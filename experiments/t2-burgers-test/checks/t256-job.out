@@ -1,0 +1,956 @@
+host=pax105 source_commit=1f8e279798880968ed17db9cd031318c04cc3615
+NVIDIA A100 80GB PCIe, GPU-c166dee7-f138-fc72-533f-4bfaee778a5c, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  362G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 65025 rows in 1 blocks 7.7
+TRUTH 0 9.5
+TRUTH 1 9.6
+TRUTH 2 9.7
+TRUTH 3 9.8
+TRUTH 4 9.9
+TRUTH 5 10.0
+TRUTH 6 10.1
+TRUTH 7 10.2
+TRUTH 8 10.3
+TRUTH 9 10.4
+TRUTH 10 10.5
+TRUTH 11 10.5
+TRUTH 12 10.6
+TRUTH 13 10.7
+TRUTH 14 10.8
+TRUTH 15 10.9
+TRUTH 16 11.0
+TRUTH 17 11.1
+TRUTH 18 11.2
+TRUTH 19 11.3
+TRUTH 20 11.4
+TRUTH 21 11.5
+TRUTH 22 11.6
+TRUTH 23 11.7
+TRUTH 24 11.8
+TRUTH 25 11.9
+TRUTH 26 12.0
+TRUTH 27 12.1
+TRUTH 28 12.3
+TRUTH 29 12.4
+TRUTH 30 12.5
+TRUTH 31 12.6
+TRUTH 32 12.7
+TRUTH 33 12.9
+TRUTH 34 13.0
+TRUTH 35 13.1
+TRUTH 36 13.2
+TRUTH 37 13.3
+TRUTH 38 13.4
+TRUTH 39 13.5
+TRUTH 40 13.6
+TRUTH 41 13.7
+TRUTH 42 13.8
+TRUTH 43 13.9
+TRUTH 44 13.9
+TRUTH 45 14.0
+TRUTH 46 14.1
+TRUTH 47 14.2
+TRUTH 48 14.3
+TRUTH 49 14.4
+TRUTH 50 14.5
+TRUTH 51 14.5
+TRUTH 52 14.6
+TRUTH 53 14.7
+TRUTH 54 14.8
+TRUTH 55 14.9
+TRUTH 56 15.0
+TRUTH 57 15.1
+TRUTH 58 15.2
+TRUTH 59 15.3
+TRUTH 60 15.4
+TRUTH 61 15.5
+TRUTH 62 15.5
+TRUTH 63 15.6
+QUICK fft_tight evolved% 0.0 stalled 0 6.8 26.7
+QUICK nt1e-4_dt005 evolved% 0.0636 stalled 0 3.4 30.2
+QUICK nt1e-3_dt005 evolved% 0.1003 stalled 0 2.9 33.1
+QUICK nt1e-2_dt005 evolved% 30.3319 stalled 0 1.8 34.9
+QUICK nt1e-4_dt01 evolved% 1.863 stalled 0 3.9 38.9
+QUICK nt1e-3_dt01 evolved% 1.8705 stalled 0 2.2 41.1
+QUICK nt1e-2_dt01 evolved% 2.8269 stalled 0 1.4 42.5
+QUICK lean_tight evolved% 0.0 stalled 0 7.5 50.1
+QUICK lean_nt1e-4_dt005 evolved% 0.0636 stalled 0 3.3 53.5
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.1009 stalled 0 2.2 55.7
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1091 stalled 0 2.1 57.9
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 30.2741 stalled 0 1.9 59.7
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.8698 stalled 0 2.6 62.4
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.9617 stalled 0 1.6 64.0
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 2.0923 stalled 0 1.5 65.5
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 4.0974 stalled 0 10.0 83.5
+TIMED F rep 0 389.0
+TIMED F rep 1 693.4
+TIMED F rep 2 998.0
+TIMED F rep 3 1302.7
+TIMED F rep 4 1607.9
+QUICK bank384_M1536_lat64_g1em06 evolved% 0.8674 stalled 0 27.3 1641.8
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.2238 exceeds 1648.1
+BLOCK bank384_M1536_lat64_g1em06 1838.2
+CMP COMPLETE
+torch_cuda True NVIDIA A100 80GB PCIe
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 7.453
+FNO burgers-test-00001 device_ms 7.442
+FNO burgers-test-00002 device_ms 7.421
+FNO burgers-test-00003 device_ms 7.453
+FNO burgers-test-00004 device_ms 7.457
+FNO burgers-test-00005 device_ms 7.422
+FNO burgers-test-00006 device_ms 7.459
+FNO burgers-test-00007 device_ms 7.433
+FNO burgers-test-00008 device_ms 7.451
+FNO burgers-test-00009 device_ms 7.427
+FNO burgers-test-00010 device_ms 7.452
+FNO burgers-test-00011 device_ms 7.438
+FNO burgers-test-00012 device_ms 7.45
+FNO burgers-test-00013 device_ms 7.414
+FNO burgers-test-00014 device_ms 7.457
+FNO burgers-test-00015 device_ms 7.435
+FNO burgers-test-00016 device_ms 7.441
+FNO burgers-test-00017 device_ms 7.432
+FNO burgers-test-00018 device_ms 7.48
+FNO burgers-test-00019 device_ms 7.433
+FNO burgers-test-00020 device_ms 7.471
+FNO burgers-test-00021 device_ms 7.434
+FNO burgers-test-00022 device_ms 7.462
+FNO burgers-test-00023 device_ms 7.433
+FNO burgers-test-00024 device_ms 7.458
+FNO burgers-test-00025 device_ms 7.421
+FNO burgers-test-00026 device_ms 7.484
+FNO burgers-test-00027 device_ms 7.432
+FNO burgers-test-00028 device_ms 7.461
+FNO burgers-test-00029 device_ms 7.452
+FNO burgers-test-00030 device_ms 7.46
+FNO burgers-test-00031 device_ms 7.439
+FNO burgers-test-00032 device_ms 7.467
+FNO burgers-test-00033 device_ms 7.444
+FNO burgers-test-00034 device_ms 7.449
+FNO burgers-test-00035 device_ms 7.434
+FNO burgers-test-00036 device_ms 7.445
+FNO burgers-test-00037 device_ms 7.447
+FNO burgers-test-00038 device_ms 7.451
+FNO burgers-test-00039 device_ms 7.435
+FNO burgers-test-00040 device_ms 7.451
+FNO burgers-test-00041 device_ms 7.442
+FNO burgers-test-00042 device_ms 7.468
+FNO burgers-test-00043 device_ms 7.465
+FNO burgers-test-00044 device_ms 7.457
+FNO burgers-test-00045 device_ms 7.466
+FNO burgers-test-00046 device_ms 7.462
+FNO burgers-test-00047 device_ms 7.441
+FNO burgers-test-00048 device_ms 7.442
+FNO burgers-test-00049 device_ms 7.46
+FNO burgers-test-00050 device_ms 7.432
+FNO burgers-test-00051 device_ms 7.459
+FNO burgers-test-00052 device_ms 7.438
+FNO burgers-test-00053 device_ms 7.443
+FNO burgers-test-00054 device_ms 7.455
+FNO burgers-test-00055 device_ms 7.441
+FNO burgers-test-00056 device_ms 7.461
+FNO burgers-test-00057 device_ms 7.43
+FNO burgers-test-00058 device_ms 7.443
+FNO burgers-test-00059 device_ms 7.416
+FNO burgers-test-00060 device_ms 7.442
+FNO burgers-test-00061 device_ms 7.452
+FNO burgers-test-00062 device_ms 7.442
+FNO burgers-test-00063 device_ms 7.454
+OPERATOR TIMING COMPLETE fno-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 9.657
+FNO burgers-test-00001 device_ms 9.627
+FNO burgers-test-00002 device_ms 9.646
+FNO burgers-test-00003 device_ms 9.667
+FNO burgers-test-00004 device_ms 9.627
+FNO burgers-test-00005 device_ms 9.64
+FNO burgers-test-00006 device_ms 9.63
+FNO burgers-test-00007 device_ms 9.626
+FNO burgers-test-00008 device_ms 9.624
+FNO burgers-test-00009 device_ms 9.624
+FNO burgers-test-00010 device_ms 9.627
+FNO burgers-test-00011 device_ms 9.632
+FNO burgers-test-00012 device_ms 9.597
+FNO burgers-test-00013 device_ms 9.627
+FNO burgers-test-00014 device_ms 9.604
+FNO burgers-test-00015 device_ms 9.652
+FNO burgers-test-00016 device_ms 9.61
+FNO burgers-test-00017 device_ms 9.636
+FNO burgers-test-00018 device_ms 9.616
+FNO burgers-test-00019 device_ms 9.636
+FNO burgers-test-00020 device_ms 9.612
+FNO burgers-test-00021 device_ms 9.641
+FNO burgers-test-00022 device_ms 9.643
+FNO burgers-test-00023 device_ms 9.64
+FNO burgers-test-00024 device_ms 9.66
+FNO burgers-test-00025 device_ms 9.633
+FNO burgers-test-00026 device_ms 9.619
+FNO burgers-test-00027 device_ms 9.636
+FNO burgers-test-00028 device_ms 9.613
+FNO burgers-test-00029 device_ms 9.651
+FNO burgers-test-00030 device_ms 9.631
+FNO burgers-test-00031 device_ms 9.659
+FNO burgers-test-00032 device_ms 9.609
+FNO burgers-test-00033 device_ms 9.64
+FNO burgers-test-00034 device_ms 9.608
+FNO burgers-test-00035 device_ms 9.644
+FNO burgers-test-00036 device_ms 9.625
+FNO burgers-test-00037 device_ms 9.631
+FNO burgers-test-00038 device_ms 9.602
+FNO burgers-test-00039 device_ms 9.639
+FNO burgers-test-00040 device_ms 9.609
+FNO burgers-test-00041 device_ms 9.623
+FNO burgers-test-00042 device_ms 9.625
+FNO burgers-test-00043 device_ms 9.636
+FNO burgers-test-00044 device_ms 9.622
+FNO burgers-test-00045 device_ms 9.647
+FNO burgers-test-00046 device_ms 9.601
+FNO burgers-test-00047 device_ms 9.621
+FNO burgers-test-00048 device_ms 9.621
+FNO burgers-test-00049 device_ms 9.631
+FNO burgers-test-00050 device_ms 9.626
+FNO burgers-test-00051 device_ms 9.64
+FNO burgers-test-00052 device_ms 9.61
+FNO burgers-test-00053 device_ms 9.61
+FNO burgers-test-00054 device_ms 9.609
+FNO burgers-test-00055 device_ms 9.654
+FNO burgers-test-00056 device_ms 9.616
+FNO burgers-test-00057 device_ms 9.625
+FNO burgers-test-00058 device_ms 9.608
+FNO burgers-test-00059 device_ms 9.622
+FNO burgers-test-00060 device_ms 9.626
+FNO burgers-test-00061 device_ms 9.657
+FNO burgers-test-00062 device_ms 9.596
+FNO burgers-test-00063 device_ms 9.635
+OPERATOR TIMING COMPLETE unet-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 6.004
+FNO burgers-test-00001 device_ms 6.01
+FNO burgers-test-00002 device_ms 5.999
+FNO burgers-test-00003 device_ms 6.025
+FNO burgers-test-00004 device_ms 6.001
+FNO burgers-test-00005 device_ms 6.019
+FNO burgers-test-00006 device_ms 5.992
+FNO burgers-test-00007 device_ms 6.001
+FNO burgers-test-00008 device_ms 5.991
+FNO burgers-test-00009 device_ms 6.024
+FNO burgers-test-00010 device_ms 5.997
+FNO burgers-test-00011 device_ms 6.004
+FNO burgers-test-00012 device_ms 5.978
+FNO burgers-test-00013 device_ms 5.998
+FNO burgers-test-00014 device_ms 6.009
+FNO burgers-test-00015 device_ms 6.007
+FNO burgers-test-00016 device_ms 6.002
+FNO burgers-test-00017 device_ms 5.997
+FNO burgers-test-00018 device_ms 5.999
+FNO burgers-test-00019 device_ms 5.998
+FNO burgers-test-00020 device_ms 6.015
+FNO burgers-test-00021 device_ms 5.999
+FNO burgers-test-00022 device_ms 5.997
+FNO burgers-test-00023 device_ms 6.04
+FNO burgers-test-00024 device_ms 6.016
+FNO burgers-test-00025 device_ms 6.043
+FNO burgers-test-00026 device_ms 6.0
+FNO burgers-test-00027 device_ms 6.011
+FNO burgers-test-00028 device_ms 6.003
+FNO burgers-test-00029 device_ms 6.008
+FNO burgers-test-00030 device_ms 6.012
+FNO burgers-test-00031 device_ms 5.996
+FNO burgers-test-00032 device_ms 5.983
+FNO burgers-test-00033 device_ms 6.01
+FNO burgers-test-00034 device_ms 5.948
+FNO burgers-test-00035 device_ms 6.003
+FNO burgers-test-00036 device_ms 6.106
+FNO burgers-test-00037 device_ms 6.017
+FNO burgers-test-00038 device_ms 5.997
+FNO burgers-test-00039 device_ms 6.03
+FNO burgers-test-00040 device_ms 6.01
+FNO burgers-test-00041 device_ms 6.022
+FNO burgers-test-00042 device_ms 5.996
+FNO burgers-test-00043 device_ms 6.086
+FNO burgers-test-00044 device_ms 6.0
+FNO burgers-test-00045 device_ms 6.01
+FNO burgers-test-00046 device_ms 5.981
+FNO burgers-test-00047 device_ms 6.005
+FNO burgers-test-00048 device_ms 5.994
+FNO burgers-test-00049 device_ms 6.029
+FNO burgers-test-00050 device_ms 6.024
+FNO burgers-test-00051 device_ms 6.0
+FNO burgers-test-00052 device_ms 6.007
+FNO burgers-test-00053 device_ms 6.019
+FNO burgers-test-00054 device_ms 6.008
+FNO burgers-test-00055 device_ms 6.009
+FNO burgers-test-00056 device_ms 6.007
+FNO burgers-test-00057 device_ms 6.003
+FNO burgers-test-00058 device_ms 6.009
+FNO burgers-test-00059 device_ms 6.009
+FNO burgers-test-00060 device_ms 6.019
+FNO burgers-test-00061 device_ms 6.043
+FNO burgers-test-00062 device_ms 6.006
+FNO burgers-test-00063 device_ms 6.008
+OPERATOR TIMING COMPLETE unet-medium
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 10.291
+FNO burgers-test-00001 device_ms 10.255
+FNO burgers-test-00002 device_ms 10.308
+FNO burgers-test-00003 device_ms 10.285
+FNO burgers-test-00004 device_ms 10.28
+FNO burgers-test-00005 device_ms 10.317
+FNO burgers-test-00006 device_ms 10.33
+FNO burgers-test-00007 device_ms 10.275
+FNO burgers-test-00008 device_ms 10.299
+FNO burgers-test-00009 device_ms 10.29
+FNO burgers-test-00010 device_ms 10.301
+FNO burgers-test-00011 device_ms 10.275
+FNO burgers-test-00012 device_ms 10.282
+FNO burgers-test-00013 device_ms 10.275
+FNO burgers-test-00014 device_ms 10.294
+FNO burgers-test-00015 device_ms 10.272
+FNO burgers-test-00016 device_ms 10.286
+FNO burgers-test-00017 device_ms 10.309
+FNO burgers-test-00018 device_ms 10.287
+FNO burgers-test-00019 device_ms 10.254
+FNO burgers-test-00020 device_ms 10.308
+FNO burgers-test-00021 device_ms 10.293
+FNO burgers-test-00022 device_ms 10.292
+FNO burgers-test-00023 device_ms 10.295
+FNO burgers-test-00024 device_ms 10.286
+FNO burgers-test-00025 device_ms 10.258
+FNO burgers-test-00026 device_ms 10.292
+FNO burgers-test-00027 device_ms 10.29
+FNO burgers-test-00028 device_ms 10.3
+FNO burgers-test-00029 device_ms 10.277
+FNO burgers-test-00030 device_ms 10.289
+FNO burgers-test-00031 device_ms 10.269
+FNO burgers-test-00032 device_ms 10.274
+FNO burgers-test-00033 device_ms 10.288
+FNO burgers-test-00034 device_ms 10.276
+FNO burgers-test-00035 device_ms 10.294
+FNO burgers-test-00036 device_ms 10.29
+FNO burgers-test-00037 device_ms 10.295
+FNO burgers-test-00038 device_ms 10.299
+FNO burgers-test-00039 device_ms 10.286
+FNO burgers-test-00040 device_ms 10.296
+FNO burgers-test-00041 device_ms 10.278
+FNO burgers-test-00042 device_ms 10.293
+FNO burgers-test-00043 device_ms 10.284
+FNO burgers-test-00044 device_ms 10.289
+FNO burgers-test-00045 device_ms 10.292
+FNO burgers-test-00046 device_ms 10.308
+FNO burgers-test-00047 device_ms 10.279
+FNO burgers-test-00048 device_ms 10.304
+FNO burgers-test-00049 device_ms 10.267
+FNO burgers-test-00050 device_ms 10.298
+FNO burgers-test-00051 device_ms 10.274
+FNO burgers-test-00052 device_ms 10.263
+FNO burgers-test-00053 device_ms 10.283
+FNO burgers-test-00054 device_ms 10.28
+FNO burgers-test-00055 device_ms 10.265
+FNO burgers-test-00056 device_ms 10.29
+FNO burgers-test-00057 device_ms 10.265
+FNO burgers-test-00058 device_ms 10.304
+FNO burgers-test-00059 device_ms 10.257
+FNO burgers-test-00060 device_ms 10.309
+FNO burgers-test-00061 device_ms 10.273
+FNO burgers-test-00062 device_ms 10.291
+FNO burgers-test-00063 device_ms 10.266
+OPERATOR TIMING COMPLETE unet-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 6.034
+FNO burgers-test-00001 device_ms 5.971
+FNO burgers-test-00002 device_ms 5.992
+FNO burgers-test-00003 device_ms 5.983
+FNO burgers-test-00004 device_ms 5.997
+FNO burgers-test-00005 device_ms 6.022
+FNO burgers-test-00006 device_ms 5.968
+FNO burgers-test-00007 device_ms 5.963
+FNO burgers-test-00008 device_ms 5.983
+FNO burgers-test-00009 device_ms 5.99
+FNO burgers-test-00010 device_ms 5.953
+FNO burgers-test-00011 device_ms 5.968
+FNO burgers-test-00012 device_ms 5.955
+FNO burgers-test-00013 device_ms 5.994
+FNO burgers-test-00014 device_ms 5.99
+FNO burgers-test-00015 device_ms 5.923
+FNO burgers-test-00016 device_ms 5.94
+FNO burgers-test-00017 device_ms 5.984
+FNO burgers-test-00018 device_ms 5.952
+FNO burgers-test-00019 device_ms 5.958
+FNO burgers-test-00020 device_ms 5.881
+FNO burgers-test-00021 device_ms 5.986
+FNO burgers-test-00022 device_ms 5.952
+FNO burgers-test-00023 device_ms 5.983
+FNO burgers-test-00024 device_ms 5.9
+FNO burgers-test-00025 device_ms 5.903
+FNO burgers-test-00026 device_ms 5.867
+FNO burgers-test-00027 device_ms 5.868
+FNO burgers-test-00028 device_ms 5.876
+FNO burgers-test-00029 device_ms 6.003
+FNO burgers-test-00030 device_ms 6.014
+FNO burgers-test-00031 device_ms 6.011
+FNO burgers-test-00032 device_ms 6.009
+FNO burgers-test-00033 device_ms 6.041
+FNO burgers-test-00034 device_ms 6.03
+FNO burgers-test-00035 device_ms 6.048
+FNO burgers-test-00036 device_ms 6.039
+FNO burgers-test-00037 device_ms 6.06
+FNO burgers-test-00038 device_ms 6.037
+FNO burgers-test-00039 device_ms 6.061
+FNO burgers-test-00040 device_ms 6.022
+FNO burgers-test-00041 device_ms 6.037
+FNO burgers-test-00042 device_ms 6.023
+FNO burgers-test-00043 device_ms 6.021
+FNO burgers-test-00044 device_ms 6.031
+FNO burgers-test-00045 device_ms 6.083
+FNO burgers-test-00046 device_ms 6.056
+FNO burgers-test-00047 device_ms 6.027
+FNO burgers-test-00048 device_ms 6.037
+FNO burgers-test-00049 device_ms 6.036
+FNO burgers-test-00050 device_ms 6.019
+FNO burgers-test-00051 device_ms 6.035
+FNO burgers-test-00052 device_ms 6.036
+FNO burgers-test-00053 device_ms 6.049
+FNO burgers-test-00054 device_ms 6.039
+FNO burgers-test-00055 device_ms 6.036
+FNO burgers-test-00056 device_ms 6.029
+FNO burgers-test-00057 device_ms 6.041
+FNO burgers-test-00058 device_ms 6.026
+FNO burgers-test-00059 device_ms 6.041
+FNO burgers-test-00060 device_ms 6.049
+FNO burgers-test-00061 device_ms 6.045
+FNO burgers-test-00062 device_ms 6.054
+FNO burgers-test-00063 device_ms 6.016
+OPERATOR TIMING COMPLETE unet-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 11.448
+FNO burgers-test-00001 device_ms 11.423
+FNO burgers-test-00002 device_ms 11.5
+FNO burgers-test-00003 device_ms 11.453
+FNO burgers-test-00004 device_ms 11.427
+FNO burgers-test-00005 device_ms 11.474
+FNO burgers-test-00006 device_ms 11.412
+FNO burgers-test-00007 device_ms 11.451
+FNO burgers-test-00008 device_ms 11.454
+FNO burgers-test-00009 device_ms 11.455
+FNO burgers-test-00010 device_ms 11.463
+FNO burgers-test-00011 device_ms 11.481
+FNO burgers-test-00012 device_ms 11.47
+FNO burgers-test-00013 device_ms 11.406
+FNO burgers-test-00014 device_ms 11.489
+FNO burgers-test-00015 device_ms 11.448
+FNO burgers-test-00016 device_ms 11.411
+FNO burgers-test-00017 device_ms 11.496
+FNO burgers-test-00018 device_ms 11.47
+FNO burgers-test-00019 device_ms 11.447
+FNO burgers-test-00020 device_ms 11.436
+FNO burgers-test-00021 device_ms 11.477
+FNO burgers-test-00022 device_ms 11.47
+FNO burgers-test-00023 device_ms 11.439
+FNO burgers-test-00024 device_ms 11.468
+FNO burgers-test-00025 device_ms 11.472
+FNO burgers-test-00026 device_ms 11.479
+FNO burgers-test-00027 device_ms 11.494
+FNO burgers-test-00028 device_ms 11.473
+FNO burgers-test-00029 device_ms 11.45
+FNO burgers-test-00030 device_ms 11.442
+FNO burgers-test-00031 device_ms 11.453
+FNO burgers-test-00032 device_ms 11.433
+FNO burgers-test-00033 device_ms 11.464
+FNO burgers-test-00034 device_ms 11.444
+FNO burgers-test-00035 device_ms 11.466
+FNO burgers-test-00036 device_ms 11.444
+FNO burgers-test-00037 device_ms 11.456
+FNO burgers-test-00038 device_ms 11.424
+FNO burgers-test-00039 device_ms 11.474
+FNO burgers-test-00040 device_ms 11.439
+FNO burgers-test-00041 device_ms 11.448
+FNO burgers-test-00042 device_ms 11.429
+FNO burgers-test-00043 device_ms 11.433
+FNO burgers-test-00044 device_ms 11.421
+FNO burgers-test-00045 device_ms 11.431
+FNO burgers-test-00046 device_ms 11.44
+FNO burgers-test-00047 device_ms 11.434
+FNO burgers-test-00048 device_ms 11.447
+FNO burgers-test-00049 device_ms 11.473
+FNO burgers-test-00050 device_ms 11.441
+FNO burgers-test-00051 device_ms 11.464
+FNO burgers-test-00052 device_ms 11.43
+FNO burgers-test-00053 device_ms 11.499
+FNO burgers-test-00054 device_ms 11.446
+FNO burgers-test-00055 device_ms 11.466
+FNO burgers-test-00056 device_ms 11.461
+FNO burgers-test-00057 device_ms 11.437
+FNO burgers-test-00058 device_ms 11.426
+FNO burgers-test-00059 device_ms 11.489
+FNO burgers-test-00060 device_ms 11.441
+FNO burgers-test-00061 device_ms 11.468
+FNO burgers-test-00062 device_ms 11.487
+FNO burgers-test-00063 device_ms 11.45
+OPERATOR TIMING COMPLETE tsol-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 13.221
+FNO burgers-test-00001 device_ms 13.233
+FNO burgers-test-00002 device_ms 13.226
+FNO burgers-test-00003 device_ms 13.252
+FNO burgers-test-00004 device_ms 13.237
+FNO burgers-test-00005 device_ms 13.244
+FNO burgers-test-00006 device_ms 13.226
+FNO burgers-test-00007 device_ms 13.222
+FNO burgers-test-00008 device_ms 13.235
+FNO burgers-test-00009 device_ms 13.235
+FNO burgers-test-00010 device_ms 13.206
+FNO burgers-test-00011 device_ms 13.215
+FNO burgers-test-00012 device_ms 13.202
+FNO burgers-test-00013 device_ms 13.236
+FNO burgers-test-00014 device_ms 13.255
+FNO burgers-test-00015 device_ms 13.256
+FNO burgers-test-00016 device_ms 13.25
+FNO burgers-test-00017 device_ms 13.271
+FNO burgers-test-00018 device_ms 13.271
+FNO burgers-test-00019 device_ms 13.251
+FNO burgers-test-00020 device_ms 13.27
+FNO burgers-test-00021 device_ms 13.228
+FNO burgers-test-00022 device_ms 13.251
+FNO burgers-test-00023 device_ms 13.245
+FNO burgers-test-00024 device_ms 13.256
+FNO burgers-test-00025 device_ms 13.226
+FNO burgers-test-00026 device_ms 13.231
+FNO burgers-test-00027 device_ms 13.261
+FNO burgers-test-00028 device_ms 13.246
+FNO burgers-test-00029 device_ms 13.193
+FNO burgers-test-00030 device_ms 13.253
+FNO burgers-test-00031 device_ms 13.251
+FNO burgers-test-00032 device_ms 13.257
+FNO burgers-test-00033 device_ms 13.243
+FNO burgers-test-00034 device_ms 13.247
+FNO burgers-test-00035 device_ms 13.245
+FNO burgers-test-00036 device_ms 13.254
+FNO burgers-test-00037 device_ms 13.251
+FNO burgers-test-00038 device_ms 13.246
+FNO burgers-test-00039 device_ms 13.266
+FNO burgers-test-00040 device_ms 13.269
+FNO burgers-test-00041 device_ms 13.231
+FNO burgers-test-00042 device_ms 13.229
+FNO burgers-test-00043 device_ms 13.243
+FNO burgers-test-00044 device_ms 13.257
+FNO burgers-test-00045 device_ms 13.247
+FNO burgers-test-00046 device_ms 13.232
+FNO burgers-test-00047 device_ms 13.24
+FNO burgers-test-00048 device_ms 13.243
+FNO burgers-test-00049 device_ms 13.266
+FNO burgers-test-00050 device_ms 13.229
+FNO burgers-test-00051 device_ms 13.263
+FNO burgers-test-00052 device_ms 13.25
+FNO burgers-test-00053 device_ms 13.259
+FNO burgers-test-00054 device_ms 13.242
+FNO burgers-test-00055 device_ms 13.231
+FNO burgers-test-00056 device_ms 13.245
+FNO burgers-test-00057 device_ms 13.232
+FNO burgers-test-00058 device_ms 13.244
+FNO burgers-test-00059 device_ms 13.26
+FNO burgers-test-00060 device_ms 13.246
+FNO burgers-test-00061 device_ms 13.259
+FNO burgers-test-00062 device_ms 13.23
+FNO burgers-test-00063 device_ms 13.251
+OPERATOR TIMING COMPLETE tsol-medium
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 15.575
+FNO burgers-test-00001 device_ms 15.585
+FNO burgers-test-00002 device_ms 15.576
+FNO burgers-test-00003 device_ms 15.599
+FNO burgers-test-00004 device_ms 15.574
+FNO burgers-test-00005 device_ms 15.586
+FNO burgers-test-00006 device_ms 15.576
+FNO burgers-test-00007 device_ms 15.585
+FNO burgers-test-00008 device_ms 15.564
+FNO burgers-test-00009 device_ms 15.584
+FNO burgers-test-00010 device_ms 15.574
+FNO burgers-test-00011 device_ms 15.569
+FNO burgers-test-00012 device_ms 15.58
+FNO burgers-test-00013 device_ms 15.597
+FNO burgers-test-00014 device_ms 15.585
+FNO burgers-test-00015 device_ms 15.581
+FNO burgers-test-00016 device_ms 15.578
+FNO burgers-test-00017 device_ms 15.572
+FNO burgers-test-00018 device_ms 15.555
+FNO burgers-test-00019 device_ms 15.581
+FNO burgers-test-00020 device_ms 15.569
+FNO burgers-test-00021 device_ms 15.587
+FNO burgers-test-00022 device_ms 15.595
+FNO burgers-test-00023 device_ms 15.578
+FNO burgers-test-00024 device_ms 15.585
+FNO burgers-test-00025 device_ms 15.571
+FNO burgers-test-00026 device_ms 15.575
+FNO burgers-test-00027 device_ms 15.576
+FNO burgers-test-00028 device_ms 15.57
+FNO burgers-test-00029 device_ms 15.616
+FNO burgers-test-00030 device_ms 15.569
+FNO burgers-test-00031 device_ms 15.581
+FNO burgers-test-00032 device_ms 15.574
+FNO burgers-test-00033 device_ms 15.583
+FNO burgers-test-00034 device_ms 15.569
+FNO burgers-test-00035 device_ms 15.578
+FNO burgers-test-00036 device_ms 15.542
+FNO burgers-test-00037 device_ms 15.576
+FNO burgers-test-00038 device_ms 15.6
+FNO burgers-test-00039 device_ms 15.548
+FNO burgers-test-00040 device_ms 15.576
+FNO burgers-test-00041 device_ms 15.58
+FNO burgers-test-00042 device_ms 15.578
+FNO burgers-test-00043 device_ms 15.588
+FNO burgers-test-00044 device_ms 15.563
+FNO burgers-test-00045 device_ms 15.579
+FNO burgers-test-00046 device_ms 15.532
+FNO burgers-test-00047 device_ms 15.586
+FNO burgers-test-00048 device_ms 15.593
+FNO burgers-test-00049 device_ms 15.591
+FNO burgers-test-00050 device_ms 15.593
+FNO burgers-test-00051 device_ms 15.576
+FNO burgers-test-00052 device_ms 15.575
+FNO burgers-test-00053 device_ms 15.564
+FNO burgers-test-00054 device_ms 15.581
+FNO burgers-test-00055 device_ms 15.599
+FNO burgers-test-00056 device_ms 15.582
+FNO burgers-test-00057 device_ms 15.57
+FNO burgers-test-00058 device_ms 15.593
+FNO burgers-test-00059 device_ms 15.579
+FNO burgers-test-00060 device_ms 15.572
+FNO burgers-test-00061 device_ms 15.558
+FNO burgers-test-00062 device_ms 15.585
+FNO burgers-test-00063 device_ms 15.554
+OPERATOR TIMING COMPLETE tsol-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 11.411
+FNO burgers-test-00001 device_ms 11.5
+FNO burgers-test-00002 device_ms 11.471
+FNO burgers-test-00003 device_ms 11.47
+FNO burgers-test-00004 device_ms 11.513
+FNO burgers-test-00005 device_ms 11.48
+FNO burgers-test-00006 device_ms 11.49
+FNO burgers-test-00007 device_ms 11.453
+FNO burgers-test-00008 device_ms 11.494
+FNO burgers-test-00009 device_ms 11.511
+FNO burgers-test-00010 device_ms 11.503
+FNO burgers-test-00011 device_ms 11.497
+FNO burgers-test-00012 device_ms 11.429
+FNO burgers-test-00013 device_ms 11.444
+FNO burgers-test-00014 device_ms 11.448
+FNO burgers-test-00015 device_ms 11.498
+FNO burgers-test-00016 device_ms 11.465
+FNO burgers-test-00017 device_ms 11.478
+FNO burgers-test-00018 device_ms 11.498
+FNO burgers-test-00019 device_ms 11.467
+FNO burgers-test-00020 device_ms 11.44
+FNO burgers-test-00021 device_ms 11.479
+FNO burgers-test-00022 device_ms 11.485
+FNO burgers-test-00023 device_ms 11.46
+FNO burgers-test-00024 device_ms 11.462
+FNO burgers-test-00025 device_ms 11.445
+FNO burgers-test-00026 device_ms 11.496
+FNO burgers-test-00027 device_ms 11.517
+FNO burgers-test-00028 device_ms 11.439
+FNO burgers-test-00029 device_ms 11.495
+FNO burgers-test-00030 device_ms 11.449
+FNO burgers-test-00031 device_ms 11.475
+FNO burgers-test-00032 device_ms 11.492
+FNO burgers-test-00033 device_ms 11.481
+FNO burgers-test-00034 device_ms 11.498
+FNO burgers-test-00035 device_ms 11.407
+FNO burgers-test-00036 device_ms 11.446
+FNO burgers-test-00037 device_ms 11.327
+FNO burgers-test-00038 device_ms 11.321
+FNO burgers-test-00039 device_ms 11.08
+FNO burgers-test-00040 device_ms 11.101
+FNO burgers-test-00041 device_ms 11.125
+FNO burgers-test-00042 device_ms 11.06
+FNO burgers-test-00043 device_ms 11.014
+FNO burgers-test-00044 device_ms 11.014
+FNO burgers-test-00045 device_ms 11.006
+FNO burgers-test-00046 device_ms 11.003
+FNO burgers-test-00047 device_ms 11.514
+FNO burgers-test-00048 device_ms 11.513
+FNO burgers-test-00049 device_ms 11.53
+FNO burgers-test-00050 device_ms 11.435
+FNO burgers-test-00051 device_ms 11.494
+FNO burgers-test-00052 device_ms 11.488
+FNO burgers-test-00053 device_ms 11.499
+FNO burgers-test-00054 device_ms 11.421
+FNO burgers-test-00055 device_ms 11.472
+FNO burgers-test-00056 device_ms 11.415
+FNO burgers-test-00057 device_ms 11.467
+FNO burgers-test-00058 device_ms 11.465
+FNO burgers-test-00059 device_ms 11.494
+FNO burgers-test-00060 device_ms 11.446
+FNO burgers-test-00061 device_ms 11.458
+FNO burgers-test-00062 device_ms 11.49
+FNO burgers-test-00063 device_ms 11.441
+OPERATOR TIMING COMPLETE tsol-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 3.945
+FNO burgers-test-00001 device_ms 3.942
+FNO burgers-test-00002 device_ms 3.91
+FNO burgers-test-00003 device_ms 3.933
+FNO burgers-test-00004 device_ms 3.925
+FNO burgers-test-00005 device_ms 3.931
+FNO burgers-test-00006 device_ms 3.942
+FNO burgers-test-00007 device_ms 3.922
+FNO burgers-test-00008 device_ms 3.936
+FNO burgers-test-00009 device_ms 3.944
+FNO burgers-test-00010 device_ms 3.93
+FNO burgers-test-00011 device_ms 3.96
+FNO burgers-test-00012 device_ms 3.945
+FNO burgers-test-00013 device_ms 3.934
+FNO burgers-test-00014 device_ms 3.954
+FNO burgers-test-00015 device_ms 3.95
+FNO burgers-test-00016 device_ms 3.924
+FNO burgers-test-00017 device_ms 3.947
+FNO burgers-test-00018 device_ms 3.932
+FNO burgers-test-00019 device_ms 3.908
+FNO burgers-test-00020 device_ms 3.948
+FNO burgers-test-00021 device_ms 3.958
+FNO burgers-test-00022 device_ms 3.949
+FNO burgers-test-00023 device_ms 3.949
+FNO burgers-test-00024 device_ms 3.929
+FNO burgers-test-00025 device_ms 3.963
+FNO burgers-test-00026 device_ms 3.941
+FNO burgers-test-00027 device_ms 3.941
+FNO burgers-test-00028 device_ms 3.933
+FNO burgers-test-00029 device_ms 3.947
+FNO burgers-test-00030 device_ms 3.931
+FNO burgers-test-00031 device_ms 3.956
+FNO burgers-test-00032 device_ms 3.964
+FNO burgers-test-00033 device_ms 3.944
+FNO burgers-test-00034 device_ms 3.93
+FNO burgers-test-00035 device_ms 3.946
+FNO burgers-test-00036 device_ms 3.906
+FNO burgers-test-00037 device_ms 3.935
+FNO burgers-test-00038 device_ms 3.966
+FNO burgers-test-00039 device_ms 3.926
+FNO burgers-test-00040 device_ms 3.929
+FNO burgers-test-00041 device_ms 3.952
+FNO burgers-test-00042 device_ms 3.958
+FNO burgers-test-00043 device_ms 3.927
+FNO burgers-test-00044 device_ms 3.951
+FNO burgers-test-00045 device_ms 3.943
+FNO burgers-test-00046 device_ms 3.941
+FNO burgers-test-00047 device_ms 3.948
+FNO burgers-test-00048 device_ms 3.942
+FNO burgers-test-00049 device_ms 3.931
+FNO burgers-test-00050 device_ms 3.932
+FNO burgers-test-00051 device_ms 3.955
+FNO burgers-test-00052 device_ms 3.951
+FNO burgers-test-00053 device_ms 3.924
+FNO burgers-test-00054 device_ms 3.945
+FNO burgers-test-00055 device_ms 3.947
+FNO burgers-test-00056 device_ms 3.919
+FNO burgers-test-00057 device_ms 3.927
+FNO burgers-test-00058 device_ms 3.921
+FNO burgers-test-00059 device_ms 3.978
+FNO burgers-test-00060 device_ms 3.953
+FNO burgers-test-00061 device_ms 3.953
+FNO burgers-test-00062 device_ms 3.943
+FNO burgers-test-00063 device_ms 3.926
+OPERATOR TIMING COMPLETE don-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 5.836
+FNO burgers-test-00001 device_ms 5.855
+FNO burgers-test-00002 device_ms 5.861
+FNO burgers-test-00003 device_ms 5.833
+FNO burgers-test-00004 device_ms 5.843
+FNO burgers-test-00005 device_ms 5.921
+FNO burgers-test-00006 device_ms 5.842
+FNO burgers-test-00007 device_ms 5.846
+FNO burgers-test-00008 device_ms 5.822
+FNO burgers-test-00009 device_ms 5.831
+FNO burgers-test-00010 device_ms 5.841
+FNO burgers-test-00011 device_ms 5.85
+FNO burgers-test-00012 device_ms 5.855
+FNO burgers-test-00013 device_ms 5.847
+FNO burgers-test-00014 device_ms 5.83
+FNO burgers-test-00015 device_ms 5.883
+FNO burgers-test-00016 device_ms 5.841
+FNO burgers-test-00017 device_ms 5.853
+FNO burgers-test-00018 device_ms 5.892
+FNO burgers-test-00019 device_ms 5.852
+FNO burgers-test-00020 device_ms 5.856
+FNO burgers-test-00021 device_ms 5.939
+FNO burgers-test-00022 device_ms 5.847
+FNO burgers-test-00023 device_ms 5.87
+FNO burgers-test-00024 device_ms 5.855
+FNO burgers-test-00025 device_ms 5.836
+FNO burgers-test-00026 device_ms 5.857
+FNO burgers-test-00027 device_ms 5.849
+FNO burgers-test-00028 device_ms 5.861
+FNO burgers-test-00029 device_ms 5.868
+FNO burgers-test-00030 device_ms 5.832
+FNO burgers-test-00031 device_ms 5.865
+FNO burgers-test-00032 device_ms 5.846
+FNO burgers-test-00033 device_ms 5.832
+FNO burgers-test-00034 device_ms 5.817
+FNO burgers-test-00035 device_ms 5.888
+FNO burgers-test-00036 device_ms 5.853
+FNO burgers-test-00037 device_ms 5.876
+FNO burgers-test-00038 device_ms 5.906
+FNO burgers-test-00039 device_ms 5.859
+FNO burgers-test-00040 device_ms 5.856
+FNO burgers-test-00041 device_ms 5.921
+FNO burgers-test-00042 device_ms 5.839
+FNO burgers-test-00043 device_ms 5.841
+FNO burgers-test-00044 device_ms 5.878
+FNO burgers-test-00045 device_ms 5.866
+FNO burgers-test-00046 device_ms 5.855
+FNO burgers-test-00047 device_ms 5.838
+FNO burgers-test-00048 device_ms 5.899
+FNO burgers-test-00049 device_ms 5.853
+FNO burgers-test-00050 device_ms 5.874
+FNO burgers-test-00051 device_ms 5.832
+FNO burgers-test-00052 device_ms 5.875
+FNO burgers-test-00053 device_ms 5.832
+FNO burgers-test-00054 device_ms 5.907
+FNO burgers-test-00055 device_ms 5.842
+FNO burgers-test-00056 device_ms 5.837
+FNO burgers-test-00057 device_ms 5.849
+FNO burgers-test-00058 device_ms 5.852
+FNO burgers-test-00059 device_ms 5.878
+FNO burgers-test-00060 device_ms 5.859
+FNO burgers-test-00061 device_ms 5.85
+FNO burgers-test-00062 device_ms 5.868
+FNO burgers-test-00063 device_ms 5.851
+OPERATOR TIMING COMPLETE don-medium
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 3.919
+FNO burgers-test-00001 device_ms 3.945
+FNO burgers-test-00002 device_ms 3.912
+FNO burgers-test-00003 device_ms 3.932
+FNO burgers-test-00004 device_ms 3.947
+FNO burgers-test-00005 device_ms 3.923
+FNO burgers-test-00006 device_ms 3.915
+FNO burgers-test-00007 device_ms 3.944
+FNO burgers-test-00008 device_ms 3.94
+FNO burgers-test-00009 device_ms 3.951
+FNO burgers-test-00010 device_ms 3.938
+FNO burgers-test-00011 device_ms 3.906
+FNO burgers-test-00012 device_ms 3.934
+FNO burgers-test-00013 device_ms 3.946
+FNO burgers-test-00014 device_ms 3.907
+FNO burgers-test-00015 device_ms 3.937
+FNO burgers-test-00016 device_ms 3.922
+FNO burgers-test-00017 device_ms 3.935
+FNO burgers-test-00018 device_ms 3.93
+FNO burgers-test-00019 device_ms 3.967
+FNO burgers-test-00020 device_ms 3.918
+FNO burgers-test-00021 device_ms 3.947
+FNO burgers-test-00022 device_ms 3.968
+FNO burgers-test-00023 device_ms 3.95
+FNO burgers-test-00024 device_ms 3.938
+FNO burgers-test-00025 device_ms 3.929
+FNO burgers-test-00026 device_ms 3.947
+FNO burgers-test-00027 device_ms 3.951
+FNO burgers-test-00028 device_ms 3.945
+FNO burgers-test-00029 device_ms 3.945
+FNO burgers-test-00030 device_ms 3.94
+FNO burgers-test-00031 device_ms 3.928
+FNO burgers-test-00032 device_ms 3.93
+FNO burgers-test-00033 device_ms 3.953
+FNO burgers-test-00034 device_ms 3.923
+FNO burgers-test-00035 device_ms 3.932
+FNO burgers-test-00036 device_ms 3.946
+FNO burgers-test-00037 device_ms 3.936
+FNO burgers-test-00038 device_ms 3.937
+FNO burgers-test-00039 device_ms 3.93
+FNO burgers-test-00040 device_ms 3.935
+FNO burgers-test-00041 device_ms 3.921
+FNO burgers-test-00042 device_ms 3.931
+FNO burgers-test-00043 device_ms 3.933
+FNO burgers-test-00044 device_ms 3.928
+FNO burgers-test-00045 device_ms 3.959
+FNO burgers-test-00046 device_ms 3.905
+FNO burgers-test-00047 device_ms 3.927
+FNO burgers-test-00048 device_ms 3.948
+FNO burgers-test-00049 device_ms 3.955
+FNO burgers-test-00050 device_ms 3.951
+FNO burgers-test-00051 device_ms 3.95
+FNO burgers-test-00052 device_ms 3.915
+FNO burgers-test-00053 device_ms 3.933
+FNO burgers-test-00054 device_ms 3.934
+FNO burgers-test-00055 device_ms 3.964
+FNO burgers-test-00056 device_ms 3.933
+FNO burgers-test-00057 device_ms 3.925
+FNO burgers-test-00058 device_ms 3.919
+FNO burgers-test-00059 device_ms 3.916
+FNO burgers-test-00060 device_ms 3.932
+FNO burgers-test-00061 device_ms 3.941
+FNO burgers-test-00062 device_ms 3.921
+FNO burgers-test-00063 device_ms 3.937
+OPERATOR TIMING COMPLETE don-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-test-00000 device_ms 10.821
+FNO burgers-test-00001 device_ms 10.818
+FNO burgers-test-00002 device_ms 10.829
+FNO burgers-test-00003 device_ms 10.818
+FNO burgers-test-00004 device_ms 10.835
+FNO burgers-test-00005 device_ms 10.823
+FNO burgers-test-00006 device_ms 10.806
+FNO burgers-test-00007 device_ms 10.705
+FNO burgers-test-00008 device_ms 10.74
+FNO burgers-test-00009 device_ms 10.811
+FNO burgers-test-00010 device_ms 10.703
+FNO burgers-test-00011 device_ms 10.709
+FNO burgers-test-00012 device_ms 10.824
+FNO burgers-test-00013 device_ms 10.821
+FNO burgers-test-00014 device_ms 10.72
+FNO burgers-test-00015 device_ms 10.822
+FNO burgers-test-00016 device_ms 10.817
+FNO burgers-test-00017 device_ms 10.81
+FNO burgers-test-00018 device_ms 10.732
+FNO burgers-test-00019 device_ms 10.818
+FNO burgers-test-00020 device_ms 10.814
+FNO burgers-test-00021 device_ms 10.76
+FNO burgers-test-00022 device_ms 10.816
+FNO burgers-test-00023 device_ms 10.699
+FNO burgers-test-00024 device_ms 10.825
+FNO burgers-test-00025 device_ms 10.712
+FNO burgers-test-00026 device_ms 10.813
+FNO burgers-test-00027 device_ms 10.811
+FNO burgers-test-00028 device_ms 10.82
+FNO burgers-test-00029 device_ms 10.818
+FNO burgers-test-00030 device_ms 10.812
+FNO burgers-test-00031 device_ms 10.763
+FNO burgers-test-00032 device_ms 10.817
+FNO burgers-test-00033 device_ms 10.824
+FNO burgers-test-00034 device_ms 10.853
+FNO burgers-test-00035 device_ms 10.809
+FNO burgers-test-00036 device_ms 10.813
+FNO burgers-test-00037 device_ms 10.827
+FNO burgers-test-00038 device_ms 10.82
+FNO burgers-test-00039 device_ms 10.81
+FNO burgers-test-00040 device_ms 10.817
+FNO burgers-test-00041 device_ms 10.82
+FNO burgers-test-00042 device_ms 10.702
+FNO burgers-test-00043 device_ms 10.706
+FNO burgers-test-00044 device_ms 10.819
+FNO burgers-test-00045 device_ms 10.823
+FNO burgers-test-00046 device_ms 10.7
+FNO burgers-test-00047 device_ms 10.819
+FNO burgers-test-00048 device_ms 10.809
+FNO burgers-test-00049 device_ms 10.824
+FNO burgers-test-00050 device_ms 10.81
+FNO burgers-test-00051 device_ms 10.737
+FNO burgers-test-00052 device_ms 10.809
+FNO burgers-test-00053 device_ms 10.796
+FNO burgers-test-00054 device_ms 10.817
+FNO burgers-test-00055 device_ms 10.814
+FNO burgers-test-00056 device_ms 10.8
+FNO burgers-test-00057 device_ms 10.819
+FNO burgers-test-00058 device_ms 10.808
+FNO burgers-test-00059 device_ms 10.821
+FNO burgers-test-00060 device_ms 10.816
+FNO burgers-test-00061 device_ms 10.811
+FNO burgers-test-00062 device_ms 10.817
+FNO burgers-test-00063 device_ms 10.809
+OPERATOR TIMING COMPLETE don-large
+AUDIT t256 arms 30 failed gates: []
+ALL-DONE

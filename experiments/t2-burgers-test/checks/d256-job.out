@@ -1,0 +1,144 @@
+host=pax105 source_commit=1f8e279798880968ed17db9cd031318c04cc3615
+NVIDIA A100 80GB PCIe, GPU-e1155fbe-2d60-1685-178c-9d7f9cbab295, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  362G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 65025 rows in 1 blocks 6.8
+TRUTH 0 8.4
+TRUTH 1 8.5
+TRUTH 2 8.6
+TRUTH 3 8.7
+TRUTH 4 8.8
+TRUTH 5 8.9
+QUICK fft_tight evolved% 0.0 stalled 0 0.7 11.9
+QUICK nt1e-4_dt005 evolved% 0.0338 stalled 0 0.3 12.2
+QUICK nt1e-3_dt005 evolved% 0.0489 stalled 0 0.3 12.5
+QUICK nt1e-2_dt005 evolved% 3.7127 stalled 0 0.2 12.7
+QUICK nt1e-4_dt01 evolved% 1.5109 stalled 0 1.3 14.0
+QUICK nt1e-3_dt01 evolved% 1.5179 stalled 0 0.2 14.3
+QUICK nt1e-2_dt01 evolved% 3.1999 stalled 0 0.1 14.4
+QUICK lean_tight evolved% 0.0 stalled 0 1.6 16.0
+QUICK lean_nt1e-4_dt005 evolved% 0.0338 stalled 0 0.4 16.3
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0482 stalled 0 0.2 16.6
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0485 stalled 0 0.2 16.8
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1361 stalled 0 0.2 17.0
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.5177 stalled 0 1.1 18.1
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.5309 stalled 0 0.2 18.3
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.5474 stalled 0 0.2 18.5
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 1.8892 stalled 0 7.3 33.4
+TIMED F rep 0 62.8
+TIMED F rep 1 91.3
+TIMED F rep 2 120.1
+TIMED F rep 3 148.7
+TIMED F rep 4 177.4
+QUICK bank384_M1536_lat64_g1em06 evolved% 0.1656 stalled 0 7.5 190.8
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.2238 exceeds 196.5
+BLOCK bank384_M1536_lat64_g1em06 214.4
+CMP COMPLETE
+torch_cuda True NVIDIA A100 80GB PCIe
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 7.307
+FNO burgers-development-00001 device_ms 7.316
+FNO burgers-development-00002 device_ms 7.342
+FNO burgers-development-00003 device_ms 7.333
+FNO burgers-development-00004 device_ms 7.322
+FNO burgers-development-00005 device_ms 7.328
+OPERATOR TIMING COMPLETE fno-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 9.429
+FNO burgers-development-00001 device_ms 9.414
+FNO burgers-development-00002 device_ms 9.478
+FNO burgers-development-00003 device_ms 9.412
+FNO burgers-development-00004 device_ms 9.419
+FNO burgers-development-00005 device_ms 9.415
+OPERATOR TIMING COMPLETE unet-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 5.862
+FNO burgers-development-00001 device_ms 5.86
+FNO burgers-development-00002 device_ms 5.831
+FNO burgers-development-00003 device_ms 5.843
+FNO burgers-development-00004 device_ms 5.831
+FNO burgers-development-00005 device_ms 5.859
+OPERATOR TIMING COMPLETE unet-medium
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 10.036
+FNO burgers-development-00001 device_ms 10.047
+FNO burgers-development-00002 device_ms 10.055
+FNO burgers-development-00003 device_ms 10.044
+FNO burgers-development-00004 device_ms 10.048
+FNO burgers-development-00005 device_ms 10.037
+OPERATOR TIMING COMPLETE unet-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 5.862
+FNO burgers-development-00001 device_ms 5.828
+FNO burgers-development-00002 device_ms 5.847
+FNO burgers-development-00003 device_ms 5.83
+FNO burgers-development-00004 device_ms 5.818
+FNO burgers-development-00005 device_ms 5.838
+OPERATOR TIMING COMPLETE unet-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 11.035
+FNO burgers-development-00001 device_ms 11.036
+FNO burgers-development-00002 device_ms 11.051
+FNO burgers-development-00003 device_ms 11.017
+FNO burgers-development-00004 device_ms 11.011
+FNO burgers-development-00005 device_ms 11.029
+OPERATOR TIMING COMPLETE tsol-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 12.85
+FNO burgers-development-00001 device_ms 12.873
+FNO burgers-development-00002 device_ms 12.849
+FNO burgers-development-00003 device_ms 12.858
+FNO burgers-development-00004 device_ms 12.852
+FNO burgers-development-00005 device_ms 12.842
+OPERATOR TIMING COMPLETE tsol-medium
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 15.225
+FNO burgers-development-00001 device_ms 15.237
+FNO burgers-development-00002 device_ms 15.213
+FNO burgers-development-00003 device_ms 15.231
+FNO burgers-development-00004 device_ms 15.253
+FNO burgers-development-00005 device_ms 15.22
+OPERATOR TIMING COMPLETE tsol-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 10.995
+FNO burgers-development-00001 device_ms 11.019
+FNO burgers-development-00002 device_ms 11.0
+FNO burgers-development-00003 device_ms 10.986
+FNO burgers-development-00004 device_ms 10.995
+FNO burgers-development-00005 device_ms 10.997
+OPERATOR TIMING COMPLETE tsol-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 3.828
+FNO burgers-development-00001 device_ms 3.782
+FNO burgers-development-00002 device_ms 3.794
+FNO burgers-development-00003 device_ms 3.786
+FNO burgers-development-00004 device_ms 3.8
+FNO burgers-development-00005 device_ms 3.8
+OPERATOR TIMING COMPLETE don-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 5.605
+FNO burgers-development-00001 device_ms 5.74
+FNO burgers-development-00002 device_ms 5.664
+FNO burgers-development-00003 device_ms 5.676
+FNO burgers-development-00004 device_ms 5.606
+FNO burgers-development-00005 device_ms 5.72
+OPERATOR TIMING COMPLETE don-medium
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 3.776
+FNO burgers-development-00001 device_ms 3.782
+FNO burgers-development-00002 device_ms 3.793
+FNO burgers-development-00003 device_ms 3.787
+FNO burgers-development-00004 device_ms 3.792
+FNO burgers-development-00005 device_ms 3.786
+OPERATOR TIMING COMPLETE don-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-development-00000 device_ms 10.561
+FNO burgers-development-00001 device_ms 10.542
+FNO burgers-development-00002 device_ms 10.515
+FNO burgers-development-00003 device_ms 10.546
+FNO burgers-development-00004 device_ms 10.567
+FNO burgers-development-00005 device_ms 10.55
+OPERATOR TIMING COMPLETE don-large
+AUDIT d256 arms 30 failed gates: []
+ALL-DONE

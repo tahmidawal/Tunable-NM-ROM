@@ -76,6 +76,7 @@ def main():
         r = ref[L]
         t3 = s['table3']
         rows = {x['arm']: x for x in t3['rows']}
+        ev = {x['name']: sorted(x['evolved'], reverse=True) for x in s['arms']}
         bs = {x['arm']: x for x in (s.get('bank_span') or {}).get('arms', [])}
         mesh = dict(summary_file=f, summary_sha256=sha(fp), job_id=s['job_id'], gpu=s['gpu'], commit=s['commit'],
                     cohort=s['cohort'], cohort_sha256=s['cohort_sha256'], failed_gates=s['failed_gates'],
@@ -89,7 +90,11 @@ def main():
             mesh['rows'].append(dict(row=label, arm=arm, unknowns=x.get('unknowns'),
                                      test=dict(worst_percent=x.get('worst_evolved_percent'),
                                                median_percent=x.get('median_evolved_percent'), gpu_ms=x.get('gpu_ms'),
-                                               speedup_vs_cell_fom=x.get('speedup_vs_cell_fom')),
+                                               speedup_vs_cell_fom=x.get('speedup_vs_cell_fom'),
+                                               second_worst_percent=(100 * ev[arm][1] if arm in ev else None),
+                                               worst_case=(next(a_['evolved'].index(max(a_['evolved'])) for a_ in s['arms']
+                                                                if a_['name'] == arm) if arm in ev else None),
+                                               cases=(len(ev[arm]) if arm in ev else None)),
                                      dev=dict(worst_percent=d['worst_evolved_percent'], median_percent=d['median_evolved_percent'],
                                               gpu_ms=d['gpu_ms'], speedup_vs_cell_fom=d['speedup_vs_cell_fom']),
                                      rho=(dict(rho_max=bs[arm]['rho_max'], exceeds_bar=bs[arm]['exceeds_bar'],
@@ -117,12 +122,13 @@ def main():
                f"Cell FOM, test: `{cf['name']}` {fmt(cf['gpu_ms'])} ms, worst {fmt(cf['worst_evolved_percent'], 3)} % "
                f"(median {fmt(cf['median_evolved_percent'], 3)} %). Cell FOM, development: `{dcf['name']}` {fmt(dcf['gpu_ms'])} ms, "
                f"worst {fmt(dcf['worst_evolved_percent'], 3)} %." if cf else 'Cell FOM, test: none qualifies (no ratio printed).', '',
-               '| row | unknowns | test worst % | test median % | test GPU ms | test speedup | dev worst % | dev GPU ms | dev speedup |',
-               '|---|---|---|---|---|---|---|---|---|']
+               '| row | unknowns | test worst % (case) | test 2nd-worst % | test median % | test GPU ms | test speedup | dev worst % | dev GPU ms | dev speedup |',
+               '|---|---|---|---|---|---|---|---|---|---|']
         for x in mesh['rows']:
             t, d = x['test'], x['dev']
             sp = f"{t['speedup_vs_cell_fom']:.3g}×" if t['speedup_vs_cell_fom'] else '—'
-            md.append(f"| {x['row']} | {x['unknowns']} | {fmt(t['worst_percent'], 3)} | {fmt(t['median_percent'], 3)} | "
+            md.append(f"| {x['row']} | {x['unknowns']} | {fmt(t['worst_percent'], 3)} ({t['worst_case']}) | "
+                      f"{fmt(t['second_worst_percent'], 3)} | {fmt(t['median_percent'], 3)} | "
                       f"{fmt(t['gpu_ms'])} | {sp} | {fmt(d['worst_percent'], 3)} | {fmt(d['gpu_ms'])} | {d['speedup_vs_cell_fom']:.3g}× |")
         acc = mesh['rows'][0]
         br = mesh['basis_reproduction']
@@ -143,6 +149,7 @@ def main():
            '- **test / dev**: the 64 held-out test cases (never used for any choice) / the six development cases the paper\'s current cells use.',
            '- **worst %**: over the cases, the largest of max over the five evolved output times of ‖u − u_ref‖/‖u₀‖, in percent; '
            'u_ref = the tightly converged Newton solve (`fft_tight`) on the same mesh in the same job. **median %**: the median over cases.',
+           '- **2nd-worst %**: the second-largest per-case error (shows whether the worst is a single outlier case); **(case)** = index of the worst case in test64.',
            '- **GPU ms**: median over cases × 5 repetitions of the time from input field on the GPU to the six output fields on the GPU.',
            '- **cell FOM**: one full-order setting per mesh — the fastest of the 15 Newton–BiCGStab settings whose worst error is at '
            'most the NM-ROM accurate row\'s worst error, timed in the same job. **speedup** = cell FOM ms / row ms.',

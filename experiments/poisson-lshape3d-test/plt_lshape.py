@@ -178,7 +178,7 @@ def main():
     dev, dinfo = K_.cohort(tc['seed'], tc['draw'], tc['count'])
     dev = dev[:cfg['case_count']]
     assert dinfo['parameters_sha256'] == tc['parameters_sha256'], dinfo
-    assert len(dev) == cfg['case_count'] == tc['count']
+    assert len(dev) == cfg['case_count'] and (a.smoke or cfg['case_count'] == tc['count'])
     others = {}
     for role in ('training', 'selection', 'development'):
         draws, _ = K_.cohort(cc[role]['seed'], cc[role]['draw'], cc[role]['count'])

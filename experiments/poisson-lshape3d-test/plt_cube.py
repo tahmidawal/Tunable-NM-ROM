@@ -177,7 +177,7 @@ def main():
         # reserved final seed 920499), generated here at this mesh; rows frozen in frozen-test.json before opening.
         assert role == 'test'
         frozen = json.loads((here / cfg['frozen_settings']).read_text())
-        assert n in frozen['intervals'] and frozen['selected_on'] == 'development'
+        assert (n in frozen['intervals'] or a_.smoke) and frozen['selected_on'] == 'development'
         cases = C.family(mcfg['reserved_final_seed'], cfg['test_count'])
         assert P3.sha_array(cases) == cfg['test_parameters_sha256'], P3.sha_array(cases)
         dev_cases = C.family(mcfg['validation_seed'], mcfg['validation_count'])

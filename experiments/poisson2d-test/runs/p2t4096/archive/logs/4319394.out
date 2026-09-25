@@ -1,0 +1,27 @@
+host=pax049 source_commit=c72b1c51d9a8f56bb1c4d301591834e7fd486add
+NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB
+10.235.106.34:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+COHORT 2026092501 32 efce2f08cbfc8df609dea8ebf2b66a609b041e0b6e10154dac039b8e592116fd {'training_all_draws': 0.01686024622883033, 'dev12': 0.05745389221275943, 'seed20260916x256': 0.018366176694078584, 'seed20260921x256': 0.017354125053087532, 'seed20260922x256': 0.025337049362483155, 'seed20260920x16384': 0.008144708950666435, 'seed7090702x6': 0.06560861282376351, 'seed911702x6': 0.04578094576944691, 'seed777x6': 0.062350275854781256}
+BANK 35.0 {'32': 15.494, '64': 6.612, '128': 4.057, '256': 2.046, '384': 1.227, '512': 0.835}
+WARMUP 66.4
+PHASE romA1 0 273.5
+PHASE romA1 1 365.9
+PHASE romA1 2 458.5
+PHASE romA1 3 551.0
+PHASE romA1 4 643.7
+PHASE cg 0 2388.0
+PHASE cg 1 4077.5
+PHASE cg 2 5767.2
+PHASE romA2 0 5866.8
+PHASE romA2 1 5959.3
+PHASE romA2 2 6051.9
+PHASE romA2 3 6144.4
+PHASE romA2 4 6237.0
+DRIFT True 0.9989847636692574 1.0080829023906401
+NEIGHBOUR True 1.0249334254217413
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'neighbour': True, 'drift': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK SOLVE COMPLETE
+PASS 544 errors recomputed, worst relative deviation 9.6e-11 (bar 1e-8), hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE

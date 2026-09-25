@@ -1,0 +1,12 @@
+{
+ "problem": "lshape",
+ "intervals": [256, 512, 1024, 2048],
+ "selected_on": "development",
+ "source": "paper Table 1 L-shape rows (from exp/2026-09-23-poisson-bank-knob-3d, jobs 4204384/4199770/4201792/4205072, 32 development sources, GPU-query scope)",
+ "accurate": "R128_linear",
+ "fast": "R64_linear",
+ "scope": "fused_device_seconds",
+ "other_scope_reported": "total_seconds",
+ "fom_rule": "fastest tested CG tolerance (same job, same scope) whose worst TEST error <= the accurate arm's worst TEST error; both arms divided by it",
+ "test_cohort": {"seed": 20260925, "draw": 64, "count": 32, "parameters_sha256": "c9230b402088fa3eeeba52d27883b2956fd84f4edae118a9eef1a7a1404f3204"}
+}

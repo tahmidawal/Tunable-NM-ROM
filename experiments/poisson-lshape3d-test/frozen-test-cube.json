@@ -1,0 +1,14 @@
+{
+ "problem": "cube",
+ "intervals": [128, 256],
+ "selected_on": "development",
+ "source": "paper Table 1 Poisson 3D 128^3/256^3 rows (from exp/2026-09-23-poisson-bank-knob-3d, jobs 4207945/4203255, 16 development cases, GPU-query scope)",
+ "accurate": "R128_linear",
+ "fast": "R16_linear",
+ "also_reported": ["R32_linear"],
+ "also_reported_reason": "R'=32 is the fast width of the paper's 32^3/64^3 rows; reported beside R'=16, not substituted for it",
+ "scope": "fused_device_seconds",
+ "other_scope_reported": "total_seconds",
+ "fom_rule": "fastest tested CG tolerance (same job, same scope) whose worst TEST error <= the accurate arm's worst TEST error; all arms divided by it",
+ "test_cohort": {"seed": 920499, "count": 64, "parameters_sha256": "27ec2cf52d2eb0ad84d6b3e83c46f504a67c0dd56a7a1f968263d3179430be60"}
+}

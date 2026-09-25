@@ -1,0 +1,27 @@
+host=pax009 source_commit=aeeb13752ce5cfca24d0c31e8daa69c292a01d1e
+NVIDIA H200, GPU-5c9e4e12-197d-1189-3d08-ae3e874f6e1f, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+fields_need_gb=29 avail_local_gb=733 avail_share_gb=368
+fields_store=local /tmp/pl3t_ct128_4319378
+jax_backend=gpu x64=True precision=highest
+MESH 128 {'16': 5.7698, '32': 1.9662, '48': 0.8804, '64': 0.4674, '96': 0.2664, '128': 0.2286} 15.1
+WARMUP 19 17.0
+MAIN 0 230.2
+MAIN 1 416.9
+MAIN 2 603.5
+MAIN 3 790.1
+MAIN 4 976.8
+SLOW 0 995.2
+SLOW 1 1013.0
+SLOW 2 1030.8
+NEIGHBOUR True 1.014757785322124 1.0102699520597131 1.0293477524631398
+PROFILE 0 1340.2
+PROFILE 1 1474.6
+PROFILE 2 1609.3
+PARITY {'candidate': 'R128_q0', 'baseline': 'orig_q0', 'worst_field_relative': 1.567230424824404e-15, 'limit': 1e-10, 'passed': True}
+PARITY {'candidate': 'R128_q96', 'baseline': 'orig_q96', 'worst_field_relative': 1.5380812864967114e-15, 'limit': 1e-10, 'passed': True}
+GATES {'parity': True, 'deterministic': True, 'cg_converged': True, 'rom_stationary_parent_and_full_R': True, 'neighbour': True, 'profile_matches_fused': True, 'device_guard': True}
+PBK3 CUBE COMPLETE
+PASS 1664 errors recomputed, worst relative deviation 1.6e-11, reference vs audit truth 1.2e-15, hashes match, repetitions identical: True; controls detected: swapped-case True, perturbed-error True
+ALL-DONE

@@ -1,0 +1,59 @@
+{
+ "cell": "smoke64",
+ "operators": [
+  {
+   "name": "fno-large",
+   "family": "fno",
+   "role": "256^2 checkpoint (selected; source job 3710846)",
+   "local_path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-panel/experiments/b-panel/runs/bpn301/fnockpt/best.pt",
+   "sha256": "208d9002cd8e856760407bd21b1355d017bf52c744fcfa7ea4c249f933852a88",
+   "source_job": "3710846",
+   "trained_at": "256^2",
+   "source_record": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-timing-panel/experiments/ops-timing-panel/operators.json",
+   "table2_row": true,
+   "epochs": null,
+   "stop_reason": null
+  },
+  {
+   "name": "unet-large",
+   "family": "unet",
+   "role": "256^2 checkpoint (capacity; source job 3780138)",
+   "local_path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-no-second/experiments/no-second/runs/unet01/archive/unet01/out/unet-large/best.pt",
+   "sha256": "fd8586ce77da15d4c310e4f7ff0cd6f7091f90f7452c2ddaaee925eb62e9bc84",
+   "source_job": "3780138",
+   "trained_at": "256^2",
+   "source_record": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-timing-panel/experiments/ops-timing-panel/operators.json",
+   "table2_row": true,
+   "epochs": null,
+   "stop_reason": null
+  },
+  {
+   "name": "tsol-refine",
+   "family": "transolver",
+   "role": "256^2 checkpoint (selected; source job 3780139)",
+   "local_path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-no-second/experiments/no-second/runs/tsol01/archive/tsol01/out/tsol-refine/best.pt",
+   "sha256": "7f5a96d7077a59e247712d27440918580f48c00d426439616d00df4858e9c01e",
+   "source_job": "3780139",
+   "trained_at": "256^2",
+   "source_record": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-timing-panel/experiments/ops-timing-panel/operators.json",
+   "table2_row": true,
+   "epochs": null,
+   "stop_reason": null
+  },
+  {
+   "name": "don-refine",
+   "family": "deeponet",
+   "role": "256^2 checkpoint (capacity; source job 4179556)",
+   "local_path": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-deeponet-b2d/experiments/ops-deeponet-b2d/runs/don01/archive/don01/out/don-refine/best.pt",
+   "sha256": "fa006e41ede5ea6ffcf33e6d380174dbbc73df2fb72857c7d05a24432b472a38",
+   "source_job": "4179556",
+   "trained_at": "256^2",
+   "source_record": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-ops-timing-panel/experiments/ops-timing-panel/operators.json",
+   "table2_row": true,
+   "epochs": null,
+   "stop_reason": "early stopping, not the wall budget"
+  }
+ ],
+ "failed": [],
+ "note": "frozen checkpoints; sha256 re-verified by make_operators.py and again by cluster/stage.py; no operator is trained in this lane"
+}

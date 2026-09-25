@@ -1,0 +1,178 @@
+{
+ "attempt": "smoke64",
+ "intervals": 64,
+ "dt": 0.005,
+ "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "train_seed": 0,
+ "train_trajectories": 10,
+ "train_state_stride": 2,
+ "snapshot_ntol": 1e-09,
+ "snapshot_ltol": 1e-07,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "dense_tangent_group": 34,
+ "parity_mesh": 64,
+ "bank_blocks": null,
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "rules": [
+    {
+     "name": "lat16",
+     "parts": [
+      {
+       "lattice": 16
+      }
+     ],
+     "phase": "F",
+     "status": "confirmed at 1024^2 (burgers-eqcert bc1024: confirmation 0.0250, bar 0.116)",
+     "variants": [
+      {
+       "solver": "lu",
+       "clip": true,
+       "lamcarry": true,
+       "pred2": true,
+       "gtols": [
+        0.001
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "reps": 1,
+ "required_reps": 1,
+ "bracket_reps": 1,
+ "order_seed": 20260923,
+ "burn_seconds": 0.0,
+ "pod_ranks": [],
+ "qman_ranks": [],
+ "qman_gammas": [
+  0.0,
+  1e-10,
+  1e-08,
+  1e-06,
+  0.0001,
+  0.01,
+  1.0
+ ],
+ "qman_seed": 20260922,
+ "qman_holdout": 0.2,
+ "qman_cold_axis_points": 96,
+ "fit_block_bytes": 2000000000.0,
+ "grid_tangent_chunk": 64,
+ "grid_parity_ranks": [],
+ "rho_bar": 0.116,
+ "target_chunk": 4,
+ "phase_s_deadline_seconds": 3600,
+ "bank_span": {
+  "ranks": [
+   32
+  ],
+  "rules": [
+   "lat16"
+  ],
+  "tests_per_unknown": 4,
+  "gtol": 1e-06,
+  "rotation_file": "burgers-compare-hires/inputs/rotation_R512.npz",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "rotation_source": "worktrees/2026-09-23-burgers-bank-knob/experiments/burgers-bank-knob/inputs/rotation_R512.npz (sibling lane, make_rotation.py; training codes only)",
+  "population_draw": [
+   20260921,
+   56
+  ],
+  "population_rows": [
+   0,
+   2
+  ],
+  "note": "held-out rho population = burgers-eqcert source draw rows 0-7, disjoint from dev6/train"
+ },
+ "roles": {
+  "nmrom_fast": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+  "nmrom_accurate": "bank32_M128_lat16_g1em06"
+ },
+ "reference_roles": [],
+ "fom_subsets": {
+  "b_panel": [
+   "fft_tight",
+   "nt1e-2_dt01"
+  ],
+  "lean": [
+   "lean_nt3e-3_l3e-3_dt005"
+  ],
+  "full": [
+   "fft_tight",
+   "nt1e-2_dt01",
+   "lean_nt3e-3_l3e-3_dt005"
+  ]
+ },
+ "purpose": "t2-burgers-test DESIGN.md: the Table 2 Burgers 2D cell at 64^2 re-run on development cases in ONE allocation (burgers-compare-hires driver).",
+ "cohort": {
+  "name": "dev6: params_draw(7090702,4) + params_draw(911702,2), the development cases of Table 2",
+  "split": "development",
+  "draws": [
+   [
+    7090702,
+    4
+   ],
+   [
+    911702,
+    2
+   ]
+  ],
+  "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a"
+ },
+ "disjoint_from": [
+  [
+   20260916,
+   64,
+   "test64"
+  ]
+ ],
+ "operator_split_indices": [
+  "../burgers-compare-hires/inputs/pinned/train-index.json",
+  "../burgers-compare-hires/inputs/pinned/validation-index.json"
+ ],
+ "sub_points": 16,
+ "full_field_cases": [
+  0
+ ],
+ "case_subset": [
+  0
+ ],
+ "local_smoke_waives_cohort_hash": true
+}

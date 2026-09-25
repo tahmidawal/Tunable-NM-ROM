@@ -54,7 +54,8 @@ def one(att, params_expected):
         precision_highest=R['matmul_precision'] == 'highest', not_smoke=not R['smoke'],
         log_has_jax_backend_gpu='jax_backend=gpu' in logtext, log_all_done='ALL-DONE' in logtext,
         cohort_seed=R['cohort']['seed'] == TEST_SEED and R['cohort']['count'] == TEST_COUNT,
-        cohort_params_match_sampler=bool(np.array_equal(np.asarray(R['cohort']['parameters']), params_expected)),
+        # value gate, not bitwise: cluster vs GB10 NumPy differ by 1 ulp in exp (width column; lab-log landmine 2026-09-16)
+        cohort_params_match_sampler=bool(np.allclose(np.asarray(R['cohort']['parameters']), params_expected, rtol=1e-14, atol=0)),
         audit_pass=A['verdict'] == 'PASS',
         commit_matches_staged=(R['commit'] == (HERE / 'runs' / att / 'COMMIT.txt').read_text().strip()),
         a100_80gb=('A100' in R['gpu'] and '80GB' in R['gpu']))

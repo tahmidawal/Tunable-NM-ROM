@@ -1,0 +1,351 @@
+{
+ "attempt": "t4096",
+ "intervals": 4096,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+ "cohort_name": "hold64 = test64: params_draw(20260916, 64); never used for any fit, rule, setting or selection",
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "rho_bar": 0.116,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "ladder": [
+  32,
+  64,
+  128,
+  256,
+  384
+ ],
+ "population": {
+  "source_draw": [
+   20260921,
+   56
+  ],
+  "cert_draws": [
+   [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   [
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   [
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23
+   ],
+   [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+   ],
+   [
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39
+   ]
+  ],
+  "confirm_draw": [
+   40,
+   41,
+   42,
+   43,
+   44,
+   45,
+   46,
+   47,
+   48,
+   49,
+   50,
+   51,
+   52,
+   53,
+   54,
+   55
+  ],
+  "note": "burgers-eqcert populations (as the parent lane): 256^2 params_draw(20260922,56), else params_draw(20260921,56); 5 certification draws x 8 + 1 confirmation draw x 16"
+ },
+ "rules": {
+  "q0scaled": {
+   "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+   "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+   "mesh": 256,
+   "note": "b-eqtop q=0 rule, m=1024, nodes at the same physical points, weights x (L/256)^2, no refit; the paper fast rule (burgers-eqcert: confirmed at 256^2/512^2/1024^2)"
+  },
+  "lat64": {
+   "lattice": 64,
+   "note": "uniform 63x63 interior sub-lattice, equal weights; the paper accurate rule (burgers-eqcert: certified at 256^2 (bc256b, x1), 512^2 (x1), 1024^2; 2048^2 certificate-only; 4096^2 NOT confirmed)"
+  },
+  "bad0": {
+   "file": "rules/rule_q256_reachable_m2048.npz",
+   "sha256": "770470510e21c564eddee82d2685072336e7d5fe0d86c9357ad49265b9dc89d0",
+   "mesh": 256,
+   "control": true,
+   "note": "q-ridge rule that regressed at 1024^2 in b-panel: certificate CONTROL, must fail"
+  }
+ },
+ "arms": [
+  {
+   "model": "lin",
+   "Rp": 384,
+   "M": 1536,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "accurate",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 64,
+   "M": 256,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "fast",
+   "primary": true
+  },
+  {
+   "model": "lin",
+   "Rp": 128,
+   "M": 512,
+   "rule": "lat64",
+   "gtol": 0.001,
+   "variant": {
+    "solver": "chol",
+    "clip": true,
+    "lamcarry": true,
+    "pred2": true
+   },
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "family": "lin",
+   "certify": false,
+   "role": "extra",
+   "primary": true
+  }
+ ],
+ "parity_pairs": [],
+ "parity_bar": 1e-10,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-4_dt01",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-4_dt005",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt01",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  }
+ ],
+ "fom_both_modes": false,
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__parent",
+  "R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2__parent",
+  "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2__parent"
+ ],
+ "restrict_to": 256,
+ "target_chunk": 1,
+ "dense_tangent_group": 34,
+ "phi_gate_max_mesh": 512,
+ "rom_reps": 2,
+ "fom_reps": 1,
+ "order_seed": 20260924,
+ "burn_seconds": 0.25,
+ "phase_cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "gate_limit": 1.1,
+ "parent_fast_bar": {
+  "percent": null,
+  "arm": null,
+  "source": "not used (test panel: no selection)"
+ },
+ "purpose": "DESIGN.md: frozen Table-1 Burgers 2D settings on the 64 test cases, FOM ladder in the same job",
+ "eval_draws": [
+  [
+   20260916,
+   64
+  ]
+ ],
+ "skip_certificates": true,
+ "fom_mode_parity": false,
+ "save_restricted_skip_graphs_fom": true,
+ "timed_full_sha_every": 8,
+ "test_arms": {
+  "primary": {
+   "accurate": "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__parent",
+   "fast": "R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2__parent",
+   "extra": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2__parent"
+  },
+  "primary_impl": "parent",
+  "secondary": []
+ },
+ "prior_heldout": {
+  "source": "experiments/burgers-bank-knob/checks/bkh64-summary.json @ 340627ca",
+  "job": "4239635"
+ },
+ "bank_columns": 384,
+ "bank_blocks": 24,
+ "untimed_fom": [
+  "fft_tight",
+  "lean_tight",
+  "nt1e-4_dt005",
+  "lean_nt1e-4_dt005"
+ ]
+}

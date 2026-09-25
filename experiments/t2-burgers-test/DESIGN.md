@@ -139,3 +139,11 @@ Submitted: `t2048` 4327384 (H200, pending on resources), `t1024` 4327389, `t256`
 commit `1f8e2797`. H200s are contended. Pre-start fallback, fixed now: if `t2048` has not started by 10:30 EDT it is
 cancelled while PENDING and `t2048a` (identical, A100 80 GB, as the pre-registered fallback p2048f of the source lane)
 is submitted. Only one 2048² attempt is ever evaluated; the choice depends on queue state only, never on a result.
+
+## Amendment A2 (2026-09-25 ~08:50 EDT; supersedes the A1 fallback; queue/schedule facts only, no 2048² number exists)
+
+`t2048` (4327384, H200) is still PENDING (Priority); H200s are fully used. Measured in `t1024` (A100): one Phase F
+repetition over 64 cases takes ~790 s, so at 2048² an A100 run (~4× the FOM cost) would need > 6 h and miss the
+16:00 cutoff — the A1 A100 fallback is not viable. Three H100 80 GB GPUs (pax063) are idle. Therefore `t2048` is
+cancelled while PENDING and `t2048a` — identical config (`config-t2048a.json` differs only in `attempt`) — is submitted
+on H100. Only `t2048a` is evaluated at 2048²; its ratios are same-job H100 ratios (the dev cell is H200, p2048e).

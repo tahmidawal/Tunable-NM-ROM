@@ -132,3 +132,10 @@ Full hashes of every frozen input are in `FROZEN.sha256` (written by `freeze.sh`
 No setting, checkpoint, cohort, rule or gate changes after a test number is seen. The report
 (`reports/make_report.py` → `reports/summary.json` + `reports/2026-09-25-t2-burgers-test.md`) is generated from the
 audited summaries; no number is typed by hand; the sha256 of every summary is recorded. Every evaluation is reported.
+
+## Amendment A1 (2026-09-25, after submission, before any job started producing test numbers)
+
+Submitted: `t2048` 4327384 (H200, pending on resources), `t1024` 4327389, `t256` 4327396, `d256` 4327402 (A100 80 GB),
+commit `1f8e2797`. H200s are contended. Pre-start fallback, fixed now: if `t2048` has not started by 10:30 EDT it is
+cancelled while PENDING and `t2048a` (identical, A100 80 GB, as the pre-registered fallback p2048f of the source lane)
+is submitted. Only one 2048² attempt is ever evaluated; the choice depends on queue state only, never on a result.

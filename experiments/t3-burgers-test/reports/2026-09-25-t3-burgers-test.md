@@ -36,6 +36,10 @@ Cell FOM, test: `lean_nt3e-3_l3e-3_dt005` 125.6 ms, worst 0.1347 % (median 0.033
 - Bank-span ρ (8 held-out trajectories, bar 0.116): ρ_max 0.0777 — within the bar.
 - Basis reproduction (DESIGN §4.1): PASS — snapshot SHA256 equal to the parent: True; POD mode SHA256 equal: True; top-16 POD eigenvalue max rel. difference 0.00e+00; QM ridge 0.01 (parent 0.01); QM held-out 0.123232 (parent 0.123232).
 
+## Run and not used
+
+- 2048²: job 4327216 (NVIDIA A100 80GB PCIe), failed gates: none; summary SHA256 `063dc08e74ba442a…`. run and not used (DESIGN §7 decision rule).
+
 ## Glossary
 
 - **test / dev**: the 64 held-out test cases (never used for any choice) / the six development cases the paper's current cells use.

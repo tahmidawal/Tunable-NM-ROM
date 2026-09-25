@@ -135,3 +135,10 @@ before; round-off may differ at the GEMM level (different matrix shape), which t
 the worst error) covers. Checked locally at $128^2$ (`bank_columns=64`): the $R'=32$ arm's worst error is unchanged
 (3.0634 %). Absolute ms at $4096^2$ are on an A100, not the H200 of bk4096b; speedups are same-job. The e1024 job is
 unaffected (staged from the earlier commit, no `bank_columns`).
+
+## A2 — 2026-09-24 ~20:15 EDT, before any 4096² result: `e4096b` OOM in the bank build → `e4096c`
+
+`e4096b` (job 4304018, A100 80 GB, pax105) failed after 33 s: out of memory allocating a 12 GiB bank row block
+(`base.at` for one of the default ~6 row blocks) beside the rotated blocks already held. No arm ran. `e4096c` evaluates
+the bank in 24 row blocks (`bank_blocks = 24`, ~3 GiB each; rows are independent, so only GEMM shapes change — covered by
+the Table-1 parity gate) and raises `XLA_PYTHON_CLIENT_MEM_FRACTION` to 0.95. Nothing else changes.

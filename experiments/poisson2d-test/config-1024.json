@@ -1,0 +1,119 @@
+{
+ "attempt": "p2t1024",
+ "intervals": 1024,
+ "training_intervals": 255,
+ "eval_seed": 7090703,
+ "eval_count": 6,
+ "fresh_seed": 7090732,
+ "fresh_count": 6,
+ "model": {
+  "id": "new_K32",
+  "checkpoint_path": "../p-linear/checkpoints/primary_K32.pkl",
+  "basis_path": "../p-linear/checkpoints/primary_K32-basis.npz",
+  "training": {
+   "seed": 0,
+   "draw_count": 3072,
+   "fit_split": {
+    "split_seed": 20260916,
+    "validation_fraction": 0.15
+   }
+  }
+ },
+ "R_ladder": [
+  32,
+  64,
+  128,
+  256,
+  384,
+  512
+ ],
+ "rows_per_chunk": 128,
+ "eval_rows": 64,
+ "order_seed": 2510024,
+ "retained": {
+  "online_preset": {
+   "budget": 300,
+   "tau": 0.0,
+   "stationarity_stop": 1e-06,
+   "starts": 1,
+   "requested_modes": 256
+  },
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "residual_reconstruction_limit": 1e-10
+ },
+ "prep_path": "runs/prep.npz",
+ "keep_orig": true,
+ "repetitions": 5,
+ "burn_seconds": 0.1,
+ "cg_maxiter": 200000,
+ "cg_fast": [
+  0.7,
+  0.5,
+  0.4,
+  0.3,
+  0.2,
+  0.1,
+  0.03,
+  0.01
+ ],
+ "cg_slow": [
+  0.001,
+  0.0001
+ ],
+ "neighbour_limit": 1.1,
+ "profile_reps": 3,
+ "design": "ABA",
+ "cg_repetitions": 3,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "test_cohort": {
+  "seed": 2026092501,
+  "count": 32,
+  "disjoint_from": [
+   [
+    20260916,
+    256
+   ],
+   [
+    20260921,
+    256
+   ],
+   [
+    20260922,
+    256
+   ],
+   [
+    20260920,
+    16384
+   ],
+   [
+    7090702,
+    6
+   ],
+   [
+    911702,
+    6
+   ],
+   [
+    777,
+    6
+   ]
+  ],
+  "note": "fresh held-out TEST draw from the training/development generator (ms_parametric.sample_params)"
+ },
+ "trunc_arms": [
+  [
+   512,
+   0
+  ]
+ ],
+ "orig_q": [
+  0
+ ],
+ "table1_settings": {
+  "accurate": "R512_linear",
+  "fast": "R128_linear",
+  "fom_rule": "fastest tested CG (by CG-phase median GPU-query time) whose worst test error <= accurate arm worst test error, same job"
+ }
+}

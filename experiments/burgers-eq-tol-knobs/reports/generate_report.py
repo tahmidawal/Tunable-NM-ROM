@@ -1,7 +1,7 @@
 """Generate the lane summary (checks/summary.json) and the report (reports/2026-09-24-burgers-eq-tol-knobs.md) from the
 audited per-mesh summaries checks/<attempt>-summary.json. No number in the report is typed by hand.
 
-    python reports/generate_report.py [--attempts e1024 e4096]
+    python reports/generate_report.py [--attempts e1024 e4096c]
 """
 import argparse
 import hashlib
@@ -39,7 +39,7 @@ def row_order(lad):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--attempts', nargs='+', default=['e1024', 'e4096'])
+    p.add_argument('--attempts', nargs='+', default=['e1024', 'e4096c'])
     a = p.parse_args()
     meshes, missing = {}, []
     for att in a.attempts:
@@ -56,6 +56,8 @@ def main():
                     table1_fom=lad['table1_fom'], table1_fom_ms=lad['table1_fom_ms'],
                     table1_fom_worst_percent=lad['table1_fom_worst_percent'],
                     table1_parity=s['gates']['table1_parity'],
+                    failed_gate_details={k: {kk: vv for kk, vv in s['gates'][k].items() if not isinstance(vv, (list, dict))}
+                                         for k in s['failed_gates']},
                     gates={k: v['passed'] for k, v in s['gates'].items()},
                     gate_details={k: {kk: (len(vv) if kk == 'not_evaluable' else vv) for kk, vv in v.items()
                                       if kk in ('worst', 'limit', 'worst_relative_diff', 'worst_abs_diff', 'ratio_min',
@@ -88,7 +90,8 @@ def main():
     w = L.append
     w('# Burgers 2D: empirical-quadrature node count and stopping tolerance at the Table-1 settings')
     w('')
-    state = 'final' if not missing and all(m['accepted'] for m in meshes.values()) else 'partial'
+    state = ('final' if not missing and all(m['accepted'] for m in meshes.values()) else
+             'final, with the failed audit gates stated per mesh' if not missing else 'partial')
     w(f'Same-job measurements of the two solver-side cost knobs of the frozen Burgers 2D NM-ROM (dev6 cases) at the '
       f'Table-1 accurate and fast settings, against the Table-1 Newton–BiCGStab FOM in the same allocation. '
       f'Numbers are **{state}**' + (f' ({", ".join(missing)} not done)' if missing else '') +
@@ -109,6 +112,14 @@ def main():
           '; '.join(f"R'={x['R_prime']} {x['this_job_percent']:.10f} % vs {x['recorded_percent']:.10f} % "
                     f"(rel {x['relative']:.1e}, job {x['recorded_job']})" for x in m['table1_parity']['rows']) + '.')
         w('')
+        for k, v in m['failed_gate_details'].items():
+            w(f'Failed gate `{k}`: `{json.dumps(v)}`.' + (
+                ' The perturbed-error control runs through the full-grid predicate, and no full fields are saved at this '
+                'mesh (DESIGN §5, config `audit_cases: []`), so that control cannot fire; the swapped-case and '
+                'perturbed-time controls are detected. The gate is reported as failed, not re-defined after the fact.'
+                if k == 'controls_detected' and v.get('swapped_case_rejected') and v.get('perturbed_A2_time_x1p2_rejected')
+                and not v.get('perturbed_error_1em6_rejected') else ''))
+            w('')
         w(f'Table-1 FOM `{m["table1_fom"]}`: {m["table1_fom_ms"]:.2f} ms, worst {m["table1_fom_worst_percent"]:.4f} %.')
         w('')
         for Rp, lad in m['ladders'].items():
@@ -148,6 +159,8 @@ def main():
     w('- The 0.5× and 2× quadrature rungs are anisotropic lattices ($31\\times63$, $63\\times127$), one orientation only.')
     w('- Certificates are on reached states of the eqcert populations with the lane\'s primary state set $k\\ge1$, '
       'bar 0.116; they cover stored endpoint states, not every trial state.')
+    w('- $4096^2$ ran on an A100 80 GB (the H200 queue was ~2 days); the Table-1 row was timed on an H200 (bk4096b), so '
+      'absolute ms and the speedup differ from the paper even though errors reproduce; ratios here are same-job.')
     w('- ms are medians of ≥10 invocations per case pooled over 6 cases and both ROM phases; no dispersion reported.')
     w('')
     w('## Glossary')

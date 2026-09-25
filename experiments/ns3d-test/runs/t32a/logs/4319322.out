@@ -1,0 +1,83 @@
+host=pax105 source_commit=2bdb5f7ea9b1c18f0dbed7ee107b2ec0e97c58f6 job=4319322 config=configs/test32.json
+NVIDIA A100 80GB PCIe, GPU-c52a7f04-fc38-6157-cf19-5c7ff0945752, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  371G  93% /cluster/tufts/paralab
+jax_backend=gpu
+[03:08:57] generating bank training trajectories
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=8.632e-10 energy_tail=1.408e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+[03:09:10] bank rebuild gap 2.978e-13
+[03:09:18] generating development truth
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+[03:09:22] [dev] nmrom_accurate_head_k8: evolved worst 0.001510 (3.2s)
+[03:09:24] [dev] span64_dt0.02_it3: evolved worst 0.006025 (2.1s)
+[03:09:26] [dev] span48_dt0.02_it3: evolved worst 0.009445 (1.8s)
+[03:09:28] [dev] span32_dt0.02_it3: evolved worst 0.012568 (2.0s)
+[03:09:30] [dev] nmrom_fast_span16_dt0.02_it3: evolved worst 0.029564 (1.8s)
+[03:09:31] [dev] span8_dt0.02_it3: evolved worst 0.055489 (1.4s)
+[03:09:32] [dev] span64_dt0.04_it2: evolved worst 0.020065 (1.0s)
+[03:09:33] [dev] span48_dt0.04_it2: evolved worst 0.019985 (1.1s)
+[03:09:35] [dev] span32_dt0.04_it2: evolved worst 0.011481 (1.2s)
+[03:09:36] [dev] nmrom_fast_span16_dt0.04_it2: evolved worst 0.028177 (1.2s)
+[03:09:37] [dev] span8_dt0.04_it2: evolved worst 0.054949 (0.9s)
+[03:09:38] [dev] cnab2_s200: evolved worst 0.000000 (1.0s)
+[03:09:38] [dev] cnab2_s100: evolved worst 0.000188 (0.8s)
+[03:09:39] [dev] cnab2_s80: evolved worst 0.000329 (0.8s)
+[03:09:40] [dev] cnab2_s70: evolved worst 0.000449 (0.8s)
+[03:09:41] [dev] cnab2_s60: evolved worst 0.000634 (0.8s)
+[03:09:42] [dev] cnab2_s50: evolved worst 0.000943 (0.7s)
+[03:09:42] [dev] cnab2_s40: evolved worst 0.001516 (0.7s)
+[03:09:43] [dev] cnab2_s20: evolved worst 0.007882 (0.7s)
+[03:09:44] [dev] cnab2_s10: evolved worst 0.766936 (0.6s)
+[03:09:44] reproduction gate: True max gap 6.642e-10; missing []
+[03:09:44] generating TEST truth (seed 202609221, 32 cases)
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+[03:09:46] [test] nmrom_accurate_head_k8: evolved worst 0.002056 (0.5s)
+[03:09:46] [test] span64_dt0.02_it3: evolved worst 0.010927 (0.4s)
+[03:09:47] [test] span48_dt0.02_it3: evolved worst 0.011283 (0.4s)
+[03:09:47] [test] span32_dt0.02_it3: evolved worst 0.014674 (0.4s)
+[03:09:48] [test] nmrom_fast_span16_dt0.02_it3: evolved worst 0.032420 (0.4s)
+[03:09:48] [test] span8_dt0.02_it3: evolved worst 0.069108 (0.4s)
+[03:09:48] [test] span64_dt0.04_it2: evolved worst 0.022381 (0.4s)
+[03:09:49] [test] span48_dt0.04_it2: evolved worst 0.026263 (0.3s)
+[03:09:49] [test] span32_dt0.04_it2: evolved worst 0.014090 (0.3s)
+[03:09:49] [test] nmrom_fast_span16_dt0.04_it2: evolved worst 0.030561 (0.3s)
+[03:09:50] [test] span8_dt0.04_it2: evolved worst 0.068746 (0.3s)
+[03:09:51] [test] cnab2_s200: evolved worst 0.000000 (1.2s)
+[03:09:51] [test] cnab2_s100: evolved worst 0.000229 (0.7s)
+[03:09:52] [test] cnab2_s80: evolved worst 0.000401 (0.6s)
+[03:09:53] [test] cnab2_s70: evolved worst 0.000547 (0.6s)
+[03:09:53] [test] cnab2_s60: evolved worst 0.000774 (0.6s)
+[03:09:54] [test] cnab2_s50: evolved worst 0.001151 (0.5s)
+[03:09:54] [test] cnab2_s40: evolved worst 0.001854 (0.5s)
+[03:09:54] [test] cnab2_s20: evolved worst 0.032511 (0.3s)
+[03:09:55] [test] cnab2_s10: evolved worst 2.945019 (0.3s)
+[03:09:55] timing: TEST cohort
+[03:10:44] timing: development cohort (context)
+[03:11:10] FOM cnab2_s40; gates {'reproduction': True, 'bank_rebuild': True, 'drift': True, 'order': True, 'positive_control_failed_as_required': True, 'timed_outputs_match': True, 'coverage': True, 'finite_reported_arms': True, 'fom_found': True, 'gated_arms': ['nmrom_accurate_head_k8', 'nmrom_fast_span16_dt0.04_it2', 'nmrom_fast_span16_dt0.02_it3', 'cnab2_s40'], 'all_passed': True}
+[03:11:10]   nmrom_accurate_head_k8: test 0.00206 5.762 ms x0.926 | dev 0.00151 x1.138
+[03:11:10]   nmrom_fast_span16_dt0.04_it2: test 0.03056 1.497 ms x3.564 | dev 0.02818 x4.351
+[03:11:10]   nmrom_fast_span16_dt0.02_it3: test 0.03242 3.214 ms x1.660 | dev 0.02956 x2.042
+[03:11:10]   cnab2_s40: test 0.00185 5.334 ms x1.000 | dev 0.00152 x1.234
+{"passed": true, "control_rejected": true, "failures": [], "fom": "cnab2_s40", "sampled_max": 0.2204962748571432}
+RUN_EXIT=0 AUDIT_EXIT=0

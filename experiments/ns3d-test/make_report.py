@@ -193,6 +193,20 @@ def write_md(S, path):
     L.append('')
     L.append('## Caveats')
     L.append('')
+    for n, m in M.items():
+        t, d = m['test'], m['dev_same_job']
+        if t['fom'] != d['fom']:
+            ta, da = t['arms'], d['arms']
+            L.append(f"- **{n}³: the Table-1 FOM changes between cohorts.** On the test cases `{t['fom']}` "
+                     f"({pct(ta[t['fom']]['worst'])} %) is at least as accurate as the accurate setting "
+                     f"({pct(ta[ACC]['worst'])} %), so it becomes the comparator; on the development cases it was "
+                     f"not ({pct(da[t['fom']]['worst'])} % vs {pct(da[ACC]['worst'])} %, ratio "
+                     f"{da[t['fom']]['worst'] / da[ACC]['worst']:.4f}), and `{d['fom']}` was used. Against "
+                     f"`{d['fom']}` on the test cases the accurate setting would be "
+                     f"{sx(ta[d['fom']]['ms'] / ta[ACC]['ms'])}; the rule gives {sx(ta[ACC]['speedup'])}.")
+        if t['arms'][ACC]['speedup'] < 1:
+            L.append(f"- {n}³: on the test cases the accurate setting is slower than the rule FOM "
+                     f"({sx(t['arms'][ACC]['speedup'])}).")
     L.append('- The test cohort (seed 202609221) is the one already evaluated four times at 96³; its parameters are '
              'mesh-independent. It was never generated at 32³/64³ and no setting at these meshes was chosen on it '
              '(DESIGN.md §4). The fast A setting was picked on 2026-09-24 from development records, after the 96³ '

@@ -155,3 +155,16 @@ same-protocol development ratios so that the test–development comparison does 
 * **development / test cohort** — the 16 cases on which settings were chosen / 32 cases never used
   for any choice at these meshes.
 * **A–B–A** — interleaved, arm-major, interleaved timing phases; drift and order gates compare them.
+
+## A1 (2026-09-25 ~03:25 EDT, after the test jobs) — execution record, no change of settings
+
+Both test jobs ran once, concurrently, from their own directories with the frozen configs of §3
+(commit `2bdb5f7e`): `t32a` = job 4319322 and `t64a` = job 4319329, both A100 80GB PCIe (node pax105,
+shared with other lanes' jobs on other GPUs), `jax_backend=gpu`, every gate passed, in-job audit
+passed and rejected its perturbed control. The test cohort was opened once per mesh; no rerun, no
+second evaluation. Pulled with checksum verification; the cluster directories and the namespace
+were deleted. The local re-run of `audit_test.py` (§5.6) agrees with the in-job audit up to
+round-off (u0 regeneration gap 6.8e-16 vs 6.4e-16); it is stored as `runs/<job>/audit_local.json`
+(it first overwrote `output/audit.json` by mistake; the in-job file was restored from a copy and
+the pulled manifest re-verified). The report generator gained a generated caveat for a mesh
+whose Table-1 FOM differs between cohorts (32³: CNAB2 40 steps on test, 50 on development).

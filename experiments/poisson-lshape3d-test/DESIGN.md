@@ -117,3 +117,22 @@ cases above the development worst error are reported as well as the worst.
   both runs are reported.
 - If a frozen fast arm exceeds the paper's "< 5 %" fast criterion on test, it is reported as exceeding it. It is not
   replaced.
+
+## Amendment A1 (2026-09-25 ~04:05 EDT, after jobs 4319385, 4319382, 4319381, 4319374) — L-shape test-cohort hash
+
+All four L-shape test jobs (`lt256` 4319385, `lt512` 4319382, `lt1024` 4319381, `lt2048` 4319374) stopped within
+seconds, at the driver's cohort assertion. The parameters sha256 recorded above
+(`c9230b40…`) was computed on the local GB10, which is ARM. The x86 cluster gives `366e6597…` for the same seed,
+draw and acceptance: 54 of 64 accepted, the same 32 kept. The cause is last-ulp differences in `np.exp` between the
+two platforms. The development cohort shows the same thing: the local recompute of seed 20260917 hashes to
+`4164cfd1…`, while the cluster record in parent job 4199770 is `525e1951…`, with a maximum relative parameter
+difference of 1.4e-16. So the cohort is the same draw, and only the platform hash differs.
+
+**Change.** The canonical test-cohort hash is now the cluster value,
+`366e659729ec83baf5cd725391cd81cdfff34909927926db03b9ada2c4d7fc03`, in the four configs and in `frozen-test-lshape.json`.
+Seed, draw and count are unchanged. Nothing else changes.
+
+**No test case was opened.** Each job stopped before `save()` wrote a `result.json`, and before any reference
+solve, field or error existed. The logs are kept under `runs/lt*-failed-cohort-sha/`. The resubmissions are
+`lt256b`, `lt512b`, `lt1024b` and `lt2048b`. The two cube jobs (`ct128` 4319378, `ct256` 4319372) passed their cohort
+check, because `common.family` uses no transcendental functions, and they continue unchanged.

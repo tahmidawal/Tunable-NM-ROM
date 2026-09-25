@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/pl3test_20260925/lt2048/code/plt_lshape.py", line 426, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/pl3test_20260925/lt2048/code/plt_lshape.py", line 180, in main
+    assert dinfo['parameters_sha256'] == tc['parameters_sha256'], dinfo
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'seed': 20260925, 'draw_count': 64, 'count': 32, 'accepted_in_draw': 54, 'rejected_in_draw': 10, 'parameters_sha256': '366e659729ec83baf5cd725391cd81cdfff34909927926db03b9ada2c4d7fc03'}

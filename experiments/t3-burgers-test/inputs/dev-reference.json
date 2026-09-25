@@ -1,0 +1,168 @@
+{
+ "1024": {
+  "attempt": "p1024",
+  "job_id": "4204019",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "commit": "8e5dfa4fdae16fbc1b3cf5a03ee7112eba5d02a8",
+  "cohort": "dev6: params_draw(7090702,4) + params_draw(911702,2), opened development cases",
+  "summary_file": "experiments/burgers-compare-hires/checks/p1024-summary.json",
+  "summary_sha256": "ffba6ef655060cdea22c7646ef933524fd6108b5776f2d0740a4b86658654efe",
+  "result_file": "experiments/burgers-compare-hires/artifacts/p1024/result.json.gz",
+  "result_sha256": "ad23dee4ab7e9b84931100f0338024cab9b1709652f0be0ffc8c4462ef53604f",
+  "cell_fom": {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "gpu_ms": 70.53190912120044,
+   "worst_evolved_percent": 0.048302028672202776
+  },
+  "rows": {
+   "nmrom_accurate": {
+    "arm": "bank384_M1536_lat64_g1em06",
+    "worst_evolved_percent": 0.2108198088275102,
+    "median_evolved_percent": 0.06488842525169229,
+    "gpu_ms": 318.3290271554142,
+    "speedup_vs_cell_fom": 0.22156920388779197
+   },
+   "nmrom_head": {
+    "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+    "worst_evolved_percent": 2.288356103816248,
+    "median_evolved_percent": 1.0424534726914618,
+    "gpu_ms": 34.93238356895745,
+    "speedup_vs_cell_fom": 2.0190980950947304
+   },
+   "pod_lspg16": {
+    "arm": "pod16_M64_dense",
+    "worst_evolved_percent": 29.27933122941561,
+    "median_evolved_percent": 22.099147455206065,
+    "gpu_ms": 178.44529054127634,
+    "speedup_vs_cell_fom": 0.39525789056834565
+   },
+   "qman16": {
+    "arm": "qman16_quad_M64",
+    "worst_evolved_percent": 22.625694960104504,
+    "median_evolved_percent": 15.043074085054137,
+    "gpu_ms": 733.2429555244744,
+    "speedup_vs_cell_fom": 0.09619173098055929
+   }
+  },
+  "snapshots": {
+   "snapshot_sha256": "034f6ec84905a6e7fcfec29e9f22eca6b086d87413f89a6f457f58890e411928",
+   "shape": [
+    3328
+   ]
+  },
+  "pod": {
+   "kmax": 512,
+   "modes_sha256": "5d1da0a3075351499be771d1e55864e979903d4a8d01c34721cc8238ec817ca0",
+   "eigenvalues_top16": [
+    107987865.89478196,
+    37975232.93474628,
+    35476310.86700191,
+    12432618.703815011,
+    9337477.973140284,
+    8759351.227564288,
+    4106406.5176495593,
+    2996072.4743208224,
+    2016279.948498218,
+    1886239.1090505659,
+    1113035.2847739868,
+    1031527.7066839343,
+    871306.8369757143,
+    608255.3943284707,
+    576638.3838810987,
+    446368.64174432075
+   ]
+  },
+  "qman16": {
+   "ridge": 0.01,
+   "heldout_relative": 0.12281287682162557,
+   "bank_sha256": "59e484c1838cbf0a960df51e5b12ad232d4ca8a7994571b2ee03842996d3a183",
+   "weight_frobenius_norm": 0.01859532259373326,
+   "snapshot_relative_linear_only": 0.1396667166501608,
+   "snapshot_relative_with_quadratic": 0.07696371483678076,
+   "split": "by trajectory (DESIGN A1)"
+  }
+ },
+ "2048": {
+  "attempt": "p2048e",
+  "job_id": "4218390",
+  "gpu": "NVIDIA H200",
+  "commit": "f57b2effcee99b66d5c7a6e5211508cc7f4d0d89",
+  "cohort": "dev6: params_draw(7090702,4) + params_draw(911702,2), opened development cases",
+  "summary_file": "experiments/burgers-compare-hires/checks/p2048e-summary.json",
+  "summary_sha256": "3b10737153515abe7de715d507c46a481ab3f8f4f440d01e6154e31aa8f8a735",
+  "result_file": "experiments/burgers-compare-hires/artifacts/p2048e/result.json.gz",
+  "result_sha256": "40b01fbdd6d928d9b6e5595b50d1e00438438488a1cf5850219ad6c1d1968607",
+  "cell_fom": {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "gpu_ms": 122.50369042158127,
+   "worst_evolved_percent": 0.04938130483311309
+  },
+  "rows": {
+   "nmrom_accurate": {
+    "arm": "bank384_M1536_lat64_g1em06",
+    "worst_evolved_percent": 0.21945314220618023,
+    "median_evolved_percent": 0.06522879228135739,
+    "gpu_ms": 186.41181220300496,
+    "speedup_vs_cell_fom": 0.6571669948048845
+   },
+   "nmrom_head": {
+    "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+    "worst_evolved_percent": 2.371395504880771,
+    "median_evolved_percent": 1.0498595742080354,
+    "gpu_ms": 26.91581193357706,
+    "speedup_vs_cell_fom": 4.551365224422593
+   },
+   "pod_lspg16": {
+    "arm": "pod16_M64_dense",
+    "worst_evolved_percent": 29.37437209157571,
+    "median_evolved_percent": 22.201444295776202,
+    "gpu_ms": 290.79973697662354,
+    "speedup_vs_cell_fom": 0.42126479100436376
+   },
+   "qman16": {
+    "arm": "qman16_quad_M64",
+    "worst_evolved_percent": 22.69733937861467,
+    "median_evolved_percent": 15.065063993042171,
+    "gpu_ms": 1306.0762570239604,
+    "speedup_vs_cell_fom": 0.09379520511361221
+   }
+  },
+  "snapshots": {
+   "snapshot_sha256": "570e69c80140b31232885540ab83a4b347c5d55f7f80b0763fc6b9d7527e2715",
+   "shape": [
+    3328
+   ]
+  },
+  "pod": {
+   "kmax": 512,
+   "modes_sha256": "de4651f3d7e642a1f31b7a46512172c7db47bb7473ab3c70685f07fd9c1deee7",
+   "eigenvalues_top16": [
+    432659304.9942998,
+    152224653.22972128,
+    142199030.02095696,
+    49870068.03351429,
+    37463800.18657841,
+    35144624.49520328,
+    16487123.883246986,
+    12034636.728158785,
+    8106871.464475573,
+    7586583.477772451,
+    4476329.997066411,
+    4149866.3863368006,
+    3507026.1588713205,
+    2451023.529368548,
+    2322298.6221380825,
+    1798943.11264768
+   ]
+  },
+  "qman16": {
+   "ridge": 0.01,
+   "heldout_relative": 0.12323177134169871,
+   "bank_sha256": "795cb18acd5a0c7ffd15e5e61fe51a9bc94952cbcdf79d51b8898140fe4a5223",
+   "weight_frobenius_norm": 0.009322589953909369,
+   "snapshot_relative_linear_only": 0.1401928668990521,
+   "snapshot_relative_with_quadratic": 0.07726116052785935,
+   "split": "by trajectory (DESIGN A1)"
+  }
+ }
+}

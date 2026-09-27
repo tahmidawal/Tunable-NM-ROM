@@ -1,0 +1,1881 @@
+                                              A FAST AND ACCURATE PHYSICS-INFORMED NEURAL NETWORK REDUCED
+                                                      ORDER MODEL WITH SHALLOW MASKED AUTOENCODER
+                                                           YOUNGKYU KIM∗ , YOUNGSOO CHOI† , DAVID WIDEMANN‡ , AND TAREK ZOHDI∗
+
+                                               Abstract. Traditional linear subspace reduced order models (LS-ROMs) are able to accelerate physical simulations in
+                                           which the intrinsic solution space falls into a subspace with a small dimension, i.e., the solution space has a small Kolmogorov
+                                           n-width. However, for physical phenomena not of this type, e.g., any advection-dominated flow phenomena such as in traffic
+                                           flow, atmospheric flows, and air flow over vehicles, a low-dimensional linear subspace poorly approximates the solution. To
+                                           address cases such as these, we have developed a fast and accurate physics-informed neural network ROM, namely nonlinear
+                                           manifold ROM (NM-ROM), which can better approximate high-fidelity model solutions with a smaller latent space dimension
+arXiv:2009.11990v2 [math.NA] 28 Sep 2020
+
+
+
+
+                                           than the LS-ROMs. Our method takes advantage of the existing numerical methods that are used to solve the corresponding full
+                                           order models. The efficiency is achieved by developing a hyper-reduction technique in the context of the NM-ROM. Numerical
+                                           results show that neural networks can learn a more efficient latent space representation on advection-dominated data from 1D
+                                           and 2D Burgers’ equations. A speedup of up to 2.6 for 1D Burgers’ and a speedup of 11.7 for 2D Burgers’ equations are achieved
+                                           with an appropriate treatment of the nonlinear terms through a hyper-reduction technique. Finally, a posteriori error bounds
+                                           for the NM-ROMs are derived that take account of the hyper-reduced operators.
+
+                                              Key words. nonlinear manifold solution representation, physics-informed neural network, reduced order model, nonlinear
+                                           dynamical system, hyper-reduction
+
+
+                                                1. Introduction. Physical simulations are influencing developments in science, engineering, and tech-
+                                           nology more rapidly than ever before. However, high-fidelity, forward physical simulations are computation-
+                                           ally expensive and, thus, make intractable any decision-making applications, such as design optimization,
+                                           inverse problems, optimal controls, and uncertainty quantification, for which many forward simulations are
+                                           required to explore the parameter space in the outer loop.
+                                                To compensate for the computational expense issue, the projection-based reduced order models (ROMs)
+                                           take advantage of both the known governing equation and the data. ROMs generate the solution data from
+                                           the corresponding physical simulations and then compress the data to find an intrinsic solution subspace,
+                                           which is represented by a linear combination of basis vectors, i.e., LS-ROMs. This condensed solution repre-
+                                           sentation is plugged back into the (semi-)discretized governing equation to reduce the number of unknowns,
+                                           resulting in an over-determined system, i.e., more equations than unknowns. Note that the full governing
+                                           equations are used to constrain the LS-ROM through this substitution. Therefore, this can be considered as
+                                           a physics-informed surrogate model. Additionally, the existing numerical methods for the corresponding full
+                                           order model (FOM) is utilized in the LS-ROM solution process. Therefore, the LS-ROM fully respects the
+                                           original discretization of the governing equations that describe/approximate the underlying physical laws,
+                                           unlike black-box approaches.
+                                                The LS-ROM approach has been successfully applied to many problems and applications, including,
+                                           but not limited to, rocket nozzle shape design [2], flutter avoidance wing shape optimization [16], topology
+                                           optimization of wind turbine blades [20], porous media flow/reservoir simulations [29, 35, 74], computational
+                                           electro-cardiology [73], inverse problems [28], shallow water equations [76, 66], computing electromyography
+                                           [51], spatio-temporal dynamics of a predator-prey systems [23], and acoustic wave-driven microfluidic biochips
+                                           [3]. A survey paper for the projection-based LS-ROM techniques can be found in [5].
+                                                In spite of its successes, the linear subspace solution representation suffers from not being able to
+                                           represent certain physical simulation solutions with a small basis dimension, such as advection-dominated or
+                                           sharp gradient solutions. This is because LS-ROMs work only for physical problems in which the intrinsic
+                                           solution space falls into a subspace with a small dimension, i.e., the solution space has a small Kolmogorov n-
+                                           width. Unfortunately, even though problems that are advection-dominated or have sharp gradient solutions
+                                           are important, they do not have small Kolmogorov n-width. Such physical simulations include, but are not
+                                           limited to, the hyperbolic equations with high Reynolds number, the Boltzmann transport equations, and
+                                           the traffic flow simulations.
+                                             ∗ Mechanical Engineering, University of California, Berkeley, CA 94720 (youngkyu kim@berkeley.edu, zohdi@berkeley.edu)
+                                              † Center for Applied Scientific Computing, Lawrence Livermore National Laboratory, Livermore, CA 94550 (choi15@llnl.gov)
+                                             ‡ Computational Engineering Division,       Lawrence Livermore National Laboratory,          Livermore,   CA 94550 (wide-
+                                           mann1@llnl.gov)
+                                                                                                          1
+     Therefore, there have been many attempts to build efficient ROMs for the advection-dominated or sharp
+gradient problems. The attempts can be divided mainly into two categories: the first one is to enhance the
+solution representability of the linear subspace by introducing some special treatments and adaptive schemes
+and the second one is to replace the linear subspace solution representation with the nonlinear manifold.
+     The effort of enhancing the solution representability of the linear subspace includes the artificial viscosity,
+the Petrov–Galerkin projection applied to the computational fluid dynamics problems [13, 12, 19], the residual
+discrete empirical interpolation approach to handle the Navier-Stokes equations with a large Reynolds number
+[72], and the space–time ROM [17, 18, 67] where the temporal as well as spatial dimensions were reduced
+to maximize the compressibility even with the advection-dominated problems. A dictionary-based model
+reduction method was developed in [1] where `1 minimization is used to project onto the reduced linear
+subspace. A fail-safe h-adaptive algorithm was developed in [9] where the reduced linear subspace basis
+vectors are broken algebraically to enrich the solution subspace. The shifted proper orthogonal decomposition
+(POD) was introduced to address the issue that arises from the advection-dominated problems [60] where
+a transport operator is incorporated within the POD process. The drawback with this approach is that
+the speed of the transport operator must be known a priori. In a similar spirit, the transport reversal was
+introduced in [61], which was inspired by the template fitting [38]. The windowed least-squares Petrov–
+Galerkin model reduction for dynamical systems with implicit time integrators is introduced in [53], which
+can overcome the challenges arising from the advection-dominated problems by representing only a small
+time window with a local ROM. In order to capture the sharp gradient accurately, many approaches use
+localization strategies. The examples of such methods include the online adaptive bases and sampling
+approach in [56] and [21]. Transformed snapshot interpolation method was also developed in [70] to capture
+a sharp gradient in the solution, by introducing a new transform discretization near singularities.
+     Even though all the approaches mentioned above do show some remedies of overcoming the challenges
+that arise from the advection-dominated problems, the solution representability of the linear subspace is still
+limited in a sense that the treatments introduced in the methods above are problem-specific and require
+some a priori knowledge, such as advection direction. In order to maximize the representability and make
+the methodology as general as possible, it seems unavoidable to transition from the linear subspace to a
+nonlinear manifold solution representation.
+     There are many works available in the current literautre that looked into the nonlinear manifold solution
+represenation in physical simulations. Many of them treat the weights and biases of a neural network (NN)
+to be unknowns in the solution process. For example, Lagaris, et al., used a single output NN as an argument
+for trial functions and minimized the partial/ordinary differential equation (PDE/ODE) residual norm [41],
+where the weights of the NNs are used as optimization variables. Dissanayake and Phan-Thien used the
+universal approximator of NNs as a solution representation for solving PDEs. They also used the weights
+of the NNs as parameters as in the work by Lagaris, et al. [24]. A similar method was also applied to a
+plasma equilibrium solver [68]. Meade and Fernandez used hard limit transfer functions for linear ordinary
+differential equations [50]. However, these approaches can introduce too many unknowns because all the
+wieghts and biases need to be found during the PDE/ODE solution process.
+     Recently, similar attempts have been made to incorporate physical laws into NN-based surrogate models
+- so called physics-informed surrogate models, where the weights and biases of the NN are determined in
+the training phase. Such models include, but are not limited to, attempts to mimic temporal evolution
+by incorporating a time integrator in a loss function [59, 15, 36, 47, 4] and to represent the solution with
+a trained NN [59, 77, 6], the deep Galerkin method [65], approximating spatial gradient functions with a
+multilayer feedforward NN [30], DeepONet [48], DeepXDE [49], fractional physics-informed NNs (fPINNs)
+[52], PINNs with uncertainty quantification [75], and Deep Ritz method of minimizing the energy functional
+with trial functions of NNs [69, 31]. However, inclusions of NNs in the governing equations of the underlying
+physical laws, such as those above, do not take advantage of the existing numerical methods for high-fidelity
+physical simulations.
+     Recently, a neural network-based ROM is developed in [43], where the weights and biases are determined
+in the training phase and the existing numerical methods are utilized in their models. The same technique
+is extended to preserve the conserved quantities in the physical conservation laws [42]. However, their
+approaches do not achieve any speed-up with respect to the corresponding FOM because the nonlinear
+terms that still scale with the FOM size need to be updated every time step or Newton step.
+                                                         2
+      Fig. 1. The figure shows the hierarchy of several ROMs. If the governing equation is nonlinear, then a hyper-reduction is
+required to achieve both accuracy and speed-up with respect to the corresponding FOM. This paper contributes to the development
+of NM-LSPG-HR and NM-Galerkin-HR that achieve both speedup and accuracy with the NM-ROM. Throughout the paper, we
+will compare the performance of LS-ROMs and NM-ROMs.
+
+
+    Two interesting papers were written by Rim, et al., recently. First of all, manifold approximations via
+transported subspaces in [62] introduced a nonlinear solution representation by explicitly composing global
+transport dynamics with locally linear approximations of the solution manifolds. However, their approach is
+only applicable to 1D problem for now. The other work by Rim, et al., is the depth separation for reduced
+deep networks in nonlinear model reduction [63], where they applied a compression technique on weight
+matrices and bias vectors to achieve the reduced deep networks.
+    We present a fast and accurate physics-informed neural network ROM with a nonlinear manifold solution
+representation, i.e., the nonlinear manifold ROM (NM-ROM). We train a shallow masked autoencoder with
+solution data from the corresponding FOM simulations and use the decoder as the nonlinear manifold solution
+representation. Our NM-ROM is different from the aformentioned physics-informed neural networks in that
+we take advantage of the existing numerical methods of solving PDE/ODEs in our approach. Furthermore,
+our NM-ROM is different from the neural network-based ROM of [43] in a sense that we use a shallow
+masked autoencoder, while they used a deep convolutional autoencoder. The choice of the shallow masked
+NN over the deep convolutional NN is determined by the efficiency of the hyper-reduction technique we have
+developed.
+    1.1. Nomenclature. We use the following nomenclature/abbreviation for various ROMs throughout
+the paper:
+      • FOM: full order model
+      • LS-ROM: linear subspace reduced order model
+      • LS-Galerkin: linear subspace Galerkin
+      • LS-LSPG: linear subpsace least-squares Petrov–Galerkin
+      • LS-Galerkin-HR: linear subspace Galerkin hyper-reduction
+      • LS-LSPG-HR: linear subspace least-squares Petrov–Galerkin hyper-reduction
+      • NM-ROM: nonlinear manifold reduced order model
+      • NM-Galerkin: nonlinear manifold Galerkin
+      • NM-LSPG: nonlinear manifold least-squares Petrov–Galerkin
+      • NM-Galerkin-HR: nonlinear manifold Galerkin hyper-reduction
+      • NM-LSPG-HR: nonlinear manifold least-squares Petrov–Galerkin hyper-reduction
+These ROMs form a hierarchy that is depicted in Fig. 1.
+     1.2. Organization of the paper. We organize the subsequent sections by starting to discuss some
+background materials in Section 2, where the FOM is stated in Section 2.1 and two LS-ROMs, i.e., LS-
+Galerkin and LS-LSPG, are described in Sections 2.2.2 and 2.2.3, respectively. Our NM-ROM is introduced
+in Section 3, where the nonlinear manifold solution representation is explained in Section 3.1. The shallow
+masked autoencoder that is used for the solution representation is described in Section 3.2. The NM-Galerkin
+is explained in Section 3.3 and the NM-LSPG is descirbed in Section 3.4. The hyper-reduction technique
+                                                              3
+that enables the NM-ROM to achieve a speed-up is elaborated in Section 4. The error analysis is presented
+in Section 5. Finally, the performance of our NM-ROM is demonstrated in two numerical experiments in
+Section 6. Finally, the paper is concluded with summary and discussion in Section 7.
+    2. Background.
+     2.1. Full order model. A parameterized nonlinear dynamical system is considered, characterized by
+a system of nonlinear ordinary differential equations (ODEs), which can be considered as a resultant system
+from semi-discretization of Partial Differential Equations (PDEs) in space domains
+                                         dx
+(2.1)                                        = f (x, t; µ),      x(0; µ) = x0 (µ),
+                                         dt
+where t ∈ [0, T ] denotes time with the final time T ∈ R+ , and x(t; µ) denotes the time-dependent, pa-
+rameterized state implicitly defined as the solution to problem (2.1) with x : [0, T ] × D → RNs . Further,
+f : RNs × [0, T ] × D → RNs with (w, τ ; ν) 7→ f (w, τ ; ν) denotes the velocity of x, which we assume to be
+nonlinear in at least its first argument. The initial state is denoted by x0 : D → RNs , and µ ∈ D denotes
+parameters in the domain D ⊆ Rnµ .
+     A uniform time discretization is assumed throughout the paper, characterized by time step ∆t ∈ R+
+and time instances tn = tn−1 + ∆t for n ∈ N(Nt ) with t0 = 0, Nt ∈ N, and N(N ) := {1, . . . , N }. To
+avoid notational clutter, we introduce the following time discretization-related notations: xn := x(tn ; µ),
+x̃n := x̃(tn ; µ), x̂n := x̂(tn ; µ), and f n := f (x(tn ; µ), tn ; µ), where x̃, x̂ and x̂ are defined in Section 2.2.
+     Implicit time integrators are considered as time discretization methods. To illustrate this, we mainly
+consider the backward Euler time integrator for an implicit scheme. Several other time integrators are shown
+in Appendix A.
+     The implicit Backward Euler (BE) method numerically solves Eq. (2.1), by solving the following nonlinear
+system of equations for xn at n-th time step:
+(2.2)                                             xn − xn−1 = ∆tf n .
+Eq. (2.2) implies the following subspace inclusion:
+
+                                            span{f n } ⊆ span{xn−1 , xn }.
+By induction, we conclude the following subspace inclusion relation:
+
+                                     span{f 1 , . . . , f Nt } ⊆ span{x0 , . . . , xNt },
+which shows that the span of nonlinear term snapshots is included in the span of solution snapshots. The
+residual function with the backward Euler time integrator is defined as
+(2.3)                            r nBE (xn ; xn−1 , µ) := xn − xn−1 − ∆tf n .
+    2.2. Linear subspace reduced order model (LS-ROM). Many projection-based reduced order
+models with linear subspace solution representation can be considered for nonlinear dynamical systems. We
+consider Galerkin and least-squares Petrov-Galerkin projection methods, which are the most relevant to our
+proposed method, i.e., NM-ROM.
+     2.2.1. Linear subspace solution representation. The linear subspace reduced order model ap-
+proach applies spatial projection using a subspace S := span{φi }ni=1
+                                                                   s
+                                                                      ⊆ RNs with dim(S) = ns  Ns . Using
+this subspace, it approximates the solution as x ≈ x̃ ∈ xref + S (i.e., in a trial subspace) or equivalently
+(2.4)                                             x ≈ x̃ = xref + Φx̂
+and the time derivative of the solution as
+                                             dx    dx̃       dx̂
+(2.5)                                            ≈      =Φ
+                                              dt    dt       dt
+where xref ∈ RNs denotes a reference solution and Φ := [φ1 · · · φns ] ∈ RNs ×ns denotes a basis matrix and
+x̂ ∈ Rns denotes the generalized coordinates. The initial condition for the generalized coordinate, x̂0 ∈ Rns ,
+is given by x̂0 = ΦT (x0 − xref ).
+     For constructing Φ, Proper Orthogonal Decomposition (POD) is commonly used. POD [7] obtains Φ
+from a truncated Singular Value Decomposition (SVD) approximation to a FOM solution snapshot matrix.
+                                                              4
+It is related to principal component analysis in statistical analysis [34] and
+                                                                            h Karhunen–Loève expansion i[46]
+                                                                                                      µn
+in stochastic analysis. POD forms a solution snapshot matrix, X := xµ
+                                                                    0 − xref
+                                                                     1
+                                                                                               ···   xNt µ − xref   ∈
+ Ns ×nµ (Nt +1)          µ
+R            ,           is a solution state at n-th time step with parameter µk for n ∈ N(Nt ) and
+                  where xn k
+k ∈ N(nµ ). Then, POD computes its thin SVD:
+
+                                                     X = U ΣV T ,
+where U ∈ RNs ×nµ (Nt +1) and V ∈ Rnµ (Nt +1)×nµ (Nt +1) are orthogonal matrices and Σ ∈ Rnµ (Nt +1)×nµ (Nt +1)
+is a diagonal matrix with singular values
+                                          on its diagonals. Then POD chooses the leading ns columns of
+U to set Φ (i.e., Φ = u1 · · · uns , where uk is k-th column vector of U ). The POD basis minimizes
+kX − ΦΦT Xk2F over all Φ ∈ RNs ×ns with q   orthonormal columns, where kAkF denotes the Frobenius norm
+                   I×J
+                                               PI PJ         2
+of a matrix A ∈ R      , defined as kAkF =       i=1   j=1 aij with aij being an (i, j)-th element of A. Since
+the objective function does not change if Φ is post-multiplied by an arbitrary ns × ns orthogonal matrix, the
+POD procedure seeks the optimal ns -dimensional subspace that captures the snapshots in the least-squares
+sense. For more details on POD, we refer to [33, 40].
+
+
+
+    2.2.2. Linear subspace Galerkin projection. We derive LS-Galerkin using time continuous residual
+minimization. First, we rewrite FOM ODE Eq. (2.1) as
+(2.6)                          r(ẋ, x, t; µ) := ẋ − f (x, t; µ) = 0,   x(0; µ) = x0 (µ)
+where r : RNs × RNs × R+ × D → RNs with (ẇ, w, τ ; ν) 7→ r(ẇ, w, τ ; ν) denotes the time continuous
+                            ˙ as time derivative of (·) for notational simplicity. Replacing x with x̃ given by
+residual. Here, we denote (·)
+                      ˙
+Eq. (2.4) and ẋ with x̃ given by Eq. (2.5) leads to the following residual function with the reduced number
+of unknowns
+                                       ˙ x̂, t; µ) := r(Φx̂,
+                                    r̃(x̂,               ˙ xref + Φx̂, t; µ),
+where r̃ : Rns × Rns × R+ × D → RNs with (ŵ,   ˙ ŵ, τ ; ν) 7→ r̃(ŵ,
+                                                                    ˙ ŵ, τ ; ν) denotes the time continuous residual.
+              ˙
+Note that r̃(x̂, x̂, t; µ) = 0 is an over-determined system. Therefore, it is likely that no solution exists. To
+close the system, we minimize the squared norm of the residual vector function:
+(2.7)                                        ˙ = argminkr̃(v̂, x̂, t; µ)k2
+                                             x̂                           2
+                                                    v̂∈Rns
+
+with x̂(0; µ) = x̂0 (µ) = ΦT (x0 (µ) − xref ). The solution to Eq. (2.7) leads to the LS-Galerkin
+(2.8)                          ˙ = ΦT f (xref + Φx̂, t; µ), x̂(0; µ) = x̂0 (µ).
+                               x̂
+
+     Applying a time integrator to Eq. (2.8) leads to a fully discretized reduced system, denoted as the reduced
+O∆E. Note that the reduced O∆E has ns unknowns and ns equations. If an implicit time integrator is
+applied, a Newton–type method can be applied to solve for unknown generalized coordinates each time step.
+If an explicit time integrator is applied, time marching updates will solve the system. However, we cannot
+expect any speed-up because the size of the nonlinear term and its Jacobian, which need to be updated for
+every Newton step, scales with the FOM size. In order to handle this issue, the hyper-reduction will be
+applied (see Section 4.2.1)
+
+
+
+    2.2.3. Linear subspace least-squares Petrov–Galerkin projection. The Least-Squares Petrov–
+Galerkin (LSPG) method projects a fully discretized solution space onto a trial subspace. That is, it
+discretizes Eq. (2.1) in time domain and replaces xn with x̃n := xref + Φx̂n for n ∈ N(Nt ) in residual
+functions defined in Section 2.1 and Appendix A. Here, we consider only implicit time integrators because
+the LSPG projection is equivalent to the Galerkin projection when an explicit time integrator is used as
+shown in Section 5.1 in [10]. The residual functions for implicit time integrators are defined in (2.3), (A.1),
+and (A.2) for various time integrators. For example, the residual function with the backward Euler time
+                                                             5
+integrator1 after the trial subspace projection becomes
+                        r̃nBE (x̂n ; x̂n−1 , µ) := r nBE (xref + Φx̂n ; xref + Φx̂n−1 , µ)
+(2.9)
+                                                = Φ(x̂n − x̂n−1 ) − ∆tf (xref + Φx̂n , tn ; µ).
+The basis matrix Φ can be found by the POD as in the Galerkin approach. Note that Eq. (2.9) is an
+over-determined system. To close the system and solve for the unknown generalized coordinates, x̂n , the
+LSPG takes the squared norm of the residual vector function and minimize it at every time step:
+                                                   1 n                   2
+(2.10)                              x̂n = argmin     kr̃ (v̂; x̂n−1 , µ)k2 .
+                                               n
+                                           v̂∈R s  2 BE
+The Gauss–Newton method with the starting point x̂n−1 is applied to solve the minimization problem (2.10)
+in LSPG. However, as in the Galerkin approach, a hyper-reduction, which will be discussed in Section 4.2.2,
+is required for a speed-up due to the presence of the nonlinear residual vector function that scales with the
+full order model size.
+    3. Nonlinear manifold reduced order model (NM-ROM). A projection-based reduced order
+model with nonlinear manifold solution representation is introduced in this section. The ROM formulation
+with nonlinear manifold solution representation is introduced in Section 3.1. Section 3.2 describes how we
+construct the neural network that is used as a nonlinear manifold solution representation. As in the LS-
+ROMs of Section 2.2, Galerkin and least-squares Petrov–Galerkin projections will be applied in Sections 3.3
+and 3.4. Finally, the hyper-reduction for the NM-ROM is described in Section 4.
+    3.1. Nonlinear manifold solution representation. The NM-ROM applies solution representation
+using a nonlinear manifold S := {g (v̂) |v̂ ∈ Rns }, where g : Rns → RNs with ns  Ns denotes a nonlinear
+function that maps a latent space of dimension ns to the full order model space of dimension, Ns . That is,
+the NM-ROM approximates the solution in a trial manifold as
+(3.1)                                             x ≈ x̃ = xref + g (x̂)
+and the time derivative of the solution as
+                                             dx    dx̃            dx̂
+(3.2)                                           ≈      = J g (x̂)
+                                             dt    dt             dt
+where x̂ ∈ Rns denotes the generalized coordinates. The initial condition for the generalized coordinate,
+x̂0 ∈ Rns , is given by x̂0 = h (x0 − xref ), where h ≈ g −1 (i.e., x − xref ≈ g (h (x − xref ))). The details
+about the nonlinear functions, h and g, are presented in Section 3.2.
+      3.2. Shallow masked autoencoder. In this section, we present the approach for constructing a
+nonlinear manifold. Here, we use an autoencoder, A, in the form of a feedforward neural network, that is
+trained to reconstruct its input. The autoencoder architecture is composed of an encoder, E and a decoder,
+D. The encoder maps a high dimensional input, x ∈ RNs to a low-dimensional latent vector, x̂ ∈ Rns ,
+i.e., E(x) = x̂, and the decoder then maps the latent vector to x̃ ∈ RNs , i.e., D(x̂) = x̃, where ns  Ns .
+Therefore, we have
+
+                                              x ≈ x̃ = A(x) = D(E(x)).
+    The main idea behind an autoencoder is that it forces the model to learn salient features by compressing
+the input into a low-dimensional space and then reconstructing the input.
+    The universal approximation theorem [22, 57], proves that functions of the form,
+                                  N2         N1
+                                                             !
+                                 X          X
+(3.3)                      vk =      wjk2 σ     wij1 ui + θj    for k ∈ N(N3 ),
+                                      j=1           i=1
+where wij1 , wjk2 ∈ R are weights, θj ∈ R is a bias, σ is a non-polynomial activation function, ui is an input
+and vk is an output, can approximate any continuous, real-valued function arbitrarily well. Eq. (3.3) is a
+simple, single hidden layer neural network with a non-polynomial activation function. Its input dimension
+is N1 , width of the hidden layer is N2 , and output dimension is N3 . We construct two single hidden layer
+    1 Although the backward Euler time integrator is used extensively in the paper for illustrative purposes, many other time
+
+integrators introduced in Appendix A can be applied to all the ROM methods dealt in the paper in a straight forward way.
+                                                             6
+     Fig. 2. General description of an autoencoder: x being encoded to a latent vector, x̂, by the encoder and decoded by the
+decoder, to x̃. The mean square error between x and x̃ is minimized to update neural network weights and bias.
+
+
+
+
+neural networks, one is the encoder, E, and the other is the decoder, D. For non-polynomial activation
+functions, a sigmoidal function given by
+                                                                 1
+                                                  σ(x) =
+                                                           1 + exp (−x)
+or a swish function given by
+                                                          x
+                                                  σ(x) =
+                                                    1 + exp (−x)
+are used. We use a non-deep neural network for the decoder because the decoder and its Jacobian are
+computed many times during the ROM computation. In order for this computation to be on par with POD
+methods, it is necessary to limit the depth of the decoder network. The dimension of the encoder input and
+the decoder output is Ns and the dimension of the encoder E output and the decoder D input is ns . The
+width of the encoder E and decoder D are hyper-parameters. The first layers of the encoder E and decoder
+D are fully-connected layers, where the nonlinear activation functions are applied and the last layer of the
+encoder E is fully-connected layer with no activation functions. The last layer of the decoder D is either
+fully-connected layer or sparsely-connected layer with no activation functions. These network architectures
+are shown in Fig. 3.
+    Then, combining the encoder and the decoder yields the autoencoder which can be trained to learn the
+identity mapping in an unsupervised manner because the desired output is the input. During the training
+phase, the error measured by
+                                                       kX − X̃k2F ,
+where X is solution snapshot matrix and X̃ is a reconstructed solution snapshot matrix, is minimized by
+optimizing learnable parameters (i.e., weights and bias) in the two networks. The error is back-propagated
+through the networks and the gradient with respect to the learnable parameters are computed by using the
+chain rule [64, 54, 71]. Then, the parameters are updated in the steepest descent direction with respect to
+the gradient. Here, ADAM [37], a variant of stochastic gradient descent (SGD), is used to approximate the
+gradient with a few data samples to make training process faster. Stochastic gradient noise helps the neural
+network avoiding over-fitting [8]. Furthermore, graphics processing units (GPUs) are utilized to parallelize
+the autonencoder’s training by simultaneously approximating multiple snapshots [58]. In practice, a dataset
+is usually normalized before the training process. Here, we normalize the dataset (i.e., solution snapshots)
+                                                             7
+                      (a) Without masking                                          (b) With masking
+
+     Fig. 3. Three layer autoencoder architecture: (a) unmasked and (b) masked shallow neural neural network. Nodes and
+edges in orange color represent active path that stems from the sampled outputs that are marked as the orange disks. Note that
+the masked shallow neural network has a sparser structure than the unmasked one.
+
+
+
+in the following way:
+
+                                             xnormal = xscale       (x − xref )
+where x is a column vector of the dataset matrix X and       denotes the element-wise product. xscale and
+xref are directly computed from the dataset along each feature direction such that xnormal ranges either
+[−1, 1] or [0, 1].
+    After data normalization, an autoencoder can be trained to learn the identity mapping with the normal-
+ized dataset. Now, a normalized encoder maps from a high dimensional normalized input xnormal ∈ RNs to
+a low dimensional latent vector x̂ ∈ Rns in the form:
+
+                                                    x̂ = en (xnormal )
+and a normalized decoder maps from the low dimensional latent vector x̂ ∈ Rns to a reconstructed normalized
+input x̃normal ∈ RNs in the form:
+
+                                                    x̃normal = de (x̂) .
+Next, the encoder E and the decoder D can be written by
+                                            E (x) = en (xscale      (x − xref ))
+                                            D (x̂) = xref + de (x̂)      xscale
+where and denote the element-wise product and division, respectively. Moreover, the row-wise product
+of xscale and the first layer weight matrix of en yields the scaled encoder h. Likewise, the row-wise division
+of xscale and the last layer weight matrix of de gives us the scaled decoder g. Finally, the encoder E and
+the decoder D are given by
+                                                  E (x) = h (x − xref )
+                                                 D (x̂) = xref + g (x̂) .
+We set the decoder D (x̂) = xref + g (x̂) as the nonlinear manifold solution representation discussed in
+Section 3.
+    The scaled decoder g can be written in the form
+                                               g (x̂) = W 2 σ (W 1 x̂ + b1 )
+                                                              8
+where W 1 and W 2 are weight matrices, b1 is a bias vector, and σ is an element-wise activation function. The
+decoder can have more than two hidden layers (i.e., deep network). However, we use the single layer decoder
+(i.e., shallow network) because the Jacobian computation of the multiple hidden layer decoder involves
+multiple matrix-matrix multiplications. The output layer of the decoder g is fully-connected as depicted in
+Fig. 3 (a) (i.e., W 2 is a dense matrix), which means all nodes in the previous layer are required to compute
+even one element of the output vector. We apply a sparsity mask on the output layer of the decoder. Then,
+sampling a subset of the output vector doesn’t need all nodes in the previous layer as depicted in Fig. 3 (b).
+Thus, more speed-up can be achieved by a hyper-reduction technique that is described in Section 4. For
+example, the orange color nodes in Fig. 3 show the required nodes when the first and the last elements of
+the output are selected, which are represented as solid orange disks. To create a sparsely connected layer,
+we use a mask matrix S which contains either zero or one as shown in Fig. 4. By element-wise product
+S W 2 , a sparse weight matrix is obtained. The mask matrix S is constructed to reflect local connectivity
+as in the Laplacian operator approximated by the central difference scheme in Finite Difference Method.
+The autoencoder composed of the encoder and the sparse decoder is trained by using custom pruning in
+PyTorch [55] pruning module.
+
+
+
+
+              (a) Mask matrix for 1D Burgers equation            (b) Mask matrix for 2D Burgers equation
+
+    Fig. 4. Mask matrix. Note that the mask matrices have the analogical structure to the ones of Mass matrix that arises
+from a numerical discretization, such as the finite element or difference method, with 1D or 2D diffusion equations.
+
+     In the autoencoder, the number of learnable parameters (i.e., weights and bias) is determined by the
+number of nodes in the hidden layers in the encoder and the decoder, dimension of latent vector, and the
+sparsity in the mask matrix. The sparsity is determined by how many nodes in the hidden layer are used
+to compute one element of the output and how many nodes in the hidden layer are shared for neighboring
+elements of the output. To generate a mask matrix for 1D problem, we use two variables b and δb, where
+b denotes the number of nodes in the hidden layer to compute one output element (width of the block in
+each row in Fig. 4(a)) and δb denotes the amount by which the block shifts. For example, at the ith row,
+j ∈ {(i − 1)db, (i − 1)db + 1, · · · , (i − 1)db + b}th column is one and the others are zero. For a mask of the 2D
+problem, we create a building matrix in the same way as the mask matrix for 1D problem. Then, we add
+all rows neighboring ith row (e.g., 5-point stencil for 2D and 7-point stencil for 3D) to ith row and change
+nonzero values to one. Note that the mask matrix for 2D problem as in Fig. 4(b) looks similar to 2D finite
+difference Laplacian operator.
+     There is no way to determine these hyper-parameters a priori. If the number of learnable parameters
+is not enough, the decoder is not able to represent the nonlinear manifold well. On the other hand, too
+many learnable parameters may result in over-fitting, so the decoder is not able to generalize well, which
+means the trained decoder can’t be used for problems whose data is unseen, i.e., the predictive case. To
+avoid over-fitting, there are two options to consider. In the first option, one first divides the data into two
+sets, i.e., train and test sets. Then, the autoencoder is trained using the train set only and is tested for
+the generalization ability using the test set. If the mean squared error on the test and train sets are very
+different, the over-fitting occurs and we should reduce the number of learnable parameters [39].
+     The second option of avoiding the overfitting is to use Akaike’s information criteria (AIC) which is given
+by
+                                                                    Nw
+                                                    AIC = ln(e) + 2
+                                                                    N
+            kX−X̃k2
+where e =     2N
+                  F
+                    , Nw is the total number of learnable parameters, and N is the number of elements in
+the data set matrix (i.e., X). If one minimizes only the first term of AIC, then an over-fit network will be
+                                                           9
+obtained. On the other hand, if one minimizes only the second term of AIC, i.e., Nw = 0, then the network
+will not fit the training distribution. Therefore, the minimum of AIC helps train a model that is not over-fit
+and generalizes well. [45, 39]. However, finding the minimum of AIC requires a lot more training processes
+than the first option above. Because of randomness in training, e.g., the random initialization of weights and
+bias in neural networks and SGD optimization method, e will be different for every training process even
+with the same Nw and the dataset matrix. Therefore, AIC needs to be averaged over several training for
+each Nw to find the minimum of AIC.
+     Because of the practicality of the first option of avoiding the overfitting over the second option, we use
+the first option in our numerical experiments. For example, as shown in Fig. 5, the mean squares error on
+the test and train data sets are very close. This implies that the trained autoencoder is not over-fit.
+
+
+     100                                         100                                         100
+
+
+
+
+                                                10-5                                        10-5
+    10-5
+           0      500        1000                      0        1000    2000                       0      1000        2000
+
+       (a) 1D Burgers equation                    (b) 2D Burgers equation, u                  (c) 2D Burgers equation, v
+
+
+     Fig. 5. Loss history of decoders for various problems; all three figures show good agreement between train and test loss
+history, which is a sign for good balance between overfitting and accuracy.
+
+
+    3.3. Nonlinear manifold Galerkin projection. We derive NM-Galerkin using time continuous resid-
+ual minimization. Replacing x with x̃ given by Eq. (3.1) and ẋ with x̃    ˙ given by Eq. (3.2) in Eq. (2.6) leads
+to the following residual function with the reduced number of unknowns
+(3.4)                               ˙ x̂, t; µ) := r(J g (x̂)x̂,
+                                 r̃(x̂,                      ˙ xref + g(x̂), t; µ).
+Note that Eq. (3.4) is an over-determined system. Therefore, it is likely that no solution exists. To close the
+system, we minimize the squared norm of the residual vector function:
+(3.5)                                    ˙ = argminkr̃(v̂, x̂, t; µ)k2
+                                         x̂                                 2
+                                                       v̂∈Rns
+with x̂(0; µ) = x̂0 (µ) = h (x0 (µ) − xref ). The solution to Eq. (3.5) leads to the NM-Galerkin
+(3.6)                         ˙ = J g (x̂)† f (xref + g(x̂), t; µ), x̂(0; µ) = x̂0 (µ)
+                              x̂
+where the Moore–Penrose inverse of a matrix A ∈ RNs ×ns with full column rank is defined as A† :=
+(AT A)−1 AT .
+     Applying a time integrator to Eq. (3.6) leads to a fully discretized reduced system, denoted as the
+reduced O∆E. Note that the reduced O∆E has ns unknowns and ns equations. If an implicit time integrator
+is applied, a Newton–type method can be applied to solve for unknown generalized coordinates each time
+step. If an explicit time integrator is applied, time marching updates will solve the system. However, we
+cannot expect any speed-up because the size of the nonlinear terms and their Jacobians, which need to be
+updated for every Newton step, scales with the FOM size. In order to handle this issue, the hyper-reduction
+will be applied (see Section 4.3.1).
+     3.4. Nonlinear manifold least-squares Petrov–Galerkin projection. Alternatively, the nonlinear
+manifold least-squares Petrov–Galerkin (NM-LSPG) approach projects a fully discretized solution space onto
+a trial manifold. That is, it discretizes Eq. (2.1) in time domain and replaces xn with x̃n := xref + g (x̂n )
+for n ∈ N(Nt ) in residual functions defined in Section 2.1 and Appendix A. Here, we consider only implicit
+time integrators for simplicity. See Ref. [44] for other types of time integrators. The residual functions for
+several implicit time integrators are defined in (2.3), (A.1), and (A.2). For example, the residual function
+                                                                10
+with the backward Euler time integrator1 after the trial manifold projection becomes
+                     r̃nBE (x̂n ; x̂n−1 , µ) := r nBE (xref + g (x̂n ) ; xref + g (x̂n−1 ) , µ)
+(3.7)
+                                             = g (x̂n ) − g (x̂n−1 ) − ∆tf (xref + g (x̂n ) , tn ; µ).
+The nonlinear manifold g can be found by training the autoencoder as described in Section 3.2. Note that
+Eq. (3.7) is an over-determined system. Therefore, it is likely that no solution exists. To close the system
+and solve for the unknown generalized coordinates, x̂n , the NM-LSPG takes the squared norm of the residual
+vector function and minimizes it at every time step:
+                                                            1 n                     2
+(3.8)                                     x̂n = argmin        kr̃BE (v̂; x̂n−1 , µ)k2 .
+                                                 v̂∈R sn    2
+The Gauss–Newton method with the starting point x̂n−1 is applied to solve the minimization problem (3.8).
+However, as in the Galerkin approach, a hyper-reduction which will be discussed in Section 4.3.2 is required
+for a speed-up due to the presence of the nonlinear residual vector function that scales with the full order
+model size. More specifically, g (x̂n ), f (xref + g (x̂n ) , t; µ), and their Jacobians are needed to be updated
+whenever x̂n chagnes if the backward Euler time integrator is used.
+     4. Hyper-reduction. As mentioned in Section 2.2 and 3, we cannot expect speed-up even though the
+dimension of unknowns in ROMs is small, i.e., ns  Ns , because the nonlinear term still scales with the
+full order model size. To overcome this issue, there are several hyper-reduction techniques available, e.g.,
+[14, 25, 26, 13, 19] for LS-ROMs. These hyper-reduction techniques share a common feature and it plays an
+important role in the development of the hyper-reduction technique in the NM-ROMs, so we will go over
+one of the hyper-reduction technique that is commonly used in the LS-ROMs.
+    4.1. Nonlinear residual approximation. We follow the DEIM-SNS and GNAT-SNS approaches
+introduced in [19] where the solution snapshots, whose span includes a span of nonlinear term snapshots,
+are taken to build a nonlinear term basis. Then, it selects a subset of each nonlinear term basis vector to
+either interpolate or data-fit in a least-squares sense. In this way, it reduces the computational complexity
+of updating nonlinear terms in an iterative solver for nonlinear problems.
+    In more details, the GNAT-SNS method approximates the nonlinear residual term with gappy POD [27]
+as
+(4.1)                                              r̃ ≈ Φr r̂,
+                                    Ns ×nr
+where Φr := [φr,1 , . . . , φr,nr ] ∈ R      , ns ≤ nr  Ns , denotes the residual basis matrix and r̂ ∈ Rnr
+denotes the generalized coordinates of the nonlinear residual term. Here, r̃ represents a residual vector
+function, e.g., the backward Euler residual, r̃nBE , defined in Eq. (2.9). The GNAT-SNS method uses the SVD
+of the FOM solution snapshot matrix to construct Φr , which reduces computational cost by avoiding another
+POD to a nonlinear residual term snapshots. The hyper-reduction method solves the following least-squares
+problem to obtain the generalized coordinates r̂:
+                                                        1                  2
+(4.2)                                   r̂ := argmin       Z T (r̃ − Φr v̂) .
+                                               v̂∈Rnr   2                  2
+
+where Z T := [ep1 , . . . , epnz ]T ∈ Rnz ×Ns , ns ≤ nr ≤ nz  Ns , is the sampling matrix and epi is the pi th
+column of the identity matrix I Ns ∈ RNs ×Ns . The solution to Eq. (4.2) is given as
+
+                                              r̂ = (Z T Φr )† Z T r̃,
+where the Moore–Penrose inverse of a matrix A ∈ Rnz ×nr with full column rank is defined as A† :=
+(AT A)−1 AT . Therefore, Eq. (4.1) becomes
+(4.3)                                        r̃ ≈ Pr̃,
+where P := Φr (Z T Φr )† Z T is the oblique projection matrix. The projection matrix has a pseudo-inverse
+instead of the inverse because it allows the oversampling, i.e., nr < nz . The hyper-reduction method does not
+construct the sampling matrix Z. Instead, it maintains the sampling indices {p1 , . . . , pnf } and corresponding
+rows of Φr and r̃. This enables hyper-reduced ROMs to achieve a speed-up when it is applied to nonlinear
+problems.
+    The sampling indices (i.e., Z) can be determined by Algorithm 3 of [13] for computational fluid dynamics
+                                                        11
+problems and Algorithm 5 of [11] for other problems. These two algorithms take greedy procedure to
+minimize the error in the gappy reconstruction of the POD basis vectors Φr . These sampling algorithms for
+the hyper-reduction method allows oversampling (i.e., nz > nr ), resulting in solving least-squares problems
+in the greedy procedure. These selection algorithms can be viewed as the extension of Algorithm 1 in [14]
+(i.e., a row pivoted LU decomposition) to the oversampling case. The nonlinear residual term projection
+error associated with these sampling algorithms is presented in Appendix D of [13]. That is,
+
+                                        kr̃ − Pr̃k2 ≤ kR−1 k2 kr̃ − Φr ΦTr r̃k2
+where R is the triangular factor from the QR factorization of Z T Φr (i.e., Z T Φr = QR). For more details,
+please refer to [19]2 .
+    4.2. Hyper-reduction for LS-ROM. We present formulations of LS-Galerkin-HR and LS-LSPG-HR.
+For numerical examples, LS-LSPG-HR is only implemented.
+    4.2.1. LS-Galerkin-HR. We denote the hyper-reduced linear subspace Galerkin as LS-Galerkin-HR.
+The LS-Galerkin-HR method approximates the nonlinear residual term with the gappy POD procedure as
+in Section 4.1. Therefore, the LS-Galerkin-HR method replaces the residual in (2.7) with Pr̃(v̂, x̂, t; µ) given
+by Eq. (4.3). Thus, it minimizes the following least-squares problem:
+(4.4)                              ˙ = argmink(Z T Φr )† Z T r̃(v̂, x̂, t; µ)k2
+                                   x̂                                             2
+                                            v̂∈Rns
+with x̂(0; µ) = x̂0 (µ). The solution to Eq. (4.4) leads to the following reduced ODE:
+(4.5) x̂˙ = ((Z T Φr )† Z T Φ)† ((Z T Φr )T Z T Φr )−1 (Z T Φr )T Z T f (xref + Φx̂, t; µ), x̂(0; µ) = x̂0 (µ).
+     Applying a time integrator to Eq. (4.5) leads to a fully discretized reduced system, denoted as the
+reduced O∆E. Note that the reduced O∆E has ns unknowns and ns equations. If an implicit time integrator
+is applied, a Newton–type method can be applied to solve for unknown generalized coordinates each time
+step. If an explicit time integrator is applied, time marching updates can be applied.
+     Note that the operator ((Z T Φr )† Z T Φ)† ((Z T Φr )T Z T Φr )−1 (Z T Φr )T can be pre-computed once for all.
+We avoid constructing the sampling matrix Z. For example, the operator Z T Φr can be computed simply
+by extracting only the selected rows of Φr . For the term, Z T f , only the nonlinear term elements that are
+selected by the sampling matrix need to be computed. This implies that we have to keep track of the rows
+of Φ that are needed to compute the selected nonlinear term elements, which is usually a larger set than the
+rows that are selected solely by the sampling matrix, i.e., Z T Φ, as in the 5-point stencil or 7-point stencil
+in the finite difference method.
+   4.2.2. LS-LSPG-HR. We denote the hyper-reduced linear subspace LSPG as LS-LSPG-HR. The LS-
+LSPG-HR method approximates the nonlinear residual term with the gappy POD procedure as in Section 4.1.
+Therefore, the LS-LSPG-HR method replaces the residual in (2.10) with Pr̃(v̂, x̂, t; µ) given by Eq. (4.3).
+Thus, it minimizes the following least-squares problem:
+                                            1                                       2
+                             x̂n = argmin       (Z T Φr )† Z T r̃nBE (v̂; x̂n−1 , µ) ,
+                                    v̂∈Rns  2                                       2
+
+with x̂(0; µ) = x̂0 (µ). Note that the pseudo-inverse (Z T Φr )† can be pre-computed once for all. Due
+to the definition of r̃nBE in Eq. (2.9), the sampling matrix Z needs to be applied to the following terms:
+Φ(x̂n − x̂n−1 ) and f (xref + Φx̂n , t; µ) at every time step. The first term Z T Φ can be precomputed by
+extracting the selected rows of the basis matrix. For the second term, only the nonlinear term elements that
+are selected by the sampling matrix need to be computed. This implies that we have to keep track of the
+rows of Φ that are needed to compute the selected nonlinear term elements, which is usually a larger set
+than the rows that are selected solely by the sampling matrix, i.e., Z T Φ, as in the 5-point stencil or 7-point
+stencil in the finite difference method.
+     4.3. Hyper-reduction for NM-ROM. There are two layers of nonlinear terms in the NM-ROM:
+(i) the nonlinear term in the original governing equations, i.e., f in Eq. (2.1), and (ii) the decoder, which
+
+  2 In this paper, GNAT-SNS in [19] is re-named as LS-LSPG-HR to emphasize the difference between the LS-ROMs and
+
+NM-ROMs.
+                                                          12
+is nonlinear function of the generalized coordinates, i.e., g in Eq. (3.1) and appears in the definition of
+residuals both for Galerkin and Petrov–Galerkin cases. The first layer nonlinear term can be treated in the
+same way as the LS-ROMs (see Sections 4.2.1 and 4.2.2). Now, it is the second layer nonlinear term that
+requires a special attention. For example, the Jacobian of the decoder needs to be evaluated at every solver
+iteration. Because the cost of computing the Jacobian scales with the number of learnable parameters in
+the decoder, we cannot expect much speed-up. As we did in the hyper-reduction process of the LS-ROMs,
+we have to avoid computing all the entries of the decoder or its Jacobian because they scale with the full
+order model size. This will be achieved by constructing a subnet that computes only the relevant outputs,
+which is discussed in Section 4.4. First, we state the hyper-reduced NM-ROMs, i.e., the NM-Galerkin-HR in
+Section 4.3.1 and the NM-LSPG-HR in Section 4.3.2. At last, the flop count estimate comparison between
+non-hyper-reduced and hyper-reduced models are shown at the end of Section 4.4 and their derivations are
+shown in Appendix B.
+
+    4.3.1. NM-Galerkin-HR. Now, we apply the hyper-reduction to the NM-Galerkin method. We de-
+note the hyper-reduced nonlinear manifold Galerkin as NM-Galerkin-HR. The NM-Galerkin-HR method
+approximates the nonlinear residual term with the gappy POD procedure as in Section 4.1. Therefore,
+the NM-Galerkin-HR method replaces the residual in (3.5) with Pr̃(v̂, x̂, t; µ) given by Eq. (4.3). Thus, it
+minimizes the following least-squares problem:
+(4.6)                              ˙ = argmink(Z T Φr )† Z T r̃(v̂, x̂, t; µ)k2
+                                  x̂                                             2
+                                             v̂∈Rns
+with x̂(0; µ) = x̂0 (µ). The solution to Eq. (4.6) leads to the NM-Galerkin-HR
+(4.7)           ˙ = ((Z T Φr )† Z T J g (x̂))† (Z T Φr )† Z T f (xref + g(x̂), t; µ), x̂(0; µ) = x̂0 (µ).
+               x̂
+    Applying a time integrator to Eq. (4.7) leads to a fully discretized reduced system, denoted as the
+reduced O∆E. Note that the reduced O∆E has ns unknowns and ns equations. If an implicit time integrator
+is applied, a Newton–type method can be applied to solve for unknown generalized coordinates each time
+step. If an explicit time integrator is applied, time marching updates will solve the system.
+    Note that the pseudo inverse, (Z T Φr )† , can be pre-computed once for all by extracting only the selected
+rows of Φr . However, the term, Z T J g (x̂), cannot be precomputed because J g needs to be updated every
+time x̂ is updated. Fortunately, we need to compute only the selected rows of J g by the sampling matrix
+Z. Similarly, for the term, Z T f , only the nonlinear term elements that are selected by the sampling matrix
+need to be computed. This implies that we have to keep track of the outputs of g that are needed to compute
+the selected nonlinear term elements, which is usually a larger set than the outputs that are selected solely
+by the sampling matrix, i.e., Z T g, as in the 5-point stencil or 7-point stencil in the finite difference method.
+
+     4.3.2. NM-LSPG-HR. We apply the hyper-reduction to the NM-LSPG method discussed in Section
+3.4. The hyper-reduction procedure for the nonlinear residual function after the trial manifold projection is
+the same as the one in Section 4.1, i.e., we replace the residual defined in (3.7) with Pr̃nBE and plug it into
+the minimization problem in Eq. (3.8). Then, the minimization problem becomes
+                                             1                                       2
+                            x̂n = argmin         (Z T Φr )† Z T r̃nBE (v̂; x̂n−1 , µ) .
+                                   v̂∈Rns    2                                       2
+
+Note that the pseudo-inverse (Z T Φr )† can be pre-computed once for all. Due to the definition of r̃nBE
+in Eq. (3.7), the sampling matrix Z needs to be applied the following two terms: g (x̂n ) − g (x̂n−1 ) and
+f (xref + g (x̂n ) , t; µ) at every time step. The first term, Z T (g (x̂n ) − g (x̂n−1 )), requires to compute only
+the selected outputs of the decoder. Furthermore, for the second term, only the nonlinear term elements
+that are selected by the sampling matrix need to be computed. This implies that we have to keep track of
+the outputs of g that are needed to compute the selected nonlinear term elements by the sampling matrix,
+which is usually a larger set than the outputs that are selected solely by the sampling matrix, i.e., Z T g, as
+in the 5-point stencil or 7-point stencil in the finite difference method. Therefore, we build a subnet that
+computes only the outputs of the decoder that is required to compute the elements of the nonlinear term, f .
+Then, with the same subnet, the outputs required for the first term, Z T (g (x̂n ) − g (x̂n−1 )), can be extracted
+from the same subnet. The construction of the subnet is explained in Section 4.4.1.
+
+                                                           13
+     4.4. Efficient Hyper-Reduction Decoder Computation. In the NM-LSPG-HR method, the resid-
+ual is evaluated at the sampling points given by the hyper-reduction. We use “sample points” and “hyper-
+reduction indices” interchangeably throughout the paper. Evaluating the decoder and its Jacobian can be
+done efficiently by restricting the computation to the active paths of the outputs required to compute the
+selected residual elements. For example, active paths of the sparse decoder are shown in orange color in
+Fig. 3(b). The costs of computing the decoder and its Jacobian scale piecewise-linearly with the number
+of sample points because the slopes of the costs of computing the decoder and its Jacobian vs the number
+of sample points are different depending on how many nodes in hidden layer are shared for each sample
+point (see Fig. 6). The distribution of the hyper-reduction indices determines the number of overlapping
+nodes in hidden layer of decoder. The more the overlapping nodes in hidden layer implies the more efficient
+computation of the hyper-reduced decoder. If successive points are selected, overlapping of nodes in hidden
+layer are maximized. If the selected points are uniformly apart, then the overlapping of nodes in hidden layer
+is minimized. In the case of random distribution, if the number of selected points is small, the possibility of
+overlapping is low. Our required outputs to compute the selected residual elements after the hyper-reduction
+are neither successive nor uniformly separated. Thus, the cost of computing the decoder and its Jacobian
+would be between case 1 (successive points) and case 2 (uniformly separated points) in Fig. 6. By restricting
+our computation to active paths, we only compute along the subnet of the decoder network that is needed
+for our required outputs.
+
+
+                                       10-3
+                            2.5
+
+                               2
+
+                            1.5
+
+                               1
+
+                            0.5
+
+                               0
+                                   0          100            200             300        400
+
+
+    Fig. 6. Illustration of the computational time elapsed for the evaluation of decoder and its Jacobian vs the number of
+sample points from 2D Burgers’ equation in Section 6.2. The total number of points is 3364.
+
+
+
+
+    4.4.1. Construction of a subnet. To determine the sparse decoder’s active paths for given hyper-
+reduction indices together with additional indices required to compute the hyper-reduced residual (i.e., the
+neighbor indices that are used to approximate the derivatives at the sample point), denoted as H, we follow
+the steps below:
+Step 1: Set nonlinear activation functions to be identity functions.
+Step 2: Replace nonzero elements of the weight matrices, W 1 , W 2 S and the bias vector, b1 with one
+        and then denote each of them as W̃ 1 , W̃ 2 , and b̃1 , respectively. Zero elements of W̃ 1 , W̃ 2 , and b̃1
+        represent non-connected edges between layers.
+Step 3: A new decoder model, g̃(y 0 ), is created in the form
+                                                    g̃(y 0 ) = W̃ 2 (W̃ 1 y 0 + b̃1 )
+                                                             14
+        or for each layer, we can write
+                                                      y 1 = W̃ 1 y 0 + b̃1
+                                                      y 2 = W̃ 2 y 1 .
+                             T      ns
+Step 4: Set y 0 = (1, · · · , 1) ∈ R as an input. By construction, g̃(y 0 ) must be all positive.
+Step 5: Define the target vector as y ∗ = y 2 − e ∈ RNs , where ith component of the error vector, e, is defined
+        as ei = δij , j ∈ H. Then the loss function, L, is defined as
+                                                         1
+                                                    L = ky 2 − y ∗ k22
+                                                         2
+              ∂L
+        and ∂y   is given by
+                2
+
+                                                   ∂L
+                                                        = y 2 − y ∗ = e.
+                                                   ∂y 2
+Step 6: Compute ∇W̃ 2 L, ∇W̃ 1 L, and ∇b̃1 L using the chain rule
+                                                                  
+                                ∂L      ∂L ∂y 2            ∂L T
+                  ∇W̃ 2 L =          =               =         y1      s(W̃ 2 )
+                              ∂ W̃ 2   ∂y 2 ∂ W̃ 2        ∂y 2
+                                                                                          
+                                ∂L      ∂L ∂y 1          ∂L ∂y 2 ∂y 1            T ∂L T
+                  ∇W̃ 1 L =          =               =                   = W̃ 2        y0        s(W̃ 1 )
+                              ∂ W̃ 1   ∂y 1 ∂ W̃ 1      ∂y 2 ∂y 1 ∂ W̃ 1           ∂y
+                                                                                   2
+                               ∂L     ∂L ∂y 1        ∂L ∂y 2 ∂y 1          T ∂L
+                    ∇b̃1 L =        =             =                  = W̃ 2            s(b̃1 )
+                              ∂ b̃1   ∂y 1 ∂ b̃1     ∂y 2 ∂y 1 ∂ b̃1          ∂y 2
+        where                                             (
+                                                           0 if x ≤ 0
+                                                 s(x) :=
+                                                           1 otherwise
+        is the element-wise function. Here, we make derivatives of L with respect to non-connected edges
+        (i.e., zero elements of W̃ 2 , W̃ 1 , and b̃1 ) zeros by element-wise multiplication with s(W̃ 2 ), s(W̃ 1 ),
+        and s(b̃1 ) because we do not consider non-connected edges as variables.
+Step 7: Using the fact that the weights and bias that are not in the active paths do not contribute to
+        computing L, we deduce that the derivatives of L with respect to such weights and bias are zero. On
+        the other hand, the derivatives of L with respect to the weights and bias that are in the support of
+        indices in H must be strictly positive because the special structure of g̃ (i.e., the same structure as
+        the sparse decoder, g, except all the nonzero weights and bias are one and the nonlinear activation
+        functions are identity functions), choosing the all-ones vector as input vector, and defining the target
+        vector as above should induce the positive gradient to reduce the L. Thus, active path weights and
+        bias are obtained by
+                                                W a2 = (W 2 S) s(∇W̃ 2 L)
+                                               W a1 = W 1         s(∇W̃ 1 L)
+                                                 ba1 = b1        s(∇b̃1 L).
+Step 8: Removing zero rows and zero columns of the active path weights and bias, W a2 , W a1 , and ba1 yields
+                                                                             sn
+        the subnet weights and bias, which are denoted as W sn      sn
+                                                             2 , W 1 , and b1 , respectively. Then the
+                 sn
+        subnet, g is given by
+                                                                          sn
+                                              g sn (x̂) = W sn    sn
+                                                            2 σ(W 1 x̂ + b1 ).
+    This subnet strategy works for neural networks of arbitrary depth. However, we have illustrated it in
+the context of the neural network with one hidden layer. It is because that is what we use to achieve enough
+speed up. Please see Fig. 7 for an argument of a shallow over a deep network.
+    Remark 4.1. To count flops of NM-LSPG and NM-LSPG-HR, let m, f , z, and b denote FOM size,
+ROM size, the size of subnet output, and the number of nodes in the hidden layer to compute one output
+element of the sparse decoder, respectively. Then, the flop counts of NM-LSPG is O(mbf ) and the flop
+counts of NM-LSPG-HR is O(zbf ) + O(f z 2 ). Thus, if z is small e.g., z 2 < m, speed-up can be achieved.
+For full details, see Appendix B.
+                                                            15
+                    (a) Shallow network                                                  (b) Deep network
+
+
+     Fig. 7. Illustration of the effect on the sparsity of the active path for shallow network vs deep network. The shallow
+network provides a sparser network than the deep network in the subnet. Therefore, the shallow network is expected to achieve
+a higher speed-up than the deep network.
+
+
+
+
+    5. Error analysis. We present error analysis of the NM-LSPG-HR method. The error analysis is based
+on [43] and we added an oblique projection matrix for a hyper-reduction method. A posteriori discrete-time
+error bounds for NM-Galerkin and NM-LSPG without any hyper-reduction are derived in [43]. Here, we
+apply a linear multi-step method described in Appendix A.
+
+     Theorem 5.1. Let Z ∈ RNs ×nz with nz  Ns denote a sampling matrix, P ∈ RNs ×Ns be an oblique
+projection matrix used in NM-Galerkin-HR and NM-LSPG-HR, i.e., P = PNM-Galerkin-HR for NM-Galerkin-
+HR and P = PNM-LSPG-HR for NM-LSPG-HR, and r̃n ∈ RNs denote the nonlinear residual term, which is
+defined by replacing xn with x̃n := xref + g (x̂n ) for n ∈ N(Nt ) in residual functions defined in Section 2.1
+and Appendix A, e.g., the residual with the backward Euler time integrator is defined in Sections 3.4 and
+4.3.2. Then, if the velocity f is Lipschitz continuous with the Lipschitz constant L and the time step size ∆t
+is sufficiently small such that ∆t < γγ21|β|α00|L| , we have the following error bound
+                                                                1
+                  kxn − xref − g(x̂n )k2 ≤                                        kPr̃n (xref + g(x̂n ))k2
+                                                 kPk2 (γ1 − γ2 |β0|α|∆tL
+                                                                     0|
+                                                                         )|α0 |
+(5.1)                                            k
+                                                 X      |αj | + |βj |∆tL
+                                             +                  |β0 |∆tL
+                                                                                 kxn−j − xref − g(x̂n−j )k2
+                                                 j=1 (γ1 − γ2     |α0 | )|α0 |
+for NM-Galerkin-HR and
+                                                         1
+           kxn − xref − g(x̂n )k2 ≤                                       min kPr̃n (v̂; x̂n−1 , · · · , x̂n−k , µ)k2
+                                          kPk2 (γ1 |α0 | − γ2 |β0 |∆tL) v̂∈Rns
+(5.2)                                    k
+                                         X       |αj | + |βj |∆tL
+                                     +                               kxn−j − xref − g(x̂n−j )k2
+                                         j=1
+                                             (γ 1 0 | − γ2 |β0 |∆tL)
+                                                 |α
+for NM-LSPG-HR, where coefficients αj , βj ∈ R, j = 0, · · · , k define a particular linear multi-step scheme
+and γ1 , γ2 ∈ R are 0 < γ1 , γ2 ≤ 1.
+                                                                16
+      Proof. We have
+                                         k
+                                         X                    k
+                                                              X
+(5.3)                      r n (xn ) =         αj xn−j − ∆t         βj f (xn−j ) = 0,
+                                         j=0                  j=0
+                                                                                                
+                                         Xk                            k
+                                                                       X
+(5.4)         Pr̃n (xref + g(x̂n )) = P    αj (xref + g(x̂n−j )) − ∆t   βj f (xref + g (x̂n−j ))
+                                               j=0                                 j=0
+               Ns                                                               ns
+where xn ∈ R        denotes FOM solution and xref + g(x̂n ), x̂n ∈ R                 is approximate solution.
+
+
+
+
+      Subtracting Eq. (5.3) from Eq. (5.4) gives
+                               
+
+  −Pr̃n (xref + g(x̂n )) = P α0 (xn − xref − g(x̂n )) − ∆tβ0 (f (xn ) − f (xref + g(x̂n )))
+                                                                                                                       
+                               k
+                               X                                             k
+                                                                             X
+                           +         αj (xn−j − xref − g(x̂n−j )) − ∆t             βj (f (xn−j ) − f (xref + g(x̂n−j ))) .
+                               j=1                                           j=1
+
+We can re-write this in the following form
+                                                                 
+                             β0 ∆t
+  P xn − xref − g(x̂n ) −           (f (xn ) − f (xref + g(x̂n ))) =
+                              α0
+  |                              {z                               }
+                                  I
+                                                                                                                    
+                                        k                                    k
+  1                                 1 X                                  ∆t X
+− Pr̃n (xref + g(x̂n )) + P −            αj (xn−j − xref − g(x̂n−j )) +        βj (f (xn−j ) − f (xref + g(x̂n−j )))
+  α0                               α0 j=1                                α0 j=1
+|                                                           {z                                                       }
+                                                                      II
+Applying the reverse triangle inequality gives
+                                                                β0 ∆t
+                 kIk2 ≥ kP(xn − xref − g(x̂n ))k2 −                   P(f (xn ) − f (xref + g(x̂n )))   .
+                                                                 α0                                   2
+Now, we use relationships
+                            kP(xn − xref − g(x̂n ))k2 = γ1 kPk2 kxn − xref − g(x̂n )k2
+and
+                     kP(f (xn ) − f (xref + g(x̂n )))k2 = γ2 kPk2 kf (xn ) − f (xref + g(x̂n ))k2
+where 0 < γ1 ≤ 1 and 0 < γ2 ≤ 1. Then, we have
+                                                                          β0 ∆t
+             kIk2 ≥ γ1 kPk2 kxn − xref − g(x̂n )k2 − γ2 kPk2                    (f (xn ) − f (xref + g(x̂n )))
+                                                                            α0                                 2
+                                                                     β0 ∆t
+                    = kPk2 γ1 kxn − xref − g(x̂n )k2 − γ2                  (f (xn ) − f (xref + g(x̂n )))    .
+                                                                      α0                                  2
+
+If f is Lipschitz continuous with L and ∆t is sufficiently small such that ∆t < γγ21|β|α00|L| , we have
+                                                               
+                                                     |β0 |∆tL
+(5.5)                          kIk2 ≥ kPk2 γ1 − γ2                 kxn − xref − g(x̂n )k2 .
+                                                        |α0 |
+With triangle inequality and Lipschitz continuity of f , we have
+                                                                k
+                   1                                      1 X
+(5.6) kIIk2 ≤           kPr̃n (xref + g(x̂n ))k2 + kPk2            ((|αj | + |βj |∆tL)kxn−j − xref − g(x̂n−j )k2 ) .
+                  |α0 |                                  |α0 | j=1
+                                                               17
+Combining Eq. (5.5) and (5.6) yields
+                                                              1
+               kxn − xref − g(x̂n )k2 ≤                                         kPr̃n (xref + g(x̂n ))k2
+                                               kPk2 (γ1 − γ2 |β0|α|∆tL
+                                                                   0|
+                                                                       )|α0 |
+(5.7)                                          k
+                                               X      |αj | + |βj |∆tL
+                                           +                  |β0 |∆tL
+                                                                               kxn−j − xref − g(x̂n−j )k2 .
+                                               j=1 (γ1 − γ2     |α0 | )|α0 |
+The error bound for NM-Galerkin-HR Eq. (5.1) is proved. Furthermore, noting that NM-LSPG-HR solution
+x̂n minimizes the term kPr̃n (xref +g(x̂n ))k2 in Eq. (5.7) proves the error bound for NM-LSPG-HR Eq.(5.2).
+
+    From the error bound for NM-LSPG-HR, we know that the NM-LSPG-HR solutions satisfy sequential
+minimization of the error bound.
+     6. Numerical results. We demonstrate the accuracy and speed-up of the nonlinear manifold reduced
+order model for two advection-dominated problems: (i) a parameterized 1D inviscid Burgers equation in
+Section 6.1 and (ii) a parameterized 2D viscous Burgers equation with a large Reynolds number (i.e., the
+advection-dominated case) in Section 6.2. The ROMs are trained with solution snapshot associated with
+train parameters in a parameter space and are used to predict the solution of the parameter that is not
+included in the train parameters. We refer this to the predictive case. The accuracy of ROM solution x̃(·; µ)
+is assessed from its maximum relative error:
+
+                                                               kx̃(tn ; µ) − x(tn ; µ)k2
+                                                                                        
+                        maximum relative error = max
+                                                    n∈N(Nt )         kx(tn ; µ)k2
+where x is the corresponding FOM solution. We also introduce the projection errors for the lower bounds
+of LS-ROMs and NM-ROMs maximum  v       relative errors:
+                                u Nt                                            ,v u Nt
+                                uX                                                 uX
+                                                 T                             2
+(6.1)        projection error = t    k I − ΦΦ (x(tn ; µ) − x (µ)) k            ref
+                                                                                    t
+                                                                                          2kx(tn ; µ)k2              2
+                                    n=1                                                              n=1
+for linear subspace projection and
+                          v                                                                                 ,v
+                          u Nt                                                                               u Nt
+                          uX                                                                                 uX
+                                k (x(tn ; µ) − x                                n ; µ) − x                2       kx(tn ; µ)k2
+(6.2) projection error = t                           ref (µ)) − g ◦ h (x(t                          (µ)) k   t
+                                                                                              ref          2                 2
+                             n=1                                                                               n=1
+for nonlinear manifold projection, where Φ denotes a POD basis matrix, and the scaled decoder g and the
+scaled encoder h are a nonlinear manifold and its approximate inverse function that are obtained from an
+autoencoder, respectively. The computational cost is measured in terms of the CPU wall time. Specifically,
+timing is obtained by performing calculations on an Intel(R) Xeon(R) CPU E5-2637 v3 @ 3.50 GHz and
+DDR4 Memory @ 1866 MT/s. The autoencoders are trained on a NVIDIA Quadro M6000 GPU with 3072
+NVIDIA CUDA Cores and 12 GB GDDR5 GPU Memory using PyTorch [55] which is the open source
+machine learning frame work.
+    6.1. 1D inviscid Burgers’ equation. We consider a parameterized 1D inviscid Burgers’ equation
+                               ∂u(x, t; µ)              ∂u(x, t; µ)
+(6.3)                                      + u(x, t; µ)             = 0,
+                                  ∂t                       ∂x
+                                         x ∈ Ω = [0, 2]
+                                                    t ∈ [0, T ],
+where u ∈ R denotes a scalar-valued time dependent state variable with the periodic boundary condition
+                                                   u(2, t; µ) = u(0, t; µ)
+and the initial condition
+                                               1 + µ2 sin 2πx − π2 + 1
+                                                                     
+                                                                                     if 0 ≤ x ≤ 1
+                            u(x, 0; µ) =
+                                               1                                     otherwise
+where µ ∈ D = [0.9, 1.1] is a parameter. Discretizing the space domain Ω into nx − 1 uniform mesh gives nx
+grid points xi = (i − 1)∆x where i ∈ {1, 2, · · · , nx } and ∆x = nx2−1 . We denote the discrete solutions on
+                                                              18
+                                                                                                     ui −ui−1
+grid points as ui (t; µ) = u(xi , t; µ), where i ∈ N(nx ). Then, the backward difference scheme ∂u
+                                                                                                ∂x ≈    ∆x
+yields the semi-discretized equation which is written by
+                                                      dU
+                                                           = f (U )
+                                                       dt
+where U = (u1 , u2 , · · · , unx −1 )T and f : Rnx −1 → Rnx −1 is in the form
+                                                       1
+                                           f (U ) = −     (M U U + BU )
+                                                      ∆x
+where                                                                                 
+                       1                                             unx −1
+                  −1 1                                                   0           
+           M =                                           , B=                                        ,
+                                                                                     
+                              . ..  . ..                                     ..        
+                                                                              .      
+                                −1    1 (n −1)×(n −1)                                  0 (n −1)×(n −1)
+                                             x      x                                        x    x
+
+with denoting element-wise multiplication.
+     For a time integrator, we use the backward Euler scheme with time step size ∆t = nTt , where T is final
+time and nt is the number of time steps. We set T = 0.5, nx = 1001, and nt = 500.
+     For the training process, we collect solution snapshots associated with the parameter µ ∈ Dtrain =
+{0.9, 1.1} such that ntrain = 2 at which the FOM is solved. Then, the number of train data points is
+ntrain · (nt + 1) = 1002 and 10% of the train data are used for validation purpose. We employ the Adam
+optimizer [37] for SGD with initial learning rate 0.001 which decreases by a factor of 10 when a training loss
+stagnates for 10 successive training epochs. We set the number of nodes in the hidden layer of the encoder,
+M1 = 2000, and the number of nodes in the hidden layer of the decoder, M2 = 12024. The weights and
+bias of the autoencoder are initialized via Kaiming initialization [32]. The size of the batch is 20 and the
+maximum number of epochs is 10, 000. The training process is stopped if the loss on the validation dataset
+stagnates for 200 epochs.
+     After the training is done, the NM-ROMs and LS-ROMs solve the Eq. (6.3) with the target parameter
+µ = 1 which is not included in the train dataset for training the autoencoder and the linear subspace.
+Fig. 8 shows the relative error versus the reduced dimension ns . It also shows the projection errors for
+LS-ROMs and NM-ROMs, which are defined in (6.1) and (6.2). These are the lower bounds for LS-ROMs
+and NM-ROMs, respectively. As expected the relative errors for the NM-ROMs are lower than the ones for
+the LS-ROMs. We even observe that the relative errors of NM-ROMs are even lower than the lower bounds
+of LS-ROMs.
+
+
+                                       100
+
+
+
+                                      10-1
+
+
+
+                                      10-2
+
+
+
+                                      10-3
+                                                        5        10           15
+
+
+                          Fig. 8. 1D Burgers’ equation. Relative errors vs reduced dimensions.
+
+
+    To see the trends regarding the number of training parameter instances, we increase the number of
+                                                            19
+parameters starting from ntrain = 2 with the fixed reduced dimension ns = 5 to achieve less than 1%
+maximum relative error for NM-ROMs. In Fig. 9, we observe that ntrain = 2 is enough.
+
+
+                                             10-1
+
+
+
+
+                                             10-2
+
+
+
+
+                                             10-3
+                                                    2        4           6       8        10
+
+
+     Fig. 9. 1D Burgers’ equation. Relative errors vs the number of parameter instances. We use Dtrain = {0.9, 1.1} for
+ntrain = 2, Dtrain = {0.9, 0.95, 1.05, 1, 1} for ntrain = 4, Dtrain = {0.9, 0.9 + 31 , 0.9 + 23 , 1 + 31 , 1 + 23 , 1.1} for ntrain = 6, and
+Dtrain = {0.9, 0.925, 0.95, 0.975, 1.025, 1.05, 1.075, 1.1} for ntrain = 8.
+
+    LS-ROMs with ns = 5 are able to achieve speed-up, but their accuracies are not as good as NM-ROMs.
+For example, LS-ROMs are about 5 to 6 times faster than FOM on average and have a maximum relative
+error of 6 %. NM-ROMs solve the problem with less than the maximum relative error of 1 %. For LS-
+ROMs, a hyper-reduction improves speed-up (e.g., 9 to 10 times faster than FOM) but accuracy doesn’t
+get better. On the other hand, NM-ROMs without a hyper-reduction do not achieve any speed-up with
+respect to the corresponding FOM simulation. For example, the FOM simulation takes 1.30 seconds, while
+the NM-Galerkin and NM-LSPG with ns = 5 takes 1.67 and 1.35 seconds, respectively. Therefore, the
+hyper-reduction is essential to achieve a speed-up with a reasonable accuracy for the NM-ROMs. Now, we
+compute the maximum relative error and wall-clock time for the hyper-reduced ROMs, i.e., NM-LSPG-HR
+and LS-LSPG-HR, by varying the number of residual basis and residual samples with the fixed number of
+training parameter instances ntrain = 2 and the reduced dimension ns = 5 and show the results in Table 1.
+Although the LS-LSPG-HR can achieve a better speed-up than the NM-LSPG-HR, the relative error of the
+LS-LSPG-HR is too large, e.g., the relative errors of around 6%. On the other hand, the NM-LSPG-HR
+achieves much better accuracy, i.e., a relative error of around 1%, than the LS-LSPG-HR with a speedup of
+higher than 2.
+                                                       Table 1
+    The top 6 maximum relative errors and wall-clock times at different numbers of residual basis and samples which range
+from 30 to 50.
+
+                                                 NM-LSPG-HR                                            LS-LSPG-HR
+   Residual basis                 31       33      36   32   40                32       30       30      30   31   41                41
+  Residual samples                47       49      40   47   42                46       47       48      49   49   49                48
+ Max. rel. error (%)             1.03     1.07    1.18 1.23 1.23              1.25     6.07     6.08    6.08 6.09 6.11              6.11
+ Wall-clock time (sec)           0.63     0.51    0.49 0.50 0.51              0.50     0.14     0.13    0.13 0.23 0.14              0.13
+       Speed-up                  2.07     2.53    2.63 2.62 2.56              2.62     9.29     9.80    9.71 5.65 9.63              9.82
+
+    Fig. 10 shows solutions in both space and time domain of FOM, NM-LSPG-HR, and LS-LSPG-HR with
+the reduced dimension being ns = 5. For NM-LSPG-HR, 31 residual basis and 47 residual samples are used
+and for LS-LSPG-HR, 30 residual basis and 47 residual samples are used. In fact, the NM-LSPG-HR is able
+to achieve an accuracy as good as the NM-LSPG for some combinations of the small number of residual
+basis and residual samples.
+                                                                    20
+             (a) FOM                               (b) NM-LSPG-HR                          (c) LS-LSPG-HR
+
+                Fig. 10. A space–time solution instances of FOM and ROMs for 1D Burgers’ equation.
+
+
+
+
+     We look into the numerical tests to see the generalization capability of the NM-LSPG and NM-LSPG-
+HR, i.e., the robustness of the NM-LSPG and NM-LSPG-HR outside of the trained domain. The training
+sample point set, µ ∈ Dtrain = {0.9, 1.1}, is used to train a NM-LSPG-HR. Then the trained NM-LSPG-HR
+model is used to predict the following parameter points, µ ∈ Dtest = {µ|µ = 0.6+0.02i, i = 0, 1, · · · , 30}. The
+residual basis dimension and the number of residual samples for each test case are given in Table 2. Fig. 11
+shows the maximum relative error over the test range of the parameter points. Note that the NM-LSPG and
+NM-LSPG-HR are the most accurate within the range of the training points, i.e., [0.9, 1.1]. As the parameter
+points go beyond the training parameter domain, the accuracy of the NM-LSPG and NM-LSPG-HR start
+to deteriorate gradually. This implies that the NM-LSPG and NM-LSPG-HR have a trust region. Its trust
+region should be determined by an application. For example, if the application is okay with the maximum
+relative error of 10 %, then the trust region of this particular NM-LSPG-HR is [0.6, 1.2]. However, if the
+application requires a higher accuracy, e.g., the maximum relative error of 2 %, then the trust region of the
+NM-LSPG-HR is [0.82, 1.12]. Note that the average speed-up of the NM-LSPG-HR for all the test cases is
+2.72 (see Table 2).
+
+
+
+    6.2. 2D Burgers’ equation. We now consider a parameterized 2D viscous Burgers’ equation
+                                                     2
+                                                     ∂ u ∂2u
+                                                                 
+                             ∂u     ∂u    ∂u     1
+(6.4)                            +u    +v    =           +
+                              ∂t    ∂x    ∂y    Re ∂x2      ∂y 2
+                                                     2
+                                                            ∂2v
+                                                                 
+                              ∂v    ∂v    ∂v     1   ∂ v
+                                 +u    +v    =           +
+                              ∂t    ∂x    ∂y    Re ∂x2      ∂y 2
+                                                   (x, y) ∈ Ω = [0, 1] × [0, 1]
+                                                        t ∈ [0, 2],
+with the boundary condition
+                    u(x, y, t; µ) = v(x, y, t; µ) = 0   on Γ = {(x, y)|x ∈ {0, 1}, y ∈ {0, 1}}
+                                                          21
+                                                         Table 2
+     The residual basis dimension and the number of residual samples for each test parameter µ. The wall-clock time and the
+speed-up of the NM-LSPG-HR with respect to the corresponding FOM are also reported.
+
+                          µ     Residual basis    Residual samples   Wall-clock time (sec)   Speed-up
+                         0.60        46                  48                  0.54              2.41
+                         0.62        37                  39                  0.46              2.83
+                         0.64        37                  39                  0.47              2.77
+                         0.66        44                  46                  0.52              2.50
+                         0.68        42                  44                  0.48              2.71
+                         0.70        42                  44                  0.48              2.71
+                         0.72        42                  44                  0.48              2.71
+                         0.74        42                  44                  0.48              2.71
+                         0.76        43                  45                  0.53              2.45
+                         0.78        36                  45                  0.46              2.83
+                         0.80        38                  47                  0.47              2.77
+                         0.82        38                  47                  0.47              2.77
+                         0.84        38                  47                  0.47              2.77
+                         0.86        38                  47                  0.47              2.77
+                         0.88        37                  46                  0.46              2.83
+                         0.90        33                  33                  0.45              2.89
+                         0.92        33                  33                  0.46              2.83
+                         0.94        33                  33                  0.46              2.83
+                         0.96        33                  33                  0.45              2.89
+                         0.98        31                  47                  0.45              2.89
+                         1.00        31                  47                  0.45              2.89
+                         1.02        33                  49                  0.48              2.71
+                         1.04        31                  48                  0.46              2.83
+                         1.06        30                  48                  0.46              2.83
+                         1.08        33                  39                  0.48              2.71
+                         1.10        33                  40                  0.48              2.71
+                         1.12        33                  42                  0.48              2.71
+                         1.14        44                  49                  0.54              2.41
+                         1.16        31                  48                  0.48              2.71
+                         1.18        31                  48                  0.47              2.77
+                         1.20        44                  48                  0.57              2.28
+
+
+                                  0.08
+
+                                  0.06
+
+                                  0.04
+
+                                  0.02
+
+                                         0
+                                         0.6            0.8              1             1.2
+
+
+            Fig. 11. The comparison of the NM-LSPG-HR and NM-LSPG on the maximum relative error vs µ
+
+
+and the initial condition                
+                                             µ sin (2πx) · sin (2πy) if (x, y) ∈ [0, 0.5] × [0, 0.5]
+                      u(x, y, 0; µ) =
+                                             0                       otherwise
+                                         
+                                             µ sin (2πx) · sin (2πy) if (x, y) ∈ [0, 0.5] × [0, 0.5]
+                       v(x, y, 0; µ) =
+                                             0                       otherwise
+                                                              22
+where µ ∈ D = [0.9, 1.1] is a parameter and u(x, y, t; µ) and v(x, y, t; µ) denote the x and y directional
+velocities, respectively, with u : Ω × [0, 2] × D → R and v : Ω × [0, 2] × D → R defined as the solutions to
+Eq. (6.4), and Re is a Reynolds number which is set Re = 10000. In the case of Re = 10000 (an advection-
+dominated case), the FOM solution snapshot shows slowly decaying singular values compared to the case of
+Re = 100 as shown in Fig. 12 and we observe that a sharp gradient, i.e., a shock, appears in Figs. 15(a) and
+15(d).
+
+
+
+
+           1010                                                                1010
+
+
+            100                                                                 100
+
+               -10                                                                -10
+          10                                                                 10
+
+
+          10-20                                                              10-20
+                     0                100                   200                         0                 100                   200
+
+                              (a) Re = 100                                                      (b) Re = 10000
+
+                                Fig. 12. The effect of Reynolds number on the singular value decay.
+
+
+
+
+     Discretizing the space domain Ω into nx −1 and ny −1 uniform meshes in x and y directions, respectively,
+gives nx × ny grid points (xi , yj ). xi is given by xi = (i − 1)∆x where i ∈ {1, 2, · · · , nx } and ∆x = nx1−1 and
+yj is given by yj = (j − 1)∆y where j ∈ {1, 2, · · · , ny } and ∆y = ny1−1 . We denote the discrete solutions on
+grid points as ui,j (t; µ) = u(xi , yj , t; µ) and vi,j (t; µ) = v(xi , yj , t; µ), where i ∈ N(nx ) and j ∈ N(ny ). Let
+nxy = (nx − 2) × (ny − 2). Then, the backward difference scheme for the first spatial derivative terms
+                                                                ∂(·)        (·)i,j − (·)i−1,j
+                                                                        ≈                       ,
+                                                                ∂x                 ∆x
+                                                                ∂(·)        (·)i,j − (·)i,j−1
+                                                                        ≈
+                                                                ∂y                 ∆y
+and the central difference scheme for the second spatial derivative terms
+                                                        ∂ 2 (·)     (·)i+1,j − 2(·)i,j + (·)i−1,j
+                                                                ≈                                        ,
+                                                         ∂x2                       ∆x2
+                                                        ∂ 2 (·)     (·)i,j+1 − 2(·)i,j + (·)i,j−1
+                                                                ≈
+                                                         ∂y 2                      ∆y 2
+yield the semi-discretized equation which is written by
+                                                                    dU
+                                                                           = f u (U , V ),
+                                                                      dt
+                                                                    dV
+                                                                           = f v (U , V )
+                                                                      dt
+where U = (u2,2 , u3,2 , · · · , unx −2,2 , u2,3 , u3,3 , · · · , unx −2,3 , · · · u2,ny −2 , u3,ny −2 , · · · , unx −2,ny −2 )T and V =
+(v2,2 , v3,2 , · · · , vnx −2,2 , v2,3 , v3,3 , · · · , vnx −2,3 , · · · v2,ny −2 , v3,ny −2 , · · · , vnx −2,ny −2 )T with superscript T stand-
+ing for the transpose operation and f u : Rnxy × Rnxy → Rnxy and f v : Rnxy × Rnxy → Rnxy are in the
+                                                                      23
+form
+                                             1                      1
+                           f u (U , V ) = −    U (M U − bux1 ) −      V (N U − buy1 )
+                                            ∆x                     ∆y
+                                            1                       1
+                                        +       (D x U + bux2 ) +        (D y U + buy2 )
+                                          Re∆x2                   Re∆y 2
+                                             1                      1
+                           f v (U , V ) = −    U (M V − bvx1 ) −      V (N V − bvy1 )
+                                            ∆x                     ∆y
+                                            1                       1
+                                        +       (D x V + bvx2 ) +        (D y V + bvy2 )
+                                          Re∆x2                   Re∆y 2
+where                                                                                                               
+                                                                             1
+                   Mb                                                        −1                1                    
+               M =
+                                 ..              
+                                                                  ,     Mb = 
+                                                                                                                    
+                                                                                                                                    ,
+                                       .                                                      ..     ..             
+                                                                                                 .    .             
+                                            Mb         nxy ×nxy                                       −1            1 (n −2)×(n −2)
+                                                                                                                             x       x
+                                                                 
+                    Nb                                                                                                  
+                  −N b                                                                           1
+                                    Nb                            
+               N =
+                                                                 
+                                                                                    ,       Nb = 
+                                                                                                          ..         
+                                                                                                                                     ,
+                                    ..            ..                                                           .     
+                                      .        .                 
+                                                                                                                     1 (n −2)×(n −2)
+                                              −N b         Nb         nxy ×nxy
+                                                                                                                                 x       x
+
+                                                                                          T
+             bux1 =  u1,2 , u1,3 , · · · , u1,ny −1 1×(n −2) ⊗ (1, 0, · · · , 0)1×(nx −2) ,
+                                                        y
+                                                                                          T
+             buy1 = (1, 0, · · · , 0)1×(ny −2) ⊗ (u2,1 , u3,1 , · · · , unx −1,1 )1×(nx −2) ,
+                                                                                         T
+             bvx1 = v1,2 , v1,3 , · · · , v1,ny −1 1×(n −2) ⊗ (1, 0, · · · , 0)1×(nx −2) ,
+                                                       y
+                                                                                          T
+             bvy1 = (1, 0, · · · , 0)1×(ny −2) ⊗ (v2,1 , v3,1 , · · · , vnx −1,1 )1×(nx −2) ,
+                                                                                    
+                     D xb                                               −2 1
+              Dx = 
+                             ..           
+                                                      , D xb =  1 . . . 1 
+                                                                                      
+                                                                                                                                             ,
+                                 .         
+                                             D xb      nxy ×nxy
+                                                                                               1 −2 (n −2)×(n −2)
+                                                                                                        x      x
+                                                                                                     
+                     −2D yb                D yb                                                 1
+              D y =  D yb
+                                          ..             
+                                                                                ,       D yb = 
+                                                                                                 ..    
+                                                                                                                       ,
+                                              .      D yb                                           .  
+                                           D yb     −2D yb n                                           1 (n −2)×(n −2)
+                                                                      xy ×nxy                                                    x       x
+
+             bux2 = (u1,2 , 0, · · · , 0, unx ,2 , u1,3 , 0, · · · , 0, unx ,3 , · · · , u1,ny −1 , 0, · · · , 0, unx ,ny −1 )T ,
+             buy2 = (u2,1 , u3,1 , · · · , unx −1,1 , 0, · · · , 0, u2,ny , u3,ny , · · · , unx −1,ny )T ,
+             bvx2 = (v1,2 , 0, · · · , 0, vnx ,2 , v1,3 , 0, · · · , 0, vnx ,3 , · · · , v1,ny −1 , 0, · · · , 0, vnx ,ny −1 )T ,
+             bvy2 = (v2,1 , v3,1 , · · · , vnx −1,1 , 0, · · · , 0, v2,ny , v3,ny , · · · , vnx −1,ny )T
+with    and ⊗ denoting the element-wise multiplication and the Kronecker product, respectively.
+   For a time integrator, we use the backward Euler scheme with time step size ∆t = n2t , where nt is the
+number of time steps. We set nx = 60, ny = 60, and nt = 1500.
+     For the training process, we collect solution snapshots associated with the parameter µ ∈ Dtrain =
+{0.9, 0.95, 1.05, 1.1} such that ntrain = 4 at which the FOM is solved. Then, the number of train data points
+is ntrain · (nt + 1) = 6004 and 10% of the train data are used for validation purpose. We employ the Adam
+optimizer [37] with the SGD and the initial learning rate of 0.001, which decreases by a factor of 10 when a
+training loss stagnates for 10 successive training epochs. Here, we have two autoencoders. One for U vector
+and the other for V vector. The reason why we have such two autoencoders is that we can use less memory
+for training process compared to one autoencoder for (U T , V T )T vector and train both of them at the same
+                                                                           24
+time. We set the number of nodes in hidden layer in the encoder, M1 = 6728, and the number of nodes
+in hidden layer in the decoder, M2 = 33730. The weights and bias of the autoencoder are initialized via
+Kaiming initialization [32] as in the first numerical example. The size of the batch is 240 and the maximum
+number of epochs is 10, 000. The training process is stopped if the loss on the validation dataset stagnates
+for 200 epochs.
+     After the training is done, the NM-ROMs and LS-ROMs solve the Eq. (6.4) with the target parameter
+µ = 1 ,which is not included in the train dataset for training the autoencoder and the linear subspace. Fig. 13
+shows the relative error versus the reduced dimension ns for both NM-ROMs and LS-ROMs. It also shows
+the projection errors for LS-ROMs and NM-ROMs, which are defined in (6.1) and (6.2). These are the lower
+bounds for LS-ROMs and NM-ROMs, respectively. As expected the relative errors for the NM-ROMs are
+lower than the ones for the LS-ROMs. We even observe that the relative errors of NM-LSPG are even lower
+than the lower bounds of LS-ROMs. One notable observation is that NM-Galerkin is not able to achieve
+a good accuracy, while the NM-LSPG does. Another observation is that LS-ROMs struggle more for this
+problem than the 1D invisid Burgers’ equations, e.g., some LS-ROMs fail to converge.
+
+
+
+      100                                                       100
+
+
+
+     10-1                                                      10-1
+
+
+
+     10-2                                                      10-2
+
+
+
+     10-3                                                      10-3
+               5          10           15         20                      5          10           15        20
+
+                   (a) State variable, u                                      (b) State variable, v
+
+
+   Fig. 13. 2D Burgers’ equation. Relative errors vs reduced dimensions. A maximum relative error that is 1 means the
+ROM failed to solve the problem.
+
+      To see the trends regarding the number of training parameter instances, we increase the number of
+parameters starting from ntrain = 2 with the fixed reduced dimension ns = 5 to achieve less than 1%
+maximum relative error for NM-ROMs. In Fig. 14, we observe that ntrain = 4 is enough.
+      Both NM-Galerkin and LS-ROMs without a hyper-reduction do not achieve any speed-up with respect
+to the corresponding FOM simulation. For example, the FOM simulation takes 140.67 seconds, while the
+NM-Galerkin, NM-LSPG, LS-Galerkin, and LS-LSPG with ns = 5 takes 143.41, 78.22, 519.12 and 2193.70
+seconds, respectively. Although NM-LSPG is able to achieve a speed-up, it is not considerable. Therefore,
+the hyper-reduction is essential to achieve a considerable speed-up with a reasonable accuracy.
+      We compute the maximum relative error by choosing the larger of the two errors between the maximum
+relative error of u and the maximum relative error of v. We vary the number of residual basis and residual
+samples, with the fixed number of training parameter instances ntrain = 4 and the reduced dimension ns = 5,
+and measure the wall-clock time. The results are shown in Table 3. Although the LS-LSPG-HR can achieve
+better speedup than the NM-LSPG-HR, the relative error of the LS-LSPG-HR is too large to be reasonable,
+e.g., the relative errors of around 37%. On the other hand, the NM-LSPG-HR achieves much better accuracy,
+i.e., a relative error of around 1%, than the LS-LSPG-HR with a good speedup, i.e., a speedup of higher
+than 11.
+                                                         25
+       100                                                                   100
+
+
+
+      10-1                                                                 10-1
+
+
+
+      10-2                                                                 10-2
+
+
+
+      10-3                                                                 10-3
+             2          4            6          8          10                      2            4          6           8           10
+
+                       (a) State variable, u                                                   (b) State variable, v
+
+
+      Fig. 14. 2D Burgers’ equation. Relative errors vs the number of parameter instances. The following parameter sets are
+used: Dtrain = {0.9, 1.1} for ntrain = 2, Dtrain = {0.9, 0.95, 1.05, 1.)} for ntrain = 4, Dtrain = {0.9, 0.9 + 13 , 0.9 + 23 , 1 + 13 , 1 +
+2
+3
+  , 1.1} for ntrain = 6, and Dtrain = {0.9, 0.925, 0.95, 0.975, 1.025, 1.05, 1.075, 1.1} for ntrain = 8.
+
+                                                       Table 3
+    The top 6 maximum relative errors and wall-clock times at different numbers of residual basis and samples which range
+from 40 to 60.
+
+                                               NM-LSPG-HR                                               LS-LSPG-HR
+   Residual basis              55      56        51    53    54              44         59       53       53    53           53     53
+  Residual samples             58      59        54    56    57              47         59       58       59    56           55     53
+ Max. rel. error (%)          0.93    0.94      0.95  0.97  0.97            0.98       34.38   37.73    37.84 37.95        37.96   37.97
+ Wall-clock time (sec)       12.15    12.35    12.09 12.14 12.29           12.01       5.26     5.02     4.86  5.05         4.75   7.18
+       Speed-up              11.58    11.39    11.63 11.58 11.44           11.71       26.76   28.02    28.95 27.83        29.61   19.58
+
+
+      Fig. 15 shows solutions at the last time step of FOM, NM-LSPG-HR, and LS-LSPG-HR with the reduced
+dimension being ns = 5. For NM-LSPG-HR, 55 residual basis dimension and 58 residual samples are used
+and for LS-LSPG-HR, 59 residual basis dimension and 59 residual samples are used. Both FOM and NM-
+LSPG-HR show good agreement in their solutions, while the LS-LSPG-HR is not able to achieve a good
+accuracy. In fact, the NM-LSPG-HR is able to achieve an accuracy as good as the NM-LSPG for some
+combinations of the small number of residual basis and residual samples as in Section 6.1.
+      We look into the numerical tests to see the generalization capability of the NM-LSPG and NM-LSPG-HR,
+i.e., the robustness of the NM-LSPG and NM-LSPG-HR outside of the trained domain. The training sample
+point set, µ ∈ Dtrain = {0.9, 0.95, 1.05, 1.1}, is used to train a NM-LSPG-HR. Then the trained NM-LSPG-
+HR model is used to predict the following parameter points, µ ∈ Dtest = {µ|µ = 0.85+0.01i, i = 0, 1, · · · , 30}.
+The residual basis dimension and the number of residual samples for each test case are given in Table 4.
+Fig. 16 shows the maximum relative error over the test range of the parameter points. Note that the NM-
+LSPG and NM-LSPG-HR are the most accurate within the range of the training points, i.e., [0.9, 1.1]. As
+the parameter points go beyond the training parameter domain, the accuracy of the NM-LSPG and NM-
+LSPG-HR start to deteriorate gradually. This implies that the NM-LSPG and NM-LSPG-HR have a trust
+region. Its trust region should be determined by an application. For example, if the application is okay with
+the maximum relative error of 10 %, then the trust region of this particular NM-LSPG-HR is [0.85, 1.15].
+However, if the application requires a higher accuracy, e.g., the maximum relative error of 2 %, then the
+trust region of the NM-LSPG-HR is [0.87, 1.08]. Note that the average speed-up of the NM-LSPG-HR for
+                                                                    26
+             (a) FOM, u                            (b) NM-LSPG-HR, u                     (c) LS-LSPG-HR, u
+
+
+
+
+             (d) FOM, v                            (e) NM-LSPG-HR, v                     (f) LS-LSPG-HR, v
+
+                     Fig. 15. Solution snapshots of FOM, NM-LSPG-HR, and LS-LSPG-HR at t = 2
+
+
+all the test cases is 10.61 (see Table 4).
+
+
+     0.15                                                      0.15
+
+
+      0.1                                                       0.1
+
+
+     0.05                                                      0.05
+
+
+         0                                                         0
+                  0.9            1           1.1                         0.9            1          1.1
+
+                    (a) State variable, u                                  (b) State variable, v
+
+
+             Fig. 16. The comparison of the NM-LSPG-HR and NM-LSPG on the maximum relative error vs µ
+
+
+    7. Discussion & conclusion. In this work, we have successfully developed an accurate and efficient
+nonlinear manifold based reduced order model. We demonstrated that the linear subspace based reduced
+order model is not able to represent advection-dominated or sharp gradient solutions of 1D inviscid Burgers’
+equation and 2D viscous Burgers’ equation with a high Reynolds number. However, our new approach, NM-
+                                                         27
+                                                         Table 4
+     The residual basis dimension and the number of residual samples for each test parameter µ. The wall-clock time and the
+speed-up of the NM-LSPG-HR with respect to the corresponding FOM are also reported.
+
+                          µ     Residual basis   Residual samples   Wall-clock time (sec)   Speed-up
+                         0.85        47                 59                  13.65             10.31
+                         0.86        50                 50                  13.19             10.66
+                         0.87        45                 45                  12.61             11.16
+                         0.88        49                 50                  12.69             11.08
+                         0.89        52                 52                  13.41             10.49
+                         0.90        53                 57                  13.35             10.54
+                         0.91        59                 59                  13.60             10.34
+                         0.92        55                 58                  13.41             10.49
+                         0.93        51                 54                  13.17             10.68
+                         0.94        54                 57                  13.32             10.56
+                         0.95        55                 58                  13.52             10.40
+                         0.96        55                 58                  13.54             10.39
+                         0.97        54                 57                  13.39             10.51
+                         0.98        52                 55                  13.20             10.66
+                         0.99        52                 55                  13.18             10.67
+                         1.00        55                 58                  13.38             10.51
+                         1.01        46                 49                  12.80             10.99
+                         1.02        50                 53                  13.35             10.54
+                         1.03        50                 53                  13.40             10.50
+                         1.04        52                 53                  13.40             10.50
+                         1.05        46                 58                  13.21             10.65
+                         1.06        54                 57                  13.58             10.36
+                         1.07        45                 57                  13.20             10.66
+                         1.08        45                 57                  13.23             10.63
+                         1.09        43                 55                  13.27             10.60
+                         1.10        44                 48                  13.31             10.57
+                         1.11        40                 43                  12.79             11.00
+                         1.12        48                 59                  13.66             10.30
+                         1.13        42                 51                  13.25             10.62
+                         1.14        46                 49                  13.10             10.74
+                         1.15        40                 50                  13.11             10.73
+
+
+
+                            5
+                       10
+
+
+
+
+                       104
+
+
+
+                          102                    103                     104
+
+
+    Fig. 17. Computational cost vs FOM size. The figure shows that the higher the speed up will be achieved, the larger the
+underlying FOM problem is. The graph is generated based on the computational cost analysis done in Appendix B
+                                                             .
+
+
+LSPG-HR, solves such problems accurately and efficiently. For 1D case, the NM-LSPG-HR method achieves
+a good accuracy i.e., the maximum relative error of around 1% with the speed-up of higher than 2. For 2D
+case, the NM-LSPG-HR method was able to achieve even better accuracy, i.e., the maximum relative error
+                                                             28
+of less than 1%, with even better speed-up of around 12 than the 1D case. We also presented a posteriori
+error bounds for NM-Galerkin-HR and NM-LSPG-HR. The speed-up of the NM-LSPG-HR is achieved by
+choosing the sparse shallow decoder as the nonlinear manifold and applying the efficient hyper-reduction
+computation, which can be done by constructing a subnet. Furthermore, we expect more speed-up as the
+FOM size increases because the difference in the computational cost between the FOM and NM-LSPG-HR
+increases as shown in Fig. 17.
+     Compared with the deep neural networks for computer vision and natural language processing applica-
+tions, our neural networks are shallow with a small number of parameters. However, these networks were
+able to capture the variation in our 1D and 2D Burgers’ simulations. A main future work for transferring this
+work to more complex simulations, will be to find the right balance between a shallow network that is large
+enough to capture the data variance and yet small enough to run faster than the FOM. Another future work
+will be to find an efficient way of determining the proper size of the residual basis and the number of sample
+points a priori. To find the optimal size of residual basis and the number of sample points for hyper-reduced
+ROMs, we relied on test results. This issue is not just for NM-LSPG-HR but also for LS-LSPG-HR.
+
+    Acknowledgments. This work was performed at Lawrence Livermore National Laboratory and was
+supported by the LDRD program (project 20-FS-007). Youngkyu was also supported for this work through
+generous funding from DTRA. Lawrence Livermore National Laboratory is operated by Lawrence Livermore
+National Security, LLC, for the U.S. Department of Energy, National Nuclear Security Administration under
+Contract DE-AC52-07NA27344 and LLNL-JRNL-814844.
+
+    Appendix A. Time integrators.
+
+     A.1. The linear multistep methods. Applying a linear k-step method to numerically solve Eq. (2.1)
+yields an O∆E characterized by the following system of nonlinear algebraic residual function that needs to
+be solved for the numerical solution xn ∈ RNs at each time instance:
+                                                                k(tn )                   k(tn )
+                                                                X                        X
+                         n
+                       r (xn ; xn−1 . . . , xn−k(tn ) , µ) :=            αjn xn−j − ∆t            βjn f n−j
+                                                                j=0                      j=0
+
+                                                          = 0,        n ∈ N(Nt ),
+where coefficients αjn , βjn ∈ R, j = 0, . . . , k(tn ) define a particular linear multistep scheme. It is necessary
+                                         Pk(tn )
+for consistency to have α0n 6= 0 and j=0 αjn = 0. Here, k(tn )(≤ n) denotes the number of steps used by
+the linear multistep method at time instance n. The linear multistep methods include the one-step Euler
+methods, the implicit Adams–Moulton methods, the explicit Adams–Bashforth methods, and the Backward
+Differentiation Formulas (BDFs).
+     The second order Adams–Bashforth (AB) method numerically solves Eq. (2.1), by solving the following
+nonlinear system of equations for xn at n-th time step:
+                                                                              
+                                                              3         1
+                                        xn − xn−1 = ∆t          f n−1 − f n−2 ,
+                                                              2         2
+The residual function of the second AB method is defined as                             
+                              n                                          3         1
+                            r AB (xn ; xn−1 , µ) := xn − xn−1 − ∆t         f    − f        .
+                                                                         2 n−1 2 n−2
+    The second order Adams–Moulton (AM) method numerically solves Eq. (2.1), by solving the following
+nonlinear system of equations for xn at n-th time step:
+                                                        1
+                                          xn − xn−1 =     ∆t(f n + f n−1 ),
+                                                        2
+The residual function of the second AM method is defined as
+                                                                      1
+(A.1)                       r nAM (xn ; xn−1 , µ) := xn − xn−1 − ∆t (f n + f n−1 ).
+                                                                      2
+    The 2-step BDF numerically solves Eq. (2.1), by solving the following nonlinear system of equations for
+                                                           29
+xn at n-th time step:
+                                              4          1      2
+                                       xn − xn−1 + xn−2 = ∆tf n ,
+                                              3          3      3
+The residual function of the two-step BDF method is defined as
+                                                            4      1      2
+(A.2)                  r nBDF (xn ; xn−1 , xn−2 , µ) := xn − xn−1 + xn−2 − ∆tf n .
+                                                            3      3      3
+    A.2. The midpoint Runge–Kutta method. The midpoint method, a 2-stage Runge–Kutta method,
+takes the following two stages to advance at n-th time step of Eq. (2.1):
+                                                           ∆t
+                                            xn− 21 = xn−1 +   f
+                                                            2 n−1
+                                               xn = xn−1 + ∆tf n− 12 .
+
+     Appendix B. Computational costs. Let’s denote the size of FOM and ROM as m and f , respectively.
+Because of mathematical models that require local information, we need not only the indices selected from
+the hyper-reduction, but also their neighbors. We denote the total number of indices as z and assume z  m,
+z 2 < m and z > f (e.g., z = 10f ). For simplicity, we assume the mask matrix for the sparse decoder has
+the same structure as the mask matrix for 1D Burgers equation as depicted in Section 3.2. To generate the
+mask matrix, two variables b and δb are used, where b denotes the number of nodes in the hidden layer to
+compute single output element and δb denotes the amount by which the block of b nodes shifts. Then, the
+number of nodes in the hidden layer can be computed as M2 = b + (m − 1)δb.
+
+     B.1. Computational costs of NM-LSPG. Since the decoder is a single hidden layer neural network,
+the cost of the decoder and its Jacobian evaluation is O(mb) + O(M2 f ) and O(f M2 ) + O(mbf ), respectively.
+Computing residual, r̃, includes only element-wise vector calcualtion, resulting in O(m). Jacobian of the
+          ˜ can be computed using row-wise multiplication of matrix and vector because of local connectivity
+residual, J,
+of mathematical model (e.g., discrete 1D and 2D Burgers equation) in O(f m). For the Gauss–Newton
+                                                       ˜ which requires O(f m) and O(f 2 m), respectively. It
+method, we need to construct r̂ = J˜T r̃ and Jˆ = J˜T J,
+                2                                   ˆ−1
+also takes O(f ) to compute each update, δu = −J r̂, iteratively. Assuming the number of Gauss–Newton
+iterations is in the same order for the given governing equation, we can factor out the number of iterations.
+Thus, the total computational costs of NM-LSPG for each time step is O(f M2 ) + O(mbf ) + O(f 2 m). With
+the assumption of M2 ≈ mδb, f < b, and δb < b, we have O(mbf ).
+
+     B.2. Computational costs of NM-LSPG-HR. The size of the weight matrix connecting the hidden
+                                                                     z
+layer and the output layer is reduced to z by βM2 , where β = m         for the best case (z successive points are
+selected) and β = 1 for the worst case (z uniformly separate points are selected). Note that when z is
+small, it is possible to have β < 1 even for the worst case. Then, replacing m with z and M2 with βM2 in
+the decoder and its Jacobian evaluation gives us O(zb) + O(βM2 f ) and O(f βM2 ) + O(zbf ), respectively.
+Costs of computing residual, r̃HR = Z T r̃ and its Jacobian, J˜HR = Z T J˜ for NM-LSPG-HR are O(z) and
+O(f z), respectively because the sampling matrix Z T selects z elements of the residual and z rows of its
+Jacobian without constructing the sampling matrix. For the Gauss–Newton method, we need to construct
+r̂ = J˜HR
+       T
+           P r̃HR and Jˆ = J˜HR
+                             T
+                                P J˜HR , where P is the pre-computed z × z matrix, which require O(f z) + O(z 2 )
+and O(f z ) + O(f z), respectively. It also takes O(f 2 ) to compute each update, δu = −Jˆ−1 r̂, iteratively.
+            2        2
+
+Assuming the number of Gauss–Newton iterations is in the same order for the given governing equation, we
+can factor out the number of iterations. Thus, the total computational costs of NM-LSPG-HR for each time
+step is O(f βM2 ) + O(zbf ) + O(f z 2 ). With the assumption of M2 ≈ δbm, we have O(f βδbm) + O(zbf ) +
+                                    z
+O(f z 2 ). For the best case, β = m   , the computational costs is O(f zδb) + O(zbf ) + O(f z 2 ). Assuming δb < b,
+we have O(zbf ) + O(f z ). For the worst case, β = 1, we have O(f δbm) + O(zbf ) + O(f z 2 ).
+                           2
+
+
+    B.3. Computational costs of LS-LSPG. The decoder g(x̂) and its Jacobian Jg (x̂) are replaced
+with Φx̂ and Φ, respectively. Thus, the cost of Φx̂ is O(mf ) and the cost of its Jacobian evaluation is zero.
+The costs of computing residual and its Jacobian are the same as for NM-LSPG . Also, the costs of the
+Gauss–Newton method is the same as in Section B.1. Assuming the number of Gauss–Newton iterations is
+                                                        30
+in the same order for the given governing equation, we can factor out the number of iterations. Thus, the
+total computational costs of LS-LSPG for each time step is O(f 2 m).
+    B.4. Computational costs of LS-LSPG-HR. For LS-LSPG-HR, we construct reduced model with
+the size of basis matrix ΦHR being z by f , where ΦHR := Z T Φ. Thus, the costs of ΦHR x̂ is O(zf ) and
+the cost of its Jacobian evaluation is zero. The costs of computing residual and its Jacobian are the same as
+for NM-LSPG-HR. Also, the costs of the Gauss–Newton method is the same as in Section B.2. Assuming
+the number of Gauss–Newton iterations is in the same order for the given governing equation, we can factor
+out the number of iterations. Thus, the total computational costs of LS-LSPG-HR for each time step is
+O(f 2 z) + O(f z 2 ).
+
+                                                        REFERENCES
+
+ [1] Rémi Abgrall, David Amsallem, and Roxana Crisovan. Robust model reduction by l1 -norm minimization and approxima-
+          tion via dictionaries: application to nonlinear hyperbolic problems. Advanced Modeling and Simulation in Engineering
+          Sciences, 3(1):1–16, 2016.
+ [2] David Amsallem, Matthew Zahr, Youngsoo Choi, and Charbel Farhat. Design optimization using hyper-reduced-order
+          models. Structural and Multidisciplinary Optimization, 51(4):919–940, 2015.
+ [3] Harbir Antil, Matthias Heinkenschloss, Ronald HW Hoppe, Christopher Linsenmann, and Achim Wixforth. Reduced
+          order modeling based shape optimization of surface acoustic wave driven microfluidic biochips. Mathematics and
+          Computers in Simulation, 82(10):1986–2003, 2012.
+ [4] Christian Beck, E Weinan, and Arnulf Jentzen. Machine learning approximation algorithms for high-dimensional fully non-
+          linear partial differential equations and second-order backward stochastic differential equations. Journal of Nonlinear
+          Science, 29(4):1563–1619, 2019.
+ [5] Peter Benner, Serkan Gugercin, and Karen Willcox. A survey of projection-based model reduction methods for parametric
+          dynamical systems. SIAM review, 57(4):483–531, 2015.
+ [6] Jens Berg and Kaj Nyström. A unified deep artificial neural network approach to partial differential equations in complex
+          geometries. Neurocomputing, 317:28–41, 2018.
+ [7] Gal Berkooz, Philip Holmes, and John L Lumley. The proper orthogonal decomposition in the analysis of turbulent flows.
+          Annual review of fluid mechanics, 25(1):539–575, 1993.
+ [8] Léon Bottou and Olivier Bousquet. The tradeoffs of large scale learning. In Advances in neural information processing
+          systems, pages 161–168, 2008.
+ [9] Kevin Carlberg. Adaptive h-refinement for reduced-order models. International Journal for Numerical Methods in
+          Engineering, 102(5):1192–1210, 2015.
+[10] Kevin Carlberg, Matthew Barone, and Harbir Antil. Galerkin v. least-squares petrov–galerkin projection in nonlinear
+          model reduction. Journal of Computational Physics, 330:693–734, 2017.
+[11] Kevin Carlberg, Charbel Bou-Mosleh, and Charbel Farhat. Efficient non-linear model reduction via a least-squares
+          petrov–galerkin projection and compressive tensor approximations. International Journal for Numerical Methods in
+          Engineering, 86(2):155–181, 2011.
+[12] Kevin Carlberg, Youngsoo Choi, and Syuzanna Sargsyan. Conservative model reduction for finite-volume models. Journal
+          of Computational Physics, 371:280–314, 2018.
+[13] Kevin Carlberg, Charbel Farhat, Julien Cortial, and David Amsallem. The gnat method for nonlinear model reduction:
+          effective implementation and application to computational fluid dynamics and turbulent flows. Journal of Computa-
+          tional Physics, 242:623–647, 2013.
+[14] Saifon Chaturantabut and Danny C Sorensen. Nonlinear model reduction via discrete empirical interpolation. SIAM
+          Journal on Scientific Computing, 32(5):2737–2764, 2010.
+[15] Ricky TQ Chen, Yulia Rubanova, Jesse Bettencourt, and David K Duvenaud. Neural ordinary differential equations. In
+          Advances in neural information processing systems, pages 6571–6583, 2018.
+[16] Youngsoo Choi, Gabriele Boncoraglio, Spenser Anderson, David Amsallem, and Charbel Farhat. Gradient-based con-
+          strained optimization using a database of linear reduced-order models. Journal of Computational Physics, page
+          109787, 2020.
+[17] Youngsoo Choi, Peter Brown, Bill Arrighi, Robert Anderson, and Kevin Huynh. Space–time reduced order model for
+          large-scale linear dynamical systems with application to boltzmann transport problems. Journal of Computational
+          Physics, P109845, 2020.
+[18] Youngsoo Choi and Kevin Carlberg. Space–time least-squares petrov–galerkin projection for nonlinear model reduction.
+          SIAM Journal on Scientific Computing, 41(1):A26–A58, 2019.
+[19] Youngsoo Choi, Deshawn Coombs, and Robert Anderson. Sns: a solution-based nonlinear subspace method for time-
+          dependent model order reduction. SIAM Journal on Scientific Computing, 42(2):A1116–A1146, 2020.
+[20] Youngsoo Choi, Geoffrey Oxberry, Daniel White, and Trenton Kirchdoerfer. Accelerating design optimization using
+          reduced order models. arXiv preprint arXiv:1909.11320, 2019.
+[21] PG Constantine and G Iaccarino. Reduced order models for parameterized hyperbolic conservations laws with shock
+          reconstruction. Center for Turbulence Research Annual Brief, 2012.
+[22] George Cybenko. Mathematics of control. Signals and Systems, 2:303, 1989.
+[23] Gabriel Dimitriu, Ionel M Navon, and Răzvan Ştefănescu. Application of pod-deim approach for dimension reduction of a
+                                                               31
+         diffusive predator-prey system with allee effect. In International conference on large-scale scientific computing, pages
+         373–381. Springer, 2013.
+[24] MWMG Dissanayake and N Phan-Thien. Neural-network-based approximations for solving partial differential equations.
+         communications in Numerical Methods in Engineering, 10(3):195–201, 1994.
+[25] Zlatko Drmac and Serkan Gugercin. A new selection operator for the discrete empirical interpolation method—improved
+         a priori error bound and extensions. SIAM Journal on Scientific Computing, 38(2):A631–A648, 2016.
+[26] Zlatko Drmac and Arvind Krishna Saibaba. The discrete empirical interpolation method: Canonical structure and
+         formulation in weighted inner product spaces. SIAM Journal on Matrix Analysis and Applications, 39(3):1152–1180,
+         2018.
+[27] Richard Everson and Lawrence Sirovich. Karhunen–loeve procedure for gappy data. JOSA A, 12(8):1657–1664, 1995.
+[28] Hongfei Fu, Hong Wang, and Zhu Wang. Pod/deim reduced-order modeling of time-fractional partial differential equations
+         with applications in parameter identification. Journal of Scientific Computing, 74(1):220–243, 2018.
+[29] Mohamadreza Ghasemi and Eduardo Gildin. Localized model reduction in porous media flow. IFAC-PapersOnLine,
+         48(6):242–247, 2015.
+[30] Jiequn Han, Arnulf Jentzen, and E Weinan. Solving high-dimensional partial differential equations using deep learning.
+         Proceedings of the National Academy of Sciences, 115(34):8505–8510, 2018.
+[31] Juncai He, Lin Li, Jinchao Xu, and Chunyue Zheng. Relu deep neural networks and linear finite elements. arXiv preprint
+         arXiv:1807.03973, 2018.
+[32] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun. Delving deep into rectifiers: Surpassing human-level perfor-
+         mance on imagenet classification. In Proceedings of the IEEE international conference on computer vision, pages
+         1026–1034, 2015.
+[33] Michael Hinze and Stefan Volkwein. Proper orthogonal decomposition surrogate models for nonlinear dynamical systems:
+         Error estimates and suboptimal control. In Dimension reduction of large-scale systems, pages 261–306. Springer,
+         2005.
+[34] Harold Hotelling. Analysis of a complex of statistical variables into principal components. Journal of educational psy-
+         chology, 24(6):417, 1933.
+[35] Rui Jiang and Louis J Durlofsky. Implementation and detailed assessment of a gnat reduced-order model for subsurface
+         flow simulation. Journal of Computational Physics, 379:192–213, 2019.
+[36] Yuehaw Khoo, Jianfeng Lu, and Lexing Ying. Solving parametric pde problems with artificial neural networks. arXiv
+         preprint arXiv:1707.03351, 2017.
+[37] Diederik P. Kingma and Jimmy Ba. Adam: A method for stochastic optimization, 2014.
+[38] Michael Kirby and Dieter Armbruster. Reconstructing phase space from pde simulations. Zeitschrift für angewandte
+         Mathematik und Physik ZAMP, 43(6):999–1022, 1992.
+[39] Mark A Kramer. Nonlinear principal component analysis using autoassociative neural networks. AIChE journal, 37(2):233–
+         243, 1991.
+[40] Karl Kunisch and Stefan Volkwein. Galerkin proper orthogonal decomposition methods for a general equation in fluid
+         dynamics. SIAM Journal on Numerical analysis, 40(2):492–515, 2002.
+[41] Isaac E Lagaris, Aristidis Likas, and Dimitrios I Fotiadis. Artificial neural networks for solving ordinary and partial
+         differential equations. IEEE transactions on neural networks, 9(5):987–1000, 1998.
+[42] Kookjin Lee and Kevin Carlberg. Deep conservation: A latent dynamics model for exact satisfaction of physical conser-
+         vation laws. arXiv preprint arXiv:1909.09754, 2019.
+[43] Kookjin Lee and Kevin T Carlberg. Model reduction of dynamical systems on nonlinear manifolds using deep convolutional
+         autoencoders. Journal of Computational Physics, 404:108973, 2020.
+[44] Randall J LeVeque. Finite difference methods for ordinary and partial differential equations: steady-state and time-
+         dependent problems. SIAM, 2007.
+[45] L. Ljung. System Identification: Theory for the User. Prentice Hall information and system sciences series. Prentice Hall
+         PTR, 1999.
+[46] Michel Loeve. Probability Theory. D. Van Nostrand, New York, 1955.
+[47] Zichao Long, Yiping Lu, Xianzhong Ma, and Bin Dong. Pde-net: Learning pdes from data. In International Conference
+         on Machine Learning, pages 3208–3216, 2018.
+[48] Lu Lu, Pengzhan Jin, and George Em Karniadakis. Deeponet: Learning nonlinear operators for identifying differential
+         equations based on the universal approximation theorem of operators. arXiv preprint arXiv:1910.03193, 2019.
+[49] Lu Lu, Xuhui Meng, Zhiping Mao, and George E Karniadakis. Deepxde: A deep learning library for solving differential
+         equations. arXiv preprint arXiv:1907.04502, 2019.
+[50] Andrew J Meade Jr and Alvaro A Fernandez. The numerical solution of linear ordinary differential equations by feedforward
+         neural networks. Mathematical and Computer Modelling, 19(12):1–25, 1994.
+[51] M Mordhorst, Timm Strecker, D Wirtz, Thomas Heidlauf, and Oliver Röhrle. Pod-deim reduction of computational emg
+         models. Journal of Computational Science, 19:86–96, 2017.
+[52] Guofei Pang, Lu Lu, and George Em Karniadakis. fpinns: Fractional physics-informed neural networks. SIAM Journal
+         on Scientific Computing, 41(4):A2603–A2626, 2019.
+[53] Eric J Parish and Kevin T Carlberg. Windowed least-squares model reduction for dynamical systems. arXiv preprint
+         arXiv:1910.11388, 2019.
+[54] David B Parker. Learnins logic. Technical Report, 1985.
+[55] Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin,
+         Natalia Gimelshein, Luca Antiga, et al. Pytorch: An imperative style, high-performance deep learning library. In
+         Advances in neural information processing systems, pages 8026–8037, 2019.
+
+                                                               32
+[56] Benjamin Peherstorfer. Model reduction for transport-dominated problems via online adaptive bases and adaptive sam-
+         pling. arXiv preprint arXiv:1812.02094, 2018.
+[57] Allan Pinkus. Approximation theory of the mlp model in neural networks. Acta numerica, 8(1):143–195, 1999.
+[58] Rajat Raina, Anand Madhavan, and Andrew Y Ng. Large-scale deep unsupervised learning using graphics processors. In
+         Proceedings of the 26th annual international conference on machine learning, pages 873–880, 2009.
+[59] Maziar Raissi, Paris Perdikaris, and George E Karniadakis. Physics-informed neural networks: A deep learning framework
+         for solving forward and inverse problems involving nonlinear partial differential equations. Journal of Computational
+         Physics, 378:686–707, 2019.
+[60] Julius Reiss, Philipp Schulze, Jörn Sesterhenn, and Volker Mehrmann. The shifted proper orthogonal decomposition: A
+         mode decomposition for multiple transport phenomena. SIAM Journal on Scientific Computing, 40(3):A1322–A1344,
+         2018.
+[61] Donsub Rim, Scott Moe, and Randall J LeVeque. Transport reversal for model reduction of hyperbolic partial differential
+         equations. SIAM/ASA Journal on Uncertainty Quantification, 6(1):118–150, 2018.
+[62] Donsub Rim, Benjamin Peherstorfer, and Kyle T Mandli. Manifold approximations via transported subspaces: Model
+         reduction for transport-dominated problems. arXiv preprint arXiv:1912.13024, 2019.
+[63] Donsub Rim, Luca Venturi, Joan Bruna, and Benjamin Peherstorfer. Depth separation for reduced deep networks in
+         nonlinear model reduction: Distilling shock waves in nonlinear hyperbolic problems. arXiv preprint arXiv:2007.13977,
+         2020.
+[64] David E Rumelhart, Geoffrey E Hinton, and Ronald J Williams. Learning representations by back-propagating errors.
+         nature, 323(6088):533–536, 1986.
+[65] Justin Sirignano and Konstantinos Spiliopoulos. Dgm: A deep learning algorithm for solving partial differential equations.
+         Journal of computational physics, 375:1339–1364, 2018.
+[66] R Ştefănescu and Ionel Michael Navon. Pod/deim nonlinear model order reduction of an adi implicit shallow water
+         equations model. Journal of Computational Physics, 237:95–114, 2013.
+[67] Tommaso Taddei and Lei Zhang. Space-time registration-based model reduction of parameterized one-dimensional hyper-
+         bolic pdes. arXiv preprint arXiv:2004.06693, 2020.
+[68] B Ph van Milligen, V Tribaldos, and JA Jiménez. Neural network differential equation and plasma equilibrium solver.
+         Physical review letters, 75(20):3594, 1995.
+[69] E Weinan and Bing Yu. The deep ritz method: a deep learning-based numerical algorithm for solving variational problems.
+         Communications in Mathematics and Statistics, 6(1):1–12, 2018.
+[70] G Welper. Transformed snapshot interpolation with high resolution transforms. SIAM Journal on Scientific Computing,
+         42(4):A2037–A2061, 2020.
+[71] Paul Werbos. Beyond regression:” new tools for prediction and analysis in the behavioral sciences. Ph. D. dissertation,
+         Harvard University, 1974.
+[72] Dunhui Xiao, Fangxin Fang, Andrew G Buchan, Christopher C Pain, Ionel Michael Navon, Juan Du, and G Hu. Non-
+         linear model reduction for the navier–stokes equations using residual deim method. Journal of Computational Physics,
+         263:1–18, 2014.
+[73] Huanhuan Yang and Alessandro Veneziani. Efficient estimation of cardiac conductivities via pod-deim model order
+         reduction. Applied Numerical Mathematics, 115:180–199, 2017.
+[74] Yanfang Yang, Mohammadreza Ghasemi, Eduardo Gildin, Yalchin Efendiev, Victor Calo, et al. Fast multiscale reservoir
+         simulations with pod-deim model reduction. SPE Journal, 21(06):2–141, 2016.
+[75] Dongkun Zhang, Lu Lu, Ling Guo, and George Em Karniadakis. Quantifying total uncertainty in physics-informed neural
+         networks for solving forward and inverse stochastic problems. Journal of Computational Physics, 397:108850, 2019.
+[76] Pengfei Zhao, Cai Liu, and Xuan Feng. Pod-deim based model order reduction for the spherical shallow water equations
+         with turkel-zwas finite difference discretization. Journal of Applied Mathematics, 2014, 2014.
+[77] Yinhao Zhu, Nicholas Zabaras, Phaedon-Stelios Koutsourelakis, and Paris Perdikaris. Physics-constrained deep learning for
+         high-dimensional surrogate modeling and uncertainty quantification without labeled data. Journal of Computational
+         Physics, 394:56–81, 2019.
+
+
+
+
+                                                              33
+

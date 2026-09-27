@@ -1,0 +1,335 @@
+{
+ "intervals": 128,
+ "cohort": "tune",
+ "pod_ks": [
+  8,
+  16,
+  32,
+  64
+ ],
+ "rom_qs": [],
+ "gn_cap": 20,
+ "hr_residual_cases": 16,
+ "variants": [
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 100,
+   "db": 10,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_base"
+  },
+  {
+   "K": 16,
+   "ref": "zero",
+   "scale": "feature",
+   "b": 100,
+   "db": 10,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_refzero"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "global",
+   "b": 100,
+   "db": 10,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_global"
+  },
+  {
+   "K": 16,
+   "ref": "zero",
+   "scale": "global",
+   "b": 100,
+   "db": 10,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_refzero_global"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 50,
+   "db": 5,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_b50"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 200,
+   "db": 20,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_b200"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 100,
+   "db": 10,
+   "M1": 4096,
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_M1_4096"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 100,
+   "db": 10,
+   "M1": 1024,
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_M1_1024"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 100,
+   "db": 10,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 50,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_pat50"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 100,
+   "db": 10,
+   "M1": "2n",
+   "lr": 0.0003,
+   "patience": 50,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float32",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_lr3e4_pat50"
+  },
+  {
+   "K": 16,
+   "ref": "ic",
+   "scale": "feature",
+   "b": 100,
+   "db": 10,
+   "M1": "2n",
+   "lr": 0.001,
+   "patience": 10,
+   "seed": 0,
+   "max_epochs": 3000,
+   "wall": 1500,
+   "dtype": "float64",
+   "hr": [
+    [
+     32,
+     48
+    ],
+    [
+     64,
+     96
+    ],
+    [
+     128,
+     192
+    ]
+   ],
+   "name": "kim_K16_f64"
+  }
+ ],
+ "timing": null
+}

@@ -1,0 +1,230 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{HestenesStiefel1952CG}
+\citation{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator}
+\citation{BennerGugercinWillcox2015,Sirovich1987POD}
+\citation{CohenDeVore2015}
+\citation{LeeCarlberg2020,KimChoi2022NMROM}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\citation{BennerGugercinWillcox2015,Sirovich1987POD}
+\citation{CohenDeVore2015,GreifUrban2019}
+\citation{LeeCarlberg2020,KimChoi2022NMROM}
+\citation{GeelenWrightWillcox2022,BarnettFarhat2022}
+\citation{KimWenLeeChoiCNFROM2024}
+\citation{PeherstorferWillcox2015Adaptive,Carlberg2015hRefinement}
+\citation{Carlberg2011LSPG}
+\citation{StefanescuSandu2014,WederSchwerdtnerPeherstorfer2024}
+\citation{YuSlimmable2019,Cai2020OnceForAll}
+\citation{Li2020FNO}
+\citation{Lu2021DeepONet}
+\citation{Ronneberger2015UNet,Takamoto2022PDEBench}
+\citation{WuTransolver2024}
+\citation{Hernandez2017EQ,YanoPatera2019LPEQ}
+\citation{HestenesStiefel1952CG}
+\@writefile{toc}{\contentsline {paragraph}{Contributions.}{2}{section*.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2}Related Work}{2}{section.2}\protected@file@percent }
+\newlabel{sec:related}{{2}{2}{Related Work}{section.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Linear and non-linear manifold ROMs.}{2}{section*.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Neural operators and hyper-reduction.}{2}{section*.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3}Methodology}{2}{section.3}\protected@file@percent }
+\newlabel{sec:method}{{3}{2}{Methodology}{section.3}{}}
+\citation{Carlberg2011LSPG,LeeCarlberg2020}
+\citation{Marquardt1963}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Trial Manifold with Exact Dirichlet Enforcement}{3}{subsection.3.1}\protected@file@percent }
+\newlabel{sec:method:manifold}{{3.1}{3}{Trial Manifold with Exact Dirichlet Enforcement}{subsection.3.1}{}}
+\newlabel{eq:bank}{{1}{3}{Trial Manifold with Exact Dirichlet Enforcement}{equation.3.1}{}}
+\newlabel{sec:method:ladder}{{3.1}{3}{Ordering the bank}{section*.4}{}}
+\newlabel{sec:method:ordered}{{3.1}{3}{Ordering the bank}{section*.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Ordering the bank.}{3}{section*.4}\protected@file@percent }
+\newlabel{eq:ordered}{{2}{3}{Ordering the bank}{equation.3.2}{}}
+\newlabel{eq:modes}{{3}{3}{Ordering the bank}{equation.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Projecting the PDE onto the Manifold}{3}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:method:weak}{{3.2}{3}{Projecting the PDE onto the Manifold}{subsection.3.2}{}}
+\newlabel{eq:objective}{{4}{3}{Projecting the PDE onto the Manifold}{equation.3.4}{}}
+\newlabel{eq:lm}{{5}{3}{Projecting the PDE onto the Manifold}{equation.3.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Elliptic (Poisson).}{3}{section*.5}\protected@file@percent }
+\newlabel{eq:poisson-residual}{{6}{3}{Elliptic (Poisson)}{equation.3.6}{}}
+\citation{Hernandez2017EQ,YanoPatera2019LPEQ}
+\citation{LawsonHanson1974NNLS}
+\@writefile{toc}{\contentsline {paragraph}{Parabolic (heat).}{4}{section*.6}\protected@file@percent }
+\newlabel{eq:heat-step}{{7}{4}{Parabolic (heat)}{equation.3.7}{}}
+\newlabel{eq:step}{{8}{4}{Parabolic (heat)}{equation.3.8}{}}
+\@writefile{toc}{\contentsline {paragraph}{Hyperbolic (Burgers).}{4}{section*.7}\protected@file@percent }
+\newlabel{eq:burgers-step}{{9}{4}{Hyperbolic (Burgers)}{equation.3.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Incompressible flow (Navier--Stokes).}{4}{section*.8}\protected@file@percent }
+\newlabel{eq:ns-step}{{10}{4}{Incompressible flow (Navier--Stokes)}{equation.3.10}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Hyper-reduction}{4}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:method:precomp}{{3.3}{4}{Hyper-reduction}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Linear terms: computed once and exact.}{4}{section*.9}\protected@file@percent }
+\newlabel{eq:preassembled}{{11}{4}{Linear terms: computed once and exact}{equation.3.11}{}}
+\@writefile{toc}{\contentsline {paragraph}{The nonlinear term: Empirical Quadrature.}{4}{section*.10}\protected@file@percent }
+\newlabel{eq:eq-rule}{{12}{4}{The nonlinear term: Empirical Quadrature}{equation.3.12}{}}
+\newlabel{eq:nnls-main}{{13}{4}{The nonlinear term: Empirical Quadrature}{equation.3.13}{}}
+\@writefile{toc}{\contentsline {paragraph}{Cost.}{4}{section*.11}\protected@file@percent }
+\newlabel{eq:cost}{{14}{4}{Cost}{equation.3.14}{}}
+\citation{Tancik2020FourierFeatures}
+\@writefile{toc}{\contentsline {paragraph}{Checking the rule.}{5}{section*.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Model Architecture}{5}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:decoder}{{3.4}{5}{Model Architecture}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Linear skip, for the latent solve.}{5}{section*.13}\protected@file@percent }
+\newlabel{eq:head}{{15}{5}{Linear skip, for the latent solve}{equation.3.15}{}}
+\@writefile{toc}{\contentsline {paragraph}{Coordinate-network bank, for node-local evaluation.}{5}{section*.14}\protected@file@percent }
+\newlabel{eq:coordnet}{{16}{5}{Coordinate-network bank, for node-local evaluation}{equation.3.16}{}}
+\@writefile{toc}{\contentsline {paragraph}{Ordered bank, for deployment-time accuracy.}{5}{section*.15}\protected@file@percent }
+\citation{Bradbury2018JAX}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces NM-ROM model and online solve. \textbf  {Top, trained once and then frozen:} the latent code $z$ passes through a linear skip and a shallow SiLU network, and their sum gives the bank coefficients $h(z)$. The ordered coordinate-network bank, multiplied by a factor that vanishes on the boundary $\Gamma $, turns coefficients into the field $\tilde  u$ with the Dirichlet data exact. A query uses either the head, $\tilde  u=G h(z)$, or the span of the first $R'$ ordered columns, $\tilde  u=\setbox \z@ \hbox {\mathsurround \z@ $\textstyle G$}\mathaccent "0362{G}_{R'}c$. \textbf  {Bottom, solved at each query:} the residual of $\tilde  u$ is tested against $M$ fixed tests $P$. Linear terms use the matrix $PKG$, computed once, and are exact; Burgers advection uses the empirical quadrature rule on $N_{\mathrm  {eq}}$ nodes. On a linear PDE in the span the tested residual is linear in $c$ and is solved once by least squares; otherwise Levenberg--Marquardt steps update $z$ or $c$ until the stopping test is met. Dashed tags mark the deployment knobs: the bank width $R'$ sets the accuracy, and the quadrature rule and the stopping tolerance set the cost.}}{6}{figure.caption.16}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:decoder}{{1}{6}{NM-ROM model and online solve. \textbf {Top, trained once and then frozen:} the latent code $z$ passes through a linear skip and a shallow SiLU network, and their sum gives the bank coefficients $\head (z)$. The ordered coordinate-network bank, multiplied by a factor that vanishes on the boundary $\Gamma $, turns coefficients into the field $\tilde u$ with the Dirichlet data exact. A query uses either the head, $\tilde u=G h(z)$, or the span of the first $R'$ ordered columns, $\tilde u=\widehat G_{R'}c$. \textbf {Bottom, solved at each query:} the residual of $\tilde u$ is tested against $M$ fixed tests $P$. Linear terms use the matrix $PKG$, computed once, and are exact; Burgers advection uses the empirical quadrature rule on $N_{\mathrm {eq}}$ nodes. On a linear PDE in the span the tested residual is linear in $c$ and is solved once by least squares; otherwise Levenberg--Marquardt steps update $z$ or $c$ until the stopping test is met. Dashed tags mark the deployment knobs: the bank width $R'$ sets the accuracy, and the quadrature rule and the stopping tolerance set the cost}{figure.caption.16}{}}
+\newlabel{sec:method:tuning}{{3.4}{6}{What is fixed and what is solved}{section*.17}{}}
+\newlabel{sec:method:layers}{{3.4}{6}{What is fixed and what is solved}{section*.17}{}}
+\@writefile{toc}{\contentsline {paragraph}{What is fixed and what is solved.}{6}{section*.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation}{6}{section.4}\protected@file@percent }
+\newlabel{sec:impl}{{4}{6}{Implementation}{section.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Matrix-free Projected Operators via JAX}{6}{subsection.4.1}\protected@file@percent }
+\newlabel{eq:jvp}{{17}{6}{Matrix-free Projected Operators via JAX}{equation.4.17}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Training Protocol}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experimental Setup and Benchmark Problems}{7}{section.5}\protected@file@percent }
+\newlabel{sec:setup}{{5}{7}{Experimental Setup and Benchmark Problems}{section.5}{}}
+\@writefile{toc}{\contentsline {paragraph}{Problems and references.}{7}{section*.18}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Accuracy.}{7}{section*.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Timing and speedup.}{7}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Baselines.}{7}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Numerical Experiments and Results}{7}{section.6}\protected@file@percent }
+\newlabel{sec:results}{{6}{7}{Numerical Experiments and Results}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Accuracy and Speed against Full-Order Solvers}{7}{subsection.6.1}\protected@file@percent }
+\newlabel{sec:results:operators}{{6.1}{7}{Accuracy and Speed against Full-Order Solvers}{subsection.6.1}{}}
+\newlabel{sec:exp:panel}{{6.1}{7}{Accuracy and Speed against Full-Order Solvers}{subsection.6.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Linear problems.}{7}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Burgers.}{7}{section*.24}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces NM-ROM against the named full-order solver at every problem and mesh. \textbf  {Both NM-ROM columns of a row come from one frozen model}: \emph  {accurate} is the most accurate tested setting and \emph  {fast} the cheapest setting at least as accurate as the model's earlier default (Table~\ref {tab:headline-times}); no network is retrained between them. Error is the worst relative $L^2$ error over the cases (\%). Speedup is the FOM's median time divided by the NM-ROM's in the same GPU allocation, \textbf  {bold} where the NM-ROM is faster. The FOM is the named solver at its fastest tested setting at least as accurate as the accurate setting, and both speedups of a row divide that one time. The FOM is CG for Poisson, Crank--Nicolson with CG (CN--CG) for heat, Newton--BiCGStab for Burgers and the pseudo-spectral CNAB2 for Navier--Stokes; its tolerance in each row is in Table~\ref {tab:headline-times}. The Navier--Stokes and three-dimensional Burgers fast settings are the cheapest bank width below 5\,\% error; the three-dimensional Burgers rows are sealed held-out cases. Dashes mark settings not measured.}}{8}{table.caption.22}\protected@file@percent }
+\newlabel{tab:headline}{{1}{8}{NM-ROM against the named full-order solver at every problem and mesh. \textbf {Both NM-ROM columns of a row come from one frozen model}: \emph {accurate} is the most accurate tested setting and \emph {fast} the cheapest setting at least as accurate as the model's earlier default (Table~\ref {tab:headline-times}); no network is retrained between them. Error is the worst relative $L^2$ error over the cases (\%). Speedup is the FOM's median time divided by the NM-ROM's in the same GPU allocation, \textbf {bold} where the NM-ROM is faster. The FOM is the named solver at its fastest tested setting at least as accurate as the accurate setting, and both speedups of a row divide that one time. The FOM is CG for Poisson, Crank--Nicolson with CG (CN--CG) for heat, Newton--BiCGStab for Burgers and the pseudo-spectral CNAB2 for Navier--Stokes; its tolerance in each row is in Table~\ref {tab:headline-times}. The Navier--Stokes and three-dimensional Burgers fast settings are the cheapest bank width below 5\,\% error; the three-dimensional Burgers rows are sealed held-out cases. Dashes mark settings not measured}{table.caption.22}{}}
+\citation{Saad2003}
+\citation{Li2020FNO}
+\citation{Ronneberger2015UNet}
+\citation{Lu2021DeepONet}
+\citation{WuTransolver2024}
+\@writefile{toc}{\contentsline {paragraph}{Navier--Stokes.}{9}{section*.25}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Time to reach a target error on two-dimensional Burgers (6 development cases). Each point is the cheapest setting that meets the target: our model chooses its bank width, Newton--BiCGStab its time step and tolerance. Darker lines mean a stricter target. Fitting time $\propto N^p$ over $256^2$--$2048^2$ (one GPU type) gives $p\approx 0.05$ for our model and $p\approx 0.65$ for the solver; up to $4096^2$ our time grows less than twofold, the solver's about thirtyfold.}}{9}{figure.caption.26}\protected@file@percent }
+\newlabel{fig:cost-scaling}{{2}{9}{Time to reach a target error on two-dimensional Burgers (6 development cases). Each point is the cheapest setting that meets the target: our model chooses its bank width, Newton--BiCGStab its time step and tolerance. Darker lines mean a stricter target. Fitting time $\propto N^p$ over $256^2$--$2048^2$ (one GPU type) gives $p\approx 0.05$ for our model and $p\approx 0.65$ for the solver; up to $4096^2$ our time grows less than twofold, the solver's about thirtyfold}{figure.caption.26}{}}
+\@writefile{toc}{\contentsline {paragraph}{Where the speedup comes from.}{9}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Comparison with Neural Operators and Other ROMs}{9}{subsection.6.2}\protected@file@percent }
+\newlabel{sec:results:neuralops}{{6.2}{9}{Comparison with Neural Operators and Other ROMs}{subsection.6.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{The NM-ROM Pareto-dominates every operator at the larger meshes.}{9}{section*.29}\protected@file@percent }
+\citation{KimChoi2022NMROM}
+\citation{GeelenWrightWillcox2022}
+\citation{KimChoi2022NMROM}
+\citation{GeelenWrightWillcox2022}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Best NM-ROM against FNO, U-Net, Transolver and DeepONet at every measured (PDE, $N$) cell. NM-ROM \emph  {accurate} and \emph  {fast} come from the same trained model. Error is the worst same-grid relative $L^2$ error (\%), over evolved times for Burgers and all times for heat. Speedup is the median GPU time of one full-order setting per cell, the fastest tested one at least as accurate as the NM-ROM accurate setting, divided by the method's time in the same allocation; \emph  {italic} marks speedups below $1\times $. \textbf  {Bold} marks an NM-ROM setting that is both more accurate and faster than every operator in the cell. Each operator family shows its most accurate trained size. Cells: Burgers $256^2$, job 4181372, six development cases, FOM Newton--BiCGStab tol $10^{-3}$, $\Delta t{=}0.005$ (0.049\,\%); Burgers $1024^2$ and $2048^2$, jobs 4204019 and 4218390, the same six cases, FOM tol $3{\times }10^{-3}$, $\Delta t{=}0.005$ (0.048 and 0.049\,\%); heat $1024^2$ and $2048^2$, jobs 4206383 (A100) and 4211204 (H200), the 16 held-out cases of Table~\ref {tab:headline}, FOM CN--CG $\Delta t{=}0.025$, rtol $10^{-4}$ (0.045\,\%); Navier--Stokes $32^3$ and $64^3$, jobs 4234771 and 4237885, the 16 development cases of Table~\ref {tab:headline}, FOM CNAB2 with 50 steps (0.094 and 0.093\,\%); Navier--Stokes $96^3$, job 4244423, 32 held-out cases, FOM CNAB2 with 70 steps (0.056\,\%). In these jobs the Burgers accurate setting (span, $R'=384$, the same quadrature rule as in Table~\ref {tab:headline}, errors equal to four digits) was solved by the general Levenberg--Marquardt code (Jacobian by forward-mode differentiation, dense LU solve, linear predictor) instead of the fused solver of Table~\ref {tab:headline}, whose times that table gives; it was not timed at $256^2$, and the $2048^2$ cell ran on an H200 GPU; the Burgers fast column is the head with $k=16$; the heat fast setting was not timed in its job.}}{10}{table.caption.28}\protected@file@percent }
+\newlabel{tab:operators}{{2}{10}{Best NM-ROM against FNO, U-Net, Transolver and DeepONet at every measured (PDE, $N$) cell. NM-ROM \emph {accurate} and \emph {fast} come from the same trained model. Error is the worst same-grid relative $L^2$ error (\%), over evolved times for Burgers and all times for heat. Speedup is the median GPU time of one full-order setting per cell, the fastest tested one at least as accurate as the NM-ROM accurate setting, divided by the method's time in the same allocation; \emph {italic} marks speedups below $1\times $. \textbf {Bold} marks an NM-ROM setting that is both more accurate and faster than every operator in the cell. Each operator family shows its most accurate trained size. Cells: Burgers $256^2$, job 4181372, six development cases, FOM Newton--BiCGStab tol $10^{-3}$, $\Delta t{=}0.005$ (0.049\,\%); Burgers $1024^2$ and $2048^2$, jobs 4204019 and 4218390, the same six cases, FOM tol $3{\times }10^{-3}$, $\Delta t{=}0.005$ (0.048 and 0.049\,\%); heat $1024^2$ and $2048^2$, jobs 4206383 (A100) and 4211204 (H200), the 16 held-out cases of Table~\ref {tab:headline}, FOM CN--CG $\Delta t{=}0.025$, rtol $10^{-4}$ (0.045\,\%); Navier--Stokes $32^3$ and $64^3$, jobs 4234771 and 4237885, the 16 development cases of Table~\ref {tab:headline}, FOM CNAB2 with 50 steps (0.094 and 0.093\,\%); Navier--Stokes $96^3$, job 4244423, 32 held-out cases, FOM CNAB2 with 70 steps (0.056\,\%). In these jobs the Burgers accurate setting (span, $R'=384$, the same quadrature rule as in Table~\ref {tab:headline}, errors equal to four digits) was solved by the general Levenberg--Marquardt code (Jacobian by forward-mode differentiation, dense LU solve, linear predictor) instead of the fused solver of Table~\ref {tab:headline}, whose times that table gives; it was not timed at $256^2$, and the $2048^2$ cell ran on an H200 GPU; the Burgers fast column is the head with $k=16$; the heat fast setting was not timed in its job}{table.caption.28}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Best NM-ROM against other nonlinear-manifold and projection ROMs on Burgers 2D at matched latent dimension ($k=16$ for every baseline and for our head). Error is the worst evolved same-grid relative $L^2$ error (\%). Speedup as in Table~\ref {tab:operators}: one full-order setting per cell, the fastest at least as accurate as the NM-ROM accurate setting, same allocation; \emph  {italic} below $1\times $; \textbf  {bold} marks an NM-ROM setting more accurate and faster than every baseline. At $256^2$ and $512^2$ the cohort is 32 validation cases (never used for any choice) and every method, ours included, uses a dense residual, so no times are given; at $1024^2$ and $2048^2$ it is the six development cases of jobs 4204019 and 4218390, where our accurate setting is timed with the general solver code, as in Table~\ref {tab:operators}. The shallow masked-autoencoder NM-LSPG of \citet  {KimChoi2022NMROM} passed its reproduction gate on the third of three pre-registered attempts; its hyper-reduction was not reproduced and it was not run from $1024^2$. The quadratic manifold \citep  {GeelenWrightWillcox2022} was run at $1024^2$ and $2048^2$ only. Every latent size and the memory use are in Tables~\ref {tab:nmrom-baselines-appx} and~\ref {tab:ops1024}.}}{10}{table.caption.30}\protected@file@percent }
+\newlabel{tab:nmrom-baselines}{{3}{10}{Best NM-ROM against other nonlinear-manifold and projection ROMs on Burgers 2D at matched latent dimension ($k=16$ for every baseline and for our head). Error is the worst evolved same-grid relative $L^2$ error (\%). Speedup as in Table~\ref {tab:operators}: one full-order setting per cell, the fastest at least as accurate as the NM-ROM accurate setting, same allocation; \emph {italic} below $1\times $; \textbf {bold} marks an NM-ROM setting more accurate and faster than every baseline. At $256^2$ and $512^2$ the cohort is 32 validation cases (never used for any choice) and every method, ours included, uses a dense residual, so no times are given; at $1024^2$ and $2048^2$ it is the six development cases of jobs 4204019 and 4218390, where our accurate setting is timed with the general solver code, as in Table~\ref {tab:operators}. The shallow masked-autoencoder NM-LSPG of \citet {KimChoi2022NMROM} passed its reproduction gate on the third of three pre-registered attempts; its hyper-reduction was not reproduced and it was not run from $1024^2$. The quadratic manifold \citep {GeelenWrightWillcox2022} was run at $1024^2$ and $2048^2$ only. Every latent size and the memory use are in Tables~\ref {tab:nmrom-baselines-appx} and~\ref {tab:ops1024}}{table.caption.30}{}}
+\@writefile{toc}{\contentsline {paragraph}{The NM-ROM is more accurate than every other ROM at matched size.}{10}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Which Knob to Turn}{11}{subsection.6.3}\protected@file@percent }
+\newlabel{sec:results:tunability}{{6.3}{11}{Which Knob to Turn}{subsection.6.3}{}}
+\newlabel{sec:results:best}{{6.3}{11}{Which Knob to Turn}{subsection.6.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Accuracy: the bank width and the head.}{11}{section*.32}\protected@file@percent }
+\newlabel{sec:limitations}{{6.3}{11}{Limitations}{section*.33}{}}
+\newlabel{sec:results:head}{{6.3}{11}{Limitations}{section*.33}{}}
+\newlabel{sec:results:collapse}{{6.3}{11}{Limitations}{section*.33}{}}
+\newlabel{sec:exp:eq}{{6.3}{11}{Limitations}{section*.33}{}}
+\@writefile{toc}{\contentsline {paragraph}{Limitations.}{11}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {7}Conclusion and Future Work}{11}{section.7}\protected@file@percent }
+\newlabel{sec:conclusion}{{7}{11}{Conclusion and Future Work}{section.7}{}}
+\bibstyle{plainnat}
+\bibcite{BarnettFarhat2022}{{1}{2022}{{Barnett and Farhat}}{{}}}
+\bibcite{BennerGugercinWillcox2015}{{2}{2015}{{Benner et~al.}}{{}}}
+\bibcite{Bradbury2018JAX}{{3}{2018}{{Bradbury et~al.}}{{}}}
+\bibcite{Cai2020OnceForAll}{{4}{2020}{{Cai et~al.}}{{}}}
+\bibcite{Carlberg2015hRefinement}{{5}{2015}{{Carlberg}}{{}}}
+\bibcite{Carlberg2011LSPG}{{6}{2011}{{Carlberg et~al.}}{{}}}
+\bibcite{CohenDeVore2015}{{7}{2015}{{Cohen and DeVore}}{{}}}
+\bibcite{GeelenWrightWillcox2022}{{8}{2022}{{Geelen et~al.}}{{}}}
+\bibcite{GolubPereyra1973}{{9}{1973}{{Golub and Pereyra}}{{}}}
+\bibcite{GreifUrban2019}{{10}{2019}{{Greif and Urban}}{{}}}
+\bibcite{Hernandez2017EQ}{{11}{2017}{{Hern\'andez et~al.}}{{}}}
+\bibcite{HestenesStiefel1952CG}{{12}{1952}{{Hestenes and Stiefel}}{{}}}
+\bibcite{KimChoi2022NMROM}{{13}{2022}{{Kim et~al.}}{{}}}
+\bibcite{KimWenLeeChoiCNFROM2024}{{14}{2024}{{Kim et~al.}}{{}}}
+\bibcite{Kovachki2023NeuralOperator}{{15}{2023}{{Kovachki et~al.}}{{}}}
+\newlabel{sec:repro}{{7}{12}{Reproducibility statement}{section*.34}{}}
+\bibcite{LawsonHanson1974NNLS}{{16}{1974}{{Lawson and Hanson}}{{}}}
+\bibcite{LeeCarlberg2020}{{17}{2020}{{Lee and Carlberg}}{{}}}
+\bibcite{Li2020FNO}{{18}{2021}{{Li et~al.}}{{}}}
+\bibcite{Lu2021DeepONet}{{19}{2021}{{Lu et~al.}}{{}}}
+\bibcite{Marquardt1963}{{20}{1963}{{Marquardt}}{{}}}
+\bibcite{PeherstorferWillcox2015Adaptive}{{21}{2015}{{Peherstorfer and Willcox}}{{}}}
+\bibcite{Ronneberger2015UNet}{{22}{2015}{{Ronneberger et~al.}}{{}}}
+\bibcite{Saad2003}{{23}{2003}{{Saad}}{{}}}
+\bibcite{Sirovich1987POD}{{24}{1987}{{Sirovich}}{{}}}
+\bibcite{StefanescuSandu2014}{{25}{2014}{{{\c S}tef{\u a}nescu and Sandu}}{{}}}
+\bibcite{Takamoto2022PDEBench}{{26}{2022}{{Takamoto et~al.}}{{}}}
+\bibcite{Tancik2020FourierFeatures}{{27}{2020}{{Tancik et~al.}}{{}}}
+\bibcite{WederSchwerdtnerPeherstorfer2024}{{28}{2024}{{Weder et~al.}}{{}}}
+\bibcite{WuTransolver2024}{{29}{2024}{{Wu et~al.}}{{}}}
+\bibcite{YanoPatera2019LPEQ}{{30}{2019}{{Yano and Patera}}{{}}}
+\bibcite{YuSlimmable2019}{{31}{2019}{{Yu et~al.}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Method details}{14}{appendix.A}\protected@file@percent }
+\newlabel{app:method}{{A}{14}{Method details}{appendix.A}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.1}Ordering the bank}{14}{subsection.A.1}\protected@file@percent }
+\newlabel{app:method:ordered}{{A.1}{14}{Ordering the bank}{subsection.A.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.2}Poisson}{14}{subsection.A.2}\protected@file@percent }
+\newlabel{app:method:poisson}{{A.2}{14}{Poisson}{subsection.A.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.3}Heat}{14}{subsection.A.3}\protected@file@percent }
+\newlabel{app:method:heat}{{A.3}{14}{Heat}{subsection.A.3}{}}
+\newlabel{eq:heat-endpoint}{{18}{14}{Heat}{equation.A.18}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.4}Burgers}{14}{subsection.A.4}\protected@file@percent }
+\newlabel{app:method:burgers}{{A.4}{14}{Burgers}{subsection.A.4}{}}
+\newlabel{eq:upwind}{{19}{14}{Burgers}{equation.A.19}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.5}Navier--Stokes}{14}{subsection.A.5}\protected@file@percent }
+\newlabel{app:method:ns}{{A.5}{14}{Navier--Stokes}{subsection.A.5}{}}
+\citation{Li2020FNO}
+\citation{Ronneberger2015UNet}
+\citation{Lu2021DeepONet}
+\citation{WuTransolver2024}
+\citation{GeelenWrightWillcox2022}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.6}Empirical quadrature}{15}{subsection.A.6}\protected@file@percent }
+\newlabel{app:method:eq}{{A.6}{15}{Empirical quadrature}{subsection.A.6}{}}
+\newlabel{eq:rho}{{20}{15}{Empirical quadrature}{equation.A.20}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {A.7}Solver constants}{15}{subsection.A.7}\protected@file@percent }
+\newlabel{app:method:codes}{{A.7}{15}{Solver constants}{subsection.A.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}Neural operators}{15}{appendix.B}\protected@file@percent }
+\newlabel{app:operators}{{B}{15}{Neural operators}{appendix.B}{}}
+\@writefile{toc}{\contentsline {paragraph}{Other reduced-order models at $1024^2$.}{15}{section*.37}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Navier--Stokes cells.}{15}{section*.39}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {B.1}{\ignorespaces Burgers 2D at $1024^2$, one allocation (job 4204019, A100 80\,GB, six development cases): worst and median evolved same-grid error, median GPU query time, and speedup over the one full-order setting used for this cell in Tables~\ref {tab:operators} and~\ref {tab:nmrom-baselines} (Newton--BiCGStab, tol $3{\times }10^{-3}$, $\Delta t{=}0.005$, 70.5\,ms, the fastest setting at least as accurate as the NM-ROM accurate setting); below $1\times $ the row is slower. FOM rows are Newton--BiCGStab settings.}}{16}{table.caption.38}\protected@file@percent }
+\newlabel{tab:ops1024}{{B.1}{16}{Burgers 2D at $1024^2$, one allocation (job 4204019, A100 80\,GB, six development cases): worst and median evolved same-grid error, median GPU query time, and speedup over the one full-order setting used for this cell in Tables~\ref {tab:operators} and~\ref {tab:nmrom-baselines} (Newton--BiCGStab, tol $3{\times }10^{-3}$, $\Delta t{=}0.005$, 70.5\,ms, the fastest setting at least as accurate as the NM-ROM accurate setting); below $1\times $ the row is slower. FOM rows are Newton--BiCGStab settings}{table.caption.38}{}}
+\@writefile{toc}{\contentsline {paragraph}{How much data each side was given.}{16}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {C}Experimental configuration and reproducibility}{16}{appendix.C}\protected@file@percent }
+\newlabel{app:training-schedule}{{C}{16}{Experimental configuration and reproducibility}{appendix.C}{}}
+\newlabel{app:provenance}{{C}{16}{Experimental configuration and reproducibility}{appendix.C}{}}
+\@writefile{toc}{\contentsline {paragraph}{Full-order and solver details.}{16}{section*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {C.1}Headline settings, times and timing protocol}{16}{subsection.C.1}\protected@file@percent }
+\newlabel{app:cg-current}{{C.1}{16}{Headline settings, times and timing protocol}{subsection.C.1}{}}
+\newlabel{app:main-experiment-details}{{C.1}{16}{Headline settings, times and timing protocol}{subsection.C.1}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {B.2}{\ignorespaces Training of the neural operators of Table~\ref {tab:operators}, one row per trained network shown there: parameters, epochs completed within the 3000\,s wall budget, and why training stopped. Every network used AdamW, weight decay $10^{-4}$, batch 8 (by gradient accumulation where memory required it), seed 20260914 and the checkpoint of its best validation epoch. Training sets: Burgers 128 trajectories (32 validation), heat 512 (16 validation), Navier--Stokes 448 (64 validation). The Burgers $2048^2$ FNO was stopped by host memory after 19 epochs.}}{17}{table.caption.41}\protected@file@percent }
+\newlabel{tab:development-training}{{B.2}{17}{Training of the neural operators of Table~\ref {tab:operators}, one row per trained network shown there: parameters, epochs completed within the 3000\,s wall budget, and why training stopped. Every network used AdamW, weight decay $10^{-4}$, batch 8 (by gradient accumulation where memory required it), seed 20260914 and the checkpoint of its best validation epoch. Training sets: Burgers 128 trajectories (32 validation), heat 512 (16 validation), Navier--Stokes 448 (64 validation). The Burgers $2048^2$ FNO was stopped by host memory after 19 epochs}{table.caption.41}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {C.1}{\ignorespaces Training configurations of the frozen checkpoints, transcribed from the committed configuration and code files of each study (paths and SHA256 in \texttt  {evidence/training-configs-2026-09-21}).}}{17}{table.caption.42}\protected@file@percent }
+\newlabel{tab:training-all}{{C.1}{17}{Training configurations of the frozen checkpoints, transcribed from the committed configuration and code files of each study (paths and SHA256 in \texttt {evidence/training-configs-2026-09-21})}{table.caption.42}{}}
+\citation{KimChoi2022NMROM}
+\citation{KimChoi2022NMROM}
+\@writefile{lot}{\contentsline {table}{\numberline {C.2}{\ignorespaces Problem specification. Cohort and reduced sizes are read from the run configurations where recorded; rows describe their recorded development, validation and held-out cohorts.}}{18}{table.caption.44}\protected@file@percent }
+\newlabel{tab:problems}{{C.2}{18}{Problem specification. Cohort and reduced sizes are read from the run configurations where recorded; rows describe their recorded development, validation and held-out cohorts}{table.caption.44}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {C.3}{\ignorespaces Sampled problem families.}}{18}{table.caption.45}\protected@file@percent }
+\newlabel{tab:spec}{{C.3}{18}{Sampled problem families}{table.caption.45}{}}
+\@writefile{toc}{\contentsline {paragraph}{Training/evaluation separation (Burgers).}{18}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {D}Tunability ladders}{18}{appendix.D}\protected@file@percent }
+\newlabel{app:tunability}{{D}{18}{Tunability ladders}{appendix.D}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {C.4}{\ignorespaces Supporting data for Table~\ref {tab:headline}, including the full-order setting the rule selected for each row: the two settings of each frozen model, median times (ms), timing scope and status. ``EQ'' is the lattice rule of Appendix~\ref {app:method:eq}. Where a run also recorded the complete query (host transfer included), those speedups are listed. Heat errors are measured against the exact time evolution on the same grid, so the NM-ROM and CN--CG errors both include the Crank--Nicolson time error.}}{19}{table.caption.46}\protected@file@percent }
+\newlabel{tab:headline-times}{{C.4}{19}{Supporting data for Table~\ref {tab:headline}, including the full-order setting the rule selected for each row: the two settings of each frozen model, median times (ms), timing scope and status. ``EQ'' is the lattice rule of Appendix~\ref {app:method:eq}. Where a run also recorded the complete query (host transfer included), those speedups are listed. Heat errors are measured against the exact time evolution on the same grid, so the NM-ROM and CN--CG errors both include the Crank--Nicolson time error}{table.caption.46}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {C.5}{\ignorespaces Solver iterations per query and where the query time goes. On Poisson and heat the query is a direct solve; \emph  {input} is projecting the forcing or fitting the initial state, \emph  {solve} the reduced solve including all time steps, and \emph  {output} rebuilding the field at the output times. These stage times come from separately compiled stages in the same jobs, so they do not add exactly to the query time. Burgers: Levenberg--Marquardt iterations per query, median over the cases (largest number in one step in brackets): in two dimensions over 50 time steps of the six development cases, every step stopped on the convergence test; in three dimensions over 50 ($\Delta t=0.005$) or 25 ($\Delta t=0.01$) steps of the 32 held-out cases. Navier--Stokes: 10 time steps of three Gauss--Newton sweeps each, plus 12 Gauss--Newton sweeps that fit the head's starting code to the projected initial field, starting from a stored training code. Query times as in Table~\ref {tab:headline-times} (ms).}}{19}{table.caption.47}\protected@file@percent }
+\newlabel{tab:iterations}{{C.5}{19}{Solver iterations per query and where the query time goes. On Poisson and heat the query is a direct solve; \emph {input} is projecting the forcing or fitting the initial state, \emph {solve} the reduced solve including all time steps, and \emph {output} rebuilding the field at the output times. These stage times come from separately compiled stages in the same jobs, so they do not add exactly to the query time. Burgers: Levenberg--Marquardt iterations per query, median over the cases (largest number in one step in brackets): in two dimensions over 50 time steps of the six development cases, every step stopped on the convergence test; in three dimensions over 50 ($\Delta t=0.005$) or 25 ($\Delta t=0.01$) steps of the 32 held-out cases. Navier--Stokes: 10 time steps of three Gauss--Newton sweeps each, plus 12 Gauss--Newton sweeps that fit the head's starting code to the projected initial field, starting from a stored training code. Query times as in Table~\ref {tab:headline-times} (ms)}{table.caption.47}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {C.6}{\ignorespaces Supporting data for Table~\ref {tab:nmrom-baselines}: every row of that table with its residual path and median GPU query time from the same allocation. Our rows use the unoptimised dense reference path (no empirical quadrature, stopping tolerance $10^{-6}$); our optimised query is timed only in Table~\ref {tab:headline}, in other jobs, and no ratio across jobs is formed. The shallow masked-autoencoder NM-LSPG of \citet  {KimChoi2022NMROM} passed its reproduction gate, on their own 2D Burgers benchmark (their Sec.~6.2), on the third of three pre-registered attempts (sigmoid{} activation; median $1.45\,\%$ against a $1.5\,\%$ bar; published ${<}1\,\%$). Its published encoder width ($2n$) needs $136$\,GB to train at $256^2$ and $2183$\,GB at $512^2$, beyond the $77$ and $135$\,GB devices; at $512^2$ its encoder, capped at width $4096$, trained only $229\mbox  {--}231$ epochs in its $4800$\,s budget, so those errors partly reflect a training-time limit. The data-matched row is trained on our bank's 576{} trajectories.}}{20}{table.caption.48}\protected@file@percent }
+\newlabel{tab:nmrom-baselines-appx}{{C.6}{20}{Supporting data for Table~\ref {tab:nmrom-baselines}: every row of that table with its residual path and median GPU query time from the same allocation. Our rows use the unoptimised dense reference path (no empirical quadrature, stopping tolerance $10^{-6}$); our optimised query is timed only in Table~\ref {tab:headline}, in other jobs, and no ratio across jobs is formed. The shallow masked-autoencoder NM-LSPG of \citet {KimChoi2022NMROM} passed its reproduction gate, on their own 2D Burgers benchmark (their Sec.~6.2), on the third of three pre-registered attempts (\nBaseGateAct {} activation; median $\nBaseGateMedian \,\%$ against a $\nBaseGateBar \,\%$ bar; published ${<}\nBaseGatePublished \,\%$). Its published encoder width ($2n$) needs $\nBaseEncoderNeedGB $\,GB to train at $256^2$ and $\nBaseEncoderNeedGBFiveTwelve $\,GB at $512^2$, beyond the $\nBaseDeviceGB $ and $\nBaseDeviceGBFiveTwelve $\,GB devices; at $512^2$ its encoder, capped at width $\nBaseKimWidth $, trained only $\nBaseKimEpochs $ epochs in its $\nBaseKimWall $\,s budget, so those errors partly reflect a training-time limit. The data-matched row is trained on our bank's \nBaseDataMatched {} trajectories}{table.caption.48}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {C.7}{\ignorespaces Three-dimensional configurations, read from the run records. Domains are the unit cube with homogeneous Dirichlet data, except Navier--Stokes, which is periodic.}}{20}{table.caption.49}\protected@file@percent }
+\newlabel{tab:config3d}{{C.7}{20}{Three-dimensional configurations, read from the run records. Domains are the unit cube with homogeneous Dirichlet data, except Navier--Stokes, which is periodic}{table.caption.49}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {D.1}{\ignorespaces Bank-width tunability at the finest mesh. Each block is one frozen model, and within a cohort every speedup divides the median time of \emph  {one} full-order setting (the \emph  {FOM} row, the fastest at least as accurate as the block's most accurate setting, in the same allocation) by the setting's time (ms). Error is the worst same-grid relative $L^2$ error (\%), over evolved times for Navier--Stokes and Burgers and over all times for heat. Held-out cases were never used for selection and share the development settings; for Burgers 3D the development column is the 64 validation cases on which its settings were chosen, and only the two selected widths were run on the held-out cases. The Burgers 2D held-out cases ran on an A100 GPU and the development cases on an H200 GPU. Heat is shown at $2048^2$, the finest mesh whose timing is not provisional.}}{21}{table.caption.51}\protected@file@percent }
+\newlabel{tab:tunability}{{D.1}{21}{Bank-width tunability at the finest mesh. Each block is one frozen model, and within a cohort every speedup divides the median time of \emph {one} full-order setting (the \emph {FOM} row, the fastest at least as accurate as the block's most accurate setting, in the same allocation) by the setting's time (ms). Error is the worst same-grid relative $L^2$ error (\%), over evolved times for Navier--Stokes and Burgers and over all times for heat. Held-out cases were never used for selection and share the development settings; for Burgers 3D the development column is the 64 validation cases on which its settings were chosen, and only the two selected widths were run on the held-out cases. The Burgers 2D held-out cases ran on an A100 GPU and the development cases on an H200 GPU. Heat is shown at $2048^2$, the finest mesh whose timing is not provisional}{table.caption.51}{}}
+\gdef \@abspage@last{21}

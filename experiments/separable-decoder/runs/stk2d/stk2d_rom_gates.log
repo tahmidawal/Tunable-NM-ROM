@@ -1,0 +1,23 @@
+stk2d ROM gates (phase 2b) -> runs/stk2d/stk2d_rom_gates_rom_nu1.json
+  STOPGATE passed: oracle agg 9.869e-03 vs POD-K 3.849e-02 (3.90x)
+ cell N=32
+  cell N=32: n_u=1984 (cache)
+  S7 N=32: nl_qf 1.890e-02  gspan 2.908e-14  podK 5.013e-02  galerkin 2.781e-14
+  S6 N=32: qf 25.622 ms  full 115.357 ms  eq 53.331 ms  gspan 0.005 ms  fom 1.489 ms
+  S4 N=32: resid 5.992e-16  jac 4.739e-16  press 3.400e-16  controls 1.28e-01/3.52e-02/1.47e-09
+ cell N=64
+  cell N=64: n_u=8064 (cache)
+  S7 N=64: nl_qf 1.893e-02  gspan 4.565e-14  podK 4.981e-02  galerkin 4.178e-14
+  S6 N=64: qf 34.163 ms  full 282.873 ms  eq 55.493 ms  gspan 0.005 ms  fom 11.388 ms
+  S4 N=64: resid 1.758e-15  jac 1.135e-15  press 4.926e-16  controls 1.70e-01/2.78e-02/1.25e-09
+ cell N=128
+  cell N=128: n_u=32512 (cache)
+  S7 N=128: nl_qf 1.866e-02  gspan 3.335e-13  podK 4.833e-02  galerkin 2.847e-13
+  S6 N=128: qf 35.132 ms  full 3065.286 ms  eq 62.944 ms  gspan 0.005 ms  fom 90.382 ms
+  S4 N=128: resid 2.329e-15  jac 1.641e-15  press 1.366e-15  controls 1.21e-01/2.19e-02/1.45e-09
+ cell N=256
+  cell N=256: n_u=130560 (cache)
+  S7 N=256: nl_qf 1.423e-02  gspan 2.071e-12  podK 4.618e-02  galerkin 1.359e-12
+  S6 N=256: qf 51.725 ms  full 16420.693 ms  eq 75.313 ms  gspan 0.006 ms  fom 412.014 ms
+  S4 N=256: resid 7.384e-15  jac 4.765e-15  press 1.518e-14  controls 9.36e-02/2.06e-02/1.08e-09
+DONE stk2d ROM gates [1623s] complete=True -> runs/stk2d/stk2d_rom_gates_rom_nu1.json

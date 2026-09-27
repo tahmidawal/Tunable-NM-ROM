@@ -1,0 +1,51 @@
+stk2d RECONSTRUCTION STOP GATE (phase 2b) -> runs/stk2d/stk2d_recon_gate_recon_nu1.json
+  S0 asserted: x64 True matmul highest backend gpu
+  PRECOND: asserts=True smoke=0 mismatch=none
+ S-SELECT at N=64 R=32
+  cell N=64: n_u=8064 (cache)
+   train[select-sup]      1/40000 rel-MSE 1.465e+00 [20s]
+   train[select-sup]  10000/40000 rel-MSE 1.774e-04 [115s]
+   train[select-sup]  20000/40000 rel-MSE 5.674e-05 [204s]
+   train[select-sup]  30000/40000 rel-MSE 3.204e-05 [284s]
+   train[select-sup]  40000/40000 rel-MSE 2.611e-05 [371s]
+  select[sup]: val oracle 1.222e-02 median 3.515e-03
+   train[select-auto]      1/40000 rel-MSE 1.013e+00 [8s]
+   train[select-auto]  10000/40000 rel-MSE 6.414e-04 [88s]
+   train[select-auto]  20000/40000 rel-MSE 1.945e-04 [170s]
+   train[select-auto]  30000/40000 rel-MSE 9.658e-05 [248s]
+   train[select-auto]  40000/40000 rel-MSE 7.718e-05 [325s]
+  select[auto]: val oracle 1.011e-02 median 9.207e-03
+  SELECTED training form: auto
+ cell N=32
+  cell N=32: n_u=1984 (cache)
+   head[head_N32_R8_K8.npz]: loaded from cache
+  N=32 R=8: oracle agg 3.868e-02 med 3.752e-02 max 1.848e-01 | POD-8 agg 3.868e-02 med 3.752e-02 | gain 1.00x / 1.00x | linear ctl 3.868e-02 untrained ctl 2.019e-01
+   head[head_N32_R16_K8.npz]: loaded from cache
+  N=32 R=16: oracle agg 1.278e-02 med 1.103e-02 max 7.150e-02 | POD-8 agg 3.868e-02 med 3.752e-02 | gain 3.03x / 3.40x | linear ctl 3.763e-02 untrained ctl 7.471e-01
+   head[head_N32_R32_K8.npz]: loaded from cache
+  N=32 R=32: oracle agg 1.135e-02 med 9.548e-03 max 8.863e-02 | POD-8 agg 3.868e-02 med 3.752e-02 | gain 3.41x / 3.93x | linear ctl 3.763e-02 untrained ctl 8.660e-01
+ cell N=64
+  cell N=64: n_u=8064 (cache)
+   head[head_N64_R8_K8.npz]: loaded from cache
+  N=64 R=8: oracle agg 3.849e-02 med 3.730e-02 max 1.946e-01 | POD-8 agg 3.849e-02 med 3.730e-02 | gain 1.00x / 1.00x | linear ctl 3.849e-02 untrained ctl 1.775e-01
+   head[head_N64_R16_K8.npz]: loaded from cache
+  N=64 R=16: oracle agg 1.165e-02 med 1.025e-02 max 5.976e-02 | POD-8 agg 3.849e-02 med 3.730e-02 | gain 3.30x / 3.64x | linear ctl 3.738e-02 untrained ctl 7.463e-01
+   head[head_N64_R32_K8.npz]: loaded from cache
+  N=64 R=32: oracle agg 9.869e-03 med 7.996e-03 max 5.343e-02 | POD-8 agg 3.849e-02 med 3.730e-02 | gain 3.90x / 4.66x | linear ctl 3.738e-02 untrained ctl 8.677e-01
+ cell N=128
+  cell N=128: n_u=32512 (cache)
+  N=128 R=8: oracle agg 3.849e-02 med 3.913e-02 max 2.039e-01 | POD-8 agg 3.849e-02 med 3.913e-02 | gain 1.00x / 1.00x | linear ctl 3.849e-02 untrained ctl 1.656e-01
+  N=128 R=16: oracle agg 1.043e-02 med 9.194e-03 max 5.064e-02 | POD-8 agg 3.849e-02 med 3.913e-02 | gain 3.69x / 4.26x | linear ctl 3.731e-02 untrained ctl 7.458e-01
+  N=128 R=32: oracle agg 9.746e-03 med 8.038e-03 max 4.064e-02 | POD-8 agg 3.849e-02 med 3.913e-02 | gain 3.95x / 4.87x | linear ctl 3.731e-02 untrained ctl 8.696e-01
+ cell N=256
+  cell N=256: n_u=130560 (solve 204.2s)
+  N=256 R=8: oracle agg 3.846e-02 med 3.910e-02 max 2.108e-01 | POD-8 agg 3.841e-02 med 3.910e-02 | gain 1.00x / 1.00x | linear ctl 3.841e-02 untrained ctl 1.676e-01
+  N=256 R=16: oracle agg 1.298e-02 med 1.055e-02 max 6.751e-02 | POD-8 agg 3.841e-02 med 3.910e-02 | gain 2.96x / 3.71x | linear ctl 3.714e-02 untrained ctl 7.704e-01
+  N=256 R=32: oracle agg 6.403e-03 med 6.474e-03 max 3.389e-02 | POD-8 agg 3.841e-02 med 3.910e-02 | gain 6.00x / 6.04x | linear ctl 3.714e-02 untrained ctl 8.736e-01
+
+  ==================== STOP-GATE VERDICT ====================
+  N=64 R=32 K=8  oracle agg 9.8687e-03 (need <= 1.2829e-02), median 7.9965e-03 (need <= 1.2434e-02)
+  POD-8 agg 3.8486e-02 median 3.7301e-02;  gain 3.90x agg / 4.66x median
+  VERDICT: PASS
+  ===========================================================
+DONE stop gate [3258s] complete=True passed=True -> runs/stk2d/stk2d_recon_gate_recon_nu1.json

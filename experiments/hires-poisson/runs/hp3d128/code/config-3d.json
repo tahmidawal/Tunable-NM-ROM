@@ -1,0 +1,44 @@
+{
+  "attempt": "hp3d128",
+  "meshes": [
+    64,
+    128
+  ],
+  "cohort_seed": 920411,
+  "cohort_draw": 16,
+  "case_count": 12,
+  "train_seed": 920410,
+  "train_count": 512,
+  "weak_tests": 512,
+  "q_ladder": [
+    0,
+    32,
+    96
+  ],
+  "lm_budget": 160,
+  "lm_tolerance": 1e-06,
+  "initial_starts": 3,
+  "field_chunk": 8192,
+  "cg_tolerances": [
+    0.01,
+    0.0001,
+    1e-06
+  ],
+  "cg_iterations_per_interval": 40,
+  "coarse_intervals": [
+    16,
+    32,
+    64
+  ],
+  "coarse_cg_tolerances": [
+    0.01,
+    0.0001
+  ],
+  "repetitions": 5,
+  "order_seed": 920003,
+  "burn_seconds": 0.1,
+  "accepted_checkpoint_sha256": {
+    "bank": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+    "head": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+  }
+}

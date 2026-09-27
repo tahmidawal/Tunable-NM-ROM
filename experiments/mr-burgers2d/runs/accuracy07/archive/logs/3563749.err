@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy07/code/accuracy.py", line 118, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/mr_burgers2d_20260907/accuracy07/code/accuracy.py", line 107, in main
+    if s['solver']=='stationary':assert np.max(abs(gn-v[8]))<1e-10 and abs(icgn-v[9])<1e-10
+                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

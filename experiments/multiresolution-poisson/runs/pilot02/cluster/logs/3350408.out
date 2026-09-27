@@ -1,0 +1,26 @@
+jax_backend=gpu
+jax_backend=gpu [CudaDevice(id=0)]
+jax_backend=gpu [CudaDevice(id=0)]
+parity 0.01 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+parity 0.0 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+reference 0 delta 3.962148232492551e-06
+reference 1 delta 1.6662361045678847e-06
+reference 2 delta 2.4449753961365608e-06
+reference 3 delta 1.7612400287339842e-06
+reference 4 delta 2.880353981146452e-06
+reference 5 delta 7.351177051286694e-06
+assembling interval ladder 256
+finished 256 case 0 bank/head error 0.023867282285078954 0.02697029908003933
+finished 256 case 1 bank/head error 0.00304855872691967 0.006190607678347841
+finished 256 case 2 bank/head error 0.0054034435119254196 0.006317527338818468
+finished 256 case 3 bank/head error 0.0010461993430088382 0.0021213629431631933
+finished 256 case 4 bank/head error 0.007713435654318637 0.008898818724661414
+finished 256 case 5 bank/head error 0.05746521528834477 0.07263482620710793
+assembling interval ladder 512
+finished 512 case 0 bank/head error 0.023841786475384166 0.026940952003642823
+finished 512 case 1 bank/head error 0.0030490237252619673 0.006191426769229364
+finished 512 case 2 bank/head error 0.005399614691422397 0.006313416649420057
+finished 512 case 3 bank/head error 0.0010455547860091494 0.0021213069564517016
+finished 512 case 4 bank/head error 0.007707236381913516 0.008893004191256531
+finished 512 case 5 bank/head error 0.05738777838428298 0.07256429631780369
+ALL-DONE

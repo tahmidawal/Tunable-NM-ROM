@@ -1,0 +1,253 @@
+jax_backend=gpu
+training smoke_bank {'updates': 1, 'loss': 0.00021136778517375586, 'reconstruction': 0.0002100433372621582, 'orth': 0.013244479115976636, 'optimizer_seconds': 0.0036212350241839886, 'block_seconds': 0.0036212350241839886, 'learning_rate': 2.9999999999999997e-06}
+training smoke_bank {'updates': 2, 'loss': 0.0010211978803527214, 'reconstruction': 0.0010198900157698746, 'orth': 0.013078645828469076, 'optimizer_seconds': 0.004030137090012431, 'block_seconds': 0.0004089020658284426, 'learning_rate': 0.00015625965926939082}
+training smoke_head {'updates': 1, 'loss': 0.0003892222378587428, 'reconstruction': 0.0003892222378587428, 'orth': 0.0, 'optimizer_seconds': 0.003030839841812849, 'block_seconds': 0.003030839841812849, 'learning_rate': 2.9999999999999997e-06}
+training smoke_head {'updates': 2, 'loss': 0.0005879769207096854, 'reconstruction': 0.0005879769207096854, 'orth': 0.0, 'optimizer_seconds': 0.003431410761550069, 'block_seconds': 0.0004005709197372198, 'learning_rate': 0.00015625965926939082}
+training smoke_joint {'updates': 1, 'loss': 0.0007688986702062445, 'reconstruction': 0.0007675739164722838, 'orth': 0.013247537339606414, 'optimizer_seconds': 0.004743219120427966, 'block_seconds': 0.004743219120427966, 'learning_rate': 2.9999999999999997e-06}
+training smoke_joint {'updates': 2, 'loss': 0.0017721265871108226, 'reconstruction': 0.001770818661885141, 'orth': 0.013079252256815593, 'optimizer_seconds': 0.00539656518958509, 'block_seconds': 0.0006533460691571236, 'learning_rate': 0.00015625965926939082}
+training smoke_time_control {'updates': 1, 'loss': 0.00018886454576503306, 'reconstruction': 0.0001875400978534354, 'orth': 0.013244479115976636, 'optimizer_seconds': 0.004917908925563097, 'block_seconds': 0.004917908925563097, 'learning_rate': 2.9999999999999997e-06}
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "field_metric_absolute_difference": 1.0842021724855044e-19,
+  "pod_orthogonality_error": 3.2845037572242913e-15,
+  "bank_rank": 64,
+  "frozen_subtree_checks": true,
+  "matched_updates": 1
+}
+{
+  "rank_deficiency_detected": true,
+  "head_oracle_full_field_residual_verified": true,
+  "head_oracle_candidates": 2
+}
+training staged_bank {'updates': 1, 'loss': 0.0006571809998270275, 'reconstruction': 0.0006558849569015644, 'orth': 0.0129604292546317, 'optimizer_seconds': 0.0038103838451206684, 'block_seconds': 0.0038103838451206684, 'learning_rate': 2.9999999999999997e-06}
+training staged_bank {'updates': 2, 'loss': 0.000580079868278231, 'reconstruction': 0.0005787606737540776, 'orth': 0.013191945241535136, 'optimizer_seconds': 0.004243912873789668, 'block_seconds': 0.00043352902866899967, 'learning_rate': 0.00015625965926939082}
+training staged_head {'updates': 1, 'loss': 0.0011904009506148974, 'reconstruction': 0.0011904009506148974, 'orth': 0.0, 'optimizer_seconds': 0.002928702160716057, 'block_seconds': 0.002928702160716057, 'learning_rate': 2.9999999999999997e-06}
+training staged_head {'updates': 2, 'loss': 0.0009908727358860234, 'reconstruction': 0.0009908727358860234, 'orth': 0.0, 'optimizer_seconds': 0.0033191002439707518, 'block_seconds': 0.00039039808325469494, 'learning_rate': 0.00015625965926939082}
+training staged_joint {'updates': 1, 'loss': 0.0008290537099616741, 'reconstruction': 0.0008278164908407285, 'orth': 0.012372191209455858, 'optimizer_seconds': 0.004748677834868431, 'block_seconds': 0.004748677834868431, 'learning_rate': 1.0000000000000002e-06}
+training staged_joint {'updates': 2, 'loss': 0.0020190265528587516, 'reconstruction': 0.0020177231055967374, 'orth': 0.013034472620139823, 'optimizer_seconds': 0.005376865854486823, 'block_seconds': 0.000628188019618392, 'learning_rate': 5.208655308979695e-05}
+training joint_matched {'updates': 1, 'loss': 0.0006332075674853293, 'reconstruction': 0.0006319115245598662, 'orth': 0.0129604292546317, 'optimizer_seconds': 0.004908632021397352, 'block_seconds': 0.004908632021397352, 'learning_rate': 2.9999999999999997e-06}
+training joint_matched {'updates': 2, 'loss': 0.0005489386445731808, 'reconstruction': 0.0005476194528665352, 'orth': 0.013191917066455703, 'optimizer_seconds': 0.005584038095548749, 'block_seconds': 0.0006754060741513968, 'learning_rate': 0.00021189687608846454}
+training joint_matched {'updates': 3, 'loss': 0.0003260579823348308, 'reconstruction': 0.000324733311196542, 'orth': 0.013246711382887997, 'optimizer_seconds': 0.006175132934004068, 'block_seconds': 0.0005910948384553194, 'learning_rate': 0.00018845944126106467}
+training joint_matched {'updates': 4, 'loss': 0.0035458942416936646, 'reconstruction': 0.0035445879396805635, 'orth': 0.013063020131011134, 'optimizer_seconds': 0.00672226189635694, 'block_seconds': 0.0005471289623528719, 'learning_rate': 0.00016707745335664247}
+training joint_matched {'updates': 5, 'loss': 0.000734776871442712, 'reconstruction': 0.0007334600657856572, 'orth': 0.013168056570547837, 'optimizer_seconds': 0.007265983847901225, 'block_seconds': 0.0005437219515442848, 'learning_rate': 0.00014697844048730101}
+training joint_matched {'updates': 6, 'loss': 0.008199162771931804, 'reconstruction': 0.008197811601480387, 'orth': 0.013511704514177441, 'optimizer_seconds': 0.007798282895237207, 'block_seconds': 0.0005322990473359823, 'learning_rate': 0.00012708599943587207}
+training joint_matched {'updates': 7, 'loss': 0.0002834603984461284, 'reconstruction': 0.0002820984305941259, 'orth': 0.013619678520024766, 'optimizer_seconds': 0.008328052004799247, 'block_seconds': 0.0005297691095620394, 'learning_rate': 0.00010803752763911756}
+training joint_matched {'updates': 8, 'loss': 0.007012560700939289, 'reconstruction': 0.0070112903264207115, 'orth': 0.01270374518577808, 'optimizer_seconds': 0.008864942006766796, 'block_seconds': 0.0005368900019675493, 'learning_rate': 8.982842805652119e-05}
+training joint_matched {'updates': 9, 'loss': 0.0008788845221227233, 'reconstruction': 0.0008775602258760967, 'orth': 0.013242962466266085, 'optimizer_seconds': 0.009397085988894105, 'block_seconds': 0.0005321439821273088, 'learning_rate': 7.245819841592863e-05}
+training joint_matched {'updates': 10, 'loss': 0.000707215608089339, 'reconstruction': 0.0007059629332122853, 'orth': 0.01252674877053728, 'optimizer_seconds': 0.009918170981109142, 'block_seconds': 0.0005210849922150373, 'learning_rate': 5.661850370769935e-05}
+training joint_matched {'updates': 11, 'loss': 0.006714460539237941, 'reconstruction': 0.006713137693878275, 'orth': 0.01322845359665802, 'optimizer_seconds': 0.010429034009575844, 'block_seconds': 0.0005108630284667015, 'learning_rate': 4.2701944008337405e-05}
+training joint_matched {'updates': 12, 'loss': 0.0003905270417535512, 'reconstruction': 0.0003891990515790285, 'orth': 0.013279901745226806, 'optimizer_seconds': 0.010944729903712869, 'block_seconds': 0.0005156958941370249, 'learning_rate': 3.081472036965009e-05}
+training joint_matched {'updates': 13, 'loss': 0.010466788230223232, 'reconstruction': 0.01046550222930188, 'orth': 0.012860009213525342, 'optimizer_seconds': 0.01146506192162633, 'block_seconds': 0.0005203320179134607, 'learning_rate': 2.0773560902434175e-05}
+training joint_matched {'updates': 14, 'loss': 0.0003471277857048557, 'reconstruction': 0.0003458474814301016, 'orth': 0.012803042747541089, 'optimizer_seconds': 0.011979053961113095, 'block_seconds': 0.0005139920394867659, 'learning_rate': 1.2802192090127381e-05}
+training joint_matched {'updates': 15, 'loss': 0.009618078532923433, 'reconstruction': 0.009616748880645972, 'orth': 0.01329652277461183, 'optimizer_seconds': 0.012493457878008485, 'block_seconds': 0.0005144039168953896, 'learning_rate': 7.187170672400018e-06}
+training joint_matched {'updates': 16, 'loss': 0.0005282343871298509, 'reconstruction': 0.0005269224744631031, 'orth': 0.013119126667478019, 'optimizer_seconds': 0.01300352392718196, 'block_seconds': 0.0005100660491734743, 'learning_rate': 3.907256992020244e-06}
+reference 0
+evaluation 64 0 existing_development
+STAGED ACCURACY COMPLETE
+training staged_bank {'updates': 250, 'loss': 0.0005927616320221558, 'reconstruction': 0.0005914974553535408, 'orth': 0.012641766686150581, 'optimizer_seconds': 0.09531090781092644, 'block_seconds': 0.09531090781092644, 'learning_rate': 2.9999999999999997e-06}
+training staged_bank {'updates': 5000, 'loss': 0.0008176212200386332, 'reconstruction': 0.0008162972601947133, 'orth': 0.013239598439198825, 'optimizer_seconds': 1.84537955513224, 'block_seconds': 0.09212095802649856, 'learning_rate': 0.00029262115451037234}
+training staged_bank {'updates': 10000, 'loss': 0.000643287665003905, 'reconstruction': 0.000641938074872018, 'orth': 0.013495901318870566, 'optimizer_seconds': 3.687963877338916, 'block_seconds': 0.09214601502753794, 'learning_rate': 0.0002634093792939843}
+training staged_bank {'updates': 15000, 'loss': 0.0006550345280914944, 'reconstruction': 0.0006536689226481162, 'orth': 0.013656054433783153, 'optimizer_seconds': 5.529866473516449, 'block_seconds': 0.09204806014895439, 'learning_rate': 0.0002164673464552321}
+training staged_bank {'updates': 20000, 'loss': 0.0005474873226173823, 'reconstruction': 0.0005461169087358788, 'orth': 0.013704138815034949, 'optimizer_seconds': 7.372172154951841, 'block_seconds': 0.09208639897406101, 'learning_rate': 0.00015923227297091753}
+training staged_bank {'updates': 25000, 'loss': 0.0006774706367916903, 'reconstruction': 0.0006760986645854214, 'orth': 0.013719722062689656, 'optimizer_seconds': 9.213747738860548, 'block_seconds': 0.0919926178175956, 'learning_rate': 0.0001007721440654602}
+training staged_bank {'updates': 30000, 'loss': 0.0005229254080582828, 'reconstruction': 0.0005215521566345161, 'orth': 0.013732514237667741, 'optimizer_seconds': 11.053186503238976, 'block_seconds': 0.09195806691423059, 'learning_rate': 5.034903547075632e-05}
+training staged_bank {'updates': 35000, 'loss': 0.0006271910454102934, 'reconstruction': 0.0006258164369221976, 'orth': 0.013746084880957951, 'optimizer_seconds': 12.892746419180185, 'block_seconds': 0.09189250390045345, 'learning_rate': 1.5951685138394156e-05}
+training staged_bank {'updates': 40000, 'loss': 0.000649618211931375, 'reconstruction': 0.0006482454572363707, 'orth': 0.013727546950042952, 'optimizer_seconds': 14.732390051940456, 'block_seconds': 0.0920228399336338, 'learning_rate': 3.0298050296683976e-06}
+training staged_head {'updates': 250, 'loss': 0.00702233750987074, 'reconstruction': 0.00702233750987074, 'orth': 0.0, 'optimizer_seconds': 0.0539588020183146, 'block_seconds': 0.0539588020183146, 'learning_rate': 2.9999999999999997e-06}
+training staged_head {'updates': 5000, 'loss': 0.001989552878904189, 'reconstruction': 0.001989552878904189, 'orth': 0.0, 'optimizer_seconds': 1.0322424615733325, 'block_seconds': 0.051772329956293106, 'learning_rate': 0.00028563621436292067}
+training staged_head {'updates': 10000, 'loss': 0.001077944546040258, 'reconstruction': 0.001077944546040258, 'orth': 0.0, 'optimizer_seconds': 2.072426764992997, 'block_seconds': 0.05203827889636159, 'learning_rate': 0.0002344962896509501}
+training staged_head {'updates': 15000, 'loss': 0.0015221268731764703, 'reconstruction': 0.0015221268731764703, 'orth': 0.0, 'optimizer_seconds': 3.104923178208992, 'block_seconds': 0.0516917088534683, 'learning_rate': 0.0001602225133556753}
+training staged_head {'updates': 20000, 'loss': 0.0006918739051346875, 'reconstruction': 0.0006918739051346875, 'orth': 0.0, 'optimizer_seconds': 4.142099694348872, 'block_seconds': 0.05209975503385067, 'learning_rate': 8.351747982887582e-05}
+training staged_head {'updates': 25000, 'loss': 0.0005825931905211405, 'reconstruction': 0.0005825931905211405, 'orth': 0.0, 'optimizer_seconds': 5.18270122539252, 'block_seconds': 0.052126829978078604, 'learning_rate': 2.5761456414599805e-05}
+training staged_head {'updates': 30000, 'loss': 0.0006299839121819476, 'reconstruction': 0.0006299839121819476, 'orth': 0.0, 'optimizer_seconds': 6.2241012991871685, 'block_seconds': 0.05235808901488781, 'learning_rate': 3.0529853407817483e-06}
+training staged_joint {'updates': 250, 'loss': 0.000642517467874661, 'reconstruction': 0.0006411432245379485, 'orth': 0.013742433367124796, 'optimizer_seconds': 0.11659248312935233, 'block_seconds': 0.11659248312935233, 'learning_rate': 1.0000000000000002e-06}
+training staged_joint {'updates': 5000, 'loss': 0.0007186866034812182, 'reconstruction': 0.0007173101026146564, 'orth': 0.01376500866561755, 'optimizer_seconds': 2.2375266056042165, 'block_seconds': 0.11157732899300754, 'learning_rate': 8.844751799005421e-05}
+training staged_joint {'updates': 10000, 'loss': 0.0007947473154880415, 'reconstruction': 0.0007933689817131316, 'orth': 0.013783337749098463, 'optimizer_seconds': 4.469598694704473, 'block_seconds': 0.11152491113170981, 'learning_rate': 5.406726094187964e-05}
+training staged_joint {'updates': 15000, 'loss': 0.0007058938009297584, 'reconstruction': 0.0007045144228908981, 'orth': 0.013793780388601769, 'optimizer_seconds': 6.701385124120861, 'block_seconds': 0.11166124395094812, 'learning_rate': 1.7515844391375808e-05}
+training staged_joint {'updates': 20000, 'loss': 0.0006717708677689955, 'reconstruction': 0.0006703908371606821, 'orth': 0.01380030608313361, 'optimizer_seconds': 8.933143042260781, 'block_seconds': 0.11156299384310842, 'learning_rate': 1.039736051500439e-06}
+training joint_matched {'updates': 250, 'loss': 0.0007049643804755428, 'reconstruction': 0.0007037002606505895, 'orth': 0.012641198249533202, 'optimizer_seconds': 0.11787799699231982, 'block_seconds': 0.11787799699231982, 'learning_rate': 2.9999999999999997e-06}
+training joint_matched {'updates': 5000, 'loss': 0.0011571434168313876, 'reconstruction': 0.001155780713601041, 'orth': 0.013627032303464764, 'optimizer_seconds': 2.246618787292391, 'block_seconds': 0.11213566409423947, 'learning_rate': 0.00029798770181719376}
+training joint_matched {'updates': 10000, 'loss': 0.0017235836792426412, 'reconstruction': 0.0017221766941893598, 'orth': 0.014069850532814003, 'optimizer_seconds': 4.487213011831045, 'block_seconds': 0.11206978582777083, 'learning_rate': 0.0002879793123537189}
+training joint_matched {'updates': 15000, 'loss': 0.001445878313892077, 'reconstruction': 0.0014444467393727083, 'orth': 0.014315745193688433, 'optimizer_seconds': 6.728628162294626, 'block_seconds': 0.11218364699743688, 'learning_rate': 0.0002701208425352796}
+training joint_matched {'updates': 20000, 'loss': 0.0012944624993435328, 'reconstruction': 0.0012930197620542108, 'orth': 0.014427372893219874, 'optimizer_seconds': 8.970006615156308, 'block_seconds': 0.11203321698121727, 'learning_rate': 0.0002454381326381948}
+training joint_matched {'updates': 25000, 'loss': 0.0011776907827847566, 'reconstruction': 0.0011762402141994909, 'orth': 0.014505685852658016, 'optimizer_seconds': 11.211379474494606, 'block_seconds': 0.11203083605505526, 'learning_rate': 0.0002153545160651833}
+training joint_matched {'updates': 30000, 'loss': 0.000731043446108711, 'reconstruction': 0.000729588114120753, 'orth': 0.014553319879580218, 'optimizer_seconds': 13.45248343097046, 'block_seconds': 0.1124964498449117, 'learning_rate': 0.00018161012117961148}
+training joint_matched {'updates': 35000, 'loss': 0.0008083470489682369, 'reconstruction': 0.0008068883807397104, 'orth': 0.014586682285263733, 'optimizer_seconds': 15.692740430356935, 'block_seconds': 0.11200882215052843, 'learning_rate': 0.00014613353551671412}
+training joint_matched {'updates': 40000, 'loss': 0.0007861499417079377, 'reconstruction': 0.0007846913388108598, 'orth': 0.014586028970779822, 'optimizer_seconds': 17.933753489516675, 'block_seconds': 0.11201531998813152, 'learning_rate': 0.00011096138889567876}
+training joint_matched {'updates': 45000, 'loss': 0.0007625209447866171, 'reconstruction': 0.0007610628854080141, 'orth': 0.014580593786030223, 'optimizer_seconds': 20.17426935932599, 'block_seconds': 0.11205754079855978, 'learning_rate': 7.812723231394277e-05}
+training joint_matched {'updates': 50000, 'loss': 0.0005444302342298032, 'reconstruction': 0.0005429716224875857, 'orth': 0.014586117422174747, 'optimizer_seconds': 22.415107920533046, 'block_seconds': 0.11199836502783, 'learning_rate': 4.950445419052846e-05}
+training joint_matched {'updates': 55000, 'loss': 0.0006441520195506707, 'reconstruction': 0.0006426974081662694, 'orth': 0.014546113844013123, 'optimizer_seconds': 24.65602708887309, 'block_seconds': 0.11206559604033828, 'learning_rate': 2.6745345165801474e-05}
+training joint_matched {'updates': 60000, 'loss': 0.0007982364954422065, 'reconstruction': 0.0007967806824338306, 'orth': 0.014558130083758848, 'optimizer_seconds': 26.896293747005984, 'block_seconds': 0.1120165279135108, 'learning_rate': 1.1160330293420544e-05}
+training joint_matched {'updates': 65000, 'loss': 0.0005729875869444057, 'reconstruction': 0.0005715310881426353, 'orth': 0.014564988017703817, 'optimizer_seconds': 29.13698943774216, 'block_seconds': 0.11199640296399593, 'learning_rate': 3.6380630637028822e-06}
+training joint_matched {'updates': 66750, 'loss': 0.0006245031481081936, 'reconstruction': 0.0006230489837253738, 'orth': 0.014541643828197927, 'optimizer_seconds': 29.92202697088942, 'block_seconds': 0.11204453301616013, 'learning_rate': 3.0054186748301387e-06}
+reference 0
+reference 1
+reference 2
+reference 3
+reference 4
+reference 5
+reference 6
+reference 7
+reference 8
+reference 9
+reference 10
+reference 11
+reference 12
+reference 13
+reference 14
+reference 15
+reference 16
+reference 17
+reference 18
+reference 19
+reference 20
+reference 21
+reference 22
+reference 23
+reference 24
+reference 25
+reference 26
+reference 27
+reference 28
+reference 29
+reference 30
+reference 31
+reference 32
+reference 33
+reference 34
+reference 35
+reference 36
+reference 37
+reference 38
+reference 39
+reference 40
+reference 41
+evaluation 64 0 existing_development
+evaluation 64 1 existing_development
+evaluation 64 2 existing_development
+evaluation 64 3 existing_development
+evaluation 64 4 existing_development
+evaluation 64 5 existing_development
+evaluation 64 6 existing_development
+evaluation 64 7 existing_development
+evaluation 64 8 existing_development
+evaluation 64 9 existing_development
+evaluation 64 10 existing_development
+evaluation 64 11 existing_development
+evaluation 64 12 existing_development
+evaluation 64 13 existing_development
+evaluation 64 14 existing_development
+evaluation 64 15 existing_development
+evaluation 64 16 existing_development
+evaluation 64 17 existing_development
+evaluation 64 18 existing_development
+evaluation 64 19 existing_development
+evaluation 64 20 existing_development
+evaluation 64 21 existing_development
+evaluation 64 22 existing_development
+evaluation 64 23 existing_development
+evaluation 64 24 existing_development
+evaluation 64 25 existing_development
+evaluation 64 26 existing_development
+evaluation 64 27 existing_development
+evaluation 64 28 existing_development
+evaluation 64 29 existing_development
+evaluation 64 30 new_development
+evaluation 64 31 new_development
+evaluation 64 32 new_development
+evaluation 64 33 new_development
+evaluation 64 34 new_development
+evaluation 64 35 new_development
+evaluation 64 36 new_development
+evaluation 64 37 new_development
+evaluation 64 38 new_development
+evaluation 64 39 new_development
+evaluation 64 40 new_development
+evaluation 64 41 new_development
+evaluation 256 0 existing_development
+evaluation 256 1 existing_development
+evaluation 256 2 existing_development
+evaluation 256 3 existing_development
+evaluation 256 4 existing_development
+evaluation 256 5 existing_development
+evaluation 256 6 existing_development
+evaluation 256 7 existing_development
+evaluation 256 8 existing_development
+evaluation 256 9 existing_development
+evaluation 256 10 existing_development
+evaluation 256 11 existing_development
+evaluation 256 12 existing_development
+evaluation 256 13 existing_development
+evaluation 256 14 existing_development
+evaluation 256 15 existing_development
+evaluation 256 16 existing_development
+evaluation 256 17 existing_development
+evaluation 256 18 existing_development
+evaluation 256 19 existing_development
+evaluation 256 20 existing_development
+evaluation 256 21 existing_development
+evaluation 256 22 existing_development
+evaluation 256 23 existing_development
+evaluation 256 24 existing_development
+evaluation 256 25 existing_development
+evaluation 256 26 existing_development
+evaluation 256 27 existing_development
+evaluation 256 28 existing_development
+evaluation 256 29 existing_development
+evaluation 256 30 new_development
+evaluation 256 31 new_development
+evaluation 256 32 new_development
+evaluation 256 33 new_development
+evaluation 256 34 new_development
+evaluation 256 35 new_development
+evaluation 256 36 new_development
+evaluation 256 37 new_development
+evaluation 256 38 new_development
+evaluation 256 39 new_development
+evaluation 256 40 new_development
+evaluation 256 41 new_development
+evaluation 1024 0 existing_development
+evaluation 1024 1 existing_development
+evaluation 1024 2 existing_development
+evaluation 1024 3 existing_development
+evaluation 1024 4 existing_development
+evaluation 1024 5 existing_development
+evaluation 1024 6 existing_development
+evaluation 1024 7 existing_development
+evaluation 1024 8 existing_development
+evaluation 1024 9 existing_development
+evaluation 1024 10 existing_development
+evaluation 1024 11 existing_development
+evaluation 1024 12 existing_development
+evaluation 1024 13 existing_development
+evaluation 1024 14 existing_development
+evaluation 1024 15 existing_development
+evaluation 1024 16 existing_development
+evaluation 1024 17 existing_development
+evaluation 1024 18 existing_development
+evaluation 1024 19 existing_development
+evaluation 1024 20 existing_development
+evaluation 1024 21 existing_development
+evaluation 1024 22 existing_development
+evaluation 1024 23 existing_development
+evaluation 1024 24 existing_development
+evaluation 1024 25 existing_development
+evaluation 1024 26 existing_development
+evaluation 1024 27 existing_development
+evaluation 1024 28 existing_development
+evaluation 1024 29 existing_development
+evaluation 1024 30 new_development
+evaluation 1024 31 new_development
+evaluation 1024 32 new_development
+evaluation 1024 33 new_development
+evaluation 1024 34 new_development
+evaluation 1024 35 new_development
+evaluation 1024 36 new_development
+evaluation 1024 37 new_development
+evaluation 1024 38 new_development
+evaluation 1024 39 new_development
+evaluation 1024 40 new_development
+evaluation 1024 41 new_development
+STAGED ACCURACY COMPLETE

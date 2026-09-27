@@ -1,0 +1,236 @@
+jax_backend=gpu
+jax_backend=gpu [CudaDevice(id=0)]
+jax_backend=gpu [CudaDevice(id=0)]
+parity 0.01 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+parity 0.0 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+jax_backend=gpu [CudaDevice(id=0)]
+actual_agreement 0.01 {'field_relative': 9.630693258047e-16, 'latent_relative': 2.1694131004015445e-15, 'objective_scaled_difference': 6.575806781864998e-17, 'candidate_stationarity': 1.7450569013652736e-09, 'control_stationarity': 1.7450516629316164e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True} fallbacks 0
+actual_agreement 0.0 {'field_relative': 9.630693258047e-16, 'latent_relative': 2.1694131004015445e-15, 'objective_scaled_difference': 6.575806781864998e-17, 'candidate_stationarity': 1.7450569013652736e-09, 'control_stationarity': 1.7450516629316164e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True} fallbacks 0
+synthetic_max_forward 1.5192213447864355e-05
+synthetic_max_backward 5.448219500192518e-16
+jax_backend=gpu [CudaDevice(id=0)]
+train original_global {'step': 1, 'loss': 4.873045509398273e-05, 'reconstruction': 4.757185034523529e-05, 'orth': 0.011586047487474393, 'elapsed': 8.41485478496179}
+train original_global {'step': 250, 'loss': 0.0002399877839827914, 'reconstruction': 0.00023882916897325395, 'orth': 0.011586150095374623, 'elapsed': 8.544281085953116}
+train original_global {'step': 500, 'loss': 0.00024299901366982822, 'reconstruction': 0.00024183339104289267, 'orth': 0.011656226269355533, 'elapsed': 8.675102495006286}
+train original_global {'step': 750, 'loss': 0.0002148342103845879, 'reconstruction': 0.0002136670585127468, 'orth': 0.011671518718411008, 'elapsed': 8.804033490945585}
+train original_global {'step': 1000, 'loss': 0.000298578457969746, 'reconstruction': 0.00029740489064600446, 'orth': 0.011735673237415012, 'elapsed': 8.934085064916871}
+train original_global {'step': 1250, 'loss': 8.898531476230138e-05, 'reconstruction': 8.78167800589646e-05, 'orth': 0.011685347033367793, 'elapsed': 9.064780604909174}
+train original_global {'step': 1500, 'loss': 0.0003423448080262288, 'reconstruction': 0.00034117582063922133, 'orth': 0.011689873870074578, 'elapsed': 9.193982350989245}
+train original_global {'step': 1750, 'loss': 0.00044696712719513533, 'reconstruction': 0.0004457948155127537, 'orth': 0.011723116823816182, 'elapsed': 9.32275759591721}
+train original_global {'step': 2000, 'loss': 8.365455996078246e-05, 'reconstruction': 8.247600262462556e-05, 'orth': 0.011785573361568965, 'elapsed': 9.457628212985583}
+train original_global {'step': 2250, 'loss': 5.101345331328639e-05, 'reconstruction': 4.983935680522681e-05, 'orth': 0.011740965080595776, 'elapsed': 9.590986188966781}
+train original_global {'step': 2500, 'loss': 7.373145610633216e-05, 'reconstruction': 7.255840729138349e-05, 'orth': 0.011730488149486733, 'elapsed': 9.722876550978981}
+train original_global {'step': 2750, 'loss': 0.00022637164472411056, 'reconstruction': 0.0002251943907558971, 'orth': 0.011772539682134386, 'elapsed': 9.853837964939885}
+train original_global {'step': 3000, 'loss': 0.0001230771538125193, 'reconstruction': 0.00012189747695131118, 'orth': 0.011796768612081284, 'elapsed': 9.986257227952592}
+train original_global {'step': 3250, 'loss': 0.00014351879547917367, 'reconstruction': 0.00014233672357226966, 'orth': 0.011820719069039998, 'elapsed': 10.118738300981931}
+train original_global {'step': 3500, 'loss': 7.497715879847944e-05, 'reconstruction': 7.379785088375703e-05, 'orth': 0.011793079147224043, 'elapsed': 10.249587833997793}
+train original_global {'step': 3750, 'loss': 6.723815229387953e-05, 'reconstruction': 6.605813357787153e-05, 'orth': 0.01180018716008008, 'elapsed': 10.382231557974592}
+train original_global {'step': 4000, 'loss': 7.354084579772262e-05, 'reconstruction': 7.2364863431035e-05, 'orth': 0.011759823666876137, 'elapsed': 10.51674218091648}
+train original_global {'step': 4250, 'loss': 0.00016876365369448035, 'reconstruction': 0.00016758080037865202, 'orth': 0.011828533158283297, 'elapsed': 10.654672765987925}
+train original_global {'step': 4500, 'loss': 5.4428325162402966e-05, 'reconstruction': 5.3245345757881794e-05, 'orth': 0.01182979404521171, 'elapsed': 10.788978304946795}
+train original_global {'step': 4750, 'loss': 5.880281890335077e-05, 'reconstruction': 5.761929716872269e-05, 'orth': 0.011835217346280773, 'elapsed': 10.926989607978612}
+train original_global {'step': 5000, 'loss': 4.960031350765951e-05, 'reconstruction': 4.841732028772637e-05, 'orth': 0.011829932199331395, 'elapsed': 11.061083349981345}
+train original_global {'step': 5250, 'loss': 6.702797705530214e-05, 'reconstruction': 6.584806534256733e-05, 'orth': 0.011799117127347991, 'elapsed': 11.193837656988762}
+train original_global {'step': 5500, 'loss': 0.00017335430741156479, 'reconstruction': 0.00017217358244024772, 'orth': 0.011807249713170563, 'elapsed': 11.32906918192748}
+train original_global {'step': 5750, 'loss': 5.9899267516279586e-05, 'reconstruction': 5.871236800987661e-05, 'orth': 0.01186899506402972, 'elapsed': 11.463569665909745}
+train original_global {'step': 6000, 'loss': 5.597207014804534e-05, 'reconstruction': 5.4792424645739463e-05, 'orth': 0.011796455023058733, 'elapsed': 11.598576864926144}
+train original_global {'step': 6250, 'loss': 4.9449727795645765e-05, 'reconstruction': 4.826889873715934e-05, 'orth': 0.011808290584864285, 'elapsed': 11.733435711008497}
+train original_global {'step': 6500, 'loss': 5.244138119152219e-05, 'reconstruction': 5.125952754742205e-05, 'orth': 0.011818536441001375, 'elapsed': 11.867961248965003}
+train original_global {'step': 6750, 'loss': 5.253547188419918e-05, 'reconstruction': 5.135179879361514e-05, 'orth': 0.011836730905840424, 'elapsed': 12.003059974987991}
+train original_global {'step': 7000, 'loss': 5.2634795852975974e-05, 'reconstruction': 5.1454520702622844e-05, 'orth': 0.011802751503531304, 'elapsed': 12.138527953997254}
+train original_global {'step': 7250, 'loss': 4.924812766024812e-05, 'reconstruction': 4.806506820018974e-05, 'orth': 0.011830594600583862, 'elapsed': 12.271686766995117}
+train original_global {'step': 7500, 'loss': 4.833510241378035e-05, 'reconstruction': 4.715226900452562e-05, 'orth': 0.011828334092547313, 'elapsed': 12.4260275720153}
+train original_global {'step': 7750, 'loss': 5.1187016718728876e-05, 'reconstruction': 5.000738833231773e-05, 'orth': 0.011796283864111433, 'elapsed': 12.569460386992432}
+train original_global {'step': 8000, 'loss': 4.6009900705915e-05, 'reconstruction': 4.48316156830635e-05, 'orth': 0.011782850228515038, 'elapsed': 12.70626721798908}
+train original_global {'step': 8250, 'loss': 5.528618425086341e-05, 'reconstruction': 5.410693947194846e-05, 'orth': 0.011792447789149561, 'elapsed': 12.847366252914071}
+train original_global {'step': 8500, 'loss': 4.750713706559199e-05, 'reconstruction': 4.633064568694308e-05, 'orth': 0.011764913786489101, 'elapsed': 12.981755557004362}
+train original_global {'step': 8750, 'loss': 5.2076060505905225e-05, 'reconstruction': 5.089789094191842e-05, 'orth': 0.011781695639868098, 'elapsed': 13.116873350925744}
+train original_global {'step': 9000, 'loss': 4.5502314814647725e-05, 'reconstruction': 4.432157432880544e-05, 'orth': 0.011807404858422858, 'elapsed': 13.256094660959207}
+train original_global {'step': 9250, 'loss': 4.5710990333872906e-05, 'reconstruction': 4.4530999310242156e-05, 'orth': 0.011799910236307512, 'elapsed': 13.391764116007835}
+train original_global {'step': 9500, 'loss': 4.888940105342554e-05, 'reconstruction': 4.771137120035433e-05, 'orth': 0.011780298530712106, 'elapsed': 13.527615854982287}
+train original_global {'step': 9750, 'loss': 4.566569563936378e-05, 'reconstruction': 4.4485956815744364e-05, 'orth': 0.011797388236194136, 'elapsed': 13.661963011953048}
+train original_global {'step': 10000, 'loss': 5.0724259123030796e-05, 'reconstruction': 4.954096046846707e-05, 'orth': 0.01183298654563723, 'elapsed': 13.795144616975449}
+train expanded_global {'step': 1, 'loss': 0.00017499216881647472, 'reconstruction': 0.0001738335640677273, 'orth': 0.011586047487474393, 'elapsed': 1.4323909970698878}
+train expanded_global {'step': 250, 'loss': 0.00036134834799787287, 'reconstruction': 0.0003601886472076877, 'orth': 0.011597007901851284, 'elapsed': 1.5695174459833652}
+train expanded_global {'step': 500, 'loss': 0.0007687830417289776, 'reconstruction': 0.0007676152722172103, 'orth': 0.011677695117673068, 'elapsed': 1.7062011670786887}
+train expanded_global {'step': 750, 'loss': 0.0006083110340352144, 'reconstruction': 0.0006071382923312943, 'orth': 0.011727417039200412, 'elapsed': 1.8435021420009434}
+train expanded_global {'step': 1000, 'loss': 0.00031292312901042935, 'reconstruction': 0.00031174583922826467, 'orth': 0.011772897821646765, 'elapsed': 1.9808984490809962}
+train expanded_global {'step': 1250, 'loss': 0.0006137257044622821, 'reconstruction': 0.0006125523346453223, 'orth': 0.011733698169597278, 'elapsed': 2.11823960498441}
+train expanded_global {'step': 1500, 'loss': 0.00040085410146510365, 'reconstruction': 0.00039967767352273463, 'orth': 0.011764279423689907, 'elapsed': 2.258137019001879}
+train expanded_global {'step': 1750, 'loss': 0.0003145801738208954, 'reconstruction': 0.00031340434747208093, 'orth': 0.011758263488144578, 'elapsed': 2.3987354070413858}
+train expanded_global {'step': 2000, 'loss': 0.00040116732803019536, 'reconstruction': 0.00039998465778850816, 'orth': 0.011826702416872191, 'elapsed': 2.5378007569815964}
+train expanded_global {'step': 2250, 'loss': 0.00020740139051230792, 'reconstruction': 0.0002062204878676096, 'orth': 0.011809026446983032, 'elapsed': 2.6783857350237668}
+train expanded_global {'step': 2500, 'loss': 0.00033762563063969545, 'reconstruction': 0.0003364432707230733, 'orth': 0.011823599166221286, 'elapsed': 2.8159785150783136}
+train expanded_global {'step': 2750, 'loss': 0.0002496376460099421, 'reconstruction': 0.0002484522967075501, 'orth': 0.011853493023919814, 'elapsed': 2.9535575120244175}
+train expanded_global {'step': 3000, 'loss': 0.00020240258175139455, 'reconstruction': 0.00020121560424397425, 'orth': 0.011869775074202898, 'elapsed': 3.091958601027727}
+train expanded_global {'step': 3250, 'loss': 0.0001874980775020362, 'reconstruction': 0.00018630898113568248, 'orth': 0.011890963663537236, 'elapsed': 3.2295528890099376}
+train expanded_global {'step': 3500, 'loss': 0.00019708145745434932, 'reconstruction': 0.0001958947809470456, 'orth': 0.01186676507303739, 'elapsed': 3.3669709940440953}
+train expanded_global {'step': 3750, 'loss': 0.0002695493015659072, 'reconstruction': 0.0002683603685468374, 'orth': 0.011889330190697768, 'elapsed': 3.5047349319793284}
+train expanded_global {'step': 4000, 'loss': 0.00028724627001521733, 'reconstruction': 0.0002860599390075304, 'orth': 0.01186331007686962, 'elapsed': 3.642587195034139}
+train expanded_global {'step': 4250, 'loss': 0.00015623799459406018, 'reconstruction': 0.0001550468309014011, 'orth': 0.011911636926590793, 'elapsed': 3.780590702081099}
+train expanded_global {'step': 4500, 'loss': 0.0002488754777938874, 'reconstruction': 0.00024768340186244356, 'orth': 0.01192075931443877, 'elapsed': 3.9180950480513275}
+train expanded_global {'step': 4750, 'loss': 0.0001554681268441033, 'reconstruction': 0.00015427517972696372, 'orth': 0.011929471171395745, 'elapsed': 4.055826811003499}
+train expanded_global {'step': 5000, 'loss': 0.00014608987960673943, 'reconstruction': 0.00014489673061532265, 'orth': 0.011931489914167804, 'elapsed': 4.194544019992463}
+train expanded_global {'step': 5250, 'loss': 0.00013976758040298016, 'reconstruction': 0.0001385774472786377, 'orth': 0.011901331243424611, 'elapsed': 4.336478007026017}
+train expanded_global {'step': 5500, 'loss': 0.00013530586685212668, 'reconstruction': 0.0001341155541617347, 'orth': 0.011903126903919726, 'elapsed': 4.47509624902159}
+train expanded_global {'step': 5750, 'loss': 0.00013604871213952784, 'reconstruction': 0.00013485264245129282, 'orth': 0.011960696882350144, 'elapsed': 4.615755748003721}
+train expanded_global {'step': 6000, 'loss': 0.0001305278638825428, 'reconstruction': 0.00012933807422804344, 'orth': 0.011897896544993515, 'elapsed': 4.759949863073416}
+train expanded_global {'step': 6250, 'loss': 0.00010766419113705465, 'reconstruction': 0.00010647283250188123, 'orth': 0.011913586351734255, 'elapsed': 4.897762689040974}
+train expanded_global {'step': 6500, 'loss': 0.00011449355691221139, 'reconstruction': 0.00011330130005797329, 'orth': 0.011922568542381046, 'elapsed': 5.035234429058619}
+train expanded_global {'step': 6750, 'loss': 0.0001100529803280796, 'reconstruction': 0.00010885817080199351, 'orth': 0.011948095260860816, 'elapsed': 5.173204467981122}
+train expanded_global {'step': 7000, 'loss': 0.00010249425534234003, 'reconstruction': 0.00010130302437954432, 'orth': 0.011912309627957113, 'elapsed': 5.311334402998909}
+train expanded_global {'step': 7250, 'loss': 9.47672194435987e-05, 'reconstruction': 9.357333102225581e-05, 'orth': 0.011938884213428952, 'elapsed': 5.449400368030183}
+train expanded_global {'step': 7500, 'loss': 0.00010143873881758155, 'reconstruction': 0.00010024484822886018, 'orth': 0.011938905887213618, 'elapsed': 5.591521062073298}
+train expanded_global {'step': 7750, 'loss': 0.00011023874977625906, 'reconstruction': 0.00010904781755825516, 'orth': 0.011909322180038985, 'elapsed': 5.729691951069981}
+train expanded_global {'step': 8000, 'loss': 0.00012186658179951369, 'reconstruction': 0.00012067676381566962, 'orth': 0.011898179838440754, 'elapsed': 5.86748663301114}
+train expanded_global {'step': 8250, 'loss': 0.00011407253459476382, 'reconstruction': 0.00011288221395413207, 'orth': 0.011903206406317474, 'elapsed': 6.005565294995904}
+train expanded_global {'step': 8500, 'loss': 0.00010378899998298889, 'reconstruction': 0.00010260094000671576, 'orth': 0.011880599762731165, 'elapsed': 6.143399107037112}
+train expanded_global {'step': 8750, 'loss': 8.055226223315389e-05, 'reconstruction': 7.936259199463893e-05, 'orth': 0.011896702385149598, 'elapsed': 6.283552977023646}
+train expanded_global {'step': 9000, 'loss': 8.564705976366089e-05, 'reconstruction': 8.44548476041983e-05, 'orth': 0.011922121594625894, 'elapsed': 6.423734041978605}
+train expanded_global {'step': 9250, 'loss': 9.189426758889042e-05, 'reconstruction': 9.070287866350148e-05, 'orth': 0.011913889253889299, 'elapsed': 6.568215870996937}
+train expanded_global {'step': 9500, 'loss': 9.528868331827635e-05, 'reconstruction': 9.409896355398788e-05, 'orth': 0.011897197642884702, 'elapsed': 6.706178097985685}
+train expanded_global {'step': 9750, 'loss': 0.000100496892511466, 'reconstruction': 9.930535516862128e-05, 'orth': 0.011915373428447226, 'elapsed': 6.843825084972195}
+train expanded_global {'step': 10000, 'loss': 0.00010036012446692592, 'reconstruction': 9.916530078324873e-05, 'orth': 0.011948236836771885, 'elapsed': 6.981858117040247}
+train original_relative {'step': 1, 'loss': 0.0011205600652010846, 'reconstruction': 0.0011194014604523372, 'orth': 0.011586047487474393, 'elapsed': 1.3653657840332016}
+train original_relative {'step': 250, 'loss': 0.002885634775389612, 'reconstruction': 0.002884474394374074, 'orth': 0.011603810155381271, 'elapsed': 1.4987082129810005}
+train original_relative {'step': 500, 'loss': 0.002992705096824891, 'reconstruction': 0.0029915260766759546, 'orth': 0.01179020148936316, 'elapsed': 1.6320076079573482}
+train original_relative {'step': 750, 'loss': 0.0021284199402718516, 'reconstruction': 0.0021271983378874726, 'orth': 0.012216023843787449, 'elapsed': 1.7647261370439082}
+train original_relative {'step': 1000, 'loss': 0.001012703955918933, 'reconstruction': 0.0010114851372217766, 'orth': 0.012188186971564078, 'elapsed': 1.8987096520140767}
+train original_relative {'step': 1250, 'loss': 0.000963315451446154, 'reconstruction': 0.0009621065340356507, 'orth': 0.012089174105032635, 'elapsed': 2.0338999850209802}
+train original_relative {'step': 1500, 'loss': 0.004458521998346168, 'reconstruction': 0.004457300622674295, 'orth': 0.012213756718726002, 'elapsed': 2.1646084180101752}
+train original_relative {'step': 1750, 'loss': 0.0011097332556646421, 'reconstruction': 0.0011085008541069832, 'orth': 0.012324015576588722, 'elapsed': 2.296980176004581}
+train original_relative {'step': 2000, 'loss': 0.0011242950599282546, 'reconstruction': 0.0011230593524159025, 'orth': 0.012357075123520465, 'elapsed': 2.4277644460089505}
+train original_relative {'step': 2250, 'loss': 0.001050797509276527, 'reconstruction': 0.0010495636165421048, 'orth': 0.012338927344223082, 'elapsed': 2.5601603450486436}
+train original_relative {'step': 2500, 'loss': 0.0015252982799829693, 'reconstruction': 0.001524061644782442, 'orth': 0.012366352005273083, 'elapsed': 2.6924357239622623}
+train original_relative {'step': 2750, 'loss': 0.0024629891467604598, 'reconstruction': 0.0024617404689407053, 'orth': 0.01248677819754631, 'elapsed': 2.8244022489525378}
+train original_relative {'step': 3000, 'loss': 0.0019015045433859981, 'reconstruction': 0.0019002412068896118, 'orth': 0.012633364963863095, 'elapsed': 2.958378080977127}
+train original_relative {'step': 3250, 'loss': 0.0011901034952303128, 'reconstruction': 0.0011888405468074119, 'orth': 0.012629484229009781, 'elapsed': 3.091560581000522}
+train original_relative {'step': 3500, 'loss': 0.000952683206928181, 'reconstruction': 0.0009514253254285001, 'orth': 0.012578814996809795, 'elapsed': 3.228740710997954}
+train original_relative {'step': 3750, 'loss': 0.0011025687901813606, 'reconstruction': 0.0011013014545503527, 'orth': 0.012673356310080014, 'elapsed': 3.3594488409580663}
+train original_relative {'step': 4000, 'loss': 0.0008089709222327994, 'reconstruction': 0.0008077072494839472, 'orth': 0.012636727488521562, 'elapsed': 3.4935849050525576}
+train original_relative {'step': 4250, 'loss': 0.0010793156469767352, 'reconstruction': 0.0010780484350214376, 'orth': 0.012672119552976339, 'elapsed': 3.6276027250569314}
+train original_relative {'step': 4500, 'loss': 0.0009111805548995526, 'reconstruction': 0.0009099141574173981, 'orth': 0.012663974821544698, 'elapsed': 3.7615495669888332}
+train original_relative {'step': 4750, 'loss': 0.001295165162681969, 'reconstruction': 0.0012938961025635689, 'orth': 0.01269060118400191, 'elapsed': 3.8967292540473863}
+train original_relative {'step': 5000, 'loss': 0.0007025675817401003, 'reconstruction': 0.0007012915859490554, 'orth': 0.012759957910448781, 'elapsed': 4.030749688972719}
+train original_relative {'step': 5250, 'loss': 0.0006017453633789668, 'reconstruction': 0.000600475034454075, 'orth': 0.012703289248918167, 'elapsed': 4.165283130016178}
+train original_relative {'step': 5500, 'loss': 0.0006466817177561748, 'reconstruction': 0.0006454110573376729, 'orth': 0.012706604185018228, 'elapsed': 4.299934266950004}
+train original_relative {'step': 5750, 'loss': 0.0008322999784943243, 'reconstruction': 0.0008310236667301238, 'orth': 0.01276311764200564, 'elapsed': 4.43907673296053}
+train original_relative {'step': 6000, 'loss': 0.0007881418114925508, 'reconstruction': 0.0007868733292074258, 'orth': 0.012684822851250197, 'elapsed': 4.57414428901393}
+train original_relative {'step': 6250, 'loss': 0.0008534338298044286, 'reconstruction': 0.0008521638810543143, 'orth': 0.012699487501142852, 'elapsed': 4.708393197041005}
+train original_relative {'step': 6500, 'loss': 0.0009058109184347321, 'reconstruction': 0.0009045404849025594, 'orth': 0.012704335321726497, 'elapsed': 4.845656021963805}
+train original_relative {'step': 6750, 'loss': 0.0009186093399112417, 'reconstruction': 0.0009173377166401215, 'orth': 0.012716232711200755, 'elapsed': 5.006125411950052}
+train original_relative {'step': 7000, 'loss': 0.0006299760198642369, 'reconstruction': 0.000628706809596588, 'orth': 0.012692102676488237, 'elapsed': 5.146442892961204}
+train original_relative {'step': 7250, 'loss': 0.0006716036065614888, 'reconstruction': 0.0006703317479515624, 'orth': 0.012718586099263723, 'elapsed': 5.286625107983127}
+train original_relative {'step': 7500, 'loss': 0.0006922819388111053, 'reconstruction': 0.0006910111684138169, 'orth': 0.012707703972884857, 'elapsed': 5.421471399953589}
+train original_relative {'step': 7750, 'loss': 0.0007212750222149832, 'reconstruction': 0.0007200071157273256, 'orth': 0.012679064876575656, 'elapsed': 5.556898255948909}
+train original_relative {'step': 8000, 'loss': 0.0006476970296916813, 'reconstruction': 0.0006464311118107309, 'orth': 0.012659178809504547, 'elapsed': 5.695958744967356}
+train original_relative {'step': 8250, 'loss': 0.0007151597928030922, 'reconstruction': 0.0007138930522108905, 'orth': 0.012667405922016746, 'elapsed': 5.832195639028214}
+train original_relative {'step': 8500, 'loss': 0.0006029865573452176, 'reconstruction': 0.0006017232161273701, 'orth': 0.01263341217847555, 'elapsed': 5.967575154965743}
+train original_relative {'step': 8750, 'loss': 0.0007062799197635573, 'reconstruction': 0.0007050145516101086, 'orth': 0.012653681534486769, 'elapsed': 6.102873350959271}
+train original_relative {'step': 9000, 'loss': 0.0006243178023112538, 'reconstruction': 0.0006230499330484112, 'orth': 0.012678692628426025, 'elapsed': 6.2378481440246105}
+train original_relative {'step': 9250, 'loss': 0.0006301779844043203, 'reconstruction': 0.0006289112404837083, 'orth': 0.012667439206120621, 'elapsed': 6.372820624965243}
+train original_relative {'step': 9500, 'loss': 0.0011020566617964056, 'reconstruction': 0.001100792192240792, 'orth': 0.012644695556136041, 'elapsed': 6.507828133995645}
+train original_relative {'step': 9750, 'loss': 0.0007384662452893124, 'reconstruction': 0.0007372003644275485, 'orth': 0.01265880861763944, 'elapsed': 6.642782954964787}
+train original_relative {'step': 10000, 'loss': 0.0009025894758998266, 'reconstruction': 0.000901319370570178, 'orth': 0.01270105329648612, 'elapsed': 6.779271009960212}
+train expanded_relative {'step': 1, 'loss': 0.0010578738915860012, 'reconstruction': 0.0010567152868372538, 'orth': 0.011586047487474393, 'elapsed': 1.4587355019757524}
+train expanded_relative {'step': 250, 'loss': 0.0026452367203070636, 'reconstruction': 0.0026440774006271407, 'orth': 0.011593196799229573, 'elapsed': 1.5958180240122601}
+train expanded_relative {'step': 500, 'loss': 0.00814537852250726, 'reconstruction': 0.00814419285592721, 'orth': 0.011856665800490057, 'elapsed': 1.7327567210886627}
+train expanded_relative {'step': 750, 'loss': 0.0028218267396219313, 'reconstruction': 0.0028206241223000337, 'orth': 0.01202617321897757, 'elapsed': 1.8711299260612577}
+train expanded_relative {'step': 1000, 'loss': 0.002328490774098257, 'reconstruction': 0.0023272811096629762, 'orth': 0.012096644352809872, 'elapsed': 2.010364786023274}
+train expanded_relative {'step': 1250, 'loss': 0.004156540870472237, 'reconstruction': 0.004155334473370765, 'orth': 0.012063971014720669, 'elapsed': 2.1489240130176768}
+train expanded_relative {'step': 1500, 'loss': 0.0028699865858746285, 'reconstruction': 0.0028687674856348903, 'orth': 0.012191002397382418, 'elapsed': 2.2854836779879406}
+train expanded_relative {'step': 1750, 'loss': 0.0023456249488437242, 'reconstruction': 0.002344407586409374, 'orth': 0.012173624343502791, 'elapsed': 2.4224002630217}
+train expanded_relative {'step': 2000, 'loss': 0.0022193531789748908, 'reconstruction': 0.002218125689046472, 'orth': 0.012274899284187598, 'elapsed': 2.56012996006757}
+train expanded_relative {'step': 2250, 'loss': 0.0022674401754035917, 'reconstruction': 0.0022662070611811783, 'orth': 0.01233114222413223, 'elapsed': 2.69779828004539}
+train expanded_relative {'step': 2500, 'loss': 0.003364336609725031, 'reconstruction': 0.0033630943603278635, 'orth': 0.012422493971678862, 'elapsed': 2.835410259081982}
+train expanded_relative {'step': 2750, 'loss': 0.002421215492766103, 'reconstruction': 0.0024199711529887774, 'orth': 0.012443397773256419, 'elapsed': 2.973040311015211}
+train expanded_relative {'step': 3000, 'loss': 0.0023396580270808043, 'reconstruction': 0.0023384099978296284, 'orth': 0.012480292511759689, 'elapsed': 3.110678742057644}
+train expanded_relative {'step': 3250, 'loss': 0.0014524473504536946, 'reconstruction': 0.0014511951426927792, 'orth': 0.012522077609155236, 'elapsed': 3.248545872978866}
+train expanded_relative {'step': 3500, 'loss': 0.0024884621830785687, 'reconstruction': 0.0024872105085487145, 'orth': 0.012516745298543162, 'elapsed': 3.3860665800748393}
+train expanded_relative {'step': 3750, 'loss': 0.0035439588602013392, 'reconstruction': 0.003542701631064605, 'orth': 0.01257229136733918, 'elapsed': 3.524573371047154}
+train expanded_relative {'step': 4000, 'loss': 0.0015716023174933496, 'reconstruction': 0.0015703474059653656, 'orth': 0.012549115279839177, 'elapsed': 3.6635966940084472}
+train expanded_relative {'step': 4250, 'loss': 0.0016447229883293647, 'reconstruction': 0.001643461044475314, 'orth': 0.012619438540506109, 'elapsed': 3.802844017976895}
+train expanded_relative {'step': 4500, 'loss': 0.0015147737066544536, 'reconstruction': 0.0015135113981867556, 'orth': 0.012623084676978955, 'elapsed': 3.944383968017064}
+train expanded_relative {'step': 4750, 'loss': 0.0017466775250242425, 'reconstruction': 0.0017454132022062412, 'orth': 0.012643228180011299, 'elapsed': 4.083558485028334}
+train expanded_relative {'step': 5000, 'loss': 0.001355952334124918, 'reconstruction': 0.0013546868891786278, 'orth': 0.012654449462901694, 'elapsed': 4.221959728980437}
+train expanded_relative {'step': 5250, 'loss': 0.0019567812034663847, 'reconstruction': 0.0019555184163027152, 'orth': 0.012627871636694935, 'elapsed': 4.359542185091414}
+train expanded_relative {'step': 5500, 'loss': 0.0013652310031240923, 'reconstruction': 0.0013639669371209447, 'orth': 0.012640660031475463, 'elapsed': 4.497261046082713}
+train expanded_relative {'step': 5750, 'loss': 0.0011703898499200792, 'reconstruction': 0.0011691208281442533, 'orth': 0.012690217758258557, 'elapsed': 4.634615394985303}
+train expanded_relative {'step': 6000, 'loss': 0.0013489141699948395, 'reconstruction': 0.0013476515606062694, 'orth': 0.012626093885701836, 'elapsed': 4.773620596039109}
+train expanded_relative {'step': 6250, 'loss': 0.001382797259620391, 'reconstruction': 0.0013815334869815826, 'orth': 0.012637726388084908, 'elapsed': 4.931363702053204}
+train expanded_relative {'step': 6500, 'loss': 0.0015174529845220844, 'reconstruction': 0.0015161888796334667, 'orth': 0.012641048886176481, 'elapsed': 5.068405105033889}
+train expanded_relative {'step': 6750, 'loss': 0.0007865860825459, 'reconstruction': 0.0007853194865805584, 'orth': 0.01266595965341661, 'elapsed': 5.209345126990229}
+train expanded_relative {'step': 7000, 'loss': 0.0009731058486160554, 'reconstruction': 0.0009718426649852894, 'orth': 0.012631836307660398, 'elapsed': 5.346601882018149}
+train expanded_relative {'step': 7250, 'loss': 0.0010173532606507162, 'reconstruction': 0.0010160872307715526, 'orth': 0.012660298791635756, 'elapsed': 5.484325197059661}
+train expanded_relative {'step': 7500, 'loss': 0.0011086633203630835, 'reconstruction': 0.001107398069022833, 'orth': 0.01265251340250641, 'elapsed': 5.621905199019238}
+train expanded_relative {'step': 7750, 'loss': 0.0010311575785850666, 'reconstruction': 0.0010298951235053965, 'orth': 0.012624550796700724, 'elapsed': 5.759069564985111}
+train expanded_relative {'step': 8000, 'loss': 0.0013111168808874823, 'reconstruction': 0.0013098560296016806, 'orth': 0.012608512858016669, 'elapsed': 5.8999255480011925}
+train expanded_relative {'step': 8250, 'loss': 0.0013911133686269413, 'reconstruction': 0.0013898520366275326, 'orth': 0.01261331999408619, 'elapsed': 6.03815266105812}
+train expanded_relative {'step': 8500, 'loss': 0.001085423258943826, 'reconstruction': 0.001084164749096697, 'orth': 0.012585098471289698, 'elapsed': 6.175555031048134}
+train expanded_relative {'step': 8750, 'loss': 0.0011805397500847796, 'reconstruction': 0.001179279412479335, 'orth': 0.012603376054445444, 'elapsed': 6.312807807000354}
+train expanded_relative {'step': 9000, 'loss': 0.0007796533695334836, 'reconstruction': 0.0007783909920981795, 'orth': 0.012623774353041075, 'elapsed': 6.450684483977966}
+train expanded_relative {'step': 9250, 'loss': 0.0010382768182662647, 'reconstruction': 0.0010370148184543184, 'orth': 0.012619998119462815, 'elapsed': 6.588126969058067}
+train expanded_relative {'step': 9500, 'loss': 0.0013546938595026732, 'reconstruction': 0.001353433669099867, 'orth': 0.01260190402806171, 'elapsed': 6.724959257990122}
+train expanded_relative {'step': 9750, 'loss': 0.0011736542549402795, 'reconstruction': 0.0011723925368181543, 'orth': 0.01261718122125195, 'elapsed': 6.865707627031952}
+train expanded_relative {'step': 10000, 'loss': 0.0010548856840086713, 'reconstruction': 0.0010536201228530328, 'orth': 0.012655611556385947, 'elapsed': 7.003520030993968}
+evaluation 256 0 existing_development
+evaluation 256 1 existing_development
+evaluation 256 2 existing_development
+evaluation 256 3 existing_development
+evaluation 256 4 existing_development
+evaluation 256 5 existing_development
+evaluation 256 6 fresh_development
+evaluation 256 7 fresh_development
+evaluation 256 8 fresh_development
+evaluation 256 9 fresh_development
+evaluation 256 10 fresh_development
+evaluation 256 11 fresh_development
+evaluation 256 12 fresh_development
+evaluation 256 13 fresh_development
+evaluation 256 14 fresh_development
+evaluation 256 15 fresh_development
+evaluation 256 16 fresh_development
+evaluation 256 17 fresh_development
+evaluation 256 18 fresh_development
+evaluation 256 19 fresh_development
+evaluation 256 20 fresh_development
+evaluation 256 21 fresh_development
+evaluation 256 22 fresh_development
+evaluation 256 23 fresh_development
+evaluation 256 24 fresh_development
+evaluation 256 25 fresh_development
+evaluation 256 26 fresh_development
+evaluation 256 27 fresh_development
+evaluation 256 28 fresh_development
+evaluation 256 29 fresh_development
+evaluation 512 0 existing_development
+evaluation 512 1 existing_development
+evaluation 512 2 existing_development
+evaluation 512 3 existing_development
+evaluation 512 4 existing_development
+evaluation 512 5 existing_development
+evaluation 512 6 fresh_development
+evaluation 512 7 fresh_development
+evaluation 512 8 fresh_development
+evaluation 512 9 fresh_development
+evaluation 512 10 fresh_development
+evaluation 512 11 fresh_development
+evaluation 512 12 fresh_development
+evaluation 512 13 fresh_development
+evaluation 512 14 fresh_development
+evaluation 512 15 fresh_development
+evaluation 512 16 fresh_development
+evaluation 512 17 fresh_development
+evaluation 512 18 fresh_development
+evaluation 512 19 fresh_development
+evaluation 512 20 fresh_development
+evaluation 512 21 fresh_development
+evaluation 512 22 fresh_development
+evaluation 512 23 fresh_development
+evaluation 512 24 fresh_development
+evaluation 512 25 fresh_development
+evaluation 512 26 fresh_development
+evaluation 512 27 fresh_development
+evaluation 512 28 fresh_development
+evaluation 512 29 fresh_development
+ALL-DONE

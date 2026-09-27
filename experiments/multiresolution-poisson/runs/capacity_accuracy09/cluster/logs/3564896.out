@@ -1,0 +1,291 @@
+jax_backend=gpu
+training smoke_bank {'updates': 1, 'loss': 0.00021136778517375583, 'reconstruction': 0.00021004333726215818, 'orth': 0.013244479115976636, 'optimizer_seconds': 0.003654482075944543, 'block_seconds': 0.003654482075944543, 'learning_rate': 2.9999999999999997e-06}
+training smoke_bank {'updates': 2, 'loss': 0.0010211978803527214, 'reconstruction': 0.0010198900157698746, 'orth': 0.013078645828469076, 'optimizer_seconds': 0.004088764078915119, 'block_seconds': 0.0004342820029705763, 'learning_rate': 0.00015625965926939082}
+training smoke_head {'updates': 1, 'loss': 0.00038922223785874366, 'reconstruction': 0.00038922223785874366, 'orth': 0.0, 'optimizer_seconds': 0.0031422548927366734, 'block_seconds': 0.0031422548927366734, 'learning_rate': 2.9999999999999997e-06}
+training smoke_head {'updates': 2, 'loss': 0.0005879769207096843, 'reconstruction': 0.0005879769207096843, 'orth': 0.0, 'optimizer_seconds': 0.003546607680618763, 'block_seconds': 0.0004043527878820896, 'learning_rate': 0.00015625965926939082}
+training smoke_joint {'updates': 1, 'loss': 0.0007688986702062375, 'reconstruction': 0.0007675739164722768, 'orth': 0.013247537339606414, 'optimizer_seconds': 0.004576379898935556, 'block_seconds': 0.004576379898935556, 'learning_rate': 2.9999999999999997e-06}
+training smoke_joint {'updates': 2, 'loss': 0.0017721265871108306, 'reconstruction': 0.001770818661885149, 'orth': 0.013079252256815593, 'optimizer_seconds': 0.005188333801925182, 'block_seconds': 0.0006119539029896259, 'learning_rate': 0.00015625965926939082}
+training smoke_time_control {'updates': 1, 'loss': 0.00018886454576503306, 'reconstruction': 0.0001875400978534354, 'orth': 0.013244479115976636, 'optimizer_seconds': 0.00466847512871027, 'block_seconds': 0.00466847512871027, 'learning_rate': 2.9999999999999997e-06}
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "field_metric_absolute_difference": 0.0,
+  "pod_orthogonality_error": 3.2845037572242913e-15,
+  "bank_rank": 64,
+  "frozen_subtree_checks": true,
+  "matched_updates": 1
+}
+{
+  "rank_deficiency_detected": true,
+  "head_oracle_full_field_residual_verified": true,
+  "head_oracle_candidates": 2
+}
+training capacity_smoke_bank {'updates': 1, 'loss': 2.4562082788927335e-05, 'reconstruction': 2.385715376433986e-05, 'orth': 0.007049290245874773, 'optimizer_seconds': 0.0037030831445008516, 'block_seconds': 0.0037030831445008516, 'learning_rate': 2.9999999999999997e-06}
+training capacity_smoke_bank {'updates': 2, 'loss': 0.00020543670463681795, 'reconstruction': 0.00020472200567961664, 'orth': 0.007146989572013037, 'optimizer_seconds': 0.004561812151223421, 'block_seconds': 0.0008587290067225695, 'learning_rate': 0.00015625965926939082}
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "field_parity": 0.0,
+  "jacobian_parity": 0.0,
+  "field_vs_qr_relative": 1.0384802816639868e-14,
+  "rank": 128,
+  "condition": 492.83857708158894,
+  "deficient_affine_rejected": true,
+  "bank_phase_frozen_head_verified": true
+}
+{
+  "passed": true,
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "full_field_relative_parity": 7.057527617453007e-16,
+  "initial_code_indices": [
+    86,
+    86
+  ],
+  "stationarities": [
+    1.4730292803373175e-07,
+    1.473029265433095e-07
+  ],
+  "stop_reasons": [
+    6,
+    6
+  ],
+  "scope": "smoke controls only; no local benchmark claim"
+}
+training r128_bank {'updates': 1, 'loss': 0.00023503580123676877, 'reconstruction': 0.00023432601344260752, 'orth': 0.007097877941612565, 'optimizer_seconds': 0.003693272825330496, 'block_seconds': 0.003693272825330496, 'learning_rate': 2.9999999999999997e-06}
+training r128_bank {'updates': 2, 'loss': 0.00018453349176017738, 'reconstruction': 0.0001838307731148725, 'orth': 0.00702718645304882, 'optimizer_seconds': 0.0045302987564355135, 'block_seconds': 0.0008370259311050177, 'learning_rate': 0.00015625965926939082}
+training r128_head {'updates': 1, 'loss': 0.0011848870883461675, 'reconstruction': 0.0011848870883461675, 'orth': 0.0, 'optimizer_seconds': 0.0027020350098609924, 'block_seconds': 0.0027020350098609924, 'learning_rate': 2.9999999999999997e-06}
+training r128_head {'updates': 2, 'loss': 0.0009934769432236156, 'reconstruction': 0.0009934769432236156, 'orth': 0.0, 'optimizer_seconds': 0.0035344469361007214, 'block_seconds': 0.0008324119262397289, 'learning_rate': 0.00015625965926939082}
+training r128_joint {'updates': 1, 'loss': 0.0009706109615652214, 'reconstruction': 0.00096991165488187, 'orth': 0.006993066833514057, 'optimizer_seconds': 0.004330503987148404, 'block_seconds': 0.004330503987148404, 'learning_rate': 1.0000000000000002e-06}
+training r128_joint {'updates': 2, 'loss': 0.00254247779122763, 'reconstruction': 0.002541767129368351, 'orth': 0.007106618592788703, 'optimizer_seconds': 0.004950829083099961, 'block_seconds': 0.0006203250959515572, 'learning_rate': 5.208655308979695e-05}
+training r64_bank {'updates': 1, 'loss': 0.0006571809998270275, 'reconstruction': 0.0006558849569015644, 'orth': 0.0129604292546317, 'optimizer_seconds': 0.0033128680661320686, 'block_seconds': 0.0033128680661320686, 'learning_rate': 2.9999999999999997e-06}
+training r64_bank {'updates': 2, 'loss': 0.000580079868278231, 'reconstruction': 0.0005787606737540776, 'orth': 0.013191945241535136, 'optimizer_seconds': 0.0037651408929377794, 'block_seconds': 0.0004522728268057108, 'learning_rate': 5.4778806647818985e-05}
+training r64_bank {'updates': 3, 'loss': 0.0002698747222476264, 'reconstruction': 0.00026855009161148846, 'orth': 0.013246306361379419, 'optimizer_seconds': 0.004151727072894573, 'block_seconds': 0.0003865861799567938, 'learning_rate': 2.4240112671173896e-05}
+training r64_bank {'updates': 4, 'loss': 0.00026892351369934875, 'reconstruction': 0.000267617145731832, 'orth': 0.013063679675167555, 'optimizer_seconds': 0.004527086159214377, 'block_seconds': 0.0003753590863198042, 'learning_rate': 8.296487316090272e-06}
+training r64_bank {'updates': 5, 'loss': 0.0003267162245261193, 'reconstruction': 0.0003253992432711648, 'orth': 0.013169812549544944, 'optimizer_seconds': 0.0048867492005229, 'block_seconds': 0.0003596630413085222, 'learning_rate': 3.000383709664169e-06}
+training r64_head {'updates': 1, 'loss': 0.001153523625439048, 'reconstruction': 0.001153523625439048, 'orth': 0.0, 'optimizer_seconds': 0.002836917992681265, 'block_seconds': 0.002836917992681265, 'learning_rate': 2.9999999999999997e-06}
+training r64_head {'updates': 2, 'loss': 0.0009854115024377377, 'reconstruction': 0.0009854115024377377, 'orth': 0.0, 'optimizer_seconds': 0.003251040121540427, 'block_seconds': 0.00041412212885916233, 'learning_rate': 3.1740313795673254e-05}
+training r64_head {'updates': 3, 'loss': 0.000999830295512143, 'reconstruction': 0.000999830295512143, 'orth': 0.0, 'optimizer_seconds': 0.003615681314840913, 'block_seconds': 0.0003646411933004856, 'learning_rate': 7.878980826655265e-06}
+training r64_joint {'updates': 1, 'loss': 0.0007406081964069412, 'reconstruction': 0.0007393711163958387, 'orth': 0.01237080011102509, 'optimizer_seconds': 0.004414109978824854, 'block_seconds': 0.004414109978824854, 'learning_rate': 1.0000000000000002e-06}
+training r64_joint {'updates': 2, 'loss': 0.00156756483513032, 'reconstruction': 0.0015662614279270098, 'orth': 0.0130340720331017, 'optimizer_seconds': 0.0050445678643882275, 'block_seconds': 0.0006304578855633736, 'learning_rate': 3.9592765256778405e-06}
+reference 0
+evaluation 64 0 existing_development
+CAPACITY ACCURACY COMPLETE
+training r128_bank {'updates': 250, 'loss': 0.00020346109894066927, 'reconstruction': 0.00020280081516254884, 'orth': 0.006602837781204233, 'optimizer_seconds': 0.11339048692025244, 'block_seconds': 0.11339048692025244, 'learning_rate': 2.9999999999999997e-06}
+training r128_bank {'updates': 5000, 'loss': 0.00024497274795564435, 'reconstruction': 0.0002442665228925574, 'orth': 0.007062250630869522, 'optimizer_seconds': 2.19818181800656, 'block_seconds': 0.10963673703372478, 'learning_rate': 0.00029262115451037234}
+training r128_bank {'updates': 10000, 'loss': 0.00013708016112362972, 'reconstruction': 0.00013635982633372338, 'orth': 0.007203347899063399, 'optimizer_seconds': 4.394570487784222, 'block_seconds': 0.10983938397839665, 'learning_rate': 0.0002634093792939843}
+training r128_bank {'updates': 15000, 'loss': 0.0001353159404278351, 'reconstruction': 0.0001345883592306418, 'orth': 0.007275811971933039, 'optimizer_seconds': 6.591154608409852, 'block_seconds': 0.10986848105676472, 'learning_rate': 0.0002164673464552321}
+training r128_bank {'updates': 20000, 'loss': 0.00015276245192964575, 'reconstruction': 0.00015203303636759428, 'orth': 0.007294155620514659, 'optimizer_seconds': 8.7836966982577, 'block_seconds': 0.1095663879532367, 'learning_rate': 0.00015923227297091753}
+training r128_bank {'updates': 25000, 'loss': 0.00010190838043569444, 'reconstruction': 0.00010117841516567225, 'orth': 0.0072996527002218165, 'optimizer_seconds': 10.974873444763944, 'block_seconds': 0.10955432406626642, 'learning_rate': 0.0001007721440654602}
+training r128_bank {'updates': 30000, 'loss': 7.097725017658841e-05, 'reconstruction': 7.024702842871121e-05, 'orth': 0.007302217478771938, 'optimizer_seconds': 13.165932610630989, 'block_seconds': 0.1095313539262861, 'learning_rate': 5.034903547075632e-05}
+training r128_bank {'updates': 35000, 'loss': 8.748576618905597e-05, 'reconstruction': 8.675517563050709e-05, 'orth': 0.007305905585488775, 'optimizer_seconds': 15.356780405854806, 'block_seconds': 0.10955276410095394, 'learning_rate': 1.5951685138394156e-05}
+training r128_bank {'updates': 40000, 'loss': 7.458709627076012e-05, 'reconstruction': 7.385702974363923e-05, 'orth': 0.0073006652712088674, 'optimizer_seconds': 17.547948214691132, 'block_seconds': 0.10954195004887879, 'learning_rate': 3.0298050296683976e-06}
+training r128_head {'updates': 250, 'loss': 0.010331927641389092, 'reconstruction': 0.010331927641389092, 'orth': 0.0, 'optimizer_seconds': 0.05634164693765342, 'block_seconds': 0.05634164693765342, 'learning_rate': 2.9999999999999997e-06}
+training r128_head {'updates': 5000, 'loss': 0.0021539147083016945, 'reconstruction': 0.0021539147083016945, 'orth': 0.0, 'optimizer_seconds': 1.0695641511119902, 'block_seconds': 0.054340103175491095, 'learning_rate': 0.00028563621436292067}
+training r128_head {'updates': 10000, 'loss': 0.0008348706777963713, 'reconstruction': 0.0008348706777963713, 'orth': 0.0, 'optimizer_seconds': 2.1396930038463324, 'block_seconds': 0.05241555208340287, 'learning_rate': 0.0002344962896509501}
+training r128_head {'updates': 15000, 'loss': 0.0007335485092148032, 'reconstruction': 0.0007335485092148032, 'orth': 0.0, 'optimizer_seconds': 3.2047638453077525, 'block_seconds': 0.05335457203909755, 'learning_rate': 0.0001602225133556753}
+training r128_head {'updates': 20000, 'loss': 0.0006329508313674389, 'reconstruction': 0.0006329508313674389, 'orth': 0.0, 'optimizer_seconds': 4.280044847400859, 'block_seconds': 0.05389746208675206, 'learning_rate': 8.351747982887582e-05}
+training r128_head {'updates': 25000, 'loss': 0.00048069434395492866, 'reconstruction': 0.00048069434395492866, 'orth': 0.0, 'optimizer_seconds': 5.361749108415097, 'block_seconds': 0.054297491908073425, 'learning_rate': 2.5761456414599805e-05}
+training r128_head {'updates': 30000, 'loss': 0.000526954311477435, 'reconstruction': 0.000526954311477435, 'orth': 0.0, 'optimizer_seconds': 6.452309210319072, 'block_seconds': 0.05409648711793125, 'learning_rate': 3.0529853407817483e-06}
+training r128_joint {'updates': 250, 'loss': 0.000545877399354848, 'reconstruction': 0.0005451469175911896, 'orth': 0.007304817636583685, 'optimizer_seconds': 0.13648853218182921, 'block_seconds': 0.13648853218182921, 'learning_rate': 1.0000000000000002e-06}
+training r128_joint {'updates': 5000, 'loss': 0.0005493779017572027, 'reconstruction': 0.0005486480382271266, 'orth': 0.007298635300760795, 'optimizer_seconds': 2.6488367952406406, 'block_seconds': 0.13224236201494932, 'learning_rate': 8.844751799005421e-05}
+training r128_joint {'updates': 10000, 'loss': 0.0006198621358103683, 'reconstruction': 0.0006191329851040223, 'orth': 0.007291507063459199, 'optimizer_seconds': 5.293819739948958, 'block_seconds': 0.13227839092724025, 'learning_rate': 5.406726094187964e-05}
+training r128_joint {'updates': 15000, 'loss': 0.0005123782038759943, 'reconstruction': 0.0005116496556437711, 'orth': 0.0072854823222314865, 'optimizer_seconds': 7.938046590425074, 'block_seconds': 0.13215678301639855, 'learning_rate': 1.7515844391375808e-05}
+training r128_joint {'updates': 20000, 'loss': 0.00047721053498145225, 'reconstruction': 0.00047648206459927257, 'orth': 0.007284703821796648, 'optimizer_seconds': 10.583128998056054, 'block_seconds': 0.1322316350415349, 'learning_rate': 1.039736051500439e-06}
+training r64_bank {'updates': 250, 'loss': 0.0005927616320221558, 'reconstruction': 0.0005914974553535408, 'orth': 0.012641766686150581, 'optimizer_seconds': 0.096197189996019, 'block_seconds': 0.096197189996019, 'learning_rate': 2.9999999999999997e-06}
+training r64_bank {'updates': 5000, 'loss': 0.0007812256046295682, 'reconstruction': 0.0007799011931038548, 'orth': 0.013244115257134093, 'optimizer_seconds': 1.8626647219061852, 'block_seconds': 0.09291935595683753, 'learning_rate': 0.0002950398732720585}
+training r64_bank {'updates': 10000, 'loss': 0.0006734281920968705, 'reconstruction': 0.0006720773558453152, 'orth': 0.013508362515553577, 'optimizer_seconds': 3.7220096685923636, 'block_seconds': 0.09305892093107104, 'learning_rate': 0.0002741601550921425}
+training r64_bank {'updates': 15000, 'loss': 0.000658844095498609, 'reconstruction': 0.0006574757639358324, 'orth': 0.013683315627767065, 'optimizer_seconds': 5.58127707708627, 'block_seconds': 0.09293951792642474, 'learning_rate': 0.0002392620776280211}
+training r64_bank {'updates': 20000, 'loss': 0.0005641478456667975, 'reconstruction': 0.0005627727260270521, 'orth': 0.013751196397454698, 'optimizer_seconds': 7.440730530070141, 'block_seconds': 0.0929829659871757, 'learning_rate': 0.00019433430852745567}
+training r64_bank {'updates': 25000, 'loss': 0.0007034418924886269, 'reconstruction': 0.0007020634774828058, 'orth': 0.01378415005821065, 'optimizer_seconds': 9.300832614302635, 'block_seconds': 0.09305472299456596, 'learning_rate': 0.00014449468027692282}
+training r64_bank {'updates': 30000, 'loss': 0.0005326622342751189, 'reconstruction': 0.0005312813065795585, 'orth': 0.01380927695560442, 'optimizer_seconds': 11.160252565518022, 'block_seconds': 0.09295675391331315, 'learning_rate': 9.546901307652645e-05}
+training r64_bank {'updates': 35000, 'loss': 0.0006360591234496186, 'reconstruction': 0.0006346760579343042, 'orth': 0.013830655153143578, 'optimizer_seconds': 13.02015259093605, 'block_seconds': 0.09293370484374464, 'learning_rate': 5.2839015871642034e-05}
+training r64_bank {'updates': 40000, 'loss': 0.0006509707829542936, 'reconstruction': 0.0006495893873630374, 'orth': 0.013813955912562369, 'optimizer_seconds': 14.879894779995084, 'block_seconds': 0.09297227789647877, 'learning_rate': 2.14929087494919e-05}
+training r64_bank {'updates': 45000, 'loss': 0.0006264222123293715, 'reconstruction': 0.0006250409367485094, 'orth': 0.013812755808621376, 'optimizer_seconds': 16.739736437564716, 'block_seconds': 0.09289170405827463, 'learning_rate': 5.007519405576932e-06}
+training r64_bank {'updates': 47250, 'loss': 0.0005343079186845829, 'reconstruction': 0.0005329250009146986, 'orth': 0.013829177698842574, 'optimizer_seconds': 17.577041825512424, 'block_seconds': 0.09312720410525799, 'learning_rate': 3.010160197680561e-06}
+training r64_head {'updates': 250, 'loss': 0.008835537871792282, 'reconstruction': 0.008835537871792282, 'orth': 0.0, 'optimizer_seconds': 0.056671997997909784, 'block_seconds': 0.056671997997909784, 'learning_rate': 2.9999999999999997e-06}
+training r64_head {'updates': 5000, 'loss': 0.00209122201152276, 'reconstruction': 0.00209122201152276, 'orth': 0.0, 'optimizer_seconds': 1.0839214392472059, 'block_seconds': 0.053964765975251794, 'learning_rate': 0.00028537101852459573}
+training r64_head {'updates': 10000, 'loss': 0.0007908300374681457, 'reconstruction': 0.0007908300374681457, 'orth': 0.0, 'optimizer_seconds': 2.1633205416146666, 'block_seconds': 0.05367432814091444, 'learning_rate': 0.0002337209841769109}
+training r64_head {'updates': 15000, 'loss': 0.0009413459362457591, 'reconstruction': 0.0009413459362457591, 'orth': 0.0, 'optimizer_seconds': 3.2443624024745077, 'block_seconds': 0.05406285007484257, 'learning_rate': 0.00015890276913940661}
+training r64_head {'updates': 20000, 'loss': 0.0006907118372787369, 'reconstruction': 0.0006907118372787369, 'orth': 0.0, 'optimizer_seconds': 4.32418382819742, 'block_seconds': 0.0542809939943254, 'learning_rate': 8.206984969601814e-05}
+training r64_head {'updates': 25000, 'loss': 0.0005868358229288694, 'reconstruction': 0.0005868358229288694, 'orth': 0.0, 'optimizer_seconds': 5.40633496385999, 'block_seconds': 0.05376737890765071, 'learning_rate': 2.4620393974598274e-05}
+training r64_head {'updates': 30000, 'loss': 0.0006318384925575236, 'reconstruction': 0.0006318384925575236, 'orth': 0.0, 'optimizer_seconds': 6.491909295320511, 'block_seconds': 0.0545553860720247, 'learning_rate': 3.0040992275926393e-06}
+training r64_joint {'updates': 250, 'loss': 0.0006453114877386855, 'reconstruction': 0.0006439286463583676, 'orth': 0.013828413803178171, 'optimizer_seconds': 0.11882445495575666, 'block_seconds': 0.11882445495575666, 'learning_rate': 1.0000000000000002e-06}
+training r64_joint {'updates': 5000, 'loss': 0.0007703995076762186, 'reconstruction': 0.0007690144706777475, 'orth': 0.013850369984711574, 'optimizer_seconds': 2.2928697948809713, 'block_seconds': 0.11446651513688266, 'learning_rate': 9.147280607968361e-05}
+training r64_joint {'updates': 10000, 'loss': 0.0007883049502621799, 'reconstruction': 0.000786917187063679, 'orth': 0.013877631985008281, 'optimizer_seconds': 4.581369328778237, 'block_seconds': 0.11436108103953302, 'learning_rate': 6.426621839159444e-05}
+training r64_joint {'updates': 15000, 'loss': 0.0007113555270026285, 'reconstruction': 0.0007099664979035103, 'orth': 0.013890290991181397, 'optimizer_seconds': 6.869890389731154, 'block_seconds': 0.1144451021682471, 'learning_rate': 3.0706976399727015e-05}
+training r64_joint {'updates': 20000, 'loss': 0.0006667918002841977, 'reconstruction': 0.0006654025647614653, 'orth': 0.013892355227323284, 'optimizer_seconds': 9.158927300013602, 'block_seconds': 0.11438925401307642, 'learning_rate': 6.279172472558418e-06}
+training r64_joint {'updates': 23250, 'loss': 0.00053700796523996, 'reconstruction': 0.000535620305416202, 'orth': 0.01387659823758048, 'optimizer_seconds': 10.646402438404039, 'block_seconds': 0.11437293910421431, 'learning_rate': 1.0059295157520323e-06}
+reference 0
+reference 1
+reference 2
+reference 3
+reference 4
+reference 5
+reference 6
+reference 7
+reference 8
+reference 9
+reference 10
+reference 11
+reference 12
+reference 13
+reference 14
+reference 15
+reference 16
+reference 17
+reference 18
+reference 19
+reference 20
+reference 21
+reference 22
+reference 23
+reference 24
+reference 25
+reference 26
+reference 27
+reference 28
+reference 29
+reference 30
+reference 31
+reference 32
+reference 33
+reference 34
+reference 35
+reference 36
+reference 37
+reference 38
+reference 39
+reference 40
+reference 41
+evaluation 64 0 existing_development
+evaluation 64 1 existing_development
+evaluation 64 2 existing_development
+evaluation 64 3 existing_development
+evaluation 64 4 existing_development
+evaluation 64 5 existing_development
+evaluation 64 6 existing_development
+evaluation 64 7 existing_development
+evaluation 64 8 existing_development
+evaluation 64 9 existing_development
+evaluation 64 10 existing_development
+evaluation 64 11 existing_development
+evaluation 64 12 existing_development
+evaluation 64 13 existing_development
+evaluation 64 14 existing_development
+evaluation 64 15 existing_development
+evaluation 64 16 existing_development
+evaluation 64 17 existing_development
+evaluation 64 18 existing_development
+evaluation 64 19 existing_development
+evaluation 64 20 existing_development
+evaluation 64 21 existing_development
+evaluation 64 22 existing_development
+evaluation 64 23 existing_development
+evaluation 64 24 existing_development
+evaluation 64 25 existing_development
+evaluation 64 26 existing_development
+evaluation 64 27 existing_development
+evaluation 64 28 existing_development
+evaluation 64 29 existing_development
+evaluation 64 30 new_development
+evaluation 64 31 new_development
+evaluation 64 32 new_development
+evaluation 64 33 new_development
+evaluation 64 34 new_development
+evaluation 64 35 new_development
+evaluation 64 36 new_development
+evaluation 64 37 new_development
+evaluation 64 38 new_development
+evaluation 64 39 new_development
+evaluation 64 40 new_development
+evaluation 64 41 new_development
+evaluation 256 0 existing_development
+evaluation 256 1 existing_development
+evaluation 256 2 existing_development
+evaluation 256 3 existing_development
+evaluation 256 4 existing_development
+evaluation 256 5 existing_development
+evaluation 256 6 existing_development
+evaluation 256 7 existing_development
+evaluation 256 8 existing_development
+evaluation 256 9 existing_development
+evaluation 256 10 existing_development
+evaluation 256 11 existing_development
+evaluation 256 12 existing_development
+evaluation 256 13 existing_development
+evaluation 256 14 existing_development
+evaluation 256 15 existing_development
+evaluation 256 16 existing_development
+evaluation 256 17 existing_development
+evaluation 256 18 existing_development
+evaluation 256 19 existing_development
+evaluation 256 20 existing_development
+evaluation 256 21 existing_development
+evaluation 256 22 existing_development
+evaluation 256 23 existing_development
+evaluation 256 24 existing_development
+evaluation 256 25 existing_development
+evaluation 256 26 existing_development
+evaluation 256 27 existing_development
+evaluation 256 28 existing_development
+evaluation 256 29 existing_development
+evaluation 256 30 new_development
+evaluation 256 31 new_development
+evaluation 256 32 new_development
+evaluation 256 33 new_development
+evaluation 256 34 new_development
+evaluation 256 35 new_development
+evaluation 256 36 new_development
+evaluation 256 37 new_development
+evaluation 256 38 new_development
+evaluation 256 39 new_development
+evaluation 256 40 new_development
+evaluation 256 41 new_development
+evaluation 1024 0 existing_development
+evaluation 1024 1 existing_development
+evaluation 1024 2 existing_development
+evaluation 1024 3 existing_development
+evaluation 1024 4 existing_development
+evaluation 1024 5 existing_development
+evaluation 1024 6 existing_development
+evaluation 1024 7 existing_development
+evaluation 1024 8 existing_development
+evaluation 1024 9 existing_development
+evaluation 1024 10 existing_development
+evaluation 1024 11 existing_development
+evaluation 1024 12 existing_development
+evaluation 1024 13 existing_development
+evaluation 1024 14 existing_development
+evaluation 1024 15 existing_development
+evaluation 1024 16 existing_development
+evaluation 1024 17 existing_development
+evaluation 1024 18 existing_development
+evaluation 1024 19 existing_development
+evaluation 1024 20 existing_development
+evaluation 1024 21 existing_development
+evaluation 1024 22 existing_development
+evaluation 1024 23 existing_development
+evaluation 1024 24 existing_development
+evaluation 1024 25 existing_development
+evaluation 1024 26 existing_development
+evaluation 1024 27 existing_development
+evaluation 1024 28 existing_development
+evaluation 1024 29 existing_development
+evaluation 1024 30 new_development
+evaluation 1024 31 new_development
+evaluation 1024 32 new_development
+evaluation 1024 33 new_development
+evaluation 1024 34 new_development
+evaluation 1024 35 new_development
+evaluation 1024 36 new_development
+evaluation 1024 37 new_development
+evaluation 1024 38 new_development
+evaluation 1024 39 new_development
+evaluation 1024 40 new_development
+evaluation 1024 41 new_development
+CAPACITY ACCURACY COMPLETE

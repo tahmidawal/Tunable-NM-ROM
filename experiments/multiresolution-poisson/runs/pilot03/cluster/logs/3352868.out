@@ -1,0 +1,25 @@
+jax_backend=gpu
+jax_backend=gpu [CudaDevice(id=0)]
+jax_backend=gpu [CudaDevice(id=0)]
+parity 0.01 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+parity 0.0 {'field_relative': 0.0, 'latent_relative': 0.0, 'residual_absolute': 0.0, 'initial_absolute': 0.0, 'counters_match': True, 'modular_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'fused_counters': {'reason': 1, 'attempts': 17, 'accepted': 12, 'jacobians': 13}, 'passed': True}
+jax_backend=gpu [CudaDevice(id=0)]
+actual_agreement 0.01 {'field_relative': 8.232931865707137e-16, 'latent_relative': 5.562395808556632e-16, 'objective_scaled_difference': 4.574474283036522e-17, 'candidate_stationarity': 1.745049085446075e-09, 'control_stationarity': 1.745053895029914e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True} fallbacks 0
+actual_agreement 0.0 {'field_relative': 8.232931865707137e-16, 'latent_relative': 5.562395808556632e-16, 'objective_scaled_difference': 4.574474283036522e-17, 'candidate_stationarity': 1.745049085446075e-09, 'control_stationarity': 1.745053895029914e-09, 'candidate_reason': 1, 'control_reason': 1, 'attempt_difference': 0, 'accepted_difference': 0, 'jacobian_difference': 0, 'passed': True} fallbacks 0
+synthetic_max_forward 1.5192213447864355e-05
+synthetic_max_backward 5.448219500192518e-16
+assemble 256
+finished 256 0 specialized fallbacks 0
+finished 256 1 specialized fallbacks 0
+finished 256 2 specialized fallbacks 0
+finished 256 3 specialized fallbacks 0
+finished 256 4 specialized fallbacks 0
+finished 256 5 specialized fallbacks 0
+assemble 512
+finished 512 0 specialized fallbacks 0
+finished 512 1 specialized fallbacks 0
+finished 512 2 specialized fallbacks 0
+finished 512 3 specialized fallbacks 0
+finished 512 4 specialized fallbacks 0
+finished 512 5 specialized fallbacks 0
+ALL-DONE

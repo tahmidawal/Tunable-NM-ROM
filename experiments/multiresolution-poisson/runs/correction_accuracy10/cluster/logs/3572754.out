@@ -1,0 +1,257 @@
+jax_backend=gpu
+{
+  "passed": true,
+  "mode": "algebra",
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "results": [
+    {
+      "count": 0,
+      "residual_relative": 0.0,
+      "eliminated_jacobian_relative": 0.0,
+      "gradient_relative": 0.0,
+      "linear_gradient_scaled": 0.0,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    },
+    {
+      "count": 8,
+      "residual_relative": 4.802941467272449e-16,
+      "eliminated_jacobian_relative": 5.476443614400077e-16,
+      "gradient_relative": 1.1518885022997452e-15,
+      "linear_gradient_scaled": 3.0263864653703934e-17,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    },
+    {
+      "count": 16,
+      "residual_relative": 5.374347569407738e-16,
+      "eliminated_jacobian_relative": 5.362322219879551e-16,
+      "gradient_relative": 5.290402315979133e-16,
+      "linear_gradient_scaled": 3.307502022106306e-17,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    },
+    {
+      "count": 32,
+      "residual_relative": 6.926685237329023e-16,
+      "eliminated_jacobian_relative": 7.142661483296288e-16,
+      "gradient_relative": 7.463072025914878e-16,
+      "linear_gradient_scaled": 2.981614745443215e-17,
+      "old_manifold_value_relative": 0.0,
+      "old_manifold_jacobian_relative": 0.0
+    }
+  ],
+  "scope": "smoke controls, not scientific timing measurements"
+}
+{
+  "passed": true,
+  "mode": "solve",
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "results": [
+    {
+      "count": 0,
+      "solver_valid": true,
+      "full_stationarity": 7.519177461658348e-08,
+      "reduced_stationarity": 7.519177461658348e-08,
+      "rank": 16,
+      "recovery_backward_error": 0.0,
+      "residual_reconstruction": 0.0,
+      "reason": 6,
+      "legacy_field_relative": 4.4275111156580493e-16,
+      "legacy_objective_scaled_difference": 0.0,
+      "legacy_gradient_absolute_difference": 5.249106716922344e-16,
+      "legacy_stops_match": true
+    },
+    {
+      "count": 32,
+      "solver_valid": true,
+      "full_stationarity": 4.4634606968401144e-08,
+      "reduced_stationarity": 1.5652620767872723e-07,
+      "rank": 16,
+      "recovery_backward_error": 3.076276686527682e-17,
+      "residual_reconstruction": 1.1187813170033515e-16,
+      "reason": 6,
+      "legacy_field_relative": null,
+      "legacy_objective_scaled_difference": null,
+      "legacy_gradient_absolute_difference": null,
+      "legacy_stops_match": null
+    }
+  ],
+  "scope": "smoke controls, not scientific timing measurements"
+}
+reference 0
+evaluation 32 0 existing_development
+CORRECTION ACCURACY COMPLETE
+reference 0
+reference 1
+reference 2
+reference 3
+reference 4
+reference 5
+reference 6
+reference 7
+reference 8
+reference 9
+reference 10
+reference 11
+reference 12
+reference 13
+reference 14
+reference 15
+reference 16
+reference 17
+reference 18
+reference 19
+reference 20
+reference 21
+reference 22
+reference 23
+reference 24
+reference 25
+reference 26
+reference 27
+reference 28
+reference 29
+reference 30
+reference 31
+reference 32
+reference 33
+reference 34
+reference 35
+reference 36
+reference 37
+reference 38
+reference 39
+reference 40
+reference 41
+evaluation 64 0 existing_development
+evaluation 64 1 existing_development
+evaluation 64 2 existing_development
+evaluation 64 3 existing_development
+evaluation 64 4 existing_development
+evaluation 64 5 existing_development
+evaluation 64 6 existing_development
+evaluation 64 7 existing_development
+evaluation 64 8 existing_development
+evaluation 64 9 existing_development
+evaluation 64 10 existing_development
+evaluation 64 11 existing_development
+evaluation 64 12 existing_development
+evaluation 64 13 existing_development
+evaluation 64 14 existing_development
+evaluation 64 15 existing_development
+evaluation 64 16 existing_development
+evaluation 64 17 existing_development
+evaluation 64 18 existing_development
+evaluation 64 19 existing_development
+evaluation 64 20 existing_development
+evaluation 64 21 existing_development
+evaluation 64 22 existing_development
+evaluation 64 23 existing_development
+evaluation 64 24 existing_development
+evaluation 64 25 existing_development
+evaluation 64 26 existing_development
+evaluation 64 27 existing_development
+evaluation 64 28 existing_development
+evaluation 64 29 existing_development
+evaluation 64 30 new_development
+evaluation 64 31 new_development
+evaluation 64 32 new_development
+evaluation 64 33 new_development
+evaluation 64 34 new_development
+evaluation 64 35 new_development
+evaluation 64 36 new_development
+evaluation 64 37 new_development
+evaluation 64 38 new_development
+evaluation 64 39 new_development
+evaluation 64 40 new_development
+evaluation 64 41 new_development
+evaluation 256 0 existing_development
+evaluation 256 1 existing_development
+evaluation 256 2 existing_development
+evaluation 256 3 existing_development
+evaluation 256 4 existing_development
+evaluation 256 5 existing_development
+evaluation 256 6 existing_development
+evaluation 256 7 existing_development
+evaluation 256 8 existing_development
+evaluation 256 9 existing_development
+evaluation 256 10 existing_development
+evaluation 256 11 existing_development
+evaluation 256 12 existing_development
+evaluation 256 13 existing_development
+evaluation 256 14 existing_development
+evaluation 256 15 existing_development
+evaluation 256 16 existing_development
+evaluation 256 17 existing_development
+evaluation 256 18 existing_development
+evaluation 256 19 existing_development
+evaluation 256 20 existing_development
+evaluation 256 21 existing_development
+evaluation 256 22 existing_development
+evaluation 256 23 existing_development
+evaluation 256 24 existing_development
+evaluation 256 25 existing_development
+evaluation 256 26 existing_development
+evaluation 256 27 existing_development
+evaluation 256 28 existing_development
+evaluation 256 29 existing_development
+evaluation 256 30 new_development
+evaluation 256 31 new_development
+evaluation 256 32 new_development
+evaluation 256 33 new_development
+evaluation 256 34 new_development
+evaluation 256 35 new_development
+evaluation 256 36 new_development
+evaluation 256 37 new_development
+evaluation 256 38 new_development
+evaluation 256 39 new_development
+evaluation 256 40 new_development
+evaluation 256 41 new_development
+evaluation 1024 0 existing_development
+evaluation 1024 1 existing_development
+evaluation 1024 2 existing_development
+evaluation 1024 3 existing_development
+evaluation 1024 4 existing_development
+evaluation 1024 5 existing_development
+evaluation 1024 6 existing_development
+evaluation 1024 7 existing_development
+evaluation 1024 8 existing_development
+evaluation 1024 9 existing_development
+evaluation 1024 10 existing_development
+evaluation 1024 11 existing_development
+evaluation 1024 12 existing_development
+evaluation 1024 13 existing_development
+evaluation 1024 14 existing_development
+evaluation 1024 15 existing_development
+evaluation 1024 16 existing_development
+evaluation 1024 17 existing_development
+evaluation 1024 18 existing_development
+evaluation 1024 19 existing_development
+evaluation 1024 20 existing_development
+evaluation 1024 21 existing_development
+evaluation 1024 22 existing_development
+evaluation 1024 23 existing_development
+evaluation 1024 24 existing_development
+evaluation 1024 25 existing_development
+evaluation 1024 26 existing_development
+evaluation 1024 27 existing_development
+evaluation 1024 28 existing_development
+evaluation 1024 29 existing_development
+evaluation 1024 30 new_development
+evaluation 1024 31 new_development
+evaluation 1024 32 new_development
+evaluation 1024 33 new_development
+evaluation 1024 34 new_development
+evaluation 1024 35 new_development
+evaluation 1024 36 new_development
+evaluation 1024 37 new_development
+evaluation 1024 38 new_development
+evaluation 1024 39 new_development
+evaluation 1024 40 new_development
+evaluation 1024 41 new_development
+CORRECTION ACCURACY COMPLETE

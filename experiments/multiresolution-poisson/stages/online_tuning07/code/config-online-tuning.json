@@ -1,0 +1,199 @@
+{
+  "existing_development_seed": 7090703,
+  "existing_development_count": 6,
+  "fresh_development_seed": 7090732,
+  "fresh_development_count": 24,
+  "parameter_sha256": "8bd369190679e4ebb6df47c7b38d7b4a09fe3d6d2a95331643ae056d081dfb55",
+  "lm_budget": 150,
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "requested_modes": 256,
+  "intervals": [
+    64,
+    256,
+    1024
+  ],
+  "reference_intervals": [
+    1024,
+    2048
+  ],
+  "observation_intervals": 64,
+  "repetitions": 3,
+  "warmup": 2,
+  "burn_seconds": 0.1,
+  "checkpoint": "experiments/multiresolution-poisson/runs/pilot04/checkpoints/original_relative.pkl",
+  "checkpoint_sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a",
+  "projection": "skinny_sine_products",
+  "initialization": "nearest_cached_scaled_weak_prediction",
+  "tau": 0.01,
+  "cg_tolerances": [
+    1e-06,
+    0.0001,
+    0.01,
+    0.03,
+    0.1
+  ],
+  "cg_maxiter": 6000,
+  "primary_cg_tolerance": 1e-06,
+  "development_target": 0.05,
+  "reference_fraction": 0.1,
+  "checkpoint_selection": "scheduled relative-loss endpoint selected before pilot05; frozen all resolutions",
+  "case_selection": "all previous 30 development cases; no final cohort opened",
+  "screen_intervals": 64,
+  "screen_repetitions": 3,
+  "presets": [
+    {
+      "id": "nmrom_baseline",
+      "requested_modes": 256,
+      "budget": 150,
+      "tau": 0.01,
+      "stationarity_stop": null,
+      "starts": 1
+    },
+    {
+      "id": "budget_1",
+      "requested_modes": 256,
+      "budget": 1,
+      "tau": 0.0,
+      "stationarity_stop": null,
+      "starts": 1
+    },
+    {
+      "id": "budget_3",
+      "requested_modes": 256,
+      "budget": 3,
+      "tau": 0.0,
+      "stationarity_stop": null,
+      "starts": 1
+    },
+    {
+      "id": "budget_8",
+      "requested_modes": 256,
+      "budget": 8,
+      "tau": 0.0,
+      "stationarity_stop": null,
+      "starts": 1
+    },
+    {
+      "id": "residual_tau_0.5",
+      "requested_modes": 256,
+      "budget": 150,
+      "tau": 0.5,
+      "stationarity_stop": null,
+      "starts": 1
+    },
+    {
+      "id": "residual_tau_0.2",
+      "requested_modes": 256,
+      "budget": 150,
+      "tau": 0.2,
+      "stationarity_stop": null,
+      "starts": 1
+    },
+    {
+      "id": "stationarity_1e-02",
+      "requested_modes": 256,
+      "budget": 150,
+      "tau": 0.0,
+      "stationarity_stop": 0.01,
+      "starts": 1
+    },
+    {
+      "id": "stationarity_1e-03",
+      "requested_modes": 256,
+      "budget": 150,
+      "tau": 0.0,
+      "stationarity_stop": 0.001,
+      "starts": 1
+    },
+    {
+      "id": "stationarity_1e-04",
+      "requested_modes": 256,
+      "budget": 150,
+      "tau": 0.0,
+      "stationarity_stop": 0.0001,
+      "starts": 1
+    },
+    {
+      "id": "stationarity_1e-06",
+      "requested_modes": 256,
+      "budget": 150,
+      "tau": 0.0,
+      "stationarity_stop": 1e-06,
+      "starts": 1
+    },
+    {
+      "id": "strict_M64",
+      "requested_modes": 64,
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-08,
+      "starts": 1
+    },
+    {
+      "id": "strict_M128",
+      "requested_modes": 128,
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-08,
+      "starts": 1
+    },
+    {
+      "id": "strict_M256",
+      "requested_modes": 256,
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-08,
+      "starts": 1
+    },
+    {
+      "id": "strict_M512",
+      "requested_modes": 512,
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-08,
+      "starts": 1
+    },
+    {
+      "id": "strict_M1024",
+      "requested_modes": 1024,
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-08,
+      "starts": 1
+    },
+    {
+      "id": "multistart4_M256",
+      "requested_modes": 256,
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-08,
+      "starts": 4
+    },
+    {
+      "id": "multistart4_M1024",
+      "requested_modes": 1024,
+      "budget": 300,
+      "tau": 0.0,
+      "stationarity_stop": 1e-08,
+      "starts": 4
+    }
+  ],
+  "confirmation_selection": [
+    "nmrom_baseline",
+    "fastest_gpu",
+    "most_accurate",
+    "unrestricted_accuracy",
+    "fastest_passing",
+    "fastest_stationary"
+  ],
+  "selection_rules": {
+    "fastest_gpu": "minimum pooled repetition GPU median over complete cohort; finite diagnostic candidates include intentional budget exits",
+    "most_accurate": "minimum worst physical error among complete-cohort numerically stationary settings at unchanged 1e-6 threshold; GPU median then lexical id ties",
+    "fastest_passing": "minimum pooled repetition GPU median among settings passing unchanged adjusted 5% error, reference and numerical gates on every case",
+    "fastest_stationary": "minimum pooled repetition GPU median among settings with every selected latent stationary at 1e-6 and all linear solves valid",
+    "confirmation": "freeze unique screen winners and baseline before any confirmation timing; evaluate identical list at every requested mesh; report per-mesh extrema within that frozen shortlist as development selections",
+    "unrestricted_accuracy": "minimum worst physical error among finite settings regardless of stopping; diagnostic separately if different"
+  },
+  "expected_screen_methods": 23
+}

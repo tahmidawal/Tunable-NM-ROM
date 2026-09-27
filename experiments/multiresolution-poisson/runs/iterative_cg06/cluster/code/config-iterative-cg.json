@@ -1,0 +1,43 @@
+{
+  "existing_development_seed": 7090703,
+  "existing_development_count": 6,
+  "fresh_development_seed": 7090732,
+  "fresh_development_count": 24,
+  "parameter_sha256": "8bd369190679e4ebb6df47c7b38d7b4a09fe3d6d2a95331643ae056d081dfb55",
+  "lm_budget": 150,
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "requested_modes": 256,
+  "intervals": [
+    64,
+    256,
+    1024
+  ],
+  "reference_intervals": [
+    1024,
+    2048
+  ],
+  "observation_intervals": 64,
+  "repetitions": 3,
+  "warmup": 2,
+  "burn_seconds": 0.1,
+  "checkpoint": "experiments/multiresolution-poisson/runs/pilot04/checkpoints/original_relative.pkl",
+  "checkpoint_sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a",
+  "projection": "skinny_sine_products",
+  "initialization": "nearest_cached_scaled_weak_prediction",
+  "tau": 0.01,
+  "cg_tolerances": [
+    1e-06,
+    0.0001,
+    0.01,
+    0.03,
+    0.1
+  ],
+  "cg_maxiter": 6000,
+  "primary_cg_tolerance": 1e-06,
+  "development_target": 0.05,
+  "reference_fraction": 0.1,
+  "expected_timed_invocations": 1890,
+  "checkpoint_selection": "scheduled relative-loss endpoint selected before pilot05; frozen all resolutions",
+  "case_selection": "all previous 30 development cases; no final cohort opened"
+}

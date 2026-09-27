@@ -1,0 +1,116 @@
+{
+ "config": {
+  "d": 2,
+  "family": "mr2d",
+  "train_intervals": 32,
+  "times": [
+   0.0,
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5
+  ],
+  "diffusivity": 0.02,
+  "train_seed": 791000,
+  "train_count": 24,
+  "validation_seed": 791001,
+  "validation_count": 4,
+  "model_seed": 791002,
+  "fourier_features": 32,
+  "fourier_scale": 1.5,
+  "bank_width": 256,
+  "bank_rank": 24,
+  "head_width": 256,
+  "latent_dimensions": [
+   8
+  ],
+  "bank_steps": 600,
+  "head_steps": 600,
+  "bank_batch_states": 64,
+  "bank_batch_points": 2048,
+  "head_batch_states": 128,
+  "bank_learning_rate": 0.001,
+  "head_learning_rate": 0.0005,
+  "bank_tail_weight": 0.1,
+  "bank_gradient_clip": 1.0,
+  "refit_every": 200,
+  "checkpoint_every": 300
+ },
+ "bank": {
+  "selected_step": 600,
+  "validation_projection_worst": 0.03332876392260633,
+  "condition": 128.4647470565709,
+  "training_projection_worst": 0.0509068849860772,
+  "seconds": 37.241707233013585
+ },
+ "heads": {
+  "8": {
+   "k": 8,
+   "selected_step": 600,
+   "validation_best_found_worst": 0.14394935707037362,
+   "training_error_worst": 0.5186271026988184,
+   "training_error_mean": 0.21354746157359497,
+   "correction_singular_values": [
+    9.22904310798862,
+    5.754135754300557,
+    5.291151679134359,
+    4.169437977376128,
+    3.714662171629294,
+    3.441358916684873,
+    3.0604181581153753,
+    2.624005704569402,
+    1.6163056578303432,
+    1.4552468640792835,
+    1.234974306270842,
+    0.9357390055334984,
+    0.8327790495224484,
+    0.5561373971728323,
+    0.41449986024510443,
+    0.3429985252338377,
+    0.32808179501530393,
+    0.26311535076655007,
+    0.25316724099555155,
+    0.2267140192663006,
+    0.1625562348538074,
+    0.15609381850799736,
+    0.14765942741134894,
+    0.13294505198752168
+   ]
+  }
+ },
+ "log": {
+  "bank": [
+   {
+    "step": 300,
+    "loss": 0.0011010499639223404,
+    "validation_projection_worst": 0.03937645598165864,
+    "seconds": 35.684473901987076
+   },
+   {
+    "step": 600,
+    "loss": 0.0006039537242275857,
+    "validation_projection_worst": 0.03332876392260633,
+    "seconds": 37.23032195295673
+   }
+  ],
+  "head": [
+   {
+    "k": 8,
+    "step": 300,
+    "objective": 0.07960855888759671,
+    "validation_best_found_worst": 0.15622015169876788,
+    "seconds": 49.845575444051065
+   },
+   {
+    "k": 8,
+    "step": 600,
+    "objective": 0.05346708598938611,
+    "validation_best_found_worst": 0.14394935707037362,
+    "seconds": 51.75443653797265
+   }
+  ]
+ },
+ "train_draws_sha": "fc3682e9a30bc1c8f8071ed4a0e0bcb11a68e39004270d12a10eae5ea035babf",
+ "validation_draws_sha": "d024f2430fc6826f9c6be635a44368e257dccec67cc74a17716977e18c4262ae"
+}

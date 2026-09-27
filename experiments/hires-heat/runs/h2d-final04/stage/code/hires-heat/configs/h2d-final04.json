@@ -1,0 +1,201 @@
+{
+ "model": {
+  "kind": "mlp",
+  "bank": "wide2d/bank.pkl",
+  "head": "wide2d/head_K8.pkl"
+ },
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 256
+ },
+ "cohorts": [
+  [
+   790711,
+   4
+  ],
+  [
+   790716,
+   8
+  ],
+  [
+   791099,
+   16
+  ]
+ ],
+ "meshes": [
+  1024,
+  2048,
+  4096
+ ],
+ "cases_by_mesh": {
+  "1024": 28,
+  "2048": 28,
+  "4096": 28
+ },
+ "repetitions": 5,
+ "burn_seconds": 0.15,
+ "audit_intervals": 256,
+ "full_audit_cases": 2,
+ "reference_budget": 0.0001,
+ "rom_defaults": {
+  "init": "moments",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 4,
+  "fit_budget": 600,
+  "step_budget": 120,
+  "tolerance": 1e-06
+ },
+ "rom_arms": [
+  {
+   "name": "nmrom_q0_cn",
+   "q": 0
+  },
+  {
+   "name": "nmrom_q32_cn",
+   "q": 32
+  },
+  {
+   "name": "nmrom_q96_cn",
+   "q": 96
+  },
+  {
+   "name": "nmrom_q0_field_chain",
+   "q": 0,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_chain"
+   }
+  },
+  {
+   "name": "nmrom_q32_field_chain",
+   "q": 32,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_chain"
+   }
+  },
+  {
+   "name": "nmrom_q96_field_chain",
+   "q": 96,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_chain"
+   }
+  },
+  {
+   "name": "nmrom_q0_field_chain_tol1e-4_chol",
+   "q": 0,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_chain",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  },
+  {
+   "name": "nmrom_q32_field_chain_tol1e-4_chol",
+   "q": 32,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_chain",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  },
+  {
+   "name": "nmrom_q96_field_chain_tol1e-4_chol",
+   "q": 96,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_chain",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  },
+  {
+   "name": "nmrom_q0_field_direct_tol1e-4_chol",
+   "q": 0,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_direct",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  },
+  {
+   "name": "nmrom_q32_field_direct_tol1e-4_chol",
+   "q": 32,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_direct",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  },
+  {
+   "name": "nmrom_q96_field_direct_tol1e-4_chol",
+   "q": 96,
+   "opt": {
+    "init": "field",
+    "stepping": "exact_direct",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  }
+ ],
+ "linear_bank_inits": [
+  "field",
+  "moments"
+ ],
+ "cg_arms": {
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.025_rtol1e-2": {
+   "dt": 0.025,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-2": {
+   "dt": 0.05,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "dt": 0.1,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.1_rtol1e-3": {
+   "dt": 0.1,
+   "tolerance": 0.001
+  }
+ },
+ "coarse_intervals": [
+  16,
+  32,
+  64
+ ],
+ "coarse_cg": "fom_cncg_dt0.05_rtol1e-3",
+ "cohort_names": [
+  [
+   "development",
+   12
+  ],
+  [
+   "sealed_opened_once",
+   16
+  ]
+ ]
+}

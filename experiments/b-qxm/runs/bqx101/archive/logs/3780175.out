@@ -1,0 +1,56 @@
+host=pax050 source_commit=ed431edb498a3d38aeca6a6b9ea4b0e2481686bb
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  434G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 79.5
+REFERENCE 1 145.7
+REFERENCE 2 237.1
+REFERENCE 3 321.4
+REFERENCE 4 393.4
+REFERENCE 5 458.2
+SNAPSHOTS 15.3
+DIRECTIONS 1543.6 rank 512 hash 0d8a34749765 matches {'btq101': False, 'btq102': False, 'btq201': False, 'cclad01': False}
+ARM q0_M64_dense M 64 sigma None 1.1
+ARM q0_M128_dense M 128 sigma None 1.1
+ARM q0_M256_dense M 256 sigma None 1.4
+ARM q0_M1088_dense M 1088 sigma None 3.4
+ARM q16_M128_dense M 128 sigma 0.9564734748943858 0.6
+ARM q16_M192_dense M 192 sigma 0.9804491526415179 1.9
+ARM q16_M256_dense M 256 sigma 0.9908034442483064 0.7
+ARM q16_M512_dense M 512 sigma 0.9974894459944387 2.7
+ARM q16_M1088_dense M 1088 sigma 0.9991760299187236 0.8
+ARM q32_M192_dense M 192 sigma 0.9908040387732943 0.7
+ARM q32_M256_dense M 256 sigma 0.9951313467334453 0.7
+ARM q32_M320_dense M 320 sigma 0.9971490987296793 2.2
+ARM q32_M384_dense M 384 sigma 0.9980579622104949 2.5
+ARM q32_M768_dense M 768 sigma 0.999415367299571 3.4
+ARM q32_M1088_dense M 1088 sigma 0.9996617864109603 0.8
+ARM q32_M1088_dense_lu M 1088 sigma 0.9996617864109603 0.0
+RECON q 0 2.54466
+RECON q 16 2.46146
+RECON q 32 2.33249
+WARM q0_M64_dense 6.3 device_MB 2678
+WARM q0_M128_dense 9.9 device_MB 2678
+WARM q0_M256_dense 13.8 device_MB 2678
+WARM q0_M1088_dense 18.2 device_MB 2678
+WARM q16_M128_dense 25.6 device_MB 2678
+WARM q16_M192_dense 31.2 device_MB 2678
+WARM q16_M256_dense 36.2 device_MB 2678
+WARM q16_M512_dense 42.0 device_MB 2678
+WARM q16_M1088_dense 47.9 device_MB 2678
+WARM q32_M192_dense 56.4 device_MB 2678
+WARM q32_M256_dense 61.8 device_MB 2678
+WARM q32_M320_dense 68.3 device_MB 2678
+WARM q32_M384_dense 74.9 device_MB 2678
+WARM q32_M768_dense 81.9 device_MB 2678
+WARM q32_M1088_dense 88.0 device_MB 2678
+WARM q32_M1088_dense_lu 92.1 device_MB 2678
+WARM fft_tight 93.0 device_MB 2678
+WARM fft_loose 93.1 device_MB 2678
+WARM nt1e-2_dt01 93.9 device_MB 2678
+TIMED 0 2355.6
+TIMED 1 2441.0
+TIMED 2 2526.4
+Q-XM COMPLETE
+ALL-DONE

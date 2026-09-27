@@ -1,0 +1,56 @@
+{
+  "schema": "mr-heat2d-frozen-transfer-v4",
+  "base_config": "config-pilot.json",
+  "checkpoint_commit": "8df5ecf6f8261147d9c6d3b418d8e7f57254ed02",
+  "checkpoints": [
+    {
+      "name": "expanded_seed790714",
+      "path": "experiments/mr-heat2d/runs/pilot03/archive/outputs/checkpoints/expanded_seed790714.pkl",
+      "sha256": "2c418fb26ec75ea8845a7f56ceeeafd0a9e119b4eed1073e577a0fdac6d81105"
+    },
+    {
+      "name": "expanded_seed790715",
+      "path": "experiments/mr-heat2d/runs/pilot03/archive/outputs/checkpoints/expanded_seed790715.pkl",
+      "sha256": "970436e5891f94f04491615caa1a7338b182b0e5e54c1b3214f221da55376851"
+    }
+  ],
+  "cohorts": [
+    {
+      "name": "smoke",
+      "seed": 790711,
+      "count": 1
+    }
+  ],
+  "requested_intervals": [
+    64
+  ],
+  "coarse_solver_intervals": [
+    16
+  ],
+  "observation_intervals": 64,
+  "reference_intervals": [
+    64,
+    128
+  ],
+  "dt": 0.025,
+  "gradient_tolerance": 1e-05,
+  "timing_repetitions": 1,
+  "field_parity_tolerance": 1e-10,
+  "latent_parity_tolerance": 1e-09,
+  "initial_output_policy": "All FOMs return the exact supplied requested-grid initial field at t=0. Host coarse restriction, coarse GPU input, all later-time interpolation, GPU-to-host transfer and full contiguous host output construction are charged. ROM returns its actual fitted initial field and charges full-input transfer/projection/fit and all full host outputs.",
+  "interpolation": "Physically aligned piecewise bilinear on interior nodes i/N with exact homogeneous boundary values; no pixel-center resizing.",
+  "reference_evidence_kind": "empirical_spectral_refinement_only",
+  "rigorous_relative_bound": null,
+  "final_cohort_opened": false,
+  "estimated_timed_calls": 4,
+  "estimated_gpu_peak_gib": 10,
+  "estimated_host_peak_gib": 16,
+  "estimated_archive_gib": [
+    7,
+    10
+  ],
+  "estimated_minutes": [
+    15,
+    35
+  ]
+}

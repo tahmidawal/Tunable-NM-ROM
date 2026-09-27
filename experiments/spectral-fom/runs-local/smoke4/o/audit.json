@@ -1,0 +1,125 @@
+{
+ "verdict": "PASS",
+ "recomputed": 16,
+ "worst_deviation_over_tolerance": 0.006004750753477559,
+ "field_hashes_match": true,
+ "deterministic": true,
+ "control_swapped_truth_detected": true,
+ "control_perturbed_error_detected": true,
+ "control_subject": "R128_linear",
+ "truth_method": "NumPy dense orthonormal sine matrix (not FFT)",
+ "rows": [
+  {
+   "name": "R128_linear",
+   "case": 0,
+   "recorded": 0.0014503433547919061,
+   "recomputed": 0.0014503433547919029,
+   "agrees": true
+  },
+  {
+   "name": "R128_linear",
+   "case": 1,
+   "recorded": 0.0004766659372598661,
+   "recomputed": 0.00047666593725986535,
+   "agrees": true
+  },
+  {
+   "name": "R128_linear",
+   "case": 2,
+   "recorded": 0.0002675786877673391,
+   "recomputed": 0.0002675786877673389,
+   "agrees": true
+  },
+  {
+   "name": "R128_linear",
+   "case": 3,
+   "recorded": 0.00037048495721617056,
+   "recomputed": 0.0003704849572161691,
+   "agrees": true
+  },
+  {
+   "name": "R64_linear",
+   "case": 0,
+   "recorded": 0.0024498889320735584,
+   "recomputed": 0.002449888932073585,
+   "agrees": true
+  },
+  {
+   "name": "R64_linear",
+   "case": 1,
+   "recorded": 0.0007827319593989802,
+   "recomputed": 0.0007827319593989887,
+   "agrees": true
+  },
+  {
+   "name": "R64_linear",
+   "case": 2,
+   "recorded": 0.0004833511306167056,
+   "recomputed": 0.0004833511306167102,
+   "agrees": true
+  },
+  {
+   "name": "R64_linear",
+   "case": 3,
+   "recorded": 0.00046855969414239543,
+   "recomputed": 0.0004685596941423933,
+   "agrees": true
+  },
+  {
+   "name": "dst_fft",
+   "case": 0,
+   "recorded": 4.379775196917113e-16,
+   "recomputed": 6.198814204370326e-16,
+   "agrees": true
+  },
+  {
+   "name": "dst_fft",
+   "case": 1,
+   "recorded": 5.661762733732213e-16,
+   "recomputed": 6.237139578279306e-16,
+   "agrees": true
+  },
+  {
+   "name": "dst_fft",
+   "case": 2,
+   "recorded": 6.144907483874853e-16,
+   "recomputed": 7.092102536489369e-16,
+   "agrees": true
+  },
+  {
+   "name": "dst_fft",
+   "case": 3,
+   "recorded": 7.708302103877673e-16,
+   "recomputed": 6.209319524630242e-16,
+   "agrees": true
+  },
+  {
+   "name": "dst_mm",
+   "case": 0,
+   "recorded": 5.893352696516289e-16,
+   "recomputed": 1.1802967588285334e-16,
+   "agrees": true
+  },
+  {
+   "name": "dst_mm",
+   "case": 1,
+   "recorded": 5.5993577461223735e-16,
+   "recomputed": 4.1717851333138793e-16,
+   "agrees": true
+  },
+  {
+   "name": "dst_mm",
+   "case": 2,
+   "recorded": 5.414223309618542e-16,
+   "recomputed": 1.201706138254923e-16,
+   "agrees": true
+  },
+  {
+   "name": "dst_mm",
+   "case": 3,
+   "recorded": 7.267180988678446e-16,
+   "recomputed": 1.262430234764512e-16,
+   "agrees": true
+  }
+ ]
+}

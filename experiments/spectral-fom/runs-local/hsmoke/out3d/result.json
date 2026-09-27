@@ -1,0 +1,1401 @@
+{
+ "problem": "heat3d",
+ "config": {
+  "problem": "heat3d",
+  "source_lane": "exp/2026-09-23-heat-bank-knob",
+  "source_lane_commit": "00147a52",
+  "lane_config": "experiments/heat-bank-knob/configs/h3d.json",
+  "lane_root": "experiments/heat-bank-knob",
+  "intervals": 16,
+  "cohort": "heldout_sealed_921099",
+  "rom_arms": {
+   "rom_accurate": "lin_R320_cn",
+   "rom_fast": "nmrom_R320_q0_cn"
+  },
+  "spectral_variants": [
+   "fft",
+   "mm"
+  ],
+  "cn_dt": 0.025,
+  "cncg_validation_rtol": 1e-12,
+  "cn_agreement_limit": 1e-09,
+  "spectral_limit": 1e-10,
+  "repetitions": 2,
+  "burn_seconds": 0.001,
+  "cooldown_seconds": 0.1,
+  "phase_dummy_seconds": 0.1,
+  "neighbour_limit": 1.1,
+  "order_seed": 2,
+  "case_count": 2
+ },
+ "lane_config": {
+  "dim": 3,
+  "model": {
+   "kind": "mlp",
+   "bank": "vp_R320/bank.pkl",
+   "head": "vp_R320/head_K32.pkl"
+  },
+  "prep": "prep_3d.npz",
+  "times": [
+   0.0,
+   0.1,
+   0.2,
+   0.3,
+   0.4,
+   0.5
+  ],
+  "diffusivity": 0.02,
+  "tests": {
+   "count": 1024
+  },
+  "edges": [
+   0,
+   32,
+   64,
+   128,
+   192,
+   256,
+   320
+  ],
+  "ladder": [
+   320,
+   256,
+   192,
+   128,
+   64,
+   32
+  ],
+  "q_by_Rp": {
+   "320": [
+    0,
+    144,
+    288
+   ],
+   "256": [
+    0,
+    112,
+    224
+   ],
+   "192": [
+    0,
+    80,
+    160
+   ],
+   "128": [
+    0,
+    48,
+    96
+   ],
+   "64": [
+    0,
+    16,
+    32
+   ],
+   "32": [
+    0
+   ]
+  },
+  "rom_defaults": {
+   "init": "field",
+   "stepping": "cn",
+   "dt": 0.025,
+   "starts": 4,
+   "fit_budget": 600,
+   "step_budget": 120,
+   "tolerance": 1e-06
+  },
+  "families": {
+   "cn": {
+    "init": "field"
+   },
+   "bf": {
+    "init": "field",
+    "stepping": "exact_direct",
+    "tolerance": 0.0001,
+    "cholesky": true
+   }
+  },
+  "parity": {
+   "meshes": [
+    32,
+    64,
+    128
+   ],
+   "q": [
+    0,
+    144,
+    288
+   ]
+  },
+  "cohorts": [
+   [
+    "validation_921777",
+    921777,
+    16
+   ],
+   [
+    "heldout_sealed_921099",
+    921099,
+    64
+   ]
+  ],
+  "meshes": [
+   32,
+   64,
+   128
+  ],
+  "cases_by_mesh": {},
+  "repetitions": 5,
+  "burn_seconds": 0.1,
+  "audit_intervals": 32,
+  "full_audit_cases": 2,
+  "full_audit_max_unknowns": 300000,
+  "cg_arms": {
+   "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+    "dt": 0.025,
+    "tolerance": 1e-06
+   },
+   "fom_cncg_dt0.025_rtol1e-4": {
+    "dt": 0.025,
+    "tolerance": 0.0001
+   },
+   "fom_cncg_dt0.025_rtol1e-3": {
+    "dt": 0.025,
+    "tolerance": 0.001
+   },
+   "fom_cncg_dt0.025_rtol1e-2": {
+    "dt": 0.025,
+    "tolerance": 0.01
+   },
+   "fom_cncg_dt0.05_rtol1e-4": {
+    "dt": 0.05,
+    "tolerance": 0.0001
+   },
+   "fom_cncg_dt0.05_rtol1e-3": {
+    "dt": 0.05,
+    "tolerance": 0.001
+   },
+   "fom_cncg_dt0.05_rtol1e-2": {
+    "dt": 0.05,
+    "tolerance": 0.01
+   },
+   "fom_cncg_dt0.1_rtol1e-4": {
+    "dt": 0.1,
+    "tolerance": 0.0001
+   },
+   "fom_cncg_dt0.1_rtol1e-3": {
+    "dt": 0.1,
+    "tolerance": 0.001
+   },
+   "fom_cncg_dt0.1_rtol1e-2": {
+    "dt": 0.1,
+    "tolerance": 0.01
+   }
+  },
+  "neighbour": {
+   "cg": "fom_cncg_dt0.05_rtol1e-3",
+   "cohort": "heldout_sealed_921099",
+   "cases": 3,
+   "reps": 3
+  },
+  "profile": {
+   "meshes": [
+    128
+   ]
+  },
+  "paper_fast": {
+   "cn": "nmrom_R320_q0_cn",
+   "bf": "nmrom_R320_q0_bf"
+  }
+ },
+ "commit": null,
+ "job_id": null,
+ "backend": "gpu",
+ "gpu": "NVIDIA GB10",
+ "gpu_uuid": "GPU-369273b6-d476-ed02-cc10-385a1b3059b6",
+ "nvidia_smi": "GPU-369273b6-d476-ed02-cc10-385a1b3059b6, NVIDIA GB10, [N/A]\n",
+ "matmul_precision": "highest",
+ "jax_version": "0.10.1",
+ "smoke": true,
+ "intervals": 16,
+ "dim": 3,
+ "model_sha256": {
+  "bank": "edd8b0a33917b8652012550f80bd5bb7eee8089073551ed3dd0d63d53d542a90",
+  "head": "abe56bfa59d337e33ecc3af16a700981967519ee7ea20c3626f2f599685df568"
+ },
+ "cohort": {
+  "name": "heldout_sealed_921099",
+  "seed": 921099,
+  "count": 2,
+  "sha256": "1cf9ff98ffbd57a5de211a5186acc2b5fbd614cdbf6e40833733db1cc37ba135"
+ },
+ "error_convention": "relative L2 per output time vs exact modal propagation (discrete eigenvalues); max over cases x the six times",
+ "complete": true,
+ "validation": {
+  "exp_vs_truth": [
+   {
+    "name": "modal_exp_fft",
+    "case": 0,
+    "worst": 2.252866534036554e-16
+   },
+   {
+    "name": "modal_exp_fft",
+    "case": 1,
+    "worst": 3.3014142832120895e-16
+   },
+   {
+    "name": "modal_exp_mm",
+    "case": 0,
+    "worst": 1.0007842826443673e-15
+   },
+   {
+    "name": "modal_exp_mm",
+    "case": 1,
+    "worst": 1.1820398500021877e-15
+   }
+  ],
+  "cn_vs_cncg": {
+   "rtol": 1e-12,
+   "cg_failures": 0,
+   "worst": 3.024529980452426e-12
+  },
+  "control": {
+   "name": "modal_exp_continuum_eigenvalues_CONTROL",
+   "worst": 0.012833273168636325,
+   "must_exceed": 1e-10,
+   "failed_as_required": true
+  },
+  "gates": {
+   "exp_exact": true,
+   "cn_matches_cncg": true,
+   "control_failed": true
+  }
+ },
+ "invocations": [
+  {
+   "field_sha256": "0c6eae17eb4af2d2a79358aa58b443b861b1fff10896ad5e1a191fbb4bd2f354",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "same_grid_worst": 0.00026728562130875415,
+   "sub_errors": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 0,
+   "rep": 0,
+   "phase": "romA1",
+   "previous": null,
+   "fused_device_seconds": 0.000905363995116204,
+   "total_seconds": 0.0024475310056004673
+  },
+  {
+   "field_sha256": "f30ef8af437abb321c0cbc91345fc99ae81414c93f8e69c8e8428cda18d6a128",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "same_grid_worst": 0.0016720992854216779,
+   "sub_errors": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 0,
+   "rep": 0,
+   "phase": "romA1",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.09385833400301635,
+   "total_seconds": 0.097140939993551
+  },
+  {
+   "field_sha256": "e80fadbde4dd434e046160725595ff87fa77c4b6924bf226864da837f6ef7828",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "same_grid_worst": 0.0035008027011025405,
+   "sub_errors": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 1,
+   "rep": 0,
+   "phase": "romA1",
+   "previous": "nmrom_R320_q0_cn",
+   "fused_device_seconds": 0.09815027299919166,
+   "total_seconds": 0.10152753599686548
+  },
+  {
+   "field_sha256": "5f44c304df8574e4c13b7e3691ee2921879e15cdfb3a6926787026f902621ad3",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "same_grid_worst": 0.0002389668963637017,
+   "sub_errors": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 1,
+   "rep": 0,
+   "phase": "romA1",
+   "previous": "nmrom_R320_q0_cn",
+   "fused_device_seconds": 0.0007958109927130863,
+   "total_seconds": 0.0024010660126805305
+  },
+  {
+   "field_sha256": "f30ef8af437abb321c0cbc91345fc99ae81414c93f8e69c8e8428cda18d6a128",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "same_grid_worst": 0.0016720992854216779,
+   "sub_errors": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 0,
+   "rep": 1,
+   "phase": "romA1",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.09322073099610861,
+   "total_seconds": 0.09477996999339666
+  },
+  {
+   "field_sha256": "0c6eae17eb4af2d2a79358aa58b443b861b1fff10896ad5e1a191fbb4bd2f354",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "same_grid_worst": 0.00026728562130875415,
+   "sub_errors": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 0,
+   "rep": 1,
+   "phase": "romA1",
+   "previous": "nmrom_R320_q0_cn",
+   "fused_device_seconds": 0.0009250599978258833,
+   "total_seconds": 0.002764603996183723
+  },
+  {
+   "field_sha256": "5f44c304df8574e4c13b7e3691ee2921879e15cdfb3a6926787026f902621ad3",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "same_grid_worst": 0.0002389668963637017,
+   "sub_errors": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 1,
+   "rep": 1,
+   "phase": "romA1",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.0011844849941553548,
+   "total_seconds": 0.004341523002949543
+  },
+  {
+   "field_sha256": "e80fadbde4dd434e046160725595ff87fa77c4b6924bf226864da837f6ef7828",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "same_grid_worst": 0.0035008027011025405,
+   "sub_errors": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 1,
+   "rep": 1,
+   "phase": "romA1",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.09800662400084548,
+   "total_seconds": 0.10166372799722012
+  },
+  {
+   "field_sha256": "fe6396961fe258d1e0ae4fb5feadbd3211205db6968f41829cfa3e5fa407cedc",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    4.968172842330003e-17,
+    2.606604940317824e-17,
+    6.978318002488822e-17,
+    6.3959355686816266e-18,
+    2.252866534036554e-16
+   ],
+   "same_grid_worst": 2.252866534036554e-16,
+   "sub_errors": [
+    0.0,
+    4.968172842330003e-17,
+    2.606604940317824e-17,
+    6.978318002488822e-17,
+    6.3959355686816266e-18,
+    2.252866534036554e-16
+   ],
+   "name": "modal_exp_fft",
+   "role": "spectral",
+   "case": 0,
+   "rep": 0,
+   "phase": "spec",
+   "previous": null,
+   "fused_device_seconds": 0.0011293489951640368,
+   "total_seconds": 0.003591151995351538
+  },
+  {
+   "field_sha256": "26668a6302b4d4234165bc8a0cfad36c955511b78f5497518e835919014351b0",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.0002189149690240456,
+    0.00026645057478257575,
+    0.00025895887247281583,
+    0.0002354647053191793,
+    0.00020956878454908454
+   ],
+   "same_grid_worst": 0.00026645057478257575,
+   "sub_errors": [
+    0.0,
+    0.0002189149690240456,
+    0.00026645057478257575,
+    0.00025895887247281583,
+    0.0002354647053191793,
+    0.00020956878454908454
+   ],
+   "name": "modal_cn_mm",
+   "role": "spectral",
+   "case": 0,
+   "rep": 0,
+   "phase": "spec",
+   "previous": "modal_exp_fft",
+   "fused_device_seconds": 0.0008878119988366961,
+   "total_seconds": 0.002979708995553665
+  },
+  {
+   "field_sha256": "6d8988819853f8ef118e656d4ebbf179da3c909466af79ad0297af281b1e1ff2",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.00021891496902418358,
+    0.00026645057478277514,
+    0.00025895887247307946,
+    0.00023546470531940329,
+    0.0002095687845493133
+   ],
+   "same_grid_worst": 0.00026645057478277514,
+   "sub_errors": [
+    0.0,
+    0.00021891496902418358,
+    0.00026645057478277514,
+    0.00025895887247307946,
+    0.00023546470531940329,
+    0.0002095687845493133
+   ],
+   "name": "modal_cn_fft",
+   "role": "spectral",
+   "case": 0,
+   "rep": 0,
+   "phase": "spec",
+   "previous": "modal_cn_mm",
+   "fused_device_seconds": 0.0019083119987044483,
+   "total_seconds": 0.006302092006080784
+  },
+  {
+   "field_sha256": "4dca95af798b13fd9e043004e325cca19294ba9e8ea8925e68eef3a3f380bee0",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    9.94985672082623e-16,
+    1.0007842826443673e-15,
+    8.990635877451302e-16,
+    8.639402455996384e-16,
+    7.16653028064771e-16
+   ],
+   "same_grid_worst": 1.0007842826443673e-15,
+   "sub_errors": [
+    0.0,
+    9.94985672082623e-16,
+    1.0007842826443673e-15,
+    8.990635877451302e-16,
+    8.639402455996384e-16,
+    7.16653028064771e-16
+   ],
+   "name": "modal_exp_mm",
+   "role": "spectral",
+   "case": 0,
+   "rep": 0,
+   "phase": "spec",
+   "previous": "modal_cn_fft",
+   "fused_device_seconds": 0.0005885310092708096,
+   "total_seconds": 0.0018701840017456561
+  },
+  {
+   "field_sha256": "559a907dc6c8de53852cdee61c7ddaea6921775b7d0dbb4d53979ffcdc66dde4",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    4.0020959118539885e-17,
+    2.1577825558165625e-17,
+    3.310934704441727e-17,
+    6.464827769129382e-17,
+    3.3014142832120895e-16
+   ],
+   "same_grid_worst": 3.3014142832120895e-16,
+   "sub_errors": [
+    0.0,
+    4.0020959118539885e-17,
+    2.1577825558165625e-17,
+    3.310934704441727e-17,
+    6.464827769129382e-17,
+    3.3014142832120895e-16
+   ],
+   "name": "modal_exp_fft",
+   "role": "spectral",
+   "case": 1,
+   "rep": 0,
+   "phase": "spec",
+   "previous": "modal_exp_mm",
+   "fused_device_seconds": 0.0005990750069031492,
+   "total_seconds": 0.0017041510000126436
+  },
+  {
+   "field_sha256": "54e3b75f03b108dc7fccd5a7e0c53ac28e96125a3786f1d641f8b648b00a769f",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    1.1820398500021877e-15,
+    9.85053814358276e-16,
+    1.0782298018481617e-15,
+    1.16668430227845e-15,
+    7.656180630210904e-16
+   ],
+   "same_grid_worst": 1.1820398500021877e-15,
+   "sub_errors": [
+    0.0,
+    1.1820398500021877e-15,
+    9.85053814358276e-16,
+    1.0782298018481617e-15,
+    1.16668430227845e-15,
+    7.656180630210904e-16
+   ],
+   "name": "modal_exp_mm",
+   "role": "spectral",
+   "case": 1,
+   "rep": 0,
+   "phase": "spec",
+   "previous": "modal_exp_fft",
+   "fused_device_seconds": 0.0005432180041680112,
+   "total_seconds": 0.0017236879939446226
+  },
+  {
+   "field_sha256": "72b48efe133b5e611ca3390d9d610763f298b2873dccbadafc7eab5f7db55e97",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.00018633733584397255,
+    0.00023386256831847677,
+    0.00023359546859683247,
+    0.00021739626756438297,
+    0.00019689592533978317
+   ],
+   "same_grid_worst": 0.00023386256831847677,
+   "sub_errors": [
+    0.0,
+    0.00018633733584397255,
+    0.00023386256831847677,
+    0.00023359546859683247,
+    0.00021739626756438297,
+    0.00019689592533978317
+   ],
+   "name": "modal_cn_mm",
+   "role": "spectral",
+   "case": 1,
+   "rep": 0,
+   "phase": "spec",
+   "previous": "modal_exp_mm",
+   "fused_device_seconds": 0.0005441310058813542,
+   "total_seconds": 0.001968969008885324
+  },
+  {
+   "field_sha256": "3d58484edee2333b32f24afb96adb8d671609a307b904994bce4cf3330434ff9",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.00018633733584435313,
+    0.00023386256831880116,
+    0.00023359546859722771,
+    0.00021739626756470394,
+    0.0001968959253400924
+   ],
+   "same_grid_worst": 0.00023386256831880116,
+   "sub_errors": [
+    0.0,
+    0.00018633733584435313,
+    0.00023386256831880116,
+    0.00023359546859722771,
+    0.00021739626756470394,
+    0.0001968959253400924
+   ],
+   "name": "modal_cn_fft",
+   "role": "spectral",
+   "case": 1,
+   "rep": 0,
+   "phase": "spec",
+   "previous": "modal_cn_mm",
+   "fused_device_seconds": 0.0007045630045467988,
+   "total_seconds": 0.002273626989335753
+  },
+  {
+   "field_sha256": "4dca95af798b13fd9e043004e325cca19294ba9e8ea8925e68eef3a3f380bee0",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    9.94985672082623e-16,
+    1.0007842826443673e-15,
+    8.990635877451302e-16,
+    8.639402455996384e-16,
+    7.16653028064771e-16
+   ],
+   "same_grid_worst": 1.0007842826443673e-15,
+   "sub_errors": [
+    0.0,
+    9.94985672082623e-16,
+    1.0007842826443673e-15,
+    8.990635877451302e-16,
+    8.639402455996384e-16,
+    7.16653028064771e-16
+   ],
+   "name": "modal_exp_mm",
+   "role": "spectral",
+   "case": 0,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_cn_fft",
+   "fused_device_seconds": 0.0006044670008122921,
+   "total_seconds": 0.0025873550039250404
+  },
+  {
+   "field_sha256": "fe6396961fe258d1e0ae4fb5feadbd3211205db6968f41829cfa3e5fa407cedc",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    4.968172842330003e-17,
+    2.606604940317824e-17,
+    6.978318002488822e-17,
+    6.3959355686816266e-18,
+    2.252866534036554e-16
+   ],
+   "same_grid_worst": 2.252866534036554e-16,
+   "sub_errors": [
+    0.0,
+    4.968172842330003e-17,
+    2.606604940317824e-17,
+    6.978318002488822e-17,
+    6.3959355686816266e-18,
+    2.252866534036554e-16
+   ],
+   "name": "modal_exp_fft",
+   "role": "spectral",
+   "case": 0,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_exp_mm",
+   "fused_device_seconds": 0.0007257789984578267,
+   "total_seconds": 0.0022853379923617467
+  },
+  {
+   "field_sha256": "6d8988819853f8ef118e656d4ebbf179da3c909466af79ad0297af281b1e1ff2",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.00021891496902418358,
+    0.00026645057478277514,
+    0.00025895887247307946,
+    0.00023546470531940329,
+    0.0002095687845493133
+   ],
+   "same_grid_worst": 0.00026645057478277514,
+   "sub_errors": [
+    0.0,
+    0.00021891496902418358,
+    0.00026645057478277514,
+    0.00025895887247307946,
+    0.00023546470531940329,
+    0.0002095687845493133
+   ],
+   "name": "modal_cn_fft",
+   "role": "spectral",
+   "case": 0,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_exp_fft",
+   "fused_device_seconds": 0.0008699559984961525,
+   "total_seconds": 0.0021389530011219904
+  },
+  {
+   "field_sha256": "26668a6302b4d4234165bc8a0cfad36c955511b78f5497518e835919014351b0",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.0002189149690240456,
+    0.00026645057478257575,
+    0.00025895887247281583,
+    0.0002354647053191793,
+    0.00020956878454908454
+   ],
+   "same_grid_worst": 0.00026645057478257575,
+   "sub_errors": [
+    0.0,
+    0.0002189149690240456,
+    0.00026645057478257575,
+    0.00025895887247281583,
+    0.0002354647053191793,
+    0.00020956878454908454
+   ],
+   "name": "modal_cn_mm",
+   "role": "spectral",
+   "case": 0,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_cn_fft",
+   "fused_device_seconds": 0.001245414008735679,
+   "total_seconds": 0.004511924009420909
+  },
+  {
+   "field_sha256": "54e3b75f03b108dc7fccd5a7e0c53ac28e96125a3786f1d641f8b648b00a769f",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    1.1820398500021877e-15,
+    9.85053814358276e-16,
+    1.0782298018481617e-15,
+    1.16668430227845e-15,
+    7.656180630210904e-16
+   ],
+   "same_grid_worst": 1.1820398500021877e-15,
+   "sub_errors": [
+    0.0,
+    1.1820398500021877e-15,
+    9.85053814358276e-16,
+    1.0782298018481617e-15,
+    1.16668430227845e-15,
+    7.656180630210904e-16
+   ],
+   "name": "modal_exp_mm",
+   "role": "spectral",
+   "case": 1,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_cn_mm",
+   "fused_device_seconds": 0.0012272220046725124,
+   "total_seconds": 0.003658111992990598
+  },
+  {
+   "field_sha256": "3d58484edee2333b32f24afb96adb8d671609a307b904994bce4cf3330434ff9",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.00018633733584435313,
+    0.00023386256831880116,
+    0.00023359546859722771,
+    0.00021739626756470394,
+    0.0001968959253400924
+   ],
+   "same_grid_worst": 0.00023386256831880116,
+   "sub_errors": [
+    0.0,
+    0.00018633733584435313,
+    0.00023386256831880116,
+    0.00023359546859722771,
+    0.00021739626756470394,
+    0.0001968959253400924
+   ],
+   "name": "modal_cn_fft",
+   "role": "spectral",
+   "case": 1,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_exp_mm",
+   "fused_device_seconds": 0.0006823069998063147,
+   "total_seconds": 0.0022240100079216063
+  },
+  {
+   "field_sha256": "559a907dc6c8de53852cdee61c7ddaea6921775b7d0dbb4d53979ffcdc66dde4",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    4.0020959118539885e-17,
+    2.1577825558165625e-17,
+    3.310934704441727e-17,
+    6.464827769129382e-17,
+    3.3014142832120895e-16
+   ],
+   "same_grid_worst": 3.3014142832120895e-16,
+   "sub_errors": [
+    0.0,
+    4.0020959118539885e-17,
+    2.1577825558165625e-17,
+    3.310934704441727e-17,
+    6.464827769129382e-17,
+    3.3014142832120895e-16
+   ],
+   "name": "modal_exp_fft",
+   "role": "spectral",
+   "case": 1,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_cn_fft",
+   "fused_device_seconds": 0.0011007249995600432,
+   "total_seconds": 0.0032968949963105842
+  },
+  {
+   "field_sha256": "72b48efe133b5e611ca3390d9d610763f298b2873dccbadafc7eab5f7db55e97",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0,
+    0.00018633733584397255,
+    0.00023386256831847677,
+    0.00023359546859683247,
+    0.00021739626756438297,
+    0.00019689592533978317
+   ],
+   "same_grid_worst": 0.00023386256831847677,
+   "sub_errors": [
+    0.0,
+    0.00018633733584397255,
+    0.00023386256831847677,
+    0.00023359546859683247,
+    0.00021739626756438297,
+    0.00019689592533978317
+   ],
+   "name": "modal_cn_mm",
+   "role": "spectral",
+   "case": 1,
+   "rep": 1,
+   "phase": "spec",
+   "previous": "modal_exp_fft",
+   "fused_device_seconds": 0.0008671879913890734,
+   "total_seconds": 0.002290441989316605
+  },
+  {
+   "field_sha256": "f30ef8af437abb321c0cbc91345fc99ae81414c93f8e69c8e8428cda18d6a128",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "same_grid_worst": 0.0016720992854216779,
+   "sub_errors": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 0,
+   "rep": 0,
+   "phase": "romA2",
+   "previous": null,
+   "fused_device_seconds": 0.09267002499836963,
+   "total_seconds": 0.09615522499370854
+  },
+  {
+   "field_sha256": "0c6eae17eb4af2d2a79358aa58b443b861b1fff10896ad5e1a191fbb4bd2f354",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "same_grid_worst": 0.00026728562130875415,
+   "sub_errors": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 0,
+   "rep": 0,
+   "phase": "romA2",
+   "previous": "nmrom_R320_q0_cn",
+   "fused_device_seconds": 0.001580518000992015,
+   "total_seconds": 0.004718372991192155
+  },
+  {
+   "field_sha256": "5f44c304df8574e4c13b7e3691ee2921879e15cdfb3a6926787026f902621ad3",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "same_grid_worst": 0.0002389668963637017,
+   "sub_errors": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 1,
+   "rep": 0,
+   "phase": "romA2",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.0007002589991316199,
+   "total_seconds": 0.0026089869934367016
+  },
+  {
+   "field_sha256": "e80fadbde4dd434e046160725595ff87fa77c4b6924bf226864da837f6ef7828",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "same_grid_worst": 0.0035008027011025405,
+   "sub_errors": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 1,
+   "rep": 0,
+   "phase": "romA2",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.09820632199989632,
+   "total_seconds": 0.10335159199894406
+  },
+  {
+   "field_sha256": "f30ef8af437abb321c0cbc91345fc99ae81414c93f8e69c8e8428cda18d6a128",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "same_grid_worst": 0.0016720992854216779,
+   "sub_errors": [
+    0.0015897743684841472,
+    0.0015909004885985693,
+    0.0016715424321834063,
+    0.001592384895180718,
+    0.001559324141756468,
+    0.0016720992854216779
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 0,
+   "rep": 1,
+   "phase": "romA2",
+   "previous": "nmrom_R320_q0_cn",
+   "fused_device_seconds": 0.0931110509991413,
+   "total_seconds": 0.09455624100519344
+  },
+  {
+   "field_sha256": "0c6eae17eb4af2d2a79358aa58b443b861b1fff10896ad5e1a191fbb4bd2f354",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "same_grid_worst": 0.00026728562130875415,
+   "sub_errors": [
+    2.8494134455134145e-05,
+    0.00022005664177742054,
+    0.00026728562130875415,
+    0.000259755712007636,
+    0.00023636808568135067,
+    0.00021074701629855965
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 0,
+   "rep": 1,
+   "phase": "romA2",
+   "previous": "nmrom_R320_q0_cn",
+   "fused_device_seconds": 0.0014374780002981424,
+   "total_seconds": 0.004239330999553204
+  },
+  {
+   "field_sha256": "5f44c304df8574e4c13b7e3691ee2921879e15cdfb3a6926787026f902621ad3",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "same_grid_worst": 0.0002389668963637017,
+   "sub_errors": [
+    7.489618159629267e-05,
+    0.00019466665740465415,
+    0.0002389668963637017,
+    0.0002379057487924516,
+    0.0002223656112334742,
+    0.00020444290577922617
+   ],
+   "name": "lin_R320_cn",
+   "role": "rom_accurate",
+   "case": 1,
+   "rep": 1,
+   "phase": "romA2",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.001299494004342705,
+   "total_seconds": 0.0032516780047444627
+  },
+  {
+   "field_sha256": "e80fadbde4dd434e046160725595ff87fa77c4b6924bf226864da837f6ef7828",
+   "matches_saved_field": true,
+   "same_grid_per_time": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "same_grid_worst": 0.0035008027011025405,
+   "sub_errors": [
+    0.0027296783228698343,
+    0.0025846696039304178,
+    0.0030967107954855536,
+    0.0030453694193342644,
+    0.003055503170706488,
+    0.0035008027011025405
+   ],
+   "name": "nmrom_R320_q0_cn",
+   "role": "rom_fast",
+   "case": 1,
+   "rep": 1,
+   "phase": "romA2",
+   "previous": "lin_R320_cn",
+   "fused_device_seconds": 0.09822230499412399,
+   "total_seconds": 0.1000927139975829
+  }
+ ],
+ "phase_breaks": [
+  {
+   "before": "romA1",
+   "at_seconds": 2.1827941890078364
+  },
+  {
+   "before": "spec",
+   "at_seconds": 3.0254478590068175
+  },
+  {
+   "before": "romA2",
+   "at_seconds": 3.685328499006573
+  }
+ ],
+ "timing_gates": {
+  "drift": {
+   "rows": [
+    {
+     "name": "lin_R320_cn",
+     "romA1_median": 0.0009152119964710437,
+     "romA2_median": 0.0013684860023204237,
+     "ratio": 1.4952666787554736
+    },
+    {
+     "name": "nmrom_R320_q0_cn",
+     "romA1_median": 0.09593247900193091,
+     "romA2_median": 0.09565868649951881,
+     "ratio": 0.9971459874146836
+    }
+   ],
+   "limit": 1.1,
+   "passed": false
+  },
+  "neighbour": {
+   "rows": [
+    {
+     "name": "lin_R320_cn",
+     "phase": "romA1",
+     "insufficient": true,
+     "n_long": 2,
+     "n_short": 1
+    },
+    {
+     "name": "nmrom_R320_q0_cn",
+     "phase": "romA1",
+     "insufficient": true,
+     "n_long": 1,
+     "n_short": 3
+    },
+    {
+     "name": "lin_R320_cn",
+     "phase": "romA2",
+     "insufficient": true,
+     "n_long": 2,
+     "n_short": 2
+    },
+    {
+     "name": "nmrom_R320_q0_cn",
+     "phase": "romA2",
+     "insufficient": true,
+     "n_long": 1,
+     "n_short": 2
+    },
+    {
+     "name": "modal_exp_fft",
+     "phase": "spec",
+     "insufficient": true,
+     "n_long": 0,
+     "n_short": 2
+    },
+    {
+     "name": "modal_cn_fft",
+     "phase": "spec",
+     "insufficient": true,
+     "n_long": 1,
+     "n_short": 1
+    },
+    {
+     "name": "modal_exp_mm",
+     "phase": "spec",
+     "insufficient": true,
+     "n_long": 1,
+     "n_short": 2
+    },
+    {
+     "name": "modal_cn_mm",
+     "phase": "spec",
+     "insufficient": true,
+     "n_long": 2,
+     "n_short": 1
+    }
+   ],
+   "limit": 1.1,
+   "passed": false
+  }
+ },
+ "timings": {
+  "lin_R320_cn": {
+   "role": "rom_accurate",
+   "median_ms": 1.054772495990619,
+   "romA1_ms": 0.9152119964710437,
+   "romA2_ms": 1.3684860023204237,
+   "samples": 8,
+   "total_median_ms": 3.008141000464093
+  },
+  "nmrom_R320_q0_cn": {
+   "role": "rom_fast",
+   "median_ms": 95.93247900193091,
+   "romA1_ms": 95.93247900193091,
+   "romA2_ms": 95.65868649951881,
+   "samples": 8,
+   "total_median_ms": 98.61682699556695
+  },
+  "modal_exp_fft": {
+   "role": "spectral",
+   "median_ms": 0.913251999008935,
+   "samples": 4,
+   "total_median_ms": 2.7911164943361655
+  },
+  "modal_cn_fft": {
+   "role": "spectral",
+   "median_ms": 0.7872595015214756,
+   "samples": 4,
+   "total_median_ms": 2.2488184986286797
+  },
+  "modal_exp_mm": {
+   "role": "spectral",
+   "median_ms": 0.5964990050415508,
+   "samples": 4,
+   "total_median_ms": 2.2287695028353482
+  },
+  "modal_cn_mm": {
+   "role": "spectral",
+   "median_ms": 0.8774999951128848,
+   "samples": 4,
+   "total_median_ms": 2.635075492435135
+  }
+ },
+ "errors": {
+  "lin_R320_cn": {
+   "worst": 0.00026728562130875415,
+   "median": 0.00025312625883622795,
+   "per_case": [
+    0.00026728562130875415,
+    0.0002389668963637017
+   ]
+  },
+  "nmrom_R320_q0_cn": {
+   "worst": 0.0035008027011025405,
+   "median": 0.0025864509932621094,
+   "per_case": [
+    0.0016720992854216779,
+    0.0035008027011025405
+   ]
+  },
+  "modal_exp_fft": {
+   "worst": 3.3014142832120895e-16,
+   "median": 2.777140408624322e-16,
+   "per_case": [
+    2.252866534036554e-16,
+    3.3014142832120895e-16
+   ]
+  },
+  "modal_cn_fft": {
+   "worst": 0.00026645057478277514,
+   "median": 0.00025015657155078816,
+   "per_case": [
+    0.00026645057478277514,
+    0.00023386256831880116
+   ]
+  },
+  "modal_exp_mm": {
+   "worst": 1.1820398500021877e-15,
+   "median": 1.0914120663232776e-15,
+   "per_case": [
+    1.0007842826443673e-15,
+    1.1820398500021877e-15
+   ]
+  },
+  "modal_cn_mm": {
+   "worst": 0.00026645057478257575,
+   "median": 0.0002501565715505263,
+   "per_case": [
+    0.00026645057478257575,
+    0.00023386256831847677
+   ]
+  }
+ },
+ "gates": {
+  "exp_exact": true,
+  "cn_matches_cncg": true,
+  "control_failed": true,
+  "deterministic": true,
+  "drift": false,
+  "neighbour": false,
+  "device_guard": true
+ }
+}

@@ -1,0 +1,32 @@
+{
+ "problem": "heat3d",
+ "source_lane": "exp/2026-09-23-heat-bank-knob",
+ "source_lane_commit": "134f30a2",
+ "selection_source": "lane-ref/heat3d-selection.json",
+ "lane_config": "experiments/heat-bank-knob/configs/h3d.json",
+ "lane_root": "experiments/heat-bank-knob",
+ "intervals": 64,
+ "cohort": "heldout_sealed_921099",
+ "rom_arms": {
+  "rom_accurate": "lin_R320_bf",
+  "rom_fast": "lin_R128_cn",
+  "rom_accurate_cn": "lin_R320_cn",
+  "rom_fast_bf": "lin_R128_bf"
+ },
+ "spectral_variants": [
+  "fft",
+  "half",
+  "mm"
+ ],
+ "cn_dt": 0.025,
+ "cncg_validation_rtol": 1e-11,
+ "cn_agreement_limit": 1e-09,
+ "spectral_limit": 1e-10,
+ "repetitions": 5,
+ "burn_seconds": 0.1,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "neighbour_limit": 1.1,
+ "order_seed": 955064,
+ "amendment": "L2"
+}

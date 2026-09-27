@@ -1,0 +1,120 @@
+{
+ "verdict": "PASS",
+ "recomputed": 12,
+ "field_hashes_match": true,
+ "deterministic": true,
+ "control_swapped_truth_detected": true,
+ "control_perturbed_error_detected": true,
+ "control_subject": "lin_R128_cn",
+ "truth_method": "NumPy dense sine matrix exact propagation (cases 0,1); driver subsampled truth elsewhere",
+ "rows": [
+  {
+   "name": "lin_R128_cn",
+   "case": 0,
+   "sub_deviation_over_tolerance": 4.571372419328595e-08,
+   "full_recomputed_worst": 0.00045952422600689105,
+   "full_recorded_worst": 0.00045952422600689056,
+   "full_deviation_over_tolerance": 2.831156682955225e-05,
+   "agrees": true
+  },
+  {
+   "name": "lin_R128_cn",
+   "case": 1,
+   "sub_deviation_over_tolerance": 3.693611271170685e-08,
+   "full_recomputed_worst": 0.00033082527519644607,
+   "full_recorded_worst": 0.00033082527519644444,
+   "full_deviation_over_tolerance": 2.7071392285409637e-05,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_fft",
+   "case": 0,
+   "sub_deviation_over_tolerance": 5.927738649138679e-08,
+   "full_recomputed_worst": 0.0002787545172054883,
+   "full_recorded_worst": 0.00027875451720532743,
+   "full_deviation_over_tolerance": 9.242664284925092e-05,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_fft",
+   "case": 1,
+   "sub_deviation_over_tolerance": 6.33292059561934e-08,
+   "full_recomputed_worst": 0.00016120097372397714,
+   "full_recorded_worst": 0.00016120097372379462,
+   "full_deviation_over_tolerance": 9.098593791573469e-05,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_mm",
+   "case": 0,
+   "sub_deviation_over_tolerance": 7.59095049024739e-08,
+   "full_recomputed_worst": 0.00027875451720531735,
+   "full_recorded_worst": 0.00027875451720515645,
+   "full_deviation_over_tolerance": 9.242664284925092e-05,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_mm",
+   "case": 1,
+   "sub_deviation_over_tolerance": 4.04497171506809e-08,
+   "full_recomputed_worst": 0.00016120097372383235,
+   "full_recorded_worst": 0.00016120097372364988,
+   "full_deviation_over_tolerance": 9.098593791573469e-05,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_fft",
+   "case": 0,
+   "sub_deviation_over_tolerance": 3.6977854931899513e-19,
+   "full_recomputed_worst": 8.501981170978269e-16,
+   "full_recorded_worst": 9.070700579783347e-17,
+   "full_deviation_over_tolerance": 0.0008367654914241965,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_fft",
+   "case": 1,
+   "sub_deviation_over_tolerance": 1.540743955508542e-20,
+   "full_recomputed_worst": 6.306140012026944e-16,
+   "full_recorded_worst": 6.320570349789019e-17,
+   "full_deviation_over_tolerance": 0.0006096568501336379,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_mm",
+   "case": 0,
+   "sub_deviation_over_tolerance": 2.95822839435129e-18,
+   "full_recomputed_worst": 2.0391290818983486e-16,
+   "full_recorded_worst": 8.537284704705338e-16,
+   "full_deviation_over_tolerance": 0.0007093028092544721,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_mm",
+   "case": 1,
+   "sub_deviation_over_tolerance": 9.860761314747621e-19,
+   "full_recomputed_worst": 1.9849978859133476e-16,
+   "full_recorded_worst": 6.595874691547258e-16,
+   "full_deviation_over_tolerance": 0.00046108768056034977,
+   "agrees": true
+  },
+  {
+   "name": "nmrom_R128_q0_cn",
+   "case": 0,
+   "sub_deviation_over_tolerance": 7.51953908819944e-08,
+   "full_recomputed_worst": 0.0025228900718770406,
+   "full_recorded_worst": 0.0025228900718770285,
+   "full_deviation_over_tolerance": 5.066662101408992e-06,
+   "agrees": true
+  },
+  {
+   "name": "nmrom_R128_q0_cn",
+   "case": 1,
+   "sub_deviation_over_tolerance": 5.8534862503351437e-08,
+   "full_recomputed_worst": 0.0037924861977834,
+   "full_recorded_worst": 0.003792486197783409,
+   "full_deviation_over_tolerance": 2.9620595246485677e-06,
+   "agrees": true
+  }
+ ]
+}

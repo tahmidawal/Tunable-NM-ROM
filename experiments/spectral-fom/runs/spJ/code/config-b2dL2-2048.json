@@ -1,0 +1,236 @@
+{
+ "problem": "burgers2d",
+ "source_lane": "exp/2026-09-23-burgers-bank-knob",
+ "source_lane_commit": "b393fa55",
+ "lane_config": "experiments/burgers-bank-knob/config-2048.json",
+ "lane_selection": "burgers-2048-selection.json",
+ "lane_quick_errors": "burgers-2048-errors.json",
+ "checkpoint": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "rotation": "experiments/burgers-bank-knob/inputs/rotation_R512.npz",
+ "inputs": "experiments/b-panel/inputs",
+ "spectral_settings": [
+  {
+   "name": "pic_dt005_nt1e-6",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt005_nt1e-4",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt005_nt2e-4",
+   "dt": 0.005,
+   "ntol": 0.0002,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt005_nt5e-4",
+   "dt": 0.005,
+   "ntol": 0.0005,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt005_nt1e-3",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt005_nt3e-3",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt005_nt1e-2",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt01_nt1e-4",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt01_nt1e-3",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt01_nt2e-3",
+   "dt": 0.01,
+   "ntol": 0.002,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt01_nt3e-3",
+   "dt": 0.01,
+   "ntol": 0.003,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt01_nt5e-3",
+   "dt": 0.01,
+   "ntol": 0.005,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "pic_dt01_nt1e-2",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "max_iter": 400,
+   "predictor": false
+  },
+  {
+   "name": "ppic_dt005_nt1e-6",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt005_nt1e-4",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt005_nt2e-4",
+   "dt": 0.005,
+   "ntol": 0.0002,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt005_nt5e-4",
+   "dt": 0.005,
+   "ntol": 0.0005,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt005_nt1e-3",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt005_nt3e-3",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt005_nt1e-2",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt01_nt1e-4",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt01_nt1e-3",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt01_nt2e-3",
+   "dt": 0.01,
+   "ntol": 0.002,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt01_nt3e-3",
+   "dt": 0.01,
+   "ntol": 0.003,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt01_nt5e-3",
+   "dt": 0.01,
+   "ntol": 0.005,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "ppic_dt01_nt1e-2",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "max_iter": 400,
+   "predictor": true
+  },
+  {
+   "name": "imex_dt0025",
+   "dt": 0.0025,
+   "ntol": 0.0,
+   "max_iter": 1,
+   "predictor": false
+  },
+  {
+   "name": "imex_dt005",
+   "dt": 0.005,
+   "ntol": 0.0,
+   "max_iter": 1,
+   "predictor": false
+  },
+  {
+   "name": "imex_dt01",
+   "dt": 0.01,
+   "ntol": 0.0,
+   "max_iter": 1,
+   "predictor": false
+  }
+ ],
+ "full_field_subjects": [
+  "pic_dt005_nt1e-6",
+  "imex_dt005"
+ ],
+ "validation_ntol": 1e-10,
+ "validation_ltol": 1e-12,
+ "validation_agreement_limit": 1e-08,
+ "repetitions": 10,
+ "burn_seconds": 0.1,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "neighbour_limit": 1.1,
+ "order_seed": 983048,
+ "smoke_intervals": 2048,
+ "amendment": "L1+L2",
+ "dst_candidates": [
+  "fft",
+  "half",
+  "mm"
+ ]
+}

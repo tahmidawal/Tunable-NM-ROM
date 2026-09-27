@@ -1,0 +1,90 @@
+{
+ "verdict": "PASS",
+ "recomputed": 12,
+ "field_hashes_match": true,
+ "deterministic": true,
+ "control_swapped_truth_detected": true,
+ "control_perturbed_error_detected": true,
+ "control_subject": "lin_R320_cn",
+ "truth_method": "NumPy dense sine matrix exact propagation (cases 0,1); driver subsampled truth elsewhere",
+ "rows": [
+  {
+   "name": "lin_R320_cn",
+   "case": 0,
+   "sub_deviation_over_tolerance": 4.9115145049984476e-08,
+   "full_recomputed_worst": 0.0002672856213089919,
+   "full_recorded_worst": 0.00026728562130875415,
+   "full_deviation_over_tolerance": 8.839793620784495e-05,
+   "agrees": true
+  },
+  {
+   "name": "lin_R320_cn",
+   "case": 1,
+   "sub_deviation_over_tolerance": 7.653528855589833e-08,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_fft",
+   "case": 0,
+   "sub_deviation_over_tolerance": 5.882799339470164e-08,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_fft",
+   "case": 1,
+   "sub_deviation_over_tolerance": 5.557444608863303e-08,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_mm",
+   "case": 0,
+   "sub_deviation_over_tolerance": 6.172337832037843e-08,
+   "agrees": true
+  },
+  {
+   "name": "modal_cn_mm",
+   "case": 1,
+   "sub_deviation_over_tolerance": 8.891911374193114e-08,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_fft",
+   "case": 0,
+   "sub_deviation_over_tolerance": 9.860761315040497e-19,
+   "full_recomputed_worst": 1.082450973056032e-15,
+   "full_recorded_worst": 2.252866534036554e-16,
+   "full_deviation_over_tolerance": 0.001032769244632219,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_fft",
+   "case": 1,
+   "sub_deviation_over_tolerance": 1.23259516440375e-19,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_mm",
+   "case": 0,
+   "sub_deviation_over_tolerance": 3.944304525750441e-18,
+   "agrees": true
+  },
+  {
+   "name": "modal_exp_mm",
+   "case": 1,
+   "sub_deviation_over_tolerance": 3.944304525638827e-18,
+   "agrees": true
+  },
+  {
+   "name": "nmrom_R320_q0_cn",
+   "case": 0,
+   "sub_deviation_over_tolerance": 6.447664666289298e-08,
+   "agrees": true
+  },
+  {
+   "name": "nmrom_R320_q0_cn",
+   "case": 1,
+   "sub_deviation_over_tolerance": 5.014290085380259e-08,
+   "agrees": true
+  }
+ ]
+}

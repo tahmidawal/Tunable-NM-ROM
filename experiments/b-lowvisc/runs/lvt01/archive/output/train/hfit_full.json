@@ -1,0 +1,150 @@
+{
+ "config": {
+  "npz": "sep_coeff_N256_K16_R512.npz",
+  "ckpt": "sep_burgers_r3_N256_K16_R512.pkl",
+  "arms": [
+   "mid"
+  ],
+  "steps": 200000,
+  "batch": 4096,
+  "lr": 0.001,
+  "oracle_iters": 150,
+  "enc_steps": 12000,
+  "seed": 0,
+  "K_ckpt": 16,
+  "R": 512,
+  "S": 131072,
+  "n_test_states": 408,
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "gpu": "NVIDIA A100-PCIE-40GB",
+  "slurm_job": "3804337",
+  "node": "pax142"
+ },
+ "gates": {
+  "whitening_round_trip": 7.933325362072309e-15,
+  "q_equals_LT_h": 2.0516163129705795e-15
+ },
+ "floors": {
+  "traj_fit": 0,
+  "hold_from": 0,
+  "n_hold": 0,
+  "hold_span_floor_mean": null,
+  "train_span_floor_mean": 0.010765972169139377,
+  "train_span_floor_max": 0.16689150705885994,
+  "test_span_floor_mean": 0.009766535468658365,
+  "test_span_floor_max": 0.027834281866161534
+ },
+ "arms": {
+  "mid": {
+   "spec": {
+    "hidden": 512,
+    "layers": 2
+   },
+   "train": {
+    "steps": 200000,
+    "steps_done": 200000,
+    "lr": 0.001,
+    "hidden": 512,
+    "layers": 2,
+    "batch": 4096,
+    "wd": 0.0,
+    "ema_decay": 0.0,
+    "used_ema": false,
+    "norm": "snap",
+    "z_polish_every": 0,
+    "h_ff": 0,
+    "h_ff_scale": 1.0,
+    "z_noise": 0.0,
+    "seconds": 376.563175201416,
+    "final_loss": 0.0005378390339695857
+   },
+   "k": 16,
+   "recon_train": {
+    "mean": 0.0231256630969867,
+    "max": 0.20078425529007618
+   },
+   "encoder_final_loss": 0.017410557990023282,
+   "oracle_test": {
+    "mean": 0.022612297084007006,
+    "max": 0.051726424832343396,
+    "t0": 0.02046887918281186,
+    "early": 0.015600300999642413,
+    "late": 0.023547229895255622,
+    "per_time": [
+     0.02046887918281186,
+     0.01615645256329097,
+     0.014746794017176216,
+     0.014194621369497524,
+     0.014012351721472305,
+     0.014022707143605597,
+     0.014175187710497673,
+     0.014461267161200058,
+     0.014842500663563591,
+     0.015261975811933663,
+     0.015691039889013436,
+     0.016165118913905575,
+     0.016777805876788676,
+     0.01759497019741622,
+     0.018528948155548022,
+     0.019365477826758733,
+     0.019969707269971982,
+     0.020405516519762325,
+     0.020832334230083203,
+     0.021345113183830228,
+     0.021920804538931023,
+     0.022481547979967726,
+     0.0229699106665918,
+     0.02337775322138963,
+     0.023729624009601782,
+     0.024065872368159706,
+     0.024438099322995028,
+     0.02489090064469387,
+     0.025427593544888785,
+     0.025985823328632286,
+     0.02646178957166799,
+     0.02677306445720238,
+     0.026903048132014263,
+     0.026900193452854843,
+     0.026847461037775067,
+     0.026823957559624474,
+     0.02687704020085855,
+     0.027015222923399494,
+     0.027213821470219113,
+     0.02742452267815019,
+     0.027593177187804477,
+     0.027680715231975846,
+     0.02768001254710592,
+     0.02762317067755041,
+     0.027563395468649228,
+     0.027550925816231277,
+     0.027623651065696156,
+     0.027782290505971155,
+     0.02798796708271491,
+     0.028197475335280203,
+     0.02839754984763194
+    ],
+    "note": "representation oracle, DIAGNOSTIC (uses test truth); inits = mean training code + training-only encoder"
+   },
+   "oracle_over_span_floor": 2.3152833629255505,
+   "oracle_test_nn": {
+    "mean": 0.022612297084006992,
+    "max": 0.051726424832343396,
+    "note": "UPPER BOUND on what better initialisation could buy: adds a nearest-training-state init selected USING the test target"
+   },
+   "oracle_train_from_codes": {
+    "mean": 0.022387869991620152,
+    "max": 0.11583890326247662,
+    "n": 2048,
+    "recon_on_same_subset": 0.022469580895331437,
+    "gain_vs_recon": 1.003649784626312,
+    "note": "codes re-solved exactly at frozen h; ratio > 1 means the codes had NOT converged during joint training"
+   },
+   "seconds": 404.8791735172272
+  }
+ },
+ "complete": true,
+ "emitted": "/cluster/tufts/paralab/tawal01/b_lowvisc_20260917/lvt01/output/train/sep_hfit_lowvisc0.pkl",
+ "total_seconds": 417.58416771888733
+}

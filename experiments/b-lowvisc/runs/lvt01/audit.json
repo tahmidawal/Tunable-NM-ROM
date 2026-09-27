@@ -1,0 +1,251 @@
+{
+ "attempt": "lvt01",
+ "seed": 0,
+ "job_ids": [
+  "3804337"
+ ],
+ "gpu": "NVIDIA A100-PCIE-40GB",
+ "checkpoint_sha256": "9a481e27ae87724d3a3a92c1568de7b44ff7b752b4050fcc61b93c22d5e98f8b",
+ "bank_sha256": "0856f63064b4c081458d04b1d5123fb8f7263d02003da2255ee75855aa4fb78d",
+ "npz_sha256": "9e40fe6a30191f920c6fe6704a4b2a115e8fc08971ca89280a25096327f6b8e6",
+ "checkpoint_cfg_viscosity_keys": {},
+ "bank": {
+  "seconds": 10958.862676382065,
+  "final_rel_mse": 0.000528228441590836,
+  "recon_train_mean_percent": 2.823245271502604,
+  "recon_train_max_percent": 19.93049095259712,
+  "cond_G": 4168.953069641146,
+  "numerical_rank": 512,
+  "gram_sv_ratio": {
+   "0": 1.0,
+   "128": 0.10956625703854575,
+   "256": 0.014518220041934184,
+   "384": 0.003495618894882507,
+   "511": 0.00023986837541591172
+  },
+  "incumbent": {
+   "recon_train_mean_percent": 0.7171139529778486,
+   "cond_G": 26368.625367005006,
+   "gram_sv_ratio": {
+    "0": 1.0,
+    "128": 0.07216564275501844,
+    "256": 0.005787910376239746,
+    "384": 0.0011099981782748405,
+    "511": 3.792385784551733e-05
+   }
+  }
+ },
+ "layers": {
+  "lowvisc": {
+   "bank_floor_test_max_percent": 2.7834281866161534,
+   "bank_floor_test_mean_percent": 0.9766535468658365,
+   "bank_floor_train_mean_percent": 1.0765972169139377,
+   "best_found_test_max_percent": 5.172642483234339,
+   "best_found_test_mean_percent": 2.2612297084007005,
+   "best_found_t0_percent": 2.046887918281186,
+   "head_recon_train_mean_percent": 2.31256630969867,
+   "oracle_over_span_floor": 2.3152833629255505,
+   "code_refit_gain": 1.003649784626312
+  },
+  "incumbent": {
+   "bank_floor_test_max_percent": 0.2997558284690597,
+   "bank_floor_test_mean_percent": 0.021236444373705938,
+   "bank_floor_train_mean_percent": 0.06213485382466559,
+   "best_found_test_max_percent": 2.765090616792729,
+   "best_found_test_mean_percent": 0.5200570538097191,
+   "best_found_t0_percent": 1.5020737159575095,
+   "head_recon_train_mean_percent": 0.7507219122474577,
+   "oracle_over_span_floor": 24.488894876094776,
+   "code_refit_gain": 1.0868108782331456
+  },
+  "seeds": {
+   "1": {
+    "bank_floor_test_max_percent": 0.3025110399142964,
+    "bank_floor_test_mean_percent": 0.02179816010828514,
+    "bank_floor_train_mean_percent": 0.06214803170441611,
+    "best_found_test_max_percent": 2.8184037186010573,
+    "best_found_test_mean_percent": 0.5604041677366687,
+    "best_found_t0_percent": 1.593011906909024,
+    "head_recon_train_mean_percent": 0.7615761182560725,
+    "oracle_over_span_floor": 25.708782986857123,
+    "code_refit_gain": 1.087224797866518
+   },
+   "2": {
+    "bank_floor_test_max_percent": 0.33142508059702996,
+    "bank_floor_test_mean_percent": 0.02170574858921879,
+    "bank_floor_train_mean_percent": 0.06315377249387934,
+    "best_found_test_max_percent": 2.573117076676565,
+    "best_found_test_mean_percent": 0.5217635409250426,
+    "best_found_t0_percent": 1.4958267040936553,
+    "head_recon_train_mean_percent": 0.7080713729255117,
+    "oracle_over_span_floor": 24.038034845027262,
+    "code_refit_gain": 1.067538482701924
+   },
+   "3": {
+    "bank_floor_test_max_percent": 0.2537689338689851,
+    "bank_floor_test_mean_percent": 0.019805126789783387,
+    "bank_floor_train_mean_percent": 0.06009207957821832,
+    "best_found_test_max_percent": 3.0045716655053227,
+    "best_found_test_mean_percent": 0.5340527260962983,
+    "best_found_t0_percent": 1.5973128640846712,
+    "head_recon_train_mean_percent": 0.7712920849939412,
+    "oracle_over_span_floor": 26.965377791562187,
+    "code_refit_gain": 1.0867578225980932
+   }
+  },
+  "ratio_lowvisc_over_incumbent": {
+   "bank_floor_test_max_percent": 9.285651594605955,
+   "bank_floor_test_mean_percent": 45.98950415989069,
+   "bank_floor_train_mean_percent": 17.326784415586125,
+   "best_found_test_max_percent": 1.8706954672010592,
+   "best_found_test_mean_percent": 4.348041607811841,
+   "best_found_t0_percent": 1.362708032592382,
+   "head_recon_train_mean_percent": 3.0804566537500873
+  },
+  "test_cohort": "408 held-out states: 8 trajectories (test_seed 1) x 51 times; the same draw in every run, viscosity column /10 for lowvisc"
+ },
+ "f2": {
+  "pre_registered_quantities": "panel bank floor / best-found / solved on the development cohort (DESIGN section 6, F2); NOT available before a panel",
+  "evaluated_here": "training-stage analogues: bank floor = test_span_floor max, best-found = oracle_test max, on the 408 held-out test states; solved = unavailable",
+  "pod512_degradation_ratio": 12.09229470095856,
+  "keys": [
+   "bank_floor_test_max_percent",
+   "best_found_test_max_percent"
+  ],
+  "ratios": {
+   "bank_floor_test_max_percent": 9.285651594605955,
+   "best_found_test_max_percent": 1.8706954672010592
+  },
+  "fires_provisional": false,
+  "status": "PROVISIONAL"
+ },
+ "checks": [
+  {
+   "check": "generator_parity_passed_in_job",
+   "passed": true,
+   "bounds": {
+    "default": [
+     0.01,
+     0.1
+    ],
+    "lowvisc": [
+     0.001,
+     0.01
+    ]
+   }
+  },
+  {
+   "check": "training_complete",
+   "passed": true
+  },
+  {
+   "check": "gpu_x64_highest_all_stages",
+   "passed": true,
+   "gpu": "NVIDIA A100-PCIE-40GB",
+   "jobs": [
+    "3804337"
+   ]
+  },
+  {
+   "check": "bank_steps_done_300000",
+   "passed": true,
+   "steps_done": 300000,
+   "seconds": 10958.862676382065
+  },
+  {
+   "check": "head_steps_done_200000",
+   "passed": true,
+   "steps_done": 200000,
+   "seconds": 376.563175201416
+  },
+  {
+   "check": "seed_is_the_incumbents_own_zero",
+   "passed": true,
+   "r3": 0,
+   "coeff": 0,
+   "hfit": 0
+  },
+  {
+   "check": "recipe_values_match_incumbent",
+   "passed": true,
+   "arch": {
+    "n_ff": 128,
+    "g_hidden": 1024,
+    "h_hidden": 256
+   },
+   "hfit_spec": {
+    "hidden": 512,
+    "layers": 2
+   }
+  },
+  {
+   "check": "training_data_same_shape_but_differs_from_incumbent",
+   "passed": true,
+   "bank_sum": 0.09042941152222668,
+   "bank_sumsq": 0.3593298738364775,
+   "extract_sum": 0.09191203295070348,
+   "extract_sumsq": 0.36083217374650933,
+   "shapes_equal": true
+  },
+  {
+   "check": "fom_residuals_converged",
+   "passed": true,
+   "bank": 9.997815698763323e-13,
+   "extract": 9.999855338263082e-13
+  },
+  {
+   "check": "gram_identity_and_whitening",
+   "passed": true,
+   "co": {
+    "gram_identity_rel_dev_max": 4.0915573765649095e-14,
+    "gram_identity_rel_dev_mean": 2.974591096013863e-15,
+    "gram_identity_rows": 64,
+    "gram_identity_implied_field_rel": 3.582761584563324e-15,
+    "span_floor_direct_vs_gram_rel_dev": 3.999137895588765e-16
+   },
+   "hf": {
+    "whitening_round_trip": 7.933325362072309e-15,
+    "q_equals_LT_h": 2.0516163129705795e-15
+   }
+  },
+  {
+   "check": "checkpoint_sha256_consistent",
+   "passed": true,
+   "sha256": "9a481e27ae87724d3a3a92c1568de7b44ff7b752b4050fcc61b93c22d5e98f8b"
+  },
+  {
+   "check": "bank_sha256_consistent",
+   "passed": true,
+   "sha256": "0856f63064b4c081458d04b1d5123fb8f7263d02003da2255ee75855aa4fb78d"
+  },
+  {
+   "check": "extraction_npz_sha256_consistent",
+   "passed": true,
+   "sha256": "9e40fe6a30191f920c6fe6704a4b2a115e8fc08971ca89280a25096327f6b8e6"
+  },
+  {
+   "check": "pick_is_131072_with_27648_early",
+   "passed": true,
+   "pick": 131072,
+   "early": 27648,
+   "T": 51
+  },
+  {
+   "check": "checkpoint_finite_and_shaped",
+   "passed": true,
+   "h_lin": [
+    16,
+    512
+   ],
+   "Z_tr": [
+    131072,
+    16
+   ]
+  },
+  {
+   "check": "final_cohort_unopened",
+   "passed": true,
+   "note": "stages A-C draw seeds 0/576, 1000/4032 and 1/8 only; the sealed draw 17092026/6 is not consumed by any of the three scripts"
+  }
+ ]
+}

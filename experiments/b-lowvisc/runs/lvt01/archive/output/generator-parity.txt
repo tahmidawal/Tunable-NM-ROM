@@ -1,0 +1,29 @@
+{
+ "patched": {
+  "path": "experiments/b-lowvisc/deps/burgers2d-coord-rom/burgers2d_film.py",
+  "sha256": "959ba3af27c03cd46cc90830a59b287874daa53f06c3fa626e9ff6be0728d5aa"
+ },
+ "original": {
+  "path": "experiments/b-seeds/deps/burgers2d-coord-rom/burgers2d_film.py",
+  "sha256": "c521b36a9bae5471f0f3c1644d03451109c84688cf3808f9c5ea6ffea18493e4"
+ },
+ "bounds": {
+  "default": [
+   0.01,
+   0.1
+  ],
+  "lowvisc": [
+   0.001,
+   0.01
+  ]
+ },
+ "passed": true,
+ "note": "z is returned but discarded as `_z` by sep_burgers_r3.py and sep_coeff_extract.py, the only consumers in this chain, so a last-bit change in its log-nu column under the defaults touches no number."
+}
+0 576 phys_identical True z_identical True nu_ratio_dev 7.11e-16
+1000 4032 phys_identical True z_identical True nu_ratio_dev 1.07e-15
+1 8 phys_identical True z_identical True nu_ratio_dev 7.11e-16
+0 128 phys_identical True z_identical True nu_ratio_dev 7.11e-16
+7090702 4 phys_identical True z_identical True nu_ratio_dev 3.55e-16
+911702 2 phys_identical True z_identical True nu_ratio_dev 3.55e-16
+17092026 6 phys_identical True z_identical True nu_ratio_dev 3.55e-16

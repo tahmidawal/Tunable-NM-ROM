@@ -1,0 +1,23 @@
+{
+  "note": "built in THIS job by lv_directions.py: directions.audited (the incumbent `old` rule, ladder.residual_directions arithmetic unchanged) evaluated on the low-viscosity checkpoint; the same rule that produced the incumbent panel's directions_qtd02.npz (job 3757505)",
+  "files": {
+    "directions_lowvisc.npz": {
+      "sha256": "89da5e7e16d119dec28dcb50534e79e7e9240d3ea98a3a7aeaad39b32d68f59c",
+      "source_job": "3817807",
+      "source_attempt": "lvp01",
+      "source_path": "output/directions/directions_lowvisc.npz",
+      "columns": 512,
+      "available_rank": 512,
+      "prefix_sha256": {
+        "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "16": "8f01b08d00228448c50a534ec6a36cbce89ae9a4fea6876245768425b4ef9986",
+        "32": "6b1e2fb6df238c91b2265b4fd89bcf16299d839a575e26ecf1045c471a878a8e",
+        "64": "dd3c2122e09a9808dbc0fe7a732d62349f222a972e0a777e76b6de7cc37a748a",
+        "128": "d0203849b90ca2adcf0801936a6e696a2190f0ffc8b1b320192b6ba9c953982c",
+        "256": "6ac093829591575a583ead75f6dfbce958f99d2f4375b029030bd4acc26621c3"
+      },
+      "rule": "old: field-metric POD of the frozen head's static reconstruction residual eta - h(z*), nested in q",
+      "checkpoint_sha256": "9a481e27ae87724d3a3a92c1568de7b44ff7b752b4050fcc61b93c22d5e98f8b"
+    }
+  }
+}

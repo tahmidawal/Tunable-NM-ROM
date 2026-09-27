@@ -1,0 +1,57 @@
+host=pax052 source_commit=2cf5dc3487764eaad289041b465d33fb3c98b93b attempt=lvg01 started=2026-09-17T13:42:07-04:00
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  439G  91% /cluster/tufts/paralab
+jax_backend=gpu
+GATE 2026-09-17T13:42:20-04:00
+jax_backend=gpu x64=True precision=highest
+FAMILY RELATION True
+REFERENCE incumbent 0 91.5
+REFERENCE incumbent 1 182.0
+REFERENCE incumbent 2 326.9
+REFERENCE incumbent 3 466.1
+REFERENCE incumbent 4 588.0
+REFERENCE incumbent 5 697.1
+REFERENCE lowvisc 0 853.5
+REFERENCE lowvisc 1 1048.5
+REFERENCE lowvisc 2 1480.0
+REFERENCE lowvisc 3 1753.1
+REFERENCE lowvisc 4 1955.3
+REFERENCE lowvisc 5 2139.5
+TRUTH 2143.6
+SNAPSHOTS incumbent 16.3 orth 7.14e-05
+SNAPSHOTS lowvisc 32.7 orth 1.05e-09
+WARM incumbent__fft_tight__L256 1.2
+WARM incumbent__dense_tight__L256 4.1
+WARM incumbent__nt1e-2_dt01__L256 5.1
+WARM incumbent__nt1e-2_dt005__L256 5.2
+WARM incumbent__nt1e-3_dt01__L256 5.2
+WARM incumbent__nt1e-3_dt005__L256 5.3
+WARM incumbent__nt1e-4_dt01__L256 5.3
+WARM incumbent__nt1e-4_dt005__L256 5.3
+WARM lowvisc__fft_tight__L256 5.5
+WARM lowvisc__dense_tight__L256 5.6
+WARM lowvisc__nt1e-2_dt01__L256 5.6
+WARM lowvisc__nt1e-2_dt005__L256 5.6
+WARM lowvisc__nt1e-3_dt01__L256 5.7
+WARM lowvisc__nt1e-3_dt005__L256 5.7
+WARM lowvisc__nt1e-4_dt01__L256 5.8
+WARM lowvisc__nt1e-4_dt005__L256 5.8
+WARM incumbent__fft_tight__L512 7.2
+WARM lowvisc__fft_tight__L512 7.5
+WARM incumbent__nt1e-3_dt005__L512 7.6
+WARM lowvisc__nt1e-3_dt005__L512 7.6
+WARM incumbent__fft_tight__L1024 9.5
+WARM lowvisc__fft_tight__L1024 10.4
+WARM incumbent__nt1e-3_dt005__L1024 10.6
+WARM lowvisc__nt1e-3_dt005__L1024 10.9
+TIMED 0 2321.3
+TIMED 1 2390.6
+TIMED 2 2460.5
+POD FLOORS incumbent {'16': 61.6503, '32': 47.0681, '64': 19.8147, '128': 10.1189, '256': 3.7686, '512': 0.609}
+POD FLOORS lowvisc {'16': 67.3429, '32': 54.4539, '64': 35.1339, '128': 23.2019, '256': 15.267, '512': 7.3643}
+COMPARATOR {'passed': True, 'tolerance': 0.001, 'source': 'b-panel job 3780638, reports/summary.json, family=pod metric=best_found_percent', 'expected': {'16': 61.65025457052222, '32': 47.06812532890498, '64': 19.814736427359435, '128': 10.118904555212852, '256': 3.7685744617897887, '512': 0.6090074835492131}, 'got': {'16': 61.650254570522, '32': 47.068125328905275, '64': 19.814736427359396, '128': 10.118904555227736, '256': 3.7685744608766933, '512': 0.6090067628392004}, 'max_relative_deviation': 1.183417334166698e-06, 'per_rank_relative_deviation': {'16': 3.572868427228706e-15, '32': 6.189380172376169e-15, '64': 1.972261937980943e-15, '128': 1.4709194929274249e-12, '256': 2.4229198237806374e-10, '512': 1.183417334166698e-06}}
+POD PROBE 512 incumbent {'16': 61.833, '32': 47.444, '64': 20.3195, '128': 10.5342, '256': 4.0004, '512': 0.6554}
+POD PROBE 512 lowvisc {'16': 67.6718, '32': 54.9584, '64': 35.9396, '128': 24.0103, '256': 16.3614, '512': 8.442}
+DONE 2690.5
+STAGES DONE 2026-09-17T14:27:16-04:00
+ALL-DONE

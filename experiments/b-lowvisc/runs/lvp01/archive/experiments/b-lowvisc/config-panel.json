@@ -1,0 +1,220 @@
+{
+ "intervals": 256,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "reference_mesh": 4096,
+ "reference_dt": 0.0003125,
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "train_state_stride": 2,
+ "snapshot_ntol": 1e-09,
+ "snapshot_ltol": 1e-07,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "recon_starts": 8,
+ "recon_budget": 400,
+ "reps": 3,
+ "order_seed": 20260917,
+ "burn_seconds": 0.25,
+ "rules_mesh": 256,
+ "pod_ranks": [
+  16,
+  32,
+  64,
+  128,
+  256,
+  512
+ ],
+ "free_bank": true,
+ "free_bank_M": 1024,
+ "same_grid_reference": "fft_tight",
+ "direct_control": "dense_tight",
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "dense_tight",
+   "preconditioner": "dense",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "preconditioner": "fft",
+   "dt": 0.01,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-2_dt005",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.5
+  },
+  {
+   "name": "nt1e-3_dt01",
+   "preconditioner": "fft",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-3_dt005",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 1e-05
+  },
+  {
+   "name": "nt1e-4_dt01",
+   "preconditioner": "fft",
+   "dt": 0.01,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "nt1e-4_dt005",
+   "preconditioner": "fft",
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "attempt": "lvp01",
+ "lane": "b-lowvisc",
+ "nu_bounds": [
+  0.001,
+  0.01
+ ],
+ "expected_physical_sha256": "53ea75a0ea8acf050525b81b598b10afd5cb1e202fbc9807ef8f975143f5ec4a",
+ "expected_physical_sha256_source": "lvg01 (job 3789639) families.lowvisc.physical_sha256",
+ "expected_reference_sha256": {
+  "0": "7908cc2f91b0db7d8e6bc8a4654d58228bed8f9dcb619e4650bcf8aec3be06ef",
+  "1": "1ae495e558c070735aa9810e89647fa18aafaeee31b704bb32590d7489d1dc75",
+  "2": "933d5c52e53e1f97120c6dbc697f976b29ea4fa1793878e3a8a291d7a3c6d5e7",
+  "3": "114a1c6a433203f67d4ba35d0326e6460968f713e652abaedc1eef792ee1f41c",
+  "4": "6c7d9a610b1f95b80f5406d1ff13dac1130388b1fdfc0586938c9514e4c5f6b2",
+  "5": "ca6f97c158143c207b6d46e82bf19cc41420f38ebbde8cbdfe06538ad06575d0"
+ },
+ "reference_sha_note": "lvg01 4096-interval low-viscosity reference field hashes; GPU-model dependent, recorded as a probe, not a gate",
+ "snapshot_residual_bar": 1e-08,
+ "directions_file": "directions_lowvisc.npz",
+ "q_ladder": [
+  0,
+  16,
+  32,
+  64,
+  128,
+  256
+ ],
+ "residual_snapshots": 1024,
+ "residual_starts": 4,
+ "residual_budget": 200,
+ "residual_seed": 20260915,
+ "dense_q": [],
+ "eq_q": [],
+ "eq_gtols": [],
+ "rules": {},
+ "extra_rule_sets": [],
+ "extra_dense_q": [],
+ "extra_dense_M": null,
+ "extra_dense_cells": [
+  [
+   0,
+   1088
+  ],
+  [
+   16,
+   1088
+  ],
+  [
+   32,
+   1088
+  ],
+  [
+   64,
+   1088
+  ],
+  [
+   128,
+   1088
+  ],
+  [
+   256,
+   1088
+  ],
+  [
+   0,
+   256
+  ],
+  [
+   16,
+   256
+  ],
+  [
+   32,
+   256
+  ],
+  [
+   64,
+   256
+  ],
+  [
+   128,
+   256
+  ],
+  [
+   256,
+   2176
+  ]
+ ],
+ "fidelity_expectations": {},
+ "priority_override": [
+  "q0_M1088_dense_g1em06",
+  "q16_M1088_dense_g1em06",
+  "q32_M1088_dense_g1em06",
+  "q64_M1088_dense_g1em06",
+  "q128_M1088_dense_g1em06",
+  "q256_M1088_dense_g1em06",
+  "pod16_M64_dense",
+  "pod32_M128_dense",
+  "pod64_M256_dense",
+  "pod128_M512_dense",
+  "pod256_M1024_dense",
+  "pod512_M2048_dense",
+  "q0_M256_dense_g1em06",
+  "q16_M256_dense_g1em06",
+  "q32_M256_dense_g1em06",
+  "q64_M256_dense_g1em06",
+  "q128_M256_dense_g1em06",
+  "q256_M2176_dense_g1em06",
+  "free512_M1024_dense"
+ ],
+ "priority_override_note": "DESIGN A3/A8: the headline fixed-M = 1088 column is built first, then POD-LSPG, then the M = 256 control column, the (256, 2176) cell and the free bank; the OOM rule drops from the end",
+ "source_job_ids": {
+  "bpn301": "3780638",
+  "lvg01": "3789639",
+  "lvt01": "3804337",
+  "qtd02": "3757505"
+ },
+ "purpose": "DESIGN A3/A8: the low-viscosity stage-3 panel in ONE allocation on ONE 80 GB A100 -- the checkpoint's own residual directions built in-job, the fixed M = 1088 correction ladder q in {0..256}, the fixed M = 256 control column q <= 128, the (256, 2176) cell, POD-LSPG at k in {16..512} through the same weak objective/solver/budget, the unrestricted R = 512 bank, and the tuned full-order Newton grid of job 3780638, three timed repetitions; every row carries the same-grid error AND the error against the 4096-interval reference (F4)"
+}

@@ -1,0 +1,81 @@
+host=pax105 source_commit=2718bd320dce1f6411ca9dd8b097fee10ca61419
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  4.2T  442G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 78.0
+REFERENCE 1 143.7
+REFERENCE 2 234.6
+REFERENCE 3 318.3
+REFERENCE 4 389.9
+REFERENCE 5 454.3
+MESH 64
+SNAPSHOTS 64 9.0
+ARM 64 a_neural_eq 21.0
+ARM 64 a_neural_dense 0.2
+ARM 64 b_linear_dec_eq 15.1
+ARM 64 b_linear_dec_dense 0.1
+ARM 64 b_linear_truth_eq 15.1
+ARM 64 c_quad_dec_eq 14.6
+ARM 64 c_quad_dec_dense 0.2
+ARM 64 e_pod8_dense 1.7
+ARM 64 e_pod16_eq 16.9
+ARM 64 e_pod16_dense 0.0
+ARM 64 e_pod32_dense 2.0
+ARM 64 e_pod64_dense 2.2
+ARM 64 e_pod128_dense 2.5
+ARM 64 d_freebank_dense 1.1
+RECON 64 a_neural_eq 2.29595
+RECON 64 a_neural_dense 2.29595
+RECON 64 b_linear_dec_eq 56.92917
+RECON 64 b_linear_dec_dense 56.92917
+RECON 64 b_linear_truth_eq 60.53428
+RECON 64 c_quad_dec_eq 31.78627
+RECON 64 c_quad_dec_dense 31.78627
+RECON 64 e_pod8_dense 78.00074
+RECON 64 e_pod16_eq 60.7356
+RECON 64 e_pod16_dense 60.7356
+RECON 64 e_pod32_dense 45.26076
+RECON 64 e_pod64_dense 17.85538
+RECON 64 e_pod128_dense 8.65906
+RECON 64 d_freebank_dense 0.31471
+WARMUP 64 42.1
+TIMED 64 0 674.3
+TIMED 64 1 704.9
+TIMED 64 2 735.6
+MESH 256
+SNAPSHOTS 256 15.0
+ARM 256 a_neural_eq 20.4
+ARM 256 a_neural_dense 0.3
+ARM 256 b_linear_dec_eq 16.0
+ARM 256 b_linear_dec_dense 0.3
+ARM 256 b_linear_truth_eq 15.8
+ARM 256 c_quad_dec_eq 15.5
+ARM 256 c_quad_dec_dense 0.4
+ARM 256 e_pod8_dense 1.6
+ARM 256 e_pod16_eq 17.6
+ARM 256 e_pod16_dense 0.1
+ARM 256 e_pod32_dense 2.0
+ARM 256 e_pod64_dense 2.3
+ARM 256 e_pod128_dense 2.9
+ARM 256 d_freebank_dense 3.2
+RECON 256 a_neural_eq 2.54466
+RECON 256 a_neural_dense 2.54466
+RECON 256 b_linear_dec_eq 56.92957
+RECON 256 b_linear_dec_dense 56.92957
+RECON 256 b_linear_truth_eq 61.52262
+RECON 256 c_quad_dec_eq 31.82757
+RECON 256 c_quad_dec_dense 31.82757
+RECON 256 e_pod8_dense 78.51485
+RECON 256 e_pod16_eq 61.65025
+RECON 256 e_pod16_dense 61.65025
+RECON 256 e_pod32_dense 47.06813
+RECON 256 e_pod64_dense 19.81474
+RECON 256 e_pod128_dense 10.1189
+RECON 256 d_freebank_dense 0.39184
+WARMUP 256 36.6
+TIMED 256 0 1051.6
+TIMED 256 1 1100.7
+TIMED 256 2 1149.8
+HEAD ABLATION COMPLETE
+ALL-DONE

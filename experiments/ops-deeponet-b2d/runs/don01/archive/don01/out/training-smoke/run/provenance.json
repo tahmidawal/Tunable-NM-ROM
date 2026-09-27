@@ -1,0 +1,61 @@
+{
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "neuraloperator": "2.0.0",
+    "cuda": "12.8",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "sources": {
+    "dataset.py": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+    "evaluate_cohort.py": "a088ba646caee32a45cd5df49b1f421ee47f5bf222a8a01be2837612803b38a9",
+    "families.py": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+    "model.py": "70a14f70429134f58e6d81a8fbd94992b4f1969fdd7648cb0cd8386248917f3e",
+    "prepare_diagnosis_cohort.py": "3c6529e355c27ebcd8c8c5affc339c8286b0393703e0d75fc01f6df4c60f0504",
+    "smoke_second.py": "3391670ad1ddf4497b16e6986ec0a94beb0c52366a420598451d0c017979b07a",
+    "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+    "timing.py": "f736bc8dc73a7a28e7a02938f088f5f24851b60e50b2a0cd9f496a278f7a7ecc",
+    "train.py": "5abc9bd77275c40587c3b2fa9f81c17349a925d86bd3f847f86c42875e9578c1",
+    "training_smoke_second.py": "fa48e6fb890091cd56ba49bd167e15a9419ab7811f678dc53a267c1a4288d8b2",
+    "worker_second.py": "c2ad6f49c10f6382499d9bd494be4d1d9547044699868ae14f1f63055c7e69ce"
+  },
+  "config": {
+    "family": "deeponet",
+    "width": 8,
+    "rank": 16,
+    "trunk_width": 16,
+    "levels": 2,
+    "pool_bins": 2,
+    "dtype": "float32",
+    "epochs": 2,
+    "patience": 2,
+    "batch_size": 2,
+    "warmup_epochs": 1,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "seed": 20260914
+  },
+  "config_sha256": "97444346877a92dea77b21d7b71ccda3a92309c9c463098e3da87ae069e8d9f1",
+  "train_index_sha256": "b5fcb04a87e8577dde01f621ced10540a6e20e02f20fe7acf290619116325d78",
+  "validation_index_sha256": "80fedb3906e2604d9d43dde71f40b6470e6da3c2882183d65c1aed99dae5e6aa",
+  "train_case_ids": [
+    "smoke-deeponet-train-0",
+    "smoke-deeponet-train-1",
+    "smoke-deeponet-train-2",
+    "smoke-deeponet-train-3"
+  ],
+  "validation_case_ids": [
+    "smoke-deeponet-validation-0",
+    "smoke-deeponet-validation-1"
+  ],
+  "job_id": "4179556",
+  "node": "pax050",
+  "seed": 20260914,
+  "pde": "burgers",
+  "mesh": 64,
+  "final_cohort_opened": false,
+  "target": "declared dataset target; physical-reference evaluation is separate",
+  "supplied_input": "sampled field and known physical coefficients; no Gaussian descriptors",
+  "timing": "training resource accounting only; no FOM/ROM speed ratio"
+}

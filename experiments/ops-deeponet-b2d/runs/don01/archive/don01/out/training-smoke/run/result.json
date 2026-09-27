@@ -1,0 +1,50 @@
+{
+  "complete": true,
+  "pde": "burgers",
+  "best_epoch": 1,
+  "family": "deeponet",
+  "parameter_dtype": "torch.float32",
+  "epochs_completed": 2,
+  "stop_reason": "epoch_cap",
+  "stopped_by_signal": false,
+  "stopped_by_wall_budget": false,
+  "stopped_by_early_stopping": false,
+  "stopped_by_epoch_cap": true,
+  "wall_budget_seconds": 7200.0,
+  "warmup_epochs": 1,
+  "validation": {
+    "errors": [
+      [
+        0.0,
+        0.9364432210153901,
+        0.8829608909611458,
+        0.8314861754791256,
+        0.7832092950796916,
+        0.7378145614413859
+      ],
+      [
+        0.0,
+        0.936348826957593,
+        0.8827790010107356,
+        0.8312252764724208,
+        0.782896841670653,
+        0.7374361451898936
+      ]
+    ],
+    "mean_case_max": 0.9363960239864916,
+    "median_case_max": 0.9363960239864916,
+    "worst_case_max": 0.9364432210153901,
+    "p95_case_max": 0.9364385013125003,
+    "above_threshold_counts": {
+      "0.01": 2,
+      "0.02": 2,
+      "0.05": 2
+    },
+    "batched_selection_score": 0.9363960240044618
+  },
+  "parameter_tensor_elements": 7413,
+  "real_parameter_count": 7413,
+  "best_checkpoint_sha256": "ee7679b10af8715658efcff9129a70c8dc068260fcb65cd85a3a7bcab7a9c99c",
+  "training_seconds": 0.6134442980401218,
+  "scientific_status": "single-seed development capacity screen; no paired speed claim"
+}

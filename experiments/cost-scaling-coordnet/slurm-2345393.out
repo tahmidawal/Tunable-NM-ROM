@@ -1,0 +1,31 @@
+jax_backend=gpu
+jax_backend=gpu
+device=NVIDIA A100 80GB PCIe  m_eq=100  gn_iters=10  repeats=30  n_freq=32 (fixed)
+SHAPE CHECK PASSED: GN-step jaxpr shape multisets identical for N=32 vs N=512 at every k in [2, 4, 8, 16, 32] — N appears in no tensor shape in the timed loop
+RESULT N=  32 k=  2  median=0.2199 ms/GN-iter  iqr=[0.2194,0.2201]  flops=837758208.0
+RESULT N=  64 k=  2  median=0.2203 ms/GN-iter  iqr=[0.2199,0.2208]  flops=837758208.0
+RESULT N= 128 k=  2  median=0.2197 ms/GN-iter  iqr=[0.2193,0.2203]  flops=837758208.0
+RESULT N= 256 k=  2  median=0.2198 ms/GN-iter  iqr=[0.2195,0.2202]  flops=837758208.0
+RESULT N= 512 k=  2  median=0.2193 ms/GN-iter  iqr=[0.2190,0.2199]  flops=837758208.0
+RESULT N=  32 k=  4  median=0.2559 ms/GN-iter  iqr=[0.2555,0.2568]  flops=61970480.0
+RESULT N=  64 k=  4  median=0.2568 ms/GN-iter  iqr=[0.2559,0.2572]  flops=61970480.0
+RESULT N= 128 k=  4  median=0.2558 ms/GN-iter  iqr=[0.2552,0.2562]  flops=61970480.0
+RESULT N= 256 k=  4  median=0.2562 ms/GN-iter  iqr=[0.2558,0.2567]  flops=61970480.0
+RESULT N= 512 k=  4  median=0.2566 ms/GN-iter  iqr=[0.2562,0.2572]  flops=61970480.0
+RESULT N=  32 k=  8  median=0.3423 ms/GN-iter  iqr=[0.3421,0.3433]  flops=2443077120.0
+RESULT N=  64 k=  8  median=0.3426 ms/GN-iter  iqr=[0.3422,0.3433]  flops=2443077120.0
+RESULT N= 128 k=  8  median=0.3423 ms/GN-iter  iqr=[0.3420,0.3429]  flops=2443077120.0
+RESULT N= 256 k=  8  median=0.3427 ms/GN-iter  iqr=[0.3422,0.3430]  flops=2443077120.0
+RESULT N= 512 k=  8  median=0.3425 ms/GN-iter  iqr=[0.3419,0.3431]  flops=2443077120.0
+RESULT N=  32 k= 16  median=0.5027 ms/GN-iter  iqr=[0.5021,0.5035]  flops=4585292800.0
+RESULT N=  64 k= 16  median=0.5020 ms/GN-iter  iqr=[0.5014,0.5023]  flops=4585292800.0
+RESULT N= 128 k= 16  median=0.5027 ms/GN-iter  iqr=[0.5022,0.5031]  flops=4585292800.0
+RESULT N= 256 k= 16  median=0.5021 ms/GN-iter  iqr=[0.5015,0.5024]  flops=4585292800.0
+RESULT N= 512 k= 16  median=0.5019 ms/GN-iter  iqr=[0.5016,0.5025]  flops=4585292800.0
+RESULT N=  32 k= 32  median=0.8423 ms/GN-iter  iqr=[0.8417,0.8429]  flops=8855158784.0
+RESULT N=  64 k= 32  median=0.8410 ms/GN-iter  iqr=[0.8407,0.8419]  flops=8855158784.0
+RESULT N= 128 k= 32  median=0.8417 ms/GN-iter  iqr=[0.8412,0.8425]  flops=8855158784.0
+RESULT N= 256 k= 32  median=0.8408 ms/GN-iter  iqr=[0.8403,0.8413]  flops=8855158784.0
+RESULT N= 512 k= 32  median=0.8417 ms/GN-iter  iqr=[0.8414,0.8422]  flops=8855158784.0
+FLOP CHECK PASSED: identical FLOPs/GN-iter across all N at every fixed k
+wrote ./coordnet_timing_pax106.json

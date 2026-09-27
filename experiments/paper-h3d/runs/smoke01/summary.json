@@ -1,0 +1,199 @@
+{
+  "schema": "paper-heat3d-summary-v1",
+  "source_commit": null,
+  "job_id": null,
+  "gpu": "NVIDIA GB10",
+  "complete": true,
+  "smoke": true,
+  "rows": [
+    {
+      "intervals": 8,
+      "method": "dst_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.5383379757404327,
+      "device_ms_repetitions": [
+        0.5383379757404327
+      ],
+      "total_ms_median": 1.3940229546278715,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.0,
+      "same_grid_current_evolved_worst": 0.0,
+      "physical_current_evolved_worst": 0.0487976598215559,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_cn",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.9828850161284208,
+      "device_ms_repetitions": [
+        0.9828850161284208
+      ],
+      "total_ms_median": 1.8768409499898553,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 1.7578686214602492,
+      "same_grid_current_evolved_worst": 1.7578686214602492,
+      "physical_current_evolved_worst": 1.7815830765727263,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "linear_bank_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.3561140038073063,
+      "device_ms_repetitions": [
+        0.3561140038073063
+      ],
+      "total_ms_median": 0.9656689362600446,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 1.757218638821256,
+      "same_grid_current_evolved_worst": 1.757218638821256,
+      "physical_current_evolved_worst": 1.780919044535029,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q0_dense",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 3.801424987614155,
+      "device_ms_repetitions": [
+        3.801424987614155
+      ],
+      "total_ms_median": 5.116662941873074,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.9182884434119745,
+      "same_grid_current_evolved_worst": 0.9182884434119745,
+      "physical_current_evolved_worst": 0.9163633471134397,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q0_eq",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 4.241907969117165,
+      "device_ms_repetitions": [
+        4.241907969117165
+      ],
+      "total_ms_median": 5.982875009067357,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 1.142732692313594,
+      "same_grid_current_evolved_worst": 1.142732692313594,
+      "physical_current_evolved_worst": 1.147985656585595,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 1
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 6.512668915092945,
+      "device_ms_repetitions": [
+        6.512668915092945
+      ],
+      "total_ms_median": 8.577479049563408,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.9829545306073018,
+      "same_grid_current_evolved_worst": 0.9829545306073018,
+      "physical_current_evolved_worst": 0.9838179947659333,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 1
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_dense_dt_half",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 5.822074017487466,
+      "device_ms_repetitions": [
+        5.822074017487466
+      ],
+      "total_ms_median": 7.967875921167433,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.9829922570068704,
+      "same_grid_current_evolved_worst": 0.9829922570068704,
+      "physical_current_evolved_worst": 0.983856436477107,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 1
+    },
+    {
+      "intervals": 8,
+      "method": "nmrom_K2_q2_eq",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 5.4465848952531815,
+      "device_ms_repetitions": [
+        5.4465848952531815
+      ],
+      "total_ms_median": 7.123760995455086,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 1.3143863379738612,
+      "same_grid_current_evolved_worst": 1.3143863379738612,
+      "physical_current_evolved_worst": 1.323869729486808,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 1
+    },
+    {
+      "intervals": 8,
+      "method": "pod2_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.5404339171946049,
+      "device_ms_repetitions": [
+        0.5404339171946049
+      ],
+      "total_ms_median": 1.9616730278357863,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.5256876347770705,
+      "same_grid_current_evolved_worst": 0.5256876347770705,
+      "physical_current_evolved_worst": 0.5168731598295132,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "pod4_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.21041696891188622,
+      "device_ms_repetitions": [
+        0.21041696891188622
+      ],
+      "total_ms_median": 1.4602619921788573,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.3399356358345476,
+      "same_grid_current_evolved_worst": 0.3399356358345476,
+      "physical_current_evolved_worst": 0.33224665957938876,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    },
+    {
+      "intervals": 8,
+      "method": "pod8_exact",
+      "cases": 1,
+      "invocations": 1,
+      "device_ms_median": 0.3934740088880062,
+      "device_ms_repetitions": [
+        0.3934740088880062
+      ],
+      "total_ms_median": 1.5355109935626388,
+      "time_outliers_above_1p5_median": 0,
+      "same_grid_current_evolved_median": 0.32008933508292226,
+      "same_grid_current_evolved_worst": 0.32008933508292226,
+      "physical_current_evolved_worst": 0.3099028380791515,
+      "nonfinite_cases": 0,
+      "cases_with_nonstationary_solves": 0
+    }
+  ],
+  "final_cohort_opened": false,
+  "interpretation": "development pilot; convergence, physical-reference qualification and EQ certification remain separate"
+}

@@ -1,0 +1,101 @@
+{
+  "attempt": "poisson01",
+  "pde": "poisson",
+  "checks": {
+    "driver_reported_complete": {
+      "passed": true,
+      "detail": null
+    },
+    "jax_backend_gpu": {
+      "passed": true,
+      "detail": "gpu"
+    },
+    "float64": {
+      "passed": true,
+      "detail": null
+    },
+    "matmul_precision_highest": {
+      "passed": true,
+      "detail": null
+    },
+    "checkpoint_unchanged": {
+      "passed": true,
+      "detail": null
+    },
+    "complete_invocation_grid": {
+      "passed": true,
+      "detail": {
+        "observed": {
+          "64": 630,
+          "128": 630,
+          "256": 630,
+          "512": 630,
+          "1024": 630
+        },
+        "expected": {
+          "64": 630,
+          "128": 630,
+          "256": 630,
+          "512": 630,
+          "1024": 630
+        }
+      }
+    },
+    "meshes_are_the_configured_ladder": {
+      "passed": true,
+      "detail": [
+        64,
+        128,
+        256,
+        512,
+        1024
+      ]
+    },
+    "timing_identity_and_positive_device_time": {
+      "passed": true,
+      "detail": []
+    },
+    "cached_reduced_solve_recorded": {
+      "passed": true,
+      "detail": 630
+    },
+    "cached_times_positive": {
+      "passed": true,
+      "detail": null
+    },
+    "common_grid_errors_reproduced": {
+      "passed": true,
+      "detail": {
+        "checked": 3150,
+        "worst_absolute_difference": 3.469446951953614e-17,
+        "unarchived": 0
+      }
+    },
+    "staged_solver_matches_retained": {
+      "passed": true,
+      "detail": [
+        5.048070797470409e-16,
+        6.184277079285199e-16,
+        6.710176220897991e-16,
+        5.423275275466429e-16,
+        5.079234915740676e-16
+      ]
+    },
+    "native_rank_valid": {
+      "passed": true,
+      "detail": null
+    }
+  },
+  "failures": [],
+  "rom_stationary": {
+    "stationary": 0,
+    "graded": 0,
+    "total": 630,
+    "note": "Poisson grades stationarity in native_rows, outside every timer, because the timed complete query deliberately excludes the diagnostics"
+  },
+  "native_solver_valid": {
+    "valid": 210,
+    "total": 210
+  },
+  "passed": true
+}

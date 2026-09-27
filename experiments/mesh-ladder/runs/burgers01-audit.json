@@ -1,0 +1,105 @@
+{
+  "attempt": "burgers01",
+  "pde": "burgers",
+  "checks": {
+    "driver_reported_complete": {
+      "passed": true,
+      "detail": null
+    },
+    "jax_backend_gpu": {
+      "passed": true,
+      "detail": "gpu"
+    },
+    "float64": {
+      "passed": true,
+      "detail": null
+    },
+    "matmul_precision_highest": {
+      "passed": true,
+      "detail": null
+    },
+    "checkpoint_unchanged": {
+      "passed": true,
+      "detail": null
+    },
+    "complete_invocation_grid": {
+      "passed": true,
+      "detail": {
+        "observed": {
+          "64": 150,
+          "128": 180,
+          "256": 150,
+          "512": 180,
+          "1024": 180
+        },
+        "expected": {
+          "64": 150,
+          "128": 180,
+          "256": 150,
+          "512": 180,
+          "1024": 180
+        }
+      }
+    },
+    "meshes_are_the_configured_ladder": {
+      "passed": true,
+      "detail": [
+        64,
+        128,
+        256,
+        512,
+        1024
+      ]
+    },
+    "timing_identity_and_positive_device_time": {
+      "passed": true,
+      "detail": []
+    },
+    "cached_reduced_solve_recorded": {
+      "passed": true,
+      "detail": 150
+    },
+    "cached_times_positive": {
+      "passed": true,
+      "detail": null
+    },
+    "common_grid_errors_reproduced": {
+      "passed": true,
+      "detail": {
+        "checked": 840,
+        "worst_absolute_difference": 1.1102230246251565e-16,
+        "unarchived": 0
+      }
+    },
+    "staged_solver_matches_retained": {
+      "passed": true,
+      "detail": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    "charged_and_audited_stationarity_agree": {
+      "passed": true,
+      "detail": {
+        "worst_absolute_difference": 1.592395832763786e-10,
+        "worst_relative_difference": 0.00016807397956418584,
+        "worst_gradient": 9.972413621357576e-07,
+        "stopping_threshold": 1e-06,
+        "margin_to_threshold": 2.7586378642423127e-09,
+        "difference_as_fraction_of_margin": 0.057723989560375055,
+        "note": "the solver exits as soon as the gradient reaches the threshold, so every recorded gradient sits just below it; the check is that no verdict can turn on the difference between the two evaluations"
+      }
+    }
+  },
+  "failures": [],
+  "rom_stationary": {
+    "stationary": 150,
+    "graded": 150,
+    "total": 150,
+    "note": "graded from the charged gradients returned by the timed invocation itself"
+  },
+  "passed": true
+}

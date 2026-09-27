@@ -1,0 +1,44 @@
+host=pax051 job=3711388 gpu=0 commit=521cdced6f4d0292872f08c0479ebd257c7b4350
+NVIDIA A100-PCIE-40GB, 40960 MiB
+jax_backend=gpu
+10.235.106.34:/projects/paralab  4.6T  4.2T  442G  91% /cluster/tufts/paralab
+jax_backend=gpu
+REFERENCE L=1024 dt=0.000625
+REFERENCE L=2048 dt=0.000625
+REFERENCE L=2048 dt=0.0003125
+REFERENCE L=4096 dt=0.00125
+REFERENCE L=4096 dt=0.000625
+REFERENCE L=4096 dt=0.0003125
+MESH L=64
+TIMED L=64 rep=0 elapsed=1293.2s
+TIMED L=64 rep=1 elapsed=1303.7s
+TIMED L=64 rep=2 elapsed=1314.2s
+TIMED L=64 rep=3 elapsed=1324.7s
+TIMED L=64 rep=4 elapsed=1335.3s
+MESH L=128
+TIMED L=128 rep=0 elapsed=1394.7s
+TIMED L=128 rep=1 elapsed=1407.1s
+TIMED L=128 rep=2 elapsed=1419.6s
+TIMED L=128 rep=3 elapsed=1432.1s
+TIMED L=128 rep=4 elapsed=1444.6s
+MESH L=256
+TIMED L=256 rep=0 elapsed=1502.3s
+TIMED L=256 rep=1 elapsed=1513.5s
+TIMED L=256 rep=2 elapsed=1524.7s
+TIMED L=256 rep=3 elapsed=1536.0s
+TIMED L=256 rep=4 elapsed=1547.2s
+MESH L=512
+TIMED L=512 rep=0 elapsed=1610.0s
+TIMED L=512 rep=1 elapsed=1625.1s
+TIMED L=512 rep=2 elapsed=1640.2s
+TIMED L=512 rep=3 elapsed=1655.3s
+TIMED L=512 rep=4 elapsed=1670.5s
+MESH L=1024
+TIMED L=1024 rep=0 elapsed=1754.1s
+TIMED L=1024 rep=1 elapsed=1780.0s
+TIMED L=1024 rep=2 elapsed=1805.8s
+TIMED L=1024 rep=3 elapsed=1831.7s
+TIMED L=1024 rep=4 elapsed=1857.6s
+BURGERS LADDER COMPLETE seconds=1862.5
+DRIVER-EXIT=0
+SBATCH-COMPLETE

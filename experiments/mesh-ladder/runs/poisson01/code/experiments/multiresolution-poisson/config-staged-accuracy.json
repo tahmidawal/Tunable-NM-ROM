@@ -1,0 +1,121 @@
+{
+  "existing_development_seed": 7090703,
+  "existing_development_count": 6,
+  "fresh_development_seed": 7090732,
+  "fresh_development_count": 24,
+  "parameter_sha256": "8bd369190679e4ebb6df47c7b38d7b4a09fe3d6d2a95331643ae056d081dfb55",
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "linear_backward_error_limit": 1e-12,
+  "requested_modes": 256,
+  "intervals": [
+    64,
+    256,
+    1024
+  ],
+  "reference_intervals": [
+    1024,
+    2048
+  ],
+  "observation_intervals": 64,
+  "repetitions": 3,
+  "warmup": 2,
+  "burn_seconds": 0.1,
+  "checkpoint": "experiments/multiresolution-poisson/runs/pilot04/checkpoints/original_relative.pkl",
+  "checkpoint_sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a",
+  "cg_tolerances": [
+    1e-06,
+    0.03,
+    0.1
+  ],
+  "cg_maxiter": 6000,
+  "primary_cg_tolerance": 1e-06,
+  "development_target": 0.05,
+  "reference_fraction": 0.1,
+  "study": "staged_bank_head_joint_accuracy",
+  "training_nodes": 256,
+  "original_draw_seed": 0,
+  "original_draw_count": 576,
+  "training_prefix_count": 512,
+  "new_development_seed": 2026091127,
+  "new_development_count": 12,
+  "online_preset": {
+    "budget": 300,
+    "tau": 0.0,
+    "stationarity_stop": 1e-06,
+    "starts": 1,
+    "requested_modes": 256
+  },
+  "trained_model_ids": [
+    "original_relative",
+    "joint_matched",
+    "staged_head",
+    "staged_joint"
+  ],
+  "staged_intermediate_ids": [
+    "staged_bank",
+    "staged_head"
+  ],
+  "training_common": {
+    "source_batch": 64,
+    "point_batch": 4096,
+    "orthogonality_weight": 0.0001,
+    "timing_block_updates": 250,
+    "log_every_updates": 5000,
+    "training_burn_seconds": 0.2,
+    "warmup_fraction": 0.02,
+    "final_learning_rate_fraction": 0.01,
+    "max_matched_steps": 300000
+  },
+  "training_phases": [
+    {
+      "tag": "staged_bank",
+      "phase": "bank",
+      "steps": 40000,
+      "learning_rate": 0.0003,
+      "rng_seed": 2026091131
+    },
+    {
+      "tag": "staged_head",
+      "phase": "head",
+      "steps": 30000,
+      "learning_rate": 0.0003,
+      "rng_seed": 2026091132
+    },
+    {
+      "tag": "staged_joint",
+      "phase": "joint",
+      "steps": 20000,
+      "learning_rate": 0.0001,
+      "rng_seed": 2026091133
+    }
+  ],
+  "joint_matched": {
+    "tag": "joint_matched",
+    "phase": "joint",
+    "steps": 90000,
+    "learning_rate": 0.0003,
+    "rng_seed": 2026091131
+  },
+  "training_selection": "fixed scheduled staged endpoints; joint control stops at first 250-update block reaching sum of staged optimizer-block seconds; no development-selected checkpoint",
+  "match_contract": "same-GPU optimizer-block elapsed time only; excludes compilation, burn-in, QR, data and diagnostics; one-block overshoot reported; actual updates/exposures retained",
+  "diagnostic_projection": "full requested-grid learned-bank QR projection for every evaluated checkpoint; training-only normalized rank64 SVD span evaluated on training mesh",
+  "proposed_gates": {
+    "bank_worst_relative_error": 0.03,
+    "online_adjusted_relative_error": 0.05,
+    "no_new_numerical_failures": true,
+    "cost": "no paired median GPU or host regression relative to frozen stationary control"
+  },
+  "development_grouping": "first 30 previously opened sources, plus 12 preregistered new development sources; final cohort unopened",
+  "online_contract": "online_preset is authoritative: one nearest-training-code start, skinny exact sine projection, tau0, explicit stationarity1e-6, cap300; no online reference input",
+  "head_oracle": {
+    "intervals": 256,
+    "budget": 300,
+    "starts": [
+      "mean_training_code",
+      "nearest_full_field_training_prediction"
+    ],
+    "stationarity_tolerance": 1e-06,
+    "objective": "full same-grid field norm through QR plus perpendicular residual; reference-only diagnostic, never online"
+  }
+}

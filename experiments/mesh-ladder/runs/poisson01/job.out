@@ -1,0 +1,35 @@
+host=pax105 job=3711389 gpu=0 commit=521cdced6f4d0292872f08c0479ebd257c7b4350
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+10.235.106.24:/projects/paralab  4.6T  4.2T  442G  91% /cluster/tufts/paralab
+jax_backend=gpu
+REFERENCE case=0 elapsed=1.8s
+REFERENCE case=6 elapsed=5.2s
+REFERENCE case=12 elapsed=8.7s
+REFERENCE case=18 elapsed=12.1s
+REFERENCE case=24 elapsed=15.5s
+REFERENCE case=30 elapsed=18.9s
+REFERENCE case=36 elapsed=22.3s
+MESH n=64
+TIMED n=64 rep=0 elapsed=71.6s
+TIMED n=64 rep=1 elapsed=106.1s
+TIMED n=64 rep=2 elapsed=140.6s
+MESH n=128
+TIMED n=128 rep=0 elapsed=190.2s
+TIMED n=128 rep=1 elapsed=225.2s
+TIMED n=128 rep=2 elapsed=260.2s
+MESH n=256
+TIMED n=256 rep=0 elapsed=313.1s
+TIMED n=256 rep=1 elapsed=349.3s
+TIMED n=256 rep=2 elapsed=385.5s
+MESH n=512
+TIMED n=512 rep=0 elapsed=444.8s
+TIMED n=512 rep=1 elapsed=484.2s
+TIMED n=512 rep=2 elapsed=523.7s
+MESH n=1024
+TIMED n=1024 rep=0 elapsed=612.3s
+TIMED n=1024 rep=1 elapsed=666.8s
+TIMED n=1024 rep=2 elapsed=721.2s
+POISSON LADDER COMPLETE seconds=728.4
+DRIVER-EXIT=0
+SBATCH-COMPLETE

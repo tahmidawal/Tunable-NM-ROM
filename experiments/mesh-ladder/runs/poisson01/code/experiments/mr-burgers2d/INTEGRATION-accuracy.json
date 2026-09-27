@@ -1,0 +1,292 @@
+{
+  "status": "concrete review inventory; no merge performed",
+  "tree": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-07-mr-burgers2d",
+  "branch": "exp/2026-09-07-mr-burgers2d",
+  "corrected_base": "b0e7aaa18a0a2338036db8b08fc45c5f61fbd755",
+  "accepted_solver": {
+    "status": "candidate for scoped integration after user merge decision",
+    "source": "experiments/mr-burgers2d/accuracy_paths.py",
+    "symbols": [
+      "make_stationary_lm",
+      "make_rom",
+      "make_diagnostics"
+    ],
+    "scientific_source_commit": "cbc4e4d8432763a8ea6a02fac0b433066cd521af",
+    "config": {
+      "ic_budget": 400,
+      "step_budget": 180,
+      "gtol": 1e-06
+    },
+    "config_path": "experiments/mr-burgers2d/config-accuracy-coverage.json",
+    "rationale": "Explicit stationarity stopping with adequate initial-fit and step budgets is independently verified. Keep the original network. This improves numerical reliability; it does not establish a large physical-accuracy gain or a speed improvement."
+  },
+  "accepted_checkpoint": {
+    "path": "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+    "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+    "unchanged": true
+  },
+  "accepted_benchmark_controls": [
+    {
+      "attempt": "accuracy08",
+      "source_commit": "47b783429500b559f6a509448ca11f164183b658",
+      "archive_commit": "fe0bc57043d01224b1f9555e4139f744434dc551",
+      "result": "experiments/mr-burgers2d/runs/accuracy08/archive/out/result.json",
+      "result_sha256": "056ba0ae8b16bf8737ac370cef6219414fecff3e693592fc4f15f67cdd41cb7e",
+      "audit": "experiments/mr-burgers2d/runs/accuracy08/AUDIT.json",
+      "audit_sha256": "7d2e9e5fc4771346ee6a5e93471a249ffce1c806af325338891caa36a966f61b",
+      "restore": "/home/tahmid/Dev/.venv/bin/python experiments/mr-burgers2d/restore_iterative.py experiments/mr-burgers2d/runs/accuracy08"
+    },
+    {
+      "attempt": "accuracy09",
+      "source_commit": "9bd640437f8ba1d830806d950fd34949dbbb8bfc",
+      "archive_commit": "3ccf003df9d86d8b474ac9f9430baaeb5c315ae4",
+      "result": "experiments/mr-burgers2d/runs/accuracy09/archive/out/result.json",
+      "result_sha256": "cf7409cbb553a78662ee8eb5b6e33d52ec89228f511a74eb2170562f4eeb9c33",
+      "audit": "experiments/mr-burgers2d/runs/accuracy09/AUDIT.json",
+      "audit_sha256": "8ae6fb0988164e0828bf2f81716e727d2e12389191eb8da31f56ea6addd1612c",
+      "restore": "/home/tahmid/Dev/.venv/bin/python experiments/mr-burgers2d/restore_iterative.py experiments/mr-burgers2d/runs/accuracy09"
+    }
+  ],
+  "research_only_sources": [
+    "experiments/mr-burgers2d/accuracy_replay.py",
+    "experiments/mr-burgers2d/accuracy_coverage.py",
+    "experiments/mr-burgers2d/accuracy_coverage_paths.py",
+    "experiments/mr-burgers2d/config-accuracy-coverage.json",
+    "experiments/mr-burgers2d/ACCURACY-COVERAGE-DESIGN.md"
+  ],
+  "rejected_training_checkpoints": [
+    {
+      "model": "trained576",
+      "status": "retain as failed-accuracy research evidence; do not adopt this checkpoint",
+      "checkpoint": "experiments/mr-burgers2d/runs/accuracy09/archive/out/trained_checkpoint.pkl",
+      "checkpoint_sha256": "8fc558d72c8f47bba4d71573c0278bfcf942c64e22f26e7994e47a59399b530f",
+      "fine_mesh_all_cases": {
+        "intervals": 1024,
+        "name": "trained576_stationary",
+        "method": "rom",
+        "cohort": "all",
+        "cases": 6,
+        "invocations": 18,
+        "gpu_ms": 49.02190365828574,
+        "host_ms": 69.91155899595469,
+        "worst_fixed_initial": 0.05459553761006062,
+        "worst_current_relative": 0.06355352407895458,
+        "median_case_fixed_initial": 0.04218156060306998,
+        "worst_initial_error": 0.04592752114945387,
+        "worst_final_error": 0.03570155319926435,
+        "stationary_invocations": 18,
+        "stationary_states": 918,
+        "maximum_stationarity": 9.728067875348564e-07,
+        "numerical_pass": true,
+        "reference_pass": true,
+        "error_plus_margin_pass": false,
+        "physical_pass": false,
+        "physical_and_numerical_pass": false,
+        "timing_outliers_gt2x_case_median": 0,
+        "initial_reasons": {
+          "4": 18
+        },
+        "evolution_reasons": {
+          "4": 900
+        },
+        "median_total_iterations": 194.0
+      }
+    },
+    {
+      "model": "trained4608",
+      "status": "retain as failed-accuracy research evidence; do not adopt this checkpoint",
+      "checkpoint": "experiments/mr-burgers2d/runs/accuracy09/archive/out/coverage_training/trained_checkpoint.pkl",
+      "checkpoint_sha256": "20b48d4ecdc868931b8898c92e8aced1084ee2aa316786eea25d3ba398b8ea9e",
+      "fine_mesh_all_cases": {
+        "intervals": 1024,
+        "name": "trained4608_stationary",
+        "method": "rom",
+        "cohort": "all",
+        "cases": 6,
+        "invocations": 18,
+        "gpu_ms": 49.60026452317834,
+        "host_ms": 70.1795439235866,
+        "worst_fixed_initial": 0.05277322641300565,
+        "worst_current_relative": 0.05787447025967307,
+        "median_case_fixed_initial": 0.03501017503796291,
+        "worst_initial_error": 0.02824661747534853,
+        "worst_final_error": 0.03688284285280243,
+        "stationary_invocations": 18,
+        "stationary_states": 918,
+        "maximum_stationarity": 9.886846589074145e-07,
+        "numerical_pass": true,
+        "reference_pass": true,
+        "error_plus_margin_pass": false,
+        "physical_pass": false,
+        "physical_and_numerical_pass": false,
+        "timing_outliers_gt2x_case_median": 0,
+        "initial_reasons": {
+          "4": 18
+        },
+        "evolution_reasons": {
+          "4": 900
+        },
+        "median_total_iterations": 196.5
+      }
+    }
+  ],
+  "failed_attempt": {
+    "attempt": "accuracy07",
+    "scientific_source_commit": "cbc4e4d8432763a8ea6a02fac0b433066cd521af",
+    "archive_commit": "47b783429500b559f6a509448ca11f164183b658",
+    "failure": "Instrumentation assertion interrupted evaluation; 134 persisted invocations are incomplete coverage. Original failed charged-gradient difference was lost. The frozen training and reference artifacts were explicitly inherited and retimed in accuracy08.",
+    "evidence": [
+      "runs/accuracy07/FAILURE.json",
+      "runs/accuracy07/STATIONARITY-DIAGNOSTIC.json",
+      "runs/accuracy07/TRAINING-AUDIT.json"
+    ]
+  },
+  "fine_case_initial_vs_rollout": [
+    {
+      "case": 0,
+      "comparisons": {
+        "frozen_stationary": {
+          "initial_error": 0.016289100365910237,
+          "worst_trajectory_error": 0.016289100365910237,
+          "final_error": 0.00781544332849538,
+          "peak_output_index": 0
+        },
+        "trained576_stationary": {
+          "initial_error": 0.01283080820268748,
+          "worst_trajectory_error": 0.016428750765579644,
+          "final_error": 0.010729809353005,
+          "peak_output_index": 1
+        },
+        "trained4608_stationary": {
+          "initial_error": 0.01237728121668606,
+          "worst_trajectory_error": 0.016995087782119885,
+          "final_error": 0.01056643814549973,
+          "peak_output_index": 1
+        }
+      }
+    },
+    {
+      "case": 1,
+      "comparisons": {
+        "frozen_stationary": {
+          "initial_error": 0.013028026764927403,
+          "worst_trajectory_error": 0.013028026764927403,
+          "final_error": 0.004301186328660821,
+          "peak_output_index": 0
+        },
+        "trained576_stationary": {
+          "initial_error": 0.02331056384807986,
+          "worst_trajectory_error": 0.02331056384807986,
+          "final_error": 0.0056278062422530145,
+          "peak_output_index": 0
+        },
+        "trained4608_stationary": {
+          "initial_error": 0.016750121112350868,
+          "worst_trajectory_error": 0.016750121112350868,
+          "final_error": 0.005376492766025407,
+          "peak_output_index": 0
+        }
+      }
+    },
+    {
+      "case": 2,
+      "comparisons": {
+        "frozen_stationary": {
+          "initial_error": 0.015055969270488986,
+          "worst_trajectory_error": 0.035022372419360834,
+          "final_error": 0.02437078251117395,
+          "peak_output_index": 3
+        },
+        "trained576_stationary": {
+          "initial_error": 0.019922676252874756,
+          "worst_trajectory_error": 0.05072114685247188,
+          "final_error": 0.03570155319926435,
+          "peak_output_index": 3
+        },
+        "trained4608_stationary": {
+          "initial_error": 0.013858864725961055,
+          "worst_trajectory_error": 0.04618877627309981,
+          "final_error": 0.03688284285280243,
+          "peak_output_index": 3
+        }
+      }
+    },
+    {
+      "case": 3,
+      "comparisons": {
+        "frozen_stationary": {
+          "initial_error": 0.038562196232810486,
+          "worst_trajectory_error": 0.03884679626405852,
+          "final_error": 0.021257905913158997,
+          "peak_output_index": 1
+        },
+        "trained576_stationary": {
+          "initial_error": 0.03419857841874381,
+          "worst_trajectory_error": 0.05459553761006062,
+          "final_error": 0.030569815133810564,
+          "peak_output_index": 1
+        },
+        "trained4608_stationary": {
+          "initial_error": 0.02824661747534853,
+          "worst_trajectory_error": 0.05277322641300565,
+          "final_error": 0.030939930146615027,
+          "peak_output_index": 1
+        }
+      }
+    },
+    {
+      "case": 4,
+      "comparisons": {
+        "frozen_stationary": {
+          "initial_error": 0.016959718295610524,
+          "worst_trajectory_error": 0.016959718295610524,
+          "final_error": 0.005354296799288778,
+          "peak_output_index": 0
+        },
+        "trained576_stationary": {
+          "initial_error": 0.01985203141812176,
+          "worst_trajectory_error": 0.038435600056686094,
+          "final_error": 0.008215407284478607,
+          "peak_output_index": 1
+        },
+        "trained4608_stationary": {
+          "initial_error": 0.01804306231037592,
+          "worst_trajectory_error": 0.03994647649190796,
+          "final_error": 0.0072334706029041395,
+          "peak_output_index": 1
+        }
+      }
+    },
+    {
+      "case": 5,
+      "comparisons": {
+        "frozen_stationary": {
+          "initial_error": 0.024102228563616268,
+          "worst_trajectory_error": 0.024102228563616268,
+          "final_error": 0.005061998979275684,
+          "peak_output_index": 0
+        },
+        "trained576_stationary": {
+          "initial_error": 0.04592752114945387,
+          "worst_trajectory_error": 0.04592752114945387,
+          "final_error": 0.008760962584641652,
+          "peak_output_index": 0
+        },
+        "trained4608_stationary": {
+          "initial_error": 0.023186698336453718,
+          "worst_trajectory_error": 0.030073873584017856,
+          "final_error": 0.00894330072549658,
+          "peak_output_index": 1
+        }
+      }
+    }
+  ],
+  "limitations": [
+    "All six cases are development cases; no final paper cases were opened.",
+    "Lower mesh continuum/error failures remain in PANEL.json.",
+    "Replay preserves old decoded states and is not new PDE truth.",
+    "Training procedures also change the initial-code library and refit decoder-output EQ weights.",
+    "Initial reconstruction can improve while weak rollout accuracy worsens; attribution to dynamics training versus changed manifold or quadrature requires a separate future experiment.",
+    "No additional training arm or merge is authorized in this round."
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "attempt": "pref01",
+  "intervals": 1024,
+  "requested_modes": 256,
+  "lm_budget": 300,
+  "stationarity_tolerance": 1e-06,
+  "gauss_jordan_max": 64,
+  "eval_seed": 7090703, "eval_count": 6,
+  "fresh_seed": 7090732, "fresh_count": 6,
+  "train_seed": 0, "train_count": 192,
+  "reference_intervals": [1024, 2048],
+  "n_ladder": [0, 1, 2, 4, 8, 16, 32],
+  "mu": {"loose": 100.0, "tight": 100000.0},
+  "alpha_grid": [1e-08, 3e-08, 1e-07, 3e-07, 1e-06, 3e-06, 1e-05, 3e-05, 0.0001],
+  "calibration_n": 8, "calibration_mu": "loose", "calibration_tie_relative": 0.001,
+  "mu_diagnostic_grid": [1.0, 100.0, 1000.0, 10000.0, 100000.0, 1000000.0],
+  "mu_diagnostic_n": 32,
+  "redecode_nodes": 4096, "redecode_seed": 20260915,
+  "recon_starts": 8, "recon_budget": 400,
+  "repetitions": 3, "order_seed": 911717, "burn_seconds": 0.1
+}

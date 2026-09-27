@@ -1,0 +1,188 @@
+{
+  "source": "experiments/head-ablation/artifacts/pabl01/result.json",
+  "source_sha256": "b5fe5102cc20104504112c84829a39ae8e48a73d72326328a01e224db24b3bb7",
+  "job_id": "3711736",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "commit": "6759adcc9d85a413f64a05e49e60f828c4bcea4d",
+  "arm": "a_neural",
+  "intervals": 1024,
+  "cohort": {
+    "parameters": [
+      [
+        0.7111857545119654,
+        0.6785072845806663,
+        0.03781003529578573,
+        1.107836968343443
+      ],
+      [
+        0.3662296510716607,
+        0.7722317211431379,
+        0.09619445600627376,
+        0.842043762548469
+      ],
+      [
+        0.7956444716086449,
+        0.6874858589091726,
+        0.07251922864627577,
+        1.4122847825201421
+      ],
+      [
+        0.5429193214121715,
+        0.3651752988327248,
+        0.07330772413526129,
+        0.8324615275920344
+      ],
+      [
+        0.49545630187383616,
+        0.7446915271999587,
+        0.050989746709821725,
+        1.2691295535847185
+      ],
+      [
+        0.2953991881281367,
+        0.3256102857871852,
+        0.020030203573170348,
+        0.7649829376501022
+      ],
+      [
+        0.5213249360761626,
+        0.532968011012732,
+        0.046795664441663595,
+        0.6860463400592776
+      ],
+      [
+        0.6818988468288492,
+        0.1761468692233844,
+        0.06667715421695446,
+        1.674944682033159
+      ],
+      [
+        0.3992606660652511,
+        0.20807853089609946,
+        0.04154557927242538,
+        1.1875312626424053
+      ],
+      [
+        0.5950609146200666,
+        0.29809571371487664,
+        0.09664266441165077,
+        1.5239648957533585
+      ],
+      [
+        0.542405070495813,
+        0.6080331011258858,
+        0.0511302132078188,
+        1.2883008824709807
+      ],
+      [
+        0.5431323477823409,
+        0.636321666675202,
+        0.08545048022903898,
+        1.4748074652834076
+      ]
+    ],
+    "sha256": "9cb495d1d90d9c2e8084bffd2b7afd74d390aaa433fb8d57cab0fc84274fd603",
+    "groups": [
+      "existing development",
+      "existing development",
+      "existing development",
+      "existing development",
+      "existing development",
+      "existing development",
+      "fresh development",
+      "fresh development",
+      "fresh development",
+      "fresh development",
+      "fresh development",
+      "fresh development"
+    ]
+  },
+  "checkpoint_sha256": "a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c",
+  "basis_sha256": "88d088d0665ea6bafc949433a1764b3032e8773a47a45f94e4bb0fc1036f5456",
+  "cases": [
+    {
+      "case": 0,
+      "field_sha256": "42865cd65fbedbdc6d435b453e78c7fe3dccc01383e5044622af9a0f97b677c6",
+      "physical_error": 0.014795337853019924,
+      "iterations": 5,
+      "reason": 4
+    },
+    {
+      "case": 1,
+      "field_sha256": "fc032476545cfa1b4f72eae77171b9d19b7654d1f9d71977daf9fe816b41d7d8",
+      "physical_error": 0.013029071503687449,
+      "iterations": 6,
+      "reason": 4
+    },
+    {
+      "case": 2,
+      "field_sha256": "6c397da787110f2306fd017efc266b5243f81a455e38dd3c31e3d0603a9a8c0b",
+      "physical_error": 0.011214164938726078,
+      "iterations": 5,
+      "reason": 4
+    },
+    {
+      "case": 3,
+      "field_sha256": "002257e54d2ed4781675ddc0a9137fc0be06589b55603c68ccfd165d085f16e6",
+      "physical_error": 0.005878025164033663,
+      "iterations": 5,
+      "reason": 4
+    },
+    {
+      "case": 4,
+      "field_sha256": "8492ff5af7da33541db051d00a28ab6e12e87323504974155e033d117fce05bc",
+      "physical_error": 0.011813251254308335,
+      "iterations": 6,
+      "reason": 4
+    },
+    {
+      "case": 5,
+      "field_sha256": "bed36de636edf25cbafb19b8f7ae803c7f24c2311120374d8bc3639e3566f19f",
+      "physical_error": 0.060927217068033,
+      "iterations": 6,
+      "reason": 4
+    },
+    {
+      "case": 6,
+      "field_sha256": "e183a2745e7a4b52398090436c657fa9b325a9783a90cc4d56e313b41392d965",
+      "physical_error": 0.016378236259150556,
+      "iterations": 5,
+      "reason": 4
+    },
+    {
+      "case": 7,
+      "field_sha256": "c5bda509d13db20abdae8112c2956a925081775dc399ab434541c39fa1188cb9",
+      "physical_error": 0.01420979698962319,
+      "iterations": 4,
+      "reason": 4
+    },
+    {
+      "case": 8,
+      "field_sha256": "a59f4ac67109703916dc8723ae017923898f04534f6875f796eaf21e67e82ba3",
+      "physical_error": 0.021757600042694614,
+      "iterations": 5,
+      "reason": 4
+    },
+    {
+      "case": 9,
+      "field_sha256": "c4bb3f2558e07cba3f786e0e9f2cba7342a013f1f181f734025b04c0723ccac6",
+      "physical_error": 0.009334336162451683,
+      "iterations": 5,
+      "reason": 4
+    },
+    {
+      "case": 10,
+      "field_sha256": "86d844f456995c7cf015406b37429a6eea7244db008c34df7d5110e19e6745e1",
+      "physical_error": 0.009282253920442823,
+      "iterations": 5,
+      "reason": 4
+    },
+    {
+      "case": 11,
+      "field_sha256": "4f16bbc1279baa2413f0dab9391a25431a69da16e98e530cc1137945f367d4d5",
+      "physical_error": 0.009866404578790232,
+      "iterations": 6,
+      "reason": 4
+    }
+  ]
+}

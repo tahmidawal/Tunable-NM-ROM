@@ -1,0 +1,110 @@
+# Burgers 1e-3 / 10x Phase-10 diagnostic preregistration
+
+Status: prospective. Phase 10 permits exactly one train-only diagnostic cell,
+`p10_d_r1`. It performs no optimizer or model update and cannot itself authorize
+an architecture change, training submission, selection evaluation, weak/EQ,
+scaling, model validation, or confirmation.
+
+## License and immutable model
+
+The diagnostic is licensed by valid P4--P7 evidence and the independently
+accepted Phase-9 terminal full-field result. Phase-8 remains descriptive and
+invalid for promotion. All Phase-9 capacity work remains retracted as
+nonportable, unaccepted, and unusable for any decision or license.
+
+The fixed learned model is the exact Phase-9 G1/q19 terminal generator in
+checkpoint SHA-256
+`90e9df6388bf3c05905d52c5ff073f331728ffd493a965e4376e4df285bb07d9`.
+Its immutable recovery JSON and NPZ are
+`8d86ab90c1d293e4810c3d3a9391db48f635f8c77a7a8c30e71809a112bc7f8d`
+and `d6e5001d8dcb5ba7fb269241b989492533379807bcbc4cb65a384f7d429c773e`.
+The accepting audit-only JSON, work NPZ, LOCAL, and staged-manifest SHA-256
+values are respectively
+`b7bb908addaeb54c81293624c4433c61388c03faf9f514dbe5c8f3ec9d281377`,
+`66ef97a0daeb2036e0aa6ccc3f31863e6861702baaa9711311d1839541cd556b`,
+`65e546fa0226fa0cc50a9d4f5953f53f1b51995a1741be656481621571a35a65`,
+and `9173714f5a03feef10a9f22f21b4c0c6466caad34e710ccb3131ebb655730edc`.
+The original final work checkpoint remains bound at
+`dd7b5fecc07e9021c6264febf5c7187004daaa73a50381921d5190eede639ce0`.
+The generator, all other model trees, q, normalization, and source artifacts
+are read-only and byte-checked before and after the diagnostic.
+
+## Information boundary and objective
+
+Only the locked seed-0 full training population is regenerated: all 51 times
+for N64 cases `0:512`, N128 `0:128`, and N256 `0:64`, totaling 35,904
+snapshots. All 16 immutable P5 target chunks and the P4--P8 dependency chain
+are checked. Train-only output normalization is regenerated exactly. Selection
+cases/fields/coefficients, model validation, confirmation, seeds 29/47,
+weak/EQ, scaling, and downstream rollout data remain sealed.
+
+The G1 generator is frozen. For each train snapshot the variable is q directly,
+bounded componentwise in `[-1,1]^19`. The sole start is exactly
+`q0=tanh(final_q_raw)` from the accepted terminal checkpoint. There is no
+encoder, predictor, free-target, zero, random, or restart control. The sole
+objective is the Cox full-grid discrete value
+
+```
+ell(q) = ||u_theta(a,q;G1)-u_FOM||_2^2
+         / max(||u_FOM||_2^2,1e-300).
+```
+
+Every grid point enters every objective. K3 is charged only at initial and
+terminal full-cohort verification as an identity control; it never seeds or
+changes the optimization.
+
+## Fixed globalized-q protocol
+
+Each snapshot receives at most 40 matrix-free Gauss--Newton/LM attempts. CG
+solves `(J^T J + lambda I)p=-J^T r` from zero for at most 19 iterations at
+relative tolerance `1e-12`. The step is radius-scaled, then projected into the
+box. Fixed values are `Delta0=0.25`, `Delta in [2^-20,1]`, `lambda0=1e-6`,
+and `lambda in [1e-12,1e12]`.
+
+A step is accepted only with finite work, no CG breakdown, positive predicted
+and actual decrease, and defined `rho=actual/predicted >=1e-4`. If predicted
+decrease is nonpositive, store finite `rho=0`, `rho_defined=false`, and reject;
+no update branch reads undefined rho. Rejection or defined `rho<0.25` divides
+Delta by four and multiplies lambda by ten. Accepted `rho>0.75` divides lambda
+by three and doubles Delta only when the projected step norm is at least
+`0.9*Delta`; other accepted steps retain both. Accepted relative objective or
+relative step change at most `1e-12` terminates that row. Exhaustion at minimum
+radius and maximum damping, breakdown, nonfinite work, false rho/decision, or
+any transition/work-count mismatch is unhealthy.
+
+Persist q/objective/Delta/lambda/active at attempts 0--40 and all attempted,
+trial, predicted, actual, rho/rho-defined, acceptance, termination, gradient,
+step, CG, JVP/VJP, bound, exhaustion, and elapsed health work. Progress and a
+terminal work checkpoint expose no scientific metric while running. The
+independent negative-aware audit regenerates data/normalization and recomputes
+initial and terminal Cox/K3 arrays, trajectory aggregation, every trust
+transition, work count, immutable binding, and decision.
+
+## Gates and interpretation
+
+At every N and pooled, initial and recovered trajectory mean/worst use the
+locked aggregation and must be finite, have zero boundary violations, and K3/
+Cox identity at most `2e-14`. The unchanged recovered train accuracy gate is
+mean `<=2e-4` and worst `<=7e-4` at every N and pooled.
+
+- A healthy gate pass establishes only that the fixed trained G1 map can
+  represent the training truth after globalized q recovery. It permits a new
+  prospective proposal for exactly one corrected G1 alternating-optimization
+  arm; it does not authorize implementation or submission by itself.
+- A healthy miss establishes only that this fixed trained G1 map misses. It
+  does not prove G1 architectural insufficiency and cannot license G2 or any
+  richer architecture. It hard-stops Phase 10 pending a separately audited
+  architecture-justification proposal.
+- An unhealthy diagnostic is invalid and hard-stops without interpretation.
+
+No result is a deployable inference or speed claim. The original pure-nonlinear
+`1e-3`/`10x` objective and the proven P6 Cox-weak/K3-full route remain unchanged.
+
+## Resources and cap
+
+The sole real cell is cluster-only on one fixed H200, 8 CPUs, 96 GiB host RAM,
+f64, highest matmul precision, and 16 hours. The 35,904-by-40 one-start work is
+about 3.14 times P8-D's 5,712-by-40 two-start attempt count; P8-D completed in
+33m35s on an H200, making 16 hours conservative without a cross-job timing
+claim. Local execution is limited to one excluded synthetic smoke under 60
+seconds through the mandated GPU wrapper. There is no retry or second D cell.

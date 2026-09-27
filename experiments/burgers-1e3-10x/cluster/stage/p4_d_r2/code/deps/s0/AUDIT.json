@@ -1,0 +1,82 @@
+{
+  "cost_panel": {
+    "A": {
+      "clustered_speedup_ci": [
+        5.164622802145466,
+        8.08034218733646
+      ],
+      "cost_pass": false,
+      "mandatory_median_elapsed_s": 0.01503096497617662,
+      "memory_ok": true,
+      "paired_fom_accuracy_eligible": true,
+      "paired_fom_median_elapsed_s": 0.09873205446638167,
+      "paired_median_speedup": 6.568577241904787,
+      "promote": false
+    },
+    "B": {
+      "clustered_speedup_ci": [
+        5.163002542801687,
+        8.056262689099043
+      ],
+      "cost_pass": false,
+      "mandatory_median_elapsed_s": 0.015047068009153008,
+      "memory_ok": true,
+      "paired_fom_accuracy_eligible": true,
+      "paired_fom_median_elapsed_s": 0.09873205446638167,
+      "paired_median_speedup": 6.561547698616353,
+      "promote": false
+    },
+    "C": {
+      "clustered_speedup_ci": [
+        5.1607789247909155,
+        8.028585530546248
+      ],
+      "cost_pass": false,
+      "mandatory_median_elapsed_s": 0.015077688498422503,
+      "memory_ok": true,
+      "paired_fom_accuracy_eligible": true,
+      "paired_fom_median_elapsed_s": 0.09873205446638167,
+      "paired_median_speedup": 6.548222194450527,
+      "promote": false
+    },
+    "paired_fom": {
+      "accuracy_eligible": true,
+      "healthy": true,
+      "median_elapsed_s": 0.09873205446638167,
+      "trajectory_error_mean": 0.0006584064402266894,
+      "trajectory_error_worst": 0.001400001319726601
+    }
+  },
+  "decision": {
+    "phase2_hard_stop": true,
+    "promoted_arms": [],
+    "selected_smallest_promoted": null
+  },
+  "expected_commit": "3d9adb769c1534f507ae15d86ad2f38506e77954",
+  "free_oracle": {
+    "A": {
+      "all_mesh_and_pooled_accuracy_pass": false,
+      "trajectory_error_mean": 0.0011075538178226371,
+      "trajectory_error_worst": 0.009298718062233455,
+      "zero_unhealthy_fits": false
+    },
+    "B": {
+      "all_mesh_and_pooled_accuracy_pass": false,
+      "trajectory_error_mean": 0.0003235076212202718,
+      "trajectory_error_worst": 0.0033867289653187675,
+      "zero_unhealthy_fits": false
+    },
+    "C": {
+      "all_mesh_and_pooled_accuracy_pass": false,
+      "trajectory_error_mean": 0.00010152647430990104,
+      "trajectory_error_worst": 0.0009968316650470358,
+      "zero_unhealthy_fits": false
+    }
+  },
+  "job_id": "2667808",
+  "provenance_health": "pass",
+  "source_json": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-19-burgers-1e3-10x/experiments/burgers-1e3-10x/runs/s0_spline_r1/out/s0.json",
+  "source_json_sha256": "c211598690543f5aed952364c48e9bf855f264373f0d5dfede399bec00850046",
+  "source_npz_sha256": "dab782c6b4542d711e95041a38e3cf795e654b809a96b1bfcf7fc97bee380b34",
+  "status": "pass"
+}

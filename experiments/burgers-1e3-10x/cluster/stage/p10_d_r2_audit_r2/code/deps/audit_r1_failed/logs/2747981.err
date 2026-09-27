@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p10_d_r2_audit_r1/code/b10_audit_phase10_d_portability.py", line 495, in <module>
+    if __name__=="__main__": main()
+                             ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p10_d_r2_audit_r1/code/b10_audit_phase10_d_portability.py", line 376, in main
+    immutable_data &= bool(np.array_equal(arrays["coefficient_mean"],np.asarray(checkpoint["coefficient_mean"]))
+                                                                                ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+KeyError: 'coefficient_mean'

@@ -1,0 +1,70 @@
+{
+  "status": "terminal_recovery_artifacts_complete_independent_audit_failed",
+  "classification": "zero-update recovery driver completed; full-field audit passed; descriptive capacity repeat was not bitwise/stopping-path portable",
+  "job": {
+    "id": "2735251",
+    "name": "p9_terminal_recovery_s11_r1",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed": "00:14:29",
+    "node": "pax008",
+    "gpu": "NVIDIA H200",
+    "jax_backend": "gpu"
+  },
+  "provenance": {
+    "commit": "399f8b2b74ca457bf78f28444eba8eca01ccf8ed",
+    "manifest_sha256": "3b001ee45df4d9889dec99052dee9489623da2ca158b9db9d9006e35739279dd"
+  },
+  "driver": {
+    "completed": true,
+    "optimizer_updates": 0,
+    "selection_evaluated": false,
+    "capacity_license_complete": false,
+    "g2_licensed": false,
+    "all_done_marker_before_audit": true
+  },
+  "audit": {
+    "status": "fail",
+    "full_field_independent": true,
+    "source_work_binding": true,
+    "state_fold_binding": true,
+    "normalization": true,
+    "target_manifest_binding": true,
+    "decision_contract": true,
+    "negative_corruptions_rejected": 9,
+    "capacity_persisted_contract": true,
+    "capacity_independent": false,
+    "cause": "independently repeated CG reductions changed stopping iterations by at most four and changed N64 near-threshold convergence labels; derived gamma/eta/residual/tangent/bound metrics matched to roundoff",
+    "max_observed": {
+      "cg_iteration_difference": 4,
+      "cg_relative_difference": 2.3842377958174156e-12,
+      "delta_absolute_difference": 8.520628647090689e-12
+    }
+  },
+  "recovered_train_metrics_not_globally_accepted": {
+    "N64_mean": 0.01246725439932803,
+    "N64_worst": 0.04077637642320842,
+    "N128_mean": 0.014145086201103382,
+    "N128_worst": 0.045103855826087606,
+    "N256_mean": 0.015578520766500157,
+    "N256_worst": 0.0484066602026945,
+    "pooled_mean": 0.013055157123939194,
+    "pooled_worst": 0.0484066602026945,
+    "finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.973504067287116e-15
+  },
+  "sha256": {
+    "MANIFEST.sha256": "3b001ee45df4d9889dec99052dee9489623da2ca158b9db9d9006e35739279dd",
+    "REMOTE.sha256": "84e5664b6abe7099430a8734def6aaaff41e9a8ae87f86879efa75c1b427264f",
+    "SACCT.txt": "08badfd4376b5bcfbad71ada7365fc8b2a03c292a19225f1d38444e16d014ead",
+    "logs/2735251.out": "8bfbb5eb23004652bf159307829d55a4b1bb4f2fad5d4af572f39022fd936dfa",
+    "logs/2735251.err": "96de81be0ba1091dd1fb18d6cf6c58ea1d768537536e68f08d671524f4bbd212",
+    "out/phase9_terminal_recovery.json": "8d86ab90c1d293e4810c3d3a9391db48f635f8c77a7a8c30e71809a112bc7f8d",
+    "out/phase9_terminal_recovery.npz": "d6e5001d8dcb5ba7fb269241b989492533379807bcbc4cb65a384f7d429c773e",
+    "out/terminal_checkpoint.pkl": "90e9df6388bf3c05905d52c5ff073f331728ffd493a965e4376e4df285bb07d9",
+    "out/AUDIT.json": "a1c6c0ee23e16da4aab1e4320aedcab4bd7039ec650429908feb15a471f99cec"
+  },
+  "remote_preserved": true,
+  "remote_cleaned": false
+}

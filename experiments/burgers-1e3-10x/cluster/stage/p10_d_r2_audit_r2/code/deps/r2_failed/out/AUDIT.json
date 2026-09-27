@@ -1,0 +1,249 @@
+{
+ "capacity": {
+  "accepted": false,
+  "g2_licensed": false,
+  "license_complete": false,
+  "reproducible": false,
+  "used": false
+ },
+ "checks": {
+  "accepted_audit_binding": true,
+  "accepted_terminal_field_binding": false,
+  "accepted_terminal_field_portability": {
+   "array_exact": {
+    "N128.boundary_count": true,
+    "N128.denominator": true,
+    "N128.identity": true,
+    "N128.numerator": true,
+    "N128.trajectory": true,
+    "N256.boundary_count": true,
+    "N256.denominator": false,
+    "N256.identity": false,
+    "N256.numerator": false,
+    "N256.trajectory": false,
+    "N64.boundary_count": true,
+    "N64.denominator": true,
+    "N64.identity": true,
+    "N64.numerator": true,
+    "N64.trajectory": true
+   },
+   "array_max_abs": {
+    "N128.boundary_count": 0.0,
+    "N128.denominator": 0.0,
+    "N128.identity": 0.0,
+    "N128.numerator": 0.0,
+    "N128.trajectory": 0.0,
+    "N256.boundary_count": 0.0,
+    "N256.denominator": 1.6370904631912708e-11,
+    "N256.identity": 1.0906851897410482e-16,
+    "N256.numerator": 8.981260180007666e-12,
+    "N256.trajectory": 1.249000902703301e-16,
+    "N64.boundary_count": 0.0,
+    "N64.denominator": 0.0,
+    "N64.identity": 0.0,
+    "N64.numerator": 0.0,
+    "N64.trajectory": 0.0
+   },
+   "arrays_bitwise_exact": false,
+   "arrays_max_abs": 1.6370904631912708e-11,
+   "atol": 2e-14,
+   "metric_exact": {
+    "N128.k3_cox_identity_worst": true,
+    "N128.mean_snapshot_relative_l2_squared": true,
+    "N128.trajectory_error_mean": true,
+    "N128.trajectory_error_worst": true,
+    "N256.k3_cox_identity_worst": false,
+    "N256.mean_snapshot_relative_l2_squared": false,
+    "N256.trajectory_error_mean": false,
+    "N256.trajectory_error_worst": false,
+    "N64.k3_cox_identity_worst": true,
+    "N64.mean_snapshot_relative_l2_squared": true,
+    "N64.trajectory_error_mean": true,
+    "N64.trajectory_error_worst": true,
+    "pooled.k3_cox_identity_worst": true,
+    "pooled.mean_snapshot_relative_l2_squared": false,
+    "pooled.trajectory_error_mean": true,
+    "pooled.trajectory_error_worst": false
+   },
+   "metric_max_abs": {
+    "N128.k3_cox_identity_worst": 0.0,
+    "N128.mean_snapshot_relative_l2_squared": 0.0,
+    "N128.trajectory_error_mean": 0.0,
+    "N128.trajectory_error_worst": 0.0,
+    "N256.k3_cox_identity_worst": 1.0906851897410482e-16,
+    "N256.mean_snapshot_relative_l2_squared": 1.6263032587282567e-19,
+    "N256.trajectory_error_mean": 1.734723475976807e-18,
+    "N256.trajectory_error_worst": 7.632783294297951e-17,
+    "N64.k3_cox_identity_worst": 0.0,
+    "N64.mean_snapshot_relative_l2_squared": 0.0,
+    "N64.trajectory_error_mean": 0.0,
+    "N64.trajectory_error_worst": 0.0,
+    "pooled.k3_cox_identity_worst": 0.0,
+    "pooled.mean_snapshot_relative_l2_squared": 2.710505431213761e-20,
+    "pooled.trajectory_error_mean": 0.0,
+    "pooled.trajectory_error_worst": 7.632783294297951e-17
+   },
+   "metrics_bitwise_exact": false,
+   "metrics_max_abs": 1.0906851897410482e-16,
+   "pass": false,
+   "rtol": 2e-13
+  },
+  "artifacts": true,
+  "config": true,
+  "data_normalization": false,
+  "decision": false,
+  "dependency_binding": true,
+  "failed_t1_binding": true,
+  "field_health": true,
+  "full_field_independent": false,
+  "health": false,
+  "identity": true,
+  "information_boundary": true,
+  "initial_control_file_binding": false,
+  "negative_self_test": {
+   "decision_corruption_count": 6,
+   "decision_corruptions_rejected": true,
+   "pass": true,
+   "positive_decision_contract": true,
+   "trace_corruption_count": 6,
+   "trace_corruptions_rejected": true
+  },
+  "objective_binding": true,
+  "portability_negative_self_test": {
+   "corruption_count": 5,
+   "corruptions_rejected": true,
+   "exact_positive": true,
+   "pass": true,
+   "portable_positive": true
+  },
+  "prereg_manifest_binding": true,
+  "provenance": {
+   "commit": true,
+   "gpu": true,
+   "job": true,
+   "logs": true,
+   "precision": true
+  },
+  "r1_zero_attempt_binding": true,
+  "recovery_binding": true,
+  "source_manifest_binding": true,
+  "source_model_immutable": true,
+  "train_pass": false,
+  "trust_trace": {
+   "acceptance_exact": true,
+   "active_transition": true,
+   "attempt_active_exact": true,
+   "attempt_work_finite": true,
+   "bound_count_exact": true,
+   "damping_transition": true,
+   "delta_transition": true,
+   "inactive_no_work": true,
+   "no_breakdown": true,
+   "no_unhealthy_exhaustion": true,
+   "nonpositive_sentinel": true,
+   "objective_transition": true,
+   "one_start_shape": true,
+   "pass": false,
+   "positive_rho_exact": true,
+   "q_transition": true,
+   "rho_definition": true,
+   "sole_choice_binding": true,
+   "terminal_exhaustion_exact": true,
+   "termination_exact": false,
+   "work_exact": true
+  },
+  "work_checkpoint_binding": true
+ },
+ "decision": {
+  "architecture_increase_licensed": false,
+  "corrected_g1_proposal_eligible": false,
+  "fixed_g1_train_representable": false,
+  "g2_licensed": false,
+  "next_action": "root audit; invalid diagnostic",
+  "optimizer_updates": 0,
+  "p10_d_valid": false,
+  "scientific_promotion_allowed": false,
+  "selection_evaluated": false
+ },
+ "expected_commit": "25bb3502b851a4eb56c51a25af3fc844e3583219",
+ "expected_job": "2739690",
+ "initial_control_sha256": "03bcbd51fc375b87bb876953b910d8c6a11dcffc893048ed7d9a6f2c46f4290c",
+ "initial_train": {
+  "meshes": {
+   "128": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.8618064888258682e-15,
+    "mean_snapshot_relative_l2_squared": 0.0002447136005404005,
+    "trajectory_error_mean": 0.014145086201103382,
+    "trajectory_error_worst": 0.045103855826087606
+   },
+   "256": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.1564722155585803e-15,
+    "mean_snapshot_relative_l2_squared": 0.000288912764266997,
+    "trajectory_error_mean": 0.015578520766500159,
+    "trajectory_error_worst": 0.048406660202694574
+   },
+   "64": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.973504067287116e-15,
+    "mean_snapshot_relative_l2_squared": 0.0001895535649650981,
+    "trajectory_error_mean": 0.01246725439932803,
+    "trajectory_error_worst": 0.04077637642320842
+   }
+  },
+  "pooled": {
+   "all_finite": true,
+   "boundary_violation_count": 0,
+   "k3_cox_identity_worst": 2.973504067287116e-15,
+   "mean_snapshot_relative_l2_squared": 0.0002086153168244166,
+   "trajectory_error_mean": 0.013055157123939194,
+   "trajectory_error_worst": 0.048406660202694574
+  }
+ },
+ "manifest_sha256": "60cd3e3f2d4946c8671f3cb43c3a852fd72a12b86735f3314bf7e78379edb45d",
+ "negative_aware": true,
+ "recovered_train": {
+  "meshes": {
+   "128": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.8288426582187173e-15,
+    "mean_snapshot_relative_l2_squared": 0.00012968551229562494,
+    "trajectory_error_mean": 0.010568575224987099,
+    "trajectory_error_worst": 0.027144160561838927
+   },
+   "256": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.1058841466257104e-15,
+    "mean_snapshot_relative_l2_squared": 0.00013978975764737496,
+    "trajectory_error_mean": 0.011175100983955338,
+    "trajectory_error_worst": 0.03462941729817451
+   },
+   "64": {
+    "all_finite": true,
+    "boundary_violation_count": 0,
+    "k3_cox_identity_worst": 2.7307806580685084e-15,
+    "mean_snapshot_relative_l2_squared": 0.00010102641565329818,
+    "trajectory_error_mean": 0.009412789716854914,
+    "trajectory_error_worst": 0.02286807703192582
+   }
+  },
+  "pooled": {
+   "all_finite": true,
+   "boundary_violation_count": 0,
+   "k3_cox_identity_worst": 2.8288426582187173e-15,
+   "mean_snapshot_relative_l2_squared": 0.0001097611006786373,
+   "trajectory_error_mean": 0.009783142651706257,
+   "trajectory_error_worst": 0.03462941729817451
+  }
+ },
+ "source_json_sha256": "f0fab7583d1f1590efb58cd97d0128f34cc80cf4ab7ce8e3271066158f239523",
+ "source_npz_sha256": "35d139fedcfff539aef25a335c556d47f2ec5e8581066a9e1f9b6ad8fcef4664",
+ "status": "fail",
+ "work_checkpoint_sha256": "5fd879c32f2205d6427b272042c095624d824a8278e1eaf074c5295bcb574d68"
+}

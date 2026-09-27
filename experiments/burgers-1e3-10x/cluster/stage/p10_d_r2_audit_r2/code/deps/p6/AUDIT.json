@@ -1,0 +1,31 @@
+{
+ "status": "pass",
+ "negative_aware": true,
+ "source_json": "phase6_d.json",
+ "source_json_sha256": "9fe2d49bbb0324fd08ef5da906c3afab0338a1f3bbfb6dfc1ef73f89603c139a",
+ "source_npz_sha256": "9f0372daba8c12e3aff86efde3201d3ae0612aba8cd297aa37559aa286967381",
+ "decision": {
+  "repair_licensed": true,
+  "phase6_hard_stop": false,
+  "training_authorized": false,
+  "next_action": "separate training proposal/audit",
+  "scientific_promotion_allowed": true
+ },
+ "checks": {
+  "identity": {
+   "R0_polynomial_weak": false,
+   "R1_cox_weak_k3_full": true
+  },
+  "work": {
+   "R0_polynomial_weak": true,
+   "R1_cox_weak_k3_full": true
+  },
+  "actual_route_consistency": true,
+  "r1_pass": true
+ },
+ "model_validation_touched": false,
+ "confirmation_touched": false,
+ "expected_commit": "3f454057c2aa5234ae1f589d1f7443a994ebf740",
+ "expected_job": "2669652",
+ "manifest_sha256": "f8932a6a4304a14b93bfdf6783e900a47a9a1d45ba03f9915941bb00770bfb40"
+}

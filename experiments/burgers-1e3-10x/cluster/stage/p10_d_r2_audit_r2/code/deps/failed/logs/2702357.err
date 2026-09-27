@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p9_t1_s11_r1/code/b10_phase9_train.py", line 1112, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p9_t1_s11_r1/code/b10_phase9_train.py", line 1039, in main
+    capacity_license=license_capacity(terminal_train,capacity,history)
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p9_t1_s11_r1/code/b10_phase9_train.py", line 949, in license_capacity
+    improvement={key:(loss(24,key)-loss(27,key))/max(loss(24,key),1e-300) for key in [*train_metrics["meshes"],"pooled"]}
+                      ~~~~^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/burgers_nmrom_1e3_10x/p9_t1_s11_r1/code/b10_phase9_train.py", line 948, in loss
+    return metrics["pooled"]["mean_snapshot_relative_l2_squared"] if key=="pooled" else metrics["meshes"][key]["mean_snapshot_relative_l2_squared"]
+                                                                                        ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'mean_snapshot_relative_l2_squared'

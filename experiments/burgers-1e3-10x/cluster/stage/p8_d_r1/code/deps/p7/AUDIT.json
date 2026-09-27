@@ -1,0 +1,58 @@
+{
+ "chosen_start": 1,
+ "decision": {
+  "g1_seed11_pass": false,
+  "next_action": "hard stop",
+  "phase7_hard_stop": true,
+  "scientific_promotion_allowed": true,
+  "seeds29_47_proposal_licensed": false,
+  "training_authorized": false
+ },
+ "expected_commit": "b85a0b06d3dd2fe460e41a801f51050f271fcf5b",
+ "expected_job": "2673185",
+ "gates": {
+  "direct_all_N_and_pooled": false,
+  "promote_seed": false,
+  "representation_oracle_all_N_and_pooled": false,
+  "route_identity_all_selection": true
+ },
+ "immutable_bindings_verified": true,
+ "manifest_sha256": "a95fc4621a90cef13071df1ad1db363187deac0f7fc7c8c774c0fedd7c9c3a19",
+ "metadata_recomputed": true,
+ "negative_aware": true,
+ "oracle_start_losses": [
+  0.4527532498791427,
+  0.26483255987505727,
+  0.3233344063772067
+ ],
+ "predictor_fold_selection_max_abs": 4.440892098500626e-16,
+ "predictor_fold_train_max_abs": 4.440892098500626e-16,
+ "prereg_sha256": "b90aa200fd2020796fd59f26c5e2056450e2f82c047c126c18c27f9a98252c67",
+ "schedules_recomputed": true,
+ "smoke": false,
+ "source_checkpoint_sha256": "113101637ef2b4fb75fe2ca0ba0dabe5a90c35d03a5c563b765438385c62db8c",
+ "source_json_sha256": "a59e92640aae787003d5753d4614de1b6fe90c68fdba7f2daa81a125a3c0956c",
+ "source_npz_sha256": "fd40d339c0746b48c07408d5d017dff8819595350c365f7af5fc0d40673946ae",
+ "state_consistency_recomputed": true,
+ "status": "pass",
+ "target_normalization_local_recompute": {
+  "absolute_tolerance": 2e-15,
+  "artifact_affine_state_bitwise": true,
+  "checkpoint_physical_target_bitwise": true,
+  "classification": "portable_f64_scalar_exp_log_recompute; immutable physical target and staged scientific mapping remain exact",
+  "feature_target_bitwise": true,
+  "max_abs": 2.220446049250313e-16,
+  "physical_target_bitwise": true,
+  "relative_tolerance": 0.0,
+  "within_tolerance": true
+ },
+ "training_binding": {
+  "checked": true,
+  "feature_exact_columns_bitwise": true,
+  "feature_viscosity_max_abs": 0.0,
+  "feature_viscosity_within_ulp": true,
+  "normalized_affine_absolute_tolerance": 2e-15,
+  "normalized_affine_max_abs": 0.0,
+  "normalized_affine_within_tolerance": true
+ }
+}

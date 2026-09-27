@@ -1,0 +1,480 @@
+{
+ "stage": "adaptive Phase-2 S0 free-spline and charged weak/FOM cost oracle",
+ "status": "excluded_execution_smoke",
+ "config": {
+  "smoke": true,
+  "f64": true,
+  "dt": 0.005,
+  "num_steps": 50,
+  "domain": [
+   -4.5,
+   4.5
+  ],
+  "degree": 3,
+  "selection": [
+   {
+    "N": 64,
+    "seed": 0,
+    "draw_count": 704,
+    "indices": [
+     512,
+     513,
+     514,
+     515,
+     516,
+     517,
+     518,
+     519,
+     520,
+     521,
+     522,
+     523,
+     524,
+     525,
+     526,
+     527,
+     528,
+     529,
+     530,
+     531,
+     532,
+     533,
+     534,
+     535,
+     536,
+     537,
+     538,
+     539,
+     540,
+     541,
+     542,
+     543,
+     544,
+     545,
+     546,
+     547,
+     548,
+     549,
+     550,
+     551,
+     552,
+     553,
+     554,
+     555,
+     556,
+     557,
+     558,
+     559,
+     560,
+     561,
+     562,
+     563,
+     564,
+     565,
+     566,
+     567,
+     568,
+     569,
+     570,
+     571,
+     572,
+     573,
+     574,
+     575
+    ]
+   },
+   {
+    "N": 128,
+    "seed": 0,
+    "draw_count": 704,
+    "indices": [
+     512,
+     513,
+     514,
+     515,
+     516,
+     517,
+     518,
+     519,
+     520,
+     521,
+     522,
+     523,
+     524,
+     525,
+     526,
+     527,
+     528,
+     529,
+     530,
+     531,
+     532,
+     533,
+     534,
+     535,
+     536,
+     537,
+     538,
+     539,
+     540,
+     541,
+     542,
+     543
+    ]
+   },
+   {
+    "N": 256,
+    "seed": 0,
+    "draw_count": 704,
+    "indices": [
+     512,
+     513,
+     514,
+     515,
+     516,
+     517,
+     518,
+     519,
+     520,
+     521,
+     522,
+     523,
+     524,
+     525,
+     526,
+     527
+    ]
+   }
+  ],
+  "fom_panel": {
+   "N": 1024,
+   "seed": 20260822,
+   "draw_count": 32,
+   "indices": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "outer": 0.003,
+   "inner": 0.1,
+   "history": "cubic",
+   "preconditioner": "exact Helmholtz"
+  },
+  "candidate_bracket": [
+   {
+    "arm": "A",
+    "R": 24,
+    "k": 12,
+    "M": 64,
+    "m": 256,
+    "q": 7,
+    "hyperdecoder_parameters": 20320,
+    "predictor_parameters": 1708,
+    "analytic_screen": {
+     "R": 24,
+     "spacing": 0.42857142857142855,
+     "relative_l2_tail_bound": 1.983008102701634e-05,
+     "one_axis_cubic_bound": 0.001125294761138381,
+     "two_dimensional_tail_plus_cubic_bound": 0.002271685891603224
+    },
+    "initialization_seed": 20262012
+   },
+   {
+    "arm": "B",
+    "R": 32,
+    "k": 16,
+    "M": 64,
+    "m": 256,
+    "q": 11,
+    "hyperdecoder_parameters": 35232,
+    "predictor_parameters": 1840,
+    "analytic_screen": {
+     "R": 32,
+     "spacing": 0.3103448275862069,
+     "relative_l2_tail_bound": 1.983008102701634e-05,
+     "one_axis_cubic_bound": 0.00030942221046649575,
+     "two_dimensional_tail_plus_cubic_bound": 0.0006387702440643378
+    },
+    "initialization_seed": 20262016
+   },
+   {
+    "arm": "C",
+    "R": 48,
+    "k": 24,
+    "M": 96,
+    "m": 384,
+    "q": 19,
+    "hyperdecoder_parameters": 77728,
+    "predictor_parameters": 2104,
+    "analytic_screen": {
+     "R": 48,
+     "spacing": 0.2,
+     "relative_l2_tail_bound": 1.983008102701634e-05,
+     "one_axis_cubic_bound": 5.336953523937292e-05,
+     "two_dimensional_tail_plus_cubic_bound": 0.00012657199981305385
+    },
+    "initialization_seed": 20262024
+   }
+  ],
+  "model_validation_touched": false,
+  "confirmation_touched": false,
+  "cold_start_geometry_assertion": {
+   "N": 1024,
+   "sample_count": 4096,
+   "coordinate_count": 4096,
+   "full_grid_coordinates_allocated": false,
+   "recovery": "interior maximum then log-quadratic 3x3 sampled patch",
+   "recovery_relative_error_gate": 1e-09
+  }
+ },
+ "provenance": {
+  "commit": "73fd1d166ee613745e2c6c9973749efacdd47ed9",
+  "commit_source": "git",
+  "source_sha256": {
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_d0.py": "2e671ecec6af56508dafe3bd07248772b690e9080afcbfd218b8f7405d0def41",
+   "b10_d1.py": "215fbbef917cdb927f38d8257e88c5a4d8d83157713251808eeed32f8f4f05d8",
+   "b10_decide_d0.py": "4f77ed9afcc1dd5e3ed1a61537fe0b2d4fa849a1116ba8e410fb9878db6c1624",
+   "b10_fom_cal.py": "7c5dffce3dd307201d946ca8b768809f5d56ce8e12642c42823d9f53ca56cf9c",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "82f364a7e5c724b0345ede72640d12fdeafb9d2bbe1a66a4f09f0285941cd53c",
+   "b10_train_predictor.py": "99769a6990ab93f7461ed84eea4128bd513625a9a4cbc849e2762d6c60c6f710",
+   "b10_weak_eq.py": "bbb7fe4cb7668670a9fadde50dfbee34fa922c80fd3615fdf9cdabe5c7b97618"
+  },
+  "jax_backend": "gpu",
+  "jax_version": "0.10.1",
+  "x64": true,
+  "matmul_precision": "highest",
+  "gpu": "cuda:0",
+  "gpu_kind": "NVIDIA GB10",
+  "slurm_job_id": "local",
+  "host": "spark-d69e"
+ },
+ "selection_reference_health": {},
+ "free_oracle": {
+  "A": {
+   "candidate": {
+    "arm": "A",
+    "R": 24,
+    "k": 12,
+    "M": 64,
+    "m": 256
+   },
+   "meshes": {},
+   "smoke": {
+    "finite": true,
+    "fit_info": {
+     "healthy": true,
+     "lsmr_istop": 7,
+     "lsmr_iterations": 500,
+     "lsmr_normr": 3.209111436847506e-05,
+     "lsmr_normar": 1.3870659985286906e-11,
+     "lsmr_norma": 16.002224071407532,
+     "lsmr_conda": 90.16017691160437,
+     "lsmr_normx": 5.122617063647234,
+     "ridge": 1.7948585849105968e-13,
+     "relative_normal_residual": 2.4491300378659532e-12,
+     "exact_boundary": true,
+     "local_entries_per_point": 16,
+     "max_partition_sum_error_in_domain": 4.440892098500626e-16,
+     "elapsed_s": 0.014682698994874954
+    },
+    "affine": [
+     0.4200000457543066,
+     0.5699999768737413,
+     -2.207276041655855,
+     3.897527722918166e-18,
+     -2.207275298677241
+    ],
+    "normalized_affine": [
+     -0.10666660566092452,
+     0.09333330249832168,
+     -0.05115764117899457,
+     1.77160485148066e-17,
+     -0.05115728735480907
+    ]
+   }
+  },
+  "B": {
+   "candidate": {
+    "arm": "B",
+    "R": 32,
+    "k": 16,
+    "M": 64,
+    "m": 256
+   },
+   "meshes": {},
+   "smoke": {
+    "finite": true,
+    "fit_info": {
+     "healthy": true,
+     "lsmr_istop": 2,
+     "lsmr_iterations": 58,
+     "lsmr_normr": 3.209208653534955e-05,
+     "lsmr_normar": 1.3636970203637561e-16,
+     "lsmr_norma": 4.374829691113013,
+     "lsmr_conda": 2.4384980918696706,
+     "lsmr_normx": 6.9663740179639575,
+     "ridge": 1.0029824375203089e-13,
+     "relative_normal_residual": 2.3158281525230724e-16,
+     "exact_boundary": true,
+     "local_entries_per_point": 16,
+     "max_partition_sum_error_in_domain": 4.440892098500626e-16,
+     "elapsed_s": 0.0022317850962281227
+    },
+    "affine": [
+     0.4200000457543066,
+     0.5699999768737413,
+     -2.207276041655855,
+     3.897527722918166e-18,
+     -2.207275298677241
+    ],
+    "normalized_affine": [
+     -0.10666660566092452,
+     0.09333330249832168,
+     -0.05115764117899457,
+     1.77160485148066e-17,
+     -0.05115728735480907
+    ]
+   }
+  },
+  "C": {
+   "candidate": {
+    "arm": "C",
+    "R": 48,
+    "k": 24,
+    "M": 96,
+    "m": 384
+   },
+   "meshes": {},
+   "smoke": {
+    "finite": true,
+    "fit_info": {
+     "healthy": true,
+     "lsmr_istop": 2,
+     "lsmr_iterations": 15,
+     "lsmr_normr": 3.208772373543298e-05,
+     "lsmr_normar": 3.4023266024958414e-17,
+     "lsmr_norma": 2.04227293257395,
+     "lsmr_conda": 1.954524180721786,
+     "lsmr_normx": 10.128360663003054,
+     "ridge": 4.4719651985462395e-14,
+     "relative_normal_residual": 5.375802882103192e-16,
+     "exact_boundary": true,
+     "local_entries_per_point": 16,
+     "max_partition_sum_error_in_domain": 4.440892098500626e-16,
+     "elapsed_s": 0.0009614438749849796
+    },
+    "affine": [
+     0.4200000457543066,
+     0.5699999768737413,
+     -2.207276041655855,
+     3.897527722918166e-18,
+     -2.207275298677241
+    ],
+    "normalized_affine": [
+     -0.10666660566092452,
+     0.09333330249832168,
+     -0.05115764117899457,
+     1.77160485148066e-17,
+     -0.05115728735480907
+    ]
+   }
+  }
+ },
+ "cost_panel": {},
+ "smoke": {
+  "N": 24,
+  "num_weak_steps": 2,
+  "arm": "A",
+  "cold_sample_count": 576,
+  "online": {
+   "direct": {
+    "elapsed_s": 0.004763395059853792,
+    "finite": true,
+    "shape": [
+     3,
+     576
+    ]
+   },
+   "mandatory": {
+    "elapsed_s": 0.004216913133859634,
+    "finite": true,
+    "shape": [
+     3,
+     576
+    ]
+   },
+   "maximum_one": {
+    "elapsed_s": 0.017898743972182274,
+    "finite": true,
+    "shape": [
+     3,
+     576
+    ]
+   }
+  },
+  "cold_recovery_relative_error": 2.9587891392376648e-15,
+  "memory_analysis": {
+   "direct": {
+    "argument_size_in_bytes": 13992,
+    "output_size_in_bytes": 27960,
+    "temp_size_in_bytes": 33555800,
+    "alias_size_in_bytes": 0,
+    "host_argument_size_in_bytes": 0,
+    "host_output_size_in_bytes": 0,
+    "host_temp_size_in_bytes": 0,
+    "eligibility_device_bytes": 33597752
+   },
+   "mandatory": {
+    "argument_size_in_bytes": 14000,
+    "output_size_in_bytes": 29016,
+    "temp_size_in_bytes": 33574016,
+    "alias_size_in_bytes": 0,
+    "host_argument_size_in_bytes": 0,
+    "host_output_size_in_bytes": 0,
+    "host_temp_size_in_bytes": 0,
+    "eligibility_device_bytes": 33617032
+   },
+   "maximum_one": {
+    "argument_size_in_bytes": 14000,
+    "output_size_in_bytes": 41394,
+    "temp_size_in_bytes": 33591936,
+    "alias_size_in_bytes": 0,
+    "host_argument_size_in_bytes": 0,
+    "host_output_size_in_bytes": 0,
+    "host_temp_size_in_bytes": 0,
+    "eligibility_device_bytes": 33647330
+   }
+  },
+  "weak_geometry": {
+   "M": 64,
+   "m": 256,
+   "center_count": 256,
+   "rule": "lexicographically sorted rounded uniform interior tensor lattice; constant structural weights (N-2)^2/m; not fitted EQ"
+  },
+  "compile": {
+   "direct": {
+    "lower_s": 0.0671068923547864,
+    "compile_s": 1.6382141769863665,
+    "lower_plus_compile_s": 1.705321069341153
+   },
+   "mandatory": {
+    "lower_s": 0.2092799749225378,
+    "compile_s": 4.523488130886108,
+    "lower_plus_compile_s": 4.7327681058086455
+   },
+   "maximum_one": {
+    "lower_s": 0.5664227795787156,
+    "compile_s": 13.66895426204428,
+    "lower_plus_compile_s": 14.235377041622996
+   }
+  },
+  "fom_finite": true
+ },
+ "npz": {
+  "path": "s0.npz",
+  "sha256": "5f35484cd4030b61aa4ff1bf6c197c8cb04df834f4bd13adf2251db06196aa21"
+ }
+}

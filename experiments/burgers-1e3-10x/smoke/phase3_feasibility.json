@@ -1,0 +1,83 @@
+{
+ "status": "excluded_execution_feasibility_pass",
+ "scientific_result": false,
+ "provenance": {
+  "commit": "03160b9c1a58e04d0d4a2ee99350bdd59a5164a8",
+  "commit_source": "git",
+  "source_sha256": {
+   "b10_audit_s0.py": "115cff8d025cf6ad4bc46d58e71cf5d48c2eb10c9dadccbca5a1777e060e594a",
+   "b10_audit_spline_modelval.py": "4aa7fca7b39dcc2aaae7a30d833c49cdd2248399767cea17a74a2bbde2d353d9",
+   "b10_audit_spline_train.py": "ad0105c73272148442a3f6a05d6960a8802fbc4c3d18236c3c9a046346f9d5e5",
+   "b10_common.py": "187dd997d02854e4fffcbb61373dfa9ede06ef6285e12670b0ff9ced361b7e41",
+   "b10_d0.py": "2e671ecec6af56508dafe3bd07248772b690e9080afcbfd218b8f7405d0def41",
+   "b10_d1.py": "215fbbef917cdb927f38d8257e88c5a4d8d83157713251808eeed32f8f4f05d8",
+   "b10_decide_d0.py": "4f77ed9afcc1dd5e3ed1a61537fe0b2d4fa849a1116ba8e410fb9878db6c1624",
+   "b10_fom_cal.py": "7c5dffce3dd307201d946ca8b768809f5d56ce8e12642c42823d9f53ca56cf9c",
+   "b10_phase3.py": "60b5b9ac01b73f7c814ecbb193ce60d1d77ddeb0284961529068b7d97cc37f08",
+   "b10_phase3_feasibility.py": "14a3f212da0dc32ea572194115a6ffddbd5cf852226ae9bdc25a65898b7ebf60",
+   "b10_s0_spline.py": "bc516ad340559fb80666913002b96100150ae251563547797381ff9e620d0421",
+   "b10_spline.py": "82f364a7e5c724b0345ede72640d12fdeafb9d2bbe1a66a4f09f0285941cd53c",
+   "b10_spline_modelval.py": "465ca4cf7ec963e9ecc147587f5cd867e9af8dcac4524cea4fd5bcce00db8209",
+   "b10_spline_train.py": "2381f13ce8641029a089e9be5fbb6e0e901dbdcbf26007f6763a9d39ddaff651",
+   "b10_train_predictor.py": "99769a6990ab93f7461ed84eea4128bd513625a9a4cbc849e2762d6c60c6f710",
+   "b10_weak_eq.py": "bbb7fe4cb7668670a9fadde50dfbee34fa922c80fd3615fdf9cdabe5c7b97618"
+  },
+  "jax_backend": "gpu",
+  "jax_version": "0.10.1",
+  "x64": true,
+  "matmul_precision": "highest",
+  "gpu": "cuda:0",
+  "gpu_kind": "NVIDIA GB10",
+  "slurm_job_id": "local",
+  "host": "spark-d69e"
+ },
+ "mesh": 32,
+ "identity": {
+  "probe_count": 4234,
+  "includes_knots_nextafter_random": true,
+  "support_indices_exact": true,
+  "local_support": 16,
+  "weight_max_abs": 3.885780586188048e-16,
+  "weight_max_scaled_eps": 1.75,
+  "sequential_field_relative_l2_vs_cox": 2.800475147597567e-16,
+  "chunk3_field_relative_l2_vs_cox": 2.9578063778179786e-16,
+  "sequential_field_max_abs_vs_cox": 6.661338147750939e-16,
+  "exact_binary_boundary": true
+ },
+ "first_lower_compile_execute_s": {
+  "cox_sequential": 0.6386304940097034,
+  "polynomial_sequential": 0.1823095721192658,
+  "polynomial_chunk3": 0.1904143262654543
+ },
+ "pallas": {
+  "available": true,
+  "executed": true,
+  "first_lower_compile_execute_s": 0.3171766069717705,
+  "relative_l2_vs_cox": 2.0694039588405714e-15,
+  "max_abs_vs_cox": 7.528699885739343e-15
+ },
+ "solver": {
+  "augmented_column_lsmr": {
+   "solver": "augmented_column_preconditioned_lsmr",
+   "ridge": 8.305387411498871e-14,
+   "relative_normal_residual": 6.336091786944218e-16,
+   "healthy": true,
+   "elapsed_s": 0.02799907885491848,
+   "iterations": 657,
+   "istop": 2
+  },
+  "sparse_normal_lu": {
+   "solver": "sparse_normal_equation_superlu_colamd",
+   "ridge": 8.305387411498871e-14,
+   "relative_normal_residual": 3.575970173841913e-16,
+   "healthy": true,
+   "elapsed_s": 0.03839113796129823,
+   "nnz_normal": 66672,
+   "nnz_factors": 530835
+  }
+ },
+ "solver_prediction_relative_l2": 1.0657073381131948e-15,
+ "elapsed_s": 4.457023082766682,
+ "model_validation_touched": false,
+ "confirmation_touched": false
+}

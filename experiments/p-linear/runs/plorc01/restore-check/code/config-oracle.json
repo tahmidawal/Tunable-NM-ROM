@@ -1,0 +1,21 @@
+{
+  "attempt": "plorc01",
+  "history": "references/oracle-history.json",
+  "intervals": [
+    256,
+    1024
+  ],
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "stationarity_tolerance": 1e-06,
+  "original_protocol": "Original frozen checkpoint, cohort and q sets; no timed invocation changes.",
+  "extra_starts": "Retained same-q solved latent from each test rule and previous-q best latent; original eight-start result retained separately.",
+  "endpoint": "Direct free-bank QR projection, with zero nonlinear iterations.",
+  "acceptance": {
+    "metric_direct_field_atol": 2e-07,
+    "gradient_atol": 2e-07,
+    "q0_original_atol": 2e-07,
+    "old_floor_atol": 2e-07,
+    "best_found_solved_bracket_atol": 2e-07
+  }
+}

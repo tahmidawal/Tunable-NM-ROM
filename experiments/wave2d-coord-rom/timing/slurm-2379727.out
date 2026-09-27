@@ -1,0 +1,15 @@
+jax_backend=gpu
+jax_backend=gpu  PDE=wave2d
+FOM N=  16:    270.85 ms/traj
+FOM N=  32:    268.34 ms/traj
+FOM N=  64:    269.62 ms/traj
+FOM N= 128:    489.54 ms/traj
+FOM N= 256:    425.79 ms/traj
+FOM N= 512:    628.33 ms/traj
+net trainN= 16: native    13.09 ms/traj (speedup   20.70x) | on 512^2   731.48 ms/traj (vs FOM-512    0.86x)
+net trainN= 32: native    13.32 ms/traj (speedup   20.14x) | on 512^2   748.63 ms/traj (vs FOM-512    0.84x)
+net trainN= 64: native    15.14 ms/traj (speedup   17.81x) | on 512^2   782.58 ms/traj (vs FOM-512    0.80x)
+net trainN=128: native    53.54 ms/traj (speedup    9.14x) | on 512^2   784.70 ms/traj (vs FOM-512    0.80x)
+net trainN=256: native   198.02 ms/traj (speedup    2.15x) | on 512^2   785.79 ms/traj (vs FOM-512    0.80x)
+wrote /cluster/tufts/paralab/tawal01/tnrom-timing-20260815/wave2d/out/timing.json
+@@@ TNROM wave2d timing DONE @@@

@@ -1,0 +1,19 @@
+jax_backend=gpu
+jax_backend=gpu
+N=256 (65536 nodes x 51 times), film 120000 steps / grid-tied 40000, n_train=512 traj, n_freq=32 (Nyquist-capped), t_freq=25, substeps=80
+  FOM: 576 trajectories (50x80 CN substeps, dt=0.00025) in 66s, max rel energy drift 1.74e-11
+  POD: 26112 snapshots (fit stride 1), top-64 ortho dev 3.4e-14
+  POD floors (traj-RMS metric): r1=8.179e-01  r2=7.105e-01  r4=5.482e-01  r6=4.520e-01  r8=3.798e-01  r12=3.014e-01  r16=2.507e-01  r24=1.904e-01  r32=1.527e-01  r48=1.109e-01  r64=9.033e-02
+  POD floors (per-snap metric): r1=8.362e-01  r2=7.301e-01  r4=5.672e-01  r6=4.685e-01  r8=3.930e-01  r12=3.115e-01  r16=2.591e-01  r24=1.969e-01  r32=1.582e-01  r48=1.152e-01  r64=9.395e-02
+  grid-tied (32792 params, 40000 steps, 173s): traj=3.757e-01 snap=3.903e-01
+  film params: 476865
+  step       0  val 1.106e+00  [10s]
+  step   20000  val 3.129e-02  [1169s]
+  step   40000  val 2.443e-02  [2332s]
+  step   60000  val 7.219e-03  [3495s]
+  step   80000  val 4.706e-03  [4658s]
+  step  100000  val 5.984e-03  [5821s]
+  trained 120000 steps in 6985s (best val loss 3.425e-03)
+RESULT N=256  film-coord=3.507e-02  grid-tied=3.757e-01  POD-6=4.520e-01  POD-24=1.904e-01  (traj-RMS metric; snap: film=3.693e-02)
+wrote results + checkpoints
+@@@ TNROM wave2d n256 DONE @@@

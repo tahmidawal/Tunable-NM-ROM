@@ -1,0 +1,22 @@
+jax_backend=gpu
+jax_backend=gpu
+ViT-CP arm N=64 rank=256 steps=120000 batch=32 lr=0.002 wd=0.0005
+  FOM: 576 trajectories (50x80 CN substeps, dt=0.00025) in 6s, max rel energy drift 3.18e-11
+  [cp] step       0  loss 1.000e+00  [5s]
+  [cp] step   20000  loss 1.644e-01  [52s]
+  [cp] step   40000  loss 8.698e-02  [97s]
+  [cp] step   60000  loss 1.225e-01  [142s]
+  [cp] step   80000  loss 9.888e-02  [186s]
+  [cp] step  100000  loss 4.800e-02  [230s]
+  [cp] trained 120000 steps in 273s (final batch loss 8.143e-02)
+  [cp] params=166145  traj-RMS = 2.555e-01  snap = 2.629e-01
+  [lincp] step       0  loss 1.000e+00  [3s]
+  [lincp] step   20000  loss 1.696e-01  [50s]
+  [lincp] step   40000  loss 1.356e-01  [97s]
+  [lincp] step   60000  loss 9.105e-02  [145s]
+  [lincp] step   80000  loss 6.801e-02  [192s]
+  [lincp] step  100000  loss 8.350e-02  [238s]
+  [lincp] trained 120000 steps in 285s (final batch loss 7.395e-02)
+  [lincp] params=167681  traj-RMS = 2.574e-01  snap = 2.646e-01
+RESULT N=64  vitcp-cp=2.555e-01  vitcp-lincp=2.574e-01  (traj-RMS; snap: cp=2.629e-01 lincp=2.646e-01)
+@@@ TNROM wave2d vitcp n64 DONE @@@

@@ -1,0 +1,34 @@
+{
+  "spec": {
+    "kind": "fno3d",
+    "width": 16,
+    "modes": [
+      6,
+      6,
+      6
+    ],
+    "depth": 4,
+    "padding": 9
+  },
+  "config": {
+    "steps": 20000,
+    "wall_seconds": 900,
+    "batch_size": 2,
+    "seed": 920310,
+    "learning_rate": 0.001,
+    "validation_every": 100,
+    "curve_every": 25,
+    "components_per_output": 1,
+    "normalization": "fixed supplied initial-field norm"
+  },
+  "parameter_count": 1771431,
+  "steps_completed": 20000,
+  "best_step": 16100,
+  "best_validation_worst": 0.017300396751979755,
+  "seconds": 119.07400278490968,
+  "exit_reason": "steps",
+  "normalization": "fixed supplied initial-field norm",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128"
+}

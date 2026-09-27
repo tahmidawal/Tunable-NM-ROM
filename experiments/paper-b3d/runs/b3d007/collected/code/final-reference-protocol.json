@@ -1,0 +1,76 @@
+{
+  "status": "prospective; no final parameters or fields drawn",
+  "parameter_seed": 920399,
+  "cases": 32,
+  "parameter_rows": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "same_grid": {
+    "nodes": 33,
+    "dt": 0.005,
+    "steps": 50,
+    "nonlinear_tolerance": 1e-10,
+    "linear_tolerance": 1e-11
+  },
+  "physical_reference": {
+    "levels": [
+      {
+        "nodes": 65,
+        "dt": 0.0025
+      },
+      {
+        "nodes": 129,
+        "dt": 0.0025
+      }
+    ],
+    "time_refinement_cases": [
+      0,
+      8,
+      16,
+      24
+    ],
+    "time_refinement": {
+      "nodes": 129,
+      "dt": 0.00125
+    },
+    "output_times": "all 51 original output times from 0 to 0.25",
+    "comparison_domain": "reference fields restricted by exact nodal inclusion to the 31^3 interior coarse nodes",
+    "normalization": "fixed supplied initial-field Euclidean norm on the common coarse nodes",
+    "spatial_refinement_budget": 0.005,
+    "time_refinement_budget": 0.001,
+    "interpretation": "empirical refinement checks; no rigorous continuum certificate. If either budget fails, report the discrepancy and retain the main result as same-grid evidence.",
+    "retention": "all requested restricted fields; all Newton iterations and residuals; full native previous/current fields for the largest recorded step residual per case/level; full native initial/final fields on time-refinement cases. Full fine trajectories may be streamed, never silently omitted from a claimed full-field audit."
+  },
+  "freeze_requirement": "all model checkpoints, complete operator recipes, correction directions/POD basis, solver configuration and row-selection rule committed and hashed before parameter-seed access"
+}

@@ -1,0 +1,145 @@
+{
+  "attempt": "b3d003",
+  "nodes": 33,
+  "dt": 0.005,
+  "steps": 50,
+  "seed": 0,
+  "train_trajectories": 512,
+  "validation_rows": [
+    512,
+    513,
+    514,
+    515,
+    516,
+    517,
+    518,
+    519
+  ],
+  "train_steps": [
+    0,
+    1,
+    2,
+    5,
+    10,
+    20,
+    35,
+    50
+  ],
+  "direction_states": 512,
+  "q_ladder": [
+    0,
+    64,
+    128,
+    192
+  ],
+  "pod_ranks": [
+    32,
+    96,
+    160,
+    224,
+    256
+  ],
+  "test_modes": 640,
+  "fit_budget": 400,
+  "step_budget": 200,
+  "gradient_tolerance": 1e-06,
+  "repetitions": 3,
+  "timing_seed": 20260920,
+  "final_cohort_unopened": true,
+  "refinement_cases": [
+    0,
+    2
+  ],
+  "fom_controls": [
+    [
+      0.01,
+      0.5
+    ],
+    [
+      0.001,
+      0.5
+    ],
+    [
+      0.0001,
+      0.5
+    ],
+    [
+      1e-06,
+      0.1
+    ],
+    [
+      0.01,
+      0.005
+    ],
+    [
+      0.0001,
+      1e-06
+    ]
+  ],
+  "training": {
+    "seed": 920201,
+    "latent_dimension": 32,
+    "rank": 256,
+    "bank_width": 384,
+    "head_width": 256,
+    "fourier_features": 64,
+    "fourier_scale": 1.5,
+    "bank_steps": 200000,
+    "head_steps": 100000,
+    "batch_states": 64,
+    "batch_points": 1024,
+    "head_batch": 256,
+    "bank_learning_rate": 0.0003,
+    "head_learning_rate": 0.0005,
+    "checkpoint_every": 10000,
+    "coefficient_refresh_every": 20000
+  },
+  "fit_tile": 16,
+  "operators": [
+    {
+      "name": "fno3d",
+      "spec": {
+        "kind": "fno3d",
+        "width": 16,
+        "modes": [
+          6,
+          6,
+          6
+        ],
+        "depth": 4,
+        "padding": 9
+      },
+      "training": {
+        "steps": 20000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 920310,
+        "learning_rate": 0.001,
+        "validation_every": 100,
+        "curve_every": 25,
+        "components_per_output": 1,
+        "normalization": "fixed supplied initial-field norm"
+      }
+    },
+    {
+      "name": "unet3d",
+      "spec": {
+        "kind": "unet3d",
+        "width": 8,
+        "levels": 3,
+        "periodic": false
+      },
+      "training": {
+        "steps": 20000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 920311,
+        "learning_rate": 0.001,
+        "validation_every": 100,
+        "curve_every": 25,
+        "components_per_output": 1,
+        "normalization": "fixed supplied initial-field norm"
+      }
+    }
+  ]
+}

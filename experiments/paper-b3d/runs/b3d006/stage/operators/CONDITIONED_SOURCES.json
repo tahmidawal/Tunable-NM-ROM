@@ -1,0 +1,24 @@
+{
+  "files": [
+    {
+      "path": "operators/pretrained_deeponet.py",
+      "source_commit": "59651088",
+      "source_path": "experiments/paper-p3d/operators/pretrained_deeponet.py",
+      "sha256": "7b6e6fdddfe8bb352e22e1d8bf7e831edf0a093c9417bc36b8cc14d32e8c2b14"
+    },
+    {
+      "path": "operators/training.py",
+      "source_commit": "59651088",
+      "source_path": "experiments/paper-p3d/operators/training.py",
+      "sha256": "0596ee2b95a226bda2082fa2ef5ad7def9c00189a126d82ba6d91d1a464b9aaf"
+    },
+    {
+      "path": "operators/extra_models3d.py",
+      "source_commit": "5a04db6b",
+      "source_path": "experiments/paper-h3d/operators/extra_models3d.py",
+      "sha256": "a3921f33d3f77060a25914cbc26f82a650b6e300b1acd9332ae92520119bf8ef"
+    }
+  ],
+  "online_architecture_changed": false,
+  "initialization": "train-only relative-error-weighted POD-informed learned trunk, branch Gram supervision, then joint fine tuning"
+}

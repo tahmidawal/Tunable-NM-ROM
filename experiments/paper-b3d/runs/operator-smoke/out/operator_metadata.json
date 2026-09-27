@@ -1,0 +1,167 @@
+{
+  "training_rows": [
+    0,
+    1
+  ],
+  "validation_rows": [
+    2
+  ],
+  "observed_training_steps": [
+    0,
+    1,
+    10,
+    50
+  ],
+  "output_steps": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    37,
+    38,
+    39,
+    40,
+    41,
+    42,
+    43,
+    44,
+    45,
+    46,
+    47,
+    48,
+    49,
+    50
+  ],
+  "output_contract": "seven learned evolved knots plus exact supplied initial field, linear time interpolation to all 51 fields",
+  "scale": 0.41034071507057335,
+  "nu_center": 0.03415721376455716,
+  "nu_scale": 0.0006333302860688332,
+  "final_cohort_unopened": true,
+  "normalization": "each time error divided by supplied initial-field norm",
+  "input": "supplied initial interior field, viscosity and fixed coordinates",
+  "training_fields_sha256": "21ef9c2d8b3ccfce41c854dd254e99db34c8f6fd1221b57f9022a722c43c29d6",
+  "shared_operator_source": [
+    {
+      "path": "operators/models3d.py",
+      "source_commit": "84d302a706bf06a460d04f419d9c06a6c424932e",
+      "source_path": "experiments/paper-h3d/operators/models3d.py",
+      "sha256": "f6125ec24e0d6fa8299a5da32167cf239ac71171d8bfe67ef9da171b1e304bca"
+    },
+    {
+      "path": "operators/training.py",
+      "source_commit": "84d302a706bf06a460d04f419d9c06a6c424932e",
+      "source_path": "experiments/paper-h3d/operators/training.py",
+      "sha256": "8fd78e5807915c83a5399cf90fbe406f4bdee8e6fc2a57772f39da1328ddfa36"
+    },
+    {
+      "path": "operators/__init__.py",
+      "source_commit": "84d302a706bf06a460d04f419d9c06a6c424932e",
+      "source_path": "experiments/paper-h3d/operators/__init__.py",
+      "sha256": "0960d0e81b29fc04979aad5de89bf8bb8570416c3ba7d85fd85aee1968b09e6a"
+    },
+    {
+      "path": "operators/README.md",
+      "source_commit": "84d302a706bf06a460d04f419d9c06a6c424932e",
+      "source_path": "experiments/paper-h3d/operators/README.md",
+      "sha256": "b8762837fdfa8cd796a9c3e94b005a3138c975ac6d024ac2a267c83a6800e5e1"
+    }
+  ],
+  "models": [
+    {
+      "name": "fno3d",
+      "spec": {
+        "kind": "fno3d",
+        "width": 2,
+        "modes": [
+          2,
+          2,
+          2
+        ],
+        "depth": 1,
+        "padding": 1
+      },
+      "config": {
+        "steps": 2,
+        "wall_seconds": 20,
+        "batch_size": 1,
+        "seed": 7,
+        "learning_rate": 0.001,
+        "validation_every": 1,
+        "curve_every": 1,
+        "components_per_output": 1
+      },
+      "parameter_count": 301,
+      "steps_completed": 2,
+      "best_step": 1,
+      "best_validation_worst": 1.7389497538663057,
+      "seconds": 1.9799249779898673,
+      "exit_reason": "steps",
+      "normalization": "explicit per-case/time squared norm",
+      "converged_claim": false,
+      "parameter_dtype": "float64",
+      "fft_dtype": "complex128"
+    },
+    {
+      "name": "unet3d",
+      "spec": {
+        "kind": "unet3d",
+        "width": 2,
+        "levels": 2,
+        "periodic": false
+      },
+      "config": {
+        "steps": 2,
+        "wall_seconds": 20,
+        "batch_size": 1,
+        "seed": 8,
+        "learning_rate": 0.001,
+        "validation_every": 1,
+        "curve_every": 1,
+        "components_per_output": 1
+      },
+      "parameter_count": 1483,
+      "steps_completed": 2,
+      "best_step": 1,
+      "best_validation_worst": 1.0099222890848705,
+      "seconds": 1.8271475310903043,
+      "exit_reason": "steps",
+      "normalization": "explicit per-case/time squared norm",
+      "converged_claim": false,
+      "parameter_dtype": "float64",
+      "fft_dtype": "complex128"
+    }
+  ]
+}

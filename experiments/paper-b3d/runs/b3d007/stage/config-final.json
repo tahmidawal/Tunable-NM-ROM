@@ -1,0 +1,749 @@
+{
+  "attempt": "b3d007",
+  "workflow": "final_campaign.py",
+  "wall_time": "02:00:00",
+  "freeze_manifest": "final-freeze.json",
+  "freeze_sha256": "d3d1dbda9e89da8e5d05d651994cd4d8f94ce30e32aa58176bf065cf90c5bb2f",
+  "assets": [
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/training/checkpoint.pkl",
+      "destination": "frozen/seed0/checkpoint.pkl",
+      "sha256": "00c22a0a8544eda7e0802c5ec3a1e632a3cec5f9835e67630aa9b20070f67ff6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/bases.npz",
+      "destination": "frozen/seed0/offline/bases.npz",
+      "sha256": "1f893c65f1ff26de75a53368f10a761532639e0882e7c8449565e0979028c10e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/directions.npz",
+      "destination": "frozen/seed0/offline/directions.npz",
+      "sha256": "d84a8a577183f33be00ffbf01b640bbe021c3b9d89db5620788999a23fc66b97"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/result.json",
+      "destination": "frozen/seed0/offline/result.json",
+      "sha256": "f223de38e70432dbe12f38c9a0eae1414e0ec164acbe297d76a1d3712fee4a99"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-01_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-01_lt5e-01_case7_rep0.npz",
+      "sha256": "2c396696f21e7e82c59173519832dc04a2ad7ce583b7bd5e92dea098dda82ee6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-01_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-01_lt5e-01_case0_rep0.npz",
+      "sha256": "0497756a79a8891420949827376375fc8a343bb0844b547452707cac38f3062a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt5e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt5e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "2c396696f21e7e82c59173519832dc04a2ad7ce583b7bd5e92dea098dda82ee6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt5e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt5e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "0497756a79a8891420949827376375fc8a343bb0844b547452707cac38f3062a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "cf56a072d9b77a32c8621f0cd73cbf36aeca2a0a02fe4d7fd521c128c4f98b2e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "1697dc91a543d68724a75b7cf348100f120e99cb1ed23d148de025dede441f7f"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "08a3456ae64ecd892c477d99e1c8595cae956304dfc36246597e2da357af0594"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "be28aeaf712eee470315aad30f106141054c9e2e94d61a631dc5aa77b7878354"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-03_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-03_lt5e-01_case7_rep0.npz",
+      "sha256": "7eb9681c1585f1ce9cbc7f34263265cc130d43d65744dc9aef4341e5116e5b8d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-03_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-03_lt5e-01_case0_rep0.npz",
+      "sha256": "2a3e52b7ff4ebe0c1dbe14902a7d7da691d32a8888864fb29759c3da4467f166"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-04_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-04_lt5e-01_case0_rep0.npz",
+      "sha256": "a5f9d9e825d6d459e8101730389a0446b9b1bed3e94b8b1f6bef4eba4fde7382"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_nt1e-04_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_nt1e-04_lt5e-01_case7_rep0.npz",
+      "sha256": "ae9baab019318df1722196adb10f739ea97c1bd4e600c0709212e40082165498"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "71c4b7e9b3bb5f34f9b39fe2e6d03af8cde86d1e4cc47f88cb1bafb5d7616284"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "aa41efc7cd3df100dceb008e7758a74f95ddd344681f8fd741bca4d4f0d239ea"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.01_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.01_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "f04673bdf287b7c6f05bb58e9937ee5a062f5d9cb421e24a61ae45c297a9c731"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.01_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.01_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "e3aa190296bbfe087cb15bbfb233e9068bc468a126df1a7031e5d09640b73500"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "fce2a60d760a96a96b9f3d57e7d571a1abdbcbb1f4aedc58c4b161b21272211a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "65dc9a703edd41999c239e86a70cb8539dbae9ed42f4477a448b1ae6ffb611cd"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.025_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.025_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "8ced9a630c64beb6516966d86d0c8b76c038c142a8c45be531533fe1d656dd51"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.025_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.025_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "2c564563d026715e65cf51114e21f770b4a63a7a8d7a9a3b6d9c4836b5aa997c"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.05_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.05_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "7f0702bf0fb362e960e9af1cb5a1eca9a6f6fc14ff22c818d5f2f5b1e54b3dcb"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.05_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.05_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "bebcec6d0310b475ccea51536a30a732fdbebc6ccadb9fd7a48dce85c806e910"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.05_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.05_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "c4cb99477880f48578ead575401d8cfc645de0de5101512f1d31f952791fb30e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n33_dt0.05_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n33_dt0.05_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "3cb9aba261e3a4efb2f187728ca56a8b7271042064fdb481ab651978a3850f9e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n17_dt0.005_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n17_dt0.005_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "66c3d94f813aa77ffef46bcab0b4c0563829834b6f4d091906e00f2b14b6c884"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n17_dt0.005_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n17_dt0.005_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "472cb57569204acb756d93fe126014e42bdc652341cc87bd8db87fcf666b214d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n17_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n17_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "4be0631afd74a2efe10a633607173346740cdf926fa64855b7e4242597ae6580"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n17_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n17_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "1f2f79db16548769a95b00e77de20ae1bff4357da9f0765e006a1609475670fa"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n17_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n17_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "240fe7f7dabb83b7407d5f4ced780da0bd6fcab8f0728e0db3188f5643897c2d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fom_n17_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fom_n17_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "86fe0d12e96402c7e2d4d8b95619b09f9dd0be176060670b364d6e7bae9d4a00"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q128_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/rom_q128_case0_rep0.npz",
+      "sha256": "430b5cf1a799d890717b3f1aafbd032dbf4d7225fc709ba4fdb7b59f7b7e3296"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q128_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/rom_q128_case7_rep0.npz",
+      "sha256": "8c8186517cf8bc3c3b3a3f0d52d13172a656b8c212ff83c49c13cd2c4f6fcdab"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q0_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/rom_q0_case0_rep0.npz",
+      "sha256": "deedd9cc480bb3c488c87f6c63f8a090ee69939b5df3dde4790a8e4022e3d4f7"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q0_case7_rep2.npz",
+      "destination": "frozen/seed0/expected/rom_q0_case7_rep2.npz",
+      "sha256": "ee8bf8cb532c716eadd493bde40708d48af19efc237dcab079709e960036136e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_192_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/pod_192_case7_rep0.npz",
+      "sha256": "a9a66b34ce152c41564206305fcce80b4950665a975694c5b4b006c7ca5dbd1a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_192_case0_rep2.npz",
+      "destination": "frozen/seed0/expected/pod_192_case0_rep2.npz",
+      "sha256": "199d27678188dee9971458a0591fe9a6cb0e52bd57aab49a2dbbc657ed81ef74"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_256_case0_rep2.npz",
+      "destination": "frozen/seed0/expected/pod_256_case0_rep2.npz",
+      "sha256": "ca9ed8bc4dc524d56b59b36527a47db8e148c22202e55aa60e6d2470df99d563"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_256_case7_rep1.npz",
+      "destination": "frozen/seed0/expected/pod_256_case7_rep1.npz",
+      "sha256": "6c32fa52b832a346b149003f73714b870a85658eddcbbaffc4186946be8f4275"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q192_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/rom_q192_case7_rep0.npz",
+      "sha256": "a93f8ff26f5f7b3c6f0d3aee847438217656d3b8f1538158bd3e510a5059cfd6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q192_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/rom_q192_case0_rep0.npz",
+      "sha256": "071c420df4b57d982163dee9c2abedbba34ab4200ac6e211024c7a61343113cb"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/free_R256_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/free_R256_case0_rep0.npz",
+      "sha256": "45e1d4954e1e57b5ff19864ae4906638d070a3bbc8f295a27c00ad96b5da263a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/free_R256_case7_rep1.npz",
+      "destination": "frozen/seed0/expected/free_R256_case7_rep1.npz",
+      "sha256": "dfe6791cae9e57c3539742ef07d12112626c3fe2e633f0176cfa5f556ee97e49"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q64_case0_rep1.npz",
+      "destination": "frozen/seed0/expected/rom_q64_case0_rep1.npz",
+      "sha256": "e45c6b8332d4f9f4592bf33a4a8e271ce5b85a4c7cfcf3899556b14adf713c88"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/rom_q64_case7_rep1.npz",
+      "destination": "frozen/seed0/expected/rom_q64_case7_rep1.npz",
+      "sha256": "70841c7f356c71b9deb082628a800e76a3d76bb7ebae28fc0b31985be42c11d3"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_128_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/pod_128_case7_rep0.npz",
+      "sha256": "cc407462dca7fadb879988a32eb5f2e6770c251ab7f9501282d3d6f2ed4c75e6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_128_case0_rep2.npz",
+      "destination": "frozen/seed0/expected/pod_128_case0_rep2.npz",
+      "sha256": "024b1dcbe5cff80c2a67bb1ae6197831727adf4647fc513c6f0793a958a359c5"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_64_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/pod_64_case0_rep0.npz",
+      "sha256": "08ac1a26fde316aa6c8bec268a76f9bee767b64d27994d0884cfa31a582b2bf3"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/pod_64_case7_rep1.npz",
+      "destination": "frozen/seed0/expected/pod_64_case7_rep1.npz",
+      "sha256": "c58a88c65bf0551f0d60c5ec15414894eda6be1bc07cce57b757d16c4f6590fc"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fno3d_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/fno3d_case0_rep0.npz",
+      "sha256": "6cced786473891ec6b78ed284bfecb2da9c126f936764fd9399a86f1d9718d9e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fno3d_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/fno3d_case7_rep0.npz",
+      "sha256": "6fc96470e98e377efdc9f751a646f61cf54b49fad30b3ed3eee6c871fc350900"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/unet3d_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/unet3d_case0_rep0.npz",
+      "sha256": "808b2e2e5df3f3e64112c8604e298c895a04790e84fc5484cbd6db79dc90b4b6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/unet3d_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/unet3d_case7_rep0.npz",
+      "sha256": "51e8c909422197deabc5eb017c0a46ebb3ac7cedba1fd33cc2dd5066e19331f1"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/deeponet3d_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/deeponet3d_case0_rep0.npz",
+      "sha256": "086d2229053a08613e576a9e9516cc615466ca61ec297a7c3ee6481f3238c7ca"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/deeponet3d_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/deeponet3d_case7_rep0.npz",
+      "sha256": "95fb04c60e3fe74eb2c8be3f1f39225b7369bccedaae2c9a6ccf6aae6dc96995"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/transolver3d_case7_rep0.npz",
+      "destination": "frozen/seed0/expected/transolver3d_case7_rep0.npz",
+      "sha256": "86d0160e807da1a364d0c105e8c133c49e59362edc4e70c460f926fbd71b4226"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/transolver3d_case0_rep0.npz",
+      "destination": "frozen/seed0/expected/transolver3d_case0_rep0.npz",
+      "sha256": "f8a5fab0574c2011e4a45977edd7871084d6fafa847bc4853f96d9e10cea6568"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fno3d/best.pkl",
+      "destination": "frozen/seed0/operators/fno3d/best.pkl",
+      "sha256": "8420cf0eb7771e48acca298c5bdff6a8fed1b7395dbfe1e760ce85f3ec7a8e6d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fno3d/training.json",
+      "destination": "frozen/seed0/operators/fno3d/training.json",
+      "sha256": "3eaf656b083ee22828cbdcef450a5fe5c71a583cc2277fbfa220b9dcf7a299f5"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/fno3d/curve.json",
+      "destination": "frozen/seed0/operators/fno3d/curve.json",
+      "sha256": "fb953f650d032bb765fb2f8f3c01d56b918ecbd753875aaab878ac2a90b5f049"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/unet3d/best.pkl",
+      "destination": "frozen/seed0/operators/unet3d/best.pkl",
+      "sha256": "6f1de160ff4f73cbc02b5fa57200ba601248fbb87bd697a12ba2880d4f48ef2c"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/unet3d/training.json",
+      "destination": "frozen/seed0/operators/unet3d/training.json",
+      "sha256": "9f6ab9ee007fdee16c7c4d6fb111e404c9ab789e3c970b200e3593c4bbf648a0"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/unet3d/curve.json",
+      "destination": "frozen/seed0/operators/unet3d/curve.json",
+      "sha256": "ac50993bf6f9537ce2d7ddc2191197b6a12377d9edf599563913f88fc950b991"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/deeponet3d/best.pkl",
+      "destination": "frozen/seed0/operators/deeponet3d/best.pkl",
+      "sha256": "5795fde189ca59fb9df31ef00b2dfcd5945b30e42438c2b13ebaec83cc48e614"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/deeponet3d/training.json",
+      "destination": "frozen/seed0/operators/deeponet3d/training.json",
+      "sha256": "6c1d28ed30a9355d6ff062d8fbd71e3e62c9d363b770c0584f2e609e1afe7d92"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/deeponet3d/curve.json",
+      "destination": "frozen/seed0/operators/deeponet3d/curve.json",
+      "sha256": "d20b9e94a29395075b9b3615ef1be6f6155ba870c434c207e9908a3f91f65818"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/transolver3d/best.pkl",
+      "destination": "frozen/seed0/operators/transolver3d/best.pkl",
+      "sha256": "30572fcb1564b90d58988e6d764a5d5eee55103180bc0a32524cd3d47dadba4e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/transolver3d/training.json",
+      "destination": "frozen/seed0/operators/transolver3d/training.json",
+      "sha256": "c1ec3a0d537af7296165262c415b06494c49ce9c1988a54abfd659b8f3450288"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/transolver3d/curve.json",
+      "destination": "frozen/seed0/operators/transolver3d/curve.json",
+      "sha256": "d4a036948460023a9a4d1c38a14c108cbece2d098224ea61b267492385e320d0"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/reference_case0.npz",
+      "destination": "frozen/seed0/expected/reference_row512.npz",
+      "sha256": "1a0991b31d362d4afb14f75d379265b95625a850cce5fb3685813aa752e1c6ed"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed0/reference_case7.npz",
+      "destination": "frozen/seed0/expected/reference_row519.npz",
+      "sha256": "90b8a2bb21c342bc8d4cc58bf6a45366561cf2a6f99c14a29cdb963ba41b4794"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/training/seed1/checkpoint.pkl",
+      "destination": "frozen/seed1/checkpoint.pkl",
+      "sha256": "7c0c0e437a03eb769e018776b20fe20f7a7114042c78a4704c87c75abfd78d81"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/bases.npz",
+      "destination": "frozen/seed1/offline/bases.npz",
+      "sha256": "0b5f31bb725ffbfdf419a57b2555523503445de8cfd835fc8fa5f7c2d1c42811"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/directions.npz",
+      "destination": "frozen/seed1/offline/directions.npz",
+      "sha256": "9e17034fa84ef93972d3f4cb86efb366bd7792ad54485bfa6192d5411c90ddfe"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/result.json",
+      "destination": "frozen/seed1/offline/result.json",
+      "sha256": "658bd3d7877a7d110747f410427c26d53a5dc92c69b761eb019d3eb18b40d834"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-01_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-01_lt5e-01_case7_rep0.npz",
+      "sha256": "2c396696f21e7e82c59173519832dc04a2ad7ce583b7bd5e92dea098dda82ee6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-01_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-01_lt5e-01_case0_rep0.npz",
+      "sha256": "0497756a79a8891420949827376375fc8a343bb0844b547452707cac38f3062a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt5e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt5e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "2c396696f21e7e82c59173519832dc04a2ad7ce583b7bd5e92dea098dda82ee6"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt5e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt5e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "0497756a79a8891420949827376375fc8a343bb0844b547452707cac38f3062a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "fcc432371862a7675c3d7d169e53feff5478b4c25d310ca5c4de111623792dc4"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "678a5506369f40a759a9ca9970e6dfda103d6527c054a6ffa05e8deeac1117b5"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "bb31a1ddee6096550f88dff36d0775d7dee5f27ff4aa7cd68d8a586e6d7faa10"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "65e4efa5ce1e3aabf608b50fcbb6ba28c481aabb8230a9f32f5cb5c4c20c48c9"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-03_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-03_lt5e-01_case7_rep0.npz",
+      "sha256": "7d1f0224ebfc8ea9aefa0d953d8ad94af818542cc530f3569296d5f10ddc2756"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-03_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-03_lt5e-01_case0_rep0.npz",
+      "sha256": "853e20bc7a6db8fff1c8914d5e48fb97a7da3a781485b4afeadf9bf7aadf13b0"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-04_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-04_lt5e-01_case0_rep0.npz",
+      "sha256": "78368edaafc01b68c06dcd4ee60a56caad36fe734c76b3fbefffb0d7ad1d55b0"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_nt1e-04_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_nt1e-04_lt5e-01_case7_rep0.npz",
+      "sha256": "cd73dec9c67c66ad70333d518234c265405f96005680cf6ede1fc967245f6738"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "34530c3179d95ef15a351a72c487df3194e5af460f76cb0cbef01c8186b69bb0"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "268b6f8a1a87265c5d0d9ebe0285948281ef579e78fc5954e8a3fd2574e3f1bc"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.01_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.01_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "15551d5b15bf9efc4c3e1f4448dc7aef9d7aee48439f80af6af0c8d16cdc0283"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.01_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.01_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "bc8f8d0604d9ac7e18a04d2d0d33bd443c70ab0884347050b27fb6e4221e36c8"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "32d2edb9ea2f84ff2ebfef47d298e551e493496da2d02dc601a909611d826fc4"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "b89486bc9e8e427a36cd3f913a1c85271dedddf1aca52a9f35f1277ed1604c1d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.025_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.025_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "48f4e188757b0b7d5775d39f381d2165e3ed4c63350923dd01544532ba6ff872"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.025_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.025_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "0ff50186ce63965bd82852fc8f605b5f3c402ec900722360ae44d00705acc170"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.05_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.05_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "8aa09f76c067b5233bb1bd310f0e8ec0b6f5ff609459454372a908772a50d3c9"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.05_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.05_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "7d1eef1516eabef216ee61086d9887ca16dc632cc7693ba9d61369c5fd8c61a7"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.05_nt3e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.05_nt3e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "36cb23a80652eab726e08c8d27c139020262ceda8bc2c48fad4cbc890d1a7048"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n33_dt0.05_nt3e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n33_dt0.05_nt3e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "698ac3543d112cd009f4e75b8332e65c18cf5de9afc968ba42cfa18940444988"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n17_dt0.005_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n17_dt0.005_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "25ec6744ffe3de271e613b3373a4e8c0ac9dd23393f5d462f16ebb10693d4e7d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n17_dt0.005_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n17_dt0.005_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "db14d0c99f195913dd89d036eb6d7cf1e3a6b511be75d93a495d971d6f1178ec"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n17_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n17_dt0.01_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "4b93613f4d3ed66ec21c18a96488f9c59a0c7dabfe7701b21ac2dc2130ad69dc"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n17_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n17_dt0.01_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "f3ba2c19eb52f0d1e9641985b054e2ecf6247fed43269cd2f0a4e2ddd3814a24"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n17_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n17_dt0.025_nt1e-02_lt5e-01_case0_rep0.npz",
+      "sha256": "963ffe919d134694575ebf804ce7b71878eae2d3f81f75672f271aac1667de55"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fom_n17_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fom_n17_dt0.025_nt1e-02_lt5e-01_case7_rep0.npz",
+      "sha256": "b1c628c089386c1840bd9d821b5b4f263a30bcc1225612e689cca3309a937e11"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q128_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/rom_q128_case0_rep0.npz",
+      "sha256": "2c9c5a6f6a45f180714d5999c55332033b87e9a9ed75d60eb8b6d7550409782c"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q128_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/rom_q128_case7_rep0.npz",
+      "sha256": "0317682b80cd00643c3fd966e5d5a9a91584b00ba62acc260b87c131f3f3cc5d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q0_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/rom_q0_case0_rep0.npz",
+      "sha256": "e5a2aeb06f8ce1960c3a6638c2cf09d2771b957a5ca475be8c8daf972c218a98"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q0_case7_rep2.npz",
+      "destination": "frozen/seed1/expected/rom_q0_case7_rep2.npz",
+      "sha256": "d50ff254acee12050e36c57372dd17890fb1ee773fe328414473c3c0d0fef425"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_192_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/pod_192_case7_rep0.npz",
+      "sha256": "019324016e3cf95e67af49906fbc01d9c0301e21bb631d6449d6564046c92572"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_192_case0_rep2.npz",
+      "destination": "frozen/seed1/expected/pod_192_case0_rep2.npz",
+      "sha256": "68a18ee2e60caf365f7b5633d568d74b43cd27d8c7bc0f390ea00de5b3b470a3"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_256_case0_rep2.npz",
+      "destination": "frozen/seed1/expected/pod_256_case0_rep2.npz",
+      "sha256": "a98d106a280c56c7d1f8e8beebc919fc131f7f224b5b3f048cd5733cfea78e8a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_256_case7_rep1.npz",
+      "destination": "frozen/seed1/expected/pod_256_case7_rep1.npz",
+      "sha256": "fc29397bb33fafb4d1f09afcf340477225fa9a9190c05433f720f2a43aff7a06"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q192_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/rom_q192_case7_rep0.npz",
+      "sha256": "6a5f5a302f024dfa6b1c585829e0d22326701592a962af93f54dacdf08304620"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q192_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/rom_q192_case0_rep0.npz",
+      "sha256": "84d8bd2704524f01728984ef5a353cd9dbaa4106467e58744154ab5fbb4d1760"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/free_R256_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/free_R256_case0_rep0.npz",
+      "sha256": "7b656c4770c99371460a319002eb83dbf0b9472eb21472d77b33ea3ecea48556"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/free_R256_case7_rep1.npz",
+      "destination": "frozen/seed1/expected/free_R256_case7_rep1.npz",
+      "sha256": "fed4a300ebc49f65bb8240f1d6c4946a824b77942a9a083fd593923341d9465e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q64_case0_rep1.npz",
+      "destination": "frozen/seed1/expected/rom_q64_case0_rep1.npz",
+      "sha256": "11e4c50759d49660fe993ae56076166a41e132f99adee7a81cdbe728979146df"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/rom_q64_case7_rep1.npz",
+      "destination": "frozen/seed1/expected/rom_q64_case7_rep1.npz",
+      "sha256": "b6d9efba987872f60624ca3d8c883b12851dde7ad91d456a6f65017ed4b165aa"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_128_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/pod_128_case7_rep0.npz",
+      "sha256": "2be9d7caa1e3f07a74a872ac5881a16afd13d94f2c39cca55b6bb1e4b714c7da"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_128_case0_rep2.npz",
+      "destination": "frozen/seed1/expected/pod_128_case0_rep2.npz",
+      "sha256": "1095585653fd7cbec8eba0641ab7d66831abd98a16861fc60d60d87b5b7c42c3"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_64_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/pod_64_case0_rep0.npz",
+      "sha256": "4d0e63f6897717de392e647cebef29d76ca2e176e94244b4b2920ab83ed5ad17"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/pod_64_case7_rep1.npz",
+      "destination": "frozen/seed1/expected/pod_64_case7_rep1.npz",
+      "sha256": "81d8c6b303b335930448cea012d5c040859a65e033208b906f2402113390d739"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fno3d_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/fno3d_case0_rep0.npz",
+      "sha256": "ca225797020e0f18ad68db0ec2b14875c83ec50d7d45e8bbd709c8331fa82411"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fno3d_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/fno3d_case7_rep0.npz",
+      "sha256": "8743df966864bc5174ed088480af82a8299a477941043f432278890ba74f3940"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/unet3d_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/unet3d_case0_rep0.npz",
+      "sha256": "8a73bfdbe8595fd7dd21fa8f0d6a31778888c5b0d2d39ce6aa23acc179313865"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/unet3d_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/unet3d_case7_rep0.npz",
+      "sha256": "7a851819bed7fad0a88dc5ff98d6e88ad37f90de98825b3c0bb27e21f6b96520"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/deeponet3d_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/deeponet3d_case0_rep0.npz",
+      "sha256": "2082f4fffd51333d9396ec54c73e6accfca608f35cb86647612cd68180bc9eb5"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/deeponet3d_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/deeponet3d_case7_rep0.npz",
+      "sha256": "2e6214e4c0254d672773aa0cb9e68b50fb0630b5465c415bbe5575480fe17a06"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/transolver3d_case7_rep0.npz",
+      "destination": "frozen/seed1/expected/transolver3d_case7_rep0.npz",
+      "sha256": "2294e7f1775bcb3f56cf3d96de51999472713d9e4d705a463563c79700dd59ca"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/transolver3d_case0_rep0.npz",
+      "destination": "frozen/seed1/expected/transolver3d_case0_rep0.npz",
+      "sha256": "645439164d3573ba90366798648cbb9c5faf612250a0e3e084be8b11ca304abc"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fno3d/best.pkl",
+      "destination": "frozen/seed1/operators/fno3d/best.pkl",
+      "sha256": "ffb19921126c127d2f5839969f0a3ad5289299e303d8965d054fc9cc689e3f75"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fno3d/training.json",
+      "destination": "frozen/seed1/operators/fno3d/training.json",
+      "sha256": "d967f3a5e1fe361134bd32fcde439e54da3429d95b0e9be1b306a9533fccd80a"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/fno3d/curve.json",
+      "destination": "frozen/seed1/operators/fno3d/curve.json",
+      "sha256": "704fa6b53f15f1f5dcbde7b51f92d1ad397acc9fa7d18eff307464b3d0bee17f"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/unet3d/best.pkl",
+      "destination": "frozen/seed1/operators/unet3d/best.pkl",
+      "sha256": "daac67eef41010942496a803e317211861a58b6423fe1e49be8670f97e051b96"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/unet3d/training.json",
+      "destination": "frozen/seed1/operators/unet3d/training.json",
+      "sha256": "39fcca8b10e5945696a5de074d7dac6dd1d86aebf1f1a999a4bf4318a9ca8095"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/unet3d/curve.json",
+      "destination": "frozen/seed1/operators/unet3d/curve.json",
+      "sha256": "095fee872e29026de33559819add957672d1c0feae78493e88b92b690f3fa0ab"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/deeponet3d/best.pkl",
+      "destination": "frozen/seed1/operators/deeponet3d/best.pkl",
+      "sha256": "848bfb8e909e4bfc9d0f7b0b0802aaa937ce1f1878923a61bd86812b97d2ec17"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/deeponet3d/training.json",
+      "destination": "frozen/seed1/operators/deeponet3d/training.json",
+      "sha256": "4ca7b41b95799e6c2e327a6702819c984cd7308f2e1fa5bd1bef47c9469eb8a4"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/deeponet3d/curve.json",
+      "destination": "frozen/seed1/operators/deeponet3d/curve.json",
+      "sha256": "bde9e661fe59a796b3a3332e733c2744d54d0b260faed41eb2e95d4b14f5da1e"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/transolver3d/best.pkl",
+      "destination": "frozen/seed1/operators/transolver3d/best.pkl",
+      "sha256": "c3c831455c2e0c55b5c4bc8679a993df20af89a565234bc8e05df9d557e1ce76"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/transolver3d/training.json",
+      "destination": "frozen/seed1/operators/transolver3d/training.json",
+      "sha256": "06dd59534b4514b2e4004019bf2e31f558e29921f6a2f113fd14479c5cbe558d"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/transolver3d/curve.json",
+      "destination": "frozen/seed1/operators/transolver3d/curve.json",
+      "sha256": "a5f1916a0e50176857cc29e25445d152dc33e080182a0e5b5ad3b729c95049e1"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/reference_case0.npz",
+      "destination": "frozen/seed1/expected/reference_row512.npz",
+      "sha256": "37e68cea5d325d15c1d3f08d377fa37d9d3f7c624f57b88b1103fb95ff231bdd"
+    },
+    {
+      "source": "experiments/paper-b3d/runs/b3d005/collected/out/seed1/reference_case7.npz",
+      "destination": "frozen/seed1/expected/reference_row519.npz",
+      "sha256": "51bb2a52ecca98e18419853b547dc41d4dc7ba96c0ddefcb9810848d531237a3"
+    }
+  ]
+}

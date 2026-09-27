@@ -1,0 +1,56 @@
+{
+  "job_id": "3989410",
+  "source_commit": "1d2010aacff49a77ff7f8fe2c3221b4c6c739dc6",
+  "attempt": "b3d001",
+  "remote": "/cluster/tufts/paralab/tawal01/paper_b3d_20260920/b3d001",
+  "config": {
+    "attempt": "b3d001",
+    "nodes": 33,
+    "dt": 0.005,
+    "steps": 50,
+    "seed": 0,
+    "train_trajectories": 64,
+    "validation_rows": [
+      512,
+      513,
+      514,
+      515,
+      516,
+      517,
+      518,
+      519
+    ],
+    "train_steps": [
+      0,
+      1,
+      2,
+      5,
+      10,
+      20,
+      35,
+      50
+    ],
+    "direction_states": 128,
+    "q_ladder": [
+      0,
+      32,
+      64
+    ],
+    "pod_ranks": [
+      32,
+      64,
+      96,
+      128
+    ],
+    "test_modes": 384,
+    "fit_budget": 400,
+    "step_budget": 200,
+    "gradient_tolerance": 1e-06,
+    "repetitions": 3,
+    "timing_seed": 20260920,
+    "final_cohort_unopened": true
+  },
+  "config_sha256": "a8a07a94266f051387b265afa01c4a8258a03f2dc98590950878a918a15ba6cd",
+  "queue_before": "",
+  "queue_after": "3989410|ctol_paper_b3d001|PENDING"
+}

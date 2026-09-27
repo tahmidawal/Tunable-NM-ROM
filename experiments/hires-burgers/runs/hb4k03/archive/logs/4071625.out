@@ -1,0 +1,109 @@
+host=pax008 source_commit=ae700dfde8c2d4834e082e539a6c730c47d8d2f3
+NVIDIA H200, GPU-3011fd20-5985-c4ea-f6bf-649a67b8d28b, 143771 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  411G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 16769025 rows in 5 blocks 12.8
+TRUTH 0 18.6
+TRUTH 1 21.7
+TRUTH 2 27.1
+TRUTH 3 31.9
+TRUTH 4 35.5
+TRUTH 5 38.4
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 32.3 125.5
+QUICK nt1e-4_dt005 evolved% 0.0318 all% 0.0318 stalled 0 18.9 144.4
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 31.3 175.8
+QUICK lean_nt1e-4_dt005 evolved% 0.0318 all% 0.0318 stalled 0 17.8 193.6
+QUICK lean_nt1e-3_dt005 evolved% 0.0544 all% 0.0544 stalled 0 15.8 209.3
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.055 all% 0.055 stalled 0 13.3 222.6
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1635 all% 2.1635 stalled 0 11.8 234.5
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6607 all% 1.6607 stalled 0 12.8 247.3
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0499 all% 0.0499 stalled 0 12.6 259.9
+QUICK c2048_nt1e-4_dt005 evolved% 0.2146 all% 0.8908 stalled 0 12.2 272.2
+QUICK c1024_nt1e-4_dt005 evolved% 0.6268 all% 1.6664 stalled 0 10.9 283.1
+QUICK q0_M64_scaled_g0p001_fast evolved% 2.4157 all% 4.3503 stalled 0 14.0 307.2
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry evolved% 2.4158 all% 4.3503 stalled 0 11.4 318.6
+QUICK q128_M576_lat64_g0p001_fast evolved% 1.0907 all% 3.8503 stalled 0 15.1 343.3
+QUICK q128_M576_lat64_g0p001_fast_chol evolved% 1.0907 all% 3.8503 stalled 0 12.1 355.5
+QUICK q128_M576_lat64_g0p001_fast_chol_clip evolved% 1.0907 all% 3.8503 stalled 0 12.0 367.4
+QUICK q128_M576_lat64_g0p001_fast_chol_lamcarry evolved% 1.0907 all% 3.8503 stalled 0 12.1 379.5
+QUICK q128_M576_lat64_g0p001_fast_chol_clip_lamcarry evolved% 1.0907 all% 3.8503 stalled 0 12.0 391.5
+QUICK q256_M544_lat64_g0p001_fast_chol evolved% 0.9048 all% 3.4303 stalled 0 15.6 413.2
+QUICK q256_M544_lat64_g0p001_fast_chol_clip evolved% 0.8755 all% 3.4303 stalled 0 12.7 425.9
+QUICK q256_M1088_lat64_g0p001_fast evolved% 0.6043 all% 3.4303 stalled 0 15.0 445.1
+QUICK q256_M1088_lat64_g0p001_fast_chol evolved% 0.6043 all% 3.4303 stalled 0 13.0 458.1
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip evolved% 0.6043 all% 3.4303 stalled 0 12.2 470.3
+QUICK q256_M1088_lat64_g0p001_fast_chol_lamcarry evolved% 0.6043 all% 3.4303 stalled 0 12.9 483.2
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry evolved% 0.6043 all% 3.4303 stalled 0 12.9 496.1
+QUICK q256_M1088_bad0_g0p001_fast evolved% 1.0365 all% 3.4303 stalled 0 14.1 513.8
+QUICK q256_M1088_bad0_g0p001_fast_chol evolved% 1.0365 all% 3.4303 stalled 0 12.2 526.0
+QUICK q256_M1088_bad0_g0p001_fast_chol_clip evolved% 1.0475 all% 3.4303 stalled 0 11.9 537.9
+QUICK q256_M1088_bad0_g0p001_fast_chol_lamcarry evolved% 1.0363 all% 3.4303 stalled 0 12.3 550.2
+QUICK q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry evolved% 1.0475 all% 3.4303 stalled 0 11.9 562.1
+QUICK q256_M2176_lat64_g0p001_fast evolved% 0.4609 all% 3.4303 stalled 0 15.2 582.9
+QUICK q256_M2176_lat64_g0p001_fast_chol evolved% 0.4609 all% 3.4303 stalled 0 12.6 595.6
+QUICK q256_M2176_lat64_g0p001_fast_chol_clip evolved% 0.4609 all% 3.4303 stalled 0 12.2 607.8
+QUICK q256_M2176_lat64_g0p001_fast_chol_lamcarry evolved% 0.4608 all% 3.4303 stalled 0 13.1 620.9
+QUICK q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry evolved% 0.4608 all% 3.4303 stalled 0 12.3 633.3
+QUICK q256_M2176_lat128_g0p001_fast evolved% 0.461 all% 3.4303 stalled 0 16.7 655.7
+QUICK q256_M2176_lat128_g0p001_fast_chol evolved% 0.461 all% 3.4303 stalled 0 14.6 670.3
+QUICK q256_M2176_lat128_g0p001_fast_chol_clip evolved% 0.461 all% 3.4303 stalled 0 13.4 683.7
+QUICK q256_M2176_lat128_g0p001_fast_chol_lamcarry evolved% 0.4609 all% 3.4303 stalled 0 15.3 699.0
+QUICK q256_M2176_lat128_g0p001_fast_chol_clip_lamcarry evolved% 0.4609 all% 3.4303 stalled 0 13.4 712.5
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 726.1
+POPULATION q 128 stalled {'fit': 0, 'cert': 0} 771.6
+POPULATION q 256 stalled {'fit': 0, 'cert': 0} 913.5
+RULE 0 64 scaled m 1024 rho_max 0.0403 p95 0.0235 median 3.17e-04 fit-states rho_max 0.0041 919.7
+RULE 128 576 lat64 m 3969 rho_max 0.0644 p95 0.0050 median 2.95e-04 fit-states rho_max 0.0654 925.7
+RULE 256 544 lat64 m 3969 rho_max 0.0577 p95 0.0035 median 2.89e-04 fit-states rho_max 0.0049 930.1
+RULE 256 1088 lat64 m 3969 rho_max 0.0908 p95 0.0064 median 4.41e-04 fit-states rho_max 0.0086 934.7
+RULE 256 1088 bad0 m 2048 rho_max 0.4838 p95 0.2597 median 1.55e-02 fit-states rho_max 0.3257 936.6
+RULE 256 2176 lat64 m 3969 rho_max 0.1368 p95 0.0152 median 6.49e-04 fit-states rho_max 0.0171 941.7
+RULE 256 2176 lat128 m 16129 rho_max 0.6191 p95 0.0056 median 8.75e-04 fit-states rho_max 0.0299 943.9
+DEPLOYED-RHO q0_M64_scaled_g0p001_fast 0.0431 certified(both) True 949.2
+DEPLOYED-RHO q0_M64_scaled_g0p001_fast_clip_lamcarry 0.0431 certified(both) True 954.7
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast 0.0662 certified(both) True 961.0
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast_chol 0.0662 certified(both) True 967.0
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast_chol_clip 0.0662 certified(both) True 972.9
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast_chol_lamcarry 0.0662 certified(both) True 979.1
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast_chol_clip_lamcarry 0.0662 certified(both) True 985.0
+DEPLOYED-RHO q256_M544_lat64_g0p001_fast_chol 0.0561 certified(both) True 991.8
+DEPLOYED-RHO q256_M544_lat64_g0p001_fast_chol_clip 0.0561 certified(both) True 998.1
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast 0.0877 certified(both) True 1006.0
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast_chol 0.0877 certified(both) True 1013.0
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast_chol_clip 0.0877 certified(both) True 1019.6
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast_chol_lamcarry 0.0877 certified(both) True 1026.7
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry 0.0877 certified(both) True 1033.2
+DEPLOYED-RHO q256_M1088_bad0_g0p001_fast 0.4839 certified(both) False 1040.6
+DEPLOYED-RHO q256_M1088_bad0_g0p001_fast_chol 0.4839 certified(both) False 1047.2
+DEPLOYED-RHO q256_M1088_bad0_g0p001_fast_chol_clip 0.4839 certified(both) False 1053.3
+DEPLOYED-RHO q256_M1088_bad0_g0p001_fast_chol_lamcarry 0.4839 certified(both) False 1059.9
+DEPLOYED-RHO q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry 0.4839 certified(both) False 1066.2
+DEPLOYED-RHO q256_M2176_lat64_g0p001_fast 0.1304 certified(both) False 1074.6
+DEPLOYED-RHO q256_M2176_lat64_g0p001_fast_chol 0.1304 certified(both) False 1082.2
+DEPLOYED-RHO q256_M2176_lat64_g0p001_fast_chol_clip 0.1304 certified(both) False 1089.2
+DEPLOYED-RHO q256_M2176_lat64_g0p001_fast_chol_lamcarry 0.1304 certified(both) False 1096.8
+DEPLOYED-RHO q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry 0.1304 certified(both) False 1103.7
+DEPLOYED-RHO q256_M2176_lat128_g0p001_fast 0.6810 certified(both) False 1114.4
+DEPLOYED-RHO q256_M2176_lat128_g0p001_fast_chol 0.6810 certified(both) False 1124.4
+DEPLOYED-RHO q256_M2176_lat128_g0p001_fast_chol_clip 0.6810 certified(both) False 1133.0
+DEPLOYED-RHO q256_M2176_lat128_g0p001_fast_chol_lamcarry 0.6810 certified(both) False 1143.0
+DEPLOYED-RHO q256_M2176_lat128_g0p001_fast_chol_clip_lamcarry 0.6810 certified(both) False 1151.4
+TIMED rep 0 1684.8
+TIMED rep 1 2187.5
+TIMED rep 2 2689.9
+TIMED rep 3 3192.5
+TIMED rep 4 3694.8
+PROFILE {"arm": "q256_M1088_lat64_g0p001_fast_chol", "case": 0, "iterations": 495, "steps": 50, "retries": 114, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 329.9395339563489, "initialize_ms": 18.147500231862068, "evolve_ms": 289.4778838381171, "decode_ms": 16.675772611051798, "evalJ_ms": 0.6279172375798225, "residual_ms": 0.49624289385974407, "gram_ms": 0.15859538689255714, "gram_plus_solve_ms": 0.7752703968435526, "evolve_ms_per_iteration": 0.5848038057335699}
+PROFILE {"arm": "q256_M1088_lat64_g0p001_fast_chol_clip", "case": 0, "iterations": 230, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 185.3574081324041, "initialize_ms": 18.23856495320797, "evolve_ms": 148.24481075629592, "decode_ms": 16.679068561643362, "evalJ_ms": 0.5838642828166485, "residual_ms": 0.48393895849585533, "gram_ms": 0.1545578707009554, "gram_plus_solve_ms": 0.7681925781071186, "evolve_ms_per_iteration": 0.6445426554621562}
+PROFILE {"arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry", "case": 0, "iterations": 191, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 163.71219186112285, "initialize_ms": 18.288846127688885, "evolve_ms": 127.174261957407, "decode_ms": 16.674896702170372, "evalJ_ms": 0.6816908717155457, "residual_ms": 0.4688589833676815, "gram_ms": 0.1625602599233389, "gram_plus_solve_ms": 0.7733509410172701, "evolve_ms_per_iteration": 0.665833832237733}
+PROFILE {"arm": "q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry", "case": 0, "iterations": 209, "steps": 50, "retries": 10, "J_shape": [2176, 272], "m": 3969, "whole_query_ms": 190.7530059106648, "initialize_ms": 18.306748010218143, "evolve_ms": 155.4572358727455, "decode_ms": 16.6799109429121, "evalJ_ms": 0.7702477741986513, "residual_ms": 0.45949919149279594, "gram_ms": 0.1592249609529972, "gram_plus_solve_ms": 0.7764587644487619, "evolve_ms_per_iteration": 0.7438145257069163}
+PROFILE {"arm": "q128_M576_lat64_g0p001_fast_chol_clip_lamcarry", "case": 0, "iterations": 134, "steps": 50, "retries": 0, "J_shape": [576, 144], "m": 3969, "whole_query_ms": 98.75779086723924, "initialize_ms": 10.950116906315088, "evolve_ms": 71.11932523548603, "decode_ms": 16.680866945534945, "evalJ_ms": 0.64462935552001, "residual_ms": 0.3216634504497051, "gram_ms": 0.1356115099042654, "gram_plus_solve_ms": 0.44593564234673977, "evolve_ms_per_iteration": 0.530741233100642}
+REFERENCE 0 accepted True 148.9 3923.6
+REFERENCE 1 accepted True 135.5 4059.3
+REFERENCE 2 accepted True 185.8 4245.3
+REFERENCE 3 accepted True 171.4 4416.9
+REFERENCE 4 accepted True 147.1 4564.2
+REFERENCE 5 accepted True 132.7 4697.1
+HIRES COMPLETE
+ALL-DONE

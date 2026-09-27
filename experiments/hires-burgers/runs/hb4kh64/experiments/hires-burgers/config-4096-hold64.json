@@ -1,0 +1,298 @@
+{
+ "attempt": "hb4kh64",
+ "intervals": 4096,
+ "dt": 0.005,
+ "eval_seed": 7090702,
+ "eval_cases": 4,
+ "eval_fresh_seed": 911702,
+ "eval_fresh_cases": 2,
+ "expected_physical_sha256": null,
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "directions_file": "directions_qtd02.npz",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "population": {
+  "mesh": 512,
+  "fit_trajectories": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "cert_trajectories": [
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "fit_states": 128,
+  "seed": 20260920
+ },
+ "target_chunk": 4,
+ "restrict_to": 256,
+ "fast_arm_q0": "C1",
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    0.001
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "scaled",
+     "parts": [
+      {
+       "file": "rules-eqtop/rule_q0_m1024_qrg304_reachable.npz",
+       "sha256": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+       "mesh": 256,
+       "status": "confirmed (3/3) at 256^2"
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "lu",
+     "clip": true,
+     "lamcarry": true
+    },
+    {
+     "solver": "lu",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 128,
+   "M": 576,
+   "gtols": [
+    0.001
+   ],
+   "dense": false,
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true
+    },
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 544,
+   "gtols": [
+    0.001
+   ],
+   "dense": false,
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true
+    },
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 1088,
+   "gtols": [
+    0.001,
+    0.003,
+    0.01
+   ],
+   "dense": false,
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true
+    },
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 2176,
+   "gtols": [
+    0.001
+   ],
+   "dense": false,
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true
+    },
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ],
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "dense_tangent_group": 34,
+ "dense_deadline_seconds": 36000,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  }
+ ],
+ "coarse_fom": [
+  {
+   "name": "c2048_nt1e-4_dt005",
+   "mesh": 2048,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "c1024_nt1e-4_dt005",
+   "mesh": 1024,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2"
+ ],
+ "reps": 1,
+ "order_seed": 20260920,
+ "burn_seconds": 0.25,
+ "profile_arms": [],
+ "reference": null,
+ "purpose": "accuracy of the rungs, including the pred2 and tolerance arms, on the 64-case held-out cohort at 4096^2; selection is made on dev6 (hb4k04) only; one timed repetition, timing is not the purpose",
+ "rule_notes": {
+  "scaled": "b-eqtop nodes at the same physical points, weights multiplied by (L/256)^2, NO refit",
+  "xfer": "same support, NNLS weight refit on 128 fit states, per-state scaling",
+  "lat64": "uniform 63x63 interior sub-lattice, equal weights",
+  "bad0": "CONTROL: the historically regressing q-ridge rule with its ORIGINAL weights scaled by (L/256)^2; expected to fail the certificate and to regress",
+  "badfit": "the same support with weights refit; labelled separately, not a control"
+ },
+ "parity_bar": 1e-09,
+ "fom_notes": "audited = iterative_paths.make_fom (the named comparator of every earlier panel; it also records a per-Newton linear-residual diagnostic costing one extra Jacobian-vector product). lean = engines.make_fom, the same discretisation and solver without that diagnostic: the FOM at its best. Both are reported; speedups are quoted against the FASTER of the two at each tolerance.",
+ "q0_through_hfast": true,
+ "keep_for_reference": [],
+ "eval_draws": [
+  [
+   20260916,
+   64
+  ]
+ ],
+ "cohort_name": "hold64: params_draw(20260916, 64), the bank-floor lane's held-out cohort; never used to fit the bank, the head, the directions or any rule in this lane",
+ "required_reps": 1,
+ "prune_each_arm": true
+}

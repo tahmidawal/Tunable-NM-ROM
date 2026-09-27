@@ -1,0 +1,115 @@
+host=pax008 source_commit=af5e61e9a67ff03cb64d56aecb35d80ad6985e53
+NVIDIA H200, GPU-50404ee7-1d50-1d0c-6780-806cf66543b8, 143771 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  438G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 16769025 rows in 5 blocks 30.0
+TRUTH 0 36.0
+TRUTH 1 40.2
+TRUTH 2 44.7
+TRUTH 3 49.3
+TRUTH 4 52.4
+TRUTH 5 55.8
+TRUTH 6 60.0
+TRUTH 7 64.8
+TRUTH 8 67.6
+TRUTH 9 71.5
+TRUTH 10 73.9
+TRUTH 11 76.5
+TRUTH 12 80.1
+TRUTH 13 84.4
+TRUTH 14 86.7
+TRUTH 15 89.3
+TRUTH 16 93.6
+TRUTH 17 96.7
+TRUTH 18 100.1
+TRUTH 19 104.2
+TRUTH 20 110.6
+TRUTH 21 113.0
+TRUTH 22 119.8
+TRUTH 23 122.5
+TRUTH 24 126.3
+TRUTH 25 128.4
+TRUTH 26 132.0
+TRUTH 27 138.6
+TRUTH 28 146.1
+TRUTH 29 149.9
+TRUTH 30 153.3
+TRUTH 31 157.1
+TRUTH 32 163.4
+TRUTH 33 168.1
+TRUTH 34 171.7
+TRUTH 35 176.2
+TRUTH 36 180.4
+TRUTH 37 184.2
+TRUTH 38 187.7
+TRUTH 39 191.3
+TRUTH 40 195.8
+TRUTH 41 198.9
+TRUTH 42 202.5
+TRUTH 43 206.7
+TRUTH 44 209.6
+TRUTH 45 212.0
+TRUTH 46 215.4
+TRUTH 47 218.8
+TRUTH 48 222.7
+TRUTH 49 226.0
+TRUTH 50 229.0
+TRUTH 51 232.3
+TRUTH 52 235.4
+TRUTH 53 240.0
+TRUTH 54 242.5
+TRUTH 55 247.7
+TRUTH 56 249.9
+TRUTH 57 253.0
+TRUTH 58 255.5
+TRUTH 59 259.1
+TRUTH 60 264.6
+TRUTH 61 267.7
+TRUTH 62 270.5
+TRUTH 63 273.1
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 330.0 657.7
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 318.2 975.9
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.1331 all% 0.1331 stalled 0 142.5 1118.4
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1377 all% 0.1377 stalled 0 134.7 1253.1
+QUICK c2048_nt1e-4_dt005 evolved% 0.2661 all% 1.1452 stalled 0 120.2 1373.4
+QUICK c1024_nt1e-4_dt005 evolved% 0.7619 all% 2.1425 stalled 0 104.8 1478.2
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry evolved% 9.0139 all% 9.0139 stalled 0 105.3 1593.1
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 9.0302 all% 9.0302 stalled 0 103.9 1697.1
+QUICK q128_M576_lat64_g0p001_fast_chol_clip_lamcarry evolved% 2.4315 all% 5.7471 stalled 0 108.3 1814.7
+QUICK q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 2.4314 all% 5.7471 stalled 0 107.0 1921.7
+QUICK q256_M544_lat64_g0p001_fast_chol_clip_lamcarry evolved% 2.929 all% 4.1008 stalled 0 111.4 2039.4
+QUICK q256_M544_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 2.9284 all% 4.1008 stalled 0 109.6 2149.1
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry evolved% 1.3296 all% 4.1008 stalled 0 110.5 2263.9
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 1.3297 all% 4.1008 stalled 0 110.2 2374.2
+QUICK q256_M1088_lat64_g0p003_fast_chol_clip_lamcarry evolved% 1.3294 all% 4.1008 stalled 0 108.4 2482.7
+QUICK q256_M1088_lat64_g0p003_fast_chol_clip_lamcarry_pred2 evolved% 1.3298 all% 4.1008 stalled 0 107.5 2590.5
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry evolved% 1.3303 all% 4.1008 stalled 0 107.5 2698.0
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 1.3312 all% 4.1008 stalled 0 106.9 2805.0
+QUICK q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry evolved% 1.1284 all% 4.1008 stalled 0 111.5 2922.2
+QUICK q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 1.1284 all% 4.1008 stalled 0 109.8 3032.1
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 3045.2
+POPULATION q 128 stalled {'fit': 0, 'cert': 0} 3090.7
+POPULATION q 256 stalled {'fit': 0, 'cert': 0} 3235.7
+RULE 0 64 scaled m 1024 rho_max 0.0403 p95 0.0235 median 3.17e-04 fit-states rho_max 0.0041 3241.9
+RULE 128 576 lat64 m 3969 rho_max 0.0644 p95 0.0050 median 2.95e-04 fit-states rho_max 0.0654 3247.7
+RULE 256 544 lat64 m 3969 rho_max 0.0577 p95 0.0035 median 2.89e-04 fit-states rho_max 0.0049 3251.9
+RULE 256 1088 lat64 m 3969 rho_max 0.0908 p95 0.0064 median 4.41e-04 fit-states rho_max 0.0086 3256.5
+RULE 256 2176 lat64 m 3969 rho_max 0.1368 p95 0.0152 median 6.49e-04 fit-states rho_max 0.0171 3261.5
+DEPLOYED-RHO q0_M64_scaled_g0p001_fast_clip_lamcarry 0.0431 certified(both) True 3266.7
+DEPLOYED-RHO q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 0.0431 certified(both) True 3271.8
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast_chol_clip_lamcarry 0.0662 certified(both) True 3277.6
+DEPLOYED-RHO q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2 0.0662 certified(both) True 3283.4
+DEPLOYED-RHO q256_M544_lat64_g0p001_fast_chol_clip_lamcarry 0.0561 certified(both) True 3289.4
+DEPLOYED-RHO q256_M544_lat64_g0p001_fast_chol_clip_lamcarry_pred2 0.0561 certified(both) True 3295.3
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry 0.0877 certified(both) True 3301.5
+DEPLOYED-RHO q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 0.0877 certified(both) True 3307.6
+DEPLOYED-RHO q256_M1088_lat64_g0p003_fast_chol_clip_lamcarry 0.0877 certified(both) True 3313.9
+DEPLOYED-RHO q256_M1088_lat64_g0p003_fast_chol_clip_lamcarry_pred2 0.0877 certified(both) True 3320.0
+DEPLOYED-RHO q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry 0.0877 certified(both) True 3326.1
+DEPLOYED-RHO q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 0.0877 certified(both) True 3332.2
+DEPLOYED-RHO q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry 0.1304 certified(both) False 3339.1
+DEPLOYED-RHO q256_M2176_lat64_g0p001_fast_chol_clip_lamcarry_pred2 0.1304 certified(both) False 3345.9
+TIMED rep 0 6044.3
+HIRES COMPLETE
+ALL-DONE

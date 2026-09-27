@@ -1,0 +1,233 @@
+{
+  "attempt": "qmn102",
+  "intervals": 256,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "expected_reference_sha256": {
+    "0": "363d77568dbd1b117ef10d8c634548ebe4febe0366d44c40519ace63dfecab21",
+    "1": "bc411074cbaf401b31a3291db010d190066a2ad82cb808098d3c70c8b8fced76",
+    "2": "79fb8ec6495589c16df12071a0f55fba2732bb9d334df9a19b27bc5c7a35b259",
+    "3": "fc3db5f4ae81e5e70df8a6074aacfc9948c1a66618c3c88ec8883007acfe2905",
+    "4": "ec6ea95b93ff30f504ecb6f17d9062b5d6ac2dce79eb2dda1363b72f8a45e9a5",
+    "5": "1ee7966163f55ce300a0821d7d84479b0448d8a6da2f660e27c68b509163c166"
+  },
+  "reference_sha_note": "btq201/qtd02 4096-interval reference field hashes; GPU-model dependent, recorded as a probe, not a gate",
+  "train_seed": 0,
+  "train_trajectories": 128,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "decoder_code_subsample": 8192,
+  "gauss_jordan_max": 64,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 600,
+    "gtol": 1e-06
+  },
+  "ic_gtol": 1e-06,
+  "inner_damping": 1e-10,
+  "tau_y": 0.1,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reps": 5,
+  "order_seed": 20260917,
+  "burn_seconds": 0.25,
+  "directions_file": "directions_qtd02.npz",
+  "rules_mesh": 256,
+  "rules": {
+    "0": {
+      "file": "rule_q0_reachable_m1024.npz"
+    },
+    "256": {
+      "file": "rule_q256_reachable_m2048.npz"
+    }
+  },
+  "dense_q": [
+    0,
+    256
+  ],
+  "eq_q": [
+    0,
+    256
+  ],
+  "eq_gtols": [
+    1e-06
+  ],
+  "pod_ranks": [
+    8,
+    16,
+    32,
+    64,
+    256,
+    512
+  ],
+  "extra_dense_q": [],
+  "extra_dense_M": 256,
+  "free_bank": false,
+  "free_bank_M": 1024,
+  "fast_arm": "L4",
+  "fast_parity_bar": 1e-12,
+  "same_grid_reference": "fft_tight",
+  "direct_control": "dense_tight",
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "dense_tight",
+      "preconditioner": "dense",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "nt1e-3_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.001,
+      "ltol": 1e-05
+    },
+    {
+      "name": "nt1e-3_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.001,
+      "ltol": 1e-05
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    }
+  ],
+  "fidelity_expectations": {
+    "q0_M64_dense_g1em06": {
+      "source": "qtd02",
+      "arm": "q0_M64_dense",
+      "tolerance": 1e-09
+    },
+    "q0_M64_eqcert_g1em06": {
+      "source": "qrg304",
+      "arm": "q0_m4_eqcert",
+      "tolerance": 1e-09
+    },
+    "q256_M1088_dense_g1em06": {
+      "source": "qtd02",
+      "arm": "old_q256_M1088_dense",
+      "tolerance": 1e-09,
+      "second_tier_tolerance": 0.001
+    },
+    "q256_M1088_eqcert_g1em06": {
+      "source": "qrg304",
+      "arm": "q256_m4_eqcert",
+      "tolerance": 0.001
+    }
+  },
+  "source_job_ids": {
+    "qtd02": "3757505",
+    "btq201": "3747245",
+    "qrg304": "3768168",
+    "spd01": "3745655",
+    "bpn301": "3789570"
+  },
+  "purpose": "DESIGN section 1: does a quadratic manifold u = u_ref + V_r a + W vech(a (x) a) -- no network, W from one regularised linear solve on the same truth snapshots (Geelen-Wright-Willcox 2022; Barnett-Farhat 2022) -- reach the accuracy of the nonlinear head at matched solved dimension, and what does its O(r^2) Jacobian cost online? Measured in ONE allocation on ONE GPU at 256^2 beside the NM-ROM fast and accurate settings, the classical POD-LSPG ladder at the same ranks, and the eight named Newton-BiCGStab full-order settings, so every speedup is a single-job ratio.",
+  "priority_override": [
+    "q0_M64_dense_g1em06",
+    "q256_M1088_dense_g1em06",
+    "q0_M64_eqcert_g1em06",
+    "q256_M1088_eqcert_g1em06",
+    "q0_M64_eqcert_g1em06_fastL4",
+    "qman8_quad_M32",
+    "qman16_quad_M64",
+    "qman32_quad_M128",
+    "qman32_quadg0p0001_M128",
+    "qman64_quad_M256",
+    "qman32_quad_M512",
+    "qman8_lin_M32",
+    "qman16_lin_M64",
+    "qman32_lin_M128",
+    "qman64_lin_M256",
+    "pod8_M32_dense",
+    "pod16_M64_dense",
+    "pod32_M128_dense",
+    "pod64_M256_dense",
+    "pod256_M1024_dense",
+    "pod512_M2048_dense"
+  ],
+  "priority_override_note": "quadratic-manifold lane: the eight quadratic-manifold arms (r in {8,16,32,64}, W on and off) come first after the NM-ROM fast/accurate endpoints and the matched POD-LSPG ranks, because the lane fails if they are dropped. pod256/pod512 and the loose-tolerance arms are the only things the OOM rule may take.",
+  "fno": false,
+  "qman_ranks": [
+    8,
+    16,
+    32,
+    64
+  ],
+  "qman_variants": [
+    "quad",
+    "lin"
+  ],
+  "qman_gammas": [
+    0.0,
+    1e-10,
+    1e-08,
+    1e-06,
+    0.0001,
+    0.01,
+    1.0
+  ],
+  "qman_seed": 20260922,
+  "qman_holdout": 0.2,
+  "qman_cold_axis_points": 96,
+  "qman_extra_M": [
+    {
+      "r": 32,
+      "M": 512
+    }
+  ],
+  "qman_holdout_note": "fraction of TRAINING TRAJECTORIES held out for the ridge selection, not of snapshot columns: consecutive columns are near-duplicate states of one trajectory and a column split cannot see overfitting (DESIGN A1)",
+  "qman_extra_gamma": [
+    {
+      "r": 32,
+      "gamma": 0.0001
+    }
+  ],
+  "supersedes": {
+    "attempt": "qmn101",
+    "job_id": "4185793",
+    "reason": "died at the first save() after the manifold fits: a denormal Gram eigenvalue made the condition-number diagnostic overflow to inf and ladder.dump writes with allow_nan=False. No reduced-subject number was produced. DESIGN A2."
+  }
+}

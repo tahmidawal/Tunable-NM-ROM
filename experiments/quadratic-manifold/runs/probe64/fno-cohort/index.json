@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "pde": "burgers",
+  "split": "development",
+  "count": 2,
+  "mesh": 64,
+  "complete": true,
+  "descriptors_are_model_inputs": false,
+  "derivation": "the same six opened development cases and the same 128-interval reference restricted to the 64-interval grid that every subject in this job is graded against",
+  "records": [
+    {
+      "case_id": "burgers-dev-00000",
+      "split": "development",
+      "case_index": 0,
+      "seed": 7090702,
+      "path": "burgers-dev-00000.npz",
+      "mesh": 64,
+      "sha256": "52909afea48ad6411e46bcd76b5650a9d1309026f3b91fc1265d5373b3224feb",
+      "generation_descriptors": {
+        "cx": 0.28252396549391534,
+        "cy": 0.6366084820193556,
+        "width": 0.1868965964536891,
+        "amplitude": 1.0820386491896183,
+        "nu": 0.03172924415397142
+      }
+    },
+    {
+      "case_id": "burgers-dev-00001",
+      "split": "development",
+      "case_index": 1,
+      "seed": 7090702,
+      "path": "burgers-dev-00001.npz",
+      "mesh": 64,
+      "sha256": "0e852fd92b6fcd77da322696760bef6f773aa24420e3c91c03cee4edeebf4560",
+      "generation_descriptors": {
+        "cx": 0.4606729763621312,
+        "cy": 0.16598352069267147,
+        "width": 0.07016574189598321,
+        "amplitude": 1.1994479966226255,
+        "nu": 0.04655240960473743
+      }
+    }
+  ]
+}

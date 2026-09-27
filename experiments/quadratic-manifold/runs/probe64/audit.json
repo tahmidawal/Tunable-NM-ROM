@@ -1,0 +1,1256 @@
+{
+  "result": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-quadratic-manifold/experiments/quadratic-manifold/runs/probe64/result.json",
+  "reference_mesh": 128,
+  "result_sha256": "34a03a71f5657f087666c536cfebe6578bbbe69caea7708daceadbb2923463db",
+  "job_id": null,
+  "commit": null,
+  "gpu": "NVIDIA GB10",
+  "attempt": "probe64",
+  "intervals": 64,
+  "dt": 0.005,
+  "admissibility_rule": {
+    "primary": "converged_design5: DESIGN.md \u00a75 as written \u2014 every time step g <= 1e-6 or residual-rule exit, initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity",
+    "secondary": "converged_own_gtol: the same rule against each invocation's own gtol (1e-6 or 1e-3) \u2014 the flag the report carried before DESIGN \u00a7A13 (2026-09-19); kept as a labelled secondary column, defines nothing"
+  },
+  "design5_gtol": 1e-06,
+  "mem_fraction": "0.25",
+  "elapsed_seconds": 74.20570723600395,
+  "K": 16,
+  "R": 512,
+  "output_times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "checks": {
+    "complete": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "backend_gpu": {
+      "passed": true,
+      "detail": "gpu",
+      "note": null
+    },
+    "x64": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "precision_highest": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "bank_frozen": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "checkpoint_unchanged": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "final_cohort_unopened": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "step_budget_600": {
+      "passed": true,
+      "detail": {
+        "ic_budget": 400,
+        "step_budget": 600,
+        "gtol": 1e-06
+      },
+      "note": null
+    },
+    "evaluation_cohort_bitwise_abl01": {
+      "passed": true,
+      "detail": {
+        "expected": null,
+        "got": "3610a428db73a58615a5a2dc7dae5045da0f4977f93fcd1f798c3a9723289e57",
+        "passed": null
+      },
+      "note": null
+    },
+    "directions_file_sha256": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "got": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+        "expected": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535"
+      },
+      "note": null
+    },
+    "directions_prefix_hashes": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": {
+          "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "note": null
+    },
+    "repetition_output_identical": {
+      "passed": true,
+      "detail": {
+        "passed": true
+      },
+      "note": null
+    },
+    "fft_tight_converged_everywhere": {
+      "passed": true,
+      "detail": {
+        "passed": true
+      },
+      "note": null
+    },
+    "direct_reproduces_fft_tight": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "worst_relative": 1.3773089753853853e-16,
+        "direct": "dense_tight",
+        "tight": "fft_tight"
+      },
+      "note": null
+    },
+    "reference_residuals": {
+      "passed": true,
+      "detail": 9.307712365132512e-12,
+      "note": null
+    },
+    "every_rule_hash_matches_provenance": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "matched_rule_files_bitwise": {
+      "passed": null,
+      "detail": {
+        "passed": null,
+        "pairs": [],
+        "note": "None when no two sets share a rule file; a pair that differs means the multi-set path perturbs a result"
+      },
+      "note": "no two rule sets share a rule file in this job",
+      "blocking": false
+    },
+    "no_subject_dropped": {
+      "passed": true,
+      "detail": [],
+      "note": "a drop is a reported finding, not a failure of the job",
+      "blocking": false
+    },
+    "every_subject_case_has_all_reps": {
+      "passed": true,
+      "detail": [
+        1
+      ],
+      "note": null
+    },
+    "every_invocation_paired": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "overdetermined_weak_system": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "every_rom_carries_exit_and_stationarity": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "host_time_covers_gpu_time": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "artifacts_present": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "same_grid_baseline_present": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "recorded_errors_recomputed_from_saved_fields": {
+      "passed": true,
+      "detail": 0.0,
+      "note": null
+    },
+    "fno_phase_present": {
+      "passed": false,
+      "detail": "runs/probe64/fno-large-timing.json",
+      "note": "no FNO timing file: the FNO phase did not run or failed",
+      "blocking": false
+    },
+    "convergence_flags_reproduced": {
+      "passed": true,
+      "detail": [],
+      "note": "the driver's converged / converged_strict flags (own-gtol rule) reproduce from the raw per-step quantities"
+    },
+    "design5_flag_differs_from_own_gtol": {
+      "passed": null,
+      "detail": [],
+      "note": "reduced subjects converged at their own gtol but not under DESIGN \u00a75's fixed 1e-6 (DESIGN \u00a7A13)",
+      "blocking": false
+    },
+    "cross_job_fidelity": {
+      "passed": null,
+      "detail": {}
+    }
+  },
+  "failed": [],
+  "arms": [
+    {
+      "arm": "q0_M64_dense_g1em06",
+      "kind": "rom",
+      "family": "rom",
+      "q": 0,
+      "k": null,
+      "M": 64,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 16,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 2.3472598964768503,
+      "median_reference_percent": 2.117926703327104,
+      "worst_all_times_percent": 2.3472598964768503,
+      "median_all_times_percent": 2.095052576327226,
+      "worst_evolved_percent": 0.7644347328612232,
+      "median_evolved_percent": 0.7332920241568749,
+      "worst_t0_compression_percent": 2.3472598964768503,
+      "per_case_evolved_percent": {
+        "0": 0.7021493154525266,
+        "1": 0.7644347328612232
+      },
+      "per_case_all_times_percent": {
+        "0": 1.8428452561776016,
+        "1": 2.3472598964768503
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.8428452561776016,
+          0.7021493154525266,
+          0.5546132475483335,
+          0.5360828655668037,
+          0.5016668842717396,
+          0.4640537022538018
+        ],
+        "1": [
+          2.3472598964768503,
+          0.7644347328612232,
+          0.36053207938055826,
+          0.2593556392061539,
+          0.2163997524909686,
+          0.19518405143966705
+        ]
+      },
+      "median_gpu_ms": 188.3098034959403,
+      "median_host_ms": 190.8179365018441,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        208.91171399853192,
+        167.70789299334865
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 32,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.419165270496656e-07,
+      "max_step_stationarity": 8.98700173200285e-07,
+      "max_ic_stationarity": 9.419165270496656e-07,
+      "max_ic_relative_residual": 0.02309094448706613,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 2.2959496706749256,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.3147127613425829,
+      "solved_over_best_found": 1.0223481492026092
+    },
+    {
+      "arm": "pod8_M32_dense",
+      "kind": "rom",
+      "family": "pod",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": "classical POD of the same truth snapshots, identity head",
+      "worst_reference_percent": 99.02356576109676,
+      "median_reference_percent": 55.28286114334946,
+      "worst_all_times_percent": 99.02356576109676,
+      "median_all_times_percent": 55.28286114334946,
+      "worst_evolved_percent": 66.60504263459046,
+      "median_evolved_percent": 37.38969690860228,
+      "worst_t0_compression_percent": 99.02356576109676,
+      "per_case_evolved_percent": {
+        "0": 8.174351182614105,
+        "1": 66.60504263459046
+      },
+      "per_case_all_times_percent": {
+        "0": 11.542156525602158,
+        "1": 99.02356576109676
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.542156525602158,
+          7.558818238698894,
+          6.578446948534024,
+          6.5528498851547505,
+          7.262954318665475,
+          8.174351182614105
+        ],
+        "1": [
+          99.02356576109676,
+          66.60504263459046,
+          51.60207159165849,
+          42.48627589780106,
+          36.24831379826606,
+          31.670348286428148
+        ]
+      },
+      "median_gpu_ms": 14.571430496289395,
+      "median_host_ms": 15.765564996399917,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        17.765871998562943,
+        11.376988994015846
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 4.3936614727196814e-07,
+      "max_step_stationarity": 4.3936614727196814e-07,
+      "max_ic_stationarity": 0.0,
+      "max_ic_relative_residual": 0.0,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 99.0232327895711,
+      "best_found_kind": "POD span projection",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000033625596365
+    },
+    {
+      "arm": "qman8_lin_M32",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": "lin",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 9,
+      "quadratic_terms": 0,
+      "qman_ridge": 0.0001,
+      "qman_heldout_relative": 0.015910333223310216,
+      "qman_snapshot_relative_linear_only": 0.03576736643513125,
+      "qman_snapshot_relative_with_quadratic": 0.007222286485500083,
+      "trial_map": "affine linear control u_ref + V_r a on the identical u_ref and V_r",
+      "worst_reference_percent": 98.80384057702034,
+      "median_reference_percent": 55.19258774216428,
+      "worst_all_times_percent": 98.80384057702034,
+      "median_all_times_percent": 55.19258774216428,
+      "worst_evolved_percent": 66.37564463653206,
+      "median_evolved_percent": 37.21611617518069,
+      "worst_t0_compression_percent": 98.80384057702034,
+      "per_case_evolved_percent": {
+        "0": 8.056587713829314,
+        "1": 66.37564463653206
+      },
+      "per_case_all_times_percent": {
+        "0": 11.581334907308213,
+        "1": 98.80384057702034
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.581334907308213,
+          7.570990005454567,
+          6.48640394785575,
+          6.359646035305213,
+          7.069348993132212,
+          8.056587713829314
+        ],
+        "1": [
+          98.80384057702034,
+          66.37564463653206,
+          51.502935017531726,
+          42.579132270434265,
+          36.551784466985815,
+          32.1800073459579
+        ]
+      },
+      "median_gpu_ms": 15.81511699987459,
+      "median_host_ms": 17.382701000315137,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        19.63047400204232,
+        11.99975999770686
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.36736506968046e-07,
+      "max_step_stationarity": 9.36736506968046e-07,
+      "max_ic_stationarity": 2.3288152704607917e-12,
+      "max_ic_relative_residual": 0.01525964355149251,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    },
+    {
+      "arm": "qman8_quad_M32",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": "quad",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 45,
+      "quadratic_terms": 36,
+      "qman_ridge": 0.0001,
+      "qman_heldout_relative": 0.015910333223310216,
+      "qman_snapshot_relative_linear_only": 0.03576736643513125,
+      "qman_snapshot_relative_with_quadratic": 0.007222286485500083,
+      "trial_map": "quadratic manifold u_ref + V_r a + W vech(a a^T), W by ridge least squares on the same truth snapshots",
+      "worst_reference_percent": 97.8506649288144,
+      "median_reference_percent": 54.45178106074652,
+      "worst_all_times_percent": 97.8506649288144,
+      "median_all_times_percent": 54.45178106074652,
+      "worst_evolved_percent": 64.9149908200945,
+      "median_evolved_percent": 36.53788080786393,
+      "worst_t0_compression_percent": 97.8506649288144,
+      "per_case_evolved_percent": {
+        "0": 8.16077079563337,
+        "1": 64.9149908200945
+      },
+      "per_case_all_times_percent": {
+        "0": 11.052897192678632,
+        "1": 97.8506649288144
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.052897192678632,
+          8.15663449872574,
+          7.085354704317457,
+          6.906897146161409,
+          7.361696925555829,
+          8.16077079563337
+        ],
+        "1": [
+          97.8506649288144,
+          64.9149908200945,
+          49.588757535601,
+          40.32097573109329,
+          34.062165702963505,
+          29.549601187146607
+        ]
+      },
+      "median_gpu_ms": 21.71261250259704,
+      "median_host_ms": 22.797306501161074,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        22.947643003135454,
+        20.477582002058625
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.857850790834653e-07,
+      "max_step_stationarity": 9.857850790834653e-07,
+      "max_ic_stationarity": 9.423075798014835e-07,
+      "max_ic_relative_residual": 0.4635206316960031,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    },
+    {
+      "arm": "dense_tight",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "k": null,
+      "M": null,
+      "m": null,
+      "quadrature": null,
+      "gtol": null,
+      "dt": 0.005,
+      "solved_dimension": null,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "preconditioner": "dense",
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 1.7941021123395362,
+      "median_reference_percent": 1.4710078486026064,
+      "worst_all_times_percent": 1.3578212030859551e-14,
+      "median_all_times_percent": 1.3378035909169106e-14,
+      "worst_evolved_percent": 1.3578212030859551e-14,
+      "median_evolved_percent": 1.3378035909169106e-14,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 1.3177859787478661e-14,
+        "1": 1.3578212030859551e-14
+      },
+      "per_case_all_times_percent": {
+        "0": 1.3177859787478661e-14,
+        "1": 1.3578212030859551e-14
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          1.040319373755722e-14,
+          1.3177859787478661e-14,
+          1.3078563095449266e-14,
+          1.0637089712538376e-14,
+          1.0736764674706376e-14
+        ],
+        "1": [
+          0.0,
+          1.3578212030859551e-14,
+          8.240455458946262e-15,
+          7.535946200747477e-15,
+          7.848293502527553e-15,
+          6.7946012741359995e-15
+        ]
+      },
+      "median_gpu_ms": 43.4023210000305,
+      "median_host_ms": 45.09357000279124,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        47.603439998056274,
+        39.20120200200472
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": null,
+      "newton_iterations_median": 100.0,
+      "max_joint_stationarity": null,
+      "max_step_stationarity": null,
+      "max_ic_stationarity": null,
+      "max_ic_relative_residual": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
+      "converged_strict": null,
+      "completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    },
+    {
+      "arm": "fft_tight",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "k": null,
+      "M": null,
+      "m": null,
+      "quadrature": null,
+      "gtol": null,
+      "dt": 0.005,
+      "solved_dimension": null,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "preconditioner": "fft",
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 1.794102112339533,
+      "median_reference_percent": 1.471007848602602,
+      "worst_all_times_percent": 0.0,
+      "median_all_times_percent": 0.0,
+      "worst_evolved_percent": 0.0,
+      "median_evolved_percent": 0.0,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 0.0,
+        "1": 0.0
+      },
+      "per_case_all_times_percent": {
+        "0": 0.0,
+        "1": 0.0
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "median_gpu_ms": 81.9430880001164,
+      "median_host_ms": 84.7382390020357,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        91.01932100020349,
+        72.86685500002932
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": null,
+      "newton_iterations_median": 100.0,
+      "max_joint_stationarity": null,
+      "max_step_stationarity": null,
+      "max_ic_stationarity": null,
+      "max_ic_relative_residual": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
+      "converged_strict": null,
+      "completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    }
+  ],
+  "ladders": {
+    "dense": {
+      "arms": [
+        "q0_M64_dense_g1em06"
+      ],
+      "q_or_k": [
+        0
+      ],
+      "worst_evolved_percent": [
+        0.7644347328612232
+      ],
+      "worst_all_times_percent": [
+        2.3472598964768503
+      ],
+      "median_gpu_ms": [
+        188.3098034959403
+      ],
+      "converged_design5": [
+        true
+      ],
+      "converged_own_gtol": [
+        true
+      ],
+      "admissible": [
+        true
+      ],
+      "admissible_own_gtol": [
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 1,
+      "error_span": 1.0,
+      "cost_span": 1.0
+    },
+    "pod": {
+      "arms": [
+        "pod8_M32_dense"
+      ],
+      "q_or_k": [
+        8
+      ],
+      "worst_evolved_percent": [
+        66.60504263459046
+      ],
+      "worst_all_times_percent": [
+        99.02356576109676
+      ],
+      "median_gpu_ms": [
+        14.571430496289395
+      ],
+      "converged_design5": [
+        true
+      ],
+      "converged_own_gtol": [
+        true
+      ],
+      "admissible": [
+        true
+      ],
+      "admissible_own_gtol": [
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 1,
+      "error_span": 1.0,
+      "cost_span": 1.0
+    },
+    "qman_lin": {
+      "arms": [
+        "qman8_lin_M32"
+      ],
+      "q_or_k": [
+        8
+      ],
+      "worst_evolved_percent": [
+        66.37564463653206
+      ],
+      "worst_all_times_percent": [
+        98.80384057702034
+      ],
+      "median_gpu_ms": [
+        15.81511699987459
+      ],
+      "converged_design5": [
+        true
+      ],
+      "converged_own_gtol": [
+        true
+      ],
+      "admissible": [
+        true
+      ],
+      "admissible_own_gtol": [
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 1,
+      "error_span": 1.0,
+      "cost_span": 1.0
+    },
+    "qman_quad": {
+      "arms": [
+        "qman8_quad_M32"
+      ],
+      "q_or_k": [
+        8
+      ],
+      "worst_evolved_percent": [
+        64.9149908200945
+      ],
+      "worst_all_times_percent": [
+        97.8506649288144
+      ],
+      "median_gpu_ms": [
+        21.71261250259704
+      ],
+      "converged_design5": [
+        true
+      ],
+      "converged_own_gtol": [
+        true
+      ],
+      "admissible": [
+        true
+      ],
+      "admissible_own_gtol": [
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 1,
+      "error_span": 1.0,
+      "cost_span": 1.0
+    }
+  },
+  "nondominated": {
+    "gpu_all": {
+      "cost": "median_gpu_ms",
+      "error": "worst_all_times_percent",
+      "all": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ]
+    },
+    "gpu_evolved": {
+      "cost": "median_gpu_ms",
+      "error": "worst_evolved_percent",
+      "all": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ]
+    },
+    "complete_all": {
+      "cost": "median_host_ms",
+      "error": "worst_all_times_percent",
+      "all": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ]
+    },
+    "complete_evolved": {
+      "cost": "median_host_ms",
+      "error": "worst_evolved_percent",
+      "all": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "pod8_M32_dense",
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "q0_M64_dense_g1em06"
+      ]
+    }
+  },
+  "fom_discretisation_error_percent": {
+    "dense_tight": 1.7941021123395362,
+    "fft_tight": 1.794102112339533
+  },
+  "dropped": [],
+  "rules": [],
+  "transfer": [],
+  "directions": {
+    "file": "directions_qtd02.npz",
+    "sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "expected_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "columns": 512,
+    "prefix_sha256": {
+      "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "expected_prefix_sha256": {
+      "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "16": "3417aa250f794e3ee5350a595341d8a5d17327effdb23c7b148cdaac2d6f0396",
+      "32": "f0619016ff580d5fa7b8673486403e3b5566910885c40e248d35b5527bff4606",
+      "64": "c15f5ab1fec3be28c7a2ec6d7c5b57af3faa51e4de959da1500fde72f6177edc",
+      "128": "5abaedc1a97bb94271602f625fb2a21ae52004d0f858eb7ad618b6c11eb7ad56",
+      "256": "0935c63e66f6afcdf95ee4dad9ba54ef3e03ae61a78c290a23bbfb09c9d77405"
+    },
+    "source_job": "3757505",
+    "rule": "field-metric POD of the decoder-output residual eta - h_theta(z*), with z* the best-found head code under the shared LM rule; nested in q",
+    "transferred": true
+  },
+  "reconstruction": [
+    {
+      "family": "rom",
+      "q": 0,
+      "solved_dimension": 16,
+      "cases": [
+        {
+          "case": 0,
+          "bank_projection_per_time": [
+            0.0001609722118501981,
+            8.519961094499048e-05,
+            5.0843657425095355e-05,
+            4.9082839509934126e-05,
+            5.095485075734519e-05,
+            5.468735509756647e-05
+          ],
+          "bank_projection_max": 0.0001609722118501981,
+          "best_found_per_time": [
+            0.007129032095944399,
+            0.003565013819044668,
+            0.002810777332938839,
+            0.00314043837590867,
+            0.002914036855032516,
+            0.0028664440082153187
+          ],
+          "best_found_max": 0.007129032095944399
+        },
+        {
+          "case": 1,
+          "bank_projection_per_time": [
+            0.0031471276134258292,
+            0.0004938871345011787,
+            0.00016765208638576889,
+            8.298627930786608e-05,
+            5.064956784069488e-05,
+            3.542265646345845e-05
+          ],
+          "bank_projection_max": 0.0031471276134258292,
+          "best_found_per_time": [
+            0.022959496706749256,
+            0.005869813380732066,
+            0.0030915579990981102,
+            0.0024322895903055295,
+            0.002061509534808333,
+            0.0018601980859004718
+          ],
+          "best_found_max": 0.022959496706749256
+        }
+      ],
+      "worst_bank_projection": 0.0031471276134258292,
+      "worst_best_found": 0.022959496706749256,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 8.16093316700426
+    },
+    {
+      "family": "pod",
+      "k": 8,
+      "solved_dimension": 8,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.11536412472099528,
+            0.07155656879996458,
+            0.05815021212450541,
+            0.055845004638183114,
+            0.06338018866774757,
+            0.07441511994589632
+          ],
+          "best_found_max": 0.11536412472099528
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            0.9902323278957109,
+            0.672944342117062,
+            0.5192691951663987,
+            0.4226900947989472,
+            0.3549158497730825,
+            0.3043317153770964
+          ],
+          "best_found_max": 0.9902323278957109
+        }
+      ],
+      "worst_best_found": 0.9902323278957109
+    }
+  ],
+  "fno": null,
+  "compile_warmup": {
+    "seconds": 11.60400595900137,
+    "subjects": 6
+  },
+  "timed_subjects": [
+    "fft_tight",
+    "dense_tight",
+    "q0_M64_dense_g1em06",
+    "qman8_quad_M32",
+    "qman8_lin_M32",
+    "pod8_M32_dense"
+  ]
+}

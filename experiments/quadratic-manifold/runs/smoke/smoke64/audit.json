@@ -1,0 +1,2570 @@
+{
+  "result": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-quadratic-manifold/experiments/quadratic-manifold/runs/smoke/smoke64/output/result.json",
+  "reference_mesh": 128,
+  "result_sha256": "9635ad949dbac089ccff7e564633e821026ab63bb77209ef4910df2b712cf63c",
+  "job_id": null,
+  "commit": null,
+  "gpu": "NVIDIA GB10",
+  "attempt": "smoke",
+  "intervals": 64,
+  "dt": 0.005,
+  "admissibility_rule": {
+    "primary": "converged_design5: DESIGN.md \u00a75 as written \u2014 every time step g <= 1e-6 or residual-rule exit, initial fit g <= 1e-6 or relative residual <= 1e-10, every exit regular; plus rule certification / fast parity",
+    "secondary": "converged_own_gtol: the same rule against each invocation's own gtol (1e-6 or 1e-3) \u2014 the flag the report carried before DESIGN \u00a7A13 (2026-09-19); kept as a labelled secondary column, defines nothing"
+  },
+  "design5_gtol": 1e-06,
+  "mem_fraction": "0.25",
+  "elapsed_seconds": 116.77378008200321,
+  "K": 16,
+  "R": 512,
+  "output_times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "checks": {
+    "complete": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "backend_gpu": {
+      "passed": true,
+      "detail": "gpu",
+      "note": null
+    },
+    "x64": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "precision_highest": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "bank_frozen": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "checkpoint_unchanged": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "final_cohort_unopened": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "step_budget_600": {
+      "passed": true,
+      "detail": {
+        "ic_budget": 400,
+        "step_budget": 600,
+        "gtol": 1e-06
+      },
+      "note": null
+    },
+    "evaluation_cohort_bitwise_abl01": {
+      "passed": true,
+      "detail": {
+        "expected": null,
+        "got": "3610a428db73a58615a5a2dc7dae5045da0f4977f93fcd1f798c3a9723289e57",
+        "passed": null
+      },
+      "note": null
+    },
+    "directions_file_sha256": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "got": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+        "expected": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535"
+      },
+      "note": null
+    },
+    "directions_prefix_hashes": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": {
+          "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "note": null
+    },
+    "repetition_output_identical": {
+      "passed": true,
+      "detail": {
+        "passed": true
+      },
+      "note": null
+    },
+    "fft_tight_converged_everywhere": {
+      "passed": true,
+      "detail": {
+        "passed": true
+      },
+      "note": null
+    },
+    "direct_reproduces_fft_tight": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "worst_relative": 1.9383332722393308e-16,
+        "direct": "dense_tight",
+        "tight": "fft_tight"
+      },
+      "note": null
+    },
+    "fast_parity": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "worst_relative": 3.875845221971329e-14,
+        "integers_identical": true,
+        "bar": 1e-12,
+        "against": "q0_M64_eqcert_g1em06",
+        "cases": [
+          {
+            "case": 0,
+            "relative": 2.2218456063450944e-14,
+            "integers_identical": true
+          },
+          {
+            "case": 1,
+            "relative": 3.875845221971329e-14,
+            "integers_identical": true
+          }
+        ]
+      },
+      "note": null
+    },
+    "quadratic_block_changes_the_answer": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "pairs": [
+          {
+            "rank": 4,
+            "arms": [
+              "qman4_quad_M16",
+              "qman4_lin_M16"
+            ],
+            "min_relative_difference": 0.011201054550195062,
+            "differ": true
+          },
+          {
+            "rank": 8,
+            "arms": [
+              "qman8_quad_M32",
+              "qman8_lin_M32"
+            ],
+            "min_relative_difference": 0.0013301105477778285,
+            "differ": true
+          }
+        ],
+        "note": "the quad and lin arms share u_ref and V_r exactly; only W differs"
+      },
+      "note": null
+    },
+    "reference_residuals": {
+      "passed": true,
+      "detail": 9.307712365132512e-12,
+      "note": null
+    },
+    "every_rule_hash_matches_provenance": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "matched_rule_files_bitwise": {
+      "passed": null,
+      "detail": {
+        "passed": null,
+        "pairs": [],
+        "note": "None when no two sets share a rule file; a pair that differs means the multi-set path perturbs a result"
+      },
+      "note": "no two rule sets share a rule file in this job",
+      "blocking": false
+    },
+    "no_subject_dropped": {
+      "passed": true,
+      "detail": [],
+      "note": "a drop is a reported finding, not a failure of the job",
+      "blocking": false
+    },
+    "every_subject_case_has_all_reps": {
+      "passed": true,
+      "detail": [
+        1
+      ],
+      "note": null
+    },
+    "every_invocation_paired": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "overdetermined_weak_system": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "every_rom_carries_exit_and_stationarity": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "host_time_covers_gpu_time": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "artifacts_present": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "same_grid_baseline_present": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "recorded_errors_recomputed_from_saved_fields": {
+      "passed": true,
+      "detail": 0.0,
+      "note": null
+    },
+    "fno_phase_present": {
+      "passed": false,
+      "detail": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-22-quadratic-manifold/experiments/quadratic-manifold/runs/smoke/smoke64/output/fno-large-timing.json",
+      "note": "no FNO timing file: the FNO phase did not run or failed",
+      "blocking": false
+    },
+    "convergence_flags_reproduced": {
+      "passed": true,
+      "detail": [],
+      "note": "the driver's converged / converged_strict flags (own-gtol rule) reproduce from the raw per-step quantities"
+    },
+    "design5_flag_differs_from_own_gtol": {
+      "passed": null,
+      "detail": [],
+      "note": "reduced subjects converged at their own gtol but not under DESIGN \u00a75's fixed 1e-6 (DESIGN \u00a7A13)",
+      "blocking": false
+    },
+    "cross_job_fidelity": {
+      "passed": null,
+      "detail": {}
+    }
+  },
+  "failed": [],
+  "arms": [
+    {
+      "arm": "q0_M64_dense_g1em06",
+      "kind": "rom",
+      "family": "rom",
+      "q": 0,
+      "k": null,
+      "M": 64,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 16,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 2.3472598964770963,
+      "median_reference_percent": 2.117926703327207,
+      "worst_all_times_percent": 2.3472598964770963,
+      "median_all_times_percent": 2.095052576327352,
+      "worst_evolved_percent": 0.7644347328606971,
+      "median_evolved_percent": 0.7332920241566674,
+      "worst_t0_compression_percent": 2.3472598964770963,
+      "per_case_evolved_percent": {
+        "0": 0.7021493154526377,
+        "1": 0.7644347328606971
+      },
+      "per_case_all_times_percent": {
+        "0": 1.8428452561776072,
+        "1": 2.3472598964770963
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.8428452561776072,
+          0.7021493154526377,
+          0.5546132475482572,
+          0.5360828655665193,
+          0.5016668842715104,
+          0.46405370225341047
+        ],
+        "1": [
+          2.3472598964770963,
+          0.7644347328606971,
+          0.3605320793810639,
+          0.25935563920635607,
+          0.2163997524905923,
+          0.19518405143935225
+        ]
+      },
+      "median_gpu_ms": 188.01501900088624,
+      "median_host_ms": 191.14568300210522,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        208.5759670007974,
+        167.4540710009751
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 32,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.419164292549773e-07,
+      "max_step_stationarity": 8.986994888174012e-07,
+      "max_ic_stationarity": 9.419164292549773e-07,
+      "max_ic_relative_residual": 0.023090944487067434,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 2.2959496706749163,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.3147127613425829,
+      "solved_over_best_found": 1.0223481492027204
+    },
+    {
+      "arm": "q0_M64_eqcert_g1em06",
+      "kind": "rom",
+      "family": "rom",
+      "q": 0,
+      "k": null,
+      "M": 64,
+      "m": 256,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 16,
+      "rule_kind": "eqcert",
+      "variant": null,
+      "rule_basis": "none",
+      "rule_m": 256,
+      "rho_max": null,
+      "rule_set": "eqcert",
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": "q-ridge",
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": "rule_q0_smoke_m256.npz",
+      "rule_file_sha256": "95f1304ed015ecce46dbb64dfb553cc7bfb3671b85fda167794b6dfca573c149",
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": false,
+      "certified_secondary": false,
+      "rule_source_job": "smoke",
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 2.3472598964770963,
+      "median_reference_percent": 2.095052576327352,
+      "worst_all_times_percent": 2.3472598964770963,
+      "median_all_times_percent": 2.095052576327352,
+      "worst_evolved_percent": 1.1379566710581703,
+      "median_evolved_percent": 0.9597059712660314,
+      "worst_t0_compression_percent": 2.3472598964770963,
+      "per_case_evolved_percent": {
+        "0": 1.1379566710581703,
+        "1": 0.7814552714738927
+      },
+      "per_case_all_times_percent": {
+        "0": 1.8428452561776072,
+        "1": 2.3472598964770963
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.8428452561776072,
+          1.1379566710581703,
+          0.7177274303333695,
+          0.6062573506342424,
+          0.534103913563799,
+          0.4827301842551758
+        ],
+        "1": [
+          2.3472598964770963,
+          0.7814552714738927,
+          0.380135746467117,
+          0.2657205367734223,
+          0.21614692583637476,
+          0.19260487791995207
+        ]
+      },
+      "median_gpu_ms": 87.0020359980117,
+      "median_host_ms": 89.00924300178303,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        99.01582400198095,
+        74.98824799404247
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 32,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.419164292549773e-07,
+      "max_step_stationarity": 9.091351123968304e-07,
+      "max_ic_stationarity": 9.419164292549773e-07,
+      "max_ic_relative_residual": 0.023090944487067434,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": false,
+      "best_found_percent": 2.2959496706749163,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.3147127613425829,
+      "solved_over_best_found": 1.0223481492027204
+    },
+    {
+      "arm": "q0_M64_eqcert_g1em06_fastL4",
+      "kind": "rom",
+      "family": "fast",
+      "q": 0,
+      "k": null,
+      "M": 64,
+      "m": 256,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 16,
+      "rule_kind": "eqcert",
+      "variant": null,
+      "rule_basis": "none",
+      "rule_m": 256,
+      "rho_max": null,
+      "rule_set": "eqcert",
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": "q-ridge",
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": "rule_q0_smoke_m256.npz",
+      "rule_file_sha256": "95f1304ed015ecce46dbb64dfb553cc7bfb3671b85fda167794b6dfca573c149",
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": false,
+      "certified_secondary": false,
+      "rule_source_job": "smoke",
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 2.3472598964770914,
+      "median_reference_percent": 2.095052576327337,
+      "worst_all_times_percent": 2.3472598964770914,
+      "median_all_times_percent": 2.095052576327337,
+      "worst_evolved_percent": 1.1379566710578723,
+      "median_evolved_percent": 0.9597059712659972,
+      "worst_t0_compression_percent": 2.3472598964770914,
+      "per_case_evolved_percent": {
+        "0": 1.1379566710578723,
+        "1": 0.7814552714741222
+      },
+      "per_case_all_times_percent": {
+        "0": 1.8428452561775825,
+        "1": 2.3472598964770914
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.8428452561775825,
+          1.1379566710578723,
+          0.7177274303333198,
+          0.6062573506342356,
+          0.534103913563696,
+          0.48273018425508635
+        ],
+        "1": [
+          2.3472598964770914,
+          0.7814552714741222,
+          0.38013574646806997,
+          0.26572053677428703,
+          0.21614692583695597,
+          0.19260487792009676
+        ]
+      },
+      "median_gpu_ms": 61.90581449845922,
+      "median_host_ms": 64.35356849760865,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        68.67185000010068,
+        55.13977899681777
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 32,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.419164803628871e-07,
+      "max_step_stationarity": 9.091324917456395e-07,
+      "max_ic_stationarity": 9.419164803628871e-07,
+      "max_ic_relative_residual": 0.02309094448706831,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": false,
+      "admissible_design5": false,
+      "admissible_own_gtol": false,
+      "best_found_percent": 2.2959496706749163,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.3147127613425829,
+      "solved_over_best_found": 1.0223481492027184
+    },
+    {
+      "arm": "pod8_M32_dense",
+      "kind": "rom",
+      "family": "pod",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": "classical POD of the same truth snapshots, identity head",
+      "worst_reference_percent": 99.02356576109675,
+      "median_reference_percent": 55.28286114334946,
+      "worst_all_times_percent": 99.02356576109675,
+      "median_all_times_percent": 55.28286114334946,
+      "worst_evolved_percent": 66.60504263459045,
+      "median_evolved_percent": 37.389696908602296,
+      "worst_t0_compression_percent": 99.02356576109675,
+      "per_case_evolved_percent": {
+        "0": 8.174351182614151,
+        "1": 66.60504263459045
+      },
+      "per_case_all_times_percent": {
+        "0": 11.542156525602154,
+        "1": 99.02356576109675
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.542156525602154,
+          7.558818238698911,
+          6.578446948534057,
+          6.552849885154803,
+          7.262954318665531,
+          8.174351182614151
+        ],
+        "1": [
+          99.02356576109675,
+          66.60504263459045,
+          51.60207159165851,
+          42.486275897801065,
+          36.248313798266075,
+          31.67034828642816
+        ]
+      },
+      "median_gpu_ms": 15.361179997853469,
+      "median_host_ms": 16.996745001961244,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        18.043207994196564,
+        12.679152001510374
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 4.3936614731040215e-07,
+      "max_step_stationarity": 4.3936614731040215e-07,
+      "max_ic_stationarity": 0.0,
+      "max_ic_relative_residual": 0.0,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 99.0232327895711,
+      "best_found_kind": "POD span projection",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000033625596365
+    },
+    {
+      "arm": "pod16_M64_dense",
+      "kind": "rom",
+      "family": "pod",
+      "q": null,
+      "k": 16,
+      "M": 64,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 16,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": "classical POD of the same truth snapshots, identity head",
+      "worst_reference_percent": 97.33098005252917,
+      "median_reference_percent": 53.34512132217735,
+      "worst_all_times_percent": 97.33098005252917,
+      "median_all_times_percent": 53.34512132217735,
+      "worst_evolved_percent": 65.32931515677038,
+      "median_evolved_percent": 36.302640820603465,
+      "worst_t0_compression_percent": 97.33098005252917,
+      "per_case_evolved_percent": {
+        "0": 7.275966484436546,
+        "1": 65.32931515677038
+      },
+      "per_case_all_times_percent": {
+        "0": 9.359262591825514,
+        "1": 97.33098005252917
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          9.359262591825514,
+          7.275966484436546,
+          6.1389902660964415,
+          5.8160705692284145,
+          6.069691288886982,
+          6.708227626528671
+        ],
+        "1": [
+          97.33098005252917,
+          65.32931515677038,
+          50.63354016956054,
+          41.3210016324647,
+          34.75423093872408,
+          29.891512757888055
+        ]
+      },
+      "median_gpu_ms": 21.169777002796764,
+      "median_host_ms": 22.39641800042591,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        24.685420001333114,
+        17.654134004260413
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 14,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 0.24383344328238427,
+      "max_step_stationarity": 8.613304693420863e-07,
+      "max_ic_stationarity": 0.24383344328238427,
+      "max_ic_relative_residual": 4.958825058924117e-18,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": false,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 97.32577770287926,
+      "best_found_kind": "POD span projection",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000534529471297
+    },
+    {
+      "arm": "qman4_lin_M16",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 4,
+      "M": 16,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 4,
+      "rule_kind": null,
+      "variant": "lin",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 5,
+      "quadratic_terms": 0,
+      "qman_ridge": 1.0,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": 0.007484855335667455,
+      "qman_heldout_trajectories": 1,
+      "qman_ridge_trace": [
+        {
+          "gamma": 0.0,
+          "heldout_relative": 6.316660778781398,
+          "finite": true
+        },
+        {
+          "gamma": 1e-08,
+          "heldout_relative": 6.273832891487396,
+          "finite": true
+        },
+        {
+          "gamma": 0.0001,
+          "heldout_relative": 2.760322716490666,
+          "finite": true
+        },
+        {
+          "gamma": 1.0,
+          "heldout_relative": 0.07777516738444124,
+          "finite": true
+        }
+      ],
+      "qman_heldout_relative": 0.07777516738444124,
+      "qman_snapshot_relative_linear_only": 0.12457753486251988,
+      "qman_snapshot_relative_with_quadratic": 0.11142882524211517,
+      "trial_map": "affine linear control u_ref + V_r a on the identical u_ref and V_r",
+      "worst_reference_percent": 102.20085651083602,
+      "median_reference_percent": 56.91206144003465,
+      "worst_all_times_percent": 102.20085651083602,
+      "median_all_times_percent": 56.91206144003465,
+      "worst_evolved_percent": 71.34333192236254,
+      "median_evolved_percent": 40.87153232700515,
+      "worst_t0_compression_percent": 102.20085651083602,
+      "per_case_evolved_percent": {
+        "0": 10.39973273164776,
+        "1": 71.34333192236254
+      },
+      "per_case_all_times_percent": {
+        "0": 11.623266369233267,
+        "1": 102.20085651083602
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.623266369233267,
+          8.158635136046945,
+          7.425796898954299,
+          8.089419451666762,
+          9.349477797937741,
+          10.39973273164776
+        ],
+        "1": [
+          102.20085651083602,
+          71.34333192236254,
+          57.55320722353379,
+          49.48061361353558,
+          44.164751148827875,
+          40.39894317057487
+        ]
+      },
+      "median_gpu_ms": 16.005209497961914,
+      "median_host_ms": 17.800574998545926,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        19.017567996343132,
+        12.992850999580696
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 3.298344415462165e-07,
+      "max_step_stationarity": 3.298344415462165e-07,
+      "max_ic_stationarity": 2.8463622261634675e-07,
+      "max_ic_relative_residual": 0.22373703585490262,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 102.2008465899412,
+      "best_found_kind": "quadratic-manifold best-found fit",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000000970725307
+    },
+    {
+      "arm": "qman4_quad_M16",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 4,
+      "M": 16,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 4,
+      "rule_kind": null,
+      "variant": "quad",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 15,
+      "quadratic_terms": 10,
+      "qman_ridge": 1.0,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": 0.007484855335667455,
+      "qman_heldout_trajectories": 1,
+      "qman_ridge_trace": [
+        {
+          "gamma": 0.0,
+          "heldout_relative": 6.316660778781398,
+          "finite": true
+        },
+        {
+          "gamma": 1e-08,
+          "heldout_relative": 6.273832891487396,
+          "finite": true
+        },
+        {
+          "gamma": 0.0001,
+          "heldout_relative": 2.760322716490666,
+          "finite": true
+        },
+        {
+          "gamma": 1.0,
+          "heldout_relative": 0.07777516738444124,
+          "finite": true
+        }
+      ],
+      "qman_heldout_relative": 0.07777516738444124,
+      "qman_snapshot_relative_linear_only": 0.12457753486251988,
+      "qman_snapshot_relative_with_quadratic": 0.11142882524211517,
+      "trial_map": "quadratic manifold u_ref + V_r a + W vech(a a^T), W by ridge least squares on the same truth snapshots",
+      "worst_reference_percent": 101.65663708073738,
+      "median_reference_percent": 56.70061524319369,
+      "worst_all_times_percent": 101.65663708073738,
+      "median_all_times_percent": 56.70061524319369,
+      "worst_evolved_percent": 70.56904350176703,
+      "median_evolved_percent": 40.47102092264847,
+      "worst_t0_compression_percent": 101.65663708073738,
+      "per_case_evolved_percent": {
+        "0": 10.372998343529916,
+        "1": 70.56904350176703
+      },
+      "per_case_all_times_percent": {
+        "0": 11.744593405649992,
+        "1": 101.65663708073738
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.744593405649992,
+          7.81586791274919,
+          7.070747739077595,
+          7.89601515810598,
+          9.266398626705854,
+          10.372998343529916
+        ],
+        "1": [
+          101.65663708073738,
+          70.56904350176703,
+          56.60325507586491,
+          48.39361708229994,
+          42.97227943594739,
+          39.12623356379482
+        ]
+      },
+      "median_gpu_ms": 17.0426735021465,
+      "median_host_ms": 18.69070100292447,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        20.54164400033187,
+        13.543703003961127
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 4.883492823159835e-07,
+      "max_step_stationarity": 4.883492823159835e-07,
+      "max_ic_stationarity": 9.26100782757651e-08,
+      "max_ic_relative_residual": 0.2843852695483714,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 101.65662561945337,
+      "best_found_kind": "quadratic-manifold best-found fit",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000001127450764
+    },
+    {
+      "arm": "qman8_lin_M32",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": "lin",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 9,
+      "quadratic_terms": 0,
+      "qman_ridge": 1.0,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": 0.0025762092819416266,
+      "qman_heldout_trajectories": 1,
+      "qman_ridge_trace": [
+        {
+          "gamma": 0.0,
+          "heldout_relative": 774.7988033878703,
+          "finite": true
+        },
+        {
+          "gamma": 1e-08,
+          "heldout_relative": 2.2798129062107764,
+          "finite": true
+        },
+        {
+          "gamma": 0.0001,
+          "heldout_relative": 0.9732305119948043,
+          "finite": true
+        },
+        {
+          "gamma": 1.0,
+          "heldout_relative": 0.044557217691535714,
+          "finite": true
+        }
+      ],
+      "qman_heldout_relative": 0.044557217691535714,
+      "qman_snapshot_relative_linear_only": 0.03576736643513125,
+      "qman_snapshot_relative_with_quadratic": 0.03445826334678797,
+      "trial_map": "affine linear control u_ref + V_r a on the identical u_ref and V_r",
+      "worst_reference_percent": 98.80384057702032,
+      "median_reference_percent": 55.192587742164264,
+      "worst_all_times_percent": 98.80384057702032,
+      "median_all_times_percent": 55.192587742164264,
+      "worst_evolved_percent": 66.37564463653204,
+      "median_evolved_percent": 37.21611617518068,
+      "worst_t0_compression_percent": 98.80384057702032,
+      "per_case_evolved_percent": {
+        "0": 8.056587713829325,
+        "1": 66.37564463653204
+      },
+      "per_case_all_times_percent": {
+        "0": 11.581334907308213,
+        "1": 98.80384057702032
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.581334907308213,
+          7.570990005454581,
+          6.486403947855774,
+          6.3596460353052455,
+          7.069348993132232,
+          8.056587713829325
+        ],
+        "1": [
+          98.80384057702032,
+          66.37564463653204,
+          51.50293501753169,
+          42.57913227043423,
+          36.55178446698579,
+          32.18000734595785
+        ]
+      },
+      "median_gpu_ms": 14.802024503296707,
+      "median_host_ms": 16.014905497286236,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        17.833831007010303,
+        11.77021799958311
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.36736504735162e-07,
+      "max_step_stationarity": 9.36736504735162e-07,
+      "max_ic_stationarity": 2.3300019210396946e-12,
+      "max_ic_relative_residual": 0.01525964355149219,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 98.80369007827895,
+      "best_found_kind": "quadratic-manifold best-found fit",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000015232097228
+    },
+    {
+      "arm": "qman8_quad_M32",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": "quad",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 45,
+      "quadratic_terms": 36,
+      "qman_ridge": 1.0,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": 0.0025762092819416266,
+      "qman_heldout_trajectories": 1,
+      "qman_ridge_trace": [
+        {
+          "gamma": 0.0,
+          "heldout_relative": 774.7988033878703,
+          "finite": true
+        },
+        {
+          "gamma": 1e-08,
+          "heldout_relative": 2.2798129062107764,
+          "finite": true
+        },
+        {
+          "gamma": 0.0001,
+          "heldout_relative": 0.9732305119948043,
+          "finite": true
+        },
+        {
+          "gamma": 1.0,
+          "heldout_relative": 0.044557217691535714,
+          "finite": true
+        }
+      ],
+      "qman_heldout_relative": 0.044557217691535714,
+      "qman_snapshot_relative_linear_only": 0.03576736643513125,
+      "qman_snapshot_relative_with_quadratic": 0.03445826334678797,
+      "trial_map": "quadratic manifold u_ref + V_r a + W vech(a a^T), W by ridge least squares on the same truth snapshots",
+      "worst_reference_percent": 98.80019770760315,
+      "median_reference_percent": 55.1917310704098,
+      "worst_all_times_percent": 98.80019770760315,
+      "median_all_times_percent": 55.1917310704098,
+      "worst_evolved_percent": 66.38178420326157,
+      "median_evolved_percent": 37.24151475741852,
+      "worst_t0_compression_percent": 98.80019770760315,
+      "per_case_evolved_percent": {
+        "0": 8.101245311575472,
+        "1": 66.38178420326157
+      },
+      "per_case_all_times_percent": {
+        "0": 11.583264433216465,
+        "1": 98.80019770760315
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.583264433216465,
+          7.600669587873053,
+          6.541094438801872,
+          6.42481167919141,
+          7.128238358691036,
+          8.101245311575472
+        ],
+        "1": [
+          98.80019770760315,
+          66.38178420326157,
+          51.51780935831768,
+          42.59996883550111,
+          36.57648690761041,
+          32.20754316920941
+        ]
+      },
+      "median_gpu_ms": 17.645501997321844,
+      "median_host_ms": 18.913174997578608,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        20.974062994355336,
+        14.316941000288352
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.56632946238483e-07,
+      "max_step_stationarity": 9.56632946238483e-07,
+      "max_ic_stationarity": 1.400976611253331e-08,
+      "max_ic_relative_residual": 0.4833996366759713,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 98.80003960041034,
+      "best_found_kind": "quadratic-manifold best-found fit",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000016002745893
+    },
+    {
+      "arm": "qman8_quad_M64",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 8,
+      "M": 64,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": "quad",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 45,
+      "quadratic_terms": 36,
+      "qman_ridge": 1.0,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": 0.0025762092819416266,
+      "qman_heldout_trajectories": 1,
+      "qman_ridge_trace": [
+        {
+          "gamma": 0.0,
+          "heldout_relative": 774.7988033878703,
+          "finite": true
+        },
+        {
+          "gamma": 1e-08,
+          "heldout_relative": 2.2798129062107764,
+          "finite": true
+        },
+        {
+          "gamma": 0.0001,
+          "heldout_relative": 0.9732305119948043,
+          "finite": true
+        },
+        {
+          "gamma": 1.0,
+          "heldout_relative": 0.044557217691535714,
+          "finite": true
+        }
+      ],
+      "qman_heldout_relative": 0.044557217691535714,
+      "qman_snapshot_relative_linear_only": 0.03576736643513125,
+      "qman_snapshot_relative_with_quadratic": 0.03445826334678797,
+      "trial_map": "quadratic manifold u_ref + V_r a + W vech(a a^T), W by ridge least squares on the same truth snapshots",
+      "worst_reference_percent": 98.80019770760315,
+      "median_reference_percent": 55.1917310704098,
+      "worst_all_times_percent": 98.80019770760315,
+      "median_all_times_percent": 55.1917310704098,
+      "worst_evolved_percent": 66.42389576009207,
+      "median_evolved_percent": 37.16850545602859,
+      "worst_t0_compression_percent": 98.80019770760315,
+      "per_case_evolved_percent": {
+        "0": 7.913115151965113,
+        "1": 66.42389576009207
+      },
+      "per_case_all_times_percent": {
+        "0": 11.583264433216465,
+        "1": 98.80019770760315
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.583264433216465,
+          7.546861898923016,
+          6.420774427361012,
+          6.257327860910491,
+          6.9315221663081115,
+          7.913115151965113
+        ],
+        "1": [
+          98.80019770760315,
+          66.42389576009207,
+          51.681894400262685,
+          42.93147620288675,
+          37.083209003405656,
+          32.87187658432866
+        ]
+      },
+      "median_gpu_ms": 20.41821100283414,
+      "median_host_ms": 22.56784350174712,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        23.6153310033842,
+        17.221091002284084
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 8.947903302947083e-07,
+      "max_step_stationarity": 8.947903302947083e-07,
+      "max_ic_stationarity": 1.400976611253331e-08,
+      "max_ic_relative_residual": 0.4833996366759713,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 98.80003960041034,
+      "best_found_kind": "quadratic-manifold best-found fit",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000016002745893
+    },
+    {
+      "arm": "qman8_quadg0p0001_M32",
+      "kind": "rom",
+      "family": "qman",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "variant": "quad",
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "bank_columns": 45,
+      "quadratic_terms": 36,
+      "qman_ridge": 0.0001,
+      "qman_forced_gamma": 0.0001,
+      "qman_weight_frobenius_norm": 0.29063353766405386,
+      "qman_heldout_trajectories": 1,
+      "qman_ridge_trace": [
+        {
+          "gamma": 0.0001,
+          "heldout_relative": 0.9732305119948043,
+          "finite": true
+        }
+      ],
+      "qman_heldout_relative": 0.9732305119948043,
+      "qman_snapshot_relative_linear_only": 0.03576736643513125,
+      "qman_snapshot_relative_with_quadratic": 0.007735606643745725,
+      "trial_map": "quadratic manifold u_ref + V_r a + W vech(a a^T), W by ridge least squares on the same truth snapshots",
+      "worst_reference_percent": 97.90151476105503,
+      "median_reference_percent": 54.48447139663587,
+      "worst_all_times_percent": 97.90151476105503,
+      "median_all_times_percent": 54.48447139663587,
+      "worst_evolved_percent": 64.99362614611567,
+      "median_evolved_percent": 36.57876302654153,
+      "worst_t0_compression_percent": 97.90151476105503,
+      "per_case_evolved_percent": {
+        "0": 8.163899906967375,
+        "1": 64.99362614611567
+      },
+      "per_case_all_times_percent": {
+        "0": 11.067428032216723,
+        "1": 97.90151476105503
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          11.067428032216723,
+          8.130418180977607,
+          7.062336147096143,
+          6.874488934303784,
+          7.34398145572199,
+          8.163899906967375
+        ],
+        "1": [
+          97.90151476105503,
+          64.99362614611567,
+          49.69696112785883,
+          40.45750029123179,
+          34.22272297839342,
+          29.7283882724765
+        ]
+      },
+      "median_gpu_ms": 20.751598003698746,
+      "median_host_ms": 22.15664749746793,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        21.78904600441456,
+        19.714150002982933
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.804631271914885e-07,
+      "max_step_stationarity": 9.804631271914885e-07,
+      "max_ic_stationarity": 8.710451965532531e-07,
+      "max_ic_relative_residual": 0.46461866736080615,
+      "converged_design5": true,
+      "converged_own_gtol": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": 98.80003960041034,
+      "best_found_kind": "quadratic-manifold best-found fit",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 0.9909056226800178
+    },
+    {
+      "arm": "dense_tight",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "k": null,
+      "M": null,
+      "m": null,
+      "quadrature": null,
+      "gtol": null,
+      "dt": 0.005,
+      "solved_dimension": null,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "preconditioner": "dense",
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 1.7941021123395338,
+      "median_reference_percent": 1.4710078486026004,
+      "worst_all_times_percent": 1.790191331924439e-14,
+      "median_all_times_percent": 1.5179954131262346e-14,
+      "worst_evolved_percent": 1.790191331924439e-14,
+      "median_evolved_percent": 1.5179954131262346e-14,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 1.2457994943280302e-14,
+        "1": 1.790191331924439e-14
+      },
+      "per_case_all_times_percent": {
+        "0": 1.2457994943280302e-14,
+        "1": 1.790191331924439e-14
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          1.1974694569047579e-14,
+          1.123410880616979e-14,
+          1.0580336558749507e-14,
+          1.2131361674444698e-14,
+          1.2457994943280302e-14
+        ],
+        "1": [
+          0.0,
+          1.790191331924439e-14,
+          1.482752569037521e-14,
+          1.0832210638770406e-14,
+          9.415085778348927e-15,
+          8.901990717252172e-15
+        ]
+      },
+      "median_gpu_ms": 42.787869497260544,
+      "median_host_ms": 43.78983700007666,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        47.31368799548363,
+        38.262050999037456
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": null,
+      "newton_iterations_median": 100.0,
+      "max_joint_stationarity": null,
+      "max_step_stationarity": null,
+      "max_ic_stationarity": null,
+      "max_ic_relative_residual": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
+      "converged_strict": null,
+      "completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    },
+    {
+      "arm": "fft_tight",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "k": null,
+      "M": null,
+      "m": null,
+      "quadrature": null,
+      "gtol": null,
+      "dt": 0.005,
+      "solved_dimension": null,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "preconditioner": "fft",
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 1.7941021123395393,
+      "median_reference_percent": 1.471007848602608,
+      "worst_all_times_percent": 0.0,
+      "median_all_times_percent": 0.0,
+      "worst_evolved_percent": 0.0,
+      "median_evolved_percent": 0.0,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 0.0,
+        "1": 0.0
+      },
+      "per_case_all_times_percent": {
+        "0": 0.0,
+        "1": 0.0
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "median_gpu_ms": 81.19146399621968,
+      "median_host_ms": 83.66693949938053,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        89.32722199824639,
+        73.05570599419298
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": null,
+      "newton_iterations_median": 100.0,
+      "max_joint_stationarity": null,
+      "max_step_stationarity": null,
+      "max_ic_stationarity": null,
+      "max_ic_relative_residual": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
+      "converged_strict": null,
+      "completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    },
+    {
+      "arm": "nt1e-2_dt01",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "k": null,
+      "M": null,
+      "m": null,
+      "quadrature": null,
+      "gtol": null,
+      "dt": 0.01,
+      "solved_dimension": null,
+      "rule_kind": null,
+      "variant": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "preconditioner": "fft",
+      "bank_columns": null,
+      "quadratic_terms": null,
+      "qman_ridge": null,
+      "qman_forced_gamma": null,
+      "qman_weight_frobenius_norm": null,
+      "qman_heldout_trajectories": null,
+      "qman_ridge_trace": null,
+      "qman_heldout_relative": null,
+      "qman_snapshot_relative_linear_only": null,
+      "qman_snapshot_relative_with_quadratic": null,
+      "trial_map": null,
+      "worst_reference_percent": 1.288452801169987,
+      "median_reference_percent": 1.186444111237019,
+      "worst_all_times_percent": 1.4285004987159995,
+      "median_all_times_percent": 1.2725337830272656,
+      "worst_evolved_percent": 1.4285004987159995,
+      "median_evolved_percent": 1.2725337830272656,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 1.4285004987159995,
+        "1": 1.116567067338532
+      },
+      "per_case_all_times_percent": {
+        "0": 1.4285004987159995,
+        "1": 1.116567067338532
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          1.0484982100985654,
+          1.3466412830494288,
+          1.4285004987159995,
+          1.394492131371974,
+          1.3106273795635237
+        ],
+        "1": [
+          0.0,
+          1.116567067338532,
+          1.055812167245469,
+          0.8335090342175386,
+          0.6671533897565171,
+          0.54984988137675
+        ]
+      },
+      "median_gpu_ms": 9.00504449964501,
+      "median_host_ms": 10.705729000619613,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        8.638993997010402,
+        9.371095002279617
+      ],
+      "median_iterations": 1.0,
+      "max_iterations": null,
+      "newton_iterations_median": 26.5,
+      "max_joint_stationarity": null,
+      "max_step_stationarity": null,
+      "max_ic_stationarity": null,
+      "max_ic_relative_residual": null,
+      "converged_design5": null,
+      "converged_own_gtol": null,
+      "converged_strict": null,
+      "completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "admissible": true,
+      "admissible_design5": true,
+      "admissible_own_gtol": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    }
+  ],
+  "ladders": {
+    "dense": {
+      "arms": [
+        "q0_M64_dense_g1em06"
+      ],
+      "q_or_k": [
+        0
+      ],
+      "worst_evolved_percent": [
+        0.7644347328606971
+      ],
+      "worst_all_times_percent": [
+        2.3472598964770963
+      ],
+      "median_gpu_ms": [
+        188.01501900088624
+      ],
+      "converged_design5": [
+        true
+      ],
+      "converged_own_gtol": [
+        true
+      ],
+      "admissible": [
+        true
+      ],
+      "admissible_own_gtol": [
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 1,
+      "error_span": 1.0,
+      "cost_span": 1.0
+    },
+    "eq_eqcert_g1em06": {
+      "arms": [
+        "q0_M64_eqcert_g1em06"
+      ],
+      "q_or_k": [
+        0
+      ],
+      "worst_evolved_percent": [
+        1.1379566710581703
+      ],
+      "worst_all_times_percent": [
+        2.3472598964770963
+      ],
+      "median_gpu_ms": [
+        87.0020359980117
+      ],
+      "converged_design5": [
+        true
+      ],
+      "converged_own_gtol": [
+        true
+      ],
+      "admissible": [
+        false
+      ],
+      "admissible_own_gtol": [
+        false
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 0,
+      "error_span": null,
+      "cost_span": null
+    },
+    "pod": {
+      "arms": [
+        "pod8_M32_dense",
+        "pod16_M64_dense"
+      ],
+      "q_or_k": [
+        8,
+        16
+      ],
+      "worst_evolved_percent": [
+        66.60504263459045,
+        65.32931515677038
+      ],
+      "worst_all_times_percent": [
+        99.02356576109675,
+        97.33098005252917
+      ],
+      "median_gpu_ms": [
+        15.361179997853469,
+        21.169777002796764
+      ],
+      "converged_design5": [
+        true,
+        true
+      ],
+      "converged_own_gtol": [
+        true,
+        true
+      ],
+      "admissible": [
+        true,
+        true
+      ],
+      "admissible_own_gtol": [
+        true,
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 2,
+      "error_span": 1.0195276419897976,
+      "cost_span": 1.3781348181425497
+    },
+    "qman_lin": {
+      "arms": [
+        "qman4_lin_M16",
+        "qman8_lin_M32"
+      ],
+      "q_or_k": [
+        4,
+        8
+      ],
+      "worst_evolved_percent": [
+        71.34333192236254,
+        66.37564463653204
+      ],
+      "worst_all_times_percent": [
+        102.20085651083602,
+        98.80384057702032
+      ],
+      "median_gpu_ms": [
+        16.005209497961914,
+        14.802024503296707
+      ],
+      "converged_design5": [
+        true,
+        true
+      ],
+      "converged_own_gtol": [
+        true,
+        true
+      ],
+      "admissible": [
+        true,
+        true
+      ],
+      "admissible_own_gtol": [
+        true,
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 1,
+      "error_span": 1.0,
+      "cost_span": 1.0
+    },
+    "qman_quad": {
+      "arms": [
+        "qman4_quad_M16",
+        "qman8_quad_M32",
+        "qman8_quad_M64",
+        "qman8_quadg0p0001_M32"
+      ],
+      "q_or_k": [
+        4,
+        8,
+        8,
+        8
+      ],
+      "worst_evolved_percent": [
+        70.56904350176703,
+        66.38178420326157,
+        66.42389576009207,
+        64.99362614611567
+      ],
+      "worst_all_times_percent": [
+        101.65663708073738,
+        98.80019770760315,
+        98.80019770760315,
+        97.90151476105503
+      ],
+      "median_gpu_ms": [
+        17.0426735021465,
+        17.645501997321844,
+        20.41821100283414,
+        20.751598003698746
+      ],
+      "converged_design5": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "converged_own_gtol": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "admissible": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "admissible_own_gtol": [
+        true,
+        true,
+        true,
+        true
+      ],
+      "monotone_evolved": false,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "all_converged_own_gtol": true,
+      "nondominated_converged_points": 3,
+      "error_span": 1.0857840635498157,
+      "cost_span": 1.2176257440527223
+    }
+  },
+  "nondominated": {
+    "gpu_all": {
+      "cost": "median_gpu_ms",
+      "error": "worst_all_times_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "qman8_quadg0p0001_M32",
+        "pod16_M64_dense",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "qman8_quadg0p0001_M32",
+        "pod16_M64_dense",
+        "q0_M64_dense_g1em06"
+      ]
+    },
+    "gpu_evolved": {
+      "cost": "median_gpu_ms",
+      "error": "worst_evolved_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "qman8_lin_M32",
+        "qman8_quadg0p0001_M32",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "qman8_lin_M32",
+        "qman8_quadg0p0001_M32",
+        "q0_M64_dense_g1em06"
+      ]
+    },
+    "complete_all": {
+      "cost": "median_host_ms",
+      "error": "worst_all_times_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "qman8_quadg0p0001_M32",
+        "pod16_M64_dense",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "qman8_lin_M32",
+        "qman8_quad_M32",
+        "qman8_quadg0p0001_M32",
+        "pod16_M64_dense",
+        "q0_M64_dense_g1em06"
+      ]
+    },
+    "complete_evolved": {
+      "cost": "median_host_ms",
+      "error": "worst_evolved_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "admissible_own_gtol": [
+        "nt1e-2_dt01",
+        "dense_tight",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "qman8_lin_M32",
+        "qman8_quadg0p0001_M32",
+        "q0_M64_dense_g1em06"
+      ],
+      "reduced_only_own_gtol": [
+        "qman8_lin_M32",
+        "qman8_quadg0p0001_M32",
+        "q0_M64_dense_g1em06"
+      ]
+    }
+  },
+  "fom_discretisation_error_percent": {
+    "dense_tight": 1.7941021123395338,
+    "fft_tight": 1.7941021123395393,
+    "nt1e-2_dt01": 1.288452801169987
+  },
+  "dropped": [],
+  "rules": [
+    {
+      "q": 0,
+      "M": 64,
+      "rule_set": "eqcert",
+      "file": "rule_q0_smoke_m256.npz",
+      "sha256": "95f1304ed015ecce46dbb64dfb553cc7bfb3671b85fda167794b6dfca573c149",
+      "source_job": "smoke",
+      "source_m": 256,
+      "source_mesh": 64,
+      "source_rho_max": null,
+      "source_rho_p95": null,
+      "source_relative_fit": 0.005337909767877915,
+      "rho_bar": 0.116,
+      "source_fit_states": null,
+      "certified_primary": false,
+      "certified_secondary": false,
+      "basis": "none",
+      "nodes_sha256": "d1ef1bc11bc70a749930c83dbde9bc29a1f2d4710a52229ce4ded8f084edca81",
+      "weights_sha256": "ea45179777317567fe7a81505a96938229cbfc569fc85830d9508d00b337bb0f",
+      "nodes_sha256_matches": true,
+      "weights_sha256_matches": true,
+      "source_lane": "q-ridge",
+      "source_attempt": null,
+      "construction_status": null,
+      "export_basis": null,
+      "construction_note": null,
+      "same_file_as_qrg304_rule": null,
+      "kind": "eqcert",
+      "m": 256,
+      "transferred": false
+    }
+  ],
+  "transfer": [],
+  "directions": {
+    "file": "directions_qtd02.npz",
+    "sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "expected_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "columns": 512,
+    "prefix_sha256": {
+      "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "expected_prefix_sha256": {
+      "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "16": "3417aa250f794e3ee5350a595341d8a5d17327effdb23c7b148cdaac2d6f0396",
+      "32": "f0619016ff580d5fa7b8673486403e3b5566910885c40e248d35b5527bff4606",
+      "64": "c15f5ab1fec3be28c7a2ec6d7c5b57af3faa51e4de959da1500fde72f6177edc",
+      "128": "5abaedc1a97bb94271602f625fb2a21ae52004d0f858eb7ad618b6c11eb7ad56",
+      "256": "0935c63e66f6afcdf95ee4dad9ba54ef3e03ae61a78c290a23bbfb09c9d77405"
+    },
+    "source_job": "3757505",
+    "rule": "field-metric POD of the decoder-output residual eta - h_theta(z*), with z* the best-found head code under the shared LM rule; nested in q",
+    "transferred": true
+  },
+  "reconstruction": [
+    {
+      "family": "rom",
+      "q": 0,
+      "solved_dimension": 16,
+      "cases": [
+        {
+          "case": 0,
+          "bank_projection_per_time": [
+            0.0001609722118501981,
+            8.519961094499048e-05,
+            5.0843657425095355e-05,
+            4.9082839509934126e-05,
+            5.095485075734519e-05,
+            5.468735509756647e-05
+          ],
+          "bank_projection_max": 0.0001609722118501981,
+          "best_found_per_time": [
+            0.007129032095943949,
+            0.003565013819044483,
+            0.0028107773329386233,
+            0.0031404383759086707,
+            0.002914036855032431,
+            0.002866444008215328
+          ],
+          "best_found_max": 0.007129032095943949
+        },
+        {
+          "case": 1,
+          "bank_projection_per_time": [
+            0.0031471276134258292,
+            0.0004938871345011787,
+            0.00016765208638576889,
+            8.298627930786608e-05,
+            5.064956784069488e-05,
+            3.542265646345845e-05
+          ],
+          "bank_projection_max": 0.0031471276134258292,
+          "best_found_per_time": [
+            0.022959496706749162,
+            0.005869813380730765,
+            0.003091557999097614,
+            0.0024322895903053036,
+            0.0020615095348080793,
+            0.0018601980859010363
+          ],
+          "best_found_max": 0.022959496706749162
+        }
+      ],
+      "worst_bank_projection": 0.0031471276134258292,
+      "worst_best_found": 0.022959496706749162,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 8.0531413839999
+    },
+    {
+      "family": "pod",
+      "k": 8,
+      "solved_dimension": 8,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.11536412472099525,
+            0.07155656879996475,
+            0.05815021212450564,
+            0.055845004638183406,
+            0.06338018866774776,
+            0.07441511994589635
+          ],
+          "best_found_max": 0.11536412472099525
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            0.9902323278957109,
+            0.6729443421170621,
+            0.5192691951663987,
+            0.42269009479894726,
+            0.3549158497730826,
+            0.3043317153770965
+          ],
+          "best_found_max": 0.9902323278957109
+        }
+      ],
+      "worst_best_found": 0.9902323278957109
+    },
+    {
+      "family": "pod",
+      "k": 16,
+      "solved_dimension": 16,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.09356723286178935,
+            0.06456548227868285,
+            0.0473351273176234,
+            0.037587316317154215,
+            0.03468003212830023,
+            0.037123619391241675
+          ],
+          "best_found_max": 0.09356723286178935
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            0.9732577770287927,
+            0.6481412882862346,
+            0.4889900271521601,
+            0.3886321877203998,
+            0.3184418343882482,
+            0.2665207880944449
+          ],
+          "best_found_max": 0.9732577770287927
+        }
+      ],
+      "worst_best_found": 0.9732577770287927
+    },
+    {
+      "family": "qman",
+      "k": 4,
+      "variant": "lin",
+      "solved_dimension": 4,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.1162302879600899,
+            0.08115038875416095,
+            0.07179652704114554,
+            0.078886192930212,
+            0.093523165668367,
+            0.10537918934664685
+          ],
+          "best_found_max": 0.1162302879600899
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            1.022008465899412,
+            0.7213671059438195,
+            0.5823758802054271,
+            0.4989975668123539,
+            0.4429285064048826,
+            0.4025239207770762
+          ],
+          "best_found_max": 1.022008465899412
+        }
+      ],
+      "worst_best_found": 1.022008465899412,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 1.6506570409983397
+    },
+    {
+      "family": "qman",
+      "k": 4,
+      "variant": "quad",
+      "solved_dimension": 4,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.11744287195169652,
+            0.07745807366653885,
+            0.06810335079444947,
+            0.0772488934728809,
+            0.09318957485531468,
+            0.10554220653245333
+          ],
+          "best_found_max": 0.11744287195169652
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            1.0165662561945337,
+            0.7137122089880377,
+            0.5730331366306063,
+            0.4882975042649189,
+            0.43111741943214643,
+            0.3897919342790443
+          ],
+          "best_found_max": 1.0165662561945337
+        }
+      ],
+      "worst_best_found": 1.0165662561945337,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 0.848237895006605
+    },
+    {
+      "family": "qman",
+      "k": 8,
+      "variant": "lin",
+      "solved_dimension": 8,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.11575446053372782,
+            0.0717919334537243,
+            0.05804202215342713,
+            0.055105637226244064,
+            0.06283381804668059,
+            0.07462408816656298
+          ],
+          "best_found_max": 0.11575446053372782
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            0.9880369007827895,
+            0.6700065106791114,
+            0.5164788539431232,
+            0.4206239278941522,
+            0.3538955647001836,
+            0.30450688467108855
+          ],
+          "best_found_max": 0.9880369007827895
+        }
+      ],
+      "worst_best_found": 0.9880369007827895,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 1.4185426179974456
+    },
+    {
+      "family": "qman",
+      "k": 8,
+      "variant": "quad",
+      "solved_dimension": 8,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.11577356233534372,
+            0.07205141030228403,
+            0.05854495483317148,
+            0.05574638176339033,
+            0.06343448829700069,
+            0.07509024570085149
+          ],
+          "best_found_max": 0.11577356233534372
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            0.9880003960041035,
+            0.6700584232127457,
+            0.5166078097741896,
+            0.4208219370808928,
+            0.35415756424035694,
+            0.304827919990559
+          ],
+          "best_found_max": 0.9880003960041035
+        }
+      ],
+      "worst_best_found": 0.9880003960041035,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 1.4819543190023978
+    }
+  ],
+  "fno": null,
+  "compile_warmup": {
+    "seconds": 24.846118232999288,
+    "subjects": 14
+  },
+  "timed_subjects": [
+    "fft_tight",
+    "dense_tight",
+    "nt1e-2_dt01",
+    "q0_M64_dense_g1em06",
+    "q0_M64_eqcert_g1em06",
+    "q0_M64_eqcert_g1em06_fastL4",
+    "qman4_quad_M16",
+    "qman8_quad_M32",
+    "qman8_quadg0p0001_M32",
+    "qman8_quad_M64",
+    "qman4_lin_M16",
+    "qman8_lin_M32",
+    "pod8_M32_dense",
+    "pod16_M64_dense"
+  ]
+}

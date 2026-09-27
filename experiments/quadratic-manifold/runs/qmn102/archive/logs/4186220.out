@@ -1,0 +1,95 @@
+host=pax106 source_commit=99e7b3d1b7c53d6e0595c9988deb5e55c5799eca
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.2T  422G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+DECLARED 29 subjects: fft_tight dense_tight nt1e-2_dt01 nt1e-2_dt005 nt1e-3_dt01 nt1e-3_dt005 nt1e-4_dt01 nt1e-4_dt005 q0_M64_dense_g1em06 q256_M1088_dense_g1em06 q0_M64_eqcert_g1em06 q256_M1088_eqcert_g1em06 q0_M64_eqcert_g1em06_fastL4 qman8_quad_M32 qman16_quad_M64 qman32_quad_M128 qman32_quadg0p0001_M128 qman64_quad_M256 qman32_quad_M512 qman8_lin_M32 qman16_lin_M64 qman32_lin_M128 qman64_lin_M256 pod8_M32_dense pod16_M64_dense pod32_M128_dense pod64_M256_dense pod256_M1024_dense pod512_M2048_dense
+REFERENCE 0 81.3
+REFERENCE 1 150.0
+REFERENCE 2 245.5
+REFERENCE 3 333.6
+REFERENCE 4 408.8
+REFERENCE 5 476.6
+QMAN r 8 P 36 ridge 0.01 heldout_traj 26 |W| 0.05781 heldout 0.213475 lin/quad 0.265973 0.170331 9.9
+QMAN r 16 P 136 ridge 0.01 heldout_traj 26 |W| 0.07328 heldout 0.12053 lin/quad 0.136725 0.075307 9.3
+QMAN r 32 P 528 ridge 0.01 heldout_traj 26 |W| 0.07432 heldout 0.058564 lin/quad 0.060564 0.029448 10.6
+QMAN r 64 P 2080 ridge 1.0 heldout_traj 26 |W| 0.003941 heldout 0.024387 lin/quad 0.020961 0.019123 14.9
+QMAN r 32 FORCED ridge 0.0001 |W| 0.3704 lin/quad 0.060564 0.013791
+SNAPSHOTS 18.3
+RULE eqcert q 0 m 1024 primary
+RULE eqcert q 256 m 2048 secondary
+RECON q 0 2.54466 53.1
+RECON q 256 0.90164 232.4
+RECON qman 8 lin 79.31062 3.5
+RECON qman 8 quad 73.77296 22.0
+RECON qman 16 lin 61.52263 1.9
+RECON qman 16 quad 52.14807 187.5
+RECON qman 32 lin 47.18933 26.3
+RECON qman 32 quad 32.36436 12.8
+RECON qman 64 lin 19.7917 175.4
+RECON qman 64 quad 19.61395 6.8
+ARM fft_tight 0.5
+ARM dense_tight 0.3
+ARM nt1e-2_dt01 0.0
+ARM nt1e-2_dt005 0.0
+ARM nt1e-3_dt01 0.0
+ARM nt1e-3_dt005 0.0
+ARM nt1e-4_dt01 0.0
+ARM nt1e-4_dt005 0.0
+ARM q0_M64_dense_g1em06 1.0
+ARM q256_M1088_dense_g1em06 1.2
+ARM q0_M64_eqcert_g1em06 0.0
+ARM q256_M1088_eqcert_g1em06 0.0
+ARM q0_M64_eqcert_g1em06_fastL4 2.6
+ARM qman8_quad_M32 3.5
+ARM qman16_quad_M64 3.6
+ARM qman32_quad_M128 3.9
+ARM qman32_quadg0p0001_M128 0.4
+ARM qman64_quad_M256 4.4
+ARM qman32_quad_M512 2.2
+ARM qman8_lin_M32 2.3
+ARM qman16_lin_M64 3.1
+ARM qman32_lin_M128 3.1
+ARM qman64_lin_M256 4.0
+ARM pod8_M32_dense 1.9
+ARM pod16_M64_dense 2.6
+ARM pod32_M128_dense 2.5
+ARM pod64_M256_dense 3.0
+ARM pod256_M1024_dense 6.6
+ARM pod512_M2048_dense 10.0
+WARM fft_tight 1.2
+WARM dense_tight 2.4
+WARM nt1e-2_dt01 1.1
+WARM nt1e-2_dt005 0.0
+WARM nt1e-3_dt01 0.0
+WARM nt1e-3_dt005 0.0
+WARM nt1e-4_dt01 0.0
+WARM nt1e-4_dt005 0.0
+WARM q0_M64_dense_g1em06 6.0
+WARM q256_M1088_dense_g1em06 22.1
+WARM q0_M64_eqcert_g1em06 3.9
+WARM q256_M1088_eqcert_g1em06 7.0
+WARM q0_M64_eqcert_g1em06_fastL4 4.8
+WARM qman8_quad_M32 2.7
+WARM qman16_quad_M64 5.0
+WARM qman32_quad_M128 6.0
+WARM qman32_quadg0p0001_M128 2.5
+WARM qman64_quad_M256 7.1
+WARM qman32_quad_M512 3.9
+WARM qman8_lin_M32 1.8
+WARM qman16_lin_M64 2.1
+WARM qman32_lin_M128 3.1
+WARM qman64_lin_M256 4.8
+WARM pod8_M32_dense 1.7
+WARM pod16_M64_dense 2.1
+WARM pod32_M128_dense 2.7
+WARM pod64_M256_dense 4.0
+WARM pod256_M1024_dense 5.4
+WARM pod512_M2048_dense 7.1
+TIMED 0 1624.5
+TIMED 1 1745.5
+TIMED 2 1866.9
+TIMED 3 1988.2
+TIMED 4 2109.7
+PANEL COMPLETE
+ALL-DONE

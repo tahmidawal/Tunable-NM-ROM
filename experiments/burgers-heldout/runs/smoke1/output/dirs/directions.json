@@ -1,0 +1,102 @@
+{
+  "config": {
+    "intervals": 48,
+    "dt": 0.005,
+    "train_seed": 0,
+    "train_trajectories": 4,
+    "train_state_stride": 2,
+    "snapshot_ntol": 1e-09,
+    "snapshot_ltol": 1e-07,
+    "residual_snapshots": 16,
+    "residual_starts": 4,
+    "residual_budget": 200,
+    "residual_seed": 20260915,
+    "decoder_code_subsample": 256,
+    "gauss_jordan_max": 64,
+    "cold_axis_points": 48,
+    "strict": {
+      "ic_budget": 400,
+      "step_budget": 600,
+      "gtol": 1e-06
+    },
+    "ic_gtol": 1e-06,
+    "inner_damping": 1e-10,
+    "tau_y": 0.1,
+    "q_ladder": [
+      0,
+      16,
+      32,
+      64,
+      128,
+      256
+    ]
+  },
+  "job": null,
+  "backend": "gpu",
+  "gpu": "NVIDIA GB10",
+  "matmul_precision": "highest",
+  "checkpoint_sha256": "6747aa0698789c91051bfeac9fe118a0fc854076c31328e22bbd4dee86c9c5be",
+  "K": 16,
+  "R": 512,
+  "snapshots": {
+    "trajectories": 4,
+    "states_per_trajectory": 26,
+    "snapshots": 104,
+    "state_stride": 2,
+    "newton_tolerance": 1e-09,
+    "linear_tolerance": 1e-07,
+    "max_relative_residual": 9.093084746659385e-10,
+    "seconds": 0.9211398169863969,
+    "snapshot_sha256": "18e7e0e8d005e113f458328ab844fe511b02227e714e8de1d0204bc66e0d283e",
+    "bank_projection_relative_rms": 0.0011182613528252514
+  },
+  "directions": {
+    "rule": "field-metric POD of the decoder-output residual eta - h_theta(z*), with z* the best-found head code under the shared LM rule; nested in q",
+    "path": "audited_double_vmap",
+    "snapshots": 16,
+    "snapshot_indices_sha256": "40a0fdb8c6b83b92ca54d63990a1709da741400959e393b097708077a5139912",
+    "starts": 4,
+    "budget": 200,
+    "seed": 20260915,
+    "available_rank": 16,
+    "head_fit_relative_median": 0.39347297368005174,
+    "head_fit_relative_worst": 0.629290123128765,
+    "head_fit_iterations_median": 20.5,
+    "head_fit_reason_counts": {
+      "4": 16
+    },
+    "residual_energy_captured": {
+      "0": 0.0,
+      "16": 1.0,
+      "32": 1.0,
+      "64": 1.0,
+      "128": 1.0,
+      "256": 1.0
+    },
+    "seconds": 21.654208694933914,
+    "directions_sha256": "456ff84ab1e8b86bd0d62bf137bc953c78d6124854cff86f99bf018531aa7f77"
+  },
+  "singular_values_head": [
+    14.273330061729101,
+    6.269102861588,
+    4.370805044325964,
+    3.329217772142197,
+    1.9979407693957232,
+    1.0948750908957872,
+    1.0189938126989437,
+    0.41642949936419776,
+    0.2577440404892746,
+    0.13280896549699658,
+    0.12343150273953857,
+    0.10591941048887633,
+    0.02721506990899662,
+    0.008660909268773989,
+    0.005944295491185342,
+    0.0050602343583827526
+  ],
+  "field_orthonormality_max_abs_dev": 9.325873406851315e-15,
+  "columns": 16,
+  "directions_file_sha256": "2ad71b93ea5861a998ab9414284051d86e03ea96e6e39b81c68673164a4b8163",
+  "seconds": 46.734963465016335,
+  "complete": true
+}

@@ -1,0 +1,106 @@
+host=pax008 source_commit=7912b0336f90bcc61b483ae86f91d30154fd7035
+NVIDIA H200, GPU-50404ee7-1d50-1d0c-6780-806cf66543b8, 143771 MiB
+10.235.106.26:/projects/paralab  4.6T  4.2T  406G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 16769025 rows in 5 blocks 30.8
+TRUTH 0 36.4
+TRUTH 1 39.4
+TRUTH 2 44.9
+TRUTH 3 49.7
+TRUTH 4 53.2
+TRUTH 5 56.1
+TRUTH 6 60.3
+TRUTH 7 64.4
+TRUTH 8 68.9
+TRUTH 9 73.5
+TRUTH 10 76.6
+TRUTH 11 80.0
+TRUTH 12 84.1
+TRUTH 13 89.0
+TRUTH 14 91.8
+TRUTH 15 95.7
+TRUTH 16 98.0
+TRUTH 17 100.6
+TRUTH 18 104.2
+TRUTH 19 108.5
+TRUTH 20 110.8
+TRUTH 21 113.4
+TRUTH 22 117.7
+TRUTH 23 120.8
+TRUTH 24 124.2
+TRUTH 25 128.3
+TRUTH 26 134.6
+TRUTH 27 137.0
+TRUTH 28 143.8
+TRUTH 29 146.6
+TRUTH 30 150.3
+TRUTH 31 152.4
+TRUTH 32 156.0
+TRUTH 33 162.6
+TRUTH 34 170.1
+TRUTH 35 173.8
+TRUTH 36 177.2
+TRUTH 37 181.1
+TRUTH 38 187.3
+TRUTH 39 192.0
+TRUTH 40 195.6
+TRUTH 41 200.1
+TRUTH 42 204.3
+TRUTH 43 208.1
+TRUTH 44 211.6
+TRUTH 45 215.2
+TRUTH 46 219.7
+TRUTH 47 222.8
+TRUTH 48 226.3
+TRUTH 49 230.6
+TRUTH 50 233.4
+TRUTH 51 235.8
+TRUTH 52 239.3
+TRUTH 53 242.6
+TRUTH 54 246.5
+TRUTH 55 249.8
+TRUTH 56 252.8
+TRUTH 57 256.1
+TRUTH 58 259.2
+TRUTH 59 263.7
+TRUTH 60 266.2
+TRUTH 61 271.4
+TRUTH 62 273.6
+TRUTH 63 276.7
+TRUTH 64 279.2
+TRUTH 65 282.8
+TRUTH 66 288.3
+TRUTH 67 291.4
+TRUTH 68 294.2
+TRUTH 69 296.8
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 360.7 675.3
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 348.3 1023.6
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.1331 all% 0.1331 stalled 0 154.8 1178.5
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1377 all% 0.1377 stalled 0 146.8 1325.3
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 2.0062 all% 2.0062 stalled 0 139.5 1464.8
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 31.1802 all% 31.1802 stalled 0 138.1 1603.0
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 9.0302 all% 9.0302 stalled 0 115.2 1727.6
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 1.3297 all% 4.1008 stalled 0 122.4 1859.7
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 1.3312 all% 4.1008 stalled 0 117.2 1976.9
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1 evolved% 1.3297 all% 4.1008 stalled 0 796.0 2773.0
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 1.3311 all% 4.1008 stalled 0 728.1 3501.2
+QUICK q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 7.0664 all% 7.0664 stalled 0 117.4 3622.2
+POPULATION q 0 states 2856 stalled 0 3652.9
+POPULATION q 256 states 2856 stalled 1 4067.6
+RULE 0 64 scaled m 1024 rho_max(k>=0) 0.0280 draws 5 | k>=1 0.0276 5 4093.5
+RULE 256 1088 lat64 m 3969 rho_max(k>=0) 0.0717 draws 5 | k>=1 0.0371 5 4121.5
+RULE 256 1088 bad0 m 2048 rho_max(k>=0) 0.5288 draws 0 | k>=1 0.2804 2 4122.5
+ARM-STATUS q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 confirmed heldout 0.0280 deployed 0.0269 4167.1
+ARM-STATUS q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 confirmed heldout 0.0717 deployed 0.1072 4217.3
+ARM-STATUS q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 confirmed heldout 0.0717 deployed 0.1072 4266.2
+ARM-STATUS q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1 confirmed heldout 0.0371 deployed 0.0313 4849.4
+ARM-STATUS q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed heldout 0.0371 deployed 0.0313 5382.7
+ARM-STATUS q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2 fails heldout 0.5288 deployed 0.5791 5430.6
+TIMED rep 0 8398.1
+TIMED rep 1 11335.1
+TIMED rep 2 14270.8
+TIMED rep 3 17208.5
+TIMED rep 4 20152.4
+HIRES COMPLETE
+ALL-DONE

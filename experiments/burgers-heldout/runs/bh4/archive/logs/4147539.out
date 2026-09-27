@@ -1,0 +1,104 @@
+host=pax011 source_commit=749043d1f60839f5a1fa4e90a88241c86e2bfd48
+NVIDIA H200, GPU-1fd35deb-68c1-9288-ccdc-d263a762ecde, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T  4.2T  440G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 16769025 rows in 5 blocks 31.4
+TRUTH 0 36.6
+TRUTH 1 39.5
+TRUTH 2 42.5
+TRUTH 3 48.2
+TRUTH 4 52.9
+TRUTH 5 55.8
+TRUTH 6 59.8
+TRUTH 7 63.7
+TRUTH 8 66.5
+TRUTH 9 70.3
+TRUTH 10 75.1
+TRUTH 11 78.3
+TRUTH 12 84.7
+TRUTH 13 88.5
+TRUTH 14 91.6
+TRUTH 15 97.8
+TRUTH 16 100.8
+TRUTH 17 105.5
+TRUTH 18 108.5
+TRUTH 19 111.2
+TRUTH 20 113.9
+TRUTH 21 118.8
+TRUTH 22 123.8
+TRUTH 23 128.5
+TRUTH 24 132.7
+TRUTH 25 135.1
+TRUTH 26 138.8
+TRUTH 27 141.9
+TRUTH 28 147.4
+TRUTH 29 150.0
+TRUTH 30 152.8
+TRUTH 31 157.4
+TRUTH 32 159.7
+TRUTH 33 167.0
+TRUTH 34 170.3
+TRUTH 35 174.9
+TRUTH 36 178.7
+TRUTH 37 181.9
+TRUTH 38 185.8
+TRUTH 39 191.3
+TRUTH 40 197.3
+TRUTH 41 202.0
+TRUTH 42 205.2
+TRUTH 43 208.7
+TRUTH 44 210.9
+TRUTH 45 215.5
+TRUTH 46 219.7
+TRUTH 47 223.0
+TRUTH 48 225.6
+TRUTH 49 230.5
+TRUTH 50 233.4
+TRUTH 51 236.9
+TRUTH 52 239.4
+TRUTH 53 243.5
+TRUTH 54 247.8
+TRUTH 55 250.2
+TRUTH 56 254.4
+TRUTH 57 258.6
+TRUTH 58 264.3
+TRUTH 59 266.9
+TRUTH 60 270.8
+TRUTH 61 273.6
+TRUTH 62 277.7
+TRUTH 63 280.3
+FLOORS worst evolved % 0.368 max orth 1.56e-10 333.5
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 338.3 731.2
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 324.3 1055.5
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.1423 all% 0.1423 stalled 0 142.1 1197.6
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1494 all% 0.1494 stalled 0 135.8 1333.4
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 2.3939 all% 2.3939 stalled 0 129.5 1463.0
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 10.4914 all% 10.4914 stalled 0 128.2 1591.1
+QUICK c2048_nt1e-4_dt005 evolved% 0.3642 all% 1.248 stalled 0 121.1 1712.2
+QUICK c1024_nt1e-4_dt005 evolved% 1.0746 all% 2.3347 stalled 0 105.4 1817.6
+QUICK q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2 evolved% 7.9974 all% 9.2191 stalled 0 112.4 1940.1
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 2.4069 all% 4.3786 stalled 0 116.3 2063.0
+QUICK q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.6734 all% 4.2129 stalled 0 127.7 2203.2
+QUICK q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.4575 all% 4.2031 stalled 0 127.6 2339.8
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 2352.8
+POPULATION q 256 stalled {'fit': 0, 'cert': 0} 2417.5
+POPULATION q 448 stalled {'fit': 0, 'cert': 0} 2652.6
+POPULATION q 512 stalled {'fit': 0, 'cert': 0} 2764.0
+RULE 0 64 lat64 m 3969 rho_max 0.0117 p95 0.0020 median 6.64e-05 fit-states rho_max 0.0029 2770.4
+RULE 256 1088 lat64 m 3969 rho_max 0.0754 p95 0.0083 median 3.49e-04 fit-states rho_max 0.0099 2775.1
+RULE 448 1856 lat128 m 16129 rho_max 0.5424 p95 0.0045 median 3.11e-04 fit-states rho_max 0.5599 2781.9
+RULE 512 2112 lat128 m 16129 rho_max 0.5887 p95 0.0046 median 3.44e-04 fit-states rho_max 0.5967 2786.8
+DEPLOYED-RHO q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2 0.0120 certified(both) True 2792.2
+DEPLOYED-RHO q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 0.0708 certified(both) True 2798.1
+DEPLOYED-RHO q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.5999 certified(both) False 2806.0
+DEPLOYED-RHO q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.6474 certified(both) False 2813.7
+TIMED rep 0 4389.7
+TIMED rep 1 5960.1
+TIMED rep 2 7531.3
+TIMED rep 3 9101.8
+TIMED rep 4 10672.8
+PROFILE {"arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 55, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 72.83570198342204, "initialize_ms": 1.6595171764492989, "evolve_ms": 54.44685975089669, "decode_ms": 16.4293828420341, "evalJ_ms": 0.6411015056073666, "residual_ms": 0.48226467333734035, "gram_ms": 0.1657556276768446, "gram_plus_solve_ms": 0.7767931092530489, "evolve_ms_per_iteration": 0.989942904561758}
+PROFILE {"arm": "q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 64, "steps": 50, "retries": 0, "J_shape": [2112, 528], "m": 16129, "whole_query_ms": 253.55122424662113, "initialize_ms": 5.103682167828083, "evolve_ms": 232.03816590830684, "decode_ms": 16.437077894806862, "evalJ_ms": 1.9808022771030664, "residual_ms": 0.5077463574707508, "gram_ms": 0.16965740360319614, "gram_plus_solve_ms": 1.793315401300788, "evolve_ms_per_iteration": 3.6255963423172943}
+HIRES COMPLETE
+ALL-DONE

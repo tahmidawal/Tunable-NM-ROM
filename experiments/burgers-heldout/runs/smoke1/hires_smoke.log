@@ -1,0 +1,27 @@
+jax_backend=gpu x64=True precision=highest
+BANK 3969 rows in 1 blocks 18.6
+TRUTH 0 19.5
+TRUTH 1 19.5
+TRUTH 2 19.6
+FLOORS worst evolved % 0.0925 max orth 2.04e-11 26.9
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 4.2 40.0
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 4.8 44.7
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.062 all% 0.062 stalled 0 1.5 46.2
+QUICK q0_M64_lat32_g0p001_fast_clip_lamcarry_pred2 evolved% 49.4482 all% 88.2429 stalled 0 8.5 112.6
+QUICK q16_M128_lat32_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 32.6742 all% 85.2751 stalled 0 8.4 126.5
+QUICK q16_M128_lat32_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 32.6745 all% 85.2751 stalled 0 3.5 130.0
+QUICK q16_M128_lat8_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 32.7797 all% 85.2751 stalled 0 3.6 141.9
+QUICK q16_M128_lat8_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 32.7797 all% 85.2751 stalled 0 1.5 143.4
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 148.9
+POPULATION q 16 stalled {'fit': 0, 'cert': 0} 157.9
+RULE 0 64 lat32 m 961 rho_max 0.2791 p95 0.2653 median 2.10e-01 fit-states rho_max 0.5267 163.9
+RULE 16 128 lat32 m 961 rho_max 0.1689 p95 0.1688 median 1.56e-01 fit-states rho_max 0.7702 166.7
+RULE 16 128 lat8 m 49 rho_max 2.5580 p95 2.3468 median 1.64e+00 fit-states rho_max 3.4322 168.4
+DEPLOYED-RHO q0_M64_lat32_g0p001_fast_clip_lamcarry_pred2 0.2791 certified(both) False 169.3
+DEPLOYED-RHO q16_M128_lat32_g0p001_fast_chol_clip_lamcarry_pred2 0.2065 certified(both) False 170.1
+DEPLOYED-RHO q16_M128_lat32_g0p01_fast_chol_clip_lamcarry_pred2 0.2067 certified(both) False 171.0
+DEPLOYED-RHO q16_M128_lat8_g0p001_fast_chol_clip_lamcarry_pred2 2.5580 certified(both) False 171.8
+DEPLOYED-RHO q16_M128_lat8_g0p01_fast_chol_clip_lamcarry_pred2 2.5580 certified(both) False 172.6
+TIMED rep 0 178.6
+TIMED rep 1 182.8
+HIRES COMPLETE

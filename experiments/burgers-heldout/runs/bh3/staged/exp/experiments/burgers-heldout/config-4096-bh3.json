@@ -1,0 +1,269 @@
+{
+ "intervals": 4096,
+ "dt": 0.005,
+ "expected_physical_sha256": null,
+ "train_seed": 0,
+ "train_trajectories": 128,
+ "decoder_code_subsample": 8192,
+ "gauss_jordan_max": 64,
+ "cold_axis_points": 48,
+ "strict": {
+  "ic_budget": 400,
+  "step_budget": 600,
+  "gtol": 1e-06
+ },
+ "ic_gtol": 1e-06,
+ "inner_damping": 1e-10,
+ "tau_y": 0.1,
+ "rho_bar": 0.116,
+ "rho_tight": 0.06,
+ "model_key": "bh_model",
+ "directions_key": "directions_bh",
+ "directions_file": "directions_bh.npz",
+ "directions_sha256": "33972d1713184b177b9b43fe7b38a8e5fedb8fd6a83a67b741c5a02221a28b3b",
+ "population": {
+  "mesh": 512,
+  "fit_trajectories": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7
+  ],
+  "cert_trajectories": [
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "fit_states": 128,
+  "seed": 20260920
+ },
+ "target_chunk": 4,
+ "restrict_to": 256,
+ "fast_arm_q0": "C1",
+ "q0_through_hfast": true,
+ "rungs": [
+  {
+   "q": 0,
+   "M": 64,
+   "gtols": [
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "lu",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 256,
+   "M": 1088,
+   "gtols": [
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat64",
+     "parts": [
+      {
+       "lattice": 64
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 448,
+   "M": 1856,
+   "gtols": [
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat128",
+     "parts": [
+      {
+       "lattice": 128
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  },
+  {
+   "q": 512,
+   "M": 2112,
+   "gtols": [
+    0.01
+   ],
+   "dense": false,
+   "rules": [
+    {
+     "name": "lat128",
+     "parts": [
+      {
+       "lattice": 128
+      }
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "solver": "chol",
+     "clip": true,
+     "lamcarry": true,
+     "pred2": true
+    }
+   ]
+  }
+ ],
+ "dense_tangent_group": 34,
+ "dense_deadline_seconds": 36000,
+ "fom_settings": [
+  {
+   "name": "fft_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  {
+   "name": "lean_tight",
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-3_l1e-3_dt01",
+   "dt": 0.01,
+   "ntol": 0.001,
+   "ltol": 0.001,
+   "impl": "lean"
+  },
+  {
+   "name": "lean_nt1e-2_l1e-2_dt005",
+   "dt": 0.005,
+   "ntol": 0.01,
+   "ltol": 0.01,
+   "impl": "lean"
+  }
+ ],
+ "coarse_fom": [
+  {
+   "name": "c2048_nt1e-4_dt005",
+   "mesh": 2048,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  },
+  {
+   "name": "c1024_nt1e-4_dt005",
+   "mesh": 1024,
+   "dt": 0.005,
+   "ntol": 0.0001,
+   "ltol": 1e-06
+  }
+ ],
+ "same_grid_reference": "fft_tight",
+ "untimed": [
+  "fft_tight"
+ ],
+ "audit_cases": [
+  0
+ ],
+ "audit_arms": [
+  "fft_tight",
+  "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+  "q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2",
+  "q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2"
+ ],
+ "reps": 5,
+ "required_reps": 5,
+ "order_seed": 20260921,
+ "burn_seconds": 0.25,
+ "profile_arms": [
+  "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+  "q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2"
+ ],
+ "reference": null,
+ "parity_bar": 1e-09,
+ "keep_for_reference": [],
+ "prune_each_arm": true,
+ "headline_arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2",
+ "exploratory_accurate_arm": "q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2",
+ "fast_arm": "q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2",
+ "headline_source": "bh2b audited selection (checks/bh2b-summary.json, group dev6+sel32): 'none qualified: most accurate certified arm'",
+ "attempt": "bh3",
+ "eval_draws": [
+  [
+   7090702,
+   4,
+   "dev6"
+  ],
+  [
+   911702,
+   2,
+   "dev6"
+  ],
+  [
+   20260916,
+   64,
+   "hold64"
+  ]
+ ],
+ "cohort_name": "dev6 + hold64 (opened before this lane, DESIGN A-1)",
+ "purpose": "bh3 (DESIGN A3): 4096^2, frozen model; pre-registered headline q256/M1088 lat64 (certified) + labelled exploratory q448/q512 lat128 (uncertified), paired FOM grid, 5 reps"
+}

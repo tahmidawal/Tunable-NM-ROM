@@ -1,0 +1,48 @@
+jax_backend=gpu
+PARITY seed1024 {"points": 8831, "seed": 20260921, "relative_frobenius": 1.5017222120249443e-15, "worst_column_relative": 2.647668915152378e-15, "passed": true}
+WROTE in/cat1024_seed.pkl
+jax_backend=gpu device=cuda:0 x64=True EXTRACT N=48 K=16 R=1024 ckpt=/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-21-burgers-heldout/experiments/burgers-heldout/runs/smoke1/in/cat1024_seed.pkl
+  UNALIGNED-CODES MODE: pick 1200 != checkpoint codes 131072: the state pick does not match the checkpoint's training set
+    (expected for a dense-sampling extraction; the identity gate (*) holds for ANY z, so it still tests what it tests, and the checkpoint reconstruction is simply not comparable)
+  bank rank(>1e-8) 1024/1024  cond(G) 2.150e+05
+  APPENDED 8 trajectories from seed 1000 to the canonical 576; canonical draw untouched
+   gen+proj: trajectories 16/30  worst FOM rel residual 9.83e-13  [21s]
+   gen+proj: trajectories 30/30  worst FOM rel residual 9.83e-13  [33s]
+  GRAM IDENTITY gate on 16 training states: max rel deviation 4.775e-16 mean 2.118e-16  (full mean 2.113928e+00 vs gram mean 2.113928e+00)
+  span-floor direct-vs-Gram deviation on 16 rows: 7.337e-13  (direct mean 7.394508e-05)
+  checkpoint recon via (*): mean 1.640624e+00  (train span LS floor mean 8.050e-05)
+  fresh test span LS floor: mean 1.071e-04 max 3.184e-04  (test FOM residual 9.91e-13)
+EXTRACT done in 80s -> /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-21-burgers-heldout/experiments/burgers-heldout/runs/smoke1/output/x1024_sep_coeff_N48_K16_R1024.npz
+jax_backend=gpu
+COHORTS 5.7
+FLOOR incumbent_inc512 sel32 0.2452% dev6 0.0479%
+FLOOR cat1024 sel32 0.0536% dev6 0.0175%
+FLOOR pod_raw_R256 sel32 1.9569% dev6 0.7417%
+FLOOR pod_raw_R384 sel32 0.5952% dev6 0.2406%
+FLOOR pod_raw_R512 sel32 0.3009% dev6 0.1089%
+FLOOR pod_raw_R640 sel32 0.1869% dev6 0.0528%
+FLOOR pod_raw_R768 sel32 0.1253% dev6 0.0355%
+FLOOR pod_raw_R1024 sel32 0.0536% dev6 0.0175%
+FLOOR pod_state_R256 sel32 1.9464% dev6 0.7248%
+FLOOR pod_state_R384 sel32 0.5901% dev6 0.2279%
+FLOOR pod_state_R512 sel32 0.2822% dev6 0.1060%
+FLOOR pod_state_R640 sel32 0.1848% dev6 0.0513%
+FLOOR pod_state_R768 sel32 0.1219% dev6 0.0345%
+FLOOR pod_state_R1024 sel32 0.0536% dev6 0.0175%
+FLOOR pod_u0_R256 sel32 1.9645% dev6 0.7503%
+FLOOR pod_u0_R384 sel32 0.5963% dev6 0.2350%
+FLOOR pod_u0_R512 sel32 0.2976% dev6 0.1076%
+FLOOR pod_u0_R640 sel32 0.1862% dev6 0.0529%
+FLOOR pod_u0_R768 sel32 0.1232% dev6 0.0349%
+FLOOR pod_u0_R1024 sel32 0.0536% dev6 0.0175%
+SELECTED state {'raw': 0.003009338475507268, 'state': 0.0028223812537699977, 'u0': 0.0029761826228238697} incumbent 0.00245242275067906
+PARITY cpod512 {"points": 8831, "seed": 20260921, "relative_frobenius": 1.1561965573661977e-13, "worst_column_relative": 3.0028985322095284e-13, "passed": true}
+Traceback (most recent call last):
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-21-burgers-heldout/experiments/burgers-heldout/runs/smoke1/exp/experiments/burgers-heldout/bh_compress.py", line 254, in <module>
+    main()
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-21-burgers-heldout/experiments/burgers-heldout/runs/smoke1/exp/experiments/burgers-heldout/bh_compress.py", line 250, in main
+    (seed1024 if a.mode == 'seed1024' else compress)(a)
+  File "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-21-burgers-heldout/experiments/burgers-heldout/runs/smoke1/exp/experiments/burgers-heldout/bh_compress.py", line 221, in compress
+    assert orth <= 1e-8, orth
+           ^^^^^^^^^^^^
+AssertionError: 1.1263584580145647e-05

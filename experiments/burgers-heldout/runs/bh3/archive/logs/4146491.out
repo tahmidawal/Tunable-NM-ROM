@@ -1,0 +1,110 @@
+host=pax009 source_commit=749043d1f60839f5a1fa4e90a88241c86e2bfd48
+NVIDIA H200, GPU-ff5d079b-3cd9-8094-02d4-f80e11943f20, 143771 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 16769025 rows in 5 blocks 33.6
+TRUTH 0 39.2
+TRUTH 1 42.2
+TRUTH 2 47.7
+TRUTH 3 52.4
+TRUTH 4 56.0
+TRUTH 5 58.9
+TRUTH 6 63.0
+TRUTH 7 67.1
+TRUTH 8 71.6
+TRUTH 9 76.3
+TRUTH 10 79.4
+TRUTH 11 82.8
+TRUTH 12 86.9
+TRUTH 13 91.7
+TRUTH 14 94.5
+TRUTH 15 98.5
+TRUTH 16 100.8
+TRUTH 17 103.4
+TRUTH 18 107.0
+TRUTH 19 111.3
+TRUTH 20 113.6
+TRUTH 21 116.2
+TRUTH 22 120.5
+TRUTH 23 123.6
+TRUTH 24 127.0
+TRUTH 25 131.1
+TRUTH 26 137.4
+TRUTH 27 139.8
+TRUTH 28 146.7
+TRUTH 29 149.4
+TRUTH 30 153.2
+TRUTH 31 155.2
+TRUTH 32 158.8
+TRUTH 33 165.5
+TRUTH 34 173.0
+TRUTH 35 176.7
+TRUTH 36 180.1
+TRUTH 37 183.9
+TRUTH 38 190.2
+TRUTH 39 194.9
+TRUTH 40 198.5
+TRUTH 41 203.0
+TRUTH 42 207.2
+TRUTH 43 210.9
+TRUTH 44 214.4
+TRUTH 45 218.0
+TRUTH 46 222.6
+TRUTH 47 225.7
+TRUTH 48 229.2
+TRUTH 49 233.5
+TRUTH 50 236.4
+TRUTH 51 238.7
+TRUTH 52 242.2
+TRUTH 53 245.6
+TRUTH 54 249.4
+TRUTH 55 252.7
+TRUTH 56 255.7
+TRUTH 57 259.0
+TRUTH 58 262.1
+TRUTH 59 266.7
+TRUTH 60 269.2
+TRUTH 61 274.4
+TRUTH 62 276.5
+TRUTH 63 279.7
+TRUTH 64 282.1
+TRUTH 65 285.7
+TRUTH 66 291.2
+TRUTH 67 294.4
+TRUTH 68 297.1
+TRUTH 69 299.8
+FLOORS worst evolved % 0.2948 max orth 1.06e-10 356.0
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 362.8 777.6
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 348.3 1125.9
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.1331 all% 0.1331 stalled 0 155.1 1281.0
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1377 all% 0.1377 stalled 0 146.6 1427.6
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 2.0062 all% 2.0062 stalled 0 139.4 1567.0
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 31.1802 all% 31.1802 stalled 0 138.7 1705.7
+QUICK c2048_nt1e-4_dt005 evolved% 0.2661 all% 1.1452 stalled 0 131.3 1837.1
+QUICK c1024_nt1e-4_dt005 evolved% 0.7619 all% 2.1425 stalled 0 114.1 1951.2
+QUICK q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2 evolved% 7.6074 all% 8.8804 stalled 0 120.1 2081.4
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 1.6005 all% 4.0929 stalled 0 123.7 2211.4
+QUICK q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.4328 all% 4.0144 stalled 0 137.3 2360.9
+QUICK q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.3934 all% 4.01 stalled 0 136.5 2506.1
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 2517.2
+POPULATION q 256 stalled {'fit': 0, 'cert': 0} 2580.4
+POPULATION q 448 stalled {'fit': 0, 'cert': 0} 2816.7
+POPULATION q 512 stalled {'fit': 0, 'cert': 0} 2929.2
+RULE 0 64 lat64 m 3969 rho_max 0.0117 p95 0.0020 median 6.64e-05 fit-states rho_max 0.0029 2935.4
+RULE 256 1088 lat64 m 3969 rho_max 0.0754 p95 0.0083 median 3.49e-04 fit-states rho_max 0.0099 2940.0
+RULE 448 1856 lat128 m 16129 rho_max 0.5424 p95 0.0045 median 3.11e-04 fit-states rho_max 0.5599 2946.3
+RULE 512 2112 lat128 m 16129 rho_max 0.5887 p95 0.0046 median 3.44e-04 fit-states rho_max 0.5967 2951.4
+DEPLOYED-RHO q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2 0.0120 certified(both) True 2956.6
+DEPLOYED-RHO q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 0.0708 certified(both) True 2962.4
+DEPLOYED-RHO q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.5999 certified(both) False 2970.2
+DEPLOYED-RHO q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.6474 certified(both) False 2977.9
+TIMED rep 0 4684.5
+TIMED rep 1 6384.5
+TIMED rep 2 8084.7
+TIMED rep 3 9784.8
+TIMED rep 4 11485.1
+PROFILE {"arm": "q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 62, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 78.2848079688847, "initialize_ms": 3.4959400072693825, "evolve_ms": 57.80127691105008, "decode_ms": 16.69415202923119, "evalJ_ms": 0.6727254949510098, "residual_ms": 0.5160998553037643, "gram_ms": 0.16791443340480328, "gram_plus_solve_ms": 0.779414433054626, "evolve_ms_per_iteration": 0.9322786598556465}
+PROFILE {"arm": "q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 70, "steps": 50, "retries": 0, "J_shape": [2112, 528], "m": 16129, "whole_query_ms": 265.6765668652952, "initialize_ms": 4.228838952258229, "evolve_ms": 244.6710979565978, "decode_ms": 16.69648103415966, "evalJ_ms": 1.871906453743577, "residual_ms": 0.6932260002940893, "gram_ms": 0.18049741629511118, "gram_plus_solve_ms": 1.7919474048539996, "evolve_ms_per_iteration": 3.4953013993799686}
+HIRES COMPLETE
+ALL-DONE

@@ -1,0 +1,86 @@
+host=pax105 source_commit=917349cababebec0fd3e46af22d37315a76a7bd1
+NVIDIA A100 80GB PCIe, GPU-a9dcc2dc-2ba8-5c5c-ed4c-ff7b876e8fee, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  441G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 1046529 rows in 1 blocks 8.4
+TRUTH 0 10.3
+TRUTH 1 10.7
+TRUTH 2 11.4
+TRUTH 3 12.1
+TRUTH 4 12.5
+TRUTH 5 12.9
+TRUTH 6 13.4
+TRUTH 7 13.8
+TRUTH 8 14.2
+TRUTH 9 14.7
+TRUTH 10 15.2
+TRUTH 11 16.1
+TRUTH 12 16.5
+TRUTH 13 17.4
+TRUTH 14 18.0
+TRUTH 15 18.5
+TRUTH 16 18.9
+TRUTH 17 19.2
+TRUTH 18 19.6
+TRUTH 19 19.9
+TRUTH 20 20.4
+TRUTH 21 20.8
+TRUTH 22 21.1
+TRUTH 23 21.8
+TRUTH 24 22.6
+TRUTH 25 23.6
+TRUTH 26 24.1
+TRUTH 27 24.4
+TRUTH 28 24.8
+TRUTH 29 25.2
+TRUTH 30 25.6
+TRUTH 31 26.2
+TRUTH 32 26.8
+TRUTH 33 27.1
+TRUTH 34 27.5
+TRUTH 35 28.0
+TRUTH 36 28.5
+TRUTH 37 28.9
+FLOORS worst evolved % 0.2588 max orth 1.58e-10 36.8
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 26.2 163.0
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 26.2 189.2
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.1499 all% 0.1499 stalled 0 10.9 200.1
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1523 all% 0.1523 stalled 0 10.1 210.3
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 2.1216 all% 2.1216 stalled 0 10.7 221.0
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 26.3752 all% 26.3752 stalled 0 9.5 230.5
+QUICK q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2 evolved% 4.6227 all% 7.4625 stalled 0 16.4 255.9
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 1.732 all% 2.7403 stalled 0 19.0 279.3
+QUICK q256_M1088_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 1.7456 all% 2.7403 stalled 0 24.2 308.8
+QUICK q256_M2176_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 1.3246 all% 2.7403 stalled 0 34.3 347.2
+QUICK q384_M1600_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.9142 all% 2.5864 stalled 0 41.0 393.7
+QUICK q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.6467 all% 2.5214 stalled 0 53.0 454.2
+QUICK q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.4056 all% 2.5058 stalled 0 37.3 497.8
+POPULATION q 0 stalled {'fit': 0, 'cert': 0} 517.6
+POPULATION q 256 stalled {'fit': 0, 'cert': 0} 667.8
+POPULATION q 384 stalled {'fit': 0, 'cert': 0} 1012.1
+POPULATION q 448 stalled {'fit': 0, 'cert': 0} 1694.5
+POPULATION q 512 stalled {'fit': 0, 'cert': 0} 1998.0
+RULE 0 64 lat64 m 3969 rho_max 0.0153 p95 0.0022 median 6.52e-05 fit-states rho_max 0.0035 2002.3
+RULE 256 1088 lat64 m 3969 rho_max 0.1054 p95 0.0082 median 3.31e-04 fit-states rho_max 0.0096 2004.3
+RULE 256 1088 lat128 m 16129 rho_max 0.3699 p95 0.0034 median 3.22e-04 fit-states rho_max 0.0141 2006.4
+RULE 256 2176 lat128 m 16129 rho_max 0.5798 p95 0.0052 median 5.09e-04 fit-states rho_max 0.0227 2008.6
+RULE 384 1600 lat128 m 16129 rho_max 0.4926 p95 0.0031 median 1.76e-04 fit-states rho_max 0.5350 2010.7
+RULE 448 1856 lat128 m 16129 rho_max 0.5535 p95 0.0029 median 2.89e-04 fit-states rho_max 0.6024 2012.8
+RULE 512 2112 lat128 m 16129 rho_max 0.6016 p95 0.0031 median 3.36e-04 fit-states rho_max 0.6429 2014.9
+DEPLOYED-RHO q0_M64_lat64_g0p01_fast_clip_lamcarry_pred2 0.0156 certified(both) True 2016.6
+DEPLOYED-RHO q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2 0.1051 certified(both) True 2018.5
+DEPLOYED-RHO q256_M1088_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.3900 certified(both) False 2022.0
+DEPLOYED-RHO q256_M2176_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.6119 certified(both) False 2026.6
+DEPLOYED-RHO q384_M1600_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.5186 certified(both) False 2031.4
+DEPLOYED-RHO q448_M1856_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.5795 certified(both) False 2037.1
+DEPLOYED-RHO q512_M2112_lat128_g0p01_fast_chol_clip_lamcarry_pred2 0.6284 certified(both) False 2042.6
+DENSE 384 1600 case 0 evolved% 0.0247 iters 355 102.0 2144.8
+DENSE 384 1600 case 11 evolved% 0.3575 iters 223 64.0 2209.0
+DENSE 384 1600 case 25 evolved% 0.9064 iters 1418 344.0 2553.2
+DENSE 384 1600 case 32 evolved% 0.9118 iters 376 99.9 2653.2
+TIMED rep 0 2876.5
+TIMED rep 1 3096.5
+TIMED rep 2 3317.4
+HIRES COMPLETE
+ALL-DONE

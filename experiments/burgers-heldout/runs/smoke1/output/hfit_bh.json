@@ -1,0 +1,150 @@
+{
+ "config": {
+  "npz": "x512_sep_coeff_N48_K16_R512.npz",
+  "ckpt": "cpod512_seed.pkl",
+  "arms": [
+   "mid"
+  ],
+  "steps": 300,
+  "batch": 256,
+  "lr": 0.001,
+  "oracle_iters": 20,
+  "enc_steps": 200,
+  "seed": 0,
+  "K_ckpt": 16,
+  "R": 512,
+  "S": 1200,
+  "n_test_states": 102,
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "gpu": "NVIDIA GB10",
+  "slurm_job": null,
+  "node": "local"
+ },
+ "gates": {
+  "whitening_round_trip": 3.922580150812114e-15,
+  "q_equals_LT_h": 3.536266859361405e-14
+ },
+ "floors": {
+  "traj_fit": 0,
+  "hold_from": 0,
+  "n_hold": 0,
+  "hold_span_floor_mean": null,
+  "train_span_floor_mean": 8.049838476239997e-05,
+  "train_span_floor_max": 0.0014480004038689592,
+  "test_span_floor_mean": 0.00016126898163541082,
+  "test_span_floor_max": 0.0005150720279663622
+ },
+ "arms": {
+  "mid": {
+   "spec": {
+    "hidden": 512,
+    "layers": 2
+   },
+   "train": {
+    "steps": 300,
+    "steps_done": 300,
+    "lr": 0.001,
+    "hidden": 512,
+    "layers": 2,
+    "batch": 256,
+    "wd": 0.0,
+    "ema_decay": 0.0,
+    "used_ema": false,
+    "norm": "snap",
+    "z_polish_every": 0,
+    "h_ff": 0,
+    "h_ff_scale": 1.0,
+    "z_noise": 0.0,
+    "seconds": 7.861286878585815,
+    "final_loss": 0.3691187516676892
+   },
+   "k": 16,
+   "recon_train": {
+    "mean": 0.5739475065871699,
+    "max": 1.2180384196293523
+   },
+   "encoder_final_loss": 0.727969100977623,
+   "oracle_test": {
+    "mean": 0.49931258421246616,
+    "max": 0.751893161164644,
+    "t0": 0.6011740983857147,
+    "early": 0.589400705937798,
+    "late": 0.4873008346490886,
+    "per_time": [
+     0.6011740983857147,
+     0.5960604795660275,
+     0.5913124537297476,
+     0.586836599402774,
+     0.5825668529990433,
+     0.5784537515434812,
+     0.5744589262635762,
+     0.5705516067976208,
+     0.5667066719236854,
+     0.5629035351106682,
+     0.5591251969703941,
+     0.5553576721149525,
+     0.551589526506775,
+     0.5478115743085241,
+     0.5440163416543189,
+     0.5401982165374375,
+     0.5363529390073585,
+     0.5324774876749668,
+     0.5285699650495693,
+     0.5246294376650356,
+     0.5206557892056027,
+     0.5166496770952493,
+     0.5126123855244304,
+     0.5085457524220796,
+     0.5044520878211066,
+     0.5003340985272481,
+     0.4961948200892436,
+     0.4920375656594857,
+     0.4878657901902025,
+     0.4836857990094625,
+     0.47949512100341724,
+     0.47530154047526746,
+     0.47110614502117143,
+     0.466917341012567,
+     0.46273685964113276,
+     0.4585691237447997,
+     0.4544180809824731,
+     0.45028322178698876,
+     0.44616913206777076,
+     0.4420963443065693,
+     0.4380852912006224,
+     0.4340120578342255,
+     0.43006442628055885,
+     0.4261004799577321,
+     0.42215548712877704,
+     0.4182842345955351,
+     0.4144622085024279,
+     0.41067783191221374,
+     0.40694124490193867,
+     0.4032558558034589,
+     0.3996226679203431
+    ],
+    "note": "representation oracle, DIAGNOSTIC (uses test truth); inits = mean training code + training-only encoder"
+   },
+   "oracle_over_span_floor": 3096.1476853700738,
+   "oracle_test_nn": {
+    "mean": 0.49930969528369673,
+    "max": 0.751893161164644,
+    "note": "UPPER BOUND on what better initialisation could buy: adds a nearest-training-state init selected USING the test target"
+   },
+   "oracle_train_from_codes": {
+    "mean": 0.28116835483731667,
+    "max": 0.7397070684826972,
+    "n": 64,
+    "recon_on_same_subset": 0.5749812068840395,
+    "gain_vs_recon": 2.044971267185179,
+    "note": "codes re-solved exactly at frozen h; ratio > 1 means the codes had NOT converged during joint training"
+   },
+   "seconds": 32.575857400894165
+  }
+ },
+ "complete": true,
+ "emitted": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-21-burgers-heldout/experiments/burgers-heldout/runs/smoke1/output/bh_model.pkl",
+ "total_seconds": 41.44103217124939
+}

@@ -1,0 +1,29 @@
+jax_backend=gpu
+jax_backend=gpu
+device=NVIDIA A100 80GB PCIe  NS=[32, 64, 128, 256, 512]  KS=[2, 4, 8, 16, 32]  m_eq=640  gn_iters=10  rank=128 hidden=256  repeats=30
+RESULT N=  32 k=  2  gn_iter=1.543e-04s  flops/iter=3.118e+05  decode=6.547e-05s  fom=0.0001975526101887226
+RESULT N=  32 k=  4  gn_iter=1.677e-04s  flops/iter=1.667e+05  decode=6.932e-05s  fom=-
+RESULT N=  32 k=  8  gn_iter=1.789e-04s  flops/iter=9.682e+05  decode=6.418e-05s  fom=-
+RESULT N=  32 k= 16  gn_iter=1.911e-04s  flops/iter=3.486e+06  decode=7.116e-05s  fom=-
+RESULT N=  32 k= 32  gn_iter=2.158e-04s  flops/iter=6.990e+06  decode=6.554e-05s  fom=-
+RESULT N=  64 k=  2  gn_iter=1.549e-04s  flops/iter=3.118e+05  decode=6.477e-05s  fom=0.0005037449300289154
+RESULT N=  64 k=  4  gn_iter=1.685e-04s  flops/iter=1.667e+05  decode=6.530e-05s  fom=-
+RESULT N=  64 k=  8  gn_iter=1.790e-04s  flops/iter=9.682e+05  decode=7.200e-05s  fom=-
+RESULT N=  64 k= 16  gn_iter=1.916e-04s  flops/iter=3.486e+06  decode=6.581e-05s  fom=-
+RESULT N=  64 k= 32  gn_iter=2.159e-04s  flops/iter=6.990e+06  decode=6.690e-05s  fom=-
+RESULT N= 128 k=  2  gn_iter=1.556e-04s  flops/iter=3.118e+05  decode=7.081e-05s  fom=0.002527614589780569
+RESULT N= 128 k=  4  gn_iter=1.700e-04s  flops/iter=1.667e+05  decode=6.723e-05s  fom=-
+RESULT N= 128 k=  8  gn_iter=1.779e-04s  flops/iter=9.682e+05  decode=6.716e-05s  fom=-
+RESULT N= 128 k= 16  gn_iter=1.915e-04s  flops/iter=3.486e+06  decode=6.796e-05s  fom=-
+RESULT N= 128 k= 32  gn_iter=2.183e-04s  flops/iter=6.990e+06  decode=6.768e-05s  fom=-
+RESULT N= 256 k=  2  gn_iter=1.548e-04s  flops/iter=3.118e+05  decode=6.935e-05s  fom=0.009191275108605623
+RESULT N= 256 k=  4  gn_iter=1.665e-04s  flops/iter=1.667e+05  decode=6.989e-05s  fom=-
+RESULT N= 256 k=  8  gn_iter=1.792e-04s  flops/iter=9.682e+05  decode=7.065e-05s  fom=-
+RESULT N= 256 k= 16  gn_iter=1.912e-04s  flops/iter=3.486e+06  decode=6.956e-05s  fom=-
+RESULT N= 256 k= 32  gn_iter=2.162e-04s  flops/iter=6.990e+06  decode=7.079e-05s  fom=-
+RESULT N= 512 k=  2  gn_iter=1.554e-04s  flops/iter=3.118e+05  decode=7.209e-05s  fom=0.0311483652330935
+RESULT N= 512 k=  4  gn_iter=1.681e-04s  flops/iter=1.667e+05  decode=7.253e-05s  fom=-
+RESULT N= 512 k=  8  gn_iter=1.783e-04s  flops/iter=9.682e+05  decode=7.260e-05s  fom=-
+RESULT N= 512 k= 16  gn_iter=1.914e-04s  flops/iter=3.486e+06  decode=7.270e-05s  fom=-
+RESULT N= 512 k= 32  gn_iter=2.190e-04s  flops/iter=6.990e+06  decode=7.235e-05s  fom=-
+wrote ./cp_timing_pax106.json

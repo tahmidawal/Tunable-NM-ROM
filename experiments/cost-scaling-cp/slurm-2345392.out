@@ -1,0 +1,12 @@
+jax_backend=gpu
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/cost-cp/repo/experiments/cost-scaling-cp/time_cp_rom.py", line 34, in <module>
+    from tunable_rom_poisson.solver.nm_rom import NMROMSolver          # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/cost-cp/repo/poisson/src/tunable_rom_poisson/__init__.py", line 3, in <module>
+    from .models.encoder import ViTEncoder
+  File "/cluster/tufts/paralab/tawal01/cost-cp/repo/poisson/src/tunable_rom_poisson/models/__init__.py", line 1, in <module>
+    from .encoder import ViTEncoder
+  File "/cluster/tufts/paralab/tawal01/cost-cp/repo/poisson/src/tunable_rom_poisson/models/encoder.py", line 4, in <module>
+    import flax.linen as nn
+ModuleNotFoundError: No module named 'flax'

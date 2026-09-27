@@ -1,0 +1,152 @@
+host=pax105 source_commit=7a57f02e2bf4aeeadee32bba1073723024e0af76
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.31:/projects/paralab  4.6T  4.2T  443G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+DECLARED 47 subjects: fft_tight dense_tight nt1e-2_dt01 nt1e-2_dt005 nt1e-3_dt01 nt1e-3_dt005 nt1e-4_dt01 nt1e-4_dt005 q0_M64_dense_g1em06 q64_M320_dense_g1em06 q256_M1088_dense_g1em06 q0_M64_eqxfer_g1em06 q64_M320_eqxfer_g1em06 q256_M1088_eqxfer_g1em06 pod16_M64_dense pod128_M512_dense q16_M128_dense_g1em06 q32_M192_dense_g1em06 q128_M576_dense_g1em06 q16_M128_eqxfer_g1em06 q32_M192_eqxfer_g1em06 q128_M576_eqxfer_g1em06 q0_M64_eqtopxfer_g1em06 q16_M128_eqtopxfer_g1em06 q32_M192_eqtopxfer_g1em06 q64_M320_eqtopxfer_g1em06 q128_M576_eqtopxfer_g1em06 q256_M1088_eqtopxfer_g1em06 pod32_M128_dense pod64_M256_dense pod256_M1024_dense pod512_M2048_dense q0_M64_eqxfer_g0p001 q16_M128_eqxfer_g0p001 q32_M192_eqxfer_g0p001 q64_M320_eqxfer_g0p001 q128_M576_eqxfer_g0p001 q256_M1088_eqxfer_g0p001 q0_M64_eqtopxfer_g0p001 q16_M128_eqtopxfer_g0p001 q32_M192_eqtopxfer_g0p001 q64_M320_eqtopxfer_g0p001 q128_M576_eqtopxfer_g0p001 q256_M1088_eqtopxfer_g0p001 q0_M256_dense_g1em06 free512_M1024_dense q0_M64_eqxfer_g1em06_fastL4
+REFERENCE 0 80.4
+REFERENCE 1 146.1
+REFERENCE 2 236.8
+REFERENCE 3 320.4
+REFERENCE 4 391.9
+REFERENCE 5 456.2
+SNAPSHOTS 33.6
+RULE eqxfer q 0 m 1024 primary
+RULE eqxfer q 16 m 1024 primary
+RULE eqxfer q 32 m 1024 primary
+RULE eqxfer q 64 m 1024 primary
+RULE eqxfer q 128 m 2048 secondary
+RULE eqxfer q 256 m 2048 secondary
+RULE eqtopxfer q 0 m 1024 primary
+RULE eqtopxfer q 16 m 1024 primary
+RULE eqtopxfer q 32 m 1024 primary
+RULE eqtopxfer q 64 m 2048 primary
+RULE eqtopxfer q 128 m 2319 primary
+RULE eqtopxfer q 256 m 2560 primary
+XFER eqxfer q 0 m 922 rho_max 0.0185 p95 0.0166 primary 30.7
+XFER eqxfer q 16 m 911 rho_max 0.0499 p95 0.0370 primary 38.5
+XFER eqxfer q 32 m 973 rho_max 0.0152 p95 0.0126 primary 45.8
+XFER eqxfer q 64 m 937 rho_max 0.1303 p95 0.1215 none 61.4
+XFER eqxfer q 128 m 1644 rho_max 0.1406 p95 0.1170 none 185.9
+XFER eqxfer q 256 m 1663 rho_max 0.3253 p95 0.2925 none 467.6
+XFER eqtopxfer q 0 m 914 rho_max 0.0186 p95 0.0175 primary 20.6
+XFER eqtopxfer q 16 m 879 rho_max 0.0825 p95 0.0350 primary 29.1
+XFER eqtopxfer q 32 m 848 rho_max 0.1319 p95 0.0765 secondary 34.7
+XFER eqtopxfer q 64 m 1898 rho_max 0.1791 p95 0.1647 none 92.1
+XFER eqtopxfer q 128 m 2152 rho_max 0.0532 p95 0.0259 primary 197.5
+XFER eqtopxfer q 256 m 2438 rho_max 0.0364 p95 0.0231 primary 568.9
+RECON q 0 3.28285 73.2
+RECON q 64 2.95351 110.6
+RECON q 256 1.98345 764.0
+RECON q 16 3.22346 45.3
+RECON q 32 3.11559 56.3
+RECON q 128 2.59965 269.4
+ARM fft_tight 0.4
+ARM dense_tight 0.3
+ARM nt1e-2_dt01 0.0
+ARM nt1e-2_dt005 0.0
+ARM nt1e-3_dt01 0.0
+ARM nt1e-3_dt005 0.0
+ARM nt1e-4_dt01 0.0
+ARM nt1e-4_dt005 0.0
+ARM q0_M64_dense_g1em06 0.1
+ARM q64_M320_dense_g1em06 0.0
+ARM q256_M1088_dense_g1em06 0.0
+ARM q0_M64_eqxfer_g1em06 0.0
+ARM q64_M320_eqxfer_g1em06 0.0
+ARM q256_M1088_eqxfer_g1em06 0.0
+ARM pod16_M64_dense 3.2
+ARM pod128_M512_dense 6.9
+ARM q16_M128_dense_g1em06 0.0
+ARM q32_M192_dense_g1em06 0.0
+ARM q128_M576_dense_g1em06 0.0
+ARM q16_M128_eqxfer_g1em06 0.0
+ARM q32_M192_eqxfer_g1em06 0.0
+ARM q128_M576_eqxfer_g1em06 0.0
+ARM q0_M64_eqtopxfer_g1em06 0.0
+ARM q16_M128_eqtopxfer_g1em06 0.0
+ARM q32_M192_eqtopxfer_g1em06 0.0
+ARM q64_M320_eqtopxfer_g1em06 0.0
+ARM q128_M576_eqtopxfer_g1em06 0.0
+ARM q256_M1088_eqtopxfer_g1em06 0.0
+ARM pod32_M128_dense 3.5
+ARM pod64_M256_dense 4.6
+ARM pod256_M1024_dense 11.8
+ARM pod512_M2048_dense 22.1
+ARM q0_M64_eqxfer_g0p001 0.0
+ARM q16_M128_eqxfer_g0p001 0.0
+ARM q32_M192_eqxfer_g0p001 0.0
+ARM q64_M320_eqxfer_g0p001 0.0
+ARM q128_M576_eqxfer_g0p001 0.0
+ARM q256_M1088_eqxfer_g0p001 0.0
+ARM q0_M64_eqtopxfer_g0p001 0.0
+ARM q16_M128_eqtopxfer_g0p001 0.0
+ARM q32_M192_eqtopxfer_g0p001 0.0
+ARM q64_M320_eqtopxfer_g0p001 0.0
+ARM q128_M576_eqtopxfer_g0p001 0.0
+ARM q256_M1088_eqtopxfer_g0p001 0.0
+ARM q0_M256_dense_g1em06 2.8
+ARM free512_M1024_dense 11.2
+ARM q0_M64_eqxfer_g1em06_fastL4 2.2
+WARM fft_tight 1.4
+WARM dense_tight 2.6
+WARM nt1e-2_dt01 1.0
+WARM nt1e-2_dt005 0.0
+WARM nt1e-3_dt01 0.0
+WARM nt1e-3_dt005 0.1
+WARM nt1e-4_dt01 0.0
+WARM nt1e-4_dt005 0.1
+WARM q0_M64_dense_g1em06 3.4
+WARM q64_M320_dense_g1em06 5.7
+WARM q256_M1088_dense_g1em06 37.6
+WARM q0_M64_eqxfer_g1em06 3.7
+WARM q64_M320_eqxfer_g1em06 4.9
+WARM q256_M1088_eqxfer_g1em06 7.6
+WARM pod16_M64_dense 2.3
+WARM pod128_M512_dense 5.1
+WARM q16_M128_dense_g1em06 4.6
+WARM q32_M192_dense_g1em06 5.0
+WARM q128_M576_dense_g1em06 9.4
+WARM q16_M128_eqxfer_g1em06 4.6
+WARM q32_M192_eqxfer_g1em06 4.9
+WARM q128_M576_eqxfer_g1em06 5.0
+WARM q0_M64_eqtopxfer_g1em06 3.0
+WARM q16_M128_eqtopxfer_g1em06 4.9
+WARM q32_M192_eqtopxfer_g1em06 5.3
+WARM q64_M320_eqtopxfer_g1em06 5.3
+WARM q128_M576_eqtopxfer_g1em06 5.0
+WARM q256_M1088_eqtopxfer_g1em06 6.7
+WARM pod32_M128_dense 3.2
+WARM pod64_M256_dense 5.4
+WARM pod256_M1024_dense 8.3
+WARM pod512_M2048_dense 17.7
+WARM q0_M64_eqxfer_g0p001 2.5
+WARM q16_M128_eqxfer_g0p001 3.1
+WARM q32_M192_eqxfer_g0p001 3.2
+WARM q64_M320_eqxfer_g0p001 3.4
+WARM q128_M576_eqxfer_g0p001 3.7
+WARM q256_M1088_eqxfer_g0p001 3.6
+WARM q0_M64_eqtopxfer_g0p001 2.4
+WARM q16_M128_eqtopxfer_g0p001 3.2
+WARM q32_M192_eqtopxfer_g0p001 3.2
+WARM q64_M320_eqtopxfer_g0p001 3.4
+WARM q128_M576_eqtopxfer_g0p001 3.4
+WARM q256_M1088_eqtopxfer_g0p001 4.1
+WARM q0_M256_dense_g1em06 4.9
+WARM free512_M1024_dense 13.5
+WARM q0_M64_eqxfer_g1em06_fastL4 5.2
+TIMED 0 4546.8
+TIMED 1 5007.6
+TIMED 2 5469.4
+PANEL COMPLETE
+FNO PHASE
+fno_exit=0
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 22.446
+FNO burgers-dev-00001 device_ms 22.468
+FNO burgers-dev-00002 device_ms 22.461
+FNO burgers-dev-00003 device_ms 22.479
+FNO burgers-dev-00004 device_ms 22.539
+FNO burgers-dev-00005 device_ms 22.54
+FNO PANEL COMPLETE
+ALL-DONE

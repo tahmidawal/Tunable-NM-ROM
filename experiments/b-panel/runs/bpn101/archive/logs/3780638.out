@@ -1,0 +1,109 @@
+host=pax105 source_commit=89df5cd18b01d99e630999ddfed5ddf43bba377c
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  429G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 80.2
+REFERENCE 1 149.6
+REFERENCE 2 245.7
+REFERENCE 3 334.2
+REFERENCE 4 409.7
+REFERENCE 5 477.9
+SNAPSHOTS 15.1
+RULE q 0 eqcert m 1024 primary
+RULE q 16 eqcert m 1024 primary
+RULE q 32 eqcert m 1024 primary
+RULE q 64 eqcert m 1024 primary
+RULE q 128 eqcert m 2048 secondary
+RULE q 256 eqcert m 2048 secondary
+ARM fft_tight 0.4
+ARM dense_tight 0.3
+ARM nt1e-2_dt01 0.0
+ARM nt1e-2_dt005 0.0
+ARM nt1e-3_dt01 0.0
+ARM nt1e-3_dt005 0.0
+ARM nt1e-4_dt01 0.0
+ARM nt1e-4_dt005 0.0
+ARM q0_M64_dense_g1em06 5.0
+ARM q16_M128_dense_g1em06 1.5
+ARM q32_M192_dense_g1em06 1.6
+ARM q64_M320_dense_g1em06 1.9
+ARM q128_M576_dense_g1em06 2.0
+ARM q256_M1088_dense_g1em06 2.0
+ARM q0_M64_eqcert_g1em06 0.0
+ARM q16_M128_eqcert_g1em06 0.0
+ARM q32_M192_eqcert_g1em06 0.0
+ARM q64_M320_eqcert_g1em06 0.0
+ARM q128_M576_eqcert_g1em06 0.0
+ARM q256_M1088_eqcert_g1em06 0.0
+ARM pod16_M64_dense 2.9
+ARM pod32_M128_dense 2.7
+ARM pod64_M256_dense 3.4
+ARM pod128_M512_dense 3.9
+ARM pod256_M1024_dense 5.2
+ARM pod512_M2048_dense 7.1
+ARM q0_M64_eqcert_g0p001 0.0
+ARM q16_M128_eqcert_g0p001 0.0
+ARM q32_M192_eqcert_g0p001 0.0
+ARM q64_M320_eqcert_g0p001 0.0
+ARM q128_M576_eqcert_g0p001 0.0
+ARM q256_M1088_eqcert_g0p001 0.0
+ARM q0_M256_dense_g1em06 1.2
+ARM free512_M1024_dense 3.3
+ARM q0_M64_eqcert_g1em06_fastL4 2.4
+RECON q 0 2.54466
+RECON q 16 2.46146
+RECON q 32 2.33249
+RECON q 64 2.13863
+RECON q 128 1.81053
+RECON q 256 0.90164
+WARM fft_tight 1.2
+WARM dense_tight 2.5
+WARM nt1e-2_dt01 1.0
+WARM nt1e-2_dt005 0.0
+WARM nt1e-3_dt01 0.0
+WARM nt1e-3_dt005 0.0
+WARM nt1e-4_dt01 0.0
+WARM nt1e-4_dt005 0.0
+WARM q0_M64_dense_g1em06 6.2
+WARM q16_M128_dense_g1em06 8.1
+WARM q32_M192_dense_g1em06 9.7
+WARM q64_M320_dense_g1em06 11.3
+WARM q128_M576_dense_g1em06 12.0
+WARM q256_M1088_dense_g1em06 21.4
+WARM q0_M64_eqcert_g1em06 3.3
+WARM q16_M128_eqcert_g1em06 4.2
+WARM q32_M192_eqcert_g1em06 4.6
+WARM q64_M320_eqcert_g1em06 4.5
+WARM q128_M576_eqcert_g1em06 4.7
+WARM q256_M1088_eqcert_g1em06 6.6
+WARM pod16_M64_dense 2.0
+WARM pod32_M128_dense 2.8
+WARM pod64_M256_dense 4.8
+WARM pod128_M512_dense 3.9
+WARM pod256_M1024_dense 5.2
+WARM pod512_M2048_dense 7.1
+WARM q0_M64_eqcert_g0p001 2.1
+WARM q16_M128_eqcert_g0p001 2.8
+WARM q32_M192_eqcert_g0p001 3.1
+WARM q64_M320_eqcert_g0p001 3.1
+WARM q128_M576_eqcert_g0p001 3.1
+WARM q256_M1088_eqcert_g0p001 3.7
+WARM q0_M256_dense_g1em06 3.9
+WARM free512_M1024_dense 5.3
+WARM q0_M64_eqcert_g1em06_fastL4 5.0
+TIMED 0 1380.7
+TIMED 1 1546.6
+TIMED 2 1712.6
+PANEL COMPLETE
+FNO PHASE
+fno_exit=0
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 7.199
+FNO burgers-dev-00001 device_ms 7.183
+FNO burgers-dev-00002 device_ms 7.211
+FNO burgers-dev-00003 device_ms 7.269
+FNO burgers-dev-00004 device_ms 7.216
+FNO burgers-dev-00005 device_ms 7.215
+FNO PANEL COMPLETE
+ALL-DONE

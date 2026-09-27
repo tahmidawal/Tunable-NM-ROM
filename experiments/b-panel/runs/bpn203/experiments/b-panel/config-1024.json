@@ -1,0 +1,172 @@
+{
+  "attempt": "bpn203",
+  "intervals": 1024,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "expected_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "expected_reference_sha256": {},
+  "reference_sha_note": "no comparator reference hashes at 1024; recorded as probes only",
+  "train_seed": 0,
+  "train_trajectories": 128,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "decoder_code_subsample": 8192,
+  "gauss_jordan_max": 64,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 600,
+    "gtol": 1e-06
+  },
+  "ic_gtol": 1e-06,
+  "inner_damping": 1e-10,
+  "tau_y": 0.1,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reps": 3,
+  "order_seed": 20260918,
+  "burn_seconds": 0.25,
+  "directions_file": "directions_qtd02.npz",
+  "rules_mesh": 256,
+  "rules": {
+    "0": {
+      "file": "rule_q0_reachable_m1024.npz"
+    },
+    "16": {
+      "file": "rule_q16_reachable_m1024.npz"
+    },
+    "32": {
+      "file": "rule_q32_reachable_m1024.npz"
+    },
+    "64": {
+      "file": "rule_q64_reachable_m1024.npz"
+    },
+    "128": {
+      "file": "rule_q128_reachable_m2048.npz"
+    },
+    "256": {
+      "file": "rule_q256_reachable_m2048.npz"
+    }
+  },
+  "dense_q": [
+    0,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "eq_q": [
+    0,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "eq_gtols": [
+    1e-06,
+    0.001
+  ],
+  "pod_ranks": [
+    16,
+    128,
+    32,
+    64,
+    256
+  ],
+  "extra_dense_q": [],
+  "extra_dense_M": 256,
+  "free_bank": true,
+  "free_bank_M": 1024,
+  "fast_arm": null,
+  "fast_parity_bar": 1e-12,
+  "same_grid_reference": "fft_tight",
+  "direct_control": null,
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "nt1e-2_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.01,
+      "ltol": 0.5
+    },
+    {
+      "name": "nt1e-4_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    }
+  ],
+  "fidelity_expectations": {},
+  "source_job_ids": {
+    "qtd02": "3757505",
+    "btq201": "3747245",
+    "qrg304": "3768168",
+    "spd01": "3745655"
+  },
+  "purpose": "DESIGN.md section 3.2: the 1024^2 panel on an H200 with the frozen model (bank, head, directions) transferred and the certified rules transferred (support mapped, weights refit on reachable states, held-out rho); priority_override lists the coordinator's reduced set first within each family",
+  "eq_transfer": {
+    "seed": 20260917,
+    "fit_trajectories": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "cert_trajectories": [
+      8,
+      9,
+      10,
+      11
+    ],
+    "collect_iters": 12,
+    "fit_states": 64,
+    "cert_states": 512,
+    "certify_chunk": 16,
+    "fit_state_note": "DESIGN A7: fit_states used at every rung, uncapped; the clip(max_fit_rows/M, 8, fit_states) convention of bpn201/bpn202 is retired"
+  },
+  "priority_override": [
+    "q0_M64_dense_g1em06",
+    "q64_M320_dense_g1em06",
+    "q256_M1088_dense_g1em06",
+    "q0_M64_eqxfer_g1em06",
+    "q64_M320_eqxfer_g1em06",
+    "q256_M1088_eqxfer_g1em06",
+    "pod16_M64_dense",
+    "pod128_M512_dense"
+  ],
+  "reconstruction_note": "DESIGN A7: the untimed reconstruction diagnostic runs before the subjects are built (bpn202, job 3787247, OOM-killed in it at q = 256 with 29 subjects resident) and is OOM-tolerant"
+}

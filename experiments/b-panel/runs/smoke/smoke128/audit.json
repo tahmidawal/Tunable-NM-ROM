@@ -1,0 +1,1345 @@
+{
+  "result": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-panel/experiments/b-panel/runs/smoke/smoke128/output/result.json",
+  "reference_mesh": 256,
+  "result_sha256": "4b408140bd1017f1b072596b8a46dc110f52f030dc2d14a4e4f4d44b0290dbab",
+  "job_id": null,
+  "commit": null,
+  "gpu": "NVIDIA GB10",
+  "attempt": "smoke",
+  "intervals": 128,
+  "dt": 0.005,
+  "mem_fraction": "0.25",
+  "elapsed_seconds": 134.35842172591947,
+  "K": 16,
+  "R": 512,
+  "output_times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "checks": {
+    "complete": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "backend_gpu": {
+      "passed": true,
+      "detail": "gpu",
+      "note": null
+    },
+    "x64": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "precision_highest": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "bank_frozen": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "checkpoint_unchanged": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "final_cohort_unopened": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "step_budget_600": {
+      "passed": true,
+      "detail": {
+        "ic_budget": 400,
+        "step_budget": 600,
+        "gtol": 1e-06
+      },
+      "note": null
+    },
+    "evaluation_cohort_bitwise_abl01": {
+      "passed": true,
+      "detail": {
+        "expected": null,
+        "got": "3610a428db73a58615a5a2dc7dae5045da0f4977f93fcd1f798c3a9723289e57",
+        "passed": null
+      },
+      "note": null
+    },
+    "directions_file_sha256": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "got": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+        "expected": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535"
+      },
+      "note": null
+    },
+    "directions_prefix_hashes": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "detail": {
+          "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "4": "4a4bb607c94763c0c8fa899bde052d527a25fa994bbf286b9927bf93a55ed40e"
+        }
+      },
+      "note": null
+    },
+    "repetition_output_identical": {
+      "passed": true,
+      "detail": {
+        "passed": true
+      },
+      "note": null
+    },
+    "fft_tight_converged_everywhere": {
+      "passed": true,
+      "detail": {
+        "passed": true
+      },
+      "note": null
+    },
+    "transfer_fit_cert_disjoint": {
+      "passed": true,
+      "detail": {
+        "passed": true,
+        "fit": [
+          0,
+          1
+        ],
+        "cert": [
+          2
+        ]
+      },
+      "note": null
+    },
+    "reference_residuals": {
+      "passed": true,
+      "detail": 9.875615023157604e-12,
+      "note": null
+    },
+    "every_rule_hash_matches_provenance": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "matched_rule_files_bitwise": {
+      "passed": null,
+      "detail": {
+        "passed": null,
+        "pairs": [],
+        "note": "None when no two sets share a rule file; a pair that differs means the multi-set path perturbs a result"
+      },
+      "note": "no two rule sets share a rule file in this job",
+      "blocking": false
+    },
+    "no_subject_dropped": {
+      "passed": true,
+      "detail": [],
+      "note": "a drop is a reported finding, not a failure of the job",
+      "blocking": false
+    },
+    "every_subject_case_has_all_reps": {
+      "passed": true,
+      "detail": [
+        1
+      ],
+      "note": null
+    },
+    "every_invocation_paired": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "overdetermined_weak_system": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "every_rom_carries_exit_and_stationarity": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "host_time_covers_gpu_time": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "artifacts_present": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "same_grid_baseline_present": {
+      "passed": true,
+      "detail": null,
+      "note": null
+    },
+    "recorded_errors_recomputed_from_saved_fields": {
+      "passed": true,
+      "detail": 0.0,
+      "note": null
+    },
+    "fno_phase_present": {
+      "passed": false,
+      "detail": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-17-b-panel/experiments/b-panel/runs/smoke/smoke128/output/fno-large-timing.json",
+      "note": "no FNO timing file: the FNO phase did not run or failed",
+      "blocking": false
+    },
+    "convergence_flags_reproduced": {
+      "passed": true,
+      "detail": [],
+      "note": null
+    },
+    "cross_job_fidelity": {
+      "passed": null,
+      "detail": {}
+    }
+  },
+  "failed": [],
+  "arms": [
+    {
+      "arm": "q0_M64_dense_g1em06",
+      "kind": "rom",
+      "family": "rom",
+      "q": 0,
+      "k": null,
+      "M": 64,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 16,
+      "rule_kind": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "worst_reference_percent": 2.3348989252245973,
+      "median_reference_percent": 1.7683748935088381,
+      "worst_all_times_percent": 2.3348989252245973,
+      "median_all_times_percent": 1.7683748935088381,
+      "worst_evolved_percent": 0.7850343025284429,
+      "median_evolved_percent": 0.7246493309092378,
+      "worst_t0_compression_percent": 2.3348989252245973,
+      "per_case_evolved_percent": {
+        "0": 0.6642643592900326,
+        "1": 0.7850343025284429
+      },
+      "per_case_all_times_percent": {
+        "0": 1.201850861793079,
+        "1": 2.3348989252245973
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.201850861793079,
+          0.6642643592900326,
+          0.4956986856914836,
+          0.4214751887017772,
+          0.3586591018732781,
+          0.3312264298233679
+        ],
+        "1": [
+          2.3348989252245973,
+          0.7850343025284429,
+          0.3453797845195676,
+          0.24390659514525395,
+          0.1988457368681841,
+          0.17868088080516512
+        ]
+      },
+      "median_gpu_ms": 506.978623510804,
+      "median_host_ms": 508.77213501371443,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        536.910307011567,
+        477.046940010041
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 29,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.399209081470929e-07,
+      "max_step_stationarity": 8.57949304185486e-07,
+      "max_ic_stationarity": 9.399209081470929e-07,
+      "max_ic_relative_residual": 0.023031214910560878,
+      "converged": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "best_found_percent": 2.328214153463049,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.35684304469333117,
+      "solved_over_best_found": 1.002871201410577
+    },
+    {
+      "arm": "q0_M64_eqxfer_g1em06",
+      "kind": "rom",
+      "family": "rom",
+      "q": 0,
+      "k": null,
+      "M": 64,
+      "m": 240,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 16,
+      "rule_kind": "eqxfer",
+      "rule_basis": "primary",
+      "rule_m": 240,
+      "rho_max": 0.07612780759810857,
+      "rule_set": "eqxfer",
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": "q-ridge",
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": "rule_q0_smoke_m256.npz",
+      "rule_file_sha256": "95f1304ed015ecce46dbb64dfb553cc7bfb3671b85fda167794b6dfca573c149",
+      "rule_construction_note": null,
+      "rho_p95": 0.07168425443829199,
+      "certified_primary": true,
+      "certified_secondary": true,
+      "rule_source_job": "smoke",
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "worst_reference_percent": 2.3348989252245973,
+      "median_reference_percent": 1.7859923358163832,
+      "worst_all_times_percent": 2.3348989252245973,
+      "median_all_times_percent": 1.7683748935088381,
+      "worst_evolved_percent": 1.8138075354292769,
+      "median_evolved_percent": 1.4610716160351769,
+      "worst_t0_compression_percent": 2.3348989252245973,
+      "per_case_evolved_percent": {
+        "0": 1.108335696641077,
+        "1": 1.8138075354292769
+      },
+      "per_case_all_times_percent": {
+        "0": 1.201850861793079,
+        "1": 2.3348989252245973
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.201850861793079,
+          1.108335696641077,
+          0.7470762663567863,
+          0.5908112562499682,
+          0.48595327641493913,
+          0.41006605118618733
+        ],
+        "1": [
+          2.3348989252245973,
+          1.8138075354292769,
+          1.0859475468730198,
+          0.7122226160770792,
+          0.5267416107672467,
+          0.4240213249542069
+        ]
+      },
+      "median_gpu_ms": 88.96793203894049,
+      "median_host_ms": 90.96186101669446,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        102.71490504965186,
+        75.22095902822912
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 33,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.606501886019295e-07,
+      "max_step_stationarity": 9.606501886019295e-07,
+      "max_ic_stationarity": 9.399209081470929e-07,
+      "max_ic_relative_residual": 0.023031214910560878,
+      "converged": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "best_found_percent": 2.328214153463049,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.35684304469333117,
+      "solved_over_best_found": 1.002871201410577
+    },
+    {
+      "arm": "q4_M80_dense_g1em06",
+      "kind": "rom",
+      "family": "rom",
+      "q": 4,
+      "k": null,
+      "M": 80,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 20,
+      "rule_kind": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "worst_reference_percent": 2.3247147686855167,
+      "median_reference_percent": 1.7626607054364765,
+      "worst_all_times_percent": 2.3247147686855167,
+      "median_all_times_percent": 1.7626607054364765,
+      "worst_evolved_percent": 0.7403775247778352,
+      "median_evolved_percent": 0.6728365078601962,
+      "worst_t0_compression_percent": 2.3247147686855167,
+      "per_case_evolved_percent": {
+        "0": 0.605295490942557,
+        "1": 0.7403775247778352
+      },
+      "per_case_all_times_percent": {
+        "0": 1.2006066421874362,
+        "1": 2.3247147686855167
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.2006066421874362,
+          0.605295490942557,
+          0.436798625776787,
+          0.38537972707609847,
+          0.3412898631154014,
+          0.3205757396421547
+        ],
+        "1": [
+          2.3247147686855167,
+          0.7403775247778352,
+          0.36092429167794765,
+          0.26777647940752236,
+          0.2120386437097685,
+          0.18438401396792203
+        ]
+      },
+      "median_gpu_ms": 688.3585890172981,
+      "median_host_ms": 690.7788719981909,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        714.9958660593256,
+        661.7213119752705
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 32,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.79665689658554e-07,
+      "max_step_stationarity": 9.79665689658554e-07,
+      "max_ic_stationarity": 8.827751935655965e-07,
+      "max_ic_relative_residual": 0.022935190939218423,
+      "converged": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "best_found_percent": 2.317902408485194,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.35684304469333117,
+      "solved_over_best_found": 1.0029390194235033
+    },
+    {
+      "arm": "q4_M80_eqxfer_g1em06",
+      "kind": "rom",
+      "family": "rom",
+      "q": 4,
+      "k": null,
+      "M": 80,
+      "m": 285,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 20,
+      "rule_kind": "eqxfer",
+      "rule_basis": "primary",
+      "rule_m": 285,
+      "rho_max": 0.06321135907229682,
+      "rule_set": "eqxfer",
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": "q-ridge",
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": "rule_q4_smoke_m320.npz",
+      "rule_file_sha256": "8dc74e87241c0307927b3d8e608df9c61ad855b9092b216e3c1ea4d54feb4479",
+      "rule_construction_note": null,
+      "rho_p95": 0.04401151165450109,
+      "certified_primary": true,
+      "certified_secondary": true,
+      "rule_source_job": "smoke",
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "worst_reference_percent": 2.3247147686855167,
+      "median_reference_percent": 1.7626607054364765,
+      "worst_all_times_percent": 2.3247147686855167,
+      "median_all_times_percent": 1.7626607054364765,
+      "worst_evolved_percent": 1.63016421003143,
+      "median_evolved_percent": 1.2049866034741337,
+      "worst_t0_compression_percent": 2.3247147686855167,
+      "per_case_evolved_percent": {
+        "0": 0.7798089969168374,
+        "1": 1.63016421003143
+      },
+      "per_case_all_times_percent": {
+        "0": 1.2006066421874362,
+        "1": 2.3247147686855167
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          1.2006066421874362,
+          0.7798089969168374,
+          0.5071270778317715,
+          0.4190084407599158,
+          0.35965967698100076,
+          0.3289791927671335
+        ],
+        "1": [
+          2.3247147686855167,
+          1.63016421003143,
+          1.017269419936556,
+          0.5758934680425987,
+          0.3643940773583392,
+          0.27950781519312545
+        ]
+      },
+      "median_gpu_ms": 135.47293847659603,
+      "median_host_ms": 137.36233103554696,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        144.89105995744467,
+        126.05481699574739
+      ],
+      "median_iterations": 3.0,
+      "max_iterations": 35,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.465208851927342e-07,
+      "max_step_stationarity": 9.465208851927342e-07,
+      "max_ic_stationarity": 8.827751935655965e-07,
+      "max_ic_relative_residual": 0.022935190939218423,
+      "converged": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "best_found_percent": 2.317902408485194,
+      "best_found_kind": "head manifold best-found",
+      "bank_projection_percent": 0.35684304469333117,
+      "solved_over_best_found": 1.0029390194235033
+    },
+    {
+      "arm": "pod8_M32_dense",
+      "kind": "rom",
+      "family": "pod",
+      "q": null,
+      "k": 8,
+      "M": 32,
+      "m": null,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "dt": 0.005,
+      "solved_dimension": 8,
+      "rule_kind": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": null,
+      "ltol": null,
+      "preconditioner": null,
+      "worst_reference_percent": 92.13353888324262,
+      "median_reference_percent": 69.25550893558679,
+      "worst_all_times_percent": 92.13353888324262,
+      "median_all_times_percent": 69.25550893558679,
+      "worst_evolved_percent": 59.02179954499219,
+      "median_evolved_percent": 47.68138374591564,
+      "worst_t0_compression_percent": 92.13353888324262,
+      "per_case_evolved_percent": {
+        "0": 36.34096794683908,
+        "1": 59.02179954499219
+      },
+      "per_case_all_times_percent": {
+        "0": 46.37747898793097,
+        "1": 92.13353888324262
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          46.37747898793097,
+          36.34096794683908,
+          29.924566909912443,
+          25.382853056104548,
+          22.39306633732454,
+          20.49438035920833
+        ],
+        "1": [
+          92.13353888324262,
+          59.02179954499219,
+          42.96405161555663,
+          33.15213134403842,
+          26.55832260488819,
+          21.89422665304681
+        ]
+      },
+      "median_gpu_ms": 23.09963054722175,
+      "median_host_ms": 24.597317504230887,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        26.589510031044483,
+        19.609751063399017
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": 12,
+      "newton_iterations_median": null,
+      "max_joint_stationarity": 9.740579312866242e-07,
+      "max_step_stationarity": 9.740579312866242e-07,
+      "max_ic_stationarity": 0.0,
+      "max_ic_relative_residual": 0.0,
+      "converged": true,
+      "converged_strict": true,
+      "completed": true,
+      "total_budget_exits": 0,
+      "exit_reason_counts": {
+        "4": 100
+      },
+      "admissible": true,
+      "best_found_percent": 92.13353258784635,
+      "best_found_kind": "POD span projection",
+      "bank_projection_percent": null,
+      "solved_over_best_found": 1.0000000683290449
+    },
+    {
+      "arm": "fft_tight",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "k": null,
+      "M": null,
+      "m": null,
+      "quadrature": null,
+      "gtol": null,
+      "dt": 0.005,
+      "solved_dimension": null,
+      "rule_kind": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": 1e-06,
+      "ltol": 1e-08,
+      "preconditioner": "fft",
+      "worst_reference_percent": 1.0451389068910735,
+      "median_reference_percent": 0.8919333277729826,
+      "worst_all_times_percent": 0.0,
+      "median_all_times_percent": 0.0,
+      "worst_evolved_percent": 0.0,
+      "median_evolved_percent": 0.0,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 0.0,
+        "1": 0.0
+      },
+      "per_case_all_times_percent": {
+        "0": 0.0,
+        "1": 0.0
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "median_gpu_ms": 105.02981906756759,
+      "median_host_ms": 106.6298499936238,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        118.3397100539878,
+        91.71992808114737
+      ],
+      "median_iterations": 2.0,
+      "max_iterations": null,
+      "newton_iterations_median": 100.5,
+      "max_joint_stationarity": null,
+      "max_step_stationarity": null,
+      "max_ic_stationarity": null,
+      "max_ic_relative_residual": null,
+      "converged": null,
+      "converged_strict": null,
+      "completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "admissible": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    },
+    {
+      "arm": "nt1e-2_dt01",
+      "kind": "fom",
+      "family": "fom",
+      "q": null,
+      "k": null,
+      "M": null,
+      "m": null,
+      "quadrature": null,
+      "gtol": null,
+      "dt": 0.01,
+      "solved_dimension": null,
+      "rule_kind": null,
+      "rule_basis": null,
+      "rule_m": null,
+      "rho_max": null,
+      "rule_set": null,
+      "rule_status": null,
+      "rule_export_basis": null,
+      "rule_source_lane": null,
+      "rule_source_attempt": null,
+      "rule_fit_states": null,
+      "rule_file": null,
+      "rule_file_sha256": null,
+      "rule_construction_note": null,
+      "rho_p95": null,
+      "certified_primary": null,
+      "certified_secondary": null,
+      "rule_source_job": null,
+      "ntol": 0.01,
+      "ltol": 0.5,
+      "preconditioner": "fft",
+      "worst_reference_percent": 1.261088157424872,
+      "median_reference_percent": 1.0787112756396176,
+      "worst_all_times_percent": 1.3542460923422377,
+      "median_all_times_percent": 1.213083588567386,
+      "worst_evolved_percent": 1.3542460923422377,
+      "median_evolved_percent": 1.213083588567386,
+      "worst_t0_compression_percent": 0.0,
+      "per_case_evolved_percent": {
+        "0": 1.3542460923422377,
+        "1": 1.0719210847925342
+      },
+      "per_case_all_times_percent": {
+        "0": 1.3542460923422377,
+        "1": 1.0719210847925342
+      },
+      "per_time_same_grid_percent": {
+        "0": [
+          0.0,
+          0.7251559116136042,
+          1.1594197878905577,
+          1.33173841712989,
+          1.3542460923422377,
+          1.3047603852185037
+        ],
+        "1": [
+          0.0,
+          1.0719210847925342,
+          1.0623238769570804,
+          0.8498383965250831,
+          0.6859253203270829,
+          0.5696928052276257
+        ]
+      },
+      "median_gpu_ms": 10.2062615333125,
+      "median_host_ms": 11.403994460124522,
+      "gpu_ms_repetitions": 2,
+      "gpu_ms_all": [
+        9.903148049488664,
+        10.509375017136335
+      ],
+      "median_iterations": 1.0,
+      "max_iterations": null,
+      "newton_iterations_median": 27.0,
+      "max_joint_stationarity": null,
+      "max_step_stationarity": null,
+      "max_ic_stationarity": null,
+      "max_ic_relative_residual": null,
+      "converged": null,
+      "converged_strict": null,
+      "completed": null,
+      "total_budget_exits": null,
+      "exit_reason_counts": null,
+      "admissible": true,
+      "best_found_percent": null,
+      "best_found_kind": null,
+      "bank_projection_percent": null,
+      "solved_over_best_found": null
+    }
+  ],
+  "ladders": {
+    "dense": {
+      "arms": [
+        "q0_M64_dense_g1em06",
+        "q4_M80_dense_g1em06"
+      ],
+      "q_or_k": [
+        0,
+        4
+      ],
+      "worst_evolved_percent": [
+        0.7850343025284429,
+        0.7403775247778352
+      ],
+      "worst_all_times_percent": [
+        2.3348989252245973,
+        2.3247147686855167
+      ],
+      "median_gpu_ms": [
+        506.978623510804,
+        688.3585890172981
+      ],
+      "converged": [
+        true,
+        true
+      ],
+      "admissible": [
+        true,
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "nondominated_converged_points": 2,
+      "error_span": 1.0603162255148246,
+      "cost_span": 1.3577664956570477
+    },
+    "eq_eqxfer_g1em06": {
+      "arms": [
+        "q0_M64_eqxfer_g1em06",
+        "q4_M80_eqxfer_g1em06"
+      ],
+      "q_or_k": [
+        0,
+        4
+      ],
+      "worst_evolved_percent": [
+        1.8138075354292769,
+        1.63016421003143
+      ],
+      "worst_all_times_percent": [
+        2.3348989252245973,
+        2.3247147686855167
+      ],
+      "median_gpu_ms": [
+        88.96793203894049,
+        135.47293847659603
+      ],
+      "converged": [
+        true,
+        true
+      ],
+      "admissible": [
+        true,
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "nondominated_converged_points": 2,
+      "error_span": 1.112653267853492,
+      "cost_span": 1.522716504383857
+    },
+    "pod": {
+      "arms": [
+        "pod8_M32_dense"
+      ],
+      "q_or_k": [
+        8
+      ],
+      "worst_evolved_percent": [
+        59.02179954499219
+      ],
+      "worst_all_times_percent": [
+        92.13353888324262
+      ],
+      "median_gpu_ms": [
+        23.09963054722175
+      ],
+      "converged": [
+        true
+      ],
+      "admissible": [
+        true
+      ],
+      "monotone_evolved": true,
+      "monotone_all_times": true,
+      "all_converged": true,
+      "nondominated_converged_points": 1,
+      "error_span": 1.0,
+      "cost_span": 1.0
+    }
+  },
+  "nondominated": {
+    "gpu_all": {
+      "cost": "median_gpu_ms",
+      "error": "worst_all_times_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "q0_M64_eqxfer_g1em06",
+        "q4_M80_eqxfer_g1em06"
+      ]
+    },
+    "gpu_evolved": {
+      "cost": "median_gpu_ms",
+      "error": "worst_evolved_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "q0_M64_eqxfer_g1em06",
+        "q4_M80_eqxfer_g1em06",
+        "q0_M64_dense_g1em06",
+        "q4_M80_dense_g1em06"
+      ]
+    },
+    "complete_all": {
+      "cost": "median_host_ms",
+      "error": "worst_all_times_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "q0_M64_eqxfer_g1em06",
+        "q4_M80_eqxfer_g1em06"
+      ]
+    },
+    "complete_evolved": {
+      "cost": "median_host_ms",
+      "error": "worst_evolved_percent",
+      "all": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "admissible": [
+        "nt1e-2_dt01",
+        "fft_tight"
+      ],
+      "reduced_only": [
+        "pod8_M32_dense",
+        "q0_M64_eqxfer_g1em06",
+        "q4_M80_eqxfer_g1em06",
+        "q0_M64_dense_g1em06",
+        "q4_M80_dense_g1em06"
+      ]
+    }
+  },
+  "fom_discretisation_error_percent": {
+    "fft_tight": 1.0451389068910735,
+    "nt1e-2_dt01": 1.261088157424872
+  },
+  "dropped": [],
+  "rules": [
+    {
+      "q": 0,
+      "M": 64,
+      "rule_set": "eqxfer",
+      "file": "rule_q0_smoke_m256.npz",
+      "sha256": "95f1304ed015ecce46dbb64dfb553cc7bfb3671b85fda167794b6dfca573c149",
+      "source_job": "smoke",
+      "source_m": 256,
+      "source_mesh": 64,
+      "source_rho_max": null,
+      "source_rho_p95": null,
+      "source_relative_fit": 0.005337909767877915,
+      "rho_bar": 0.116,
+      "source_fit_states": null,
+      "certified_primary": false,
+      "certified_secondary": false,
+      "basis": "none",
+      "nodes_sha256": "d1ef1bc11bc70a749930c83dbde9bc29a1f2d4710a52229ce4ded8f084edca81",
+      "weights_sha256": "ea45179777317567fe7a81505a96938229cbfc569fc85830d9508d00b337bb0f",
+      "nodes_sha256_matches": true,
+      "weights_sha256_matches": true,
+      "source_lane": "q-ridge",
+      "source_attempt": null,
+      "construction_status": null,
+      "export_basis": null,
+      "construction_note": null,
+      "same_file_as_qrg304_rule": null
+    },
+    {
+      "q": 4,
+      "M": 80,
+      "rule_set": "eqxfer",
+      "file": "rule_q4_smoke_m320.npz",
+      "sha256": "8dc74e87241c0307927b3d8e608df9c61ad855b9092b216e3c1ea4d54feb4479",
+      "source_job": "smoke",
+      "source_m": 320,
+      "source_mesh": 64,
+      "source_rho_max": null,
+      "source_rho_p95": null,
+      "source_relative_fit": 0.0006984921483662102,
+      "rho_bar": 0.116,
+      "source_fit_states": null,
+      "certified_primary": false,
+      "certified_secondary": false,
+      "basis": "none",
+      "nodes_sha256": "e20ece31e5068a04f4aa268bbd5aab524764beeb8254764777816cb8094d3928",
+      "weights_sha256": "42bdda44eddb9262d64b029445ed6197675c917d2a6d19c7244971bdf9dd788a",
+      "nodes_sha256_matches": true,
+      "weights_sha256_matches": true,
+      "source_lane": "q-ridge",
+      "source_attempt": null,
+      "construction_status": null,
+      "export_basis": null,
+      "construction_note": null,
+      "same_file_as_qrg304_rule": null
+    }
+  ],
+  "transfer": [
+    {
+      "q": 0,
+      "M": 64,
+      "rule_set": "eqxfer",
+      "m_support": 256,
+      "m": 240,
+      "refit": {
+        "relative_fit": 0.0016645489774957294,
+        "design_rows": 1024,
+        "support": 256,
+        "nonzero_weights": 240,
+        "fit_states": 16,
+        "M": 64,
+        "seconds": 0.24239480297546834
+      },
+      "certification": {
+        "states": 16,
+        "rho_max": 0.07612780759810857,
+        "rho_p95": 0.07168425443829199,
+        "rho_median": 0.02155482078899385,
+        "rho_mean": 0.029421700195449367,
+        "rho_min": 0.009509673079682647
+      },
+      "fit_states_available": 102,
+      "fit_states_used": 16,
+      "fit_state_rule": "fit_states, uncapped (DESIGN A7)",
+      "certification_states": 16,
+      "population": "production dense query, converged per-step states (A3)",
+      "fit_pool_sha256": "099d9a7f4723d1f4ab1a817dab3e8f3f97fa90ce12fe75a93b90296f4595edc9",
+      "certification_pool_sha256": "99323331df74e62812b8257b48878ac5879a4d9d654931b020f3b02c298f1c87",
+      "certified_primary": true,
+      "certified_secondary": true,
+      "rho_bar": 0.116,
+      "source_rho_max": null,
+      "seconds": 17.205291244084947,
+      "basis": "primary"
+    },
+    {
+      "q": 4,
+      "M": 80,
+      "rule_set": "eqxfer",
+      "m_support": 320,
+      "m": 285,
+      "refit": {
+        "relative_fit": 0.0010059684829113484,
+        "design_rows": 1280,
+        "support": 320,
+        "nonzero_weights": 285,
+        "fit_states": 16,
+        "M": 80,
+        "seconds": 0.2671941539738327
+      },
+      "certification": {
+        "states": 16,
+        "rho_max": 0.06321135907229682,
+        "rho_p95": 0.04401151165450109,
+        "rho_median": 0.023658857966810307,
+        "rho_mean": 0.02340030244818922,
+        "rho_min": 0.005859775008605123
+      },
+      "fit_states_available": 102,
+      "fit_states_used": 16,
+      "fit_state_rule": "fit_states, uncapped (DESIGN A7)",
+      "certification_states": 16,
+      "population": "production dense query, converged per-step states (A3)",
+      "fit_pool_sha256": "db0ebfd901f924dbe05ca3e90489881b27ea62ba62da262b56bd3282d3adc041",
+      "certification_pool_sha256": "4fe1a1d22ee375d5dfd98f22ba563ccfac5e8ae9734d28a99c83bf82e2bd35fb",
+      "certified_primary": true,
+      "certified_secondary": true,
+      "rho_bar": 0.116,
+      "source_rho_max": null,
+      "seconds": 19.083866209955886,
+      "basis": "primary"
+    }
+  ],
+  "directions": {
+    "file": "directions_qtd02.npz",
+    "sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "expected_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+    "columns": 512,
+    "prefix_sha256": {
+      "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "4": "4a4bb607c94763c0c8fa899bde052d527a25fa994bbf286b9927bf93a55ed40e"
+    },
+    "expected_prefix_sha256": {
+      "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "16": "3417aa250f794e3ee5350a595341d8a5d17327effdb23c7b148cdaac2d6f0396",
+      "32": "f0619016ff580d5fa7b8673486403e3b5566910885c40e248d35b5527bff4606",
+      "64": "c15f5ab1fec3be28c7a2ec6d7c5b57af3faa51e4de959da1500fde72f6177edc",
+      "128": "5abaedc1a97bb94271602f625fb2a21ae52004d0f858eb7ad618b6c11eb7ad56",
+      "256": "0935c63e66f6afcdf95ee4dad9ba54ef3e03ae61a78c290a23bbfb09c9d77405"
+    },
+    "source_job": "3757505",
+    "rule": "field-metric POD of the decoder-output residual eta - h_theta(z*), with z* the best-found head code under the shared LM rule; nested in q",
+    "transferred": true
+  },
+  "reconstruction": [
+    {
+      "family": "rom",
+      "q": 4,
+      "solved_dimension": 20,
+      "cases": [
+        {
+          "case": 0,
+          "bank_projection_per_time": [
+            0.0003050933959908652,
+            0.00010069608527986244,
+            5.542684992979422e-05,
+            5.375269626013557e-05,
+            5.778161983737132e-05,
+            6.429603181282628e-05
+          ],
+          "bank_projection_max": 0.0003050933959908652,
+          "best_found_per_time": [
+            0.007629885082579525,
+            0.003607342149472795,
+            0.00277751040504141,
+            0.003012698892040212,
+            0.002805751118093276,
+            0.002799822547931232
+          ],
+          "best_found_max": 0.007629885082579525
+        },
+        {
+          "case": 1,
+          "bank_projection_per_time": [
+            0.0035684304469333116,
+            0.0005809192663933565,
+            0.0001892860761717901,
+            9.26728069883629e-05,
+            5.631769870932335e-05,
+            3.9450809259420316e-05
+          ],
+          "bank_projection_max": 0.0035684304469333116,
+          "best_found_per_time": [
+            0.023179024084851937,
+            0.005936576185237086,
+            0.0031505252784290788,
+            0.0024313413356644034,
+            0.002024440480191703,
+            0.0018118758919570845
+          ],
+          "best_found_max": 0.023179024084851937
+        }
+      ],
+      "worst_bank_projection": 0.0035684304469333116,
+      "worst_best_found": 0.023179024084851937,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 12.288550513912924
+    },
+    {
+      "family": "rom",
+      "q": 0,
+      "solved_dimension": 16,
+      "cases": [
+        {
+          "case": 0,
+          "bank_projection_per_time": [
+            0.0003050933959908652,
+            0.00010069608527986244,
+            5.542684992979422e-05,
+            5.375269626013557e-05,
+            5.778161983737132e-05,
+            6.429603181282628e-05
+          ],
+          "bank_projection_max": 0.0003050933959908652,
+          "best_found_per_time": [
+            0.007666226670831356,
+            0.0036452654496240498,
+            0.0027862137756164474,
+            0.003044742235313639,
+            0.0028600098957129267,
+            0.002890184857061703
+          ],
+          "best_found_max": 0.007666226670831356
+        },
+        {
+          "case": 1,
+          "bank_projection_per_time": [
+            0.0035684304469333116,
+            0.0005809192663933565,
+            0.0001892860761717901,
+            9.26728069883629e-05,
+            5.631769870932335e-05,
+            3.9450809259420316e-05
+          ],
+          "bank_projection_max": 0.0035684304469333116,
+          "best_found_per_time": [
+            0.02328214153463049,
+            0.005952939772296411,
+            0.0031576327188279313,
+            0.0024371801815364818,
+            0.0020330809190175713,
+            0.0018229056051610006
+          ],
+          "best_found_max": 0.02328214153463049
+        }
+      ],
+      "worst_bank_projection": 0.0035684304469333116,
+      "worst_best_found": 0.02328214153463049,
+      "starts": 4,
+      "budget": 100,
+      "seconds": 8.161065721069463
+    },
+    {
+      "family": "pod",
+      "k": 8,
+      "solved_dimension": 8,
+      "cases": [
+        {
+          "case": 0,
+          "best_found_per_time": [
+            0.46377467956043367,
+            0.35706107453928243,
+            0.2797658401945155,
+            0.21946131405081754,
+            0.17687061896923417,
+            0.15059278251019514
+          ],
+          "best_found_max": 0.46377467956043367
+        },
+        {
+          "case": 1,
+          "best_found_per_time": [
+            0.9213353258784635,
+            0.5919759328903345,
+            0.42787370369811656,
+            0.3247624206965005,
+            0.2535925350075344,
+            0.20204682203801985
+          ],
+          "best_found_max": 0.9213353258784635
+        }
+      ],
+      "worst_best_found": 0.9213353258784635
+    }
+  ],
+  "fno": null,
+  "compile_warmup": {
+    "seconds": 14.10235916590318,
+    "subjects": 7
+  },
+  "timed_subjects": [
+    "fft_tight",
+    "nt1e-2_dt01",
+    "q4_M80_dense_g1em06",
+    "q0_M64_eqxfer_g1em06",
+    "q0_M64_dense_g1em06",
+    "q4_M80_eqxfer_g1em06",
+    "pod8_M32_dense"
+  ]
+}

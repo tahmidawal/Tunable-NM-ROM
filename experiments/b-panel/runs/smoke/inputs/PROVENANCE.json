@@ -1,0 +1,65 @@
+{
+  "note": "SMOKE inputs",
+  "files": {
+    "directions_qtd02.npz": {
+      "sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+      "source_job": "3757505",
+      "source_attempt": "qtd02",
+      "source_commit": "f064b8825c57fad2a6c3c62715ad41568ddce828",
+      "source_archive_sha256": "188fbf88a8d3562399f5d2b5a2f9efb18f6c3bbfb38759d1f861f2b7431828e1",
+      "source_path": "output/directions_old.npz",
+      "columns": 512,
+      "available_rank": 512,
+      "prefix_sha256": {
+        "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "16": "3417aa250f794e3ee5350a595341d8a5d17327effdb23c7b148cdaac2d6f0396",
+        "32": "f0619016ff580d5fa7b8673486403e3b5566910885c40e248d35b5527bff4606",
+        "64": "c15f5ab1fec3be28c7a2ec6d7c5b57af3faa51e4de959da1500fde72f6177edc",
+        "128": "5abaedc1a97bb94271602f625fb2a21ae52004d0f858eb7ad618b6c11eb7ad56",
+        "256": "0935c63e66f6afcdf95ee4dad9ba54ef3e03ae61a78c290a23bbfb09c9d77405"
+      },
+      "field_orthonormal_prefix_sha256": {
+        "0": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "16": "d376dcbda5b2e752ac17d0af9d11508d48b0d0ae03cde4ce13e22d6a9d9faadc",
+        "32": "acdbb80f1a29e269fecd0b760969214edbce8f4235e717daadb619bda11a3b08",
+        "64": "9e5ca0d3a44abdfc7f2b66842eada87db3524c4e9684af6d3c20b3239a249033",
+        "128": "9c9c6a03d449ecc5f08282e0240d83f67b3f83ae4f2d4cb0cb3837c11dca438f",
+        "256": "78ad11950482f5540582b9a6045361e1ec66822b3fe0071e26ca9f6a0c9e9609"
+      },
+      "directions_sha256": "7d51a88cd0e27bc829ecd7e76b95ea8b855ab683fd3011fd67d180013d0e2d51",
+      "rule": "field-metric POD of the decoder-output residual eta - h_theta(z*), with z* the best-found head code under the shared LM rule; nested in q",
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "role": "C_q for every q > 0 arm in this lane, in BOTH meshes: the frozen model is (bank, head, C) and C is transferred, not refitted"
+    },
+    "rules/rule_q0_smoke_m256.npz": {
+      "sha256": "95f1304ed015ecce46dbb64dfb553cc7bfb3671b85fda167794b6dfca573c149",
+      "source_job": "smoke",
+      "q": 0,
+      "M": 64,
+      "m": 256,
+      "relative_fit": 0.005337909767877915,
+      "rho_max": null,
+      "rho_p95": null,
+      "rho_bar": 0.116,
+      "certified_primary": false,
+      "certified_secondary": false,
+      "nodes_sha256": "d1ef1bc11bc70a749930c83dbde9bc29a1f2d4710a52229ce4ded8f084edca81",
+      "weights_sha256": "ea45179777317567fe7a81505a96938229cbfc569fc85830d9508d00b337bb0f"
+    },
+    "rules/rule_q4_smoke_m320.npz": {
+      "sha256": "8dc74e87241c0307927b3d8e608df9c61ad855b9092b216e3c1ea4d54feb4479",
+      "source_job": "smoke",
+      "q": 4,
+      "M": 80,
+      "m": 320,
+      "relative_fit": 0.0006984921483662102,
+      "rho_max": null,
+      "rho_p95": null,
+      "rho_bar": 0.116,
+      "certified_primary": false,
+      "certified_secondary": false,
+      "nodes_sha256": "e20ece31e5068a04f4aa268bbd5aab524764beeb8254764777816cb8094d3928",
+      "weights_sha256": "42bdda44eddb9262d64b029445ed6197675c917d2a6d19c7244971bdf9dd788a"
+    }
+  }
+}

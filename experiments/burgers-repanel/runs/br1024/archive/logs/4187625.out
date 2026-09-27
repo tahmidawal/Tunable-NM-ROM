@@ -1,0 +1,52 @@
+host=pax050 source_commit=b7f436785d341b840b9649e39ac9b1e04da98f89
+NVIDIA A100 80GB PCIe, GPU-48b2d82c-0e16-1d88-9016-0d1b8d169ed8, 81920 MiB
+10.235.106.36:/projects/paralab  4.6T  4.2T  418G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 1046529 rows in 1 blocks 8.7
+TRUTH 0 10.9
+TRUTH 1 11.3
+TRUTH 2 12.0
+TRUTH 3 12.6
+TRUTH 4 13.0
+TRUTH 5 13.4
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 4.2 62.1
+QUICK nt1e-4_dt005 evolved% 0.0343 all% 0.0343 stalled 0 2.4 64.5
+QUICK nt1e-3_dt005 evolved% 0.0532 all% 0.0532 stalled 0 2.1 66.6
+QUICK nt1e-2_dt005 evolved% 4.2628 all% 4.2628 stalled 0 1.6 68.1
+QUICK nt1e-4_dt01 evolved% 1.6287 all% 1.6287 stalled 0 3.3 71.4
+QUICK nt1e-3_dt01 evolved% 1.6286 all% 1.6286 stalled 0 1.8 73.2
+QUICK nt1e-2_dt01 evolved% 3.4582 all% 3.4582 stalled 0 1.4 74.6
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 4.9 79.5
+QUICK lean_nt1e-4_dt005 evolved% 0.0343 all% 0.0343 stalled 0 2.3 81.8
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.053 all% 0.053 stalled 0 1.7 83.5
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0483 all% 0.0483 stalled 0 1.6 85.1
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1578 all% 2.1578 stalled 0 1.5 86.6
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6294 all% 1.6294 stalled 0 2.3 88.9
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6445 all% 1.6445 stalled 0 1.4 90.3
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6558 all% 1.6558 stalled 0 1.4 91.7
+QUICK q0_M64_scaled_g1em06_base evolved% 2.2883 all% 3.8562 stalled 0 7.4 108.7
+QUICK q0_M64_scaled_g1em06_fastL4 evolved% 2.2883 all% 3.8562 stalled 0 5.9 114.5
+QUICK q0_M64_scaled_g1em06_fast evolved% 2.2883 all% 3.8562 stalled 0 4.3 118.9
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.2884 all% 3.8562 stalled 0 5.1 124.0
+PARITY q0_M64_scaled_g1em06_fastL4 4.522e-13 integers True
+PARITY q0_M64_scaled_g1em06_fast 5.034e-14 integers True
+QUICK q256_M1088_scaled_g1em06_base evolved% 0.5791 all% 2.7974 stalled 0 16.1 146.5
+QUICK q256_M1088_scaled_g1em06_fast evolved% 0.5791 all% 2.7974 stalled 0 9.4 155.8
+QUICK q256_M1088_scaled_g1em06_fast_chol evolved% 0.5791 all% 2.7974 stalled 0 6.0 161.8
+QUICK q256_M1088_scaled_g1em06_fast_chol_clip_lamcarry_pred2 evolved% 0.5791 all% 2.7974 stalled 0 7.2 169.0
+QUICK q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5791 all% 2.7974 stalled 0 4.5 173.5
+PARITY q256_M1088_scaled_g1em06_fast 8.344e-14 integers True
+PARITY q256_M1088_scaled_g1em06_fast_chol 6.564e-14 integers True
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5857 all% 2.7974 stalled 0 7.2 185.1
+QUICK q256_M1088_exact_g1em06_base evolved% 0.5861 all% 2.7974 stalled 0 449.6 669.2
+QUICK q256_M1088_exact_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5861 all% 2.7974 stalled 0 141.6 810.9
+TIMED rep 0 1624.9
+TIMED rep 1 2282.8
+TIMED rep 2 2940.6
+TIMED rep 3 3598.7
+TIMED rep 4 4256.7
+PROFILE {"arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 166, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 224.74561911076307, "initialize_ms": 19.640471786260605, "evolve_ms": 203.05044017732143, "decode_ms": 2.7088080532848835, "evalJ_ms": 1.2461489532142878, "residual_ms": 0.7164804264903069, "gram_ms": 0.16363710165023804, "gram_plus_solve_ms": 0.9715848136693239, "evolve_ms_per_iteration": 1.2231954227549484}
+PROFILE {"arm": "q256_M1088_scaled_g1em06_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 289, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 2560, "whole_query_ms": 246.78657529875636, "initialize_ms": 19.83620598912239, "evolve_ms": 224.43927312269807, "decode_ms": 2.7092318050563335, "evalJ_ms": 0.6703643593937159, "residual_ms": 0.6258685607463121, "gram_ms": 0.15527987852692604, "gram_plus_solve_ms": 0.9823315776884556, "evolve_ms_per_iteration": 0.7766064813934189}
+HIRES COMPLETE
+ALL-DONE

@@ -1,0 +1,14 @@
+jax_backend=gpu x64=True precision=highest
+BANK 16129 rows 2 row blocks 38.8
+TRUTH done 40.5
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None] sec 0.3357 0.9 75.3
+QUICK fft_tight__graphs evolved% 0.0 median% 0.0 stalled 0 iters [None, None] sec 0.2479 1.8 77.1
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0255 median% 0.0249 stalled 0 iters [None, None] sec 0.0384 0.7 77.8
+QUICK lean_nt3e-3_l3e-3_dt005__graphs evolved% 0.0255 median% 0.0249 stalled 0 iters [None, None] sec 0.571 1.7 79.5
+QUICK R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 1.977 median% 1.0744 stalled 0 iters [45, 25] sec 0.0307 4.3 136.1
+QUICK R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent evolved% 4.1583 median% 2.2742 stalled 0 iters [35, 22] sec 0.1235 9.6 162.8
+TIMED romA1 rep 0 170.5
+TIMED fomB rep 0 173.9
+TIMED romA2 rep 0 175.2
+DRIFT False 0.5094433236524927 0.5188819777710095 NEIGHBOUR True None
+B2TEST COMPLETE

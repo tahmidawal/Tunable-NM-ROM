@@ -1,0 +1,623 @@
+{
+ "attempt": "smoke128",
+ "job_id": null,
+ "commit": null,
+ "gpu": "NVIDIA GB10",
+ "host": "spark-d69e",
+ "intervals": 128,
+ "cohort": "SMOKE ONLY (2 dev cases at 128^2; not a result)",
+ "cohort_cases": 2,
+ "elapsed_seconds": 175.28992381799617,
+ "gates": {
+  "log_says_backend_gpu": {
+   "passed": true
+  },
+  "complete": {
+   "passed": true
+  },
+  "x64_and_highest": {
+   "passed": true
+  },
+  "cohort_hash": {
+   "passed": true,
+   "expected": null,
+   "got": "04aa9c8e170dd4f6b627b765d79a0490a3999a85befd13e990093c641e25828d"
+  },
+  "rotation_file_is_the_committed_one": {
+   "passed": true
+  },
+  "directions_file": {
+   "passed": true
+  },
+  "phi_free_operator_parity": {
+   "passed": true,
+   "job": {
+    "M": 384,
+    "lam_identical": true,
+    "A_relative": 1.3321588885993666e-15,
+    "sep_dense_relative": 9.556939248770269e-16,
+    "passed": true
+   }
+  },
+  "repetition_output_identical": {
+   "passed": true,
+   "job": {
+    "passed": true
+   }
+  },
+  "retained_repetitions": {
+   "passed": true,
+   "job": {
+    "minimum": 1,
+    "passed": true
+   }
+  },
+  "sep_lattice_projection": {
+   "passed": true,
+   "rows": [
+    {
+     "rule": "lat64",
+     "M": 384,
+     "relative": 6.454868636827977e-16,
+     "passed": true
+    }
+   ]
+  },
+  "retained_repetitions_recomputed": {
+   "passed": true,
+   "minimum": 1,
+   "phases": [
+    "fomB",
+    "romA1",
+    "romA2"
+   ]
+  },
+  "restricted_recomputation_tracks_job": {
+   "passed": true,
+   "worst_relative_gap": 2.220446049250313e-16,
+   "ratio_min": 0.9999999999999999,
+   "ratio_max": 1.0000000000000002,
+   "restriction_is_identity": true,
+   "rule": "identity restriction: <= 1e-9; else restricted/job ratio in [0.5, 1.05] (parent amendment A1)"
+  },
+  "full_grid_errors_recomputed": {
+   "passed": true,
+   "worst_abs_diff": 0.0,
+   "arms": 2
+  },
+  "parity": {
+   "passed": true,
+   "pairs": [],
+   "bar": 1e-10
+  },
+  "fom_mode_field_sha_identical": {
+   "passed": true,
+   "rows": {
+    "fft_tight": true,
+    "lean_nt3e-3_l3e-3_dt005": true
+   }
+  },
+  "fom_mode_parity": {
+   "passed": true,
+   "rows": []
+  },
+  "certificate_status_recomputed_matches_job": {
+   "passed": true,
+   "mismatches": []
+  },
+  "rho_recomputed_in_numpy": {
+   "passed": true,
+   "worst_relative_diff": null,
+   "states": 0
+  },
+  "coefficient_map_recomputed_in_numpy": {
+   "passed": true,
+   "worst_relative": 1.1172597238603898e-15,
+   "arms": 2
+  },
+  "drift_ABA": {
+   "passed": false,
+   "limit": 1.1,
+   "worst": 1.9629268921033727,
+   "rows": [
+    {
+     "name": "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+     "romA1_median": 0.1954525290057063,
+     "romA2_median": 0.09957198599295225,
+     "ratio": 0.5094433236524927
+    },
+    {
+     "name": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "romA1_median": 0.13898844648792874,
+     "romA2_median": 0.07211860000097658,
+     "ratio": 0.5188819777710095
+    }
+   ]
+  },
+  "neighbour": {
+   "passed": false,
+   "limit": 1.1,
+   "worst": null,
+   "evaluable": 0,
+   "not_evaluable": [
+    [
+     "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+     "romA1"
+    ],
+    [
+     "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "romA1"
+    ],
+    [
+     "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+     "romA2"
+    ],
+    [
+     "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "romA2"
+    ],
+    [
+     "fft_tight",
+     "fomB"
+    ],
+    [
+     "fft_tight__graphs",
+     "fomB"
+    ],
+    [
+     "lean_nt3e-3_l3e-3_dt005",
+     "fomB"
+    ],
+    [
+     "lean_nt3e-3_l3e-3_dt005__graphs",
+     "fomB"
+    ]
+   ],
+   "rows": [
+    {
+     "name": "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+     "phase": "romA1",
+     "ratio": null,
+     "n_short": 1,
+     "n_long": 0,
+     "evaluable": false
+    },
+    {
+     "name": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "phase": "romA1",
+     "ratio": null,
+     "n_short": 1,
+     "n_long": 1,
+     "evaluable": false
+    },
+    {
+     "name": "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+     "phase": "romA2",
+     "ratio": null,
+     "n_short": 2,
+     "n_long": 0,
+     "evaluable": false
+    },
+    {
+     "name": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+     "phase": "romA2",
+     "ratio": null,
+     "n_short": 0,
+     "n_long": 1,
+     "evaluable": false
+    },
+    {
+     "name": "fft_tight",
+     "phase": "fomB",
+     "ratio": null,
+     "n_short": 1,
+     "n_long": 1,
+     "evaluable": false
+    },
+    {
+     "name": "fft_tight__graphs",
+     "phase": "fomB",
+     "ratio": null,
+     "n_short": 2,
+     "n_long": 0,
+     "evaluable": false
+    },
+    {
+     "name": "lean_nt3e-3_l3e-3_dt005",
+     "phase": "fomB",
+     "ratio": null,
+     "n_short": 0,
+     "n_long": 1,
+     "evaluable": false
+    },
+    {
+     "name": "lean_nt3e-3_l3e-3_dt005__graphs",
+     "phase": "fomB",
+     "ratio": null,
+     "n_short": 1,
+     "n_long": 1,
+     "evaluable": false
+    }
+   ],
+   "rule": "case-controlled: invocation / its (subject, case, phase) median; mean after long / after short"
+  },
+  "fom_modes_same_error": {
+   "passed": true
+  },
+  "knob_error_identical_across_modes": {
+   "passed": true,
+   "mismatches": []
+  },
+  "cohort_is_test64": {
+   "passed": true,
+   "got": "04aa9c8e170dd4f6b627b765d79a0490a3999a85befd13e990093c641e25828d"
+  },
+  "controls_detected": {
+   "passed": true,
+   "swapped_case_gap": 1555.154394988474,
+   "swapped_case_rejected": 1.0,
+   "perturbed_error_1em6_rejected": 1.0,
+   "perturbed_A2_time_x1p2_rejected": true,
+   "note": "each injected control is run through the same predicate that accepts the job and must be rejected"
+  }
+ },
+ "failed_gates": [
+  "drift_ABA",
+  "neighbour"
+ ],
+ "accepted": false,
+ "selection": {
+  "mesh": 128,
+  "rule": "test panel: frozen Table-1 arms (DESIGN.md section 2), reported as measured",
+  "primary_impl": "mixed",
+  "roles": {
+   "accurate": {
+    "name": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+    "R_prime": 96,
+    "M": 384,
+    "m": 3969,
+    "rule": "lat64",
+    "gtol": 0.01,
+    "impl": "eng",
+    "graphs": true,
+    "worst_evolved_percent": 1.9769846726517146,
+    "median_evolved_percent": 1.0744373303943155,
+    "median_gpu_ms": 103.13909099204466,
+    "median_host_ms": 104.04123201442417,
+    "A1_median_ms": 138.98844648792874,
+    "A2_median_ms": 72.11860000097658,
+    "invocations": 4,
+    "total_iterations_per_case": [
+     45,
+     25
+    ],
+    "max_iterations_per_step": 3,
+    "stalled_exits": 0,
+    "budget_exits": 0,
+    "per_case_evolved_percent": [
+     0.17188998813691633,
+     1.9769846726517146
+    ],
+    "table1_fom": "lean_nt3e-3_l3e-3_dt005",
+    "table1_speedup_gpu": 0.29434992302917123,
+    "own_fom": "lean_nt3e-3_l3e-3_dt005",
+    "own_fom_ms": 30.358983494807035,
+    "own_speedup_gpu": 0.29434992302917123
+   },
+   "fast": {
+    "name": "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+    "R_prime": 64,
+    "M": 256,
+    "m": 3969,
+    "rule": "lat64",
+    "gtol": 0.01,
+    "impl": "parent",
+    "graphs": false,
+    "worst_evolved_percent": 4.158269175853273,
+    "median_evolved_percent": 2.2741782867090334,
+    "median_gpu_ms": 144.5673150010407,
+    "median_host_ms": 146.89731098769698,
+    "A1_median_ms": 195.4525290057063,
+    "A2_median_ms": 99.57198599295225,
+    "invocations": 4,
+    "total_iterations_per_case": [
+     35,
+     22
+    ],
+    "max_iterations_per_step": 3,
+    "stalled_exits": 0,
+    "budget_exits": 0,
+    "per_case_evolved_percent": [
+     0.39008739756479427,
+     4.158269175853273
+    ],
+    "table1_fom": "lean_nt3e-3_l3e-3_dt005",
+    "table1_speedup_gpu": 0.2099989440530765,
+    "own_fom": "lean_nt3e-3_l3e-3_dt005",
+    "own_fom_ms": 30.358983494807035,
+    "own_speedup_gpu": 0.2099989440530765
+   }
+  },
+  "table1": {
+   "fom": "lean_nt3e-3_l3e-3_dt005",
+   "fom_gpu_ms": 30.358983494807035,
+   "fom_worst_evolved_percent": 0.025481121315439552,
+   "fom_median_evolved_percent": 0.024945212789462472,
+   "rule": "fastest timed converged (setting, mode) with worst error <= the accurate arm, same job"
+  },
+  "secondary": {},
+  "secondary_faster_mode": {},
+  "fom_table": {
+   "fft_tight": {
+    "worst_evolved_percent": 0.0,
+    "median_evolved_percent": 0.0,
+    "median_gpu_ms": 237.6515960058896,
+    "nonlinear_converged": true,
+    "invocations": 2
+   },
+   "fft_tight__graphs": {
+    "worst_evolved_percent": 0.0,
+    "median_evolved_percent": 0.0,
+    "median_gpu_ms": 136.45883397839498,
+    "nonlinear_converged": true,
+    "invocations": 2
+   },
+   "lean_nt3e-3_l3e-3_dt005": {
+    "worst_evolved_percent": 0.025481121315439552,
+    "median_evolved_percent": 0.024945212789462472,
+    "median_gpu_ms": 30.358983494807035,
+    "nonlinear_converged": true,
+    "invocations": 2
+   },
+   "lean_nt3e-3_l3e-3_dt005__graphs": {
+    "worst_evolved_percent": 0.025481121315439552,
+    "median_evolved_percent": 0.024945212789462472,
+    "median_gpu_ms": 210.00592201016843,
+    "nonlinear_converged": true,
+    "invocations": 2
+   }
+  }
+ },
+ "table": {
+  "fft_tight": {
+   "name": "fft_tight",
+   "family": "fom",
+   "cases": 2,
+   "timed": true,
+   "invocations": 2,
+   "median_gpu_ms": 237.6515960058896,
+   "median_host_ms": 238.63997700391337,
+   "worst_evolved_percent": 0.0,
+   "median_evolved_percent": 0.0,
+   "per_case_evolved_percent": [
+    0.0,
+    0.0
+   ],
+   "setting": "fft_tight",
+   "graphs": false,
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "audited",
+   "newton_iterations_per_case": [
+    100,
+    100
+   ],
+   "nonlinear_converged": true
+  },
+  "fft_tight__graphs": {
+   "name": "fft_tight__graphs",
+   "family": "fom",
+   "cases": 2,
+   "timed": true,
+   "invocations": 2,
+   "median_gpu_ms": 136.45883397839498,
+   "median_host_ms": 139.67836249503307,
+   "worst_evolved_percent": 0.0,
+   "median_evolved_percent": 0.0,
+   "per_case_evolved_percent": [
+    0.0,
+    0.0
+   ],
+   "setting": "fft_tight",
+   "graphs": true,
+   "dt": 0.005,
+   "ntol": 1e-06,
+   "ltol": 1e-08,
+   "impl": "audited",
+   "newton_iterations_per_case": [
+    100,
+    100
+   ],
+   "nonlinear_converged": true
+  },
+  "lean_nt3e-3_l3e-3_dt005": {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "family": "fom",
+   "cases": 2,
+   "timed": true,
+   "invocations": 2,
+   "median_gpu_ms": 30.358983494807035,
+   "median_host_ms": 36.24378099630121,
+   "worst_evolved_percent": 0.025481121315439552,
+   "median_evolved_percent": 0.024945212789462472,
+   "per_case_evolved_percent": [
+    0.024409304263485396,
+    0.025481121315439552
+   ],
+   "setting": "lean_nt3e-3_l3e-3_dt005",
+   "graphs": false,
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean",
+   "newton_iterations_per_case": [
+    50,
+    50
+   ],
+   "nonlinear_converged": true
+  },
+  "lean_nt3e-3_l3e-3_dt005__graphs": {
+   "name": "lean_nt3e-3_l3e-3_dt005__graphs",
+   "family": "fom",
+   "cases": 2,
+   "timed": true,
+   "invocations": 2,
+   "median_gpu_ms": 210.00592201016843,
+   "median_host_ms": 213.3011304977117,
+   "worst_evolved_percent": 0.025481121315439552,
+   "median_evolved_percent": 0.024945212789462472,
+   "per_case_evolved_percent": [
+    0.024409304263485396,
+    0.025481121315439552
+   ],
+   "setting": "lean_nt3e-3_l3e-3_dt005",
+   "graphs": true,
+   "dt": 0.005,
+   "ntol": 0.003,
+   "ltol": 0.003,
+   "impl": "lean",
+   "newton_iterations_per_case": [
+    50,
+    50
+   ],
+   "nonlinear_converged": true
+  },
+  "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs": {
+   "name": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "family": "rom",
+   "cases": 2,
+   "timed": true,
+   "invocations": 4,
+   "median_gpu_ms": 103.13909099204466,
+   "median_host_ms": 104.04123201442417,
+   "worst_evolved_percent": 1.9769846726517146,
+   "median_evolved_percent": 1.0744373303943155,
+   "per_case_evolved_percent": [
+    0.17188998813691633,
+    1.9769846726517146
+   ],
+   "model": "lin",
+   "R_prime": 96,
+   "q": 0,
+   "M": 384,
+   "m": 3969,
+   "rule": "lat64",
+   "unknowns": 96,
+   "gtol": 0.01,
+   "exact_steps": 0,
+   "cap": null,
+   "impl": "eng",
+   "graphs": true,
+   "role": "fast",
+   "candidate": true,
+   "knob": [
+    "lin",
+    96,
+    0,
+    384,
+    "lat64",
+    0.01,
+    "chol",
+    true,
+    true,
+    true,
+    0,
+    null
+   ],
+   "A1_median_ms": 138.98844648792874,
+   "A2_median_ms": 72.11860000097658,
+   "total_iterations_per_case": [
+    45,
+    25
+   ],
+   "max_iterations_per_step": 3,
+   "stalled_exits": 0,
+   "budget_exits": 0,
+   "rejected_steps": 0
+  },
+  "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent": {
+   "name": "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+   "family": "rom",
+   "cases": 2,
+   "timed": true,
+   "invocations": 4,
+   "median_gpu_ms": 144.5673150010407,
+   "median_host_ms": 146.89731098769698,
+   "worst_evolved_percent": 4.158269175853273,
+   "median_evolved_percent": 2.2741782867090334,
+   "per_case_evolved_percent": [
+    0.39008739756479427,
+    4.158269175853273
+   ],
+   "model": "lin",
+   "R_prime": 64,
+   "q": 0,
+   "M": 256,
+   "m": 3969,
+   "rule": "lat64",
+   "unknowns": 64,
+   "gtol": 0.01,
+   "exact_steps": 0,
+   "cap": null,
+   "impl": "parent",
+   "graphs": false,
+   "role": "fast",
+   "candidate": true,
+   "knob": [
+    "lin",
+    64,
+    0,
+    256,
+    "lat64",
+    0.01,
+    "chol",
+    true,
+    true,
+    true,
+    0,
+    null
+   ],
+   "A1_median_ms": 195.4525290057063,
+   "A2_median_ms": 99.57198599295225,
+   "total_iterations_per_case": [
+    35,
+    22
+   ],
+   "max_iterations_per_step": 3,
+   "stalled_exits": 0,
+   "budget_exits": 0,
+   "rejected_steps": 0
+  }
+ },
+ "full_grid": [
+  {
+   "name": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "case": 0,
+   "recomputed_evolved": 0.0017188998813691633,
+   "job_evolved": 0.0017188998813691633,
+   "abs_diff": 0.0
+  },
+  {
+   "name": "fft_tight",
+   "case": 0,
+   "recomputed_evolved": 0.0,
+   "job_evolved": 0.0,
+   "abs_diff": 0.0
+  }
+ ],
+ "coefficient_map": [
+  {
+   "arm": "R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs",
+   "relative": 1.1172597238603898e-15
+  },
+  {
+   "arm": "R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2__parent",
+   "relative": 1.0784081512038613e-15
+  }
+ ],
+ "sources": {
+  "result_json_sha256": "89403e845035d61429a007f4a105fae2d2bb3a4dd04d5f9c89708b396b7bfff7",
+  "config": "smoke128"
+ }
+}

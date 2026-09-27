@@ -1,0 +1,194 @@
+host=pax143 source_commit=320708749287cca2ad39a56995aa941acd19c2d5 attempt=final started=2026-09-17T18:16:59-04:00
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.24:/projects/paralab  4.6T  4.2T  424G  91% /cluster/tufts/paralab
+jax_backend=gpu
+SEALED LADDER incumbent 2026-09-17T18:17:11-04:00
+18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589  experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 123.3
+REFERENCE 1 229.3
+REFERENCE 2 321.8
+REFERENCE 3 395.2
+REFERENCE 4 516.3
+REFERENCE 5 587.8
+SNAPSHOTS 15.9
+DIRECTIONS old 1472.4 rank 512 hash_match False
+COMPARISON done 2103.5
+ARM q0_M64_dense M 64 m None 0.3
+ARM q0_M256_dense M 256 m None 1.6
+ARM old_q16_M128_dense M 128 m None 1.3
+ARM old_q16_M256_dense M 256 m None 0.0
+ARM old_q32_M192_dense M 192 m None 1.4
+ARM old_q32_M256_dense M 256 m None 0.0
+ARM old_q64_M256_dense M 256 m None 0.0
+ARM old_q64_M320_dense M 320 m None 1.8
+ARM old_q128_M256_dense M 256 m None 0.0
+ARM old_q128_M576_dense M 576 m None 2.5
+ARM old_q256_M1088_dense M 1088 m None 4.2
+RECON shared q 0 2.55255
+RECON old q 16 2.46263
+RECON old q 32 2.39036
+RECON old q 64 2.12272
+RECON old q 128 1.73388
+RECON old q 256 1.01862
+WARM q0_M64_dense 7.0
+WARM old_q16_M128_dense 15.4
+WARM old_q32_M192_dense 25.9
+WARM old_q64_M320_dense 37.6
+WARM old_q128_M576_dense 50.2
+WARM old_q256_M1088_dense 66.5
+WARM q0_M256_dense 70.6
+WARM old_q16_M256_dense 76.3
+WARM old_q32_M256_dense 82.1
+WARM old_q64_M256_dense 88.7
+WARM old_q128_M256_dense 95.4
+WARM fft_tight 96.5
+WARM fft_loose 96.5
+WARM nt1e-2_dt01 97.4
+TIMED 0 2766.2
+TIMED 1 2867.9
+TIMED 2 2969.8
+B-SEEDS LADDER COMPLETE
+SEALED LADDER seed1 2026-09-17T19:06:46-04:00
+55e98cc1f369d5285ae22a12c1cbcb1e160b5b0cf5e40ab0e3d27e6184b9974d  experiments/b-seeds/checkpoints/sep_hfit_seed1.pkl
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 123.5
+REFERENCE 1 229.8
+REFERENCE 2 322.5
+REFERENCE 3 395.9
+REFERENCE 4 517.0
+REFERENCE 5 588.5
+SNAPSHOTS 16.3
+DIRECTIONS old 1798.1 rank 512 hash_match None
+COMPARISON done 2430.8
+ARM q0_M64_dense M 64 m None 0.3
+ARM q0_M256_dense M 256 m None 1.6
+ARM old_q16_M128_dense M 128 m None 1.3
+ARM old_q16_M256_dense M 256 m None 0.0
+ARM old_q32_M192_dense M 192 m None 1.5
+ARM old_q32_M256_dense M 256 m None 0.0
+ARM old_q64_M256_dense M 256 m None 0.0
+ARM old_q64_M320_dense M 320 m None 1.8
+ARM old_q128_M256_dense M 256 m None 0.0
+ARM old_q128_M576_dense M 576 m None 2.6
+ARM old_q256_M1088_dense M 1088 m None 4.2
+RECON shared q 0 2.66334
+RECON old q 16 2.5361
+RECON old q 32 2.32207
+RECON old q 64 2.21943
+RECON old q 128 1.73736
+RECON old q 256 0.92405
+WARM q0_M64_dense 6.7
+WARM old_q16_M128_dense 15.3
+WARM old_q32_M192_dense 25.6
+WARM old_q64_M320_dense 37.3
+WARM old_q128_M576_dense 49.7
+WARM old_q256_M1088_dense 65.1
+WARM q0_M256_dense 69.2
+WARM old_q16_M256_dense 74.7
+WARM old_q32_M256_dense 80.7
+WARM old_q64_M256_dense 87.4
+WARM old_q128_M256_dense 94.2
+WARM fft_tight 95.5
+WARM fft_loose 95.5
+WARM nt1e-2_dt01 96.4
+TIMED 0 3041.3
+TIMED 1 3133.6
+TIMED 2 3226.7
+B-SEEDS LADDER COMPLETE
+SEALED LADDER seed2 2026-09-17T20:00:37-04:00
+2997e06e773d945989af27fa14f473299d7f3e28802f9176037cab142419764f  experiments/b-seeds/checkpoints/sep_hfit_seed2.pkl
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 123.5
+REFERENCE 1 229.8
+REFERENCE 2 322.5
+REFERENCE 3 395.9
+REFERENCE 4 517.2
+REFERENCE 5 588.6
+SNAPSHOTS 16.5
+DIRECTIONS old 1818.1 rank 512 hash_match None
+COMPARISON done 2451.4
+ARM q0_M64_dense M 64 m None 0.3
+ARM q0_M256_dense M 256 m None 1.6
+ARM old_q16_M128_dense M 128 m None 1.3
+ARM old_q16_M256_dense M 256 m None 0.0
+ARM old_q32_M192_dense M 192 m None 1.4
+ARM old_q32_M256_dense M 256 m None 0.0
+ARM old_q64_M256_dense M 256 m None 0.0
+ARM old_q64_M320_dense M 320 m None 1.7
+ARM old_q128_M256_dense M 256 m None 0.0
+ARM old_q128_M576_dense M 576 m None 2.6
+ARM old_q256_M1088_dense M 1088 m None 4.1
+RECON shared q 0 2.53175
+RECON old q 16 2.44564
+RECON old q 32 2.28541
+RECON old q 64 2.12073
+RECON old q 128 1.68976
+RECON old q 256 1.00903
+WARM q0_M64_dense 6.8
+WARM old_q16_M128_dense 15.6
+WARM old_q32_M192_dense 26.3
+WARM old_q64_M320_dense 38.2
+WARM old_q128_M576_dense 50.6
+WARM old_q256_M1088_dense 66.8
+WARM q0_M256_dense 71.0
+WARM old_q16_M256_dense 76.4
+WARM old_q32_M256_dense 82.6
+WARM old_q64_M256_dense 89.4
+WARM old_q128_M256_dense 96.3
+WARM fft_tight 97.5
+WARM fft_loose 97.5
+WARM nt1e-2_dt01 98.5
+TIMED 0 3063.0
+TIMED 1 3154.2
+TIMED 2 3245.6
+B-SEEDS LADDER COMPLETE
+SEALED LADDER seed3 2026-09-17T20:54:47-04:00
+1194495b2d96747d5c25df14feb9632493cbc7f64b1764511c06489ea8cb51f1  experiments/b-seeds/checkpoints/sep_hfit_seed3.pkl
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 123.7
+REFERENCE 1 230.0
+REFERENCE 2 322.7
+REFERENCE 3 396.2
+REFERENCE 4 517.5
+REFERENCE 5 589.0
+SNAPSHOTS 16.6
+DIRECTIONS old 2001.7 rank 512 hash_match None
+COMPARISON done 2635.6
+ARM q0_M64_dense M 64 m None 0.3
+ARM q0_M256_dense M 256 m None 1.6
+ARM old_q16_M128_dense M 128 m None 1.3
+ARM old_q16_M256_dense M 256 m None 0.0
+ARM old_q32_M192_dense M 192 m None 1.5
+ARM old_q32_M256_dense M 256 m None 0.0
+ARM old_q64_M256_dense M 256 m None 0.0
+ARM old_q64_M320_dense M 320 m None 1.8
+ARM old_q128_M256_dense M 256 m None 0.0
+ARM old_q128_M576_dense M 576 m None 2.6
+ARM old_q256_M1088_dense M 1088 m None 4.2
+RECON shared q 0 2.75233
+RECON old q 16 2.68235
+RECON old q 32 2.58471
+RECON old q 64 2.32746
+RECON old q 128 1.82195
+RECON old q 256 1.0207
+WARM q0_M64_dense 7.0
+WARM old_q16_M128_dense 15.9
+WARM old_q32_M192_dense 26.6
+WARM old_q64_M320_dense 38.7
+WARM old_q128_M576_dense 51.4
+WARM old_q256_M1088_dense 67.8
+WARM q0_M256_dense 71.9
+WARM old_q16_M256_dense 77.5
+WARM old_q32_M256_dense 83.6
+WARM old_q64_M256_dense 90.6
+WARM old_q128_M256_dense 97.6
+WARM fft_tight 98.7
+WARM fft_loose 98.7
+WARM nt1e-2_dt01 99.6
+TIMED 0 3357.6
+TIMED 1 3463.3
+TIMED 2 3569.3
+B-SEEDS LADDER COMPLETE
+STAGES DONE 2026-09-17T21:54:21-04:00
+ALL-DONE

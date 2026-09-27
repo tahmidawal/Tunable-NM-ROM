@@ -1,0 +1,4 @@
+output/train/sep_coeff_N256_K16_R512.npz
+output/eqcert_seed/bank_G.npz
+
+Collected separately and verified on BOTH sides by the full OUTPUTS.sha256. The extraction npz holds the whitened span coefficients of the 131072 picked training states in the seed bank (a deterministic function of the bank and the seed-regenerated data); its SHA256 is recorded beside the chunks and is needed only by the local training audit, so it is not duplicated into the Git-tracked archive chunks.

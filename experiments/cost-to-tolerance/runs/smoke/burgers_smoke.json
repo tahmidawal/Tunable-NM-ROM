@@ -1,0 +1,219 @@
+{
+ "config": {
+  "pde": "burgers2d",
+  "ks": [
+   8
+  ],
+  "ns": [
+   32
+  ],
+  "taus": [
+   0.01
+  ],
+  "M": 32,
+  "m": 64,
+  "M_big": 256,
+  "k_big": 32,
+  "m_supp": 1024,
+  "do_supp": 0,
+  "n_test": 2,
+  "n_pod_traj": 8,
+  "num_steps": 50,
+  "dt": 0.005,
+  "gn_budget": 30,
+  "ic_budget": 100,
+  "time_reps": 1,
+  "time_warm": 1,
+  "seed": 0,
+  "test_seed": 1,
+  "ckpt_N": 64,
+  "cand_cap": 512,
+  "eq_snaps": 8,
+  "eq_perturb": 3,
+  "eq_rows": 512,
+  "eq_seed": 20259,
+  "eq_pool": "grid",
+  "objective": "weak<M> with the FOM-exact upwind advection, quadratured on m NNLS-EQ grid nodes",
+  "stopping": "per step: ||r_n(z)|| <= tau * ||r_n(z_n)||; cold start: ||mis(z)|| <= tau * ||mis(z0)||",
+  "cold_start": "hyper-reduced on the cell's own EQ nodes, best of {mean t=0 latent, nearest-IC training latent}",
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GB10",
+  "commit": "338f2a1",
+  "slurm_job": null,
+  "time_ms_definition": "cold start + latent rollout + 51-slice decode",
+  "train_data_fingerprint": {
+   "sum": 12014563.752092322,
+   "sumsq": 5940357.887094005,
+   "shape": [
+    576,
+    51,
+    4096
+   ]
+  },
+  "ckpts": {
+   "8": "blat_ad_N64_K8.pkl"
+  }
+ },
+ "rows": [
+  {
+   "pde": "burgers2d",
+   "method": "coord",
+   "N": 32,
+   "k": 8,
+   "M": 32,
+   "m": 64,
+   "tau": 0.01,
+   "time_ms": 4555.173405911773,
+   "err_rel_l2": 0.047266274059627876,
+   "iters": 404.0,
+   "jac_evals": 418.0,
+   "censored": true,
+   "n_sources": 2,
+   "seed": 0,
+   "gpu": "NVIDIA GB10",
+   "jax_backend": "gpu",
+   "commit": "338f2a1",
+   "arm": "primary",
+   "time_ms_solve": 4368.109025992453,
+   "time_ms_decode": 187.06437991932034,
+   "time_ms_solve_per_source": [
+    3939.260058104992,
+    4796.957993879914
+   ],
+   "err_rel_l2_median": 0.047266274059627876,
+   "err_rel_l2_max": 0.06661688920654092,
+   "err_rel_l2_per_source": [
+    0.02791565891271483,
+    0.06661688920654092
+   ],
+   "n_blowup": 0,
+   "fom_residual_rel_mean": 0.003934795852529148,
+   "censored_frac": 0.9607843137254901,
+   "censored_frac_max": 1.0,
+   "rel_reduction_mean": 0.06497900816471969,
+   "rel_reduction_max": 0.11073393086121135,
+   "rel_reduction_ic_mean": 0.04919679034615844,
+   "ic_reasons": {
+    "1": 2
+   },
+   "eq_rel_fit": 0.02646959003236939,
+   "eq_info": {
+    "m": 64,
+    "support": 64,
+    "padded": 0,
+    "rnorm_capped": 3.5105219806510695,
+    "rnorm_final": 3.510521980651069,
+    "b_norm": 132.62472053243317,
+    "rel_fit": 0.02646959003236939,
+    "row_rel_median": 0.037024780922671474,
+    "row_rel_p95": 2.199671924500406,
+    "row_rel_max": 274.2452351012512,
+    "n_rows_total": 512,
+    "n_rows_fit": 512,
+    "n_cand": 512,
+    "cand_cap": 512,
+    "eq_snaps": 8,
+    "eq_perturb": 3,
+    "eq_rows": 512,
+    "eq_seed": 20259,
+    "secs": 7.64213490486145,
+    "kind": "weak_burgers"
+   },
+   "ms_per_jac": 10.450021593283381,
+   "fom_rollout_ms": 262.1588564943522,
+   "speedup_e2e": 0.057551893887095154
+  },
+  {
+   "pde": "burgers2d",
+   "method": "pod",
+   "N": 32,
+   "k": 8,
+   "M": 32,
+   "m": 64,
+   "tau": 0.01,
+   "time_ms": 62.862410908564925,
+   "err_rel_l2": 0.5059569441696482,
+   "iters": 247.5,
+   "jac_evals": 201.5,
+   "censored": true,
+   "n_sources": 2,
+   "seed": 0,
+   "gpu": "NVIDIA GB10",
+   "jax_backend": "gpu",
+   "commit": "338f2a1",
+   "arm": "primary",
+   "time_ms_solve": 62.36301711760461,
+   "time_ms_decode": 0.4993937909603119,
+   "time_ms_solve_per_source": [
+    69.90056717768312,
+    54.82546705752611
+   ],
+   "err_rel_l2_median": 0.5059569441696482,
+   "err_rel_l2_max": 0.6940875447034873,
+   "err_rel_l2_per_source": [
+    0.317826343635809,
+    0.6940875447034873
+   ],
+   "n_blowup": 0,
+   "fom_residual_rel_mean": 0.009798078590229652,
+   "censored_frac": 1.0,
+   "censored_frac_max": 1.0,
+   "rel_reduction_mean": 0.533088592869698,
+   "rel_reduction_max": 0.7256113018552156,
+   "rel_reduction_ic_mean": 0.5944252210119834,
+   "ic_reasons": {
+    "1": 1,
+    "3": 1
+   },
+   "eq_rel_fit": 0.034129526903820914,
+   "eq_info": {
+    "m": 64,
+    "support": 64,
+    "padded": 0,
+    "rnorm_capped": 4.48669974965931,
+    "rnorm_final": 4.486699749659309,
+    "b_norm": 131.46094179105094,
+    "rel_fit": 0.034129526903820914,
+    "row_rel_median": 0.04679073830989164,
+    "row_rel_p95": 1.404181031642696,
+    "row_rel_max": 89.42480531720724,
+    "n_rows_total": 512,
+    "n_rows_fit": 512,
+    "n_cand": 512,
+    "cand_cap": 512,
+    "eq_snaps": 8,
+    "eq_perturb": 3,
+    "eq_rows": 512,
+    "eq_seed": 20259,
+    "secs": 1.2718169689178467,
+    "kind": "weak_burgers"
+   },
+   "ms_per_jac": 0.30949388147694595,
+   "fom_rollout_ms": 262.1588564943522,
+   "speedup_e2e": 4.170359563136536
+  }
+ ],
+ "fom": [
+  {
+   "pde": "burgers2d",
+   "method": "fom",
+   "N": 32,
+   "n_dof": 900,
+   "fom_rollout_s": 0.2621588564943522,
+   "per_source_s": [
+    0.30629943311214447,
+    0.21801827987655997
+   ],
+   "fom_max_rel_residual": 9.997957259569745e-13,
+   "n_sources": 2,
+   "gpu": "NVIDIA GB10",
+   "jax_backend": "gpu",
+   "commit": "338f2a1"
+  }
+ ],
+ "supplementary": [],
+ "complete": true
+}

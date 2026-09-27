@@ -1,0 +1,166 @@
+{
+ "config": {
+  "pde": "poisson2d",
+  "ks": [
+   8
+  ],
+  "ns": [
+   32
+  ],
+  "taus": [
+   0.01
+  ],
+  "M": 32,
+  "m": 64,
+  "M_big": 64,
+  "k_big": 32,
+  "m_4M": 128,
+  "do_supp": 0,
+  "n_test": 2,
+  "gn_iters": 40,
+  "time_reps": 1,
+  "time_warm": 1,
+  "seed": 0,
+  "cg_tol": 1e-13,
+  "cand_cap": 512,
+  "eq_snaps": 8,
+  "eq_perturb": 3,
+  "eq_rows": 512,
+  "eq_seed": 20259,
+  "eq_pool": "grid",
+  "eq_perturb_scale": "0.05 * rms(Z_snap) (relative, symmetric across arms)",
+  "init": "mean training latent / mean training POD coefficient",
+  "objective": "weak_a1_M{M}: || Lambda^-1 Phi_M^T (A u - f) ||, quadratured on m NNLS-EQ nodes",
+  "stopping": "||r(z)|| <= tau * ||r(z0)||",
+  "x64": true,
+  "matmul_precision": "highest",
+  "backend": "gpu",
+  "device": "cuda:0",
+  "gpu": "NVIDIA GB10",
+  "commit": "1df1569",
+  "slurm_job": null,
+  "time_ms_definition": "preprocess + latent solve + interior-field decode",
+  "fom_ladder": [
+   0.01,
+   1e-13
+  ],
+  "fom_only": 1,
+  "mq_4m": 128,
+  "fom_baseline_note": "mp.CG_TOL=1e-13 is the tolerance that MANUFACTURED the truth data; report['fom'] carries the full iso-accuracy ladder and every ROM row carries fom_iso_accuracy_ms",
+  "node": "local",
+  "configs": null,
+  "arm_tag": "consolidated",
+  "source_sha256": {
+   "ctol_tol.py": "215a4d0d4b640e29",
+   "ctol_eq.py": "d77c11bd607b768e",
+   "pro_common.py": "044d1c3aaf4727bc",
+   "ms_parametric.py": "ffcd4c563ea7f995",
+   "ctol_poisson.py": "89149730e23985c3",
+   "ctol_tables.py": "b6f2a98d66a6ec03",
+   "fu_eq.py": "92717e93c8c04c93"
+  },
+  "ckpt_sha256": {
+   "autodec_K8_N64_hbc_stages.pkl": "79ab5d05e343953b"
+  },
+  "src_commits": null,
+  "manifest_sha256": {},
+  "ns_measured": [
+   32
+  ],
+  "ks_measured": [
+   8
+  ],
+  "ckpts": {
+   "8": "autodec_K8_N64_hbc_stages.pkl"
+  }
+ },
+ "rows": [],
+ "fom": [
+  {
+   "pde": "poisson2d",
+   "method": "fom",
+   "N": 32,
+   "n_dof": 900,
+   "fom_rule": "jax.scipy.sparse.linalg.cg(tol=1e-02, maxiter=100000)",
+   "exact_reference": false,
+   "truth_manufacturing_tol": 1e-13,
+   "n_sources": 2,
+   "gpu": "NVIDIA GB10",
+   "node": "local",
+   "slurm_job": null,
+   "jax_backend": "gpu",
+   "commit": "1df1569",
+   "fom_tol": 0.01,
+   "fom_cg_s": 0.0043828669004142284,
+   "fom_cg_s_mean": 0.0043828669004142284,
+   "per_source_s": [
+    0.004387522581964731,
+    0.004378211218863726
+   ],
+   "err_rel_l2": 0.004039640709367015,
+   "err_rel_l2_max": 0.0064369197617953075,
+   "achieved_rel_residual": 0.009655093718950963
+  },
+  {
+   "pde": "poisson2d",
+   "method": "fom",
+   "N": 32,
+   "n_dof": 900,
+   "fom_rule": "jax.scipy.sparse.linalg.cg(tol=1e-13, maxiter=100000)",
+   "exact_reference": true,
+   "truth_manufacturing_tol": 1e-13,
+   "n_sources": 2,
+   "gpu": "NVIDIA GB10",
+   "node": "local",
+   "slurm_job": null,
+   "jax_backend": "gpu",
+   "commit": "1df1569",
+   "fom_tol": 1e-13,
+   "fom_cg_s": 0.004665587330237031,
+   "fom_cg_s_mean": 0.004665587330237031,
+   "per_source_s": [
+    0.004719779826700687,
+    0.0046113948337733746
+   ],
+   "err_rel_l2": 0.0,
+   "err_rel_l2_max": 0.0,
+   "achieved_rel_residual": 9.459495311249169e-14
+  }
+ ],
+ "supplementary": [],
+ "complete": true,
+ "fom_baseline": [
+  {
+   "overconvergence_engineering": {
+    "1e-06": {
+     "t_ms": 4.665587330237031,
+     "achieved": 9.459495311249169e-14,
+     "factor": 1.0
+    },
+    "1e-08": {
+     "t_ms": 4.665587330237031,
+     "achieved": 9.459495311249169e-14,
+     "factor": 1.0
+    }
+   },
+   "anchor_vs_archived": {
+    "archived_ms": 5.591,
+    "retimed_ms": 4.665587330237031,
+    "rel_diff": 0.16551827396940963,
+    "archived_true_rel_res": 1.03e-13,
+    "retimed_true_rel_res": 9.459495311249169e-14,
+    "source": "poisson2d-rom-objective/runs/followup/pt_n/timing_n.json"
+   },
+   "N": 32,
+   "t_fom_testbed_ms": 4.665587330237031,
+   "fom_testbed_cg_tol": 1e-13,
+   "fom_testbed_true_rel_res": 9.459495311249169e-14,
+   "t_fom_baseline_native_ms": 4.665587330237031,
+   "fom_baseline_tol": 1e-13,
+   "fom_baseline_true_rel_res": 9.459495311249169e-14,
+   "overconvergence_factor": 1.0,
+   "solver": "jax.scipy.sparse.linalg.cg from x0=0, both rungs (like-for-like)",
+   "note": "matched tolerance chosen by the ACHIEVED true residual of the archived 1e-13 baseline, per the rom-warmstart-fom definition"
+  }
+ ]
+}

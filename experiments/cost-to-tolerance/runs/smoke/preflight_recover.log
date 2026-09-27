@@ -1,0 +1,30 @@
+jax_backend=gpu device=cuda:0 gpu=NVIDIA GB10 x64=True KS=[8, 32] NS=[32] TAUS=[0.01] M=32 m=64 reps=1 warm=1
+  plan: 1 mesh(es) [32], k values [8, 32], 4 (arm, method) cells
+  ckpt k= 8: autodec_K8_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.175
+  ckpt k=32: autodec_K32_N64_hbc_stages.pkl hard_bc=1 train_seed=0 latent_rms=0.141
+   FOM CG tol=1e-02:    2.295 ms  err 4.040e-03  achieved residual 9.66e-03
+   FOM CG tol=1e-13:    6.279 ms  err 0.000e+00  achieved residual 9.46e-14
+   anchor N=32: archived 5.59 ms vs re-timed 6.28 ms (12.3% diff; archived achieved 1.0e-13, re-timed 9.5e-14)
+   overconvergence factor at N=32: 1.00x (testbed 1e-13 achieved 9.5e-14; matched rung tol=1e-13)
+== N=  32  FOM CG @1e-13     6.28 ms  (residual 9.5e-14) -- the ladder above is the iso-accuracy baseline
+  FOM: 576 CG solves in 4s, max rel residual over all samples 1.14e-13
+   POD basis: 512 snapshots, orthonormality dev 1.34e-13, sv0 1.457e+00 sv[31] 1.067e-02
+   EQ candidate pool: 512 of 900 interior nodes (cap 512)
+   preprocess M=32: selected-mode matvec 0.763 ms/query (full dense sine transform 1.373 ms; offline table 0.1 s; vs reference rel 3.4e-16)
+  NNLS-EQ poisson coord N=32 k=8 M=32 m=64: pool 512 support 64 (+0 pad) rel fit 9.39e-03 (row p95 5.7e-01, max 2.0e+01) [13s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   coord N=  32 k= 8 M= 32 m=  64 tau=1e-02  solve   32.68 ms  e2e   36.78 ms  jac  21.5  err 5.022e-02  fd 5.56e-01  cens  50%
+   [cell coord N=32 k=8 M=32 m=64: 32s]
+  NNLS-EQ poisson pod N=32 k=8 M=32 m=64: pool 512 support 64 (+0 pad) rel fit 3.08e-03 (row p95 7.4e-01, max 1.6e+02) [0s]
+   tau-solver vs reference solver at tau=0: rel |dz| 0.00e+00
+   pod   N=  32 k= 8 M= 32 m=  64 tau=1e-02  solve    1.75 ms  e2e    2.86 ms  jac   4.0  err 1.970e-01  fd 8.12e-01  cens 100%
+   [cell pod N=32 k=8 M=32 m=64: 2s]
+   preprocess M=64: selected-mode matvec 0.247 ms/query (full dense sine transform 0.753 ms; offline table 0.0 s; vs reference rel 3.4e-16)
+  NNLS-EQ poisson coord N=32 k=32 M=64 m=128: pool 512 support 128 (+0 pad) rel fit 3.19e-03 (row p95 1.3e+00, max 1.1e+02) [4s]
+   coord N=  32 k=32 M= 64 m= 128 tau=1e-02  solve   74.15 ms  e2e   76.74 ms  jac  19.5  err 4.860e-02  fd 3.67e-01  cens  50%
+   [cell coord N=32 k=32 M=64 m=128: 24s]
+  NNLS-EQ poisson pod N=32 k=32 M=64 m=128: pool 512 support 128 (+0 pad) rel fit 4.65e-03 (row p95 2.1e+00, max 1.5e+02) [6s]
+   pod   N=  32 k=32 M= 64 m= 128 tau=1e-02  solve    1.18 ms  e2e    1.69 ms  jac   4.0  err 7.288e-02  fd 6.17e-01  cens 100%
+   [cell pod N=32 k=32 M=64 m=128: 8s]
+== N=32 done [81s]
+DONE

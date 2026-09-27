@@ -1,0 +1,32 @@
+[
+ {
+  "pde": "poisson2d",
+  "method": "pod",
+  "N": 512,
+  "k": 32,
+  "M": 256,
+  "m": 1024,
+  "tau": 0.1,
+  "arm": "primary"
+ },
+ {
+  "pde": "poisson2d",
+  "method": "pod",
+  "N": 512,
+  "k": 32,
+  "M": 256,
+  "m": 1024,
+  "tau": 0.01,
+  "arm": "primary"
+ },
+ {
+  "pde": "poisson2d",
+  "method": "pod",
+  "N": 512,
+  "k": 32,
+  "M": 256,
+  "m": 1024,
+  "tau": 0.001,
+  "arm": "primary"
+ }
+]

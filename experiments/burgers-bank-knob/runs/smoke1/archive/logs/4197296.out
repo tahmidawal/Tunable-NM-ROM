@@ -1,0 +1,33 @@
+host=pax050 source_commit=577fc592cfe02655b1a72eb9acb2103245bf0996
+NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  4.3T  334G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 16129 rows 1 row blocks, parent kept True 9.1
+TRUTH done 10.7
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None] sec 0.046 0.2 20.6
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0189 median% 0.0153 stalled 0 iters [None, None] sec 0.015 0.9 21.5
+QUICK R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 1.1437 median% 0.8053 stalled 0 iters [57, 75] sec 0.036 7.7 40.7
+QUICK R512_lin_M2048_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.0364 median% 0.036 stalled 0 iters [50, 38] sec 0.115 11.3 56.8
+QUICK R512_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.1427 median% 0.1096 stalled 0 iters [63, 80] sec 0.152 17.7 81.0
+QUICK R64_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 1.2684 median% 0.9109 stalled 0 iters [57, 73] sec 0.027 4.0 89.9
+QUICK R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 1.3711 median% 0.8911 stalled 0 iters [30, 22] sec 0.014 6.4 99.6
+QUICK R64_q48_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 1.3643 median% 0.891 stalled 0 iters [167, 178] sec 0.076 6.9 109.1
+QUICK R512_q256_M1088_bad0_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 2.7713 median% 1.4771 stalled 0 iters [48, 106] sec 0.098 6.5 120.3
+QUICK P_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 1.1437 median% 0.8053 stalled 0 iters [57, 75] sec 0.036 3.0 123.5
+QUICK P_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.1427 median% 0.1096 stalled 0 iters [63, 80] sec 0.153 5.4 129.2
+PARITY R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 vs P_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 4.455e-14 integers True
+PARITY R512_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 vs P_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 5.757e-14 integers True
+CERT R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0007 conf 0.0009 5.6 134.8
+CERT R512_lin_M2048_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0004 conf 0.0010 2.7 137.6
+CERT R512_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0002 conf 0.0011 2.8 140.4
+CERT R64_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0005 conf 0.0009 2.4 142.8
+CERT R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0001 conf 0.0001 1.9 144.8
+CERT R64_q48_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0001 conf 0.0001 1.8 146.6
+CERT R512_q256_M1088_bad0_g0p01_fast_chol_clip_lamcarry_pred2_x1 fails rho_max 1.9990 conf 1.9062 1.8 148.3
+CERT P_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0007 conf 0.0009 1.6 149.9
+CERT P_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0002 conf 0.0011 1.4 151.3
+TIMED main rep 0 154.5
+TIMED slow rep 0 154.5
+BANKKNOB COMPLETE
+ALL-DONE

@@ -1,0 +1,78 @@
+host=pax049 source_commit=4c45652b0fa00d608eea74ca32b0c3185a7df036
+NVIDIA A100 80GB PCIe, GPU-d881b2b0-b08f-83e6-0f3d-e646626625cc, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.4T  247G  95% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 261121 rows 1 row blocks, parent kept True 8.3
+TRUTH done 11.0
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.154 1.8 41.6
+QUICK nt1e-4_dt005 evolved% 0.0341 median% 0.0163 stalled 0 iters [None, None, None, None, None, None] sec 0.063 1.2 42.8
+QUICK nt1e-3_dt005 evolved% 0.0516 median% 0.0299 stalled 0 iters [None, None, None, None, None, None] sec 0.051 1.1 43.9
+QUICK nt1e-2_dt005 evolved% 4.0614 median% 1.5052 stalled 0 iters [None, None, None, None, None, None] sec 0.025 0.9 44.8
+QUICK nt1e-4_dt01 evolved% 1.5869 median% 1.1873 stalled 0 iters [None, None, None, None, None, None] sec 0.051 2.1 46.9
+QUICK nt1e-3_dt01 evolved% 1.5893 median% 1.2115 stalled 0 iters [None, None, None, None, None, None] sec 0.034 1.0 47.9
+QUICK nt1e-2_dt01 evolved% 3.355 median% 1.4513 stalled 0 iters [None, None, None, None, None, None] sec 0.015 0.8 48.7
+QUICK lean_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.154 2.6 51.4
+QUICK lean_nt1e-4_dt005 evolved% 0.0341 median% 0.0163 stalled 0 iters [None, None, None, None, None, None] sec 0.062 1.2 52.5
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0508 median% 0.0326 stalled 0 iters [None, None, None, None, None, None] sec 0.035 1.0 53.5
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0497 median% 0.0418 stalled 0 iters [None, None, None, None, None, None] sec 0.03 1.0 54.5
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1507 median% 0.0914 stalled 0 iters [None, None, None, None, None, None] sec 0.025 0.9 55.4
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.59 median% 1.2112 stalled 0 iters [None, None, None, None, None, None] sec 0.023 1.7 57.1
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6044 median% 1.2304 stalled 0 iters [None, None, None, None, None, None] sec 0.019 0.8 58.0
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.62 median% 1.2187 stalled 0 iters [None, None, None, None, None, None] sec 0.016 0.8 58.8
+QUICK R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.1375 median% 1.0385 stalled 0 iters [86, 99, 94, 91, 60, 75] sec 0.034 8.5 78.4
+QUICK R512_lin_M2048_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.2628 median% 0.1065 stalled 0 iters [53, 53, 49, 55, 44, 51] sec 0.377 13.8 97.3
+QUICK R512_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5623 median% 0.1846 stalled 0 iters [135, 89, 115, 128, 62, 74] sec 0.339 20.0 123.4
+QUICK R384_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.1376 median% 1.0385 stalled 0 iters [86, 99, 94, 90, 60, 75] sec 0.032 7.6 136.0
+QUICK R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.1947 median% 0.0639 stalled 0 iters [53, 53, 49, 55, 45, 51] sec 0.227 12.2 151.4
+QUICK R384_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.4976 median% 0.1679 stalled 0 iters [138, 80, 118, 121, 64, 74] sec 0.301 14.2 169.0
+QUICK R256_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.1392 median% 1.0374 stalled 0 iters [86, 99, 94, 93, 60, 75] sec 0.031 7.4 180.8
+QUICK R256_lin_M1024_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.6606 median% 0.1196 stalled 0 iters [53, 53, 39, 54, 43, 51] sec 0.117 10.6 194.3
+QUICK R256_q240_M1024_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.6519 median% 0.12 stalled 0 iters [366, 281, 487, 529, 134, 339] sec 0.99 17.4 215.8
+QUICK R128_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.2103 median% 1.0821 stalled 0 iters [82, 96, 99, 89, 60, 75] sec 0.03 6.2 227.4
+QUICK R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 1.748 median% 0.6249 stalled 0 iters [42, 47, 33, 40, 32, 37] sec 0.043 8.7 238.7
+QUICK R128_q112_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 1.7426 median% 0.626 stalled 0 iters [293, 298, 477, 497, 184, 344] sec 0.418 11.7 254.2
+QUICK R64_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 4.5524 median% 2.2914 stalled 0 iters [96, 96, 99, 96, 58, 69] sec 0.029 5.0 264.4
+QUICK R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 4.5533 median% 2.15 stalled 0 iters [29, 40, 28, 25, 25, 31] sec 0.021 7.6 274.8
+QUICK R64_q48_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 4.5584 median% 2.1547 stalled 0 iters [293, 338, 494, 361, 134, 284] sec 0.179 8.7 286.8
+QUICK R32_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 10.0689 median% 7.4788 stalled 0 iters [320, 124, 105, 157, 53, 73] sec 0.032 5.0 296.1
+QUICK R32_lin_M128_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 10.1608 median% 7.5204 stalled 0 iters [24, 36, 25, 21, 22, 22] sec 0.013 6.3 305.0
+QUICK R32_q16_M128_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 10.1297 median% 7.9243 stalled 0 iters [211, 316, 334, 424, 153, 334] sec 0.119 7.4 314.2
+QUICK R512_q256_M1088_bad0_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 1.0181 median% 0.3848 stalled 0 iters [213, 90, 116, 130, 62, 74] sec 0.28 9.7 328.5
+QUICK P_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.1375 median% 1.0385 stalled 0 iters [86, 99, 94, 91, 60, 75] sec 0.034 3.9 332.7
+QUICK P_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5623 median% 0.1846 stalled 0 iters [135, 89, 115, 128, 62, 74] sec 0.372 8.6 341.7
+PARITY R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 vs P_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 5.286e-14 integers True
+PARITY R512_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 vs P_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 6.640e-14 integers True
+CERT R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0192 conf 0.0248 7.5 349.3
+CERT R512_lin_M2048_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 not confirmed (4/5 draws, confirmation True) rho_max 0.1368 conf 0.0837 24.3 373.6
+CERT R512_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0400 conf 0.0518 32.1 405.7
+CERT R384_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0192 conf 0.0248 6.1 411.8
+CERT R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0678 conf 0.0690 15.7 427.5
+CERT R384_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0409 conf 0.0536 28.9 456.4
+CERT R256_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0195 conf 0.0248 5.4 461.8
+CERT R256_lin_M1024_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0418 conf 0.0542 9.6 471.5
+CERT R256_q240_M1024_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0415 conf 0.0543 62.9 534.4
+CERT R128_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0292 conf 0.0338 4.7 539.1
+CERT R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0260 conf 0.0524 5.1 544.2
+CERT R128_q112_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0260 conf 0.0524 21.2 565.5
+CERT R64_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0120 conf 0.0251 4.3 569.7
+CERT R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0049 conf 0.0108 3.4 573.4
+CERT R64_q48_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0049 conf 0.0108 11.0 584.4
+CERT R32_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0031 conf 0.0042 4.5 588.9
+CERT R32_lin_M128_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0007 conf 0.0007 2.7 591.7
+CERT R32_q16_M128_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0007 conf 0.0007 7.7 599.5
+CERT R512_q256_M1088_bad0_g0p01_fast_chol_clip_lamcarry_pred2_x1 not confirmed (2/5 draws, confirmation False) rho_max 0.2826 conf 0.4681 28.3 627.8
+CERT P_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 confirmed rho_max 0.0192 conf 0.0248 4.2 632.1
+CERT P_q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed rho_max 0.0400 conf 0.0518 34.4 666.5
+TIMED main rep 0 773.8
+TIMED main rep 1 874.4
+TIMED main rep 2 974.9
+TIMED main rep 3 1075.6
+TIMED main rep 4 1176.1
+TIMED slow rep 0 1176.2
+TIMED slow rep 1 1176.2
+TIMED slow rep 2 1176.2
+TIMED slow rep 3 1176.3
+TIMED slow rep 4 1176.3
+BANKKNOB COMPLETE
+ALL-DONE

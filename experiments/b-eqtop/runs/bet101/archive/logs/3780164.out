@@ -1,0 +1,121 @@
+host=pax049 source_commit=ace8936e42b3558ccda39ab9cc6ee38a8dec407d cpus=16
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.22:/projects/paralab  4.6T  4.2T  433G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 77.9
+REFERENCE 1 143.9
+REFERENCE 2 234.8
+REFERENCE 3 318.7
+REFERENCE 4 390.5
+REFERENCE 5 455.0
+SNAPSHOTS 15.0
+DIRECTIONS 1424.5 rank 512
+COLLECT q 0 15600 5200 {'fit': False, 'cert': False} 22.9
+COLLECT q 16 15600 5200 {'fit': False, 'cert': False} 26.8
+COLLECT q 32 15600 5200 {'fit': False, 'cert': False} 31.3
+COLLECT q 64 15600 5200 {'fit': False, 'cert': False} 41.5
+COLLECT q 128 15600 5200 {'fit': False, 'cert': False} 64.8
+COLLECT q 256 15600 5200 {'fit': False, 'cert': False} 129.2
+ARCHIVED q 0 static m 256 rho_max 0.2407 qrg304 0.2407
+ARCHIVED q 0 reachable m 1024 rho_max 0.0153 qrg304 0.0153
+ARCHIVED q 0 reachable m 1521 rho_max 0.0261 qrg304 0.0261
+ARCHIVED q 16 static m 512 rho_max 0.1279 qrg304 0.1279
+ARCHIVED q 16 reachable m 1024 rho_max 0.0935 qrg304 0.0935
+ARCHIVED q 16 reachable m 2048 rho_max 0.0452 qrg304 0.0452
+ARCHIVED q 32 static m 768 rho_max 0.1482 qrg304 0.1482
+ARCHIVED q 32 reachable m 1024 rho_max 0.0533 qrg304 0.0533
+ARCHIVED q 32 reachable m 2048 rho_max 0.0668 qrg304 0.0668
+ARCHIVED q 64 static m 1280 rho_max 0.1439 qrg304 0.1439
+ARCHIVED q 64 reachable m 1024 rho_max 0.0531 qrg304 0.0531
+ARCHIVED q 64 reachable m 2048 rho_max 0.1120 qrg304 0.1120
+ARCHIVED q 128 static m 2048 rho_max 0.2194 qrg304 0.2194
+ARCHIVED q 128 reachable m 1024 rho_max 0.2786 qrg304 0.2786
+ARCHIVED q 128 reachable m 2048 rho_max 0.1908 qrg304 0.1908
+ARCHIVED q 256 static m 2048 rho_max 0.4621 qrg304 0.4621
+ARCHIVED q 256 reachable m 1024 rho_max 0.5731 qrg304 0.5731
+ARCHIVED q 256 reachable m 2048 rho_max 0.1678 qrg304 0.1678
+DESIGN q128_std 8064 -> 8064 rows 5.4
+DESIGN q128_fs64 36864 -> 16384 rows 14.4
+DESIGN q128_rhow64 36864 -> 16384 rows 11.2
+DESIGN q256_std 8704 -> 8704 rows 5.8
+DESIGN q256_fs64 69632 -> 16384 rows 23.9
+DESIGN q256_rhow64 69632 -> 16384 rows 18.7
+  FIT launch q128_std m=1024 pid=2545954
+  FIT launch q128_fs64 m=2048 pid=2545955
+  FIT launch q128_rhow64 m=2048 pid=2545956
+  FIT launch q256_std m=1024 pid=2545957
+  FIT launch q256_fs64 m=2048 pid=2545958
+  FIT launch q256_rhow64 m=2048 pid=2545960
+RULE q256_std m 1024 fit 1.607e-02 rho_max 0.4977 p95 0.4450 primary False tight False 310.2 s
+  FIT launch q256_std m=2048 pid=2547262
+RULE q128_std m 1024 fit 1.494e-03 rho_max 0.2793 p95 0.1615 primary False tight False 469.2 s
+  FIT launch q128_std m=2048 pid=2547748
+RULE q128_std m 2048 fit 7.982e-05 rho_max 0.2373 p95 0.0520 primary False tight False 1339.0 s
+  FIT launch q128_std m=2560 pid=2588483
+RULE q256_std m 2048 fit 1.752e-04 rho_max 0.2958 p95 0.1822 primary False tight False 2056.0 s
+  FIT launch q256_std m=2560 pid=2618597
+RULE q256_fs64 m 2048 fit 2.406e-03 rho_max 0.1074 p95 0.0878 primary True tight False 2650.1 s
+  FIT launch q256_fs64 m=2560 pid=2631504
+RULE q128_rhow64 m 2048 fit 3.544e-04 rho_max 0.0472 p95 0.0176 primary True tight True 2698.4 s
+  FIT launch q128_rhow64 m=2560 pid=2634534
+RULE q128_fs64 m 2048 fit 3.522e-04 rho_max 0.0669 p95 0.0214 primary True tight False 2919.6 s
+  FIT launch q128_fs64 m=2560 pid=2646731
+RULE q256_rhow64 m 2048 fit 1.444e-03 rho_max 0.1299 p95 0.0836 primary False tight False 3019.8 s
+  FIT launch q256_rhow64 m=2560 pid=2651920
+RULE q128_std m 2560 fit 3.143e-05 rho_max 0.2040 p95 0.0308 primary False tight False 1935.6 s
+  FIT launch q128_std m=3072 pid=2685634
+RULE q256_std m 2560 fit 5.842e-05 rho_max 0.1956 p95 0.1052 primary False tight False 2775.1 s
+  FIT launch q256_std m=3072 pid=2774709
+RULE q128_rhow64 m 2319 fit 2.516e-04 rho_max 0.0277 p95 0.0102 primary True tight True 2747.5 s
+RULE q128_std m 3055 fit 1.397e-05 rho_max 0.1193 p95 0.0197 primary False tight False 2370.4 s
+  FIT launch q128_std m=4096 pid=2861957
+RULE q128_fs64 m 2560 fit 1.817e-04 rho_max 0.0292 p95 0.0111 primary True tight True 3470.8 s
+RULE q256_fs64 m 2560 fit 9.354e-04 rho_max 0.0647 p95 0.0314 primary True tight False 3993.4 s
+RULE q256_rhow64 m 2560 fit 6.229e-04 rho_max 0.1018 p95 0.0380 primary True tight False 3792.8 s
+  FIT launch q256_rhow64 m=3072 pid=2939423
+RULE q128_std m 3088 fit 1.345e-05 rho_max 0.1091 p95 0.0183 primary True tight False 1887.8 s
+  FIT launch q128_std m=6144 pid=3070008
+RULE q256_std m 3072 fit 2.323e-05 rho_max 0.1774 p95 0.0722 primary False tight False 3116.6 s
+  FIT launch q256_std m=4096 pid=3098264
+RULE q128_std m 3128 fit 1.331e-05 rho_max 0.1487 p95 0.0161 primary False tight False 1797.1 s
+RULE q256_std m 3370 fit 1.450e-05 rho_max 0.1308 p95 0.0685 primary False tight False 3010.3 s
+  FIT launch q256_std m=6144 pid=3363893
+RULE q256_rhow64 m 3072 fit 3.371e-04 rho_max 0.0963 p95 0.0229 primary True tight False 4552.4 s
+RULE q256_std m 3410 fit 1.430e-05 rho_max 0.1761 p95 0.0836 primary False tight False 2330.0 s
+FITS DONE 13644.3 {'q128_std': {'stop_reason': 'grid_exhausted', 'rules_fitted': 6, 'certified': 1}, 'q128_fs64': {'stop_reason': 'certified_and_confirmed', 'rules_fitted': 2, 'certified': 2}, 'q128_rhow64': {'stop_reason': 'certified_and_confirmed', 'rules_fitted': 2, 'certified': 2}, 'q256_std': {'stop_reason': 'grid_exhausted', 'rules_fitted': 6, 'certified': 0}, 'q256_fs64': {'stop_reason': 'certified_and_confirmed', 'rules_fitted': 2, 'certified': 2}, 'q256_rhow64': {'stop_reason': 'certified_and_confirmed', 'rules_fitted': 3, 'certified': 2}}
+CHOICE primary q 0 primary (('archived', 0, 'reachable', 1024), 1024)
+CHOICE primary q 16 primary (('archived', 16, 'reachable', 1024), 1024)
+CHOICE primary q 32 primary (('archived', 32, 'reachable', 1024), 1024)
+CHOICE primary q 64 primary (('archived', 64, 'reachable', 1024), 1024)
+CHOICE primary q 128 primary (('new', 128, 'fs64', 2048), 2048)
+CHOICE primary q 256 primary (('new', 256, 'fs64', 2048), 2048)
+CHOICE tight q 0 tight (('archived', 0, 'reachable', 1024), 1024)
+CHOICE tight q 16 tight (('archived', 16, 'reachable', 2048), 2048)
+CHOICE tight q 32 tight (('archived', 32, 'reachable', 1024), 1024)
+CHOICE tight q 64 tight (('archived', 64, 'reachable', 1024), 1024)
+CHOICE tight q 128 tight (('new', 128, 'rhow64', 2048), 2048)
+CHOICE tight q 256 none None
+ARMS ['q0_eq_primary', 'q16_eq_primary', 'q32_eq_primary', 'q64_eq_primary', 'q128_eq_primary', 'q256_eq_primary', 'q0_dense', 'q64_dense', 'q128_dense', 'q256_dense', 'q128_eq_qrg304_m2048', 'q256_eq_qrg304_m2048', 'q16_eq_tight', 'q128_eq_tight'] aliases {'q0_eq_tight': 'q0_eq_primary', 'q32_eq_tight': 'q32_eq_primary', 'q64_eq_tight': 'q64_eq_primary'} dropped []
+WARM q0_eq_primary 4.0
+WARM q16_eq_primary 7.8
+WARM q32_eq_primary 12.0
+WARM q64_eq_primary 16.4
+WARM q128_eq_primary 21.0
+WARM q256_eq_primary 27.4
+WARM q0_dense 29.9
+WARM q64_dense 34.7
+WARM q128_dense 39.8
+WARM q256_dense 53.6
+WARM q128_eq_qrg304_m2048 56.5
+WARM q256_eq_qrg304_m2048 61.3
+WARM q16_eq_tight 64.7
+WARM q128_eq_tight 67.7
+WARM fft_tight 68.7
+WARM fft_loose 68.8
+WARM nt1e-2_dt01 69.7
+TIMED 0 16178.5
+TIMED 1 16265.0
+TIMED 2 16351.7
+Q-EQTOP COMPLETE
+ALL-DONE

@@ -1,0 +1,118 @@
+host=pax052 source_commit=b2844c607290d08d255092ba780ff8ae8a9a0a48 cpus=16
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.34:/projects/paralab  4.6T  4.2T  410G  92% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+SNAPSHOTS 16.4
+DIRECTIONS 1468.6 rank 512
+COLLECT q 0 15600 5200 {'fit': False, 'cert': False} 26.7
+COLLECT q 16 15600 5200 {'fit': False, 'cert': False} 30.3
+COLLECT q 32 15600 5200 {'fit': False, 'cert': False} 36.1
+COLLECT q 64 15600 5200 {'fit': False, 'cert': False} 50.5
+COLLECT q 128 15600 5200 {'fit': False, 'cert': False} 91.6
+COLLECT q 256 15600 5200 {'fit': False, 'cert': False} 223.1
+ARCHIVED q 0 static m 256 rho_max 0.2407 qrg304 0.2407
+ARCHIVED q 0 reachable m 1024 rho_max 0.0153 qrg304 0.0153
+ARCHIVED q 0 reachable m 1521 rho_max 0.0261 qrg304 0.0261
+ARCHIVED q 16 static m 512 rho_max 0.1279 qrg304 0.1279
+ARCHIVED q 16 reachable m 1024 rho_max 0.0935 qrg304 0.0935
+ARCHIVED q 16 reachable m 2048 rho_max 0.0452 qrg304 0.0452
+ARCHIVED q 32 static m 768 rho_max 0.1482 qrg304 0.1482
+ARCHIVED q 32 reachable m 1024 rho_max 0.0533 qrg304 0.0533
+ARCHIVED q 32 reachable m 2048 rho_max 0.0668 qrg304 0.0668
+ARCHIVED q 64 static m 1280 rho_max 0.1439 qrg304 0.1439
+ARCHIVED q 64 reachable m 1024 rho_max 0.0531 qrg304 0.0531
+ARCHIVED q 64 reachable m 2048 rho_max 0.1120 qrg304 0.1120
+ARCHIVED q 128 static m 2048 rho_max 0.2194 qrg304 0.2194
+ARCHIVED q 128 reachable m 1024 rho_max 0.2786 qrg304 0.2786
+ARCHIVED q 128 reachable m 2048 rho_max 0.1908 qrg304 0.1908
+ARCHIVED q 256 static m 2048 rho_max 0.4621 qrg304 0.4621
+ARCHIVED q 256 reachable m 1024 rho_max 0.5731 qrg304 0.5731
+ARCHIVED q 256 reachable m 2048 rho_max 0.1678 qrg304 0.1678
+DESIGN q64_reprowincumbentm1024s1 8000 -> 8000 rows 5.9
+DESIGN q64_reprowincumbentm1024s2 8000 -> 8000 rows 3.1
+DESIGN q64_reprowincumbentm1024s3 8000 -> 8000 rows 3.1
+DESIGN q64_reprowincumbentm1024s4 8000 -> 8000 rows 3.1
+DESIGN q64_reprow64m2048s1 20480 -> 16384 rows 15.3
+DESIGN q64_reprow64m2048s2 20480 -> 16384 rows 13.4
+DESIGN q64_reprow64m2048s3 20480 -> 16384 rows 13.4
+DESIGN q64_reprow64m2048s4 20480 -> 16384 rows 13.4
+DESIGN q128_reprowincumbentm1024s1 8064 -> 8064 rows 6.5
+DESIGN q128_reprowincumbentm1024s2 8064 -> 8064 rows 3.1
+DESIGN q128_reprowincumbentm1024s3 8064 -> 8064 rows 3.2
+DESIGN q128_reprowincumbentm1024s4 8064 -> 8064 rows 3.2
+DESIGN q128_reprow64m2048s1 36864 -> 16384 rows 24.5
+DESIGN q128_reprow64m2048s2 36864 -> 16384 rows 21.2
+DESIGN q128_reprow64m2048s3 36864 -> 16384 rows 21.3
+DESIGN q128_reprow64m2048s4 36864 -> 16384 rows 21.0
+DESIGN q256_reprowincumbentm1024s1 8704 -> 8704 rows 6.8
+DESIGN q256_reprowincumbentm1024s2 8704 -> 8704 rows 4.0
+DESIGN q256_reprowincumbentm1024s3 8704 -> 8704 rows 4.0
+DESIGN q256_reprowincumbentm1024s4 8704 -> 8704 rows 3.9
+DESIGN q256_reprow64m2048s1 69632 -> 16384 rows 53.4
+DESIGN q256_reprow64m2048s2 69632 -> 16384 rows 244.7
+DESIGN q256_reprow64m2048s3 69632 -> 16384 rows 245.7
+DESIGN q256_reprow64m2048s4 69632 -> 16384 rows 247.8
+  FIT launch q64_reprowincumbentm1024s1 m=1024 pid=716544
+  FIT launch q64_reprowincumbentm1024s2 m=1024 pid=716545
+  FIT launch q64_reprowincumbentm1024s3 m=1024 pid=716546
+  FIT launch q64_reprowincumbentm1024s4 m=1024 pid=716548
+  FIT launch q64_reprow64m2048s1 m=2048 pid=716549
+  FIT launch q64_reprow64m2048s2 m=2048 pid=716550
+  FIT launch q64_reprow64m2048s3 m=2048 pid=716551
+  FIT launch q64_reprow64m2048s4 m=2048 pid=716552
+  FIT launch q128_reprowincumbentm1024s1 m=1024 pid=716553
+  FIT launch q128_reprowincumbentm1024s2 m=1024 pid=716554
+  FIT launch q128_reprowincumbentm1024s3 m=1024 pid=716555
+  FIT launch q128_reprowincumbentm1024s4 m=1024 pid=716556
+RULE q64_reprowincumbentm1024s4 m 1024 fit 6.256e-04 rho_max 0.0670 p95 0.0309 primary True tight False 496.9 s
+  FIT launch q128_reprow64m2048s1 m=2048 pid=738192
+RULE q64_reprowincumbentm1024s2 m 1024 fit 4.662e-04 rho_max 0.1509 p95 0.0526 primary False tight False 507.8 s
+  FIT launch q128_reprow64m2048s2 m=2048 pid=738788
+RULE q64_reprowincumbentm1024s1 m 1024 fit 4.847e-04 rho_max 0.1420 p95 0.0608 primary False tight False 543.1 s
+RULE q64_reprowincumbentm1024s3 m 1024 fit 6.857e-04 rho_max 0.1587 p95 0.0924 primary False tight False 544.1 s
+  FIT launch q128_reprow64m2048s3 m=2048 pid=740611
+  FIT launch q128_reprow64m2048s4 m=2048 pid=740612
+RULE q128_reprowincumbentm1024s4 m 1024 fit 1.358e-03 rho_max 0.4609 p95 0.4217 primary False tight False 619.9 s
+  FIT launch q256_reprowincumbentm1024s1 m=1024 pid=741503
+RULE q128_reprowincumbentm1024s2 m 1024 fit 1.696e-03 rho_max 0.2098 p95 0.1380 primary False tight False 662.5 s
+  FIT launch q256_reprowincumbentm1024s2 m=1024 pid=743432
+RULE q128_reprowincumbentm1024s1 m 1024 fit 1.619e-03 rho_max 0.3523 p95 0.3057 primary False tight False 667.3 s
+  FIT launch q256_reprowincumbentm1024s3 m=1024 pid=743735
+RULE q128_reprowincumbentm1024s3 m 1024 fit 1.014e-03 rho_max 0.3357 p95 0.2786 primary False tight False 717.2 s
+  FIT launch q256_reprowincumbentm1024s4 m=1024 pid=746387
+RULE q256_reprowincumbentm1024s1 m 1024 fit 1.214e-02 rho_max 0.6743 p95 0.4499 primary False tight False 387.4 s
+  FIT launch q256_reprow64m2048s1 m=2048 pid=761212
+RULE q256_reprowincumbentm1024s3 m 1024 fit 3.347e-02 rho_max 0.7319 p95 0.7216 primary False tight False 392.4 s
+  FIT launch q256_reprow64m2048s2 m=2048 pid=762656
+RULE q256_reprowincumbentm1024s2 m 1024 fit 2.258e-02 rho_max 0.5737 p95 0.5502 primary False tight False 417.8 s
+  FIT launch q256_reprow64m2048s3 m=2048 pid=763356
+RULE q256_reprowincumbentm1024s4 m 1024 fit 1.714e-02 rho_max 0.5075 p95 0.4916 primary False tight False 411.3 s
+  FIT launch q256_reprow64m2048s4 m=2048 pid=765083
+RULE q64_reprow64m2048s4 m 2048 fit 1.361e-04 rho_max 0.0108 p95 0.0052 primary True tight True 2862.0 s
+RULE q64_reprow64m2048s3 m 2048 fit 1.272e-04 rho_max 0.0134 p95 0.0042 primary True tight True 2888.2 s
+RULE q64_reprow64m2048s2 m 2048 fit 1.182e-04 rho_max 0.1036 p95 0.0090 primary True tight False 2990.5 s
+RULE q64_reprow64m2048s1 m 2048 fit 1.263e-04 rho_max 0.0459 p95 0.0088 primary True tight True 2996.0 s
+RULE q128_reprow64m2048s4 m 2048 fit 3.660e-04 rho_max 0.2040 p95 0.0506 primary False tight False 2912.9 s
+RULE q128_reprow64m2048s2 m 2048 fit 4.311e-04 rho_max 0.0426 p95 0.0298 primary True tight True 2970.0 s
+RULE q128_reprow64m2048s1 m 2048 fit 4.116e-04 rho_max 0.0497 p95 0.0372 primary True tight True 2983.3 s
+RULE q128_reprow64m2048s3 m 2048 fit 3.253e-04 rho_max 0.0788 p95 0.0234 primary True tight False 2951.3 s
+RULE q256_reprow64m2048s2 m 2048 fit 1.642e-03 rho_max 0.1899 p95 0.1209 primary False tight False 2687.0 s
+RULE q256_reprow64m2048s3 m 2048 fit 1.415e-03 rho_max 0.1299 p95 0.0909 primary False tight False 3421.3 s
+RULE q256_reprow64m2048s1 m 2048 fit 1.335e-03 rho_max 0.1820 p95 0.1299 primary False tight False 3691.5 s
+RULE q256_reprow64m2048s4 m 2048 fit 1.327e-03 rho_max 0.2421 p95 0.1413 primary False tight False 3594.2 s
+FITS DONE 4759.4 {'q64_reprowincumbentm1024s1': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q64_reprowincumbentm1024s2': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q64_reprowincumbentm1024s3': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q64_reprowincumbentm1024s4': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q64_reprow64m2048s1': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q64_reprow64m2048s2': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q64_reprow64m2048s3': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q64_reprow64m2048s4': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q128_reprowincumbentm1024s1': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q128_reprowincumbentm1024s2': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q128_reprowincumbentm1024s3': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q128_reprowincumbentm1024s4': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q128_reprow64m2048s1': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q128_reprow64m2048s2': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q128_reprow64m2048s3': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 1}, 'q128_reprow64m2048s4': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprowincumbentm1024s1': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprowincumbentm1024s2': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprowincumbentm1024s3': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprowincumbentm1024s4': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprow64m2048s1': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprow64m2048s2': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprow64m2048s3': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}, 'q256_reprow64m2048s4': {'stop_reason': 'grid_exhausted', 'rules_fitted': 1, 'certified': 0}}
+CHOICE primary q 0 primary (('archived', 0, 'reachable', 1024), 1024)
+CHOICE primary q 16 primary (('archived', 16, 'reachable', 1024), 1024)
+CHOICE primary q 32 primary (('archived', 32, 'reachable', 1024), 1024)
+CHOICE primary q 64 primary (('archived', 64, 'reachable', 1024), 1024)
+CHOICE primary q 128 primary (('new', 128, 'reprow64m2048s1', 2048), 2048)
+CHOICE primary q 256 secondary (('archived', 256, 'reachable', 2048), 2048)
+CHOICE tight q 0 tight (('archived', 0, 'reachable', 1024), 1024)
+CHOICE tight q 16 tight (('archived', 16, 'reachable', 2048), 2048)
+CHOICE tight q 32 tight (('archived', 32, 'reachable', 1024), 1024)
+CHOICE tight q 64 tight (('archived', 64, 'reachable', 1024), 1024)
+CHOICE tight q 128 tight (('new', 128, 'reprow64m2048s1', 2048), 2048)
+CHOICE tight q 256 none None
+Q-EQTOP COMPLETE (no timed phase)
+ALL-DONE

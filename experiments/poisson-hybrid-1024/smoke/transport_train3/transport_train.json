@@ -1,0 +1,115 @@
+{
+ "complete": true,
+ "config": {
+  "N": 32,
+  "n_train": 32,
+  "n_val": 8,
+  "q_base": 16,
+  "K": 6,
+  "rank": 8,
+  "width": 24,
+  "depth": 2,
+  "steps": 1,
+  "batch": 8,
+  "peak_lr": 0.002,
+  "post_cg_steps": 2,
+  "seed": 0,
+  "cg_tau": 1e-06,
+  "dtype": "f64",
+  "matmul_precision": "highest",
+  "architecture": {
+   "name": "separable_transport_tail",
+   "rank": 8,
+   "width": 24,
+   "depth": 2,
+   "k_lat": 6,
+   "hard_bc": true
+  }
+ },
+ "provenance": {
+  "commit": "unknown",
+  "job_id": "local",
+  "backend": "gpu",
+  "device": "cuda:0",
+  "jax_version": "0.10.1",
+  "train_source_sha256": "8bf6286fca2cca01cfbb18fae8a44f27b1e34875b1e612779421207b81dcd593",
+  "arch_source_sha256": "3976dbc32304e0acdcbaac73a6bac86aa23a28fdfbcf61a7314f7b01c479dbc5"
+ },
+ "initializer": {
+  "selection": "fixed split of 512 training sources only",
+  "calibration_seed": 73129,
+  "n_fit": 26,
+  "n_calibration": 6,
+  "trials": [
+   {
+    "ridge": 0.0001,
+    "calibration_latent_mse": 0.23397873267428235
+   },
+   {
+    "ridge": 0.01,
+    "calibration_latent_mse": 0.23391776639776468
+   }
+  ],
+  "selected_ridge": 0.01,
+  "refit_train_latent_mse": 1.34779093027365e-08,
+  "validation_latent_mse": 0.4465121571978076
+ },
+ "tail_rms": 3.2505229555254573e-06,
+ "n_params": 2256,
+ "evaluations": [
+  {
+   "step": 0,
+   "train_batch_loss": 9.606910868870236e-05,
+   "val_energy_ratio_mean": 0.009347737197443837,
+   "val_energy_ratio_median": 4.4785741467812556e-05,
+   "val_jacobi_residual_ratio_mean": 0.0707358265447808,
+   "val_post_fixed_cg_energy_ratio_mean": 4.665534426698804e-05,
+   "val_counting_cg_iters_mean": 37.75,
+   "val_counting_cg_iters_median": 36.5,
+   "spectral_q16_counting_cg_iters_mean": 7.0,
+   "val_true_residual_max": 9.86953443501098e-07,
+   "diagnostic_val_rel_l2_mean": 0.009167317535454373,
+   "val_iters_per_case": [
+    38,
+    52,
+    29,
+    35,
+    19,
+    35,
+    43,
+    51
+   ],
+   "elapsed_seconds": 4.831268310546875
+  },
+  {
+   "step": 1,
+   "train_batch_loss": 0.009905333801512137,
+   "val_energy_ratio_mean": 0.009347737249565103,
+   "val_energy_ratio_median": 4.478575390021033e-05,
+   "val_jacobi_residual_ratio_mean": 0.07073582754318794,
+   "val_post_fixed_cg_energy_ratio_mean": 4.665518490978904e-05,
+   "val_counting_cg_iters_mean": 37.75,
+   "val_counting_cg_iters_median": 36.5,
+   "spectral_q16_counting_cg_iters_mean": 7.0,
+   "val_true_residual_max": 9.770288469521357e-07,
+   "diagnostic_val_rel_l2_mean": 0.009167321849521745,
+   "val_iters_per_case": [
+    38,
+    52,
+    29,
+    35,
+    19,
+    35,
+    43,
+    51
+   ],
+   "elapsed_seconds": 13.831064462661743
+  }
+ ],
+ "selected_step": 0,
+ "selection_key": [
+  37.75,
+  0.009347737197443837
+ ],
+ "checkpoint_sha256": "35b13868a7e4f4c31495728772735f5cd308208be71c106b44415be802df8398"
+}

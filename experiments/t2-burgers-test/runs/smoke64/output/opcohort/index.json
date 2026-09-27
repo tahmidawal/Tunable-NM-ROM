@@ -1,0 +1,27 @@
+{
+ "schema_version": 1,
+ "pde": "burgers",
+ "split": "development",
+ "count": 1,
+ "mesh": 64,
+ "complete": true,
+ "derivation": "dev6: params_draw(7090702,4) + params_draw(911702,2), the development cases of Table 2 with this job's own same-grid fft_tight solve at 64 intervals, in the operator contract",
+ "records": [
+  {
+   "case_id": "burgers-development-00000",
+   "split": "development",
+   "case_index": 0,
+   "seed": 7090702000,
+   "path": "burgers-development-00000.npz",
+   "mesh": 64,
+   "sha256": "27b88384b7d91dd5c05cab2d6f2c635baf49182ab416fbfb43931d2e52f35b1c",
+   "generation_descriptors": {
+    "cx": 0.28252396549391534,
+    "cy": 0.6366084820193556,
+    "width": 0.1868965964536891,
+    "amplitude": 1.0820386491896183,
+    "nu": 0.03172924415397142
+   }
+  }
+ ]
+}

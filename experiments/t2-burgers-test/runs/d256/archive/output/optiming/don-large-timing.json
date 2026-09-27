@@ -1,0 +1,261 @@
+{
+  "model": "don-large",
+  "role": "256^2 checkpoint (capacity; source job 4179556)",
+  "gpu_name": "NVIDIA A100 80GB PCIe",
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "neuraloperator": "2.0.0",
+    "cuda": "12.8",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "checkpoint_sha256": "af5a47ddb0bc7aa2ea8fca7a8df324e296c8f3fe16517c97cd13caee16c9b6e2",
+  "config": {
+    "family": "deeponet",
+    "width": 96,
+    "rank": 512,
+    "trunk_width": 768,
+    "levels": 3,
+    "pool_bins": 4,
+    "dtype": "float32",
+    "warmup_epochs": 0,
+    "epochs": 4000,
+    "patience": 250,
+    "batch_size": 8,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "seed": 20260914
+  },
+  "best_epoch": 133,
+  "parameter_tensor_elements": 10258181,
+  "real_parameter_count": 10258181,
+  "repetitions_per_case": 5,
+  "burn_in_per_block": 20,
+  "device_query_pooled": {
+    "count": 30,
+    "mean_ms": 10.567003845547635,
+    "median_ms": 10.549519676715136,
+    "p05_ms": 10.503747686743736,
+    "p95_ms": 10.664984653703868,
+    "minimum_ms": 10.499821044504642,
+    "maximum_ms": 10.66854689270258,
+    "upper_tukey_outliers": 0
+  },
+  "host_transfer_pooled": {
+    "count": 30,
+    "mean_ms": 0.25385615105430287,
+    "median_ms": 0.25345548056066036,
+    "p05_ms": 0.24883088190108538,
+    "p95_ms": 0.2621604595333337,
+    "minimum_ms": 0.24866312742233276,
+    "maximum_ms": 0.2643200568854809,
+    "upper_tukey_outliers": 2
+  },
+  "device_query_median_of_case_medians_ms": 10.548260761424899,
+  "cases": [
+    {
+      "case_id": "burgers-development-00000",
+      "case_index": 0,
+      "artifact": "sub_don-large_case0.npy",
+      "field_sha256": "0015e7e7dc479884742dcbb68b8d22cb4608de5c67c2b18978f23b714ce5d766",
+      "t0_returned_exactly": true,
+      "same_grid_per_time": [
+        0.0,
+        0.1280875981567084,
+        0.10909106096709802,
+        0.1000853802719432,
+        0.09458375587264499,
+        0.09220963849544221
+      ],
+      "same_grid_evolved": 0.1280875981567084,
+      "same_grid_all": 0.1280875981567084,
+      "sub_grid_evolved": 0.12768894279178192,
+      "sub_field_sha256": "862c469275a4ad3eec89f9d387c823e642c8d728bad72ef3b6427eda07bc3e1e",
+      "device_seconds": [
+        0.010665569920092821,
+        0.01063108816742897,
+        0.01056092930957675,
+        0.01053689792752266,
+        0.010545555036514997
+      ],
+      "host_seconds": [
+        0.0002643200568854809,
+        0.00025348085910081863,
+        0.0002518491819500923,
+        0.000251655001193285,
+        0.0002570590004324913
+      ]
+    },
+    {
+      "case_id": "burgers-development-00001",
+      "case_index": 1,
+      "artifact": "sub_don-large_case1.npy",
+      "field_sha256": "63bd24d114a7d69a3a683f38606c2f4672c2d982f85e796b3a9adc17b7d0233a",
+      "t0_returned_exactly": true,
+      "same_grid_per_time": [
+        0.0,
+        0.09282960592686662,
+        0.06685366027502893,
+        0.06807678867527692,
+        0.07094903275146056,
+        0.07071664948874755
+      ],
+      "same_grid_evolved": 0.09282960592686662,
+      "same_grid_all": 0.09282960592686662,
+      "sub_grid_evolved": 0.09272484402775931,
+      "sub_field_sha256": "5f4f0bac406b97aacbab9f688e0ca0bbb013941224f1a345464803e2e0fd9988",
+      "device_seconds": [
+        0.010645647998899221,
+        0.010542216245085001,
+        0.010505553800612688,
+        0.010548633057624102,
+        0.010539297945797443
+      ],
+      "host_seconds": [
+        0.0002537989057600498,
+        0.00024946825578808784,
+        0.00024866312742233276,
+        0.00025594187900424004,
+        0.00024913297966122627
+      ]
+    },
+    {
+      "case_id": "burgers-development-00002",
+      "case_index": 2,
+      "artifact": "sub_don-large_case2.npy",
+      "field_sha256": "7781f3940aa4b017e7fe0fc1f41b93bb3eb57cd2244b34e44f2ac147f8ba6c7b",
+      "t0_returned_exactly": true,
+      "same_grid_per_time": [
+        0.0,
+        0.27345288105593296,
+        0.2515106807236259,
+        0.23556406669516164,
+        0.2227267986348794,
+        0.20626375456185966
+      ],
+      "same_grid_evolved": 0.27345288105593296,
+      "same_grid_all": 0.27345288105593296,
+      "sub_grid_evolved": 0.27325207118581585,
+      "sub_field_sha256": "6321737c6d1501a7b79db5c516b0e2c02387d98baeef1f784154f0833af50493",
+      "device_seconds": [
+        0.01066854689270258,
+        0.010573770385235548,
+        0.010514884255826473,
+        0.010499821044504642,
+        0.010502269957214594
+      ],
+      "host_seconds": [
+        0.0002538459375500679,
+        0.00024890992790460587,
+        0.00024877535179257393,
+        0.0002549523487687111,
+        0.0002488987520337105
+      ]
+    },
+    {
+      "case_id": "burgers-development-00003",
+      "case_index": 3,
+      "artifact": "sub_don-large_case3.npy",
+      "field_sha256": "dd15761f94081b4ed53ca7b4586993d0090c165620e22312fdbc5cdc642d8d4c",
+      "t0_returned_exactly": true,
+      "same_grid_per_time": [
+        0.0,
+        0.18379024697318944,
+        0.13704535276370838,
+        0.13044019860204492,
+        0.13297577535645697,
+        0.1340900651609594
+      ],
+      "same_grid_evolved": 0.18379024697318944,
+      "same_grid_all": 0.18379024697318944,
+      "sub_grid_evolved": 0.1833591120855311,
+      "sub_field_sha256": "82cec53a933d8e90b8fdbb7118a128062ff7cd1e86a9448b259341d7de06b982",
+      "device_seconds": [
+        0.010641761124134064,
+        0.010543507058173418,
+        0.010521018877625465,
+        0.010546303819864988,
+        0.010546115227043629
+      ],
+      "host_seconds": [
+        0.00025422777980566025,
+        0.00025865575298666954,
+        0.00025250809267163277,
+        0.00025099702179431915,
+        0.0002513187937438488
+      ]
+    },
+    {
+      "case_id": "burgers-development-00004",
+      "case_index": 4,
+      "artifact": "sub_don-large_case4.npy",
+      "field_sha256": "bafec2e1afaf3424042fd20e268d3e29503ed7c21f4dce2ae5f3a41574bdac42",
+      "t0_returned_exactly": true,
+      "same_grid_per_time": [
+        0.0,
+        0.17994496271184915,
+        0.12027355701938006,
+        0.09532854319699491,
+        0.08422091741575918,
+        0.0776031276538229
+      ],
+      "same_grid_evolved": 0.17994496271184915,
+      "same_grid_all": 0.17994496271184915,
+      "sub_grid_evolved": 0.1793921297316348,
+      "sub_field_sha256": "60ba70159e13b96bf4e11cfba81c44d35e284714fb8d2dba808ab5f7f177070c",
+      "device_seconds": [
+        0.01066426932811737,
+        0.01059729466214776,
+        0.01056043803691864,
+        0.010554495267570019,
+        0.0105674359947443
+      ],
+      "host_seconds": [
+        0.00025603827089071274,
+        0.0002534720115363598,
+        0.0002601407468318939,
+        0.00025383196771144867,
+        0.00025321589782834053
+      ]
+    },
+    {
+      "case_id": "burgers-development-00005",
+      "case_index": 5,
+      "artifact": "sub_don-large_case5.npy",
+      "field_sha256": "d833d93ffe2603f4134779ed4cb6ce46c49aae805ce85fd9e2b993d232e8a84f",
+      "t0_returned_exactly": true,
+      "same_grid_per_time": [
+        0.0,
+        0.3483598964393165,
+        0.2213390419221582,
+        0.15493809015301244,
+        0.11632952387827586,
+        0.09430826585264855
+      ],
+      "same_grid_evolved": 0.3483598964393165,
+      "same_grid_all": 0.3483598964393165,
+      "sub_grid_evolved": 0.3481991184690381,
+      "sub_field_sha256": "5b9375341ff5735fc849bae930fe4511cc0ef53c4188e7583c022cb91ac4412a",
+      "device_seconds": [
+        0.01062458660453558,
+        0.010540253017097712,
+        0.01055040629580617,
+        0.010553353000432253,
+        0.010518195107579231
+      ],
+      "host_seconds": [
+        0.00026381295174360275,
+        0.00025343894958496094,
+        0.00025137094780802727,
+        0.0002593947574496269,
+        0.0002525090239942074
+      ]
+    }
+  ],
+  "timed_region": "supplied on-device initial field and viscosity to on-device complete trajectory",
+  "host_transfer": "separately timed device-to-host copy of the finished trajectory",
+  "retained": "every individual repetition is stored in the npz beside this file",
+  "deviation": "second process in the same Slurm allocation on the same GPU, after the JAX phase exited; the source protocol times all models in one process",
+  "scientific_status": "same-allocation, same-GPU timing against the JAX subjects of this job; no ratio is taken against any other job"
+}

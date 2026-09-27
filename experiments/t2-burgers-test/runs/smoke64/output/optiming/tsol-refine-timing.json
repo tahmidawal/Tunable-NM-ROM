@@ -1,0 +1,100 @@
+{
+  "model": "tsol-refine",
+  "role": "",
+  "gpu_name": "NVIDIA GB10",
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "neuraloperator": "2.0.0",
+    "cuda": "13.0",
+    "gpu": "NVIDIA GB10",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "checkpoint_sha256": "7f5a96d7077a59e247712d27440918580f48c00d426439616d00df4858e9c01e",
+  "config": {
+    "family": "transolver",
+    "dim": 128,
+    "layers": 8,
+    "heads": 8,
+    "slices": 64,
+    "mlp_ratio": 2,
+    "patch": 4,
+    "ref": 8,
+    "dtype": "float32",
+    "warmup_epochs": 10,
+    "epochs": 4000,
+    "patience": 250,
+    "batch_size": 8,
+    "learning_rate": 0.0003,
+    "weight_decay": 0.0001,
+    "seed": 20260914,
+    "refines_capacity": "small",
+    "selected_by": "validation mean case-maximum fixed-initial error"
+  },
+  "best_epoch": 1542,
+  "parameter_tensor_elements": 3108240,
+  "real_parameter_count": 3108240,
+  "repetitions_per_case": 5,
+  "burn_in_per_block": 2,
+  "device_query_pooled": {
+    "count": 5,
+    "mean_ms": 2.5789846025872976,
+    "median_ms": 2.618898026412353,
+    "p05_ms": 2.4033641908317804,
+    "p95_ms": 2.7600837987847626,
+    "minimum_ms": 2.400528988800943,
+    "maximum_ms": 2.7798759983852506,
+    "upper_tukey_outliers": 0
+  },
+  "host_transfer_pooled": {
+    "count": 5,
+    "mean_ms": 0.013536197366192937,
+    "median_ms": 0.013504002708941698,
+    "p05_ms": 0.013283401494845748,
+    "p95_ms": 0.013795198174193501,
+    "minimum_ms": 0.013248005416244268,
+    "maximum_ms": 0.013823999324813485,
+    "upper_tukey_outliers": 0
+  },
+  "device_query_median_of_case_medians_ms": 2.618898026412353,
+  "cases": [
+    {
+      "case_id": "burgers-development-00000",
+      "case_index": 0,
+      "artifact": "sub_tsol-refine_case0.npy",
+      "field_sha256": "d8a561b1e330cf510816abe8b3ff90ecdd6414cb4b3c744228337505a81974ab",
+      "t0_returned_exactly": true,
+      "same_grid_per_time": [
+        0.0,
+        0.13003217152928817,
+        0.15369476737709314,
+        0.16159502485826457,
+        0.15415254546377297,
+        0.1400318961824098
+      ],
+      "same_grid_evolved": 0.16159502485826457,
+      "same_grid_all": 0.16159502485826457,
+      "sub_grid_evolved": 0.1448466594688119,
+      "sub_field_sha256": "d40a5e7b2026182bc4efc03e4910b1ed7cdef6a05e2808b7cb9162ce88a94d98",
+      "device_seconds": [
+        0.002618898026412353,
+        0.0024147049989551306,
+        0.0027798759983852506,
+        0.002680915000382811,
+        0.002400528988800943
+      ],
+      "host_seconds": [
+        1.3823999324813485e-05,
+        1.3504002708941698e-05,
+        1.3679993571713567e-05,
+        1.3424985809251666e-05,
+        1.3248005416244268e-05
+      ]
+    }
+  ],
+  "timed_region": "supplied on-device initial field and viscosity to on-device complete trajectory",
+  "host_transfer": "separately timed device-to-host copy of the finished trajectory",
+  "retained": "every individual repetition is stored in the npz beside this file",
+  "deviation": "second process in the same Slurm allocation on the same GPU, after the JAX phase exited; the source protocol times all models in one process",
+  "scientific_status": "same-allocation, same-GPU timing against the JAX subjects of this job; no ratio is taken against any other job"
+}

@@ -1,0 +1,127 @@
+{
+ "title": "Paper Table 3 (tab:nmrom-baselines), Burgers 2D 1024^2/2048^2, on the 64 held-out test cases",
+ "design": "experiments/t3-burgers-test/DESIGN.md",
+ "dev_reference": {
+  "file": "inputs/dev-reference.json",
+  "sha256": "7f46d5615aabe175ab6690b2644abaa9596b05f016dda6b2acb36b157809d014"
+ },
+ "meshes": {
+  "1024": {
+   "summary_file": "checks/t31024-summary.json",
+   "summary_sha256": "49dbe0ed7108e345b2b200713accae4fa7a7a4fc149c5010a710bfc2ed71c14a",
+   "job_id": "4327211",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "commit": "ca3d7af81f74ce53045019a83c1f972bb6396e78",
+   "cohort": "test64 = hold64: params_draw(20260916, 64), the held-out Burgers 2D TEST cases",
+   "cohort_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+   "failed_gates": [],
+   "cell_fom": {
+    "name": "lean_nt3e-3_l3e-3_dt005",
+    "gpu_ms": 76.49880205281079,
+    "worst_evolved_percent": 0.1290338508904443,
+    "median_evolved_percent": 0.032494421122516395
+   },
+   "basis_reproduction": {
+    "snapshot_sha256_equal": false,
+    "pod_modes_sha256_equal": false,
+    "pod_kmax": 512,
+    "pod_eigenvalue_max_relative_difference": 2.2813138587659725e-14,
+    "qman16_ridge": 0.01,
+    "qman16_ridge_parent": 0.01,
+    "qman16_heldout": 0.12281287682162549,
+    "qman16_heldout_parent": 0.12281287682162557,
+    "qman16_heldout_relative_difference": 6.779967133888087e-16,
+    "passed": true
+   },
+   "dev": {
+    "job_id": "4204019",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "summary_sha256": "ffba6ef655060cdea22c7646ef933524fd6108b5776f2d0740a4b86658654efe",
+    "cell_fom": {
+     "name": "lean_nt3e-3_l3e-3_dt005",
+     "gpu_ms": 70.53190912120044,
+     "worst_evolved_percent": 0.048302028672202776
+    }
+   },
+   "rows": [
+    {
+     "row": "NM-ROM accurate (span R'=384)",
+     "arm": "bank384_M1536_lat64_g1em06",
+     "unknowns": 384,
+     "test": {
+      "worst_percent": 1.2497745061388397,
+      "median_percent": 0.02924681936701533,
+      "gpu_ms": 316.8730966281146,
+      "speedup_vs_cell_fom": 0.24141778796257526
+     },
+     "dev": {
+      "worst_percent": 0.2108198088275102,
+      "median_percent": 0.06488842525169229,
+      "gpu_ms": 318.3290271554142,
+      "speedup_vs_cell_fom": 0.22156920388779197
+     },
+     "rho": {
+      "rho_max": 0.10600883555440199,
+      "exceeds_bar": false,
+      "bar": 0.116
+     }
+    },
+    {
+     "row": "NM-ROM head, k=16",
+     "arm": "q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2",
+     "unknowns": 16,
+     "test": {
+      "worst_percent": 8.420338506107099,
+      "median_percent": 0.7085950206985289,
+      "gpu_ms": 35.318690817803144,
+      "speedup_vs_cell_fom": 2.1659580318942604
+     },
+     "dev": {
+      "worst_percent": 2.288356103816248,
+      "median_percent": 1.0424534726914618,
+      "gpu_ms": 34.93238356895745,
+      "speedup_vs_cell_fom": 2.0190980950947304
+     },
+     "rho": null
+    },
+    {
+     "row": "POD-LSPG, k=16",
+     "arm": "pod16_M64_dense",
+     "unknowns": 16,
+     "test": {
+      "worst_percent": 41.56181612123692,
+      "median_percent": 13.035964616275486,
+      "gpu_ms": 186.4836837630719,
+      "speedup_vs_cell_fom": 0.41021713272246785
+     },
+     "dev": {
+      "worst_percent": 29.27933122941561,
+      "median_percent": 22.099147455206065,
+      "gpu_ms": 178.44529054127634,
+      "speedup_vs_cell_fom": 0.39525789056834565
+     },
+     "rho": null
+    },
+    {
+     "row": "quadratic manifold, r=16",
+     "arm": "qman16_quad_M64",
+     "unknowns": 16,
+     "test": {
+      "worst_percent": 34.14140604539928,
+      "median_percent": 7.964340769709105,
+      "gpu_ms": 758.0193204339594,
+      "speedup_vs_cell_fom": 0.10091933014189651
+     },
+     "dev": {
+      "worst_percent": 22.625694960104504,
+      "median_percent": 15.043074085054137,
+      "gpu_ms": 733.2429555244744,
+      "speedup_vs_cell_fom": 0.09619173098055929
+     },
+     "rho": null
+    }
+   ]
+  }
+ },
+ "unused": []
+}

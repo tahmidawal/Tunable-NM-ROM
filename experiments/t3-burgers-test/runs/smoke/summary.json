@@ -1,0 +1,964 @@
+{
+ "attempt": "smoke64",
+ "job_id": null,
+ "commit": null,
+ "gpu": "NVIDIA GB10",
+ "roles": {
+  "nmrom_fast": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+  "nmrom_accurate": "bank32_M128_lat16_g1em06"
+ },
+ "nvidia_smi": [
+  "GPU 0: NVIDIA GB10 (UUID: GPU-369273b6-d476-ed02-cc10-385a1b3059b6)"
+ ],
+ "intervals": 64,
+ "cohort": "test64 = hold64: params_draw(20260916, 64), the held-out Burgers 2D TEST cases",
+ "cohort_sha256": "f7cb90ac710353644c4fbc170d72412e0c404ff4d16ae642d55d06cdf0579fe0",
+ "elapsed_seconds": 90.4569779309968,
+ "phases": {
+  "F_seconds": 0.6526966119999997,
+  "fits_seconds": 21.835152799001662,
+  "S_seconds": 45.83108753399574,
+  "B_seconds": 3.2064736130123492
+ },
+ "dropped": [],
+ "rule_status": [
+  {
+   "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+   "status": "smoke"
+  },
+  {
+   "arm": "bank32_M128_lat16_g1em06",
+   "status": "rho_max 0.0119 on 102 held-out states: within the 0.116 bar"
+  }
+ ],
+ "snapshots": {
+  "trajectories": 10,
+  "states_per_trajectory": 26,
+  "snapshots": 260,
+  "state_stride": 2,
+  "newton_tolerance": 1e-09,
+  "linear_tolerance": 1e-07,
+  "max_relative_residual": 9.892611288365417e-10,
+  "seconds": 1.4078851300000679,
+  "snapshot_sha256": "5339096f4f0443df9bed8ff59d35cd343fce4c51ac0d9ef25e9f5ee9c9428765",
+  "layout": "host (n, Ns) float64; sha256 is of the (Ns, n) row-major matrix ladder.generate_snapshots returns"
+ },
+ "bank_span": {
+  "rotation_file": "burgers-compare-hires/inputs/rotation_R512.npz",
+  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "arms": [
+   {
+    "arm": "bank32_M128_lat16_g1em06",
+    "R_prime": 32,
+    "M": 128,
+    "rule": "lat16",
+    "m": 225,
+    "states": 102,
+    "population": {
+     "draw": [
+      20260921,
+      56
+     ],
+     "rows": [
+      0,
+      2
+     ]
+    },
+    "rho_max": 0.011857917943588024,
+    "rho_max_k_ge_1": 0.011857917943588024,
+    "rho_p99": 0.011854541968689306,
+    "rho_median": 0.0023196490622783813,
+    "bar": 0.116,
+    "exceeds_bar": false,
+    "seconds": 5.846825662010815
+   }
+  ]
+ },
+ "reference_roles": [],
+ "quadratic_manifold_fits": [
+  {
+   "rank": 4,
+   "ridge": 1.0,
+   "ridge_at_grid_top": true,
+   "heldout": 0.3268180114758475,
+   "weight_frobenius_norm": 0.013521853717505215
+  }
+ ],
+ "error_convention": "same-grid evolved: max over t in {0.05..0.25} of ||u - u_fft_tight|| / ||u_0||, reference solved in this job at this mesh",
+ "fom_rule": "fastest tested FOM setting (Phase F timing, same job) whose worst evolved error <= the arm's",
+ "arms": [
+  {
+   "name": "bank32_M128_lat16_g1em06",
+   "family": "bankspan",
+   "phase": "S",
+   "evolved": [
+    0.02944019263410517,
+    0.014910238344666444,
+    0.0445597719867293
+   ],
+   "all_times": [
+    0.26827837267155885,
+    0.029216769961752594,
+    0.0445597719867293
+   ],
+   "stalled": 0,
+   "reps_per_case": 1,
+   "gpu_ms": 38.81878100219183,
+   "complete_ms": 39.72286498174071,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": true,
+   "bracket_gpu_ms": null,
+   "worst_evolved_percent": 4.45597719867293,
+   "median_evolved_percent": 2.9440192634105173,
+   "worst_all_times_percent": 26.827837267155886,
+   "unknowns": 32,
+   "M": 128,
+   "m": 225,
+   "k": 32,
+   "rule": "lat16",
+   "gtol": 1e-06,
+   "kernel": "arms EQ LM (jacfwd), linear head T[:, :R']; output via row-blocked bank",
+   "rule_status": "rho_max 0.0119 on 102 held-out states: within the 0.116 bar",
+   "fom_gpu_full": "nt1e-2_dt01",
+   "fom_ms_gpu_full": 9.270108974305913,
+   "fom_worst_gpu_full": 2.776311701991944,
+   "speedup_gpu_full": 0.2388047418022347,
+   "fom_gpu_b_panel": "nt1e-2_dt01",
+   "fom_ms_gpu_b_panel": 9.270108974305913,
+   "fom_worst_gpu_b_panel": 2.776311701991944,
+   "speedup_gpu_b_panel": 0.2388047418022347,
+   "fom_gpu_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_gpu_lean": 16.53039999655448,
+   "fom_worst_gpu_lean": 0.056913163007852784,
+   "speedup_gpu_lean": 0.4258351130505907,
+   "fom_complete_full": "nt1e-2_dt01",
+   "fom_ms_complete_full": 10.33323400770314,
+   "fom_worst_complete_full": 2.776311701991944,
+   "speedup_complete_full": 0.2601331503267195,
+   "fom_complete_b_panel": "nt1e-2_dt01",
+   "fom_ms_complete_b_panel": 10.33323400770314,
+   "fom_worst_complete_b_panel": 2.776311701991944,
+   "speedup_complete_b_panel": 0.2601331503267195,
+   "fom_complete_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_complete_lean": 17.476596985943615,
+   "fom_worst_complete_lean": 0.056913163007852784,
+   "speedup_complete_lean": 0.4399631545704729
+  },
+  {
+   "name": "fft_tight",
+   "family": "fom",
+   "phase": "F",
+   "evolved": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "all_times": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "stalled": 0,
+   "reps_per_case": 1,
+   "gpu_ms": 73.31214798614383,
+   "complete_ms": 74.61527502164245,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": true,
+   "bracket_gpu_ms": 72.69312199787237,
+   "worst_evolved_percent": 0.0,
+   "median_evolved_percent": 0.0,
+   "worst_all_times_percent": 0.0,
+   "unknowns": 3969
+  },
+  {
+   "name": "lean_nt3e-3_l3e-3_dt005",
+   "family": "fom",
+   "phase": "F",
+   "evolved": [
+    0.0005691316300785278,
+    0.00023404991806630322,
+    0.0003075187789963399
+   ],
+   "all_times": [
+    0.0005691316300785278,
+    0.00023404991806630322,
+    0.0003075187789963399
+   ],
+   "stalled": 0,
+   "reps_per_case": 1,
+   "gpu_ms": 16.53039999655448,
+   "complete_ms": 17.476596985943615,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": true,
+   "bracket_gpu_ms": 16.9097300095018,
+   "worst_evolved_percent": 0.056913163007852784,
+   "median_evolved_percent": 0.03075187789963399,
+   "worst_all_times_percent": 0.056913163007852784,
+   "unknowns": 3969
+  },
+  {
+   "name": "nt1e-2_dt01",
+   "family": "fom",
+   "phase": "F",
+   "evolved": [
+    0.012618990337797047,
+    0.00963719349528021,
+    0.027763117019919438
+   ],
+   "all_times": [
+    0.012618990337797047,
+    0.00963719349528021,
+    0.027763117019919438
+   ],
+   "stalled": 0,
+   "reps_per_case": 1,
+   "gpu_ms": 9.270108974305913,
+   "complete_ms": 10.33323400770314,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": true,
+   "bracket_gpu_ms": 8.3030000096187,
+   "worst_evolved_percent": 2.776311701991944,
+   "median_evolved_percent": 1.2618990337797047,
+   "worst_all_times_percent": 2.776311701991944,
+   "unknowns": 3969
+  },
+  {
+   "name": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+   "family": "nmrom",
+   "phase": "F",
+   "evolved": [
+    0.003243795609868328,
+    0.004441082252552752,
+    0.007221991925638928
+   ],
+   "all_times": [
+    0.02192947083160816,
+    0.009106872190555655,
+    0.007221991925638928
+   ],
+   "stalled": 0,
+   "reps_per_case": 1,
+   "gpu_ms": 56.681315996684134,
+   "complete_ms": 58.1332910223864,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": true,
+   "bracket_gpu_ms": 54.9834510020446,
+   "worst_evolved_percent": 0.7221991925638928,
+   "median_evolved_percent": 0.4441082252552752,
+   "worst_all_times_percent": 2.192947083160816,
+   "unknowns": 16,
+   "q": 0,
+   "M": 64,
+   "m": 225,
+   "rule": "lat16",
+   "gtol": 0.001,
+   "kernel": "hfast EQ",
+   "rule_status": "smoke",
+   "fom_gpu_full": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_gpu_full": 16.53039999655448,
+   "fom_worst_gpu_full": 0.056913163007852784,
+   "speedup_gpu_full": 0.29163754768011224,
+   "fom_gpu_b_panel": "fft_tight",
+   "fom_ms_gpu_b_panel": 73.31214798614383,
+   "fom_worst_gpu_b_panel": 0.0,
+   "speedup_gpu_b_panel": 1.2934094189067982,
+   "fom_gpu_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_gpu_lean": 16.53039999655448,
+   "fom_worst_gpu_lean": 0.056913163007852784,
+   "speedup_gpu_lean": 0.29163754768011224,
+   "fom_complete_full": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_complete_full": 17.476596985943615,
+   "fom_worst_complete_full": 0.056913163007852784,
+   "speedup_complete_full": 0.3006297541147911,
+   "fom_complete_b_panel": "fft_tight",
+   "fom_ms_complete_b_panel": 74.61527502164245,
+   "fom_worst_complete_b_panel": 0.0,
+   "speedup_complete_b_panel": 1.2835205733133024,
+   "fom_complete_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_complete_lean": 17.476596985943615,
+   "fom_worst_complete_lean": 0.056913163007852784,
+   "speedup_complete_lean": 0.3006297541147911
+  },
+  {
+   "name": "pod4_M16_dense",
+   "family": "pod",
+   "phase": "S",
+   "evolved": [
+    0.41253775008926225,
+    0.40645915745723793,
+    0.5601115743121979
+   ],
+   "all_times": [
+    0.7993288498565883,
+    0.526216888671108,
+    0.6493533102895952
+   ],
+   "stalled": 0,
+   "reps_per_case": 1,
+   "gpu_ms": 13.014463009312749,
+   "complete_ms": 14.590103004593402,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": true,
+   "bracket_gpu_ms": null,
+   "worst_evolved_percent": 56.01115743121979,
+   "median_evolved_percent": 41.253775008926226,
+   "worst_all_times_percent": 79.93288498565883,
+   "unknowns": 4,
+   "M": 16,
+   "m": null,
+   "k": 4,
+   "gtol": 1e-06,
+   "kernel": "gridarm: arms dense residual, Phi-free, row-blocked, chunked-jvp Jacobian",
+   "fom_gpu_full": "nt1e-2_dt01",
+   "fom_ms_gpu_full": 9.270108974305913,
+   "fom_worst_gpu_full": 2.776311701991944,
+   "speedup_gpu_full": 0.7122928520118355,
+   "fom_gpu_b_panel": "nt1e-2_dt01",
+   "fom_ms_gpu_b_panel": 9.270108974305913,
+   "fom_worst_gpu_b_panel": 2.776311701991944,
+   "speedup_gpu_b_panel": 0.7122928520118355,
+   "fom_gpu_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_gpu_lean": 16.53039999655448,
+   "fom_worst_gpu_lean": 0.056913163007852784,
+   "speedup_gpu_lean": 1.2701561320452357,
+   "fom_complete_full": "nt1e-2_dt01",
+   "fom_ms_complete_full": 10.33323400770314,
+   "fom_worst_complete_full": 2.776311701991944,
+   "speedup_complete_full": 0.7082358503192149,
+   "fom_complete_b_panel": "nt1e-2_dt01",
+   "fom_ms_complete_b_panel": 10.33323400770314,
+   "fom_worst_complete_b_panel": 2.776311701991944,
+   "speedup_complete_b_panel": 0.7082358503192149,
+   "fom_complete_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_complete_lean": 17.476596985943615,
+   "fom_worst_complete_lean": 0.056913163007852784,
+   "speedup_complete_lean": 1.1978391777248905
+  },
+  {
+   "name": "pod4_M16_dense_armsTwin",
+   "family": "pod",
+   "phase": "P",
+   "evolved": [
+    0.41253775008926225,
+    0.40645915745723793,
+    0.5601115743121979
+   ],
+   "all_times": [
+    0.7993288498565883,
+    0.526216888671108,
+    0.6493533102895952
+   ],
+   "stalled": 0,
+   "reps_per_case": 0,
+   "gpu_ms": null,
+   "complete_ms": null,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": null,
+   "bracket_gpu_ms": null,
+   "worst_evolved_percent": 56.01115743121979,
+   "median_evolved_percent": 41.253775008926226,
+   "worst_all_times_percent": 79.93288498565883,
+   "unknowns": 4,
+   "M": 16,
+   "m": null,
+   "k": 4,
+   "gtol": 1e-06,
+   "kernel": "arms.make_query dense (explicit Phi) -- parity twin, untimed",
+   "fom_gpu_full": "nt1e-2_dt01",
+   "fom_ms_gpu_full": 9.270108974305913,
+   "fom_worst_gpu_full": 2.776311701991944,
+   "speedup_gpu_full": null,
+   "fom_gpu_b_panel": "nt1e-2_dt01",
+   "fom_ms_gpu_b_panel": 9.270108974305913,
+   "fom_worst_gpu_b_panel": 2.776311701991944,
+   "speedup_gpu_b_panel": null,
+   "fom_gpu_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_gpu_lean": 16.53039999655448,
+   "fom_worst_gpu_lean": 0.056913163007852784,
+   "speedup_gpu_lean": null,
+   "fom_complete_full": "nt1e-2_dt01",
+   "fom_ms_complete_full": 10.33323400770314,
+   "fom_worst_complete_full": 2.776311701991944,
+   "speedup_complete_full": null,
+   "fom_complete_b_panel": "nt1e-2_dt01",
+   "fom_ms_complete_b_panel": 10.33323400770314,
+   "fom_worst_complete_b_panel": 2.776311701991944,
+   "speedup_complete_b_panel": null,
+   "fom_complete_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_complete_lean": 17.476596985943615,
+   "fom_worst_complete_lean": 0.056913163007852784,
+   "speedup_complete_lean": null
+  },
+  {
+   "name": "qman4_quad_M16",
+   "family": "qman",
+   "phase": "S",
+   "evolved": [
+    0.43773817338061893,
+    0.4105716308859217,
+    0.5680153505501396
+   ],
+   "all_times": [
+    0.815485254674189,
+    0.5180009354566668,
+    0.6606694345644923
+   ],
+   "stalled": 0,
+   "reps_per_case": 1,
+   "gpu_ms": 14.779192017158493,
+   "complete_ms": 15.739916998427361,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": true,
+   "bracket_gpu_ms": null,
+   "worst_evolved_percent": 56.801535055013964,
+   "median_evolved_percent": 43.773817338061896,
+   "worst_all_times_percent": 81.5485254674189,
+   "unknowns": 4,
+   "M": 16,
+   "m": null,
+   "k": 4,
+   "gtol": 1e-06,
+   "kernel": "gridarm: arms dense residual, Phi-free, row-blocked, chunked-jvp Jacobian",
+   "bank_columns": 15,
+   "fom_gpu_full": "nt1e-2_dt01",
+   "fom_ms_gpu_full": 9.270108974305913,
+   "fom_worst_gpu_full": 2.776311701991944,
+   "speedup_gpu_full": 0.6272405801036626,
+   "fom_gpu_b_panel": "nt1e-2_dt01",
+   "fom_ms_gpu_b_panel": 9.270108974305913,
+   "fom_worst_gpu_b_panel": 2.776311701991944,
+   "speedup_gpu_b_panel": 0.6272405801036626,
+   "fom_gpu_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_gpu_lean": 16.53039999655448,
+   "fom_worst_gpu_lean": 0.056913163007852784,
+   "speedup_gpu_lean": 1.118491455917404,
+   "fom_complete_full": "nt1e-2_dt01",
+   "fom_ms_complete_full": 10.33323400770314,
+   "fom_worst_complete_full": 2.776311701991944,
+   "speedup_complete_full": 0.6564986339340656,
+   "fom_complete_b_panel": "nt1e-2_dt01",
+   "fom_ms_complete_b_panel": 10.33323400770314,
+   "fom_worst_complete_b_panel": 2.776311701991944,
+   "speedup_complete_b_panel": 0.6564986339340656,
+   "fom_complete_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_complete_lean": 17.476596985943615,
+   "fom_worst_complete_lean": 0.056913163007852784,
+   "speedup_complete_lean": 1.1103360321207394
+  },
+  {
+   "name": "qman4_quad_M16_armsTwin",
+   "family": "qman",
+   "phase": "P",
+   "evolved": [
+    0.43773817338061893,
+    0.41057163088592175,
+    0.5680153505501397
+   ],
+   "all_times": [
+    0.815485254674189,
+    0.5180009354566668,
+    0.6606694345644923
+   ],
+   "stalled": 0,
+   "reps_per_case": 0,
+   "gpu_ms": null,
+   "complete_ms": null,
+   "timed_stalled": 0,
+   "timed_identical_to_quick": null,
+   "bracket_gpu_ms": null,
+   "worst_evolved_percent": 56.80153505501397,
+   "median_evolved_percent": 43.773817338061896,
+   "worst_all_times_percent": 81.5485254674189,
+   "unknowns": 4,
+   "M": 16,
+   "m": null,
+   "k": 4,
+   "gtol": 1e-06,
+   "kernel": "arms.make_query dense (explicit Phi) -- parity twin, untimed",
+   "bank_columns": 15,
+   "fom_gpu_full": "nt1e-2_dt01",
+   "fom_ms_gpu_full": 9.270108974305913,
+   "fom_worst_gpu_full": 2.776311701991944,
+   "speedup_gpu_full": null,
+   "fom_gpu_b_panel": "nt1e-2_dt01",
+   "fom_ms_gpu_b_panel": 9.270108974305913,
+   "fom_worst_gpu_b_panel": 2.776311701991944,
+   "speedup_gpu_b_panel": null,
+   "fom_gpu_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_gpu_lean": 16.53039999655448,
+   "fom_worst_gpu_lean": 0.056913163007852784,
+   "speedup_gpu_lean": null,
+   "fom_complete_full": "nt1e-2_dt01",
+   "fom_ms_complete_full": 10.33323400770314,
+   "fom_worst_complete_full": 2.776311701991944,
+   "speedup_complete_full": null,
+   "fom_complete_b_panel": "nt1e-2_dt01",
+   "fom_ms_complete_b_panel": 10.33323400770314,
+   "fom_worst_complete_b_panel": 2.776311701991944,
+   "speedup_complete_b_panel": null,
+   "fom_complete_lean": "lean_nt3e-3_l3e-3_dt005",
+   "fom_ms_complete_lean": 17.476596985943615,
+   "fom_worst_complete_lean": 0.056913163007852784,
+   "speedup_complete_lean": null
+  }
+ ],
+ "gates": {
+  "truth_fields_are_the_reference_solve": {
+   "passed": true,
+   "cases": [
+    0,
+    2
+   ]
+  },
+  "truth_converged": {
+   "passed": true
+  },
+  "errors_recomputed_from_full_fields": {
+   "passed": true,
+   "mismatches": [],
+   "tolerance": 1e-09,
+   "pairs_recomputed": 16,
+   "pairs_total": 27
+  },
+  "worst_case_field_saved_and_recomputed": {
+   "passed": true,
+   "per_arm": [
+    {
+     "arm": "fft_tight",
+     "worst_case": 0,
+     "saved": true
+    },
+    {
+     "arm": "nt1e-2_dt01",
+     "worst_case": 2,
+     "saved": true
+    },
+    {
+     "arm": "lean_nt3e-3_l3e-3_dt005",
+     "worst_case": 0,
+     "saved": true
+    },
+    {
+     "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+     "worst_case": 2,
+     "saved": true
+    },
+    {
+     "arm": "bank32_M128_lat16_g1em06",
+     "worst_case": 2,
+     "saved": true
+    },
+    {
+     "arm": "pod4_M16_dense_armsTwin",
+     "worst_case": 2,
+     "saved": true
+    },
+    {
+     "arm": "pod4_M16_dense",
+     "worst_case": 2,
+     "saved": true
+    },
+    {
+     "arm": "qman4_quad_M16_armsTwin",
+     "worst_case": 2,
+     "saved": true
+    },
+    {
+     "arm": "qman4_quad_M16",
+     "worst_case": 2,
+     "saved": true
+    }
+   ]
+  },
+  "control_perturbed_field_is_flagged": {
+   "passed": true,
+   "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+   "case": 0,
+   "job": 0.003243795609868328,
+   "perturbed": 0.003283439224671236
+  },
+  "no_order_effect_between_arms": {
+   "bar": 0.05,
+   "min_samples": 5,
+   "min_cases": 3,
+   "passed": null,
+   "splits": {
+    "a": {
+     "definition": "predecessor >= 1 s",
+     "judged_arms": 0,
+     "worst_gap": null,
+     "passed": null,
+     "per_arm": [
+      {
+       "arm": "fft_tight",
+       "n_after_slow": 0,
+       "n_after_fast": 3,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      },
+      {
+       "arm": "lean_nt3e-3_l3e-3_dt005",
+       "n_after_slow": 0,
+       "n_after_fast": 2,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      },
+      {
+       "arm": "nt1e-2_dt01",
+       "n_after_slow": 0,
+       "n_after_fast": 3,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      },
+      {
+       "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+       "n_after_slow": 0,
+       "n_after_fast": 3,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      }
+     ]
+    },
+    "b": {
+     "definition": "predecessor >= 3 x the arm's own per-case median",
+     "judged_arms": 0,
+     "worst_gap": null,
+     "passed": null,
+     "per_arm": [
+      {
+       "arm": "fft_tight",
+       "n_after_slow": 0,
+       "n_after_fast": 3,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      },
+      {
+       "arm": "lean_nt3e-3_l3e-3_dt005",
+       "n_after_slow": 2,
+       "n_after_fast": 0,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      },
+      {
+       "arm": "nt1e-2_dt01",
+       "n_after_slow": 2,
+       "n_after_fast": 1,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      },
+      {
+       "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+       "n_after_slow": 0,
+       "n_after_fast": 3,
+       "cases_with_both": 0,
+       "gap": null,
+       "judged": false,
+       "passed": null
+      }
+     ]
+    }
+   }
+  },
+  "control_order_gate_catches_injected_6pct": {
+   "passed": false,
+   "note": "+6% injected after slow predecessors in THIS job's Phase F rows; every judged role arm and rule-chosen FOM must be caught individually. Arms never judged in a split are listed, not counted.",
+   "per_split": {
+    "a": [
+     {
+      "arm": "lean_nt3e-3_l3e-3_dt005",
+      "judged": false,
+      "caught": false,
+      "gap": null
+     },
+     {
+      "arm": "nt1e-2_dt01",
+      "judged": false,
+      "caught": false,
+      "gap": null
+     },
+     {
+      "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+      "judged": false,
+      "caught": false,
+      "gap": null
+     }
+    ],
+    "b": [
+     {
+      "arm": "lean_nt3e-3_l3e-3_dt005",
+      "judged": false,
+      "caught": false,
+      "gap": null
+     },
+     {
+      "arm": "nt1e-2_dt01",
+      "judged": false,
+      "caught": false,
+      "gap": null
+     },
+     {
+      "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+      "judged": false,
+      "caught": false,
+      "gap": null
+     }
+    ]
+   },
+   "never_judged": [
+    "lean_nt3e-3_l3e-3_dt005",
+    "nt1e-2_dt01",
+    "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2"
+   ]
+  },
+  "bracket_drift": {
+   "bar": 0.1,
+   "passed": false,
+   "per_arm": [
+    {
+     "arm": "lean_nt3e-3_l3e-3_dt005",
+     "phase_F_ms": 16.53039999655448,
+     "phase_B_ms": 16.9097300095018,
+     "drift": 0.022947418878332515,
+     "passed": true
+    },
+    {
+     "arm": "nt1e-2_dt01",
+     "phase_F_ms": 9.270108974305913,
+     "phase_B_ms": 8.3030000096187,
+     "drift": -0.10432552274927542,
+     "passed": false
+    },
+    {
+     "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+     "phase_F_ms": 56.681315996684134,
+     "phase_B_ms": 54.9834510020446,
+     "drift": -0.029954579649118518,
+     "passed": true
+    }
+   ]
+  },
+  "five_retained_repetitions_everywhere": {
+   "passed": true,
+   "minimum": 1
+  },
+  "repetition_output_identical": {
+   "passed": true
+  },
+  "no_role_arm_stalls": {
+   "passed": true,
+   "roles": [
+    "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+    "bank32_M128_lat16_g1em06"
+   ],
+   "missing": []
+  },
+  "timed_rows_match_recomputed_errors": {
+   "passed": true
+  },
+  "grid_arm_parity": {
+   "passed": true,
+   "pairs": [
+    {
+     "arm": "pod4_M16_dense",
+     "twin": "pod4_M16_dense_armsTwin",
+     "worst_relative": 6.591442985647913e-16,
+     "integers_identical": true,
+     "passed": true
+    },
+    {
+     "arm": "qman4_quad_M16",
+     "twin": "qman4_quad_M16_armsTwin",
+     "worst_relative": 7.711253718210913e-16,
+     "integers_identical": true,
+     "passed": true
+    }
+   ],
+   "bar": 1e-09,
+   "pairs_expected_at_most": 2
+  },
+  "quadratic_manifold_trajectory_split": {
+   "passed": true,
+   "fits": [
+    {
+     "rank": 4,
+     "ridge": 1.0,
+     "ridge_at_grid_top": true,
+     "heldout": 0.3268180114758475,
+     "weight_frobenius_norm": 0.013521853717505215
+    }
+   ]
+  },
+  "cohort_matches_frozen_test64": {
+   "passed": false,
+   "got": "f7cb90ac710353644c4fbc170d72412e0c404ff4d16ae642d55d06cdf0579fe0"
+  },
+  "backend_gpu_x64_highest": {
+   "passed": true
+  },
+  "checkpoint_unchanged": {
+   "passed": true
+  },
+  "job_complete": {
+   "passed": true
+  },
+  "phi_free_operator_parity": {
+   "passed": true
+  }
+ },
+ "failed_gates": [
+  "bracket_drift",
+  "cohort_matches_frozen_test64",
+  "control_order_gate_catches_injected_6pct"
+ ],
+ "notes": [],
+ "table3": {
+  "rule": "one FOM per cell: the fastest Phase-F-timed setting of the full grid whose worst evolved error <= the worst evolved error of the NM-ROM accurate row (roles.nmrom_accurate), same job",
+  "accurate_arm": "bank32_M128_lat16_g1em06",
+  "fom": {
+   "name": "nt1e-2_dt01",
+   "gpu_ms": 9.270108974305913,
+   "worst_evolved_percent": 2.776311701991944,
+   "median_evolved_percent": 1.2618990337797047
+  },
+  "rows": [
+   {
+    "arm": "bank32_M128_lat16_g1em06",
+    "family": "bankspan",
+    "unknowns": 32,
+    "worst_evolved_percent": 4.45597719867293,
+    "median_evolved_percent": 2.9440192634105173,
+    "gpu_ms": 38.81878100219183,
+    "speedup_vs_cell_fom": 0.2388047418022347
+   },
+   {
+    "arm": "pod4_M16_dense",
+    "family": "pod",
+    "unknowns": 4,
+    "worst_evolved_percent": 56.01115743121979,
+    "median_evolved_percent": 41.253775008926226,
+    "gpu_ms": 13.014463009312749,
+    "speedup_vs_cell_fom": 0.7122928520118355
+   },
+   {
+    "arm": "pod4_M16_dense_armsTwin",
+    "family": "pod",
+    "unknowns": 4,
+    "worst_evolved_percent": 56.01115743121979,
+    "median_evolved_percent": 41.253775008926226,
+    "gpu_ms": null,
+    "speedup_vs_cell_fom": null
+   },
+   {
+    "arm": "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2",
+    "family": "nmrom",
+    "unknowns": 16,
+    "worst_evolved_percent": 0.7221991925638928,
+    "median_evolved_percent": 0.4441082252552752,
+    "gpu_ms": 56.681315996684134,
+    "speedup_vs_cell_fom": 0.1635478783669775
+   },
+   {
+    "arm": "qman4_quad_M16",
+    "family": "qman",
+    "unknowns": 4,
+    "worst_evolved_percent": 56.801535055013964,
+    "median_evolved_percent": 43.773817338061896,
+    "gpu_ms": 14.779192017158493,
+    "speedup_vs_cell_fom": 0.6272405801036626
+   },
+   {
+    "arm": "qman4_quad_M16_armsTwin",
+    "family": "qman",
+    "unknowns": 4,
+    "worst_evolved_percent": 56.80153505501397,
+    "median_evolved_percent": 43.773817338061896,
+    "gpu_ms": null,
+    "speedup_vs_cell_fom": null
+   }
+  ]
+ },
+ "pod": {
+  "kmax": 16,
+  "modes_sha256_by_rank": {
+   "4": "b59ea87ebc323c903bbadb3da4013518cce43a904279f38d8550f8344c3decca"
+  },
+  "eigenvalues": [
+   58640.105164173656,
+   13513.538365825325,
+   7873.484158018525,
+   3591.3019837844345,
+   1678.1400197318037,
+   1102.404433464896,
+   921.9943413200061,
+   572.5050308205438,
+   418.94218673608356,
+   371.4388044286132,
+   219.06564931204872,
+   141.50341516841544,
+   113.23187885144401,
+   91.98368677982472,
+   56.63137001772528,
+   36.860402558712934
+  ],
+  "total_energy": 89464.46359579786,
+  "tail_fraction": {
+   "4": 0.06534476024366954
+  },
+  "seconds": 6.703023934009252,
+  "basis": "uncentred method of snapshots (ablation.pod_basis), streamed",
+  "modes_sha256": "ce1926a1b651f1218911874560ac1e3010615372481c04a7185b2010083383fe"
+ },
+ "audit_cases": [
+  0
+ ],
+ "saved_field_cases": {
+  "fft_tight": [
+   0
+  ],
+  "nt1e-2_dt01": [
+   0,
+   2
+  ],
+  "lean_nt3e-3_l3e-3_dt005": [
+   0
+  ],
+  "q0_M64_lat16_g0p001_fast_clip_lamcarry_pred2": [
+   0,
+   2
+  ],
+  "bank32_M128_lat16_g1em06": [
+   0,
+   2
+  ],
+  "pod4_M16_dense_armsTwin": [
+   0,
+   2
+  ],
+  "pod4_M16_dense": [
+   0,
+   2
+  ],
+  "qman4_quad_M16_armsTwin": [
+   0,
+   2
+  ],
+  "qman4_quad_M16": [
+   0,
+   2
+  ]
+ }
+}

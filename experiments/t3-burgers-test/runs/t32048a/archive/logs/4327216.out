@@ -1,0 +1,108 @@
+host=pax105 source_commit=ca3d7af81f74ce53045019a83c1f972bb6396e78
+NVIDIA A100 80GB PCIe, GPU-c52a7f04-fc38-6157-cf19-5c7ff0945752, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  367G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 4190209 rows in 1 blocks 14.5
+TRUTH 0 18.7
+TRUTH 1 21.0
+TRUTH 2 23.6
+TRUTH 3 26.2
+TRUTH 4 28.0
+TRUTH 5 29.9
+TRUTH 6 32.3
+TRUTH 7 35.0
+TRUTH 8 36.6
+TRUTH 9 38.9
+TRUTH 10 40.2
+TRUTH 11 41.8
+TRUTH 12 43.8
+TRUTH 13 46.3
+TRUTH 14 47.6
+TRUTH 15 49.1
+TRUTH 16 51.5
+TRUTH 17 53.3
+TRUTH 18 55.3
+TRUTH 19 57.6
+TRUTH 20 61.2
+TRUTH 21 62.6
+TRUTH 22 66.5
+TRUTH 23 68.0
+TRUTH 24 70.2
+TRUTH 25 71.4
+TRUTH 26 73.5
+TRUTH 27 77.2
+TRUTH 28 81.4
+TRUTH 29 83.6
+TRUTH 30 85.5
+TRUTH 31 87.7
+TRUTH 32 91.3
+TRUTH 33 94.0
+TRUTH 34 96.1
+TRUTH 35 98.7
+TRUTH 36 101.1
+TRUTH 37 103.2
+TRUTH 38 105.3
+TRUTH 39 107.4
+TRUTH 40 110.0
+TRUTH 41 111.8
+TRUTH 42 113.8
+TRUTH 43 116.3
+TRUTH 44 117.9
+TRUTH 45 119.3
+TRUTH 46 121.3
+TRUTH 47 123.3
+TRUTH 48 125.5
+TRUTH 49 127.4
+TRUTH 50 129.2
+TRUTH 51 131.1
+TRUTH 52 132.9
+TRUTH 53 135.5
+TRUTH 54 137.0
+TRUTH 55 140.0
+TRUTH 56 141.2
+TRUTH 57 143.1
+TRUTH 58 144.5
+TRUTH 59 146.6
+TRUTH 60 149.7
+TRUTH 61 151.6
+TRUTH 62 153.2
+TRUTH 63 154.7
+QUICK fft_tight evolved% 0.0 stalled 0 145.6 306.4
+QUICK nt1e-4_dt005 evolved% 0.0574 stalled 0 73.1 379.5
+QUICK nt1e-3_dt005 evolved% 0.1306 stalled 0 60.9 440.4
+QUICK nt1e-2_dt005 evolved% 31.2191 stalled 0 37.0 477.4
+QUICK nt1e-4_dt01 evolved% 2.0211 stalled 0 67.5 544.9
+QUICK nt1e-3_dt01 evolved% 1.9955 stalled 0 48.8 593.7
+QUICK nt1e-2_dt01 evolved% 3.1141 stalled 0 30.8 624.6
+QUICK lean_tight evolved% 0.0 stalled 0 143.2 767.8
+QUICK lean_nt1e-4_dt005 evolved% 0.0574 stalled 0 70.1 837.9
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.1303 stalled 0 43.7 881.7
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.1347 stalled 0 39.4 921.1
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 31.1777 stalled 0 35.2 956.4
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.9955 stalled 0 36.0 992.4
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 2.0927 stalled 0 32.6 1025.0
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 2.2061 stalled 0 29.8 1054.8
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 9.0423 stalled 0 28.3 1091.5
+TIMED F rep 0 2255.4
+TIMED F rep 1 3409.3
+TIMED F rep 2 4563.6
+TIMED F rep 3 5716.1
+TIMED F rep 4 6869.4
+QUICK bank384_M1536_lat64_g1em06 evolved% 1.3161 stalled 0 46.4 6923.1
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.0777 ok 6932.0
+BLOCK bank384_M1536_lat64_g1em06 7209.2
+SNAPSHOTS (4190209, 3328) 544.6 7754.1
+POD 512 67.7 7822.1
+QUICK pod16_M64_dense_armsTwin evolved% 41.672 stalled 0 128.7 7961.0
+QUICK pod16_M64_dense evolved% 41.672 stalled 0 62.6 8026.8
+GRID PARITY pod16_M64_dense 1.124e-15 integers True
+BLOCK pod16_M64_dense 8400.0
+QMAN r 16 ridge 0.01 |W| 0.009323 heldout 0.123232 lin/quad 0.140193 0.077261 56.5 8478.2
+QUICK qman16_quad_M64_armsTwin evolved% 34.2171 stalled 0 297.7 8788.6
+QUICK qman16_quad_M64 evolved% 34.2171 stalled 0 217.1 9010.8
+GRID PARITY qman16_quad_M64 3.569e-15 integers True
+BLOCK qman16_quad_M64 10161.0
+CMP COMPLETE
+AUDIT t32048 arms 21 failed gates: []
+ALL-DONE

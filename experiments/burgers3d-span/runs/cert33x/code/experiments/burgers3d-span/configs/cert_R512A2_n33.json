@@ -1,0 +1,157 @@
+{
+ "mesh": 33,
+ "lattice": 16,
+ "audit_lattice": 16,
+ "ladder": [
+  32,
+  64,
+  96,
+  128,
+  192,
+  256,
+  384,
+  512
+ ],
+ "gtol": 0.001,
+ "step_budget": 50,
+ "trust_fraction": 0.05,
+ "rho_bar": 0.116,
+ "mode": "certify",
+ "arms": [
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 512,
+   "solver": "fs1",
+   "dt": 0.005
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 384,
+   "solver": "fs1",
+   "dt": 0.005
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 256,
+   "solver": "fs1",
+   "dt": 0.005
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 192,
+   "solver": "fs1",
+   "dt": 0.005
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 128,
+   "solver": "fs1",
+   "dt": 0.005
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 96,
+   "solver": "fs1",
+   "dt": 0.005
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 64,
+   "solver": "fs1",
+   "dt": 0.005
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 512,
+   "solver": "fs1",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 384,
+   "solver": "fs1",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 256,
+   "solver": "fs1",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 192,
+   "solver": "fs1",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 128,
+   "solver": "fs1",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 96,
+   "solver": "fs1",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 64,
+   "solver": "fs1",
+   "dt": 0.01
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 128,
+   "bad": true
+  }
+ ],
+ "cert_draws": [
+  [
+   923201,
+   8
+  ],
+  [
+   923202,
+   8
+  ],
+  [
+   923203,
+   8
+  ],
+  [
+   923204,
+   8
+  ],
+  [
+   923205,
+   8
+  ],
+  [
+   923206,
+   16
+  ]
+ ],
+ "expected_model_sha256": {
+  "bank.pkl": "85b144175a39e1aca3f0391392fbb8eff6047041b498d20a90d26f83848960d8",
+  "head_K32.pkl": "2f5e0c96d1b952182b24398191c19c1d97ca9c1681c92ba72fae4f25743622a8",
+  "head_K64.pkl": "6cb193bf959e01ea35771cb13f3b785bfed77ee38065e826fd8f5cef54f39c7c"
+ }
+}

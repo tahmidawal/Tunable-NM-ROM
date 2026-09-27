@@ -1,0 +1,276 @@
+{
+ "mesh": 33,
+ "lattice": 16,
+ "audit_lattice": 16,
+ "ladder": [
+  32,
+  64,
+  96,
+  128,
+  192,
+  256,
+  384,
+  512
+ ],
+ "gtol": 0.001,
+ "step_budget": 50,
+ "trust_fraction": 0.05,
+ "rho_bar": 0.116,
+ "mode": "panel",
+ "arms": [
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 512
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 384
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 256
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 192
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 128
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 96
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 64
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 32
+  },
+  {
+   "kind": "span",
+   "rule": "tensor",
+   "Rp": 512,
+   "gtol": 1e-06
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 512
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 256
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 128
+  },
+  {
+   "kind": "span",
+   "rule": "lat16",
+   "Rp": 64
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 512,
+   "K": 32
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 256,
+   "K": 32
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 128,
+   "K": 32
+  },
+  {
+   "kind": "head",
+   "rule": "tensor",
+   "Rp": 512,
+   "K": 64
+  },
+  {
+   "kind": "head",
+   "rule": "lat16",
+   "Rp": 512,
+   "K": 32
+  },
+  {
+   "kind": "span",
+   "rule": "exact",
+   "Rp": 512
+  }
+ ],
+ "cohort_seed": 923101,
+ "cohort_count": 16,
+ "ref_ntol": 1e-10,
+ "ref_ltol": 1e-11,
+ "save_reference_steps": true,
+ "fom_grid": [
+  [
+   0.005,
+   0.1,
+   0.5
+  ],
+  [
+   0.005,
+   0.1,
+   0.1
+  ],
+  [
+   0.005,
+   0.03,
+   0.5
+  ],
+  [
+   0.005,
+   0.03,
+   0.1
+  ],
+  [
+   0.005,
+   0.01,
+   0.5
+  ],
+  [
+   0.005,
+   0.01,
+   0.1
+  ],
+  [
+   0.005,
+   0.003,
+   0.5
+  ],
+  [
+   0.005,
+   0.003,
+   0.1
+  ],
+  [
+   0.005,
+   0.001,
+   0.5
+  ],
+  [
+   0.005,
+   0.001,
+   0.1
+  ],
+  [
+   0.005,
+   0.0001,
+   0.5
+  ],
+  [
+   0.005,
+   0.0001,
+   0.1
+  ],
+  [
+   0.01,
+   0.1,
+   0.5
+  ],
+  [
+   0.01,
+   0.1,
+   0.1
+  ],
+  [
+   0.01,
+   0.03,
+   0.5
+  ],
+  [
+   0.01,
+   0.03,
+   0.1
+  ],
+  [
+   0.01,
+   0.01,
+   0.5
+  ],
+  [
+   0.01,
+   0.01,
+   0.1
+  ],
+  [
+   0.01,
+   0.003,
+   0.5
+  ],
+  [
+   0.01,
+   0.003,
+   0.1
+  ],
+  [
+   0.01,
+   0.001,
+   0.5
+  ],
+  [
+   0.01,
+   0.001,
+   0.1
+  ],
+  [
+   0.01,
+   0.0001,
+   0.5
+  ],
+  [
+   0.01,
+   0.0001,
+   0.1
+  ],
+  [
+   0.025,
+   0.01,
+   0.5
+  ],
+  [
+   0.025,
+   0.001,
+   0.5
+  ]
+ ],
+ "reps": 3,
+ "audit_arms": [
+  "span_R512_tensor",
+  "span_R128_tensor",
+  "head32_R512_tensor",
+  "fom_dt0.005_nt0.001_lt0.5"
+ ],
+ "parity": {
+  "arm": "head32_R512_lat16",
+  "cases": 4
+ },
+ "expected_model_sha256": {
+  "bank.pkl": "85b144175a39e1aca3f0391392fbb8eff6047041b498d20a90d26f83848960d8",
+  "head_K32.pkl": "2f5e0c96d1b952182b24398191c19c1d97ca9c1681c92ba72fae4f25743622a8",
+  "head_K64.pkl": "6cb193bf959e01ea35771cb13f3b785bfed77ee38065e826fd8f5cef54f39c7c"
+ }
+}

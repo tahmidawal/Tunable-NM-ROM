@@ -1,0 +1,17 @@
+{
+ "complete": false,
+ "name": "deeponet",
+ "family": "deeponet",
+ "problem": "square",
+ "mesh": 4096,
+ "mem_share": 1.0,
+ "co_scheduled_on_same_gpu": [
+  "deeponet"
+ ],
+ "data": {
+  "seconds": 1.283497759141028
+ },
+ "failure": "out_of_memory",
+ "failure_message": "no micro-batch fits (micro-batch 1 out of memory)",
+ "peak_allocated_bytes": 77643566080
+}

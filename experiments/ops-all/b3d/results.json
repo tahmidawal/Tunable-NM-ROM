@@ -1,0 +1,315 @@
+{
+ "group": "C b3d",
+ "cells": {
+  "64^3": {
+   "mesh": "64^3",
+   "nodes": 65,
+   "cohort": "sealed held-out 923901 x 32 (Table 1 cohort, opened before)",
+   "table1_job": 4253861,
+   "table1_gpu": "NVIDIA H200",
+   "status": "complete",
+   "job_id": "4294606",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "training_jobs": [
+    "4286423"
+   ],
+   "gates": {
+    "timing_drift_worst": 1.0558266366988012,
+    "timing_drift_pass": true,
+    "timing_neighbour_ratio": 1.0341366987193976,
+    "timing_neighbour_ratio_fom": 1.003675698267645,
+    "timing_neighbour_pass": true,
+    "deterministic_outputs": 0.0,
+    "deterministic_pass": true,
+    "reference_residual": 9.991752891316205e-11,
+    "nmrom_reproduction_max_rel": 1.0333344493033918e-15
+   },
+   "fom": {
+    "rule": "fastest FOM setting in this job with worst <= NM-ROM accurate worst",
+    "setting": "fom_dt0.005_nt0.001_lt0.5",
+    "ms": 26.034372858703136,
+    "worst_pct": 0.9205698170329645,
+    "median_pct": 0.5069838724861933,
+    "table1_setting": "fom_dt0.005_nt0.001_lt0.1",
+    "table1_setting_ms": 26.221918873488903,
+    "table1_setting_worst_pct": 0.9205698170329645
+   },
+   "nmrom_accurate": {
+    "arm": "span_R512_fsc_dt0.005",
+    "worst_pct": 1.007257704693526,
+    "median_pct": 0.06752826566163263,
+    "ms": 178.09586692601442,
+    "speedup": 0.14618179134678336,
+    "speedup_vs_table1_fom_setting": 0.1472348534869827,
+    "table1_worst_pct": 1.0072577046935272
+   },
+   "nmrom_fast": {
+    "arm": "span_R192_fsc_dt0.01",
+    "worst_pct": 3.3720961985511493,
+    "median_pct": 0.8746189179126125,
+    "ms": 13.938601128757,
+    "speedup": 1.8677895018454265,
+    "speedup_vs_table1_fom_setting": 1.8812446551318518,
+    "table1_worst_pct": 3.3720961985511484
+   },
+   "operators": {
+    "FNO": {
+     "arm": "fno-l",
+     "status": "evaluated",
+     "training_dir": "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/c65/output/train/fno-l",
+     "parameters": 18887909,
+     "epochs": 28,
+     "optimisation_steps": 5342,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "training_seconds": 3001.1901367120445,
+     "validation_mean_case_max_pct": 1.0318068633275124,
+     "worst_pct": 1.7891811564648272,
+     "median_pct": 0.8676429049023875,
+     "ms": 10.607141302898526,
+     "speedup": 2.4544193496874542,
+     "speedup_vs_table1_fom_setting": 2.472100458049282
+    },
+    "U-Net": {
+     "arm": "unet-l",
+     "status": "evaluated",
+     "training_dir": "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/c65/output/train/unet-l",
+     "parameters": 22581861,
+     "epochs": 22,
+     "optimisation_steps": 4169,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "training_seconds": 3002.3513652789406,
+     "validation_mean_case_max_pct": 1.2356098477364137,
+     "worst_pct": 2.47122551424862,
+     "median_pct": 1.0962445857619463,
+     "ms": 33.015075605362654,
+     "speedup": 0.7885601465796541,
+     "speedup_vs_table1_fom_setting": 0.7942407640353749
+    },
+    "Transolver": {
+     "arm": "tsol-l",
+     "status": "evaluated",
+     "training_dir": "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/c65/output/train/tsol-l",
+     "parameters": 17897984,
+     "epochs": 32,
+     "optimisation_steps": 5960,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "training_seconds": 3002.3836061889306,
+     "validation_mean_case_max_pct": 5.593898663836115,
+     "worst_pct": 7.320590174798772,
+     "median_pct": 5.01943329716129,
+     "ms": 34.6780763939023,
+     "speedup": 0.7507444346965263,
+     "speedup_vs_table1_fom_setting": 0.7561526359085965
+    },
+    "DeepONet": {
+     "arm": "don-s",
+     "status": "evaluated",
+     "training_dir": "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/c65/output/train/don-s",
+     "parameters": 4756773,
+     "epochs": 69,
+     "optimisation_steps": 13132,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "training_seconds": 3001.3809256618842,
+     "validation_mean_case_max_pct": 8.745512120519729,
+     "worst_pct": 18.09714759665643,
+     "median_pct": 6.03437478503729,
+     "ms": 17.240062355995178,
+     "speedup": 1.5101089729904464,
+     "speedup_vs_table1_fom_setting": 1.520987472784303
+    }
+   }
+  },
+  "128^3": {
+   "mesh": "128^3",
+   "nodes": 129,
+   "cohort": "sealed held-out 923901 x 32 (Table 1 cohort, opened before)",
+   "table1_job": 4253865,
+   "table1_gpu": "NVIDIA H200",
+   "status": "complete",
+   "job_id": "4286429",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "training_jobs": [
+    "4286429"
+   ],
+   "gates": {
+    "timing_drift_worst": 1.0150222598037106,
+    "timing_drift_pass": true,
+    "timing_neighbour_ratio": 1.001818482558488,
+    "timing_neighbour_ratio_fom": 1.0036038796176556,
+    "timing_neighbour_pass": true,
+    "deterministic_outputs": 0.0,
+    "deterministic_pass": true,
+    "reference_residual": 9.896144906059028e-11,
+    "nmrom_reproduction_max_rel": 5.806167254103924e-15
+   },
+   "fom": {
+    "rule": "fastest FOM setting in this job with worst <= NM-ROM accurate worst",
+    "setting": "fom_dt0.01_nt0.001_lt0.1",
+    "ms": 112.54058429040015,
+    "worst_pct": 1.3871226083424149,
+    "median_pct": 0.6889820007345958,
+    "table1_setting": "fom_dt0.01_nt0.01_lt0.1",
+    "table1_setting_ms": 62.627464067190886,
+    "table1_setting_worst_pct": 1.4676377794084647
+   },
+   "nmrom_accurate": {
+    "arm": "span_R512_fsc_dt0.005",
+    "worst_pct": 1.4639855622964046,
+    "median_pct": 0.07918665580969807,
+    "ms": 195.48138207755983,
+    "speedup": 0.5757099888200513,
+    "speedup_vs_table1_fom_setting": 0.3203755948601929,
+    "table1_worst_pct": 1.463985562296413
+   },
+   "nmrom_fast": {
+    "arm": "span_R192_fsc_dt0.01",
+    "worst_pct": 4.2596672255942085,
+    "median_pct": 0.8822206542537042,
+    "ms": 19.44939629174769,
+    "speedup": 5.78632789430851,
+    "speedup_vs_table1_fom_setting": 3.220020977914029,
+    "table1_worst_pct": 4.259667225594186
+   },
+   "operators": {
+    "FNO": {
+     "arm": "fno-l",
+     "status": "evaluated",
+     "training_dir": "../output/train/fno-l",
+     "parameters": 18887909,
+     "epochs": 2,
+     "optimisation_steps": 384,
+     "stop_reason": "wall_budget",
+     "micro_batch": 4,
+     "training_seconds": 3008.421029711142,
+     "validation_mean_case_max_pct": 8.118349655592565,
+     "worst_pct": 11.953907093018406,
+     "median_pct": 6.752312576468614,
+     "ms": 75.99071506410837,
+     "speedup": 1.4809780931191008,
+     "speedup_vs_table1_fom_setting": 0.8241462659530998
+    },
+    "U-Net": {
+     "arm": "unet-l",
+     "status": "evaluated",
+     "training_dir": "../output/train/unet-l",
+     "parameters": 22581861,
+     "epochs": 4,
+     "optimisation_steps": 640,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "training_seconds": 3014.1378854271024,
+     "validation_mean_case_max_pct": 5.159541349836659,
+     "worst_pct": 9.387758387102732,
+     "median_pct": 4.210135837951573,
+     "ms": 194.4752426352352,
+     "speedup": 0.5786884889069677,
+     "speedup_vs_table1_fom_setting": 0.32203309387127094
+    },
+    "Transolver": {
+     "arm": "tsol-l",
+     "status": "evaluated",
+     "training_dir": "../output/train/tsol-l",
+     "parameters": 19190464,
+     "epochs": 31,
+     "optimisation_steps": 5913,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "training_seconds": 3003.0380496820435,
+     "validation_mean_case_max_pct": 12.200869561271658,
+     "worst_pct": 14.3917631558829,
+     "median_pct": 11.04938818702137,
+     "ms": 35.2200660854578,
+     "speedup": 3.195354148891493,
+     "speedup_vs_table1_fom_setting": 1.7781756546177938
+    },
+    "DeepONet": {
+     "arm": "don-s",
+     "status": "evaluated",
+     "training_dir": "../output/train/don-s",
+     "parameters": 4756773,
+     "epochs": 10,
+     "optimisation_steps": 1918,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "training_seconds": 3009.575415990781,
+     "validation_mean_case_max_pct": 19.867784522778372,
+     "worst_pct": 34.08913117795437,
+     "median_pct": 15.934388652413938,
+     "ms": 125.8657758589834,
+     "speedup": 0.8941317329699502,
+     "speedup_vs_table1_fom_setting": 0.49757341612351397
+    }
+   }
+  },
+  "256^3": {
+   "mesh": "256^3",
+   "nodes": 257,
+   "cohort": "sealed held-out 923901 x 32 (Table 1 cohort, opened before)",
+   "table1_job": 4253867,
+   "table1_gpu": "NVIDIA H200",
+   "status": "FAILED (panel job 4292776): jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']",
+   "panel_failure": "jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']",
+   "training_only": {
+    "don-s@t257": {
+     "job": "4286465",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "trained": false,
+     "failure": "RuntimeError: no micro-batch fits (probe {'8': 'oom', '4': 'oom', '2': 'oom', '1': 'oom'})",
+     "epochs": null,
+     "stop_reason": null,
+     "micro_batch": null,
+     "validation_mean_case_max_pct": null,
+     "validation_worst_case_max_pct": null
+    },
+    "tsol-s@t257": {
+     "job": "4286465",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "trained": true,
+     "failure": null,
+     "epochs": 128,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "validation_mean_case_max_pct": 13.140639420158017,
+     "validation_worst_case_max_pct": 26.52473395967421
+    },
+    "unet-s@t257": {
+     "job": "4286465",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "trained": true,
+     "failure": null,
+     "epochs": 5,
+     "stop_reason": "wall_budget",
+     "micro_batch": 2,
+     "validation_mean_case_max_pct": 31.951166583441527,
+     "validation_worst_case_max_pct": 61.886202528522446
+    },
+    "don-s@p257b": {
+     "job": "4292776",
+     "gpu": "NVIDIA H200",
+     "trained": true,
+     "failure": null,
+     "epochs": 8,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "validation_mean_case_max_pct": 48.16658960594833,
+     "validation_worst_case_max_pct": 68.70075731274568
+    },
+    "fno-s@p257b": {
+     "job": "4292776",
+     "gpu": "NVIDIA H200",
+     "trained": true,
+     "failure": null,
+     "epochs": 17,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "validation_mean_case_max_pct": 7.18898570105789,
+     "validation_worst_case_max_pct": 15.891181717725825
+    }
+   }
+  }
+ }
+}

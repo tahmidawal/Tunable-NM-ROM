@@ -1,0 +1,4 @@
+torch_backend=cuda NVIDIA H200
+{"arm": "unet-s", "problem": "heat", "mesh": 256, "micro_batch": 1, "real_parameter_count": 5647749}
+{"arm": "unet-s", "epoch": 0, "steps": 35, "train": 0.2972275374214107, "val_mean": 0.5335965358798291, "val_worst": 0.7422945590558937, "lr": 1.0541761257171303e-05, "wall": 3117.5}
+TRAIN DONE {"arm": "unet-s", "problem": "heat", "mesh": 256, "stop_reason": "wall_budget", "epochs_completed": 1, "optimisation_steps": 35, "best_epoch": 0} val_mean 0.5335965358798291 val_worst 0.7422945590558937

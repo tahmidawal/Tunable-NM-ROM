@@ -1,0 +1,26 @@
+host=pax106 job=4288826
+NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  367G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda=True
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l512a/logs/deeponet.log <==
+{"arm": "deeponet", "epoch": 18, "steps": 6213, "train": 0.01051809787555882, "val_mean": 0.12733364601657227, "val_worst": 0.359044525588603, "lr": 1.0520854029805275e-05, "wall": 2957.7}
+{"arm": "deeponet", "epoch": 19, "steps": 6303, "train": 0.009796306181465955, "val_mean": 0.128286691909971, "val_worst": 0.35789568366241187, "lr": 1.0000018194889706e-05, "wall": 3001.3}
+TRAIN OP COMPLETE
+
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l512a/logs/fno.log <==
+{"arm": "fno", "epoch": 0, "steps": 327, "train": 0.23711633024959616, "val_mean": 0.15101401016643076, "val_worst": 0.6060646058612316, "lr": 0.00046488315715989694, "wall": 1582.0}
+{"arm": "fno", "epoch": 1, "steps": 621, "train": 0.01044098692365128, "val_mean": 0.10016194426457681, "val_worst": 0.38023749771382925, "lr": 1.000008869355745e-05, "wall": 3003.1}
+TRAIN OP COMPLETE
+
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l512a/logs/transolver.log <==
+{"arm": "transolver", "epoch": 11, "steps": 3924, "train": 0.1265627592224879, "val_mean": 0.38065387680206836, "val_worst": 0.6952073660366183, "lr": 1.1255683080156757e-05, "wall": 2933.8}
+{"arm": "transolver", "epoch": 12, "steps": 4013, "train": 0.12694311886098342, "val_mean": 0.3775588390202307, "val_worst": 0.6781248087772008, "lr": 1.0000087162483337e-05, "wall": 3001.5}
+TRAIN OP COMPLETE
+
+==> /cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l512a/logs/unet.log <==
+{"arm": "unet", "epoch": 12, "steps": 4251, "train": 0.00469583572157381, "val_mean": 0.07526787230859303, "val_worst": 0.18009954142340512, "lr": 1.83125169714855e-05, "wall": 2826.3}
+{"arm": "unet", "epoch": 13, "steps": 4514, "train": 0.0045443407729602045, "val_mean": 0.07739000832155178, "val_worst": 0.2037215584066273, "lr": 1.0000002441102056e-05, "wall": 3001.5}
+TRAIN OP COMPLETE
+members rc=0
+ALL-DONE

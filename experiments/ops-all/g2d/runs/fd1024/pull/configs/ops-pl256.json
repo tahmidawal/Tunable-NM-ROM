@@ -1,0 +1,110 @@
+{
+ "mesh": 256,
+ "operators": [
+  {
+   "name": "fno-large",
+   "path": "ckpt/fno-large.pt",
+   "sha256": "208d9002cd8e856760407bd21b1355d017bf52c744fcfa7ea4c249f933852a88",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "unet-small",
+   "path": "ckpt/unet-small.pt",
+   "sha256": "b57a9138f2e6323ff9385e4c927eeb3a5b8e5feab63a6124c89baeda8e93be62",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "unet-medium",
+   "path": "ckpt/unet-medium.pt",
+   "sha256": "6175a7247939db3796be31680ce133decb3169fab5d2a1a5bc5d94edf0b56d86",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "unet-refine",
+   "path": "ckpt/unet-refine.pt",
+   "sha256": "8fd7eb8327483e6bfdd550bd3a2e48a1ee254a426fc2f6b680f67ccfde76c734",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "unet-large",
+   "path": "ckpt/unet-large.pt",
+   "sha256": "fd8586ce77da15d4c310e4f7ff0cd6f7091f90f7452c2ddaaee925eb62e9bc84",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "tsol-small",
+   "path": "ckpt/tsol-small.pt",
+   "sha256": "95d48755980268e0811e2a1b952c3cb03ac91b7d4a7a4c7592f53ceacb20cf05",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "tsol-medium",
+   "path": "ckpt/tsol-medium.pt",
+   "sha256": "98ccd548192323fe5900289decaab568768c2536cc0c5dfd804f0bbf498b087a",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "tsol-refine",
+   "path": "ckpt/tsol-refine.pt",
+   "sha256": "7f5a96d7077a59e247712d27440918580f48c00d426439616d00df4858e9c01e",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "tsol-large",
+   "path": "ckpt/tsol-large.pt",
+   "sha256": "cec38b2ce1dee105213a936e7d27d894b48eb7ea967336588a80f4fb43db8bbd",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "don-small",
+   "path": "ckpt/don-small.pt",
+   "sha256": "64d13193f9531f0f9ad92a70ad254ee481484fe879a6088698ade95af33398b7",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "don-medium",
+   "path": "ckpt/don-medium.pt",
+   "sha256": "014df949b789b07bfee19288bfd7fa8072cec51d14200bd88d1e0625bba0fb4b",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "don-refine",
+   "path": "ckpt/don-refine.pt",
+   "sha256": "fa006e41ede5ea6ffcf33e6d380174dbbc73df2fb72857c7d05a24432b472a38",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "don-large",
+   "path": "ckpt/don-large.pt",
+   "sha256": "af5a47ddb0bc7aa2ea8fca7a8df324e296c8f3fe16517c97cd13caee16c9b6e2",
+   "copy": false,
+   "source": "ops-timing-panel opt201 (job 4181372)"
+  },
+  {
+   "name": "unet-b64",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t256ub64/out/train/unet-b64/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t256ub64/out/train/unet-b64/result.json",
+   "copy": false,
+   "source": "g2d training job t256ub64"
+  },
+  {
+   "name": "fno-w96f32",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t256ff32/out/train/fno-w96f32/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t256ff32/out/train/fno-w96f32/result.json",
+   "copy": false,
+   "source": "g2d training job t256ff32"
+  }
+ ]
+}

@@ -1,0 +1,1082 @@
+{
+ "group": "g2d",
+ "generated_by": "scripts/summarize.py",
+ "cells": [
+  {
+   "cell": "Burgers 2D 512\u00b2",
+   "pde": "Burgers 2D",
+   "mesh": 512,
+   "panel_job": {
+    "job": "pb512",
+    "slurm_id": "4290476",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend_gpu": true,
+    "exit": 0,
+    "host": "pax106"
+   },
+   "cohort": "dev6 (6 development cases)",
+   "table1_source": "burgers2d-speed b512, job 4241035 (selection-512.json): engineered solver, the printed Table 1 row",
+   "driver_complete": true,
+   "driver_gates": {
+    "evaluation_cohort_hash": true,
+    "phi_free_operator_parity": true,
+    "drift": true,
+    "neighbour": true,
+    "repetition_output_identical": true,
+    "retained_repetitions": true
+   },
+   "result_sha256": "b02a2b2a89aae56eaf6464427f17de2b31febdb82d6d82ee38edbb2f5e371d7c",
+   "complete": true,
+   "fom": {
+    "setting": "lean_nt3e-3_l3e-3_dt005__graphs",
+    "worst_percent": 0.04971054736637841,
+    "median_percent": 0.04180876988829265,
+    "gpu_ms": 27.654458535835147,
+    "rule": "fastest timed converged FOM setting with worst error <= NM-ROM accurate worst error"
+   },
+   "fom_grid": {
+    "fft_tight": {
+     "worst_percent": 0.0,
+     "gpu_ms": 156.72307624481618,
+     "unstable": false,
+     "is_reference": true
+    },
+    "fft_tight__graphs": {
+     "worst_percent": 0.0,
+     "gpu_ms": 158.71265181340277,
+     "unstable": false,
+     "is_reference": true
+    },
+    "nt1e-4_dt005": {
+     "worst_percent": 0.03409258759178715,
+     "gpu_ms": 60.62271655537188,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-4_dt005__graphs": {
+     "worst_percent": 0.03409258759178715,
+     "gpu_ms": 61.59785506315529,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-3_dt005": {
+     "worst_percent": 0.05160674525012484,
+     "gpu_ms": 52.47549433261156,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-3_dt005__graphs": {
+     "worst_percent": 0.05160674525012484,
+     "gpu_ms": 53.14393574371934,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-2_dt005": {
+     "worst_percent": 4.061446538723282,
+     "gpu_ms": 23.99059245362878,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-2_dt005__graphs": {
+     "worst_percent": 4.061446538723282,
+     "gpu_ms": 24.279725970700383,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-4_dt01": {
+     "worst_percent": 1.5869339087343024,
+     "gpu_ms": 48.05820412002504,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-4_dt01__graphs": {
+     "worst_percent": 1.5869339087343024,
+     "gpu_ms": 48.275233479216695,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-3_dt01": {
+     "worst_percent": 1.5893416045413067,
+     "gpu_ms": 33.31351513043046,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-3_dt01__graphs": {
+     "worst_percent": 1.5893416045413067,
+     "gpu_ms": 33.41000946238637,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-2_dt01": {
+     "worst_percent": 3.3549853901440323,
+     "gpu_ms": 13.774293009191751,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-2_dt01__graphs": {
+     "worst_percent": 3.3549853901440323,
+     "gpu_ms": 13.803089503198862,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_tight": {
+     "worst_percent": 0.0,
+     "gpu_ms": 155.11929290369153,
+     "unstable": false,
+     "is_reference": true
+    },
+    "lean_tight__graphs": {
+     "worst_percent": 0.0,
+     "gpu_ms": 155.5172330699861,
+     "unstable": false,
+     "is_reference": true
+    },
+    "lean_nt1e-4_dt005": {
+     "worst_percent": 0.03409258759178715,
+     "gpu_ms": 59.71940793097019,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-4_dt005__graphs": {
+     "worst_percent": 0.03409258759178715,
+     "gpu_ms": 59.692801209166646,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-3_l1e-3_dt005": {
+     "worst_percent": 0.050815849002652694,
+     "gpu_ms": 36.33808856830001,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-3_l1e-3_dt005__graphs": {
+     "worst_percent": 0.050815849002652694,
+     "gpu_ms": 36.177268950268626,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt3e-3_l3e-3_dt005": {
+     "worst_percent": 0.04971054736637841,
+     "gpu_ms": 27.937178034335375,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt3e-3_l3e-3_dt005__graphs": {
+     "worst_percent": 0.04971054736637841,
+     "gpu_ms": 27.654458535835147,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-2_l1e-2_dt005": {
+     "worst_percent": 2.1507446794317895,
+     "gpu_ms": 23.832744685932994,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-2_l1e-2_dt005__graphs": {
+     "worst_percent": 2.1507446794317895,
+     "gpu_ms": 23.411168018355966,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-3_l1e-3_dt01": {
+     "worst_percent": 1.5900452635486964,
+     "gpu_ms": 21.575555205345154,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-3_l1e-3_dt01__graphs": {
+     "worst_percent": 1.5900452635486964,
+     "gpu_ms": 21.569443168118596,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt3e-3_l3e-3_dt01": {
+     "worst_percent": 1.604356328410965,
+     "gpu_ms": 18.939194036647677,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt3e-3_l3e-3_dt01__graphs": {
+     "worst_percent": 1.604356328410965,
+     "gpu_ms": 18.934728344902396,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-2_l1e-2_dt01": {
+     "worst_percent": 1.6200025488970073,
+     "gpu_ms": 14.319864800199866,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-2_l1e-2_dt01__graphs": {
+     "worst_percent": 1.6200025488970073,
+     "gpu_ms": 14.385896502062678,
+     "unstable": false,
+     "is_reference": false
+    }
+   },
+   "nmrom_accurate": {
+    "arm": "R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng",
+    "worst_percent": 0.19466109477731208,
+    "median_percent": 0.06385014454908249,
+    "gpu_ms": 46.40168556943536,
+    "speedup": 0.5959796114400433,
+    "samples": 60
+   },
+   "nmrom_fast": {
+    "arm": "R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng",
+    "worst_percent": 1.7479877169283948,
+    "median_percent": 0.6248957384616725,
+    "gpu_ms": 17.383277183398604,
+    "speedup": 1.5908656488688875,
+    "samples": 60
+   },
+   "operators": {
+    "FNO": {
+     "arm": "fno-large",
+     "training": {
+      "ok": true,
+      "train_job": {
+       "job": "b512fno",
+       "slurm_id": "4285933",
+       "gpu": "NVIDIA A100-PCIE-40GB",
+       "backend_gpu": true,
+       "exit": 0,
+       "host": "pax003"
+      },
+      "epochs": 201,
+      "best_epoch": 188,
+      "stop_reason": "wall_budget",
+      "micro_batch_final": 8,
+      "training_seconds": 3004.643090753816,
+      "parameters": 17877317,
+      "validation_mean_case_max": 0.024580123225250064,
+      "best_checkpoint_sha256": "1d6ab5c66d374ca83c8e751276f1243c5c3713a36290a52685b025620838c207"
+     },
+     "ok": true,
+     "worst_percent": 4.5711093483413,
+     "median_percent": 2.750157590653509,
+     "gpu_ms": 22.612222004681826,
+     "speedup": 1.2229872203673453,
+     "gpu_name": "NVIDIA A100 80GB PCIe",
+     "params": 17877317,
+     "t0_returned_exactly": true,
+     "repetitions": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ],
+     "sizes": [
+      {
+       "arm": "fno-large",
+       "training": {
+        "ok": true,
+        "train_job": {
+         "job": "b512fno",
+         "slurm_id": "4285933",
+         "gpu": "NVIDIA A100-PCIE-40GB",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax003"
+        },
+        "epochs": 201,
+        "best_epoch": 188,
+        "stop_reason": "wall_budget",
+        "micro_batch_final": 8,
+        "training_seconds": 3004.643090753816,
+        "parameters": 17877317,
+        "validation_mean_case_max": 0.024580123225250064,
+        "best_checkpoint_sha256": "1d6ab5c66d374ca83c8e751276f1243c5c3713a36290a52685b025620838c207"
+       },
+       "ok": true,
+       "worst_percent": 4.5711093483413,
+       "median_percent": 2.750157590653509,
+       "gpu_ms": 22.612222004681826,
+       "speedup": 1.2229872203673453,
+       "gpu_name": "NVIDIA A100 80GB PCIe",
+       "params": 17877317,
+       "t0_returned_exactly": true,
+       "repetitions": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+       ]
+      }
+     ]
+    },
+    "U-Net": {
+     "arm": "unet-refine",
+     "training": {
+      "ok": true,
+      "train_job": {
+       "job": "b512unet",
+       "slurm_id": "4285939",
+       "gpu": "NVIDIA A100 80GB PCIe",
+       "backend_gpu": true,
+       "exit": 0,
+       "host": "pax105"
+      },
+      "epochs": 916,
+      "best_epoch": 903,
+      "stop_reason": "wall_budget",
+      "micro_batch_final": 8,
+      "training_seconds": 3003.636172208935,
+      "parameters": 7763461,
+      "validation_mean_case_max": 0.019140609817284313,
+      "best_checkpoint_sha256": "5620fbeafbdbf0048a8d8bf7aa30c7b54d8c3cfbb8696a3d338bab50e0a43576"
+     },
+     "ok": true,
+     "worst_percent": 2.517290176268875,
+     "median_percent": 1.59646384039204,
+     "gpu_ms": 14.187145978212357,
+     "speedup": 1.949261576521801,
+     "gpu_name": "NVIDIA A100 80GB PCIe",
+     "params": 7763461,
+     "t0_returned_exactly": true,
+     "repetitions": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ],
+     "sizes": [
+      {
+       "arm": "unet-refine",
+       "training": {
+        "ok": true,
+        "train_job": {
+         "job": "b512unet",
+         "slurm_id": "4285939",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax105"
+        },
+        "epochs": 916,
+        "best_epoch": 903,
+        "stop_reason": "wall_budget",
+        "micro_batch_final": 8,
+        "training_seconds": 3003.636172208935,
+        "parameters": 7763461,
+        "validation_mean_case_max": 0.019140609817284313,
+        "best_checkpoint_sha256": "5620fbeafbdbf0048a8d8bf7aa30c7b54d8c3cfbb8696a3d338bab50e0a43576"
+       },
+       "ok": true,
+       "worst_percent": 2.517290176268875,
+       "median_percent": 1.59646384039204,
+       "gpu_ms": 14.187145978212357,
+       "speedup": 1.949261576521801,
+       "gpu_name": "NVIDIA A100 80GB PCIe",
+       "params": 7763461,
+       "t0_returned_exactly": true,
+       "repetitions": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+       ]
+      }
+     ]
+    },
+    "Transolver": {
+     "arm": "tsol-refine",
+     "training": {
+      "ok": true,
+      "train_job": {
+       "job": "b512tsol",
+       "slurm_id": "4285948",
+       "gpu": "NVIDIA A100 80GB PCIe",
+       "backend_gpu": true,
+       "exit": 0,
+       "host": "pax106"
+      },
+      "epochs": 538,
+      "best_epoch": 531,
+      "stop_reason": "wall_budget",
+      "micro_batch_final": 8,
+      "training_seconds": 3006.9288746281527,
+      "parameters": 3108240,
+      "validation_mean_case_max": 0.02775225455895086,
+      "best_checkpoint_sha256": "03d6de4938c58b2eadcef1eb007fef5f0425b5babb0530614aea0ea5a8a485a8"
+     },
+     "ok": true,
+     "worst_percent": 3.270271064448539,
+     "median_percent": 2.340132880850704,
+     "gpu_ms": 36.04061738587916,
+     "speedup": 0.7673136738958934,
+     "gpu_name": "NVIDIA A100 80GB PCIe",
+     "params": 3108240,
+     "t0_returned_exactly": true,
+     "repetitions": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ],
+     "sizes": [
+      {
+       "arm": "tsol-refine",
+       "training": {
+        "ok": true,
+        "train_job": {
+         "job": "b512tsol",
+         "slurm_id": "4285948",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax106"
+        },
+        "epochs": 538,
+        "best_epoch": 531,
+        "stop_reason": "wall_budget",
+        "micro_batch_final": 8,
+        "training_seconds": 3006.9288746281527,
+        "parameters": 3108240,
+        "validation_mean_case_max": 0.02775225455895086,
+        "best_checkpoint_sha256": "03d6de4938c58b2eadcef1eb007fef5f0425b5babb0530614aea0ea5a8a485a8"
+       },
+       "ok": true,
+       "worst_percent": 3.270271064448539,
+       "median_percent": 2.340132880850704,
+       "gpu_ms": 36.04061738587916,
+       "speedup": 0.7673136738958934,
+       "gpu_name": "NVIDIA A100 80GB PCIe",
+       "params": 3108240,
+       "t0_returned_exactly": true,
+       "repetitions": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+       ]
+      }
+     ]
+    },
+    "DeepONet": {
+     "arm": "don-small",
+     "training": {
+      "ok": true,
+      "train_job": {
+       "job": "b512don",
+       "slurm_id": "4288587",
+       "gpu": "NVIDIA A100-PCIE-40GB",
+       "backend_gpu": true,
+       "exit": 0,
+       "host": "pax003"
+      },
+      "epochs": 824,
+      "best_epoch": 573,
+      "stop_reason": "early_stopping",
+      "micro_batch_final": 8,
+      "training_seconds": 2890.8225098773837,
+      "parameters": 2569349,
+      "validation_mean_case_max": 0.15015381529886657,
+      "best_checkpoint_sha256": "3b733306e2eba13acab4768d277e05fb36d12024951bb205fd32c50108bebba8"
+     },
+     "ok": true,
+     "worst_percent": 32.17844300298112,
+     "median_percent": 15.80702616351663,
+     "gpu_ms": 13.306723674759269,
+     "speedup": 2.078231968421441,
+     "gpu_name": "NVIDIA A100 80GB PCIe",
+     "params": 2569349,
+     "t0_returned_exactly": true,
+     "repetitions": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ],
+     "sizes": [
+      {
+       "arm": "don-small",
+       "training": {
+        "ok": true,
+        "train_job": {
+         "job": "b512don",
+         "slurm_id": "4288587",
+         "gpu": "NVIDIA A100-PCIE-40GB",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax003"
+        },
+        "epochs": 824,
+        "best_epoch": 573,
+        "stop_reason": "early_stopping",
+        "micro_batch_final": 8,
+        "training_seconds": 2890.8225098773837,
+        "parameters": 2569349,
+        "validation_mean_case_max": 0.15015381529886657,
+        "best_checkpoint_sha256": "3b733306e2eba13acab4768d277e05fb36d12024951bb205fd32c50108bebba8"
+       },
+       "ok": true,
+       "worst_percent": 32.17844300298112,
+       "median_percent": 15.80702616351663,
+       "gpu_ms": 13.306723674759269,
+       "speedup": 2.078231968421441,
+       "gpu_name": "NVIDIA A100 80GB PCIe",
+       "params": 2569349,
+       "t0_returned_exactly": true,
+       "repetitions": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+       ]
+      }
+     ]
+    }
+   }
+  },
+  {
+   "cell": "Burgers 2D 4096\u00b2",
+   "pde": "Burgers 2D",
+   "mesh": 4096,
+   "panel_job": {
+    "job": "pl4096b",
+    "slurm_id": "4309865",
+    "gpu": "NVIDIA H200",
+    "backend_gpu": true,
+    "exit": 0,
+    "host": "pax009"
+   },
+   "cohort": "dev6 (6 development cases)",
+   "table1_source": "burgers-bank-knob bk4096b, job 4197473 (paper row = k>=j+1 sensitivity arms R384_lin / R128_lin), re-timed in the expanded panel pl4096b",
+   "driver_complete": true,
+   "driver_gates": {
+    "evaluation_cohort_hash": true,
+    "repetition_output_identical": true,
+    "retained_repetitions": true
+   },
+   "result_sha256": "ef6883fb28b68f1a95173ac781af47d64c5479246133ff456cd1fa5af5ce1922",
+   "complete": true,
+   "fom": {
+    "setting": "lean_nt3e-3_l3e-3_dt005",
+    "worst_percent": 0.04994838819809611,
+    "median_percent": 0.03845672541518996,
+    "gpu_ms": 522.600882453844,
+    "rule": "fastest timed converged FOM setting with worst error <= NM-ROM accurate worst error"
+   },
+   "fom_grid": {
+    "fft_tight": {
+     "worst_percent": 0.0,
+     "gpu_ms": null,
+     "unstable": false,
+     "is_reference": true
+    },
+    "nt1e-4_dt005": {
+     "worst_percent": 0.03177654480372312,
+     "gpu_ms": 1219.5586395682767,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-3_dt005": {
+     "worst_percent": 0.05443069205339697,
+     "gpu_ms": 1039.256629999727,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-2_dt005": {
+     "worst_percent": 4.428277968312873,
+     "gpu_ms": 419.1934975096956,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-4_dt01": {
+     "worst_percent": 1.6619005308341621,
+     "gpu_ms": 983.0830415012315,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-3_dt01": {
+     "worst_percent": 1.659837223999581,
+     "gpu_ms": 660.8980864984915,
+     "unstable": false,
+     "is_reference": false
+    },
+    "nt1e-2_dt01": {
+     "worst_percent": 3.541109521548573,
+     "gpu_ms": 235.6809073826298,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_tight": {
+     "worst_percent": 0.0,
+     "gpu_ms": 3259.3942638486624,
+     "unstable": false,
+     "is_reference": true
+    },
+    "lean_nt1e-4_dt005": {
+     "worst_percent": 0.03177654480372312,
+     "gpu_ms": 1204.7439850866795,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-3_l1e-3_dt005": {
+     "worst_percent": 0.0550280868090141,
+     "gpu_ms": 706.6497495397925,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt3e-3_l3e-3_dt005": {
+     "worst_percent": 0.04994838819809611,
+     "gpu_ms": 522.600882453844,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-2_l1e-2_dt005": {
+     "worst_percent": 2.1634663319958576,
+     "gpu_ms": 420.1695704832673,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-3_l1e-3_dt01": {
+     "worst_percent": 1.6607352179764727,
+     "gpu_ms": 404.29974102880806,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt3e-3_l3e-3_dt01": {
+     "worst_percent": 1.6764620389856217,
+     "gpu_ms": 367.17272945679724,
+     "unstable": false,
+     "is_reference": false
+    },
+    "lean_nt1e-2_l1e-2_dt01": {
+     "worst_percent": 1.688302728757628,
+     "gpu_ms": 268.07960704900324,
+     "unstable": false,
+     "is_reference": false
+    }
+   },
+   "nmrom_accurate": {
+    "arm": "R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+    "worst_percent": 0.2239874024132454,
+    "median_percent": 0.06538477243494122,
+    "gpu_ms": 61.94616761058569,
+    "speedup": 8.436371491761811,
+    "samples": 30
+   },
+   "nmrom_fast": {
+    "arm": "R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2",
+    "worst_percent": 1.8940229488900684,
+    "median_percent": 0.6292081596473444,
+    "gpu_ms": 24.978957953862846,
+    "speedup": 20.92164466664739,
+    "samples": 30
+   },
+   "operators": {
+    "FNO": {
+     "ok": false,
+     "reason": "fno-large: training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 41.77 GiB. GPU 0 has a total capacity of 79.25 GiB of which 5.17 GiB is free. Including non-PyTorch memory, this process has 74.07 GiB memory in use. Of the allocated memory 65.54 GiB is allocated by PyTorch, and 26.91 MiB is reserved by PyTorch but unallocated.; fno-w96f32: training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 31.33 GiB. GPU 0 has a total capacity of 79.25 GiB of which 20.89 GiB is free. Including non-PyTorch memory, this process has 58.35 GiB memory in use. Of the allocated memory 49.80 GiB is allocated by PyTorch, and 46.24 MiB is reserved by PyTorch but unallocated",
+     "sizes": [
+      {
+       "arm": "fno-large",
+       "training": {
+        "ok": false,
+        "train_job": {
+         "job": "b4096tc",
+         "slurm_id": "4293779",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax105"
+        },
+        "reason": "OutOfMemoryError: CUDA out of memory. Tried to allocate 41.77 GiB. GPU 0 has a total capacity of 79.25 GiB of which 5.17 GiB is free. Including non-PyTorch memory, this process has 74.07 GiB memory in use. Of the allocated memory 65.54 GiB is allocated by PyTorch, and 26.91 MiB is reserved by PyTorch but unallocated."
+       },
+       "ok": false,
+       "reason": "training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 41.77 GiB. GPU 0 has a total capacity of 79.25 GiB of which 5.17 GiB is free. Including non-PyTorch memory, this process has 74.07 GiB memory in use. Of the allocated memory 65.54 GiB is allocated by PyTorch, and 26.91 MiB is reserved by PyTorch but unallocated."
+      },
+      {
+       "arm": "fno-w96f32",
+       "training": {
+        "ok": false,
+        "train_job": {
+         "job": "t4096ff32",
+         "slurm_id": "4308445",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax105"
+        },
+        "reason": "OutOfMemoryError: CUDA out of memory. Tried to allocate 31.33 GiB. GPU 0 has a total capacity of 79.25 GiB of which 20.89 GiB is free. Including non-PyTorch memory, this process has 58.35 GiB memory in use. Of the allocated memory 49.80 GiB is allocated by PyTorch, and 46.24 MiB is reserved by PyTorch but unallocated"
+       },
+       "ok": false,
+       "reason": "training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 31.33 GiB. GPU 0 has a total capacity of 79.25 GiB of which 20.89 GiB is free. Including non-PyTorch memory, this process has 58.35 GiB memory in use. Of the allocated memory 49.80 GiB is allocated by PyTorch, and 46.24 MiB is reserved by PyTorch but unallocated"
+      }
+     ]
+    },
+    "U-Net": {
+     "arm": "unet-refine",
+     "training": {
+      "ok": true,
+      "train_job": {
+       "job": "b4096tc",
+       "slurm_id": "4293779",
+       "gpu": "NVIDIA A100 80GB PCIe",
+       "backend_gpu": true,
+       "exit": 0,
+       "host": "pax105"
+      },
+      "epochs": 12,
+      "best_epoch": 10,
+      "stop_reason": "wall_budget",
+      "micro_batch_final": 1,
+      "training_seconds": 3235.558185962029,
+      "parameters": 7763461,
+      "validation_mean_case_max": 0.1950108516542277,
+      "best_checkpoint_sha256": "ca748bf0a6edff1b49bca2a45daecd85ef156e22f0990b83c7870b3260b24ff6"
+     },
+     "ok": true,
+     "worst_percent": 21.872442728614523,
+     "median_percent": 15.512300597801138,
+     "gpu_ms": 623.5305638983846,
+     "speedup": 0.8381319420598781,
+     "gpu_name": "NVIDIA H200",
+     "params": 7763461,
+     "t0_returned_exactly": true,
+     "repetitions": [
+      5,
+      5,
+      5,
+      5,
+      5,
+      5
+     ],
+     "sizes": [
+      {
+       "arm": "unet-refine",
+       "training": {
+        "ok": true,
+        "train_job": {
+         "job": "b4096tc",
+         "slurm_id": "4293779",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax105"
+        },
+        "epochs": 12,
+        "best_epoch": 10,
+        "stop_reason": "wall_budget",
+        "micro_batch_final": 1,
+        "training_seconds": 3235.558185962029,
+        "parameters": 7763461,
+        "validation_mean_case_max": 0.1950108516542277,
+        "best_checkpoint_sha256": "ca748bf0a6edff1b49bca2a45daecd85ef156e22f0990b83c7870b3260b24ff6"
+       },
+       "ok": true,
+       "worst_percent": 21.872442728614523,
+       "median_percent": 15.512300597801138,
+       "gpu_ms": 623.5305638983846,
+       "speedup": 0.8381319420598781,
+       "gpu_name": "NVIDIA H200",
+       "params": 7763461,
+       "t0_returned_exactly": true,
+       "repetitions": [
+        5,
+        5,
+        5,
+        5,
+        5,
+        5
+       ]
+      },
+      {
+       "arm": "unet-large",
+       "training": {
+        "ok": false,
+        "train_job": {
+         "job": "t4096ul",
+         "slurm_id": "4308439",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax050"
+        },
+        "reason": "OutOfMemoryError: CUDA out of memory. Tried to allocate 6.05 GiB. GPU 0 has a total capacity of 79.25 GiB of which 5.13 GiB is free. Including non-PyTorch memory, this process has 74.11 GiB memory in use. Of the allocated memory 65.53 GiB is allocated by PyTorch, and 80.81 MiB is reserved by PyTorch but unallocated. "
+       },
+       "ok": false,
+       "reason": "training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 6.05 GiB. GPU 0 has a total capacity of 79.25 GiB of which 5.13 GiB is free. Including non-PyTorch memory, this process has 74.11 GiB memory in use. Of the allocated memory 65.53 GiB is allocated by PyTorch, and 80.81 MiB is reserved by PyTorch but unallocated. "
+      }
+     ]
+    },
+    "Transolver": {
+     "ok": false,
+     "reason": "tsol-refine: training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 1.00 GiB. GPU 0 has a total capacity of 79.25 GiB of which 395.88 MiB is free. Including non-PyTorch memory, this process has 78.85 GiB memory in use. Of the allocated memory 70.27 GiB is allocated by PyTorch, and 74.92 MiB is reserved by PyTorch but unallocated",
+     "sizes": [
+      {
+       "arm": "tsol-refine",
+       "training": {
+        "ok": false,
+        "train_job": {
+         "job": "t4096ts",
+         "slurm_id": "4308421",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax050"
+        },
+        "reason": "OutOfMemoryError: CUDA out of memory. Tried to allocate 1.00 GiB. GPU 0 has a total capacity of 79.25 GiB of which 395.88 MiB is free. Including non-PyTorch memory, this process has 78.85 GiB memory in use. Of the allocated memory 70.27 GiB is allocated by PyTorch, and 74.92 MiB is reserved by PyTorch but unallocated"
+       },
+       "ok": false,
+       "reason": "training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 1.00 GiB. GPU 0 has a total capacity of 79.25 GiB of which 395.88 MiB is free. Including non-PyTorch memory, this process has 78.85 GiB memory in use. Of the allocated memory 70.27 GiB is allocated by PyTorch, and 74.92 MiB is reserved by PyTorch but unallocated"
+      }
+     ]
+    },
+    "DeepONet": {
+     "ok": false,
+     "reason": "don-small: training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 24.01 GiB. GPU 0 has a total capacity of 79.25 GiB of which 21.65 GiB is free. Including non-PyTorch memory, this process has 57.59 GiB memory in use. Of the allocated memory 48.99 GiB is allocated by PyTorch, and 99.47 MiB is reserved by PyTorch but unallocated",
+     "sizes": [
+      {
+       "arm": "don-small",
+       "training": {
+        "ok": false,
+        "train_job": {
+         "job": "t4096dn",
+         "slurm_id": "4308432",
+         "gpu": "NVIDIA A100 80GB PCIe",
+         "backend_gpu": true,
+         "exit": 0,
+         "host": "pax050"
+        },
+        "reason": "OutOfMemoryError: CUDA out of memory. Tried to allocate 24.01 GiB. GPU 0 has a total capacity of 79.25 GiB of which 21.65 GiB is free. Including non-PyTorch memory, this process has 57.59 GiB memory in use. Of the allocated memory 48.99 GiB is allocated by PyTorch, and 99.47 MiB is reserved by PyTorch but unallocated"
+       },
+       "ok": false,
+       "reason": "training failed: OutOfMemoryError: CUDA out of memory. Tried to allocate 24.01 GiB. GPU 0 has a total capacity of 79.25 GiB of which 21.65 GiB is free. Including non-PyTorch memory, this process has 57.59 GiB memory in use. Of the allocated memory 48.99 GiB is allocated by PyTorch, and 99.47 MiB is reserved by PyTorch but unallocated"
+      }
+     ]
+    }
+   }
+  },
+  {
+   "cell": "Heat 2D 4096\u00b2",
+   "pde": "Heat 2D",
+   "mesh": 4096,
+   "panel_job": {
+    "job": "phl4096",
+    "slurm_id": "4303352",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend_gpu": true,
+    "exit": 0,
+    "host": "pax049"
+   },
+   "cohort": "sealed held-out, seed 791099, 16 cases",
+   "table1_source": "heat-bank-knob h2d, job 4197350",
+   "hbk_complete": true,
+   "fom": {
+    "setting": "fom_cncg_dt0.025_rtol1e-3",
+    "worst_percent": 0.053849570195883975,
+    "median_percent": 0.04538110483505639,
+    "gpu_ms": 4613.214928889647,
+    "rule": "fastest CN-CG setting with no CG failure and worst error <= NM-ROM accurate worst error"
+   },
+   "fom_grid": {
+    "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+     "worst_percent": 0.04491875555185377,
+     "gpu_ms": 11270.161743275821,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.025_rtol1e-4": {
+     "worst_percent": 0.04490197802526282,
+     "gpu_ms": 5818.464954616502,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.025_rtol1e-3": {
+     "worst_percent": 0.053849570195883975,
+     "gpu_ms": 4613.214928889647,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.025_rtol1e-2": {
+     "worst_percent": 0.6306085670350259,
+     "gpu_ms": 2878.36108636111,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.05_rtol1e-4": {
+     "worst_percent": 0.1837615802436483,
+     "gpu_ms": 6014.552219072357,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.05_rtol1e-3": {
+     "worst_percent": 0.1837618639251259,
+     "gpu_ms": 3867.8634020034224,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.05_rtol1e-2": {
+     "worst_percent": 0.468383929956588,
+     "gpu_ms": 2727.5624801404774,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.1_rtol1e-4": {
+     "worst_percent": 0.8253587293072087,
+     "gpu_ms": 5587.106571067125,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.1_rtol1e-3": {
+     "worst_percent": 0.8253252913650924,
+     "gpu_ms": 3894.254570361227,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "fom_cncg_dt0.1_rtol1e-2": {
+     "worst_percent": 0.8249527728953475,
+     "gpu_ms": 2420.769303571433,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": false
+    },
+    "dst_exact_CONTROL": {
+     "worst_percent": 0.0,
+     "gpu_ms": 17.903474858030677,
+     "failures": 0,
+     "unstable": false,
+     "is_reference": true
+    }
+   },
+   "nmrom_accurate": {
+    "arm": "lin_R128_cn",
+    "worst_percent": 0.13318664496437077,
+    "median_percent": 0.04913879779496461,
+    "gpu_ms": 20.894417306408286,
+    "speedup": 220.78696243301223,
+    "samples": 80,
+    "fingerprint_mismatch": 0
+   },
+   "nmrom_fast": {
+    "arm": "lin_R48_cn",
+    "worst_percent": 0.27623366610874056,
+    "median_percent": 0.06436070599027861,
+    "gpu_ms": 10.635864222422242,
+    "speedup": 433.7414273458091,
+    "samples": 80,
+    "fingerprint_mismatch": 0
+   },
+   "order_neighbour_ratio_max": 1.126494772671159,
+   "operators": {
+    "FNO": {
+     "arm": "fno",
+     "config": "configs/ops/fno.json (heat-compare-hires)",
+     "training": {
+      "ok": false,
+      "train_job": {
+       "job": "h4096fno",
+       "slurm_id": "4288598",
+       "gpu": "NVIDIA H200",
+       "backend_gpu": true,
+       "exit": 1,
+       "host": "pax010"
+      },
+      "reason": "    raise RuntimeError('no micro-batch fits') | RuntimeError: no micro-batch fits"
+     },
+     "ok": false,
+     "reason": "training failed:     raise RuntimeError('no micro-batch fits') | RuntimeError: no micro-batch fits"
+    },
+    "U-Net": {
+     "arm": "unet",
+     "config": "configs/ops/unet.json (heat-compare-hires)",
+     "training": {
+      "ok": true,
+      "train_job": {
+       "job": "h4096unet",
+       "slurm_id": "4290468",
+       "gpu": "NVIDIA H200",
+       "backend_gpu": true,
+       "exit": 0,
+       "host": "pax010"
+      },
+      "epochs": 4,
+      "best_epoch": 3,
+      "stop_reason": "wall_budget",
+      "micro_batch_final": 1,
+      "training_seconds": 3019.6420427630655,
+      "parameters": 7763173,
+      "validation_mean_case_max": 0.05766004887413051,
+      "best_checkpoint_sha256": "2e0846f7eba2b394c7bda66a9e3ac769bc2c29dde8850ba21e1b7f785657d1d9"
+     },
+     "ok": false,
+     "reason": "trained but not timed: the operator process of phl4096 (4303352) hit CUDA OOM because JAX preallocated the GPU (g2d bug); the rerun phl4096b was cancelled by the user (Burgers-only instruction)"
+    },
+    "Transolver": {
+     "arm": "transolver",
+     "config": "configs/ops/transolver.json (heat-compare-hires)",
+     "training": {
+      "ok": true,
+      "train_job": {
+       "job": "h4096tran",
+       "slurm_id": "4290668",
+       "gpu": "NVIDIA A100 80GB PCIe",
+       "backend_gpu": true,
+       "exit": 0,
+       "host": "pax106"
+      },
+      "epochs": 103,
+      "best_epoch": 100,
+      "stop_reason": "wall_budget",
+      "micro_batch_final": 8,
+      "training_seconds": 3000.6491775619797,
+      "parameters": 19646528,
+      "validation_mean_case_max": 0.025859519059560767,
+      "best_checkpoint_sha256": "8a5cb6872df8032206b372be7d00938a01b12e96acb19a7da986cb3ac2fd897f"
+     },
+     "ok": false,
+     "reason": "trained but not timed: the operator process of phl4096 (4303352) hit CUDA OOM because JAX preallocated the GPU (g2d bug); the rerun phl4096b was cancelled by the user (Burgers-only instruction)"
+    },
+    "DeepONet": {
+     "arm": "deeponet",
+     "config": "configs/ops/deeponet.json (heat-compare-hires)",
+     "training": {
+      "ok": false,
+      "train_job": {
+       "job": "h4096deep",
+       "slurm_id": "4290390",
+       "gpu": "NVIDIA A100 80GB PCIe",
+       "backend_gpu": true,
+       "exit": 1,
+       "host": "pax105"
+      },
+      "reason": "    raise RuntimeError('no micro-batch fits') | RuntimeError: no micro-batch fits"
+     },
+     "ok": false,
+     "reason": "training failed:     raise RuntimeError('no micro-batch fits') | RuntimeError: no micro-batch fits"
+    }
+   },
+   "complete": false
+  }
+ ]
+}

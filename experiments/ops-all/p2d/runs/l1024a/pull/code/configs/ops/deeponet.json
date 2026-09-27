@@ -1,0 +1,22 @@
+{
+ "family": "deeponet",
+ "width": 48,
+ "rank": 256,
+ "trunk_width": 384,
+ "levels": 3,
+ "pool_bins": 4,
+ "dtype": "float32",
+ "epochs": 4000,
+ "patience": 250,
+ "batch_size": 8,
+ "learning_rate": 0.001,
+ "weight_decay": 0.0001,
+ "seed": 20260914,
+ "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+ "smoke_overrides": {
+  "width": 8,
+  "rank": 16,
+  "trunk_width": 16,
+  "epochs": 2
+ }
+}

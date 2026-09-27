@@ -1,0 +1,93 @@
+{
+ "problem": "lshape",
+ "intervals": 2048,
+ "cg_maxiter": 200000,
+ "order_seed": 20262972,
+ "repetitions": 3,
+ "cg_repetitions": 2,
+ "burn_seconds": 0.1,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "table1": {
+  "source_job": 4205072,
+  "accurate": "R128_linear",
+  "fast": "R64_linear",
+  "named_fom": "cg_0.03",
+  "R128_linear": {
+   "worst": 0.030296072809392262,
+   "median": 0.004570402692877779,
+   "gpu_ms": 3.6929671186953783
+  },
+  "R64_linear": {
+   "worst": 0.05719234470740566,
+   "median": 0.013547324222009837,
+   "gpu_ms": 2.992801135405898
+  },
+  "cg_0.03": {
+   "worst": 0.007607562840209043,
+   "median": null,
+   "gpu_ms": 311.11780600622296
+  }
+ },
+ "nmrom_R": [
+  128,
+  64
+ ],
+ "cg_tols": [
+  0.7,
+  0.5,
+  0.3,
+  0.2,
+  0.1,
+  0.03,
+  0.01,
+  0.003,
+  0.001,
+  0.0001
+ ],
+ "expected_nmrom_worst": {
+  "R128_linear": 0.030296072809392262,
+  "R64_linear": 0.05719234470740566
+ },
+ "operators": {
+  "fno": {
+   "job": "l2048fc",
+   "job_id": "4294296",
+   "config": "fno.json",
+   "co_scheduled": [
+    "fno"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048fc/output/fno/fno/best.pt"
+  },
+  "unet": {
+   "job": "l2048u",
+   "job_id": "4294557",
+   "config": "unet.json",
+   "co_scheduled": [
+    "unet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048u/output/unet/unet/best.pt"
+  },
+  "transolver": {
+   "job": "l2048b",
+   "job_id": "4294560",
+   "config": "transolver.json",
+   "co_scheduled": [
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048b/output/transolver/transolver/best.pt"
+  },
+  "deeponet": {
+   "job": "l2048b",
+   "job_id": "4294560",
+   "config": "deeponet.json",
+   "co_scheduled": [
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048b/output/deeponet/deeponet/best.pt"
+  }
+ },
+ "xla_flags": "--xla_gpu_autotune_level=0"
+}

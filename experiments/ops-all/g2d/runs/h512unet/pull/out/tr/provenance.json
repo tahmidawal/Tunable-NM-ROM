@@ -1,0 +1,55 @@
+{
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "mesh": 512,
+ "train": [
+  791000,
+  512
+ ],
+ "validation": [
+  791001,
+  16
+ ],
+ "sources": {
+  "families.py": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+  "heatops.py": "ea487f81ce8552a375ff3b7bf7b4622a93fa92abe45b0f45365ccc60ac691b6e",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_ops.py": "f30dd46d2365d9d85f7bbfdf780caa059e1cac688ae992527b51aac8542afabd"
+ },
+ "configs": {
+  "unet": {
+   "family": "unet",
+   "base": 32,
+   "groups": 8,
+   "dtype": "float32",
+   "epochs": 4000,
+   "patience": 250,
+   "batch_size": 8,
+   "learning_rate": 0.001,
+   "weight_decay": 0.0001,
+   "seed": 20260914,
+   "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+   "smoke_overrides": {
+    "base": 8,
+    "epochs": 2
+   }
+  }
+ },
+ "config_sha256": {
+  "unet": "1ffb1174ed010af2d588b31a9dd8261d045bdaf2ae7f5ccc8aa1af55eb1428fc"
+ },
+ "wall_seconds": 3000.0,
+ "job_id": "4306597",
+ "node": "pax050",
+ "normalization": [
+  0.08009888540989259,
+  0.17892057275359963,
+  0.14697922246161835
+ ],
+ "evaluation_cohorts_generated": false
+}

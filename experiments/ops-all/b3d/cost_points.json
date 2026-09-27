@@ -1,0 +1,559 @@
+{
+ "group": "b3d",
+ "cells": [
+  {
+   "pde": "Burgers 3D",
+   "mesh": 64,
+   "complete": true,
+   "panel_job": "4294606",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "held-out",
+   "error_metric": "worst over 32 cases of max over the five evolved times of same-grid relative L2 (normalised by the initial field)",
+   "nmrom": [
+    {
+     "setting": "accurate span_R512_fsc_dt0.005",
+     "worst_percent": 1.007257704693526,
+     "gpu_ms": 178.09586692601442
+    },
+    {
+     "setting": "fast span_R192_fsc_dt0.01",
+     "worst_percent": 3.3720961985511493,
+     "gpu_ms": 13.938601128757
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_dt0.005_nt0.1_lt0.5",
+     "worst_percent": 81.39200866564242,
+     "gpu_ms": 2.802361501380801,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.1_lt0.1",
+     "worst_percent": 81.39200866564242,
+     "gpu_ms": 2.8149026911705732,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.03_lt0.5",
+     "worst_percent": 60.38827086525349,
+     "gpu_ms": 3.7704973947256804,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.03_lt0.1",
+     "worst_percent": 60.27763116480853,
+     "gpu_ms": 3.606056561693549,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.01_lt0.5",
+     "worst_percent": 26.00833303803942,
+     "gpu_ms": 22.663157433271408,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.01_lt0.1",
+     "worst_percent": 26.00833303803942,
+     "gpu_ms": 22.760468302294612,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.003_lt0.5",
+     "worst_percent": 2.0889091894759133,
+     "gpu_ms": 22.86020340397954,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.003_lt0.1",
+     "worst_percent": 1.9709440423821567,
+     "gpu_ms": 22.77451055124402,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.001_lt0.5",
+     "worst_percent": 0.9205698170329645,
+     "gpu_ms": 26.034372858703136,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": true
+    },
+    {
+     "setting": "fom_dt0.005_nt0.001_lt0.1",
+     "worst_percent": 0.9205698170329645,
+     "gpu_ms": 26.221918873488903,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.0001_lt0.5",
+     "worst_percent": 0.04897671610476452,
+     "gpu_ms": 45.379267539829016,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.0001_lt0.1",
+     "worst_percent": 0.04897671610476452,
+     "gpu_ms": 42.45452373288572,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.1_lt0.5",
+     "worst_percent": 69.43002108528712,
+     "gpu_ms": 1.5226060058921576,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.1_lt0.1",
+     "worst_percent": 69.43002108528712,
+     "gpu_ms": 1.5128371305763721,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.03_lt0.5",
+     "worst_percent": 41.296158021171706,
+     "gpu_ms": 8.542060386389494,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.03_lt0.1",
+     "worst_percent": 41.296158021171706,
+     "gpu_ms": 8.151123067364097,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.01_lt0.5",
+     "worst_percent": 2.6289793703356104,
+     "gpu_ms": 11.827154085040092,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.01_lt0.1",
+     "worst_percent": 1.264259367617975,
+     "gpu_ms": 11.531146941706538,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.003_lt0.5",
+     "worst_percent": 1.3419360192860177,
+     "gpu_ms": 14.190856367349625,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.003_lt0.1",
+     "worst_percent": 1.242220100937422,
+     "gpu_ms": 13.096050824970007,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.001_lt0.5",
+     "worst_percent": 1.2918767521851,
+     "gpu_ms": 19.798841327428818,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.001_lt0.1",
+     "worst_percent": 1.2020960213152636,
+     "gpu_ms": 19.02517187409103,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.0001_lt0.5",
+     "worst_percent": 1.2106277015547164,
+     "gpu_ms": 30.481175985187292,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.0001_lt0.1",
+     "worst_percent": 1.2089491487054822,
+     "gpu_ms": 24.329412961378694,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.025_nt0.01_lt0.5",
+     "worst_percent": 4.300540559190795,
+     "gpu_ms": 6.960086058825254,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.025_nt0.001_lt0.5",
+     "worst_percent": 4.284458343640174,
+     "gpu_ms": 14.05064994469285,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 1.7891811564648272,
+     "gpu_ms": 10.607141302898526,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 2.47122551424862,
+     "gpu_ms": 33.015075605362654,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 7.320590174798772,
+     "gpu_ms": 34.6780763939023,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 18.09714759665643,
+     "gpu_ms": 17.240062355995178,
+     "failure": null
+    }
+   },
+   "reference_note": "truth = same-grid Newton-BiCGStab dt 0.005 ntol 1e-10 ltol 1e-11, computed in the panel but not timed, so it is not in the fom list (no entry has is_reference=true)"
+  },
+  {
+   "pde": "Burgers 3D",
+   "mesh": 128,
+   "complete": true,
+   "panel_job": "4286429",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "held-out",
+   "error_metric": "worst over 32 cases of max over the five evolved times of same-grid relative L2 (normalised by the initial field)",
+   "nmrom": [
+    {
+     "setting": "accurate span_R512_fsc_dt0.005",
+     "worst_percent": 1.4639855622964046,
+     "gpu_ms": 195.48138207755983
+    },
+    {
+     "setting": "fast span_R192_fsc_dt0.01",
+     "worst_percent": 4.2596672255942085,
+     "gpu_ms": 19.44939629174769
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_dt0.005_nt0.1_lt0.5",
+     "worst_percent": 81.10211405001104,
+     "gpu_ms": 6.990577094256878,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.1_lt0.1",
+     "worst_percent": 81.10211405001104,
+     "gpu_ms": 6.995899835601449,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.03_lt0.5",
+     "worst_percent": 63.21578695021074,
+     "gpu_ms": 9.415569482371211,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.03_lt0.1",
+     "worst_percent": 63.21578695021074,
+     "gpu_ms": 9.857779834419489,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.01_lt0.5",
+     "worst_percent": 25.908431233389962,
+     "gpu_ms": 123.97331022657454,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.01_lt0.1",
+     "worst_percent": 25.908431233389962,
+     "gpu_ms": 123.9946719724685,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.003_lt0.5",
+     "worst_percent": 2.440802841817742,
+     "gpu_ms": 124.08371595665812,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.003_lt0.1",
+     "worst_percent": 2.0440100574328715,
+     "gpu_ms": 124.03169856406748,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.001_lt0.5",
+     "worst_percent": 1.0758851060072743,
+     "gpu_ms": 147.22504978999496,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.001_lt0.1",
+     "worst_percent": 1.0758851060072743,
+     "gpu_ms": 147.43082807399333,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.0001_lt0.5",
+     "worst_percent": 0.0588172107154697,
+     "gpu_ms": 258.1450385041535,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.005_nt0.0001_lt0.1",
+     "worst_percent": 0.0588172107154697,
+     "gpu_ms": 242.92024015448987,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.1_lt0.5",
+     "worst_percent": 69.63852731221854,
+     "gpu_ms": 3.72991687618196,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.1_lt0.1",
+     "worst_percent": 69.63852731221854,
+     "gpu_ms": 3.7325583398342133,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.03_lt0.5",
+     "worst_percent": 43.83615677788986,
+     "gpu_ms": 47.149888472631574,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.03_lt0.1",
+     "worst_percent": 43.83615677788986,
+     "gpu_ms": 43.769995449110866,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.01_lt0.5",
+     "worst_percent": 2.8611971601964927,
+     "gpu_ms": 62.86325212568045,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.01_lt0.1",
+     "worst_percent": 1.4676377794084647,
+     "gpu_ms": 62.627464067190886,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.003_lt0.5",
+     "worst_percent": 1.4850432596088183,
+     "gpu_ms": 77.85337534733117,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.003_lt0.1",
+     "worst_percent": 1.4676377794084647,
+     "gpu_ms": 71.88971876166761,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.001_lt0.5",
+     "worst_percent": 1.3926851817288521,
+     "gpu_ms": 117.82949953339994,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.001_lt0.1",
+     "worst_percent": 1.3871226083424149,
+     "gpu_ms": 112.54058429040015,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": true
+    },
+    {
+     "setting": "fom_dt0.01_nt0.0001_lt0.5",
+     "worst_percent": 1.4054991118678166,
+     "gpu_ms": 184.67340269125998,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.01_nt0.0001_lt0.1",
+     "worst_percent": 1.404312147795883,
+     "gpu_ms": 137.68500345759094,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.025_nt0.01_lt0.5",
+     "worst_percent": 4.7268895022594375,
+     "gpu_ms": 39.46509049274027,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    },
+    {
+     "setting": "fom_dt0.025_nt0.001_lt0.5",
+     "worst_percent": 4.724966181495786,
+     "gpu_ms": 81.58913045190275,
+     "unstable": false,
+     "is_reference": false,
+     "table1_comparator": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 11.953907093018406,
+     "gpu_ms": 75.99071506410837,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 9.387758387102732,
+     "gpu_ms": 194.4752426352352,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 14.3917631558829,
+     "gpu_ms": 35.2200660854578,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 34.08913117795437,
+     "gpu_ms": 125.8657758589834,
+     "failure": null
+    }
+   },
+   "reference_note": "truth = same-grid Newton-BiCGStab dt 0.005 ntol 1e-10 ltol 1e-11, computed in the panel but not timed, so it is not in the fom list (no entry has is_reference=true)"
+  },
+  {
+   "pde": "Burgers 3D",
+   "mesh": 256,
+   "complete": false,
+   "panel_job": "4292776",
+   "gpu": "NVIDIA H200",
+   "cohort": "held-out",
+   "error_metric": "worst over 32 cases of max over the five evolved times of same-grid relative L2 (normalised by the initial field)",
+   "nmrom": [],
+   "fom": [],
+   "operators": {
+    "FNO": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "cell panel failed: jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']"
+    },
+    "U-Net": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "cell panel failed: jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']"
+    },
+    "Transolver": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "cell panel failed: jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']"
+    },
+    "DeepONet": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "cell panel failed: jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']"
+    }
+   },
+   "panel_failure": "jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']"
+  }
+ ]
+}

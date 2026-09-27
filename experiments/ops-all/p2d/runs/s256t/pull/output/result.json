@@ -1,0 +1,78 @@
+{
+ "complete": true,
+ "name": "transolver",
+ "family": "transolver",
+ "problem": "square",
+ "mesh": 256,
+ "data": {
+  "seconds": 1.136434513144195
+ },
+ "config": {
+  "family": "transolver",
+  "dim": 256,
+  "layers": 8,
+  "heads": 8,
+  "slices": 64,
+  "mlp_ratio": 2,
+  "patch": 4,
+  "ref": 8,
+  "dtype": "float32",
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "warmup_steps": 160,
+  "patch_rule": "n // 64 (set by train_ops.py)",
+  "smoke_overrides": {
+   "dim": 32,
+   "layers": 2,
+   "heads": 4,
+   "slices": 8,
+   "epochs": 2
+  }
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 4640695808,
+ "best_epoch": 64,
+ "best_step": 21255,
+ "epochs_completed": 70,
+ "optimisation_steps": 22704,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3000.300087763928,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.06881074058811543,
+   0.13446365084047096,
+   0.2598833988415036,
+   0.10108088832044998,
+   0.2743887813097579,
+   0.15772628196925406,
+   0.16981581729657722,
+   0.15102311270240135,
+   0.15798164142173646,
+   0.21609849284804025,
+   0.12560669625651624,
+   0.11025930375875691,
+   0.13069459848536974,
+   0.3053445983046082,
+   0.36102727005066504,
+   0.4277279407633348
+  ],
+  "mean": 0.1969958258598474,
+  "median": 0.15785396169549526,
+  "worst": 0.4277279407633348
+ },
+ "best_checkpoint_sha256": "8bfd9507c75cd86ed64d6a9c75f57eb182967b1ad62168a75f3def940bc1d838",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 12298320,
+ "normalization": [
+  0.02126182643724136,
+  0.11623014438131317,
+  0.0024425211230707368
+ ],
+ "peak_allocated_bytes": 4739095040
+}

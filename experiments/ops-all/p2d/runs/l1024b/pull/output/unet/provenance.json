@@ -1,0 +1,48 @@
+{
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "problem": "lshape",
+ "mesh": 1024,
+ "train_count": 1024,
+ "fit_split_size": 2611,
+ "val_count": 16,
+ "train_sha": "71567706251a53a71e0122bbc9fa80a05be04fa2a1ae450b9a7fb85b0866bea3",
+ "sources": {
+  "families.py": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+  "pops.py": "d75c232238a872f64844b30222e7cf490afe96c358a1c22cd3ddbef5740b00ad",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_ops.py": "73407264a9bcacf2f6dca63991da671134736b3ce8fb199ab819a84258bccb32"
+ },
+ "config": {
+  "family": "unet",
+  "base": 32,
+  "groups": 8,
+  "dtype": "float32",
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "smoke_overrides": {
+   "base": 8,
+   "epochs": 2
+  }
+ },
+ "config_sha256": "1ffb1174ed010af2d588b31a9dd8261d045bdaf2ae7f5ccc8aa1af55eb1428fc",
+ "wall_seconds": 3000.0,
+ "job_id": "4290707",
+ "node": "pax106",
+ "evaluation_cohort_used_for_training": false,
+ "mem_share": 0.5,
+ "co_scheduled_on_same_gpu": [
+  "unet",
+  "deeponet"
+ ]
+}

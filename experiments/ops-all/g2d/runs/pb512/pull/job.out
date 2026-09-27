@@ -1,0 +1,112 @@
+host=pax106 job_id=4290476
+NVIDIA A100 80GB PCIe, GPU-10ba5789-de43-27ff-bc59-837e30b7d4d0, 81920 MiB, 575.57.08
+10.235.106.30:/projects/paralab  4.6T  4.2T  370G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda True NVIDIA A100 80GB PCIe
+jax_backend=gpu x64=True precision=highest
+BANK 261121 rows 1 row blocks 8.4
+TRUTH done 11.0
+OPCOHORT written 6
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.1533 1.8 39.4
+QUICK fft_tight__graphs evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.1549 2.8 42.1
+QUICK nt1e-4_dt005 evolved% 0.0341 median% 0.0163 stalled 0 iters [None, None, None, None, None, None] sec 0.0627 1.2 43.3
+QUICK nt1e-4_dt005__graphs evolved% 0.0341 median% 0.0163 stalled 0 iters [None, None, None, None, None, None] sec 0.0629 1.2 44.5
+QUICK nt1e-3_dt005 evolved% 0.0516 median% 0.0299 stalled 0 iters [None, None, None, None, None, None] sec 0.0507 1.1 45.6
+QUICK nt1e-3_dt005__graphs evolved% 0.0516 median% 0.0299 stalled 0 iters [None, None, None, None, None, None] sec 0.0506 1.1 46.7
+QUICK nt1e-2_dt005 evolved% 4.0614 median% 1.5052 stalled 0 iters [None, None, None, None, None, None] sec 0.0251 0.9 47.7
+QUICK nt1e-2_dt005__graphs evolved% 4.0614 median% 1.5052 stalled 0 iters [None, None, None, None, None, None] sec 0.025 0.9 48.6
+QUICK nt1e-4_dt01 evolved% 1.5869 median% 1.1873 stalled 0 iters [None, None, None, None, None, None] sec 0.0506 2.1 50.7
+QUICK nt1e-4_dt01__graphs evolved% 1.5869 median% 1.1873 stalled 0 iters [None, None, None, None, None, None] sec 0.0512 2.0 52.8
+QUICK nt1e-3_dt01 evolved% 1.5893 median% 1.2115 stalled 0 iters [None, None, None, None, None, None] sec 0.0344 1.0 53.8
+QUICK nt1e-3_dt01__graphs evolved% 1.5893 median% 1.2115 stalled 0 iters [None, None, None, None, None, None] sec 0.0348 1.0 54.8
+QUICK nt1e-2_dt01 evolved% 3.355 median% 1.4513 stalled 0 iters [None, None, None, None, None, None] sec 0.015 0.9 55.6
+QUICK nt1e-2_dt01__graphs evolved% 3.355 median% 1.4513 stalled 0 iters [None, None, None, None, None, None] sec 0.0151 0.9 56.5
+QUICK lean_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.1526 2.6 59.1
+QUICK lean_tight__graphs evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.1533 2.6 61.7
+QUICK lean_nt1e-4_dt005 evolved% 0.0341 median% 0.0163 stalled 0 iters [None, None, None, None, None, None] sec 0.0616 1.2 62.9
+QUICK lean_nt1e-4_dt005__graphs evolved% 0.0341 median% 0.0163 stalled 0 iters [None, None, None, None, None, None] sec 0.0614 1.2 64.1
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0508 median% 0.0326 stalled 0 iters [None, None, None, None, None, None] sec 0.0352 1.0 65.1
+QUICK lean_nt1e-3_l1e-3_dt005__graphs evolved% 0.0508 median% 0.0326 stalled 0 iters [None, None, None, None, None, None] sec 0.0354 1.0 66.0
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0497 median% 0.0418 stalled 0 iters [None, None, None, None, None, None] sec 0.0297 1.0 67.0
+QUICK lean_nt3e-3_l3e-3_dt005__graphs evolved% 0.0497 median% 0.0418 stalled 0 iters [None, None, None, None, None, None] sec 0.0298 0.9 68.0
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1507 median% 0.0914 stalled 0 iters [None, None, None, None, None, None] sec 0.025 0.9 68.9
+QUICK lean_nt1e-2_l1e-2_dt005__graphs evolved% 2.1507 median% 0.0914 stalled 0 iters [None, None, None, None, None, None] sec 0.0246 0.9 69.8
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.59 median% 1.2112 stalled 0 iters [None, None, None, None, None, None] sec 0.0229 1.8 71.7
+QUICK lean_nt1e-3_l1e-3_dt01__graphs evolved% 1.59 median% 1.2112 stalled 0 iters [None, None, None, None, None, None] sec 0.0231 1.7 73.4
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6044 median% 1.2304 stalled 0 iters [None, None, None, None, None, None] sec 0.0189 0.9 74.3
+QUICK lean_nt3e-3_l3e-3_dt01__graphs evolved% 1.6044 median% 1.2304 stalled 0 iters [None, None, None, None, None, None] sec 0.0192 0.9 75.2
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.62 median% 1.2187 stalled 0 iters [None, None, None, None, None, None] sec 0.0158 0.9 76.1
+QUICK lean_nt1e-2_l1e-2_dt01__graphs evolved% 1.62 median% 1.2187 stalled 0 iters [None, None, None, None, None, None] sec 0.0158 0.9 76.9
+QUICK R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng evolved% 0.1947 median% 0.0639 stalled 0 iters [53, 53, 49, 54, 45, 51] sec 0.047 6.6 95.9
+QUICK R128_lin_M512_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng evolved% 1.748 median% 0.6249 stalled 0 iters [42, 47, 33, 40, 32, 37] sec 0.018 4.8 107.4
+FOM-PARITY fft_tight 0.000e+00 True
+FOM-PARITY nt1e-4_dt005 0.000e+00 True
+FOM-PARITY nt1e-3_dt005 0.000e+00 True
+FOM-PARITY nt1e-2_dt005 0.000e+00 True
+FOM-PARITY nt1e-4_dt01 0.000e+00 True
+FOM-PARITY nt1e-3_dt01 0.000e+00 True
+FOM-PARITY nt1e-2_dt01 0.000e+00 True
+FOM-PARITY lean_tight 0.000e+00 True
+FOM-PARITY lean_nt1e-4_dt005 0.000e+00 True
+FOM-PARITY lean_nt1e-3_l1e-3_dt005 0.000e+00 True
+FOM-PARITY lean_nt3e-3_l3e-3_dt005 0.000e+00 True
+FOM-PARITY lean_nt1e-2_l1e-2_dt005 0.000e+00 True
+FOM-PARITY lean_nt1e-3_l1e-3_dt01 0.000e+00 True
+FOM-PARITY lean_nt3e-3_l3e-3_dt01 0.000e+00 True
+FOM-PARITY lean_nt1e-2_l1e-2_dt01 0.000e+00 True
+TIMED romA1 rep 0 118.3
+TIMED romA1 rep 1 120.1
+TIMED romA1 rep 2 122.0
+TIMED romA1 rep 3 123.8
+TIMED romA1 rep 4 125.7
+TIMED fomB rep 0 164.3
+TIMED fomB rep 1 195.9
+TIMED fomB rep 2 227.6
+TIMED romA2 rep 0 236.5
+TIMED romA2 rep 1 238.3
+TIMED romA2 rep 2 240.2
+TIMED romA2 rep 3 242.0
+TIMED romA2 rep 4 243.9
+DRIFT True 1.0002665412611442 1.0045492665228397 NEIGHBOUR True 1.009601137920257
+B2SPEED COMPLETE
+CHECKPOINT OK fno-large 1d6ab5c66d374ca83c8e751276f1243c5c3713a36290a52685b025620838c207
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 22.628
+FNO burgers-dev-00001 device_ms 22.583
+FNO burgers-dev-00002 device_ms 22.643
+FNO burgers-dev-00003 device_ms 22.559
+FNO burgers-dev-00004 device_ms 22.654
+FNO burgers-dev-00005 device_ms 22.55
+OPERATOR TIMING COMPLETE fno-large
+CHECKPOINT OK unet-refine 5620fbeafbdbf0048a8d8bf7aa30c7b54d8c3cfbb8696a3d338bab50e0a43576
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 14.149
+FNO burgers-dev-00001 device_ms 14.197
+FNO burgers-dev-00002 device_ms 14.186
+FNO burgers-dev-00003 device_ms 14.187
+FNO burgers-dev-00004 device_ms 14.211
+FNO burgers-dev-00005 device_ms 14.166
+OPERATOR TIMING COMPLETE unet-refine
+CHECKPOINT OK tsol-refine 03d6de4938c58b2eadcef1eb007fef5f0425b5babb0530614aea0ea5a8a485a8
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 36.014
+FNO burgers-dev-00001 device_ms 36.065
+FNO burgers-dev-00002 device_ms 35.999
+FNO burgers-dev-00003 device_ms 36.055
+FNO burgers-dev-00004 device_ms 36.022
+FNO burgers-dev-00005 device_ms 36.015
+OPERATOR TIMING COMPLETE tsol-refine
+CHECKPOINT OK don-small 3b733306e2eba13acab4768d277e05fb36d12024951bb205fd32c50108bebba8
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 13.365
+FNO burgers-dev-00001 device_ms 13.269
+FNO burgers-dev-00002 device_ms 13.303
+FNO burgers-dev-00003 device_ms 13.353
+FNO burgers-dev-00004 device_ms 13.311
+FNO burgers-dev-00005 device_ms 13.289
+OPERATOR TIMING COMPLETE don-small
+OPSCORE fno-large 4.5711 2.7502 22.612
+OPSCORE unet-refine 2.5173 1.5965 14.187
+OPSCORE tsol-refine 3.2703 2.3401 36.041
+OPSCORE don-small 32.1784 15.807 13.307
+run_exit=0

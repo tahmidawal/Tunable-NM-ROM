@@ -1,0 +1,18 @@
+W0924 19:33:53.878608  656485 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 18.02GiB (rounded to 19344359680)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0924 19:33:53.879252  656485 bfc_allocator.cc:525] ____________**********______*******************_____________________********************___________*
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048q/code/panel.py", line 394, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048q/code/panel.py", line 287, in main
+    dev, same, sources, subjects, cgs, burn, _ = build(cfg, n, R_)
+                                                 ~~~~~^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048q/code/panel.py", line 165, in build_lshape
+    B = K_.reduce_bank(ops, fom, G)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048q/code/nmrom_ls/lsh_core.py", line 569, in reduce_bank
+    B.block_until_ready()
+    ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 18.02GiB. [executable_name='jit_matmul'] [tf-allocator-allocation-error='']

@@ -1,0 +1,35 @@
+Burgers 2D 256 complete expanded ladder 4301382 NVIDIA A100 80GB PCIe
+  target 10.0 %: {'nmrom': ('R32_lin_M128_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 9.597, 11.14), 'fom': ('nt1e-2_dt01', 3.2, 8.77), 'FNO': ('fno-w96f32', 3.89, 6.79), 'U-Net': ('unet-refine', 4.553, 5.82), 'Transolver': ('tsol-small', 4.898, 11.01), 'DeepONet': None}
+  target 5.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 4.267, 16.5), 'fom': ('nt1e-2_dt01', 3.2, 8.77), 'FNO': ('fno-w96f32', 3.89, 6.79), 'U-Net': ('unet-refine', 4.553, 5.82), 'Transolver': ('tsol-small', 4.898, 11.01), 'DeepONet': None}
+  target 1.0 %: {'nmrom': ('R256_lin_M1024_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 0.572, 72.09), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.048, 18.12), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 0.5 %: {'nmrom': ('R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 0.166, 123.12), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.048, 18.12), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+Burgers 2D 512 complete expanded ladder 4302973 NVIDIA A100 80GB PCIe
+  target 10.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 4.553, 20.04), 'fom': ('nt1e-2_dt01', 3.355, 13.81), 'FNO': ('fno-w96f32', 4.381, 19.96), 'U-Net': ('unet-refine', 2.305, 13.97), 'Transolver': ('tsol-refine', 3.386, 35.77), 'DeepONet': None}
+  target 5.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 4.553, 20.04), 'fom': ('nt1e-2_dt01', 3.355, 13.81), 'FNO': ('fno-w96f32', 4.381, 19.96), 'U-Net': ('unet-refine', 2.305, 13.97), 'Transolver': ('tsol-refine', 3.386, 35.77), 'DeepONet': None}
+  target 1.0 %: {'nmrom': ('R256_lin_M1024_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 0.661, 120.49), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.05, 28.16), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 0.5 %: {'nmrom': ('R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1', 0.195, 228.75), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.05, 28.16), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+Burgers 2D 1024 complete expanded ladder 4304490 NVIDIA A100 80GB PCIe
+  target 10.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 4.712, 20.13), 'fom': ('nt1e-2_dt01', 3.458, 33.74), 'FNO': ('fno-w96f32', 4.08, 87.36), 'U-Net': ('unet-refine', 4.599, 53.91), 'Transolver': None, 'DeepONet': None}
+  target 5.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 4.712, 20.13), 'fom': ('nt1e-2_dt01', 3.458, 33.74), 'FNO': ('fno-w96f32', 4.08, 87.36), 'U-Net': ('unet-refine', 4.599, 53.91), 'Transolver': None, 'DeepONet': None}
+  target 1.0 %: {'nmrom': ('R256_lin_M1024_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 0.705, 56.54), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.048, 70.84), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 0.5 %: {'nmrom': ('R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 0.211, 81.33), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.048, 70.84), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+Burgers 2D 2048 complete expanded ladder 4309160 NVIDIA A100 80GB PCIe
+  target 10.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 4.79, 21.53), 'fom': ('nt1e-2_dt01', 3.513, 130.03), 'FNO': ('fno-w96f32', 6.46, 437.87), 'U-Net': ('unet-refine', 9.499, 213.29), 'Transolver': None, 'DeepONet': None}
+  target 5.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 4.79, 21.53), 'fom': ('nt1e-2_dt01', 3.513, 130.03), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 1.0 %: {'nmrom': ('R256_lin_M1024_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 0.729, 61.52), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.049, 286.35), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 0.5 %: {'nmrom': ('R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 0.219, 88.59), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.049, 286.35), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+Burgers 2D 4096 complete expanded ladder 4309865 NVIDIA H200
+  target 10.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 4.83, 17.08), 'fom': ('nt1e-2_dt01', 3.541, 235.68), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 5.0 %: {'nmrom': ('R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 4.83, 17.08), 'fom': ('nt1e-2_dt01', 3.541, 235.68), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 1.0 %: {'nmrom': ('R256_lin_M1024_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 0.742, 42.97), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.05, 522.6), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 0.5 %: {'nmrom': ('R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2', 0.224, 61.95), 'fom': ('lean_nt3e-3_l3e-3_dt005', 0.05, 522.6), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+Heat 2D 256 complete expanded ladder 4307911 NVIDIA A100 80GB PCIe
+  target 10.0 %: {'nmrom': ('lin_R16_cn', 8.678, 0.17), 'fom': ('fom_cncg_dt0.1_rtol1e-2', 0.831, 5.07), 'FNO': ('fno-w96f32', 0.143, 7.71), 'U-Net': ('unet', 0.436, 6.69), 'Transolver': ('transolver', 2.829, 16.03), 'DeepONet': ('deeponet', 0.886, 4.77)}
+  target 5.0 %: {'nmrom': ('lin_R32_cn', 1.082, 0.18), 'fom': ('fom_cncg_dt0.1_rtol1e-2', 0.831, 5.07), 'FNO': ('fno-w96f32', 0.143, 7.71), 'U-Net': ('unet', 0.436, 6.69), 'Transolver': ('transolver', 2.829, 16.03), 'DeepONet': ('deeponet', 0.886, 4.77)}
+  target 1.0 %: {'nmrom': ('lin_R48_cn', 0.276, 0.19), 'fom': ('fom_cncg_dt0.1_rtol1e-2', 0.831, 5.07), 'FNO': ('fno-w96f32', 0.143, 7.71), 'U-Net': ('unet', 0.436, 6.69), 'Transolver': None, 'DeepONet': ('deeponet', 0.886, 4.77)}
+  target 0.5 %: {'nmrom': ('lin_R48_cn', 0.276, 0.19), 'fom': ('fom_cncg_dt0.05_rtol1e-3', 0.186, 8.17), 'FNO': ('fno-w96f32', 0.143, 7.71), 'U-Net': ('unet', 0.436, 6.69), 'Transolver': None, 'DeepONet': None}
+Heat 2D 1024 complete expanded ladder 4305095 NVIDIA A100 80GB PCIe
+  target 10.0 %: {'nmrom': ('lin_R16_cn', 8.678, 0.34), 'fom': ('fom_cncg_dt0.1_rtol1e-2', 0.83, 42.64), 'FNO': ('fno-w96f32', 0.833, 86.06), 'U-Net': ('unet', 1.56, 55.01), 'Transolver': ('transolver', 2.569, 16.94), 'DeepONet': ('deeponet', 4.602, 50.94)}
+  target 5.0 %: {'nmrom': ('lin_R32_cn', 1.082, 0.55), 'fom': ('fom_cncg_dt0.1_rtol1e-2', 0.83, 42.64), 'FNO': ('fno-w96f32', 0.833, 86.06), 'U-Net': ('unet', 1.56, 55.01), 'Transolver': ('transolver', 2.569, 16.94), 'DeepONet': ('deeponet', 4.602, 50.94)}
+  target 1.0 %: {'nmrom': ('lin_R48_cn', 0.276, 0.71), 'fom': ('fom_cncg_dt0.1_rtol1e-2', 0.83, 42.64), 'FNO': ('fno-w96f32', 0.833, 86.06), 'U-Net': None, 'Transolver': None, 'DeepONet': None}
+  target 0.5 %: {'nmrom': ('lin_R48_cn', 0.276, 0.71), 'fom': ('fom_cncg_dt0.05_rtol1e-3', 0.184, 67.57), 'FNO': None, 'U-Net': None, 'Transolver': None, 'DeepONet': None}

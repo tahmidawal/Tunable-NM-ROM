@@ -1,0 +1,17 @@
+torch_backend=cuda NVIDIA H200
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/train_l3d.py", line 257, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/train_l3d.py", line 102, in main
+    x, y = prob.batch(draws[tr_idx[s:s + 16]])
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/problems.py", line 88, in batch
+    return f, dst3(dst3(f) / self.lam)
+                   ~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/problems.py", line 63, in dst3
+    u = dst_axis(u, ax)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/problems.py", line 57, in dst_axis
+    out = -torch.fft.rfft(odd, dim=-1).imag[..., 1:n] / math.sqrt(2.0 * n)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.98 GiB. GPU 0 has a total capacity of 139.80 GiB of which 79.31 GiB is free. Process 3736642 has 16.60 GiB memory in use. Process 3736636 has 16.60 GiB memory in use. Including non-PyTorch memory, this process has 10.68 GiB memory in use. Process 3736638 has 16.60 GiB memory in use. 11.18 GiB allowed; Of the allocated memory 10.06 GiB is allocated by PyTorch, and 17.46 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

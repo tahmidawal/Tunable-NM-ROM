@@ -1,0 +1,119 @@
+{
+ "problem": "poisson",
+ "n": 32,
+ "expected": "expected/poisson_32.json",
+ "order_seed": 2026092432,
+ "timing_rounds": 3,
+ "burn_seconds": 0.05,
+ "reproduction_tolerance": 1e-06,
+ "reproduction_tolerance_fom": 0.001,
+ "operators": [
+  {
+   "arm": "don-s",
+   "family": "deeponet",
+   "checkpoint": "checkpoints/don-s/best.pt",
+   "sha256": "f0dc2a106e12bc5b9432ab03dc2863b012a7c89ce7532bfa44969b449775c749",
+   "training": {
+    "epochs": 205,
+    "steps": 11448,
+    "best_epoch": 204,
+    "stop_reason": "wall_budget",
+    "micro_batch": 8,
+    "parameters": 4361665,
+    "validation_mean_case": 0.02722970846201902,
+    "validation_worst_case": 0.05512551019392264,
+    "job_id": "4286496",
+    "memory_fraction": 0.05,
+    "training_seconds": 3001.2272309791297
+   }
+  },
+  {
+   "arm": "fno-l",
+   "family": "fno",
+   "checkpoint": "checkpoints/fno-l/best.pt",
+   "sha256": "47c15c4bf7aedda41debc14e49a9c536c6c0d3ae9401357bce7dc0d66a57b58a",
+   "training": {
+    "epochs": 77,
+    "steps": 4275,
+    "best_epoch": 69,
+    "stop_reason": "wall_budget",
+    "micro_batch": 8,
+    "parameters": 18887585,
+    "validation_mean_case": 0.004125154291465643,
+    "validation_worst_case": 0.010831393270741304,
+    "job_id": "4286496",
+    "memory_fraction": 0.06,
+    "training_seconds": 3001.349825107958
+   }
+  },
+  {
+   "arm": "tsol-s",
+   "family": "transolver",
+   "checkpoint": "checkpoints/tsol-s/best.pt",
+   "sha256": "361e196f507e21a6b29ca465206021593951c45f0d1dbf0f31968afda1d78b14",
+   "training": {
+    "epochs": 36,
+    "steps": 1968,
+    "best_epoch": 33,
+    "stop_reason": "wall_budget",
+    "micro_batch": 8,
+    "parameters": 5989368,
+    "validation_mean_case": 0.02723164307378811,
+    "validation_worst_case": 0.04354721864100001,
+    "job_id": "4286496",
+    "memory_fraction": 0.05,
+    "training_seconds": 3004.880283731036
+   }
+  },
+  {
+   "arm": "unet-l",
+   "family": "unet",
+   "checkpoint": "checkpoints/unet-l/best.pt",
+   "sha256": "507ad3e04bf200bdfe4a928c2af303f85b3ca951dcd87ae3051818f06d3903eb",
+   "training": {
+    "epochs": 70,
+    "steps": 3919,
+    "best_epoch": 69,
+    "stop_reason": "wall_budget",
+    "micro_batch": 8,
+    "parameters": 22580865,
+    "validation_mean_case": 0.004208772128812029,
+    "validation_worst_case": 0.009207277728810153,
+    "job_id": "4286496",
+    "memory_fraction": 0.06,
+    "training_seconds": 3003.354596713092
+   }
+  }
+ ],
+ "smoke": {},
+ "cohort": "final",
+ "final_count": 64,
+ "final_parameters_sha256": "27ec2cf52d2eb0ad84d6b3e83c46f504a67c0dd56a7a1f968263d3179430be60",
+ "checkpoint_sha256": {
+  "bank": "6c2298776709973b614b0ab3eed9fcd68d9d39e8d9639d40f1a8da5d0b973c63",
+  "head": "258d28457800b3cceb7eab2e1f1075166f0287a246713034bb0bffb024409e01"
+ },
+ "field_chunk": 8192,
+ "weak_tests": 512,
+ "R_ladder": [
+  16,
+  32,
+  48,
+  64,
+  96,
+  128
+ ],
+ "accurate_Rp": 128,
+ "fast_Rp": 64,
+ "cg_iterations_per_interval": 40,
+ "cg_tolerances": [
+  0.3,
+  0.1,
+  0.03,
+  0.01,
+  0.003,
+  0.001
+ ],
+ "source_table1_job": "4200246",
+ "table1_fom": "fom_cg_rtol0.01"
+}

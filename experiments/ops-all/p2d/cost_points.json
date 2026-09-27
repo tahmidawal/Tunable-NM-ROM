@@ -1,0 +1,943 @@
+{
+ "group": "p2d",
+ "cells": [
+  {
+   "pde": "Poisson 2D",
+   "mesh": 256,
+   "complete": true,
+   "panel_job": "4290576",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R512_linear",
+     "worst_percent": 0.7458632302014031,
+     "gpu_ms": 0.5388637073338032
+    },
+    {
+     "setting": "R128_linear",
+     "worst_percent": 2.314079778686941,
+     "gpu_ms": 0.3211130388081074
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 42.54530385812117,
+     "gpu_ms": 5.398377543315291,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 35.174318420639445,
+     "gpu_ms": 6.3544069416821,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.4",
+     "worst_percent": 22.473267958281514,
+     "gpu_ms": 7.012457586824894,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 12.397243336472359,
+     "gpu_ms": 7.511564064770937,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 7.155207570871588,
+     "gpu_ms": 8.295010076835752,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 2.1466842311377388,
+     "gpu_ms": 9.335601469501853,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 0.5480065709137634,
+     "gpu_ms": 10.992445051670074,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.15274277988042045,
+     "gpu_ms": 12.524343095719814,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.001",
+     "worst_percent": 0.013000942922647061,
+     "gpu_ms": 15.835582744330168,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.0001",
+     "worst_percent": 0.0011822059664717726,
+     "gpu_ms": 18.262816593050957,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 1.0590559332983216,
+     "gpu_ms": 7.431357866153121,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 0.7094613125962231,
+     "gpu_ms": 6.18082145228982,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 19.288498880212863,
+     "gpu_ms": 15.568704344332218,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 6.892528704282891,
+     "gpu_ms": 4.087063949555159,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson 2D",
+   "mesh": 1024,
+   "complete": true,
+   "panel_job": "4306883",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R512_linear",
+     "worst_percent": 0.7421302120899466,
+     "gpu_ms": 3.25840525329113
+    },
+    {
+     "setting": "R128_linear",
+     "worst_percent": 2.3063961307404837,
+     "gpu_ms": 1.192963682115078
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 16.490208844234893,
+     "gpu_ms": 58.74239490367472,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 9.015716507823326,
+     "gpu_ms": 63.9823901001364,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.4",
+     "worst_percent": 7.2513088934514345,
+     "gpu_ms": 66.09804416075349,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 5.554564778333101,
+     "gpu_ms": 70.03441057167947,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 2.19971811917963,
+     "gpu_ms": 75.08420012891293,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 0.7690035506507056,
+     "gpu_ms": 82.29661593213677,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 0.22010804999718428,
+     "gpu_ms": 95.39259225130081,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.07220726616892795,
+     "gpu_ms": 106.70075146481395,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.001",
+     "worst_percent": 0.00704966330773375,
+     "gpu_ms": 131.21030083857477,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.0001",
+     "worst_percent": 0.00042102314707871127,
+     "gpu_ms": 150.0686351209879,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 8.695416636790672,
+     "gpu_ms": 98.39472360908985,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 4.597674022570077,
+     "gpu_ms": 54.071226390078664,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 35.58160371064453,
+     "gpu_ms": 15.692190965637565,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 16.324609035743542,
+     "gpu_ms": 49.30385295301676,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson 2D",
+   "mesh": 2048,
+   "complete": true,
+   "panel_job": "4296977",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R512_linear",
+     "worst_percent": 0.7419441746164305,
+     "gpu_ms": 11.57283061183989
+    },
+    {
+     "setting": "R128_linear",
+     "worst_percent": 2.3060130533623275,
+     "gpu_ms": 3.2778484746813774
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 8.900938334064568,
+     "gpu_ms": 485.89475150220096,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 6.750293112078505,
+     "gpu_ms": 514.3785341642797,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.4",
+     "worst_percent": 5.153751393601673,
+     "gpu_ms": 539.957664674148,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 2.50244242003896,
+     "gpu_ms": 564.9481471627951,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 1.1782252597276004,
+     "gpu_ms": 600.6913965102285,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 0.6088666412608817,
+     "gpu_ms": 651.41790243797,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 0.16178789744188155,
+     "gpu_ms": 747.5799708627164,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.04900553940932719,
+     "gpu_ms": 838.8650689739734,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.001",
+     "worst_percent": 0.005447860110263101,
+     "gpu_ms": 1024.1219454910606,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.0001",
+     "worst_percent": 0.0002509355133392339,
+     "gpu_ms": 1163.1669129710644,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 47.72166052545887,
+     "gpu_ms": 889.4951737020165,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 22.333473844189637,
+     "gpu_ms": 213.66749005392194,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 44.95331947428866,
+     "gpu_ms": 16.19896641932428,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 41.804917602058595,
+     "gpu_ms": 198.33110738545656,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson 2D",
+   "mesh": 4096,
+   "complete": true,
+   "panel_job": "4294147",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R512_linear",
+     "worst_percent": 0.7418976743525537,
+     "gpu_ms": 44.22200447879732
+    },
+    {
+     "setting": "R128_linear",
+     "worst_percent": 2.305917300406882,
+     "gpu_ms": 12.861153343692422
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 6.707812165908908,
+     "gpu_ms": 3490.9077184274793,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 3.723701083802085,
+     "gpu_ms": 3739.1813276335597,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.4",
+     "worst_percent": 2.2045345309206326,
+     "gpu_ms": 3871.291689807549,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 1.2950519116023134,
+     "gpu_ms": 4042.3478113953024,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 0.7720330047906748,
+     "gpu_ms": 4238.4439466986805,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 0.4505524242017507,
+     "gpu_ms": 4641.581697156653,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 0.12280866110742777,
+     "gpu_ms": 5109.586954582483,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.037865510109647026,
+     "gpu_ms": 5870.190761052072,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "training failed: out_of_memory (no micro-batch fits (micro-batch 1 out of memory))"
+    },
+    "U-Net": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "query out of memory in the panel (beside the NM-ROM bank on an 80 GB card)"
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 32.636846359068386,
+     "gpu_ms": 14.12576506845653,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "training failed: out_of_memory (no micro-batch fits (micro-batch 1 out of memory))"
+    }
+   }
+  },
+  {
+   "pde": "Poisson L-shape 2D",
+   "mesh": 256,
+   "complete": false,
+   "panel_job": "4290447",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R128_linear",
+     "worst_percent": 3.0404300684272365,
+     "gpu_ms": 0.39750104770064354
+    },
+    {
+     "setting": "R64_linear",
+     "worst_percent": 5.732018255440812,
+     "gpu_ms": 0.41595124639570713
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 50.32138725837828,
+     "gpu_ms": 3.6168615333735943,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 38.41095480156434,
+     "gpu_ms": 4.244316602125764,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 23.839911124528236,
+     "gpu_ms": 5.180957959964871,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 13.432934280349698,
+     "gpu_ms": 5.779459606856108,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 8.822828815893407,
+     "gpu_ms": 7.111351005733013,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 2.401839976544479,
+     "gpu_ms": 8.92230961471796,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.637361448170308,
+     "gpu_ms": 10.504851350560784,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.003",
+     "worst_percent": 0.18543690356326203,
+     "gpu_ms": 12.04075338318944,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.001",
+     "worst_percent": 0.04112782200814573,
+     "gpu_ms": 13.435013592243195,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.0001",
+     "worst_percent": 0.0027313776258884974,
+     "gpu_ms": 15.87879634462297,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 3.2373977507184932,
+     "gpu_ms": 7.597421994432807,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 3.2451834892279674,
+     "gpu_ms": 6.339262705296278,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 52.8135994873023,
+     "gpu_ms": 15.810983953997493,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 9.440323725664554,
+     "gpu_ms": 4.241284215822816,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson L-shape 2D",
+   "mesh": 512,
+   "complete": true,
+   "panel_job": "4291515",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R128_linear",
+     "worst_percent": 3.0321839970988638,
+     "gpu_ms": 0.6309570744633675
+    },
+    {
+     "setting": "R64_linear",
+     "worst_percent": 5.722333259668447,
+     "gpu_ms": 0.5152411758899689
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 38.34414507428532,
+     "gpu_ms": 9.900957578793168,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 28.790326506469448,
+     "gpu_ms": 11.89704961143434,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 15.243457063026627,
+     "gpu_ms": 14.237751951441169,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 9.714498666391417,
+     "gpu_ms": 15.386389335617423,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 6.959116208630155,
+     "gpu_ms": 19.039094680920243,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 1.508367939278356,
+     "gpu_ms": 23.501390824094415,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.3845242627555538,
+     "gpu_ms": 27.302362024784088,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.003",
+     "worst_percent": 0.11814326123306612,
+     "gpu_ms": 31.371480086818337,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.001",
+     "worst_percent": 0.026350963933557518,
+     "gpu_ms": 34.217237029224634,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.0001",
+     "worst_percent": 0.0019988543809274983,
+     "gpu_ms": 40.50757153891027,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 15.398441184829439,
+     "gpu_ms": 22.35885104164481,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 9.662893866807504,
+     "gpu_ms": 14.62676003575325,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 52.634397798341226,
+     "gpu_ms": 16.114006517454982,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 15.111606858870308,
+     "gpu_ms": 13.168430421501398,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson L-shape 2D",
+   "mesh": 1024,
+   "complete": true,
+   "panel_job": "4294144",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R128_linear",
+     "worst_percent": 3.0301255136171643,
+     "gpu_ms": 1.7585144378244877
+    },
+    {
+     "setting": "R64_linear",
+     "worst_percent": 5.719867597187765,
+     "gpu_ms": 1.4754615258425474
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 28.607898380571,
+     "gpu_ms": 41.10136954113841,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 19.461280581079667,
+     "gpu_ms": 45.905611012130976,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 10.042815180085134,
+     "gpu_ms": 52.16505448333919,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 8.84716921922867,
+     "gpu_ms": 60.90515339747071,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 6.927740835800707,
+     "gpu_ms": 71.47105317562819,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 1.0459156700411292,
+     "gpu_ms": 86.317528039217,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.3140645590650977,
+     "gpu_ms": 100.9385408833623,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.003",
+     "worst_percent": 0.07561076966449419,
+     "gpu_ms": 115.29396055266261,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.001",
+     "worst_percent": 0.016699590651539153,
+     "gpu_ms": 125.4751009400934,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.0001",
+     "worst_percent": 0.0014699598475045562,
+     "gpu_ms": 148.13165203668177,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 40.977209019394465,
+     "gpu_ms": 97.5358106661588,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 34.50060867078652,
+     "gpu_ms": 54.187559988349676,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 58.98568580748942,
+     "gpu_ms": 16.06606040149927,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 23.384535732717882,
+     "gpu_ms": 49.30179798975587,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson L-shape 2D",
+   "mesh": 2048,
+   "complete": true,
+   "panel_job": "4303797",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst same-grid relative L2 over the cohort (steady problem)",
+   "nmrom": [
+    {
+     "setting": "R128_linear",
+     "worst_percent": 3.0296072809392287,
+     "gpu_ms": 9.309269953519106
+    },
+    {
+     "setting": "R64_linear",
+     "worst_percent": 5.719234470740566,
+     "gpu_ms": 8.350573247298598
+    }
+   ],
+   "fom": [
+    {
+     "setting": "cg_0.7",
+     "worst_percent": 19.145394828709293,
+     "gpu_ms": 323.0842384509742,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.5",
+     "worst_percent": 11.534639320013172,
+     "gpu_ms": 359.9328913260251,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.3",
+     "worst_percent": 8.963728797590019,
+     "gpu_ms": 391.7054389603436,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.2",
+     "worst_percent": 6.99671280521688,
+     "gpu_ms": 462.6688358839601,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.1",
+     "worst_percent": 3.139438476376285,
+     "gpu_ms": 533.98527787067,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.03",
+     "worst_percent": 0.7607568235735147,
+     "gpu_ms": 638.26810172759,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "cg_0.01",
+     "worst_percent": 0.24144029302729264,
+     "gpu_ms": 725.5098768509924,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.003",
+     "worst_percent": 0.04513158973396677,
+     "gpu_ms": 827.6453814469278,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.001",
+     "worst_percent": 0.01051411576890779,
+     "gpu_ms": 899.3945221882313,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "cg_0.0001",
+     "worst_percent": 0.001067580313071626,
+     "gpu_ms": 1062.84342543222,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "query out of memory in the panel (beside the NM-ROM bank on an 80 GB card)"
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 47.603906188461856,
+     "gpu_ms": 212.19580061733723,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 46.5505866873373,
+     "gpu_ms": 16.01870497688651,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "query out of memory in the panel (beside the NM-ROM bank on an 80 GB card)"
+    }
+   }
+  }
+ ]
+}

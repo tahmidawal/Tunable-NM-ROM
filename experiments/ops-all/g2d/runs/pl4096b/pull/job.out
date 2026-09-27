@@ -1,0 +1,57 @@
+host=pax009 job_id=4309865
+NVIDIA H200, GPU-9414f59f-8546-1c49-b2f9-c0bffc2ea441, 143771 MiB, 575.57.08
+10.235.106.26:/projects/paralab  4.6T  4.2T  368G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda True NVIDIA H200
+jax_backend=gpu x64=True precision=highest
+BANK 16769025 rows 32 row blocks, parent kept False 16.2
+TRUTH done 41.5
+OPCOHORT written 6
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 3.238 32.3 94.6
+QUICK nt1e-4_dt005 evolved% 0.0318 median% 0.0167 stalled 0 iters [None, None, None, None, None, None] sec 1.261 18.9 113.5
+QUICK nt1e-3_dt005 evolved% 0.0544 median% 0.0311 stalled 0 iters [None, None, None, None, None, None] sec 1.001 16.9 130.4
+QUICK nt1e-2_dt005 evolved% 4.4283 median% 1.5288 stalled 0 iters [None, None, None, None, None, None] sec 0.437 12.6 143.0
+QUICK nt1e-4_dt01 evolved% 1.6619 median% 1.2019 stalled 0 iters [None, None, None, None, None, None] sec 1.056 19.2 162.2
+QUICK nt1e-3_dt01 evolved% 1.6598 median% 1.2246 stalled 0 iters [None, None, None, None, None, None] sec 0.68 14.6 176.9
+QUICK nt1e-2_dt01 evolved% 3.5411 median% 1.482 stalled 0 iters [None, None, None, None, None, None] sec 0.262 11.6 188.5
+QUICK lean_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 3.217 31.3 219.8
+QUICK lean_nt1e-4_dt005 evolved% 0.0318 median% 0.0167 stalled 0 iters [None, None, None, None, None, None] sec 1.245 17.7 237.6
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.055 median% 0.032 stalled 0 iters [None, None, None, None, None, None] sec 0.688 13.2 250.8
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0499 median% 0.0385 stalled 0 iters [None, None, None, None, None, None] sec 0.566 12.5 263.4
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1635 median% 0.1844 stalled 0 iters [None, None, None, None, None, None] sec 0.446 11.8 275.2
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6607 median% 1.2251 stalled 0 iters [None, None, None, None, None, None] sec 0.433 12.7 287.8
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6765 median% 1.245 stalled 0 iters [None, None, None, None, None, None] sec 0.379 11.4 299.2
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6883 median% 1.2491 stalled 0 iters [None, None, None, None, None, None] sec 0.297 10.9 310.1
+QUICK R512_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.415 median% 1.0491 stalled 0 iters [84, 99, 98, 85, 60, 75] sec 0.059 17.2 339.2
+QUICK R512_lin_M2048_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.2965 median% 0.1094 stalled 0 iters [57, 55, 53, 58, 52, 52] sec 0.097 13.6 357.8
+QUICK R384_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.415 median% 1.0491 stalled 0 iters [85, 99, 98, 85, 60, 75] sec 0.055 16.0 378.2
+QUICK R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.224 median% 0.0654 stalled 0 iters [56, 55, 53, 57, 52, 52] sec 0.08 13.3 397.1
+QUICK R256_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.4168 median% 1.0481 stalled 0 iters [85, 99, 98, 85, 60, 75] sec 0.05 14.8 416.2
+QUICK R256_lin_M1024_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.7419 median% 0.1215 stalled 0 iters [57, 55, 53, 55, 51, 52] sec 0.063 12.8 434.0
+QUICK R128_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.4709 median% 1.0896 stalled 0 iters [81, 98, 106, 92, 60, 75] sec 0.047 13.8 452.2
+QUICK R128_lin_M512_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 1.894 median% 0.6292 stalled 0 iters [51, 55, 52, 52, 49, 51] sec 0.044 12.2 468.5
+QUICK R64_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 4.8235 median% 2.3192 stalled 0 iters [88, 94, 97, 95, 58, 69] sec 0.042 12.9 485.7
+QUICK R64_lin_M256_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 4.8304 median% 2.1825 stalled 0 iters [51, 53, 51, 51, 43, 51] sec 0.036 12.1 501.6
+QUICK R32_q0_M64_q0scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 10.5916 median% 7.5427 stalled 1 iters [948, 115, 107, 144, 53, 73] sec 0.044 12.5 518.1
+QUICK R32_lin_M128_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 10.7111 median% 7.5835 stalled 0 iters [51, 53, 51, 51, 41, 51] sec 0.032 11.3 533.2
+TIMED main rep 0 665.1
+TIMED main rep 1 784.3
+TIMED main rep 2 903.4
+TIMED main rep 3 1021.4
+TIMED main rep 4 1141.1
+TIMED slow rep 0 1257.7
+TIMED slow rep 1 1375.7
+TIMED slow rep 2 1493.4
+TIMED slow rep 3 1609.3
+TIMED slow rep 4 1728.2
+BANKKNOB COMPLETE
+torch_backend=cuda NVIDIA H200
+FNO burgers-dev-00000 device_ms 623.533
+FNO burgers-dev-00001 device_ms 623.603
+FNO burgers-dev-00002 device_ms 623.573
+FNO burgers-dev-00003 device_ms 623.407
+FNO burgers-dev-00004 device_ms 623.477
+FNO burgers-dev-00005 device_ms 623.492
+OPERATOR TIMING COMPLETE unet-refine
+OPSCORE unet-refine 21.8724 15.5123 623.531
+run_exit=0

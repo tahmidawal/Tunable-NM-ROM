@@ -1,0 +1,12 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+DATA READY {"seconds": 0.5077936020679772} [0.021118475357327755, 0.11584588831434399, 0.0024341130013857785]
+probe micro-batch 8 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 16.02 GiB. GPU 0 has a total capacity of 79.25 GiB of which 13.25 GiB is free. Including non-PyTorch memory, this process has 66.00 GiB memory in use. Of the allo
+probe after cleanup: allocated 33589248
+probe micro-batch 4 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 72.05 GiB. GPU 0 has a total capacity of 79.25 GiB of which 13.85 GiB is free. Including non-PyTorch memory, this process has 65.39 GiB memory in use. Of the allo
+probe after cleanup: allocated 33589248
+probe micro-batch 2 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 36.04 GiB. GPU 0 has a total capacity of 79.25 GiB of which 34.17 GiB is free. Including non-PyTorch memory, this process has 45.07 GiB memory in use. Of the allo
+probe after cleanup: allocated 42108928
+probe micro-batch 1 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 32.02 GiB. GPU 0 has a total capacity of 79.25 GiB of which 24.20 GiB is free. Including non-PyTorch memory, this process has 55.04 GiB memory in use. Of the allo
+probe after cleanup: allocated 50628608
+FAILED out_of_memory no micro-batch fits (micro-batch 1 out of memory)
+TRAIN OP FAILED

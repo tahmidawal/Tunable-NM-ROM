@@ -1,0 +1,25 @@
+tr_p3264 4286496 gpu:a100:1 a100-80G 96G train.sbatch poisson:32:fno-l:0.06 poisson:32:unet-l:0.06 poisson:32:tsol-s:0.05 poisson:32:don-s:0.05 poisson:64:fno-l:0.25 poisson:64:unet-l:0.2 poisson:64:tsol-s:0.1 poisson:64:don-s:0.12
+tr_h3264 4286503 gpu:a100:1 a100-80G 96G train.sbatch heat:32:fno-l:0.06 heat:32:unet-l:0.06 heat:32:tsol-s:0.05 heat:32:don-s:0.05 heat:64:fno-l:0.25 heat:64:unet-l:0.2 heat:64:tsol-s:0.1 heat:64:don-s:0.12
+tr_p128 4286506 gpu:a100:1 a100-80G 64G train.sbatch poisson:128:fno-l:0.38 poisson:128:unet-l:0.24 poisson:128:tsol-s:0.1 poisson:128:don-s:0.2
+tr_h128 4286513 gpu:a100:1 a100-80G 64G train.sbatch heat:128:fno-l:0.38 heat:128:unet-l:0.24 heat:128:tsol-s:0.1 heat:128:don-s:0.2
+tr_p256 4286518 gpu:h200:1 - 240G train.sbatch poisson:256:fno-s:0.36 poisson:256:unet-s:0.2 poisson:256:tsol-s:0.08 poisson:256:don-s:0.3
+pn_poisson32 4288794 gpu:a100:1 a100-80G 64G panel.sbatch configs/panel_poisson32.json 0.6
+pn_poisson64 4288798 gpu:a100:1 a100-80G 64G panel.sbatch configs/panel_poisson64.json 0.6
+pn_heat32 4288811 gpu:a100:1 a100-80G 64G panel.sbatch configs/panel_heat32.json 0.6
+pn_heat64 4288827 gpu:a100:1 a100-80G 64G panel.sbatch configs/panel_heat64.json 0.6
+pn_poisson128 4288835 gpu:a100:1 a100-80G 64G panel.sbatch configs/panel_poisson128.json 0.6
+tr_h256 4288846 gpu:h200:1 - 240G train.sbatch heat:256:fno-s:0.36 heat:256:unet-s:0.2 heat:256:tsol-s:0.08 heat:256:don-s:0.3
+pn_heat128 4290399 gpu:a100:1 a100-80G 64G panel.sbatch configs/panel_heat128.json 0.6
+tr_256b 4290426 gpu:h200:1 - 240G train256b.sbatch 'poisson:256:fno-s:0.95 poisson:256:don-s:0.95 heat:256:fno-s:0.95 heat:256:don-s:0.95' heat:256:unet-s:0.45 heat:256:tsol-s:0.2 poisson:256:tsol-s:0.2
+tr_256b 4290426 CANCELLED while pending (never started); superseded by tr_256c
+tr_256c 4291133 gpu:h200:1 - 240G train256b.sbatch 'poisson:256:fno-s:0.95 poisson:256:don-s:0.95 heat:256:fno-s:0.95 heat:256:don-s:0.95' heat:256:unet-s:0.3 poisson:256:unet-s:0.3 heat:256:tsol-s:0.15 poisson:256:tsol-s:0.15
+pn_poisson256 4293741 gpu:h200:1 - 240G panel256.sbatch poisson 0.6
+pn_heat256 4293744 gpu:h200:1 - 240G panel256.sbatch heat 0.75
+tr_256fp 4296910 gpu:h200:1 - 240G train.sbatch poisson:256:fno-s:0.95
+tr_256dp 4296916 gpu:h200:1 - 240G train.sbatch poisson:256:don-s:0.95
+tr_256fh 4296919 gpu:h200:1 - 240G train.sbatch heat:256:fno-s:0.95
+tr_256dh 4296925 gpu:h200:1 - 240G train.sbatch heat:256:don-s:0.95
+pn_poisson256 4293741 / pn_heat256 4293744 CANCELLED while pending (dependency), superseded by pn_*256 resubmission
+pn_poisson256 4296944 gpu:h200:1 - 240G panel256.sbatch poisson 0.6
+pn_heat256 4296949 gpu:h200:1 - 240G panel256.sbatch heat 0.75
+tr_256fp/dp/fh/dh 4296910/4296916/4296919/4296925 CANCELLED while pending (coordinator: GPU cap 5->2, Burgers/Heat 2D priority); pn_*256 dependency changed to afterany:4291133

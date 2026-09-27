@@ -1,0 +1,57 @@
+{
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA H200",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "mesh": 4096,
+ "train": [
+  791000,
+  512
+ ],
+ "validation": [
+  791001,
+  16
+ ],
+ "sources": {
+  "families.py": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+  "heatops.py": "ac81cf143ff6808e301859812ed3714d7c1321a29da36cbf6561da39e3272904",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_ops.py": "f30dd46d2365d9d85f7bbfdf780caa059e1cac688ae992527b51aac8542afabd"
+ },
+ "configs": {
+  "fno": {
+   "family": "fno",
+   "width": 64,
+   "modes": 32,
+   "layers": 4,
+   "epochs": 4000,
+   "patience": 250,
+   "batch_size": 8,
+   "learning_rate": 0.001,
+   "weight_decay": 0.0001,
+   "seed": 20260914,
+   "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+   "smoke_overrides": {
+    "width": 8,
+    "modes": 8,
+    "layers": 2,
+    "epochs": 2
+   }
+  }
+ },
+ "config_sha256": {
+  "fno": "cdc6a44bfb29118c1ac641d5dcc21feca6b68a92a3fc7117f6d55a04df247781"
+ },
+ "wall_seconds": 3000.0,
+ "job_id": "4288598",
+ "node": "pax010",
+ "normalization": [
+  0.0803728337954587,
+  0.17916483356642104,
+  0.14722981033256421
+ ],
+ "evaluation_cohorts_generated": false
+}

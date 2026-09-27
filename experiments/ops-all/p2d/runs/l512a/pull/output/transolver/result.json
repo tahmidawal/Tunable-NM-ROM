@@ -1,0 +1,86 @@
+{
+ "complete": true,
+ "name": "transolver",
+ "family": "transolver",
+ "problem": "lshape",
+ "mesh": 512,
+ "mem_share": 0.24,
+ "co_scheduled_on_same_gpu": [
+  "fno",
+  "unet",
+  "transolver",
+  "deeponet"
+ ],
+ "data": {
+  "seconds": 1254.9720604997128,
+  "data_seconds": 1254.240172949154
+ },
+ "config": {
+  "family": "transolver",
+  "dim": 256,
+  "layers": 8,
+  "heads": 8,
+  "slices": 64,
+  "mlp_ratio": 2,
+  "patch": 8,
+  "ref": 8,
+  "dtype": "float32",
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "warmup_steps": 160,
+  "patch_rule": "n // 64 (set by train_ops.py)",
+  "smoke_overrides": {
+   "dim": 32,
+   "layers": 2,
+   "heads": 4,
+   "slices": 8,
+   "epochs": 2
+  }
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 4624120832,
+ "best_epoch": 12,
+ "best_step": 4013,
+ "epochs_completed": 13,
+ "optimisation_steps": 4013,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3001.5402467362583,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.18744252618145246,
+   0.5095782194368227,
+   0.3299787274954901,
+   0.31779963205568057,
+   0.36583468945891673,
+   0.45297011296915374,
+   0.32427475645437526,
+   0.45968712751656005,
+   0.5170783629094512,
+   0.2993465288569764,
+   0.22146919564299097,
+   0.5603442545232231,
+   0.6781248087772008,
+   0.20005258385422942,
+   0.314924010740291,
+   0.30203588745087556
+  ],
+  "mean": 0.3775588390202307,
+  "median": 0.3271267419749327,
+  "worst": 0.6781248087772008
+ },
+ "best_checkpoint_sha256": "982cd42bb940907ec58a976a7aba61ba0946c36a87a0ff9d15ae5d0947f3d10d",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 12335232,
+ "normalization": [
+  0.03201091826299756,
+  0.15194085254074538,
+  0.0018182238352402195
+ ],
+ "peak_allocated_bytes": 4730065408
+}

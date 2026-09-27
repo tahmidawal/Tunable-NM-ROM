@@ -1,0 +1,14 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"arm": "unet-l", "problem": "poisson", "mesh": 32, "micro_batch": 8, "real_parameter_count": 22580865}
+{"arm": "unet-l", "epoch": 0, "steps": 56, "train": 0.12696394216963092, "val_mean": 0.11936494060631091, "val_worst": 0.22761964589595027, "lr": 0.000999600895292937, "wall": 42.3}
+{"arm": "unet-l", "epoch": 1, "steps": 112, "train": 0.01631594472329079, "val_mean": 0.04977569464984702, "val_worst": 0.09612696559164126, "lr": 0.0009982035671364565, "wall": 85.3}
+{"arm": "unet-l", "epoch": 2, "steps": 168, "train": 0.004931081838111045, "val_mean": 0.03521761458460811, "val_worst": 0.06467185167375346, "lr": 0.0009958121004872418, "wall": 128.4}
+{"arm": "unet-l", "epoch": 3, "steps": 224, "train": 0.004314110621982107, "val_mean": 0.09925932233625748, "val_worst": 0.146312122223462, "lr": 0.0009924110891196256, "wall": 171.2}
+{"arm": "unet-l", "epoch": 4, "steps": 280, "train": 0.0024359795175498467, "val_mean": 0.03805072003634939, "val_worst": 0.06958438372314857, "lr": 0.000988054973020848, "wall": 214.1}
+{"arm": "unet-l", "epoch": 10, "steps": 616, "train": 0.0014856941797714296, "val_mean": 0.03215007167533284, "val_worst": 0.09314101062944119, "lr": 0.0009418258233428301, "wall": 471.5}
+{"arm": "unet-l", "epoch": 20, "steps": 1176, "train": 0.0004913350913233438, "val_mean": 0.012949209310776718, "val_worst": 0.03379848083785472, "lr": 0.0007972889557301212, "wall": 900.8}
+{"arm": "unet-l", "epoch": 30, "steps": 1736, "train": 0.0001948718843783163, "val_mean": 0.01917185316211066, "val_worst": 0.032486087067181334, "lr": 0.0005945590175449459, "wall": 1330.1}
+{"arm": "unet-l", "epoch": 40, "steps": 2296, "train": 0.00010359757249580463, "val_mean": 0.006447347910681964, "val_worst": 0.011552376876867252, "lr": 0.0003742413890271859, "wall": 1759.2}
+{"arm": "unet-l", "epoch": 50, "steps": 2856, "train": 3.5425192334525063e-05, "val_mean": 0.0055885721661135465, "val_worst": 0.009278599904398352, "lr": 0.0001796744734423048, "wall": 2188.7}
+{"arm": "unet-l", "epoch": 60, "steps": 3416, "train": 2.341327680393295e-05, "val_mean": 0.004494339508400639, "val_worst": 0.009715045672367485, "lr": 4.983304291561159e-05, "wall": 2618.4}
+TRAIN DONE {"arm": "unet-l", "problem": "poisson", "mesh": 32, "stop_reason": "wall_budget", "epochs_completed": 70, "optimisation_steps": 3919, "best_epoch": 69} val_mean 0.004208772128812029 val_worst 0.009207277728810153

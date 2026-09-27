@@ -1,0 +1,1825 @@
+{
+ "group": "l3d",
+ "cells": [
+  {
+   "cell": "poisson32",
+   "problem": "poisson",
+   "mesh": 32,
+   "train_job": "tr_p3264",
+   "train_job_id": "4286496",
+   "panel_job": "pn_poisson32",
+   "panel_job_id": "4288794",
+   "state": null,
+   "gpu": "NVIDIA A100 80GB PCIe, GPU-662eb49d-1d4d-a693-a62c-7fbfef041e73, 81920 MiB",
+   "cohort": "final",
+   "cases": 64,
+   "status": "final",
+   "gates": {
+    "reproduction": true,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-poisson-bank-knob-3d/experiments/poisson-bank-knob-3d/runs/c32final/archive/output/result.json",
+    "source_sha256": "17511b99310fd43b1a49067e98c8b3344887edf474f61b2baa7153d6d2781a51",
+    "source_job": "4200246",
+    "arms": {
+     "nmrom_accurate_R128_linear": {
+      "source": "R128_linear",
+      "max_relative_gap": 6.141196215300788e-15,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R64_linear": {
+      "source": "R64_linear",
+      "max_relative_gap": 7.513302928597032e-15,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.3": {
+      "source": "cg_0.3",
+      "max_relative_gap": 4.0055365698685594e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.1": {
+      "source": "cg_0.1",
+      "max_relative_gap": 3.8454714404410626e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.03": {
+      "source": "cg_0.03",
+      "max_relative_gap": 3.882507000527443e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.01": {
+      "source": "cg_0.01",
+      "max_relative_gap": 3.562621289569639e-16,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.003": {
+      "source": "cg_0.003",
+      "max_relative_gap": 4.3326137702851387e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.001": {
+      "source": "cg_0.001",
+      "max_relative_gap": 2.737107374271878e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": true,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cg_rtol0.01",
+    "ms": 1.536453841254115,
+    "worst_pct": 0.15655376030407583
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R128_linear",
+    "ms": 0.5167857743799686,
+    "worst_pct": 0.23081140660911678,
+    "speedup": 2.9730962372126593
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R64_linear",
+    "ms": 0.5010424647480249,
+    "worst_pct": 0.4750741065355887,
+    "speedup": 3.0665142165680512
+   },
+   "fom_grid": {
+    "fom_cg_rtol0.3": {
+     "ms": 0.7919210474938154,
+     "worst_pct": 12.515758023282144,
+     "converged": true
+    },
+    "fom_cg_rtol0.1": {
+     "ms": 1.0969405993819237,
+     "worst_pct": 2.8359703484043384,
+     "converged": true
+    },
+    "fom_cg_rtol0.03": {
+     "ms": 1.3517732731997967,
+     "worst_pct": 0.4691286546310953,
+     "converged": true
+    },
+    "fom_cg_rtol0.01": {
+     "ms": 1.536453841254115,
+     "worst_pct": 0.15655376030407583,
+     "converged": true
+    },
+    "fom_cg_rtol0.003": {
+     "ms": 1.7608697526156902,
+     "worst_pct": 0.03989285155075031,
+     "converged": true
+    },
+    "fom_cg_rtol0.001": {
+     "ms": 1.9201368559151888,
+     "worst_pct": 0.017023042518194347,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "parameters": 4361665,
+     "epochs": 205,
+     "steps": 11448,
+     "best_epoch": 204,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.05,
+     "validation_mean_pct": 2.722970846201902,
+     "worst_pct": 7.442484636260392,
+     "median_pct": 2.4991868135427255,
+     "ms": 3.6929745692759752,
+     "speedup_vs_fom": 0.41604777190635894,
+     "drift_ok": true
+    },
+    "fno": {
+     "arm": "fno-l",
+     "parameters": 18887585,
+     "epochs": 77,
+     "steps": 4275,
+     "best_epoch": 69,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.06,
+     "validation_mean_pct": 0.4125154291465643,
+     "worst_pct": 2.0832894320047486,
+     "median_pct": 0.3797405368437144,
+     "ms": 3.757471451535821,
+     "speedup_vs_fom": 0.4089063246577983,
+     "drift_ok": true
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 5989368,
+     "epochs": 36,
+     "steps": 1968,
+     "best_epoch": 33,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.05,
+     "validation_mean_pct": 2.723164307378811,
+     "worst_pct": 4.8445143863230875,
+     "median_pct": 2.606313416186864,
+     "ms": 16.93567307665944,
+     "speedup_vs_fom": 0.09072292753286783,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-l",
+     "parameters": 22580865,
+     "epochs": 70,
+     "steps": 3919,
+     "best_epoch": 69,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.06,
+     "validation_mean_pct": 0.4208772128812029,
+     "worst_pct": 1.2914901278119744,
+     "median_pct": 0.4027592907032412,
+     "ms": 15.012372517958283,
+     "speedup_vs_fom": 0.10234583770261227,
+     "drift_ok": true
+    }
+   }
+  },
+  {
+   "cell": "poisson64",
+   "problem": "poisson",
+   "mesh": 64,
+   "train_job": "tr_p3264",
+   "train_job_id": "4286496",
+   "panel_job": "pn_poisson64",
+   "panel_job_id": "4288798",
+   "state": null,
+   "gpu": "NVIDIA A100 80GB PCIe, GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033, 81920 MiB",
+   "cohort": "final",
+   "cases": 64,
+   "status": "final",
+   "gates": {
+    "reproduction": true,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-poisson-bank-knob-3d/experiments/poisson-bank-knob-3d/runs/c64final/archive/output/result.json",
+    "source_sha256": "32a3ec6454f850591b7add0da8086df2d9f6f76550e13a2390e3bc9bf56589da",
+    "source_job": "4202245",
+    "arms": {
+     "nmrom_accurate_R128_linear": {
+      "source": "R128_linear",
+      "max_relative_gap": 2.314009608797821e-15,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R64_linear": {
+      "source": "R64_linear",
+      "max_relative_gap": 4.1140563281822625e-16,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.3": {
+      "source": "cg_0.3",
+      "max_relative_gap": 4.276989959281714e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.1": {
+      "source": "cg_0.1",
+      "max_relative_gap": 3.762738518513313e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.03": {
+      "source": "cg_0.03",
+      "max_relative_gap": 3.3903527038063584e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.01": {
+      "source": "cg_0.01",
+      "max_relative_gap": 3.322511292209897e-16,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.003": {
+      "source": "cg_0.003",
+      "max_relative_gap": 4.359048814582662e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.001": {
+      "source": "cg_0.001",
+      "max_relative_gap": 3.7898330721798015e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": true,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cg_rtol0.01",
+    "ms": 4.120876546949148,
+    "worst_pct": 0.11432331552908127
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R128_linear",
+    "ms": 1.1613701935857534,
+    "worst_pct": 0.23106414045320225,
+    "speedup": 3.54828853858033
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R64_linear",
+    "ms": 1.0850939434021711,
+    "worst_pct": 0.4689530106436664,
+    "speedup": 3.7977140799705094
+   },
+   "fom_grid": {
+    "fom_cg_rtol0.3": {
+     "ms": 2.2103688679635525,
+     "worst_pct": 5.9349320526400104,
+     "converged": true
+    },
+    "fom_cg_rtol0.1": {
+     "ms": 3.0860155820846558,
+     "worst_pct": 1.9332038258720712,
+     "converged": true
+    },
+    "fom_cg_rtol0.03": {
+     "ms": 3.6222829949110746,
+     "worst_pct": 0.34632366316248653,
+     "converged": true
+    },
+    "fom_cg_rtol0.01": {
+     "ms": 4.120876546949148,
+     "worst_pct": 0.11432331552908127,
+     "converged": true
+    },
+    "fom_cg_rtol0.003": {
+     "ms": 4.665835062041879,
+     "worst_pct": 0.03172086431691513,
+     "converged": true
+    },
+    "fom_cg_rtol0.001": {
+     "ms": 5.211009178310633,
+     "worst_pct": 0.01169668693141781,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "parameters": 4361665,
+     "epochs": 35,
+     "steps": 1957,
+     "best_epoch": 34,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.12,
+     "validation_mean_pct": 5.344171775122628,
+     "worst_pct": 12.155162863396644,
+     "median_pct": 5.18633210214999,
+     "ms": 16.792230773717165,
+     "speedup_vs_fom": 0.24540375858811175,
+     "drift_ok": true
+    },
+    "fno": {
+     "arm": "fno-l",
+     "parameters": 18887585,
+     "epochs": 12,
+     "steps": 634,
+     "best_epoch": 11,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.25,
+     "validation_mean_pct": 2.2357262875897406,
+     "worst_pct": 8.240276829259285,
+     "median_pct": 2.0492376885841055,
+     "ms": 11.696116300299764,
+     "speedup_vs_fom": 0.35232862269363147,
+     "drift_ok": true
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 6053936,
+     "epochs": 35,
+     "steps": 1943,
+     "best_epoch": 34,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.1,
+     "validation_mean_pct": 3.958730058671999,
+     "worst_pct": 7.984493805756103,
+     "median_pct": 3.8220305379991224,
+     "ms": 17.858432605862617,
+     "speedup_vs_fom": 0.2307524203213856,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-l",
+     "parameters": 22580865,
+     "epochs": 12,
+     "steps": 640,
+     "best_epoch": 11,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.2,
+     "validation_mean_pct": 2.3651613294556415,
+     "worst_pct": 9.203593305906681,
+     "median_pct": 2.2328894033769324,
+     "ms": 31.519137090072036,
+     "speedup_vs_fom": 0.13074204839976886,
+     "drift_ok": true
+    }
+   }
+  },
+  {
+   "cell": "poisson128",
+   "problem": "poisson",
+   "mesh": 128,
+   "train_job": "tr_p128",
+   "train_job_id": "4286506",
+   "panel_job": "pn_poisson128",
+   "panel_job_id": "4288835",
+   "state": null,
+   "gpu": "NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB",
+   "cohort": "development",
+   "cases": 16,
+   "status": "final",
+   "gates": {
+    "reproduction": true,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-poisson-bank-knob-3d/experiments/poisson-bank-knob-3d/runs/c128/archive/output/result.json",
+    "source_sha256": "a41924ecd00bbd6290d4887713d880fe85a8713b6232fe4b9ffb5f414a4c72d8",
+    "source_job": "4207945",
+    "arms": {
+     "nmrom_accurate_R128_linear": {
+      "source": "R128_linear",
+      "max_relative_gap": 2.135328122444855e-15,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R64_linear": {
+      "source": "R64_linear",
+      "max_relative_gap": 1.4379900584563316e-15,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.3": {
+      "source": "cg_0.3",
+      "max_relative_gap": 0.0005724492439382487,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.1": {
+      "source": "cg_0.1",
+      "max_relative_gap": 0.000878122728502899,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.03": {
+      "source": "cg_0.03",
+      "max_relative_gap": 0.032763891830314466,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": false
+     },
+     "fom_cg_rtol0.01": {
+      "source": "cg_0.01",
+      "max_relative_gap": 0.0008278438024688249,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.003": {
+      "source": "cg_0.003",
+      "max_relative_gap": 0.0003688303035050618,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.001": {
+      "source": "cg_0.001",
+      "max_relative_gap": 0.00033095114088762634,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": true,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cg_rtol0.01",
+    "ms": 23.60556973144412,
+    "worst_pct": 0.07475461810744928
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R128_linear",
+    "ms": 2.348844660446048,
+    "worst_pct": 0.14422944138225874,
+    "speedup": 10.049864143404614
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R64_linear",
+    "ms": 1.6291991341859102,
+    "worst_pct": 0.24127057983126995,
+    "speedup": 14.489063513552331
+   },
+   "fom_grid": {
+    "fom_cg_rtol0.3": {
+     "ms": 11.532817035913467,
+     "worst_pct": 3.8283034059232652,
+     "converged": true
+    },
+    "fom_cg_rtol0.1": {
+     "ms": 16.148798167705536,
+     "worst_pct": 0.7723519083621105,
+     "converged": true
+    },
+    "fom_cg_rtol0.03": {
+     "ms": 19.896509125828743,
+     "worst_pct": 0.24438354533405793,
+     "converged": true
+    },
+    "fom_cg_rtol0.01": {
+     "ms": 23.60556973144412,
+     "worst_pct": 0.07475461810744928,
+     "converged": true
+    },
+    "fom_cg_rtol0.003": {
+     "ms": 26.854670606553555,
+     "worst_pct": 0.022576112682348756,
+     "converged": true
+    },
+    "fom_cg_rtol0.001": {
+     "ms": 30.347070191055536,
+     "worst_pct": 0.008382943602061871,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "parameters": 4361665,
+     "epochs": 4,
+     "steps": 215,
+     "best_epoch": 3,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "memory_fraction": 0.2,
+     "validation_mean_pct": 26.03991296054799,
+     "worst_pct": 37.066681126120336,
+     "median_pct": 25.871622641875845,
+     "ms": 121.86809373088181,
+     "speedup_vs_fom": 0.19369770223510424,
+     "drift_ok": true
+    },
+    "fno": {
+     "arm": "fno-l",
+     "parameters": 18887585,
+     "epochs": 8,
+     "steps": 431,
+     "best_epoch": 7,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "memory_fraction": 0.38,
+     "validation_mean_pct": 2.965478534667566,
+     "worst_pct": 4.737209654807645,
+     "median_pct": 2.858529801030392,
+     "ms": 78.44173791818321,
+     "speedup_vs_fom": 0.3009312434671622,
+     "drift_ok": true
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 6570480,
+     "epochs": 58,
+     "steps": 3225,
+     "best_epoch": 55,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.1,
+     "validation_mean_pct": 2.6292372356437257,
+     "worst_pct": 4.52718689291686,
+     "median_pct": 2.651350127874509,
+     "ms": 17.95381400734186,
+     "speedup_vs_fom": 1.3147941558150866,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-l",
+     "parameters": 22580865,
+     "epochs": 3,
+     "steps": 148,
+     "best_epoch": 2,
+     "stop_reason": "wall_budget",
+     "micro_batch": 2,
+     "memory_fraction": 0.24,
+     "validation_mean_pct": 4.7933772656067335,
+     "worst_pct": 11.433664340175458,
+     "median_pct": 5.573018112120827,
+     "ms": 189.06648736447096,
+     "speedup_vs_fom": 0.12485327283802934,
+     "drift_ok": true
+    }
+   }
+  },
+  {
+   "cell": "poisson256",
+   "problem": "poisson",
+   "mesh": 256,
+   "train_job": "tr_256merged",
+   "train_job_id": null,
+   "panel_job": "pn_poisson256",
+   "panel_job_id": "4296944",
+   "state": null,
+   "gpu": "NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB",
+   "cohort": "development",
+   "cases": 16,
+   "status": "final",
+   "gates": {
+    "reproduction": true,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-poisson-bank-knob-3d/experiments/poisson-bank-knob-3d/runs/c256/archive/output/result.json",
+    "source_sha256": "ee1ad833ee8eb0efc6c48f6dd3ad65a8ee6b03289f8a7fa13052d5efe5b41023",
+    "source_job": "4203255",
+    "arms": {
+     "nmrom_accurate_R128_linear": {
+      "source": "R128_linear",
+      "max_relative_gap": 1.4705986041832477e-15,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R64_linear": {
+      "source": "R64_linear",
+      "max_relative_gap": 8.992569374546031e-16,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.3": {
+      "source": "cg_0.3",
+      "max_relative_gap": 6.738359633617221e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.1": {
+      "source": "cg_0.1",
+      "max_relative_gap": 8.852337506941723e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.03": {
+      "source": "cg_0.03",
+      "max_relative_gap": 8.55840549301833e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.01": {
+      "source": "cg_0.01",
+      "max_relative_gap": 1.3570908803574948e-15,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cg_rtol0.003": {
+      "source": "cg_0.003",
+      "max_relative_gap": 1.1162105789009972e-15,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cg_rtol0.001": {
+      "source": "cg_0.001",
+      "max_relative_gap": 9.374078242108225e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": true,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cg_rtol0.01",
+    "ms": 141.42293157055974,
+    "worst_pct": 0.04887096800894684
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R128_linear",
+    "ms": 5.962039809674025,
+    "worst_pct": 0.14416550521635954,
+    "speedup": 23.720561432865047
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R64_linear",
+    "ms": 3.3610849641263485,
+    "worst_pct": 0.24113290147183075,
+    "speedup": 42.07657142857143
+   },
+   "fom_grid": {
+    "fom_cg_rtol0.3": {
+     "ms": 76.62702910602093,
+     "worst_pct": 2.593246856555082,
+     "converged": true
+    },
+    "fom_cg_rtol0.1": {
+     "ms": 99.41162238828838,
+     "worst_pct": 0.519823656688393,
+     "converged": true
+    },
+    "fom_cg_rtol0.03": {
+     "ms": 120.18033070489764,
+     "worst_pct": 0.1644618544818126,
+     "converged": true
+    },
+    "fom_cg_rtol0.01": {
+     "ms": 141.42293157055974,
+     "worst_pct": 0.04887096800894684,
+     "converged": true
+    },
+    "fom_cg_rtol0.003": {
+     "ms": 160.23787599988282,
+     "worst_pct": 0.01679011623138713,
+     "converged": true
+    },
+    "fom_cg_rtol0.001": {
+     "ms": 184.68332453630865,
+     "worst_pct": 0.007746880112737899,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "failure": "not trained: no micro-batch fit its 0.30 share of a shared H200 (job 4286518); whole-H200 probe (job 4291133) fits micro-batch 1 at 109 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)",
+     "probe_peak_bytes": {
+      "8": "oom",
+      "4": "oom",
+      "2": "oom",
+      "1": "oom"
+     },
+     "memory_fraction": 0.3
+    },
+    "fno": {
+     "arm": "fno-s",
+     "failure": "not trained: no micro-batch fit its 0.36 share of a shared H200 (job 4286518); whole-H200 probe (job 4291133) fits micro-batch 1 at 88 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)",
+     "probe_peak_bytes": {
+      "8": "oom",
+      "4": "oom",
+      "2": "oom",
+      "1": "oom"
+     },
+     "memory_fraction": 0.36
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 10702832,
+     "epochs": 80,
+     "steps": 4480,
+     "best_epoch": 78,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.15,
+     "validation_mean_pct": 3.4594909658056365,
+     "worst_pct": 4.802652529040596,
+     "median_pct": 3.3883562579826525,
+     "ms": 6.351046031340957,
+     "speedup_vs_fom": 22.267659669394614,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-s",
+     "parameters": 5647681,
+     "epochs": 1,
+     "steps": 35,
+     "best_epoch": 0,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "memory_fraction": 0.3,
+     "validation_mean_pct": 23.01539994729093,
+     "worst_pct": 43.69157269503136,
+     "median_pct": 21.157640837322454,
+     "ms": 306.3213978894055,
+     "speedup_vs_fom": 0.46168152974288523,
+     "drift_ok": true
+    }
+   }
+  },
+  {
+   "cell": "heat32",
+   "problem": "heat",
+   "mesh": 32,
+   "train_job": "tr_h3264",
+   "train_job_id": "4286503",
+   "panel_job": "pn_heat32",
+   "panel_job_id": "4288811",
+   "state": null,
+   "gpu": "NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB",
+   "cohort": "heldout_sealed_921099",
+   "cases": 64,
+   "status": "final",
+   "gates": {
+    "reproduction": true,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-heat-bank-knob/experiments/heat-bank-knob/runs/h3d/pull/out/panel/results.json",
+    "source_sha256": "c98d4a1eacfe5c6a906d6b67b489785129da5f4457d93a6cc587e71edb8e91df",
+    "source_job": "4197416",
+    "arms": {
+     "nmrom_accurate_R320_linear_cn": {
+      "source": "lin_R320_cn",
+      "max_relative_gap": 6.868144864405372e-13,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R128_linear_cn": {
+      "source": "lin_R128_cn",
+      "max_relative_gap": 2.7098300905212637e-13,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+      "source": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+      "max_relative_gap": 3.2123242688852926e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-4": {
+      "source": "fom_cncg_dt0.025_rtol1e-4",
+      "max_relative_gap": 2.987362927925695e-16,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-3": {
+      "source": "fom_cncg_dt0.025_rtol1e-3",
+      "max_relative_gap": 3.0644741313377667e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-2": {
+      "source": "fom_cncg_dt0.025_rtol1e-2",
+      "max_relative_gap": 2.7088651163790395e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-4": {
+      "source": "fom_cncg_dt0.05_rtol1e-4",
+      "max_relative_gap": 4.0509936904099267e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-3": {
+      "source": "fom_cncg_dt0.05_rtol1e-3",
+      "max_relative_gap": 2.933002758021923e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-2": {
+      "source": "fom_cncg_dt0.05_rtol1e-2",
+      "max_relative_gap": 2.659102817647438e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-4": {
+      "source": "fom_cncg_dt0.1_rtol1e-4",
+      "max_relative_gap": 3.727894673870824e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-3": {
+      "source": "fom_cncg_dt0.1_rtol1e-3",
+      "max_relative_gap": 3.5826093640235542e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-2": {
+      "source": "fom_cncg_dt0.1_rtol1e-2",
+      "max_relative_gap": 2.841384863687043e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": true,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cncg_dt0.025_rtol1e-4",
+    "ms": 3.7897240836173296,
+    "worst_pct": 0.07837328908127902
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R320_linear_cn",
+    "ms": 0.39787543937563896,
+    "worst_pct": 0.08022903004490498,
+    "speedup": 9.524900781923877
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R128_linear_cn",
+    "ms": 0.2535944804549217,
+    "worst_pct": 1.1109907639354342,
+    "speedup": 14.944032207715896
+   },
+   "fom_grid": {
+    "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+     "ms": 4.890656098723412,
+     "worst_pct": 0.0782682873269713,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-4": {
+     "ms": 3.7897240836173296,
+     "worst_pct": 0.07837328908127902,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-3": {
+     "ms": 3.1999791972339153,
+     "worst_pct": 0.6490788125099958,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-2": {
+     "ms": 2.8944953810423613,
+     "worst_pct": 1.6956130129143105,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-4": {
+     "ms": 2.839451190084219,
+     "worst_pct": 0.3208021541513106,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-3": {
+     "ms": 2.4797108490020037,
+     "worst_pct": 0.3222833346229856,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-2": {
+     "ms": 2.001316985115409,
+     "worst_pct": 2.3817685725723936,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-4": {
+     "ms": 2.306129550561309,
+     "worst_pct": 1.458123244514054,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-3": {
+     "ms": 1.9225550349801779,
+     "worst_pct": 1.4580990000350116,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-2": {
+     "ms": 1.5527671203017235,
+     "worst_pct": 2.1281271159545114,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "parameters": 4755909,
+     "epochs": 51,
+     "steps": 11406,
+     "best_epoch": 50,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.05,
+     "validation_mean_pct": 7.716868192900191,
+     "worst_pct": 17.523057976559848,
+     "median_pct": 6.5943477046497,
+     "ms": 4.303378285840154,
+     "speedup_vs_fom": 0.8806393098387485,
+     "drift_ok": true
+    },
+    "fno": {
+     "arm": "fno-l",
+     "parameters": 18887845,
+     "epochs": 19,
+     "steps": 4062,
+     "best_epoch": 18,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.06,
+     "validation_mean_pct": 0.692260100638679,
+     "worst_pct": 1.370540640336352,
+     "median_pct": 0.6091812680995378,
+     "ms": 4.775985376909375,
+     "speedup_vs_fom": 0.7934957468545951,
+     "drift_ok": true
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 5993496,
+     "epochs": 9,
+     "steps": 1946,
+     "best_epoch": 8,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.05,
+     "validation_mean_pct": 2.4701598992111418,
+     "worst_pct": 4.190892918486059,
+     "median_pct": 2.1709629650335587,
+     "ms": 17.61074480600655,
+     "speedup_vs_fom": 0.21519385610112055,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-l",
+     "parameters": 22580997,
+     "epochs": 18,
+     "steps": 3888,
+     "best_epoch": 17,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.06,
+     "validation_mean_pct": 0.672804521281675,
+     "worst_pct": 1.5640751640823867,
+     "median_pct": 0.6255854942926822,
+     "ms": 15.602712985128164,
+     "speedup_vs_fom": 0.24288879038084799,
+     "drift_ok": true
+    }
+   }
+  },
+  {
+   "cell": "heat64",
+   "problem": "heat",
+   "mesh": 64,
+   "train_job": "tr_h3264",
+   "train_job_id": "4286503",
+   "panel_job": "pn_heat64",
+   "panel_job_id": "4288827",
+   "state": null,
+   "gpu": "NVIDIA A100 80GB PCIe, GPU-958eaf8d-bc37-c972-8632-fe73352de1ac, 81920 MiB",
+   "cohort": "heldout_sealed_921099",
+   "cases": 64,
+   "status": "PROVISIONAL (a gate failed; see gates)",
+   "gates": {
+    "reproduction": false,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-heat-bank-knob/experiments/heat-bank-knob/runs/h3d/pull/out/panel/results.json",
+    "source_sha256": "c98d4a1eacfe5c6a906d6b67b489785129da5f4457d93a6cc587e71edb8e91df",
+    "source_job": "4197416",
+    "arms": {
+     "nmrom_accurate_R320_linear_cn": {
+      "source": "lin_R320_cn",
+      "max_relative_gap": 4.66952140126452e-14,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R128_linear_cn": {
+      "source": "lin_R128_cn",
+      "max_relative_gap": 2.961451048312027e-14,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+      "source": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+      "max_relative_gap": 1.2973063342744889e-05,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-4": {
+      "source": "fom_cncg_dt0.025_rtol1e-4",
+      "max_relative_gap": 0.01725519605142345,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": false
+     },
+     "fom_cncg_dt0.025_rtol1e-3": {
+      "source": "fom_cncg_dt0.025_rtol1e-3",
+      "max_relative_gap": 0.001840676333051379,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": false
+     },
+     "fom_cncg_dt0.025_rtol1e-2": {
+      "source": "fom_cncg_dt0.025_rtol1e-2",
+      "max_relative_gap": 0.005595818083977524,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": false
+     },
+     "fom_cncg_dt0.05_rtol1e-4": {
+      "source": "fom_cncg_dt0.05_rtol1e-4",
+      "max_relative_gap": 1.3559236568865081e-06,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-3": {
+      "source": "fom_cncg_dt0.05_rtol1e-3",
+      "max_relative_gap": 3.632248816595758e-05,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-2": {
+      "source": "fom_cncg_dt0.05_rtol1e-2",
+      "max_relative_gap": 0.00014388026848811597,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-4": {
+      "source": "fom_cncg_dt0.1_rtol1e-4",
+      "max_relative_gap": 1.3398884708551048e-09,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-3": {
+      "source": "fom_cncg_dt0.1_rtol1e-3",
+      "max_relative_gap": 9.101909173304172e-08,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-2": {
+      "source": "fom_cncg_dt0.1_rtol1e-2",
+      "max_relative_gap": 4.011647262751106e-06,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": false,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cncg_dt0.025_rtol1e-4",
+    "ms": 6.37871166691184,
+    "worst_pct": 0.0812746527773823
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R320_linear_cn",
+    "ms": 1.2213843874633312,
+    "worst_pct": 0.08238952676867531,
+    "speedup": 5.2225259569263525
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R128_linear_cn",
+    "ms": 0.5749564152210951,
+    "worst_pct": 1.1110265905281924,
+    "speedup": 11.094252534705532
+   },
+   "fom_grid": {
+    "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+     "ms": 9.084629127755761,
+     "worst_pct": 0.08127651364187162,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-4": {
+     "ms": 6.37871166691184,
+     "worst_pct": 0.0812746527773823,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-3": {
+     "ms": 4.946172004565597,
+     "worst_pct": 0.6224545818649878,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-2": {
+     "ms": 4.396774107590318,
+     "worst_pct": 1.8011898879129513,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-4": {
+     "ms": 5.234661977738142,
+     "worst_pct": 0.3334560850306076,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-3": {
+     "ms": 4.145687445998192,
+     "worst_pct": 0.3347271758852174,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-2": {
+     "ms": 2.981571014970541,
+     "worst_pct": 1.9846741785206234,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-4": {
+     "ms": 4.487263970077038,
+     "worst_pct": 1.5272915065812762,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-3": {
+     "ms": 3.360833041369915,
+     "worst_pct": 1.5270594109636402,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-2": {
+     "ms": 2.410745481029153,
+     "worst_pct": 1.6391843248198947,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "parameters": 4755909,
+     "epochs": 9,
+     "steps": 1905,
+     "best_epoch": 8,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.12,
+     "validation_mean_pct": 12.232303224114405,
+     "worst_pct": 24.125355249889996,
+     "median_pct": 10.677929860927884,
+     "ms": 16.92206715233624,
+     "speedup_vs_fom": 0.3769463629643618,
+     "drift_ok": true
+    },
+    "fno": {
+     "arm": "fno-l",
+     "parameters": 18887845,
+     "epochs": 3,
+     "steps": 600,
+     "best_epoch": 2,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.25,
+     "validation_mean_pct": 3.2414575084095203,
+     "worst_pct": 5.80778442713864,
+     "median_pct": 3.1089763144355147,
+     "ms": 11.874701594933867,
+     "speedup_vs_fom": 0.5371681651043093,
+     "drift_ok": true
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 6086960,
+     "epochs": 9,
+     "steps": 1870,
+     "best_epoch": 8,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.1,
+     "validation_mean_pct": 4.01944046460499,
+     "worst_pct": 6.183837479175791,
+     "median_pct": 3.869695497026862,
+     "ms": 17.76027283631265,
+     "speedup_vs_fom": 0.3591561754541252,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-l",
+     "parameters": 22580997,
+     "epochs": 3,
+     "steps": 639,
+     "best_epoch": 2,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "memory_fraction": 0.2,
+     "validation_mean_pct": 2.681319343358127,
+     "worst_pct": 3.9458117749100032,
+     "median_pct": 2.2904828177242367,
+     "ms": 31.518138479441404,
+     "speedup_vs_fom": 0.20238224637132474,
+     "drift_ok": true
+    }
+   }
+  },
+  {
+   "cell": "heat128",
+   "problem": "heat",
+   "mesh": 128,
+   "train_job": "tr_h128",
+   "train_job_id": "4286513",
+   "panel_job": "pn_heat128",
+   "panel_job_id": "4290399",
+   "state": null,
+   "gpu": "NVIDIA A100 80GB PCIe, GPU-7ea87052-7ee2-b522-615d-be66f44238c3, 81920 MiB",
+   "cohort": "heldout_sealed_921099",
+   "cases": 64,
+   "status": "final",
+   "gates": {
+    "reproduction": true,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-heat-bank-knob/experiments/heat-bank-knob/runs/h3d/pull/out/panel/results.json",
+    "source_sha256": "c98d4a1eacfe5c6a906d6b67b489785129da5f4457d93a6cc587e71edb8e91df",
+    "source_job": "4197416",
+    "arms": {
+     "nmrom_accurate_R320_linear_cn": {
+      "source": "lin_R320_cn",
+      "max_relative_gap": 7.794891196389735e-14,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R128_linear_cn": {
+      "source": "lin_R128_cn",
+      "max_relative_gap": 1.907994377784756e-14,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+      "source": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+      "max_relative_gap": 6.075691373039074e-10,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-4": {
+      "source": "fom_cncg_dt0.025_rtol1e-4",
+      "max_relative_gap": 5.789399840514547e-06,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-3": {
+      "source": "fom_cncg_dt0.025_rtol1e-3",
+      "max_relative_gap": 5.6642451433819075e-06,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-2": {
+      "source": "fom_cncg_dt0.025_rtol1e-2",
+      "max_relative_gap": 0.009589431152870373,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": false
+     },
+     "fom_cncg_dt0.05_rtol1e-4": {
+      "source": "fom_cncg_dt0.05_rtol1e-4",
+      "max_relative_gap": 4.1812016696927626e-09,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-3": {
+      "source": "fom_cncg_dt0.05_rtol1e-3",
+      "max_relative_gap": 2.1209141232626304e-07,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-2": {
+      "source": "fom_cncg_dt0.05_rtol1e-2",
+      "max_relative_gap": 4.058814547482854e-06,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-4": {
+      "source": "fom_cncg_dt0.1_rtol1e-4",
+      "max_relative_gap": 1.6577014252889147e-11,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-3": {
+      "source": "fom_cncg_dt0.1_rtol1e-3",
+      "max_relative_gap": 6.209264378620633e-10,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-2": {
+      "source": "fom_cncg_dt0.1_rtol1e-2",
+      "max_relative_gap": 2.1008391338960868e-08,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": true,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cncg_dt0.025_rtol1e-4",
+    "ms": 31.94242692552507,
+    "worst_pct": 0.0820933177187895
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R320_linear_cn",
+    "ms": 7.528325309976935,
+    "worst_pct": 0.08309139008444497,
+    "speedup": 4.242965813816955
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R128_linear_cn",
+    "ms": 3.222987288609147,
+    "worst_pct": 1.1110287685852356,
+    "speedup": 9.910813808797103
+   },
+   "fom_grid": {
+    "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+     "ms": 54.717909544706345,
+     "worst_pct": 0.08204000965799457,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-4": {
+     "ms": 31.94242692552507,
+     "worst_pct": 0.0820933177187895,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-3": {
+     "ms": 24.551201378926635,
+     "worst_pct": 0.48315986877647515,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-2": {
+     "ms": 19.520040368661284,
+     "worst_pct": 1.514418105827291,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-4": {
+     "ms": 29.66408710926771,
+     "worst_pct": 0.3366649417149719,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-3": {
+     "ms": 20.46185010112822,
+     "worst_pct": 0.33770474234495057,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-2": {
+     "ms": 12.720774859189987,
+     "worst_pct": 1.7900839947588665,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-4": {
+     "ms": 26.569144101813436,
+     "worst_pct": 1.545095463677621,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-3": {
+     "ms": 18.479293445125222,
+     "worst_pct": 1.5448409526565838,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-2": {
+     "ms": 12.14962126687169,
+     "worst_pct": 1.5575497707809325,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "parameters": 4755909,
+     "epochs": 1,
+     "steps": 206,
+     "best_epoch": 0,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "memory_fraction": 0.2,
+     "validation_mean_pct": 50.79796892661987,
+     "worst_pct": 67.26934492203243,
+     "median_pct": 49.66646242869598,
+     "ms": 123.46728891134262,
+     "speedup_vs_fom": 0.25871165721037065,
+     "drift_ok": true
+    },
+    "fno": {
+     "arm": "fno-l",
+     "parameters": 18887845,
+     "epochs": 2,
+     "steps": 428,
+     "best_epoch": 1,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "memory_fraction": 0.38,
+     "validation_mean_pct": 4.223335487614045,
+     "worst_pct": 7.1737830580090325,
+     "median_pct": 4.131715958404154,
+     "ms": 80.27050248347223,
+     "speedup_vs_fom": 0.3979348071491398,
+     "drift_ok": true
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 6834672,
+     "epochs": 12,
+     "steps": 2573,
+     "best_epoch": 11,
+     "stop_reason": "wall_budget",
+     "micro_batch": 4,
+     "memory_fraction": 0.1,
+     "validation_mean_pct": 4.924868866720994,
+     "worst_pct": 6.167474032198242,
+     "median_pct": 4.665971362433472,
+     "ms": 17.793335020542145,
+     "speedup_vs_fom": 1.7951905524539389,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-l",
+     "parameters": 22580997,
+     "epochs": 1,
+     "steps": 165,
+     "best_epoch": 0,
+     "stop_reason": "wall_budget",
+     "micro_batch": 2,
+     "memory_fraction": 0.24,
+     "validation_mean_pct": 5.792634832805446,
+     "worst_pct": 17.236783678422118,
+     "median_pct": 4.201396972704831,
+     "ms": 189.44376171566546,
+     "speedup_vs_fom": 0.16861165887038912,
+     "drift_ok": true
+    }
+   }
+  },
+  {
+   "cell": "heat256",
+   "problem": "heat",
+   "mesh": 256,
+   "train_job": "tr_256merged",
+   "train_job_id": null,
+   "panel_job": "pn_heat256",
+   "panel_job_id": "4296949",
+   "state": null,
+   "gpu": "NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB",
+   "cohort": "heldout_sealed_921099",
+   "cases": 64,
+   "status": "final",
+   "gates": {
+    "reproduction": true,
+    "drift_selected": true,
+    "fom_found": true
+   },
+   "reproduction": {
+    "source": "2026-09-23-heat-bank-knob/experiments/heat-bank-knob/runs/h3d256b/pull/out/panel/results.json",
+    "source_sha256": "ea794c8044ca078539e156b0bfacdf55d1ca74d65802308d28d9ae9101401d54",
+    "source_job": "4207497",
+    "arms": {
+     "nmrom_accurate_R320_linear_cn": {
+      "source": "lin_R320_cn",
+      "max_relative_gap": 2.5175839205068097e-16,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "nmrom_fast_R128_linear_cn": {
+      "source": "lin_R128_cn",
+      "max_relative_gap": 2.8133482775541506e-16,
+      "tolerance": 1e-06,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+      "source": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+      "max_relative_gap": 2.7408367853882656e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-4": {
+      "source": "fom_cncg_dt0.025_rtol1e-4",
+      "max_relative_gap": 2.982153302004043e-16,
+      "tolerance": 0.001,
+      "gated": true,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-3": {
+      "source": "fom_cncg_dt0.025_rtol1e-3",
+      "max_relative_gap": 3.263573152252e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.025_rtol1e-2": {
+      "source": "fom_cncg_dt0.025_rtol1e-2",
+      "max_relative_gap": 2.719657163821869e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-4": {
+      "source": "fom_cncg_dt0.05_rtol1e-4",
+      "max_relative_gap": 2.8469402448271517e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-3": {
+      "source": "fom_cncg_dt0.05_rtol1e-3",
+      "max_relative_gap": 3.6559427554519524e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.05_rtol1e-2": {
+      "source": "fom_cncg_dt0.05_rtol1e-2",
+      "max_relative_gap": 4.137603099262529e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-4": {
+      "source": "fom_cncg_dt0.1_rtol1e-4",
+      "max_relative_gap": 3.792003174937966e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-3": {
+      "source": "fom_cncg_dt0.1_rtol1e-3",
+      "max_relative_gap": 2.7116020304342805e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.1_rtol1e-2": {
+      "source": "fom_cncg_dt0.1_rtol1e-2",
+      "max_relative_gap": 3.657886410802734e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.0125_rtol1e-6": {
+      "source": "fom_cncg_dt0.0125_rtol1e-6",
+      "max_relative_gap": 2.826526778706178e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     },
+     "fom_cncg_dt0.0125_rtol1e-4": {
+      "source": "fom_cncg_dt0.0125_rtol1e-4",
+      "max_relative_gap": 3.0114552107263625e-16,
+      "tolerance": 0.001,
+      "gated": false,
+      "passed": true
+     }
+    },
+    "passed": true,
+    "note": "gated: NM-ROM arms (<=1e-6 rel) and the Table-1 FOM setting (<=1e-3 rel); other FOM settings informational (loose-tolerance CG stopping is rounding-sensitive across GPUs)"
+   },
+   "audit": {
+    "max_relative_mismatch": 0.0,
+    "fom_rule_recomputed_equal": true
+   },
+   "fom": {
+    "setting": "fom_cncg_dt0.025_rtol1e-4",
+    "ms": 180.14127621427178,
+    "worst_pct": 0.08228551541225271
+   },
+   "nmrom_accurate": {
+    "setting": "nmrom_accurate_R320_linear_cn",
+    "ms": 23.507083533331752,
+    "worst_pct": 0.08326804243846223,
+    "speedup": 7.663276303878418
+   },
+   "nmrom_fast": {
+    "setting": "nmrom_fast_R128_linear_cn",
+    "ms": 10.270103579387069,
+    "worst_pct": 1.1110289037874144,
+    "speedup": 17.540356318881724
+   },
+   "fom_grid": {
+    "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+     "ms": 333.5243780165911,
+     "worst_pct": 0.0822319802397718,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-4": {
+     "ms": 180.14127621427178,
+     "worst_pct": 0.08228551541225271,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-3": {
+     "ms": 141.2636775057763,
+     "worst_pct": 0.3595728302781347,
+     "converged": true
+    },
+    "fom_cncg_dt0.025_rtol1e-2": {
+     "ms": 101.61056835204363,
+     "worst_pct": 1.4130736982160854,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-4": {
+     "ms": 175.58386572636664,
+     "worst_pct": 0.33747075338934995,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-3": {
+     "ms": 116.54171161353588,
+     "worst_pct": 0.3385690325015471,
+     "converged": true
+    },
+    "fom_cncg_dt0.05_rtol1e-2": {
+     "ms": 74.20319551602006,
+     "worst_pct": 1.4824055615904637,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-4": {
+     "ms": 161.64373559877276,
+     "worst_pct": 1.5495798478732261,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-3": {
+     "ms": 111.41595686785877,
+     "worst_pct": 1.5494732442037265,
+     "converged": true
+    },
+    "fom_cncg_dt0.1_rtol1e-2": {
+     "ms": 71.90328906290233,
+     "worst_pct": 1.5594722129651961,
+     "converged": true
+    },
+    "fom_cncg_dt0.0125_rtol1e-6": {
+     "ms": 384.56278992816806,
+     "worst_pct": 0.0204284254284363,
+     "converged": true
+    },
+    "fom_cncg_dt0.0125_rtol1e-4": {
+     "ms": 242.37883393652737,
+     "worst_pct": 0.030817797299170422,
+     "converged": true
+    }
+   },
+   "operators": {
+    "deeponet": {
+     "arm": "don-s",
+     "failure": "not trained: no micro-batch fit its 0.30 share of a shared H200 (job 4288846); whole-H200 probe (job 4291133) fits micro-batch 1 at 110 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)",
+     "probe_peak_bytes": {
+      "8": "oom",
+      "4": "oom",
+      "2": "oom",
+      "1": "oom"
+     },
+     "memory_fraction": 0.3
+    },
+    "fno": {
+     "arm": "fno-s",
+     "failure": "not trained: no micro-batch fit its 0.36 share of a shared H200 (job 4288846); whole-H200 probe (job 4291133) fits micro-batch 1 at 90 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)",
+     "probe_peak_bytes": {
+      "8": "oom",
+      "4": "oom",
+      "2": "oom",
+      "1": "oom"
+     },
+     "memory_fraction": 0.36
+    },
+    "transolver": {
+     "arm": "tsol-s",
+     "parameters": 12816368,
+     "epochs": 10,
+     "steps": 2088,
+     "best_epoch": 9,
+     "stop_reason": "wall_budget",
+     "micro_batch": 2,
+     "memory_fraction": 0.15,
+     "validation_mean_pct": 6.832633934808915,
+     "worst_pct": 8.86080006059569,
+     "median_pct": 6.207208899324463,
+     "ms": 8.068269584327936,
+     "speedup_vs_fom": 22.327126570508245,
+     "drift_ok": true
+    },
+    "unet": {
+     "arm": "unet-s",
+     "parameters": 5647749,
+     "epochs": 1,
+     "steps": 35,
+     "best_epoch": 0,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "memory_fraction": 0.3,
+     "validation_mean_pct": 53.35965358798291,
+     "worst_pct": 71.78245657216709,
+     "median_pct": 54.472234410956474,
+     "ms": 306.8286555353552,
+     "speedup_vs_fom": 0.5871070806602497,
+     "drift_ok": true
+    }
+   }
+  }
+ ]
+}

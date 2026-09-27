@@ -1,0 +1,13 @@
+host=pax106 job=4286496 specs=poisson:32:fno-l:0.06 poisson:32:unet-l:0.06 poisson:32:tsol-s:0.05 poisson:32:don-s:0.05 poisson:64:fno-l:0.25 poisson:64:unet-l:0.2 poisson:64:tsol-s:0.1 poisson:64:don-s:0.12
+NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  365G  93% /cluster/tufts/paralab
+jax_backend=gpu
+EXIT poisson32-fno-l 0
+EXIT poisson32-unet-l 0
+EXIT poisson32-tsol-s 0
+EXIT poisson32-don-s 0
+EXIT poisson64-fno-l 0
+EXIT poisson64-unet-l 0
+EXIT poisson64-tsol-s 0
+EXIT poisson64-don-s 0
+ALL-DONE

@@ -1,0 +1,40 @@
+{
+ "mesh": 4096,
+ "operators": [
+  {
+   "name": "unet-refine",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/b4096tc/out/train/unet-refine/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/b4096tc/out/train/unet-refine/result.json",
+   "copy": false,
+   "source": "g2d training job b4096tc"
+  },
+  {
+   "name": "tsol-refine",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096ts/out/train/tsol-refine/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096ts/out/train/tsol-refine/result.json",
+   "copy": false,
+   "source": "g2d training job t4096ts"
+  },
+  {
+   "name": "don-small",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096dn/out/train/don-small/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096dn/out/train/don-small/result.json",
+   "copy": false,
+   "source": "g2d training job t4096dn"
+  },
+  {
+   "name": "unet-large",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096ul/out/train/unet-large/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096ul/out/train/unet-large/result.json",
+   "copy": false,
+   "source": "g2d training job t4096ul"
+  },
+  {
+   "name": "fno-w96f32",
+   "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096ff32/out/train/fno-w96f32/best.pt",
+   "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t4096ff32/out/train/fno-w96f32/result.json",
+   "copy": false,
+   "source": "g2d training job t4096ff32"
+  }
+ ]
+}

@@ -1,0 +1,86 @@
+{
+ "complete": true,
+ "name": "transolver",
+ "family": "transolver",
+ "problem": "lshape",
+ "mesh": 256,
+ "mem_share": 0.24,
+ "co_scheduled_on_same_gpu": [
+  "fno",
+  "unet",
+  "transolver",
+  "deeponet"
+ ],
+ "data": {
+  "seconds": 157.6627325033769,
+  "data_seconds": 156.91442829510197
+ },
+ "config": {
+  "family": "transolver",
+  "dim": 256,
+  "layers": 8,
+  "heads": 8,
+  "slices": 64,
+  "mlp_ratio": 2,
+  "patch": 4,
+  "ref": 8,
+  "dtype": "float32",
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "warmup_steps": 160,
+  "patch_rule": "n // 64 (set by train_ops.py)",
+  "smoke_overrides": {
+   "dim": 32,
+   "layers": 2,
+   "heads": 4,
+   "slices": 8,
+   "epochs": 2
+  }
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 4590626304,
+ "best_epoch": 11,
+ "best_step": 3924,
+ "epochs_completed": 13,
+ "optimisation_steps": 4161,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3000.963090073783,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.20476553474144654,
+   0.5524543946308675,
+   0.3343869737745365,
+   0.3350652343870495,
+   0.35516483524967385,
+   0.4793471122136017,
+   0.30631204238466797,
+   0.49592114550322675,
+   0.5408935373133111,
+   0.3413429777453632,
+   0.23201909541809443,
+   0.7173116638748982,
+   0.701631656779012,
+   0.22412026974234833,
+   0.2950836375270154,
+   0.2841275099102762
+  ],
+  "mean": 0.39999672632471184,
+  "median": 0.3382041060662063,
+  "worst": 0.7173116638748982
+ },
+ "best_checkpoint_sha256": "b28fc594586d8c21ff724d6eba6978178cbbb6b175cd70d4c38f8fa5bfaa09a1",
+ "parameter_dtype": "torch.float32",
+ "real_parameter_count": 12298320,
+ "normalization": [
+  0.03213593523064688,
+  0.15224374381712402,
+  0.0018227815250909812
+ ],
+ "peak_allocated_bytes": 4689025536
+}

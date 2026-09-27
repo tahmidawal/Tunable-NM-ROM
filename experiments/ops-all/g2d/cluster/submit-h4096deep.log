@@ -1,0 +1,8 @@
+--- squeue before
+4288583 g2d_b4096tr PENDING 0:00 (QOSMaxGRESPerUser)
+4288587 g2d_b512don RUNNING 48:57 pax003
+Submitted batch job 4290390
+--- squeue after
+4288583 g2d_b4096tr PENDING 0:00 (QOSMaxGRESPerUser)
+4290390 g2d_h4096deep PENDING 0:00 (Priority)
+4288587 g2d_b512don RUNNING 49:02 pax003

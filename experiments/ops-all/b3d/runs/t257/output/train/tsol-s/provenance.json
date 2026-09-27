@@ -1,0 +1,83 @@
+{
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "mesh": 257,
+ "grid": 256,
+ "train_seed": 923701,
+ "train_count": 256,
+ "train_table_sha256": "1855b3928bccb83f0c351cae9d86d457cbda31a521876c5cf877fcb91709cb4a",
+ "validation_seed": 923751,
+ "validation_count": 32,
+ "validation_table_sha256": "20498b605edbe4338fa162984c3555a4e0a8ff3a5be9cf6515dfb7dfdfec0799",
+ "data_solver": {
+  "dt": 0.005,
+  "ntol": 1e-08,
+  "ltol": 1e-09
+ },
+ "generation": {
+  "max_rel_residual": 9.977794746324823e-09,
+  "max_newton": 3,
+  "cap_hits": 0
+ },
+ "generation_seconds": 3036.4378578662872,
+ "overlap_with_evaluation_cohorts": {
+  "heldout": 0,
+  "romval": 0
+ },
+ "normalization": [
+  0.19202123354193582,
+  -3.4239841605683443,
+  0.6589551024091981,
+  0.14062922022124424
+ ],
+ "data_on_device": false,
+ "job_id": "4286465",
+ "node": "pax105",
+ "sources": {
+  "make_configs.py": "66d890a809aa8f299a62f1fc489dc19684c8573a915acc61dc05e593a82ed363",
+  "ops3d.py": "2ced1f72c75f62f7c221baca92e18c56fb33c263928a83dab5f09cdfaf85e676",
+  "opsb3d.py": "ec8d30d396839c302ea2933e62004f519f9df35dbfbb31a4fd7c5bd5e5e4388d",
+  "panel_b3d.py": "6677eaf354ad2cbc1eb4e419ce0f8c393d5075dec18bbb793982c09439c5c720",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_b3d.py": "bccedb513dfc4b35dc150f9e29ab70bab06dafa4f4a44568d9e465c05e1c9405"
+ },
+ "arm": "tsol-s",
+ "config": {
+  "family": "transolver",
+  "dim": 128,
+  "layers": 6,
+  "heads": 8,
+  "slices": 32,
+  "mlp_ratio": 2,
+  "ref": 8,
+  "warmup_steps": 160,
+  "dtype": "float32",
+  "smoke_overrides": {
+   "dim": 16,
+   "layers": 1,
+   "heads": 2,
+   "slices": 4,
+   "ref": 2,
+   "warmup_steps": 2
+  },
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 4000,
+  "patience": 250,
+  "seed": 20260914,
+  "patch": 16
+ },
+ "config_sha256": "8b689281feec321629841db0ef0c5676c4097bd089e531ce3cb601a3fc01f418",
+ "micro_batch": 8,
+ "probe_peak_bytes": {
+  "8": 31441884672
+ },
+ "wall_budget_seconds": 3000.0,
+ "real_parameter_count": 13864944
+}

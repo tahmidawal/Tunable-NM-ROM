@@ -1,0 +1,138 @@
+{
+ "dim": 2,
+ "model": {
+  "kind": "mlp",
+  "bank": "wide2d/bank.pkl",
+  "head": "wide2d/head_K8.pkl"
+ },
+ "prep": "prep_2d.npz",
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 256
+ },
+ "edges": [
+  0,
+  16,
+  32,
+  48,
+  64,
+  96,
+  128
+ ],
+ "ladder": [
+  128,
+  96,
+  64,
+  48,
+  32,
+  16
+ ],
+ "q_by_Rp": {
+  "128": [
+   0
+  ],
+  "96": [],
+  "64": [],
+  "48": [],
+  "32": [],
+  "16": []
+ },
+ "rom_defaults": {
+  "init": "field",
+  "stepping": "cn",
+  "dt": 0.025,
+  "starts": 4,
+  "fit_budget": 600,
+  "step_budget": 120,
+  "tolerance": 1e-06
+ },
+ "families": {
+  "cn": {
+   "init": "moments"
+  }
+ },
+ "parity": {
+  "meshes": [],
+  "q": []
+ },
+ "cohorts": [
+  [
+   "heldout_sealed_791099",
+   791099,
+   16
+  ]
+ ],
+ "meshes": [
+  256
+ ],
+ "cases_by_mesh": {},
+ "repetitions": 5,
+ "burn_seconds": 0.1,
+ "audit_intervals": 256,
+ "full_audit_cases": 2,
+ "full_audit_max_unknowns": 300000,
+ "cg_arms": {
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.025_rtol1e-4": {
+   "dt": 0.025,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.025_rtol1e-3": {
+   "dt": 0.025,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.025_rtol1e-2": {
+   "dt": 0.025,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-4": {
+   "dt": 0.05,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.05_rtol1e-2": {
+   "dt": 0.05,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.1_rtol1e-4": {
+   "dt": 0.1,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.1_rtol1e-3": {
+   "dt": 0.1,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "dt": 0.1,
+   "tolerance": 0.01
+  }
+ },
+ "neighbour": {
+  "cg": "fom_cncg_dt0.05_rtol1e-3",
+  "cohort": "heldout_sealed_791099",
+  "cases": 3,
+  "reps": 3
+ },
+ "profile": {
+  "meshes": []
+ },
+ "paper_fast": {
+  "cn": "nmrom_R128_q0_cn",
+  "bf": "nmrom_R128_q0_bf"
+ },
+ "g2d_note": "heat-bank-knob h2d.json at one mesh, held-out cohort only (Table 1 cohort), every span R' of the lane (linear CN rungs) + the head-only arm nmrom_R128_q0_cn, CN family; full CN-CG grid; DST exact reference"
+}

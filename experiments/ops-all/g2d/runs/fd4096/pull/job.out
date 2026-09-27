@@ -1,0 +1,49 @@
+host=pax009 job_id=4318738
+NVIDIA H200, GPU-53ec98ff-6fbf-49ea-2fb1-2141063303c8, 143771 MiB, 575.57.08
+10.235.106.34:/projects/paralab  4.6T  4.2T  370G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda True NVIDIA H200
+jax_backend=gpu x64=True precision=highest
+TRUTH done
+QUICK lean_nt1e-2_l1e-2_dt01 1.6883 1.1501 0.2985
+QUICK lean_nt3e-3_l3e-3_dt01 1.6765 1.1547 0.3793
+QUICK lean_nt1e-3_l1e-3_dt01 1.6607 1.1386 0.4342
+QUICK lean_nt1e-2_l1e-2_dt1_120 1.1647 0.7783 0.3383
+QUICK lean_nt3e-3_l3e-3_dt1_120 1.1411 0.7852 0.4198
+QUICK lean_nt1e-3_l1e-3_dt1_120 1.1471 0.783 0.5016
+QUICK lean_nt1e-2_l1e-2_dt1_140 0.7842 0.4848 0.3595
+QUICK lean_nt3e-3_l3e-3_dt1_140 0.7475 0.5173 0.4536
+QUICK lean_nt1e-3_l1e-3_dt1_140 0.7519 0.5142 0.5571
+QUICK lean_nt1e-2_l1e-2_dt00625 0.5024 0.2864 0.3905
+QUICK lean_nt3e-3_l3e-3_dt00625 0.4492 0.3117 0.4931
+QUICK lean_nt1e-3_l1e-3_dt00625 0.4468 0.3082 0.6089
+QUICK lean_nt1e-2_l1e-2_dt005 2.1635 0.5018 0.4423
+QUICK lean_nt3e-3_l3e-3_dt005 0.0499 0.0385 0.5669
+QUICK lean_nt1e-3_l1e-3_dt005 0.055 0.0314 0.6892
+TIMED main 0
+TIMED main 1
+TIMED main 2
+TIMED main 3
+TIMED main 4
+TIMED slow 0
+TIMED slow 1
+TIMED slow 2
+TIMED slow 3
+TIMED slow 4
+RESULT lean_nt1e-2_l1e-2_dt01 1.6883 1.1501 1.2491 268.54ms
+RESULT lean_nt3e-3_l3e-3_dt01 1.6765 1.1547 1.2450 367.04ms
+RESULT lean_nt1e-3_l1e-3_dt01 1.6607 1.1386 1.2251 404.75ms
+RESULT lean_nt1e-2_l1e-2_dt1_120 1.1647 0.7783 0.8375 306.17ms
+RESULT lean_nt3e-3_l3e-3_dt1_120 1.1411 0.7852 0.8451 424.86ms
+RESULT lean_nt1e-3_l1e-3_dt1_120 1.1471 0.7830 0.8403 465.29ms
+RESULT lean_nt1e-2_l1e-2_dt1_140 0.7842 0.4848 0.5417 334.73ms
+RESULT lean_nt3e-3_l3e-3_dt1_140 0.7475 0.5173 0.5597 478.80ms
+RESULT lean_nt1e-3_l1e-3_dt1_140 0.7519 0.5142 0.5521 529.96ms
+RESULT lean_nt1e-2_l1e-2_dt00625 0.5024 0.2864 0.3066 368.59ms
+RESULT lean_nt3e-3_l3e-3_dt00625 0.4492 0.3117 0.3387 497.69ms
+RESULT lean_nt1e-3_l1e-3_dt00625 0.4468 0.3082 0.3303 593.27ms
+RESULT lean_nt1e-2_l1e-2_dt005 2.1635 0.5018 0.1844 421.24ms
+RESULT lean_nt3e-3_l3e-3_dt005 0.0499 0.0385 0.0385 524.66ms
+RESULT lean_nt1e-3_l1e-3_dt005 0.0550 0.0314 0.0320 706.90ms
+FOMDT COMPLETE
+run_exit=0

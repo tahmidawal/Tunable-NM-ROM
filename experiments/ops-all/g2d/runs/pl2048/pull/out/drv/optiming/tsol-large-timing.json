@@ -1,0 +1,192 @@
+{
+  "model": "tsol-large",
+  "role": "g2d expanded 2048^2",
+  "gpu_name": "NVIDIA A100 80GB PCIe",
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "neuraloperator": "2.0.0",
+    "cuda": "12.8",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "checkpoint_sha256": "80d6e7dd5f3c3399c0d0d6073a1fdfb5ed2b6f5e8bfa5ea12dd15e31ca5b15e6",
+  "config": {
+    "family": "transolver",
+    "dim": 256,
+    "layers": 8,
+    "heads": 8,
+    "slices": 64,
+    "mlp_ratio": 2,
+    "patch": 4,
+    "ref": 8,
+    "dtype": "float32",
+    "warmup_epochs": 10,
+    "epochs": 4000,
+    "patience": 250,
+    "batch_size": 8,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "seed": 20260914,
+    "g2d_source": "ops-tune-grid @52d1b573 configs transolver/large"
+  },
+  "best_epoch": 11,
+  "parameter_tensor_elements": 12322960,
+  "real_parameter_count": 12322960,
+  "repetitions_per_case": 5,
+  "burn_in_per_block": 20,
+  "device_query_pooled": {
+    "count": 30,
+    "mean_ms": 723.4350114750365,
+    "median_ms": 722.9815518949181,
+    "p05_ms": 722.2509766696021,
+    "p95_ms": 726.474466943182,
+    "minimum_ms": 721.6903958469629,
+    "maximum_ms": 726.7026398330927,
+    "upper_tukey_outliers": 5
+  },
+  "host_transfer_pooled": {
+    "count": 30,
+    "mean_ms": 44.38866487083336,
+    "median_ms": 44.428154127672315,
+    "p05_ms": 43.71967401821166,
+    "p95_ms": 45.07554804440588,
+    "minimum_ms": 43.70426293462515,
+    "maximum_ms": 45.096475165337324,
+    "upper_tukey_outliers": 0
+  },
+  "device_query_median_of_case_medians_ms": 722.8278359398246,
+  "cases": [
+    {
+      "case_id": "burgers-dev-00000",
+      "case_index": 0,
+      "artifact": "full_tsol-large_case0.npy",
+      "field_sha256": "63788ba0f68d8a2101cc37adee3b7aeb5d538fe82ae156b33c571d898ae1b818",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.7235472146421671,
+        0.7225905829109251,
+        0.7224455834366381,
+        0.7231369689106941,
+        0.7224504770711064
+      ],
+      "host_seconds": [
+        0.04382044076919556,
+        0.04413822712376714,
+        0.04380058031529188,
+        0.044110001996159554,
+        0.043786834459751844
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00001",
+      "case_index": 1,
+      "artifact": "full_tsol-large_case1.npy",
+      "field_sha256": "8f3e810ae470306d06745ba1c5a099a5f7475779bb60aa1c9265f21079864b8d",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.7223638067953289,
+        0.7227385472506285,
+        0.7235999959520996,
+        0.722928405739367,
+        0.7224729270674288
+      ],
+      "host_seconds": [
+        0.04473584005609155,
+        0.044900229666382074,
+        0.044725256972014904,
+        0.04491820326074958,
+        0.04471808113157749
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00002",
+      "case_index": 2,
+      "artifact": "full_tsol-large_case2.npy",
+      "field_sha256": "f604827742ce28fd3811b006933770936d5c2eb1f3a2c31f722295eb338d6985",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.7261706050485373,
+        0.7255309759639204,
+        0.7266046586446464,
+        0.7267026398330927,
+        0.7263153437525034
+      ],
+      "host_seconds": [
+        0.04372469615191221,
+        0.04401784110814333,
+        0.043756617698818445,
+        0.044012128841131926,
+        0.043715564999729395
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00003",
+      "case_index": 3,
+      "artifact": "full_tsol-large_case3.npy",
+      "field_sha256": "f59a28ca4932372c2220edfa1218fb0b5d65e8a110de05b5ca9215006a238c3b",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.7235319796018302,
+        0.7237731209024787,
+        0.722472527064383,
+        0.7235412066802382,
+        0.7234762338921428
+      ],
+      "host_seconds": [
+        0.04490087879821658,
+        0.045092721935361624,
+        0.04488516692072153,
+        0.045096475165337324,
+        0.04490800900384784
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00004",
+      "case_index": 4,
+      "artifact": "full_tsol-large_case4.npy",
+      "field_sha256": "444b2120aa4e380c7798ad9e5d89add69c534994e523720c3285553673f874da",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.7221586611121893,
+        0.722761208191514,
+        0.7232811497524381,
+        0.7226002933457494,
+        0.7225075080059469
+      ],
+      "host_seconds": [
+        0.04374245600774884,
+        0.04403066681697965,
+        0.04370426293462515,
+        0.044009581208229065,
+        0.043726522009819746
+      ]
+    },
+    {
+      "case_id": "burgers-dev-00005",
+      "case_index": 5,
+      "artifact": "full_tsol-large_case5.npy",
+      "field_sha256": "6dda5cf9d35b349c69e36052b7d9df9d7f3a65ef8b2b685a7dabe00ca30ee97f",
+      "t0_returned_exactly": true,
+      "device_seconds": [
+        0.7230346980504692,
+        0.7216903958469629,
+        0.722376509103924,
+        0.7229171246290207,
+        0.7233289950527251
+      ],
+      "host_seconds": [
+        0.044860657304525375,
+        0.04505455773323774,
+        0.044852374121546745,
+        0.04505234071984887,
+        0.04486273089423776
+      ]
+    }
+  ],
+  "timed_region": "supplied on-device initial field and viscosity to on-device complete trajectory",
+  "host_transfer": "separately timed device-to-host copy of the finished trajectory",
+  "retained": "every individual repetition is stored in the npz beside this file",
+  "deviation": "second process in the same Slurm allocation on the same GPU, after the JAX phase exited; the source protocol times all models in one process",
+  "scientific_status": "same-allocation, same-GPU timing against the JAX subjects of this job; no ratio is taken against any other job"
+}

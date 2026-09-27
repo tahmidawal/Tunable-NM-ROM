@@ -1,0 +1,859 @@
+{
+ "group": "l3d",
+ "cells": [
+  {
+   "pde": "Poisson 3D",
+   "mesh": 32,
+   "complete": true,
+   "panel_job": "4288794",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "held-out",
+   "error_metric": "worst over cases of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R128_linear",
+     "worst_percent": 0.23081140660911678,
+     "gpu_ms": 0.5167857743799686
+    },
+    {
+     "setting": "nmrom_fast_R64_linear",
+     "worst_percent": 0.4750741065355887,
+     "gpu_ms": 0.5010424647480249
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cg_rtol0.3",
+     "worst_percent": 12.515758023282144,
+     "gpu_ms": 0.7919210474938154,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.1",
+     "worst_percent": 2.8359703484043384,
+     "gpu_ms": 1.0969405993819237,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.03",
+     "worst_percent": 0.4691286546310953,
+     "gpu_ms": 1.3517732731997967,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.01",
+     "worst_percent": 0.15655376030407583,
+     "gpu_ms": 1.536453841254115,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cg_rtol0.003",
+     "worst_percent": 0.03989285155075031,
+     "gpu_ms": 1.7608697526156902,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.001",
+     "worst_percent": 0.017023042518194347,
+     "gpu_ms": 1.9201368559151888,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 2.0832894320047486,
+     "gpu_ms": 3.757471451535821,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 1.2914901278119744,
+     "gpu_ms": 15.012372517958283,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 4.8445143863230875,
+     "gpu_ms": 16.93567307665944,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 7.442484636260392,
+     "gpu_ms": 3.6929745692759752,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson 3D",
+   "mesh": 64,
+   "complete": true,
+   "panel_job": "4288798",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "held-out",
+   "error_metric": "worst over cases of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R128_linear",
+     "worst_percent": 0.23106414045320225,
+     "gpu_ms": 1.1613701935857534
+    },
+    {
+     "setting": "nmrom_fast_R64_linear",
+     "worst_percent": 0.4689530106436664,
+     "gpu_ms": 1.0850939434021711
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cg_rtol0.3",
+     "worst_percent": 5.9349320526400104,
+     "gpu_ms": 2.2103688679635525,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.1",
+     "worst_percent": 1.9332038258720712,
+     "gpu_ms": 3.0860155820846558,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.03",
+     "worst_percent": 0.34632366316248653,
+     "gpu_ms": 3.6222829949110746,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.01",
+     "worst_percent": 0.11432331552908127,
+     "gpu_ms": 4.120876546949148,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cg_rtol0.003",
+     "worst_percent": 0.03172086431691513,
+     "gpu_ms": 4.665835062041879,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.001",
+     "worst_percent": 0.01169668693141781,
+     "gpu_ms": 5.211009178310633,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 8.240276829259285,
+     "gpu_ms": 11.696116300299764,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 9.203593305906681,
+     "gpu_ms": 31.519137090072036,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 7.984493805756103,
+     "gpu_ms": 17.858432605862617,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 12.155162863396644,
+     "gpu_ms": 16.792230773717165,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson 3D",
+   "mesh": 128,
+   "complete": true,
+   "panel_job": "4288835",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "development",
+   "error_metric": "worst over cases of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R128_linear",
+     "worst_percent": 0.14422944138225874,
+     "gpu_ms": 2.348844660446048
+    },
+    {
+     "setting": "nmrom_fast_R64_linear",
+     "worst_percent": 0.24127057983126995,
+     "gpu_ms": 1.6291991341859102
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cg_rtol0.3",
+     "worst_percent": 3.8283034059232652,
+     "gpu_ms": 11.532817035913467,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.1",
+     "worst_percent": 0.7723519083621105,
+     "gpu_ms": 16.148798167705536,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.03",
+     "worst_percent": 0.24438354533405793,
+     "gpu_ms": 19.896509125828743,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.01",
+     "worst_percent": 0.07475461810744928,
+     "gpu_ms": 23.60556973144412,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cg_rtol0.003",
+     "worst_percent": 0.022576112682348756,
+     "gpu_ms": 26.854670606553555,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.001",
+     "worst_percent": 0.008382943602061871,
+     "gpu_ms": 30.347070191055536,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 4.737209654807645,
+     "gpu_ms": 78.44173791818321,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 11.433664340175458,
+     "gpu_ms": 189.06648736447096,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 4.52718689291686,
+     "gpu_ms": 17.95381400734186,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 37.066681126120336,
+     "gpu_ms": 121.86809373088181,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Poisson 3D",
+   "mesh": 256,
+   "complete": true,
+   "panel_job": "4296944",
+   "gpu": "NVIDIA H200",
+   "cohort": "development",
+   "error_metric": "worst over cases of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R128_linear",
+     "worst_percent": 0.14416550521635954,
+     "gpu_ms": 5.962039809674025
+    },
+    {
+     "setting": "nmrom_fast_R64_linear",
+     "worst_percent": 0.24113290147183075,
+     "gpu_ms": 3.3610849641263485
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cg_rtol0.3",
+     "worst_percent": 2.593246856555082,
+     "gpu_ms": 76.62702910602093,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.1",
+     "worst_percent": 0.519823656688393,
+     "gpu_ms": 99.41162238828838,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.03",
+     "worst_percent": 0.1644618544818126,
+     "gpu_ms": 120.18033070489764,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.01",
+     "worst_percent": 0.04887096800894684,
+     "gpu_ms": 141.42293157055974,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cg_rtol0.003",
+     "worst_percent": 0.01679011623138713,
+     "gpu_ms": 160.23787599988282,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cg_rtol0.001",
+     "worst_percent": 0.007746880112737899,
+     "gpu_ms": 184.68332453630865,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "not trained: no micro-batch fit its 0.36 share of a shared H200 (job 4286518); whole-H200 probe (job 4291133) fits micro-batch 1 at 88 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)"
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 43.69157269503136,
+     "gpu_ms": 306.3213978894055,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 4.802652529040596,
+     "gpu_ms": 6.351046031340957,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "not trained: no micro-batch fit its 0.30 share of a shared H200 (job 4286518); whole-H200 probe (job 4291133) fits micro-batch 1 at 109 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)"
+    }
+   }
+  },
+  {
+   "pde": "Heat 3D",
+   "mesh": 32,
+   "complete": true,
+   "panel_job": "4288811",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "held-out",
+   "error_metric": "worst over cases of the max over all six output times (t=0 included) of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R320_linear_cn",
+     "worst_percent": 0.08022903004490498,
+     "gpu_ms": 0.39787543937563896
+    },
+    {
+     "setting": "nmrom_fast_R128_linear_cn",
+     "worst_percent": 1.1109907639354342,
+     "gpu_ms": 0.2535944804549217
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+     "worst_percent": 0.0782682873269713,
+     "gpu_ms": 4.890656098723412,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-4",
+     "worst_percent": 0.07837328908127902,
+     "gpu_ms": 3.7897240836173296,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-3",
+     "worst_percent": 0.6490788125099958,
+     "gpu_ms": 3.1999791972339153,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-2",
+     "worst_percent": 1.6956130129143105,
+     "gpu_ms": 2.8944953810423613,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-4",
+     "worst_percent": 0.3208021541513106,
+     "gpu_ms": 2.839451190084219,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-3",
+     "worst_percent": 0.3222833346229856,
+     "gpu_ms": 2.4797108490020037,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-2",
+     "worst_percent": 2.3817685725723936,
+     "gpu_ms": 2.001316985115409,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-4",
+     "worst_percent": 1.458123244514054,
+     "gpu_ms": 2.306129550561309,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-3",
+     "worst_percent": 1.4580990000350116,
+     "gpu_ms": 1.9225550349801779,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-2",
+     "worst_percent": 2.1281271159545114,
+     "gpu_ms": 1.5527671203017235,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 1.370540640336352,
+     "gpu_ms": 4.775985376909375,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 1.5640751640823867,
+     "gpu_ms": 15.602712985128164,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 4.190892918486059,
+     "gpu_ms": 17.61074480600655,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 17.523057976559848,
+     "gpu_ms": 4.303378285840154,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Heat 3D",
+   "mesh": 64,
+   "complete": false,
+   "panel_job": "4288827",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "held-out",
+   "error_metric": "worst over cases of the max over all six output times (t=0 included) of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R320_linear_cn",
+     "worst_percent": 0.08238952676867531,
+     "gpu_ms": 1.2213843874633312
+    },
+    {
+     "setting": "nmrom_fast_R128_linear_cn",
+     "worst_percent": 1.1110265905281924,
+     "gpu_ms": 0.5749564152210951
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+     "worst_percent": 0.08127651364187162,
+     "gpu_ms": 9.084629127755761,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-4",
+     "worst_percent": 0.0812746527773823,
+     "gpu_ms": 6.37871166691184,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-3",
+     "worst_percent": 0.6224545818649878,
+     "gpu_ms": 4.946172004565597,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-2",
+     "worst_percent": 1.8011898879129513,
+     "gpu_ms": 4.396774107590318,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-4",
+     "worst_percent": 0.3334560850306076,
+     "gpu_ms": 5.234661977738142,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-3",
+     "worst_percent": 0.3347271758852174,
+     "gpu_ms": 4.145687445998192,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-2",
+     "worst_percent": 1.9846741785206234,
+     "gpu_ms": 2.981571014970541,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-4",
+     "worst_percent": 1.5272915065812762,
+     "gpu_ms": 4.487263970077038,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-3",
+     "worst_percent": 1.5270594109636402,
+     "gpu_ms": 3.360833041369915,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-2",
+     "worst_percent": 1.6391843248198947,
+     "gpu_ms": 2.410745481029153,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 5.80778442713864,
+     "gpu_ms": 11.874701594933867,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 3.9458117749100032,
+     "gpu_ms": 31.518138479441404,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 6.183837479175791,
+     "gpu_ms": 17.76027283631265,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 24.125355249889996,
+     "gpu_ms": 16.92206715233624,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Heat 3D",
+   "mesh": 128,
+   "complete": true,
+   "panel_job": "4290399",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "cohort": "held-out",
+   "error_metric": "worst over cases of the max over all six output times (t=0 included) of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R320_linear_cn",
+     "worst_percent": 0.08309139008444497,
+     "gpu_ms": 7.528325309976935
+    },
+    {
+     "setting": "nmrom_fast_R128_linear_cn",
+     "worst_percent": 1.1110287685852356,
+     "gpu_ms": 3.222987288609147
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+     "worst_percent": 0.08204000965799457,
+     "gpu_ms": 54.717909544706345,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-4",
+     "worst_percent": 0.0820933177187895,
+     "gpu_ms": 31.94242692552507,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-3",
+     "worst_percent": 0.48315986877647515,
+     "gpu_ms": 24.551201378926635,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-2",
+     "worst_percent": 1.514418105827291,
+     "gpu_ms": 19.520040368661284,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-4",
+     "worst_percent": 0.3366649417149719,
+     "gpu_ms": 29.66408710926771,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-3",
+     "worst_percent": 0.33770474234495057,
+     "gpu_ms": 20.46185010112822,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-2",
+     "worst_percent": 1.7900839947588665,
+     "gpu_ms": 12.720774859189987,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-4",
+     "worst_percent": 1.545095463677621,
+     "gpu_ms": 26.569144101813436,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-3",
+     "worst_percent": 1.5448409526565838,
+     "gpu_ms": 18.479293445125222,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-2",
+     "worst_percent": 1.5575497707809325,
+     "gpu_ms": 12.14962126687169,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": true,
+     "worst_percent": 7.1737830580090325,
+     "gpu_ms": 80.27050248347223,
+     "failure": null
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 17.236783678422118,
+     "gpu_ms": 189.44376171566546,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 6.167474032198242,
+     "gpu_ms": 17.793335020542145,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": true,
+     "worst_percent": 67.26934492203243,
+     "gpu_ms": 123.46728891134262,
+     "failure": null
+    }
+   }
+  },
+  {
+   "pde": "Heat 3D",
+   "mesh": 256,
+   "complete": true,
+   "panel_job": "4296949",
+   "gpu": "NVIDIA H200",
+   "cohort": "held-out",
+   "error_metric": "worst over cases of the max over all six output times (t=0 included) of the same-grid relative L2 error",
+   "nmrom": [
+    {
+     "setting": "nmrom_accurate_R320_linear_cn",
+     "worst_percent": 0.08326804243846223,
+     "gpu_ms": 23.507083533331752
+    },
+    {
+     "setting": "nmrom_fast_R128_linear_cn",
+     "worst_percent": 1.1110289037874144,
+     "gpu_ms": 10.270103579387069
+    }
+   ],
+   "fom": [
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-6_NAMED",
+     "worst_percent": 0.0822319802397718,
+     "gpu_ms": 333.5243780165911,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-4",
+     "worst_percent": 0.08228551541225271,
+     "gpu_ms": 180.14127621427178,
+     "unstable": false,
+     "is_reference": true
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-3",
+     "worst_percent": 0.3595728302781347,
+     "gpu_ms": 141.2636775057763,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.025_rtol1e-2",
+     "worst_percent": 1.4130736982160854,
+     "gpu_ms": 101.61056835204363,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-4",
+     "worst_percent": 0.33747075338934995,
+     "gpu_ms": 175.58386572636664,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-3",
+     "worst_percent": 0.3385690325015471,
+     "gpu_ms": 116.54171161353588,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.05_rtol1e-2",
+     "worst_percent": 1.4824055615904637,
+     "gpu_ms": 74.20319551602006,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-4",
+     "worst_percent": 1.5495798478732261,
+     "gpu_ms": 161.64373559877276,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-3",
+     "worst_percent": 1.5494732442037265,
+     "gpu_ms": 111.41595686785877,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.1_rtol1e-2",
+     "worst_percent": 1.5594722129651961,
+     "gpu_ms": 71.90328906290233,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.0125_rtol1e-6",
+     "worst_percent": 0.0204284254284363,
+     "gpu_ms": 384.56278992816806,
+     "unstable": false,
+     "is_reference": false
+    },
+    {
+     "setting": "fom_cncg_dt0.0125_rtol1e-4",
+     "worst_percent": 0.030817797299170422,
+     "gpu_ms": 242.37883393652737,
+     "unstable": false,
+     "is_reference": false
+    }
+   ],
+   "operators": {
+    "FNO": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "not trained: no micro-batch fit its 0.36 share of a shared H200 (job 4288846); whole-H200 probe (job 4291133) fits micro-batch 1 at 90 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)"
+    },
+    "U-Net": {
+     "ok": true,
+     "worst_percent": 71.78245657216709,
+     "gpu_ms": 306.8286555353552,
+     "failure": null
+    },
+    "Transolver": {
+     "ok": true,
+     "worst_percent": 8.86080006059569,
+     "gpu_ms": 8.068269584327936,
+     "failure": null
+    },
+    "DeepONet": {
+     "ok": false,
+     "worst_percent": null,
+     "gpu_ms": null,
+     "failure": "not trained: no micro-batch fit its 0.30 share of a shared H200 (job 4288846); whole-H200 probe (job 4291133) fits micro-batch 1 at 110 GiB peak, so it needs a dedicated H200, not granted (GPU cap 2, DESIGN A5)"
+    }
+   }
+  }
+ ]
+}

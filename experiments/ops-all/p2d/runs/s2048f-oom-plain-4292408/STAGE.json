@@ -1,0 +1,17 @@
+{
+ "kind": "train",
+ "problem": "square",
+ "mesh": 2048,
+ "members": [
+  "fno.json"
+ ],
+ "layout": "output/<stem>/<stem>/best.pt",
+ "train_count": 0,
+ "cg_batch": 32,
+ "mem_share": 1.0,
+ "job": "s2048f",
+ "remote": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s2048f",
+ "gpu_constraint": "a100-80G|h100-80G|h200-141G",
+ "mem": "240G",
+ "time": "02:45:00"
+}

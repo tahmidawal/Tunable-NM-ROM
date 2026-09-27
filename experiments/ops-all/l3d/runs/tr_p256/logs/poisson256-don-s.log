@@ -1,0 +1,8 @@
+torch_backend=cuda NVIDIA H200
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/train_l3d.py", line 257, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/l3d/tr_p256/code/train_l3d.py", line 163, in main
+    raise RuntimeError('no micro-batch fits')
+RuntimeError: no micro-batch fits

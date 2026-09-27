@@ -1,0 +1,493 @@
+{
+ "fno-large": {
+  "ok": true,
+  "worst_evolved_percent": 4.5711093483413,
+  "median_evolved_percent": 2.750157590653509,
+  "median_gpu_ms": 22.612222004681826,
+  "median_of_case_medians_ms": 22.605768172070384,
+  "host_transfer_median_ms": 0.77840406447649,
+  "gpu_name": "NVIDIA A100 80GB PCIe",
+  "best_epoch": 188,
+  "checkpoint_sha256": "1d6ab5c66d374ca83c8e751276f1243c5c3713a36290a52685b025620838c207",
+  "real_parameter_count": 17877317,
+  "config": {
+   "family": "fno",
+   "width": 64,
+   "modes": 32,
+   "layers": 4,
+   "epochs": 4000,
+   "patience": 250,
+   "batch_size": 8,
+   "learning_rate": 0.001,
+   "weight_decay": 0.0001,
+   "seed": 20260914
+  },
+  "t0_returned_exactly": true,
+  "repetitions": [
+   5,
+   5,
+   5,
+   5,
+   5,
+   5
+  ],
+  "per_case": [
+   {
+    "case": 0,
+    "same_grid_per_time": [
+     0.0,
+     0.010311045831204343,
+     0.010967194051637956,
+     0.011474621335398182,
+     0.013801574869297395,
+     0.013536813582276958
+    ],
+    "same_grid_evolved": 0.013801574869297395,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 1,
+    "same_grid_per_time": [
+     0.0,
+     0.01027166207312685,
+     0.01102077633698764,
+     0.010126975807684417,
+     0.010282211664761268,
+     0.009540425894705702
+    ],
+    "same_grid_evolved": 0.01102077633698764,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 2,
+    "same_grid_per_time": [
+     0.0,
+     0.017703886686813664,
+     0.024099156981701182,
+     0.03020052382423698,
+     0.03446859641449922,
+     0.045711093483413
+    ],
+    "same_grid_evolved": 0.045711093483413,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 3,
+    "same_grid_per_time": [
+     0.0,
+     0.01820932898087751,
+     0.02331341171541121,
+     0.026899228207682927,
+     0.028415588985964205,
+     0.031627475836674364
+    ],
+    "same_grid_evolved": 0.031627475836674364,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 4,
+    "same_grid_per_time": [
+     0.0,
+     0.018902453960338475,
+     0.022461356966536977,
+     0.026616522815927517,
+     0.03503195999939204,
+     0.038500101856443474
+    ],
+    "same_grid_evolved": 0.038500101856443474,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 5,
+    "same_grid_per_time": [
+     0.0,
+     0.023375675976395813,
+     0.022228358265664945,
+     0.01968250522939134,
+     0.020607884115219924,
+     0.022726881004914733
+    ],
+    "same_grid_evolved": 0.023375675976395813,
+    "t0_error": 0.0,
+    "finite": true
+   }
+  ]
+ },
+ "unet-refine": {
+  "ok": true,
+  "worst_evolved_percent": 2.517290176268875,
+  "median_evolved_percent": 1.59646384039204,
+  "median_gpu_ms": 14.187145978212357,
+  "median_of_case_medians_ms": 14.186416985467076,
+  "host_transfer_median_ms": 0.7710589561611414,
+  "gpu_name": "NVIDIA A100 80GB PCIe",
+  "best_epoch": 903,
+  "checkpoint_sha256": "5620fbeafbdbf0048a8d8bf7aa30c7b54d8c3cfbb8696a3d338bab50e0a43576",
+  "real_parameter_count": 7763461,
+  "config": {
+   "family": "unet",
+   "base": 32,
+   "groups": 8,
+   "dtype": "float32",
+   "warmup_epochs": 0,
+   "epochs": 4000,
+   "patience": 250,
+   "batch_size": 8,
+   "learning_rate": 0.0003,
+   "weight_decay": 0.0001,
+   "seed": 20260914,
+   "refines_capacity": "medium",
+   "selected_by": "validation mean case-maximum fixed-initial error"
+  },
+  "t0_returned_exactly": true,
+  "repetitions": [
+   5,
+   5,
+   5,
+   5,
+   5,
+   5
+  ],
+  "per_case": [
+   {
+    "case": 0,
+    "same_grid_per_time": [
+     0.0,
+     0.010526278929153766,
+     0.00989982039845879,
+     0.009471111884391202,
+     0.009519947509423534,
+     0.014651605503754621
+    ],
+    "same_grid_evolved": 0.014651605503754621,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 1,
+    "same_grid_per_time": [
+     0.0,
+     0.012122723113607117,
+     0.010762441036292836,
+     0.010520549953700426,
+     0.010543932999066929,
+     0.01253194367772931
+    ],
+    "same_grid_evolved": 0.01253194367772931,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 2,
+    "same_grid_per_time": [
+     0.0,
+     0.0068875819014116895,
+     0.006483991239818617,
+     0.00518222035417103,
+     0.00622642392731645,
+     0.0058680339953593565
+    ],
+    "same_grid_evolved": 0.0068875819014116895,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 3,
+    "same_grid_per_time": [
+     0.0,
+     0.01104114313173284,
+     0.012929405581263972,
+     0.010027543478121967,
+     0.013645847334867438,
+     0.017507492693399608
+    ],
+    "same_grid_evolved": 0.017507492693399608,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 4,
+    "same_grid_per_time": [
+     0.0,
+     0.009385715984097695,
+     0.02218962092261598,
+     0.02517290176268875,
+     0.024532831784777095,
+     0.02377832378103324
+    ],
+    "same_grid_evolved": 0.02517290176268875,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 5,
+    "same_grid_per_time": [
+     0.0,
+     0.01452174375839426,
+     0.011045823854494572,
+     0.011073881512972662,
+     0.01451802458834818,
+     0.01727767130408618
+    ],
+    "same_grid_evolved": 0.01727767130408618,
+    "t0_error": 0.0,
+    "finite": true
+   }
+  ]
+ },
+ "tsol-refine": {
+  "ok": true,
+  "worst_evolved_percent": 3.270271064448539,
+  "median_evolved_percent": 2.340132880850704,
+  "median_gpu_ms": 36.04061738587916,
+  "median_of_case_medians_ms": 36.01832897402346,
+  "host_transfer_median_ms": 0.7797360885888338,
+  "gpu_name": "NVIDIA A100 80GB PCIe",
+  "best_epoch": 531,
+  "checkpoint_sha256": "03d6de4938c58b2eadcef1eb007fef5f0425b5babb0530614aea0ea5a8a485a8",
+  "real_parameter_count": 3108240,
+  "config": {
+   "family": "transolver",
+   "dim": 128,
+   "layers": 8,
+   "heads": 8,
+   "slices": 64,
+   "mlp_ratio": 2,
+   "patch": 4,
+   "ref": 8,
+   "dtype": "float32",
+   "warmup_epochs": 10,
+   "epochs": 4000,
+   "patience": 250,
+   "batch_size": 8,
+   "learning_rate": 0.0003,
+   "weight_decay": 0.0001,
+   "seed": 20260914,
+   "refines_capacity": "small",
+   "selected_by": "validation mean case-maximum fixed-initial error"
+  },
+  "t0_returned_exactly": true,
+  "repetitions": [
+   5,
+   5,
+   5,
+   5,
+   5,
+   5
+  ],
+  "per_case": [
+   {
+    "case": 0,
+    "same_grid_per_time": [
+     0.0,
+     0.014638554500212238,
+     0.015290590559072982,
+     0.016334094530742804,
+     0.018052313237051858,
+     0.019565702111844913
+    ],
+    "same_grid_evolved": 0.019565702111844913,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 1,
+    "same_grid_per_time": [
+     0.0,
+     0.008927323128362915,
+     0.010592517824940278,
+     0.011519324911124508,
+     0.011366031218583292,
+     0.01131550588352118
+    ],
+    "same_grid_evolved": 0.011519324911124508,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 2,
+    "same_grid_per_time": [
+     0.0,
+     0.01325619458126196,
+     0.010894427394035814,
+     0.013287820830293475,
+     0.01333612562425281,
+     0.013187977133623085
+    ],
+    "same_grid_evolved": 0.01333612562425281,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 3,
+    "same_grid_per_time": [
+     0.0,
+     0.03253851307264536,
+     0.03270271064448539,
+     0.03188658690303406,
+     0.030350125079014655,
+     0.03169794888429858
+    ],
+    "same_grid_evolved": 0.03270271064448539,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 4,
+    "same_grid_per_time": [
+     0.0,
+     0.022331881573139156,
+     0.026915357669432573,
+     0.027236955505169164,
+     0.02608869840708207,
+     0.024033607445235892
+    ],
+    "same_grid_evolved": 0.027236955505169164,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 5,
+    "same_grid_per_time": [
+     0.0,
+     0.021824667768030007,
+     0.026550271759259884,
+     0.02764086894283086,
+     0.024250434650980427,
+     0.022726911884621812
+    ],
+    "same_grid_evolved": 0.02764086894283086,
+    "t0_error": 0.0,
+    "finite": true
+   }
+  ]
+ },
+ "don-small": {
+  "ok": true,
+  "worst_evolved_percent": 32.17844300298112,
+  "median_evolved_percent": 15.80702616351663,
+  "median_gpu_ms": 13.306723674759269,
+  "median_of_case_medians_ms": 13.306723674759269,
+  "host_transfer_median_ms": 0.8017600048333406,
+  "gpu_name": "NVIDIA A100 80GB PCIe",
+  "best_epoch": 573,
+  "checkpoint_sha256": "3b733306e2eba13acab4768d277e05fb36d12024951bb205fd32c50108bebba8",
+  "real_parameter_count": 2569349,
+  "config": {
+   "family": "deeponet",
+   "width": 48,
+   "rank": 256,
+   "trunk_width": 384,
+   "levels": 3,
+   "pool_bins": 4,
+   "dtype": "float32",
+   "warmup_epochs": 0,
+   "epochs": 4000,
+   "patience": 250,
+   "batch_size": 8,
+   "learning_rate": 0.001,
+   "weight_decay": 0.0001,
+   "seed": 20260914
+  },
+  "t0_returned_exactly": true,
+  "repetitions": [
+   5,
+   5,
+   5,
+   5,
+   5,
+   5
+  ],
+  "per_case": [
+   {
+    "case": 0,
+    "same_grid_per_time": [
+     0.0,
+     0.07674890034287224,
+     0.06705697239162418,
+     0.06768110288415133,
+     0.07651018329619387,
+     0.08583213598815956
+    ],
+    "same_grid_evolved": 0.08583213598815956,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 1,
+    "same_grid_per_time": [
+     0.0,
+     0.06768264637868245,
+     0.035156207455159766,
+     0.031241177714609995,
+     0.030675316592840823,
+     0.02889368563871772
+    ],
+    "same_grid_evolved": 0.06768264637868245,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 2,
+    "same_grid_per_time": [
+     0.0,
+     0.19229367387454974,
+     0.19427034102624138,
+     0.20861295957363035,
+     0.21407847359008605,
+     0.2147436503253426
+    ],
+    "same_grid_evolved": 0.2147436503253426,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 3,
+    "same_grid_per_time": [
+     0.0,
+     0.19084036206851704,
+     0.15160561584560456,
+     0.1528206216468605,
+     0.16517372525679952,
+     0.17453783901828832
+    ],
+    "same_grid_evolved": 0.19084036206851704,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 4,
+    "same_grid_per_time": [
+     0.0,
+     0.12530016120181556,
+     0.10424142696483488,
+     0.08558131760323415,
+     0.06379906291017734,
+     0.051400444754082966
+    ],
+    "same_grid_evolved": 0.12530016120181556,
+    "t0_error": 0.0,
+    "finite": true
+   },
+   {
+    "case": 5,
+    "same_grid_per_time": [
+     0.0,
+     0.32178443002981116,
+     0.20548183123520164,
+     0.15792111052625404,
+     0.13543870637505576,
+     0.12752968236819692
+    ],
+    "same_grid_evolved": 0.32178443002981116,
+    "t0_error": 0.0,
+    "finite": true
+   }
+  ]
+ }
+}

@@ -1,0 +1,19 @@
+{
+ "kind": "train",
+ "problem": "lshape",
+ "mesh": 2048,
+ "members": [
+  "transolver.json",
+  "deeponet.json"
+ ],
+ "layout": "output/<stem>/<stem>/best.pt",
+ "train_count": 256,
+ "cg_batch": 32,
+ "mem_share": 0.5,
+ "checkpoint_blocks": false,
+ "job": "l2048b",
+ "remote": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l2048b",
+ "gpu_constraint": "a100-80G|h100-80G|h200-141G",
+ "mem": "160G",
+ "time": "04:30:00"
+}

@@ -1,0 +1,174 @@
+{
+ "ops/families.py": {
+  "source": "exp/2026-09-23-heat-compare-hires @ 9a5baf9a experiments/heat-compare-hires/ops/families.py (byte-identical; itself ops-tune-grid @ 52d1b573)",
+  "sha256": "5f68654c70d5ccc22193d105aacd146381598aba73698e30bb51d369d3d103f6",
+  "identical": true
+ },
+ "ops/spectral_conv_f64.py": {
+  "source": "exp/2026-09-23-heat-compare-hires @ 9a5baf9a ops/spectral_conv_f64.py (byte-identical)",
+  "sha256": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "identical": true
+ },
+ "ops/NEURALOPERATOR-LICENSE": {
+  "source": "exp/2026-09-23-heat-compare-hires @ 9a5baf9a (byte-identical)"
+ },
+ "ops/pops.py": {
+  "source": "adapted from exp/2026-09-23-heat-compare-hires @ 9a5baf9a ops/heatops.py (Poisson contract: cin=3, cout=1, domain mask, DST/CG data)"
+ },
+ "ops/train_ops.py": {
+  "source": "adapted from exp/2026-09-23-heat-compare-hires @ 9a5baf9a ops/train_ops.py (one network per process, Poisson data, optional co-scheduling memory share)"
+ },
+ "configs/ops/{fno,unet,transolver,deeponet}.json": {
+  "source": "exp/2026-09-23-heat-compare-hires @ 9a5baf9a configs/ops/*.json (= ops-tune-grid @ 52d1b573 fno/large, unet/medium, transolver/large, deeponet/small)",
+  "identical": {
+   "fno": true,
+   "unet": true,
+   "transolver": true,
+   "deeponet": true
+  }
+ },
+ "configs/ops/unet_small.json": {
+  "source": "exp/2026-09-22-ops-tune-grid @ 52d1b573 configs/unet/small.json (byte-identical)",
+  "identical": true
+ },
+ "configs/ops/transolver_small.json": {
+  "source": "exp/2026-09-22-ops-tune-grid @ 52d1b573 configs/transolver/small.json (byte-identical)",
+  "identical": true
+ },
+ "nmrom_sq/*": {
+  "source": "exp/2026-09-23-poisson-bank-knob, staged code/ directory of job pbkH 4199318 (commit 50f2df48; pbkI 4199321 staged the same bytes), minus stage.py; byte-identical",
+  "files": {
+   "arms.py": {
+    "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+    "identical": true
+   },
+   "core.py": {
+    "sha256": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+    "identical": true
+   },
+   "correction_core.py": {
+    "sha256": "70738422a31393fe4bdc7d22acf7f03cf7d8f76804410c073a803f85e32e795c",
+    "identical": true
+   },
+   "ctol_tol.py": {
+    "sha256": "7bf2a76d195e4cd44ed65b5765bc1197f195fd05915a8abc1037a7d1a02e32f0",
+    "identical": true
+   },
+   "engines.py": {
+    "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "identical": true
+   },
+   "hp_core.py": {
+    "sha256": "0e6b64109d9bff7dd82d0c93899b010f25ceb80dca19cc1838b74517458da575",
+    "identical": true
+   },
+   "iterative_core.py": {
+    "sha256": "6e01472a48be675f5b3838bb15be74631c9afc7ea34b230938dbf9549da49119",
+    "identical": true
+   },
+   "kernel_solver.py": {
+    "sha256": "b2d7881b6c6dd8f53db15f1a8f39515fe5e9b1350db5883c91bcaa71a2d3b975",
+    "identical": true
+   },
+   "ms_parametric.py": {
+    "sha256": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3",
+    "identical": true
+   },
+   "pbh_core.py": {
+    "sha256": "531a3f28a195d6d30b8439f91cde8d81a0133f5dff90485688b57c505d314d0b",
+    "identical": true
+   },
+   "pbk_audit_np.py": {
+    "sha256": "9da45acd1f95323d7e00a7f70b4499891cf308d9250d30932a3efbf60ad0ec4e",
+    "identical": true
+   },
+   "pbk_core.py": {
+    "sha256": "2ff5aec4d4695ca62c9087d0acd6f9ce38554ece31253dd529f9923c60d96c95",
+    "identical": true
+   },
+   "pbk_solve.py": {
+    "sha256": "a115486a49c3665c21fb717ab65ed97ef22219587f5bd73f9c5cbed218882f31",
+    "identical": true
+   },
+   "plin_core.py": {
+    "sha256": "9584b88ef9e10e489856e23c3eb0c44a8a7be295d95c3b86d9c2eef5aec1eaac",
+    "identical": true
+   },
+   "prep.npz": {
+    "sha256": "43767c771a42f7e51a9c3017815e5d558c0022c90c1cd01d1e6dc5f92d6f86c7",
+    "identical": true
+   },
+   "primary_K32-basis.npz": {
+    "sha256": "d629fb764295b5fad2252078993335ea7f7d3ea242584d7cef32dad21824fcd5",
+    "identical": true
+   },
+   "primary_K32.pkl": {
+    "sha256": "0c195e99c4fbc47c7906d84df885d12bc5452401a5c97eec3727b7ffba70be4f",
+    "identical": true
+   },
+   "sep_common.py": {
+    "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+    "identical": true
+   },
+   "speed_core.py": {
+    "sha256": "3f701fed25ff7cbb9b537e54e38af6c13b97cf4735408d601d8cc1c6805942a4",
+    "identical": true
+   }
+  }
+ },
+ "nmrom_ls/*": {
+  "source": "exp/2026-09-23-poisson-bank-knob-3d, staged code/ directory of job l2048b 4205072 (commit 036a73e0, same bytes as l256b 4204384; l512/l1024 differ only in the pbk3_core order-gate function), minus stage.py and config; byte-identical",
+  "files": {
+   "arms.py": {
+    "sha256": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+    "identical": true
+   },
+   "engines.py": {
+    "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+    "identical": true
+   },
+   "head_sdf_R512_K16-basis.npz": {
+    "sha256": "91aa1ae7bbe9c5557898e57bfa8e929b6781328c2b65fc1da4e38fb8be14ed63",
+    "identical": true
+   },
+   "head_sdf_R512_K16.pkl": {
+    "sha256": "d43082e26c83f21e3f6969acd6051ffd20fbb076477c0d5dfe24bce65222b829",
+    "identical": true
+   },
+   "lsh_core.py": {
+    "sha256": "836600923c4bac3c04459352356c710d316f6c4b6f075aef65598f8f41574dcc",
+    "identical": true
+   },
+   "models.json": {
+    "sha256": "07efccff7f6748ff1dfc46b2d32611c3b333b0e11673948dcfb27713bf79d1f4",
+    "identical": true
+   },
+   "pbk3_audit_np.py": {
+    "sha256": "fcf25c72b45f66c83865e10c170d4ef6a4abcf784068f251d92f9a027d898a9b",
+    "identical": true
+   },
+   "pbk3_core.py": {
+    "sha256": "a49641c9d85cfa121712a6362fc5d6b97b42da981a8cee640b931d8a33d8dc1f",
+    "identical": true
+   },
+   "pbk3_lshape.py": {
+    "sha256": "6f7b23d04084b0657f3e8168e14927d2ed5feea2a5999e9472bbda9b1e7dc965",
+    "identical": true
+   },
+   "prep_lshape.npz": {
+    "sha256": "2276995933267194e3383880a5e0fb2e44ed843dfa21e5a9f81f58fd93ec5ba6",
+    "identical": true
+   },
+   "sep_common.py": {
+    "sha256": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4",
+    "identical": true
+   }
+  }
+ },
+ "configs/table1_reference.json": {
+  "source": "extracted from poisson-bank-knob reports/summary.json (@06546331) and poisson-bank-knob-3d reports/summary.json (@59b67ae2)"
+ },
+ "panel.py": {
+  "source": "new; NM-ROM/CG construction follows pbk_solve.py (linear-rung branch) and pbk3_lshape.py (linear arm) of the above staged code; A-B-A timing after poisson-bank-knob DESIGN A5"
+ }
+}

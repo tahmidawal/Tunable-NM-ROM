@@ -1,0 +1,28 @@
+{
+ "spec": {
+  "note": "g2d: one network per job; config verbatim from burgers-compare-hires (the 1024^2/2048^2 operator panels), 3000 s budget",
+  "per_arm_seconds": 3000,
+  "arms": [
+   {
+    "name": "unet-refine",
+    "config": "inputs/opconfigs/unet-refine.json"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "arm": "unet-refine",
+   "config": "inputs/opconfigs/unet-refine.json",
+   "exit_code": 0,
+   "started_unix": 1790269095.261611,
+   "ended_unix": 1790272122.2762146,
+   "job_id": "4285939",
+   "epochs": 916,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.019140609817284313,
+   "validation_worst_case_max": 0.06821377020000072,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "5620fbeafbdbf0048a8d8bf7aa30c7b54d8c3cfbb8696a3d338bab50e0a43576"
+  }
+ ]
+}

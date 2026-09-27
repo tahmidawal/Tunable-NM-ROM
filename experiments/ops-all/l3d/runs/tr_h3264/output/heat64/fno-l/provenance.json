@@ -1,0 +1,67 @@
+{
+ "arm": "fno-l",
+ "problem": "heat",
+ "mesh": 64,
+ "family": "fno",
+ "config": {
+  "family": "fno",
+  "width": 32,
+  "modes": 16,
+  "layers": 4,
+  "dtype": "float64",
+  "smoke_overrides": {
+   "width": 4,
+   "modes": 4,
+   "layers": 2
+  },
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 4000,
+  "patience": 250,
+  "seed": 20260914,
+  "cin": 4,
+  "cout": 5
+ },
+ "memory_fraction": 0.25,
+ "probe_peak_bytes": {
+  "8": 16432427520
+ },
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "job_id": "4286503",
+ "node": "pax049",
+ "config_sha256": "a58351b0a710f3f8cd7a7f7a4a4cb313750f6ad89bec98a11a3b7bfae55c8662",
+ "sources": {
+  "make_panel_config.py": "d30b7f0b40923e4de6540edf5bafc4ca520e16fb74360364039706910024fb23",
+  "ops_l3d.py": "963cca4ad9b02c711c3c5d03fb02f222afdf8c614b00603a7a00c545c652bb3a",
+  "panel_l3d.py": "7f9196ece3a4495889399a00496e7324c7fe52405d9b70a47b10482cd96ecb5c",
+  "problems.py": "cece80fafa96ad368ebffeda3516e8d67e97f8361d89dea275b65f384dc877a1",
+  "smoke_generators.py": "1f87983c97c53759a9ea58129f4c066915dbf456aba20e2b7c568d042a6507c6",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_l3d.py": "a0a34fff6ee4ba06bc6b3340d3387b1452fb36df1e41b6b8dbbedf7aa501ea02"
+ },
+ "train_seed": 921000,
+ "train_cases": 2048,
+ "split": "index % 8 == 7 -> validation",
+ "train_count": 1792,
+ "validation_count": 256,
+ "overlap_with_evaluation_cohorts": {
+  "validation": 0,
+  "heldout": 0
+ },
+ "draws_sha256": "55040dc58b15b625b2026591d19d79c725d029de7d030dec50ab8ef525a78550",
+ "normalization": [
+  0.09121428893964514,
+  0.060258360699461076
+ ],
+ "micro_batch": 8,
+ "wall_budget_seconds": 3000.0,
+ "smoke": false,
+ "real_parameter_count": 18887845
+}

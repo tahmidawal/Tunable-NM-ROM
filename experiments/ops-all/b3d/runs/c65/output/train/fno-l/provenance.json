@@ -1,0 +1,75 @@
+{
+ "environment": {
+  "torch": "2.11.0+cu128",
+  "neuraloperator": "2.0.0",
+  "cuda": "12.8",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9"
+ },
+ "mesh": 65,
+ "grid": 64,
+ "train_seed": 923701,
+ "train_count": 1536,
+ "train_table_sha256": "dbf21b405dd4f1064714f3f8acdb077344ec83724bf281aae0c33b1caa7bfedf",
+ "validation_seed": 923751,
+ "validation_count": 64,
+ "validation_table_sha256": "9bda1be2219bc2193983db11a9679c120453d9ae1a422fc1a1fed12fa4d6d1b1",
+ "data_solver": {
+  "dt": 0.005,
+  "ntol": 1e-08,
+  "ltol": 1e-09
+ },
+ "generation": {
+  "max_rel_residual": 9.951122253227524e-09,
+  "max_newton": 3,
+  "cap_hits": 0
+ },
+ "generation_seconds": 295.847460269928,
+ "overlap_with_evaluation_cohorts": {
+  "heldout": 0,
+  "romval": 0
+ },
+ "normalization": [
+  0.19348391645095922,
+  -3.420930882705404,
+  0.6523227081670999,
+  0.14003474744594038
+ ],
+ "data_on_device": true,
+ "job_id": "4286423",
+ "node": "pax105",
+ "sources": {
+  "make_configs.py": "66d890a809aa8f299a62f1fc489dc19684c8573a915acc61dc05e593a82ed363",
+  "ops3d.py": "2ced1f72c75f62f7c221baca92e18c56fb33c263928a83dab5f09cdfaf85e676",
+  "opsb3d.py": "ec8d30d396839c302ea2933e62004f519f9df35dbfbb31a4fd7c5bd5e5e4388d",
+  "panel_b3d.py": "b7885206b8cf5e59aace2ff842d00528844908ea2f69a927e9933cfd7e026468",
+  "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+  "train_b3d.py": "bccedb513dfc4b35dc150f9e29ab70bab06dafa4f4a44568d9e465c05e1c9405"
+ },
+ "arm": "fno-l",
+ "config": {
+  "family": "fno",
+  "width": 32,
+  "modes": 16,
+  "layers": 4,
+  "dtype": "float64",
+  "smoke_overrides": {
+   "width": 4,
+   "modes": 4,
+   "layers": 2
+  },
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "epochs": 4000,
+  "patience": 250,
+  "seed": 20260914
+ },
+ "config_sha256": "a58351b0a710f3f8cd7a7f7a4a4cb313750f6ad89bec98a11a3b7bfae55c8662",
+ "micro_batch": 8,
+ "probe_peak_bytes": {
+  "8": 25927744512
+ },
+ "wall_budget_seconds": 3000.0,
+ "real_parameter_count": 18887909
+}

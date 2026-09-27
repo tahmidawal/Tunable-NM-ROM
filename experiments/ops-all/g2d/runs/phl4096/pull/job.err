@@ -1,0 +1,48 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/panel.py", line 432, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/panel.py", line 261, in main
+    run_operators()
+    ~~~~~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/panel.py", line 250, in run_operators
+    run_block(name, m, dict(family='operator', unknowns=None, checkpoint=str(path), checkpoint_sha256=sha_file(path),
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                            training_provenance=dict(job_id=prov.get('job_id'), train=prov['train'], validation=prov['validation'],
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ...<2 lines>...
+                            parameters=int(sum(p.numel() * (2 if p.is_complex() else 1) for p in net.parameters())),
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                            parameter_dtype=str(getattr(net, 'parameter_dtype', torch.float64))))
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/panel.py", line 192, in run_block
+    t = time.perf_counter(); o = method.run(x); row['warm_seconds'].append(time.perf_counter() - t)
+                                 ~~~~~~~~~~^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/panel.py", line 45, in run
+    out = self.run_raw(x); self.sync(out); return out
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/panel.py", line 248, in run
+    return H.query_interior(net, x, *norm)
+           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/ops/heatops.py", line 165, in query_interior
+    return predict(model, field, mean, std, scale)[0, :, 1:-1, 1:-1].contiguous()
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/ops/heatops.py", line 153, in predict
+    output = model(features(field, mean, std)) * scale
+             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/ops/families.py", line 82, in forward
+    return self.network(x.to(self.parameter_dtype)).to(torch.float64)
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/phl4096/src/experiments/heat-compare-hires/ops/families.py", line 132, in forward
+    x = block(torch.cat((up(x), skip), dim=1))
+              ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.02 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.19 GiB is free. Including non-PyTorch memory, this process has 78.05 GiB memory in use. Of the allocated memory 6.04 GiB is allocated by PyTorch, and 64.33 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

@@ -1,0 +1,8 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"arm": "tsol-s", "problem": "heat", "mesh": 32, "micro_batch": 8, "real_parameter_count": 5993496}
+{"arm": "tsol-s", "epoch": 0, "steps": 224, "train": 0.23862713016861764, "val_mean": 0.19714496172349366, "val_worst": 0.3752661008364964, "lr": 0.0009722447332205014, "wall": 346.8}
+{"arm": "tsol-s", "epoch": 1, "steps": 448, "train": 0.020893252824865854, "val_mean": 0.1113101622437355, "val_worst": 0.19797011090689506, "lr": 0.000883573546191602, "wall": 694.3}
+{"arm": "tsol-s", "epoch": 2, "steps": 672, "train": 0.008632271982903299, "val_mean": 0.08027769152518573, "val_worst": 0.14030488174455538, "lr": 0.0007452848161425519, "wall": 1041.7}
+{"arm": "tsol-s", "epoch": 3, "steps": 896, "train": 0.00240773254470275, "val_mean": 0.041514149885624664, "val_worst": 0.09091821527114721, "lr": 0.0005757331774429791, "wall": 1388.9}
+{"arm": "tsol-s", "epoch": 4, "steps": 1120, "train": 0.0011547953499058316, "val_mean": 0.03764455379515874, "val_worst": 0.0839471171213482, "lr": 0.0003966828704317364, "wall": 1736.4}
+TRAIN DONE {"arm": "tsol-s", "problem": "heat", "mesh": 32, "stop_reason": "wall_budget", "epochs_completed": 9, "optimisation_steps": 1946, "best_epoch": 8} val_mean 0.024701598992111416 val_worst 0.06876271871904781

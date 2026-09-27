@@ -1,0 +1,118 @@
+{
+ "times": [
+  0.0,
+  0.1,
+  0.2,
+  0.3,
+  0.4,
+  0.5
+ ],
+ "diffusivity": 0.02,
+ "tests": {
+  "count": 256
+ },
+ "cohorts": [
+  [
+   791099,
+   16
+  ]
+ ],
+ "cohort_name": "sealed (hires-heat h2d-final04, seed 791099, 16 draws; second opening, no choice made on it)",
+ "train": [
+  791000,
+  512
+ ],
+ "validation": [
+  791001,
+  16
+ ],
+ "repetitions": 5,
+ "burn_seconds": 0.15,
+ "idle_seconds": 1.0,
+ "sentinel_reps": 15,
+ "order_tolerance": 0.1,
+ "audit_intervals": 128,
+ "random_audit_cases": 16,
+ "random_audit_nodes": 50000,
+ "audit_sample_seed": 20260923,
+ "factor_gate_draws": [
+  0,
+  257,
+  511
+ ],
+ "control_matmul_size": 8192,
+ "cg_arms": {
+  "fom_cncg_dt0.1_rtol1e-2": {
+   "dt": 0.1,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.05_rtol1e-2": {
+   "dt": 0.05,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.025_rtol1e-2": {
+   "dt": 0.025,
+   "tolerance": 0.01
+  },
+  "fom_cncg_dt0.1_rtol1e-3": {
+   "dt": 0.1,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.05_rtol1e-3": {
+   "dt": 0.05,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.025_rtol1e-3": {
+   "dt": 0.025,
+   "tolerance": 0.001
+  },
+  "fom_cncg_dt0.05_rtol1e-4": {
+   "dt": 0.05,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.025_rtol1e-4": {
+   "dt": 0.025,
+   "tolerance": 0.0001
+  },
+  "fom_cncg_dt0.025_rtol1e-6_NAMED": {
+   "dt": 0.025,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.0125_rtol1e-6": {
+   "dt": 0.0125,
+   "tolerance": 1e-06
+  },
+  "fom_cncg_dt0.00625_rtol1e-8_TIGHT": {
+   "dt": 0.00625,
+   "tolerance": 1e-08
+  }
+ },
+ "fom_order": [],
+ "coarse_intervals": [],
+ "coarse_cg": "fom_cncg_dt0.05_rtol1e-3",
+ "retime": {},
+ "carryover_tolerance": 0.1,
+ "retime_tolerance": 0.1,
+ "mesh": 4096,
+ "operators_first": true,
+ "qm_first": false,
+ "operators": {
+  "op_fno": {
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096fno/out/tr/fno/best.pt",
+   "family": "fno"
+  },
+  "op_unet": {
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096unet/out/tr/unet/best.pt",
+   "family": "unet"
+  },
+  "op_transolver": {
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096tran/out/tr/transolver/best.pt",
+   "family": "transolver"
+  },
+  "op_deeponet": {
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/h4096deep/out/tr/deeponet/best.pt",
+   "family": "deeponet"
+  }
+ },
+ "g2d_note": "heat-compare-hires panel.py with only the operator blocks (+ its DST control and sentinels); NM-ROM and FOM are timed by hbk_run.py earlier in the same allocation"
+}

@@ -1,0 +1,20 @@
+{
+ "kind": "train",
+ "problem": "lshape",
+ "mesh": 256,
+ "members": [
+  "fno.json",
+  "unet.json",
+  "transolver.json",
+  "deeponet.json"
+ ],
+ "layout": "output/<stem>/<stem>/best.pt",
+ "train_count": 2611,
+ "cg_batch": 256,
+ "mem_share": 0.24,
+ "job": "l256a",
+ "remote": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l256a",
+ "gpu_constraint": "a100-80G|h100-80G|h200-141G",
+ "mem": "128G",
+ "time": "02:45:00"
+}

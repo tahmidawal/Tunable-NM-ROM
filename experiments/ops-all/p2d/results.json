@@ -1,0 +1,3273 @@
+{
+ "generated_by": "summarize.py",
+ "protocol": "../../../OPS-ALL-PROTOCOL.md",
+ "design": "DESIGN.md",
+ "units": {
+  "ms": "median GPU-query milliseconds over A1 u A2 (operators, NM-ROM) or B (CG)",
+  "pct": "relative L2 x 100"
+ },
+ "cells": [
+  {
+   "problem": "square",
+   "mesh": 256,
+   "cell": "s256",
+   "table1_source_job": 4199318,
+   "nmrom_accurate": "R512_linear",
+   "nmrom_fast": "R128_linear",
+   "named_fom": "cg_0.03",
+   "cohort": {
+    "role": "development",
+    "cases": 12,
+    "note": "the twelve opened development sources of p-linear / hires-poisson / poisson-bank-knob"
+   },
+   "panel_job": "s256q",
+   "panel_job_id": "4290576",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-662eb49d-1d4d-a693-a62c-7fbfef041e73",
+   "node": "pax105",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R512_linear": {
+     "expected": 0.007458632302014031,
+     "got": 0.007458632302014031,
+     "relative_difference": 0.0,
+     "passed": true
+    },
+    "R128_linear": {
+     "expected": 0.023140797786869418,
+     "got": 0.02314079778686941,
+     "relative_difference": 2.9985543142529445e-16,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R512_linear": 0.9693069743285738,
+    "R128_linear": 1.0180389885556347,
+    "op_fno": 0.9980717407774127,
+    "op_unet": 1.0011665275914634,
+    "op_transolver": 1.0034252122177967,
+    "op_deeponet": 0.9940485821219427
+   },
+   "elapsed_seconds": 142.6781403431669,
+   "fom_named": {
+    "name": "cg_0.03",
+    "ms": 10.992445051670074,
+    "worst_pct": 0.5480065709137634,
+    "median_pct": 0.1849495434580255,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.03",
+    "ms": 10.992445051670074,
+    "worst_pct": 0.5480065709137634
+   },
+   "nmrom_accurate_result": {
+    "arm": "R512_linear",
+    "ms": 0.5388637073338032,
+    "worst_pct": 0.7458632302014031,
+    "median_pct": 0.05803777706542782,
+    "speedup_vs_named_fom": 20.399304874434087,
+    "deterministic": true,
+    "table1_worst_pct": 0.7458632302014031,
+    "table1_gpu_ms": 0.7673734799027443
+   },
+   "nmrom_fast_result": {
+    "arm": "R128_linear",
+    "ms": 0.3211130388081074,
+    "worst_pct": 2.314079778686941,
+    "median_pct": 0.21835065567854775,
+    "speedup_vs_named_fom": 34.23232233879797,
+    "deterministic": true,
+    "table1_worst_pct": 2.3140797786869416,
+    "table1_gpu_ms": 0.5875241477042437
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 5.398377543315291,
+     "worst_pct": 42.54530385812117,
+     "median_pct": 10.641373754102034,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 6.3544069416821,
+     "worst_pct": 35.174318420639445,
+     "median_pct": 5.55416340606181,
+     "converged": true
+    },
+    "cg_0.4": {
+     "ms": 7.012457586824894,
+     "worst_pct": 22.473267958281514,
+     "median_pct": 4.25961460729492,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 7.511564064770937,
+     "worst_pct": 12.397243336472359,
+     "median_pct": 2.848411916178582,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 8.295010076835752,
+     "worst_pct": 7.155207570871588,
+     "median_pct": 1.5483161990758936,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 9.335601469501853,
+     "worst_pct": 2.1466842311377388,
+     "median_pct": 0.6233059827539418,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 10.992445051670074,
+     "worst_pct": 0.5480065709137634,
+     "median_pct": 0.1849495434580255,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 12.524343095719814,
+     "worst_pct": 0.15274277988042045,
+     "median_pct": 0.05541468238572386,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 15.835582744330168,
+     "worst_pct": 0.013000942922647061,
+     "median_pct": 0.004862736920718002,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 18.262816593050957,
+     "worst_pct": 0.0011822059664717726,
+     "median_pct": 0.0002990423834852177,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "s256f",
+     "training_job_id": "4286507",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 45,
+     "steps": 14616,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 42,
+     "training_seconds": 3000.2142745857127,
+     "real_parameter_count": 17876673,
+     "train_count": 2611,
+     "validation_worst": 0.007569343142232657,
+     "validation_mean": 0.004546176908693413,
+     "peak_allocated_bytes": 8335379456,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 1.0590559332983216,
+     "median_pct": 0.40057383819011355,
+     "ms": 7.431357866153121,
+     "ms_A1": 7.433519698679447,
+     "ms_A2": 7.419185945764184,
+     "speedup_vs_named_fom": 1.4791973754535883,
+     "own_matched_cg": "cg_0.03",
+     "speedup_vs_own_matched_cg": 1.4791973754535883,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "2976f3abf9a110f643101be6357c098859d3e714a02a6b676b4ed6307b485784",
+     "panel_param_count": 17876673
+    },
+    "unet": {
+     "training_job": "s256u",
+     "training_job_id": "4286509",
+     "config": "unet.json",
+     "co_scheduled": [
+      "unet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 135,
+     "steps": 44076,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 132,
+     "training_seconds": 3000.1345376963727,
+     "real_parameter_count": 7763041,
+     "train_count": 2611,
+     "validation_worst": 0.008194490314416368,
+     "validation_mean": 0.0047904145931086176,
+     "peak_allocated_bytes": 6031712768,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 0.7094613125962231,
+     "median_pct": 0.36109951342510327,
+     "ms": 6.18082145228982,
+     "ms_A1": 6.1756044160574675,
+     "ms_A2": 6.182808429002762,
+     "speedup_vs_named_fom": 1.7784763945248223,
+     "own_matched_cg": "cg_0.03",
+     "speedup_vs_own_matched_cg": 1.7784763945248223,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "26a2b30865067415c96bbe2209c9ed67c90f8c75a36cc2515957a21fc6970405",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "s256t",
+     "training_job_id": "4286512",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "transolver"
+     ],
+     "training_gpu": "NVIDIA H100 PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 70,
+     "steps": 22704,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 64,
+     "training_seconds": 3000.300087763928,
+     "real_parameter_count": 12298320,
+     "train_count": 2611,
+     "validation_worst": 0.4277279407633348,
+     "validation_mean": 0.1969958258598474,
+     "peak_allocated_bytes": 4739095040,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 4,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 19.288498880212863,
+     "median_pct": 10.734422478852318,
+     "ms": 15.568704344332218,
+     "ms_A1": 15.562523622065783,
+     "ms_A2": 15.61582856811583,
+     "speedup_vs_named_fom": 0.7060603636982721,
+     "own_matched_cg": "cg_0.3",
+     "speedup_vs_own_matched_cg": 0.4824784322855691,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "8bfd9507c75cd86ed64d6a9c75f57eb182967b1ad62168a75f3def940bc1d838",
+     "panel_param_count": 12298320
+    },
+    "deeponet": {
+     "training_job": "s256d",
+     "training_job_id": "4286515",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 186,
+     "steps": 60735,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 185,
+     "training_seconds": 3000.1535840779543,
+     "real_parameter_count": 2174673,
+     "train_count": 2611,
+     "validation_worst": 0.07473283090917537,
+     "validation_mean": 0.0281772064833029,
+     "peak_allocated_bytes": 5752926208,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 6.892528704282891,
+     "median_pct": 1.2146346526071046,
+     "ms": 4.087063949555159,
+     "ms_A1": 4.098368808627129,
+     "ms_A2": 4.073977703228593,
+     "speedup_vs_named_fom": 2.689570113740576,
+     "own_matched_cg": "cg_0.1",
+     "speedup_vs_own_matched_cg": 2.2841828717942994,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "709e077409f8daa587df9df9f0be5979a019d303fc2187454a799754457319ea",
+     "panel_param_count": 2174673
+    }
+   }
+  },
+  {
+   "problem": "square",
+   "mesh": 1024,
+   "cell": "s1024",
+   "table1_source_job": 4199318,
+   "nmrom_accurate": "R512_linear",
+   "nmrom_fast": "R128_linear",
+   "named_fom": "cg_0.03",
+   "cohort": {
+    "role": "development",
+    "cases": 12,
+    "note": "the twelve opened development sources of p-linear / hires-poisson / poisson-bank-knob"
+   },
+   "panel_job": "s1024p",
+   "panel_job_id": "4290645",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-10ba5789-de43-27ff-bc59-837e30b7d4d0",
+   "node": "pax106",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R512_linear": {
+     "expected": 0.007421302120899465,
+     "got": 0.007421302120899465,
+     "relative_difference": 0.0,
+     "passed": true
+    },
+    "R128_linear": {
+     "expected": 0.02306396130740484,
+     "got": 0.02306396130740484,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R512_linear": 0.9742936316767092,
+    "R128_linear": 0.9170737003629446,
+    "op_fno": 0.9989380629075417,
+    "op_transolver": 1.005668721053047,
+    "op_unet": 0.9977694883391018,
+    "op_deeponet": 0.996755228542262
+   },
+   "elapsed_seconds": 321.8885311912745,
+   "fom_named": {
+    "name": "cg_0.03",
+    "ms": 99.64146744459867,
+    "worst_pct": 0.22010876537488866,
+    "median_pct": 0.09595663204575797,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.03",
+    "ms": 99.64146744459867,
+    "worst_pct": 0.22010876537488866
+   },
+   "nmrom_accurate_result": {
+    "arm": "R512_linear",
+    "ms": 3.4128259867429733,
+    "worst_pct": 0.7421302120899466,
+    "median_pct": 0.058011197306196825,
+    "speedup_vs_named_fom": 29.19617578852633,
+    "deterministic": true,
+    "table1_worst_pct": 0.7421302120899466,
+    "table1_gpu_ms": 3.5362488124519587
+   },
+   "nmrom_fast_result": {
+    "arm": "R128_linear",
+    "ms": 1.5208914410322905,
+    "worst_pct": 2.3063961307404837,
+    "median_pct": 0.21799162724391413,
+    "speedup_vs_named_fom": 65.51517403304472,
+    "deterministic": true,
+    "table1_worst_pct": 2.3063961307404837,
+    "table1_gpu_ms": 1.4412137679755688
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 61.71197700314224,
+     "worst_pct": 16.49024980993533,
+     "median_pct": 3.554292274013811,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 66.93039508536458,
+     "worst_pct": 9.015738651084389,
+     "median_pct": 2.1140269030530083,
+     "converged": true
+    },
+    "cg_0.4": {
+     "ms": 69.53435903415084,
+     "worst_pct": 7.251324444778552,
+     "median_pct": 1.5643702364327619,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 73.28761974349618,
+     "worst_pct": 5.554576254934182,
+     "median_pct": 1.11864984063256,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 78.60374008305371,
+     "worst_pct": 2.199729427698864,
+     "median_pct": 0.6350549411731918,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 85.90083452872932,
+     "worst_pct": 0.7690061656964189,
+     "median_pct": 0.2892428096366141,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 99.64146744459867,
+     "worst_pct": 0.22010876537488866,
+     "median_pct": 0.09595663204575797,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 111.58539052121341,
+     "worst_pct": 0.07220757966955461,
+     "median_pct": 0.029734071376346895,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 136.89350942149758,
+     "worst_pct": 0.00704968705601234,
+     "median_pct": 0.0021201270409699612,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 156.75137331709266,
+     "worst_pct": 0.00042102541557037233,
+     "median_pct": 0.00013393697268240465,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "s1024a",
+     "training_job_id": "4288828",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno",
+      "transolver"
+     ],
+     "training_gpu": "NVIDIA H100 PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 2,
+     "steps": 528,
+     "stop_reason": "wall_budget",
+     "micro_batch": 2,
+     "best_epoch": 1,
+     "training_seconds": 3004.1754548740573,
+     "real_parameter_count": 17876673,
+     "train_count": 2611,
+     "validation_worst": 0.09085147274129148,
+     "validation_mean": 0.05128017147832112,
+     "peak_allocated_bytes": 31952259584,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 11.650665286567802,
+     "median_pct": 4.739639258122419,
+     "ms": 97.3275676369667,
+     "ms_A1": 97.41250891238451,
+     "ms_A2": 97.30906295590103,
+     "speedup_vs_named_fom": 1.0237743515410027,
+     "own_matched_cg": "cg_0.5",
+     "speedup_vs_own_matched_cg": 0.6876817813326638,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "7fb7586fe6ca92c006441521805de3f3f9bcb799c3405c1c58c16ef85004ed97",
+     "panel_param_count": 17876673
+    },
+    "unet": {
+     "training_job": "s1024b",
+     "training_job_id": "4288830",
+     "config": "unet.json",
+     "co_scheduled": [
+      "unet",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 8,
+     "steps": 2328,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 6,
+     "training_seconds": 3002.1152524570934,
+     "real_parameter_count": 7763041,
+     "train_count": 2611,
+     "validation_worst": 0.0790080739717169,
+     "validation_mean": 0.05302649411492494,
+     "peak_allocated_bytes": 32532660224,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 8.447257468177803,
+     "median_pct": 4.467032693305166,
+     "ms": 54.32941438630223,
+     "ms_A1": 54.354110499843955,
+     "ms_A2": 54.232873022556305,
+     "speedup_vs_named_fom": 1.8340243231062825,
+     "own_matched_cg": "cg_0.4",
+     "speedup_vs_own_matched_cg": 1.2798657931362158,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "05d5291a946c8c26003f4f8de0910e82e96c57080f308a03ef79c485293d9eef",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "s1024a",
+     "training_job_id": "4288828",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "fno",
+      "transolver"
+     ],
+     "training_gpu": "NVIDIA H100 PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 32,
+     "steps": 10345,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 31,
+     "training_seconds": 3000.7449219450355,
+     "real_parameter_count": 12482880,
+     "train_count": 2611,
+     "validation_worst": 0.47044505704824346,
+     "validation_mean": 0.2501824240568319,
+     "peak_allocated_bytes": 5245579264,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 16,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 45.341373274194844,
+     "median_pct": 12.885881865987301,
+     "ms": 16.27505710348487,
+     "ms_A1": 16.21495303697884,
+     "ms_A2": 16.306871082633734,
+     "speedup_vs_named_fom": 6.122342109832789,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 3.7918132397783273,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "d424dfb9556e480c7d2027b798492ab0472bd51a0964e480b8869b5f0874ddec",
+     "panel_param_count": 12482880
+    },
+    "deeponet": {
+     "training_job": "s1024b",
+     "training_job_id": "4288830",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "unet",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 10,
+     "steps": 3223,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 9,
+     "training_seconds": 3001.9026888539083,
+     "real_parameter_count": 2174673,
+     "train_count": 2611,
+     "validation_worst": 0.21252271992782612,
+     "validation_mean": 0.1217619928031625,
+     "peak_allocated_bytes": 18823794688,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 24.889900780925995,
+     "median_pct": 7.187661877458284,
+     "ms": 49.67448557727039,
+     "ms_A1": 49.76332373917103,
+     "ms_A2": 49.60185312665999,
+     "speedup_vs_named_fom": 2.005888260072727,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 1.242327450118172,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "b8e4e6697ba0f95a8dd5ed5f0bf4e0e5b596ff6e529fa4f9fef4b03e092900be",
+     "panel_param_count": 2174673
+    }
+   }
+  },
+  {
+   "problem": "square",
+   "mesh": 1024,
+   "cell": "s1024r",
+   "table1_source_job": 4199318,
+   "nmrom_accurate": "R512_linear",
+   "nmrom_fast": "R128_linear",
+   "named_fom": "cg_0.03",
+   "cohort": {
+    "role": "development",
+    "cases": 12,
+    "note": "the twelve opened development sources of p-linear / hires-poisson / poisson-bank-knob"
+   },
+   "panel_job": "s1024rp",
+   "panel_job_id": "4306883",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-e2c95937-bb0e-947d-02fc-290362a2286b",
+   "node": "pax050",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R512_linear": {
+     "expected": 0.007421302120899465,
+     "got": 0.007421302120899465,
+     "relative_difference": 0.0,
+     "passed": true
+    },
+    "R128_linear": {
+     "expected": 0.02306396130740484,
+     "got": 0.02306396130740484,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R512_linear": 1.0090239771472695,
+    "R128_linear": 1.027331136077909,
+    "op_fno": 0.99992426445944,
+    "op_unet": 0.9989033591359501,
+    "op_transolver": 1.0040830530714442,
+    "op_deeponet": 1.0000315028771747
+   },
+   "elapsed_seconds": 304.9123146571219,
+   "fom_named": {
+    "name": "cg_0.03",
+    "ms": 95.39259225130081,
+    "worst_pct": 0.22010804999718428,
+    "median_pct": 0.09595662013457243,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.03",
+    "ms": 95.39259225130081,
+    "worst_pct": 0.22010804999718428
+   },
+   "nmrom_accurate_result": {
+    "arm": "R512_linear",
+    "ms": 3.25840525329113,
+    "worst_pct": 0.7421302120899466,
+    "median_pct": 0.058011197306196825,
+    "speedup_vs_named_fom": 29.27585270584442,
+    "deterministic": true,
+    "table1_worst_pct": 0.7421302120899466,
+    "table1_gpu_ms": 3.5362488124519587
+   },
+   "nmrom_fast_result": {
+    "arm": "R128_linear",
+    "ms": 1.192963682115078,
+    "worst_pct": 2.3063961307404837,
+    "median_pct": 0.21799162724391413,
+    "speedup_vs_named_fom": 79.96269599940668,
+    "deterministic": true,
+    "table1_worst_pct": 2.3063961307404837,
+    "table1_gpu_ms": 1.4412137679755688
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 58.74239490367472,
+     "worst_pct": 16.490208844234893,
+     "median_pct": 3.5542925535158103,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 63.9823901001364,
+     "worst_pct": 9.015716507823326,
+     "median_pct": 2.1140269042735493,
+     "converged": true
+    },
+    "cg_0.4": {
+     "ms": 66.09804416075349,
+     "worst_pct": 7.2513088934514345,
+     "median_pct": 1.5643702370884343,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 70.03441057167947,
+     "worst_pct": 5.554564778333101,
+     "median_pct": 1.118649841237265,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 75.08420012891293,
+     "worst_pct": 2.19971811917963,
+     "median_pct": 0.6350549415892798,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 82.29661593213677,
+     "worst_pct": 0.7690035506507056,
+     "median_pct": 0.2892428289555647,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 95.39259225130081,
+     "worst_pct": 0.22010804999718428,
+     "median_pct": 0.09595662013457243,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 106.70075146481395,
+     "worst_pct": 0.07220726616892795,
+     "median_pct": 0.029734071378120706,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 131.21030083857477,
+     "worst_pct": 0.00704966330773375,
+     "median_pct": 0.0021201269827953954,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 150.0686351209879,
+     "worst_pct": 0.00042102314707871127,
+     "median_pct": 0.00013393697907011925,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "s1024rf",
+     "training_job_id": "4301491",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 2,
+     "steps": 649,
+     "stop_reason": "wall_budget",
+     "micro_batch": 4,
+     "best_epoch": 1,
+     "training_seconds": 3003.665740366094,
+     "real_parameter_count": 17876673,
+     "train_count": 2611,
+     "validation_worst": 0.08649535826139154,
+     "validation_mean": 0.04404809130500222,
+     "peak_allocated_bytes": 63206867456,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 8.695416636790672,
+     "median_pct": 4.1379679348115,
+     "ms": 98.39472360908985,
+     "ms_A1": 98.39472360908985,
+     "ms_A2": 98.38727163150907,
+     "speedup_vs_named_fom": 0.9694888989198635,
+     "own_matched_cg": "cg_0.4",
+     "speedup_vs_own_matched_cg": 0.6717641123049738,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "143957e2fab914487bf2fd98e0b22e045c0ae828a031bb12e95aa12d053b1107",
+     "panel_param_count": 17876673
+    },
+    "unet": {
+     "training_job": "s1024ru",
+     "training_job_id": "4302300",
+     "config": "unet.json",
+     "co_scheduled": [
+      "unet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 16,
+     "steps": 5109,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 14,
+     "training_seconds": 3000.9516384750605,
+     "real_parameter_count": 7763041,
+     "train_count": 2611,
+     "validation_worst": 0.05295041022899387,
+     "validation_mean": 0.030659650747005066,
+     "peak_allocated_bytes": 32532660224,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 4.597674022570077,
+     "median_pct": 2.4295314163286292,
+     "ms": 54.071226390078664,
+     "ms_A1": 54.10955776460469,
+     "ms_A2": 54.05021901242435,
+     "speedup_vs_named_fom": 1.7642024903064535,
+     "own_matched_cg": "cg_0.2",
+     "speedup_vs_own_matched_cg": 1.3886165552681058,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "4e726db5a54f2238869018e3117b1532af139b890af0e28d9051c6e5833cac04",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "s1024rt",
+     "training_job_id": "4303538",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "transolver"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 52,
+     "steps": 16818,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 51,
+     "training_seconds": 3000.461916434113,
+     "real_parameter_count": 12482880,
+     "train_count": 2611,
+     "validation_worst": 0.3705593261807902,
+     "validation_mean": 0.19375705001570365,
+     "peak_allocated_bytes": 5195509760,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 16,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 35.58160371064453,
+     "median_pct": 9.03201158300561,
+     "ms": 15.692190965637565,
+     "ms_A1": 15.671129105612636,
+     "ms_A2": 15.735115157440305,
+     "speedup_vs_named_fom": 6.0789849206009245,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 3.743415755792649,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "fb402e08d7c763fd30cac2d156ef5adc3100044cfa25f58f5f95bbb131b30f50",
+     "panel_param_count": 12482880
+    },
+    "deeponet": {
+     "training_job": "s1024rd",
+     "training_job_id": "4305123",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 22,
+     "steps": 7177,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 21,
+     "training_seconds": 3000.909763185773,
+     "real_parameter_count": 2174673,
+     "train_count": 2611,
+     "validation_worst": 0.15035493247553539,
+     "validation_mean": 0.08380660747854941,
+     "peak_allocated_bytes": 18823794688,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 16.324609035743542,
+     "median_pct": 5.069527799945363,
+     "ms": 49.30385295301676,
+     "ms_A1": 49.30385295301676,
+     "ms_A2": 49.30540616624057,
+     "speedup_vs_named_fom": 1.934789809271164,
+     "own_matched_cg": "cg_0.5",
+     "speedup_vs_own_matched_cg": 1.2977158227594767,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "04874672a49f19306833ab25152a7b87a12891c335e5a8f01a9b802fc4f90021",
+     "panel_param_count": 2174673
+    }
+   }
+  },
+  {
+   "problem": "square",
+   "mesh": 2048,
+   "cell": "s2048",
+   "table1_source_job": 4199318,
+   "nmrom_accurate": "R512_linear",
+   "nmrom_fast": "R128_linear",
+   "named_fom": "cg_0.1",
+   "cohort": {
+    "role": "development",
+    "cases": 12,
+    "note": "the twelve opened development sources of p-linear / hires-poisson / poisson-bank-knob"
+   },
+   "panel_job": "s2048p",
+   "panel_job_id": "4296977",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-3821cf96-084c-f51d-914c-38d8195c5979",
+   "node": "pax050",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R512_linear": {
+     "expected": 0.0074194417461643045,
+     "got": 0.0074194417461643045,
+     "relative_difference": 0.0,
+     "passed": true
+    },
+    "R128_linear": {
+     "expected": 0.023060130533623276,
+     "got": 0.023060130533623276,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R512_linear": 1.0046145635528934,
+    "R128_linear": 0.996376219575629,
+    "op_fno": 1.0001527116059015,
+    "op_unet": 0.9999971777191514,
+    "op_transolver": 1.0008681942974507,
+    "op_deeponet": 0.9998822526665492
+   },
+   "elapsed_seconds": 587.2170603373088,
+   "fom_named": {
+    "name": "cg_0.1",
+    "ms": 651.41790243797,
+    "worst_pct": 0.6088666412608817,
+    "median_pct": 0.20991889026645227,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.1",
+    "ms": 651.41790243797,
+    "worst_pct": 0.6088666412608817
+   },
+   "nmrom_accurate_result": {
+    "arm": "R512_linear",
+    "ms": 11.57283061183989,
+    "worst_pct": 0.7419441746164305,
+    "median_pct": 0.05800979729064877,
+    "speedup_vs_named_fom": 56.28855413916797,
+    "deterministic": true,
+    "table1_worst_pct": 0.7419441746164305,
+    "table1_gpu_ms": 12.014209758490324
+   },
+   "nmrom_fast_result": {
+    "arm": "R128_linear",
+    "ms": 3.2778484746813774,
+    "worst_pct": 2.3060130533623275,
+    "median_pct": 0.2179736897501502,
+    "speedup_vs_named_fom": 198.7333787603745,
+    "deterministic": true,
+    "table1_worst_pct": 2.3060130533623275,
+    "table1_gpu_ms": 3.7361127324402332
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 485.89475150220096,
+     "worst_pct": 8.900938334064568,
+     "median_pct": 2.0707435921577195,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 514.3785341642797,
+     "worst_pct": 6.750293112078505,
+     "median_pct": 1.3630728231292515,
+     "converged": true
+    },
+    "cg_0.4": {
+     "ms": 539.957664674148,
+     "worst_pct": 5.153751393601673,
+     "median_pct": 1.0172440475006528,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 564.9481471627951,
+     "worst_pct": 2.50244242003896,
+     "median_pct": 0.6903413032814804,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 600.6913965102285,
+     "worst_pct": 1.1782252597276004,
+     "median_pct": 0.3634691666348921,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 651.41790243797,
+     "worst_pct": 0.6088666412608817,
+     "median_pct": 0.20991889026645227,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 747.5799708627164,
+     "worst_pct": 0.16178789744188155,
+     "median_pct": 0.07217564159954824,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 838.8650689739734,
+     "worst_pct": 0.04900553940932719,
+     "median_pct": 0.02169957932197794,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 1024.1219454910606,
+     "worst_pct": 0.005447860110263101,
+     "median_pct": 0.0015106678174898096,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 1163.1669129710644,
+     "worst_pct": 0.0002509355133392339,
+     "median_pct": 9.203776348225019e-05,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "s2048fc",
+     "training_job_id": "4293930",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 1,
+     "steps": 124,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "best_epoch": 0,
+     "training_seconds": 3024.4782677907497,
+     "real_parameter_count": 17876673,
+     "train_count": 2611,
+     "validation_worst": 0.6509232014383283,
+     "validation_mean": 0.26343157275752155,
+     "peak_allocated_bytes": 67411911168,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      },
+      "checkpoint_blocks": true
+     },
+     "panel_status": "loaded",
+     "worst_pct": 47.72166052545887,
+     "median_pct": 26.272195930424537,
+     "ms": 889.4951737020165,
+     "ms_A1": 889.4476154819131,
+     "ms_A2": 889.5834444556385,
+     "speedup_vs_named_fom": 0.7323456289558204,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 0.5462590083315924,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "d5ed19d9f01c65a0bee316268774d8eb49156ae9c6152b53f91b839d4bb9840a",
+     "panel_param_count": 17876673
+    },
+    "unet": {
+     "training_job": "s2048ub",
+     "training_job_id": "4292541",
+     "config": "unet.json",
+     "co_scheduled": [
+      "unet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 4,
+     "steps": 1202,
+     "stop_reason": "wall_budget",
+     "micro_batch": 4,
+     "best_epoch": 3,
+     "training_seconds": 3004.454381183721,
+     "real_parameter_count": 7763041,
+     "train_count": 2611,
+     "validation_worst": 0.2188335678874932,
+     "validation_mean": 0.12388320448851023,
+     "peak_allocated_bytes": 64038296576,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 22.333473844189637,
+     "median_pct": 10.059295742396516,
+     "ms": 213.66749005392194,
+     "ms_A1": 213.668093085289,
+     "ms_A2": 213.66749005392194,
+     "speedup_vs_named_fom": 3.048745985051707,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 2.2740696367967757,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "e97d08a92af386244f80b8fe18c5f6b89049357f289cae42411cf92b77d32beb",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "s2048b",
+     "training_job_id": "4294149",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 20,
+     "steps": 6373,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 19,
+     "training_seconds": 3001.152053759899,
+     "real_parameter_count": 13073472,
+     "train_count": 2611,
+     "validation_worst": 0.489555292805918,
+     "validation_mean": 0.26274886881934484,
+     "peak_allocated_bytes": 7056421888,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 32,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 44.95331947428866,
+     "median_pct": 15.90276339119224,
+     "ms": 16.19896641932428,
+     "ms_A1": 16.197417164221406,
+     "ms_A2": 16.211479669436812,
+     "speedup_vs_named_fom": 40.21354730761539,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 29.995416925030547,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "cc3d3ca92c3e4a3ddeeddc07684095167e12e22da1d31d184ba037277dfb40d7",
+     "panel_param_count": 13073472
+    },
+    "deeponet": {
+     "training_job": "s2048b",
+     "training_job_id": "4294149",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 1,
+     "steps": 277,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "best_epoch": 0,
+     "training_seconds": 3003.793704018928,
+     "real_parameter_count": 2174673,
+     "train_count": 2611,
+     "validation_worst": 0.45360992279475826,
+     "validation_mean": 0.33601721800865697,
+     "peak_allocated_bytes": 32234234880,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 41.804917602058595,
+     "median_pct": 25.15307091359795,
+     "ms": 198.33110738545656,
+     "ms_A1": 198.34060803987086,
+     "ms_A2": 198.31725396215916,
+     "speedup_vs_named_fom": 3.28449687507638,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 2.449916999444088,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "6d2310240d53cb06d9aca5dcc57ebd3af29c77189137ca9072a3870c6e76e7e0",
+     "panel_param_count": 2174673
+    }
+   }
+  },
+  {
+   "problem": "square",
+   "mesh": 4096,
+   "cell": "s4096",
+   "table1_source_job": 4199321,
+   "nmrom_accurate": "R512_linear",
+   "nmrom_fast": "R128_linear",
+   "named_fom": "cg_0.1",
+   "cohort": {
+    "role": "development",
+    "cases": 12,
+    "note": "the twelve opened development sources of p-linear / hires-poisson / poisson-bank-knob"
+   },
+   "panel_job": "s4096p",
+   "panel_job_id": "4294147",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-958eaf8d-bc37-c972-8632-fe73352de1ac",
+   "node": "pax106",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R512_linear": {
+     "expected": 0.007418976743525537,
+     "got": 0.007418976743525537,
+     "relative_difference": 0.0,
+     "passed": true
+    },
+    "R128_linear": {
+     "expected": 0.02305917300406882,
+     "got": 0.02305917300406882,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R512_linear": 1.0072188186635647,
+    "R128_linear": 1.0178756553325143,
+    "op_transolver": 1.0023608222303237
+   },
+   "elapsed_seconds": 729.4632568797097,
+   "fom_named": {
+    "name": "cg_0.1",
+    "ms": 4641.581697156653,
+    "worst_pct": 0.4505524242017507,
+    "median_pct": 0.13344729811090206,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.1",
+    "ms": 4641.581697156653,
+    "worst_pct": 0.4505524242017507
+   },
+   "nmrom_accurate_result": {
+    "arm": "R512_linear",
+    "ms": 44.22200447879732,
+    "worst_pct": 0.7418976743525537,
+    "median_pct": 0.05800944622741223,
+    "speedup_vs_named_fom": 104.96090694808069,
+    "deterministic": true,
+    "table1_worst_pct": 0.7418976743525537,
+    "table1_gpu_ms": 42.387917870655656
+   },
+   "nmrom_fast_result": {
+    "arm": "R128_linear",
+    "ms": 12.861153343692422,
+    "worst_pct": 2.305917300406882,
+    "median_pct": 0.21796920557599408,
+    "speedup_vs_named_fom": 360.8993356286397,
+    "deterministic": true,
+    "table1_worst_pct": 2.305917300406882,
+    "table1_gpu_ms": 12.543563963845372
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 3490.9077184274793,
+     "worst_pct": 6.707812165908908,
+     "median_pct": 1.348661679158887,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 3739.1813276335597,
+     "worst_pct": 3.723701083802085,
+     "median_pct": 0.8440296263647968,
+     "converged": true
+    },
+    "cg_0.4": {
+     "ms": 3871.291689807549,
+     "worst_pct": 2.2045345309206326,
+     "median_pct": 0.6357247202599648,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 4042.3478113953024,
+     "worst_pct": 1.2950519116023134,
+     "median_pct": 0.3812004184013928,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 4238.4439466986805,
+     "worst_pct": 0.7720330047906748,
+     "median_pct": 0.289833637048046,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 4641.581697156653,
+     "worst_pct": 0.4505524242017507,
+     "median_pct": 0.13344729811090206,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 5109.586954582483,
+     "worst_pct": 0.12280866110742777,
+     "median_pct": 0.041942387242409215,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 5870.190761052072,
+     "worst_pct": 0.037865510109647026,
+     "median_pct": 0.01249490335238366,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "s4096fb",
+     "training_job_id": "4292263",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno"
+     ],
+     "training_gpu": "NVIDIA H100 PCIe",
+     "training_status": "failed: out_of_memory",
+     "failure_message": "no micro-batch fits (micro-batch 1 out of memory)",
+     "epochs": null,
+     "steps": null,
+     "stop_reason": null,
+     "micro_batch": null,
+     "best_epoch": null,
+     "training_seconds": null,
+     "real_parameter_count": null,
+     "train_count": 2611,
+     "validation_worst": null,
+     "validation_mean": null,
+     "peak_allocated_bytes": 69703851008,
+     "config_used": null,
+     "panel_status": "not_available",
+     "panel_reason": "no checkpoint"
+    },
+    "unet": {
+     "training_job": "s4096ub",
+     "training_job_id": "4292268",
+     "config": "unet_small.json",
+     "co_scheduled": [
+      "unet_small"
+     ],
+     "training_gpu": "NVIDIA H100 PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 1,
+     "steps": 268,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "best_epoch": 0,
+     "training_seconds": 3018.944041992072,
+     "real_parameter_count": 4368073,
+     "train_count": 2611,
+     "validation_worst": 0.6298218495322322,
+     "validation_mean": 0.39071545167272287,
+     "peak_allocated_bytes": 52263885312,
+     "config_used": {
+      "family": "unet",
+      "base": 24,
+      "groups": 8,
+      "dtype": "float32",
+      "warmup_epochs": 0,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914
+     },
+     "panel_status": "query_out_of_memory",
+     "panel_reason": "CUDA out of memory. Tried to allocate 1.51 GiB. GPU 0 has a total capacity of 79.25 GiB of which 807.88 MiB is free. Including non-PyTorch memory, this process has 78.45 GiB memory in use. Of the allocated memory 2.58 GiB is allocated by PyTorch, and 47.10 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/do"
+    },
+    "transolver": {
+     "training_job": "s4096tb",
+     "training_job_id": "4292269",
+     "config": "transolver_small.json",
+     "co_scheduled": [
+      "transolver_small"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 38,
+     "steps": 12309,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 36,
+     "training_seconds": 3000.5301279299892,
+     "real_parameter_count": 4666688,
+     "train_count": 2611,
+     "validation_worst": 0.3339461959683972,
+     "validation_mean": 0.19293850777562369,
+     "peak_allocated_bytes": 12729794560,
+     "config_used": {
+      "family": "transolver",
+      "dim": 128,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 64,
+      "ref": 8,
+      "dtype": "float32",
+      "warmup_epochs": 10,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914
+     },
+     "panel_status": "loaded",
+     "worst_pct": 32.636846359068386,
+     "median_pct": 11.843518130687677,
+     "ms": 14.12576506845653,
+     "ms_A1": 14.111723750829697,
+     "ms_A2": 14.145039021968842,
+     "speedup_vs_named_fom": 328.58975599994324,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 247.1305236572873,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "16ecda72fdc222636231ba4867aab06085bfdc6c71952371a93daf23ca626ca9",
+     "panel_param_count": 4666688
+    },
+    "deeponet": {
+     "training_job": "s4096d",
+     "training_job_id": "4292346",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "failed: out_of_memory",
+     "failure_message": "no micro-batch fits (micro-batch 1 out of memory)",
+     "epochs": null,
+     "steps": null,
+     "stop_reason": null,
+     "micro_batch": null,
+     "best_epoch": null,
+     "training_seconds": null,
+     "real_parameter_count": null,
+     "train_count": 2611,
+     "validation_worst": null,
+     "validation_mean": null,
+     "peak_allocated_bytes": 77643566080,
+     "config_used": null,
+     "panel_status": "not_available",
+     "panel_reason": "no checkpoint"
+    }
+   }
+  },
+  {
+   "problem": "lshape",
+   "mesh": 256,
+   "cell": "l256",
+   "table1_source_job": 4204384,
+   "nmrom_accurate": "R128_linear",
+   "nmrom_fast": "R64_linear",
+   "named_fom": "cg_0.03",
+   "cohort": {
+    "role": "development",
+    "cases": 32,
+    "note": "the 32 development sources of the lshape / hires-poisson / poisson-bank-knob-3d lanes"
+   },
+   "panel_job": "l256p",
+   "panel_job_id": "4290447",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033",
+   "node": "pax106",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": false
+   },
+   "reproduction": {
+    "R128_linear": {
+     "expected": 0.030404300684272374,
+     "got": 0.030404300684272367,
+     "relative_difference": 2.2822080257536066e-16,
+     "passed": true
+    },
+    "R64_linear": {
+     "expected": 0.057320182554408114,
+     "got": 0.057320182554408114,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R128_linear": 1.0103257695960175,
+    "R64_linear": 0.8468979081722557,
+    "op_fno": 0.9889286564327798,
+    "op_unet": 0.9791214064454631,
+    "op_transolver": 0.9949130432886405,
+    "op_deeponet": 0.9853992237430003
+   },
+   "elapsed_seconds": 337.8234785362147,
+   "fom_named": {
+    "name": "cg_0.03",
+    "ms": 8.92230961471796,
+    "worst_pct": 2.401839976544479,
+    "median_pct": 0.3864943182346199,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.03",
+    "ms": 8.92230961471796,
+    "worst_pct": 2.401839976544479
+   },
+   "nmrom_accurate_result": {
+    "arm": "R128_linear",
+    "ms": 0.39750104770064354,
+    "worst_pct": 3.0404300684272365,
+    "median_pct": 0.4714408097873421,
+    "speedup_vs_named_fom": 22.446002762330618,
+    "deterministic": true,
+    "table1_worst_pct": 3.0404300684272374,
+    "table1_gpu_ms": 0.3234709147363901
+   },
+   "nmrom_fast_result": {
+    "arm": "R64_linear",
+    "ms": 0.41595124639570713,
+    "worst_pct": 5.732018255440812,
+    "median_pct": 1.3608054210586888,
+    "speedup_vs_named_fom": 21.450373552264573,
+    "deterministic": true,
+    "table1_worst_pct": 5.732018255440812,
+    "table1_gpu_ms": 0.28550089336931705
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 3.6168615333735943,
+     "worst_pct": 50.32138725837828,
+     "median_pct": 13.80818567756267,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 4.244316602125764,
+     "worst_pct": 38.41095480156434,
+     "median_pct": 11.257198736992107,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 5.180957959964871,
+     "worst_pct": 23.839911124528236,
+     "median_pct": 5.7558486787183565,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 5.779459606856108,
+     "worst_pct": 13.432934280349698,
+     "median_pct": 4.672976347062248,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 7.111351005733013,
+     "worst_pct": 8.822828815893407,
+     "median_pct": 1.5305575142592829,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 8.92230961471796,
+     "worst_pct": 2.401839976544479,
+     "median_pct": 0.3864943182346199,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 10.504851350560784,
+     "worst_pct": 0.637361448170308,
+     "median_pct": 0.11774470059092473,
+     "converged": true
+    },
+    "cg_0.003": {
+     "ms": 12.04075338318944,
+     "worst_pct": 0.18543690356326203,
+     "median_pct": 0.029208468645996122,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 13.435013592243195,
+     "worst_pct": 0.04112782200814573,
+     "median_pct": 0.00798972828731428,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 15.87879634462297,
+     "worst_pct": 0.0027313776258884974,
+     "median_pct": 0.0007808908609487646,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "l256a",
+     "training_job_id": "4286766",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 11,
+     "steps": 3470,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 8,
+     "training_seconds": 3000.993819185067,
+     "real_parameter_count": 17876673,
+     "train_count": 2611,
+     "validation_worst": 0.06356576010080248,
+     "validation_mean": 0.021512357923804862,
+     "peak_allocated_bytes": 8335379456,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 3.2373977507184932,
+     "median_pct": 1.423842434472703,
+     "ms": 7.597421994432807,
+     "ms_A1": 7.637053960934281,
+     "ms_A2": 7.552501512691379,
+     "speedup_vs_named_fom": 1.174386472313371,
+     "own_matched_cg": "cg_0.03",
+     "speedup_vs_own_matched_cg": 1.174386472313371,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "18dc97b1de8e0832f9510fe487b6c63381d8aa5cfa039748eaa35d5e8ae26854",
+     "panel_param_count": 17876673
+    },
+    "unet": {
+     "training_job": "l256a",
+     "training_job_id": "4286766",
+     "config": "unet.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 32,
+     "steps": 10293,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 29,
+     "training_seconds": 3000.734217757825,
+     "real_parameter_count": 7763041,
+     "train_count": 2611,
+     "validation_worst": 0.0488345468084676,
+     "validation_mean": 0.02065624993319759,
+     "peak_allocated_bytes": 6031712768,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 3.2451834892279674,
+     "median_pct": 1.3480663767974137,
+     "ms": 6.339262705296278,
+     "ms_A1": 6.435691844671965,
+     "ms_A2": 6.301323650404811,
+     "speedup_vs_named_fom": 1.4074680336663787,
+     "own_matched_cg": "cg_0.03",
+     "speedup_vs_own_matched_cg": 1.4074680336663787,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "950187e8851624488c6d441e3ed575b3968933a44465db5ac293f793ecff1eef",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "l256a",
+     "training_job_id": "4286766",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 13,
+     "steps": 4161,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 11,
+     "training_seconds": 3000.963090073783,
+     "real_parameter_count": 12298320,
+     "train_count": 2611,
+     "validation_worst": 0.7173116638748982,
+     "validation_mean": 0.39999672632471184,
+     "peak_allocated_bytes": 4689025536,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 4,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 52.8135994873023,
+     "median_pct": 29.421827896616776,
+     "ms": 15.810983953997493,
+     "ms_A1": 15.855640871450305,
+     "ms_A2": 15.774983912706375,
+     "speedup_vs_named_fom": 0.564310838634564,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 0.22875625855398726,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "b28fc594586d8c21ff724d6eba6978178cbbb6b175cd70d4c38f8fa5bfaa09a1",
+     "panel_param_count": 12298320
+    },
+    "deeponet": {
+     "training_job": "l256a",
+     "training_job_id": "4286766",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 41,
+     "steps": 13389,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 40,
+     "training_seconds": 3000.7003191797994,
+     "real_parameter_count": 2174673,
+     "train_count": 2611,
+     "validation_worst": 0.25153051985236563,
+     "validation_mean": 0.07491333746462536,
+     "peak_allocated_bytes": 5752926208,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 9.440323725664554,
+     "median_pct": 3.6019568614729907,
+     "ms": 4.241284215822816,
+     "ms_A1": 4.287284566089511,
+     "ms_A2": 4.22468688338995,
+     "speedup_vs_named_fom": 2.103681140120674,
+     "own_matched_cg": "cg_0.1",
+     "speedup_vs_own_matched_cg": 1.6766975858875328,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "4e72b77e1b4572b66685cbdda2b6aaf281f5f2775f68119c620c113c92075b64",
+     "panel_param_count": 2174673
+    }
+   }
+  },
+  {
+   "problem": "lshape",
+   "mesh": 512,
+   "cell": "l512",
+   "table1_source_job": 4199770,
+   "nmrom_accurate": "R128_linear",
+   "nmrom_fast": "R64_linear",
+   "named_fom": "cg_0.03",
+   "cohort": {
+    "role": "development",
+    "cases": 32,
+    "note": "the 32 development sources of the lshape / hires-poisson / poisson-bank-knob-3d lanes"
+   },
+   "panel_job": "l512p",
+   "panel_job_id": "4291515",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719",
+   "node": "pax106",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R128_linear": {
+     "expected": 0.030321839970988636,
+     "got": 0.03032183997098864,
+     "relative_difference": 1.144207262907896e-16,
+     "passed": true
+    },
+    "R64_linear": {
+     "expected": 0.05722333259668447,
+     "got": 0.05722333259668447,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R128_linear": 0.9588612854236511,
+    "R64_linear": 1.0045946757070179,
+    "op_fno": 0.9990737234654241,
+    "op_unet": 0.9993390301570415,
+    "op_transolver": 1.0007742030416125,
+    "op_deeponet": 0.999243508469071
+   },
+   "elapsed_seconds": 714.3185992999934,
+   "fom_named": {
+    "name": "cg_0.03",
+    "ms": 23.501390824094415,
+    "worst_pct": 1.508367939278356,
+    "median_pct": 0.272117901024503,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.03",
+    "ms": 23.501390824094415,
+    "worst_pct": 1.508367939278356
+   },
+   "nmrom_accurate_result": {
+    "arm": "R128_linear",
+    "ms": 0.6309570744633675,
+    "worst_pct": 3.0321839970988638,
+    "median_pct": 0.460541855051085,
+    "speedup_vs_named_fom": 37.24721027033809,
+    "deterministic": true,
+    "table1_worst_pct": 3.0321839970988638,
+    "table1_gpu_ms": 0.6149383261799812
+   },
+   "nmrom_fast_result": {
+    "arm": "R64_linear",
+    "ms": 0.5152411758899689,
+    "worst_pct": 5.722333259668447,
+    "median_pct": 1.3562012016062954,
+    "speedup_vs_named_fom": 45.61240817661902,
+    "deterministic": true,
+    "table1_worst_pct": 5.722333259668447,
+    "table1_gpu_ms": 0.5320280324667692
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 9.900957578793168,
+     "worst_pct": 38.34414507428532,
+     "median_pct": 11.23703603920847,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 11.89704961143434,
+     "worst_pct": 28.790326506469448,
+     "median_pct": 7.7424480294679,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 14.237751951441169,
+     "worst_pct": 15.243457063026627,
+     "median_pct": 4.791448587034064,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 15.386389335617423,
+     "worst_pct": 9.714498666391417,
+     "median_pct": 2.621389127409415,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 19.039094680920243,
+     "worst_pct": 6.959116208630155,
+     "median_pct": 1.097453966566685,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 23.501390824094415,
+     "worst_pct": 1.508367939278356,
+     "median_pct": 0.272117901024503,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 27.302362024784088,
+     "worst_pct": 0.3845242627555538,
+     "median_pct": 0.08248869216493565,
+     "converged": true
+    },
+    "cg_0.003": {
+     "ms": 31.371480086818337,
+     "worst_pct": 0.11814326123306612,
+     "median_pct": 0.020296229322761556,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 34.217237029224634,
+     "worst_pct": 0.026350963933557518,
+     "median_pct": 0.006078294889584926,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 40.50757153891027,
+     "worst_pct": 0.0019988543809274983,
+     "median_pct": 0.0006293417016057242,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "l512a",
+     "training_job_id": "4288826",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 2,
+     "steps": 621,
+     "stop_reason": "wall_budget",
+     "micro_batch": 4,
+     "best_epoch": 1,
+     "training_seconds": 3003.1552575398237,
+     "real_parameter_count": 17876673,
+     "train_count": 2611,
+     "validation_worst": 0.38023749771382925,
+     "validation_mean": 0.10016194426457681,
+     "peak_allocated_bytes": 16280788992,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 15.398441184829439,
+     "median_pct": 5.569981990705424,
+     "ms": 22.35885104164481,
+     "ms_A1": 22.366434568539262,
+     "ms_A2": 22.345717065036297,
+     "speedup_vs_named_fom": 1.051100111554102,
+     "own_matched_cg": "cg_0.3",
+     "speedup_vs_own_matched_cg": 0.6367837025669356,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "69c0014d8285b5bd58769c2d0f77261271d14642a6e800c6567bd6f217058c9d",
+     "panel_param_count": 17876673
+    },
+    "unet": {
+     "training_job": "l512a",
+     "training_job_id": "4288826",
+     "config": "unet.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 14,
+     "steps": 4514,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 12,
+     "training_seconds": 3001.5637029940262,
+     "real_parameter_count": 7763041,
+     "train_count": 2611,
+     "validation_worst": 0.18009954142340512,
+     "validation_mean": 0.07526787230859303,
+     "peak_allocated_bytes": 8453480448,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 9.662893866807504,
+     "median_pct": 4.541147231055417,
+     "ms": 14.62676003575325,
+     "ms_A1": 14.631660655140877,
+     "ms_A2": 14.621989568695426,
+     "speedup_vs_named_fom": 1.6067393439591722,
+     "own_matched_cg": "cg_0.1",
+     "speedup_vs_own_matched_cg": 1.3016617921112812,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "eab5ae316c3138b2b32b3303aaf0eb285c6574f2e6e77fd8b022f73b46b78806",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "l512a",
+     "training_job_id": "4288826",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 13,
+     "steps": 4013,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 12,
+     "training_seconds": 3001.5402467362583,
+     "real_parameter_count": 12335232,
+     "train_count": 2611,
+     "validation_worst": 0.6781248087772008,
+     "validation_mean": 0.3775588390202307,
+     "peak_allocated_bytes": 4730065408,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 8,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 52.634397798341226,
+     "median_pct": 30.117679316865264,
+     "ms": 16.114006517454982,
+     "ms_A1": 16.1017004866153,
+     "ms_A2": 16.114166472107172,
+     "speedup_vs_named_fom": 1.458444912420588,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 0.6144317720157475,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "982cd42bb940907ec58a976a7aba61ba0946c36a87a0ff9d15ae5d0947f3d10d",
+     "panel_param_count": 12335232
+    },
+    "deeponet": {
+     "training_job": "l512a",
+     "training_job_id": "4288826",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "fno",
+      "unet",
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 20,
+     "steps": 6303,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 18,
+     "training_seconds": 3001.3265453185886,
+     "real_parameter_count": 2174673,
+     "train_count": 2611,
+     "validation_worst": 0.359044525588603,
+     "validation_mean": 0.12733364601657227,
+     "peak_allocated_bytes": 4753444864,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 15.111606858870308,
+     "median_pct": 6.282591761742504,
+     "ms": 13.168430421501398,
+     "ms_A1": 13.172237202525139,
+     "ms_A2": 13.16227251663804,
+     "speedup_vs_named_fom": 1.7846766905280809,
+     "own_matched_cg": "cg_0.2",
+     "speedup_vs_own_matched_cg": 1.1684300135340764,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "9ac063430681e36f33d1414f4218e0caa86883eca91ce8dd6df4f5e3fc5e7e88",
+     "panel_param_count": 2174673
+    }
+   }
+  },
+  {
+   "problem": "lshape",
+   "mesh": 1024,
+   "cell": "l1024",
+   "table1_source_job": 4201792,
+   "nmrom_accurate": "R128_linear",
+   "nmrom_fast": "R64_linear",
+   "named_fom": "cg_0.03",
+   "cohort": {
+    "role": "development",
+    "cases": 32,
+    "note": "the 32 development sources of the lshape / hires-poisson / poisson-bank-knob-3d lanes"
+   },
+   "panel_job": "l1024p",
+   "panel_job_id": "4294144",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033",
+   "node": "pax106",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R128_linear": {
+     "expected": 0.030301255136171643,
+     "got": 0.030301255136171643,
+     "relative_difference": 0.0,
+     "passed": true
+    },
+    "R64_linear": {
+     "expected": 0.057198675971877645,
+     "got": 0.057198675971877645,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R128_linear": 0.9859379422519531,
+    "R64_linear": 0.9843755629782084,
+    "op_fno": 1.0010839096468276,
+    "op_transolver": 0.9910995803502402,
+    "op_unet": 0.9973850383159714,
+    "op_deeponet": 0.9991458561324453
+   },
+   "elapsed_seconds": 683.6466911728494,
+   "fom_named": {
+    "name": "cg_0.03",
+    "ms": 86.317528039217,
+    "worst_pct": 1.0459156700411292,
+    "median_pct": 0.19553919470354117,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.03",
+    "ms": 86.317528039217,
+    "worst_pct": 1.0459156700411292
+   },
+   "nmrom_accurate_result": {
+    "arm": "R128_linear",
+    "ms": 1.7585144378244877,
+    "worst_pct": 3.0301255136171643,
+    "median_pct": 0.45774241896275014,
+    "speedup_vs_named_fom": 49.085481576143934,
+    "deterministic": true,
+    "table1_worst_pct": 3.0301255136171643,
+    "table1_gpu_ms": 1.821509562432766
+   },
+   "nmrom_fast_result": {
+    "arm": "R64_linear",
+    "ms": 1.4754615258425474,
+    "worst_pct": 5.719867597187765,
+    "median_pct": 1.3550331004762672,
+    "speedup_vs_named_fom": 58.50205276611753,
+    "deterministic": true,
+    "table1_worst_pct": 5.719867597187765,
+    "table1_gpu_ms": 1.5406932216137648
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 41.10136954113841,
+     "worst_pct": 28.607898380571,
+     "median_pct": 7.702022603461035,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 45.905611012130976,
+     "worst_pct": 19.461280581079667,
+     "median_pct": 5.179564680105515,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 52.16505448333919,
+     "worst_pct": 10.042815180085134,
+     "median_pct": 3.6889963761299676,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 60.90515339747071,
+     "worst_pct": 8.84716921922867,
+     "median_pct": 1.6385098912039553,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 71.47105317562819,
+     "worst_pct": 6.927740835800707,
+     "median_pct": 0.6913848167196106,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 86.317528039217,
+     "worst_pct": 1.0459156700411292,
+     "median_pct": 0.19553919470354117,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 100.9385408833623,
+     "worst_pct": 0.3140645590650977,
+     "median_pct": 0.06274066187154105,
+     "converged": true
+    },
+    "cg_0.003": {
+     "ms": 115.29396055266261,
+     "worst_pct": 0.07561076966449419,
+     "median_pct": 0.013507885034021453,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 125.4751009400934,
+     "worst_pct": 0.016699590651539153,
+     "median_pct": 0.004060837941318289,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 148.13165203668177,
+     "worst_pct": 0.0014699598475045562,
+     "median_pct": 0.00042944895360929984,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "l1024a",
+     "training_job_id": "4290516",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno",
+      "transolver"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 2,
+     "steps": 186,
+     "stop_reason": "wall_budget",
+     "micro_batch": 2,
+     "best_epoch": 1,
+     "training_seconds": 3003.655626491178,
+     "real_parameter_count": 17876673,
+     "train_count": 1024,
+     "validation_worst": 1.7200301538147174,
+     "validation_mean": 0.3819597903973836,
+     "peak_allocated_bytes": 31902190080,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 40.977209019394465,
+     "median_pct": 24.803858521600556,
+     "ms": 97.5358106661588,
+     "ms_A1": 97.4874859675765,
+     "ms_A2": 97.59315359406173,
+     "speedup_vs_named_fom": 0.8849829354949513,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 0.4213977334111503,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "e4ee2d81e7513e5544999e3dd0f577b7d9cf2248fb1bcfe0423a6e8e223e9793",
+     "panel_param_count": 17876673
+    },
+    "unet": {
+     "training_job": "l1024b",
+     "training_job_id": "4290707",
+     "config": "unet.json",
+     "co_scheduled": [
+      "unet",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 19,
+     "steps": 2359,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 18,
+     "training_seconds": 3002.941246503964,
+     "real_parameter_count": 7763041,
+     "train_count": 1024,
+     "validation_worst": 0.6231371525038738,
+     "validation_mean": 0.20978327951268655,
+     "peak_allocated_bytes": 32532660224,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 34.50060867078652,
+     "median_pct": 12.669240789425157,
+     "ms": 54.187559988349676,
+     "ms_A1": 54.27651200443506,
+     "ms_A2": 54.134581005200744,
+     "speedup_vs_named_fom": 1.5929399304522156,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 0.7585019430654416,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "41a55180dbbe17f7983b401f55de916d87b2bd9634ed18136e665a6f38af3aa8",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "l1024a",
+     "training_job_id": "4290516",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "fno",
+      "transolver"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 60,
+     "steps": 7618,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 58,
+     "training_seconds": 3000.8447781610303,
+     "real_parameter_count": 12482880,
+     "train_count": 1024,
+     "validation_worst": 0.650006092510123,
+     "validation_mean": 0.3753986275574358,
+     "peak_allocated_bytes": 5195509760,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 16,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 58.98568580748942,
+     "median_pct": 30.838004582990308,
+     "ms": 16.06606040149927,
+     "ms_A1": 16.13997481763363,
+     "ms_A2": 15.996322268620133,
+     "speedup_vs_named_fom": 5.372662985330362,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 2.5582730622189658,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "4f065239427aecba8034a3827e4dc519050ee6c43e1259a05bc9284b47a97afd",
+     "panel_param_count": 12482880
+    },
+    "deeponet": {
+     "training_job": "l1024b",
+     "training_job_id": "4290707",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "unet",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 26,
+     "steps": 3247,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 25,
+     "training_seconds": 3002.657354373019,
+     "real_parameter_count": 2174673,
+     "train_count": 1024,
+     "validation_worst": 0.6132153588215374,
+     "validation_mean": 0.19093113616530338,
+     "peak_allocated_bytes": 18823794688,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 23.384535732717882,
+     "median_pct": 10.124574038936315,
+     "ms": 49.30179798975587,
+     "ms_A1": 49.32397836819291,
+     "ms_A2": 49.28184859454632,
+     "speedup_vs_named_fom": 1.750798785414528,
+     "own_matched_cg": "cg_0.5",
+     "speedup_vs_own_matched_cg": 0.9311143382979549,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "18b902e00d0f1c4e3eb7e0cd71598f93827cca531aee3f268b95357079c5b429",
+     "panel_param_count": 2174673
+    }
+   }
+  },
+  {
+   "problem": "lshape",
+   "mesh": 2048,
+   "cell": "l2048",
+   "table1_source_job": 4205072,
+   "nmrom_accurate": "R128_linear",
+   "nmrom_fast": "R64_linear",
+   "named_fom": "cg_0.03",
+   "cohort": {
+    "role": "development",
+    "cases": 32,
+    "note": "the 32 development sources of the lshape / hires-poisson / poisson-bank-knob-3d lanes"
+   },
+   "panel_job": "l2048r",
+   "panel_job_id": "4303797",
+   "status": "complete",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "gpu_uuid": "GPU-48b2d82c-0e16-1d88-9016-0d1b8d169ed8",
+   "node": "pax050",
+   "gates": {
+    "nmrom_reproduces_table1": true,
+    "nmrom_cg_deterministic": true,
+    "cg_converged": true,
+    "device_guard": true,
+    "drift_A2_over_A1": true
+   },
+   "reproduction": {
+    "R128_linear": {
+     "expected": 0.030296072809392262,
+     "got": 0.030296072809392286,
+     "relative_difference": 8.016262971267423e-16,
+     "passed": true
+    },
+    "R64_linear": {
+     "expected": 0.05719234470740566,
+     "got": 0.05719234470740566,
+     "relative_difference": 0.0,
+     "passed": true
+    }
+   },
+   "drift": {
+    "R128_linear": 0.9998703024042248,
+    "R64_linear": 0.999931634925932,
+    "op_unet": 0.9999949449952723,
+    "op_transolver": 0.9998901407428032
+   },
+   "elapsed_seconds": 2005.1385691110045,
+   "fom_named": {
+    "name": "cg_0.03",
+    "ms": 638.26810172759,
+    "worst_pct": 0.7607568235735147,
+    "median_pct": 0.1259076257971243,
+    "iterations_note": "unpreconditioned CG"
+   },
+   "fom_rule": {
+    "rule": "fastest tested CG with worst error <= NM-ROM accurate worst error (same job)",
+    "name": "cg_0.03",
+    "ms": 638.26810172759,
+    "worst_pct": 0.7607568235735147
+   },
+   "nmrom_accurate_result": {
+    "arm": "R128_linear",
+    "ms": 9.309269953519106,
+    "worst_pct": 3.0296072809392287,
+    "median_pct": 0.4570402692877779,
+    "speedup_vs_named_fom": 68.56263755530162,
+    "deterministic": true,
+    "table1_worst_pct": 3.029607280939226,
+    "table1_gpu_ms": 3.6929671186953783
+   },
+   "nmrom_fast_result": {
+    "arm": "R64_linear",
+    "ms": 8.350573247298598,
+    "worst_pct": 5.719234470740566,
+    "median_pct": 1.3547324222009838,
+    "speedup_vs_named_fom": 76.4340462415642,
+    "deterministic": true,
+    "table1_worst_pct": 5.719234470740566,
+    "table1_gpu_ms": 2.992801135405898
+   },
+   "cg_grid": {
+    "cg_0.7": {
+     "ms": 323.0842384509742,
+     "worst_pct": 19.145394828709293,
+     "median_pct": 5.138324396404844,
+     "converged": true
+    },
+    "cg_0.5": {
+     "ms": 359.9328913260251,
+     "worst_pct": 11.534639320013172,
+     "median_pct": 4.361582856299035,
+     "converged": true
+    },
+    "cg_0.3": {
+     "ms": 391.7054389603436,
+     "worst_pct": 8.963728797590019,
+     "median_pct": 2.2183861340300712,
+     "converged": true
+    },
+    "cg_0.2": {
+     "ms": 462.6688358839601,
+     "worst_pct": 6.99671280521688,
+     "median_pct": 1.0960593916194021,
+     "converged": true
+    },
+    "cg_0.1": {
+     "ms": 533.98527787067,
+     "worst_pct": 3.139438476376285,
+     "median_pct": 0.45777094549393005,
+     "converged": true
+    },
+    "cg_0.03": {
+     "ms": 638.26810172759,
+     "worst_pct": 0.7607568235735147,
+     "median_pct": 0.1259076257971243,
+     "converged": true
+    },
+    "cg_0.01": {
+     "ms": 725.5098768509924,
+     "worst_pct": 0.24144029302729264,
+     "median_pct": 0.039192972105162205,
+     "converged": true
+    },
+    "cg_0.003": {
+     "ms": 827.6453814469278,
+     "worst_pct": 0.04513158973396677,
+     "median_pct": 0.008996651507389212,
+     "converged": true
+    },
+    "cg_0.001": {
+     "ms": 899.3945221882313,
+     "worst_pct": 0.01051411576890779,
+     "median_pct": 0.002664992558800939,
+     "converged": true
+    },
+    "cg_0.0001": {
+     "ms": 1062.84342543222,
+     "worst_pct": 0.001067580313071626,
+     "median_pct": 0.00028916356136509996,
+     "converged": true
+    }
+   },
+   "operators": {
+    "fno": {
+     "training_job": "l2048fc",
+     "training_job_id": "4294296",
+     "config": "fno.json",
+     "co_scheduled": [
+      "fno"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 4,
+     "steps": 123,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "best_epoch": 3,
+     "training_seconds": 3019.4448981452733,
+     "real_parameter_count": 17876673,
+     "train_count": 256,
+     "validation_worst": 2.539402544526339,
+     "validation_mean": 0.4955670689896058,
+     "peak_allocated_bytes": 67411911168,
+     "config_used": {
+      "family": "fno",
+      "width": 64,
+      "modes": 32,
+      "layers": 4,
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "modes": 8,
+       "layers": 2,
+       "epochs": 2
+      },
+      "checkpoint_blocks": true
+     },
+     "panel_status": "query_out_of_memory",
+     "panel_reason": "CUDA out of memory. Tried to allocate 18.01 GiB. GPU 0 has a total capacity of 79.25 GiB of which 6.05 GiB is free. Including non-PyTorch memory, this process has 73.19 GiB memory in use. Of the allocated memory 8.60 GiB is allocated by PyTorch, and 26.46 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/doc"
+    },
+    "unet": {
+     "training_job": "l2048u",
+     "training_job_id": "4294557",
+     "config": "unet.json",
+     "co_scheduled": [
+      "unet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 37,
+     "steps": 1156,
+     "stop_reason": "wall_budget",
+     "micro_batch": 4,
+     "best_epoch": 34,
+     "training_seconds": 3003.9027539393865,
+     "real_parameter_count": 7763041,
+     "train_count": 256,
+     "validation_worst": 1.2850139174089015,
+     "validation_mean": 0.33285569766353673,
+     "peak_allocated_bytes": 64038296576,
+     "config_used": {
+      "family": "unet",
+      "base": 32,
+      "groups": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/unet/medium.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "base": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 47.603906188461856,
+     "median_pct": 20.75244482766242,
+     "ms": 212.19580061733723,
+     "ms_A1": 212.19580061733723,
+     "ms_A2": 212.1947279665619,
+     "speedup_vs_named_fom": 3.007920514311257,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 1.522576024176875,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "a74cd7634cbbb929a4ac9101dd28d80322cd083f2c4d1843d3799a0a4644ad67",
+     "panel_param_count": 7763041
+    },
+    "transolver": {
+     "training_job": "l2048b",
+     "training_job_id": "4294560",
+     "config": "transolver.json",
+     "co_scheduled": [
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 189,
+     "steps": 6022,
+     "stop_reason": "wall_budget",
+     "micro_batch": 8,
+     "best_epoch": 183,
+     "training_seconds": 3000.5645267516375,
+     "real_parameter_count": 13073472,
+     "train_count": 256,
+     "validation_worst": 0.8566774483099042,
+     "validation_mean": 0.38612717727936097,
+     "peak_allocated_bytes": 7056421888,
+     "config_used": {
+      "family": "transolver",
+      "dim": 256,
+      "layers": 8,
+      "heads": 8,
+      "slices": 64,
+      "mlp_ratio": 2,
+      "patch": 32,
+      "ref": 8,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/transolver/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "warmup_steps": 160,
+      "patch_rule": "n // 64 (set by train_ops.py)",
+      "smoke_overrides": {
+       "dim": 32,
+       "layers": 2,
+       "heads": 4,
+       "slices": 8,
+       "epochs": 2
+      }
+     },
+     "panel_status": "loaded",
+     "worst_pct": 46.5505866873373,
+     "median_pct": 27.111993030130343,
+     "ms": 16.01870497688651,
+     "ms_A1": 16.02019602432847,
+     "ms_A2": 16.01843605749309,
+     "speedup_vs_named_fom": 39.84517491573451,
+     "own_matched_cg": "cg_0.7",
+     "speedup_vs_own_matched_cg": 20.16918589343861,
+     "max_relative_to_first_rep": 0.0,
+     "all_finite": true,
+     "checkpoint_sha256": "41857174d202cd3f51b719706e4084bbcaaaca6b0aa0cc705dec4b1b3abdd102",
+     "panel_param_count": 13073472
+    },
+    "deeponet": {
+     "training_job": "l2048b",
+     "training_job_id": "4294560",
+     "config": "deeponet.json",
+     "co_scheduled": [
+      "transolver",
+      "deeponet"
+     ],
+     "training_gpu": "NVIDIA A100 80GB PCIe",
+     "training_status": "complete",
+     "failure_message": null,
+     "epochs": 9,
+     "steps": 264,
+     "stop_reason": "wall_budget",
+     "micro_batch": 1,
+     "best_epoch": 8,
+     "training_seconds": 3016.4638006258756,
+     "real_parameter_count": 2174673,
+     "train_count": 256,
+     "validation_worst": 1.3076314883914901,
+     "validation_mean": 0.47491557511968796,
+     "peak_allocated_bytes": 32234234880,
+     "config_used": {
+      "family": "deeponet",
+      "width": 48,
+      "rank": 256,
+      "trunk_width": 384,
+      "levels": 3,
+      "pool_bins": 4,
+      "dtype": "float32",
+      "epochs": 4000,
+      "patience": 250,
+      "batch_size": 8,
+      "learning_rate": 0.001,
+      "weight_decay": 0.0001,
+      "seed": 20260914,
+      "published_source": "experiments/ops-tune-grid/configs/deeponet/small.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+      "smoke_overrides": {
+       "width": 8,
+       "rank": 16,
+       "trunk_width": 16,
+       "epochs": 2
+      }
+     },
+     "panel_status": "query_out_of_memory",
+     "panel_reason": "CUDA out of memory. Tried to allocate 6.01 GiB. GPU 0 has a total capacity of 79.25 GiB of which 1.90 GiB is free. Including non-PyTorch memory, this process has 77.35 GiB memory in use. Of the allocated memory 12.69 GiB is allocated by PyTorch, and 80.25 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/doc"
+    }
+   }
+  }
+ ]
+}

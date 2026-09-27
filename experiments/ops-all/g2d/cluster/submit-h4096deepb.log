@@ -1,0 +1,19 @@
+--- squeue before
+4290468 g2d_h4096unet PENDING 0:00 (Priority)
+Submitted batch job 4293111
+Connection timed out during banner exchange
+Connection to 10.246.224.31 port 22 timed out
+Permission denied, please try again.
+Permission denied, please try again.
+tawal01@login-prod.pax.tufts.edu: Permission denied (publickey,gssapi-keyex,gssapi-with-mic,password).
+rsync: connection unexpectedly closed (0 bytes received so far) [sender]
+rsync error: unexplained error (code 255) at io.c(232) [sender=3.2.7]
+--- squeue after
+4290468 g2d_h4096unet PENDING 0:00 (Priority)
+4293111 g2d_h4096deepb PENDING 0:00 (Priority)
+Submitted batch job 4293135
+--- squeue after
+4290468 g2d_h4096unet PENDING 0:00 (Priority)
+4293111 g2d_h4096deepb PENDING 0:00 (Priority)
+4293135 g2d_h4096deepb PENDING 0:00 (Priority)
+DUPLICATE SUBMISSION

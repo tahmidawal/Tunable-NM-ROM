@@ -1,0 +1,70 @@
+[
+ {
+  "name": "fno-large",
+  "path": "ckpt/fno-large.pt",
+  "sha256": "c51c689b79d3b5ae4bbb2787f7237931e03b87b32eb69f8632f12fc8864ebf0e",
+  "copy": false,
+  "source": "burgers-compare-hires p2048b (job 4207177, salvaged)",
+  "ok": true
+ },
+ {
+  "name": "unet-refine",
+  "path": "ckpt/unet-refine.pt",
+  "sha256": "dc6fded56c90ffd5c310b46837a257f38db89223988ea9d3fe5459615c92f84f",
+  "copy": false,
+  "source": "burgers-compare-hires t2048 (job 4196041)",
+  "ok": true
+ },
+ {
+  "name": "tsol-refine",
+  "path": "ckpt/tsol-refine.pt",
+  "sha256": "9922dbb6293a4f22dfed0770343c2822e7d437565a87e46696dd5f789249c1ad",
+  "copy": false,
+  "source": "burgers-compare-hires t2048 (job 4196041)",
+  "ok": true
+ },
+ {
+  "name": "don-small",
+  "path": "ckpt/don-small.pt",
+  "sha256": "7e287588af9a9ccbab63eaa2679d1017c2fcde9d051ce150820db1d615169820",
+  "copy": false,
+  "source": "burgers-compare-hires t2048s (job 4206643)",
+  "ok": true
+ },
+ {
+  "name": "unet-large",
+  "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048ul/out/train/unet-large/best.pt",
+  "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048ul/out/train/unet-large/result.json",
+  "copy": false,
+  "source": "g2d training job t2048ul",
+  "ok": true,
+  "sha256": "8a163d2583edd8816c3032670f363c5bbd4cee13f8280d18f10397444de51be4"
+ },
+ {
+  "name": "unet-b64",
+  "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048ub64/out/train/unet-b64/best.pt",
+  "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048ub64/out/train/unet-b64/result.json",
+  "copy": false,
+  "source": "g2d training job t2048ub64",
+  "ok": true,
+  "sha256": "fec4bc014df34bd8c1e9aed7b6157663b8ab342a8edc504a17dc5cdb799bfdc4"
+ },
+ {
+  "name": "tsol-large",
+  "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048tl/out/train/tsol-large/best.pt",
+  "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048tl/out/train/tsol-large/result.json",
+  "copy": false,
+  "source": "g2d training job t2048tl",
+  "ok": true,
+  "sha256": "80d6e7dd5f3c3399c0d0d6073a1fdfb5ed2b6f5e8bfa5ea12dd15e31ca5b15e6"
+ },
+ {
+  "name": "fno-w96f32",
+  "path": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048ff32/out/train/fno-w96f32/best.pt",
+  "result_json": "/cluster/tufts/paralab/tawal01/opsall_20260924/g2d/t2048ff32/out/train/fno-w96f32/result.json",
+  "copy": false,
+  "source": "g2d training job t2048ff32",
+  "ok": true,
+  "sha256": "be5478305599b2f076da6c8f098e9f2bdc69b7712e5f4dee8282aeb7b8a0ea68"
+ }
+]

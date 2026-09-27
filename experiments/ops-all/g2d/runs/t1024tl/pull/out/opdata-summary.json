@@ -1,0 +1,2746 @@
+{
+ "summary": {
+  "train": {
+   "cases": 128,
+   "source_index_sha256": "5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49",
+   "median_seconds": 0.49367103283293545,
+   "host_bytes": 6455040000
+  },
+  "validation": {
+   "cases": 32,
+   "source_index_sha256": "468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad",
+   "median_seconds": 0.4521713093854487,
+   "host_bytes": 1613760000
+  },
+  "mesh": 1024,
+  "seconds": 93.971201851964,
+  "solver": "iterative_paths.make_fom(L, dt, \"fft\") = fft_tight",
+  "storage": "host memory only (no per-case files)"
+ },
+ "records": {
+  "train": [
+   {
+    "case_id": "burgers-train-00000",
+    "split": "train",
+    "case_index": 0,
+    "seed": 428288116,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5166373922631632,
+     "cy": 0.37951347644145966,
+     "width": 0.08069285341559271,
+     "amplitude": 0.5987393226364118,
+     "nu": 0.055062408711969435
+    },
+    "field_sha256": "bc7a0b187cd0454d049414017f7431d23d7e03de5f51c7cf4b5297c4ca9f08a7",
+    "max_relative_residual": 9.791632864632274e-07,
+    "seconds": 1.402701883111149
+   },
+   {
+    "case_id": "burgers-train-00001",
+    "split": "train",
+    "case_index": 1,
+    "seed": 3953685106,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8468241991833023,
+     "cy": 0.1935916091687541,
+     "width": 0.13418720969602424,
+     "amplitude": 0.6503939751327327,
+     "nu": 0.06713994503874768
+    },
+    "field_sha256": "65f8f1522da3143a1c733e0bed7aab9742741f43f795b529fb8a1022753cbb56",
+    "max_relative_residual": 4.0766972885290195e-07,
+    "seconds": 0.3422995270229876
+   },
+   {
+    "case_id": "burgers-train-00002",
+    "split": "train",
+    "case_index": 2,
+    "seed": 4108307323,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6293910366811192,
+     "cy": 0.684870127241384,
+     "width": 0.15721843716356587,
+     "amplitude": 0.9414028298557466,
+     "nu": 0.08241844142188777
+    },
+    "field_sha256": "dd259aa80b1ff15327bfca641298ef3eb5a133cad775bc8edc2be69bb804d073",
+    "max_relative_residual": 3.729748447099511e-09,
+    "seconds": 0.3682578708976507
+   },
+   {
+    "case_id": "burgers-train-00003",
+    "split": "train",
+    "case_index": 3,
+    "seed": 2872383505,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5674786876949676,
+     "cy": 0.6620176380863099,
+     "width": 0.1176394746998528,
+     "amplitude": 1.814878708826621,
+     "nu": 0.039582747596439906
+    },
+    "field_sha256": "e7e40a59f3982ce6fd15a0434faee9d9471e7ea3c4d2b7f18f7f8dbf86a2bbc4",
+    "max_relative_residual": 4.530933934126842e-09,
+    "seconds": 0.5688898516818881
+   },
+   {
+    "case_id": "burgers-train-00004",
+    "split": "train",
+    "case_index": 4,
+    "seed": 2705921983,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3297363009057226,
+     "cy": 0.6399987516108595,
+     "width": 0.16916547254743286,
+     "amplitude": 1.2933093194347227,
+     "nu": 0.014851602021957228
+    },
+    "field_sha256": "86c4c646bbbf3aa997bb087adbd5dca3c9cdb2d43905d186464983ef9dfbbb03",
+    "max_relative_residual": 2.5772913848416055e-07,
+    "seconds": 0.6737760049290955
+   },
+   {
+    "case_id": "burgers-train-00005",
+    "split": "train",
+    "case_index": 5,
+    "seed": 2245563181,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5298204955531444,
+     "cy": 0.8297904848465661,
+     "width": 0.14706386197478855,
+     "amplitude": 1.4756605594406753,
+     "nu": 0.06289668031830191
+    },
+    "field_sha256": "ffde7d5878127b60539e6ad4383c0a1f9e64a566e9327bdfd86e44fcbdb6f600",
+    "max_relative_residual": 8.263551162244982e-09,
+    "seconds": 0.44572466518729925
+   },
+   {
+    "case_id": "burgers-train-00006",
+    "split": "train",
+    "case_index": 6,
+    "seed": 2792960013,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7827849355058976,
+     "cy": 0.45051846867646994,
+     "width": 0.1643970698967871,
+     "amplitude": 1.1442278530378103,
+     "nu": 0.012364281797650383
+    },
+    "field_sha256": "c11cc00d36d2a8f36a45a4be51ed22515e0c220966cb58b1ced9d3bf80719f25",
+    "max_relative_residual": 1.2245830864596236e-08,
+    "seconds": 0.6679853987880051
+   },
+   {
+    "case_id": "burgers-train-00007",
+    "split": "train",
+    "case_index": 7,
+    "seed": 958011769,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5180917662536465,
+     "cy": 0.47967163117712497,
+     "width": 0.10640868768936901,
+     "amplitude": 1.6761256610630713,
+     "nu": 0.022422384035394375
+    },
+    "field_sha256": "29b25941afc3b21796915dae34b779fcf55e16a0c3e329b061a341e7ceebfb9c",
+    "max_relative_residual": 4.584412068449659e-09,
+    "seconds": 0.6582396058365703
+   },
+   {
+    "case_id": "burgers-train-00008",
+    "split": "train",
+    "case_index": 8,
+    "seed": 2565156466,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6745902211201827,
+     "cy": 0.8457716626415336,
+     "width": 0.19460249593173418,
+     "amplitude": 1.2701187380211505,
+     "nu": 0.08842631378935094
+    },
+    "field_sha256": "4d78d1a0725af69f3587840e3c938b0a38d046a0f037a33fd15308ab9769b83c",
+    "max_relative_residual": 1.5469886651106807e-08,
+    "seconds": 0.3917509592138231
+   },
+   {
+    "case_id": "burgers-train-00009",
+    "split": "train",
+    "case_index": 9,
+    "seed": 1133989574,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6700480023857878,
+     "cy": 0.6450748905894352,
+     "width": 0.17578405776673517,
+     "amplitude": 1.094054990034329,
+     "nu": 0.013268393650558692
+    },
+    "field_sha256": "dce6c01186d6f5bddc8a6d1adb673aaa11826741cdad81ee62f897de64a51d9e",
+    "max_relative_residual": 1.276174384124738e-07,
+    "seconds": 0.6472603459842503
+   },
+   {
+    "case_id": "burgers-train-00010",
+    "split": "train",
+    "case_index": 10,
+    "seed": 1759620736,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.22912167006348558,
+     "cy": 0.6109361819671728,
+     "width": 0.16971929013935078,
+     "amplitude": 1.3821078467258057,
+     "nu": 0.020118149812003154
+    },
+    "field_sha256": "c30906bedef523aaa13059903b4cd8e78d48ad95852ea71eb7ca4073e14af5bc",
+    "max_relative_residual": 2.2716246598644296e-08,
+    "seconds": 0.6461838777177036
+   },
+   {
+    "case_id": "burgers-train-00011",
+    "split": "train",
+    "case_index": 11,
+    "seed": 3265298925,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7492721926779087,
+     "cy": 0.5526951014024589,
+     "width": 0.16299380014038573,
+     "amplitude": 0.5139122561349377,
+     "nu": 0.03820983318582076
+    },
+    "field_sha256": "320a1f082ad39a649b1be16cd0cdcda1c8cedaf42af1d576320092d0f3515c57",
+    "max_relative_residual": 9.895950733347858e-07,
+    "seconds": 0.26878643315285444
+   },
+   {
+    "case_id": "burgers-train-00012",
+    "split": "train",
+    "case_index": 12,
+    "seed": 477419537,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6770606715051116,
+     "cy": 0.7417888713464812,
+     "width": 0.10376784509634472,
+     "amplitude": 1.0613357264973504,
+     "nu": 0.08130981445938174
+    },
+    "field_sha256": "c76c6a56664a5db202dc511ec17d840c06883745d215a49445769ffdfaaaf6f7",
+    "max_relative_residual": 1.8234943276874155e-09,
+    "seconds": 0.3619158063083887
+   },
+   {
+    "case_id": "burgers-train-00013",
+    "split": "train",
+    "case_index": 13,
+    "seed": 105966940,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.514696191847251,
+     "cy": 0.2357378267084464,
+     "width": 0.08011904380400722,
+     "amplitude": 1.7971731073003676,
+     "nu": 0.027427491976243605
+    },
+    "field_sha256": "0209065cedfebdee715566881e074065a4e4ed9817ecfffd014bc4452983bb4c",
+    "max_relative_residual": 4.070569428535768e-08,
+    "seconds": 0.5713461432605982
+   },
+   {
+    "case_id": "burgers-train-00014",
+    "split": "train",
+    "case_index": 14,
+    "seed": 3462095751,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5791438730213668,
+     "cy": 0.26259809860082806,
+     "width": 0.11836086141356089,
+     "amplitude": 1.912877869740505,
+     "nu": 0.046507245626468546
+    },
+    "field_sha256": "8cbba073f082259d7f3f286a917bc6cba2010b18f4a98881db5391e41a9659ce",
+    "max_relative_residual": 1.630780773691454e-08,
+    "seconds": 0.5421759602613747
+   },
+   {
+    "case_id": "burgers-train-00015",
+    "split": "train",
+    "case_index": 15,
+    "seed": 2941646562,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.29638072408316835,
+     "cy": 0.7684337010691736,
+     "width": 0.14725557141394996,
+     "amplitude": 0.5177934114248781,
+     "nu": 0.0260397157625792
+    },
+    "field_sha256": "c7d6f0c4a969395dc13fb50e56dc98622b1f6c3bd96b057e9c5ee56fe90ed241",
+    "max_relative_residual": 9.799517560837638e-07,
+    "seconds": 0.2846728591248393
+   },
+   {
+    "case_id": "burgers-train-00016",
+    "split": "train",
+    "case_index": 16,
+    "seed": 546819529,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.15775174778034814,
+     "cy": 0.26356093037765904,
+     "width": 0.17015743256610286,
+     "amplitude": 1.5954634791421194,
+     "nu": 0.07264088079698168
+    },
+    "field_sha256": "16c81a2a2a84790f0e3ced7debd4cedd240bbf1f8ce76bdafa8560a269f1c0ec",
+    "max_relative_residual": 5.4883925612051995e-08,
+    "seconds": 0.45510388165712357
+   },
+   {
+    "case_id": "burgers-train-00017",
+    "split": "train",
+    "case_index": 17,
+    "seed": 3317266086,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5667701244159778,
+     "cy": 0.6073463075177581,
+     "width": 0.12063216126047525,
+     "amplitude": 1.0341808898362401,
+     "nu": 0.019066264874729306
+    },
+    "field_sha256": "6d930af2a92aefc9326eb56be9b6750c297134de16328315681f75dfaadf8ceb",
+    "max_relative_residual": 1.0729770622814547e-10,
+    "seconds": 0.5521709551103413
+   },
+   {
+    "case_id": "burgers-train-00018",
+    "split": "train",
+    "case_index": 18,
+    "seed": 2625823921,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6923820719391759,
+     "cy": 0.17330238985093893,
+     "width": 0.0994412086747938,
+     "amplitude": 0.7641899363097773,
+     "nu": 0.07313503802606915
+    },
+    "field_sha256": "c82643feb62ba50c9d7929f55e552e2f898547a774b5cac795ed21f73b2a40f1",
+    "max_relative_residual": 2.235658578889175e-08,
+    "seconds": 0.3398110307753086
+   },
+   {
+    "case_id": "burgers-train-00019",
+    "split": "train",
+    "case_index": 19,
+    "seed": 2258462969,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7132026742864456,
+     "cy": 0.35333257956482367,
+     "width": 0.09921880062694866,
+     "amplitude": 1.051762514522717,
+     "nu": 0.027019383448473593
+    },
+    "field_sha256": "5f62802061a3363237fb003136ebb13a6a1d90c2337275710af05b352859ca82",
+    "max_relative_residual": 5.686143967792195e-10,
+    "seconds": 0.4798508011735976
+   },
+   {
+    "case_id": "burgers-train-00020",
+    "split": "train",
+    "case_index": 20,
+    "seed": 3577838991,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6277704800057774,
+     "cy": 0.7200359089343952,
+     "width": 0.17946271737307667,
+     "amplitude": 1.6468750467685271,
+     "nu": 0.02313184303344404
+    },
+    "field_sha256": "cd475faa5e9a9afff2da6f64607deddb6b6c76ff0369037bf7e5c7800a1ef29e",
+    "max_relative_residual": 3.978337579708589e-09,
+    "seconds": 0.7088300939649343
+   },
+   {
+    "case_id": "burgers-train-00021",
+    "split": "train",
+    "case_index": 21,
+    "seed": 2790457016,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.1860704420817116,
+     "cy": 0.4480117457881785,
+     "width": 0.07809398348664602,
+     "amplitude": 1.5282105103060468,
+     "nu": 0.05141149942181925
+    },
+    "field_sha256": "3b9c74bf90313f862b26605dc21ce6087915ede12d17c49d4ee486d1c286340a",
+    "max_relative_residual": 3.31066000947131e-08,
+    "seconds": 0.4165839278139174
+   },
+   {
+    "case_id": "burgers-train-00022",
+    "split": "train",
+    "case_index": 22,
+    "seed": 3541386368,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.37446271229814065,
+     "cy": 0.4823717174342025,
+     "width": 0.1072536197230378,
+     "amplitude": 1.0750476494507737,
+     "nu": 0.03325703147000693
+    },
+    "field_sha256": "e4c77537eca9e8483b6dcf6069ab1434d1dcf95ff99d27b4eb8911857e1d0f55",
+    "max_relative_residual": 4.4196281783715983e-10,
+    "seconds": 0.46725318813696504
+   },
+   {
+    "case_id": "burgers-train-00023",
+    "split": "train",
+    "case_index": 23,
+    "seed": 837927548,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7702261812731699,
+     "cy": 0.5933492327619749,
+     "width": 0.19640495245901385,
+     "amplitude": 1.7433919324929985,
+     "nu": 0.023216917215740894
+    },
+    "field_sha256": "0b0b796cd3d535becb70386f8a0d06d99325ed54705b2c464eb97b0673d7199b",
+    "max_relative_residual": 3.3606522555907324e-08,
+    "seconds": 0.7140367338433862
+   },
+   {
+    "case_id": "burgers-train-00024",
+    "split": "train",
+    "case_index": 24,
+    "seed": 10476716,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7200513403284252,
+     "cy": 0.6687300294865105,
+     "width": 0.11198529584355216,
+     "amplitude": 1.0002607525627532,
+     "nu": 0.08153161928494385
+    },
+    "field_sha256": "921d12708d97668a9da43007262595c9856c2ac87e77ff6c32692bd1fe7fd841",
+    "max_relative_residual": 8.049364320990331e-10,
+    "seconds": 0.3608606783673167
+   },
+   {
+    "case_id": "burgers-train-00025",
+    "split": "train",
+    "case_index": 25,
+    "seed": 1464236329,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7583985690497812,
+     "cy": 0.47280313507529215,
+     "width": 0.16446993808962374,
+     "amplitude": 1.8962613033167883,
+     "nu": 0.01405012536594932
+    },
+    "field_sha256": "b1d99e8e4a0ddf61fa2031f1e4bd68b1490f120d0efcda0425b82e69366f453c",
+    "max_relative_residual": 1.7191375150464678e-08,
+    "seconds": 0.9120605951175094
+   },
+   {
+    "case_id": "burgers-train-00026",
+    "split": "train",
+    "case_index": 26,
+    "seed": 4293532649,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.24941076927134836,
+     "cy": 0.6238326029563439,
+     "width": 0.12785968659150487,
+     "amplitude": 1.588915572279859,
+     "nu": 0.011987907529043367
+    },
+    "field_sha256": "9f30fa632392fe60081bad81b4ac5c0ff78719af44bf021c587c5397990db78e",
+    "max_relative_residual": 7.747370473172601e-07,
+    "seconds": 0.8606434729881585
+   },
+   {
+    "case_id": "burgers-train-00027",
+    "split": "train",
+    "case_index": 27,
+    "seed": 2183011956,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.37395317762963187,
+     "cy": 0.7767735999499477,
+     "width": 0.1621675293808637,
+     "amplitude": 0.7546821192110538,
+     "nu": 0.01755138969171774
+    },
+    "field_sha256": "8ab050b72819b4f4b6ca641207ccf0e5cc0ab57de124aaa72a3780009a0bab0c",
+    "max_relative_residual": 9.793877474549833e-07,
+    "seconds": 0.4364389469847083
+   },
+   {
+    "case_id": "burgers-train-00028",
+    "split": "train",
+    "case_index": 28,
+    "seed": 3031873735,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.26637190077001643,
+     "cy": 0.6599708990752611,
+     "width": 0.1594634537500686,
+     "amplitude": 1.4890115081056217,
+     "nu": 0.013630425410042165
+    },
+    "field_sha256": "46931bb56ebe62694155d8d2456cfd1c417ebf8ecd8a000d3f8d976df4b785c1",
+    "max_relative_residual": 6.844610032601207e-09,
+    "seconds": 0.7926506740041077
+   },
+   {
+    "case_id": "burgers-train-00029",
+    "split": "train",
+    "case_index": 29,
+    "seed": 903356112,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8297629770077941,
+     "cy": 0.26618511580685644,
+     "width": 0.1449988585472437,
+     "amplitude": 1.663482490223206,
+     "nu": 0.014933018285343304
+    },
+    "field_sha256": "938207ecf35710fc423db7f47398765246dfdbda0a45e5e48d3917d6deb6e1e9",
+    "max_relative_residual": 4.9999685628160725e-08,
+    "seconds": 0.7807898460887372
+   },
+   {
+    "case_id": "burgers-train-00030",
+    "split": "train",
+    "case_index": 30,
+    "seed": 3308090767,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.32668216822706764,
+     "cy": 0.42916565820982866,
+     "width": 0.13471794271060816,
+     "amplitude": 1.873119337779586,
+     "nu": 0.017243122450830387
+    },
+    "field_sha256": "dea18069a57a88208f42ff1e62a922a02a05ec2b2de255678a23417e2e1f9dad",
+    "max_relative_residual": 1.0650184128665238e-08,
+    "seconds": 0.8338144877925515
+   },
+   {
+    "case_id": "burgers-train-00031",
+    "split": "train",
+    "case_index": 31,
+    "seed": 3809779483,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5730955452285104,
+     "cy": 0.6935127952905652,
+     "width": 0.08753876429172464,
+     "amplitude": 1.450132579576455,
+     "nu": 0.017262498845680995
+    },
+    "field_sha256": "c98260a96c85368cf1944c3f9c5950d6ab9b9a76a63d5dc8973261579a489f98",
+    "max_relative_residual": 6.290190833874266e-09,
+    "seconds": 0.6392411510460079
+   },
+   {
+    "case_id": "burgers-train-00032",
+    "split": "train",
+    "case_index": 32,
+    "seed": 403727301,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8447165244395309,
+     "cy": 0.7076479238271943,
+     "width": 0.06274350942587437,
+     "amplitude": 1.448822593901422,
+     "nu": 0.08459666842963963
+    },
+    "field_sha256": "d66fb5c1301ff1c112a86f5b30601dcef7e28a81a1ef45d249807817f3b566e0",
+    "max_relative_residual": 2.1958611426086599e-07,
+    "seconds": 0.3309246860444546
+   },
+   {
+    "case_id": "burgers-train-00033",
+    "split": "train",
+    "case_index": 33,
+    "seed": 2384879048,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.26918906439822743,
+     "cy": 0.7513065344492551,
+     "width": 0.10386792829069032,
+     "amplitude": 0.5105619557135572,
+     "nu": 0.04772890445941802
+    },
+    "field_sha256": "81fa4ce1ee980f4895de583f79e41ad05d55e49a1c0c982365af2993c5cd4b58",
+    "max_relative_residual": 9.822627842258357e-07,
+    "seconds": 0.31178228184580803
+   },
+   {
+    "case_id": "burgers-train-00034",
+    "split": "train",
+    "case_index": 34,
+    "seed": 3225632943,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7680877526469212,
+     "cy": 0.7937137156220676,
+     "width": 0.0704341899491226,
+     "amplitude": 0.8234719809824136,
+     "nu": 0.01566519143954945
+    },
+    "field_sha256": "db7f7be68039a6b5810852832e8f5c76aae0b0f3417dddd4938288445b1568c5",
+    "max_relative_residual": 1.0731473622133258e-09,
+    "seconds": 0.4809529040940106
+   },
+   {
+    "case_id": "burgers-train-00035",
+    "split": "train",
+    "case_index": 35,
+    "seed": 775196082,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.4581842010737388,
+     "cy": 0.3868111743816912,
+     "width": 0.19582612175041098,
+     "amplitude": 0.5225101349336931,
+     "nu": 0.022964779242144275
+    },
+    "field_sha256": "d95e41cf09481437c5b3bdd1054841c622e964cdaeac3c24349542db9e0c311a",
+    "max_relative_residual": 9.812350941405658e-07,
+    "seconds": 0.21566610969603062
+   },
+   {
+    "case_id": "burgers-train-00036",
+    "split": "train",
+    "case_index": 36,
+    "seed": 739437444,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.33731982938132365,
+     "cy": 0.4685760309759217,
+     "width": 0.06174582142255076,
+     "amplitude": 1.1291350372691948,
+     "nu": 0.019950814790632158
+    },
+    "field_sha256": "a5e251ed07f03972429f9aa50ab3c9be5a6bf2fcf39885bbc47424f001167e76",
+    "max_relative_residual": 1.5781806724107833e-08,
+    "seconds": 0.48497755406424403
+   },
+   {
+    "case_id": "burgers-train-00037",
+    "split": "train",
+    "case_index": 37,
+    "seed": 4194995445,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.2667796519873429,
+     "cy": 0.5433416788285528,
+     "width": 0.15515720980058906,
+     "amplitude": 1.4761401424389875,
+     "nu": 0.049478052513792746
+    },
+    "field_sha256": "c89cd4af4f43803e629262fb2c68f35ab92fc16429aead46fde1975eca128aee",
+    "max_relative_residual": 2.867309659857894e-07,
+    "seconds": 0.4995757956057787
+   },
+   {
+    "case_id": "burgers-train-00038",
+    "split": "train",
+    "case_index": 38,
+    "seed": 772786819,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.47186149865295257,
+     "cy": 0.5034683065234931,
+     "width": 0.06561239854126276,
+     "amplitude": 1.4713998289021573,
+     "nu": 0.031108205636568506
+    },
+    "field_sha256": "e4c74292a5b427e018509b62c6acbe4f38894d3ede10bc4894cf1c72eb4c98c3",
+    "max_relative_residual": 5.414271021035938e-08,
+    "seconds": 0.4699663300998509
+   },
+   {
+    "case_id": "burgers-train-00039",
+    "split": "train",
+    "case_index": 39,
+    "seed": 6474357,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6352800440019388,
+     "cy": 0.28891682849507216,
+     "width": 0.13369437024830863,
+     "amplitude": 1.699902774751616,
+     "nu": 0.018965628119934883
+    },
+    "field_sha256": "39fdde8a98019fc13316ab780f82888d2eee7efd2253b6297963ba795088a140",
+    "max_relative_residual": 7.572212564674514e-08,
+    "seconds": 0.7496161442250013
+   },
+   {
+    "case_id": "burgers-train-00040",
+    "split": "train",
+    "case_index": 40,
+    "seed": 1271906524,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6985400001994571,
+     "cy": 0.6874612526981988,
+     "width": 0.19514229964052415,
+     "amplitude": 1.1278405803772689,
+     "nu": 0.05111704539447272
+    },
+    "field_sha256": "5b8acacaa000ff46a9f8da287e0d9f6cb38186e344299a09b8c11257b42ff01d",
+    "max_relative_residual": 3.264538375273798e-07,
+    "seconds": 0.4498510379344225
+   },
+   {
+    "case_id": "burgers-train-00041",
+    "split": "train",
+    "case_index": 41,
+    "seed": 524343989,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.43427017053932093,
+     "cy": 0.7580066693277998,
+     "width": 0.11205770713310545,
+     "amplitude": 1.8633838125890738,
+     "nu": 0.03685724095896043
+    },
+    "field_sha256": "b7e0799ddf1607c68f6a1138d74852b23698db1a7faa50b74c27fb65518f3192",
+    "max_relative_residual": 2.5330538984922627e-08,
+    "seconds": 0.5737173180095851
+   },
+   {
+    "case_id": "burgers-train-00042",
+    "split": "train",
+    "case_index": 42,
+    "seed": 4060847222,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3069898339240018,
+     "cy": 0.7509760521010298,
+     "width": 0.16794460353067814,
+     "amplitude": 1.5128643112639546,
+     "nu": 0.03340288426110488
+    },
+    "field_sha256": "238bc3ccfea6e5b2ffb84b39612250d054cefe95c327680302e40da8ea7fa500",
+    "max_relative_residual": 3.3012771950768724e-09,
+    "seconds": 0.5838649380020797
+   },
+   {
+    "case_id": "burgers-train-00043",
+    "split": "train",
+    "case_index": 43,
+    "seed": 958635307,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6740204812465515,
+     "cy": 0.15360204776130518,
+     "width": 0.1084443927190871,
+     "amplitude": 1.1307752642034212,
+     "nu": 0.01197463859086842
+    },
+    "field_sha256": "74d9cc801a58e7e97bad74d9ea6c89ef9f0bdb853336537bdbb228cedcb12d7f",
+    "max_relative_residual": 2.401982632419276e-08,
+    "seconds": 0.6686593140475452
+   },
+   {
+    "case_id": "burgers-train-00044",
+    "split": "train",
+    "case_index": 44,
+    "seed": 2669107215,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5761050912517016,
+     "cy": 0.31361669917957435,
+     "width": 0.07008286353213214,
+     "amplitude": 0.9821969246693809,
+     "nu": 0.09137218745840196
+    },
+    "field_sha256": "e4dfb644c103957cb3e36588b297270f5127893e9f964ad93010d5f9001763c2",
+    "max_relative_residual": 9.371610389824155e-07,
+    "seconds": 0.2911033960990608
+   },
+   {
+    "case_id": "burgers-train-00045",
+    "split": "train",
+    "case_index": 45,
+    "seed": 24056518,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.4658668198466086,
+     "cy": 0.18563104239835207,
+     "width": 0.17598068999092897,
+     "amplitude": 1.5197129519509138,
+     "nu": 0.08984876137161077
+    },
+    "field_sha256": "805b5261c8a0cc7d183eabcc9611ac553ca0de3d26b577e06594571c9adcec7c",
+    "max_relative_residual": 2.0292047342995615e-08,
+    "seconds": 0.4328105067834258
+   },
+   {
+    "case_id": "burgers-train-00046",
+    "split": "train",
+    "case_index": 46,
+    "seed": 427702708,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7603924087946083,
+     "cy": 0.27404618997533825,
+     "width": 0.12590474793757375,
+     "amplitude": 1.0264863243276678,
+     "nu": 0.01291167646107825
+    },
+    "field_sha256": "87d01d923760f5e6eb8169e8177560aed4f57b8fd8da888f24207d6f95ca0918",
+    "max_relative_residual": 1.042807164039789e-07,
+    "seconds": 0.6226973449811339
+   },
+   {
+    "case_id": "burgers-train-00047",
+    "split": "train",
+    "case_index": 47,
+    "seed": 3452407815,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5490032847138131,
+     "cy": 0.5086027419833611,
+     "width": 0.16721632608472137,
+     "amplitude": 0.5648331319473161,
+     "nu": 0.08971784680241056
+    },
+    "field_sha256": "73ffa388c7ac70f95f381a3d952b2983aae1419f19f6ba4459b750b6d6d9e909",
+    "max_relative_residual": 9.467806080125957e-07,
+    "seconds": 0.27424796065315604
+   },
+   {
+    "case_id": "burgers-train-00048",
+    "split": "train",
+    "case_index": 48,
+    "seed": 1636289706,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5562242936374916,
+     "cy": 0.784486965123186,
+     "width": 0.12196718361458096,
+     "amplitude": 1.3274973551435925,
+     "nu": 0.037150050423826804
+    },
+    "field_sha256": "f7c38f50028e94189526081a3821eecdf18c6a52c59b38c7bbfba9d452ea878b",
+    "max_relative_residual": 1.8246156632539615e-07,
+    "seconds": 0.49537581065669656
+   },
+   {
+    "case_id": "burgers-train-00049",
+    "split": "train",
+    "case_index": 49,
+    "seed": 3694184051,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5203056594967831,
+     "cy": 0.5151131274841633,
+     "width": 0.19551422632116966,
+     "amplitude": 1.268754276045459,
+     "nu": 0.04647047130271005
+    },
+    "field_sha256": "aa48d8a12073f1214d6d77c6686c9aad8e397da57f4b3be60bd289b4139fe558",
+    "max_relative_residual": 3.7912164234550516e-10,
+    "seconds": 0.49196625500917435
+   },
+   {
+    "case_id": "burgers-train-00050",
+    "split": "train",
+    "case_index": 50,
+    "seed": 142441739,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5270968209567919,
+     "cy": 0.15292861189444246,
+     "width": 0.1937400895702734,
+     "amplitude": 0.6230754941687755,
+     "nu": 0.02772512313564036
+    },
+    "field_sha256": "3f4fab792e8272e0550f99fce496b9952ba2230edbc9d4f77282b0ccfbb55630",
+    "max_relative_residual": 9.961409587909825e-07,
+    "seconds": 0.3786431420594454
+   },
+   {
+    "case_id": "burgers-train-00051",
+    "split": "train",
+    "case_index": 51,
+    "seed": 2802897948,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7412336788105506,
+     "cy": 0.7882020052837359,
+     "width": 0.190080615714403,
+     "amplitude": 1.3392726192394273,
+     "nu": 0.01849383789973744
+    },
+    "field_sha256": "8b37bbba56e6eb7c9eeedf3feaadb2df92b2b9dff0f5eb7bc017ee81780f873e",
+    "max_relative_residual": 3.1046555781668295e-08,
+    "seconds": 0.6558620589785278
+   },
+   {
+    "case_id": "burgers-train-00052",
+    "split": "train",
+    "case_index": 52,
+    "seed": 179640535,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.1900327014123228,
+     "cy": 0.8184356922142175,
+     "width": 0.053539266920201396,
+     "amplitude": 1.455229316123273,
+     "nu": 0.010463449678731187
+    },
+    "field_sha256": "3a35054371761b8511a491e8c453247637d05531ce5f5bcbbef53b228d563153",
+    "max_relative_residual": 1.1098240266078389e-07,
+    "seconds": 0.6668068892322481
+   },
+   {
+    "case_id": "burgers-train-00053",
+    "split": "train",
+    "case_index": 53,
+    "seed": 3770613377,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.1756113402254799,
+     "cy": 0.7531597576542547,
+     "width": 0.1617105875477322,
+     "amplitude": 0.7719341933724372,
+     "nu": 0.010605528365493057
+    },
+    "field_sha256": "d70ab8cbcb1bea5afaf325a103013ed38b9588753ea7bffaecbc0e9a415a20b2",
+    "max_relative_residual": 3.593305847006557e-08,
+    "seconds": 0.5521968090906739
+   },
+   {
+    "case_id": "burgers-train-00054",
+    "split": "train",
+    "case_index": 54,
+    "seed": 720173962,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.4527492534031421,
+     "cy": 0.5629463634479329,
+     "width": 0.060502393522943246,
+     "amplitude": 0.6280368399294429,
+     "nu": 0.01631525368362901
+    },
+    "field_sha256": "248d0cab55f904927f528186860975285148b5b151ddff27af9ca9d919445b6c",
+    "max_relative_residual": 9.93584895358999e-07,
+    "seconds": 0.4103284142911434
+   },
+   {
+    "case_id": "burgers-train-00055",
+    "split": "train",
+    "case_index": 55,
+    "seed": 2537468382,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6014240784922547,
+     "cy": 0.3244739019915536,
+     "width": 0.1099060044936975,
+     "amplitude": 1.9265008709059657,
+     "nu": 0.08634372148658735
+    },
+    "field_sha256": "ee47e15e75510ef26e774c97acf32fb1a64a05fe2281cb24af8bc4643706cecb",
+    "max_relative_residual": 1.6890836036109428e-08,
+    "seconds": 0.42858637822791934
+   },
+   {
+    "case_id": "burgers-train-00056",
+    "split": "train",
+    "case_index": 56,
+    "seed": 779234464,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8173931863719286,
+     "cy": 0.4776457230259018,
+     "width": 0.10078990238065391,
+     "amplitude": 1.9941955458818375,
+     "nu": 0.02068233201670693
+    },
+    "field_sha256": "c506da1f8910b9fd5ab87f5f0184d1991eb4e5cbcc6f9eeeac8177a20da1a7a5",
+    "max_relative_residual": 9.603191929928856e-07,
+    "seconds": 0.7182921231724322
+   },
+   {
+    "case_id": "burgers-train-00057",
+    "split": "train",
+    "case_index": 57,
+    "seed": 1029815691,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3833151196041761,
+     "cy": 0.8291611246399476,
+     "width": 0.18349930185871044,
+     "amplitude": 1.1488999021353057,
+     "nu": 0.013975362378254665
+    },
+    "field_sha256": "db48226c85b020bf9d9e6d1f86b7431c0778f71443077100a136e008be2b894c",
+    "max_relative_residual": 5.5811106411467314e-08,
+    "seconds": 0.6456028828397393
+   },
+   {
+    "case_id": "burgers-train-00058",
+    "split": "train",
+    "case_index": 58,
+    "seed": 1508218475,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6766354112466458,
+     "cy": 0.2116471036254784,
+     "width": 0.16612714651880198,
+     "amplitude": 1.158921420411379,
+     "nu": 0.04487425828537683
+    },
+    "field_sha256": "02a17c293080309763e89e2e70751d64af6aeccea4dc7e16f2def4f1070e1e8f",
+    "max_relative_residual": 6.75301512045245e-09,
+    "seconds": 0.4671649970114231
+   },
+   {
+    "case_id": "burgers-train-00059",
+    "split": "train",
+    "case_index": 59,
+    "seed": 1579611259,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5129728311444309,
+     "cy": 0.20701688887814354,
+     "width": 0.08941030842676725,
+     "amplitude": 1.9011068951665313,
+     "nu": 0.03827544413760346
+    },
+    "field_sha256": "a630aaf1ca21c574d8a83be23c95cb0003a4dd1b6a396e785c20e5bb1f0ce3df",
+    "max_relative_residual": 3.368078052256294e-08,
+    "seconds": 0.5337456166744232
+   },
+   {
+    "case_id": "burgers-train-00060",
+    "split": "train",
+    "case_index": 60,
+    "seed": 1063008804,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.48109985503498387,
+     "cy": 0.5814990595328047,
+     "width": 0.10730621124562258,
+     "amplitude": 1.8938767287364366,
+     "nu": 0.010677030796332431
+    },
+    "field_sha256": "275fc180296d00b510e8566969d807a626cf4483b8c758cb120e3d7e89d00ee2",
+    "max_relative_residual": 8.34859810294011e-08,
+    "seconds": 0.9930366449989378
+   },
+   {
+    "case_id": "burgers-train-00061",
+    "split": "train",
+    "case_index": 61,
+    "seed": 3219765924,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6206211320649465,
+     "cy": 0.33306876962686904,
+     "width": 0.13375411003071708,
+     "amplitude": 1.117926998493825,
+     "nu": 0.05408087306444168
+    },
+    "field_sha256": "d26898f1fd7ed699825136e71d46d7c0161eb87db1c313192c34ff4f0b93c39d",
+    "max_relative_residual": 2.480098130726849e-10,
+    "seconds": 0.43233025912195444
+   },
+   {
+    "case_id": "burgers-train-00062",
+    "split": "train",
+    "case_index": 62,
+    "seed": 3731608344,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3454298005906363,
+     "cy": 0.38863970746666376,
+     "width": 0.19916896786529548,
+     "amplitude": 0.9988286843137761,
+     "nu": 0.049854066729531736
+    },
+    "field_sha256": "e454daa9e9f55c6f5379c744b0b7cba35cf8839da85934ba1ef4d0aa60a249c1",
+    "max_relative_residual": 9.943715429043115e-07,
+    "seconds": 0.41699926694855094
+   },
+   {
+    "case_id": "burgers-train-00063",
+    "split": "train",
+    "case_index": 63,
+    "seed": 910510358,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7349775764657902,
+     "cy": 0.6683260130776192,
+     "width": 0.09806592914402167,
+     "amplitude": 1.473732367002158,
+     "nu": 0.029918645476925028
+    },
+    "field_sha256": "140150e129b730184575665d89273766b56bf402612b6a965fd3d6847b24ccfe",
+    "max_relative_residual": 4.084730121685786e-09,
+    "seconds": 0.5373356021009386
+   },
+   {
+    "case_id": "burgers-train-00064",
+    "split": "train",
+    "case_index": 64,
+    "seed": 2070283980,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6959121389265582,
+     "cy": 0.42292301181083025,
+     "width": 0.15523903316745008,
+     "amplitude": 1.7273561712103507,
+     "nu": 0.08313415356863559
+    },
+    "field_sha256": "80ce5ea2bae81e6932082ed4699e36113ec11c91e95569c299f89c8430ba0543",
+    "max_relative_residual": 3.305380542235784e-08,
+    "seconds": 0.45620804419741035
+   },
+   {
+    "case_id": "burgers-train-00065",
+    "split": "train",
+    "case_index": 65,
+    "seed": 1501623554,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3458540036036015,
+     "cy": 0.5314147126125712,
+     "width": 0.09209721396359871,
+     "amplitude": 1.4165538884086315,
+     "nu": 0.046921696711387045
+    },
+    "field_sha256": "35cd3bb3ca0339d1b202406f4e139b1e400fa106b1f4c677e0a841e2aaf88f3f",
+    "max_relative_residual": 7.06405529039006e-09,
+    "seconds": 0.4529791148379445
+   },
+   {
+    "case_id": "burgers-train-00066",
+    "split": "train",
+    "case_index": 66,
+    "seed": 951514680,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8413270968595965,
+     "cy": 0.23822934788362563,
+     "width": 0.1551133640028923,
+     "amplitude": 1.8314857261056705,
+     "nu": 0.054580717731762665
+    },
+    "field_sha256": "f697f57a84766bbca8ac92f72b4dafbe40f6e67dabccad3a02f121a9f8ccd39e",
+    "max_relative_residual": 3.0413589034604315e-08,
+    "seconds": 0.505294996779412
+   },
+   {
+    "case_id": "burgers-train-00067",
+    "split": "train",
+    "case_index": 67,
+    "seed": 2053361450,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.21610667384384016,
+     "cy": 0.38672685418417185,
+     "width": 0.1101736144159078,
+     "amplitude": 0.6608959599310928,
+     "nu": 0.021387314717730428
+    },
+    "field_sha256": "92b2971cd99be0e35d73dc5563bea8944ae42797ddb3b2919e2daab39dedb4ba",
+    "max_relative_residual": 9.943623509163886e-07,
+    "seconds": 0.4184206291101873
+   },
+   {
+    "case_id": "burgers-train-00068",
+    "split": "train",
+    "case_index": 68,
+    "seed": 3458648290,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.748386903577531,
+     "cy": 0.5097770707255834,
+     "width": 0.1879467982352001,
+     "amplitude": 0.5191855991079546,
+     "nu": 0.01238400671629383
+    },
+    "field_sha256": "3f96be04ab6e321e9e9ff223974f34fdf9b14c10a33070795f6bee2f8e844f56",
+    "max_relative_residual": 8.952022887594677e-07,
+    "seconds": 0.27056335704401135
+   },
+   {
+    "case_id": "burgers-train-00069",
+    "split": "train",
+    "case_index": 69,
+    "seed": 3453575420,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.2042880811508968,
+     "cy": 0.4390339574051487,
+     "width": 0.05789604704642992,
+     "amplitude": 1.136596667658393,
+     "nu": 0.045845383104322596
+    },
+    "field_sha256": "498c3c740729df8986315634cbe05ba0bdd3f51eff347be02320ea81da66dca6",
+    "max_relative_residual": 9.871673840738571e-07,
+    "seconds": 0.3649717108346522
+   },
+   {
+    "case_id": "burgers-train-00070",
+    "split": "train",
+    "case_index": 70,
+    "seed": 2632349741,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5316758934986073,
+     "cy": 0.213254542021932,
+     "width": 0.19042102366494768,
+     "amplitude": 1.409295476354071,
+     "nu": 0.05213940531262748
+    },
+    "field_sha256": "48b52c71f0aeca65ae31861303433439416ee9ac78e4d59584b6a133270e9055",
+    "max_relative_residual": 2.048333217848567e-08,
+    "seconds": 0.4905158169567585
+   },
+   {
+    "case_id": "burgers-train-00071",
+    "split": "train",
+    "case_index": 71,
+    "seed": 2281239302,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7929822431398224,
+     "cy": 0.49713549050308437,
+     "width": 0.1306987699055232,
+     "amplitude": 1.5465132060342464,
+     "nu": 0.06366391641778558
+    },
+    "field_sha256": "9393a480d84acdbfbddd6df682757529f2cbf7456518dc1963bc50b06390882e",
+    "max_relative_residual": 5.057357151808159e-07,
+    "seconds": 0.450690892059356
+   },
+   {
+    "case_id": "burgers-train-00072",
+    "split": "train",
+    "case_index": 72,
+    "seed": 2962724254,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6006206969276084,
+     "cy": 0.46108376324495115,
+     "width": 0.18444942579562917,
+     "amplitude": 1.3123859971220477,
+     "nu": 0.09312151608999587
+    },
+    "field_sha256": "f4270430fc302f78fc8ebefddd1a5841eafec7addf4e9ea69164765902e601dc",
+    "max_relative_residual": 2.1154293710166855e-09,
+    "seconds": 0.4134887927211821
+   },
+   {
+    "case_id": "burgers-train-00073",
+    "split": "train",
+    "case_index": 73,
+    "seed": 934897250,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6832328066607501,
+     "cy": 0.474290759324982,
+     "width": 0.1391826472579476,
+     "amplitude": 1.1886565974153562,
+     "nu": 0.06865905571601115
+    },
+    "field_sha256": "1122641d482afa79417f5d1fdfd778dfff5582458b978b1725a2bc5fd9abe741",
+    "max_relative_residual": 1.001143565472093e-09,
+    "seconds": 0.4114289106801152
+   },
+   {
+    "case_id": "burgers-train-00074",
+    "split": "train",
+    "case_index": 74,
+    "seed": 1495164889,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5678805494925298,
+     "cy": 0.19590552236404052,
+     "width": 0.06863699123286032,
+     "amplitude": 1.8011367623208345,
+     "nu": 0.07756697018180822
+    },
+    "field_sha256": "9b2dbe2cfe781680510a6c5e5401c94172f7bda7367b05ed7b520f8f7415804e",
+    "max_relative_residual": 2.4143971167074457e-07,
+    "seconds": 0.3798921201378107
+   },
+   {
+    "case_id": "burgers-train-00075",
+    "split": "train",
+    "case_index": 75,
+    "seed": 3543939316,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.302203216845854,
+     "cy": 0.580174793434026,
+     "width": 0.06694850140362278,
+     "amplitude": 1.3691792489802026,
+     "nu": 0.010209146506394443
+    },
+    "field_sha256": "5917806de6168f0d474a5f252ee0baa6976478d53d0d8566241418dea4b49d11",
+    "max_relative_residual": 2.1717522862603328e-08,
+    "seconds": 0.7144419709220529
+   },
+   {
+    "case_id": "burgers-train-00076",
+    "split": "train",
+    "case_index": 76,
+    "seed": 1181654267,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.18369734567608917,
+     "cy": 0.1788158109140269,
+     "width": 0.13184245876711886,
+     "amplitude": 0.5782010102168912,
+     "nu": 0.06157942928028049
+    },
+    "field_sha256": "238bed1ef72150608dd0a68cf4c7d8e6a5a78bbf8b21a3b31cf6d24023eb6a7a",
+    "max_relative_residual": 1.6255776998966747e-07,
+    "seconds": 0.3404142213985324
+   },
+   {
+    "case_id": "burgers-train-00077",
+    "split": "train",
+    "case_index": 77,
+    "seed": 3422038613,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.16141480802624783,
+     "cy": 0.8282275376398324,
+     "width": 0.0791249473337365,
+     "amplitude": 0.6748266032970177,
+     "nu": 0.014291279631763545
+    },
+    "field_sha256": "60a67355338797f4dfc798dafebfacf735a46e784fc71168d7f209c2bdc05979",
+    "max_relative_residual": 2.737408009811115e-08,
+    "seconds": 0.46632098499685526
+   },
+   {
+    "case_id": "burgers-train-00078",
+    "split": "train",
+    "case_index": 78,
+    "seed": 2478433945,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7457680458971649,
+     "cy": 0.2782677864603506,
+     "width": 0.17654979379718944,
+     "amplitude": 0.6621941858118449,
+     "nu": 0.0662924770592664
+    },
+    "field_sha256": "8df3f83f1d61d82aa8a4ed04b73ebfc6f2739ed473eb4bc61059da9276ff5e0b",
+    "max_relative_residual": 9.856266958521597e-07,
+    "seconds": 0.3429761603474617
+   },
+   {
+    "case_id": "burgers-train-00079",
+    "split": "train",
+    "case_index": 79,
+    "seed": 818583525,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.25545376944263526,
+     "cy": 0.3187973287306282,
+     "width": 0.17358303186134724,
+     "amplitude": 1.675146028344515,
+     "nu": 0.01770050695450752
+    },
+    "field_sha256": "2f49924dbbdb3ca7d74b4eef0a0650303243a47492ae77906217e5c3c76afd8c",
+    "max_relative_residual": 2.4504155213111893e-08,
+    "seconds": 0.7846312071196735
+   },
+   {
+    "case_id": "burgers-train-00080",
+    "split": "train",
+    "case_index": 80,
+    "seed": 2246882313,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.22539828926982497,
+     "cy": 0.7051985379618427,
+     "width": 0.07469844955741248,
+     "amplitude": 1.6989120244469702,
+     "nu": 0.019791894383539295
+    },
+    "field_sha256": "42412b76d3b66b67d6af0d62074e4e86eaa2b1d71684aaadf11e49927c336193",
+    "max_relative_residual": 4.1549344321250964e-08,
+    "seconds": 0.6260230666957796
+   },
+   {
+    "case_id": "burgers-train-00081",
+    "split": "train",
+    "case_index": 81,
+    "seed": 699585048,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.4039040936046321,
+     "cy": 0.19842858551005915,
+     "width": 0.1932450678666982,
+     "amplitude": 1.0784786267347144,
+     "nu": 0.023905796787955878
+    },
+    "field_sha256": "05d6cf47b6a8d75b0aa17e490390e765e077386332dda35ede01b6317c317abf",
+    "max_relative_residual": 3.697546850099547e-08,
+    "seconds": 0.5198712018318474
+   },
+   {
+    "case_id": "burgers-train-00082",
+    "split": "train",
+    "case_index": 82,
+    "seed": 1374852621,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6462897678496111,
+     "cy": 0.4007193462229165,
+     "width": 0.07281954823142728,
+     "amplitude": 1.3089466948414876,
+     "nu": 0.06768114150039903
+    },
+    "field_sha256": "1a7c0047df9643efc7c754a1098bcce902e7383494cc4f522055894ad4bbffa1",
+    "max_relative_residual": 9.478284285259814e-07,
+    "seconds": 0.3592319362796843
+   },
+   {
+    "case_id": "burgers-train-00083",
+    "split": "train",
+    "case_index": 83,
+    "seed": 3157307147,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7555112879967413,
+     "cy": 0.3022222980279987,
+     "width": 0.13038095505257108,
+     "amplitude": 0.8191197931245175,
+     "nu": 0.01841742753143231
+    },
+    "field_sha256": "d9fafbbe4b3cdbb17f7b6bdf41d6f850b22d56243449efd1718b7677813ced0d",
+    "max_relative_residual": 4.187490946773141e-08,
+    "seconds": 0.5000947862863541
+   },
+   {
+    "case_id": "burgers-train-00084",
+    "split": "train",
+    "case_index": 84,
+    "seed": 660937062,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6370938214910801,
+     "cy": 0.30448765690135726,
+     "width": 0.1327179037410824,
+     "amplitude": 1.4184972604275086,
+     "nu": 0.018969195339876774
+    },
+    "field_sha256": "2f98515b5e823b2cec2edde95dd7bc6a0ae166ebca0ae70bda1ed3d8fa0d7774",
+    "max_relative_residual": 1.3362016277343034e-08,
+    "seconds": 0.6689821942709386
+   },
+   {
+    "case_id": "burgers-train-00085",
+    "split": "train",
+    "case_index": 85,
+    "seed": 2035121729,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5658043413202862,
+     "cy": 0.7396302159783841,
+     "width": 0.15565003228870533,
+     "amplitude": 0.8370798868717244,
+     "nu": 0.024480433801767502
+    },
+    "field_sha256": "7271dc398863c4dfe515eecac6bba863867f1906321739bb21981fa743daa8c2",
+    "max_relative_residual": 9.948778531167173e-07,
+    "seconds": 0.45268098497763276
+   },
+   {
+    "case_id": "burgers-train-00086",
+    "split": "train",
+    "case_index": 86,
+    "seed": 3763878796,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.685409388456536,
+     "cy": 0.4302966427651349,
+     "width": 0.18096363609189653,
+     "amplitude": 1.319886509065876,
+     "nu": 0.021619676155345338
+    },
+    "field_sha256": "5322224c905a2fafd36626d10612feaa95a7cf727ab677644e96b4fca7bdc4b5",
+    "max_relative_residual": 3.325352604750973e-07,
+    "seconds": 0.6319954050704837
+   },
+   {
+    "case_id": "burgers-train-00087",
+    "split": "train",
+    "case_index": 87,
+    "seed": 2536559822,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.15806386118369586,
+     "cy": 0.24217027610133998,
+     "width": 0.08077295309530737,
+     "amplitude": 1.7316179129374931,
+     "nu": 0.025577724257066205
+    },
+    "field_sha256": "d13a5e23bfbdfd22f2ff5bf0460448b77a8df373f32f472d676e37bebe61bf18",
+    "max_relative_residual": 3.3864176837658537e-07,
+    "seconds": 0.579206258058548
+   },
+   {
+    "case_id": "burgers-train-00088",
+    "split": "train",
+    "case_index": 88,
+    "seed": 3169040447,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.698203038214604,
+     "cy": 0.19471714651244404,
+     "width": 0.15365341913777675,
+     "amplitude": 0.8138916738396318,
+     "nu": 0.012598215069572786
+    },
+    "field_sha256": "1e77a2df244424f76588e89608340a74764a0a06373b605deb26a68424ac7ccd",
+    "max_relative_residual": 1.3645697386892403e-08,
+    "seconds": 0.5471534649841487
+   },
+   {
+    "case_id": "burgers-train-00089",
+    "split": "train",
+    "case_index": 89,
+    "seed": 1324977706,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.363796926440686,
+     "cy": 0.5790239885789044,
+     "width": 0.15151872628631252,
+     "amplitude": 0.8001496096427401,
+     "nu": 0.010343491659422492
+    },
+    "field_sha256": "7c98fab1c0b9238d85431723752c277c32f319c87d655f6ba441fdb54e56eace",
+    "max_relative_residual": 2.2628788795984823e-09,
+    "seconds": 0.5662780441343784
+   },
+   {
+    "case_id": "burgers-train-00090",
+    "split": "train",
+    "case_index": 90,
+    "seed": 2486045557,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7642609855637884,
+     "cy": 0.5431014506781017,
+     "width": 0.12352850177721635,
+     "amplitude": 0.8632558947362734,
+     "nu": 0.02432659431007992
+    },
+    "field_sha256": "f0c93c35dcabfd342b18121f6aa7f8182abef988f69c2e2804ae5664b693fb89",
+    "max_relative_residual": 2.860036134474539e-08,
+    "seconds": 0.47142725018784404
+   },
+   {
+    "case_id": "burgers-train-00091",
+    "split": "train",
+    "case_index": 91,
+    "seed": 588261674,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.417027136975784,
+     "cy": 0.7375023029755637,
+     "width": 0.07332748006394782,
+     "amplitude": 1.8192693704164007,
+     "nu": 0.0569535258228559
+    },
+    "field_sha256": "01e72d234b601d211c8d98960866a952bfbedd41ad330513a43f587674cd3d75",
+    "max_relative_residual": 1.1839476423182285e-07,
+    "seconds": 0.42208184488117695
+   },
+   {
+    "case_id": "burgers-train-00092",
+    "split": "train",
+    "case_index": 92,
+    "seed": 72465666,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5668887843787688,
+     "cy": 0.3455540593980055,
+     "width": 0.07782848794260823,
+     "amplitude": 1.9265201121375013,
+     "nu": 0.021427710093797844
+    },
+    "field_sha256": "6bb15dd8d1802eaf81983749d3abeffbea05d62cbc086fc2ddb622424ca6f74a",
+    "max_relative_residual": 6.637109550539042e-08,
+    "seconds": 0.6557806329801679
+   },
+   {
+    "case_id": "burgers-train-00093",
+    "split": "train",
+    "case_index": 93,
+    "seed": 4132644996,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.273170383997151,
+     "cy": 0.17159597005706523,
+     "width": 0.08539587228386226,
+     "amplitude": 1.807440764005204,
+     "nu": 0.016701409276206496
+    },
+    "field_sha256": "167c71dc0eb155def359422249b528e29e8eae6d0338ce2db140897c9be1ac2c",
+    "max_relative_residual": 5.067021627882393e-07,
+    "seconds": 0.7332882671616971
+   },
+   {
+    "case_id": "burgers-train-00094",
+    "split": "train",
+    "case_index": 94,
+    "seed": 413516183,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3409483758818311,
+     "cy": 0.7323693561908501,
+     "width": 0.12774811735553593,
+     "amplitude": 1.3031037689450402,
+     "nu": 0.0394962371366056
+    },
+    "field_sha256": "9fba2c17db91ea16ed59c68d0c3d6331720c7f738248dc866df6cc6645b48721",
+    "max_relative_residual": 1.2463665302204975e-08,
+    "seconds": 0.497103916015476
+   },
+   {
+    "case_id": "burgers-train-00095",
+    "split": "train",
+    "case_index": 95,
+    "seed": 2045221690,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8314996552279973,
+     "cy": 0.7351894697291923,
+     "width": 0.09418292427998748,
+     "amplitude": 1.5297202137631016,
+     "nu": 0.06431973971291385
+    },
+    "field_sha256": "f9beb250c6c56312c3855ac2f807d37222b2425a2e0e8bb4e04797a49d24574a",
+    "max_relative_residual": 1.4113101138132442e-07,
+    "seconds": 0.40751898381859064
+   },
+   {
+    "case_id": "burgers-train-00096",
+    "split": "train",
+    "case_index": 96,
+    "seed": 3544497688,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7782364627147367,
+     "cy": 0.1807329546446825,
+     "width": 0.12508319137395865,
+     "amplitude": 1.5398274278450887,
+     "nu": 0.055482961571433634
+    },
+    "field_sha256": "79bf9f5a29fb38736643753613954acd710f911c700bf1a44cd1791c81c902a7",
+    "max_relative_residual": 6.942893746547704e-09,
+    "seconds": 0.4686185522004962
+   },
+   {
+    "case_id": "burgers-train-00097",
+    "split": "train",
+    "case_index": 97,
+    "seed": 1953309928,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.4451832620236331,
+     "cy": 0.22081344119304092,
+     "width": 0.11500573527783935,
+     "amplitude": 1.8933775149591234,
+     "nu": 0.08213693579305757
+    },
+    "field_sha256": "17aeba57c7e51fcb7d87d59d98a4cd497efdb802a60783fc62070cfa52905f48",
+    "max_relative_residual": 7.251000921364046e-08,
+    "seconds": 0.43648888170719147
+   },
+   {
+    "case_id": "burgers-train-00098",
+    "split": "train",
+    "case_index": 98,
+    "seed": 3108442854,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.4428844127742033,
+     "cy": 0.8431575256342698,
+     "width": 0.07758876852715052,
+     "amplitude": 1.011201412892043,
+     "nu": 0.015652290613855535
+    },
+    "field_sha256": "4f7a5fd810d3a89f9a16dff9f014180ee0d028eb84bcca7ed00fa0c7868e2394",
+    "max_relative_residual": 3.925043999432044e-08,
+    "seconds": 0.5352975619025528
+   },
+   {
+    "case_id": "burgers-train-00099",
+    "split": "train",
+    "case_index": 99,
+    "seed": 995313737,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.1553283325199745,
+     "cy": 0.7034904986252405,
+     "width": 0.18816566630293124,
+     "amplitude": 1.8635300391328506,
+     "nu": 0.02866143738511767
+    },
+    "field_sha256": "a5c8a399a42cb5cd81e40f1b3af1ed4300837bdef0c4de3554216c6c7603c0fc",
+    "max_relative_residual": 3.9722172652408276e-07,
+    "seconds": 0.7413050029426813
+   },
+   {
+    "case_id": "burgers-train-00100",
+    "split": "train",
+    "case_index": 100,
+    "seed": 2548976707,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7040232587233506,
+     "cy": 0.5556582562885981,
+     "width": 0.13542697239771356,
+     "amplitude": 1.2913626952268806,
+     "nu": 0.017764440289047494
+    },
+    "field_sha256": "4cc944baca2c89659522f1ce9be418a1392e07679ca075f1815cec58775edfa8",
+    "max_relative_residual": 1.3475899110279852e-08,
+    "seconds": 0.6458809650503099
+   },
+   {
+    "case_id": "burgers-train-00101",
+    "split": "train",
+    "case_index": 101,
+    "seed": 1795755369,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.2957191067197672,
+     "cy": 0.3372309692750775,
+     "width": 0.13132450246589356,
+     "amplitude": 1.4195817853458799,
+     "nu": 0.025975903623035142
+    },
+    "field_sha256": "d3a4491bf3169c6eba2e1d32a4e8870506d9bcf5d9155dc05d2284483a4a1631",
+    "max_relative_residual": 1.1617234204139891e-08,
+    "seconds": 0.5972000798210502
+   },
+   {
+    "case_id": "burgers-train-00102",
+    "split": "train",
+    "case_index": 102,
+    "seed": 3765602550,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3946826765833925,
+     "cy": 0.3251516708468438,
+     "width": 0.14107576776797642,
+     "amplitude": 1.8015452651805357,
+     "nu": 0.08562300483877781
+    },
+    "field_sha256": "4d89476d7595d210877f46778e69808c6167ba28cc4f698cf2b27ff76d8a31f5",
+    "max_relative_residual": 2.9953685026627123e-09,
+    "seconds": 0.45389035483822227
+   },
+   {
+    "case_id": "burgers-train-00103",
+    "split": "train",
+    "case_index": 103,
+    "seed": 731384567,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.19998323424635625,
+     "cy": 0.5721897791411249,
+     "width": 0.07712482424285048,
+     "amplitude": 0.8767803667654597,
+     "nu": 0.021991507421769474
+    },
+    "field_sha256": "c0d16ca31484c9e1213b8ef316a3ed5340b8d9c9d1804881cbe4e34147e632b1",
+    "max_relative_residual": 1.0845801932024905e-09,
+    "seconds": 0.4564850446768105
+   },
+   {
+    "case_id": "burgers-train-00104",
+    "split": "train",
+    "case_index": 104,
+    "seed": 2346476321,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6589486272279153,
+     "cy": 0.5997633383047078,
+     "width": 0.15022809585238545,
+     "amplitude": 0.5338654552873149,
+     "nu": 0.010241548273056431
+    },
+    "field_sha256": "ac660be496a7135d6a28bba0f2b82e73af5c5150139ca6b1e11d6e6cca737877",
+    "max_relative_residual": 9.949370769898842e-07,
+    "seconds": 0.40905988216400146
+   },
+   {
+    "case_id": "burgers-train-00105",
+    "split": "train",
+    "case_index": 105,
+    "seed": 3077427637,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6073838106678919,
+     "cy": 0.55571280106619,
+     "width": 0.05848599027670612,
+     "amplitude": 1.7708939071433645,
+     "nu": 0.06797652529515719
+    },
+    "field_sha256": "307666ffc6d1e8eb413b444766e23921026d7f9d98162d41f234e854b94a99e6",
+    "max_relative_residual": 9.624945155099077e-07,
+    "seconds": 0.3638138980604708
+   },
+   {
+    "case_id": "burgers-train-00106",
+    "split": "train",
+    "case_index": 106,
+    "seed": 140848010,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.60430264217197,
+     "cy": 0.7602274532958311,
+     "width": 0.08663095246660099,
+     "amplitude": 0.9167379139076635,
+     "nu": 0.04254175709233995
+    },
+    "field_sha256": "ae4aa5917b33823a10c95c518a23fd127b4078460c93c25325633ec7064bfba8",
+    "max_relative_residual": 1.2978079113210873e-09,
+    "seconds": 0.39364766003564
+   },
+   {
+    "case_id": "burgers-train-00107",
+    "split": "train",
+    "case_index": 107,
+    "seed": 4125811996,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8264462654467598,
+     "cy": 0.6215599422941268,
+     "width": 0.17110085811148257,
+     "amplitude": 1.0603852293947762,
+     "nu": 0.07337844747125186
+    },
+    "field_sha256": "313a34d9289dfe7b7282ad7044c4b8e64469a6e5ff7d420a8d0e1bacaa40b0df",
+    "max_relative_residual": 5.186114969083706e-09,
+    "seconds": 0.38847246998921037
+   },
+   {
+    "case_id": "burgers-train-00108",
+    "split": "train",
+    "case_index": 108,
+    "seed": 2958299685,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.836136068009572,
+     "cy": 0.8401212129143376,
+     "width": 0.06439714784915429,
+     "amplitude": 0.8007297820898415,
+     "nu": 0.014740144828673777
+    },
+    "field_sha256": "69f3166b320327c5f6cd1c626ddc4a6073abf0ebce789eb56507054e28f5a613",
+    "max_relative_residual": 1.6837858006833707e-09,
+    "seconds": 0.4762299032881856
+   },
+   {
+    "case_id": "burgers-train-00109",
+    "split": "train",
+    "case_index": 109,
+    "seed": 1461973004,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.28377050874083587,
+     "cy": 0.47808436594827863,
+     "width": 0.10706258051567591,
+     "amplitude": 1.1529343326008372,
+     "nu": 0.010321092700625355
+    },
+    "field_sha256": "af980a9246c0bb69aa7dee82f5d7ce71cc004527140c723d2eb4a84d839f4f14",
+    "max_relative_residual": 7.604370615370261e-10,
+    "seconds": 0.7214086959138513
+   },
+   {
+    "case_id": "burgers-train-00110",
+    "split": "train",
+    "case_index": 110,
+    "seed": 1013291675,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7134144852588535,
+     "cy": 0.695107536714831,
+     "width": 0.17458320089228604,
+     "amplitude": 1.4694176161420345,
+     "nu": 0.08936258516108299
+    },
+    "field_sha256": "871a5e7293e8f1a08c1683a82330f73becedd7a06dbfe2b3345a41d188b3be4d",
+    "max_relative_residual": 1.9358230327689103e-07,
+    "seconds": 0.43099536607041955
+   },
+   {
+    "case_id": "burgers-train-00111",
+    "split": "train",
+    "case_index": 111,
+    "seed": 1255493672,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5769924115092966,
+     "cy": 0.5987521664930145,
+     "width": 0.06626033534364195,
+     "amplitude": 0.8727104235030738,
+     "nu": 0.010782163749478027
+    },
+    "field_sha256": "45577deb6c03f86bea7781216b0e16e2cda4ed1bce6351e4f59afdb23deb07c1",
+    "max_relative_residual": 1.7402780549007733e-09,
+    "seconds": 0.5593646401539445
+   },
+   {
+    "case_id": "burgers-train-00112",
+    "split": "train",
+    "case_index": 112,
+    "seed": 3779880613,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8222293117058644,
+     "cy": 0.6178732144422185,
+     "width": 0.08211063303332553,
+     "amplitude": 1.6263071179598771,
+     "nu": 0.0295963158877872
+    },
+    "field_sha256": "fcad976d11dc481cf9a81b80585099ab21ddb8132ac6705d6d75af6a23177c79",
+    "max_relative_residual": 3.144990567067813e-08,
+    "seconds": 0.532173986081034
+   },
+   {
+    "case_id": "burgers-train-00113",
+    "split": "train",
+    "case_index": 113,
+    "seed": 2988037120,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.19724151524043104,
+     "cy": 0.5196051882201801,
+     "width": 0.07253784743797234,
+     "amplitude": 1.3766922932203316,
+     "nu": 0.020212501776282508
+    },
+    "field_sha256": "63a3a476f9b8b38a0b65501ad9bd5db2b1e6e81e2662e6afbba20ec1f95c0c94",
+    "max_relative_residual": 1.5973596118655427e-08,
+    "seconds": 0.5576017098501325
+   },
+   {
+    "case_id": "burgers-train-00114",
+    "split": "train",
+    "case_index": 114,
+    "seed": 3430475965,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8051752658969547,
+     "cy": 0.34067964792503225,
+     "width": 0.19030807872275113,
+     "amplitude": 1.587335269611454,
+     "nu": 0.0430380183697986
+    },
+    "field_sha256": "7cb9298e1846610ba84b1272ca2bdfb4a85a3db8d8dfbc6cf5b583482cdae879",
+    "max_relative_residual": 2.5538313271529068e-08,
+    "seconds": 0.5459470641799271
+   },
+   {
+    "case_id": "burgers-train-00115",
+    "split": "train",
+    "case_index": 115,
+    "seed": 3003306883,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5298965766264918,
+     "cy": 0.6854450283163818,
+     "width": 0.14790427409238047,
+     "amplitude": 0.7965164094403114,
+     "nu": 0.015162966364400683
+    },
+    "field_sha256": "e5a97b303f05e93096c3ee24bba9917efaa85c5c3e1b4c6b35b3370b8ab8ac5e",
+    "max_relative_residual": 5.9736107184022005e-09,
+    "seconds": 0.5197039023041725
+   },
+   {
+    "case_id": "burgers-train-00116",
+    "split": "train",
+    "case_index": 116,
+    "seed": 797815485,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.727029514286921,
+     "cy": 0.43696777812066667,
+     "width": 0.11099888850363503,
+     "amplitude": 1.605605733218576,
+     "nu": 0.08420706437996373
+    },
+    "field_sha256": "78bd1a4c69672484ca128c16f717a0dc9e04226aec2f38557d1924f6b6d2d65c",
+    "max_relative_residual": 6.72569931426036e-09,
+    "seconds": 0.406228331848979
+   },
+   {
+    "case_id": "burgers-train-00117",
+    "split": "train",
+    "case_index": 117,
+    "seed": 3731779305,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5175213533159062,
+     "cy": 0.282694878689416,
+     "width": 0.19153206185045568,
+     "amplitude": 0.8055060977404263,
+     "nu": 0.011402192748368626
+    },
+    "field_sha256": "9989cfdfe8078e4ce5a34893dfab6ba16ffbf23254497015d7d986895c203d87",
+    "max_relative_residual": 3.981707966046885e-09,
+    "seconds": 0.5288236159831285
+   },
+   {
+    "case_id": "burgers-train-00118",
+    "split": "train",
+    "case_index": 118,
+    "seed": 1338588700,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.23721033478591969,
+     "cy": 0.4756747091578156,
+     "width": 0.18437669293103204,
+     "amplitude": 0.5902494624770704,
+     "nu": 0.06418338117371053
+    },
+    "field_sha256": "4ac390bef76ad5b674a3c2bfe6a5be29aec4c7a89045970d4903c28ac0d0402c",
+    "max_relative_residual": 9.872036175137733e-07,
+    "seconds": 0.2962748152203858
+   },
+   {
+    "case_id": "burgers-train-00119",
+    "split": "train",
+    "case_index": 119,
+    "seed": 3138934993,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6882663685327461,
+     "cy": 0.7566099345199931,
+     "width": 0.17920263530039315,
+     "amplitude": 1.249732340829428,
+     "nu": 0.02241049564830121
+    },
+    "field_sha256": "41b7f01426cd46d9be44e7bc77bf094877d02dcba3cdd91a32f5b204f58e65a1",
+    "max_relative_residual": 6.220191370890424e-09,
+    "seconds": 0.6035524210892618
+   },
+   {
+    "case_id": "burgers-train-00120",
+    "split": "train",
+    "case_index": 120,
+    "seed": 258376542,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.4739677059024541,
+     "cy": 0.6194185372665324,
+     "width": 0.12892619708131323,
+     "amplitude": 1.1873399600021088,
+     "nu": 0.01611527581035631
+    },
+    "field_sha256": "8f6df167fb9572f00a04a59e28b1a9175de962cd5fbaccf9bde48e2194d980b1",
+    "max_relative_residual": 1.5221697399897532e-10,
+    "seconds": 0.6369252209551632
+   },
+   {
+    "case_id": "burgers-train-00121",
+    "split": "train",
+    "case_index": 121,
+    "seed": 3711601759,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8037690453201715,
+     "cy": 0.3734617890595766,
+     "width": 0.08783406397798565,
+     "amplitude": 1.4492508693167598,
+     "nu": 0.06400100606588684
+    },
+    "field_sha256": "4e41ab15c15c3ae92b41f4ee7130fded760f403a8a2a7336f9d9c5b3f7ffc4dd",
+    "max_relative_residual": 1.569536460982589e-08,
+    "seconds": 0.4018044644035399
+   },
+   {
+    "case_id": "burgers-train-00122",
+    "split": "train",
+    "case_index": 122,
+    "seed": 1458869621,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.218107514260227,
+     "cy": 0.15393049004946951,
+     "width": 0.15435987749025923,
+     "amplitude": 1.770122502740274,
+     "nu": 0.038882795307461034
+    },
+    "field_sha256": "0cba22be90a5639c388a0c8bb3cc1c4b7419db4489067459f7eca9833799b1b2",
+    "max_relative_residual": 1.3902964662868785e-07,
+    "seconds": 0.5980282300151885
+   },
+   {
+    "case_id": "burgers-train-00123",
+    "split": "train",
+    "case_index": 123,
+    "seed": 145443040,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.34159897794866745,
+     "cy": 0.6212495351136615,
+     "width": 0.0732058560031654,
+     "amplitude": 1.3151509243856498,
+     "nu": 0.09080552676908772
+    },
+    "field_sha256": "c73b1b7e218e414f0f383e65c8f2d1fc3b153166deb96ee42ee4648d62768965",
+    "max_relative_residual": 9.820963692307074e-07,
+    "seconds": 0.32624191185459495
+   },
+   {
+    "case_id": "burgers-train-00124",
+    "split": "train",
+    "case_index": 124,
+    "seed": 3593849278,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6203792105333115,
+     "cy": 0.5284114704755526,
+     "width": 0.18901211222451753,
+     "amplitude": 1.6121382654824652,
+     "nu": 0.04919199910211656
+    },
+    "field_sha256": "dc7ab233cd5c4dedb58411d16e0c06df5aeabc6947c29716138b7eb7f441b104",
+    "max_relative_residual": 3.0530126393013464e-08,
+    "seconds": 0.5456931469962001
+   },
+   {
+    "case_id": "burgers-train-00125",
+    "split": "train",
+    "case_index": 125,
+    "seed": 2713612541,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.2117275744533546,
+     "cy": 0.21017233893807585,
+     "width": 0.15181624333379756,
+     "amplitude": 1.4010298442797267,
+     "nu": 0.03144985342441126
+    },
+    "field_sha256": "580654e3d489138c0b6aabd6d0b07be30770f9573af62e14b6cbdae8c8aa327a",
+    "max_relative_residual": 1.6141540303979973e-08,
+    "seconds": 0.5657767741940916
+   },
+   {
+    "case_id": "burgers-train-00126",
+    "split": "train",
+    "case_index": 126,
+    "seed": 2504317495,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.40483221126541935,
+     "cy": 0.21899792421027797,
+     "width": 0.10151009124143992,
+     "amplitude": 1.4141847525671463,
+     "nu": 0.08925106371574874
+    },
+    "field_sha256": "513b0bada691df21bda0312497bd6f708c8b795f84f095b4372a9b0555cc27eb",
+    "max_relative_residual": 8.864199079362045e-09,
+    "seconds": 0.3780613811686635
+   },
+   {
+    "case_id": "burgers-train-00127",
+    "split": "train",
+    "case_index": 127,
+    "seed": 1159564962,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7940470969339752,
+     "cy": 0.6337340130582112,
+     "width": 0.11677175363298206,
+     "amplitude": 1.981592579719673,
+     "nu": 0.0288075585955731
+    },
+    "field_sha256": "ea96eeccad57a9d96cf1a122ea0822a7e97ff85a6d1759dd845b5bbec5050eb3",
+    "max_relative_residual": 8.496222566474661e-07,
+    "seconds": 0.6566852913238108
+   }
+  ],
+  "validation": [
+   {
+    "case_id": "burgers-validation-00000",
+    "split": "validation",
+    "case_index": 0,
+    "seed": 1044997471,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6561003448727452,
+     "cy": 0.2030336467722093,
+     "width": 0.14223504484444943,
+     "amplitude": 0.9347715725425874,
+     "nu": 0.031336320627261376
+    },
+    "field_sha256": "1c52f705cb94c31a6a10baf28759617aa4a780cd6d66a820d97ffd2d62b853b4",
+    "max_relative_residual": 2.519791025584493e-09,
+    "seconds": 0.4711035559885204
+   },
+   {
+    "case_id": "burgers-validation-00001",
+    "split": "validation",
+    "case_index": 1,
+    "seed": 3797609774,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5195798216958761,
+     "cy": 0.21330751930047043,
+     "width": 0.16150219469124885,
+     "amplitude": 1.2202627778986652,
+     "nu": 0.04264725564047183
+    },
+    "field_sha256": "7d9ca3a654b87535cba3d0b839f8e273c7446ad567a2b5df7c7b848cf4f4b3e7",
+    "max_relative_residual": 6.724309421593713e-09,
+    "seconds": 0.483027963899076
+   },
+   {
+    "case_id": "burgers-validation-00002",
+    "split": "validation",
+    "case_index": 2,
+    "seed": 2771836162,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5788876100317234,
+     "cy": 0.671441533601872,
+     "width": 0.062488312298883804,
+     "amplitude": 1.2807604015605762,
+     "nu": 0.061608886805415305
+    },
+    "field_sha256": "3ceedad3c66b5c5da7a1652ae2e77a435014ba8d0611f15ebcf423bb8019737e",
+    "max_relative_residual": 9.90714214642597e-07,
+    "seconds": 0.3495873101055622
+   },
+   {
+    "case_id": "burgers-validation-00003",
+    "split": "validation",
+    "case_index": 3,
+    "seed": 2021712575,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.22533411449254814,
+     "cy": 0.4510650227792625,
+     "width": 0.07213321768769686,
+     "amplitude": 1.1223086373277402,
+     "nu": 0.08315248013713716
+    },
+    "field_sha256": "34c5ebdf58605dceed24c1105db300da72343a1bea0bb25c8f80c2e59d1b22b1",
+    "max_relative_residual": 9.55767757591933e-07,
+    "seconds": 0.33114055218175054
+   },
+   {
+    "case_id": "burgers-validation-00004",
+    "split": "validation",
+    "case_index": 4,
+    "seed": 1366272061,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.17246581723950372,
+     "cy": 0.18915392274016032,
+     "width": 0.13972407993439825,
+     "amplitude": 0.9755154882591095,
+     "nu": 0.05001665757742035
+    },
+    "field_sha256": "78e8d45a9f11342b3858049f2d29b3c16e66bbaccde4e644a62155b95d6aefa5",
+    "max_relative_residual": 5.834549383078454e-09,
+    "seconds": 0.40899924002587795
+   },
+   {
+    "case_id": "burgers-validation-00005",
+    "split": "validation",
+    "case_index": 5,
+    "seed": 855373498,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.32154279712953926,
+     "cy": 0.833974117706739,
+     "width": 0.1342399110968576,
+     "amplitude": 1.4360417428534635,
+     "nu": 0.011435951946490901
+    },
+    "field_sha256": "bc9412033c07a910034e4f06ab8ab01beb4448ab81425f255860efae06818fcd",
+    "max_relative_residual": 3.674626725867026e-08,
+    "seconds": 0.7921052249148488
+   },
+   {
+    "case_id": "burgers-validation-00006",
+    "split": "validation",
+    "case_index": 6,
+    "seed": 352056143,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7845741919563173,
+     "cy": 0.8048881440447033,
+     "width": 0.1964668781569166,
+     "amplitude": 1.932337290770348,
+     "nu": 0.022232449313186395
+    },
+    "field_sha256": "50717479e65ffaca903a345babf3585f3586aa57d2427e1f5ccb5676f2d2fd01",
+    "max_relative_residual": 1.185704617331293e-07,
+    "seconds": 0.7707569883204997
+   },
+   {
+    "case_id": "burgers-validation-00007",
+    "split": "validation",
+    "case_index": 7,
+    "seed": 966142033,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5840613033876495,
+     "cy": 0.46356145260617876,
+     "width": 0.1643709382915787,
+     "amplitude": 0.6281584916554421,
+     "nu": 0.011354588310188374
+    },
+    "field_sha256": "9a329fa5738929000949d80bb38fba5db7669deeae5d9158af927098bc157765",
+    "max_relative_residual": 8.939675502992739e-11,
+    "seconds": 0.4761431850492954
+   },
+   {
+    "case_id": "burgers-validation-00008",
+    "split": "validation",
+    "case_index": 8,
+    "seed": 2632051304,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7277332805915943,
+     "cy": 0.6805977703745645,
+     "width": 0.08672747874949913,
+     "amplitude": 1.3190643969884663,
+     "nu": 0.04059675229558192
+    },
+    "field_sha256": "4e746996e5ad7af47aa20fc4d769434727d0d5c0be1cfdfcb4fbf1f278d3669d",
+    "max_relative_residual": 6.535089420143701e-09,
+    "seconds": 0.45632302993908525
+   },
+   {
+    "case_id": "burgers-validation-00009",
+    "split": "validation",
+    "case_index": 9,
+    "seed": 672788269,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6764962313077306,
+     "cy": 0.5219069792066444,
+     "width": 0.13575999809783879,
+     "amplitude": 1.2950709879527331,
+     "nu": 0.09492936415416055
+    },
+    "field_sha256": "857f53002b5e2d98cb49a713b5249bc8b25775403df942c4a6cfed6fcf98e904",
+    "max_relative_residual": 7.742417337789586e-10,
+    "seconds": 0.3925137771293521
+   },
+   {
+    "case_id": "burgers-validation-00010",
+    "split": "validation",
+    "case_index": 10,
+    "seed": 801282023,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5307795292703591,
+     "cy": 0.486650156353001,
+     "width": 0.07167186590135426,
+     "amplitude": 1.851141305484781,
+     "nu": 0.02081117009713322
+    },
+    "field_sha256": "9cb57c3af3b2b167791ff99a4f8f96ef828dd20ab70ffadbf07f770a222e106e",
+    "max_relative_residual": 8.536563896886439e-08,
+    "seconds": 0.6326341261155903
+   },
+   {
+    "case_id": "burgers-validation-00011",
+    "split": "validation",
+    "case_index": 11,
+    "seed": 561377755,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.48801460173309197,
+     "cy": 0.837238917640599,
+     "width": 0.1431122674020755,
+     "amplitude": 0.5167660195615001,
+     "nu": 0.09627815310088096
+    },
+    "field_sha256": "9fd58c70be0d63023e7ee6efb0a6ec07b5bc35b2d272b44f864592e6d011ecef",
+    "max_relative_residual": 9.785346339630385e-07,
+    "seconds": 0.28956263791769743
+   },
+   {
+    "case_id": "burgers-validation-00012",
+    "split": "validation",
+    "case_index": 12,
+    "seed": 1410606118,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6313168878522137,
+     "cy": 0.28917779920947995,
+     "width": 0.15310604098006342,
+     "amplitude": 0.8255224205871778,
+     "nu": 0.016208709150787343
+    },
+    "field_sha256": "3c2f482b271891b3760fb9fa70e881a536bfb7ec028ce67ede5df846e9646b43",
+    "max_relative_residual": 9.610157501848605e-08,
+    "seconds": 0.518402598798275
+   },
+   {
+    "case_id": "burgers-validation-00013",
+    "split": "validation",
+    "case_index": 13,
+    "seed": 59003622,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.671214047164635,
+     "cy": 0.5597333110589686,
+     "width": 0.09663535816007567,
+     "amplitude": 1.6054268813856252,
+     "nu": 0.0858327524525539
+    },
+    "field_sha256": "40b69306159bb267f32bc7e585b5f5e2fcf0c6b54a3e8f97c1950d86a7e3595e",
+    "max_relative_residual": 1.80227582494554e-08,
+    "seconds": 0.3924085288308561
+   },
+   {
+    "case_id": "burgers-validation-00014",
+    "split": "validation",
+    "case_index": 14,
+    "seed": 2251482023,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8259913516322938,
+     "cy": 0.7294662526083056,
+     "width": 0.14561707035612473,
+     "amplitude": 1.4456448152201948,
+     "nu": 0.03238456284097165
+    },
+    "field_sha256": "c4693540b68e86ef445d408bd08582dc49a315d5a89ac12ef54419e661faeae2",
+    "max_relative_residual": 1.4060602640246206e-08,
+    "seconds": 0.5533775156363845
+   },
+   {
+    "case_id": "burgers-validation-00015",
+    "split": "validation",
+    "case_index": 15,
+    "seed": 96675545,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5388583887447032,
+     "cy": 0.36106445821239763,
+     "width": 0.05372185978815813,
+     "amplitude": 1.2200474739286762,
+     "nu": 0.08349336965326638
+    },
+    "field_sha256": "ff937a48824bd13891301b6b8a49a820fff88c7bfe109d618bc60bf9848f6a1d",
+    "max_relative_residual": 9.384985391687587e-07,
+    "seconds": 0.28856785176321864
+   },
+   {
+    "case_id": "burgers-validation-00016",
+    "split": "validation",
+    "case_index": 16,
+    "seed": 3653011254,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7536972434102893,
+     "cy": 0.3924352219208753,
+     "width": 0.17922407194966705,
+     "amplitude": 0.5114636273582984,
+     "nu": 0.010270305155137861
+    },
+    "field_sha256": "1de9236c65cc91ee1ed3b0f18455c971d41e39046097efe5e1f691609143b3c1",
+    "max_relative_residual": 9.453970263286928e-07,
+    "seconds": 0.27103979885578156
+   },
+   {
+    "case_id": "burgers-validation-00017",
+    "split": "validation",
+    "case_index": 17,
+    "seed": 2866081749,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5579102184492952,
+     "cy": 0.6702136084904566,
+     "width": 0.12311654778839877,
+     "amplitude": 0.8716524543805718,
+     "nu": 0.012080947087747276
+    },
+    "field_sha256": "ca057f32a60da57f85e8ef1c005156433af4ecace5efd2a08a1658cca4dab438",
+    "max_relative_residual": 6.14230517381101e-11,
+    "seconds": 0.5730788488872349
+   },
+   {
+    "case_id": "burgers-validation-00018",
+    "split": "validation",
+    "case_index": 18,
+    "seed": 1397814590,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.5065364499622214,
+     "cy": 0.6970221805565993,
+     "width": 0.10138410862932382,
+     "amplitude": 1.7199450187829082,
+     "nu": 0.01073335730161557
+    },
+    "field_sha256": "3086470b8959c4d740fb0c0b924f9dce8fca522c281e2734e6c901e06a3ba11c",
+    "max_relative_residual": 2.9154681707702386e-08,
+    "seconds": 0.9264271301217377
+   },
+   {
+    "case_id": "burgers-validation-00019",
+    "split": "validation",
+    "case_index": 19,
+    "seed": 4018776733,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6017730858999871,
+     "cy": 0.6440949287504083,
+     "width": 0.1489030295368568,
+     "amplitude": 1.7002113114116504,
+     "nu": 0.014011418042525129
+    },
+    "field_sha256": "7533a8f581e940e643d2efb32f66ded43edaa027532b6b34814b8dbbd3816d1c",
+    "max_relative_residual": 6.831318058577238e-09,
+    "seconds": 0.8773474181070924
+   },
+   {
+    "case_id": "burgers-validation-00020",
+    "split": "validation",
+    "case_index": 20,
+    "seed": 1360796936,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6619915561824739,
+     "cy": 0.3922371755884292,
+     "width": 0.11074187494954625,
+     "amplitude": 1.4857940858932577,
+     "nu": 0.024454795439387896
+    },
+    "field_sha256": "bb6fcab5e191460bdbf6e35433ef524f7654f55a5b38db46da59efa66f6964f9",
+    "max_relative_residual": 1.78207262530211e-09,
+    "seconds": 0.6148845609277487
+   },
+   {
+    "case_id": "burgers-validation-00021",
+    "split": "validation",
+    "case_index": 21,
+    "seed": 1847656864,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6702826498417839,
+     "cy": 0.710225489435474,
+     "width": 0.08846768986275541,
+     "amplitude": 1.3855733310752438,
+     "nu": 0.04621223710115065
+    },
+    "field_sha256": "1546350a689ec09672fffa5a2712f2e5991e7e4b2b60f05a58de2f16d40093db",
+    "max_relative_residual": 8.216715138873485e-09,
+    "seconds": 0.44801958883181214
+   },
+   {
+    "case_id": "burgers-validation-00022",
+    "split": "validation",
+    "case_index": 22,
+    "seed": 1688939329,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.2672337263842542,
+     "cy": 0.6766167870163592,
+     "width": 0.11555911915511366,
+     "amplitude": 1.1464834896743736,
+     "nu": 0.0913765655316485
+    },
+    "field_sha256": "acf52266b72346d139951fcd820e3ff12278a2d41f7a025f241775e065c8cbc3",
+    "max_relative_residual": 1.4226605204695391e-09,
+    "seconds": 0.3692546612583101
+   },
+   {
+    "case_id": "burgers-validation-00023",
+    "split": "validation",
+    "case_index": 23,
+    "seed": 2982055104,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.2722314026338989,
+     "cy": 0.5072653288087052,
+     "width": 0.06080374391772526,
+     "amplitude": 0.6181551586131223,
+     "nu": 0.023947470985872413
+    },
+    "field_sha256": "a2f59196d00d317b2414409a34d443996209331cbb60a9a5c60a65e655f60621",
+    "max_relative_residual": 9.56875480259085e-07,
+    "seconds": 0.36410013074055314
+   },
+   {
+    "case_id": "burgers-validation-00024",
+    "split": "validation",
+    "case_index": 24,
+    "seed": 1888822779,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.6572858958126425,
+     "cy": 0.5419534834435991,
+     "width": 0.06479419802626059,
+     "amplitude": 0.6136062341961956,
+     "nu": 0.01609709347283376
+    },
+    "field_sha256": "e98731bec34118cbe11b48fe2a49c54cb6d45226d956dd1e415dd4a17104254e",
+    "max_relative_residual": 9.785336338367624e-07,
+    "seconds": 0.42188887298107147
+   },
+   {
+    "case_id": "burgers-validation-00025",
+    "split": "validation",
+    "case_index": 25,
+    "seed": 4188872719,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.3043228476108286,
+     "cy": 0.21519434193211734,
+     "width": 0.14543719706445427,
+     "amplitude": 0.5185453072660945,
+     "nu": 0.014594859035474722
+    },
+    "field_sha256": "6d7a2bf7c39addacae37c118c05f4627d4ce786cbc0217c36dcafa19bc6ec624",
+    "max_relative_residual": 9.970539847597484e-07,
+    "seconds": 0.3413109160028398
+   },
+   {
+    "case_id": "burgers-validation-00026",
+    "split": "validation",
+    "case_index": 26,
+    "seed": 1225124115,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.8338741519158345,
+     "cy": 0.6011313207289298,
+     "width": 0.1752836987358728,
+     "amplitude": 0.5275279908630494,
+     "nu": 0.03253480592325466
+    },
+    "field_sha256": "8e4b76701d0cb4aeb7c489f1577e47f3814a36431130fbed12d6db42541f898c",
+    "max_relative_residual": 9.876054930296538e-07,
+    "seconds": 0.31770011270418763
+   },
+   {
+    "case_id": "burgers-validation-00027",
+    "split": "validation",
+    "case_index": 27,
+    "seed": 2527049696,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.48790750665607874,
+     "cy": 0.4486926177378546,
+     "width": 0.12158366653076143,
+     "amplitude": 0.7817296165750343,
+     "nu": 0.07558233224023823
+    },
+    "field_sha256": "72d080ab343d8ab35516abcaf3f6196ed57cb8dd8f83710425b267af8bb617ee",
+    "max_relative_residual": 9.698329614587321e-07,
+    "seconds": 0.3248547180555761
+   },
+   {
+    "case_id": "burgers-validation-00028",
+    "split": "validation",
+    "case_index": 28,
+    "seed": 3440483241,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.48277967817990763,
+     "cy": 0.6131746283947414,
+     "width": 0.15335736256142687,
+     "amplitude": 1.3084977885465878,
+     "nu": 0.04783535073977079
+    },
+    "field_sha256": "2dff4b492f20f3a2bc6d92e049ced7b7790b8c476ac1c36add5bccdec2a999c3",
+    "max_relative_residual": 2.2444242691679903e-10,
+    "seconds": 0.48264040937647223
+   },
+   {
+    "case_id": "burgers-validation-00029",
+    "split": "validation",
+    "case_index": 29,
+    "seed": 1774060670,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.664182323809047,
+     "cy": 0.6031170674058841,
+     "width": 0.06959624157099079,
+     "amplitude": 0.6600675711002153,
+     "nu": 0.053852347679294
+    },
+    "field_sha256": "b7c3944dbd972cc0071827539c492eee1ac079e04f216d46f51c397a03d48d47",
+    "max_relative_residual": 9.58169743083221e-07,
+    "seconds": 0.30093783885240555
+   },
+   {
+    "case_id": "burgers-validation-00030",
+    "split": "validation",
+    "case_index": 30,
+    "seed": 502181974,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.542972976445331,
+     "cy": 0.5144028574959337,
+     "width": 0.18708369271253839,
+     "amplitude": 1.4885866362121671,
+     "nu": 0.04557528748890239
+    },
+    "field_sha256": "634d5cf0f1294dd205db8177b668cf36bec49f656e6402d7aee8db84b7a2eb46",
+    "max_relative_residual": 5.688500259953071e-10,
+    "seconds": 0.5417280467227101
+   },
+   {
+    "case_id": "burgers-validation-00031",
+    "split": "validation",
+    "case_index": 31,
+    "seed": 3925023829,
+    "mesh": 1024,
+    "generation_descriptors": {
+     "cx": 0.7354682424531004,
+     "cy": 0.5769882861075073,
+     "width": 0.1888424621283148,
+     "amplitude": 1.477912551215439,
+     "nu": 0.03818573591179347
+    },
+    "field_sha256": "99c7e48b94fdb5e7872ac0f3d9942659ef7f90b81ba0a4a1e71a345c1e79a298",
+    "max_relative_residual": 3.988530494732894e-09,
+    "seconds": 0.566880411002785
+   }
+  ]
+ }
+}

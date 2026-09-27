@@ -1,0 +1,102 @@
+{
+ "problem": "lshape",
+ "intervals": 256,
+ "cg_maxiter": 200000,
+ "order_seed": 20261180,
+ "repetitions": 3,
+ "cg_repetitions": 2,
+ "burn_seconds": 0.1,
+ "cooldown_seconds": 5.0,
+ "phase_dummy_seconds": 2.0,
+ "table1": {
+  "source_job": 4204384,
+  "accurate": "R128_linear",
+  "fast": "R64_linear",
+  "named_fom": "cg_0.03",
+  "R128_linear": {
+   "worst": 0.030404300684272374,
+   "median": 0.004714408097873426,
+   "gpu_ms": 0.3234709147363901
+  },
+  "R64_linear": {
+   "worst": 0.057320182554408114,
+   "median": 0.013608054210586891,
+   "gpu_ms": 0.28550089336931705
+  },
+  "cg_0.03": {
+   "worst": 0.02401840357582769,
+   "median": null,
+   "gpu_ms": 15.251565724611282
+  }
+ },
+ "nmrom_R": [
+  128,
+  64
+ ],
+ "cg_tols": [
+  0.7,
+  0.5,
+  0.3,
+  0.2,
+  0.1,
+  0.03,
+  0.01,
+  0.003,
+  0.001,
+  0.0001
+ ],
+ "expected_nmrom_worst": {
+  "R128_linear": 0.030404300684272374,
+  "R64_linear": 0.057320182554408114
+ },
+ "operators": {
+  "fno": {
+   "job": "l256a",
+   "job_id": "4286766",
+   "config": "fno.json",
+   "co_scheduled": [
+    "fno",
+    "unet",
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l256a/output/fno/fno/best.pt"
+  },
+  "unet": {
+   "job": "l256a",
+   "job_id": "4286766",
+   "config": "unet.json",
+   "co_scheduled": [
+    "fno",
+    "unet",
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l256a/output/unet/unet/best.pt"
+  },
+  "transolver": {
+   "job": "l256a",
+   "job_id": "4286766",
+   "config": "transolver.json",
+   "co_scheduled": [
+    "fno",
+    "unet",
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l256a/output/transolver/transolver/best.pt"
+  },
+  "deeponet": {
+   "job": "l256a",
+   "job_id": "4286766",
+   "config": "deeponet.json",
+   "co_scheduled": [
+    "fno",
+    "unet",
+    "transolver",
+    "deeponet"
+   ],
+   "checkpoint": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/l256a/output/deeponet/deeponet/best.pt"
+  }
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "family": "transolver",
+ "dim": 32,
+ "layers": 2,
+ "heads": 4,
+ "slices": 8,
+ "mlp_ratio": 2,
+ "patch": 4,
+ "ref": 8,
+ "dtype": "float32",
+ "warmup_epochs": 10,
+ "epochs": 2,
+ "patience": 250,
+ "batch_size": 2,
+ "learning_rate": 0.0003,
+ "weight_decay": 0.0001,
+ "seed": 20260914,
+ "refines_capacity": "small",
+ "selected_by": "validation mean case-maximum fixed-initial error"
+}

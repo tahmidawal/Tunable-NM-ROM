@@ -1,0 +1,23 @@
+W0924 20:25:20.600588 4188489 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 16.00GiB (rounded to 17179869184)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0924 20:25:20.600847 4188489 bfc_allocator.cc:525] ***********************************************************************************************_____
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/p257b/code/panel_b3d.py", line 459, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/p257b/code/panel_b3d.py", line 106, in main
+    tb = TB.build_tables(n, model['bank'], model['T'], ladder, M_of, log=log)
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/p257b/code/lanes/burgers3d-retry/tables.py", line 45, in build_tables
+    GTb = tuple(jax.block_until_ready(feature_rows(bank, Tn[:, a:b], x)) for a, b in zip(edges[:-1], edges[1:]))
+  File "/cluster/tufts/paralab/tawal01/opsall_20260924/b3d/p257b/code/lanes/burgers3d-retry/tables.py", line 45, in <genexpr>
+    GTb = tuple(jax.block_until_ready(feature_rows(bank, Tn[:, a:b], x)) for a, b in zip(edges[:-1], edges[1:]))
+                ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2509, in block_until_ready
+    try_to_block(arrays[0])
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2492, in try_to_block
+    return x.block_until_ready()
+           ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']

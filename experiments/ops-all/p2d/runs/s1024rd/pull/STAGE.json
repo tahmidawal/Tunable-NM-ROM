@@ -1,0 +1,18 @@
+{
+ "kind": "train",
+ "problem": "square",
+ "mesh": 1024,
+ "members": [
+  "deeponet.json"
+ ],
+ "layout": "output/<stem>/<stem>/best.pt",
+ "train_count": 0,
+ "cg_batch": 32,
+ "mem_share": 1.0,
+ "checkpoint_blocks": false,
+ "job": "s1024rd",
+ "remote": "/cluster/tufts/paralab/tawal01/opsall_20260924/p2d/s1024rd",
+ "gpu_constraint": "a100-80G|h100-80G|h200-141G",
+ "mem": "128G",
+ "time": "02:45:00"
+}

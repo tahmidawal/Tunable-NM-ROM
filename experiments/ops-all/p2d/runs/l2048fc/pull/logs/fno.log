@@ -1,0 +1,21 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+CG data 32 / 256 215.3
+CG data 64 / 256 428.3
+CG data 96 / 256 642.0
+CG data 128 / 256 854.2
+CG data 160 / 256 1067.5
+CG data 192 / 256 1280.5
+CG data 224 / 256 1493.9
+CG data 256 / 256 1706.8
+DATA READY {"seconds": 1815.015531418845, "data_seconds": 1814.5521773132496} [0.03191754910612882, 0.15171432699740064, 0.0018147967767274274]
+probe micro-batch 8 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 16.02 GiB. GPU 0 has a total capacity of 79.25 GiB of which 13.21 GiB is free. Including non-PyTorch memory, this process has 66.01 GiB memory in use. Of the allo
+probe after cleanup: allocated 33589248
+probe micro-batch 4 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 72.05 GiB. GPU 0 has a total capacity of 79.25 GiB of which 13.84 GiB is free. Including non-PyTorch memory, this process has 65.39 GiB memory in use. Of the allo
+probe after cleanup: allocated 33589248
+probe micro-batch 2 does not fit: OutOfMemoryError CUDA out of memory. Tried to allocate 36.04 GiB. GPU 0 has a total capacity of 79.25 GiB of which 34.16 GiB is free. Including non-PyTorch memory, this process has 45.07 GiB memory in use. Of the allo
+probe after cleanup: allocated 42108928
+{"arm": "fno", "epoch": 0, "steps": 32, "train": 0.790311758406532, "val_mean": 0.980004872069255, "val_worst": 4.184480510861702, "lr": 0.0008560916466597333, "wall": 785.7}
+{"arm": "fno", "epoch": 1, "steps": 64, "train": 0.37166811321201093, "val_mean": 0.6588417866264484, "val_worst": 3.8173477625634384, "lr": 0.0004885665804622382, "wall": 1570.3}
+{"arm": "fno", "epoch": 2, "steps": 96, "train": 0.19812609319365226, "val_mean": 0.5463433874507142, "val_worst": 3.1018490301763717, "lr": 0.0001315309274081489, "wall": 2355.0}
+{"arm": "fno", "epoch": 3, "steps": 123, "train": 0.14401054822821008, "val_mean": 0.4955670689896058, "val_worst": 2.539402544526339, "lr": 1.0099939210118923e-05, "wall": 3019.4}
+TRAIN OP COMPLETE

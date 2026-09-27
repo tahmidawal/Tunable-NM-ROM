@@ -1,0 +1,70 @@
+{
+ "complete": true,
+ "name": "fno",
+ "family": "fno",
+ "problem": "square",
+ "mesh": 256,
+ "data": {
+  "seconds": 0.39601423824205995
+ },
+ "config": {
+  "family": "fno",
+  "width": 64,
+  "modes": 32,
+  "layers": 4,
+  "epochs": 4000,
+  "patience": 250,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "weight_decay": 0.0001,
+  "seed": 20260914,
+  "published_source": "experiments/ops-tune-grid/configs/fno/large.json @ exp/2026-09-22-ops-tune-grid 52d1b573",
+  "smoke_overrides": {
+   "width": 8,
+   "modes": 8,
+   "layers": 2,
+   "epochs": 2
+  }
+ },
+ "micro_batch": 8,
+ "probe_peak_bytes": 8040829952,
+ "best_epoch": 42,
+ "best_step": 14061,
+ "epochs_completed": 45,
+ "optimisation_steps": 14616,
+ "stop_reason": "wall_budget",
+ "training_seconds": 3000.2142745857127,
+ "wall_budget_seconds": 3000.0,
+ "validation_best_checkpoint": {
+  "errors": [
+   0.003806022736112112,
+   0.005236691443550359,
+   0.006472644921162796,
+   0.004053161112498702,
+   0.0036638322512506155,
+   0.00506095675233004,
+   0.006565455621054668,
+   0.0038476071734872322,
+   0.0045781779148497395,
+   0.0035704867863952296,
+   0.004395230621294164,
+   0.0038700443242528962,
+   0.002973710056318714,
+   0.007569343142232657,
+   0.003359283071177607,
+   0.0037161826111270697
+  ],
+  "mean": 0.004546176908693413,
+  "median": 0.003961602718375799,
+  "worst": 0.007569343142232657
+ },
+ "best_checkpoint_sha256": "2976f3abf9a110f643101be6357c098859d3e714a02a6b676b4ed6307b485784",
+ "parameter_dtype": "torch.float64",
+ "real_parameter_count": 17876673,
+ "normalization": [
+  0.02126182643724136,
+  0.11623014438131317,
+  0.0024425211230707368
+ ],
+ "peak_allocated_bytes": 8335379456
+}

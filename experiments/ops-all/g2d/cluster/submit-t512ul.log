@@ -1,0 +1,10 @@
+--- squeue before
+4298045 g2d_t512ur PENDING 0:00 (Priority)
+4298038 g2d_t256ff32 PENDING 0:00 (Priority)
+4298027 g2d_t256ub64 RUNNING 0:28 pax050
+Submitted batch job 4298056
+--- squeue after
+4298056 g2d_t512ul PENDING 0:00 (Priority)
+4298038 g2d_t256ff32 RUNNING 0:04 pax050
+4298045 g2d_t512ur RUNNING 0:04 pax050
+4298027 g2d_t256ub64 RUNNING 0:34 pax050

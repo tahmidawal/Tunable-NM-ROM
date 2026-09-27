@@ -1,0 +1,32 @@
+host=pax050 job_id=4303275
+NVIDIA A100 80GB PCIe, GPU-e2c95937-bb0e-947d-02fc-290362a2286b, 81920 MiB, 575.57.08
+10.235.106.34:/projects/paralab  4.6T  4.2T  363G  93% /cluster/tufts/paralab
+jax_backend=gpu
+torch_cuda True NVIDIA A100 80GB PCIe
+torch_backend=cuda NVIDIA A100 80GB PCIe
+probe micro-batch 8 does not fit: OutOfMemoryError
+{"arm": "fno-w96f32", "epoch": 0, "steps": 64, "train": 0.13041777190768483, "val_mean_case_max": 0.10047074980198965, "val_worst": 0.25281523933040734, "lr": 0.0009951536374448434, "wall": 137.6}
+{"arm": "fno-w96f32", "epoch": 1, "steps": 128, "train": 0.0023229895348975916, "val_mean_case_max": 0.03984213301804013, "val_worst": 0.08462476397316343, "lr": 0.0009800894877451812, "wall": 275.6}
+{"arm": "fno-w96f32", "epoch": 2, "steps": 192, "train": 0.0005640604401725399, "val_mean_case_max": 0.024985362681290587, "val_worst": 0.048876086242954274, "lr": 0.0009551172270703198, "wall": 413.6}
+{"arm": "fno-w96f32", "epoch": 3, "steps": 256, "train": 0.0002459703875362687, "val_mean_case_max": 0.018404875107214017, "val_worst": 0.03842378392935513, "lr": 0.0009207511482085668, "wall": 551.8}
+{"arm": "fno-w96f32", "epoch": 4, "steps": 320, "train": 0.00014699838053099958, "val_mean_case_max": 0.01453232684918686, "val_worst": 0.02796355273540736, "lr": 0.0008776882116521573, "wall": 689.8}
+{"arm": "fno-w96f32", "epoch": 5, "steps": 384, "train": 0.00011637158829047261, "val_mean_case_max": 0.01358821897280295, "val_worst": 0.022256457443424162, "lr": 0.0008268670036073862, "wall": 827.8}
+{"arm": "fno-w96f32", "epoch": 6, "steps": 448, "train": 8.020532363409067e-05, "val_mean_case_max": 0.010396047589793329, "val_worst": 0.019104267833033504, "lr": 0.0007693297272681465, "wall": 965.9}
+{"arm": "fno-w96f32", "epoch": 7, "steps": 512, "train": 6.182462693713365e-05, "val_mean_case_max": 0.009293011027278926, "val_worst": 0.01865739989811123, "lr": 0.0007062834993401809, "wall": 1103.9}
+{"arm": "fno-w96f32", "epoch": 8, "steps": 576, "train": 5.6665680913655064e-05, "val_mean_case_max": 0.009198871649001138, "val_worst": 0.01875255453649728, "lr": 0.0006390329732875314, "wall": 1242.0}
+{"arm": "fno-w96f32", "epoch": 9, "steps": 640, "train": 4.37228021752241e-05, "val_mean_case_max": 0.007790238247046323, "val_worst": 0.01554083584256662, "lr": 0.0005689720026199243, "wall": 1380.1}
+{"arm": "fno-w96f32", "epoch": 10, "steps": 704, "train": 3.8188058673087216e-05, "val_mean_case_max": 0.0071239154724715165, "val_worst": 0.014527236042666957, "lr": 0.0004975775113150655, "wall": 1518.2}
+{"arm": "fno-w96f32", "epoch": 11, "steps": 768, "train": 3.4436208506129904e-05, "val_mean_case_max": 0.006898903475615678, "val_worst": 0.014616825789137516, "lr": 0.0004263462575658187, "wall": 1656.2}
+{"arm": "fno-w96f32", "epoch": 12, "steps": 832, "train": 3.0397898327456548e-05, "val_mean_case_max": 0.006577775658587174, "val_worst": 0.013564366533854079, "lr": 0.00035674677413617846, "wall": 1794.3}
+{"arm": "fno-w96f32", "epoch": 13, "steps": 896, "train": 2.7130458629063803e-05, "val_mean_case_max": 0.006404723753038549, "val_worst": 0.012845304734306718, "lr": 0.00029023782317175216, "wall": 1932.4}
+{"arm": "fno-w96f32", "epoch": 14, "steps": 960, "train": 2.5053841565305323e-05, "val_mean_case_max": 0.005908947212864241, "val_worst": 0.012289626226798462, "lr": 0.00022821518932738852, "wall": 2070.5}
+{"arm": "fno-w96f32", "epoch": 15, "steps": 1024, "train": 2.3926032819608333e-05, "val_mean_case_max": 0.005949963172090565, "val_worst": 0.011983465416560458, "lr": 0.00017197358969575627, "wall": 2208.3}
+{"arm": "fno-w96f32", "epoch": 16, "steps": 1088, "train": 2.2581641978759462e-05, "val_mean_case_max": 0.0059143435668963275, "val_worst": 0.012176258214799748, "lr": 0.00012278006283016963, "wall": 2346.0}
+{"arm": "fno-w96f32", "epoch": 17, "steps": 1152, "train": 2.1769798190025086e-05, "val_mean_case_max": 0.005635558593460103, "val_worst": 0.012141408196451833, "lr": 8.152185091649641e-05, "wall": 2484.1}
+{"arm": "fno-w96f32", "epoch": 18, "steps": 1216, "train": 2.1170581674018843e-05, "val_mean_case_max": 0.005683701927135132, "val_worst": 0.012106769063854508, "lr": 4.901044200478644e-05, "wall": 2621.9}
+{"arm": "fno-w96f32", "epoch": 19, "steps": 1280, "train": 2.0827064075673792e-05, "val_mean_case_max": 0.005611247370659673, "val_worst": 0.012405525333129405, "lr": 2.605073484788109e-05, "wall": 2760.0}
+{"arm": "fno-w96f32", "epoch": 20, "steps": 1344, "train": 2.061198512877666e-05, "val_mean_case_max": 0.005563595072923276, "val_worst": 0.012157296238818891, "lr": 1.303197021316074e-05, "wall": 2898.1}
+{"arm": "fno-w96f32", "epoch": 21, "steps": 1392, "train": 2.0206559430289364e-05, "val_mean_case_max": 0.005573645584795901, "val_worst": 0.01229417183299302, "lr": 1.0000823822341261e-05, "wall": 3001.8}
+ARM DONE fno-w96f32 {"stop_reason": "wall_budget", "epochs_completed": 22, "optimisation_steps": 1392, "micro_batch": 4} val_mean_case_max 0.005563595072923276
+TRAIN OPS COMPLETE
+run_exit=0

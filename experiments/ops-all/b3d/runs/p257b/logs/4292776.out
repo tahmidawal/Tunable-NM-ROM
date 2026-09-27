@@ -1,0 +1,50 @@
+host=pax010 job=4292776 mesh=257 arms=don-s,fno-s ntrain=256 nval=32 jfrac=0.72
+NVIDIA H200, GPU-00f941a0-47e4-a46a-3ac2-257f0a4c43cc, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T  4.2T  369G  93% /cluster/tufts/paralab
+jax_backend=gpu
+[612s] generated train 128/256 (585s)
+[1239s] generated train 256/256 (1212s)
+[1394s] data generated in 1367s: {'max_rel_residual': 9.977794746324823e-09, 'max_newton': 3, 'cap_hits': 0}
+torch_backend=cuda NVIDIA H200
+[1412s] === arm don-s {'family': 'deeponet', 'width': 32, 'rank': 256, 'trunk_width': 384, 'levels': 3, 'pool_bins': 4, 'trunk_frequencies': [1, 2, 3, 4], 'dtype': 'float32', 'smoke_overrides': {'width': 4, 'rank': 8, 'trunk_width': 8}, 'batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'epochs': 4000, 'patience': 250, 'seed': 20260914}
+[1426s] don-s: micro 1 params 4756773 probe {'8': 'oom', '4': 'oom', '2': 130180753920, '1': 118102094336}
+{"arm": "don-s", "epoch": 0, "steps": 32, "train": 0.49401943503604473, "val_mean": 0.8587943619679648, "val_worst": 1.841337309919812, "lr": 0.0009638385295510329, "wall": 390.6}
+{"arm": "don-s", "epoch": 1, "steps": 64, "train": 0.3012790157819045, "val_mean": 0.6414237235327664, "val_worst": 0.8029189969383215, "lr": 0.0008521806214879477, "wall": 781.0}
+{"arm": "don-s", "epoch": 2, "steps": 96, "train": 0.21867602675005715, "val_mean": 0.5578233506755446, "val_worst": 0.7184072594783997, "lr": 0.0006832990096179695, "wall": 1171.4}
+{"arm": "don-s", "epoch": 3, "steps": 128, "train": 0.1920786123391869, "val_mean": 0.5181569309460853, "val_worst": 0.7028759462715418, "lr": 0.0004850773828534788, "wall": 1561.7}
+{"arm": "don-s", "epoch": 4, "steps": 160, "train": 0.1658955410833285, "val_mean": 0.49992391932862856, "val_worst": 0.6947599116085047, "lr": 0.00029009781185907374, "wall": 1952.1}
+{"arm": "don-s", "epoch": 5, "steps": 192, "train": 0.1558514877407168, "val_mean": 0.48770970961407806, "val_worst": 0.6891060276133946, "lr": 0.00013055455282127653, "wall": 2342.5}
+{"arm": "don-s", "epoch": 6, "steps": 224, "train": 0.15071529961755112, "val_mean": 0.48275417308612567, "val_worst": 0.687562043842031, "lr": 3.2755184604782375e-05, "wall": 2732.6}
+{"arm": "don-s", "epoch": 7, "steps": 247, "train": 0.15350789545540683, "val_mean": 0.48166589605948334, "val_worst": 0.6870075731274569, "lr": 1.0012348025378315e-05, "wall": 3016.5}
+[4455s] TRAIN DONE don-s stop wall_budget epochs 8 steps 247 best_epoch 7 val_mean 0.4817 val_worst 0.687
+[4456s] === arm fno-s {'family': 'fno', 'width': 24, 'modes': 12, 'layers': 4, 'dtype': 'float64', 'smoke_overrides': {'width': 4, 'modes': 4, 'layers': 2}, 'batch_size': 8, 'learning_rate': 0.001, 'weight_decay': 0.0001, 'epochs': 4000, 'patience': 250, 'seed': 20260914}
+[4461s] fno-s: micro 1 params 4652717 probe {'8': 'oom', '4': 'oom', '2': 'oom', '1': 96168278016}
+{"arm": "fno-s", "epoch": 0, "steps": 32, "train": 0.4569359394485675, "val_mean": 0.7250361506943588, "val_worst": 1.0533548282259488, "lr": 0.0009930597855671492, "wall": 178.2}
+{"arm": "fno-s", "epoch": 1, "steps": 64, "train": 0.1243079439810974, "val_mean": 0.21959367271118507, "val_worst": 0.31182296683880734, "lr": 0.0009692866253544691, "wall": 356.3}
+{"arm": "fno-s", "epoch": 2, "steps": 96, "train": 0.02652192321799783, "val_mean": 0.1525329407960641, "val_worst": 0.2516052833974616, "lr": 0.0009294231949585999, "wall": 534.3}
+{"arm": "fno-s", "epoch": 3, "steps": 128, "train": 0.014803013515074813, "val_mean": 0.12324297635569191, "val_worst": 0.22903109344029696, "lr": 0.0008748565234625766, "wall": 712.3}
+{"arm": "fno-s", "epoch": 4, "steps": 160, "train": 0.009960986187256611, "val_mean": 0.10717331165704445, "val_worst": 0.23234416628365534, "lr": 0.0008074612200841276, "wall": 890.4}
+{"arm": "fno-s", "epoch": 5, "steps": 192, "train": 0.007418088054537547, "val_mean": 0.10032771446664854, "val_worst": 0.2227330785720449, "lr": 0.000729567933458116, "wall": 1068.4}
+{"arm": "fno-s", "epoch": 6, "steps": 224, "train": 0.006280704692139361, "val_mean": 0.09188422149536497, "val_worst": 0.21016494712153883, "lr": 0.0006439295840335061, "wall": 1246.4}
+{"arm": "fno-s", "epoch": 7, "steps": 256, "train": 0.005312759632328613, "val_mean": 0.08732780103185891, "val_worst": 0.2067495210589134, "lr": 0.0005534632746675386, "wall": 1424.4}
+{"arm": "fno-s", "epoch": 8, "steps": 288, "train": 0.004804964724726535, "val_mean": 0.08173925490515693, "val_worst": 0.16114905534173182, "lr": 0.0004613129766738763, "wall": 1602.5}
+{"arm": "fno-s", "epoch": 9, "steps": 320, "train": 0.004308971837530486, "val_mean": 0.07922119243110215, "val_worst": 0.1837227831482443, "lr": 0.0003706781756909371, "wall": 1780.5}
+{"arm": "fno-s", "epoch": 10, "steps": 352, "train": 0.004037291847933979, "val_mean": 0.07566408472393192, "val_worst": 0.16058446796089423, "lr": 0.000284703676722933, "wall": 1958.5}
+{"arm": "fno-s", "epoch": 11, "steps": 384, "train": 0.0036751999026944588, "val_mean": 0.07535467603190947, "val_worst": 0.1690886861393628, "lr": 0.00020634231316622338, "wall": 2136.6}
+{"arm": "fno-s", "epoch": 12, "steps": 416, "train": 0.0035144380842584873, "val_mean": 0.07330892947454273, "val_worst": 0.16322709445132838, "lr": 0.00013832858156654246, "wall": 2314.7}
+{"arm": "fno-s", "epoch": 13, "steps": 448, "train": 0.0034134621307033877, "val_mean": 0.07229527371152661, "val_worst": 0.15830291741857688, "lr": 8.305055270809483e-05, "wall": 2492.7}
+{"arm": "fno-s", "epoch": 14, "steps": 480, "train": 0.003341539468423876, "val_mean": 0.07252577953942098, "val_worst": 0.16063019564447767, "lr": 4.2389404101105405e-05, "wall": 2670.7}
+{"arm": "fno-s", "epoch": 15, "steps": 512, "train": 0.0033021397922632654, "val_mean": 0.0718898570105789, "val_worst": 0.15891181717725825, "lr": 1.776689555786292e-05, "wall": 2848.7}
+{"arm": "fno-s", "epoch": 16, "steps": 542, "train": 0.003285350752270181, "val_mean": 0.07190595081410336, "val_worst": 0.16025016991060712, "lr": 1.0000712559213036e-05, "wall": 3016.4}
+[7491s] TRAIN DONE fno-s stop wall_budget epochs 17 steps 542 best_epoch 15 val_mean 0.07189 val_worst 0.1589
+[7492s] ALL ARMS DONE
+TRAIN_EXIT=0
+panel sources:
+9370679351a0be57e9f570e4a3d69cfd82272728c4313c379e3d0b0350a94864  panel_b3d.py
+ec8d30d396839c302ea2933e62004f519f9df35dbfbb31a4fd7c5bd5e5e4388d  opsb3d.py
+2ced1f72c75f62f7c221baca92e18c56fb33c263928a83dab5f09cdfaf85e676  ops3d.py
+edc811b592cf68e4e76eb9eb4c6b8c86171425e7685ca4ccbbe02c4bff3d8b4d  lanes/burgers3d-retry/tables.py
+670475259683ef77f7af454d8b2b04fdd5ee3543373aa4a11353df4363c484b6  lanes/burgers3d-span/common.py
+jax_backend=gpu x64=True precision=highest
+PANEL_EXIT=1
+ALL-DONE

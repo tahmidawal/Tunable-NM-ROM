@@ -1,0 +1,18 @@
+W0924 19:53:46.876706 1288646 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 12.00GiB (rounded to 12884901888)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0924 19:53:46.880165 1288646 bfc_allocator.cc:525] ******************************************************************************************__________
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/b2eqk_20260924/e4096b/experiments/burgers-eq-tol-knobs/eqtol.py", line 786, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/b2eqk_20260924/e4096b/experiments/burgers-eq-tol-knobs/eqtol.py", line 248, in main
+    g = jax.block_until_ready(base.at(xy, chunk=8192))
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2509, in block_until_ready
+    try_to_block(arrays[0])
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2492, in try_to_block
+    return x.block_until_ready()
+           ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 12.00GiB. [tf-allocator-allocation-error=''] [executable_name='jit_concatenate']

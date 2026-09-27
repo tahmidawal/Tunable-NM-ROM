@@ -1,0 +1,138 @@
+host=pax105 source_commit=9ccacbb3e12b4dbb0b2916338099d5104054c7d0
+NVIDIA A100 80GB PCIe, GPU-662eb49d-1d4d-a693-a62c-7fbfef041e73, 81920 MiB
+10.235.106.34:/projects/paralab  4.6T  4.2T  369G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 1046529 rows 1 row blocks 10.1
+TRUTH done 15.9
+QUICK fft_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.4366 4.9 24.2
+QUICK fft_tight__graphs evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.4398 5.1 29.3
+QUICK nt1e-4_dt005 evolved% 0.0343 median% 0.0165 stalled 0 iters [None, None, None, None, None, None] sec 0.1713 2.4 31.7
+QUICK nt1e-4_dt005__graphs evolved% 0.0343 median% 0.0165 stalled 0 iters [None, None, None, None, None, None] sec 0.1724 2.4 34.1
+QUICK nt1e-3_dt005 evolved% 0.0532 median% 0.0307 stalled 0 iters [None, None, None, None, None, None] sec 0.1366 2.2 36.3
+QUICK nt1e-3_dt005__graphs evolved% 0.0532 median% 0.0307 stalled 0 iters [None, None, None, None, None, None] sec 0.1372 2.1 38.5
+QUICK nt1e-2_dt005 evolved% 4.2628 median% 1.5187 stalled 0 iters [None, None, None, None, None, None] sec 0.0613 1.6 40.0
+QUICK nt1e-2_dt005__graphs evolved% 4.2628 median% 1.5187 stalled 0 iters [None, None, None, None, None, None] sec 0.0619 1.6 41.6
+QUICK nt1e-4_dt01 evolved% 1.6287 median% 1.1955 stalled 0 iters [None, None, None, None, None, None] sec 0.1392 3.2 44.8
+QUICK nt1e-4_dt01__graphs evolved% 1.6287 median% 1.1955 stalled 0 iters [None, None, None, None, None, None] sec 0.1397 3.1 48.0
+QUICK nt1e-3_dt01 evolved% 1.6286 median% 1.2188 stalled 0 iters [None, None, None, None, None, None] sec 0.0926 1.8 49.8
+QUICK nt1e-3_dt01__graphs evolved% 1.6286 median% 1.2188 stalled 0 iters [None, None, None, None, None, None] sec 0.0932 1.8 51.6
+QUICK nt1e-2_dt01 evolved% 3.4582 median% 1.4686 stalled 0 iters [None, None, None, None, None, None] sec 0.0359 1.4 53.1
+QUICK nt1e-2_dt01__graphs evolved% 3.4582 median% 1.4686 stalled 0 iters [None, None, None, None, None, None] sec 0.0362 1.4 54.5
+QUICK lean_tight evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.4339 4.9 59.4
+QUICK lean_tight__graphs evolved% 0.0 median% 0.0 stalled 0 iters [None, None, None, None, None, None] sec 0.4328 4.8 64.2
+QUICK lean_nt1e-4_dt005 evolved% 0.0343 median% 0.0165 stalled 0 iters [None, None, None, None, None, None] sec 0.168 2.3 66.5
+QUICK lean_nt1e-4_dt005__graphs evolved% 0.0343 median% 0.0165 stalled 0 iters [None, None, None, None, None, None] sec 0.1686 2.3 68.8
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.053 median% 0.032 stalled 0 iters [None, None, None, None, None, None] sec 0.0909 1.7 70.5
+QUICK lean_nt1e-3_l1e-3_dt005__graphs evolved% 0.053 median% 0.032 stalled 0 iters [None, None, None, None, None, None] sec 0.091 1.7 72.3
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0483 median% 0.0384 stalled 0 iters [None, None, None, None, None, None] sec 0.0755 1.6 73.9
+QUICK lean_nt3e-3_l3e-3_dt005__graphs evolved% 0.0483 median% 0.0384 stalled 0 iters [None, None, None, None, None, None] sec 0.0756 1.6 75.5
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1578 median% 0.1636 stalled 0 iters [None, None, None, None, None, None] sec 0.061 1.5 77.1
+QUICK lean_nt1e-2_l1e-2_dt005__graphs evolved% 2.1578 median% 0.1636 stalled 0 iters [None, None, None, None, None, None] sec 0.061 1.5 78.6
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6294 median% 1.2184 stalled 0 iters [None, None, None, None, None, None] sec 0.0596 2.3 80.9
+QUICK lean_nt1e-3_l1e-3_dt01__graphs evolved% 1.6294 median% 1.2184 stalled 0 iters [None, None, None, None, None, None] sec 0.0596 2.3 83.3
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6445 median% 1.2387 stalled 0 iters [None, None, None, None, None, None] sec 0.0513 1.5 84.8
+QUICK lean_nt3e-3_l3e-3_dt01__graphs evolved% 1.6445 median% 1.2387 stalled 0 iters [None, None, None, None, None, None] sec 0.0513 1.4 86.2
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6558 median% 1.1956 stalled 0 iters [None, None, None, None, None, None] sec 0.0402 1.4 87.6
+QUICK lean_nt1e-2_l1e-2_dt01__graphs evolved% 1.6558 median% 1.1956 stalled 0 iters [None, None, None, None, None, None] sec 0.0403 1.4 89.0
+QUICK R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 0.2108 median% 0.0649 stalled 0 iters [57, 55, 53, 57, 52, 52] sec 0.05 7.1 107.3
+QUICK R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.2108 median% 0.0649 stalled 0 iters [57, 55, 53, 57, 52, 52] sec 0.0502 2.8 110.1
+QUICK R384_lin_M1536_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 0.2453 median% 0.0677 stalled 0 iters [55, 55, 53, 54, 51, 52] sec 0.039 3.7 119.5
+QUICK R384_lin_M1536_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.2453 median% 0.0677 stalled 0 iters [55, 55, 53, 54, 51, 52] sec 0.0386 2.5 122.0
+QUICK R384_lin_M1536_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 0.2297 median% 0.0656 stalled 0 iters [55, 55, 53, 54, 52, 52] sec 0.042 3.8 131.1
+QUICK R384_lin_M1536_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.2297 median% 0.0656 stalled 0 iters [55, 55, 53, 54, 52, 52] sec 0.0421 2.6 133.7
+QUICK R384_lin_M1536_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 0.2108 median% 0.0649 stalled 0 iters [57, 55, 53, 57, 53, 52] sec 0.0617 4.3 144.0
+QUICK R384_lin_M1536_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.2108 median% 0.0649 stalled 0 iters [57, 55, 53, 57, 53, 52] sec 0.0612 2.8 146.8
+QUICK R384_lin_M1536_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 0.2108 median% 0.0649 stalled 0 iters [57, 56, 53, 59, 53, 52] sec 0.0873 5.6 159.5
+QUICK R384_lin_M1536_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.2108 median% 0.0649 stalled 0 iters [57, 56, 53, 59, 53, 52] sec 0.0874 2.9 162.4
+QUICK R384_lin_M1536_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng evolved% 81.1305 median% 74.1848 stalled 0 iters [0, 0, 0, 0, 0, 0] sec 0.0198 2.5 164.9
+QUICK R384_lin_M1536_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 81.1305 median% 74.1848 stalled 0 iters [0, 0, 0, 0, 0, 0] sec 0.0197 2.5 167.4
+QUICK R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng evolved% 0.2108 median% 0.0649 stalled 0 iters [53, 53, 49, 54, 45, 51] sec 0.049 2.6 170.0
+QUICK R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.2108 median% 0.0649 stalled 0 iters [53, 53, 49, 54, 45, 51] sec 0.0486 2.5 172.6
+QUICK R384_lin_M1536_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng evolved% 0.2108 median% 0.0649 stalled 0 iters [58, 58, 55, 60, 54, 54] sec 0.0512 2.6 175.2
+QUICK R384_lin_M1536_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 0.2108 median% 0.0649 stalled 0 iters [58, 58, 55, 60, 54, 54] sec 0.0511 2.6 177.9
+QUICK R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng evolved% 0.2108 median% 0.0649 stalled 0 iters [56, 56, 53, 57, 53, 52] sec 1.2433 13.8 194.8
+QUICK R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs evolved% 0.2108 median% 0.0649 stalled 0 iters [56, 56, 53, 57, 53, 52] sec 1.2466 10.2 205.0
+QUICK R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 2.787 median% 1.0947 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0199 4.7 216.0
+QUICK R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.787 median% 1.0947 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0205 2.6 218.6
+QUICK R96_lin_M384_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 2.7868 median% 1.095 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0176 3.1 223.1
+QUICK R96_lin_M384_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.7868 median% 1.095 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0181 2.3 225.4
+QUICK R96_lin_M384_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 2.7868 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0182 3.1 230.0
+QUICK R96_lin_M384_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.7868 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0183 2.3 232.3
+QUICK R96_lin_M384_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 2.787 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0241 3.5 237.5
+QUICK R96_lin_M384_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.787 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0239 2.5 240.0
+QUICK R96_lin_M384_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng evolved% 2.787 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0315 4.4 246.8
+QUICK R96_lin_M384_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.787 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.0319 2.4 249.3
+QUICK R96_lin_M384_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng evolved% 72.0364 median% 28.1005 stalled 0 iters [0, 24, 5, 0, 7, 10] sec 0.0108 2.3 251.6
+QUICK R96_lin_M384_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 72.0364 median% 28.1005 stalled 0 iters [0, 24, 5, 0, 7, 10] sec 0.0109 2.3 253.9
+QUICK R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng evolved% 2.7812 median% 1.0946 stalled 0 iters [37, 45, 30, 34, 29, 33] sec 0.0158 2.2 256.2
+QUICK R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.7812 median% 1.0946 stalled 0 iters [37, 45, 30, 34, 29, 33] sec 0.0158 2.2 258.5
+QUICK R96_lin_M384_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng evolved% 2.787 median% 1.0946 stalled 0 iters [52, 55, 52, 52, 51, 52] sec 0.0205 2.3 260.8
+QUICK R96_lin_M384_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs evolved% 2.787 median% 1.0946 stalled 0 iters [52, 55, 52, 52, 51, 52] sec 0.0204 2.3 263.1
+QUICK R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng evolved% 2.787 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.2994 6.6 270.7
+QUICK R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs evolved% 2.787 median% 1.0948 stalled 0 iters [51, 55, 51, 51, 47, 51] sec 0.2996 4.3 275.0
+PARITY R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R384_lin_M1536_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs vs R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs vs R96_lin_M384_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng 0.000e+00 integers True
+PARITY R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng_graphs vs R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x50__eng 0.000e+00 integers True
+FOM-PARITY fft_tight 0.000e+00 True
+FOM-PARITY nt1e-4_dt005 0.000e+00 True
+FOM-PARITY nt1e-3_dt005 0.000e+00 True
+FOM-PARITY nt1e-2_dt005 0.000e+00 True
+FOM-PARITY nt1e-4_dt01 0.000e+00 True
+FOM-PARITY nt1e-3_dt01 0.000e+00 True
+FOM-PARITY nt1e-2_dt01 0.000e+00 True
+FOM-PARITY lean_tight 0.000e+00 True
+FOM-PARITY lean_nt1e-4_dt005 0.000e+00 True
+FOM-PARITY lean_nt1e-3_l1e-3_dt005 0.000e+00 True
+FOM-PARITY lean_nt3e-3_l3e-3_dt005 0.000e+00 True
+FOM-PARITY lean_nt1e-2_l1e-2_dt005 0.000e+00 True
+FOM-PARITY lean_nt1e-3_l1e-3_dt01 0.000e+00 True
+FOM-PARITY lean_nt3e-3_l3e-3_dt01 0.000e+00 True
+FOM-PARITY lean_nt1e-2_l1e-2_dt01 0.000e+00 True
+CERT R384_lin_M1536_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0595 conf 0.0584 9.7 287.9
+CERT R384_lin_M1536_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs fails rho_max 0.5462 conf 0.4826 7.1 295.0
+CERT R384_lin_M1536_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs not confirmed (1/5 draws, confirmation False) rho_max 0.2162 conf 0.1898 7.3 302.3
+CERT R384_lin_M1536_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0294 conf 0.0351 8.5 310.9
+CERT R384_lin_M1536_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0301 conf 0.0576 10.5 321.4
+CERT R384_lin_M1536_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs not confirmed (4/5 draws, confirmation False) rho_max 0.1288 conf 0.1253 4.9 326.4
+CERT R384_lin_M1536_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0595 conf 0.0585 6.8 333.3
+CERT R384_lin_M1536_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0595 conf 0.0584 7.0 340.4
+CERT R96_lin_M384_lat64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0156 conf 0.0352 4.7 345.1
+CERT R96_lin_M384_lat32_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs not confirmed (3/5 draws, confirmation False) rho_max 0.1844 conf 0.1583 3.5 348.7
+CERT R96_lin_M384_lat32x64_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0579 conf 0.0617 3.7 352.4
+CERT R96_lin_M384_lat64x128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0308 conf 0.0340 4.2 356.7
+CERT R96_lin_M384_lat128_g0p001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0328 conf 0.0634 4.6 361.4
+CERT R96_lin_M384_lat64_g0p1_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0312 conf 0.0506 2.5 363.9
+CERT R96_lin_M384_lat64_g0p01_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0156 conf 0.0352 2.9 366.9
+CERT R96_lin_M384_lat64_g0p0001_fast_chol_clip_lamcarry_pred2__eng_graphs confirmed rho_max 0.0156 conf 0.0352 3.1 370.0
+TIMED romA1 rep 0 448.0
+TIMED romA1 rep 1 510.3
+TIMED romA1 rep 2 572.6
+TIMED romA1 rep 3 634.9
+TIMED romA1 rep 4 697.1
+TIMED fomB rep 0 762.6
+TIMED fomB rep 1 821.1
+TIMED fomB rep 2 879.7
+TIMED romA2 rep 0 949.1
+TIMED romA2 rep 1 1011.3
+TIMED romA2 rep 2 1073.6
+TIMED romA2 rep 3 1136.0
+TIMED romA2 rep 4 1198.3
+DRIFT True 0.9888790550772004 1.0167116803466587 NEIGHBOUR True 1.0303418032529421
+EQTOL COMPLETE
+ALL-DONE

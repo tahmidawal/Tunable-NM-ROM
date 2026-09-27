@@ -1,0 +1,65 @@
+{
+ "status": "promoted",
+ "source": "runs/dynamic_pair/out/dynamic_pair.json",
+ "source_sha256": "9680b74fda0efdecb3712938b2d9cc06cadc4761b54135dddbd16b36f8f75bcb",
+ "selection": "runs/dynamic_selection/out/dynamic_selection_choice.json",
+ "selection_sha256": "6d27c5d926a6b7e33861705656c7fa8c194bf8854ad5935f18df6920fb9f5e5d",
+ "classification": "classical FOM warm start; not learned and not NM-ROM",
+ "gates": {
+  "all_trajectory_median_savings_positive": true,
+  "trajectory_cluster_interval_positive": true,
+  "solver_health": true,
+  "wall_speedup_positive": true
+ },
+ "selected_policy": {
+  "relaxation": 1.0,
+  "resolution_policy": "coarse_n=N at every mesh (full-grid fraction 1.0)",
+  "basis": "only q=N passed at N=256; q=64 and q=128 failed"
+ },
+ "timing": {
+  "cubic_median_ms": 35.56427010335028,
+  "dynamic_median_ms": 25.45781503431499,
+  "speedup_cubic_over_dynamic": 1.3969883140172337,
+  "saving_vs_cubic_case_medians_ms": [
+   9.536802303045988,
+   10.676107835024595,
+   9.995799511671066,
+   5.364033626392484
+  ],
+  "saving_trajectory_cluster_95ci_ms": [
+   5.364033626392484,
+   10.676107835024595
+  ]
+ },
+ "finish_work": {
+  "interpretation": "Newton/BiCGStab are finish-only counters; wall time also charges the dynamic corrections listed separately",
+  "cubic_newton_median": 57.5,
+  "dynamic_newton_median": 24.0,
+  "cubic_bicgstab_median": 81.0,
+  "dynamic_bicgstab_median": 38.5
+ },
+ "dynamic_charged_correction_work_per_trajectory": {
+  "full_grid_residual_evaluations": 50,
+  "exact_helmholtz_inverses": 50
+ },
+ "outliers_retained": {
+  "cubic": {
+   "per_trajectory": {
+    "8": 0,
+    "9": 0,
+    "10": 1,
+    "11": 1
+   },
+   "total": 2
+  },
+  "dynamic": {
+   "per_trajectory": {
+    "8": 1,
+    "9": 1,
+    "10": 1,
+    "11": 1
+   },
+   "total": 4
+  }
+ }
+}

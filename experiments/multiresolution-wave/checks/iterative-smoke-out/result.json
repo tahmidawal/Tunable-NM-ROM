@@ -1,0 +1,3403 @@
+{
+  "config": {
+    "meshes": [
+      32
+    ],
+    "boundaries": [
+      "dirichlet",
+      "absorbing"
+    ],
+    "validation_seed": 690602,
+    "validation_indices": [
+      0
+    ],
+    "end_time": 0.01,
+    "observation_dt": 0.005,
+    "repetitions": 1,
+    "fit_iterations": 800,
+    "primary_dt": 0.0025,
+    "accuracy_only_dt": 0.00125,
+    "fom_cfl": 0.45,
+    "reference_cfl": 0.1125,
+    "reference_refinement_cfl": 0.05625,
+    "vanishing_fraction": 0.001,
+    "rom_refinement_target": 0.01,
+    "reference_refinement_target": 0.0001,
+    "accuracy_targets": [
+      0.1,
+      0.05,
+      0.01,
+      0.001
+    ],
+    "primary_method": "frozen_mlp32_seed691200",
+    "control_method": null,
+    "frozen_bank_rank": 64,
+    "final_test_opened": false,
+    "expected_timed_invocations": 8,
+    "expected_accuracy_only_queries": 2,
+    "input_output_contract": "Full GPU-resident displacement, velocity and scalar physical wave speed to both full GPU-resident fields at all 49 observations. Include projection, every cold-fit start, parameter preparation, evolution and dense output; exclude host transfers, compilation and mesh-only assembly.",
+    "selection": "Frozen MLP32 with same primary time grid; unpreconditioned warm-started CG with declared tolerances, full compiled solve and counted true residuals. No tolerance selection on evaluation.",
+    "claim_scope": "Two existing development inputs per boundary; same-grid semidiscrete references only. FOM uses matched implicit-midpoint time grid; nonlinear ROM retains verified RK4 dynamics. No continuum or matched-accuracy claim.",
+    "walltime": "01:00:00",
+    "estimated_runtime_minutes": [
+      15,
+      35
+    ],
+    "cg_tolerances": [
+      1e-06,
+      0.01
+    ],
+    "cg_max_iterations": 1000
+  },
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.1",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA GB10"
+    ],
+    "host": "spark-d69e",
+    "source_commit": null,
+    "job_id": null,
+    "numpy_version": "2.4.4"
+  },
+  "frozen_mathematics": {
+    "source_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+    "sha256": {
+      "fresh_fom.py": "9dc6e3bd14acce20f5cc29497032f07d63806a20ddb78ef3f31a13b607c1adfc",
+      "fresh_models.py": "bef42f5ead734fb6b85b2e17b92790b8327f5f1dc3abce941c62f993de6e5553",
+      "fresh_rom.py": "960aefef2ffb77f2a0ff4ac4c99ae55e8ebd036486ce1c6d460dd5b5b98434ff",
+      "fresh_learning.py": "239f0df304781ca29ea0afc2b67fefa6a9163ab18fbdd81e95c76a08a72dd8c8",
+      "fresh_evaluate.py": "67bf89e8df5654fdcd29040ec737607762e5762d33d6e9996e6a5772be27f7e1"
+    }
+  },
+  "input_sha256": {
+    "ORIGIN.json": "3adb6ad07396604813d40e7804ad99ef6a794b0b16157d4b6d99edd9b13c628c",
+    "dirichlet/campaign-config.json": "8db8fb9ac036e3611231df487c14c9fdf5fad7b3fd96a9b8351fe077cbd93dad",
+    "dirichlet/head.npz": "985e8707e6b549e4ae5ea299c3d703ab58ff171849027d5f9189cc8e6930d845",
+    "dirichlet/coordinates.npz": "da594cff97868239c26cfd8b170131cff44d318167a30e2c546bcd374feda882",
+    "dirichlet/data_manifest.json": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809",
+    "dirichlet/initializer32.npz": "537106c0a07cd78b6701c8a4e01fec423cd0a103c6681f1527879977efacca7d",
+    "dirichlet/bank_parameters.npz": "4be766c4f2386005dddac89346f32b6351051d014406242e1ec40bf8f343c600",
+    "dirichlet/head32.npz": "124267d7f6802670357a4f7ad1a663c0b27aa25f578116a8ecaed991d9c76b6e",
+    "absorbing/campaign-config.json": "8db8fb9ac036e3611231df487c14c9fdf5fad7b3fd96a9b8351fe077cbd93dad",
+    "absorbing/head.npz": "86d55abfed15ca778ca145b1a11ba7e4d30560bedc0f8cf95026111a51f4702a",
+    "absorbing/coordinates.npz": "97c3ddf60a9c4c5eff8f6c0d21dc8c599e213beacc2dd70f61b0f7e53dd85890",
+    "absorbing/data_manifest.json": "53edc2d730d912a35b30017033f534e812303abafacf71ba7dc5c92b1caf358c",
+    "absorbing/initializer32.npz": "e09b11becb830dc8214d1351d875b5f53d4321936c379ab7bb3c9d8d69ca9f4c",
+    "absorbing/bank_parameters.npz": "a9254afa4b94483f7204c6c9d08126890c1aee927609f926865dadaa9c7ecc74",
+    "absorbing/head32.npz": "4cef675ccaec28aedd887a085ff4f3fc1c95494a7ba44fd0a4369b651d88645a"
+  },
+  "operator_verification": {
+    "dirichlet": {
+      "dense_relative_error": 2.674871159580505e-12,
+      "minimum_system_eigenvalue": 1.0000496975549267,
+      "temporal_refinement_ratio": 3.999091957254285,
+      "maximum_true_relative_residual": 9.139159375712325e-13
+    },
+    "absorbing": {
+      "dense_relative_error": 1.1970487082189078e-13,
+      "minimum_system_eigenvalue": 1.0000494011089898,
+      "temporal_refinement_ratio": 3.999624914189826,
+      "maximum_true_relative_residual": 9.338095952656358e-14
+    }
+  },
+  "meshes": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "audits": {
+        "head_values": 6.5052130349130266e-18,
+        "head_jacobian": 2.7755575615628914e-17,
+        "physical_value": 3.469446951953614e-17,
+        "physical_tangent": 4.3368086899420177e-16,
+        "orthogonality": 3.1056765612142445e-15,
+        "stiffness_symmetry": 8.881784197001252e-14,
+        "damping_symmetry": 0.0,
+        "stiffness_min_eigenvalue": 19.724572339584334,
+        "damping_min_eigenvalue": 0.0
+      },
+      "assembly_seconds_including_first_compile": 7.71636631399997,
+      "storage_bytes": 565256
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "audits": {
+        "head_values": 1.3010426069826053e-18,
+        "head_jacobian": 1.734723475976807e-17,
+        "physical_value": 6.331740687315346e-17,
+        "physical_tangent": 2.7755575615628914e-16,
+        "orthogonality": 3.289553910994879e-15,
+        "stiffness_symmetry": 9.237055564881302e-14,
+        "damping_symmetry": 0.0,
+        "stiffness_min_eigenvalue": 0.033866497285891715,
+        "damping_min_eigenvalue": 3.9872120783594195e-06
+      },
+      "assembly_seconds_including_first_compile": 6.36420878700028,
+      "storage_bytes": 631816
+    }
+  ],
+  "references": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "parameters": [
+        0.466961743879224,
+        0.4305649335231267,
+        0.41660572809956714,
+        0.366197064560389,
+        0.8728556067414628,
+        1.00894790835607,
+        0.0,
+        0.0,
+        0.15161942095621836,
+        0.13380311362457928
+      ],
+      "seed": 690602,
+      "input_sha256": {
+        "u": "ac5950963c344837d90a1514197d6f6b11f88794b11d0acb8255ab332147e8af",
+        "v": "c0001d8a49ee113b09522c59633e16002442a88f03eb5867f0bd93c3dfcd7531"
+      },
+      "reference_kind": "exact semidiscrete DST",
+      "refinement_passed": true
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "parameters": [
+        0.466961743879224,
+        0.4305649335231267,
+        0.41660572809956714,
+        0.366197064560389,
+        0.8728556067414628,
+        1.00894790835607,
+        0.0,
+        0.0,
+        0.15161942095621836,
+        0.13380311362457928
+      ],
+      "seed": 690602,
+      "input_sha256": {
+        "u": "044098a7c8c4d5f149c7f9db81aa53d79686a7d47ae1cb7936bb41694295cbd7",
+        "v": "c95d9897736736b9dfa22a44803ef32c0d928f87ab5f20c65cd045c8f8d6422a"
+      },
+      "reference_kind": "same-grid RK4 with temporal self-refinement",
+      "temporal_refinement": {
+        "displacement": {
+          "absolute": [
+            0.0,
+            1.2214736730510093e-11,
+            6.727757102855592e-11
+          ],
+          "initial_normalized": [
+            0.0,
+            6.361259491387682e-11,
+            3.5037192917463563e-10
+          ],
+          "current_relative": [
+            0.0,
+            6.366803621489625e-11,
+            3.515941143912259e-10
+          ],
+          "reference_norm": [
+            0.19201758310673,
+            0.19185037668324129,
+            0.19135010591700294
+          ],
+          "initial_scale": 0.19201758310673,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 3.5037192917463563e-10,
+          "max_absolute": 6.727757102855592e-11,
+          "max_current_relative": 3.515941143912259e-10
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            4.41777981177482e-09,
+            8.210774615143454e-09
+          ],
+          "initial_normalized": [
+            0.0,
+            2.755599496043466e-09,
+            5.121488022402381e-09
+          ],
+          "current_relative": [
+            null,
+            4.78351876107948e-08,
+            4.455942112948176e-08
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418595448082,
+            0.18426573790724082
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 5.121488022402381e-09,
+          "max_absolute": 8.210774615143454e-09,
+          "max_current_relative": 4.78351876107948e-08
+        },
+        "energy_state": {
+          "absolute": [
+            0.0,
+            4.4636806439257235e-09,
+            8.9259319302935e-09
+          ],
+          "initial_normalized": [
+            0.0,
+            2.7842302371242874e-09,
+            5.567568909450382e-09
+          ],
+          "current_relative": [
+            0.0,
+            2.7842302371326184e-09,
+            5.567568909483701e-09
+          ],
+          "reference_norm": [
+            1.6032009797207247,
+            1.6032009797159277,
+            1.6032009797111306
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 5.567568909450382e-09,
+          "max_absolute": 8.9259319302935e-09,
+          "max_current_relative": 5.567568909483701e-09
+        },
+        "mean_error": [
+          0.0,
+          2.7251361046463464e-15,
+          4.110353766110243e-14
+        ],
+        "energy_fraction": [
+          1.0,
+          0.9999999999545657,
+          0.9999999999091316
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999940156,
+          0.9999999999880311
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.3321587716562675e-12,
+              2.313690211641628e-11,
+              2.300489659878835e-11
+            ],
+            [
+              4.324762770124835e-12,
+              4.584817248076689e-11,
+              4.3944847760712946e-11
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "refinement_passed": true
+    }
+  ],
+  "invocations": [
+    {
+      "method": "frozen_mlp32_seed691200",
+      "setting": 0.0025,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 0.035396299000240106,
+        "evolution": 0.05661446700014494,
+        "dense_device_output": 0.0012998459997106693,
+        "complete_device_query": 0.09331061200009572
+      },
+      "post_timer_host_transfer_seconds": 0.0010522290003791568,
+      "device_plus_output_transfer_seconds": 0.09436284100047487,
+      "output_sha256": {
+        "u": "204cbebd571977a46893d2fa675e954bf3f042fe8322676cef80655594dc6464",
+        "v": "f0fc62bd97325a07a7c2d13adb12d59a15c05886bce86408ecc8f3a8cea32554"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "cold_fit": {
+        "finite": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "gradient": [
+          1.1415135514353941e-10,
+          4.663786375049949e-11,
+          2.940932184738142e-11,
+          1.374380422566445e-10,
+          1.3599320504615892e-10,
+          7.922482014497377e-11,
+          6.069726386542969e-11,
+          3.8874606943348385e-11
+        ],
+        "iterations": [
+          6,
+          7,
+          7,
+          6,
+          6,
+          7,
+          7,
+          7
+        ],
+        "objective": [
+          0.0001889771095953243,
+          0.0001889771095951999,
+          0.00018897710959518682,
+          0.00018897710959538355,
+          0.00018897710959538025,
+          0.00018897710959524543,
+          0.0001889771095952161,
+          0.00018897710959519393
+        ],
+        "rank_ratio": [
+          0.01542956984993255,
+          0.015429570179028313,
+          0.015429570537146983,
+          0.015429569752720368,
+          0.01542956976478361,
+          0.015429570024711039,
+          0.015429570112443213,
+          0.015429570213632027
+        ],
+        "selected": 2,
+        "stationarity": [
+          8.346822584260091e-07,
+          3.3790964746093503e-07,
+          2.1299992119662585e-07,
+          9.920273291817215e-07,
+          9.805827350503122e-07,
+          5.745622291252608e-07,
+          4.399378206395467e-07,
+          2.8367528036427027e-07
+        ]
+      },
+      "fit_stationary": true,
+      "minimum_dynamic_rank_ratio": 0.015429570537146978,
+      "configuration_dimension": 32,
+      "case": 0,
+      "repetition": 0,
+      "order": 0,
+      "invocation_id": "dirichlet_32_0_frozen_mlp32_seed691200_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.0026929870134796566,
+            0.002688724790934504,
+            0.0026759912775956712
+          ],
+          "initial_normalized": [
+            0.014024689665960438,
+            0.014002492622980351,
+            0.013936178313984205
+          ],
+          "current_relative": [
+            0.014024689665960438,
+            0.014014696439086613,
+            0.013984791201435172
+          ],
+          "reference_norm": [
+            0.19201758310673006,
+            0.19185037668284577,
+            0.1913501059151352
+          ],
+          "initial_scale": 0.19201758310673006,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.014024689665960438,
+          "max_absolute": 0.0026929870134796566,
+          "max_current_relative": 0.014024689665960438
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            0.004598002224883121,
+            0.009036421351430962
+          ],
+          "initial_normalized": [
+            0.0,
+            0.002868013607179859,
+            0.005636486919441061
+          ],
+          "current_relative": [
+            null,
+            0.049786614028490724,
+            0.049040160288720554
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418625279244,
+            0.18426573849330133
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.005636486919441061,
+          "max_absolute": 0.009036421351430962,
+          "max_current_relative": 0.049786614028490724
+        },
+        "energy_state": {
+          "absolute": [
+            0.05808137423117259,
+            0.058077843957216546,
+            0.058058102753679154
+          ],
+          "initial_normalized": [
+            0.036228379951021655,
+            0.03622617793517916,
+            0.0362138643177431
+          ],
+          "current_relative": [
+            0.036228379951021655,
+            0.03622617793517916,
+            0.0362138643177431
+          ],
+          "reference_norm": [
+            1.6032009797207252,
+            1.603200979720725,
+            1.6032009797207252
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.036228379951021655,
+          "max_absolute": 0.05808137423117259,
+          "max_current_relative": 0.036228379951021655
+        },
+        "mean_error": [
+          -0.00017942258118257135,
+          -0.00017865409232017905,
+          -0.0001763681505055644
+        ],
+        "energy_fraction": [
+          1.0005971579205866,
+          1.0005971578861772,
+          1.0005971578698152
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999999997,
+          1.0
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.803566477934145e-06,
+              1.0464786598093911e-05,
+              7.254462739326312e-05
+            ],
+            [
+              7.896147758375271e-06,
+              2.0210456538452548e-05,
+              0.00014294011219904978
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "dirichlet_32_0_frozen_mlp32_seed691200.npz",
+      "artifact_relation": "Actual first timed output"
+    },
+    {
+      "method": "cg_1e-06",
+      "setting": 1e-06,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 8.416000127908774e-06,
+        "evolution": 0.0011940699996557669,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.0012024859997836757
+      },
+      "post_timer_host_transfer_seconds": 0.0014259910003602272,
+      "device_plus_output_transfer_seconds": 0.002628477000143903,
+      "output_sha256": {
+        "u": "581fbce8b3d77f3b391243db36ce7c165a290a38f81231df33d145f4806c346a",
+        "v": "22401c45b7ae23125eff62ed8d80e5247ad30ed116983ec3e45411a575ba6d54"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "cg_iterations": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "cg_recursive_relative": [
+        3.1292421693532016e-07,
+        1.5395447190962634e-07,
+        9.92691824115086e-08,
+        7.065478498556672e-08
+      ],
+      "cg_true_relative": [
+        3.129242169383465e-07,
+        1.5395447190731257e-07,
+        9.926918241127963e-08,
+        7.065478498660834e-08
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0,
+      "case": 0,
+      "repetition": 0,
+      "order": 1,
+      "invocation_id": "dirichlet_32_0_cg_1e-06_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            8.312578904104844e-17,
+            5.3904412471204e-08,
+            2.1435755585830785e-07
+          ],
+          "initial_normalized": [
+            4.3290717285429137e-16,
+            2.807264397304806e-07,
+            1.1163433701754305e-06
+          ],
+          "current_relative": [
+            4.3290717285429137e-16,
+            2.809711057295195e-07,
+            1.1202374560136203e-06
+          ],
+          "reference_norm": [
+            0.19201758310673006,
+            0.19185037668284577,
+            0.1913501059151352
+          ],
+          "initial_scale": 0.19201758310673006,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.1163433701754305e-06,
+          "max_absolute": 2.1435755585830785e-07,
+          "max_current_relative": 1.1202374560136203e-06
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            1.0739783007438857e-05,
+            2.1110287898762233e-05
+          ],
+          "initial_normalized": [
+            0.0,
+            6.6989623529981305e-06,
+            1.3167586700476948e-05
+          ],
+          "current_relative": [
+            null,
+            0.00011628907625304453,
+            0.00011456436813146174
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418625279244,
+            0.18426573849330133
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.3167586700476948e-05,
+          "max_absolute": 2.1110287898762233e-05,
+          "max_current_relative": 0.00011628907625304453
+        },
+        "energy_state": {
+          "absolute": [
+            2.877463035225093e-15,
+            1.0803542784731342e-05,
+            2.160708350448171e-05
+          ],
+          "initial_normalized": [
+            1.7948236506980815e-15,
+            6.738732648861842e-06,
+            1.3477464009687435e-05
+          ],
+          "current_relative": [
+            1.7948236506980815e-15,
+            6.738732648861843e-06,
+            1.3477464009687435e-05
+          ],
+          "reference_norm": [
+            1.6032009797207252,
+            1.603200979720725,
+            1.6032009797207252
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.3477464009687435e-05,
+          "max_absolute": 2.160708350448171e-05,
+          "max_current_relative": 1.3477464009687435e-05
+        },
+        "mean_error": [
+          -3.922232688829626e-17,
+          -3.588848391308275e-13,
+          -7.707755087213162e-12
+        ],
+        "energy_fraction": [
+          0.9999999999999994,
+          0.9999999999999981,
+          0.9999999999998224
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999999997,
+          1.0
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.4130865994287376e-07,
+              9.308250633471847e-07,
+              9.308250633194292e-07
+            ],
+            [
+              4.820570662159019e-07,
+              1.860928029173703e-06,
+              1.8609280291459473e-06
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "dirichlet_32_0_cg_1e-06.npz",
+      "artifact_relation": "Actual first timed output"
+    },
+    {
+      "method": "cg_0.01",
+      "setting": 0.01,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 6.975999895075802e-06,
+        "evolution": 0.0014437670006373082,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.001450743000532384
+      },
+      "post_timer_host_transfer_seconds": 0.000919795999834605,
+      "device_plus_output_transfer_seconds": 0.002370539000366989,
+      "output_sha256": {
+        "u": "cd43ea6df3d39e8611d7c9b12a363c26749612594bd91a9035dea82bb7ffbcb0",
+        "v": "85b819a99b0458e0bd957b63b409e4bb5d828683b02512c376e64061f9bca373"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "cg_iterations": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cg_recursive_relative": [
+        0.00018176531311130042,
+        9.044769948201654e-05,
+        5.971851015402675e-05,
+        4.4154527242623934e-05
+      ],
+      "cg_true_relative": [
+        0.00018176531311129917,
+        9.04476994820197e-05,
+        5.971851015402426e-05,
+        4.415452724262987e-05
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0,
+      "case": 0,
+      "repetition": 0,
+      "order": 2,
+      "invocation_id": "dirichlet_32_0_cg_0.01_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            8.312578904104844e-17,
+            4.82304231834416e-08,
+            1.9225058640015242e-07
+          ],
+          "initial_normalized": [
+            4.3290717285429137e-16,
+            2.5117711827793113e-07,
+            1.001213447693969e-06
+          ],
+          "current_relative": [
+            4.3290717285429137e-16,
+            2.513960306847503e-07,
+            1.0047059314689722e-06
+          ],
+          "reference_norm": [
+            0.19201758310673006,
+            0.19185037668284577,
+            0.1913501059151352
+          ],
+          "initial_scale": 0.19201758310673006,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.001213447693969e-06,
+          "max_absolute": 1.9225058640015242e-07,
+          "max_current_relative": 1.0047059314689722e-06
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            1.4475716059820646e-05,
+            2.862764935812619e-05
+          ],
+          "initial_normalized": [
+            0.0,
+            9.029258491559986e-06,
+            1.7856556801202228e-05
+          ],
+          "current_relative": [
+            null,
+            0.00015674130916164025,
+            0.00015536067416660262
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418625279244,
+            0.18426573849330133
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.7856556801202228e-05,
+          "max_absolute": 2.862764935812619e-05,
+          "max_current_relative": 0.00015674130916164025
+        },
+        "energy_state": {
+          "absolute": [
+            2.877463035225093e-15,
+            1.4490439220173498e-05,
+            2.8744086857647734e-05
+          ],
+          "initial_normalized": [
+            1.7948236506980815e-15,
+            9.03844209395238e-06,
+            1.7929184937658223e-05
+          ],
+          "current_relative": [
+            1.7948236506980815e-15,
+            9.03844209395238e-06,
+            1.7929184937658223e-05
+          ],
+          "reference_norm": [
+            1.6032009797207252,
+            1.603200979720725,
+            1.6032009797207252
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.7929184937658223e-05,
+          "max_absolute": 2.8744086857647734e-05,
+          "max_current_relative": 1.7929184937658223e-05
+        },
+        "mean_error": [
+          -3.922232688829626e-17,
+          1.971733315123792e-13,
+          3.924277041337658e-12
+        ],
+        "energy_fraction": [
+          0.9999999999999994,
+          1.000000000218635,
+          1.0000000042776962
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999999997,
+          1.0
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              6.244918856566223e-06,
+              8.748806417047117e-06,
+              8.748806416991606e-06
+            ],
+            [
+              1.2460414568621347e-05,
+              1.7441338520107763e-05,
+              1.7441338519774696e-05
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "dirichlet_32_0_cg_0.01.npz",
+      "artifact_relation": "Actual first timed output"
+    },
+    {
+      "method": "dst",
+      "setting": 0.0,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 0,
+      "observation_stride": 0,
+      "seconds": {
+        "initialization_and_parameter_projection": 0.0006460670001615654,
+        "evolution": 0.0006592509998881724,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.0013053180000497377
+      },
+      "post_timer_host_transfer_seconds": 0.0009154600002148072,
+      "device_plus_output_transfer_seconds": 0.002220778000264545,
+      "output_sha256": {
+        "u": "c5505c2bb6b5d6f10c75f307fa41150492ad045fc3a1173f4d8afc08eddbcbaa",
+        "v": "7de4c96bb55a8130570e29d8f6da66aded5b85b10ec3328718b30173ee4b422d"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "case": 0,
+      "repetition": 0,
+      "order": 3,
+      "invocation_id": "dirichlet_32_0_dst_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "initial_normalized": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "current_relative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reference_norm": [
+            0.19201758310673006,
+            0.19185037668284577,
+            0.1913501059151352
+          ],
+          "initial_scale": 0.19201758310673006,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.0,
+          "max_absolute": 0.0,
+          "max_current_relative": 0.0
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "initial_normalized": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "current_relative": [
+            null,
+            0.0,
+            0.0
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418625279244,
+            0.18426573849330133
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.0,
+          "max_absolute": 0.0,
+          "max_current_relative": 0.0
+        },
+        "energy_state": {
+          "absolute": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "initial_normalized": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "current_relative": [
+            0.0,
+            0.0,
+            0.0
+          ],
+          "reference_norm": [
+            1.6032009797207252,
+            1.603200979720725,
+            1.6032009797207252
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.0,
+          "max_absolute": 0.0,
+          "max_current_relative": 0.0
+        },
+        "mean_error": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "energy_fraction": [
+          1.0,
+          0.9999999999999997,
+          1.0
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999999997,
+          1.0
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              0.0,
+              0.0,
+              0.0
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "dirichlet_32_0_dst.npz",
+      "artifact_relation": "Actual first timed output"
+    },
+    {
+      "method": "frozen_mlp32_seed691200",
+      "setting": 0.0025,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 0.041729656999450526,
+        "evolution": 0.06298585700005788,
+        "dense_device_output": 0.0005972990002192091,
+        "complete_device_query": 0.10531281299972761
+      },
+      "post_timer_host_transfer_seconds": 0.0009705969996502972,
+      "device_plus_output_transfer_seconds": 0.10628340999937791,
+      "output_sha256": {
+        "u": "e1379abee359823a7cba458762f71e5e11e1df25aab1469d031fdc304eb14dc6",
+        "v": "14d22925136268cbe820277ca4e7d4a81337c04c83b653e00eaf2418ca556cef"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "cold_fit": {
+        "finite": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "gradient": [
+          1.1143532551929772e-11,
+          1.0386196168789361e-11,
+          9.558003877024792e-12,
+          1.0349643905294744e-11,
+          1.1027003617126389e-11,
+          1.189862109936355e-11,
+          2.2937035402254263e-11,
+          1.1454995650216505e-11
+        ],
+        "iterations": [
+          7,
+          9,
+          9,
+          9,
+          9,
+          9,
+          8,
+          9
+        ],
+        "objective": [
+          0.00013444142588352957,
+          0.0001344414258835229,
+          0.00013444142588352155,
+          0.00013444142588352274,
+          0.0001344414258835245,
+          0.00013444142588352862,
+          0.00013444142588356234,
+          0.0001344414258835253
+        ],
+        "rank_ratio": [
+          0.013295243312055987,
+          0.013295243227100186,
+          0.013295243270922486,
+          0.013295243226573387,
+          0.013295243219920623,
+          0.013295243204175937,
+          0.01329524324789553,
+          0.013295243223438417
+        ],
+        "selected": 2,
+        "stationarity": [
+          3.429298921288358e-07,
+          2.637068121340032e-07,
+          2.504678277872956e-07,
+          2.6358596978647013e-07,
+          2.871180156856875e-07,
+          3.276784266268119e-07,
+          5.593780865323027e-07,
+          2.928437267978843e-07
+        ]
+      },
+      "fit_stationary": true,
+      "minimum_dynamic_rank_ratio": 0.013295243270922302,
+      "configuration_dimension": 32,
+      "case": 0,
+      "repetition": 0,
+      "order": 0,
+      "invocation_id": "absorbing_32_0_frozen_mlp32_seed691200_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.002330293654198126,
+            0.002321549283129287,
+            0.0022958934898066855
+          ],
+          "initial_normalized": [
+            0.01213583473187905,
+            0.012090295303003006,
+            0.011956683615429889
+          ],
+          "current_relative": [
+            0.01213583473187905,
+            0.012100832551203854,
+            0.011998391528471465
+          ],
+          "reference_norm": [
+            0.19201758310673,
+            0.19185037668324129,
+            0.19135010591700294
+          ],
+          "initial_scale": 0.19201758310673,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.01213583473187905,
+          "max_absolute": 0.002330293654198126,
+          "max_current_relative": 0.01213583473187905
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            0.005558321467554702,
+            0.010955370301649989
+          ],
+          "initial_normalized": [
+            0.0,
+            0.003467014764750801,
+            0.006833435383477871
+          ],
+          "current_relative": [
+            null,
+            0.0601848352633877,
+            0.059454190594916294
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418595448082,
+            0.18426573790724082
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.006833435383477871,
+          "max_absolute": 0.010955370301649989,
+          "max_current_relative": 0.0601848352633877
+        },
+        "energy_state": {
+          "absolute": [
+            0.05971848975485621,
+            0.05973010675989274,
+            0.059760809424163404
+          ],
+          "initial_normalized": [
+            0.037249534219508204,
+            0.03725678035095614,
+            0.037275931202695275
+          ],
+          "current_relative": [
+            0.037249534219508204,
+            0.03725678035106762,
+            0.037275931202918354
+          ],
+          "reference_norm": [
+            1.6032009797207247,
+            1.6032009797159277,
+            1.6032009797111306
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.037275931202695275,
+          "max_absolute": 0.059760809424163404,
+          "max_current_relative": 0.037275931202918354
+        },
+        "mean_error": [
+          2.488823736962608e-05,
+          2.4781542118514473e-05,
+          2.452516609186666e-05
+        ],
+        "energy_fraction": [
+          1.0001120565702186,
+          1.000111941540198,
+          1.0001111692998124
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999940156,
+          0.9999999999880311
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              9.793813309936368e-05,
+              0.0004588341262601811,
+              0.0002690761258567209
+            ],
+            [
+              0.000191824788691293,
+              0.0009301124627214831,
+              0.0005016628912609261
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "absorbing_32_0_frozen_mlp32_seed691200.npz",
+      "artifact_relation": "Actual first timed output"
+    },
+    {
+      "method": "cg_1e-06",
+      "setting": 1e-06,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 8.400000297115184e-06,
+        "evolution": 0.005589546999544837,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.005597946999841952
+      },
+      "post_timer_host_transfer_seconds": 0.0010687250005503302,
+      "device_plus_output_transfer_seconds": 0.006666672000392282,
+      "output_sha256": {
+        "u": "bd4138850bd2ba8401ca2222bedbd0720b5af7fc249670f9c22c16bfb0933676",
+        "v": "5ca9e899a5811a41fc5b723237527af6c5411ee44d6de213854792d06796b2b8"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "cg_iterations": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "cg_recursive_relative": [
+        3.131777558568895e-07,
+        1.540384885676778e-07,
+        9.930205082997154e-08,
+        7.068722966767601e-08
+      ],
+      "cg_true_relative": [
+        3.1317775586026536e-07,
+        1.5403848856738488e-07,
+        9.930205083018129e-08,
+        7.068722966710503e-08
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0,
+      "case": 0,
+      "repetition": 0,
+      "order": 1,
+      "invocation_id": "absorbing_32_0_cg_1e-06_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.0,
+            5.390213436929849e-08,
+            2.14346991748781e-07
+          ],
+          "initial_normalized": [
+            0.0,
+            2.8071457570288144e-07,
+            1.1162883538099712e-06
+          ],
+          "current_relative": [
+            0.0,
+            2.8095923136129556e-07,
+            1.1201822477263369e-06
+          ],
+          "reference_norm": [
+            0.19201758310673,
+            0.19185037668324129,
+            0.19135010591700294
+          ],
+          "initial_scale": 0.19201758310673,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.1162883538099712e-06,
+          "max_absolute": 2.14346991748781e-07,
+          "max_current_relative": 1.1201822477263369e-06
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            1.0739160110333806e-05,
+            2.110915055310849e-05
+          ],
+          "initial_normalized": [
+            0.0,
+            6.698573819612156e-06,
+            1.316687727872127e-05
+          ],
+          "current_relative": [
+            null,
+            0.00011628233197385209,
+            0.00011455819618368128
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418595448082,
+            0.18426573790724082
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.316687727872127e-05,
+          "max_absolute": 2.110915055310849e-05,
+          "max_current_relative": 0.00011628233197385209
+        },
+        "energy_state": {
+          "absolute": [
+            0.0,
+            1.0802907059934844e-05,
+            2.160580971118998e-05
+          ],
+          "initial_normalized": [
+            0.0,
+            6.7383361141762115e-06,
+            1.3476669478429138e-05
+          ],
+          "current_relative": [
+            0.0,
+            6.738336114196374e-06,
+            1.3476669478509786e-05
+          ],
+          "reference_norm": [
+            1.6032009797207247,
+            1.6032009797159277,
+            1.6032009797111306
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.3476669478429138e-05,
+          "max_absolute": 2.160580971118998e-05,
+          "max_current_relative": 1.3476669478509786e-05
+        },
+        "mean_error": [
+          0.0,
+          -1.461961110205585e-14,
+          -8.09623378575871e-13
+        ],
+        "energy_fraction": [
+          1.0,
+          0.9999999999999987,
+          0.9999999999998226
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999940156,
+          0.9999999999880311
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.4130812020795034e-07,
+              9.308193951104714e-07,
+              9.308201091365319e-07
+            ],
+            [
+              4.820648269315831e-07,
+              1.8609274294451028e-06,
+              1.8609749966036482e-06
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "absorbing_32_0_cg_1e-06.npz",
+      "artifact_relation": "Actual first timed output"
+    },
+    {
+      "method": "cg_0.01",
+      "setting": 0.01,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 1.3727999430557247e-05,
+        "evolution": 0.004580085999805306,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.004593813999235863
+      },
+      "post_timer_host_transfer_seconds": 0.002419868000288261,
+      "device_plus_output_transfer_seconds": 0.007013681999524124,
+      "output_sha256": {
+        "u": "fb314663b0f010b9c1576cfc6d506722c59b2bf0bc332af2c44487ad3d2de192",
+        "v": "2f8adb41c8b3d78601f2a141fe69bf2224272121381d50046e99af55356c2096"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "cg_iterations": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cg_recursive_relative": [
+        0.00018176531311129597,
+        9.0447703009022e-05,
+        5.971853309661973e-05,
+        4.415458872259642e-05
+      ],
+      "cg_true_relative": [
+        0.0001817653131113003,
+        9.044770300902268e-05,
+        5.9718533096619454e-05,
+        4.4154588722595594e-05
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0,
+      "case": 0,
+      "repetition": 0,
+      "order": 2,
+      "invocation_id": "absorbing_32_0_cg_0.01_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.0,
+            4.823014804555609e-08,
+            1.92249167609387e-07
+          ],
+          "initial_normalized": [
+            0.0,
+            2.511756853993319e-07,
+            1.0012060588353945e-06
+          ],
+          "current_relative": [
+            0.0,
+            2.5139459655681323e-07,
+            1.0046985168263977e-06
+          ],
+          "reference_norm": [
+            0.19201758310673,
+            0.19185037668324129,
+            0.19135010591700294
+          ],
+          "initial_scale": 0.19201758310673,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.0012060588353945e-06,
+          "max_absolute": 1.92249167609387e-07,
+          "max_current_relative": 1.0046985168263977e-06
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            1.4476079389485054e-05,
+            2.8628299811253946e-05
+          ],
+          "initial_normalized": [
+            0.0,
+            9.02948511920618e-06,
+            1.785696252271562e-05
+          ],
+          "current_relative": [
+            null,
+            0.00015674524375776502,
+            0.00015536420463399116
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418595448082,
+            0.18426573790724082
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.785696252271562e-05,
+          "max_absolute": 2.8628299811253946e-05,
+          "max_current_relative": 0.00015674524375776502
+        },
+        "energy_state": {
+          "absolute": [
+            0.0,
+            1.449080565188916e-05,
+            2.8744763079653046e-05
+          ],
+          "initial_normalized": [
+            0.0,
+            9.038670656509603e-06,
+            1.7929606732563463e-05
+          ],
+          "current_relative": [
+            0.0,
+            9.038670656536647e-06,
+            1.7929606732670758e-05
+          ],
+          "reference_norm": [
+            1.6032009797207247,
+            1.6032009797159277,
+            1.6032009797111306
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.7929606732563463e-05,
+          "max_absolute": 2.8744763079653046e-05,
+          "max_current_relative": 1.7929606732670758e-05
+        },
+        "mean_error": [
+          0.0,
+          7.598047072423406e-15,
+          8.960447813053654e-13
+        ],
+        "energy_fraction": [
+          1.0,
+          1.0000000002186356,
+          1.0000000042776993
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999940156,
+          0.9999999999880311
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              6.244918203623245e-06,
+              8.74880062849692e-06,
+              8.748800258737142e-06
+            ],
+            [
+              1.2460406561172478e-05,
+              1.7441318878610997e-05,
+              1.744128463275485e-05
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "absorbing_32_0_cg_0.01.npz",
+      "artifact_relation": "Actual first timed output"
+    },
+    {
+      "method": "rk4",
+      "setting": 0.45,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 2,
+      "observation_stride": 1,
+      "seconds": {
+        "initialization_and_parameter_projection": 1.862399949459359e-05,
+        "evolution": 0.0005429470002127346,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.0005615709997073282
+      },
+      "post_timer_host_transfer_seconds": 0.0009963239999706275,
+      "device_plus_output_transfer_seconds": 0.0015578949996779556,
+      "output_sha256": {
+        "u": "9de1facd5afb6ffdf1a3aed9823ee7e0305e7aa4ae6b335b92df964928dc31bc",
+        "v": "a2d64adf3f34fe5c5b68586aa1a35301f4010772d5f02acdb35e9371b0e6f77c"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "case": 0,
+      "repetition": 0,
+      "order": 3,
+      "invocation_id": "absorbing_32_0_rk4_0",
+      "comparison_eligible": true,
+      "measurement_role": "timed_comparison",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.0,
+            7.013685493094459e-11,
+            1.0032738219787453e-09
+          ],
+          "initial_normalized": [
+            0.0,
+            3.6526266915858484e-10,
+            5.224905999473449e-09
+          ],
+          "current_relative": [
+            0.0,
+            3.6558101236749487e-10,
+            5.243131782816519e-09
+          ],
+          "reference_norm": [
+            0.19201758310673,
+            0.19185037668324129,
+            0.19135010591700294
+          ],
+          "initial_scale": 0.19201758310673,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 5.224905999473449e-09,
+          "max_absolute": 1.0032738219787453e-09,
+          "max_current_relative": 5.243131782816519e-09
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            8.778128798128232e-08,
+            1.67711311022644e-07
+          ],
+          "initial_normalized": [
+            0.0,
+            5.475376393331152e-08,
+            1.0461028476408433e-07
+          ],
+          "current_relative": [
+            null,
+            9.504852116237332e-07,
+            9.101600380374006e-07
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418595448082,
+            0.18426573790724082
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.0461028476408433e-07,
+          "max_absolute": 1.67711311022644e-07,
+          "max_current_relative": 9.504852116237332e-07
+        },
+        "energy_state": {
+          "absolute": [
+            0.0,
+            8.785787370161366e-08,
+            1.7568338866546008e-07
+          ],
+          "initial_normalized": [
+            0.0,
+            5.4801534438257627e-08,
+            1.0958288504543196e-07
+          ],
+          "current_relative": [
+            0.0,
+            5.48015344384216e-08,
+            1.0958288504608775e-07
+          ],
+          "reference_norm": [
+            1.6032009797207247,
+            1.6032009797159277,
+            1.6032009797111306
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.0958288504543196e-07,
+          "max_absolute": 1.7568338866546008e-07,
+          "max_current_relative": 1.0958288504608775e-07
+        },
+        "mean_error": [
+          0.0,
+          7.597590421813675e-15,
+          4.66077778135056e-13
+        ],
+        "energy_fraction": [
+          1.0,
+          0.9999999985477309,
+          0.9999999970954622
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999940156,
+          0.9999999999880311
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              4.635949263365191e-11,
+              4.5599196640822015e-10,
+              4.556223454077468e-10
+            ],
+            [
+              8.84237336129523e-11,
+              9.067563783160537e-10,
+              8.847549637369667e-10
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "absorbing_32_0_rk4.npz",
+      "artifact_relation": "Actual first timed output"
+    }
+  ],
+  "accuracy_controls": [
+    {
+      "method": "frozen_mlp32_seed691200",
+      "setting": 0.00125,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 8,
+      "observation_stride": 4,
+      "seconds": {
+        "initialization_and_parameter_projection": 0.03568863700002112,
+        "evolution": 0.8216196450002826,
+        "dense_device_output": 0.001629015999242256,
+        "complete_device_query": 0.858937297999546
+      },
+      "post_timer_host_transfer_seconds": 0.003600641000048199,
+      "device_plus_output_transfer_seconds": 0.8625379389995942,
+      "output_sha256": {
+        "u": "8be607883f433f548fe8560f898dddd4b069d019a5379f96c204d04e82ba1cd0",
+        "v": "22c13bbf50e3d1aae41718637d2a62573186395a0b5fa87dda6251dece760b34"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "cold_fit": {
+        "finite": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "gradient": [
+          1.1415135514353941e-10,
+          4.663786375049949e-11,
+          2.940932184738142e-11,
+          1.374380422566445e-10,
+          1.3599320504615892e-10,
+          7.922482014497377e-11,
+          6.069726386542969e-11,
+          3.8874606943348385e-11
+        ],
+        "iterations": [
+          6,
+          7,
+          7,
+          6,
+          6,
+          7,
+          7,
+          7
+        ],
+        "objective": [
+          0.0001889771095953243,
+          0.0001889771095951999,
+          0.00018897710959518682,
+          0.00018897710959538355,
+          0.00018897710959538025,
+          0.00018897710959524543,
+          0.0001889771095952161,
+          0.00018897710959519393
+        ],
+        "rank_ratio": [
+          0.01542956984993255,
+          0.015429570179028313,
+          0.015429570537146983,
+          0.015429569752720368,
+          0.01542956976478361,
+          0.015429570024711039,
+          0.015429570112443213,
+          0.015429570213632027
+        ],
+        "selected": 2,
+        "stationarity": [
+          8.346822584260091e-07,
+          3.3790964746093503e-07,
+          2.1299992119662585e-07,
+          9.920273291817215e-07,
+          9.805827350503122e-07,
+          5.745622291252608e-07,
+          4.399378206395467e-07,
+          2.8367528036427027e-07
+        ]
+      },
+      "fit_stationary": true,
+      "minimum_dynamic_rank_ratio": 0.015429570537146978,
+      "configuration_dimension": 32,
+      "case": 0,
+      "repetition": 0,
+      "invocation_id": "dirichlet_32_0_frozen_mlp32_seed691200_refined",
+      "comparison_eligible": false,
+      "measurement_role": "accuracy_refinement_only",
+      "timing_note": "May include first compilation; ineligible for speed claims.",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.0026929870134796566,
+            0.002688724790933176,
+            0.002675991277568147
+          ],
+          "initial_normalized": [
+            0.014024689665960438,
+            0.014002492622973435,
+            0.013936178313840862
+          ],
+          "current_relative": [
+            0.014024689665960438,
+            0.014014696439079691,
+            0.013984791201291329
+          ],
+          "reference_norm": [
+            0.19201758310673006,
+            0.19185037668284577,
+            0.1913501059151352
+          ],
+          "initial_scale": 0.19201758310673006,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.014024689665960438,
+          "max_absolute": 0.0026929870134796566,
+          "max_current_relative": 0.014024689665960438
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            0.004598002326912968,
+            0.009036421553569514
+          ],
+          "initial_normalized": [
+            0.0,
+            0.002868013670821192,
+            0.005636487045525411
+          ],
+          "current_relative": [
+            null,
+            0.04978661513325761,
+            0.049040161385715327
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418625279244,
+            0.18426573849330133
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.005636487045525411,
+          "max_absolute": 0.009036421553569514,
+          "max_current_relative": 0.04978661513325761
+        },
+        "energy_state": {
+          "absolute": [
+            0.05808137423117259,
+            0.05807784396247526,
+            0.05805810276815061
+          ],
+          "initial_normalized": [
+            0.036228379951021655,
+            0.036226177938459295,
+            0.03621386432676971
+          ],
+          "current_relative": [
+            0.036228379951021655,
+            0.0362261779384593,
+            0.03621386432676971
+          ],
+          "reference_norm": [
+            1.6032009797207252,
+            1.603200979720725,
+            1.6032009797207252
+          ],
+          "initial_scale": 1.6032009797207252,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.036228379951021655,
+          "max_absolute": 0.05808137423117259,
+          "max_current_relative": 0.036228379951021655
+        },
+        "mean_error": [
+          -0.00017942258118257135,
+          -0.00017865409228460437,
+          -0.0001763681504224691
+        ],
+        "energy_fraction": [
+          1.0005971579205866,
+          1.000597157919768,
+          1.0005971579200774
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999999997,
+          1.0
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.8036009870554e-06,
+              1.0464740064164424e-05,
+              7.254447300911876e-05
+            ],
+            [
+              7.896213954958209e-06,
+              2.0210361855121928e-05,
+              0.0001429398412147731
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "dirichlet_32_0_frozen_mlp32_seed691200_refined.npz"
+    },
+    {
+      "method": "frozen_mlp32_seed691200",
+      "setting": 0.00125,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 8,
+      "observation_stride": 4,
+      "seconds": {
+        "initialization_and_parameter_projection": 0.040581235999525234,
+        "evolution": 0.910308704000272,
+        "dense_device_output": 0.0006390270000338205,
+        "complete_device_query": 0.951528966999831
+      },
+      "post_timer_host_transfer_seconds": 0.0010909330003414652,
+      "device_plus_output_transfer_seconds": 0.9526199000001725,
+      "output_sha256": {
+        "u": "54e0e52ed22d90666039cf6ff95dd0efd78a5bfa5c929c53914e2b0c298e7b0f",
+        "v": "97e4390b3d6932c33df25d0d214fc734da5f30b60b8edeec555f77e384ab059d"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "cold_fit": {
+        "finite": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "gradient": [
+          1.1143532551929772e-11,
+          1.0386196168789361e-11,
+          9.558003877024792e-12,
+          1.0349643905294744e-11,
+          1.1027003617126389e-11,
+          1.189862109936355e-11,
+          2.2937035402254263e-11,
+          1.1454995650216505e-11
+        ],
+        "iterations": [
+          7,
+          9,
+          9,
+          9,
+          9,
+          9,
+          8,
+          9
+        ],
+        "objective": [
+          0.00013444142588352957,
+          0.0001344414258835229,
+          0.00013444142588352155,
+          0.00013444142588352274,
+          0.0001344414258835245,
+          0.00013444142588352862,
+          0.00013444142588356234,
+          0.0001344414258835253
+        ],
+        "rank_ratio": [
+          0.013295243312055987,
+          0.013295243227100186,
+          0.013295243270922486,
+          0.013295243226573387,
+          0.013295243219920623,
+          0.013295243204175937,
+          0.01329524324789553,
+          0.013295243223438417
+        ],
+        "selected": 2,
+        "stationarity": [
+          3.429298921288358e-07,
+          2.637068121340032e-07,
+          2.504678277872956e-07,
+          2.6358596978647013e-07,
+          2.871180156856875e-07,
+          3.276784266268119e-07,
+          5.593780865323027e-07,
+          2.928437267978843e-07
+        ]
+      },
+      "fit_stationary": true,
+      "minimum_dynamic_rank_ratio": 0.013295243270922302,
+      "configuration_dimension": 32,
+      "case": 0,
+      "repetition": 0,
+      "invocation_id": "absorbing_32_0_frozen_mlp32_seed691200_refined",
+      "comparison_eligible": false,
+      "measurement_role": "accuracy_refinement_only",
+      "timing_note": "May include first compilation; ineligible for speed claims.",
+      "same_grid_discrepancy": {
+        "displacement": {
+          "absolute": [
+            0.002330293654198126,
+            0.0023215492831340236,
+            0.002295893489887701
+          ],
+          "initial_normalized": [
+            0.01213583473187905,
+            0.012090295303027673,
+            0.011956683615851805
+          ],
+          "current_relative": [
+            0.01213583473187905,
+            0.012100832551228543,
+            0.011998391528894854
+          ],
+          "reference_norm": [
+            0.19201758310673,
+            0.19185037668324129,
+            0.19135010591700294
+          ],
+          "initial_scale": 0.19201758310673,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.01213583473187905,
+          "max_absolute": 0.002330293654198126,
+          "max_current_relative": 0.01213583473187905
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            0.005558321465734683,
+            0.010955370273532473
+          ],
+          "initial_normalized": [
+            0.0,
+            0.00346701476361556,
+            0.006833435365939511
+          ],
+          "current_relative": [
+            null,
+            0.060184835243680755,
+            0.05945419044232409
+          ],
+          "reference_norm": [
+            0.0,
+            0.09235418595448082,
+            0.18426573790724082
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.006833435365939511,
+          "max_absolute": 0.010955370273532473,
+          "max_current_relative": 0.060184835243680755
+        },
+        "energy_state": {
+          "absolute": [
+            0.05971848975485621,
+            0.059730106752704445,
+            0.05976080939390271
+          ],
+          "initial_normalized": [
+            0.037249534219508204,
+            0.03725678034647243,
+            0.0372759311838201
+          ],
+          "current_relative": [
+            0.037249534219508204,
+            0.03725678034658391,
+            0.037275931184043175
+          ],
+          "reference_norm": [
+            1.6032009797207247,
+            1.6032009797159277,
+            1.6032009797111306
+          ],
+          "initial_scale": 1.6032009797207247,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 0.0372759311838201,
+          "max_absolute": 0.05976080939390271,
+          "max_current_relative": 0.037275931184043175
+        },
+        "mean_error": [
+          2.488823736962608e-05,
+          2.4781541872739386e-05,
+          2.4525165745195705e-05
+        ],
+        "energy_fraction": [
+          1.0001120565702186,
+          1.0001119416504083,
+          1.0001111696126253
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999940156,
+          0.9999999999880311
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              9.793835844735742e-05,
+              0.0004588342697489575,
+              0.0002690778486592535
+            ],
+            [
+              0.0001918253562212674,
+              0.0009301126750679567,
+              0.0005016665891038607
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "field_artifact": "absorbing_32_0_frozen_mlp32_seed691200_refined.npz"
+    }
+  ],
+  "warmups": [
+    {
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "setting": 0.0025,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 5.468564021999555,
+        "evolution": 2.9313774000002013,
+        "dense_device_output": 0.8587030589997084,
+        "complete_device_query": 9.258644480999465
+      },
+      "post_timer_host_transfer_seconds": 0.0010504530000616796,
+      "device_plus_output_transfer_seconds": 9.259694933999526,
+      "output_sha256": {
+        "u": "204cbebd571977a46893d2fa675e954bf3f042fe8322676cef80655594dc6464",
+        "v": "f0fc62bd97325a07a7c2d13adb12d59a15c05886bce86408ecc8f3a8cea32554"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "cold_fit": {
+        "finite": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "gradient": [
+          1.1415135514353941e-10,
+          4.663786375049949e-11,
+          2.940932184738142e-11,
+          1.374380422566445e-10,
+          1.3599320504615892e-10,
+          7.922482014497377e-11,
+          6.069726386542969e-11,
+          3.8874606943348385e-11
+        ],
+        "iterations": [
+          6,
+          7,
+          7,
+          6,
+          6,
+          7,
+          7,
+          7
+        ],
+        "objective": [
+          0.0001889771095953243,
+          0.0001889771095951999,
+          0.00018897710959518682,
+          0.00018897710959538355,
+          0.00018897710959538025,
+          0.00018897710959524543,
+          0.0001889771095952161,
+          0.00018897710959519393
+        ],
+        "rank_ratio": [
+          0.01542956984993255,
+          0.015429570179028313,
+          0.015429570537146983,
+          0.015429569752720368,
+          0.01542956976478361,
+          0.015429570024711039,
+          0.015429570112443213,
+          0.015429570213632027
+        ],
+        "selected": 2,
+        "stationarity": [
+          8.346822584260091e-07,
+          3.3790964746093503e-07,
+          2.1299992119662585e-07,
+          9.920273291817215e-07,
+          9.805827350503122e-07,
+          5.745622291252608e-07,
+          4.399378206395467e-07,
+          2.8367528036427027e-07
+        ]
+      },
+      "fit_stationary": true,
+      "minimum_dynamic_rank_ratio": 0.015429570537146978,
+      "configuration_dimension": 32
+    },
+    {
+      "case": 0,
+      "method": "cg_1e-06",
+      "setting": 1e-06,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 4.1920002331607975e-06,
+        "evolution": 0.1511983649998001,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.15120255700003327
+      },
+      "post_timer_host_transfer_seconds": 0.0007329790005314862,
+      "device_plus_output_transfer_seconds": 0.15193553600056475,
+      "output_sha256": {
+        "u": "581fbce8b3d77f3b391243db36ce7c165a290a38f81231df33d145f4806c346a",
+        "v": "22401c45b7ae23125eff62ed8d80e5247ad30ed116983ec3e45411a575ba6d54"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "cg_iterations": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "cg_recursive_relative": [
+        3.1292421693532016e-07,
+        1.5395447190962634e-07,
+        9.92691824115086e-08,
+        7.065478498556672e-08
+      ],
+      "cg_true_relative": [
+        3.129242169383465e-07,
+        1.5395447190731257e-07,
+        9.926918241127963e-08,
+        7.065478498660834e-08
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0
+    },
+    {
+      "case": 0,
+      "method": "cg_0.01",
+      "setting": 0.01,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 4.08000050811097e-06,
+        "evolution": 0.0008423720000791945,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.0008464520005873055
+      },
+      "post_timer_host_transfer_seconds": 0.0009106279994739452,
+      "device_plus_output_transfer_seconds": 0.0017570800000612508,
+      "output_sha256": {
+        "u": "cd43ea6df3d39e8611d7c9b12a363c26749612594bd91a9035dea82bb7ffbcb0",
+        "v": "85b819a99b0458e0bd957b63b409e4bb5d828683b02512c376e64061f9bca373"
+      },
+      "output_bytes": 46128,
+      "completed": true,
+      "cg_iterations": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cg_recursive_relative": [
+        0.00018176531311130042,
+        9.044769948201654e-05,
+        5.971851015402675e-05,
+        4.4154527242623934e-05
+      ],
+      "cg_true_relative": [
+        0.00018176531311129917,
+        9.04476994820197e-05,
+        5.971851015402426e-05,
+        4.415452724262987e-05
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0
+    },
+    {
+      "case": 0,
+      "method": "dst",
+      "setting": 0.0,
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "steps": 0,
+      "observation_stride": 0,
+      "seconds": {
+        "initialization_and_parameter_projection": 0.0002610569999887957,
+        "evolution": 0.0005812669996885234,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.0008423239996773191
+      },
+      "post_timer_host_transfer_seconds": 0.0008310120001624455,
+      "device_plus_output_transfer_seconds": 0.0016733359998397646,
+      "output_sha256": {
+        "u": "c5505c2bb6b5d6f10c75f307fa41150492ad045fc3a1173f4d8afc08eddbcbaa",
+        "v": "7de4c96bb55a8130570e29d8f6da66aded5b85b10ec3328718b30173ee4b422d"
+      },
+      "output_bytes": 46128,
+      "completed": true
+    },
+    {
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "setting": 0.0025,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 0.8676548049998019,
+        "evolution": 0.7605113100007657,
+        "dense_device_output": 0.42254013899946585,
+        "complete_device_query": 2.0507062540000334
+      },
+      "post_timer_host_transfer_seconds": 0.0030206709998310544,
+      "device_plus_output_transfer_seconds": 2.0537269249998644,
+      "output_sha256": {
+        "u": "e1379abee359823a7cba458762f71e5e11e1df25aab1469d031fdc304eb14dc6",
+        "v": "14d22925136268cbe820277ca4e7d4a81337c04c83b653e00eaf2418ca556cef"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "cold_fit": {
+        "finite": [
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true,
+          true
+        ],
+        "gradient": [
+          1.1143532551929772e-11,
+          1.0386196168789361e-11,
+          9.558003877024792e-12,
+          1.0349643905294744e-11,
+          1.1027003617126389e-11,
+          1.189862109936355e-11,
+          2.2937035402254263e-11,
+          1.1454995650216505e-11
+        ],
+        "iterations": [
+          7,
+          9,
+          9,
+          9,
+          9,
+          9,
+          8,
+          9
+        ],
+        "objective": [
+          0.00013444142588352957,
+          0.0001344414258835229,
+          0.00013444142588352155,
+          0.00013444142588352274,
+          0.0001344414258835245,
+          0.00013444142588352862,
+          0.00013444142588356234,
+          0.0001344414258835253
+        ],
+        "rank_ratio": [
+          0.013295243312055987,
+          0.013295243227100186,
+          0.013295243270922486,
+          0.013295243226573387,
+          0.013295243219920623,
+          0.013295243204175937,
+          0.01329524324789553,
+          0.013295243223438417
+        ],
+        "selected": 2,
+        "stationarity": [
+          3.429298921288358e-07,
+          2.637068121340032e-07,
+          2.504678277872956e-07,
+          2.6358596978647013e-07,
+          2.871180156856875e-07,
+          3.276784266268119e-07,
+          5.593780865323027e-07,
+          2.928437267978843e-07
+        ]
+      },
+      "fit_stationary": true,
+      "minimum_dynamic_rank_ratio": 0.013295243270922302,
+      "configuration_dimension": 32
+    },
+    {
+      "case": 0,
+      "method": "cg_1e-06",
+      "setting": 1e-06,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 4.432000423548743e-06,
+        "evolution": 0.6286362239998198,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.6286406560002433
+      },
+      "post_timer_host_transfer_seconds": 0.00042224200024065794,
+      "device_plus_output_transfer_seconds": 0.629062898000484,
+      "output_sha256": {
+        "u": "bd4138850bd2ba8401ca2222bedbd0720b5af7fc249670f9c22c16bfb0933676",
+        "v": "5ca9e899a5811a41fc5b723237527af6c5411ee44d6de213854792d06796b2b8"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "cg_iterations": [
+        2,
+        2,
+        2,
+        2
+      ],
+      "cg_recursive_relative": [
+        3.131777558568895e-07,
+        1.540384885676778e-07,
+        9.930205082997154e-08,
+        7.068722966767601e-08
+      ],
+      "cg_true_relative": [
+        3.1317775586026536e-07,
+        1.5403848856738488e-07,
+        9.930205083018129e-08,
+        7.068722966710503e-08
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0
+    },
+    {
+      "case": 0,
+      "method": "cg_0.01",
+      "setting": 0.01,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 4,
+      "observation_stride": 2,
+      "seconds": {
+        "initialization_and_parameter_projection": 5.4239999371930026e-06,
+        "evolution": 0.0011117659996671136,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.0011171899996043066
+      },
+      "post_timer_host_transfer_seconds": 0.0004280820003259578,
+      "device_plus_output_transfer_seconds": 0.0015452719999302644,
+      "output_sha256": {
+        "u": "fb314663b0f010b9c1576cfc6d506722c59b2bf0bc332af2c44487ad3d2de192",
+        "v": "2f8adb41c8b3d78601f2a141fe69bf2224272121381d50046e99af55356c2096"
+      },
+      "output_bytes": 52272,
+      "completed": true,
+      "cg_iterations": [
+        1,
+        1,
+        1,
+        1
+      ],
+      "cg_recursive_relative": [
+        0.00018176531311129597,
+        9.0447703009022e-05,
+        5.971853309661973e-05,
+        4.415458872259642e-05
+      ],
+      "cg_true_relative": [
+        0.0001817653131113003,
+        9.044770300902268e-05,
+        5.9718533096619454e-05,
+        4.4154588722595594e-05
+      ],
+      "cg_all_converged": true,
+      "cg_cap_exits": 0
+    },
+    {
+      "case": 0,
+      "method": "rk4",
+      "setting": 0.45,
+      "boundary": "absorbing",
+      "intervals": 32,
+      "steps": 2,
+      "observation_stride": 1,
+      "seconds": {
+        "initialization_and_parameter_projection": 9.68000040302286e-06,
+        "evolution": 0.3063610339995648,
+        "dense_device_output": 0.0,
+        "complete_device_query": 0.30637071399996785
+      },
+      "post_timer_host_transfer_seconds": 0.0005697779997717589,
+      "device_plus_output_transfer_seconds": 0.3069404919997396,
+      "output_sha256": {
+        "u": "9de1facd5afb6ffdf1a3aed9823ee7e0305e7aa4ae6b335b92df964928dc31bc",
+        "v": "a2d64adf3f34fe5c5b68586aa1a35301f4010772d5f02acdb35e9371b0e6f77c"
+      },
+      "output_bytes": 52272,
+      "completed": true
+    }
+  ],
+  "time_refinement": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 32,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "differences": {
+        "displacement": {
+          "absolute": [
+            0.0,
+            6.142756324770829e-12,
+            3.280587976191643e-11
+          ],
+          "initial_normalized": [
+            0.0,
+            3.1988881494530935e-11,
+            1.7083917130099197e-10
+          ],
+          "current_relative": [
+            0.0,
+            3.201675126916653e-11,
+            1.7143489373632402e-10
+          ],
+          "reference_norm": [
+            0.19202785586051332,
+            0.19186070045422002,
+            0.1913605745419227
+          ],
+          "initial_scale": 0.19202785586051332,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 1.7083917130099197e-10,
+          "max_absolute": 3.280587976191643e-11,
+          "max_current_relative": 1.7143489373632402e-10
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            1.8838722937768873e-09,
+            3.7120718705503128e-09
+          ],
+          "initial_normalized": [
+            0.0,
+            1.1747186315142924e-09,
+            2.314721651918942e-09
+          ],
+          "current_relative": [
+            null,
+            2.0404623689682236e-08,
+            2.0150796247528737e-08
+          ],
+          "reference_norm": [
+            0.0,
+            0.09232575530072053,
+            0.18421464963229708
+          ],
+          "initial_scale": 1.6036795903615213,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 2.314721651918942e-09,
+          "max_absolute": 3.7120718705503128e-09,
+          "max_current_relative": 2.0404623689682236e-08
+        },
+        "energy_state": {
+          "absolute": [
+            0.0,
+            1.8876541746390497e-09,
+            3.765976630581397e-09
+          ],
+          "initial_normalized": [
+            0.0,
+            1.177076883676939e-09,
+            2.348334825245499e-09
+          ],
+          "current_relative": [
+            0.0,
+            1.1770768836774204e-09,
+            2.3483348252460968e-09
+          ],
+          "reference_norm": [
+            1.6036795903615213,
+            1.6036795903608656,
+            1.6036795903611134
+          ],
+          "initial_scale": 1.6036795903615213,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 2.348334825245499e-09,
+          "max_absolute": 3.765976630581397e-09,
+          "max_current_relative": 2.3483348252460968e-09
+        },
+        "mean_error": [
+          0.0,
+          -3.557470241016066e-14,
+          -8.309530099044663e-14
+        ],
+        "energy_fraction": [
+          1.0,
+          0.9999999999656113,
+          0.9999999999492589
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999999999991822,
+          0.9999999999994913
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              3.4509121255021924e-11,
+              4.6533929487502235e-11,
+              1.5438414435742231e-10
+            ],
+            [
+              6.61965829373834e-11,
+              9.468333062034873e-11,
+              2.709842766845938e-10
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "maxima_on_reference_initial_scales": {
+        "displacement": 1.7084831103035903e-10,
+        "velocity": 2.3154126759559172e-09,
+        "energy_state": 2.349035883970969e-09
+      },
+      "passed": true
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 32,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "differences": {
+        "displacement": {
+          "absolute": [
+            0.0,
+            9.480616851948301e-12,
+            4.0377761269615715e-11
+          ],
+          "initial_normalized": [
+            0.0,
+            4.9374552861117336e-11,
+            2.1028525246334773e-10
+          ],
+          "current_relative": [
+            0.0,
+            4.9417577272863154e-11,
+            2.1101865122781652e-10
+          ],
+          "reference_norm": [
+            0.19201423208055673,
+            0.19184705878235,
+            0.19134688348483345
+          ],
+          "initial_scale": 0.19201423208055673,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 2.1028525246334773e-10,
+          "max_absolute": 4.0377761269615715e-11,
+          "max_current_relative": 2.1101865122781652e-10
+        },
+        "velocity": {
+          "absolute": [
+            0.0,
+            2.5975370561099117e-09,
+            5.056772629786811e-09
+          ],
+          "initial_normalized": [
+            0.0,
+            1.6201284590317744e-09,
+            3.153995908970739e-09
+          ],
+          "current_relative": [
+            null,
+            2.8163533801436707e-08,
+            2.7479746674426837e-08
+          ],
+          "reference_norm": [
+            0.0,
+            0.09223050894193553,
+            0.1840181676235297
+          ],
+          "initial_scale": 1.6032908018060859,
+          "reference_zero": [
+            true,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            true,
+            false,
+            false
+          ],
+          "max_initial_normalized": 3.153995908970739e-09,
+          "max_absolute": 5.056772629786811e-09,
+          "max_current_relative": 2.8163533801436707e-08
+        },
+        "energy_state": {
+          "absolute": [
+            0.0,
+            2.603880106704231e-09,
+            5.117817644015616e-09
+          ],
+          "initial_normalized": [
+            0.0,
+            1.6240847285913414e-09,
+            3.1920707324276182e-09
+          ],
+          "current_relative": [
+            0.0,
+            1.6240848219006478e-09,
+            3.1920721478856358e-09
+          ],
+          "reference_norm": [
+            1.6032908018060859,
+            1.603290709691468,
+            1.6032900908601189
+          ],
+          "initial_scale": 1.6032908018060859,
+          "reference_zero": [
+            false,
+            false,
+            false
+          ],
+          "reference_vanishing": [
+            false,
+            false,
+            false
+          ],
+          "max_initial_normalized": 3.1920707324276182e-09,
+          "max_absolute": 5.117817644015616e-09,
+          "max_current_relative": 3.1920721478856358e-09
+        },
+        "mean_error": [
+          0.0,
+          2.457751178485993e-13,
+          3.466709709265676e-13
+        ],
+        "energy_fraction": [
+          1.0,
+          0.9999998849828678,
+          0.9999991128290072
+        ],
+        "truth_energy_fraction": [
+          1.0,
+          0.9999998850930658,
+          0.9999991131417849
+        ],
+        "phase": {
+          "defined": [
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ],
+            [
+              true,
+              true,
+              true
+            ]
+          ],
+          "error": [
+            [
+              0.0,
+              0.0,
+              0.0
+            ],
+            [
+              2.2534799373752357e-10,
+              1.4348877641623403e-10,
+              1.7228025325777274e-09
+            ],
+            [
+              5.675299744045681e-10,
+              2.1234647373802318e-10,
+              3.697842934635709e-09
+            ]
+          ],
+          "interpretation": "Sine-projection phase; absorber modes are not eigenmodes."
+        },
+        "finite": true
+      },
+      "maxima_on_reference_initial_scales": {
+        "displacement": 2.1028158263596287e-10,
+        "velocity": 3.154172617002575e-09,
+        "energy_state": 3.1922495736667605e-09
+      },
+      "passed": true
+    }
+  ],
+  "complete": true,
+  "final_test_opened": false,
+  "output_sha256": {
+    "dirichlet_32_0_frozen_mlp32_seed691200_refined.npz": "69010ef86b1c7fced0812f82bb05320cbad50c7e39f7794984bcbd723b9058c3",
+    "absorbing_32_0_frozen_mlp32_seed691200.npz": "54110f5bcec2fa1949413027530f19506af89addf554f91f9120f536f8ababfd",
+    "absorbing_32_0_frozen_mlp32_seed691200_refined.npz": "ec73173371fcd4669266e123aac9a5a3f4e1c71f31e42985420fe9e5cfd1d111",
+    "dirichlet_32_0_frozen_mlp32_seed691200.npz": "2859930d14f6eddf05a765045d10cf54d1781329c15fed30424f3df13d6cb3a9",
+    "reference_dirichlet_32_0.npz": "54f950c8d169bd28420b807e7373ee156b298912876815aec47899810dbc35b1",
+    "mesh_dirichlet_32.npz": "60df6ad31c13add2767ea53e07b5aea3659cfbcddca64d600014f431f13a27a0",
+    "dirichlet_32_0_dst.npz": "b8f8ff3fa3ca9f593e0ee2a74dfacf8a6a37fefea590d99ea64c1f074d4a467f",
+    "dirichlet_32_0_cg_0.01.npz": "94465a5921aed523ca96aa30e2fec982ba34f2e4d27c948e9192b3f621112117",
+    "absorbing_32_0_cg_1e-06.npz": "e12e01dcd04feeb3127d91229f6afeaefcd63cafaba20bf8259a02802a5d0a73",
+    "reference_absorbing_32_0.npz": "b37206d5fb476df49145783f9f8b9cf8f136b553750e1b7b18312b306f960bb8",
+    "dirichlet_32_0_cg_1e-06.npz": "85eab733f855be4ebc783f4c13534a21cc78f92d3aa978d33994276c99cd63b7",
+    "reference_coarse_absorbing_32_0.npz": "c36261419ac424eecc1232f70df6baf57d91e6669af264e4e59a1c11f754a442",
+    "mesh_absorbing_32.npz": "ba19b00355b743371418a406bbacb3ea4a0ef1a7b18ed88a4c6f3083f016b02d",
+    "absorbing_32_0_rk4.npz": "50ead8deada7daa7706a1a7cea9f7f3a227672a5138ae868c1d26ad24142c5d9",
+    "absorbing_32_0_cg_0.01.npz": "e9fa8524d3bc59098e30e777e935cf2f8b911400ee5deec556a87a070f43fc51"
+  }
+}

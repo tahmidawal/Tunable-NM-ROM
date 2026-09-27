@@ -1,0 +1,26 @@
+host=pax105 source_commit=db48b7a86ee4f38ea9f79751e730a70c841144d0
+NVIDIA A100 80GB PCIe, 81920 MiB
+jax_backend=gpu
+jax_backend=gpu
+EQ REPRODUCTION {"indices_identical": true, "maximum_absolute_weight_difference": 0.0, "refit_relative_fit": 0.0051591049306033065, "archived_relative_fit": 0.0051591049306033065, "deadline_truncated": false, "fit_seconds": 17.259116569999605, "interpretation": "bounded refit of the accepted m=256 rule; the archived support/weights are used for the m256 arm regardless"}
+REFIT EQ 512 budget 1500
+REFIT EQ 1024 budget 1500
+SENTINEL COMPLETE
+TUNING CASE COMPLETE quadrature burgers-calibration-00000
+TUNING CASE COMPLETE quadrature burgers-calibration-00001
+TUNING CASE COMPLETE quadrature burgers-calibration-00002
+TUNING CASE COMPLETE quadrature burgers-calibration-00003
+TUNING CASE COMPLETE quadrature burgers-calibration-00004
+TUNING CASE COMPLETE quadrature burgers-calibration-00005
+TUNING CASE COMPLETE quadrature burgers-calibration-00006
+TUNING CASE COMPLETE quadrature burgers-calibration-00007
+TUNING CASE COMPLETE effort burgers-calibration-00000
+TUNING CASE COMPLETE effort burgers-calibration-00001
+TUNING CASE COMPLETE effort burgers-calibration-00002
+TUNING CASE COMPLETE effort burgers-calibration-00003
+TUNING CASE COMPLETE effort burgers-calibration-00004
+TUNING CASE COMPLETE effort burgers-calibration-00005
+TUNING CASE COMPLETE effort burgers-calibration-00006
+TUNING CASE COMPLETE effort burgers-calibration-00007
+TUNING COMPLETE
+ALL-DONE

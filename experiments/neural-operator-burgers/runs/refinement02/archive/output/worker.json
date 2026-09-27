@@ -1,0 +1,102 @@
+{
+  "complete": true,
+  "tasks": [
+    {
+      "name": "refinement",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/experiments/neural-operator-burgers/refine.py",
+        "refine",
+        "--original",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/calibration/index.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/refinement",
+        "--seconds",
+        "26039.99311630102"
+      ],
+      "timeout_seconds": 26099.993111858028,
+      "returncode": 0,
+      "status": "complete",
+      "seconds": 1233.8330208220286
+    },
+    {
+      "name": "diagnosis",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/experiments/neural-operator-burgers/diagnose.py",
+        "--reference-index",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/refinement/index.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/diagnosis",
+        "--intervals",
+        "256",
+        "--cases",
+        "8",
+        "--reps",
+        "3",
+        "--reference-dt",
+        ".00015625"
+      ],
+      "timeout_seconds": 24862.312800187035,
+      "returncode": 0,
+      "status": "complete",
+      "seconds": 420.5994561469415
+    },
+    {
+      "name": "train",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/experiments/neural-operator-burgers/refine.py",
+        "generate",
+        "--split",
+        "train",
+        "--intervals",
+        "256",
+        "--calibration",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/refinement/index.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/train"
+      ],
+      "timeout_seconds": 24437.973840804072,
+      "returncode": 0,
+      "status": "complete",
+      "seconds": 17032.85807247192
+    },
+    {
+      "name": "validation",
+      "command": [
+        "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/experiments/neural-operator-burgers/refine.py",
+        "generate",
+        "--split",
+        "validation",
+        "--intervals",
+        "256",
+        "--calibration",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/refinement/index.json",
+        "--out",
+        "/cluster/tufts/paralab/tawal01/no_burgers_20260914/refinement02/output/validation"
+      ],
+      "timeout_seconds": 7405.097895876039,
+      "returncode": 0,
+      "status": "complete",
+      "seconds": 4140.482966562035
+    }
+  ],
+  "budget_seconds": 26220.0,
+  "bulk_unlocked": true,
+  "bulk_decision": {
+    "status": "resource_decision",
+    "selected": {
+      "intervals": 4096,
+      "dt": 0.00015625,
+      "passing": true,
+      "worst_empirical_margin": 0.0009588159542496009,
+      "work_proxy": 26843545600
+    },
+    "conservative_seconds_estimate": 21773.149657038975,
+    "remaining_seconds": 24437.97388356598,
+    "estimate_rule": "1.10 times worst compile-inclusive calibrated anchor runtime times 160, plus 120 seconds; child timeout retains case checkpoints"
+  },
+  "elapsed_seconds": 22835.401598949917
+}

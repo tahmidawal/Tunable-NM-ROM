@@ -1,0 +1,26 @@
+{
+ "mesh": 1024,
+ "dt": 0.005,
+ "ntol": 1e-06,
+ "ltol": 1e-08,
+ "solver": "iterative_paths.make_fom(L, dt, \"fft\") = fft_tight",
+ "dev6_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "splits": {
+  "train": {
+   "cases": 128,
+   "source_index_sha256": "5333584b7162df622ec7bc2b08e68d8003036b1b05abbea520249ed408fc8d49",
+   "index_sha256": "dd1b03406974b59ba2c8c2f07a9cd2e8e102b6d5516bf4c79c407559370a336f",
+   "median_seconds": 0.4650832030456513,
+   "max_seconds": 1.6498922030441463,
+   "worst_relative_residual": 9.961409585856714e-07
+  },
+  "validation": {
+   "cases": 32,
+   "source_index_sha256": "468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad",
+   "index_sha256": "71eb197068d98a7466993a3be0ad3444be339f3b351db8f9f12672c0d48f09cd",
+   "median_seconds": 0.4172779640648514,
+   "max_seconds": 0.8838663809001446,
+   "worst_relative_residual": 9.970539848207187e-07
+  }
+ }
+}

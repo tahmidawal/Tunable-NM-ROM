@@ -1,0 +1,127 @@
+host=pax049 source_commit=8e5dfa4fdae16fbc1b3cf5a03ee7112eba5d02a8
+NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  4.3T  352G  93% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 1046529 rows in 1 blocks 7.4
+TRUTH 0 9.3
+TRUTH 1 9.8
+TRUTH 2 10.5
+TRUTH 3 11.2
+TRUTH 4 11.7
+TRUTH 5 12.1
+QUICK fft_tight evolved% 0.0 stalled 0 4.0 62.5
+QUICK nt1e-4_dt005 evolved% 0.0343 stalled 0 2.2 64.7
+QUICK nt1e-3_dt005 evolved% 0.0532 stalled 0 2.0 66.7
+QUICK nt1e-2_dt005 evolved% 4.2628 stalled 0 1.6 68.3
+QUICK nt1e-4_dt01 evolved% 1.6287 stalled 0 3.1 71.4
+QUICK nt1e-3_dt01 evolved% 1.6286 stalled 0 1.6 73.1
+QUICK nt1e-2_dt01 evolved% 3.4582 stalled 0 1.2 74.3
+QUICK lean_tight evolved% 0.0 stalled 0 4.8 79.1
+QUICK lean_nt1e-4_dt005 evolved% 0.0343 stalled 0 2.1 81.2
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.053 stalled 0 1.6 82.8
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0483 stalled 0 1.4 84.2
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1578 stalled 0 1.4 85.5
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.6294 stalled 0 2.2 87.7
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6445 stalled 0 1.2 89.0
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.6558 stalled 0 1.2 90.2
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.2884 stalled 0 7.9 105.2
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5857 stalled 0 10.2 122.2
+TIMED F rep 0 174.5
+TIMED F rep 1 224.2
+TIMED F rep 2 273.9
+TIMED F rep 3 323.5
+TIMED F rep 4 373.2
+QUICK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5856 stalled 0 18.5 391.9
+BLOCK q256_M1088_lat64x_g0p01_fast_chol_clip_lamcarry_pred2_x1 445.4
+QUICK bank512_M2048_lat64_g1em06 evolved% 0.2795 stalled 0 8.6 460.7
+BANKSPAN RHO bank512_M2048_lat64_g1em06 0.0881 ok 468.3
+BLOCK bank512_M2048_lat64_g1em06 492.1
+QUICK bank512_M2048_lat128_g1em06 evolved% 0.2796 stalled 0 11.0 510.3
+BANKSPAN RHO bank512_M2048_lat128_g1em06 0.5082 exceeds 522.3
+BLOCK bank512_M2048_lat128_g1em06 569.8
+QUICK bank384_M1536_lat64_g1em06 evolved% 0.2108 stalled 0 8.0 583.6
+BANKSPAN RHO bank384_M1536_lat64_g1em06 0.106 ok 588.8
+BLOCK bank384_M1536_lat64_g1em06 608.8
+QUICK bank384_M1536_lat128_g1em06 evolved% 0.2108 stalled 0 8.7 622.4
+BANKSPAN RHO bank384_M1536_lat128_g1em06 0.4161 exceeds 630.6
+BLOCK bank384_M1536_lat128_g1em06 666.7
+QUICK bank256_M1024_lat64_g1em06 evolved% 0.705 stalled 0 6.6 679.3
+BANKSPAN RHO bank256_M1024_lat64_g1em06 0.0935 ok 683.6
+BLOCK bank256_M1024_lat64_g1em06 700.4
+QUICK bank256_M1024_lat128_g1em06 evolved% 0.704 stalled 0 6.8 711.9
+BANKSPAN RHO bank256_M1024_lat128_g1em06 0.3301 exceeds 717.4
+BLOCK bank256_M1024_lat128_g1em06 743.8
+QUICK bank128_M512_lat64_g1em06 evolved% 1.8281 stalled 0 6.6 755.8
+BANKSPAN RHO bank128_M512_lat64_g1em06 0.054 ok 759.1
+BLOCK bank128_M512_lat64_g1em06 773.1
+QUICK bank128_M512_lat128_g1em06 evolved% 1.8283 stalled 0 5.1 782.4
+BANKSPAN RHO bank128_M512_lat128_g1em06 0.1534 exceeds 785.8
+BLOCK bank128_M512_lat128_g1em06 804.3
+SNAPSHOTS (1046529, 3328) 136.0 940.4
+POD 512 31.2 971.7
+QUICK pod16_M64_dense_armsTwin evolved% 29.2793 stalled 0 6.5 982.7
+QUICK pod16_M64_dense evolved% 29.2793 stalled 0 5.3 990.9
+GRID PARITY pod16_M64_dense 1.304e-15 integers True
+BLOCK pod16_M64_dense 1007.6
+QUICK pod64_M256_dense evolved% 7.4077 stalled 0 12.2 1023.8
+BLOCK pod64_M256_dense 1061.1
+QUICK pod256_M1024_dense evolved% 1.1017 stalled 0 78.7 1143.6
+BLOCK pod256_M1024_dense 1519.0
+QUICK pod512_M2048_dense evolved% 0.4441 stalled 0 293.3 1815.8
+BLOCK pod512_M2048_dense 3269.9
+QMAN r 16 ridge 0.01 |W| 0.0186 heldout 0.122813 lin/quad 0.139667 0.076964 26.5 3303.1
+QUICK qman16_quad_M64_armsTwin evolved% 22.6257 stalled 0 13.0 3321.8
+QUICK qman16_quad_M64 evolved% 22.6257 stalled 0 7.3 3333.6
+GRID PARITY qman16_quad_M64 1.613e-15 integers True
+BLOCK qman16_quad_M64 3367.4
+QMAN r 32 ridge 0.01 |W| 0.01916 heldout 0.060581 lin/quad 0.062815 0.03065 32.2 3404.6
+QUICK qman32_quad_M128 evolved% 13.0044 stalled 0 22.7 3433.4
+BLOCK qman32_quad_M128 3520.7
+QMAN r 64 ridge 1.0 |W| 0.00106 heldout 0.026049 lin/quad 0.022437 0.020441 60.8 3600.0
+QUICK qman64_quad_M256 evolved% 7.2587 stalled 0 56.9 3664.1
+BLOCK qman64_quad_M256 3915.9
+CMP COMPLETE
+torch_cuda True NVIDIA A100 80GB PCIe
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 54.025
+FNO burgers-dev-00001 device_ms 53.898
+FNO burgers-dev-00002 device_ms 53.913
+FNO burgers-dev-00003 device_ms 53.921
+FNO burgers-dev-00004 device_ms 53.929
+FNO burgers-dev-00005 device_ms 53.908
+OPERATOR TIMING COMPLETE unet-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 100.688
+FNO burgers-dev-00001 device_ms 100.738
+FNO burgers-dev-00002 device_ms 100.583
+FNO burgers-dev-00003 device_ms 100.794
+FNO burgers-dev-00004 device_ms 100.708
+FNO burgers-dev-00005 device_ms 101.2
+OPERATOR TIMING COMPLETE fno-large
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 135.584
+FNO burgers-dev-00001 device_ms 135.709
+FNO burgers-dev-00002 device_ms 135.682
+FNO burgers-dev-00003 device_ms 135.724
+FNO burgers-dev-00004 device_ms 135.785
+FNO burgers-dev-00005 device_ms 135.697
+OPERATOR TIMING COMPLETE tsol-refine
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 52.061
+FNO burgers-dev-00001 device_ms 52.011
+FNO burgers-dev-00002 device_ms 51.934
+FNO burgers-dev-00003 device_ms 51.82
+FNO burgers-dev-00004 device_ms 51.901
+FNO burgers-dev-00005 device_ms 51.886
+OPERATOR TIMING COMPLETE don-small
+torch_backend=cuda NVIDIA A100 80GB PCIe
+FNO burgers-dev-00000 device_ms 101.018
+FNO burgers-dev-00001 device_ms 100.914
+FNO burgers-dev-00002 device_ms 100.86
+FNO burgers-dev-00003 device_ms 101.042
+FNO burgers-dev-00004 device_ms 101.189
+FNO burgers-dev-00005 device_ms 101.2
+OPERATOR TIMING COMPLETE fno-large-256
+AUDIT p1024 arms 40 failed gates: []
+ALL-DONE

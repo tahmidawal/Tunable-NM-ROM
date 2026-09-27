@@ -1,0 +1,10 @@
+{
+ "note": "The four validation-selected 256^2 operator configurations (ops-timing-panel opt201 roles: fno-large, unet-refine, tsol-refine, don-small), each retrained from scratch at the target mesh on the 256^2 protocol's equal wall budget. The capacity screen and the refinement step are NOT repeated at the target mesh; the selected configuration is carried over.",
+ "per_arm_seconds": 3000,
+ "arms": [
+  {"name": "unet-refine", "config": "inputs/opconfigs/unet-refine.json"},
+  {"name": "fno-large", "config": "inputs/opconfigs/fno-large.json"},
+  {"name": "tsol-refine", "config": "inputs/opconfigs/tsol-refine.json"},
+  {"name": "don-small", "config": "inputs/opconfigs/don-small.json"}
+ ]
+}

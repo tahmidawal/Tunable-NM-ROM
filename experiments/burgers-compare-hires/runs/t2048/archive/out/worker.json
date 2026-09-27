@@ -1,0 +1,70 @@
+{
+ "spec": {
+  "note": "The four validation-selected 256^2 operator configurations (ops-timing-panel opt201 roles: fno-large, unet-refine, tsol-refine, don-small), each retrained from scratch at the target mesh on the 256^2 protocol's equal wall budget. The capacity screen and the refinement step are NOT repeated at the target mesh; the selected configuration is carried over.",
+  "per_arm_seconds": 3000,
+  "arms": [
+   {
+    "name": "unet-refine",
+    "config": "inputs/opconfigs/unet-refine.json"
+   },
+   {
+    "name": "fno-large",
+    "config": "inputs/opconfigs/fno-large.json"
+   },
+   {
+    "name": "tsol-refine",
+    "config": "inputs/opconfigs/tsol-refine.json"
+   },
+   {
+    "name": "don-small",
+    "config": "inputs/opconfigs/don-small.json"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "arm": "unet-refine",
+   "config": "inputs/opconfigs/unet-refine.json",
+   "exit_code": 0,
+   "started_unix": 1790143324.7042563,
+   "ended_unix": 1790146537.9031334,
+   "job_id": "4196041",
+   "epochs": 62,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.0738576320723885,
+   "validation_worst_case_max": 0.13204530419291768,
+   "micro_batch_final": 4,
+   "best_checkpoint_sha256": "dc6fded56c90ffd5c310b46837a257f38db89223988ea9d3fe5459615c92f84f"
+  },
+  {
+   "arm": "fno-large",
+   "config": "inputs/opconfigs/fno-large.json",
+   "exit_code": 1,
+   "started_unix": 1790146537.9083683,
+   "ended_unix": 1790146713.2366862,
+   "job_id": "4196041"
+  },
+  {
+   "arm": "tsol-refine",
+   "config": "inputs/opconfigs/tsol-refine.json",
+   "exit_code": 0,
+   "started_unix": 1790146713.2421696,
+   "ended_unix": 1790149927.1130905,
+   "job_id": "4196041",
+   "epochs": 24,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.16197004220038302,
+   "validation_worst_case_max": 0.3158199117091942,
+   "micro_batch_final": 2,
+   "best_checkpoint_sha256": "9922dbb6293a4f22dfed0770343c2822e7d437565a87e46696dd5f789249c1ad"
+  },
+  {
+   "arm": "don-small",
+   "config": "inputs/opconfigs/don-small.json",
+   "exit_code": 1,
+   "started_unix": 1790149927.1195166,
+   "ended_unix": 1790150102.2451534,
+   "job_id": "4196041"
+  }
+ ]
+}

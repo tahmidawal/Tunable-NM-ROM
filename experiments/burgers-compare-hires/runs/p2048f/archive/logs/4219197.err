@@ -1,0 +1,12 @@
+W0923 12:27:23.666551 2486592 bfc_allocator.cc:317] Allocator (GPU_0_bfc) ran out of memory trying to allocate 16.01GiB with freed_by_count=0. The caller indicates that this is not a failure, but this may mean that there could be performance gains if more memory were available.
+E0923 12:27:23.667602 2486447 config_assigner.cc:383] Could not get config for HLO: %gemm_fusion_dot.14 = f64[64,4192257]{1,0} fusion(%bitcast.253.0, %wrapped_concatenate), kind=kCustom, calls=
+(parameter_0.5: f64[64,512], parameter_1.5: f64[4192257,512]) -> f64[64,4192257] {
+  %parameter_0.5 = f64[64,512]{1,0} parameter(0)
+  %parameter_1.5 = f64[4192257,512]{1,0} parameter(1)
+  ROOT %dot.18 = f64[64,4192257]{1,0} dot(%parameter_0.5, %parameter_1.5), lhs_contracting_dims={1}, rhs_contracting_dims={1}, operand_precision={highest,highest}, metadata={op_name="jit(query)/while/body/closed_call/while/body/closed_call/vmap(jvp())/transpose" stack_frame_id=619}
+}, metadata={op_name="jit(query)/while/body/closed_call/while/body/closed_call/vmap(jvp())/transpose" deduplicated_name="gemm_fusion_dot.9" stack_frame_id=619}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Status: INTERNAL: Autotuning failed for HLO: %gemm_fusion_dot.14 = f64[64,4192257]{1,0} fusion(%bitcast.253.0, %wrapped_concatenate), kind=kCustom, calls=%gemm_fusion_dot.14_computation, metadata={op_name="jit(query)/while/body/closed_call/while/body/closed_call/vmap(jvp())/transpose" deduplicated_name="gemm_fusion_dot.9" stack_frame_id=619}, backend_config={"operation_queue_id":"0","fusion_backend_config":{"kind":"__triton_gemm"},"force_earliest_schedule":false,"reification_cost":[],"device_type":"DEVICE_TYPE_INVALID"}. Failed to profile configs: Out of memory while trying to allocate 16.01GiB.
+W0923 12:42:42.699754 2486447 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 13.41GiB (rounded to 14401873408)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W0923 12:42:42.700450 2486447 bfc_allocator.cc:525] *******_______________**********************__________________**************************************

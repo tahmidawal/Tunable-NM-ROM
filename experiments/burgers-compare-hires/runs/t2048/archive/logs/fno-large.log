@@ -1,0 +1,40 @@
+torch_backend=cuda NVIDIA A100 80GB PCIe
+{"micro_batch_reduced_to": 4, "epoch": 0}
+{"micro_batch_reduced_to": 2, "epoch": 0}
+{"micro_batch_reduced_to": 1, "epoch": 0}
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/bcmp_20260923/t2048/experiments/burgers-compare-hires/ops/train.py", line 264, in <module>
+    train(args)
+    ~~~~~^^^^^^
+  File "/cluster/tufts/paralab/tawal01/bcmp_20260923/t2048/experiments/burgers-compare-hires/ops/train.py", line 157, in train
+    pred = adapter.predict(model, x, p, *norm, pde)
+  File "/cluster/tufts/paralab/tawal01/bcmp_20260923/t2048/experiments/burgers-compare-hires/ops/model.py", line 97, in predict
+    output = model(features(field, parameters, mean, std)) * output_scale
+             ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/neuralop/models/fno.py", line 395, in forward
+    x = self.fno_blocks(x, layer_idx, output_shape=output_shape[layer_idx])
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/neuralop/layers/fno_block.py", line 299, in forward
+    return self.forward_with_postactivation(x, index, output_shape)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/neuralop/layers/fno_block.py", line 316, in forward_with_postactivation
+    x_fno = self.convs[index](x, output_shape=output_shape)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/torch/nn/modules/module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/cluster/tufts/paralab/tawal01/bcmp_20260923/t2048/experiments/burgers-compare-hires/ops/spectral_conv_f64.py", line 132, in forward
+    x = torch.fft.irfftn(
+        out_fft, s=mode_sizes, dim=fft_dims, norm=self.fft_norm
+    )
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 18.02 GiB. GPU 0 has a total capacity of 79.25 GiB of which 8.04 GiB is free. Including non-PyTorch memory, this process has 71.20 GiB memory in use. Of the allocated memory 52.54 GiB is allocated by PyTorch, and 18.17 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://docs.pytorch.org/docs/stable/notes/cuda.html#optimizing-memory-usage-with-pytorch-cuda-alloc-conf)

@@ -1,0 +1,40 @@
+{
+ "spec": {
+  "note": "Retry at 2048^2 of the two arms that ran out of CUDA memory on t2048's A100-80G at micro-batch 1 (fno-large: 18 GiB request, don-small: 6 GiB request, both with >=8 GiB reserved-but-unallocated, i.e. fragmentation). Same configs, same 3000 s budget each; H200 + PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True.",
+  "per_arm_seconds": 3000,
+  "arms": [
+   {
+    "name": "fno-large",
+    "config": "inputs/opconfigs/fno-large.json"
+   },
+   {
+    "name": "don-small",
+    "config": "inputs/opconfigs/don-small.json"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "arm": "fno-large",
+   "config": "inputs/opconfigs/fno-large.json",
+   "exit_code": 1,
+   "started_unix": 1790160596.455609,
+   "ended_unix": 1790160770.8028922,
+   "job_id": "4206643"
+  },
+  {
+   "arm": "don-small",
+   "config": "inputs/opconfigs/don-small.json",
+   "exit_code": 0,
+   "started_unix": 1790160770.8073819,
+   "ended_unix": 1790163978.165205,
+   "job_id": "4206643",
+   "epochs": 69,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.20202600924143743,
+   "validation_worst_case_max": 0.6414301178456053,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "7e287588af9a9ccbab63eaa2679d1017c2fcde9d051ce150820db1d615169820"
+  }
+ ]
+}

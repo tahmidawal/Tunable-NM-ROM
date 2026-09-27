@@ -1,0 +1,845 @@
+{
+ "schema_version": 1,
+ "pde": "burgers",
+ "kind": "burgers-compare-hires target-mesh regeneration",
+ "split": "validation",
+ "count": 32,
+ "mesh": 2048,
+ "complete": true,
+ "source_index_sha256": "468b9e70df3392c4b5bbb41381c9062d3d697ac4772b7236c4ee59d0ca73ebad",
+ "records": [
+  {
+   "case_id": "burgers-validation-00000",
+   "split": "validation",
+   "case_index": 0,
+   "seed": 1044997471,
+   "path": "burgers-validation-00000.npz",
+   "sha256": "1e27b4ed5bf4c5ba3e2389a4f83873e209ec3fa2918d506f655b66bbe2a161d2",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.6561003448727452,
+    "cy": 0.2030336467722093,
+    "width": 0.14223504484444943,
+    "amplitude": 0.9347715725425874,
+    "nu": 0.031336320627261376
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 6.606874230067792e-07,
+    "newton_total": 100,
+    "seconds": 1.7287012520246208
+   }
+  },
+  {
+   "case_id": "burgers-validation-00001",
+   "split": "validation",
+   "case_index": 1,
+   "seed": 3797609774,
+   "path": "burgers-validation-00001.npz",
+   "sha256": "73556d0eea80d6b8692f4de3e4d6a8b6c7b5dda90eb16f5c7f4a36bfd7aad622",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.5195798216958761,
+    "cy": 0.21330751930047043,
+    "width": 0.16150219469124885,
+    "amplitude": 1.2202627778986652,
+    "nu": 0.04264725564047183
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 6.108892234105144e-09,
+    "newton_total": 101,
+    "seconds": 1.8200284442864358
+   }
+  },
+  {
+   "case_id": "burgers-validation-00002",
+   "split": "validation",
+   "case_index": 2,
+   "seed": 2771836162,
+   "path": "burgers-validation-00002.npz",
+   "sha256": "a7f8f2915715a5e04eb40c50dc8d4bbac3ec3cc24da5915d6ca36a1750600205",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.5788876100317234,
+    "cy": 0.671441533601872,
+    "width": 0.062488312298883804,
+    "amplitude": 1.2807604015605762,
+    "nu": 0.061608886805415305
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.929850387788925e-07,
+    "newton_total": 94,
+    "seconds": 1.2824682886712253
+   }
+  },
+  {
+   "case_id": "burgers-validation-00003",
+   "split": "validation",
+   "case_index": 3,
+   "seed": 2021712575,
+   "path": "burgers-validation-00003.npz",
+   "sha256": "2910329a47b78d4edbd2f5dfea555b75670c803a25c900e460b18d6ce57af298",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.22533411449254814,
+    "cy": 0.4510650227792625,
+    "width": 0.07213321768769686,
+    "amplitude": 1.1223086373277402,
+    "nu": 0.08315248013713716
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.569601302496072e-07,
+    "newton_total": 95,
+    "seconds": 1.198423475958407
+   }
+  },
+  {
+   "case_id": "burgers-validation-00004",
+   "split": "validation",
+   "case_index": 4,
+   "seed": 1366272061,
+   "path": "burgers-validation-00004.npz",
+   "sha256": "79371f7b4ef638ae4ca7ff333646410889444269120e3e490fa0caed75d3c22d",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.17246581723950372,
+    "cy": 0.18915392274016032,
+    "width": 0.13972407993439825,
+    "amplitude": 0.9755154882591095,
+    "nu": 0.05001665757742035
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 5.348315698328353e-09,
+    "newton_total": 101,
+    "seconds": 1.5195366437546909
+   }
+  },
+  {
+   "case_id": "burgers-validation-00005",
+   "split": "validation",
+   "case_index": 5,
+   "seed": 855373498,
+   "path": "burgers-validation-00005.npz",
+   "sha256": "6c5e8847e551950c18b95f0922247aa11bbc7aabe10f8ccded16acdb7f41bd97",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.32154279712953926,
+    "cy": 0.833974117706739,
+    "width": 0.1342399110968576,
+    "amplitude": 1.4360417428534635,
+    "nu": 0.011435951946490901
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 3.555470312868299e-08,
+    "newton_total": 101,
+    "seconds": 3.110994894988835
+   }
+  },
+  {
+   "case_id": "burgers-validation-00006",
+   "split": "validation",
+   "case_index": 6,
+   "seed": 352056143,
+   "path": "burgers-validation-00006.npz",
+   "sha256": "765575a569647ab4e341e6e1f61064a91132d8d9f496cdc5100b6081621fd8d7",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.7845741919563173,
+    "cy": 0.8048881440447033,
+    "width": 0.1964668781569166,
+    "amplitude": 1.932337290770348,
+    "nu": 0.022232449313186395
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 1.1646905092171067e-07,
+    "newton_total": 101,
+    "seconds": 2.9782921099103987
+   }
+  },
+  {
+   "case_id": "burgers-validation-00007",
+   "split": "validation",
+   "case_index": 7,
+   "seed": 966142033,
+   "path": "burgers-validation-00007.npz",
+   "sha256": "4213aac879794aa2993b5cc9cf86c99e930b17954b34b240ff3beae0000d69ef",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.5840613033876495,
+    "cy": 0.46356145260617876,
+    "width": 0.1643709382915787,
+    "amplitude": 0.6281584916554421,
+    "nu": 0.011354588310188374
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 1.0470056294302741e-10,
+    "newton_total": 100,
+    "seconds": 1.777567248325795
+   }
+  },
+  {
+   "case_id": "burgers-validation-00008",
+   "split": "validation",
+   "case_index": 8,
+   "seed": 2632051304,
+   "path": "burgers-validation-00008.npz",
+   "sha256": "2c342b5e2b88126ca366b8dff41caacd2051e036990f082d2d152ccddab09864",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.7277332805915943,
+    "cy": 0.6805977703745645,
+    "width": 0.08672747874949913,
+    "amplitude": 1.3190643969884663,
+    "nu": 0.04059675229558192
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 6.52448681180282e-09,
+    "newton_total": 100,
+    "seconds": 1.700897116214037
+   }
+  },
+  {
+   "case_id": "burgers-validation-00009",
+   "split": "validation",
+   "case_index": 9,
+   "seed": 672788269,
+   "path": "burgers-validation-00009.npz",
+   "sha256": "2303649374fa1703cac22ff95513f72e8e3dc1721efe8c4fae651abb2de7c713",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.6764962313077306,
+    "cy": 0.5219069792066444,
+    "width": 0.13575999809783879,
+    "amplitude": 1.2950709879527331,
+    "nu": 0.09492936415416055
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 7.800116420798244e-10,
+    "newton_total": 100,
+    "seconds": 1.4481917670927942
+   }
+  },
+  {
+   "case_id": "burgers-validation-00010",
+   "split": "validation",
+   "case_index": 10,
+   "seed": 801282023,
+   "path": "burgers-validation-00010.npz",
+   "sha256": "1557ff3a1f7982bb3171528fa664be192819309a5996a8a21c7f47bc130fd432",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.5307795292703591,
+    "cy": 0.486650156353001,
+    "width": 0.07167186590135426,
+    "amplitude": 1.851141305484781,
+    "nu": 0.02081117009713322
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 8.603232186065232e-08,
+    "newton_total": 100,
+    "seconds": 2.4318046760745347
+   }
+  },
+  {
+   "case_id": "burgers-validation-00011",
+   "split": "validation",
+   "case_index": 11,
+   "seed": 561377755,
+   "path": "burgers-validation-00011.npz",
+   "sha256": "9c0d20da14df636a3a488d86ebc45776ad9c813e4883b7b8e65255141458ee3a",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.48801460173309197,
+    "cy": 0.837238917640599,
+    "width": 0.1431122674020755,
+    "amplitude": 0.5167660195615001,
+    "nu": 0.09627815310088096
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.799493310112658e-07,
+    "newton_total": 92,
+    "seconds": 1.0445802081376314
+   }
+  },
+  {
+   "case_id": "burgers-validation-00012",
+   "split": "validation",
+   "case_index": 12,
+   "seed": 1410606118,
+   "path": "burgers-validation-00012.npz",
+   "sha256": "229785fa627d3373263570af349ab6350ba652d2230f1492129eeeb3fae94c2d",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.6313168878522137,
+    "cy": 0.28917779920947995,
+    "width": 0.15310604098006342,
+    "amplitude": 0.8255224205871778,
+    "nu": 0.016208709150787343
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 5.42921104969639e-08,
+    "newton_total": 100,
+    "seconds": 1.9536580312997103
+   }
+  },
+  {
+   "case_id": "burgers-validation-00013",
+   "split": "validation",
+   "case_index": 13,
+   "seed": 59003622,
+   "path": "burgers-validation-00013.npz",
+   "sha256": "20aed63a010ceb0716f7ed45018eac8a60bb0db1562cee96b62618622031d56b",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.671214047164635,
+    "cy": 0.5597333110589686,
+    "width": 0.09663535816007567,
+    "amplitude": 1.6054268813856252,
+    "nu": 0.0858327524525539
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 1.797315420877508e-08,
+    "newton_total": 100,
+    "seconds": 1.4608532111160457
+   }
+  },
+  {
+   "case_id": "burgers-validation-00014",
+   "split": "validation",
+   "case_index": 14,
+   "seed": 2251482023,
+   "path": "burgers-validation-00014.npz",
+   "sha256": "572e9f181594c2061745f6456f2e1b9ef9e756259954f4d5145384501ed2fcbd",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.8259913516322938,
+    "cy": 0.7294662526083056,
+    "width": 0.14561707035612473,
+    "amplitude": 1.4456448152201948,
+    "nu": 0.03238456284097165
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 1.3951088672518255e-08,
+    "newton_total": 101,
+    "seconds": 2.1052750311791897
+   }
+  },
+  {
+   "case_id": "burgers-validation-00015",
+   "split": "validation",
+   "case_index": 15,
+   "seed": 96675545,
+   "path": "burgers-validation-00015.npz",
+   "sha256": "53d762a061e3822cc80408bb51e68dfa8ec8f5073fb2636e7252c191aa22880a",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.5388583887447032,
+    "cy": 0.36106445821239763,
+    "width": 0.05372185978815813,
+    "amplitude": 1.2200474739286762,
+    "nu": 0.08349336965326638
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.399627731215035e-07,
+    "newton_total": 87,
+    "seconds": 1.031575284898281
+   }
+  },
+  {
+   "case_id": "burgers-validation-00016",
+   "split": "validation",
+   "case_index": 16,
+   "seed": 3653011254,
+   "path": "burgers-validation-00016.npz",
+   "sha256": "4076f28d2094306722945270850d502a2dd4a96fe3da89cec29d9caf986ecc73",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.7536972434102893,
+    "cy": 0.3924352219208753,
+    "width": 0.17922407194966705,
+    "amplitude": 0.5114636273582984,
+    "nu": 0.010270305155137861
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.488176661351556e-07,
+    "newton_total": 61,
+    "seconds": 0.9702114090323448
+   }
+  },
+  {
+   "case_id": "burgers-validation-00017",
+   "split": "validation",
+   "case_index": 17,
+   "seed": 2866081749,
+   "path": "burgers-validation-00017.npz",
+   "sha256": "8908229312dad79d742921d30917745319542f4dcccc8cc41e6ffa5b458d5554",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.5579102184492952,
+    "cy": 0.6702136084904566,
+    "width": 0.12311654778839877,
+    "amplitude": 0.8716524543805718,
+    "nu": 0.012080947087747276
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 7.000104457292167e-11,
+    "newton_total": 100,
+    "seconds": 2.2001306051388383
+   }
+  },
+  {
+   "case_id": "burgers-validation-00018",
+   "split": "validation",
+   "case_index": 18,
+   "seed": 1397814590,
+   "path": "burgers-validation-00018.npz",
+   "sha256": "0a26d8da97bd304fc0eff6772cc4ff197a2cb0419dbd9a9122d4f850c02033a4",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.5065364499622214,
+    "cy": 0.6970221805565993,
+    "width": 0.10138410862932382,
+    "amplitude": 1.7199450187829082,
+    "nu": 0.01073335730161557
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 3.280707577528781e-08,
+    "newton_total": 100,
+    "seconds": 3.6388404220342636
+   }
+  },
+  {
+   "case_id": "burgers-validation-00019",
+   "split": "validation",
+   "case_index": 19,
+   "seed": 4018776733,
+   "path": "burgers-validation-00019.npz",
+   "sha256": "47689c915a64b4845e4de5e62200872e2ec2bbdb521069464c4d8f5777b7ce98",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.6017730858999871,
+    "cy": 0.6440949287504083,
+    "width": 0.1489030295368568,
+    "amplitude": 1.7002113114116504,
+    "nu": 0.014011418042525129
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 7.572469308171503e-09,
+    "newton_total": 100,
+    "seconds": 3.456094596069306
+   }
+  },
+  {
+   "case_id": "burgers-validation-00020",
+   "split": "validation",
+   "case_index": 20,
+   "seed": 1360796936,
+   "path": "burgers-validation-00020.npz",
+   "sha256": "1cc320e7bc8d31d7889353e8fece9e0118dd8c69a6a22c86b98bd10cbeaddad6",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.6619915561824739,
+    "cy": 0.3922371755884292,
+    "width": 0.11074187494954625,
+    "amplitude": 1.4857940858932577,
+    "nu": 0.024454795439387896
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 1.7865942933362026e-09,
+    "newton_total": 100,
+    "seconds": 2.3280704892240465
+   }
+  },
+  {
+   "case_id": "burgers-validation-00021",
+   "split": "validation",
+   "case_index": 21,
+   "seed": 1847656864,
+   "path": "burgers-validation-00021.npz",
+   "sha256": "136fe27e418d1efb2420b58e1ed12ad69cad3d86883a89eeb3e211d4db21bc54",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.6702826498417839,
+    "cy": 0.710225489435474,
+    "width": 0.08846768986275541,
+    "amplitude": 1.3855733310752438,
+    "nu": 0.04621223710115065
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 8.201968912295197e-09,
+    "newton_total": 100,
+    "seconds": 1.6689780098386109
+   }
+  },
+  {
+   "case_id": "burgers-validation-00022",
+   "split": "validation",
+   "case_index": 22,
+   "seed": 1688939329,
+   "path": "burgers-validation-00022.npz",
+   "sha256": "a251957a238601fa72ae122be2da1d431aeb7e8e0a62bde0bee0f776ecbd2b23",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.2672337263842542,
+    "cy": 0.6766167870163592,
+    "width": 0.11555911915511366,
+    "amplitude": 1.1464834896743736,
+    "nu": 0.0913765655316485
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 1.408252992416759e-09,
+    "newton_total": 100,
+    "seconds": 1.3632255848497152
+   }
+  },
+  {
+   "case_id": "burgers-validation-00023",
+   "split": "validation",
+   "case_index": 23,
+   "seed": 2982055104,
+   "path": "burgers-validation-00023.npz",
+   "sha256": "2b15b337ccdb4414d14414cbbd1e5007475c403b73309a77f1cdf78d3cb8ce7a",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.2722314026338989,
+    "cy": 0.5072653288087052,
+    "width": 0.06080374391772526,
+    "amplitude": 0.6181551586131223,
+    "nu": 0.023947470985872413
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.603383332637887e-07,
+    "newton_total": 95,
+    "seconds": 1.3434969186782837
+   }
+  },
+  {
+   "case_id": "burgers-validation-00024",
+   "split": "validation",
+   "case_index": 24,
+   "seed": 1888822779,
+   "path": "burgers-validation-00024.npz",
+   "sha256": "3d79ee8a87dbd12230573e06abae43ea5200a68bc50816484c2b60765da1f8fc",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.6572858958126425,
+    "cy": 0.5419534834435991,
+    "width": 0.06479419802626059,
+    "amplitude": 0.6136062341961956,
+    "nu": 0.01609709347283376
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.84086486168923e-07,
+    "newton_total": 99,
+    "seconds": 1.5700242039747536
+   }
+  },
+  {
+   "case_id": "burgers-validation-00025",
+   "split": "validation",
+   "case_index": 25,
+   "seed": 4188872719,
+   "path": "burgers-validation-00025.npz",
+   "sha256": "489376e154b040b2cef6cd75a2f694da7e5ca5fd11f3bba28ed9952a5551f903",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.3043228476108286,
+    "cy": 0.21519434193211734,
+    "width": 0.14543719706445427,
+    "amplitude": 0.5185453072660945,
+    "nu": 0.014594859035474722
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.990318413300446e-07,
+    "newton_total": 79,
+    "seconds": 1.2588359089568257
+   }
+  },
+  {
+   "case_id": "burgers-validation-00026",
+   "split": "validation",
+   "case_index": 26,
+   "seed": 1225124115,
+   "path": "burgers-validation-00026.npz",
+   "sha256": "c832972358ead4926828da720de4ca950adbb6e3a94b1dfb426a7e9198b9e61f",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.8338741519158345,
+    "cy": 0.6011313207289298,
+    "width": 0.1752836987358728,
+    "amplitude": 0.5275279908630494,
+    "nu": 0.03253480592325466
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.896843392424952e-07,
+    "newton_total": 85,
+    "seconds": 1.179183148778975
+   }
+  },
+  {
+   "case_id": "burgers-validation-00027",
+   "split": "validation",
+   "case_index": 27,
+   "seed": 2527049696,
+   "path": "burgers-validation-00027.npz",
+   "sha256": "8f6f6e42542b9fb7df69072e1e667fd0d10658f75f1f6c71e7e9500acc798033",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.48790750665607874,
+    "cy": 0.4486926177378546,
+    "width": 0.12158366653076143,
+    "amplitude": 0.7817296165750343,
+    "nu": 0.07558233224023823
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.712275561867828e-07,
+    "newton_total": 89,
+    "seconds": 1.188597863074392
+   }
+  },
+  {
+   "case_id": "burgers-validation-00028",
+   "split": "validation",
+   "case_index": 28,
+   "seed": 3440483241,
+   "path": "burgers-validation-00028.npz",
+   "sha256": "96790118abb54ef4c5da3a4a861f61fefd37bedb3c69c92bea54f6a8049be1f2",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.48277967817990763,
+    "cy": 0.6131746283947414,
+    "width": 0.15335736256142687,
+    "amplitude": 1.3084977885465878,
+    "nu": 0.04783535073977079
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 2.361633984625359e-10,
+    "newton_total": 100,
+    "seconds": 1.8256868091411889
+   }
+  },
+  {
+   "case_id": "burgers-validation-00029",
+   "split": "validation",
+   "case_index": 29,
+   "seed": 1774060670,
+   "path": "burgers-validation-00029.npz",
+   "sha256": "267d54e1f60aadda36040292202b5803459890ea9ebf71b23e8077b9a4bdc36a",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.664182323809047,
+    "cy": 0.6031170674058841,
+    "width": 0.06959624157099079,
+    "amplitude": 0.6600675711002153,
+    "nu": 0.053852347679294
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 9.59656369334374e-07,
+    "newton_total": 88,
+    "seconds": 1.0969208148308098
+   }
+  },
+  {
+   "case_id": "burgers-validation-00030",
+   "split": "validation",
+   "case_index": 30,
+   "seed": 502181974,
+   "path": "burgers-validation-00030.npz",
+   "sha256": "197178c8f2487c025c5df69ce707c6405a84cc3a83e0df6565cea48b3d40c1b2",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.542972976445331,
+    "cy": 0.5144028574959337,
+    "width": 0.18708369271253839,
+    "amplitude": 1.4885866362121671,
+    "nu": 0.04557528748890239
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 6.161912248734746e-10,
+    "newton_total": 100,
+    "seconds": 2.0344720110297203
+   }
+  },
+  {
+   "case_id": "burgers-validation-00031",
+   "split": "validation",
+   "case_index": 31,
+   "seed": 3925023829,
+   "path": "burgers-validation-00031.npz",
+   "sha256": "dec2f76a74b490024c233cee8b23f60e6419ff061fa4d5b1fb674c7fa6fb1ae2",
+   "mesh": 2048,
+   "generation_descriptors": {
+    "cx": 0.7354682424531004,
+    "cy": 0.5769882861075073,
+    "width": 0.1888424621283148,
+    "amplitude": 1.477912551215439,
+    "nu": 0.03818573591179347
+   },
+   "reference": {
+    "intervals": 2048,
+    "dt": 0.005,
+    "ntol": 1e-06,
+    "ltol": 1e-08,
+    "preconditioner": "fft",
+    "max_relative_residual": 3.96669432418191e-09,
+    "newton_total": 101,
+    "seconds": 2.153900686185807
+   }
+  }
+ ],
+ "derivation": "the pinned 256^2 operator cases (same ids, seeds, descriptors) solved at the target mesh with the panel's own same-grid reference setting fft_tight"
+}

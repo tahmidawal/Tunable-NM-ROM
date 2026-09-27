@@ -1,0 +1,82 @@
+{
+ "spec": {
+  "note": "The four validation-selected 256^2 operator configurations (ops-timing-panel opt201 roles: fno-large, unet-refine, tsol-refine, don-small), each retrained from scratch at the target mesh on the 256^2 protocol's equal wall budget. The capacity screen and the refinement step are NOT repeated at the target mesh; the selected configuration is carried over.",
+  "per_arm_seconds": 3000,
+  "arms": [
+   {
+    "name": "unet-refine",
+    "config": "inputs/opconfigs/unet-refine.json"
+   },
+   {
+    "name": "fno-large",
+    "config": "inputs/opconfigs/fno-large.json"
+   },
+   {
+    "name": "tsol-refine",
+    "config": "inputs/opconfigs/tsol-refine.json"
+   },
+   {
+    "name": "don-small",
+    "config": "inputs/opconfigs/don-small.json"
+   }
+  ]
+ },
+ "arms": [
+  {
+   "arm": "unet-refine",
+   "config": "inputs/opconfigs/unet-refine.json",
+   "exit_code": 0,
+   "started_unix": 1790143022.1648533,
+   "ended_unix": 1790146234.2309976,
+   "job_id": "4196040",
+   "epochs": 223,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.03191995976951806,
+   "validation_worst_case_max": 0.08963287014469068,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "bfa126fd55883f5425f62fddd1e782178a89a3495c56d25249a96becd7765a58"
+  },
+  {
+   "arm": "fno-large",
+   "config": "inputs/opconfigs/fno-large.json",
+   "exit_code": 0,
+   "started_unix": 1790146234.2375767,
+   "ended_unix": 1790149325.474461,
+   "job_id": "4196040",
+   "epochs": 37,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.04503863299014448,
+   "validation_worst_case_max": 0.11127008407750459,
+   "micro_batch_final": 4,
+   "best_checkpoint_sha256": "48faf3357c9bed27b9ef0854f6a59d0b1926f8cbbf2f5625c278db81f1188b61"
+  },
+  {
+   "arm": "tsol-refine",
+   "config": "inputs/opconfigs/tsol-refine.json",
+   "exit_code": 0,
+   "started_unix": 1790149325.4811375,
+   "ended_unix": 1790152404.8156397,
+   "job_id": "4196040",
+   "epochs": 131,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.061188576833047556,
+   "validation_worst_case_max": 0.19084909124553234,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "9e99c41c9a517f931e631e35b98717c2c204e7e4df13354424bf281e1515e137"
+  },
+  {
+   "arm": "don-small",
+   "config": "inputs/opconfigs/don-small.json",
+   "exit_code": 0,
+   "started_unix": 1790152404.821682,
+   "ended_unix": 1790155479.5539155,
+   "job_id": "4196040",
+   "epochs": 308,
+   "stop_reason": "wall_budget",
+   "validation_mean_case_max": 0.17124416907120568,
+   "validation_worst_case_max": 0.6281884029704522,
+   "micro_batch_final": 8,
+   "best_checkpoint_sha256": "8443e8aca7d81574dd7bc00144cf4e5fcbc01ab2025ddae6c46c2341414b2eae"
+  }
+ ]
+}

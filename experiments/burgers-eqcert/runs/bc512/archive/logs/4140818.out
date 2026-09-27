@@ -1,0 +1,89 @@
+host=pax008 source_commit=7fa79b8a4a140e2eb928e169b921f52d75e33e57
+NVIDIA H200, GPU-a8a12c96-fc46-0791-d459-e18b81bc6b19, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T  4.2T  433G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+BANK 261121 rows in 1 blocks 8.4
+TRUTH 0 10.3
+TRUTH 1 10.4
+TRUTH 2 10.5
+TRUTH 3 10.7
+TRUTH 4 10.7
+TRUTH 5 10.8
+QUICK fft_tight evolved% 0.0 all% 0.0 stalled 0 1.4 33.8
+QUICK nt1e-4_dt005 evolved% 0.0341 all% 0.0341 stalled 0 1.1 34.9
+QUICK nt1e-3_dt005 evolved% 0.0516 all% 0.0516 stalled 0 1.1 36.0
+QUICK lean_tight evolved% 0.0 all% 0.0 stalled 0 2.3 38.2
+QUICK lean_nt1e-4_dt005 evolved% 0.0341 all% 0.0341 stalled 0 1.1 39.3
+QUICK lean_nt1e-3_l1e-3_dt005 evolved% 0.0508 all% 0.0508 stalled 0 1.0 40.3
+QUICK lean_nt3e-3_l3e-3_dt005 evolved% 0.0497 all% 0.0497 stalled 0 1.0 41.3
+QUICK lean_nt1e-2_l1e-2_dt005 evolved% 2.1507 all% 2.1507 stalled 0 0.9 42.2
+QUICK lean_nt1e-3_l1e-3_dt01 evolved% 1.59 all% 1.59 stalled 0 1.8 44.0
+QUICK lean_nt3e-3_l3e-3_dt01 evolved% 1.6044 all% 1.6044 stalled 0 0.9 44.9
+QUICK lean_nt1e-2_l1e-2_dt01 evolved% 1.62 all% 1.62 stalled 0 0.9 45.8
+QUICK lean_nt1e-3_l1e-3_dt0125 evolved% 2.2693 all% 2.2693 stalled 0 1.7 47.5
+QUICK lean_nt3e-3_l3e-3_dt0125 evolved% 2.3372 all% 2.3372 stalled 0 0.9 48.5
+QUICK lean_nt1e-3_l1e-3_dt025 evolved% 5.3531 all% 5.3531 stalled 0 1.7 50.2
+QUICK c256_nt1e-4_dt005 evolved% 1.5128 all% 2.5207 stalled 0 1.9 52.1
+QUICK c128_nt1e-4_dt005 evolved% 4.2209 all% 4.7157 stalled 0 1.9 54.0
+QUICK q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 evolved% 2.1375 all% 3.2836 stalled 0 6.7 68.2
+QUICK q128_M576_scaled_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.9892 all% 2.6066 stalled 0 8.2 82.7
+QUICK q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.9891 all% 2.6066 stalled 0 5.8 92.6
+QUICK q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.9891 all% 2.6066 stalled 0 9.4 102.1
+QUICK q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5555 all% 2.0195 stalled 0 8.5 116.9
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5624 all% 2.0195 stalled 0 6.0 123.7
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5624 all% 2.0195 stalled 0 10.7 134.4
+QUICK q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5623 all% 2.0195 stalled 0 5.7 140.1
+QUICK q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x2 evolved% 0.5624 all% 2.0195 stalled 0 6.7 146.9
+QUICK q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5625 all% 2.0195 stalled 0 10.0 163.7
+QUICK q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5625 all% 2.0195 stalled 0 9.0 172.7
+QUICK q256_M1088_lathalf_g0p01_fast_chol_clip_lamcarry_pred2_x1 evolved% 0.5624 all% 2.0195 stalled 0 8.5 181.2
+QUICK q256_M1088_exact_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 0.5625 all% 2.0195 stalled 0 18.9 200.1
+QUICK q256_M1088_exact_g0p01_fast_chol_clip_lamcarry_pred2 evolved% 0.5625 all% 2.0195 stalled 0 16.5 216.6
+QUICK q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2 evolved% 1.0455 all% 2.0195 stalled 0 6.1 226.3
+POPULATION q 0 states 2856 stalled 0 256.5
+POPULATION q 128 states 2856 stalled 0 373.5
+POPULATION q 256 states 2856 stalled 1 781.5
+RULE 0 64 scaled m 1024 rho_max(k>=0) 0.0195 draws 5 | k>=1 0.0195 5 784.3
+RULE 128 576 scaled m 2319 rho_max(k>=0) 0.1099 draws 5 | k>=1 0.0535 5 786.5
+RULE 128 576 lat64 m 3969 rho_max(k>=0) 0.0833 draws 5 | k>=1 0.0229 5 787.6
+RULE 256 1088 scaled m 2560 rho_max(k>=0) 0.1704 draws 4 | k>=1 0.0473 5 789.9
+RULE 256 1088 lat64 m 3969 rho_max(k>=0) 0.1303 draws 4 | k>=1 0.0416 5 790.2
+RULE 256 1088 lathalf m 65025 rho_max(k>=0) 0.1234 draws 4 | k>=1 0.0250 5 792.9
+RULE 256 1088 bad0 m 2048 rho_max(k>=0) 0.2977 draws 0 | k>=1 0.2826 2 793.9
+ARM-STATUS q0_M64_scaled_g0p001_fast_clip_lamcarry_pred2 confirmed heldout 0.0195 deployed 0.0192 796.9
+ARM-STATUS q128_M576_scaled_g0p001_fast_chol_clip_lamcarry_pred2 confirmed heldout 0.1099 deployed 0.1099 801.0
+ARM-STATUS q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2 confirmed heldout 0.0833 deployed 0.0833 805.8
+ARM-STATUS q128_M576_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1 confirmed heldout 0.0229 deployed 0.0229 815.5
+ARM-STATUS q256_M1088_scaled_g0p001_fast_chol_clip_lamcarry_pred2 marginal (4/5) heldout 0.1704 deployed 0.1704 821.3
+ARM-STATUS q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2 marginal (4/5) heldout 0.1303 deployed 0.1303 828.5
+ARM-STATUS q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1 confirmed heldout 0.0416 deployed 0.0402 847.4
+ARM-STATUS q256_M1088_lat64_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed heldout 0.0416 deployed 0.0400 864.1
+ARM-STATUS q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x2 confirmed heldout 0.0275 deployed 0.0259 889.0
+ARM-STATUS q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2 marginal (4/5) heldout 0.1234 deployed 0.1234 928.7
+ARM-STATUS q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2_x1 confirmed heldout 0.0250 deployed 0.0247 977.7
+ARM-STATUS q256_M1088_lathalf_g0p01_fast_chol_clip_lamcarry_pred2_x1 confirmed heldout 0.0250 deployed 0.0246 1020.3
+ARM-STATUS q256_M1088_bad0_g0p001_fast_chol_clip_lamcarry_pred2 fails heldout 0.2977 deployed 0.2977 1025.9
+DENSE 256 1088 case 0 evolved% 0.0686 iters 1297 22.9 1049.1
+DENSE 256 1088 case 1 evolved% 0.0688 iters 488 7.9 1057.3
+DENSE 256 1088 case 2 evolved% 0.5625 iters 459 7.5 1065.0
+DENSE 256 1088 case 3 evolved% 0.3117 iters 789 12.3 1077.5
+DENSE 256 1088 case 4 evolved% 0.1642 iters 222 4.0 1081.7
+DENSE 256 1088 case 5 evolved% 0.205 iters 268 4.7 1086.6
+TIMED rep 0 1202.0
+TIMED rep 1 1305.6
+TIMED rep 2 1408.9
+TIMED rep 3 1512.4
+TIMED rep 4 1615.8
+PROFILE {"arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 171, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 136.00635109469295, "initialize_ms": 19.346359185874462, "evolve_ms": 116.6280172765255, "decode_ms": 0.44302456080913544, "evalJ_ms": 0.765650998800993, "residual_ms": 0.5498318932950497, "gram_ms": 0.1602980773895979, "gram_plus_solve_ms": 0.780770555138588, "evolve_ms_per_iteration": 0.6820351887516111}
+PROFILE {"arm": "q256_M1088_lat64_g0p001_fast_chol_clip_lamcarry_pred2_x1", "case": 0, "iterations": 181, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 3969, "whole_query_ms": 387.6630482263863, "initialize_ms": 19.530699122697115, "evolve_ms": 368.2919410057366, "decode_ms": 0.43217185884714127, "evalJ_ms": 0.7471572607755661, "residual_ms": 0.48295874148607254, "gram_ms": 0.1505664549767971, "gram_plus_solve_ms": 0.7773847319185734, "evolve_ms_per_iteration": 2.0347621050040696}
+PROFILE {"arm": "q256_M1088_lathalf_g0p001_fast_chol_clip_lamcarry_pred2_x1", "case": 0, "iterations": 172, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 65025, "whole_query_ms": 1022.1017668955028, "initialize_ms": 19.52089136466384, "evolve_ms": 1006.0469247400761, "decode_ms": 0.44220173731446266, "evalJ_ms": 3.475614357739687, "residual_ms": 1.0403229389339685, "gram_ms": 0.15034759417176247, "gram_plus_solve_ms": 0.7780515588819981, "evolve_ms_per_iteration": 5.849110027558582}
+PROFILE {"arm": "q256_M1088_exact_g0p001_fast_chol_clip_lamcarry_pred2", "case": 0, "iterations": 172, "steps": 50, "retries": 0, "J_shape": [1088, 272], "m": 261121, "whole_query_ms": 3229.000356979668, "initialize_ms": 19.610503688454628, "evolve_ms": 3206.4864789135754, "decode_ms": 0.42684702202677727, "evalJ_ms": 14.13822895847261, "residual_ms": 0.49159559421241283, "gram_ms": 0.14892220497131348, "gram_plus_solve_ms": 0.7756196428090334, "evolve_ms_per_iteration": 18.64236324949753}
+REFERENCE 0 accepted True 8.4 1756.2
+REFERENCE 1 accepted True 6.6 1763.0
+REFERENCE 2 accepted True 8.9 1772.0
+REFERENCE 3 accepted True 8.3 1780.5
+REFERENCE 4 accepted True 7.1 1787.7
+REFERENCE 5 accepted True 6.5 1794.3
+HIRES COMPLETE
+ALL-DONE

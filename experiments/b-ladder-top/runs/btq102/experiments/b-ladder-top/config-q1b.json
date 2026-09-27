@@ -1,0 +1,158 @@
+{
+  "attempt": "btq102",
+  "intervals": 256,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "train_seed": 0,
+  "train_trajectories": 128,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "residual_snapshots": 1024,
+  "residual_starts": 4,
+  "residual_budget": 200,
+  "residual_seed": 20260915,
+  "decoder_code_subsample": 8192,
+  "q_ladder": [
+    0,
+    256
+  ],
+  "fixed_test_count": 256,
+  "quadrature_multiplier": 4,
+  "quadrature_cap": 2048,
+  "eq_seconds": 2400.0,
+  "eq_blocks": 16,
+  "gauss_jordan_max": 64,
+  "eq_seed": 20259,
+  "candidate_cap": 8192,
+  "fit_states": 64,
+  "max_fit_rows": 8192,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 180,
+    "gtol": 1e-06
+  },
+  "ic_gtol": 1e-06,
+  "inner_damping": 1e-10,
+  "tau_y": 0.1,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reps": 3,
+  "order_seed": 911716,
+  "burn_seconds": 0.25,
+  "conditioning_q": [
+    256
+  ],
+  "conditioning_rule": "m2",
+  "conditioning_step": 25,
+  "cascade_source_arm": "predamp",
+  "gate_arms": [
+    {
+      "q": 256,
+      "rule": "m2",
+      "quadrature": "dense",
+      "arm": "base"
+    }
+  ],
+  "sweep": [
+    {
+      "q": 256,
+      "rule": "m2",
+      "quadrature": "dense",
+      "arms": [
+        "base"
+      ],
+      "step_budget": 600,
+      "tag": "_b600"
+    },
+    {
+      "q": 256,
+      "rule": "m2",
+      "quadrature": "dense",
+      "arms": [
+        "base"
+      ],
+      "step_budget": 2000,
+      "tag": "_b2000"
+    },
+    {
+      "q": 256,
+      "rule": "m2",
+      "quadrature": "dense",
+      "arms": [
+        "base"
+      ],
+      "step_budget": 600,
+      "trust_scale": 10.0,
+      "tag": "_b600t10"
+    },
+    {
+      "q": 256,
+      "rule": "m2",
+      "quadrature": "dense",
+      "arms": [
+        "base"
+      ],
+      "step_budget": 180,
+      "trust_scale": 10.0,
+      "tag": "_t10"
+    },
+    {
+      "q": 256,
+      "rule": "m2",
+      "quadrature": "eq",
+      "arms": [
+        "base"
+      ],
+      "step_budget": 2000,
+      "tag": "_b2000"
+    },
+    {
+      "q": 256,
+      "rule": "m2",
+      "quadrature": "eq",
+      "arms": [
+        "base"
+      ]
+    }
+  ],
+  "cascade_setup": [],
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "nt1e-2",
+      "preconditioner": "fft",
+      "ntol": 0.01,
+      "ltol": 0.5
+    }
+  ],
+  "expected_directions_sha256": "f270e5bf682ad220f2164ced82dde0f3e0374e84e2fa002f3101e0728062d399",
+  "expected_reference_sha256": {
+    "0": "363d77568dbd1b117ef10d8c634548ebe4febe0366d44c40519ace63dfecab21",
+    "1": "bc411074cbaf401b31a3291db010d190066a2ad82cb808098d3c70c8b8fced76",
+    "2": "79fb8ec6495589c16df12071a0f55fba2732bb9d334df9a19b27bc5c7a35b259",
+    "3": "fc3db5f4ae81e5e70df8a6074aacfc9948c1a66618c3c88ec8883007acfe2905",
+    "4": "ec6ea95b93ff30f504ecb6f17d9062b5d6ac2dce79eb2dda1363b72f8a45e9a5",
+    "5": "1ee7966163f55ce300a0821d7d84479b0448d8a6da2f660e27c68b509163c166"
+  },
+  "cclad01_expectations": {
+    "q256_m2_dense_base": {
+      "reproduces": "q256_m2_dense_block",
+      "tolerance": 1e-09
+    }
+  },
+  "cclad01_job_id": 3734098,
+  "qlad01_job_id": 3713867,
+  "purpose": "Q1 follow-up: the q = 256 rung failed the pre-registered target with every fix, and the failure is localised to five time steps of ONE case out of six (case 0, steps 0-3 and 31). This asks whether it converges at a STATED COST by relaxing exactly one of the two retained contract constants at a time: the per-step iteration budget (180 -> 600, 2000) and the latent trust radius (x1 -> x10). Everything else is the frozen contract. The budget-180, trust-x1 arm is the control and must reproduce btq101/cclad01."
+}

@@ -1,0 +1,85 @@
+host=pax052 source_commit=a9b99c50cb2e5b274cd02cf5b53dc62cc9eb8c75
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.35:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 90.9
+REFERENCE 1 192.8
+REFERENCE 2 375.7
+REFERENCE 3 549.7
+REFERENCE 4 698.5
+REFERENCE 5 832.5
+SNAPSHOTS 17.5
+DIRECTIONS 1532.4 rank 512
+EQFIT q0_M256_eq_g1em06 m 1024 valid True 241.4
+ARM q0_M256_eq_g1em06 M 256 m 1024 250.7
+ARM q0_M256_eq_g0p001 M 256 m 1024 0.0
+ARM q0_M256_dense_g1em06 M 256 m None 0.6
+ARM q0_M256_dense_g0p001 M 256 m None 0.0
+EQFIT q16_M256_eq_g1em06 m 1024 valid True 201.4
+ARM q16_M256_eq_g1em06 M 256 m 1024 203.6
+ARM q16_M256_eq_g0p001 M 256 m 1024 0.0
+EQFIT q32_M256_eq_g1em06 m 1024 valid True 215.4
+ARM q32_M256_eq_g1em06 M 256 m 1024 217.6
+ARM q32_M256_eq_g0p001 M 256 m 1024 0.0
+EQFIT q64_M256_eq_g1em06 m 1024 valid True 198.5
+ARM q64_M256_eq_g1em06 M 256 m 1024 200.8
+ARM q64_M256_eq_g0p001 M 256 m 1024 0.0
+EQFIT q128_M256_eq_g1em06 m 1024 valid True 206.2
+ARM q128_M256_eq_g1em06 M 256 m 1024 208.5
+ARM q128_M256_eq_g0p001 M 256 m 1024 0.0
+ARM q128_M256_dense_g1em06 M 256 m None 0.6
+EQFIT q256_M544_eq_g1em06 m 2048 valid True 895.9
+ARM q256_M544_eq_g1em06 M 544 m 2048 904.9
+ARM q256_M544_eq_g0p001 M 544 m 2048 0.0
+EQFIT q512_M1056_eq_g1em06 m 2048 valid True 1075.0
+ARM q512_M1056_eq_g1em06 M 1056 m 2048 1081.0
+ARM pod16_dense 2.6
+ARM pod32_dense 2.6
+ARM pod64_dense 2.9
+ARM pod128_dense 4.0
+RECON q 0 2.54466
+RECON q 16 2.46146
+RECON q 32 2.33249
+RECON q 64 2.13863
+RECON q 128 1.81053
+RECON q 256 0.90164
+RECON q 512 0.39184
+WARM q0_M256_eq_g1em06 6.5
+WARM q0_M256_eq_g0p001 8.9
+WARM q0_M256_dense_g1em06 12.7
+WARM q0_M256_dense_g0p001 15.4
+WARM q16_M256_eq_g1em06 22.9
+WARM q16_M256_eq_g0p001 25.7
+WARM q32_M256_eq_g1em06 34.2
+WARM q32_M256_eq_g0p001 37.1
+WARM q64_M256_eq_g1em06 46.4
+WARM q64_M256_eq_g0p001 49.6
+WARM q128_M256_eq_g1em06 59.6
+WARM q128_M256_eq_g0p001 62.7
+WARM q128_M256_dense_g1em06 70.0
+WARM q256_M544_eq_g1em06 82.4
+WARM q256_M544_eq_g0p001 86.3
+WARM q512_M1056_eq_g1em06 97.2
+WARM pod16_dense 99.8
+WARM pod32_dense 103.3
+WARM pod64_dense 108.2
+WARM pod128_dense 112.9
+WARM fft_tight 114.0
+WARM nt1e-4_dt005 114.0
+WARM nt1e-2_dt01 115.0
+TIMED 0 6410.4
+TIMED 1 6482.1
+TIMED 2 6557.3
+Q2 ENVELOPE COMPLETE
+FNO PHASE
+fno_exit=0
+torch_backend=cuda NVIDIA A100-PCIE-40GB
+FNO burgers-dev-00000 device_ms 11.211
+FNO burgers-dev-00001 device_ms 11.206
+FNO burgers-dev-00002 device_ms 11.209
+FNO burgers-dev-00003 device_ms 11.219
+FNO burgers-dev-00004 device_ms 11.2
+FNO burgers-dev-00005 device_ms 11.205
+FNO PANEL COMPLETE
+ALL-DONE

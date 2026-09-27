@@ -1,0 +1,91 @@
+host=pax106 source_commit=b03fc2e07aa3ed98cacaccaacbd640f078d19f3d
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 81.7
+REFERENCE 1 147.4
+REFERENCE 2 238.1
+REFERENCE 3 321.7
+REFERENCE 4 393.2
+REFERENCE 5 457.5
+SNAPSHOTS 15.1
+DIRECTIONS 1223.8 rank 512 hash_match False
+ARM q0_m4_dense_base M 64 m None 1.1
+ARM q0_m4_dense_pre M 64 m None 0.0
+ARM q0_m4_dense_predamp M 64 m None 0.0
+EQFIT q0_m4_eq_base m 256 valid True 13.3
+ARM q0_m4_eq_base M 64 m 256 20.0
+ARM q64_m2_dense_base M 160 m None 1.2
+ARM q64_m2_dense_predamp M 160 m None 0.2
+ARM q128_m2_dense_base M 288 m None 1.5
+ARM q128_m2_dense_pre M 288 m None 0.1
+ARM q128_m2_dense_damp M 288 m None 0.0
+ARM q128_m2_dense_predamp M 288 m None 0.0
+EQFIT q128_m2_eq_base m 1152 valid True 217.5
+ARM q128_m2_eq_base M 288 m 1152 223.1
+ARM q128_m2_eq_predamp M 288 m 1152 0.0
+ARM q128_m2_dense_casc M 288 m None 0.0
+ARM q256_m2_dense_base M 544 m None 2.1
+ARM q256_m2_dense_pre M 544 m None 0.1
+ARM q256_m2_dense_damp M 544 m None 0.0
+ARM q256_m2_dense_predamp M 544 m None 0.0
+EQFIT q256_m2_eq_base m 2048 valid True 841.7
+ARM q256_m2_eq_base M 544 m 2048 848.8
+ARM q256_m2_eq_predamp M 544 m 2048 0.0
+ARM q256_m2_dense_casc M 544 m None 0.0
+ARM q512_m2_dense_base M 1056 m None 3.3
+ARM q512_m2_dense_pre M 1056 m None 0.1
+ARM q512_m2_dense_damp M 1056 m None 0.0
+ARM q512_m2_dense_predamp M 1056 m None 0.0
+EQFIT q512_m2_eq_base m 2048 valid True 1005.9
+ARM q512_m2_eq_base M 1056 m 2048 1009.9
+ARM q512_m2_eq_predamp M 1056 m 2048 0.0
+ARM q512_m2_dense_casc M 1056 m None 0.0
+CASCADE q128_m2_dense_casc from q64_m2_dense_predamp 16.3
+CASCADE q256_m2_dense_casc from q128_m2_dense_predamp 15.5
+CASCADE q512_m2_dense_casc from q256_m2_dense_predamp 31.7
+COND q 0 kappa 296785.45196696604 -> 258207.96341157757
+COND q 64 kappa 347513.4947926314 -> 227109.3649611161
+COND q 128 kappa 608045.5865331735 -> 434226.2527512025
+COND q 256 kappa 6138913.624081658 -> 3491689.29684263
+COND q 512 kappa 68646403040.94507 -> 34941720.727079205
+RECON q 0 2.54466
+RECON q 64 2.13863
+RECON q 128 1.81053
+RECON q 256 0.90164
+RECON q 512 0.39184
+WARM q0_m4_dense_base 3.8
+WARM q0_m4_dense_pre 6.3
+WARM q0_m4_dense_predamp 8.9
+WARM q0_m4_eq_base 12.3
+WARM q64_m2_dense_base 15.9
+WARM q64_m2_dense_predamp 19.5
+WARM q128_m2_dense_base 23.5
+WARM q128_m2_dense_pre 27.7
+WARM q128_m2_dense_damp 31.7
+WARM q128_m2_dense_predamp 35.7
+WARM q128_m2_dense_casc 48.1
+WARM q256_m2_dense_base 58.4
+WARM q256_m2_dense_pre 68.8
+WARM q256_m2_dense_damp 79.2
+WARM q256_m2_dense_predamp 89.6
+WARM q256_m2_dense_casc 116.8
+WARM q512_m2_dense_base 122.0
+WARM q512_m2_dense_pre 127.6
+WARM q512_m2_dense_damp 133.0
+WARM q512_m2_dense_predamp 138.4
+WARM q512_m2_dense_casc 145.5
+WARM q128_m2_eq_base 150.1
+WARM q128_m2_eq_predamp 153.4
+WARM q256_m2_eq_base 159.9
+WARM q256_m2_eq_predamp 165.0
+WARM q512_m2_eq_base 170.0
+WARM q512_m2_eq_predamp 173.3
+WARM fft_tight 174.3
+WARM nt1e-2 174.3
+TIMED 0 4910.4
+TIMED 1 5276.0
+TIMED 2 5641.6
+Q1 TOP COMPLETE
+ALL-DONE

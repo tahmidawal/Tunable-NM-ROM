@@ -1,0 +1,37 @@
+host=pax106 source_commit=4eccb76e3a9f908ad853f467d9043a4db30d0d00
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.28:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 80.7
+REFERENCE 1 149.5
+REFERENCE 2 245.0
+REFERENCE 3 333.0
+REFERENCE 4 408.0
+REFERENCE 5 475.5
+SNAPSHOTS 15.2
+DIRECTIONS 1204.8 rank 512 hash_match False
+ARM q256_m2_dense_base M 544 m None 1.9
+ARM q256_m2_dense_base_b600 M 544 m None 0.0
+ARM q256_m2_dense_base_b2000 M 544 m None 0.0
+ARM q256_m2_dense_base_b600t10 M 544 m None 0.0
+ARM q256_m2_dense_base_t10 M 544 m None 0.0
+EQFIT q256_m2_eq_base_b2000 m 2048 valid True 830.0
+ARM q256_m2_eq_base_b2000 M 544 m 2048 837.8
+ARM q256_m2_eq_base M 544 m 2048 0.0
+COND q 256 kappa 6138913.626290161 -> 3491689.2987237223
+RECON q 256 0.90164
+WARM q256_m2_dense_base 11.4
+WARM q256_m2_dense_base_b600 23.1
+WARM q256_m2_dense_base_b2000 35.0
+WARM q256_m2_dense_base_b600t10 42.4
+WARM q256_m2_dense_base_t10 49.1
+WARM q256_m2_eq_base_b2000 55.8
+WARM q256_m2_eq_base 60.8
+WARM fft_tight 61.9
+WARM nt1e-2 61.9
+TIMED 0 3039.0
+TIMED 1 3165.4
+TIMED 2 3291.9
+Q1 TOP COMPLETE
+ALL-DONE

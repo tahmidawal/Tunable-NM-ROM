@@ -1,0 +1,221 @@
+{
+  "attempt": "btq201",
+  "intervals": 256,
+  "dt": 0.005,
+  "eval_seed": 7090702,
+  "eval_cases": 4,
+  "eval_fresh_seed": 911702,
+  "eval_fresh_cases": 2,
+  "reference_mesh": 4096,
+  "reference_dt": 0.0003125,
+  "train_seed": 0,
+  "train_trajectories": 128,
+  "train_state_stride": 2,
+  "snapshot_ntol": 1e-09,
+  "snapshot_ltol": 1e-07,
+  "residual_snapshots": 1024,
+  "residual_starts": 4,
+  "residual_budget": 200,
+  "residual_seed": 20260915,
+  "decoder_code_subsample": 8192,
+  "q_ladder": [
+    0,
+    16,
+    32,
+    64,
+    128,
+    256
+  ],
+  "quadrature_multiplier": 4,
+  "quadrature_cap": 2048,
+  "eq_seconds": 2400.0,
+  "eq_blocks": 16,
+  "eq_seed": 20259,
+  "candidate_cap": 8192,
+  "fit_states": 64,
+  "max_fit_rows": 8192,
+  "gauss_jordan_max": 64,
+  "cold_axis_points": 48,
+  "strict": {
+    "ic_budget": 400,
+    "step_budget": 180,
+    "gtol": 1e-06
+  },
+  "ic_gtol": 1e-06,
+  "inner_damping": 1e-10,
+  "tau_y": 0.1,
+  "recon_starts": 8,
+  "recon_budget": 400,
+  "reps": 3,
+  "order_seed": 911719,
+  "burn_seconds": 0.25,
+  "pod_ranks": [
+    16,
+    32,
+    64,
+    128
+  ],
+  "pod_test_multiplier": 4,
+  "pod_gtol": 1e-06,
+  "rom_arms": [
+    {
+      "q": 0,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 0,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 0,
+      "M": 256,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 0,
+      "M": 256,
+      "quadrature": "dense",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 16,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 16,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 32,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 32,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 64,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 64,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 128,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 128,
+      "M": 256,
+      "quadrature": "eq",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 128,
+      "M": 256,
+      "quadrature": "dense",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 256,
+      "M": 544,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    },
+    {
+      "q": 256,
+      "M": 544,
+      "quadrature": "eq",
+      "gtol": 0.001,
+      "fix": "base"
+    },
+    {
+      "q": 512,
+      "M": 1056,
+      "quadrature": "eq",
+      "gtol": 1e-06,
+      "fix": "base"
+    }
+  ],
+  "fom_settings": [
+    {
+      "name": "fft_tight",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 1e-06,
+      "ltol": 1e-08
+    },
+    {
+      "name": "nt1e-4_dt005",
+      "preconditioner": "fft",
+      "dt": 0.005,
+      "ntol": 0.0001,
+      "ltol": 1e-06
+    },
+    {
+      "name": "nt1e-2_dt01",
+      "preconditioner": "fft",
+      "dt": 0.01,
+      "ntol": 0.01,
+      "ltol": 0.5
+    }
+  ],
+  "expected_directions_sha256": "f270e5bf682ad220f2164ced82dde0f3e0374e84e2fa002f3101e0728062d399",
+  "expected_reference_sha256": {
+    "0": "363d77568dbd1b117ef10d8c634548ebe4febe0366d44c40519ace63dfecab21",
+    "1": "bc411074cbaf401b31a3291db010d190066a2ad82cb808098d3c70c8b8fced76",
+    "2": "79fb8ec6495589c16df12071a0f55fba2732bb9d334df9a19b27bc5c7a35b259",
+    "3": "fc3db5f4ae81e5e70df8a6074aacfc9948c1a66618c3c88ec8883007acfe2905",
+    "4": "ec6ea95b93ff30f504ecb6f17d9062b5d6ac2dce79eb2dda1363b72f8a45e9a5",
+    "5": "1ee7966163f55ce300a0821d7d84479b0448d8a6da2f660e27c68b509163c166"
+  },
+  "cclad01_expectations": {
+    "q0_M256_dense_g1em06": {
+      "reproduces": "q0_m256_dense_block",
+      "tolerance": 1e-09
+    },
+    "q128_M256_dense_g1em06": {
+      "reproduces": "q128_m256_dense_block",
+      "tolerance": 0.001,
+      "tolerance_if_directions_bitwise": 1e-09
+    }
+  },
+  "cclad01_job_id": 3734098,
+  "q256_note": "Q1 (job 3745589) did NOT converge the q = 256 rung and measured all three fixes to be numerically inert there, so the rung is carried with fix 'base' and reported as not converged rather than dropped; the pre-registered knob criterion counts only converged non-dominated points, so keeping it cannot corrupt the criterion.",
+  "fidelity_note": "the fidelity gates use the DENSE arms, not the empirical-quadrature ones: the bounded NNLS fitter stops on whichever of target support and walltime binds, so a walltime-truncated rule is not reproducible across nodes even at identical settings, and cclad01's m256 rules were truncated. The dense arms carry no quadrature and must reproduce exactly.",
+  "q512_note": "added after Q1: every q = 512 time step is stationary and the only failing check is a degenerate initial-fit gradient (at q = R the corrections span the whole bank and the supplied field is fit to machine zero, making the normalized gradient a 0/0 ratio). It is the rung that reaches the bank floor, so the envelope is more honest with it than without it."
+}

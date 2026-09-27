@@ -1,0 +1,11 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/confirmation06/experiments/ns3d/confirmation06.py", line 63, in <module>
+    if __name__=='__main__':main()
+                            ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/confirmation06/experiments/ns3d/confirmation06.py", line 20, in main
+    record=json.loads((reuse/'REUSE.json').read_text());assert all(file_hash(reuse[x['path']])==x['sha256'] for x in record['files'])
+                                                               ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/paper_ns3d_20260920/confirmation06/experiments/ns3d/confirmation06.py", line 20, in <genexpr>
+    record=json.loads((reuse/'REUSE.json').read_text());assert all(file_hash(reuse[x['path']])==x['sha256'] for x in record['files'])
+                                                                             ~~~~~^^^^^^^^^^^
+TypeError: 'PosixPath' object is not subscriptable

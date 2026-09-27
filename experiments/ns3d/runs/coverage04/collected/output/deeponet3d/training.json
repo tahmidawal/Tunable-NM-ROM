@@ -1,0 +1,43 @@
+{
+  "spec": {
+    "kind": "deeponet3d",
+    "width": 16,
+    "levels": 3,
+    "pool_bins": 4,
+    "rank": 512,
+    "trunk_width": 512,
+    "periodic": true,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ],
+    "trunk_frequencies": [
+      2.0,
+      4.0,
+      8.0
+    ],
+    "output_residual_initial": true
+  },
+  "config": {
+    "steps": 50000,
+    "wall_seconds": 900,
+    "batch_size": 2,
+    "seed": 202609247,
+    "learning_rate": 0.001,
+    "validation_every": 400,
+    "curve_every": 100,
+    "components_per_output": 3,
+    "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+  },
+  "parameter_count": 6790319,
+  "steps_completed": 31600,
+  "best_step": 1200,
+  "best_validation_worst": 0.6574580202822156,
+  "seconds": 909.7464800239541,
+  "exit_reason": "wall_budget",
+  "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128"
+}

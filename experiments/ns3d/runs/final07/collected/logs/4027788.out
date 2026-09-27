@@ -1,0 +1,142 @@
+host=pax049 source_commit=7681447fe74efb6c2755bb19304174d6867533e7 job=4027788
+NVIDIA A100 80GB PCIe, 81920 MiB
+Filesystem                       Size  Used Avail Use% Mounted on
+10.235.106.23:/projects/paralab  4.6T  4.2T  406G  92% /cluster/tufts/paralab
+jax_backend=gpu
+STAGE evaluation_data_generation
+data seed=202609203 1/32 elapsed=3.5
+data seed=202609203 9/32 elapsed=4.1
+data seed=202609203 17/32 elapsed=4.8
+data seed=202609203 25/32 elapsed=5.4
+data seed=202609203 32/32 elapsed=5.9
+STAGE reference_generation
+STAGE compile_complete_queries
+COMPILED nmrom_pca64_free_q0
+COMPILED nmrom_pca64_free_q32
+COMPILED nmrom_pca64_free_q64
+COMPILED nmrom_pca64_free_q128
+COMPILED nmrom_pca64_free_q256
+COMPILED pod_weak_64
+COMPILED pod_galerkin_64
+COMPILED pod_weak_96
+COMPILED pod_galerkin_96
+COMPILED pod_weak_128
+COMPILED pod_galerkin_128
+COMPILED pod_weak_192
+COMPILED pod_galerkin_192
+COMPILED pod_weak_320
+COMPILED pod_galerkin_320
+COMPILED free_bank_galerkin
+COMPILED fno3d_increment_raw
+COMPILED fno3d_increment_projected
+COMPILED unet3d_increment_raw
+COMPILED unet3d_increment_projected
+COMPILED deeponet3d_increment_raw
+COMPILED deeponet3d_increment_projected
+COMPILED transolver3d_increment_raw
+COMPILED transolver3d_increment_projected
+COMPILED fom_dt0.002
+COMPILED fom_dt0.004
+COMPILED fom_dt0.008
+COMPILED fom_dt0.01
+COMPILED fom_dt0.02
+COMPILED fom_dt0.04
+STAGE paired_timing
+TIMED 0 0
+TIMED 0 1
+TIMED 0 2
+TIMED 1 0
+TIMED 1 1
+TIMED 1 2
+TIMED 2 0
+TIMED 2 1
+TIMED 2 2
+TIMED 3 0
+TIMED 3 1
+TIMED 3 2
+TIMED 4 0
+TIMED 4 1
+TIMED 4 2
+TIMED 5 0
+TIMED 5 1
+TIMED 5 2
+TIMED 6 0
+TIMED 6 1
+TIMED 6 2
+TIMED 7 0
+TIMED 7 1
+TIMED 7 2
+TIMED 8 0
+TIMED 8 1
+TIMED 8 2
+TIMED 9 0
+TIMED 9 1
+TIMED 9 2
+TIMED 10 0
+TIMED 10 1
+TIMED 10 2
+TIMED 11 0
+TIMED 11 1
+TIMED 11 2
+TIMED 12 0
+TIMED 12 1
+TIMED 12 2
+TIMED 13 0
+TIMED 13 1
+TIMED 13 2
+TIMED 14 0
+TIMED 14 1
+TIMED 14 2
+TIMED 15 0
+TIMED 15 1
+TIMED 15 2
+TIMED 16 0
+TIMED 16 1
+TIMED 16 2
+TIMED 17 0
+TIMED 17 1
+TIMED 17 2
+TIMED 18 0
+TIMED 18 1
+TIMED 18 2
+TIMED 19 0
+TIMED 19 1
+TIMED 19 2
+TIMED 20 0
+TIMED 20 1
+TIMED 20 2
+TIMED 21 0
+TIMED 21 1
+TIMED 21 2
+TIMED 22 0
+TIMED 22 1
+TIMED 22 2
+TIMED 23 0
+TIMED 23 1
+TIMED 23 2
+TIMED 24 0
+TIMED 24 1
+TIMED 24 2
+TIMED 25 0
+TIMED 25 1
+TIMED 25 2
+TIMED 26 0
+TIMED 26 1
+TIMED 26 2
+TIMED 27 0
+TIMED 27 1
+TIMED 27 2
+TIMED 28 0
+TIMED 28 1
+TIMED 28 2
+TIMED 29 0
+TIMED 29 1
+TIMED 29 2
+TIMED 30 0
+TIMED 30 1
+TIMED 30 2
+TIMED 31 0
+TIMED 31 1
+TIMED 31 2
+STAGE complete
+PILOT_EXIT=0

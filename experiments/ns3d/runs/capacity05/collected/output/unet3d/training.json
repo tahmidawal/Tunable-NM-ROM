@@ -1,0 +1,31 @@
+{
+  "spec": {
+    "kind": "unet3d",
+    "width": 8,
+    "levels": 3,
+    "periodic": true,
+    "output_residual_initial": true
+  },
+  "config": {
+    "steps": 50000,
+    "wall_seconds": 900,
+    "batch_size": 2,
+    "seed": 202609246,
+    "learning_rate": 0.001,
+    "validation_every": 400,
+    "curve_every": 100,
+    "components_per_output": 3,
+    "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+  },
+  "parameter_count": 89287,
+  "steps_completed": 50000,
+  "best_step": 43200,
+  "best_validation_worst": 0.02564616798509794,
+  "seconds": 514.1284234989434,
+  "exit_reason": "steps",
+  "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "reused_from_job": "3997427"
+}

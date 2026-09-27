@@ -1,0 +1,35 @@
+{
+  "spec": {
+    "kind": "fno3d",
+    "width": 16,
+    "modes": [
+      8,
+      8,
+      8
+    ],
+    "depth": 4,
+    "padding": 0,
+    "output_residual_initial": true
+  },
+  "config": {
+    "steps": 50000,
+    "wall_seconds": 900,
+    "batch_size": 2,
+    "seed": 202609245,
+    "learning_rate": 0.001,
+    "validation_every": 400,
+    "curve_every": 100,
+    "components_per_output": 3,
+    "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+  },
+  "parameter_count": 4196511,
+  "steps_completed": 50000,
+  "best_step": 50000,
+  "best_validation_worst": 0.005529366200649932,
+  "seconds": 188.13822641409934,
+  "exit_reason": "steps",
+  "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128"
+}

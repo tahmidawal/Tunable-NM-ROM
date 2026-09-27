@@ -1,0 +1,45 @@
+{
+  "spec": {
+    "kind": "transolver3d",
+    "width": 48,
+    "depth": 4,
+    "heads": 4,
+    "slices": 32,
+    "patch": 2,
+    "reference_grid": 4,
+    "mlp_ratio": 2,
+    "periodic": true,
+    "coordinate_channels": [
+      -3,
+      -2,
+      -1
+    ],
+    "coordinate_bounds": [
+      0.0,
+      1.0
+    ],
+    "output_residual_initial": true
+  },
+  "config": {
+    "steps": 50000,
+    "wall_seconds": 900,
+    "batch_size": 2,
+    "seed": 202609248,
+    "learning_rate": 0.001,
+    "validation_every": 400,
+    "curve_every": 100,
+    "components_per_output": 3,
+    "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+  },
+  "parameter_count": 569064,
+  "steps_completed": 37600,
+  "best_step": 36400,
+  "best_validation_worst": 0.041523093315710476,
+  "seconds": 901.7417847730685,
+  "exit_reason": "wall_budget",
+  "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference",
+  "converged_claim": false,
+  "parameter_dtype": "float64",
+  "fft_dtype": "complex128",
+  "reused_from_job": "3997427"
+}

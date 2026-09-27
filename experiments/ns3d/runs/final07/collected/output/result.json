@@ -1,0 +1,2526 @@
+{
+  "freeze": {
+    "schema": "ns3d-final-freeze-v1",
+    "configuration": {
+      "n": 32,
+      "initial_amplitude": 0.2,
+      "dt": 0.001,
+      "horizon": 0.2,
+      "verification_cases": 4,
+      "train_cases": 512,
+      "dev_cases": 16,
+      "train_seed": 202609201,
+      "dev_seed": 202609202,
+      "final_seed_unopened": 202609203,
+      "model_seed": 202609242,
+      "n_ff": 256,
+      "spatial_batch": 1024,
+      "test_modes": 2048,
+      "q_values": [
+        0,
+        32,
+        64,
+        128,
+        256
+      ],
+      "rom_dt": 0.004,
+      "rom_budget": 120,
+      "fom_dts": [
+        0.002,
+        0.004,
+        0.008,
+        0.01,
+        0.02,
+        0.04
+      ],
+      "timed_cases": 32,
+      "repetitions": 3,
+      "reference_dt": 0.00025,
+      "fine_reference_n": 64,
+      "fine_reference_dt": 0.0005,
+      "operator_train": {
+        "steps": 50000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 202609245,
+        "learning_rate": 0.001,
+        "validation_every": 400,
+        "curve_every": 100,
+        "components_per_output": 3,
+        "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+      },
+      "operators": [
+        {
+          "kind": "fno3d",
+          "width": 16,
+          "modes": [
+            8,
+            8,
+            8
+          ],
+          "depth": 4,
+          "padding": 0,
+          "output_residual_initial": true
+        },
+        {
+          "kind": "unet3d",
+          "width": 8,
+          "levels": 3,
+          "periodic": true,
+          "output_residual_initial": true
+        },
+        {
+          "kind": "deeponet3d",
+          "width": 16,
+          "levels": 3,
+          "pool_bins": 4,
+          "rank": 512,
+          "trunk_width": 512,
+          "periodic": true,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "trunk_frequencies": [
+            2.0,
+            4.0,
+            8.0
+          ],
+          "output_residual_initial": true
+        },
+        {
+          "kind": "transolver3d",
+          "width": 48,
+          "depth": 4,
+          "heads": 4,
+          "slices": 32,
+          "patch": 2,
+          "reference_grid": 4,
+          "mlp_ratio": 2,
+          "periodic": true,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "coordinate_bounds": [
+            0.0,
+            1.0
+          ],
+          "output_residual_initial": true
+        }
+      ],
+      "capacity_head_steps": 100000,
+      "capacity_head_seconds": 600,
+      "augmentation_copies": 4,
+      "augmentation_seed": 202609241,
+      "coverage_rank": 1536,
+      "coverage_bank_steps": 200000,
+      "coverage_bank_seconds": 1200,
+      "pod_screen_ranks": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        1536
+      ],
+      "head_batch": 128,
+      "head_variants": [
+        {
+          "label": "pca64_fixed",
+          "k": 64,
+          "free_codes": false
+        },
+        {
+          "label": "pca64_free",
+          "k": 64,
+          "free_codes": true
+        },
+        {
+          "label": "pca128_fixed",
+          "k": 128,
+          "free_codes": false
+        }
+      ],
+      "rollout_bank_threshold": 0.05,
+      "rollout_head_threshold": 0.08,
+      "larger_rollout_q_values": [
+        0,
+        32,
+        64
+      ],
+      "planned_extended_ladder": {
+        "q_values": [
+          0,
+          32,
+          64,
+          128,
+          256
+        ],
+        "fixed_test_modes": 2048,
+        "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+      },
+      "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases.",
+      "k": 64,
+      "r": 1536,
+      "selected_head": "pca64_free",
+      "bank_hidden_width": 1536,
+      "selected_training_source_commit": "ef1d1e9f5c29a2e77444a2d190d9d0c6a70cdf7f",
+      "selected_training_job_id": "3997427",
+      "selected_training_config": {
+        "n": 32,
+        "initial_amplitude": 0.2,
+        "dt": 0.001,
+        "horizon": 0.2,
+        "verification_cases": 4,
+        "train_cases": 512,
+        "dev_cases": 16,
+        "train_seed": 202609201,
+        "dev_seed": 202609202,
+        "final_seed_unopened": 202609203,
+        "model_seed": 202609242,
+        "n_ff": 256,
+        "spatial_batch": 1024,
+        "test_modes": 1024,
+        "q_values": [
+          0,
+          16,
+          32,
+          64,
+          128
+        ],
+        "rom_dt": 0.004,
+        "rom_budget": 80,
+        "fom_dts": [
+          0.002,
+          0.004,
+          0.008,
+          0.01,
+          0.02,
+          0.04
+        ],
+        "timed_cases": 8,
+        "repetitions": 3,
+        "reference_dt": 0.00025,
+        "fine_reference_n": 64,
+        "fine_reference_dt": 0.0005,
+        "operator_train": {
+          "steps": 50000,
+          "wall_seconds": 900,
+          "batch_size": 2,
+          "seed": 202609245,
+          "learning_rate": 0.001,
+          "validation_every": 400,
+          "curve_every": 100,
+          "components_per_output": 3,
+          "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+        },
+        "operators": [
+          {
+            "kind": "fno3d",
+            "width": 16,
+            "modes": [
+              8,
+              8,
+              8
+            ],
+            "depth": 4,
+            "padding": 0,
+            "output_residual_initial": true
+          },
+          {
+            "kind": "unet3d",
+            "width": 8,
+            "levels": 3,
+            "periodic": true,
+            "output_residual_initial": true
+          },
+          {
+            "kind": "deeponet3d",
+            "width": 16,
+            "levels": 3,
+            "pool_bins": 4,
+            "rank": 512,
+            "trunk_width": 512,
+            "periodic": true,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ],
+            "trunk_frequencies": [
+              2.0,
+              4.0,
+              8.0
+            ],
+            "output_residual_initial": true
+          },
+          {
+            "kind": "transolver3d",
+            "width": 48,
+            "depth": 4,
+            "heads": 4,
+            "slices": 32,
+            "patch": 2,
+            "reference_grid": 4,
+            "mlp_ratio": 2,
+            "periodic": true,
+            "coordinate_channels": [
+              -3,
+              -2,
+              -1
+            ],
+            "coordinate_bounds": [
+              0.0,
+              1.0
+            ],
+            "output_residual_initial": true
+          }
+        ],
+        "capacity_head_steps": 100000,
+        "capacity_head_seconds": 600,
+        "augmentation_copies": 4,
+        "augmentation_seed": 202609241,
+        "coverage_rank": 1536,
+        "coverage_bank_steps": 200000,
+        "coverage_bank_seconds": 1200,
+        "pod_screen_ranks": [
+          64,
+          128,
+          256,
+          512,
+          1024,
+          1536
+        ],
+        "head_batch": 128,
+        "head_variants": [
+          {
+            "label": "pca64_fixed",
+            "k": 64,
+            "free_codes": false
+          },
+          {
+            "label": "pca64_free",
+            "k": 64,
+            "free_codes": true
+          },
+          {
+            "label": "pca128_fixed",
+            "k": 128,
+            "free_codes": false
+          }
+        ],
+        "rollout_bank_threshold": 0.05,
+        "rollout_head_threshold": 0.08,
+        "larger_rollout_q_values": [
+          0,
+          32,
+          64
+        ],
+        "planned_extended_ladder": {
+          "q_values": [
+            0,
+            32,
+            64,
+            128,
+            256
+          ],
+          "fixed_test_modes": 2048,
+          "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+        },
+        "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases."
+      },
+      "cold_starts": 8,
+      "gtol": 1e-07,
+      "evaluation_cohort": "final",
+      "reuse_path": "reuse",
+      "operator_projection_variants": [
+        false,
+        true
+      ],
+      "refinement_n": 128,
+      "refinement_dt": 0.00025,
+      "refinement_budget": 0.005,
+      "final_cases_unopened": 32,
+      "physical_accuracy_target": 0.05,
+      "pretraining": {
+        "teacher_seed": 202609270,
+        "teacher_oversampling": 64,
+        "teacher_power_iterations": 2,
+        "trunk_steps": 20000,
+        "trunk_learning_rate": 0.001,
+        "trunk_batch_points": 2048,
+        "trunk_wall_seconds": 300,
+        "branch_steps": 20000,
+        "branch_learning_rate": 0.001,
+        "branch_batch_size": 4,
+        "branch_wall_seconds": 300,
+        "checkpoint_every": 1000
+      },
+      "deep_joint_training": {
+        "steps": 40000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 202609270,
+        "learning_rate": 0.001,
+        "validation_every": 400,
+        "curve_every": 100,
+        "components_per_output": 3,
+        "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+      },
+      "frozen_source_directory": "reuse"
+    },
+    "assets": {
+      "files": {
+        "deeponet3d/best.pkl": "a1f02c4a185b1ce5d432dd824f840d65b9b39ea9ab788d88f4fdf944aab81d44",
+        "dense_weak_operators.npz": "12e5c0a2f0dce30f59170fdd6f3f31dc535f872d87ad76629f76a182bbb82a7f",
+        "dense_weak_test_modes.json": "9b4aef25e54691be09df376c6185a54654e28309bf0d7b337c241e4fc5f4a929",
+        "fno3d/best.pkl": "3149e8d303cd70eed7bc969ecd281c51bbfbe1d3974f181124a8cd80edc26dbd",
+        "frozen_bank.pkl": "8ec5f3e2485291f7ca18d3053eccd061074b0cf00911c8b1a56251402d46033b",
+        "head.pkl": "6350b11dd24ae375b968035017b243b1b8276c7a159a3b8a0c3c33a2a1e2b7b5",
+        "metadata.json": "f962bc9cb18441994660202c537184e2e1fc416ea7df7c4601cadc893c6ae26a",
+        "operator_statistics.pkl": "8bc5d1ba54df5f33f7fb9915a5e068b6c3eb6887864aa96018243aea4a443353",
+        "pod.npz": "faaa9a3e78479c640ef4b52e905008cd653a180406326ded76775bc7a55d9837",
+        "transolver3d/best.pkl": "5e5862c84880689ed6a43726063e096d77934d50bfe2feff26ac793d9dd8f227",
+        "unet3d/best.pkl": "69949501a37493ed1243ae49f151248d46cbf68e69ddb46ed535bf1df5488ee1"
+      },
+      "final_cohort_opened": false
+    },
+    "accepted_development_audit_sha256": {
+      "audit.json": "0d5ac50b7dc9cd314bc0bba9d27138a36eefeece1c7cb0181826b04fa5931f57",
+      "history_audit.json": "7304a428481a86bba7d18377266db57df82dcafae33c8d2524d34ffa38f8dbab",
+      "source_audit.json": "c398864887690d5c2efaa90387f5441168b6fa3a411e0067eb974dd47b9c91fc",
+      "teacher_audit.json": "120c9d48accf36f295bf36a07bada1ce72295735132b9ead160d3c4e652abd19",
+      "pod_cold_audit.json": "c8072a27077662dfd2db86149e3cb859752ac785ebf31b12208f75bd6acb9975"
+    },
+    "asset_manifest_sha256": "b0eb17a551365a870c376d725afbf8c8b4c2325353687bdb6fdd992e71a4dfe9",
+    "selection_source_commit": "71fd208d1ea2258a87147d78a56484993bb7fcf6",
+    "selection_job_id": "4024180",
+    "selection_files": {
+      "result.json": "3e2d8399783418165eae3b507cb255d4551cf04e96c51f814d56b44981a0ea7e",
+      "timing_rows.json": "c5af35fa14fd75d8e312a63aca801fa83fd334f2da3c6609dbe1753c04d92dbf",
+      "timed_fields.npz": "730c7e1e15a8d1af4ad87d9e27fd19e6b3b1baa65f8464d1786cc7acb2e25597"
+    },
+    "cheapest_passing_development_fom": "fom_dt0.01",
+    "final_fields_generated": false,
+    "policy": "Actual offline assets and every solver choice are fixed before final generation; no final-based training, selection or exclusions."
+  },
+  "development_replay": {
+    "passed": true,
+    "relative_tolerance": 1e-08,
+    "checks": [
+      {
+        "method": "nmrom_pca64_free_q0",
+        "field_relative_difference": 1.2381075511940628e-15,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "nmrom_pca64_free_q32",
+        "field_relative_difference": 1.3192416245176887e-15,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "nmrom_pca64_free_q64",
+        "field_relative_difference": 1.2769287852103942e-15,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "nmrom_pca64_free_q128",
+        "field_relative_difference": 1.4534645747303097e-15,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "nmrom_pca64_free_q256",
+        "field_relative_difference": 1.708940116073986e-15,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_weak_64",
+        "field_relative_difference": 2.621843670708283e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_galerkin_64",
+        "field_relative_difference": 2.427599105303456e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_weak_96",
+        "field_relative_difference": 2.759908896014641e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_galerkin_96",
+        "field_relative_difference": 2.8918598751924865e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_weak_128",
+        "field_relative_difference": 2.6069637873626957e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_galerkin_128",
+        "field_relative_difference": 2.7136596408110854e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_weak_192",
+        "field_relative_difference": 2.954596655696137e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_galerkin_192",
+        "field_relative_difference": 3.020451275679801e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_weak_320",
+        "field_relative_difference": 3.2411096871125734e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "pod_galerkin_320",
+        "field_relative_difference": 3.3218115502459125e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "free_bank_galerkin",
+        "field_relative_difference": 3.0964328243923216e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fno3d_increment_raw",
+        "field_relative_difference": 3.411649326781932e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fno3d_increment_projected",
+        "field_relative_difference": 3.4352705402413214e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "unet3d_increment_raw",
+        "field_relative_difference": 4.132105346850908e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "unet3d_increment_projected",
+        "field_relative_difference": 3.5327707536815254e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "deeponet3d_increment_raw",
+        "field_relative_difference": 4.28396616452269e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "deeponet3d_increment_projected",
+        "field_relative_difference": 3.8353023479569523e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "transolver3d_increment_raw",
+        "field_relative_difference": 4.468740663661801e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "transolver3d_increment_projected",
+        "field_relative_difference": 3.9507886670088677e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fom_dt0.002",
+        "field_relative_difference": 2.647419842010676e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fom_dt0.004",
+        "field_relative_difference": 2.6036187228690975e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fom_dt0.008",
+        "field_relative_difference": 2.611105791136413e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fom_dt0.01",
+        "field_relative_difference": 2.614487040081366e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fom_dt0.02",
+        "field_relative_difference": 3.944204323243098e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      },
+      {
+        "method": "fom_dt0.04",
+        "field_relative_difference": 4.726082671027841e-16,
+        "expected_numerical_failure": false,
+        "identical_stopping": true,
+        "passed": true
+      }
+    ],
+    "final_cohort_opened": false
+  },
+  "verified_before_final_parameter_generation": true,
+  "final_access_utc": "2026-09-20T17:36:18.902251+00:00",
+  "gpu": "NVIDIA A100 80GB PCIe, 81920 MiB",
+  "backend": "gpu",
+  "x64": true,
+  "precision": "highest",
+  "config": {
+    "n": 32,
+    "initial_amplitude": 0.2,
+    "dt": 0.001,
+    "horizon": 0.2,
+    "verification_cases": 4,
+    "train_cases": 512,
+    "dev_cases": 16,
+    "train_seed": 202609201,
+    "dev_seed": 202609202,
+    "final_seed_unopened": 202609203,
+    "model_seed": 202609242,
+    "n_ff": 256,
+    "spatial_batch": 1024,
+    "test_modes": 2048,
+    "q_values": [
+      0,
+      32,
+      64,
+      128,
+      256
+    ],
+    "rom_dt": 0.004,
+    "rom_budget": 120,
+    "fom_dts": [
+      0.002,
+      0.004,
+      0.008,
+      0.01,
+      0.02,
+      0.04
+    ],
+    "timed_cases": 32,
+    "repetitions": 3,
+    "reference_dt": 0.00025,
+    "fine_reference_n": 64,
+    "fine_reference_dt": 0.0005,
+    "operator_train": {
+      "steps": 50000,
+      "wall_seconds": 900,
+      "batch_size": 2,
+      "seed": 202609245,
+      "learning_rate": 0.001,
+      "validation_every": 400,
+      "curve_every": 100,
+      "components_per_output": 3,
+      "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+    },
+    "operators": [
+      {
+        "kind": "fno3d",
+        "width": 16,
+        "modes": [
+          8,
+          8,
+          8
+        ],
+        "depth": 4,
+        "padding": 0,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "unet3d",
+        "width": 8,
+        "levels": 3,
+        "periodic": true,
+        "output_residual_initial": true
+      },
+      {
+        "kind": "deeponet3d",
+        "width": 16,
+        "levels": 3,
+        "pool_bins": 4,
+        "rank": 512,
+        "trunk_width": 512,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "trunk_frequencies": [
+          2.0,
+          4.0,
+          8.0
+        ],
+        "output_residual_initial": true
+      },
+      {
+        "kind": "transolver3d",
+        "width": 48,
+        "depth": 4,
+        "heads": 4,
+        "slices": 32,
+        "patch": 2,
+        "reference_grid": 4,
+        "mlp_ratio": 2,
+        "periodic": true,
+        "coordinate_channels": [
+          -3,
+          -2,
+          -1
+        ],
+        "coordinate_bounds": [
+          0.0,
+          1.0
+        ],
+        "output_residual_initial": true
+      }
+    ],
+    "capacity_head_steps": 100000,
+    "capacity_head_seconds": 600,
+    "augmentation_copies": 4,
+    "augmentation_seed": 202609241,
+    "coverage_rank": 1536,
+    "coverage_bank_steps": 200000,
+    "coverage_bank_seconds": 1200,
+    "pod_screen_ranks": [
+      64,
+      128,
+      256,
+      512,
+      1024,
+      1536
+    ],
+    "head_batch": 128,
+    "head_variants": [
+      {
+        "label": "pca64_fixed",
+        "k": 64,
+        "free_codes": false
+      },
+      {
+        "label": "pca64_free",
+        "k": 64,
+        "free_codes": true
+      },
+      {
+        "label": "pca128_fixed",
+        "k": 128,
+        "free_codes": false
+      }
+    ],
+    "rollout_bank_threshold": 0.05,
+    "rollout_head_threshold": 0.08,
+    "larger_rollout_q_values": [
+      0,
+      32,
+      64
+    ],
+    "planned_extended_ladder": {
+      "q_values": [
+        0,
+        32,
+        64,
+        128,
+        256
+      ],
+      "fixed_test_modes": 2048,
+      "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+    },
+    "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases.",
+    "k": 64,
+    "r": 1536,
+    "selected_head": "pca64_free",
+    "bank_hidden_width": 1536,
+    "selected_training_source_commit": "ef1d1e9f5c29a2e77444a2d190d9d0c6a70cdf7f",
+    "selected_training_job_id": "3997427",
+    "selected_training_config": {
+      "n": 32,
+      "initial_amplitude": 0.2,
+      "dt": 0.001,
+      "horizon": 0.2,
+      "verification_cases": 4,
+      "train_cases": 512,
+      "dev_cases": 16,
+      "train_seed": 202609201,
+      "dev_seed": 202609202,
+      "final_seed_unopened": 202609203,
+      "model_seed": 202609242,
+      "n_ff": 256,
+      "spatial_batch": 1024,
+      "test_modes": 1024,
+      "q_values": [
+        0,
+        16,
+        32,
+        64,
+        128
+      ],
+      "rom_dt": 0.004,
+      "rom_budget": 80,
+      "fom_dts": [
+        0.002,
+        0.004,
+        0.008,
+        0.01,
+        0.02,
+        0.04
+      ],
+      "timed_cases": 8,
+      "repetitions": 3,
+      "reference_dt": 0.00025,
+      "fine_reference_n": 64,
+      "fine_reference_dt": 0.0005,
+      "operator_train": {
+        "steps": 50000,
+        "wall_seconds": 900,
+        "batch_size": 2,
+        "seed": 202609245,
+        "learning_rate": 0.001,
+        "validation_every": 400,
+        "curve_every": 100,
+        "components_per_output": 3,
+        "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+      },
+      "operators": [
+        {
+          "kind": "fno3d",
+          "width": 16,
+          "modes": [
+            8,
+            8,
+            8
+          ],
+          "depth": 4,
+          "padding": 0,
+          "output_residual_initial": true
+        },
+        {
+          "kind": "unet3d",
+          "width": 8,
+          "levels": 3,
+          "periodic": true,
+          "output_residual_initial": true
+        },
+        {
+          "kind": "deeponet3d",
+          "width": 16,
+          "levels": 3,
+          "pool_bins": 4,
+          "rank": 512,
+          "trunk_width": 512,
+          "periodic": true,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "trunk_frequencies": [
+            2.0,
+            4.0,
+            8.0
+          ],
+          "output_residual_initial": true
+        },
+        {
+          "kind": "transolver3d",
+          "width": 48,
+          "depth": 4,
+          "heads": 4,
+          "slices": 32,
+          "patch": 2,
+          "reference_grid": 4,
+          "mlp_ratio": 2,
+          "periodic": true,
+          "coordinate_channels": [
+            -3,
+            -2,
+            -1
+          ],
+          "coordinate_bounds": [
+            0.0,
+            1.0
+          ],
+          "output_residual_initial": true
+        }
+      ],
+      "capacity_head_steps": 100000,
+      "capacity_head_seconds": 600,
+      "augmentation_copies": 4,
+      "augmentation_seed": 202609241,
+      "coverage_rank": 1536,
+      "coverage_bank_steps": 200000,
+      "coverage_bank_seconds": 1200,
+      "pod_screen_ranks": [
+        64,
+        128,
+        256,
+        512,
+        1024,
+        1536
+      ],
+      "head_batch": 128,
+      "head_variants": [
+        {
+          "label": "pca64_fixed",
+          "k": 64,
+          "free_codes": false
+        },
+        {
+          "label": "pca64_free",
+          "k": 64,
+          "free_codes": true
+        },
+        {
+          "label": "pca128_fixed",
+          "k": 128,
+          "free_codes": false
+        }
+      ],
+      "rollout_bank_threshold": 0.05,
+      "rollout_head_threshold": 0.08,
+      "larger_rollout_q_values": [
+        0,
+        32,
+        64
+      ],
+      "planned_extended_ladder": {
+        "q_values": [
+          0,
+          32,
+          64,
+          128,
+          256
+        ],
+        "fixed_test_modes": 2048,
+        "condition": "if measured q64 remains representation-limited after a viable learned bank/head, repeat the entire ladder with this fixed M; no cross-M q-only claim"
+      },
+      "final_panel_requirement": "Measure the selected augmented-cohort NM-ROM even if accuracy target fails, together with augmented-cohort POD/all four operators and efficient FOM; freeze all choices before final cases."
+    },
+    "cold_starts": 8,
+    "gtol": 1e-07,
+    "evaluation_cohort": "final",
+    "reuse_path": "reuse",
+    "operator_projection_variants": [
+      false,
+      true
+    ],
+    "refinement_n": 128,
+    "refinement_dt": 0.00025,
+    "refinement_budget": 0.005,
+    "final_cases_unopened": 32,
+    "physical_accuracy_target": 0.05,
+    "pretraining": {
+      "teacher_seed": 202609270,
+      "teacher_oversampling": 64,
+      "teacher_power_iterations": 2,
+      "trunk_steps": 20000,
+      "trunk_learning_rate": 0.001,
+      "trunk_batch_points": 2048,
+      "trunk_wall_seconds": 300,
+      "branch_steps": 20000,
+      "branch_learning_rate": 0.001,
+      "branch_batch_size": 4,
+      "branch_wall_seconds": 300,
+      "checkpoint_every": 1000
+    },
+    "deep_joint_training": {
+      "steps": 40000,
+      "wall_seconds": 900,
+      "batch_size": 2,
+      "seed": 202609270,
+      "learning_rate": 0.001,
+      "validation_every": 400,
+      "curve_every": 100,
+      "components_per_output": 3,
+      "normalization": "initial vector norm; trained increment u(t)-u(0), initial field restored at inference"
+    },
+    "frozen_source_directory": "reuse",
+    "final_freeze_path": "experiments/ns3d/configs/final07freeze.json"
+  },
+  "source_commit": "7681447fe74efb6c2755bb19304174d6867533e7",
+  "job_id": "4027788",
+  "final_cohort_opened": true,
+  "complete": true,
+  "kind": "NS3D frozen matched comparison",
+  "evaluation_cohort": "final",
+  "cohort_seed": 202609203,
+  "cohort_count": 32,
+  "method_names": [
+    "nmrom_pca64_free_q0",
+    "nmrom_pca64_free_q32",
+    "nmrom_pca64_free_q64",
+    "nmrom_pca64_free_q128",
+    "nmrom_pca64_free_q256",
+    "pod_weak_64",
+    "pod_galerkin_64",
+    "pod_weak_96",
+    "pod_galerkin_96",
+    "pod_weak_128",
+    "pod_galerkin_128",
+    "pod_weak_192",
+    "pod_galerkin_192",
+    "pod_weak_320",
+    "pod_galerkin_320",
+    "free_bank_galerkin",
+    "fno3d_increment_raw",
+    "fno3d_increment_projected",
+    "unet3d_increment_raw",
+    "unet3d_increment_projected",
+    "deeponet3d_increment_raw",
+    "deeponet3d_increment_projected",
+    "transolver3d_increment_raw",
+    "transolver3d_increment_projected",
+    "fom_dt0.002",
+    "fom_dt0.004",
+    "fom_dt0.008",
+    "fom_dt0.01",
+    "fom_dt0.02",
+    "fom_dt0.04"
+  ],
+  "timing_scope": {
+    "gpu": "Device initial field to complete device trajectory and diagnostics",
+    "with_host": "Host initial field to complete host trajectory and diagnostics; input transfer, query and output transfer from the same invocation"
+  },
+  "limitations": [
+    "Dense full-grid weak evaluation; no hyper-reduction speed claim",
+    "Warm bank lineage is not an independent complete training seed"
+  ],
+  "stage": "complete",
+  "dev_data": {
+    "seed": 202609203,
+    "count": 32,
+    "n": 32,
+    "dt": 0.001,
+    "horizon": 0.2,
+    "parameter_sha256": "6746568d220c9242a58e2813e83f5c020a51ec89cbab65294856f1c634a58b25",
+    "states_sha256": "9654a73c5d6ef6fde8a82bb6331c9d60ee09af38c9a406aea5bc224ce85264dd",
+    "records": [
+      {
+        "index": 0,
+        "field_sha256": "94f953da856870f4d70d9e31650b6474262c049b6559a4c0f7b209203979f3df",
+        "energy": [
+          0.03582810065849115,
+          0.034762001497309965,
+          0.03371526720869359,
+          0.0326691514528504,
+          0.0316183492704049,
+          0.030567061130623144
+        ],
+        "divergence": [
+          9.545884970494422e-16,
+          9.498342960480963e-16,
+          9.24099796762175e-16,
+          9.438297824236568e-16,
+          9.010720722978854e-16,
+          8.937661505778645e-16
+        ],
+        "initial_component_rms": [
+          0.162390175276876,
+          0.162390175276876,
+          0.1375320444989941
+        ]
+      },
+      {
+        "index": 1,
+        "field_sha256": "0b012dc4b222aac5cd7059ec46961090dd29b1808b106d469c08fca34e9fc024",
+        "energy": [
+          0.022413317101788354,
+          0.020559765093176988,
+          0.018897711358281936,
+          0.01739478338266124,
+          0.016033970735785486,
+          0.014803231807896446
+        ],
+        "divergence": [
+          9.319243674262746e-16,
+          9.555089322906582e-16,
+          9.470213483206574e-16,
+          9.524805052324293e-16,
+          9.799846821985277e-16,
+          9.863258365936783e-16
+        ],
+        "initial_component_rms": [
+          0.13529933098177332,
+          0.13529933098177332,
+          0.09063562365508285
+        ]
+      },
+      {
+        "index": 2,
+        "field_sha256": "d729cb172353d838ee418cb86b744dfdcbc6d7e86e2f99974670817b1ec0d6a2",
+        "energy": [
+          0.02811445553113471,
+          0.024772180469085216,
+          0.02193746672488973,
+          0.01950926587489487,
+          0.01742308072869208,
+          0.0156273237646903
+        ],
+        "divergence": [
+          9.302361427966034e-16,
+          9.498524301709422e-16,
+          9.457025798840226e-16,
+          1.0024992155702034e-15,
+          1.0101037069387029e-15,
+          1.054690457756908e-15
+        ],
+        "initial_component_rms": [
+          0.14790604417834796,
+          0.14790604417834796,
+          0.11169832251781846
+        ]
+      },
+      {
+        "index": 3,
+        "field_sha256": "fefa61270cd88b609b46d11c4a06a10a8ca2e15a5f9ec266f466c93fc1278563",
+        "energy": [
+          0.02078054952344295,
+          0.018015174426379413,
+          0.015734441092314828,
+          0.013830329169608207,
+          0.012229483821556301,
+          0.01087576812380061
+        ],
+        "divergence": [
+          9.243639938549816e-16,
+          9.608185323902779e-16,
+          9.749298340196773e-16,
+          9.894999008538374e-16,
+          1.0351456625916266e-15,
+          1.0505224191409527e-15
+        ],
+        "initial_component_rms": [
+          0.1321782060608664,
+          0.1321782060608664,
+          0.0813568849695475
+        ]
+      },
+      {
+        "index": 4,
+        "field_sha256": "9b0d835bee0e5954fa78252e3dc5aa497d2efaaff0abf9deadeb32be1fe35cef",
+        "energy": [
+          0.02650328571808428,
+          0.02437422542333291,
+          0.022451382314907425,
+          0.020700190034091785,
+          0.019105681746712018,
+          0.017657781340625043
+        ],
+        "divergence": [
+          9.306083078169139e-16,
+          9.397836796068161e-16,
+          9.634307409735765e-16,
+          9.601865519134215e-16,
+          9.828483097913732e-16,
+          9.878407940856735e-16
+        ],
+        "initial_component_rms": [
+          0.14359880910718248,
+          0.14359880910718248,
+          0.10846813118223476
+        ]
+      },
+      {
+        "index": 5,
+        "field_sha256": "52d59f6ef3dfb23da87f01fbbf5f46a16233180deadd3c79e06662e276dff183",
+        "energy": [
+          0.03122900249895206,
+          0.028413880663202967,
+          0.02590595514705088,
+          0.02365309674405645,
+          0.021630882274811896,
+          0.019820629910309397
+        ],
+        "divergence": [
+          9.398878510292958e-16,
+          9.718793940432224e-16,
+          9.569899489342497e-16,
+          9.872550134396912e-16,
+          9.894396351971101e-16,
+          9.76460270882828e-16
+        ],
+        "initial_component_rms": [
+          0.15200514041418897,
+          0.15200514041418897,
+          0.1274632479314312
+        ]
+      },
+      {
+        "index": 6,
+        "field_sha256": "a5e57762e0a2c5b5dc88d936a7070744fb7bf28c1019292ccfbdb2e59f7742d0",
+        "energy": [
+          0.028821767258823246,
+          0.026349426530458304,
+          0.024144060442115825,
+          0.022157976377632047,
+          0.020365040133749922,
+          0.01874790101059403
+        ],
+        "divergence": [
+          9.499204090991843e-16,
+          9.490190044135259e-16,
+          9.654058081387018e-16,
+          9.744052253193428e-16,
+          9.860095436192586e-16,
+          1.0056328458942447e-15
+        ],
+        "initial_component_rms": [
+          0.149842181364503,
+          0.149842181364503,
+          0.1128635277027139
+        ]
+      },
+      {
+        "index": 7,
+        "field_sha256": "679a5064011a80bf1dcec146928baffff8e362fedec498d6397631c83800100e",
+        "energy": [
+          0.038849218212058,
+          0.03582968586445338,
+          0.03307910927658414,
+          0.03054760572169119,
+          0.02822145911284433,
+          0.026095389624899296
+        ],
+        "divergence": [
+          9.28220760848401e-16,
+          9.542388255662516e-16,
+          9.477033330637415e-16,
+          9.74223745467172e-16,
+          9.503858053953903e-16,
+          9.686075613680783e-16
+        ],
+        "initial_component_rms": [
+          0.16728106414579905,
+          0.16728106414579902,
+          0.14741956308649862
+        ]
+      },
+      {
+        "index": 8,
+        "field_sha256": "17dc93261f52a2dd5ba689e803695a7b41f915b25a2d8e56aee29e787fbbcf92",
+        "energy": [
+          0.040059588423405644,
+          0.038120131949541204,
+          0.03627299711171794,
+          0.034486866320208996,
+          0.032755544782457374,
+          0.031086876807212664
+        ],
+        "divergence": [
+          9.586260708222229e-16,
+          9.552875020878476e-16,
+          9.335083827930346e-16,
+          9.52362040412229e-16,
+          9.245988729197717e-16,
+          9.166998075362171e-16
+        ],
+        "initial_component_rms": [
+          0.16951809553327862,
+          0.16951809553327862,
+          0.15048723341317605
+        ]
+      },
+      {
+        "index": 9,
+        "field_sha256": "ff470332e35e02af558511cc28562a50f5d39fdbcb45456508e1f3d49c2f6a20",
+        "energy": [
+          0.0330711409090271,
+          0.03132117650281547,
+          0.029667068068378825,
+          0.0280845498834177,
+          0.02656946592499492,
+          0.025126495430221052
+        ],
+        "divergence": [
+          9.535595324171447e-16,
+          9.38025076998346e-16,
+          9.341533801882265e-16,
+          9.127189742609992e-16,
+          9.438785920129416e-16,
+          9.267183771405767e-16
+        ],
+        "initial_component_rms": [
+          0.15749306302156701,
+          0.15749306302156701,
+          0.12858519361973078
+        ]
+      },
+      {
+        "index": 10,
+        "field_sha256": "1136f2a410083875a607988717a30c4033c8fc8a703d1729a199506e9af3eef9",
+        "energy": [
+          0.02497626413939438,
+          0.024079437187441717,
+          0.023213114306616614,
+          0.022365655440680636,
+          0.02153299690991553,
+          0.02071652058173023
+        ],
+        "divergence": [
+          9.319529465955697e-16,
+          9.55293385034114e-16,
+          9.42727371055965e-16,
+          9.399713970425586e-16,
+          9.126848098879173e-16,
+          9.113813496017473e-16
+        ],
+        "initial_component_rms": [
+          0.1422059775106004,
+          0.1422059775106004,
+          0.09750614441817491
+        ]
+      },
+      {
+        "index": 11,
+        "field_sha256": "d2b64a05a6b8b9a5892a663a003a7c20d6a6cc31a4e74da182c58ca85aebaad6",
+        "energy": [
+          0.03828332742099549,
+          0.03674691754908159,
+          0.035251789648462394,
+          0.033774825094196353,
+          0.03231689263954933,
+          0.030889226103204284
+        ],
+        "divergence": [
+          9.475295108923237e-16,
+          9.441738715049914e-16,
+          9.373750194455994e-16,
+          9.27610057862499e-16,
+          9.015327802527658e-16,
+          8.879273630735595e-16
+        ],
+        "initial_component_rms": [
+          0.16477721874568146,
+          0.16477721874568146,
+          0.14920988977566688
+        ]
+      },
+      {
+        "index": 12,
+        "field_sha256": "3de717482bab2607f33c492ff44cfe4f47033dde92e55a0ba2efef85bd4fd164",
+        "energy": [
+          0.020200521403205326,
+          0.019541397276758507,
+          0.018902017297932453,
+          0.018274233321576884,
+          0.017654917065006853,
+          0.017044510380598156
+        ],
+        "divergence": [
+          9.057466986884473e-16,
+          9.389898956321043e-16,
+          9.431942359648336e-16,
+          9.15753716819919e-16,
+          9.263775604819062e-16,
+          9.197051063259624e-16
+        ],
+        "initial_component_rms": [
+          0.13102051163081574,
+          0.13102051163081574,
+          0.0778992546203698
+        ]
+      },
+      {
+        "index": 13,
+        "field_sha256": "9d6653be1e50e31abb957f1996bc00d739874a4621b181a77d4f92b06bedceb1",
+        "energy": [
+          0.033019489963465376,
+          0.031528328617143934,
+          0.030095457298576017,
+          0.028700942889065516,
+          0.027344430220925503,
+          0.02603330672725792
+        ],
+        "divergence": [
+          9.099965928592489e-16,
+          9.406672866845612e-16,
+          9.474958749668007e-16,
+          9.318748291548835e-16,
+          9.258323061804003e-16,
+          9.044867247649076e-16
+        ],
+        "initial_component_rms": [
+          0.1565424895418255,
+          0.15654248954182554,
+          0.13049091103607813
+        ]
+      },
+      {
+        "index": 14,
+        "field_sha256": "4d161af79475daec7320a0645222d1f24db91fd10f377d06403bf493a4e217c2",
+        "energy": [
+          0.031193760835297027,
+          0.028220578455751624,
+          0.025600354269428166,
+          0.023269426677528397,
+          0.021193527257413372,
+          0.019347253776554198
+        ],
+        "divergence": [
+          9.428945582906256e-16,
+          9.34624426928517e-16,
+          9.689150272555686e-16,
+          9.841323299151886e-16,
+          9.794325357981751e-16,
+          1.0005999322608023e-15
+        ],
+        "initial_component_rms": [
+          0.15413935146983174,
+          0.15413935146983174,
+          0.12194114288259486
+        ]
+      },
+      {
+        "index": 15,
+        "field_sha256": "1ba9b6b1eadceceba393f765a279de79a23bcc76ca7d249397072ad4f23475da",
+        "energy": [
+          0.031217312775287102,
+          0.02969052736534674,
+          0.028241946526348472,
+          0.02685052542746741,
+          0.025510861420327855,
+          0.02422618177331415
+        ],
+        "divergence": [
+          9.485475674341114e-16,
+          9.568655806957435e-16,
+          9.540037078886655e-16,
+          9.560087601081642e-16,
+          9.379341777457588e-16,
+          9.200881575773573e-16
+        ],
+        "initial_component_rms": [
+          0.15426671045750323,
+          0.15426671045750323,
+          0.12181210793601725
+        ]
+      },
+      {
+        "index": 16,
+        "field_sha256": "84c978a7c9e77665f5504ce1fd176afbbd8f61db2c1d290c068804700ae496e0",
+        "energy": [
+          0.024237425925277375,
+          0.02278663994483216,
+          0.021439862004616103,
+          0.020177511713720737,
+          0.018991007539564172,
+          0.01787766203199207
+        ],
+        "divergence": [
+          9.237969739298637e-16,
+          9.560074686301781e-16,
+          9.589822443105212e-16,
+          9.653430991513315e-16,
+          9.497353595468075e-16,
+          9.552495134827647e-16
+        ],
+        "initial_component_rms": [
+          0.14078063720095838,
+          0.14078063720095838,
+          0.09400253309958735
+        ]
+      },
+      {
+        "index": 17,
+        "field_sha256": "9ea2aa08098ab65b53fdbd9f1aef1b634cf5277e86425b02605cf128aa172c41",
+        "energy": [
+          0.02725241176295047,
+          0.025537657471143643,
+          0.02394582737112848,
+          0.022453611907640326,
+          0.021054318079509,
+          0.019747224366348334
+        ],
+        "divergence": [
+          9.259417203665384e-16,
+          9.562988149566539e-16,
+          9.555684928423131e-16,
+          9.644257869501665e-16,
+          9.546918095018726e-16,
+          9.479913168735032e-16
+        ],
+        "initial_component_rms": [
+          0.14644965095018012,
+          0.14644965095018012,
+          0.10774888862091225
+        ]
+      },
+      {
+        "index": 18,
+        "field_sha256": "e7bd14f85d1b3b9c55290aaf7a0e21d3e928a6cb96f57b9be6df8e00aad468bd",
+        "energy": [
+          0.03743832690016774,
+          0.03596998421932694,
+          0.034552571877199324,
+          0.03316205681226469,
+          0.0317920746621008,
+          0.03044833156080179
+        ],
+        "divergence": [
+          9.40486271572343e-16,
+          9.634545435821238e-16,
+          9.472088573913723e-16,
+          9.34061553622004e-16,
+          9.290504408234585e-16,
+          9.033621499841663e-16
+        ],
+        "initial_component_rms": [
+          0.1651806465580003,
+          0.1651806465580003,
+          0.14250390101922636
+        ]
+      },
+      {
+        "index": 19,
+        "field_sha256": "53a547f39baf1b68b90b45bd9fc18254b3caff31223093cd02347409e85ea9bd",
+        "energy": [
+          0.0204893430465886,
+          0.018845437195358285,
+          0.017370803456497518,
+          0.01603640034344732,
+          0.014824867213513032,
+          0.01372448193916576
+        ],
+        "divergence": [
+          9.174090357959972e-16,
+          9.601872563068735e-16,
+          9.494736162059255e-16,
+          9.6224669327779e-16,
+          9.962218357458444e-16,
+          1.0014481642139367e-15
+        ],
+        "initial_component_rms": [
+          0.13269213456527826,
+          0.13269213456527826,
+          0.07592286178877466
+        ]
+      },
+      {
+        "index": 20,
+        "field_sha256": "04cce2cabca65833bebb7d6ffc0687e6077dcd343dc869ffce6469e9d6f3d151",
+        "energy": [
+          0.027921034510718694,
+          0.025423175516507877,
+          0.02319879319613157,
+          0.021201557689414105,
+          0.019408648791623188,
+          0.017802613381191004
+        ],
+        "divergence": [
+          9.27553503542076e-16,
+          9.415953653534089e-16,
+          9.584905787138412e-16,
+          9.748570285500285e-16,
+          9.667281891754214e-16,
+          1.0048728440022704e-15
+        ],
+        "initial_component_rms": [
+          0.1464127425880948,
+          0.1464127425880948,
+          0.11388014153969939
+        ]
+      },
+      {
+        "index": 21,
+        "field_sha256": "527d23bdcc339c812cc65fe605c27cce7bdaa016d877f0f15c2ef868d1910ec4",
+        "energy": [
+          0.03829911989413911,
+          0.03572970368309884,
+          0.033345186172245155,
+          0.031108259952978744,
+          0.02901444549412089,
+          0.027067379337793303
+        ],
+        "divergence": [
+          9.485790907755397e-16,
+          9.628589215598356e-16,
+          9.563227270339418e-16,
+          9.512538922300247e-16,
+          9.44223326680808e-16,
+          9.573972477382883e-16
+        ],
+        "initial_component_rms": [
+          0.16611009122513112,
+          0.16611009122513115,
+          0.14633220757794724
+        ]
+      },
+      {
+        "index": 22,
+        "field_sha256": "6351397806df71abc72e685abb2aa9ad13b129d71d676d6034fda7bec5f285da",
+        "energy": [
+          0.022258229782598466,
+          0.020605468042542756,
+          0.01910287624294111,
+          0.017724988287499268,
+          0.01646005112952193,
+          0.015300990373775076
+        ],
+        "divergence": [
+          9.336232024229182e-16,
+          9.519456959877718e-16,
+          9.467055047104963e-16,
+          9.831321165351792e-16,
+          9.66529863198984e-16,
+          9.93276628482217e-16
+        ],
+        "initial_component_rms": [
+          0.13562838178544656,
+          0.13562838178544656,
+          0.08789962271659206
+        ]
+      },
+      {
+        "index": 23,
+        "field_sha256": "9b20b2b09ca4ce489f2d934d688b1dbe6596e661624556c33c1414c362819220",
+        "energy": [
+          0.019407811146506193,
+          0.018268420653525796,
+          0.0172094810517242,
+          0.016216316848610482,
+          0.01528246450214802,
+          0.014405488186644265
+        ],
+        "divergence": [
+          9.161107779488187e-16,
+          9.473684267771923e-16,
+          9.38126295121965e-16,
+          9.325484468671865e-16,
+          9.412338128716231e-16,
+          9.585044228159257e-16
+        ],
+        "initial_component_rms": [
+          0.1292156627183586,
+          0.1292156627183586,
+          0.07363591046169778
+        ]
+      },
+      {
+        "index": 24,
+        "field_sha256": "74b4b970e4cf5fb919f05c9030f5d5419fa0b33d5d1965a5f417eea12903b648",
+        "energy": [
+          0.03146449297003798,
+          0.03019384356633978,
+          0.028964226230631593,
+          0.02775838137413697,
+          0.026575422052387943,
+          0.025421723589898998
+        ],
+        "divergence": [
+          9.342003513733637e-16,
+          9.176176445280154e-16,
+          9.323513634369656e-16,
+          9.091974675980145e-16,
+          8.96762789895709e-16,
+          9.042775422893466e-16
+        ],
+        "initial_component_rms": [
+          0.1536513365670546,
+          0.1536513365670546,
+          0.12534560017165086
+        ]
+      },
+      {
+        "index": 25,
+        "field_sha256": "ccdf818c531c4490c97400a6d1417c5e235379dd8c6d78e644df6dcb161c5219",
+        "energy": [
+          0.029705642776539865,
+          0.027298525847751373,
+          0.02512344248417769,
+          0.023141291545703963,
+          0.021336372607768488,
+          0.019698338744263758
+        ],
+        "divergence": [
+          9.353260184318586e-16,
+          9.354305678140832e-16,
+          9.246653229642704e-16,
+          9.654381487836466e-16,
+          9.527726799570885e-16,
+          9.735108821200857e-16
+        ],
+        "initial_component_rms": [
+          0.14913990294036486,
+          0.14913990294036486,
+          0.12217145433756946
+        ]
+      },
+      {
+        "index": 26,
+        "field_sha256": "531a25cabed8e8f5103a6ff6802516833efeb568fe96a43119629dc8fad5f6a4",
+        "energy": [
+          0.03595052703079668,
+          0.03328621301046014,
+          0.030841440211858487,
+          0.028577249017462093,
+          0.026485799711548855,
+          0.024565018773755415
+        ],
+        "divergence": [
+          9.320424082325938e-16,
+          9.307588771353496e-16,
+          9.57324908457974e-16,
+          9.554789415918265e-16,
+          9.75791075427439e-16,
+          9.539865920856938e-16
+        ],
+        "initial_component_rms": [
+          0.16139526543789878,
+          0.16139526543789878,
+          0.14072736283343673
+        ]
+      },
+      {
+        "index": 27,
+        "field_sha256": "26ad6e5f32d6201622c23f4d87baa3514fd94c013ba9bd9489bb9f8e3debf1d0",
+        "energy": [
+          0.022622616278526627,
+          0.019731153141902033,
+          0.01732340972638971,
+          0.0152959227140189,
+          0.013578993644689558,
+          0.01211833579025545
+        ],
+        "divergence": [
+          9.20763536302074e-16,
+          9.6385206006204e-16,
+          9.939563560190509e-16,
+          9.885225545806673e-16,
+          1.0439473865224773e-15,
+          1.075132314124351e-15
+        ],
+        "initial_component_rms": [
+          0.13567884860436202,
+          0.13567884860436202,
+          0.09180268318433002
+        ]
+      },
+      {
+        "index": 28,
+        "field_sha256": "0d2a70260b65d63a9a869654ddf6e08a976dffd5b2c9f5f5a7a6dae027465e88",
+        "energy": [
+          0.022376882130334314,
+          0.019870407280676607,
+          0.01772778021660075,
+          0.015878477678918895,
+          0.014276613187413571,
+          0.012885969123860459
+        ],
+        "divergence": [
+          9.35872315367595e-16,
+          9.532111082115945e-16,
+          9.603465251587807e-16,
+          9.851807970618554e-16,
+          9.962796192015984e-16,
+          1.0279518428479677e-15
+        ],
+        "initial_component_rms": [
+          0.1355000648216064,
+          0.1355000648216064,
+          0.08962828307710433
+        ]
+      },
+      {
+        "index": 29,
+        "field_sha256": "a16802b1f00ef86a0b73c59cd1e6f4cd5a5cae5eb7041ac90255fd53cfd10eee",
+        "energy": [
+          0.03612981813345821,
+          0.031503599602804695,
+          0.02762574590800221,
+          0.02434214118365316,
+          0.02155509782286091,
+          0.019184856999453406
+        ],
+        "divergence": [
+          9.09500999025152e-16,
+          9.576808560311373e-16,
+          9.676293409408583e-16,
+          1.0135490449146216e-15,
+          1.02214659897093e-15,
+          1.0475230452677003e-15
+        ],
+        "initial_component_rms": [
+          0.16209389411522737,
+          0.16209389411522737,
+          0.1403950684605386
+        ]
+      },
+      {
+        "index": 30,
+        "field_sha256": "fec7bbc1cc613440699e1e4b149c642bd027ef0855aa091a1b7f2e292ba22ff1",
+        "energy": [
+          0.025230741027614793,
+          0.02202226036147567,
+          0.019346005079280415,
+          0.017087333305263918,
+          0.015169461154534835,
+          0.01353368256154692
+        ],
+        "divergence": [
+          9.31459553067797e-16,
+          9.833211763719368e-16,
+          9.715493681047495e-16,
+          1.0108506658658789e-15,
+          1.034920097606758e-15,
+          1.0973783623151565e-15
+        ],
+        "initial_component_rms": [
+          0.14278677532651318,
+          0.14278677532651318,
+          0.09841420445718846
+        ]
+      },
+      {
+        "index": 31,
+        "field_sha256": "00a498c3b07587dcc4b5ec27378917343a46b927a251c1e890d82c63a5f2e002",
+        "energy": [
+          0.027346690834884155,
+          0.02622304454350717,
+          0.025142375490042182,
+          0.024090023805954753,
+          0.023063152845207865,
+          0.022065231726378816
+        ],
+        "divergence": [
+          9.509801241936498e-16,
+          9.426849893914733e-16,
+          9.388801401311132e-16,
+          9.47987029560599e-16,
+          9.14485146011229e-16,
+          9.15320244584882e-16
+        ],
+        "initial_component_rms": [
+          0.1466238846287165,
+          0.1466238846287165,
+          0.10814922367977485
+        ]
+      }
+    ],
+    "seconds": 10.36877233791165
+  },
+  "reference_refinement": [
+    {
+      "case": 0,
+      "errors": [
+        6.604748468001251e-16,
+        6.271143992593358e-06,
+        1.0760950476524575e-05,
+        2.2514974195647656e-05,
+        6.0733020094403534e-05,
+        0.00011136307404750359
+      ],
+      "passed": true,
+      "fine_sha256": "a32fd1aaa649ab1a6279b4bd9d95c4bc6567f4a0013b0ceecab389b0871981b0"
+    },
+    {
+      "case": 1,
+      "errors": [
+        6.552152275427055e-16,
+        3.523953807808501e-06,
+        4.741804242795302e-06,
+        4.7953133177793385e-06,
+        4.394976419314447e-06,
+        3.88441347207329e-06
+      ],
+      "passed": true,
+      "fine_sha256": "fc34692430d1b91ad8837eaba7d8c7fc8b2d0d6671325fb08374d483af7a5077"
+    },
+    {
+      "case": 2,
+      "errors": [
+        6.325433790810784e-16,
+        4.1573394109841375e-06,
+        4.9888915325394854e-06,
+        4.629904131917143e-06,
+        3.999348872927426e-06,
+        3.401890646501394e-06
+      ],
+      "passed": true,
+      "fine_sha256": "64a22bbb1b36e2ad38f882cdeba9ef9a513495c6c5b20a162677b9626f149ca3"
+    },
+    {
+      "case": 3,
+      "errors": [
+        6.347762098943934e-16,
+        2.8379057702619724e-06,
+        3.3456118408109946e-06,
+        3.121113961732572e-06,
+        2.7344359669174458e-06,
+        2.358171824310847e-06
+      ],
+      "passed": true,
+      "fine_sha256": "6e04b90f32c6a12e443863cabe09f94607ac4f24b1d8c8d98c0d624bb56af091"
+    },
+    {
+      "case": 4,
+      "errors": [
+        6.242399801295912e-16,
+        4.5603927103769335e-06,
+        6.105924042395689e-06,
+        6.109614558442747e-06,
+        5.534585172473939e-06,
+        4.838310537959784e-06
+      ],
+      "passed": true,
+      "fine_sha256": "364e7c1a5f18de499262eca53e4da60021d802e5f315eba217ff618c2b17d46a"
+    },
+    {
+      "case": 5,
+      "errors": [
+        6.265007719365427e-16,
+        5.46250481660751e-06,
+        6.964698730734386e-06,
+        6.698504207966951e-06,
+        5.894432912565436e-06,
+        5.05170730307356e-06
+      ],
+      "passed": true,
+      "fine_sha256": "29dab6c3a58be1851ce7a8a335180dd215be1238ca62fb9f3e8c953df42f5ef6"
+    },
+    {
+      "case": 6,
+      "errors": [
+        6.564438102944629e-16,
+        3.4185590733611497e-06,
+        4.670103326933375e-06,
+        4.7489862973053684e-06,
+        4.338673374047108e-06,
+        3.8102145659902092e-06
+      ],
+      "passed": true,
+      "fine_sha256": "e6a2640c6263535aea4727f0d3c1947424356e45b9982d79b068eb7ece9c8af8"
+    },
+    {
+      "case": 7,
+      "errors": [
+        6.673786899819363e-16,
+        6.365439472520876e-06,
+        8.602315137053892e-06,
+        8.553689380022527e-06,
+        7.659547262358349e-06,
+        6.620194816279112e-06
+      ],
+      "passed": true,
+      "fine_sha256": "cf559b487a1776ab0e0bdc0de5719a9c86dc2011ac76e1de30100bdb365db833"
+    },
+    {
+      "case": 8,
+      "errors": [
+        6.654262848403435e-16,
+        5.9233339372471035e-06,
+        9.201918328961173e-06,
+        1.1081356993237397e-05,
+        1.4232611948550791e-05,
+        1.7582507946300017e-05
+      ],
+      "passed": true,
+      "fine_sha256": "0470ea2e2cd225e360c7b71eef88b4d99b38e8e6f9d32cf8d76ccac371dd22b5"
+    },
+    {
+      "case": 9,
+      "errors": [
+        6.38509938933463e-16,
+        5.489764590488648e-06,
+        8.317385553426693e-06,
+        9.501277356382845e-06,
+        1.0693905942784799e-05,
+        1.1647518044028897e-05
+      ],
+      "passed": true,
+      "fine_sha256": "9ef40803380b744fca43741d0a44c7d07cb5aae75230eb51ac20587cc3d55285"
+    },
+    {
+      "case": 10,
+      "errors": [
+        6.277880372728326e-16,
+        3.943411920472391e-06,
+        6.548804622046943e-06,
+        8.957890101829151e-06,
+        1.587403973664201e-05,
+        2.6782983967791305e-05
+      ],
+      "passed": true,
+      "fine_sha256": "1d86f55a0dfb022a6720b7c316ce2aa627fa575c29fad9d4a85605a980f062f7"
+    },
+    {
+      "case": 11,
+      "errors": [
+        6.537448576523118e-16,
+        8.504154231744741e-06,
+        1.3382226064083687e-05,
+        2.3777362507306687e-05,
+        4.922099570084591e-05,
+        7.198668700536824e-05
+      ],
+      "passed": true,
+      "fine_sha256": "03d40f00b64ac0cf870102aadb4b2eb0abf2213e8237ce838ad28ada38d13f52"
+    },
+    {
+      "case": 12,
+      "errors": [
+        6.542425119084662e-16,
+        3.4834532017219225e-06,
+        5.806321697064817e-06,
+        8.126839034296896e-06,
+        1.569092116998772e-05,
+        2.922740401547918e-05
+      ],
+      "passed": true,
+      "fine_sha256": "2fa25672b421a9eb27b178d2b53396c94a0e48d561ee87dcf76ba8c0637fb697"
+    },
+    {
+      "case": 13,
+      "errors": [
+        6.42705733809881e-16,
+        6.736290437438755e-06,
+        1.03973966258404e-05,
+        1.3934917138537232e-05,
+        2.223555489175889e-05,
+        3.0143623264565856e-05
+      ],
+      "passed": true,
+      "fine_sha256": "c099d3892d711827aa1ac89d12b0c13d98a73556ef07ca0e8e7a87046b46a784"
+    },
+    {
+      "case": 14,
+      "errors": [
+        6.386894100764865e-16,
+        4.360189727834037e-06,
+        5.660531619049567e-06,
+        5.5115448544232394e-06,
+        4.879231265291419e-06,
+        4.200650116652322e-06
+      ],
+      "passed": true,
+      "fine_sha256": "3ef3ec839b4b26f17cb40cfd4996745dd4c0478c37fc37d924ea2672d0e05b5f"
+    },
+    {
+      "case": 15,
+      "errors": [
+        6.395284053287823e-16,
+        4.724026366711567e-06,
+        7.356233207953743e-06,
+        8.63884373430941e-06,
+        1.0180373329690439e-05,
+        1.1860051719529125e-05
+      ],
+      "passed": true,
+      "fine_sha256": "cc2bb8b6301340f8f9db65c11e62056666f53674d1cb227d23d28e4717fa72a8"
+    },
+    {
+      "case": 16,
+      "errors": [
+        6.504555834215255e-16,
+        3.174107052110138e-06,
+        4.778511867141732e-06,
+        5.285417452436858e-06,
+        5.2024151385404045e-06,
+        4.878117498460559e-06
+      ],
+      "passed": true,
+      "fine_sha256": "de5d6ad2782f0e5496784cac985d0944657c67de47df71de1e654024c0bc7254"
+    },
+    {
+      "case": 17,
+      "errors": [
+        6.285149991074407e-16,
+        4.501705634314435e-06,
+        6.551310112714825e-06,
+        7.0201396963126e-06,
+        6.776866616218613e-06,
+        6.2463268608779414e-06
+      ],
+      "passed": true,
+      "fine_sha256": "5931a6cbac20db93ec933f618a8b79693d7b608a2d8c3dd47b10402bcd3ada3d"
+    },
+    {
+      "case": 18,
+      "errors": [
+        6.513771621070282e-16,
+        5.6205237831380505e-06,
+        9.158443605010375e-06,
+        1.2825104732232101e-05,
+        2.2757679112206478e-05,
+        3.516930349242006e-05
+      ],
+      "passed": true,
+      "fine_sha256": "c91fdffc8a5bbff74b3c6ce8eba812f8f254e1ca05fbefd978e6c4bcc3bbf3a8"
+    },
+    {
+      "case": 19,
+      "errors": [
+        6.578642926630038e-16,
+        2.4540647728140987e-06,
+        3.4439596796857836e-06,
+        3.6116415329592675e-06,
+        3.3995920679940225e-06,
+        3.0613718042060897e-06
+      ],
+      "passed": true,
+      "fine_sha256": "98720d65997643ff6f6d1baab45429e97d238c267e397d120c17a5de1cf5a171"
+    },
+    {
+      "case": 20,
+      "errors": [
+        6.474381992821043e-16,
+        4.766389874179143e-06,
+        6.16650077294215e-06,
+        6.005974203347537e-06,
+        5.335617024105463e-06,
+        4.606802181971973e-06
+      ],
+      "passed": true,
+      "fine_sha256": "b9bae1bef6b8f64237491ca0e29e44a9e260d6e77ae204fa3dfe86611fc8b72e"
+    },
+    {
+      "case": 21,
+      "errors": [
+        6.612818919075279e-16,
+        6.938736999062992e-06,
+        9.703810680577596e-06,
+        1.004276221841255e-05,
+        9.525942897619789e-06,
+        8.608032041942294e-06
+      ],
+      "passed": true,
+      "fine_sha256": "a1853a5cc8b15602fccb20128a645eee4d26d7bbd9b7a2fea320e4cac2e48b95"
+    },
+    {
+      "case": 22,
+      "errors": [
+        6.346532568264885e-16,
+        3.540133928544224e-06,
+        4.937932186197309e-06,
+        5.1240502143289205e-06,
+        4.776447670546388e-06,
+        4.266278552239507e-06
+      ],
+      "passed": true,
+      "fine_sha256": "01d3ede2dfaeb6ad3a6f0213fb813259195f169e208faa79a2d1795aa2f39a91"
+    },
+    {
+      "case": 23,
+      "errors": [
+        6.480354537730463e-16,
+        2.9452331737586363e-06,
+        4.390075027161195e-06,
+        4.846262993619152e-06,
+        4.808108041957054e-06,
+        4.5872540464555145e-06
+      ],
+      "passed": true,
+      "fine_sha256": "3ccdc97cc21aa54e459692a333c95a83695e4859f6dd8ff3ff6c4210e0950b68"
+    },
+    {
+      "case": 24,
+      "errors": [
+        6.360001598080027e-16,
+        6.5118084110714745e-06,
+        1.0313927052943146e-05,
+        1.5405653243236063e-05,
+        2.911786637336283e-05,
+        4.369968933713597e-05
+      ],
+      "passed": true,
+      "fine_sha256": "8ef81159605acebab1d2d75104b8e629a82906136deb6dc363fc61bdb100eee1"
+    },
+    {
+      "case": 25,
+      "errors": [
+        6.322682551855548e-16,
+        5.251032718460717e-06,
+        6.928368893756344e-06,
+        6.844502191983355e-06,
+        6.140481244234425e-06,
+        5.325231136613917e-06
+      ],
+      "passed": true,
+      "fine_sha256": "c8b68441e2259afa5d7868580c444839025bdea0d931c685a121799c22fd78c5"
+    },
+    {
+      "case": 26,
+      "errors": [
+        6.417754197404775e-16,
+        6.7983165854304555e-06,
+        9.163008209585735e-06,
+        9.152932089158411e-06,
+        8.300234936090283e-06,
+        7.231616494225044e-06
+      ],
+      "passed": true,
+      "fine_sha256": "a93d435a84aa56de5938d2bea1a6c1283da825834813efc51b7a790d3a0a5b56"
+    },
+    {
+      "case": 27,
+      "errors": [
+        6.186743407198903e-16,
+        3.2469554753162016e-06,
+        3.835704797852384e-06,
+        3.5705075620353192e-06,
+        3.1165605585795037e-06,
+        2.677160375117273e-06
+      ],
+      "passed": true,
+      "fine_sha256": "d582d15158ff781d2d53901faef18e8c97c0529f9dc7c101d167b7c5297541b5"
+    },
+    {
+      "case": 28,
+      "errors": [
+        6.409863354715416e-16,
+        3.2897931722669188e-06,
+        4.057472955605434e-06,
+        3.871263730430645e-06,
+        3.4232806074036556e-06,
+        2.9621680954095686e-06
+      ],
+      "passed": true,
+      "fine_sha256": "6d0e7e140ee12ada53ba6910f4c759d1c87bcf1949d261117c32e752be672d74"
+    },
+    {
+      "case": 29,
+      "errors": [
+        6.512826725628323e-16,
+        5.641849548008375e-06,
+        6.448695041602321e-06,
+        5.757970733612003e-06,
+        4.844262789611605e-06,
+        4.050152182143139e-06
+      ],
+      "passed": true,
+      "fine_sha256": "b1cd49e42c9938e3d1e3f5119e0335bc60fed8e2d418ed39883c4c214e428c4a"
+    },
+    {
+      "case": 30,
+      "errors": [
+        6.629920654364003e-16,
+        2.9138442477440207e-06,
+        3.521340634159228e-06,
+        3.315038827803796e-06,
+        2.906557225211995e-06,
+        2.5040471497584137e-06
+      ],
+      "passed": true,
+      "fine_sha256": "5b6e7884df4ff4aacf8ea564b7a95254d746e440693cca4d35a2e69bc8569b2b"
+    },
+    {
+      "case": 31,
+      "errors": [
+        6.487033070316504e-16,
+        4.917947659861196e-06,
+        7.876634655669078e-06,
+        1.038357105210326e-05,
+        1.663036967253983e-05,
+        2.45836067026395e-05
+      ],
+      "passed": true,
+      "fine_sha256": "2e1ddbd4940098c2e42b744a7a899d9cdf0165f9586f82bddf1c679aa07d5786"
+    }
+  ],
+  "timing_summary": {
+    "nmrom_pca64_free_q0": {
+      "gpu_seconds_median": 1.2582911509089172,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.20342782168262455,
+      "worst_evolved_physical": 0.20340976262442118
+    },
+    "nmrom_pca64_free_q32": {
+      "gpu_seconds_median": 1.6843985189916566,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.2021233044807485,
+      "worst_evolved_physical": 0.20210269252065335
+    },
+    "nmrom_pca64_free_q64": {
+      "gpu_seconds_median": 2.0812604499515146,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.20109346468261188,
+      "worst_evolved_physical": 0.20106908794773284
+    },
+    "nmrom_pca64_free_q128": {
+      "gpu_seconds_median": 2.925733330543153,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.19643972152068326,
+      "worst_evolved_physical": 0.19641035407362825
+    },
+    "nmrom_pca64_free_q256": {
+      "gpu_seconds_median": 4.6411602679872885,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.18921443575015134,
+      "worst_evolved_physical": 0.18917805036994179
+    },
+    "pod_weak_64": {
+      "gpu_seconds_median": 0.5346611511195078,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.6156510669154387,
+      "worst_evolved_physical": 0.6156506229585919
+    },
+    "pod_galerkin_64": {
+      "gpu_seconds_median": 0.01488149305805564,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.6156515642965056,
+      "worst_evolved_physical": 0.6156511203942258
+    },
+    "pod_weak_96": {
+      "gpu_seconds_median": 0.7592812321381643,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.47186652776912547,
+      "worst_evolved_physical": 0.4718591758945667
+    },
+    "pod_galerkin_96": {
+      "gpu_seconds_median": 0.0169415584532544,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.47218379137813676,
+      "worst_evolved_physical": 0.4721764594874608
+    },
+    "pod_weak_128": {
+      "gpu_seconds_median": 0.9903608205495402,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.4305533071961357,
+      "worst_evolved_physical": 0.4305469461974145
+    },
+    "pod_galerkin_128": {
+      "gpu_seconds_median": 0.018584949430078268,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.4310805695146782,
+      "worst_evolved_physical": 0.43107425110537906
+    },
+    "pod_weak_192": {
+      "gpu_seconds_median": 1.473248373484239,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.3713066121243203,
+      "worst_evolved_physical": 0.3713019549911773
+    },
+    "pod_galerkin_192": {
+      "gpu_seconds_median": 0.022647871868684888,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.372525694367326,
+      "worst_evolved_physical": 0.37252114140029535
+    },
+    "pod_weak_320": {
+      "gpu_seconds_median": 2.4961888230172917,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.3074749132417457,
+      "worst_evolved_physical": 0.30747056332291334
+    },
+    "pod_galerkin_320": {
+      "gpu_seconds_median": 0.03056023095268756,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.3090917709472924,
+      "worst_evolved_physical": 0.3090876038786472
+    },
+    "free_bank_galerkin": {
+      "gpu_seconds_median": 0.10496113146655262,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.10168781225643843,
+      "worst_evolved_physical": 0.10158266002206262
+    },
+    "fno3d_increment_raw": {
+      "gpu_seconds_median": 0.009198714978992939,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.008001908553183416,
+      "worst_evolved_physical": 0.008683805730080492
+    },
+    "fno3d_increment_projected": {
+      "gpu_seconds_median": 0.009341562516056001,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.007031366193038978,
+      "worst_evolved_physical": 0.008485017653941045
+    },
+    "unet3d_increment_raw": {
+      "gpu_seconds_median": 0.00203292747028172,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.03024743441542596,
+      "worst_evolved_physical": 0.03024550928811923
+    },
+    "unet3d_increment_projected": {
+      "gpu_seconds_median": 0.002145155449397862,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.027263521668880932,
+      "worst_evolved_physical": 0.027260194225393775
+    },
+    "deeponet3d_increment_raw": {
+      "gpu_seconds_median": 0.004342301865108311,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.4399168065246192,
+      "worst_evolved_physical": 0.43991427142796924
+    },
+    "deeponet3d_increment_projected": {
+      "gpu_seconds_median": 0.004468062077648938,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.36034953483273285,
+      "worst_evolved_physical": 0.3603444161501949
+    },
+    "transolver3d_increment_raw": {
+      "gpu_seconds_median": 0.003993849037215114,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.05131645836687005,
+      "worst_evolved_physical": 0.050777219751711296
+    },
+    "transolver3d_increment_projected": {
+      "gpu_seconds_median": 0.003975968458689749,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.03849969030866454,
+      "worst_evolved_physical": 0.03849841542332469
+    },
+    "fom_dt0.002": {
+      "gpu_seconds_median": 0.01285795250441879,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.0003072050800897927,
+      "worst_evolved_physical": 0.007132788033603494
+    },
+    "fom_dt0.004": {
+      "gpu_seconds_median": 0.006788684637285769,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.0012524280094450319,
+      "worst_evolved_physical": 0.00730916835507247
+    },
+    "fom_dt0.008": {
+      "gpu_seconds_median": 0.003788279020227492,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.00545535513458997,
+      "worst_evolved_physical": 0.008933875891315777
+    },
+    "fom_dt0.01": {
+      "gpu_seconds_median": 0.0031700754771009088,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 0.02472186825335237,
+      "worst_evolved_physical": 0.025891776334289292
+    },
+    "fom_dt0.02": {
+      "gpu_seconds_median": 0.0019567086128517985,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 2.7150335286229237,
+      "worst_evolved_physical": 2.7155715590019156
+    },
+    "fom_dt0.04": {
+      "gpu_seconds_median": 0.0013511140132322907,
+      "invocations": 96,
+      "nonfinite_invocations": 0,
+      "timing_outliers_above_three_median": 0,
+      "worst_evolved_same_grid": 2.793620227791715,
+      "worst_evolved_physical": 2.7934476983475105
+    }
+  }
+}

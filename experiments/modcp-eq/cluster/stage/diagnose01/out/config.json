@@ -1,0 +1,98 @@
+{
+  "decoder": {
+    "architecture": "cp",
+    "k": 16,
+    "rank": 64,
+    "outputs": 1,
+    "intervals": 256,
+    "boundary": "dirichlet",
+    "width": 64,
+    "inr_width": 128,
+    "head_width": 256,
+    "frequencies": 8
+  },
+  "meshes": [
+    256,
+    512
+  ],
+  "counts": {
+    "train": 64,
+    "validation": 16,
+    "evaluation": 16
+  },
+  "seeds": {
+    "train": 2609101701,
+    "validation": 2609101702,
+    "evaluation": 2609101703
+  },
+  "validation_case_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "evaluation_case_ids": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+  ],
+  "repetitions": 7,
+  "split_repetitions": {
+    "validation": 1,
+    "evaluation": 7
+  },
+  "selection_proxy_case": 0,
+  "selection_proxy_repetitions": 7,
+  "validation_repetitions": 1,
+  "evaluation_repetitions": 7,
+  "discarded_warmups": 2,
+  "targets": [
+    0.01,
+    0.05
+  ],
+  "output_times": [
+    0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "training_updates": {
+    "cp_initialization": 6000,
+    "comparison": 10000,
+    "film": 16000
+  },
+  "training_batch_size": 64,
+  "point_batch": 256,
+  "lr_initial": 0.001,
+  "lr_final": 0.0001,
+  "stage_cosine_schedule": "reset for each6k/10k stage; paired CP/modCP share6k initialization",
+  "timing_contract": "GPU resident supplied dense field+viscosity to six GPU dense output fields; initialization+evolution+decoding included; transfer/setup/compile excluded",
+  "boundary_transfer": "clipped training-interior coordinates and linear boundary strip; exact training-node predictions, no masked endpoint leakage"
+}

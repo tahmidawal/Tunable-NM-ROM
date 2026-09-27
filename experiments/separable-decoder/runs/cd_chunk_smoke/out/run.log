@@ -1,0 +1,28 @@
+jax_backend=gpu device=cuda:0 CODESIGN N=64 ckpt=sep_burgers_N64_K16_R64.pkl TRAIN_H=0 TRAIN_NODES=1 m=64 steps=20
+  data cache hit: /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-26-codesign/experiments/separable-decoder/runs/cd_smoke/data_n64.npz  U(576, 51, 4096)
+  test data: 4 fresh trajectories, worst FOM rel residual 9.71e-13
+  GATE H (param split identity): 0.00e+00
+  GATE R (warm recon on regenerated snapshots): 2.488e-02
+  NNLS-EQ codesign N=64 k=16 M=64 m=64 adv-only: pool 3844 support 64 (+0 pad) rel fit 1.95e-01 (row p95 5.2e+00, max 1.4e+03) [5s]
+  init terms (fit): rec=1.962e-03  sob=1.207e-02  samp=6.142e-02  jac=5.115e-02
+  init terms (held): rec=2.212e-03  samp=7.021e-02  jac=5.144e-02
+  GATE 0 (grid closure vs make_weak_ops): 5.34e-16
+  GATE C (continuous machinery at grid init): 1.16e-14
+  GATE D (FD vs autodiff, kink-free window): ad=-1.580058e-01 rel=1.42e-07
+  step     0  loss 1.2000e+01  samp 6.142e-02  held samp 7.021e-02 jac 5.144e-02 rec-drift +0.0000 [1s]
+  step    10  loss 1.1457e+01  samp 4.285e-02  held samp 6.252e-02 jac 4.460e-02 rec-drift +0.0000 [5s]
+  step    20  loss 1.1230e+01  samp 3.574e-02  held samp 5.771e-02 jac 4.075e-02 rec-drift +0.0000 [9s]
+  train DONE: best loss 1.1230e+01 at step 20 [9s]
+  GATE L [base]: 2.35e-16
+  [base] traj 0: rollout err 1.942e-02 (t0 1.46e-02, t50 2.95e-02) [3s]
+  [base] traj 1: rollout err 1.656e-01 (t0 3.60e-01, t50 9.71e-02) [1s]
+  [base] traj 2: rollout err 5.495e-02 (t0 4.52e-02, t50 6.19e-02) [1s]
+  [base] traj 3: rollout err 4.453e-02 (t0 4.69e-02, t50 5.63e-02) [1s]
+  [base] SUMMARY m=64: held b 8.050e-01 c1 5.428e+00 cos 0.6407 c3 1.867e+00 cos 0.7022  recon 2.733e-02  rollout 7.113e-02
+  GATE L [cot]: 2.35e-16
+  [cot] traj 0: rollout err 1.568e-02 (t0 1.46e-02, t50 2.01e-02) [1s]
+  [cot] traj 1: rollout err 1.506e-01 (t0 3.60e-01, t50 7.97e-02) [1s]
+  [cot] traj 2: rollout err 5.290e-02 (t0 4.52e-02, t50 7.42e-02) [1s]
+  [cot] traj 3: rollout err 3.802e-02 (t0 4.69e-02, t50 5.27e-02) [1s]
+  [cot] SUMMARY m=64: held b 7.151e-01 c1 4.408e+00 cos 0.6323 c3 1.683e+00 cos 0.7638  recon 2.733e-02  rollout 6.430e-02
+DONE -> /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-27-nodes-mm/experiments/separable-decoder/runs/cd_chunk_smoke/out/sep_codesign_chunk_smoke.json [274s]

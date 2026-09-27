@@ -1,0 +1,35 @@
+{
+  "passed": true,
+  "checks": {
+    "training_array_hash": true,
+    "all_training_snapshots": true,
+    "denominator_max_error": 0.0,
+    "teacher_error_max_disagreement": 3.469446951953614e-17,
+    "learned_error_max_disagreement": 2.7755575615628914e-16,
+    "teacher_orthogonality": 2.3314683517128287e-15,
+    "teacher_projected_covariance_relative": 4.554631356191911e-15,
+    "actual_trunk_gram_relative": 1.1588001754365298e-15,
+    "learned_projection_max_normalized_gradient": 1.8526862758008536e-15,
+    "trunk_training_loss_disagreement": 1.734723475976807e-18,
+    "branch_vector_loss_disagreement": 1.6479873021779667e-17,
+    "teacher_vector_summary_disagreement": 1.3877787807814457e-17,
+    "learned_vector_summary_disagreement": 2.7755575615628914e-17
+  },
+  "scope": "NumPy audit of train-only approximate teacher and vector-aware branch loss.",
+  "teacher_status": "Seeded randomized training aid; projection is not an optimal rank floor",
+  "development_targets_used": false,
+  "final_targets_used": false,
+  "complete": true,
+  "input_sha256": {
+    "train_data.npz": "7cc3cee07afe1ac3a084fd51d42ec9b60821609b6e6376efa9ba5669949cbd02",
+    "confirmation_statistics.pkl": "8bc5d1ba54df5f33f7fb9915a5e068b6c3eb6887864aa96018243aea4a443353",
+    "membership.json": "762446f3e2458fc99f2147e462bef0e4f93d7d03d65edef905e77e9eee20b84d",
+    "deeponet_candidate/pretraining/pretraining.json": "88290a92fb26f3766069f9dd04c6083b15004e81348c580fe1682ffa6bcd39a9",
+    "deeponet_candidate/pretraining/training_teacher.npz": "679a3650b2ee2026406a5315104c0b0796b63e8dc881f53fb3e24afa348ae6b5",
+    "deeponet_candidate/pretraining/branch_teacher.npz": "f5a7c994d259e35d155da651b358dabb9cc45577588b1124b99f124d3eac8665",
+    "deeponet_candidate/pretraining/branch_selected_coefficients.npz": "a45b0c8d08a772759300346f5aa9f4edde177b4a5f518b89395736dcb01f68a7",
+    "deeponet_candidate/pretraining/trunk_selected.pkl": "eda340ee8cdbe73b837bbd22b9c746a493ba905fd36679d7333785fedae9bff7"
+  },
+  "configuration_sha256": "420f126dbd6be16e5ea15d4e72fc2020d155ff0782711c9c0f5dbfb031a29c24",
+  "verified_against_complete_collection": false
+}

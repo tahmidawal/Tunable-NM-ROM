@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "complete": true,
+  "source_commit": "4d675dd97c12ea47b90b7ca9720bc9bf0623da7f",
+  "job_id": "4019914",
+  "scope": "Independent development projection metrics of retained POD bases.\n\nThis verifies fixed-basis projection errors, not a universal optimality claim.\nBasis isometry is checked with recorded global coefficient probes.\n",
+  "cases": 16,
+  "snapshots": 96,
+  "global_isometry_probe_count": 32,
+  "probe_seed": 202609328,
+  "global_isometry_relative": 1.903061901695578e-12,
+  "checks": {
+    "1536": {
+      "passed": true,
+      "maximum_metric_disagreement": 1.0408340855860843e-17,
+      "development_initial_normalized": {
+        "mean": 0.030246349511368124,
+        "median": 0.025881126337960025,
+        "worst": 0.07425546143254977,
+        "over_5pct": 12,
+        "count": 96
+      }
+    },
+    "2048": {
+      "passed": true,
+      "maximum_metric_disagreement": 2.42861286636753e-17,
+      "development_initial_normalized": {
+        "mean": 0.02127043450247977,
+        "median": 0.01795758303947997,
+        "worst": 0.05510324498248649,
+        "over_5pct": 3,
+        "count": 96
+      }
+    },
+    "3072": {
+      "passed": true,
+      "maximum_metric_disagreement": 6.938893903907228e-18,
+      "development_initial_normalized": {
+        "mean": 0.012575035277247465,
+        "median": 0.009831554281140648,
+        "worst": 0.038407465598290856,
+        "over_5pct": 0,
+        "count": 96
+      }
+    }
+  },
+  "input_sha256": {
+    "capacity/pod.npz": "83542aeb0ae33cde45f8b8607e99d6059505794a8636e5188dda0d211b240d3f",
+    "capacity/screen.json": "5721c643ef2ff9b4027bc9472d44f8eb113935f7a49b124137a08152ebc0dc62",
+    "dev_data.npz": "e97c259034c6a310e89d887ad7a3c41aee7c017e152ea2f2327c7e70aba88998"
+  }
+}

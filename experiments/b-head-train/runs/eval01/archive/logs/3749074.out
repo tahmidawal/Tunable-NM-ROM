@@ -1,0 +1,60 @@
+host=pax142 source_commit=2b9e7ee756428a4f9dc5c2105e6803adb9dd9837
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.20:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+CHECKPOINTS [('incumbent', 16, 512), ('best_d2048k32w', 32, 512), ('d128k16rec', 16, 512), ('d128k16t', 16, 512), ('d128k16w', 16, 512), ('d128k16z', 16, 512), ('d128k32rec', 32, 512), ('d2048k16rec', 16, 512), ('d2048k32rec', 32, 512), ('d4608k16rec', 16, 512), ('d512k16rec', 16, 512), ('joint_d2048k32r1024', 32, 1024), ('joint_d2048k32r512', 32, 512)]
+GATE cohort_matches_abl01 {'bitwise': True, 'max_relative': 0.0, 'n': 6}
+REFERENCE 0 92.0
+REFERENCE 1 168.0
+REFERENCE 2 273.3
+REFERENCE 3 370.5
+REFERENCE 4 453.7
+REFERENCE 5 528.5
+SAME-GRID REFERENCE 531.6
+ARM incumbent_eq 35.3
+ARM incumbent_dense 0.4
+ARM best_d2048k32w_eq 246.7
+ARM best_d2048k32w_dense 0.5
+ARM d128k16rec_eq 17.2
+ARM d128k16rec_dense 0.3
+ARM d128k16t_eq 15.7
+ARM d128k16t_dense 0.3
+ARM d128k16w_eq 15.6
+ARM d128k16w_dense 0.3
+ARM d128k16z_eq 15.8
+ARM d128k16z_dense 0.3
+ARM d128k32rec_eq 237.9
+ARM d128k32rec_dense 0.5
+ARM d2048k16rec_eq 16.7
+ARM d2048k16rec_dense 0.4
+ARM d2048k32rec_eq 236.1
+ARM d2048k32rec_dense 0.5
+ARM d4608k16rec_eq 17.0
+ARM d4608k16rec_dense 0.3
+ARM d512k16rec_eq 15.8
+ARM d512k16rec_dense 0.3
+ARM joint_d2048k32r1024_eq 265.9
+ARM joint_d2048k32r1024_dense 0.5
+ARM joint_d2048k32r512_eq 237.4
+ARM joint_d2048k32r512_dense 0.5
+RECON incumbent_eq 2.54466 1979.8
+RECON best_d2048k32w_eq 2.82893 1992.6
+RECON d128k16rec_eq 12.64956 2002.1
+RECON d128k16t_eq 12.8237 2008.1
+RECON d128k16w_eq 14.21636 2013.3
+RECON d128k16z_eq 13.64971 2017.4
+RECON d128k32rec_eq 8.84887 2029.1
+RECON d2048k16rec_eq 3.55703 2037.9
+RECON d2048k32rec_eq 3.11322 2043.0
+RECON d4608k16rec_eq 3.9616 2063.8
+RECON d512k16rec_eq 6.82021 2066.9
+RECON joint_d2048k32r1024_eq 44.2457 2097.0
+RECON joint_d2048k32r512_eq 5.0383 2101.2
+WARMUP 85.1
+TIMED 0 2278.1
+TIMED 1 2353.5
+TIMED 2 2428.8
+GATE incumbent_reproduces_abl01 {'compared': 6, 'worst_relative_delta': 5.490561961380376e-13, 'tolerance': 1e-09, 'passed': True, 'reference': 'a_neural_eq'}
+EVALUATION COMPLETE
+ALL-DONE

@@ -1,0 +1,1125 @@
+{
+  "config": {
+    "attempt": "train01",
+    "intervals": 256,
+    "dt": 0.005,
+    "state_stride": 1,
+    "eval_seed": 7090702,
+    "eval_cases": 4,
+    "eval_fresh_seed": 911702,
+    "eval_fresh_cases": 2,
+    "canonical_seed": 0,
+    "canonical_trajectories": 576,
+    "extra_seed": 1000,
+    "extra_trajectories": 4032,
+    "densities": [
+      128,
+      512,
+      2048,
+      4608
+    ],
+    "capacity_densities": [
+      128,
+      2048
+    ],
+    "latent_dims": [
+      16,
+      32
+    ],
+    "objective_density": 128,
+    "snapshot_ntol": 1e-09,
+    "snapshot_ltol": 1e-07,
+    "identity_rows": 8,
+    "head_hidden": 512,
+    "head_layers": 2,
+    "steps": 200000,
+    "lr": 0.001,
+    "batch": 4096,
+    "res_batch": 256,
+    "test_multiplier": 4,
+    "objective_fraction": 0.1,
+    "calibration_states": 512,
+    "holdout_seed": 20260916,
+    "holdout_trajectories": 64,
+    "oracle_iters": 150,
+    "encoder_steps": 12000,
+    "saturation_fraction": 0.1,
+    "joint_steps": 120000,
+    "joint_orth_fraction": 0.1,
+    "joint_points": 4096,
+    "joint_density_cap": 2048,
+    "point_seed": 20260916,
+    "wide_rank": 1024,
+    "seed": 0
+  },
+  "commit": "0f0c56f7dc411b4e42fd8beb8271a1a567cea332",
+  "job_id": "3745912",
+  "backend": "gpu",
+  "gpu": "NVIDIA A100-PCIE-40GB",
+  "x64": true,
+  "matmul_precision": "highest",
+  "jax_version": "0.10.2",
+  "source_checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "K_incumbent": 16,
+  "R_incumbent": 512,
+  "gates": {
+    "whitening_round_trip": 4.858650414074096e-15,
+    "identity_star_relative": 1.3742723736407972e-13
+  },
+  "data": {
+    "train_physical_sha256": "6c34ea7000bd76c90290806149cd136b7f51502a417184a0c62e52205a14334e",
+    "holdout_physical_sha256": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c",
+    "eval_physical_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+    "training": {
+      "trajectories": 4608,
+      "states_per_trajectory": 51,
+      "snapshots": 235008,
+      "state_stride": 1,
+      "newton_tolerance": 1e-09,
+      "linear_tolerance": 1e-07,
+      "max_relative_residual": 9.999571249853786e-10,
+      "seconds": 449.1246786969714,
+      "whitened_target_sha256": "46d3e4a72b224000cf3c54737fe4e2f2b15092e1a9554f58f09dd2368fedd733"
+    },
+    "holdout": {
+      "trajectories": 64,
+      "states_per_trajectory": 51,
+      "snapshots": 3264,
+      "state_stride": 1,
+      "newton_tolerance": 1e-09,
+      "linear_tolerance": 1e-07,
+      "max_relative_residual": 9.986521179669735e-10,
+      "seconds": 20.49729625112377,
+      "whitened_target_sha256": "0041b650cc0fd10a9fae17f0aac99bf2f4cdf866cfbaac49d149a167a3c29005"
+    },
+    "holdout_span_floor": {
+      "mean": 0.0004613739082560776,
+      "max": 0.0223508524538703
+    },
+    "joint": {
+      "trajectories": 2048,
+      "states_per_trajectory": 51,
+      "snapshots": 104448,
+      "state_stride": 1,
+      "newton_tolerance": 1e-09,
+      "linear_tolerance": 1e-07,
+      "max_relative_residual": 9.997663777784536e-10,
+      "seconds": 210.92233597510494,
+      "whitened_target_sha256": "0ade7e90d863617c9c6ded5bc51304dbee2314d6ae6835481cbe2fe59437f7af",
+      "density_cap": 2048,
+      "selected_density": 2048
+    }
+  },
+  "weights": {
+    "rule": "weight = rho * L_rec / L_term at the INCUMBENT head on a training-cohort calibration batch; rho = 0.1. No accuracy number is consulted.",
+    "calibration_states": 512,
+    "L_rec": 6.149235209916803,
+    "L_weak": 6.1547278641952765,
+    "L_smooth": 31.569712628281046,
+    "beta_w": 0.09991075715450513,
+    "beta_t": 0.09991075715450513,
+    "gamma": 0.01947827426344117
+  },
+  "arms": [
+    {
+      "arm": "d128k16rec",
+      "spec": {
+        "trajectories": 128,
+        "K": 16,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "rec"
+      },
+      "K": 16,
+      "R": 512,
+      "trajectories": 128,
+      "states": 6528,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 0,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 337.14956283569336,
+        "final_loss": 8.522243325242654e-07,
+        "final_parts": {
+          "rec": 8.522243325242654e-07,
+          "weak": 0.0,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.0010469651471138818,
+        "max": 0.007745022803745546
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.045143581410391806,
+          "max": 0.5111574428378485,
+          "median": 0.02456113136660075,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.04513914888763722,
+          "max": 0.5111574428378485,
+          "median": 0.02456113136660075,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.001996920827850302,
+        "selection": {
+          "mean": 0.04513914888763722,
+          "max": 0.5111574428378485,
+          "median": 0.02456113136660075,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 97.8363710645369,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d128k16rec.pkl",
+      "checkpoint_sha256": "df27781fe64b800a789a0c57e755cae53dfe13342be14e386487b4109c227bf8",
+      "train_gpu_hours": 0.09365265634324815
+    },
+    {
+      "arm": "d512k16rec",
+      "spec": {
+        "trajectories": 512,
+        "K": 16,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "rec"
+      },
+      "K": 16,
+      "R": 512,
+      "trajectories": 512,
+      "states": 26112,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 0,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 352.8920621871948,
+        "final_loss": 9.416304378655733e-06,
+        "final_parts": {
+          "rec": 9.416304378655733e-06,
+          "weak": 0.0,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.002833385884196437,
+        "max": 0.015059724585517964
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.011547289679715056,
+          "max": 0.33283037074257976,
+          "median": 0.005377338210808528,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.011547289679715028,
+          "max": 0.3328303707425797,
+          "median": 0.0053773382108085075,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.0045291927732570725,
+        "selection": {
+          "mean": 0.011547289679715028,
+          "max": 0.3328303707425797,
+          "median": 0.0053773382108085075,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 25.028050943240387,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d512k16rec.pkl",
+      "checkpoint_sha256": "d514775ed064288a5dda6ac9095f4a59f425f1dc478b17cac3faa388c1a0aa00",
+      "train_gpu_hours": 0.09802557282977634
+    },
+    {
+      "arm": "d2048k16rec",
+      "spec": {
+        "trajectories": 2048,
+        "K": 16,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "rec"
+      },
+      "K": 16,
+      "R": 512,
+      "trajectories": 2048,
+      "states": 104448,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 0,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 358.85624837875366,
+        "final_loss": 4.360324640202187e-05,
+        "final_parts": {
+          "rec": 4.360324640202187e-05,
+          "weak": 0.0,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.005625171956296897,
+        "max": 0.051439654193888885
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.006391903200410698,
+          "max": 0.1413884345090071,
+          "median": 0.0043179841345881275,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.006225346899965701,
+          "max": 0.0903687003755742,
+          "median": 0.0043161502777260725,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.058081373258633245,
+        "selection": {
+          "mean": 0.006225346899965701,
+          "max": 0.0903687003755742,
+          "median": 0.0043161502777260725,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 13.493062326598732,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d2048k16rec.pkl",
+      "checkpoint_sha256": "1d4965310b09aaba92582dd85a3072e01928fa94e905228e7ef282af359b859a",
+      "train_gpu_hours": 0.09968229121632047
+    },
+    {
+      "arm": "d4608k16rec",
+      "spec": {
+        "trajectories": 4608,
+        "K": 16,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "rec"
+      },
+      "K": 16,
+      "R": 512,
+      "trajectories": 4608,
+      "states": 235008,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 0,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 387.2006289958954,
+        "final_loss": 0.00010276206816832278,
+        "final_parts": {
+          "rec": 0.00010276206816832278,
+          "weak": 0.0,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.008626213643448477,
+        "max": 0.09572889480050745
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.007520026491720396,
+          "max": 0.09879263540283803,
+          "median": 0.0055983655937767145,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.007480300266005549,
+          "max": 0.09879263540283803,
+          "median": 0.005559784290788757,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.20572623413553057,
+        "selection": {
+          "mean": 0.007480300266005549,
+          "max": 0.09879263540283803,
+          "median": 0.005559784290788757,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 16.2130977329861,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d4608k16rec.pkl",
+      "checkpoint_sha256": "7e5dec446298cb06b48ddf482e55df62f2e9206807d439fa4717ee71b81c064a",
+      "train_gpu_hours": 0.1075557302766376
+    },
+    {
+      "arm": "d128k32rec",
+      "spec": {
+        "trajectories": 128,
+        "K": 32,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "rec"
+      },
+      "K": 32,
+      "R": 512,
+      "trajectories": 128,
+      "states": 6528,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 0,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 343.42717957496643,
+        "final_loss": 2.8010822675550533e-07,
+        "final_parts": {
+          "rec": 2.8010822675550533e-07,
+          "weak": 0.0,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.0007301147133963279,
+        "max": 0.007656303947847663
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.03334756249830535,
+          "max": 0.5045814001499905,
+          "median": 0.01660368556456537,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.03334719964652552,
+          "max": 0.5045814001499905,
+          "median": 0.016603685564565353,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.005561267330497141,
+        "selection": {
+          "mean": 0.03334719964652552,
+          "max": 0.5045814001499905,
+          "median": 0.016603685564565353,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 72.27803534138462,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d128k32rec.pkl",
+      "checkpoint_sha256": "f999eed1eebd564f33679cc3dcebd71913a54634b37fef92229d2dc09aa007e4",
+      "train_gpu_hours": 0.095396438770824
+    },
+    {
+      "arm": "d2048k32rec",
+      "spec": {
+        "trajectories": 2048,
+        "K": 32,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "rec"
+      },
+      "K": 32,
+      "R": 512,
+      "trajectories": 2048,
+      "states": 104448,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 0,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 378.2249331474304,
+        "final_loss": 1.6233475831342077e-05,
+        "final_parts": {
+          "rec": 1.6233475831342077e-05,
+          "weak": 0.0,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.0035537742287830303,
+        "max": 0.0398881178220277
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.004063449236100096,
+          "max": 0.09678363304634026,
+          "median": 0.002618105652324682,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.004063437332156311,
+          "max": 0.09678363304634009,
+          "median": 0.0026181056523246794,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.033593871588997695,
+        "selection": {
+          "mean": 0.004063437332156311,
+          "max": 0.09678363304634009,
+          "median": 0.0026181056523246794,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 8.807254288642977,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d2048k32rec.pkl",
+      "checkpoint_sha256": "fe8010bc7679b43160491266c5e010ba982240c1d044e808e6ce419608fa4ae5",
+      "train_gpu_hours": 0.10506248142984179
+    },
+    {
+      "arm": "d128k16w",
+      "spec": {
+        "trajectories": 128,
+        "K": 16,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.09991075715450513,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "w"
+      },
+      "K": 16,
+      "R": 512,
+      "trajectories": 128,
+      "states": 6528,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 256,
+        "beta_w": 0.09991075715450513,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 1352.4065606594086,
+        "final_loss": 8.828521576890052e-07,
+        "final_parts": {
+          "rec": 8.647511275032105e-07,
+          "weak": 1.8117198489250424e-07,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.0010519029613307743,
+        "max": 0.0077303908758851
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.045561247630055424,
+          "max": 0.5067082904615826,
+          "median": 0.02539001824641354,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.04555781516284153,
+          "max": 0.5067082904615826,
+          "median": 0.025366473825239946,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.0020744923210614563,
+        "selection": {
+          "mean": 0.04555781516284153,
+          "max": 0.5067082904615826,
+          "median": 0.025366473825239946,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 98.74380485676588,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d128k16w.pkl",
+      "checkpoint_sha256": "373bfbcaa86bfb0c6e4393b72bcf4448b396dfc34a8ba2c50d88ce9d9ebaa286",
+      "train_gpu_hours": 0.3756684890720579
+    },
+    {
+      "arm": "d128k16t",
+      "spec": {
+        "trajectories": 128,
+        "K": 16,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.09991075715450513,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "t"
+      },
+      "K": 16,
+      "R": 512,
+      "trajectories": 128,
+      "states": 6528,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 256,
+        "beta_w": 0.0,
+        "beta_t": 0.09991075715450513,
+        "gamma": 0.0,
+        "seconds": 1361.5368802547455,
+        "final_loss": 8.953684207389874e-07,
+        "final_parts": {
+          "rec": 8.881075190508377e-07,
+          "weak": 0.0,
+          "traj": 7.2673873113795e-08,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.0010646825168166135,
+        "max": 0.007734907571993986
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.04614946050267939,
+          "max": 0.5169311978469746,
+          "median": 0.026050517304307783,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.04614540290933742,
+          "max": 0.5169311978395277,
+          "median": 0.026050517304307776,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.001726936139236555,
+        "selection": {
+          "mean": 0.04614540290933742,
+          "max": 0.5169311978395277,
+          "median": 0.026050517304307776,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 100.01736570617949,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d128k16t.pkl",
+      "checkpoint_sha256": "8eb58f1634559b0fb4bcd12a26015f7431ea0ed766b32f3c1374e29701ce08ef",
+      "train_gpu_hours": 0.37820468895965154
+    },
+    {
+      "arm": "d128k16z",
+      "spec": {
+        "trajectories": 128,
+        "K": 16,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.01947827426344117,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "z"
+      },
+      "K": 16,
+      "R": 512,
+      "trajectories": 128,
+      "states": 6528,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 0,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.01947827426344117,
+        "seconds": 338.9669668674469,
+        "final_loss": 1.4945945729010699e-05,
+        "final_parts": {
+          "rec": 7.002968136307315e-06,
+          "weak": 0.0,
+          "traj": 0.0,
+          "smooth": 0.00040778651564690114
+        }
+      },
+      "recon_train": {
+        "mean": 0.002372386939122246,
+        "max": 0.015395871601153494
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.11136482069876359,
+          "max": 0.8037798698184595,
+          "median": 0.08332672660257226,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.10288943182394204,
+          "max": 0.6523245598550137,
+          "median": 0.07689186882151805,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.0007057053557994709,
+        "selection": {
+          "mean": 0.10288943182394204,
+          "max": 0.6523245598550137,
+          "median": 0.07689186882151805,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 223.0066113032882,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_d128k16z.pkl",
+      "checkpoint_sha256": "f81c6e0a17cbd7b4bfb1afe996ec2b3ce00dd4a4c53af60f85cca255baecec08",
+      "train_gpu_hours": 0.09415749079651303
+    },
+    {
+      "arm": "best_d2048k32w",
+      "spec": {
+        "trajectories": 2048,
+        "K": 32,
+        "bank": "frozen",
+        "rank": 512,
+        "beta_w": 0.09991075715450513,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 200000,
+        "objective": "w"
+      },
+      "K": 32,
+      "R": 512,
+      "trajectories": 2048,
+      "states": 104448,
+      "train": {
+        "steps": 200000,
+        "lr": 0.001,
+        "hidden": 512,
+        "layers": 2,
+        "batch": 4096,
+        "res_batch": 256,
+        "beta_w": 0.09991075715450513,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "seconds": 1459.075679063797,
+        "final_loss": 1.7058437709825777e-05,
+        "final_parts": {
+          "rec": 1.632636234969862e-05,
+          "weak": 7.327292685762075e-06,
+          "traj": 0.0,
+          "smooth": 0.0
+        }
+      },
+      "recon_train": {
+        "mean": 0.00353590519951424,
+        "max": 0.04067750947105597
+      },
+      "holdout": {
+        "mean_only": {
+          "mean": 0.004097207757031065,
+          "max": 0.07859062566805378,
+          "median": 0.0025407338614250193,
+          "n": 3264
+        },
+        "with_encoder": {
+          "mean": 0.0040971648829526836,
+          "max": 0.07859062566805378,
+          "median": 0.0025407338614249738,
+          "n": 3264
+        },
+        "encoder_final_loss": 0.033257170273479394,
+        "selection": {
+          "mean": 0.0040971648829526836,
+          "max": 0.07859062566805378,
+          "median": 0.0025407338614249738,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 8.880356712063186,
+      "span_floor": {
+        "mean": 0.0004613739082560776,
+        "max": 0.0223508524538703
+      },
+      "checkpoint": "ckpt_best_d2048k32w.pkl",
+      "checkpoint_sha256": "81fa0e3d065132c6282a926195700080187b9e0d8c32c4be08581401e6d4f7cb",
+      "train_gpu_hours": 0.4052987997399436
+    },
+    {
+      "arm": "joint_d2048k32r512",
+      "spec": {
+        "trajectories": 2048,
+        "K": 32,
+        "bank": "joint",
+        "rank": 512,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 120000,
+        "objective": "rec_field",
+        "points": 4096,
+        "warm_start_from": "best_d2048k32w"
+      },
+      "K": 32,
+      "R": 512,
+      "trajectories": 2048,
+      "states": 104448,
+      "train": {
+        "steps": 120000,
+        "lr": 0.001,
+        "batch": 4096,
+        "points": 4096,
+        "n_full": 65025,
+        "lam_orth": 0.0007686760103811783,
+        "orth_fraction": 0.1,
+        "data_term_at_warm_start": 1.4606524524624461e-05,
+        "warm_start": true,
+        "seconds": 1322.4612674713135,
+        "final_loss": 6.545449350672538e-05,
+        "final_data_loss": 6.395377448833825e-05,
+        "feature_gram_deviation_start": 0.001900218600211192,
+        "feature_gram_deviation_end": 0.0019523427005251252,
+        "bank_gram_condition": 8924161138580185.0
+      },
+      "recon_train": null,
+      "holdout": {
+        "mean_only": {
+          "mean": 0.006374394973289305,
+          "max": 0.1109566644943594,
+          "median": 0.004006026814917752,
+          "n": 3264
+        },
+        "selection": {
+          "mean": 0.006374394973289305,
+          "max": 0.1109566644943594,
+          "median": 0.004006026814917752,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 3.5611546981191347,
+      "span_floor": {
+        "mean": 0.0017899797997138445,
+        "max": 0.034585035358108626
+      },
+      "checkpoint": "ckpt_joint_d2048k32r512.pkl",
+      "checkpoint_sha256": "2630caefd9d09504cab183f646d6fca9bba1e6541476a6030448e7d37579bbfc",
+      "train_gpu_hours": 0.36735035207536487
+    },
+    {
+      "arm": "joint_d2048k32r1024",
+      "spec": {
+        "trajectories": 2048,
+        "K": 32,
+        "bank": "joint",
+        "rank": 1024,
+        "beta_w": 0.0,
+        "beta_t": 0.0,
+        "gamma": 0.0,
+        "hidden": 512,
+        "layers": 2,
+        "steps": 120000,
+        "objective": "rec_field",
+        "points": 4096,
+        "warm_start_from": "best_d2048k32w"
+      },
+      "K": 32,
+      "R": 1024,
+      "trajectories": 2048,
+      "states": 104448,
+      "train": {
+        "steps": 120000,
+        "lr": 0.001,
+        "batch": 4096,
+        "points": 4096,
+        "n_full": 65025,
+        "lam_orth": 4540.924397632671,
+        "orth_fraction": 0.1,
+        "data_term_at_warm_start": 43.17760658188945,
+        "warm_start": true,
+        "seconds": 2135.1211936473846,
+        "final_loss": 0.2218018262573051,
+        "final_data_loss": 0.0009441170613596476,
+        "feature_gram_deviation_start": 0.0009508549978149673,
+        "feature_gram_deviation_end": 4.863716881009331e-05,
+        "bank_gram_condition": 3.7071338834572805e+18
+      },
+      "recon_train": null,
+      "holdout": {
+        "mean_only": {
+          "mean": 0.2513412227742855,
+          "max": 0.7393576869336665,
+          "median": 0.23667996771300098,
+          "n": 3264
+        },
+        "selection": {
+          "mean": 0.2513412227742855,
+          "max": 0.7393576869336665,
+          "median": 0.23667996771300098,
+          "n": 3264
+        }
+      },
+      "holdout_over_floor": 1.6104330231110844,
+      "span_floor": {
+        "mean": 0.15607058422630748,
+        "max": 0.2835899565157542
+      },
+      "checkpoint": "ckpt_joint_d2048k32r1024.pkl",
+      "checkpoint_sha256": "49b7800d9383391ad360f0b3090df75828a8614b47150a1f1a80254f136f66ba",
+      "train_gpu_hours": 0.5930892204576068
+    }
+  ],
+  "emitted": [
+    {
+      "arm": "d128k16rec",
+      "artifact": "ckpt_d128k16rec.pkl",
+      "sha256": "df27781fe64b800a789a0c57e755cae53dfe13342be14e386487b4109c227bf8",
+      "K": 16,
+      "R": 512
+    },
+    {
+      "arm": "d512k16rec",
+      "artifact": "ckpt_d512k16rec.pkl",
+      "sha256": "d514775ed064288a5dda6ac9095f4a59f425f1dc478b17cac3faa388c1a0aa00",
+      "K": 16,
+      "R": 512
+    },
+    {
+      "arm": "d2048k16rec",
+      "artifact": "ckpt_d2048k16rec.pkl",
+      "sha256": "1d4965310b09aaba92582dd85a3072e01928fa94e905228e7ef282af359b859a",
+      "K": 16,
+      "R": 512
+    },
+    {
+      "arm": "d4608k16rec",
+      "artifact": "ckpt_d4608k16rec.pkl",
+      "sha256": "7e5dec446298cb06b48ddf482e55df62f2e9206807d439fa4717ee71b81c064a",
+      "K": 16,
+      "R": 512
+    },
+    {
+      "arm": "d128k32rec",
+      "artifact": "ckpt_d128k32rec.pkl",
+      "sha256": "f999eed1eebd564f33679cc3dcebd71913a54634b37fef92229d2dc09aa007e4",
+      "K": 32,
+      "R": 512
+    },
+    {
+      "arm": "d2048k32rec",
+      "artifact": "ckpt_d2048k32rec.pkl",
+      "sha256": "fe8010bc7679b43160491266c5e010ba982240c1d044e808e6ce419608fa4ae5",
+      "K": 32,
+      "R": 512
+    },
+    {
+      "arm": "d128k16w",
+      "artifact": "ckpt_d128k16w.pkl",
+      "sha256": "373bfbcaa86bfb0c6e4393b72bcf4448b396dfc34a8ba2c50d88ce9d9ebaa286",
+      "K": 16,
+      "R": 512
+    },
+    {
+      "arm": "d128k16t",
+      "artifact": "ckpt_d128k16t.pkl",
+      "sha256": "8eb58f1634559b0fb4bcd12a26015f7431ea0ed766b32f3c1374e29701ce08ef",
+      "K": 16,
+      "R": 512
+    },
+    {
+      "arm": "d128k16z",
+      "artifact": "ckpt_d128k16z.pkl",
+      "sha256": "f81c6e0a17cbd7b4bfb1afe996ec2b3ce00dd4a4c53af60f85cca255baecec08",
+      "K": 16,
+      "R": 512
+    },
+    {
+      "arm": "best_d2048k32w",
+      "artifact": "ckpt_best_d2048k32w.pkl",
+      "sha256": "81fa0e3d065132c6282a926195700080187b9e0d8c32c4be08581401e6d4f7cb",
+      "K": 32,
+      "R": 512
+    },
+    {
+      "arm": "joint_d2048k32r512",
+      "artifact": "ckpt_joint_d2048k32r512.pkl",
+      "sha256": "2630caefd9d09504cab183f646d6fca9bba1e6541476a6030448e7d37579bbfc",
+      "K": 32,
+      "R": 512
+    },
+    {
+      "arm": "joint_d2048k32r1024",
+      "artifact": "ckpt_joint_d2048k32r1024.pkl",
+      "sha256": "49b7800d9383391ad360f0b3090df75828a8614b47150a1f1a80254f136f66ba",
+      "K": 32,
+      "R": 1024
+    }
+  ],
+  "selection": {
+    "rule": "held-out representation-oracle WORST, declared in DESIGN.md before any run",
+    "density_curve": [
+      [
+        128,
+        0.5111574428378485
+      ],
+      [
+        512,
+        0.3328303707425797
+      ],
+      [
+        2048,
+        0.0903687003755742
+      ],
+      [
+        4608,
+        0.09879263540283803
+      ]
+    ],
+    "monotone": false,
+    "saturation_rung": 512,
+    "next_rung": 2048,
+    "top_rung": 4608,
+    "relative_gain_mid_to_next": 0.7284842120208198,
+    "relative_gain_mid_to_top": 0.703174216997021,
+    "saturation_fraction": 0.1,
+    "diagnostic_verdict": "mixed",
+    "best_density": 2048,
+    "latent_curve": [
+      [
+        16,
+        0.5111574428378485
+      ],
+      [
+        32,
+        0.5045814001499905
+      ]
+    ],
+    "best_K": 32,
+    "objective_curve": [
+      [
+        "rec",
+        0.5111574428378485
+      ],
+      [
+        "w",
+        0.5067082904615826
+      ],
+      [
+        "t",
+        0.5169311978395277
+      ],
+      [
+        "z",
+        0.6523245598550137
+      ]
+    ],
+    "best_objective": "w",
+    "best_combination_arm": "best_d2048k32w",
+    "bank_rank_arms": [
+      512,
+      1024
+    ],
+    "joint_warm_start": "best_d2048k32w"
+  },
+  "final_cohort_unopened": true,
+  "complete": true,
+  "elapsed_seconds": 11184.015876207966,
+  "source_checkpoint_sha256_after": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589"
+}

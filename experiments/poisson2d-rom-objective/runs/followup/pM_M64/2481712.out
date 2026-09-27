@@ -1,0 +1,13 @@
+host=pax007  gpu=NVIDIA A100 80GB PCIe  commit=d26d27e  dirty=e3b0c44298fc  cell=pM_M64
+jax_backend=gpu cuda:0
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "autodec_K8_N64_hbc_stages.pkl", "pkl_config": {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 8, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 1, "objectives": ["weak_a1_M64"], "ms": [256], "schemes": ["full", "nnls", "nnlsoff"], "inits": ["nearest"], "eq_snaps": 64, "eq_perturb": 3, "eq_modes": 64, "eq_rows": 3072, "eq_fixed_snaps": 1, "bc_beta": 0.0, "backend": "gpu"}
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+ORACLE nearest=7.109e-03
+RESULT obj=weak_a1_M64    full     m= 3844 init=nearest  ROM 7.654e-03 (med 6.200e-03 max 1.482e-02) oracle 7.109e-03 acc/rej 24/2 {'converged': 15, 'budget': 1} [6s]
+  NNLS-EQ m=256 M=64 grid: support 256 (+0 padded) rows 3072 rnorm capped 6.65e-01 final(all rows) 1.81e+00 / ||b|| 7.52e+02 (per-row median 9.4e-03, p95 3.8e-01, max 1.9e+03) [15s]
+RESULT obj=weak_a1_M64    nnls     m=  256 init=nearest  ROM 8.658e-03 (med 6.326e-03 max 1.754e-02) oracle 7.109e-03 acc/rej 20/2 {'converged': 15, 'budget': 1} [19s]
+  NNLS-EQ m=256 M=64 meshfree: support 256 (+0 padded) rows 3072 rnorm capped 1.73e-04 final(all rows) 4.83e-04 / ||b|| 1.83e-01 (per-row median 9.7e-03, p95 4.4e-01, max 3.2e+02) [16s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  256 init=nearest  ROM 8.983e-03 (med 6.717e-03 max 1.955e-02) oracle 7.109e-03 acc/rej 26/3 {'converged': 15, 'budget': 1} [17s]
+DONE
+ALL-DONE

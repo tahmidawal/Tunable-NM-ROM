@@ -1,0 +1,46 @@
+host=pax007  gpu=NVIDIA A100 80GB PCIe  commit=d26d27e  dirty=e3b0c44298fc  cell=pt_m
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 MODE=m M=64 m=256 reps=7 warm=2 rel_tol=0.0
+  NNLS-EQ offgrid M=64 m=64 @N=64: support 64 (+0) rel fit 1.24e-01 (row p95 2.0e+01, max 2.3e+05) [3s]
+RESULT M=  64 m=   64 offgrid  solve   12.91 ms (38.4 iters, 0.315 ms/iter) err 6.049e-02
+  NNLS-EQ grid M=64 m=64 @N=64: support 64 (+0) rel fit 1.40e-01 (row p95 2.4e+01, max 2.0e+04) [1s]
+RESULT M=  64 m=   64 grid     solve   11.12 ms (37.5 iters, 0.318 ms/iter) err 6.251e-02
+  NNLS-EQ offgrid M=64 m=128 @N=64: support 128 (+0) rel fit 1.74e-02 (row p95 2.5e+00, max 1.4e+04) [5s]
+RESULT M=  64 m=  128 offgrid  solve   14.00 ms (27.1 iters, 0.333 ms/iter) err 1.940e-02
+  NNLS-EQ grid M=64 m=128 @N=64: support 128 (+0) rel fit 1.61e-02 (row p95 2.1e+00, max 2.0e+03) [4s]
+RESULT M=  64 m=  128 grid     solve   13.91 ms (32.7 iters, 0.339 ms/iter) err 1.722e-02
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.64e-03 (row p95 4.4e-01, max 3.2e+02) [16s]
+RESULT M=  64 m=  256 offgrid  solve   11.48 ms (27.8 iters, 0.348 ms/iter) err 8.942e-03
+  NNLS-EQ grid M=64 m=256 @N=64: support 256 (+0) rel fit 2.41e-03 (row p95 3.8e-01, max 1.9e+03) [15s]
+RESULT M=  64 m=  256 grid     solve   15.07 ms (27.2 iters, 0.314 ms/iter) err 8.422e-03
+  NNLS-EQ offgrid M=64 m=512 @N=64: support 512 (+0) rel fit 2.70e-04 (row p95 4.8e-02, max 5.4e+02) [77s]
+RESULT M=  64 m=  512 offgrid  solve   15.31 ms (29.6 iters, 0.403 ms/iter) err 7.938e-03
+  NNLS-EQ grid M=64 m=512 @N=64: support 512 (+0) rel fit 2.43e-04 (row p95 4.3e-02, max 4.5e+01) [73s]
+RESULT M=  64 m=  512 grid     solve   15.19 ms (29.5 iters, 0.400 ms/iter) err 7.788e-03
+  NNLS-EQ offgrid M=64 m=1024 @N=64: support 1015 (+9) rel fit 2.44e-05 (row p95 4.1e-03, max 1.1e+01) [523s]
+RESULT M=  64 m= 1024 offgrid  solve   18.54 ms (29.8 iters, 0.488 ms/iter) err 7.912e-03
+  NNLS-EQ grid M=64 m=1024 @N=64: support 1024 (+0) rel fit 1.60e-05 (row p95 3.2e-03, max 1.5e+01) [498s]
+RESULT M=  64 m= 1024 grid     solve   18.90 ms (32.0 iters, 0.485 ms/iter) err 7.756e-03
+RESULT M=  64 m= 3844 full     solve   35.62 ms (31.9 iters, 0.913 ms/iter) err 7.759e-03
+  NNLS-EQ offgrid M=16 m=64 @N=64: support 64 (+0) rel fit 1.72e-02 (row p95 4.7e-01, max 4.1e+02) [1s]
+RESULT M=  16 m=   64 offgrid  solve    6.69 ms (35.1 iters, 0.279 ms/iter) err 4.278e-02
+  NNLS-EQ grid M=16 m=64 @N=64: support 64 (+0) rel fit 1.60e-02 (row p95 4.0e-01, max 1.5e+02) [1s]
+RESULT M=  16 m=   64 grid     solve   13.63 ms (33.5 iters, 0.262 ms/iter) err 2.408e-02
+  NNLS-EQ offgrid M=32 m=128 @N=64: support 128 (+0) rel fit 6.71e-03 (row p95 4.1e-01, max 1.4e+03) [3s]
+RESULT M=  32 m=  128 offgrid  solve   14.82 ms (35.0 iters, 0.270 ms/iter) err 1.368e-02
+  NNLS-EQ grid M=32 m=128 @N=64: support 128 (+0) rel fit 6.62e-03 (row p95 4.2e-01, max 1.3e+03) [3s]
+RESULT M=  32 m=  128 grid     solve    8.72 ms (34.3 iters, 0.264 ms/iter) err 1.392e-02
+  NNLS-EQ offgrid M=128 m=512 @N=64: support 512 (+0) rel fit 7.98e-04 (row p95 3.3e-01, max 3.8e+02) [116s]
+RESULT M= 128 m=  512 offgrid  solve   16.59 ms (27.8 iters, 0.405 ms/iter) err 7.395e-03
+  NNLS-EQ grid M=128 m=512 @N=64: support 512 (+0) rel fit 8.32e-04 (row p95 3.4e-01, max 2.3e+02) [109s]
+RESULT M= 128 m=  512 grid     solve   16.65 ms (31.1 iters, 0.406 ms/iter) err 7.328e-03
+  NNLS-EQ offgrid M=256 m=1024 @N=64: support 1024 (+0) rel fit 2.83e-04 (row p95 2.2e-01, max 2.0e+03) [1112s]
+RESULT M= 256 m= 1024 offgrid  solve   23.85 ms (30.2 iters, 0.418 ms/iter) err 7.181e-03
+  NNLS-EQ grid M=256 m=1024 @N=64: support 1024 (+0) rel fit 2.15e-04 (row p95 1.9e-01, max 1.1e+03) [1112s]
+RESULT M= 256 m= 1024 grid     solve   23.89 ms (30.7 iters, 0.419 ms/iter) err 7.065e-03
+RESULT M=  16 m= 3844 full     solve   20.08 ms (33.3 iters, 0.873 ms/iter) err 1.037e-02
+RESULT M=  32 m= 3844 full     solve   45.30 ms (32.7 iters, 0.824 ms/iter) err 9.183e-03
+RESULT M= 128 m= 3844 full     solve   38.06 ms (31.1 iters, 0.928 ms/iter) err 7.245e-03
+RESULT M= 256 m= 3844 full     solve   47.37 ms (31.4 iters, 0.831 ms/iter) err 7.062e-03
+DONE
+ALL-DONE

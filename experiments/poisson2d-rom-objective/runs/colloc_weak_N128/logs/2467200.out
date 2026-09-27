@@ -1,0 +1,54 @@
+host=pax106  gpu=NVIDIA A100 80GB PCIe  commit=80f3bc3  cell=colloc_weak_N128
+jax_backend=gpu cuda:0
+jax_backend=gpu x64=True K_LAT=8 HARD_BC=0
+CONFIG {"N": 128, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 8, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 0, "gn_iters": 60}
+  FOM: 576 CG solves in 10s, max rel residual over all samples 2.46e-12
+  [A] step      0 loss 3.926e-02 [4s]
+  [A] step   5000 loss 5.408e-05 [16s]
+  [A] step  10000 loss 1.285e-05 [28s]
+  [A] step  15000 loss 7.948e-06 [40s]
+  [A] Adam 20000 steps in 53s (final batch loss 5.390e-06)
+RESULT K8_N128: TRAIN 9.310e-03/8.792e-03  VAL inferred mean 1.090e-02 nearest 8.017e-03 best 8.012e-03  boundary-block(train) 1.3e-04
+DONE
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "autodec_K8_N128_stages.pkl", "pkl_config": {"N": 128, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 8, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 0, "gn_iters": 60}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 0, "objectives": ["weak_a1_M64", "weak_a1_M256"], "ms": [128, 256, 512], "schemes": ["nnls", "nnlsoff"], "inits": ["nearest", "mean"], "eq_snaps": 64, "eq_perturb": 3, "eq_modes": 64, "eq_rows": 3072, "bc_beta": 16129.000000000002, "backend": "gpu"}
+  FOM: 576 CG solves in 9s, max rel residual over all samples 2.46e-12
+ORACLE mean=1.442e-02  nearest=8.539e-03
+  NNLS-EQ m=128: support 128 (+0 padded) rows 3072 rnorm capped 9.57e+00 final(all rows) 2.41e+01 / ||b|| 1.51e+03 [7s]
+RESULT obj=weak_a1_M64    nnls     m=  128 init=mean     ROM 2.239e-02 (med 1.290e-02 max 1.061e-01) oracle 1.442e-02 acc/rej 28/12 {'converged': 15, 'budget': 1} [14s]
+RESULT obj=weak_a1_M64    nnls     m=  128 init=nearest  ROM 1.533e-02 (med 1.324e-02 max 3.587e-02) oracle 8.539e-03 acc/rej 26/8 {'converged': 14, 'budget': 2} [1s]
+  NNLS-EQ m=256: support 256 (+0 padded) rows 3072 rnorm capped 1.29e+00 final(all rows) 3.63e+00 / ||b|| 1.50e+03 [20s]
+RESULT obj=weak_a1_M64    nnls     m=  256 init=mean     ROM 1.333e-02 (med 7.781e-03 max 5.828e-02) oracle 1.442e-02 acc/rej 30/6 {'converged': 11, 'budget': 5} [23s]
+RESULT obj=weak_a1_M64    nnls     m=  256 init=nearest  ROM 1.079e-02 (med 7.777e-03 max 2.289e-02) oracle 8.539e-03 acc/rej 30/1 {'converged': 13, 'budget': 3} [1s]
+  NNLS-EQ m=512: support 512 (+0 padded) rows 3072 rnorm capped 1.53e-01 final(all rows) 4.74e-01 / ||b|| 1.51e+03 [84s]
+RESULT obj=weak_a1_M64    nnls     m=  512 init=mean     ROM 1.315e-02 (med 7.659e-03 max 5.906e-02) oracle 1.442e-02 acc/rej 32/6 {'converged': 12, 'budget': 4} [88s]
+RESULT obj=weak_a1_M64    nnls     m=  512 init=nearest  ROM 1.031e-02 (med 7.656e-03 max 2.446e-02) oracle 8.539e-03 acc/rej 36/0 {'converged': 11, 'budget': 5} [2s]
+  NNLS-EQ m=128: support 128 (+0 padded) rows 3072 rnorm capped 1.05e-03 final(all rows) 2.55e-03 / ||b|| 1.81e-01 [5s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  128 init=mean     ROM 1.863e-02 (med 9.943e-03 max 5.819e-02) oracle 1.442e-02 acc/rej 33/10 {'converged': 12, 'budget': 4} [8s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  128 init=nearest  ROM 1.417e-02 (med 1.011e-02 max 3.241e-02) oracle 8.539e-03 acc/rej 26/3 {'converged': 14, 'budget': 2} [2s]
+  NNLS-EQ m=256: support 256 (+0 padded) rows 3072 rnorm capped 2.31e-04 final(all rows) 5.82e-04 / ||b|| 1.85e-01 [17s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  256 init=mean     ROM 1.379e-02 (med 7.372e-03 max 5.931e-02) oracle 1.442e-02 acc/rej 28/6 {'converged': 11, 'budget': 5} [21s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  256 init=nearest  ROM 1.084e-02 (med 7.373e-03 max 2.402e-02) oracle 8.539e-03 acc/rej 27/1 {'converged': 11, 'budget': 5} [2s]
+  NNLS-EQ m=512: support 512 (+0 padded) rows 3072 rnorm capped 1.62e-05 final(all rows) 4.96e-05 / ||b|| 1.79e-01 [92s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  512 init=mean     ROM 1.326e-02 (med 7.630e-03 max 5.890e-02) oracle 1.442e-02 acc/rej 34/6 {'converged': 11, 'budget': 5} [95s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  512 init=nearest  ROM 1.052e-02 (med 7.619e-03 max 2.501e-02) oracle 8.539e-03 acc/rej 40/1 {'converged': 11, 'budget': 5} [2s]
+  NNLS-EQ m=128: support 128 (+0 padded) rows 3072 rnorm capped 7.96e+01 final(all rows) 4.14e+02 / ||b|| 1.53e+03 [19s]
+RESULT obj=weak_a1_M256   nnls     m=  128 init=mean     ROM 5.164e-02 (med 4.443e-02 max 9.406e-02) oracle 1.442e-02 acc/rej 35/14 {'converged': 10, 'budget': 6} [22s]
+RESULT obj=weak_a1_M256   nnls     m=  128 init=nearest  ROM 5.107e-02 (med 4.400e-02 max 9.214e-02) oracle 8.539e-03 acc/rej 24/11 {'converged': 13, 'budget': 3} [2s]
+  NNLS-EQ m=256: support 256 (+0 padded) rows 3072 rnorm capped 2.10e+01 final(all rows) 1.12e+02 / ||b|| 1.54e+03 [63s]
+RESULT obj=weak_a1_M256   nnls     m=  256 init=mean     ROM 1.819e-02 (med 1.575e-02 max 4.483e-02) oracle 1.442e-02 acc/rej 31/9 {'converged': 14, 'budget': 2} [66s]
+RESULT obj=weak_a1_M256   nnls     m=  256 init=nearest  ROM 1.680e-02 (med 1.542e-02 max 3.828e-02) oracle 8.539e-03 acc/rej 24/10 {'converged': 14, 'budget': 2} [1s]
+  NNLS-EQ m=512: support 512 (+0 padded) rows 3072 rnorm capped 7.27e-01 final(all rows) 5.18e+00 / ||b|| 1.53e+03 [252s]
+RESULT obj=weak_a1_M256   nnls     m=  512 init=mean     ROM 1.839e-02 (med 8.283e-03 max 1.025e-01) oracle 1.442e-02 acc/rej 28/6 {'converged': 15, 'budget': 1} [255s]
+RESULT obj=weak_a1_M256   nnls     m=  512 init=nearest  ROM 8.811e-03 (med 7.024e-03 max 2.012e-02) oracle 8.539e-03 acc/rej 24/0 {'converged': 16} [1s]
+  NNLS-EQ m=128: support 128 (+0 padded) rows 3072 rnorm capped 1.12e-02 final(all rows) 5.16e-02 / ||b|| 1.83e-01 [13s]
+RESULT obj=weak_a1_M256   nnlsoff  m=  128 init=mean     ROM 5.177e-02 (med 4.721e-02 max 7.817e-02) oracle 1.442e-02 acc/rej 26/12 {'converged': 13, 'budget': 3} [17s]
+RESULT obj=weak_a1_M256   nnlsoff  m=  128 init=nearest  ROM 5.288e-02 (med 5.104e-02 max 7.231e-02) oracle 8.539e-03 acc/rej 23/11 {'converged': 15, 'budget': 1} [3s]
+  NNLS-EQ m=256: support 256 (+0 padded) rows 3072 rnorm capped 2.42e-03 final(all rows) 1.35e-02 / ||b|| 1.85e-01 [53s]
+RESULT obj=weak_a1_M256   nnlsoff  m=  256 init=mean     ROM 2.343e-02 (med 1.310e-02 max 1.028e-01) oracle 1.442e-02 acc/rej 32/16 {'converged': 12, 'budget': 4} [57s]
+RESULT obj=weak_a1_M256   nnlsoff  m=  256 init=nearest  ROM 1.524e-02 (med 1.165e-02 max 3.796e-02) oracle 8.539e-03 acc/rej 29/12 {'converged': 13, 'budget': 3} [3s]
+  NNLS-EQ m=512: support 512 (+0 padded) rows 3072 rnorm capped 1.11e-04 final(all rows) 8.83e-04 / ||b|| 1.86e-01 [243s]
+RESULT obj=weak_a1_M256   nnlsoff  m=  512 init=mean     ROM 1.442e-02 (med 7.000e-03 max 1.025e-01) oracle 1.442e-02 acc/rej 28/6 {'converged': 14, 'budget': 2} [246s]
+RESULT obj=weak_a1_M256   nnlsoff  m=  512 init=nearest  ROM 8.685e-03 (med 7.000e-03 max 2.017e-02) oracle 8.539e-03 acc/rej 26/0 {'converged': 12, 'budget': 4} [3s]
+DONE
+ALL-DONE

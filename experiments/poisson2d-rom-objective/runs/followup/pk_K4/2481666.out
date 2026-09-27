@@ -1,0 +1,32 @@
+host=pax142  gpu=NVIDIA A100-PCIE-40GB  commit=d26d27e  dirty=e3b0c44298fc  cell=pk_K4
+jax_backend=gpu cuda:0
+jax_backend=gpu x64=True K_LAT=4 HARD_BC=1
+CONFIG {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 4, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 0}
+  FOM: 576 CG solves in 6s, max rel residual over all samples 4.29e-13
+  [A] step      0 loss 3.491e-02 [4s]
+  [A] step   5000 loss 4.547e-05 [18s]
+  [A] step  10000 loss 3.246e-05 [32s]
+  [A] step  15000 loss 1.266e-05 [46s]
+  [A] Adam 20000 steps in 60s (final batch loss 1.362e-05)
+RESULT K4_N64_hbc: TRAIN 1.413e-02/1.226e-02  VAL inferred mean 3.236e-02 nearest 2.069e-02 best 1.822e-02  boundary-block(train) 0.0e+00
+DONE
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "autodec_K4_N64_hbc_stages.pkl", "pkl_config": {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 4, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 0}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 1, "objectives": ["weak_a1_M64"], "ms": [256], "schemes": ["full", "nnls", "nnlsoff"], "inits": ["nearest", "mean"], "eq_snaps": 64, "eq_perturb": 3, "eq_modes": 64, "eq_rows": 3072, "eq_fixed_snaps": 1, "bc_beta": 0.0, "backend": "gpu"}
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+ORACLE mean=1.704e-02  nearest=1.551e-02
+RESULT obj=weak_a1_M64    full     m= 3844 init=mean     ROM 1.720e-02 (med 1.492e-02 max 3.431e-02) oracle 1.704e-02 acc/rej 14/4 {'converged': 16} [7s]
+RESULT obj=weak_a1_M64    full     m= 3844 init=nearest  ROM 1.565e-02 (med 1.435e-02 max 3.431e-02) oracle 1.551e-02 acc/rej 12/0 {'converged': 16} [1s]
+  NNLS-EQ m=256 M=64 grid: support 256 (+0 padded) rows 3072 rnorm capped 7.25e-01 final(all rows) 1.83e+00 / ||b|| 7.51e+02 (per-row median 9.8e-03, p95 3.8e-01, max 4.6e+02) [22s]
+RESULT obj=weak_a1_M64    nnls     m=  256 init=mean     ROM 1.728e-02 (med 1.505e-02 max 3.435e-02) oracle 1.704e-02 acc/rej 14/4 {'converged': 16} [25s]
+RESULT obj=weak_a1_M64    nnls     m=  256 init=nearest  ROM 1.572e-02 (med 1.426e-02 max 3.435e-02) oracle 1.551e-02 acc/rej 11/0 {'converged': 16} [1s]
+  NNLS-EQ m=256 M=64 meshfree: support 256 (+0 padded) rows 3072 rnorm capped 1.65e-04 final(all rows) 4.17e-04 / ||b|| 1.84e-01 (per-row median 9.3e-03, p95 3.6e-01, max 2.1e+02) [22s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  256 init=mean     ROM 1.740e-02 (med 1.524e-02 max 3.424e-02) oracle 1.704e-02 acc/rej 13/4 {'converged': 16} [23s]
+RESULT obj=weak_a1_M64    nnlsoff  m=  256 init=nearest  ROM 1.586e-02 (med 1.469e-02 max 3.424e-02) oracle 1.551e-02 acc/rej 11/0 {'converged': 16} [1s]
+DONE
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "autodec_K4_N64_hbc_stages.pkl", "pkl_config": {"N": 64, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 4, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 1, "gn_iters": 60, "train_seed": 0}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 1, "objectives": ["fd"], "ms": [256], "schemes": ["full"], "inits": ["nearest"], "eq_snaps": 64, "eq_perturb": 3, "eq_modes": 64, "eq_rows": 4096, "eq_fixed_snaps": 0, "bc_beta": 0.0, "backend": "gpu"}
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+ORACLE nearest=1.551e-02
+RESULT obj=fd             full     m= 3844 init=nearest  ROM 9.085e-02 (med 7.248e-02 max 2.444e-01) oracle 1.551e-02 acc/rej 18/0 {'budget': 2, 'converged': 14} [7s]
+DONE
+ALL-DONE

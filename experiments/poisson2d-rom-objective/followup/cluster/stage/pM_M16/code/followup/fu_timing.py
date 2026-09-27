@@ -1,0 +1,296 @@
+"""Poisson-2D online-cost measurements on ONE GPU, all ladder points measured
+SEQUENTIALLY IN ONE PROCESS (cross-N / cross-k ratios from different GPUs are
+not comparable).
+
+Protocol for every reported time: 2 warm-ups, then the median of TIME_REPS (7)
+`block_until_ready`-synchronised repetitions, same device, same process.  The
+FOM baseline is the testbed's own jitted CG at the testbed's own tolerance --
+the function that produced the truth -- warmed and compiled the same way, and
+its converged residual is asserted below FOM_RES_TOL before anything is timed.
+
+  MODE=n : N ladder at fixed (K, M, m).  The coordinate decoder is meshfree, so
+           the same N=64 checkpoint is used at every N.  The NNLS-EQ weights are
+           REFIT ON EACH N's GRID, so the decoder-side quadrature target and the
+           source-side projection Lambda^-1 Phi^T f use the SAME grid rule at
+           every N (fitting once at N=64 and pairing it with an N=512 source
+           rule would mix two discretisations of the same continuum integral).
+           Times: FOM CG, input preprocessing, ROM latent solve, full-field
+           decode; plus iterations, termination reasons and the ROM error.
+  MODE=k : k ladder at N=64, fixed (M, m): per-iteration cost and iterations to
+           termination for each checkpoint in PKLS, and the linear POD control
+           (whose online solve is one precomputed pseudo-inverse matvec).
+  MODE=m : m / M ladder at N=64, fixed K: per-solve and per-iteration cost for
+           each (M, m, pool).  ACCURACY for these ladders is measured by
+           pro_colloc.py (the authoritative path); the error column here is a
+           cross-check on a smaller test set.
+
+There is no absolute residual tolerance in the reference LM (pro_common.lm_generic
+stops on relative decrease / step size / budget), so the iteration counts below
+are ITERATIONS TO TERMINATION and the termination reasons are reported with
+them.  Setting REL_TOL>0 adds an invariant absolute stop ||r|| <= REL_TOL*||f_m||.
+
+Usage: PKL=<pkl> MODE=n NS=32,64,128,256,512 [M=64] [MQ=256] ... python fu_timing.py <out.json>
+       PKLS=<pkl,...> MODE=k [POD_KS=...] ...            python fu_timing.py <out.json>
+       PKL=<pkl> MODE=m [MS_LADDER=64,...] [M_LADDER=...] python fu_timing.py <out.json>
+"""
+from __future__ import annotations
+
+import json
+import os
+import sys
+import time
+
+import numpy as np
+import jax
+
+jax.config.update("jax_enable_x64", True)
+import jax.numpy as jnp
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.dirname(HERE))
+import pro_common as pc  # noqa: E402
+from pro_common import mp, F64  # noqa: E402
+sys.path.insert(0, HERE)
+from fu_eq import eq_fit, make_lm_jit, weak_source_projector  # noqa: E402  (shared with fu_family.py)
+
+MODE = os.environ.get("MODE", "n")
+OUT = sys.argv[1]
+NS = [int(v) for v in os.environ.get("NS", "32,64,128,256,512").split(",")]
+M_MODES = int(os.environ.get("M", "64"))
+MQ = int(os.environ.get("MQ", "256"))
+GN_ITERS = int(os.environ.get("GN_ITERS", "60"))
+TIME_REPS = int(os.environ.get("TIME_REPS", "7"))
+WARM = int(os.environ.get("TIME_WARM", "2"))
+N_TEST = int(os.environ.get("N_TEST", "16"))
+EQ_SNAPS = int(os.environ.get("EQ_SNAPS", "64"))
+EQ_PERTURB = int(os.environ.get("EQ_PERTURB", "3"))
+EQ_ROWS = int(os.environ.get("EQ_ROWS", "3072"))
+EQ_CAND = int(os.environ.get("EQ_CAND_OFF", "4096"))
+INIT = os.environ.get("INIT", "mean")                 # mean | nearest
+REL_TOL = float(os.environ.get("REL_TOL", "0.0"))
+FOM_RES_TOL = float(os.environ.get("FOM_RES_TOL", "1e-10"))
+POOLS = [p for p in os.environ.get("POOLS", "offgrid").split(",") if p]
+MS_LADDER = [int(v) for v in os.environ.get("MS_LADDER", "64,128,256,512,1024").split(",") if v]
+M_LADDER = [int(v) for v in os.environ.get("M_LADDER", "16,32,64,128,256").split(",") if v]
+POD_KS = [int(v) for v in os.environ.get("POD_KS", "2,4,6,8,12,16,24,32,48,64").split(",") if v]
+EQ_SEED = int(os.environ.get("EQ_SEED", str(mp.SEED + 20259)))
+
+
+def time_fn(fn, reps=None, warm=None):
+    reps = TIME_REPS if reps is None else reps
+    warm = WARM if warm is None else warm
+    for _ in range(warm):
+        fn()
+    ts = []
+    for _ in range(reps):
+        t0 = time.perf_counter(); fn(); ts.append(time.perf_counter() - t0)
+    return float(np.median(ts)), [float(t) for t in ts]
+
+
+
+# --------------------------------------------------------------- shared pieces
+def load():
+    d, cfg, stages_all, Z_tr, HARD_BC = pc.load_pkl(os.environ["PKL"] if MODE != "k"
+                                                    else os.environ["PKLS"].split(",")[0])
+    return cfg, stages_all, Z_tr, HARD_BC
+
+
+def sources(n, cx, cy, w, a, N_TRAIN):
+    return np.stack([mp.source_interior(n, cx[N_TRAIN + i], cy[N_TRAIN + i], w[N_TRAIN + i],
+                                        a[N_TRAIN + i]) for i in range(N_TEST)])
+
+
+def fom_solve(n, Fs):
+    """The testbed's own jitted CG at the testbed's tolerance -- the function
+    that generated the truth.  Aborts if the converged residual is too large."""
+    op = lambda v: mp.neg_lap_interior(v, n)
+    solve_one = jax.jit(lambda F: jax.scipy.sparse.linalg.cg(op, F, tol=mp.CG_TOL,
+                                                             maxiter=mp.CG_MAXITER)[0])
+    U_int = np.asarray(jax.lax.map(solve_one, jnp.asarray(Fs)))
+    res = float(np.max([np.linalg.norm(np.asarray(op(jnp.asarray(U_int[i]))) - Fs[i])
+                        / np.linalg.norm(Fs[i]) for i in range(Fs.shape[0])]))
+    if not np.isfinite(res) or res > FOM_RES_TOL:
+        raise SystemExit(f"N={n}: FOM CG rel residual {res:.2e} > {FOM_RES_TOL:.0e} -- "
+                         f"the baseline at this N is not converged, refusing to time it")
+    return solve_one, U_int, res
+
+
+def rom_arm(dec, grid, K, Z_tr, M, m, pool, Fs, U_int, z0, label):
+    """Fit the EQ rule, build the jitted LM, time one solve (median of
+    TIME_REPS), and report iterations / reasons / error over the N_TEST
+    sources."""
+    n = grid.N
+    spec = dict(kind="weak", alpha=1.0, M=M)
+    if pool == "full":
+        pts = np.asarray(grid.coords_int); wq = np.ones(pts.shape[0]); info = None
+    else:
+        pts, wq, info = eq_fit(dec, grid, Z_tr, K, M, m, pool)
+    kind = "grid" if pool == "grid" else "offgrid"
+    if pool == "full":
+        kind = "grid"
+    PhiT, Wl = pc.colloc_mode_table(grid, spec, kind, pts)
+    f_ms = [jnp.asarray(pc.weak_source_term(grid, spec, kind, Fs[i])) for i in range(N_TEST)]
+    lm = make_lm_jit(dec, K, pts, wq, PhiT, Wl, GN_ITERS, REL_TOL)
+
+    def once():
+        z, val, nJ, acc, att, reason = lm(z0, f_ms[0]); z.block_until_ready()
+    rom_med, rom_all = time_fn(once)
+    errs, iters, atts, reasons = [], [], [], []
+    coords = grid.coords
+    for i in range(N_TEST):
+        zi, vi, nJi, acci, atti, ri = lm(z0, f_ms[i])
+        u_full = np.asarray(dec(zi, coords)).reshape(n, n)
+        u_ref = np.zeros((n, n)); u_ref[1:-1, 1:-1] = U_int[i]
+        errs.append(float(np.linalg.norm(u_full - u_ref) / np.linalg.norm(u_ref)))
+        iters.append(int(nJi)); atts.append(int(atti)); reasons.append(int(ri))
+    out = dict(label=label, M=M, m=int(len(wq)), pool=pool, n_modes=int(PhiT.shape[0]),
+               rom_solve_s=rom_med, rom_all=rom_all, rom_iters_mean=float(np.mean(iters)),
+               rom_attempts_mean=float(np.mean(atts)),
+               rom_s_per_iter=rom_med / max(iters[0], 1),
+               rom_s_per_attempt=rom_med / max(atts[0], 1),
+               rom_reasons={str(r): reasons.count(r) for r in set(reasons)},
+               rom_rel_l2_mean=float(np.mean(errs)), rom_rel_l2_med=float(np.median(errs)),
+               rom_rel_l2_max=float(np.max(errs)), eq_info=info)
+    return out
+
+
+def main():
+    print(f"jax_backend={jax.default_backend()} device={jax.devices()[0]} MODE={MODE} "
+          f"M={M_MODES} m={MQ} reps={TIME_REPS} warm={WARM} rel_tol={REL_TOL}", flush=True)
+    cfg, stages_all, Z_tr, HARD_BC = load()
+    K = cfg["K_LAT"]; N0 = mp.N; N_TRAIN = mp.N_TRAIN
+    dec = pc.make_decoder(stages_all[:1], hard_bc=bool(HARD_BC))
+    cx, cy, w, a, z_par = mp.sample_params()
+    zt = np.asarray(z_par)
+    nn_idx = np.argmin(((zt[N_TRAIN:, None, :] - zt[None, :N_TRAIN, :]) ** 2).sum(-1), axis=1)
+    z_mean = jnp.asarray(Z_tr.mean(0))
+    z_init = z_mean if INIT == "mean" else jnp.asarray(Z_tr[nn_idx[0]])
+    report = dict(config=dict(mode=MODE, pkl_config=cfg, hard_bc=HARD_BC, K=K, M=M_MODES, m=MQ,
+                              gn_iters=GN_ITERS, time_reps=TIME_REPS, time_warm=WARM,
+                              n_test=N_TEST, init=INIT, rel_tol=REL_TOL, ns=NS,
+                              backend=jax.default_backend(), device=str(jax.devices()[0]),
+                              cg_tol=mp.CG_TOL, fom_res_tol=FOM_RES_TOL, eq_seed=EQ_SEED),
+                  rows=[])
+
+    def save():
+        json.dump(report, open(OUT, "w"), indent=1, default=float)
+
+    if MODE == "n":
+        for n in NS:
+            t0 = time.time()
+            grid = pc.Grid(n)
+            Fs = sources(n, cx, cy, w, a, N_TRAIN)
+            solve_one, U_int, res = fom_solve(n, Fs)
+            F0 = jnp.asarray(Fs[0])
+            fom_med, fom_all = time_fn(lambda: solve_one(F0).block_until_ready())
+            spec = dict(kind="weak", alpha=1.0, M=M_MODES)
+            arm = rom_arm(dec, grid, K, Z_tr, M_MODES, MQ, "offgrid", Fs, U_int, z_init,
+                          f"N{n}")
+            # input preprocessing (Lambda^-1 Phi^T f) and full-field decode, same protocol.
+            # The mode table is a per-MESH constant, so it is built offline (timed
+            # separately); the per-query cost is the one (M' x n_i^2) matvec.
+            pre_apply, pre_build_s = weak_source_projector(grid, spec, "offgrid")
+            f0 = jnp.asarray(Fs[0])
+            chk = float(jnp.max(jnp.abs(pre_apply(f0)
+                                        - pc.weak_source_term(grid, spec, "offgrid", Fs[0]))))
+            pre_med, _ = time_fn(lambda: pre_apply(f0).block_until_ready())
+            dec_full = jax.jit(lambda z: dec(z, grid.coords))
+            dec_med, _ = time_fn(lambda: dec_full(z_init).block_until_ready())
+            row = dict(N=n, n_dof=(n - 2) ** 2, fom_cg_s=fom_med, fom_all=fom_all,
+                       fom_max_rel_residual=res, preprocess_s=pre_med,
+                       preprocess_offline_table_s=pre_build_s, preprocess_vs_reference_maxabs=chk,
+                       decode_full_field_s=dec_med,
+                       speedup_solve_only=fom_med / arm["rom_solve_s"],
+                       speedup_with_preprocess=fom_med / (arm["rom_solve_s"] + pre_med),
+                       speedup_end_to_end=fom_med / (arm["rom_solve_s"] + pre_med + dec_med),
+                       secs=time.time() - t0, **arm)
+            report["rows"].append(row); save()
+            print(f"RESULT N={n:4d} FOM CG {fom_med*1e3:8.2f} ms  ROM {arm['rom_solve_s']*1e3:6.2f} ms "
+                  f"({arm['rom_iters_mean']:.1f} iters, {arm['rom_s_per_iter']*1e3:.3f} ms/iter)  "
+                  f"pre {pre_med*1e3:.2f} ms  decode {dec_med*1e3:.2f} ms  "
+                  f"speedup solve {row['speedup_solve_only']:.1f}x / e2e {row['speedup_end_to_end']:.1f}x  "
+                  f"ROM err {arm['rom_rel_l2_mean']:.3e} [{row['secs']:.0f}s]", flush=True)
+    elif MODE == "k":
+        n = N0
+        grid = pc.Grid(n)
+        Fs = sources(n, cx, cy, w, a, N_TRAIN)
+        solve_one, U_int, res = fom_solve(n, Fs)
+        F0 = jnp.asarray(Fs[0])
+        fom_med, fom_all = time_fn(lambda: solve_one(F0).block_until_ready())
+        report["fom_cg_s"] = fom_med; report["fom_all"] = fom_all
+        report["fom_max_rel_residual"] = res
+        print(f"FOM CG N={n}: {fom_med*1e3:.2f} ms", flush=True)
+        for path in os.environ["PKLS"].split(","):
+            d_, cfg_, stages_, Ztr_, hb_ = pc.load_pkl(path)
+            Kk = cfg_["K_LAT"]
+            dk = pc.make_decoder(stages_[:1], hard_bc=bool(hb_))
+            z0 = jnp.asarray(Ztr_.mean(0)) if INIT == "mean" else jnp.asarray(Ztr_[nn_idx[0]])
+            arm = rom_arm(dk, grid, Kk, Ztr_, M_MODES, MQ, "offgrid", Fs, U_int, z0,
+                          os.path.basename(path))
+            arm.update(kind="coord", k=Kk, ckpt=os.path.basename(path),
+                       train_seed=cfg_.get("train_seed"),
+                       speedup_solve_only=fom_med / arm["rom_solve_s"])
+            report["rows"].append(arm); save()
+            print(f"RESULT coord k={Kk:3d} ROM {arm['rom_solve_s']*1e3:6.2f} ms "
+                  f"({arm['rom_iters_mean']:.1f} iters, {arm['rom_s_per_iter']*1e3:.3f} ms/iter) "
+                  f"err {arm['rom_rel_l2_mean']:.3e}", flush=True)
+        # POD control: the ROM is LINEAR in the coefficients, so the online solve is one
+        # precomputed pseudo-inverse matvec (the exact minimiser of the SAME objective)
+        U_tr = np.asarray(mp.build_snapshots(n)[0])[:N_TRAIN][:, grid.ix_full * n + grid.iy_full]
+        Vfull, sv, _ = np.linalg.svd(U_tr.T, full_matrices=False)
+        spec = dict(kind="weak", alpha=1.0, M=M_MODES)
+        PhiT_g, Wl_g = pc.colloc_mode_table(grid, spec, "grid", np.asarray(grid.coords_int))
+        f_ms = [np.asarray(pc.weak_source_term(grid, spec, "grid", Fs[i])) for i in range(N_TEST)]
+        for k in POD_KS:
+            V = Vfull[:, :k]
+            A_ = np.asarray(PhiT_g) @ V                          # (M', k)
+            pinv = jnp.asarray(np.linalg.pinv(A_))
+            b0 = jnp.asarray(f_ms[0])
+            apply_ = jax.jit(lambda b: pinv @ b)
+            med, all_ = time_fn(lambda: apply_(b0).block_until_ready())
+            errs = []
+            for i in range(N_TEST):
+                c = np.asarray(apply_(jnp.asarray(f_ms[i])))
+                u_full = np.zeros((n, n)); u_full[1:-1, 1:-1] = (V @ c).reshape(grid.n_i, grid.n_i)
+                u_ref = np.zeros((n, n)); u_ref[1:-1, 1:-1] = U_int[i]
+                errs.append(float(np.linalg.norm(u_full - u_ref) / np.linalg.norm(u_ref)))
+            row = dict(kind="pod", k=k, M=M_MODES, m=grid.n_i ** 2, pool="full",
+                       n_modes=int(A_.shape[0]), rom_solve_s=med, rom_all=all_,
+                       rom_iters_mean=1.0, rom_s_per_iter=med, square_system=bool(A_.shape[0] <= k),
+                       cond=float(np.linalg.cond(A_)), rank=int(np.linalg.matrix_rank(A_)),
+                       rom_rel_l2_mean=float(np.mean(errs)), rom_rel_l2_med=float(np.median(errs)),
+                       speedup_solve_only=fom_med / med)
+            report["rows"].append(row); save()
+            print(f"RESULT pod   k={k:3d} solve {med*1e6:7.1f} us (1 matvec, cond {row['cond']:.1e}) "
+                  f"err {row['rom_rel_l2_mean']:.3e}", flush=True)
+    else:                                          # MODE == "m"
+        n = N0
+        grid = pc.Grid(n)
+        Fs = sources(n, cx, cy, w, a, N_TRAIN)
+        solve_one, U_int, res = fom_solve(n, Fs)
+        F0 = jnp.asarray(Fs[0])
+        fom_med, _ = time_fn(lambda: solve_one(F0).block_until_ready())
+        report["fom_cg_s"] = fom_med; report["fom_max_rel_residual"] = res
+        arms = [(M_MODES, m, pool) for m in MS_LADDER for pool in POOLS] + \
+               [(M_MODES, None, "full")] + \
+               [(M, 4 * M, pool) for M in M_LADDER for pool in POOLS] + \
+               [(M, None, "full") for M in M_LADDER]
+        seen = set()
+        for M, m, pool in arms:
+            key = (M, m, pool)
+            if key in seen:
+                continue
+            seen.add(key)
+            arm = rom_arm(dec, grid, K, Z_tr, M, m or grid.n_i ** 2, pool, Fs, U_int, z_init,
+                          f"M{M}_m{m or 'full'}_{pool}")
+            arm["speedup_solve_only"] = fom_med / arm["rom_solve_s"]
+            report["rows"].append(arm); save()
+            print(f"RESULT M={M:4d} m={arm['m']:5d} {pool:8s} solve {arm['rom_solve_s']*1e3:7.2f} ms "
+                  f"({arm['rom_iters_mean']:.1f} iters, {arm['rom_s_per_iter']*1e3:.3f} ms/iter) "
+                  f"err {arm['rom_rel_l2_mean']:.3e}", flush=True)
+    report["complete"] = True; save()
+    print("DONE", flush=True)
+
+
+if __name__ == "__main__":
+    main()

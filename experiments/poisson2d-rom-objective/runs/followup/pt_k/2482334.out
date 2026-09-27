@@ -1,0 +1,33 @@
+host=pax143  gpu=NVIDIA A100-PCIE-40GB  commit=5547a96  dirty=7ffde622ea1f  cell=pt_k
+jax_backend=gpu cuda:0
+jax_backend=gpu device=cuda:0 MODE=k M=64 m=256 reps=7 warm=2 rel_tol=0.0
+FOM CG N=64: 7.85 ms
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 5.44e-03 (row p95 5.2e-01, max 7.5e+02) [22s]
+RESULT coord k=  2 ROM   6.51 ms (23.1 iters, 0.434 ms/iter) err 3.858e-01
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.27e-03 (row p95 3.6e-01, max 2.1e+02) [21s]
+RESULT coord k=  4 ROM   7.41 ms (16.3 iters, 0.529 ms/iter) err 1.740e-02
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.19e-03 (row p95 3.1e-01, max 4.1e+02) [21s]
+RESULT coord k=  6 ROM  16.59 ms (26.0 iters, 0.535 ms/iter) err 7.000e-02
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.64e-03 (row p95 4.4e-01, max 3.2e+02) [21s]
+RESULT coord k=  8 ROM  20.15 ms (27.8 iters, 0.611 ms/iter) err 8.942e-03
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.59e-03 (row p95 3.8e-01, max 2.3e+02) [22s]
+RESULT coord k= 12 ROM  16.09 ms (31.6 iters, 0.555 ms/iter) err 3.147e-02
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.41e-03 (row p95 3.8e-01, max 5.1e+02) [20s]
+RESULT coord k= 16 ROM  15.91 ms (32.1 iters, 0.723 ms/iter) err 6.154e-03
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.11e-03 (row p95 3.5e-01, max 5.1e+02) [23s]
+RESULT coord k= 24 ROM  21.15 ms (34.9 iters, 0.661 ms/iter) err 1.415e-02
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.02e-03 (row p95 3.9e-01, max 3.5e+03) [19s]
+RESULT coord k= 32 ROM  24.57 ms (39.7 iters, 0.910 ms/iter) err 5.978e-02
+  FOM: 576 CG solves in 5s, max rel residual over all samples 4.29e-13
+RESULT pod   k=  2 solve    52.1 us (1 matvec, cond 1.0e+00) err 4.570e-01
+RESULT pod   k=  4 solve    51.7 us (1 matvec, cond 1.0e+00) err 2.913e-01
+RESULT pod   k=  6 solve    53.3 us (1 matvec, cond 1.0e+00) err 2.200e-01
+RESULT pod   k=  8 solve    51.2 us (1 matvec, cond 1.0e+00) err 1.769e-01
+RESULT pod   k= 12 solve    54.0 us (1 matvec, cond 1.0e+00) err 1.290e-01
+RESULT pod   k= 16 solve    50.6 us (1 matvec, cond 1.0e+00) err 1.008e-01
+RESULT pod   k= 24 solve    52.1 us (1 matvec, cond 1.0e+00) err 6.678e-02
+RESULT pod   k= 32 solve    72.7 us (1 matvec, cond 1.0e+00) err 5.106e-02
+RESULT pod   k= 48 solve    73.1 us (1 matvec, cond 1.3e+00) err 3.542e-02
+RESULT pod   k= 64 solve    52.4 us (1 matvec, cond 1.6e+01) err 4.892e-02
+DONE
+ALL-DONE

@@ -1,0 +1,61 @@
+host=pax142  gpu=NVIDIA A100-PCIE-40GB  commit=70829fa  cell=nlad_N128
+jax_backend=gpu cuda:0
+jax_backend=gpu x64=True K_LAT=8 HARD_BC=0
+CONFIG {"N": 128, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 8, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 0, "gn_iters": 60}
+  FOM: 576 CG solves in 10s, max rel residual over all samples 2.46e-12
+  [A] step      0 loss 3.926e-02 [4s]
+  [A] step   5000 loss 5.408e-05 [18s]
+  [A] step  10000 loss 1.285e-05 [32s]
+  [A] step  15000 loss 7.948e-06 [46s]
+  [A] Adam 20000 steps in 60s (final batch loss 5.390e-06)
+RESULT K8_N128: TRAIN 9.310e-03/8.792e-03  VAL inferred mean 1.090e-02 nearest 8.017e-03 best 8.012e-03  boundary-block(train) 1.3e-04
+DONE
+jax_backend=gpu x64=True
+MANIFEST {"pkl": "autodec_K8_N128_stages.pkl", "pkl_config": {"N": 128, "n_train": 512, "n_val": 64, "n_stages": 1, "steps": 20000, "batch": 32, "p_sub": 1024, "hidden": 128, "n_layers": 4, "peak_lr": 0.002, "const_lr": 0, "lbfgs_steps": 0, "z_ff": 0, "freq_margin": 4, "seed": 0, "K_LAT": 8, "lat_lr": 0.005, "lat_reg": 0.0001, "hard_bc": 0, "gn_iters": 60}, "ns": 1, "n_test": 16, "gn_iters": 60, "hard_bc": 0, "objectives": ["fd", "spec_a0_M64", "spec_a0_M256", "spec_a0.5_M256", "spec_a0.5_Mall", "spec_a1_M64", "spec_a1_M256", "spec_a1_Mall", "ritz", "cg5", "cg20", "lowpass2", "lowpass4", "lowpass8"], "inits": ["mean", "nearest", "encoder"], "enc_steps": 3000, "backend": "gpu"}
+  FOM: 576 CG solves in 10s, max rel residual over all samples 2.46e-12
+ENCODER train-mse 1.74e-05  plug-in held-out rel-L2 3.651e-01 (med 1.833e-01)
+ORACLE (data-misfit LM, same budget): mean=1.442e-02  nearest=8.539e-03  encoder=1.198e-02  [11s]
+RESULT obj=fd               init=mean     ROM 2.507e-01 (med 1.074e-01 max 9.749e-01) oracle 1.442e-02 | obj lm 3.245e+00 or 3.127e+00 (lm<=or 13/16) | fd-res lm 3.25e+00 or 3.13e+00 f 1.03e+01 | acc/rej 42/6 {'budget': 6, 'converged': 10} [7s]
+RESULT obj=fd               init=nearest  ROM 9.235e-02 (med 6.779e-02 max 2.702e-01) oracle 8.539e-03 | obj lm 2.194e+00 or 2.844e+00 (lm<=or 16/16) | fd-res lm 2.19e+00 or 2.84e+00 f 1.03e+01 | acc/rej 28/0 {'budget': 5, 'converged': 11} [2s]
+RESULT obj=fd               init=encoder  ROM 9.244e-02 (med 6.797e-02 max 2.702e-01) oracle 1.198e-02 | obj lm 2.194e+00 or 3.127e+00 (lm<=or 16/16) | fd-res lm 2.19e+00 or 3.13e+00 f 1.03e+01 | acc/rej 32/0 {'budget': 4, 'converged': 12} [2s]
+RESULT obj=spec_a0_M64      init=mean     ROM 2.497e-01 (med 1.595e-02 max 9.256e-01) oracle 1.442e-02 | obj lm 6.131e-01 or 4.550e-01 (lm<=or 11/16) | fd-res lm 6.40e+00 or 3.13e+00 f 1.03e+01 | acc/rej 33/10 {'budget': 7, 'converged': 9} [6s]
+RESULT obj=spec_a0_M64      init=nearest  ROM 1.820e-02 (med 1.368e-02 max 5.746e-02) oracle 8.539e-03 | obj lm 3.528e-01 or 3.767e-01 (lm<=or 15/16) | fd-res lm 3.49e+00 or 2.84e+00 f 1.03e+01 | acc/rej 26/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=spec_a0_M64      init=encoder  ROM 1.770e-02 (med 1.368e-02 max 5.746e-02) oracle 1.198e-02 | obj lm 3.106e-01 or 4.510e-01 (lm<=or 16/16) | fd-res lm 3.02e+00 or 3.13e+00 f 1.03e+01 | acc/rej 24/0 {'converged': 16} [2s]
+RESULT obj=spec_a0_M256     init=mean     ROM 1.201e-01 (med 4.705e-02 max 5.597e-01) oracle 1.442e-02 | obj lm 1.649e+00 or 1.498e+00 (lm<=or 13/16) | fd-res lm 5.22e+00 or 3.13e+00 f 1.03e+01 | acc/rej 34/8 {'budget': 6, 'converged': 10} [4s]
+RESULT obj=spec_a0_M256     init=nearest  ROM 4.560e-02 (med 4.290e-02 max 1.014e-01) oracle 8.539e-03 | obj lm 8.569e-01 or 1.198e+00 (lm<=or 16/16) | fd-res lm 2.77e+00 or 2.84e+00 f 1.03e+01 | acc/rej 24/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=spec_a0_M256     init=encoder  ROM 4.560e-02 (med 4.290e-02 max 1.014e-01) oracle 1.198e-02 | obj lm 8.569e-01 or 1.498e+00 (lm<=or 16/16) | fd-res lm 2.77e+00 or 3.13e+00 f 1.03e+01 | acc/rej 20/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=spec_a0.5_M256   init=mean     ROM 1.188e-02 (med 9.923e-03 max 3.295e-02) oracle 1.442e-02 | obj lm 2.669e-02 or 3.872e-02 (lm<=or 16/16) | fd-res lm 2.84e+00 or 3.13e+00 f 1.03e+01 | acc/rej 23/6 {'budget': 1, 'converged': 15} [3s]
+RESULT obj=spec_a0.5_M256   init=nearest  ROM 1.139e-02 (med 9.203e-03 max 3.295e-02) oracle 8.539e-03 | obj lm 2.684e-02 or 3.046e-02 (lm<=or 16/16) | fd-res lm 2.81e+00 or 2.84e+00 f 1.03e+01 | acc/rej 20/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=spec_a0.5_M256   init=encoder  ROM 1.149e-02 (med 9.203e-03 max 3.295e-02) oracle 1.198e-02 | obj lm 2.669e-02 or 3.822e-02 (lm<=or 16/16) | fd-res lm 2.84e+00 or 3.13e+00 f 1.03e+01 | acc/rej 21/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=spec_a0.5_Mall   init=mean     ROM 1.224e-02 (med 1.111e-02 max 3.404e-02) oracle 1.442e-02 | obj lm 3.499e-02 or 4.640e-02 (lm<=or 16/16) | fd-res lm 2.61e+00 or 3.13e+00 f 1.03e+01 | acc/rej 25/4 {'budget': 2, 'converged': 14} [4s]
+RESULT obj=spec_a0.5_Mall   init=nearest  ROM 1.209e-02 (med 1.068e-02 max 3.404e-02) oracle 8.539e-03 | obj lm 3.499e-02 or 3.923e-02 (lm<=or 16/16) | fd-res lm 2.61e+00 or 2.84e+00 f 1.03e+01 | acc/rej 23/0 {'budget': 2, 'converged': 14} [2s]
+RESULT obj=spec_a0.5_Mall   init=encoder  ROM 1.209e-02 (med 1.068e-02 max 3.404e-02) oracle 1.198e-02 | obj lm 3.499e-02 or 4.640e-02 (lm<=or 16/16) | fd-res lm 2.61e+00 or 3.13e+00 f 1.03e+01 | acc/rej 23/0 {'budget': 2, 'converged': 14} [2s]
+RESULT obj=spec_a1_M64      init=mean     ROM 1.313e-02 (med 7.653e-03 max 5.907e-02) oracle 1.442e-02 | obj lm 8.841e-04 or 8.194e-04 (lm<=or 12/16) | fd-res lm 4.50e+00 or 3.13e+00 f 1.03e+01 | acc/rej 34/6 {'budget': 4, 'converged': 12} [4s]
+RESULT obj=spec_a1_M64      init=nearest  ROM 1.027e-02 (med 7.652e-03 max 2.369e-02) oracle 8.539e-03 | obj lm 7.484e-04 or 6.999e-04 (lm<=or 15/16) | fd-res lm 3.91e+00 or 2.84e+00 f 1.03e+01 | acc/rej 34/0 {'budget': 5, 'converged': 11} [3s]
+RESULT obj=spec_a1_M64      init=encoder  ROM 1.314e-02 (med 7.654e-03 max 5.907e-02) oracle 1.198e-02 | obj lm 8.481e-04 or 9.500e-04 (lm<=or 15/16) | fd-res lm 3.49e+00 or 3.13e+00 f 1.03e+01 | acc/rej 36/0 {'budget': 6, 'converged': 10} [3s]
+RESULT obj=spec_a1_M256     init=mean     ROM 1.455e-02 (med 7.727e-03 max 1.024e-01) oracle 1.442e-02 | obj lm 1.228e-03 or 1.229e-03 (lm<=or 15/16) | fd-res lm 3.14e+00 or 3.13e+00 f 1.03e+01 | acc/rej 27/6 {'budget': 3, 'converged': 13} [4s]
+RESULT obj=spec_a1_M256     init=nearest  ROM 8.571e-03 (med 6.980e-03 max 2.009e-02) oracle 8.539e-03 | obj lm 9.548e-04 or 9.557e-04 (lm<=or 15/16) | fd-res lm 2.86e+00 or 2.84e+00 f 1.03e+01 | acc/rej 24/0 {'budget': 3, 'converged': 13} [2s]
+RESULT obj=spec_a1_M256     init=encoder  ROM 1.133e-02 (med 6.980e-03 max 5.636e-02) oracle 1.198e-02 | obj lm 1.228e-03 or 1.263e-03 (lm<=or 16/16) | fd-res lm 3.14e+00 or 3.13e+00 f 1.03e+01 | acc/rej 24/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=spec_a1_Mall     init=mean     ROM 1.442e-02 (med 7.725e-03 max 1.023e-01) oracle 1.442e-02 | obj lm 1.273e-03 or 1.274e-03 (lm<=or 16/16) | fd-res lm 3.13e+00 or 3.13e+00 f 1.03e+01 | acc/rej 32/6 {'budget': 4, 'converged': 12} [4s]
+RESULT obj=spec_a1_Mall     init=nearest  ROM 8.540e-03 (med 6.975e-03 max 2.009e-02) oracle 8.539e-03 | obj lm 9.875e-04 or 9.879e-04 (lm<=or 16/16) | fd-res lm 2.85e+00 or 2.84e+00 f 1.03e+01 | acc/rej 24/0 {'budget': 3, 'converged': 13} [2s]
+RESULT obj=spec_a1_Mall     init=encoder  ROM 1.198e-02 (med 6.975e-03 max 5.632e-02) oracle 1.198e-02 | obj lm 1.287e-03 or 1.287e-03 (lm<=or 16/16) | fd-res lm 3.13e+00 or 3.13e+00 f 1.03e+01 | acc/rej 26/0 {'budget': 2, 'converged': 14} [2s]
+RESULT obj=ritz             init=mean     ROM 1.224e-02 (med 1.111e-02 max 3.404e-02) oracle 1.442e-02 | obj lm -3.592e-01 or -3.591e-01 (lm<=or 16/16) | fd-res lm 2.61e+00 or 3.13e+00 f 1.03e+01 | acc/rej 28/26 {'budget': 6, 'converged': 2, 'lambda_max': 8} [5s]
+RESULT obj=ritz             init=nearest  ROM 1.209e-02 (med 1.068e-02 max 3.404e-02) oracle 8.539e-03 | obj lm -3.592e-01 or -3.591e-01 (lm<=or 16/16) | fd-res lm 2.61e+00 or 2.84e+00 f 1.03e+01 | acc/rej 24/24 {'budget': 6, 'converged': 2, 'lambda_max': 8} [3s]
+RESULT obj=ritz             init=encoder  ROM 1.209e-02 (med 1.068e-02 max 3.404e-02) oracle 1.198e-02 | obj lm -3.592e-01 or -3.591e-01 (lm<=or 16/16) | fd-res lm 2.61e+00 or 3.13e+00 f 1.03e+01 | acc/rej 25/20 {'budget': 6, 'converged': 5, 'lambda_max': 5} [3s]
+RESULT obj=cg5              init=mean     ROM 5.326e-01 (med 6.578e-01 max 9.788e-01) oracle 1.442e-02 | obj lm 4.334e-03 or 6.965e-04 (lm<=or 3/16) | fd-res lm 3.58e+01 or 3.13e+00 f 1.03e+01 | acc/rej 37/23 {'budget': 16} [5s]
+RESULT obj=cg5              init=nearest  ROM 3.538e-02 (med 3.420e-02 max 7.837e-02) oracle 8.539e-03 | obj lm 3.917e-04 or 5.304e-04 (lm<=or 16/16) | fd-res lm 2.80e+00 or 2.84e+00 f 1.03e+01 | acc/rej 38/22 {'budget': 16} [4s]
+RESULT obj=cg5              init=encoder  ROM 3.774e-02 (med 3.634e-02 max 8.069e-02) oracle 1.198e-02 | obj lm 4.867e-04 or 6.813e-04 (lm<=or 15/16) | fd-res lm 3.13e+00 or 3.13e+00 f 1.03e+01 | acc/rej 38/22 {'budget': 16} [4s]
+RESULT obj=cg20             init=mean     ROM 6.918e-02 (med 1.356e-02 max 8.946e-01) oracle 1.442e-02 | obj lm 1.094e-03 or 1.125e-03 (lm<=or 14/16) | fd-res lm 2.99e+00 or 3.13e+00 f 1.03e+01 | acc/rej 38/22 {'budget': 16} [7s]
+RESULT obj=cg20             init=nearest  ROM 1.388e-02 (med 1.129e-02 max 4.367e-02) oracle 8.539e-03 | obj lm 8.059e-04 or 8.842e-04 (lm<=or 16/16) | fd-res lm 2.75e+00 or 2.84e+00 f 1.03e+01 | acc/rej 38/22 {'budget': 16} [4s]
+RESULT obj=cg20             init=encoder  ROM 1.395e-02 (med 1.121e-02 max 4.204e-02) oracle 1.198e-02 | obj lm 8.059e-04 or 1.112e-03 (lm<=or 16/16) | fd-res lm 2.76e+00 or 3.13e+00 f 1.03e+01 | acc/rej 38/22 {'budget': 16} [4s]
+RESULT obj=lowpass2         init=mean     ROM 8.383e-02 (med 4.901e-02 max 6.563e-01) oracle 1.442e-02 | obj lm 1.359e+00 or 1.335e+00 (lm<=or 13/16) | fd-res lm 3.63e+00 or 3.13e+00 f 1.03e+01 | acc/rej 36/6 {'budget': 5, 'converged': 11} [4s]
+RESULT obj=lowpass2         init=nearest  ROM 4.724e-02 (med 4.617e-02 max 1.061e-01) oracle 8.539e-03 | obj lm 9.122e-01 or 1.137e+00 (lm<=or 16/16) | fd-res lm 2.64e+00 or 2.84e+00 f 1.03e+01 | acc/rej 23/0 {'budget': 2, 'converged': 14} [2s]
+RESULT obj=lowpass2         init=encoder  ROM 4.490e-02 (med 4.453e-02 max 1.061e-01) oracle 1.198e-02 | obj lm 9.122e-01 or 1.335e+00 (lm<=or 16/16) | fd-res lm 2.64e+00 or 3.13e+00 f 1.03e+01 | acc/rej 24/0 {'budget': 4, 'converged': 12} [2s]
+RESULT obj=lowpass4         init=mean     ROM 5.863e-02 (med 1.939e-02 max 5.790e-01) oracle 1.442e-02 | obj lm 5.195e-01 or 6.770e-01 (lm<=or 15/16) | fd-res lm 3.13e+00 or 3.13e+00 f 1.03e+01 | acc/rej 29/8 {'budget': 4, 'converged': 12} [4s]
+RESULT obj=lowpass4         init=nearest  ROM 2.401e-02 (med 2.131e-02 max 6.488e-02) oracle 8.539e-03 | obj lm 4.224e-01 or 5.323e-01 (lm<=or 16/16) | fd-res lm 2.88e+00 or 2.84e+00 f 1.03e+01 | acc/rej 20/0 {'budget': 3, 'converged': 13} [2s]
+RESULT obj=lowpass4         init=encoder  ROM 2.381e-02 (med 1.974e-02 max 6.488e-02) oracle 1.198e-02 | obj lm 4.224e-01 or 6.631e-01 (lm<=or 16/16) | fd-res lm 2.88e+00 or 3.13e+00 f 1.03e+01 | acc/rej 20/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=lowpass8         init=mean     ROM 5.287e-02 (med 9.232e-03 max 6.812e-01) oracle 1.442e-02 | obj lm 1.372e-01 or 1.463e-01 (lm<=or 13/16) | fd-res lm 3.72e+00 or 3.13e+00 f 1.03e+01 | acc/rej 31/6 {'budget': 4, 'converged': 12} [4s]
+RESULT obj=lowpass8         init=nearest  ROM 1.146e-02 (med 8.839e-03 max 3.470e-02) oracle 8.539e-03 | obj lm 1.149e-01 or 1.229e-01 (lm<=or 16/16) | fd-res lm 2.73e+00 or 2.84e+00 f 1.03e+01 | acc/rej 26/0 {'budget': 1, 'converged': 15} [2s]
+RESULT obj=lowpass8         init=encoder  ROM 1.146e-02 (med 8.839e-03 max 3.470e-02) oracle 1.198e-02 | obj lm 1.149e-01 or 1.600e-01 (lm<=or 16/16) | fd-res lm 2.73e+00 or 3.13e+00 f 1.03e+01 | acc/rej 24/0 {'converged': 16} [2s]
+DONE
+ALL-DONE

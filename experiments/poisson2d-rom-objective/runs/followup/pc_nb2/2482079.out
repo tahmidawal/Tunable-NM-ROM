@@ -1,0 +1,72 @@
+host=pax142  gpu=NVIDIA A100-PCIE-40GB  commit=d26d27e  dirty=3a08825d9de9  cell=pc_nb2
+jax_backend=gpu cuda:0
+jax_backend=gpu NB=2 intrinsic_dim=8 KS=[2, 4, 6, 8, 12, 16, 24, 32] M=64 m=256
+  FOM: 576 CG solves in 5s, max rel residual 4.57e-13
+RESULT pod NB=2 k=  2 proj 4.208e-01 galerkin 4.210e-01 weak 4.208e-01 fd 4.262e-01
+RESULT pod NB=2 k=  4 proj 2.499e-01 galerkin 2.503e-01 weak 2.499e-01 fd 2.612e-01
+RESULT pod NB=2 k=  6 proj 1.836e-01 galerkin 1.843e-01 weak 1.836e-01 fd 1.981e-01
+RESULT pod NB=2 k=  8 proj 1.495e-01 galerkin 1.503e-01 weak 1.495e-01 fd 1.655e-01
+RESULT pod NB=2 k= 12 proj 1.006e-01 galerkin 1.012e-01 weak 1.006e-01 fd 1.116e-01
+RESULT pod NB=2 k= 16 proj 7.678e-02 galerkin 7.739e-02 weak 7.678e-02 fd 8.814e-02
+RESULT pod NB=2 k= 24 proj 5.079e-02 galerkin 5.140e-02 weak 5.079e-02 fd 6.236e-02
+RESULT pod NB=2 k= 32 proj 3.892e-02 galerkin 3.951e-02 weak 3.893e-02 fd 4.829e-02
+RESULT pod NB=2 k= 48 proj 2.503e-02 galerkin 2.556e-02 weak 2.542e-02 fd 3.583e-02
+RESULT pod NB=2 k= 64 proj 1.705e-02 galerkin 1.741e-02 weak 2.928e-02 fd 2.188e-02
+  [A] step      0 loss 1.333e-01 [4s]
+  [A] step   5000 loss 5.729e-03 [18s]
+  [A] step  10000 loss 2.215e-03 [32s]
+  [A] step  15000 loss 1.128e-03 [46s]
+  [A] Adam 20000 steps in 60s (final batch loss 1.214e-03)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 4.62e-03 (row p95 5.8e-01, max 1.8e+02) [19s]
+RESULT coord NB=2 K=  2 train 8.369e-02 oracle(nearest) 4.109e-01 ROM full 4.109e-01 EQ m=256 4.109e-01 FD 6.705e-01 [105s]
+  [A] step      0 loss 1.227e-01 [1s]
+  [A] step   5000 loss 1.100e-03 [16s]
+  [A] step  10000 loss 2.032e-04 [30s]
+  [A] step  15000 loss 8.008e-05 [45s]
+  [A] Adam 20000 steps in 60s (final batch loss 4.784e-05)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.57e-03 (row p95 3.8e-01, max 5.2e+02) [18s]
+RESULT coord NB=2 K=  4 train 2.026e-02 oracle(nearest) 1.521e-01 ROM full 1.521e-01 EQ m=256 1.522e-01 FD 5.206e-01 [94s]
+  [A] step      0 loss 1.265e-01 [1s]
+  [A] step   5000 loss 4.665e-04 [17s]
+  [A] step  10000 loss 1.210e-04 [32s]
+  [A] step  15000 loss 4.437e-05 [48s]
+  [A] Adam 20000 steps in 63s (final batch loss 2.830e-05)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 2.14e-03 (row p95 3.2e-01, max 4.5e+01) [18s]
+RESULT coord NB=2 K=  6 train 1.486e-02 oracle(nearest) 1.226e-01 ROM full 1.263e-01 EQ m=256 1.263e-01 FD 3.725e-01 [99s]
+  [A] step      0 loss 1.271e-01 [1s]
+  [A] step   5000 loss 4.940e-04 [16s]
+  [A] step  10000 loss 8.389e-05 [32s]
+  [A] step  15000 loss 3.422e-05 [48s]
+  [A] Adam 20000 steps in 63s (final batch loss 2.511e-05)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 1.83e-03 (row p95 2.7e-01, max 4.5e+02) [18s]
+RESULT coord NB=2 K=  8 train 1.392e-02 oracle(nearest) 1.092e-01 ROM full 1.096e-01 EQ m=256 1.096e-01 FD 3.081e-01 [100s]
+  [A] step      0 loss 1.163e-01 [1s]
+  [A] step   5000 loss 3.334e-04 [15s]
+  [A] step  10000 loss 8.649e-05 [30s]
+  [A] step  15000 loss 3.277e-05 [45s]
+  [A] Adam 20000 steps in 59s (final batch loss 1.944e-05)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 1.70e-03 (row p95 2.5e-01, max 4.6e+02) [20s]
+RESULT coord NB=2 K= 12 train 1.219e-02 oracle(nearest) 7.027e-02 ROM full 7.354e-02 EQ m=256 7.081e-02 FD 2.300e-01 [102s]
+  [A] step      0 loss 1.305e-01 [1s]
+  [A] step   5000 loss 3.824e-04 [15s]
+  [A] step  10000 loss 7.551e-05 [30s]
+  [A] step  15000 loss 2.480e-05 [44s]
+  [A] Adam 20000 steps in 58s (final batch loss 1.682e-05)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 1.69e-03 (row p95 2.9e-01, max 7.8e+02) [19s]
+RESULT coord NB=2 K= 16 train 1.146e-02 oracle(nearest) 4.945e-02 ROM full 5.047e-02 EQ m=256 5.319e-02 FD 2.269e-01 [100s]
+  [A] step      0 loss 1.299e-01 [1s]
+  [A] step   5000 loss 3.394e-04 [15s]
+  [A] step  10000 loss 1.103e-04 [29s]
+  [A] step  15000 loss 2.283e-05 [43s]
+  [A] Adam 20000 steps in 56s (final batch loss 1.559e-05)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 1.44e-03 (row p95 2.5e-01, max 2.0e+03) [19s]
+RESULT coord NB=2 K= 24 train 1.078e-02 oracle(nearest) 2.923e-02 ROM full 2.935e-02 EQ m=256 2.968e-02 FD 1.655e-01 [103s]
+  [A] step      0 loss 1.317e-01 [1s]
+  [A] step   5000 loss 2.387e-04 [15s]
+  [A] step  10000 loss 1.015e-04 [29s]
+  [A] step  15000 loss 2.193e-05 [42s]
+  [A] Adam 20000 steps in 56s (final batch loss 1.368e-05)
+  NNLS-EQ offgrid M=64 m=256 @N=64: support 256 (+0) rel fit 1.53e-03 (row p95 2.6e-01, max 1.1e+02) [19s]
+RESULT coord NB=2 K= 32 train 1.002e-02 oracle(nearest) 2.063e-02 ROM full 2.808e-02 EQ m=256 3.053e-02 FD 1.427e-01 [106s]
+DONE
+ALL-DONE

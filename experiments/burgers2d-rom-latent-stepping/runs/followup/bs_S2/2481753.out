@@ -1,0 +1,63 @@
+host=pax142  gpu=NVIDIA A100-PCIE-40GB
+git_commit=1acbe611e6a4d411f78f82184960f556910366b6
+git_dirty=e3b0c44298fc (dirty marker: 'e3b0c442' when clean)
+jax_backend=gpu cuda:0
+jax_backend=gpu  x64=True  N=64 K=8 steps=60000 batch=128 p_sub=2048 t_smooth=0.01 bc=poly hidden=256x5
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  data fingerprint {'sum': 12014563.752092322, 'sumsq': 5940357.887094005, 'shape': [576, 51, 4096]}
+  POD: 26112 snapshots, top-64 ortho dev 1.9e-15 [5s]
+  POD val floors: r4=3.933e-01  r6=2.833e-01  r8=2.108e-01  r16=1.013e-01  r32=4.169e-02  r64=1.324e-02
+  film params 462913, n_freq 31, eps 2.2114e-01
+  step      0  loss 1.392e-01  data 1.391e-01  [6s]
+  step   2000  loss 2.318e-03  data 2.117e-03  [103s]
+  step   4000  loss 7.087e-04  data 5.198e-04  [202s]
+  step   6000  loss 4.521e-04  data 2.640e-04  [300s]
+  step   8000  loss 3.995e-04  data 2.029e-04  [399s]
+  step  10000  loss 3.463e-04  data 1.554e-04  [497s]
+  step  12000  loss 4.031e-04  data 1.878e-04  [596s]
+  step  14000  loss 3.591e-04  data 1.737e-04  [695s]
+  step  16000  loss 2.492e-04  data 6.008e-05  [793s]
+  step  18000  loss 2.849e-04  data 9.324e-05  [892s]
+  step  20000  loss 2.396e-04  data 5.138e-05  [991s]
+  step  22000  loss 2.190e-04  data 4.931e-05  [1089s]
+  step  24000  loss 1.882e-04  data 4.978e-05  [1188s]
+  step  26000  loss 2.639e-04  data 3.690e-05  [1287s]
+  step  28000  loss 2.107e-04  data 2.139e-05  [1385s]
+  step  30000  loss 2.087e-04  data 3.890e-05  [1484s]
+  step  32000  loss 1.726e-04  data 2.338e-05  [1583s]
+  step  34000  loss 1.962e-04  data 1.870e-05  [1681s]
+  step  36000  loss 1.791e-04  data 1.226e-05  [1780s]
+  step  38000  loss 1.624e-04  data 1.136e-05  [1879s]
+  step  40000  loss 2.178e-04  data 7.498e-06  [1977s]
+  step  42000  loss 1.785e-04  data 6.992e-06  [2076s]
+  step  44000  loss 1.923e-04  data 5.978e-06  [2175s]
+  step  46000  loss 1.549e-04  data 4.843e-06  [2273s]
+  step  48000  loss 1.677e-04  data 3.423e-06  [2372s]
+  step  50000  loss 1.799e-04  data 2.410e-06  [2471s]
+  step  52000  loss 1.434e-04  data 2.192e-06  [2569s]
+  step  54000  loss 1.797e-04  data 1.782e-06  [2668s]
+  step  56000  loss 2.025e-04  data 2.165e-06  [2767s]
+  step  58000  loss 1.685e-04  data 1.586e-06  [2865s]
+  step  59999  loss 1.404e-04  data 1.688e-06  [2964s]
+  TRAIN recon at learned latents: mean rel 3.483e-03 (median 3.029e-03, max 3.045e-02); latent RMS 1.086, mean |dz| per step 5.653e-02 [2964s]
+wrote N64_K8_S2
+jax_backend=gpu  N=64  variants=['lspg:full:fd', 'lspg:full:weak64', 'lspg:eq256:weak64', 'lspg:eq512:weak64']
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  checks: {'local_vs_fom_maxabs': 0.0, 'fom_traj_step1_rel_res': 6.374458614255595e-16}
+  ORACLE inferred-latent floor (held-out, budget 40): 1.113e-02 [100s]
+  IC fit (u0 misfit): mean 2.088e-02
+  lspg:full:fd             m= 3844  traj rel mean 1.932e-02 (med 2.003e-02, max 4.063e-02) blowups 0  iters cold 14.0 warm 6.46  step 78.9 ms  [76s]
+  lspg:full:weak64         m= 3844  traj rel mean 1.462e-02 (med 1.357e-02, max 2.334e-02) blowups 0  iters cold 6.9 warm 5.61  step 79.7 ms  [66s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.01e-03 (per-row median 9.7e-03, p95 8.0e-01, max 5.4e+02) [15s]
+  lspg:eq256:weak64        m=  256  traj rel mean 1.518e-02 (med 1.364e-02, max 2.442e-02) blowups 0  iters cold 7.1 warm 5.61  step 6.8 ms  [26s]
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 9.72e-04 (per-row median 2.0e-03, p95 1.3e-01, max 5.7e+01) [73s]
+  lspg:eq512:weak64        m=  512  traj rel mean 1.467e-02 (med 1.363e-02, max 2.331e-02) blowups 0  iters cold 7.2 warm 5.60  step 11.5 ms  [87s]
+  POD k=  8 lspg:full:fd         traj rel mean 2.094e-01 (med 1.647e-01) blowups 0 iters warm 3.92 step 1.4 ms
+  POD k= 16 lspg:full:fd         traj rel mean 9.731e-02 (med 7.042e-02) blowups 0 iters warm 3.97 step 1.5 ms
+  POD k= 32 lspg:full:fd         traj rel mean 4.318e-02 (med 3.069e-02) blowups 0 iters warm 4.01 step 1.7 ms
+  POD k= 64 lspg:full:fd         traj rel mean 1.401e-02 (med 8.917e-03) blowups 0 iters warm 4.06 step 2.0 ms
+  timing: lspg:full:fd=3545ms  lspg:full:weak64=3382ms  lspg:eq256:weak64=272ms  lspg:eq512:weak64=469ms  pod_k8:lspg:full:fd=45ms  pod_k16:lspg:full:fd=42ms  pod_k32:lspg:full:fd=47ms  pod_k64:lspg:full:fd=63ms  fom_rollout=434ms
+wrote blat_rom_N64_K8_S2.json
+ALL-DONE

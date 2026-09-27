@@ -1,0 +1,29 @@
+host=pax142  gpu=NVIDIA A100-PCIE-40GB
+git_commit=1acbe611e6a4d411f78f82184960f556910366b6
+git_dirty=e3b0c44298fc (dirty marker: 'e3b0c442' when clean)
+jax_backend=gpu cuda:0
+jax_backend=gpu  N=64  variants=['lspg:full:weak16', 'lspg:eq64:weak16', 'lspg:full:weak32', 'lspg:eq128:weak32', 'lspg:full:weak64', 'lspg:eq256:weak64', 'lspg:full:weak128', 'lspg:eq512:weak128', 'lspg:full:weak256', 'lspg:eq1024:weak256']
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  checks: {'local_vs_fom_maxabs': 0.0, 'fom_traj_step1_rel_res': 6.374458614255595e-16}
+  ORACLE inferred-latent floor (held-out, budget 40): 1.147e-02 [104s]
+  IC fit (u0 misfit): mean 2.309e-02
+  lspg:full:weak16         m= 3844  traj rel mean 1.879e-02 (med 1.562e-02, max 3.843e-02) blowups 0  iters cold 11.0 warm 6.17  step 80.8 ms  [74s]
+  NNLS-EQ weak/grid M=16 m=64: support 64 (+0 pad), rel fit 4.45e-02 (per-row median 3.0e-02, p95 5.2e-01, max 2.5e+01) [2s]
+  lspg:eq64:weak16         m=   64  traj rel mean 2.860e-02 (med 3.032e-02, max 8.391e-02) blowups 0  iters cold 9.8 warm 5.97  step 3.6 ms  [9s]
+  lspg:full:weak32         m= 3844  traj rel mean 1.684e-02 (med 1.449e-02, max 3.663e-02) blowups 0  iters cold 7.9 warm 5.80  step 80.6 ms  [68s]
+  NNLS-EQ weak/grid M=32 m=128: support 128 (+0 pad), rel fit 1.77e-02 (per-row median 1.6e-02, p95 5.4e-01, max 1.7e+02) [3s]
+  lspg:eq128:weak32        m=  128  traj rel mean 1.831e-02 (med 1.699e-02, max 3.723e-02) blowups 0  iters cold 8.1 warm 5.88  step 4.7 ms  [12s]
+  lspg:full:weak64         m= 3844  traj rel mean 1.654e-02 (med 1.531e-02, max 3.749e-02) blowups 0  iters cold 8.1 warm 5.74  step 80.7 ms  [68s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.21e-03 (per-row median 9.7e-03, p95 6.8e-01, max 3.4e+02) [15s]
+  lspg:eq256:weak64        m=  256  traj rel mean 1.742e-02 (med 1.559e-02, max 3.952e-02) blowups 0  iters cold 8.8 warm 5.73  step 6.9 ms  [26s]
+  lspg:full:weak128        m= 3844  traj rel mean 1.656e-02 (med 1.555e-02, max 3.233e-02) blowups 0  iters cold 9.6 warm 5.87  step 80.6 ms  [70s]
+  NNLS-EQ weak/grid M=128 m=512: support 512 (+0 pad), rel fit 2.59e-03 (per-row median 1.2e-02, p95 1.1e+00, max 2.3e+04) [144s]
+  lspg:eq512:weak128       m=  512  traj rel mean 1.669e-02 (med 1.572e-02, max 3.081e-02) blowups 0  iters cold 9.5 warm 5.88  step 11.5 ms  [158s]
+  lspg:full:weak256        m= 3844  traj rel mean 1.672e-02 (med 1.596e-02, max 3.162e-02) blowups 0  iters cold 9.6 warm 5.91  step 79.6 ms  [71s]
+  NNLS-EQ weak/grid M=256 m=1024: support 1024 (+0 pad), rel fit 1.29e-03 (per-row median 2.0e-02, p95 1.0e+00, max 3.3e+03) [1277s]
+  lspg:eq1024:weak256      m= 1024  traj rel mean 1.677e-02 (med 1.602e-02, max 3.029e-02) blowups 0  iters cold 10.4 warm 6.00  step 22.7 ms  [1302s]
+  POD k=  8 lspg:full:fd         traj rel mean 2.094e-01 (med 1.647e-01) blowups 0 iters warm 3.91 step 1.5 ms
+  timing: lspg:full:weak16=3463ms  lspg:eq64:weak16=122ms  lspg:full:weak32=3518ms  lspg:eq128:weak32=189ms  lspg:full:weak64=3514ms  lspg:eq256:weak64=297ms  lspg:full:weak128=3551ms  lspg:eq512:weak128=487ms  lspg:full:weak256=3567ms  lspg:eq1024:weak256=996ms  pod_k8:lspg:full:fd=41ms  fom_rollout=426ms
+wrote blat_rom_N64_K8.json
+ALL-DONE

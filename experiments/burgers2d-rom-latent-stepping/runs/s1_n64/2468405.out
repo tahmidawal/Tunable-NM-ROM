@@ -1,0 +1,22 @@
+host=pax049  gpu=NVIDIA A100 80GB PCIe
+git_commit=3efd6dedde23c2747ff88816d675d5cb1976ecd6
+jax_backend=gpu cuda:0
+jax_backend=gpu  N=64  n_freq=31 t_freq=8
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  ORACLE (true z) traj rel mean 3.834e-03
+  FOM traj rel residual 2.75e-13; decoder residual at true z (rel) 2.941e-03
+  ic    : traj rel mean 2.255e-01 (med 1.715e-01, max 8.657e-01)  |z-z*| 6.713e-01  [8s]
+  resid : traj rel mean 9.520e-01 (med 9.430e-01, max 1.159e+00)  |z-z*| 1.709e+00  [293s]
+  both  : traj rel mean 2.219e-02 (med 1.145e-02, max 1.804e-01)  |z-z*| 5.822e-02  [58s]
+wrote stage1 json
+jax_backend=gpu  N=64  n_freq=31 t_freq=8
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  ORACLE (true z) traj rel mean 3.834e-03
+  FOM traj rel residual 2.75e-13; decoder residual at true z (rel) 2.941e-03
+  ic    : traj rel mean 2.255e-01 (med 1.715e-01, max 8.657e-01)  |z-z*| 6.713e-01  [7s]
+  resid : traj rel mean 9.520e-01 (med 9.430e-01, max 1.159e+00)  |z-z*| 1.709e+00  [294s]
+  both  : traj rel mean 7.286e-03 (med 3.474e-03, max 5.195e-02)  |z-z*| 1.205e-02  [44s]
+wrote stage1 json
+ALL-DONE

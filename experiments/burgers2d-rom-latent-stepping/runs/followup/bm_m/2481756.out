@@ -1,0 +1,46 @@
+host=pax007  gpu=NVIDIA A100 80GB PCIe
+git_commit=1acbe611e6a4d411f78f82184960f556910366b6
+git_dirty=e3b0c44298fc (dirty marker: 'e3b0c442' when clean)
+jax_backend=gpu cuda:0
+jax_backend=gpu  N=64  variants=['lspg:full:weak64', 'lspg:eq64:weak64', 'lspg:eq128:weak64', 'lspg:eq256:weak64', 'lspg:eq512:weak64', 'lspg:eq1024:weak64', 'lspg:full:weakc64', 'lspg:eq64:weakc64', 'lspg:eq128:weakc64', 'lspg:eq256:weakc64', 'lspg:eq512:weakc64', 'lspg:eq1024:weakc64', 'lspg:eqoff64:weakc64', 'lspg:eqoff128:weakc64', 'lspg:eqoff256:weakc64', 'lspg:eqoff512:weakc64', 'lspg:eqoff1024:weakc64']
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+  checks: {'local_vs_fom_maxabs': 0.0, 'fom_traj_step1_rel_res': 6.374458614255595e-16}
+  ORACLE inferred-latent floor (held-out, budget 40): 1.147e-02 [94s]
+  IC fit (u0 misfit): mean 2.309e-02
+  lspg:full:weak64         m= 3844  traj rel mean 1.654e-02 (med 1.531e-02, max 3.749e-02) blowups 0  iters cold 8.2 warm 5.74  step 70.9 ms  [61s]
+  NNLS-EQ weak/grid M=64 m=64: support 64 (+0 pad), rel fit 2.09e-01 (per-row median 4.5e-01, p95 3.8e+01, max 4.4e+04) [3s]
+  lspg:eq64:weak64         m=   64  traj rel mean 6.540e-02 (med 5.475e-02, max 1.785e-01) blowups 0  iters cold 10.5 warm 6.23  step 3.4 ms  [9s]
+  NNLS-EQ weak/grid M=64 m=128: support 128 (+0 pad), rel fit 4.89e-02 (per-row median 7.7e-02, p95 5.8e+00, max 5.5e+03) [4s]
+  lspg:eq128:weak64        m=  128  traj rel mean 1.946e-02 (med 1.886e-02, max 3.830e-02) blowups 0  iters cold 8.2 warm 5.95  step 4.5 ms  [12s]
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.21e-03 (per-row median 9.7e-03, p95 6.8e-01, max 3.4e+02) [13s]
+  lspg:eq256:weak64        m=  256  traj rel mean 1.742e-02 (med 1.559e-02, max 3.952e-02) blowups 0  iters cold 8.9 warm 5.72  step 6.2 ms  [23s]
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 1.04e-03 (per-row median 2.1e-03, p95 1.4e-01, max 3.1e+01) [61s]
+  lspg:eq512:weak64        m=  512  traj rel mean 1.682e-02 (med 1.540e-02, max 3.832e-02) blowups 0  iters cold 8.7 warm 5.71  step 10.8 ms  [73s]
+  NNLS-EQ weak/grid M=64 m=1024: support 1024 (+0 pad), rel fit 1.45e-04 (per-row median 3.2e-04, p95 2.6e-02, max 7.4e+01) [391s]
+  lspg:eq1024:weak64       m= 1024  traj rel mean 1.665e-02 (med 1.535e-02, max 3.773e-02) blowups 0  iters cold 8.4 warm 5.73  step 20.7 ms  [412s]
+  lspg:full:weakc64        m= 3844  traj rel mean 4.560e-02 (med 4.041e-02, max 9.550e-02) blowups 0  iters cold 8.6 warm 5.88  step 15.5 ms  [16s]
+  NNLS-EQ weakc/grid M=64 m=64: support 64 (+0 pad), rel fit 1.67e-01 (per-row median 4.5e-01, p95 4.0e+01, max 1.9e+04) [2s]
+  lspg:eq64:weakc64        m=   64  traj rel mean 1.112e-01 (med 9.844e-02, max 2.265e-01) blowups 0  iters cold 11.6 warm 7.99  step 2.6 ms  [8s]
+  NNLS-EQ weakc/grid M=64 m=128: support 128 (+0 pad), rel fit 2.89e-02 (per-row median 6.4e-02, p95 5.8e+00, max 5.7e+03) [4s]
+  lspg:eq128:weakc64       m=  128  traj rel mean 5.529e-02 (med 4.007e-02, max 1.976e-01) blowups 0  iters cold 11.1 warm 6.21  step 2.8 ms  [10s]
+  NNLS-EQ weakc/grid M=64 m=256: support 256 (+0 pad), rel fit 1.46e-03 (per-row median 4.1e-03, p95 3.1e-01, max 4.0e+02) [14s]
+  lspg:eq256:weakc64       m=  256  traj rel mean 4.468e-02 (med 3.955e-02, max 9.649e-02) blowups 0  iters cold 8.0 warm 5.88  step 3.3 ms  [20s]
+  NNLS-EQ weakc/grid M=64 m=512: support 512 (+0 pad), rel fit 1.99e-04 (per-row median 6.1e-04, p95 5.4e-02, max 2.0e+01) [63s]
+  lspg:eq512:weakc64       m=  512  traj rel mean 4.511e-02 (med 3.998e-02, max 9.530e-02) blowups 0  iters cold 8.6 warm 5.86  step 4.1 ms  [70s]
+  NNLS-EQ weakc/grid M=64 m=1024: support 1024 (+0 pad), rel fit 2.73e-05 (per-row median 8.3e-05, p95 8.6e-03, max 8.0e+00) [377s]
+  lspg:eq1024:weakc64      m= 1024  traj rel mean 4.555e-02 (med 4.039e-02, max 9.557e-02) blowups 0  iters cold 8.8 warm 5.87  step 5.8 ms  [386s]
+  NNLS-EQ weakc/off M=64 m=64: support 64 (+0 pad), rel fit 1.62e-01 (per-row median 4.1e-01, p95 3.8e+01, max 7.2e+04) [3s]
+  lspg:eqoff64:weakc64     m=   64  traj rel mean 1.197e-01 (med 7.096e-02, max 3.217e-01) blowups 0  iters cold 11.0 warm 7.95  step 2.6 ms  [7s]
+  NNLS-EQ weakc/off M=64 m=128: support 128 (+0 pad), rel fit 2.84e-02 (per-row median 5.8e-02, p95 4.5e+00, max 9.2e+02) [4s]
+  lspg:eqoff128:weakc64    m=  128  traj rel mean 5.407e-02 (med 4.157e-02, max 2.007e-01) blowups 0  iters cold 8.9 warm 6.02  step 2.8 ms  [9s]
+  NNLS-EQ weakc/off M=64 m=256: support 256 (+0 pad), rel fit 1.40e-03 (per-row median 4.0e-03, p95 3.0e-01, max 3.1e+02) [15s]
+  lspg:eqoff256:weakc64    m=  256  traj rel mean 4.494e-02 (med 3.986e-02, max 9.709e-02) blowups 0  iters cold 7.9 warm 5.88  step 3.4 ms  [19s]
+  NNLS-EQ weakc/off M=64 m=512: support 512 (+0 pad), rel fit 2.08e-04 (per-row median 6.5e-04, p95 5.0e-02, max 4.8e+01) [64s]
+  lspg:eqoff512:weakc64    m=  512  traj rel mean 4.528e-02 (med 3.993e-02, max 9.564e-02) blowups 0  iters cold 7.8 warm 5.85  step 4.1 ms  [69s]
+  NNLS-EQ weakc/off M=64 m=1024: support 1024 (+0 pad), rel fit 3.54e-05 (per-row median 1.1e-04, p95 1.0e-02, max 1.5e+01) [406s]
+  lspg:eqoff1024:weakc64   m= 1024  traj rel mean 4.553e-02 (med 4.034e-02, max 9.555e-02) blowups 0  iters cold 9.2 warm 5.87  step 5.8 ms  [413s]
+  POD k=  8 lspg:full:fd         traj rel mean 2.094e-01 (med 1.647e-01) blowups 0 iters warm 3.91 step 1.3 ms
+  timing: lspg:full:weak64=3097ms  lspg:eq64:weak64=116ms  lspg:eq128:weak64=180ms  lspg:eq256:weak64=269ms  lspg:eq512:weak64=456ms  lspg:eq1024:weak64=878ms  lspg:full:weakc64=651ms  lspg:eq64:weakc64=75ms  lspg:eq128:weakc64=99ms  lspg:eq256:weakc64=119ms  lspg:eq512:weakc64=161ms  lspg:eq1024:weakc64=233ms  lspg:eqoff64:weakc64=75ms  lspg:eqoff128:weakc64=88ms  lspg:eqoff256:weakc64=118ms  lspg:eqoff512:weakc64=156ms  lspg:eqoff1024:weakc64=229ms  pod_k8:lspg:full:fd=40ms  fom_rollout=407ms
+wrote blat_rom_N64_K8.json
+ALL-DONE

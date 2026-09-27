@@ -1,0 +1,47 @@
+host=pax143  gpu=NVIDIA A100-PCIE-40GB
+git_commit=1acbe611e6a4d411f78f82184960f556910366b6
+git_dirty=e3b0c44298fc (dirty marker: 'e3b0c442' when clean)
+jax_backend=gpu cuda:0
+jax_backend=gpu MODE=n gpu=cuda:0 reps=7 warm=2
+== N=32: FOM test trajectory residual 9.85e-13
+  IC fit: python 918 ms (rel 2.107e-02)  jit 34.6 ms (rel 2.107e-02, iters 35)  |dz|rel 1.4e-16
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.37e-03 (per-row median 1.1e-02, p95 7.7e-01, max 5.1e+02) [17s]
+  lspg:eq256:weak64        rollout 280 ms  iters 258 (att 304, 1.09 ms/jac) speedup 0.74x e2e(jit ic) 0.65x  err vs FOM@N 1.149e-02
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 1.02e-03 (per-row median 2.0e-03, p95 1.4e-01, max 3.7e+01) [82s]
+  lspg:eq512:weak64        rollout 483 ms  iters 261 (att 264, 1.85 ms/jac) speedup 0.43x e2e(jit ic) 0.40x  err vs FOM@N 1.241e-02
+  lspg:full:weak64         rollout 847 ms  iters 264 (att 277, 3.21 ms/jac) speedup 0.25x e2e(jit ic) 0.23x  err vs FOM@N 1.244e-02
+  NNLS-EQ weakc/off M=64 m=512: support 512 (+0 pad), rel fit 2.22e-04 (per-row median 7.2e-04, p95 6.0e-02, max 9.4e+01) [81s]
+  lspg:eqoff512:weakc64    rollout 148 ms  iters 257 (att 276, 0.58 ms/jac) speedup 1.40x e2e(jit ic) 1.11x  err vs FOM@N 3.597e-02
+  FOM 208 ms  [252s]
+== N=64: FOM test trajectory residual 9.75e-13
+  IC fit: python 1015 ms (rel 2.137e-02)  jit 106.1 ms (rel 2.137e-02, iters 27)  |dz|rel 1.3e-16
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.21e-03 (per-row median 9.7e-03, p95 6.8e-01, max 3.4e+02) [18s]
+  lspg:eq256:weak64        rollout 289 ms  iters 260 (att 312, 1.11 ms/jac) speedup 1.48x e2e(jit ic) 1.05x  err vs FOM@N 1.186e-02
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 1.04e-03 (per-row median 2.1e-03, p95 1.4e-01, max 3.1e+01) [74s]
+  lspg:eq512:weak64        rollout 486 ms  iters 261 (att 271, 1.86 ms/jac) speedup 0.88x e2e(jit ic) 0.71x  err vs FOM@N 1.152e-02
+  lspg:full:weak64         rollout 3477 ms  iters 259 (att 257, 13.42 ms/jac) speedup 0.12x e2e(jit ic) 0.12x  err vs FOM@N 1.219e-02
+  NNLS-EQ weakc/off M=64 m=512: support 512 (+0 pad), rel fit 2.08e-04 (per-row median 6.5e-04, p95 5.0e-02, max 4.8e+01) [79s]
+  lspg:eqoff512:weakc64    rollout 152 ms  iters 256 (att 305, 0.59 ms/jac) speedup 2.80x e2e(jit ic) 1.58x  err vs FOM@N 2.170e-02
+  FOM 426 ms  [266s]
+== N=128: FOM test trajectory residual 9.94e-13
+  IC fit: python 1384 ms (rel 2.928e-02)  jit 417.6 ms (rel 2.928e-02, iters 27)  |dz|rel 1.1e-16
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 5.54e-03 (per-row median 9.4e-03, p95 5.6e-01, max 4.6e+02) [24s]
+  lspg:eq256:weak64        rollout 274 ms  iters 255 (att 341, 1.08 ms/jac) speedup 4.24x e2e(jit ic) 1.57x  err vs FOM@N 1.034e-02
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 1.03e-03 (per-row median 2.0e-03, p95 1.6e-01, max 9.6e+01) [85s]
+  lspg:eq512:weak64        rollout 485 ms  iters 258 (att 260, 1.88 ms/jac) speedup 2.40x e2e(jit ic) 1.22x  err vs FOM@N 1.111e-02
+  lspg:full:weak64         rollout 14238 ms  iters 262 (att 272, 54.35 ms/jac) speedup 0.08x e2e(jit ic) 0.08x  err vs FOM@N 1.209e-02
+  NNLS-EQ weakc/off M=64 m=512: support 512 (+0 pad), rel fit 2.18e-04 (per-row median 6.9e-04, p95 5.8e-02, max 4.8e+01) [78s]
+  lspg:eqoff512:weakc64    rollout 157 ms  iters 256 (att 265, 0.61 ms/jac) speedup 7.42x e2e(jit ic) 1.87x  err vs FOM@N 1.543e-02
+  FOM 1162 ms  [423s]
+== N=256: FOM test trajectory residual 8.44e-13
+  IC fit: python 3384 ms (rel 3.467e-02)  jit 1696.7 ms (rel 3.467e-02, iters 27)  |dz|rel 7.1e-17
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 5.80e-03 (per-row median 9.6e-03, p95 6.8e-01, max 1.9e+02) [49s]
+  lspg:eq256:weak64        rollout 274 ms  iters 254 (att 288, 1.08 ms/jac) speedup 8.13x e2e(jit ic) 1.03x  err vs FOM@N 1.066e-02
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 1.02e-03 (per-row median 2.0e-03, p95 1.4e-01, max 6.2e+01) [129s]
+  lspg:eq512:weak64        rollout 488 ms  iters 253 (att 294, 1.93 ms/jac) speedup 4.56x e2e(jit ic) 0.94x  err vs FOM@N 1.125e-02
+  lspg:full:weak64         rollout 57322 ms  iters 260 (att 253, 220.47 ms/jac) speedup 0.04x e2e(jit ic) 0.04x  err vs FOM@N 1.202e-02
+  NNLS-EQ weakc/off M=64 m=512: support 512 (+0 pad), rel fit 2.07e-04 (per-row median 6.7e-04, p95 5.5e-02, max 1.7e+01) [88s]
+  lspg:eqoff512:weakc64    rollout 154 ms  iters 257 (att 301, 0.60 ms/jac) speedup 14.48x e2e(jit ic) 1.09x  err vs FOM@N 1.354e-02
+  FOM 2227 ms  [1030s]
+DONE
+ALL-DONE

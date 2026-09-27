@@ -1,0 +1,46 @@
+host=pax007  gpu=NVIDIA A100 80GB PCIe
+git_commit=1acbe611e6a4d411f78f82184960f556910366b6
+git_dirty=e3b0c44298fc (dirty marker: 'e3b0c442' when clean)
+jax_backend=gpu cuda:0
+jax_backend=gpu MODE=k gpu=cuda:0 reps=7 warm=2
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 10s, max Newton rel residual 1.00e-12
+  data check: max FOM rel residual over all trajectories 1.00e-12
+FOM N=64: 411 ms
+  K= 8 lspg:full:weak64         rollout 3042 ms iters 262 (att 261, 11.61 ms/jac) speedup 0.14x err 1.219e-02
+  NNLS-EQ weak/grid M=64 m=64: support 64 (+0 pad), rel fit 2.09e-01 (per-row median 4.5e-01, p95 3.8e+01, max 4.4e+04) [3s]
+  K= 8 lspg:eq64:weak64         rollout 119 ms iters 264 (att 246, 0.45 ms/jac) speedup 3.47x err 7.910e-02
+  NNLS-EQ weak/grid M=64 m=128: support 128 (+0 pad), rel fit 4.89e-02 (per-row median 7.7e-02, p95 5.8e+00, max 5.5e+03) [4s]
+  K= 8 lspg:eq128:weak64        rollout 178 ms iters 259 (att 300, 0.69 ms/jac) speedup 2.31x err 1.444e-02
+  NNLS-EQ weak/grid M=64 m=256: support 256 (+0 pad), rel fit 6.21e-03 (per-row median 9.7e-03, p95 6.8e-01, max 3.4e+02) [14s]
+  K= 8 lspg:eq256:weak64        rollout 272 ms iters 260 (att 312, 1.05 ms/jac) speedup 1.51x err 1.186e-02
+  NNLS-EQ weak/grid M=64 m=512: support 512 (+0 pad), rel fit 1.04e-03 (per-row median 2.1e-03, p95 1.4e-01, max 3.1e+01) [62s]
+  K= 8 lspg:eq512:weak64        rollout 451 ms iters 261 (att 274, 1.73 ms/jac) speedup 0.91x err 1.152e-02
+  NNLS-EQ weak/grid M=64 m=1024: support 1024 (+0 pad), rel fit 1.45e-04 (per-row median 3.2e-04, p95 2.6e-02, max 7.4e+01) [396s]
+  K= 8 lspg:eq1024:weak64       rollout 877 ms iters 260 (att 300, 3.37 ms/jac) speedup 0.47x err 1.184e-02
+  K= 8 lspg:full:weakc64        rollout 643 ms iters 260 (att 282, 2.47 ms/jac) speedup 0.64x err 2.255e-02
+  NNLS-EQ weakc/off M=64 m=64: support 64 (+0 pad), rel fit 1.62e-01 (per-row median 4.1e-01, p95 3.8e+01, max 7.2e+04) [2s]
+  K= 8 lspg:eqoff64:weakc64     rollout 75 ms iters 269 (att 242, 0.28 ms/jac) speedup 5.49x err 5.748e-02
+  NNLS-EQ weakc/off M=64 m=128: support 128 (+0 pad), rel fit 2.84e-02 (per-row median 5.8e-02, p95 4.5e+00, max 9.2e+02) [4s]
+  K= 8 lspg:eqoff128:weakc64    rollout 91 ms iters 256 (att 257, 0.35 ms/jac) speedup 4.53x err 1.856e-02
+  NNLS-EQ weakc/off M=64 m=256: support 256 (+0 pad), rel fit 1.40e-03 (per-row median 4.0e-03, p95 3.0e-01, max 3.1e+02) [15s]
+  K= 8 lspg:eqoff256:weakc64    rollout 116 ms iters 258 (att 322, 0.45 ms/jac) speedup 3.53x err 2.105e-02
+  NNLS-EQ weakc/off M=64 m=512: support 512 (+0 pad), rel fit 2.08e-04 (per-row median 6.5e-04, p95 5.0e-02, max 4.8e+01) [65s]
+  K= 8 lspg:eqoff512:weakc64    rollout 154 ms iters 257 (att 273, 0.60 ms/jac) speedup 2.67x err 2.170e-02
+  NNLS-EQ weakc/off M=64 m=1024: support 1024 (+0 pad), rel fit 3.54e-05 (per-row median 1.1e-04, p95 1.0e-02, max 1.5e+01) [416s]
+  K= 8 lspg:eqoff1024:weakc64   rollout 236 ms iters 256 (att 275, 0.92 ms/jac) speedup 1.75x err 2.260e-02
+  K= 8 lspg:full:weak16         rollout 2969 ms iters 250 (att 292, 11.88 ms/jac) speedup 0.14x err 1.176e-02
+  NNLS-EQ weak/grid M=16 m=64: support 64 (+0 pad), rel fit 4.45e-02 (per-row median 3.0e-02, p95 5.2e-01, max 2.5e+01) [1s]
+  K= 8 lspg:eq64:weak16         rollout 120 ms iters 247 (att 229, 0.49 ms/jac) speedup 3.43x err 1.544e-02
+  K= 8 lspg:full:weak32         rollout 3081 ms iters 260 (att 274, 11.85 ms/jac) speedup 0.13x err 1.203e-02
+  NNLS-EQ weak/grid M=32 m=128: support 128 (+0 pad), rel fit 1.77e-02 (per-row median 1.6e-02, p95 5.4e-01, max 1.7e+02) [3s]
+  K= 8 lspg:eq128:weak32        rollout 186 ms iters 266 (att 323, 0.70 ms/jac) speedup 2.21x err 1.331e-02
+  K= 8 lspg:full:weak64         rollout 3076 ms iters 262 (att 261, 11.74 ms/jac) speedup 0.13x err 1.219e-02
+  K= 8 lspg:eq256:weak64        rollout 275 ms iters 260 (att 312, 1.06 ms/jac) speedup 1.49x err 1.186e-02
+  K= 8 lspg:full:weak128        rollout 3101 ms iters 262 (att 274, 11.84 ms/jac) speedup 0.13x err 1.172e-02
+  NNLS-EQ weak/grid M=128 m=512: support 512 (+0 pad), rel fit 2.59e-03 (per-row median 1.2e-02, p95 1.1e+00, max 2.3e+04) [116s]
+  K= 8 lspg:eq512:weak128       rollout 454 ms iters 262 (att 253, 1.73 ms/jac) speedup 0.91x err 1.102e-02
+  K= 8 lspg:full:weak256        rollout 3115 ms iters 264 (att 270, 11.80 ms/jac) speedup 0.13x err 1.131e-02
+  NNLS-EQ weak/grid M=256 m=1024: support 1024 (+0 pad), rel fit 1.29e-03 (per-row median 2.0e-02, p95 1.0e+00, max 3.3e+03) [1098s]
+  K= 8 lspg:eq1024:weak256      rollout 886 ms iters 263 (att 275, 3.37 ms/jac) speedup 0.46x err 1.100e-02
+DONE
+ALL-DONE

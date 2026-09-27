@@ -1,0 +1,122 @@
+{
+  "config": {
+    "name": "modcp-wave2d-single-seed-pilot",
+    "train_intervals": 256,
+    "meshes": [
+      256,
+      512
+    ],
+    "boundaries": [
+      "dirichlet",
+      "absorbing"
+    ],
+    "train_seed": 910601,
+    "validation_seed": 910602,
+    "evaluation_seed": 910603,
+    "model_seed": 910700,
+    "train_count": 64,
+    "validation_count": 16,
+    "evaluation_count": 16,
+    "latent": 32,
+    "rank": 64,
+    "weak_modes": 128,
+    "modulation_width": 64,
+    "inr_width": 128,
+    "pretrain_steps": 6000,
+    "comparison_steps": 10000,
+    "batch_size": 64,
+    "point_batch": 256,
+    "learning_rate": 0.001,
+    "code_lr_factor": 3.0,
+    "end_time": 2.4,
+    "observation_dt": 0.05,
+    "reference_cfl": 0.12,
+    "reference_refinement_cfl": 0.06,
+    "reference_temporal_target": 0.0001,
+    "time_steps": [
+      0.005,
+      0.0025,
+      0.00125
+    ],
+    "gn_caps": [
+      10,
+      30
+    ],
+    "gn_tolerances": [
+      0.0001,
+      1e-06
+    ],
+    "eq_multipliers": [
+      4,
+      8
+    ],
+    "eq_fit_codes": 32,
+    "eq_candidate_count": 8192,
+    "initial_fit_cap": 100,
+    "initial_fit_tolerance": 1e-06,
+    "initial_fit_starts": 8,
+    "cg_tolerances": [
+      0.001,
+      0.0001,
+      1e-06,
+      1e-08,
+      1e-10
+    ],
+    "cg_maxiter": 1000,
+    "rk4_cfls": [
+      0.6,
+      0.3,
+      0.12
+    ],
+    "targets": [
+      0.01,
+      0.05
+    ],
+    "warmups": 2,
+    "repetitions": 7,
+    "continuum_claim": "Provisional: primary errors use the verified semidiscrete PDE. New seed temporal references are checked. The inherited conditional spatial refinement does not certify a universal one-percent continuum target.",
+    "query_contract": "GPU resident full initial displacement/velocity to GPU resident all49 full output displacement/velocity fields; initialization, evolution and decoding charged; offline model and quadrature setup excluded."
+  },
+  "boundary": "absorbing",
+  "provenance": {
+    "jax_backend": "gpu",
+    "jax_version": "0.10.2",
+    "x64": true,
+    "matmul_precision": "highest",
+    "devices": [
+      "cuda:0"
+    ],
+    "device_kind": [
+      "NVIDIA A100 80GB PCIe"
+    ],
+    "host": "pax049",
+    "source_commit": "46a8c8b08abc6047af2e3c472693300200f757e3",
+    "job_id": "3500623",
+    "numpy_version": "2.5.0"
+  },
+  "source_sha256": {
+    "common/__init__.py": "3b5a1d3f1d5c88df262d385ee3bccc8dc894787acb9a5ad8290da32cdb196a9b",
+    "common/decoders.py": "c60ebc254f5e9cb580ee715ff7c43a5c6674eb5aaf8452aecc2b4e2f29422444",
+    "common/lm.py": "b5016a176f433c7515f12b1a827c2fbdfc7f09951cecd51dd54ac93cdf2eb915",
+    "common/quadrature.py": "a6a1e26bf68b1791beb357c6a1113a944c330a755d6883fcbfca2ee110b4b117",
+    "common/training.py": "9d32526b04fa2262fe2c439f9917fcbeacd1aa4cf95b085254d1ef907c1c43a6",
+    "wave/data.py": "78adddbfa9d7f7446b00262ac26c52fbd1f02c98c8d0a94911b0cf8c3c1693d8",
+    "wave/physics.py": "e28602b53cd35d956a35838403ecb0bd4a9c991db0ffb1e9d1fa7ce660696128",
+    "wave/test_physics.py": "a18f24cb3ec7cf3398d4088ad82cd307db02c3131c184c3a7822c99e6b344d7c",
+    "wave/test_weak.py": "c522bb7c9478673a4585d7a4948ec44860b8bf04f8064efd9a0673fc626fc857",
+    "wave/train_wave.py": "7b8f5dc6659950416b9093e15a082a95a06b2c1c94f53f1bc6ad7610cac17870",
+    "wave/weak.py": "51e656a1c045673397a4bdd05c53368dd2ce4af82088e16e0e8d2b0404fa35ad"
+  },
+  "complete": true,
+  "evaluation_opened": false,
+  "fixed_component_scales": [
+    0.2109358131777948,
+    1.8290247937500077
+  ],
+  "data_manifest": "data/training_data.json",
+  "checkpoints": {
+    "cp": "checkpoints/cp.pkl",
+    "modcp": "checkpoints/modcp.pkl",
+    "film": "checkpoints/film.pkl"
+  }
+}

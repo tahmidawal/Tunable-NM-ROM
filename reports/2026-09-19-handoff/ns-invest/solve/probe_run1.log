@@ -1,0 +1,8 @@
+[jaxrun-slot] slot 2 acquired at 15:17:07
+[   26.1s] bank (65536, 512) cond Rb 141.3131792249013
+[   34.7s] FOM case 1 nu=0.001123 Re=890 in 8.1s, value check vs ns304 reference 7.861114277235161e-16, newton max 2
+[   41.0s] FOM case 0 nu=0.008446 Re=118 in 6.3s, value check vs ns304 reference 4.0366957982293153e-16, newton max 2
+[   76.9s] q0_weakM_case1 ERROR TypeError('Using a non-tuple sequence for multidimensional indexing is not allowed; use `arr[array(seq)]` instead of `arr[seq]`. See https://github.com/jax-ml/jax/issues/4564 for more information.')
+[  104.5s] q0_weakM_case0 ERROR TypeError('Using a non-tuple sequence for multidimensional indexing is not allowed; use `arr[array(seq)]` instead of `arr[seq]`. See https://github.com/jax-ml/jax/issues/4564 for more information.')
+[  127.7s] q0_onestep_case1 {"mean_gap": 0.036764578856402774, "mean_gap_x500": 18.382289428201386, "seconds": 23.19094491004944}
+[  136.6s] q0_onestep_case0 {"mean_gap": 0.0010632655726281726, "mean_gap_x500": 0.5316327863140863, "seconds": 8.897604703903198}

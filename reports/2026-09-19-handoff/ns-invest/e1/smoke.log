@@ -1,0 +1,14 @@
+[jaxrun-slot] slot 1 acquired at 16:30:37
+backend gpu x64 True
+  A chunk 0-4: 4.0s  worst_res 5.90e-16  newton mean 2.00 max 2  cfl<=0.28  max|w| 23.5  [5s]
+SMOKE A: max rel diff vs head data64 U_dev[:4] = 0.000e+00  (bitwise-level expected)
+  B chunk 0-2: 3.4s  worst_res 4.35e-16  newton mean 2.00 max 2  cfl<=0.34  max|w| 35.5  [8s]
+SMOKE B: E(T)/E(0) [0.5366916  0.13987969]  Z(T)/Z(0) [0.34015522 0.0529054 ]  params [[1.461, 0.23, 0.183, 0.078, 5.71, 0.002], [0.586, 0.19, 4.167, 0.237, 0.548, 0.01]]
+  C chunk 0-2: 3.1s  worst_res 2.43e-13  newton mean 2.00 max 2  cfl<=0.37  max|w| 33.0  [11s]
+SMOKE C: E(T)/E(0) [0.41526351 0.52692795]  Z(T)/Z(0) [0.1333462  0.35560405]  params [[1.461, 5.026, 0.212, 0.978, 5.71, 0.002], [0.586, 2.527, 0.465, 2.972, 0.548, 0.01]]
+  D chunk 0-2: 2.4s  worst_res 9.00e-17  newton mean 2.00 max 2  cfl<=0.13  max|w| 31.0  [14s]
+SMOKE D: E(T)/E(0) [0.79990341 0.42084265]  Z(T)/Z(0) [0.58402728 0.17724573]  params [[0.059, 0.072, 0.183, 0.078, 5.71, 0.002], [0.033, 0.038, 4.167, 0.237, 0.548, 0.01]]
+  E chunk 0-2: 2.5s  worst_res 5.98e-17  newton mean 2.00 max 2  cfl<=0.25  max|w| 16.3  [16s]
+SMOKE E: E(T)/E(0) [0.79241236 0.75674822]  Z(T)/Z(0) [0.71342931 0.66663023]  params [[-1.477, -1.021, 1.82, -0.061, -1.185, -0.259, 0.002], [1.077, -0.266, 1.22, -1.089, 0.551, 0.953, 0.003]]
+SMOKE-DONE 16.380573511123657
+[jaxrun-slot] slot 1 released rc=0

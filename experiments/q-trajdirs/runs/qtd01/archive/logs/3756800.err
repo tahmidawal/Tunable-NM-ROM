@@ -1,0 +1,20 @@
+E0916 10:33:34.469215 1719069 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion.4 for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E0916 10:57:08.937188 1719066 slow_operation_alarm.cc:140] The operation took 25m34.468096096s
+
+********************************
+[Compiling module input_reduce_fusion.4 for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/q_trajdirs_20260916/qtd01/experiments/q-trajdirs/qtd_run.py", line 518, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/q_trajdirs_20260916/qtd01/experiments/q-trajdirs/qtd_run.py", line 427, in main
+    jax.block_until_ready(invoke(sub, jnp.asarray(inputs[0]), 0))
+    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2512, in block_until_ready
+    xc.batched_block_until_ready(arrays)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: [0] Failed to load in-memory CUBIN (compiled for a different GPU?).: CUDA_ERROR_OUT_OF_MEMORY: out of memory [executable_name='jit__lambda']

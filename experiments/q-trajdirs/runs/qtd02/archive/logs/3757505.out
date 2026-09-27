@@ -1,0 +1,50 @@
+host=pax051 source_commit=f064b8825c57fad2a6c3c62715ad41568ddce828
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.29:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 90.0
+REFERENCE 1 165.3
+REFERENCE 2 269.2
+REFERENCE 3 365.1
+REFERENCE 4 447.1
+REFERENCE 5 520.9
+SNAPSHOTS 16.3
+DIRECTIONS old 1704.0 rank 512 hash_match False
+COMPARISON done 2269.5
+ARM q0_M64_dense M 64 m None 0.3
+ARM q0_M256_dense M 256 m None 1.5
+ARM old_q16_M128_dense M 128 m None 1.3
+ARM old_q16_M256_dense M 256 m None 0.0
+ARM old_q32_M192_dense M 192 m None 1.5
+ARM old_q32_M256_dense M 256 m None 0.0
+ARM old_q64_M256_dense M 256 m None 0.0
+ARM old_q64_M320_dense M 320 m None 2.0
+ARM old_q128_M256_dense M 256 m None 0.0
+ARM old_q128_M576_dense M 576 m None 2.6
+ARM old_q256_M1088_dense M 1088 m None 4.1
+RECON shared q 0 2.54466
+RECON old q 16 2.46146
+RECON old q 32 2.33249
+RECON old q 64 2.13863
+RECON old q 128 1.81053
+RECON old q 256 0.90164
+WARM q0_M64_dense 6.9
+WARM old_q16_M128_dense 15.7
+WARM old_q32_M192_dense 26.2
+WARM old_q64_M320_dense 38.4
+WARM old_q128_M576_dense 51.3
+WARM old_q256_M1088_dense 74.0
+WARM q0_M256_dense 78.2
+WARM old_q16_M256_dense 83.8
+WARM old_q32_M256_dense 89.8
+WARM old_q64_M256_dense 96.7
+WARM old_q128_M256_dense 103.9
+WARM fft_tight 105.0
+WARM fft_loose 105.1
+WARM nt1e-2_dt01 106.0
+TIMED 0 2966.6
+TIMED 1 3059.2
+TIMED 2 3152.0
+Q-TRAJDIRS COMPLETE
+ALL-DONE

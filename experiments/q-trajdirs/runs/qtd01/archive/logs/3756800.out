@@ -1,0 +1,101 @@
+host=pax143 source_commit=59fa69b1ad0c88140fc9519d6dad74fa0570ad9c
+NVIDIA A100-PCIE-40GB, 40960 MiB
+10.235.106.26:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 90.3
+REFERENCE 1 165.8
+REFERENCE 2 270.1
+REFERENCE 3 366.4
+REFERENCE 4 448.8
+REFERENCE 5 522.8
+SNAPSHOTS 16.0
+DIRECTIONS old 1546.9 rank 512 hash_match False
+DIRECTIONS traj 27.0 rank 512 rows 1632
+DIRECTIONS prac 8.9 rank 306 rows 306
+COMPARISON done 2161.0
+ARM q0_M64_dense M 64 m None 0.3
+EQFIT q0_M64_eq m 256 valid True 7.3
+ARM q0_M64_eq M 64 m 256 13.9
+EQFIT q0_M64_eq_ret m 256 valid True 14.7
+ARM q0_M64_eq_ret M 64 m 256 15.5
+ARM q0_M256_dense M 256 m None 1.5
+EQFIT q0_M256_eq m 1024 valid True 233.3
+ARM q0_M256_eq M 256 m 1024 241.0
+ARM old_q16_M128_dense M 128 m None 1.3
+EQFIT old_q16_M128_eq m 512 valid True 58.7
+ARM old_q16_M128_eq M 128 m 512 65.8
+ARM prac_q16_M128_dense M 128 m None 0.0
+EQFIT prac_q16_M128_eq m 512 valid True 58.1
+ARM prac_q16_M128_eq M 128 m 512 59.4
+ARM traj_q16_M128_dense M 128 m None 0.0
+EQFIT traj_q16_M128_eq m 512 valid True 60.6
+ARM traj_q16_M128_eq M 128 m 512 62.1
+EQFIT old_q16_M256_eq m 1024 valid True 197.5
+ARM old_q16_M256_eq M 256 m 1024 199.1
+EQFIT traj_q16_M256_eq m 1024 valid True 188.7
+ARM traj_q16_M256_eq M 256 m 1024 190.3
+EQFIT prac_q32_M192_eq m 768 valid True 104.9
+ARM prac_q32_M192_eq M 192 m 768 113.2
+EQFIT traj_q32_M192_eq m 768 valid True 98.2
+ARM traj_q32_M192_eq M 192 m 768 99.7
+EQFIT traj_q32_M256_eq m 1024 valid True 206.5
+ARM traj_q32_M256_eq M 256 m 1024 208.2
+EQFIT old_q64_M256_eq m 1024 valid True 187.7
+ARM old_q64_M256_eq M 256 m 1024 189.6
+EQFIT traj_q64_M256_eq m 1024 valid True 182.9
+ARM traj_q64_M256_eq M 256 m 1024 184.5
+ARM old_q64_M320_dense M 320 m None 1.8
+EQFIT old_q64_M320_eq m 1280 valid True 263.3
+ARM old_q64_M320_eq M 320 m 1280 271.0
+ARM prac_q64_M320_dense M 320 m None 0.0
+EQFIT prac_q64_M320_eq m 1280 valid True 279.5
+ARM prac_q64_M320_eq M 320 m 1280 281.3
+ARM traj_q64_M320_dense M 320 m None 0.0
+EQFIT traj_q64_M320_eq m 1280 valid True 271.2
+ARM traj_q64_M320_eq M 320 m 1280 273.1
+EQFIT traj_q128_M256_eq m 1024 valid True 171.1
+ARM traj_q128_M256_eq M 256 m 1024 172.8
+EQFIT prac_q128_M576_eq m 2048 valid True 900.7
+ARM prac_q128_M576_eq M 576 m 2048 913.1
+EQFIT traj_q128_M576_eq m 2048 valid True 797.2
+ARM traj_q128_M576_eq M 576 m 2048 799.9
+ARM prac_q256_M1088_dense M 1088 m None 4.2
+EQFIT prac_q256_M1088_eq m 2048 valid True 1581.4
+ARM prac_q256_M1088_eq M 1088 m 2048 1588.3
+ARM traj_q256_M1088_dense M 1088 m None 0.0
+EQFIT traj_q256_M1088_eq m 2048 valid True 1211.4
+ARM traj_q256_M1088_eq M 1088 m 2048 1215.4
+RECON shared q 0 2.54466
+RECON traj q 16 2.478
+RECON traj q 32 2.27107
+RECON traj q 64 2.07636
+RECON traj q 128 1.81717
+RECON traj q 256 1.06814
+RECON prac q 16 2.42409
+RECON prac q 32 2.28565
+RECON prac q 64 2.06691
+RECON prac q 128 1.743
+RECON prac q 256 0.9492
+RECON old q 16 2.46146
+RECON old q 64 2.13863
+WARM q0_M64_eq 3.9
+WARM traj_q16_M128_eq 11.6
+WARM traj_q32_M192_eq 20.2
+WARM traj_q64_M320_eq 29.8
+WARM traj_q128_M576_eq 39.9
+WARM traj_q256_M1088_eq 51.0
+WARM q0_M64_dense 53.6
+WARM traj_q16_M128_dense 59.3
+WARM traj_q64_M320_dense 66.3
+WARM traj_q256_M1088_dense 78.2
+WARM q0_M256_eq 82.5
+WARM traj_q16_M256_eq 87.8
+WARM traj_q32_M256_eq 93.5
+WARM traj_q64_M256_eq 99.1
+WARM traj_q128_M256_eq 104.7
+WARM prac_q16_M128_eq 107.5
+WARM prac_q32_M192_eq 110.5
+WARM prac_q64_M320_eq 113.5
+WARM prac_q128_M576_eq 116.8
+WARM prac_q256_M1088_eq 121.7

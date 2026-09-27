@@ -1,0 +1,132 @@
+host=pax050 source_commit=f76ec2ff9acd1cfad96dcb0bda733b29a20b1be6
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.30:/projects/paralab  4.6T  4.2T  434G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 78.7
+REFERENCE 1 144.4
+REFERENCE 2 235.0
+REFERENCE 3 318.6
+REFERENCE 4 390.0
+REFERENCE 5 454.2
+SNAPSHOTS 15.1
+DIRECTIONS audited 1118.1 rank 512 hash_match False
+DIRECTIONS flat 1242.4 identical True
+ARM q0_m4_dense_joint M 64 m None 1.0
+ARM q0_m4_dense_varpro M 64 m None 0.0
+ARM q0_m4_dense_block M 64 m None 0.0
+ARM q0_m4_dense_alt M 64 m None 0.0
+ARM q16_m4_dense_joint M 128 m None 1.1
+ARM q16_m4_dense_varpro M 128 m None 0.0
+ARM q16_m4_dense_block M 128 m None 0.0
+ARM q16_m4_dense_alt M 128 m None 0.0
+ARM q64_m4_dense_joint M 320 m None 1.5
+ARM q64_m4_dense_varpro M 320 m None 0.0
+ARM q64_m4_dense_block M 320 m None 0.0
+ARM q64_m4_dense_alt M 320 m None 0.0
+ARM q128_m4_dense_joint M 576 m None 2.0
+ARM q128_m4_dense_block M 576 m None 0.0
+ARM q128_m4_dense_alt M 576 m None 0.0
+ARM q0_m4_eq_varpro M 64 m 256 19.8
+ARM q16_m4_eq_joint M 128 m 512 227.9
+ARM q16_m4_eq_varpro M 128 m 512 0.0
+ARM q16_m4_eq_varpro_bnd M 128 m 512 84.6
+ARM q32_m4_dense_block M 192 m None 1.2
+ARM q256_m4_dense_block M 1088 m None 3.3
+ARM q512_m4_dense_block M 2112 m None 5.8
+ARM q0_m2_dense_block M 32 m None 0.9
+ARM q16_m2_dense_block M 64 m None 0.1
+ARM q32_m2_dense_block M 96 m None 1.0
+ARM q64_m2_dense_block M 160 m None 1.1
+ARM q128_m2_dense_block M 288 m None 1.4
+ARM q256_m2_dense_block M 544 m None 1.9
+ARM q512_m2_dense_block M 1056 m None 3.3
+ARM q256_m2_eq_block M 544 m 1176 313.7
+ARM q512_m2_eq_block M 1056 m 1209 310.6
+ARM q0_m256_dense_block M 256 m None 1.3
+ARM q16_m256_dense_block M 256 m None 0.5
+ARM q32_m256_dense_block M 256 m None 0.5
+ARM q64_m256_dense_block M 256 m None 0.5
+ARM q128_m256_dense_block M 256 m None 0.5
+ARM q0_m256_eq_block M 256 m 1010 311.1
+ARM q16_m256_eq_block M 256 m 1000 304.9
+ARM q32_m256_eq_block M 256 m 1024 311.0
+ARM q64_m256_eq_block M 256 m 1010 303.9
+ARM q128_m256_eq_block M 256 m 999 310.0
+ARM q0_m256_dense_varpro M 256 m None 0.0
+ARM q16_m256_dense_varpro M 256 m None 0.0
+ARM q32_m256_dense_varpro M 256 m None 0.0
+ARM q64_m256_dense_varpro M 256 m None 0.0
+ARM q128_m256_dense_varpro M 256 m None 0.0
+ARM q0_m256_eq_varpro M 256 m 1010 0.0
+ARM q16_m256_eq_varpro M 256 m 1000 0.0
+ARM q32_m256_eq_varpro M 256 m 1024 0.0
+ARM q64_m256_eq_varpro M 256 m 1010 0.0
+ARM q128_m256_eq_varpro M 256 m 999 0.0
+ARM q0_Mmax_dense_block M 2112 m None 4.7
+RECON q 0 2.54466
+RECON q 16 2.46146
+RECON q 64 2.13863
+RECON q 128 1.81053
+RECON q 32 2.33249
+RECON q 256 0.90164
+RECON q 512 0.39184
+WARM q0_m4_dense_joint 5.9
+WARM q0_m4_dense_varpro 8.4
+WARM q0_m4_dense_block 10.7
+WARM q0_m4_dense_alt 13.0
+WARM q16_m4_dense_joint 19.0
+WARM q16_m4_dense_varpro 31.5
+WARM q16_m4_dense_block 35.0
+WARM q16_m4_dense_alt 40.3
+WARM q64_m4_dense_joint 47.8
+WARM q64_m4_dense_varpro 68.2
+WARM q64_m4_dense_block 72.4
+WARM q64_m4_dense_alt 78.3
+WARM q128_m4_dense_joint 87.3
+WARM q128_m4_dense_block 95.9
+WARM q128_m4_dense_alt 106.9
+WARM q0_m4_eq_varpro 110.2
+WARM q16_m4_eq_joint 114.0
+WARM q16_m4_eq_varpro 120.0
+WARM q16_m4_eq_varpro_bnd 123.9
+WARM q32_m4_dense_block 133.0
+WARM q256_m4_dense_block 152.3
+WARM q512_m4_dense_block 166.7
+WARM q0_m2_dense_block 170.1
+WARM q16_m2_dense_block 174.8
+WARM q32_m2_dense_block 179.9
+WARM q64_m2_dense_block 186.5
+WARM q128_m2_dense_block 193.3
+WARM q256_m2_dense_block 206.3
+WARM q512_m2_dense_block 214.9
+WARM q256_m2_eq_block 221.0
+WARM q512_m2_eq_block 225.5
+WARM q0_m256_dense_block 229.2
+WARM q16_m256_dense_block 234.1
+WARM q32_m256_dense_block 239.3
+WARM q64_m256_dense_block 245.4
+WARM q128_m256_dense_block 251.7
+WARM q0_m256_eq_block 255.3
+WARM q16_m256_eq_block 259.7
+WARM q32_m256_eq_block 264.3
+WARM q64_m256_eq_block 268.6
+WARM q128_m256_eq_block 273.2
+WARM q0_m256_dense_varpro 275.8
+WARM q16_m256_dense_varpro 283.5
+WARM q32_m256_dense_varpro 293.7
+WARM q64_m256_dense_varpro 308.3
+WARM q128_m256_dense_varpro 358.8
+WARM q0_m256_eq_varpro 360.9
+WARM q16_m256_eq_varpro 366.2
+WARM q32_m256_eq_varpro 372.7
+WARM q64_m256_eq_varpro 380.4
+WARM q128_m256_eq_varpro 395.9
+WARM q0_Mmax_dense_block 400.3
+WARM fft_tight 401.3
+WARM nt1e-2 401.3
+TIMED 0 7088.2
+TIMED 1 7940.0
+TIMED 2 8792.3
+CHEAP LADDER COMPLETE
+ALL-DONE

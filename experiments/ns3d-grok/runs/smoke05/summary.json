@@ -1,0 +1,93 @@
+{
+  "config": {
+    "dev_seed": 202609202,
+    "dt_truth": 0.01,
+    "eval_cases": 2,
+    "eval_seed": 202609202,
+    "final_seed_closed": 202609203,
+    "frozen_dt": 0.01,
+    "frozen_rank": 64,
+    "gram_block": 512,
+    "horizon": 0.05,
+    "n": 8,
+    "train_cases": 4,
+    "train_seed": 202609201
+  },
+  "device": "[CudaDevice(id=0)]",
+  "elapsed_seconds": 3.244957685470581,
+  "eval_parameter_sha256": "7407b42f4a86527baea26585628530adac3b8297651e8c0229e2aeccf75a308c",
+  "final_cohort_opened": false,
+  "fom": {},
+  "frozen_dt": 0.01,
+  "frozen_rank": 4,
+  "job_id": null,
+  "pod_orth_error": 4.86694018420053e-14,
+  "rom": {
+    "errors": [
+      [
+        0.08364866405205396,
+        0.08287111904218862,
+        0.10829820870544198,
+        0.1431878412138621,
+        0.18533858244202908,
+        0.2345085619628753
+      ],
+      [
+        0.050580358934234355,
+        0.05075432773952983,
+        0.06752883672615832,
+        0.0902669390277558,
+        0.11684406733064356,
+        0.14676742409718518
+      ]
+    ],
+    "median_ms": 3.206670517101884,
+    "repetition_ms": [
+      [
+        3.3836469519883394,
+        3.0296940822154284
+      ],
+      [
+        2.7823960408568382,
+        3.8547220174223185
+      ]
+    ],
+    "stats": {
+      "all_times_median_of_case_max": 0.19063799303003026,
+      "all_times_worst": 0.2345085619628753,
+      "cases": 2,
+      "cases_evolved_over_target": 2,
+      "cases_grew": 2,
+      "cases_initial_over_target": 2,
+      "evolved_mean": 0.19063799303003026,
+      "evolved_median": 0.19063799303003026,
+      "evolved_worst": 0.2345085619628753,
+      "initial_median": 0.06711451149314415,
+      "initial_worst": 0.08364866405205396,
+      "max_evolved_minus_initial": 0.15085989791082136,
+      "median_evolved_minus_initial": 0.1235234815368861,
+      "per_time_median": [
+        0.06711451149314415,
+        0.06681272339085922,
+        0.08791352271580015,
+        0.11672739012080896,
+        0.1510913248863363,
+        0.19063799303003026
+      ],
+      "per_time_worst": [
+        0.08364866405205396,
+        0.08287111904218862,
+        0.10829820870544198,
+        0.1431878412138621,
+        0.18533858244202908,
+        0.2345085619628753
+      ],
+      "times": 6
+    }
+  },
+  "schema": "ns3d-grok-diag05-v1",
+  "selection": "Fastest diag04 development setting with zero cases over 5%: rank 64, dt=0.01.",
+  "smoke": true,
+  "source_commit": null,
+  "train_parameter_sha256": "8162d2837d495f26bec736889cc255ed7248ca3957aadfcf25826450dad0ac63"
+}

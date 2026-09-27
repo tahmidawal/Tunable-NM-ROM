@@ -1,0 +1,212 @@
+{
+  "config": {
+    "dev_cases": 2,
+    "dev_seed": 202609202,
+    "dt_truth": 0.01,
+    "final_seed_closed": 202609203,
+    "gram_block": 4,
+    "horizon": 0.05,
+    "n": 8,
+    "ranks": [
+      4
+    ],
+    "rollout_dts": [
+      0.01
+    ],
+    "target_relative": 0.05,
+    "timing_cases": 1,
+    "timing_repetitions": 2,
+    "train_cases": 4,
+    "train_seed": 202609201
+  },
+  "device": "[CudaDevice(id=0)]",
+  "final_cohort_opened": false,
+  "job_id": null,
+  "pod": {
+    "available_rank": 4,
+    "orth_error": 5.017861126610512e-14,
+    "spectrum_head": [
+      507.71453529337424,
+      12.819987788322656,
+      1.649749663315414,
+      0.3956215886770917
+    ]
+  },
+  "ranks": {
+    "4": {
+      "interval": {
+        "0p0100": {
+          "dt": 0.01,
+          "errors": [
+            [
+              0.08364866405205391,
+              0.08287111904218865,
+              0.1082982087054421,
+              0.14318784121386235,
+              0.18533858244202953,
+              0.2345085619628763
+            ],
+            [
+              0.050580358934234196,
+              0.050754327739529766,
+              0.06752883672615834,
+              0.0902669390277558,
+              0.11684406733064365,
+              0.1467674240971854
+            ]
+          ],
+          "max_recentering_shift": 0.009826671142466919,
+          "stats": {
+            "all_times_median_of_case_max": 0.19063799303003087,
+            "all_times_worst": 0.2345085619628763,
+            "cases": 2,
+            "cases_evolved_over_target": 2,
+            "cases_grew": 2,
+            "cases_initial_over_target": 2,
+            "evolved_mean": 0.19063799303003087,
+            "evolved_median": 0.19063799303003087,
+            "evolved_worst": 0.2345085619628763,
+            "initial_median": 0.06711451149314406,
+            "initial_worst": 0.08364866405205391,
+            "max_evolved_minus_initial": 0.15085989791082238,
+            "median_evolved_minus_initial": 0.1235234815368868,
+            "per_time_median": [
+              0.06711451149314406,
+              0.06681272339085921,
+              0.08791352271580022,
+              0.11672739012080907,
+              0.1510913248863366,
+              0.19063799303003087
+            ],
+            "per_time_worst": [
+              0.08364866405205391,
+              0.08287111904218865,
+              0.1082982087054421,
+              0.14318784121386235,
+              0.18533858244202953,
+              0.2345085619628763
+            ],
+            "times": 6
+          }
+        }
+      },
+      "rom": {
+        "0p0100": {
+          "dt": 0.01,
+          "errors": [
+            [
+              0.08364866405205391,
+              0.08287111904218865,
+              0.1082982087054421,
+              0.14318784121386235,
+              0.18533858244202953,
+              0.2345085619628763
+            ],
+            [
+              0.050580358934234196,
+              0.050754327739529766,
+              0.06752883672615834,
+              0.0902669390277558,
+              0.11684406733064365,
+              0.1467674240971854
+            ]
+          ],
+          "max_recentering_shift": 0.009826671142466919,
+          "stats": {
+            "all_times_median_of_case_max": 0.19063799303003087,
+            "all_times_worst": 0.2345085619628763,
+            "cases": 2,
+            "cases_evolved_over_target": 2,
+            "cases_grew": 2,
+            "cases_initial_over_target": 2,
+            "evolved_mean": 0.19063799303003087,
+            "evolved_median": 0.19063799303003087,
+            "evolved_worst": 0.2345085619628763,
+            "initial_median": 0.06711451149314406,
+            "initial_worst": 0.08364866405205391,
+            "max_evolved_minus_initial": 0.15085989791082238,
+            "median_evolved_minus_initial": 0.1235234815368868,
+            "per_time_median": [
+              0.06711451149314406,
+              0.06681272339085921,
+              0.08791352271580022,
+              0.11672739012080907,
+              0.1510913248863366,
+              0.19063799303003087
+            ],
+            "per_time_worst": [
+              0.08364866405205391,
+              0.08287111904218865,
+              0.1082982087054421,
+              0.14318784121386235,
+              0.18533858244202953,
+              0.2345085619628763
+            ],
+            "times": 6
+          }
+        }
+      },
+      "truth": {
+        "0p0100": {
+          "dt": 0.01,
+          "errors": [
+            [
+              0.08364866405205391,
+              0.0828711190421886,
+              0.08206801991266838,
+              0.08233111675084027,
+              0.08356602909458845,
+              0.08565826553614724
+            ],
+            [
+              0.050580358934234196,
+              0.05075432773952965,
+              0.04999987985557673,
+              0.05020546748431303,
+              0.05131422200025032,
+              0.05323805784853609
+            ]
+          ],
+          "max_recentering_shift": 0.0,
+          "stats": {
+            "all_times_median_of_case_max": 0.06944816169234166,
+            "all_times_worst": 0.08565826553614724,
+            "cases": 2,
+            "cases_evolved_over_target": 2,
+            "cases_grew": 2,
+            "cases_initial_over_target": 2,
+            "evolved_mean": 0.06944816169234166,
+            "evolved_median": 0.06944816169234166,
+            "evolved_worst": 0.08565826553614724,
+            "initial_median": 0.06711451149314406,
+            "initial_worst": 0.08364866405205391,
+            "max_evolved_minus_initial": 0.002657698914301891,
+            "median_evolved_minus_initial": 0.002333650199197606,
+            "per_time_median": [
+              0.06711451149314406,
+              0.06681272339085913,
+              0.06603394988412256,
+              0.06626829211757665,
+              0.06744012554741938,
+              0.06944816169234166
+            ],
+            "per_time_worst": [
+              0.08364866405205391,
+              0.0828711190421886,
+              0.08206801991266838,
+              0.08233111675084027,
+              0.08356602909458845,
+              0.08565826553614724
+            ],
+            "times": 6
+          }
+        }
+      }
+    }
+  },
+  "schema": "ns3d-grok-diag03-v1",
+  "scheme": "Each substep is the startup step of make_dense_galerkin_run, then the field is re-centered. This is not multistep CNAB2. rom uses the ROM centroid; truth uses the true centroid; interval re-centers only at the saved output times.",
+  "shift_composition_gap": 5.551115123125783e-17,
+  "smoke": true,
+  "source_commit": null
+}

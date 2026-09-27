@@ -1,0 +1,17 @@
+E0916 14:30:04.542400 1239367 slow_operation_alarm.cc:73] 
+********************************
+[Compiling module input_reduce_fusion.4 for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+E0916 14:48:09.442359 1239362 slow_operation_alarm.cc:140] The operation took 20m4.900026579s
+
+********************************
+[Compiling module input_reduce_fusion.4 for GPU] Very slow compile? If you want to file a bug, run with envvar XLA_FLAGS=--xla_dump_to=/tmp/foo and attach the results.
+********************************
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/q_ridge_20260916/qrg303/experiments/q-ridge/q_eqcert.py", line 547, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/q_ridge_20260916/qrg303/experiments/q-ridge/q_eqcert.py", line 361, in main
+    rk2, ri2 = rules[sk]
+               ~~~~~^^^^
+KeyError: (0, 'static', 256, 'gpu')

@@ -1,0 +1,43 @@
+host=pax106 source_commit=e75221f330140fb3fa1d75c102e292a607790ff8
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.32:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 78.0
+REFERENCE 1 143.7
+REFERENCE 2 234.6
+REFERENCE 3 318.3
+REFERENCE 4 389.8
+REFERENCE 5 454.2
+SNAPSHOTS 15.1
+DIRECTIONS 1216.0 rank 512
+COLLECT q 0 15600 5200 23.7
+COLLECT q 16 15600 5200 27.4
+COLLECT q 32 15600 5200 32.5
+COLLECT q 64 15600 5200 43.8
+COLLECT q 128 15600 5200 66.4
+COLLECT q 256 15600 5200 134.1
+RULE q 0 static m 256 fit 6.854e-03 rho_max 0.2407 p95 0.2073 certified False 12.1
+RULE q 0 reachable m 1024 fit 4.579e-05 rho_max 0.0153 p95 0.0088 certified True 77.7
+RULE q 0 reachable m 1521 fit 7.832e-06 rho_max 0.0261 p95 0.0083 certified True 134.0
+RULE q 16 static m 512 fit 1.539e-03 rho_max 0.1279 p95 0.0523 certified False 53.0
+RULE q 16 reachable m 1024 fit 1.901e-04 rho_max 0.0935 p95 0.0273 certified True 139.5
+RULE q 16 reachable m 2048 fit 1.920e-05 rho_max 0.0452 p95 0.0041 certified True 635.4
+RULE q 32 static m 768 fit 6.273e-04 rho_max 0.1482 p95 0.0214 certified False 109.0
+RULE q 32 reachable m 1024 fit 2.888e-04 rho_max 0.0533 p95 0.0226 certified True 164.2
+RULE q 32 reachable m 2048 fit 2.661e-05 rho_max 0.0668 p95 0.0120 certified True 655.8
+RULE q 64 static m 1280 fit 2.434e-04 rho_max 0.1439 p95 0.0235 certified False 278.1
+RULE q 64 reachable m 1024 fit 7.118e-04 rho_max 0.0531 p95 0.0230 certified True 166.0
+RULE q 64 reachable m 2048 fit 7.543e-05 rho_max 0.1120 p95 0.0172 certified True 638.3
+RULE q 128 static m 2048 fit 7.161e-05 rho_max 0.2194 p95 0.0677 certified False 839.5
+RULE q 128 reachable m 1024 fit 1.618e-03 rho_max 0.2786 p95 0.2246 certified False 235.7
+RULE q 128 reachable m 2048 fit 1.037e-04 rho_max 0.1908 p95 0.0518 certified False 803.3
+RULE q 256 static m 2047 fit 1.493e-04 rho_max 0.4669 p95 0.4293 certified False 1536.4
+RULE q 256 reachable m 1024 fit 4.009e-02 rho_max 0.5731 p95 0.5370 certified False 105.5
+RULE q 256 reachable m 2048 fit 3.078e-04 rho_max 0.1678 p95 0.0957 certified False 973.2
+CHOICE q 0 m 1024 primary
+CHOICE q 16 m 1024 primary
+CHOICE q 32 m 1024 primary
+CHOICE q 64 m 1024 primary
+CHOICE q 128 m 2048 secondary
+CHOICE q 256 m 2048 secondary

@@ -1,0 +1,72 @@
+host=pax106 source_commit=5fc6099127d451b2a446d6655e3060a1798b089a
+NVIDIA A100 80GB PCIe, 81920 MiB
+10.235.106.23:/projects/paralab  4.6T  4.2T  437G  91% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+REFERENCE 0 78.9
+REFERENCE 1 144.6
+REFERENCE 2 235.4
+REFERENCE 3 319.0
+REFERENCE 4 390.6
+REFERENCE 5 454.9
+SNAPSHOTS 15.4
+DIRECTIONS 1551.6 rank 512 hash_match False
+EQFIT q0_m4_eq_l0_ret M 64 m 256 target 256 valid True 13.6
+ARM q0_m4_eq_l0_ret M 64 m 256 sigma None 21.2
+ARM q0_m4_dense_l0 M 64 m None sigma None 0.1
+EQFIT q0_m4_eq_l0 M 64 m 256 target 256 valid True 6.5
+ARM q0_m4_eq_l0 M 64 m 256 sigma None 7.1
+ARM q0_m8_dense_l0 M 128 m None sigma None 1.1
+EQFIT q0_m8_eq_l0 M 128 m 512 target 512 valid True 54.9
+ARM q0_m8_eq_l0 M 128 m 512 sigma None 61.3
+ARM q0_m16_dense_l0 M 256 m None sigma None 1.3
+EQFIT q0_m16_eq_l0 M 256 m 1024 target 1024 valid True 263.7
+ARM q0_m16_eq_l0 M 256 m 1024 sigma None 270.6
+ARM q16_m4_dense_l0 M 128 m None sigma 0.9564734749293257 0.9
+EQFIT q16_m4_eq_l0 M 128 m 512 target 512 valid True 62.1
+ARM q16_m4_eq_l0 M 128 m 512 sigma 0.9564734749293257 63.9
+ARM q16_m8_dense_l0 M 256 m None sigma 0.9908034442512861 1.3
+EQFIT q16_m8_eq_l0 M 256 m 1024 target 1024 valid True 218.4
+ARM q16_m8_eq_l0 M 256 m 1024 sigma 0.9908034442512861 219.8
+ARM q16_m16_dense_l0 M 512 m None sigma 0.9974894459950578 2.7
+EQFIT q16_m16_eq_l0 M 512 m 2048 target 2048 valid True 1080.0
+ARM q16_m16_eq_l0 M 512 m 2048 sigma 0.9974894459950578 1088.7
+ARM q64_m4_dense_l0 M 320 m None sigma 0.9990727118043388 2.3
+EQFIT q64_m4_eq_l0 M 320 m 1280 target 1280 valid True 265.7
+ARM q64_m4_eq_l0 M 320 m 1280 sigma 0.9990727118043388 273.1
+ARM q64_m8_dense_l0 M 640 m None sigma 0.999753324748723 3.2
+EQFIT q64_m8_eq_l0 M 640 m 2048 target 2048 valid True 830.5
+ARM q64_m8_eq_l0 M 640 m 2048 sigma 0.999753324748723 835.1
+ARM q64_m16_dense_l0 M 1280 m None sigma 0.9999310063098092 4.4
+EQFIT q64_m16_eq_l0 M 1280 m 2048 target 2048 valid True 1480.6
+ARM q64_m16_eq_l0 M 1280 m 2048 sigma 0.9999310063098092 1487.0
+RECON q 0 2.54466
+RECON q 16 2.46146
+RECON q 64 2.13863
+WARM q0_m4_eq_l0_ret 6.4
+WARM q0_m4_dense_l0 9.8
+WARM q0_m4_eq_l0 12.2
+WARM q0_m8_dense_l0 16.1
+WARM q0_m8_eq_l0 20.0
+WARM q0_m16_dense_l0 24.0
+WARM q0_m16_eq_l0 27.6
+WARM q16_m4_dense_l0 35.4
+WARM q16_m4_eq_l0 39.8
+WARM q16_m8_dense_l0 45.1
+WARM q16_m8_eq_l0 49.5
+WARM q16_m16_dense_l0 55.6
+WARM q16_m16_eq_l0 60.4
+WARM q64_m4_dense_l0 71.5
+WARM q64_m4_eq_l0 76.3
+WARM q64_m8_dense_l0 83.9
+WARM q64_m8_eq_l0 88.6
+WARM q64_m16_dense_l0 96.9
+WARM q64_m16_eq_l0 101.0
+WARM fft_tight 102.0
+WARM fft_loose 102.1
+WARM nt1e-2_dt01 103.0
+TIMED 0 6689.8
+TIMED 1 6761.7
+TIMED 2 6833.9
+Q-RIDGE COMPLETE
+ALL-DONE

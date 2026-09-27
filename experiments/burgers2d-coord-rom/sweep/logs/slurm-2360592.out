@@ -1,0 +1,18 @@
+jax_backend=gpu
+jax_backend=gpu
+N=128 (16384 nodes x 51 times), film 120000 steps / grid-tied 40000, n_train=512 traj, n_freq=32 (Nyquist-capped), t_freq=8, newton_iters=8
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 51s, max Newton rel residual 9.99e-13
+  POD: 26112 snapshots (stride 1), top-64 ortho dev 1.1e-12
+  POD floors: r1=7.506e-01  r2=6.168e-01  r4=3.979e-01  r6=2.884e-01  r8=2.161e-01  r12=1.470e-01  r16=1.055e-01  r24=6.717e-02  r32=4.452e-02  r48=2.399e-02  r64=1.479e-02
+  grid-tied (26648 params, 40000 steps, 123s): 8.499e-02
+  film params: 468161
+  step       0  val 1.083e+00  [7s]
+  step   20000  val 1.398e-03  [1029s]
+  step   40000  val 2.925e-04  [2053s]
+  step   60000  val 7.747e-05  [3078s]
+  step   80000  val 3.694e-05  [4103s]
+  step  100000  val 2.287e-05  [5128s]
+  trained 120000 steps in 6153s (best val loss 1.895e-05)
+RESULT N=128  film-coord=2.833e-03  grid-tied=8.499e-02  POD-6=2.884e-01  POD-24=6.717e-02
+wrote results + checkpoints
+@@@ TNROM burgers2d n128 DONE @@@

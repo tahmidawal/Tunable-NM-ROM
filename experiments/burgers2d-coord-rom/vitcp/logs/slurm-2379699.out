@@ -1,0 +1,22 @@
+jax_backend=gpu
+jax_backend=gpu
+ViT-CP arm N=128 rank=256 steps=120000 batch=16 lr=0.001 wd=0.002
+  FOM: 576 trajectories (50 Newton-implicit steps each) in 51s, max Newton rel residual 9.99e-13
+  [cp] step       0  loss 1.000e+00  [5s]
+  [cp] step   20000  loss 1.019e-02  [47s]
+  [cp] step   40000  loss 4.497e-03  [90s]
+  [cp] step   60000  loss 1.969e-03  [133s]
+  [cp] step   80000  loss 9.015e-04  [175s]
+  [cp] step  100000  loss 1.413e-03  [218s]
+  [cp] trained 120000 steps in 260s (final batch loss 1.925e-03)
+  [cp] params=198913  val rel-L2 = 5.547e-02
+  [lincp] step       0  loss 1.000e+00  [1s]
+  [lincp] step   20000  loss 1.154e-02  [46s]
+  [lincp] step   40000  loss 7.703e-03  [90s]
+  [lincp] step   60000  loss 5.332e-03  [135s]
+  [lincp] step   80000  loss 2.083e-03  [180s]
+  [lincp] step  100000  loss 1.962e-03  [224s]
+  [lincp] trained 120000 steps in 269s (final batch loss 1.598e-03)
+  [lincp] params=200449  val rel-L2 = 5.910e-02
+RESULT N=128  vitcp-cp=5.547e-02  vitcp-lincp=5.910e-02
+@@@ TNROM burgers2d vitcp n128 DONE @@@

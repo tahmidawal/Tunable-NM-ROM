@@ -1,0 +1,15 @@
+jax_backend=gpu
+jax_backend=gpu  DIAG_N=128
+chunk   0- 64: res max 3.687e-15  finite=True
+chunk  64-128: res max 3.699e-15  finite=True
+chunk 128-192: res max 3.317e-15  finite=True
+chunk 192-256: res max 3.522e-15  finite=True
+chunk 256-320: res max 3.727e-15  finite=True
+chunk 320-384: res max 3.695e-15  finite=True
+chunk 384-448: res max nan  finite=False
+chunk 448-512: res max 3.601e-15  finite=True
+chunk 512-576: res max 3.614e-15  finite=True
+BAD TRAJECTORIES: 1
+{'i': 421, 'cx': 0.30855027697765447, 'cy': 0.4183235775834824, 'w': 0.11760219342554587, 'a': 0.577664989102026, 'nu': 0.03890163805514161, 'first_bad_t': 41, 'umax_before': 0.26770839829345006}
+  res per step: 1.4e-15 1.3e-15 1.3e-15 1.3e-15 1.3e-15 1.3e-15 1.3e-15 1.3e-15 1.3e-15 1.3e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.5e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.4e-15 1.3e-15 1.4e-15 1.4e-15 nan nan nan nan nan nan nan nan nan nan
+@@@ TNROM burgers2d diag128 DONE @@@

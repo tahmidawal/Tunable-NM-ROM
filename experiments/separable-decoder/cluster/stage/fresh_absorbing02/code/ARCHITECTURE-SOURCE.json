@@ -1,0 +1,11 @@
+{
+  "quadratic_reference": {
+    "commit": "4dbe77cbb3a6269ee3894d264bbc4769799b1500",
+    "path": "experiments/separable-decoder/b3d_arch_quadratic.py",
+    "sha256": "3160328e7f62cb1cc3f680edb08610b5bc474a70dbc64fad2421cb6760b41708",
+    "use": "Read-only formula reference; independently implemented affine plus undoubled unique latent products. Fresh weights."
+  },
+  "mlp": "Fresh affine-skip two-hidden-layer SiLU implementation of the generic architecture.",
+  "spatial_bank": "Fresh coordinate network and fresh weights; deterministic coordinate-only Fourier lift, no POD spatial bank.",
+  "wave_dependencies": "None outside this fresh-wave-head cell. No prior wave code/data/checkpoint/gate imported."
+}

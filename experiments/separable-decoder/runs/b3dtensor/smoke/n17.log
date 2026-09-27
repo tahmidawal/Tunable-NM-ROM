@@ -1,0 +1,77 @@
+jax_backend=gpu device=cuda:0 B3D-TENSOR N=17 K=8 R=32 M=64 m=256 arms=['full', 'ex', 'tensor'] train=1 pilot=0 micro=0 reps=1 burn=1 stall=0.001
+  [mem start] device peak 0.0 GB (now 0.0, limit 121.7); host maxrss 0.8 GB
+  TEST truth: 2 traj, worst res 9.43e-13, min u 6.19e-18 [8s]
+  TRAIN truth: 80 traj [21s], worst res 1.00e-12, min u 1.30e-20, frac<=0 0.00e+00; kept 512 pool states, 16 D4 states
+  GATE F5_nonnegativity_train_val: 1.302e-20 PASS
+  [mem after_truth] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 1.5 GB
+  TRAIN in-job: 512 states x 3375 pool points, 400 steps, lr 0.001, p_sub 1024
+   train3d[b3d N=17 k=8 r=32] step      1/400  rel-MSE 1.057e+00  [14s]
+   train3d[b3d N=17 k=8 r=32] done: recon rel-L2 (training pool) mean 6.290e-01 max 9.687e-01 [19s]
+  [mem after_train] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 2.0 GB
+  [mem after_bank] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 2.1 GB
+  GATE D1_bank_vs_meshfree_numpy: 3.863e-16 PASS  | control 4.350e-01 fired=True
+  GATE D2_lineage_rlite: 6.271e-01 FAIL  | control 9.220e-01 fired=True
+  GATE D3_rank_of_A: 2.605e-03 PASS  | control 1.830e-03 fired=False
+  [mem after_D3] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 2.1 GB
+  GATE D4_heldout_oracle_validation: 6.589e-01 FAIL  | control 9.098e-01 fired=True
+  [mem after_D4] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 2.3 GB
+  NNLS-EQ exlin3d N=17 k=8 M=64 m=256: pool 3375 support 256 (+0 pad) rel fit 3.90e-02 (row p95 1.0e+00, max 7.2e+02) [10s]
+  GATE L_exlin_linear_vs_assembled: 5.274e-16 PASS  | control 3.943e-04 fired=False
+  GATE A_exlin_advection_direct: 0.000e+00 PASS  | control 5.661e-01 fired=True
+  GATE FOMR_fullgrid_weak_vs_fom_residual: 2.054e-15 PASS  | control 6.077e-03 fired=True
+  GATE TB_build_order: 0.000e+00 PASS  | control 1.000e+00 fired=True
+  GATE TA_algebraic_identity: 7.712e-16 PASS  | control 5.000e-01 fired=True
+  T0-decoded (recorded): 503 all-positive states; mismatch median 3.23e-16 max 2.62e-02; frac points u<=0 0.001%
+  GATE T0_scope_truth_upwind_eq_backward: 0.000e+00 PASS  | control 1.238e+00 fired=True
+  [mem after_tensor] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 2.6 GB
+  TQ (recorded): r rel median 6.76e-18 max 1.13e-17; J rel max 1.10e-17; states with u<=0 0/4
+  encoder: rel-MSE 2.251e-11 on 8 training pairs [1s]
+  GATE STEP_device_vs_eager: 2.776e-17 PASS  | control 1.496e-02 fired=True
+  GATE ROLL_device_vs_eager: 2.484e-15 PASS
+  [mem after_gates] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 2.6 GB
+  rep 0 (burn, order ['full', 'ex', 'tensor']) done [113s]
+  rep 1 (timed, order ['tensor', 'ex', 'full']) done [114s]
+  [mem after_arms] device peak 0.2 GB (now 0.0, limit 121.7); host maxrss 2.7 GB
+   ARM full    err 7.187501e-01 (max 7.932e-01)  e2e 110.96 ms = ic 6.87 + solve 104.08 + dec 0.95; attempts 564; {'budget': 24, 'stalled': 76}; censored 39 (opt max 9.3e-02); decoded states with u<=0 100.0%
+   ARM ex      err 7.199995e-01 (max 7.936e-01)  e2e 91.42 ms = ic 7.08 + solve 85.87 + dec 1.29; attempts 515; {'budget': 23, 'stalled': 77}; censored 41 (opt max 1.4e-01); decoded states with u<=0 100.0%
+   ARM tensor  err 7.187143e-01 (max 7.932e-01)  e2e 92.08 ms = ic 6.68 + solve 84.06 + dec 0.99; attempts 566; {'budget': 25, 'stalled': 75}; censored 39 (opt max 1.4e-01); decoded states with u<=0 100.0%
+  [ex vs full] err ratio 1.0017; field rel diff max 3.55e-02; latent dev max 7.94e-02; stop hist identical False; attempts identical False
+  [tensor vs full] err ratio 1.0000; field rel diff max 2.09e-03; latent dev max 3.99e-03; stop hist identical False; attempts identical False; E1 False
+  [full vs ex] err ratio 0.9983; field rel diff max 3.51e-02; latent dev max 7.94e-02; stop hist identical False; attempts identical False
+  [tensor vs ex] err ratio 0.9982; field rel diff max 3.51e-02; latent dev max 7.94e-02; stop hist identical False; attempts identical False
+  TR (recorded): 315 candidates; r rel max 8.80e-03; J rel max 1.92e-04; decision agreement 1.0000; concern True
+  FOM ladders traj 0 done [133s]
+  FOM ladders traj 1 done [138s]
+   FOM newton ntol=1e+00 lt=5e-02: err 7.236e-01  27.05 ms  iters 0
+   FOM newton ntol=1e+00 lt=5e-01: err 7.236e-01  26.65 ms  iters 0
+   FOM newton ntol=3e-01 lt=1e-02: err 7.236e-01  26.34 ms  iters 0
+   FOM newton ntol=3e-01 lt=1e-01: err 7.236e-01  26.24 ms  iters 0
+   FOM newton ntol=1e-01 lt=5e-03: err 7.236e-01  26.32 ms  iters 0
+   FOM newton ntol=1e-01 lt=5e-02: err 7.236e-01  26.11 ms  iters 0
+   FOM newton ntol=3e-02 lt=2e-03: err 4.325e-01  38.91 ms  iters 6
+   FOM newton ntol=3e-02 lt=1e-02: err 4.325e-01  35.51 ms  iters 6
+   FOM newton ntol=1e-02 lt=5e-04: err 2.679e-04  111.76 ms  iters 50
+   FOM newton ntol=1e-02 lt=5e-03: err 2.909e-04  100.05 ms  iters 50
+   FOM newton ntol=3e-03 lt=2e-04: err 2.696e-04  122.89 ms  iters 50
+   FOM newton ntol=3e-03 lt=2e-03: err 2.675e-04  104.50 ms  iters 50
+   FOM newton ntol=1e-03 lt=5e-05: err 2.692e-04  125.47 ms  iters 50
+   FOM newton ntol=1e-03 lt=5e-04: err 2.679e-04  112.14 ms  iters 50
+   FOM newton ntol=1e-04 lt=5e-06: err 1.682e-04  134.62 ms  iters 52
+   FOM newton ntol=1e-04 lt=5e-05: err 1.684e-04  130.66 ms  iters 52
+   FOM defect ntol=1e+00 k=60: err 7.236e-01  26.77 ms  iters 0
+   FOM defect ntol=3e-01 k=60: err 7.236e-01  26.67 ms  iters 0
+   FOM defect ntol=1e-01 k=60: err 7.236e-01  26.54 ms  iters 0
+   FOM defect ntol=3e-02 k=60: err 3.518e-02  47.31 ms  iters 42
+   FOM defect ntol=1e-02 k=60: err 5.944e-03  49.31 ms  iters 46
+   FOM defect ntol=3e-03 k=60: err 1.114e-03  50.20 ms  iters 49
+   FOM defect ntol=1e-03 k=60: err 3.508e-04  50.91 ms  iters 50
+   FOM defect ntol=1e-04 k=60: err 4.266e-05  52.51 ms  iters 53
+   FOM defect ntol=0e+00 k=0: err 7.236e-01  26.75 ms  iters 0
+   FOM defect ntol=0e+00 k=1: err 2.886e+03  50.79 ms  iters 50
+   FOM defect ntol=0e+00 k=2: err 9.613e-05  74.69 ms  iters 100
+  [mem after_fom] device peak 0.2 GB (now 0.1, limit 121.7); host maxrss 2.9 GB
+  MATCHED paired [full]: ROM 677.11 ms vs newton(ntol=3e-02, err 4.33e-01) 35.74 ms -> median 0.06x, min 0.04x, boot lower95 0.04; bracket True; speed win False
+  MATCHED paired [ex]: ROM 608.33 ms vs newton(ntol=3e-02, err 4.33e-01) 36.27 ms -> median 0.07x, min 0.05x, boot lower95 0.05; bracket True; speed win False
+  MATCHED paired [tensor]: ROM 654.58 ms vs newton(ntol=3e-02, err 4.33e-01) 35.53 ms -> median 0.06x, min 0.04x, boot lower95 0.04; bracket True; speed win False
+DONE -> runs/b3dtensor/smoke/n17.json [151s]
+driver exit 0

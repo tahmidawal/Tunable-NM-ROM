@@ -1,0 +1,17 @@
+{
+  "capacity_scores": {
+    "small": 0.02596791364827669,
+    "medium": 0.023122104552393222,
+    "large": 0.022810934037589572
+  },
+  "refinement_learning_rate": 0.0003,
+  "per_capacity_wall_seconds": 3000.0,
+  "trained": [
+    "small",
+    "medium",
+    "large",
+    "refine"
+  ],
+  "stopped_by_signal": false,
+  "design": "equal wall budget per capacity with early stopping; epoch counts differ by design"
+}

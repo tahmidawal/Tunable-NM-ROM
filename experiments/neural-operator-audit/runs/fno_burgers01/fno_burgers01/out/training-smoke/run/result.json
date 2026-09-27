@@ -1,0 +1,42 @@
+{
+  "complete": true,
+  "pde": "burgers",
+  "best_epoch": 0,
+  "epochs_completed": 2,
+  "stopped_by_signal": false,
+  "stopped_by_wall_budget": false,
+  "validation": {
+    "errors": [
+      [
+        0.0,
+        0.7155382968221653,
+        0.5828595859714164,
+        1.0446043128755762,
+        1.4869421286839342,
+        0.8801782551742579
+      ],
+      [
+        0.0,
+        0.7256670142377202,
+        0.5908018813894131,
+        1.0469289670174557,
+        1.5076729884467266,
+        0.8906205172077617
+      ]
+    ],
+    "mean_case_max": 1.4973075585653304,
+    "median_case_max": 1.4973075585653304,
+    "worst_case_max": 1.5076729884467266,
+    "p95_case_max": 1.506636445458587,
+    "above_threshold_counts": {
+      "0.01": 2,
+      "0.02": 2,
+      "0.05": 2
+    }
+  },
+  "parameter_tensor_elements": 3829,
+  "real_parameter_count": 6901,
+  "best_checkpoint_sha256": "b52ae5ab9335020cac5b4d15a1563d9c77fe8baa885a2ffe798991dbe3b5ac0a",
+  "training_seconds": 0.7142456449801102,
+  "scientific_status": "single-seed development capacity screen; no paired speed claim"
+}

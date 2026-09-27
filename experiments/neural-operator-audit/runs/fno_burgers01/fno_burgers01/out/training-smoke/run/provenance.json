@@ -1,0 +1,63 @@
+{
+  "environment": {
+    "torch": "2.11.0+cu128",
+    "neuraloperator": "2.0.0",
+    "cuda": "12.8",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "sources": {
+    "check_burgers_error_definition.py": "0c92e60b92785945d64631f8a9247ee80ba599f9e35c604ea697415dc17289c5",
+    "check_burgers_reference.py": "b2c7b61259a396e68cd663dbcc313121be35d7c8ca209b102c1c1f73f2ebf37f",
+    "collect_burgers.py": "d4e0c1c04b2303dee2f89cf5af334e7d748d0d048ef20da0bfc2348b8c8d0261",
+    "collect_when_done.py": "1a7dda1c2607a32bf55b3ecf8825b9b50f4ad54c73a5fbac4f96196d2ac12de6",
+    "dataset.py": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+    "install_cluster.py": "e342829126e8443bb42e9cc281c49d2e1efa5a9b340500e59699c948557d6e96",
+    "model.py": "5322476b55ad6cc2a2be9b310e2f1a5809efc247d83b2785209d04799dc00585",
+    "prepare_fixed_checkpoint_tuning.py": "b9dd372ee35f79c404eec3c92d09b466f51848aaa624bd901ae6fede319a0f1d",
+    "smoke.py": "e8fc8135c018d498ae6ec62367d28f3692c06087300d5f729c5b42abf7164102",
+    "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+    "stage.py": "ce18d1ede118fe099020fd8ca718a4ac54ee3a79ea69221d5b44c4bd4220edf9",
+    "stage_burgers.py": "5be651ab21949a9a862aee3a0acc4a8a5149226082ca5f188461709f94aa397d",
+    "timing.py": "0e010a8a948f1cefae2e08858828444dc781d50bf0babaa632f75c73a1b95cdc",
+    "train.py": "f431b35ddc8c552c848f56fae36d2d02eed3f6fb8b01cf338213258413b89660",
+    "training_smoke.py": "57e299e86c54bedb8d2fa292473ce03195beaf1aedf1dfa1baf11c22f914d29a",
+    "training_smoke_burgers.py": "be6c4de1a2a65fa7cfcf3c942e8efaa80d298f2027f3a727464465ae4f274873",
+    "worker.py": "8e9cedc4b95fea3db90e29f0c77718b43adff9aaed91379a14076c1e9410cbb0",
+    "worker_burgers.py": "93ab1ac0d7fd2230bc4e8c587abbb743f7ed876f52b30ac54d9f5512f07a08e3"
+  },
+  "config": {
+    "width": 8,
+    "modes": 6,
+    "layers": 2,
+    "epochs": 2,
+    "patience": 2,
+    "batch_size": 2,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "seed": 20260914
+  },
+  "config_sha256": "0245a1fe5285f69580bcf587e347b66deb9445a3a985f00cad3460b9f062f268",
+  "train_index_sha256": "516d7752963574485d04400c386e9b392d5d17a3391dc0fd9ff256f101405eb4",
+  "validation_index_sha256": "f691435bf2f7a8948cea269c04fefe008ed818e6544d638c476726f970f89bca",
+  "train_case_ids": [
+    "smoke-burgers-train-0",
+    "smoke-burgers-train-1",
+    "smoke-burgers-train-2",
+    "smoke-burgers-train-3"
+  ],
+  "validation_case_ids": [
+    "smoke-burgers-validation-0",
+    "smoke-burgers-validation-1"
+  ],
+  "job_id": "3710790",
+  "node": "pax007",
+  "seed": 20260914,
+  "pde": "burgers",
+  "mesh": 16,
+  "final_cohort_opened": false,
+  "target": "declared dataset target; physical-reference evaluation is separate",
+  "supplied_input": "sampled field and known physical coefficients; no Gaussian descriptors",
+  "timing": "training resource accounting only; no FOM/ROM speed ratio"
+}

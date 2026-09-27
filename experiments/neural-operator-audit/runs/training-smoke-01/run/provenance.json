@@ -1,0 +1,52 @@
+{
+  "environment": {
+    "torch": "2.11.0+cu130",
+    "neuraloperator": "2.0.0",
+    "cuda": "13.0",
+    "gpu": "NVIDIA GB10",
+    "spectral_module_sha256": "efd032b332833746f6021c3850ee1c1ad04420e95fdcbd676082b028fc9dc3b9",
+    "precision": "float64/complex128"
+  },
+  "sources": {
+    "dataset.py": "3ad9a1469ffabce0cc3dfe607960cbf5f4a18aa2251551f03f99a8592a221cec",
+    "model.py": "5322476b55ad6cc2a2be9b310e2f1a5809efc247d83b2785209d04799dc00585",
+    "training_smoke.py": "57e299e86c54bedb8d2fa292473ce03195beaf1aedf1dfa1baf11c22f914d29a",
+    "install_cluster.py": "e342829126e8443bb42e9cc281c49d2e1efa5a9b340500e59699c948557d6e96",
+    "train.py": "852d9a41d5776c33e38412cf9b28a221a0163387206f3c216ff46aa61984eee3",
+    "spectral_conv_f64.py": "b41d614e07ae55678fc667a19e4d3eaad2d9ed5a952748368522324cd62bb31f",
+    "smoke.py": "e8fc8135c018d498ae6ec62367d28f3692c06087300d5f729c5b42abf7164102"
+  },
+  "config": {
+    "width": 8,
+    "modes": 6,
+    "layers": 2,
+    "epochs": 2,
+    "patience": 2,
+    "batch_size": 2,
+    "learning_rate": 0.001,
+    "weight_decay": 0.0001,
+    "seed": 20260914
+  },
+  "config_sha256": "0245a1fe5285f69580bcf587e347b66deb9445a3a985f00cad3460b9f062f268",
+  "train_index_sha256": "b4642a32f5786d8a9e1dabd23d13184e07fed9c991c1dadae741b8ec2087f088",
+  "validation_index_sha256": "0f7825ca6e188309bcf44f03da84ecbea84e891faac45c5537a88cea706318f0",
+  "train_case_ids": [
+    "smoke-train-0",
+    "smoke-train-1",
+    "smoke-train-2",
+    "smoke-train-3"
+  ],
+  "validation_case_ids": [
+    "smoke-validation-0",
+    "smoke-validation-1"
+  ],
+  "job_id": null,
+  "node": null,
+  "seed": 20260914,
+  "pde": "poisson",
+  "mesh": 16,
+  "final_cohort_opened": false,
+  "target": "declared dataset target; physical-reference evaluation is separate",
+  "supplied_input": "sampled field and known physical coefficients; no Gaussian descriptors",
+  "timing": "training resource accounting only; no FOM/ROM speed ratio"
+}

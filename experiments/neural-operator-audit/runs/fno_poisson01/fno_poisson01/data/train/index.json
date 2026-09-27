@@ -1,0 +1,3621 @@
+{
+  "calibration": {
+    "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+    "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+  },
+  "complete": true,
+  "count": 128,
+  "dataset_seed": 20260914,
+  "final_cohort": "sealed; unsupported by generator",
+  "intervals": 256,
+  "model_input_contract": "Only input, known-physics parameters and coordinates; generation descriptors are forbidden.",
+  "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+  "pde": "poisson",
+  "records": [
+    {
+      "case_id": "poisson-train-00000",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9944528419293874,
+        "cx": 0.4432725264592817,
+        "cy": 0.8038399597651112,
+        "width": 0.0839986107852816
+      },
+      "path": "cases/poisson-train-00000.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1078694021195948e-12,
+        "target_intervals": 256
+      },
+      "seed": 3310928488,
+      "sha256": "36ad34a65df2fb19b8b3870426cc8c7a9b99061a8b1f94fe1ab895a267f38a17",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00001",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.4329676103835909,
+        "cx": 0.4646929409490792,
+        "cy": 0.5096693747617728,
+        "width": 0.07824743789671405
+      },
+      "path": "cases/poisson-train-00001.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.4946912149797504e-12,
+        "target_intervals": 256
+      },
+      "seed": 1819222169,
+      "sha256": "0d73ca6668e2db001f8a232e061fb2d7d580fd9fd7d20613e2dade2b4b7a1304",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00002",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9009095445759003,
+        "cx": 0.7613053770376113,
+        "cy": 0.3801387782214679,
+        "width": 0.09665895593870066
+      },
+      "path": "cases/poisson-train-00002.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3207875475894318e-12,
+        "target_intervals": 256
+      },
+      "seed": 4089528131,
+      "sha256": "c4f126369cd1c4998317d716aafd99b80efbef24ede73621d592c9996ebbaebd",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00003",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8432383052982644,
+        "cx": 0.6732393896453267,
+        "cy": 0.5038429513138282,
+        "width": 0.07761263716816115
+      },
+      "path": "cases/poisson-train-00003.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.2816660031876373e-12,
+        "target_intervals": 256
+      },
+      "seed": 3227398457,
+      "sha256": "8495fc129c9dfed00ce5ec26d015c39859e2a5f9f00a426c7dc68a6261f35dbe",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00004",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0353337567669725,
+        "cx": 0.3003431764307742,
+        "cy": 0.5686006532143535,
+        "width": 0.08634414015322453
+      },
+      "path": "cases/poisson-train-00004.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3817307270717662e-12,
+        "target_intervals": 256
+      },
+      "seed": 718747905,
+      "sha256": "d64098de4842ba88ba0168fc0be1aa4e0512c3cef95949d96d80c0b617614520",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00005",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.940893641588243,
+        "cx": 0.4742589158118633,
+        "cy": 0.6203883834983884,
+        "width": 0.020697977046921497
+      },
+      "path": "cases/poisson-train-00005.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.643050192644374e-13,
+        "target_intervals": 256
+      },
+      "seed": 1647169111,
+      "sha256": "93a61e45998c87dbe16a64c7ee75982f5d90379be9afef479498ed59bd9be87a",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00006",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6999204998415819,
+        "cx": 0.5382600659048613,
+        "cy": 0.7917743632651609,
+        "width": 0.04394398631536258
+      },
+      "path": "cases/poisson-train-00006.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.408583495188483e-13,
+        "target_intervals": 256
+      },
+      "seed": 1460251117,
+      "sha256": "7d7d47f9b1625e45582f097d884f2b634569884b06a73f37b9b5c19eff7bb9f9",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00007",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6654615945947793,
+        "cx": 0.5543562225533973,
+        "cy": 0.6183839587222596,
+        "width": 0.05145978873457735
+      },
+      "path": "cases/poisson-train-00007.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.977351983138733e-13,
+        "target_intervals": 256
+      },
+      "seed": 805630254,
+      "sha256": "01b156ce1da3644e9f695af3e89250e1eca54471d3bb0b6fcfb3a4111c6d294c",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00008",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.527243768641042,
+        "cx": 0.42874013093878915,
+        "cy": 0.41471304257862207,
+        "width": 0.059310472710414286
+      },
+      "path": "cases/poisson-train-00008.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.0351696953124217e-12,
+        "target_intervals": 256
+      },
+      "seed": 2191916935,
+      "sha256": "7e11a3c3cd5824e46c8d583876a5fcfe6f944f08f5fb18dbe684920550d261e0",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00009",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9544535216270513,
+        "cx": 0.33313443613103466,
+        "cy": 0.37737709389462215,
+        "width": 0.05448166758562072
+      },
+      "path": "cases/poisson-train-00009.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.645781524647836e-13,
+        "target_intervals": 256
+      },
+      "seed": 4099251720,
+      "sha256": "e9dc145fe350efa576098cfbfb7b877a520d0e2f59faa2880182da5eaaca6da2",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00010",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.4052455810665299,
+        "cx": 0.3758350369727327,
+        "cy": 0.31642756726422583,
+        "width": 0.06399130896765119
+      },
+      "path": "cases/poisson-train-00010.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1564161591808966e-12,
+        "target_intervals": 256
+      },
+      "seed": 948480876,
+      "sha256": "7615908f6ca8f5aa3d07916dfa820fa90cbd7a4681220b25c657b8e4c14d3437",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00011",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2522497046638281,
+        "cx": 0.1804604836238321,
+        "cy": 0.7902366293234492,
+        "width": 0.08410711245935464
+      },
+      "path": "cases/poisson-train-00011.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.871198039579904e-13,
+        "target_intervals": 256
+      },
+      "seed": 3689394950,
+      "sha256": "612f234adc4e763dec1f85a8d1f96d98ac272357cde7ec196c748fe460c80593",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00012",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2232900774347826,
+        "cx": 0.4287186648615037,
+        "cy": 0.26340006431187973,
+        "width": 0.024208363197432303
+      },
+      "path": "cases/poisson-train-00012.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.857228389125624e-13,
+        "target_intervals": 256
+      },
+      "seed": 4100056223,
+      "sha256": "5b2a7df9597e189a45e2eb962b077123af1623a7d25ee361a15b35fab4936968",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00013",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2148839404783662,
+        "cx": 0.23283655150471155,
+        "cy": 0.49787218596989036,
+        "width": 0.06642949345285408
+      },
+      "path": "cases/poisson-train-00013.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.776180144294488e-13,
+        "target_intervals": 256
+      },
+      "seed": 297227963,
+      "sha256": "b47c2a74a3e1c884c2b958d61eacb51cd89aba5186edbd5801f9e317c4c816df",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00014",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2336074962645314,
+        "cx": 0.5248946924604593,
+        "cy": 0.800840531519304,
+        "width": 0.06145116926205771
+      },
+      "path": "cases/poisson-train-00014.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.637155370720044e-13,
+        "target_intervals": 256
+      },
+      "seed": 1606066362,
+      "sha256": "cfe9e91c3ad2751fd1ad981cc068693e45713b90836e550a04b54d4adc501260",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00015",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.819692499176207,
+        "cx": 0.6157357920281938,
+        "cy": 0.5928795815882903,
+        "width": 0.09922052472307535
+      },
+      "path": "cases/poisson-train-00015.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.7743699615115543e-12,
+        "target_intervals": 256
+      },
+      "seed": 2463338421,
+      "sha256": "f59bbad07a309538b83b5f474181f7591e51227ab82633554d77b3a9cd5251fb",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00016",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.4061380979451985,
+        "cx": 0.43930924397336524,
+        "cy": 0.7466428632019236,
+        "width": 0.039253202174710636
+      },
+      "path": "cases/poisson-train-00016.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.210726120423796e-13,
+        "target_intervals": 256
+      },
+      "seed": 3320797582,
+      "sha256": "7e2acaf0bdbb32092a06ee307058b8d94ffef020a3adffcba80d1c345b9668df",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00017",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9203487388568141,
+        "cx": 0.655408981087844,
+        "cy": 0.4733051683035183,
+        "width": 0.04276460239537157
+      },
+      "path": "cases/poisson-train-00017.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.769149222132338e-13,
+        "target_intervals": 256
+      },
+      "seed": 3087220126,
+      "sha256": "5e4b7d0f4c138a417cee52b30995f6ea2736c28445236be725a9996d3ab1c36b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00018",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.8755632813097862,
+        "cx": 0.37541691489916207,
+        "cy": 0.5845982353739175,
+        "width": 0.028621221452288154
+      },
+      "path": "cases/poisson-train-00018.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.079805408756564e-13,
+        "target_intervals": 256
+      },
+      "seed": 3136133310,
+      "sha256": "b26191d0176ee81b62a4681f3927a51dc21edd2adcb2303cb8babf04737e892f",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00019",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.743709609370836,
+        "cx": 0.6463810960048093,
+        "cy": 0.35258761451172704,
+        "width": 0.039686386972619205
+      },
+      "path": "cases/poisson-train-00019.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.555479030461497e-13,
+        "target_intervals": 256
+      },
+      "seed": 2610622607,
+      "sha256": "0b01af7eb12ecf493d69cae361b79c43892bf2016936a3b47f899ac1ff60e8f7",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00020",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9881749821722683,
+        "cx": 0.21300165797192666,
+        "cy": 0.6762166728465224,
+        "width": 0.07291380173473819
+      },
+      "path": "cases/poisson-train-00020.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.35045531876305e-13,
+        "target_intervals": 256
+      },
+      "seed": 2048793367,
+      "sha256": "5598be05bfe2d96d2661abff090317fc39a94d7240ddb4c98c9ceb26b2df5b27",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00021",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6755486162648576,
+        "cx": 0.2522106763767681,
+        "cy": 0.6698458955349708,
+        "width": 0.05733791080390431
+      },
+      "path": "cases/poisson-train-00021.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.835086856017268e-13,
+        "target_intervals": 256
+      },
+      "seed": 968277545,
+      "sha256": "b135ef55bdf9928013bfa8cd86f659c13d0f52cb28b3d2b4d45167103df86a9b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00022",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0185716546556205,
+        "cx": 0.27799294666712737,
+        "cy": 0.5018268839642428,
+        "width": 0.07885365902978986
+      },
+      "path": "cases/poisson-train-00022.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1902975494130349e-12,
+        "target_intervals": 256
+      },
+      "seed": 2959557802,
+      "sha256": "5b8564eae7b5d3ce82b8909f7365e41f681bf35ce3a1a10137843a47ab834e67",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00023",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1994016289656302,
+        "cx": 0.42371917685812777,
+        "cy": 0.3167397834203508,
+        "width": 0.0628813749990771
+      },
+      "path": "cases/poisson-train-00023.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1269010910017106e-12,
+        "target_intervals": 256
+      },
+      "seed": 3090873183,
+      "sha256": "d519fb04c0dfde73b98f7fd427c0410ceb27b771194b8f7438de65735e2e23ec",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00024",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6602636276089058,
+        "cx": 0.7090264380583516,
+        "cy": 0.594843773580296,
+        "width": 0.06538717194353705
+      },
+      "path": "cases/poisson-train-00024.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1412510139565017e-12,
+        "target_intervals": 256
+      },
+      "seed": 3278828207,
+      "sha256": "8f4d9dce5c8a6cd18a02c71f8e3ca6ea7bdd0547e20c1405e5f634e9adbac814",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00025",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.5360613151309641,
+        "cx": 0.3519204677289037,
+        "cy": 0.41122686405282816,
+        "width": 0.039728247742151904
+      },
+      "path": "cases/poisson-train-00025.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.682827904585879e-13,
+        "target_intervals": 256
+      },
+      "seed": 3802503513,
+      "sha256": "31ef15fa60310aa22a7d5e65cb9243c73f99a4ae0b10ce622829b8598f51f562",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00026",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.8588126309769357,
+        "cx": 0.665313123820935,
+        "cy": 0.2511179531518345,
+        "width": 0.027825851538027857
+      },
+      "path": "cases/poisson-train-00026.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.1262856637749723e-13,
+        "target_intervals": 256
+      },
+      "seed": 3092540159,
+      "sha256": "03f2eff3c055300cd319f12eb108a61a51902c8dec413a5fd08c2a9a3a3e9d09",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00027",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2473678501495082,
+        "cx": 0.8059244642555977,
+        "cy": 0.20263527233079498,
+        "width": 0.027376868591667804
+      },
+      "path": "cases/poisson-train-00027.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 2.996332189607099e-13,
+        "target_intervals": 256
+      },
+      "seed": 4107108687,
+      "sha256": "d948cf1ae80562a687180e6f4ded942cf02716bdcf781dde86af222ffb7128eb",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00028",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5726236503885103,
+        "cx": 0.4663720647553392,
+        "cy": 0.7843151504875193,
+        "width": 0.06797618370594169
+      },
+      "path": "cases/poisson-train-00028.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.846110870977321e-13,
+        "target_intervals": 256
+      },
+      "seed": 1731230869,
+      "sha256": "186f1f70613e0e4eae39e7d7b7383fb0ce8e6161eb2a554d2eee040fcc748dca",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00029",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3014407013617628,
+        "cx": 0.607987084087826,
+        "cy": 0.7658528774041234,
+        "width": 0.07573184547275713
+      },
+      "path": "cases/poisson-train-00029.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1346136238574501e-12,
+        "target_intervals": 256
+      },
+      "seed": 4138493010,
+      "sha256": "c4f01c3df2aad5806dc9c10d999c1a3a1ea2d41bf92a7ff9991b9c777d2d7b23",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00030",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7191558698983351,
+        "cx": 0.37076411065049864,
+        "cy": 0.2617335601166021,
+        "width": 0.023741378160447954
+      },
+      "path": "cases/poisson-train-00030.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.655629758692915e-13,
+        "target_intervals": 256
+      },
+      "seed": 3679266951,
+      "sha256": "625083539c20fcbfa0d51223df850b3ad508dd16e9b9ad34f13195dc8f2d4723",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00031",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6194145899730682,
+        "cx": 0.3389792812782594,
+        "cy": 0.6834550036295273,
+        "width": 0.02131144819724273
+      },
+      "path": "cases/poisson-train-00031.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.558043832674959e-13,
+        "target_intervals": 256
+      },
+      "seed": 1172613879,
+      "sha256": "27c0ba2322f2084c2976c10b6ed166515b047a72e083b76fceccdef643c486c5",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00032",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.731018664237254,
+        "cx": 0.17266660739650225,
+        "cy": 0.30395871620925224,
+        "width": 0.08730285926126197
+      },
+      "path": "cases/poisson-train-00032.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.332532095846208e-13,
+        "target_intervals": 256
+      },
+      "seed": 4062724851,
+      "sha256": "0c9aec91e31c97f1c349aef2d593ab10bdf4ae4bc1ecfc79138b557ef7f6c8f9",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00033",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1063706509790385,
+        "cx": 0.7506517971686717,
+        "cy": 0.25211516987619664,
+        "width": 0.03584889517254012
+      },
+      "path": "cases/poisson-train-00033.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.580574791419085e-13,
+        "target_intervals": 256
+      },
+      "seed": 79103207,
+      "sha256": "6312c5f616f602f902da70d0ed5119eae657b5e29c755ed31bde82fca97505ec",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00034",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8895778780227586,
+        "cx": 0.4388356729782341,
+        "cy": 0.2598389060356062,
+        "width": 0.07849701238214045
+      },
+      "path": "cases/poisson-train-00034.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.315775170722596e-12,
+        "target_intervals": 256
+      },
+      "seed": 1413836039,
+      "sha256": "9ab2cde91de7d2c1449619dedc467ae2903bb07b2e9689a816245a3ab7286f8f",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00035",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3952605770099833,
+        "cx": 0.21988235698651773,
+        "cy": 0.7015068143946696,
+        "width": 0.047693650054042504
+      },
+      "path": "cases/poisson-train-00035.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.02306343687534e-13,
+        "target_intervals": 256
+      },
+      "seed": 600053615,
+      "sha256": "714144e49558033c9cad2cb4004773d45b0533dfec3dfc4b110c918a61478138",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00036",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6076838335457511,
+        "cx": 0.5997112936128178,
+        "cy": 0.2124164703746051,
+        "width": 0.08056975410815174
+      },
+      "path": "cases/poisson-train-00036.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.162605538250397e-12,
+        "target_intervals": 256
+      },
+      "seed": 859800804,
+      "sha256": "a00d98c21602a328ca6e3d6d05d372718c21f3624104d8c1ef71afa3c9c4e719",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00037",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7366878218221309,
+        "cx": 0.48384186536504226,
+        "cy": 0.23165471495829537,
+        "width": 0.040953746711812
+      },
+      "path": "cases/poisson-train-00037.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.308015624822752e-13,
+        "target_intervals": 256
+      },
+      "seed": 680947195,
+      "sha256": "fbb5601dc6e4459dc3a400db97f8f9c588b186083ae3d5b16787b0628b5bc389",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00038",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1892919109939966,
+        "cx": 0.7779595787058485,
+        "cy": 0.6179147160171157,
+        "width": 0.03648065066370817
+      },
+      "path": "cases/poisson-train-00038.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.547632204933395e-13,
+        "target_intervals": 256
+      },
+      "seed": 1816551103,
+      "sha256": "0eb63cdffb0e743eb3ffa7d510410671c664ece0bd178cdad92c407b60c4b6c0",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00039",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.5490046050839026,
+        "cx": 0.31653356805064037,
+        "cy": 0.48373465752392075,
+        "width": 0.027009181431146674
+      },
+      "path": "cases/poisson-train-00039.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.723619886038862e-13,
+        "target_intervals": 256
+      },
+      "seed": 2528997900,
+      "sha256": "ff1765b2c21ad96f86d2ad804b493e7f35c00fb17aba61975bdfdb0cebdd632b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00040",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5692413727313421,
+        "cx": 0.6567267840508183,
+        "cy": 0.5615157725478735,
+        "width": 0.09695921826818509
+      },
+      "path": "cases/poisson-train-00040.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.6893445489328737e-12,
+        "target_intervals": 256
+      },
+      "seed": 779749180,
+      "sha256": "3b3a6719d2fa61439cdff9edba2856bd572dffead79af70c95df008b0f4ec14c",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00041",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1874274444473374,
+        "cx": 0.19560553730562552,
+        "cy": 0.21487188632662252,
+        "width": 0.02147915210272491
+      },
+      "path": "cases/poisson-train-00041.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 2.4761242072360384e-13,
+        "target_intervals": 256
+      },
+      "seed": 2803614805,
+      "sha256": "c18d02160fd08bde2f373f9527dedff3c861d6199c5f8e86789c29565b220bba",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00042",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.221276239935042,
+        "cx": 0.845323630056019,
+        "cy": 0.16740737316341284,
+        "width": 0.08406919543949741
+      },
+      "path": "cases/poisson-train-00042.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.462629999609123e-13,
+        "target_intervals": 256
+      },
+      "seed": 3145603434,
+      "sha256": "730f79e487c4d595d4ed6b94390f094518b50f741d7499422fa1833f771709e1",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00043",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.5524632178288185,
+        "cx": 0.5696103212556657,
+        "cy": 0.7659993223396946,
+        "width": 0.026913631407971986
+      },
+      "path": "cases/poisson-train-00043.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.9102013083257667e-13,
+        "target_intervals": 256
+      },
+      "seed": 4258500354,
+      "sha256": "f3e7a5e5f7a1a614a911c5568f1d6283a2714675fcb8f02928847aeda037e54c",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00044",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.502646467078846,
+        "cx": 0.7455713497304102,
+        "cy": 0.6795051409981097,
+        "width": 0.03449091566805693
+      },
+      "path": "cases/poisson-train-00044.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.924412112036617e-13,
+        "target_intervals": 256
+      },
+      "seed": 3966016501,
+      "sha256": "afb46db63bc612db261e8156de8bebd9e775aadc6c599bcfd282628b712b21f8",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00045",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6174296345933619,
+        "cx": 0.44644161945582417,
+        "cy": 0.23243833876355321,
+        "width": 0.04484804816234615
+      },
+      "path": "cases/poisson-train-00045.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.866747246056201e-13,
+        "target_intervals": 256
+      },
+      "seed": 1809812400,
+      "sha256": "87e6e94f5d3499f602ea8dfb1e430bf7d25f56f454cdcb99ca93fb47218ea459",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00046",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.83487907242045,
+        "cx": 0.184078569637751,
+        "cy": 0.416795386804251,
+        "width": 0.03152803826724565
+      },
+      "path": "cases/poisson-train-00046.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.2785832183742563e-13,
+        "target_intervals": 256
+      },
+      "seed": 3189189497,
+      "sha256": "16f520da6ee2dcd83f3e6ec7345c001bc54d8ce30976aa9b8290988fe749a155",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00047",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.597592056620164,
+        "cx": 0.4008310995915767,
+        "cy": 0.21663171989007993,
+        "width": 0.08428960604836543
+      },
+      "path": "cases/poisson-train-00047.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.2193171903947285e-12,
+        "target_intervals": 256
+      },
+      "seed": 1812693150,
+      "sha256": "b573149bdc1b72692947c7ec4de5f23d6ff0af4943aba3894115dec080f49921",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00048",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7453578683246658,
+        "cx": 0.6712306670393717,
+        "cy": 0.5111736365006515,
+        "width": 0.03577191682562633
+      },
+      "path": "cases/poisson-train-00048.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.335988347789155e-13,
+        "target_intervals": 256
+      },
+      "seed": 3654523094,
+      "sha256": "b38a865633561aac01619767e104d00b89316d30e93af6eb59c1d7f37b3600ab",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00049",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3347746246145908,
+        "cx": 0.7307404154299377,
+        "cy": 0.7528027887899534,
+        "width": 0.0961875026911316
+      },
+      "path": "cases/poisson-train-00049.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1727689509845296e-12,
+        "target_intervals": 256
+      },
+      "seed": 2370114102,
+      "sha256": "4284dae9a9013a288290a13be01d0c9841c37c10c6e6cc72baefe4f16c353599",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00050",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5115865165327556,
+        "cx": 0.508981096115098,
+        "cy": 0.4524914093989829,
+        "width": 0.023148063539869722
+      },
+      "path": "cases/poisson-train-00050.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.4920092221203795e-13,
+        "target_intervals": 256
+      },
+      "seed": 991433717,
+      "sha256": "741e227e0bf762f85cae8f5ab2d3d000d149cc16b34cd611148674ab82b1cd92",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00051",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.186441423222662,
+        "cx": 0.20188723044771836,
+        "cy": 0.5284679086299139,
+        "width": 0.03342655792196092
+      },
+      "path": "cases/poisson-train-00051.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.729514220874145e-13,
+        "target_intervals": 256
+      },
+      "seed": 608479834,
+      "sha256": "662b7ec4f97ca9a99c3df7085666f5a1a98873b53acd47a93d3b5cc2cfae4098",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00052",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2021992380353217,
+        "cx": 0.44447103020411494,
+        "cy": 0.6595575349558566,
+        "width": 0.053011689201511655
+      },
+      "path": "cases/poisson-train-00052.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.668973405876216e-13,
+        "target_intervals": 256
+      },
+      "seed": 1277990153,
+      "sha256": "90beb1ede855c20f6f38155bac426982d580ec7e4bb0f6bb55ad3d54e17ce1e9",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00053",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.531819163106086,
+        "cx": 0.3644840127486575,
+        "cy": 0.34504016985472075,
+        "width": 0.02562310397519918
+      },
+      "path": "cases/poisson-train-00053.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.363217538153367e-13,
+        "target_intervals": 256
+      },
+      "seed": 3269911316,
+      "sha256": "e23652ff484185e1f52e313b642771db1e41bcbb2c7ba4003f1d877f37228862",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00054",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.9663225958112671,
+        "cx": 0.34709943690811607,
+        "cy": 0.8221517566769012,
+        "width": 0.029696640599136886
+      },
+      "path": "cases/poisson-train-00054.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.017010988242643e-13,
+        "target_intervals": 256
+      },
+      "seed": 4255412374,
+      "sha256": "6a52605aff7324d41d71f99e99b7e0d28467c2dde41f0c4851eef2e3c5940586",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00055",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1812592940910924,
+        "cx": 0.28134575729121347,
+        "cy": 0.17560887225469543,
+        "width": 0.04890750296222298
+      },
+      "path": "cases/poisson-train-00055.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.086595420601671e-13,
+        "target_intervals": 256
+      },
+      "seed": 1583374024,
+      "sha256": "2db9d7cd57e73c4f48ab1b42bc190a2743a54239b14575037de7eacfb01d08c3",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00056",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.5517847040795303,
+        "cx": 0.731250979805497,
+        "cy": 0.8493671106274803,
+        "width": 0.07893329588706205
+      },
+      "path": "cases/poisson-train-00056.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.610233099729071e-13,
+        "target_intervals": 256
+      },
+      "seed": 3074517550,
+      "sha256": "60cbb998f20a3991908cdbecc0ea8d6c484da1250a95bfc8422ddba682f115e0",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00057",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2211002428282822,
+        "cx": 0.28841487827432744,
+        "cy": 0.19843339833952628,
+        "width": 0.0411250098833065
+      },
+      "path": "cases/poisson-train-00057.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.593273132147007e-13,
+        "target_intervals": 256
+      },
+      "seed": 854019604,
+      "sha256": "816c28ba274292827731e2f882f34bb936b640dbaae5ba503e9a11594126a509",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00058",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2829591633069302,
+        "cx": 0.4233693575510017,
+        "cy": 0.5438806794896852,
+        "width": 0.036604282141413695
+      },
+      "path": "cases/poisson-train-00058.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.043781336461919e-13,
+        "target_intervals": 256
+      },
+      "seed": 1662519120,
+      "sha256": "bc80e944f4fd518d45804f22635395d521ab4d3d2506005c2ed08cfa4912184b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00059",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6978353715359774,
+        "cx": 0.6136055356463981,
+        "cy": 0.3153453769298413,
+        "width": 0.022656653534196
+      },
+      "path": "cases/poisson-train-00059.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.7296084563538705e-13,
+        "target_intervals": 256
+      },
+      "seed": 627889799,
+      "sha256": "0b5cd94af25b85639360393d58612c8698f4d9950a1294b280e5c3d8bc10fecd",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00060",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1588071847886143,
+        "cx": 0.6428730851510992,
+        "cy": 0.7626329632934197,
+        "width": 0.07471096249951728
+      },
+      "path": "cases/poisson-train-00060.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1049509572659668e-12,
+        "target_intervals": 256
+      },
+      "seed": 4191833034,
+      "sha256": "de926f49b5c47bd31eab72aa4e9d9c51bc47d61dc45844d2849ef9a9e758aeb7",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00061",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3199143750872926,
+        "cx": 0.16679626620744614,
+        "cy": 0.1709891290469867,
+        "width": 0.09559558424373353
+      },
+      "path": "cases/poisson-train-00061.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.217407312175028e-13,
+        "target_intervals": 256
+      },
+      "seed": 2859152703,
+      "sha256": "fc60ece69759667d6b2549e8528c5745fda63a3bde2d9b0bdd5330c8b44000d7",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00062",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0885624241677654,
+        "cx": 0.5368782696797914,
+        "cy": 0.50549502839214,
+        "width": 0.06391107672744797
+      },
+      "path": "cases/poisson-train-00062.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1459552005568842e-12,
+        "target_intervals": 256
+      },
+      "seed": 1720917415,
+      "sha256": "dca4b0e9a90efe44fa938e535e4c1bff96c36ccec87b08a47a066f8260e081c0",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00063",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7526907993000895,
+        "cx": 0.5284578601908807,
+        "cy": 0.7278748400838712,
+        "width": 0.020280376604313442
+      },
+      "path": "cases/poisson-train-00063.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.292206381420266e-13,
+        "target_intervals": 256
+      },
+      "seed": 480624225,
+      "sha256": "6fafcd2d656157e3f49d7102255be7395a71f4841e6a6b1a5c52c12afdc86c3b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00064",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6550661726845266,
+        "cx": 0.2961617185532397,
+        "cy": 0.5427815021413226,
+        "width": 0.061541754236248386
+      },
+      "path": "cases/poisson-train-00064.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.684202231479222e-13,
+        "target_intervals": 256
+      },
+      "seed": 3271109034,
+      "sha256": "13098031c4013e070441fefba5a1b62c393f5670277a684e03078f9a8a01a174",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00065",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5760274962615872,
+        "cx": 0.6115183163786727,
+        "cy": 0.8468717702263506,
+        "width": 0.055182326416190766
+      },
+      "path": "cases/poisson-train-00065.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.328990267773885e-13,
+        "target_intervals": 256
+      },
+      "seed": 40881143,
+      "sha256": "dc15dafdf3072bee990df74b6a086578bec4b17dba1bba22f734e8fb07ebfe04",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00066",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.558529857772884,
+        "cx": 0.3340731885500716,
+        "cy": 0.5036746863872964,
+        "width": 0.07916288422807438
+      },
+      "path": "cases/poisson-train-00066.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3088335625791513e-12,
+        "target_intervals": 256
+      },
+      "seed": 361845765,
+      "sha256": "497a941ebe5b0035c011562d4f14f5a424dd2343df0758d17c0800c8fe8d08e2",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00067",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.5845026334363124,
+        "cx": 0.5755094490697512,
+        "cy": 0.7245587140208152,
+        "width": 0.03232079558566354
+      },
+      "path": "cases/poisson-train-00067.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.118585516950227e-13,
+        "target_intervals": 256
+      },
+      "seed": 1711387908,
+      "sha256": "0ec586eb229a46286dc55a15aee709794618da32e00772c63d1e66d50949358b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00068",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.384841009636314,
+        "cx": 0.6983484383145915,
+        "cy": 0.635850913293552,
+        "width": 0.04142240791945294
+      },
+      "path": "cases/poisson-train-00068.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.589393765198656e-13,
+        "target_intervals": 256
+      },
+      "seed": 2479804330,
+      "sha256": "e7e88c4e478aff7662da30082a6825334996c50a4a1608db9ae8df1c83e3af4d",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00069",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8393667842031762,
+        "cx": 0.6337203123296744,
+        "cy": 0.7656478282900903,
+        "width": 0.028927446937115284
+      },
+      "path": "cases/poisson-train-00069.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.203685674541196e-13,
+        "target_intervals": 256
+      },
+      "seed": 681490276,
+      "sha256": "f7459fc7b2fe309288fad1c862b6650989e257910dd6830e684431a2a771eb54",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00070",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.598961808934043,
+        "cx": 0.5112817700219733,
+        "cy": 0.7996648098760675,
+        "width": 0.022038367358443618
+      },
+      "path": "cases/poisson-train-00070.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.132554547817787e-13,
+        "target_intervals": 256
+      },
+      "seed": 190371830,
+      "sha256": "d0aaf6dbf41c50dce53acdcc1dd034be63c60fcc45b489b9a52243e24a339b5a",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00071",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1494260703721793,
+        "cx": 0.3432656363305526,
+        "cy": 0.7251226870758126,
+        "width": 0.04261249627137689
+      },
+      "path": "cases/poisson-train-00071.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.375328967595052e-13,
+        "target_intervals": 256
+      },
+      "seed": 4237737388,
+      "sha256": "c07e82e8486aea7199d9bccbb09a354ce7336fb051275d5d02014d814cde62a3",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00072",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3202397249272604,
+        "cx": 0.7395095306329217,
+        "cy": 0.20853027990444464,
+        "width": 0.0957703166985334
+      },
+      "path": "cases/poisson-train-00072.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1526796574523774e-12,
+        "target_intervals": 256
+      },
+      "seed": 2612393611,
+      "sha256": "07a5c404913734d8cbe712ed78fe8f3520901262aad5f7e3ea2ca870f84c1767",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00073",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7608586849313443,
+        "cx": 0.6760123052786462,
+        "cy": 0.7687038237463071,
+        "width": 0.026123516292552884
+      },
+      "path": "cases/poisson-train-00073.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.6764053786150816e-13,
+        "target_intervals": 256
+      },
+      "seed": 1691057,
+      "sha256": "3c495492f53dd62b45ea6a83e2d74dfab22ab7d41fa3b73bb8326c26079e8c09",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00074",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1141423865883204,
+        "cx": 0.8090738140409072,
+        "cy": 0.2974604536779165,
+        "width": 0.02021384126100096
+      },
+      "path": "cases/poisson-train-00074.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 2.6313651605451645e-13,
+        "target_intervals": 256
+      },
+      "seed": 1160225389,
+      "sha256": "65738428f94dfb363e91177e505d71f26d0beb3d6d6b064b534088a98439b85b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00075",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6278606353275233,
+        "cx": 0.35877259657367566,
+        "cy": 0.8462462674386253,
+        "width": 0.033082645712497714
+      },
+      "path": "cases/poisson-train-00075.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.079708170049415e-13,
+        "target_intervals": 256
+      },
+      "seed": 3046801204,
+      "sha256": "f213eb11894289bb25d58f04926d1c46c747ba8d454e523f59cdf0fc8e0cf0a7",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00076",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.9798356635371509,
+        "cx": 0.4382701374900303,
+        "cy": 0.8341755024301047,
+        "width": 0.047286131024408574
+      },
+      "path": "cases/poisson-train-00076.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.12911340656029e-13,
+        "target_intervals": 256
+      },
+      "seed": 1814164591,
+      "sha256": "d62d0b365380a5187b86a7a624980890d7ed8704ff373a74be0e58d709cb3926",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00077",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.7942157652830493,
+        "cx": 0.6114268811789412,
+        "cy": 0.4900245748828982,
+        "width": 0.08592510541971471
+      },
+      "path": "cases/poisson-train-00077.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.586128059418046e-12,
+        "target_intervals": 256
+      },
+      "seed": 2632288871,
+      "sha256": "c61f7de134455bc037f8eee5b0b2f3dd13d92d320d62c352ec8e462e6de1d801",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00078",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.8854336653626715,
+        "cx": 0.30014099392586746,
+        "cy": 0.2659326259359899,
+        "width": 0.021401117198876232
+      },
+      "path": "cases/poisson-train-00078.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.123964498372872e-13,
+        "target_intervals": 256
+      },
+      "seed": 2188003649,
+      "sha256": "78e08d3c524cbdc54731c33b250a71ba5e611a123525123609e249c7db86d135",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00079",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7572633369105356,
+        "cx": 0.7843822325761323,
+        "cy": 0.35257490541265046,
+        "width": 0.041203539584465175
+      },
+      "path": "cases/poisson-train-00079.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.638595337412736e-13,
+        "target_intervals": 256
+      },
+      "seed": 2903843111,
+      "sha256": "edd62b93ee5b549cc933650833f21650f3856798423155d2e9d78775d2fe2186",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00080",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6224583568652651,
+        "cx": 0.5975833963962969,
+        "cy": 0.49053184110824144,
+        "width": 0.0823149718400972
+      },
+      "path": "cases/poisson-train-00080.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.4445009971639298e-12,
+        "target_intervals": 256
+      },
+      "seed": 3538501617,
+      "sha256": "6a382383cba0463d66125c97e29713b3c7e362577cc0bb1797aebb7a11a9cf25",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00081",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.844581150631778,
+        "cx": 0.34574976526176016,
+        "cy": 0.49418034634454056,
+        "width": 0.04888326746182262
+      },
+      "path": "cases/poisson-train-00081.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.339320845163196e-13,
+        "target_intervals": 256
+      },
+      "seed": 3975764094,
+      "sha256": "affeffe519074fa47b5a625eb0019cbfb8a8bef0de6c8cf3c0b36852b55fc04c",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00082",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2564713340185656,
+        "cx": 0.15416851726985686,
+        "cy": 0.6340314933644823,
+        "width": 0.09559661775369625
+      },
+      "path": "cases/poisson-train-00082.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.55999306611038e-13,
+        "target_intervals": 256
+      },
+      "seed": 3998213728,
+      "sha256": "8c29b39687db1e22bd02a6427ea39fcd89abff9eb8d92ab378eccf0d7a3aba60",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00083",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5041950811754901,
+        "cx": 0.3772660900861876,
+        "cy": 0.5348948978915868,
+        "width": 0.024308488136512162
+      },
+      "path": "cases/poisson-train-00083.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.4506623455114665e-13,
+        "target_intervals": 256
+      },
+      "seed": 1325086854,
+      "sha256": "d3757d52bfc5cdc6d016e5a71e2c18de11c8d3fb2e9fa9eb606b032048be3527",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00084",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6545536983135802,
+        "cx": 0.3504614817993691,
+        "cy": 0.26697807147370345,
+        "width": 0.03797834465326286
+      },
+      "path": "cases/poisson-train-00084.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.709121726406128e-13,
+        "target_intervals": 256
+      },
+      "seed": 318644810,
+      "sha256": "6e1acd3699f98807ac96322888c709bd232b3fdc63f7115590c8cd0a7f8ae701",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00085",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5927192881980388,
+        "cx": 0.45349972997222254,
+        "cy": 0.6752440382483945,
+        "width": 0.07364362824500027
+      },
+      "path": "cases/poisson-train-00085.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3147214889202692e-12,
+        "target_intervals": 256
+      },
+      "seed": 2346127390,
+      "sha256": "411d6fd949d4405f76380f92d8b34a9f34efd2ba71d1c0becd3417b8cb57b2d5",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00086",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6518752992979073,
+        "cx": 0.822256710794108,
+        "cy": 0.23794162194320448,
+        "width": 0.08743649749624352
+      },
+      "path": "cases/poisson-train-00086.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.542050095756522e-13,
+        "target_intervals": 256
+      },
+      "seed": 1871478478,
+      "sha256": "6af5b720c131efd64c07e3094cb53e04c0b1b9997fdd161f6cef7402622faf1f",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00087",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0955703663313616,
+        "cx": 0.2905438010492003,
+        "cy": 0.5732683148192084,
+        "width": 0.07022090970359303
+      },
+      "path": "cases/poisson-train-00087.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.16556394687408e-12,
+        "target_intervals": 256
+      },
+      "seed": 3536394284,
+      "sha256": "55f9ec2132930ee81ea96d7ad43db80a03b5b216e060fb6c1130d7327c9d4b6a",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00088",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.9662830614233529,
+        "cx": 0.7908806184704847,
+        "cy": 0.5667092694463027,
+        "width": 0.050472152336666166
+      },
+      "path": "cases/poisson-train-00088.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.718856092791687e-13,
+        "target_intervals": 256
+      },
+      "seed": 2934801590,
+      "sha256": "b034cd9f7629231d73de7a0dc71f789b1d3a6d1aba0f19a442b586d6c7802268",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00089",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8323337781036022,
+        "cx": 0.571353669492369,
+        "cy": 0.33905428995875597,
+        "width": 0.06401212864734956
+      },
+      "path": "cases/poisson-train-00089.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1263561887626905e-12,
+        "target_intervals": 256
+      },
+      "seed": 2433121661,
+      "sha256": "8b87391507d4980cfb129ccb9fdea639d822aed0c8308d67c12f73c1c214d36a",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00090",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.65059352535328,
+        "cx": 0.6208740869076982,
+        "cy": 0.5661662358663153,
+        "width": 0.05132538798950403
+      },
+      "path": "cases/poisson-train-00090.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.065777921272428e-13,
+        "target_intervals": 256
+      },
+      "seed": 35308119,
+      "sha256": "07f61dd52ed7cd97afabb4ebd399138f69f905c0f41249ab30799ab805a44c05",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00091",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9554764867217422,
+        "cx": 0.60126283413065,
+        "cy": 0.8329311260065271,
+        "width": 0.054744052168786264
+      },
+      "path": "cases/poisson-train-00091.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.648326673839443e-13,
+        "target_intervals": 256
+      },
+      "seed": 3696343417,
+      "sha256": "b5b9e097e2adca25e47345161f9cf78ed596cd6c8eec68211704e365adaec214",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00092",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.936007062608267,
+        "cx": 0.41248383207279005,
+        "cy": 0.37868783754025126,
+        "width": 0.06988773286466274
+      },
+      "path": "cases/poisson-train-00092.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.4169039867678022e-12,
+        "target_intervals": 256
+      },
+      "seed": 1722985441,
+      "sha256": "dc3778804267af9549da55099c7c5e89b460924e2290fad1cb6741a0ff24cab1",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00093",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9264262670815118,
+        "cx": 0.653787803113704,
+        "cy": 0.39757982725350016,
+        "width": 0.03070884130253873
+      },
+      "path": "cases/poisson-train-00093.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.011883100262152e-13,
+        "target_intervals": 256
+      },
+      "seed": 3901655358,
+      "sha256": "cca2aa93432ed5266ec8982218b8c4641f21b942fa6218e7073bb2e2fffac3be",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00094",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6779781239012632,
+        "cx": 0.8008740927520123,
+        "cy": 0.7554648013970674,
+        "width": 0.028329604286948057
+      },
+      "path": "cases/poisson-train-00094.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.258075982311152e-13,
+        "target_intervals": 256
+      },
+      "seed": 356831244,
+      "sha256": "b399088cc8fa331553653d5c7bd369f8213ae9210789593cd6c29acade7333e2",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00095",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8316229860014557,
+        "cx": 0.7556779091290674,
+        "cy": 0.5683231736313861,
+        "width": 0.06962017126904771
+      },
+      "path": "cases/poisson-train-00095.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.906518339207298e-13,
+        "target_intervals": 256
+      },
+      "seed": 2792695522,
+      "sha256": "1572974046c7eaefbba086a44304a5333186486045ab9eac20100f021e1fa9e4",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00096",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7959268597343594,
+        "cx": 0.786282199142246,
+        "cy": 0.8322217749187666,
+        "width": 0.08851335306705801
+      },
+      "path": "cases/poisson-train-00096.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.426433089280723e-13,
+        "target_intervals": 256
+      },
+      "seed": 1462591142,
+      "sha256": "e8e23ee2356bfdda810e956fbef984d1e034f2b1d8bc4912c7593a8e19dd369d",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00097",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.8450417753271369,
+        "cx": 0.569398607374779,
+        "cy": 0.5627070825629708,
+        "width": 0.021515485337507034
+      },
+      "path": "cases/poisson-train-00097.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.984149100118715e-13,
+        "target_intervals": 256
+      },
+      "seed": 800581929,
+      "sha256": "a3ca99d6f31097fffdd41c980aace46008932c1195b3a548d459e0b74756c57e",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00098",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1704619354950312,
+        "cx": 0.6088463857863328,
+        "cy": 0.47063962597753073,
+        "width": 0.0790836470198524
+      },
+      "path": "cases/poisson-train-00098.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.5284104650307482e-12,
+        "target_intervals": 256
+      },
+      "seed": 2929295360,
+      "sha256": "abd36b5e084e53e03b4d8b543ddcbd4bdff2c3e55013a1b82b7742aebd6d8964",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00099",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.9657405722087027,
+        "cx": 0.20122248444229376,
+        "cy": 0.4011137475367307,
+        "width": 0.02911429475312824
+      },
+      "path": "cases/poisson-train-00099.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.01163704574398e-13,
+        "target_intervals": 256
+      },
+      "seed": 207315298,
+      "sha256": "859f861b2d00c4ecb0cab3a32f6276da0cc4114e151070628e645277921b2fa2",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00100",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.216162021798541,
+        "cx": 0.18738685346300965,
+        "cy": 0.21643348027808404,
+        "width": 0.04648771657737168
+      },
+      "path": "cases/poisson-train-00100.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.477742512153704e-13,
+        "target_intervals": 256
+      },
+      "seed": 2047431788,
+      "sha256": "d6eac0e0472b3c676808bf5c0fc5b516cef9497caf20ff322c627b7be213b77f",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00101",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.7916588801103865,
+        "cx": 0.7352819774129382,
+        "cy": 0.29789503803757095,
+        "width": 0.054501276202045604
+      },
+      "path": "cases/poisson-train-00101.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.749438768388926e-13,
+        "target_intervals": 256
+      },
+      "seed": 458327825,
+      "sha256": "c0ca4df99d00ba22c1d801c0e6a169bbd2424074ca4f0a83007f10c1e09fa0a0",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00102",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.8790224267637153,
+        "cx": 0.3103534568181857,
+        "cy": 0.4056902042351972,
+        "width": 0.045802194969813456
+      },
+      "path": "cases/poisson-train-00102.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.314484423857984e-13,
+        "target_intervals": 256
+      },
+      "seed": 1096751292,
+      "sha256": "7ab2b2e5df18850ff42eaaef081b3f4de06c39b5c137ab19a7c31db1ceb3dac1",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00103",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.783414404930519,
+        "cx": 0.5584511294488461,
+        "cy": 0.3181682172089867,
+        "width": 0.03885313238678
+      },
+      "path": "cases/poisson-train-00103.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.493623926482171e-13,
+        "target_intervals": 256
+      },
+      "seed": 4146458724,
+      "sha256": "a60e4f20662d7cc61f70651dafef7fc4864f84ee71841b7b615563043f097db6",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00104",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.612135858693548,
+        "cx": 0.42614824158960085,
+        "cy": 0.8469087882959627,
+        "width": 0.022736147472732993
+      },
+      "path": "cases/poisson-train-00104.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 2.668744768247908e-13,
+        "target_intervals": 256
+      },
+      "seed": 2244493822,
+      "sha256": "f59b7e00eb4ffb946bece945528c91ab5e6cf73044a146cb8c5f0c9a8e041ec5",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00105",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3258719267872303,
+        "cx": 0.6491427442017158,
+        "cy": 0.39108485390777087,
+        "width": 0.09562133973741434
+      },
+      "path": "cases/poisson-train-00105.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.6097602381533226e-12,
+        "target_intervals": 256
+      },
+      "seed": 2647749427,
+      "sha256": "0f84d6dd20306344f7e0d959f48e82bc768b4bff64431c846efc8807697207bc",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00106",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6147087335853499,
+        "cx": 0.592015937837414,
+        "cy": 0.24124032242201632,
+        "width": 0.09296959279348799
+      },
+      "path": "cases/poisson-train-00106.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.3729795719641686e-12,
+        "target_intervals": 256
+      },
+      "seed": 1082678161,
+      "sha256": "ff0ca296fd7c9a25a7bd52e11078e8b0c86d5e61d037ded1d375725f0cbb1f55",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00107",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.7548814958849275,
+        "cx": 0.7978783033345089,
+        "cy": 0.7539576076768947,
+        "width": 0.062096662020424874
+      },
+      "path": "cases/poisson-train-00107.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.321412374333953e-13,
+        "target_intervals": 256
+      },
+      "seed": 4130758731,
+      "sha256": "49264c5764b572d750ac157ac73950957068a876fa63fb944a911ba9e4be9cb0",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00108",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.9846125498230223,
+        "cx": 0.2578406902619781,
+        "cy": 0.8217636656279186,
+        "width": 0.020647938703191836
+      },
+      "path": "cases/poisson-train-00108.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 2.2973245485409266e-13,
+        "target_intervals": 256
+      },
+      "seed": 201772534,
+      "sha256": "8863dd574e16e2dabdf73b08cf09030c114df20adf5b44404d644523371f640d",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00109",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.7646416553751074,
+        "cx": 0.52679836039675,
+        "cy": 0.5359028954969245,
+        "width": 0.04531683315094348
+      },
+      "path": "cases/poisson-train-00109.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.302031975555119e-13,
+        "target_intervals": 256
+      },
+      "seed": 3833694666,
+      "sha256": "118c3177a6eb33c978828211492081bd09cea67633ac247b8ad0f53d5ff79533",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00110",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6761385100119606,
+        "cx": 0.47185095299160806,
+        "cy": 0.5993300239228747,
+        "width": 0.04799808451389442
+      },
+      "path": "cases/poisson-train-00110.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.595479608683844e-13,
+        "target_intervals": 256
+      },
+      "seed": 3243016698,
+      "sha256": "a80ab9b5d3c1549f76cef78c6a546cf24101ed27a53aeef52a9c36a15078a829",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00111",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.455610554559781,
+        "cx": 0.47046596329309287,
+        "cy": 0.2836765098463083,
+        "width": 0.04195574274549188
+      },
+      "path": "cases/poisson-train-00111.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.796096449547819e-13,
+        "target_intervals": 256
+      },
+      "seed": 3853116421,
+      "sha256": "44ca83b8e0696925d1cdd04e0c18f9615606ab690a4bf2d37ecbef0daed6e87d",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00112",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.7937967604388092,
+        "cx": 0.6386840058685453,
+        "cy": 0.18773706087134578,
+        "width": 0.08599710569418595
+      },
+      "path": "cases/poisson-train-00112.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.0635872812616926e-12,
+        "target_intervals": 256
+      },
+      "seed": 212835607,
+      "sha256": "7b5b9304766fc51b12c3fc2b01ac7269cf9c1d6ba3fb33751d72bcddb1d9c4b4",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00113",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6515783434938842,
+        "cx": 0.8383037314003753,
+        "cy": 0.8207890490235752,
+        "width": 0.02724104688096981
+      },
+      "path": "cases/poisson-train-00113.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 2.7612889815523045e-13,
+        "target_intervals": 256
+      },
+      "seed": 1536332708,
+      "sha256": "377a6a935cb8b4ac68b818116e4de1dfced42f8cc9c4e7e40355153ecdf3d4ef",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00114",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.4344184665043576,
+        "cx": 0.2979600496888203,
+        "cy": 0.5508150907821133,
+        "width": 0.08691459663413582
+      },
+      "path": "cases/poisson-train-00114.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.497691777209279e-12,
+        "target_intervals": 256
+      },
+      "seed": 1377142699,
+      "sha256": "09ff521d5a207963efaeb887e072bde1c1cf0a6dfcb8b1959288dce9969be8c0",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00115",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6168125412862995,
+        "cx": 0.7830139738191279,
+        "cy": 0.4579149242813586,
+        "width": 0.026198891170993
+      },
+      "path": "cases/poisson-train-00115.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 3.8226426149471253e-13,
+        "target_intervals": 256
+      },
+      "seed": 292590440,
+      "sha256": "fb2eafccd1bbde6c54343f1154f694b2f957f8a44df02e2b042e741e84d448d1",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00116",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.5796809385477371,
+        "cx": 0.6381963799753609,
+        "cy": 0.619380417748862,
+        "width": 0.05602647293445015
+      },
+      "path": "cases/poisson-train-00116.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 9.064372099789459e-13,
+        "target_intervals": 256
+      },
+      "seed": 2764549228,
+      "sha256": "c1effcf719c39da9311dcb8bc381013a16804c9db3d5a30bf43404029f0b26d6",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00117",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.9307553778526829,
+        "cx": 0.6250943668676167,
+        "cy": 0.6345755410642409,
+        "width": 0.02459764066226778
+      },
+      "path": "cases/poisson-train-00117.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.269531060098632e-13,
+        "target_intervals": 256
+      },
+      "seed": 3037410690,
+      "sha256": "18c009924ec277edb4058b574e4b488a712fdc7662d3a5c56dfd23e25fdf1837",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00118",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.615600195504473,
+        "cx": 0.5772595702762602,
+        "cy": 0.27127833272791924,
+        "width": 0.042690150478739766
+      },
+      "path": "cases/poisson-train-00118.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.000741784237403e-13,
+        "target_intervals": 256
+      },
+      "seed": 3436730275,
+      "sha256": "47b2d95f60f1f963f370999773ca89e0c7d369aa5490b1a0b445b4118eb0be65",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00119",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.6884702802375369,
+        "cx": 0.4400776824354453,
+        "cy": 0.8314857648418574,
+        "width": 0.06121805331004401
+      },
+      "path": "cases/poisson-train-00119.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.408595067098522e-13,
+        "target_intervals": 256
+      },
+      "seed": 367471727,
+      "sha256": "6e7441884e5137182ad7fc28a57d3507bc113da0cae4895e463dbbc7af59a0dd",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00120",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1863261456373446,
+        "cx": 0.5072789502741587,
+        "cy": 0.2712138355017036,
+        "width": 0.039404360387358235
+      },
+      "path": "cases/poisson-train-00120.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 6.130809627169642e-13,
+        "target_intervals": 256
+      },
+      "seed": 1731168510,
+      "sha256": "07e1f17c491ee4e2f33aca28c8dd4a39bcb4680e25ca110d889666b6143d0c24",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00121",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6103680677108673,
+        "cx": 0.28561035111949695,
+        "cy": 0.38617315981709244,
+        "width": 0.048573527040910836
+      },
+      "path": "cases/poisson-train-00121.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.115845719581273e-13,
+        "target_intervals": 256
+      },
+      "seed": 4221688959,
+      "sha256": "2224f567c7d09460daf1025ea5d138c1e5828c0aa79906bff2c42a5e9e7af12e",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00122",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6649248576894473,
+        "cx": 0.6692379460700423,
+        "cy": 0.30825107298967813,
+        "width": 0.04901371233665381
+      },
+      "path": "cases/poisson-train-00122.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 8.075345183159625e-13,
+        "target_intervals": 256
+      },
+      "seed": 2026971785,
+      "sha256": "41532451fd58129a67b4701480ce6825c906d5512fa2917f39f52deeb254767d",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00123",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 0.6095804415880322,
+        "cx": 0.4255380695804344,
+        "cy": 0.42898342040054294,
+        "width": 0.06573031706848857
+      },
+      "path": "cases/poisson-train-00123.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.1530879716780495e-12,
+        "target_intervals": 256
+      },
+      "seed": 3433169954,
+      "sha256": "bdecc96c140cc41c7bf4e8484d965f58069ea4bffd79806c5500e3b2f3dbd54e",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00124",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.1915769986978104,
+        "cx": 0.2976707355914444,
+        "cy": 0.24917412465280445,
+        "width": 0.09714792413655114
+      },
+      "path": "cases/poisson-train-00124.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 1.2179526752617485e-12,
+        "target_intervals": 256
+      },
+      "seed": 415225326,
+      "sha256": "2651a69bcdda7237ddbc05ff672c24c8446716d2eefeb152fba7f2a47a2e1717",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00125",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.3563944066419147,
+        "cx": 0.6023628369687161,
+        "cy": 0.7294045651214031,
+        "width": 0.03581469287440938
+      },
+      "path": "cases/poisson-train-00125.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 5.578570022689398e-13,
+        "target_intervals": 256
+      },
+      "seed": 3292928679,
+      "sha256": "d7d441038153bf1c9b34e0feec9dce99b2e360394125315173e0db8fe49b6e0b",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00126",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.2692026147081266,
+        "cx": 0.620505530102366,
+        "cy": 0.3979489826602416,
+        "width": 0.04251167960218753
+      },
+      "path": "cases/poisson-train-00126.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 7.476435266249231e-13,
+        "target_intervals": 256
+      },
+      "seed": 1962202614,
+      "sha256": "11856949ae78e1c9bcb1c79a61320a5ef5df32fffa2545b25f9b9b7a4324c43a",
+      "split": "train"
+    },
+    {
+      "case_id": "poisson-train-00127",
+      "intervals": 256,
+      "mesh": 256,
+      "nodes_per_axis": 257,
+      "offline_generation_parameters": {
+        "amplitude": 1.0034569509929896,
+        "cx": 0.6308973550984266,
+        "cy": 0.7053754688019925,
+        "width": 0.03213859099897859
+      },
+      "path": "cases/poisson-train-00127.npz",
+      "reference": {
+        "boundary_max_abs": 0.0,
+        "calibration": {
+          "path": "/cluster/tufts/paralab/tawal01/no_poisson_20260914/pilot01/out/calibration/calibration.json",
+          "sha256": "e449c2d0e36d0fda2d772a44d7f986db44f1c4c4d9953c23e4654c0a3d9655eb"
+        },
+        "kind": "exact-discrete-fd-dst",
+        "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+        "physical_accuracy_status": "Discrete target; empirical refinement only.",
+        "relative_discrete_residual": 4.879385387086769e-13,
+        "target_intervals": 256
+      },
+      "seed": 56217634,
+      "sha256": "db80bcaf7f80c4b42f2471bc8a407fb5c2804235725644a582ed078187623778",
+      "split": "train"
+    }
+  ],
+  "runtime": {
+    "gpu_type": "NVIDIA A100 80GB PCIe",
+    "jax_backend": "gpu",
+    "jax_enable_x64": true,
+    "jax_version": "0.10.2",
+    "job_id": "3701314",
+    "matmul_precision": "highest",
+    "numpy_version": "2.5.0",
+    "provenance_note": "Content hashes are authoritative; no cluster git ancestor lookup.",
+    "purpose": "cluster-dataset-generation",
+    "source_commit": "50098e583fdbb4384653d0bdc6a3885a7d9832a8",
+    "source_files": {
+      "experiments/multiresolution-poisson/core.py": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+      "experiments/neural-operator-poisson/dataset.py": "93ebde98b6f8bcf759c07de4dfe00b114b60e91e359bacb0e45d9c00fbf2fe81",
+      "experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+    },
+    "utc_started": "2026-09-14T16:50:04.371798+00:00"
+  },
+  "schema": "neural-operator-case-v1",
+  "split": "train",
+  "target_contract": "Target is the native discrete solution on this mesh; physical-reference sidecars are evaluation-only."
+}

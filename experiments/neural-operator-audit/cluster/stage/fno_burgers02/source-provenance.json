@@ -1,0 +1,27 @@
+{
+  "source_commit": "6fe122e2ba233e987e43c54cd3f3d27aa145e5b6",
+  "source_worktree": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-09-14-no-audit",
+  "job_directory": "/cluster/tufts/paralab/tawal01/no_audit_20260914/fno_burgers02",
+  "worker": "worker_burgers_long.py",
+  "pde": "burgers",
+  "mesh_intervals": 256,
+  "output_times": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.2,
+    0.25
+  ],
+  "data_origin": "Burgers lane cluster-generated cache /cluster/tufts/paralab/tawal01/no_burgers_20260914/pilot-data01; copied on the cluster and re-verified",
+  "extra_data": [
+    "refinement"
+  ],
+  "model_inputs": "sampled initial nodal field, viscosity and coordinates only; no generation descriptors, case ids or truth sidecars",
+  "time_dependence": "direct multi-time output: five evolved fields as output channels; the supplied initial state is returned exactly and no autoregressive rollout is used",
+  "capacities": "equal 3000-second wall budget per capacity with early stopping, then a learning-rate refinement of the best capacity",
+  "resumability": "none; each training run is bounded inside this one allocation",
+  "gpu_hour_target": 4.0,
+  "precision": "float64/complex128, highest matmul precision",
+  "comparisons": "same-job FNO timing and validation accuracy; matched-cohort accuracy may be compared with the Burgers lane diagnosis, timing may not"
+}

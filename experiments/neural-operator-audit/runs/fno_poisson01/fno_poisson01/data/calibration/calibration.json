@@ -1,0 +1,528 @@
+{
+  "complete": true,
+  "count": 8,
+  "dataset_seed": 20260914,
+  "empirical_reference_budget_pass": true,
+  "interpretation": "Empirical refinement diagnostic on calibration cases; not a rigorous continuum error bound or a guarantee for other cases.",
+  "meshes": [
+    64,
+    128,
+    256,
+    512,
+    1024
+  ],
+  "operator": "zero-dirichlet-five-point-negative-laplacian-unit-square-v1",
+  "pde": "poisson",
+  "records": [
+    {
+      "case_id": "poisson-calibration-00000",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00000-references.npz",
+      "field_sha256": "3dc4f3de97ccd56bba90b96f7fcf26396b1f4ae0b1d5b13cba25cb6eb6c83f94",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 7.227363197828073e-14,
+          "relative_to_restricted_reference": 0.0006077533575781063,
+          "relative_to_restricted_refinement": 0.0006081983324847995
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 3.1040406794170373e-13,
+          "relative_to_restricted_reference": 0.0001512988424503635,
+          "relative_to_restricted_refinement": 0.00015174369164660552
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 1.2333133155221173e-12,
+          "relative_to_restricted_reference": 3.7367771723805793e-05,
+          "relative_to_restricted_refinement": 3.7812589438947734e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 5.077455377551531e-12,
+          "relative_to_restricted_reference": 8.896378183943831e-06,
+          "relative_to_restricted_refinement": 9.341188025625264e-06
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 2.11015479682449e-11,
+          "relative_to_restricted_reference": 1.7792401268850956e-06,
+          "relative_to_restricted_refinement": 2.2240479999709432e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.6806918404428416,
+        0.6679887618877752,
+        0.08105706114042621,
+        1.269741716700891
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 8.534896080039514e-11
+      },
+      "reference_relative_change": 4.4480738092109655e-07,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 3.623621961441728e-10
+      },
+      "seed": 3559168985,
+      "split": "calibration"
+    },
+    {
+      "case_id": "poisson-calibration-00001",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00001-references.npz",
+      "field_sha256": "f070e984228c7da2d9211aa7cd548d2e83139b9ee4a6829b9b6d9c0b5dbf9f6c",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 2.7164163032890526e-14,
+          "relative_to_restricted_reference": 0.0019032183685477795,
+          "relative_to_restricted_refinement": 0.001904601421551905
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 9.844010480509669e-14,
+          "relative_to_restricted_reference": 0.0004709822872827152,
+          "relative_to_restricted_refinement": 0.00047236452458448004
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 4.502235126345091e-13,
+          "relative_to_restricted_reference": 0.00011615258299568436,
+          "relative_to_restricted_refinement": 0.00011753460650170811
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 1.6644565293299254e-12,
+          "relative_to_restricted_reference": 2.7643067763999245e-05,
+          "relative_to_restricted_refinement": 2.9025037232682978e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 7.127509013594449e-12,
+          "relative_to_restricted_reference": 5.527998800012069e-06,
+          "relative_to_restricted_refinement": 6.90995472298658e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.6131751675078589,
+        0.17691773918912707,
+        0.032837218479277036,
+        0.9201736301798406
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 2.6897024630475786e-11
+      },
+      "reference_relative_change": 1.381952534282285e-06,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 1.1925329833417187e-10
+      },
+      "seed": 2639272363,
+      "split": "calibration"
+    },
+    {
+      "case_id": "poisson-calibration-00002",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00002-references.npz",
+      "field_sha256": "d686bd8b5a0603585ec72fdef5d196a2f1b6ac348ac768e14eb17d61a1b4297d",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 3.180625756180825e-14,
+          "relative_to_restricted_reference": 0.0013517108072523777,
+          "relative_to_restricted_refinement": 0.001352697259085043
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 1.2353231207553664e-13,
+          "relative_to_restricted_reference": 0.00033560585716683284,
+          "relative_to_restricted_refinement": 0.00033659181180265083
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 5.518965529307853e-13,
+          "relative_to_restricted_reference": 8.283301013274985e-05,
+          "relative_to_restricted_refinement": 8.381883862352391e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 2.2128279399960276e-12,
+          "relative_to_restricted_reference": 1.9717313377802997e-05,
+          "relative_to_restricted_refinement": 2.070311022008371e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 9.016556684714926e-12,
+          "relative_to_restricted_reference": 3.943221230712853e-06,
+          "relative_to_restricted_refinement": 4.929010153873884e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.8144966571059207,
+        0.5840359490375948,
+        0.04454467474672844,
+        0.8595765624434385
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 3.6109901518015254e-11
+      },
+      "reference_relative_change": 9.857869429379497e-07,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 1.604146438068419e-10
+      },
+      "seed": 1312138048,
+      "split": "calibration"
+    },
+    {
+      "case_id": "poisson-calibration-00003",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00003-references.npz",
+      "field_sha256": "1e1fd35b55b562581c45290b44e0f2f45835f9cd0ea0698c357670e84327ab21",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 1.9009806449906524e-14,
+          "relative_to_restricted_reference": 0.002531213957239418,
+          "relative_to_restricted_refinement": 0.00253302652047154
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 6.795544586911564e-14,
+          "relative_to_restricted_reference": 0.0006195816905012479,
+          "relative_to_restricted_refinement": 0.0006213937265116235
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 3.0880954149547745e-13,
+          "relative_to_restricted_reference": 0.0001524040852417796,
+          "relative_to_restricted_refinement": 0.00015421589139124838
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 1.1589013749922424e-12,
+          "relative_to_restricted_reference": 3.624732016480622e-05,
+          "relative_to_restricted_refinement": 3.8059063381846215e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 5.014569073395053e-12,
+          "relative_to_restricted_reference": 7.247501307368037e-06,
+          "relative_to_restricted_refinement": 9.059228458787382e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.23837131535968953,
+        0.474951594787713,
+        0.020765861256806652,
+        0.6266382066918823
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 1.947977858926383e-11
+      },
+      "reference_relative_change": 1.8117231143709728e-06,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 8.7297981211289e-11
+      },
+      "seed": 1672465532,
+      "split": "calibration"
+    },
+    {
+      "case_id": "poisson-calibration-00004",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00004-references.npz",
+      "field_sha256": "6be3254fef191d262c8956f225f4b2dde09663de05129263eb5de4cc577cb199",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 2.950399724554437e-14,
+          "relative_to_restricted_reference": 0.0017730924701455293,
+          "relative_to_restricted_refinement": 0.001774381143497156
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 1.0289735180440682e-13,
+          "relative_to_restricted_reference": 0.0004388525179408832,
+          "relative_to_restricted_refinement": 0.00044014050456609436
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 4.72843569374187e-13,
+          "relative_to_restricted_reference": 0.00010823313771300561,
+          "relative_to_restricted_refinement": 0.0001095209437076535
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 1.725241881213907e-12,
+          "relative_to_restricted_reference": 2.575858054061844e-05,
+          "relative_to_restricted_refinement": 2.7046340843441817e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 7.451450600710684e-12,
+          "relative_to_restricted_reference": 5.151156029523753e-06,
+          "relative_to_restricted_refinement": 6.438904876348003e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.5129456183394867,
+        0.8109098457839443,
+        0.03314850259677141,
+        1.7496066231680172
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 2.8181400705665942e-11
+      },
+      "reference_relative_change": 1.287745980762938e-06,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 1.2664993451385643e-10
+      },
+      "seed": 34313818,
+      "split": "calibration"
+    },
+    {
+      "case_id": "poisson-calibration-00005",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00005-references.npz",
+      "field_sha256": "0b1cb8dcf035ea35068a3a7209d72e92481d58eb632449b89fafc2e7193dbcb3",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 3.917838410346115e-14,
+          "relative_to_restricted_reference": 0.0010942484400496804,
+          "relative_to_restricted_refinement": 0.001095047554917005
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 1.5403328822612923e-13,
+          "relative_to_restricted_reference": 0.0002718522253086709,
+          "relative_to_restricted_refinement": 0.0002726510183338834
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 6.883968626783094e-13,
+          "relative_to_restricted_reference": 6.710790155436077e-05,
+          "relative_to_restricted_refinement": 6.790661306124189e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 2.6744243243723875e-12,
+          "relative_to_restricted_reference": 1.5974769831913284e-05,
+          "relative_to_restricted_refinement": 1.677346089465346e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 1.1592786641178238e-11,
+          "relative_to_restricted_reference": 3.194788954140129e-06,
+          "relative_to_restricted_refinement": 3.993474901797414e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.7723503607108292,
+        0.5048660953794379,
+        0.048610000235739644,
+        1.4293827554567136
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 4.3968716205008637e-11
+      },
+      "reference_relative_change": 7.98684668635856e-07,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 1.9501587258574436e-10
+      },
+      "seed": 948477056,
+      "split": "calibration"
+    },
+    {
+      "case_id": "poisson-calibration-00006",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00006-references.npz",
+      "field_sha256": "ed27aa830acbb3ee9e1d549b304cc16165352d0fad8645a030688a1dc5845196",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 7.410641921093357e-14,
+          "relative_to_restricted_reference": 0.0005958774967400147,
+          "relative_to_restricted_refinement": 0.000596313702307972
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 3.1447535746323746e-13,
+          "relative_to_restricted_reference": 0.00014832679728793712,
+          "relative_to_restricted_refinement": 0.00014876288961071342
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 1.5752220376507642e-12,
+          "relative_to_restricted_reference": 3.6632779968279996e-05,
+          "relative_to_restricted_refinement": 3.706884390801963e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 5.439987249098599e-12,
+          "relative_to_restricted_reference": 8.721337276124269e-06,
+          "relative_to_restricted_refinement": 9.157394115766492e-06
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 2.1894114440233828e-11,
+          "relative_to_restricted_reference": 1.7442298030698965e-06,
+          "relative_to_restricted_refinement": 2.1802848673690734e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.45741207207417545,
+        0.679605041112598,
+        0.07730725877740374,
+        1.3803401847045325
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 8.97952862713171e-11
+      },
+      "reference_relative_change": 4.3605462044867083e-07,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 3.791956270673637e-10
+      },
+      "seed": 2522946615,
+      "split": "calibration"
+    },
+    {
+      "case_id": "poisson-calibration-00007",
+      "empirical_reference_budget_pass": true,
+      "field_mesh": 1024,
+      "field_path": "case-00007-references.npz",
+      "field_sha256": "f6e01276e8ce9f4e7df35988166c55c60e93095413b2160ad42d7f767f9402cc",
+      "meshes": [
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 64,
+          "relative_discrete_residual": 2.4171581356059064e-14,
+          "relative_to_restricted_reference": 0.0021441968880236,
+          "relative_to_restricted_refinement": 0.0021457315547222604
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 128,
+          "relative_discrete_residual": 9.176239919914267e-14,
+          "relative_to_restricted_reference": 0.000524732726401147,
+          "relative_to_restricted_refinement": 0.0005262671887351212
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 256,
+          "relative_discrete_residual": 3.7980765635740513e-13,
+          "relative_to_restricted_reference": 0.00012906672769586697,
+          "relative_to_restricted_refinement": 0.00013060105181060885
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 512,
+          "relative_discrete_residual": 1.4861953760146483e-12,
+          "relative_to_restricted_reference": 3.0696456518392085e-05,
+          "relative_to_restricted_refinement": 3.223074122421823e-05
+        },
+        {
+          "boundary_max_abs": 0.0,
+          "intervals": 1024,
+          "relative_discrete_residual": 6.116755947237664e-12,
+          "relative_to_restricted_reference": 6.137610351814563e-06,
+          "relative_to_restricted_refinement": 7.67188491022955e-06
+        }
+      ],
+      "offline_generation_parameters": [
+        0.5045654395278927,
+        0.6295319671441649,
+        0.0206039401822406,
+        1.0222585125539543
+      ],
+      "reference_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 2.4214196756812906e-11
+      },
+      "reference_relative_change": 1.5342720032379505e-06,
+      "refinement_checks": {
+        "boundary_max_abs": 0.0,
+        "relative_discrete_residual": 1.0263702032928378e-10
+      },
+      "seed": 1431037553,
+      "split": "calibration"
+    }
+  ],
+  "reference_intervals": 2048,
+  "refinement_intervals": 4096,
+  "relative_reference_budget": 0.001,
+  "runtime": {
+    "gpu_type": "NVIDIA A100 80GB PCIe",
+    "jax_backend": "gpu",
+    "jax_enable_x64": true,
+    "jax_version": "0.10.2",
+    "job_id": "3701314",
+    "matmul_precision": "highest",
+    "numpy_version": "2.5.0",
+    "provenance_note": "Content hashes are authoritative; no cluster git ancestor lookup.",
+    "purpose": "cluster-dataset-generation",
+    "source_commit": "50098e583fdbb4384653d0bdc6a3885a7d9832a8",
+    "source_files": {
+      "experiments/multiresolution-poisson/core.py": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+      "experiments/neural-operator-poisson/dataset.py": "93ebde98b6f8bcf759c07de4dfe00b114b60e91e359bacb0e45d9c00fbf2fe81",
+      "experiments/wave2d-rom-latent-stepping/deps/multistage-precision/ms_parametric.py": "ffcd4c563ea7f995f787ddfbd59d673cc55840428de441e9371d7f063fdbd4e3"
+    },
+    "utc_started": "2026-09-14T16:49:50.189736+00:00"
+  },
+  "schema": "neural-operator-case-v1"
+}

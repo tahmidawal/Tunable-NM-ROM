@@ -1,0 +1,91 @@
+[
+  {
+    "task": "precision",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/smoke.py",
+      "--output",
+      "out/precision.json"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789405528.7895005,
+    "ended_unix": 1789405544.5101166,
+    "job_id": "3702464"
+  },
+  {
+    "task": "training-smoke",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/training_smoke.py",
+      "--out",
+      "out/training-smoke"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789405544.5150661,
+    "ended_unix": 1789405551.4169297,
+    "job_id": "3702464"
+  },
+  {
+    "task": "small",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/train.py",
+      "--train-index",
+      "data/train/index.json",
+      "--validation-index",
+      "data/validation/index.json",
+      "--config",
+      "code/configs/fno-small.json",
+      "--out",
+      "out/fno-small",
+      "--wall-seconds",
+      "7200"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789405551.419748,
+    "ended_unix": 1789406330.543017,
+    "job_id": "3702464"
+  },
+  {
+    "task": "medium",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/train.py",
+      "--train-index",
+      "data/train/index.json",
+      "--validation-index",
+      "data/validation/index.json",
+      "--config",
+      "code/configs/fno-medium.json",
+      "--out",
+      "out/fno-medium",
+      "--wall-seconds",
+      "7200"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789406330.5470204,
+    "ended_unix": 1789407432.8806016,
+    "job_id": "3702464"
+  },
+  {
+    "task": "large",
+    "command": [
+      "/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python",
+      "code/train.py",
+      "--train-index",
+      "data/train/index.json",
+      "--validation-index",
+      "data/validation/index.json",
+      "--config",
+      "code/configs/fno-large.json",
+      "--out",
+      "out/fno-large",
+      "--wall-seconds",
+      "7200"
+    ],
+    "exit_code": 0,
+    "started_unix": 1789407432.8844662,
+    "ended_unix": 1789409014.2596323,
+    "job_id": "3702464"
+  }
+]

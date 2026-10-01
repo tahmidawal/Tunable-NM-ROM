@@ -305,3 +305,30 @@ it is opened once.
 a much slower spectrum; its tail is reported). The pilot's third architecture C is described in
 §A1. The local probe (`probe_local.py`, `runs/probe/`) read the first 4 development cases at 32³
 and printed floors for a small f32 model; it informed nothing but the wall-budget concern of §A1.
+
+## A3 (2026-10-01, after the pilot, before the production bank jobs) — what the pilot changed
+
+Pilot `bank_pilot` = job **4708239** (A100 80GB, `jax_backend=gpu`, commit `962be67e`, pulled,
+remote deleted; `runs/pilot/`). Decisions taken from **training loss and step time only**:
+
+- **Architecture A** (512 × 4, $k_{\max}=4$) had the lowest training loss at equal wall time
+  (B and C were slower per step and higher in loss); production banks use A only, and the
+  `bank_r64b` job is dropped (A vs B is no longer a selection).
+- **Wall budget 10 h** (36 000 s) per production bank (5.5k steps in 30 min still left the loss
+  ~140× above the same-data optimum); `bank_ff64` stays at 1.5 h.
+- **Band-limit penalty added to the objective.** The pilot's real-mesh gates fired: at 32³ the
+  sampled bank was $1.9\times10^{-2}$ from orthonormal before Löwdin and autodiff vs spectral
+  derivatives disagreed by 15 % — the network puts energy above the frequencies a 32³ grid
+  resolves, so the bank would not read the same on every mesh. The objective becomes
+  $$\mathcal L(\phi)=1-\frac{\lVert P_{G}Y\rVert^2}{\lVert Y\rVert^2}+\lambda\,\frac{\lVert G-\Pi_{10}G\rVert_F^2}{\lVert G\rVert_F^2},\qquad\lambda=1,$$
+  $\Pi_{10}$ = keep Fourier modes with $\max_i|k_i|\le10$ on the 48³ training grid (the 2/3
+  space of the coarsest mesh, 32³, which every finer FOM space contains). A local GB10 A/B on a
+  small problem (training data only, `configs/probe_band_local.json`, `runs/probe/band_local.log`)
+  showed the penalty costs little fit (6.1e-4 vs 5.9e-4 after 10 min) and leaves 3e-5 of the
+  bank's energy above the band.
+- **Rejected after a local test:** variable projection on the last layer (`coordnet.py`
+  "variable projection" block; `method: varpro`) — slower per step and worse at equal wall time
+  in the same local A/B (fit 1.3e-3). The code stays, unused.
+- The pilot's 32³ development floors (R=64 coordnet 1.00 % vs parent POD-64 0.125 %, whose
+  reproduction passed at 1.9e-10) are recorded, not used for any choice; they come from a
+  30-minute bank and are not a bar (a) result.

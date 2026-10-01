@@ -182,3 +182,79 @@ def order_bank(G, states, row_norms):
     V = V * np.sign(V[np.argmax(np.abs(V), axis=0), np.arange(V.shape[1])])[None, :]
     T = np.linalg.solve(Rf, V)
     return T, S, Q @ V
+
+
+# ------------------------------------------- variable projection on the last layer --
+#
+# The bank is linear in the last layer: psi_{c,r}(x) = sum_j h_j(x) W[j, c R + r] (+ a
+# constant bias, whose curl is zero), so g_r = sum_{j,c} (grad h_j x e_c) W[j, c R + r].
+# The 3*width fields (grad h_j x e_c) are a dictionary; for fixed hidden layers the best
+# rank-R bank inside its span is a generalised eigenproblem, solved exactly every step
+# (variable projection, Golub-Pereyra). By the envelope theorem the gradient of the
+# reduced objective with respect to the hidden layers is the gradient at the solved last
+# layer held fixed, so the solve sits under stop_gradient. The network is unchanged: the
+# solved matrix IS its last layer.
+
+def trunk(p, x):
+    angle = 2 * jnp.pi * (x @ p["B"])
+    h = jnp.concatenate((jnp.sin(angle), jnp.cos(angle)), axis=-1)
+    for w, b in p["layers"][:-1]:
+        h = jax.nn.silu(h @ w + b)
+    return h                                                        # (P, width)
+
+
+def dictionary(p, x):
+    """(P, 3_comp, width*3) fields grad h_j x e_c, column index j*3 + c."""
+    fn = lambda y: trunk(p, y)
+    dx, dy, dz = [_directional(fn, x, a) for a in range(3)]        # (P, width)
+    z = jnp.zeros_like(dx)
+    # c = x: (0, dz, -dy); c = y: (-dz, 0, dx); c = z: (dy, -dx, 0)
+    ux = jnp.stack((z, -dz, dy), axis=-1)
+    uy = jnp.stack((dz, z, -dx), axis=-1)
+    uz = jnp.stack((-dy, dx, z), axis=-1)
+    out = jnp.stack((ux, uy, uz), axis=1)                           # (P, 3comp, width, 3c)
+    return out.reshape(x.shape[0], 3, -1)
+
+
+def make_dictionary_fn(n, chunk=None):
+    total = n ** 3
+    chunk = total if chunk is None else int(chunk)
+
+    def sample(p, pts):
+        vals = jax.lax.map(lambda b: dictionary(p, b), pts.reshape(total // chunk, chunk, 3))
+        vals = vals.reshape(total, 3, -1)
+        return jnp.transpose(vals, (1, 0, 2)).reshape(3 * total, -1) * n ** -1.5
+    return sample
+
+
+def band_mask(n, kcut):
+    k = np.fft.fftfreq(n) * n
+    kk = np.stack(np.meshgrid(k, k, k, indexing="ij"))
+    return jnp.asarray(np.all(np.abs(kk) <= kcut, axis=0))
+
+
+def lowpass(G, n, mask):
+    """Keep Fourier modes with max |k_i| <= kcut (mask) of every column of G (3 n^3, m)."""
+    m = G.shape[1]
+    f = G.T.reshape(m, 3, n, n, n)
+    s = jnp.fft.fftn(f, axes=(-3, -2, -1)) * mask
+    return jnp.fft.ifftn(s, axes=(-3, -2, -1)).real.reshape(m, -1).T
+
+
+def solve_last_layer(PhiL, Y, rank, rtol=1e-12):
+    """Best rank-R combination W (dictionary -> bank) with PhiL W orthonormal."""
+    M = PhiL.T @ PhiL
+    lam, V = jnp.linalg.eigh(M)
+    keep = lam > rtol * lam[-1]
+    Z = V * jnp.where(keep, 1.0 / jnp.sqrt(jnp.where(keep, lam, 1.0)), 0.0)[None, :]
+    C = Z.T @ (PhiL.T @ Y)
+    mu, U = jnp.linalg.eigh(C @ C.T)
+    return Z @ U[:, ::-1][:, :rank], mu[::-1][:rank]
+
+
+def set_last_layer(p, W, rank):
+    width = p["layers"][-1][0].shape[0]
+    Wf = W.reshape(width, 3, rank).reshape(width, 3 * rank)
+    q = dict(p)
+    q["layers"] = list(p["layers"][:-1]) + [(Wf, jnp.zeros((3 * rank,), dtype=Wf.dtype))]
+    return q

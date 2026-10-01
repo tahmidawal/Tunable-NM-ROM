@@ -169,16 +169,53 @@ def main():
         w_, b_ = p["layers"][-1]
         p["layers"][-1] = (w_ * s, b_)
         every = int(cfg["log_every"])
+        varpro = arch.get("method", "adam") == "varpro"
+        if varpro:
+            dict_fn = CN.make_dictionary_fn(nt, chunk=int(cfg.get("sample_chunk", nt ** 3)))
+            bmask = CN.band_mask(nt, int(arch["band_kcut"]))
+            lam_band = float(arch["band_weight"])
+
+            def vp_loss(q, Y, pts):
+                Phi = dict_fn(q, pts)
+                PhiL = CN.lowpass(Phi, nt, bmask)
+                W, _ = jax.lax.stop_gradient(CN.solve_last_layer(PhiL, Y, R))
+                GL = PhiL @ W
+                GH = Phi @ W - GL
+                fit = CN.projection_loss(GL, Y)
+                band = jnp.sum(GH * GH) / jnp.sum(GL * GL)
+                return fit + lam_band * band, (fit, band, W)
+
+        band_weight = 0.0 if varpro else float(arch.get("band_weight", 0.0))
+        if band_weight > 0:
+            amask = CN.band_mask(nt, int(arch["band_kcut"]))
+
+            def adam_band_loss(q, Y, pts):
+                # projection objective + penalty on the bank's energy above the band,
+                # so the network itself is band-limited and reads the same on every mesh
+                G = sample_fn(q, pts)
+                GH = G - CN.lowpass(G, nt, amask)
+                return CN.projection_loss(G, Y) + band_weight * jnp.sum(GH * GH) / jnp.sum(G * G)
 
         def make_chunk(opt):
             @jax.jit
             def chunk(p, state, Y, pts):
                 def body(carry, _):
                     p, state = carry
-                    v, g = jax.value_and_grad(lambda q: CN.projection_loss(sample_fn(q, pts), Y))(p)
+                    if varpro:
+                        (v, (fit, band, W)), g = jax.value_and_grad(vp_loss, has_aux=True)(p, Y, pts)
+                    elif band_weight > 0:
+                        v, g = jax.value_and_grad(lambda q: adam_band_loss(q, Y, pts))(p)
+                    else:
+                        v, g = jax.value_and_grad(lambda q: CN.projection_loss(sample_fn(q, pts), Y))(p)
                     g = dict(g, B=jnp.zeros_like(g["B"]))           # frequencies are fixed
+                    if varpro:   # the last layer is solved, not trained
+                        g["layers"] = list(g["layers"][:-1]) + [jax.tree_util.tree_map(
+                            jnp.zeros_like, g["layers"][-1])]
                     upd, state = opt.update(g, state, p)
-                    return (optax.apply_updates(p, upd), state), v
+                    p = optax.apply_updates(p, upd)
+                    if varpro:
+                        p = CN.set_last_layer(p, W, R)
+                    return (p, state), v
                 (p, state), vals = jax.lax.scan(body, (p, state), None, length=every)
                 return p, state, vals[-1]
             return chunk
@@ -226,6 +263,17 @@ def main():
                 BI.save_params(out / f"bank_{name}_partial.npz", p)
         if np.max(np.abs(np.asarray(p["B"]) - CN.frequency_set(int(arch["kmax"])))) != 0.0:
             raise RuntimeError("Fourier frequencies changed during training")
+        extra = {}
+        if band_weight > 0:
+            G_ = sample_t(p)
+            GH_ = G_ - CN.lowpass(G_, nt, amask)
+            extra = dict(band_fraction=float(jnp.sum(GH_ * GH_) / jnp.sum(G_ * G_)))
+            del G_, GH_
+        if varpro:
+            # solve the last layer once more for the final trunk, and record the split
+            vfin, (ffin, bfin, Wfin) = jax.jit(vp_loss)(p, Yj, pts_t)
+            p = CN.set_last_layer(p, Wfin, R)
+            extra = dict(varpro_fit=float(ffin), varpro_band_fraction=float(bfin))
         final = float(CN.projection_loss(sample_t(p), Yj))
         G_end = np.asarray(sample_t(p))
         exact_raw, sv_raw = CN.projection_loss_exact(G_end, Yn)
@@ -234,7 +282,7 @@ def main():
         fits[name] = dict(arch=arch, final_train_loss=final, curve=curve, calibration=calib,
                           final_loss_qr_raw=exact_raw, final_loss_qr_projected=exact_proj,
                           bank_singular_value_ratio=float(sv_raw[-1] / sv_raw[0]),
-                          steps=steps,
+                          steps=steps, **extra,
                           seconds=time.time() - t0,
                           eckart_young_optimum=float(ev[R:K].sum() / ev[:K].sum()))
         BI.save_params(out / f"bank_{name}.npz", p)

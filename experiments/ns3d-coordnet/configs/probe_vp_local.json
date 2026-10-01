@@ -6,40 +6,29 @@
   202609211,
   202609221
  ],
- "bank_cases": 512,
+ "bank_cases": 48,
  "data_meshes": [
-  32,
-  64,
-  96
+  32
  ],
  "dt_truth": 0.001,
  "horizon": 0.2,
- "train_grid": 48,
- "compress_K": 512,
+ "train_grid": 32,
+ "compress_K": 256,
  "seed": 20261001,
- "log_every": 500,
+ "log_every": 50,
  "dev_cases": 16,
  "target_relative": 0.05,
- "floor_meshes": [
-  32,
-  64,
-  96
- ],
+ "floor_meshes": [],
  "prefixes": [
-  8,
   16,
   32,
   48,
-  64,
-  128
+  64
  ],
  "parent_pod_meshes": [],
  "parent_pod_cases": 128,
  "gram_block": 64,
- "derivative_meshes": [
-  32,
-  64
- ],
+ "derivative_meshes": [],
  "sample_chunk_eval": 32768,
  "smoke": {
   "bank_cases": 6,
@@ -84,26 +73,42 @@
    }
   ]
  },
- "rank": 128,
+ "rank": 64,
  "centred": true,
  "architectures": [
   {
-   "name": "A",
-   "width": 512,
-   "depth": 4,
-   "kmax": 4,
-   "train_seconds": 36000,
+   "name": "varpro",
+   "width": 128,
+   "depth": 3,
+   "kmax": 3,
+   "train_seconds": 600,
    "lr": 0.001,
    "final_lr_ratio": 0.001,
-   "warmup": 1000,
+   "warmup": 100,
+   "method": "varpro",
    "band_kcut": 10,
    "band_weight": 1.0
+  },
+  {
+   "name": "adam",
+   "width": 128,
+   "depth": 3,
+   "kmax": 3,
+   "train_seconds": 600,
+   "lr": 0.001,
+   "final_lr_ratio": 0.001,
+   "warmup": 100
   }
  ],
- "name": "bank_r128",
+ "name": "probe_vp",
  "parent_pod_floor_reference": {
   "32": 0.0012472927220064634,
   "64": 0.001289117915622264,
   "96": 0.001289089833132612
+ },
+ "parent_pod_floor_reference_source": {
+  "32": "ns3d-shift-head a2_h32 job 4198840",
+  "64": "a2_h64 job 4198090",
+  "96": "a3_h96 job 4198101"
  }
 }

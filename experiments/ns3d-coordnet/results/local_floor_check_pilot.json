@@ -1,0 +1,38 @@
+{
+  "job": "pilot",
+  "n": 32,
+  "cases": 16,
+  "bank_info": {
+    "n": 32,
+    "leray_removed_worst": 0.0035955541864902563,
+    "leray_removed_median": 0.0015241784537861507,
+    "orthonormality_before_lowdin": 0.01900474862735435,
+    "orthonormality_before_lowdin_spectral": 0.038776556116563034,
+    "lowdin_relative_change": 0.00613022695740857,
+    "lowdin_worst_column_change": 0.012168749542118372,
+    "orthonormality_after": 4.884981308350689e-15
+  },
+  "floors": {
+    "R16": {
+      "local": 0.021212940208615565,
+      "job": 0.021212940208615624,
+      "relative_gap": 2.7804065633134864e-15
+    },
+    "R32": {
+      "local": 0.010525122214169048,
+      "job": 0.010525122214169064,
+      "relative_gap": 1.4833567692709057e-15
+    },
+    "R48": {
+      "local": 0.010054774217375606,
+      "job": 0.010054774217375616,
+      "relative_gap": 1.0351640554866194e-15
+    },
+    "R64": {
+      "local": 0.01004071058659366,
+      "job": 0.010040710586593645,
+      "relative_gap": 1.5549209539648605e-15
+    }
+  },
+  "passed": true
+}

@@ -21,3 +21,9 @@ checkpoints/
 
 # Per-cell run artefacts under best-results/ — these are regenerable, not source.
 best-results/**/__pycache__/
+
+# session lock and LaTeX build intermediates
+.lablog.lock
+*.aux
+*.fls
+*.fdb_latexmk

@@ -67,8 +67,8 @@ def main():
     # ---------------------------------------------------------------- header --
     w("# NS3D: one coordinate-network bank inside the co-moving frame\n")
     w("Lane `exp/2026-10-01-ns3d-coordnet-bank` tests whether **one** trained coordinate-network bank, "
-      "sampled unchanged at $32^3$, $64^3$ and $96^3$, can replace the paper's per-mesh rank-64 centred POD "
-      "bank inside the same co-moving frame, with the same $k=8$ head recipe and solver. "
+      "sampled unchanged at $32^3$, $64^3$ and $96^3$, can serve 3D periodic Navier–Stokes inside the co-moving "
+      "frame in place of the parent lanes' per-mesh rank-64 centred POD bank, with the same $k=8$ head recipe and solver. "
       f"Status: development numbers are final for {', '.join(f'{m}^3' for m in dev) or 'no mesh'}"
       + ("; the 32-case test cohort was opened once and its numbers are final." if test else
          "; the test cohort has **not** been opened.")
@@ -87,13 +87,13 @@ def main():
       "Fourier features $\\sin,\\cos(2\\pi k\\cdot x)$, $\\max_i|k_i|\\le4$ — periodic by construction and "
       "divergence-free in the continuum. At mesh $n$ the bank is read as\n")
     w("$$G_n=\\mathrm{L\\ddot owdin}\\big(P_n\\,n^{-3/2}g_\\phi(x_n)\\,T\\big),$$\n")
-    w("with $P_n$ the full-order solver's discrete space (two-thirds mask and Leray projection), $T$ the paper's "
-      "QR+SVD importance ordering computed once from training states, and Löwdin the closest orthonormal matrix. "
+    w("with $P_n$ the full-order solver's discrete space (two-thirds mask and Leray projection), $T$ the parent "
+      "lanes' QR+SVD importance ordering computed once from training states, and Löwdin the closest orthonormal matrix. "
       "The network was trained once on 3072 centred training states pooled across the three meshes "
       "(one third of the 512 trajectories at each mesh), by the variable-projection objective "
       "$1-\\lVert P_GY\\rVert_F^2/\\lVert Y\\rVert_F^2$ ($Y$ the weighted snapshot matrix compressed to 512 "
-      "singular pairs). At each mesh the paper's $k=8$ head recipe is trained on $G_n^{\\mathsf T}$(centred "
-      "training states) and the reduced model is run beside the paper's own POD-64 head, the CNAB2 ladder and the "
+      "singular pairs). At each mesh the parent lanes' $k=8$ head recipe is trained on $G_n^{\\mathsf T}$(centred "
+      "training states) and the reduced model is run beside the parent lanes' POD-64 head, the CNAB2 ladder and the "
       "controls, in one allocation.\n")
     w("```mermaid\nflowchart LR\n"
       "  D[\"training states<br/>3 meshes, centred\"] --> TR[\"fit g_phi once<br/>(pilot, 30 min)\"]\n"
@@ -109,7 +109,7 @@ def main():
     # ------------------------------------------------------------- bar (a) --
     w("## Bar (a): projection floor of the centred states\n")
     w("Oracle-centroid floor: each development state is centred on its own true energy centroid, projected on "
-      "the bank and shifted back; evolved worst over the 16 development cases. POD-64 is the paper's bank, "
+      "the bank and shifted back; evolved worst over the 16 development cases. POD-64 is the parent lanes' bank, "
       "rebuilt in the same job. Pre-registered bar: coordnet ≤ 1.5 × POD-64 at every mesh. "
       "*A4 (user decision after the pilot): the floor is accepted at about 1 %; the pre-registered bar is "
       "evaluated and reported, not waived.*\n")
@@ -134,7 +134,7 @@ def main():
               f"{num(max(v['relative_gap'] for v in lfc['floors'].values()))} (passed {lfc['passed']}).")
         w("\n")
     if ratios:
-        w(f"**Bar (a) as pre-registered: {yes(all(r <= 1.5 for r in ratios.values()))}** "
+        w(f"Bar (a) as pre-registered: {yes(all(r <= 1.5 for r in ratios.values()))} "
           f"(worst ratio {rx(max(ratios.values()), 1)}). Accepted at about 1 % by the user decision of A4. "
           "The larger ranks that would have answered \"R needed to match POD-64\" were cancelled by the same "
           "decision; that number is **not measured**.\n")
@@ -207,7 +207,7 @@ def main():
             bp[m] = s["rollouts"][hk]["stats"]["evolved_worst"] / s["floors"]["coordnet_R64"]["evolved_worst"]
         sp96 = dev["96"]["comparators"][hk]["speedup"] if "96" in dev else None
         ok_b = bool(len(bp) == 3 and all(v <= 1.5 for v in bp.values()) and sp96 is not None and sp96 >= 5)
-        w(f"**Bar (b′) (A4, user decision, fixed before the ROM jobs): {yes(ok_b)}.** Head worst / coordnet floor "
+        w(f"Bar (b′) (A4, user decision, fixed before the ROM jobs): {yes(ok_b)}. Head worst / coordnet floor "
           + ", ".join(f"{m}^3 {rx(v)}" for m, v in bp.items()) + f" (bar ≤ 1.5x at every mesh); head at 96³ "
           f"{rx(sp96)} CNAB2 (bar ≥ 5x). The original bar (b) (≤ 0.25 % at 96³) "
           + (f"fails: {pct(dev['96']['rollouts'][hk]['stats']['evolved_worst'])}." if "96" in dev else "is not evaluated.") + "\n")
@@ -220,12 +220,12 @@ def main():
             hr = max(hw.values()) / min(hw.values())
             fr = max(fw.values()) / min(fw.values())
             c1, c2, c3, c4 = len(shas) == 1, hr <= 1.25, fr <= 1.25, max(od.values()) <= 1e-3
-            w(f"**Bar (c) (unchanged, the main question): {yes(c1 and c2 and c3 and c4)}.** One bank file in all three "
+            w(f"Bar (c) (unchanged, the main question): {yes(c1 and c2 and c3 and c4)}. One bank file in all three "
               f"jobs: {c1}. Head evolved worst max/min over meshes {hr:.3f} (≤ 1.25: {c2}). Bank floor max/min "
               f"{fr:.3f} (≤ 1.25: {c3}). Pre-Löwdin deviation worst {num(max(od.values()))} (≤ 1e-3: {c4}; "
               "known to fail before the ROM jobs, A4).\n")
             phw = {m: dev[m]["rollouts"]["pod_head_k8"]["stats"]["evolved_worst"] for m in MESHES}
-            w(f"For reference, the paper's per-mesh POD heads in the same jobs: max/min {max(phw.values()) / min(phw.values()):.3f}.\n")
+            w(f"For reference, the parent lanes' per-mesh POD heads in the same jobs: max/min {max(phw.values()) / min(phw.values()):.3f}.\n")
 
     # ----------------------------------------------------------------- test --
     if test:
@@ -313,8 +313,8 @@ def main():
     w("")
 
     # ---------------------------------------------------------- the question --
-    w("## Can the paper say \"one coordinate-network bank across meshes\"?\n")
-    for para in plan["paper_answer"]:
+    w("## Answer to the research question\n")
+    for para in plan["answer"]:
         w(para + "\n")
 
     w("## Open\n")
@@ -350,7 +350,7 @@ def main():
         ("bank $G_n$", "the fixed spatial basis (here 64 vector fields) the reduced state lives in, read at mesh $n$."),
         ("coordinate network (coordnet)", "a neural network evaluated at a point $x$; it returns 64 vector fields at once, so reading it on any grid gives a bank."),
         ("vector potential / curl", "the network outputs $\\psi$; the bank is $\\nabla\\times\\psi$, whose divergence is zero."),
-        ("POD-64", "the paper's bank: the best 64-dimensional linear basis, in mean square, of 768 centred training states, rebuilt at each mesh."),
+        ("POD-64", "the parent lanes' bank: the best 64-dimensional linear basis, in mean square, of 768 centred training states, rebuilt at each mesh."),
         ("same-data POD", "the POD of exactly the data the coordnet was trained on: the best any 64-column bank can do on its training objective."),
         ("centred, co-moving frame, δ", "states are shifted so their energy centroid sits at the origin; the reduced model solves the shift increment δ at every step."),
         ("floor (oracle-centroid floor)", "error of the best reconstruction of a true state in the bank after centring it on its true centroid. A fixed reference, not a strict lower bound for a model that solves its own shift."),
@@ -358,7 +358,7 @@ def main():
         ("worst / floor", "an arm's evolved worst divided by the floor of the bank it lives in; 1 means the solve loses nothing beyond the bank."),
         ("over 5 %", "number of cases whose evolved worst exceeds 5 %."),
         ("prefix $R'$, span arm", "the first $R'$ columns of the importance-ordered bank; the span arm is the linear reduced model in them."),
-        ("head $h$, $k$", "small network mapping $k=8$ numbers to the 64 bank coefficients; the paper's nonlinear trial manifold, trained per mesh."),
+        ("head $h$, $k$", "small network mapping $k=8$ numbers to the 64 bank coefficients; the nonlinear trial manifold, trained per mesh."),
         ("Löwdin", "symmetric orthonormalisation $B(B^{\\mathsf T}B)^{-1/2}$; how much it changes the sampled bank measures how far that reading is from the trained bank."),
         ("$P_n$", "projection on the full-order solver's discrete space at mesh $n$: two-thirds dealiasing mask and divergence-free (Leray) projection."),
         ("pre-Löwdin deviation", "largest entry of $G^{\\mathsf T}G-I$ for the sampled bank before orthonormalisation; zero for a bank that reads identically on every mesh."),

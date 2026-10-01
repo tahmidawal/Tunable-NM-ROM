@@ -1,0 +1,24 @@
+{
+ "dev": {"32": "dev32", "64": "dev64", "96": "dev96"},
+ "test": "test",
+ "fixed_frame_run": "ff64b",
+ "not_computed": [
+  "4711010, 4711011, 4711013, 4711015 (GPU preflight failed on node pax007: no CUDA device; logs in runs/failed_preflight/)",
+  "4711018, 4711019, 4711020 (10 h production fits at R=64/128/256, cancelled after about 25 min by the user decision of A4; logs in runs/cancelled/)"
+ ],
+ "wrong": [
+  "Found by the first Codex audit before any job: the integer Fourier frequencies were in the optimised parameter tree, so Adam would have moved them and broken periodicity without any divergence check noticing. Fixed (gradient zeroed, frequencies asserted at every save/load) before the pilot.",
+  "The pre-registered bank-training plan (5 h, then 10 h fits at R = 64/128/256 with a band-limit penalty) was not carried out: after seeing the pilot's 32³ floor the user froze the 30-minute pilot bank (DESIGN A4). Bar (a) as registered fails; it was relaxed to 'accepted at about 1 %'. Bar (b) (0.25 % at 96³) was replaced by a bar relative to the bank's own floor. The 'R needed to match POD-64' question is unanswered.",
+  "The pilot bank was fitted without the band-limit penalty that the pilot itself showed to be needed: the network has detail finer than a 32³ grid resolves, so the 32³ reading of the bank is a measurably different bank from the 64³/96³ readings (pre-Löwdin deviation and cross-mesh tables). It is the likely cause of the bar (c) failure below (the 32³ reading has the lowest floor; 64³ and 96³ agree closely); this was not tested with a band-limited bank, so it is an inference about this artifact, not a result about the method.",
+  "The autodiff vs FFT derivative disagreement first read as a correctness problem; it is aliasing of the network on the grid (it shrinks when the same network is read finer). The frame uses the exact spectral derivative of the bank actually used, checked in every job; nothing was retracted, but the in-job autodiff comparison remains a flag at 32³.",
+  "One stray, malformed submit command (missing arguments) was issued before the test job; it exited before creating a directory or a job (squeue before and after showed exactly one test job)."
+ ],
+ "answer": [
+  "PLACEHOLDER"
+ ],
+ "open": [
+  "A bank fitted with the band-limit penalty (or read only at meshes that resolve it) is the direct test of whether bar (c) fails because of this artifact's aliasing or because of the approach; the cancelled production fits would have answered it.",
+  "The floor gap to POD-64 is a fitting gap (the training loss of the frozen fit is far above the optimum of its own objective); longer fits or larger ranks were not run.",
+  "The heads are trained per mesh; a single head shared across meshes was not tested."
+ ]
+}

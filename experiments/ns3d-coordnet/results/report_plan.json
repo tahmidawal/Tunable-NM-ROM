@@ -1,5 +1,9 @@
 {
- "dev": {"32": "dev32", "64": "dev64", "96": "dev96"},
+ "dev": {
+  "32": "dev32",
+  "64": "dev64",
+  "96": "dev96"
+ },
  "test": "test",
  "fixed_frame_run": "ff64b",
  "not_computed": [
@@ -8,13 +12,16 @@
  ],
  "wrong": [
   "Found by the first Codex audit before any job: the integer Fourier frequencies were in the optimised parameter tree, so Adam would have moved them and broken periodicity without any divergence check noticing. Fixed (gradient zeroed, frequencies asserted at every save/load) before the pilot.",
-  "The pre-registered bank-training plan (5 h, then 10 h fits at R = 64/128/256 with a band-limit penalty) was not carried out: after seeing the pilot's 32³ floor the user froze the 30-minute pilot bank (DESIGN A4). Bar (a) as registered fails; it was relaxed to 'accepted at about 1 %'. Bar (b) (0.25 % at 96³) was replaced by a bar relative to the bank's own floor. The 'R needed to match POD-64' question is unanswered.",
-  "The pilot bank was fitted without the band-limit penalty that the pilot itself showed to be needed: the network has detail finer than a 32³ grid resolves, so the 32³ reading of the bank is a measurably different bank from the 64³/96³ readings (pre-Löwdin deviation and cross-mesh tables). It is the likely cause of the bar (c) failure below (the 32³ reading has the lowest floor; 64³ and 96³ agree closely); this was not tested with a band-limited bank, so it is an inference about this artifact, not a result about the method.",
-  "The autodiff vs FFT derivative disagreement first read as a correctness problem; it is aliasing of the network on the grid (it shrinks when the same network is read finer). The frame uses the exact spectral derivative of the bank actually used, checked in every job; nothing was retracted, but the in-job autodiff comparison remains a flag at 32³.",
-  "One stray, malformed submit command (missing arguments) was issued before the test job; it exited before creating a directory or a job (squeue before and after showed exactly one test job)."
+  "The pre-registered bank-training plan (5 h, then 10 h fits at R = 64/128/256 with a band-limit penalty) was not carried out: after seeing the pilot's 32\u00b3 floor the user froze the 30-minute pilot bank (DESIGN A4). Bar (a) as registered fails; it was relaxed to 'accepted at about 1 %'. Bar (b) (0.25 % at 96\u00b3) was replaced by a bar relative to the bank's own floor. The 'R needed to match POD-64' question is unanswered.",
+  "The pilot bank was fitted without the band-limit penalty that the pilot itself showed to be needed: the network has detail finer than a 32\u00b3 grid resolves, so the 32\u00b3 reading of the bank is a measurably different bank from the 64\u00b3/96\u00b3 readings (pre-L\u00f6wdin deviation and cross-mesh tables). It is the likely cause of the bar (c) failure below (the 32\u00b3 reading has the lowest floor; 64\u00b3 and 96\u00b3 agree closely); this was not tested with a band-limited bank, so it is an inference about this artifact, not a result about the method.",
+  "The autodiff vs FFT derivative disagreement first read as a correctness problem; it is aliasing of the network on the grid (it shrinks when the same network is read finer). The frame uses the exact spectral derivative of the bank actually used, checked in every job; nothing was retracted, but the in-job autodiff comparison remains a flag at 32\u00b3.",
+  "One stray, malformed submit command (missing arguments) was issued before the test job; it exited before creating a directory or a job (squeue before and after showed exactly one test job).",
+  "Gate wording: a job's `status: final` means its integrity gates passed; it is not a verdict on the bars, which this report evaluates."
  ],
  "answer": [
-  "PLACEHOLDER"
+  "**Yes, mechanically; no, as a drop-in replacement at the POD's accuracy.** One frozen network file, read at 32\u00b3, 64\u00b3 and 96\u00b3 with no per-mesh fitting of the bank, runs the co-moving reduced model at every mesh: the frame solves its shift, the frame-frozen control fails as it must, and the $k=8$ head sits within a few per cent of its bank's floor on development and on test (tables above). At 96\u00b3 the head is faster than its CNAB2 comparator by more than the 5x bar on both cohorts.",
+  "**Accuracy is set by the bank, and this bank is about an order of magnitude less accurate than the per-mesh POD.** The frozen fit's floor is several times the POD-64 floor at every mesh and its training loss is far above the optimum of its own objective, so this is a fitting shortfall of a 30-minute fit, not a limit shown for the approach. The bars were relaxed after the pilot by the user (A4); judged by the pre-registered bars (a) and (b) the result fails.",
+  "**Bar (c), the main question, fails as pre-registered.** The head error and the floor at 64\u00b3 and 96\u00b3 agree closely, but the 32\u00b3 reading is a measurably different bank (lower floor, pre-L\u00f6wdin deviation an order of magnitude larger, columns differing by more than ten per cent after restriction), because the unpenalised network carries detail a 32\u00b3 grid cannot resolve. The head's max/min ratio passes 1.25 on development, the floor's ratio misses it narrowly, and the orthonormality sub-criterion fails at every mesh. So the statement that holds is: one coordinate-network bank can be read on every mesh that resolves it and gives mesh-consistent errors there; on a mesh that does not resolve it, it becomes a different (here, slightly better) bank. Whether a band-limited fit removes the 32\u00b3 discrepancy is open."
  ],
  "open": [
   "A bank fitted with the band-limit penalty (or read only at meshes that resolve it) is the direct test of whether bar (c) fails because of this artifact's aliasing or because of the approach; the cancelled production fits would have answered it.",

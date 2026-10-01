@@ -1,0 +1,233 @@
+host=pax049 source_commit=a5ed12600d3ecdee72752de8516b95275e2d335b job=4717237 mode=test config=experiments/ns3d-coordnet/configs/test32.json,experiments/ns3d-coordnet/configs/test64.json,experiments/ns3d-coordnet/configs/test96.json
+NVIDIA A100 80GB PCIe, GPU-ddaed0e6-973b-70bc-7131-3e8516bfa534, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  987G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+test disjointness (rounded-row overlaps): {'202609201': 0, '202609202': 0, '202609203': 0, '202609211': 0}
+POD reference bank: parent recipe
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=8.493e-10 energy_tail=1.408e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+POD bank rebuild vs the paper's probe: 3.093e-13
+coordnet bank at 32^3: {'n': 32, 'leray_removed_worst': 0.0035955541864902555, 'leray_removed_median': 0.0015241784537861507, 'orthonormality_before_lowdin': 0.019004748627354462, 'orthonormality_before_lowdin_spectral': 0.03877655611656324, 'lowdin_relative_change': 0.00613022695740823, 'lowdin_worst_column_change': 0.0121687495421181, 'orthonormality_after': 3.219646771412954e-15, 'prefix': None}
+generating evaluation trajectories
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+coordnet D_d autodiff vs spectral: 4.912e-03
+floors: pod_R64=0.001890, coordnet_R8=0.063367, coordnet_R16=0.024006, coordnet_R32=0.011324, coordnet_R48=0.010763, coordnet_R64=0.010757
+head floors: pod 0.001893 coordnet 0.010757
+coordnet_head_k8: evolved worst 0.010848
+pod_head_k8: evolved worst 0.002056
+pod_linear_R64: evolved worst 0.010927
+coordnet_span64: evolved worst 0.017448
+coordnet_span48: evolved worst 0.016262
+coordnet_span32: evolved worst 0.016092
+coordnet_span16: evolved worst 0.028330
+coordnet_span8: evolved worst 0.062419
+POD reproduction vs the paper's job: {'pod_head_k8': 1.9796469151456275e-13}
+control frame-zero (coordnet head): 0.4246
+coordnet head parity vs LM: 3.199e-09
+CNAB2 steps=200: 0.000000
+CNAB2 steps=100: 0.000229
+CNAB2 steps=80: 0.000401
+CNAB2 steps=70: 0.000547
+CNAB2 steps=60: 0.000774
+CNAB2 steps=50: 0.001151
+CNAB2 steps=40: 0.001854
+CNAB2 steps=20: 0.032511
+CNAB2 steps=10: 2.945019
+timing gate True; timed outputs vs accuracy pass 0.000e+00
+speedups: coordnet_head_k8=0.93, pod_head_k8=0.94, pod_linear_R64=1.00, coordnet_span64=1.00, coordnet_span48=1.39, coordnet_span32=1.41, coordnet_span16=1.62, coordnet_span8=0.94
+done; failures: ['flag (bar c): orthonormality before Lowdin 1.90e-02', 'flag: D_d autodiff vs spectral 4.91e-03 > 1e-4']
+control: perturbed copy of coordnet_head_k8 gap 1.417e-04 rejected=True (gap 1.417e-04 > 1e-12)
+coordnet_head_k8 {"dtype": "float64", "gap": 6.245004513516506e-17, "ok": true, "reason": "ok", "evolved_worst": 0.010847564525050429}
+coordnet_span16 {"dtype": "float64", "gap": 1.457167719820518e-16, "ok": true, "reason": "ok", "evolved_worst": 0.02833021461647105}
+coordnet_span32 {"dtype": "float64", "gap": 9.8879238130678e-17, "ok": true, "reason": "ok", "evolved_worst": 0.016091754005660704}
+coordnet_span48 {"dtype": "float64", "gap": 7.979727989493313e-17, "ok": true, "reason": "ok", "evolved_worst": 0.016262229571143247}
+coordnet_span64 {"dtype": "float64", "gap": 1.2836953722228372e-16, "ok": true, "reason": "ok", "evolved_worst": 0.017447681033640895}
+coordnet_span8 {"dtype": "float64", "gap": 2.983724378680108e-16, "ok": true, "reason": "ok", "evolved_worst": 0.06241891567953237}
+pod_head_k8 {"dtype": "float64", "gap": 1.0408340855860843e-17, "ok": true, "reason": "ok", "evolved_worst": 0.0020562388579897432}
+pod_linear_R64 {"dtype": "float64", "gap": 3.469446951953614e-17, "ok": true, "reason": "ok", "evolved_worst": 0.010926647222806759}
+control_frame_zero {"dtype": "float64", "gap": 2.220446049250313e-15, "ok": true, "reason": "ok", "evolved_worst": 0.4245816076786171}
+cnab2_s10 {"dtype": "float32", "gap": 8.77815711971278e-09, "ok": true, "reason": "ok", "evolved_worst": 2.945019384015445}
+cnab2_s100 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00022866408501761245}
+cnab2_s20 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.03251082465523689}
+cnab2_s200 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 2.5111142079028777e-08}
+cnab2_s40 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0018537891091402934}
+cnab2_s50 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0011512809651526223}
+cnab2_s60 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0007736750935589044}
+cnab2_s70 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0005471844600090874}
+cnab2_s80 {"dtype": "float32", "gap": 2.5851842788956403e-08, "ok": true, "reason": "ok", "evolved_worst": 0.000400620166251272}
+floor audit {'rank': 64, 'local': 0.010757252857242588, 'claimed': 0.010757252857242588, 'relative_gap': 0.0}
+verify ok
+MESH=output/test32 RUN_EXIT=0 VERIFY_EXIT=0
+test disjointness (rounded-row overlaps): {'202609201': 0, '202609202': 0, '202609203': 0, '202609211': 0}
+POD reference bank: parent recipe
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.336e-09 energy_tail=1.413e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+POD bank rebuild vs the paper's probe: 2.818e-13
+coordnet bank at 64^3: {'n': 64, 'leray_removed_worst': 2.13351877755295e-05, 'leray_removed_median': 9.668101962559895e-06, 'orthonormality_before_lowdin': 0.0013576638304650945, 'orthonormality_before_lowdin_spectral': 0.0023745637158143094, 'lowdin_relative_change': 0.0004985389481773376, 'lowdin_worst_column_change': 0.0007672175762755204, 'orthonormality_after': 4.218847493575595e-15, 'prefix': None}
+generating evaluation trajectories
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+coordnet D_d autodiff vs spectral: 3.700e-05
+floors: pod_R64=0.001907, coordnet_R8=0.063630, coordnet_R16=0.024804, coordnet_R32=0.013099, coordnet_R48=0.012590, coordnet_R64=0.012586
+head floors: pod 0.001913 coordnet 0.012587
+coordnet_head_k8: evolved worst 0.012650
+pod_head_k8: evolved worst 0.002084
+pod_linear_R64: evolved worst 0.011232
+coordnet_span64: evolved worst 0.018650
+coordnet_span48: evolved worst 0.017541
+coordnet_span32: evolved worst 0.017769
+coordnet_span16: evolved worst 0.029021
+coordnet_span8: evolved worst 0.062702
+POD reproduction vs the paper's job: {'pod_head_k8': 4.417286848801272e-13}
+control frame-zero (coordnet head): 0.4239
+coordnet head parity vs LM: 7.500e-10
+CNAB2 steps=200: 0.000000
+CNAB2 steps=100: 0.000225
+CNAB2 steps=80: 0.000394
+CNAB2 steps=70: 0.000538
+CNAB2 steps=60: 0.000760
+CNAB2 steps=50: 0.001232
+CNAB2 steps=40: 0.196940
+CNAB2 steps=20: 18268657.261737
+CNAB2 steps=10: 25.125423
+timing gate True; timed outputs vs accuracy pass 0.000e+00
+speedups: coordnet_head_k8=3.04, pod_head_k8=3.04, pod_linear_R64=3.21, coordnet_span64=3.19, coordnet_span48=4.19, coordnet_span32=4.51, coordnet_span16=5.30, coordnet_span8=5.77
+done; failures: ['flag (bar c): orthonormality before Lowdin 1.36e-03']
+control: perturbed copy of coordnet_head_k8 gap 1.061e-04 rejected=True (gap 1.061e-04 > 1e-12)
+coordnet_head_k8 {"dtype": "float64", "gap": 2.949029909160572e-16, "ok": true, "reason": "ok", "evolved_worst": 0.012650487052516448}
+coordnet_span16 {"dtype": "float64", "gap": 3.7643499428696714e-16, "ok": true, "reason": "ok", "evolved_worst": 0.029021132655035527}
+coordnet_span32 {"dtype": "float64", "gap": 3.0878077872387166e-16, "ok": true, "reason": "ok", "evolved_worst": 0.017769328711394854}
+coordnet_span48 {"dtype": "float64", "gap": 3.226585665316861e-16, "ok": true, "reason": "ok", "evolved_worst": 0.01754099404669378}
+coordnet_span64 {"dtype": "float64", "gap": 2.8796409701215e-16, "ok": true, "reason": "ok", "evolved_worst": 0.018649769520129037}
+coordnet_span8 {"dtype": "float64", "gap": 9.43689570931383e-16, "ok": true, "reason": "ok", "evolved_worst": 0.0627019363180653}
+pod_head_k8 {"dtype": "float64", "gap": 3.686287386450715e-17, "ok": true, "reason": "ok", "evolved_worst": 0.0020835653071704266}
+pod_linear_R64 {"dtype": "float64", "gap": 1.8301332671555315e-16, "ok": true, "reason": "ok", "evolved_worst": 0.011232121630515108}
+control_frame_zero {"dtype": "float64", "gap": 5.2735593669694936e-15, "ok": true, "reason": "ok", "evolved_worst": 0.42388378365900775}
+cnab2_s10 {"dtype": "float32", "gap": 2.1281337099739363e-09, "ok": true, "reason": "ok", "evolved_worst": 25.12542279037396}
+cnab2_s100 {"dtype": "float32", "gap": 2.571376632981076e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00022492426601178415}
+cnab2_s20 {"dtype": "float32", "gap": 8.834990731657643e-11, "ok": true, "reason": "ok", "evolved_worst": 18268657.260123394}
+cnab2_s200 {"dtype": "float32", "gap": 2.571376632981076e-08, "ok": true, "reason": "ok", "evolved_worst": 2.5233395658062612e-08}
+cnab2_s40 {"dtype": "float32", "gap": 2.571376632981076e-08, "ok": true, "reason": "ok", "evolved_worst": 0.19694021228761924}
+cnab2_s50 {"dtype": "float32", "gap": 2.571376632981076e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0012316557865212467}
+cnab2_s60 {"dtype": "float32", "gap": 2.571376632981076e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0007600934952690988}
+cnab2_s70 {"dtype": "float32", "gap": 2.571376632981076e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0005378711989524235}
+cnab2_s80 {"dtype": "float32", "gap": 2.571376632981076e-08, "ok": true, "reason": "ok", "evolved_worst": 0.000393929346018137}
+floor audit {'rank': 64, 'local': 0.012586410894826124, 'claimed': 0.012586410894826124, 'relative_gap': 0.0}
+verify ok
+MESH=output/test64 RUN_EXIT=0 VERIFY_EXIT=0
+test disjointness (rounded-row overlaps): {'202609201': 0, '202609202': 0, '202609203': 0, '202609211': 0}
+POD reference bank: parent recipe
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=2.338e-09 energy_tail=1.413e-08
+generated 1/4 dt=0.001
+generated 4/4 dt=0.001
+POD bank rebuild vs the paper's probe: 2.031e-13
+coordnet bank at 96^3: {'n': 96, 'leray_removed_worst': 5.163955956387142e-07, 'leray_removed_median': 1.980409700164039e-07, 'orthonormality_before_lowdin': 0.001486642155524187, 'orthonormality_before_lowdin_spectral': 0.0025673219369059547, 'lowdin_relative_change': 0.0005316195405463938, 'lowdin_worst_column_change': 0.000841246935972621, 'orthonormality_after': 5.995204332975845e-15, 'prefix': None}
+generating evaluation trajectories
+generated 1/32 dt=0.001
+generated 32/32 dt=0.001
+coordnet D_d autodiff vs spectral: 1.509e-07
+floors: pod_R64=0.001907, coordnet_R8=0.063649, coordnet_R16=0.024862, coordnet_R32=0.013208, coordnet_R48=0.012727, coordnet_R64=0.012723
+head floors: pod 0.001913 coordnet 0.012723
+coordnet_head_k8: evolved worst 0.012792
+pod_head_k8: evolved worst 0.002068
+pod_linear_R64: evolved worst 0.011232
+coordnet_span64: evolved worst 0.018710
+coordnet_span48: evolved worst 0.017627
+coordnet_span32: evolved worst 0.017854
+coordnet_span16: evolved worst 0.029070
+coordnet_span8: evolved worst 0.062722
+POD reproduction vs the paper's job: {'pod_head_k8': 2.887119796707305e-13}
+control frame-zero (coordnet head): 0.4257
+coordnet head parity vs LM: 1.487e-09
+CNAB2 steps=200: 0.000000
+CNAB2 steps=100: 0.000225
+CNAB2 steps=80: 0.000394
+CNAB2 steps=70: 0.000561
+CNAB2 steps=60: 0.047382
+CNAB2 steps=50: 26941.749234
+CNAB2 steps=40: 3981387513732642853053511053082624.000000
+CNAB2 steps=20: 933040489.727997
+CNAB2 steps=10: 25.829890
+timing gate True; timed outputs vs accuracy pass 0.000e+00
+speedups: coordnet_head_k8=7.92, pod_head_k8=7.92, pod_linear_R64=8.18, coordnet_span64=8.13, coordnet_span48=9.87, coordnet_span32=10.91, coordnet_span16=13.79, coordnet_span8=13.39
+done; failures: ['flag (bar c): orthonormality before Lowdin 1.49e-03']
+control: perturbed copy of coordnet_head_k8 gap 1.025e-04 rejected=True (gap 1.025e-04 > 1e-12)
+coordnet_head_k8 {"dtype": "float64", "gap": 5.238864897449957e-16, "ok": true, "reason": "ok", "evolved_worst": 0.01279171121280196}
+coordnet_span16 {"dtype": "float64", "gap": 1.1345091532888318e-15, "ok": true, "reason": "ok", "evolved_worst": 0.02906993006593561}
+coordnet_span32 {"dtype": "float64", "gap": 7.875644580934704e-16, "ok": true, "reason": "ok", "evolved_worst": 0.017853846916113948}
+coordnet_span48 {"dtype": "float64", "gap": 7.875644580934704e-16, "ok": true, "reason": "ok", "evolved_worst": 0.017626789406946026}
+coordnet_span64 {"dtype": "float64", "gap": 7.303185833862358e-16, "ok": true, "reason": "ok", "evolved_worst": 0.0187100135392484}
+coordnet_span8 {"dtype": "float64", "gap": 2.4771851236948805e-15, "ok": true, "reason": "ok", "evolved_worst": 0.06272231445527919}
+pod_head_k8 {"dtype": "float64", "gap": 9.64939933512099e-17, "ok": true, "reason": "ok", "evolved_worst": 0.002068056700098561}
+pod_linear_R64 {"dtype": "float64", "gap": 5.84601811404184e-16, "ok": true, "reason": "ok", "evolved_worst": 0.011231645756943373}
+control_frame_zero {"dtype": "float64", "gap": 1.404432126150823e-14, "ok": true, "reason": "ok", "evolved_worst": 0.42570492390787035}
+cnab2_s10 {"dtype": "float32", "gap": 9.909362264415255e-10, "ok": true, "reason": "ok", "evolved_worst": 25.829889977841308}
+cnab2_s100 {"dtype": "float32", "gap": 2.5595773709215522e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00022491313480453888}
+cnab2_s20 {"dtype": "float32", "gap": 9.935756370561883e-10, "ok": true, "reason": "ok", "evolved_worst": 933040490.6550437}
+cnab2_s200 {"dtype": "float32", "gap": 2.5595773709215522e-08, "ok": true, "reason": "ok", "evolved_worst": 2.515934379664938e-08}
+cnab2_s40 {"dtype": "float32", "gap": 1.2297741501450764e-09, "ok": true, "reason": "ok", "evolved_worst": 3.9813875088364354e+33}
+cnab2_s50 {"dtype": "float32", "gap": 1.77486001863696e-09, "ok": true, "reason": "ok", "evolved_worst": 26941.749185869576}
+cnab2_s60 {"dtype": "float32", "gap": 2.5595773709215522e-08, "ok": true, "reason": "ok", "evolved_worst": 0.04738243826843859}
+cnab2_s70 {"dtype": "float32", "gap": 2.5595773709215522e-08, "ok": true, "reason": "ok", "evolved_worst": 0.0005611016847873081}
+cnab2_s80 {"dtype": "float32", "gap": 2.5595773709215522e-08, "ok": true, "reason": "ok", "evolved_worst": 0.00039390814722642273}
+floor audit {'rank': 64, 'local': 0.012722742664833007, 'claimed': 0.012722742664833028, 'relative_gap': 1.6361787910134456e-15}
+verify ok
+MESH=output/test96 RUN_EXIT=0 VERIFY_EXIT=0
+ALL_EXIT=0

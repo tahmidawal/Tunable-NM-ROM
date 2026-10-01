@@ -34,7 +34,7 @@ CFGS=""
 for C in ${CONFIG//,/ }; do CFGS="$CFGS,experiments/ns3d-coordnet/$C"; done
 ARGS="$MODE ${CFGS#,}"
 [[ -n "$FROZEN" ]] && ARGS="$ARGS frozen"
-ID=$(ssh tufts-login "cd $DEST && sbatch --parsable --job-name=nscoord_$JOB --gres=$GRES --mem=$MEM --time=$TIME \
+ID=$(ssh tufts-login "cd $DEST && sbatch --parsable ${SBATCH_EXTRA:-} --job-name=nscoord_$JOB --gres=$GRES --mem=$MEM --time=$TIME \
   --output=$DEST/logs/%j.out --error=$DEST/logs/%j.err \
   experiments/ns3d-coordnet/cluster/job.sbatch $ARGS")
 echo "submitted job $ID into $DEST"

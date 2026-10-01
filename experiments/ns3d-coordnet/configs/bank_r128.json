@@ -92,11 +92,16 @@
    "width": 512,
    "depth": 4,
    "kmax": 4,
-   "train_seconds": 18000,
+   "train_seconds": 36000,
    "lr": 0.001,
    "final_lr_ratio": 0.001,
    "warmup": 1000
   }
  ],
- "name": "bank_r128"
+ "name": "bank_r128",
+ "parent_pod_floor_reference": {
+  "32": 0.0012472927220064634,
+  "64": 0.001289117915622264,
+  "96": 0.001289089833132612
+ }
 }

@@ -1,0 +1,78 @@
+host=pax049 source_commit=962be67eda85e92284d134ecb648f7a3c860dd1a job=4708239 mode=bank config=experiments/ns3d-coordnet/configs/bank_pilot.json
+NVIDIA A100 80GB PCIe, GPU-95775fab-6b7d-1937-324d-130dfd74fcdb, 81920 MiB
+10.235.106.35:/projects/paralab  4.6T  987G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+bank data 64/512
+bank data 128/512
+bank data 192/512
+bank data 256/512
+bank data 320/512
+bank data 384/512
+bank data 448/512
+bank data 512/512
+data: {'states': 3072, 'cases': 512, 'meshes': [32, 64, 96], 'train_grid': 48, 'centred': True, 'resample_dropped_energy_worst': 6.7325367503201505e-09, 'state_sha256': '48fa74454462e92b14866c44582413b337d4daa8d076dc7c8820c1131fcdc472'}
+compression K=512 tail=1.044e-12
+[A] calibration: 303.1 ms/step -> 5500 steps
+  [A] step 500/5500 loss 2.4812e-03 (153s)
+  [A] step 1000/5500 loss 6.2231e-04 (305s)
+  [A] step 1500/5500 loss 2.8065e-04 (456s)
+  [A] step 2000/5500 loss 1.5225e-04 (608s)
+  [A] step 2500/5500 loss 1.0797e-04 (759s)
+  [A] step 3000/5500 loss 8.2596e-05 (911s)
+  [A] step 3500/5500 loss 6.7809e-05 (1062s)
+  [A] step 4000/5500 loss 5.9165e-05 (1214s)
+  [A] step 4500/5500 loss 5.4394e-05 (1366s)
+  [A] step 5000/5500 loss 5.2335e-05 (1517s)
+  [A] step 5500/5500 loss 5.1948e-05 (1669s)
+[A] final training loss 5.1948e-05 (optimum at R 3.7295e-07)
+[B] calibration: 590.2 ms/step -> 4000 steps
+  [B] step 500/4000 loss 2.7080e-03 (296s)
+  [B] step 1000/4000 loss 6.3407e-04 (591s)
+  [B] step 1500/4000 loss 2.8384e-04 (886s)
+  [B] step 2000/4000 loss 1.7696e-04 (1182s)
+  [B] step 2500/4000 loss 1.2993e-04 (1477s)
+  [B] step 3000/4000 loss 1.0823e-04 (1772s)
+  [B] step 3500/4000 loss 9.9655e-05 (2067s)
+  [B] step 4000/4000 loss 9.8148e-05 (2362s)
+[B] final training loss 9.8148e-05 (optimum at R 3.7295e-07)
+[C] calibration: 630.1 ms/step -> 4000 steps
+  [C] step 500/4000 loss 4.9502e-03 (316s)
+  [C] step 1000/4000 loss 1.2318e-03 (632s)
+  [C] step 1500/4000 loss 9.6497e-04 (947s)
+  [C] step 2000/4000 loss 3.4742e-04 (1262s)
+  [C] step 2500/4000 loss 2.2972e-04 (1577s)
+  [C] step 3000/4000 loss 1.9008e-04 (1892s)
+  [C] step 3500/4000 loss 1.7436e-04 (2207s)
+  [C] step 4000/4000 loss 1.7159e-04 (2522s)
+[C] final training loss 1.7159e-04 (optimum at R 3.7295e-07)
+selected architecture by training loss: A
+floors at 32^3
+generated 1/16 dt=0.001
+generated 16/16 dt=0.001
+  coordnet R'=16: evolved worst 0.021213
+  coordnet R'=32: evolved worst 0.010525
+  coordnet R'=48: evolved worst 0.010055
+  coordnet R'=64: evolved worst 0.010041
+generated 1/128 dt=0.001
+generated 32/128 dt=0.001
+generated 64/128 dt=0.001
+generated 96/128 dt=0.001
+generated 128/128 dt=0.001
+gram rows 64/768
+gram rows 128/768
+gram rows 192/768
+gram rows 256/768
+gram rows 320/768
+gram rows 384/768
+gram rows 448/768
+gram rows 512/768
+gram rows 576/768
+gram rows 640/768
+gram rows 704/768
+gram rows 768/768
+eigh dimension 768
+pod rank=64 orth=8.632e-10 energy_tail=1.408e-08
+  parent POD-64: evolved worst 0.001247
+  derivative check: {'n': 32, 'relative_per_direction': [0.15931775591949537, 0.15248549415701562, 0.15202523308069554], 'worst_column': 0.17465644520781354}
+done; failures: ['orthonormality before Lowdin 1.90e-02 at 32^3 (> 1e-3, bar c flag)']
+RUN_EXIT=0 VERIFY_EXIT=0

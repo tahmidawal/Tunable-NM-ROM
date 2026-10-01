@@ -128,10 +128,12 @@ def check_frequencies(p):
 
 def projection_loss_exact(G, Y):
     """The same objective certified by a NumPy QR (no Gram matrix, no ridge)."""
-    Q, Rf = np.linalg.qr(np.asarray(G))
-    sv = np.linalg.svd(Rf, compute_uv=False)
+    U, sv, _ = np.linalg.svd(np.asarray(G), full_matrices=False)
+    rank = int(np.sum(sv > sv[0] * 1e-12))
+    if rank < G.shape[1]:
+        raise RuntimeError(f"bank is numerically rank-deficient: rank {rank} < {G.shape[1]}")
     Y = np.asarray(Y)
-    W = Q.T @ Y
+    W = U.T @ Y
     return float(1.0 - np.sum(W * W) / np.sum(Y * Y)), sv
 
 

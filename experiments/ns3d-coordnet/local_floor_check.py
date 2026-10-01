@@ -57,10 +57,13 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--job", required=True)
     ap.add_argument("--n", type=int, default=32)
-    ap.add_argument("--cases", type=int, default=16)
     args = ap.parse_args()
     run = HERE / "runs" / args.job / "output"
     summary = json.loads((run / "summary.json").read_text())
+    cfg = summary["config"]
+    if not cfg.get("centred", True):
+        raise SystemExit("local floor check covers centred banks only")
+    args.cases = int(cfg["dev_cases"])
     bank = run / "bank_selected.npz"
     p = BI.load_params(bank)
     T = np.load(bank)["T"]
@@ -68,8 +71,9 @@ def main():
     G, info = BI.mesh_bank(p, T, n)
     info.pop("lowdin_factor")
     par = F.parameters(int(summary["config"]["dev_seed"]), args.cases)
-    steps = 200
-    solver = F.make_solver(0.001, steps, steps // 5)
+    dt, horizon = float(cfg["dt_truth"]), float(cfg["horizon"])
+    steps = int(round(horizon / dt))
+    solver = F.make_solver(dt, steps, steps // 5)
     geom = F.geometry(n)
     R = G.shape[1]
     prefixes = sorted({int(x) for x in summary["config"]["prefixes"] if int(x) <= R} | {R})
@@ -94,6 +98,8 @@ def main():
     (HERE / "results" / f"local_floor_check_{args.job}.json").write_text(
         json.dumps(payload, indent=2) + "\n")
     print(json.dumps(payload, indent=2))
+    if not payload["passed"]:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

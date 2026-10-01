@@ -54,6 +54,11 @@ def accept(fields, truth, claimed_errors, stats, dtype, target):
         return False, float("inf"), None, "nonfinite field values"
     errors = relative(fields, truth)
     claimed_errors = np.asarray(claimed_errors, dtype=np.float64)
+    if claimed_errors.shape != truth.shape[:2]:
+        return False, float("inf"), None, f"claimed error shape {claimed_errors.shape}"
+    for key in ("evolved_worst", "evolved_median"):
+        if not np.isfinite(stats[key]):
+            return False, float("inf"), None, f"nonfinite claimed {key}"
     if not (np.all(np.isfinite(errors)) and np.all(np.isfinite(claimed_errors))):
         return False, float("inf"), None, "nonfinite errors"
     evolved = errors[:, 1:].max(axis=1)

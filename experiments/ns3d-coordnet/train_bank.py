@@ -200,7 +200,8 @@ def main():
             per_step = (time.time() - t_c) / every
             # 3 % reserve for logging / checkpoints / recompilation
             steps = int(0.97 * float(arch["train_seconds"]) / per_step) // every * every
-            steps = max(steps, 4 * int(arch.get("warmup", 1000)), every)
+            if steps < 4 * int(arch.get("warmup", 1000)):
+                raise RuntimeError(f"budget too small: {steps} steps < 4 x warm-up")
             calib = dict(seconds_per_step=per_step, steps=steps)
             del cp, cs, cchunk
             log(f"[{name}] calibration: {per_step * 1e3:.1f} ms/step -> {steps} steps")
@@ -307,8 +308,8 @@ def main():
                     gapp = abs(entry["parent_pod_R64"]["evolved_worst"] - want) / want
                     entry["parent_pod_R64_reproduction"] = dict(reference=want, relative_gap=gapp,
                                                                 passed=bool(gapp <= 1e-6))
-                    if gapp > 1e-6:
-                        failures.append(f"parent POD-64 floor at {n}^3 not reproduced: {gapp:.2e}")
+                    if not gapp <= 1e-6:
+                        failures.append(f"HARD: parent POD-64 floor at {n}^3 not reproduced: {gapp:.2e}")
                 del basis, Gpod
                 log(f"  parent POD-64: evolved worst {entry['parent_pod_R64']['evolved_worst']:.6f}")
         else:
@@ -339,6 +340,8 @@ def main():
             entry["cross_mesh_vs_smallest"] = dict(against=int(n0), worst_column=float(col.max()),
                                                    median_column=float(np.median(col)))
             log(f"  cross-mesh consistency vs {n0}^3: worst column {col.max():.3e}")
+            if not col.max() <= 1e-3:
+                failures.append(f"flag (bar c): cross-mesh column discrepancy {col.max():.2e} at {n}^3 vs {n0}^3")
         floors[str(n)] = entry
         del dev, Gn
         gc.collect()
@@ -349,9 +352,12 @@ def main():
     vel = CN.velocity(p, pts)
     report["autodiff_divergence_relative"] = float(jnp.max(jnp.abs(div)) / jnp.max(jnp.abs(vel)))
     report["failures"] = failures
-    report["status"] = "final" if not failures else "flagged"
+    hard = [f for f in failures if f.startswith("HARD")]
+    report["status"] = "failed-gates" if hard else ("flagged" if failures else "final")
     dump()
     log(f"done; failures: {failures}")
+    if hard:
+        sys.exit(3)
 
 
 if __name__ == "__main__":

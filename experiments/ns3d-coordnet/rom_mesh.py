@@ -180,6 +180,8 @@ def main():
     lowdin_S = binfo.pop("lowdin_factor")
     prefix = cfg.get("bank_prefix")
     if prefix is not None:
+        if not (isinstance(prefix, int) and 1 <= prefix <= Gc.shape[1]):
+            raise RuntimeError(f"invalid bank_prefix {prefix} for a rank-{Gc.shape[1]} bank")
         # the full bank's normalisation, THEN the ordered prefix (as its floor was measured)
         Gc = np.ascontiguousarray(Gc[:, :int(prefix)])
         lowdin_S = lowdin_S[:, :int(prefix)]
@@ -213,7 +215,7 @@ def main():
     report["coordnet_Dd_autodiff_vs_spectral"] = float(
         np.linalg.norm(D_auto - D_used) / np.linalg.norm(D_used))
     log(f"coordnet D_d autodiff vs spectral: {report['coordnet_Dd_autodiff_vs_spectral']:.3e}")
-    if report["coordnet_Dd_autodiff_vs_spectral"] > 1e-4:
+    if not report["coordnet_Dd_autodiff_vs_spectral"] <= 1e-4:
         failures.append(f"flag: D_d autodiff vs spectral {report['coordnet_Dd_autodiff_vs_spectral']:.2e} > 1e-4")
     Gpj, Gcj = jnp.asarray(Gpod), jnp.asarray(Gc)
     opsj_p = (Gpj, jnp.asarray(ops_p["A"]), jnp.asarray(ops_p["T"]), jnp.asarray(ops_p["lam"]),
@@ -409,7 +411,7 @@ def main():
         got = fn(jnp.asarray(dev[case, 0]), float(viscosities[case]))
         gaps.append(float(jnp.linalg.norm(got - f_ref) / jnp.linalg.norm(f_ref)))
     report["coordnet_head_parity_vs_lm"] = dict(cases=len(gaps), worst=max(gaps), gaps=gaps)
-    if not max(gaps) <= 1e-6:
+    if not (np.all(np.isfinite(gaps)) and max(gaps) <= 1e-6):
         failures.append(f"coordnet head driver parity vs LM {max(gaps):.2e} > 1e-6")
     log(f"coordnet head parity vs LM: {max(gaps):.3e}")
     dump()
@@ -471,14 +473,17 @@ def main():
         if src.get("errors") is None:
             continue
         e = rel_case(np.asarray(value).reshape(dev.shape[1:]), dev, case)
-        agree = max(agree, float(np.max(np.abs(e - np.asarray(src["errors"][case])))))
+        d = float(np.max(np.abs(e - np.asarray(src["errors"][case]))))
+        agree = d if not np.isfinite(d) else max(agree, d)
+        if not np.isfinite(agree):
+            break
     report["timing"] = dict(case=case, fast=t_fast, sentinels_before=t_sent0,
                             sentinels_end=t_sent1, gate=gate, gate_passed=bool(passed),
                             timed_output_error_agreement=agree)
     log(f"timing gate {passed}; timed outputs vs accuracy pass {agree:.3e}")
     if not passed:
         failures.append("timing gate failed")
-    if not agree <= 1e-9:
+    if not (np.isfinite(agree) and agree <= 1e-9):
         failures.append(f"timed outputs disagree with the accuracy pass: {agree:.2e}")
     # comparator: fastest stable CNAB2 setting (finite, evolved worst <= 100 %) whose
     # evolved worst is no larger than the arm's; speedup = its median / the arm's median

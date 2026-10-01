@@ -1,0 +1,9 @@
+{
+  "name": "bank_smoke", "train_seed": 7, "dev_seed": 8, "closed_seeds": [202609203, 202609211, 202609221],
+  "bank_cases": 6, "data_meshes": [8, 16], "dt_truth": 0.005, "horizon": 0.05,
+  "train_grid": 12, "centred": true, "compress_K": 16, "rank": 4, "seed": 1,
+  "architectures": [{"name": "a", "width": 16, "depth": 2, "kmax": 2, "steps": 40, "lr": 0.001, "final_lr_ratio": 0.01, "warmup": 5},
+                    {"name": "b", "width": 16, "depth": 2, "kmax": 1, "train_seconds": 5, "lr": 0.001, "final_lr_ratio": 0.01, "warmup": 5}],
+  "log_every": 20, "dev_cases": 2, "target_relative": 0.05, "floor_meshes": [8, 16], "prefixes": [2],
+  "parent_pod_meshes": [8], "parent_pod_cases": 4, "gram_block": 8, "derivative_meshes": [8]
+}

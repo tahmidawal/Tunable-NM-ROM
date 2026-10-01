@@ -1,0 +1,106 @@
+{
+ "train_seed": 202609201,
+ "dev_seed": 202609202,
+ "closed_seeds": [
+  202609203,
+  202609211,
+  202609221
+ ],
+ "bank_cases": 512,
+ "data_meshes": [
+  32,
+  64,
+  96
+ ],
+ "dt_truth": 0.001,
+ "horizon": 0.2,
+ "train_grid": 48,
+ "compress_K": 512,
+ "seed": 20261001,
+ "log_every": 500,
+ "dev_cases": 16,
+ "target_relative": 0.05,
+ "floor_meshes": [
+  32,
+  64,
+  96
+ ],
+ "prefixes": [
+  8,
+  16,
+  32,
+  48,
+  64,
+  128
+ ],
+ "parent_pod_meshes": [
+  32,
+  64,
+  96
+ ],
+ "parent_pod_cases": 128,
+ "gram_block": 64,
+ "derivative_meshes": [
+  32,
+  64
+ ],
+ "sample_chunk_eval": 32768,
+ "smoke": {
+  "bank_cases": 6,
+  "data_meshes": [
+   8,
+   16
+  ],
+  "dt_truth": 0.005,
+  "horizon": 0.05,
+  "train_grid": 12,
+  "compress_K": 16,
+  "rank": 4,
+  "log_every": 20,
+  "dev_cases": 2,
+  "floor_meshes": [
+   8,
+   16
+  ],
+  "prefixes": [
+   2
+  ],
+  "parent_pod_meshes": [
+   8
+  ],
+  "parent_pod_cases": 4,
+  "gram_block": 8,
+  "derivative_meshes": [
+   8
+  ],
+  "train_seed": 7,
+  "dev_seed": 8,
+  "architectures": [
+   {
+    "name": "s",
+    "width": 16,
+    "depth": 2,
+    "kmax": 2,
+    "train_seconds": 5,
+    "lr": 0.001,
+    "final_lr_ratio": 0.001,
+    "warmup": 5
+   }
+  ]
+ },
+ "rank": 64,
+ "centred": true,
+ "architectures": [
+  {
+   "name": "A",
+   "width": 512,
+   "depth": 4,
+   "kmax": 4,
+   "train_seconds": 18000,
+   "lr": 0.001,
+   "final_lr_ratio": 0.001,
+   "warmup": 1000
+  }
+ ],
+ "name": "bank_r64a"
+}

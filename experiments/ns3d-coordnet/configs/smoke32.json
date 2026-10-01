@@ -1,0 +1,63 @@
+{
+ "n": 32,
+ "dt_truth": 0.001,
+ "horizon": 0.2,
+ "train_seed": 202609201,
+ "train_cases": 128,
+ "head_train_cases": 16,
+ "head_frame_every": 10,
+ "val_every": 8,
+ "modes": 292,
+ "check_modes": 8,
+ "gram_block": 64,
+ "k": 2,
+ "width": 256,
+ "head_seed": 20260923,
+ "head_steps": 200,
+ "head_log_every": 100,
+ "head_lr": 0.001,
+ "head_floor_lr": 1e-05,
+ "code_reg": 1e-06,
+ "ic_iters": 12,
+ "ladder_dt": 0.02,
+ "ladder_iters": 3,
+ "damping": 1e-06,
+ "lm_budget": 60,
+ "lm_gtol": 1e-07,
+ "cnab2_steps": [
+  50,
+  20
+ ],
+ "timing_case": 0,
+ "timing_repetitions": 2,
+ "neighbour_gate_ratio": 1.1,
+ "target_relative": 0.05,
+ "one_bank_orthonormality_gate": 0.05,
+ "span_ladder": [
+  4,
+  2
+ ],
+ "sample_chunk_eval": 32768,
+ "coordnet_bank_file": "experiments/ns3d-coordnet/runs/smoke_bank/bank_selected.npz",
+ "coordnet_bank_sha256": "8f580a2be3f74e0b9be39361a5ef9800200102af8980253974b8092215a1bea9",
+ "pod_frozen_dir": "experiments/ns3d-operators/frozen/h32",
+ "pod_frozen_sha256": {
+  "head_k8.npz": "35c1a8aff8bdb5da292d3dd297470d25f23900b25529ba7fe99f309a8e792369",
+  "bank_probe.npz": "a78d896fa78efa8fba3bbbcd4fce81abd17ca34924acd720dd090a7d52312802"
+ },
+ "eval_seed": 202609202,
+ "eval_cases": 2,
+ "closed_seeds": [
+  202609203,
+  202609211,
+  202609221
+ ],
+ "reference_source": {
+  "job": "a2_h32",
+  "slurm_id": "4198840",
+  "summary": "experiments/ns3d-shift-head/runs/a2_h32/output/summary.json",
+  "sha256": "301df68a58d29310e78bd64e24555ec6c2c078202c4de789800602207898c10c"
+ },
+ "reference_errors": {},
+ "name": "smoke32"
+}

@@ -26,12 +26,26 @@ Every new experiment starts in its own git worktree on its own branch, pushed to
   chronologically. The `worktrees/` dir is listed in `.git/info/exclude` so `main` stays
   clean; it is never committed.
 - The branch name mirrors the directory: `exp/YYYY-MM-DD-<slug>`.
-- Push the branch to origin with `-u` immediately and keep it synced as work progresses.
+- **Commit small and often, and back every commit up to GitHub so nothing is lost** (user
+  instruction, 2026-10-01). Nothing that matters may live only in an uncommitted file, a
+  scratchpad, or a cluster directory.
+- **Lane branches cannot be pushed directly.** Every branch forked from the consolidated
+  baseline or later carries multi-GB archive blobs that GitHub rejects, so a plain
+  `git push` of `exp/...` fails (and repacks a ~200 GB repo trying). Back up through the
+  filtered **code-only mirror** instead: `origin/codeonly/exp/<slug>`, whose history drops the
+  archive blobs. Template script: `experiments/ns3d-coordnet/sync_github.sh` on
+  `exp/2026-10-01-ns3d-coordnet-bank`. Copy it into the new lane and set `LOCAL_BASE` (the
+  lane's fork point) and `REMOTE_BASE` (that fork point's `codeonly/` mirror commit). Run it
+  after every commit. It mirrors every path changed since the fork, skips files over 50 MB
+  (track those by SHA256 in a committed manifest), and pushes only when something changed.
+- New worktrees are sparse, to avoid checking out the 49 GB heat archive:
 
 ```bash
-cd /home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude
-git worktree add -b exp/YYYY-MM-DD-<slug> worktrees/YYYY-MM-DD-<slug> main
-git -C worktrees/YYYY-MM-DD-<slug> push -u origin exp/YYYY-MM-DD-<slug>
+cd /home/tahmid/Dev/Tunable-NM-ROM-Claude
+git worktree add --no-checkout -b exp/YYYY-MM-DD-<slug> worktrees/YYYY-MM-DD-<slug> <base>
+cd worktrees/YYYY-MM-DD-<slug>
+git sparse-checkout set --no-cone '/*' '!/experiments/mr-heat2d/runs/' && git checkout
+# copy + configure sync_github.sh, commit, then: bash experiments/<lane>/sync_github.sh
 ```
 
 Each worktree doubles as its own isolated job/submit directory, satisfying the

@@ -188,6 +188,9 @@ never one per session.
 `main` is the frozen public baseline and its heat ROM rollout is broken (frozen after step 1) —
 do not use it as a behavioural reference. Work on a branch; experiments live in dated worktrees
 under `worktrees/`, named `YYYY-MM-DD-<slug>` with branch `exp/<same>`. Ask before creating one.
+Commit small and often and back every commit up to GitHub. Lane branches carry archive blobs
+GitHub rejects, so never push `exp/...` directly: mirror it to `origin/codeonly/exp/<slug>`
+with a per-lane `sync_github.sh` (see CLAUDE.md, "Branching") after every commit.
 
 Do not rewrite anything under `best-results/` — it is a frozen archive. Copy a cell into a new
 directory before changing architecture, data, or hyperparameters.

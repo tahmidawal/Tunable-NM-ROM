@@ -1,0 +1,59 @@
+{
+ "schema": "ns3d-coordnet-frozen-v1",
+ "heads": {
+  "32": {
+   "file": "coordnet_head_k8_n32.npz",
+   "sha256": "ed28a8d09d9fbc5d0216bf92e87878fb3a0326279380b7708a968dbdd6c79ec5",
+   "source_job": "4713119",
+   "source_run": "dev32"
+  },
+  "64": {
+   "file": "coordnet_head_k8_n64.npz",
+   "sha256": "06a5411f44a94b6894315dfaa4eb4ec066dfecf4e3a8a094cd9968cca7d598c8",
+   "source_job": "4713141",
+   "source_run": "dev64"
+  },
+  "96": {
+   "file": "coordnet_head_k8_n96.npz",
+   "sha256": "92bc7e3b747e57561dbfe3a88123724d13799f5350d9a622b65823af08d7d2e0",
+   "source_job": "4713143",
+   "source_run": "dev96"
+  }
+ },
+ "sources": {
+  "32": {
+   "summary_sha256": "5b81ca55b5c3b6c6fae86466e2b96bad796044cd374afc62b19092f8b3969bf8",
+   "job": "4713119",
+   "commit": "2c15704873354727653768d12fbae544ff977707"
+  },
+  "64": {
+   "summary_sha256": "fe1d7788ddf32519f45907c59a4f1271979441a4edf3448ac2b7a87b7fefab13",
+   "job": "4713141",
+   "commit": "2c15704873354727653768d12fbae544ff977707"
+  },
+  "96": {
+   "summary_sha256": "5dc158115e51efeee831f65bc3388239e8c88bd89930a1f7df727a7310ded3bd",
+   "job": "4713143",
+   "commit": "2c15704873354727653768d12fbae544ff977707"
+  }
+ },
+ "coordnet_bank_file": "experiments/ns3d-coordnet/banks/pilot/bank_selected.npz",
+ "coordnet_bank_sha256": "9a010260de043e95ac4eee72ce9fd85ecdcf920968d4a34a5334f285a6bd648b",
+ "bank_prefix": null,
+ "k": 8,
+ "ladder_dt": 0.02,
+ "ladder_iters": 3,
+ "damping": 1e-06,
+ "ic_iters": 12,
+ "modes": 292,
+ "span_ladder": [
+  256,
+  192,
+  128,
+  64,
+  48,
+  32,
+  16,
+  8
+ ]
+}

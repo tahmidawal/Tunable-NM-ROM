@@ -1,5 +1,5 @@
 #!/bin/bash
-# Usage (from submit.sh): sbatch ... job.sbatch <mode: bank|rom|test> <config> [frozen-dir]
+# Usage (from submit.sh): sbatch ... job.sbatch <mode: bank|rom|test> <config[,config...]> [frozen-dir]
 #SBATCH --partition=gpu
 #SBATCH --qos=normal
 #SBATCH --cpus-per-task=8
@@ -18,32 +18,37 @@ df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={b}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 export SOURCE_COMMIT="$(cat COMMIT.txt)"
 D=experiments/ns3d-coordnet
-set +e
+
+# run one mesh: driver, then (if it wrote a summary) the independent audit; field files
+# are deleted only when the audit passed, otherwise kept as evidence
+one_mesh() {  # <config> <outdir> [frozen]
+  local C="$1" O="$2" FZ="${3:-}" R1 V1
+  local EX=(); [[ -n "$FZ" ]] && EX=(--frozen "$FZ")
+  set +e
+  "$PY" $D/rom_mesh.py --config "$C" --out "$O" "${EX[@]}"; R1=$?
+  V1=-1
+  if [[ -f "$O/summary.json" && ( "$R1" -eq 0 || "$R1" -eq 3 ) ]]; then
+    "$PY" $D/verify_coordnet.py --out "$O"; V1=$?
+  fi
+  set -e
+  find "$O" -type f -print0 | sort -z | xargs -0 -r sha256sum > "$O.OUTPUTS.sha256"
+  if [[ "$V1" -eq 0 ]]; then rm -f "$O"/fields_*.npy "$O"/dev_truth.npy; fi
+  echo "MESH=$O RUN_EXIT=$R1 VERIFY_EXIT=$V1"
+  [[ "$R1" -eq 0 && "$V1" -eq 0 ]]
+}
+
+RC=0
 if [[ "$MODE" == "bank" ]]; then
-  "$PY" $D/train_bank.py --config "$CONFIG" --out output; RC=$?; VRC=0
+  set +e; "$PY" $D/train_bank.py --config "$CONFIG" --out output; RC=$?; set -e
+  echo "RUN_EXIT=$RC VERIFY_EXIT=0"
 elif [[ "$MODE" == "rom" ]]; then
-  "$PY" $D/rom_mesh.py --config "$CONFIG" --out output; RC=$?
-  VRC=-1
-  if [[ "$RC" -eq 0 ]]; then "$PY" $D/verify_coordnet.py --out output; VRC=$?; fi
+  one_mesh "$CONFIG" output/mesh || RC=1
+  echo "ALL_EXIT=$RC"
 else
-  # test: CONFIG is a comma-separated list, one sub-directory per mesh; each mesh's
-  # fields are audited and deleted before the next mesh starts
-  RC=0; VRC=0
   for C in ${CONFIG//,/ }; do
-    NAME=$(basename "$C" .json)
-    "$PY" $D/rom_mesh.py --config "$C" --out "output/$NAME" --frozen "$FROZEN"; R1=$?
-    V1=-1
-    if [[ "$R1" -eq 0 ]]; then "$PY" $D/verify_coordnet.py --out "output/$NAME"; V1=$?; fi
-    find "output/$NAME" -type f -print0 | sort -z | xargs -0 -r sha256sum > "output/$NAME.OUTPUTS.sha256"
-    rm -f output/$NAME/fields_*.npy output/$NAME/dev_truth.npy
-    echo "MESH=$NAME RUN_EXIT=$R1 VERIFY_EXIT=$V1"
-    if [[ "$R1" -ne 0 ]]; then RC=$R1; fi
-    if [[ "$V1" -ne 0 ]]; then VRC=$V1; fi
+    one_mesh "$C" "output/$(basename "$C" .json)" "$FROZEN" || RC=1
   done
+  echo "ALL_EXIT=$RC"
 fi
-set -e
 find output -type f -print0 | sort -z | xargs -0 -r sha256sum > OUTPUTS.sha256
-# field files served the in-job independent audit; they are not transferred
-rm -f output/fields_*.npy output/dev_truth.npy output/*/fields_*.npy output/*/dev_truth.npy
-echo "RUN_EXIT=$RC VERIFY_EXIT=$VRC"
 exit "$RC"

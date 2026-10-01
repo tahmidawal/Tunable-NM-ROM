@@ -19,7 +19,9 @@ def resample(field, n_to):
     dropped on both sides). Returns the field and the fraction of its energy dropped."""
     field = np.asarray(field)
     n = field.shape[-1]
-    if n == n_to:
+    if field.shape != (3, n, n, n) or n % 2 or n_to % 2:
+        raise ValueError("resample expects (3, n, n, n) with even n and n_to")
+    if n == n_to:  # identity (Nyquist planes kept)
         return field.copy(), 0.0
     spec = np.fft.fftn(field, axes=(1, 2, 3), norm="forward")
     m = min(n, n_to) // 2
@@ -34,6 +36,7 @@ def resample(field, n_to):
 
 
 def save_params(path, p):
+    CN.check_frequencies(p)
     flat = {"B": np.asarray(p["B"])}
     for i, (w, b) in enumerate(p["layers"]):
         flat[f"W{i}"] = np.asarray(w)
@@ -48,7 +51,9 @@ def load_params(path):
     while f"W{i}" in z:
         layers.append((jnp.asarray(z[f"W{i}"]), jnp.asarray(z[f"b{i}"])))
         i += 1
-    return dict(B=jnp.asarray(z["B"]), layers=layers)
+    p = dict(B=jnp.asarray(z["B"]), layers=layers)
+    CN.check_frequencies(p)
+    return p
 
 
 def lowdin(G):
@@ -56,11 +61,13 @@ def lowdin(G):
     Returns the orthonormal matrix and the R x R factor S with G_orth = G S."""
     M = G.T @ G
     vals, vecs = np.linalg.eigh(M)
+    if not (np.all(np.isfinite(vals)) and vals.min() > 1e-12 * vals.max()):
+        raise RuntimeError(f"bank Gram is singular or nonfinite: {vals.min()} {vals.max()}")
     S = vecs @ np.diag(vals ** -0.5) @ vecs.T
     return G @ S, S
 
 
-def mesh_bank(p, T, n, chunk=32768):
+def mesh_bank(p, T, n, chunk=32768, abort=0.05):
     """The bank at mesh n: sample g at the n^3 nodes (scaled n^{-3/2}), project on the
     FOM's discrete space (2/3 mask + Leray), rotate by the frozen T, and remove the
     remaining non-orthonormality symmetrically (Lowdin). Every step is reported."""
@@ -70,12 +77,18 @@ def mesh_bank(p, T, n, chunk=32768):
     raw = np.asarray(CN.make_sampler(n, chunk=chunk)(p))
     proj, removed = CN.leray_mask(raw, n)
     Gr = proj @ np.asarray(T)
-    dev = float(np.max(np.abs(Gr.T @ Gr - np.eye(Gr.shape[1]))))
+    M = Gr.T @ Gr - np.eye(Gr.shape[1])
+    dev = float(np.max(np.abs(M)))
+    dev2 = float(np.linalg.norm(M, 2))
+    if not np.isfinite(dev) or dev > abort:
+        raise RuntimeError(f"sampled bank at {n}^3 too far from orthonormal: {dev}")
     G, S = lowdin(Gr)
+    col_change = np.linalg.norm(G - Gr, axis=0) / np.linalg.norm(Gr, axis=0)
     change = float(np.linalg.norm(G - Gr) / np.linalg.norm(Gr))
     info = dict(n=int(n), leray_removed_worst=float(np.max(removed)),
                 leray_removed_median=float(np.median(removed)),
-                orthonormality_before_lowdin=dev, lowdin_relative_change=change,
+                orthonormality_before_lowdin=dev, orthonormality_before_lowdin_spectral=dev2,
+                lowdin_relative_change=change, lowdin_worst_column_change=float(col_change.max()),
                 orthonormality_after=float(np.max(np.abs(G.T @ G - np.eye(G.shape[1])))))
     info["lowdin_factor"] = S
     return np.ascontiguousarray(G), info

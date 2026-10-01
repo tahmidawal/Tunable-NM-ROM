@@ -109,13 +109,13 @@ def main():
         m = meshes[c % len(meshes)]
         solver, geom = solvers[m]
         frames = solver(jnp.asarray(F.initial(m, row)), float(row[-1]), geom)
+        u0sq.append(float(jnp.mean(frames[0] ** 2)))      # native mesh, before resampling
         for t in range(frames.shape[0]):
             f = centre[m](frames[t]) if centred else frames[t]
             g, lost = BI.resample(np.asarray(f), nt)
             states.append(g.ravel())
             dropped.append(lost)
             case_of.append(c)
-        u0sq.append(float(np.mean(states[-frames.shape[0]] ** 2)))
         if (c + 1) % 64 == 0:
             log(f"bank data {c + 1}/{len(par)}")
     X = np.stack(states)
@@ -155,6 +155,9 @@ def main():
     R = int(cfg["rank"])
     Yj = jnp.asarray(Yn)
     sample_t = CN.make_sampler(nt, chunk=int(cfg.get("sample_chunk", nt ** 3)))
+    sample_fn = CN.make_sample_fn(nt, chunk=int(cfg.get("sample_chunk", nt ** 3)))
+    pts_t = jnp.asarray(CN.grid_points(nt))
+    failures = []
     fits = {}
     best = None
     for arch in cfg["architectures"]:
@@ -169,10 +172,11 @@ def main():
 
         def make_chunk(opt):
             @jax.jit
-            def chunk(p, state, Y):
+            def chunk(p, state, Y, pts):
                 def body(carry, _):
                     p, state = carry
-                    v, g = jax.value_and_grad(lambda q: CN.projection_loss(sample_t(q), Y))(p)
+                    v, g = jax.value_and_grad(lambda q: CN.projection_loss(sample_fn(q, pts), Y))(p)
+                    g = dict(g, B=jnp.zeros_like(g["B"]))           # frequencies are fixed
                     upd, state = opt.update(g, state, p)
                     return (optax.apply_updates(p, upd), state), v
                 (p, state), vals = jax.lax.scan(body, (p, state), None, length=every)
@@ -185,15 +189,18 @@ def main():
             steps = int(arch["steps"])
             calib = None
         else:
-            copt = optax.adam(1e-4)
+            # the same clipped Adam as the real run, constant small rate
+            copt = optax.chain(optax.clip_by_global_norm(1.0), optax.adam(1e-6))
             cchunk = make_chunk(copt)
-            cp, cs, _ = cchunk(p, copt.init(p), Yj)                      # compile
+            cp, cs, _ = cchunk(p, copt.init(p), Yj, pts_t)               # compile
             jax.block_until_ready(cp)
             t_c = time.time()
-            cp, cs, _ = cchunk(cp, cs, Yj)
+            cp, cs, _ = cchunk(cp, cs, Yj, pts_t)
             jax.block_until_ready(cp)
             per_step = (time.time() - t_c) / every
-            steps = max(every, int(float(arch["train_seconds"]) / per_step) // every * every)
+            # 3 % reserve for logging / checkpoints / recompilation
+            steps = int(0.97 * float(arch["train_seconds"]) / per_step) // every * every
+            steps = max(steps, 4 * int(arch.get("warmup", 1000)), every)
             calib = dict(seconds_per_step=per_step, steps=steps)
             del cp, cs, cchunk
             log(f"[{name}] calibration: {per_step * 1e3:.1f} ms/step -> {steps} steps")
@@ -208,7 +215,7 @@ def main():
         t0 = time.time()
         done = 0
         while done < steps:
-            p, state, v = chunk(p, state, Yj)
+            p, state, v = chunk(p, state, Yj, pts_t)
             done += every
             curve.append((done, float(v), time.time() - t0))
             log(f"  [{name}] step {done}/{steps} loss {float(v):.4e} ({time.time() - t0:.0f}s)")
@@ -216,8 +223,16 @@ def main():
                 raise RuntimeError("nonfinite bank training")
             if done % (every * 10) == 0:
                 BI.save_params(out / f"bank_{name}_partial.npz", p)
+        if np.max(np.abs(np.asarray(p["B"]) - CN.frequency_set(int(arch["kmax"])))) != 0.0:
+            raise RuntimeError("Fourier frequencies changed during training")
         final = float(CN.projection_loss(sample_t(p), Yj))
+        G_end = np.asarray(sample_t(p))
+        exact_raw, sv_raw = CN.projection_loss_exact(G_end, Yn)
+        exact_proj, _ = CN.projection_loss_exact(CN.leray_mask(G_end, nt)[0], Yn)
+        del G_end
         fits[name] = dict(arch=arch, final_train_loss=final, curve=curve, calibration=calib,
+                          final_loss_qr_raw=exact_raw, final_loss_qr_projected=exact_proj,
+                          bank_singular_value_ratio=float(sv_raw[-1] / sv_raw[0]),
                           steps=steps,
                           seconds=time.time() - t0,
                           eckart_young_optimum=float(ev[R:K].sum() / ev[:K].sum()))
@@ -252,9 +267,12 @@ def main():
     for n in sorted(int(m) for m in cfg["floor_meshes"]):
         log(f"floors at {n}^3")
         dev, _, _ = D.generate(dev_par, n, float(cfg["dt_truth"]), float(cfg["horizon"]))
-        Gn, info = BI.mesh_bank(p, T, n, chunk=int(cfg.get("sample_chunk_eval", 32768)))
+        Gn, info = BI.mesh_bank(p, T, n, chunk=int(cfg.get("sample_chunk_eval", 32768)),
+                                abort=float(cfg.get("orthonormality_abort", 0.05)))
         info.pop("lowdin_factor")
         entry = dict(bank=info)
+        if info["orthonormality_before_lowdin"] > 1e-3:
+            failures.append(f"orthonormality before Lowdin {info['orthonormality_before_lowdin']:.2e} at {n}^3 (> 1e-3, bar c flag)")
         if centred:
             for Rp in sorted({int(x) for x in cfg["prefixes"] if int(x) <= R} | {R}):
                 errors, _, travel = D.oracle_shift_errors(Gn[:, :Rp], dev)
@@ -267,7 +285,7 @@ def main():
             # the optimum of the training objective, resampled to this mesh
             Up = np.stack([BI.resample(pod_same[:, j].reshape(3, nt, nt, nt), n)[0].ravel()
                            for j in range(R)], axis=1)
-            Up, _ = np.linalg.qr(Up)
+            Up, _ = np.linalg.qr(CN.leray_mask(Up, n)[0])
             errors, _, _ = D.oracle_shift_errors(Up, dev)
             entry[f"same_data_pod_R{R}"] = D.stats_from_cases(errors, target)
             if n in [int(m) for m in cfg.get("parent_pod_meshes", [])]:
@@ -284,6 +302,13 @@ def main():
                 Gpod, _ = D.orthonormalize_prefix(basis, 64)
                 errors, _, _ = D.oracle_shift_errors(Gpod, dev)
                 entry["parent_pod_R64"] = D.stats_from_cases(errors, target)
+                want = cfg.get("parent_pod_floor_reference", {}).get(str(n))
+                if want is not None:
+                    gapp = abs(entry["parent_pod_R64"]["evolved_worst"] - want) / want
+                    entry["parent_pod_R64_reproduction"] = dict(reference=want, relative_gap=gapp,
+                                                                passed=bool(gapp <= 1e-6))
+                    if gapp > 1e-6:
+                        failures.append(f"parent POD-64 floor at {n}^3 not reproduced: {gapp:.2e}")
                 del basis, Gpod
                 log(f"  parent POD-64: evolved worst {entry['parent_pod_R64']['evolved_worst']:.6f}")
         else:
@@ -295,7 +320,7 @@ def main():
                 f"{entry[f'coordnet_fixed_frame_R{R}']['evolved_worst']:.6f}")
             Up = np.stack([BI.resample(pod_same[:, j].reshape(3, nt, nt, nt), n)[0].ravel()
                            for j in range(R)], axis=1)
-            Up, _ = np.linalg.qr(Up)
+            Up, _ = np.linalg.qr(CN.leray_mask(Up, n)[0])
             errors, _ = D.project_errors(Up, dev)
             entry[f"same_data_pod_fixed_frame_R{R}"] = D.stats_from_cases(errors, target)
         # 6. derivative and divergence checks at this mesh
@@ -323,8 +348,10 @@ def main():
     div = CN.divergence(p, pts)
     vel = CN.velocity(p, pts)
     report["autodiff_divergence_relative"] = float(jnp.max(jnp.abs(div)) / jnp.max(jnp.abs(vel)))
+    report["failures"] = failures
+    report["status"] = "final" if not failures else "flagged"
     dump()
-    log("done")
+    log(f"done; failures: {failures}")
 
 
 if __name__ == "__main__":

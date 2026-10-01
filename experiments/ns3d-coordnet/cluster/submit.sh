@@ -16,8 +16,14 @@ for pkg in ns3d ns2d separable-decoder ns3d-grok ns3d-shift ns3d-shift-head ns3d
     --include='*.sh' --include='frozen/**' --exclude='*' \
     "$HERE/experiments/$pkg/" "tufts-login:$DEST/experiments/$pkg/"
 done
-# the parent run summaries the dev configs cite, and any frozen bank files the configs name
-rsync -azR "$HERE/./experiments/ns3d-coordnet/banks/" "tufts-login:$DEST/" 2>/dev/null || true
+# every coordnet bank file a config names (repo-relative), staged at the same path
+for C in ${CONFIG//,/ }; do
+  BF=$(python3 -c "import json,sys; print(json.load(open(sys.argv[1])).get('coordnet_bank_file',''))" "$HERE/experiments/ns3d-coordnet/$C")
+  if [[ -n "$BF" ]]; then
+    [[ -f "$HERE/$BF" ]] || { echo "bank file $BF missing"; exit 1; }
+    rsync -azR "$HERE/./$BF" "tufts-login:$DEST/"
+  fi
+done
 if [[ -n "$FROZEN" ]]; then
   rsync -az "$HERE/experiments/ns3d-coordnet/$FROZEN/" "tufts-login:$DEST/frozen/"
 fi

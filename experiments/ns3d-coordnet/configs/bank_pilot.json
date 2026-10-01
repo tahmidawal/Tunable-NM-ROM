@@ -21,28 +21,21 @@
  "dev_cases": 16,
  "target_relative": 0.05,
  "floor_meshes": [
-  32,
-  64,
-  96
+  32
  ],
  "prefixes": [
-  8,
   16,
   32,
   48,
-  64,
-  128
+  64
  ],
  "parent_pod_meshes": [
-  32,
-  64,
-  96
+  32
  ],
  "parent_pod_cases": 128,
  "gram_block": 64,
  "derivative_meshes": [
-  32,
-  64
+  32
  ],
  "sample_chunk_eval": 32768,
  "smoke": {
@@ -96,13 +89,33 @@
    "width": 512,
    "depth": 4,
    "kmax": 4,
-   "train_seconds": 18000,
+   "train_seconds": 1800,
+   "lr": 0.001,
+   "final_lr_ratio": 0.001,
+   "warmup": 1000
+  },
+  {
+   "name": "B",
+   "width": 768,
+   "depth": 3,
+   "kmax": 6,
+   "train_seconds": 1800,
+   "lr": 0.001,
+   "final_lr_ratio": 0.001,
+   "warmup": 1000
+  },
+  {
+   "name": "C",
+   "width": 512,
+   "depth": 4,
+   "kmax": 8,
+   "train_seconds": 1800,
    "lr": 0.001,
    "final_lr_ratio": 0.001,
    "warmup": 1000
   }
  ],
- "name": "bank_r64a",
+ "name": "bank_pilot",
  "parent_pod_floor_reference": {
   "32": 0.0012472927220064634,
   "64": 0.001289117915622264,

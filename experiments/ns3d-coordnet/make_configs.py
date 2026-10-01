@@ -41,7 +41,7 @@ def base(n):
         "cnab2_steps": [200, 100, 80, 70, 60, 50, 40, 20, 10],
         "timing_case": 0, "timing_repetitions": 7, "neighbour_gate_ratio": 1.10,
         "target_relative": 0.05, "one_bank_orthonormality_gate": 0.05,
-        "span_ladder": [256, 128, 64, 48, 32, 16, 8],
+        "span_ladder": [256, 192, 128, 64, 48, 32, 16, 8], "bank_prefix": None,
         "sample_chunk_eval": 32768,
     }
 
@@ -52,6 +52,7 @@ def main():
     ap.add_argument("--mode", choices=("dev", "test", "smoke"), required=True)
     ap.add_argument("--out", type=Path, default=HERE / "configs")
     ap.add_argument("--tag", default="")
+    ap.add_argument("--prefix", type=int, default=None, help="ordered prefix of the bank")
     args = ap.parse_args()
     bank_sha = sha(ROOT / args.bank)
     meshes = (32, 64, 96) if args.mode != "smoke" else (32,)
@@ -59,6 +60,7 @@ def main():
         cfg = base(n)
         cfg["coordnet_bank_file"] = args.bank
         cfg["coordnet_bank_sha256"] = bank_sha
+        cfg["bank_prefix"] = args.prefix
         cfg["pod_frozen_dir"] = POD_FROZEN[n]
         cfg["pod_frozen_sha256"] = {f: sha(ROOT / POD_FROZEN[n] / f)
                                     for f in ("head_k8.npz", "bank_probe.npz")}

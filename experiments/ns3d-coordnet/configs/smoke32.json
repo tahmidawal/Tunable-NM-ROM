@@ -32,14 +32,15 @@
  "timing_repetitions": 2,
  "neighbour_gate_ratio": 1.1,
  "target_relative": 0.05,
- "one_bank_orthonormality_gate": 0.05,
+ "one_bank_orthonormality_gate": 10.0,
  "span_ladder": [
   4,
   2
  ],
+ "bank_prefix": null,
  "sample_chunk_eval": 32768,
  "coordnet_bank_file": "experiments/ns3d-coordnet/runs/smoke_bank/bank_selected.npz",
- "coordnet_bank_sha256": "8f580a2be3f74e0b9be39361a5ef9800200102af8980253974b8092215a1bea9",
+ "coordnet_bank_sha256": "a5af3008058e87d6e9622052a8b0718bf85b2863f85046292bd867a5a0fdca49",
  "pod_frozen_dir": "experiments/ns3d-operators/frozen/h32",
  "pod_frozen_sha256": {
   "head_k8.npz": "35c1a8aff8bdb5da292d3dd297470d25f23900b25529ba7fe99f309a8e792369",

@@ -129,6 +129,12 @@ def main():
         if got != sha:
             raise RuntimeError(f"frozen input {path} sha256 {got} != {sha}")
     report["frozen_inputs_checked"] = checks
+    failures = []
+    if test:
+        for key in ("coordnet_bank_sha256", "bank_prefix", "k", "ladder_dt", "ladder_iters",
+                    "damping", "ic_iters", "modes"):
+            if frozen.get(key) != cfg.get(key):
+                raise RuntimeError(f"config {key}={cfg.get(key)} differs from frozen {frozen.get(key)}")
     if test:
         others = [(cfg["train_seed"], cfg["head_train_cases"])] + [tuple(x) for x in cfg["disjoint_against"]]
         overlap = disjointness(cfg["eval_seed"], cfg["eval_cases"], others)
@@ -169,14 +175,23 @@ def main():
     bank = np.load(bank_file)
     pc = BI.load_params(bank_file)
     Tc = np.asarray(bank["T"])
-    Gc, binfo = BI.mesh_bank(pc, Tc, n, chunk=int(cfg.get("sample_chunk_eval", 32768)))
+    Gc, binfo = BI.mesh_bank(pc, Tc, n, chunk=int(cfg.get("sample_chunk_eval", 32768)),
+                              abort=float(cfg["one_bank_orthonormality_gate"]))
     lowdin_S = binfo.pop("lowdin_factor")
+    prefix = cfg.get("bank_prefix")
+    if prefix is not None:
+        # the full bank's normalisation, THEN the ordered prefix (as its floor was measured)
+        Gc = np.ascontiguousarray(Gc[:, :int(prefix)])
+        lowdin_S = lowdin_S[:, :int(prefix)]
+    binfo["prefix"] = prefix
     Rc = Gc.shape[1]
     report["coordnet_bank"] = binfo
     log(f"coordnet bank at {n}^3: {binfo}")
     if binfo["orthonormality_before_lowdin"] > float(cfg["one_bank_orthonormality_gate"]):
         raise RuntimeError("the sampled bank is too far from orthonormal at this mesh: "
                            f"{binfo['orthonormality_before_lowdin']}")
+    if binfo["orthonormality_before_lowdin"] > 1e-3:
+        failures.append(f"flag (bar c): orthonormality before Lowdin {binfo['orthonormality_before_lowdin']:.2e}")
 
     ev_par = F.parameters(int(cfg["eval_seed"]), int(cfg["eval_cases"]))
     report["eval_parameter_sha256"] = D.sha256_array(ev_par)
@@ -198,6 +213,8 @@ def main():
     report["coordnet_Dd_autodiff_vs_spectral"] = float(
         np.linalg.norm(D_auto - D_used) / np.linalg.norm(D_used))
     log(f"coordnet D_d autodiff vs spectral: {report['coordnet_Dd_autodiff_vs_spectral']:.3e}")
+    if report["coordnet_Dd_autodiff_vs_spectral"] > 1e-4:
+        failures.append(f"flag: D_d autodiff vs spectral {report['coordnet_Dd_autodiff_vs_spectral']:.2e} > 1e-4")
     Gpj, Gcj = jnp.asarray(Gpod), jnp.asarray(Gc)
     opsj_p = (Gpj, jnp.asarray(ops_p["A"]), jnp.asarray(ops_p["T"]), jnp.asarray(ops_p["lam"]),
               jnp.asarray(ops_p["Dd"]))
@@ -367,11 +384,18 @@ def main():
         report["pod_reproduction"] = dict(max_abs_error_difference=repro,
                                           source=cfg["reference_source"],
                                           passed=bool(max(repro.values()) <= 1e-8))
+        if not report["pod_reproduction"]["passed"]:
+            failures.append(f"POD reproduction failed: {repro}")
         log(f"POD reproduction vs the paper's job: {repro}")
 
     # controls: the coordnet head with the frame frozen must fail; driver parity vs LM
-    zero_err, _ = run_cases(head_fn("coordnet", frame="zero"), dev, viscosities)
+    zero_err, zero_fields = run_cases(head_fn("coordnet", frame="zero"), dev, viscosities, keep=True)
+    np.save(out / "fields_control_frame_zero.npy", zero_fields)
+    del zero_fields
     report["control_frame_zero"] = D.stats_from_cases(zero_err, target)
+    report["control_frame_zero_errors"] = zero_err.tolist()
+    if not report["control_frame_zero"]["evolved_worst"] > target:
+        failures.append("control did not fire: frame-frozen coordnet head is within 5 %")
     log(f"control frame-zero (coordnet head): {report['control_frame_zero']['evolved_worst']:.4f}")
     p_, Zj, Hc, Hn, R_, _ = heads["coordnet"]
     refrun = H.make_head_reference(dtv, steps, steps // 5, n, R_, k, 0,
@@ -385,6 +409,8 @@ def main():
         got = fn(jnp.asarray(dev[case, 0]), float(viscosities[case]))
         gaps.append(float(jnp.linalg.norm(got - f_ref) / jnp.linalg.norm(f_ref)))
     report["coordnet_head_parity_vs_lm"] = dict(cases=len(gaps), worst=max(gaps), gaps=gaps)
+    if not max(gaps) <= 1e-6:
+        failures.append(f"coordnet head driver parity vs LM {max(gaps):.2e} > 1e-6")
     log(f"coordnet head parity vs LM: {max(gaps):.3e}")
     dump()
 
@@ -434,8 +460,8 @@ def main():
                     ratio=float(t_fast[s]["median_ms"] / t_sent0[s]["median_ms"]),
                     end_ratio=float(t_sent1[s]["median_ms"] / t_sent0[s]["median_ms"]))
             for s in sentinels}
-    passed = all(g["ratio"] <= gate_ratio and g["end_ratio"] <= gate_ratio
-                 and g["ratio"] >= 1 / gate_ratio for g in gate.values())
+    passed = all(1 / gate_ratio <= g["ratio"] <= gate_ratio
+                 and 1 / gate_ratio <= g["end_ratio"] <= gate_ratio for g in gate.values())
     agree = 0.0
     for name, value in last.items():
         if name.startswith("query_"):
@@ -450,8 +476,39 @@ def main():
                             sentinels_end=t_sent1, gate=gate, gate_passed=bool(passed),
                             timed_output_error_agreement=agree)
     log(f"timing gate {passed}; timed outputs vs accuracy pass {agree:.3e}")
+    if not passed:
+        failures.append("timing gate failed")
+    if not agree <= 1e-9:
+        failures.append(f"timed outputs disagree with the accuracy pass: {agree:.2e}")
+    # comparator: fastest stable CNAB2 setting (finite, evolved worst <= 100 %) whose
+    # evolved worst is no larger than the arm's; speedup = its median / the arm's median
+    stable = {st: e for st, e in cnab.items() if e["stats"] is not None and not e["unstable"]}
+    comp = {}
+    for name, row in rows.items():
+        if not row["finite"]:
+            continue
+        worst = row["stats"]["evolved_worst"]
+        arm_ms = t_fast[f"query_{name}"]["median_ms"]
+        eligible = {st: t_fast[f"CNAB2_s{st}"]["median_ms"] for st, e in stable.items()
+                    if e["stats"]["evolved_worst"] <= worst}
+        if eligible:
+            st = min(eligible, key=eligible.get)
+            comp[name] = dict(arm_ms=arm_ms, arm_worst=worst, comparator=f"CNAB2_s{st}",
+                              comparator_worst=stable[st]["stats"]["evolved_worst"],
+                              comparator_ms=eligible[st], speedup=eligible[st] / arm_ms,
+                              eligible={f"CNAB2_s{a}": b for a, b in eligible.items()})
+        else:
+            comp[name] = dict(arm_ms=arm_ms, arm_worst=worst, comparator=None, speedup=None,
+                              note="no stable CNAB2 setting is as accurate")
+    report["comparators"] = comp
+    log("speedups: " + ", ".join(f"{a}={b['speedup']:.2f}" for a, b in comp.items() if b["speedup"]))
+    report["failures"] = failures
+    hard = [f for f in failures if not f.startswith("flag")]
+    report["status"] = "final" if not hard else "failed-gates"
     dump()
-    log("done")
+    log(f"done; failures: {failures}")
+    if hard:
+        sys.exit(3)
 
 
 if __name__ == "__main__":

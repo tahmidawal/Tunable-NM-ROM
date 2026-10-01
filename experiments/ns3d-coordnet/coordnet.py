@@ -92,24 +92,48 @@ def grid_points(n):
     return np.stack(np.meshgrid(s, s, s, indexing="ij"), axis=-1).reshape(-1, 3)
 
 
-def make_sampler(n, chunk=None):
-    """jit'd sample(p) -> (3 n^3, R), scaled by n^{-3/2}. chunk = points per pass."""
-    pts = jnp.asarray(grid_points(n))
+def make_sample_fn(n, chunk=None):
+    """Un-jitted sample(p, pts) -> (3 n^3, R), scaled by n^{-3/2}; pts = grid_points(n)
+    must be passed explicitly (never captured as a compile-time constant)."""
     total = n ** 3
     chunk = total if chunk is None else int(chunk)
     assert total % chunk == 0
 
-    @jax.jit
     def sample(p, pts):
         def one(block):
             return velocity(p, block)                              # (chunk, 3, R)
         vals = jax.lax.map(one, pts.reshape(total // chunk, chunk, 3))
         vals = vals.reshape(total, 3, -1)
         return jnp.transpose(vals, (1, 0, 2)).reshape(3 * total, -1) * n ** -1.5
-    return lambda p: sample(p, pts)
+    return sample
+
+
+def make_sampler(n, chunk=None):
+    """jit'd sample(p) -> (3 n^3, R) for evaluation (points passed as a jit argument)."""
+    pts = jnp.asarray(grid_points(n))
+    fn = jax.jit(make_sample_fn(n, chunk))
+    return lambda p: fn(p, pts)
+
+
+def check_frequencies(p):
+    """The Fourier frequencies are fixed integers (periodicity); never trained."""
+    B = np.asarray(p["B"])
+    kmax = int(np.max(np.abs(B)))
+    if B.shape != frequency_set(kmax).shape or np.max(np.abs(B - frequency_set(kmax))) != 0.0:
+        raise RuntimeError("Fourier frequencies are not the fixed integer set")
+    return kmax
 
 
 # ------------------------------------------------------------- the objective --
+
+def projection_loss_exact(G, Y):
+    """The same objective certified by a NumPy QR (no Gram matrix, no ridge)."""
+    Q, Rf = np.linalg.qr(np.asarray(G))
+    sv = np.linalg.svd(Rf, compute_uv=False)
+    Y = np.asarray(Y)
+    W = Q.T @ Y
+    return float(1.0 - np.sum(W * W) / np.sum(Y * Y)), sv
+
 
 def projection_loss(G, Y, ridge=1e-12):
     """Variable-projection objective: fraction of ||Y||_F^2 outside span(G).

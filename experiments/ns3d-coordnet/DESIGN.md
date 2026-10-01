@@ -235,3 +235,73 @@ comparison).
   advection), used for the truth ($\Delta t=0.001$) and as the speed comparator.
 - **development / test** — cases used for every choice / cases evaluated once with everything
   frozen.
+
+## A1 (2026-10-01, before any GPU job) — a calibration pilot before the bank jobs
+
+A local GB10 probe (`probe_local.py`, f32, 48 training cases at 32³, width 256, depth 3,
+$k_{\max}=3$; logs in `runs/probe/`) showed the training loss falling roughly as a power of
+the step count (about $t^{-1.4}$ over the first 1000 steps), so whether a 5 h budget reaches the
+POD floor cannot be judged from the design alone, and the throughput on an A100 in f64 is
+unknown. One pilot job, `bank_pilot` (config `configs/bank_pilot.json`), runs the stage-1 driver
+unchanged on the full data with three architectures for 30 min each — A (512 × 4, $k_{\max}=4$),
+B (768 × 3, $k_{\max}=6$), C (512 × 4, $k_{\max}=8$) — and floors at 32³ only (with the parent
+POD-64 and every control at that mesh). It is the real-mesh check of every stage-1 gate and
+control. What may be decided from it, **on training loss and step time only**: the architecture
+set and the wall budget of the production bank jobs. Its development floors are recorded but are
+not used to choose anything. Any change is written as §A2 before the production jobs.
+
+## A2 (2026-10-01, before any GPU job) — changes after the Codex design/code audit
+
+Audit: `results/codex-design-audit-pass1.md`. Changes, all before any GPU job:
+
+1. **Bug fixed: the Fourier frequencies were trainable.** The integer wave vectors sat in the
+   optimised parameter tree, so Adam would have moved them off the integers and broken
+   periodicity (the curl stays divergence-free, so no divergence check would have caught it).
+   Their gradient is now zeroed, and `check_frequencies` asserts the exact integer set at every
+   save, load and at the end of training.
+2. The final training loss is also certified by a NumPy QR (no Gram, no ridge), for the raw and
+   for the $P_{48}$-projected bank; both are reported. The A/B choice stays on the registered
+   training loss.
+3. The trajectory weight uses $\overline{u_0^2}$ on the native mesh before resampling.
+   The same-data POD reference is projected with $P_n$ before its floor is measured, like the
+   coordnet bank. The step-time calibration uses the real clipped optimiser and keeps a 3 %
+   reserve; the step count is at least 4 × the warm-up.
+4. The parent's POD-64 floors measured in `bank_r64a` (and the pilot) are gated against the
+   parent jobs' recorded values (relative gap ≤ $10^{-6}$; pinned in the configs).
+5. Löwdin is guarded (finite, non-singular Gram); the 0.05 pre-Löwdin abort is enforced in both
+   stages; the spectral norm of $B^{\mathsf T}B-I$ and the worst column change are reported.
+6. **Prefixes.** A selected prefix $R'$ of a larger bank is defined as the first $R'$ columns of
+   the **full** bank's $G_n$ (full Löwdin first, then slicing), which is exactly how its floor is
+   measured. The mesh configs carry `bank_prefix`.
+7. Mesh jobs now fail (exit 3, status `failed-gates`) when the POD reproduction gate, the
+   frame-frozen control (must exceed 5 %), the LM parity ($\le10^{-6}$), the timing gate (both
+   bounds, in-block and end) or the timed-output agreement ($\le10^{-9}$) fails; pre-Löwdin
+   deviation $>10^{-3}$ and $D_d$ autodiff-vs-spectral $>10^{-4}$ are recorded as flags. The
+   CNAB2 comparator and speedup of every arm are computed in the job (eligible set persisted).
+   Test mode refuses to start unless bank sha256, prefix, $k$, $\Delta t$, sweeps, damping,
+   encoder sweeps and $M$ equal the frozen manifest.
+8. Audit: the required field sets are derived from `summary.json` (every finite arm, the
+   frame-frozen control, every CNAB2 row); missing files, wrong shape or dtype, and nonfinite
+   values fail; the must-fail perturbation goes through the same accept function. Fields are
+   deleted only after a passing audit; job exit is nonzero if the run or the audit fails;
+   `pull.sh` deletes the remote directory only for a clean job.
+9. The evaluation points are passed to every compiled function as arguments (no captured
+   grid-sized constants).
+
+**Wording corrections.** The "oracle-shift floor" is the projection error after centring on the
+true energy centroid. It is a fixed, comparable reference, not a lower bound for a ROM that
+solves its own shift (a different shift could do better), and nearest-code + fixed-sweep head
+fits are achieved, not certified, minima. **Stop rule, restated exhaustively:** the lane stops
+after stage 1 if no trained bank and no ordered prefix has a development floor ≤ 0.25 % at all
+three meshes; then (b) and (c)-for-the-head are reported as *not evaluated*. Otherwise the ROM
+bank is the candidate with the fewest columns whose floor is ≤ 0.20 % at all meshes, else ≤ 0.25 %;
+ties → dedicated bank, then the lower 96³ floor. The 3 × POD clause of §6 is dropped (the
+selection above already covers it). A control that unexpectedly passes is a finding to be
+explained before anything is reported, not automatic proof of a bug. The test cohort
+(202609221) has been opened by earlier lanes (paper's POD model); for this lane's coordnet model
+it is opened once.
+
+**Disclosures.** `bank_ff64` compresses its uncentred data to $K=1024$ (the uncentred family has
+a much slower spectrum; its tail is reported). The pilot's third architecture C is described in
+§A1. The local probe (`probe_local.py`, `runs/probe/`) read the first 4 development cases at 32³
+and printed floors for a small f32 model; it informed nothing but the wall-budget concern of §A1.

@@ -32,7 +32,7 @@ one_mesh() {  # <config> <outdir> [frozen]
   fi
   set -e
   find "$O" -type f -print0 | sort -z | xargs -0 -r sha256sum > "$O.OUTPUTS.sha256" || return 1
-  if [[ "$V1" -eq 0 ]]; then rm -f "$O"/fields_*.npy "$O"/dev_truth.npy || return 1; fi
+  if [[ "$V1" -eq 0 ]]; then rm -f "$O"/fields_*.npy "$O"/dev_truth.npy "$O"/bank_G.npy || return 1; fi
   echo "MESH=$O RUN_EXIT=$R1 VERIFY_EXIT=$V1"
   [[ "$R1" -eq 0 && "$V1" -eq 0 ]]
 }

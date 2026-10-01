@@ -384,3 +384,12 @@ amendment supersedes, so it is numbered A4.)
 - **Cohorts, controls, timing, audit, test opening: unchanged** (§4, §6, A2): POD-head reference
   arm (paper's frozen heads) and controls in the same allocations; test cohort 202609221 opened
   once with everything frozen.
+
+**A4 correction (same day, after the Codex audit `results/codex-a4-audit.md`, before any ROM
+job).** "0.25 % is unreachable from a ~1 % floor" overstates it: the oracle-centroid floor is not
+a strict lower bound for a ROM that solves its own shift (A2). The accurate statement is that in
+every parent run the head's error sat at 1.2× its bank's centroid floor, so 0.25 % is not a
+realistic target for this bank. Also added before the ROM jobs: explicit finiteness checks on every
+operator validation number, and an independent NumPy recomputation of the coordnet bank's floor
+inside `verify_coordnet.py` from the saved bank and truth (gap ≤ $10^{-8}$ relative). A job's
+`status: final` means only that its gates passed; the bars are evaluated by the report generator.

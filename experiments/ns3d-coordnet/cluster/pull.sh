@@ -9,14 +9,14 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 SRC=/cluster/tufts/paralab/tawal01/nscoord_20261001/$JOB
 DEST="$HERE/experiments/ns3d-coordnet/runs/$JOB"
 mkdir -p "$DEST/output"
-rsync -az --exclude='fields_*.npy' --exclude='dev_truth.npy' "tufts-login:$SRC/output/" "$DEST/output/"
+rsync -az --exclude='fields_*.npy' --exclude='dev_truth.npy' --exclude='bank_G.npy' "tufts-login:$SRC/output/" "$DEST/output/"
 rsync -az "tufts-login:$SRC/OUTPUTS.sha256" "tufts-login:$SRC/COMMIT.txt" "$DEST/"
 rsync -az "tufts-login:$SRC/logs/" "$DEST/logs/"
 check() {  # <manifest> <base>
   ( cd "$2" && sha256sum -c --ignore-missing --quiet "$1" )
   awk '{print $2}' "$1" | while read -r f; do
     case "$f" in
-      *fields_*.npy|*dev_truth.npy|*.OUTPUTS.sha256) ;;
+      *fields_*.npy|*dev_truth.npy|*bank_G.npy|*.OUTPUTS.sha256) ;;
       *) [ -f "$2/$f" ] || { echo "MISSING artefact: $f" >&2; exit 1; } ;;
     esac
   done

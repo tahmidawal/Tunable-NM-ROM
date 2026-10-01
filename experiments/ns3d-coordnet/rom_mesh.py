@@ -206,6 +206,11 @@ def main():
     ops_p, rep_p = SR.build_operators_fast(Gpod, n, modes, check_modes=int(cfg["check_modes"]))
     ops_c, rep_c = SR.build_operators_fast(Gc, n, modes, check_modes=int(cfg["check_modes"]))
     report["operator_checks"] = dict(pod=rep_p, coordnet=rep_c)
+    for label, rep in (("pod", rep_p), ("coordnet", rep_c)):
+        for key, val in rep.items():
+            if isinstance(val, float) and not np.isfinite(val):
+                raise RuntimeError(f"{label} operator check {key} is not finite")
+    np.save(out / "bank_G.npy", Gc)          # for the independent floor audit; deleted after it
     # D_d of the coordnet bank: spectral (used) vs autodiff of the network (independent)
     ids, _ = SR.test_mode_ids(n, modes)
     subset = np.sort(np.random.default_rng(13).choice(modes, size=8, replace=False))

@@ -73,6 +73,47 @@ def accept(fields, truth, claimed_errors, stats, dtype, target):
     return True, gap, evolved, "ok"
 
 
+def centroid_np(u):
+    w = np.sum(u * u, axis=0)
+    n = u.shape[-1]
+    ang = 2 * np.pi * np.arange(n) / n
+    c = []
+    for ax in range(3):
+        m = w.sum(axis=tuple(i for i in range(3) if i != ax))
+        c.append((np.arctan2((m * np.sin(ang)).sum(), (m * np.cos(ang)).sum()) / (2 * np.pi)) % 1.0)
+    return np.asarray(c)
+
+
+def shift_np(u, frac):
+    n = u.shape[-1]
+    s = np.fft.fftn(u, axes=(1, 2, 3))
+    k = np.fft.fftfreq(n) * n
+    for ax in range(3):
+        shape = [1, 1, 1, 1]
+        shape[ax + 1] = n
+        s = s * np.exp(-2j * np.pi * k * frac[ax]).reshape(shape)
+    return np.fft.ifftn(s, axes=(1, 2, 3)).real
+
+
+def floor_audit(out, report, truth):
+    """Recompute the coordnet bank's oracle-centroid floor (all columns) from the saved
+    bank and the truth, with this file's own centroid / shift / projection."""
+    G = np.load(out / "bank_G.npy")
+    n = truth.shape[-1]
+    R = G.shape[1]
+    err = np.zeros(truth.shape[:2])
+    for c in range(truth.shape[0]):
+        den = np.sqrt(np.sum(truth[c, 0] ** 2))
+        for t in range(truth.shape[1]):
+            cc = centroid_np(truth[c, t])
+            a = G.T @ shift_np(truth[c, t], -cc).ravel()
+            rec = shift_np((G @ a).reshape(3, n, n, n), cc)
+            err[c, t] = np.sqrt(np.sum((rec - truth[c, t]) ** 2)) / den
+    mine = float(err[:, 1:].max())
+    theirs = report["floors"][f"coordnet_R{R}"]["evolved_worst"]
+    return dict(rank=R, local=mine, claimed=theirs, relative_gap=abs(mine - theirs) / theirs)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", type=Path, required=True)
@@ -106,8 +147,12 @@ def main():
         print(key, json.dumps(checked[key]), flush=True)
     extra = sorted({p.stem.replace("fields_", "") for p in args.out.glob("fields_*.npy")}
                    - {k for k, *_ in sets})
+    fa = floor_audit(args.out, report, truth) if (args.out / "bank_G.npy").exists() else None
+    if fa is None or not fa["relative_gap"] <= 1e-8:
+        failed["coordnet_floor"] = f"floor audit {fa}"
+    print("floor audit", fa, flush=True)
     passed = bool(control_rejected and not failed and not extra)
-    payload = dict(schema="ns3d-coordnet-verify-v2", passed=passed, control_rejected=control_rejected,
+    payload = dict(schema="ns3d-coordnet-verify-v2", passed=passed, floor_audit=fa, control_rejected=control_rejected,
                    control_gap=gap_bad, settings=checked, failed=failed, unexpected_files=extra,
                    job_id=report.get("job_id"), source_commit=report.get("source_commit"))
     (args.out / "verify.json").write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n")

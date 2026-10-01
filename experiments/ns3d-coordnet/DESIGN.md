@@ -332,3 +332,55 @@ remote deleted; `runs/pilot/`). Decisions taken from **training loss and step ti
 - The pilot's 32³ development floors (R=64 coordnet 1.00 % vs parent POD-64 0.125 %, whose
   reproduction passed at 1.9e-10) are recorded, not used for any choice; they come from a
   30-minute bank and are not a bar (a) result.
+
+## A4 (2026-10-01) — USER DECISION after seeing the pilot: freeze the pilot bank, move to the ROM
+
+**This is a deviation from the pre-registration, decided by the user after seeing the pilot's
+development floors (job 4708239, 32³ only), not a pre-registered choice.** (The user's message
+called this addendum "A3"; A3 was already taken by the post-pilot production plan, which this
+amendment supersedes, so it is numbered A4.)
+
+- **Production bank fits dropped.** Jobs 4711018/4711019/4711020 (`r64a2`, `r128b`, `r256b`,
+  10 h fits with the band penalty) were cancelled after about 25 min; their logs are in
+  `runs/cancelled/`, nothing from them is used. (Jobs 4711010/11/13/15 had already failed the GPU
+  preflight on node pax007 without computing; logs in `runs/failed_preflight/`.) The band penalty
+  of A3 is therefore **not** part of the frozen bank. The fixed-frame control `ff64b`
+  (job 4711021, uncentred data, 1.5 h, trained with the A3 recipe including the band penalty) was
+  already running and is kept as the fixed-frame control; that recipe difference is disclosed.
+- **Frozen bank = the pilot's selected bank, unchanged:** architecture A (512 × 4, $k_{\max}=4$),
+  $R=64$, 30-minute Adam fit, no band penalty, ordering $T$ from the pilot job. File
+  `banks/pilot/bank_selected.npz` (byte copy of `runs/pilot/output/bank_selected.npz`; sha256 in the
+  mesh configs and checked in every job). No re-fit.
+- **Bar (a) relaxed:** the floor is *accepted at about 1 %* (user decision). The coordnet floor is
+  reported at every mesh beside POD-64; the original 1.5 × POD bar is reported as failed, not
+  waived.
+- **Bar (b) replaced** (the 0.25 % bar is unreachable from a ~1 % floor). New bar, fixed now,
+  before any ROM job: at **each** mesh the coordnet head $k=8$ development evolved worst is
+  $\le 1.5\times$ the coordnet bank's ($R=64$) oracle-centroid floor at that mesh (the paper's POD
+  head sits at 1.17–1.21 × its POD floor in the parent jobs), **and** at $96^3$ the head is
+  $\ge 5\times$ faster than its CNAB2 comparator (definition unchanged). The span arms ($R'=64$ … 8)
+  are reported against their floors with no bar.
+- **Bar (c) unchanged and now the main question:** one bank file (same sha256) in all three
+  mesh jobs; $\max/\min$ over meshes of the head's evolved worst $\le1.25$; same for the bank floor
+  $\le1.25$; pre-Löwdin deviation $\le10^{-3}$ at every mesh. Disclosed before any ROM job: a
+  sampling-only diagnostic of the frozen bank (no flow data; `check_bank_meshes.py`,
+  `results/pilot_bank_meshes*.json`) already shows the pre-Löwdin deviation is $1.9\times10^{-2}$,
+  $1.36\times10^{-3}$, $1.49\times10^{-3}$ at 32³/64³/96³, so that sub-criterion **fails at every
+  mesh**; and the bank sampled at 64³ or 96³, restricted to 32³, differs from the bank sampled at
+  32³ by up to 14 % per column (96³ vs 64³: up to 1.1 %). The error-flatness sub-criteria are what
+  the ROM jobs measure.
+- **The derivative mismatch is settled as follows (item 3 of the user's message).** The moving
+  frame uses $D_d=\Phi^{\mathsf T}\partial_dG_n$ computed **spectrally from the sampled, projected,
+  Löwdin-orthonormalised bank $G_n$ actually used** (`build_operators_fast`). On the periodic grid
+  $G_n$ is a trigonometric polynomial inside the 2/3 mask, so this derivative is exact for that
+  bank; every job validates it against a dense spectral derivative of $G_nc$ (`derivative_relative`
+  $\le10^{-9}$) and against a central finite difference of the Fourier shift the frame actually
+  applies (`shift_sign_relative` $\le10^{-5}$), and fails otherwise. The autodiff derivative of the
+  network is *not* used; its disagreement with the spectral derivative of the raw sampled columns
+  is under-resolution/aliasing of the network output on the grid — it falls from 17 % at 32³ to
+  2.0 % at 64³ when the same network is sampled finer (sampling diagnostic above). The in-job
+  comparison on the tests ($\Phi^{\mathsf T}$ autodiff vs spectral) stays as a reported diagnostic
+  (flag, not a gate).
+- **Cohorts, controls, timing, audit, test opening: unchanged** (§4, §6, A2): POD-head reference
+  arm (paper's frozen heads) and controls in the same allocations; test cohort 202609221 opened
+  once with everything frozen.

@@ -1,0 +1,63 @@
+{
+ "bank": "banks/pilot/bank_selected.npz",
+ "meshes": {
+  "32": {
+   "n": 32,
+   "leray_removed_worst": 0.0035955541864902563,
+   "leray_removed_median": 0.0015241784537861507,
+   "orthonormality_before_lowdin": 0.01900474862735435,
+   "orthonormality_before_lowdin_spectral": 0.038776556116563034,
+   "lowdin_relative_change": 0.00613022695740857,
+   "lowdin_worst_column_change": 0.012168749542118372,
+   "orthonormality_after": 4.884981308350689e-15,
+   "derivative_raw": {
+    "n": 32,
+    "relative_per_direction": [
+     0.15931775591949549,
+     0.1524854941570159,
+     0.1520252330806956
+    ],
+    "worst_column": 0.1746564452078136
+   }
+  },
+  "64": {
+   "n": 64,
+   "leray_removed_worst": 2.13351877755295e-05,
+   "leray_removed_median": 9.668101962559895e-06,
+   "orthonormality_before_lowdin": 0.0013576638304653166,
+   "orthonormality_before_lowdin_spectral": 0.0023745637158138133,
+   "lowdin_relative_change": 0.0004985389481774687,
+   "lowdin_worst_column_change": 0.0007672175762752876,
+   "orthonormality_after": 7.993605777301127e-15,
+   "derivative_raw": {
+    "n": 64,
+    "relative_per_direction": [
+     0.013614975562699593,
+     0.011417006989082282,
+     0.00864957977200439
+    ],
+    "worst_column": 0.019969368576662937
+   },
+   "cross_mesh_vs_smallest": {
+    "against": 32,
+    "worst_column": 0.14264001105947088,
+    "median_column": 0.10320582477644871
+   }
+  },
+  "96": {
+   "n": 96,
+   "leray_removed_worst": 5.163955956387142e-07,
+   "leray_removed_median": 1.9804097001640397e-07,
+   "orthonormality_before_lowdin": 0.0014866421555219667,
+   "orthonormality_before_lowdin_spectral": 0.002567321936905416,
+   "lowdin_relative_change": 0.0005316195405464657,
+   "lowdin_worst_column_change": 0.0008412469359709511,
+   "orthonormality_after": 1.3877787807814457e-14,
+   "cross_mesh_vs_smallest": {
+    "against": 32,
+    "worst_column": 0.1426317907130121,
+    "median_column": 0.10320330534230376
+   }
+  }
+ }
+}

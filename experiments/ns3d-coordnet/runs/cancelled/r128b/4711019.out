@@ -1,0 +1,24 @@
+host=pax050 source_commit=c072d8102e6d35c25004babcdb6aaf86b5696b06 job=4711019 mode=bank config=experiments/ns3d-coordnet/configs/bank_r128.json
+NVIDIA A100 80GB PCIe, GPU-fe5316fb-35a6-78ef-4c0b-da5c343c936d, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  987G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+bank data 64/512
+bank data 128/512
+bank data 192/512
+bank data 256/512
+bank data 320/512
+bank data 384/512
+bank data 448/512
+bank data 512/512
+data: {'states': 3072, 'cases': 512, 'meshes': [32, 64, 96], 'train_grid': 48, 'centred': True, 'resample_dropped_energy_worst': 6.7325367503201505e-09, 'state_sha256': '36de80406d044662a734a1ff83dc5ec1746a835db752715b9de17384639b5b6e'}
+compression K=512 tail=1.044e-12
+[A] calibration: 337.6 ms/step -> 103000 steps
+  [A] step 500/103000 loss 2.7884e-03 (170s)
+  [A] step 1000/103000 loss 6.0531e-04 (339s)
+  [A] step 1500/103000 loss 4.0778e-04 (508s)
+  [A] step 2000/103000 loss 1.0841e-03 (677s)
+  [A] step 2500/103000 loss 1.5278e-04 (846s)
+  [A] step 3000/103000 loss 8.8995e-05 (1014s)
+  [A] step 3500/103000 loss 6.0715e-05 (1183s)
+  [A] step 4000/103000 loss 4.5099e-05 (1352s)
+  [A] step 4500/103000 loss 5.5686e-05 (1521s)

@@ -8,7 +8,7 @@
  "fixed_frame_run": "ff64b",
  "not_computed": [
   "never computed: 4711010, 4711011, 4711013, 4711015 (GPU preflight failed on node pax007, no CUDA device; logs in runs/failed_preflight/)",
-  "cancelled and never evaluated: 4711018, 4711019, 4711020 (the A3 production fits; cancelled by the user decision of A4 after roughly 25 minutes of training; logs in runs/cancelled/)"
+  "cancelled and never evaluated: 4711018, 4711019, 4711020 (the A3 production fits, cancelled by the user decision of A4 early in training; logs in runs/cancelled/)"
  ],
  "wrong": [
   "Found by the first Codex audit before any job: the integer Fourier frequencies were in the optimised parameter tree, so Adam would have moved them and broken periodicity without any divergence check noticing. Fixed (gradient zeroed, frequencies asserted at every save/load) before the pilot.",

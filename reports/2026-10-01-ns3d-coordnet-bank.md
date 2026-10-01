@@ -39,7 +39,7 @@ Training loss of the frozen fit 5.19e-05 against the optimum 3.73e-07 of the sam
  Independent local recomputation of the pilot's 32³ floors: largest relative gap 2.78e-15 (passed True).
 
 
-Bar (a) as pre-registered: **FAIL** (worst ratio 9.8x). Accepted at about 1 % by the user decision of A4. The larger ranks that would have answered "R needed to match POD-64" were cancelled by the same decision; that number is **not measured**.
+Bar (a) as pre-registered: **FAIL** (worst ratio 9.8x). Accepted at about 1 % by the user decision of A4. The fits at larger ranks that were to measure "R needed to match POD-64" were cancelled by the same decision and never evaluated; that number is **not measured**.
 
 ## Does the frozen bank read the same on every mesh?
 
@@ -140,8 +140,8 @@ Test, coordnet head worst max/min over meshes 1.179; head worst / floor 32^3 1.0
 | fixed-frame coordnet bank (trained on uncentred states, R=64, no shift anywhere) | 70.16% | 70.16% | 70.16% | True |
 | (reference) same-data POD-64 of the uncentred states | 70.16% | 70.16% | 70.16% | — |
 | frozen centred bank, development states not centred (pilot job) | 97.59% | — | — | True |
-| coordnet head with the frame frozen (δ ≡ 0), development | 40.19% | 40.27% | 40.36% | True |
-| coordnet head with the frame frozen (δ ≡ 0), test | 42.46% | 42.39% | 42.57% | True |
+| coordnet head with the frame frozen ($\delta\equiv0$), development | 40.19% | 40.27% | 40.36% | True |
+| coordnet head with the frame frozen ($\delta\equiv0$), test | 42.46% | 42.39% | 42.57% | True |
 
 The fixed-frame control was trained with the A3 recipe (band-limit penalty, 1.5 h), not the pilot recipe; it is a control of the frame, not of the fit.
 
@@ -191,7 +191,7 @@ The fixed-frame control was trained with the A3 recipe (band-limit penalty, 1.5 
 
 Frozen bank file `experiments/ns3d-coordnet/banks/pilot/bank_selected.npz`, sha256 `9a010260de043e95ac4eee72ce9fd85ecdcf920968d4a34a5334f285a6bd648b`.
  Frozen test settings sha256 `aae294efe5a59bb22dcaf06925d3f1997e63347116152f7fca8c46c68415b708`.
- Other jobs: never computed: 4711010, 4711011, 4711013, 4711015 (GPU preflight failed on node pax007, no CUDA device; logs in runs/failed_preflight/); cancelled and never evaluated: 4711018, 4711019, 4711020 (the A3 production fits; cancelled by the user decision of A4 after roughly 25 minutes of training; logs in runs/cancelled/).
+ Other jobs: never computed: 4711010, 4711011, 4711013, 4711015 (GPU preflight failed on node pax007, no CUDA device; logs in runs/failed_preflight/); cancelled and never evaluated: 4711018, 4711019, 4711020 (the A3 production fits, cancelled by the user decision of A4 early in training; logs in runs/cancelled/).
 
 ## Glossary
 
@@ -200,10 +200,12 @@ Frozen bank file `experiments/ns3d-coordnet/banks/pilot/bank_selected.npz`, sha2
 - **vector potential / curl** — the network outputs $\psi$; the bank is $\nabla\times\psi$, whose divergence is zero.
 - **POD-64** — the parent lanes' bank: the best 64-dimensional linear basis, in mean square, of 768 centred training states, rebuilt at each mesh.
 - **same-data POD** — the POD of exactly the data the coordnet was trained on: the best any 64-column bank can do on its training objective.
-- **centred, co-moving frame, δ** — states are shifted so their energy centroid sits at the origin; the reduced model solves the shift increment δ at every step.
+- **centred, co-moving frame, $\delta$** — states are shifted so their energy centroid sits at the origin; the reduced model solves the shift increment $\delta$ at every step.
 - **floor (oracle-centroid floor)** — error of the best reconstruction of a true state in the bank after centring it on its true centroid. A fixed reference, not a strict lower bound for a model that solves its own shift.
 - **evolved worst / median** — per case, the largest relative $L^2$ error (relative to $\lVert u_0\rVert$) over the output times after $t=0$; then the worst / median over cases.
-- **worst / floor** — an arm's evolved worst divided by the evolved-worst floor of the bank it lives in (both are worst cases, possibly from different cases); near 1 means the solve adds little error beyond the bank's own representation error.
+- **worst / floor** — an arm's evolved worst divided by the evolved-worst floor of the bank it lives in. It is a ratio of two worst cases that may come from different cases, so it summarises the cohort and is not a per-case bound.
+- **MLP, SiLU** — multilayer perceptron (a stack of affine maps and nonlinearities); SiLU is the nonlinearity $x/(1+e^{-x})$.
+- **QR, SVD** — QR factorisation (orthonormal times triangular) and singular value decomposition, used to order the bank.
 - **over 5 %** — number of cases whose evolved worst exceeds 5 %.
 - **prefix $R'$, span arm** — the first $R'$ columns of the importance-ordered bank; the span arm is the linear reduced model in them.
 - **head $h$, $k$** — small network mapping $k=8$ numbers to the 64 bank coefficients; the nonlinear trial manifold, trained per mesh.
@@ -212,7 +214,7 @@ Frozen bank file `experiments/ns3d-coordnet/banks/pilot/bank_selected.npz`, sha2
 - **pre-Löwdin deviation** — largest entry of $G^{\mathsf T}G-I$ for the sampled, projected and ordered bank before orthonormalisation. The ordering makes the bank orthonormal on the training grid, so this measures how far a mesh's reading departs from the trained bank.
 - **raw derivative mismatch** — relative difference between the network's automatic-differentiation derivatives at the grid nodes and FFT derivatives of its sampled values; large when the network has detail finer than the grid.
 - **$D_d$** — the frame operator: tests applied to the $x_d$-derivative of every bank column.
-- **CNAB2** — the pseudo-spectral full-order solver (Crank–Nicolson viscous, Adams–Bashforth-2 advection); truth at Δt = 0.001 and the speed comparator.
+- **CNAB2** — the pseudo-spectral full-order solver (Crank–Nicolson viscous, Adams–Bashforth-2 advection); truth at $\Delta t=0.001$ and the speed comparator.
 - **comparator / speedup** — the fastest stable CNAB2 setting at least as accurate as the arm; speedup = its median time / the arm's, from one interleaved timing block in the same job.
 - **fixed-sweep vs generic LM** — relative field difference between the 3-sweep Gauss–Newton query and a generic Levenberg–Marquardt reference (adaptive damping, automatic Jacobian, iteration budget 60 per step) on the same residual, four cases.
 - **unknowns** — numbers solved per time step: the latent or span coordinates plus the 3 frame-shift components.

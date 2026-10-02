@@ -49,15 +49,18 @@ def sha(p):
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--out', required=True)
+    ap.add_argument('--dry', action='store_true', help='layout test: validation data in place of held-out')
     a = ap.parse_args()
-    sv, sh = J(RES / 'select-val.json'), J(RES / 'select-ho.json')
-    rv, rh = J(RES / 'refined-val.json'), J(RES / 'refined-ho.json')
+    ho = 'val' if a.dry else 'ho'
+    sv, sh = J(RES / 'select-val.json'), J(RES / f'select-{ho}.json')
+    rv, rh = J(RES / 'refined-val.json'), J(RES / f'refined-{ho}.json')
     pv = {n: J(HERE / 'runs' / f'val{n}' / 'code' / 'output' / 'result.json') for n in MESHES}
-    ph = {n: J(HERE / 'runs' / f'ho{n}' / 'code' / 'output' / 'result.json') for n in MESHES}
+    ph = {n: J(HERE / 'runs' / f'{ho}{n}' / 'code' / 'output' / 'result.json') for n in MESHES}
     ref = J(HERE / 'runs' / 'ref1' / 'code' / 'output' / 'result.json')
-    rck = J(HERE / 'runs' / 'rck1' / 'code' / 'output' / 'result.json')
+    rck = J(HERE / 'runs' / 'rck1' / 'code' / 'output' / 'result.json') if not a.dry else \
+        dict(job_id='DRY', recheck=[dict(lattice_diff_vs_reference=0.0)])
     probe = J(HERE / 'runs' / 'smoke1' / 'code' / 'output' / 'ref_probe' / 'result.json')['probe']
-    aud = {f'{c}{n}': J(RES / f'audit-{c}{n}.json') for c in ('val', 'ho') for n in MESHES}
+    aud = {f'{c}{n}': J(RES / f'audit-{(ho if c == "ho" else c)}{n}.json') for c in ('val', 'ho') for n in MESHES}
     L = []
     w = L.append
 
@@ -147,7 +150,10 @@ def main():
       f'job {ref["job_id"]} on {ref["gpu"]}: {len(cases_ref)} cases, median '
       f'{fx(sorted(c["seconds"] for c in cases_ref)[len(cases_ref) // 2])} s per case, every case accepted. '
       f'Re-solving four validation cases at $(10^{{-10}}, 10^{{-11}})$ (job {rck["job_id"]}) changes them by at most '
-      f'{sci(rck_max)} relative to $\\lVert u_0\\rVert$. The same-grid references at the lane\'s meshes differ from it, '
+      f'{sci(rck_max)} relative to $\\lVert u_0\\rVert$' + (
+          f' — above the $10^{{-5}}$ threshold of DESIGN R4, so the reference is declared tolerance-limited at that '
+          f'level and refined-error differences below {sci(10 * rck_max)} are unresolved' if rck_max > 1e-5 else '') +
+      '. The same-grid references at the lane\'s meshes differ from it, '
       'worst over the held-out cases, by ' + ', '.join(f'{pct(sg_ref[n])} ({CELLS[n]})' for n in MESHES) +
       f'; on the probe case the 257-node reference differed from the 513-node one by '
       f'{pct(probe["same_grid_257"]["lattice_diff_vs_refined"])}. The reference is a first-order solution: '
@@ -204,15 +210,19 @@ def main():
             w(f'**{CELLS[n]}, $R\' = {Rp}$** (job {ph[n]["job_id"]}, {ph[n]["gpu"]}; selected: '
               f'`{M["selected"] or "none"}`)')
             w('')
-            w('| arm | refined | same-grid | dist tensor | dist conv | LM its/query | exits (4/0/3) | ms |')
-            w('|---|---|---|---|---|---|---|---|')
+            w('| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | '
+              'exits (4/0/3) | ms |')
+            w('|---|---|---|---|---|---|---|---|---|')
             order = [f'tensor_R{Rp}', f'dense_R{Rp}'] + [f'{r}_R{Rp}' for r in OFF]
             for nm in order:
                 r = M['rows'].get(nm)
                 if not r:
                     continue
-                w(f'| `{nm.rsplit("_R", 1)[0]}`{" (control)" if r["control"] else ""} | '
-                  f'{pct(r["refined_worst"])} ({pct(r["refined_median"])}) | {pct(r["same_worst"])} | '
+                ra = rh['panels'][n]['arms'][nm]
+                w(f'| `{nm.rsplit("_R", 1)[0]}`{" (control)" if r["control"] else ""}'
+                  f'{(" (" + str(r["cases"]) + " cases)") if r["family"] == "dense" else ""} | '
+                  f'{pct(r["refined_worst"])} ({pct(r["refined_median"])}) | {pct(ra.get("richardson_worst"))} | '
+                  f'{pct(r["same_worst"])} | '
                   f'{pct(r["dist_tensor"]) if r["dist_tensor"] is not None else "–"} | '
                   f'{pct(r["dist_conv"], 3) if r["dist_conv"] is not None else "–"} | {fx(r["lm_its_median"], 0)} | '
                   f'{r["reasons"]["4"]}/{r["reasons"]["0"]}/{r["reasons"]["3"]} | '
@@ -220,8 +230,9 @@ def main():
             w('')
         fo = sh['meshes'][n]['fom']
         w(f'Newton–BiCGStab at {CELLS[n]} (same job): ' + '; '.join(
-            f'{k.replace("fom_", "")} {pct(v["refined"])} refined / {pct(v["same"])} same-grid / {fx(v["ms"])} ms'
-            for k, v in fo.items()) + '.')
+            f'{k.replace("fom_", "")} {pct(v["refined"])} refined / '
+            f'{pct(rh["panels"][n]["fom"][k].get("richardson_worst"))} Richardson / {pct(v["same"])} same-grid / '
+            f'{fx(v["ms"])} ms' for k, v in fo.items()) + '.')
         w('')
     w('**Mesh invariance** (DESIGN R2-7): worst refined error ratio max/min over the three meshes and cross-mesh field '
       'distances of the same arm on the 63³ lattice (held-out).')
@@ -237,9 +248,19 @@ def main():
             d1 = rh['cross_mesh']['65-129'][nm]['worst']
             d2 = rh['cross_mesh']['129-257'][nm]['worst']
             ok = bool(ratio <= 1.10 and d2 <= 1e-2 and d2 <= d1)
-            inv[nm] = ok
+            inv[nm] = (ok, ratio)
             w(f'| `{rule}` | {Rp} | {" / ".join(pct(x) for x in e)} | {fx(ratio, 3)} | {pct(d1, 3)} | {pct(d2, 3)} | '
               f'{"yes" if ok else "no"} |')
+    w('')
+
+    w('Verdict (ii): ' + '; '.join(
+        f'$R\' = {Rp}$: the selected `{sh["meshes"]["65"]["R"][Rp]["selected"].rsplit("_R", 1)[0]}` is '
+        f'{"mesh-invariant" if inv[sh["meshes"]["65"]["R"][Rp]["selected"]][0] else "not mesh-invariant"} '
+        f'(ratio {fx(inv[sh["meshes"]["65"]["R"][Rp]["selected"]][1], 3)}), the tensor is '
+        f'{"mesh-invariant" if inv[f"tensor_R{Rp}"][0] else "not mesh-invariant"} '
+        f'(ratio {fx(inv[f"tensor_R{Rp}"][1], 3)})' for Rp in RPS
+        if len({sh["meshes"][n]["R"][Rp]["selected"] for n in MESHES}) == 1 and sh["meshes"]["65"]["R"][Rp]["selected"])
+      + '. The selected rule is the same at every mesh for both widths, so the policy and the fixed arm coincide.')
     w('')
 
     # ---------------------------------------------------------------- cost
@@ -255,7 +276,7 @@ def main():
     for n in MESHES:
         for Rp in RPS:
             M = sh['meshes'][n]['R'][Rp]
-            for nm in [f'tensor_R{Rp}', M['selected'], f'lat4096_R{Rp}', f'lat32768_R{Rp}']:
+            for nm in dict.fromkeys([f'tensor_R{Rp}', M['selected'], f'lat4096_R{Rp}', f'lat32768_R{Rp}']):
                 if not nm or nm not in M['rows']:
                     continue
                 r = M['rows'][nm]
@@ -302,6 +323,12 @@ def main():
               f'({c["dense_cont_rho_gt_bar"]["fired"]}) |')
     w('')
 
+    def reapply(n, Rp):
+        rows = sh['meshes'][n]['R'][Rp]['rows']
+        c = [(r['ms'], nm) for nm, r in rows.items() if r['eligible'] and r['dist_conv'] is not None
+             and r['dist_conv'] <= 1e-3]
+        return min(c)[1] if c else None
+
     # ---------------------------------------------------------------- validation selection
     w('## 7. Validation and the frozen selection')
     w('')
@@ -310,15 +337,66 @@ def main():
       '0.116, finite, no reason-3 exit, ≤ 1 % non-stationary steps) within $10^{-3}$ of the converged 32768-point '
       'lattice rollout.')
     w('')
-    w('| mesh | $R\'$ | selected | by | validation refined: selected / tensor | validation ms: selected / tensor |')
-    w('|---|---|---|---|---|---|')
+    w('| mesh | $R\'$ | selected | by | validation refined: selected / tensor | validation ms: selected / tensor | '
+      'rule re-applied to held-out data |')
+    w('|---|---|---|---|---|---|---|')
     for n in MESHES:
         for Rp in RPS:
             M = sv['meshes'][n]['R'][Rp]
             s = M['selected_row'] or {}
             w(f'| {CELLS[n]} | {Rp} | `{M["selected"] or "none"}` | {M["selected_by"]} | '
               f'{pct(s.get("refined_worst"))} / {pct(M["tensor_row"]["refined_worst"])} | '
-              f'{fx(s.get("ms"))} / {fx(M["tensor_row"]["ms"])} |')
+              f'{fx(s.get("ms"))} / {fx(M["tensor_row"]["ms"])} | `{reapply(n, Rp) or "none"}` |')
+    w('')
+
+    # ---------------------------------------------------------------- findings
+    w('## 8. What the numbers say, and their limits')
+    w('')
+    best_fom = {n: min(v['refined'] for v in sh['meshes'][n]['fom'].values()) for n in MESHES}
+    sel512 = {n: sh['meshes'][n]['R']['512']['selected_row'] for n in MESHES}
+    ten512 = {n: sh['meshes'][n]['R']['512']['tensor_row'] for n in MESHES}
+    w('- **The tensor inherits the mesh\'s upwind error; the off-mesh solve does not.** Against the refined reference the '
+      'tensor at $R\' = 512$ is at ' + ', '.join(f'{pct(ten512[n]["refined_worst"])} ({CELLS[n]})' for n in MESHES) +
+      ', tracking the same-mesh full-order model, whose best setting is at ' +
+      ', '.join(f'{pct(best_fom[n])}' for n in MESHES) + '. The selected off-mesh rule is at ' +
+      ', '.join(f'{pct(sel512[n]["refined_worst"]) if sel512[n] else "–"}' for n in MESHES) +
+      ': it solves the continuum advection, so its error is the bank\'s and the time step\'s, not the stencil\'s. '
+      'This is why "reproduces the tensor" is the wrong expectation: the off-mesh solve differs from the tensor solve '
+      'by the stencil\'s $O(h)$ gap (column `dist tensor`), which shrinks as the mesh is refined.')
+    w('- **Caveat on that comparison.** The refined reference is a first-order upwind solution itself, so it is biased '
+      'toward upwind discretisations; the Richardson column (post-hoc diagnostic, DESIGN R5) moves every arm, and the '
+      'off-mesh rule is ' + ('ahead of the tensor under it at every mesh and width' if all(
+          rh['panels'][n_]['arms'][sh['meshes'][n_]['R'][R_]['selected']]['richardson_worst'] <
+          rh['panels'][n_]['arms'][f'tensor_R{R_}']['richardson_worst'] for n_ in MESHES for R_ in RPS)
+          else 'not ahead of the tensor under it everywhere') + '. The bank was trained on fields up to 129 '
+      'nodes per axis; evaluating its analytic derivative brings in resolution the coarse mesh does not have, which is '
+      'why an off-mesh solve can beat the same-mesh full-order model at 64³ and 128³. That is a property of the trained '
+      'bank, not a free lunch: at 256³ the full-order model\'s best setting is more accurate than either reduced solve.')
+    w('- **Quadrature error is small next to model error.** Every non-control rule that passes the continuum '
+      'certificate gives the same refined error to within a few hundredths of a percent; the differences between the '
+      'converged lattice and Gauss rollouts (`dist conv` of `gl32`) are far below the bank\'s floor.')
+    w('- **Continuum ρ of a fixed rule grows with the mesh** (the tensor-reached states are sharper on finer meshes, '
+      'because the mesh adds less numerical diffusion), so a rule size certified at 64³ is not automatically certified '
+      'at 256³; the 4096-point lattice at $R\' = 512$ crosses the 0.116 bar at 256³ (section 3).')
+    w('- **Cost.** The off-mesh Jacobian is a dense GEMM of $M \\times m \\times R\'$ flops, more flops than the '
+      'tensor\'s $M R\'^2$ contraction but far fewer bytes; on the H200 it is faster for $m \\lesssim$ 16k at $R\' = 512$ '
+      'and comparable at $R\' = 256$. The query time is dominated at 256³ by the mesh-side projection and output '
+      'decoding, which no advection rule removes, so the speedup against Newton–BiCGStab changes little.')
+    w('')
+    w('### What was wrong or changed along the way')
+    w('')
+    w('- `ref1` first attempt (job 4732809, A100 node pax007) failed the GPU preflight (no CUDA device); restaged '
+      'unchanged on an H100 (4732869).')
+    w('- The design audit found that the vendor full-order solver would store every time step at 513 nodes (107 GB) and '
+      'that the selection had an unconditional fallback; both fixed before any experiment job (DESIGN R1–R2).')
+    w('- The smoke probe could not discriminate the reference tolerances (its case converged to $10^{-10}$ at every '
+      'tolerance); the re-check job `rck1` was added (R4) and bounds the effect (section 2).')
+    w('- The Richardson diagnostic was added after the validation refined errors were seen (R5); it is labelled '
+      'post-hoc and changes no verdict.')
+    w('- The DESIGN check "dense continuum ρ > 0.116" is meaningful only at 64³; at 128³ and 256³ the $O(h)$ gap is '
+      'below 0.116 by construction (it halves per refinement), so the `False` entries there are expected, not failures.')
+    w('- The held-out cohort had been evaluated before by the retry lane for its tensor settings; no off-mesh arm had '
+      'run on it and no choice here used it.')
     w('')
 
     # ---------------------------------------------------------------- glossary

@@ -493,7 +493,7 @@ def answers(w, dv, tt, sel):
                          f"(on {'/'.join(str(x) for x in nc)} cases)")
         w('- **(i) Reproduce dense against the refined reference, mesh-invariantly?** In the linear-rung settings (`acc`, '
           f'`fast`) the errors of the resolved off-mesh rules are mesh-invariant case by case (largest per-case spread of the '
-          f'ST error over the three meshes {pc(spread_lin(tag), 3)} pp for Gauss $\\ge 48^2$ and Fibonacci; table below) — '
+          f'ST error over the three meshes {pc(spread_lin(tag), 3)} pp for the continuum rollout, Gauss $64^2$ and Fibonacci 6765; table below) — '
           'invariance of the error, not a proof of identical solutions; '
           'in the `head` setting a few cases move between meshes for every arm, dense included (table below). The dense '
           'mesh solve carries the upwind stencil error, which shrinks with the mesh. On the cases where dense ran (worst '

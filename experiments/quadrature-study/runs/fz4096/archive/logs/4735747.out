@@ -1,0 +1,23 @@
+host=pax009 source_commit=240793ded3ed772878041f7acf1fdc818209e450
+NVIDIA H200, GPU-9fe6d31e-a7b8-0037-da75-63ba6cc6b86f, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T 1005G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+CASES 1 1.9
+REFS 0 1.9
+BANK+OPS 38.9
+TRUTH 47.6
+ARMS acc 20 96.5
+CASE acc 0 dev6 2 258.3
+RHO acc 50 124.3 382.6
+TIMING acc 441.8
+ARMS fast 20 462.0
+CASE fast 0 dev6 2 532.2
+RHO fast 50 78.3 610.6
+TIMING fast 666.1
+ARMS head 21 688.0
+CASE head 0 dev6 2 792.5
+RHO head 50 78.7 871.2
+TIMING head 963.5
+QSTUDY COMPLETE
+ALL-DONE

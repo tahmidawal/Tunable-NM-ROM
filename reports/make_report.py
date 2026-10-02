@@ -14,9 +14,10 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[1]
 LANE = ROOT / 'experiments/quadrature-study'
-CHK = LANE / 'checks'
+import os
+CHK = Path(os.environ.get('QS_CHK', LANE / 'checks'))
 HARI = ROOT / 'external/quadrature-study-2026-09-30/quadrature/results'
-OUT = ROOT / 'reports/2026-10-01-burgers2d-offmesh-quadrature.md'
+OUT = Path(os.environ.get('QS_OUT', ROOT / 'reports/2026-10-01-burgers2d-offmesh-quadrature.md'))
 MESHES = (256, 1024, 4096)
 SETS = ('acc', 'fast', 'head')
 SNAME = dict(acc="accurate (span $R'=384$, $M=1536$)", fast="fast (span $R'=128$, $M=512$)",

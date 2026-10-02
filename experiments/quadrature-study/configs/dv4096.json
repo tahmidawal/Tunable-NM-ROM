@@ -1053,7 +1053,7 @@
  "refs": "/cluster/tufts/paralab/tawal01/quad2d_20261001/refdv/output",
  "fom": {
   "truth": {
-   "name": "lean_tight",
+   "name": "fft_tight",
    "ntol": 1e-06,
    "ltol": 1e-08
   },
@@ -1139,27 +1139,45 @@
   "extra_mesh_arms": {
    "acc": [
     "lat64",
+    "gauss32",
+    "gauss48",
     "gauss64",
+    "gauss96",
     "gauss128",
+    "gauss192",
     "gauss256",
+    "fib1597",
+    "fib4181",
     "fib6765",
     "fib17711",
     "fib46368"
    ],
    "fast": [
     "lat64",
+    "gauss32",
+    "gauss48",
     "gauss64",
+    "gauss96",
     "gauss128",
+    "gauss192",
     "gauss256",
+    "fib1597",
+    "fib4181",
     "fib6765",
     "fib17711",
     "fib46368"
    ],
    "head": [
     "lat64",
+    "gauss32",
+    "gauss48",
     "gauss64",
+    "gauss96",
     "gauss128",
+    "gauss192",
     "gauss256",
+    "fib1597",
+    "fib4181",
     "fib6765",
     "fib17711",
     "fib46368",
@@ -1190,6 +1208,24 @@
  },
  "dense_chunk": 8,
  "point_chunk": 32768,
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "role": "dev",
  "timing_meshes": [
   256,
   1024

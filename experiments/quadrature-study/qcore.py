@@ -19,7 +19,7 @@ discrete eigenvalues. ONLY the tested advection N(c) depends on the quadrature r
   flux    N = -L sum_q w_q (psi_x + psi_y)(x_q) u(x_q)^2/2   off-mesh, Hari's integrated-by-parts form
 
 with psi = 2 sin(kx pi x) sin(ky pi y) the L2-orthonormal continuum sines of the SAME (kx, ky) as Phi, and
-(x_q, w_q), sum w_q = 1, a classical rule on (0,1)^2. Because Phi^T F = sum_ij (2/L) s s F ~ L int psi F, the
+(x_q, w_q), sum w_q = 1 (except Smolyak, see offmesh_data), a classical rule on (0,1)^2. Because Phi^T F = sum_ij (2/L) s s F ~ L int psi F, the
 off-mesh form reproduces the mesh-tested term up to the stencil's consistency error (Hari, grid.py docstring).
 u, u_x, u_y at x_q come from the coordinate-network bank and its forward-mode derivatives (partial decoding).
 
@@ -81,7 +81,7 @@ def _fib_index(n):
 
 
 def offmesh_rule(name):
-    """(X (m, 2), w (m,), sum w = 1) of a named off-mesh rule. Names: gauss<p>, fib<n>, sobol<m>, halton<m>,
+    """(X (m, 2), w (m,)) of a named off-mesh rule; sum w = 1 except Smolyak (Hari's boundary-node removal). Names: gauss<p>, fib<n>, sobol<m>, halton<m>,
     smolyak<level> (Clenshaw-Curtis). All random rules use seed 0 (Hari's defaults)."""
     if name.startswith('gauss'):
         X, w = HQ.gauss_tensor(int(name[5:]))

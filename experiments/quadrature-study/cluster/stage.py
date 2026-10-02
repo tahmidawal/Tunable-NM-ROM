@@ -35,6 +35,7 @@ def main():
     p.add_argument('--hours', type=int, default=12)
     p.add_argument('--mem-fraction', default='0.90')
     p.add_argument('--after', default=None, help='afterok dependency job id')
+    p.add_argument('--retry-reason', default=None, help='infrastructure retry of a test attempt (recorded)')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     files = FILES + [f'{LANE}/{a.config}']
@@ -44,11 +45,20 @@ def main():
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain', '--', LANE], text=True)
     assert not [l for l in dirty.splitlines() if not l[3:].startswith(f'{LANE}/runs')], dirty
-    if a.driver == 'qstudy' and json.loads((ROOT / LANE / a.config).read_text())['cohorts'] == ['test64']:
-        # DESIGN 8/9: the test cohort is evaluated only after the selection is frozen and committed
-        sel = subprocess.run(['git', '-C', str(ROOT), 'cat-file', '-e', f'{commit}:{LANE}/checks/selection-dv.json'])
-        des = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{LANE}/DESIGN.md'], text=True)
-        assert sel.returncode == 0 and 'FROZEN SELECTION' in des, 'test jobs require the committed frozen selection'
+    cfgj = json.loads((ROOT / LANE / a.config).read_text())
+    if a.driver == 'qstudy' and 'test64' in cfgj['cohorts']:
+        # DESIGN 8/9 + Codex audit 2 (B6): test64 is evaluated only against a committed freeze manifest whose selection
+        # hash matches the committed selection, and only once per mesh (an infrastructure retry needs --retry-reason)
+        fz = json.loads(subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{LANE}/checks/FROZEN-SELECTION.json']))
+        sel = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{LANE}/{fz["selection_file"]}'])
+        assert hashlib.sha256(sel).hexdigest() == fz['selection_sha256'], 'selection differs from the freeze manifest'
+        prior = []
+        for d in (ROOT / LANE / 'runs').glob('*'):
+            for f in (d / LANE / 'configs').glob('*.json') if d.name != a.attempt else []:
+                c_ = json.loads(f.read_text())
+                if c_.get('mesh') == cfgj['mesh'] and 'test64' in c_.get('cohorts', []):
+                    prior.append(d.name)
+        assert not prior or a.retry_reason, f'test64 at this mesh already staged in {prior}; pass --retry-reason'
     proof = []
     for name in files:
         content = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}'])
@@ -60,6 +70,8 @@ def main():
         proof.append(dict(source=name, bytes=len(content), sha256=hashlib.sha256(content).hexdigest(), commit=commit))
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=2) + '\n')
     (out / 'COMMIT.txt').write_text(commit + '\n')
+    if a.retry_reason:
+        (out / 'RETRY-REASON.txt').write_text(a.retry_reason + '\n')
     (out / 'logs').mkdir()
     gres, constraint = GRES[a.gpu]
     dep = f'#SBATCH --dependency=afterok:{a.after}' if a.after else ''

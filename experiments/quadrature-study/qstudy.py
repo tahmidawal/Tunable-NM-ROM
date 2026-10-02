@@ -157,14 +157,24 @@ def main():
     if cfg.get('refs'):
         rdir = Path(cfg['refs'])
         man = json.loads((rdir / 'result.json').read_text())
-        assert man.get('complete'), 'reference job incomplete'
+        assert man.get('complete') and man.get('all_accepted'), 'reference job incomplete or rejected'
+        want = cfg['ref_contract']           # DESIGN 4: mesh 8192; ST dt/16, S dt; ntol 1e-11, ltol 1e-9, accept 2e-11
+        assert int(man['config']['mesh']) == want['mesh'], ('reference mesh', man['config']['mesh'])
+        for tag, w_ in want['refs'].items():
+            got = man['config']['refs'][tag]
+            assert all(abs(float(got[k_]) - float(w_[k_])) <= 1e-15 * max(1., abs(float(w_[k_]))) for k_ in w_), (tag, got)
+        keys_ = [(x['cohort'], x['case'], x['ref']) for x in man['cases']]
+        assert len(keys_) == len(set(keys_)), 'duplicate reference entries'
         idx = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
         for coh, c, ph in cases:
             assert man['cohort_sha256'][coh] == rep['cohorts'][coh]['physical_sha256'], ('reference cohort', coh)
             for tag in ('ST', 'S'):
                 ent = idx.get((coh, c, tag))
                 assert ent is not None and ent['accepted'], ('reference missing or not accepted', coh, c, tag)
+                assert ent['mesh'] == want['mesh'] and abs(ent['dt'] - want['refs'][tag]['dt']) <= 1e-15, ent
+                assert ent['max_relative_residual'] <= want['refs'][tag]['accept_residual'], ent
                 r = np.load(rdir / f'ref_{tag}_{coh}_{c:03d}.npz')['f257']
+                assert r.shape == (6, 257, 257) and np.isfinite(r).all(), ('reference shape', coh, c, tag, r.shape)
                 assert sha(r) == ent['f257_sha256'], ('reference sha', coh, c, tag)
                 refs[(coh, c, tag)] = r
                 rep['references'].setdefault(tag, {})[f'{coh}{c}'] = dict(file=str(rdir / f'ref_{tag}_{coh}_{c:03d}.npz'),
@@ -223,7 +233,8 @@ def main():
     rng = np.random.default_rng(int(tcfg.get('seed', 20261001)))
     tcases = [x for x in cases if x[0] == tcfg['cohort']][:tcfg['cases']]
     inv_all = []
-    for s in cfg['settings']:
+
+    def run_setting(s):
         st = Q.SETTINGS[s]
         Rp, M = st['Rp'], st['M']
         if st['kind'] == 'lin':
@@ -449,9 +460,15 @@ def main():
                 return lambda: dfn(Wd)
             return lambda: fom_lean(u0, nu, obj['ntol'], obj['ltol'])
 
-        for sj in subjects:          # compile + warm every signature before any timed invocation
+        base_sha = {}
+        for j, sj in enumerate(subjects):    # compile + warm every signature before any timed invocation
             for x in range(len(tcases)):
-                jax.block_until_ready(fn_of(sj, x)())
+                o = fn_of(sj, x)()
+                jax.block_until_ready(o)
+                if sj[0] == 'rom':
+                    sx_ = max(1, sj[1] // 256)
+                    base_sha[(j, x)] = sha(np.asarray(o['fields'][:, ::sx_, ::sx_]))
+                del o
         inv = []
         for rep_i in range(tcfg['reps']):
             orderT = [(j, x) for j in range(len(subjects)) for x in range(len(tcases))]
@@ -466,8 +483,12 @@ def main():
                 secs = time.perf_counter() - t1
                 coh, c = inputs[sj[1]][x][2]
                 ent = dict(setting=s, kind=sj[0], mesh=sj[1], name=sj[2], case=f'{coh}{c}', rep=rep_i, seconds=secs)
-                if sj[0] == 'rom' and sj[1] == L:
-                    ent['output_matches_phase1'] = bool(sha(np.asarray(o['fields'][:, ::s256, ::s256])) == sha1.get((sj[2], coh, c)))
+                if sj[0] == 'rom':
+                    sx_ = max(1, sj[1] // 256)
+                    h_ = sha(np.asarray(o['fields'][:, ::sx_, ::sx_]))
+                    ent['output_matches_warmup'] = bool(h_ == base_sha[(j, x)])
+                    if sj[1] == L:
+                        ent['output_matches_phase1'] = bool(h_ == sha1.get((sj[2], coh, c)))
                 elif sj[0] == 'fom':
                     T = truth[(coh, c)]
                     f = np.asarray(o[0])
@@ -475,7 +496,7 @@ def main():
                     ent['converged'] = bool(np.asarray(o[2]).max() <= sj[3]['ntol'] * (1 + 1e-9))
                 inv.append(ent)
                 del o
-        inv_all += inv
+        inv_all.extend(inv)
         med = {}
         for d_ in inv_all:
             med.setdefault(f"{d_['setting']}|{d_['kind']}|{d_['mesh']}|{d_['name']}", []).append(d_['seconds'])
@@ -483,7 +504,9 @@ def main():
                              invocations=inv_all, median_ms={k: 1e3 * float(np.median(v)) for k, v in med.items()})
         print('TIMING', s, el(), flush=True)
         save()
-        del arms, cache, subjects, pops
+
+    for s in cfg['settings']:
+        run_setting(s)               # function scope: every rule block / compiled arm of s is released afterwards
         gc.collect()
 
     rep['elapsed_seconds'] = el()

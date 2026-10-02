@@ -18,8 +18,15 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument('--tag', default='dv')
     p.add_argument('--out', required=True)
+    p.add_argument('--freeze', action='store_true', help='also write checks/FROZEN-SELECTION.json (staging gate for test64)')
     a = p.parse_args()
     S = {L: json.loads((HERE / f'checks/{a.tag}{L}-summary.json').read_text()) for L in MESHES}
+    # acceptance first (Codex audit 2, finding B1): every source job accepted, same cohorts and case sets everywhere
+    bad = {L: S[L]['failed_gates'] for L in MESHES if S[L]['failed_gates'] or not S[L].get('accepted')}
+    assert not bad, f'source jobs not accepted: {bad}'
+    assert all(S[L]['role'] == 'dev' for L in MESHES)
+    assert len({json.dumps(S[L]['cohorts'], sort_keys=True) for L in MESHES}) == 1, 'cohort hashes differ across meshes'
+    assert len({json.dumps(S[L]['gates']['G2_cohort']['cases']) for L in MESHES}) == 1, 'case sets differ across meshes'
     out = dict(source={L: dict(attempt=S[L]['attempt'], job_id=S[L]['job_id'], result_sha256=S[L]['result_sha256'],
                                failed_gates=S[L]['failed_gates']) for L in MESHES},
                B2={}, B4={}, per_arm={}, recommended={})
@@ -48,10 +55,21 @@ def main():
                                                           B1=b1, B3=b3, B5=b5, rho_cont_max=rho)
         cands = [(v['m'], n) for n, v in out['per_arm'][s].items()
                  if v['kind'] == 'point' and (v['rule'] or '').startswith(('gauss', 'fib')) and not n.startswith('ctrl')
-                 and n != 'gref' and all(x is not False for x in v['B1']) and all(v['B3']) and v['B5']]
+                 and n not in ('gref', 'gref_check') and all(x is True for x in v['B1']) and all(x is True for x in v['B3'])
+                 and v['B5']]
         out['recommended'][s] = min(cands)[1] if cands else None
     Path(a.out).write_text(json.dumps(out, indent=1) + '\n')
     print(json.dumps(out['recommended']))
+    if a.freeze:
+        import hashlib
+        fz = dict(selection_file=str(Path(a.out).relative_to(HERE)),
+                  selection_sha256=hashlib.sha256(Path(a.out).read_bytes()).hexdigest(),
+                  sources={L: dict(summary_sha256=hashlib.sha256((HERE / f'checks/{a.tag}{L}-summary.json').read_bytes()).hexdigest(),
+                                   job_id=S[L]['job_id'], result_sha256=S[L]['result_sha256']) for L in MESHES},
+                  recommended=out['recommended'],
+                  test_arms='the full rollout arm set of configs/t*.json (unchanged since the dev jobs; no arm added or removed)')
+        (HERE / 'checks/FROZEN-SELECTION.json').write_text(json.dumps(fz, indent=1) + '\n')
+        print('frozen ->', HERE / 'checks/FROZEN-SELECTION.json')
 
 
 if __name__ == '__main__':

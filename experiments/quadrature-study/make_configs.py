@@ -49,7 +49,7 @@ def qstudy(attempt, L, cohorts, dense_cases, refs, timing_cohort, settings=SETTI
              arms={s: rollout_arms(s, gref) for s in settings},
              dense_cases=dense_cases, population_arm='lat64', gref=gref, gref_check=gref_check, gref_bar=GREF_BAR,
              rho_rules={s: rho_rules(s, L) for s in settings},
-             refs=refs, fom=dict(truth=dict(name='lean_tight', ntol=1e-6, ltol=1e-8),
+             refs=refs, fom=dict(truth=dict(name='fft_tight', ntol=1e-6, ltol=1e-8),
                                  timed=[dict(name='lean_tight', ntol=1e-6, ltol=1e-8),
                                         dict(name='lean_nt3e-3_l3e-3_dt005', ntol=3e-3, ltol=3e-3)]),
              timing=dict(cohort=timing_cohort, cases=timing_cases, reps=reps, burn=.1, seed=20261001,
@@ -58,6 +58,9 @@ def qstudy(attempt, L, cohorts, dense_cases, refs, timing_cohort, settings=SETTI
              audit=dict(cohort=cohorts[0], cases=list(audit_cases), full_max_mesh=256, full_case0_max_mesh=1024,
                         full_arms=['dense', 'lat64', 'gauss64', 'fib6765', 'gref']),
              tangent_chunks=dict(acc=24, fast=8, head=1), dense_chunk=8, point_chunk=32768)
+    c['ref_contract'] = dict(mesh=8192, refs=dict(ST=dict(dt=.005 / 16, ntol=1e-11, ltol=1e-9, accept_residual=2e-11),
+                                                S=dict(dt=.005, ntol=1e-11, ltol=1e-9, accept_residual=2e-11)))
+    c['role'] = 'test' if cohorts == ['test64'] else 'dev'
     for x in parity:
         c['arms'][x['setting']].append({k: v for k, v in x.items() if k != 'setting'})
     c['timing']['extra_mesh_arms'] = {s: [n for n in XMESH_ARMS + (['q0scaled'] if s == 'head' else [])] for s in settings}
@@ -89,7 +92,7 @@ def refs(att):
     return f'{NS}/{att}/output'
 
 
-XMESH_ARMS = ['lat64', 'gauss64', 'gauss128', 'gauss256', 'fib6765', 'fib17711', 'fib46368']
+XMESH_ARMS = ['lat64'] + [f'gauss{p}' for p in (32, 48, 64, 96, 128, 192, 256)] + [f'fib{n}' for n in (1597, 4181, 6765, 17711, 46368)]
 
 
 def refjob(attempt, cohorts, audit, mesh=8192, case_limit=None):

@@ -169,7 +169,7 @@ larger; this is a property of the frozen model and is reported as a finding, not
   \lVert u-u_{\rm ST}\rVert/\lVert u_0\rVert$ on the shared $257^2$ nodes; (b) the distance from our own dense
   rollout, $\max_t\lVert u-u_{\rm dense}\rVert/\lVert u_0\rVert$ (full mesh) — the hyper-reduction error of the mesh
   rules proper.
-- **Secondary**: same-grid error against `lean_tight` (full mesh); error against reference S.
+- **Secondary**: same-grid error against `fft_tight` (full mesh); error against reference S.
 - Also: distance from the continuum rollout `gref` (the hyper-reduction error of the off-mesh rules proper); LM
   iterations (total, max per step), exit reasons, rejected steps; ms per query.
 - `dense` case coverage: every case at $256^2$ and $1024^2$; at $4096^2$ dev6 in the development job and the first
@@ -280,3 +280,25 @@ NEEDS-RESTATEMENT; C8, C10 WRONG. All findings were addressed before staging:
 | 10 | memory not established; rule caches unbounded | FIXED: setting-major driver (one setting's rule blocks resident), off-mesh tables built on the device in 32768-point chunks, host truth cache sized by `--mem`; the first $4096^2$ job is the feasibility test and is reported either way |
 | 11 | mesh Jacobian at the upwind switch | RESTATED (§7) |
 | 12 | Smolyak weights do not sum to one | DOCUMENTED in `qcore.offmesh_data`; never renormalised (Hari's rule as published) |
+
+## A1 — Codex design audit 2 (2026-10-02, before any ROM job; the two FOM-only reference jobs were already submitted)
+
+Audit: `results/codex-design-audit-2.md`. It confirmed the rewrite's numerics (closures, populations and labels,
+timing keys, B1/B3 arithmetic, NumPy $\rho$ formulas, reference file contract) and found acceptance gaps. Fixed before
+any ROM job:
+
+| finding | disposition |
+|---|---|
+| B1 failed audits do not block selection | `select_rule.py` asserts every source job accepted (no failed gate), identical cohort hashes and case sets across meshes, and B1/B3 explicitly `True` at every mesh; `audit_qs.py` exits non-zero on any failed gate |
+| B2 gate applicability | role-based: G3 only for dev jobs and every registered target must be present (6 dev6 rows); G6-rollout required at dev $1024^2$ (6 rows per setting); G7 required in every job |
+| B3 reference contract | `qstudy.py` validates the reference job's mesh (8192), each tag's $\Delta t$/tolerances/acceptance residual, uniqueness, per-entry mesh/$\Delta t$/residual, array shape $(6,257,257)$ and finiteness, before any rollout |
+| B4 incomplete evidence / non-finite values | G8 enumerates the required files from the rows (every arm that ran on an audit case; full fields where configured) and fails on any missing; non-finite metrics count as $+\infty$ in every statistic, B1 and B3; B1 requires the arm's case set to contain dense's exactly |
+| B5 extra-mesh timed outputs unverified | every ROM subject's warm-up output is hashed (stride $L/256$); every timed output is compared with it, and main-mesh outputs also with phase 1 |
+| B6 freeze gate matched explanatory text | replaced by `checks/FROZEN-SELECTION.json` (written by `select_rule.py --freeze`; carries the selection's sha256 and the source summaries'); `stage.py` gates any config containing test64 on it and refuses a second test64 attempt at the same mesh without `--retry-reason` |
+| B7 cross-job cohort equality | G2 recomputes the descriptor hash; `select_rule.py` requires equal hashes and case sets across meshes |
+| B8 injected controls bypassed the acceptance path | perturbed field and a swap of the two real audit cases are pushed through the same `check_errors` used for acceptance; the ×1.2 time through the same median comparison |
+| B9 narrow $\rho$ recompute | NumPy recompute now covers Gauss 64/128, Fibonacci 6765/17711, Sobol 4096, Smolyak 8, flux Gauss 64 against the NumPy Gauss-640 target, plus the dense mesh-target gap and `lat64` against the mesh target at $256^2$, with every family's argmax state |
+| B10 recommended rule may lack a cost panel | the cross-mesh panel covers every selectable rule (Gauss 32–256, Fibonacci 1597–46368) and `lat64` (and `q0scaled` for the head) |
+| B11 B4 denominators | finite and strictly positive solve times required; the low endpoint is the smallest panel mesh (256) |
+| B12 labels | truth relabelled `fft_tight`; unit-sum docstrings carry the Smolyak exception |
+| feasibility | setting phase is now function-scoped (all arrays of a setting released on return); the first $4096^2$ job remains the feasibility test, `--hours 16`, and is reported either way |

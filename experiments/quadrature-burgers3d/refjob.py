@@ -116,6 +116,21 @@ def main():
             log(f"same-grid {nn}: {rep['probe'][f'same_grid_{nn}']}")
             del f, u0
             save()
+    elif cfg['mode'] == 'recheck':
+        # R4: re-solve chosen cases of an accepted reference at the tightest tolerances; lattice difference recorded
+        ref = np.load(cfg['ref_npz'])
+        fom = lean(n, dt, cfg['tight'][0], cfg['tight'][1])
+        tab = C.table(int(ref['seed']), int(ref['count']))
+        rows = []
+        for j in cfg['cases']:
+            lat, rec = solve(fom, tab, j)
+            old = np.asarray(ref[f'c{j}'])
+            rec.update(case=j, lattice_diff_vs_reference=float((np.linalg.norm(lat - old, axis=1) /
+                                                                np.linalg.norm(old[0])).max()))
+            rows.append(rec)
+            log(f'recheck case {j}: {rec}')
+            rep['recheck'] = rows
+            save()
     else:
         fom = lean(n, dt, cfg['ntol'], cfg['ltol'])
         for seed, count in cfg['cohorts']:

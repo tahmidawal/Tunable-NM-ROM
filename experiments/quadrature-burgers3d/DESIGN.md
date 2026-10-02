@@ -312,3 +312,12 @@ $\Delta t$ halving): the refined reference is itself a first-order solution, and
 than about a percent against it must be read with that in mind (reported beside every refined number).
 Smoke panel (`smoke65`, 4 probe cases, diagnostic): every gate G1–G4 passed; timing drift 1.19 and neighbour 1.21
 failed with only 2 cases × 2 repetitions (the validation panels use 16 × 3).
+
+## R4 — reference tolerance re-check (2026-10-02 ~02:15 EDT; validation panels running, no ROM result read yet)
+
+The smoke probe case reached a $10^{-10}$ residual in two Newton steps at every tolerance, so it could not discriminate
+the tolerances; in `ref1` most cases stop after one Newton step at relative residual just below $10^{-6}$ (accepted by
+the rule). Job `rck1` (after `ref1`, dependency) re-solves validation cases 1–4 at $(10^{-10}, 10^{-11})$ and records
+their lattice difference from the stored reference; if any exceeds $10^{-5}$ (relative to $\lVert u_0\rVert$) the
+reference is declared tolerance-limited at that level and every refined comparison closer than 10× that difference is
+reported as unresolved.

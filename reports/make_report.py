@@ -175,11 +175,15 @@ def main():
     w('```')
     w('')
 
+    # --------------------------------------------------------------- answers
+    answers(w, dv, tt if have_test else None, sel)
+
     # --------------------------------------------------------------- results
     sections_for(w, dv, 'development and validation (dev6 ∪ val32)', sel, hari=hari_ladder())
     if have_test:
         sections_for(w, tt, 'held-out test (test64, frozen)', sel, test=True)
 
+    caveats(w, dv, sel)
     # ------------------------------------------------------------- glossary
     glossary(w)
     OUT.write_text('\n'.join(L_) + '\n')
@@ -409,6 +413,123 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
                 w(f"| ${L}^2$ | {st} | {label(name)} | {sci(am['rho'])} | {am['cohort']}{am['case']} | {am['width']:.3f} | "
                   f"{am['amplitude']:.2f} | {am['nu']:.3f} | {am['k']} | {'—' if sp is None else f'{sp:+.2f}'} | "
                   f"{100 * e['top1pct_share_k_le_5']:.0f} % | {e.get('spearman_casemax_vs_nu', 0):+.2f} | {e.get('top1pct_median_k', 0):.0f} |")
+    w('')
+
+
+def b1m(S, L, st, name, key):
+    return g(S[L], 'arms', st, name, 'B1', key)
+
+
+def answers(w, dv, tt, sel):
+    """Generated summary. Every number is read from the summaries; the wording follows the audits' corrections."""
+    ph = (sel or {}).get('recommended_posthoc_one_sided_B1', {})
+    w('## Answers in brief')
+    w('')
+    for tag, S in (('development/validation', dv), ('test', tt)):
+        if not S or not all(S[L] for L in MESHES):
+            continue
+        w(f'**{tag.capitalize()} cohort{"s" if tag.startswith("dev") else ""}.**')
+        w('')
+        # (i)
+        lines = []
+        for st in SETS:
+            gr = [b1m(S, L, st, 'gref', 'worst_ST') for L in MESHES]
+            gs = [b1m(S, L, st, 'gref', 'worst_S') for L in MESHES]
+            dn = [b1m(S, L, st, 'gref', 'dense_worst_ST') for L in MESHES]
+            ds = [b1m(S, L, st, 'gref', 'dense_worst_S') for L in MESHES]
+            if None in gr + dn:
+                continue
+            nc = [b1m(S, L, st, 'gref', 'cases') for L in MESHES]
+            lines.append(f"{st}: continuum rollout ST {'/'.join(pc(x, 2) for x in gr)} %, S {'/'.join(pc(x, 2) for x in gs)} % at "
+                         f"$256^2/1024^2/4096^2$; dense ST {'/'.join(pc(x, 2) for x in dn)} %, S {'/'.join(pc(x, 2) for x in ds)} % "
+                         f"(on {'/'.join(str(x) for x in nc)} cases)")
+        w('- **(i) Reproduce dense against the refined reference, mesh-invariantly?** Resolved off-mesh rules converge to one '
+          'mesh-invariant solution (the continuum-advection hybrid), the dense mesh solve to the upwind solution, which '
+          'improves with the mesh. On the cases where dense ran (worst over cases; the case set is smaller at $4096^2$, '
+          'which is why the continuum-rollout numbers differ there — on a fixed case set they are invariant, see B2): '
+          + '; '.join(lines) + '. So at the '
+          'coarse meshes the off-mesh rules are *more* accurate than dense against both references, and at $4096^2$ the '
+          'two agree against S to within the differences shown (slightly better against ST). The pre-registered two-sided '
+          'B1 therefore fails for most off-mesh arms at the coarse meshes in the favourable direction; under-resolved rules '
+          '(e.g. accurate Gauss $32^2$) fail it by being worse.')
+        if tag.startswith('dev') and sel:
+            b2 = [v['ratio'] for st in SETS for n, v in sel['B2'][st].items()
+                  if v and n.startswith(('gauss', 'fib', 'flux', 'gref')) and n != 'gauss32']
+            b2l = [sel['B2'][st]['lat64']['ratio'] for st in SETS if sel['B2'][st].get('lat64')]
+            w(f'  Mesh invariance (B2, worst ST max/min over the three meshes): off-mesh Gauss/Fibonacci/flux rules except '
+              f'accurate-setting Gauss $32^2$ between {min(b2):.4f} and {max(b2):.4f}; the deployed lattice {min(b2l):.2f}–{max(b2l):.2f}.')
+        # (ii)
+        L0 = 1024
+        r = lambda st, n, t='cont': g(S[L0], 'rho', st, 'rules', n, t, 'max')
+        w(f'- **(ii) $\\rho$ ladder vs the $63^2$ lattice and EQ at matched $m$ ($1024^2$, worst over reached states):** '
+          + '; '.join(f"{st}: lat64 ($m$=3969) {sci(r(st, 'lat64', 'mesh'))} against its mesh target, "
+                      f"Gauss $64^2$ ($m$=4096) {sci(r(st, 'gauss64'))} and Fibonacci 4181 {sci(r(st, 'fib4181'))} against the continuum"
+                      + (f", fitted EQ ($m$=1024) {sci(r(st, 'q0scaled', 'mesh'))} vs Gauss $32^2$ {sci(r(st, 'gauss32'))}" if st == 'head' else '')
+                      for st in SETS)
+          + '. Our bank needs far more points than Hari\'s for the same continuum accuracy (Gauss $128^2$: '
+          + ', '.join(f"{st} {sci(r(st, 'gauss128'))}" for st in SETS) + '); Sobol 4096 stays at '
+          + ', '.join(f"{st} {sci(r(st, 'sobol4096'))}" for st in SETS) + ' and Smolyak CC 8 at '
+          + ', '.join(f"{st} {sci(r(st, 'smolyak8'))}" for st in SETS) + '.')
+        # (iii)
+        s4 = S[4096]
+        b4 = g(s4, 'timing', 'B4_same_gpu') or {}
+        if b4:
+            rs = [v['ratio'] for v in b4.values() if v['ratio'] is not None]
+            cmp_ = []
+            for st in SETS:
+                n = ph.get(st)
+                if n:
+                    cmp_.append(f"{st}: {label(n)} {ms(g(s4, 'timing', 'solve_ms', f'{st}|4096|{n}'))} ms vs lat64 "
+                                f"{ms(g(s4, 'timing', 'solve_ms', f'{st}|4096|lat64'))} ms")
+            w(f'- **(iii) Cost flat in $N$?** Solve time (query minus decode) is flat on one GPU: B4 ratios $4096^2/256^2$ '
+              f'between {min(rs):.3f} and {max(rs):.3f} for all {len(rs)} measured arms; it grows with $m$. The full query '
+              f'is not flat because the six-field output decode grows with $N$. At $4096^2$, solve time of the post-hoc '
+              f'rules vs the deployed lattice: ' + '; '.join(cmp_) + ' (not a matched equal-accuracy comparison; §D5).')
+        # (iv)
+        iv = []
+        for st in SETS:
+            e = g(S[L0], 'question_iv', st, 'gauss64')
+            e2 = g(S[L0], 'question_iv', st, 'lat64')
+            if e and e2:
+                iv.append(f"{st}: Gauss $64^2$ worst at $k$={e['argmax']['k']} (width {e['argmax']['width']:.3f}, "
+                          f"Spearman with width {e['spearman_casemax_vs_width']:+.2f}); lat64 worst at $k$={e2['argmax']['k']} "
+                          f"(width {e2['argmax']['width']:.3f}, Spearman {e2['spearman_casemax_vs_width']:+.2f})")
+        w('- **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: ' + '; '.join(iv) +
+          '. For the off-mesh rules the worst states lean towards early steps of *wide* bumps; there are exceptions '
+          '(§D6). The cause is not tested here.')
+        w('')
+    if sel:
+        w('Pre-registered recommended off-mesh rule: ' + ', '.join(f"{st} {label(r) if r else 'none'}" for st, r in sel['recommended'].items())
+          + '. Post hoc (one-sided B1′, fixed before the test jobs): ' + ', '.join(f"{st} {label(r)}" for st, r in ph.items() if r) + '.')
+        w('')
+
+
+def caveats(w, dv, sel):
+    w('## What went wrong, what was changed, limitations')
+    w('')
+    for t in [
+        'Two Codex design audits (`experiments/quadrature-study/results/codex-design-audit-{1,2}.md`) found 2 + 1 blockers '
+        'and 18 major issues in the design and code before any ROM job (unvalidated references, a missing audit, '
+        'timing confounded with GPU type, an ineffective test-freeze gate, acceptance that did not block selection); '
+        'all were fixed or explicitly dispositioned before submission (DESIGN A0, A1).',
+        'The local smoke caught one real bug after the restructuring (an `UnboundLocalError` in the timing accumulator) '
+        'before any cluster job; a first local calibration probe was silently killed by the 36 GB cgroup and was redone '
+        'in streamed form.',
+        'B1 was written two-sided; it fails when the off-mesh rules are better than the upwind stencil. It is reported as '
+        'written; the one-sided reading and the extra worst-state descriptives are post hoc (DESIGN A3), the regenerated '
+        'summaries with matched-set descriptives (A4) were produced after the test jobs had been submitted (no input '
+        'changed; selection verified identical), and A3\'s wording was corrected in A5.',
+        'The continuum target is Gauss $640^2$ (certified against $768^2$ and the flux form, gate G6); calibration showed '
+        'our bank needs about ten times Hari\'s points per axis for the same agreement.',
+        'Refined-reference errors are measured on the $257^2$ nodes shared by every mesh, not the full mesh; the full-mesh '
+        'audit recompute covers $256^2$ (audit arms) and $1024^2$ (accurate setting, one case) only.',
+        'Dense at $4096^2$ ran on six cases per cohort (cost); every comparison against dense is on the matched cases.',
+        'Timing: 6 cases × 3 repetitions per subject, medians, one GPU per job; solve time = median(query) − median(decode).',
+        'The FOM-only reference jobs used A100s; ROM jobs: A100-80G at $256^2$/$1024^2$, H200 at $4096^2$. Absolute times '
+        'are compared only within a job.',
+        'test64 is a historical cohort reused by earlier lanes for fixed settings; nothing here was chosen from it.',
+    ]:
+        w(f'- {t}')
     w('')
 
 

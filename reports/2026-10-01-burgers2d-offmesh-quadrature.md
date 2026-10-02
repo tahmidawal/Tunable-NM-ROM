@@ -10,6 +10,7 @@ Replication of Hari's off-mesh quadrature study on the frozen Table-1 Burgers 2D
 | `dv1024` | dev | $1024^2$ | dev6, val32 | NVIDIA A100 80GB PCIe | 4735709 | 0.83 | yes | none |
 | `dv4096` | dev | $4096^2$ | dev6, val32 | NVIDIA H200 | 4735717 | 0.79 | yes | none |
 | `refdv` | reference (FOM only) | $8192^2$ | dev6, val32 | NVIDIA A100 80GB PCIe | 4734273 | 4.62 | yes | none |
+| `reft` | reference (FOM only) | $8192^2$ | test64 | NVIDIA A100 80GB PCIe | 4734276 | 7.91 | yes | none |
 
 ## 2. The hybrid reduced solve
 
@@ -35,6 +36,18 @@ flowchart LR
   classDef mesh fill:#fef3c7,stroke:#b45309;
   classDef off fill:#fce7f3,stroke:#be185d;
 ```
+
+## Answers in brief
+
+**Development/validation cohorts.**
+
+- **(i) Reproduce dense against the refined reference, mesh-invariantly?** Resolved off-mesh rules converge to one mesh-invariant solution (the continuum-advection hybrid), the dense mesh solve to the upwind solution, which improves with the mesh. On the cases where dense ran (worst over cases; the case set is smaller at $4096^2$, which is why the continuum-rollout numbers differ there — on a fixed case set they are invariant, see B2): acc: continuum rollout ST 2.75/2.75/1.82 %, S 1.06/1.05/0.24 % at $256^2/1024^2/4096^2$; dense ST 6.21/3.38/1.91 %, S 4.16/1.34/0.24 % (on 38/38/6 cases); fast: continuum rollout ST 4.64/4.64/2.86 %, S 3.46/3.45/1.91 % at $256^2/1024^2/4096^2$; dense ST 6.92/5.03/2.91 %, S 4.97/3.48/1.90 % (on 38/38/6 cases); head: continuum rollout ST 5.66/5.63/3.31 %, S 4.37/4.35/2.45 % at $256^2/1024^2/4096^2$; dense ST 7.48/5.93/3.35 %, S 5.53/4.37/2.43 % (on 38/38/6 cases). So at the coarse meshes the off-mesh rules are *more* accurate than dense against both references, and at $4096^2$ the two agree against S to within the differences shown (slightly better against ST). The pre-registered two-sided B1 therefore fails for most off-mesh arms at the coarse meshes in the favourable direction; under-resolved rules (e.g. accurate Gauss $32^2$) fail it by being worse.
+  Mesh invariance (B2, worst ST max/min over the three meshes): off-mesh Gauss/Fibonacci/flux rules except accurate-setting Gauss $32^2$ between 1.0001 and 1.0060; the deployed lattice 1.31–2.19.
+- **(ii) $\rho$ ladder vs the $63^2$ lattice and EQ at matched $m$ ($1024^2$, worst over reached states):** acc: lat64 ($m$=3969) 5.4e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 1.9e-02 and Fibonacci 4181 3.3e-02 against the continuum; fast: lat64 ($m$=3969) 4.6e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 2.3e-02 and Fibonacci 4181 1.8e-02 against the continuum; head: lat64 ($m$=3969) 1.2e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 9.4e-03 and Fibonacci 4181 2.5e-03 against the continuum, fitted EQ ($m$=1024) 1.0e-01 vs Gauss $32^2$ 3.4e-02. Our bank needs far more points than Hari's for the same continuum accuracy (Gauss $128^2$: acc 2.1e-03, fast 6.5e-03, head 3.1e-03); Sobol 4096 stays at acc 2.5e-01, fast 1.2e-01, head 1.6e-02 and Smolyak CC 8 at acc 9.5e+00, fast 3.0e+00, head 3.6e-01.
+- **(iii) Cost flat in $N$?** Solve time (query minus decode) is flat on one GPU: B4 ratios $4096^2/256^2$ between 0.937 and 1.060 for all 40 measured arms; it grows with $m$. The full query is not flat because the six-field output decode grows with $N$. At $4096^2$, solve time of the post-hoc rules vs the deployed lattice: acc: Gauss $96^2$ 54.5 ms vs lat64 46.3 ms; fast: Fibonacci 1597 13.3 ms vs lat64 18.7 ms; head: Gauss $32^2$ 22.3 ms vs lat64 40.6 ms (not a matched equal-accuracy comparison; §D5).
+- **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: acc: Gauss $64^2$ worst at $k$=1 (width 0.111, Spearman with width +0.35); lat64 worst at $k$=29 (width 0.111, Spearman +0.00); fast: Gauss $64^2$ worst at $k$=1 (width 0.188, Spearman with width +0.61); lat64 worst at $k$=1 (width 0.182, Spearman -0.01); head: Gauss $64^2$ worst at $k$=1 (width 0.196, Spearman with width +0.64); lat64 worst at $k$=32 (width 0.111, Spearman -0.53). For the off-mesh rules the worst states lean towards early steps of *wide* bumps; there are exceptions (§D6). The cause is not tested here.
+
+Pre-registered recommended off-mesh rule: acc none, fast none, head none. Post hoc (one-sided B1′, fixed before the test jobs): acc Gauss $96^2$, fast Fibonacci 1597, head Gauss $32^2$.
 
 ## 3. Results — development and validation (dev6 ∪ val32)
 
@@ -759,6 +772,18 @@ For each rule, the state with the largest continuum $\rho$: its case's bump widt
 | $4096^2$ | head | Fibonacci 17711 | 7.2e-05 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.53 | 79 % | -0.23 | 2 |
 | $4096^2$ | head | Sobol 4096 | 1.6e-02 | val3218 | 0.140 | 1.76 | 0.021 | 40 | -0.34 | 0 % | -0.32 | 41 |
 | $4096^2$ | head | mesh lattice $63^2$ | 1.7e-02 | val325 | 0.111 | 1.93 | 0.012 | 32 | +0.10 | 0 % | -0.45 | 33 |
+
+## What went wrong, what was changed, limitations
+
+- Two Codex design audits (`experiments/quadrature-study/results/codex-design-audit-{1,2}.md`) found 2 + 1 blockers and 18 major issues in the design and code before any ROM job (unvalidated references, a missing audit, timing confounded with GPU type, an ineffective test-freeze gate, acceptance that did not block selection); all were fixed or explicitly dispositioned before submission (DESIGN A0, A1).
+- The local smoke caught one real bug after the restructuring (an `UnboundLocalError` in the timing accumulator) before any cluster job; a first local calibration probe was silently killed by the 36 GB cgroup and was redone in streamed form.
+- B1 was written two-sided; it fails when the off-mesh rules are better than the upwind stencil. It is reported as written; the one-sided reading and the extra worst-state descriptives are post hoc (DESIGN A3), the regenerated summaries with matched-set descriptives (A4) were produced after the test jobs had been submitted (no input changed; selection verified identical), and A3's wording was corrected in A5.
+- The continuum target is Gauss $640^2$ (certified against $768^2$ and the flux form, gate G6); calibration showed our bank needs about ten times Hari's points per axis for the same agreement.
+- Refined-reference errors are measured on the $257^2$ nodes shared by every mesh, not the full mesh; the full-mesh audit recompute covers $256^2$ (audit arms) and $1024^2$ (accurate setting, one case) only.
+- Dense at $4096^2$ ran on six cases per cohort (cost); every comparison against dense is on the matched cases.
+- Timing: 6 cases × 3 repetitions per subject, medians, one GPU per job; solve time = median(query) − median(decode).
+- The FOM-only reference jobs used A100s; ROM jobs: A100-80G at $256^2$/$1024^2$, H200 at $4096^2$. Absolute times are compared only within a job.
+- test64 is a historical cohort reused by earlier lanes for fixed settings; nothing here was chosen from it.
 
 ## Glossary
 

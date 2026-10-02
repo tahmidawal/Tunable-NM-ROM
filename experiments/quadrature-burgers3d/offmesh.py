@@ -218,3 +218,47 @@ def continuum_adv(n, bank, T, X, w, kxyz, Cs, chunk=1 << 16):
     for s in range(0, len(X), chunk):
         out = out + part(bank, jnp.asarray(X[s:s + chunk]), jnp.asarray(w[s:s + chunk]), Tj, Cj)
     return out
+
+
+# ------------------------------------------------------------------ lean FOM for the refined reference (R1-1)
+def make_fom_lean(n, dt, ntol, ltol):
+    """vendor common.make_fom with the same Newton / BiCGStab / preconditioner arithmetic, except that (i) only the six
+    output states are kept (nested scans: 5 output intervals x `keep` steps) instead of stacking every step, and (ii)
+    the 1D eigenvalues are an explicit argument (no captured (n-2)^3 spectral constant). query(u0, nu) -> (fields
+    (6, ni^3), newton iterations (steps,), final relative residuals (steps,)). Gate: equal to the vendor FOM (R1-1)."""
+    ni = n - 2
+    steps = int(round(0.25 / dt))
+    keep = int(round(0.05 / dt))
+    assert abs(steps * dt - 0.25) < 1e-12 and abs(keep * dt - 0.05) < 1e-12
+    b3 = C.b3
+
+    def residual(u, prev, nu):
+        return u - prev + dt * (b3.upwind_adv_field_3d(u, n) - nu * b3.lap_3d(u, n))
+
+    def query(u0, nu, l1):
+        def pre(v):
+            spec = l1[:, None, None] + l1[None, :, None] + l1[None, None, :]
+            return C.dst3(C.dst3(v.reshape(ni, ni, ni)) / (1 + dt * nu * spec)).ravel()
+
+        def step(prev, _):
+            scale = jnp.maximum(jnp.linalg.norm(prev), 1e-300)
+
+            def body(state):
+                u, it, _ = state
+                r = residual(u, prev, nu)
+                jv = lambda v: jax.jvp(lambda w: residual(w, prev, nu), (u,), (v,))[1]
+                du, _ = jax.scipy.sparse.linalg.bicgstab(jv, -r, tol=ltol, maxiter=C.LIN_MAXITER, M=pre)
+                u = u + du
+                return u, it + 1, jnp.linalg.norm(residual(u, prev, nu))
+            u, it, rn = jax.lax.while_loop(lambda s: (s[2] > ntol * scale) & (s[1] < C.MAX_NEWTON), body,
+                                          (prev, jnp.int32(0), jnp.linalg.norm(residual(prev, prev, nu))))
+            return u, (it, rn / scale)
+
+        def interval(u, _):
+            u2, (it, rn) = jax.lax.scan(step, u, None, length=keep)
+            return u2, (u2, it, rn)
+        _, (outs, it, rn) = jax.lax.scan(interval, u0, None, length=5)
+        return jnp.concatenate((u0[None], outs)), it.reshape(-1), rn.reshape(-1)
+    q = jax.jit(query)
+    l1 = jnp.asarray(C.lam1(n))
+    return lambda u0, nu: q(u0, nu, l1)

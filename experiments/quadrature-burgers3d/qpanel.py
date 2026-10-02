@@ -105,6 +105,8 @@ def main():
     rules_sha = sha_file(rules_path)
     assert cfg.get('expected_rules_sha256') in (None, rules_sha), rules_sha
     rule_names = list(cfg['rules'])
+    if cfg.get('selection_sha256'):
+        assert sha_file(root / cfg['selection']) == cfg['selection_sha256'], 'frozen selection differs'
     rules = load_rules(rules_path, rule_names + [cfg['continuum_target'], cfg['continuum_check']])
     rep = dict(config=cfg, mesh=n, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
                backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=smi, x64=True,
@@ -224,15 +226,20 @@ def main():
     # G4: solver equivalence, tensor rule through make_fsc_rule vs the vendor make_fsc (one case)
     tab_g = C.table(cfg['cert_draws'][0][0], 1)
     u0g = jnp.asarray(C.initial_interior(n, tab_g, 0))
-    Rg = Rps[-1]
-    sg = arms[f'tensor_R{Rg}']
-    qv, _ = TB.make_fsc(n, Rg, sg['M'], dt=cfg['dt'], gtol=cfg['gtol'], trust=sg['trust'])
-    o_v = qv(u0g, float(tab_g['nu'][0]), sg['data'], {})
-    o_r = sg['q'](u0g, float(tab_g['nu'][0]), sg['data'], {})
-    rep['gates']['G4_solver_vs_vendor_fields'] = rel_max(o_r[0], o_v[0])
-    rep['gates']['G4_solver_vs_vendor_coefs'] = rel_max(o_r[1], o_v[1])
-    assert rep['gates']['G4_solver_vs_vendor_fields'] <= 1e-12, rep['gates']
-    del o_v, o_r, qv
+    g4f, g4c, g4i = 0., 0., True
+    for Rg in Rps:
+        sg = arms[f'tensor_R{Rg}']
+        qv, _ = TB.make_fsc(n, Rg, sg['M'], dt=cfg['dt'], gtol=cfg['gtol'], trust=sg['trust'])
+        o_v = qv(u0g, float(tab_g['nu'][0]), sg['data'], {})
+        o_r = sg['q'](u0g, float(tab_g['nu'][0]), sg['data'], {})
+        g4f = max(g4f, rel_max(o_r[0], o_v[0]))
+        g4c = max(g4c, rel_max(o_r[1], o_v[1]))
+        g4i = g4i and all(bool(jnp.all(o_r[i] == o_v[i])) for i in (2, 3, 6))
+        del o_v, o_r, qv
+    rep['gates']['G4_solver_vs_vendor_fields'] = g4f
+    rep['gates']['G4_solver_vs_vendor_coefs'] = g4c
+    rep['gates']['G4_iterations_reasons_equal'] = g4i
+    assert g4f <= 1e-12 and g4c <= 1e-12 and g4i, rep['gates']
     log(f"G4 {rep['gates']['G4_solver_vs_vendor_fields']:.2e}")
     save()
 
@@ -246,12 +253,16 @@ def main():
     for Rp in Rps:
         st = arms[f'tensor_R{Rp}']
         M = st['M']
-        states, kidx = [], []
+        states, kidx, crec = [], [], []
         for seed, count in cfg['cert_draws']:
             tab = C.table(seed, count)
             for j in range(count):
                 o = run(f'tensor_R{Rp}', jnp.asarray(C.initial_interior(n, tab, j)), float(tab['nu'][j]))
                 ws = np.asarray(o[1])
+                rsn = np.asarray(o[3])
+                crec.append(dict(seed=seed, row=j, finite=bool(np.isfinite(ws).all()),
+                                 reasons={str(k): int((rsn == k).sum()) for k in range(5)}))
+                assert np.isfinite(ws).all(), ('non-finite certification rollout', seed, j)
                 states.append(ws)
                 kidx.append(np.arange(ws.shape[0]))
         Cs = np.concatenate(states, 0)
@@ -271,6 +282,7 @@ def main():
             return dict(worst=float(ev.max()), median=float(np.median(ev)), p90=float(np.quantile(ev, 0.9)),
                         worst_k0=float(k0.max()), median_k0=float(np.median(k0)))
         res = dict(states=int(len(Cs)), states_evolved=int((kk >= 1).sum()), M=M, umin=float(umin.min()),
+                   cert_rollouts=crec,
                    continuum_check=dict(vs_target=summ(rho(chk_cont, tgt_cont))),
                    rules={})
         res['rules']['tensor'] = dict(cont=summ(rho(ten, tgt_cont)), mesh=summ(rho(ten, tgt_mesh)))
@@ -320,6 +332,8 @@ def main():
     ridx = jnp.asarray(ridx_np)
     i65 = jnp.asarray(lattice65_index(n)) if has65 else None
     errf = jax.jit(lambda f, r: jnp.linalg.norm(f - r, axis=1) / jnp.linalg.norm(r[0]))
+    REF16 = {j: REF[j][:, ridx_np] for j in cases}
+    err16 = lambda f16, j: (np.linalg.norm(f16 - REF16[j], axis=1) / np.linalg.norm(REF16[j][0])).tolist()
     np.savez(out / 'fields' / 'reference_restricted.npz', **{f'c{j}': REF[j][:, ridx_np] for j in cases})
     ref0 = [float(np.linalg.norm(REF[j][0])) for j in cases]
     rep['reference']['norm0'] = ref0
@@ -327,6 +341,7 @@ def main():
 
     COEF = {}
     quick16 = {}
+    CHK = {}
     for nm, s in arms.items():
         if s['family'] == 'dense' and dense_cases != 'all':
             run_cases = cases[:int(dense_cases)]
@@ -347,7 +362,9 @@ def main():
             Cout = np.asarray(o[1])[::keep]                                       # (6, R') coefficients at outputs
             COEF[(nm, j)] = Cout
             quick16[(nm, j)] = np.asarray(o[0][:, ridx])
+            CHK[(nm, j)] = (float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
             recs.append(dict(case=j, err_same_grid=e.tolist(), worst_same_grid=float(e[1:].max()),
+                             err_restricted16=err16(quick16[(nm, j)], j),
                              iterations=np.asarray(o[2]).tolist(), reasons=np.asarray(o[3]).tolist(),
                              gradients=np.asarray(o[4]).tolist(), rejected=np.asarray(o[6]).tolist(),
                              finite=bool(np.isfinite(np.asarray(o[0])).all() and np.isfinite(Cout).all())))
@@ -398,10 +415,11 @@ def main():
             e = np.asarray(errf(f, r))
             del r
             quick16[(name, j)] = np.asarray(f[:, ridx])
+            CHK[(name, j)] = (float(jnp.sum(f)), float(jnp.sum(f * f)))
             if has65:
                 FOM65[(name, j)] = np.asarray(f[:, i65])
             recs.append(dict(case=j, err_same_grid=e.tolist(), worst_same_grid=float(e[1:].max()),
-                             newton=np.asarray(it).tolist(), max_rel_residual=float(jnp.max(rn)),
+                             err_restricted16=err16(quick16[(name, j)], j), newton=np.asarray(it).tolist(), max_rel_residual=float(jnp.max(rn)),
                              hit_newton_cap=bool(int(jnp.max(it)) >= C.MAX_NEWTON),
                              finite=bool(np.isfinite(np.asarray(f)).all())))
             np.savez(out / 'fields' / f'{name}_c{j}.npz', f16=quick16[(name, j)],
@@ -435,7 +453,11 @@ def main():
         block(o)
         dt_ = time.perf_counter() - t
         d = float(jnp.max(jnp.abs(o[0][:, ridx] - jnp.asarray(quick16[(nm, j)]))))
-        inv.append(dict(kind=kind, name=nm, case=j, phase=phase, seconds=dt_, max_diff_vs_quick=d))
+        cs_ = (float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
+        d_full = max(abs(cs_[0] - CHK[(nm, j)][0]) / max(abs(CHK[(nm, j)][0]), 1e-300),
+                     abs(cs_[1] - CHK[(nm, j)][1]) / CHK[(nm, j)][1])
+        inv.append(dict(kind=kind, name=nm, case=j, phase=phase, seconds=dt_, max_diff_vs_quick=max(d, d_full),
+                        restricted_diff=d, full_checksum_rel_diff=d_full))
         if dt_ >= 0.5:
             time.sleep(min(1.0, dt_))
             burn(0.2)
@@ -472,7 +494,7 @@ def main():
     drift = [v['drift_A2_over_A1'] for v in tim.values() if 'drift_A2_over_A1' in v]
     rep['gates']['timing_drift_worst'] = float(max(max(drift), 1 / min(drift)))
     rep['gates']['timing_drift_pass'] = bool(rep['gates']['timing_drift_worst'] <= 1.10)
-    nb = float(np.mean(after_long) / np.mean(after_short)) if after_long and after_short else 1.0
+    nb = float(np.mean(after_long) / np.mean(after_short)) if after_long and after_short else None
     fom_inv = [r for r in inv if r['kind'] == 'fom']
     fmed = {}
     for r in fom_inv:
@@ -482,13 +504,14 @@ def main():
     for prev, cur in zip(fom_inv[:-1], fom_inv[1:]):
         v = cur['seconds'] / fmed[(cur['name'], cur['case'])]
         (fl if tim[prev['name']]['median_ms'] >= 4 * tim[cur['name']]['median_ms'] else fs).append(v)
-    nbf = float(np.mean(fl) / np.mean(fs)) if fl and fs else 1.0
+    nbf = float(np.mean(fl) / np.mean(fs)) if fl and fs else None
     rep['gates']['timing_neighbour_ratio'] = nb
     rep['gates']['timing_neighbour_ratio_fom'] = nbf
-    rep['gates']['timing_neighbour_pass'] = bool(1 / 1.10 <= nb <= 1.10 and 1 / 1.10 <= nbf <= 1.10)
+    rep['gates']['timing_neighbour_untested'] = [k for k, v in (('rom', nb), ('fom', nbf)) if v is None]
+    rep['gates']['timing_neighbour_pass'] = bool(all(1 / 1.10 <= v <= 1.10 for v in (nb, nbf) if v is not None))
     rep['gates']['deterministic_outputs'] = max(r['max_diff_vs_quick'] for r in inv)
     rep['gates']['deterministic_pass'] = bool(rep['gates']['deterministic_outputs'] <= 1e-12)
-    log(f"timing gates drift {rep['gates']['timing_drift_worst']:.3f} neighbour {nb:.3f} / {nbf:.3f} "
+    log(f"timing gates drift {rep['gates']['timing_drift_worst']:.3f} neighbour {nb} / {nbf} "
         f"determinism {rep['gates']['deterministic_outputs']:.2e}")
     # microbenchmark: one advection-Jacobian evaluation (the only thing the rule changes), jitted, median of 50
     for nm, s in arms.items():
@@ -497,14 +520,15 @@ def main():
         fn = OM.contract_tensor if s['family'] == 'tensor' else OM.contract_offmesh
         f_j = jax.jit(fn)
         cc = jnp.asarray(COEF[(nm, 0)][3])
-        block(f_j(s['data'], cc))
+        for _ in range(5):
+            block(f_j(s['data'], cc))
         ts = []
         for _ in range(50):
             t = time.perf_counter()
             block(f_j(s['data'], cc))
             ts.append(time.perf_counter() - t)
         rep['microbench'][nm] = dict(jacobian_ms_median=1e3 * float(np.median(ts)),
-                                     jacobian_ms_min=1e3 * float(np.min(ts)))
+                                     jacobian_ms_min=1e3 * float(np.min(ts)), seconds=ts)
     for nm, v in tim.items():
         log(f"TIME {nm}: {v['median_ms']:.2f} ms" + (f" (Ju {rep['microbench'][nm]['jacobian_ms_median']:.3f} ms)"
                                                        if nm in rep['microbench'] else ''))
@@ -526,12 +550,17 @@ def main():
         ref_ready = done.exists()
         rep['refined_in_job'] = ref_ready
     if ref_ready:
-        rep['refined'] = dict(path=str(ref_path), sha256=sha_file(ref_path), done=done.read_text().strip())
+        dn = json.loads(done.read_text())
+        rep['refined'] = dict(path=str(ref_path), sha256=sha_file(ref_path), done=dn)
+        assert dn['sha256'] == rep['refined']['sha256'] and dn['accepted'], dn
+        for k_, v_ in cfg['expected_ref'].items():
+            assert dn[k_] == v_, (k_, dn[k_], v_)
         z = np.load(ref_path)
         assert int(z['seed']) == cfg['cohort_seed'] and int(z['count']) >= cfg['cohort_count'], (z['seed'], z['count'])
         RR = {j: np.asarray(z[f'c{j}']) for j in cases}
         n0 = {j: float(np.linalg.norm(RR[j][0])) for j in cases}
         rep['refined']['initial_match'] = max(rel_max(REF65[j][0], RR[j][0]) for j in cases)
+        assert rep['refined']['initial_match'] <= 1e-12, rep['refined']['initial_match']
         G65 = np.asarray(TB.feature_rows(model['bank'], model['T'], lattice65_coords()))      # (R, 63^3)
         rep['refined']['same_grid_reference'] = [float((np.linalg.norm(REF65[j] - RR[j], axis=1) / n0[j])[1:].max())
                                                  for j in cases]

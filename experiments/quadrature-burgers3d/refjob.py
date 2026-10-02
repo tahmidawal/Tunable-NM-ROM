@@ -27,7 +27,7 @@ import jax.numpy as jnp
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
-import offmesh  # noqa: E402,F401  (path setup)
+import offmesh as OM  # noqa: E402
 from offmesh import C  # noqa: E402
 from qpanel import lattice65_index  # noqa: E402
 
@@ -62,16 +62,36 @@ def main():
         lat = np.asarray(f[:, jnp.asarray(i65)])
         rec = dict(seconds=sec, max_newton=int(jnp.max(it)), total_newton=int(jnp.sum(it)),
                    max_rel_residual=float(jnp.max(rn)), finite=bool(np.isfinite(lat).all()))
+        rec['accepted'] = bool(rec['finite'] and rec['max_newton'] < C.MAX_NEWTON and
+                               rec['max_rel_residual'] <= fom.ntol)
         del f, u0
         return lat, rec
+
+    def lean(nn, dt_, ntol, ltol):
+        f = OM.make_fom_lean(nn, dt_, ntol, ltol)
+        f.ntol = ntol
+        return f
+
+    # gate R1-1: the lean FOM equals the vendor FOM (fields, Newton counts, residuals) at a small mesh
+    tab_g = C.table(cfg.get('probe_seed', 923651), 1)
+    u0g = jnp.asarray(C.initial_interior(65, tab_g, 0))
+    a_ = C.make_fom(65, 0.005, 1e-8, 1e-9)(u0g, float(tab_g['nu'][0]))
+    b_ = lean(65, 0.005, 1e-8, 1e-9)(u0g, float(tab_g['nu'][0]))
+    rep['gate_lean_vs_vendor'] = dict(fields=float(jnp.max(jnp.abs(a_[0] - b_[0])) / jnp.max(jnp.abs(a_[0]))),
+                                      newton_equal=bool(jnp.all(a_[1] == b_[1])),
+                                      residuals=float(jnp.max(jnp.abs(a_[2] - b_[2]))))
+    log(f"lean FOM gate {rep['gate_lean_vs_vendor']}")
+    assert rep['gate_lean_vs_vendor']['fields'] <= 1e-13 and rep['gate_lean_vs_vendor']['newton_equal']
+    save()
 
     if cfg['mode'] == 'probe':
         tab = C.table(cfg['probe_seed'], 1)
         lats = {}
         for ntol, ltol in cfg['tolerances']:
-            fom = C.make_fom(n, dt, ntol, ltol)
-            lat, rec = solve(fom, tab, 0)                         # includes compilation
+            fom = lean(n, dt, ntol, ltol)
+            lat, rec = solve(fom, tab, 0)                         # includes compilation (blocked)
             lat, rec = solve(fom, tab, 0)
+            rec['peak_bytes'] = (jax.devices()[0].memory_stats() or {}).get('peak_bytes_in_use')
             lats[(ntol, ltol)] = lat
             rep['probe'][f'{ntol:g}_{ltol:g}'] = rec
             log(f'probe ntol {ntol:g} ltol {ltol:g}: {rec}')
@@ -82,9 +102,9 @@ def main():
             rep['probe'][f'{k[0]:g}_{k[1]:g}']['lattice_diff_vs_tightest'] = float(
                 (np.linalg.norm(v - tight, axis=1) / n0).max())
         for nn in cfg.get('compare_meshes', []):
-            fom = C.make_fom(nn, C.DT, 1e-10, 1e-11)
+            fom = lean(nn, C.DT, 1e-10, 1e-11)
             u0 = jnp.asarray(C.initial_interior(nn, tab, 0))
-            fom(u0, float(tab['nu'][0]))
+            jax.block_until_ready(fom(u0, float(tab['nu'][0])))
             t = time.perf_counter()
             f, _, _ = fom(u0, float(tab['nu'][0]))
             f = jax.block_until_ready(f)
@@ -96,7 +116,7 @@ def main():
             del f, u0
             save()
     else:
-        fom = C.make_fom(n, dt, cfg['ntol'], cfg['ltol'])
+        fom = lean(n, dt, cfg['ntol'], cfg['ltol'])
         for seed, count in cfg['cohorts']:
             tab = C.table(seed, count)
             recs, lats = [], {}
@@ -107,13 +127,14 @@ def main():
                 log(f'cohort {seed} case {j}: {rec}')
                 rep['cohorts'][str(seed)] = dict(count=count, table_sha256=tab['sha256'], cases=recs)
                 save()
-            assert all(r['finite'] for r in recs)
+            assert all(r['accepted'] for r in recs), [r for r in recs if not r['accepted']]
             p = out / f'ref_{seed}.npz'
             np.savez(p, seed=seed, count=count, n=n, dt=dt, ntol=cfg['ntol'], ltol=cfg['ltol'], **lats)
             h = hashlib.sha256(p.read_bytes()).hexdigest()
             rep['cohorts'][str(seed)].update(npz_sha256=h, worst_rel_residual=max(r['max_rel_residual'] for r in recs))
             save()
-            p.with_suffix('.done').write_text(h + '\n')
+            p.with_suffix('.done').write_text(json.dumps(dict(sha256=h, n=n, dt=dt, ntol=cfg['ntol'], ltol=cfg['ltol'],
+                                                              seed=seed, count=count, accepted=True)) + '\n')
             log(f'cohort {seed} written ({h[:12]})')
     rep['complete'] = True
     rep['seconds'] = time.perf_counter() - t_begin

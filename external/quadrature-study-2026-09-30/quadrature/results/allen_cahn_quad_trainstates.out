@@ -1,0 +1,137 @@
+== allen_cahn: reached states from dense reduced rollouts at N=256
+  using projected training snapshots as states
+  96 reached states kept
+  reference check: GL200 vs GL300 rho max 1.19e-14
+== off-mesh rules vs continuum reference (mesh-independent)
+  [point] gauss_tensor     6     m=    36  rho(M=320) med 3.87e+00 max 4.71e+00 | rho(M=64) med 1.70e+00 max 1.94e+00
+  [point] gauss_tensor     8     m=    64  rho(M=320) med 2.72e+00 max 3.05e+00 | rho(M=64) med 5.18e-01 max 1.11e+00
+  [point] gauss_tensor     12    m=   144  rho(M=320) med 1.79e+00 max 2.23e+00 | rho(M=64) med 1.30e-02 max 3.62e-01
+  [point] gauss_tensor     16    m=   256  rho(M=320) med 4.96e-01 max 1.13e+00 | rho(M=64) med 4.39e-03 max 5.06e-02
+  [point] gauss_tensor     24    m=   576  rho(M=320) med 4.37e-03 max 8.46e-02 | rho(M=64) med 9.51e-04 max 2.77e-03
+  [point] gauss_tensor     32    m=  1024  rho(M=320) med 1.27e-03 max 4.00e-03 | rho(M=64) med 1.12e-04 max 3.96e-04
+  [point] gauss_tensor     48    m=  2304  rho(M=320) med 7.10e-06 max 3.08e-05 | rho(M=64) med 2.64e-07 max 1.36e-06
+  [point] gauss_tensor     64    m=  4096  rho(M=320) med 4.22e-08 max 5.38e-07 | rho(M=64) med 1.64e-09 max 3.16e-08
+  [point] smolyak_cc       3     m=    13  rho(M=320) med 1.31e+01 max 2.73e+01 | rho(M=64) med 6.42e+00 max 1.36e+01
+  [point] smolyak_cc       4     m=    33  rho(M=320) med 1.15e+01 max 2.83e+01 | rho(M=64) med 3.64e+00 max 1.02e+01
+  [point] smolyak_cc       5     m=    81  rho(M=320) med 7.10e+00 max 1.71e+01 | rho(M=64) med 1.94e+00 max 4.35e+00
+  [point] smolyak_cc       6     m=   193  rho(M=320) med 4.27e+00 max 7.83e+00 | rho(M=64) med 3.58e-01 max 1.27e+00
+  [point] smolyak_cc       7     m=   449  rho(M=320) med 2.17e+00 max 3.41e+00 | rho(M=64) med 3.68e-02 max 5.30e-01
+  [point] smolyak_cc       8     m=  1025  rho(M=320) med 2.48e-01 max 1.42e+00 | rho(M=64) med 4.56e-03 max 3.19e-02
+  [point] smolyak_cc       9     m=  2305  rho(M=320) med 7.23e-03 max 1.83e-01 | rho(M=64) med 1.50e-03 max 4.68e-03
+  [point] smolyak_cc       10    m=  5121  rho(M=320) med 9.80e-04 max 3.24e-03 | rho(M=64) med 5.65e-05 max 2.12e-04
+  [point] smolyak_gl_exp   3     m=    73  rho(M=320) med 1.01e+01 max 2.24e+01 | rho(M=64) med 2.97e+00 max 7.58e+00
+  [point] smolyak_gl_exp   4     m=   221  rho(M=320) med 5.25e+00 max 1.16e+01 | rho(M=64) med 7.37e-01 max 1.85e+00
+  [point] smolyak_gl_exp   5     m=   609  rho(M=320) med 2.44e+00 max 3.94e+00 | rho(M=64) med 5.46e-02 max 6.66e-01
+  [point] smolyak_gl_exp   6     m=  1573  rho(M=320) med 4.38e-01 max 1.67e+00 | rho(M=64) med 5.26e-03 max 4.66e-02
+  [point] smolyak_gl_exp   7     m=  3881  rho(M=320) med 9.91e-03 max 2.42e-01 | rho(M=64) med 1.64e-03 max 4.95e-03
+  [point] smolyak_gl_exp   8     m=  9261  rho(M=320) med 1.13e-03 max 3.73e-03 | rho(M=64) med 7.04e-05 max 2.71e-04
+  [point] smolyak_gl_exp   9     m= 21553  rho(M=320) med 4.15e-05 max 1.91e-04 | rho(M=64) med 1.24e-06 max 1.05e-05
+  [point] smolyak_gl_lin   6     m=   305  rho(M=320) med 9.09e+00 max 1.29e+01 | rho(M=64) med 2.79e-01 max 1.38e+00
+  [point] smolyak_gl_lin   10    m=  1361  rho(M=320) med 2.13e+00 max 4.22e+00 | rho(M=64) med 1.87e-02 max 9.11e-02
+  [point] smolyak_gl_lin   14    m=  3697  rho(M=320) med 5.74e-02 max 3.23e-01 | rho(M=64) med 5.62e-03 max 1.69e-02
+  [point] smolyak_gl_lin   18    m=  7825  rho(M=320) med 1.05e-02 max 4.78e-02 | rho(M=64) med 1.59e-03 max 9.14e-03
+  [point] smolyak_gl_lin   22    m= 14257  rho(M=320) med 3.38e-03 max 1.40e-02 | rho(M=64) med 3.82e-04 max 3.57e-03
+  [point] smolyak_gl_lin   26    m= 23505  rho(M=320) med 1.06e-03 max 8.89e-03 | rho(M=64) med 4.67e-05 max 2.60e-04
+  [point] smolyak_gl_lin   30    m= 36081  rho(M=320) med 1.78e-04 max 1.40e-03 | rho(M=64) med 5.74e-06 max 5.91e-05
+  [point] smolyak_gl_lin   34    m= 52497  rho(M=320) med 2.12e-05 max 1.89e-04 | rho(M=64) med 7.58e-07 max 1.08e-05
+  [point] smolyak_gl_lin   38    m= 73265  rho(M=320) med 2.59e-06 max 3.36e-05 | rho(M=64) med 1.57e-07 max 4.54e-06
+  [point] sobol            256   m=   256  rho(M=320) med 7.45e-01 max 8.16e-01 | rho(M=64) med 1.09e-01 max 1.51e-01
+  [point] halton           256   m=   256  rho(M=320) med 6.43e-01 max 7.51e-01 | rho(M=64) med 2.18e-01 max 3.50e-01
+  [point] mc               256   m=   256  rho(M=320) med 1.18e+00 max 1.51e+00 | rho(M=64) med 5.18e-01 max 6.27e-01
+  [point] sobol            512   m=   512  rho(M=320) med 3.50e-01 max 3.83e-01 | rho(M=64) med 4.56e-02 max 8.31e-02
+  [point] halton           512   m=   512  rho(M=320) med 3.88e-01 max 4.25e-01 | rho(M=64) med 6.85e-02 max 1.11e-01
+  [point] mc               512   m=   512  rho(M=320) med 8.65e-01 max 1.03e+00 | rho(M=64) med 4.30e-01 max 5.25e-01
+  [point] sobol            1024  m=  1024  rho(M=320) med 1.46e-01 max 1.89e-01 | rho(M=64) med 1.03e-02 max 1.93e-02
+  [point] halton           1024  m=  1024  rho(M=320) med 2.14e-01 max 2.49e-01 | rho(M=64) med 3.10e-02 max 4.76e-02
+  [point] mc               1024  m=  1024  rho(M=320) med 5.71e-01 max 6.42e-01 | rho(M=64) med 2.80e-01 max 3.36e-01
+  [point] sobol            2048  m=  2048  rho(M=320) med 9.16e-02 max 1.16e-01 | rho(M=64) med 7.18e-03 max 2.30e-02
+  [point] halton           2048  m=  2048  rho(M=320) med 1.01e-01 max 1.29e-01 | rho(M=64) med 2.35e-02 max 3.40e-02
+  [point] mc               2048  m=  2048  rho(M=320) med 4.46e-01 max 4.98e-01 | rho(M=64) med 2.33e-01 max 2.94e-01
+  [point] sobol            4096  m=  4096  rho(M=320) med 1.93e-02 max 2.16e-02 | rho(M=64) med 4.25e-03 max 6.42e-03
+  [point] halton           4096  m=  4096  rho(M=320) med 6.42e-02 max 7.17e-02 | rho(M=64) med 1.12e-02 max 1.76e-02
+  [point] mc               4096  m=  4096  rho(M=320) med 3.23e-01 max 3.47e-01 | rho(M=64) med 1.67e-01 max 1.94e-01
+  [point] sobol            8192  m=  8192  rho(M=320) med 4.48e-03 max 6.09e-03 | rho(M=64) med 2.32e-04 max 5.33e-04
+  [point] halton           8192  m=  8192  rho(M=320) med 2.68e-02 max 3.66e-02 | rho(M=64) med 5.40e-03 max 8.83e-03
+  [point] mc               8192  m=  8192  rho(M=320) med 2.35e-01 max 2.57e-01 | rho(M=64) med 1.25e-01 max 1.71e-01
+  [point] fibonacci        12    m=   144  rho(M=320) med 3.82e-01 max 8.44e-01 | rho(M=64) med 9.72e-03 max 2.69e-02
+  [point] fibonacci_tent   12    m=   144  rho(M=320) med 1.24e+00 max 1.41e+00 | rho(M=64) med 8.49e-02 max 2.61e-01
+  [point] fibonacci        13    m=   233  rho(M=320) med 5.98e-02 max 1.42e-01 | rho(M=64) med 2.70e-03 max 6.73e-03
+  [point] fibonacci_tent   13    m=   233  rho(M=320) med 1.39e+00 max 1.49e+00 | rho(M=64) med 5.65e-02 max 2.98e-01
+  [point] fibonacci        14    m=   377  rho(M=320) med 1.21e-02 max 3.73e-02 | rho(M=64) med 7.45e-04 max 2.79e-03
+  [point] fibonacci_tent   14    m=   377  rho(M=320) med 2.94e-01 max 5.40e-01 | rho(M=64) med 8.61e-03 max 2.60e-02
+  [point] fibonacci        15    m=   610  rho(M=320) med 1.89e-03 max 1.08e-02 | rho(M=64) med 4.42e-05 max 1.01e-03
+  [point] fibonacci_tent   15    m=   610  rho(M=320) med 1.41e-01 max 4.31e-01 | rho(M=64) med 3.79e-03 max 1.46e-02
+  [point] fibonacci        16    m=   987  rho(M=320) med 1.62e-04 max 2.80e-03 | rho(M=64) med 3.43e-06 max 2.15e-04
+  [point] fibonacci_tent   16    m=   987  rho(M=320) med 2.11e-02 max 9.53e-02 | rho(M=64) med 1.27e-03 max 3.47e-03
+  [point] fibonacci        17    m=  1597  rho(M=320) med 1.34e-05 max 5.57e-04 | rho(M=64) med 3.14e-07 max 6.00e-05
+  [point] fibonacci_tent   17    m=  1597  rho(M=320) med 4.07e-03 max 9.90e-03 | rho(M=64) med 1.42e-04 max 1.03e-03
+  [point] fibonacci        18    m=  2584  rho(M=320) med 1.07e-06 max 1.50e-04 | rho(M=64) med 2.04e-08 max 1.29e-05
+  [point] fibonacci_tent   18    m=  2584  rho(M=320) med 5.77e-04 max 3.14e-03 | rho(M=64) med 2.23e-05 max 2.23e-04
+  [point] fibonacci        19    m=  4181  rho(M=320) med 1.06e-07 max 5.78e-06 | rho(M=64) med 1.82e-09 max 4.80e-07
+  [point] fibonacci_tent   19    m=  4181  rho(M=320) med 6.64e-05 max 2.15e-03 | rho(M=64) med 1.07e-06 max 2.06e-04
+  [point] fibonacci        20    m=  6765  rho(M=320) med 8.87e-09 max 3.35e-07 | rho(M=64) med 1.58e-10 max 2.08e-08
+  [point] fibonacci_tent   20    m=  6765  rho(M=320) med 4.33e-06 max 1.36e-04 | rho(M=64) med 5.44e-08 max 1.56e-05
+== mesh N=128
+  mesh-vs-continuum gap (continuum ref vs dense upwind at N): med 1.54e-06 max 5.36e-05
+  dense q=0: 3.49 ms per residual+Jacobian
+  dense q=64: 9.14 ms per residual+Jacobian
+  mesh_lattice stride 16 m=49: rho(M=320) med 2.04e+00 max 2.22e+00 | fast max 3.91e-01
+  mesh_lattice stride 8 m=225: rho(M=320) med 3.32e-02 max 1.19e-01 | fast max 3.32e-02
+  mesh_lattice stride 4 m=961: rho(M=320) med 5.70e-03 max 1.32e-02 | fast max 4.90e-03
+  mesh_lattice stride 2 m=3969: rho(M=320) med 1.04e-04 max 1.98e-03 | fast max 6.52e-04
+  EQ fit matrix (7680, 8192)
+  eq_nnls m=256 support 256 (fit res 1.51e-01, 6s): rho(M=320) med 1.58e-01 max 3.80e-01 | fast max 1.35e-01
+  eq_nnls m=512 support 512 (fit res 8.43e-03, 60s): rho(M=320) med 1.12e-02 max 8.59e-02 | fast max 6.27e-03
+  eq_nnls m=1024 support 1024 (fit res 4.96e-04, 190s): rho(M=320) med 8.55e-04 max 4.53e-03 | fast max 7.21e-04
+  eq_nnls m=2048 support 2048 (fit res 8.63e-06, 1282s): rho(M=320) med 3.02e-05 max 2.43e-04 | fast max 6.37e-05
+  time sobol:1024 m=1024 q=0: 0.44 ms per residual+Jacobian
+  time sobol:1024 m=1024 q=64: 1.14 ms per residual+Jacobian
+  time sobol:4096 m=4096 q=0: 2.13 ms per residual+Jacobian
+  time sobol:4096 m=4096 q=64: 2.45 ms per residual+Jacobian
+  time smolyak_cc:7 m=449 q=0: 0.38 ms per residual+Jacobian
+  time smolyak_cc:7 m=449 q=64: 0.53 ms per residual+Jacobian
+  time gauss_tensor:32 m=1024 q=0: 0.65 ms per residual+Jacobian
+  time gauss_tensor:32 m=1024 q=64: 1.11 ms per residual+Jacobian
+== mesh N=256
+  mesh-vs-continuum gap (continuum ref vs dense upwind at N): med 2.39e-08 max 9.25e-07
+  dense q=0: 4.22 ms per residual+Jacobian
+  dense q=64: 11.14 ms per residual+Jacobian
+  mesh_lattice stride 32 m=49: rho(M=320) med 2.04e+00 max 2.22e+00 | fast max 3.91e-01
+  mesh_lattice stride 16 m=225: rho(M=320) med 3.32e-02 max 1.19e-01 | fast max 3.32e-02
+  mesh_lattice stride 8 m=961: rho(M=320) med 5.70e-03 max 1.32e-02 | fast max 4.91e-03
+  mesh_lattice stride 4 m=3969: rho(M=320) med 1.06e-04 max 2.04e-03 | fast max 6.69e-04
+  EQ fit matrix (7680, 8192)
+  eq_nnls m=256 support 256 (fit res 1.40e-01, 5s): rho(M=320) med 1.47e-01 max 4.40e-01 | fast max 1.30e-01
+  eq_nnls m=512 support 512 (fit res 9.07e-03, 40s): rho(M=320) med 1.13e-02 max 9.46e-02 | fast max 3.61e-03
+  eq_nnls m=1024 support 1024 (fit res 5.14e-04, 172s): rho(M=320) med 8.57e-04 max 4.97e-03 | fast max 5.80e-04
+  eq_nnls m=2048 support 2048 (fit res 8.92e-06, 1121s): rho(M=320) med 3.24e-05 max 2.13e-04 | fast max 3.21e-05
+  time sobol:1024 m=1024 q=0: 0.39 ms per residual+Jacobian
+  time sobol:1024 m=1024 q=64: 0.87 ms per residual+Jacobian
+  time sobol:4096 m=4096 q=0: 1.51 ms per residual+Jacobian
+  time sobol:4096 m=4096 q=64: 2.14 ms per residual+Jacobian
+  time smolyak_cc:7 m=449 q=0: 0.28 ms per residual+Jacobian
+  time smolyak_cc:7 m=449 q=64: 0.57 ms per residual+Jacobian
+  time gauss_tensor:32 m=1024 q=0: 0.39 ms per residual+Jacobian
+  time gauss_tensor:32 m=1024 q=64: 0.89 ms per residual+Jacobian
+== mesh N=512
+  mesh-vs-continuum gap (continuum ref vs dense upwind at N): med 3.72e-10 max 1.48e-08
+  dense q=0: 18.47 ms per residual+Jacobian
+  dense q=64: 35.73 ms per residual+Jacobian
+  mesh_lattice stride 64 m=49: rho(M=320) med 2.04e+00 max 2.22e+00 | fast max 3.91e-01
+  mesh_lattice stride 32 m=225: rho(M=320) med 3.32e-02 max 1.19e-01 | fast max 3.32e-02
+  mesh_lattice stride 16 m=961: rho(M=320) med 5.70e-03 max 1.32e-02 | fast max 4.91e-03
+  mesh_lattice stride 8 m=3969: rho(M=320) med 1.06e-04 max 2.04e-03 | fast max 6.70e-04
+  EQ fit matrix (7680, 8192)
+  eq_nnls m=256 support 256 (fit res 1.27e-01, 5s): rho(M=320) med 1.35e-01 max 5.31e-01 | fast max 8.92e-02
+  eq_nnls m=512 support 512 (fit res 8.28e-03, 33s): rho(M=320) med 1.09e-02 max 7.58e-02 | fast max 8.09e-03
+  eq_nnls m=1024 support 1024 (fit res 5.27e-04, 152s): rho(M=320) med 8.47e-04 max 4.71e-03 | fast max 6.84e-04
+  eq_nnls m=2048 support 2048 (fit res 8.85e-06, 1564s): rho(M=320) med 3.30e-05 max 2.36e-04 | fast max 6.00e-05
+  time sobol:1024 m=1024 q=0: 0.50 ms per residual+Jacobian
+  time sobol:1024 m=1024 q=64: 0.97 ms per residual+Jacobian
+  time sobol:4096 m=4096 q=0: 2.20 ms per residual+Jacobian
+  time sobol:4096 m=4096 q=64: 2.43 ms per residual+Jacobian
+  time smolyak_cc:7 m=449 q=0: 0.26 ms per residual+Jacobian
+  time smolyak_cc:7 m=449 q=64: 0.76 ms per residual+Jacobian
+  time gauss_tensor:32 m=1024 q=0: 0.48 ms per residual+Jacobian
+  time gauss_tensor:32 m=1024 q=64: 1.02 ms per residual+Jacobian
+done

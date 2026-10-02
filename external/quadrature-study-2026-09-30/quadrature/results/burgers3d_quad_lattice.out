@@ -1,0 +1,28 @@
+== lattice generating vectors and P_2 merits
+  n=1024: CBC z=[1, 275, 167] P2=6.160e-03 (0s);  'kuo' z mod n=[1, 395, 899] P2=1.416e-02
+  [point] cbc_lattice       m=  1024  rho(M=384) med 1.78e-01 max 5.96e-01 | rho(M=128) med 6.00e-02 max 3.95e-01
+  [point] cbc_lattice_tent  m=  1024  rho(M=384) med 4.47e-01 max 7.38e-01 | rho(M=128) med 1.82e-01 max 5.49e-01
+  [flux] cbc_lattice       m=  1024  rho(M=384) med 1.83e-01 max 5.13e-01 | rho(M=128) med 2.92e-02 max 1.89e-01
+  n=2048: CBC z=[1, 791, 213] P2=2.034e-03 (0s);  'kuo' z mod n=[1, 395, 899] P2=1.142e-02
+  [point] cbc_lattice       m=  2048  rho(M=384) med 6.31e-03 max 4.86e-02 | rho(M=128) med 2.06e-03 max 1.87e-02
+  [point] cbc_lattice_tent  m=  2048  rho(M=384) med 2.43e-01 max 5.66e-01 | rho(M=128) med 6.93e-02 max 4.00e-01
+  [flux] cbc_lattice       m=  2048  rho(M=384) med 3.12e-03 max 2.92e-02 | rho(M=128) med 6.81e-04 max 7.95e-03
+  n=4096: CBC z=[1, 1557, 1741] P2=6.468e-04 (0s);  'kuo' z mod n=[1, 2443, 2947] P2=9.845e-03
+  [point] cbc_lattice       m=  4096  rho(M=384) med 1.23e-03 max 8.33e-03 | rho(M=128) med 3.94e-04 max 2.34e-03
+  [point] cbc_lattice_tent  m=  4096  rho(M=384) med 9.65e-02 max 2.48e-01 | rho(M=128) med 2.95e-02 max 1.58e-01
+  [flux] cbc_lattice       m=  4096  rho(M=384) med 5.33e-04 max 4.57e-03 | rho(M=128) med 1.11e-04 max 1.13e-03
+  n=8192: CBC z=[1, 2431, 563] P2=1.876e-04 (1s);  'kuo' z mod n=[1, 2443, 2947] P2=4.443e-03
+  [point] cbc_lattice       m=  8192  rho(M=384) med 3.07e-05 max 5.29e-04 | rho(M=128) med 1.00e-05 max 1.29e-04
+  [point] cbc_lattice_tent  m=  8192  rho(M=384) med 1.53e-02 max 8.52e-02 | rho(M=128) med 4.23e-03 max 3.98e-02
+  [flux] cbc_lattice       m=  8192  rho(M=384) med 1.00e-05 max 2.50e-04 | rho(M=128) med 2.21e-06 max 5.74e-05
+  n=16384: CBC z=[1, 6915, 3959] P2=4.753e-05 (3s);  'kuo' z mod n=[1, 2443, 11139] P2=4.242e-03
+  [point] cbc_lattice       m= 16384  rho(M=384) med 3.19e-06 max 8.94e-05 | rho(M=128) med 6.95e-07 max 2.56e-05
+  [point] cbc_lattice_tent  m= 16384  rho(M=384) med 6.86e-03 max 3.83e-02 | rho(M=128) med 2.14e-03 max 1.48e-02
+  [flux] cbc_lattice       m= 16384  rho(M=384) med 1.99e-06 max 4.93e-05 | rho(M=128) med 5.41e-07 max 1.27e-05
+  n=32768: CBC z=[1, 12031, 7247] P2=1.572e-05 (13s);  'kuo' z mod n=[1, 18827, 11139] P2=4.224e-03
+  [point] cbc_lattice       m= 32768  rho(M=384) med 3.85e-07 max 1.43e-05 | rho(M=128) med 6.12e-08 max 2.12e-06
+  [point] cbc_lattice_tent  m= 32768  rho(M=384) med 4.36e-04 max 3.06e-03 | rho(M=128) med 1.35e-04 max 1.29e-03
+  [flux] cbc_lattice       m= 32768  rho(M=384) med 1.96e-07 max 7.23e-06 | rho(M=128) med 3.04e-08 max 1.10e-06
+  korobov n=4093: z=[1, 1884, 825] P2=5.826e-04
+  korobov n=16381: z=[1, 3657, 6753] P2=5.155e-05
+done

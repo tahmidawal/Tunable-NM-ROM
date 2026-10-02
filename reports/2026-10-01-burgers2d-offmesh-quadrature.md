@@ -19,7 +19,9 @@ Replication of Hari's off-mesh quadrature study on the frozen Table-1 Burgers 2D
 
 One backward-Euler step solves for the bank coefficients $c$ (linear rung: $c=w$; head: $c=h(z)$):
 
-$$ r(c) = S\Big(A c - p + \Delta t\,\big(N(c) + \nu\Lambda A c\big)\Big),\qquad S=(1+\Delta t\,\nu\Lambda)^{-1}. $$
+$$ r(c) = D\Big(A c - p + \Delta t\,\big(N(c) + \nu\Lambda A c\big)\Big),\qquad D=(1+\Delta t\,\nu\Lambda)^{-1}. $$
+
+Here $L$ is the number of mesh intervals per axis, $G'$ the rotated bank on the mesh, $\Phi$ the $M$ mesh-orthonormal sine tests $\tfrac{2}{L}\sin(a\pi x)\sin(b\pi y)$, $\psi=2\sin(a\pi x)\sin(b\pi y)$ their continuum counterparts, $\Lambda$ their discrete eigenvalues, $p=Ac_n$ the previous step, $\nu$ the viscosity, $\Delta t=0.005$, and $(x_q,w_q)$ the $m$ points and weights of a rule. "Hari's study" is `external/quadrature-study-2026-09-30/quadrature/results/SUMMARY.md`; $\rho$ is eq. 13 of the project's NM-ROM paper draft, the relative error of a rule's tested advection against a target (defined in the rho sections).
 
 The linear terms ($A=\Phi^{\mathsf T}G'$, $\Lambda$) are the exact discrete ones of the project's solver. Only the tested advection $N(c)$ changes between arms: the FOM's upwind stencil on all mesh nodes (`dense`) or on $m$ of them (mesh rules), or Hari's off-mesh form $N(c)=L\sum_q w_q\,\psi(x_q)\,u\,(u_x+u_y)(x_q)$ with the bank and its gradient decoded at the rule's points (or the flux form $-L\sum_q w_q(\psi_x+\psi_y)\,u^2/2$).
 
@@ -44,18 +46,58 @@ flowchart LR
 
 **Development/validation cohorts.**
 
-- **(i) Reproduce dense against the refined reference, mesh-invariantly?** Resolved off-mesh rules converge to one mesh-invariant solution (the continuum-advection hybrid), the dense mesh solve to the upwind solution, which improves with the mesh. On the cases where dense ran (worst over cases; the case set is smaller at $4096^2$, which is why the continuum-rollout numbers differ there — on a fixed case set they are invariant, see B2): acc: continuum rollout ST 2.75/2.75/1.82 %, S 1.06/1.05/0.24 % at $256^2/1024^2/4096^2$; dense ST 6.21/3.38/1.91 %, S 4.16/1.34/0.24 % (on 38/38/6 cases); fast: continuum rollout ST 4.64/4.64/2.86 %, S 3.46/3.45/1.91 % at $256^2/1024^2/4096^2$; dense ST 6.92/5.03/2.91 %, S 4.97/3.48/1.90 % (on 38/38/6 cases); head: continuum rollout ST 5.66/5.63/3.31 %, S 4.37/4.35/2.45 % at $256^2/1024^2/4096^2$; dense ST 7.48/5.93/3.35 %, S 5.53/4.37/2.43 % (on 38/38/6 cases). So at the coarse meshes the off-mesh rules are *more* accurate than dense against both references, and at $4096^2$ the two agree against S to within the differences shown (slightly better against ST). The pre-registered two-sided B1 therefore fails for most off-mesh arms at the coarse meshes in the favourable direction; under-resolved rules (e.g. accurate Gauss $32^2$) fail it by being worse.
+- **(i) Reproduce dense against the refined reference, mesh-invariantly?** In the linear-rung settings (`acc`, `fast`) the resolved off-mesh rules give one mesh-invariant solution (case by case to ≤0.02 pp, table below); in the `head` setting a few cases move between meshes for every arm, dense included (table below). The dense mesh solve carries the upwind stencil error, which shrinks with the mesh. On the cases where dense ran (worst over those cases; the case set is smaller at $4096^2$, so the columns are not one population): acc: continuum rollout ST 2.75/2.75/1.82 %, S 1.06/1.05/0.24 % at $256^2/1024^2/4096^2$; dense ST 6.21/3.38/1.91 %, S 4.16/1.34/0.24 % (on 38/38/6 cases); fast: continuum rollout ST 4.64/4.64/2.86 %, S 3.46/3.45/1.91 % at $256^2/1024^2/4096^2$; dense ST 6.92/5.03/2.91 %, S 4.97/3.48/1.90 % (on 38/38/6 cases); head: continuum rollout ST 5.66/5.63/3.31 %, S 4.37/4.35/2.45 % at $256^2/1024^2/4096^2$; dense ST 7.48/5.93/3.35 %, S 5.53/4.37/2.43 % (on 38/38/6 cases). In cohort-worst terms the resolved off-mesh rules are more accurate than dense at the coarse meshes against both references (not case-by-case dominance), and at $4096^2$ the worst errors are close: slightly lower than dense against ST, slightly higher against S. The two-sided B1 therefore fails for the resolved linear-rung arms at the coarse meshes in the favourable direction; under-resolved rules (e.g. accurate Gauss $32^2$) fail it by being worse.
   Mesh invariance (B2, worst ST max/min over the three meshes): off-mesh Gauss/Fibonacci/flux rules except accurate-setting Gauss $32^2$ between 1.0001 and 1.0060; the deployed lattice 1.31–2.19.
-- **(ii) $\rho$ ladder vs the $63^2$ lattice and EQ at matched $m$ ($1024^2$, worst over reached states):** acc: lat64 ($m$=3969) 5.4e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 1.9e-02 and Fibonacci 4181 3.3e-02 against the continuum; fast: lat64 ($m$=3969) 4.6e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 2.3e-02 and Fibonacci 4181 1.8e-02 against the continuum; head: lat64 ($m$=3969) 1.2e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 9.4e-03 and Fibonacci 4181 2.5e-03 against the continuum, fitted EQ ($m$=1024) 1.0e-01 vs Gauss $32^2$ 3.4e-02. Our bank needs far more points than Hari's for the same continuum accuracy (Gauss $128^2$: acc 2.1e-03, fast 6.5e-03, head 3.1e-03); Sobol 4096 stays at acc 2.5e-01, fast 1.2e-01, head 1.6e-02 and Smolyak CC 8 at acc 9.5e+00, fast 3.0e+00, head 3.6e-01.
+- **(ii) $\rho$ ladder vs the $63^2$ lattice and EQ at approximately matched $m$ ($1024^2$, worst over reached states; the mesh rules are measured against their own target, the upwind stencil, and the off-mesh rules against theirs, the continuum — different discrepancies):** acc: lat64 ($m$=3969) 5.4e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 1.9e-02 and Fibonacci 4181 3.3e-02 against the continuum; fast: lat64 ($m$=3969) 4.6e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 2.3e-02 and Fibonacci 4181 1.8e-02 against the continuum; head: lat64 ($m$=3969) 1.2e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 9.4e-03 and Fibonacci 4181 2.5e-03 against the continuum, fitted EQ ($m$=1024) 1.0e-01 vs Gauss $32^2$ 3.4e-02. Our bank converges much more slowly in the number of points than Hari's (different bank and test space; cause not isolated; Gauss $128^2$: acc 2.1e-03, fast 6.5e-03, head 3.1e-03); Sobol 4096 stays at acc 2.5e-01, fast 1.2e-01, head 1.6e-02 and Smolyak CC 8 at acc 9.5e+00, fast 3.0e+00, head 3.6e-01.
 - **(iii) Cost flat in $N$?** Solve time (query minus decode) is flat on one GPU: B4 ratios $4096^2/256^2$ between 0.937 and 1.060 for all 40 measured arms; it grows with $m$. The full query is not flat because the six-field output decode grows with $N$. At $4096^2$, solve time of the post-hoc rules vs the deployed lattice: acc: Gauss $96^2$ 54.5 ms vs lat64 46.3 ms; fast: Fibonacci 1597 13.3 ms vs lat64 18.7 ms; head: Gauss $32^2$ 22.3 ms vs lat64 40.6 ms (not a matched equal-accuracy comparison; §D5).
-- **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: acc: Gauss $64^2$ worst at $k$=1 (width 0.111, Spearman with width +0.35); lat64 worst at $k$=29 (width 0.111, Spearman +0.00); fast: Gauss $64^2$ worst at $k$=1 (width 0.188, Spearman with width +0.61); lat64 worst at $k$=1 (width 0.182, Spearman -0.01); head: Gauss $64^2$ worst at $k$=1 (width 0.196, Spearman with width +0.64); lat64 worst at $k$=32 (width 0.111, Spearman -0.53). For the off-mesh rules the worst states lean towards early steps of *wide* bumps; there are exceptions (§D6). The cause is not tested here.
+- **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: acc: Gauss $64^2$ worst state at $k$=1 (width 0.111; Spearman of case-max $\\rho$ with width +0.35; median $k$ of its top 1 % (19 states) 41.0); lat64 worst at $k$=29 (width 0.111, Spearman +0.00); fast: Gauss $64^2$ worst state at $k$=1 (width 0.188; Spearman of case-max $\\rho$ with width +0.61; median $k$ of its top 1 % (19 states) 1.0); lat64 worst at $k$=1 (width 0.182, Spearman -0.01); head: Gauss $64^2$ worst state at $k$=1 (width 0.196; Spearman of case-max $\\rho$ with width +0.64; median $k$ of its top 1 % (19 states) 1.0); lat64 worst at $k$=32 (width 0.111, Spearman -0.53). For the off-mesh Gauss/Fibonacci rules the cases with the largest $\rho$ tend to be the *wider* bumps (positive Spearman), and the single worst state is often an early step, while the top-1 % tail spreads over later steps; Sobol and some rules are exceptions (§D6). The cause is not tested here.
 
 **Test cohort.**
 
-- **(i) Reproduce dense against the refined reference, mesh-invariantly?** Resolved off-mesh rules converge to one mesh-invariant solution (the continuum-advection hybrid), the dense mesh solve to the upwind solution, which improves with the mesh. On the cases where dense ran (worst over cases; the case set is smaller at $4096^2$, which is why the continuum-rollout numbers differ there — on a fixed case set they are invariant, see B2): acc: continuum rollout ST 2.64/2.65/1.57 %, S 1.34/1.36/0.10 % at $256^2/1024^2/4096^2$; dense ST 5.58/3.27/1.62 %, S 3.71/1.53/0.10 % (on 64/64/6 cases); fast: continuum rollout ST 4.36/4.36/1.68 %, S 3.15/3.15/0.71 % at $256^2/1024^2/4096^2$; dense ST 6.28/4.67/1.72 %, S 4.46/3.18/0.71 % (on 64/64/6 cases); head: continuum rollout ST 4.92/8.79/1.87 %, S 4.18/8.45/1.35 % at $256^2/1024^2/4096^2$; dense ST 6.59/8.84/1.90 %, S 4.74/8.49/1.35 % (on 64/64/6 cases). So at the coarse meshes the off-mesh rules are *more* accurate than dense against both references, and at $4096^2$ the two agree against S to within the differences shown (slightly better against ST). The pre-registered two-sided B1 therefore fails for most off-mesh arms at the coarse meshes in the favourable direction; under-resolved rules (e.g. accurate Gauss $32^2$) fail it by being worse.
-- **(ii) $\rho$ ladder vs the $63^2$ lattice and EQ at matched $m$ ($1024^2$, worst over reached states):** acc: lat64 ($m$=3969) 7.8e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 2.4e-02 and Fibonacci 4181 7.6e-02 against the continuum; fast: lat64 ($m$=3969) 6.1e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 2.7e-02 and Fibonacci 4181 2.3e-02 against the continuum; head: lat64 ($m$=3969) 2.1e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 1.8e-02 and Fibonacci 4181 2.5e-03 against the continuum, fitted EQ ($m$=1024) 2.8e-02 vs Gauss $32^2$ 5.8e-02. Our bank needs far more points than Hari's for the same continuum accuracy (Gauss $128^2$: acc 3.0e-03, fast 6.9e-03, head 2.8e-03); Sobol 4096 stays at acc 2.4e-01, fast 7.1e-02, head 1.7e-02 and Smolyak CC 8 at acc 9.5e+00, fast 3.0e+00, head 4.4e-01.
-- **(iii) Cost flat in $N$?** Solve time (query minus decode) is flat on one GPU: B4 ratios $4096^2/256^2$ between 0.972 and 1.040 for all 40 measured arms; it grows with $m$. The full query is not flat because the six-field output decode grows with $N$. At $4096^2$, solve time of the post-hoc rules vs the deployed lattice: acc: Gauss $96^2$ 55.4 ms vs lat64 46.6 ms; fast: Fibonacci 1597 13.4 ms vs lat64 19.1 ms; head: Gauss $32^2$ 21.7 ms vs lat64 40.2 ms (not a matched equal-accuracy comparison; §D5).
-- **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: acc: Gauss $64^2$ worst at $k$=1 (width 0.159, Spearman with width +0.26); lat64 worst at $k$=1 (width 0.169, Spearman -0.07); fast: Gauss $64^2$ worst at $k$=1 (width 0.164, Spearman with width +0.61); lat64 worst at $k$=1 (width 0.169, Spearman -0.08); head: Gauss $64^2$ worst at $k$=1 (width 0.164, Spearman with width +0.55); lat64 worst at $k$=31 (width 0.169, Spearman -0.45). For the off-mesh rules the worst states lean towards early steps of *wide* bumps; there are exceptions (§D6). The cause is not tested here.
+- **(i) Reproduce dense against the refined reference, mesh-invariantly?** In the linear-rung settings (`acc`, `fast`) the resolved off-mesh rules give one mesh-invariant solution (case by case to ≤0.02 pp, table below); in the `head` setting a few cases move between meshes for every arm, dense included (table below). The dense mesh solve carries the upwind stencil error, which shrinks with the mesh. On the cases where dense ran (worst over those cases; the case set is smaller at $4096^2$, so the columns are not one population): acc: continuum rollout ST 2.64/2.65/1.57 %, S 1.34/1.36/0.10 % at $256^2/1024^2/4096^2$; dense ST 5.58/3.27/1.62 %, S 3.71/1.53/0.10 % (on 64/64/6 cases); fast: continuum rollout ST 4.36/4.36/1.68 %, S 3.15/3.15/0.71 % at $256^2/1024^2/4096^2$; dense ST 6.28/4.67/1.72 %, S 4.46/3.18/0.71 % (on 64/64/6 cases); head: continuum rollout ST 4.92/8.79/1.87 %, S 4.18/8.45/1.35 % at $256^2/1024^2/4096^2$; dense ST 6.59/8.84/1.90 %, S 4.74/8.49/1.35 % (on 64/64/6 cases). In cohort-worst terms the resolved off-mesh rules are more accurate than dense at the coarse meshes against both references (not case-by-case dominance), and at $4096^2$ the worst errors are close: slightly lower than dense against ST, slightly higher against S. The two-sided B1 therefore fails for the resolved linear-rung arms at the coarse meshes in the favourable direction; under-resolved rules (e.g. accurate Gauss $32^2$) fail it by being worse.
+- **(ii) $\rho$ ladder vs the $63^2$ lattice and EQ at approximately matched $m$ ($1024^2$, worst over reached states; the mesh rules are measured against their own target, the upwind stencil, and the off-mesh rules against theirs, the continuum — different discrepancies):** acc: lat64 ($m$=3969) 7.8e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 2.4e-02 and Fibonacci 4181 7.6e-02 against the continuum; fast: lat64 ($m$=3969) 6.1e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 2.7e-02 and Fibonacci 4181 2.3e-02 against the continuum; head: lat64 ($m$=3969) 2.1e-02 against its mesh target, Gauss $64^2$ ($m$=4096) 1.8e-02 and Fibonacci 4181 2.5e-03 against the continuum, fitted EQ ($m$=1024) 2.8e-02 vs Gauss $32^2$ 5.8e-02. Our bank converges much more slowly in the number of points than Hari's (different bank and test space; cause not isolated; Gauss $128^2$: acc 3.0e-03, fast 6.9e-03, head 2.8e-03); Sobol 4096 stays at acc 2.4e-01, fast 7.1e-02, head 1.7e-02 and Smolyak CC 8 at acc 9.5e+00, fast 3.0e+00, head 4.4e-01.
+- **(iii) Cost flat in $N$?** Solve time (query minus decode) is flat on one GPU: B4 ratios $4096^2/256^2$ between 0.972 and 1.040 for all 40 measured arms; it grows with $m$. The full query is not flat because the six-field output decode grows with $N$. At $4096^2$, solve time of the post-hoc rules vs the deployed lattice: acc: Gauss $96^2$ 55.4 ms vs lat64 46.6 ms; fast: Fibonacci 1597 13.4 ms vs lat64 19.1 ms; head: Gauss $32^2$ 21.7 ms vs lat64 40.2 ms (not a matched equal-accuracy comparison; §T5).
+- **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: acc: Gauss $64^2$ worst state at $k$=1 (width 0.159; Spearman of case-max $\\rho$ with width +0.26; median $k$ of its top 1 % (32 states) 42.5); lat64 worst at $k$=1 (width 0.169, Spearman -0.07); fast: Gauss $64^2$ worst state at $k$=1 (width 0.164; Spearman of case-max $\\rho$ with width +0.61; median $k$ of its top 1 % (32 states) 1.5); lat64 worst at $k$=1 (width 0.169, Spearman -0.08); head: Gauss $64^2$ worst state at $k$=1 (width 0.164; Spearman of case-max $\\rho$ with width +0.55; median $k$ of its top 1 % (32 states) 2.0); lat64 worst at $k$=31 (width 0.169, Spearman -0.45). For the off-mesh Gauss/Fibonacci rules the cases with the largest $\rho$ tend to be the *wider* bumps (positive Spearman), and the single worst state is often an early step, while the top-1 % tail spreads over later steps; Sobol and some rules are exceptions (§T6). The cause is not tested here.
+
+**Did the frozen post-hoc rules confirm on test64?** (one-sided B1′, B3 and B5 recomputed from the test summaries exactly as on development):
+
+| setting | rule | B1′ at $256^2/1024^2/4096^2$ | B3 worst % at $256^2/1024^2/4096^2$ (bar) | continuum $\rho_{\max}$ at $256^2/1024^2/4096^2$ | confirmed |
+|---|---|---|---|---|---|
+| acc | Gauss $96^2$ | y/y/y | 0.017/0.017/0.017 (0.05) | 4.3e-03/3.4e-03/3.6e-03 | yes |
+| fast | Fibonacci 1597 | y/y/y | 0.140/0.139/0.139 (0.20) | 6.9e-02/8.1e-02/8.3e-02 | yes |
+| head | Gauss $32^2$ | y/y/y | 0.585/1.105/1.258 (0.50) | 5.0e-02/5.8e-02/6.0e-02 | **no** |
+
+**Mesh invariance on test64** (B2: worst ST % over all 64 cases at each mesh; dense omitted, 6 cases at $4096^2$):
+
+| setting | arm | $256^2$ | $1024^2$ | $4096^2$ | max/min | B2 ($\le1.02$) |
+|---|---|---|---|---|---|---|
+| acc | continuum rollout (Gauss $640^2$) | 2.638 | 2.647 | 2.647 | 1.0034 | yes |
+| acc | Gauss $32^2$ | 9.036 | 8.813 | 8.809 | 1.0259 | **no** |
+| acc | Gauss $64^2$ | 2.641 | 2.649 | 2.649 | 1.0031 | yes |
+| acc | Gauss $96^2$ | 2.638 | 2.647 | 2.647 | 1.0034 | yes |
+| acc | Gauss $128^2$ | 2.638 | 2.647 | 2.647 | 1.0034 | yes |
+| acc | Fibonacci 1597 | 2.597 | 2.603 | 2.604 | 1.0024 | yes |
+| acc | Fibonacci 6765 | 2.637 | 2.645 | 2.645 | 1.0033 | yes |
+| acc | Fibonacci 17711 | 2.638 | 2.647 | 2.647 | 1.0034 | yes |
+| acc | mesh lattice $63^2$ | 5.578 | 3.269 | 2.787 | 2.0017 | **no** |
+| fast | continuum rollout (Gauss $640^2$) | 4.360 | 4.358 | 4.358 | 1.0007 | yes |
+| fast | Gauss $32^2$ | 4.349 | 4.347 | 4.347 | 1.0006 | yes |
+| fast | Gauss $64^2$ | 4.360 | 4.357 | 4.357 | 1.0006 | yes |
+| fast | Gauss $96^2$ | 4.360 | 4.358 | 4.357 | 1.0007 | yes |
+| fast | Gauss $128^2$ | 4.360 | 4.358 | 4.358 | 1.0007 | yes |
+| fast | Fibonacci 1597 | 4.361 | 4.358 | 4.358 | 1.0007 | yes |
+| fast | Fibonacci 6765 | 4.360 | 4.358 | 4.358 | 1.0007 | yes |
+| fast | Fibonacci 17711 | 4.360 | 4.358 | 4.358 | 1.0007 | yes |
+| fast | mesh lattice $63^2$ | 6.283 | 4.666 | 4.404 | 1.4266 | **no** |
+| head | continuum rollout (Gauss $640^2$) | 4.916 | 8.794 | 9.377 | 1.9074 | **no** |
+| head | Gauss $32^2$ | 4.920 | 8.747 | 9.354 | 1.9011 | **no** |
+| head | Gauss $64^2$ | 4.917 | 8.765 | 9.347 | 1.9009 | **no** |
+| head | Gauss $96^2$ | 4.916 | 8.812 | 9.392 | 1.9104 | **no** |
+| head | Gauss $128^2$ | 4.916 | 8.800 | 9.382 | 1.9084 | **no** |
+| head | Fibonacci 1597 | 4.917 | 8.840 | 9.457 | 1.9232 | **no** |
+| head | Fibonacci 6765 | 4.916 | 8.790 | 9.373 | 1.9065 | **no** |
+| head | Fibonacci 17711 | 4.916 | 8.796 | 9.380 | 1.9078 | **no** |
+| head | mesh lattice $63^2$ | 6.588 | 8.882 | 9.442 | 1.4333 | **no** |
 
 **Per-case mesh invariance** (generated from the job result files: for each case, the spread of its worst ST error across $256^2/1024^2/4096^2$; cases moving by more than 0.5 pp listed):
 
@@ -64,27 +106,27 @@ flowchart LR
 | dev6 ∪ val32 | acc | continuum rollout (Gauss $640^2$) | 38 | 0.012 | none |
 | dev6 ∪ val32 | acc | Gauss $64^2$ | 38 | 0.014 | none |
 | dev6 ∪ val32 | acc | Fibonacci 6765 | 38 | 0.012 | none |
-| dev6 ∪ val32 | acc | mesh lattice $63^2$ | 38 | 3.374 | dev60, dev62, dev63, dev64, val320, val323, val324, val325, val326, val327, val328, val3211, val3213, val3214, val3217, val3218, val3219, val3223, val3225, val3226, val3228, val3229, val3230 |
+| dev6 ∪ val32 | acc | mesh lattice $63^2$ | 38 | 3.374 | dev6:0, dev6:2, dev6:3, dev6:4, val32:0, val32:3, val32:4, val32:5, val32:6, val32:7, val32:8, val32:11, val32:13, val32:14, val32:17, val32:18, val32:19, val32:23, val32:25, val32:26, val32:28, val32:29, val32:30 |
 | dev6 ∪ val32 | fast | continuum rollout (Gauss $640^2$) | 38 | 0.020 | none |
 | dev6 ∪ val32 | fast | Gauss $64^2$ | 38 | 0.020 | none |
 | dev6 ∪ val32 | fast | Fibonacci 6765 | 38 | 0.020 | none |
-| dev6 ∪ val32 | fast | mesh lattice $63^2$ | 38 | 2.207 | dev60, dev62, dev63, dev64, val320, val324, val325, val326, val327, val328, val3213, val3214, val3217, val3218, val3219, val3223, val3225, val3226, val3228, val3229, val3230 |
-| dev6 ∪ val32 | head | continuum rollout (Gauss $640^2$) | 38 | 1.221 | val3220 |
-| dev6 ∪ val32 | head | Gauss $64^2$ | 38 | 1.219 | val3220 |
-| dev6 ∪ val32 | head | Fibonacci 6765 | 38 | 1.219 | val3220 |
-| dev6 ∪ val32 | head | mesh lattice $63^2$ | 38 | 1.790 | dev62, dev63, val325, val326, val327, val328, val3217, val3218, val3219, val3220, val3225, val3230 |
+| dev6 ∪ val32 | fast | mesh lattice $63^2$ | 38 | 2.207 | dev6:0, dev6:2, dev6:3, dev6:4, val32:0, val32:4, val32:5, val32:6, val32:7, val32:8, val32:13, val32:14, val32:17, val32:18, val32:19, val32:23, val32:25, val32:26, val32:28, val32:29, val32:30 |
+| dev6 ∪ val32 | head | continuum rollout (Gauss $640^2$) | 38 | 1.221 | val32:20 |
+| dev6 ∪ val32 | head | Gauss $64^2$ | 38 | 1.219 | val32:20 |
+| dev6 ∪ val32 | head | Fibonacci 6765 | 38 | 1.219 | val32:20 |
+| dev6 ∪ val32 | head | mesh lattice $63^2$ | 38 | 1.790 | dev6:2, dev6:3, val32:5, val32:6, val32:7, val32:8, val32:17, val32:18, val32:19, val32:20, val32:25, val32:30 |
 | test64 | acc | continuum rollout (Gauss $640^2$) | 64 | 0.009 | none |
 | test64 | acc | Gauss $64^2$ | 64 | 0.009 | none |
 | test64 | acc | Fibonacci 6765 | 64 | 0.009 | none |
-| test64 | acc | mesh lattice $63^2$ | 64 | 2.791 | test640, test641, test642, test643, test645, test646, test647, test649, test6413, test6416, test6420, test6422, test6426, test6427, test6428, test6429, test6431, test6432, test6433, test6434, test6435, test6436, test6437, test6439, test6440, test6442, test6443, test6445, test6448, test6453, test6455, test6460 |
+| test64 | acc | mesh lattice $63^2$ | 64 | 2.791 | test64:0, test64:1, test64:2, test64:3, test64:5, test64:6, test64:7, test64:9, test64:13, test64:16, test64:20, test64:22, test64:26, test64:27, test64:28, test64:29, test64:31, test64:32, test64:33, test64:34, test64:35, test64:36, test64:37, test64:39, test64:40, test64:42, test64:43, test64:45, test64:48, test64:53, test64:55, test64:60 |
 | test64 | fast | continuum rollout (Gauss $640^2$) | 64 | 0.011 | none |
 | test64 | fast | Gauss $64^2$ | 64 | 0.011 | none |
 | test64 | fast | Fibonacci 6765 | 64 | 0.011 | none |
-| test64 | fast | mesh lattice $63^2$ | 64 | 2.167 | test640, test641, test642, test643, test645, test646, test647, test649, test6413, test6416, test6420, test6422, test6426, test6427, test6428, test6429, test6431, test6432, test6433, test6435, test6439, test6440, test6442, test6443, test6445, test6453, test6455, test6460 |
-| test64 | head | continuum rollout (Gauss $640^2$) | 64 | 4.715 | test6436, test6448, test6460 |
-| test64 | head | Gauss $64^2$ | 64 | 4.693 | test6427, test6436, test6448, test6460 |
-| test64 | head | Fibonacci 6765 | 64 | 4.710 | test6436, test6448, test6460 |
-| test64 | head | mesh lattice $63^2$ | 64 | 4.606 | test640, test642, test643, test645, test646, test647, test649, test6413, test6416, test6420, test6422, test6428, test6429, test6431, test6432, test6433, test6435, test6436, test6439, test6440, test6443, test6453, test6455 |
+| test64 | fast | mesh lattice $63^2$ | 64 | 2.167 | test64:0, test64:1, test64:2, test64:3, test64:5, test64:6, test64:7, test64:9, test64:13, test64:16, test64:20, test64:22, test64:26, test64:27, test64:28, test64:29, test64:31, test64:32, test64:33, test64:35, test64:39, test64:40, test64:42, test64:43, test64:45, test64:53, test64:55, test64:60 |
+| test64 | head | continuum rollout (Gauss $640^2$) | 64 | 4.715 | test64:36, test64:48, test64:60 |
+| test64 | head | Gauss $64^2$ | 64 | 4.693 | test64:27, test64:36, test64:48, test64:60 |
+| test64 | head | Fibonacci 6765 | 64 | 4.710 | test64:36, test64:48, test64:60 |
+| test64 | head | mesh lattice $63^2$ | 64 | 4.606 | test64:0, test64:2, test64:3, test64:5, test64:6, test64:7, test64:9, test64:13, test64:16, test64:20, test64:22, test64:28, test64:29, test64:31, test64:32, test64:33, test64:35, test64:36, test64:39, test64:40, test64:43, test64:53, test64:55 |
 
 The linear rungs (`acc`, `fast`) are invariant case by case for the off-mesh rules. In the `head` setting a few cases move for *every* arm, the dense mesh solve and `lat64` included, so that spread comes from the nonlinear head solve (it lands on a different trajectory at another mesh), not from the quadrature; the cause is not isolated here.
 
@@ -278,7 +320,7 @@ Worst and median $\rho$ over the states $k=1..50$ reached by the deployed `lat64
 
 ### D3. End-to-end rollouts (question i)
 
-**Matched comparison on the cases where dense ran** (worst over those cases, %): the off-mesh arms against dense, against both refined references. B1 is the pre-registered two-sided bar (within $\max(0.02$ pp$, 2\,\%)$ of dense on ST).
+**Matched comparison on the cases where dense ran** (worst over those cases, %): the off-mesh arms against dense, against both refined references (% of the initial-field norm). B1 is the pre-registered two-sided bar: within the larger of 0.02 pp and 2 % of dense's worst ST error.
 
 | setting | arm | ST $256^2$ | S $256^2$ | ST $1024^2$ | S $1024^2$ | ST $4096^2$ | S $4096^2$ | B1 at $256^2$, $1024^2$, $4096^2$ |
 |---|---|---|---|---|---|---|---|---|
@@ -555,9 +597,10 @@ Worst over cases of the maximum over the five evolved output times, % of $\lVert
 
 ### D4. Mesh invariance (B2) and the recommended rule
 
-| setting | arm | worst ST $256^2$ | $1024^2$ | $4096^2$ | max/min | B2 |
+Worst ST error (%) over all 38 cases at each mesh; dense is omitted (it ran on 6 cases at $4096^2$).
+
+| setting | arm | worst ST % $256^2$ | $1024^2$ | $4096^2$ | max/min | B2 ($\le1.02$) |
 |---|---|---|---|---|---|---|
-| acc | dense (all mesh nodes) | 6.205 | 3.383 | 1.913 | 3.2432 | **no** |
 | acc | mesh lattice $63^2$ | 6.205 | 3.384 | 2.831 | 2.1915 | **no** |
 | acc | Gauss $32^2$ | 9.862 | 9.659 | 9.655 | 1.0214 | **no** |
 | acc | Gauss $48^2$ | 2.781 | 2.767 | 2.767 | 1.0048 | yes |
@@ -577,7 +620,6 @@ Worst over cases of the maximum over the five evolved output times, % of $\lVert
 | acc | continuum rollout (Gauss $640^2$) | 2.747 | 2.747 | 2.747 | 1.0003 | yes |
 | acc | control: Smolyak CC 8 | 43.745 | 43.649 | 43.649 | 1.0022 | yes |
 | acc | control: Gauss $8^2$ | 64.667 | 64.651 | 64.650 | 1.0003 | yes |
-| fast | dense (all mesh nodes) | 6.923 | 5.032 | 2.914 | 2.3758 | **no** |
 | fast | mesh lattice $63^2$ | 6.924 | 5.033 | 4.717 | 1.4679 | **no** |
 | fast | Gauss $32^2$ | 4.596 | 4.594 | 4.594 | 1.0006 | yes |
 | fast | Gauss $48^2$ | 4.638 | 4.634 | 4.634 | 1.0008 | yes |
@@ -597,7 +639,6 @@ Worst over cases of the maximum over the five evolved output times, % of $\lVert
 | fast | continuum rollout (Gauss $640^2$) | 4.641 | 4.637 | 4.637 | 1.0008 | yes |
 | fast | control: Smolyak CC 8 | 16.775 | 16.765 | 16.765 | 1.0006 | yes |
 | fast | control: Gauss $8^2$ | 57.914 | 57.906 | 57.906 | 1.0001 | yes |
-| head | dense (all mesh nodes) | 7.475 | 5.929 | 3.348 | 2.2326 | **no** |
 | head | mesh lattice $63^2$ | 7.474 | 5.928 | 5.684 | 1.3149 | **no** |
 | head | fitted EQ rule (q0scaled) | 7.481 | 5.931 | 5.685 | 1.3158 | **no** |
 | head | Gauss $32^2$ | 5.676 | 5.644 | 5.637 | 1.0068 | yes |
@@ -759,60 +800,60 @@ For each rule, the state with the largest continuum $\rho$: its case's bump widt
 
 | mesh | setting | rule | worst $\rho$ | case | $w$ | $a$ | $\nu$ | $k$ | Spearman($\rho$, $w$) | top-1 % with $k\le5$ | Spearman($\rho$, $\nu$)† | median $k$ of top 1 %† |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| $256^2$ | acc | Gauss $64^2$ | 1.2e-02 | val3219 | 0.158 | 1.87 | 0.011 | 50 | +0.25 | 11 % | -0.65 | 41 |
-| $256^2$ | acc | Gauss $128^2$ | 2.2e-03 | dev63 | 0.136 | 1.28 | 0.018 | 1 | +0.44 | 53 % | -0.29 | 1 |
-| $256^2$ | acc | Fibonacci 6765 | 1.1e-02 | dev63 | 0.136 | 1.28 | 0.018 | 1 | +0.52 | 26 % | -0.38 | 23 |
-| $256^2$ | acc | Fibonacci 17711 | 1.1e-03 | val325 | 0.111 | 1.93 | 0.012 | 33 | +0.47 | 11 % | -0.35 | 33 |
-| $256^2$ | acc | Sobol 4096 | 2.4e-01 | val321 | 0.071 | 0.76 | 0.051 | 1 | -0.33 | 26 % | -0.33 | 19 |
-| $256^2$ | acc | mesh lattice $63^2$ | 1.4e-01 | val3211 | 0.182 | 0.60 | 0.018 | 1 | -0.29 | 5 % | -0.42 | 29 |
-| $256^2$ | fast | Gauss $64^2$ | 2.0e-02 | val327 | 0.188 | 1.81 | 0.016 | 1 | +0.60 | 100 % | -0.35 | 1 |
-| $256^2$ | fast | Gauss $128^2$ | 5.8e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.62 | 100 % | -0.19 | 1 |
-| $256^2$ | fast | Fibonacci 6765 | 7.2e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.63 | 100 % | -0.26 | 1 |
-| $256^2$ | fast | Fibonacci 17711 | 4.9e-04 | val3210 | 0.188 | 1.17 | 0.063 | 1 | +0.56 | 100 % | -0.30 | 1 |
-| $256^2$ | fast | Sobol 4096 | 1.1e-01 | val325 | 0.111 | 1.93 | 0.012 | 30 | -0.44 | 0 % | -0.33 | 32 |
-| $256^2$ | fast | mesh lattice $63^2$ | 1.3e-01 | val325 | 0.111 | 1.93 | 0.012 | 28 | -0.48 | 0 % | -0.37 | 30 |
-| $256^2$ | head | Gauss $64^2$ | 7.3e-03 | val327 | 0.188 | 1.81 | 0.016 | 1 | +0.63 | 95 % | -0.26 | 1 |
-| $256^2$ | head | Gauss $128^2$ | 2.1e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.58 | 100 % | -0.14 | 1 |
-| $256^2$ | head | Fibonacci 6765 | 3.7e-04 | val327 | 0.188 | 1.81 | 0.016 | 1 | +0.56 | 21 % | -0.23 | 34 |
-| $256^2$ | head | Fibonacci 17711 | 5.4e-05 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.51 | 63 % | -0.25 | 2 |
-| $256^2$ | head | Sobol 4096 | 1.5e-02 | val3218 | 0.140 | 1.76 | 0.021 | 40 | -0.39 | 0 % | -0.26 | 41 |
-| $256^2$ | head | mesh lattice $63^2$ | 1.5e-01 | val325 | 0.111 | 1.93 | 0.012 | 32 | -0.63 | 0 % | -0.36 | 34 |
-| $1024^2$ | acc | Gauss $64^2$ | 1.9e-02 | val325 | 0.111 | 1.93 | 0.012 | 1 | +0.35 | 16 % | -0.62 | 41 |
-| $1024^2$ | acc | Gauss $128^2$ | 2.1e-03 | val320 | 0.194 | 0.92 | 0.018 | 1 | +0.48 | 47 % | -0.32 | 29 |
-| $1024^2$ | acc | Fibonacci 6765 | 1.6e-02 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.55 | 37 % | -0.41 | 29 |
-| $1024^2$ | acc | Fibonacci 17711 | 1.7e-03 | val325 | 0.111 | 1.93 | 0.012 | 32 | +0.47 | 5 % | -0.40 | 34 |
-| $1024^2$ | acc | Sobol 4096 | 2.5e-01 | val3217 | 0.153 | 1.86 | 0.025 | 20 | -0.38 | 21 % | -0.31 | 20 |
-| $1024^2$ | acc | mesh lattice $63^2$ | 7.1e-02 | val325 | 0.111 | 1.93 | 0.012 | 29 | +0.00 | 5 % | -0.52 | 30 |
-| $1024^2$ | fast | Gauss $64^2$ | 2.3e-02 | val327 | 0.188 | 1.81 | 0.016 | 1 | +0.61 | 100 % | -0.35 | 1 |
-| $1024^2$ | fast | Gauss $128^2$ | 6.5e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.64 | 100 % | -0.18 | 1 |
-| $1024^2$ | fast | Fibonacci 6765 | 8.1e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.64 | 100 % | -0.26 | 1 |
-| $1024^2$ | fast | Fibonacci 17711 | 5.8e-04 | val3210 | 0.188 | 1.17 | 0.063 | 1 | +0.56 | 100 % | -0.31 | 1 |
-| $1024^2$ | fast | Sobol 4096 | 1.2e-01 | val325 | 0.111 | 1.93 | 0.012 | 29 | -0.41 | 0 % | -0.38 | 32 |
-| $1024^2$ | fast | mesh lattice $63^2$ | 4.9e-02 | val3211 | 0.182 | 0.60 | 0.018 | 1 | -0.01 | 5 % | -0.49 | 29 |
-| $1024^2$ | head | Gauss $64^2$ | 9.4e-03 | val3223 | 0.196 | 0.79 | 0.019 | 1 | +0.64 | 95 % | -0.23 | 1 |
-| $1024^2$ | head | Gauss $128^2$ | 3.1e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.60 | 100 % | -0.14 | 1 |
-| $1024^2$ | head | Fibonacci 6765 | 4.7e-04 | val327 | 0.188 | 1.81 | 0.016 | 1 | +0.58 | 32 % | -0.21 | 35 |
-| $1024^2$ | head | Fibonacci 17711 | 7.0e-05 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.53 | 74 % | -0.23 | 2 |
-| $1024^2$ | head | Sobol 4096 | 1.6e-02 | val3218 | 0.140 | 1.76 | 0.021 | 40 | -0.34 | 0 % | -0.29 | 41 |
-| $1024^2$ | head | mesh lattice $63^2$ | 4.6e-02 | val325 | 0.111 | 1.93 | 0.012 | 32 | -0.53 | 0 % | -0.41 | 34 |
-| $4096^2$ | acc | Gauss $64^2$ | 2.3e-02 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.45 | 26 % | -0.59 | 40 |
-| $4096^2$ | acc | Gauss $128^2$ | 5.1e-03 | val320 | 0.194 | 0.92 | 0.018 | 1 | +0.50 | 47 % | -0.30 | 29 |
-| $4096^2$ | acc | Fibonacci 6765 | 2.1e-02 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.62 | 42 % | -0.36 | 28 |
-| $4096^2$ | acc | Fibonacci 17711 | 1.9e-03 | val325 | 0.111 | 1.93 | 0.012 | 32 | +0.55 | 5 % | -0.33 | 34 |
-| $4096^2$ | acc | Sobol 4096 | 2.5e-01 | val3217 | 0.153 | 1.86 | 0.025 | 20 | -0.37 | 21 % | -0.32 | 20 |
-| $4096^2$ | acc | mesh lattice $63^2$ | 5.7e-02 | val325 | 0.111 | 1.93 | 0.012 | 29 | +0.32 | 16 % | -0.52 | 29 |
-| $4096^2$ | fast | Gauss $64^2$ | 2.4e-02 | val327 | 0.188 | 1.81 | 0.016 | 1 | +0.61 | 100 % | -0.35 | 1 |
-| $4096^2$ | fast | Gauss $128^2$ | 6.7e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.64 | 100 % | -0.19 | 1 |
-| $4096^2$ | fast | Fibonacci 6765 | 8.3e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.65 | 100 % | -0.27 | 1 |
-| $4096^2$ | fast | Fibonacci 17711 | 6.0e-04 | val3210 | 0.188 | 1.17 | 0.063 | 1 | +0.56 | 100 % | -0.32 | 1 |
-| $4096^2$ | fast | Sobol 4096 | 1.2e-01 | val325 | 0.111 | 1.93 | 0.012 | 29 | -0.40 | 0 % | -0.38 | 32 |
-| $4096^2$ | fast | mesh lattice $63^2$ | 4.4e-02 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.40 | 42 % | -0.43 | 24 |
-| $4096^2$ | head | Gauss $64^2$ | 1.0e-02 | val3223 | 0.196 | 0.79 | 0.019 | 1 | +0.65 | 95 % | -0.22 | 2 |
-| $4096^2$ | head | Gauss $128^2$ | 3.4e-03 | val3231 | 0.168 | 0.83 | 0.046 | 1 | +0.61 | 100 % | -0.13 | 1 |
-| $4096^2$ | head | Fibonacci 6765 | 4.9e-04 | val327 | 0.188 | 1.81 | 0.016 | 1 | +0.59 | 32 % | -0.22 | 35 |
-| $4096^2$ | head | Fibonacci 17711 | 7.2e-05 | val3211 | 0.182 | 0.60 | 0.018 | 1 | +0.53 | 79 % | -0.23 | 2 |
-| $4096^2$ | head | Sobol 4096 | 1.6e-02 | val3218 | 0.140 | 1.76 | 0.021 | 40 | -0.34 | 0 % | -0.32 | 41 |
-| $4096^2$ | head | mesh lattice $63^2$ | 1.7e-02 | val325 | 0.111 | 1.93 | 0.012 | 32 | +0.10 | 0 % | -0.45 | 33 |
+| $256^2$ | acc | Gauss $64^2$ | 1.2e-02 | val32:19 | 0.158 | 1.87 | 0.011 | 50 | +0.25 | 11 % | -0.65 | 41 |
+| $256^2$ | acc | Gauss $128^2$ | 2.2e-03 | dev6:3 | 0.136 | 1.28 | 0.018 | 1 | +0.44 | 53 % | -0.29 | 1 |
+| $256^2$ | acc | Fibonacci 6765 | 1.1e-02 | dev6:3 | 0.136 | 1.28 | 0.018 | 1 | +0.52 | 26 % | -0.38 | 23 |
+| $256^2$ | acc | Fibonacci 17711 | 1.1e-03 | val32:5 | 0.111 | 1.93 | 0.012 | 33 | +0.47 | 11 % | -0.35 | 33 |
+| $256^2$ | acc | Sobol 4096 | 2.4e-01 | val32:1 | 0.071 | 0.76 | 0.051 | 1 | -0.33 | 26 % | -0.33 | 19 |
+| $256^2$ | acc | mesh lattice $63^2$ | 1.4e-01 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | -0.29 | 5 % | -0.42 | 29 |
+| $256^2$ | fast | Gauss $64^2$ | 2.0e-02 | val32:7 | 0.188 | 1.81 | 0.016 | 1 | +0.60 | 100 % | -0.35 | 1 |
+| $256^2$ | fast | Gauss $128^2$ | 5.8e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.62 | 100 % | -0.19 | 1 |
+| $256^2$ | fast | Fibonacci 6765 | 7.2e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.63 | 100 % | -0.26 | 1 |
+| $256^2$ | fast | Fibonacci 17711 | 4.9e-04 | val32:10 | 0.188 | 1.17 | 0.063 | 1 | +0.56 | 100 % | -0.30 | 1 |
+| $256^2$ | fast | Sobol 4096 | 1.1e-01 | val32:5 | 0.111 | 1.93 | 0.012 | 30 | -0.44 | 0 % | -0.33 | 32 |
+| $256^2$ | fast | mesh lattice $63^2$ | 1.3e-01 | val32:5 | 0.111 | 1.93 | 0.012 | 28 | -0.48 | 0 % | -0.37 | 30 |
+| $256^2$ | head | Gauss $64^2$ | 7.3e-03 | val32:7 | 0.188 | 1.81 | 0.016 | 1 | +0.63 | 95 % | -0.26 | 1 |
+| $256^2$ | head | Gauss $128^2$ | 2.1e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.58 | 100 % | -0.14 | 1 |
+| $256^2$ | head | Fibonacci 6765 | 3.7e-04 | val32:7 | 0.188 | 1.81 | 0.016 | 1 | +0.56 | 21 % | -0.23 | 34 |
+| $256^2$ | head | Fibonacci 17711 | 5.4e-05 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | +0.51 | 63 % | -0.25 | 2 |
+| $256^2$ | head | Sobol 4096 | 1.5e-02 | val32:18 | 0.140 | 1.76 | 0.021 | 40 | -0.39 | 0 % | -0.26 | 41 |
+| $256^2$ | head | mesh lattice $63^2$ | 1.5e-01 | val32:5 | 0.111 | 1.93 | 0.012 | 32 | -0.63 | 0 % | -0.36 | 34 |
+| $1024^2$ | acc | Gauss $64^2$ | 1.9e-02 | val32:5 | 0.111 | 1.93 | 0.012 | 1 | +0.35 | 16 % | -0.62 | 41 |
+| $1024^2$ | acc | Gauss $128^2$ | 2.1e-03 | val32:0 | 0.194 | 0.92 | 0.018 | 1 | +0.48 | 47 % | -0.32 | 29 |
+| $1024^2$ | acc | Fibonacci 6765 | 1.6e-02 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | +0.55 | 37 % | -0.41 | 29 |
+| $1024^2$ | acc | Fibonacci 17711 | 1.7e-03 | val32:5 | 0.111 | 1.93 | 0.012 | 32 | +0.47 | 5 % | -0.40 | 34 |
+| $1024^2$ | acc | Sobol 4096 | 2.5e-01 | val32:17 | 0.153 | 1.86 | 0.025 | 20 | -0.38 | 21 % | -0.31 | 20 |
+| $1024^2$ | acc | mesh lattice $63^2$ | 7.1e-02 | val32:5 | 0.111 | 1.93 | 0.012 | 29 | +0.00 | 5 % | -0.52 | 30 |
+| $1024^2$ | fast | Gauss $64^2$ | 2.3e-02 | val32:7 | 0.188 | 1.81 | 0.016 | 1 | +0.61 | 100 % | -0.35 | 1 |
+| $1024^2$ | fast | Gauss $128^2$ | 6.5e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.64 | 100 % | -0.18 | 1 |
+| $1024^2$ | fast | Fibonacci 6765 | 8.1e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.64 | 100 % | -0.26 | 1 |
+| $1024^2$ | fast | Fibonacci 17711 | 5.8e-04 | val32:10 | 0.188 | 1.17 | 0.063 | 1 | +0.56 | 100 % | -0.31 | 1 |
+| $1024^2$ | fast | Sobol 4096 | 1.2e-01 | val32:5 | 0.111 | 1.93 | 0.012 | 29 | -0.41 | 0 % | -0.38 | 32 |
+| $1024^2$ | fast | mesh lattice $63^2$ | 4.9e-02 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | -0.01 | 5 % | -0.49 | 29 |
+| $1024^2$ | head | Gauss $64^2$ | 9.4e-03 | val32:23 | 0.196 | 0.79 | 0.019 | 1 | +0.64 | 95 % | -0.23 | 1 |
+| $1024^2$ | head | Gauss $128^2$ | 3.1e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.60 | 100 % | -0.14 | 1 |
+| $1024^2$ | head | Fibonacci 6765 | 4.7e-04 | val32:7 | 0.188 | 1.81 | 0.016 | 1 | +0.58 | 32 % | -0.21 | 35 |
+| $1024^2$ | head | Fibonacci 17711 | 7.0e-05 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | +0.53 | 74 % | -0.23 | 2 |
+| $1024^2$ | head | Sobol 4096 | 1.6e-02 | val32:18 | 0.140 | 1.76 | 0.021 | 40 | -0.34 | 0 % | -0.29 | 41 |
+| $1024^2$ | head | mesh lattice $63^2$ | 4.6e-02 | val32:5 | 0.111 | 1.93 | 0.012 | 32 | -0.53 | 0 % | -0.41 | 34 |
+| $4096^2$ | acc | Gauss $64^2$ | 2.3e-02 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | +0.45 | 26 % | -0.59 | 40 |
+| $4096^2$ | acc | Gauss $128^2$ | 5.1e-03 | val32:0 | 0.194 | 0.92 | 0.018 | 1 | +0.50 | 47 % | -0.30 | 29 |
+| $4096^2$ | acc | Fibonacci 6765 | 2.1e-02 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | +0.62 | 42 % | -0.36 | 28 |
+| $4096^2$ | acc | Fibonacci 17711 | 1.9e-03 | val32:5 | 0.111 | 1.93 | 0.012 | 32 | +0.55 | 5 % | -0.33 | 34 |
+| $4096^2$ | acc | Sobol 4096 | 2.5e-01 | val32:17 | 0.153 | 1.86 | 0.025 | 20 | -0.37 | 21 % | -0.32 | 20 |
+| $4096^2$ | acc | mesh lattice $63^2$ | 5.7e-02 | val32:5 | 0.111 | 1.93 | 0.012 | 29 | +0.32 | 16 % | -0.52 | 29 |
+| $4096^2$ | fast | Gauss $64^2$ | 2.4e-02 | val32:7 | 0.188 | 1.81 | 0.016 | 1 | +0.61 | 100 % | -0.35 | 1 |
+| $4096^2$ | fast | Gauss $128^2$ | 6.7e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.64 | 100 % | -0.19 | 1 |
+| $4096^2$ | fast | Fibonacci 6765 | 8.3e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.65 | 100 % | -0.27 | 1 |
+| $4096^2$ | fast | Fibonacci 17711 | 6.0e-04 | val32:10 | 0.188 | 1.17 | 0.063 | 1 | +0.56 | 100 % | -0.32 | 1 |
+| $4096^2$ | fast | Sobol 4096 | 1.2e-01 | val32:5 | 0.111 | 1.93 | 0.012 | 29 | -0.40 | 0 % | -0.38 | 32 |
+| $4096^2$ | fast | mesh lattice $63^2$ | 4.4e-02 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | +0.40 | 42 % | -0.43 | 24 |
+| $4096^2$ | head | Gauss $64^2$ | 1.0e-02 | val32:23 | 0.196 | 0.79 | 0.019 | 1 | +0.65 | 95 % | -0.22 | 2 |
+| $4096^2$ | head | Gauss $128^2$ | 3.4e-03 | val32:31 | 0.168 | 0.83 | 0.046 | 1 | +0.61 | 100 % | -0.13 | 1 |
+| $4096^2$ | head | Fibonacci 6765 | 4.9e-04 | val32:7 | 0.188 | 1.81 | 0.016 | 1 | +0.59 | 32 % | -0.22 | 35 |
+| $4096^2$ | head | Fibonacci 17711 | 7.2e-05 | val32:11 | 0.182 | 0.60 | 0.018 | 1 | +0.53 | 79 % | -0.23 | 2 |
+| $4096^2$ | head | Sobol 4096 | 1.6e-02 | val32:18 | 0.140 | 1.76 | 0.021 | 40 | -0.34 | 0 % | -0.32 | 41 |
+| $4096^2$ | head | mesh lattice $63^2$ | 1.7e-02 | val32:5 | 0.111 | 1.93 | 0.012 | 32 | +0.10 | 0 % | -0.45 | 33 |
 
 ## 4. Results — held-out test (test64, frozen)
 
@@ -1002,7 +1043,7 @@ Worst and median $\rho$ over the states $k=1..50$ reached by the deployed `lat64
 
 ### T3. End-to-end rollouts (question i)
 
-**Matched comparison on the cases where dense ran** (worst over those cases, %): the off-mesh arms against dense, against both refined references. B1 is the pre-registered two-sided bar (within $\max(0.02$ pp$, 2\,\%)$ of dense on ST).
+**Matched comparison on the cases where dense ran** (worst over those cases, %): the off-mesh arms against dense, against both refined references (% of the initial-field norm). B1 is the pre-registered two-sided bar: within the larger of 0.02 pp and 2 % of dense's worst ST error.
 
 | setting | arm | ST $256^2$ | S $256^2$ | ST $1024^2$ | S $1024^2$ | ST $4096^2$ | S $4096^2$ | B1 at $256^2$, $1024^2$, $4096^2$ |
 |---|---|---|---|---|---|---|---|---|
@@ -1341,67 +1382,67 @@ For each rule, the state with the largest continuum $\rho$: its case's bump widt
 
 | mesh | setting | rule | worst $\rho$ | case | $w$ | $a$ | $\nu$ | $k$ | Spearman($\rho$, $w$) | top-1 % with $k\le5$ | Spearman($\rho$, $\nu$)† | median $k$ of top 1 %† |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| $256^2$ | acc | Gauss $64^2$ | 1.8e-02 | test641 | 0.159 | 1.01 | 0.018 | 1 | -0.00 | 6 % | -0.48 | 42 |
-| $256^2$ | acc | Gauss $128^2$ | 3.3e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.53 | 25 % | -0.09 | 42 |
-| $256^2$ | acc | Fibonacci 6765 | 1.6e-02 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.55 | 34 % | -0.12 | 38 |
-| $256^2$ | acc | Fibonacci 17711 | 1.8e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.52 | 22 % | -0.11 | 38 |
-| $256^2$ | acc | Sobol 4096 | 2.4e-01 | test6455 | 0.098 | 1.37 | 0.014 | 16 | -0.29 | 0 % | -0.57 | 24 |
-| $256^2$ | acc | mesh lattice $63^2$ | 2.0e-01 | test6427 | 0.169 | 1.91 | 0.014 | 1 | -0.21 | 16 % | -0.18 | 22 |
-| $256^2$ | fast | Gauss $64^2$ | 2.3e-02 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.60 | 75 % | -0.25 | 2 |
-| $256^2$ | fast | Gauss $128^2$ | 5.9e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.66 | 66 % | -0.05 | 2 |
-| $256^2$ | fast | Fibonacci 6765 | 7.4e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.64 | 81 % | -0.06 | 1 |
-| $256^2$ | fast | Fibonacci 17711 | 4.8e-04 | test6461 | 0.141 | 0.90 | 0.039 | 1 | +0.58 | 97 % | -0.07 | 1 |
-| $256^2$ | fast | Sobol 4096 | 6.7e-02 | test6422 | 0.175 | 1.77 | 0.013 | 50 | -0.23 | 38 % | -0.27 | 40 |
-| $256^2$ | fast | mesh lattice $63^2$ | 1.2e-01 | test6427 | 0.169 | 1.91 | 0.014 | 26 | -0.38 | 3 % | -0.17 | 28 |
-| $256^2$ | head | Gauss $64^2$ | 1.1e-02 | test6448 | 0.164 | 1.22 | 0.030 | 1 | +0.54 | 84 % | -0.15 | 2 |
-| $256^2$ | head | Gauss $128^2$ | 2.1e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.66 | 84 % | +0.07 | 2 |
-| $256^2$ | head | Fibonacci 6765 | 5.4e-04 | test6457 | 0.158 | 0.95 | 0.048 | 1 | +0.59 | 91 % | -0.01 | 2 |
-| $256^2$ | head | Fibonacci 17711 | 8.5e-05 | test6461 | 0.141 | 0.90 | 0.039 | 1 | +0.54 | 88 % | -0.03 | 2 |
-| $256^2$ | head | Sobol 4096 | 1.7e-02 | test6453 | 0.067 | 1.88 | 0.021 | 1 | -0.16 | 38 % | -0.09 | 26 |
-| $256^2$ | head | mesh lattice $63^2$ | 1.0e-01 | test6427 | 0.169 | 1.91 | 0.014 | 37 | -0.58 | 0 % | -0.20 | 38 |
-| $1024^2$ | acc | Gauss $64^2$ | 2.4e-02 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.26 | 16 % | -0.38 | 42 |
-| $1024^2$ | acc | Gauss $128^2$ | 3.0e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.57 | 25 % | -0.09 | 42 |
-| $1024^2$ | acc | Fibonacci 6765 | 2.9e-02 | test6427 | 0.169 | 1.91 | 0.014 | 1 | +0.60 | 41 % | -0.11 | 40 |
-| $1024^2$ | acc | Fibonacci 17711 | 2.0e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.55 | 41 % | -0.10 | 38 |
-| $1024^2$ | acc | Sobol 4096 | 2.4e-01 | test6455 | 0.098 | 1.37 | 0.014 | 15 | -0.27 | 0 % | -0.59 | 25 |
-| $1024^2$ | acc | mesh lattice $63^2$ | 1.0e-01 | test6427 | 0.169 | 1.91 | 0.014 | 1 | -0.07 | 16 % | -0.19 | 20 |
-| $1024^2$ | fast | Gauss $64^2$ | 2.7e-02 | test6448 | 0.164 | 1.22 | 0.030 | 1 | +0.61 | 66 % | -0.26 | 2 |
-| $1024^2$ | fast | Gauss $128^2$ | 6.9e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.67 | 56 % | -0.06 | 3 |
-| $1024^2$ | fast | Fibonacci 6765 | 8.6e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.64 | 66 % | -0.06 | 2 |
-| $1024^2$ | fast | Fibonacci 17711 | 5.5e-04 | test6461 | 0.141 | 0.90 | 0.039 | 1 | +0.59 | 81 % | -0.08 | 1 |
-| $1024^2$ | fast | Sobol 4096 | 7.1e-02 | test6422 | 0.175 | 1.77 | 0.013 | 50 | -0.20 | 19 % | -0.30 | 40 |
-| $1024^2$ | fast | mesh lattice $63^2$ | 8.2e-02 | test6427 | 0.169 | 1.91 | 0.014 | 1 | -0.08 | 16 % | -0.13 | 20 |
-| $1024^2$ | head | Gauss $64^2$ | 1.8e-02 | test6448 | 0.164 | 1.22 | 0.030 | 1 | +0.55 | 84 % | -0.15 | 2 |
-| $1024^2$ | head | Gauss $128^2$ | 2.8e-03 | test6415 | 0.160 | 0.78 | 0.085 | 1 | +0.66 | 81 % | +0.08 | 2 |
-| $1024^2$ | head | Fibonacci 6765 | 7.7e-04 | test6448 | 0.164 | 1.22 | 0.030 | 1 | +0.60 | 84 % | +0.00 | 2 |
-| $1024^2$ | head | Fibonacci 17711 | 1.1e-04 | test6461 | 0.141 | 0.90 | 0.039 | 1 | +0.55 | 75 % | -0.04 | 2 |
-| $1024^2$ | head | Sobol 4096 | 1.7e-02 | test6453 | 0.067 | 1.88 | 0.021 | 1 | -0.12 | 34 % | -0.11 | 28 |
-| $1024^2$ | head | mesh lattice $63^2$ | 3.2e-02 | test6427 | 0.169 | 1.91 | 0.014 | 31 | -0.45 | 16 % | -0.21 | 32 |
-| $4096^2$ | acc | Gauss $64^2$ | 2.4e-02 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.33 | 16 % | -0.34 | 42 |
-| $4096^2$ | acc | Gauss $128^2$ | 2.1e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.57 | 28 % | -0.10 | 42 |
-| $4096^2$ | acc | Fibonacci 6765 | 3.2e-02 | test6427 | 0.169 | 1.91 | 0.014 | 1 | +0.62 | 44 % | -0.11 | 38 |
-| $4096^2$ | acc | Fibonacci 17711 | 2.0e-03 | test6427 | 0.169 | 1.91 | 0.014 | 1 | +0.55 | 44 % | -0.11 | 38 |
-| $4096^2$ | acc | Sobol 4096 | 2.4e-01 | test6455 | 0.098 | 1.37 | 0.014 | 15 | -0.27 | 0 % | -0.60 | 26 |
-| $4096^2$ | acc | mesh lattice $63^2$ | 7.7e-02 | test6427 | 0.169 | 1.91 | 0.014 | 1 | +0.14 | 16 % | -0.15 | 22 |
-| $4096^2$ | fast | Gauss $64^2$ | 2.8e-02 | test6448 | 0.164 | 1.22 | 0.030 | 1 | +0.61 | 59 % | -0.26 | 2 |
-| $4096^2$ | fast | Gauss $128^2$ | 7.1e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.67 | 53 % | -0.06 | 3 |
-| $4096^2$ | fast | Fibonacci 6765 | 8.8e-03 | test641 | 0.159 | 1.01 | 0.018 | 1 | +0.64 | 62 % | -0.06 | 2 |
-| $4096^2$ | fast | Fibonacci 17711 | 5.7e-04 | test6461 | 0.141 | 0.90 | 0.039 | 1 | +0.59 | 78 % | -0.08 | 1 |
-| $4096^2$ | fast | Sobol 4096 | 7.1e-02 | test6422 | 0.175 | 1.77 | 0.013 | 50 | -0.20 | 16 % | -0.30 | 41 |
-| $4096^2$ | fast | mesh lattice $63^2$ | 7.6e-02 | test6427 | 0.169 | 1.91 | 0.014 | 1 | +0.14 | 25 % | -0.02 | 16 |
-| $4096^2$ | head | Gauss $64^2$ | 1.9e-02 | test6448 | 0.164 | 1.22 | 0.030 | 1 | +0.55 | 88 % | -0.15 | 2 |
-| $4096^2$ | head | Gauss $128^2$ | 3.0e-03 | test6415 | 0.160 | 0.78 | 0.085 | 1 | +0.66 | 84 % | +0.08 | 2 |
-| $4096^2$ | head | Fibonacci 6765 | 8.3e-04 | test6448 | 0.164 | 1.22 | 0.030 | 1 | +0.60 | 84 % | +0.00 | 2 |
-| $4096^2$ | head | Fibonacci 17711 | 1.2e-04 | test6461 | 0.141 | 0.90 | 0.039 | 1 | +0.55 | 75 % | -0.04 | 2 |
-| $4096^2$ | head | Sobol 4096 | 1.7e-02 | test6453 | 0.067 | 1.88 | 0.021 | 1 | -0.12 | 34 % | -0.11 | 28 |
-| $4096^2$ | head | mesh lattice $63^2$ | 2.9e-02 | test6427 | 0.169 | 1.91 | 0.014 | 1 | -0.01 | 44 % | -0.03 | 6 |
+| $256^2$ | acc | Gauss $64^2$ | 1.8e-02 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | -0.00 | 6 % | -0.48 | 42 |
+| $256^2$ | acc | Gauss $128^2$ | 3.3e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.53 | 25 % | -0.09 | 42 |
+| $256^2$ | acc | Fibonacci 6765 | 1.6e-02 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.55 | 34 % | -0.12 | 38 |
+| $256^2$ | acc | Fibonacci 17711 | 1.8e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.52 | 22 % | -0.11 | 38 |
+| $256^2$ | acc | Sobol 4096 | 2.4e-01 | test64:55 | 0.098 | 1.37 | 0.014 | 16 | -0.29 | 0 % | -0.57 | 24 |
+| $256^2$ | acc | mesh lattice $63^2$ | 2.0e-01 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | -0.21 | 16 % | -0.18 | 22 |
+| $256^2$ | fast | Gauss $64^2$ | 2.3e-02 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.60 | 75 % | -0.25 | 2 |
+| $256^2$ | fast | Gauss $128^2$ | 5.9e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.66 | 66 % | -0.05 | 2 |
+| $256^2$ | fast | Fibonacci 6765 | 7.4e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.64 | 81 % | -0.06 | 1 |
+| $256^2$ | fast | Fibonacci 17711 | 4.8e-04 | test64:61 | 0.141 | 0.90 | 0.039 | 1 | +0.58 | 97 % | -0.07 | 1 |
+| $256^2$ | fast | Sobol 4096 | 6.7e-02 | test64:22 | 0.175 | 1.77 | 0.013 | 50 | -0.23 | 38 % | -0.27 | 40 |
+| $256^2$ | fast | mesh lattice $63^2$ | 1.2e-01 | test64:27 | 0.169 | 1.91 | 0.014 | 26 | -0.38 | 3 % | -0.17 | 28 |
+| $256^2$ | head | Gauss $64^2$ | 1.1e-02 | test64:48 | 0.164 | 1.22 | 0.030 | 1 | +0.54 | 84 % | -0.15 | 2 |
+| $256^2$ | head | Gauss $128^2$ | 2.1e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.66 | 84 % | +0.07 | 2 |
+| $256^2$ | head | Fibonacci 6765 | 5.4e-04 | test64:57 | 0.158 | 0.95 | 0.048 | 1 | +0.59 | 91 % | -0.01 | 2 |
+| $256^2$ | head | Fibonacci 17711 | 8.5e-05 | test64:61 | 0.141 | 0.90 | 0.039 | 1 | +0.54 | 88 % | -0.03 | 2 |
+| $256^2$ | head | Sobol 4096 | 1.7e-02 | test64:53 | 0.067 | 1.88 | 0.021 | 1 | -0.16 | 38 % | -0.09 | 26 |
+| $256^2$ | head | mesh lattice $63^2$ | 1.0e-01 | test64:27 | 0.169 | 1.91 | 0.014 | 37 | -0.58 | 0 % | -0.20 | 38 |
+| $1024^2$ | acc | Gauss $64^2$ | 2.4e-02 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.26 | 16 % | -0.38 | 42 |
+| $1024^2$ | acc | Gauss $128^2$ | 3.0e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.57 | 25 % | -0.09 | 42 |
+| $1024^2$ | acc | Fibonacci 6765 | 2.9e-02 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | +0.60 | 41 % | -0.11 | 40 |
+| $1024^2$ | acc | Fibonacci 17711 | 2.0e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.55 | 41 % | -0.10 | 38 |
+| $1024^2$ | acc | Sobol 4096 | 2.4e-01 | test64:55 | 0.098 | 1.37 | 0.014 | 15 | -0.27 | 0 % | -0.59 | 25 |
+| $1024^2$ | acc | mesh lattice $63^2$ | 1.0e-01 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | -0.07 | 16 % | -0.19 | 20 |
+| $1024^2$ | fast | Gauss $64^2$ | 2.7e-02 | test64:48 | 0.164 | 1.22 | 0.030 | 1 | +0.61 | 66 % | -0.26 | 2 |
+| $1024^2$ | fast | Gauss $128^2$ | 6.9e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.67 | 56 % | -0.06 | 3 |
+| $1024^2$ | fast | Fibonacci 6765 | 8.6e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.64 | 66 % | -0.06 | 2 |
+| $1024^2$ | fast | Fibonacci 17711 | 5.5e-04 | test64:61 | 0.141 | 0.90 | 0.039 | 1 | +0.59 | 81 % | -0.08 | 1 |
+| $1024^2$ | fast | Sobol 4096 | 7.1e-02 | test64:22 | 0.175 | 1.77 | 0.013 | 50 | -0.20 | 19 % | -0.30 | 40 |
+| $1024^2$ | fast | mesh lattice $63^2$ | 8.2e-02 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | -0.08 | 16 % | -0.13 | 20 |
+| $1024^2$ | head | Gauss $64^2$ | 1.8e-02 | test64:48 | 0.164 | 1.22 | 0.030 | 1 | +0.55 | 84 % | -0.15 | 2 |
+| $1024^2$ | head | Gauss $128^2$ | 2.8e-03 | test64:15 | 0.160 | 0.78 | 0.085 | 1 | +0.66 | 81 % | +0.08 | 2 |
+| $1024^2$ | head | Fibonacci 6765 | 7.7e-04 | test64:48 | 0.164 | 1.22 | 0.030 | 1 | +0.60 | 84 % | +0.00 | 2 |
+| $1024^2$ | head | Fibonacci 17711 | 1.1e-04 | test64:61 | 0.141 | 0.90 | 0.039 | 1 | +0.55 | 75 % | -0.04 | 2 |
+| $1024^2$ | head | Sobol 4096 | 1.7e-02 | test64:53 | 0.067 | 1.88 | 0.021 | 1 | -0.12 | 34 % | -0.11 | 28 |
+| $1024^2$ | head | mesh lattice $63^2$ | 3.2e-02 | test64:27 | 0.169 | 1.91 | 0.014 | 31 | -0.45 | 16 % | -0.21 | 32 |
+| $4096^2$ | acc | Gauss $64^2$ | 2.4e-02 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.33 | 16 % | -0.34 | 42 |
+| $4096^2$ | acc | Gauss $128^2$ | 2.1e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.57 | 28 % | -0.10 | 42 |
+| $4096^2$ | acc | Fibonacci 6765 | 3.2e-02 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | +0.62 | 44 % | -0.11 | 38 |
+| $4096^2$ | acc | Fibonacci 17711 | 2.0e-03 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | +0.55 | 44 % | -0.11 | 38 |
+| $4096^2$ | acc | Sobol 4096 | 2.4e-01 | test64:55 | 0.098 | 1.37 | 0.014 | 15 | -0.27 | 0 % | -0.60 | 26 |
+| $4096^2$ | acc | mesh lattice $63^2$ | 7.7e-02 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | +0.14 | 16 % | -0.15 | 22 |
+| $4096^2$ | fast | Gauss $64^2$ | 2.8e-02 | test64:48 | 0.164 | 1.22 | 0.030 | 1 | +0.61 | 59 % | -0.26 | 2 |
+| $4096^2$ | fast | Gauss $128^2$ | 7.1e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.67 | 53 % | -0.06 | 3 |
+| $4096^2$ | fast | Fibonacci 6765 | 8.8e-03 | test64:1 | 0.159 | 1.01 | 0.018 | 1 | +0.64 | 62 % | -0.06 | 2 |
+| $4096^2$ | fast | Fibonacci 17711 | 5.7e-04 | test64:61 | 0.141 | 0.90 | 0.039 | 1 | +0.59 | 78 % | -0.08 | 1 |
+| $4096^2$ | fast | Sobol 4096 | 7.1e-02 | test64:22 | 0.175 | 1.77 | 0.013 | 50 | -0.20 | 16 % | -0.30 | 41 |
+| $4096^2$ | fast | mesh lattice $63^2$ | 7.6e-02 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | +0.14 | 25 % | -0.02 | 16 |
+| $4096^2$ | head | Gauss $64^2$ | 1.9e-02 | test64:48 | 0.164 | 1.22 | 0.030 | 1 | +0.55 | 88 % | -0.15 | 2 |
+| $4096^2$ | head | Gauss $128^2$ | 3.0e-03 | test64:15 | 0.160 | 0.78 | 0.085 | 1 | +0.66 | 84 % | +0.08 | 2 |
+| $4096^2$ | head | Fibonacci 6765 | 8.3e-04 | test64:48 | 0.164 | 1.22 | 0.030 | 1 | +0.60 | 84 % | +0.00 | 2 |
+| $4096^2$ | head | Fibonacci 17711 | 1.2e-04 | test64:61 | 0.141 | 0.90 | 0.039 | 1 | +0.55 | 75 % | -0.04 | 2 |
+| $4096^2$ | head | Sobol 4096 | 1.7e-02 | test64:53 | 0.067 | 1.88 | 0.021 | 1 | -0.12 | 34 % | -0.11 | 28 |
+| $4096^2$ | head | mesh lattice $63^2$ | 2.9e-02 | test64:27 | 0.169 | 1.91 | 0.014 | 1 | -0.01 | 44 % | -0.03 | 6 |
 
 ## What went wrong, what was changed, limitations
 
-- Two Codex design audits (`experiments/quadrature-study/results/codex-design-audit-{1,2}.md`) found 2 + 1 blockers and 18 major issues in the design and code before any ROM job (unvalidated references, a missing audit, timing confounded with GPU type, an ineffective test-freeze gate, acceptance that did not block selection); all were fixed or explicitly dispositioned before submission (DESIGN A0, A1).
+- Two Codex design audits (`experiments/quadrature-study/results/codex-design-audit-{1,2}.md`) found 2 + 1 blockers and major issues in the design and code before any ROM job (unvalidated references, a missing audit, timing confounded with GPU type, an ineffective test-freeze gate, acceptance that did not block selection); all were fixed or explicitly dispositioned before any ROM job was submitted (DESIGN A0, A1; the two FOM-only reference jobs were already running).
 - The local smoke caught one real bug after the restructuring (an `UnboundLocalError` in the timing accumulator) before any cluster job; a first local calibration probe was silently killed by the 36 GB cgroup and was redone in streamed form.
 - B1 was written two-sided; it fails when the off-mesh rules are better than the upwind stencil. It is reported as written; the one-sided reading and the extra worst-state descriptives are post hoc (DESIGN A3), the regenerated summaries with matched-set descriptives (A4) were produced after the test jobs had been submitted (no input changed; selection verified identical), and A3's wording was corrected in A5.
-- The continuum target is Gauss $640^2$ (certified against $768^2$ and the flux form, gate G6); calibration showed our bank needs about ten times Hari's points per axis for the same agreement.
+- The continuum target is Gauss $640^2$ (certified against $768^2$ and the flux form, gate G6); certified target, not a demonstrated minimum; our bank converges much more slowly in $p$ than Hari's (§D2, Hari column), cause not isolated.
 - Refined-reference errors are measured on the $257^2$ nodes shared by every mesh, not the full mesh; the full-mesh audit recompute covers $256^2$ (audit arms) and $1024^2$ (accurate setting, one case) only.
 - Dense at $4096^2$ ran on six cases per cohort (cost); every comparison against dense is on the matched cases.
 - Timing: 6 cases × 3 repetitions per subject, medians, one GPU per job; solve time = median(query) − median(decode).
@@ -1412,7 +1453,7 @@ For each rule, the state with the largest continuum $\rho$: its case's bump widt
 
 | term | meaning |
 |---|---|
-| accurate / fast / head | the three deployment settings of the frozen model: the linear rung on the first $R'=384$ or $R'=128$ columns of the rotated bank (the coefficients are solved directly), or the $k=16$ nonlinear head on the full bank. |
+| accurate / fast / head | the three deployment settings of the frozen model: the linear rung on the first $R'=384$ or $R'=128$ columns of the rotated bank (the bank coefficients are the unknowns of each LM time step), or the $k=16$ nonlinear head on the full bank. |
 | bank, rotated bank | the frozen coordinate network $G(x)$ ($R=512$ smooth functions of position); rotated = multiplied by a fixed matrix so its leading columns are the most useful ones. |
 | tested advection $N(c)$ | the nonlinear term $u(u_x+u_y)$ projected on the $M$ sine test functions — the only term that needs quadrature. |
 | dense | evaluating the tested advection with the full-order upwind stencil at every mesh node (no hyper-reduction). |

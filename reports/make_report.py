@@ -150,7 +150,14 @@ def main():
     w('')
     w('One backward-Euler step solves for the bank coefficients $c$ (linear rung: $c=w$; head: $c=h(z)$):')
     w('')
-    w('$$ r(c) = S\\Big(A c - p + \\Delta t\\,\\big(N(c) + \\nu\\Lambda A c\\big)\\Big),\\qquad S=(1+\\Delta t\\,\\nu\\Lambda)^{-1}. $$')
+    w('$$ r(c) = D\\Big(A c - p + \\Delta t\\,\\big(N(c) + \\nu\\Lambda A c\\big)\\Big),\\qquad D=(1+\\Delta t\\,\\nu\\Lambda)^{-1}. $$')
+    w('')
+    w('Here $L$ is the number of mesh intervals per axis, $G\'$ the rotated bank on the mesh, $\\Phi$ the $M$ '
+      'mesh-orthonormal sine tests $\\tfrac{2}{L}\\sin(a\\pi x)\\sin(b\\pi y)$, $\\psi=2\\sin(a\\pi x)\\sin(b\\pi y)$ their '
+      'continuum counterparts, $\\Lambda$ their discrete eigenvalues, $p=Ac_n$ the previous step, $\\nu$ the viscosity, '
+      '$\\Delta t=0.005$, and $(x_q,w_q)$ the $m$ points and weights of a rule. "Hari\'s study" is '
+      '`external/quadrature-study-2026-09-30/quadrature/results/SUMMARY.md`; $\\rho$ is eq. 13 of the project\'s NM-ROM '
+      'paper draft, the relative error of a rule\'s tested advection against a target (defined in the rho sections).')
     w('')
     w('The linear terms ($A=\\Phi^{\\mathsf T}G\'$, $\\Lambda$) are the exact discrete ones of the project\'s solver. Only the tested '
       'advection $N(c)$ changes between arms: the FOM\'s upwind stencil on all mesh nodes (`dense`) or on $m$ of them '
@@ -241,7 +248,7 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
     w(f'### {pre}3. End-to-end rollouts (question i)')
     w('')
     w('**Matched comparison on the cases where dense ran** (worst over those cases, %): the off-mesh arms against dense, '
-      'against both refined references. B1 is the pre-registered two-sided bar (within $\\max(0.02$ pp$, 2\\,\\%)$ of dense on ST).')
+      'against both refined references (% of the initial-field norm). B1 is the pre-registered two-sided bar: within the larger of 0.02 pp and 2 % of dense\'s worst ST error.')
     w('')
     w('| setting | arm | ' + ' | '.join(f'ST ${L}^2$ | S ${L}^2$' for L in MESHES if S[L]) + ' | B1 at ' + ', '.join(f'${L}^2$' for L in MESHES if S[L]) + ' |')
     w('|' + '---|' * (2 + 2 * sum(1 for L in MESHES if S[L]) + 1))
@@ -301,12 +308,14 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
     if not test and sel:
         w(f'### {pre}4. Mesh invariance (B2) and the recommended rule')
         w('')
-        w('| setting | arm | worst ST $256^2$ | $1024^2$ | $4096^2$ | max/min | B2 |')
+        w('Worst ST error (%) over all 38 cases at each mesh; dense is omitted (it ran on 6 cases at $4096^2$).')
+        w('')
+        w('| setting | arm | worst ST % $256^2$ | $1024^2$ | $4096^2$ | max/min | B2 ($\\le1.02$) |')
         w('|---|---|---|---|---|---|---|')
         for st in SETS:
             for name in ROLL_ORDER:
                 b2 = g(sel, 'B2', st, name)
-                if not b2:
+                if not b2 or name == 'dense':
                     continue
                 v = b2['worst_ST']
                 w(f"| {st} | {label(name)} | {pc(v.get('256', v.get(256)))} | {pc(v.get('1024', v.get(1024)))} | "
@@ -410,7 +419,7 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
                     continue
                 am = e['argmax']
                 sp = e['spearman_casemax_vs_width']
-                w(f"| ${L}^2$ | {st} | {label(name)} | {sci(am['rho'])} | {am['cohort']}{am['case']} | {am['width']:.3f} | "
+                w(f"| ${L}^2$ | {st} | {label(name)} | {sci(am['rho'])} | {am['cohort']}:{am['case']} | {am['width']:.3f} | "
                   f"{am['amplitude']:.2f} | {am['nu']:.3f} | {am['k']} | {'—' if sp is None else f'{sp:+.2f}'} | "
                   f"{100 * e['top1pct_share_k_le_5']:.0f} % | {e.get('spearman_casemax_vs_nu', 0):+.2f} | {e.get('top1pct_median_k', 0):.0f} |")
     w('')
@@ -439,7 +448,7 @@ def per_case_invariance(tag):
                 d = max(vals) - min(vals)
                 dmax = max(dmax, d)
                 if d > 5e-3:
-                    moved.append(f'{c[0]}{c[1]}')
+                    moved.append(f'{c[0]}:{c[1]}')
             out[(st, arm)] = (len(common), dmax, moved)
     return out
 
@@ -471,15 +480,16 @@ def answers(w, dv, tt, sel):
             lines.append(f"{st}: continuum rollout ST {'/'.join(pc(x, 2) for x in gr)} %, S {'/'.join(pc(x, 2) for x in gs)} % at "
                          f"$256^2/1024^2/4096^2$; dense ST {'/'.join(pc(x, 2) for x in dn)} %, S {'/'.join(pc(x, 2) for x in ds)} % "
                          f"(on {'/'.join(str(x) for x in nc)} cases)")
-        w('- **(i) Reproduce dense against the refined reference, mesh-invariantly?** Resolved off-mesh rules converge to one '
-          'mesh-invariant solution (the continuum-advection hybrid), the dense mesh solve to the upwind solution, which '
-          'improves with the mesh. On the cases where dense ran (worst over cases; the case set is smaller at $4096^2$, '
-          'which is why the continuum-rollout numbers differ there — on a fixed case set they are invariant, see B2): '
-          + '; '.join(lines) + '. So at the '
-          'coarse meshes the off-mesh rules are *more* accurate than dense against both references, and at $4096^2$ the '
-          'two agree against S to within the differences shown (slightly better against ST). The pre-registered two-sided '
-          'B1 therefore fails for most off-mesh arms at the coarse meshes in the favourable direction; under-resolved rules '
-          '(e.g. accurate Gauss $32^2$) fail it by being worse.')
+        w('- **(i) Reproduce dense against the refined reference, mesh-invariantly?** In the linear-rung settings (`acc`, '
+          '`fast`) the resolved off-mesh rules give one mesh-invariant solution (case by case to ≤0.02 pp, table below); '
+          'in the `head` setting a few cases move between meshes for every arm, dense included (table below). The dense '
+          'mesh solve carries the upwind stencil error, which shrinks with the mesh. On the cases where dense ran (worst '
+          'over those cases; the case set is smaller at $4096^2$, so the columns are not one population): '
+          + '; '.join(lines) + '. In cohort-worst terms the resolved off-mesh rules are more accurate than dense at the '
+          'coarse meshes against both references (not case-by-case dominance), and at $4096^2$ the worst errors are close: '
+          'slightly lower than dense against ST, slightly higher against S. The two-sided B1 therefore fails for the '
+          'resolved linear-rung arms at the coarse meshes in the favourable direction; under-resolved rules (e.g. accurate '
+          'Gauss $32^2$) fail it by being worse.')
         if tag.startswith('dev') and sel:
             b2 = [v['ratio'] for st in SETS for n, v in sel['B2'][st].items()
                   if v and n.startswith(('gauss', 'fib', 'flux', 'gref')) and n != 'gauss32']
@@ -489,12 +499,15 @@ def answers(w, dv, tt, sel):
         # (ii)
         L0 = 1024
         r = lambda st, n, t='cont': g(S[L0], 'rho', st, 'rules', n, t, 'max')
-        w(f'- **(ii) $\\rho$ ladder vs the $63^2$ lattice and EQ at matched $m$ ($1024^2$, worst over reached states):** '
+        w(f'- **(ii) $\\rho$ ladder vs the $63^2$ lattice and EQ at approximately matched $m$ ($1024^2$, worst over reached '
+          f'states; the mesh rules are measured against their own target, the upwind stencil, and the off-mesh rules '
+          f'against theirs, the continuum — different discrepancies):** '
           + '; '.join(f"{st}: lat64 ($m$=3969) {sci(r(st, 'lat64', 'mesh'))} against its mesh target, "
                       f"Gauss $64^2$ ($m$=4096) {sci(r(st, 'gauss64'))} and Fibonacci 4181 {sci(r(st, 'fib4181'))} against the continuum"
                       + (f", fitted EQ ($m$=1024) {sci(r(st, 'q0scaled', 'mesh'))} vs Gauss $32^2$ {sci(r(st, 'gauss32'))}" if st == 'head' else '')
                       for st in SETS)
-          + '. Our bank needs far more points than Hari\'s for the same continuum accuracy (Gauss $128^2$: '
+          + '. Our bank converges much more slowly in the number of points than Hari\'s (different bank and test space; '
+          'cause not isolated; Gauss $128^2$: '
           + ', '.join(f"{st} {sci(r(st, 'gauss128'))}" for st in SETS) + '); Sobol 4096 stays at '
           + ', '.join(f"{st} {sci(r(st, 'sobol4096'))}" for st in SETS) + ' and Smolyak CC 8 at '
           + ', '.join(f"{st} {sci(r(st, 'smolyak8'))}" for st in SETS) + '.')
@@ -512,19 +525,58 @@ def answers(w, dv, tt, sel):
             w(f'- **(iii) Cost flat in $N$?** Solve time (query minus decode) is flat on one GPU: B4 ratios $4096^2/256^2$ '
               f'between {min(rs):.3f} and {max(rs):.3f} for all {len(rs)} measured arms; it grows with $m$. The full query '
               f'is not flat because the six-field output decode grows with $N$. At $4096^2$, solve time of the post-hoc '
-              f'rules vs the deployed lattice: ' + '; '.join(cmp_) + ' (not a matched equal-accuracy comparison; §D5).')
+              f'rules vs the deployed lattice: ' + '; '.join(cmp_) +
+              f" (not a matched equal-accuracy comparison; §{'T5' if tag == 'test' else 'D5'}).")
         # (iv)
         iv = []
         for st in SETS:
             e = g(S[L0], 'question_iv', st, 'gauss64')
             e2 = g(S[L0], 'question_iv', st, 'lat64')
             if e and e2:
-                iv.append(f"{st}: Gauss $64^2$ worst at $k$={e['argmax']['k']} (width {e['argmax']['width']:.3f}, "
-                          f"Spearman with width {e['spearman_casemax_vs_width']:+.2f}); lat64 worst at $k$={e2['argmax']['k']} "
-                          f"(width {e2['argmax']['width']:.3f}, Spearman {e2['spearman_casemax_vs_width']:+.2f})")
+                iv.append(f"{st}: Gauss $64^2$ worst state at $k$={e['argmax']['k']} (width {e['argmax']['width']:.3f}; "
+                          f"Spearman of case-max $\\\\rho$ with width {e['spearman_casemax_vs_width']:+.2f}; median $k$ of its "
+                          f"top 1 % ({e['top1pct_states']} states) {e.get('top1pct_median_k', 0):.1f}); lat64 worst at "
+                          f"$k$={e2['argmax']['k']} (width {e2['argmax']['width']:.3f}, Spearman {e2['spearman_casemax_vs_width']:+.2f})")
+        sec = 'T6' if tag == 'test' else 'D6'
         w('- **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: ' + '; '.join(iv) +
-          '. For the off-mesh rules the worst states lean towards early steps of *wide* bumps; there are exceptions '
-          '(§D6). The cause is not tested here.')
+          '. For the off-mesh Gauss/Fibonacci rules the cases with the largest $\\rho$ tend to be the *wider* bumps '
+          f'(positive Spearman), and the single worst state is often an early step, while the top-1 % tail spreads over '
+          f'later steps; Sobol and some rules are exceptions (§{sec}). The cause is not tested here.')
+        w('')
+    if tt and all(tt[L] for L in MESHES) and sel:
+        ph = sel.get('recommended_posthoc_one_sided_B1', {})
+        w('**Did the frozen post-hoc rules confirm on test64?** (one-sided B1′, B3 and B5 recomputed from the test '
+          'summaries exactly as on development):')
+        w('')
+        w('| setting | rule | B1′ at $256^2/1024^2/4096^2$ | B3 worst % at $256^2/1024^2/4096^2$ (bar) | continuum $\\rho_{\\max}$ at $256^2/1024^2/4096^2$ | confirmed |')
+        w('|---|---|---|---|---|---|')
+        for st, name in ph.items():
+            if not name:
+                continue
+            b1p, b3w, b3p, rh = [], [], [], []
+            for L in MESHES:
+                b = g(tt[L], 'arms', st, name, 'B1')
+                b1p.append(bool(b and b.get('worst_ST') is not None and
+                                b['worst_ST'] - b['dense_worst_ST'] <= max(2e-4, .02 * b['dense_worst_ST'])))
+                b3w.append(g(tt[L], 'arms', st, name, 'B3', 'worst'))
+                b3p.append(g(tt[L], 'arms', st, name, 'B3', 'passed'))
+                rh.append(g(tt[L], 'rho', st, 'rules', name, 'cont', 'max'))
+            ok = all(b1p) and all(x is True for x in b3p) and all(x is not None and x <= .116 for x in rh)
+            w(f"| {st} | {label(name)} | {'/'.join('y' if x else 'n' for x in b1p)} | "
+              f"{'/'.join(pc(x) for x in b3w)} ({pc(B3[st], 2)}) | {'/'.join(sci(x) for x in rh)} | "
+              f"{'yes' if ok else '**no**'} |")
+        w('')
+        w('**Mesh invariance on test64** (B2: worst ST % over all 64 cases at each mesh; dense omitted, 6 cases at $4096^2$):')
+        w('')
+        w('| setting | arm | $256^2$ | $1024^2$ | $4096^2$ | max/min | B2 ($\\le1.02$) |')
+        w('|---|---|---|---|---|---|---|')
+        for st in SETS:
+            for name in ('gref', 'gauss32', 'gauss64', 'gauss96', 'gauss128', 'fib1597', 'fib6765', 'fib17711', 'lat64'):
+                v = [g(tt[L], 'arms', st, name, 'all', 'ref_ST_evolved', 'worst') for L in MESHES]
+                if None in v:
+                    continue
+                r_ = max(v) / min(v)
+                w(f"| {st} | {label(name)} | {pc(v[0])} | {pc(v[1])} | {pc(v[2])} | {r_:.4f} | {tick(r_ <= 1.02)} |")
         w('')
     w('**Per-case mesh invariance** (generated from the job result files: for each case, the spread of its worst ST '
       'error across $256^2/1024^2/4096^2$; cases moving by more than 0.5 pp listed):')
@@ -554,9 +606,10 @@ def caveats(w, dv, sel):
     w('')
     for t in [
         'Two Codex design audits (`experiments/quadrature-study/results/codex-design-audit-{1,2}.md`) found 2 + 1 blockers '
-        'and 18 major issues in the design and code before any ROM job (unvalidated references, a missing audit, '
+        'and major issues in the design and code before any ROM job (unvalidated references, a missing audit, '
         'timing confounded with GPU type, an ineffective test-freeze gate, acceptance that did not block selection); '
-        'all were fixed or explicitly dispositioned before submission (DESIGN A0, A1).',
+        'all were fixed or explicitly dispositioned before any ROM job was submitted (DESIGN A0, A1; the two FOM-only '
+        'reference jobs were already running).',
         'The local smoke caught one real bug after the restructuring (an `UnboundLocalError` in the timing accumulator) '
         'before any cluster job; a first local calibration probe was silently killed by the 36 GB cgroup and was redone '
         'in streamed form.',
@@ -564,8 +617,8 @@ def caveats(w, dv, sel):
         'written; the one-sided reading and the extra worst-state descriptives are post hoc (DESIGN A3), the regenerated '
         'summaries with matched-set descriptives (A4) were produced after the test jobs had been submitted (no input '
         'changed; selection verified identical), and A3\'s wording was corrected in A5.',
-        'The continuum target is Gauss $640^2$ (certified against $768^2$ and the flux form, gate G6); calibration showed '
-        'our bank needs about ten times Hari\'s points per axis for the same agreement.',
+        'The continuum target is Gauss $640^2$ (certified against $768^2$ and the flux form, gate G6); '
+        'certified target, not a demonstrated minimum; our bank converges much more slowly in $p$ than Hari\'s (§D2, Hari column), cause not isolated.',
         'Refined-reference errors are measured on the $257^2$ nodes shared by every mesh, not the full mesh; the full-mesh '
         'audit recompute covers $256^2$ (audit arms) and $1024^2$ (accurate setting, one case) only.',
         'Dense at $4096^2$ ran on six cases per cohort (cost); every comparison against dense is on the matched cases.',
@@ -583,7 +636,7 @@ def glossary(w):
     w('')
     items = [
         ('accurate / fast / head', "the three deployment settings of the frozen model: the linear rung on the first $R'=384$ "
-         "or $R'=128$ columns of the rotated bank (the coefficients are solved directly), or the $k=16$ nonlinear head on the full bank."),
+         "or $R'=128$ columns of the rotated bank (the bank coefficients are the unknowns of each LM time step), or the $k=16$ nonlinear head on the full bank."),
         ('bank, rotated bank', 'the frozen coordinate network $G(x)$ ($R=512$ smooth functions of position); rotated = '
          'multiplied by a fixed matrix so its leading columns are the most useful ones.'),
         ('tested advection $N(c)$', 'the nonlinear term $u(u_x+u_y)$ projected on the $M$ sine test functions — the only '

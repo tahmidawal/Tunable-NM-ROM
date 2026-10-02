@@ -1,0 +1,27 @@
+{
+ "attempt": "refsmk",
+ "mesh": 512,
+ "cohorts": [
+  "dev6"
+ ],
+ "refs": {
+  "ST": {
+   "dt": 0.0003125,
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "accept_residual": 2e-11
+  },
+  "S": {
+   "dt": 0.005,
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "accept_residual": 2e-11
+  }
+ },
+ "audit_cases": {
+  "dev6": [
+   0
+  ]
+ },
+ "case_limit": 1
+}

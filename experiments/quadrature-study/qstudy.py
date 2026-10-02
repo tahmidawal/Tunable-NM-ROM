@@ -77,7 +77,7 @@ def main():
     except Exception:  # noqa: BLE001
         smi = []
     L, dt = int(cfg['mesh']), .005
-    s256 = L // 256
+    s256 = max(1, L // 256)     # stride to the 257^2 nodes shared by every mesh (L >= 256)
     rep = dict(config=cfg, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
                host=os.uname().nodename, backend=jax.default_backend(), gpu=jax.devices()[0].device_kind,
                nvidia_smi=smi, jax_version=jax.__version__, mesh=L,
@@ -311,20 +311,34 @@ def main():
         Cj = jnp.asarray(C)
 
         def values(kind, rule, chunk):
+            """Tested advection of every population state. Off-mesh rules are streamed over point chunks (the
+            sum over q is split, never the rule), so rules of 10^5-10^6 points never hold an (m, M) table."""
+            f = jax.jit(jax.vmap(Q.tested_value(kind, L), in_axes=(0, None)))
+            if kind in ('point', 'flux'):
+                X, w = Q.offmesh_rule(rule)
+                o = ops[st['M']]
+                acc = np.zeros((len(C), st['M']))
+                for q0 in range(0, len(X), cfg.get('point_chunk', 32768)):
+                    q1 = q0 + cfg.get('point_chunk', 32768)
+                    d = Q.offmesh_data(mdl, st['Rp'], X[q0:q1], w[q0:q1], L, o['kx'], o['ky'], kind)
+                    acc += np.concatenate([np.asarray(f(Cj[i:i + chunk], d)) for i in range(0, len(C), chunk)])
+                    del d
+                return acc, len(X)
             d, m = rule_blocks(s, kind, rule)
             data = dict(st['base'], **d)
-            f = jax.jit(jax.vmap(Q.tested_value(kind, L), in_axes=(0, None)))
             return np.concatenate([np.asarray(f(Cj[i:i + chunk], data)) for i in range(0, len(C), chunk)]), m
 
         t1 = time.perf_counter()
         Tm, _ = values('dense', None, cfg.get('dense_chunk', 8))
         Tc, mref = values('point', cfg['gref'], 64)
         Tk, _ = values('point', cfg['gref_check'], 64)
+        Tf, _ = values('flux', cfg['gref'], 64)
         rho = lambda V, T: np.linalg.norm(V - T, axis=1) / np.maximum(np.linalg.norm(T, axis=1), 1e-300)
-        conv = rho(Tc, Tk)
-        rep['gates'][f'continuum_target_converged_{s}'] = dict(gref=cfg['gref'], check=cfg['gref_check'],
-                                                               rho_max=float(conv.max()), rho_median=float(np.median(conv)),
-                                                               bar=cfg['gref_bar'], passed=bool(conv.max() <= cfg['gref_bar']))
+        conv, cflux = rho(Tc, Tk), rho(Tf, Tc)
+        rep['gates'][f'continuum_target_converged_{s}'] = dict(
+            gref=cfg['gref'], check=cfg['gref_check'], rho_max=float(conv.max()), rho_median=float(np.median(conv)),
+            flux_vs_point_rho_max=float(cflux.max()), flux_vs_point_rho_median=float(np.median(cflux)),
+            bar=cfg['gref_bar'], passed=bool(conv.max() <= cfg['gref_bar'] and cflux.max() <= cfg['gref_bar']))
         res = {}
         perstate = {}
         for spec in cfg['rho_rules'][s]:

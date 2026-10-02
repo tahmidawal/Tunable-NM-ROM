@@ -52,7 +52,7 @@ def main():
     for coh in cfg['cohorts']:
         ph = Q.cohort(coh)
         rep.setdefault('cohort_sha256', {})[coh] = sha(ph)
-        for c in range(len(ph)):
+        for c in range(min(len(ph), int(cfg.get('case_limit') or len(ph)))):
             u0 = jnp.asarray(Q.e.initial(Lr, ph[c]))
             for tag, r in cfg['refs'].items():
                 t0 = time.perf_counter()
@@ -62,7 +62,7 @@ def main():
                 ok = bool(np.isfinite(f).all() and np.isfinite(rn).all() and rn.max() <= r['accept_residual'])
                 r257 = np.array(f[:, ::Lr // 256, ::Lr // 256], copy=True)
                 extra = {}
-                if c in cfg.get('audit_cases', {}).get(coh, []):
+                if c in cfg.get('audit_cases', {}).get(coh, []) and Lr >= 1024:
                     extra['f1025'] = np.array(f[:, ::Lr // 1024, ::Lr // 1024], copy=True)
                 np.savez_compressed(out / f'ref_{tag}_{coh}_{c:03d}.npz', f257=r257, **extra)
                 rep['cases'].append(dict(cohort=coh, case=c, ref=tag, mesh=Lr, dt=r['dt'], accepted=ok,

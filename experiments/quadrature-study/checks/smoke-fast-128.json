@@ -1,0 +1,54 @@
+{
+ "S1_parity_bkfast": {
+  "fields_rel": 0.0,
+  "iterations_identical": true,
+  "reasons_identical": true,
+  "err_lat64_pct": 0.22870048969407794
+ },
+ "S2_gauss_convergence_point": {
+  "96_vs_200": 0.0009063034319776218,
+  "128_vs_200": 0.0006865018374048233,
+  "160_vs_200": 0.00028094541740865923
+ },
+ "S3_point_vs_flux": {
+  "96": 0.000868433159503437,
+  "128": 0.0006581221800348728,
+  "160": 0.00025433127061903727,
+  "200": 3.755209437854972e-05
+ },
+ "S4_allnodes_vs_dense": 5.591604598679736e-16,
+ "S4b_mesh_vs_continuum_rho_max": 0.06677725488969953,
+ "S5_dense": {
+  "finite": true,
+  "err_pct": 0.2275956576314174,
+  "vs_lat64_pct": 0.008633037931667312,
+  "iters": 51,
+  "reasons": [
+   4
+  ],
+  "seconds": 5.8561099139624275
+ },
+ "S5_point": {
+  "finite": true,
+  "err_pct": 1.7845153471263073,
+  "vs_lat64_pct": 1.7954897665122471,
+  "iters": 51,
+  "reasons": [
+   4
+  ],
+  "seconds": 3.53046781901503
+ },
+ "S5_flux": {
+  "finite": true,
+  "err_pct": 1.784108262109139,
+  "vs_lat64_pct": 1.79508386284035,
+  "iters": 51,
+  "reasons": [
+   4
+  ],
+  "seconds": 1.8687689770013094
+ },
+ "L": 128,
+ "setting": "fast",
+ "backend": "gpu"
+}

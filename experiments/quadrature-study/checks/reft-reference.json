@@ -1,0 +1,41 @@
+{
+ "attempt": "reft",
+ "job_id": "4734276",
+ "commit": "b3edf9080d92e9319e94601cdb1f33c4d101cabf",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "backend_ok": true,
+ "cohorts": [
+  "test64"
+ ],
+ "mesh": 8192,
+ "refs": {
+  "ST": {
+   "dt": 0.0003125,
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "accept_residual": 2e-11
+  },
+  "S": {
+   "dt": 0.005,
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "accept_residual": 2e-11
+  }
+ },
+ "cases": 128,
+ "all_accepted": true,
+ "complete": true,
+ "elapsed_seconds": 28462.86498533003,
+ "worst_residual": {
+  "ST": 9.972124300175846e-12,
+  "S": 1.4618526591956217e-11
+ },
+ "median_seconds": {
+  "ST": 337.928292183904,
+  "S": 64.68300201301463
+ },
+ "file_hash_mismatches": [],
+ "cohort_sha256": {
+  "test64": "cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c"
+ }
+}

@@ -1,0 +1,134 @@
+host=pax049 source_commit=329ea2d1cad3687746b9ee83832cf0689234fee3
+NVIDIA A100 80GB PCIe, GPU-ddaed0e6-973b-70bc-7131-3e8516bfa534, 81920 MiB
+10.235.106.29:/projects/paralab  4.6T  995G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+CASES 38 1.8
+REFS 76 3.1
+BANK+OPS 16.0
+TRUTH 39.6
+ARMS acc 21 100.0
+CASE acc 0 dev6 0 197.9
+CASE acc 1 dev6 1 228.4
+CASE acc 2 dev6 2 260.3
+CASE acc 3 dev6 3 291.3
+CASE acc 4 dev6 4 321.2
+CASE acc 5 dev6 5 350.9
+CASE acc 6 val32 0 375.3
+CASE acc 7 val32 1 398.4
+CASE acc 8 val32 2 422.5
+CASE acc 9 val32 3 445.6
+CASE acc 10 val32 4 468.9
+CASE acc 11 val32 5 493.1
+CASE acc 12 val32 6 517.1
+CASE acc 13 val32 7 541.9
+CASE acc 14 val32 8 565.5
+CASE acc 15 val32 9 589.8
+CASE acc 16 val32 10 615.4
+CASE acc 17 val32 11 639.5
+CASE acc 18 val32 12 662.6
+CASE acc 19 val32 13 686.1
+CASE acc 20 val32 14 710.1
+CASE acc 21 val32 15 733.7
+CASE acc 22 val32 16 757.3
+CASE acc 23 val32 17 782.6
+CASE acc 24 val32 18 806.9
+CASE acc 25 val32 19 830.9
+CASE acc 26 val32 20 855.4
+CASE acc 27 val32 21 879.6
+CASE acc 28 val32 22 903.0
+CASE acc 29 val32 23 927.1
+CASE acc 30 val32 24 951.8
+CASE acc 31 val32 25 975.7
+CASE acc 32 val32 26 998.9
+CASE acc 33 val32 27 1022.0
+CASE acc 34 val32 28 1045.9
+CASE acc 35 val32 29 1069.4
+CASE acc 36 val32 30 1093.5
+CASE acc 37 val32 31 1118.2
+RHO acc 1900 183.7 1302.1
+TIMING acc 1922.2
+ARMS fast 21 1942.1
+CASE fast 0 dev6 0 1998.1
+CASE fast 1 dev6 1 2004.1
+CASE fast 2 dev6 2 2012.0
+CASE fast 3 dev6 3 2017.9
+CASE fast 4 dev6 4 2023.7
+CASE fast 5 dev6 5 2029.5
+CASE fast 6 val32 0 2034.4
+CASE fast 7 val32 1 2039.2
+CASE fast 8 val32 2 2044.2
+CASE fast 9 val32 3 2049.0
+CASE fast 10 val32 4 2053.8
+CASE fast 11 val32 5 2058.4
+CASE fast 12 val32 6 2063.2
+CASE fast 13 val32 7 2068.1
+CASE fast 14 val32 8 2073.0
+CASE fast 15 val32 9 2077.9
+CASE fast 16 val32 10 2083.4
+CASE fast 17 val32 11 2088.0
+CASE fast 18 val32 12 2092.8
+CASE fast 19 val32 13 2097.6
+CASE fast 20 val32 14 2102.4
+CASE fast 21 val32 15 2107.3
+CASE fast 22 val32 16 2112.1
+CASE fast 23 val32 17 2117.1
+CASE fast 24 val32 18 2122.2
+CASE fast 25 val32 19 2127.1
+CASE fast 26 val32 20 2132.1
+CASE fast 27 val32 21 2137.0
+CASE fast 28 val32 22 2141.9
+CASE fast 29 val32 23 2146.7
+CASE fast 30 val32 24 2151.8
+CASE fast 31 val32 25 2156.7
+CASE fast 32 val32 26 2161.8
+CASE fast 33 val32 27 2166.7
+CASE fast 34 val32 28 2171.5
+CASE fast 35 val32 29 2176.4
+CASE fast 36 val32 30 2181.3
+CASE fast 37 val32 31 2186.2
+RHO fast 1900 138.1 2324.6
+TIMING fast 2490.4
+ARMS head 22 2513.6
+CASE head 0 dev6 0 2612.7
+CASE head 1 dev6 1 2617.2
+CASE head 2 dev6 2 2623.9
+CASE head 3 dev6 3 2628.1
+CASE head 4 dev6 4 2631.6
+CASE head 5 dev6 5 2635.4
+CASE head 6 val32 0 2638.6
+CASE head 7 val32 1 2641.4
+CASE head 8 val32 2 2644.6
+CASE head 9 val32 3 2647.1
+CASE head 10 val32 4 2650.1
+CASE head 11 val32 5 2653.1
+CASE head 12 val32 6 2656.3
+CASE head 13 val32 7 2659.7
+CASE head 14 val32 8 2662.7
+CASE head 15 val32 9 2666.2
+CASE head 16 val32 10 2670.3
+CASE head 17 val32 11 2673.3
+CASE head 18 val32 12 2676.0
+CASE head 19 val32 13 2679.0
+CASE head 20 val32 14 2682.1
+CASE head 21 val32 15 2685.2
+CASE head 22 val32 16 2688.0
+CASE head 23 val32 17 2691.2
+CASE head 24 val32 18 2695.1
+CASE head 25 val32 19 2698.9
+CASE head 26 val32 20 2701.6
+CASE head 27 val32 21 2705.1
+CASE head 28 val32 22 2707.8
+CASE head 29 val32 23 2711.0
+CASE head 30 val32 24 2714.7
+CASE head 31 val32 25 2717.9
+CASE head 32 val32 26 2721.1
+CASE head 33 val32 27 2724.0
+CASE head 34 val32 28 2727.0
+CASE head 35 val32 29 2730.1
+CASE head 36 val32 30 2733.9
+CASE head 37 val32 31 2737.7
+RHO head 1900 136.2 2874.3
+TIMING head 2998.5
+QSTUDY COMPLETE
+ALL-DONE

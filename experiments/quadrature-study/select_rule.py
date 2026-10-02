@@ -58,8 +58,25 @@ def main():
                  and n not in ('gref', 'gref_check') and all(x is True for x in v['B1']) and all(x is True for x in v['B3'])
                  and v['B5']]
         out['recommended'][s] = min(cands)[1] if cands else None
+        # POST HOC (added 2026-10-02 after the dv jobs, before any test job; NOT the pre-registered rule): one-sided B1',
+        # the arm's worst ST error is not WORSE than dense's by more than max(0.02 pp, 2 %). Reported beside the
+        # pre-registered answer because the two-sided B1 fails when off-mesh rules are better than the upwind stencil.
+        def b1p(name):
+            r_ = []
+            for L in MESHES:
+                b = S[L]['arms'][s][name].get('B1')
+                r_.append(bool(b and b.get('worst_ST') is not None and
+                               b['worst_ST'] - b['dense_worst_ST'] <= max(2e-4, .02 * b['dense_worst_ST'])))
+            return r_
+        for n, v in out['per_arm'][s].items():
+            v['B1_one_sided_posthoc'] = b1p(n)
+        cp = [(v['m'], n) for n, v in out['per_arm'][s].items()
+              if v['kind'] == 'point' and (v['rule'] or '').startswith(('gauss', 'fib')) and not n.startswith('ctrl')
+              and n not in ('gref', 'gref_check') and all(v['B1_one_sided_posthoc']) and all(x is True for x in v['B3'])
+              and v['B5']]
+        out.setdefault('recommended_posthoc_one_sided_B1', {})[s] = min(cp)[1] if cp else None
     Path(a.out).write_text(json.dumps(out, indent=1) + '\n')
-    print(json.dumps(out['recommended']))
+    print('pre-registered:', json.dumps(out['recommended']), ' post hoc one-sided B1:', json.dumps(out['recommended_posthoc_one_sided_B1']))
     if a.freeze:
         import hashlib
         fz = dict(selection_file=str(Path(a.out).relative_to(HERE)),
@@ -67,6 +84,7 @@ def main():
                   sources={L: dict(summary_sha256=hashlib.sha256((HERE / f'checks/{a.tag}{L}-summary.json').read_bytes()).hexdigest(),
                                    job_id=S[L]['job_id'], result_sha256=S[L]['result_sha256']) for L in MESHES},
                   recommended=out['recommended'],
+                  recommended_posthoc_one_sided_B1=out['recommended_posthoc_one_sided_B1'],
                   test_arms='the full rollout arm set of configs/t*.json (unchanged since the dev jobs; no arm added or removed)')
         (HERE / 'checks/FROZEN-SELECTION.json').write_text(json.dumps(fz, indent=1) + '\n')
         print('frozen ->', HERE / 'checks/FROZEN-SELECTION.json')

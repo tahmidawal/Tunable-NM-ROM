@@ -309,3 +309,22 @@ any ROM job:
 arm lists, $\rho$ ladders and the $256^2$/$1024^2$ cost panel. Purpose: memory, compile time and runtime at the largest
 mesh (Codex audit findings 10 / C) before `dv4096` starts. Its numbers are not used for any choice and are not
 reported as results (dev6 case 2 is re-run in `dv4096`). It counts against the job budget.
+
+## A3 — FROZEN SELECTION (2026-10-02, after dv256 / dv1024 / dv4096, before any test64 ROM job)
+
+Source jobs dv256 (4735696), dv1024 (4735709), dv4096 (4735717): every applicable gate passes (summaries in
+`checks/dv*-summary.json`). `select_rule.py` → `checks/selection-dv.json`; manifest `checks/FROZEN-SELECTION.json`
+(selection sha256 and source summary sha256s).
+
+- **Pre-registered recommended rule (DESIGN §8): none, in every setting.** Every off-mesh arm fails the two-sided B1 at
+  $256^2$ and $1024^2$ (and at $4096^2$ for `acc`) because its error against the refined reference is *smaller* than
+  dense's by more than $\max(0.02\,\text{pp}, 2\,\%)$; the upwind stencil, not the off-mesh rule, carries the larger
+  error there. B1 was written two-sided and is reported as written.
+- **Post hoc, labelled as such (not pre-registered), fixed now before the test jobs:** with a one-sided B1′ (not worse
+  than dense by more than the same tolerance) and the other criteria unchanged, the smallest qualifying point-form
+  Gauss/Fibonacci rule is `acc` Gauss $96^2$, `fast` Fibonacci 1597, `head` Gauss $32^2$. Question (iii)'s
+  equal-accuracy comparison against `lat64` uses these, labelled post hoc.
+- Test jobs: `t256`, `t1024`, `t4096` run the unchanged full arm set of `configs/t*.json` (nothing added or removed),
+  once each, after `reft`.
+- Also added after dv256 (descriptive only, labelled post hoc in the report): Spearman of a case's largest $\rho$ against
+  $\nu$ and amplitude, and the median step $k$ of the top 1 % of states.

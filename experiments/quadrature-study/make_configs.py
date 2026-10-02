@@ -118,6 +118,9 @@ def main():
         't256': qstudy('t256', 256, ['test64'], dict(test64='all'), refs('reft'), 'test64'),
         't1024': qstudy('t1024', 1024, ['test64'], dict(test64='all'), refs('reft'), 'test64'),
         't4096': qstudy('t4096', 4096, ['test64'], dict(test64=list(range(6))), refs('reft'), 'test64', extra=xmesh()),
+        # cluster feasibility run (DESIGN A2): 4096^2, one dev6 case, every arm, rho, cross-mesh panel; no references
+        'fz4096': qstudy('fz4096', 4096, ['dev6'], dict(dev6='all'), None, 'dev6', case_subset=dict(dev6=[2]),
+                         timing_cases=1, reps=1, extra=dict(timing_meshes=[256, 1024], allow_missing_refs=True)),
         # local smoke (GB10): tiny mesh, two dev cases, a few arms, a cheap continuum rule
         'smk128': qstudy('smk128', 128, ['dev6'], dict(dev6='all'), {}, 'dev6', parity=parity_256(),
                          gref='gauss256', gref_check='gauss320', case_subset=dict(dev6=[0, 2]), timing_cases=1, reps=1,

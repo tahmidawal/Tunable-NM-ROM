@@ -302,3 +302,10 @@ any ROM job:
 | B11 B4 denominators | finite and strictly positive solve times required; the low endpoint is the smallest panel mesh (256) |
 | B12 labels | truth relabelled `fft_tight`; unit-sum docstrings carry the Smolyak exception |
 | feasibility | setting phase is now function-scoped (all arrays of a setting released on return); the first $4096^2$ job remains the feasibility test, `--hours 16`, and is reported either way |
+
+## A2 — cluster feasibility run (2026-10-02, before any development number)
+
+`fz4096` (H200): the `dv4096` configuration on ONE dev6 case (case 2), no references, 1 timing repetition, the full
+arm lists, $\rho$ ladders and the $256^2$/$1024^2$ cost panel. Purpose: memory, compile time and runtime at the largest
+mesh (Codex audit findings 10 / C) before `dv4096` starts. Its numbers are not used for any choice and are not
+reported as results (dev6 case 2 is re-run in `dv4096`). It counts against the job budget.

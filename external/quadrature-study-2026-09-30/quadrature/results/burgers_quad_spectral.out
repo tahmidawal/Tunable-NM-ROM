@@ -1,0 +1,152 @@
+== burgers: reached states from dense reduced rollouts at N=256
+  using projected training snapshots as states
+  96 reached states kept
+  reference check: GL200 vs GL300 rho max 8.63e-15
+  point vs flux form at GL300: rho max 1.36e-14
+== off-mesh rules vs continuum reference (mesh-independent)
+  [point] gauss_tensor     6     m=    36  rho(M=384) med 3.88e+00 max 8.53e+00 | rho(M=128) med 2.09e+00 max 4.64e+00
+  [point] gauss_tensor     8     m=    64  rho(M=384) med 2.94e+00 max 4.85e+00 | rho(M=128) med 1.58e+00 max 3.09e+00
+  [point] gauss_tensor     12    m=   144  rho(M=384) med 2.08e+00 max 2.63e+00 | rho(M=128) med 6.04e-01 max 1.50e+00
+  [point] gauss_tensor     16    m=   256  rho(M=384) med 1.20e+00 max 1.58e+00 | rho(M=128) med 9.00e-02 max 7.60e-01
+  [point] gauss_tensor     24    m=   576  rho(M=384) med 5.17e-02 max 5.24e-01 | rho(M=128) med 4.35e-04 max 6.78e-02
+  [point] gauss_tensor     32    m=  1024  rho(M=384) med 3.08e-04 max 5.49e-02 | rho(M=128) med 6.51e-07 max 7.07e-04
+  [point] gauss_tensor     48    m=  2304  rho(M=384) med 1.84e-11 max 2.26e-08 | rho(M=128) med 2.47e-14 max 2.76e-14
+  [point] gauss_tensor     64    m=  4096  rho(M=384) med 1.43e-14 max 1.97e-14 | rho(M=128) med 1.40e-14 max 1.82e-14
+  [point] smolyak_cc       3     m=    13  rho(M=384) med 1.01e+01 max 3.11e+01 | rho(M=128) med 5.75e+00 max 1.95e+01
+  [point] smolyak_cc       4     m=    33  rho(M=384) med 7.98e+00 max 3.13e+01 | rho(M=128) med 4.61e+00 max 1.96e+01
+  [point] smolyak_cc       5     m=    81  rho(M=384) med 6.64e+00 max 2.27e+01 | rho(M=128) med 3.26e+00 max 9.41e+00
+  [point] smolyak_cc       6     m=   193  rho(M=384) med 4.46e+00 max 1.08e+01 | rho(M=128) med 1.81e+00 max 4.41e+00
+  [point] smolyak_cc       7     m=   449  rho(M=384) med 2.78e+00 max 4.81e+00 | rho(M=128) med 8.34e-01 max 1.76e+00
+  [point] smolyak_cc       8     m=  1025  rho(M=384) med 1.29e+00 max 2.14e+00 | rho(M=128) med 4.85e-02 max 8.05e-01
+  [point] smolyak_cc       9     m=  2305  rho(M=384) med 8.76e-02 max 6.90e-01 | rho(M=128) med 6.51e-04 max 8.96e-02
+  [point] smolyak_cc       10    m=  5121  rho(M=384) med 2.21e-05 max 4.88e-03 | rho(M=128) med 5.14e-08 max 8.34e-06
+  [point] smolyak_gl_exp   3     m=    73  rho(M=384) med 8.07e+00 max 2.35e+01 | rho(M=128) med 4.54e+00 max 1.50e+01
+  [point] smolyak_gl_exp   4     m=   221  rho(M=384) med 5.43e+00 max 1.60e+01 | rho(M=128) med 2.16e+00 max 6.24e+00
+  [point] smolyak_gl_exp   5     m=   609  rho(M=384) med 3.14e+00 max 5.52e+00 | rho(M=128) med 1.02e+00 max 2.12e+00
+  [point] smolyak_gl_exp   6     m=  1573  rho(M=384) med 1.54e+00 max 2.39e+00 | rho(M=128) med 6.79e-02 max 9.62e-01
+  [point] smolyak_gl_exp   7     m=  3881  rho(M=384) med 1.28e-01 max 7.77e-01 | rho(M=128) med 1.35e-03 max 1.21e-01
+  [point] smolyak_gl_exp   8     m=  9261  rho(M=384) med 3.03e-05 max 8.51e-03 | rho(M=128) med 7.54e-09 max 2.50e-06
+  [point] smolyak_gl_exp   9     m= 21553  rho(M=384) med 5.74e-11 max 5.60e-08 | rho(M=128) med 7.15e-12 max 2.27e-11
+  [point] smolyak_gl_lin   6     m=   305  rho(M=384) med 9.42e+00 max 1.63e+01 | rho(M=128) med 2.75e+00 max 7.29e+00
+  [point] smolyak_gl_lin   10    m=  1361  rho(M=384) med 3.55e+00 max 7.70e+00 | rho(M=128) med 1.79e-01 max 2.03e+00
+  [point] smolyak_gl_lin   14    m=  3697  rho(M=384) med 4.71e-01 max 2.58e+00 | rho(M=128) med 3.89e-03 max 3.94e-01
+  [point] smolyak_gl_lin   18    m=  7825  rho(M=384) med 1.23e-02 max 6.45e-01 | rho(M=128) med 3.49e-05 max 3.49e-02
+  [point] smolyak_gl_lin   22    m= 14257  rho(M=384) med 1.59e-04 max 9.79e-02 | rho(M=128) med 1.49e-07 max 3.71e-04
+  [point] smolyak_gl_lin   26    m= 23505  rho(M=384) med 1.31e-06 max 3.24e-03 | rho(M=128) med 3.00e-11 max 2.54e-08
+  [point] smolyak_gl_lin   30    m= 36081  rho(M=384) med 9.64e-10 max 2.56e-06 | rho(M=128) med 3.08e-11 max 7.92e-11
+  [point] smolyak_gl_lin   34    m= 52497  rho(M=384) med 7.70e-11 max 1.17e-10 | rho(M=128) med 2.40e-11 max 5.06e-11
+  [point] smolyak_gl_lin   38    m= 73265  rho(M=384) med 6.42e-11 max 1.18e-10 | rho(M=128) med 2.14e-11 max 5.51e-11
+  [point] sobol            256   m=   256  rho(M=384) med 9.23e-01 max 1.12e+00 | rho(M=128) med 2.91e-01 max 5.11e-01
+  [point] halton           256   m=   256  rho(M=384) med 7.72e-01 max 1.04e+00 | rho(M=128) med 3.70e-01 max 5.82e-01
+  [point] mc               256   m=   256  rho(M=384) med 1.31e+00 max 2.28e+00 | rho(M=128) med 7.60e-01 max 1.54e+00
+  [point] sobol            512   m=   512  rho(M=384) med 4.07e-01 max 5.56e-01 | rho(M=128) med 1.26e-01 max 2.31e-01
+  [point] halton           512   m=   512  rho(M=384) med 4.58e-01 max 6.10e-01 | rho(M=128) med 1.81e-01 max 3.40e-01
+  [point] mc               512   m=   512  rho(M=384) med 9.19e-01 max 1.27e+00 | rho(M=128) med 5.64e-01 max 9.41e-01
+  [point] sobol            1024  m=  1024  rho(M=384) med 1.87e-01 max 2.72e-01 | rho(M=128) med 4.91e-02 max 1.06e-01
+  [point] halton           1024  m=  1024  rho(M=384) med 2.60e-01 max 3.58e-01 | rho(M=128) med 8.98e-02 max 1.44e-01
+  [point] mc               1024  m=  1024  rho(M=384) med 6.30e-01 max 8.43e-01 | rho(M=128) med 3.71e-01 max 6.02e-01
+  [point] sobol            2048  m=  2048  rho(M=384) med 9.53e-02 max 1.21e-01 | rho(M=128) med 2.92e-02 max 5.47e-02
+  [point] halton           2048  m=  2048  rho(M=384) med 1.15e-01 max 1.79e-01 | rho(M=128) med 4.68e-02 max 7.67e-02
+  [point] mc               2048  m=  2048  rho(M=384) med 4.74e-01 max 8.25e-01 | rho(M=128) med 2.81e-01 max 5.81e-01
+  [point] sobol            4096  m=  4096  rho(M=384) med 2.32e-02 max 3.29e-02 | rho(M=128) med 9.16e-03 max 1.61e-02
+  [point] halton           4096  m=  4096  rho(M=384) med 7.76e-02 max 1.02e-01 | rho(M=128) med 2.77e-02 max 4.18e-02
+  [point] mc               4096  m=  4096  rho(M=384) med 3.28e-01 max 4.46e-01 | rho(M=128) med 2.00e-01 max 2.99e-01
+  [point] sobol            8192  m=  8192  rho(M=384) med 7.77e-03 max 1.63e-02 | rho(M=128) med 1.22e-03 max 8.37e-03
+  [point] halton           8192  m=  8192  rho(M=384) med 3.62e-02 max 4.85e-02 | rho(M=128) med 1.28e-02 max 2.17e-02
+  [point] mc               8192  m=  8192  rho(M=384) med 2.41e-01 max 3.46e-01 | rho(M=128) med 1.37e-01 max 2.41e-01
+  [point] fibonacci        12    m=   144  rho(M=384) med 1.05e+00 max 1.35e+00 | rho(M=128) med 1.06e-01 max 6.69e-01
+  [point] fibonacci_tent   12    m=   144  rho(M=384) med 1.49e+00 max 1.78e+00 | rho(M=128) med 6.23e-01 max 9.02e-01
+  [point] fibonacci        13    m=   233  rho(M=384) med 2.01e-01 max 7.79e-01 | rho(M=128) med 4.63e-03 max 1.09e-01
+  [point] fibonacci_tent   13    m=   233  rho(M=384) med 1.47e+00 max 2.19e+00 | rho(M=128) med 6.73e-01 max 1.09e+00
+  [point] fibonacci        14    m=   377  rho(M=384) med 5.21e-03 max 1.04e-01 | rho(M=128) med 3.10e-04 max 6.58e-03
+  [point] fibonacci_tent   14    m=   377  rho(M=384) med 6.96e-01 max 7.59e-01 | rho(M=128) med 6.06e-02 max 4.21e-01
+  [point] fibonacci        15    m=   610  rho(M=384) med 7.94e-04 max 1.32e-02 | rho(M=128) med 7.61e-05 max 1.29e-03
+  [point] fibonacci_tent   15    m=   610  rho(M=384) med 6.35e-01 max 8.15e-01 | rho(M=128) med 3.51e-02 max 3.19e-01
+  [point] fibonacci        16    m=   987  rho(M=384) med 1.74e-04 max 2.82e-03 | rho(M=128) med 1.57e-05 max 2.77e-04
+  [point] fibonacci_tent   16    m=   987  rho(M=384) med 1.29e-01 max 4.93e-01 | rho(M=128) med 1.52e-03 max 7.21e-02
+  [point] fibonacci        17    m=  1597  rho(M=384) med 4.01e-05 max 6.17e-04 | rho(M=128) med 3.98e-06 max 7.91e-05
+  [point] fibonacci_tent   17    m=  1597  rho(M=384) med 9.65e-04 max 2.89e-02 | rho(M=128) med 2.21e-05 max 5.64e-04
+  [point] fibonacci        18    m=  2584  rho(M=384) med 9.50e-06 max 1.47e-04 | rho(M=128) med 8.69e-07 max 1.63e-05
+  [point] fibonacci_tent   18    m=  2584  rho(M=384) med 2.16e-05 max 9.23e-04 | rho(M=128) med 1.32e-06 max 4.68e-05
+  [point] fibonacci        19    m=  4181  rho(M=384) med 2.12e-06 max 3.04e-05 | rho(M=128) med 2.31e-07 max 5.43e-06
+  [point] fibonacci_tent   19    m=  4181  rho(M=384) med 3.40e-06 max 8.11e-05 | rho(M=128) med 2.23e-07 max 9.26e-06
+  [point] fibonacci        20    m=  6765  rho(M=384) med 5.27e-07 max 8.34e-06 | rho(M=128) med 5.54e-08 max 1.39e-06
+  [point] fibonacci_tent   20    m=  6765  rho(M=384) med 5.21e-07 max 1.29e-05 | rho(M=128) med 6.08e-08 max 1.02e-06
+  [flux] gauss_tensor     6     m=    36  rho(M=384) med 2.21e+01 max 3.68e+01 | rho(M=128) med 7.90e+00 max 1.29e+01
+  [flux] gauss_tensor     8     m=    64  rho(M=384) med 1.66e+01 max 2.73e+01 | rho(M=128) med 6.54e+00 max 1.09e+01
+  [flux] gauss_tensor     12    m=   144  rho(M=384) med 1.19e+01 max 2.07e+01 | rho(M=128) med 1.79e+00 max 2.39e+00
+  [flux] gauss_tensor     16    m=   256  rho(M=384) med 9.20e+00 max 1.90e+01 | rho(M=128) med 9.25e-02 max 7.09e-01
+  [flux] gauss_tensor     24    m=   576  rho(M=384) med 8.83e-02 max 7.98e-01 | rho(M=128) med 2.80e-04 max 4.24e-02
+  [flux] gauss_tensor     32    m=  1024  rho(M=384) med 3.39e-04 max 6.24e-02 | rho(M=128) med 2.87e-07 max 3.41e-04
+  [flux] gauss_tensor     48    m=  2304  rho(M=384) med 1.39e-11 max 1.86e-08 | rho(M=128) med 2.54e-14 max 2.84e-14
+  [flux] gauss_tensor     64    m=  4096  rho(M=384) med 1.70e-14 max 2.20e-14 | rho(M=128) med 1.37e-14 max 1.70e-14
+  [flux] smolyak_cc       3     m=    13  rho(M=384) med 4.26e+01 max 1.96e+02 | rho(M=128) med 1.46e+01 max 6.09e+01
+  [flux] smolyak_cc       4     m=    33  rho(M=384) med 3.80e+01 max 1.92e+02 | rho(M=128) med 1.36e+01 max 7.65e+01
+  [flux] smolyak_cc       5     m=    81  rho(M=384) med 3.28e+01 max 1.58e+02 | rho(M=128) med 1.05e+01 max 3.82e+01
+  [flux] smolyak_cc       6     m=   193  rho(M=384) med 2.53e+01 max 8.00e+01 | rho(M=128) med 7.54e+00 max 1.72e+01
+  [flux] smolyak_cc       7     m=   449  rho(M=384) med 1.67e+01 max 3.70e+01 | rho(M=128) med 2.50e+00 max 3.69e+00
+  [flux] smolyak_cc       8     m=  1025  rho(M=384) med 7.34e+00 max 1.49e+01 | rho(M=128) med 4.47e-02 max 6.54e-01
+  [flux] smolyak_cc       9     m=  2305  rho(M=384) med 2.02e-01 max 1.54e+00 | rho(M=128) med 5.18e-04 max 5.76e-02
+  [flux] smolyak_cc       10    m=  5121  rho(M=384) med 3.59e-05 max 4.63e-03 | rho(M=128) med 3.61e-08 max 5.18e-06
+  [flux] smolyak_gl_exp   3     m=    73  rho(M=384) med 3.66e+01 max 1.47e+02 | rho(M=128) med 1.40e+01 max 6.33e+01
+  [flux] smolyak_gl_exp   4     m=   221  rho(M=384) med 3.00e+01 max 1.24e+02 | rho(M=128) med 8.07e+00 max 2.02e+01
+  [flux] smolyak_gl_exp   5     m=   609  rho(M=384) med 1.83e+01 max 4.57e+01 | rho(M=128) med 3.31e+00 max 5.13e+00
+  [flux] smolyak_gl_exp   6     m=  1573  rho(M=384) med 9.07e+00 max 1.98e+01 | rho(M=128) med 7.24e-02 max 7.19e-01
+  [flux] smolyak_gl_exp   7     m=  3881  rho(M=384) med 3.97e-01 max 2.04e+00 | rho(M=128) med 9.86e-04 max 8.25e-02
+  [flux] smolyak_gl_exp   8     m=  9261  rho(M=384) med 2.92e-05 max 8.32e-03 | rho(M=128) med 3.72e-09 max 1.26e-06
+  [flux] smolyak_gl_exp   9     m= 21553  rho(M=384) med 1.58e-10 max 5.16e-08 | rho(M=128) med 1.80e-11 max 7.98e-11
+  [flux] smolyak_gl_lin   6     m=   305  rho(M=384) med 6.08e+01 max 1.01e+02 | rho(M=128) med 8.85e+00 max 2.16e+01
+  [flux] smolyak_gl_lin   10    m=  1361  rho(M=384) med 2.17e+01 max 5.20e+01 | rho(M=128) med 2.67e-01 max 2.24e+00
+  [flux] smolyak_gl_lin   14    m=  3697  rho(M=384) med 1.30e+00 max 8.05e+00 | rho(M=128) med 2.97e-03 max 3.34e-01
+  [flux] smolyak_gl_lin   18    m=  7825  rho(M=384) med 1.65e-02 max 1.04e+00 | rho(M=128) med 2.00e-05 max 1.90e-02
+  [flux] smolyak_gl_lin   22    m= 14257  rho(M=384) med 1.63e-04 max 1.12e-01 | rho(M=128) med 6.40e-08 max 1.96e-04
+  [flux] smolyak_gl_lin   26    m= 23505  rho(M=384) med 9.37e-07 max 3.10e-03 | rho(M=128) med 8.18e-11 max 1.31e-08
+  [flux] smolyak_gl_lin   30    m= 36081  rho(M=384) med 1.04e-09 max 2.36e-06 | rho(M=128) med 1.13e-10 max 2.38e-10
+  [flux] smolyak_gl_lin   34    m= 52497  rho(M=384) med 4.40e-10 max 7.34e-10 | rho(M=128) med 7.24e-11 max 1.24e-10
+  [flux] smolyak_gl_lin   38    m= 73265  rho(M=384) med 3.53e-10 max 8.53e-10 | rho(M=128) med 6.07e-11 max 1.90e-10
+  [flux] sobol            256   m=   256  rho(M=384) med 5.21e+00 max 8.17e+00 | rho(M=128) med 9.85e-01 max 1.81e+00
+  [flux] halton           256   m=   256  rho(M=384) med 4.22e+00 max 6.79e+00 | rho(M=128) med 1.36e+00 max 2.65e+00
+  [flux] mc               256   m=   256  rho(M=384) med 6.04e+00 max 1.21e+01 | rho(M=128) med 2.27e+00 max 4.83e+00
+  [flux] sobol            512   m=   512  rho(M=384) med 2.37e+00 max 3.76e+00 | rho(M=128) med 3.59e-01 max 9.51e-01
+  [flux] halton           512   m=   512  rho(M=384) med 2.43e+00 max 3.79e+00 | rho(M=128) med 5.88e-01 max 9.50e-01
+  [flux] mc               512   m=   512  rho(M=384) med 4.66e+00 max 7.78e+00 | rho(M=128) med 1.70e+00 max 2.93e+00
+  [flux] sobol            1024  m=  1024  rho(M=384) med 1.02e+00 max 1.60e+00 | rho(M=128) med 1.40e-01 max 2.57e-01
+  [flux] halton           1024  m=  1024  rho(M=384) med 1.43e+00 max 2.46e+00 | rho(M=128) med 2.95e-01 max 4.75e-01
+  [flux] mc               1024  m=  1024  rho(M=384) med 3.00e+00 max 5.37e+00 | rho(M=128) med 1.09e+00 max 1.93e+00
+  [flux] sobol            2048  m=  2048  rho(M=384) med 5.61e-01 max 9.27e-01 | rho(M=128) med 7.07e-02 max 1.40e-01
+  [flux] halton           2048  m=  2048  rho(M=384) med 7.00e-01 max 1.28e+00 | rho(M=128) med 1.67e-01 max 2.74e-01
+  [flux] mc               2048  m=  2048  rho(M=384) med 2.46e+00 max 4.28e+00 | rho(M=128) med 8.41e-01 max 1.30e+00
+  [flux] sobol            4096  m=  4096  rho(M=384) med 1.23e-01 max 2.26e-01 | rho(M=128) med 2.79e-02 max 4.62e-02
+  [flux] halton           4096  m=  4096  rho(M=384) med 4.05e-01 max 6.62e-01 | rho(M=128) med 8.69e-02 max 1.44e-01
+  [flux] mc               4096  m=  4096  rho(M=384) med 1.73e+00 max 2.99e+00 | rho(M=128) med 5.98e-01 max 9.63e-01
+  [flux] sobol            8192  m=  8192  rho(M=384) med 4.13e-02 max 8.21e-02 | rho(M=128) med 2.84e-03 max 5.93e-03
+  [flux] halton           8192  m=  8192  rho(M=384) med 2.08e-01 max 3.12e-01 | rho(M=128) med 4.11e-02 max 8.32e-02
+  [flux] mc               8192  m=  8192  rho(M=384) med 1.25e+00 max 2.13e+00 | rho(M=128) med 4.53e-01 max 7.29e-01
+  [flux] fibonacci        12    m=   144  rho(M=384) med 1.01e+01 max 1.80e+01 | rho(M=128) med 1.12e-01 max 5.96e-01
+  [flux] fibonacci_tent   12    m=   144  rho(M=384) med 8.92e+00 max 1.41e+01 | rho(M=128) med 2.38e+00 max 3.23e+00
+  [flux] fibonacci        13    m=   233  rho(M=384) med 3.79e-01 max 1.37e+00 | rho(M=128) med 3.10e-03 max 7.31e-02
+  [flux] fibonacci_tent   13    m=   233  rho(M=384) med 8.85e+00 max 1.46e+01 | rho(M=128) med 1.80e+00 max 2.69e+00
+  [flux] fibonacci        14    m=   377  rho(M=384) med 5.54e-03 max 1.18e-01 | rho(M=128) med 1.53e-04 max 3.80e-03
+  [flux] fibonacci_tent   14    m=   377  rho(M=384) med 4.75e+00 max 7.65e+00 | rho(M=128) med 7.79e-02 max 3.20e-01
+  [flux] fibonacci        15    m=   610  rho(M=384) med 5.99e-04 max 8.01e-03 | rho(M=128) med 3.81e-05 max 7.17e-04
+  [flux] fibonacci_tent   15    m=   610  rho(M=384) med 3.08e+00 max 4.01e+00 | rho(M=128) med 3.32e-02 max 2.67e-01
+  [flux] fibonacci        16    m=   987  rho(M=384) med 1.23e-04 max 1.87e-03 | rho(M=128) med 7.86e-06 max 1.32e-04
+  [flux] fibonacci_tent   16    m=   987  rho(M=384) med 3.20e-01 max 8.67e-01 | rho(M=128) med 1.80e-03 max 4.78e-02
+  [flux] fibonacci        17    m=  1597  rho(M=384) med 2.26e-05 max 2.79e-04 | rho(M=128) med 1.99e-06 max 4.03e-05
+  [flux] fibonacci_tent   17    m=  1597  rho(M=384) med 2.35e-03 max 3.42e-02 | rho(M=128) med 6.77e-05 max 1.37e-03
+  [flux] fibonacci        18    m=  2584  rho(M=384) med 5.33e-06 max 8.16e-05 | rho(M=128) med 4.26e-07 max 8.25e-06
+  [flux] fibonacci_tent   18    m=  2584  rho(M=384) med 1.13e-04 max 1.67e-03 | rho(M=128) med 3.66e-06 max 6.63e-05
+  [flux] fibonacci        19    m=  4181  rho(M=384) med 1.11e-06 max 1.40e-05 | rho(M=128) med 1.15e-07 max 2.73e-06
+  [flux] fibonacci_tent   19    m=  4181  rho(M=384) med 2.79e-05 max 5.31e-04 | rho(M=128) med 6.01e-07 max 1.45e-05
+  [flux] fibonacci        20    m=  6765  rho(M=384) med 2.77e-07 max 4.34e-06 | rho(M=128) med 2.75e-08 max 6.91e-07
+  [flux] fibonacci_tent   20    m=  6765  rho(M=384) med 3.93e-06 max 6.15e-05 | rho(M=128) med 1.75e-07 max 3.33e-06
+== mesh N=256
+  mesh-vs-continuum gap (continuum ref vs dense upwind at N): med 3.35e-02 max 7.56e-02
+  dense q=0: 13.87 ms per residual+Jacobian
+  dense q=64: 29.04 ms per residual+Jacobian
+  mesh_lattice stride 32 m=49: rho(M=384) med 2.42e+00 max 2.74e+00 | fast max 1.62e+00
+  mesh_lattice stride 16 m=225: rho(M=384) med 1.08e-01 max 8.69e-01 | fast max 2.25e-01
+  mesh_lattice stride 8 m=961: rho(M=384) med 1.02e-04 max 2.15e-03 | fast max 9.87e-04
+  mesh_lattice stride 4 m=3969: rho(M=384) med 5.21e-06 max 9.81e-05 | fast max 5.30e-05
+  EQ fit matrix (9216, 8192)
+done

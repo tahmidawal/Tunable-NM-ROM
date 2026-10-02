@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=q3_ref1
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:a100:1
-#SBATCH --constraint=a100-80G
+#SBATCH --gres=gpu:h100:1
+
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=200G
 #SBATCH --time=08:00:00

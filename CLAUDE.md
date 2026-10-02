@@ -79,6 +79,13 @@ worktree or from somewhere else. Say which one you would pick and why. Never ass
 `main` is the frozen baseline and its heat ROM rollout is known broken, so branching from it
 silently discards every correction made since.
 
+**Current fork point (user decision, 2026-10-01):** `exp/2026-10-01-ns3d-coordnet-bank` at
+commit `21c175a1b`. Its GitHub mirror is `origin/codeonly/exp/2026-10-01-ns3d-coordnet-bank` at
+`1716d80de`. New worktrees branch from that commit unless the user says otherwise. In the new
+lane's `sync_github.sh`, set `LOCAL_BASE=21c175a1b…` and `REMOTE_BASE=1716d80de…` (full hashes
+via `git rev-parse`). `main` stays the home of `LAB-LOG.md`, `reports/` and these instructions,
+and is the only branch pushed directly.
+
 ### One canonical `LAB-LOG.md`, on `main`, read and appended by every session
 
 `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md`. Worktrees share one `.git`, so

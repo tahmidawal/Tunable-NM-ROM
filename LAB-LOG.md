@@ -12,7 +12,24 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-09-17
+# Where things stand — 2026-10-01
+
+**2026-10-01 — new fork point; paper discarded.** All new work branches from
+`exp/2026-10-01-ns3d-coordnet-bank` @ `21c175a1b` (GitHub mirror
+`origin/codeonly/exp/2026-10-01-ns3d-coordnet-bank` @ `1716d80de`), by user decision. The ICLR 2027
+paper is discarded and will not be submitted; `paper_latex/` is left as its last local state,
+and the paper paragraphs below are historical. Lanes back up to GitHub through `codeonly/`
+mirrors after every commit (CLAUDE.md, "Branching").
+
+**State of that branch.** NS 3D with one frozen coordinate-network bank (R=64, curl of an MLP
+potential, 30-min pilot fit) inside the co-moving frame. It runs unchanged at 32³/64³/96³. The
+k=8 head reaches its bank floor (test worst 1.09/1.27/1.28 %, 7.9× CNAB2 at 96³), about 8–10×
+less accurate than the per-mesh POD-64 bank (0.15 %). The flat-across-meshes bar narrowly fails
+(floor max/min 1.252 against 1.25), most likely because the fit is under-resolved at 32³; that
+cause is inferred, not tested. The heads are still trained per mesh. Open: a band-limited
+refit, a longer fit or larger R, and one head shared across meshes. Full entry: `## 2026-10-01`
+below; report `reports/2026-10-01-ns3d-coordnet-bank.md` on the branch.
+
 
 *(Fork point and mathematical scope refreshed during the 2026-09-04 architecture review.
 The dated chronology below preserves the earlier findings and retractions; the original

@@ -1,0 +1,64 @@
+{
+ "config": {
+  "attempt": "refsmk",
+  "mesh": 512,
+  "cohorts": [
+   "dev6"
+  ],
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  },
+  "audit_cases": {
+   "dev6": [
+    0
+   ]
+  },
+  "case_limit": 1
+ },
+ "job_id": null,
+ "commit": null,
+ "gpu": "NVIDIA GB10",
+ "backend": "gpu",
+ "cases": [
+  {
+   "cohort": "dev6",
+   "case": 0,
+   "ref": "ST",
+   "mesh": 512,
+   "dt": 0.0003125,
+   "accepted": true,
+   "max_relative_residual": 4.914750865954331e-12,
+   "newton_iterations": 1602,
+   "seconds": 7.923541683005169,
+   "f257_sha256": "1cbfff19fdc22b068f3647dad451f14ad95c5d2948239e3c038e987cc7907d4b"
+  },
+  {
+   "cohort": "dev6",
+   "case": 0,
+   "ref": "S",
+   "mesh": 512,
+   "dt": 0.005,
+   "accepted": true,
+   "max_relative_residual": 6.700448010725539e-12,
+   "newton_iterations": 107,
+   "seconds": 1.4716644349973649,
+   "f257_sha256": "8ceb1d897d6681a42940297b888affa95d3d96cd482ca384d7d43209beb77349"
+  }
+ ],
+ "cohort_sha256": {
+  "dev6": "3610a428db73a58615a5a2dc7dae5045da0f4977f93fcd1f798c3a9723289e57"
+ },
+ "elapsed_seconds": 9.43117577501107,
+ "complete": true
+}

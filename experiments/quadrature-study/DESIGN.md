@@ -72,7 +72,7 @@ on the arm:
 | `flux` (Hari's integrated-by-parts form) | $-L\sum_q w_q\,(\partial_x\psi_{ab}+\partial_y\psi_{ab})(x_q)\,\tfrac12u(x_q)^2$ | $u$ block, $(m,R')$ |
 
 Here $\psi_{ab}=2\sin(a\pi x)\sin(b\pi y)$ are the $L^2$-orthonormal continuum sines of the **same** $(a,b)$ as
-$\Phi$, $\sum_q w_q=1$, and $u,u_x,u_y$ at $x_q$ come from the bank by forward-mode differentiation (partial decoding).
+$\Phi$, $\sum_q w_q=1$ (Smolyak: Hari's weights as published, boundary nodes removed, not renormalised), and $u,u_x,u_y$ at $x_q$ come from the bank by forward-mode differentiation (partial decoding).
 Since $\Phi^{\mathsf T}F\approx L\int\psi F$, the off-mesh forms target the continuum advection; the mesh forms target
 the upwind stencil. Jacobians are analytic for `mesh`/`point`/`flux` and by chunked linearisation for `dense` (the
 vendored text). Code: `qcore.py`.
@@ -101,8 +101,19 @@ Refined-reference errors are measured on the $257\times257$ nodes shared by ever
 normalised by the initial field on the same nodes; the reference is saved there for every case (and at $1025^2$ for
 two audit cases). Same-grid errors use the full mesh.
 
-**Same-grid truth**: Newton–BiCGStab `lean_tight` (ntol $10^{-6}$, ltol $10^{-8}$) on the evaluation mesh, in the same
-job.
+Every job validates its references against the reference job's manifest before any rollout (complete, every case of
+its cohorts accepted for ST and S, sha256 of every restricted field); `refjob.py` exits non-zero if any case is
+rejected, so `afterok` dependents never start on a rejected reference.
+
+**Same-grid truth**: `fft_tight` (Newton–BiCGStab, FFT-DST preconditioner, ntol $10^{-6}$, ltol $10^{-8}$) through the
+historical path `iterative_paths.make_fom(L, dt, 'fft')` — the truth of the parity source jobs (G3) — on the evaluation
+mesh, in the same job.
+
+**test64 is a reused historical cohort**: it was opened before by the held-out/test lanes that measured fixed settings
+(burgers2d-speed h256–h1024, bank-knob bkh64f, burgers2d-test t256–t4096, t2/t3 lanes). It is unseen by *this* lane's
+choices: `cluster/stage.py` refuses to stage a test64 job unless `checks/selection-dv.json` is committed and this file
+contains the `FROZEN SELECTION` amendment. The test64 *reference* job (`reft`, FOM only, no ROM number) is exempt so it
+can run while the development jobs run.
 
 ## 5. Arms
 
@@ -178,10 +189,18 @@ primary bar) and 0.06 (tight).
 
 ### 6.3 Cost
 
-Timed in each job, randomised order, 0.1 s burn-in before every invocation, `block_until_ready`, median over 3
-repetitions × the first 6 cases of the job's first cohort: every rollout arm except the controls (full query: dense
-input field on the GPU → six dense output fields), the six-field **decode** alone per setting, and two full-order
-settings (`lean_tight`, and `lean_nt3e-3_l3e-3_dt005` — Table 1's comparator). **Solve time** := query − decode.
+Timed in each job, per setting block: every subject is compiled and warmed on every timing case first; then
+randomised order, a pre-compiled 0.1 s burn before every invocation, `block_until_ready`, median over 3 repetitions ×
+the first 6 cases of the job's first cohort. Subjects: every rollout arm except the controls (and except `dense`
+above $1024^2$) — full query: dense input field on the GPU → six dense output fields; the six-field **decode** alone;
+two full-order settings (`lean_tight`, and `lean_nt3e-3_l3e-3_dt005`, Table 1's comparator). Every timed ROM output's
+restricted sha256 must equal its phase-1 output; every timed FOM output is scored against the truth and its convergence
+recorded (gate G8). **Solve time** := median(query) − median(decode), an operational estimate (the query is one fused
+executable).
+
+**Cross-mesh cost panel (B4)**: the $4096^2$ jobs also build the $256^2$ and $1024^2$ versions of `lat64`, Gauss
+$64^2/128^2/256^2$, Fibonacci 6765/17711/46368 (and `q0scaled` for the head) and time them interleaved with the
+$4096^2$ arms in the same H200 allocation, so the flat-cost bar compares meshes on one GPU (Codex audit finding 3).
 
 ## 7. Gates (a job's numbers are used only if all pass; failures are reported, never hidden)
 
@@ -192,13 +211,17 @@ settings (`lean_tight`, and `lean_nt3e-3_l3e-3_dt005` — Table 1's comparator).
 | G3 | parity with the Table-1 / Table-2 records (dev6) | `lat64` reproduces the worst evolved same-grid error of the source job to $\le10^{-6}$ relative: $256^2$ ($g_{\rm tol}=10^{-2}$ parity arms) `acc` 0.16561743047161853 %, `fast` 1.5967685047599642 % (b256, 4241033); $1024^2$ `acc` 0.21081980982218235 %, `fast` 1.8280675823814023 % (b1024 parent, 4241031); $4096^2$ `acc` 0.2239874024132454 %, `fast` 1.8940229488900593 % (bk4096b, 4197473); head `q0scaled` at $1024^2$ 2.288356103816248 % (p1024, 4204019) |
 | G4 | truth converged | every step's Newton residual $\le$ ntol |
 | G5 | references accepted | §4 rule, every case |
-| G6 | continuum target | `gref` vs `gref_check` and `gref` vs `gref_flux`: $\rho_{\max}$ on the population below the bar of §5.1 |
-| G7 | controls must fail (checked at one real mesh before any verdict: $1024^2$, dev6 ∪ val32) | Smolyak-8 and Gauss-$8^2$ fail B3 **and** have continuum $\rho_{\max}>0.116$ |
-| G8 | independent NumPy audit (`audit_qs.py`) | refined/same-grid/vs-dense errors recomputed from saved restricted fields of the audit cases; $\rho$ recomputed for sampled states with an independent NumPy bank + gradient (`npbank.py`, parity $10^{-13}$ to JAX) and NumPy tests; every median and ratio recomputed from raw invocations; injected controls (swapped case, $10^{-6}$-perturbed field, ×1.2 time) detected |
+| G6 | continuum target | `gref` vs `gref_check` and `gref` (flux form) vs `gref`: $\rho_{\max}\le10^{-5}$ on BOTH populations (lat64-reached states and `gref`'s own reached states); and at $1024^2$ a Gauss-$768^2$ rollout (`gref_check`, dev6) within $0.1\times$B3 of the `gref` rollout |
+| G7 | controls must fail (checked at one real mesh before any verdict: $1024^2$, dev6 ∪ val32) | Smolyak-8 and Gauss-$8^2$, **each separately in every setting**, fail B3 **and** have continuum $\rho_{\max}>0.116$ |
+| G8 | independent NumPy audit (`audit_qs.py`) | refined / same-grid / vs-dense / vs-gref errors of the audit cases (dev6 0 and 2, or test64 0 and 2) recomputed from saved restricted fields to $\le10^{-10}$ absolute; full-mesh same-grid errors recomputed where full fields are saved ($256^2$: the audit arms of every setting; $1024^2$: `acc`, case 0; not at $4096^2$, 0.8 GB per field — stated limitation); continuum $\rho$ of sampled states (incl. argmax states) recomputed with an independent NumPy bank + gradient (`npbank.py`, parity $\le7\times10^{-13}$ to JAX, checked locally) and NumPy tests against a NumPy Gauss-$640^2$ target to $\le10^{-6}$ relative; mesh $\rho$ in NumPy at $256^2$; every median recomputed from raw invocations; timed outputs identical to phase 1 and timed FOMs converged; injected controls (perturbed field, swapped case, ×1.2 time) detected |
 
-Local smoke `smoke.py` (before staging): S1 the `mesh` path equals `bkfast.make_linear_query` bitwise (done at
-$128^2$: fields 0.0, identical iterations and exits); S3 point vs flux; S4 all-node lattice = dense ($5.6\times10^{-16}$
-at $128^2$).
+Local smoke `smoke.py` (before staging): S1 the `mesh` path equals `bkfast.make_linear_query` bitwise on one
+`fast`/$128^2$ case (fields 0.0, identical iterations and exits); S3 point vs flux; S4 all-node lattice = dense
+($5.6\times10^{-16}$ at $128^2$). The mesh-rule Jacobian is exact away from the upwind switching surface
+($u=0$ at a node); at a switch JAX returns the selected branch's derivative (as in the vendored Table-1 code).
+
+**Acceptance** is decided per job by `audit_qs.py` (G1–G8) and across jobs by `select_rule.py` (B2, B4, the
+recommended rule); a job is used only if every per-job gate passes.
 
 ## 8. Pre-registered bars and the verdicts they feed
 
@@ -225,8 +248,8 @@ $w$, and the share of the top-1 % states with $k\le5$.
 | `refdv` | references ST + S at $8192^2$ | dev6, val32 | A100-80G |
 | `reft` | references ST + S at $8192^2$ | test64 | A100-80G |
 | `dv256`, `dv1024` | all arms, $\rho$, timing | dev6, val32 | A100-80G |
-| `dv4096` | same (bank of 512 columns = 69 GB) | dev6, val32 | H200 |
-| `t256`, `t1024`, `t4096` | frozen arms, once | test64 | as above |
+| `dv4096` | same (bank of 512 columns = 69 GB) + the $256^2$/$1024^2$ cross-mesh timing panel | dev6, val32 | H200, `--mem 200G` |
+| `t256`, `t1024`, `t4096` | frozen arms, once (t4096: `--mem 240G`) | test64 | as above |
 
 The `dv*` jobs depend (`afterok`) on `refdv`, the `t*` jobs on `reft`. $512^2$/$2048^2$ only if the budget allows.
 An infrastructure failure may be resubmitted once as a new attempt directory; a code bug found after submission is
@@ -237,3 +260,23 @@ fixed, committed and resubmitted; all recorded here and in the lab log.
 `reports/2026-10-01-burgers2d-offmesh-quadrature.md`, generated by `reports/make_report.py` from the audited
 summaries; no hand-typed numbers; title + status line, LaTeX, mermaid, glossary (CLAUDE.md). Codex audits of this
 file and the code before submission, and of the final report; kept in `results/`.
+
+## A0 — Codex design audit 1 (2026-10-02, before any GPU job): dispositions
+
+Audit: `results/codex-design-audit-1.md` (gpt-5.6-sol, read-only). Verdicts C1, C2, C4–C7 CORRECT; C3, C9, C11
+NEEDS-RESTATEMENT; C8, C10 WRONG. All findings were addressed before staging:
+
+| # | finding | disposition |
+|---|---|---|
+| 1 | rejected/missing references do not stop evaluation | FIXED: `refjob.py` exits 3 on any rejection; `qstudy.py` validates the reference manifest (complete, accepted, sha256 per case) before any rollout |
+| 2 | G8 audit absent; no full-mesh evidence above $256^2$ | FIXED: `audit_qs.py`; full fields at $1024^2$ for `acc` case 0 + restricted-node versions of every distance; $4096^2$ full-mesh recompute declared out of scope |
+| 3 | B4 confounds mesh with GPU type | FIXED: same-GPU cross-mesh panel inside the $4096^2$ H200 jobs (§6.3) |
+| 4 | warm-up order-dependent; burn includes compilation | FIXED: every subject warmed on every timing case first; cached pre-compiled burn kernel |
+| 5 | timed outputs discarded | FIXED: timed ROM outputs hash-compared to phase 1; timed FOM outputs scored and convergence recorded |
+| 6 | Gauss-192 rollout arm has no $\rho$ | FIXED: Gauss $192^2$ in the $\rho$ ladder |
+| 7 | G3 compares against a different truth path | FIXED: truth is now `fft_tight` through the historical `iterative_paths` path |
+| 8 | cohort identity and test freeze unenforced | FIXED: test64 hash asserted in-job, all cohorts pairwise disjoint and disjoint from training, staging gate on the frozen selection; test64 described as a reused historical cohort. PARTLY DECLINED for `reft` (FOM-only references, no ROM number, exempt) |
+| 9 | G6 checked on lat64 states only | FIXED: G6 on `gref`'s own reached states too, plus a Gauss-$768^2$ rollout check at $1024^2$ |
+| 10 | memory not established; rule caches unbounded | FIXED: setting-major driver (one setting's rule blocks resident), off-mesh tables built on the device in 32768-point chunks, host truth cache sized by `--mem`; the first $4096^2$ job is the feasibility test and is reported either way |
+| 11 | mesh Jacobian at the upwind switch | RESTATED (§7) |
+| 12 | Smolyak weights do not sum to one | DOCUMENTED in `qcore.offmesh_data`; never renormalised (Hari's rule as published) |

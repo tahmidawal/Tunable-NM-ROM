@@ -53,6 +53,15 @@
     "name": "gref",
     "kind": "point",
     "rule": "gauss256"
+   },
+   {
+    "name": "lat64_g1e-2",
+    "kind": "mesh",
+    "rule": "lat64",
+    "gtol": 0.01,
+    "cohorts": [
+     "dev6"
+    ]
    }
   ],
   "fast": [
@@ -96,6 +105,15 @@
     "name": "gref",
     "kind": "point",
     "rule": "gauss256"
+   },
+   {
+    "name": "lat64_g1e-2",
+    "kind": "mesh",
+    "rule": "lat64",
+    "gtol": 0.01,
+    "cohorts": [
+     "dev6"
+    ]
    }
   ],
   "head": [
@@ -142,26 +160,6 @@
    }
   ]
  },
- "parity_arms": [
-  {
-   "setting": "acc",
-   "name": "lat64_g1e-2",
-   "kind": "mesh",
-   "rule": "lat64",
-   "gtol": 0.01,
-   "parity_only": true,
-   "cohort": "dev6"
-  },
-  {
-   "setting": "fast",
-   "name": "lat64_g1e-2",
-   "kind": "mesh",
-   "rule": "lat64",
-   "gtol": 0.01,
-   "parity_only": true,
-   "cohort": "dev6"
-  }
- ],
  "dense_cases": {
   "dev6": "all"
  },
@@ -390,6 +388,20 @@
     "flux_gauss64",
     "gref"
    ]
+  },
+  "extra_mesh_arms": {
+   "acc": [
+    "lat64",
+    "gauss64"
+   ],
+   "fast": [
+    "lat64",
+    "gauss64"
+   ],
+   "head": [
+    "lat64",
+    "gauss64"
+   ]
   }
  },
  "audit": {
@@ -399,6 +411,7 @@
    2
   ],
   "full_max_mesh": 256,
+  "full_case0_max_mesh": 1024,
   "full_arms": [
    "dense",
    "lat64",
@@ -416,9 +429,12 @@
  "point_chunk": 32768,
  "case_subset": {
   "dev6": [
-   0,
    2
   ]
  },
- "allow_cpu_smoke": false
+ "allow_missing_refs": true,
+ "local_smoke_waives_cohort_hash": true,
+ "timing_meshes": [
+  64
+ ]
 }

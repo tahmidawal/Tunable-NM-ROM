@@ -32,7 +32,7 @@ def rho_rules(setting, L):
     if setting == 'head':
         r.append(dict(name='q0scaled', kind='mesh', rule='q0scaled'))
     r += [dict(name=f'gauss{p}', kind='point', rule=f'gauss{p}')
-          for p in (8, 16, 24, 32, 48, 64, 80, 96, 128, 160, 200, 256, 320, 400, 512)]
+          for p in (8, 16, 24, 32, 48, 64, 80, 96, 128, 160, 192, 200, 256, 320, 400, 512)]
     r += [dict(name=f'fib{n}', kind='point', rule=f'fib{n}')
           for n in (987, 1597, 2584, 4181, 6765, 10946, 17711, 28657, 46368, 75025, 121393)]
     r += [dict(name=f'sobol{m}', kind='point', rule=f'sobol{m}') for m in (1024, 4096, 16384, 65536)]
@@ -46,7 +46,7 @@ def rho_rules(setting, L):
 def qstudy(attempt, L, cohorts, dense_cases, refs, timing_cohort, settings=SETTINGS, parity=(), audit_cases=(0, 2),
            gref=GREF, gref_check=GREF_CHECK, case_subset=None, timing_cases=6, reps=3, extra=None):
     c = dict(attempt=attempt, mesh=L, cohorts=cohorts, settings=list(settings), gtol=1e-3, step_budget=600,
-             arms={s: rollout_arms(s, gref) for s in settings}, parity_arms=list(parity),
+             arms={s: rollout_arms(s, gref) for s in settings},
              dense_cases=dense_cases, population_arm='lat64', gref=gref, gref_check=gref_check, gref_bar=GREF_BAR,
              rho_rules={s: rho_rules(s, L) for s in settings},
              refs=refs, fom=dict(truth=dict(name='lean_tight', ntol=1e-6, ltol=1e-8),
@@ -55,9 +55,12 @@ def qstudy(attempt, L, cohorts, dense_cases, refs, timing_cohort, settings=SETTI
              timing=dict(cohort=timing_cohort, cases=timing_cases, reps=reps, burn=.1, seed=20261001,
                          arms={s: [a['name'] for a in rollout_arms(s, gref) if not a.get('control')
                                    and not (a['name'] == 'dense' and L > 1024)] for s in settings}),
-             audit=dict(cohort=cohorts[0], cases=list(audit_cases), full_max_mesh=256,
+             audit=dict(cohort=cohorts[0], cases=list(audit_cases), full_max_mesh=256, full_case0_max_mesh=1024,
                         full_arms=['dense', 'lat64', 'gauss64', 'fib6765', 'gref']),
              tangent_chunks=dict(acc=24, fast=8, head=1), dense_chunk=8, point_chunk=32768)
+    for x in parity:
+        c['arms'][x['setting']].append({k: v for k, v in x.items() if k != 'setting'})
+    c['timing']['extra_mesh_arms'] = {s: [n for n in XMESH_ARMS + (['q0scaled'] if s == 'head' else [])] for s in settings}
     if case_subset:
         c['case_subset'] = case_subset
     if extra:
@@ -65,9 +68,13 @@ def qstudy(attempt, L, cohorts, dense_cases, refs, timing_cohort, settings=SETTI
     return c
 
 
+def xmesh():
+    return dict(timing_meshes=[256, 1024])
+
+
 def parity_256():
-    return [dict(setting='acc', name='lat64_g1e-2', kind='mesh', rule='lat64', gtol=1e-2, parity_only=True, cohort='dev6'),
-            dict(setting='fast', name='lat64_g1e-2', kind='mesh', rule='lat64', gtol=1e-2, parity_only=True, cohort='dev6')]
+    return [dict(setting='acc', name='lat64_g1e-2', kind='mesh', rule='lat64', gtol=1e-2, cohorts=['dev6']),
+            dict(setting='fast', name='lat64_g1e-2', kind='mesh', rule='lat64', gtol=1e-2, cohorts=['dev6'])]
 
 
 PARITY_TARGETS = {  # worst evolved same-grid %, dev6 (DESIGN G3)
@@ -79,7 +86,10 @@ PARITY_TARGETS = {  # worst evolved same-grid %, dev6 (DESIGN G3)
 
 
 def refs(att):
-    return dict(ST=f'{NS}/{att}/output', S=f'{NS}/{att}/output')
+    return f'{NS}/{att}/output'
+
+
+XMESH_ARMS = ['lat64', 'gauss64', 'gauss128', 'gauss256', 'fib6765', 'fib17711', 'fib46368']
 
 
 def refjob(attempt, cohorts, audit, mesh=8192, case_limit=None):
@@ -101,24 +111,29 @@ def main():
         'dv256': qstudy('dv256', 256, ['dev6', 'val32'], dict(dev6='all', val32='all'), refs('refdv'), 'dev6',
                         parity=parity_256()),
         'dv1024': qstudy('dv1024', 1024, ['dev6', 'val32'], dict(dev6='all', val32='all'), refs('refdv'), 'dev6'),
-        'dv4096': qstudy('dv4096', 4096, ['dev6', 'val32'], dict(dev6='all'), refs('refdv'), 'dev6'),
+        'dv4096': qstudy('dv4096', 4096, ['dev6', 'val32'], dict(dev6='all'), refs('refdv'), 'dev6', extra=xmesh()),
         't256': qstudy('t256', 256, ['test64'], dict(test64='all'), refs('reft'), 'test64'),
         't1024': qstudy('t1024', 1024, ['test64'], dict(test64='all'), refs('reft'), 'test64'),
-        't4096': qstudy('t4096', 4096, ['test64'], dict(test64=list(range(6))), refs('reft'), 'test64'),
+        't4096': qstudy('t4096', 4096, ['test64'], dict(test64=list(range(6))), refs('reft'), 'test64', extra=xmesh()),
         # local smoke (GB10): tiny mesh, two dev cases, a few arms, a cheap continuum rule
         'smk128': qstudy('smk128', 128, ['dev6'], dict(dev6='all'), {}, 'dev6', parity=parity_256(),
                          gref='gauss256', gref_check='gauss320', case_subset=dict(dev6=[0, 2]), timing_cases=1, reps=1,
-                         extra=dict(allow_cpu_smoke=False)),
+                         extra=dict(allow_missing_refs=True, local_smoke_waives_cohort_hash=True, timing_meshes=[64])),
         'refsmk': refjob('refsmk', ['dev6'], dict(dev6=[0]), mesh=512, case_limit=1),
     }
+    # G6 rollout-level check (DESIGN 7): a Gauss-768 rollout beside gref, dev6, at 1024^2 only
+    for s_ in SETTINGS:
+        cfgs['dv1024']['arms'][s_].append(dict(name='gref_check', kind='point', rule=GREF_CHECK, cohorts=['dev6']))
     # smoke: thin the arm and rho lists
-    keep = {'dense', 'lat64', 'gauss64', 'fib4181', 'flux_gauss64', 'ctrl_smolyak8', 'ctrl_gauss8', 'gref'}
+    keep = {'dense', 'lat64', 'gauss64', 'fib4181', 'flux_gauss64', 'ctrl_smolyak8', 'ctrl_gauss8', 'gref', 'lat64_g1e-2'}
     s = cfgs['smk128']
     s['arms'] = {k: [a for a in v if a['name'] in keep] for k, v in s['arms'].items()}
     s['rho_rules'] = {k: [r for r in v if r['name'] in ('dense', 'lat16', 'lat32', 'lat64', 'gauss32',
                                                          'gauss64', 'gauss128', 'fib4181', 'sobol4096', 'smolyak8',
                                                          'flux_gauss64')] for k, v in s['rho_rules'].items()}
     s['timing']['arms'] = {k: [n for n in v if n in keep] for k, v in s['timing']['arms'].items()}
+    s['timing']['extra_mesh_arms'] = {k: ['lat64', 'gauss64'] for k in s['settings']}
+    s['case_subset'] = dict(dev6=[2])
     for name, c in cfgs.items():
         (out / f'{name}.json').write_text(json.dumps(c, indent=1) + '\n')
     (out / 'parity_targets.json').write_text(json.dumps({str(k): v for k, v in PARITY_TARGETS.items()}, indent=1) + '\n')

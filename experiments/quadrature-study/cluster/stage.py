@@ -18,7 +18,8 @@ FILES = [f'{LANE}/qcore.py', f'{LANE}/qstudy.py', f'{LANE}/refjob.py', f'{LANE}/
          f'{LANE}/vendor/arms.py', f'{LANE}/vendor/hops.py', f'{LANE}/vendor/hfast.py', f'{LANE}/vendor/bkfast.py',
          f'{LANE}/vendor/hari_quadrature.py', f'{LANE}/inputs/rotation_R512.npz',
          f'{LANE}/inputs/rule_q0_m1024_qrg304_reachable.npz',
-         'experiments/mr-burgers2d/engines.py', 'experiments/separable-decoder/sep_common.py',
+         'experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
+         'experiments/separable-decoder/sep_common.py',
          'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
         'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
@@ -43,6 +44,11 @@ def main():
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain', '--', LANE], text=True)
     assert not [l for l in dirty.splitlines() if not l[3:].startswith(f'{LANE}/runs')], dirty
+    if a.driver == 'qstudy' and json.loads((ROOT / LANE / a.config).read_text())['cohorts'] == ['test64']:
+        # DESIGN 8/9: the test cohort is evaluated only after the selection is frozen and committed
+        sel = subprocess.run(['git', '-C', str(ROOT), 'cat-file', '-e', f'{commit}:{LANE}/checks/selection-dv.json'])
+        des = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{LANE}/DESIGN.md'], text=True)
+        assert sel.returncode == 0 and 'FROZEN SELECTION' in des, 'test jobs require the committed frozen selection'
     proof = []
     for name in files:
         content = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}'])

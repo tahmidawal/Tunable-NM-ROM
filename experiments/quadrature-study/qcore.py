@@ -197,15 +197,34 @@ def continuum_tests(X, kx, ky):
     return 2. * sx * sy, 2. * np.pi * (a * cx * sy + b * sx * cy)
 
 
-def offmesh_data(model, Rp, X, w, L, kx, ky, form):
-    """Cached blocks of an off-mesh rule. point: Gq, Gs = Gx + Gy, Psi = L w psi. flux: Gq, Pxy = L w (psi_x+psi_y)."""
-    Gq, Gx, Gy = model.values_grads(X, Rp)
-    psi, pxy = continuum_tests(X, kx, ky)
-    if form == 'point':
-        return dict(Gq=Gq, Gs=Gx + Gy, Psi=jnp.asarray(L * w[:, None] * psi))
-    if form == 'flux':
-        return dict(Gq=Gq, Pxy=jnp.asarray(L * w[:, None] * pxy))
-    raise ValueError(form)
+def _tests_dev(X, kx, ky):
+    """psi and psi_x + psi_y at X on the device: two (m, M) arrays (Hari's grid.continuum_tests, jnp)."""
+    X = jnp.asarray(X)
+    x, y = X[:, 0:1], X[:, 1:2]
+    a, b = jnp.asarray(np.asarray(kx, float))[None], jnp.asarray(np.asarray(ky, float))[None]
+    sx, cx, sy, cy = jnp.sin(a * jnp.pi * x), jnp.cos(a * jnp.pi * x), jnp.sin(b * jnp.pi * y), jnp.cos(b * jnp.pi * y)
+    return 2. * sx * sy, 2. * jnp.pi * (a * cx * sy + b * sx * cy)
+
+
+def offmesh_data(model, Rp, X, w, L, kx, ky, form, chunk=32768):
+    """Cached blocks of an off-mesh rule, built on the device in point chunks (no host (m, M) tables).
+    point: Gq, Gs = Gx + Gy, Psi = L w psi.  flux: Gq, Pxy = L w (psi_x + psi_y).  Smolyak rules carry their own
+    (possibly negative) weights, whose sum is not 1 after Hari's boundary-node removal; they are never renormalised."""
+    parts = []
+    for s in range(0, len(X), chunk):
+        Xs, ws = X[s:s + chunk], jnp.asarray(w[s:s + chunk])[:, None]
+        Gq, Gx, Gy = model.values_grads(Xs, Rp)
+        psi, pxy = _tests_dev(Xs, kx, ky)
+        if form == 'point':
+            parts.append((Gq, Gx + Gy, L * ws * psi))
+        elif form == 'flux':
+            parts.append((Gq, L * ws * pxy))
+        else:
+            raise ValueError(form)
+        del Gx, Gy, psi, pxy
+    cat = [jnp.concatenate([p_[i] for p_ in parts]) if len(parts) > 1 else parts[0][i] for i in range(len(parts[0]))]
+    keys = ('Gq', 'Gs', 'Psi') if form == 'point' else ('Gq', 'Pxy')
+    return jax.block_until_ready(dict(zip(keys, cat)))
 
 
 def mesh_data(model, Rp, ij, w, L, kx, ky):

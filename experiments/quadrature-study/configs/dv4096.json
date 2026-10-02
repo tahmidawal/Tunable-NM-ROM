@@ -328,7 +328,6 @@
    }
   ]
  },
- "parity_arms": [],
  "dense_cases": {
   "dev6": "all"
  },
@@ -411,6 +410,11 @@
     "name": "gauss160",
     "kind": "point",
     "rule": "gauss160"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
    },
    {
     "name": "gauss200",
@@ -642,6 +646,11 @@
     "name": "gauss160",
     "kind": "point",
     "rule": "gauss160"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
    },
    {
     "name": "gauss200",
@@ -880,6 +889,11 @@
     "rule": "gauss160"
    },
    {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   {
     "name": "gauss200",
     "kind": "point",
     "rule": "gauss200"
@@ -1036,10 +1050,7 @@
    }
   ]
  },
- "refs": {
-  "ST": "/cluster/tufts/paralab/tawal01/quad2d_20261001/refdv/output",
-  "S": "/cluster/tufts/paralab/tawal01/quad2d_20261001/refdv/output"
- },
+ "refs": "/cluster/tufts/paralab/tawal01/quad2d_20261001/refdv/output",
  "fom": {
   "truth": {
    "name": "lean_tight",
@@ -1124,6 +1135,36 @@
     "flux_fib6765",
     "gref"
    ]
+  },
+  "extra_mesh_arms": {
+   "acc": [
+    "lat64",
+    "gauss64",
+    "gauss128",
+    "gauss256",
+    "fib6765",
+    "fib17711",
+    "fib46368"
+   ],
+   "fast": [
+    "lat64",
+    "gauss64",
+    "gauss128",
+    "gauss256",
+    "fib6765",
+    "fib17711",
+    "fib46368"
+   ],
+   "head": [
+    "lat64",
+    "gauss64",
+    "gauss128",
+    "gauss256",
+    "fib6765",
+    "fib17711",
+    "fib46368",
+    "q0scaled"
+   ]
   }
  },
  "audit": {
@@ -1133,6 +1174,7 @@
    2
   ],
   "full_max_mesh": 256,
+  "full_case0_max_mesh": 1024,
   "full_arms": [
    "dense",
    "lat64",
@@ -1147,5 +1189,9 @@
   "head": 1
  },
  "dense_chunk": 8,
- "point_chunk": 32768
+ "point_chunk": 32768,
+ "timing_meshes": [
+  256,
+  1024
+ ]
 }

@@ -75,8 +75,11 @@ def main():
             json.dump(rep, open(out / 'result.json', 'w'), indent=1)
     rep['elapsed_seconds'] = time.perf_counter() - begin
     rep['complete'] = True
+    rep['all_accepted'] = bool(all(x['accepted'] for x in rep['cases']))
     json.dump(rep, open(out / 'result.json', 'w'), indent=1)
-    print('REF COMPLETE', flush=True)
+    print('REF COMPLETE all_accepted', rep['all_accepted'], flush=True)
+    if not rep['all_accepted']:
+        raise SystemExit(3)             # afterok dependents must not start on a rejected reference (DESIGN G5)
 
 
 if __name__ == '__main__':

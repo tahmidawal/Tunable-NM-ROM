@@ -75,7 +75,9 @@ def main():
         rf = json.loads(Path(a.refined).read_text())['panels'][str(n)]
         res['checks']['refined_in_job_vs_numpy'] = rf['max_abs_diff_vs_in_job']
         res['checks']['refined_in_job_present'] = bool(rep.get('refined_in_job'))
-        ok['refined'] = rf['max_abs_diff_vs_in_job'] <= 1e-10
+        res['checks']['refined_in_job_compared'] = rf['in_job_compared']
+        ok['refined'] = rf['max_abs_diff_vs_in_job'] <= 1e-10 and (rf['in_job_compared'] > 0 or
+                                                                   not rep.get('refined_in_job'))
     # 4. rho ingredients
     rules = np.load(HERE / 'rules' / 'rules.npz')
     rule = rep['config']['audit_rule']
@@ -109,13 +111,40 @@ def main():
         res['checks'][f'rho_R{Rp}'] = c
         ok[f'rho_R{Rp}'] = (c['offmesh_rule_rel'] <= 1e-10 and c['continuum_gl64_vs_saved_gl80_rel'] <= 1e-5
                             and c.get('mesh_target_rel', 0.) <= 1e-10 and c['rho_numpy_le_recorded_worst'])
+    # 4b. the recorded worst rho of EVERY rule reproduced at its saved arg-max state (NumPy rule vs the saved targets)
+    for Rp in rep['rho']:
+        z = np.load(pdir / 'fields' / f'rho_argmax_R{Rp}.npz')
+        idx = list(z['idx'])
+        k, _ = N.modes(n, 4 * int(Rp))
+        worst = 0.
+        for nm, (ic, im) in zip(z['names'], z['amax']):
+            Xr, wr = rules[f'{nm}_X'], rules[f'{nm}_w']
+            G, D = N.bank_np(p, T[:, :int(Rp)], Xr, deriv=True)
+            for which, i_, key in (('cont', ic, 'tgt_cont'), ('mesh', im, 'tgt_mesh')):
+                r_ = idx.index(i_)
+                v_ = N.offmesh_adv_np(G, D, Xr, wr, n, k, z['Cs'][r_:r_ + 1])[0]
+                t_ = z[key][r_]
+                rho_np = float(np.linalg.norm(v_ - t_) / np.linalg.norm(t_))
+                rec_ = rep['rho'][Rp]['rules'][str(nm)][which]['worst']
+                worst = max(worst, abs(rho_np - rec_) / rec_)
+        res['checks'][f'rho_worst_reproduced_R{Rp}_max_rel'] = worst
+        ok[f'rho_worst_reproduced_R{Rp}'] = worst <= 1e-8
     # 5. selection, independent implementation
     if a.selection:
         sel = json.loads(Path(a.selection).read_text())['meshes'][str(n)]['R']
         tim = rep['timing']['summary']
         agree = {}
+        g = rep['gates']
+        timing_ok = bool(g['timing_drift_pass'] and g['timing_neighbour_pass'] and g['deterministic_pass'])
+        hard_ok = bool(g['gram_condition'] <= 1e8 and g['tensor_vs_direct'] <= 1e-10 and g['G1_derivative_vs_fd'] <= 1e-6
+                       and g['G2_meshnodes_offmesh_vs_tensor'] <= 1e-12 and g['G3_jacobian_vs_jacfwd'] <= 1e-12
+                       and g['G3_adv_half_Jc'] <= 1e-12 and g['G4_solver_vs_vendor_fields'] <= 1e-12
+                       and g['G4_solver_vs_vendor_coefs'] <= 1e-12 and g['G4_iterations_reasons_equal']
+                       and g['reference_residual'] < 1e-9)
+        s_m = {nm: rep['sizes'][nm]['m'] for nm in rep['arms'] if 'm' in rep['sizes'].get(nm, {})}
         for Rp in rep['rho']:
-            cand = []
+            hard_ok_R = hard_ok and rep['rho'][Rp]['continuum_check']['vs_target']['worst'] <= 1e-5
+            cand, conv_ok = [], {}
             for nm, arm in rep['arms'].items():
                 s = arm['spec']
                 if s['Rp'] != int(Rp) or s['family'] != 'offmesh' or s['rule'] in rep['config']['controls']:
@@ -125,8 +154,11 @@ def main():
                 d = 0.0 if s['rule'] == rep['config']['converged_rule'] else \
                     arm['distance'][rep['config']['converged_rule']]['worst']
                 if arm['all_finite'] and arm['reason_counts']['3'] == 0 and nst <= 0.01 and rc_ <= 0.116 and d <= 1e-3:
-                    cand.append((tim[nm]['median_ms'], nm))
-            mine = min(cand)[1] if cand else None
+                    cand.append(((tim[nm]['median_ms'] if timing_ok else s_m[nm]), nm))
+                if s['rule'] in (rep['config']['converged_rule'], 'gl32'):
+                    conv_ok[s['rule']] = bool(arm['all_finite'] and arm['reason_counts']['3'] == 0 and nst <= 0.01
+                                              and rc_ <= 0.116 and d <= 1e-3)
+            mine = min(cand)[1] if (cand and all(conv_ok.values()) and len(conv_ok) == 2 and hard_ok_R) else None
             agree[Rp] = dict(numpy=mine, select_q=sel[Rp]['selected'], match=mine == sel[Rp]['selected'])
         res['checks']['selection'] = agree
         ok['selection'] = all(v['match'] for v in agree.values())

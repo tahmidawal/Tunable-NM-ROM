@@ -45,11 +45,13 @@ def main():
     a = ap.parse_args()
     ref = json.loads(Path(a.refined).read_text())
     frozen = json.loads(Path(a.frozen).read_text()) if a.frozen else None
-    out = dict(rule='DESIGN.md sections 6-7 (select_q.py)', refined=a.refined,
+    out = dict(rule='DESIGN.md sections 6-7, R1, R2 (select_q.py)', refined=a.refined, frozen=frozen is None,
+               cohort_seed=None,
                refined_sha256=hashlib.sha256(Path(a.refined).read_bytes()).hexdigest(), meshes={})
     for pth in a.panels:
         rep = json.loads(Path(pth).read_text())
         n = rep['mesh']
+        out['cohort_seed'] = rep['cohort']['seed']
         rf = ref['panels'][str(n)]
         tim = rep['timing']['summary']
         g = gates_ok(rep['gates'])
@@ -99,16 +101,20 @@ def main():
             g32 = rows.get(f'gl32_R{Rp}', {})
             conv_valid = bool(rows[conv]['eligible'] and g32.get('eligible') and g32.get('dist_conv') is not None
                               and g32['dist_conv'] <= BAR_CONV)
+            hard_gates = all(v for k, v in g.items() if k not in ('timing', 'timing_neighbour_untested')) and \
+                mres['continuum_check_pass'][str(Rp)]
+            by = 'median_ms' if g['timing'] else 'm (timing gate failed, R2-1)'
             if frozen:
                 sel = frozen['meshes'][str(n)]['R'][str(Rp)]['selected']
             else:
-                cands = [(r['ms'], nm) for nm, r in rows.items() if r['eligible'] and r['dist_conv'] is not None
+                key = (lambda nm, r: (r['ms'], nm)) if g['timing'] else (lambda nm, r: (r['m'], nm))
+                cands = [key(nm, r) for nm, r in rows.items() if r['eligible'] and r['dist_conv'] is not None
                          and r['dist_conv'] <= BAR_CONV]
-                sel = min(cands)[1] if (cands and conv_valid) else None
+                sel = min(cands)[1] if (cands and conv_valid and hard_gates) else None
             tens = rows[f'tensor_R{Rp}']
             lat = {mm: rows.get(f'lat{mm}_R{Rp}') for mm in LADDER}
             reach_t = [mm for mm in LADDER if lat[mm] and lat[mm]['refined_worst'] <= tens['refined_worst']]
-            reach_c = [mm for mm in LADDER if lat[mm] and lat[mm]['dist_conv'] is not None
+            reach_c = [mm for mm in LADDER if conv_valid and lat[mm] and lat[mm]['dist_conv'] is not None
                        and lat[mm]['dist_conv'] <= BAR_CONV]
             rc = lambda k: rows[f'{k}_R{Rp}']['rho_cont']['worst']
             res_floor = 10 * cont_chk[str(Rp)]
@@ -116,7 +122,10 @@ def main():
                           for pair, (a_, b_) in dict(m4096=('lat4096', 'gl16'), m32768=('lat32768', 'gl32')).items()}
             controls = {c: dict(rho_cont=rows[f'{c}_R{Rp}']['rho_cont']['worst'],
                                 dist_conv=rows[f'{c}_R{Rp}']['dist_conv'],
-                                fired=bool(rows[f'{c}_R{Rp}']['rho_cont']['worst'] > BAR_RHO and
+                                fired_rho=bool(rows[f'{c}_R{Rp}']['rho_cont']['worst'] > BAR_RHO),
+                                fired_dist=(bool(rows[f'{c}_R{Rp}']['dist_conv'] > BAR_CONV) if conv_valid
+                                            and rows[f'{c}_R{Rp}']['dist_conv'] is not None else 'withheld'),
+                                fired=bool(rows[f'{c}_R{Rp}']['rho_cont']['worst'] > BAR_RHO and conv_valid and
                                            rows[f'{c}_R{Rp}']['dist_conv'] is not None and
                                            rows[f'{c}_R{Rp}']['dist_conv'] > BAR_CONV))
                         for c in ctrls}
@@ -127,8 +136,9 @@ def main():
             mres['R'][str(Rp)] = dict(
                 selected=sel, selected_row=rows[sel] if sel else None, tensor_row=tens, rho_resolution=res_floor,
                 lattice_vs_gauss_unresolved=unresolved, converged=conv, converged_valid=conv_valid,
-                lattice_beats_gauss_4096=bool(rc('lat4096') < rc('gl16')),
-                lattice_beats_gauss_32768=bool(rc('lat32768') < rc('gl32')),
+                hard_gates=hard_gates, selected_by=by,
+                lattice_beats_gauss_4096=('unresolved' if unresolved['m4096'] else bool(rc('lat4096') < rc('gl16'))),
+                lattice_beats_gauss_32768=('unresolved' if unresolved['m32768'] else bool(rc('lat32768') < rc('gl32'))),
                 smallest_m_reaching_tensor=reach_t[0] if reach_t else None,
                 smallest_m_reaching_converged=reach_c[0] if reach_c else None,
                 controls=controls, rows=rows)
@@ -142,7 +152,7 @@ def main():
                   f"{v['smallest_m_reaching_converged']}; controls " +
                   ', '.join(f"{k}:{c['fired']}" for k, c in v['controls'].items()))
         print(f'n={n} gates {g}')
-    out['lattice_beats_gauss'] = all(v['lattice_beats_gauss_4096'] and v['lattice_beats_gauss_32768']
+    out['lattice_beats_gauss'] = all(v['lattice_beats_gauss_4096'] is True and v['lattice_beats_gauss_32768'] is True
                                      for m in out['meshes'].values() for v in m['R'].values())
     Path(a.out).write_text(json.dumps(out, indent=1) + '\n')
 

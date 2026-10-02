@@ -30,8 +30,12 @@ def main():
     a = ap.parse_args()
     p, T = N.load_bank(a.model)
     G65 = N.bank_np(p, T, N.lattice65_coords())                                   # (63^3, R)
+    done = json.loads(Path(a.ref).with_suffix('.done').read_text())
+    ref_sha = hashlib.sha256(Path(a.ref).read_bytes()).hexdigest()
+    assert done['sha256'] == ref_sha and done['accepted'] is True, done
     z = np.load(a.ref)
-    out = dict(ref=a.ref, ref_sha256=hashlib.sha256(Path(a.ref).read_bytes()).hexdigest(), seed=int(z['seed']),
+    assert int(z['n']) == done['n'] and float(z['dt']) == done['dt'] and float(z['ntol']) == done['ntol'], done
+    out = dict(done=done, ref=a.ref, ref_sha256=hashlib.sha256(Path(a.ref).read_bytes()).hexdigest(), seed=int(z['seed']),
                panels={}, cross_mesh={})
     fields, n0_all = {}, {}
     for pdir in a.panels:
@@ -44,11 +48,14 @@ def main():
         n0 = {j: float(np.linalg.norm(RR[j][0])) for j in cases}
         n0_all.update(n0)
         coef = np.load(pdir / 'fields' / 'coefficients.npz')
-        res = dict(mesh=n, job_id=rep.get('job_id'), arms={}, fom={}, max_abs_diff_vs_in_job=0.0)
+        for k_, v_ in rep['config']['expected_ref'].items():
+            assert done[k_] == v_, (k_, done[k_], v_)
+        res = dict(mesh=n, job_id=rep.get('job_id'), arms={}, fom={}, max_abs_diff_vs_in_job=0.0, in_job_compared=0)
         sg = np.load(pdir / 'fields' / 'same_grid_ref65.npz')
         res['same_grid_reference'] = [float(N.worst_evolved(np.asarray(sg[f'c{j}']), RR[j])[1:].max()) for j in cases]
-        res['initial_match'] = max(float(np.abs(np.asarray(sg[f'c{j}'])[0] - RR[j][0]).max() / np.abs(RR[j][0]).max())
+        res['initial_match'] = im = max(float(np.abs(np.asarray(sg[f'c{j}'])[0] - RR[j][0]).max() / np.abs(RR[j][0]).max())
                                    for j in cases)
+        assert im <= 1e-12, im
         for nm, arm in rep['arms'].items():
             Rp = arm['spec']['Rp']
             per, curves = [], {}
@@ -61,6 +68,7 @@ def main():
                 curves[j] = e
                 per.append(float(e[1:].max()))
                 if 'err_refined' in q:
+                    res['in_job_compared'] += 1
                     res['max_abs_diff_vs_in_job'] = max(res['max_abs_diff_vs_in_job'],
                                                         float(np.abs(np.asarray(q['err_refined']) - e).max()))
             if per:
@@ -74,6 +82,7 @@ def main():
                 e = N.worst_evolved(F, RR[j])
                 per.append(float(e[1:].max()))
                 if 'err_refined' in q:
+                    res['in_job_compared'] += 1
                     res['max_abs_diff_vs_in_job'] = max(res['max_abs_diff_vs_in_job'],
                                                         float(np.abs(np.asarray(q['err_refined']) - e).max()))
             res['fom'][name] = dict(worst=max(per), median=float(np.median(per)), per_case=per)

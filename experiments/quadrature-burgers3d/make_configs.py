@@ -5,7 +5,7 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 NS = '/cluster/tufts/paralab/tawal01/quad3d_20261001'
-REF_TOL = (1e-8, 1e-9)        # refined-reference tolerances; set from the smoke1 probe (DESIGN R1-2)
+REF_TOL = (1e-6, 1e-7)        # refined-reference tolerances: set from the smoke1 probe by the DESIGN section 4 rule (R3)
 RULES_SHA = hashlib.sha256((HERE / 'rules' / 'rules.npz').read_bytes()).hexdigest()
 BASE = dict(
     Rps=[512, 256], dt=0.01, gtol=1e-3, trust_fraction=0.05,

@@ -272,3 +272,43 @@ Jacobian, distances and lattice indices CORRECT; 4 blockers, 6 majors, 5 minors.
 12. **Minors.** Smolyak weights sum to 0.99753 (boundary points dropped), not one; they are not renormalised. One shift /
     scramble seed per rule: results are for those rules, not a distribution over shifts; one Sobol size cannot show a
     rate. The 257-vs-513 probe is a refinement discrepancy on one case, not an error bound for the reference.
+
+## R2 — revisions after the codex re-check of R1 (2026-10-02 ~00:45 EDT, before any experiment job; `results/codex-design-audit-r1-2026-10-02.md`)
+
+Smoke job `smoke1` (4731591, H200) ran meanwhile on probe cases only (diagnostic; no choice below uses its ROM numbers).
+
+1. **Selection and gates.** Selection requires every non-timing gate and the continuum-target check of its $R'$
+   (`hard_gates`). If the *timing* gate fails at a mesh, ms are not trusted and the selection orders the qualifying arms
+   by point count $m$ instead (flagged `selected_by`). Verdicts that rest on the converged rollout (smallest $m$
+   reaching it, the controls' distance part) are `withheld` when it is invalid. Lattice-vs-Gauss pairs below the
+   resolution floor are `unresolved` and never counted as wins.
+2. **Offline reference consumption.** `refine_q.py` re-checks the `.done` marker (sha256, accepted, $n$, $\Delta t$,
+   tolerances against each panel's `expected_ref`) and asserts the initial-field agreement ($\le 10^{-12}$); it counts
+   in-job comparisons, and the audit fails if the panel says it computed refined errors but none were compared.
+3. **Held-out guard.** For cohort 923901 the panel refuses to start unless the config carries the selection's sha256,
+   the file matches, it is marked frozen from validation cohort 923801, and every selected rule exists in the config.
+4. **Certification rollouts.** A reason-3 exit (or non-finite state) in a certification rollout aborts the job.
+5. **ρ audit.** The arg-max state of every rule (continuum and mesh) is saved; the audit reproduces every recorded worst
+   ρ with the NumPy rule against the saved targets ($\le 10^{-8}$ relative), besides recomputing the targets
+   independently on the audit-rule sample.
+6. **Neighbour timing groups** that are empty are labelled *untested* in the report; the gate result is quoted as
+   "passed, neighbour check untested for …" — never as an unqualified pass.
+7. **Mesh invariance (ii), executable.** For each fixed off-mesh arm and the tensor: the held-out worst `err_refined`
+   ratio max/min over the three meshes, and the cross-mesh field distances 64³→128³ and 128³→256³. An arm is
+   "mesh-invariant" iff the ratio is $\le 1.10$ **and** its 128³→256³ distance is $\le 10^{-2}$ and no larger than its
+   64³→128³ distance (the rollouts settle as the mesh refines). The selection policy is reported separately.
+8. Dense arms: per-case quick-run seconds are recorded (outside the A–B–A protocol) and labelled as such.
+9. Lean-vs-vendor FOM residual agreement is asserted ($\le 10^{-13}$).
+
+## R3 — refined-reference tolerances from the smoke probe (2026-10-02 ~01:30 EDT, before any experiment job)
+
+`smoke1` (job 4731591, H200, probe case 923651) at 513 nodes, $\Delta t = 0.0025$, lean FOM (gate lean = vendor at 65
+nodes: fields, Newton counts and residuals identical): $(10^{-6},10^{-7})$ 55.8 s, $(10^{-8},10^{-9})$ 73.8 s,
+$(10^{-10},10^{-11})$ 91.7 s per case; every setting reaches a final relative Newton residual of $9.85\times10^{-11}$ in
+two Newton steps per time step; lattice differences from the tightest $1.0\times10^{-12}$ and $8.4\times10^{-15}$; peak
+device memory 26.9 GB. By the §4 rule the reference uses $(10^{-6}, 10^{-7})$. The 257-node same-grid reference of
+that case differs from the 513-node reference by **1.70 %** on the lattice (first-order upwind in space plus the
+$\Delta t$ halving): the refined reference is itself a first-order solution, and differences between arms smaller
+than about a percent against it must be read with that in mind (reported beside every refined number).
+Smoke panel (`smoke65`, 4 probe cases, diagnostic): every gate G1–G4 passed; timing drift 1.19 and neighbour 1.21
+failed with only 2 cases × 2 repetitions (the validation panels use 16 × 3).

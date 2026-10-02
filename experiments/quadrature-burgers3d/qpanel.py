@@ -105,8 +105,14 @@ def main():
     rules_sha = sha_file(rules_path)
     assert cfg.get('expected_rules_sha256') in (None, rules_sha), rules_sha
     rule_names = list(cfg['rules'])
-    if cfg.get('selection_sha256'):
+    if cfg['cohort_seed'] == 923901 or cfg.get('selection_sha256'):        # held-out: frozen selection mandatory
         assert sha_file(root / cfg['selection']) == cfg['selection_sha256'], 'frozen selection differs'
+        fz = json.loads((root / cfg['selection']).read_text())
+        assert fz.get('frozen') is True and fz.get('cohort_seed') == 923801, 'selection is not a frozen validation one'
+        for n_ in ('65', '129', '257'):
+            for Rp_ in cfg['Rps']:
+                s_ = fz['meshes'][n_]['R'][str(Rp_)]['selected']
+                assert s_ is None or s_.rsplit('_R', 1)[0] in cfg['rules'], s_
     rules = load_rules(rules_path, rule_names + [cfg['continuum_target'], cfg['continuum_check']])
     rep = dict(config=cfg, mesh=n, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
                backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=smi, x64=True,
@@ -263,6 +269,7 @@ def main():
                 crec.append(dict(seed=seed, row=j, finite=bool(np.isfinite(ws).all()),
                                  reasons={str(k): int((rsn == k).sum()) for k in range(5)}))
                 assert np.isfinite(ws).all(), ('non-finite certification rollout', seed, j)
+                assert int((rsn == 3).sum()) == 0, ('reason-3 exit in a certification rollout', seed, j)
                 states.append(ws)
                 kidx.append(np.arange(ws.shape[0]))
         Cs = np.concatenate(states, 0)
@@ -287,14 +294,20 @@ def main():
                    rules={})
         res['rules']['tensor'] = dict(cont=summ(rho(ten, tgt_cont)), mesh=summ(rho(ten, tgt_mesh)))
         res['rules']['dense_upwind'] = dict(cont=summ(rho(tgt_mesh, tgt_cont)), mesh=summ(np.zeros(len(Cs))))
+        ev_idx = np.nonzero(kk >= 1)[0]
+        amax = {}
         for nm in rule_names:
             v = np.asarray(OM.adv_offmesh_batch(arms[f'{nm}_R{Rp}']['data'], jnp.asarray(Cs)))
             rc, rm = rho(v, tgt_cont), rho(v, tgt_mesh)
             res['rules'][nm] = dict(cont=summ(rc), mesh=summ(rm))
+            amax[nm] = (int(ev_idx[np.argmax(rc[ev_idx])]), int(ev_idx[np.argmax(rm[ev_idx])]))
             if nm == cfg.get('audit_rule'):
                 np.savez(out / 'fields' / f'rho_R{Rp}_{nm}.npz', Cs=Cs[:: max(1, len(Cs) // 32)],
                          k=kk[:: max(1, len(Cs) // 32)], v=v[:: max(1, len(Cs) // 32)],
                          tgt_cont=tgt_cont[:: max(1, len(Cs) // 32)], tgt_mesh=tgt_mesh[:: max(1, len(Cs) // 32)])
+        ia = sorted({i for v_ in amax.values() for i in v_})
+        np.savez(out / 'fields' / f'rho_argmax_R{Rp}.npz', idx=np.array(ia), Cs=Cs[ia], tgt_cont=tgt_cont[ia],
+                 tgt_mesh=tgt_mesh[ia], names=np.array(list(amax)), amax=np.array(list(amax.values())))
         rep['rho'][str(Rp)] = res
         log(f"RHO R{Rp}: check {res['continuum_check']['vs_target']['worst']:.2e}; " +
             '; '.join(f"{k} c{v['cont']['worst']:.2e} m{v['mesh']['worst']:.2e}" for k, v in res['rules'].items()))
@@ -350,10 +363,14 @@ def main():
         recs = []
         t_c = time.perf_counter()
         for j in run_cases:
+            t_q0 = time.perf_counter()
             o = run(nm, U0[j], NU[j])
             block(o)
             if j == run_cases[0]:
                 compile_s = time.perf_counter() - t_c
+                quick_s = None
+            else:
+                quick_s = time.perf_counter() - t_q0
             t_q = time.perf_counter()
             r = jnp.asarray(REF[j])
             e = np.asarray(errf(o[0], r))
@@ -364,7 +381,7 @@ def main():
             quick16[(nm, j)] = np.asarray(o[0][:, ridx])
             CHK[(nm, j)] = (float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
             recs.append(dict(case=j, err_same_grid=e.tolist(), worst_same_grid=float(e[1:].max()),
-                             err_restricted16=err16(quick16[(nm, j)], j),
+                             err_restricted16=err16(quick16[(nm, j)], j), quick_seconds=quick_s,
                              iterations=np.asarray(o[2]).tolist(), reasons=np.asarray(o[3]).tolist(),
                              gradients=np.asarray(o[4]).tolist(), rejected=np.asarray(o[6]).tolist(),
                              finite=bool(np.isfinite(np.asarray(o[0])).all() and np.isfinite(Cout).all())))

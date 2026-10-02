@@ -82,6 +82,7 @@ def main():
                                       residuals=float(jnp.max(jnp.abs(a_[2] - b_[2]))))
     log(f"lean FOM gate {rep['gate_lean_vs_vendor']}")
     assert rep['gate_lean_vs_vendor']['fields'] <= 1e-13 and rep['gate_lean_vs_vendor']['newton_equal']
+    assert rep['gate_lean_vs_vendor']['residuals'] <= 1e-13
     save()
 
     if cfg['mode'] == 'probe':

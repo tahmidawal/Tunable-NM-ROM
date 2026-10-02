@@ -336,3 +336,12 @@ After `FROZEN-SELECTION.json` was written and the test jobs submitted (t256 4739
 same-grid error on dense's cases) and the dv summaries were regenerated. No gate, bar or selection input changed:
 `select_rule.py` re-run on the regenerated summaries gives a byte-identical selection (sources block excluded). The
 manifest's `summary_sha256` values therefore refer to the pre-regeneration summaries (in git history at `946816433`).
+
+## A5 — correction to the wording of A3 (2026-10-02, after the Codex development-results audit)
+
+`results/codex-results-audit-dev.md` reproduced every checked number (0 mismatches) and corrected wording. A3 said
+"every off-mesh arm fails the two-sided B1 … because its error … is smaller than dense's". That is true of the resolved
+off-mesh rules; under-resolved rules (accurate Gauss $32^2$, the controls) fail B1 because they are *worse*. B1 is the
+decisive obstacle to a registered recommendation (B1′ alone yields the post-hoc choices) but not the only failure of
+every candidate. The selection itself is unchanged. Also noted by the audit: A4 was written after the test jobs were
+submitted (it changes no input), and the dense B2 ratios mix 38 cases at $256^2/1024^2$ with 6 at $4096^2$.

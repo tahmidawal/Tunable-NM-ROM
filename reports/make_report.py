@@ -159,7 +159,7 @@ def main():
     w('')
     w('```mermaid')
     w('flowchart LR')
-    w('  U0[dense input field] --> IC[Gauss-48 initial fit]:::solved')
+    w('  U0[dense input field] --> IC[initial fit on Gauss-48 samples: closed form for span, LM for head]:::solved')
     w('  IC --> LM{{LM step solve, 50 steps}}:::solved')
     w('  B[(frozen bank G, head h)]:::frozen --> LIN[exact discrete linear terms A c, Lambda]:::frozen')
     w('  B --> MESH[mesh rule: upwind stencil at m nodes]:::mesh')
@@ -264,7 +264,10 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
     w('Worst over cases of the maximum over the five evolved output times, % of $\\lVert u_0\\rVert$. **ST** = against the '
       'refined reference ($8192^2$, $\\Delta t/16$; primary), **S** = against the space-only refined reference ($8192^2$, '
       '$\\Delta t$), **vs dense** = distance from our own dense rollout, **vs gref** = distance from the continuum rollout, '
-      '**sg** = same-grid error against `fft_tight`. B1/B3 are the pre-registered bars (DESIGN §8).')
+      '**sg** = same-grid error against `fft_tight`. B1/B3 are the pre-registered bars (DESIGN §8). Refined-reference '
+      'errors are scored on the $257^2$ nodes shared by every mesh (the references are stored there); same-grid and '
+      'vs-dense/vs-gref errors on the full mesh. Rows have different case counts (column *cases*; dense and the Gauss-'
+      '$768^2$ check run on fewer cases), so compare arms across rows only in the matched table above.')
     w('')
     for st in SETS:
         for L in MESHES:
@@ -275,8 +278,8 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
             w(f'**{SNAME[st]} — ${L}^2$** (dense on {g(A, "dense", "all", "cases") or 0} cases; FOM `fft_tight` vs ST worst '
               f'{pc(g(s, "fom", "all", "ref_ST_evolved", "worst"))} %, vs S worst {pc(g(s, "fom", "all", "ref_S_evolved", "worst"))} %)')
             w('')
-            w('| arm | $m$ | ST worst | ST median | S worst | vs dense worst | vs gref worst | sg worst | B1 | B3 | LM its/query | non-stationary exits |')
-            w('|---|---|---|---|---|---|---|---|---|---|---|---|')
+            w('| arm | $m$ | cases | ST worst | ST median | S worst | vs dense worst (cases) | vs gref worst | sg worst | B1 | B3 | LM its/query | non-stationary exits |')
+            w('|---|---|---|---|---|---|---|---|---|---|---|---|---|')
             for name in ROLL_ORDER:
                 a = A.get(name)
                 if not a:
@@ -284,9 +287,9 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
                 al = a['all']
                 ex = al['exits']
                 nonst = sum(v for k, v in ex.items() if k != 'stationary')
-                w(f"| {label(name)} | {'mesh' if name == 'dense' else a['m']} | {pc(g(al, 'ref_ST_evolved', 'worst'))} | "
+                w(f"| {label(name)} | {'mesh' if name == 'dense' else a['m']} | {al['cases']} | {pc(g(al, 'ref_ST_evolved', 'worst'))} | "
                   f"{pc(g(al, 'ref_ST_evolved', 'median'))} | {pc(g(al, 'ref_S_evolved', 'worst'))} | "
-                  f"{pc(g(al, 'vs_dense_evolved', 'worst'))} | {pc(g(al, 'vs_gref_evolved', 'worst'))} | "
+                  f"{pc(g(al, 'vs_dense_evolved', 'worst'))} ({g(al, 'vs_dense_evolved', 'n') or 0}) | {pc(g(al, 'vs_gref_evolved', 'worst'))} | "
                   f"{pc(g(al, 'same_grid_evolved', 'worst'))} | {tick(g(a, 'B1', 'passed'))} | {tick(g(a, 'B3', 'passed'))} | "
                   f"{al['iterations_total_mean']:.0f} | {nonst} |")
             w('')
@@ -329,8 +332,10 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
     w('')
     s4 = S[4096]
     if s4 and g(s4, 'timing', 'B4_same_gpu'):
-        w(f"Same-GPU cross-mesh panel inside `{s4['attempt']}` ({s4['gpu']}): median solve time (query minus decode, ms) of each arm at "
-          '$256^2$, $1024^2$, $4096^2$, and the pre-registered flat-cost bar B4 (ratio $4096^2/256^2\\in[0.8,1.25]$).')
+        w(f"Same-GPU cross-mesh panel inside `{s4['attempt']}` ({s4['gpu']}): median solve time (median query minus median "
+          'decode, ms; 6 cases × 3 repetitions) of each arm at $256^2$, $1024^2$, $4096^2$, and the pre-registered flat-cost '
+          'bar B4 (ratio $4096^2/256^2\\in[0.8,1.25]$). The full query also decodes six output fields on the mesh, '
+          'which grows with $N$ (decode column), so full-query time is not flat.')
         w('')
         w('| setting | arm | $256^2$ | $1024^2$ | $4096^2$ | ratio | B4 |')
         w('|---|---|---|---|---|---|---|')
@@ -346,9 +351,11 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
         w('')
     if not test and sel and s4:
         ph = sel.get('recommended_posthoc_one_sided_B1', {})
-        w('**Equal-accuracy comparison (post hoc rules of D4 against the deployed `lat64`)**, same H200 job at $4096^2$: '
-          'solve and full-query ms, hyper-reduction error (B3 metric: vs continuum rollout for off-mesh, vs dense for '
-          '`lat64`), worst same-grid error.')
+        w('**Cost beside the deployed `lat64` (post hoc rules of D4)**, same H200 job at $4096^2$: solve and full-query ms, '
+          'hyper-reduction error (the B3 metric) and worst same-grid error. Caveat: this is not a matched equal-accuracy '
+          'comparison — the B3 metric is measured against different targets (off-mesh: the continuum rollout, all cases; '
+          '`lat64`: the dense rollout, the six dense cases), and the two families converge to different solutions (the '
+          'continuum vs the upwind stencil).')
         w('')
         w('| setting | arm | $m$ | solve ms | query ms | B3 metric worst % | sg worst % |')
         w('|---|---|---|---|---|---|---|')
@@ -424,7 +431,12 @@ def glossary(w):
          'decoded there with its exact gradient.'),
         ('Gauss $p^2$', 'tensor Gauss–Legendre rule with $p$ points per axis ($m=p^2$).'),
         ('Fibonacci $n$', 'rank-1 lattice rule with $n$ (a Fibonacci number) points and a random shift.'),
-        ('Sobol / Halton', 'scrambled quasi-Monte Carlo point sets (error about $1/m$).'),
+        ('Sobol / Halton', 'scrambled quasi-Monte Carlo point sets (typical error decay about $1/m$, not a guarantee).'),
+        ('$m$ / $M$', '$m$ = number of quadrature points (or mesh nodes) of a rule; $M$ = number of sine test functions.'),
+        ('pp', 'percentage points (an absolute difference of two percentages).'),
+        ('Spearman', 'rank correlation over the cases between a case\'s largest $\\rho$ and a case parameter ($-1$ to $+1$).'),
+        ('top 1 %', 'the 1 % of reached states (of all cases together) with the largest $\\rho$ for that rule.'),
+        ('cases (n)', 'the number of cases a statistic is taken over; dense runs on fewer cases at $4096^2$ (dev6 / the first six test cases).'),
         ('Smolyak CC', 'sparse-grid rule built from nested Clenshaw–Curtis rules; a must-fail control here.'),
         ('point / flux form', 'Hari\'s two off-mesh forms: $\\psi\\,u(u_x+u_y)$ (needs $\\nabla u$) or the integrated-by-parts '
          '$-(\\psi_x+\\psi_y)u^2/2$ (needs $u$ only).'),
@@ -439,16 +451,17 @@ def glossary(w):
         ('same-grid error (sg)', 'error against the converged full-order solve (`fft_tight`) on the same mesh.'),
         ('worst / median', 'over the cases of the cohort, of the maximum over the five evolved output times $t=0.05..0.25$, '
          'normalised by the initial field norm.'),
-        ('dev6, val32, test64', 'the 6 development, 32 validation and 64 held-out test cases (Gaussian-bump initial '
-         'conditions with random centre, width $w$, amplitude $a$ and viscosity $\\nu$).'),
+        ('dev6, val32, test64', 'the 6 development, 32 validation and 64 test cases (Gaussian-bump initial '
+         'conditions with random centre, width $w$, amplitude $a$ and viscosity $\\nu$). test64 is a reused historical '
+         'cohort: earlier lanes evaluated fixed settings on it; nothing in this lane was chosen from it.'),
         ('B1–B5', 'pre-registered bars: B1 reproduces dense against ST, B2 mesh invariance, B3 hyper-reduction error, B4 '
          'flat cost, B5 $\\rho\\le0.116$.'),
         ('G1–G8', 'acceptance gates of a job (GPU backend, cohort, parity with earlier records, truth convergence, '
          'references, continuum target, must-fail controls, independent NumPy audit).'),
         ('solve time', 'median query time minus median decode time (the six-field output decode is mesh-dependent).'),
-        ('LM its/query', 'Levenberg–Marquardt iterations summed over the 50 time steps of one query.'),
-        ('non-stationary exits', 'time steps whose solve stopped on the budget, a tiny step or the damping limit instead '
-         'of the stationarity test.'),
+        ('LM its/query', 'Levenberg–Marquardt iterations summed over the 50 time steps of one query, averaged over the cases.'),
+        ('non-stationary exits', 'total over all cases of time steps whose solve stopped on the budget, a tiny step or the '
+         'damping limit instead of the stationarity test.'),
     ]
     w('| term | meaning |')
     w('|---|---|')

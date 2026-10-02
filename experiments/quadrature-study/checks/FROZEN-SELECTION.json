@@ -1,0 +1,32 @@
+{
+ "selection_file": "checks/selection-dv.json",
+ "selection_sha256": "2b617771fa4d10cc393a4f951c8158ce112100f7712c3b37d60d19c8c92c895d",
+ "sources": {
+  "256": {
+   "summary_sha256": "74ad248a2c08a5ce33cbbea9a7fbfecd31cf961596d2ccb31e49394e46285adf",
+   "job_id": "4735696",
+   "result_sha256": "7ed8c910f3b60d8cf219d167a8a4350919719c7618a2bd013bde89472533b7e3"
+  },
+  "1024": {
+   "summary_sha256": "58b73981712b78ccd428a7fb04cf106a3ec25cfface24b57ccf8681df4637535",
+   "job_id": "4735709",
+   "result_sha256": "fdf36b575dc96487adbe53de9093e3456f1e4a82a7ac5c164aa20cb8b52d9ad4"
+  },
+  "4096": {
+   "summary_sha256": "1fe18410a49690df3a77dbac4bafb2492d20dbc35ec03b687f58cbb4e61b903f",
+   "job_id": "4735717",
+   "result_sha256": "632873d596a4da183bd9c62b73edd8f43c29341cb7741c1815626b0ac0fc8d3b"
+  }
+ },
+ "recommended": {
+  "acc": null,
+  "fast": null,
+  "head": null
+ },
+ "recommended_posthoc_one_sided_B1": {
+  "acc": "gauss96",
+  "fast": "fib1597",
+  "head": "gauss32"
+ },
+ "test_arms": "the full rollout arm set of configs/t*.json (unchanged since the dev jobs; no arm added or removed)"
+}

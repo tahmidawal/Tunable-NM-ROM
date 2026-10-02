@@ -79,7 +79,7 @@ def main():
     print('pre-registered:', json.dumps(out['recommended']), ' post hoc one-sided B1:', json.dumps(out['recommended_posthoc_one_sided_B1']))
     if a.freeze:
         import hashlib
-        fz = dict(selection_file=str(Path(a.out).relative_to(HERE)),
+        fz = dict(selection_file=str(Path(a.out).resolve().relative_to(HERE)),
                   selection_sha256=hashlib.sha256(Path(a.out).read_bytes()).hexdigest(),
                   sources={L: dict(summary_sha256=hashlib.sha256((HERE / f'checks/{a.tag}{L}-summary.json').read_bytes()).hexdigest(),
                                    job_id=S[L]['job_id'], result_sha256=S[L]['result_sha256']) for L in MESHES},

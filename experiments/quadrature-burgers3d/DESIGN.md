@@ -321,3 +321,19 @@ the rule). Job `rck1` (after `ref1`, dependency) re-solves validation cases 1–
 their lattice difference from the stored reference; if any exceeds $10^{-5}$ (relative to $\lVert u_0\rVert$) the
 reference is declared tolerance-limited at that level and every refined comparison closer than 10× that difference is
 reported as unresolved.
+
+## R5 — frozen selection and one post-hoc diagnostic (2026-10-02, after the validation panels, before any held-out job)
+
+Validation jobs val65 4732813, val129 4732818, val257 4732820 (H200; every gate passed; at 256³ the ROM neighbour
+timing group is untested — no arm is 4× slower than another there), refined reference ref1 4732869 (H100), NumPy
+audits `results/audit-val{65,129,257}.json` all pass, including the independent re-implementation of the selection.
+`selection.json` = `results/select-val.json` (select_q, unchanged rule), frozen before any held-out job; its sha256 is
+in the held-out configs and the lab log.
+
+**Post-hoc diagnostic (labelled as such; not a selection input, not a primary metric).** After the validation refined
+errors were seen, a second-order estimate of the continuum solution was added: the Richardson combination
+$u_R = 2u_{513} - u_{257}$ of the 513-node ($\Delta t = 0.0025$) and 257-node ($\Delta t = 0.005$) references (both
+first-order, both $h$ and $\Delta t$ halved). `refine_q.py --richardson` reports every arm's error against $u_R$ beside
+the primary refined error. It exists because the refined reference is itself a first-order upwind solution (it differs
+from $u_R$ by up to the value recorded in `refined-*.json`), which biases the primary metric toward upwind
+discretisations; it is reported for the held-out cohort with the same caveat and changes no verdict.

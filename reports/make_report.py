@@ -236,6 +236,31 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
     # rollouts
     w(f'### {pre}3. End-to-end rollouts (question i)')
     w('')
+    w('**Matched comparison on the cases where dense ran** (worst over those cases, %): the off-mesh arms against dense, '
+      'against both refined references. B1 is the pre-registered two-sided bar (within $\\max(0.02$ pp$, 2\\,\\%)$ of dense on ST).')
+    w('')
+    w('| setting | arm | ' + ' | '.join(f'ST ${L}^2$ | S ${L}^2$' for L in MESHES if S[L]) + ' | B1 at ' + ', '.join(f'${L}^2$' for L in MESHES if S[L]) + ' |')
+    w('|' + '---|' * (2 + 2 * sum(1 for L in MESHES if S[L]) + 1))
+    for st in SETS:
+        for name in ('dense', 'lat64', 'q0scaled', 'gref', 'gauss32', 'gauss64', 'gauss96', 'gauss128', 'fib1597', 'fib6765',
+                     'fib17711', 'sobol4096', 'flux_gauss64'):
+            cells, b1s = [], []
+            for L in MESHES:
+                if not S[L]:
+                    continue
+                b = g(S[L], 'arms', st, name, 'B1')
+                if name == 'dense':
+                    b0 = next((v.get('B1') for v in S[L]['arms'][st].values() if v.get('B1')), None)
+                    cells += [pc(g(b0, 'dense_worst_ST')), pc(g(b0, 'dense_worst_S'))]
+                    b1s.append('—')
+                else:
+                    cells += [pc(g(b, 'worst_ST')), pc(g(b, 'worst_S'))]
+                    b1s.append(tick(g(b, 'passed')))
+            if all(c == '—' for c in cells):
+                continue
+            ncase = next((g(S[L], 'arms', st, 'dense', 'all', 'cases') for L in MESHES if S[L]), None)
+            w(f"| {st} | {label(name)} | " + ' | '.join(cells) + ' | ' + ', '.join(b1s) + ' |')
+    w('')
     w('Worst over cases of the maximum over the five evolved output times, % of $\\lVert u_0\\rVert$. **ST** = against the '
       'refined reference ($8192^2$, $\\Delta t/16$; primary), **S** = against the space-only refined reference ($8192^2$, '
       '$\\Delta t$), **vs dense** = distance from our own dense rollout, **vs gref** = distance from the continuum rollout, '
@@ -280,8 +305,23 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
                 w(f"| {st} | {label(name)} | {pc(v.get('256', v.get(256)))} | {pc(v.get('1024', v.get(1024)))} | "
                   f"{pc(v.get('4096', v.get(4096)))} | {b2['ratio']:.4f} | {tick(b2['passed'])} |")
         w('')
-        w('Recommended off-mesh rule per setting (smallest $m$ passing B1, B3 and B5 at all three meshes, fixed before the '
-          'test jobs): ' + '; '.join(f"{st}: {label(r) if r else 'none'}" for st, r in sel['recommended'].items()) + '.')
+        w('**Pre-registered recommended off-mesh rule** (smallest $m$ passing B1, B3 and B5 at all three meshes, fixed '
+          'before the test jobs): ' + '; '.join(f"{st}: {label(r) if r else 'none'}" for st, r in sel['recommended'].items()) + '.')
+        w('')
+        ph = sel.get('recommended_posthoc_one_sided_B1', {})
+        w('**Post hoc (not pre-registered; fixed before the test jobs, DESIGN A3)** — with B1 read one-sided (not worse than '
+          'dense): ' + '; '.join(f"{st}: {label(r) if r else 'none'}" for st, r in ph.items()) + '.')
+        w('')
+        w('| setting | arm | $m$ | B1 (two-sided) at $256^2/1024^2/4096^2$ | B1′ one-sided | B3 | B5 | continuum $\\rho_{\\max}$ at $4096^2$ |')
+        w('|---|---|---|---|---|---|---|---|')
+        for st in SETS:
+            for name in ROLL_ORDER:
+                v = g(sel, 'per_arm', st, name)
+                if not v or name in ('dense', 'gref', 'gref_check'):
+                    continue
+                fmt = lambda xs: '/'.join('—' if x is None else ('y' if x else 'n') for x in xs)
+                w(f"| {st} | {label(name)} | {v['m']} | {fmt(v['B1'])} | {fmt(v.get('B1_one_sided_posthoc', []))} | "
+                  f"{fmt(v['B3'])} | {tick(v['B5'])} | {sci(g(v, 'rho_cont_max', '4096'))} |")
         w('')
 
     # cost
@@ -303,6 +343,21 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
                 rt = '—' if b['ratio'] is None else f"{b['ratio']:.3f}"
                 w(f"| {st} | {label(name)} | {ms(v.get('256'))} | {ms(v.get('1024'))} | {ms(v.get('4096'))} | "
                   f"{rt} | {tick(b['passed'])} |")
+        w('')
+    if not test and sel and s4:
+        ph = sel.get('recommended_posthoc_one_sided_B1', {})
+        w('**Equal-accuracy comparison (post hoc rules of D4 against the deployed `lat64`)**, same H200 job at $4096^2$: '
+          'solve and full-query ms, hyper-reduction error (B3 metric: vs continuum rollout for off-mesh, vs dense for '
+          '`lat64`), worst same-grid error.')
+        w('')
+        w('| setting | arm | $m$ | solve ms | query ms | B3 metric worst % | sg worst % |')
+        w('|---|---|---|---|---|---|---|')
+        for st in SETS:
+            for name in [x for x in ('lat64', ph.get(st)) if x]:
+                a = g(s4, 'arms', st, name)
+                w(f"| {st} | {label(name)} | {a['m']} | {ms(g(s4, 'timing', 'solve_ms', f'{st}|4096|{name}'))} | "
+                  f"{ms(g(s4, 'timing', 'query_ms', f'{st}|4096|{name}'))} | {pc(g(a, 'B3', 'worst'))} | "
+                  f"{pc(g(a, 'all', 'same_grid_evolved', 'worst'))} |")
         w('')
     w('Per-mesh query time (dense input field on the GPU → six output fields), decode time, and the two full-order settings, '
       'each from its own job (medians; same-job comparisons only):')
@@ -328,10 +383,11 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
     w('')
     w('For each rule, the state with the largest continuum $\\rho$: its case\'s bump width $w$, amplitude $a$, viscosity '
       '$\\nu$ and step $k$; the Spearman correlation between a case\'s largest $\\rho$ and $w$ (negative = narrower bumps '
-      'are worse); and the share of the top 1 % of states that are within the first five steps.')
+      'are worse); and the share of the top 1 % of states that are within the first five steps. Columns marked † were '
+      'added after the first development job and are descriptive, not pre-registered.')
     w('')
-    w('| mesh | setting | rule | worst $\\rho$ | case | $w$ | $a$ | $\\nu$ | $k$ | Spearman($\\rho$, $w$) | top-1 % with $k\\le5$ |')
-    w('|---|---|---|---|---|---|---|---|---|---|---|')
+    w('| mesh | setting | rule | worst $\\rho$ | case | $w$ | $a$ | $\\nu$ | $k$ | Spearman($\\rho$, $w$) | top-1 % with $k\\le5$ | Spearman($\\rho$, $\\nu$)† | median $k$ of top 1 %† |')
+    w('|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     for L in MESHES:
         s = S[L]
         if not s:
@@ -345,7 +401,7 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
                 sp = e['spearman_casemax_vs_width']
                 w(f"| ${L}^2$ | {st} | {label(name)} | {sci(am['rho'])} | {am['cohort']}{am['case']} | {am['width']:.3f} | "
                   f"{am['amplitude']:.2f} | {am['nu']:.3f} | {am['k']} | {'—' if sp is None else f'{sp:+.2f}'} | "
-                  f"{100 * e['top1pct_share_k_le_5']:.0f} % |")
+                  f"{100 * e['top1pct_share_k_le_5']:.0f} % | {e.get('spearman_casemax_vs_nu', 0):+.2f} | {e.get('top1pct_median_k', 0):.0f} |")
     w('')
 
 

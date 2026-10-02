@@ -208,8 +208,15 @@ def main():
                 vd = [dref[k_] for k_ in dcases]
                 if all(v is not None and np.isfinite(v) for v in va + vd):
                     wa, wd = max(va), max(vd)
+                    sa = [sub[k_].get('ref_S_evolved') for k_ in dcases]
+                    sd = [x.get('ref_S_evolved') for x in dense_rows]
+                    ga = [sub[k_].get('same_grid_evolved') for k_ in dcases]
                     arms[s][name]['B1'] = dict(cases=len(dcases), worst_ST=wa, dense_worst_ST=wd, diff_pp=100 * (wa - wd),
-                                               passed=bool(abs(wa - wd) <= max(2e-4, .02 * wd)))
+                                               passed=bool(abs(wa - wd) <= max(2e-4, .02 * wd)),
+                                               # matched-set descriptives (same dense cases), not part of the bar
+                                               worst_S=max(sa) if None not in sa else None,
+                                               dense_worst_S=max(sd) if None not in sd else None,
+                                               worst_same_grid=max(ga) if None not in ga else None)
                 else:
                     arms[s][name]['B1'] = dict(cases=len(dcases), passed=False, reason='missing or non-finite')
             if name in ('gref', 'dense'):

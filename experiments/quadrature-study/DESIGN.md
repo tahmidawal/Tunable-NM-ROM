@@ -328,3 +328,11 @@ Source jobs dv256 (4735696), dv1024 (4735709), dv4096 (4735717): every applicabl
   once each, after `reft`.
 - Also added after dv256 (descriptive only, labelled post hoc in the report): Spearman of a case's largest $\rho$ against
   $\nu$ and amplitude, and the median step $k$ of the top 1 % of states.
+
+## A4 — summaries regenerated after the freeze (2026-10-02, descriptive only)
+
+After `FROZEN-SELECTION.json` was written and the test jobs submitted (t256 4739520, t1024 4739521, t4096 4739522,
+`afterok` on `reft` 4734276), `audit_qs.py` gained matched-set descriptives inside the B1 record (worst S error and
+same-grid error on dense's cases) and the dv summaries were regenerated. No gate, bar or selection input changed:
+`select_rule.py` re-run on the regenerated summaries gives a byte-identical selection (sources block excluded). The
+manifest's `summary_sha256` values therefore refer to the pre-regeneration summaries (in git history at `946816433`).

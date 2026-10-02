@@ -416,6 +416,34 @@ def sections_for(w, S, cohort_label, sel, hari=None, test=False):
     w('')
 
 
+def per_case_invariance(tag):
+    """From the committed result.json files: per setting and arm, the largest per-case change of the ST error between
+    meshes and the cases that move by more than 0.5 pp (same case on every mesh; off-mesh arms ran on every case)."""
+    R = {}
+    for L in MESHES:
+        f = LANE / f'runs/{tag}{L}/archive/output/result.json'
+        if not f.exists():
+            return None
+        R[L] = json.loads(f.read_text())['rows']
+    out = {}
+    for st in SETS:
+        for arm in ('gref', 'gauss64', 'fib6765', 'lat64'):
+            v = {L: {(r['cohort'], r['case']): r['ref_ST_evolved'] for r in R[L] if r['setting'] == st and r['arm'] == arm}
+                 for L in MESHES}
+            common = set.intersection(*[set(v[L]) for L in MESHES])
+            if not common:
+                continue
+            dmax, moved = 0., []
+            for c in sorted(common):
+                vals = [v[L][c] for L in MESHES]
+                d = max(vals) - min(vals)
+                dmax = max(dmax, d)
+                if d > 5e-3:
+                    moved.append(f'{c[0]}{c[1]}')
+            out[(st, arm)] = (len(common), dmax, moved)
+    return out
+
+
 def b1m(S, L, st, name, key):
     return g(S[L], 'arms', st, name, 'B1', key)
 
@@ -498,6 +526,23 @@ def answers(w, dv, tt, sel):
           '. For the off-mesh rules the worst states lean towards early steps of *wide* bumps; there are exceptions '
           '(§D6). The cause is not tested here.')
         w('')
+    w('**Per-case mesh invariance** (generated from the job result files: for each case, the spread of its worst ST '
+      'error across $256^2/1024^2/4096^2$; cases moving by more than 0.5 pp listed):')
+    w('')
+    w('| cohort | setting | arm | cases | largest per-case spread (pp) | cases moving > 0.5 pp |')
+    w('|---|---|---|---|---|---|')
+    for tag, nm in (('dv', 'dev6 ∪ val32'), ('t', 'test64')):
+        pci = per_case_invariance(tag)
+        if not pci:
+            continue
+        for (st, arm), (n, dmax, moved) in pci.items():
+            w(f"| {nm} | {st} | {label(arm)} | {n} | {100 * dmax:.3f} | {', '.join(moved) or 'none'} |")
+    w('')
+    w('The linear rungs (`acc`, `fast`) are invariant case by case for the off-mesh rules. In the `head` setting a few '
+      'cases move for *every* arm, the dense mesh solve and `lat64` included, so that spread comes from the nonlinear '
+      'head solve (it lands on a different trajectory at another mesh), not from the quadrature; the cause is not '
+      'isolated here.')
+    w('')
     if sel:
         w('Pre-registered recommended off-mesh rule: ' + ', '.join(f"{st} {label(r) if r else 'none'}" for st, r in sel['recommended'].items())
           + '. Post hoc (one-sided B1′, fixed before the test jobs): ' + ', '.join(f"{st} {label(r)}" for st, r in ph.items() if r) + '.')

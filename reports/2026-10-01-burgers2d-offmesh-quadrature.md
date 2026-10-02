@@ -57,6 +57,37 @@ flowchart LR
 - **(iii) Cost flat in $N$?** Solve time (query minus decode) is flat on one GPU: B4 ratios $4096^2/256^2$ between 0.972 and 1.040 for all 40 measured arms; it grows with $m$. The full query is not flat because the six-field output decode grows with $N$. At $4096^2$, solve time of the post-hoc rules vs the deployed lattice: acc: Gauss $96^2$ 55.4 ms vs lat64 46.6 ms; fast: Fibonacci 1597 13.4 ms vs lat64 19.1 ms; head: Gauss $32^2$ 21.7 ms vs lat64 40.2 ms (not a matched equal-accuracy comparison; §D5).
 - **(iv) Narrow early bumps the worst case?** Not in the way Hari found. At $1024^2$: acc: Gauss $64^2$ worst at $k$=1 (width 0.159, Spearman with width +0.26); lat64 worst at $k$=1 (width 0.169, Spearman -0.07); fast: Gauss $64^2$ worst at $k$=1 (width 0.164, Spearman with width +0.61); lat64 worst at $k$=1 (width 0.169, Spearman -0.08); head: Gauss $64^2$ worst at $k$=1 (width 0.164, Spearman with width +0.55); lat64 worst at $k$=31 (width 0.169, Spearman -0.45). For the off-mesh rules the worst states lean towards early steps of *wide* bumps; there are exceptions (§D6). The cause is not tested here.
 
+**Per-case mesh invariance** (generated from the job result files: for each case, the spread of its worst ST error across $256^2/1024^2/4096^2$; cases moving by more than 0.5 pp listed):
+
+| cohort | setting | arm | cases | largest per-case spread (pp) | cases moving > 0.5 pp |
+|---|---|---|---|---|---|
+| dev6 ∪ val32 | acc | continuum rollout (Gauss $640^2$) | 38 | 0.012 | none |
+| dev6 ∪ val32 | acc | Gauss $64^2$ | 38 | 0.014 | none |
+| dev6 ∪ val32 | acc | Fibonacci 6765 | 38 | 0.012 | none |
+| dev6 ∪ val32 | acc | mesh lattice $63^2$ | 38 | 3.374 | dev60, dev62, dev63, dev64, val320, val323, val324, val325, val326, val327, val328, val3211, val3213, val3214, val3217, val3218, val3219, val3223, val3225, val3226, val3228, val3229, val3230 |
+| dev6 ∪ val32 | fast | continuum rollout (Gauss $640^2$) | 38 | 0.020 | none |
+| dev6 ∪ val32 | fast | Gauss $64^2$ | 38 | 0.020 | none |
+| dev6 ∪ val32 | fast | Fibonacci 6765 | 38 | 0.020 | none |
+| dev6 ∪ val32 | fast | mesh lattice $63^2$ | 38 | 2.207 | dev60, dev62, dev63, dev64, val320, val324, val325, val326, val327, val328, val3213, val3214, val3217, val3218, val3219, val3223, val3225, val3226, val3228, val3229, val3230 |
+| dev6 ∪ val32 | head | continuum rollout (Gauss $640^2$) | 38 | 1.221 | val3220 |
+| dev6 ∪ val32 | head | Gauss $64^2$ | 38 | 1.219 | val3220 |
+| dev6 ∪ val32 | head | Fibonacci 6765 | 38 | 1.219 | val3220 |
+| dev6 ∪ val32 | head | mesh lattice $63^2$ | 38 | 1.790 | dev62, dev63, val325, val326, val327, val328, val3217, val3218, val3219, val3220, val3225, val3230 |
+| test64 | acc | continuum rollout (Gauss $640^2$) | 64 | 0.009 | none |
+| test64 | acc | Gauss $64^2$ | 64 | 0.009 | none |
+| test64 | acc | Fibonacci 6765 | 64 | 0.009 | none |
+| test64 | acc | mesh lattice $63^2$ | 64 | 2.791 | test640, test641, test642, test643, test645, test646, test647, test649, test6413, test6416, test6420, test6422, test6426, test6427, test6428, test6429, test6431, test6432, test6433, test6434, test6435, test6436, test6437, test6439, test6440, test6442, test6443, test6445, test6448, test6453, test6455, test6460 |
+| test64 | fast | continuum rollout (Gauss $640^2$) | 64 | 0.011 | none |
+| test64 | fast | Gauss $64^2$ | 64 | 0.011 | none |
+| test64 | fast | Fibonacci 6765 | 64 | 0.011 | none |
+| test64 | fast | mesh lattice $63^2$ | 64 | 2.167 | test640, test641, test642, test643, test645, test646, test647, test649, test6413, test6416, test6420, test6422, test6426, test6427, test6428, test6429, test6431, test6432, test6433, test6435, test6439, test6440, test6442, test6443, test6445, test6453, test6455, test6460 |
+| test64 | head | continuum rollout (Gauss $640^2$) | 64 | 4.715 | test6436, test6448, test6460 |
+| test64 | head | Gauss $64^2$ | 64 | 4.693 | test6427, test6436, test6448, test6460 |
+| test64 | head | Fibonacci 6765 | 64 | 4.710 | test6436, test6448, test6460 |
+| test64 | head | mesh lattice $63^2$ | 64 | 4.606 | test640, test642, test643, test645, test646, test647, test649, test6413, test6416, test6420, test6422, test6428, test6429, test6431, test6432, test6433, test6435, test6436, test6439, test6440, test6443, test6453, test6455 |
+
+The linear rungs (`acc`, `fast`) are invariant case by case for the off-mesh rules. In the `head` setting a few cases move for *every* arm, the dense mesh solve and `lat64` included, so that spread comes from the nonlinear head solve (it lands on a different trajectory at another mesh), not from the quadrature; the cause is not isolated here.
+
 Pre-registered recommended off-mesh rule: acc none, fast none, head none. Post hoc (one-sided B1′, fixed before the test jobs): acc Gauss $96^2$, fast Fibonacci 1597, head Gauss $32^2$.
 
 ## 3. Results — development and validation (dev6 ∪ val32)

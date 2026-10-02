@@ -456,6 +456,8 @@ def main():
         cases = sorted({(x[0], int(x[1])) for x in labels})
         cidx = {cc: [j for j, x in enumerate(labels) if (x[0], int(x[1])) == cc] for cc in cases}
         wv = np.array([R['cohorts'][cc[0]]['physical'][cc[1]][2] for cc in cases])
+        av = np.array([R['cohorts'][cc[0]]['physical'][cc[1]][3] for cc in cases])
+        nv = np.array([R['cohorts'][cc[0]]['physical'][cc[1]][4] for cc in cases])
         rk = lambda v: np.argsort(np.argsort(v)).astype(float)
         ent = {}
         for rule in per.files:
@@ -468,7 +470,11 @@ def main():
             ent[rule] = dict(argmax=dict(cohort=co, case=c, k=k, width=ph[2], amplitude=ph[3], nu=ph[4], rho=float(rc[i])),
                              spearman_casemax_vs_width=(float(np.corrcoef(rk(cmax), rk(wv))[0, 1]) if len(cases) > 2 else None),
                              top1pct_share_k_le_5=float(np.mean([int(labels[j][2]) <= 5 for j in top])),
-                             top1pct_states=len(top))
+                             top1pct_states=len(top),
+                             # additional descriptives (added 2026-10-02 after dv256, labelled post hoc in the report)
+                             spearman_casemax_vs_nu=(float(np.corrcoef(rk(cmax), rk(nv))[0, 1]) if len(cases) > 2 else None),
+                             spearman_casemax_vs_amplitude=(float(np.corrcoef(rk(cmax), rk(av))[0, 1]) if len(cases) > 2 else None),
+                             top1pct_median_k=float(np.median([int(labels[j][2]) for j in top])))
         iv[s] = ent
 
     failed = [k for k, v in gates.items() if v.get('passed') is False]

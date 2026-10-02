@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import statistics
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -148,17 +149,21 @@ def main():
     cases_ref = [c for co in ref['cohorts'].values() for c in co['cases']]
     w(f'Full-order model at 513 nodes (512³ cells), $\\Delta t = 0.0025$, tolerances $(10^{{-6}}, 10^{{-7}})$ (DESIGN R3), '
       f'job {ref["job_id"]} on {ref["gpu"]}: {len(cases_ref)} cases, median '
-      f'{fx(sorted(c["seconds"] for c in cases_ref)[len(cases_ref) // 2])} s per case, every case accepted. '
-      f'Re-solving four validation cases at $(10^{{-10}}, 10^{{-11}})$ (job {rck["job_id"]}) changes them by at most '
-      f'{sci(rck_max)} relative to $\\lVert u_0\\rVert$' + (
+      f'{fx(statistics.median(c["seconds"] for c in cases_ref))} s per case, every case accepted. '
+      f'Re-solving four validation cases at $(10^{{-10}}, 10^{{-11}})$ (job {rck["job_id"]}) changes them by '
+      + ', '.join(sci(r['lattice_diff_vs_reference'], 3) for r in rck['recheck']) +
+      ' relative to $\\lVert u_0\\rVert$ (four cases: an observation, not a bound for all cases)' + (
           f' — above the $10^{{-5}}$ threshold of DESIGN R4, so the reference is declared tolerance-limited at that '
-          f'level and refined-error differences below {sci(10 * rck_max)} are unresolved' if rck_max > 1e-5 else '') +
+          f'level and refined-error differences below {sci(10 * rck_max, 3)} are unresolved' if rck_max > 1e-5 else '') +
       '. The same-grid references at the lane\'s meshes differ from it, '
       'worst over the held-out cases, by ' + ', '.join(f'{pct(sg_ref[n])} ({CELLS[n]})' for n in MESHES) +
       f'; on the probe case the 257-node reference differed from the 513-node one by '
-      f'{pct(probe["same_grid_257"]["lattice_diff_vs_refined"])}. The reference is a first-order solution: '
-      'refined-error differences between arms of under about one percent are within its own discretisation error and '
-      'are not read as accuracy differences.')
+      f'{pct(probe["same_grid_257"]["lattice_diff_vs_refined"])}, and the post-hoc Richardson estimate '
+      '$u_R = 2u_{513} - u_{257}$ (both $h$ and $\\Delta t$ halved between the two references) is displaced from it '
+      f'by up to {pct(max(rh["richardson"]["ref513_vs_R"]))} over the held-out cases. These are refinement '
+      'discrepancies, not error bounds: the reference is a first-order upwind solution whose own error is of that '
+      'order, so refined-error differences between arms at that scale are not read as established accuracy '
+      'differences. $u_R$ assumes an asymptotic first-order error expansion and is not a verified continuum solution.')
     w('')
 
     # ---------------------------------------------------------------- rho
@@ -189,12 +194,27 @@ def main():
           ', '.join(f'{CELLS[n]} {sci(pv[n]["rho"][Rp]["continuum_check"]["vs_target"]["worst"])}' for n in MESHES) +
           '.')
         w('')
-    w('Reading: the dense sign-upwind stencil\'s continuum ρ is the mesh\'s $O(h)$ consistency gap; every off-mesh rule '
-      'that resolves the continuum term sits at that same distance from the mesh target, so the mesh-target ρ of an '
-      'off-mesh rule cannot fall below the gap, and the paper\'s 0.116 certificate against the mesh target is not the '
-      'right test for an off-mesh rule. The lane certifies off-mesh rules against the continuum target instead '
-      '(DESIGN section 7).')
+    w('Reading: the dense sign-upwind stencil\'s continuum ρ measures the mesh\'s $O(h)$ consistency gap; it decreases '
+      'roughly by half per mesh refinement in the table. Every off-mesh rule that resolves the continuum term is observed '
+      'to settle at about that same distance from the mesh target, so the paper\'s 0.116 certificate against the mesh '
+      'target is not the right test for an off-mesh rule; the lane certifies off-mesh rules against the continuum '
+      'target instead (DESIGN section 7). Results are for the single tested shift / scramble of each lattice and Sobol '
+      'rule, not a distribution over shifts. Columns for the 90th percentile and the initial state ($k = 0$):')
     w('')
+    w('| rule | $R\' = 512$: ρ continuum p90 / worst at $k=0$, ' + ', '.join(CELLS[n] for n in MESHES) + ' | '
+      '$R\' = 256$: same |')
+    w('|---|---|---|')
+    for rule in ['tensor', 'dense_upwind'] + OFF:
+        cells = []
+        for Rp in RPS:
+            cells.append('; '.join(f'{sci(pv[n]["rho"][Rp]["rules"][rule]["cont"]["p90"])} / '
+                                   f'{sci(pv[n]["rho"][Rp]["rules"][rule]["cont"]["worst_k0"])}' for n in MESHES))
+        w(f'| `{rule}` | ' + ' | '.join(cells) + ' |')
+    w('')
+
+    def qms(n, nm):
+        q = [x['quick_seconds'] for x in ph[n]['arms'][nm]['quick'] if x.get('quick_seconds') is not None]
+        return f'{fx(1e3 * statistics.median(q))} (quick runs, not A–B–A)' if q else 'untimed'
 
     # ---------------------------------------------------------------- end to end
     w('## 4. End-to-end reduced solves (held-out cohort 923901, 32 cases)')
@@ -210,7 +230,7 @@ def main():
             w(f'**{CELLS[n]}, $R\' = {Rp}$** (job {ph[n]["job_id"]}, {ph[n]["gpu"]}; selected: '
               f'`{M["selected"] or "none"}`)')
             w('')
-            w('| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | '
+            w('| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query (median / max) | '
               'exits (4/0/3) | ms |')
             w('|---|---|---|---|---|---|---|---|---|')
             order = [f'tensor_R{Rp}', f'dense_R{Rp}'] + [f'{r}_R{Rp}' for r in OFF]
@@ -224,9 +244,9 @@ def main():
                   f'{pct(r["refined_worst"])} ({pct(r["refined_median"])}) | {pct(ra.get("richardson_worst"))} | '
                   f'{pct(r["same_worst"])} | '
                   f'{pct(r["dist_tensor"]) if r["dist_tensor"] is not None else "–"} | '
-                  f'{pct(r["dist_conv"], 3) if r["dist_conv"] is not None else "–"} | {fx(r["lm_its_median"], 0)} | '
+                  f'{pct(r["dist_conv"], 3) if r["dist_conv"] is not None else "–"} | {fx(r["lm_its_median"], 0)} / {r["lm_its_max"]} | '
                   f'{r["reasons"]["4"]}/{r["reasons"]["0"]}/{r["reasons"]["3"]} | '
-                  f'{fx(r["ms"]) if r["ms"] is not None else "untimed"} |')
+                  f'{fx(r["ms"]) if r["ms"] is not None else qms(n, nm)} |')
             w('')
         fo = sh['meshes'][n]['fom']
         w(f'Newton–BiCGStab at {CELLS[n]} (same job): ' + '; '.join(
@@ -306,7 +326,9 @@ def main():
               f'{fx(nb, 3) if nb is not None else "untested"} / {fx(nbf, 3) if nbf is not None else "untested"} / '
               f'{sci(gv["deterministic_outputs"])} → {"pass" if g["timing"] else "FAIL"} | '
               f'{", ".join(sci(v) for v in S["meshes"][n]["continuum_check"].values())} | '
-              f'{"pass" if aud[f"{c}{n}"]["all_pass"] else "FAIL"} |')
+              f'{"pass" if aud[f"{c}{n}"]["all_pass"] else "FAIL"} (swapped reference detected: '
+              f'{aud[f"{c}{n}"]["ok"]["control_swapped_detected"]}; perturbed record detected: '
+              f'{aud[f"{c}{n}"]["ok"]["control_perturbed_detected"]}) |')
     w('')
     w('Must-fail controls (held-out; `fired` = continuum ρ above 0.116 **and** distance from the converged rollout '
       'above $10^{-3}$):')
@@ -360,7 +382,9 @@ def main():
       ', tracking the same-mesh full-order model, whose best setting is at ' +
       ', '.join(f'{pct(best_fom[n])}' for n in MESHES) + '. The selected off-mesh rule is at ' +
       ', '.join(f'{pct(sel512[n]["refined_worst"]) if sel512[n] else "–"}' for n in MESHES) +
-      ': it solves the continuum advection, so its error is the bank\'s and the time step\'s, not the stencil\'s. '
+      ': it solves the continuum advection, so the stencil\'s upwind error is absent from it; what remains (bank '
+      'span, time step, projection and test space, quadrature, solver, and the reference\'s own error) was not '
+      'decomposed here. '
       'This is why "reproduces the tensor" is the wrong expectation: the off-mesh solve differs from the tensor solve '
       'by the stencil\'s $O(h)$ gap (column `dist tensor`), which shrinks as the mesh is refined.')
     w('- **Caveat on that comparison.** The refined reference is a first-order upwind solution itself, so it is biased '
@@ -368,33 +392,59 @@ def main():
       'off-mesh rule is ' + ('ahead of the tensor under it at every mesh and width' if all(
           rh['panels'][n_]['arms'][sh['meshes'][n_]['R'][R_]['selected']]['richardson_worst'] <
           rh['panels'][n_]['arms'][f'tensor_R{R_}']['richardson_worst'] for n_ in MESHES for R_ in RPS)
-          else 'not ahead of the tensor under it everywhere') + '. The bank was trained on fields up to 129 '
+          else 'not ahead of the tensor under it everywhere') + '. At 256³ and $R\' = 256$ the primary-metric '
+      'difference between the selected rule and the tensor is only ' + pct(
+          sh['meshes']['257']['R']['256']['tensor_row']['refined_worst'] -
+          sh['meshes']['257']['R']['256']['selected_row']['refined_worst']) + ' (percentage points), inside the '
+      'reference\'s own uncertainty, so no accuracy ranking is claimed there. The bank was trained on fields up to 129 '
       'nodes per axis; evaluating its analytic derivative brings in resolution the coarse mesh does not have, which is '
       'why an off-mesh solve can beat the same-mesh full-order model at 64³ and 128³. That is a property of the trained '
       'bank, not a free lunch: at 256³ the full-order model\'s best setting is more accurate than either reduced solve.')
-    w('- **Quadrature error is small next to model error.** Every non-control rule that passes the continuum '
-      'certificate gives the same refined error to within a few hundredths of a percent; the differences between the '
-      'converged lattice and Gauss rollouts (`dist conv` of `gl32`) are far below the bank\'s floor.')
+    def spread(Rp):
+        v = [r['refined_worst'] for n in MESHES for nm, r in sh['meshes'][n]['R'][Rp]['rows'].items()
+             if r['family'] == 'offmesh' and not r['control'] and r['dist_conv'] is not None and r['dist_conv'] <= 1e-3]
+        return max(v) - min(v)
+    w('- **Quadrature error is small next to model error once the rollout has converged.** Over the off-mesh rules '
+      'within $10^{-3}$ of the converged rollout, the held-out worst refined errors spread by ' +
+      ', '.join(f'{pct(spread(Rp), 3)} ($R\' = {Rp}$)' for Rp in RPS) + ' across rules and meshes. Rules that pass the '
+      'continuum certificate but not the rollout criterion can differ more (e.g. `sob16384`, `gl16`; section 4).')
     w('- **Continuum ρ of a fixed rule grows with the mesh** (the tensor-reached states are sharper on finer meshes, '
       'because the mesh adds less numerical diffusion), so a rule size certified at 64³ is not automatically certified '
       'at 256³; the 4096-point lattice at $R\' = 512$ crosses the 0.116 bar at 256³ (section 3).')
     w('- **Cost.** The off-mesh Jacobian is a dense GEMM of $M \\times m \\times R\'$ flops, more flops than the '
       'tensor\'s $M R\'^2$ contraction but far fewer bytes; on the H200 it is faster for $m \\lesssim$ 16k at $R\' = 512$ '
       'and comparable at $R\' = 256$. The query time is dominated at 256³ by the mesh-side projection and output '
-      'decoding, which no advection rule removes, so the speedup against Newton–BiCGStab changes little.')
+      'decoding, which no advection rule removes. Under the same-grid rule the 256³ speedups move from ' +
+      '; '.join(f'{fx(sh["meshes"]["257"]["R"][Rp]["tensor_row"]["speedup_same_rule"], 2)}× (tensor) to '
+                f'{fx(sh["meshes"]["257"]["R"][Rp]["selected_row"]["speedup_same_rule"], 2)}× (selected), $R\' = {Rp}$'
+                for Rp in RPS) + '; under the refined rule they move from ' +
+      '; '.join(f'{fx(sh["meshes"]["257"]["R"][Rp]["tensor_row"]["speedup_refined_rule"], 2)}× to '
+                f'{fx(sh["meshes"]["257"]["R"][Rp]["selected_row"]["speedup_refined_rule"], 2)}×, $R\' = {Rp}$'
+                for Rp in RPS) + ': the more accurate off-mesh solve can only be matched by a more accurate, hence slower, full-order setting, '
+      'while the tensor is matched by a cheaper one. At 64³ and 128³ no full-order setting on the same mesh is as accurate against the refined reference as '
+      'the off-mesh solve, so the refined-rule speedup is undefined there; under the same-grid rule the reduced model '
+      'is slower than Newton–BiCGStab at 64³ in every arm (section 5).')
     w('')
     w('### What was wrong or changed along the way')
     w('')
-    w('- `ref1` first attempt (job 4732809, A100 node pax007) failed the GPU preflight (no CUDA device); restaged '
-      'unchanged on an H100 (4732869).')
-    w('- The design audit found that the vendor full-order solver would store every time step at 513 nodes (107 GB) and '
-      'that the selection had an unconditional fallback; both fixed before any experiment job (DESIGN R1–R2).')
-    w('- The smoke probe could not discriminate the reference tolerances (its case converged to $10^{-10}$ at every '
-      'tolerance); the re-check job `rck1` was added (R4) and bounds the effect (section 2).')
+    sm = J(HERE / 'runs' / 'smoke1' / 'code' / 'output' / 'smoke65' / 'result.json')['gates']
+    w('- `ref1` first attempt (job 4732809, an A100 node) failed the GPU preflight (no CUDA device); restaged '
+      f'unchanged on an H100 ({ref["job_id"]}).')
+    w('- The design audit found that the vendor full-order solver would store every time step at 513 nodes (beyond an '
+      'H200) and that the selection had an unconditional fallback; both fixed before any experiment job (DESIGN R1–R2).')
+    w('- The smoke probe could not discriminate the reference tolerances (its case reached the tight residual at every '
+      'tolerance); the re-check job `rck1` was added (R4); one of its four cases exceeded the R4 threshold, so the '
+      'reference is declared tolerance-limited at that level (section 2).')
+    w(f'- The smoke panel (4 probe cases, 2 × 2 timing) failed its timing gates (drift {fx(sm["timing_drift_worst"], 3)}, '
+      f'neighbour {fx(sm["timing_neighbour_ratio"], 3)}); diagnostic only, superseded by the production panels, which '
+      'passed (with the ROM neighbour check untested at 256³ because no arm is four times slower than another there).')
+    w('- Re-applying the selection rule to the held-out data would pick a different rule at $R\' = 512$ (section 7): '
+      'that arm missed the $10^{-3}$ rollout criterion on validation by a small margin; the frozen selection stands.')
     w('- The Richardson diagnostic was added after the validation refined errors were seen (R5); it is labelled '
       'post-hoc and changes no verdict.')
     w('- The DESIGN check "dense continuum ρ > 0.116" is meaningful only at 64³; at 128³ and 256³ the $O(h)$ gap is '
-      'below 0.116 by construction (it halves per refinement), so the `False` entries there are expected, not failures.')
+      'observed to fall below 0.116 (it roughly halves per refinement), so the `False` entries there are expected, not '
+      'failures.')
     w('- The held-out cohort had been evaluated before by the retry lane for its tensor settings; no off-mesh arm had '
       'run on it and no choice here used it.')
     w('')
@@ -408,7 +458,20 @@ def main():
         ('off-mesh rule', 'a fixed quadrature of the continuum advection at $m$ points not tied to the mesh, using '
          'the bank and its analytic derivative there (Hari\'s "point" form, "hybrid": linear terms stay mesh-exact).'),
         ('dense', 'the full-order model\'s sign-upwind advection on every mesh node, with its exact Jacobian; run at '
-         '64³ only (and 4 validation cases at 128³) because each Jacobian costs $R\'$ full-grid transforms.'),
+         '64³ (all cases) and on the first 4 cases at 128³ (validation and held-out), not at 256³, because each '
+         'Jacobian costs $R\'$ full-grid transforms; not timed with the A–B–A protocol.'),
+        ('Richardson (diag.)', 'error against $u_R = 2u_{513} - u_{257}$, a second-order estimate of the continuum '
+         'solution from the two first-order references; post-hoc diagnostic, assumes an asymptotic error expansion.'),
+        ('LM its/query', 'median over cases of the total Levenberg–Marquardt iterations in one query (25 steps).'),
+        ('Jacobian ms', 'GPU time of one evaluation of the advection Jacobian $J_u(c)$ alone (median of 50).'),
+        ('GFLOP / Jacobian', 'floating-point operations of one $J_u$ evaluation, in units of $10^9$.'),
+        ('bytes', 'memory of the advection data: the tensor, or the rule\'s $B$, $D$ and $P$ blocks.'),
+        ('Newton–BiCGStab', 'the full-order solver: backward Euler, Newton steps with a preconditioned BiCGStab linear '
+         'solve; settings `dtX_ntY_ltZ` = time step X, Newton tolerance Y, linear tolerance Z.'),
+        ('drift / neighbour / determinism', 'timing gates: A2/A1 median ratio; slowdown after a much slower predecessor '
+         '(untested when no arm is four times slower than another); timed outputs identical to the first run.'),
+        ('audit', 'independent NumPy recomputation of errors, decoding, ρ and the selection, including two '
+         'fault-injection checks (a swapped reference case and a 1 % perturbed record must be detected).'),
         ('CBC lattice (`latN`)', 'a rank-1 lattice rule with $N$ points, generating vector built component by component '
          'to minimise the $P_2$ figure of merit, with one random shift (seed 0).'),
         ('Korobov (`kor16381`)', 'a rank-1 lattice whose vector is $(1, a, a^2)$, searched over $a$; 16381 points.'),

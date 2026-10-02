@@ -40,7 +40,7 @@ with the bank and its analytic $(1,1,1)$-derivative evaluated at the rule points
 
 ## 2. The refined reference and its own uncertainty
 
-Full-order model at 513 nodes (512³ cells), $\Delta t = 0.0025$, tolerances $(10^{-6}, 10^{-7})$ (DESIGN R3), job 4732869 on NVIDIA H100 PCIe: 96 cases, median 47.7 s per case, every case accepted. Re-solving four validation cases at $(10^{-10}, 10^{-11})$ (job 4733462) changes them by at most 1.0e-05 relative to $\lVert u_0\rVert$ — above the $10^{-5}$ threshold of DESIGN R4, so the reference is declared tolerance-limited at that level and refined-error differences below 1.0e-04 are unresolved. The same-grid references at the lane's meshes differ from it, worst over the held-out cases, by 9.96 % (64³), 5.22 % (128³), 2.28 % (256³); on the probe case the 257-node reference differed from the 513-node one by 1.70 %. The reference is a first-order solution: refined-error differences between arms of under about one percent are within its own discretisation error and are not read as accuracy differences.
+Full-order model at 513 nodes (512³ cells), $\Delta t = 0.0025$, tolerances $(10^{-6}, 10^{-7})$ (DESIGN R3), job 4732869 on NVIDIA H100 PCIe: 96 cases, median 47.1 s per case, every case accepted. Re-solving four validation cases at $(10^{-10}, 10^{-11})$ (job 4733462) changes them by 6.187e-06, 6.576e-06, 1.022e-05, 6.320e-06 relative to $\lVert u_0\rVert$ (four cases: an observation, not a bound for all cases) — above the $10^{-5}$ threshold of DESIGN R4, so the reference is declared tolerance-limited at that level and refined-error differences below 1.022e-04 are unresolved. The same-grid references at the lane's meshes differ from it, worst over the held-out cases, by 9.96 % (64³), 5.22 % (128³), 2.28 % (256³); on the probe case the 257-node reference differed from the 513-node one by 1.70 %, and the post-hoc Richardson estimate $u_R = 2u_{513} - u_{257}$ (both $h$ and $\Delta t$ halved between the two references) is displaced from it by up to 2.28 % over the held-out cases. These are refinement discrepancies, not error bounds: the reference is a first-order upwind solution whose own error is of that order, so refined-error differences between arms at that scale are not read as established accuracy differences. $u_R$ assumes an asymptotic first-order error expansion and is not a verified continuum solution.
 
 ## 3. Quadrature error ρ on reached states
 
@@ -86,7 +86,23 @@ Continuum-target check (Gauss 64³ vs 80³, worst ρ): 64³ 3.6e-08, 128³ 8.0e-
 
 Continuum-target check (Gauss 64³ vs 80³, worst ρ): 64³ 1.5e-08, 128³ 2.0e-08, 256³ 2.4e-08.
 
-Reading: the dense sign-upwind stencil's continuum ρ is the mesh's $O(h)$ consistency gap; every off-mesh rule that resolves the continuum term sits at that same distance from the mesh target, so the mesh-target ρ of an off-mesh rule cannot fall below the gap, and the paper's 0.116 certificate against the mesh target is not the right test for an off-mesh rule. The lane certifies off-mesh rules against the continuum target instead (DESIGN section 7).
+Reading: the dense sign-upwind stencil's continuum ρ measures the mesh's $O(h)$ consistency gap; it decreases roughly by half per mesh refinement in the table. Every off-mesh rule that resolves the continuum term is observed to settle at about that same distance from the mesh target, so the paper's 0.116 certificate against the mesh target is not the right test for an off-mesh rule; the lane certifies off-mesh rules against the continuum target instead (DESIGN section 7). Results are for the single tested shift / scramble of each lattice and Sobol rule, not a distribution over shifts. Columns for the 90th percentile and the initial state ($k = 0$):
+
+| rule | $R' = 512$: ρ continuum p90 / worst at $k=0$, 64³, 128³, 256³ | $R' = 256$: same |
+|---|---|---|
+| `tensor` | 1.6e-01 / 2.0e-01; 8.1e-02 / 1.0e-01; 4.1e-02 / 5.0e-02 | 1.6e-01 / 2.0e-01; 8.1e-02 / 9.9e-02; 4.1e-02 / 5.0e-02 |
+| `dense_upwind` | 1.6e-01 / 2.0e-01; 8.1e-02 / 1.0e-01; 4.1e-02 / 5.0e-02 | 1.6e-01 / 2.0e-01; 8.1e-02 / 9.9e-02; 4.1e-02 / 5.0e-02 |
+| `lat4096` | 3.0e-02 / 2.1e-02; 3.7e-02 / 2.1e-02; 4.1e-02 / 2.1e-02 | 5.0e-03 / 2.9e-03; 6.0e-03 / 2.9e-03; 6.5e-03 / 2.9e-03 |
+| `lat8192` | 1.2e-03 / 8.6e-04; 1.5e-03 / 8.6e-04; 1.7e-03 / 8.6e-04 | 4.0e-04 / 3.9e-04; 4.5e-04 / 3.9e-04; 4.9e-04 / 3.9e-04 |
+| `lat16384` | 1.5e-04 / 4.1e-05; 1.6e-04 / 4.1e-05; 1.5e-04 / 4.1e-05 | 2.5e-05 / 1.3e-05; 2.6e-05 / 1.3e-05; 2.7e-05 / 1.3e-05 |
+| `lat32768` | 8.6e-06 / 2.6e-06; 9.7e-06 / 2.6e-06; 1.0e-05 / 2.6e-06 | 3.3e-06 / 1.0e-06; 3.5e-06 / 1.0e-06; 3.6e-06 / 1.0e-06 |
+| `kor16381` | 4.0e-04 / 2.6e-04; 4.9e-04 / 2.6e-04; 5.6e-04 / 2.6e-04 | 1.7e-04 / 1.1e-04; 1.8e-04 / 1.1e-04; 1.9e-04 / 1.1e-04 |
+| `gl16` | 4.4e-01 / 6.4e-01; 4.3e-01 / 6.2e-01; 4.4e-01 / 6.2e-01 | 1.1e-01 / 2.0e-01; 1.2e-01 / 2.0e-01; 1.3e-01 / 2.0e-01 |
+| `gl24` | 7.2e-03 / 6.1e-03; 9.2e-03 / 5.8e-03; 1.0e-02 / 5.8e-03 | 8.9e-04 / 1.1e-03; 1.0e-03 / 1.1e-03; 1.2e-03 / 1.1e-03 |
+| `gl32` | 1.8e-04 / 1.4e-04; 2.0e-04 / 1.4e-04; 2.2e-04 / 1.4e-04 | 5.0e-05 / 4.8e-05; 5.3e-05 / 4.7e-05; 5.6e-05 / 4.7e-05 |
+| `sob16384` | 1.2e-01 / 1.4e-01; 1.2e-01 / 1.4e-01; 1.2e-01 / 1.4e-01 | 7.2e-02 / 8.3e-02; 7.4e-02 / 8.3e-02; 7.5e-02 / 8.3e-02 |
+| `lat256` | 2.9e+00 / 3.0e+00; 2.9e+00 / 3.0e+00; 2.9e+00 / 3.0e+00 | 1.9e+00 / 2.0e+00; 1.9e+00 / 2.0e+00; 2.0e+00 / 2.0e+00 |
+| `smol8` | 2.2e+01 / 3.2e+01; 2.2e+01 / 3.2e+01; 2.2e+01 / 3.2e+01 | 1.2e+01 / 1.7e+01; 1.2e+01 / 1.7e+01; 1.2e+01 / 1.7e+01 |
 
 ## 4. End-to-end reduced solves (held-out cohort 923901, 32 cases)
 
@@ -94,113 +110,113 @@ Worst (median) over cases of the evolved-time maximum relative error. `refined` 
 
 **64³, $R' = 512$** (job 4737003, NVIDIA H200; selected: `gl24_R512`)
 
-| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | exits (4/0/3) | ms |
+| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query (median / max) | exits (4/0/3) | ms |
 |---|---|---|---|---|---|---|---|---|
-| `tensor` | 10.46 % (3.52 %) | 12.67 % | 1.52 % | – | 10.625 % | 28 | 800/0/0 | 47.9 |
-| `dense` (32 cases) | 10.46 % (3.52 %) | 12.67 % | 1.52 % | 0.00 % | 10.625 % | 28 | 800/0/0 | untimed |
-| `lat4096` | 2.83 % (1.08 %) | 4.16 % | 10.26 % | 10.59 % | 0.245 % | 28 | 800/0/0 | 20.4 |
-| `lat8192` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.62 % | 0.040 % | 28 | 800/0/0 | 26.2 |
-| `lat16384` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.63 % | 0.002 % | 28 | 800/0/0 | 37.9 |
-| `lat32768` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.63 % | 0.000 % | 28 | 800/0/0 | 61.1 |
-| `kor16381` | 2.83 % (1.08 %) | 4.14 % | 10.30 % | 10.63 % | 0.015 % | 28 | 800/0/0 | 40.2 |
-| `gl16` | 4.31 % (1.18 %) | 5.71 % | 8.97 % | 9.23 % | 3.249 % | 26 | 800/0/0 | 19.6 |
-| `gl24` | 2.83 % (1.08 %) | 4.14 % | 10.28 % | 10.61 % | 0.089 % | 28 | 800/0/0 | 34.1 |
-| `gl32` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.63 % | 0.004 % | 28 | 800/0/0 | 60.4 |
-| `sob16384` | 3.26 % (1.19 %) | 4.62 % | 10.36 % | 10.68 % | 1.500 % | 26 | 800/0/0 | 36.1 |
-| `lat256` (control) | 37.28 % (12.91 %) | 38.80 % | 32.12 % | 31.37 % | 36.884 % | 28 | 800/0/0 | 15.0 |
-| `smol8` (control) | 41.65 % (23.09 %) | 42.97 % | 36.54 % | 35.88 % | 41.565 % | 34 | 746/54/0 | 21.1 |
+| `tensor` | 10.46 % (3.52 %) | 12.67 % | 1.52 % | – | 10.625 % | 28 / 31 | 800/0/0 | 47.9 |
+| `dense` (32 cases) | 10.46 % (3.52 %) | 12.67 % | 1.52 % | 0.00 % | 10.625 % | 28 / 31 | 800/0/0 | 1120.4 (quick runs, not A–B–A) |
+| `lat4096` | 2.83 % (1.08 %) | 4.16 % | 10.26 % | 10.59 % | 0.245 % | 28 / 30 | 800/0/0 | 20.4 |
+| `lat8192` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.62 % | 0.040 % | 28 / 30 | 800/0/0 | 26.2 |
+| `lat16384` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.63 % | 0.002 % | 28 / 30 | 800/0/0 | 37.9 |
+| `lat32768` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.63 % | 0.000 % | 28 / 30 | 800/0/0 | 61.1 |
+| `kor16381` | 2.83 % (1.08 %) | 4.14 % | 10.30 % | 10.63 % | 0.015 % | 28 / 30 | 800/0/0 | 40.2 |
+| `gl16` | 4.31 % (1.18 %) | 5.71 % | 8.97 % | 9.23 % | 3.249 % | 26 / 30 | 800/0/0 | 19.6 |
+| `gl24` | 2.83 % (1.08 %) | 4.14 % | 10.28 % | 10.61 % | 0.089 % | 28 / 30 | 800/0/0 | 34.1 |
+| `gl32` | 2.83 % (1.08 %) | 4.14 % | 10.29 % | 10.63 % | 0.004 % | 28 / 30 | 800/0/0 | 60.4 |
+| `sob16384` | 3.26 % (1.19 %) | 4.62 % | 10.36 % | 10.68 % | 1.500 % | 26 / 30 | 800/0/0 | 36.1 |
+| `lat256` (control) | 37.28 % (12.91 %) | 38.80 % | 32.12 % | 31.37 % | 36.884 % | 28 / 33 | 800/0/0 | 15.0 |
+| `smol8` (control) | 41.65 % (23.09 %) | 42.97 % | 36.54 % | 35.88 % | 41.565 % | 34 / 60 | 746/54/0 | 21.1 |
 
 **64³, $R' = 256$** (job 4737003, NVIDIA H200; selected: `lat4096_R256`)
 
-| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | exits (4/0/3) | ms |
+| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query (median / max) | exits (4/0/3) | ms |
 |---|---|---|---|---|---|---|---|---|
-| `tensor` | 10.57 % (3.52 %) | 12.76 % | 2.59 % | – | 10.600 % | 27 | 800/0/0 | 12.2 |
-| `dense` (32 cases) | 10.57 % (3.52 %) | 12.76 % | 2.59 % | 0.01 % | 10.600 % | 27 | 800/0/0 | untimed |
-| `lat4096` | 4.49 % (1.20 %) | 5.61 % | 10.51 % | 10.59 % | 0.049 % | 27 | 800/0/0 | 11.1 |
-| `lat8192` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.009 % | 27 | 800/0/0 | 13.4 |
-| `lat16384` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.000 % | 27 | 800/0/0 | 18.1 |
-| `lat32768` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.000 % | 27 | 800/0/0 | 27.1 |
-| `kor16381` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.002 % | 27 | 800/0/0 | 19.1 |
-| `gl16` | 4.54 % (1.20 %) | 5.68 % | 10.19 % | 10.27 % | 1.173 % | 26 | 800/0/0 | 11.0 |
-| `gl24` | 4.49 % (1.20 %) | 5.61 % | 10.51 % | 10.60 % | 0.020 % | 27 | 800/0/0 | 16.6 |
-| `gl32` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.001 % | 27 | 800/0/0 | 27.1 |
-| `sob16384` | 4.61 % (1.22 %) | 5.82 % | 10.53 % | 10.61 % | 1.039 % | 27 | 800/0/0 | 18.0 |
-| `lat256` (control) | 31.55 % (11.52 %) | 32.86 % | 27.75 % | 27.30 % | 31.296 % | 26 | 800/0/0 | 7.3 |
-| `smol8` (control) | 41.98 % (22.56 %) | 42.16 % | 41.82 % | 41.68 % | 41.631 % | 34 | 739/61/0 | 12.4 |
+| `tensor` | 10.57 % (3.52 %) | 12.76 % | 2.59 % | – | 10.600 % | 27 / 30 | 800/0/0 | 12.2 |
+| `dense` (32 cases) | 10.57 % (3.52 %) | 12.76 % | 2.59 % | 0.01 % | 10.600 % | 27 / 30 | 800/0/0 | 516.9 (quick runs, not A–B–A) |
+| `lat4096` | 4.49 % (1.20 %) | 5.61 % | 10.51 % | 10.59 % | 0.049 % | 27 / 30 | 800/0/0 | 11.1 |
+| `lat8192` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.009 % | 27 / 30 | 800/0/0 | 13.4 |
+| `lat16384` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.000 % | 27 / 30 | 800/0/0 | 18.1 |
+| `lat32768` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.000 % | 27 / 30 | 800/0/0 | 27.1 |
+| `kor16381` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.002 % | 27 / 30 | 800/0/0 | 19.1 |
+| `gl16` | 4.54 % (1.20 %) | 5.68 % | 10.19 % | 10.27 % | 1.173 % | 26 / 30 | 800/0/0 | 11.0 |
+| `gl24` | 4.49 % (1.20 %) | 5.61 % | 10.51 % | 10.60 % | 0.020 % | 27 / 30 | 800/0/0 | 16.6 |
+| `gl32` | 4.49 % (1.20 %) | 5.61 % | 10.52 % | 10.60 % | 0.001 % | 27 / 30 | 800/0/0 | 27.1 |
+| `sob16384` | 4.61 % (1.22 %) | 5.82 % | 10.53 % | 10.61 % | 1.039 % | 27 / 30 | 800/0/0 | 18.0 |
+| `lat256` (control) | 31.55 % (11.52 %) | 32.86 % | 27.75 % | 27.30 % | 31.296 % | 26 / 31 | 800/0/0 | 7.3 |
+| `smol8` (control) | 41.98 % (22.56 %) | 42.16 % | 41.82 % | 41.68 % | 41.631 % | 34 / 44 | 739/61/0 | 12.4 |
 
 Newton–BiCGStab at 64³ (same job): dt0.005_nt0.01_lt0.1 26.93 % refined / 27.27 % Richardson / 26.01 % same-grid / 15.4 ms; dt0.005_nt0.001_lt0.1 9.85 % refined / 12.06 % Richardson / 0.92 % same-grid / 17.9 ms; dt0.01_nt0.01_lt0.1 10.26 % refined / 12.48 % Richardson / 1.26 % same-grid / 7.6 ms; dt0.01_nt0.001_lt0.1 10.41 % refined / 12.63 % Richardson / 1.20 % same-grid / 12.9 ms; dt0.025_nt0.01_lt0.1 11.65 % refined / 13.86 % Richardson / 4.29 % same-grid / 3.6 ms; dt0.025_nt0.001_lt0.1 12.01 % refined / 14.21 % Richardson / 4.29 % same-grid / 7.0 ms.
 
 **128³, $R' = 512$** (job 4737005, NVIDIA H200; selected: `gl24_R512`)
 
-| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | exits (4/0/3) | ms |
+| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query (median / max) | exits (4/0/3) | ms |
 |---|---|---|---|---|---|---|---|---|
-| `tensor` | 6.09 % (1.92 %) | 8.34 % | 1.87 % | – | 6.040 % | 28 | 800/0/0 | 52.0 |
-| `dense` (4 cases) | 2.57 % (2.23 %) | 3.48 % | 1.06 % | 0.00 % | 2.466 % | 28 | 100/0/0 | untimed |
-| `lat4096` | 2.84 % (1.08 %) | 4.18 % | 5.56 % | 6.00 % | 0.237 % | 28 | 800/0/0 | 25.6 |
-| `lat8192` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.039 % | 28 | 800/0/0 | 31.9 |
-| `lat16384` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.002 % | 28 | 800/0/0 | 44.5 |
-| `lat32768` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.000 % | 28 | 800/0/0 | 69.3 |
-| `kor16381` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.014 % | 28 | 800/0/0 | 46.6 |
-| `gl16` | 4.27 % (1.17 %) | 5.66 % | 4.78 % | 4.90 % | 3.197 % | 26 | 800/0/0 | 24.5 |
-| `gl24` | 2.83 % (1.08 %) | 4.16 % | 5.59 % | 6.02 % | 0.090 % | 28 | 800/0/0 | 40.6 |
-| `gl32` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.004 % | 28 | 800/0/0 | 68.8 |
-| `sob16384` | 3.27 % (1.18 %) | 4.65 % | 5.73 % | 6.14 % | 1.492 % | 26 | 800/0/0 | 42.6 |
-| `lat256` (control) | 37.21 % (12.85 %) | 38.73 % | 34.24 % | 33.43 % | 36.787 % | 28 | 800/0/0 | 19.3 |
-| `smol8` (control) | 41.40 % (23.29 %) | 42.87 % | 38.63 % | 37.89 % | 41.452 % | 34 | 742/58/0 | 25.8 |
+| `tensor` | 6.09 % (1.92 %) | 8.34 % | 1.87 % | – | 6.040 % | 28 / 30 | 800/0/0 | 52.0 |
+| `dense` (4 cases) | 2.57 % (2.23 %) | 3.48 % | 1.06 % | 0.00 % | 2.466 % | 28 / 30 | 100/0/0 | 9265.0 (quick runs, not A–B–A) |
+| `lat4096` | 2.84 % (1.08 %) | 4.18 % | 5.56 % | 6.00 % | 0.237 % | 28 / 30 | 800/0/0 | 25.6 |
+| `lat8192` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.039 % | 28 / 30 | 800/0/0 | 31.9 |
+| `lat16384` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.002 % | 28 / 30 | 800/0/0 | 44.5 |
+| `lat32768` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.000 % | 28 / 30 | 800/0/0 | 69.3 |
+| `kor16381` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.014 % | 28 / 30 | 800/0/0 | 46.6 |
+| `gl16` | 4.27 % (1.17 %) | 5.66 % | 4.78 % | 4.90 % | 3.197 % | 26 / 30 | 800/0/0 | 24.5 |
+| `gl24` | 2.83 % (1.08 %) | 4.16 % | 5.59 % | 6.02 % | 0.090 % | 28 / 30 | 800/0/0 | 40.6 |
+| `gl32` | 2.83 % (1.08 %) | 4.16 % | 5.60 % | 6.04 % | 0.004 % | 28 / 30 | 800/0/0 | 68.8 |
+| `sob16384` | 3.27 % (1.18 %) | 4.65 % | 5.73 % | 6.14 % | 1.492 % | 26 / 30 | 800/0/0 | 42.6 |
+| `lat256` (control) | 37.21 % (12.85 %) | 38.73 % | 34.24 % | 33.43 % | 36.787 % | 28 / 33 | 800/0/0 | 19.3 |
+| `smol8` (control) | 41.40 % (23.29 %) | 42.87 % | 38.63 % | 37.89 % | 41.452 % | 34 / 61 | 742/58/0 | 25.8 |
 
 **128³, $R' = 256$** (job 4737005, NVIDIA H200; selected: `lat4096_R256`)
 
-| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | exits (4/0/3) | ms |
+| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query (median / max) | exits (4/0/3) | ms |
 |---|---|---|---|---|---|---|---|---|
-| `tensor` | 6.56 % (1.93 %) | 8.67 % | 3.28 % | – | 6.013 % | 27 | 800/0/0 | 14.1 |
-| `dense` (4 cases) | 2.57 % (2.25 %) | 3.49 % | 1.12 % | 0.00 % | 2.467 % | 27 | 100/0/0 | untimed |
-| `lat4096` | 4.49 % (1.19 %) | 5.62 % | 6.14 % | 6.01 % | 0.048 % | 27 | 800/0/0 | 12.1 |
-| `lat8192` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.009 % | 27 | 800/0/0 | 13.7 |
-| `lat16384` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.000 % | 27 | 800/0/0 | 17.1 |
-| `lat32768` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.000 % | 27 | 800/0/0 | 23.2 |
-| `kor16381` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.002 % | 27 | 800/0/0 | 18.0 |
-| `gl16` | 4.54 % (1.20 %) | 5.69 % | 5.86 % | 5.72 % | 1.159 % | 26 | 800/0/0 | 12.1 |
-| `gl24` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.020 % | 27 | 800/0/0 | 16.0 |
-| `gl32` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.001 % | 27 | 800/0/0 | 23.2 |
-| `sob16384` | 4.61 % (1.21 %) | 5.83 % | 6.20 % | 6.05 % | 1.034 % | 27 | 800/0/0 | 17.1 |
-| `lat256` (control) | 31.50 % (11.48 %) | 32.81 % | 29.11 % | 28.56 % | 31.221 % | 26 | 800/0/0 | 9.4 |
-| `smol8` (control) | 41.94 % (22.55 %) | 42.11 % | 41.76 % | 41.56 % | 41.579 % | 34 | 740/60/0 | 13.6 |
+| `tensor` | 6.56 % (1.93 %) | 8.67 % | 3.28 % | – | 6.013 % | 27 / 30 | 800/0/0 | 14.1 |
+| `dense` (4 cases) | 2.57 % (2.25 %) | 3.49 % | 1.12 % | 0.00 % | 2.467 % | 27 / 30 | 100/0/0 | 4272.7 (quick runs, not A–B–A) |
+| `lat4096` | 4.49 % (1.19 %) | 5.62 % | 6.14 % | 6.01 % | 0.048 % | 27 / 30 | 800/0/0 | 12.1 |
+| `lat8192` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.009 % | 27 / 30 | 800/0/0 | 13.7 |
+| `lat16384` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.000 % | 27 / 30 | 800/0/0 | 17.1 |
+| `lat32768` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.000 % | 27 / 30 | 800/0/0 | 23.2 |
+| `kor16381` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.002 % | 27 / 30 | 800/0/0 | 18.0 |
+| `gl16` | 4.54 % (1.20 %) | 5.69 % | 5.86 % | 5.72 % | 1.159 % | 26 / 30 | 800/0/0 | 12.1 |
+| `gl24` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.020 % | 27 / 30 | 800/0/0 | 16.0 |
+| `gl32` | 4.49 % (1.19 %) | 5.62 % | 6.15 % | 6.01 % | 0.001 % | 27 / 30 | 800/0/0 | 23.2 |
+| `sob16384` | 4.61 % (1.21 %) | 5.83 % | 6.20 % | 6.05 % | 1.034 % | 27 / 30 | 800/0/0 | 17.1 |
+| `lat256` (control) | 31.50 % (11.48 %) | 32.81 % | 29.11 % | 28.56 % | 31.221 % | 26 / 31 | 800/0/0 | 9.4 |
+| `smol8` (control) | 41.94 % (22.55 %) | 42.11 % | 41.76 % | 41.56 % | 41.579 % | 34 / 44 | 740/60/0 | 13.6 |
 
 Newton–BiCGStab at 128³ (same job): dt0.005_nt0.01_lt0.1 26.44 % refined / 26.77 % Richardson / 25.91 % same-grid / 54.7 ms; dt0.005_nt0.001_lt0.1 5.22 % refined / 7.48 % Richardson / 1.08 % same-grid / 66.3 ms; dt0.01_nt0.01_lt0.1 5.73 % refined / 7.99 % Richardson / 1.47 % same-grid / 27.5 ms; dt0.01_nt0.001_lt0.1 6.00 % refined / 8.27 % Richardson / 1.39 % same-grid / 50.6 ms; dt0.025_nt0.01_lt0.1 8.50 % refined / 10.60 % Richardson / 4.72 % same-grid / 13.7 ms; dt0.025_nt0.001_lt0.1 8.46 % refined / 10.59 % Richardson / 4.72 % same-grid / 29.6 ms.
 
 **256³, $R' = 512$** (job 4737007, NVIDIA H200; selected: `gl24_R512`)
 
-| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | exits (4/0/3) | ms |
+| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query (median / max) | exits (4/0/3) | ms |
 |---|---|---|---|---|---|---|---|---|
-| `tensor` | 3.87 % (1.27 %) | 5.87 % | 2.20 % | – | 3.252 % | 28 | 800/0/0 | 90.1 |
-| `lat4096` | 2.84 % (1.08 %) | 4.18 % | 2.90 % | 3.21 % | 0.234 % | 28 | 800/0/0 | 63.2 |
-| `lat8192` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.039 % | 28 | 800/0/0 | 69.3 |
-| `lat16384` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.002 % | 28 | 800/0/0 | 80.9 |
-| `lat32768` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.000 % | 28 | 800/0/0 | 104.7 |
-| `kor16381` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.014 % | 28 | 800/0/0 | 82.5 |
-| `gl16` | 4.27 % (1.17 %) | 5.66 % | 3.53 % | 3.08 % | 3.185 % | 26 | 800/0/0 | 62.3 |
-| `gl24` | 2.83 % (1.08 %) | 4.17 % | 2.92 % | 3.24 % | 0.089 % | 28 | 800/0/0 | 76.7 |
-| `gl32` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.004 % | 28 | 800/0/0 | 105.4 |
-| `sob16384` | 3.27 % (1.18 %) | 4.65 % | 3.15 % | 3.43 % | 1.489 % | 26 | 800/0/0 | 79.3 |
-| `lat256` (control) | 37.20 % (12.83 %) | 38.72 % | 35.78 % | 34.92 % | 36.776 % | 28 | 800/0/0 | 57.7 |
-| `smol8` (control) | 41.46 % (23.26 %) | 42.93 % | 40.06 % | 39.45 % | 41.505 % | 34 | 740/60/0 | 64.3 |
+| `tensor` | 3.87 % (1.27 %) | 5.87 % | 2.20 % | – | 3.252 % | 28 / 30 | 800/0/0 | 90.1 |
+| `lat4096` | 2.84 % (1.08 %) | 4.18 % | 2.90 % | 3.21 % | 0.234 % | 28 / 30 | 800/0/0 | 63.2 |
+| `lat8192` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.039 % | 28 / 30 | 800/0/0 | 69.3 |
+| `lat16384` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.002 % | 28 / 30 | 800/0/0 | 80.9 |
+| `lat32768` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.000 % | 28 / 30 | 800/0/0 | 104.7 |
+| `kor16381` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.014 % | 28 / 30 | 800/0/0 | 82.5 |
+| `gl16` | 4.27 % (1.17 %) | 5.66 % | 3.53 % | 3.08 % | 3.185 % | 26 / 30 | 800/0/0 | 62.3 |
+| `gl24` | 2.83 % (1.08 %) | 4.17 % | 2.92 % | 3.24 % | 0.089 % | 28 / 30 | 800/0/0 | 76.7 |
+| `gl32` | 2.83 % (1.08 %) | 4.17 % | 2.93 % | 3.25 % | 0.004 % | 28 / 30 | 800/0/0 | 105.4 |
+| `sob16384` | 3.27 % (1.18 %) | 4.65 % | 3.15 % | 3.43 % | 1.489 % | 26 / 30 | 800/0/0 | 79.3 |
+| `lat256` (control) | 37.20 % (12.83 %) | 38.72 % | 35.78 % | 34.92 % | 36.776 % | 28 / 33 | 800/0/0 | 57.7 |
+| `smol8` (control) | 41.46 % (23.26 %) | 42.93 % | 40.06 % | 39.45 % | 41.505 % | 34 / 61 | 740/60/0 | 64.3 |
 
 **256³, $R' = 256$** (job 4737007, NVIDIA H200; selected: `lat4096_R256`)
 
-| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query | exits (4/0/3) | ms |
+| arm | refined | Richardson (diag.) | same-grid | dist tensor | dist conv | LM its/query (median / max) | exits (4/0/3) | ms |
 |---|---|---|---|---|---|---|---|---|
-| `tensor` | 5.07 % (1.28 %) | 6.77 % | 3.77 % | – | 3.231 % | 27 | 800/0/0 | 35.1 |
-| `lat4096` | 4.49 % (1.19 %) | 5.62 % | 4.20 % | 3.22 % | 0.048 % | 27 | 800/0/0 | 33.0 |
-| `lat8192` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.009 % | 27 | 800/0/0 | 34.6 |
-| `lat16384` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.000 % | 27 | 800/0/0 | 38.0 |
-| `lat32768` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.000 % | 27 | 800/0/0 | 44.4 |
-| `kor16381` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.002 % | 27 | 800/0/0 | 39.0 |
-| `gl16` | 4.54 % (1.20 %) | 5.69 % | 4.16 % | 3.00 % | 1.156 % | 26 | 800/0/0 | 32.9 |
-| `gl24` | 4.49 % (1.19 %) | 5.62 % | 4.20 % | 3.23 % | 0.020 % | 27 | 800/0/0 | 37.1 |
-| `gl32` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.001 % | 27 | 800/0/0 | 44.4 |
-| `sob16384` | 4.61 % (1.21 %) | 5.83 % | 4.17 % | 3.33 % | 1.033 % | 27 | 800/0/0 | 37.9 |
-| `lat256` (control) | 31.49 % (11.47 %) | 32.79 % | 30.30 % | 29.66 % | 31.200 % | 26 | 800/0/0 | 30.6 |
-| `smol8` (control) | 41.94 % (22.54 %) | 42.11 % | 41.78 % | 41.56 % | 41.576 % | 34 | 740/60/0 | 34.6 |
+| `tensor` | 5.07 % (1.28 %) | 6.77 % | 3.77 % | – | 3.231 % | 27 / 30 | 800/0/0 | 35.1 |
+| `lat4096` | 4.49 % (1.19 %) | 5.62 % | 4.20 % | 3.22 % | 0.048 % | 27 / 30 | 800/0/0 | 33.0 |
+| `lat8192` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.009 % | 27 / 30 | 800/0/0 | 34.6 |
+| `lat16384` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.000 % | 27 / 30 | 800/0/0 | 38.0 |
+| `lat32768` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.000 % | 27 / 30 | 800/0/0 | 44.4 |
+| `kor16381` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.002 % | 27 / 30 | 800/0/0 | 39.0 |
+| `gl16` | 4.54 % (1.20 %) | 5.69 % | 4.16 % | 3.00 % | 1.156 % | 26 / 30 | 800/0/0 | 32.9 |
+| `gl24` | 4.49 % (1.19 %) | 5.62 % | 4.20 % | 3.23 % | 0.020 % | 27 / 30 | 800/0/0 | 37.1 |
+| `gl32` | 4.49 % (1.19 %) | 5.62 % | 4.21 % | 3.23 % | 0.001 % | 27 / 30 | 800/0/0 | 44.4 |
+| `sob16384` | 4.61 % (1.21 %) | 5.83 % | 4.17 % | 3.33 % | 1.033 % | 27 / 30 | 800/0/0 | 37.9 |
+| `lat256` (control) | 31.49 % (11.47 %) | 32.79 % | 30.30 % | 29.66 % | 31.200 % | 26 / 31 | 800/0/0 | 30.6 |
+| `smol8` (control) | 41.94 % (22.54 %) | 42.11 % | 41.78 % | 41.56 % | 41.576 % | 34 / 44 | 740/60/0 | 34.6 |
 
 Newton–BiCGStab at 256³ (same job): dt0.005_nt0.01_lt0.1 26.64 % refined / 26.96 % Richardson / 26.34 % same-grid / 394.4 ms; dt0.005_nt0.001_lt0.1 2.27 % refined / 4.55 % Richardson / 1.18 % same-grid / 494.5 ms; dt0.01_nt0.01_lt0.1 3.01 % refined / 5.24 % Richardson / 1.52 % same-grid / 198.7 ms; dt0.01_nt0.001_lt0.1 3.43 % refined / 5.63 % Richardson / 1.51 % same-grid / 365.7 ms; dt0.025_nt0.01_lt0.1 6.93 % refined / 8.82 % Richardson / 5.16 % same-grid / 99.3 ms; dt0.025_nt0.001_lt0.1 6.92 % refined / 8.81 % Richardson / 5.13 % same-grid / 219.1 ms.
 
@@ -263,12 +279,12 @@ Memory of the advection data and one advection-Jacobian evaluation (microbenchma
 
 | job | cohort | GPU | gates G1–G4, table, reference | timing (drift / neighbour ROM / FOM / determinism) | continuum check | NumPy audit |
 |---|---|---|---|---|---|---|
-| val65 (4732813) | 923801 × 64 | NVIDIA H200 | pass | 1.024 / 1.017 / 0.998 / 0.0e+00 → pass | 3.6e-08, 1.5e-08 | pass |
-| val129 (4732818) | 923801 × 64 | NVIDIA H200 | pass | 1.016 / 1.010 / 0.999 / 0.0e+00 → pass | 8.0e-08, 2.0e-08 | pass |
-| val257 (4732820) | 923801 × 64 | NVIDIA H200 | pass | 1.018 / untested / 0.999 / 0.0e+00 → pass | 1.2e-07, 2.4e-08 | pass |
-| ho65 (4737003) | 923901 × 32 | NVIDIA H200 | pass | 1.014 / 1.013 / 1.010 / 0.0e+00 → pass | 3.6e-08, 1.5e-08 | pass |
-| ho129 (4737005) | 923901 × 32 | NVIDIA H200 | pass | 1.015 / 1.012 / 1.003 / 0.0e+00 → pass | 8.0e-08, 2.0e-08 | pass |
-| ho257 (4737007) | 923901 × 32 | NVIDIA H200 | pass | 1.015 / untested / 1.000 / 0.0e+00 → pass | 1.2e-07, 2.4e-08 | pass |
+| val65 (4732813) | 923801 × 64 | NVIDIA H200 | pass | 1.024 / 1.017 / 0.998 / 0.0e+00 → pass | 3.6e-08, 1.5e-08 | pass (swapped reference detected: True; perturbed record detected: True) |
+| val129 (4732818) | 923801 × 64 | NVIDIA H200 | pass | 1.016 / 1.010 / 0.999 / 0.0e+00 → pass | 8.0e-08, 2.0e-08 | pass (swapped reference detected: True; perturbed record detected: True) |
+| val257 (4732820) | 923801 × 64 | NVIDIA H200 | pass | 1.018 / untested / 0.999 / 0.0e+00 → pass | 1.2e-07, 2.4e-08 | pass (swapped reference detected: True; perturbed record detected: True) |
+| ho65 (4737003) | 923901 × 32 | NVIDIA H200 | pass | 1.014 / 1.013 / 1.010 / 0.0e+00 → pass | 3.6e-08, 1.5e-08 | pass (swapped reference detected: True; perturbed record detected: True) |
+| ho129 (4737005) | 923901 × 32 | NVIDIA H200 | pass | 1.015 / 1.012 / 1.003 / 0.0e+00 → pass | 8.0e-08, 2.0e-08 | pass (swapped reference detected: True; perturbed record detected: True) |
+| ho257 (4737007) | 923901 × 32 | NVIDIA H200 | pass | 1.015 / untested / 1.000 / 0.0e+00 → pass | 1.2e-07, 2.4e-08 | pass (swapped reference detected: True; perturbed record detected: True) |
 
 Must-fail controls (held-out; `fired` = continuum ρ above 0.116 **and** distance from the converged rollout above $10^{-3}$):
 
@@ -296,26 +312,36 @@ Must-fail controls (held-out; `fired` = continuum ρ above 0.116 **and** distanc
 
 ## 8. What the numbers say, and their limits
 
-- **The tensor inherits the mesh's upwind error; the off-mesh solve does not.** Against the refined reference the tensor at $R' = 512$ is at 10.46 % (64³), 6.09 % (128³), 3.87 % (256³), tracking the same-mesh full-order model, whose best setting is at 9.85 %, 5.22 %, 2.27 %. The selected off-mesh rule is at 2.83 %, 2.83 %, 2.83 %: it solves the continuum advection, so its error is the bank's and the time step's, not the stencil's. This is why "reproduces the tensor" is the wrong expectation: the off-mesh solve differs from the tensor solve by the stencil's $O(h)$ gap (column `dist tensor`), which shrinks as the mesh is refined.
-- **Caveat on that comparison.** The refined reference is a first-order upwind solution itself, so it is biased toward upwind discretisations; the Richardson column (post-hoc diagnostic, DESIGN R5) moves every arm, and the off-mesh rule is ahead of the tensor under it at every mesh and width. The bank was trained on fields up to 129 nodes per axis; evaluating its analytic derivative brings in resolution the coarse mesh does not have, which is why an off-mesh solve can beat the same-mesh full-order model at 64³ and 128³. That is a property of the trained bank, not a free lunch: at 256³ the full-order model's best setting is more accurate than either reduced solve.
-- **Quadrature error is small next to model error.** Every non-control rule that passes the continuum certificate gives the same refined error to within a few hundredths of a percent; the differences between the converged lattice and Gauss rollouts (`dist conv` of `gl32`) are far below the bank's floor.
+- **The tensor inherits the mesh's upwind error; the off-mesh solve does not.** Against the refined reference the tensor at $R' = 512$ is at 10.46 % (64³), 6.09 % (128³), 3.87 % (256³), tracking the same-mesh full-order model, whose best setting is at 9.85 %, 5.22 %, 2.27 %. The selected off-mesh rule is at 2.83 %, 2.83 %, 2.83 %: it solves the continuum advection, so the stencil's upwind error is absent from it; what remains (bank span, time step, projection and test space, quadrature, solver, and the reference's own error) was not decomposed here. This is why "reproduces the tensor" is the wrong expectation: the off-mesh solve differs from the tensor solve by the stencil's $O(h)$ gap (column `dist tensor`), which shrinks as the mesh is refined.
+- **Caveat on that comparison.** The refined reference is a first-order upwind solution itself, so it is biased toward upwind discretisations; the Richardson column (post-hoc diagnostic, DESIGN R5) moves every arm, and the off-mesh rule is ahead of the tensor under it at every mesh and width. At 256³ and $R' = 256$ the primary-metric difference between the selected rule and the tensor is only 0.58 % (percentage points), inside the reference's own uncertainty, so no accuracy ranking is claimed there. The bank was trained on fields up to 129 nodes per axis; evaluating its analytic derivative brings in resolution the coarse mesh does not have, which is why an off-mesh solve can beat the same-mesh full-order model at 64³ and 128³. That is a property of the trained bank, not a free lunch: at 256³ the full-order model's best setting is more accurate than either reduced solve.
+- **Quadrature error is small next to model error once the rollout has converged.** Over the off-mesh rules within $10^{-3}$ of the converged rollout, the held-out worst refined errors spread by 0.009 % ($R' = 512$), 0.005 % ($R' = 256$) across rules and meshes. Rules that pass the continuum certificate but not the rollout criterion can differ more (e.g. `sob16384`, `gl16`; section 4).
 - **Continuum ρ of a fixed rule grows with the mesh** (the tensor-reached states are sharper on finer meshes, because the mesh adds less numerical diffusion), so a rule size certified at 64³ is not automatically certified at 256³; the 4096-point lattice at $R' = 512$ crosses the 0.116 bar at 256³ (section 3).
-- **Cost.** The off-mesh Jacobian is a dense GEMM of $M \times m \times R'$ flops, more flops than the tensor's $M R'^2$ contraction but far fewer bytes; on the H200 it is faster for $m \lesssim$ 16k at $R' = 512$ and comparable at $R' = 256$. The query time is dominated at 256³ by the mesh-side projection and output decoding, which no advection rule removes, so the speedup against Newton–BiCGStab changes little.
+- **Cost.** The off-mesh Jacobian is a dense GEMM of $M \times m \times R'$ flops, more flops than the tensor's $M R'^2$ contraction but far fewer bytes; on the H200 it is faster for $m \lesssim$ 16k at $R' = 512$ and comparable at $R' = 256$. The query time is dominated at 256³ by the mesh-side projection and output decoding, which no advection rule removes. Under the same-grid rule the 256³ speedups move from 2.21× (tensor) to 2.59× (selected), $R' = 512$; 5.66× (tensor) to 6.01× (selected), $R' = 256$; under the refined rule they move from 2.21× to 6.45×, $R' = 512$; 5.66× to 6.01×, $R' = 256$: the more accurate off-mesh solve can only be matched by a more accurate, hence slower, full-order setting, while the tensor is matched by a cheaper one. At 64³ and 128³ no full-order setting on the same mesh is as accurate against the refined reference as the off-mesh solve, so the refined-rule speedup is undefined there; under the same-grid rule the reduced model is slower than Newton–BiCGStab at 64³ in every arm (section 5).
 
 ### What was wrong or changed along the way
 
-- `ref1` first attempt (job 4732809, A100 node pax007) failed the GPU preflight (no CUDA device); restaged unchanged on an H100 (4732869).
-- The design audit found that the vendor full-order solver would store every time step at 513 nodes (107 GB) and that the selection had an unconditional fallback; both fixed before any experiment job (DESIGN R1–R2).
-- The smoke probe could not discriminate the reference tolerances (its case converged to $10^{-10}$ at every tolerance); the re-check job `rck1` was added (R4) and bounds the effect (section 2).
+- `ref1` first attempt (job 4732809, an A100 node) failed the GPU preflight (no CUDA device); restaged unchanged on an H100 (4732869).
+- The design audit found that the vendor full-order solver would store every time step at 513 nodes (beyond an H200) and that the selection had an unconditional fallback; both fixed before any experiment job (DESIGN R1–R2).
+- The smoke probe could not discriminate the reference tolerances (its case reached the tight residual at every tolerance); the re-check job `rck1` was added (R4); one of its four cases exceeded the R4 threshold, so the reference is declared tolerance-limited at that level (section 2).
+- The smoke panel (4 probe cases, 2 × 2 timing) failed its timing gates (drift 1.186, neighbour 1.208); diagnostic only, superseded by the production panels, which passed (with the ROM neighbour check untested at 256³ because no arm is four times slower than another there).
+- Re-applying the selection rule to the held-out data would pick a different rule at $R' = 512$ (section 7): that arm missed the $10^{-3}$ rollout criterion on validation by a small margin; the frozen selection stands.
 - The Richardson diagnostic was added after the validation refined errors were seen (R5); it is labelled post-hoc and changes no verdict.
-- The DESIGN check "dense continuum ρ > 0.116" is meaningful only at 64³; at 128³ and 256³ the $O(h)$ gap is below 0.116 by construction (it halves per refinement), so the `False` entries there are expected, not failures.
+- The DESIGN check "dense continuum ρ > 0.116" is meaningful only at 64³; at 128³ and 256³ the $O(h)$ gap is observed to fall below 0.116 (it roughly halves per refinement), so the `False` entries there are expected, not failures.
 - The held-out cohort had been evaluated before by the retry lane for its tensor settings; no off-mesh arm had run on it and no choice here used it.
 
 ## Glossary
 
 - **tensor (incumbent)**: the precomputed quadratic form $\tfrac12 c^\top T_m c$ that evaluates the tested advection exactly for the mesh's backward-difference stencil; $M R'^2$ numbers.
 - **off-mesh rule**: a fixed quadrature of the continuum advection at $m$ points not tied to the mesh, using the bank and its analytic derivative there (Hari's "point" form, "hybrid": linear terms stay mesh-exact).
-- **dense**: the full-order model's sign-upwind advection on every mesh node, with its exact Jacobian; run at 64³ only (and 4 validation cases at 128³) because each Jacobian costs $R'$ full-grid transforms.
+- **dense**: the full-order model's sign-upwind advection on every mesh node, with its exact Jacobian; run at 64³ (all cases) and on the first 4 cases at 128³ (validation and held-out), not at 256³, because each Jacobian costs $R'$ full-grid transforms; not timed with the A–B–A protocol.
+- **Richardson (diag.)**: error against $u_R = 2u_{513} - u_{257}$, a second-order estimate of the continuum solution from the two first-order references; post-hoc diagnostic, assumes an asymptotic error expansion.
+- **LM its/query**: median over cases of the total Levenberg–Marquardt iterations in one query (25 steps).
+- **Jacobian ms**: GPU time of one evaluation of the advection Jacobian $J_u(c)$ alone (median of 50).
+- **GFLOP / Jacobian**: floating-point operations of one $J_u$ evaluation, in units of $10^9$.
+- **bytes**: memory of the advection data: the tensor, or the rule's $B$, $D$ and $P$ blocks.
+- **Newton–BiCGStab**: the full-order solver: backward Euler, Newton steps with a preconditioned BiCGStab linear solve; settings `dtX_ntY_ltZ` = time step X, Newton tolerance Y, linear tolerance Z.
+- **drift / neighbour / determinism**: timing gates: A2/A1 median ratio; slowdown after a much slower predecessor (untested when no arm is four times slower than another); timed outputs identical to the first run.
+- **audit**: independent NumPy recomputation of errors, decoding, ρ and the selection, including two fault-injection checks (a swapped reference case and a 1 % perturbed record must be detected).
 - **CBC lattice (`latN`)**: a rank-1 lattice rule with $N$ points, generating vector built component by component to minimise the $P_2$ figure of merit, with one random shift (seed 0).
 - **Korobov (`kor16381`)**: a rank-1 lattice whose vector is $(1, a, a^2)$, searched over $a$; 16381 points.
 - **Gauss (`glP`)**: tensor Gauss–Legendre with $P$ points per axis, $m = P^3$.

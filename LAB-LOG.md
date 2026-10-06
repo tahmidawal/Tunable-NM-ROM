@@ -18807,3 +18807,27 @@ Cell FOM, test: `lean_nt3e-3_l3e-3_dt005` 125.6 ms, worst 0.1347 % (median 0.033
 **Where.** Committed on main. No worktree, branch, cluster job or GPU run. Manim came from conda-forge in a scratchpad micromamba prefix, because the system lacks Cairo/Pango headers and pip's manim fails building glcontext on aarch64. The recipe is in the README.
 **Wrong / retracted.** Nothing numerical. In conversation I first said "Haris" could not be found; the name is Hari.
 **Open.** The two quadrature lanes are still unmerged; the user declined merging for now (2026-10-05).
+
+## 2026-10-06
+
+### 2026-10-06 — JCP paper plan (planning only, no experiments)
+
+**What.** The user wants a JCP journal paper built from our NM-ROM work and Hari's off-mesh quadrature study. A five-agent read-only team produced five notes: evidence inventory, JCP venue and literature, theory, experiment design, and a red-team review. I combined them into `reports/2026-10-06-jcp-offmesh-paper-plan.md`; the notes are its appendices in `reports/2026-10-06-jcp-offmesh-paper-plan/01–05`. A Codex audit is appendix `06`, and the plan was revised to follow it.
+- **Recommended framing:** "Classical quadrature in place of empirical hyper-reduction for neural-field reduced-order models". This is not a speed-up paper and not "first off-mesh". CROM, SNF-ROM (JCP 2025) and Weder–Schwerdtner–Peherstorfer already cover off-mesh decoding and mesh-independent cost.
+- **Campaign:** E0–E7, about 730 GPU-h, at least 7.6 days on 4 GPUs.
+- **Kill criteria K0–K6.** Four kill experiments run first: references, mechanism controls, the FOM ladder, and POD+ECSW baselines.
+- **Nine proposed lanes** named `2026-10-07-jcp-*`. None has been created; they need user approval.
+**Wrong / retracted (from the audit).** Note 03's explicit Gauss strip-width bound is wrong. Its claim "lattices converge like m^-3" is only a conditional upper bound; the observed slopes are not an asymptotic rate. Hari's "super-algebraic lattice" and "tent adds a kink" statements are both wrong for this integrand. In note 04:
+- the sealed cohort was per lane, which allows leakage between lanes; sealing is now global;
+- the 5 % timing fault sat under a 10 % gate, so it could never be caught;
+- Gauss is not exact on sines, so the planned exactness check was invalid;
+- the rule-doubling "certificate" is only an indicator;
+- the error budget defined one term as a remainder.
+The first schedule estimate (5–7 days) was arithmetically impossible.
+**Open / decisions for the user.**
+- Authorship and coordination with Hari.
+- Whether new lanes copy the off-mesh code or fork from the quadrature branch tips.
+- Running coarse-grid, second-order and spectral FOMs, which the 2026-09-21 ICLR scope rule excluded.
+- Which non-polynomial PDE to use (e^u recommended).
+- Approval of the lane names, and whether to start with the week-1 kill set only (~300 GPU-h).
+- Whether to keep the NS 3D stretch lane.

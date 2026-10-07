@@ -18872,3 +18872,11 @@ The first schedule estimate (5–7 days) was arithmetically impossible.
 - User: withdraw the ICLR submission on OpenReview if it is still active.
 - User: agree authorship with Hari.
 - Next session: write DESIGN.md for the four lanes (one subagent per lane), then Codex audits, smoke tests and jobs.
+
+## 2026-10-07
+
+### 2026-10-07 — quadrature study guide (explainer, no experiments)
+I wrote `understand/2026-10-07-quadrature-study-guide/` for the user. It is a 10-page PDF (`guide.pdf`) built from `guide.tex`. It walks step by step through Gauss, rank-1 lattices (Fibonacci/CBC), Sobol, Smolyak and Monte Carlo, the tent transform, the O(h) gap between the mesh sum and the true integral, and the off-mesh assembly in the reduced model.
+- Every figure and table comes from `exercises.py`, which runs on the CPU in about 3 s. It uses an unchanged copy of Hari's `quadrature.py` (sha256 c6403d05…) and an illustrative smooth bump, not our bank.
+- Errors are normalised by ∫|f|. The first draft divided by |∫f|, which nearly cancels for ψ_{12,12} and gave meaningless 1e6 relative errors; that was fixed before the guide was built.
+- In the guide's own results, the tent transform hurts the lattice and the upwind gap halves per refinement, exactly as expected.

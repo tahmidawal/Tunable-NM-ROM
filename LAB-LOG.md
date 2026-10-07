@@ -12,7 +12,20 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-10-01
+# Where things stand — 2026-10-06
+
+**2026-10-06 — JCP paper campaign started.**
+- **The paper.** One combined Journal of Computational Physics paper: the tunable ordered coordinate-network bank (the ICLR material; ICLR will not be submitted) plus Hari's off-mesh classical-quadrature hyper-reduction.
+- **Documents.** Plan: `reports/2026-10-06-jcp-offmesh-paper-plan.md`, with appendices 01–07, including a Codex audit and a literature check. Outline: `reports/2026-10-06-jcp-combined-paper-outline/`. Working notebook: `notebook/` (LaTeX; rebuild the PDF after every update).
+- **Week-1 lanes**, created and mirrored, with no jobs yet:
+  - `2026-10-06-jcp-references` (E0)
+  - `2026-10-06-jcp-mechanism` (E1, E2)
+  - `2026-10-06-jcp-fom-pareto` (E4)
+  - `2026-10-06-jcp-hr-baselines` (E5)
+- **Next.** For each lane: a pre-registered DESIGN.md, then a Codex audit, then code.
+- **User decisions** are recorded in CLAUDE.md ("JCP paper campaign"). In particular, Claude now names and creates worktrees without asking.
+
+## Earlier state — 2026-10-01
 
 **2026-10-01 — new fork point; paper discarded.** All new work branches from
 `exp/2026-10-01-ns3d-coordnet-bank` @ `21c175a1b` (GitHub mirror
@@ -18831,3 +18844,31 @@ The first schedule estimate (5–7 days) was arithmetically impossible.
 - Which non-polynomial PDE to use (e^u recommended).
 - Approval of the lane names, and whether to start with the week-1 kill set only (~300 GPU-h).
 - Whether to keep the NS 3D stretch lane.
+
+### 2026-10-06 (later) — JCP Phase 0: decisions, lanes, notebook (setup only, no experiments)
+
+**Decisions (user).**
+- One combined JCP paper; ICLR will not be submitted.
+- The off-mesh code is copied into the lanes, not forked.
+- The paper compares against coarse-grid, second-order and spectral full-order solvers, in addition to the iterative ones. This supersedes the 2026-09-21 scope rule.
+- Harder examples are added alongside the existing PDEs.
+- The NS 3D lane stays, and its bank keeps improving.
+- Claude now names and creates worktrees without asking. CLAUDE.md, AGENTS.md and memory were updated to say so.
+
+**Done.**
+- Outline PDF: `reports/2026-10-06-jcp-combined-paper-outline/`.
+- Literature check: `reports/2026-10-06-jcp-offmesh-paper-plan/07-literature-check.md`. None of arXiv 2505.14595, 2507.07830 or 2508.21279, nor the LiCROM cubature, pre-empts the paper's claims. No ROM paper found uses weighted classical quadrature for the reduced residual. Must add: Ingimarson–Rebholz–Iliescu (CMAME 2022, argues ROMs should match the FOM discretisation) and nested dropout (Rippel et al. 2014).
+- Four lanes were created from `21c175a1b`, each a sparse worktree:
+  - `exp/2026-10-06-jcp-references` @676889082, mirror cd93bb4aa
+  - `exp/2026-10-06-jcp-mechanism` @b2cd1d8ae, mirror 198739137
+  - `exp/2026-10-06-jcp-fom-pareto` @73bab9c31, mirror f98f27a05
+  - `exp/2026-10-06-jcp-hr-baselines` @56a1f9f0f, mirror 108ce45f2
+  Each lane has 69 vendored files from quadrature-study @84d28e303 and quadrature-burgers3d @aab6b6927, checked blob by blob, plus `vendor/PROVENANCE.json`, a `sync_github.sh` and a README.
+- LaTeX notebook `notebook/` (`build.sh`, one entry per update): first entry written and rendered.
+
+**Wrong / retracted.** Nothing numerical. A lane-wait loop matched its own command line and spun; it was stopped, with no effect on the lanes.
+
+**Open.**
+- User: withdraw the ICLR submission on OpenReview if it is still active.
+- User: agree authorship with Hari.
+- Next session: write DESIGN.md for the four lanes (one subagent per lane), then Codex audits, smoke tests and jobs.

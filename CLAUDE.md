@@ -20,7 +20,8 @@ reported outputs; make a new experiment directory when extending them.
 Every new experiment starts in its own git worktree on its own branch, pushed to GitHub
 (`origin` = https://github.com/tahmidawal/Tunable-NM-ROM.git):
 
-- **Ask the user before creating a worktree** — propose the name and get confirmation first.
+- **Claude names and creates worktrees itself** (user decision, 2026-10-06): no confirmation is
+  needed for the name or for creating it. Report the names to the user and in the lab log once created.
 - Worktree dirs live in `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/`,
   named `YYYY-MM-DD-<short-descriptive-slug>` — date first so directories sort
   chronologically. The `worktrees/` dir is listed in `.git/info/exclude` so `main` stays
@@ -61,10 +62,10 @@ and often necessary — comparing cells, assembling reports, auditing another ce
 **write to one tree only**. Two sessions or agents writing into the same tree corrupt each
 other's `runs/` and cluster directories.
 
-### Several experiments at once — one worktree each, and ask first
+### Several experiments at once — one worktree each
 
 When asked to run more than one experiment concurrently, give each its own subagent and its own
-worktree. **Propose the names and get confirmation before creating any of them.** Give each a
+worktree. Choose and create the names yourself (user decision, 2026-10-06). Give each a
 distinct cluster namespace as well (`/cluster/tufts/paralab/tawal01/<ns>/`), because the account
 is shared and jobs from different experiments must never land in one directory.
 
@@ -72,10 +73,10 @@ is shared and jobs from different experiments must never land in one directory.
 initiative, and do not leave the decision unasked — a finished experiment sitting alone on its
 branch is easy to lose track of. Record whichever way it goes in the lab log.
 
-### Starting a new session on new ideas — ask where to start from
+### Starting a new session on new ideas — branch from the fork point
 
-Before creating a worktree for new work, ask whether it should branch from the most recent
-worktree or from somewhere else. Say which one you would pick and why. Never assume `main`:
+New worktrees branch from the current fork point below. Ask where to branch from only when the work
+genuinely needs a different base (and say which you would pick and why). Never assume `main`:
 `main` is the frozen baseline and its heat ROM rollout is known broken, so branching from it
 silently discards every correction made since.
 
@@ -85,6 +86,27 @@ commit `21c175a1b`. Its GitHub mirror is `origin/codeonly/exp/2026-10-01-ns3d-co
 lane's `sync_github.sh`, set `LOCAL_BASE=21c175a1b…` and `REMOTE_BASE=1716d80de…` (full hashes
 via `git rev-parse`). `main` stays the home of `LAB-LOG.md`, `reports/` and these instructions,
 and is the only branch pushed directly.
+
+### JCP paper campaign (since 2026-10-06)
+
+The project is now building one Journal of Computational Physics paper that combines the
+tunable ordered bank (the discarded ICLR material) with Hari's off-mesh classical-quadrature
+hyper-reduction. Plan: `reports/2026-10-06-jcp-offmesh-paper-plan.md` (governs over its appendices);
+outline: `reports/2026-10-06-jcp-combined-paper-outline/`. User decisions of 2026-10-06:
+- New lanes **copy** the off-mesh code byte-identically from `exp/2026-10-01-quadrature-study` and
+  `exp/2026-10-01-quadrature-burgers3d` into `experiments/jcp-<lane>/vendor/` with `PROVENANCE.json`.
+- Full-order comparators: run **and compare against all three** of coarse-grid, second-order and
+  spectral solvers, in addition to the named iterative solvers. This supersedes the 2026-09-21
+  "named iterative FOMs only" rule.
+- Add **harder examples** alongside the existing PDEs (non-polynomial nonlinearities, sharper
+  regimes), chosen in the lane designs.
+- Keep the **NS 3D** lane and keep improving its coordinate-network bank.
+- Week-1 lanes: `2026-10-06-jcp-{references,mechanism,fom-pareto,hr-baselines}`.
+
+**LaTeX notebook.** `notebook/` on `main` is the JCP campaign notebook: one entry file per update in
+`notebook/entries/`, built with `bash notebook/build.sh`, which renders `notebook/jcp-notebook.pdf`.
+After every notebook update, rebuild the PDF and commit both. The notebook complements
+`LAB-LOG.md`; it does not replace it.
 
 ### One canonical `LAB-LOG.md`, on `main`, read and appended by every session
 

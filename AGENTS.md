@@ -133,13 +133,13 @@ These are what separate a result from a plausible-looking number.
 writing to more than one is not. Two agents writing into one tree corrupt each other's `runs/`
 and cluster directories.
 
-**Several experiments at once: one worktree each, and ask first.** Give each its own subagent,
+**Several experiments at once: one worktree each.** Give each its own subagent,
 its own worktree, and its own cluster namespace (`/cluster/tufts/paralab/tawal01/<ns>/`) —
-the account is shared. Propose the names and get confirmation before creating any of them.
+the account is shared. Choose and create the names yourself (user decision, 2026-10-06).
 When they finish, **ask whether to merge the worktrees**; do not merge unprompted, and do not
 leave the question unasked.
 
-**Starting new work: ask where to branch from.** Say which base you would pick and why. Never
+**Starting new work: branch from the current fork point** (see CLAUDE.md); ask only if the work needs a different base, and say which you would pick and why. Never
 assume `main` — it is the frozen baseline with a known-broken heat rollout, so branching from it
 silently discards every correction since.
 
@@ -187,7 +187,7 @@ never one per session.
 
 `main` is the frozen public baseline and its heat ROM rollout is broken (frozen after step 1) —
 do not use it as a behavioural reference. Work on a branch; experiments live in dated worktrees
-under `worktrees/`, named `YYYY-MM-DD-<slug>` with branch `exp/<same>`. Ask before creating one.
+under `worktrees/`, named `YYYY-MM-DD-<slug>` with branch `exp/<same>`. Create them without asking (user decision, 2026-10-06).
 Commit small and often and back every commit up to GitHub. Lane branches carry archive blobs
 GitHub rejects, so never push `exp/...` directly: mirror it to `origin/codeonly/exp/<slug>`
 with a per-lane `sync_github.sh` (see CLAUDE.md, "Branching") after every commit.

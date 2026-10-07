@@ -1,0 +1,27 @@
+{
+ "attempt": "reft",
+ "mesh": 8192,
+ "cohorts": [
+  "test64"
+ ],
+ "refs": {
+  "ST": {
+   "dt": 0.0003125,
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "accept_residual": 2e-11
+  },
+  "S": {
+   "dt": 0.005,
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "accept_residual": 2e-11
+  }
+ },
+ "audit_cases": {
+  "test64": [
+   0,
+   1
+  ]
+ }
+}

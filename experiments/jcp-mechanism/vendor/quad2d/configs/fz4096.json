@@ -1,0 +1,1238 @@
+{
+ "attempt": "fz4096",
+ "mesh": 4096,
+ "cohorts": [
+  "dev6"
+ ],
+ "settings": [
+  "acc",
+  "fast",
+  "head"
+ ],
+ "gtol": 0.001,
+ "step_budget": 600,
+ "arms": {
+  "acc": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "gauss32",
+    "kind": "point",
+    "rule": "gauss32"
+   },
+   {
+    "name": "gauss48",
+    "kind": "point",
+    "rule": "gauss48"
+   },
+   {
+    "name": "gauss64",
+    "kind": "point",
+    "rule": "gauss64"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "gauss128",
+    "kind": "point",
+    "rule": "gauss128"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   {
+    "name": "gauss256",
+    "kind": "point",
+    "rule": "gauss256"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "fib4181",
+    "kind": "point",
+    "rule": "fib4181"
+   },
+   {
+    "name": "fib6765",
+    "kind": "point",
+    "rule": "fib6765"
+   },
+   {
+    "name": "fib17711",
+    "kind": "point",
+    "rule": "fib17711"
+   },
+   {
+    "name": "fib46368",
+    "kind": "point",
+    "rule": "fib46368"
+   },
+   {
+    "name": "sobol4096",
+    "kind": "point",
+    "rule": "sobol4096"
+   },
+   {
+    "name": "flux_gauss64",
+    "kind": "flux",
+    "rule": "gauss64"
+   },
+   {
+    "name": "flux_fib6765",
+    "kind": "flux",
+    "rule": "fib6765"
+   },
+   {
+    "name": "ctrl_smolyak8",
+    "kind": "point",
+    "rule": "smolyak8",
+    "control": true
+   },
+   {
+    "name": "ctrl_gauss8",
+    "kind": "point",
+    "rule": "gauss8",
+    "control": true
+   },
+   {
+    "name": "gref",
+    "kind": "point",
+    "rule": "gauss640"
+   }
+  ],
+  "fast": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "gauss32",
+    "kind": "point",
+    "rule": "gauss32"
+   },
+   {
+    "name": "gauss48",
+    "kind": "point",
+    "rule": "gauss48"
+   },
+   {
+    "name": "gauss64",
+    "kind": "point",
+    "rule": "gauss64"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "gauss128",
+    "kind": "point",
+    "rule": "gauss128"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   {
+    "name": "gauss256",
+    "kind": "point",
+    "rule": "gauss256"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "fib4181",
+    "kind": "point",
+    "rule": "fib4181"
+   },
+   {
+    "name": "fib6765",
+    "kind": "point",
+    "rule": "fib6765"
+   },
+   {
+    "name": "fib17711",
+    "kind": "point",
+    "rule": "fib17711"
+   },
+   {
+    "name": "fib46368",
+    "kind": "point",
+    "rule": "fib46368"
+   },
+   {
+    "name": "sobol4096",
+    "kind": "point",
+    "rule": "sobol4096"
+   },
+   {
+    "name": "flux_gauss64",
+    "kind": "flux",
+    "rule": "gauss64"
+   },
+   {
+    "name": "flux_fib6765",
+    "kind": "flux",
+    "rule": "fib6765"
+   },
+   {
+    "name": "ctrl_smolyak8",
+    "kind": "point",
+    "rule": "smolyak8",
+    "control": true
+   },
+   {
+    "name": "ctrl_gauss8",
+    "kind": "point",
+    "rule": "gauss8",
+    "control": true
+   },
+   {
+    "name": "gref",
+    "kind": "point",
+    "rule": "gauss640"
+   }
+  ],
+  "head": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "q0scaled",
+    "kind": "mesh",
+    "rule": "q0scaled"
+   },
+   {
+    "name": "gauss32",
+    "kind": "point",
+    "rule": "gauss32"
+   },
+   {
+    "name": "gauss48",
+    "kind": "point",
+    "rule": "gauss48"
+   },
+   {
+    "name": "gauss64",
+    "kind": "point",
+    "rule": "gauss64"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "gauss128",
+    "kind": "point",
+    "rule": "gauss128"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   {
+    "name": "gauss256",
+    "kind": "point",
+    "rule": "gauss256"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "fib4181",
+    "kind": "point",
+    "rule": "fib4181"
+   },
+   {
+    "name": "fib6765",
+    "kind": "point",
+    "rule": "fib6765"
+   },
+   {
+    "name": "fib17711",
+    "kind": "point",
+    "rule": "fib17711"
+   },
+   {
+    "name": "fib46368",
+    "kind": "point",
+    "rule": "fib46368"
+   },
+   {
+    "name": "sobol4096",
+    "kind": "point",
+    "rule": "sobol4096"
+   },
+   {
+    "name": "flux_gauss64",
+    "kind": "flux",
+    "rule": "gauss64"
+   },
+   {
+    "name": "flux_fib6765",
+    "kind": "flux",
+    "rule": "fib6765"
+   },
+   {
+    "name": "ctrl_smolyak8",
+    "kind": "point",
+    "rule": "smolyak8",
+    "control": true
+   },
+   {
+    "name": "ctrl_gauss8",
+    "kind": "point",
+    "rule": "gauss8",
+    "control": true
+   },
+   {
+    "name": "gref",
+    "kind": "point",
+    "rule": "gauss640"
+   }
+  ]
+ },
+ "dense_cases": {
+  "dev6": "all"
+ },
+ "population_arm": "lat64",
+ "gref": "gauss640",
+ "gref_check": "gauss768",
+ "gref_bar": 1e-05,
+ "rho_rules": {
+  "acc": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat16",
+    "kind": "mesh",
+    "rule": "lat16"
+   },
+   {
+    "name": "lat32",
+    "kind": "mesh",
+    "rule": "lat32"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "lat128",
+    "kind": "mesh",
+    "rule": "lat128"
+   },
+   {
+    "name": "gauss8",
+    "kind": "point",
+    "rule": "gauss8"
+   },
+   {
+    "name": "gauss16",
+    "kind": "point",
+    "rule": "gauss16"
+   },
+   {
+    "name": "gauss24",
+    "kind": "point",
+    "rule": "gauss24"
+   },
+   {
+    "name": "gauss32",
+    "kind": "point",
+    "rule": "gauss32"
+   },
+   {
+    "name": "gauss48",
+    "kind": "point",
+    "rule": "gauss48"
+   },
+   {
+    "name": "gauss64",
+    "kind": "point",
+    "rule": "gauss64"
+   },
+   {
+    "name": "gauss80",
+    "kind": "point",
+    "rule": "gauss80"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "gauss128",
+    "kind": "point",
+    "rule": "gauss128"
+   },
+   {
+    "name": "gauss160",
+    "kind": "point",
+    "rule": "gauss160"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   {
+    "name": "gauss200",
+    "kind": "point",
+    "rule": "gauss200"
+   },
+   {
+    "name": "gauss256",
+    "kind": "point",
+    "rule": "gauss256"
+   },
+   {
+    "name": "gauss320",
+    "kind": "point",
+    "rule": "gauss320"
+   },
+   {
+    "name": "gauss400",
+    "kind": "point",
+    "rule": "gauss400"
+   },
+   {
+    "name": "gauss512",
+    "kind": "point",
+    "rule": "gauss512"
+   },
+   {
+    "name": "fib987",
+    "kind": "point",
+    "rule": "fib987"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "fib2584",
+    "kind": "point",
+    "rule": "fib2584"
+   },
+   {
+    "name": "fib4181",
+    "kind": "point",
+    "rule": "fib4181"
+   },
+   {
+    "name": "fib6765",
+    "kind": "point",
+    "rule": "fib6765"
+   },
+   {
+    "name": "fib10946",
+    "kind": "point",
+    "rule": "fib10946"
+   },
+   {
+    "name": "fib17711",
+    "kind": "point",
+    "rule": "fib17711"
+   },
+   {
+    "name": "fib28657",
+    "kind": "point",
+    "rule": "fib28657"
+   },
+   {
+    "name": "fib46368",
+    "kind": "point",
+    "rule": "fib46368"
+   },
+   {
+    "name": "fib75025",
+    "kind": "point",
+    "rule": "fib75025"
+   },
+   {
+    "name": "fib121393",
+    "kind": "point",
+    "rule": "fib121393"
+   },
+   {
+    "name": "sobol1024",
+    "kind": "point",
+    "rule": "sobol1024"
+   },
+   {
+    "name": "sobol4096",
+    "kind": "point",
+    "rule": "sobol4096"
+   },
+   {
+    "name": "sobol16384",
+    "kind": "point",
+    "rule": "sobol16384"
+   },
+   {
+    "name": "sobol65536",
+    "kind": "point",
+    "rule": "sobol65536"
+   },
+   {
+    "name": "halton4096",
+    "kind": "point",
+    "rule": "halton4096"
+   },
+   {
+    "name": "smolyak6",
+    "kind": "point",
+    "rule": "smolyak6"
+   },
+   {
+    "name": "smolyak7",
+    "kind": "point",
+    "rule": "smolyak7"
+   },
+   {
+    "name": "smolyak8",
+    "kind": "point",
+    "rule": "smolyak8"
+   },
+   {
+    "name": "smolyak9",
+    "kind": "point",
+    "rule": "smolyak9"
+   },
+   {
+    "name": "flux_gauss64",
+    "kind": "flux",
+    "rule": "gauss64"
+   },
+   {
+    "name": "flux_gauss128",
+    "kind": "flux",
+    "rule": "gauss128"
+   },
+   {
+    "name": "flux_gauss256",
+    "kind": "flux",
+    "rule": "gauss256"
+   },
+   {
+    "name": "flux_fib6765",
+    "kind": "flux",
+    "rule": "fib6765"
+   },
+   {
+    "name": "flux_fib17711",
+    "kind": "flux",
+    "rule": "fib17711"
+   },
+   {
+    "name": "flux_sobol4096",
+    "kind": "flux",
+    "rule": "sobol4096"
+   }
+  ],
+  "fast": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat16",
+    "kind": "mesh",
+    "rule": "lat16"
+   },
+   {
+    "name": "lat32",
+    "kind": "mesh",
+    "rule": "lat32"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "lat128",
+    "kind": "mesh",
+    "rule": "lat128"
+   },
+   {
+    "name": "gauss8",
+    "kind": "point",
+    "rule": "gauss8"
+   },
+   {
+    "name": "gauss16",
+    "kind": "point",
+    "rule": "gauss16"
+   },
+   {
+    "name": "gauss24",
+    "kind": "point",
+    "rule": "gauss24"
+   },
+   {
+    "name": "gauss32",
+    "kind": "point",
+    "rule": "gauss32"
+   },
+   {
+    "name": "gauss48",
+    "kind": "point",
+    "rule": "gauss48"
+   },
+   {
+    "name": "gauss64",
+    "kind": "point",
+    "rule": "gauss64"
+   },
+   {
+    "name": "gauss80",
+    "kind": "point",
+    "rule": "gauss80"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "gauss128",
+    "kind": "point",
+    "rule": "gauss128"
+   },
+   {
+    "name": "gauss160",
+    "kind": "point",
+    "rule": "gauss160"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   {
+    "name": "gauss200",
+    "kind": "point",
+    "rule": "gauss200"
+   },
+   {
+    "name": "gauss256",
+    "kind": "point",
+    "rule": "gauss256"
+   },
+   {
+    "name": "gauss320",
+    "kind": "point",
+    "rule": "gauss320"
+   },
+   {
+    "name": "gauss400",
+    "kind": "point",
+    "rule": "gauss400"
+   },
+   {
+    "name": "gauss512",
+    "kind": "point",
+    "rule": "gauss512"
+   },
+   {
+    "name": "fib987",
+    "kind": "point",
+    "rule": "fib987"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "fib2584",
+    "kind": "point",
+    "rule": "fib2584"
+   },
+   {
+    "name": "fib4181",
+    "kind": "point",
+    "rule": "fib4181"
+   },
+   {
+    "name": "fib6765",
+    "kind": "point",
+    "rule": "fib6765"
+   },
+   {
+    "name": "fib10946",
+    "kind": "point",
+    "rule": "fib10946"
+   },
+   {
+    "name": "fib17711",
+    "kind": "point",
+    "rule": "fib17711"
+   },
+   {
+    "name": "fib28657",
+    "kind": "point",
+    "rule": "fib28657"
+   },
+   {
+    "name": "fib46368",
+    "kind": "point",
+    "rule": "fib46368"
+   },
+   {
+    "name": "fib75025",
+    "kind": "point",
+    "rule": "fib75025"
+   },
+   {
+    "name": "fib121393",
+    "kind": "point",
+    "rule": "fib121393"
+   },
+   {
+    "name": "sobol1024",
+    "kind": "point",
+    "rule": "sobol1024"
+   },
+   {
+    "name": "sobol4096",
+    "kind": "point",
+    "rule": "sobol4096"
+   },
+   {
+    "name": "sobol16384",
+    "kind": "point",
+    "rule": "sobol16384"
+   },
+   {
+    "name": "sobol65536",
+    "kind": "point",
+    "rule": "sobol65536"
+   },
+   {
+    "name": "halton4096",
+    "kind": "point",
+    "rule": "halton4096"
+   },
+   {
+    "name": "smolyak6",
+    "kind": "point",
+    "rule": "smolyak6"
+   },
+   {
+    "name": "smolyak7",
+    "kind": "point",
+    "rule": "smolyak7"
+   },
+   {
+    "name": "smolyak8",
+    "kind": "point",
+    "rule": "smolyak8"
+   },
+   {
+    "name": "smolyak9",
+    "kind": "point",
+    "rule": "smolyak9"
+   },
+   {
+    "name": "flux_gauss64",
+    "kind": "flux",
+    "rule": "gauss64"
+   },
+   {
+    "name": "flux_gauss128",
+    "kind": "flux",
+    "rule": "gauss128"
+   },
+   {
+    "name": "flux_gauss256",
+    "kind": "flux",
+    "rule": "gauss256"
+   },
+   {
+    "name": "flux_fib6765",
+    "kind": "flux",
+    "rule": "fib6765"
+   },
+   {
+    "name": "flux_fib17711",
+    "kind": "flux",
+    "rule": "fib17711"
+   },
+   {
+    "name": "flux_sobol4096",
+    "kind": "flux",
+    "rule": "sobol4096"
+   }
+  ],
+  "head": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat16",
+    "kind": "mesh",
+    "rule": "lat16"
+   },
+   {
+    "name": "lat32",
+    "kind": "mesh",
+    "rule": "lat32"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "lat128",
+    "kind": "mesh",
+    "rule": "lat128"
+   },
+   {
+    "name": "q0scaled",
+    "kind": "mesh",
+    "rule": "q0scaled"
+   },
+   {
+    "name": "gauss8",
+    "kind": "point",
+    "rule": "gauss8"
+   },
+   {
+    "name": "gauss16",
+    "kind": "point",
+    "rule": "gauss16"
+   },
+   {
+    "name": "gauss24",
+    "kind": "point",
+    "rule": "gauss24"
+   },
+   {
+    "name": "gauss32",
+    "kind": "point",
+    "rule": "gauss32"
+   },
+   {
+    "name": "gauss48",
+    "kind": "point",
+    "rule": "gauss48"
+   },
+   {
+    "name": "gauss64",
+    "kind": "point",
+    "rule": "gauss64"
+   },
+   {
+    "name": "gauss80",
+    "kind": "point",
+    "rule": "gauss80"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "gauss128",
+    "kind": "point",
+    "rule": "gauss128"
+   },
+   {
+    "name": "gauss160",
+    "kind": "point",
+    "rule": "gauss160"
+   },
+   {
+    "name": "gauss192",
+    "kind": "point",
+    "rule": "gauss192"
+   },
+   {
+    "name": "gauss200",
+    "kind": "point",
+    "rule": "gauss200"
+   },
+   {
+    "name": "gauss256",
+    "kind": "point",
+    "rule": "gauss256"
+   },
+   {
+    "name": "gauss320",
+    "kind": "point",
+    "rule": "gauss320"
+   },
+   {
+    "name": "gauss400",
+    "kind": "point",
+    "rule": "gauss400"
+   },
+   {
+    "name": "gauss512",
+    "kind": "point",
+    "rule": "gauss512"
+   },
+   {
+    "name": "fib987",
+    "kind": "point",
+    "rule": "fib987"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "fib2584",
+    "kind": "point",
+    "rule": "fib2584"
+   },
+   {
+    "name": "fib4181",
+    "kind": "point",
+    "rule": "fib4181"
+   },
+   {
+    "name": "fib6765",
+    "kind": "point",
+    "rule": "fib6765"
+   },
+   {
+    "name": "fib10946",
+    "kind": "point",
+    "rule": "fib10946"
+   },
+   {
+    "name": "fib17711",
+    "kind": "point",
+    "rule": "fib17711"
+   },
+   {
+    "name": "fib28657",
+    "kind": "point",
+    "rule": "fib28657"
+   },
+   {
+    "name": "fib46368",
+    "kind": "point",
+    "rule": "fib46368"
+   },
+   {
+    "name": "fib75025",
+    "kind": "point",
+    "rule": "fib75025"
+   },
+   {
+    "name": "fib121393",
+    "kind": "point",
+    "rule": "fib121393"
+   },
+   {
+    "name": "sobol1024",
+    "kind": "point",
+    "rule": "sobol1024"
+   },
+   {
+    "name": "sobol4096",
+    "kind": "point",
+    "rule": "sobol4096"
+   },
+   {
+    "name": "sobol16384",
+    "kind": "point",
+    "rule": "sobol16384"
+   },
+   {
+    "name": "sobol65536",
+    "kind": "point",
+    "rule": "sobol65536"
+   },
+   {
+    "name": "halton4096",
+    "kind": "point",
+    "rule": "halton4096"
+   },
+   {
+    "name": "smolyak6",
+    "kind": "point",
+    "rule": "smolyak6"
+   },
+   {
+    "name": "smolyak7",
+    "kind": "point",
+    "rule": "smolyak7"
+   },
+   {
+    "name": "smolyak8",
+    "kind": "point",
+    "rule": "smolyak8"
+   },
+   {
+    "name": "smolyak9",
+    "kind": "point",
+    "rule": "smolyak9"
+   },
+   {
+    "name": "flux_gauss64",
+    "kind": "flux",
+    "rule": "gauss64"
+   },
+   {
+    "name": "flux_gauss128",
+    "kind": "flux",
+    "rule": "gauss128"
+   },
+   {
+    "name": "flux_gauss256",
+    "kind": "flux",
+    "rule": "gauss256"
+   },
+   {
+    "name": "flux_fib6765",
+    "kind": "flux",
+    "rule": "fib6765"
+   },
+   {
+    "name": "flux_fib17711",
+    "kind": "flux",
+    "rule": "fib17711"
+   },
+   {
+    "name": "flux_sobol4096",
+    "kind": "flux",
+    "rule": "sobol4096"
+   }
+  ]
+ },
+ "refs": null,
+ "fom": {
+  "truth": {
+   "name": "fft_tight",
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  "timed": [
+   {
+    "name": "lean_tight",
+    "ntol": 1e-06,
+    "ltol": 1e-08
+   },
+   {
+    "name": "lean_nt3e-3_l3e-3_dt005",
+    "ntol": 0.003,
+    "ltol": 0.003
+   }
+  ]
+ },
+ "timing": {
+  "cohort": "dev6",
+  "cases": 1,
+  "reps": 1,
+  "burn": 0.1,
+  "seed": 20261001,
+  "arms": {
+   "acc": [
+    "lat64",
+    "gauss32",
+    "gauss48",
+    "gauss64",
+    "gauss96",
+    "gauss128",
+    "gauss192",
+    "gauss256",
+    "fib1597",
+    "fib4181",
+    "fib6765",
+    "fib17711",
+    "fib46368",
+    "sobol4096",
+    "flux_gauss64",
+    "flux_fib6765",
+    "gref"
+   ],
+   "fast": [
+    "lat64",
+    "gauss32",
+    "gauss48",
+    "gauss64",
+    "gauss96",
+    "gauss128",
+    "gauss192",
+    "gauss256",
+    "fib1597",
+    "fib4181",
+    "fib6765",
+    "fib17711",
+    "fib46368",
+    "sobol4096",
+    "flux_gauss64",
+    "flux_fib6765",
+    "gref"
+   ],
+   "head": [
+    "lat64",
+    "q0scaled",
+    "gauss32",
+    "gauss48",
+    "gauss64",
+    "gauss96",
+    "gauss128",
+    "gauss192",
+    "gauss256",
+    "fib1597",
+    "fib4181",
+    "fib6765",
+    "fib17711",
+    "fib46368",
+    "sobol4096",
+    "flux_gauss64",
+    "flux_fib6765",
+    "gref"
+   ]
+  },
+  "extra_mesh_arms": {
+   "acc": [
+    "lat64",
+    "gauss32",
+    "gauss48",
+    "gauss64",
+    "gauss96",
+    "gauss128",
+    "gauss192",
+    "gauss256",
+    "fib1597",
+    "fib4181",
+    "fib6765",
+    "fib17711",
+    "fib46368"
+   ],
+   "fast": [
+    "lat64",
+    "gauss32",
+    "gauss48",
+    "gauss64",
+    "gauss96",
+    "gauss128",
+    "gauss192",
+    "gauss256",
+    "fib1597",
+    "fib4181",
+    "fib6765",
+    "fib17711",
+    "fib46368"
+   ],
+   "head": [
+    "lat64",
+    "gauss32",
+    "gauss48",
+    "gauss64",
+    "gauss96",
+    "gauss128",
+    "gauss192",
+    "gauss256",
+    "fib1597",
+    "fib4181",
+    "fib6765",
+    "fib17711",
+    "fib46368",
+    "q0scaled"
+   ]
+  }
+ },
+ "audit": {
+  "cohort": "dev6",
+  "cases": [
+   0,
+   2
+  ],
+  "full_max_mesh": 256,
+  "full_case0_max_mesh": 1024,
+  "full_arms": [
+   "dense",
+   "lat64",
+   "gauss64",
+   "fib6765",
+   "gref"
+  ]
+ },
+ "tangent_chunks": {
+  "acc": 24,
+  "fast": 8,
+  "head": 1
+ },
+ "dense_chunk": 8,
+ "point_chunk": 32768,
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "role": "dev",
+ "case_subset": {
+  "dev6": [
+   2
+  ]
+ },
+ "timing_meshes": [
+  256,
+  1024
+ ],
+ "allow_missing_refs": true
+}

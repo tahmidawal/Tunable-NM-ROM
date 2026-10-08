@@ -12,3 +12,7 @@ SUBMIT: NO
 ---
 **Disposition (lane agent):** the only FAIL was lane capacity; submitted once J1 (5012763) had finished and J3b
 (5012847) had been collected, with the cap back at 1.
+
+**Resubmission (lane agent):** the first attempt stopped at gate G1 (s2, job 5018586) / was cancelled before starting
+(s4, job 5019404). Restaged unchanged except the A6 G1 fix, which was code-audited (audits/codex-code-w3d-3.md,
+OK-TO-RUN YES); configs, staged inputs and sbatch are otherwise identical to the audited attempt. New attempts: s2b / s4b.

@@ -463,7 +463,7 @@ def evaluate(var, L, cases, refs, out, cfg):
         np.savez_compressed(out / f'coeffs_{tag}_{s}.npz', **coeffs)
 
         # ----------------------------------------------- P5: spectra ----
-        pick = np.sort(np.random.default_rng(0).choice(len(Cg), 64, replace=False))
+        pick = np.sort(np.random.default_rng(0).choice(len(Cg), min(64, len(Cg)), replace=False))
         spec_states = []
         by_state = {}
         for n in (256, 512):

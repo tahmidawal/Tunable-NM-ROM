@@ -5,9 +5,9 @@ Data   = sep_burgers_r3.build_data_lean (copied below, POOL = all interior point
          `nodes` points per axis INCLUDING the boundary (h = 1/(nodes-1)); the seed-0 state pick of 16384 states.
 Train  = sep_solvers.train_autodecoder_v2 (copied below; deps/sep_solvers_reference.py is the r3a job's staged copy, git 5ae420414, sha 5af7056b) with
            * the random-Fourier-feature scale `sigma` (init_separable ff_scale; 4.0 = original),
-           * an OPTIONAL Sobolev term  lam * mean ||grad u_hat - D_h u||^2 / mean ||D_h u||^2  on a random subset of
-             `sob_states` states and the step's p_sub points (a separate key stream, so the value path and its random
-             draws are bit-for-bit those of the original when lam = 0; lam = 0 skips the term at trace time).
+           * an OPTIONAL Sobolev term  lam * mean ||grad u_hat - D_h u||^2 / mean ||D_h u||^2  on `sob_states` random
+             states x p_sub random points of its OWN key stream at every step (DESIGN A2.1), so the value path and its
+             random draws are those of the original for any lam; lam = 0 skips the term at trace time.
          D_h = second-order central differences on the training mesh (boundary neighbours are the exact zeros).
 Post   = least-squares coefficients of the training states on the bank (training mesh interior) and the importance
          rotation of burgers-bank-knob/make_rotation.py with h(z_i) replaced by those coefficients (DESIGN §2).
@@ -255,11 +255,11 @@ def train(key, coords, U, nb, h, k_lat, r_feat, steps, lr, lam_orth, weight_deca
     @jax.jit
     def step_sub(pz, st, ema, k_, ks, U_all, C_all):
         pts_idx = jax.random.choice(k_, n_pts, shape=(p_sub,), replace=False)
-        return _apply(pz, st, ema, U_all[:, pts_idx], C_all[pts_idx], sob_args(ks, U_all)) + (pts_idx[:8],)
+        return _apply(pz, st, ema, U_all[:, pts_idx], C_all[pts_idx], sob_args(ks, U_all)) + (pts_idx,)
 
     @jax.jit
     def step_full(pz, st, ema, ks, U_all, C_all):
-        return _apply(pz, st, ema, U_all, C_all, sob_args(ks, U_all)) + (jnp.zeros((8,), jnp.int32),)
+        return _apply(pz, st, ema, U_all, C_all, sob_args(ks, U_all)) + (jnp.zeros((p_sub,), jnp.int32),)
 
     pz = (params, Z)
     ema = pz

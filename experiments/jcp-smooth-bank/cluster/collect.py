@@ -13,7 +13,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--partial', action='store_true')
-    p.add_argument('--expect', nargs='*', default=[], help='output JSONs that must exist with complete=true')
+    p.add_argument('--job', required=True, help='jobs/<attempt>.json: its "expect" list of output JSONs must all exist with complete=true')
     a = p.parse_args()
     assert a.attempt.isalnum()
     remote = f'{NAMESPACE}/{a.attempt}'
@@ -31,12 +31,18 @@ def main():
     subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
     (out / 'collection.tar').unlink()
     import json
-    bad = [e for e in a.expect if not (out / 'output' / e).exists() or not json.loads((out / 'output' / e).read_text()).get('complete')]
+    expect = json.loads((ROOT / 'experiments/jcp-smooth-bank' / a.job).read_text())['expect']
+    st_lines = (out / 'output' / 'TASK_STATUS.txt').read_text().split() if (out / 'output' / 'TASK_STATUS.txt').exists() else []
+    bad_status = [st_lines[i] for i in range(0, len(st_lines), 2) if st_lines[i + 1] != '0']
+    if a.partial or bad_status or not st_lines:
+        (out / 'INCOMPLETE').write_text(f'partial={a.partial} failed_tasks={bad_status} status_present={bool(st_lines)}\n')
+    bad = [e for e in expect if not (out / 'output' / e).exists() or not json.loads((out / 'output' / e).read_text()).get('complete')]
     st = (out / 'output' / 'TASK_STATUS.txt')
     print('TASK_STATUS:', st.read_text() if st.exists() else 'missing')
-    if bad:
-        (out / 'INCOMPLETE').write_text('\n'.join(bad) + '\n')
-        raise SystemExit(f'INCOMPLETE outputs: {bad}')
+    if bad or bad_status or a.partial or not st_lines:
+        with open(out / 'INCOMPLETE', 'a') as f_:
+            f_.write('\n'.join(bad) + '\n')
+        raise SystemExit(f'INCOMPLETE: missing/incomplete {bad}, failed tasks {bad_status}, partial={a.partial}')
     print(out)
     print('Checksums verified; remote cleanup remains an explicit separate step.')
 

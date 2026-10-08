@@ -37,6 +37,6 @@ for lam in (0.0, 0.1):
              log_every=1000, record_idx=rec, **kw, **arch)
     idx[lam] = np.stack(rec[1])
 same = bool(np.array_equal(idx[0.0], idx[0.1]))
-print('R2b(ii) value-path indices identical over 50 steps:', same, idx[0.0].shape)
+print('R2b(ii) value-path indices (all 4096 per step) identical over 50 steps:', same, idx[0.0].shape)
 assert same
 print('R2b PASS')

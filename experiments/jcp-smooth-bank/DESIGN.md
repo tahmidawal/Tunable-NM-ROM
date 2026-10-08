@@ -445,3 +445,29 @@ GPU number: **blocks of 4 degrees, $B_k=\max_{4k\le j<4k+4}E_j$, fitted over the
 $B_k>10^{-13}$**, other rules unchanged. Local pre-check (`audits/precheck-controls-C2-C3-C5b.txt`, CPU):
 C2 $n_{10^{-8}}$ = 20 ($w=0.2$) < 64 ($w=0.05$), both "geometric" — pass; C3 kink "algebraic" (fitted exponent 2.15) —
 pass; C5b max error $1.7\times10^{-13}$ — pass.
+
+## Amendment A4 (2026-10-08, after Codex design audit 3 and code audit 2; before any GPU job)
+
+- **A3 wording.** A3's block classifier fully replaces A2.3's fit window (blocks of 4 from $j\ge4$, $B_k>10^{-13}$, at
+  least 4 blocks); the full 512-degree envelope is saved.
+- **Common-state ladder** agreement *supports* but does not isolate the smoothness mechanism (the projected fields
+  differ between banks); projection errors are reported beside it.
+- **H1 gradient criterion** (replaces A1.5's comparison with the FD indicator): the relative reduction
+  $\Delta(e_\nabla^{\rm med})\le-0.20$ must hold with the $D^{(2)}$ target **and** with the $D^{(4)}$ target (common support,
+  A2.2), and be resolved by the noise gate; otherwise "stencil-sensitive".
+- **Censored treatment in the ranking:** a treatment censored at $b=0.06$ contributes
+  $\log_2(m_{\rm base}/(2m_{\max}))$ (one rung beyond the ladder, a conservative penalty); it can still pass H2 at
+  $b=0.01$ only through the A2.4 rules.
+- **Eligibility** additionally fails on any missing or non-finite numerator or denominator of a required metric, and on
+  an ineligible comparator (`base` ineligible ⇒ no verdict in that setting). The tested linear operator
+  $A=\Phi^{\mathsf T}G'_{R'}$ has its extreme singular values recorded per bank and setting (diagnostic).
+- **C6 accepted exits.** LM exits `tol` and `stationary` are accepted; `budget`, `tiny_step` and `damping_limit` are
+  not. Every required rollout (all arms used in a verdict, all 38 cases) must have at most 2 non-accepted exits in 50
+  steps and finite fields; the `dev6` tight-tolerance `gref` check (A2.5) is kept as an additional sensitivity check.
+  (The 2D lane's `gref`, `lat64` and Gauss $64^2$ rollouts at $1024^2$ had zero non-accepted exits: every step exited
+  `stationary`.)
+- **Resources.** Sobolev overhead estimate revised to 1.7–2.1× in the sub-sampled phase (Codex code audit 2), i.e.
+  ≈4.5–5.5 h; the 7 h limit stands. Total allocated: `tr1` 28 + `ev1` 18 + `tr2` 28 + `ev2` 18 + `comb`+eval 10
+  = **≤102 allocated GPU-h**.
+- **R2b** must pass locally (record in `audits/`) before `tr1` is submitted; the instrumented step returns all 4 096
+  value-path indices.

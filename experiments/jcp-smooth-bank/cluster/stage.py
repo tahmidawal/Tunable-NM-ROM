@@ -26,7 +26,8 @@ def main():
     job = json.loads((ROOT / LANE / a.job).read_text())
     att = job['attempt']
     assert att.isalnum(), att
-    files = BASE_FILES + [f'{LANE}/{a.job}'] + [f'{LANE}/{f}' for f in job.get('extra_files', [])]
+    files = (BASE_FILES + [f'{LANE}/{a.job}'] + [f'{LANE}/{f}' for f in job.get('extra_files', [])]
+             + list(job.get('extra_repo_files', [])))
     out = ROOT / LANE / 'runs' / att
     out.mkdir(parents=True, exist_ok=False)
     remote = f'{NAMESPACE}/{att}'
@@ -42,6 +43,17 @@ def main():
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(content)
         proof.append(dict(source=name, bytes=len(content), sha256=hashlib.sha256(content).hexdigest(), commit=commit))
+    for d in job.get('data', []):                   # non-git inputs (references, trained banks), copied with sha256
+        src = Path(d['src']) if Path(d['src']).is_absolute() else ROOT / LANE / d['src']
+        srcs = sorted(p_ for p_ in src.rglob('*') if p_.is_file()) if src.is_dir() else [src]
+        for f in srcs:
+            rel = f.relative_to(src) if src.is_dir() else Path(f.name)
+            dest = out / LANE / d['dest'] / rel
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            content = f.read_bytes()
+            dest.write_bytes(content)
+            proof.append(dict(source=str(f), dest=str(dest.relative_to(out)), bytes=len(content),
+                              sha256=hashlib.sha256(content).hexdigest(), kind='data'))
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=1) + '\n')
     (out / 'COMMIT.txt').write_text(commit + '\n')
     (out / 'logs').mkdir()
@@ -55,6 +67,11 @@ def main():
         lines.append(f'CUDA_VISIBLE_DEVICES=${{DEVS[{k}]}} "$PY" {cmd} > "$TASK_ROOT/logs/{tag}.log" 2>&1 &\n'
                      f'PIDS[{k}]=$!; NAMES[{k}]={tag}')
     nproc = len(job['tasks'])
+    post = ''
+    for k, cmd in enumerate(job.get('post', [])):     # after every task succeeded, sequentially on the first device
+        cmd = cmd.replace('OUT/', '"$TASK_ROOT/output/"')
+        post += (f'if [ $FAIL -eq 0 ]; then CUDA_VISIBLE_DEVICES=${{DEVS[0]}} "$PY" {cmd} > "$TASK_ROOT/logs/post{k}.log" 2>&1; '
+                 f'rc=$?; echo "post{k} $rc" >> "$TASK_ROOT/output/TASK_STATUS.txt"; [ $rc -eq 0 ] || FAIL=1; fi\n')
     script = f'''#!/bin/bash
 #SBATCH --job-name=jcps_{att}
 #SBATCH --partition=gpu
@@ -95,8 +112,9 @@ for i in $(seq 0 {nproc - 1}); do
   echo "task ${{NAMES[$i]}} exit=$rc"; echo "${{NAMES[$i]}} $rc" >> "$TASK_ROOT/output/TASK_STATUS.txt"
   [ $rc -eq 0 ] || FAIL=1
 done
+{post}
 cd "$TASK_ROOT"
-find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
+find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 || {{ echo "CHECKSUM FAILED"; FAIL=1; }}
 [ $FAIL -eq 0 ] || {{ echo "SOME TASKS FAILED"; exit 1; }}
 echo ALL-DONE
 '''

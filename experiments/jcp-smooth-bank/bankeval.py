@@ -187,7 +187,7 @@ def spectra(fields_by_n):
             ent[f'n_{eps:g}'] = b if (a is not None and b is not None and abs(a - b) <= 2) else None
             ent[f'n_{eps:g}_256_512'] = [a, b]
         ent['class'] = classify(Es[512])
-        ent['envelope_512'] = Es[512][:256].tolist()
+        ent['envelope_512'] = Es[512].tolist()
         out[name] = ent
     return out
 
@@ -261,7 +261,9 @@ def evaluate(var, L, cases, refs, out, cfg):
         cold = Q.build_cold_linear(mdl, Rp, cold_codes(mdl, Rp, deployed))
         o = mesh.ops[M]
         lam_sorted = bool(np.all(np.diff(np.asarray(o['lam'])) >= -1e-9))
-        R = dict(R_prime=Rp, M=M, trust=trust, tests_sorted_by_eigenvalue=lam_sorted, rows=[], rho={}, mstar={})
+        sv_A = np.linalg.svd(np.asarray(mesh.base(s)['A']), compute_uv=False)
+        R = dict(R_prime=Rp, M=M, trust=trust, tests_sorted_by_eigenvalue=lam_sorted, rows=[], rho={}, mstar={},
+                 A_singular_values=dict(max=float(sv_A[0]), min=float(sv_A[-1])))
         rep['settings'][s] = R
         cache = {}
 
@@ -302,6 +304,7 @@ def evaluate(var, L, cases, refs, out, cfg):
                 row = dict(arm=name, kind=arm['kind'], rule=arm['rule'], m=arm['m'], cohort=coh, case=c, gtol=arm['gtol'],
                            finite=bool(np.isfinite(fr).all()), seconds_first=secs, iterations_total=int(it.sum()),
                            iterations_max=int(it.max()), budget_exits=int(np.sum(reason == 0)),
+                           nonaccepted_exits=int(np.sum((reason == 0) | (reason == 2) | (reason == 3))),
                            exits={QS.REASONS[k]: int(np.sum(reason == k)) for k in QS.REASONS},
                            residual_max=float(np.max(rn)), restricted_sha256=QS.sha(fr))
                 for tg in ('ST', 'S'):

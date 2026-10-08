@@ -23,6 +23,11 @@ FILES = [f'{LANE}/t2core.py', f'{LANE}/t2run.py', f'{LANE}/fom2.py', f'{LANE}/fo
          'experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
          'experiments/separable-decoder/sep_common.py',
          'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
+V3 = f'{LANE}/vendor/quad3d'
+FILES3 = [f'{LANE}/t2core.py', f'{LANE}/t3run.py', f'{V3}/offmesh.py', f'{V3}/qpanel.py',
+          f'{V3}/vendor/burgers3d-span/common.py', f'{V3}/vendor/burgers3d-retry/tables.py',
+          f'{V3}/vendor/paper-b3d/vendor/b3d_common.py', f'{V3}/inputs/model_M2/bank.pkl', f'{V3}/rules/rules.npz']
+REF3 = ROOT.parent / '2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output'
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
         'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
 
@@ -49,16 +54,24 @@ def main():
         assert hashlib.sha256(blob).hexdigest() == h, f'G2a certificate is for a different {f}'
     FILES.append(f'{LANE}/checks/test_lmm.json')
     cfgname = f'{LANE}/configs/{a.attempt}.json'
+    driver = json.loads((ROOT / cfgname).read_text()).get('driver', 't2run')
+    if driver == 't3run':
+        FILES[:] = FILES3 + [f'{LANE}/checks/test_lmm.json']
     for name in FILES + [cfgname]:          # preflight: every file committed and identical, before anything is written
         assert (ROOT / name).read_bytes() == subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}']), name
     cfg0 = json.loads((ROOT / cfgname).read_text())
-    assert cfg0['refs'] == 'REFS_DIR' and cfg0['attempt'] == a.attempt
+    assert cfg0.get('refs', cfg0.get('refined_ref')) in ('REFS_DIR', 'REF3D') and cfg0['attempt'] == a.attempt
     import numpy as np
     man = json.loads((REFSRC / 'result.json').read_text())
     ent = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
     sizes = dict(dev6=6, val32=32)
     reffiles = []
-    for coh in cfg0['cohorts']:
+    if driver == 't3run':
+        r3 = REF3 / f"ref_{cfg0['cohort_seed']}.npz"
+        dn = json.loads(r3.with_suffix('.done').read_text())
+        assert hashlib.sha256(r3.read_bytes()).hexdigest() == dn['sha256'] and dn['accepted']
+        reffiles = [r3, r3.with_suffix('.done')]
+    for coh in (cfg0.get('cohorts', []) if driver != 't3run' else []):
         sub = cfg0.get('case_subset', {}).get(coh) or range(sizes[coh])
         for c in sub:
             for tag in ('ST', 'S'):
@@ -73,16 +86,21 @@ def main():
         assert (ROOT / name).read_bytes() == content, f'working copy differs from HEAD: {name}'
         if name == cfgname:
             cfg = json.loads(content)
-            assert cfg['refs'] == 'REFS_DIR'
-            cfg['refs'] = f'{remote}/refs'
+            if driver == 't3run':
+                assert cfg['refined_ref'] == 'REF3D'
+                cfg['refined_ref'] = f"{remote}/refs/ref_{cfg['cohort_seed']}.npz"
+            else:
+                assert cfg['refs'] == 'REFS_DIR'
+                cfg['refs'] = f'{remote}/refs'
             content = (json.dumps(cfg, indent=1) + '\n').encode()
         dest = out / name
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(content)
         proof.append(dict(source=name, bytes=len(content), sha256=hashlib.sha256(content).hexdigest(), commit=commit))
     (out / 'refs').mkdir()
-    shutil.copy2(REFSRC / 'result.json', out / 'refs/result.json')
-    proof.append(dict(source=str(REFSRC / 'result.json'), sha256=hashlib.sha256((REFSRC / 'result.json').read_bytes()).hexdigest()))
+    if driver != 't3run':
+        shutil.copy2(REFSRC / 'result.json', out / 'refs/result.json')
+        proof.append(dict(source=str(REFSRC / 'result.json'), sha256=hashlib.sha256((REFSRC / 'result.json').read_bytes()).hexdigest()))
     for f in reffiles:
         shutil.copy2(f, out / 'refs' / f.name)
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=2) + '\n')
@@ -117,7 +135,7 @@ nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 cd {LANE}
-"$PY" {cfg0.get('driver', 't2run')}.py --config configs/{a.attempt}.json --out "$TASK_ROOT/output"
+"$PY" {driver}.py --config configs/{a.attempt}.json --out "$TASK_ROOT/output"
 cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE

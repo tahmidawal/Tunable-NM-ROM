@@ -542,3 +542,27 @@ ROM: `a1k*`).
 order check (BE [0.8, 1.25], CN/CN-R/BDF2 [1.7, 2.3] at the finest pair, recomputed from saved fields); re-applies the
 calibration rule; re-scores FOM errors from saved fields and ROM errors from saved coefficients; re-hashes the timing
 cases; requires the independent BE re-run (skipping it makes the audit incomplete); and has rejection tests.
+
+## Amendment A10 (2026-10-08; 3D details before any 3D code runs, and FOM diagnostics wording)
+
+**A10.1 FOM diagnostics (supersedes the per-Newton clause of A1.10).** The linear residual is recorded per step as the
+worst over that step's Newton iterations, with the step's Newton count and final nonlinear residual.
+
+**A10.2 3D job `b3d65` (section 10 made concrete).** Mesh $65^3$; the 3D lane's model `model_M2`, sine tests completed to
+their eigenvalue shell ($M=\mathrm{complete}(4R')$), off-mesh point rules from the lane's `rules.npz`: **Gauss $24^3$ at
+$R'=512$** and **lattice 4096 at $R'=256$**. Validation cohort 923801, first **16** cases (time-limited; stated). Reference:
+the 3D lane's refined reference (513 nodes, BE, $\Delta t=0.0025=\Delta t_0^{3D}/4$, 65-node lattice) — an ST-type reference,
+PROVISIONAL. $\Delta t_0^{3D}=0.01$; ladder $\Delta t/\Delta t_0\in\{1/8,1/4,1/2,1,2.5,5\}$ (each divides 0.05; $2\Delta t_0$ does not).
+Forms LSPG/GAL, schemes BE/CN/CN-R/BDF2 at production tolerance on the ladder; tight and tighter on
+$\{1/8,1/4,1/2,1\}$; TH06 control tight/tighter; GAL-BDF2 and GAL-CN at $\Delta t_0/16$ (anchor GAL-BDF2). All use the
+generic adaptive LM of `t2core.make_evolve` (LM to the stopping test on every step) with the 3D off-mesh advection
+$N(c)=P^{\mathsf T}((Bc)\odot(Dc))$ and its exact Jacobian; the initial coefficients are the L2 projection (`tables.project`),
+as deployed. The **deployed fixed-sweep BE** query (`offmesh.make_fsc_rule`, one Gauss–Newton sweep per step after
+three adaptive steps) is run on every case: it is the deployed comparator for accuracy and the A of the paired A–B–A
+timing (first 4 cases × 3 repetitions), and its distance from the generic adaptive BE is reported (the generic BE is not
+expected to equal it). A fixed-sweep second-order solver is not built in this lane. Metrics, order rules (primary triple
+$(\Delta t_0/2,\Delta t_0/4,\Delta t_0/8)$, adjacent $(\Delta t_0,\Delta t_0/2,\Delta t_0/4)$), anchor rules and verification as in 2D
+(A1–A6), with the 16-case cohort (claims need ≥ 80 % of 16). Hypotheses (reported, as in A1.8 but against the
+deployed fixed-sweep BE): H1-3D, H2-3D with the same inequalities. `audit_t3.py` re-scores every rollout from the saved
+coefficients through a separate evaluation path (bank features evaluated at the lattice coordinates, not the mesh
+rows) and checks inventories, verification and timing hashes.

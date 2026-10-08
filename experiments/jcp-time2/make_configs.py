@@ -36,6 +36,13 @@ ROM_ARMS = [dict(setting=st_, rule=RULES[st_]['main']['rule'], form=f_, scheme=s
 C['fom1k'] = dict(attempt='fom1k', driver='fomrun', mesh=1024, cohorts=['dev6', 'val32'], schemes=['BE', 'CN', 'CNR', 'BDF2'],
                   dt_factors=[.5, 1, 2, 5], ntols=[1e-4, 1e-6, 1e-8], order_cases=[['dev6', 0], ['dev6', 2]],
                   refs='REFS_DIR', rom_arms=ROM_ARMS, timing=dict(cases=6, reps=3, burn=.1, seed=20261008))
+C['b3d65'] = dict(attempt='b3d65', driver='t3run', mesh=65, cohort_seed=923801, cohort_count=16, refined_ref='REF3D',
+                  rules=[dict(rule='gl24', Rp=512), dict(rule='lat4096', Rp=256)], gtol=1e-3, trust_fraction=.05,
+                  expected_model_sha256='6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9',
+                  expected_rules_sha256='099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b',
+                  grid=dict(dt_factors=[.125, .25, .5, 1, 2.5, 5], tight_factors=[.125, .25, .5, 1], forms=['LSPG', 'GAL'],
+                            schemes=['BE', 'CN', 'CNR', 'BDF2'], control_schemes=['TH06'], anchor_schemes=['BDF2', 'CN']),
+                  timing=dict(cases=4, reps=3, burn=.1, seed=20261008))
 for k, v in C.items():
     (HERE / 'configs' / f'{k}.json').write_text(json.dumps(v, indent=1) + '\n')
     print(k)

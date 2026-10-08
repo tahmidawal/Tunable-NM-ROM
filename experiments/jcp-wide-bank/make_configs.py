@@ -59,7 +59,11 @@ def ladder3d(lats, gauss):
 def base3d(**kw):
     ex = HERE / 'rules3d' / 'rules_extra.json'
     rules = [list(r) for r in RULES3D]
-    rules[1][1] = json.loads(ex.read_text())['npz_sha256'] if ex.exists() else None
+    import hashlib
+    meta = json.loads(ex.read_text())                    # fails closed if the rules were not generated
+    npz = HERE / 'rules3d' / 'rules_extra.npz'
+    assert hashlib.sha256(npz.read_bytes()).hexdigest() == meta['npz_sha256'], 'rules_extra.npz differs from its metadata'
+    rules[1][1] = meta['npz_sha256']
     c = dict(meshes=[65], banks=[dict(M2, Rps=[512, 256], kappas=[4, 3, 2], tensor=True)], rules_files=rules,
              ladder=ladder3d([2048, 4096, 8192, 16384, 32768, 65536], [12, 16, 20, 24, 32, 40]),
              converged='gl48', check='gl40', target='gl80', target_check='gl64', families=['lat', 'gauss'],

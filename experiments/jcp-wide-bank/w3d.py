@@ -82,7 +82,16 @@ class MemSampler:
 
     def __init__(self, period=0.2):
         self.period, self.dev_max, self.host_max = period, 0, 0
+        self._lock = threading.Lock()
         threading.Thread(target=self._run, daemon=True).start()
+
+    @staticmethod
+    def now():
+        try:
+            ms = jax.devices()[0].memory_stats()
+            return dict(bytes_in_use=int(ms.get('bytes_in_use', -1)), lifetime_peak=int(ms.get('peak_bytes_in_use', -1)))
+        except Exception:  # noqa: BLE001
+            return {}
 
     @staticmethod
     def host_rss():
@@ -96,16 +105,18 @@ class MemSampler:
 
     def _run(self):
         while True:
-            try:
-                d = int(jax.devices()[0].memory_stats().get('bytes_in_use', -1))
-            except Exception:  # noqa: BLE001
-                d = -1
-            self.dev_max, self.host_max = max(self.dev_max, d), max(self.host_max, self.host_rss())
+            with self._lock:
+                d = self.now().get('bytes_in_use', -1)
+                self.dev_max, self.host_max = max(self.dev_max, d), max(self.host_max, self.host_rss())
             time.sleep(self.period)
 
     def interval(self):
-        out = dict(device_bytes_in_use_max=self.dev_max, host_rss_max=self.host_max, sample_period_s=self.period)
-        self.dev_max, self.host_max = 0, 0
+        """Sampled maxima since the previous call (spikes shorter than the period can be missed), plus the
+        allocator's current and lifetime-peak values at the boundary; resets the sampled maxima."""
+        with self._lock:
+            out = dict(device_bytes_in_use_max=self.dev_max, host_rss_max=self.host_max, sample_period_s=self.period,
+                       boundary=self.now())
+            self.dev_max, self.host_max = 0, 0
         return out
 
 
@@ -224,6 +235,7 @@ def main():
             T = np.asarray(b['rotation'])
             R = T.shape[1]
             spread = b['coefficient_rms_spread']
+            assert all(str(r) in spread for r in bk['Rps']) and '32' in spread, ('spread keys', bk['name'], list(spread))
             order, lam_all = C.mode_order(n)
             Mof = {(Rp, k): int(C.complete_M(n, int(k * Rp), order, lam_all)) for Rp in bk['Rps'] for k in bk['kappas']}
             Mmax = max(Mof.values())
@@ -231,7 +243,14 @@ def main():
                                                      settings={}, gates={}, floors={})
             t0 = time.perf_counter()
             use_tensor = bool(bk.get('tensor'))
-            tb = TB.build_tables(n, bank, T, sorted(set(bk['Rps'])), lambda r: Mmax, log=log, tensor=use_tensor)
+            tb = TB.build_tables(n, bank, T, sorted(set(bk['Rps'])), lambda r: Mmax, log=log, tensor=False)
+            tbt = None
+            trs = [r for r in bk['Rps'] if r <= 512]
+            if use_tensor and trs:                  # tensor capped at 512 columns (audit w3d-1 item 4; A1/A2-13)
+                Rt = max(trs)
+                Mt = max(Mof[(r, k)] for r in trs for k in bk['kappas'])
+                tbt = TB.build_tables(n, bank, T[:, :Rt], sorted(set(trs)), lambda r: Mt, log=log, tensor=True)
+                B_rep['tensor_table'] = dict(R=Rt, M=Mt, bytes=int(tbt['Tsym'].nbytes))
             B_rep['table_seconds'] = time.perf_counter() - t0
             B_rep['gates']['gram_condition'] = tb['gram_cond'] ** 2
             assert B_rep['gates']['gram_condition'] <= 1e8, B_rep['gates']
@@ -254,10 +273,10 @@ def main():
             Ju_mesh = 0.
             for s in range(0, Xn.shape[0], 1 << 20):
                 Pq = OM.test_block(n, Xn[s:s + (1 << 20)], np.full(min(1 << 20, Xn.shape[0] - s), float(n - 1) ** -3),
-                                   tbs['kxyz'][:64])
+                                   tbs['kxyz'][:Ms])
                 Ju_mesh = Ju_mesh + OM.contract_offmesh(dict(B=rows[:, s:s + (1 << 20)].T, D=Drows[:, s:s + (1 << 20)].T,
                                                              P=Pq), cs)
-            Ju_t = OM.contract_tensor(dict(Ts=tbs['Tsym'][:64, :32, :32]), cs)
+            Ju_t = OM.contract_tensor(dict(Ts=tbs['Tsym'][:Ms, :32, :32]), cs)
             B_rep['gates']['G2_meshnodes_offmesh_vs_tensor_32col'] = rel_max(Ju_mesh, Ju_t)
             del rows, Drows, Xn, Pq, Ju_mesh
             d32 = TB.arm_data(tbs, 32, Ms)
@@ -294,15 +313,16 @@ def main():
                 M = Mof[(Rp, kap)]
                 key = f'R{Rp}_k{kap}'           # mesh-independent label (M is shell-completed per mesh)
                 ts = time.perf_counter()
-                mem.interval()
                 trust = float(cfg['trust_fraction'] * spread[str(Rp)])
                 lean = dict(GTb=TB.rows_prefix(tb['GTb'], Rp), L=tb['L'][:Rp, :Rp], A=tb['A'][:M, :Rp],
                             lam=tb['lam'][:M])
                 lean = jax.tree_util.tree_map(lambda x: block(jnp.asarray(x)), lean)
                 sv = np.linalg.svd(np.asarray(lean['A']), compute_uv=False)
-                S_rep = B_rep['settings'][key] = dict(
+                S_rep_start_mem = mem.interval()['boundary']
+                S_rep = B_rep['settings'][key] = dict(start_memory=S_rep_start_mem, 
                     Rp=Rp, M=M, kappa_nominal=kap, kappa=M / Rp, trust=trust, tensor_bytes=8 * M * Rp * Rp,
-                    A_condition=float(sv[0] / sv[-1]), A_rank=int(np.sum(sv > 1e-12 * sv[0])), arms={})
+                    A_condition=float(sv[0] / sv[-1]), A_rank=int(np.sum(sv > 1e-12 * sv[0])), A_singular_values=sv.tolist(),
+                    arms={})
                 # the check rule is also a ladder candidate when it appears in the ladder: it runs ONCE (A2-12b) and is
                 # aliased under its ladder name after phase 1
                 alias = next((r for r in ladder if r['name'] == cfg['check']), None)
@@ -316,8 +336,8 @@ def main():
                     Xr, wr = rules[sp['rule']]
                     d = dict(lean, **OM.offmesh_tables(n, bank, T[:, :Rp], Xr, wr, kx[:M]))
                     arms[sp['name']] = dict(sp, m=len(wr), data=d, q=q_off, kind='offmesh')
-                if use_tensor and Rp <= tb['Tsym'].shape[1]:
-                    d = dict(lean, Ts=block(jnp.asarray(tb['Tsym'][:M, :Rp, :Rp])))
+                if tbt is not None and Rp <= tbt['Tsym'].shape[1] and M <= tbt['Tsym'].shape[0]:
+                    d = dict(lean, Ts=block(jnp.asarray(tbt['Tsym'][:M, :Rp, :Rp])))
                     arms['tensor'] = dict(name='tensor', rule='tensor', family='tensor', control=False, m=None, data=d,
                                           kind='tensor', q=OM.make_fsc_rule(n, Rp, M, OM.contract_tensor, dt=dt,
                                                                            gtol=cfg['gtol'], trust=trust))
@@ -392,8 +412,10 @@ def main():
                 save()
                 # -------------------------------------------- phase 2: rho on the converged rule's reached states
                 Cs = np.concatenate(pop)
-                tgt = np.asarray(OM.continuum_adv(n, bank, T, *rules[cfg['target']], kx[:M], Cs))
-                chk = np.asarray(OM.continuum_adv(n, bank, T, *rules[cfg['target_check']], kx[:M], Cs))
+                tgt = np.concatenate([np.asarray(OM.continuum_adv(n, bank, T, *rules[cfg['target']], kx[:M], Cs[i:i + 64]))
+                                      for i in range(0, len(Cs), 64)])          # 64-state batches (A3-11)
+                chk = np.concatenate([np.asarray(OM.continuum_adv(n, bank, T, *rules[cfg['target_check']], kx[:M],
+                                                                  Cs[i:i + 64])) for i in range(0, len(Cs), 64)])
                 tn = np.linalg.norm(tgt, axis=1)
                 assert tn.min() > 0, 'zero continuum target'
                 rho = lambda v: np.linalg.norm(v - tgt, axis=1) / tn
@@ -409,7 +431,7 @@ def main():
                                             for i in range(0, len(Cs), 256)])
                     r_ = rho(v)
                     S_rep['rho']['rules'][nm] = dict(worst=float(r_.max()), median=float(np.median(r_)),
-                                                     p90=float(np.quantile(r_, .9)))
+                                                     p95=float(np.quantile(r_, .95)), p90=float(np.quantile(r_, .9)))
                     rho_max[nm] = float(r_.max())
                     if nm == cfg.get('audit_rho_arm'):
                         sub = slice(None, None, max(1, len(Cs) // 64))
@@ -444,12 +466,17 @@ def main():
                         nm_, m_ = select_mstar(recs, rho_max, arm_list, fam, tv, rho_bar)
                         nd, md = select_mstar(recs, rho_max, arm_list, fam, tv, rho_bar, use_rho=False)
                         ok = valid and disc[t_]
-                        sel[f'{t_}|{fam}'] = dict(tau=tv, family=fam, available=ok, arm=nm_ if ok else None,
+                        sel[f'{t_}|{fam}'] = dict(tau=tv, family=fam, gates_passed=ok, available=bool(ok and nm_ is not None),
+                                                  reason=(None if ok and nm_ is not None else
+                                                          ('gates' if not valid else 'controls' if not disc[t_]
+                                                           else 'no ladder member qualifies')),
+                                                  arm=nm_ if ok else None,
                                                   m=m_ if ok else None, arm_raw=nm_, m_raw=m_, arm_d=nd, m_d=md)
                 for fam in cfg['families']:
                     nr, mr = select_mstar(recs, rho_max, arm_list, fam, 0., rho_bar, use_d=False)
                     sel[f'rho_only|{fam}'] = dict(arm_rho=nr, m_rho=mr)
                 S_rep['controls'] = ctrl
+                S_rep['certification'] = crecs
                 S_rep['selection'] = dict(valid=valid, discriminating=disc, entries=sel)
                 # reached-state Jacobian (A2-10), first validation case, converged rule
                 Wj = np.asarray(arms['conv']['q'](U0[cases[0]], NU[cases[0]], arms['conv']['data'], {})[1])
@@ -459,8 +486,11 @@ def main():
                     Ju = np.asarray(OM.contract_offmesh(arms['conv']['data'], jnp.asarray(Wj[k_])))
                     A_ = np.asarray(lean['A'])
                     Jm = Sd[:, None] * (A_ + dt * (Ju + NU[cases[0]] * np.asarray(lean['lam'])[:, None] * A_))
+                    if not np.isfinite(Jm).all():
+                        jc[str(k_)] = dict(finite=False)
+                        continue
                     s2 = np.linalg.svd(Jm, compute_uv=False)
-                    jc[str(k_)] = dict(condition=float(s2[0] / s2[-1]), rank=int(np.sum(s2 > 1e-12 * s2[0])),
+                    jc[str(k_)] = dict(singular_values=s2.tolist(), condition=float(s2[0] / s2[-1]), rank=int(np.sum(s2 > 1e-12 * s2[0])),
                                        sigma_min=float(s2[-1]))
                 S_rep['jacobian_reached'] = jc
                 save()
@@ -474,6 +504,18 @@ def main():
                     while time.perf_counter() - t_ < sec:
                         block(xb @ xb)
                 ref16 = {(nm, j): coefs[(n, bk['name'], key, nm, j)] for nm in timed for j in tcases}
+                fchk = {}
+                for nm in timed:
+                    for j in tcases:
+                        o = run(nm, U0[j], NU[j])
+                        fchk[(nm, j)] = (float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
+                        del o
+                for j in tcases:
+                    o = fom(U0[j], NU[j])
+                    fchk[('fom', j)] = (float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
+                    del o
+                chkd = lambda key_, o: max(abs(float(jnp.sum(o[0])) - fchk[key_][0]) / max(abs(fchk[key_][0]), 1e-300),
+                                           abs(float(jnp.sum(o[0] * o[0])) - fchk[key_][1]) / fchk[key_][1])
                 for nm in timed:                       # warm every signature
                     for j in tcases:
                         block(run(nm, U0[j], NU[j]))
@@ -491,7 +533,10 @@ def main():
                         sec = time.perf_counter() - t_
                         ent = dict(phase=ph, name=nm, case=j, rep=r, seconds=sec)
                         if kind == 'rom':
-                            ent['max_diff'] = rel_max(np.asarray(o[1])[::int(round(0.05 / dt))], ref16[(nm, j)])
+                            ent['max_diff'] = max(rel_max(np.asarray(o[1])[::int(round(0.05 / dt))], ref16[(nm, j)]),
+                                                  chkd((nm, j), o))
+                        else:
+                            ent['max_diff'] = chkd(('fom', j), o)
                         inv.append(ent)
                         del o
                         if sec >= 0.5:
@@ -511,6 +556,7 @@ def main():
                                                   drift_pass=bool(max(max(dr), 1 / min(dr)) <= 1.10),
                                                   deterministic_max_diff=det, deterministic=bool(det <= 1e-12)))
                 mb = {}
+                burn(2.0)
                 for nm in timed:
                     fn = jax.jit(OM.contract_tensor if arms[nm]['kind'] == 'tensor' else OM.contract_offmesh)
                     cc = jnp.asarray(coefs[(n, bk['name'], key, nm, cases[0])][3])
@@ -521,15 +567,21 @@ def main():
                         t_ = time.perf_counter()
                         block(fn(arms[nm]['data'], cc))
                         tt.append(time.perf_counter() - t_)
-                    mb[nm] = dict(jacobian_ms_median=1e3 * float(np.median(tt)), jacobian_ms_min=1e3 * float(np.min(tt)))
+                    mb[nm] = dict(jacobian_ms_median=1e3 * float(np.median(tt)), jacobian_ms_min=1e3 * float(np.min(tt)),
+                                  seconds=tt)
                 S_rep['microbench'] = mb
-                dep = [(tim[e_['arm']]['median_ms'], e_['family'], e_['arm']) for k_, e_ in sel.items()
+                tvalid = bool(S_rep['timing']['gates']['drift_pass'] and S_rep['timing']['gates']['deterministic'])
+                S_rep['timing']['valid'] = tvalid
+                dep = [((tim[e_['arm']]['median_ms'] if tvalid else e_['m']), e_['family'], e_['arm']) for k_, e_ in sel.items()
                        if k_.startswith('primary|') and e_.get('arm') is not None]
                 if dep:
-                    ms_, fam_, arm_ = min(dep)
-                    S_rep['deployed'] = dict(family=fam_, arm=arm_, m=arms[arm_]['m'], median_ms=ms_)
+                    _, fam_, arm_ = min(dep)
+                    S_rep['deployed'] = dict(family=fam_, arm=arm_, m=arms[arm_]['m'], median_ms=tim[arm_]['median_ms'],
+                                             timing_valid=tvalid, chosen_by='timed_median' if tvalid else
+                                             'smaller_m (K-time failed; diagnostic only, DESIGN A5)')
                     final.append(dict(key=f"{bk['name']}|{key}|{arm_}", q=arms[arm_]['q'], data=arms[arm_]['data'],
-                                      ref={j: coefs[(n, bk['name'], key, arm_, j)] for j in tcases}))
+                                      ref={j: coefs[(n, bk['name'], key, arm_, j)] for j in tcases},
+                                      fsq={j: fchk[(arm_, j)][1] for j in tcases}))
                 else:
                     S_rep['deployed'] = None
                 S_rep['seconds'] = time.perf_counter() - ts
@@ -541,6 +593,7 @@ def main():
                 for nm in list(arms):
                     if id(arms[nm]['data']) not in keep:
                         del arms[nm]
+                d = s_ = o = None                   # drop loop references to rule blocks (audit w3d-1 item 12)
                 del arms, lean, pop, Cs
                 jax.clear_caches()
                 gc.collect()
@@ -558,12 +611,15 @@ def main():
                 sol = np.linalg.lstsq(Gm, RR[cases[0]][-1], rcond=1e-12)[0]
                 lres = float(np.linalg.norm(Gm @ sol - RR[cases[0]][-1])) / n0r[cases[0]]
                 fl_last = float(np.linalg.norm(RR[cases[0]][-1] - (RR[cases[0]][-1] @ U_) @ U_.T)) / n0r[cases[0]]
+                assert rk > 0
                 B_rep['floors'][str(Rp)] = dict(rank=rk, condition=float(s_[0] / s_[rk - 1]), worst=max(per),
                                                 median=float(np.median(per)), per_case=per,
                                                 lstsq_vs_svd=(abs(lres - fl_last) / fl_last if fl_last > 1e-12
                                                               else abs(lres - fl_last)))
+                B_rep['floors'][str(Rp)]['check_passed'] = bool(np.isfinite(B_rep['floors'][str(Rp)]['lstsq_vs_svd']) and
+                                                                B_rep['floors'][str(Rp)]['lstsq_vs_svd'] <= 1e-10)
                 del Gm, U_
-            del tb, G65
+            del tb, tbt, G65
             gc.collect()
             save()
         # -------------------------------------------------------- final cross-setting panel (this mesh)
@@ -590,9 +646,15 @@ def main():
                     sec = time.perf_counter() - t_
                     ent = dict(phase=ph, name=nm, case=j, rep=r, seconds=sec)
                     if f_:
-                        ent['max_diff'] = rel_max(np.asarray(o[1])[::int(round(0.05 / dt))], f_['ref'][j])
+                        ent['max_diff'] = max(rel_max(np.asarray(o[1])[::int(round(0.05 / dt))], f_['ref'][j]),
+                                              abs(float(jnp.sum(o[0] * o[0])) - f_['fsq'][j]) / f_['fsq'][j])
                     inv.append(ent)
                     del o
+                    if sec >= 0.5:
+                        time.sleep(min(1.0, sec))
+                        t2 = time.perf_counter()
+                        while time.perf_counter() - t2 < 0.2:
+                            block(xb @ xb)
             tim = {}
             for nm in [f_['key'] for f_ in final] + ['fom']:
                 xs = [r for r in inv if r['name'] == nm]
@@ -602,7 +664,8 @@ def main():
                                drift=(float(np.median(a2) / np.median(a1)) if a1 and a2 else None))
             dr = [v['drift'] for v in tim.values() if v['drift'] is not None]
             det = max(r.get('max_diff', 0.) for r in inv)
-            M_rep['final_timing'] = dict(invocations=inv, subjects=tim, gates=dict(
+            M_rep['final_timing'] = dict(retained_bytes=int(sum(sum(x.nbytes for x in jax.tree_util.tree_leaves(f_['data']))
+                                                                for f_ in final)), invocations=inv, subjects=tim, gates=dict(
                 drift_worst=float(max(max(dr), 1 / min(dr))), drift_pass=bool(max(max(dr), 1 / min(dr)) <= 1.10),
                 deterministic_max_diff=det, deterministic=bool(det <= 1e-12)))
         final.clear()

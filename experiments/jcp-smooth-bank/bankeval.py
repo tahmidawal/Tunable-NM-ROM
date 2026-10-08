@@ -411,8 +411,12 @@ def evaluate(var, L, cases, refs, out, cfg):
         Tk, _ = values('point', GCHK)
         Tf, _ = values('flux', GREF)
         tn = np.linalg.norm(Tc, axis=1)
-        R['target_norm'] = {p: dict(min=float(tn[sl[p]].min()), zero_or_nonfinite=int(np.sum(~np.isfinite(tn[sl[p]]) | (tn[sl[p]] <= 0))))
-                            for p in sl}
+        tn320 = np.linalg.norm(Tc[:, :320], axis=1)
+        bad_ = lambda x: int(np.sum(~np.isfinite(x) | (x <= 0)))
+        R['target_norm'] = {p: dict(min=float(tn[sl[p]].min()), zero_or_nonfinite=bad_(tn[sl[p]]),
+                                    min_320=float(tn320[sl[p]].min()), zero_or_nonfinite_320=bad_(tn320[sl[p]]),
+                                    states=int(sl[p].stop - sl[p].start)) for p in sl}
+        np.savez_compressed(out / f'target_norms_{tag}_{s}.npz', full=tn, first320=tn320)
         R['C4'] = {p: dict(check_rho_max=float(rho(Tc, Tk)[sl[p]].max()), flux_rho_max=float(rho(Tf, Tc)[sl[p]].max()))
                    for p in sl}
         perstate = {}

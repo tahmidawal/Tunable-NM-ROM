@@ -93,6 +93,8 @@ def metrics(E, b, s):
                     (not r['finite'] or r.get('nonaccepted_exits', 0) > 2)}
     keep = [r for r in g if (r['cohort'], r['case']) not in failed_cases]
     out['E_S_without_C6_failed'] = max(r['ref_S_evolved'] for r in keep) if keep else None
+    out['E_ST_without_C6_failed'] = max(r['ref_ST_evolved'] for r in keep) if keep else None
+    out['C6_failed_cases'] = sorted(f'{a}{b}' for a, b in failed_cases)
     out['target_norm_ok'] = all(v['zero_or_nonfinite'] == 0 for v in S.get('target_norm', {}).values()) and bool(S.get('target_norm'))
     out['tight_max'] = max(tight) if tight else None
     c4 = S.get('C4', {})
@@ -102,9 +104,33 @@ def metrics(E, b, s):
     return out
 
 
+N_CASES, N_STATES, N_COMMON = 38, 38 * 50, 38 * 6
+
+
+def complete_inputs(E, b, s):
+    """Completeness (A4 eligibility): evaluation complete, every case of every required arm, full populations."""
+    why = []
+    if not E[b].get('complete'):
+        why.append('evaluation incomplete')
+    S = E[b]['settings'].get(s)
+    if not S:
+        return why + ['setting missing']
+    for arm in ('gref', 'lat64', 'gauss32', 'gauss48', 'gauss64', 'gauss96', 'fib1597', 'fib4181', 'fib6765'):
+        if len(rows(E, b, s, arm)) != N_CASES:
+            why.append(f'{arm} cases')
+    for arm in ('gauss768', 'gref_tight'):
+        if len(rows(E, b, s, arm)) != 6:
+            why.append(f'{arm} dev6 cases')
+    tn = S.get('target_norm', {})
+    for p_, n_ in (('gref', N_STATES), ('lat64', N_STATES), ('common', N_COMMON)):
+        if tn.get(p_, {}).get('states') != n_ or tn.get(p_, {}).get('zero_or_nonfinite_320', 1) != 0:
+            why.append(f'{p_} population')
+    return why
+
+
 def eligible(E, T, b, s, M):
     m = M[b][s]
-    why = []
+    why = complete_inputs(E, b, s)
     if not m['C4_pass']:
         why.append('C4')
     if m['g768_max'] is None or m['g768_max'] > 1e-6:
@@ -127,6 +153,23 @@ def eligible(E, T, b, s, M):
     if not E[b]['C5a']['passed']:
         why.append('C5a')
     return why
+
+
+def interp_m(E, b, s, bar, pop='gref'):
+    """Descriptive (A1.4): log-linear interpolation of m between the confirmed Gauss rung m* and the rung below it."""
+    R = E[b]['settings'][s]['rho']
+    ms = E[b]['settings'][s]['mstar'].get(f'{pop}|G|{bar}')
+    if ms is None:
+        return None
+    lad = [p * p for p in GAUSS]
+    j = lad.index(ms)
+    if j == 0:
+        return float(ms)
+    r0, r1 = R[f'gauss{GAUSS[j - 1]}'][pop]['max'], R[f'gauss{GAUSS[j]}'][pop]['max']
+    if not (r0 > bar >= r1 > 0):
+        return float(ms)
+    t = (math.log(r0) - math.log(bar)) / (math.log(r0) - math.log(r1))
+    return float(math.exp(math.log(lad[j - 1]) + t * (math.log(lad[j]) - math.log(lad[j - 1]))))
 
 
 def red(m_base, m_t, fam):
@@ -317,6 +360,15 @@ def main():
     R1 = r1_gate(E)
     ctrl_ok = bool(meta) and all(all(x['controls'][k]['passed'] for k in ('C2', 'C3', 'C5b')) for x in meta)
     gates_ok = R1['passed'] and ctrl_ok
+    V['acceptance_gates'] = dict(R1=R1['passed'], controls=ctrl_ok, passed=gates_ok)
+    if not gates_ok:                  # A2.5: no verdict stands if an acceptance gate failed
+        for t, v in V.items():
+            if isinstance(v, dict) and 'H1' in v:
+                v['H1']['passed'] = False; v['H2_passed'] = False; v['useful_winner'] = False
+                v['invalidated_by_failed_gate'] = True
+        V['ranking_useful_H2'] = []
+    if TM is not None and not TM.get('valid'):
+        TM = dict(TM, median_ms={}, invalid=True)
     plots(E, M, HERE / 'plots')
     e2e_plot(E, M, TM, HERE / 'plots')
     banks = [b for b in ORDER if b in M]
@@ -354,20 +406,20 @@ def main():
         Rp = E[banks[0]]['settings'][s]['R_prime']; Mm = E[banks[0]]['settings'][s]['M']
         w(f'## Setting `{s}` ($R\'={Rp}$, $M={Mm}$)\n')
         w('### Representation and derivatives (discrete, 257² nodes, vs the S reference; PROVISIONAL)\n')
-        w('| bank | projection floor median | projection floor worst | gradient error median (D2) | gradient error median (D4) | gradient error worst (D2) | FD stencil sensitivity (ref., median) |')
-        w('|---|---|---|---|---|---|---|')
+        w('| bank | projection floor median | projection floor worst | gradient error median, D2 all interior | D2 on the D4 support | D4 | gradient error worst (D2) | FD stencil sensitivity (ref., median) |')
+        w('|---|---|---|---|---|---|---|---|')
         for b in banks:
             m = M[b][s]
-            w(f"| {b} | {fmt(m['e_val_med'])} | {fmt(m['e_val_max'])} | {fmt(m['e_grad_med'])} | {fmt(m['e_grad4_med'])} | {fmt(m['e_grad_max'])} | {fmt(m['fd_unc_med'])} |")
+            w(f"| {b} | {fmt(m['e_val_med'])} | {fmt(m['e_val_max'])} | {fmt(m['e_grad_med'])} | {fmt(m['e_grad2c_med'])} | {fmt(m['e_grad4_med'])} | {fmt(m['e_grad_max'])} | {fmt(m['fd_unc_med'])} |")
         w('')
         w('### Quadrature points needed (worst ρ over the population ≤ bar, confirmed at every larger rung)\n')
-        w('| bank | Gauss m*(0.116) own / common | Gauss m*(0.06) own / common | Gauss m*(0.01) own / common | Fibonacci m*(0.06) own | tail ϱ̂ (R²) | target checks C4 |')
-        w('|---|---|---|---|---|---|---|')
+        w('| bank | Gauss m*(0.116) own / common | Gauss m*(0.06) own / common | Gauss m*(0.01) own / common | interpolated m(0.06), descriptive | Fibonacci m*(0.06) own | tail ϱ̂ (R²) | target checks C4 |')
+        w('|---|---|---|---|---|---|---|---|')
         for b in banks:
             m = M[b][s]; ms = m['mstar']; tl = m['tail'].get('gref', {})
             tail = f"{tl['varrho']:.4f} ({tl['r2']:.2f})" if tl.get('varrho') else 'no resolved tail'
             w(f"| {b} | {mfmt(ms['gref|G|0.116'], 'G')} / {mfmt(ms['common|G|0.116'], 'G')} | {mfmt(ms['gref|G|0.06'], 'G')} / {mfmt(ms['common|G|0.06'], 'G')} | "
-              f"{mfmt(ms['gref|G|0.01'], 'G')} / {mfmt(ms['common|G|0.01'], 'G')} | {mfmt(ms['gref|F|0.06'], 'F')} | {tail} | {'pass' if m['C4_pass'] else 'FAIL'} |")
+              f"{mfmt(ms['gref|G|0.01'], 'G')} / {mfmt(ms['common|G|0.01'], 'G')} | {fmt(interp_m(E, b, s, 0.06))} | {mfmt(ms['gref|F|0.06'], 'F')} | {tail} | {'pass' if m['C4_pass'] else 'FAIL'} |")
         w('')
         w('Worst ρ at selected Gauss rungs (own reached states; in brackets: restricted to the first 320 tests, Hari\'s $M$):\n')
         sel = (32, 48, 64, 96, 128)
@@ -400,14 +452,21 @@ def main():
                 cells.append(f'{pct(st_)} / {pct(s_)}')
             w(f'| {b} | ' + ' | '.join(cells) + ' |')
         w('\nEach cell: ST / S.\n')
-    if TM:
+        for b in banks:
+            m = M[b][s]
+            if m['C6_failed_cases']:
+                w(f"- `{b}`: C6-failed cases {', '.join(m['C6_failed_cases'])}; converged-quadrature rollout worst error without them: ST {pct(m['E_ST_without_C6_failed'])}%, S {pct(m['E_S_without_C6_failed'])}%.")
+        w('')
+    if TM and TM.get('invalid'):
+        w('## Cost\n\nThe timing run did not reproduce the evaluation rollouts (or was incomplete); its numbers are suppressed.\n')
+    if TM and not TM.get('invalid'):
         w('## Cost at each bank\'s own m* rules (median ms per query, one GPU, paired A–B–A, dev6 × 3 repetitions)\n')
-        w('| setting | bank | rule | m | median ms | outputs equal to the evaluation rollout |')
+        w('| setting | bank | rule | m | median ms | max coefficient difference vs the evaluation rollout |')
         w('|---|---|---|---|---|---|')
         for k, v in TM['median_ms'].items():
             s, b, rule = k.split('|')
             inv = [x for x in TM['invocations'] if x['setting'] == s and x['label'] == b and x['rule'] == rule]
-            w(f"| {s} | {b} | {rule} | {inv[0]['m']} | {v:.1f} | {sum(x['output_matches_phase1'] for x in inv)}/{len(inv)} |")
+            w(f"| {s} | {b} | {rule} | {inv[0]['m']} | {v:.1f} | {fmt(max(x['coeff_rel_diff_vs_phase1'] for x in inv))} |")
         w('')
     w('## Gates and controls\n')
     if meta:
@@ -432,7 +491,7 @@ def main():
     if 'noise' in V:
         w('Noise yardstick (|base / frozen-lane − 1|): ' + ', '.join(f'{k} {v:.3f}' for k, v in V['noise'].items()) + '.\n')
     for t, v in V.items():
-        if t in ('noise', 'ranking_useful_H2'):
+        if t in ('noise', 'ranking_useful_H2', 'acceptance_gates'):
             continue
         h2 = '; '.join(f"{k}: ×{x['reduction']:.2f} ({'pass' if x['passed'] else 'no'}{'' if x['resolved'] else ', unresolved'})" for k, x in v['H2'].items())
         w(f"- **{t}**: H1 {'PASS' if v['H1']['passed'] else 'fail'} (gradient {v['H1']['grad']}, value {v['H1']['value']}, rollout {v['H1']['rollout']}); "

@@ -114,7 +114,9 @@ def main():
     diffs = [d_['coeff_rel_diff_vs_phase1'] for d_ in rep['invocations']]
     rep['max_coeff_rel_diff_vs_phase1'] = max((x for x in diffs if x is not None), default=None)
     # valid only if every timed rollout reproduces the evaluation's (a different process/compile may differ by round-off)
-    rep['valid'] = bool(all(x is not None and x <= 1e-6 for x in diffs))
+    expected = sum(2 * len(x['rules']) for x in rep['subjects']) * len(dev6) * a.reps
+    rep['expected_invocations'] = expected
+    rep['valid'] = bool(diffs and len(diffs) == expected and all(x is not None and x <= 1e-6 for x in diffs))
     rep['complete'] = True
     (out / 'timing.json').write_text(json.dumps(QS.clean(rep), indent=1))
     print('BANKTIME COMPLETE', json.dumps(rep['median_ms'], indent=1), flush=True)

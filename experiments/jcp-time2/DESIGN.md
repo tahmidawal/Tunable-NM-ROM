@@ -358,3 +358,72 @@ check: every run's anchor discrepancy is computed on the full $1024^2$ mesh as w
 **A1.12 (item 23) Smoke.** Local GB10: only `test_lmm.py` (CPU) and a sub-minute import/compile check (one case, $L=256$,
 two $\Delta t$, one `jaxrun`). The real-size smoke (`smk`, $L=256$ and 1024, dev6 cases 0 and 2, every arm) runs on the
 cluster before `a1k`. The local 0.3 h line of section 12 is withdrawn.
+
+## Amendment A2 (2026-10-08, after the re-audit `audits/codex-design-r1.md`; before any run)
+
+**A2.8 Anchor.** Anchor uncertainty uses the metric's own definition:
+$U_{\rm anc}=\max_t\lVert u^{\rm anc}_{\Delta t_0/8}-u^{\rm anc}_{\Delta t_0/16}\rVert/\lVert u_0\rVert+s^{\rm anc}_{\Delta t_0/8}+s^{\rm anc}_{\Delta t_0/16}$ ($s$ = solve
+uncertainty, A2.11), per case. The anchor is eligible for a case iff its $\Delta t_0/8$ and $\Delta t_0/16$ trajectories and their tighter
+replays are verified. $U_{\rm anc}$ is an uncertainty *indicator*. G2a (manufactured) failure stops the lane; G2b (real data)
+failure only withholds order claims, and anchor discrepancies are then reported as "distance to GAL-BDF2 at
+$\Delta t_0/16$" without a continuous-time interpretation.
+
+**A2.9 G1a tolerances.** The generic step keeps the vendor BE arithmetic order (same residual expression, Jacobian
+$A+\Delta t\,S\,N'$, same predictor and LM). Pass: $\max_k\lVert W^{\rm gen}_k-W^{\rm ven}_k\rVert_2/\lVert W^{\rm ven}_0\rVert_2\le10^{-8}$ and
+$\lVert w_0^{\rm gen}-w_0^{\rm ven}\rVert\le10^{-12}\lVert w_0^{\rm ven}\rVert$, and the field criterion of A1.7. A failure is diagnosed (per-step
+iteration/predictor comparison) before any threshold changes. G1b historical parity tolerance is restored to
+$10^{-6}$ and is reported, not gating (different job, commit and possibly GPU).
+
+**A2.10 Manufactured tests (replaces A1.4).** Frozen problem (`test_lmm.py`): seed 20261008, $M=24$, $R'=6$, $A$ Gaussian
+$(M,R')$ scaled by $1/\sqrt M$, $\Lambda=\mathrm{geomspace}(1,10^3,M)$, $\nu=0.05$, $N(c)_m=\sum_{ij}T_{mij}c_ic_j$ with $T$ Gaussian
+$\times0.3$, $c_0$ Gaussian $\times0.5$; nonstationarity asserted ($\lVert c(0.25)-c_0\rVert>0.1\lVert c_0\rVert$).
+**Independent oracle**: SciPy `solve_ivp` (Radau, rtol = atol = $10^{-13}$) on $R\dot c=-Q^{\mathsf T}F(c)$ written in NumPy, at
+$t=0.05k$. Gates (GAL): order of the error against the oracle, on $\Delta t\in\{0.25/64,0.25/128,0.25/256\}$: BE, TH06 in
+[0.85, 1.15]; CN, CN-R, BDF2 in [1.85, 2.15]. **Step-residual checks** (independent NumPy evaluation of the intended
+LMM): runs with keep = 1 and 5 steps; for every scheme and steps 1..5, $\lVert Q^{\mathsf T}\mathcal R_n(c_{n+1})\rVert\le10^{-9}\lVert Ac_n\rVert$ (GAL), and
+for LSPG BE/BDF2 the step equals a SciPy weighted least-squares solve of the intended residual within $10^{-7}$ relative.
+**Mutations (each must be detected by the named check):** m1 `a2flip` (BDF2): oracle error and step-residual check;
+m2 `fn_lag` (CN): step-residual check from step 2; m3 `stale_hist` (BDF2 uses $c_{n-2}$ in place of $c_{n-1}$): step-residual
+check from step 3; m4 `late_out` (stores $c_k$ in place of $c_{k+1}$): step-residual check of $c_1$ against $c_0$ and the
+oracle error at $t=0.25$; m5 `d_b1` (LSPG BE and BDF2, where $\beta_1=0\neq\beta_0$, nonzero LS residual, nonuniform weights):
+SciPy comparison must differ by $>10^{-6}$ relative. LSPG orders against the oracle are reported (not gated).
+
+**A2.11 Solve uncertainty (replaces the last bullet of A1.5).** Zero tolerances only make those tests trigger on
+exact zeros (`<=` comparisons); the tiny-step and strict-decrease tests of the LM remain active. Each trajectory
+records its achieved worst stationarity ratio and worst residual-to-tolerance ratio. The *tighter* replay (LSPG
+`gtol` $10^{-12}$; GAL $\epsilon=10^{-15}$) is run on **every** case and every dyadic $\Delta t$ used for order estimates (not only
+dev6); $s_h=\max_t\lVert u^{\rm tight}_h-u^{\rm tighter}_h\rVert/\lVert u_0\rVert$ per case. If the tighter replay is not verified, $s_h$ is
+*unresolved* and the triples using it are invalid. A difference $d(h)=\max_t\lVert u_h-u_{h/2}\rVert/\lVert u_0\rVert$ is valid iff
+$d(h)>10\,(s_h+s_{h/2})$.
+
+**A2.12 Order claims.** Two fixed triples for every case: finest $(\Delta t_0/2,\Delta t_0/4,\Delta t_0/8)$ and adjacent
+$(\Delta t_0,\Delta t_0/2,\Delta t_0/4)$ (GAL-CN/BDF2 also $(\Delta t_0/4,\Delta t_0/8,\Delta t_0/16)$). Per form and scheme, using the finest
+triple: "order 2" iff ≥ 80 % of cases valid and ≥ 80 % of valid cases in [1.7, 2.3] and, where the adjacent triple is
+also valid, in the same band for ≥ 80 % of those; "order 1" likewise with [0.8, 1.25]; otherwise "not established".
+Applied identically to GAL and LSPG (LSPG prediction: order 1, A1.2).
+
+**A2.14 Alternation diagnostic (replaces A1.6).** Per stiff test $j$ and step $n$, an *alternation event* is
+$\delta_{n,j}\delta_{n-1,j}<0$ with $\min(|\delta_{n,j}|,|\delta_{n-1,j}|)>\tau\,\lVert Ac_0\rVert_\infty$, $\tau=10^{-5}$; a per-mode run counter counts
+consecutive events. $\mathcal I=\sum_{\text{events with run}\ge3}|\delta_{n,j}\delta_{n-1,j}|\,/\,\sum_{\text{amplitude-qualified pairs}}|\delta_{n,j}\delta_{n-1,j}|$
+(0/0 := 0). Label **alternating** iff $\mathcal I>0.5$. It remains a diagnostic (no automatic selection effect); the word
+"ringing" is used only together with an accuracy degradation against ST at that $\Delta t$.
+
+**A2.15 Timing.** Clock starts after `block_until_ready` of the burn and stops after `block_until_ready` of every
+output leaf. Per candidate: paired ratios over 6 cases × 3 repetitions (18); report median, IQR and the number of
+outliers (outside median ± 3 MAD); baseline drift $t_{A_2}/t_{A_1}$ likewise.
+
+**A2.18 Selection outcomes.** The comparator's self-ratio is 1 by definition. If the selection returns the comparator the
+outcome is "baseline retained (no improvement)"; if the comparator itself is unverified, "no verified candidate"
+(selection none). Final tie-break after worst $e_{\rm ST}$ and larger $\Delta t$: form (LSPG before GAL), then scheme order
+BE, CN, CN-R, BDF2. Required gates for eligibility: G0, G1a, G2a, G4 and trajectory verification on all 38 cases.
+
+**A2.21 FOM calibration.** Per (mesh, scheme, $\Delta t$): over all dev6 cases, choose the loosest ntol in {1e-4, 1e-6, 1e-8}
+whose fields differ from the ntol $10^{-10}$ solve by < 1 % of that case's ST error in every case; the $10^{-10}$ solve must
+itself reach its tolerance. A step fails iff its final nonlinear relative residual exceeds ntol or is nonfinite
+(reaching the Newton limit with a converged residual is not a failure). Linear (BiCGStab) residuals are recorded and
+reported; they do not by themselves reject a converged step.
+
+**A2.22 Attribution.** The higher-quadrature replay covers every *selected* arm whatever its $\Delta t$, in addition to the
+$\{\Delta t_0,2\Delta t_0,5\Delta t_0\}$ grid; differences are labelled *quadrature sensitivity*. `audit_t2.py` reconstructs the reference
+errors independently and runs index mutations (case permutation, time shift by one output, ST/S swap), each of which
+must change the reconstructed errors.

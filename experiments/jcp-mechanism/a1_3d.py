@@ -334,12 +334,11 @@ def main():
         def rho_all(Cs):
             """rho of every arm's tested advection against the continuum and mesh targets, per state."""
             tgt_mesh, umin = map(np.asarray, OM.make_mesh_target(n, M, kx)(jnp.asarray(Cs), base))
-            for attempt in range(2):      # a non-finite target was seen once on the local GB10 (XLA 'red zone' warning)
-                tgt_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xc, wc, kx[:M], Cs))
-                chk_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xk, wk, kx[:M], Cs))
-                if np.isfinite(tgt_cont).all() and np.isfinite(chk_cont).all():
-                    break
-                rep.setdefault('nonfinite_target_retries', []).append(dict(Rp=Rp, states=len(Cs)))
+            # no retry (job audit 1): a non-finite target is recorded and invalidates the configuration (label X)
+            tgt_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xc, wc, kx[:M], Cs))
+            chk_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xk, wk, kx[:M], Cs))
+            if not (np.isfinite(tgt_cont).all() and np.isfinite(chk_cont).all()):
+                rep.setdefault('nonfinite_targets', []).append(dict(Rp=Rp, states=len(Cs)))
             per = {'dense_upwind': (rho(tgt_mesh, tgt_cont), np.zeros(len(Cs)))}
             for nm in arms:
                 v = adv_chunked(value_of(nm), arms[nm]['data'], Cs)
@@ -373,7 +372,8 @@ def main():
         prev = cfg['expected_rho'][str(Rp)]
         rep['gates'][f'G4a_rho_reproduction_R{Rp}'] = max(
             abs(res['rules'][nm]['cont']['worst'] - prev[nm]) / prev[nm] for nm in prev)
-        res['continuum_target_valid'] = bool(res['continuum_check']['worst'] <= 1e-6)
+        res['continuum_target_valid'] = bool(np.isfinite(tg[0]).all() and np.isfinite(tg[2]).all() and
+                                             res['continuum_check']['worst'] <= 1e-6)
         rep['rho'][str(Rp)] = res
         log(f"RHO R{Rp}: check {res['continuum_check']['worst']:.2e}; G4a {rep['gates'][f'G4a_rho_reproduction_R{Rp}']:.2e}; "
             + '; '.join(f"{k} c{v['cont']['worst']:.2e}/{v['cont']['median']:.2e} m{v['mesh']['worst']:.2e}"

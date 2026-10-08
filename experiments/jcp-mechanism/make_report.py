@@ -104,7 +104,7 @@ def a2_analysis(out):
             for k_ in z.files:                                  # independent-family check on every state set
                 if k_.startswith(f'{g}_own') and (k_.endswith('_lat32768_rho') or k_.endswith('_fib121393_rho')):
                     pan.setdefault('own_independent_worst', {})[k_] = float(z[k_].max())
-                    if z[k_].max() > 1e-2:
+                    if not (z[k_].max() <= 1e-2):           # NaN fails
                         pan['independent_ok'] = False
             res['panels'].append(pan)
     # manufactured controls
@@ -178,7 +178,7 @@ def label(keys, s, dn, invalid, provisional, expected):
     """DESIGN amendment 2 (A2-1) decision order. keys: case ids; s, dn: per-case d(incumbent, conv), d(nodes, conv).
     `expected` is the registered case list: any missing case makes the result INCOMPLETE (amendment A2-6)."""
     missing = [k for k in expected if k not in keys]
-    out = dict(missing_cases=missing, boot_low=None, why=invalid or None, provisional_solver=provisional)
+    out = dict(missing_cases=missing, boot_low=None, why=invalid or None, provisional_solver=None)
     if missing:
         out.update(label='INCOMPLETE')
         return out
@@ -204,8 +204,7 @@ def label(keys, s, dn, invalid, provisional, expected):
         out.update(label='N', boot_low=lo)
     else:
         out.update(label='X', boot_low=None, boot_low_info=lo)
-    if out['label'] not in ('R', 'N'):
-        out['provisional_solver'] = None
+    out['provisional_solver'] = provisional if out['label'] in ('R', 'N') else None
     return out
 
 
@@ -225,11 +224,23 @@ def a1d3_labels(res):
         for Rp in r['config']['Rps']:
             A = r['arms']
             need = [f'tensor_R{Rp}', f'lat32768_R{Rp}', f'nodes_R{Rp}']
-            if any(nm not in A or 'distance' not in A[nm] for nm in need):
-                labs[(n, Rp)] = dict(label='INCOMPLETE', missing_cases=['arm output missing'], boot_low=None, why=None,
+            expected = [f'c{j}' for j in range(r['config']['cohort_count'])]
+            miss = [nm for nm in need if nm not in A or 'distance' not in A[nm] or 'cases' not in A[nm]]
+            if not miss:
+                miss = [f'{nm}:{k}' for nm in need for k in expected
+                        if k not in [f'c{c["case"]}' for c in A[nm]['cases']]]
+            if not r.get('complete'):
+                miss.append('job not complete')
+            if r['config'].get('adaptive_check_cases') and str(Rp) not in (r.get('adaptive_sensitivity') or {}):
+                miss.append('required sensitivity rerun missing')
+            if str(Rp) not in (r.get('rho_nodes_reached') or {}):
+                miss.append('nodes-reached rho missing')
+            if miss:
+                labs[(n, Rp)] = dict(label='INCOMPLETE', missing_cases=miss, boot_low=None, why=None,
                                      provisional_solver=None)
                 continue
             keys = [f'c{c["case"]}' for c in A[f'nodes_R{Rp}']['cases']]
+            assert all([f'c{c["case"]}' for c in A[nm]['cases']] == keys for nm in need)
             s = A[f'tensor_R{Rp}']['distance']['lat32768']['per_case']
             dn = A[f'nodes_R{Rp}']['distance']['lat32768']['per_case']
             invalid, prov, r0s = [], [], {}
@@ -242,6 +253,8 @@ def a1d3_labels(res):
                 r0s[nm.rsplit('_R', 1)[0]] = (r0, steps)
                 if r0 > .01 * steps:
                     prov.append(f'{nm} reason-0 {r0}/{steps}')
+            if r.get('nonfinite_targets'):
+                invalid.append(f"non-finite continuum target: {r['nonfinite_targets']}")
             if not r['rho'][str(Rp)].get('continuum_target_valid', False):
                 invalid.append('continuum target check failed on certification states')
             nr_ = (r.get('rho_nodes_reached') or {}).get(str(Rp))
@@ -428,6 +441,7 @@ def g4_3d(r3):
                         d.append(float((np.linalg.norm((new[k] - old[k]) @ G[:Rp], axis=1) / n0[j])[1:].max()))
                 if d:
                     out[(n, Rp, arm)] = max(d)
+                    out[(n, Rp, arm + ' cases')] = len(d)
     return out
 
 
@@ -453,7 +467,7 @@ def g4_2d(r2):
                         fd.append(float((np.linalg.norm((fn - fo).reshape(6, -1), axis=1) /
                                          np.linalg.norm(fo[0]))[1:].max()))
                 if fd:
-                    out[(L, s, arm + ' (field, audit cases)')] = max(fd)
+                    out[(L, s, arm + f' (field, {len(fd)} of 2 audit cases)')] = max(fd)
     return out
 
 
@@ -466,9 +480,14 @@ def main():
     r2 = a1d2_load()
     lab3 = a1d3_labels(r3) if r3 else {}
     lab2 = a1d2_labels(r2) if r2 else {}
-    if a2:
-        a2_plot(a2)
-    a1_plot(r3, r2)
+    plot_notes = []
+    for nm_, fn_, args_ in (('a2_gap_vs_h.png', a2_plot, (a2,)), ('a1_error_vs_mesh.png', a1_plot, (r3, r2))):
+        if nm_ == 'a2_gap_vs_h.png' and not a2:
+            continue
+        try:
+            fn_(*args_)
+        except Exception as ex:  # noqa: BLE001  (incomplete inputs: the report still renders, the failure is stated)
+            plot_notes.append(f'{nm_} not drawn: {type(ex).__name__}: {ex}')
     w('# Mechanism of the off-mesh gain: mesh nodes with the exact gradient (A1) and the stencil gap (A2)')
     w('')
     w('This report covers the two Group A experiments of the lane `jcp-mechanism`: **A1**, a reduced-solve arm that keeps '
@@ -479,6 +498,9 @@ def main():
       'is generated by `experiments/jcp-mechanism/make_report.py` from the job outputs; the pre-registration is `DESIGN.md` '
       '(amendments 1–3). A3 and A4 are deferred (DESIGN §8).')
     w('')
+    for pn in plot_notes:
+        w(f'> {pn}')
+        w('')
     # ---------------------------------------------------------------- answers
     w('## Answers')
     w('')
@@ -588,8 +610,11 @@ def main():
                 rows = rows_of(r, s, spec['name'])
                 if not rows:
                     continue
-                st = [x['ref_ST_evolved'] for x in rows]
-                ss = [x['ref_S_evolved'] for x in rows]
+                st = [x.get('ref_ST_evolved') for x in rows]
+                ss = [x.get('ref_S_evolved') for x in rows]
+                if any(v is None for v in st + ss):
+                    w(f"| `{spec['name']}` | non-finite or missing errors | | | | | | | | |")
+                    continue
                 dg = [x.get('vs_gref_restricted_evolved') for x in rows if x.get('vs_gref_restricted_evolved') is not None]
                 dd = [x.get('vs_dense_restricted_evolved') for x in rows if x.get('vs_dense_restricted_evolved') is not None]
                 rr = rh['rules'].get(spec['name']) if rh else None
@@ -636,9 +661,11 @@ def main():
           'pre-registered window on the screened population (DESIGN amendment 2, A2-3).')
         w('')
         for p in a2['panels']:
+            ow = p.get('own_independent_worst', {})
             w(f"**{p['dim']}, {p['group']}** — window {p['window']}; continuum check worst {e(p['check_worst'])}; "
-              f"independent family worst $\\rho$ {e(p['independent_worst'])} "
-              f"({'passes' if p['independent_ok'] else 'FAILS'} the empirical $10^{{-2}}$ check).")
+              f"independent family worst $\\rho$: fixed {e(p['independent_worst'])}"
+              + ''.join(f", {k.split('_')[1]} {e(v)}" for k, v in ow.items())
+              + f" ({'all pass' if p['independent_ok'] else 'at least one FAILS'} the empirical $10^{{-2}}$ check).")
             w('')
             hdr = ' | '.join(f"{('n=' if p['dim'] == '3D' else 'L=')}{m}" for m in p['meshes'])
             w(f'| stencil | {hdr} | slope (median state) | slope (worst state) | median per-state slope | screened | bar | consistent |')
@@ -669,8 +696,10 @@ def main():
     h3 = g4_3d(r3) if r3 else {}
     h2 = g4_2d(r2) if r2 else {}
     if h3:
-        w('3D: worst over cases of the evolved-time field distance (63³ lattice) from the 2026-10-01 validation rollouts: ' +
-          ', '.join(f'{n - 1}³ R′={Rp} `{a}` {e(v)}' for (n, Rp, a), v in sorted(h3.items())) + '.')
+        w('3D: worst over cases of the evolved-time field distance (63³ lattice) from the 2026-10-01 validation rollouts '
+          '(cases compared in brackets): ' +
+          ', '.join(f"{n - 1}³ R′={Rp} `{a}` {e(v)} [{h3.get((n, Rp, a + ' cases'))}]" for (n, Rp, a), v in sorted(h3.items())
+                    if not a.endswith(' cases')) + '.')
         for n, r in sorted(r3.items()):
             w(f"3D {n - 1}³ ρ reproduction (worst continuum ρ, max relative difference): " + ', '.join(
                 f"R′={k.split('R')[-1]} {v:.1e}" for k, v in r['gates'].items() if k.startswith('G4a')) + '.')

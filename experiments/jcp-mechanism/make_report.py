@@ -399,6 +399,20 @@ def a1_plot(r3, r2):
     plt.close(fig)
 
 
+def latexify(text):
+    """Mesh sizes and widths in LaTeX outside code spans: 64³ -> $64^3$, 256² -> $256^2$, R′=512 -> $R'=512$, M = 2052 -> $M = 2052$."""
+    import re
+    out = []
+    for i, part in enumerate(re.split(r'(`[^`]*`)', text)):
+        if i % 2 == 0:
+            part = re.sub(r'(?<![\w$^])(\d+)³', r'$\1^3$', part)
+            part = re.sub(r'(?<![\w$^])(\d+)²', r'$\1^2$', part)
+            part = re.sub(r"R′ ?= ?(\d+)", r"$R'=\1$", part)
+            part = re.sub(r'\(M = (\d+)\)', r'($M = \1$)', part)
+        out.append(part)
+    return ''.join(out)
+
+
 def cell_name(k):
     return f'3D {k[0] - 1}³ R′={k[1]}' if isinstance(k[1], int) else f'2D {k[0]}² {k[1]}'
 
@@ -552,8 +566,8 @@ def main():
               f"{p['dim']} {p['group']} {e(p['stencils']['nodes']['median'][-1])} (central {e(p['stencils']['central']['median'][-1])}, "
               f"upwind {e(p['stencils']['upwind']['median'][-1])})" for p in a2['panels'])
           + '; on the manufactured state, where it is resolved, the `nodes` slope is ' + ', '.join(
-              f"{d} {c['slope_nodes']:.2f}" for d, c in a2['controls'].items()) + ' (not a pre-registered bar). All slopes are finite-window observations on fixed reached states, not established '
-          'asymptotic rates.')
+              f"{d} {c['slope_nodes']:.2f}" for d, c in a2['controls'].items()) + ' (not a pre-registered bar). The reached-state slopes are finite-window observations on fixed states, not '
+          'established asymptotic rates.')
     w('')
     # ---------------------------------------------------------------- A1 3D
     w('## 1. A1 in 3D (Burgers 3D, validation cohort 923801 × 64)')
@@ -612,7 +626,7 @@ def main():
     if len(r3) == 2:
         w('**Mesh invariance** (worst refined error, PROVISIONAL, 64³ / 128³ and their ratio max/min):')
         w('')
-        w('| arm | R′ | 64³ | 128³ | ratio |')
+        w("| arm | $R'$ | 64³ | 128³ | ratio |")
         w('|---|---|---|---|---|')
         for Rp in (512, 256):
             for k in ('tensor', 'gl24', 'lat4096', 'lat32768', 'nodes'):
@@ -681,7 +695,7 @@ def main():
         r0t = ' / '.join(f'{v[0]}/{v[1]}' for v in r0.values()) if r0 else 'n/a'
         w(f"| {cell_name(key)} | **{l['label']}** | {pc(l.get('median_separation'), 3)} | {f3(l.get('median_f'))} | "
           f"{'N/A' if l['boot_low'] is None else f3(l['boot_low'])} | {f3(l.get('frac_f_075'))} | {f3(l.get('min_f'))} | "
-          f"{', '.join(l.get('excluded_cases') or []) or 'none'} | {r0t} | {l.get('provisional_solver') or 'no'} | "
+          f"{', '.join(l.get('excluded_cases') or []) or 'none'} | {r0t} | {(l.get('provisional_solver') or 'no') if l['label'] in ('R', 'N') else 'N/A'} | "
           f"{l.get('why') or '–'}{'; missing: ' + ', '.join(l['missing_cases']) if l.get('missing_cases') else ''} |")
     w('')
     # ---------------------------------------------------------------- A2
@@ -753,7 +767,7 @@ def main():
     w('')
     for t, d in GLOSSARY:
         w(f'- **{t}**: {d}')
-    (HERE / 'report.md').write_text('\n'.join(lines) + '\n')
+    (HERE / 'report.md').write_text(latexify('\n'.join(lines)) + '\n')
     json.dump(dict(labels3d={f'{k[0]}_{k[1]}': v for k, v in lab3.items()},
                    labels2d={f'{k[0]}_{k[1]}': v for k, v in lab2.items()},
                    a2=None if not a2 else dict(panels=a2['panels'], controls=a2['controls'], void=a2['void'])),
@@ -792,11 +806,11 @@ GLOSSARY = [
      '$f_j\\ge0.9$, bootstrap bound $\\ge0.8$, $f_j\\ge0.75$ on 90 % of cases); N: median $f_j\\le0.5$; X: intermediate or '
      'invalid; X0: median separation below 1 %, nothing to explain.'),
     ('bootstrap 2.5 % bound', 'the 2.5th percentile of the median $f_j$ over 2000 resamples of cases.'),
-    ('provisional (solver)', 'a label not backed by a solver-sensitivity rerun at that mesh, or with more than 1 % '
-     'non-stationary LM steps.'),
+    ('provisional (solver)', 'applies only to R and N labels: one not backed by a solver-sensitivity rerun at that mesh, or '
+     'with more than 1 % non-stationary LM steps in an arm; N/A for X, X0 and INCOMPLETE.'),
     ('exits 0/3, budget/damping', 'Levenberg–Marquardt step outcomes: 0 = not stationary at the end of the fixed sweep '
      '(3D) / iteration budget exhausted (2D); 3 = non-finite or damping exhausted.'),
-    ('R′, M, m', 'number of bank columns in the solve; number of sine test functions; number of quadrature points.'),
+    ("$R'$, $M$, $m$", 'number of bank columns in the solve; number of sine test functions; number of quadrature points.'),
     ('fixed states', 'reached coefficient states held fixed while only the mesh changes, so the gap depends on h alone.'),
     ('screened population', 'states whose gap exceeds 100× their own continuum-target check and $10^{-12}$ at every window mesh.'),
     ('slope (median state)', 'least-squares slope of $\\log(\\text{median gap})$ against $\\log h$ over the window; 1 = first order, 2 = second.'),
@@ -808,10 +822,18 @@ GLOSSARY = [
      'the fitted slope lies in it.'),
     ('25 % survival', 'a slope is fitted only if at least a quarter of the states pass the screen at every window mesh; '
      'otherwise it is reported as unresolved.'),
-    ('leading norms / leading-term agreement', 'size of the predicted first error term of each stencil relative to the target, '
-     'and the relative difference between the measured gap and that predicted term at the finest window mesh.'),
+    ('leading norms / leading-term agreement', 'norm of the predicted leading error coefficient of each stencil (before '
+     'multiplying by $h$ or $h^2$) relative to the target norm, and the relative norm of the difference between the measured '
+     'error vector $N_h-N$ and the predicted leading error vector at the finest window mesh.'),
+    ('$N_h$, $N$', 'the tested advection vector computed as a mesh sum with a given stencil on spacing $h$, and the continuum '
+     'tested advection (target), both normalised as integrals.'),
+    ('`fib121393`', 'a 121393-point Fibonacci lattice rule, used only as an independent check of the 2D continuum target.'),
+    ('`gref`', 'the 2D converged off-mesh rule (Gauss $640^2$); its $\\rho$ is zero by definition because it is the target.'),
+    ('own-mesh states', 'reached states saved by the earlier job at a given mesh and evaluated only at that mesh (context).'),
+    ('certification draws', 'the 24 extra 3D cases (seeds 923811–923813) whose tensor rollouts supply the states for $\\rho$.'),
+    ('dev6 / val32', 'the 2D development (6 cases) and validation (32 cases) cohorts; case `val32:1` is case 1 of val32.'),
     ('central×1.01', 'the central stencil multiplied by 1.01: a deliberately inconsistent variant shown for comparison.'),
-    ('$n$, $L$, $h$', '3D mesh nodes per axis including walls ($h = 1/(n-1)$); 2D intervals per axis ($h = 1/L$); mesh spacing.'),
+    ("$n$, $L$, $h$, $R'$", "3D mesh nodes per axis including walls ($h = 1/(n-1)$); 2D intervals per axis ($h = 1/L$); mesh spacing; $R'$ is the number of bank columns."),
     ('LM its', 'Levenberg–Marquardt iterations summed over the time steps of one query (median over cases).'),
     ('acc / fast', 'the two 2D linear settings: 384 bank columns with 1536 tests, and 128 columns with 512 tests.'),
     ('bank / tests', 'the frozen coordinate network whose ordered columns span the reduced solution / the sine functions '

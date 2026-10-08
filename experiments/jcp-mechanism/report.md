@@ -4,17 +4,17 @@ This report covers the two Group A experiments of the lane `jcp-mechanism`: **A1
 
 ## Answers
 
-1. **A1 — does the exact gradient on the mesh nodes reproduce the off-mesh (continuum) solve?** Outcome labels (DESIGN amendment 2: R = `nodes` recovers the converged off-mesh rollout within the declared margins; N = it does not; X = intermediate or invalid; X0 = nothing to explain): 3D 64³ R′=256: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 3.53 %); 3D 64³ R′=512: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 3.53 %); 3D 128³ R′=256: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 1.85 %; provisional (solver): no sensitivity rerun at this mesh); 3D 128³ R′=512: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 1.85 %; provisional (solver): no sensitivity rerun at this mesh); 2D 256² acc: **X0** (descriptive, not a label: worst separation 4.26e+00 %, worst `nodes` distance to the converged rollout 3.39e-02 %) [median separation below 1e-2]; 2D 256² fast: **X0** (descriptive, not a label: worst separation 4.05e+00 %, worst `nodes` distance to the converged rollout 3.04e-02 %) [median separation below 1e-2]; 2D 1024² acc: **X0** (descriptive, not a label: worst separation 1.15e+00 %, worst `nodes` distance to the converged rollout 4.56e-04 %) [median separation below 1e-2]; 2D 1024² fast: **X0** (descriptive, not a label: worst separation 1.09e+00 %, worst `nodes` distance to the converged rollout 7.27e-05 %) [median separation below 1e-2].
+1. **A1 — does the exact gradient on the mesh nodes reproduce the off-mesh (continuum) solve?** Outcome labels (DESIGN amendment 2: R = `nodes` recovers the converged off-mesh rollout within the declared margins; N = it does not; X = intermediate or invalid; X0 = nothing to explain): 3D $64^3$ $R'=256$: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 3.53 %); 3D $64^3$ $R'=512$: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 3.53 %); 3D $128^3$ $R'=256$: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 1.85 %; provisional (solver): no sensitivity rerun at this mesh); 3D $128^3$ $R'=512$: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 1.85 %; provisional (solver): no sensitivity rerun at this mesh); 2D $256^2$ acc: **X0** (descriptive, not a label: worst separation 4.26e+00 %, worst `nodes` distance to the converged rollout 3.39e-02 %) [median separation below 1e-2]; 2D $256^2$ fast: **X0** (descriptive, not a label: worst separation 4.05e+00 %, worst `nodes` distance to the converged rollout 3.04e-02 %) [median separation below 1e-2]; 2D $1024^2$ acc: **X0** (descriptive, not a label: worst separation 1.15e+00 %, worst `nodes` distance to the converged rollout 4.56e-04 %) [median separation below 1e-2]; 2D $1024^2$ fast: **X0** (descriptive, not a label: worst separation 1.09e+00 %, worst `nodes` distance to the converged rollout 7.27e-05 %) [median separation below 1e-2].
    Scope: an R label supports only the sufficiency statement that the mesh nodes with the analytic gradient reach the converged off-mesh rollout within the declared margins, so off-mesh point placement is not needed for the accuracy observed; it does not show that point placement or the training data play no role elsewhere.
-2. **A2 — stencil gap slopes** (median-state statistic over the pre-registered window): 3D R512: upwind 0.99, central 2.00, nodes unresolved; 3D R256: upwind 0.99, central 2.00, nodes unresolved; 2D acc: upwind 1.00, central 2.00, nodes unresolved; 2D fast: upwind 1.00, central 2.00, nodes unresolved. Upwind ≈ 1 and central ≈ 2 on every panel: **yes** (controls passed). The `nodes` slope is unresolved by the pre-registered screen because its gap reaches the continuum-target check level; descriptively, at the finest window mesh its median gap is 3D R512 1.5e-08 (central 3.4e-04, upwind 3.5e-02); 3D R256 1.1e-08 (central 3.3e-04, upwind 3.5e-02); 2D acc 1.4e-10 (central 2.0e-06, upwind 2.2e-03); 2D fast 2.2e-10 (central 2.0e-06, upwind 2.2e-03); on the manufactured state, where it is resolved, the `nodes` slope is 3D 4.02, 2D 4.00 (not a pre-registered bar). All slopes are finite-window observations on fixed reached states, not established asymptotic rates.
+2. **A2 — stencil gap slopes** (median-state statistic over the pre-registered window): 3D R512: upwind 0.99, central 2.00, nodes unresolved; 3D R256: upwind 0.99, central 2.00, nodes unresolved; 2D acc: upwind 1.00, central 2.00, nodes unresolved; 2D fast: upwind 1.00, central 2.00, nodes unresolved. Upwind ≈ 1 and central ≈ 2 on every panel: **yes** (controls passed). The `nodes` slope is unresolved by the pre-registered screen because its gap reaches the continuum-target check level; descriptively, at the finest window mesh its median gap is 3D R512 1.5e-08 (central 3.4e-04, upwind 3.5e-02); 3D R256 1.1e-08 (central 3.3e-04, upwind 3.5e-02); 2D acc 1.4e-10 (central 2.0e-06, upwind 2.2e-03); 2D fast 2.2e-10 (central 2.0e-06, upwind 2.2e-03); on the manufactured state, where it is resolved, the `nodes` slope is 3D 4.02, 2D 4.00 (not a pre-registered bar). The reached-state slopes are finite-window observations on fixed states, not established asymptotic rates.
 
 ## 1. A1 in 3D (Burgers 3D, validation cohort 923801 × 64)
 
-### 64³ (job 5012942, NVIDIA H200, commit `719ecef52`, JAX 0.10.2, backend gpu, precision highest)
+### $64^3$ (job 5012942, NVIDIA H200, commit `719ecef52`, JAX 0.10.2, backend gpu, precision highest)
 
 Gates: gram_condition 1.0e+00, tensor_vs_direct 2.7e-16, G1_derivative_vs_fd_nodes 2.1e-08, G2a_nodes_B_vs_mesh_bank_R512 0.0e+00, G2b_nodes_P_vs_Phi_R512 7.0e-15, G2c_nodes_value_gemm_vs_dst_R512 1.9e-15, G2c_nodes_jacobian_gemm_vs_dst_R512 1.3e-14, G3_nodes_jacobian_vs_jvp_R512 0.0e+00, G3_nodes_adv_half_Jc_R512 2.6e-16, G4a_rho_reproduction_R512 5.1e-13, G2a_nodes_B_vs_mesh_bank_R256 0.0e+00, G2b_nodes_P_vs_Phi_R256 6.4e-15, G2c_nodes_value_gemm_vs_dst_R256 1.3e-15, G2c_nodes_jacobian_gemm_vs_dst_R256 3.7e-15, G3_nodes_jacobian_vs_jvp_R256 0.0e+00, G3_nodes_adv_half_Jc_R256 2.3e-16, G4a_rho_reproduction_R256 2.1e-12.
 
-**R′ = 512** (M = 2052). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss 64³ vs 80³) worst 3.6e-08.
+**$R'=512$** ($M = 2052$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 3.6e-08.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -29,7 +29,7 @@ $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 1
 
 Adaptive-LM sensitivity (every step adaptive, first 8 cases), worst field distance from the fixed-sweep rollout: `tensor` 1.5e-15 (reason-3 0), `lat32768` 2.1e-15 (reason-3 0), `nodes` 1.3e-15 (reason-3 0).
 
-**R′ = 256** (M = 1027). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss 64³ vs 80³) worst 1.5e-08.
+**$R'=256$** ($M = 1027$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 1.5e-08.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -44,11 +44,11 @@ $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 2
 
 Adaptive-LM sensitivity (every step adaptive, first 8 cases), worst field distance from the fixed-sweep rollout: `tensor` 8.9e-16 (reason-3 0), `lat32768` 9.7e-16 (reason-3 0), `nodes` 1.5e-15 (reason-3 0).
 
-### 128³ (job 5012942, NVIDIA H200, commit `719ecef52`, JAX 0.10.2, backend gpu, precision highest)
+### $128^3$ (job 5012942, NVIDIA H200, commit `719ecef52`, JAX 0.10.2, backend gpu, precision highest)
 
 Gates: gram_condition 1.0e+00, tensor_vs_direct 2.4e-16, G1_derivative_vs_fd_nodes 2.3e-08, G2a_nodes_B_vs_mesh_bank_R512 0.0e+00, G2b_nodes_P_vs_Phi_R512 7.1e-15, G2c_nodes_value_gemm_vs_dst_R512 1.8e-15, G2c_nodes_jacobian_gemm_vs_dst_R512 1.9e-15, G3_nodes_jacobian_vs_jvp_R512 0.0e+00, G3_nodes_adv_half_Jc_R512 2.2e-16, G4a_rho_reproduction_R512 2.3e-13, G2a_nodes_B_vs_mesh_bank_R256 0.0e+00, G2b_nodes_P_vs_Phi_R256 6.8e-15, G2c_nodes_value_gemm_vs_dst_R256 1.0e-15, G2c_nodes_jacobian_gemm_vs_dst_R256 1.6e-15, G3_nodes_jacobian_vs_jvp_R256 0.0e+00, G3_nodes_adv_half_Jc_R256 2.5e-16, G4a_rho_reproduction_R256 2.0e-13.
 
-**R′ = 512** (M = 2049). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss 64³ vs 80³) worst 8.0e-08.
+**$R'=512$** ($M = 2049$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 8.0e-08.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -61,7 +61,7 @@ Gates: gram_condition 1.0e+00, tensor_vs_direct 2.4e-16, G1_derivative_vs_fd_nod
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 1.7e-07): `dense_upwind` 1.1e-01, `tensor` 1.1e-01, `gl24` 2.4e-02, `lat4096` 1.8e-01, `lat32768` 1.1e-03, `nodes` 1.7e-05.
 
-**R′ = 256** (M = 1024). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss 64³ vs 80³) worst 2.0e-08.
+**$R'=256$** ($M = 1024$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 2.0e-08.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
@@ -76,9 +76,9 @@ $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 2
 
 The 3D sign-upwind `dense` rollouts of the earlier job (DESIGN §3, context only) are not tabulated here; the sign-upwind stencil enters as the mesh target of $\rho$.
 
-**Mesh invariance** (worst refined error, PROVISIONAL, 64³ / 128³ and their ratio max/min):
+**Mesh invariance** (worst refined error, PROVISIONAL, $64^3$ / $128^3$ and their ratio max/min):
 
-| arm | R′ | 64³ | 128³ | ratio |
+| arm | $R'$ | $64^3$ | $128^3$ | ratio |
 |---|---|---|---|---|
 | `tensor` | 512 | 10.22 % | 6.11 % | 1.674 |
 | `gl24` | 512 | 3.16 % | 3.12 % | 1.014 |
@@ -93,7 +93,7 @@ The 3D sign-upwind `dense` rollouts of the earlier job (DESIGN §3, context only
 
 ## 2. A1 in 2D (Burgers 2D, dev6 ∪ val32, 38 cases)
 
-### 256² (job 5015576, NVIDIA H200, commit `30539d990`)
+### $256^2$ (job 5015576, NVIDIA H200, commit `30539d990`)
 
 Nodes gates: nodes_acc: G1_fd_err_h1e-5 2.7e-06, G1_fd_err_h1e-6 2.7e-08, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 2.8e-14, G2c_gemm_vs_separable 1.2e-14, G3_jacobian_vs_jacfwd 0.0e+00; nodes_fast: G1_fd_err_h1e-5 8.2e-07, G1_fd_err_h1e-6 8.2e-09, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 1.4e-14, G2c_gemm_vs_separable 4.5e-15, G3_jacobian_vs_jacfwd 0.0e+00. Continuum target check: acc pass, fast pass.
 
@@ -121,7 +121,7 @@ $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.3e-08): `dense` 8.3
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 2.9e-08): `dense` 8.2e-02, `lat64` 5.9e-02, `fib1597` 5.6e-02, `fib121393` 7.3e-06, `gref` 0.0e+00, `nodes` 1.5e-02.
 
-### 1024² (job 5015576, NVIDIA H200, commit `30539d990`)
+### $1024^2$ (job 5015576, NVIDIA H200, commit `30539d990`)
 
 Nodes gates: nodes_acc: G1_fd_err_h1e-5 9.5e-05, G1_fd_err_h1e-6 9.5e-07, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 2.8e-14, G2c_gemm_vs_separable 1.2e-14, G3_jacobian_vs_jacfwd 0.0e+00; nodes_fast: G1_fd_err_h1e-5 1.5e-05, G1_fd_err_h1e-6 1.5e-07, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 1.4e-14, G2c_gemm_vs_separable 2.7e-15, G3_jacobian_vs_jacfwd 0.0e+00. Continuum target check: acc pass, fast pass.
 
@@ -151,24 +151,24 @@ $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.2e-08): `dense` 1.7
 
 ## 3. A1 outcome labels (DESIGN amendment 2)
 
-The 2D solver had no sensitivity rerun (DESIGN A2-5: untested); the 3D one only at 64³.
+The 2D solver had no sensitivity rerun (DESIGN A2-5: untested); the 3D one only at $64^3$.
 
 | cell | label | median separation $s_j$ | median $f_j$ | bootstrap 2.5 % bound | fraction $f_j\ge0.75$ | min $f_j$ | excluded cases ($s_j<10^{-3}$) | non-stationary steps (incumbent / converged / nodes) | provisional (solver) | label reason |
 |---|---|---|---|---|---|---|---|---|---|---|
-| 3D 64³ R′=256 | **R** | 3.527 % | 1.000 | 1.000 | 1.000 | 1.000 | none | 0/1600 / 0/1600 / 0/1600 | no | – |
-| 3D 64³ R′=512 | **R** | 3.527 % | 1.000 | 1.000 | 1.000 | 0.999 | none | 2/1600 / 1/1600 / 1/1600 | no | – |
-| 3D 128³ R′=256 | **R** | 1.848 % | 1.000 | 1.000 | 1.000 | 1.000 | none | 0/1600 / 0/1600 / 0/1600 | no sensitivity rerun at this mesh | – |
-| 3D 128³ R′=512 | **R** | 1.848 % | 1.000 | 1.000 | 1.000 | 0.999 | none | 2/1600 / 1/1600 / 1/1600 | no sensitivity rerun at this mesh | – |
-| 2D 256² acc | **X0** | 0.883 % | n/a | N/A | n/a | n/a | none | 0/1900 / 0/1900 / 0/1900 | no | median separation below 1e-2 |
-| 2D 256² fast | **X0** | 0.883 % | n/a | N/A | n/a | n/a | none | 0/1900 / 0/1900 / 0/1900 | no | median separation below 1e-2 |
-| 2D 1024² acc | **X0** | 0.225 % | n/a | N/A | n/a | n/a | val32:1, val32:21, val32:27 | 0/1900 / 0/1900 / 0/1900 | no | median separation below 1e-2 |
-| 2D 1024² fast | **X0** | 0.225 % | n/a | N/A | n/a | n/a | val32:1, val32:21, val32:27 | 0/1900 / 0/1900 / 0/1900 | no | median separation below 1e-2 |
+| 3D $64^3$ $R'=256$ | **R** | 3.527 % | 1.000 | 1.000 | 1.000 | 1.000 | none | 0/1600 / 0/1600 / 0/1600 | no | – |
+| 3D $64^3$ $R'=512$ | **R** | 3.527 % | 1.000 | 1.000 | 1.000 | 0.999 | none | 2/1600 / 1/1600 / 1/1600 | no | – |
+| 3D $128^3$ $R'=256$ | **R** | 1.848 % | 1.000 | 1.000 | 1.000 | 1.000 | none | 0/1600 / 0/1600 / 0/1600 | no sensitivity rerun at this mesh | – |
+| 3D $128^3$ $R'=512$ | **R** | 1.848 % | 1.000 | 1.000 | 1.000 | 0.999 | none | 2/1600 / 1/1600 / 1/1600 | no sensitivity rerun at this mesh | – |
+| 2D $256^2$ acc | **X0** | 0.883 % | n/a | N/A | n/a | n/a | none | 0/1900 / 0/1900 / 0/1900 | N/A | median separation below 1e-2 |
+| 2D $256^2$ fast | **X0** | 0.883 % | n/a | N/A | n/a | n/a | none | 0/1900 / 0/1900 / 0/1900 | N/A | median separation below 1e-2 |
+| 2D $1024^2$ acc | **X0** | 0.225 % | n/a | N/A | n/a | n/a | val32:1, val32:21, val32:27 | 0/1900 / 0/1900 / 0/1900 | N/A | median separation below 1e-2 |
+| 2D $1024^2$ fast | **X0** | 0.225 % | n/a | N/A | n/a | n/a | val32:1, val32:21, val32:27 | 0/1900 / 0/1900 / 0/1900 | N/A | median separation below 1e-2 |
 
 ## 4. A2: the stencil gap against $h$
 
 Job 5016189 on NVIDIA H200, commit `025b11f99`. Gates: 3d_point_vs_feature_rows_R512 0.0e+00, 3d_point_vs_feature_rows_R256 0.0e+00, 2d_values_vs_mesh_bank_acc 4.4e-15, 2d_values_vs_mesh_bank_fast 2.3e-15.
 
-Fixed states (3D: 200 per width from the 64³ validation tensor rollouts; 2D: 300 per setting from the 1024² dev population), tests frozen. Gap $g=\lVert N_h-N\rVert/\lVert N\rVert$, median (worst) over states; slopes fitted on the pre-registered window on the screened population (DESIGN amendment 2, A2-3).
+Fixed states (3D: 200 per width from the $64^3$ validation tensor rollouts; 2D: 300 per setting from the $1024^2$ dev population), tests frozen. Gap $g=\lVert N_h-N\rVert/\lVert N\rVert$, median (worst) over states; slopes fitted on the pre-registered window on the screened population (DESIGN amendment 2, A2-3).
 
 **3D, R512** — window [65, 129, 257]; continuum check worst 7.3e-08; independent family worst $\rho$: fixed 4.5e-04, own65 4.8e-05, own129 6.1e-05, own257 6.9e-05 (all pass the empirical $10^{-2}$ check).
 
@@ -219,11 +219,11 @@ Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256:
 
 ## 5. Historical reproducibility (report-only, DESIGN amendment A1-5)
 
-3D: worst over cases of the evolved-time field distance (63³ lattice) from the 2026-10-01 validation rollouts (cases compared in brackets): 64³ R′=256 `gl24` 1.4e-15 [64], 64³ R′=256 `lat32768` 2.2e-15 [64], 64³ R′=256 `lat4096` 1.7e-15 [64], 64³ R′=256 `tensor` 1.7e-15 [64], 64³ R′=512 `gl24` 1.3e-15 [64], 64³ R′=512 `lat32768` 1.5e-15 [64], 64³ R′=512 `lat4096` 1.1e-15 [64], 64³ R′=512 `tensor` 1.3e-15 [64], 128³ R′=256 `gl24` 1.3e-15 [64], 128³ R′=256 `lat32768` 1.6e-15 [64], 128³ R′=256 `lat4096` 1.2e-15 [64], 128³ R′=256 `tensor` 1.6e-15 [64], 128³ R′=512 `gl24` 1.2e-15 [64], 128³ R′=512 `lat32768` 1.2e-15 [64], 128³ R′=512 `lat4096` 1.3e-15 [64], 128³ R′=512 `tensor` 1.8e-15 [64].
-3D 64³ ρ reproduction (worst continuum ρ, max relative difference): R′=512 5.1e-13, R′=256 2.1e-12.
-3D 128³ ρ reproduction (worst continuum ρ, max relative difference): R′=512 2.3e-13, R′=256 2.0e-13.
+3D: worst over cases of the evolved-time field distance ($63^3$ lattice) from the 2026-10-01 validation rollouts (cases compared in brackets): $64^3$ $R'=256$ `gl24` 1.4e-15 [64], $64^3$ $R'=256$ `lat32768` 2.2e-15 [64], $64^3$ $R'=256$ `lat4096` 1.7e-15 [64], $64^3$ $R'=256$ `tensor` 1.7e-15 [64], $64^3$ $R'=512$ `gl24` 1.3e-15 [64], $64^3$ $R'=512$ `lat32768` 1.5e-15 [64], $64^3$ $R'=512$ `lat4096` 1.1e-15 [64], $64^3$ $R'=512$ `tensor` 1.3e-15 [64], $128^3$ $R'=256$ `gl24` 1.3e-15 [64], $128^3$ $R'=256$ `lat32768` 1.6e-15 [64], $128^3$ $R'=256$ `lat4096` 1.2e-15 [64], $128^3$ $R'=256$ `tensor` 1.6e-15 [64], $128^3$ $R'=512$ `gl24` 1.2e-15 [64], $128^3$ $R'=512$ `lat32768` 1.2e-15 [64], $128^3$ $R'=512$ `lat4096` 1.3e-15 [64], $128^3$ $R'=512$ `tensor` 1.8e-15 [64].
+3D $64^3$ ρ reproduction (worst continuum ρ, max relative difference): $R'=512$ 5.1e-13, $R'=256$ 2.1e-12.
+3D $128^3$ ρ reproduction (worst continuum ρ, max relative difference): $R'=512$ 2.3e-13, $R'=256$ 2.0e-13.
 
-2D: worst over cases of the relative difference of the ST error from the 2026-10-01 dev jobs, and the field distance on the two saved audit cases: 256² acc `dense` 7.1e-14, 256² acc `dense (field, 2 of 2 audit cases)` 9.1e-16, 256² acc `gauss96` 9.4e-14, 256² acc `gauss96 (field, 2 of 2 audit cases)` 8.8e-16, 256² acc `gref` 9.9e-14, 256² acc `gref (field, 2 of 2 audit cases)` 1.1e-15, 256² acc `lat64` 1.0e-13, 256² acc `lat64 (field, 2 of 2 audit cases)` 1.0e-15, 256² fast `dense` 5.7e-14, 256² fast `dense (field, 2 of 2 audit cases)` 1.1e-15, 256² fast `fib1597` 5.9e-14, 256² fast `fib1597 (field, 2 of 2 audit cases)` 1.5e-15, 256² fast `gref` 2.9e-14, 256² fast `gref (field, 2 of 2 audit cases)` 1.0e-15, 256² fast `lat64` 5.8e-14, 256² fast `lat64 (field, 2 of 2 audit cases)` 1.0e-15, 1024² acc `dense` 1.0e-13, 1024² acc `dense (field, 2 of 2 audit cases)` 9.0e-16, 1024² acc `gauss96` 1.1e-13, 1024² acc `gauss96 (field, 2 of 2 audit cases)` 1.3e-15, 1024² acc `gref` 1.2e-13, 1024² acc `gref (field, 2 of 2 audit cases)` 9.7e-16, 1024² acc `lat64` 5.2e-13, 1024² acc `lat64 (field, 2 of 2 audit cases)` 1.5e-15, 1024² fast `dense` 9.7e-14, 1024² fast `dense (field, 2 of 2 audit cases)` 1.2e-15, 1024² fast `fib1597` 3.6e-14, 1024² fast `fib1597 (field, 2 of 2 audit cases)` 1.3e-15, 1024² fast `gref` 4.6e-14, 1024² fast `gref (field, 2 of 2 audit cases)` 1.4e-15, 1024² fast `lat64` 2.3e-13, 1024² fast `lat64 (field, 2 of 2 audit cases)` 1.4e-15.
+2D: worst over cases of the relative difference of the ST error from the 2026-10-01 dev jobs, and the field distance on the two saved audit cases: $256^2$ acc `dense` 7.1e-14, $256^2$ acc `dense (field, 2 of 2 audit cases)` 9.1e-16, $256^2$ acc `gauss96` 9.4e-14, $256^2$ acc `gauss96 (field, 2 of 2 audit cases)` 8.8e-16, $256^2$ acc `gref` 9.9e-14, $256^2$ acc `gref (field, 2 of 2 audit cases)` 1.1e-15, $256^2$ acc `lat64` 1.0e-13, $256^2$ acc `lat64 (field, 2 of 2 audit cases)` 1.0e-15, $256^2$ fast `dense` 5.7e-14, $256^2$ fast `dense (field, 2 of 2 audit cases)` 1.1e-15, $256^2$ fast `fib1597` 5.9e-14, $256^2$ fast `fib1597 (field, 2 of 2 audit cases)` 1.5e-15, $256^2$ fast `gref` 2.9e-14, $256^2$ fast `gref (field, 2 of 2 audit cases)` 1.0e-15, $256^2$ fast `lat64` 5.8e-14, $256^2$ fast `lat64 (field, 2 of 2 audit cases)` 1.0e-15, $1024^2$ acc `dense` 1.0e-13, $1024^2$ acc `dense (field, 2 of 2 audit cases)` 9.0e-16, $1024^2$ acc `gauss96` 1.1e-13, $1024^2$ acc `gauss96 (field, 2 of 2 audit cases)` 1.3e-15, $1024^2$ acc `gref` 1.2e-13, $1024^2$ acc `gref (field, 2 of 2 audit cases)` 9.7e-16, $1024^2$ acc `lat64` 5.2e-13, $1024^2$ acc `lat64 (field, 2 of 2 audit cases)` 1.5e-15, $1024^2$ fast `dense` 9.7e-14, $1024^2$ fast `dense (field, 2 of 2 audit cases)` 1.2e-15, $1024^2$ fast `fib1597` 3.6e-14, $1024^2$ fast `fib1597 (field, 2 of 2 audit cases)` 1.3e-15, $1024^2$ fast `gref` 4.6e-14, $1024^2$ fast `gref (field, 2 of 2 audit cases)` 1.4e-15, $1024^2$ fast `lat64` 2.3e-13, $1024^2$ fast `lat64 (field, 2 of 2 audit cases)` 1.4e-15.
 
 ## Glossary
 
@@ -232,21 +232,21 @@ Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256:
 - **tensor (3D incumbent)**: the precomputed quadratic form that evaluates the mesh advection with a fixed backward difference exactly.
 - **dense (2D incumbent)**: the full-order model's sign-upwind advection on every mesh node.
 - **lat64**: the deployed 2D mesh rule: the upwind stencil on a 63×63 sub-lattice of nodes, equal weights.
-- **selected off-mesh rule**: the frozen rule chosen on validation by the source lanes: 3D Gauss 24³ (R′=512) and the 4096-point lattice (R′=256); 2D Gauss 96² (acc) and Fibonacci 1597 (fast).
-- **converged off-mesh rollout**: the reduced solve with a rule fine enough that further refinement does not change it: 3D the 32768-point lattice, 2D Gauss 640².
+- **selected off-mesh rule**: the frozen rule chosen on validation by the source lanes: 3D Gauss $24^3$ ($R'=512$) and the 4096-point lattice ($R'=256$); 2D Gauss $96^2$ (acc) and Fibonacci 1597 (fast).
+- **converged off-mesh rollout**: the reduced solve with a rule fine enough that further refinement does not change it: 3D the 32768-point lattice, 2D Gauss $640^2$.
 - **upwind / central**: first-order sign-upwind differences (the full-order model's) and second-order central differences.
 - **ρ**: relative error of a rule's tested advection vector against a target on a given state.
-- **continuum target / mesh target**: the tested continuum advection by a very fine Gauss rule (3D 80³, 2D 640²) / the sign-upwind stencil on every mesh node.
+- **continuum target / mesh target**: the tested continuum advection by a very fine Gauss rule (3D $80^3$, 2D $640^2$) / the sign-upwind stencil on every mesh node.
 - **refined error (PROVISIONAL)**: evolved-time maximum relative field error against a first-order full-order reference on a finer mesh (3D: 513 nodes per axis, on the $63^3$ lattice $x = k/64$; 2D: $8192^2$, ST = with a 16× smaller time step, S = same time step), normalised by the initial field.
 - **same-grid**: error against a tightly converged full-order solution on the same mesh.
-- **dist. converged / tensor / dense**: evolved-time maximum field distance between two reduced rollouts of the same case, normalised by the initial field (3D on the 63³ lattice; 2D on the 257² shared nodes).
+- **dist. converged / tensor / dense**: evolved-time maximum field distance between two reduced rollouts of the same case, normalised by the initial field (3D on the $63^3$ lattice; 2D on the $257^2$ shared nodes).
 - **separation $s_j$**: the per-case distance between the mesh incumbent and the converged off-mesh rollout: the effect to explain.
 - **recovered fraction $f_j$**: $1 - d_j(\text{nodes}, \text{converged})/s_j$: 1 means `nodes` lands on the converged off-mesh rollout, 0 means it is as far from it as the incumbent.
 - **labels R / N / X / X0**: R: `nodes` recovers the converged off-mesh rollout within the declared margins (median $f_j\ge0.9$, bootstrap bound $\ge0.8$, $f_j\ge0.75$ on 90 % of cases); N: median $f_j\le0.5$; X: intermediate or invalid; X0: median separation below 1 %, nothing to explain.
 - **bootstrap 2.5 % bound**: the 2.5th percentile of the median $f_j$ over 2000 resamples of cases.
-- **provisional (solver)**: a label not backed by a solver-sensitivity rerun at that mesh, or with more than 1 % non-stationary LM steps.
+- **provisional (solver)**: applies only to R and N labels: one not backed by a solver-sensitivity rerun at that mesh, or with more than 1 % non-stationary LM steps in an arm; N/A for X, X0 and INCOMPLETE.
 - **exits 0/3, budget/damping**: Levenberg–Marquardt step outcomes: 0 = not stationary at the end of the fixed sweep (3D) / iteration budget exhausted (2D); 3 = non-finite or damping exhausted.
-- **R′, M, m**: number of bank columns in the solve; number of sine test functions; number of quadrature points.
+- **$R'$, $M$, $m$**: number of bank columns in the solve; number of sine test functions; number of quadrature points.
 - **fixed states**: reached coefficient states held fixed while only the mesh changes, so the gap depends on h alone.
 - **screened population**: states whose gap exceeds 100× their own continuum-target check and $10^{-12}$ at every window mesh.
 - **slope (median state)**: least-squares slope of $\log(\text{median gap})$ against $\log h$ over the window; 1 = first order, 2 = second.
@@ -254,9 +254,15 @@ Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256:
 - **slope (worst state) / median per-state slope**: the same fit on the largest gap over states / the median of the slopes fitted state by state.
 - **bar / consistent**: the pre-registered interval for the median-state slope (upwind 0.8–1.2, central 1.7–2.3) / whether the fitted slope lies in it.
 - **25 % survival**: a slope is fitted only if at least a quarter of the states pass the screen at every window mesh; otherwise it is reported as unresolved.
-- **leading norms / leading-term agreement**: size of the predicted first error term of each stencil relative to the target, and the relative difference between the measured gap and that predicted term at the finest window mesh.
+- **leading norms / leading-term agreement**: norm of the predicted leading error coefficient of each stencil (before multiplying by $h$ or $h^2$) relative to the target norm, and the relative norm of the difference between the measured error vector $N_h-N$ and the predicted leading error vector at the finest window mesh.
+- **$N_h$, $N$**: the tested advection vector computed as a mesh sum with a given stencil on spacing $h$, and the continuum tested advection (target), both normalised as integrals.
+- **`fib121393`**: a 121393-point Fibonacci lattice rule, used only as an independent check of the 2D continuum target.
+- **`gref`**: the 2D converged off-mesh rule (Gauss $640^2$); its $\rho$ is zero by definition because it is the target.
+- **own-mesh states**: reached states saved by the earlier job at a given mesh and evaluated only at that mesh (context).
+- **certification draws**: the 24 extra 3D cases (seeds 923811–923813) whose tensor rollouts supply the states for $\rho$.
+- **dev6 / val32**: the 2D development (6 cases) and validation (32 cases) cohorts; case `val32:1` is case 1 of val32.
 - **central×1.01**: the central stencil multiplied by 1.01: a deliberately inconsistent variant shown for comparison.
-- **$n$, $L$, $h$**: 3D mesh nodes per axis including walls ($h = 1/(n-1)$); 2D intervals per axis ($h = 1/L$); mesh spacing.
+- **$n$, $L$, $h$, $R'$**: 3D mesh nodes per axis including walls ($h = 1/(n-1)$); 2D intervals per axis ($h = 1/L$); mesh spacing; $R'$ is the number of bank columns.
 - **LM its**: Levenberg–Marquardt iterations summed over the time steps of one query (median over cases).
 - **acc / fast**: the two 2D linear settings: 384 bank columns with 1536 tests, and 128 columns with 512 tests.
 - **bank / tests**: the frozen coordinate network whose ordered columns span the reduced solution / the sine functions against which the residual is measured.

@@ -308,10 +308,13 @@ def evaluate(var, L, cases, refs, out, cfg):
                            nonaccepted_exits=int(np.sum((reason == 0) | (reason == 2) | (reason == 3))),
                            exits={QS.REASONS[k]: int(np.sum(reason == k)) for k in QS.REASONS},
                            residual_max=float(np.max(rn)), restricted_sha256=QS.sha(fr))
+                n0c = float(np.linalg.norm(np.asarray(u0)[::2 * s256, ::2 * s256]))
                 for tg in ('ST', 'S'):
                     pe = [float(np.linalg.norm(a - b)) / n0r for a, b in zip(fr, refs[(coh, c, tg)])]
                     row[f'ref_{tg}_per_time'] = pe
                     row[f'ref_{tg}_evolved'] = QS.evolved_max(pe)
+                    pc = [float(np.linalg.norm(a[::2, ::2] - b[::2, ::2])) / n0c for a, b in zip(fr, refs[(coh, c, tg)])]
+                    row[f'ref_{tg}_evolved_129'] = QS.evolved_max(pc)       # A2.6 common 129-node restriction
                 if name == 'gref':
                     keep_gref[(coh, c)] = fr
                     if coh == 'dev6':
@@ -509,6 +512,36 @@ def evaluate(var, L, cases, refs, out, cfg):
     gc.collect()
 
 
+def fom_comparators(cases, refs, nodes_list=(129, 257)):
+    """A2.6: the training generator (deps/burgers2d_film.py, loaded by path so it cannot shadow other modules) at 129
+    and 257 nodes per axis, scored on its own nodes and on the common 129-node restriction against the references."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('bf_lane', HERE / 'deps/burgers2d_film.py')
+    bf = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bf)
+    out = []
+    for n in nodes_list:
+        rollout, _ = bf.make_rollout(n)
+        st = 256 // (n - 1)
+        for coh, c, ph in cases:
+            U0 = bf.blob_ic(n, ph[0], ph[1], ph[2], ph[3])[None]
+            snaps, res = rollout(jnp.asarray(U0), jnp.asarray([ph[4]]))
+            F = np.asarray(snaps)[::10, 0].reshape(6, n, n)
+            row = dict(nodes=n, cohort=coh, case=c, max_rel_residual=float(np.max(np.asarray(res))),
+                       finite=bool(np.isfinite(F).all()))
+            for tg in ('ST', 'S'):
+                Rf = refs[(coh, c, tg)][:, ::st, ::st]
+                n0 = float(np.linalg.norm(Rf[0]))
+                row[f'ref_{tg}_evolved_own'] = QS.evolved_max([float(np.linalg.norm(a - b)) / n0 for a, b in zip(F, Rf)])
+                k = (n - 1) // 128
+                Fc, Rc = F[:, ::k, ::k], refs[(coh, c, tg)][:, ::2, ::2]
+                n0c = float(np.linalg.norm(Rc[0]))
+                row[f'ref_{tg}_evolved_129'] = QS.evolved_max([float(np.linalg.norm(a - b)) / n0c for a, b in zip(Fc, Rc)])
+            out.append(row)
+            log('FOM', n, coh, c, row['ref_S_evolved_129'])
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument('--config', required=True)
@@ -538,6 +571,9 @@ def main():
                 cohort_sha256=coh_sha, references=rinfo, cases=len(cases), controls=controls_once())
     (out / f'meta_task{a.task}.json').write_text(json.dumps(QS.clean(meta), indent=1))
     log('CONTROLS', json.dumps(QS.clean({k: v.get('passed') for k, v in meta['controls'].items()})))
+    if cfg['tasks'][a.task].get('fom_comparators'):
+        meta['fom_comparators'] = fom_comparators(cases, refs)
+        (out / f'meta_task{a.task}.json').write_text(json.dumps(QS.clean(meta), indent=1))
     for var in cfg['tasks'][a.task]['variants']:
         log('VARIANT', var['label'])
         evaluate(var, L, cases, refs, out, cfg)

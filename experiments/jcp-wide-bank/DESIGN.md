@@ -464,3 +464,58 @@ verdicts are benchmark-relative.
 **A2-16 Estimates.** J3's steady-state step time is measured from checkpoint differences
 ($(t_{2000}-t_{1000})/1000$); if that rate projects the 12000 steps beyond 7 h the job is cancelled and the design
 amended. J4's estimate is replaced by the smoke measurement of its largest query (129 nodes, $R'=1024$, Gauss $56^3$).
+
+## Amendment A3 (2026-10-08, after Codex design audit 3, `audits/codex-design-3.md`; before any job)
+
+**A3-8 Timing cohorts per dimension.** The final cross-setting panel uses the same timing cases as the per-setting
+panels of that job: 2D the 6 dev6 cases; 3D the first 16 validation (923801) cases. ("6 dev6 cases" in A2-8 applies to
+2D only.)
+
+**A3-11 Memory policy (3D) and accounting.** 3D: off-mesh blocks $(B,D,P)$ are built **per setting** at that setting's
+$(R',M)$ directly (no column slicing of a wider block), and freed with the setting; state batches for $\rho$ and for
+the advection targets are chunked (64 states for the Gauss-$80^3$/$64^3$ targets, which are streamed in point chunks of
+65536; the full population for the cheap ladder rules); after each setting the compiled queries are dropped and
+`jax.clear_caches()` is called. Device `peak_bytes_in_use` is a lifetime maximum, so each setting records the
+**increment** of the lifetime peak and `bytes_in_use` at its start and end; host `ru_maxrss` likewise. Training (J3):
+the log records host RSS (from `/proc/self/status` via `/usr/bin/time -v` for the whole process, plus `sacct`
+MaxRSS) — phase-resolved host peaks would need code changes to `train2.py` beyond A2-A1-2 and are **not** collected;
+feasibility rests on job 4246994 (identical snapshot arrays, 320 GB) and the extra rank-dependent arrays enumerated
+here: $G$ on 250047 points at rank 1024 (2.0 GB), the ordering rows $55296\times1024$ (0.45 GB), per-group $Q_g$
+(2.0 GB), head targets $18432\times1024$ per group (0.15 GB) — under 10 GB above job 4246994's footprint.
+
+**A3-12/16 Whole-job budgets (enumerated; each line replaced by the smoke measurement where marked).**
+
+| job | component | count | unit cost (source) | total |
+|---|---|---|---|---|
+| J1 (A100) | converged + check rollouts | 12 settings × 38 cases × 2 | $\propto mR'M$; 4.5 s at (384,1536), Gauss $640^2$ (job dv1024); smoke-measured at (512,2048) | ≈ 0.9 h |
+| | ladder + controls | 12 × 38 × 18 | ≈ 0.6 × converged | ≈ 0.4 h |
+| | $\rho$ (targets $640^2$, $768^2$, flux + 18 rules) | 12 × 1900 states | ≈ 3 converged-rule evaluations per state batch | ≈ 0.3 h |
+| | timing (A–B–A, 17 subjects × 6 cases × 2 reps × 2 phases + B) | 12 | ≈ 0.25 s per call incl. burn | ≈ 0.6 h |
+| | compilation | 12 × 20 queries | ≈ 10 s (smoke-measured) | ≈ 0.7 h |
+| | floors, Jacobian SVDs, setup | – | – | ≈ 0.1 h |
+| | **J1 total** | | | **≈ 3 h; request 10 h** |
+| J2 (H200) | tables + tensor at 65 nodes, R = 512 | 1 | ≈ 0.1 h (3D lane val65) | 0.1 h |
+| | rollouts | 6 settings × (64 + 24) cases × 16 arms | ≈ 0.04 s mean query (3D lane: 11–61 ms) | ≈ 0.1 h |
+| | compilation | 6 × 16 queries | ≈ 30 s (3D lane, smoke-measured) | ≈ 0.8 h |
+| | $\rho$, timing (A–B–A 16 cases × 2 reps), microbenchmarks, floors | 6 | ≈ 5 min each | ≈ 0.5 h |
+| | **J2 total** | | | **≈ 1.5 h; request 6 h** |
+| J3 (H200) | data / bank (rate measured at steps 1000→2000) / ordering + floors | 1 | 0.4 h / ≈ 2 h / ≈ 0.4 h | **≈ 3 h; request 10 h** |
+| J4 (H200) | per mesh: tables, gates | 2 | 0.1 h (65), 0.3 h (129) | 0.4 h |
+| | rollouts: 6 settings (4 new-bank + 2 old-bank) × (64 + 24) × 17 arms | 2 meshes | largest query smoke-measured; mean ≈ 0.15 s | ≈ 0.6 h |
+| | compilation | 2 × 6 × 17 | ≈ 30 s | ≈ 1.7 h |
+| | $\rho$, timing, floors, microbenchmarks, cross-mesh distances | 2 × 6 | ≈ 6 min | ≈ 1.2 h |
+| | **J4 total** (optional trims add ≈ 50 % per added $\kappa$) | | | **≈ 4 h; request 12 h** |
+
+The J1/J2 rows marked "smoke-measured" are replaced by the measurement of the real-size smoke job before
+submission; if the measured projection exceeds half the requested time, the request is raised (never the workload
+cut silently).
+
+**A3-6 lstsq pin.** The projection-floor consistency check uses `numpy.linalg.lstsq(..., rcond=1e-12)` (the same cutoff
+as the SVD rank); when the floor is below $10^{-12}$ the check compares absolute residuals instead.
+
+**A3-13 Gate scope.** G2 and G4 at 32 columns certify the off-mesh assembly and the solver path, not rank-dependent
+behaviour above 512; G1 and G3 at the widest deployed arm, the table Gram-condition gate, and the converged/check
+agreement are the only gates at $R'>512$. This limitation is stated in the report.
+
+**A3-smoke.** The training smoke config also sets `warmup` 5 (with `bank_steps` 20 the inherited 500 would make the
+cosine schedule invalid).

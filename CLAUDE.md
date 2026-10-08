@@ -45,7 +45,7 @@ Every new experiment starts in its own git worktree on its own branch, pushed to
 cd /home/tahmid/Dev/Tunable-NM-ROM-Claude
 git worktree add --no-checkout -b exp/YYYY-MM-DD-<slug> worktrees/YYYY-MM-DD-<slug> <base>
 cd worktrees/YYYY-MM-DD-<slug>
-git sparse-checkout set --no-cone '/*' '!/experiments/mr-heat2d/runs/' && git checkout
+git sparse-checkout set --no-cone '/*' '!/experiments/mr-heat2d/runs/' '!/experiments/ns3d/' && git checkout
 # copy + configure sync_github.sh, commit, then: bash experiments/<lane>/sync_github.sh
 ```
 

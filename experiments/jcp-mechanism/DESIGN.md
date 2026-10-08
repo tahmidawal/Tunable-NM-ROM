@@ -224,3 +224,76 @@ rollout vs mesh with the `nodes` arm beside tensor/dense/lat64/selected/converge
   claims. Machinery check: a polynomial "bank" and polynomial tests of known per-axis degree $D$ through the lane's
   rule generators and assembly, exact reference by rational monomial integration; tensor Gauss must be exact to rounding
   at $p^*=\lceil(D+1)/2\rceil$ and clearly not at $p^*-1$.
+
+---
+
+## Amendment 1 (2026-10-08, after Codex design audit `audits/codex-design-1.md`, before any code ran)
+
+The audit returned 3 WRONG and 6 NEEDS-RESTATEMENT. Every item is resolved as follows; where this amendment and the
+text above differ, this amendment governs.
+
+**A1-1 (audit 4, WRONG): outcome classes are replaced** by paired per-case field distances on the evaluation lattice
+(3D: $63^3$ lattice $x=k/64$; 2D: $257^2$ shared nodes), normalised by $\lVert u_0\rVert$, evolved times only:
+$d_j(\mathrm{a},\mathrm{b})=\max_{t>0}\lVert u_{\rm a}(t)-u_{\rm b}(t)\rVert/\lVert u_0\rVert$ for case $j$. Let
+$s_j=d_j(\text{incumbent},\text{converged})$ be the separation to explain (incumbent: 3D `tensor`, 2D `dense`; `lat64` is
+reported beside it), and the recovered fraction $f_j=1-d_j(\texttt{nodes},\text{converged})/s_j$.
+
+- **Resolvable** iff the median over cases of $s_j$ is at least $10^{-2}$ (1 % of $\lVert u_0\rVert$). If not resolvable:
+  outcome **X0** (nothing to explain at this mesh), no mechanism label.
+- **R (nodes recovers the continuum rollout):** resolvable, every solve finite with no reason-3 exit, median $f_j\ge0.9$
+  and $f_j\ge0.75$ on at least 90 % of cases.
+- **N (nodes does not recover it):** resolvable and median $f_j\le0.5$.
+- **X (intermediate / failed):** anything else, including any non-finite solve or reason-3 exit in the `nodes` arm.
+
+Claim scope (audit 3): **R** supports only the sufficiency statement "with the analytic gradient on the mesh nodes, the
+reduced solve already reaches the continuum rollout, so off-mesh point placement is not needed for the accuracy
+observed"; `nodes` vs the selected rule is called a *quadrature-rule replacement* (it changes locations, weights and
+point count at once), not a placement ablation. **N** does not show that placement causes the gain. Neither label says
+anything about the finer-training-data confound (E2c, not this lane). Refined-reference errors stay provisional context.
+
+**A1-2 (audit 10, WRONG): no giant test blocks.** The `nodes` arm keeps $B$ and $D$ from `offmesh.point_blocks` (the
+unchanged off-mesh code path) but applies the tests by the exact identity $P=\Phi$ at the nodes: 3D
+$J_u=\Phi^{\mathsf T}\big(\operatorname{diag}(Dc)B+\operatorname{diag}(Bc)D\big)$ by the vendor DST (`common.phiT`, column chunks of 16),
+value $\tfrac12J_uc$; 2D unchanged `qcore` point form (its $\Psi$ at $1024^2$, `acc`, is $1.61\times10^9<2^{31}$ elements,
+12.9 GB, and fits an 80 GB GPU; it is built in chunks). Gates added: **G2c** compares the DST Jacobian with the
+off-mesh GEMM $P^{\mathsf T}(\cdot)$ built from `offmesh.test_block` — in full at $64^3$, and at $128^3$ accumulated over
+point chunks for 4 states and 32 columns — relative $\le10^{-11}$. A2 never forms test matrices: 3D tested sums by the DST,
+2D by the separable sine tables (`hops.sep_project`).
+
+**A1-3 (audit 7, WRONG): controls re-specified.**
+- *C-pos:* the manufactured state $u_\star=\mu(x)\,\big(1+0.3\sin(2\pi x_1+0.4)+0.2\cos(3\pi x_2-0.1)\,[+0.25\sin(\pi x_3+1.1)]\big)$,
+  $\mu=4^d\prod_jx_j(1-x_j)$ (the bracket in 3D only). $u_\star>0$ in the interior, so the sign-upwind stencil is the
+  backward difference everywhere and has a smooth expansion. Its leading terms are computed independently by Gauss
+  quadrature ($80^3$ / $640^2$) from analytic derivatives: upwind
+  $N_h-N=-\tfrac h2L^{d/2}\!\int\psi\,u\,\Delta u+O(h^2)$, central $N_h-N=\tfrac{h^2}6L^{d/2}\!\int\psi\,u\sum_ju_{x_jx_jx_j}+O(h^4)$.
+  Pass: fitted window slopes within $\pm0.15$ of 1 (upwind) and 2 (central), **and** at the finest mesh the measured gap
+  vector is within 10 % (relative norm) of the predicted leading term. If C-pos fails, A2 verdicts are void.
+- *C-neg:* (a) a constant injected vector error, $v=N+10^{-2}\lVert N\rVert e/\lVert e\rVert$ with a fixed random $e$: the fitted
+  slope must satisfy $|s|<0.05$ (tests the fit, analytically zero); (b) central scaled by $1.01$ on $u_\star$ is reported
+  descriptively with its predicted finite-window slope, not as a gate.
+
+**A1-4 (audit 6, 8): A2 statistics.** Each $\rho$ uses the target computed at the same mesh (normalisation cancels); the
+frozen mode tuples are written to the output. Fitted statistic: least-squares slope of $\log(\operatorname{median}_c g(h;c))$ on
+$\log h$ over the window; also the median of per-state slopes and the worst-state slope. A gap value is *resolved* iff it
+exceeds 100× the continuum-target check $\rho$ of that state ($64^3$ vs $80^3$; $640^2$ vs $768^2$, both computed in the
+job); slopes are fitted on resolved values only, and fewer than 3 resolved window meshes gives "unresolved slope". The
+`nodes` prediction is restated: asymptotically $h^4$ (tensor-product Euler–Maclaurin, the integrand and its normal
+derivative vanish on every face), possibly faster; no finite-window bar is set for it.
+
+**A1-5 (audit 5): gates split.** Implementation parity (G1–G3, G2a–c) aborts the job. Historical reproducibility (G4) is
+**report-only**: per-case field distance of the rerun tensor / selected rule (3D) and `dense` / `lat64` / selected rule
+(2D) from the 2026-10-01 rollouts, computed offline from saved coefficients / ST errors, and the 3D $\rho$ worst values;
+JAX version and GPU are recorded. Within-job pairing (all arms, same job, same inputs) holds regardless of G4.
+
+**A1-6 (audit 11): solver diagnostics and robustness.** Every arm reports finite flags, reason counts (0 non-stationary,
+3 failure) and LM iterations; a reason-3 exit in `nodes` forces outcome X. 3D, $64^3$ only, first 8 validation cases: a
+tighter-solve sensitivity rerun of `tensor`, `lat32768` and `nodes` with adaptive LM on every step (vendor
+`adaptive_first = 25`), reporting its field distance from the fixed-sweep rollout. $\rho$ of `nodes` (and of the other
+rules) is also evaluated on the `nodes`-reached states of the first 8 validation cases (3D) / of the population arm (2D).
+
+**A1-7 (audit 1, 2, 9): restatements.** The 3D tensor uses the fixed *backward* difference, not sign-upwind; the
+sign-upwind `dense` is context from the earlier job; their discrepancy on the certification states is the tensor's
+"mesh $\rho$" and is reported. Interior weights $h^d$ are not renormalised. **test64 is dropped** from this lane (the
+coordinator's narrowing and the audit: its outcomes were already inspected, so it would not be fresh replication).
+Cohorts are fixed: 3D validation 923801 × 64 (+ certification draws), 2D dev6 ∪ val32. If a job runs out of time the
+fallback is the coordinator's subset (3D $R'=512$; 2D `acc`), decided before the job by its config, never after outcomes.

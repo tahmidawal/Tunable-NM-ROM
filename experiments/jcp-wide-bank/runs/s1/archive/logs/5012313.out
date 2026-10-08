@@ -1,0 +1,26 @@
+host=pax007 source_commit=2e1f17e04bb0829a65103c5ff319f5768d08d933
+NVIDIA A100 80GB PCIe, GPU-ef0906da-ee15-780e-c19b-39842e183c5c, 81920 MiB
+10.235.106.26:/projects/paralab  4.6T  997G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[2.8s] CASES 2
+[4.0s] REFS 4
+[14.8s] BANK+OPS
+[85.3s] BLOCKS R512
+[265.4s] RHO R512_M2048
+[318.6s] timing phase A1: 34 invocations
+[318.8s] timing phase B: 2 invocations
+[347.2s] timing phase A2: 34 invocations
+[347.2s] TIMING R512_M2048
+[385.7s] BLOCKS R128
+[511.3s] RHO R128_M256
+[519.6s] timing phase A1: 34 invocations
+[519.8s] timing phase B: 2 invocations
+[525.4s] timing phase A2: 34 invocations
+[525.4s] TIMING R128_M256
+[531.4s] timing phase A1: 4 invocations
+[531.9s] timing phase B: 4 invocations
+[532.5s] timing phase A2: 4 invocations
+[532.5s] FINAL TIMING
+W2D COMPLETE
+ALL-DONE

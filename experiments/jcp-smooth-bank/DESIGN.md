@@ -240,3 +240,130 @@ on one GPU.
 | `ev2` | ≤5 × A100-80GB | evaluation of round 2 (+ FOM at 128/256 for 3d) and a re-timing with `base` | ≈3 h, ≈12 GPU-h |
 
 Total ≈56 GPU-h. 3D (only after a clear 2D winner) needs its own amendment.
+
+---
+
+## Amendment A1 (2026-10-08, after Codex design audit 1, `audits/codex-design-1.md`; before any GPU job)
+
+Every WRONG and NEEDS-RESTATEMENT item of audit 1 is addressed below. Where A1 and the text above disagree, **A1
+governs**.
+
+**A1.1 Provenance corrections (audit item 1).** (a) The bank is job r3a (Slurm 2835788, A100-PCIE-40GB): training
+10 684.65 s (2.97 h) for 300 000 steps, not the sibling job 2835789 (which used `snap_norm=True`). Source:
+`separable-decoder/runs/push_r3a/out/sep_burgers_r3_N256_K16_R512.json` and `logs/2835788.out`. (b) The job staged
+`sep_common.py` sha `1f1c2796` (git `33322fda1`) and `sep_solvers.py` sha `5af7056b` (git `5ae420414`); the lane
+vendors exactly these (`deps/`), and the patched preconditioned generator `burgers2d_film.py` sha `c521b36a`.
+(c) $\sigma$ is the **initial** scale of $B$; $B$ is trained (the trainer zeroes only the `out_scale` gradient). The
+frozen bank's trained $B$ has column norms 0.08–11.0 (median 4.63). Every bank records the quantiles of its initial
+and final $\|B_j\|$; a smaller initial $\sigma$ is not assumed to give a smoother final bank — smoothness is
+**measured** (§5.6 as amended). (d) The deployed rotation was built on the **$L=256$-interval** grid (255² interior)
+from $h(z_i)$ at 131 072 codes that include 4 032 extra trajectories from seed 1000; the lane rotation (below) is a
+different procedure.
+
+**A1.2 The lane evaluation procedure (item 2).** "Only the training recipe differs" applies to **training**. All
+banks, the frozen one included, are then evaluated by one *lane procedure*: LS coefficients $c_i$ of the bank's own
+16 384 training states on its training-mesh interior ($254^2$, or $127^2$ for `coarse`), host-f64 QR, rows
+$(R_Gc_i)^{\mathsf T}/\|R_Gc_i\|$, SVD, $T=R_G^{-1}V_s$, $L=V_s^{\mathsf T}R_G$; trust radius
+$0.01\max_i\|L_{:R'}c_i-\overline{L_{:R'}c}\|$ (the 2D lane's formula with $h(z_i)\to c_i$). The linear-rung initial fit
+is the closed-form Gauss-48 least squares (`qcore.make_linear_query.initialize`), which uses only the bank, so the
+candidate codes are irrelevant. The procedure change itself is measured: **frozen/deployed vs frozen/lane** on every
+metric (reported, not used for noise). Conditioning ($\operatorname{cond}R_G$, $\|LT-I\|$, rotated orthonormality,
+trust radii) is recorded per bank.
+
+**A1.3 Sobolev loss (item 3).** Definition unchanged. Justification restated: the central difference $D_h$ is a
+*chosen, filtered* derivative target consistent with the data's own mesh; no truncation bound is claimed. Its bias is
+**measured**: on the training data, $\|D_h^{(2)}u-D_h^{(4)}u\|/\|D_h^{(4)}u\|$ (second- vs fourth-order central
+differences, interior nodes at least two from the wall) — median and max over the 16 384 states — and the same on the
+S reference fields. Gradient-error differences between banks smaller than this FD-target uncertainty are reported as
+unresolved. The cost of the Sobolev term is benchmarked (steps/s logged), not estimated. The gradient points and
+states are drawn from a separate key stream (`fold_in(PRNGKey(12345), step)`), so the value path's random draws are
+those of the original; this is unit-tested (A1.8, R2b).
+
+**A1.4 Metrics (item 4).**
+- §5.1/5.2 are **discrete** metrics on the 257² nodes ($h=1/256$) and are named so; the S reference is first-order in
+  time, so these are labelled provisional too. The gradient error is reported beside the FD-target uncertainty
+  (A1.3) evaluated on the same reference fields.
+- §5.3 adds a **common-state ladder**: the 228 S-reference states (6 output times × 38 cases) projected (L² on the 257²
+  nodes) onto each bank's rotated span; the $\rho$ ladder on these coefficients is reported beside the own-rollout
+  (`gref`) ladder. Verdicts (H2) need both to agree in direction; otherwise "mechanism unresolved".
+- §5.4 $m^*(b)$ = the smallest rung $r$ such that $r$ **and every larger rung** in the ladder have worst $\rho\le b$
+  (monotone confirmation). If none: right-censored, $m^*>$ largest rung, reported as "> 65536". Interpolation is
+  descriptive only.
+- §5.5 tail: $s$ = least-squares slope of $\ln(\text{median }\rho)$ against $2p$ over Gauss rungs with worst
+  $\rho<0.5$ and $\rho_{\rm median}>10^{-12}$, at least 3 rungs, else "no resolved tail"; $\hat\varrho=e^{-s}$, reported
+  with the fit's $R^2$; descriptive only.
+- §5.6 Chebyshev: values on the tensor Chebyshev points of the first kind, $n\in\{256,512\}$ per axis, mapped to
+  $[0,1]$; coefficients by orthonormal 2D DCT-II scaled so $a_{jk}$ are Chebyshev coefficients; envelope
+  $E_j=\max_{\max(j',k)=j}|a_{j'k}|/\max|a|$; $n_\varepsilon$ for $\varepsilon\in\{10^{-4},10^{-8}\}$ reported only when the
+  256- and 512-point values agree within 2 (else "unresolved"); per bank the median and max over 64 fixed population
+  states (seed 0), for $u$ and $f=u(u_x+u_y)$. Column spectra are not used (rotation-dependent). Geometric vs algebraic
+  classification: least-squares fits of $\ln E_j$ against $j$ (geometric) and against $\ln j$ (algebraic) on
+  $16\le j\le\min(n_{10^{-12}},200)$; "geometric" if its residual sum of squares is $<1/2$ of the algebraic one,
+  "algebraic" if the reverse, else "inconclusive".
+- §5.7: "ROM error floor" is renamed **converged-quadrature rollout error** (the `gref` rollout's worst error).
+  Its quadrature convergence is checked: `gref` vs Gauss $768^2$ rollout distance on `dev6` $\le10^{-6}$ (the 2D
+  lane's G6 rollout check), and point vs flux form of the target $\rho\le10^{-5}$.
+- §5.8 timing runs the bank's **actual** $m^*_{\rm G}(0.116)$ and $m^*_{\rm G}(0.06)$ rules (determined in-job from the
+  ladder; every ladder rung is a valid arm), saves every repetition, the paired outputs' sha256 against the phase-1
+  rollout, LM iterations and exits; burn 0.1 s before every call (the 2D lane's validated protocol on A100).
+- The context paragraph of §1 on the onset is an **expectation, not a restriction**: the onset is not claimed to be
+  identical across banks.
+
+**A1.5 Decision rules (item 5)**, executable. For a metric $X$ (lower is better) and a treatment $t$:
+$\Delta_t=X_t/X_{\rm base}-1$. Noise yardstick $\delta_X=\max\big(|X_{\rm base}/X_{\rm frozen/lane}-1|,\ |X_{\rm base}/X_{\rm base\_s1}-1|\big)$
+(the second term once `base_s1` exists; round-1 verdicts are **provisional until then** and are re-read in an
+amendment). An effect is *resolved* if $|\Delta_t|>2\delta_X$.
+- **H1($\lambda$)** passes iff in both settings: $\Delta(e_\nabla^{\rm med})\le-0.20$ and resolved and larger than the
+  FD-target uncertainty; $\Delta(e_{\rm val}^{\rm med})\le+0.10$; and in at least one setting $\Delta(E_S)\le-0.05$ and
+  resolved, with $\Delta(E_S)\le+0.02$ in the other ($E_S$ = converged-quadrature rollout worst error vs S).
+- **H2($\sigma$) descriptive pass** iff for $b\in\{0.06,0.01\}$ (either), $m^*_{\rm G}(b)$ on the own-rollout ladder
+  falls by a factor $\ge1.5$ in at least one setting, does not rise at the same $b$ in the other, and the common-state
+  ladder moves in the same direction at that $b$. A censored $m^*$ counts as larger than every finite one; equal
+  censored values are ties (no change).
+- **Useful winner** iff (H1 or H2 descriptive pass) and $E_S\le1.10\,E_{S,\rm base}$ and $E_{ST}\le1.10\,E_{ST,\rm base}$ in
+  both settings. Only a useful winner opens 3D or `comb`. Ranking among H2 passes: the largest $m^*_{\rm G}(0.06)$
+  reduction summed over settings (in rungs), ties broken by lower $E_S$.
+- `comb` (round 3, after round-1 selection, not concurrent with round 2): $\lambda=0.1$ (the only round-1 $\lambda$) if
+  H1(0.1) passes, with the top-ranked useful-winner $\sigma$; not run otherwise. Round 2 is then `sob001`, `sob1`,
+  `coarse`, `base_s1`.
+- Conclusions are limited to the observed runs (one seed per treatment); no population claim about recipes.
+- `base_s1`: seed 1 for parameter/code initialisation and point sampling; the data pick stays seed 0 (implemented:
+  the pick is always drawn with seed 0).
+
+**A1.6 Controls (item 6)**, replacing §7 where they differ.
+- **R1** pinned to the 2D lane's `checks/dv1024-summary.json` (worktree `2026-10-01-quadrature-study`): `acc`/`fast`
+  Gauss $64^2$ worst $\rho$ on the `lat64` population and the `gref` and `lat64` worst ST errors; reproduce to 2
+  significant figures / 0.01 pp.
+- **R0** training data: the generated data's fingerprint (sum, sum of squares over all 576×51×256² values) equals
+  the r3a JSON's (200 814 620.487 49, 102 201 588.767 52) to $10^{-9}$ relative; the job aborts otherwise.
+- **R2a** `base` reproduces the r3a log's rel-MSE at step 1 (2.402e+00) and step 5 000 (2.125e-03) to 3 significant
+  figures. **R2b** (local unit test, before submission): with $\lambda=0$ and $\lambda=0.1$ the first 50 value-path
+  point indices are identical, and the $\lambda=0$ loss equals the vendored original loss on the same inputs to
+  round-off.
+- **C1** Gauss $8^2$ is a stress arm expected to fail (8 points per axis cannot resolve tests up to frequency ≈25);
+  reported, not a gate.
+- **C2** bumps centred at (0.5, 0.5): $w=0.2$ must give smaller $n_{10^{-8}}$ than $w=0.05$, and both classify
+  "geometric".
+- **C3** $u=|x-0.4|\,e^{-((x-.5)^2+(y-.5)^2)/0.02}$ must classify "algebraic" or "inconclusive", never "geometric".
+- **C4** per bank: Gauss $768^2$ vs $640^2$ worst $\rho\le10^{-5}$ on its population, point vs flux target
+  $\rho\le10^{-5}$, and `gref` vs Gauss-768 rollout distance $\le10^{-6}$ on `dev6`; failing banks have no valid ladder.
+- **C5** (a) analytic bank gradient vs central difference of the bank with step $10^{-5}$: relative error
+  $\le10^{-6}$ on 1000 random points; (b) $D_h$ applied to $\sin(5\pi x)\sin(3\pi y)$ on the 257² grid equals the
+  exact discrete response $\tfrac{\sin(5\pi h)}{h}\cos(5\pi x)\sin(3\pi y)$ to $10^{-12}$.
+- **C6** per case: every rollout finite and at most 2 of its 50 LM steps exit on the budget; otherwise that case is
+  a failure for that bank and setting, reported, and the bank's worst errors are reported with and without it.
+
+**A1.7 Coarse control (item 9).** `coarse` is trained on data from the same generator at **129 nodes per axis**
+($h=1/128$), whose nodes are nested in the 257² reference nodes. Its FOM comparators are the same generator at 129
+and 257 nodes, scored on their own nodes against the reference restricted there (no interpolation). Cohort
+disjointness is asserted in-job against both the seed-0 576-trajectory draw and the seed-1000 4 032-trajectory
+expansion (all five parameters).
+
+**A1.8 Artifacts.** Saved per bank and setting: $c$ of every population state, per-state $\rho$ for every rung, the
+restricted fields of every rollout, LM iterations/exits/residual norms, raw timing repetitions, rotation and training
+JSONs. Enough to recompute every reported number.
+
+**A1.9 GPU accounting (item 8).** Allocated GPU-hours (GPUs × wall time): `tr1` 4 A100-80GB × ≤5 h = ≤20;
+`ev1` ≤4 × ≤4 h = ≤16; `tr2` 4 × ≤5 h = ≤20; `ev2` ≤4 × ≤4 h = ≤16; `comb`+eval ≤10. Total ≤ 82 allocated GPU-h. One
+node, 8-A100 nodes exist (`sinfo`), `--constraint=a100-80G`. The A100-40GB original took 2.97 h per value-only bank;
+the Sobolev cost is measured in `tr1`.

@@ -1,0 +1,14 @@
+{
+ "attempt": "tr1",
+ "purpose": "round-1 training (DESIGN 3.3, A1): base, sob01, sig2, sig1; one process per GPU; base also writes the frozen bank's lane rotation",
+ "gpus": 4,
+ "hours": 8,
+ "mem": "320G",
+ "cpus": 32,
+ "tasks": [
+  {"gpu": 0, "cmd": "smoothtrain.py --arm base  --sigma 4 --lam 0   --nodes 256 --out OUT/base --frozen ../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl"},
+  {"gpu": 1, "cmd": "smoothtrain.py --arm sob01 --sigma 4 --lam 0.1 --nodes 256 --out OUT/sob01"},
+  {"gpu": 2, "cmd": "smoothtrain.py --arm sig2  --sigma 2 --lam 0   --nodes 256 --out OUT/sig2"},
+  {"gpu": 3, "cmd": "smoothtrain.py --arm sig1  --sigma 1 --lam 0   --nodes 256 --out OUT/sig1"}
+ ]
+}

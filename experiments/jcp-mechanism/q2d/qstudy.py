@@ -3,7 +3,8 @@
 jcp-mechanism copy (2026-10-08) of vendor/quad2d/qstudy.py. Changes, and nothing else: (1) Q.offmesh_rule receives the
 mesh (for the A1 rule `nodes`); (2) the `nodes` gates G1-G3 of the lane DESIGN section 5 run once per setting before
 the rollouts when a `nodes` arm is configured; (3) the timing phase is skipped when timing.skip is set (A1 does not
-time); (4) the cohort-overlap check is unchanged.
+time); (4) the `nodes` arm's reached states are kept and rho of every configured rule is evaluated on those of the first
+`nodes_reached_rho_cases` cases (DESIGN amendment A2-5); (5) the cohort-overlap check is unchanged.
 
 Phases (setting-major, so only one setting's rule blocks are resident at a time)
   0  setup: cohorts (expected hashes, pairwise disjointness), refined references (validated against the reference job's
@@ -344,8 +345,8 @@ def main():
             assert g['G3_jacobian_vs_jacfwd'] < 1e-12, g
 
         # ---------------------------------------------- phase 1: rollouts ----
-        pops = dict(lat64=[], gref=[])
-        labels = dict(lat64=[], gref=[])
+        pops = dict(lat64=[], gref=[], nodes=[])
+        labels = dict(lat64=[], gref=[], nodes=[])
         sha1 = {}
         order = ([n for n in arms if n == 'gref'] + [n for n in arms if n == 'dense'] +
                  [n for n in arms if n not in ('gref', 'dense')])
@@ -474,6 +475,22 @@ def main():
                                 argmax=list(lab[i]), pass_primary=bool(r_.max() <= .116), pass_tight=bool(r_.max() <= .06))
             res[spec['name']] = ent
         np.savez_compressed(out / f'rho_per_state_{s}.npz', **perstate)
+        # jcp-mechanism A2-5: rho of every configured rule on the nodes-reached states of the first k cases
+        if pops['nodes'] and cfg.get('nodes_reached_rho_cases'):
+            kc = cfg['nodes_reached_rho_cases']
+            Cn = np.concatenate(pops['nodes'][:kc])
+            Tcn = values(Cn, 'point', cfg['gref'], 64)[0]
+            Tmn = values(Cn, 'dense', None, cfg.get('dense_chunk', 8))[0]
+            Tkn = values(Cn, 'point', cfg['gref_check'], 64)[0]
+            rn = dict(states=len(Cn), cases=kc, check_rho_max=float(rho(Tkn, Tcn).max()), rules={})
+            for spec in cfg['rho_rules'][s]:
+                Vn = Tmn if spec['kind'] == 'dense' else values(Cn, spec['kind'], spec.get('rule'),
+                                                                64 if spec['kind'] != 'mesh' else 16)[0]
+                rc_, rm_ = rho(Vn, Tcn), rho(Vn, Tmn)
+                rn['rules'][spec['name']] = dict(cont_max=float(rc_.max()), cont_median=float(np.median(rc_)),
+                                                 mesh_max=float(rm_.max()))
+            rep.setdefault('rho_nodes_reached', {})[s] = rn
+            print('RHO-NODES-REACHED', s, {k_: v_['cont_max'] for k_, v_ in rn['rules'].items()}, flush=True)
         rep['rho'][s] = dict(states=len(C), population_arm='lat64', seconds=time.perf_counter() - t1,
                              mesh_vs_continuum_gap=dict(max=float(rho(Tm, Tc).max()), median=float(np.median(rho(Tm, Tc)))),
                              rules=res)

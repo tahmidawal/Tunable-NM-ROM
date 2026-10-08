@@ -1,0 +1,65 @@
+{
+ "mesh": 65,
+ "Rps": [
+  512,
+  256
+ ],
+ "dt": 0.01,
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "model": "experiments/jcp-mechanism/vendor/quad3d/inputs/model_M2",
+ "expected_model_sha256": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9",
+ "rules_npz": "experiments/jcp-mechanism/vendor/quad3d/rules/rules.npz",
+ "expected_rules_sha256": "099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b",
+ "rules": [
+  "gl24",
+  "lat4096",
+  "lat32768"
+ ],
+ "converged_rule": "lat32768",
+ "continuum_target": "gl80",
+ "continuum_check": "gl64",
+ "cert_draws": [
+  [
+   923811,
+   8
+  ],
+  [
+   923812,
+   8
+  ],
+  [
+   923813,
+   8
+  ]
+ ],
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "expected_cohort_sha256": "de2d05a4d20b0c835dd3284bf73dd9087b6c8a82c489564096915e32224dac35",
+ "refined_ref": "/cluster/tufts/paralab/tawal01/jcpmech/a1d3/refs/ref_923801.npz",
+ "expected_refined_sha256": "36e84e3dbac2f5cf1b3350c311c1f16d17ecfcd4dc217ded836ba30613c6cc8b",
+ "same_grid_ref65": "/cluster/tufts/paralab/tawal01/jcpmech/a1d3/refs/same_grid_ref65_n65.npz",
+ "expected_same_grid_sha256": "0cbd213248fc8a538ba0fcc295c50abf512b8c2314db0f2cf76a4204b346dd18",
+ "expected_rho": {
+  "512": {
+   "tensor": 0.19451651887092644,
+   "dense_upwind": 0.1945165188342729,
+   "gl24": 0.01000351528746246,
+   "lat4096": 0.08303679160329996,
+   "lat32768": 8.617786207011265e-05
+  },
+  "256": {
+   "tensor": 0.19361631223754866,
+   "dense_upwind": 0.19361631756503198,
+   "gl24": 0.00211231870949868,
+   "lat4096": 0.02372863817437813,
+   "lat32768": 2.9096839261460127e-05
+  }
+ },
+ "adaptive_check_cases": 8,
+ "source_job": {
+  "name": "val65",
+  "job_id": "4732813",
+  "gpu": "NVIDIA H200"
+ }
+}

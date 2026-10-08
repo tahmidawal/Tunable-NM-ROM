@@ -338,3 +338,15 @@ this is stated as untested.
 
 **A2-6 (re-audit 7):** a job that times out is an incomplete result: every missing case is listed, and no subset is chosen
 after outcomes are seen.
+
+## Amendment 3 (2026-10-08, after `audits/codex-design-3.md`: no WRONG; three restatements)
+
+- **A3-1 (re A2-3):** there is **one** independent family per dimension (3D `lat32768`, 2D Fibonacci 121393), besides the
+  Gauss check. The target is declared invalid for a state set if that family's worst $\rho$ against the target exceeds
+  $10^{-2}$; otherwise the target is validated to the family's own level, which is reported, and gaps below it are
+  screened only by the Gauss-check rule of A2-3.
+- **A3-2 (re A2-4):** G1–G3 pass iff $\max|a-b|\le\tau\max|b|$ with $\tau$ as stated **and** $\max|b|\ge10^{-8}$ (a reference
+  array this small fails the gate instead of passing vacuously).
+- **A3-3 (re A2-5):** an R or N label is reported as **provisional (solver)** when, in the `nodes`, incumbent or converged
+  arm, reason-0 (non-stationary) exits exceed 1 % of all steps, or (2D, and 3D at $128^3$) when no sensitivity rerun
+  exists for that configuration. The bootstrap bound is "N/A" for X and X0.

@@ -104,7 +104,7 @@ def fom_section(W, att='fom1k'):
             stat = 'in band (reported only, A11.1)' if inb else 'pre-asymptotic (consistent with a stiff-mode transient); not gated (A11.1)'
         else:
             stat = 'in band (gated)' if inb else 'OUT OF BAND (gated)'
-        W(f"| {NAMES[o['scheme']]} | {o['cohort']}{o['case']} | {', '.join(f'{v:.2f}' for v in o['orders'].values())} | {stat} |")
+        W(f"| {NAMES[o['scheme']]} | {o['cohort']}{o['case']} | {', '.join(num(v, '.2f') for v in o['orders'].values())} | {stat} |")
     W('')
     W('Accuracy (PROVISIONAL, % of $\\lVert u_0\\rVert$) and cost; rows not verified on all 38 cases or without a complete timing are marked and excluded from the matching:')
     W('')
@@ -117,10 +117,10 @@ def fom_section(W, att='fom1k'):
         if parts[0] == 'fom':
             cal = res['calibration'][f'{parts[1]}|{parts[2]}']
             tol = f"ntol {cal['chosen'][0]:g} ({cal['status']})" if cal.get('chosen') else 'unresolved'
-            W(f"| FOM | {NAMES[parts[1]]} | {parts[2]} | {tol} | {pct(e['worst'])} | {pct(e['median'])} | {e['verified']}/{e['n']} | "
+            W(f"| FOM | {NAMES[parts[1]]}{'' if e['verified'] == e['n'] else ' (FAILURE DIAGNOSTIC)'} | {parts[2]} | {tol} | {pct(e['worst'])} | {pct(e['median'])} | {e['verified']}/{e['n']} | "
               f"{num(e['ms'])} | {num(e['ratio'], '.3f')} | {'yes' if e['ok'] else 'no'} |")
         else:
-            W(f"| ROM {parts[1]} {parts[3]} | {NAMES[parts[4]]} | {parts[5]} | production | {pct(e['worst'])} | {pct(e['median'])} | "
+            W(f"| ROM {parts[1]} {parts[3]} | {NAMES[parts[4]]}{'' if e['verified'] == e['n'] else ' (FAILURE DIAGNOSTIC)'} | {parts[5]} | production | {pct(e['worst'])} | {pct(e['median'])} | "
               f"{e['verified']}/{e['n']} | {num(e['ms'])} | {num(e['ratio'], '.3f')} | {'yes' if e['ok'] else 'no'} |")
     W('')
     foms = [k for k in T if k.startswith('fom') and T[k]['ok']]
@@ -148,7 +148,7 @@ def fom_section(W, att='fom1k'):
     for fam, mk in (('fom', 's'), ('rom', 'o')):
         for sc in SCHEMES:
             for setting in (['-'] if fam == 'fom' else ['fast', 'acc']):
-                kk = [k for k in T if T[k]['ok'] and k.startswith(fam) and
+                kk = [k for k in T if eligible and T[k]['ok'] and k.startswith(fam) and
                       ((fam == 'fom' and k.split('|')[1] == sc) or
                        (fam == 'rom' and k.split('|')[4] == sc and k.split('|')[3] == 'LSPG' and k.split('|')[1] == setting))]
                 kk = sorted(kk, key=lambda k: float(k.split('|')[-1]))
@@ -161,7 +161,7 @@ def fom_section(W, att='fom1k'):
     ax.set_yscale('log')
     ax.set_xlabel('end-to-end time per case (ms; paired A–B–A, six dev6 cases, one GPU)')
     ax.set_ylabel('worst ST error over 38 cases (%), PROVISIONAL')
-    ax.set_title(f'Full-order vs reduced, same time schemes, $L={res["mesh"]}$ (eligible configurations only)', fontsize=10)
+    ax.set_title(f'Full-order vs reduced, same time schemes, $L={res["mesh"]}$' + ('' if eligible else ' — NOT ELIGIBLE (no series)'), fontsize=10)
     ax.grid(True, which='major', color='#e4e4e0', lw=.6)
     ax.spines[['top', 'right']].set_visible(False)
     ax.legend(fontsize=6.5, frameon=False, ncol=2)
@@ -256,7 +256,8 @@ def d3_section(W, att='b3d65'):
                                n_anc=len(an), verified=sum(x['verified'] for x in L), n=n, ok=ok,
                                ratio=t_['ratio'] if t_ else None, ms=t_['ms'] if t_ else None)
                     tab.append(ent)
-                    W(f"| {form} | {NAMES[sc]} | {fdt:g} | {pct(ent['worst'])} | {pct(ent['median'])} | "
+                    diag = '' if ent['verified'] == n else ' (FAILURE DIAGNOSTIC: not all cases verified)'
+                    W(f"| {form} | {NAMES[sc]}{diag} | {fdt:g} | {pct(ent['worst'])} | {pct(ent['median'])} | "
                       f"{pct(ent['anc']) if ent['anc'] is not None else 'unresolved in most cases'} | {len(resolved)}/{len(an)} | "
                       f"{ent['verified']}/{n} | {num(ent['ratio'], '.3f')} | {num(ent['ms'])} |")
         W('')
@@ -304,7 +305,7 @@ def d3_section(W, att='b3d65'):
         fig, ax = plt.subplots(1, 2, figsize=(12, 4.4))
         for form, ls, mk in (('LSPG', '-', 'o'), ('GAL', '--', 's')):
             for sc in SCHEMES:
-                E = sorted([e for e in tab if e['form'] == form and e['scheme'] == sc and e['ok']], key=lambda e: e['f'])
+                E = sorted([e for e in tab if eligible and e['form'] == form and e['scheme'] == sc and e['ok']], key=lambda e: e['f'])
                 if not E:
                     continue
                 ax[0].plot([DT0 * e['f'] for e in E], [100 * e['worst'] for e in E], ls=ls, marker=mk, color=COLORS[sc], label=f'{form} {NAMES[sc]}')

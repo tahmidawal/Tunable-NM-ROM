@@ -47,11 +47,13 @@ def main():
     (out / 'logs').mkdir()
     gtype, constraint = GRES[a.gpu]
     lines = []
-    for t in job['tasks']:
-        tag = t['cmd'].split('--arm')[1].split()[0] if '--arm' in t['cmd'] else f"t{t['gpu']}"
+    tags = []
+    for k, t in enumerate(job['tasks']):
+        tag = t['cmd'].split('--arm')[1].split()[0] if '--arm' in t['cmd'] else f"task{k}"
+        tags.append(tag)
         cmd = t['cmd'].replace('OUT/', '"$TASK_ROOT/output/"')
-        lines.append(f'(CUDA_VISIBLE_DEVICES={t["gpu"]} "$PY" {cmd} > "$TASK_ROOT/logs/{tag}.log" 2>&1; '
-                     f'echo "task {tag} exit=$?" ) &')
+        lines.append(f'CUDA_VISIBLE_DEVICES=${{DEVS[{k}]}} "$PY" {cmd} > "$TASK_ROOT/logs/{tag}.log" 2>&1 &\n'
+                     f'PIDS[{k}]=$!; NAMES[{k}]={tag}')
     nproc = len(job['tasks'])
     script = f'''#!/bin/bash
 #SBATCH --job-name=jcps_{att}
@@ -79,15 +81,23 @@ export SOURCE_COMMIT=$(cat COMMIT.txt)
 echo "host=$(hostname) source_commit=$SOURCE_COMMIT gpus=$CUDA_VISIBLE_DEVICES"
 nvidia-smi --query-gpu=index,name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
+IFS=, read -ra DEVS <<< "${{CUDA_VISIBLE_DEVICES}}"
+[ "${{#DEVS[@]}}" -ge {nproc} ] || {{ echo "allocated devices ${{CUDA_VISIBLE_DEVICES}} < {nproc}"; exit 3; }}
 for i in $(seq 0 {nproc - 1}); do
-  CUDA_VISIBLE_DEVICES=$i "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'gpu$i jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)" || exit 42
+  CUDA_VISIBLE_DEVICES=${{DEVS[$i]}} "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'dev ${{DEVS[$i]}} jax_backend={{b}} {{jax.devices()[0].device_kind}}',flush=True); sys.exit(0 if b=='gpu' else 42)" || exit 42
 done
 cd {LANE}
+declare -a PIDS NAMES
 {chr(10).join(lines)}
-wait
+FAIL=0
+for i in $(seq 0 {nproc - 1}); do
+  wait ${{PIDS[$i]}}; rc=$?
+  echo "task ${{NAMES[$i]}} exit=$rc"; echo "${{NAMES[$i]}} $rc" >> "$TASK_ROOT/output/TASK_STATUS.txt"
+  [ $rc -eq 0 ] || FAIL=1
+done
 cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
-grep -h "exit=" logs/*.out 2>/dev/null | tail -{nproc}
+[ $FAIL -eq 0 ] || {{ echo "SOME TASKS FAILED"; exit 1; }}
 echo ALL-DONE
 '''
     (out / 'run.sbatch').write_text(script)

@@ -170,7 +170,8 @@ def feat_grad(p, X):
 # ------------------------------------------------------- trainer (train_autodecoder_v2 copy) ----
 
 def train(key, coords, U, nb, h, k_lat, r_feat, steps, lr, lam_orth, weight_decay, p_sub, ema_decay,
-          full_last, lam_sob=0.0, sob_states=2048, sob_seed=12345, log_every=5000, tag='', recon_chunk=2048, **arch):
+          full_last, lam_sob=0.0, sob_states=2048, sob_seed=12345, log_every=5000, tag='', recon_chunk=2048,
+          record_idx=None, check_hist=None, **arch):
     """sep_solvers.train_autodecoder_v2 (snap_norm=False, w_extra=None, z_polish=0, time_cap=0: the dn256b call),
     with the optional Sobolev term. Lines marked [SOB] are the only additions; everything else is the original's
     text for this call (rel = mean(err^2)/mean(U^2), as in the staged sep_solvers 5af7056b)."""
@@ -254,11 +255,11 @@ def train(key, coords, U, nb, h, k_lat, r_feat, steps, lr, lam_orth, weight_deca
     @jax.jit
     def step_sub(pz, st, ema, k_, ks, U_all, C_all):
         pts_idx = jax.random.choice(k_, n_pts, shape=(p_sub,), replace=False)
-        return _apply(pz, st, ema, U_all[:, pts_idx], C_all[pts_idx], sob_args(ks, U_all))
+        return _apply(pz, st, ema, U_all[:, pts_idx], C_all[pts_idx], sob_args(ks, U_all)) + (pts_idx[:8],)
 
     @jax.jit
     def step_full(pz, st, ema, ks, U_all, C_all):
-        return _apply(pz, st, ema, U_all, C_all, sob_args(ks, U_all))
+        return _apply(pz, st, ema, U_all, C_all, sob_args(ks, U_all)) + (jnp.zeros((8,), jnp.int32),)
 
     pz = (params, Z)
     ema = pz
@@ -268,18 +269,28 @@ def train(key, coords, U, nb, h, k_lat, r_feat, steps, lr, lam_orth, weight_deca
     use_sub = 0 < p_sub < n_pts
     skey = jax.random.PRNGKey(sob_seed)                                      # [SOB]
     hist = []
+    r2a = []
     for i in range(steps):
         ks = jax.random.fold_in(skey, i)                                     # [SOB] (unused when lam_sob = 0)
         if use_sub and i < steps - full_last:
             key, k_ = jax.random.split(key)
-            pz, state, ema, rel, grel = step_sub(pz, state, ema, k_, ks, U, coords)
+            pz, state, ema, rel, grel, pidx = step_sub(pz, state, ema, k_, ks, U, coords)
         else:
-            pz, state, ema, rel, grel = step_full(pz, state, ema, ks, U, coords)
+            pz, state, ema, rel, grel, pidx = step_full(pz, state, ema, ks, U, coords)
         done = i + 1
+        if record_idx is not None and i < record_idx[0]:
+            record_idx[1].append(np.asarray(pidx))
         if done % log_every == 0 or i == 0:
             hist.append(dict(step=done, rel_mse=float(rel), grad_rel_mse=float(grel), seconds=time.time() - t0))
             if not (np.isfinite(float(rel)) and np.isfinite(float(grel))):
                 raise SystemExit(f'non-finite loss at step {done}')
+            if check_hist and done in check_hist:                           # gate R2a (base only)
+                want = check_hist[done]
+                ok = f'{float(rel):.3e}' == want
+                r2a.append(dict(step=done, got=f'{float(rel):.3e}', want=want, match=ok))
+                log(f'   R2a step {done}: {float(rel):.3e} vs r3a {want} match={ok}')
+                if done == 1 and not ok:                                     # step 1 is deterministic: code/data error
+                    raise SystemExit(f'R2a failed at step 1: {float(rel):.3e} != {want}')
             log(f"   train2[{tag}] step {done:6d}/{steps}  rel-MSE {float(rel):.3e}  grad-rel-MSE {float(grel):.3e}"
                 f"  [{time.time()-t0:.0f}s]")
 
@@ -306,7 +317,7 @@ def train(key, coords, U, nb, h, k_lat, r_feat, steps, lr, lam_orth, weight_deca
                 seconds=time.time() - t0, recon_rel_l2_mean=ema_mean if use_ema else raw_mean,
                 recon_rel_l2_max=ema_max if use_ema else raw_max, n_snapshots=int(S), n_points=int(n_pts),
                 lam_sob=lam_sob, sob_states=sob_states, grad_norm_ms=g_ms, history=hist,
-                B_init=b_init, B_final=b_stats(params['B']))
+                B_init=b_init, B_final=b_stats(params['B']), R2a=r2a)
     log(f"   train2[{tag}] done: recon mean {info['recon_rel_l2_mean']:.3e} max {info['recon_rel_l2_max']:.3e} "
         f"(used {'ema' if use_ema else 'raw'}) [{info['seconds']:.0f}s]")
     return params, np.asarray(Z), info
@@ -333,6 +344,8 @@ def ls_rotation(params, n, U):
     floor = np.concatenate(floor)
     C = np.linalg.solve(Rg, A0.T).T                                            # (S, R) LS coefficients c_i
     nrm0 = np.linalg.norm(A0, axis=1)
+    if not (np.all(np.isfinite(A0)) and np.all(nrm0 > 0)):
+        raise SystemExit('zero or non-finite training-coefficient row in the rotation')
     Am = A0 / nrm0[:, None]
     _, s, Vt = np.linalg.svd(Am, full_matrices=False)
     Vs = Vt.T
@@ -348,6 +361,8 @@ def ls_rotation(params, n, U):
                 rotated_bank_orthonormality_deviation_at_train_mesh=float(np.linalg.norm(Gt.T @ Gt - np.eye(R))),
                 cumulative_training_energy={str(r): float(energy[r - 1]) for r in (32, 64, 128, 256, 384, 512)},
                 train_ls_floor=dict(mean=float(floor.mean()), median=float(np.median(floor)), max=float(floor.max())),
+                trust_radius={str(r): float(.01 * np.max(np.linalg.norm(C @ Lm[:r].T - (C @ Lm[:r].T).mean(0), axis=1)))
+                              for r in (128, 384)},
                 T_sha256=sha_arr(T), L_sha256=sha_arr(Lm))
     return dict(T=T, L=Lm, singular_values=s, R_G=Rg, C=C), info
 
@@ -394,7 +409,8 @@ def main():
     if a.nodes == 256 and a.n_traj == 576:                 # gate R0: the r3a job's own fingerprint (push_r3a JSON)
         ok = abs(fp['sum'] / 200814620.48749176 - 1) < 1e-9 and abs(fp['sumsq'] / 102201588.76752055 - 1) < 1e-9
         rep['data']['R0_fingerprint_matches_r3a'] = bool(ok)
-        assert ok, ('training data differ from the r3a job', fp)
+        if not ok:
+            raise SystemExit(f'R0 failed: training data differ from the r3a job {fp}')
     log(f'  data: {S_tr.shape} worst residual {worst:.2e} fingerprint {fp} sha {rep["data"]["data_sha256"][:12]}')
     rep['data']['fd_target_uncertainty'] = fd_bias(S_tr, a.nodes)
     log(f"  FD-target uncertainty (D2 vs D4): {rep['data']['fd_target_uncertainty']}")
@@ -402,10 +418,14 @@ def main():
     n = a.nodes
     coords = grid_coords(n)[interior_indices(n)]
     arch = dict(RECIPE['arch'], ff_scale=a.sigma)
+    # gate R2a: the original recipe (sigma 4, lam 0, seed 0, 256 nodes, 300k steps) must reproduce the r3a log
+    orig = (a.sigma == 4.0 and a.lam == 0.0 and a.seed == 0 and a.nodes == 256 and a.steps == 300000 and a.n_traj == 576)
+    check = {1: '2.402e+00', 5000: '2.125e-03'} if orig else None
+    rep['R2a_checked'] = bool(orig)
     params, Z, tinfo = train(jax.random.PRNGKey(a.seed), coords, S_tr, neighbours(n), 1. / (n - 1), RECIPE['K'],
                              RECIPE['R'], a.steps, RECIPE['lr'], RECIPE['lam_orth'], RECIPE['wd'], RECIPE['p_sub'],
                              RECIPE['ema_decay'], min(a.full_last, a.steps), lam_sob=a.lam, sob_states=a.sob_states,
-                             log_every=a.log_every, tag=a.arm, **arch)
+                             log_every=a.log_every, tag=a.arm, check_hist=check, **arch)
     rep['train'] = tinfo
     cfg = dict(pde='burgers2d', N=n, k=RECIPE['K'], r=RECIPE['R'], arch_overrides=arch, lam_sob=a.lam, arm=a.arm,
                seed=a.seed, steps=a.steps, lane='jcp-smooth-bank')

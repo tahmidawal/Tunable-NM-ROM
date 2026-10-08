@@ -13,6 +13,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--partial', action='store_true')
+    p.add_argument('--expect', nargs='*', default=[], help='output JSONs that must exist with complete=true')
     a = p.parse_args()
     assert a.attempt.isalnum()
     remote = f'{NAMESPACE}/{a.attempt}'
@@ -29,6 +30,13 @@ def main():
     subprocess.run(['tar', '-xf', 'collection.tar'], cwd=out, check=True)
     subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
     (out / 'collection.tar').unlink()
+    import json
+    bad = [e for e in a.expect if not (out / 'output' / e).exists() or not json.loads((out / 'output' / e).read_text()).get('complete')]
+    st = (out / 'output' / 'TASK_STATUS.txt')
+    print('TASK_STATUS:', st.read_text() if st.exists() else 'missing')
+    if bad:
+        (out / 'INCOMPLETE').write_text('\n'.join(bad) + '\n')
+        raise SystemExit(f'INCOMPLETE outputs: {bad}')
     print(out)
     print('Checksums verified; remote cleanup remains an explicit separate step.')
 

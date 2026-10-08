@@ -367,3 +367,81 @@ JSONs. Enough to recompute every reported number.
 `ev1` ≤4 × ≤4 h = ≤16; `tr2` 4 × ≤5 h = ≤20; `ev2` ≤4 × ≤4 h = ≤16; `comb`+eval ≤10. Total ≤ 82 allocated GPU-h. One
 node, 8-A100 nodes exist (`sinfo`), `--constraint=a100-80G`. The A100-40GB original took 2.97 h per value-only bank;
 the Sobolev cost is measured in `tr1`.
+
+---
+
+## Amendment A2 (2026-10-08, after Codex design re-audit `audits/codex-design-2.md` and code audit `audits/codex-code-train-1.md`; before any GPU job)
+
+**A2.1 Sobolev term in the final phase.** The gradient term is a stochastic estimate (2 048 random states × 4 096
+random points, separate key stream) at **every** step, including the last 10 000 steps in which the value term uses all
+points. (This replaces §3.1's "all points in the last 10 000 steps".) Its subsample noise is not removed at the end;
+the value term is exactly the original's.
+
+**A2.2 FD target (re-audit item 3).** $\|D^{(2)}-D^{(4)}\|/\|D^{(4)}\|$ is a **stencil-sensitivity indicator**, not a
+certified bias bound. Both gradient errors ($D^{(2)}$ target on all interior nodes; $D^{(4)}$ target on the nodes at
+least two from the wall, with $D^{(2)}$ also reported on that common support) are reported; H1's gradient criterion
+must hold with **both** stencils, otherwise the gradient result is "stencil-sensitive". No claim about the physical
+gradient is made: there is no finer derivative reference, so claims are limited to agreement with the mesh
+derivative target.
+
+**A2.3 Censoring and spectra (item 4).** Censored $m^*$: Gauss "$>65\,536$" ($>256^2$), Fibonacci "$>46\,368$". Spectrum
+classification uses the **block envelope** $B_k=\max_{8k\le j<8k+8}E_j$ (removes symmetry-induced near-zero odd
+shells), fitted over the blocks with $j\ge16$ and $B_k>10^{-13}$; fewer than 4 such blocks → "unresolved". $n_\varepsilon$ is
+"unresolved" when the 256- and 512-point values differ by more than 2 or when $E$ never falls below $\varepsilon$.
+
+**A2.4 Decision semantics (item 5).**
+- Reduction factor of $m^*$: both finite → $m_{\rm base}/m_t$; base censored, treatment finite → conservative
+  $m_{\max}/m_t$ with $m_{\max}$ the largest rung; treatment censored → no reduction (fails); both censored → tie (1).
+- "Same direction" on the common-state ladder: $m^*_{\rm common}(t)\le m^*_{\rm common}(\text{base})$ at the same bar (ties
+  allowed), with censored larger than every finite value.
+- Ranking of H2 passes: $\sum_{\rm settings}\log_2(\text{reduction factor at }b=0.06)$, ties → lower mean over settings
+  of $E_S$.
+- **Eligibility.** A bank is ineligible in a setting (no H1/H2/winner verdict there, reported as such) if any of: a C4
+  failure on its own-rollout **or** common-state population; a C6 failure on any case; a non-finite or zero metric
+  denominator; $\operatorname{cond}R_G>10^{12}$ or rotated-bank orthonormality deviation $>10^{-6}$ at its training mesh.
+- The noise gate (A1.5) applies to the continuous metrics ($e_\nabla$, $e_{\rm val}$, $E_S$, $E_{ST}$). For the discrete
+  $m^*$: an H2 verdict at a bar and setting is "unresolved" unless `base` and frozen/lane have the same $m^*$ there (and,
+  once it exists, `base_s1` too).
+- Every verdict inherits the references' provisional status (first-order references; discrete projection metrics)
+  and is a development/validation selection.
+
+**A2.5 Controls (item 6)** — split into acceptance gates (must pass for results to be used), positive controls
+(must detect a known effect) and negative controls (must not report an effect that is absent).
+- Acceptance gates: R0 (scoped to the 256-node, 576-trajectory dataset; abort), R1, R2a (step 1 abort; step 5 000
+  recorded and reported), R2b (local test: bitwise parity with the original trainer at $\lambda=0$ over sub-sampled and
+  full steps, and identical value-path point indices with $\lambda=0$ and $0.1$ over 50 steps, recorded from the
+  jitted step), C4 on **all three** populations (own `gref`, `lat64`, common), C5a, C5b, C6.
+- C5a: analytic vs central difference of the bank with steps $10^{-3},10^{-4},10^{-5}$, aggregate relative 2-norm over
+  1 000 points; passes if the smallest is $\le10^{-6}$. C5b tests $D_x$ **and** $D_y$ (as implemented).
+- C6: per case, finite fields, at most 2 budget exits in 50 steps; exits of every kind (tiny-step, damping-limit,
+  stationary) are recorded; **solver sensitivity**: the `gref` rollout is repeated on `dev6` with $g_{\rm tol}=10^{-4}$
+  and its distance from the default `gref` rollout must be $\le10^{-3}$ (relative, evolved max), else the bank's results
+  in that setting are flagged "solver-sensitive" and ineligible.
+- Positive controls: C2 with bumps centred at (0.43, 0.57) ($w=0.2$ vs $0.05$, ordered $n_{10^{-8}}$, both "geometric");
+  the classifier and $n_\varepsilon$ are run locally on these fields **before** submission and the outcome recorded in
+  `audits/`. Negative/positive control C3: the kink field must classify **"algebraic"** (resolved), not merely
+  "not geometric". If the local pre-check fails, the classifier is re-registered by amendment before any GPU number.
+- C1 (Gauss $8^2$) stays a reported stress arm.
+
+**A2.6 Coarse control scoring (item 9).** The 3d verdict compares `coarse`, `base` and the two FOMs (129 and 257 nodes)
+on the **common 129-node restriction** of the references; 257-node comparisons are reported separately. Beating the
+129-node FOM supports only the limited claim; failing to beat it does not show that finer data are necessary.
+
+**A2.7 Resources (item 8).** `tr1`: 4 A100-80GB, wall limit 7 h (≤28 allocated GPU-h; the Sobolev arm is estimated at ≈1.5× the 2.97 h value-only cost from its extra forward-mode passes and contractions); measured Sobolev overhead
+recorded. `ev1`: 3 A100-80GB, two variants per GPU (frozen/deployed + frozen/lane; base + sob01; sig2 + sig1), then
+timing on one GPU, wall limit 6 h. Lane total ≤ 90 allocated GPU-h. Devices are taken from the allocation's
+`CUDA_VISIBLE_DEVICES`, every child's exit status is collected, and collection refuses outputs without
+`complete=true`.
+
+**A2.8 Artifacts.** Every rollout's internal coefficients (fields = their decode, recomputable), state labels
+`cohort|case|k`, per-state $\rho$ (full $M$ and first 320 tests) for every rung and population, projection
+coefficients, checkpoint/rotation/reference sha256, and the spectra envelopes are saved.
+
+## Amendment A3 (2026-10-08, local pre-check of the spectrum controls, before any GPU job)
+
+The A2.3 classifier (blocks of 8 from $j\ge16$) returned "unresolved" for the $w=0.2$ bump of C2 (its envelope reaches
+$10^{-13}$ by $j\approx30$, leaving fewer than 4 blocks). As A2.5 requires, the classifier is re-registered before any
+GPU number: **blocks of 4 degrees, $B_k=\max_{4k\le j<4k+4}E_j$, fitted over the blocks with centre $j\ge4$ and
+$B_k>10^{-13}$**, other rules unchanged. Local pre-check (`audits/precheck-controls-C2-C3-C5b.txt`, CPU):
+C2 $n_{10^{-8}}$ = 20 ($w=0.2$) < 64 ($w=0.05$), both "geometric" — pass; C3 kink "algebraic" (fitted exponent 2.15) —
+pass; C5b max error $1.7\times10^{-13}$ — pass.

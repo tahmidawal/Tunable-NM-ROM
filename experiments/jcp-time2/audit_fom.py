@@ -54,11 +54,14 @@ def fom_verified(st, ntol, dt):
     act = srel[:steps]
     good = np.isfinite(act) & (act <= ntol)
     nw = newt[:steps]
+    if not (np.all(np.isfinite(newt)) and np.all(newt == np.round(newt)) and np.all(np.isfinite(lres[:steps]))):
+        return False, False
     ff = int(np.argmax(~good)) if np.any(~good) else -1
     cons = (int(st['nfail']) == int(np.sum(~good)) and bool(np.all(np.isnan(srel[steps:]))) and bool(np.all((nw >= 0) & (nw <= 20)))
-            and bool(np.all(newt[steps:] == -1)) and bool(np.all(np.isnan(lres[steps:]))) and bool(np.all(np.isfinite(lres[:steps]) | (nw == 0)))
+            and bool(np.all(newt[steps:] == -1)) and bool(np.all(np.isnan(lres[steps:])))
             and int(st['it_sum']) == int(nw.sum()) and int(st['it_max']) == int(nw.max()) and int(st['first_fail']) == ff
-            and np.isclose(float(st['worst_rel']), float(np.nanmax(act)), rtol=1e-12, atol=0))
+            and np.isclose(float(st['worst_rel']), float(np.nanmax(act)), rtol=1e-12, atol=0)
+            and np.isclose(float(st['worst_lres']), max(0., float(np.max(lres[:steps]))), rtol=1e-12, atol=0))
     return bool(np.all(good)), cons
 
 

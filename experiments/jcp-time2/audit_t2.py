@@ -88,8 +88,13 @@ def rom_steps_ok(st, form, dt, gtol, nstep=800, budget=600):
         if int(st['steps']) != steps or any(a.shape != (nstep,) for a in (gn, tr, rs, it)):
             return False, False
         g, t, r, i = gn[:steps], tr[:steps], rs[:steps], it[:steps]
-        if not (np.all((r >= 0) & (r <= 4)) and np.all(rs[steps:] == -1) and np.all(np.isnan(gn[steps:]))
+        isint = lambda a: bool(np.all(np.isfinite(a)) and np.all(np.asarray(a, float) == np.round(np.asarray(a, float))))
+        if not (isint(rs) and isint(it) and np.all((r >= 0) & (r <= 4)) and np.all(rs[steps:] == -1)
+                and np.all(np.isnan(gn[steps:])) and np.all(np.isnan(tr[steps:]))
                 and np.all((i >= 0) & (i <= budget)) and np.all(it[steps:] == -1)):
+            return False, False
+        # exit-code semantics of make_lm: 4 only if the ratio met gtol, 1 only if the residual met tol
+        if np.any((r == 4) & ~(g <= gtol)) or np.any((r == 1) & ~(t <= 1.)):
             return False, False
         conv = (t <= 1.) if form == 'GAL' else ((g <= gtol) | (t <= 1.))
         okk = np.isfinite(g) & np.isfinite(t) & conv & (r != 0) & (r != 3)

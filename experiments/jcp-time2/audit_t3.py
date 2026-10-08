@@ -133,8 +133,14 @@ def validate(res, Wz, cfg, G, REF, U0):
             if not (close(d(REF[j]), v['e_ref'], 1e-7, 1e-10) and close(d(Fa), v['anchor'], 1e-6, 1e-12)
                     and close(d(Fb), v['vs_generic_BE'], 1e-6, 1e-12)):
                 vbad.append((nm, j, 'metrics'))
-            rs_ = np.array(v.get('reasons_per_step', []))
+            rs_ = np.array(v.get('reasons_per_step', []), float)
             gn_ = np.array(v.get('gn_per_step', []), float)
+            it_ = np.array(v.get('it_per_step', []), float)
+            ints = lambda a: bool(np.all(np.isfinite(a)) and np.all(a == np.round(a)))
+            if not (ints(rs_) and ints(it_) and it_.shape == (25,) and np.all((it_[:3] >= 0) & (it_[:3] <= 50))
+                    and np.all(it_[3:] == 1) and int(v['it_sum']) == int(it_.sum())
+                    and list(v['reasons']) == list(np.bincount(rs_.astype(int), minlength=5))):
+                vbad.append((nm, j, 'vendor_iterations_or_histogram'))
             pe = np.linalg.norm(Fv - REF[j], axis=1) / n0
             # eligibility of the deployed fixed-sweep output (A12.3): every step finite with a valid exit code, no
             # non-finite exit (3); the fixed sweep does not promise the adaptive stopping test, so reason 0 is allowed

@@ -1,0 +1,211 @@
+{
+ "attempt": "a1d2_L256",
+ "mesh": 256,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "settings": [
+  "acc",
+  "fast"
+ ],
+ "gtol": 0.001,
+ "step_budget": 600,
+ "arms": {
+  "acc": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "gref",
+    "kind": "point",
+    "rule": "gauss640"
+   },
+   {
+    "name": "nodes",
+    "kind": "point",
+    "rule": "nodes"
+   }
+  ],
+  "fast": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "gref",
+    "kind": "point",
+    "rule": "gauss640"
+   },
+   {
+    "name": "nodes",
+    "kind": "point",
+    "rule": "nodes"
+   }
+  ]
+ },
+ "dense_cases": {
+  "dev6": "all",
+  "val32": "all"
+ },
+ "population_arm": "lat64",
+ "gref": "gauss640",
+ "gref_check": "gauss768",
+ "gref_bar": 1e-05,
+ "rho_rules": {
+  "acc": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "gauss96",
+    "kind": "point",
+    "rule": "gauss96"
+   },
+   {
+    "name": "fib121393",
+    "kind": "point",
+    "rule": "fib121393"
+   },
+   {
+    "name": "gref",
+    "kind": "point",
+    "rule": "gauss640"
+   },
+   {
+    "name": "nodes",
+    "kind": "point",
+    "rule": "nodes"
+   }
+  ],
+  "fast": [
+   {
+    "name": "dense",
+    "kind": "dense"
+   },
+   {
+    "name": "lat64",
+    "kind": "mesh",
+    "rule": "lat64"
+   },
+   {
+    "name": "fib1597",
+    "kind": "point",
+    "rule": "fib1597"
+   },
+   {
+    "name": "fib121393",
+    "kind": "point",
+    "rule": "fib121393"
+   },
+   {
+    "name": "gref",
+    "kind": "point",
+    "rule": "gauss640"
+   },
+   {
+    "name": "nodes",
+    "kind": "point",
+    "rule": "nodes"
+   }
+  ]
+ },
+ "refs": "refs2d",
+ "fom": {
+  "truth": {
+   "name": "fft_tight",
+   "ntol": 1e-06,
+   "ltol": 1e-08
+  },
+  "timed": [
+   {
+    "name": "lean_tight",
+    "ntol": 1e-06,
+    "ltol": 1e-08
+   },
+   {
+    "name": "lean_nt3e-3_l3e-3_dt005",
+    "ntol": 0.003,
+    "ltol": 0.003
+   }
+  ]
+ },
+ "timing": {
+  "skip": true,
+  "cohort": "dev6",
+  "cases": 1,
+  "reps": 1,
+  "burn": 0.1,
+  "seed": 20261001,
+  "arms": {}
+ },
+ "audit": {
+  "cohort": "dev6",
+  "cases": [
+   0,
+   2
+  ],
+  "full_max_mesh": 256,
+  "full_case0_max_mesh": 1024,
+  "full_arms": [
+   "dense",
+   "lat64",
+   "gauss64",
+   "fib6765",
+   "gref"
+  ]
+ },
+ "tangent_chunks": {
+  "acc": 24,
+  "fast": 8
+ },
+ "dense_chunk": 8,
+ "point_chunk": 32768,
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "role": "jcp-mechanism A1 2D (dev/val only)",
+ "nodes_reached_rho_cases": 8,
+ "source_job": "dv256"
+}

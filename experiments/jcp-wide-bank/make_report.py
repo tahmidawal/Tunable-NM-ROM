@@ -17,6 +17,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import matplotlib.ticker
 
 HERE = Path(__file__).resolve().parent
 PLOTS = HERE / 'plots'
@@ -41,6 +42,14 @@ def sci(x):
 
 def gb(b):
     return '–' if b is None else (f'{b / 1e9:.2f} GB' if b >= 1e8 else f'{b / 1e6:.1f} MB')
+
+
+def plain(ax, axis='y'):
+    from matplotlib.ticker import FuncFormatter, LogLocator
+    fmt = FuncFormatter(lambda v, _: f'{v:g}')
+    for a_ in ((ax.yaxis,) if axis == 'y' else (ax.xaxis,) if axis == 'x' else (ax.xaxis, ax.yaxis)):
+        a_.set_major_formatter(fmt)
+        a_.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
 
 def style(ax, title, xlabel, ylabel):
@@ -246,7 +255,8 @@ def plots_2d(S, by, Rps, tv):
                     va='center')
     ax.set_yscale('log')
     ax.set_xticks(xs)
-    style(ax, "2D dial: worst error over 38 validation cases vs bank width R' (M = 4R', PROVISIONAL)", "R' (bank columns used)",
+    plain(ax)
+    style(ax, "2D dial (M = 4R'): worst error over 38 validation cases\nPROVISIONAL, first-order references", "R' (bank columns used)",
           'worst relative error (%)')
     ax.legend(frameon=False, fontsize=8, loc='lower left')
     save(f, '2d_error_vs_Rp.png')
@@ -260,7 +270,8 @@ def plots_2d(S, by, Rps, tv):
             label='off-mesh rule at $m^\\star$, $8m(2R\'+M)$')
     ax.set_yscale('log')
     ax.set_xticks(xs)
-    style(ax, "2D advection memory vs R' (M = 4R')", "R'", 'bytes (GB, log)')
+    plain(ax)
+    style(ax, "2D advection memory vs R' (M = 4R')", "R'", 'GB (log scale)')
     ax.legend(frameon=False, fontsize=8)
     save(f, '2d_memory_vs_Rp.png')
     # m* vs M
@@ -273,6 +284,7 @@ def plots_2d(S, by, Rps, tv):
             ax.plot(xm, ym, color=SERIES[i], lw=2, marker=MARKERS[i], ms=7, label=f"R' = {r}")
     ax.set_xscale('log', base=2)
     ax.set_yscale('log', base=2)
+    plain(ax, 'both')
     style(ax, 'Gauss points needed ($m^\\star$, $\\tau=2.5\\times10^{-4}$) vs test count M', 'M (sine tests)',
           '$m^\\star$ (Gauss points)')
     ax.legend(frameon=False, fontsize=8, title="bank width", title_fontsize=8)
@@ -285,7 +297,7 @@ def plots_2d(S, by, Rps, tv):
             ax.plot(xk, [by[(r, k)]['dep_ms_final'] for r in xk], color=SERIES[i], lw=2, marker=MARKERS[i], ms=7,
                     label=f'M/R\' = {k}')
         ax.set_xticks(Rps)
-        style(ax, "2D query time of the deployed rule vs R' (one A100, final A–B–A panel)", "R'", 'median ms per query')
+        style(ax, "2D query time of the deployed rule vs R'\n(one A100, final A–B–A panel)", "R'", 'median ms per query')
         ax.legend(frameon=False, fontsize=8)
         save(f, '2d_cost_vs_Rp.png')
 
@@ -399,7 +411,8 @@ def plots_3d(recs, tag):
     ax.axhline(141, color=INK2, lw=1, ls='--')
     ax.annotate('H200 memory (141 GB)', (xs[0], 141), textcoords='offset points', xytext=(0, 4), color=INK2, fontsize=8)
     ax.set_yscale('log')
-    style(ax, "3D advection memory vs R': tensor vs off-mesh", "R'", 'bytes (GB, log)')
+    plain(ax)
+    style(ax, "3D advection memory vs R': tensor vs off-mesh", "R'", 'GB (log scale)')
     ax.legend(frameon=False, fontsize=8, loc='lower right')
     save(f, f'3d_{tag}_memory_vs_Rp.png')
 

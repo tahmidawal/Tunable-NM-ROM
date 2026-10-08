@@ -1,0 +1,126 @@
+host=pax007 source_commit=97add8fc5a12b6e3ffbb5fe92a91b55de1852367
+NVIDIA A100 80GB PCIe, GPU-ef0906da-ee15-780e-c19b-39842e183c5c, 81920 MiB
+10.235.106.33:/projects/paralab  4.6T  997G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[3.1s] CASES 38
+[5.8s] REFS 76
+[17.0s] BANK+OPS
+[88.2s] BLOCKS R512
+[340.7s] CASE R512_M2048 7
+[526.3s] CASE R512_M2048 15
+[712.7s] CASE R512_M2048 23
+[899.5s] CASE R512_M2048 31
+[1116.2s] RHO R512_M2048
+[1360.0s] timing phase A1: 204 invocations
+[1361.3s] timing phase B: 12 invocations
+[1529.9s] timing phase A2: 204 invocations
+[1529.9s] TIMING R512_M2048
+[1736.7s] CASE R512_M1536 7
+[1882.3s] CASE R512_M1536 15
+[2028.8s] CASE R512_M1536 23
+[2175.8s] CASE R512_M1536 31
+[2340.6s] RHO R512_M1536
+[2535.9s] timing phase A1: 204 invocations
+[2537.2s] timing phase B: 12 invocations
+[2674.2s] timing phase A2: 204 invocations
+[2674.2s] TIMING R512_M1536
+[2838.1s] CASE R512_M1024 7
+[2941.3s] CASE R512_M1024 15
+[3045.4s] CASE R512_M1024 23
+[3149.6s] CASE R512_M1024 31
+[3279.6s] RHO R512_M1024
+[3426.3s] timing phase A1: 204 invocations
+[3427.5s] timing phase B: 12 invocations
+[3532.1s] timing phase A2: 204 invocations
+[3532.2s] TIMING R512_M1024
+[3575.3s] BLOCKS R384
+[3741.1s] CASE R384_M1536 7
+[3855.2s] CASE R384_M1536 15
+[3970.3s] CASE R384_M1536 23
+[4085.5s] CASE R384_M1536 31
+[4226.5s] RHO R384_M1536
+[4385.0s] timing phase A1: 204 invocations
+[4386.2s] timing phase B: 12 invocations
+[4498.0s] timing phase A2: 204 invocations
+[4498.0s] TIMING R384_M1536
+[4641.9s] CASE R384_M1152 7
+[4725.1s] CASE R384_M1152 15
+[4808.9s] CASE R384_M1152 23
+[4892.9s] CASE R384_M1152 31
+[5009.9s] RHO R384_M1152
+[5131.7s] timing phase A1: 204 invocations
+[5132.9s] timing phase B: 12 invocations
+[5220.3s] timing phase A2: 204 invocations
+[5220.3s] TIMING R384_M1152
+[5350.4s] CASE R384_M768 7
+[5418.0s] CASE R384_M768 15
+[5486.6s] CASE R384_M768 23
+[5555.0s] CASE R384_M768 31
+[5658.4s] RHO R384_M768
+[5761.5s] timing phase A1: 204 invocations
+[5762.8s] timing phase B: 12 invocations
+[5838.0s] timing phase A2: 204 invocations
+[5838.0s] TIMING R384_M768
+[5880.4s] BLOCKS R256
+[5987.6s] CASE R256_M1024 7
+[6044.9s] CASE R256_M1024 15
+[6102.9s] CASE R256_M1024 23
+[6160.9s] CASE R256_M1024 31
+[6260.0s] RHO R256_M1024
+[6353.7s] timing phase A1: 204 invocations
+[6355.0s] timing phase B: 12 invocations
+[6423.3s] timing phase A2: 204 invocations
+[6423.3s] TIMING R256_M1024
+[6518.7s] CASE R256_M768 7
+[6563.9s] CASE R256_M768 15
+[6609.5s] CASE R256_M768 23
+[6655.2s] CASE R256_M768 31
+[6711.2s] RHO R256_M768
+[6788.8s] timing phase A1: 204 invocations
+[6790.0s] timing phase B: 12 invocations
+[6848.0s] timing phase A2: 204 invocations
+[6848.0s] TIMING R256_M768
+[6941.3s] CASE R256_M512 7
+[6976.6s] CASE R256_M512 15
+[7012.2s] CASE R256_M512 23
+[7048.1s] CASE R256_M512 31
+[7126.2s] RHO R256_M512
+[7191.8s] timing phase A1: 204 invocations
+[7193.1s] timing phase B: 12 invocations
+[7243.1s] timing phase A2: 204 invocations
+[7243.1s] TIMING R256_M512
+[7286.8s] BLOCKS R128
+[7351.6s] CASE R128_M512 7
+[7372.1s] CASE R128_M512 15
+[7392.8s] CASE R128_M512 23
+[7413.8s] CASE R128_M512 31
+[7480.5s] RHO R128_M512
+[7529.0s] timing phase A1: 204 invocations
+[7530.2s] timing phase B: 12 invocations
+[7568.6s] timing phase A2: 204 invocations
+[7568.6s] TIMING R128_M512
+[7642.6s] CASE R128_M384 7
+[7659.7s] CASE R128_M384 15
+[7677.1s] CASE R128_M384 23
+[7694.7s] CASE R128_M384 31
+[7761.4s] RHO R128_M384
+[7805.6s] timing phase A1: 204 invocations
+[7806.9s] timing phase B: 12 invocations
+[7842.6s] timing phase A2: 204 invocations
+[7842.6s] TIMING R128_M384
+[7911.3s] CASE R128_M256 7
+[7925.5s] CASE R128_M256 15
+[7939.8s] CASE R128_M256 23
+[7954.3s] CASE R128_M256 31
+[8015.1s] RHO R128_M256
+[8055.6s] timing phase A1: 204 invocations
+[8056.9s] timing phase B: 12 invocations
+[8090.0s] timing phase A2: 204 invocations
+[8090.0s] TIMING R128_M256
+[8167.6s] timing phase A1: 144 invocations
+[8172.6s] timing phase B: 48 invocations
+[8218.0s] timing phase A2: 144 invocations
+[8218.0s] FINAL TIMING
+W2D COMPLETE
+ALL-DONE

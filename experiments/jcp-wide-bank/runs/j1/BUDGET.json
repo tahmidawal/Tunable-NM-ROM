@@ -1,0 +1,15 @@
+{
+ "source": "smoke s1, job 5012313, NVIDIA A100 80GB PCIe",
+ "components_seconds": {
+  "rollouts": "R512/M2048 warm per case 22.7 s (gref 7.2, gref_check 10.6, ladder+controls 4.9) x 38 cases = 863 s; grid sum of R'M = 4.2 x (512*2048) -> ~3600 s",
+  "compile": "~2.5 s per arm x 20 arms x 12 settings = 600 s",
+  "rho": "65 s per setting (fixed cost, state count negligible) x 12 = 780 s",
+  "timing": "per-setting A-B-A 6 cases x 2 reps x 2 phases: ~ 6x the smoke panel (~30-80 s) -> ~300 s mean x 12 = 3600 s (upper)",
+  "blocks+floors+setup": "~4 x 100 s = 400 s"
+ },
+ "projection_hours": 2.5,
+ "requested_hours": 10,
+ "peak_device_bytes_smoke": 52395764736,
+ "device_bytes": 85899345920,
+ "rho_worst_case": "if rho scaled fully with the state batches (2 -> 30), 65 s x 15 x 12 settings = 3.25 h; total worst case 2.5 - 0.22 + 3.25 = 5.5-5.7 h < 10 h requested; the 2x rule then holds only for the expected case (FLOP estimate of the state-dependent part: ~13 TFLOP per setting, seconds on an A100)"
+}

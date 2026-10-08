@@ -566,3 +566,16 @@ $(\Delta t_0/2,\Delta t_0/4,\Delta t_0/8)$, adjacent $(\Delta t_0,\Delta t_0/2,\
 deployed fixed-sweep BE): H1-3D, H2-3D with the same inequalities. `audit_t3.py` re-scores every rollout from the saved
 coefficients through a separate evaluation path (bank features evaluated at the lattice coordinates, not the mesh
 rows) and checks inventories, verification and timing hashes.
+
+## Amendment A11 (2026-10-08, after a local machinery run of `fomrun.py`/`audit_fom.py` at $L=256$; before `fom1k`)
+
+A local GB10 run of the FOM driver (mesh 256, all 38 cases, two dt factors, four ROM arms; development only) exercised
+every phase and the full audit: all checks and all twelve rejection tests behaved, except two. (i) The cross-job ROM
+agreement failed, as it must, because the local mesh (256) differs from `a1kfast` (1024). (ii) The FOM order check failed
+for **undamped CN on dev6 case 0**: the self-differences were $1.4\times10^{-2}$, $2.7\times10^{-3}$, $6.8\times10^{-5}$, $6.1\times10^{-6}$ at
+$\Delta t/\Delta t_0=2,1,1/2,1/4$, i.e. "orders" 2.4, 5.3, 3.5. That is the stiff-mode transient of CN (its amplification factor
+tends to −1 for $\Delta t\,\nu\lambda\gg1$, and the FOM carries every grid mode), not a coding error: CN-R — the same CN code
+after two BE steps — gives 1.96, 1.99, 2.00 on the same case, and CN gives 2.01, 2.00, 2.00 on case 2.
+**A11.1** The FOM order gate (A9.5) therefore applies to BE, CN-R and BDF2; undamped CN's orders are reported with the
+label "pre-asymptotic (stiff-mode transient)" when outside the band, and FOM-CN is not called second order unless the
+gate would have passed. This is also the brief's predicted CN ringing, seen in the full-order model.

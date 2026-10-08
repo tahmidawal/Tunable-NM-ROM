@@ -72,8 +72,9 @@ def validate(ev, cfg, refs, dec, a1k_rows):
         orders[f'{sc}|{coh}{c}'] = p
         lo, hi = BANDS[sc]
         nf = r.get('nfail', {})
+        gate = sc != 'CN'          # A11.1: undamped CN is reported, not gated (stiff-mode transient); CN-R is gated
         ok = ok and good_d and set(nf) == {'2', '1', '0.5', '0.25', '0.125'} and all(v == 0 for v in nf.values()) \
-            and lo <= p <= hi and within(p, r['orders'].get('0.5'), 1e-9)
+            and (lo <= p <= hi or not gate) and within(p, r['orders'].get('0.5'), 1e-9)
     ck['fom_order_check'] = bool(ok)
     info['fom_orders_finest'] = orders
     # ---- calibration (re-applied from saved float32 fields)

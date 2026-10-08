@@ -253,6 +253,10 @@ def main():
                     kt = key((role, form, sc, dt, 'tight'))
                     if kt in f257:
                         m['prod_vs_tight'] = dist(k_, kt)
+                if role == 'hq':      # quadrature sensitivity: paired field distance to the main-rule run (code audit 2, item 15)
+                    km = key(('main', form, sc, dt, lev))
+                    if km in f257:
+                        m['vs_main'] = dist(k_, km)
                 if lev == 'tight':
                     kt = key((role, form, sc, dt, 'tighter'))
                     if kt in f257:

@@ -127,6 +127,8 @@ def check_metrics(res, Wz, setting, dec, refs, max_cases, swapST=False, timeshif
                 bad.append((coh, c, k, 'prod_vs_tight'))
             if 's_h' in row and not close(dist(k, f'{role}|{form}|{sc}|{dt:.8g}|tighter'), row['s_h']):
                 bad.append((coh, c, k, 's_h'))
+            if 'vs_main' in row and not close(dist(k, f'main|{form}|{sc}|{dt:.8g}|{lev}'), row['vs_main']):
+                bad.append((coh, c, k, 'vs_main'))
     return bad
 
 
@@ -227,6 +229,8 @@ def main():
                 need.append('prod_vs_tight')
             if lev == 'tight' and f'{role}|{form}|{sc}|{dt:.8g}|tighter' in ers:
                 need.append('s_h')
+            if role == 'hq' and att != 'smk':     # the smoke predates the vs_main metric
+                need.append('vs_main')
             miss += [(r['run'], m) for m in need if r.get(m) is None or not np.isfinite(r[m])]
         ck[f'mandatory_metrics_{s}'] = not miss
         out['info'][f'missing_metrics_{s}'] = [list(m) for m in miss[:20]]

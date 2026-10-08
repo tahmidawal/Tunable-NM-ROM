@@ -108,6 +108,9 @@ class Setting:
         out['claim'] = claim
         out['outliers_2'] = int(sum(not (1.7 <= p <= 2.3) for p in pv))
         out['outliers_1'] = int(sum(not (.8 <= p <= 1.25) for p in pv))
+        co = [self.triple(c, form, sc, 2 * DT0) for c in self.cases]
+        cv = [p for p, v in co if v]
+        out['coarse_median'], out['coarse_valid'] = (float(np.median(cv)) if cv else None), len(cv)
         if form == 'GAL' and sc in ('BDF2', 'CN'):
             fin = [self.triple(c, form, sc, DT0 / 4) for c in self.cases]
             fv = [p for p, v in fin if v]
@@ -140,6 +143,14 @@ class Setting:
             return None
         return dict(median=float(np.median(v)), worst=float(np.max(v)), resolved=res_, n=len(v))
 
+    def failures(self):
+        out = []
+        for r in self.rows:
+            if not r['verified']:
+                out.append(dict(case=f"{r['cohort']}{r['case']}", run=r['run'], first_failed_step=int(r['stats']['first_fail']),
+                                failed_steps=int(r['stats']['nfail']), exits=r['stats']['exits']))
+        return out
+
     def timing(self):
         t = self.res['timing'].get(self.s)
         if not t:
@@ -155,15 +166,19 @@ class Setting:
             mad = float(np.median(np.abs(r - med)))
             dr = np.array([i['drift'] for i in L])
             out[b] = dict(n=len(r), median=med, iqr=[float(np.quantile(r, .25)), float(np.quantile(r, .75))],
-                          outliers=int(np.sum(np.abs(r - med) > 3 * max(mad, 1e-12))),
+                          outliers=int(np.sum(np.abs(r - med) > 3 * mad)),
                           ms=1e3 * float(np.median([i['tB'] for i in L])),
-                          drift_median=float(np.median(dr)), drift_iqr=[float(np.quantile(dr, .25)), float(np.quantile(dr, .75))])
+                          drift_median=float(np.median(dr)), drift_iqr=[float(np.quantile(dr, .25)), float(np.quantile(dr, .75))],
+                          drift_outliers=int(np.sum(np.abs(dr - np.median(dr)) > 3 * np.median(np.abs(dr - np.median(dr))))))
         return out, 1e3 * float(np.median(tA))
 
 
-def analyze(st):
+def analyze(st, aud, att):
     s = st.s
     an = dict(setting=s, cases=len(st.cases), table=[], orders={}, timing={}, A_ms=None)
+    an['claims_eligible'] = len(st.cases) == 38 and att.startswith('a1k')
+    an['audit_pass'] = bool(aud['all_pass'])
+    an['failures'] = st.failures()
     tim, A_ms = st.timing()
     an['timing'], an['A_ms'] = tim, A_ms
     comp = k('main', 'LSPG', 'BE', DT0, 'prod')
@@ -182,6 +197,11 @@ def analyze(st):
                     ent[f'{m[2:]}_worst'], ent[f'{m[2:]}_median'] = b['worst'], b['median']
                 pv = st.agg(key, 'prod_vs_tight')
                 ent['prod_vs_tight_worst'] = pv['worst'] if pv else None
+                fr_ = [st.get(c, key) for c in st.cases]
+                rat = [r['anchor_full'] / r['anchor_257'] for r in fr_ if r and r.get('anchor_full') and r.get('anchor_257')]
+                ent['full_over_257_median'] = float(np.median(rat)) if rat else None
+                vm = st.agg(k('hq', form, sc, dt, 'prod'), 'vs_main')
+                ent['hq_dist_worst'] = vm['worst'] if vm and np.isfinite(vm['worst']) else None
                 te = st.time_error(key)
                 ent['time_err'] = te
                 ent['ratio'] = (tim.get(key) or {}).get('median') if key != comp else 1.
@@ -192,7 +212,10 @@ def analyze(st):
                 an['table'].append(ent)
     for form in FORMS:
         for sc in SCHEMES + ['TH06']:
-            an['orders'][f'{form}|{sc}'] = st.order_claim(form, sc)
+            o = st.order_claim(form, sc)
+            if not an['claims_eligible']:
+                o['claim'] = f"diagnostic only ({len(st.cases)} cases; would read: {o['claim']})"
+            an['orders'][f'{form}|{sc}'] = o
     old = []
     for sc in ('BE', 'CN', 'BDF2'):
         for f in (.5, 1, 2, 5):
@@ -210,7 +233,12 @@ def analyze(st):
     an['eligible'] = [e['key'] for e in elig]
     an['comparator'] = comp
     an['comparator_verified'] = bool(C and C['verified'] == n)
+    prereq = an['audit_pass'] and an['claims_eligible']
     for ref in ('ST', 'TX'):
+        if not prereq:
+            an[f'select_{ref}'] = dict(fast='unavailable (audit failed or not the full cohort)',
+                                       accurate='unavailable (audit failed or not the full cohort)')
+            continue
         if not an['comparator_verified']:
             an[f'select_{ref}'] = dict(fast='no verified candidate', accurate='no verified candidate')
             continue
@@ -228,8 +256,9 @@ def analyze(st):
     h1 = [e for e in so2 if abs(e['dt'] - DT0) < 1e-15 and e['ST_median'] <= .7 * C['ST_median'] and e['ST_worst'] <= C['ST_worst']] if C else []
     h2 = [e for e in so2 if e['dt'] >= 2 * DT0 - 1e-15 and e['ST_worst'] <= C['ST_worst'] and e['ST_median'] <= C['ST_median']
           and e['ratio'] <= .75] if C else []
-    an['H1'] = dict(passed=bool(h1), arms=[e['key'] for e in h1])
-    an['H2'] = dict(passed=bool(h2), arms=[e['key'] for e in h2])
+    ok = prereq and an['comparator_verified']
+    an['H1'] = dict(passed=bool(h1) if ok else None, arms=[e['key'] for e in h1])
+    an['H2'] = dict(passed=bool(h2) if ok else None, arms=[e['key'] for e in h2])
     an['G1a'] = st.res['g1a']
     return an
 
@@ -249,8 +278,14 @@ def plots(st, an, rule):
             lab = f"{form} {NAMES[sc]} (order: {o['claim']}, median p={o['primary_median']:.2f})" if o['primary_median'] is not None else f'{form} {NAMES[sc]}'
             x = [e['dt'] for e in E]
             ax[0].plot(x, [100 * e['ST_worst'] for e in E], color=COLORS[sc], lw=2, ms=7, label=f'{form} {NAMES[sc]}', **STYLE[form])
-            y = [e['time_err']['median'] if e['time_err'] else np.nan for e in E]
+            y = [100 * e['time_err']['median'] if e['time_err'] else np.nan for e in E]
             ax[1].plot(x, y, color=COLORS[sc], lw=2, ms=7, label=lab, **STYLE[form])
+            un = [(xx_, yy_) for e, xx_, yy_ in zip(E, x, y) if e['time_err'] and e['time_err']['resolved'] < e['time_err']['n'] / 2]
+            if un:
+                ax[1].scatter(*zip(*un), s=70, facecolors='white', edgecolors=COLORS[sc], zorder=4)
+            bad = [(xx_, 100 * e['ST_worst']) for e, xx_ in zip(E, x) if e['verified'] < e['n']]
+            if bad:
+                ax[0].scatter(*zip(*bad), marker='x', s=80, color='#0b0b0b', zorder=5)
     ax[0].axhline(100 * comp['ST_worst'], color='#52514e', ls=':', lw=1.5, label='LSPG BE at $\\Delta t_0$ (deployed)')
     ax[0].set_xscale('log')
     ax[0].set_xlabel('time step $\\Delta t$')
@@ -260,18 +295,19 @@ def plots(st, an, rule):
     if any(e['time_err'] for e in T):
         ax[1].set_yscale('log')
     ax[1].set_xlabel('time step $\\Delta t$')
-    ax[1].set_ylabel('median time error (distance to anchor, fraction of $\\|u_0\\|$)')
-    ax[1].set_title(f'{s}: ROM time error vs $\\Delta t$ (anchor GAL-BDF2, $\\Delta t_0/16$)')
+    ax[1].set_ylabel('median anchor discrepancy (% of $\\|u_0\\|$)')
+    ax[1].set_title(f'{s}: distance to GAL-BDF2 at $\\Delta t_0/16$ (hollow: unresolved in most cases)')
     xx = np.array([DT0 / 8, 10 * DT0])
     for p_, ls in ((1, (0, (1, 3))), (2, (0, (4, 3)))):
         y0 = np.nanmedian([e['time_err']['median'] for e in T if e['time_err'] and abs(e['dt'] - DT0) < 1e-15 and e['scheme'] == ('BE' if p_ == 1 else 'BDF2')] or [np.nan])
-        ax[1].plot(xx, y0 * (xx / DT0) ** p_, color='#9a9a96', lw=1, ls=ls, label=f'slope {p_} guide')
+        ax[1].plot(xx, 100 * y0 * (xx / DT0) ** p_, color='#9a9a96', lw=1, ls=ls, label=f'slope {p_} guide')
     for a_ in ax:
         a_.grid(True, which='major', color='#e4e4e0', lw=.6)
         a_.spines[['top', 'right']].set_visible(False)
     ax[0].legend(fontsize=7.5, frameon=False)
     ax[1].legend(fontsize=6.8, frameon=False)
-    fig.suptitle(f'Burgers 2D, {RULE_NAME.get(rule, rule)}, $L=1024$ — errors are provisional (first-order references)', fontsize=10)
+    fig.suptitle(f'Burgers 2D, {RULE_NAME.get(rule, rule)}, $L={st.res["mesh"]}$, {len(st.cases)} cases — errors are provisional '
+                 '(first-order references); x = unverified', fontsize=10)
     fig.tight_layout()
     p1 = HERE / 'plots' / f'error_vs_dt_{s}.png'
     fig.savefig(p1, dpi=150)
@@ -285,6 +321,9 @@ def plots(st, an, rule):
                 continue
             ax.plot([e['ms'] for e in E], [100 * e['ST_median'] for e in E], color=COLORS[sc], lw=2, ms=7,
                     label=f'{form} {NAMES[sc]}', **STYLE[form])
+            bad = [(e['ms'], 100 * e['ST_median']) for e in E if e['verified'] < e['n']]
+            if bad:
+                ax.scatter(*zip(*bad), marker='x', s=80, color='#0b0b0b', zorder=5)
             if form == 'LSPG' and sc in ('BE', 'BDF2'):
                 for e in E:
                     ax.annotate(f"{dtf(e['dt'])}$\\Delta t_0$", (e['ms'], 100 * e['ST_median']), fontsize=7, color='#52514e',
@@ -294,7 +333,7 @@ def plots(st, an, rule):
     ax.set_xscale('log')
     ax.set_xlabel('end-to-end query time per case (ms, median of paired A–B–A on one GPU)')
     ax.set_ylabel('median error vs ST over dev6 ∪ val32 (%), PROVISIONAL')
-    ax.set_title(f'{s}: accuracy vs cost per time scheme ({RULE_NAME.get(rule, rule)})')
+    ax.set_title(f'{s}: accuracy vs cost per time scheme ({RULE_NAME.get(rule, rule)}); x = unverified')
     ax.grid(True, which='major', color='#e4e4e0', lw=.6)
     ax.spines[['top', 'right']].set_visible(False)
     ax.legend(fontsize=7.5, frameon=False)
@@ -320,7 +359,7 @@ def main():
         runs_tbl.append((att, res, aud))
         for s in res['config']['settings']:
             st = Setting(res, s)
-            an = analyze(st)
+            an = analyze(st, aud, att)
             rule = res['config']['rules'][s]['main']['rule']
             an['plots'] = plots(st, an, rule)
             (HERE / 'checks' / f'analysis-{att}-{s}.json').write_text(json.dumps(an, indent=1, default=float) + '\n')
@@ -405,8 +444,8 @@ def main():
         W('')
         W(f"### Accuracy and cost per scheme and step (production tolerance; errors PROVISIONAL, % of $\\lVert u_0\\rVert$)")
         W('')
-        W('| form | scheme | $\\Delta t/\\Delta t_0$ | ST worst | ST median | TX worst | TX median | S worst | S median | time error median | resolved | paired time ratio (IQR) | ms | verified | alternating | quad. sens. ST worst |')
-        W('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
+        W('| form | scheme | $\\Delta t/\\Delta t_0$ | ST worst | ST median | TX worst | TX median | S worst | S median | anchor disc. median (%) | resolved | prod vs tight worst (%) | full/257 | paired ratio (IQR) | ms | verified | alternating | quad. sens. worst (%) | HQ ST worst |')
+        W('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
         for e in an['table']:
             te = e['time_err']
             res_ = f"{te['resolved']}/{te['n']}" if te else '—'
@@ -414,37 +453,59 @@ def main():
             if e['ratio_iqr']:
                 rat += f" ({e['ratio_iqr'][0]:.2f}–{e['ratio_iqr'][1]:.2f})"
             ms = '—' if e['ms'] is None else f"{e['ms']:.1f}"
+            fo = '—' if e['full_over_257_median'] is None else f"{e['full_over_257_median']:.2f}"
             W(f"| {e['form']} | {NAMES[e['scheme']]} | {dtf(e['dt'])} | {pct(e['ST_worst'])} | {pct(e['ST_median'])} | "
               f"{pct(e['TX_worst'])} | {pct(e['TX_median'])} | {pct(e['S_worst'])} | {pct(e['S_median'])} | "
-              f"{sci(te['median']) if te else '—'} | {res_} | {rat} | {ms} | {e['verified']}/{e['n']} | {e['alternating']} | "
-              f"{pct(e['hq_ST_worst'])} |")
+              f"{pct(te['median']) if te else '—'} | {res_} | {pct(e['prod_vs_tight_worst'])} | {fo} | {rat} | {ms} | "
+              f"{e['verified']}/{e['n']} | {e['alternating']} | {pct(e['hq_dist_worst'])} | {pct(e['hq_ST_worst'])} |")
         W('')
-        W(f"Deployed comparator: {an['comparator']}, {an['A_ms']:.1f} ms median; the vendor backward-Euler query (same "
-          f"arithmetic) paired ratio {an['vendor_ratio']:.3f} (generic-implementation overhead check).")
+        W('Timing detail (all subjects; ratio = candidate / mean of the flanking deployed-BE runs):')
+        W('')
+        W('| subject | samples | ratio median | ratio IQR | ratio outliers | drift median | drift IQR | drift outliers |')
+        W('|---|---|---|---|---|---|---|---|')
+        for b_, t_ in sorted(an['timing'].items()):
+            W(f"| `{b_}` | {t_['n']} | {t_['median']:.3f} | {t_['iqr'][0]:.3f}–{t_['iqr'][1]:.3f} | {t_['outliers']} | "
+              f"{t_['drift_median']:.3f} | {t_['drift_iqr'][0]:.3f}–{t_['drift_iqr'][1]:.3f} | {t_['drift_outliers']} |")
+        W('')
+        if an['failures']:
+            W(f"Unverified trajectories ({len(an['failures'])}; excluded from orders, anchor and selection):")
+            W('')
+            W('| case | run | first failed step | failed steps | exits [budget, tol, tiny, damping, stationary] |')
+            W('|---|---|---|---|---|')
+            for f_ in an['failures'][:60]:
+                W(f"| {f_['case']} | `{f_['run']}` | {f_['first_failed_step']} | {f_['failed_steps']} | {f_['exits']} |")
+            if len(an['failures']) > 60:
+                W(f"| … | {len(an['failures']) - 60} more in `checks/analysis-{att}-{s}.json` | | | |")
+            W('')
+        else:
+            W('Every trajectory of this setting was verified (every step met its acceptance test).')
+            W('')
+        W(f"Deployed comparator: `{an['comparator']}`, {an['A_ms']:.1f} ms median; the vendor backward-Euler query (G1a "
+          f"agreement within tolerance) paired ratio {an['vendor_ratio']:.3f} (generic-implementation overhead check).")
         W('')
         W('### Observed temporal order (self-convergence, tight tolerance)')
         W('')
-        W('| form | scheme | claim | primary median $p$ | valid / cases | adjacent median $p$ | cases with both triples | outside [1.7, 2.3] | outside [0.8, 1.25] | finer GAL triple median |')
-        W('|---|---|---|---|---|---|---|---|---|---|')
+        W('| form | scheme | claim | primary median $p$ | valid / cases | adjacent median $p$ | cases with both triples | outside [1.7, 2.3] | outside [0.8, 1.25] | coarse triple median (valid) | finer GAL triple median |')
+        W('|---|---|---|---|---|---|---|---|---|---|---|')
         for kk, o in an['orders'].items():
             f_, sc = kk.split('|')
             fmt = lambda x: '—' if x is None else f'{x:.2f}'
             W(f"| {f_} | {NAMES[sc]} | {o['claim']} | {fmt(o['primary_median'])} | {o['primary_valid']}/{o['cases']} | "
               f"{fmt(o['adjacent_median'])} | {o['n_both']} | {o['outliers_2']} | {o['outliers_1']} | "
-              f"{fmt(o.get('finest_extra_median'))} |")
+              f"{fmt(o['coarse_median'])} ({o['coarse_valid']}) | {fmt(o.get('finest_extra_median'))} |")
         W('')
         W('### Hypotheses and selection (dev6 ∪ val32; PROVISIONAL references)')
         W('')
         W(f"- H1 (a CN/BDF2-family arm at $\\Delta t_0$ with median ST error ≤ 0.7× and worst ≤ the deployed BE): "
-          f"**{'passed' if an['H1']['passed'] else 'failed'}** ({', '.join(an['H1']['arms']) or 'none'}).")
+          f"**{ {True: 'passed', False: 'failed', None: 'unavailable'}[an['H1']['passed']] }** ({', '.join(an['H1']['arms']) or 'none'}).")
         W(f"- H2 (a CN/BDF2-family arm with $\\Delta t\\ge2\\Delta t_0$, worst and median ST ≤ BE at $\\Delta t_0$, paired time ratio ≤ 0.75): "
-          f"**{'passed' if an['H2']['passed'] else 'failed'}** ({', '.join(an['H2']['arms']) or 'none'}).")
+          f"**{ {True: 'passed', False: 'failed', None: 'unavailable'}[an['H2']['passed']] }** ({', '.join(an['H2']['arms']) or 'none'}).")
         W(f"- Selection against ST: fast-equal-accuracy **{an['select_ST']['fast']}**; accurate-equal-cost **{an['select_ST']['accurate']}**. "
           f"Sensitivity with TX: {an['select_TX']['fast']} / {an['select_TX']['accurate']}"
           f"{' (reference-dependent)' if an['select_TX'] != an['select_ST'] else ''}.")
         W('')
         if an['old']:
-            W('Old method (deployed mesh lattice $63^2$, LSPG), worst / median ST error (%):')
+            W('Old method (deployed mesh lattice $63^2$, LSPG), worst / median ST error (%, PROVISIONAL):')
             W('')
             W('| scheme | $\\Delta t/\\Delta t_0$ | ST worst | ST median | verified |')
             W('|---|---|---|---|---|')
@@ -459,7 +520,7 @@ def main():
     W('- Every error against ST, S or TX: the references are backward Euler in time and sign-upwind in space at $8192^2$. '
       'TX removes only the leading backward-Euler term and assumes the asymptotic regime. A second-order ROM can be closer to '
       'the true solution than ST is; its ST error then partly measures ST\'s own time error.')
-    W('- Time errors are distances to the GAL-BDF2 $\\Delta t_0/16$ anchor ("resolved" counts cases where the distance exceeds 3× the anchor uncertainty indicator).')
+    W('- Anchor discrepancies are distances to the GAL-BDF2 $\\Delta t_0/16$ rollout. They estimate the time-step error of a rollout only where GAL-BDF2 is shown to be second order on these data (its claim above) and the distance is resolved (≥ 3× the anchor uncertainty indicator); otherwise read them only as distances to that rollout.')
     W('- Timings are for the six dev6 timing cases on one GPU.')
     W('')
     W('## Glossary')
@@ -469,15 +530,20 @@ def main():
     W('- **LSPG**: the deployed least-squares solve of each step over the $M$ sine tests. **GAL**: the fixed-test Galerkin version (residual projected onto the range of $A$ and set to zero).')
     W('- **ST / S / TX**: full-order references at $8192^2$ with $\\Delta t_0/16$ / with $\\Delta t_0$ / their Richardson combination $(16\\,\\mathrm{ST}-\\mathrm{S})/15$.')
     W('- **ST worst / median**: the largest / median over the 38 cases of the worst-over-time ($t=0.05$–$0.25$) error on the $257^2$ shared nodes, in % of $\\lVert u_0\\rVert$.')
-    W('- **time error**: distance of a rollout from the anchor (GAL-BDF2 at $\\Delta t_0/16$, tight tolerance), median over cases; an estimate of the error due to the time step alone.')
-    W('- **resolved**: number of cases whose time error exceeds 3× the anchor uncertainty indicator.')
+    W('- **anchor disc.**: distance of a rollout from the anchor (GAL-BDF2 at $\\Delta t_0/16$, tight tolerance), worst over time, median over cases, % of $\\lVert u_0\\rVert$ on the $257^2$ nodes; a time-step error estimate only under the conditions stated above.')
+    W('- **anchor uncertainty indicator**: per case, the anchor\'s own change from $\\Delta t_0/8$ to $\\Delta t_0/16$ plus the two solve-sensitivity indicators; **resolved**: cases whose anchor discrepancy exceeds 3× it.')
+    W('- **prod vs tight**: distance between the production-tolerance rollout and the tight-tolerance rollout of the same arm (solver error at production settings).')
+    W('- **full/257**: median ratio of the anchor discrepancy measured on the full $1024^2$ mesh (normalised by the full-mesh $\\lVert u_0\\rVert$) to that on the $257^2$ nodes; near 1 means the shared nodes do not hide fine-scale differences.')
+    W('- **adjacent check**: the primary order must also hold on the coarser triple; "(adjacent check unresolved)" when fewer than half the cases have both triples valid; coarse triple = $(2\\Delta t_0,\\Delta t_0,\\Delta t_0/2)$, reported only.')
+    W('- **solve-sensitivity indicator**: distance between the tight and the tighter rollout of the same arm.')
+    W('- **ratio / drift outliers**: samples further than 3 median absolute deviations from the median; drift = second baseline time / first.')
+    W('- **HQ ST worst**: worst ST error with the finer rule; **quad. sens.**: worst distance between the finer-rule and the main-rule rollouts.')
     W('- **observed order $p$**: $\\log_2$ of the ratio of successive self-differences $\\lVert u_h-u_{h/2}\\rVert$ when $h$ is halved; primary triple $(\\Delta t_0/2,\\Delta t_0/4,\\Delta t_0/8)$, adjacent $(\\Delta t_0,\\Delta t_0/2,\\Delta t_0/4)$; a triple is valid when both differences exceed 10× the solve-sensitivity indicator.')
     W('- **claim**: "order 2" / "order 1" when ≥ 80 % of cases have a valid primary order and ≥ 80 % of those lie in the band (DESIGN A2.12, A3.3, A4.1).')
     W('- **paired time ratio**: candidate time divided by the mean of the deployed BE times run just before and after it (A–B–A), median over 6 cases × 3 repetitions; IQR is the interquartile range.')
     W('- **ms**: median end-to-end query time (initial fit, stepping, decoding six fields).')
     W('- **verified**: cases in which every time step met its solver acceptance test.')
     W('- **alternating**: cases whose stiff-mode increments alternate in sign (index > 0.5; a diagnostic only).')
-    W('- **quad. sens.**: worst ST error of the same arm with a finer quadrature rule (Gauss $192^2$ or Fibonacci 6765).')
     W('- **G1a / G1b**: the new code\'s backward Euler equals the deployed code in the same job / equals the 2D lane\'s stored numbers.')
     W('- **dev6, val32**: development (6) and validation (32) cohorts of initial bumps; selection uses only these.')
     W('- **pp**: percentage points of $\\lVert u_0\\rVert$.')

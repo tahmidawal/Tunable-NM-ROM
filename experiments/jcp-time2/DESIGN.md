@@ -521,3 +521,24 @@ fast ≈ 0.5 h, acc ≈ 1.5 h, wide ≈ 5 h (≈ 3.2× acc arithmetic, per the r
 `make_report.py` (audit identity binding, smoke labelling, verified-pair masks, wide-setting labels), which gate the
 report and are fixed and re-audited before any result is reported. The `wide` disclosure is narrowed: quadrature
 sensitivity (Gauss $192^2$) is measured for the production arms with $\Delta t\ge\Delta t_0/2$, not for the order or anchor runs.
+
+## Amendment A9 (2026-10-08, after the FOM code audit `audits/codex-fom-1.md`; before `fom1k`)
+
+**A9.1 FOM diagnostics.** `fom2.py` returns per-step arrays (final nonlinear relative residual, Newton count, worst
+BiCGStab relative residual) besides the aggregates.
+**A9.2 Calibration.** The tight solve is $(\mathrm{ntol},\mathrm{ltol})=(10^{-10},10^{-12})$; it must verify in all six dev6 cases,
+otherwise the configuration is *unresolved* and excluded from every comparison. The candidates use ltol $10^{-8}$; the
+fallback (no candidate passes) is the tight pair itself. The denominator is the tight solve's ST error per case.
+**A9.3 ROM arms inside the FOM job.** The ROM arms compared with the FOM are evaluated on all 38 cases *in the same job*
+(production tolerances as `t2run.py`): errors, verification and restricted-field hashes; their timed outputs must
+match those evaluation outputs. Arms: fast and acc, LSPG and GAL, BE/CN/CN-R/BDF2, $\Delta t/\Delta t_0\in\{1/2,1,2,5,10\}$ (the
+`t2run` timed set). The accuracy numbers of this job and of `a1k*` must agree (cross-job check in the audit/report).
+**A9.4 Comparison rule ("best among the listed configurations").** For each verified ROM arm, the matched FOM is the
+cheapest verified, calibrated FOM configuration (median paired time) whose cohort-worst ST error is ≤ the ROM arm's;
+the reported speed-up is FOM time / ROM time (both from this job, same GPU). Accuracy over 38 cases; timing over the
+six dev6 timing cases. "Second order" is used only for arms whose order is established (FOM: the L=256 order check;
+ROM: `a1k*`).
+**A9.5 Audit.** `audit_fom.py` derives every inventory from the staged, provenance-authenticated config; enforces the FOM
+order check (BE [0.8, 1.25], CN/CN-R/BDF2 [1.7, 2.3] at the finest pair, recomputed from saved fields); re-applies the
+calibration rule; re-scores FOM errors from saved fields and ROM errors from saved coefficients; re-hashes the timing
+cases; requires the independent BE re-run (skipping it makes the audit incomplete); and has rejection tests.

@@ -32,7 +32,7 @@ C = {
     'a1kacc': cfg('a1kacc', 1024, ['acc'], ['dev6', 'val32'], dict(cohort='dev6', cases=6, reps=3, burn=.1, seed=20261008)),
 }
 ROM_ARMS = [dict(setting=st_, rule=RULES[st_]['main']['rule'], form=f_, scheme=sc, dt_factor=df)
-            for st_ in ('fast', 'acc') for f_ in ('LSPG', 'GAL') for sc in ('BE', 'CN', 'CNR', 'BDF2') for df in (1, 2, 5)]
+            for st_ in ('fast', 'acc') for f_ in ('LSPG', 'GAL') for sc in ('BE', 'CN', 'CNR', 'BDF2') for df in (.5, 1, 2, 5, 10)]
 C['fom1k'] = dict(attempt='fom1k', driver='fomrun', mesh=1024, cohorts=['dev6', 'val32'], schemes=['BE', 'CN', 'CNR', 'BDF2'],
                   dt_factors=[.5, 1, 2, 5], ntols=[1e-4, 1e-6, 1e-8], order_cases=[['dev6', 0], ['dev6', 2]],
                   refs='REFS_DIR', rom_arms=ROM_ARMS, timing=dict(cases=6, reps=3, burn=.1, seed=20261008))

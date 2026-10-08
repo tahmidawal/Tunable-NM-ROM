@@ -497,3 +497,15 @@ job's provenance. The audit also requires exact run/case inventories, shapes, ma
 the vendor-subject output hashes and compiled-cache sizes, finiteness and the precision line, exits nonzero on failure,
 and never passes a partial (`--max-cases`) audit. Submission takes an `flock` on the namespace and refuses while any
 `t2_` job is live.
+
+## Amendment A7 (2026-10-08, at the coordinator's suggestion relayed from lane C1; before any 1024 job)
+
+Lane C1 (wide bank) reports, from a 2-case smoke, that against S the whole bank ($R'=512$) is about 10× more accurate
+than $R'=128$, while against ST both sit at 0.5–1.3 % because the BE time error dominates. To let the combined effect
+be shown later, a third setting is added: **`wide`** = linear rung, $R'=512$ (the whole rotated bank), $M=2048$ (the
+$M$ lowest discrete sine tests, $\kappa=4$ as `acc`/`fast`; C1's shell-completed $M$ is not used), main rule **Gauss
+$128^2$** (unselected: no rule selection exists at $R'=512$ in the 2D lane; $m$ grows with $R'$ as from fast to acc),
+quadrature-sensitivity rule Gauss $192^2$, old method `lat64`. Same grid, gates, metrics and selection rules as the
+other settings; job `a1kwide` after `a1kacc` (cap 1), run only if time permits. Its hypotheses H1/H2 and selection are
+reported as a secondary setting. The rule is not selected, so its quadrature sensitivity is reported beside every
+number.

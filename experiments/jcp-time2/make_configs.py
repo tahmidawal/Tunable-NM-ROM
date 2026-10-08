@@ -10,6 +10,8 @@ GRID = dict(dt_factors=[.125, .25, .5, 1, 2, 5, 10], dyadic_factors=[.125, .25, 
             anchor_schemes=['BDF2', 'CN'], anchor='BDF2', old_schemes=['BE', 'CN', 'BDF2'], old_dt_factors=[.5, 1, 2, 5])
 RULES = {'acc': {'main': {'kind': 'point', 'rule': 'gauss96'}, 'hq': {'kind': 'point', 'rule': 'gauss192'},
                  'old': {'kind': 'mesh', 'rule': 'lat64'}},
+         'wide': {'main': {'kind': 'point', 'rule': 'gauss128'}, 'hq': {'kind': 'point', 'rule': 'gauss192'},
+                  'old': {'kind': 'mesh', 'rule': 'lat64'}},
          'fast': {'main': {'kind': 'point', 'rule': 'fib1597'}, 'hq': {'kind': 'point', 'rule': 'fib6765'},
                   'old': {'kind': 'mesh', 'rule': 'lat64'}}}
 
@@ -26,6 +28,7 @@ C = {
     'smk': cfg('smk', 256, ['fast', 'acc'], ['dev6'], dict(cohort='dev6', cases=2, reps=1, burn=.1, seed=20261008),
                subset={'dev6': [0, 2]}),
     'a1kfast': cfg('a1kfast', 1024, ['fast'], ['dev6', 'val32'], dict(cohort='dev6', cases=6, reps=3, burn=.1, seed=20261008)),
+    'a1kwide': cfg('a1kwide', 1024, ['wide'], ['dev6', 'val32'], dict(cohort='dev6', cases=6, reps=3, burn=.1, seed=20261008)),
     'a1kacc': cfg('a1kacc', 1024, ['acc'], ['dev6', 'val32'], dict(cohort='dev6', cases=6, reps=3, burn=.1, seed=20261008)),
 }
 for k, v in C.items():

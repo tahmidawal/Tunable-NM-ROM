@@ -222,6 +222,7 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
 def load_qcore():
     import qcore as Q
     Q.CKPT = CKPT
+    Q.SETTINGS.setdefault('wide', dict(kind='lin', Rp=512, M=2048))   # amendment A7 (whole bank, kappa = 4)
     return Q
 
 

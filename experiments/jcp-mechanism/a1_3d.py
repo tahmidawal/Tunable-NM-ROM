@@ -3,9 +3,12 @@ analytic (1,1,1)-derivative) run end-to-end beside the tensor, the selected off-
 the validation cohort, one mesh per invocation.
 
 Every solver, table and rule function is the unchanged vendor code (vendor/quad3d/offmesh.py and its vendor modules);
-this file only (i) builds the `nodes` rule through the same `offmesh.point_blocks` / `offmesh.test_block` path,
-(ii) drops the phases A1 does not need (same-grid FOM references, FOM grid, timing) and (iii) scores against the
-refined and same-grid references staged with the job.
+this file only (i) builds the `nodes` rule: B, D by the off-mesh `offmesh.point_blocks` path at the interior mesh nodes,
+tests applied by the exact identity P = Phi (weights h^3) through the vendor DST `common.phiT` (DESIGN amendment A1-2:
+the explicit P at 128^3 would have 4.2e9 elements), gated against the off-mesh GEMM with `offmesh.test_block`;
+(ii) drops the phases A1 does not need (same-grid FOM references, FOM grid, timing); (iii) scores against the refined
+and same-grid references staged with the job; (iv) adds the amendment A1-6 diagnostics (rho on nodes-reached states,
+adaptive-LM sensitivity rerun at the first mesh).
 
 Phases (result.json is rewritten after each):
   1 tables   vendor tables (bank rows, Gram, A, tensor) and the tensor-vs-direct gate
@@ -67,20 +70,50 @@ def nodes_rule(n):
     return X, np.full(len(X), float(n - 1) ** -3)
 
 
-def nodes_tables(n, bank, T, kx, Rp, M, chunk=1 << 18):
-    """B, D (m, R'), P (m, M) for the `nodes` rule through the vendor point_blocks / test_block path, built in point
-    chunks so that no (m, M) temporary larger than one chunk exists."""
-    X, w = nodes_rule(n)
+def nodes_blocks(n, bank, T, Rp):
+    """B, D (N, R') of the `nodes` rule: the vendor off-mesh point_blocks at the interior mesh nodes."""
+    X, _ = nodes_rule(n)
     B, D = OM.point_blocks(bank, np.asarray(T)[:, :Rp], X, chunk=1 << 15)
+    return dict(B=block(B), D=block(D))
+
+
+def make_nodes_ops(n, M, kx, ch=16):
+    """Jacobian and value of the `nodes` rule with the tests applied by the DST (P = Phi at the nodes, weights h^3):
+    Ju(c) = Phi^T (diag(D c) B + diag(B c) D), adv(c) = Phi^T ((B c) * (D c)) = 0.5 Ju(c) c."""
+    idx = tuple(jnp.asarray(np.asarray(kx)[:M, a]) for a in range(3))
+
+    def contract(data, w):
+        B, D = data['B'], data['D']
+        cols = ((D @ w)[:, None] * B + (B @ w)[:, None] * D).T                       # (R', N)
+        Rp, N = cols.shape
+        pad = (-Rp) % ch
+        cols = jnp.concatenate((cols, jnp.zeros((pad, N))), 0).reshape(-1, ch, N)
+        return jax.lax.map(lambda blk: C.phiT(blk, n, idx), cols).reshape(-1, M)[:Rp].T
+
+    def value(data, Cs):                                                             # (S, R') -> (S, M)
+        return C.phiT((Cs @ data['B'].T) * (Cs @ data['D'].T), n, idx)
+    return contract, value
+
+
+def gemm_check(n, X, w, kx, M, B, D, cs, cols, chunk=1 << 17):
+    """The off-mesh GEMM with the explicit test block offmesh.test_block, accumulated over point chunks:
+    values P^T((B c)(D c)) for the states cs and the Jacobian columns `cols` at cs[0]."""
     kk = np.asarray(kx)[:M]
-    P = jnp.concatenate([block(OM.test_block(n, X[s:s + chunk], w[s:s + chunk], kk)) for s in range(0, len(X), chunk)], 0)
-    return dict(B=block(B), D=block(D), P=block(P)), X, w
+    val, jac = 0., 0.
+    w0 = cs[0]
+    for s in range(0, len(X), chunk):
+        P = OM.test_block(n, X[s:s + chunk], w[s:s + chunk], kk)
+        Bc, Dc = B[s:s + chunk], D[s:s + chunk]
+        val = val + ((cs @ Bc.T) * (cs @ Dc.T)) @ P
+        jac = jac + P.T @ ((Dc @ w0)[:, None] * Bc[:, cols] + (Bc @ w0)[:, None] * Dc[:, cols])
+        del P
+    return np.asarray(val), np.asarray(jac)
 
 
-def adv_chunked(data, Cs, sc=64):
-    """offmesh.adv_offmesh_batch over state chunks (bounded (S, m) temporaries)."""
-    f = jax.jit(OM.adv_offmesh_batch)
-    return np.concatenate([np.asarray(f(data, jnp.asarray(Cs[i:i + sc]))) for i in range(0, len(Cs), sc)], 0)
+def adv_chunked(f, data, Cs, sc=32):
+    """A value function f(data, Cs) over state chunks (bounded (S, N) temporaries)."""
+    fj = jax.jit(f)
+    return np.concatenate([np.asarray(fj(data, jnp.asarray(Cs[i:i + sc]))) for i in range(0, len(Cs), sc)], 0)
 
 
 def main():
@@ -181,6 +214,7 @@ def main():
     n0 = {j: float(np.linalg.norm(RR[j][0])) for j in cases}
     G65 = block(TB.feature_rows(model['bank'], model['T'], lattice65_coords()))                       # (R, 63^3)
     lat_err = jax.jit(lambda Cm, G, ref, n0_: jnp.linalg.norm(Cm @ G - ref, axis=1) / n0_)
+    zero = jnp.zeros((6, G65.shape[1]))
     rep['refined']['initial_match_same_grid'] = max(rel_max(SG[j][0], RR[j][0]) for j in cases)
     assert rep['refined']['initial_match_same_grid'] <= 1e-12, rep['refined']
     U0 = [block(jnp.asarray(C.initial_interior(n, tab, j))) for j in cases]
@@ -193,7 +227,8 @@ def main():
         trust = float(cfg['trust_fraction'] * model['spread'][str(Rp)])
         base = TB.arm_data(tb, Rp, M)
         lean = {k: v for k, v in base.items() if k != 'Ts'}
-        nd, _, _ = nodes_tables(n, model['bank'], model['T'], kx, Rp, M)
+        nd = nodes_blocks(n, model['bank'], model['T'], Rp)
+        n_contract, n_value = make_nodes_ops(n, M, kx)
         # G2a: the nodes value rows are the mesh bank rows; G2b: the nodes test block is Phi at the nodes
         dmax, rmax, off = 0., 0., 0
         for g in TB.rows_prefix(tb['GTb'], Rp):                                                     # (r_b, N) blocks
@@ -203,27 +238,28 @@ def main():
         rep['gates'][f'G2a_nodes_B_vs_mesh_bank_R{Rp}'] = dmax / rmax
         ii = np.linspace(0, len(Xn) - 1, 4096).astype(int)
         ijk = np.stack(np.unravel_index(ii, (n - 2,) * 3), 1) + 1
-        rep['gates'][f'G2b_nodes_P_vs_Phi_R{Rp}'] = rel_max(np.asarray(nd['P'][jnp.asarray(ii)]),
+        rep['gates'][f'G2b_nodes_P_vs_Phi_R{Rp}'] = rel_max(np.asarray(OM.test_block(n, Xn[ii], wn[ii], kx[:M])),
                                                             C.phi_explicit(n, kx[:M], ijk))
-        # G2c: the nodes advection by the off-mesh GEMM equals Phi^T (u * (1 . grad u)) by the DST, 4 states
+        # G2c: values (4 states) and 32 Jacobian columns by the DST equal the off-mesh GEMM with offmesh.test_block
         cs4 = jnp.asarray(rng.normal(size=(4, Rp)) / np.sqrt(Rp))
-        v_gemm = adv_chunked(nd, np.asarray(cs4))
-        uu = cs4 @ nd['B'].T
-        du = cs4 @ nd['D'].T
-        v_dst = np.asarray(C.phiT(uu * du, n, tuple(jnp.asarray(kx[:M, j]) for j in range(3))))
-        rep['gates'][f'G2c_nodes_gemm_vs_dst_R{Rp}'] = rel_max(v_gemm, v_dst)
-        # G3: the Jacobian formula vs jacfwd, and adv = 0.5 J c, on the nodes path
-        c3 = jnp.asarray(rng.normal(size=Rp) / np.sqrt(Rp))
-        J_f = OM.contract_offmesh(nd, c3)
-        J_ad = jax.jacfwd(lambda cc: OM.adv_offmesh_batch(nd, cc[None])[0])(c3)
-        rep['gates'][f'G3_nodes_jacobian_vs_jacfwd_R{Rp}'] = rel_max(J_f, J_ad)
-        rep['gates'][f'G3_nodes_adv_half_Jc_R{Rp}'] = rel_max(0.5 * J_f @ c3, OM.adv_offmesh_batch(nd, c3[None])[0])
-        del uu, du, J_ad
+        cols32 = np.sort(rng.choice(Rp, 32, replace=False))
+        v_gemm, j_gemm = gemm_check(n, Xn, wn, kx, M, nd['B'], nd['D'], cs4, jnp.asarray(cols32))
+        v_dst = np.asarray(jax.jit(n_value)(nd, cs4))
+        J_f = jax.jit(n_contract)(nd, cs4[0])
+        rep['gates'][f'G2c_nodes_value_gemm_vs_dst_R{Rp}'] = rel_max(v_dst, v_gemm)
+        rep['gates'][f'G2c_nodes_jacobian_gemm_vs_dst_R{Rp}'] = rel_max(np.asarray(J_f)[:, cols32], j_gemm)
+        # G3: J times 32 random directions vs forward-mode JVPs of the value; adv = 0.5 J c
+        V = jnp.asarray(rng.normal(size=(Rp, 32)))
+        jv = jax.vmap(lambda v: jax.jvp(lambda cc: n_value(nd, cc[None])[0], (cs4[0],), (v,))[1])(V.T).T
+        rep['gates'][f'G3_nodes_jacobian_vs_jvp_R{Rp}'] = rel_max(J_f @ V, jv)
+        rep['gates'][f'G3_nodes_adv_half_Jc_R{Rp}'] = rel_max(0.5 * J_f @ cs4[0], v_dst[0])
+        del J_f, jv, V
         log(f'R{Rp} M{M} nodes gates ' + ', '.join(f'{k} {v:.2e}' for k, v in rep['gates'].items() if f'R{Rp}' in k))
         assert rep['gates'][f'G2a_nodes_B_vs_mesh_bank_R{Rp}'] < 1e-12, rep['gates']
         assert rep['gates'][f'G2b_nodes_P_vs_Phi_R{Rp}'] < 1e-12, rep['gates']
-        assert rep['gates'][f'G2c_nodes_gemm_vs_dst_R{Rp}'] < 1e-11, rep['gates']
-        assert rep['gates'][f'G3_nodes_jacobian_vs_jacfwd_R{Rp}'] < 1e-12, rep['gates']
+        assert rep['gates'][f'G2c_nodes_value_gemm_vs_dst_R{Rp}'] < 1e-11, rep['gates']
+        assert rep['gates'][f'G2c_nodes_jacobian_gemm_vs_dst_R{Rp}'] < 1e-11, rep['gates']
+        assert rep['gates'][f'G3_nodes_jacobian_vs_jvp_R{Rp}'] < 1e-11, rep['gates']
         assert rep['gates'][f'G3_nodes_adv_half_Jc_R{Rp}'] < 1e-12, rep['gates']
         save()
 
@@ -236,15 +272,19 @@ def main():
                                        q=OM.make_fsc_rule(n, Rp, M, OM.contract_offmesh, dt=cfg['dt'],
                                                           gtol=cfg['gtol'], trust=trust))
         arms[f'nodes_R{Rp}'] = dict(family='nodes', data=dict(lean, **nd),
-                                    q=OM.make_fsc_rule(n, Rp, M, OM.contract_offmesh, dt=cfg['dt'], gtol=cfg['gtol'],
+                                    q=OM.make_fsc_rule(n, Rp, M, n_contract, dt=cfg['dt'], gtol=cfg['gtol'],
                                                        trust=trust))
         for nm, s in arms.items():
             rep['arms'][nm] = dict(Rp=Rp, M=M, family=s['family'], trust=trust)
-            if s['family'] != 'tensor':
+            if s['family'] == 'offmesh':
                 m_ = int(s['data']['B'].shape[0])
                 rep['arms'][nm]['m'] = m_
                 rep['arms'][nm]['bytes'] = 8 * m_ * (2 * Rp + M)
                 rep['arms'][nm]['flops_jacobian'] = 2 * m_ * Rp * (2 + M) + 4 * m_ * Rp
+            elif s['family'] == 'nodes':                 # B, D stored; tests applied by R' DSTs of the mesh field
+                m_ = int(s['data']['B'].shape[0])
+                rep['arms'][nm]['m'] = m_
+                rep['arms'][nm]['bytes'] = 8 * m_ * 2 * Rp
             else:
                 rep['arms'][nm]['bytes'] = 8 * M * Rp * Rp
                 rep['arms'][nm]['flops_jacobian'] = 2 * M * Rp * Rp
@@ -252,6 +292,27 @@ def main():
         def run(nm, u0, nu):
             s = arms[nm]
             return s['q'](u0, nu, s['data'], {})
+
+        def value_of(nm):
+            fam = arms[nm]['family']
+            if fam == 'nodes':
+                return n_value
+            if fam == 'offmesh':
+                return OM.adv_offmesh_batch
+            return lambda d, X: jax.lax.map(lambda cc: 0.5 * OM.contract_tensor(d, cc) @ cc, X)
+
+        rho = lambda v, t: np.linalg.norm(v - t, axis=1) / np.maximum(np.linalg.norm(t, axis=1), 1e-300)
+
+        def rho_all(Cs):
+            """rho of every arm's tested advection against the continuum and mesh targets, per state."""
+            tgt_mesh, umin = map(np.asarray, OM.make_mesh_target(n, M, kx)(jnp.asarray(Cs), base))
+            tgt_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xc, wc, kx[:M], Cs))
+            chk_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xk, wk, kx[:M], Cs))
+            per = {'dense_upwind': (rho(tgt_mesh, tgt_cont), np.zeros(len(Cs)))}
+            for nm in arms:
+                v = adv_chunked(value_of(nm), arms[nm]['data'], Cs)
+                per[nm.rsplit('_R', 1)[0]] = (rho(v, tgt_cont), rho(v, tgt_mesh))
+            return per, rho(chk_cont, tgt_cont), float(umin.min()), (tgt_cont, tgt_mesh, chk_cont)
 
         # ---------------------------------------------------- 3. rho on the certification draws (tensor-reached)
         states, kidx = [], []
@@ -266,26 +327,15 @@ def main():
                 del o
         Cs = np.concatenate(states, 0)
         kk = np.concatenate(kidx)
-        tgt_mesh, umin = map(np.asarray, OM.make_mesh_target(n, M, kx)(jnp.asarray(Cs), base))
-        tgt_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xc, wc, kx[:M], Cs))
-        chk_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xk, wk, kx[:M], Cs))
-        ten = np.asarray(jax.jit(lambda d, X: jax.lax.map(lambda cc: 0.5 * OM.contract_tensor(d, cc) @ cc, X))(
-            base, jnp.asarray(Cs)))
-        rho = lambda v, t: np.linalg.norm(v - t, axis=1) / np.maximum(np.linalg.norm(t, axis=1), 1e-300)
+        per, chk, umin, tg = rho_all(Cs)
 
         def summ(r):
             ev, k0 = r[kk >= 1], r[kk == 0]
             return dict(worst=float(ev.max()), median=float(np.median(ev)), p90=float(np.quantile(ev, 0.9)),
                         worst_k0=float(k0.max()), median_k0=float(np.median(k0)))
-        res = dict(states=int(len(Cs)), states_evolved=int((kk >= 1).sum()), M=M, umin=float(umin.min()),
-                   continuum_check=summ(rho(chk_cont, tgt_cont)), rules={})
-        per = {'tensor': (rho(ten, tgt_cont), rho(ten, tgt_mesh)), 'dense_upwind': (rho(tgt_mesh, tgt_cont), 0 * kk)}
-        for nm in rule_names + ['nodes']:
-            v = adv_chunked(arms[f'{nm}_R{Rp}']['data'], Cs)
-            per[nm] = (rho(v, tgt_cont), rho(v, tgt_mesh))
-        for nm, (rc, rm) in per.items():
-            res['rules'][nm] = dict(cont=summ(rc), mesh=summ(rm))
-        np.savez(out / 'fields' / f'rho_R{Rp}.npz', Cs=Cs, k=kk, tgt_cont=tgt_cont, tgt_mesh=tgt_mesh, chk_cont=chk_cont,
+        res = dict(states=int(len(Cs)), states_evolved=int((kk >= 1).sum()), M=M, umin=umin,
+                   continuum_check=summ(chk), rules={nm: dict(cont=summ(rc), mesh=summ(rm)) for nm, (rc, rm) in per.items()})
+        np.savez(out / 'fields' / f'rho_R{Rp}.npz', Cs=Cs, k=kk, tgt_cont=tg[0], tgt_mesh=tg[1], chk_cont=tg[2],
                  **{f'rho_cont_{nm}': v[0] for nm, v in per.items()}, **{f'rho_mesh_{nm}': v[1] for nm, v in per.items()})
         # G4a: rho of the vendor arms reproduces the 2026-10-01 validation job at this mesh (same states, same code)
         prev = cfg['expected_rho'][str(Rp)]
@@ -296,10 +346,10 @@ def main():
             + '; '.join(f"{k} c{v['cont']['worst']:.2e}/{v['cont']['median']:.2e} m{v['mesh']['worst']:.2e}"
                         for k, v in res['rules'].items()))
         save()
-        del tgt_mesh, tgt_cont, chk_cont, Cs, ten
+        del tg, Cs, per
 
         # ---------------------------------------------------- 4. cohort
-        COEF = {}
+        COEF, INTERNAL = {}, {}
         for nm in arms:
             recs = []
             t_c = time.perf_counter()
@@ -311,6 +361,7 @@ def main():
                 ws = np.asarray(o[1])
                 Cout = ws[::keep]
                 COEF[(nm, j)] = Cout
+                INTERNAL[(nm, j)] = ws
                 internal.append(ws)
                 e_ref = np.asarray(lat_err(jnp.asarray(Cout), G65[:Rp], jnp.asarray(RR[j]), n0[j]))
                 e_sg = np.asarray(lat_err(jnp.asarray(Cout), G65[:Rp], jnp.asarray(SG[j]), n0[j]))
@@ -333,7 +384,6 @@ def main():
             log(f"ARM {nm}: refined worst {max(wr):.4%} median {np.median(wr):.4%}; same-grid65 worst {max(ws_):.4%}; "
                 f"its {rep['arms'][nm]['iterations_median']:.0f}; {rep['arms'][nm]['seconds_total']:.0f}s")
             save()
-        zero = jnp.zeros((6, G65.shape[1]))
         for nm in arms:                     # field distance on the 63^3 lattice, normalised like the errors
             dist = {}
             for other in (f'tensor_R{Rp}', f"{cfg['converged_rule']}_R{Rp}", f'nodes_R{Rp}'):
@@ -345,7 +395,38 @@ def main():
             rep['arms'][nm]['distance'] = dist
         np.savez(out / 'fields' / f'coefficients_R{Rp}.npz', **{f'{nm}__c{j}': v for (nm, j), v in COEF.items()})
         save()
-        del arms, nd, base, lean, COEF
+        # A1-6: rho of every rule on the nodes-reached states of the first 8 validation cases (k = 1..25)
+        Cn = np.concatenate([INTERNAL[(f'nodes_R{Rp}', j)][1:] for j in cases[:8]], 0)
+        per_n, chk_n, _, _ = rho_all(Cn)
+        rep['rho_nodes_reached'] = rep.get('rho_nodes_reached', {})
+        rep['rho_nodes_reached'][str(Rp)] = dict(
+            states=int(len(Cn)), continuum_check_worst=float(chk_n.max()),
+            rules={nm: dict(cont_worst=float(rc.max()), cont_median=float(np.median(rc)), mesh_worst=float(rm.max()))
+                   for nm, (rc, rm) in per_n.items()})
+        log('RHO nodes-reached R%d: ' % Rp + '; '.join(f"{k} c{v['cont_worst']:.2e}" for k, v in
+                                                      rep['rho_nodes_reached'][str(Rp)]['rules'].items()))
+        save()
+        # A1-6: adaptive-LM sensitivity (every step adaptive), first `adaptive_check_cases` cases, at the first mesh
+        if cfg.get('adaptive_check_cases'):
+            sens = {}
+            for nm in (f'tensor_R{Rp}', f"{cfg['converged_rule']}_R{Rp}", f'nodes_R{Rp}'):
+                fam = arms[nm]['family']
+                ctr = OM.contract_tensor if fam == 'tensor' else (n_contract if fam == 'nodes' else OM.contract_offmesh)
+                qa = OM.make_fsc_rule(n, Rp, M, ctr, dt=cfg['dt'], gtol=cfg['gtol'], trust=trust,
+                                      adaptive_first=int(round(0.25 / cfg['dt'])))
+                dd, rs3 = [], 0
+                for j in cases[:cfg['adaptive_check_cases']]:
+                    o = qa(U0[j], NU[j], arms[nm]['data'], {})
+                    Ca = np.asarray(o[1])[::keep]
+                    rs3 += int((np.asarray(o[3]) == 3).sum())
+                    dd.append(float(np.asarray(lat_err(jnp.asarray(Ca - COEF[(nm, j)]), G65[:Rp], zero, n0[j]))[1:].max()))
+                    del o
+                sens[nm.rsplit('_R', 1)[0]] = dict(distance_fixed_vs_adaptive=dd, worst=max(dd), reason3=rs3)
+                del qa
+            rep.setdefault('adaptive_sensitivity', {})[str(Rp)] = sens
+            log(f'ADAPTIVE R{Rp}: ' + '; '.join(f"{k} {v['worst']:.2e}" for k, v in sens.items()))
+            save()
+        del arms, nd, base, lean, COEF, INTERNAL
 
     rep['complete'] = True
     rep['seconds'] = el()

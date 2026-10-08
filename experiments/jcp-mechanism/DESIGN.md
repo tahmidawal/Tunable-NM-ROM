@@ -297,3 +297,44 @@ sign-upwind `dense` is context from the earlier job; their discrepancy on the ce
 coordinator's narrowing and the audit: its outcomes were already inspected, so it would not be fresh replication).
 Cohorts are fixed: 3D validation 923801 × 64 (+ certification draws), 2D dev6 ∪ val32. If a job runs out of time the
 fallback is the coordinator's subset (3D $R'=512$; 2D `acc`), decided before the job by its config, never after outcomes.
+
+## Amendment 2 (2026-10-08, after `audits/codex-design-2.md`, before any code ran)
+
+**A2-1 (re-audit 1): decision order for the A1 labels**, per mesh and width / setting, applied in this order:
+
+1. **X (invalid)** if, on any validation case, the `nodes`, incumbent or converged arm is non-finite or has a reason-3 exit,
+   or (3D, first mesh) the adaptive-LM sensitivity distance of `nodes` or of the converged arm exceeds $0.1\,\mathrm{median}_j s_j$.
+2. **X0 (nothing to explain)** if $\mathrm{median}_j s_j<10^{-2}$.
+3. Cases with $s_j<10^{-3}$ are excluded from the $f_j$ statistics and listed. On the rest: **R** if the median $f_j\ge0.9$,
+   the 2.5 % bootstrap bound of that median (2000 resamples of cases, seed 0) is $\ge0.8$, and $f_j\ge0.75$ on at least 90 %
+   of them; **N** if the median $f_j\le0.5$; **X** otherwise.
+
+The margins (1 %, 0.9, 0.8, 0.75, 90 %, 0.5) are declared conventions, not derived from an error model; the bootstrap bound
+is reported beside every label. Wording for R: "`nodes` recovers the converged off-mesh rollout within the declared
+margins".
+
+**A2-2 (re-audit 3): C-pos uses the normalised expansions** $L^{-d/2}(N_h-N)=-\tfrac h2\int\psi\,u\,\Delta u+O(h^2)$ (backward
+difference, $u>0$) and $L^{-d/2}(N_h-N)=\tfrac{h^2}{6}\int\psi\,u\sum_ju_{x_jx_jx_j}+O(h^4)$ (central), the integrals by
+Gauss $80^3$ / $640^2$ from analytic derivatives. The job reports the leading-coefficient norms relative to
+$\lVert L^{-d/2}N\rVert$; they must be $\ge10^{-3}$ (nonzero leading term), otherwise C-pos is void. C-neg(a) validates only
+the normalisation and the fit, not stencil assembly; that is what C-pos is for.
+
+**A2-3 (re-audit 4): the resolution rule is an empirical screen.** A state enters a slope fit only if its gap is
+resolved at **every** window mesh (one fixed population per stencil and statistic), where resolved means: gap $>100\times$
+the state's continuum check $\rho$ **and** gap $>10^{-12}$ (numerical floor). The continuum target is validated by two
+independent families as well as by the Gauss check: 3D the converged `lat32768` value, 2D the Fibonacci 121393 value (both
+reported as their $\rho$ against the target on the same states). Fewer than 25 % of states surviving the screen, or fewer
+than 3 window meshes, gives "unresolved slope".
+
+**A2-4 (re-audit 5): gate details.** G1 uses centred differences with step $10^{-5}$ per coordinate (summed over the
+tangent directions), relative max-abs error $<10^{-6}$; G2a–c and G3 are relative max-abs errors against the reference
+array's max-abs (never zero here). Historical reproducibility: 3D per-case field distance from saved coefficients; 2D
+per-case ST error differences, plus the field distance on the two saved audit cases (dev6 cases 0 and 2).
+
+**A2-5 (re-audit 6): solver acceptance.** Besides A2-1(1): reason-0 (non-stationary) counts are reported per arm, and the
+2D job also evaluates $\rho$ of every configured rule on the `nodes`-reached states (first 8 dev6 ∪ val32 cases, $k=1..50$).
+The 2D solver has no adaptive-sensitivity rerun (its fused LM already iterates to the gradient tolerance at every step);
+this is stated as untested.
+
+**A2-6 (re-audit 7):** a job that times out is an incomplete result: every missing case is listed, and no subset is chosen
+after outcomes are seen.

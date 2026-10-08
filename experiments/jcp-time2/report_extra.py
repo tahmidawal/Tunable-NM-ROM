@@ -2,8 +2,7 @@
 A10.2, A13). Imported by make_report.py; every number is read from the pulled job results and their audits.
 
 Eligibility: a section makes claims (matched speed-ups, hypotheses, order claims) only if its audit passed on the exact
-result bytes (sha256 recorded by the audit is not available for fom/3D audits, so the audit's job id, commit AND a fresh
-sha256 of the result file recorded here must match), the cohort is the registered one, and every configuration used is
+result bytes (the audit's recorded result sha256, job id, commit and attempt must match), the cohort is the registered one, and every configuration used is
 verified on every case with finite timings. Otherwise the numbers are printed as diagnostics and every claim reads
 "unavailable".
 """
@@ -53,7 +52,7 @@ def _audit_ok(arc, att):
         return res, False, 'no audit'
     aud = json.loads(ap.read_text())
     ok = bool(aud['all_pass'] and aud['job_id'] == res['job_id'] and aud['commit'] == res['commit'] and aud.get('attempt') == att
-              and aud.get('result_sha256', hashlib.sha256(res_path.read_bytes()).hexdigest()) ==
+              and aud.get('result_sha256') ==
               hashlib.sha256(res_path.read_bytes()).hexdigest())
     why = 'pass' if ok else 'FAIL: ' + ', '.join(k for k, v in aud['checks'].items() if not v)
     return res, ok, why

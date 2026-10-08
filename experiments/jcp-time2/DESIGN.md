@@ -456,3 +456,10 @@ coefficients (NumPy decode at the $257^2$ nodes) against the job's values (relat
 unmutated job output must pass every check. Rejection tests (each must be REJECTED by at least one check): (i) the saved
 coefficients with two cases swapped, (ii) the output rows shifted by one time, (iii) ST and S references swapped,
 (iv) a reference file whose sha256 differs, (v) a job metric perturbed by 1 %.
+
+## Amendment A4 (2026-10-08, after `audits/codex-design-r3.md`; closes item 12)
+
+**A4.1 Adjacent-check outcomes.** Let $n_{\rm both}$ be the number of cases with both triples valid. If $n_{\rm both}<19$ (half of
+38), the claim is made from the primary triple alone and labelled "(adjacent check unresolved)"; this includes
+$n_{\rm both}=0$. If $n_{\rm both}\ge19$ and fewer than 80 % of those cases have both orders in the band, the claim is withheld
+("not established"). Otherwise the claim stands without qualification.

@@ -48,9 +48,9 @@ def dF_np(c):
     return np.einsum('mij,j->mi', TT + TT.transpose(0, 2, 1), c) + NU * LAM[:, None] * A
 
 
-def oracle():
+def oracle(tol=1e-13):
     P = np.linalg.pinv(A)
-    sol = scipy.integrate.solve_ivp(lambda t, c: -P @ F_np(c), (0, .25), C0, method='Radau', rtol=1e-13, atol=1e-13,
+    sol = scipy.integrate.solve_ivp(lambda t, c: -P @ F_np(c), (0, .25), C0, method='Radau', rtol=tol, atol=tol,
                                     t_eval=TIMES, jac=lambda t, c: -P @ dF_np(c))
     assert sol.success
     return sol.y.T
@@ -149,6 +149,9 @@ def main():
     move = float(np.linalg.norm(ref[-1] - C0) / np.linalg.norm(C0))
     rep['info']['nonstationarity'] = move
     rep['gates']['nonstationary'] = move > .1
+    ref12 = oracle(1e-12)
+    odiff = max(np.linalg.norm(ref12[k] - ref[k]) for k in range(5)) / np.linalg.norm(C0)
+    rep['info']['oracle_refinement'] = float(odiff)
     bands = dict(BE=(.85, 1.15), TH06=(.85, 1.15), CN=(1.85, 2.15), CNR=(1.85, 2.15), BDF2=(1.85, 2.15))
     for form in ('GAL', 'LSPG'):
         for sc, (lo, hi) in bands.items():
@@ -156,6 +159,8 @@ def main():
             rep['info'][f'order_{form}_{sc}'] = dict(errors=e, orders=p)
             if form == 'GAL':
                 rep['gates'][f'order_GAL_{sc}'] = bool(lo <= p[-1] <= hi)
+    emin = min(min(rep['info'][f'order_GAL_{sc}']['errors']) for sc in bands)
+    rep['gates']['oracle_refined'] = bool(odiff < 1e-3 * emin)
     for sc in bands:
         g = gal_step_check(sc)
         rep['info'][f'gal_step_{sc}'] = g

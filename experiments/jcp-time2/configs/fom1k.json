@@ -1,0 +1,381 @@
+{
+ "attempt": "fom1k",
+ "driver": "fomrun",
+ "mesh": 1024,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "schemes": [
+  "BE",
+  "CN",
+  "CNR",
+  "BDF2"
+ ],
+ "dt_factors": [
+  0.5,
+  1,
+  2,
+  5
+ ],
+ "ntols": [
+  0.0001,
+  1e-06,
+  1e-08
+ ],
+ "order_cases": [
+  [
+   "dev6",
+   0
+  ],
+  [
+   "dev6",
+   2
+  ]
+ ],
+ "refs": "REFS_DIR",
+ "rom_arms": [
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "BE",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "BE",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "BE",
+   "dt_factor": 5
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "CN",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "CN",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "CN",
+   "dt_factor": 5
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "dt_factor": 5
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "BDF2",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "BDF2",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "LSPG",
+   "scheme": "BDF2",
+   "dt_factor": 5
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "BE",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "BE",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "BE",
+   "dt_factor": 5
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "CN",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "CN",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "CN",
+   "dt_factor": 5
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "CNR",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "CNR",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "CNR",
+   "dt_factor": 5
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "BDF2",
+   "dt_factor": 1
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "BDF2",
+   "dt_factor": 2
+  },
+  {
+   "setting": "fast",
+   "rule": "fib1597",
+   "form": "GAL",
+   "scheme": "BDF2",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "BE",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "BE",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "BE",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CN",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CN",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CN",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "BDF2",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "BDF2",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "BDF2",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "BE",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "BE",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "BE",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "CN",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "CN",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "CN",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "CNR",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "CNR",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "CNR",
+   "dt_factor": 5
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "BDF2",
+   "dt_factor": 1
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "BDF2",
+   "dt_factor": 2
+  },
+  {
+   "setting": "acc",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "BDF2",
+   "dt_factor": 5
+  }
+ ],
+ "timing": {
+  "cases": 6,
+  "reps": 3,
+  "burn": 0.1,
+  "seed": 20261008
+ }
+}

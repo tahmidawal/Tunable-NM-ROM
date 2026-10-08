@@ -137,6 +137,7 @@ def main():
 
     # ---------------------------------------------------------------- E: evaluation ----
     eval_sha = {}
+    keepF = {}                                   # dev6 restricted fields, saved for the independent audit
     for ci, (coh, c, ph) in enumerate(cases):
         u0 = jnp.asarray(Q.e.initial(L, ph))
         n0r = float(np.linalg.norm(np.asarray(u0)[::s256, ::s256]))
@@ -151,12 +152,15 @@ def main():
                 kk = f'fom|{sc}|{f:g}'
                 if ci < cfg['timing']['cases'] and coh == 'dev6':
                     eval_sha[(kk, ci)] = sha(fr)
+                if coh == 'dev6':
+                    keepF[f'{kk}|{coh}|{c}'] = fr
                 rep['rows'].append(dict(run=kk, scheme=sc, dt=DT0 * f, ntol=nt, cohort=coh, case=c, seconds_first=time.perf_counter() - t1,
                                         verified=int(st['nfail']) == 0, stats=st, **errs(fr, coh, c, n0r)))
         w = fom(u0, float(ph[4]), fsched('BE', DT0), 1e-6, 1e-8)
         fr = np.asarray(w['fields'][:, ::s256, ::s256])
         rep['repro'].append(dict(cohort=coh, case=c, **errs(fr, coh, c, n0r)))
         print('EVAL', ci, el(), flush=True)
+    np.savez_compressed(out / 'fom_fields_dev6.npz', **{k_.replace('|', '__'): v for k_, v in keepF.items()})
     save()
 
     # ---------------------------------------------------------------- T: timing ----

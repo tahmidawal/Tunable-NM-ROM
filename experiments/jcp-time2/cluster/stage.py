@@ -17,7 +17,7 @@ LANE = 'experiments/jcp-time2'
 NAMESPACE = '/cluster/tufts/paralab/tawal01/jcptime2'
 REFSRC = ROOT.parent / '2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output'
 VQ = f'{LANE}/vendor/quad2d'
-FILES = [f'{LANE}/t2core.py', f'{LANE}/t2run.py', f'{VQ}/qcore.py', f'{VQ}/qstudy.py',
+FILES = [f'{LANE}/t2core.py', f'{LANE}/t2run.py', f'{LANE}/fom2.py', f'{LANE}/fomrun.py', f'{VQ}/qcore.py', f'{VQ}/qstudy.py',
          f'{VQ}/vendor/arms.py', f'{VQ}/vendor/hops.py', f'{VQ}/vendor/hfast.py', f'{VQ}/vendor/bkfast.py',
          f'{VQ}/vendor/hari_quadrature.py', f'{VQ}/inputs/rotation_R512.npz', f'{VQ}/inputs/rule_q0_m1024_qrg304_reachable.npz',
          'experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
@@ -117,7 +117,7 @@ nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 cd {LANE}
-"$PY" t2run.py --config configs/{a.attempt}.json --out "$TASK_ROOT/output"
+"$PY" {cfg0.get('driver', 't2run')}.py --config configs/{a.attempt}.json --out "$TASK_ROOT/output"
 cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE

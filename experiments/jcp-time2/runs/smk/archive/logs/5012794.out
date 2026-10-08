@@ -1,0 +1,18 @@
+host=pax106 source_commit=5918498c197e0999044c2d71c524e48767dc4c6c
+NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB
+10.235.106.25:/projects/paralab  4.6T  998G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+CASES 2 2.6
+REFS 4 2.7
+BANK+OPS 13.6
+SETUP fast 232 runs/case 35.6
+CASE fast 0 dev6 0 66.5
+CASE fast 1 dev6 2 84.1
+TIMING fast 82 127.0
+SETUP acc 232 runs/case 140.0
+CASE acc 0 dev6 0 247.5
+CASE acc 1 dev6 2 346.5
+TIMING acc 82 424.6
+T2RUN COMPLETE
+ALL-DONE

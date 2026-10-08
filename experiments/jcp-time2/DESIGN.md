@@ -509,3 +509,15 @@ quadrature-sensitivity rule Gauss $192^2$, old method `lat64`. Same grid, gates,
 other settings; job `a1kwide` after `a1kacc` (cap 1), run only if time permits. Its hypotheses H1/H2 and selection are
 reported as a secondary setting. The rule is not selected, so its quadrature sensitivity is reported beside every
 number.
+
+## Amendment A8 (2026-10-08, after the smoke `smk` (job 5012794, A100-80G) passed its independent audit; code audit round 5)
+
+**A8.1 Wall time from the smoke.** Accuracy phase at $L=256$, A100: fast ≈ 21 s of rollouts per case, acc ≈ 100 s per
+case (all 232 runs; the ROM's per-step cost does not grow with $L$, only the six-field decodes do), max 16 LM
+iterations per step; timing 82 A–B–A records took 43 s (fast) / 78 s (acc). Scaled to 38 cases and 738 records:
+fast ≈ 0.5 h, acc ≈ 1.5 h, wide ≈ 5 h (≈ 3.2× acc arithmetic, per the round-5 audit). Requested: `a1kfast` 3 h,
+`a1kacc` 4 h, `a1kwide` 12 h, A100-80G, 128 GB host.
+**A8.2 Gate status.** Round 5 found no driver, shape or memory defect for the 1024 jobs; its remaining findings concern
+`make_report.py` (audit identity binding, smoke labelling, verified-pair masks, wide-setting labels), which gate the
+report and are fixed and re-audited before any result is reported. The `wide` disclosure is narrowed: quadrature
+sensitivity (Gauss $192^2$) is measured for the production arms with $\Delta t\ge\Delta t_0/2$, not for the order or anchor runs.

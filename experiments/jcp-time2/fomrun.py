@@ -110,6 +110,7 @@ def main():
             for f in (2, 1, .5, .25, .125):
                 v = f256(u0, float(ph[4]), fsched(sc, DT0 * f), *TIGHT)
                 F[f] = (np.asarray(v['fields']), int(v['stats']['nfail']))
+                rep.setdefault('order_stats', {})[f'{sc}|{coh}|{c}|{f:g}'] = stats_np(v['stats'])
                 ofields[f'{sc}__{coh}__{c}__{f:g}'] = F[f][0]
             d = {f: max(float(np.linalg.norm(F[f][0][j] - F[f / 2][0][j])) / n0 for j in range(1, 6)) for f in (2, 1, .5, .25)}
             rep['order'].append(dict(cohort=coh, case=c, scheme=sc, d={f'{f:g}': v for f, v in d.items()},
@@ -136,7 +137,8 @@ def main():
                 n0r = float(np.linalg.norm(np.asarray(u0)[::s256, ::s256]))
                 v = fom(u0, float(ph[4]), fsched(sc, dt), *TIGHT)
                 fr0 = np.asarray(v['fields'][:, ::s256, ::s256])
-                CAL[f'{sc}__{f:g}__tight__{coh}__{c}'] = fr0.astype(np.float32)
+                CAL[f'{sc}__{f:g}__tight__{coh}__{c}'] = fr0
+                rep.setdefault('calibration_stats', {})[f'{sc}|{f:g}|tight|{coh}|{c}'] = stats_np(v['stats'])
                 ref_ok = int(v['stats']['nfail']) == 0
                 ref_all = ref_all and ref_ok
                 eST = errs(fr0, coh, c, n0r)['e_ST']
@@ -144,7 +146,8 @@ def main():
                 for nt in cfg['ntols']:
                     w = fom(u0, float(ph[4]), fsched(sc, dt), nt, LTOL)
                     fr = np.asarray(w['fields'][:, ::s256, ::s256])
-                    CAL[f'{sc}__{f:g}__{nt:g}__{coh}__{c}'] = fr.astype(np.float32)
+                    CAL[f'{sc}__{f:g}__{nt:g}__{coh}__{c}'] = fr
+                    rep['calibration_stats'][f'{sc}|{f:g}|{nt:g}|{coh}|{c}'] = stats_np(w['stats'])
                     dd = max(float(np.linalg.norm(fr[j] - fr0[j])) / n0r for j in range(1, 6))
                     row['diffs'][f'{nt:g}'] = dict(diff=dd, verified=int(w['stats']['nfail']) == 0)
                     ok[nt] = ok[nt] and int(w['stats']['nfail']) == 0 and dd < .01 * eST
@@ -158,7 +161,7 @@ def main():
             ent['chosen'] = chosen[(sc, f)]
             rep['calibration'][f'{sc}|{f:g}'] = ent
             save()
-    np.savez_compressed(out / 'calibration_fields_f32.npz', **CAL)
+    np.savez_compressed(out / 'calibration_fields.npz', **CAL)
     print('CALIBRATION', el(), flush=True)
 
     # ---------------------------------------------------------------- ROM arms (as t2run.py) ----

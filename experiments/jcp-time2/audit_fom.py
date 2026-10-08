@@ -18,6 +18,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import audit_t2 as AT  # noqa: E402
 
+Q_RP = dict(fast=128, acc=384, wide=512)
 BANDS = dict(BE=(.8, 1.25), CN=(1.7, 2.3), CNR=(1.7, 2.3), BDF2=(1.7, 2.3))
 FIN = lambda x: x is not None and np.isfinite(x)
 
@@ -30,10 +31,37 @@ class Evidence:
     def __init__(self, arc):
         self.res = json.loads((arc / 'output/result.json').read_text())
         self.O = dict(np.load(arc / 'output/order_fields.npz'))
-        self.CAL = dict(np.load(arc / 'output/calibration_fields_f32.npz'))
+        self.CAL = dict(np.load(arc / 'output/calibration_fields.npz'))
         self.F32 = dict(np.load(arc / 'output/fom_fields_f32.npz'))
         self.F64 = dict(np.load(arc / 'output/fom_fields_timing_f64.npz'))
         self.W = dict(np.load(arc / 'output/rom_W.npz'))
+
+
+NMAX = 800
+
+
+def fom_verified(st, ntol, dt):
+    """(verified, consistent): reconstructed from the per-step diagnostics against the registered schedule."""
+    steps = int(round(.25 / dt))
+    nst = int(st['steps'])
+    srel = np.array(st['step_rel'], float)
+    newt = np.array(st['step_newton'])
+    if nst != steps or srel.shape != (NMAX,) or newt.shape != (NMAX,):
+        return False, False
+    act = srel[:steps]
+    good = np.isfinite(act) & (act <= ntol)
+    cons = int(st['nfail']) == int(np.sum(~good)) and bool(np.all(np.isnan(srel[steps:]))) and bool(np.all(newt[:steps] >= 0))
+    return bool(np.all(good)), cons
+
+
+def rom_consistent(r, form, dt):
+    st = r['stats']
+    steps = int(round(.25 / dt))
+    ex = list(st['exits'])
+    ok = int(st['steps']) == steps and sum(ex) == steps and r['verified'] == (int(st['nfail']) == 0)
+    if r['verified']:
+        ok = ok and ex[0] == 0 and ex[3] == 0 and (form == 'LSPG' or float(st['worst_tolratio']) <= 1.)
+    return ok
 
 
 def validate(ev, cfg, refs, dec, a1k_rows):
@@ -72,6 +100,10 @@ def validate(ev, cfg, refs, dec, a1k_rows):
         orders[f'{sc}|{coh}{c}'] = p
         lo, hi = BANDS[sc]
         nf = r.get('nfail', {})
+        for f in (2, 1, .5, .25, .125):
+            stx = ev.res.get('order_stats', {}).get(f'{sc}|{coh}|{c}|{f:g}')
+            vv, cc = fom_verified(stx, 1e-10, .005 * f) if stx else (False, False)
+            ok = ok and vv and cc
         gate = sc != 'CN'          # A11.1: undamped CN is reported, not gated (stiff-mode transient); CN-R is gated
         ok = ok and good_d and set(nf) == {'2', '1', '0.5', '0.25', '0.125'} and all(v == 0 for v in nf.values()) \
             and (lo <= p <= hi or not gate) and within(p, r['orders'].get('0.5'), 1e-9)
@@ -88,18 +120,24 @@ def validate(ev, cfg, refs, dec, a1k_rows):
             ok = False
             bad.append((sc, f, 'cases'))
             continue
-        tight_ok = all(r['tight_verified'] for r in e_['cases'])
+        CS = ev.res.get('calibration_stats', {})
+        tight_ok = True
         passes = {nt: True for nt in cfg['ntols']}
         for r, (coh, c) in zip(e_['cases'], dev):
-            t_ = ev.CAL[f'{sc}__{f:g}__tight__{coh}__{c}'].astype(float)
+            stt = CS.get(f'{sc}|{f:g}|tight|{coh}|{c}')
+            tv, tc_ = fom_verified(stt, 1e-10, .005 * f) if stt else (False, False)
+            ok = ok and tc_ and r['tight_verified'] == tv
+            tight_ok = tight_ok and tv
+            t_ = ev.CAL[f'{sc}__{f:g}__tight__{coh}__{c}']
             e_t = errs(t_, coh, c)['e_ST']
-            ok = ok and FIN(r['tight_e_ST']) and abs(e_t - r['tight_e_ST']) <= 1e-6 * max(r['tight_e_ST'], 1e-3)
+            ok = ok and within(e_t, r['tight_e_ST'], 1e-9, 1e-14)
             for nt in cfg['ntols']:
-                dd_job = r['diffs'][f'{nt:g}']['diff']
-                fr = ev.CAL[f'{sc}__{f:g}__{nt:g}__{coh}__{c}'].astype(float)
+                sn = CS.get(f'{sc}|{f:g}|{nt:g}|{coh}|{c}')
+                nv, nc = fom_verified(sn, nt, .005 * f) if sn else (False, False)
+                fr = ev.CAL[f'{sc}__{f:g}__{nt:g}__{coh}__{c}']
                 dd = max(np.linalg.norm(fr[j] - t_[j]) for j in range(1, 6)) / n0r(coh, c)
-                ok = ok and FIN(dd_job) and dd_job >= 0 and abs(dd - dd_job) <= 1e-6        # float32 evidence
-                passes[nt] = passes[nt] and r['diffs'][f'{nt:g}']['verified'] and dd_job < .01 * r['tight_e_ST']
+                ok = ok and nc and r['diffs'][f'{nt:g}']['verified'] == nv and within(dd, r['diffs'][f'{nt:g}']['diff'], 1e-9, 1e-15)
+                passes[nt] = passes[nt] and nv and dd < .01 * e_t                # threshold on the RECONSTRUCTED values
         exp = None if not tight_ok else ([max(nt for nt in cfg['ntols'] if passes[nt]), 1e-8] if any(passes.values())
                                           else [1e-10, 1e-12])
         got = e_['chosen'] if e_['chosen'] is None else list(e_['chosen'])
@@ -127,12 +165,11 @@ def validate(ev, cfg, refs, dec, a1k_rows):
             if r is None:
                 ok = False
                 continue
-            st = r['stats']
-            nst = int(st['steps'])
-            srel = np.array(st['step_rel'][:nst], float)
-            ver = bool(np.all(np.isfinite(srel)) and np.all(srel <= pair[0]))
-            ok = ok and [r['ntol'], r['ltol']] == pair and r['verified'] == ver and int(st['nfail']) == int(np.sum(~(np.isfinite(srel) & (srel <= pair[0]))))
+            ver, cons = fom_verified(r['stats'], pair[0], float(r['dt']))
+            ok = ok and cons and [r['ntol'], r['ltol']] == pair and r['verified'] == ver and abs(float(r['dt']) - .005 * float(k.split('|')[2])) < 1e-15
             f32 = ev.F32[f'{k}|{coh}|{c}'.replace('|', '__')].astype(float)
+            ok = ok and f32.shape == (6, 257, 257) and bool(np.isfinite(f32).all()) and \
+                float(np.abs(f32[0] - AT.initial257(AT.cohort(coh)[c])).max()) <= 1e-6 * max(1., float(np.abs(f32[0]).max()))
             e = errs(f32, coh, c)
             for t in ('ST', 'S', 'TX'):
                 if not (FIN(r[f'e_{t}']) and abs(e[f'e_{t}'] - r[f'e_{t}']) <= 1e-6 * max(r[f'e_{t}'], 1e-3)):
@@ -159,21 +196,22 @@ def validate(ev, cfg, refs, dec, a1k_rows):
             if r is None or Wk not in ev.W:
                 ok = False
                 continue
-            ok = ok and r['verified'] == (int(r['stats']['nfail']) == 0)
+            ok = ok and rom_consistent(r, x['form'], .005 * x['dt_factor']) and ev.W[Wk].shape == (6, Q_RP[x['setting']]) \
+                and bool(np.isfinite(ev.W[Wk]).all())
             e = errs(dec.fields(ev.W[Wk]), coh, c)
             for t in ('ST', 'S', 'TX'):
                 if not within(e[f'e_{t}'], r[f'e_{t}'], 1e-9, 1e-13):
                     ok = False
                     bad.append((k, coh, c, t))
             a = a1k_rows.get((x['setting'], f"main|{x['form']}|{x['scheme']}|{.005 * x['dt_factor']:.8g}|prod", coh, c))
-            if a is not None:
-                xjob.append(abs(a['e_ST'] - r['e_ST']))
+            xjob.append(abs(a['e_ST'] - r['e_ST']) if a is not None else float('nan'))
     ck['rom_evaluation'] = bool(ok)
     info['rom_mismatch'] = bad[:6]
     info['rom_unverified'] = sorted({k for (k, coh, c), r in rrows.items() if not r['verified']})
-    info['cross_job_max_abs_diff'] = max(xjob) if xjob else None
+    info['cross_job_max_abs_diff'] = max([v for v in xjob if FIN(v)], default=None)
+    info['cross_job_missing'] = int(sum(not FIN(v) for v in xjob))
     info['cross_job_pairs'] = len(xjob)
-    ck['cross_job_rom_agreement'] = bool(xjob) and max(xjob) <= 1e-9
+    ck['cross_job_rom_agreement'] = len(xjob) == len(rkeys) * len(cases) and all(FIN(v) and v <= 1e-9 for v in xjob)
     for ci in tidx:
         coh, c = cases[ci]
         for k in rkeys:
@@ -230,8 +268,15 @@ def main():
             refs[(coh, c, tag)] = z
     head['references_pinned'] = all(res['references'].get(f'{t}|{coh}|{c}') == ent[(coh, c, t)] for coh, c in cases for t in ('ST', 'S'))
     a1k = {}
-    for f in (HERE / 'runs').glob('a1k*/archive/output/result.json'):
-        R = json.loads(f.read_text())
+    for s_ in sorted({x['setting'] for x in cfg['rom_arms']}):
+        f = HERE / 'runs' / f'a1k{s_}' / 'archive/output/result.json'
+        au = HERE / 'checks' / f'audit-a1k{s_}.json'
+        if not (f.exists() and au.exists()):
+            continue
+        R, A_ = json.loads(f.read_text()), json.loads(au.read_text())
+        rules_ok = all(R['config']['rules'][s_]['main']['rule'] == x['rule'] for x in cfg['rom_arms'] if x['setting'] == s_)
+        if not (A_['all_pass'] and A_['job_id'] == R['job_id'] and R['mesh'] == res['mesh'] and rules_ok):
+            continue
         for r in R['rows']:
             a1k[(r['setting'], r['run'], r['cohort'], r['case'])] = r
     dec = AT.Decoder()
@@ -262,6 +307,10 @@ def main():
     mut('timing_record_dropped', lambda e2: e2.res['timing']['invocations'].pop(0), 'timing_inventory')
     mut('timing_nan', lambda e2: e2.res['timing']['invocations'][0].__setitem__('tB', float('nan')), 'timing_values_and_hashes')
     mut('timing_hash_disconnected', lambda e2: e2.res['timing']['invocations'][0].__setitem__('B_sha', '0' * 64), 'timing_values_and_hashes')
+    mut('fom_steps_zeroed', lambda e2: e2.res['rows'][r0]['stats'].__setitem__('steps', 0), 'fom_evaluation')
+    mut('rom_flag_flipped', lambda e2: e2.res['rom_rows'][0].__setitem__('verified', not e2.res['rom_rows'][0]['verified']), 'rom_evaluation')
+    mut('calibration_flag_flipped', lambda e2: next(iter(e2.res['calibration'].values()))['cases'][0].__setitem__(
+        'tight_verified', not next(iter(e2.res['calibration'].values()))['cases'][0]['tight_verified']), 'calibration_rule')
     mut('order_nfail_missing', lambda e2: e2.res['order'][0].__setitem__('nfail', {}), 'fom_order_check')
     ck['rejections_fire'] = all(rej.values())
     info['rejections'] = rej

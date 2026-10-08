@@ -62,8 +62,9 @@ def main():
     cfg0 = json.loads((ROOT / cfgname).read_text())
     assert cfg0.get('refs', cfg0.get('refined_ref')) in ('REFS_DIR', 'REF3D') and cfg0['attempt'] == a.attempt
     import numpy as np
-    man = json.loads((REFSRC / 'result.json').read_text())
-    ent = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
+    if driver != 't3run':
+        man = json.loads((REFSRC / 'result.json').read_text())
+        ent = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
     sizes = dict(dev6=6, val32=32)
     reffiles = []
     if driver == 't3run':

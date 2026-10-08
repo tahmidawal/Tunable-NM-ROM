@@ -135,7 +135,9 @@ def main():
     rz_ref = np.load(ref_path)
     assert int(rz_ref['seed']) == cfg['cohort_seed'] and int(rz_ref['count']) >= cfg['cohort_count']
     rep['reference'] = dict(path=str(ref_path), sha256=dn['sha256'], n=int(rz_ref['n']), dt=float(rz_ref['dt']))
+    assert int(rz_ref['n']) == 513 and abs(float(rz_ref['dt']) - .0025) < 1e-15, rep['reference']     # A10.2 contract
     REF = {j: np.asarray(rz_ref[f'c{j}']) for j in range(cfg['cohort_count'])}
+    assert all(REF[j].shape == (6, 63 ** 3) for j in REF)
     i65 = jnp.asarray(lattice65_index(n))
     # ---- tables (no tensor) and arms
     R = int(model['T'].shape[1])
@@ -180,6 +182,8 @@ def main():
     acc_sha = {}
     for name, arm in arms.items():
         Wset = np.full((len(cases), len(runs), 6, arm['Rp']), np.nan)
+        Wven = np.full((len(cases), 6, arm['Rp']), np.nan)
+        keep = int(round(.05 / DT0))
         for j in cases:
             u0 = jnp.asarray(C.initial_interior(n, tab, j))
             nu = float(tab['nu'][j])
@@ -203,7 +207,7 @@ def main():
                            e_ref=max(pe[1:]), stats=st, seconds_first=time.perf_counter() - t1,
                            verified=bool(int(st['nfail']) == 0 and np.all(np.isfinite(np.asarray(v['W'])))))
                 if lev == 'prod' and j < tc['cases']:
-                    acc_sha[(name, key(runs[i]), j)] = sha(np.asarray(fr))
+                    acc_sha[(name, key(runs[i]), j)] = sha(np.asarray(v['W']))       # bound to the saved coefficients
                 rep['rows'].append(row)
             dist = lambda k1, k2: max(float(x) for x in (jnp.linalg.norm(F[k1] - F[k2], axis=1) / n0)[1:])
             for jj, i in enumerate(order):
@@ -220,20 +224,21 @@ def main():
             vo = arm['vendor'](u0, nu, arm['vdata'], {})
             jax.block_until_ready(vo)
             frv = vo[0][:, i65]
+            Wven[j] = np.asarray(vo[1])[::keep]
             pe = [float(x) for x in jnp.linalg.norm(frv - jnp.asarray(R0), axis=1) / n0]
             dv = lambda Fx: max(float(x) for x in (jnp.linalg.norm(frv - Fx, axis=1) / n0)[1:])
             vrow = dict(arm=name, case=j, e_ref=max(pe[1:]), e_ref_per_time=pe, anchor=dv(F[anchor]),
                         vs_generic_BE=dv(F[key(('LSPG', 'BE', DT0, 'prod'))]),
                         it_sum=int(np.sum(np.asarray(vo[2]))), reasons=np.bincount(np.asarray(vo[3]), minlength=5).tolist())
+            vrow['reasons_per_step'] = np.asarray(vo[3]).tolist()
+            vrow['gn_per_step'] = np.asarray(vo[4]).tolist()
             if j < tc['cases']:
-                acc_sha[(name, 'vendor', j)] = sha(np.asarray(frv))
+                acc_sha[(name, 'vendor', j)] = sha(Wven[j])
             rep['vendor_rows'].append(vrow)
             del F
             print('CASE', name, j, el(), flush=True)
-            if j % 4 == 3:
-                save()
-        np.savez_compressed(out / f'W_{name}.npz', W=Wset, runs=np.array([key(r) for r in runs]))
-        save()
+            np.savez_compressed(out / f'W_{name}.npz', W=Wset, W_vendor=Wven, runs=np.array([key(r) for r in runs]))
+            save()
         # ---- timing (A = deployed fixed-sweep BE at dt0)
         inputs = {j: (jnp.asarray(C.initial_interior(n, tab, j)), float(tab['nu'][j])) for j in range(tc['cases'])}
         cands = [r for r in runs if r[3] == 'prod' and r[2] >= DT0 / 2 - 1e-15]
@@ -241,17 +246,20 @@ def main():
         def call(B, j):
             u0, nu = inputs[j]
             if B == 'vendor':
-                return arm['vendor'](u0, nu, arm['vdata'], {})[0]
+                o = arm['vendor'](u0, nu, arm['vdata'], {})
+                return o, lambda: np.asarray(o[1])[::keep]
             form, sc, dt, lev = B
             g, t_ = tol_of(form, lev)
-            return arm['q'][form](u0, nu, arm['data'][form], T2.sched(sc, dt, g, t_))['fields']
+            o = arm['q'][form](u0, nu, arm['data'][form], T2.sched(sc, dt, g, t_))
+            return o, lambda: np.asarray(o['W'])
 
         def timed(B, j):
             burn(tc['burn'])
             t1 = time.perf_counter()
-            o = call(B, j)
+            o, Wf = call(B, j)
             jax.block_until_ready(o)
-            return time.perf_counter() - t1, sha(np.asarray(o[:, i65]))
+            secs = time.perf_counter() - t1
+            return secs, sha(Wf())
         for B in ['vendor'] + cands:
             for j in range(tc['cases']):
                 timed(B, j)
@@ -265,9 +273,13 @@ def main():
                 ta1, h1 = timed('vendor', j)
                 tb_, hb = timed(B, j)
                 ta2, h2 = timed('vendor', j)
-                inv.append(dict(arm=name, B=key(B), case=j, rep=r_, tA1=ta1, tB=tb_, tA2=ta2, ratio=tb_ / (.5 * (ta1 + ta2)),
+                inv.append(dict(arm=name, B=key(B), case=j, rep=r_, A='vendor', tA1=ta1, tB=tb_, tA2=ta2, ratio=tb_ / (.5 * (ta1 + ta2)),
                                 drift=ta2 / ta1, A_sha=[h1, h2], A_expected_sha=acc_sha.get((name, 'vendor', j)), B_sha=hb,
                                 B_expected_sha=acc_sha.get((name, key(B), j))))
+                if len(inv) % 50 == 0:
+                    rep['timing'][name] = dict(A='vendor fixed-sweep BE dt0', invocations=inv, candidates=[key(r) for r in cands],
+                                               partial=True)
+                    save()
         rep['timing'][name] = dict(A='vendor fixed-sweep BE dt0', invocations=inv, candidates=[key(r) for r in cands])
         save()
         print('TIMING', name, el(), flush=True)

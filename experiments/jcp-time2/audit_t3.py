@@ -16,6 +16,10 @@ from pathlib import Path
 
 import numpy as np
 
+
+def sha(a):
+    return hashlib.sha256(np.ascontiguousarray(np.asarray(a)).tobytes()).hexdigest()
+
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE / 'vendor' / 'quad3d'))
 import jax  # noqa: E402
@@ -47,7 +51,17 @@ def close(a, b, rtol=1e-8, atol=1e-12):
     return a is not None and b is not None and np.isfinite(a) and np.isfinite(b) and abs(a - b) <= atol + rtol * abs(b)
 
 
-def validate(res, Wz, cfg, G, REF):
+def rom_consistent(r, form, dt):
+    st = r['stats']
+    steps = int(round(.25 / dt))
+    ex = list(st['exits'])
+    ok = int(st['steps']) == steps and sum(ex) == steps and r['verified'] == (int(st['nfail']) == 0)
+    if r['verified']:
+        ok = ok and ex[0] == 0 and ex[3] == 0 and (form == 'LSPG' or float(st['worst_tolratio']) <= 1.)
+    return ok
+
+
+def validate(res, Wz, cfg, G, REF, U0):
     ck, info = {}, {}
     er = expected_runs(cfg['grid'])
     names = [f"{x['rule']}_R{x['Rp']}" for x in cfg['rules']]
@@ -64,6 +78,10 @@ def validate(res, Wz, cfg, G, REF):
         for j in cases:
             Fc = W[j] @ G[nm]                               # (runs, 6, 63^3), one case at a time
             n0 = np.linalg.norm(REF[j][0])
+            # independent L2 projection of the initial field (NumPy least squares on the lattice = the mesh at n = 65)
+            w0 = np.linalg.lstsq(G[nm].T, U0[j], rcond=None)[0]
+            if not np.allclose(W[j][:, 0], w0[None], rtol=0, atol=1e-7 * np.abs(w0).max()):
+                bad.append((nm, j, 'initial_projection'))
             Fj = {k: Fc[i] for i, k in enumerate(er)}
             dist = lambda a, b: float((np.linalg.norm(Fj[a] - Fj[b], axis=1) / n0)[1:].max())
             anc = 'GAL|BDF2|0.000625|tight'
@@ -72,13 +90,15 @@ def validate(res, Wz, cfg, G, REF):
                 if r is None:
                     bad.append((nm, k, j, 'missing'))
                     continue
-                e = float((np.linalg.norm(Fc[i] - REF[j], axis=1) / n0)[1:].max())
-                if not close(e, r['e_ref'], 1e-7, 1e-10):
+                pe = np.linalg.norm(Fc[i] - REF[j], axis=1) / n0
+                e = float(pe[1:].max())
+                if not close(e, r['e_ref'], 1e-7, 1e-10) or not all(close(a_, b_, 1e-7, 1e-10) for a_, b_ in zip(pe, r['e_ref_per_time'])) \
+                        or len(r['e_ref_per_time']) != 6:
                     bad.append((nm, k, j, 'e_ref', e, r['e_ref']))
-                if r['verified'] != (int(r['stats']['nfail']) == 0 and np.isfinite(W[j, i]).all()):
-                    bad.append((nm, k, j, 'verified_flag'))
                 form, sc, dt, lev = k.split('|')
                 dt = float(dt)
+                if not rom_consistent(r, form, dt) or not np.isfinite(W[j, i]).all():
+                    bad.append((nm, k, j, 'verification'))
                 checks = [('anchor', anc)]
                 if f'{form}|{sc}|{dt / 2:.8g}|{lev}' in Fj:
                     checks.append(('d_half', f'{form}|{sc}|{dt / 2:.8g}|{lev}'))
@@ -95,8 +115,29 @@ def validate(res, Wz, cfg, G, REF):
     ck['mandatory_metrics'] = not miss
     info['mismatches'] = [list(map(str, b)) for b in bad[:10]]
     info['missing'] = [list(map(str, m)) for m in miss[:10]]
-    vr = {(v['arm'], v['case']) for v in res['vendor_rows']}
-    ck['vendor_inventory'] = vr == {(nm, j) for nm in names for j in cases} and len(res['vendor_rows']) == len(vr)
+    vr = {(v['arm'], v['case']): v for v in res['vendor_rows']}
+    ck['vendor_inventory'] = set(vr) == {(nm, j) for nm in names for j in cases} and len(res['vendor_rows']) == len(vr)
+    vbad = []
+    for nm in names:
+        Wv, W = Wz[nm]['W_vendor'], Wz[nm]['W']
+        er_i = {k: i for i, k in enumerate(er)}
+        for j in cases:
+            v = vr.get((nm, j))
+            if v is None or Wv.shape[1:] != (6, G[nm].shape[0]) or not np.isfinite(Wv[j]).all():
+                vbad.append((nm, j, 'missing'))
+                continue
+            n0 = np.linalg.norm(REF[j][0])
+            Fv = Wv[j] @ G[nm]
+            Fa = W[j, er_i['GAL|BDF2|0.000625|tight']] @ G[nm]
+            Fb = W[j, er_i['LSPG|BE|0.01|prod']] @ G[nm]
+            d = lambda X: float((np.linalg.norm(Fv - X, axis=1) / n0)[1:].max())
+            if not (close(d(REF[j]), v['e_ref'], 1e-7, 1e-10) and close(d(Fa), v['anchor'], 1e-6, 1e-12)
+                    and close(d(Fb), v['vs_generic_BE'], 1e-6, 1e-12)):
+                vbad.append((nm, j, 'metrics'))
+            if len(v.get('reasons_per_step', [])) != int(round(.25 / DT0)) or 3 in v['reasons_per_step']:
+                vbad.append((nm, j, 'vendor_solver'))
+    ck['vendor_rescored'] = not vbad
+    info['vendor_mismatch'] = [list(map(str, b)) for b in vbad[:6]]
     tc = cfg['timing']
     ok = True
     for nm in names:
@@ -106,11 +147,14 @@ def validate(res, Wz, cfg, G, REF):
         got = [(i['B'], i['case'], i['rep']) for i in inv]
         want = {(b, j, r_) for b in cands for j in range(tc['cases']) for r_ in range(tc['reps'])}
         ok = ok and len(got) == len(set(got)) == len(want) and set(got) == want
+        er_i = {k: i_ for i_, k in enumerate(er)}
         for i in inv:
             ts = [i['tA1'], i['tB'], i['tA2']]
+            hA = sha(Wz[nm]['W_vendor'][i['case']])
+            hB = sha(Wz[nm]['W'][i['case'], er_i[i['B']]]) if i['B'] in er_i else None
             ok = ok and all(np.isfinite(x) and x > 0 for x in ts) and close(i['ratio'], i['tB'] / (.5 * (i['tA1'] + i['tA2'])), 1e-12) \
-                and i['A_expected_sha'] and i['B_expected_sha'] and i['A_sha'][0] == i['A_sha'][1] == i['A_expected_sha'] \
-                and i['B_sha'] == i['B_expected_sha']
+                and close(i['drift'], i['tA2'] / i['tA1'], 1e-12) and i.get('A') == 'vendor' \
+                and i['A_sha'][0] == i['A_sha'][1] == hA and i['B_sha'] == hB
     ck['timing'] = bool(ok)
     info['unverified'] = sorted({f"{r['arm']}|{r['run']}" for r in res['rows'] if not r['verified']})
     return ck, info
@@ -136,7 +180,14 @@ def main():
     head['reference_pinned'] = hashlib.sha256(r3.read_bytes()).hexdigest() == dn['sha256'] == res['reference']['sha256']
     z = np.load(r3)
     REF = {j: np.asarray(z[f'c{j}']) for j in range(cfg['cohort_count'])}
-    b = pickle.loads((HERE / 'vendor/quad3d/inputs/model_M2/bank.pkl').read_bytes())
+    bank_path = HERE / 'vendor/quad3d/inputs/model_M2/bank.pkl'
+    head['model_authenticated'] = hashlib.sha256(bank_path.read_bytes()).hexdigest() == res['model_sha256'] == cfg['expected_model_sha256']
+    head['rules_authenticated'] = hashlib.sha256((HERE / 'vendor/quad3d/rules/rules.npz').read_bytes()).hexdigest() == cfg['expected_rules_sha256']
+    import subprocess
+    cert = json.loads(subprocess.check_output(['git', '-C', str(HERE), 'show', f"{res['commit']}:experiments/jcp-time2/checks/test_lmm.json"]))
+    t2sha = next(x['sha256'] for x in prov if x['source'].endswith('jcp-time2/t2core.py'))
+    head['G2a_certificate'] = bool(cert['all_pass'] and cert['source_sha256']['t2core.py'] == t2sha)
+    b = pickle.loads(bank_path.read_bytes())
     bank = jax.tree_util.tree_map(jnp.asarray, b['params'])
     T = np.asarray(b['rotation'])
     X65 = lattice65_coords()
@@ -144,20 +195,26 @@ def main():
     for x in cfg['rules']:
         G[f"{x['rule']}_R{x['Rp']}"] = np.asarray(TB.feature_rows(bank, T[:, :x['Rp']], X65))
     Wz = {nm: dict(np.load(arc / f'output/W_{nm}.npz')) for nm in G}
-    ck, info = validate(res, Wz, cfg, G, REF)
+    tab = C.table(cfg['cohort_seed'], cfg['cohort_count'])
+    U0 = {j: np.asarray(C.initial_interior(65, tab, j)) for j in range(cfg['cohort_count'])}
+    ck, info = validate(res, Wz, cfg, G, REF, U0)
     ck.update(head)
     rej = {}
 
     def mut(name, fn, keyc):
         r2, W2 = copy.deepcopy(res), {k: dict(v) for k, v in Wz.items()}
         fn(r2, W2)
-        c2, _ = validate(r2, W2, cfg, G, REF)
+        c2, _ = validate(r2, W2, cfg, G, REF, U0)
         rej[name] = not c2[keyc]
     nm0 = next(iter(G))
     mut('error_perturbed', lambda r2, W2: r2['rows'][0].__setitem__('e_ref', 1.01 * r2['rows'][0]['e_ref'] + 1e-4), 'rescored')
     mut('coefficients_case_swap', lambda r2, W2: W2[nm0].__setitem__('W', W2[nm0]['W'][[1, 0] + list(range(2, len(W2[nm0]['W'])))]), 'rescored')
     mut('verified_flag_flipped', lambda r2, W2: r2['rows'][0].__setitem__('verified', not r2['rows'][0]['verified']), 'rescored')
     mut('timing_dropped', lambda r2, W2: r2['timing'][nm0]['invocations'].pop(0), 'timing')
+    mut('time_shift', lambda r2, W2: W2[nm0].__setitem__('W', np.roll(W2[nm0]['W'], 1, axis=2)), 'rescored')
+    mut('vendor_error_perturbed', lambda r2, W2: r2['vendor_rows'][0].__setitem__('e_ref', 1.01 * r2['vendor_rows'][0]['e_ref'] + 1e-4), 'vendor_rescored')
+    mut('timing_hash_disconnected', lambda r2, W2: r2['timing'][nm0]['invocations'][0].__setitem__('B_sha', '0' * 64), 'timing')
+    mut('timing_drift_nan', lambda r2, W2: r2['timing'][nm0]['invocations'][0].__setitem__('drift', float('nan')), 'timing')
     ck['rejections_fire'] = all(rej.values())
     info['rejections'] = rej
     allp = all(ck.values())

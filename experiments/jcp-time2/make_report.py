@@ -478,7 +478,7 @@ def main():
         for e in an['table']:
             te = e['time_err']
             res_ = f"{te['resolved']}/{te['n']}" if te else '—'
-            rat = '—' if e['ratio'] is None else f"{e['ratio']:.3f}"
+            rat = '—' if e['ratio'] is None else f"{e['ratio']:.4f}"
             if e['ratio_iqr']:
                 rat += f" ({e['ratio_iqr'][0]:.2f}–{e['ratio_iqr'][1]:.2f})"
             ms = '—' if e['ms'] is None else f"{e['ms']:.1f}"
@@ -509,8 +509,10 @@ def main():
         else:
             W('Every trajectory of this setting was verified (every step met its acceptance test).')
             W('')
-        W(f"Deployed comparator: `{an['comparator']}`, {an['A_ms']:.1f} ms median; the vendor backward-Euler query (G1a "
-          f"agreement within tolerance) paired ratio {an['vendor_ratio']:.3f} (generic-implementation overhead check).")
+        W(f"Comparator: `{an['comparator']}` — the deployed backward-Euler step run through this lane's generic code (identical "
+          f"output to the deployed code, G1a), {an['A_ms']:.1f} ms median. The deployed (vendor) code itself has paired ratio "
+          f"{an['vendor_ratio']:.4f} to it, so every paired ratio below is {1 / an['vendor_ratio']:.3f}× larger when measured "
+          "against the vendor code (the generic code carries a small overhead).")
         W('')
         W('### Observed temporal order (self-convergence, tight tolerance)')
         W('')
@@ -552,6 +554,7 @@ def main():
     W('- Every error against ST, S or TX: the references are backward Euler in time and sign-upwind in space at $8192^2$. '
       'TX removes only the leading backward-Euler term and assumes the asymptotic regime. A second-order ROM can be closer to '
       'the true solution than ST is; its ST error then partly measures ST\'s own time error.')
+    W('- In the anchor-discrepancy plots a hollow marker means fewer than half the cases are resolved; a filled marker does not imply every case is resolved (the resolved count is in the tables).')
     W('- Anchor discrepancies concern the fixed reduced model and quadrature rule: they say nothing about the total PDE error or the spatial, representation and quadrature errors.')
     W('- Anchor discrepancies are distances to the GAL-BDF2 $\\Delta t_0/16$ rollout. They estimate the time-step error of a rollout only where GAL-BDF2 is shown to be second order on these data (its claim above) and the distance is resolved (≥ 3× the anchor uncertainty indicator); otherwise read them only as distances to that rollout.')
     W('- Timings are for the six dev6 timing cases on one GPU.')

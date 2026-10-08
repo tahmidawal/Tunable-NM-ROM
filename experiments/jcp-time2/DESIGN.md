@@ -246,3 +246,115 @@ flowchart LR
 - **ringing index**: how much the stiff-mode part of the solution flips sign step to step (0 smooth, 1 alternating).
 - **paired A–B–A**: time a baseline, a candidate, then the baseline again, back to back, and divide.
 - **pp**: percentage points of $\lVert u_0\rVert$.
+
+---
+
+## Amendment A1 (2026-10-08, after the Codex design audit `audits/codex-design.md`; before any code)
+
+Item numbers refer to the audit. Where this amendment and the text above disagree, this amendment governs.
+
+**A1.1 (items 5, 6) Evidence and references restated.** The ST − S numbers of section 1 are *reference-sensitive error
+gaps* of six inspected setting/arm combinations, not norms of BE time error; "every arm" means those six, and the
+"factor about 18" is a ratio of median reference discrepancies only. `evidence_be_gap.py` is extended to report
+$\max_t\lVert \mathrm{S}-\mathrm{ST}\rVert/\lVert u_0\rVert$ per case (the FOM's own BE time-error proxy at $8192^2$). Distances to S are
+reported for every arm as *agreement with that discrete solution*; *estimated continuum accuracy* is read from ST and
+TX, both provisional, with the ST-vs-TX ranking sensitivity reported; a ranking that changes between ST and TX is
+marked reference-dependent. No certified accuracy floor is claimed.
+
+**A1.2 (item 3) LSPG order prediction restated.** With $\widehat D=\alpha_0D\to I$, at the GAL step ($A^{\mathsf T}\delta=0$) the
+LSPG stationarity perturbation is $A^{\mathsf T}(\widehat D^2-I)\delta+\tfrac{\beta_0\Delta t}{\alpha_0}F'^{\mathsf T}\widehat D^2\delta$, generically
+$O(\Delta t^2)$ per step. Prediction (conditional on smooth solutions, full column rank of $A$, stability, one solution branch,
+negligible solve error and a non-vanishing leading perturbation): LSPG-CN/BDF2 converge to the continuous-time ROM at
+asymptotic order 1; a small leading coefficient can delay it. LSPG arms are therefore called *CN-family / BDF2-family*
+arms, never "second order", unless their measured order says so. The job records rank and condition number of $A$.
+
+**A1.3 (items 8, 12) Self-convergence restated.** $p(h)=\log_2\big(\lVert u_h-u_{h/2}\rVert_{\max}/\lVert u_{h/2}-u_{h/4}\rVert_{\max}\big)$, max over
+the five evolved output times, per case, reported for every dyadic $h\in\{2\Delta t_0,\Delta t_0,\Delta t_0/2\}$ (finest triple
+$\Delta t_0/2,\Delta t_0/4,\Delta t_0/8$). GAL-BDF2 and GAL-CN are additionally run at $\Delta t_0/16$ (tight), giving one more
+triple and an anchor check: $e_{\rm time}$ is renamed **anchor discrepancy** (anchor GAL-BDF2 at $\Delta t_0/16$); the anchor's
+own uncertainty is $\lVert u^{\rm anc}_{\Delta t_0/8}-u^{\rm anc}_{\Delta t_0/16}\rVert$ (not divided by 3 unless the measured order at the
+finest triple is in [1.7, 2.3]); anchor discrepancies below 3 × that uncertainty are reported as *unresolved*. If GAL
+fails G2, no anchor is used and no order claim is made (the LSPG-BE fallback is dropped).
+G2 is split: **G2a implementation (must pass)** = manufactured tests (A1.4); **G2b real-data asymptotics** (blocks
+order *claims*, is not by itself diagnosed as a bug): per case, the order at the finest valid triple; a triple is
+*valid* only if both differences exceed 10 × the solve uncertainty of A1.5; reported per case with the count of valid
+cases and outliers (outside the band). A scheme's order claim on real data requires valid triples on ≥ 80 % of the 38
+cases and ≥ 80 % of the valid ones inside the band (BE/TH06 [0.8, 1.25]; CN-family/BDF2-family [1.7, 2.3]). Otherwise
+"order not established" (with the refinement extension $\Delta t_0/16$ for GAL already included). TH06 and BE are
+*empirical* controls: their expected outcome is "outside [1.7, 2.3]"; an inside result is reported as "control
+inconclusive (not asymptotic)", not as a pass.
+
+**A1.4 (item 10) Manufactured implementation tests (`test_lmm.py`, CPU, must pass before any GPU run).** The step
+function used by the job (same Python code path, small arrays) on a manufactured over-determined system: $M=24$,
+$R'=6$, random full-rank $A$, $\Lambda$ spread over $[1,10^3]$, a quadratic $N(c)$ with analytic Jacobian, $\nu=0.05$, smooth
+solution to $t=0.25$; reference by GAL-BDF2 at $\Delta t=0.25/2^{14}$. Must pass: GAL-BE and GAL-TH06 order in
+[0.85, 1.15], GAL-CN, GAL-CN-R, GAL-BDF2 in [1.85, 2.15] on the triple at $\Delta t\in\{0.25/64,0.25/128,0.25/256\}$.
+**Mutation tests (must be detected, i.e. GAL-CN or GAL-BDF2 then lands outside [1.85, 2.15] or the residual check fails):**
+(m1) $\alpha_2$ sign flipped in BDF2, (m2) CN's $F(c_n)$ replaced by $F(c_{n-1})$, (m3) the BDF2 history $c_{n-1}$ not shifted
+(stale), (m4) output stored one step late, (m5) $D$ built with $\beta_1$ instead of $\beta_0$ (LSPG only: compared with a
+direct NumPy LSPG solve, must differ). LSPG orders on the manufactured system are reported (not gated).
+
+**A1.5 (items 11, 13) Stopping, verification and solve uncertainty.**
+- LSPG production: deployed (`gtol` $10^{-3}$ on $\lVert J^{\mathsf T}r\rVert/(\lVert J\rVert_F\lVert r\rVert)$, residual tol $10^{-9}\,$scale, budget 600).
+  LSPG tight: `gtol` $10^{-10}$, residual tol 0 (disabled), budget 600.
+- GAL: `gtol` 0 (disabled); residual tol $\epsilon\lVert Ac_n\rVert$ with $\epsilon=10^{-10}$ (production) / $10^{-13}$ (tight); budget 600.
+- Every step's exit is re-verified *inside the job* from the returned state: LSPG accepted iff the recomputed stationarity
+  ratio ≤ `gtol` or residual ≤ tol; GAL accepted iff the recomputed root residual ≤ tol. Exit reasons 0 (budget), 3
+  (damping limit) and any step failing re-verification (including tiny-step exits, reason 2) are **failed steps**. A
+  trajectory with any failed step is **unverified**: excluded from selection, order estimates and the anchor; kept in a
+  failure table (per case, per arm, first failed step).
+- Solve uncertainty: dev6 (6 cases) is replayed at *tighter* tolerances (LSPG `gtol` $10^{-12}$; GAL $\epsilon=10^{-15}$) for every
+  scheme and the dyadic $\Delta t$; $s(h)=\max_t\lVert u^{\rm tight}_h-u^{\rm tighter}_h\rVert/\lVert u_0\rVert$, the per-scheme maximum over the
+  six cases is the solve uncertainty used in A1.3. Production-vs-tight discrepancy is reported for every arm.
+
+**A1.6 (item 14) Ringing restated.** For the tests $h$ above the median eigenvalue and increments
+$\delta_n=h\odot A(c_{n+1}-c_n)$: alternation index $\mathcal I=\sum_{n,j}\max(0,-\delta_{n,j}\delta_{n-1,j})/\sum_{n,j}|\delta_{n,j}\delta_{n-1,j}|$
+(0 for monotone decay of each mode, 1 for sign alternation; 0/0 := 0), and amplitude
+$a=\max_n\lVert\delta_n\rVert/\lVert Ac_0\rVert$. A run is labelled **ringing** iff $\mathcal I>0.5$ and $a>10^{-4}$. The normalised second
+difference of section 5 is dropped. Effect on selection: none automatic; ringing arms are flagged in every table.
+
+**A1.7 (items 9, 15, 16, 17) Implementation, reproduction and timing.**
+- Loop: `lax.while_loop` over a traced step count; outputs in a fixed $(6,R')$ buffer written when $(k+1)\bmod$ keep $=0$;
+  statistics accumulated in the carry (no per-step arrays). $F(c_n)$ is computed under `lax.cond(b1 != 0)` so BE/BDF2
+  steps do not evaluate it. Argument shapes/dtypes are fixed (f64 scalars for $\Delta t$ and coefficients, int32 counts), and
+  the job asserts the compiled-cache size of every query is unchanged across the timing phase.
+- G1 split. **G1a (same job, must pass):** generic LSPG-BE at $\Delta t_0$ versus the vendor `qcore.make_linear_query`, per
+  case: initial coefficients, the six output coefficient vectors and fields ($\max_t\lVert\Delta u\rVert/\lVert u_0\rVert\le10^{-8}$) and
+  total LM iterations (reported; differences explained). **G1b (historical, reported):** vendor BE errors against the
+  2D lane's `dv1024` per case, $|\Delta e|\le10^{-5}$.
+- Cost = **end-to-end query latency** (initial fit + time stepping + decoding of the six output fields at the mesh), as
+  the vendor query. Timing: for each candidate B and timing case, A–B–A with A = generic LSPG-BE at $\Delta t_0$; the
+  vendor BE query is also a timed subject (generic-overhead check). Every timed output's 257-node sha256 must equal the
+  accuracy-phase output of the same (arm, case) (same GPU, same compiled function); all A/B/A samples persisted with the
+  GPU uuid; baseline drift reported as the spread of $t_{A_2}/t_{A_1}$. Six timing cases (first six of dev6), 3
+  repetitions; conclusions about speed apply to those cases.
+
+**A1.8 (item 18) Hypotheses and selection, exact.** Candidate universe: the production-tolerance off-mesh arms of
+section 3 (both forms, BE/CN/CN-R/BDF2, every $\Delta t$ with a timing, i.e. $\Delta t\ge\Delta t_0/2$), verified on all 38 cases (A1.5);
+the comparator LSPG-BE-$\Delta t_0$ is in the set. H1: *exists* a CN/BDF2-family arm at $\Delta t_0$ with median $e_{\rm ST}\le0.7\times$ and
+worst $e_{\rm ST}\le1.0\times$ the comparator's. H2: *exists* a CN/BDF2-family arm with $\Delta t\ge2\Delta t_0$, worst and median
+$e_{\rm ST}\le$ comparator's, and median paired ratio ≤ 0.75. Selection "fast-equal-accuracy": minimise median paired ratio
+subject to worst and median $e_{\rm ST}\le$ comparator; "accurate-equal-cost": minimise median $e_{\rm ST}$ subject to median
+paired ratio ≤ 1.0; ties by worst $e_{\rm ST}$, then by larger $\Delta t$. No eligible arm → "none" (the comparator is not
+selected by default). Both are also recomputed with TX in place of ST (sensitivity, not selection).
+
+**A1.9 (item 19) test64.** Called *historical-cohort replication* (the cohort was opened by the 2D lane and the rules
+inherit that history). Run once, at $L=1024$ (and $4096$ if time), with selection, tolerances, failure rules and
+references frozen in `checks/FROZEN-SELECTION.json` before staging.
+
+**A1.10 (items 20, 21) FOM.** The LMM FOM records per step the final nonlinear relative residual and Newton count and
+per Newton iteration the linear relative residual; a step with nonlinear residual > ntol or Newton count at its limit
+is a failed step and the trajectory is rejected. Tolerance calibration on dev6 only: ntol ∈ {1e-4, 1e-6, 1e-8}, choose
+the loosest whose fields differ from the 1e-10 solve by < 1 % of its own ST error. Comparison wording: "best among the
+tested FOM configurations" at matched ST error; "second order" only for arms shown so.
+
+**A1.11 (item 22) Attribution.** Added: (i) production-vs-tight discrepancy per arm (A1.5); (ii) higher-quadrature replay:
+the same CN-family/BDF2-family/BE arms at $\Delta t\in\{\Delta t_0,2\Delta t_0,5\Delta t_0\}$ with Gauss $192^2$ (acc) and Fibonacci 6765 (fast),
+LSPG and GAL, production tolerance, on all 38 cases; its distance from the selected-rule run is reported; (iii) full-mesh
+check: every run's anchor discrepancy is computed on the full $1024^2$ mesh as well as on the $257^2$ nodes (ratio reported);
+(iv) all output coefficients and initial coefficients are saved, so every error is reconstructable offline by
+`audit_t2.py` (independent NumPy decode at the 257² nodes against the stored references).
+
+**A1.12 (item 23) Smoke.** Local GB10: only `test_lmm.py` (CPU) and a sub-minute import/compile check (one case, $L=256$,
+two $\Delta t$, one `jaxrun`). The real-size smoke (`smk`, $L=256$ and 1024, dev6 cases 0 and 2, every arm) runs on the
+cluster before `a1k`. The local 0.3 h line of section 12 is withdrawn.

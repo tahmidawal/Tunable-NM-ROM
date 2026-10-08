@@ -364,10 +364,10 @@ Old method (deployed mesh lattice $63^2$, LSPG), worst / median ST error (%, PRO
 ## What is provisional, and why
 
 - Every error against ST, S or TX: the references are backward Euler in time and sign-upwind in space at $8192^2$. TX removes only the leading backward-Euler term and assumes the asymptotic regime. A second-order ROM can be closer to the true solution than ST is; its ST error then partly measures ST's own time error.
-- In the anchor-discrepancy plots a hollow marker means fewer than half the cases are resolved; a filled marker does not imply every case is resolved (the resolved count is in the tables).
+- In the 2D anchor-discrepancy plots a hollow marker means fewer than half the cases are resolved; a filled marker does not imply every case is resolved (the resolved count is in the tables).
 - Anchor discrepancies concern the fixed reduced model and quadrature rule: they say nothing about the total PDE error or the spatial, representation and quadrature errors.
-- Anchor discrepancies are distances to the GAL-BDF2 $\Delta t_0/16$ rollout. They estimate the time-step error of a rollout only where GAL-BDF2 is shown to be second order on these data (its claim above) and the distance is resolved (≥ 3× the anchor uncertainty indicator); otherwise read them only as distances to that rollout.
-- Timings are for the six dev6 timing cases on one GPU.
+- 2D anchor discrepancies ($257^2$ nodes) are distances to the GAL-BDF2 $\Delta t_0/16$ rollout. They estimate the time-step error of a rollout only where GAL-BDF2 is shown to be second order on these data (its claim above) and the distance is resolved (≥ 3× the anchor uncertainty indicator); otherwise read them only as distances to that rollout.
+- 2D timings are for the six dev6 timing cases on one GPU (3D: four cases; see its section).
 
 ## Glossary
 

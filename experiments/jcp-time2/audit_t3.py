@@ -235,7 +235,8 @@ def main():
     ck['rejections_fire'] = all(rej.values())
     info['rejections'] = rej
     allp = all(ck.values())
-    out = dict(attempt=att, job_id=res['job_id'], commit=res['commit'], checks=ck, info=info, all_pass=allp)
+    out = dict(attempt=att, job_id=res['job_id'], commit=res['commit'], checks=ck, info=info, all_pass=allp,
+               result_sha256=hashlib.sha256((arc / 'output/result.json').read_bytes()).hexdigest())
     (HERE / 'checks' / f'audit-{att}.json').write_text(json.dumps(out, indent=1, default=str) + '\n')
     for k, v in ck.items():
         print(('PASS ' if v else 'FAIL ') + k)

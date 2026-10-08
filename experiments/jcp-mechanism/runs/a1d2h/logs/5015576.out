@@ -1,0 +1,185 @@
+host=pax008 source_commit=30539d990112f8a0163249adda24a6506d3b43e6
+NVIDIA H200, GPU-3011fd20-5985-c4ea-f6bf-649a67b8d28b, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T  999G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+CASES 38 2.1
+REFS 76 3.6
+BANK+OPS 13.0
+TRUTH 18.8
+ARMS acc 5 42.3
+NODES GATES acc {'G1_fd_err_h1e-5': 2.732745396969258e-06, 'G1_fd_err_h1e-6': 2.7349913114778982e-08, 'G1_fd_ratio': 99.91788220682038, 'G1_pass': True, 'G2a_values_vs_mesh_bank': 0.0, 'G2b_Psi_vs_Phi': 2.838701496088447e-14, 'G2c_gemm_vs_separable': 1.1965378325701524e-14, 'G3_jacobian_vs_jacfwd': 0.0, 'm': 65025}
+CASE acc 0 dev6 0 79.0
+CASE acc 1 dev6 1 81.5
+CASE acc 2 dev6 2 84.8
+CASE acc 3 dev6 3 87.3
+CASE acc 4 dev6 4 89.8
+CASE acc 5 dev6 5 92.3
+CASE acc 6 val32 0 94.9
+CASE acc 7 val32 1 97.3
+CASE acc 8 val32 2 99.8
+CASE acc 9 val32 3 102.3
+CASE acc 10 val32 4 104.8
+CASE acc 11 val32 5 107.3
+CASE acc 12 val32 6 109.9
+CASE acc 13 val32 7 112.5
+CASE acc 14 val32 8 115.0
+CASE acc 15 val32 9 117.6
+CASE acc 16 val32 10 120.3
+CASE acc 17 val32 11 122.8
+CASE acc 18 val32 12 125.3
+CASE acc 19 val32 13 127.8
+CASE acc 20 val32 14 130.4
+CASE acc 21 val32 15 132.9
+CASE acc 22 val32 16 135.4
+CASE acc 23 val32 17 138.1
+CASE acc 24 val32 18 140.7
+CASE acc 25 val32 19 143.3
+CASE acc 26 val32 20 145.9
+CASE acc 27 val32 21 148.4
+CASE acc 28 val32 22 150.9
+CASE acc 29 val32 23 153.5
+CASE acc 30 val32 24 156.2
+CASE acc 31 val32 25 158.7
+CASE acc 32 val32 26 161.2
+CASE acc 33 val32 27 163.7
+CASE acc 34 val32 28 166.2
+CASE acc 35 val32 29 168.7
+CASE acc 36 val32 30 171.3
+CASE acc 37 val32 31 173.9
+RHO-NODES-REACHED acc {'dense': 0.08301092671479993, 'lat64': 0.05981790705959754, 'gauss96': 0.004648647804901456, 'fib121393': 1.014372171929044e-05, 'gref': 0.0, 'nodes': 0.011787522990624468}
+RHO acc 1900 44.9 218.8
+ARMS fast 5 230.4
+NODES GATES fast {'G1_fd_err_h1e-5': 8.157806893573115e-07, 'G1_fd_err_h1e-6': 8.176148249364747e-09, 'G1_fd_ratio': 99.77567241649444, 'G1_pass': True, 'G2a_values_vs_mesh_bank': 0.0, 'G2b_Psi_vs_Phi': 1.4209119991726027e-14, 'G2c_gemm_vs_separable': 4.526474613048753e-15, 'G3_jacobian_vs_jacfwd': 0.0, 'm': 65025}
+CASE fast 0 dev6 0 254.6
+CASE fast 1 dev6 1 255.1
+CASE fast 2 dev6 2 256.4
+CASE fast 3 dev6 3 256.9
+CASE fast 4 dev6 4 257.4
+CASE fast 5 dev6 5 257.9
+CASE fast 6 val32 0 258.4
+CASE fast 7 val32 1 258.9
+CASE fast 8 val32 2 259.4
+CASE fast 9 val32 3 260.0
+CASE fast 10 val32 4 260.5
+CASE fast 11 val32 5 261.0
+CASE fast 12 val32 6 261.5
+CASE fast 13 val32 7 262.0
+CASE fast 14 val32 8 262.5
+CASE fast 15 val32 9 263.0
+CASE fast 16 val32 10 263.6
+CASE fast 17 val32 11 264.0
+CASE fast 18 val32 12 264.5
+CASE fast 19 val32 13 265.0
+CASE fast 20 val32 14 265.5
+CASE fast 21 val32 15 266.0
+CASE fast 22 val32 16 266.5
+CASE fast 23 val32 17 267.0
+CASE fast 24 val32 18 267.6
+CASE fast 25 val32 19 268.1
+CASE fast 26 val32 20 268.6
+CASE fast 27 val32 21 269.1
+CASE fast 28 val32 22 269.6
+CASE fast 29 val32 23 270.1
+CASE fast 30 val32 24 270.6
+CASE fast 31 val32 25 271.1
+CASE fast 32 val32 26 271.6
+CASE fast 33 val32 27 272.1
+CASE fast 34 val32 28 272.6
+CASE fast 35 val32 29 273.1
+CASE fast 36 val32 30 273.6
+CASE fast 37 val32 31 274.2
+RHO-NODES-REACHED fast {'dense': 0.08246715801084101, 'lat64': 0.05905905798774489, 'fib1597': 0.05635116783790974, 'fib121393': 7.3039720123643084e-06, 'gref': 0.0, 'nodes': 0.014661279390114041}
+RHO fast 1900 42.2 316.4
+QSTUDY COMPLETE
+jax_backend=gpu x64=True precision=highest
+CASES 38 1.9
+REFS 76 3.4
+BANK+OPS 13.8
+TRUTH 27.6
+ARMS acc 5 51.1
+NODES GATES acc {'G1_fd_err_h1e-5': 9.496110315862985e-05, 'G1_fd_err_h1e-6': 9.495948844524982e-07, 'G1_fd_ratio': 100.00170042341894, 'G1_pass': True, 'G2a_values_vs_mesh_bank': 0.0, 'G2b_Psi_vs_Phi': 2.8418239983452054e-14, 'G2c_gemm_vs_separable': 1.1916218128828217e-14, 'G3_jacobian_vs_jacfwd': 0.0, 'm': 1046529}
+CASE acc 0 dev6 0 105.5
+CASE acc 1 dev6 1 118.7
+CASE acc 2 dev6 2 132.2
+CASE acc 3 dev6 3 145.6
+CASE acc 4 dev6 4 158.6
+CASE acc 5 dev6 5 171.5
+CASE acc 6 val32 0 184.9
+CASE acc 7 val32 1 197.7
+CASE acc 8 val32 2 210.9
+CASE acc 9 val32 3 223.6
+CASE acc 10 val32 4 236.5
+CASE acc 11 val32 5 249.8
+CASE acc 12 val32 6 263.0
+CASE acc 13 val32 7 276.6
+CASE acc 14 val32 8 289.6
+CASE acc 15 val32 9 303.0
+CASE acc 16 val32 10 317.1
+CASE acc 17 val32 11 330.3
+CASE acc 18 val32 12 343.1
+CASE acc 19 val32 13 356.1
+CASE acc 20 val32 14 369.3
+CASE acc 21 val32 15 382.3
+CASE acc 22 val32 16 395.4
+CASE acc 23 val32 17 409.3
+CASE acc 24 val32 18 422.7
+CASE acc 25 val32 19 436.0
+CASE acc 26 val32 20 449.5
+CASE acc 27 val32 21 462.9
+CASE acc 28 val32 22 475.8
+CASE acc 29 val32 23 489.1
+CASE acc 30 val32 24 502.7
+CASE acc 31 val32 25 515.9
+CASE acc 32 val32 26 528.7
+CASE acc 33 val32 27 541.4
+CASE acc 34 val32 28 554.6
+CASE acc 35 val32 29 567.6
+CASE acc 36 val32 30 580.9
+CASE acc 37 val32 31 594.5
+RHO-NODES-REACHED acc {'dense': 0.017748427783376777, 'lat64': 0.04035669794501395, 'gauss96': 0.004363915529541174, 'fib121393': 2.2336915394311578e-05, 'gref': 0.0, 'nodes': 3.688494120987581e-05}
+RHO acc 1900 49.6 644.2
+ARMS fast 5 656.1
+NODES GATES fast {'G1_fd_err_h1e-5': 1.4682889402913662e-05, 'G1_fd_err_h1e-6': 1.4682783263179732e-07, 'G1_fd_ratio': 100.00072288565477, 'G1_pass': True, 'G2a_values_vs_mesh_bank': 0.0, 'G2b_Psi_vs_Phi': 1.4209987353464015e-14, 'G2c_gemm_vs_separable': 2.673836799304593e-15, 'G3_jacobian_vs_jacfwd': 0.0, 'm': 1046529}
+CASE fast 0 dev6 0 683.6
+CASE fast 1 dev6 1 686.5
+CASE fast 2 dev6 2 689.7
+CASE fast 3 dev6 3 692.5
+CASE fast 4 dev6 4 695.2
+CASE fast 5 dev6 5 697.9
+CASE fast 6 val32 0 700.6
+CASE fast 7 val32 1 703.4
+CASE fast 8 val32 2 706.1
+CASE fast 9 val32 3 708.9
+CASE fast 10 val32 4 711.6
+CASE fast 11 val32 5 714.1
+CASE fast 12 val32 6 716.9
+CASE fast 13 val32 7 719.6
+CASE fast 14 val32 8 722.4
+CASE fast 15 val32 9 725.2
+CASE fast 16 val32 10 728.1
+CASE fast 17 val32 11 730.7
+CASE fast 18 val32 12 733.4
+CASE fast 19 val32 13 736.1
+CASE fast 20 val32 14 738.8
+CASE fast 21 val32 15 741.6
+CASE fast 22 val32 16 744.3
+CASE fast 23 val32 17 747.1
+CASE fast 24 val32 18 749.9
+CASE fast 25 val32 19 752.7
+CASE fast 26 val32 20 755.5
+CASE fast 27 val32 21 758.2
+CASE fast 28 val32 22 761.0
+CASE fast 29 val32 23 763.7
+CASE fast 30 val32 24 766.5
+CASE fast 31 val32 25 769.3
+CASE fast 32 val32 26 772.1
+CASE fast 33 val32 27 774.8
+CASE fast 34 val32 28 777.5
+CASE fast 35 val32 29 780.3
+CASE fast 36 val32 30 783.0
+CASE fast 37 val32 31 785.8
+RHO-NODES-REACHED fast {'dense': 0.01712768592870183, 'lat64': 0.030587920244745194, 'fib1597': 0.0641318410810772, 'fib121393': 8.087076728171547e-06, 'gref': 0.0, 'nodes': 4.346665641418691e-05}
+RHO fast 1900 43.9 829.7
+QSTUDY COMPLETE
+ALL-DONE

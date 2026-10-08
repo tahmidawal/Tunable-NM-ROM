@@ -6,6 +6,9 @@
    "why": null,
    "provisional_solver": null,
    "median_separation": 0.035270380099460916,
+   "worst_separation": 0.09885060295838041,
+   "worst_nodes_distance": 5.490416549240581e-05,
+   "median_nodes_distance": 1.3624978273651698e-07,
    "excluded_cases": [],
    "median_f": 0.9999952651992468,
    "frac_f_075": 1.0,
@@ -32,6 +35,9 @@
    "why": null,
    "provisional_solver": null,
    "median_separation": 0.03527344256118847,
+   "worst_separation": 0.09790561792568836,
+   "worst_nodes_distance": 1.1565343070389876e-05,
+   "median_nodes_distance": 1.1564341268086685e-07,
    "excluded_cases": [],
    "median_f": 0.9999960547652199,
    "frac_f_075": 1.0,
@@ -58,6 +64,9 @@
    "why": null,
    "provisional_solver": "no sensitivity rerun at this mesh",
    "median_separation": 0.018483049182902393,
+   "worst_separation": 0.055694706150408085,
+   "worst_nodes_distance": 5.066868532991647e-05,
+   "median_nodes_distance": 2.627635462513988e-08,
    "excluded_cases": [],
    "median_f": 0.9999985929502815,
    "frac_f_075": 1.0,
@@ -84,6 +93,9 @@
    "why": null,
    "provisional_solver": "no sensitivity rerun at this mesh",
    "median_separation": 0.018479401272224315,
+   "worst_separation": 0.054911298661994616,
+   "worst_nodes_distance": 4.98964469634368e-06,
+   "median_nodes_distance": 1.6586941045887162e-08,
    "excluded_cases": [],
    "median_f": 0.9999991907546599,
    "frac_f_075": 1.0,
@@ -105,6 +117,123 @@
    }
   }
  },
- "labels2d": {},
+ "labels2d": {
+  "256_acc": {
+   "missing_cases": [],
+   "boot_low": null,
+   "why": "median separation below 1e-2",
+   "provisional_solver": null,
+   "median_separation": 0.00882898445725647,
+   "worst_separation": 0.042577355643421314,
+   "worst_nodes_distance": 0.0003388499483271206,
+   "median_nodes_distance": 3.176764563877191e-06,
+   "excluded_cases": [],
+   "label": "X0",
+   "reason0": {
+    "dense": [
+     0,
+     1900
+    ],
+    "gref": [
+     0,
+     1900
+    ],
+    "nodes": [
+     0,
+     1900
+    ]
+   },
+   "cases": 38
+  },
+  "256_fast": {
+   "missing_cases": [],
+   "boot_low": null,
+   "why": "median separation below 1e-2",
+   "provisional_solver": null,
+   "median_separation": 0.008829399431096157,
+   "worst_separation": 0.040534255480173434,
+   "worst_nodes_distance": 0.00030407677101536973,
+   "median_nodes_distance": 7.329160348145996e-06,
+   "excluded_cases": [],
+   "label": "X0",
+   "reason0": {
+    "dense": [
+     0,
+     1900
+    ],
+    "gref": [
+     0,
+     1900
+    ],
+    "nodes": [
+     0,
+     1900
+    ]
+   },
+   "cases": 38
+  },
+  "1024_acc": {
+   "missing_cases": [],
+   "boot_low": null,
+   "why": "median separation below 1e-2",
+   "provisional_solver": null,
+   "median_separation": 0.0022465774812754783,
+   "worst_separation": 0.011544644067268869,
+   "worst_nodes_distance": 4.555340679728351e-06,
+   "median_nodes_distance": 9.92643013912063e-09,
+   "excluded_cases": [
+    "val32:1",
+    "val32:21",
+    "val32:27"
+   ],
+   "label": "X0",
+   "reason0": {
+    "dense": [
+     0,
+     1900
+    ],
+    "gref": [
+     0,
+     1900
+    ],
+    "nodes": [
+     0,
+     1900
+    ]
+   },
+   "cases": 38
+  },
+  "1024_fast": {
+   "missing_cases": [],
+   "boot_low": null,
+   "why": "median separation below 1e-2",
+   "provisional_solver": null,
+   "median_separation": 0.002246751445928964,
+   "worst_separation": 0.010872606428373396,
+   "worst_nodes_distance": 7.266556050998319e-07,
+   "median_nodes_distance": 1.1606018988937565e-08,
+   "excluded_cases": [
+    "val32:1",
+    "val32:21",
+    "val32:27"
+   ],
+   "label": "X0",
+   "reason0": {
+    "dense": [
+     0,
+     1900
+    ],
+    "gref": [
+     0,
+     1900
+    ],
+    "nodes": [
+     0,
+     1900
+    ]
+   },
+   "cases": 38
+  }
+ },
  "a2": null
 }

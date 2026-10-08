@@ -224,8 +224,10 @@ def main():
         assert M_rep['refined_initial_match'] <= 1e-12, M_rep['refined_initial_match']
         n0r = {j: float(np.linalg.norm(RR[j][0])) for j in cases}
         fom = C.make_fom(n, dt, *cfg['fom_timing'])        # B phase of the A-B-A panels
+        ridx = jnp.asarray(C.restrict_index(n, 16))
         tcases = cases[:cfg['timing_cases']]
         final = []
+        fom_chk = {}
         for bk in cfg['banks']:
             bdir = ROOT / bk['model']
             b = pickle.loads((bdir / 'bank.pkl').read_bytes())
@@ -385,6 +387,7 @@ def main():
                                 kpop.append(np.arange(1, W.shape[0]))
                                 coefs[(n, bk['name'], key, 'cert_conv', kc)] = W
                             else:
+                                coefs[(n, bk['name'], key, 'cert_check', kc)] = W
                                 dd = np.linalg.norm((W - coefs[(n, bk['name'], key, 'cert_conv', kc)]) @ Lt.T, axis=1) / n0c[kc]
                                 rec['dist_conv'] = float(dd.max())
                             cl.append(rec)
@@ -504,18 +507,21 @@ def main():
                     while time.perf_counter() - t_ < sec:
                         block(xb @ xb)
                 ref16 = {(nm, j): coefs[(n, bk['name'], key, nm, j)] for nm in timed for j in tcases}
-                fchk = {}
+                fchk = {}                           # restricted decoded fields (every 16th node) + full-field sums
                 for nm in timed:
                     for j in tcases:
                         o = run(nm, U0[j], NU[j])
-                        fchk[(nm, j)] = (float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
+                        fchk[(nm, j)] = (np.asarray(o[0][:, ridx]), float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
                         del o
                 for j in tcases:
                     o = fom(U0[j], NU[j])
-                    fchk[('fom', j)] = (float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
+                    fchk[('fom', j)] = (np.asarray(o[0][:, ridx]), float(jnp.sum(o[0])), float(jnp.sum(o[0] * o[0])))
                     del o
-                chkd = lambda key_, o: max(abs(float(jnp.sum(o[0])) - fchk[key_][0]) / max(abs(fchk[key_][0]), 1e-300),
-                                           abs(float(jnp.sum(o[0] * o[0])) - fchk[key_][1]) / fchk[key_][1])
+
+                def chkd(key_, o):
+                    r16, s1, s2 = fchk[key_]
+                    return max(rel_max(np.asarray(o[0][:, ridx]), r16), abs(float(jnp.sum(o[0])) - s1) / max(abs(s1), 1e-300),
+                               abs(float(jnp.sum(o[0] * o[0])) - s2) / s2)
                 for nm in timed:                       # warm every signature
                     for j in tcases:
                         block(run(nm, U0[j], NU[j]))
@@ -581,7 +587,9 @@ def main():
                                              'smaller_m (K-time failed; diagnostic only, DESIGN A5)')
                     final.append(dict(key=f"{bk['name']}|{key}|{arm_}", q=arms[arm_]['q'], data=arms[arm_]['data'],
                                       ref={j: coefs[(n, bk['name'], key, arm_, j)] for j in tcases},
-                                      fsq={j: fchk[(arm_, j)][1] for j in tcases}))
+                                      fchk={j: fchk[(arm_, j)] for j in tcases}))
+                    if not fom_chk:
+                        fom_chk.update({j: fchk[('fom', j)] for j in tcases})
                 else:
                     S_rep['deployed'] = None
                 S_rep['seconds'] = time.perf_counter() - ts
@@ -645,9 +653,12 @@ def main():
                     block(o)
                     sec = time.perf_counter() - t_
                     ent = dict(phase=ph, name=nm, case=j, rep=r, seconds=sec)
+                    r16, s1, s2 = f_['fchk'][j] if f_ else fom_chk[j]
+                    ent['max_diff'] = max(rel_max(np.asarray(o[0][:, ridx]), r16),
+                                          abs(float(jnp.sum(o[0])) - s1) / max(abs(s1), 1e-300),
+                                          abs(float(jnp.sum(o[0] * o[0])) - s2) / s2)
                     if f_:
-                        ent['max_diff'] = max(rel_max(np.asarray(o[1])[::int(round(0.05 / dt))], f_['ref'][j]),
-                                              abs(float(jnp.sum(o[0] * o[0])) - f_['fsq'][j]) / f_['fsq'][j])
+                        ent['max_diff'] = max(ent['max_diff'], rel_max(np.asarray(o[1])[::int(round(0.05 / dt))], f_['ref'][j]))
                     inv.append(ent)
                     del o
                     if sec >= 0.5:
@@ -681,7 +692,7 @@ def main():
             b = pickle.loads((ROOT / bk['model'] / 'bank.pkl').read_bytes())
             G65 = np.asarray(TB.feature_rows(jax.tree_util.tree_map(jnp.asarray, b['params']), np.asarray(b['rotation']), X65))
             for (n_, bn, key, nm, j), Cv in coefs.items():
-                if n_ != ms[0] or bn != bk['name'] or nm == 'cert_conv' or not isinstance(j, int):
+                if n_ != ms[0] or bn != bk['name'] or nm in ('cert_conv', 'cert_check') or not isinstance(j, int):
                     continue
                 other = coefs.get((ms[1], bn, key, nm, j))
                 if other is None or other.shape != Cv.shape:
@@ -694,6 +705,10 @@ def main():
     np.savez(out / 'fields' / 'coefficients.npz',
              **{f'{n_}|{bn}|{key}|{nm}|{j if isinstance(j, int) else "_".join(map(str, j))}': v
                 for (n_, bn, key, nm, j), v in coefs.items()})
+    pan = [S_['timing'].get('valid') for m_ in rep['meshes'].values() for b_ in m_['banks'].values()
+           for S_ in b_['settings'].values()]
+    fin = [m_['final_timing']['gates'] for m_ in rep['meshes'].values() if m_.get('final_timing')]
+    rep['timing_valid_jobwide'] = bool(pan and all(pan) and all(g_['drift_pass'] and g_['deterministic'] for g_ in fin))
     rep['seconds'] = el()
     rep['complete'] = True
     save()

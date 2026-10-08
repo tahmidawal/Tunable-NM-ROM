@@ -18880,3 +18880,21 @@ I wrote `understand/2026-10-07-quadrature-study-guide/` for the user. It is a 10
 - Every figure and table comes from `exercises.py`, which runs on the CPU in about 3 s. It uses an unchanged copy of Hari's `quadrature.py` (sha256 c6403d05…) and an illustrative smooth bump, not our bank.
 - Errors are normalised by ∫|f|. The first draft divided by |∫f|, which nearly cancels for ψ_{12,12} and gave meaningless 1e6 relative errors; that was fixed before the guide was built.
 - In the guide's own results, the tent transform hurts the lattice and the upwind gap halves per refinement, exactly as expected.
+
+## 2026-10-08
+
+### 2026-10-08 — launch of Group C accuracy lanes and Group A (A1, A2) — coordinator
+**What.** The user chose to push accuracy first. Three lanes were created from `21c175a1b`, each sparse, with 69 vendored files and `sync_github.sh`:
+- `exp/2026-10-08-jcp-wide-bank` (C1), @e6a8556b8, mirror 2fe942bd4. Covers 2D R′=512, the M/R′ trim, a 3D R=1024 bank and the scaling law.
+- `exp/2026-10-08-jcp-time2` (C2), @987839e1d, mirror d5aa0aab3. Covers Crank–Nicolson, BDF2, a Δt ladder and a fair second-order full solver.
+- `exp/2026-10-08-jcp-smooth-bank` (C3), @1139f426a, mirror 6b9824c30. Covers Sobolev training, a smoothness sweep, a coarse-data control, and evaluation of the new bank in the ROM.
+
+Group A was narrowed to A1 (mesh nodes with the exact gradient) and A2 (central vs upwind gap slope) in the existing `exp/2026-10-06-jcp-mechanism`; A3 and A4 are deferred.
+
+One subagent runs per lane. Cluster namespaces: `jcpwide`, `jcptime2`, `jcpsmooth`, `jcpmech`. Each lane is capped at 1 concurrent job. The lane rules are in `reports/2026-10-08-jcp-lane-agent-rules.md`. By user instruction, a Codex adversarial gate precedes every step: design, each code file, each job, each result and the report.
+
+A cluster check before launch found tufts-login reachable, no jobs queued, and A100, H100 and H200 GPUs free. The `tufts-*.sh` helpers are not on PATH, so the lanes use sbatch through tufts-login, following the 2026-10-01 pattern.
+
+**Wrong / retracted.** My earlier claim that "the trained bank already has more columns than we used" is wrong for 3D: the bank has R=512 and all 512 are used, so C1 must train a wider bank. A first lane-wait loop had matched its own command line on 2026-10-06; the loop was fixed and caused no harm.
+
+**Open.** Interim results from the lanes are due before the user's presentation, labelled provisional because the references are first-order. Group B lanes (references, FOM cost ladder, POD baselines) have not started.

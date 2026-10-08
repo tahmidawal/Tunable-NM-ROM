@@ -1,0 +1,25 @@
+\entry{2026-10-08}{Launch: accuracy lanes (C) and two mechanism checks (A)}
+
+\subsection*{Decision (user)}
+Push accuracy first: run the three Group C directions, and from Group A only the two most important checks.
+Every step in every lane is gated by a Codex adversarial check (user instruction); the lane rules are in
+\path{reports/2026-10-08-jcp-lane-agent-rules.md}.
+
+\subsection*{Lanes running}
+\begin{tabularx}{\linewidth}{@{}l X l@{}}
+\toprule
+lane & question & cluster cap\\
+\midrule
+\texttt{2026-10-08-jcp-wide-bank} (C1) & Now that off-mesh memory is linear in $R'$, how far does a wider bank push accuracy? 2D at $R'=512$; trimming the test count $M$; training a 3D bank with $R=1024$; the error/cost scaling law. & 1 job\\
+\texttt{2026-10-08-jcp-time2} (C2) & Does second-order time stepping (Crank--Nicolson, BDF2) remove the backward-Euler error and allow larger steps? Includes a fair second-order full solver. & 1 job\\
+\texttt{2026-10-08-jcp-smooth-bank} (C3) & Does a bank trained for its derivatives (Sobolev loss, smoother features) lower the error floor and need fewer quadrature points? Includes a coarse-data control. & 1 job\\
+\texttt{2026-10-06-jcp-mechanism} (A1, A2) & Is the gain from leaving the mesh or from the exact gradient (mesh nodes with the analytic gradient)? Does the old error follow the stencil order (upwind vs central gap slope)? A3/A4 deferred. & 1 job\\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Corrections recorded}
+\retracted{``Our trained bank already has more columns than we used'' was wrong for 3D: the 3D bank has exactly 512 columns, all used. A wider 3D bank must be trained; only 2D has headroom (384 of 512 used).}
+
+\subsection*{Status}
+All accuracy numbers from these lanes are \emph{provisional} until the second-order references (E0) exist.
+The Group B lanes (references, full-solver cost ladder, POD baselines) are not started.

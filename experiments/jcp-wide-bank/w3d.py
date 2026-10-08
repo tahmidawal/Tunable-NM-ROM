@@ -259,13 +259,20 @@ def main():
             kx = tb['kxyz']
             # ------------------------------------------------ gates (G1-G4)
             rng = np.random.default_rng(20261008)
-            Xg = rules[cfg['converged']][0][:32]
+            # G1 (DESIGN A6): the vendored point set (lat4096[:32], as qpanel) with the vendored 2nd-order FD, AND a 4th-order
+            # FD on the converged rule's first 32 points (near a corner, where the 2nd-order FD truncation reaches ~2e-6)
             Rw = max(bk['Rps'])
-            _, Dg = OM.point_blocks(bank, T[:, :Rw], Xg)
             h = 1e-5
-            fp, _ = OM.point_blocks(bank, T[:, :Rw], Xg + h)
-            fm, _ = OM.point_blocks(bank, T[:, :Rw], Xg - h)
-            B_rep['gates']['G1_derivative_vs_fd'] = rel_max((fp - fm) / (2 * h), Dg)
+
+            def fd_err(Xg, order):
+                _, Dg = OM.point_blocks(bank, T[:, :Rw], Xg)
+                f = lambda k: OM.point_blocks(bank, T[:, :Rw], Xg + k * h)[0]
+                fd = ((f(1) - f(-1)) / (2 * h) if order == 2 else
+                      (-f(2) + 8 * f(1) - 8 * f(-1) + f(-2)) / (12 * h))
+                return rel_max(fd, Dg)
+            B_rep['gates']['G1_derivative_vs_fd'] = fd_err(rules[cfg.get('g1_rule', 'lat4096')][0][:32], 2)
+            B_rep['gates']['G1_converged_points_fd4'] = fd_err(rules[cfg['converged']][0][:32], 4)
+            B_rep['gates']['G1_converged_points_fd2_diag'] = fd_err(rules[cfg['converged']][0][:32], 2)
             Ms = int(C.complete_M(n, 128, order, lam_all))
             tbs = TB.build_tables(n, bank, T[:, :32], [32], lambda r: Ms, log=log, tensor=True)
             rows = jnp.array(tbs['GTb'][0][:32])
@@ -303,7 +310,8 @@ def main():
             del d3, J_ad, J_f
             g = B_rep['gates']
             log(f"[{n}|{bk['name']}] gates {g}")
-            assert g['G1_derivative_vs_fd'] < 1e-6 and g['G2_meshnodes_offmesh_vs_tensor_32col'] < 1e-12, g
+            assert g['G1_derivative_vs_fd'] < 1e-6 and g['G1_converged_points_fd4'] < 1e-6, g
+            assert g['G2_meshnodes_offmesh_vs_tensor_32col'] < 1e-12, g
             assert g['G3_jacobian_vs_jacfwd'] < 1e-12 and g['G3_adv_half_Jc'] < 1e-12, g
             assert g['G4_solver_vs_vendor_fields_32col'] <= 1e-12 and g['G4_solver_vs_vendor_coefs_32col'] <= 1e-12, g
             assert g['G4_iterations_reasons_equal'], g

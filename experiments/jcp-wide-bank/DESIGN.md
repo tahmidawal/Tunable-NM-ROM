@@ -554,3 +554,12 @@ per-setting panel and the final panel pass K-time). Cost claims (H3 *useful*, co
 jobs with `timing_valid_jobwide = true`; otherwise the timing numbers are reported as withdrawn. Paired (case, phase)
 ratios for H3 are computed offline by `make_report.py` from the persisted invocation records. A failed projection-floor
 consistency check (`check_passed = false`) makes that $R'$'s floor *unavailable* in the report.
+
+## Amendment A6 (2026-10-08, after the 3D smoke s2, job 5018586, stopped at gate G1)
+
+G1 was evaluated on the first 32 points of the converged Gauss-$48^3$ rule (clustered near a corner), where the
+vendored central difference with $h=10^{-5}$ has truncation error ≈ $2\times10^{-6}$: the job stopped with G1 =
+1.87e-6 > 1e-6 while G2–G4 passed (G3 Jacobian vs `jacfwd` 0.0). G1 now (i) uses the vendored point set
+(`lat4096[:32]`, as `qpanel.py`) with the vendored 2nd-order difference, bar $10^{-6}$ unchanged, and (ii) adds a
+4th-order difference on the converged rule's first 32 points, bar $10^{-6}$; a derivative bug fails both. The
+2nd-order value on the converged points is kept as a diagnostic. No threshold is loosened.

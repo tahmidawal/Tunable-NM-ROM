@@ -5,6 +5,7 @@ This report covers the two Group A experiments of the lane `jcp-mechanism`: **A1
 ## Answers
 
 1. **A1 — does the exact gradient on the mesh nodes reproduce the off-mesh (continuum) solve?** Outcome labels (DESIGN amendment 2: R = `nodes` recovers the converged off-mesh rollout within the declared margins; N = it does not; X = intermediate or invalid; X0 = nothing to explain): 3D 64³ R′=256: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 3.53 %); 3D 64³ R′=512: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 3.53 %); 3D 128³ R′=256: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 1.85 %; provisional (solver): no sensitivity rerun at this mesh); 3D 128³ R′=512: **R** (median recovered fraction 1.000, bootstrap bound 1.000, median separation 1.85 %; provisional (solver): no sensitivity rerun at this mesh); 2D 256² acc: **X0** (descriptive, not a label: worst separation 4.258 %, worst `nodes` distance to the converged rollout 0.034 %) [median separation below 1e-2]; 2D 256² fast: **X0** (descriptive, not a label: worst separation 4.053 %, worst `nodes` distance to the converged rollout 0.030 %) [median separation below 1e-2]; 2D 1024² acc: **X0** (descriptive, not a label: worst separation 1.154 %, worst `nodes` distance to the converged rollout 0.000 %) [median separation below 1e-2]; 2D 1024² fast: **X0** (descriptive, not a label: worst separation 1.087 %, worst `nodes` distance to the converged rollout 0.000 %) [median separation below 1e-2].
+2. **A2 — stencil gap slopes** (median-state statistic over the pre-registered window): 3D R512: upwind 0.99, central 2.00, nodes unresolved; 3D R256: upwind 0.99, central 2.00, nodes unresolved; 2D acc: upwind 1.00, central 2.00, nodes unresolved; 2D fast: upwind 1.00, central 2.00, nodes unresolved. Upwind ≈ 1 and central ≈ 2 on every panel: **yes** (controls passed). The `nodes` slope is unresolved by the pre-registered screen because its gap reaches the continuum-target check level; descriptively, at the finest window mesh its median gap is 3D R512 1.5e-08 (central 3.4e-04, upwind 3.5e-02); 3D R256 1.1e-08 (central 3.3e-04, upwind 3.5e-02); 2D acc 1.4e-10 (central 2.0e-06, upwind 2.2e-03); 2D fast 2.2e-10 (central 2.0e-06, upwind 2.2e-03); on the manufactured state, where it is resolved, the `nodes` slope is 3D 4.02, 2D 4.00 (not a pre-registered bar).
 
 ## 1. A1 in 3D (Burgers 3D, validation cohort 923801 × 64)
 
@@ -16,11 +17,11 @@ Gates: gram_condition 1.0e+00, tensor_vs_direct 2.7e-16, G1_derivative_vs_fd_nod
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 1.9e-01 (1.3e-01) | 1.8e-05 | 10.22 % (3.38 %) | 1.37 % | 9.885 % (3.527 %) | – | 28 | 2/0 |
-| `gl24` | 13824 | 1.0e-02 (1.2e-03) | 1.9e-01 | 3.16 % (1.12 %) | 9.57 % | 0.050 % (0.003 %) | 9.883 % | 27 | 1/0 |
-| `lat4096` | 4096 | 8.3e-02 (7.8e-03) | 2.0e-01 | 3.02 % (1.12 %) | 9.55 % | 0.638 % (0.007 %) | 9.868 % | 27 | 1/0 |
+| `tensor` | mesh | 1.9e-01 (1.3e-01) | 1.8e-05 | 10.22 % (3.38 %) | 1.37 % | 9.89e+00 % (3.53e+00 %) | – | 28 | 2/0 |
+| `gl24` | 13824 | 1.0e-02 (1.2e-03) | 1.9e-01 | 3.16 % (1.12 %) | 9.57 % | 5.01e-02 % (3.36e-03 %) | 9.883 % | 27 | 1/0 |
+| `lat4096` | 4096 | 8.3e-02 (7.8e-03) | 2.0e-01 | 3.02 % (1.12 %) | 9.55 % | 6.38e-01 % (6.69e-03 %) | 9.868 % | 27 | 1/0 |
 | `lat32768` | 32768 | 8.6e-05 (2.0e-06) | 1.9e-01 | 3.17 % (1.12 %) | 9.57 % | – | 9.885 % | 27 | 1/0 |
-| `nodes` | 250047 | 1.8e-04 (2.7e-06) | 1.9e-01 | 3.17 % (1.12 %) | 9.57 % | 0.005 % (0.000 %) | 9.885 % | 27 | 1/0 |
+| `nodes` | 250047 | 1.8e-04 (2.7e-06) | 1.9e-01 | 3.17 % (1.12 %) | 9.57 % | 5.49e-03 % (1.36e-05 %) | 9.885 % | 27 | 1/0 |
 | `dense` sign-upwind (target only) | mesh | 1.9e-01 (1.3e-01) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 1.7e-07): `dense_upwind` 2.2e-01, `tensor` 2.2e-01, `gl24` 2.6e-02, `lat4096` 1.8e-01, `lat32768` 1.1e-03, `nodes` 2.8e-04.
@@ -31,11 +32,11 @@ Adaptive-LM sensitivity (every step adaptive, first 8 cases), worst field distan
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 1.9e-01 (1.3e-01) | 1.9e-04 | 10.44 % (3.40 %) | 2.26 % | 9.791 % (3.527 %) | – | 27 | 0/0 |
-| `gl24` | 13824 | 2.1e-03 (3.3e-04) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 0.011 % (0.001 %) | 9.791 % | 27 | 0/0 |
-| `lat4096` | 4096 | 2.4e-02 (1.3e-03) | 1.9e-01 | 4.71 % (1.25 %) | 9.69 % | 0.081 % (0.002 %) | 9.792 % | 27 | 0/0 |
+| `tensor` | mesh | 1.9e-01 (1.3e-01) | 1.9e-04 | 10.44 % (3.40 %) | 2.26 % | 9.79e+00 % (3.53e+00 %) | – | 27 | 0/0 |
+| `gl24` | 13824 | 2.1e-03 (3.3e-04) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 1.10e-02 % (1.46e-03 %) | 9.791 % | 27 | 0/0 |
+| `lat4096` | 4096 | 2.4e-02 (1.3e-03) | 1.9e-01 | 4.71 % (1.25 %) | 9.69 % | 8.10e-02 % (2.08e-03 %) | 9.792 % | 27 | 0/0 |
 | `lat32768` | 32768 | 2.9e-05 (7.1e-07) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | – | 9.791 % | 27 | 0/0 |
-| `nodes` | 250047 | 8.8e-05 (2.0e-06) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 0.001 % (0.000 %) | 9.791 % | 27 | 0/0 |
+| `nodes` | 250047 | 8.8e-05 (2.0e-06) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 1.16e-03 % (1.16e-05 %) | 9.791 % | 27 | 0/0 |
 | `dense` sign-upwind (target only) | mesh | 1.9e-01 (1.3e-01) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 2.1e-08): `dense_upwind` 2.1e-01, `tensor` 2.1e-01, `gl24` 2.3e-03, `lat4096` 2.8e-02, `lat32768` 1.6e-04, `nodes` 1.4e-04.
@@ -50,11 +51,11 @@ Gates: gram_condition 1.0e+00, tensor_vs_direct 2.4e-16, G1_derivative_vs_fd_nod
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 9.8e-02 (6.6e-02) | 1.7e-05 | 6.11 % (1.98 %) | 1.86 % | 5.569 % (1.848 %) | – | 27 | 2/0 |
-| `gl24` | 13824 | 1.3e-02 (1.3e-03) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 0.049 % (0.003 %) | 5.568 % | 27 | 1/0 |
-| `lat4096` | 4096 | 1.0e-01 (8.9e-03) | 1.5e-01 | 3.01 % (1.13 %) | 5.22 % | 0.609 % (0.006 %) | 5.553 % | 27 | 1/0 |
+| `tensor` | mesh | 9.8e-02 (6.6e-02) | 1.7e-05 | 6.11 % (1.98 %) | 1.86 % | 5.57e+00 % (1.85e+00 %) | – | 27 | 2/0 |
+| `gl24` | 13824 | 1.3e-02 (1.3e-03) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 4.88e-02 % (3.22e-03 %) | 5.568 % | 27 | 1/0 |
+| `lat4096` | 4096 | 1.0e-01 (8.9e-03) | 1.5e-01 | 3.01 % (1.13 %) | 5.22 % | 6.09e-01 % (6.45e-03 %) | 5.553 % | 27 | 1/0 |
 | `lat32768` | 32768 | 1.4e-04 (2.0e-06) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | – | 5.569 % | 27 | 1/0 |
-| `nodes` | 2048383 | 1.6e-05 (1.6e-07) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 0.005 % (0.000 %) | 5.569 % | 27 | 1/0 |
+| `nodes` | 2048383 | 1.6e-05 (1.6e-07) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 5.07e-03 % (2.63e-06 %) | 5.569 % | 27 | 1/0 |
 | `dense` sign-upwind (target only) | mesh | 9.8e-02 (6.6e-02) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 1.7e-07): `dense_upwind` 1.1e-01, `tensor` 1.1e-01, `gl24` 2.4e-02, `lat4096` 1.8e-01, `lat32768` 1.1e-03, `nodes` 1.7e-05.
@@ -63,11 +64,11 @@ $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 1
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 9.7e-02 (6.6e-02) | 1.9e-04 | 6.69 % (1.99 %) | 3.13 % | 5.491 % (1.848 %) | – | 27 | 0/0 |
-| `gl24` | 13824 | 2.5e-03 (3.5e-04) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 0.011 % (0.001 %) | 5.491 % | 27 | 0/0 |
-| `lat4096` | 4096 | 2.9e-02 (1.3e-03) | 1.1e-01 | 4.70 % (1.25 %) | 5.94 % | 0.081 % (0.002 %) | 5.494 % | 27 | 0/0 |
+| `tensor` | mesh | 9.7e-02 (6.6e-02) | 1.9e-04 | 6.69 % (1.99 %) | 3.13 % | 5.49e+00 % (1.85e+00 %) | – | 27 | 0/0 |
+| `gl24` | 13824 | 2.5e-03 (3.5e-04) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 1.08e-02 % (1.45e-03 %) | 5.491 % | 27 | 0/0 |
+| `lat4096` | 4096 | 2.9e-02 (1.3e-03) | 1.1e-01 | 4.70 % (1.25 %) | 5.94 % | 8.05e-02 % (2.06e-03 %) | 5.494 % | 27 | 0/0 |
 | `lat32768` | 32768 | 3.6e-05 (7.1e-07) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | – | 5.491 % | 27 | 0/0 |
-| `nodes` | 2048383 | 7.0e-06 (1.2e-07) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 0.000 % (0.000 %) | 5.491 % | 27 | 0/0 |
+| `nodes` | 2048383 | 7.0e-06 (1.2e-07) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 4.99e-04 % (1.66e-06 %) | 5.491 % | 27 | 0/0 |
 | `dense` sign-upwind (target only) | mesh | 9.7e-02 (6.6e-02) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 2.0e-08): `dense_upwind` 1.1e-01, `tensor` 1.1e-01, `gl24` 2.3e-03, `lat4096` 2.8e-02, `lat32768` 1.6e-04, `nodes` 8.5e-06.
@@ -99,11 +100,11 @@ Nodes gates: nodes_acc: G1_fd_err_h1e-5 2.7e-06, G1_fd_err_h1e-6 2.7e-08, G1_fd_
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
-| `dense` | 65025 | 1.2e-01 (3.3e-02) | 0.0e+00 | 6.21 % (1.25 %) | 4.16 % | 4.258 % (0.883 %) | – | 54 | 0 / 0 |
-| `lat64` | 3969 | 1.4e-01 (3.3e-02) | 8.6e-02 | 6.21 % (1.25 %) | 4.16 % | 4.257 % (0.883 %) | 0.133 % | 54 | 0 / 0 |
-| `gauss96` | 9216 | 4.9e-03 (4.8e-05) | 1.4e-01 | 2.75 % (0.91 %) | 1.08 % | 0.030 % (0.000 %) | 4.258 % | 54 | 0 / 0 |
+| `dense` | 65025 | 1.2e-01 (3.3e-02) | 0.0e+00 | 6.21 % (1.25 %) | 4.16 % | 4.26e+00 % (8.83e-01 %) | – | 54 | 0 / 0 |
+| `lat64` | 3969 | 1.4e-01 (3.3e-02) | 8.6e-02 | 6.21 % (1.25 %) | 4.16 % | 4.26e+00 % (8.83e-01 %) | 0.133 % | 54 | 0 / 0 |
+| `gauss96` | 9216 | 4.9e-03 (4.8e-05) | 1.4e-01 | 2.75 % (0.91 %) | 1.08 % | 2.99e-02 % (1.35e-04 %) | 4.258 % | 54 | 0 / 0 |
 | `gref` | 409600 | 0.0e+00 (0.0e+00) | 1.4e-01 | 2.75 % (0.91 %) | 1.06 % | – | – | 54 | 0 / 0 |
-| `nodes` | 65025 | 1.2e-02 (1.1e-04) | 1.4e-01 | 2.75 % (0.91 %) | 1.05 % | 0.034 % (0.000 %) | 4.258 % | 55 | 0 / 0 |
+| `nodes` | 65025 | 1.2e-02 (1.1e-04) | 1.4e-01 | 2.75 % (0.91 %) | 1.05 % | 3.39e-02 % (3.18e-04 %) | 4.258 % | 55 | 0 / 0 |
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.3e-08): `dense` 8.3e-02, `lat64` 6.0e-02, `gauss96` 4.6e-03, `fib121393` 1.0e-05, `gref` 0.0e+00, `nodes` 1.2e-02.
 
@@ -111,11 +112,11 @@ $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.3e-08): `dense` 8.3
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
-| `dense` | 65025 | 1.2e-01 (3.3e-02) | 0.0e+00 | 6.92 % (1.29 %) | 4.97 % | 4.053 % (0.883 %) | – | 51 | 0 / 0 |
-| `lat64` | 3969 | 1.3e-01 (3.3e-02) | 9.0e-02 | 6.92 % (1.29 %) | 4.97 % | 4.053 % (0.883 %) | 0.117 % | 51 | 0 / 0 |
-| `fib1597` | 1597 | 5.6e-02 (6.8e-04) | 1.4e-01 | 4.64 % (1.04 %) | 3.46 % | 0.069 % (0.003 %) | 4.053 % | 51 | 0 / 0 |
+| `dense` | 65025 | 1.2e-01 (3.3e-02) | 0.0e+00 | 6.92 % (1.29 %) | 4.97 % | 4.05e+00 % (8.83e-01 %) | – | 51 | 0 / 0 |
+| `lat64` | 3969 | 1.3e-01 (3.3e-02) | 9.0e-02 | 6.92 % (1.29 %) | 4.97 % | 4.05e+00 % (8.83e-01 %) | 0.117 % | 51 | 0 / 0 |
+| `fib1597` | 1597 | 5.6e-02 (6.8e-04) | 1.4e-01 | 4.64 % (1.04 %) | 3.46 % | 6.87e-02 % (2.56e-03 %) | 4.053 % | 51 | 0 / 0 |
 | `gref` | 409600 | 0.0e+00 (0.0e+00) | 1.3e-01 | 4.64 % (1.04 %) | 3.46 % | – | – | 51 | 0 / 0 |
-| `nodes` | 65025 | 2.2e-02 (8.5e-05) | 1.3e-01 | 4.64 % (1.04 %) | 3.46 % | 0.030 % (0.001 %) | 4.054 % | 51 | 0 / 0 |
+| `nodes` | 65025 | 2.2e-02 (8.5e-05) | 1.3e-01 | 4.64 % (1.04 %) | 3.46 % | 3.04e-02 % (7.33e-04 %) | 4.054 % | 51 | 0 / 0 |
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 2.9e-08): `dense` 8.2e-02, `lat64` 5.9e-02, `fib1597` 5.6e-02, `fib121393` 7.3e-06, `gref` 0.0e+00, `nodes` 1.5e-02.
 
@@ -127,11 +128,11 @@ Nodes gates: nodes_acc: G1_fd_err_h1e-5 9.5e-05, G1_fd_err_h1e-6 9.5e-07, G1_fd_
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
-| `dense` | 1046529 | 3.5e-02 (8.3e-03) | 0.0e+00 | 3.38 % (0.98 %) | 1.34 % | 1.154 % (0.225 %) | – | 55 | 0 / 0 |
-| `lat64` | 3969 | 7.1e-02 (8.3e-03) | 5.4e-02 | 3.38 % (0.98 %) | 1.35 % | 1.154 % (0.225 %) | 0.262 % | 54 | 0 / 0 |
-| `gauss96` | 9216 | 4.6e-03 (4.8e-05) | 3.7e-02 | 2.75 % (0.91 %) | 1.06 % | 0.029 % (0.000 %) | 1.155 % | 55 | 0 / 0 |
+| `dense` | 1046529 | 3.5e-02 (8.3e-03) | 0.0e+00 | 3.38 % (0.98 %) | 1.34 % | 1.15e+00 % (2.25e-01 %) | – | 55 | 0 / 0 |
+| `lat64` | 3969 | 7.1e-02 (8.3e-03) | 5.4e-02 | 3.38 % (0.98 %) | 1.35 % | 1.15e+00 % (2.25e-01 %) | 0.262 % | 54 | 0 / 0 |
+| `gauss96` | 9216 | 4.6e-03 (4.8e-05) | 3.7e-02 | 2.75 % (0.91 %) | 1.06 % | 2.90e-02 % (1.47e-04 %) | 1.155 % | 55 | 0 / 0 |
 | `gref` | 409600 | 0.0e+00 (0.0e+00) | 3.6e-02 | 2.75 % (0.91 %) | 1.05 % | – | – | 55 | 0 / 0 |
-| `nodes` | 1046529 | 6.4e-05 (1.9e-07) | 3.6e-02 | 2.75 % (0.91 %) | 1.05 % | 0.000 % (0.000 %) | 1.154 % | 55 | 0 / 0 |
+| `nodes` | 1046529 | 6.4e-05 (1.9e-07) | 3.6e-02 | 2.75 % (0.91 %) | 1.05 % | 4.56e-04 % (9.93e-07 %) | 1.154 % | 55 | 0 / 0 |
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 4.1e-08): `dense` 1.8e-02, `lat64` 4.0e-02, `gauss96` 4.4e-03, `fib121393` 2.2e-05, `gref` 0.0e+00, `nodes` 3.7e-05.
 
@@ -139,17 +140,19 @@ $\rho$ on 400 `nodes`-reached states (first 8 cases; check 4.1e-08): `dense` 1.8
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
-| `dense` | 1046529 | 3.4e-02 (8.3e-03) | 0.0e+00 | 5.03 % (1.04 %) | 3.48 % | 1.087 % (0.225 %) | – | 51 | 0 / 0 |
-| `lat64` | 3969 | 4.9e-02 (8.3e-03) | 4.6e-02 | 5.03 % (1.04 %) | 3.48 % | 1.087 % (0.225 %) | 0.132 % | 51 | 0 / 0 |
-| `fib1597` | 1597 | 6.5e-02 (6.9e-04) | 6.7e-02 | 4.64 % (1.03 %) | 3.45 % | 0.069 % (0.003 %) | 1.087 % | 51 | 0 / 0 |
+| `dense` | 1046529 | 3.4e-02 (8.3e-03) | 0.0e+00 | 5.03 % (1.04 %) | 3.48 % | 1.09e+00 % (2.25e-01 %) | – | 51 | 0 / 0 |
+| `lat64` | 3969 | 4.9e-02 (8.3e-03) | 4.6e-02 | 5.03 % (1.04 %) | 3.48 % | 1.09e+00 % (2.25e-01 %) | 0.132 % | 51 | 0 / 0 |
+| `fib1597` | 1597 | 6.5e-02 (6.9e-04) | 6.7e-02 | 4.64 % (1.03 %) | 3.45 % | 6.89e-02 % (2.61e-03 %) | 1.087 % | 51 | 0 / 0 |
 | `gref` | 409600 | 0.0e+00 (0.0e+00) | 3.5e-02 | 4.64 % (1.04 %) | 3.45 % | – | – | 51 | 0 / 0 |
-| `nodes` | 1046529 | 1.7e-04 (1.5e-07) | 3.5e-02 | 4.64 % (1.04 %) | 3.45 % | 0.000 % (0.000 %) | 1.087 % | 51 | 0 / 0 |
+| `nodes` | 1046529 | 1.7e-04 (1.5e-07) | 3.5e-02 | 4.64 % (1.04 %) | 3.45 % | 7.27e-05 % (1.16e-06 %) | 1.087 % | 51 | 0 / 0 |
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.2e-08): `dense` 1.7e-02, `lat64` 3.1e-02, `fib1597` 6.4e-02, `fib121393` 8.1e-06, `gref` 0.0e+00, `nodes` 4.3e-05.
 
 ## 3. A1 outcome labels (DESIGN amendment 2)
 
-| cell | label | median separation $s_j$ | median $f_j$ | bootstrap 2.5 % bound | fraction $f_j\ge0.75$ | min $f_j$ | excluded cases ($s_j<10^{-3}$) | non-stationary steps (incumbent / converged / nodes) | provisional (solver) | invalid because |
+The 2D solver had no sensitivity rerun (DESIGN A2-5: untested); the 3D one only at 64³.
+
+| cell | label | median separation $s_j$ | median $f_j$ | bootstrap 2.5 % bound | fraction $f_j\ge0.75$ | min $f_j$ | excluded cases ($s_j<10^{-3}$) | non-stationary steps (incumbent / converged / nodes) | provisional (solver) | label reason |
 |---|---|---|---|---|---|---|---|---|---|---|
 | 3D 64³ R′=256 | **R** | 3.527 % | 1.000 | 1.000 | 1.000 | 1.000 | none | 0/1600 / 0/1600 / 0/1600 | no | – |
 | 3D 64³ R′=512 | **R** | 3.527 % | 1.000 | 1.000 | 1.000 | 0.999 | none | 2/1600 / 1/1600 / 1/1600 | no | – |
@@ -162,7 +165,57 @@ $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.2e-08): `dense` 1.7
 
 ## 4. A2: the stencil gap against $h$
 
-Job output missing.
+Job 5016189 on NVIDIA H200, commit `025b11f99`. Gates: 3d_point_vs_feature_rows_R512 0.0e+00, 3d_point_vs_feature_rows_R256 0.0e+00, 2d_values_vs_mesh_bank_acc 4.4e-15, 2d_values_vs_mesh_bank_fast 2.3e-15.
+
+Fixed states (3D: 200 per width from the 64³ validation tensor rollouts; 2D: 300 per setting from the 1024² dev population), tests frozen. Gap $g=\lVert N_h-N\rVert/\lVert N\rVert$, median (worst) over states; slopes fitted on the pre-registered window on the screened population (DESIGN amendment 2, A2-3).
+
+**3D, R512** — window [65, 129, 257]; continuum check worst 7.3e-08; independent family worst $\rho$: fixed 4.5e-04, own65 4.8e-05, own129 6.1e-05, own257 6.9e-05 (all pass the empirical $10^{-2}$ check).
+
+| stencil | n=33 | n=65 | n=129 | n=257 | slope (median state) | slope (worst state) | median per-state slope | screened | bar | consistent |
+|---|---|---|---|---|---|---|---|---|---|---|
+| upwind | 2.7e-01 (3.9e-01) | 1.4e-01 (2.0e-01) | 6.9e-02 (9.9e-02) | 3.5e-02 (4.9e-02) | 0.99 | 1.00 | 0.99 | 200/200 | (0.8, 1.2) | yes |
+| central | 2.1e-02 (5.0e-02) | 5.4e-03 (1.3e-02) | 1.3e-03 (3.3e-03) | 3.4e-04 (8.2e-04) | 2.00 | 1.99 | 2.00 | 200/200 | (1.7, 2.3) | yes |
+| nodes | 6.7e-05 (2.4e-03) | 4.0e-06 (1.2e-04) | 2.4e-07 (7.5e-06) | 1.5e-08 (4.6e-07) | unresolved | unresolved | unresolved | 6/200 | – | – |
+
+Own-mesh states (context, not fitted), median gap upwind / central / nodes: 65: 1.2e-01 / 4.3e-03 / 3.7e-06; 129: 6.3e-02 / 1.2e-03 / 2.3e-07; 257: 3.2e-02 / 3.0e-04 / 1.4e-08.
+
+**3D, R256** — window [65, 129, 257]; continuum check worst 1.2e-08; independent family worst $\rho$: fixed 6.4e-05, own65 2.7e-05, own129 3.4e-05, own257 3.8e-05 (all pass the empirical $10^{-2}$ check).
+
+| stencil | n=33 | n=65 | n=129 | n=257 | slope (median state) | slope (worst state) | median per-state slope | screened | bar | consistent |
+|---|---|---|---|---|---|---|---|---|---|---|
+| upwind | 2.7e-01 (3.9e-01) | 1.4e-01 (2.0e-01) | 6.9e-02 (9.8e-02) | 3.5e-02 (4.9e-02) | 0.99 | 1.00 | 0.99 | 200/200 | (0.8, 1.2) | yes |
+| central | 2.1e-02 (4.7e-02) | 5.3e-03 (1.2e-02) | 1.3e-03 (3.0e-03) | 3.3e-04 (7.6e-04) | 2.00 | 1.99 | 2.00 | 200/200 | (1.7, 2.3) | yes |
+| nodes | 4.9e-05 (1.3e-03) | 3.0e-06 (6.8e-05) | 1.8e-07 (4.1e-06) | 1.1e-08 (2.6e-07) | unresolved | unresolved | unresolved | 10/200 | – | – |
+
+Own-mesh states (context, not fitted), median gap upwind / central / nodes: 65: 1.2e-01 / 4.3e-03 / 2.7e-06; 129: 6.3e-02 / 1.2e-03 / 1.7e-07; 257: 3.2e-02 / 3.0e-04 / 1.0e-08.
+
+**2D, acc** — window [256, 512, 1024, 2048, 4096]; continuum check worst 4.3e-08; independent family worst $\rho$: fixed 2.3e-05, own256 2.6e-06, own1024 2.6e-06, own4096 3.9e-06 (all pass the empirical $10^{-2}$ check).
+
+| stencil | L=128 | L=256 | L=512 | L=1024 | L=2048 | L=4096 | slope (median state) | slope (worst state) | median per-state slope | screened | bar | consistent |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| upwind | 6.8e-02 (2.0e-01) | 3.4e-02 (8.6e-02) | 1.7e-02 (3.8e-02) | 8.6e-03 (1.8e-02) | 4.3e-03 (8.5e-03) | 2.2e-03 (4.2e-03) | 1.00 | 1.09 | 1.00 | 300/300 | (0.8, 1.2) | yes |
+| central | 2.0e-03 (5.8e-02) | 5.1e-04 (1.9e-02) | 1.3e-04 (4.9e-03) | 3.2e-05 (1.2e-03) | 8.0e-06 (3.1e-04) | 2.0e-06 (7.8e-05) | 2.00 | 1.98 | 2.00 | 300/300 | (1.7, 2.3) | yes |
+| nodes | 3.5e-04 (6.9e-02) | 1.0e-04 (1.3e-02) | 9.6e-06 (9.7e-04) | 2.5e-07 (2.8e-05) | 1.9e-09 (7.4e-07) | 1.4e-10 (6.0e-08) | unresolved | unresolved | unresolved | 1/300 | – | – |
+
+Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256: 3.4e-02 / 4.9e-04 / 1.0e-04; 1024: 8.6e-03 / 3.1e-05 / 2.5e-07; 4096: 2.2e-03 / 2.0e-06 / 1.3e-10.
+
+**2D, fast** — window [256, 512, 1024, 2048, 4096]; continuum check worst 3.2e-08; independent family worst $\rho$: fixed 8.2e-06, own256 2.0e-06, own1024 2.3e-06, own4096 2.4e-06 (all pass the empirical $10^{-2}$ check).
+
+| stencil | L=128 | L=256 | L=512 | L=1024 | L=2048 | L=4096 | slope (median state) | slope (worst state) | median per-state slope | screened | bar | consistent |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| upwind | 6.9e-02 (1.6e-01) | 3.4e-02 (6.8e-02) | 1.7e-02 (3.0e-02) | 8.6e-03 (1.5e-02) | 4.3e-03 (7.4e-03) | 2.2e-03 (3.7e-03) | 1.00 | 1.04 | 1.00 | 300/300 | (0.8, 1.2) | yes |
+| central | 2.0e-03 (4.9e-02) | 5.1e-04 (1.6e-02) | 1.3e-04 (4.0e-03) | 3.2e-05 (1.0e-03) | 8.0e-06 (2.5e-04) | 2.0e-06 (6.3e-05) | 2.00 | 1.99 | 2.00 | 300/300 | (1.7, 2.3) | yes |
+| nodes | 2.9e-04 (7.7e-02) | 1.2e-04 (1.6e-02) | 7.0e-06 (1.4e-03) | 2.1e-07 (4.4e-05) | 2.3e-09 (4.1e-07) | 2.2e-10 (4.3e-08) | unresolved | unresolved | unresolved | 1/300 | – | – |
+
+Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256: 3.4e-02 / 5.0e-04 / 1.1e-04; 1024: 8.6e-03 / 3.2e-05 / 2.1e-07; 4096: 2.2e-03 / 2.0e-06 / 2.4e-10.
+
+**Controls** (manufactured state $u_\star$, DESIGN amendment 1 A1-3 and amendment 2 A2-2):
+
+| dim | upwind slope | central slope | nodes slope | upwind vs leading term (finest) | central vs leading term (finest) | leading norms (up / central) | C-neg-a slope | central×1.01 slope | C-pos | C-neg-a |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 3D | 1.001 | 1.999 | 4.02 | 5.8e-03 | 2.6e-04 | 5.5e+00 / 8.1e+00 | 9.4e-16 | -0.06 | pass | pass |
+| 2D | 1.000 | 2.000 | 4.00 | 4.9e-04 | 3.7e-06 | 5.1e+00 / 1.0e+01 | -4.5e-16 | -0.00 | pass | pass |
+
 ## 5. Historical reproducibility (report-only, DESIGN amendment A1-5)
 
 3D: worst over cases of the evolved-time field distance (63³ lattice) from the 2026-10-01 validation rollouts (cases compared in brackets): 64³ R′=256 `gl24` 1.4e-15 [64], 64³ R′=256 `lat32768` 2.2e-15 [64], 64³ R′=256 `lat4096` 1.7e-15 [64], 64³ R′=256 `tensor` 1.7e-15 [64], 64³ R′=512 `gl24` 1.3e-15 [64], 64³ R′=512 `lat32768` 1.5e-15 [64], 64³ R′=512 `lat4096` 1.1e-15 [64], 64³ R′=512 `tensor` 1.3e-15 [64], 128³ R′=256 `gl24` 1.3e-15 [64], 128³ R′=256 `lat32768` 1.6e-15 [64], 128³ R′=256 `lat4096` 1.2e-15 [64], 128³ R′=256 `tensor` 1.6e-15 [64], 128³ R′=512 `gl24` 1.2e-15 [64], 128³ R′=512 `lat32768` 1.2e-15 [64], 128³ R′=512 `lat4096` 1.3e-15 [64], 128³ R′=512 `tensor` 1.8e-15 [64].

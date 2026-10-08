@@ -41,6 +41,10 @@ def pc(x, d=2):
     return 'n/a' if x is None else f'{100 * x:.{d}f} %'
 
 
+def pe(x):
+    return 'n/a' if x is None else f'{100 * x:.2e} %'
+
+
 def fit_slope(h, g):
     h, g = np.asarray(h, float), np.asarray(g, float)
     return float(np.polyfit(np.log(h), np.log(g), 1)[0])
@@ -142,7 +146,7 @@ def a2_plot(a2):
             s = p['stencils'][st]
             ax.fill_between(h, s['p10'], s['p90'], color=SERIES[i], alpha=.12, lw=0)
             ax.plot(h, s['median'], color=SERIES[i], lw=2, marker=MARK[i], ms=6, mec='white', mew=1,
-                    label=f"{st} (slope {s['slope_median']:.2f})" if s['slope_median'] is not None else f'{st} (unresolved)')
+                    label=f"{st} (slope {s['slope_median']:.2f})" if s['slope_median'] is not None else f'{st} (slope unresolved by the screen)')
         c = a2['controls'].get(p['dim'])
         if c is not None:
             mh = sorted(c['meshes'], key=lambda k: -int(k))
@@ -354,7 +358,7 @@ def a1_plot(r3, r2):
             err = {a: [r3[n]['arms'][f'{a}_R{g}'].get('worst_refined') for n in xs] for a, _ in arms}
             dist = {a: [r3[n]['arms'][f'{a}_R{g}']['distance'].get('lat32768', {}).get('worst') if a != 'lat32768' else None
                         for n in xs] for a, _ in arms}
-            t1, t2 = f'3D, R′={g}', 'refined error (worst, PROVISIONAL)'
+            t1, t2 = f'3D, R′={g}', 'refined error, worst (%)'
         else:
             sel = 'gauss96' if g == 'acc' else 'fib1597'
             arms = [('dense', 'dense (sign-upwind)'), ('lat64', 'lat64 (mesh lattice)'), (sel, f'{sel} (selected)'),
@@ -364,7 +368,7 @@ def a1_plot(r3, r2):
             err = {a: [max(x['ref_ST_evolved'] for x in rows_of(r2[L], g, a)) for L in xs] for a, _ in arms}
             dist = {a: [max(x['vs_gref_restricted_evolved'] for x in rows_of(r2[L], g, a)) if a != 'gref' else None
                         for L in xs] for a, _ in arms}
-            t1, t2 = f'2D, {g}', 'ST error (worst, PROVISIONAL)'
+            t1, t2 = f'2D, {g}', 'refined error, worst (%)'
         for i, (a, lab) in enumerate(arms):
             ax = axs[0, j]
             ax.plot(range(len(xs)), [100 * v for v in err[a]], color=SERIES[i], lw=2, marker=MARK[i], ms=7, mec='white',
@@ -384,7 +388,11 @@ def a1_plot(r3, r2):
                 ax.set_ylabel(yl, color=INK2, fontsize=8)
         axs[0, j].set_title(t1, color=INK, fontsize=10, loc='left')
         axs[0, j].legend(fontsize=6.5, frameon=False, labelcolor=INK2)
-    fig.tight_layout()
+    fig.text(0.01, 0.005, 'Top: worst over cases of the error against the first-order refined reference (%, PROVISIONAL; 2D: ST). '
+             'Bottom: worst distance to the converged off-mesh rollout (%). Lines that coincide overlap '
+             '(3D: selected, converged and nodes; 2D: dense and lat64; selected, converged and nodes).',
+             color=INK2, fontsize=7)
+    fig.tight_layout(rect=(0, 0.03, 1, 1))
     PLOTS.mkdir(exist_ok=True)
     fig.savefig(PLOTS / 'a1_error_vs_mesh.png', dpi=180, facecolor='#fcfcfb')
     plt.close(fig)
@@ -534,7 +542,13 @@ def main():
         cons = all(p['stencils'][st]['consistent'] is True for p in a2['panels'] for st in ('upwind', 'central'))
         w(f"2. **A2 — stencil gap slopes** (median-state statistic over the pre-registered window): " + '; '.join(parts)
           + f". Upwind ≈ 1 and central ≈ 2 on every panel: **{'yes' if cons else 'no'}**"
-          + (' (controls passed).' if not a2['void'] else ' — **controls failed: A2 verdicts void**.'))
+          + (' (controls passed).' if not a2['void'] else ' — **controls failed: A2 verdicts void**.')
+          + ' The `nodes` slope is unresolved by the pre-registered screen because its gap reaches the continuum-target '
+          'check level; descriptively, at the finest window mesh its median gap is ' + '; '.join(
+              f"{p['dim']} {p['group']} {e(p['stencils']['nodes']['median'][-1])} (central {e(p['stencils']['central']['median'][-1])}, "
+              f"upwind {e(p['stencils']['upwind']['median'][-1])})" for p in a2['panels'])
+          + '; on the manufactured state, where it is resolved, the `nodes` slope is ' + ', '.join(
+              f"{d} {c['slope_nodes']:.2f}" for d, c in a2['controls'].items()) + ' (not a pre-registered bar).')
     w('')
     # ---------------------------------------------------------------- A1 3D
     w('## 1. A1 in 3D (Burgers 3D, validation cohort 923801 × 64)')
@@ -571,7 +585,7 @@ def main():
                 r0 = sum(c['reasons']['0'] for c in a['cases'])
                 w(f"| `{k}` | {a.get('m', 'mesh')} | {e(rr['cont']['worst'])} ({e(rr['cont']['median'])}) | "
                   f"{e(rr['mesh']['worst'])} | {pc(a['worst_refined'])} ({pc(a['median_refined'])}) | "
-                  f"{pc(a['worst_same_grid65'])} | {pc(dc['worst'], 3) + ' (' + pc(dc['median'], 3) + ')' if dc else '–'} | "
+                  f"{pc(a['worst_same_grid65'])} | {pe(dc['worst']) + ' (' + pe(dc['median']) + ')' if dc else '–'} | "
                   f"{pc(dt['worst'], 3) if dt else '–'} | {a['iterations_median']:.0f} | {r0}/{a['reason3_total']} |")
             du = rho['rules']['dense_upwind']
             w(f"| `dense` sign-upwind (target only) | mesh | {e(du['cont']['worst'])} ({e(du['cont']['median'])}) | 0 | – | – | – | – | – | – |")
@@ -639,7 +653,7 @@ def main():
                 w(f"| `{spec['name']}` | {rows[0]['m']} | " + (f"{e(rr['cont']['max'])} ({e(rr['cont']['median'])}) | {e(rr['mesh']['max'])}"
                                                             if rr else '– | –')
                   + f" | {pc(max(st))} ({pc(float(np.median(st)))}) | {pc(max(ss))} | "
-                  + (f"{pc(max(dg), 3)} ({pc(float(np.median(dg)), 3)})" if dg else '–') + ' | '
+                  + (f"{pe(max(dg))} ({pe(float(np.median(dg)))})" if dg else '–') + ' | '
                   + (pc(max(dd), 3) if dd else '–') + f" | {np.median([x['iterations_total'] for x in rows]):.0f} | "
                   f"{sum(x['exits']['budget'] for x in rows)} / {sum(x['exits']['damping_limit'] for x in rows)} |")
             w('')
@@ -651,8 +665,10 @@ def main():
     # ---------------------------------------------------------------- labels
     w('## 3. A1 outcome labels (DESIGN amendment 2)')
     w('')
+    w('The 2D solver had no sensitivity rerun (DESIGN A2-5: untested); the 3D one only at 64³.')
+    w('')
     w('| cell | label | median separation $s_j$ | median $f_j$ | bootstrap 2.5 % bound | fraction $f_j\\ge0.75$ | min $f_j$ | '
-      'excluded cases ($s_j<10^{-3}$) | non-stationary steps (incumbent / converged / nodes) | provisional (solver) | invalid because |')
+      'excluded cases ($s_j<10^{-3}$) | non-stationary steps (incumbent / converged / nodes) | provisional (solver) | label reason |')
     w('|---|---|---|---|---|---|---|---|---|---|---|')
     for key, l in list(sorted(lab3.items())) + list(sorted(lab2.items())):
         f3 = lambda x: 'n/a' if x is None else f'{x:.3f}'
@@ -704,8 +720,8 @@ def main():
           'leading norms (up / central) | C-neg-a slope | central×1.01 slope | C-pos | C-neg-a |')
         w('|---|---|---|---|---|---|---|---|---|---|---|')
         for dim, c in a2['controls'].items():
-            w(f"| {dim} | {c['slope_upwind']:.3f} | {c['slope_central']:.3f} | {c['slope_nodes']:.2f} | {c['up_vs_lead']:.3f} | "
-              f"{c['ce_vs_lead']:.3f} | {e(c['lead_up_rel'])} / {e(c['lead_ce_rel'])} | {c['slope_neg_a']:.1e} | "
+            w(f"| {dim} | {c['slope_upwind']:.3f} | {c['slope_central']:.3f} | {c['slope_nodes']:.2f} | {e(c['up_vs_lead'])} | "
+              f"{e(c['ce_vs_lead'])} | {e(c['lead_up_rel'])} / {e(c['lead_ce_rel'])} | {c['slope_neg_a']:.1e} | "
               f"{c['slope_central101']:.2f} | {'pass' if c['pos_pass'] else 'FAIL'} | {'pass' if c['neg_a_pass'] else 'FAIL'} |")
         w('')
     # ---------------------------------------------------------------- historical

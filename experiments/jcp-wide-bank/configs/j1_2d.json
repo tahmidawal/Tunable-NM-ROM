@@ -1,0 +1,214 @@
+{
+ "mesh": 1024,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "settings": [
+  {
+   "Rp": 128,
+   "M": 256,
+   "kappa": 2
+  },
+  {
+   "Rp": 128,
+   "M": 384,
+   "kappa": 3
+  },
+  {
+   "Rp": 128,
+   "M": 512,
+   "kappa": 4
+  },
+  {
+   "Rp": 256,
+   "M": 512,
+   "kappa": 2
+  },
+  {
+   "Rp": 256,
+   "M": 768,
+   "kappa": 3
+  },
+  {
+   "Rp": 256,
+   "M": 1024,
+   "kappa": 4
+  },
+  {
+   "Rp": 384,
+   "M": 768,
+   "kappa": 2
+  },
+  {
+   "Rp": 384,
+   "M": 1152,
+   "kappa": 3
+  },
+  {
+   "Rp": 384,
+   "M": 1536,
+   "kappa": 4
+  },
+  {
+   "Rp": 512,
+   "M": 1024,
+   "kappa": 2
+  },
+  {
+   "Rp": 512,
+   "M": 1536,
+   "kappa": 3
+  },
+  {
+   "Rp": 512,
+   "M": 2048,
+   "kappa": 4
+  }
+ ],
+ "arms": [
+  {
+   "name": "gauss16",
+   "family": "gauss",
+   "rule": "gauss16"
+  },
+  {
+   "name": "gauss24",
+   "family": "gauss",
+   "rule": "gauss24"
+  },
+  {
+   "name": "gauss32",
+   "family": "gauss",
+   "rule": "gauss32"
+  },
+  {
+   "name": "gauss48",
+   "family": "gauss",
+   "rule": "gauss48"
+  },
+  {
+   "name": "gauss64",
+   "family": "gauss",
+   "rule": "gauss64"
+  },
+  {
+   "name": "gauss96",
+   "family": "gauss",
+   "rule": "gauss96"
+  },
+  {
+   "name": "gauss128",
+   "family": "gauss",
+   "rule": "gauss128"
+  },
+  {
+   "name": "gauss160",
+   "family": "gauss",
+   "rule": "gauss160"
+  },
+  {
+   "name": "gauss192",
+   "family": "gauss",
+   "rule": "gauss192"
+  },
+  {
+   "name": "gauss256",
+   "family": "gauss",
+   "rule": "gauss256"
+  },
+  {
+   "name": "fib987",
+   "family": "fib",
+   "rule": "fib987"
+  },
+  {
+   "name": "fib1597",
+   "family": "fib",
+   "rule": "fib1597"
+  },
+  {
+   "name": "fib4181",
+   "family": "fib",
+   "rule": "fib4181"
+  },
+  {
+   "name": "fib6765",
+   "family": "fib",
+   "rule": "fib6765"
+  },
+  {
+   "name": "fib17711",
+   "family": "fib",
+   "rule": "fib17711"
+  },
+  {
+   "name": "fib46368",
+   "family": "fib",
+   "rule": "fib46368"
+  },
+  {
+   "name": "ctrl_gauss8",
+   "family": "ctrl",
+   "rule": "gauss8",
+   "control": true
+  },
+  {
+   "name": "ctrl_smolyak8",
+   "family": "ctrl",
+   "rule": "smolyak8",
+   "control": true
+  }
+ ],
+ "families": [
+  "gauss",
+  "fib"
+ ],
+ "gref": "gauss640",
+ "gref_check": "gauss768",
+ "tau": 0.00025,
+ "tau_secondary": 0.001,
+ "rho_bar": 0.116,
+ "budget_fraction": 0.01,
+ "conv_bar": 2.5e-05,
+ "target_bar": 1e-05,
+ "step_budget": 600,
+ "gtol": 0.001,
+ "point_chunk": 32768,
+ "refs": "/cluster/tufts/paralab/tawal01/jcpwide/refs2d",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "expected_checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+ "expected_rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "expected_qcore_sha256": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b",
+ "timing": {
+  "cohort": "dev6",
+  "cases": 6,
+  "reps": 2,
+  "burn": 0.1,
+  "seed": 20261008
+ },
+ "audit_cohort": "dev6",
+ "audit_cases": [
+  0,
+  2
+ ],
+ "audit_full_arms": [],
+ "audit_rho_arm": "gauss64",
+ "attempt": "j1"
+}

@@ -519,3 +519,29 @@ agreement are the only gates at $R'>512$. This limitation is stated in the repor
 
 **A3-smoke.** The training smoke config also sets `warmup` 5 (with `bank_steps` 20 the inherited 500 would make the
 cosine schedule invalid).
+
+## Amendment A4 (2026-10-08, after Codex design audit 4, `audits/codex-design-4.md`; before any job)
+
+**A4-11 Per-setting memory.** Both drivers run a sampling thread (every 0.2 s) that records the device
+`bytes_in_use` and the host RSS (`/proc/self/status` VmRSS); each setting stores the **maximum sampled value within
+its own interval** (start to end of the setting), alongside the lifetime peak. Sampled maxima can miss spikes shorter
+than 0.2 s; this is stated with the numbers.
+
+**A4-J3 Host memory, measured.** `sacct` for job 4246994 (the $R=512$ run of the same code on the same data shapes):
+MaxRSS **287.1 GB** of 320 GB requested. The rank-dependent host arrays added at $R=1024$ are enumerated in A3-11
+(< 10 GB); network parameters and optimiser state at width 2048 are on the device (≈ 0.1 GB). J3 therefore requests
+**420 GB** (≥ 120 GB headroom over the measured peak + the enumerated additions). Phase-resolved host memory: the
+sbatch runs a sidecar loop logging the training process's RSS every 30 s with a timestamp (no change to the training
+code); phases are identified by the timestamps of the training log lines ("data n=…", "group …", "BANK …", "ORDER",
+"FLOORS"). `/usr/bin/time -v` and `sacct` give the whole-process maximum.
+
+**A4-budget Corrected arithmetic.** Cost of an off-mesh rollout is $\propto mR'M$ (Jacobian GEMM). For J1, per setting the
+ladder (16 candidates, $\sum m\approx2.4\times10^5$) and the two controls cost about **0.24×** the converged + check
+pair ($m=409600+589824\approx1.0\times10^6$) **in total**; the J1 line "ladder + controls ≈ 0.4 h" is therefore an
+over-estimate (≈ 0.25 h), not an under-estimate. Each optional J4 trim adds four new-bank settings to the six, i.e.
+**+67 %** of J4's per-setting work (not 50 %). Every "≈" line of A3 is replaced before submission by a smoke
+measurement: J1 by the 2D smoke job (two settings incl. the largest, all arms, two cases, timing), J2 by a 3D smoke
+(65 nodes, $R'=512$, $\kappa=4$, all arms, 4 validation cases, 4 certification draws, timing), J4 by a J4 smoke
+(129 nodes, new bank, $R'=1024$, all arms, 4 + 4 cases) after J3. The submission request is then
+$\max(2\times$ the smoke-calibrated projection, the A3 request$)$; the calibration (per-component seconds × counts) is
+written to `runs/<attempt>/BUDGET.json` before each submission.

@@ -1,0 +1,114 @@
+{
+ "mesh": 256,
+ "cohorts": [
+  "dev6"
+ ],
+ "settings": [
+  {
+   "Rp": 128,
+   "M": 512,
+   "kappa": 4
+  },
+  {
+   "Rp": 128,
+   "M": 256,
+   "kappa": 2
+  }
+ ],
+ "arms": [
+  {
+   "name": "gauss16",
+   "family": "gauss",
+   "rule": "gauss16"
+  },
+  {
+   "name": "gauss32",
+   "family": "gauss",
+   "rule": "gauss32"
+  },
+  {
+   "name": "gauss64",
+   "family": "gauss",
+   "rule": "gauss64"
+  },
+  {
+   "name": "fib987",
+   "family": "fib",
+   "rule": "fib987"
+  },
+  {
+   "name": "fib4181",
+   "family": "fib",
+   "rule": "fib4181"
+  },
+  {
+   "name": "ctrl_gauss8",
+   "family": "ctrl",
+   "rule": "gauss8",
+   "control": true
+  },
+  {
+   "name": "ctrl_smolyak8",
+   "family": "ctrl",
+   "rule": "smolyak8",
+   "control": true
+  }
+ ],
+ "families": [
+  "gauss",
+  "fib"
+ ],
+ "gref": "gauss160",
+ "gref_check": "gauss192",
+ "tau": 0.00025,
+ "tau_secondary": 0.001,
+ "rho_bar": 0.116,
+ "budget_fraction": 0.01,
+ "conv_bar": 2.5e-05,
+ "target_bar": 1e-05,
+ "step_budget": 600,
+ "gtol": 0.001,
+ "point_chunk": 32768,
+ "refs": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "expected_checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+ "expected_rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "expected_qcore_sha256": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b",
+ "timing": {
+  "cohort": "dev6",
+  "cases": 1,
+  "reps": 1,
+  "burn": 0.05,
+  "seed": 1
+ },
+ "audit_cohort": "dev6",
+ "audit_cases": [
+  0
+ ],
+ "audit_full_arms": [],
+ "audit_rho_arm": "gauss64",
+ "attempt": "l1",
+ "case_subset": {
+  "dev6": [
+   0
+  ]
+ },
+ "local_waive_cohort_hash": true,
+ "allow_cpu_smoke": true
+}

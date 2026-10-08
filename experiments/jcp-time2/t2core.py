@@ -37,6 +37,7 @@ SCHEMES = dict(BE=(1., -1., 0., 1., 0., 0), CN=(1., -1., 0., .5, .5, 0), CNR=(1.
                BDF2=(1.5, -2., .5, 1., 0., 1), TH06=(1., -1., 0., .6, .4, 0))
 BE_CO = (1., -1., 0., 1., 0.)
 REASONS = {0: 'budget', 1: 'tol', 2: 'tiny_step', 3: 'damping_limit', 4: 'stationary'}
+ALT_TAU = 1e-5
 MUTATIONS = (None, 'a2flip', 'fn_lag', 'stale_hist', 'late_out', 'd_b1')
 
 
@@ -154,9 +155,10 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
                       first_fail=jnp.int32(-1), worst_ratio=jnp.float64(0.), worst_tolratio=jnp.float64(0.),
                       alt_num=jnp.float64(0.), alt_den=jnp.float64(0.), amp=jnp.float64(0.))
         nA0 = jnp.linalg.norm(A @ w0) + 1e-300
+        thr = ALT_TAU * jnp.max(jnp.abs(A @ w0))
 
         def body(c):
-            k, wv, wprev, wprev2, lam0, dprev, out, st = c
+            k, wv, wprev, wprev2, lam0, dprev, runs, out, st = c
             co = jnp.where(k < sch['nstart'], be, sch['co'])
             if mutation == 'a2flip':
                 co = co.at[2].multiply(-1.)
@@ -181,22 +183,27 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
             dcur = hm * (Aw2 - Acn)
             pr = dcur * dprev
             use = k >= 1
+            # A2.14: amplitude-qualified pairs; an alternation event counts once its mode has alternated >= 3 steps running
+            qual = use & (jnp.minimum(jnp.abs(dcur), jnp.abs(dprev)) > thr)
+            event = qual & (pr < 0)
+            runs = jnp.where(event, runs + 1, 0)
             st = dict(it_sum=st['it_sum'] + it, it_max=jnp.maximum(st['it_max'], it), rej=st['rej'] + rej,
                       exits=st['exits'].at[reason].add(1), nfail=st['nfail'] + (~ok).astype(jnp.int32),
                       first_fail=jnp.where((st['first_fail'] < 0) & (~ok), k, st['first_fail']),
                       worst_ratio=jnp.maximum(st['worst_ratio'], gn),
                       worst_tolratio=jnp.maximum(st['worst_tolratio'], rn / (tol + 1e-300)),
-                      alt_num=st['alt_num'] + jnp.where(use, jnp.sum(jnp.maximum(0., -pr)), 0.),
-                      alt_den=st['alt_den'] + jnp.where(use, jnp.sum(jnp.abs(pr)), 0.),
+                      alt_num=st['alt_num'] + jnp.sum(jnp.where(event & (runs >= 3), jnp.abs(pr), 0.)),
+                      alt_den=st['alt_den'] + jnp.sum(jnp.where(qual, jnp.abs(pr), 0.)),
                       amp=jnp.maximum(st['amp'], jnp.linalg.norm(dcur) / nA0))
             kk = k + 1
             store = (kk % sch['keep']) == 0
             idx = jnp.clip(kk // sch['keep'], 0, 5)
             val = wv if mutation == 'late_out' else w2
             out = jnp.where(store, out.at[idx].set(val), out)
-            return (kk, w2, wv, wprev, lamn, dcur, out, st)
+            return (kk, w2, wv, wprev, lamn, dcur, runs, out, st)
 
-        c0 = (jnp.int32(0), w0, w0, w0, jnp.asarray(1e-6, jnp.float64), jnp.zeros(M, jnp.float64), out0, stats0)
+        c0 = (jnp.int32(0), w0, w0, w0, jnp.asarray(1e-6, jnp.float64), jnp.zeros(M, jnp.float64),
+              jnp.zeros(M, jnp.int32), out0, stats0)
         k, *_rest, out, st = jax.lax.while_loop(lambda c: c[0] < sch['steps'], body, c0)
         st = dict(st, steps=k, alt_index=jnp.where(st['alt_den'] > 0, st['alt_num'] / (st['alt_den'] + 1e-300), 0.))
         return out, st

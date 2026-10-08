@@ -427,3 +427,32 @@ reported; they do not by themselves reject a converged step.
 $\{\Delta t_0,2\Delta t_0,5\Delta t_0\}$ grid; differences are labelled *quadrature sensitivity*. `audit_t2.py` reconstructs the reference
 errors independently and runs index mutations (case permutation, time shift by one output, ST/S swap), each of which
 must change the reconstructed errors.
+
+## Amendment A3 (2026-10-08, after `audits/codex-design-r2.md`)
+
+**A3.1 (item 10) Manufactured schedule.** The order steps are $h\in\{0.05/16,0.05/32,0.05/64\}$ (integral output stride;
+0.25/64-type steps do not divide 0.05). RNG: NumPy `default_rng(20261008)`, draw order $A$, $T$, $c_0$ ($\Lambda$ is
+deterministic). Oracle refinement check: Radau at rtol = atol = $10^{-12}$ vs $10^{-13}$ must differ by less than $10^{-3}\times$
+the smallest gated error. m1/m4 oracle thresholds: the mutated error must exceed $10\times$ the unmutated error of the same
+scheme at the finest $h$.
+
+**A3.2 (item 11) wording.** $s_h$ is a *solve-sensitivity indicator*, not an error bound.
+
+**A3.3 (item 12) Triples, exactly.** For every form/scheme the **primary** triple is $(\Delta t_0/2,\Delta t_0/4,\Delta t_0/8)$ and the
+**adjacent** triple $(\Delta t_0,\Delta t_0/2,\Delta t_0/4)$. GAL-CN/BDF2's $(\Delta t_0/4,\Delta t_0/8,\Delta t_0/16)$ is reported only. Claim test:
+primary valid on ≥ 80 % of cases and ≥ 80 % of the valid primary orders in the band; adjacent check over cases where
+both triples are valid (denominator reported): ≥ 80 % of them with both orders in the band. If fewer than half of the
+cases have both triples valid, the claim carries "(adjacent check unresolved)".
+
+**A3.4 (item 14) Wording.** The diagnostic label is only **alternating**; this lane makes no "numerical ringing" claim.
+
+**A3.5 (item 21) FOM calibration fallback.** Field-discrepancy metric: $\max_t\lVert u-u_{10^{-10}}\rVert/\lVert u_0\rVert$ on the $257^2$
+nodes. If no candidate ntol passes, the configuration is run and timed at ntol $10^{-10}$ (labelled).
+
+**A3.6 (item 22) Audit acceptance and rejection.** `audit_t2.py` pins, independently of the job: cohort physical
+descriptors and their sha256 (recomputed from `engines.params_draw`), the reference files' sha256 (from the reference
+job manifest), the output times (stride rows 0..5 ↔ $t=0.05k$), and per-case metrics recomputed from the saved
+coefficients (NumPy decode at the $257^2$ nodes) against the job's values (relative tolerance $10^{-9}$). Acceptance: the
+unmutated job output must pass every check. Rejection tests (each must be REJECTED by at least one check): (i) the saved
+coefficients with two cases swapped, (ii) the output rows shifted by one time, (iii) ST and S references swapped,
+(iv) a reference file whose sha256 differs, (v) a job metric perturbed by 1 %.

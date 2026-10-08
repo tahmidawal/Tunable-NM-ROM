@@ -33,9 +33,8 @@ def main():
     (out / 'collection.tar').unlink()
     print(out, 'checksums verified')
     if a.cleanup:
-        jobs = subprocess.check_output(['ssh', 'tufts-login', f'squeue -u $USER -h -o %j | grep -cx jw_{a.attempt} || true'],
-                                       text=True).strip()
-        assert jobs == '0', f'jw_{a.attempt} still in the queue: no cleanup'
+        q = subprocess.check_output(['ssh', 'tufts-login', 'squeue -u $USER -h -o %j'], text=True)   # raises on failure
+        assert f'jw_{a.attempt}' not in q.split(), f'jw_{a.attempt} still in the queue: no cleanup'
         assert (out / 'output' / 'COMPLETE').exists() or (out / 'output' / 'training.json').exists(), 'no completion marker'
         subprocess.run(['ssh', 'tufts-login', f'rm -rf {shlex.quote(remote)}'], check=True)
         print('remote removed:', remote)

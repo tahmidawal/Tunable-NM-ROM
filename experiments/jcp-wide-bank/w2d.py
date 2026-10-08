@@ -117,12 +117,12 @@ class MemSampler:
 
     def _run(self):
         while not self._stop.is_set():
-            try:
-                d = int(jax.devices()[0].memory_stats().get('bytes_in_use', -1))
-            except Exception:  # noqa: BLE001
-                d = -1
-            h = self.host_rss()
             with self._lock:
+                try:
+                    d = int(jax.devices()[0].memory_stats().get('bytes_in_use', -1))
+                except Exception:  # noqa: BLE001
+                    d = -1
+                h = self.host_rss()
                 self.dev_max, self.host_max = max(self.dev_max, d), max(self.host_max, h)
             time.sleep(self.period)
 
@@ -514,8 +514,8 @@ def main():
                     dmax = max(r['vs_gref_evolved'] for r in rows_by_arm[name])
                     ctrl[name] = dict(worst_distance=dmax, rho_max=rho_max[name],
                                       all_eligible=all(r['eligible'] for r in rows_by_arm[name]),
-                                      fails_distance={t_: bool(dmax > tv) for t_, tv in taus.items()},
-                                      fails_rho=bool(rho_max[name] > rho_bar))
+                                      fails_distance={t_: bool(not (np.isfinite(dmax) and dmax <= tv)) for t_, tv in taus.items()},
+                                      fails_rho=bool(not (np.isfinite(rho_max[name]) and rho_max[name] <= rho_bar)))
                     # A0-2: a control passing BOTH metric criteria invalidates m* (eligibility reported separately)
                     ctrl[name]['would_be_selected'] = {
                         t_: bool(not ctrl[name]['fails_distance'][t_] and not ctrl[name]['fails_rho']) for t_ in taus}
@@ -571,7 +571,9 @@ def main():
                 ms_, fam_, arm_ = min(dep)
                 rep['selection'][key]['deployed'] = dict(family=fam_, arm=arm_, m=arms[arm_]['m'],
                                                          median_ms=summ['subjects'][arm_]['median_ms'],
-                                                         chosen_by='timed_median' if tvalid else 'smaller_m (K-time failed)')
+                                                         timing_valid=tvalid,
+                                                         chosen_by='timed_median' if tvalid else
+                                                         'smaller_m (K-time failed; diagnostic only, DESIGN A5)')
                 shas = [sha1[(arm_, coh, c)] for coh, c, _ in tcases]
                 final.append((key, fam_, arm_, arms[arm_]['call'], base, dec, Rp, shas))
             else:
@@ -635,6 +637,8 @@ def main():
             subjects.append(dict(key=f'decode|R{Rp}', phase='B', make=mkd, check=None))
         inv, summ = aba_panel(subjects, len(tcases), tcfg['reps'], tcfg['burn'], rng, log)
         rep['final_timing'] = dict(invocations=inv, **summ)
+        rep['timing_valid_jobwide'] = bool(all(v.get('valid') for v in rep['timing'].values()) and
+                                           summ['gates']['drift_pass'] and summ['gates']['deterministic'])
         log('FINAL TIMING')
 
     rep['elapsed_seconds'] = el()

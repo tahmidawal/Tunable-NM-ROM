@@ -545,3 +545,12 @@ measurement: J1 by the 2D smoke job (two settings incl. the largest, all arms, t
 (129 nodes, new bank, $R'=1024$, all arms, 4 + 4 cases) after J3. The submission request is then
 $\max(2\times$ the smoke-calibrated projection, the A3 request$)$; the calibration (per-component seconds × counts) is
 written to `runs/<attempt>/BUDGET.json` before each submission.
+
+## Amendment A5 (2026-10-08, after Codex code audit w2d-2; before any job)
+
+If a setting's own A–B–A panel fails K-time (drift or determinism), its deployed family is chosen by the smaller
+$m^\star$ instead of the timed median, labelled *diagnostic only*; the job records `timing_valid_jobwide` (every
+per-setting panel and the final panel pass K-time). Cost claims (H3 *useful*, cost-vs-$R'$ plots) are made only from
+jobs with `timing_valid_jobwide = true`; otherwise the timing numbers are reported as withdrawn. Paired (case, phase)
+ratios for H3 are computed offline by `make_report.py` from the persisted invocation records. A failed projection-floor
+consistency check (`check_passed = false`) makes that $R'$'s floor *unavailable* in the report.

@@ -437,7 +437,7 @@ def main():
             if not sp:
                 continue
             cl = sp.get('f|class', {})
-            w(f"| {b} | {sp['u|n_1e-08']['median']} / {sp['u|n_1e-08']['max']} | {sp['f|n_1e-08']['median']} / {sp['f|n_1e-08']['max']} | {sp['f|n_1e-04']['median']} | "
+            w(f"| {b} | {fmt(sp['u|n_1e-08']['median'])} / {fmt(sp['u|n_1e-08']['max'])} | {fmt(sp['f|n_1e-08']['median'])} / {fmt(sp['f|n_1e-08']['max'])} | {fmt(sp['f|n_1e-04']['median'])} | "
               f"{cl.get('geometric', 0)}/{cl.get('algebraic', 0)}/{cl.get('inconclusive', 0)}/{cl.get('unresolved', 0)} |")
         w('\nBandwidths are medians over the states whose n(ε) is resolved (256 vs 512 points agree within 2).\n')
         w('')

@@ -101,6 +101,11 @@ def a2_analysis(out):
                     own[m] = {st: float(np.median(z[k_.replace('_upwind', '_' + st)])) for st in ('upwind', 'central', 'nodes')}
                     own[m]['upwind_worst'] = float(z[k_].max())
             pan['own'] = own
+            for k_ in z.files:                                  # independent-family check on every state set
+                if k_.startswith(f'{g}_own') and (k_.endswith('_lat32768_rho') or k_.endswith('_fib121393_rho')):
+                    pan.setdefault('own_independent_worst', {})[k_] = float(z[k_].max())
+                    if z[k_].max() > 1e-2:
+                        pan['independent_ok'] = False
             res['panels'].append(pan)
     # manufactured controls
     ctl = {}
@@ -124,7 +129,8 @@ def a2_analysis(out):
         c['neg_a_pass'] = bool(abs(c['slope_neg_a']) < .05)
         ctl[dim] = c
     res['controls'] = ctl
-    res['void'] = not all(c['pos_pass'] and c['neg_a_pass'] for c in ctl.values()) or len(ctl) < 2
+    res['void'] = (not all(c['pos_pass'] and c['neg_a_pass'] for c in ctl.values()) or len(ctl) < 2
+                   or not all(p['independent_ok'] for p in res['panels']))
     return res, []
 
 
@@ -168,27 +174,38 @@ def bootstrap_low(f, seed=0, B=2000):
     return float(np.quantile(meds, .025))
 
 
-def label(s, dn, invalid, provisional):
-    """DESIGN amendment 2 (A2-1) decision order. s, dn: per-case d(incumbent, conv), d(nodes, conv)."""
-    s, dn = np.asarray(s), np.asarray(dn)
-    out = dict(median_separation=float(np.median(s)), excluded_cases=[int(i) for i in np.nonzero(s < 1e-3)[0]])
-    if invalid:
-        out.update(label='X', why=invalid, boot_low=None)
+def label(keys, s, dn, invalid, provisional, expected):
+    """DESIGN amendment 2 (A2-1) decision order. keys: case ids; s, dn: per-case d(incumbent, conv), d(nodes, conv).
+    `expected` is the registered case list: any missing case makes the result INCOMPLETE (amendment A2-6)."""
+    missing = [k for k in expected if k not in keys]
+    out = dict(missing_cases=missing, boot_low=None, why=invalid or None, provisional_solver=provisional)
+    if missing:
+        out.update(label='INCOMPLETE')
         return out
+    if invalid:
+        out.update(label='X')
+        return out
+    if any(v is None or not np.isfinite(v) for v in list(s) + list(dn)):
+        out.update(label='X', why='non-finite distance')
+        return out
+    s, dn = np.asarray(s, float), np.asarray(dn, float)
+    out.update(median_separation=float(np.median(s)),
+               excluded_cases=[keys[i] for i in np.nonzero(s < 1e-3)[0]])
     if np.median(s) < 1e-2:
-        out.update(label='X0', why='median separation below 1e-2', boot_low=None)
+        out.update(label='X0', why='median separation below 1e-2')
         return out
     keep = s >= 1e-3
     f = 1 - dn[keep] / s[keep]
     med, lo, frac = float(np.median(f)), bootstrap_low(f), float(np.mean(f >= .75))
-    out.update(median_f=med, boot_low=lo, frac_f_075=frac, min_f=float(f.min()))
+    out.update(median_f=med, frac_f_075=frac, min_f=float(f.min()))
     if med >= .9 and lo >= .8 and frac >= .9:
-        out['label'] = 'R'
+        out.update(label='R', boot_low=lo)
     elif med <= .5:
-        out['label'] = 'N'
+        out.update(label='N', boot_low=lo)
     else:
-        out['label'] = 'X'
-    out['provisional_solver'] = provisional
+        out.update(label='X', boot_low=None, boot_low_info=lo)
+    if out['label'] not in ('R', 'N'):
+        out['provisional_solver'] = None
     return out
 
 
@@ -207,31 +224,41 @@ def a1d3_labels(res):
     for n, r in res.items():
         for Rp in r['config']['Rps']:
             A = r['arms']
-            if f'nodes_R{Rp}' not in A or 'distance' not in A[f'nodes_R{Rp}']:
+            need = [f'tensor_R{Rp}', f'lat32768_R{Rp}', f'nodes_R{Rp}']
+            if any(nm not in A or 'distance' not in A[nm] for nm in need):
+                labs[(n, Rp)] = dict(label='INCOMPLETE', missing_cases=['arm output missing'], boot_low=None, why=None,
+                                     provisional_solver=None)
                 continue
+            keys = [f'c{c["case"]}' for c in A[f'nodes_R{Rp}']['cases']]
             s = A[f'tensor_R{Rp}']['distance']['lat32768']['per_case']
             dn = A[f'nodes_R{Rp}']['distance']['lat32768']['per_case']
-            invalid = []
-            steps = 0
-            r0 = 0
-            for nm in (f'tensor_R{Rp}', f'lat32768_R{Rp}', f'nodes_R{Rp}'):
+            invalid, prov, r0s = [], [], {}
+            for nm in need:
                 a = A[nm]
                 if not a['all_finite'] or a['reason3_total'] > 0:
                     invalid.append(f'{nm}: non-finite or reason-3')
-                r0 += sum(c['reasons']['0'] for c in a['cases'])
-                steps += sum(sum(c['reasons'].values()) for c in a['cases'])
+                r0 = sum(c['reasons']['0'] for c in a['cases'])
+                steps = sum(sum(c['reasons'].values()) for c in a['cases'])
+                r0s[nm.rsplit('_R', 1)[0]] = (r0, steps)
+                if r0 > .01 * steps:
+                    prov.append(f'{nm} reason-0 {r0}/{steps}')
+            if not r['rho'][str(Rp)].get('continuum_target_valid', False):
+                invalid.append('continuum target check failed on certification states')
+            nr_ = (r.get('rho_nodes_reached') or {}).get(str(Rp))
+            if nr_ is None or nr_.get('continuum_check_worst') is None or nr_['continuum_check_worst'] > 1e-6:
+                invalid.append('continuum target check failed or missing on nodes-reached states')
             sens = (r.get('adaptive_sensitivity') or {}).get(str(Rp))
             if sens:
+                ms = float(np.median([v for v in s if v is not None])) if any(v is not None for v in s) else 0.
                 for k in ('nodes', 'lat32768'):
-                    if sens[k]['worst'] > .1 * np.median(s):
-                        invalid.append(f'adaptive sensitivity of {k} {sens[k]["worst"]:.2e} > 0.1 median separation')
-            prov = []
-            if r0 > .01 * steps:
-                prov.append(f'reason-0 exits {r0}/{steps} steps')
-            if not sens:
+                    w_ = sens[k]['worst']
+                    if w_ is None or w_ > .1 * ms or sens[k]['reason3'] > 0:
+                        invalid.append(f'adaptive sensitivity of {k}: {w_} vs 0.1 x median separation {0.1 * ms:.2e}')
+            else:
                 prov.append('no sensitivity rerun at this mesh')
-            labs[(n, Rp)] = label(s, dn, '; '.join(invalid), '; '.join(prov) or None)
-            labs[(n, Rp)]['reason0'] = (r0, steps)
+            labs[(n, Rp)] = label(keys, s, dn, '; '.join(invalid), '; '.join(prov) or None,
+                                  [f'c{j}' for j in range(r['config']['cohort_count'])])
+            labs[(n, Rp)]['reason0'] = r0s
     return labs
 
 
@@ -248,28 +275,36 @@ def rows_of(r, s, arm):
     return [x for x in r['rows'] if x['setting'] == s and x['arm'] == arm]
 
 
+def expected_2d(r):
+    return [f'{coh}{c}' for coh in r['config']['cohorts'] for c in range(r['cohorts'][coh]['n'])
+            if r['config'].get('case_subset', {}).get(coh) is None or c in r['config']['case_subset'][coh]]
+
+
 def a1d2_labels(res):
     labs = {}
     for L, r in res.items():
         for s in r['config']['settings']:
-            d = {x['cohort'] + str(x['case']): x for x in rows_of(r, s, 'dense')}
-            nd = {x['cohort'] + str(x['case']): x for x in rows_of(r, s, 'nodes')}
-            g = {x['cohort'] + str(x['case']): x for x in rows_of(r, s, 'gref')}
-            keys = sorted(set(d) & set(nd) & set(g))
-            sep = [d[k]['vs_gref_restricted_evolved'] for k in keys]
-            dn = [nd[k]['vs_gref_restricted_evolved'] for k in keys]
-            invalid, r0, steps = [], 0, 0
-            for nm, rows in (('dense', d), ('gref', g), ('nodes', nd)):
-                for x in rows.values():
+            rows = {nm: {x['cohort'] + str(x['case']): x for x in rows_of(r, s, nm)} for nm in ('dense', 'gref', 'nodes')}
+            keys = [k for k in expected_2d(r) if all(k in rows[nm] for nm in rows)]
+            sep = [rows['dense'][k].get('vs_gref_restricted_evolved') for k in keys]
+            dn = [rows['nodes'][k].get('vs_gref_restricted_evolved') for k in keys]
+            invalid, prov, r0s = [], ['no sensitivity rerun (2D)'], {}
+            for nm, rr in rows.items():
+                r0, steps = 0, 0
+                for x in rr.values():
                     if not x['finite'] or x['exits']['damping_limit'] > 0:
-                        invalid.append(f'{nm} {x["cohort"]}{x["case"]}')
+                        invalid.append(f'{nm} {x["cohort"]}{x["case"]} non-finite or damping exit')
                     r0 += x['exits']['budget']
                     steps += sum(x['exits'].values())
-            prov = ['no sensitivity rerun (2D)']
-            if r0 > .01 * steps:
-                prov.append(f'budget exits {r0}/{steps}')
-            labs[(L, s)] = label(sep, dn, '; '.join(invalid), '; '.join(prov))
-            labs[(L, s)]['reason0'] = (r0, steps)
+                r0s[nm] = (r0, steps)
+                if r0 > .01 * steps:
+                    prov.append(f'{nm} budget exits {r0}/{steps}')
+            if not r.get('complete'):
+                invalid.append('job not complete')
+            if not r.get('targets_valid', False):
+                invalid.append('continuum target check failed (targets_valid false)')
+            labs[(L, s)] = label(keys, sep, dn, '; '.join(invalid), '; '.join(prov), expected_2d(r))
+            labs[(L, s)]['reason0'] = r0s
             labs[(L, s)]['cases'] = len(keys)
     return labs
 
@@ -332,11 +367,52 @@ def a1_plot(r3, r2):
     plt.close(fig)
 
 
+def cell_name(k):
+    return f'3D {k[0] - 1}³ R′={k[1]}' if isinstance(k[1], int) else f'2D {k[0]}² {k[1]}'
+
+
+def label_text(l):
+    t = f"**{l['label']}**"
+    if l.get('median_f') is not None:
+        t += f" (median recovered fraction {l['median_f']:.3f}"
+        t += f", bootstrap bound {l['boot_low']:.3f}" if l['boot_low'] is not None else ', bootstrap bound N/A'
+        t += f", median separation {pc(l.get('median_separation'))}"
+        if l.get('provisional_solver'):
+            t += f"; provisional (solver): {l['provisional_solver']}"
+        t += ')'
+    if l.get('why'):
+        t += f" [{l['why']}]"
+    if l.get('missing_cases'):
+        t += f" [missing: {', '.join(l['missing_cases'])}]"
+    return t
+
+
 # ====================================================================================================== historical
+def g65_rows():
+    """Bank rows on the 63^3 lattice x = k/64 by the vendor NumPy evaluation (common.features_np), cached in the
+    lane's runs/ directory (not committed)."""
+    cache = RUNS / 'G65_cache.npy'
+    if cache.exists():
+        return np.load(cache)
+    sys.path.insert(0, str(HERE / 'vendor/quad3d/vendor/burgers3d-span'))
+    import common as C3
+    b = pickle.loads((HERE / 'vendor/quad3d/inputs/model_M2/bank.pkl').read_bytes())
+    ax = np.arange(1, 64) / 64.0
+    X = np.stack(np.meshgrid(ax, ax, ax, indexing='ij'), -1).reshape(-1, 3)
+    G = np.concatenate([C3.features_np(b['params'], X[i:i + 65536]) for i in range(0, len(X), 65536)]) @ np.asarray(b['rotation'])
+    np.save(cache, G.T)
+    return G.T
+
+
 def g4_3d(r3):
-    """Max over cases and outputs of the relative coefficient difference between this job's rollouts and the 2026-10-01
-    validation job's, per arm (coefficient metric; the field metric is reported where the bank rows are at hand)."""
+    """Per arm, worst over cases of the evolved-time field distance on the 63^3 lattice (normalised by the refined
+    reference's initial norm, as the errors) between this job's rollouts and the 2026-10-01 validation job's."""
     out = {}
+    if not r3:
+        return out
+    G = g65_rows()
+    ref = np.load(Q3 / 'runs/ref1/code/output/ref_923801.npz')
+    n0 = {j: float(np.linalg.norm(ref[f'c{j}'][0])) for j in range(64)}
     for n in r3:
         old = np.load(Q3 / f'runs/val{n}/code/output/fields/coefficients.npz')
         for Rp in (512, 256):
@@ -349,8 +425,7 @@ def g4_3d(r3):
                 for j in range(64):
                     k = f'{arm}_R{Rp}__c{j}'
                     if k in new.files and k in old.files:
-                        a, b = new[k], old[k]
-                        d.append(float(np.linalg.norm(a - b) / np.linalg.norm(b)))
+                        d.append(float((np.linalg.norm((new[k] - old[k]) @ G[:Rp], axis=1) / n0[j])[1:].max()))
                 if d:
                     out[(n, Rp, arm)] = max(d)
     return out
@@ -369,6 +444,16 @@ def g4_2d(r2):
                 ks = sorted(set(a) & set(b))
                 if ks:
                     out[(L, s, arm)] = max(abs(a[k] - b[k]) / b[k] for k in ks)
+                fd = []
+                for c in (0, 2):                     # field distance on the saved audit cases (257^2 shared nodes)
+                    pn = RUNS / f'a1d2/code/output/L{L}/audit_{s}_{arm}_dev6{c}.npz'
+                    po = Q2 / f'runs/dv{L}/archive/output/audit_{s}_{arm}_dev6{c}.npz'
+                    if pn.exists() and po.exists():
+                        fn, fo = np.load(pn)['f257'], np.load(po)['f257']
+                        fd.append(float((np.linalg.norm((fn - fo).reshape(6, -1), axis=1) /
+                                         np.linalg.norm(fo[0]))[1:].max()))
+                if fd:
+                    out[(L, s, arm + ' (field, audit cases)')] = max(fd)
     return out
 
 
@@ -398,16 +483,7 @@ def main():
     w('## Answers')
     w('')
     if lab3 or lab2:
-        parts = []
-        for (n, Rp), l in sorted(lab3.items()):
-            parts.append(f"3D {n - 1}³, R′={Rp}: **{l['label']}** (median recovered fraction "
-                         f"{l.get('median_f', float('nan')):.3f}, bootstrap 2.5 % bound {l['boot_low'] if l['boot_low'] is None else round(l['boot_low'], 3)}, "
-                         f"median separation {pc(l['median_separation'])}"
-                         + (f"; provisional (solver): {l['provisional_solver']}" if l.get('provisional_solver') else '') + ')')
-        for (L, s), l in sorted(lab2.items()):
-            parts.append(f"2D {L}², {s}: **{l['label']}** (median recovered fraction {l.get('median_f', float('nan')):.3f}, "
-                         f"bootstrap bound {l['boot_low'] if l['boot_low'] is None else round(l['boot_low'], 3)}, "
-                         f"median separation {pc(l['median_separation'])}; provisional (solver): {l.get('provisional_solver')})")
+        parts = [f"{cell_name(k)}: {label_text(l)}" for k, l in list(sorted(lab3.items())) + list(sorted(lab2.items()))]
         w('1. **A1 — does the exact gradient on the mesh nodes reproduce the off-mesh (continuum) solve?** Outcome labels '
           '(DESIGN amendment 2: R = `nodes` recovers the converged off-mesh rollout within the declared margins; '
           'N = it does not; X = intermediate or invalid; X0 = nothing to explain): ' + '; '.join(parts) + '.')
@@ -417,10 +493,10 @@ def main():
         parts = []
         for p in a2['panels']:
             s = p['stencils']
-            parts.append(f"{p['dim']} {p['group']}: upwind {s['upwind']['slope_median']:.2f}, central "
-                         f"{s['central']['slope_median']:.2f}, nodes "
-                         + ('unresolved' if s['nodes']['slope_median'] is None else f"{s['nodes']['slope_median']:.2f}"))
-        cons = all(p['stencils'][st]['consistent'] for p in a2['panels'] for st in ('upwind', 'central'))
+            fs = lambda x: 'unresolved' if x is None else f'{x:.2f}'
+            parts.append(f"{p['dim']} {p['group']}: upwind {fs(s['upwind']['slope_median'])}, central "
+                         f"{fs(s['central']['slope_median'])}, nodes {fs(s['nodes']['slope_median'])}")
+        cons = all(p['stencils'][st]['consistent'] is True for p in a2['panels'] for st in ('upwind', 'central'))
         w(f"2. **A2 — stencil gap slopes** (median-state statistic over the pre-registered window): " + '; '.join(parts)
           + f". Upwind ≈ 1 and central ≈ 2 on every panel: **{'yes' if cons else 'no'}**"
           + (' (controls passed).' if not a2['void'] else ' — **controls failed: A2 verdicts void**.'))
@@ -533,15 +609,16 @@ def main():
     w('## 3. A1 outcome labels (DESIGN amendment 2)')
     w('')
     w('| cell | label | median separation $s_j$ | median $f_j$ | bootstrap 2.5 % bound | fraction $f_j\\ge0.75$ | min $f_j$ | '
-      'excluded cases | non-stationary steps | provisional (solver) |')
-    w('|---|---|---|---|---|---|---|---|---|---|')
+      'excluded cases ($s_j<10^{-3}$) | non-stationary steps (incumbent / converged / nodes) | provisional (solver) | invalid because |')
+    w('|---|---|---|---|---|---|---|---|---|---|---|')
     for key, l in list(sorted(lab3.items())) + list(sorted(lab2.items())):
-        cell = f'3D {key[0] - 1}³ R′={key[1]}' if isinstance(key[1], int) else f'2D {key[0]}² {key[1]}'
-        bl = 'N/A' if l['boot_low'] is None else f"{l['boot_low']:.3f}"
-        w(f"| {cell} | **{l['label']}** | {pc(l['median_separation'], 3)} | "
-          f"{l.get('median_f', float('nan')):.3f} | {bl} | "
-          f"{l.get('frac_f_075', float('nan')):.3f} | {l.get('min_f', float('nan')):.3f} | {len(l['excluded_cases'])} | "
-          f"{l['reason0'][0]}/{l['reason0'][1]} | {l.get('provisional_solver') or 'no'} |")
+        f3 = lambda x: 'n/a' if x is None else f'{x:.3f}'
+        r0 = l.get('reason0') or {}
+        r0t = ' / '.join(f'{v[0]}/{v[1]}' for v in r0.values()) if r0 else 'n/a'
+        w(f"| {cell_name(key)} | **{l['label']}** | {pc(l.get('median_separation'), 3)} | {f3(l.get('median_f'))} | "
+          f"{'N/A' if l['boot_low'] is None else f3(l['boot_low'])} | {f3(l.get('frac_f_075'))} | {f3(l.get('min_f'))} | "
+          f"{', '.join(l.get('excluded_cases') or []) or 'none'} | {r0t} | {l.get('provisional_solver') or 'no'} | "
+          f"{l.get('why') or '–'}{'; missing: ' + ', '.join(l['missing_cases']) if l.get('missing_cases') else ''} |")
     w('')
     # ---------------------------------------------------------------- A2
     w('## 4. A2: the stencil gap against $h$')
@@ -553,7 +630,8 @@ def main():
         w(f"Job {j.get('job_id')} on {j.get('gpu')}, commit `{(j.get('commit') or '')[:9]}`. Gates: "
           + ', '.join(f'{k} {v:.1e}' for k, v in j['gates'].items()) + '.')
         w('')
-        w('Fixed states (3D: 104 per width from the 64³ validation tensor rollouts; 2D: 150 per setting from the 1024² dev '
+        w(f"Fixed states (3D: {a2['panels'][0]['stencils']['upwind']['states']} per width from the 64³ validation tensor "
+          f"rollouts; 2D: {a2['panels'][-1]['stencils']['upwind']['states']} per setting from the 1024² dev "
           'population), tests frozen. Gap $g=\\lVert N_h-N\\rVert/\\lVert N\\rVert$, median (worst) over states; slopes fitted on the '
           'pre-registered window on the screened population (DESIGN amendment 2, A2-3).')
         w('')
@@ -591,14 +669,15 @@ def main():
     h3 = g4_3d(r3) if r3 else {}
     h2 = g4_2d(r2) if r2 else {}
     if h3:
-        w('3D: worst over cases of the relative coefficient difference from the 2026-10-01 validation rollouts: ' +
+        w('3D: worst over cases of the evolved-time field distance (63³ lattice) from the 2026-10-01 validation rollouts: ' +
           ', '.join(f'{n - 1}³ R′={Rp} `{a}` {e(v)}' for (n, Rp, a), v in sorted(h3.items())) + '.')
         for n, r in sorted(r3.items()):
             w(f"3D {n - 1}³ ρ reproduction (worst continuum ρ, max relative difference): " + ', '.join(
                 f"R′={k.split('R')[-1]} {v:.1e}" for k, v in r['gates'].items() if k.startswith('G4a')) + '.')
     if h2:
         w('')
-        w('2D: worst over cases of the relative difference of the ST error from the 2026-10-01 dev jobs: ' +
+        w('2D: worst over cases of the relative difference of the ST error from the 2026-10-01 dev jobs, and the field '
+          'distance on the two saved audit cases: ' +
           ', '.join(f'{L}² {s} `{a}` {e(v)}' for (L, s, a), v in sorted(h2.items())) + '.')
     w('')
     # ---------------------------------------------------------------- glossary

@@ -362,3 +362,12 @@ after outcomes are seen.
 - **A4-3 (gate coverage):** G3 compares the full $J_u$ (all $R'$ columns, basis JVPs in chunks of 16) at $10^{-12}$; G2c
   compares values on 4 states and the Jacobian at each of the 4 states (all columns at $64^3$, 32 random columns at
   $128^3$) at $10^{-11}$; 2D G2a compares the whole nodes value block with the mesh bank, block by block.
+
+## Amendment 5 (2026-10-08, after `audits/codex-code-2.md`)
+
+- **A5-1:** A4-3's coverage applies to **3D**. In 2D, G3 compares the analytic Jacobian with `jax.jacfwd` at one state (all
+  columns), and G2c compares values on 4 states (the 2D Jacobian path is the unchanged vendor `tested_jac`).
+- **A5-2:** the 3D cohort-table hash is report-only: it includes GPU-computed floating-point fields and already differs
+  between the two historical jobs (64³ vs 128³); the cohort is fixed by its seed and count.
+- **A5-3:** labels are computed only on complete cohorts; a missing case gives the label INCOMPLETE with the list.
+  The 1 % non-stationary rule applies **per arm**.

@@ -22,6 +22,6 @@ for r in json.load(open(sys.argv[1])):
 PY
 # atomic cap check + submit under a namespace lock (mkdir is atomic on the shared filesystem)
 ssh tufts-login "set -e; mkdir $NS/.submit.lock || { echo 'submit lock held: refusing'; exit 5; }; trap 'rmdir $NS/.submit.lock' EXIT; \
-  n=\$(squeue -u \$USER -h -o '%j' | grep -c '^jm_' || true); [ \"\$n\" -lt 1 ] || { echo 'lane cap (1) reached at submit: refusing'; exit 4; }; \
+  q=\$(squeue -u \$USER -h -o '%j'); n=\$(printf '%s\\n' \"\$q\" | grep -c '^jm_' || true); [ \"\$n\" -lt 1 ] || { echo 'lane cap (1) reached at submit: refusing'; exit 4; }; \
   cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && { [ ! -s REFS.sha256 ] || sha256sum -c REFS.sha256 --quiet; } && sbatch run.sbatch"
 echo "--- squeue after"; ssh tufts-login 'squeue -u $USER -o "%.10i %.24j %.8T %.10M %R"'

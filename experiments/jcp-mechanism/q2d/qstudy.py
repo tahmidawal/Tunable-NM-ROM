@@ -140,6 +140,7 @@ def nodes_gates(mdl, mesh, s, Rp, M, blocks):
     off, dmax, rmax = 0, 0., 0.                         # G2a: the nodes value block equals the mesh bank, block by block
     for rb in base['G']:
         blk = jnp.concatenate(rb, axis=1)               # (rows, R') of the nested rotated mesh bank
+        assert bool(jnp.all(jnp.isfinite(blk))) and bool(jnp.all(jnp.isfinite(d['Gq'][off:off + blk.shape[0]])))
         dmax = max(dmax, float(jnp.max(jnp.abs(d['Gq'][off:off + blk.shape[0]] - blk))))
         rmax = max(rmax, float(jnp.max(jnp.abs(blk))))
         off += blk.shape[0]

@@ -218,7 +218,8 @@ def main():
     # ================================================================ 3 + 4 per width (one nodes table resident at a time)
     tab = C.table(cfg['cohort_seed'], cfg['cohort_count'])
     rep['cohort'] = dict(seed=cfg['cohort_seed'], count=cfg['cohort_count'], table_sha256=tab['sha256'])
-    assert cfg.get('expected_cohort_sha256') in (None, tab['sha256']), 'cohort differs'
+    # report-only (code audit 2): the table hash includes GPU-computed floats and differs between the historical jobs
+    rep['cohort']['matches_source_job_hash'] = cfg.get('expected_cohort_sha256') == tab['sha256']
     cases = list(range(cfg['cohort_count']))
     keep = int(round(0.05 / cfg['dt']))
     # references on the 63^3 lattice x = k/64 (refined: 513 nodes; same grid: this mesh, tight tolerances)
@@ -253,6 +254,7 @@ def main():
         # G2a: the nodes value rows are the mesh bank rows, block by block
         off, dmax, rmax = 0, 0., 0.
         for g in TB.rows_prefix(tb['GTb'], Rp):                                                     # (r_b, N) blocks
+            assert bool(jnp.all(jnp.isfinite(g))) and bool(jnp.all(jnp.isfinite(nd['B'][:, off:off + g.shape[0]])))
             dmax = max(dmax, float(jnp.max(jnp.abs(nd['B'][:, off:off + g.shape[0]].T - g))))
             rmax = max(rmax, float(jnp.max(jnp.abs(g))))
             off += g.shape[0]

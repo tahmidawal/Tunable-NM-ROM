@@ -5,7 +5,7 @@
   configs/a2q.json                        A2 (a2_gap.py), 3D n in {33, 65, 129, 257}, 2D L in {128, ..., 4096}
   configs/smoke_*.json                    tiny local smoke configs (code paths only, never read as results)
 
-Cluster paths of the staged references are fixed here: /cluster/tufts/paralab/tawal01/jcpmech/<job>/refs/...
+Staged reference paths are relative to the job's TASK_ROOT (refs/..., refs2d/...), so a retry under another job name works.
 """
 import copy
 import hashlib
@@ -46,9 +46,9 @@ def a1d3(n, job='a1d3'):
         rules=['gl24', 'lat4096', 'lat32768'], converged_rule='lat32768', continuum_target='gl80',
         continuum_check='gl64', cert_draws=oc['cert_draws'], cohort_seed=923801, cohort_count=64,
         expected_cohort_sha256=old['cohort']['table_sha256'],
-        refined_ref=f'{NS}/{job}/refs/ref_923801.npz',
+        refined_ref='refs/ref_923801.npz',
         expected_refined_sha256=sha(Q3 / 'runs/ref1/code/output/ref_923801.npz'),
-        same_grid_ref65=f'{NS}/{job}/refs/same_grid_ref65_n{n}.npz',
+        same_grid_ref65=f'refs/same_grid_ref65_n{n}.npz',
         expected_same_grid_sha256=sha(Q3 / f'runs/val{n}/code/output/fields/same_grid_ref65.npz'),
         expected_rho=exp_rho, adaptive_check_cases=8 if n == 65 else 0,
         source_job=dict(name=f'val{n}', job_id=old['job_id'], gpu=old['gpu']))
@@ -67,9 +67,10 @@ def a1d2(L, job='a1d2'):
     cfg['rho_rules'] = {s: [dict(name='dense', kind='dense'), dict(name='lat64', kind='mesh', rule='lat64'),
                             dict(name=sel[s], kind='point', rule=sel[s]),
                             dict(name='fib121393', kind='point', rule='fib121393'),
+                            dict(name='gref', kind='point', rule='gauss640'),
                             dict(name='nodes', kind='point', rule='nodes')] for s in cfg['settings']}
     cfg['nodes_reached_rho_cases'] = 8
-    cfg['refs'] = f'{NS}/{job}/refs2d'
+    cfg['refs'] = 'refs2d'
     cfg['timing'] = dict(skip=True, cohort='dev6', cases=1, reps=1, burn=0.1, seed=20261001, arms={})
     cfg['tangent_chunks'] = {k: v for k, v in old['tangent_chunks'].items() if k in cfg['settings']}
     cfg['role'] = 'jcp-mechanism A1 2D (dev/val only)'
@@ -97,7 +98,7 @@ def main():
     dump('a2q.json', a2q())
     # local smoke configs (tiny; code paths only)
     s3 = a1d3(65)
-    s3.update(mesh=33, Rps=[256], cohort_count=2, cert_draws=[[923811, 2]], adaptive_check_cases=2, local_smoke=True,
+    s3.update(mesh=33, Rps=[256], cohort_count=2, expected_cohort_sha256=None, cert_draws=[[923811, 2]], adaptive_check_cases=2, local_smoke=True,
               refined_ref=str(Q3 / 'runs/ref1/code/output/ref_923801.npz'),
               same_grid_ref65=str(Q3 / 'runs/val65/code/output/fields/same_grid_ref65.npz'),
               expected_same_grid_sha256=sha(Q3 / 'runs/val65/code/output/fields/same_grid_ref65.npz'))

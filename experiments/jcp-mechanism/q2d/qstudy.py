@@ -119,7 +119,12 @@ def nodes_gates(mdl, mesh, s, Rp, M, blocks):
     o = mesh.ops[M]
     d, m = blocks(mesh, 'point', 'nodes')
     X, w = Q.offmesh_rule('nodes', L)
-    rel = lambda a, b: float(np.max(np.abs(np.asarray(a) - np.asarray(b))) / max(np.max(np.abs(np.asarray(b))), 1e-300))
+    def rel(a, b):
+        """Amendment A3-2: inf unless both finite and max|b| >= 1e-8; else max|a - b| / max|b|."""
+        a, b = np.asarray(a), np.asarray(b)
+        if not (np.isfinite(a).all() and np.isfinite(b).all() and np.abs(b).max() >= 1e-8):
+            return float('inf')
+        return float(np.max(np.abs(a - b)) / np.max(np.abs(b)))
     g = {}
     sel = np.linspace(0, len(X) - 1, 32).astype(int)
     hfd = 1e-5
@@ -132,9 +137,15 @@ def nodes_gates(mdl, mesh, s, Rp, M, blocks):
     rng = np.random.default_rng(20261008)
     cs = jnp.asarray(rng.normal(size=(4, Rp)) / np.sqrt(Rp))
     base = mesh.base(s)
-    u_mesh = jnp.stack([Q.H.bank_apply(base['G'], c_) for c_ in cs])
+    off, dmax, rmax = 0, 0., 0.                         # G2a: the nodes value block equals the mesh bank, block by block
+    for rb in base['G']:
+        blk = jnp.concatenate(rb, axis=1)               # (rows, R') of the nested rotated mesh bank
+        dmax = max(dmax, float(jnp.max(jnp.abs(d['Gq'][off:off + blk.shape[0]] - blk))))
+        rmax = max(rmax, float(jnp.max(jnp.abs(blk))))
+        off += blk.shape[0]
+    assert off == d['Gq'].shape[0], (off, d['Gq'].shape)
+    g['G2a_values_vs_mesh_bank'] = dmax / rmax if (rmax >= 1e-8 and np.isfinite(dmax)) else float('inf')
     u_nodes = cs @ d['Gq'].T
-    g['G2a_values_vs_mesh_bank'] = rel(u_nodes, u_mesh)
     ii = np.linspace(0, len(X) - 1, 4096).astype(int)
     ij = np.stack(np.unravel_index(ii, (L - 1, L - 1)), 1) + 1
     g['G2b_Psi_vs_Phi'] = rel(d['Psi'][jnp.asarray(ii)], Q.H.phi_rows(L, o['kx'], o['ky'], ij))
@@ -200,6 +211,8 @@ def main():
     refs = {}
     if cfg.get('refs'):
         rdir = Path(cfg['refs'])
+        if not rdir.is_absolute():                      # jcp-mechanism: staged references live under TASK_ROOT
+            rdir = Path(os.environ['TASK_ROOT']) / rdir
         man = json.loads((rdir / 'result.json').read_text())
         assert man.get('complete') and man.get('all_accepted'), 'reference job incomplete or rejected'
         want = cfg['ref_contract']           # DESIGN 4: mesh 8192; ST dt/16, S dt; ntol 1e-11, ltol 1e-9, accept 2e-11
@@ -489,6 +502,7 @@ def main():
                 rc_, rm_ = rho(Vn, Tcn), rho(Vn, Tmn)
                 rn['rules'][spec['name']] = dict(cont_max=float(rc_.max()), cont_median=float(np.median(rc_)),
                                                  mesh_max=float(rm_.max()))
+            rn['check_valid'] = bool(rn['check_rho_max'] <= cfg['gref_bar'])
             rep.setdefault('rho_nodes_reached', {})[s] = rn
             print('RHO-NODES-REACHED', s, {k_: v_['cont_max'] for k_, v_ in rn['rules'].items()}, flush=True)
         rep['rho'][s] = dict(states=len(C), population_arm='lat64', seconds=time.perf_counter() - t1,
@@ -579,6 +593,10 @@ def main():
         run_setting(s)               # function scope: every rule block / compiled arm of s is released afterwards
         gc.collect()
 
+    # jcp-mechanism: `complete` means execution completed; `targets_valid` records the required target checks
+    rep['targets_valid'] = bool(all(v['passed'] for k, v in rep['gates'].items()
+                                    if k.startswith('continuum_target_converged')) and
+                                all(v.get('check_valid', True) for v in rep.get('rho_nodes_reached', {}).values()))
     rep['elapsed_seconds'] = el()
     rep['checkpoint_sha256_after'] = sha_file(Q.CKPT)
     rep['complete'] = True

@@ -110,7 +110,8 @@ export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME"
 cd "$TASK_ROOT"
 sha256sum -c MANIFEST.sha256 --quiet
-sha256sum -c REFS.sha256 --quiet
+if [ -s REFS.sha256 ]; then sha256sum -c REFS.sha256 --quiet; fi
+export TASK_ROOT
 export SOURCE_COMMIT=$(cat COMMIT.txt) SLURM_JOB_ID
 echo "host=$(hostname) source_commit=$SOURCE_COMMIT"
 nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader

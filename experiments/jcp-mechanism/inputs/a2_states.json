@@ -39,70 +39,70 @@
   "2026-10-01-quadrature-study/experiments/quadrature-study/runs/dv256/archive/output/population_fast.npz": "2e7eddadb9e6c87d07f2cb4ac00d287770fd65f2aaacc63f79a332a5c577ac26",
   "2026-10-01-quadrature-study/experiments/quadrature-study/runs/dv4096/archive/output/population_fast.npz": "4c9d18a0cbe77e732743345b5b2ef93bab07d6ef3b8964cd3d88b573a68619c7"
  },
- "npz_sha256": "046cb6898b0653edad8be43afd7be544b3fabf2750a6466a95812ab15826b23d",
+ "npz_sha256": "76bb405bddc9af3671c6046e5b6f8ae292a53db6a189efa0561a9dd671e2c8b0",
  "shapes": {
   "d3_fixed_n65_R512": [
-   104,
+   200,
    512
   ],
   "d3_fixed_n65_R512_labels": [
-   104
+   200
   ],
   "d3_own_n65_R512": [
-   52,
+   100,
    512
   ],
   "d3_own_n65_R512_labels": [
-   52
+   100
   ],
   "d3_own_n129_R512": [
-   52,
+   100,
    512
   ],
   "d3_own_n129_R512_labels": [
-   52
+   100
   ],
   "d3_own_n257_R512": [
-   52,
+   100,
    512
   ],
   "d3_own_n257_R512_labels": [
-   52
+   100
   ],
   "d3_fixed_n65_R256": [
-   104,
+   200,
    256
   ],
   "d3_fixed_n65_R256_labels": [
-   104
+   200
   ],
   "d3_own_n65_R256": [
-   52,
+   100,
    256
   ],
   "d3_own_n65_R256_labels": [
-   52
+   100
   ],
   "d3_own_n129_R256": [
-   52,
+   100,
    256
   ],
   "d3_own_n129_R256_labels": [
-   52
+   100
   ],
   "d3_own_n257_R256": [
-   52,
+   100,
    256
   ],
   "d3_own_n257_R256_labels": [
-   52
+   100
   ],
   "d2_fixed_L1024_acc": [
-   150,
+   300,
    384
   ],
   "d2_fixed_L1024_acc_labels": [
-   150
+   300
   ],
   "d2_own_L256_acc": [
    96,
@@ -126,11 +126,11 @@
    96
   ],
   "d2_fixed_L1024_fast": [
-   150,
+   300,
    128
   ],
   "d2_fixed_L1024_fast_labels": [
-   150
+   300
   ],
   "d2_own_L256_fast": [
    96,
@@ -154,5 +154,5 @@
    96
   ]
  },
- "doc": "jcp-mechanism: pack the saved reached states used by A2 (DESIGN.md section 4) into inputs/a2_states.npz, with the\nsha256 of every source file in inputs/a2_states.json. Sources are read-only outputs of the two 2026-10-01 lanes:\n\n  3D fixed  : validation job val65 (job 4732813), arm tensor_R{512,256}, cases 0-7, steps k = 1, 3, ..., 25 (13 per case)\n  3D own    : val65 / val129 / val257, arm tensor_R{512,256}, cases 0-3, the same steps (each evaluated at its own mesh)\n  2D fixed  : dev job dv1024 (job 4735709), population_{acc,fast} (lat64-reached), dev6 cases, steps k = 2, 4, ..., 50\n  2D own    : dv256 / dv1024 / dv4096, population_{acc,fast}, dev6 cases, steps k = 3, 6, ..., 48\n\nUsage: /home/tahmid/Dev/.venv/bin/python make_inputs.py\n"
+ "doc": "jcp-mechanism: pack the saved reached states used by A2 (DESIGN.md section 4) into inputs/a2_states.npz, with the\nsha256 of every source file in inputs/a2_states.json. Sources are read-only outputs of the two 2026-10-01 lanes:\n\n  3D fixed  : validation job val65 (job 4732813), arm tensor_R{512,256}, cases 0-7, every step k = 1..25 (200 states)\n  3D own    : val65 / val129 / val257, arm tensor_R{512,256}, cases 0-3, k = 1..25 (each evaluated at its own mesh)\n  2D fixed  : dev job dv1024 (job 4735709), population_{acc,fast} (lat64-reached), dev6 cases, every k = 1..50 (300)\n  2D own    : dv256 / dv1024 / dv4096, population_{acc,fast}, dev6 cases, steps k = 3, 6, ..., 48\n\nUsage: /home/tahmid/Dev/.venv/bin/python make_inputs.py\n"
 }

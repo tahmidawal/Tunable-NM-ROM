@@ -1,9 +1,9 @@
 """jcp-mechanism: pack the saved reached states used by A2 (DESIGN.md section 4) into inputs/a2_states.npz, with the
 sha256 of every source file in inputs/a2_states.json. Sources are read-only outputs of the two 2026-10-01 lanes:
 
-  3D fixed  : validation job val65 (job 4732813), arm tensor_R{512,256}, cases 0-7, steps k = 1, 3, ..., 25 (13 per case)
-  3D own    : val65 / val129 / val257, arm tensor_R{512,256}, cases 0-3, the same steps (each evaluated at its own mesh)
-  2D fixed  : dev job dv1024 (job 4735709), population_{acc,fast} (lat64-reached), dev6 cases, steps k = 2, 4, ..., 50
+  3D fixed  : validation job val65 (job 4732813), arm tensor_R{512,256}, cases 0-7, every step k = 1..25 (200 states)
+  3D own    : val65 / val129 / val257, arm tensor_R{512,256}, cases 0-3, k = 1..25 (each evaluated at its own mesh)
+  2D fixed  : dev job dv1024 (job 4735709), population_{acc,fast} (lat64-reached), dev6 cases, every k = 1..50 (300)
   2D own    : dv256 / dv1024 / dv4096, population_{acc,fast}, dev6 cases, steps k = 3, 6, ..., 48
 
 Usage: /home/tahmid/Dev/.venv/bin/python make_inputs.py
@@ -18,7 +18,7 @@ HERE = Path(__file__).resolve().parent
 WT = HERE.parents[2]
 Q3 = WT / '2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs'
 Q2 = WT / '2026-10-01-quadrature-study/experiments/quadrature-study/runs'
-K3 = list(range(1, 26, 2))
+K3 = list(range(1, 26))
 
 
 def sha(p):
@@ -41,7 +41,7 @@ def main():
                 arrs[f'd3_{tag}_n{n}_R{Rp}'] = np.concatenate(rows, 0)
                 arrs[f'd3_{tag}_n{n}_R{Rp}_labels'] = np.array(lab)
     for s in ('acc', 'fast'):
-        for tag, meshes, ks in (('fixed', ('1024',), range(2, 51, 2)), ('own', ('256', '1024', '4096'), range(3, 49, 3))):
+        for tag, meshes, ks in (('fixed', ('1024',), range(1, 51)), ('own', ('256', '1024', '4096'), range(3, 49, 3))):
             for L in meshes:
                 f = Q2 / f'dv{L}/archive/output/population_{s}.npz'
                 prov[str(f.relative_to(WT))] = sha(f)

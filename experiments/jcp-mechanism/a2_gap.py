@@ -129,6 +129,7 @@ def run3d(cfg, rep, out, log):
         arrays[f'kx_R{Rp}'] = kx
         idx = tuple(jnp.asarray(kx[:, a]) for a in range(3))
         sets = {'fixed': S[f'd3_fixed_n65_R{Rp}']}
+        arrays[f'R{Rp}_fixed_labels'] = S[f'd3_fixed_n65_R{Rp}_labels']
         for n in meshes:
             if f'd3_own_n{n}_R{Rp}' in S.files:
                 sets[f'own{n}'] = S[f'd3_own_n{n}_R{Rp}']
@@ -270,6 +271,7 @@ def run2d(cfg, rep, out, log):
         kx, ky, _ = H.modes_lean(1024, M)
         arrays[f'{s_name}_kx'], arrays[f'{s_name}_ky'] = kx, ky
         sets = {'fixed': S[f'd2_fixed_L1024_{s_name}']}
+        arrays[f'{s_name}_fixed_labels'] = S[f'd2_fixed_L1024_{s_name}_labels']
         for L in meshes:
             if f'd2_own_L{L}_{s_name}' in S.files:
                 sets[f'own{L}'] = S[f'd2_own_L{L}_{s_name}']

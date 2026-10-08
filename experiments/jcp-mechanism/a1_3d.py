@@ -58,6 +58,22 @@ def rel_max(a, b):
     return float(np.abs(a - b).max() / max(np.abs(b).max(), 1e-300))
 
 
+def gate(rep, name, a, b, tol):
+    """DESIGN amendment 3 (A3-2): pass iff a, b finite, max|b| >= 1e-8 and max|a - b| <= tol max|b|. Aborts on failure."""
+    a, b = np.asarray(a), np.asarray(b)
+    ok_ = bool(np.isfinite(a).all() and np.isfinite(b).all() and np.abs(b).max() >= 1e-8)
+    v = rel_max(a, b) if ok_ else float('inf')
+    rep['gates'][name] = v
+    assert ok_ and v <= tol, (name, v, tol, float(np.abs(b).max()))
+    return v
+
+
+def task_path(p):
+    """Config paths of staged references are relative to the job's TASK_ROOT (absolute paths are used as given)."""
+    p = Path(p)
+    return p if p.is_absolute() else Path(os.environ['TASK_ROOT']) / p
+
+
 def lattice65_coords():
     ax = np.arange(1, 64) / 64.0
     X, Y, Z = np.meshgrid(ax, ax, ax, indexing='ij')
@@ -187,10 +203,14 @@ def main():
     Xg = Xn[sel]
     _, Dg = OM.point_blocks(model['bank'], model['T'], Xg)
     hfd = 1e-5
-    fp, _ = OM.point_blocks(model['bank'], model['T'], Xg + hfd)
-    fm, _ = OM.point_blocks(model['bank'], model['T'], Xg - hfd)
-    rep['gates']['G1_derivative_vs_fd_nodes'] = rel_max((fp - fm) / (2 * hfd), Dg)
-    assert rep['gates']['G1_derivative_vs_fd_nodes'] < 1e-6, rep['gates']
+    fd = 0.
+    for ax_ in range(3):                    # centred differences per coordinate, summed (amendment A2-4)
+        e_ = np.zeros(3)
+        e_[ax_] = hfd
+        fp, _ = OM.point_blocks(model['bank'], model['T'], Xg + e_)
+        fm, _ = OM.point_blocks(model['bank'], model['T'], Xg - e_)
+        fd = fd + (fp - fm) / (2 * hfd)
+    gate(rep, 'G1_derivative_vs_fd_nodes', fd, Dg, 1e-6)
     # G3 on the nodes path is checked per width below (same Jacobian formula as every off-mesh rule)
     log(f"rules built; G1 {rep['gates']['G1_derivative_vs_fd_nodes']:.2e}")
     save()
@@ -202,13 +222,14 @@ def main():
     cases = list(range(cfg['cohort_count']))
     keep = int(round(0.05 / cfg['dt']))
     # references on the 63^3 lattice x = k/64 (refined: 513 nodes; same grid: this mesh, tight tolerances)
-    refz = np.load(cfg['refined_ref'])
-    rep['refined'] = dict(path=cfg['refined_ref'], sha256=sha_file(cfg['refined_ref']))
+    refp, sgp = task_path(cfg['refined_ref']), task_path(cfg['same_grid_ref65'])
+    refz = np.load(refp)
+    rep['refined'] = dict(path=str(refp), sha256=sha_file(refp))
     assert rep['refined']['sha256'] == cfg['expected_refined_sha256'], rep['refined']
     assert int(refz['seed']) == cfg['cohort_seed'] and int(refz['count']) >= cfg['cohort_count']
     RR = {j: np.asarray(refz[f'c{j}']) for j in cases}
-    sgz = np.load(cfg['same_grid_ref65'])
-    rep['same_grid'] = dict(path=cfg['same_grid_ref65'], sha256=sha_file(cfg['same_grid_ref65']))
+    sgz = np.load(sgp)
+    rep['same_grid'] = dict(path=str(sgp), sha256=sha_file(sgp))
     assert rep['same_grid']['sha256'] == cfg['expected_same_grid_sha256'], rep['same_grid']
     SG = {j: np.asarray(sgz[f'c{j}']) for j in cases}
     n0 = {j: float(np.linalg.norm(RR[j][0])) for j in cases}
@@ -229,38 +250,43 @@ def main():
         lean = {k: v for k, v in base.items() if k != 'Ts'}
         nd = nodes_blocks(n, model['bank'], model['T'], Rp)
         n_contract, n_value = make_nodes_ops(n, M, kx)
-        # G2a: the nodes value rows are the mesh bank rows; G2b: the nodes test block is Phi at the nodes
-        dmax, rmax, off = 0., 0., 0
+        # G2a: the nodes value rows are the mesh bank rows, block by block
+        off, dmax, rmax = 0, 0., 0.
         for g in TB.rows_prefix(tb['GTb'], Rp):                                                     # (r_b, N) blocks
             dmax = max(dmax, float(jnp.max(jnp.abs(nd['B'][:, off:off + g.shape[0]].T - g))))
             rmax = max(rmax, float(jnp.max(jnp.abs(g))))
             off += g.shape[0]
+        assert rmax >= 1e-8 and np.isfinite(dmax)
         rep['gates'][f'G2a_nodes_B_vs_mesh_bank_R{Rp}'] = dmax / rmax
+        assert dmax / rmax <= 1e-12, rep['gates']
+        # G2b: the off-mesh test block at the nodes (weights h^3) is Phi, at 4096 nodes
         ii = np.linspace(0, len(Xn) - 1, 4096).astype(int)
         ijk = np.stack(np.unravel_index(ii, (n - 2,) * 3), 1) + 1
-        rep['gates'][f'G2b_nodes_P_vs_Phi_R{Rp}'] = rel_max(np.asarray(OM.test_block(n, Xn[ii], wn[ii], kx[:M])),
-                                                            C.phi_explicit(n, kx[:M], ijk))
-        # G2c: values (4 states) and 32 Jacobian columns by the DST equal the off-mesh GEMM with offmesh.test_block
+        gate(rep, f'G2b_nodes_P_vs_Phi_R{Rp}', OM.test_block(n, Xn[ii], wn[ii], kx[:M]), C.phi_explicit(n, kx[:M], ijk),
+             1e-12)
+        # G2c: values (4 states) and Jacobian columns at each of the 4 states by the DST equal the off-mesh GEMM with
+        # offmesh.test_block (all columns at the first mesh n <= 65, 32 random columns above; amendment A1-2)
         cs4 = jnp.asarray(rng.normal(size=(4, Rp)) / np.sqrt(Rp))
-        cols32 = np.sort(rng.choice(Rp, 32, replace=False))
-        v_gemm, j_gemm = gemm_check(n, Xn, wn, kx, M, nd['B'], nd['D'], cs4, jnp.asarray(cols32))
+        cols = np.arange(Rp) if n <= 65 else np.sort(rng.choice(Rp, 32, replace=False))
         v_dst = np.asarray(jax.jit(n_value)(nd, cs4))
+        vg, jd, jg = None, [], []
+        for i in range(4):
+            v_gemm, j_gemm = gemm_check(n, Xn, wn, kx, M, nd['B'], nd['D'], cs4[i:i + 1], jnp.asarray(cols))
+            vg = v_gemm if vg is None else np.concatenate([vg, v_gemm])
+            jd.append(np.asarray(jax.jit(n_contract)(nd, cs4[i]))[:, cols])
+            jg.append(j_gemm)
+        gate(rep, f'G2c_nodes_value_gemm_vs_dst_R{Rp}', v_dst, vg, 1e-11)
+        gate(rep, f'G2c_nodes_jacobian_gemm_vs_dst_R{Rp}', np.stack(jd), np.stack(jg), 1e-11)
+        # G3: the full Jacobian (all R' columns) vs forward-mode JVPs of the value along the basis, chunks of 16
         J_f = jax.jit(n_contract)(nd, cs4[0])
-        rep['gates'][f'G2c_nodes_value_gemm_vs_dst_R{Rp}'] = rel_max(v_dst, v_gemm)
-        rep['gates'][f'G2c_nodes_jacobian_gemm_vs_dst_R{Rp}'] = rel_max(np.asarray(J_f)[:, cols32], j_gemm)
-        # G3: J times 32 random directions vs forward-mode JVPs of the value; adv = 0.5 J c
-        V = jnp.asarray(rng.normal(size=(Rp, 32)))
-        jv = jax.vmap(lambda v: jax.jvp(lambda cc: n_value(nd, cc[None])[0], (cs4[0],), (v,))[1])(V.T).T
-        rep['gates'][f'G3_nodes_jacobian_vs_jvp_R{Rp}'] = rel_max(J_f @ V, jv)
-        rep['gates'][f'G3_nodes_adv_half_Jc_R{Rp}'] = rel_max(0.5 * J_f @ cs4[0], v_dst[0])
-        del J_f, jv, V
+        basis = jnp.eye(Rp).reshape(-1, 16, Rp)
+        jv = jax.jit(lambda d, c0, Bs: jax.lax.map(
+            lambda E: jax.vmap(lambda v: jax.jvp(lambda cc: n_value(d, cc[None])[0], (c0,), (v,))[1])(E), Bs))(
+            nd, cs4[0], basis).reshape(Rp, M).T
+        gate(rep, f'G3_nodes_jacobian_vs_jvp_R{Rp}', J_f, jv, 1e-12)
+        gate(rep, f'G3_nodes_adv_half_Jc_R{Rp}', 0.5 * J_f @ cs4[0], v_dst[0], 1e-12)
+        del J_f, jv
         log(f'R{Rp} M{M} nodes gates ' + ', '.join(f'{k} {v:.2e}' for k, v in rep['gates'].items() if f'R{Rp}' in k))
-        assert rep['gates'][f'G2a_nodes_B_vs_mesh_bank_R{Rp}'] < 1e-12, rep['gates']
-        assert rep['gates'][f'G2b_nodes_P_vs_Phi_R{Rp}'] < 1e-12, rep['gates']
-        assert rep['gates'][f'G2c_nodes_value_gemm_vs_dst_R{Rp}'] < 1e-11, rep['gates']
-        assert rep['gates'][f'G2c_nodes_jacobian_gemm_vs_dst_R{Rp}'] < 1e-11, rep['gates']
-        assert rep['gates'][f'G3_nodes_jacobian_vs_jvp_R{Rp}'] < 1e-11, rep['gates']
-        assert rep['gates'][f'G3_nodes_adv_half_Jc_R{Rp}'] < 1e-12, rep['gates']
         save()
 
         arms = {f'tensor_R{Rp}': dict(family='tensor', data=base,
@@ -341,6 +367,7 @@ def main():
         prev = cfg['expected_rho'][str(Rp)]
         rep['gates'][f'G4a_rho_reproduction_R{Rp}'] = max(
             abs(res['rules'][nm]['cont']['worst'] - prev[nm]) / prev[nm] for nm in prev)
+        res['continuum_target_valid'] = bool(res['continuum_check']['worst'] <= 1e-6)
         rep['rho'][str(Rp)] = res
         log(f"RHO R{Rp}: check {res['continuum_check']['worst']:.2e}; G4a {rep['gates'][f'G4a_rho_reproduction_R{Rp}']:.2e}; "
             + '; '.join(f"{k} c{v['cont']['worst']:.2e}/{v['cont']['median']:.2e} m{v['mesh']['worst']:.2e}"
@@ -414,14 +441,19 @@ def main():
                 ctr = OM.contract_tensor if fam == 'tensor' else (n_contract if fam == 'nodes' else OM.contract_offmesh)
                 qa = OM.make_fsc_rule(n, Rp, M, ctr, dt=cfg['dt'], gtol=cfg['gtol'], trust=trust,
                                       adaptive_first=int(round(0.25 / cfg['dt'])))
-                dd, rs3 = [], 0
+                dd, rs3, recs_a = [], 0, []
                 for j in cases[:cfg['adaptive_check_cases']]:
                     o = qa(U0[j], NU[j], arms[nm]['data'], {})
                     Ca = np.asarray(o[1])[::keep]
-                    rs3 += int((np.asarray(o[3]) == 3).sum())
+                    rsn = np.asarray(o[3])
+                    rs3 += int((rsn == 3).sum())
+                    recs_a.append(dict(case=j, finite=bool(np.isfinite(np.asarray(o[1])).all()),
+                                       reasons={str(k_): int((rsn == k_).sum()) for k_ in range(5)},
+                                       iterations=int(np.asarray(o[2]).sum())))
                     dd.append(float(np.asarray(lat_err(jnp.asarray(Ca - COEF[(nm, j)]), G65[:Rp], zero, n0[j]))[1:].max()))
                     del o
-                sens[nm.rsplit('_R', 1)[0]] = dict(distance_fixed_vs_adaptive=dd, worst=max(dd), reason3=rs3)
+                sens[nm.rsplit('_R', 1)[0]] = dict(distance_fixed_vs_adaptive=dd, worst=max(dd), reason3=rs3,
+                                                   cases=recs_a)
                 del qa
             rep.setdefault('adaptive_sensitivity', {})[str(Rp)] = sens
             log(f'ADAPTIVE R{Rp}: ' + '; '.join(f"{k} {v['worst']:.2e}" for k, v in sens.items()))

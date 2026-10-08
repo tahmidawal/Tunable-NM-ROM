@@ -350,3 +350,15 @@ after outcomes are seen.
 - **A3-3 (re A2-5):** an R or N label is reported as **provisional (solver)** when, in the `nodes`, incumbent or converged
   arm, reason-0 (non-stationary) exits exceed 1 % of all steps, or (2D, and 3D at $128^3$) when no sensitivity rerun
   exists for that configuration. The bootstrap bound is "N/A" for X and X0.
+
+## Amendment 4 (2026-10-08, after Codex code audit `audits/codex-code-1.md`, before any cluster job)
+
+- **A4-1 (populations):** the A2 fixed populations are restored to the registered ones (3D: 8 cases × $k=1..25$ = 200 per
+  width; 2D: 6 dev6 cases × $k=1..50$ = 300 per setting). The *own-mesh* context sets, whose size §4 left open, are fixed
+  as: 3D cases 0–3 × $k=1..25$ (100 per mesh and width); 2D dev6 × $k=3,6,\dots,48$ (96 per mesh and setting).
+- **A4-2 (validity flags):** a configuration whose continuum-target check fails (3D worst $\rho>10^{-6}$; 2D the source
+  lane's $10^{-5}$ bar, also on the `nodes`-reached states) is labelled X with that reason; `complete` in a job's JSON means
+  only that execution finished.
+- **A4-3 (gate coverage):** G3 compares the full $J_u$ (all $R'$ columns, basis JVPs in chunks of 16) at $10^{-12}$; G2c
+  compares values on 4 states and the Jacobian at each of the 4 states (all columns at $64^3$, 32 random columns at
+  $128^3$) at $10^{-11}$; 2D G2a compares the whole nodes value block with the mesh bank, block by block.

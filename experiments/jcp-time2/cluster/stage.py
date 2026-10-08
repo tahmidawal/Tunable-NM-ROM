@@ -36,7 +36,7 @@ def main():
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     out = ROOT / LANE / 'runs' / a.attempt
-    out.mkdir(parents=True, exist_ok=False)
+    assert not out.exists(), f'{out} exists'
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain', '--', LANE], text=True)
@@ -49,6 +49,9 @@ def main():
         assert hashlib.sha256(blob).hexdigest() == h, f'G2a certificate is for a different {f}'
     FILES.append(f'{LANE}/checks/test_lmm.json')
     cfgname = f'{LANE}/configs/{a.attempt}.json'
+    for name in FILES + [cfgname]:          # preflight: every file committed and identical, before anything is written
+        assert (ROOT / name).read_bytes() == subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}']), name
+    out.mkdir(parents=True, exist_ok=False)
     proof = []
     for name in FILES + [cfgname]:
         content = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}'])

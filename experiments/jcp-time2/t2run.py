@@ -183,6 +183,7 @@ def main():
         vdata = dict(base, **blocks['main'][0])
         runs = run_list(dict(cfg['grid'], hq='hq' in rules, old='old' in rules))
         rep['setup'][s]['runs'] = [key(r) for r in runs]
+        rep['setup'][s]['output_times'] = [.05 * j for j in range(6)]     # rows 0..5 of every W
         anchor_key = key(('main', 'GAL', cfg['grid']['anchor'], DT0 / 16, 'tight'))
         print('SETUP', s, len(runs), 'runs/case', el(), flush=True)
         Wset = np.full((len(cases), len(runs), 6, Rp), np.nan)
@@ -325,6 +326,7 @@ def main():
                 tb, hb = timed(B, ci)
                 ta2, ha2 = timed(A_run, ci)
                 ent = dict(setting=s, B=key(B), case_index=ci, rep=rep_i, tA1=ta1, tB=tb, tA2=ta2,
+                           A_sha=[ha1, ha2], A_expected_sha=acc_sha.get((key(A_run), ci)),
                            ratio=tb / (.5 * (ta1 + ta2)), drift=ta2 / ta1,
                            A_matches_accuracy=bool(ha1 == acc_sha.get((key(A_run), ci)) and ha2 == acc_sha.get((key(A_run), ci))))
                 ent['B_expected_sha'] = acc_sha.get((key(B), ci))

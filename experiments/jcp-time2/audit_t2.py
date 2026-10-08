@@ -244,6 +244,10 @@ def main():
         rej[f'{s}_metric_perturbed'] = bool(check_metrics(res_p, Wz, s, dec, refs, 1))
         # G1a / G1b / G4 / verification summaries
         g = [x for x in res['g1a'] if x['setting'] == s]
+        ck[f'G1a_inventory_{s}'] = sorted(f"{x['cohort']}|{x['case']}" for x in g) == sorted(exp_cases) and \
+            len(g) == len(exp_cases)
+        ck[f'output_times_{s}'] = res['setup'][s].get('output_times') == [.05 * j for j in range(6)] and all(
+            int(r['stats']['steps']) == int(round(.25 / float(r['run'].split('|')[3]))) for r in rws)
         ck[f'G1a_{s}'] = bool(g) and all(x['W_rel'] <= 1e-8 and x['w0_rel'] <= 1e-12 and x['field_rel'] <= 1e-8 for x in g)
         out['info'][f'G1a_{s}'] = dict(W_rel_max=max(x['W_rel'] for x in g), w0_rel_max=max(x['w0_rel'] for x in g),
                                        field_rel_max=max(x['field_rel'] for x in g),
@@ -261,10 +265,21 @@ def main():
         tm = res['timing'].get(s)
         tc = res['config']['timing']
         inv = tm['invocations'] if tm else []
-        ck[f'G4_sample_count_{s}'] = bool(tm) and len(inv) == len(tm['candidates']) * min(tc['cases'], len(
-            [x for x in exp_cases if x.startswith(tc['cohort'] + '|')])) * tc['reps'] and len(inv) > 0
-        ck[f'G4_timed_outputs_match_{s}'] = bool(inv) and all(i['A_matches_accuracy'] and i['B_matches_accuracy'] for i in inv)
-        ck[f'G4_no_recompile_{s}'] = bool(tm) and tm['cache_before'] == tm['cache_after']
+        A_ = 'main|LSPG|BE|0.005|prod'
+        cands = [x for x in er if x.startswith('main|') and x.endswith('|prod') and float(x.split('|')[3]) >= .0025 - 1e-15
+                 and x != A_] + [x for x in er if x == 'old|LSPG|BE|0.005|prod'] + ['vendor|LSPG|BE|0.005|prod']
+        ntc = min(tc['cases'], len([x for x in exp_cases if x.startswith(tc['cohort'] + '|')]))
+        want = {(b, ci, r_) for b in cands for ci in range(ntc) for r_ in range(tc['reps'])}
+        got = [(i['B'], i['case_index'], i['rep']) for i in inv]
+        ck[f'G4_inventory_{s}'] = bool(tm) and len(got) == len(set(got)) == len(want) and set(got) == want
+        ck[f'G4_timed_outputs_match_{s}'] = bool(inv) and all(
+            i['A_expected_sha'] and i['B_expected_sha'] and i['A_sha'][0] == i['A_sha'][1] == i['A_expected_sha']
+            and i['B_sha'] == i['B_expected_sha'] for i in inv)
+        need = {'main|LSPG', 'main|GAL', 'hq|LSPG', 'hq|GAL', 'old|LSPG', 'vendor'} & (
+            {'main|LSPG', 'main|GAL', 'vendor'} | ({'hq|LSPG', 'hq|GAL'} if 'hq' in rules else set()) |
+            ({'old|LSPG'} if 'old' in rules else set()))
+        ck[f'G4_no_recompile_{s}'] = bool(tm) and need <= set(tm['cache_before']) and tm['cache_before'] == tm['cache_after'] \
+            and all(v > 0 for k_, v in tm['cache_before'].items() if k_ in need)
         rows = [r for r in res['rows'] if r['setting'] == s]
         out['info'][f'unverified_{s}'] = sorted({r['run'] for r in rows if not r['verified']})
         out['info'][f'nonfinite_{s}'] = sorted({r['run'] for r in rows if not r['finite']})

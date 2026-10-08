@@ -33,7 +33,9 @@ DRIVER_CMD = {'w2d': f'cd {LANE} && "$PY" w2d.py --config {{config}} --out "$TAS
               # DESIGN A4-J3: whole-process maxima by /usr/bin/time -v (train.err); a supervised sidecar samples the
               # child's RSS every 30 s together with the last training log line (phase alignment without touching the
               # trainer); stdout is unbuffered (-u) and echoed into the Slurm log at the end
-              'train': ('/usr/bin/time -v "$PY" -u ' + f'{LANE}/train3d/train2w.py --config {LANE}/{{config}} '
+              # /usr/bin/time is absent on the compute nodes (job 5012802 failed with exit 127): used only if present
+              'train': ('TIMECMD=""; [ -x /usr/bin/time ] && TIMECMD="/usr/bin/time -v"\n'
+                        '$TIMECMD "$PY" -u ' + f'{LANE}/train3d/train2w.py --config {LANE}/{{config}} '
                         '--out "$TASK_ROOT/output" > "$TASK_ROOT/output/train.out" 2> "$TASK_ROOT/output/train.err" &\n'
                         'TPID=$!\n'
                         '( set +e; while kill -0 $TPID 2>/dev/null; do C=$(pgrep -P $TPID | head -1); '

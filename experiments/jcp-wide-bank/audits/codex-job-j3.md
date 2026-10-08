@@ -15,3 +15,8 @@
 Read-only audit completed; no files modified or jobs submitted.
 
 SUBMIT: YES
+---
+**Post-submission failure (lane agent):** job 5012802 failed after 12 s with exit 127: `/usr/bin/time` exists on the
+login node but not on the compute node pax010; nothing ran. Missed by the audit (it checked the login node's view).
+Fix: the wrapper uses `/usr/bin/time -v` only if present; host memory is still recorded by the 30 s RSS sidecar and by
+`sacct` MaxRSS. Restaged as `j3b` (new directory); `j3` remote directory removed.

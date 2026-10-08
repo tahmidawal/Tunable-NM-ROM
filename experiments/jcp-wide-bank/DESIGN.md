@@ -367,3 +367,100 @@ snapshots in the 65-grid metric, $T=R_G^{-1}V$. The 2D model `dn256b` (traced li
   $2Mm R'\approx1.5$ TFLOP (≈ 25 ms on an H200), ≈ 28 per query: ≈ 0.7 s per query; the ladders and controls
   ≈ 2× the converged cost; tables, $\rho$, timing and compilation ≈ 1 h per mesh: **J4 ≈ 3–4 H200-hours**, requested
   12 h.
+
+## Amendment A2 (2026-10-08, after Codex design audit 2, `audits/codex-design-2.md`; before any job)
+
+Closes the six NOT-CLOSED items of audit 1 and the A1 findings. Where A2 and earlier text disagree, A2 governs.
+
+**A2-6 Projection floor rank.** The floor uses the thin SVD of the bank sampled at the shared nodes,
+$\hat G_{R'}=U\Sigma W^{\top}$; numerical rank $r=\#\{\sigma_i>10^{-12}\sigma_1\}$; floor $=\lVert(I-U_rU_r^{\top})u\rVert$.
+Recorded per $R'$: $r$, $\sigma_1/\sigma_r$, and a residual check on the first case (the least-squares residual from
+`lstsq` equals the SVD floor to $10^{-10}$ relative).
+
+**A2-7 Verdict precedence (H1, H4).** Evaluated in this order: (1) *unavailable* if a deployed arm of either compared
+setting is unavailable (failed gate, no eligible ladder member, or non-discriminating controls); (2) *unresolved* if
+the worst errors differ by less than 0.05 pp; (3) *meets the registered bar* if the ratio bar (H1 0.9, H4 0.8) holds and
+the median is lower; (4) otherwise *does not meet the registered bar*. Changes are reported both in percentage points and
+as relative percentages. H1/H4 concern the joint $(R',M)$ setting at nominal $\kappa=4$, not rank alone.
+
+**A2-8 Paired timing and family choice.** The deployed family of each setting (Gauss or lattice, whichever $m^\star$
+arm has the lower median in that setting's own A–B–A panel) is fixed and written to `result.json` *before* the final
+panel runs. The final cross-setting panel (A1 → B → A2 over every setting's deployed arm and its $\kappa=4$ partner on
+the same 6 dev6 cases) is the independent confirmation block. H3's cost criterion is the **paired** ratio: for each
+(case, phase) the median time of the trimmed setting divided by that of the $\kappa=4$ setting at the same $R'$; the
+trim is *useful* if the median paired ratio is $\le0.9$ in the final panel **and** the per-setting panel medians also
+give a ratio $\le0.9$. Drift is computed per subject as median(A2)/median(A1).
+
+**A2-10 Identifiability.** $M\ge R'$ is necessary, not sufficient, for $c$ to be determined; earlier wording that
+implied sufficiency is withdrawn. Each setting records the singular values of $A$ and of the full residual
+Jacobian $J(c)=S\,(A+\Delta t\,(\partial N/\partial c+\nu\Lambda A))$ at the converged rollout's reached states of the
+first case at $k\in\{1,25,50\}$ (2D) / $k\in\{1,12,25\}$ (3D): rank and condition number.
+
+**A2-11 Residency and memory accounting.** 2D: per $R'$ the blocks of every rule of the setting are resident at
+$(R', M_{\max}(R'))$ (largest: Gauss $768^2$ at 512/2048, 14.5 GB; Gauss $640^2$, 10.1 GB; the 16 ladder rules + 2
+controls together ≈ 2 GB); $\rho$ targets are streamed in point chunks of 32768 and state chunks of 64; after each
+setting the compiled queries are dropped and `jax.clear_caches()` is called; after each $R'$ all blocks are freed.
+3D: per mesh, rule blocks at the bank's largest $R'$ and $M_{\max}$ are resident; the converged and check rules
+($\le$ 8.6 GB each at $R'=1024$) are built per setting and freed. Recorded per setting: device `bytes_in_use` and
+`peak_bytes_in_use`, and host `ru_maxrss`.
+
+**A2-12 Workloads, raw data, budgets.** Raw data retained (pulled locally; files > 50 MB listed by SHA256 in a committed
+`runs/MANIFEST-large.sha256`): every `result.json` row (all arms, all cases, per-time errors); restricted fields and
+coefficient trajectories of every arm on the audit cases (2D dev6 0 and 2; 3D validation 0 and 1); restricted
+fields of the converged rollout on every case; the $\rho$ populations; sub-sampled $\rho$ vectors of one audited rule.
+Budgets are replaced by the real-size smoke measurements before J1/J2/J4 are submitted (the smoke job reports the
+largest arm's per-query time, compile time and peak memory); the requested wall time is at least 2× the measured
+projection.
+
+**A2-A1-1 Naming.** The new bank is a *single-seed, capacity-scaled baseline-recipe bank*: rank, width, POD
+truncation, seed (hence Fourier features, initialisation and minibatch sequence) all change with it, so old-vs-new
+bank comparisons do not isolate rank; prefix comparisons inside the new bank isolate deployment width. The job reports
+the dropped POD energy per mesh and the whitening term's value.
+
+**A2-A1-2 Code.** The training code is a copy `train3d/train2w.py` of `train2.py`@`58d83d09b` with exactly two
+changes, both recorded in its header and checked by a diff in the code audit: (i) the `sys.path` line points to the
+vendored `vendor/quad3d/vendor/burgers3d-span` (which itself resolves `paper-b3d/vendor/b3d_common.py`; all three
+files are staged with their SHA256); (ii) the comparison bank's floors are computed only for ladder ranks not exceeding
+its column count, and larger ranks are recorded as unavailable (fixes the false-label defect). Head targets and
+`head_data.npz` are still computed (unchanged code path; heads themselves are skipped by `head_variants=[]`).
+
+**A2-A1-4 Host memory.** The data shapes do not depend on the bank rank and are identical to job 4246994, which
+completed with 320 GB; the job runs under `/usr/bin/time -v` so the host MaxRSS is recorded, and `sacct` MaxRSS is
+pulled with the logs.
+
+**A2-B2 Numerical-stability gate.** (B2′) the ordered bank must have numerical rank 1024 on the 65-node grid
+($\sigma_{\min}/\sigma_{\max}$ of $R_G$ above $10^{-10}$), inverse check $\lVert V^{\top}R_GT-I\rVert\le10^{-8}$, and in J4 the
+vendored table gate (Gram condition of the ordered bank on the mesh $\le10^8$) at both meshes; failing B2′ stops 1c for
+that bank (resource decision, recorded).
+
+**A2-B3.** B3 is a comparison flag (it does not reject the bank), computed against the compare bank's floor
+recomputed in the same job on the same regenerated validation fields (expected ≈ 3.1216 % at 129 nodes, $R'=512$).
+
+**A2-B4.** (B4′) *material span gain*: worst full-grid floor at 129 nodes at $R'=1024\le0.8\times$ that at $R'=512$
+(same bank). Reported either way; 1c's accuracy experiment runs **regardless** (a flat floor against first-order
+native-grid fields does not rule out a gain against the refined reference).
+
+**A2-smoke Training smoke config (local, never a result).** `meshes [17]`, `order_mesh 17`, `white_group "17"`,
+`train_count 8`, `bankval_count 4`, `full_floor_cases 2`, `train_steps` unchanged (contains 0, 10, …, 50), `bank_rank 64`,
+`bank_width 128`, `bank_depth 3`, `modes 96`, `ladder [16, 32, 48, 64]`, `pod_reference_ranks [16, 32, 64]`,
+`bank_steps 20`, `checkpoint_every 10`, `points_per_step 1000`, `group_points_cap null`, `head_variants []`,
+`compare_bank` the vendored `model_M2` (rank 512 > 64: exercises the comparison path); the comparison-ladder filter is
+additionally unit-tested with a fake 32-column compare bank and the ladder [16, 64] (64 must come back unavailable).
+
+**A2-12b Converged rules.** J2 (old bank, $M\le2052$): converged Gauss $48^3$, check $40^3$, escalation successor
+$56^3$. J4 (new bank, $M$ up to ≈ 4100): converged Gauss $56^3$, check $48^3$ (which is also a ladder candidate and
+runs once), escalation successor $64^3$. Every check runs at every mesh and setting.
+
+**A2-13 J4 cross-mesh and gates at wide rank.** J4 records, per arm, the shared-node field distance between its
+65-node and 129-node rollouts on the $63^3$ lattice, and $\rho$ per mesh. K-eval at ranks above 512: G1 and G3 at the
+widest deployed arm; G2 and G4 on a 32-column, 128-test tensor built for the gate only (cheap). 257 nodes are
+**excluded** from J4 (resource policy: the rank-1024 mesh bank alone is ≈ 136 GB).
+
+**A2-15 Reference limitation.** The "possibly reference-limited below 1.7 %" label is withdrawn: 1.70 % was one probe
+case (2.28 % on the held-out cohort) and neither is a continuum-error bound. Every physical-accuracy interpretation in
+this lane is labelled reference-limited until a matched reference-convergence study (lane `jcp-references`) exists;
+verdicts are benchmark-relative.
+
+**A2-16 Estimates.** J3's steady-state step time is measured from checkpoint differences
+($(t_{2000}-t_{1000})/1000$); if that rate projects the 12000 steps beyond 7 h the job is cancelled and the design
+amended. J4's estimate is replaced by the smoke measurement of its largest query (129 nodes, $R'=1024$, Gauss $56^3$).

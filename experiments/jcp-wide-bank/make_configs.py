@@ -96,6 +96,13 @@ def main():
     cfgs['j2_3d.json'] = base3d(attempt='j2')
     cfgs['smoke_3d.json'] = base3d(attempt='s2', banks=[dict(M2, Rps=[512], kappas=[4], tensor=True)],
                                    case_subset=[0, 1, 2, 3], cert_draws=[[923811, 4]], timing_cases=2, reps=1)
+    # local functional test of w3d.py (GB10, jaxrun): tiny rules and cohort, NOT a result
+    cfgs['local_3d.json'] = base3d(attempt='l3', banks=[dict(M2, Rps=[256], kappas=[2], tensor=True)],
+                                   ladder=ladder3d([2048, 4096], [12, 16]), converged='gl24', check='gl16',
+                                   target='gl32', target_check='gl24', case_subset=[0, 1], cert_draws=[[923811, 2]],
+                                   timing_cases=1, reps=1, audit_cases=[0], local_smoke=True,
+                                   refined_ref=str(HERE.parents[2] / '2026-10-01-quadrature-burgers3d/experiments/'
+                                                   'quadrature-burgers3d/runs/ref1/code/output/ref_923801.npz'))
     wb = HERE / 'inputs' / 'model_W1024' / 'bank.pkl'
     if wb.exists():                                       # J4 only after J3's bank is committed (DESIGN A1)
         import hashlib

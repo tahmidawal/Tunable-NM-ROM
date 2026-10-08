@@ -192,7 +192,9 @@ def main():
     ck['config_authenticated'] = bool(scfg.exists() and psha == hashlib.sha256(scfg.read_bytes()).hexdigest()
                                       and json.loads(scfg.read_text()) == res['config'])
     # G2a certificate bound to the staged code (code audit 1, item 10)
-    cert = json.loads((HERE / 'checks/test_lmm.json').read_text())
+    import subprocess    # the certificate committed at the job's own commit (not today's working copy)
+    cert = json.loads(subprocess.check_output(['git', '-C', str(ROOT), 'show',
+                                               f"{res['commit']}:experiments/jcp-time2/checks/test_lmm.json"]))
     prov = {Path(x['source']).name: x.get('sha256') for x in json.loads((arc / 'PROVENANCE.json').read_text())} \
         if (arc / 'PROVENANCE.json').exists() else {}
     ck['G2a_certificate'] = bool(cert['all_pass'] and prov.get('t2core.py') == cert['source_sha256']['t2core.py'])

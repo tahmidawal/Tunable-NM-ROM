@@ -1,0 +1,12 @@
+# R2b evidence (local GB10, 2026-10-08T17:25:29-04:00, commit c4ee9d0dc)
+
+Run with default XLA autotuning (3rd run): FAIL -- lane(lam=0) vs original max |param diff| 1.5e-2 after 8 steps while the original vs itself in the same process is 0. The first ever run also showed 1.5e-2 and the second 0.0 with identical lane code: GEMM algorithm choice by XLA autotuning differs between separately compiled functions, and Adam turns rounding-level gradient differences into O(lr) parameter differences. Not a code difference.
+R2b(i) original vs itself 0.000e+00; lane(lam=0) vs original 1.503e-02
+AssertionError: (0.0, 0.015026417582224675)
+
+Run with XLA_FLAGS='--xla_gpu_autotune_level=0 --xla_gpu_deterministic_ops=true' (deterministic algorithm choice): PASS
+R2b(i) original vs itself 0.000e+00; lane(lam=0) vs original 0.000e+00
+R2b(ii) value-path indices (all 4096 per step) identical over 50 steps: True (50, 4096)
+R2b PASS
+
+Consequence: the cluster runs use default autotuning (as the original r3a job did), so base cannot be expected to reproduce r3a bit for bit; R2a at step 5000 is recorded, not enforced (A2.5), and the base-vs-frozen difference is exactly the noise yardstick of A1.5.

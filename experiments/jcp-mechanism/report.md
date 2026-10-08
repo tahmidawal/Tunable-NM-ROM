@@ -16,14 +16,14 @@ Gates: gram_condition 1.0e+00, tensor_vs_direct 2.7e-16, G1_derivative_vs_fd_nod
 
 **$R'=512$** ($M = 2052$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 3.6e-08.
 
-| arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
+| arm | m | ρ cont. worst (median; p90) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 1.9e-01 (1.3e-01) | 1.8e-05 | 10.22 % (3.38 %) | 1.37 % | 9.89e+00 % (3.53e+00 %) | – | 28 | 2/0 |
-| `gl24` | 13824 | 1.0e-02 (1.2e-03) | 1.9e-01 | 3.16 % (1.12 %) | 9.57 % | 5.01e-02 % (3.36e-03 %) | 9.883 % | 27 | 1/0 |
-| `lat4096` | 4096 | 8.3e-02 (7.8e-03) | 2.0e-01 | 3.02 % (1.12 %) | 9.55 % | 6.38e-01 % (6.69e-03 %) | 9.868 % | 27 | 1/0 |
-| `lat32768` | 32768 | 8.6e-05 (2.0e-06) | 1.9e-01 | 3.17 % (1.12 %) | 9.57 % | – | 9.885 % | 27 | 1/0 |
-| `nodes` | 250047 | 1.8e-04 (2.7e-06) | 1.9e-01 | 3.17 % (1.12 %) | 9.57 % | 5.49e-03 % (1.36e-05 %) | 9.885 % | 27 | 1/0 |
-| `dense` sign-upwind (target only) | mesh | 1.9e-01 (1.3e-01) | 0 | – | – | – | – | – | – |
+| `tensor` | mesh | 1.9e-01 (1.3e-01; 1.6e-01) | 1.8e-05 | 10.22 % (3.38 %) | 1.37 % | 9.89e+00 % (3.53e+00 %) | – | 28 | 2/0 |
+| `gl24` | 13824 | 1.0e-02 (1.2e-03; 7.2e-03) | 1.9e-01 | 3.16 % (1.12 %) | 9.57 % | 5.01e-02 % (3.36e-03 %) | 9.883 % | 27 | 1/0 |
+| `lat4096` | 4096 | 8.3e-02 (7.8e-03; 3.0e-02) | 2.0e-01 | 3.02 % (1.12 %) | 9.55 % | 6.38e-01 % (6.69e-03 %) | 9.868 % | 27 | 1/0 |
+| `lat32768` | 32768 | 8.6e-05 (2.0e-06; 8.6e-06) | 1.9e-01 | 3.17 % (1.12 %) | 9.57 % | – | 9.885 % | 27 | 1/0 |
+| `nodes` | 250047 | 1.8e-04 (2.7e-06; 1.5e-05) | 1.9e-01 | 3.17 % (1.12 %) | 9.57 % | 5.49e-03 % (1.36e-05 %) | 9.885 % | 27 | 1/0 |
+| `dense` sign-upwind (target only) | mesh | 1.9e-01 (1.3e-01; 1.6e-01) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 1.7e-07): `dense_upwind` 2.2e-01, `tensor` 2.2e-01, `gl24` 2.6e-02, `lat4096` 1.8e-01, `lat32768` 1.1e-03, `nodes` 2.8e-04.
 
@@ -31,14 +31,14 @@ Adaptive-LM sensitivity (every step adaptive, first 8 cases), worst field distan
 
 **$R'=256$** ($M = 1027$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 1.5e-08.
 
-| arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
+| arm | m | ρ cont. worst (median; p90) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 1.9e-01 (1.3e-01) | 1.9e-04 | 10.44 % (3.40 %) | 2.26 % | 9.79e+00 % (3.53e+00 %) | – | 27 | 0/0 |
-| `gl24` | 13824 | 2.1e-03 (3.3e-04) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 1.10e-02 % (1.46e-03 %) | 9.791 % | 27 | 0/0 |
-| `lat4096` | 4096 | 2.4e-02 (1.3e-03) | 1.9e-01 | 4.71 % (1.25 %) | 9.69 % | 8.10e-02 % (2.08e-03 %) | 9.792 % | 27 | 0/0 |
-| `lat32768` | 32768 | 2.9e-05 (7.1e-07) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | – | 9.791 % | 27 | 0/0 |
-| `nodes` | 250047 | 8.8e-05 (2.0e-06) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 1.16e-03 % (1.16e-05 %) | 9.791 % | 27 | 0/0 |
-| `dense` sign-upwind (target only) | mesh | 1.9e-01 (1.3e-01) | 0 | – | – | – | – | – | – |
+| `tensor` | mesh | 1.9e-01 (1.3e-01; 1.6e-01) | 1.9e-04 | 10.44 % (3.40 %) | 2.26 % | 9.79e+00 % (3.53e+00 %) | – | 27 | 0/0 |
+| `gl24` | 13824 | 2.1e-03 (3.3e-04; 8.9e-04) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 1.10e-02 % (1.46e-03 %) | 9.791 % | 27 | 0/0 |
+| `lat4096` | 4096 | 2.4e-02 (1.3e-03; 5.0e-03) | 1.9e-01 | 4.71 % (1.25 %) | 9.69 % | 8.10e-02 % (2.08e-03 %) | 9.792 % | 27 | 0/0 |
+| `lat32768` | 32768 | 2.9e-05 (7.1e-07; 3.3e-06) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | – | 9.791 % | 27 | 0/0 |
+| `nodes` | 250047 | 8.8e-05 (2.0e-06; 1.0e-05) | 1.9e-01 | 4.70 % (1.25 %) | 9.68 % | 1.16e-03 % (1.16e-05 %) | 9.791 % | 27 | 0/0 |
+| `dense` sign-upwind (target only) | mesh | 1.9e-01 (1.3e-01; 1.6e-01) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 2.1e-08): `dense_upwind` 2.1e-01, `tensor` 2.1e-01, `gl24` 2.3e-03, `lat4096` 2.8e-02, `lat32768` 1.6e-04, `nodes` 1.4e-04.
 
@@ -50,27 +50,27 @@ Gates: gram_condition 1.0e+00, tensor_vs_direct 2.4e-16, G1_derivative_vs_fd_nod
 
 **$R'=512$** ($M = 2049$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 8.0e-08.
 
-| arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
+| arm | m | ρ cont. worst (median; p90) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 9.8e-02 (6.6e-02) | 1.7e-05 | 6.11 % (1.98 %) | 1.86 % | 5.57e+00 % (1.85e+00 %) | – | 27 | 2/0 |
-| `gl24` | 13824 | 1.3e-02 (1.3e-03) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 4.88e-02 % (3.22e-03 %) | 5.568 % | 27 | 1/0 |
-| `lat4096` | 4096 | 1.0e-01 (8.9e-03) | 1.5e-01 | 3.01 % (1.13 %) | 5.22 % | 6.09e-01 % (6.45e-03 %) | 5.553 % | 27 | 1/0 |
-| `lat32768` | 32768 | 1.4e-04 (2.0e-06) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | – | 5.569 % | 27 | 1/0 |
-| `nodes` | 2048383 | 1.6e-05 (1.6e-07) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 5.07e-03 % (2.63e-06 %) | 5.569 % | 27 | 1/0 |
-| `dense` sign-upwind (target only) | mesh | 9.8e-02 (6.6e-02) | 0 | – | – | – | – | – | – |
+| `tensor` | mesh | 9.8e-02 (6.6e-02; 8.1e-02) | 1.7e-05 | 6.11 % (1.98 %) | 1.86 % | 5.57e+00 % (1.85e+00 %) | – | 27 | 2/0 |
+| `gl24` | 13824 | 1.3e-02 (1.3e-03; 9.2e-03) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 4.88e-02 % (3.22e-03 %) | 5.568 % | 27 | 1/0 |
+| `lat4096` | 4096 | 1.0e-01 (8.9e-03; 3.7e-02) | 1.5e-01 | 3.01 % (1.13 %) | 5.22 % | 6.09e-01 % (6.45e-03 %) | 5.553 % | 27 | 1/0 |
+| `lat32768` | 32768 | 1.4e-04 (2.0e-06; 9.7e-06) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | – | 5.569 % | 27 | 1/0 |
+| `nodes` | 2048383 | 1.6e-05 (1.6e-07; 9.8e-07) | 1.0e-01 | 3.12 % (1.12 %) | 5.28 % | 5.07e-03 % (2.63e-06 %) | 5.569 % | 27 | 1/0 |
+| `dense` sign-upwind (target only) | mesh | 9.8e-02 (6.6e-02; 8.1e-02) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 1.7e-07): `dense_upwind` 1.1e-01, `tensor` 1.1e-01, `gl24` 2.4e-02, `lat4096` 1.8e-01, `lat32768` 1.1e-03, `nodes` 1.7e-05.
 
 **$R'=256$** ($M = 1024$). $\rho$ on 600 evolved tensor-reached states of the 24 certification draws; continuum check (Gauss $64^3$ vs $80^3$) worst 2.0e-08.
 
-| arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
+| arm | m | ρ cont. worst (median; p90) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |
 |---|---|---|---|---|---|---|---|---|---|
-| `tensor` | mesh | 9.7e-02 (6.6e-02) | 1.9e-04 | 6.69 % (1.99 %) | 3.13 % | 5.49e+00 % (1.85e+00 %) | – | 27 | 0/0 |
-| `gl24` | 13824 | 2.5e-03 (3.5e-04) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 1.08e-02 % (1.45e-03 %) | 5.491 % | 27 | 0/0 |
-| `lat4096` | 4096 | 2.9e-02 (1.3e-03) | 1.1e-01 | 4.70 % (1.25 %) | 5.94 % | 8.05e-02 % (2.06e-03 %) | 5.494 % | 27 | 0/0 |
-| `lat32768` | 32768 | 3.6e-05 (7.1e-07) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | – | 5.491 % | 27 | 0/0 |
-| `nodes` | 2048383 | 7.0e-06 (1.2e-07) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 4.99e-04 % (1.66e-06 %) | 5.491 % | 27 | 0/0 |
-| `dense` sign-upwind (target only) | mesh | 9.7e-02 (6.6e-02) | 0 | – | – | – | – | – | – |
+| `tensor` | mesh | 9.7e-02 (6.6e-02; 8.1e-02) | 1.9e-04 | 6.69 % (1.99 %) | 3.13 % | 5.49e+00 % (1.85e+00 %) | – | 27 | 0/0 |
+| `gl24` | 13824 | 2.5e-03 (3.5e-04; 1.0e-03) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 1.08e-02 % (1.45e-03 %) | 5.491 % | 27 | 0/0 |
+| `lat4096` | 4096 | 2.9e-02 (1.3e-03; 6.0e-03) | 1.1e-01 | 4.70 % (1.25 %) | 5.94 % | 8.05e-02 % (2.06e-03 %) | 5.494 % | 27 | 0/0 |
+| `lat32768` | 32768 | 3.6e-05 (7.1e-07; 3.5e-06) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | – | 5.491 % | 27 | 0/0 |
+| `nodes` | 2048383 | 7.0e-06 (1.2e-07; 6.5e-07) | 1.0e-01 | 4.69 % (1.25 %) | 5.91 % | 4.99e-04 % (1.66e-06 %) | 5.491 % | 27 | 0/0 |
+| `dense` sign-upwind (target only) | mesh | 9.7e-02 (6.6e-02; 8.1e-02) | 0 | – | – | – | – | – | – |
 
 $\rho$ on the 200 `nodes`-reached states (first 8 cases; continuum check worst 2.0e-08): `dense_upwind` 1.1e-01, `tensor` 1.1e-01, `gl24` 2.3e-03, `lat4096` 2.8e-02, `lat32768` 1.6e-04, `nodes` 8.5e-06.
 
@@ -78,18 +78,20 @@ The 3D sign-upwind `dense` rollouts of the earlier job (DESIGN §3, context only
 
 **Mesh invariance** (worst refined error, PROVISIONAL, $64^3$ / $128^3$ and their ratio max/min):
 
-| arm | $R'$ | $64^3$ | $128^3$ | ratio |
-|---|---|---|---|---|
-| `tensor` | 512 | 10.22 % | 6.11 % | 1.674 |
-| `gl24` | 512 | 3.16 % | 3.12 % | 1.014 |
-| `lat4096` | 512 | 3.02 % | 3.01 % | 1.005 |
-| `lat32768` | 512 | 3.17 % | 3.12 % | 1.014 |
-| `nodes` | 512 | 3.17 % | 3.12 % | 1.014 |
-| `tensor` | 256 | 10.44 % | 6.69 % | 1.561 |
-| `gl24` | 256 | 4.70 % | 4.69 % | 1.002 |
-| `lat4096` | 256 | 4.71 % | 4.70 % | 1.002 |
-| `lat32768` | 256 | 4.70 % | 4.69 % | 1.002 |
-| `nodes` | 256 | 4.70 % | 4.69 % | 1.002 |
+| arm | $R'$ | $64^3$ | $128^3$ | ratio | largest per-case spread (pp) |
+|---|---|---|---|---|---|
+| `tensor` | 512 | 10.22 % | 6.11 % | 1.674 | 4.113 |
+| `gl24` | 512 | 3.16 % | 3.12 % | 1.014 | 0.046 |
+| `lat4096` | 512 | 3.02 % | 3.01 % | 1.005 | 0.046 |
+| `lat32768` | 512 | 3.17 % | 3.12 % | 1.014 | 0.046 |
+| `nodes` | 512 | 3.17 % | 3.12 % | 1.014 | 0.046 |
+| `tensor` | 256 | 10.44 % | 6.69 % | 1.561 | 3.749 |
+| `gl24` | 256 | 4.70 % | 4.69 % | 1.002 | 0.043 |
+| `lat4096` | 256 | 4.71 % | 4.70 % | 1.002 | 0.043 |
+| `lat32768` | 256 | 4.70 % | 4.69 % | 1.002 | 0.043 |
+| `nodes` | 256 | 4.70 % | 4.69 % | 1.002 | 0.043 |
+
+**2D per-case mesh spread** (worst ST error, PROVISIONAL, largest per-case difference $256^2$ vs $1024^2$, pp): acc `dense` 2.822; acc `lat64` 2.821; acc `gauss96` 0.008; acc `gref` 0.008; acc `nodes` 0.009; fast `dense` 1.892; fast `lat64` 1.892; fast `fib1597` 0.018; fast `gref` 0.017; fast `nodes` 0.018.
 
 ## 2. A1 in 2D (Burgers 2D, dev6 ∪ val32, 38 cases)
 
@@ -97,7 +99,7 @@ The 3D sign-upwind `dense` rollouts of the earlier job (DESIGN §3, context only
 
 Nodes gates: nodes_acc: G1_fd_err_h1e-5 2.7e-06, G1_fd_err_h1e-6 2.7e-08, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 2.8e-14, G2c_gemm_vs_separable 1.2e-14, G3_jacobian_vs_jacfwd 0.0e+00; nodes_fast: G1_fd_err_h1e-5 8.2e-07, G1_fd_err_h1e-6 8.2e-09, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 1.4e-14, G2c_gemm_vs_separable 4.5e-15, G3_jacobian_vs_jacfwd 0.0e+00. Continuum target check: acc pass, fast pass.
 
-**acc** ($R'$ = 384, M = 1536); $\rho$ on 1900 lat64-reached states.
+**acc** ($R'$ = 384, $M = 1536$); $\rho$ on 1900 lat64-reached states.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst, PROVISIONAL | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
@@ -109,7 +111,7 @@ Nodes gates: nodes_acc: G1_fd_err_h1e-5 2.7e-06, G1_fd_err_h1e-6 2.7e-08, G1_fd_
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.3e-08): `dense` 8.3e-02, `lat64` 6.0e-02, `gauss96` 4.6e-03, `fib121393` 1.0e-05, `gref` 0.0e+00, `nodes` 1.2e-02.
 
-**fast** ($R'$ = 128, M = 512); $\rho$ on 1900 lat64-reached states.
+**fast** ($R'$ = 128, $M = 512$); $\rho$ on 1900 lat64-reached states.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst, PROVISIONAL | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
@@ -125,7 +127,7 @@ $\rho$ on 400 `nodes`-reached states (first 8 cases; check 2.9e-08): `dense` 8.2
 
 Nodes gates: nodes_acc: G1_fd_err_h1e-5 9.5e-05, G1_fd_err_h1e-6 9.5e-07, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 2.8e-14, G2c_gemm_vs_separable 1.2e-14, G3_jacobian_vs_jacfwd 0.0e+00; nodes_fast: G1_fd_err_h1e-5 1.5e-05, G1_fd_err_h1e-6 1.5e-07, G1_fd_ratio 1.0e+02, G1_pass 1.0e+00, G2a_values_vs_mesh_bank 0.0e+00, G2b_Psi_vs_Phi 1.4e-14, G2c_gemm_vs_separable 2.7e-15, G3_jacobian_vs_jacfwd 0.0e+00. Continuum target check: acc pass, fast pass.
 
-**acc** ($R'$ = 384, M = 1536); $\rho$ on 1900 lat64-reached states.
+**acc** ($R'$ = 384, $M = 1536$); $\rho$ on 1900 lat64-reached states.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst, PROVISIONAL | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
@@ -137,7 +139,7 @@ Nodes gates: nodes_acc: G1_fd_err_h1e-5 9.5e-05, G1_fd_err_h1e-6 9.5e-07, G1_fd_
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 4.1e-08): `dense` 1.8e-02, `lat64` 4.0e-02, `gauss96` 4.4e-03, `fib121393` 2.2e-05, `gref` 0.0e+00, `nodes` 3.7e-05.
 
-**fast** ($R'$ = 128, M = 512); $\rho$ on 1900 lat64-reached states.
+**fast** ($R'$ = 128, $M = 512$); $\rho$ on 1900 lat64-reached states.
 
 | arm | m | ρ cont. worst (median) | ρ mesh worst | ST worst (median), PROVISIONAL | S worst, PROVISIONAL | dist. converged worst (median) | dist. dense worst | LM its (median) | budget / damping exits |
 |---|---|---|---|---|---|---|---|---|---|
@@ -220,8 +222,8 @@ Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256:
 ## 5. Historical reproducibility (report-only, DESIGN amendment A1-5)
 
 3D: worst over cases of the evolved-time field distance ($63^3$ lattice) from the 2026-10-01 validation rollouts (cases compared in brackets): $64^3$ $R'=256$ `gl24` 1.4e-15 [64], $64^3$ $R'=256$ `lat32768` 2.2e-15 [64], $64^3$ $R'=256$ `lat4096` 1.7e-15 [64], $64^3$ $R'=256$ `tensor` 1.7e-15 [64], $64^3$ $R'=512$ `gl24` 1.3e-15 [64], $64^3$ $R'=512$ `lat32768` 1.5e-15 [64], $64^3$ $R'=512$ `lat4096` 1.1e-15 [64], $64^3$ $R'=512$ `tensor` 1.3e-15 [64], $128^3$ $R'=256$ `gl24` 1.3e-15 [64], $128^3$ $R'=256$ `lat32768` 1.6e-15 [64], $128^3$ $R'=256$ `lat4096` 1.2e-15 [64], $128^3$ $R'=256$ `tensor` 1.6e-15 [64], $128^3$ $R'=512$ `gl24` 1.2e-15 [64], $128^3$ $R'=512$ `lat32768` 1.2e-15 [64], $128^3$ $R'=512$ `lat4096` 1.3e-15 [64], $128^3$ $R'=512$ `tensor` 1.8e-15 [64].
-3D $64^3$ ρ reproduction (worst continuum ρ, max relative difference): $R'=512$ 5.1e-13, $R'=256$ 2.1e-12.
-3D $128^3$ ρ reproduction (worst continuum ρ, max relative difference): $R'=512$ 2.3e-13, $R'=256$ 2.0e-13.
+3D $64^3$ $\rho$ reproduction (worst continuum $\rho$, max relative difference): $R'=512$ 5.1e-13, $R'=256$ 2.1e-12.
+3D $128^3$ $\rho$ reproduction (worst continuum $\rho$, max relative difference): $R'=512$ 2.3e-13, $R'=256$ 2.0e-13.
 
 2D: worst over cases of the relative difference of the ST error from the 2026-10-01 dev jobs, and the field distance on the two saved audit cases: $256^2$ acc `dense` 7.1e-14, $256^2$ acc `dense (field, 2 of 2 audit cases)` 9.1e-16, $256^2$ acc `gauss96` 9.4e-14, $256^2$ acc `gauss96 (field, 2 of 2 audit cases)` 8.8e-16, $256^2$ acc `gref` 9.9e-14, $256^2$ acc `gref (field, 2 of 2 audit cases)` 1.1e-15, $256^2$ acc `lat64` 1.0e-13, $256^2$ acc `lat64 (field, 2 of 2 audit cases)` 1.0e-15, $256^2$ fast `dense` 5.7e-14, $256^2$ fast `dense (field, 2 of 2 audit cases)` 1.1e-15, $256^2$ fast `fib1597` 5.9e-14, $256^2$ fast `fib1597 (field, 2 of 2 audit cases)` 1.5e-15, $256^2$ fast `gref` 2.9e-14, $256^2$ fast `gref (field, 2 of 2 audit cases)` 1.0e-15, $256^2$ fast `lat64` 5.8e-14, $256^2$ fast `lat64 (field, 2 of 2 audit cases)` 1.0e-15, $1024^2$ acc `dense` 1.0e-13, $1024^2$ acc `dense (field, 2 of 2 audit cases)` 9.0e-16, $1024^2$ acc `gauss96` 1.1e-13, $1024^2$ acc `gauss96 (field, 2 of 2 audit cases)` 1.3e-15, $1024^2$ acc `gref` 1.2e-13, $1024^2$ acc `gref (field, 2 of 2 audit cases)` 9.7e-16, $1024^2$ acc `lat64` 5.2e-13, $1024^2$ acc `lat64 (field, 2 of 2 audit cases)` 1.5e-15, $1024^2$ fast `dense` 9.7e-14, $1024^2$ fast `dense (field, 2 of 2 audit cases)` 1.2e-15, $1024^2$ fast `fib1597` 3.6e-14, $1024^2$ fast `fib1597 (field, 2 of 2 audit cases)` 1.3e-15, $1024^2$ fast `gref` 4.6e-14, $1024^2$ fast `gref (field, 2 of 2 audit cases)` 1.4e-15, $1024^2$ fast `lat64` 2.3e-13, $1024^2$ fast `lat64 (field, 2 of 2 audit cases)` 1.4e-15.
 
@@ -235,7 +237,7 @@ Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256:
 - **selected off-mesh rule**: the frozen rule chosen on validation by the source lanes: 3D Gauss $24^3$ ($R'=512$) and the 4096-point lattice ($R'=256$); 2D Gauss $96^2$ (acc) and Fibonacci 1597 (fast).
 - **converged off-mesh rollout**: the reduced solve with a rule fine enough that further refinement does not change it: 3D the 32768-point lattice, 2D Gauss $640^2$.
 - **upwind / central**: first-order sign-upwind differences (the full-order model's) and second-order central differences.
-- **ρ**: relative error of a rule's tested advection vector against a target on a given state.
+- **$\rho$**: relative error of a rule's tested advection vector against a target on a given state.
 - **continuum target / mesh target**: the tested continuum advection by a very fine Gauss rule (3D $80^3$, 2D $640^2$) / the sign-upwind stencil on every mesh node.
 - **refined error (PROVISIONAL)**: evolved-time maximum relative field error against a first-order full-order reference on a finer mesh (3D: 513 nodes per axis, on the $63^3$ lattice $x = k/64$; 2D: $8192^2$, ST = with a 16× smaller time step, S = same time step), normalised by the initial field.
 - **same-grid**: error against a tightly converged full-order solution on the same mesh.
@@ -247,7 +249,7 @@ Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256:
 - **provisional (solver)**: applies only to R and N labels: one not backed by a solver-sensitivity rerun at that mesh, or with more than 1 % non-stationary LM steps in an arm; N/A for X, X0 and INCOMPLETE.
 - **exits 0/3, budget/damping**: Levenberg–Marquardt step outcomes: 0 = not stationary at the end of the fixed sweep (3D) / iteration budget exhausted (2D); 3 = non-finite or damping exhausted.
 - **$R'$, $M$, $m$**: number of bank columns in the solve; number of sine test functions; number of quadrature points.
-- **fixed states**: reached coefficient states held fixed while only the mesh changes, so the gap depends on h alone.
+- **fixed states**: reached coefficient states held fixed while only the mesh changes, so the gap depends on $h$ alone.
 - **screened population**: states whose gap exceeds 100× their own continuum-target check and $10^{-12}$ at every window mesh.
 - **slope (median state)**: least-squares slope of $\log(\text{median gap})$ against $\log h$ over the window; 1 = first order, 2 = second.
 - **manufactured state / C-pos / C-neg-a**: a known smooth positive field used as a control: its slopes and its gap against the predicted leading error term must come out right (C-pos); an injected constant 1 % error must give slope 0 (C-neg-a).

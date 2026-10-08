@@ -408,7 +408,7 @@ def latexify(text):
             part = re.sub(r'(?<![\w$^])(\d+)³', r'$\1^3$', part)
             part = re.sub(r'(?<![\w$^])(\d+)²', r'$\1^2$', part)
             part = re.sub(r"R′ ?= ?(\d+)", r"$R'=\1$", part)
-            part = re.sub(r'\(M = (\d+)\)', r'($M = \1$)', part)
+            part = re.sub(r'(?<![$\w])M = (\d+)', r'$M = \1$', part)
         out.append(part)
     return ''.join(out)
 
@@ -588,7 +588,7 @@ def main():
             w(f"**R′ = {Rp}** (M = {rho['M']}). $\\rho$ on {rho['states_evolved']} evolved tensor-reached states of the "
               f"24 certification draws; continuum check (Gauss 64³ vs 80³) worst {e(rho['continuum_check']['worst'])}.")
             w('')
-            w('| arm | m | ρ cont. worst (median) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | '
+            w('| arm | m | ρ cont. worst (median; p90) | ρ mesh worst | refined worst (median), PROVISIONAL | same-grid worst | '
               'dist. converged worst (median) | dist. tensor worst | LM its (median) | exits 0/3 |')
             w('|---|---|---|---|---|---|---|---|---|---|')
             names = [f'tensor_R{Rp}', f'gl24_R{Rp}', f'lat4096_R{Rp}', f'lat32768_R{Rp}', f'nodes_R{Rp}']
@@ -602,12 +602,12 @@ def main():
                 dc = a['distance'].get('lat32768')
                 dt = a['distance'].get('tensor')
                 r0 = sum(c['reasons']['0'] for c in a['cases'])
-                w(f"| `{k}` | {a.get('m', 'mesh')} | {e(rr['cont']['worst'])} ({e(rr['cont']['median'])}) | "
+                w(f"| `{k}` | {a.get('m', 'mesh')} | {e(rr['cont']['worst'])} ({e(rr['cont']['median'])}; {e(rr['cont']['p90'])}) | "
                   f"{e(rr['mesh']['worst'])} | {pc(a['worst_refined'])} ({pc(a['median_refined'])}) | "
                   f"{pc(a['worst_same_grid65'])} | {pe(dc['worst']) + ' (' + pe(dc['median']) + ')' if dc else '–'} | "
                   f"{pc(dt['worst'], 3) if dt else '–'} | {a['iterations_median']:.0f} | {r0}/{a['reason3_total']} |")
             du = rho['rules']['dense_upwind']
-            w(f"| `dense` sign-upwind (target only) | mesh | {e(du['cont']['worst'])} ({e(du['cont']['median'])}) | 0 | – | – | – | – | – | – |")
+            w(f"| `dense` sign-upwind (target only) | mesh | {e(du['cont']['worst'])} ({e(du['cont']['median'])}; {e(du['cont']['p90'])}) | 0 | – | – | – | – | – | – |")
             w('')
             nr = (r.get('rho_nodes_reached') or {}).get(str(Rp))
             if nr:
@@ -626,14 +626,21 @@ def main():
     if len(r3) == 2:
         w('**Mesh invariance** (worst refined error, PROVISIONAL, 64³ / 128³ and their ratio max/min):')
         w('')
-        w("| arm | $R'$ | 64³ | 128³ | ratio |")
-        w('|---|---|---|---|---|')
+        w("| arm | $R'$ | 64³ | 128³ | ratio | largest per-case spread (pp) |")
+        w('|---|---|---|---|---|---|')
         for Rp in (512, 256):
             for k in ('tensor', 'gl24', 'lat4096', 'lat32768', 'nodes'):
                 v = [r3[n]['arms'].get(f'{k}_R{Rp}', {}).get('worst_refined') for n in (65, 129)]
                 if None in v:
                     continue
-                w(f'| `{k}` | {Rp} | {pc(v[0])} | {pc(v[1])} | {max(v) / min(v):.3f} |')
+                pcs = [{c['case']: c['worst_refined'] for c in r3[n]['arms'][f'{k}_R{Rp}']['cases']} for n in (65, 129)]
+                sp = max(abs(pcs[0][j] - pcs[1][j]) for j in pcs[0] if j in pcs[1])
+                w(f'| `{k}` | {Rp} | {pc(v[0])} | {pc(v[1])} | {max(v) / min(v):.3f} | {100 * sp:.3f} |')
+        w('')
+    if len(r2) == 2:
+        w('**2D per-case mesh spread** (worst ST error, PROVISIONAL, largest per-case difference $256^2$ vs $1024^2$, pp): ' +
+          '; '.join(f"{s_} `{a_}` {100 * max(abs(x['ref_ST_evolved'] - y['ref_ST_evolved']) for x in rows_of(r2[256], s_, a_) for y in rows_of(r2[1024], s_, a_) if (x['cohort'], x['case']) == (y['cohort'], y['case'])):.3f}"
+                    for s_ in ('acc', 'fast') for a_ in ('dense', 'lat64', 'gauss96' if s_ == 'acc' else 'fib1597', 'gref', 'nodes')) + '.')
         w('')
     # ---------------------------------------------------------------- A1 2D
     w('## 2. A1 in 2D (Burgers 2D, dev6 ∪ val32, 38 cases)')
@@ -754,7 +761,7 @@ def main():
           ', '.join(f"{n - 1}³ R′={Rp} `{a}` {e(v)} [{h3.get((n, Rp, a + ' cases'))}]" for (n, Rp, a), v in sorted(h3.items())
                     if not a.endswith(' cases')) + '.')
         for n, r in sorted(r3.items()):
-            w(f"3D {n - 1}³ ρ reproduction (worst continuum ρ, max relative difference): " + ', '.join(
+            w(f"3D {n - 1}³ $\\rho$ reproduction (worst continuum $\\rho$, max relative difference): " + ', '.join(
                 f"R′={k.split('R')[-1]} {v:.1e}" for k, v in r['gates'].items() if k.startswith('G4a')) + '.')
     if h2:
         w('')
@@ -790,7 +797,7 @@ GLOSSARY = [
     ('converged off-mesh rollout', 'the reduced solve with a rule fine enough that further refinement does not change it: '
      '3D the 32768-point lattice, 2D Gauss 640².'),
     ('upwind / central', 'first-order sign-upwind differences (the full-order model\'s) and second-order central differences.'),
-    ('ρ', 'relative error of a rule\'s tested advection vector against a target on a given state.'),
+    ('$\\rho$', 'relative error of a rule\'s tested advection vector against a target on a given state.'),
     ('continuum target / mesh target', 'the tested continuum advection by a very fine Gauss rule (3D 80³, 2D 640²) / the '
      'sign-upwind stencil on every mesh node.'),
     ('refined error (PROVISIONAL)', 'evolved-time maximum relative field error against a first-order full-order reference '
@@ -811,7 +818,7 @@ GLOSSARY = [
     ('exits 0/3, budget/damping', 'Levenberg–Marquardt step outcomes: 0 = not stationary at the end of the fixed sweep '
      '(3D) / iteration budget exhausted (2D); 3 = non-finite or damping exhausted.'),
     ("$R'$, $M$, $m$", 'number of bank columns in the solve; number of sine test functions; number of quadrature points.'),
-    ('fixed states', 'reached coefficient states held fixed while only the mesh changes, so the gap depends on h alone.'),
+    ('fixed states', 'reached coefficient states held fixed while only the mesh changes, so the gap depends on $h$ alone.'),
     ('screened population', 'states whose gap exceeds 100× their own continuum-target check and $10^{-12}$ at every window mesh.'),
     ('slope (median state)', 'least-squares slope of $\\log(\\text{median gap})$ against $\\log h$ over the window; 1 = first order, 2 = second.'),
     ('manufactured state / C-pos / C-neg-a', 'a known smooth positive field used as a control: its slopes and its gap '

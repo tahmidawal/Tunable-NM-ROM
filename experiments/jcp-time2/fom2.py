@@ -7,7 +7,8 @@ BiCGStab and the FFT-DST Helmholtz preconditioner) with its backward-Euler resid
 
 preconditioner (a0 + dt b0 nu (lam_x + lam_y))^{-1} in the DST basis (BE: exactly engines.make_fom's). Startup steps
 by BE as in t2core.SCHEMES. dt, steps, output stride, coefficients and tolerances are traced. Per step it records the
-final nonlinear relative residual and Newton count, and per Newton iteration the worst BiCGStab relative residual.
+final nonlinear relative residual, the Newton count and the worst BiCGStab relative residual over that step's Newton
+iterations (amendment A10.1: per step, not per Newton iteration).
 A step fails iff its final nonlinear relative residual exceeds ntol or is nonfinite. Per-step arrays (final nonlinear
 relative residual, Newton count, worst linear relative residual of that step's Newton iterations) are returned for the
 first NMAX steps (entries beyond `steps` are NaN / -1).

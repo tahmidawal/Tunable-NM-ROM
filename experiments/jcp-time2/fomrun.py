@@ -81,7 +81,8 @@ def main():
     idx = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
     refs = {}
     for coh, c, ph in cases:
-        assert man['cohort_sha256'][coh] == rep['cohort_sha256'][coh], coh
+        if not cfg.get('local_smoke_waives_cohort_hash'):        # A5.2
+            assert man['cohort_sha256'][coh] == rep['cohort_sha256'][coh], coh
         for tag in ('ST', 'S'):
             r = np.load(rdir / f'ref_{tag}_{coh}_{c:03d}.npz')['f257']
             assert sha(r) == idx[(coh, c, tag)]['f257_sha256'] and idx[(coh, c, tag)]['accepted']
@@ -123,6 +124,7 @@ def main():
     dev = [x for x in cases if x[0] == 'dev6']
     assert len(dev) == 6
     chosen = {}
+    CAL = {}                                     # calibration evidence (float32 restricted fields) for the audit
     for sc in cfg['schemes']:
         for f in cfg['dt_factors']:
             dt = DT0 * f
@@ -134,6 +136,7 @@ def main():
                 n0r = float(np.linalg.norm(np.asarray(u0)[::s256, ::s256]))
                 v = fom(u0, float(ph[4]), fsched(sc, dt), *TIGHT)
                 fr0 = np.asarray(v['fields'][:, ::s256, ::s256])
+                CAL[f'{sc}__{f:g}__tight__{coh}__{c}'] = fr0.astype(np.float32)
                 ref_ok = int(v['stats']['nfail']) == 0
                 ref_all = ref_all and ref_ok
                 eST = errs(fr0, coh, c, n0r)['e_ST']
@@ -141,6 +144,7 @@ def main():
                 for nt in cfg['ntols']:
                     w = fom(u0, float(ph[4]), fsched(sc, dt), nt, LTOL)
                     fr = np.asarray(w['fields'][:, ::s256, ::s256])
+                    CAL[f'{sc}__{f:g}__{nt:g}__{coh}__{c}'] = fr.astype(np.float32)
                     dd = max(float(np.linalg.norm(fr[j] - fr0[j])) / n0r for j in range(1, 6))
                     row['diffs'][f'{nt:g}'] = dict(diff=dd, verified=int(w['stats']['nfail']) == 0)
                     ok[nt] = ok[nt] and int(w['stats']['nfail']) == 0 and dd < .01 * eST
@@ -154,6 +158,7 @@ def main():
             ent['chosen'] = chosen[(sc, f)]
             rep['calibration'][f'{sc}|{f:g}'] = ent
             save()
+    np.savez_compressed(out / 'calibration_fields_f32.npz', **CAL)
     print('CALIBRATION', el(), flush=True)
 
     # ---------------------------------------------------------------- ROM arms (as t2run.py) ----
@@ -187,11 +192,18 @@ def main():
     # ---------------------------------------------------------------- E: evaluation ----
     eval_sha, F32, F64, Wrom = {}, {}, {}, {}
     nt_cases = cfg['timing']['cases']
+    tidx = [ci for ci, x in enumerate(cases) if x[0] == 'dev6'][:nt_cases]     # explicit timing-case indices
+    rep['timing_case_indices'] = tidx
+
+    def dump_arrays():
+        np.savez_compressed(out / 'fom_fields_f32.npz', **F32)
+        np.savez_compressed(out / 'fom_fields_timing_f64.npz', **F64)
+        np.savez_compressed(out / 'rom_W.npz', **Wrom)
     for ci, (coh, c, ph) in enumerate(cases):
         u0 = jnp.asarray(Q.e.initial(L, ph))
         nu = float(ph[4])
         n0r = float(np.linalg.norm(np.asarray(u0)[::s256, ::s256]))
-        timing_case = coh == 'dev6' and ci < nt_cases
+        timing_case = ci in tidx
         for sc in cfg['schemes']:
             for f in cfg['dt_factors']:
                 pair = chosen[(sc, f)]
@@ -216,18 +228,17 @@ def main():
             kk = rom_key(x)
             Wrom[f'{kk}|{coh}|{c}'.replace('|', '__')] = np.asarray(v['W'])
             if timing_case:
-                eval_sha[(kk, ci)] = sha(fr)
+                eval_sha[(kk, ci)] = sha(np.asarray(v['W']))       # ROM outputs are bound by their coefficients
             st = stats_np(v['stats'])
             rep['rom_rows'].append(dict(run=kk, **x, cohort=coh, case=c, verified=bool(int(st['nfail']) == 0),
                                         restricted_sha256=sha(fr), stats=st, **errs(fr, coh, c, n0r)))
         w = fom(u0, nu, fsched('BE', DT0), 1e-6, 1e-8)
         rep['repro'].append(dict(cohort=coh, case=c, **errs(np.asarray(w['fields'][:, ::s256, ::s256]), coh, c, n0r)))
         print('EVAL', ci, el(), flush=True)
-        if ci % 4 == 3:
+        if ci % 8 == 7:
             save()
-    np.savez_compressed(out / 'fom_fields_f32.npz', **F32)
-    np.savez_compressed(out / 'fom_fields_timing_f64.npz', **F64)
-    np.savez_compressed(out / 'rom_W.npz', **Wrom)
+            dump_arrays()
+    dump_arrays()
     save()
 
     # ---------------------------------------------------------------- T: timing ----
@@ -236,7 +247,7 @@ def main():
     subj.update({rom_key(x): ('rom', x, None) for x in rom_arms})
     A_ = 'fom|BE|1'
     assert A_ in subj, 'baseline FOM unresolved'
-    tcases = [(ci, x) for ci, x in enumerate(cases) if x[0] == 'dev6'][:nt_cases]
+    tcases = [(ci, cases[ci]) for ci in tidx]
     inputs = {ci: (jnp.asarray(Q.e.initial(L, ph)), float(ph[4])) for ci, (coh, c, ph) in tcases}
 
     def call(kk, ci):
@@ -251,11 +262,13 @@ def main():
         t1 = time.perf_counter()
         o = call(kk, ci)
         jax.block_until_ready(o)
-        return time.perf_counter() - t1, sha(np.asarray(o['fields'][:, ::s256, ::s256]))
+        secs = time.perf_counter() - t1
+        return secs, (sha(np.asarray(o['W'])) if kk.startswith('rom|') else sha(np.asarray(o['fields'][:, ::s256, ::s256])))
 
     for kk in subj:                      # warm every subject (compiled already in phase E)
         for ci, _ in tcases:
             timed(kk, ci)
+    n_inv = 0
     rng = np.random.default_rng(int(tc.get('seed', 20261008)))
     inv = []
     rep['timing'] = dict(A=A_, subjects=list(subj), invocations=inv,
@@ -270,6 +283,9 @@ def main():
             inv.append(dict(B=kk, case_index=ci, rep=r_, tA1=ta1, tB=tb, tA2=ta2, ratio=tb / (.5 * (ta1 + ta2)),
                             drift=ta2 / ta1, A_sha=[h1, h2], A_expected_sha=eval_sha.get((A_, ci)), B_sha=hb,
                             B_expected_sha=eval_sha.get((kk, ci))))
+            n_inv += 1
+            if n_inv % 50 == 0:
+                save()
         save()
     rep['elapsed_seconds'] = el()
     rep['complete'] = True

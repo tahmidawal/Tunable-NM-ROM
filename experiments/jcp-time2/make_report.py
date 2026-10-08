@@ -312,7 +312,7 @@ def plots(st, an, rule):
         ax[1].set_yscale('log')
     ax[1].set_xlabel('time step $\\Delta t$')
     ax[1].set_ylabel('median anchor discrepancy (% of $\\|u_0\\|$)')
-    ax[1].set_title(f'{s}: distance to GAL-BDF2 at $\\Delta t_0/16$ (hollow: unresolved in most cases)')
+    ax[1].set_title(f'{s}: anchor discrepancy (GAL-BDF2, $\\Delta t_0/16$); hollow = unresolved', fontsize=10)
     xx = np.array([DT0 / 8, 10 * DT0])
     for p_, ls in ((1, (0, (1, 3))), (2, (0, (4, 3)))):
         y0 = np.nanmedian([e['time_err']['median'] for e in T if e['time_err'] and abs(e['dt'] - DT0) < 1e-15 and e['scheme'] == ('BE' if p_ == 1 else 'BDF2')] or [np.nan])

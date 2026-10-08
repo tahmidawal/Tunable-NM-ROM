@@ -98,8 +98,13 @@ def order(form, scheme, ref, mutation=None):
     return e, [float(np.log2(e[i] / e[i + 1])) for i in range(2)]
 
 
+# independent specification (DESIGN section 2), NOT read from the production table (code audit 1, item 2)
+SPEC = dict(BE=(1., -1., 0., 1., 0., 0), CN=(1., -1., 0., .5, .5, 0), CNR=(1., -1., 0., .5, .5, 2),
+            BDF2=(1.5, -2., .5, 1., 0., 1), TH06=(1., -1., 0., .6, .4, 0))
+
+
 def step_coeffs(scheme, k):
-    a0, a1, a2, b0, b1, ns = T2.SCHEMES[scheme]
+    a0, a1, a2, b0, b1, ns = SPEC[scheme]
     return (1., -1., 0., 1., 0.) if k < ns else (a0, a1, a2, b0, b1)
 
 
@@ -111,15 +116,15 @@ def intended_R(scheme, k, W, dt):
     return R, (a0, b0), cn, cm
 
 
-def gal_step_check(scheme, mutation=None, dt=.01):
-    """max over steps 1..5 of ||Q^T R_n(c_{n+1})|| / ||A c_n|| for the intended LMM (independent NumPy)."""
+def gal_step_check(scheme, mutation=None, dt=.01, per_step=False):
+    """max over steps 1..5 (or the list) of ||Q^T R_n(c_{n+1})|| / ||A c_n|| for the intended LMM (independent NumPy)."""
     W, _ = run('GAL', scheme, dt, steps=5, keep=1, mutation=mutation)
     Qn = np.linalg.qr(A)[0]
     v = []
     for k in range(5):
         R, _, cn, _ = intended_R(scheme, k, W, dt)
-        v.append(np.linalg.norm(Qn.T @ R) / np.linalg.norm(A @ cn))
-    return float(max(v))
+        v.append(float(np.linalg.norm(Qn.T @ R) / np.linalg.norm(A @ cn)))
+    return v if per_step else float(max(v))
 
 
 def lspg_step_check(scheme, mutation=None, dt=.01):
@@ -179,16 +184,28 @@ def main():
     det['m2_fn_lag'] = dict(step_check=g, detected=bool(g > 1e-9))
     g = gal_step_check('BDF2', 'stale_hist')
     det['m3_stale_hist'] = dict(step_check=g, detected=bool(g > 1e-9))
-    g = gal_step_check('CN', 'late_out')
-    e = err(run('GAL', 'CN', ORDER_DTS[-1], mutation='late_out')[0], ref)
-    det['m4_late_out'] = dict(step_check=g, oracle_err=e, detected=bool(g > 1e-9 and e > 10 * rep['info']['order_GAL_CN']['errors'][-1]))
+    g1 = gal_step_check('CN', 'late_out', per_step=True)[0]          # the first step: c_1 checked against c_0
+    Wm = run('GAL', 'CN', ORDER_DTS[-1], mutation='late_out')[0]
+    Wu = run('GAL', 'CN', ORDER_DTS[-1])[0]
+    eT = np.linalg.norm(Wm[5] - ref[4]) / np.linalg.norm(C0)       # the final time t = 0.25
+    eTu = np.linalg.norm(Wu[5] - ref[4]) / np.linalg.norm(C0)
+    det['m4_late_out'] = dict(step1_check=g1, final_time_err=eT, final_time_err_unmutated=eTu,
+                              detected=bool(g1 > 1e-9 and eT > 10 * eTu))
     for sc in ('BE', 'BDF2'):
         d, _ = lspg_step_check(sc, 'd_b1')
         det[f'm5_d_b1_{sc}'] = dict(rel_diff=d, detected=bool(d > 1e-6))
+    # production table equals the specification; GAL must reject a non-root exit (code audit 1, items 1-2)
+    rep['gates']['production_table_matches_spec'] = all(tuple(T2.SCHEMES[k_]) == SPEC[k_] for k_ in SPEC)
+    ev = jax.jit(T2.make_evolve(nl, nlJ, 'GAL', RP, np.inf, budget=5))
+    _, stn = ev(jnp.asarray(C0), NU, 1., data('GAL'), T2.sched('CN', .01, 0., 1e-40))
+    rep['info']['gal_unattainable_nfail'] = int(stn['nfail'])
+    rep['gates']['gal_nonroot_rejected'] = int(stn['nfail']) == int(stn['steps']) > 0
     rep['mutations'] = det
     for k, v in det.items():
         rep['gates'][f'mutation_{k}_detected'] = v['detected']
     rep['all_pass'] = bool(all(rep['gates'].values()))
+    import hashlib
+    rep['source_sha256'] = {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest() for f in ('t2core.py', 'test_lmm.py')}
     Path(a.out).write_text(json.dumps(rep, indent=1, default=float) + '\n')
     for k, v in rep['gates'].items():
         print(('PASS ' if v else 'FAIL ') + k)

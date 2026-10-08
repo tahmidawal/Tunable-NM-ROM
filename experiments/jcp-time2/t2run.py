@@ -51,8 +51,7 @@ def tol_of(form, level):
 def run_list(cfg):
     """The grid of DESIGN section 3 / A1.3 / A1.5 / A1.11 for one setting: tuples (rule_role, form, scheme, dt, level)."""
     dts = [DT0 * f for f in cfg['dt_factors']]                       # 1/8 .. 10
-    dyad = [DT0 * f for f in cfg['dyadic_factors']]                  # 1/8 .. 2
-    tighter = [DT0 * f for f in cfg['tighter_factors']]              # 1/8 .. 1
+    tighter = [DT0 * f for f in cfg['tighter_factors']]              # 1/8 .. 2
     timed = [d for d in dts if d >= DT0 / 2 - 1e-15]
     runs = []
     for form in cfg['forms']:
@@ -61,7 +60,7 @@ def run_list(cfg):
             runs += [('main', form, sc, d, 'tight') for d in dts]
             runs += [('main', form, sc, d, 'tighter') for d in tighter]
         for sc in cfg.get('control_schemes', []):
-            runs += [('main', form, sc, d, 'tight') for d in dyad] + [('main', form, sc, d, 'tighter') for d in tighter]
+            runs += [('main', form, sc, d, 'tight') for d in dts] + [('main', form, sc, d, 'tighter') for d in tighter]
         if form == 'GAL':
             for sc in cfg.get('anchor_schemes', []):
                 runs += [('main', form, sc, DT0 / 16, 'tight'), ('main', form, sc, DT0 / 16, 'tighter')]
@@ -267,6 +266,8 @@ def main():
             ig = runs.index(('main', 'LSPG', 'BE', DT0, 'prod'))
             Wv = np.asarray(vv['internal'])[::int(round(.05 / DT0))]
             frv = vv['fields'][:, ::s256, ::s256]
+            if ci < cfg['timing']['cases'] and coh == cfg['timing']['cohort']:
+                acc_sha[('vendor|LSPG|BE|0.005|prod', ci)] = sha(np.asarray(frv))
             gen_it = int(rep['rows'][base_i + order.index(ig)]['stats']['it_sum'])
             rep['g1a'].append(dict(setting=s, cohort=coh, case=c,
                                    w0_rel=float(np.linalg.norm(w0set[ci] - Wv[0]) / np.linalg.norm(Wv[0])),
@@ -295,6 +296,7 @@ def main():
         rng = np.random.default_rng(int(tc.get('seed', 20261008)))
         inputs = {ci: (jnp.asarray(Q.e.initial(L, ph)), float(ph[4])) for ci, (coh, c, ph) in tcases}
         cache0 = {f"{k_[0]}|{k_[1]}": getattr(queries[k_], "_cache_size", lambda: -1)() for k_ in queries}
+        cache0['vendor'] = getattr(vq, '_cache_size', lambda: -1)()
         vend = ('vendor', 'LSPG', 'BE', DT0, 'prod')
 
         def timed(r, ci):
@@ -325,11 +327,13 @@ def main():
                 ent = dict(setting=s, B=key(B), case_index=ci, rep=rep_i, tA1=ta1, tB=tb, tA2=ta2,
                            ratio=tb / (.5 * (ta1 + ta2)), drift=ta2 / ta1,
                            A_matches_accuracy=bool(ha1 == acc_sha.get((key(A_run), ci)) and ha2 == acc_sha.get((key(A_run), ci))))
-                if B != vend:
-                    ent['B_matches_accuracy'] = bool(hb == acc_sha.get((key(B), ci)))
+                ent['B_expected_sha'] = acc_sha.get((key(B), ci))
+                ent['B_sha'] = hb
+                ent['B_matches_accuracy'] = bool(hb == acc_sha.get((key(B), ci)))
                 inv.append(ent)
         cache1 = {f"{k_[0]}|{k_[1]}": getattr(queries[k_], "_cache_size", lambda: -1)() for k_ in queries}
-        rep['timing'][s] = dict(cases=[f'{cases[ci][0]}|{cases[ci][1]}' for ci, _ in tcases], reps=tc['reps'],
+        cache1['vendor'] = getattr(vq, '_cache_size', lambda: -1)()
+        rep['timing'][s] = dict(candidates=[key(r) for r in cands] + [key(vend)], cases=[f'{cases[ci][0]}|{cases[ci][1]}' for ci, _ in tcases], reps=tc['reps'],
                                 burn=tc['burn'], A=key(A_run), invocations=inv, cache_before=cache0, cache_after=cache1,
                                 gpu_uuid=smi)
         print('TIMING', s, len(inv), el(), flush=True)

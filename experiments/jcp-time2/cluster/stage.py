@@ -41,6 +41,13 @@ def main():
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain', '--', LANE], text=True)
     assert not [l for l in dirty.splitlines() if not l[3:].startswith(f'{LANE}/runs')], dirty
+    # G2a certificate (code audit 1, item 10): the committed manufactured-test report must pass and name the staged sources
+    cert = json.loads(subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{LANE}/checks/test_lmm.json']))
+    assert cert['all_pass'], 'manufactured tests (G2a) did not pass'
+    for f, h in cert['source_sha256'].items():
+        blob = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{LANE}/{f}'])
+        assert hashlib.sha256(blob).hexdigest() == h, f'G2a certificate is for a different {f}'
+    FILES.append(f'{LANE}/checks/test_lmm.json')
     cfgname = f'{LANE}/configs/{a.attempt}.json'
     proof = []
     for name in FILES + [cfgname]:

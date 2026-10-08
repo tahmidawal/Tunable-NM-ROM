@@ -130,6 +130,28 @@ def check_metrics(res, Wz, setting, dec, refs, max_cases, swapST=False, timeshif
     return bad
 
 
+def expected_runs(g, has_hq, has_old):
+    """DESIGN section 3 + A1.3/A1.5/A1.11 + A6.1, re-typed from the design (not imported from the driver)."""
+    D = .005
+    dts = [D * f for f in g['dt_factors']]
+    tig = [D * f for f in g['tighter_factors']]
+    out = []
+    for form in g['forms']:
+        for sc in g['schemes']:
+            out += [('main', form, sc, d, 'prod') for d in dts] + [('main', form, sc, d, 'tight') for d in dts]
+            out += [('main', form, sc, d, 'tighter') for d in tig]
+        for sc in g['control_schemes']:
+            out += [('main', form, sc, d, 'tight') for d in dts] + [('main', form, sc, d, 'tighter') for d in tig]
+        if form == 'GAL':
+            for sc in g['anchor_schemes']:
+                out += [('main', form, sc, D / 16, 'tight'), ('main', form, sc, D / 16, 'tighter')]
+        if has_hq:
+            out += [('hq', form, sc, d, 'prod') for sc in g['schemes'] for d in dts if d >= D / 2 - 1e-15]
+    if has_old:
+        out += [('old', 'LSPG', sc, D * f, 'prod') for sc in g['old_schemes'] for f in g['old_dt_factors']]
+    return [f'{r}|{f}|{sc}|{d:.8g}|{l}' for r, f, sc, d, l in out]
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('archive')
@@ -162,8 +184,45 @@ def main():
     ck['references_pinned'] = not refbad
     dec = Decoder()
     rej = {}
+    ck['precision_highest_logged'] = 'precision=highest' in logs
+    # G2a certificate bound to the staged code (code audit 1, item 10)
+    cert = json.loads((HERE / 'checks/test_lmm.json').read_text())
+    prov = {Path(x['source']).name: x.get('sha256') for x in json.loads((arc / 'PROVENANCE.json').read_text())} \
+        if (arc / 'PROVENANCE.json').exists() else {}
+    ck['G2a_certificate'] = bool(cert['all_pass'] and prov.get('t2core.py') == cert['source_sha256']['t2core.py'])
+    exp_cases = []
+    for coh in res['config']['cohorts']:
+        sub = res['config'].get('case_subset', {}).get(coh)
+        exp_cases += [f'{coh}|{c}' for c in (sub if sub is not None else range(dict(dev6=6, val32=32)[coh]))]
+    ck['full_case_coverage'] = a.max_cases >= len(exp_cases)      # a partial audit can never pass
     for s in res['config']['settings']:
         Wz = dict(np.load(arc / f'output/W_{s}.npz'))
+        rules = res['config']['rules'][s]
+        er = expected_runs(res['config']['grid'], 'hq' in rules, 'old' in rules)
+        Rp = res['setup'][s]['R_prime']
+        ck[f'inventory_runs_{s}'] = list(Wz['runs']) == er and len(set(er)) == len(er)
+        ck[f'inventory_cases_{s}'] = list(Wz['cases']) == exp_cases
+        ck[f'shapes_{s}'] = Wz['W'].shape == (len(exp_cases), len(er), 6, Rp) and Wz['w0'].shape == (len(exp_cases), Rp)
+        rws = [r for r in res['rows'] if r['setting'] == s]
+        keys = [(r['cohort'], r['case'], r['run']) for r in rws]
+        ck[f'inventory_rows_{s}'] = len(keys) == len(set(keys)) == len(exp_cases) * len(er) and \
+            set(keys) == {(x.split('|')[0], int(x.split('|')[1]), k_) for x in exp_cases for k_ in er}
+        miss = []
+        ers = set(er)
+        for r in rws:
+            role, form, sc, dt, lev = r['run'].split('|')
+            dt = float(dt)
+            need = ['e_ST', 'e_S', 'e_TX', 'anchor_257', 'anchor_full']
+            if f'{role}|{form}|{sc}|{dt / 2:.8g}|{lev}' in ers:
+                need.append('d_half')
+            if lev == 'prod' and f'{role}|{form}|{sc}|{dt:.8g}|tight' in ers:
+                need.append('prod_vs_tight')
+            if lev == 'tight' and f'{role}|{form}|{sc}|{dt:.8g}|tighter' in ers:
+                need.append('s_h')
+            miss += [(r['run'], m) for m in need if r.get(m) is None or not np.isfinite(r[m])]
+        ck[f'mandatory_metrics_{s}'] = not miss
+        out['info'][f'missing_metrics_{s}'] = [list(m) for m in miss[:20]]
+        ck[f'all_finite_{s}'] = all(r['finite'] for r in rws) and bool(np.isfinite(Wz['W']).all())
         bad = check_metrics(res, Wz, s, dec, refs, a.max_cases)
         ck[f'metrics_reconstructed_{s}'] = not bad
         out['info'][f'metric_mismatches_{s}'] = [list(map(str, b)) for b in bad[:20]]
@@ -200,10 +259,12 @@ def main():
             out['info'][f'G1b_{s}'] = dict(cases=len(dd), max_abs_diff=max(dd) if dd else None, tol=1e-6,
                                            passed=bool(dd) and max(dd) <= 1e-6)
         tm = res['timing'].get(s)
-        if tm:
-            inv = tm['invocations']
-            ck[f'G4_timed_outputs_match_{s}'] = all(i['A_matches_accuracy'] and i.get('B_matches_accuracy', True) for i in inv)
-            ck[f'G4_no_recompile_{s}'] = tm['cache_before'] == tm['cache_after']
+        tc = res['config']['timing']
+        inv = tm['invocations'] if tm else []
+        ck[f'G4_sample_count_{s}'] = bool(tm) and len(inv) == len(tm['candidates']) * min(tc['cases'], len(
+            [x for x in exp_cases if x.startswith(tc['cohort'] + '|')])) * tc['reps'] and len(inv) > 0
+        ck[f'G4_timed_outputs_match_{s}'] = bool(inv) and all(i['A_matches_accuracy'] and i['B_matches_accuracy'] for i in inv)
+        ck[f'G4_no_recompile_{s}'] = bool(tm) and tm['cache_before'] == tm['cache_after']
         rows = [r for r in res['rows'] if r['setting'] == s]
         out['info'][f'unverified_{s}'] = sorted({r['run'] for r in rows if not r['verified']})
         out['info'][f'nonfinite_{s}'] = sorted({r['run'] for r in rows if not r['finite']})
@@ -221,6 +282,7 @@ def main():
         print(('PASS ' if v else 'FAIL ') + k)
     print(json.dumps(out['info'], default=str)[:3000])
     print('AUDIT ALL PASS' if out['all_pass'] else 'AUDIT FAILED')
+    sys.exit(0 if out['all_pass'] else 1)
 
 
 if __name__ == '__main__':

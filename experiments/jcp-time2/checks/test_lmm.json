@@ -23,6 +23,8 @@
   "gal_step_BDF2": true,
   "lspg_step_BE": true,
   "lspg_step_BDF2": true,
+  "production_table_matches_spec": true,
+  "gal_nonroot_rejected": true,
   "mutation_m1_a2flip_detected": true,
   "mutation_m2_fn_lag_detected": true,
   "mutation_m3_stale_hist_detected": true,
@@ -159,7 +161,8 @@
   "lspg_step_CN": {
    "rel_diff": 1.720772193001878e-10,
    "ls_residual_step1": 0.10256702139985707
-  }
+  },
+  "gal_unattainable_nfail": 25
  },
  "mutations": {
   "m1_a2flip": {
@@ -176,18 +179,23 @@
    "detected": true
   },
   "m4_late_out": {
-   "step_check": 0.13660383981039317,
-   "oracle_err": 0.004268727406712969,
+   "step1_check": 0.13660383981039317,
+   "final_time_err": 0.0006008684353205378,
+   "final_time_err_unmutated": 5.419415771857927e-07,
    "detected": true
   },
   "m5_d_b1_BE": {
-   "rel_diff": 0.03537955582161423,
+   "rel_diff": 0.02228209591925911,
    "detected": true
   },
   "m5_d_b1_BDF2": {
-   "rel_diff": 0.02171800608383021,
+   "rel_diff": 0.02228209591925911,
    "detected": true
   }
  },
- "all_pass": true
+ "all_pass": true,
+ "source_sha256": {
+  "t2core.py": "36dbc87aa7f7f178aa690a48cadd5c3b51a2406e47b206cae73dd00f8dbd4630",
+  "test_lmm.py": "2bbb91a647bd718c45e64ab159f2171796868bb2bce1b8cec63c7ef7a2a053e4"
+ }
 }

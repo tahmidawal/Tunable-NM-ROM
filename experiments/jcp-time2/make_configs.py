@@ -5,7 +5,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 REF_CONTRACT = {'mesh': 8192, 'refs': {'ST': {'dt': 0.0003125, 'ntol': 1e-11, 'ltol': 1e-09, 'accept_residual': 2e-11},
                                        'S': {'dt': 0.005, 'ntol': 1e-11, 'ltol': 1e-09, 'accept_residual': 2e-11}}}
-GRID = dict(dt_factors=[.125, .25, .5, 1, 2, 5, 10], dyadic_factors=[.125, .25, .5, 1, 2], tighter_factors=[.125, .25, .5, 1],
+GRID = dict(dt_factors=[.125, .25, .5, 1, 2, 5, 10], dyadic_factors=[.125, .25, .5, 1, 2], tighter_factors=[.125, .25, .5, 1, 2],
             forms=['LSPG', 'GAL'], schemes=['BE', 'CN', 'CNR', 'BDF2'], control_schemes=['TH06'],
             anchor_schemes=['BDF2', 'CN'], anchor='BDF2', old_schemes=['BE', 'CN', 'BDF2'], old_dt_factors=[.5, 1, 2, 5])
 RULES = {'acc': {'main': {'kind': 'point', 'rule': 'gauss96'}, 'hq': {'kind': 'point', 'rule': 'gauss192'},

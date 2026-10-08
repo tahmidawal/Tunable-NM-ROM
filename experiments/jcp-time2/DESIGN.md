@@ -482,3 +482,18 @@ reference manifest.
 
 **A5.3 Jobs.** The 2D grid runs as two sequential jobs (`a1kfast`, then `a1kacc`) after the cluster smoke `smk`
 (both settings, $L=256$, dev6 cases 0 and 2); concurrency cap 1.
+
+## Amendment A6 (2026-10-08, after the code audit `audits/codex-code-1.md`)
+
+**A6.1 Grid.** Tighter replays also at $2\Delta t_0$ (all dyadic $\Delta t$ of both triples, $\Delta t_0/8$ … $2\Delta t_0$). TH06 runs at the
+tight tolerance on the full 7-step ladder (section 3), with tighter replays on the dyadic steps.
+**A6.2 Verification per form.** GAL steps are accepted only on the residual tolerance (a stationary non-root is a failed
+step); LSPG accepts stationarity or residual tolerance. A manufactured test checks that GAL with an unattainable
+tolerance is unverified.
+**A6.3 Production-vs-tight** is reported for the main-rule arms (the `hq` and `old` arms have no tight counterparts).
+**A6.4 G2a certificate.** `checks/test_lmm.json` (all gates pass, with the sha256 of `t2core.py` and `test_lmm.py`) is
+committed; staging refuses unless it passes and matches the staged `t2core.py`; the audit re-checks this against the
+job's provenance. The audit also requires exact run/case inventories, shapes, mandatory metrics, timing sample counts,
+the vendor-subject output hashes and compiled-cache sizes, finiteness and the precision line, exits nonzero on failure,
+and never passes a partial (`--max-cases`) audit. Submission takes an `flock` on the namespace and refuses while any
+`t2_` job is live.

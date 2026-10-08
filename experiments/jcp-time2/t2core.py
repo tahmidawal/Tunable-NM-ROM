@@ -5,7 +5,7 @@ DESIGN.md (sections 2, 5 and amendment A1) is the specification. Only the time d
 
     R_n(c) = A (a0 c + a1 c_n + a2 c_{n-1}) + dt (b0 F(c) + b1 F(c_n)),   F(c) = N(c) + nu Lambda A c
 
-  LSPG  minimise || D R_n(c) ||,  D = 1 / (a0 + dt b0 nu Lambda)       (BE: exactly the deployed residual)
+  LSPG  minimise || D R_n(c) ||,  D = 1 / (a0 + dt b0 nu Lambda)       (BE: algebraically the deployed residual; G1a tolerances)
   GAL   solve Q^T R_n(c) = 0,     A = Q Rm (thin QR)                   (the LMM for Rm c' = -Q^T F(c))
 
 The stepper is generic in the tested advection (nl, nlJ), so the manufactured tests (test_lmm.py) run the same code.
@@ -136,7 +136,9 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
         R = inner(w, Aw, val, hist, nu, data, co, dt)
         if form == 'LSPG':
             S = 1. / dscale(co, dt, nu, data['lam'])
-            # S (a0 A + dt b0 (dN + nu lam A)) = A + dt b0 S dN, since S (a0 + dt b0 nu lam) = 1 (deployed BE form)
+            if mutation == 'd_b1':  # unsimplified derivative for the wrong-weight mutant (code audit 1, item 8)
+                return R * S, S[:, None] * (co[0] * data['A'] + dt * co[3] * (dN + (nu * data['lam'])[:, None] * data['A']))
+            # S (a0 A + dt b0 (dN + nu lam A)) = A + dt b0 S dN, since S (a0 + dt b0 nu lam) = 1 (the vendor BE form)
             return R * S, data['A'] + (dt * co[3] * S)[:, None] * dN
         Qt = data['Qm'].T
         return Qt @ R, co[0] * data['Rm'] + dt * co[3] * (Qt @ dN + nu * data['QtLA'])
@@ -177,7 +179,11 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
             tol = sch['tolf'] * (scale if form == 'LSPG' else jnp.linalg.norm(Acn))
             w2, rn, it, reason, gn, rej, lamn = lm(wi, args, tol, sch['gtol'], lam0)
             # A1.5 verification from the returned state: stationarity ratio <= gtol or residual <= tol
-            ok = jnp.isfinite(rn) & ((gn <= sch['gtol']) | (rn <= tol)) & (reason != 0) & (reason != 3)
+            if form == 'LSPG':      # LSPG: stationarity or residual tolerance
+                conv = (gn <= sch['gtol']) | (rn <= tol)
+            else:                   # GAL: a root, i.e. residual tolerance only (code audit 1, item 1)
+                conv = rn <= tol
+            ok = jnp.isfinite(rn) & conv & (reason != 0) & (reason != 3)
             # A1.6 alternation index on the stiff half of the tests
             Aw2 = A @ w2
             dcur = hm * (Aw2 - Acn)

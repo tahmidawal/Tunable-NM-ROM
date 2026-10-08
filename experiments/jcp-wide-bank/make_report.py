@@ -237,6 +237,39 @@ def section_2d(d, audit, L):
                  f"{sci(ca['ctrl_gauss8']['worst_distance'])} / {sci(ca['ctrl_gauss8']['rho_max'])} | "
                  f"{sci(ca['ctrl_smolyak8']['worst_distance'])} / {sci(ca['ctrl_smolyak8']['rho_max'])} | "
                  f"{d['floors'].get('R%d' % e['Rp'], {}).get('check_passed')} | {tg['drift_worst']:.3f} / {tg['deterministic']} |")
+    # ---- what the numbers say (phrasing per audits/codex-results-j1.md)
+    rows = d['rows']
+
+    def per_case(key, arm, tag):
+        return {(r['cohort'], r['case']): r[f'ref_{tag}_evolved'] for r in rows if r['setting'] == key and r['arm'] == arm}
+    a, b = by.get((512, 4)), by.get((384, 4))
+    if a and b and a['deployed'] and b['deployed']:
+        sa, sb = per_case(a['key'], a['deployed']['arm'], 'S'), per_case(b['key'], b['deployed']['arm'], 'S')
+        worse = sum(sa[k] > sb[k] for k in sa)
+        wk = max(sa, key=sa.get)
+        sa2 = [v for k, v in sa.items() if k != wk]
+        sb2 = [v for k, v in sb.items() if k != wk]
+        L.append('\n### What the 2D numbers say (PROVISIONAL)\n')
+        L.append(f"- **The 2D dial stops at $R'=384$ on this bank.** Against S, the deployed $R'=512$ rollout is worse than "
+                 f"$R'=384$ on {worse} of {len(sa)} cases; without the worst case ({wk[0]} {wk[1]}) the worst S error is still "
+                 f"{pct(max(sa2))} vs {pct(max(sb2))}. The span floor improves only slightly "
+                 f"({pct(b['floor_S'][0], 3)} → {pct(a['floor_S'][0], 3)}), and the conditioning of $A$ grows "
+                 f"({b['A_condition']:.1f} → {a['A_condition']:.1f}). The 512-column bank adds little representable content "
+                 "and costs accuracy in the reduced dynamics; the cause is not isolated here.")
+        L.append(f"- **The ST median is flat across $R'$** ({', '.join(pct(by[(r, 4)]['dep_ST'][1]) for r in Rps if by.get((r, 4)))} "
+                 f"for $R'$ = {', '.join(str(r) for r in Rps)}), while the S median falls "
+                 f"({', '.join(pct(by[(r, 4)]['dep_S'][1]) for r in Rps if by.get((r, 4)))}). This is consistent with the "
+                 "backward-Euler time error at $\\Delta t=0.005$ masking the spatial gains; it is not causally isolated here "
+                 "(lane C2 tests second-order time stepping).")
+        L.append(f"- **Cost grows steeply with $R'$**: the final-panel query time is "
+                 f"{', '.join(('%.0f ms' % by[(r, 4)]['dep_ms_final']) for r in Rps if by.get((r, 4)) and by[(r, 4)].get('dep_ms_final'))} "
+                 f"for $R'$ = {', '.join(str(r) for r in Rps)}, because the points needed ($m^\\star$) grow with the setting.")
+        L.append('- **$m^\\star$ depends jointly on $R\'$ and $M$ and on the tested ladder;** reducing $M$ does not reliably reduce '
+                 '$m^\\star$ (it sometimes increases it), contrary to the mechanism registered for 1d. In every setting the rollout '
+                 'distance, not $\\rho$, decides $m^\\star$.')
+        u = [k for k, v in h3.items() if v['useful']]
+        L.append(f"- **Trim:** useful under the registered ST criterion only at {', '.join(f"$R'={k[0]}$, $\\kappa={k[1]}$" for k in u) or 'no setting'}; "
+                 "every trim increases the worst error against S, so the acceptance is specific to the space+time reference.\n")
     plots_2d(S, by, Rps, tv)
     return S, by, h3
 
@@ -314,6 +347,11 @@ def section_train(t, L):
              f"{t['config']['modes']} (DESIGN A1/A2). Selected checkpoint step {b.get('selected_step')} of "
              f"{t['config']['bank_steps']}; worst bank-validation error {pct(b.get('validation_worst_over_groups'))}; "
              f"bank time {b.get('seconds', 0) / 3600:.2f} h; total {t.get('seconds', 0) / 3600:.2f} h.\n")
+    L.append("Floors here are **span** floors on the native-grid bank-validation fields (seed 923751, 96 cases × six saved "
+             "times including $t=0$, each snapshot normalised by its own norm), not errors against the refined reference, and not "
+             "rollout errors: a lower floor shows more representable content, not a more accurate reduced model (that is 1c). "
+             "The old/new comparison at equal deployed width does not isolate rank (width, POD truncation, seed and whitening "
+             "weight differ).\n")
     rows = []
     for n in ('33', '65', '129'):
         for r in ('256', '512', '768', '1024'):
@@ -459,6 +497,7 @@ GLOSSARY = r"""## Glossary
 - **eligible**: finite rollout with no damping-limit (2D) / reason-3 (3D) exits and at most 1 % non-converged steps.
 - **K-conv, K-target, controls**: gates: the converged rollout agrees with its check; the continuum target agrees with its check; the under-resolved control rules (Gauss $8^2$, Smolyak-8; 3D `lat256`, `smol8`) must not pass both selection criteria.
 - **A–B–A timing, K-time**: timed reduced solves, then a fixed baseline, then the solves again, on one GPU in one job; K-time requires drift within 10 % and outputs identical to the untimed run. **paired ratio**: per case and phase, trimmed-setting time divided by the $\kappa=4$ setting's time.
+- **span floor (3D bank table)**: least-squares projection error of native-grid bank-validation snapshots onto the first $R'$ bank columns, worst over 96 cases × six times, each relative to its own norm.
 - **B1–B4′**: acceptance checks of the new 3D bank (finite training; ordering inverse and conditioning; equal-width comparison with the old bank; span gain from 512 to 1024).
 - **PROVISIONAL**: scored against first-order references; not a physical-accuracy claim.
 """

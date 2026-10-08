@@ -64,9 +64,20 @@ Job `j1` 5012763 on NVIDIA A100 80GB PCIe, commit `97add8fc5`, mesh $1024^2$, co
 | R128_M512 | 1.9e-10 (True) | 3.2e-08 / 3.5e-08 (True) | 5.7e-01 / 7.0e+00 | 1.5e-01 / 3.1e+00 | True | 1.015 / True |
 | R128_M384 | 2.2e-10 (True) | 2.6e-08 / 3.0e-08 (True) | 5.8e-01 / 6.0e+00 | 1.5e-01 / 2.2e+00 | True | 1.016 / True |
 | R128_M256 | 2.6e-10 (True) | 2.1e-08 / 2.5e-08 (True) | 5.7e-01 / 4.9e+00 | 4.8e-01 / 1.4e+00 | True | 1.013 / True |
+
+### What the 2D numbers say (PROVISIONAL)
+
+- **The 2D dial stops at $R'=384$ on this bank.** Against S, the deployed $R'=512$ rollout is worse than $R'=384$ on 28 of 38 cases; without the worst case (val32 5) the worst S error is still 1.21 % vs 0.99 %. The span floor improves only slightly (0.687 % → 0.605 %), and the conditioning of $A$ grows (9.6 → 15.2). The 512-column bank adds little representable content and costs accuracy in the reduced dynamics; the cause is not isolated here.
+- **The ST median is flat across $R'$** (1.04 %, 0.91 %, 0.91 %, 0.91 % for $R'$ = 128, 256, 384, 512), while the S median falls (0.41 %, 0.09 %, 0.05 %, 0.06 %). This is consistent with the backward-Euler time error at $\Delta t=0.005$ masking the spatial gains; it is not causally isolated here (lane C2 tests second-order time stepping).
+- **Cost grows steeply with $R'$**: the final-panel query time is 28 ms, 71 ms, 200 ms, 689 ms for $R'$ = 128, 256, 384, 512, because the points needed ($m^\star$) grow with the setting.
+- **$m^\star$ depends jointly on $R'$ and $M$ and on the tested ladder;** reducing $M$ does not reliably reduce $m^\star$ (it sometimes increases it), contrary to the mechanism registered for 1d. In every setting the rollout distance, not $\rho$, decides $m^\star$.
+- **Trim:** useful under the registered ST criterion only at $R'=384$, $\kappa=3$; every trim increases the worst error against S, so the acceptance is specific to the space+time reference.
+
 ## 3D: the wider bank (1b)
 
 Job 5012847 on NVIDIA H200, commit `156599de0`: single-seed, capacity-scaled baseline-recipe bank, rank 1024, width 2048, POD modes 2048 (DESIGN A1/A2). Selected checkpoint step 11000 of 12000; worst bank-validation error 1.31 %; bank time 1.14 h; total 1.85 h.
+
+Floors here are **span** floors on the native-grid bank-validation fields (seed 923751, 96 cases × six saved times including $t=0$, each snapshot normalised by its own norm), not errors against the refined reference, and not rollout errors: a lower floor shows more representable content, not a more accurate reduced model (that is 1c). The old/new comparison at equal deployed width does not isolate rank (width, POD truncation, seed and whitening weight differ).
 
 | mesh nodes | $R'$ | new bank: worst full-grid floor | `model_M2`: same fields |
 |---|---|---|---|
@@ -100,6 +111,7 @@ B2′ (inverse check 5.8e-12, 65-grid condition 1.01e+04): **True**. B3 (new $R'
 - **eligible**: finite rollout with no damping-limit (2D) / reason-3 (3D) exits and at most 1 % non-converged steps.
 - **K-conv, K-target, controls**: gates: the converged rollout agrees with its check; the continuum target agrees with its check; the under-resolved control rules (Gauss $8^2$, Smolyak-8; 3D `lat256`, `smol8`) must not pass both selection criteria.
 - **A–B–A timing, K-time**: timed reduced solves, then a fixed baseline, then the solves again, on one GPU in one job; K-time requires drift within 10 % and outputs identical to the untimed run. **paired ratio**: per case and phase, trimmed-setting time divided by the $\kappa=4$ setting's time.
+- **span floor (3D bank table)**: least-squares projection error of native-grid bank-validation snapshots onto the first $R'$ bank columns, worst over 96 cases × six times, each relative to its own norm.
 - **B1–B4′**: acceptance checks of the new 3D bank (finite training; ordering inverse and conditioning; equal-width comparison with the old bank; span gain from 512 to 1024).
 - **PROVISIONAL**: scored against first-order references; not a physical-accuracy claim.
 

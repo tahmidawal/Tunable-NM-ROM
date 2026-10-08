@@ -35,6 +35,7 @@ header p { color: var(--muted); margin: 0; max-width: 68ch; }
     <button type="button" data-f="all" aria-pressed="true">All</button>
     <button type="button" data-f="3D" aria-pressed="false">Burgers 3D</button>
     <button type="button" data-f="2D" aria-pressed="false">Burgers 2D</button>
+    <button type="button" data-f="Mechanism" aria-pressed="false">Why it works</button>
   </div>
 </header>
 <figure class="card" data-sec="3D">
@@ -71,6 +72,16 @@ header p { color: var(--muted); margin: 0; max-width: 68ch; }
   <figcaption><span class="tag">Burgers 2D</span><h2>In 2D, Gauss and Fibonacci converge; Sobol is slow and Smolyak fails.</h2><p>Our 2D bank needs thousands of points before Gauss or Fibonacci pass the bar, far more than Hari's smaller model did.</p></figcaption>
   <img src="figs/2d_rule_ladder.png" alt="In 2D, Gauss and Fibonacci converge; Sobol is slow and Smolyak fails." loading="lazy">
   <p class="note"><strong>How to read it:</strong> Measured on the states reached on the 1024² test runs, accurate setting. The red triangle is the old mesh lattice measured against its own (mesh) target, so it is not directly comparable.</p>
+</figure>
+<figure class="card" data-sec="Mechanism">
+  <figcaption><span class="tag">Why it works</span><h2>New (8 Oct): the accuracy comes from the exact gradient, not from leaving the mesh.</h2><p>Pink is a control: every mesh node, but the bank's exact derivative instead of the upwind stencil. In 3D it lands on top of the off-mesh rule (yellow/orange) and the converged rollout. Blue/red, the old stencil-based methods, carry the mesh's error. So the exact gradient gives the accuracy, and the classical rule gives the same answer with thousands of points instead of every mesh node.</p></figcaption>
+  <img src="figs/a1_error_vs_mesh.png" alt="New (8 Oct): the accuracy comes from the exact gradient, not from leaving the mesh." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Top row: worst error vs the refined reference (provisional: the reference is first-order). Bottom row: distance to the converged off-mesh rollout. Preliminary (lane jcp-mechanism, Codex-audited). In 2D the pre-registered label could not be applied, because the gap was below its 1 % threshold, but the distances point the same way.</p>
+</figure>
+<figure class="card" data-sec="Mechanism">
+  <figcaption><span class="tag">Why it works</span><h2>New (8 Oct): the old method's error is exactly the stencil's order.</h2><p>The difference between the mesh's own sum and the true integral falls with slope 1 for the first-order upwind stencil and slope 2 for a second-order central stencil. With the exact gradient (green) it drops to the noise floor.</p></figcaption>
+  <img src="figs/a2_gap_vs_h.png" alt="New (8 Oct): the old method's error is exactly the stencil's order." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Measured on fixed saved states; slopes are fitted over a pre-registered window. Dashed lines: a manufactured test state run through the same code (control).</p>
 </figure>
 </div>
 <script>

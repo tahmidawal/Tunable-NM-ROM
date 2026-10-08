@@ -34,12 +34,18 @@ FIGS = [
  ("2D", "2d_rule_ladder", "In 2D, Gauss and Fibonacci converge; Sobol is slow and Smolyak fails.",
   "Our 2D bank needs thousands of points before Gauss or Fibonacci pass the bar, far more than Hari's smaller model did.",
   "Measured on the states reached on the 1024² test runs, accurate setting. The red triangle is the old mesh lattice measured against its own (mesh) target, so it is not directly comparable."),
+ ("Mechanism", "a1_error_vs_mesh", "New (8 Oct): the accuracy comes from the exact gradient, not from leaving the mesh.",
+  "Pink is a control: every mesh node, but the bank's exact derivative instead of the upwind stencil. In 3D it lands on top of the off-mesh rule (yellow/orange) and the converged rollout. Blue/red, the old stencil-based methods, carry the mesh's error. So the exact gradient gives the accuracy, and the classical rule gives the same answer with thousands of points instead of every mesh node.",
+  "Top row: worst error vs the refined reference (provisional: the reference is first-order). Bottom row: distance to the converged off-mesh rollout. Preliminary (lane jcp-mechanism, Codex-audited). In 2D the pre-registered label could not be applied, because the gap was below its 1 % threshold, but the distances point the same way."),
+ ("Mechanism", "a2_gap_vs_h", "New (8 Oct): the old method's error is exactly the stencil's order.",
+  "The difference between the mesh's own sum and the true integral falls with slope 1 for the first-order upwind stencil and slope 2 for a second-order central stencil. With the exact gradient (green) it drops to the noise floor.",
+  "Measured on fixed saved states; slopes are fitted over a pre-registered window. Dashed lines: a manufactured test state run through the same code (control)."),
 ]
 
 cards = []
 for sec, fn, head, body, note in FIGS:
     cards.append(f'''<figure class="card" data-sec="{sec}">
-  <figcaption><span class="tag">Burgers {sec}</span><h2>{head}</h2><p>{body}</p></figcaption>
+  <figcaption><span class="tag">{'Why it works' if sec == 'Mechanism' else 'Burgers ' + sec}</span><h2>{head}</h2><p>{body}</p></figcaption>
   <img src="figs/{fn}.png" alt="{head}" loading="lazy">
   {f'<p class="note"><strong>How to read it:</strong> {note}</p>' if note else ''}
 </figure>''')

@@ -127,13 +127,16 @@ def nodes_gates(mdl, mesh, s, Rp, M, blocks):
         return float(np.max(np.abs(a - b)) / np.max(np.abs(b)))
     g = {}
     sel = np.linspace(0, len(X) - 1, 32).astype(int)
-    hfd = 1e-5
-    _, gx, gy = mdl.values_grads(X[sel], Rp)
-    vxp = mdl.values_grads(X[sel] + [hfd, 0.], Rp)[0]
-    vxm = mdl.values_grads(X[sel] - [hfd, 0.], Rp)[0]
-    vyp = mdl.values_grads(X[sel] + [0., hfd], Rp)[0]
-    vym = mdl.values_grads(X[sel] - [0., hfd], Rp)[0]
-    g['G1_derivative_vs_fd'] = rel((vxp - vxm + vyp - vym) / (2 * hfd), gx + gy)
+    _, gx, gy = mdl.values_grads(X[sel], Rp)     # amendment 6 (A6-1b): convergence-based check, 2nd-order centred
+    errs = {}
+    for hfd in (1e-5, 1e-6):
+        fd = 0.
+        for e_ in (np.array([1., 0.]), np.array([0., 1.])):
+            fd = fd + (mdl.values_grads(X[sel] + hfd * e_, Rp)[0] - mdl.values_grads(X[sel] - hfd * e_, Rp)[0]) / (2 * hfd)
+        errs[hfd] = rel(fd, gx + gy)
+    g['G1_fd_err_h1e-5'], g['G1_fd_err_h1e-6'] = errs[1e-5], errs[1e-6]
+    g['G1_fd_ratio'] = errs[1e-5] / max(errs[1e-6], 1e-300)
+    g['G1_pass'] = bool(errs[1e-6] <= 1e-5 and (30 <= g['G1_fd_ratio'] <= 300 or errs[1e-6] <= 1e-9))
     rng = np.random.default_rng(20261008)
     cs = jnp.asarray(rng.normal(size=(4, Rp)) / np.sqrt(Rp))
     base = mesh.base(s)
@@ -354,7 +357,7 @@ def main():
             rep['gates'][f'nodes_{s}'] = g
             print('NODES GATES', s, g, flush=True)
             save()
-            assert g['G1_derivative_vs_fd'] < 1e-6 and g['G2a_values_vs_mesh_bank'] < 1e-12, g
+            assert g['G1_pass'] and g['G2a_values_vs_mesh_bank'] < 1e-12, g
             assert g['G2b_Psi_vs_Phi'] < 1e-12 and g['G2c_gemm_vs_separable'] < 1e-11, g
             assert g['G3_jacobian_vs_jacfwd'] < 1e-12, g
 

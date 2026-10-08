@@ -371,3 +371,20 @@ after outcomes are seen.
   between the two historical jobs (64³ vs 128³); the cohort is fixed by its seed and count.
 - **A5-3:** labels are computed only on complete cohorts; a missing case gives the label INCOMPLETE with the list.
   The 1 % non-stationary rule applies **per arm**.
+
+## Amendment 6 (2026-10-08, from the 2D local smoke, before the 2D job)
+
+- **A6-1:** the 2D G1 finite-difference check at 256² gave 8.2e-7 against its $10^{-6}$ bar with second-order centred
+  differences at step $10^{-5}$ (truncation error of a bank with high Fourier-feature frequencies, not a code fault). The
+  2D G1 therefore uses **fourth-order** centred differences, step $10^{-4}$, per coordinate, summed; the bar stays
+  $10^{-6}$. The 3D job (already submitted, its G1 at the smoke mesh was 1.1e-8) keeps the second-order check.
+- **A6-2 (job audit a1d3-2):** the report validates the required sensitivity evidence per arm and per case (finite flags,
+  reason-3, every distance finite) before accepting its aggregate, and renders partial outputs as INCOMPLETE.
+- **A6-1b (supersedes A6-1, same day, before the 2D job):** a local study (1024², `acc`, 32 nodes) showed the 2D bank's
+  analytic derivative is correct but has very large higher derivatives within a few nodes of the walls: the second-order
+  difference error falls exactly as $h^2$ (relative 0.74, 0.083, 9.5e-3, 8.5e-4, 9.5e-5, 8.5e-6, 9.5e-7 for
+  $h=10^{-3}\dots10^{-6}$; worst node at $y=1-1/1024$), so a fixed-step bar of $10^{-6}$ fails for a reason that is not a
+  defect, and fourth order at $h=10^{-4}$ is worse. The 2D G1 is therefore a convergence check: second-order centred
+  differences per coordinate at $h=10^{-5}$ and $10^{-6}$; pass iff the error at $10^{-6}$ is $\le10^{-5}$ and the ratio
+  of the two errors is in $[30,300]$ (consistent with $h^2$), or the error at $10^{-6}$ is already $\le10^{-9}$.
+  (The numbers in this bullet were typed from a terminal diagnostic, `/tmp` script not kept; the job records its own.)

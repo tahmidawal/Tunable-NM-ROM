@@ -231,8 +231,14 @@ def a1d3_labels(res):
                         if k not in [f'c{c["case"]}' for c in A[nm]['cases']]]
             if not r.get('complete'):
                 miss.append('job not complete')
-            if r['config'].get('adaptive_check_cases') and str(Rp) not in (r.get('adaptive_sensitivity') or {}):
-                miss.append('required sensitivity rerun missing')
+            nreq = r['config'].get('adaptive_check_cases') or 0
+            if nreq:
+                sv = (r.get('adaptive_sensitivity') or {}).get(str(Rp)) or {}
+                for k in ('tensor', 'lat32768', 'nodes'):
+                    e_ = sv.get(k)
+                    if (e_ is None or len(e_.get('cases', [])) != nreq or
+                            len(e_.get('distance_fixed_vs_adaptive', [])) != nreq):
+                        miss.append(f'required sensitivity rerun of {k} missing or incomplete')
             if str(Rp) not in (r.get('rho_nodes_reached') or {}):
                 miss.append('nodes-reached rho missing')
             if miss:
@@ -264,8 +270,11 @@ def a1d3_labels(res):
             if sens:
                 ms = float(np.median([v for v in s if v is not None])) if any(v is not None for v in s) else 0.
                 for k in ('nodes', 'lat32768'):
-                    w_ = sens[k]['worst']
-                    if w_ is None or w_ > .1 * ms or sens[k]['reason3'] > 0:
+                    dd_ = sens[k]['distance_fixed_vs_adaptive']
+                    w_ = None if any(v is None or not np.isfinite(v) for v in dd_) else max(dd_)
+                    bad = (w_ is None or w_ > .1 * ms or sens[k]['reason3'] > 0 or
+                           not all(c['finite'] and c['reasons']['3'] == 0 for c in sens[k]['cases']))
+                    if bad:
                         invalid.append(f'adaptive sensitivity of {k}: {w_} vs 0.1 x median separation {0.1 * ms:.2e}')
             else:
                 prov.append('no sensitivity rerun at this mesh')
@@ -548,7 +557,8 @@ def main():
             names = [f'tensor_R{Rp}', f'gl24_R{Rp}', f'lat4096_R{Rp}', f'lat32768_R{Rp}', f'nodes_R{Rp}']
             for nm in names:
                 a = r['arms'].get(nm)
-                if a is None or 'worst_refined' not in a:
+                if a is None or 'worst_refined' not in a or 'distance' not in a:
+                    w(f'| `{nm}` | incomplete output | | | | | | | | |')
                     continue
                 k = nm.rsplit('_R', 1)[0]
                 rr = rho['rules'][k]

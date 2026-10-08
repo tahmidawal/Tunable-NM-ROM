@@ -11,12 +11,13 @@ Q=$(ssh tufts-login 'squeue -u $USER -h -o "%i %j %T"') || { echo "squeue failed
 NLANE=$(echo "$Q" | awk '$2 ~ /^jw_/' | grep -c . || true)     # any non-terminal state counts (squeue lists only those)
 echo "--- squeue before (lane running+pending=$NLANE)"; echo "$Q"
 if echo "$Q" | awk '{print $2}' | grep -qx "jw_$A"; then echo "jw_$A already queued: refusing"; exit 3; fi
-[ "$NLANE" -lt 1 ] || { echo "lane cap (1) reached"; exit 4; }
+CAP=${LANE_CAP:-1}   # coordinator approved cap 2 for J3 alongside J1 (2026-10-08); default 1
+[ "$NLANE" -lt "$CAP" ] || { echo "lane cap ($CAP) reached"; exit 4; }
 ssh tufts-login "mkdir $NS/.submit.lock" || { echo "another lane submission in progress"; exit 5; }
 trap 'ssh tufts-login "rmdir $NS/.submit.lock"' EXIT
 QL=$(ssh tufts-login 'squeue -u $USER -h -o "%j"') || { echo "squeue failed: refusing (fail closed)"; exit 6; }
 N2=$(printf '%s\n' "$QL" | grep -c '^jw_' || true)
-[ "$N2" -lt 1 ] || { echo "lane cap (1) reached (re-check under lock)"; exit 4; }
+[ "$N2" -lt "$CAP" ] || { echo "lane cap ($CAP) reached (re-check under lock)"; exit 4; }
 ssh tufts-login "test ! -e $NS/$A && mkdir -p $NS/$A"
 rsync -a "$LOCAL/" "tufts-login:$NS/$A/"
 ssh tufts-login "cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch run.sbatch"

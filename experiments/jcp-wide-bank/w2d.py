@@ -33,6 +33,7 @@ import os
 import resource
 import subprocess
 import sys
+import threading
 import time
 from pathlib import Path
 
@@ -92,6 +93,41 @@ def clean(x):
 def evolved_max(x):
     """max over the evolved output times t >= 1 (index 0 is the initial state)."""
     return float(np.max(np.asarray(x)[1:]))
+
+
+class MemSampler:
+    """DESIGN A4-11: a thread sampling device bytes_in_use and host VmRSS every `period` s; interval maxima."""
+
+    def __init__(self, period=0.2):
+        self.period, self.dev_max, self.host_max = period, 0, 0
+        self._stop = threading.Event()
+        self._t = threading.Thread(target=self._run, daemon=True)
+        self._t.start()
+
+    @staticmethod
+    def host_rss():
+        try:
+            for line in open('/proc/self/status'):
+                if line.startswith('VmRSS:'):
+                    return int(line.split()[1]) * 1024
+        except Exception:  # noqa: BLE001
+            pass
+        return -1
+
+    def _run(self):
+        while not self._stop.is_set():
+            try:
+                d = int(jax.devices()[0].memory_stats().get('bytes_in_use', -1))
+            except Exception:  # noqa: BLE001
+                d = -1
+            self.dev_max, self.host_max = max(self.dev_max, d), max(self.host_max, self.host_rss())
+            time.sleep(self.period)
+
+    def interval(self):
+        """Return (device max, host max) since the previous call, and reset."""
+        out = dict(device_bytes_in_use_max=self.dev_max, host_rss_max=self.host_max, sample_period_s=self.period)
+        self.dev_max, self.host_max = 0, 0
+        return out
 
 
 def eligible(row, budget_frac):
@@ -209,6 +245,7 @@ def main():
         except Exception:  # noqa: BLE001
             return dict(host_maxrss_kb=int(resource.getrusage(resource.RUSAGE_SELF).ru_maxrss))
     burn(.05)
+    mem = MemSampler()
 
     # ------------------------------------------------------------- cohorts ----
     train = Q.e.params_draw(0, 128)
@@ -322,6 +359,7 @@ def main():
             key = f'R{Rp}_M{M}'
             assert M >= Rp, key
             ts = time.perf_counter()
+            mem.interval()                       # reset: the next interval() is this setting's own maximum
             base = dict(A=ops['Arot'][:M, :Rp], lam=ops['lam'][:M], G=Gpre)
             sv = np.linalg.svd(np.asarray(base['A']), compute_uv=False)
             fq, dec = Q.make_linear_query('point', Rp, L, dt, trust, step_budget=cfg['step_budget'], gtol=cfg['gtol'])
@@ -510,7 +548,7 @@ def main():
             inv, summ = aba_panel(subjects, len(tcases), tcfg['reps'], tcfg['burn'], rng, log)
             rep['timing'][key] = dict(cases=[f'{a_}{b_}' for a_, b_, _ in tcases], reps=tcfg['reps'], burn=tcfg['burn'],
                                       invocations=inv, **summ)
-            rep['settings'][key]['memory'] = peak()
+            rep['settings'][key]['memory'] = dict(peak(), interval=mem.interval())
             rep['settings'][key]['seconds'] = time.perf_counter() - ts
             # deployed family (A2-8): the primary-tau m* arm with the lower median in THIS panel, fixed before the final
             dep = [(summ['subjects'][sv_['arm']]['median_ms'], sv_['family'], sv_['arm']) for k_, sv_ in sel.items()

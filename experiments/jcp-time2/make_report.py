@@ -362,7 +362,7 @@ def plots(st, an, rule):
 
 
 def main():
-    atts = sys.argv[1:] or ['a1kfast', 'a1kacc']
+    atts = sys.argv[1:] or [a for a in ('a1kfast', 'a1kacc', 'a1kwide') if (HERE / 'runs' / a / 'archive/output/result.json').exists()]
     (HERE / 'plots').mkdir(exist_ok=True)
     md = []
     W = md.append

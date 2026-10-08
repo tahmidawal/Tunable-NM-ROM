@@ -51,6 +51,21 @@ def main():
     cfgname = f'{LANE}/configs/{a.attempt}.json'
     for name in FILES + [cfgname]:          # preflight: every file committed and identical, before anything is written
         assert (ROOT / name).read_bytes() == subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}']), name
+    cfg0 = json.loads((ROOT / cfgname).read_text())
+    assert cfg0['refs'] == 'REFS_DIR' and cfg0['attempt'] == a.attempt
+    import numpy as np
+    man = json.loads((REFSRC / 'result.json').read_text())
+    ent = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
+    sizes = dict(dev6=6, val32=32)
+    reffiles = []
+    for coh in cfg0['cohorts']:
+        sub = cfg0.get('case_subset', {}).get(coh) or range(sizes[coh])
+        for c in sub:
+            for tag in ('ST', 'S'):
+                f = REFSRC / f'ref_{tag}_{coh}_{c:03d}.npz'
+                z = np.load(f)['f257']
+                assert hashlib.sha256(np.ascontiguousarray(z).tobytes()).hexdigest() == ent[(coh, c, tag)]['f257_sha256'], f
+                reffiles.append(f)
     out.mkdir(parents=True, exist_ok=False)
     proof = []
     for name in FILES + [cfgname]:
@@ -65,22 +80,11 @@ def main():
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(content)
         proof.append(dict(source=name, bytes=len(content), sha256=hashlib.sha256(content).hexdigest(), commit=commit))
-    # references: only the cases the config needs, checked against the reference manifest
-    man = json.loads((REFSRC / 'result.json').read_text())
-    ent = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
     (out / 'refs').mkdir()
     shutil.copy2(REFSRC / 'result.json', out / 'refs/result.json')
     proof.append(dict(source=str(REFSRC / 'result.json'), sha256=hashlib.sha256((REFSRC / 'result.json').read_bytes()).hexdigest()))
-    import numpy as np
-    sizes = dict(dev6=6, val32=32)
-    for coh in cfg['cohorts']:
-        sub = cfg.get('case_subset', {}).get(coh) or range(sizes[coh])
-        for c in sub:
-            for tag in ('ST', 'S'):
-                f = REFSRC / f'ref_{tag}_{coh}_{c:03d}.npz'
-                z = np.load(f)['f257']
-                assert hashlib.sha256(np.ascontiguousarray(z).tobytes()).hexdigest() == ent[(coh, c, tag)]['f257_sha256'], f
-                shutil.copy2(f, out / 'refs' / f.name)
+    for f in reffiles:
+        shutil.copy2(f, out / 'refs' / f.name)
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=2) + '\n')
     (out / 'COMMIT.txt').write_text(commit + '\n')
     (out / 'logs').mkdir()

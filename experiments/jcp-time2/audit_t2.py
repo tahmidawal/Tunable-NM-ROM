@@ -185,6 +185,12 @@ def main():
     dec = Decoder()
     rej = {}
     ck['precision_highest_logged'] = 'precision=highest' in logs
+    # the evidence requirements come from the STAGED config, authenticated by the staging provenance (code audit 3)
+    scfg = arc / f'experiments/jcp-time2/configs/{att}.json'
+    provl = json.loads((arc / 'PROVENANCE.json').read_text()) if (arc / 'PROVENANCE.json').exists() else []
+    psha = next((x['sha256'] for x in provl if x['source'].endswith(f'configs/{att}.json')), None)
+    ck['config_authenticated'] = bool(scfg.exists() and psha == hashlib.sha256(scfg.read_bytes()).hexdigest()
+                                      and json.loads(scfg.read_text()) == res['config'])
     # G2a certificate bound to the staged code (code audit 1, item 10)
     cert = json.loads((HERE / 'checks/test_lmm.json').read_text())
     prov = {Path(x['source']).name: x.get('sha256') for x in json.loads((arc / 'PROVENANCE.json').read_text())} \

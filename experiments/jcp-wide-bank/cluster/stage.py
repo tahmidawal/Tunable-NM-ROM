@@ -38,7 +38,7 @@ DRIVER_CMD = {'w2d': f'cd {LANE} && "$PY" w2d.py --config {{config}} --out "$TAS
                         '$TIMECMD "$PY" -u ' + f'{LANE}/train3d/train2w.py --config {LANE}/{{config}} '
                         '--out "$TASK_ROOT/output" > "$TASK_ROOT/output/train.out" 2> "$TASK_ROOT/output/train.err" &\n'
                         'TPID=$!\n'
-                        '( set +e; while kill -0 $TPID 2>/dev/null; do C=$(pgrep -P $TPID | head -1); '
+                        '( set +e; while kill -0 $TPID 2>/dev/null; do C=$(pgrep -P $TPID | head -1); C=${C:-$TPID}; '  # no time wrapper: TPID is python
                         'if [ -n "$C" ]; then echo "RSS_SAMPLE $(date -Is) $(ps -o rss= -p $C) kB | '
                         '$(tail -n 1 "$TASK_ROOT/output/train.out" | cut -c1-200)" >> "$TASK_ROOT/output/rss.log"; fi; '
                         'sleep 30; done ) &\n'

@@ -110,7 +110,8 @@ def main():
     s2d['case_subset'] = {'dev6': [0, 1], 'val32': []}
     s2d['settings'] = ['fast']
     s2d['allow_cpu_smoke'] = True
-    s2d['refs'] = str(Q2 / 'runs/refdv/archive/output')
+    s2d['refs'] = None                   # local numpy draws differ in the last bits from the cluster's: no refs locally
+    s2d['allow_missing_refs'] = True
     s2d['nodes_reached_rho_cases'] = 2
     s2d['audit'] = dict(cohort='dev6', cases=[0], full_max_mesh=256, full_case0_max_mesh=256, full_arms=[])
     dump('smoke_a1d2.json', s2d)

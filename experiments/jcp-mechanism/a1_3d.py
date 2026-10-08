@@ -334,8 +334,12 @@ def main():
         def rho_all(Cs):
             """rho of every arm's tested advection against the continuum and mesh targets, per state."""
             tgt_mesh, umin = map(np.asarray, OM.make_mesh_target(n, M, kx)(jnp.asarray(Cs), base))
-            tgt_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xc, wc, kx[:M], Cs))
-            chk_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xk, wk, kx[:M], Cs))
+            for attempt in range(2):      # a non-finite target was seen once on the local GB10 (XLA 'red zone' warning)
+                tgt_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xc, wc, kx[:M], Cs))
+                chk_cont = np.asarray(OM.continuum_adv(n, model['bank'], model['T'], Xk, wk, kx[:M], Cs))
+                if np.isfinite(tgt_cont).all() and np.isfinite(chk_cont).all():
+                    break
+                rep.setdefault('nonfinite_target_retries', []).append(dict(Rp=Rp, states=len(Cs)))
             per = {'dense_upwind': (rho(tgt_mesh, tgt_cont), np.zeros(len(Cs)))}
             for nm in arms:
                 v = adv_chunked(value_of(nm), arms[nm]['data'], Cs)

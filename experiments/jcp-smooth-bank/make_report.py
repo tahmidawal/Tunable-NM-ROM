@@ -89,8 +89,8 @@ def metrics(E, b, s):
            if r['arm'] not in ('gauss8',) and (not r['finite'] or r.get('nonaccepted_exits', 0) > 2)]
     tight = [r.get('vs_gref_evolved') for r in S['rows'] if r['arm'] == 'gref_tight']
     out['C6_failures'] = bad
-    failed_cases = {(r['cohort'], r['case']) for r in S['rows'] if r['arm'] == 'gref' and
-                    (not r['finite'] or r.get('nonaccepted_exits', 0) > 2)}
+    failed_cases = {(r['cohort'], r['case']) for r in S['rows'] if r['arm'] != 'gauss8' and
+                    (not r['finite'] or r.get('nonaccepted_exits', 0) > 2)}       # union over every arm
     keep = [r for r in g if (r['cohort'], r['case']) not in failed_cases]
     out['E_S_without_C6_failed'] = max(r['ref_S_evolved'] for r in keep) if keep else None
     out['E_ST_without_C6_failed'] = max(r['ref_ST_evolved'] for r in keep) if keep else None
@@ -115,12 +115,24 @@ def complete_inputs(E, b, s):
     S = E[b]['settings'].get(s)
     if not S:
         return why + ['setting missing']
-    for arm in ('gref', 'lat64', 'gauss32', 'gauss48', 'gauss64', 'gauss96', 'fib1597', 'fib4181', 'fib6765'):
-        if len(rows(E, b, s, arm)) != N_CASES:
+    allc = {(c, i) for c, n in (('dev6', 6), ('val32', 32)) for i in range(n)}
+    dev6 = {('dev6', i) for i in range(6)}
+    req = ['gref', 'lat64', 'gauss32', 'gauss48', 'gauss64', 'gauss96', 'fib1597', 'fib4181', 'fib6765']
+    for bb in (0.116, 0.06):                                     # P4 rollouts of the selected rules
+        ms = S['mstar'].get(f'gref|G|{bb}')
+        if ms is not None:
+            req.append(f'gauss{int(round(math.sqrt(ms)))}')
+    for arm in req:
+        got = [(r['cohort'], r['case']) for r in rows(E, b, s, arm)]
+        if len(got) != len(set(got)) or set(got) != allc:
             why.append(f'{arm} cases')
     for arm in ('gauss768', 'gref_tight'):
-        if len(rows(E, b, s, arm)) != 6:
+        got = [(r['cohort'], r['case']) for r in rows(E, b, s, arm)]
+        if len(got) != len(set(got)) or set(got) != dev6:
             why.append(f'{arm} dev6 cases')
+    for r in S['rows']:
+        if not all(math.isfinite(r.get(k) if r.get(k) is not None else float('nan')) for k in ('ref_S_evolved', 'ref_ST_evolved')):
+            why.append(f"non-finite error {r['arm']}"); break
     tn = S.get('target_norm', {})
     for p_, n_ in (('gref', N_STATES), ('lat64', N_STATES), ('common', N_COMMON)):
         if tn.get(p_, {}).get('states') != n_ or tn.get(p_, {}).get('zero_or_nonfinite_320', 1) != 0:
@@ -365,10 +377,16 @@ def main():
         for t, v in V.items():
             if isinstance(v, dict) and 'H1' in v:
                 v['H1']['passed'] = False; v['H2_passed'] = False; v['useful_winner'] = False
+                for x in v['H2'].values():
+                    x['passed'] = False
                 v['invalidated_by_failed_gate'] = True
         V['ranking_useful_H2'] = []
-    if TM is not None and not TM.get('valid'):
-        TM = dict(TM, median_ms={}, invalid=True)
+    if TM is not None:
+        inv = TM.get('invocations', [])
+        ok_tm = (TM.get('complete') and TM.get('valid') and len(inv) == TM.get('expected_invocations', -1)
+                 and all(math.isfinite(x['seconds']) and x['seconds'] > 0 for x in inv))
+        if not ok_tm:
+            TM = dict(TM, median_ms={}, invalid=True)
     plots(E, M, HERE / 'plots')
     e2e_plot(E, M, TM, HERE / 'plots')
     banks = [b for b in ORDER if b in M]
@@ -429,7 +447,8 @@ def main():
             R = E[b]['settings'][s]['rho']
             w(f'| {b} | ' + ' | '.join(f"{fmt(R[f'gauss{p}']['gref']['max'])} ({fmt(R[f'gauss{p}']['gref']['max_320'])})" for p in sel) + ' |')
         w('')
-        w('### Smoothness (Chebyshev, 64 own reached states)\n')
+        nsp = len(E[banks[0]]['settings'][s].get('spectra', {}).get('states', []))
+        w(f'### Smoothness (Chebyshev, {nsp} own reached states)\n')
         w('| bank | u: n(1e-8) median / max | f: n(1e-8) median / max | f: n(1e-4) median | f classification (geometric/algebraic/inconclusive/unresolved) |')
         w('|---|---|---|---|---|')
         for b in banks:
@@ -441,7 +460,8 @@ def main():
               f"{cl.get('geometric', 0)}/{cl.get('algebraic', 0)}/{cl.get('inconclusive', 0)}/{cl.get('unresolved', 0)} |")
         w('\nBandwidths are medians over the states whose n(ε) is resolved (256 vs 512 points agree within 2).\n')
         w('')
-        w('### End-to-end (worst over the 38 cases, evolved error %, PROVISIONAL; ST beside S)\n')
+        ncs = len(rows(E, banks[0], s, 'gref'))
+        w(f'### End-to-end (worst over the {ncs} cases, evolved error %, PROVISIONAL; ST beside S)\n')
         arms = ['gref', 'gauss32', 'gauss48', 'gauss64', 'gauss96', 'fib1597', 'fib4181', 'fib6765', 'lat64']
         w('| bank | ' + ' | '.join(arms) + ' |')
         w('|---|' + '---|' * len(arms))

@@ -1,10 +1,10 @@
 {
  "attempt": "ev1",
- "purpose": "round-1 evaluation (DESIGN 5, A1-A3): frozen/deployed, frozen/lane, base, sob01, sig2, sig1 at 1024^2 on dev6+val32; then paired timing on one GPU",
- "gpus": 3,
- "hours": 6,
+ "purpose": "round-1 evaluation (DESIGN 5, A1-A3): frozen/deployed, frozen/lane, base, sob01, sig2, sig1 at 1024^2 on dev6+val32; then paired timing on one GPU; one variant per GPU (6 GPUs), wall 10 h (A6)",
+ "gpus": 6,
+ "hours": 10,
  "mem": "300G",
- "cpus": 24,
+ "cpus": 12,
  "mesh": 1024,
  "cohorts": [
   "dev6",
@@ -61,11 +61,6 @@
      "deployed": true,
      "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
      "rotation": "vendor/quad2d/inputs/rotation_R512.npz"
-    },
-    {
-     "label": "frozen_lane",
-     "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
-     "rotation": "banks/base/rotation_frozen.npz"
     }
    ]
   },
@@ -74,14 +69,9 @@
    "cmd": "bankeval.py --config jobs/ev1.json --task 1 --out OUT/eval",
    "variants": [
     {
-     "label": "base",
-     "ckpt": "banks/base/bank.pkl",
-     "rotation": "banks/base/rotation.npz"
-    },
-    {
-     "label": "sob01",
-     "ckpt": "banks/sob01/bank.pkl",
-     "rotation": "banks/sob01/rotation.npz"
+     "label": "frozen_lane",
+     "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "rotation": "banks/base/rotation_frozen.npz"
     }
    ]
   },
@@ -90,10 +80,38 @@
    "cmd": "bankeval.py --config jobs/ev1.json --task 2 --out OUT/eval",
    "variants": [
     {
+     "label": "base",
+     "ckpt": "banks/base/bank.pkl",
+     "rotation": "banks/base/rotation.npz"
+    }
+   ]
+  },
+  {
+   "gpu": 3,
+   "cmd": "bankeval.py --config jobs/ev1.json --task 3 --out OUT/eval",
+   "variants": [
+    {
+     "label": "sob01",
+     "ckpt": "banks/sob01/bank.pkl",
+     "rotation": "banks/sob01/rotation.npz"
+    }
+   ]
+  },
+  {
+   "gpu": 4,
+   "cmd": "bankeval.py --config jobs/ev1.json --task 4 --out OUT/eval",
+   "variants": [
+    {
      "label": "sig2",
      "ckpt": "banks/sig2/bank.pkl",
      "rotation": "banks/sig2/rotation.npz"
-    },
+    }
+   ]
+  },
+  {
+   "gpu": 5,
+   "cmd": "bankeval.py --config jobs/ev1.json --task 5 --out OUT/eval",
+   "variants": [
     {
      "label": "sig1",
      "ckpt": "banks/sig1/bank.pkl",

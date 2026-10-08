@@ -481,3 +481,10 @@ on an A100-PCIE-40GB, and the Sobolev term adds under 2 GB of device memory (Cod
 run on one node and therefore on one GPU type. Training-time numbers are reported with the GPU type, and no timing
 comparison is made across jobs. Nothing else changes. The secondary projection against the training-mesh FOM
 (§5.1, secondary) is **dropped**; the primary S-reference projection is unchanged.
+
+## Amendment A6 (2026-10-08, evaluation resources; before any evaluation job)
+
+Codex eval-code audit 3 could not establish from the local smoke run that two variants per GPU fit in 6 h at $1024^2$.
+Its conservative scaling needs a ≥5.5× effective A100 speed-up over the GB10 smoke. `ev1` therefore runs **one variant
+per GPU (6 GPUs, any A100), wall 10 h, 12 CPUs**. Timing (§5.8) then runs on the first device and keeps every bank's
+mesh bank for one setting resident (≈18 GiB for `acc`). Nothing scientific changes.

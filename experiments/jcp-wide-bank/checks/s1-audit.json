@@ -1,0 +1,55 @@
+{
+ "job": "5012313",
+ "commit": "2e1f17e04bb0829a65103c5ff319f5768d08d933",
+ "checks": {
+  "A1": {
+   "passed": true
+  },
+  "A2": {
+   "compared": 84,
+   "worst_relative": 4.467864088428641e-16,
+   "passed": true
+  },
+  "A5": {
+   "swapped_reference_worst": 206.07975502043527,
+   "perturbed_field_worst": 24.711041491870066,
+   "swapped_detected": true,
+   "perturbed_detected": true,
+   "passed": true
+  },
+  "A4": {
+   "mismatches": [],
+   "passed": true
+  },
+  "A6": {
+   "conv": {
+    "converged_R512_M2048": true,
+    "converged_R128_M256": true
+   },
+   "target": {
+    "continuum_target_R512_M2048": true,
+    "continuum_target_R128_M256": true
+   },
+   "controls": {
+    "controls_R512_M2048": {
+     "primary": true,
+     "secondary": true
+    },
+    "controls_R128_M256": {
+     "primary": true,
+     "secondary": true
+    }
+   },
+   "floors": {
+    "R512": true,
+    "R128": true
+   },
+   "timing": {
+    "R512_M2048": true,
+    "R128_M256": true
+   },
+   "timing_valid_jobwide": true
+  }
+ },
+ "accepted": true
+}

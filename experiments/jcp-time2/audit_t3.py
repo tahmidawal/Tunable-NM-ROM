@@ -51,14 +51,14 @@ def close(a, b, rtol=1e-8, atol=1e-12):
     return a is not None and b is not None and np.isfinite(a) and np.isfinite(b) and abs(a - b) <= atol + rtol * abs(b)
 
 
-def rom_consistent(r, form, dt):
-    st = r['stats']
-    steps = int(round(.25 / dt))
-    ex = list(st['exits'])
-    ok = int(st['steps']) == steps and sum(ex) == steps and r['verified'] == (int(st['nfail']) == 0)
-    if r['verified']:
-        ok = ok and ex[0] == 0 and ex[3] == 0 and (form == 'LSPG' or float(st['worst_tolratio']) <= 1.)
-    return ok
+sys.path.insert(0, str(HERE))
+import audit_t2 as AT2  # noqa: E402
+GTOL = dict(prod=1e-3, tight=1e-7, tighter=1e-8)
+
+
+def rom_consistent(r, form, dt, lev):
+    v, c = AT2.rom_steps_ok(r['stats'], form, dt, GTOL[lev])
+    return c and r['verified'] == v
 
 
 def validate(res, Wz, cfg, G, REF, U0):
@@ -78,8 +78,7 @@ def validate(res, Wz, cfg, G, REF, U0):
         for j in cases:
             Fc = W[j] @ G[nm]                               # (runs, 6, 63^3), one case at a time
             n0 = np.linalg.norm(REF[j][0])
-            # independent L2 projection of the initial field (NumPy least squares on the lattice = the mesh at n = 65)
-            w0 = np.linalg.lstsq(G[nm].T, U0[j], rcond=None)[0]
+            w0 = U0[(nm, j)]                                # independent L2 projection, computed once (main)
             if not np.allclose(W[j][:, 0], w0[None], rtol=0, atol=1e-7 * np.abs(w0).max()):
                 bad.append((nm, j, 'initial_projection'))
             Fj = {k: Fc[i] for i, k in enumerate(er)}
@@ -97,7 +96,7 @@ def validate(res, Wz, cfg, G, REF, U0):
                     bad.append((nm, k, j, 'e_ref', e, r['e_ref']))
                 form, sc, dt, lev = k.split('|')
                 dt = float(dt)
-                if not rom_consistent(r, form, dt) or not np.isfinite(W[j, i]).all():
+                if not rom_consistent(r, form, dt, lev) or not np.isfinite(W[j, i]).all():
                     bad.append((nm, k, j, 'verification'))
                 checks = [('anchor', anc)]
                 if f'{form}|{sc}|{dt / 2:.8g}|{lev}' in Fj:
@@ -134,8 +133,15 @@ def validate(res, Wz, cfg, G, REF, U0):
             if not (close(d(REF[j]), v['e_ref'], 1e-7, 1e-10) and close(d(Fa), v['anchor'], 1e-6, 1e-12)
                     and close(d(Fb), v['vs_generic_BE'], 1e-6, 1e-12)):
                 vbad.append((nm, j, 'metrics'))
-            if len(v.get('reasons_per_step', [])) != int(round(.25 / DT0)) or 3 in v['reasons_per_step']:
-                vbad.append((nm, j, 'vendor_solver'))
+            rs_ = np.array(v.get('reasons_per_step', []))
+            gn_ = np.array(v.get('gn_per_step', []), float)
+            pe = np.linalg.norm(Fv - REF[j], axis=1) / n0
+            # eligibility of the deployed fixed-sweep output (A12.3): every step finite with a valid exit code, no
+            # non-finite exit (3); the fixed sweep does not promise the adaptive stopping test, so reason 0 is allowed
+            if not (rs_.shape == (25,) and np.all((rs_ >= 0) & (rs_ <= 4)) and 3 not in rs_ and gn_.shape == (25,)
+                    and np.all(np.isfinite(gn_)) and len(v['e_ref_per_time']) == 6
+                    and all(close(a_, b_, 1e-7, 1e-10) for a_, b_ in zip(pe, v['e_ref_per_time'])) and int(v['it_sum']) >= 25):
+                vbad.append((nm, j, 'vendor_solver_or_errors'))
     ck['vendor_rescored'] = not vbad
     info['vendor_mismatch'] = [list(map(str, b)) for b in vbad[:6]]
     tc = cfg['timing']
@@ -196,7 +202,12 @@ def main():
         G[f"{x['rule']}_R{x['Rp']}"] = np.asarray(TB.feature_rows(bank, T[:, :x['Rp']], X65))
     Wz = {nm: dict(np.load(arc / f'output/W_{nm}.npz')) for nm in G}
     tab = C.table(cfg['cohort_seed'], cfg['cohort_count'])
-    U0 = {j: np.asarray(C.initial_interior(65, tab, j)) for j in range(cfg['cohort_count'])}
+    U0 = {}
+    for nm, Gm in G.items():        # independent L2 projections: one least-squares solve for all cases (normal equations)
+        Uall = np.stack([np.asarray(C.initial_interior(65, tab, j)) for j in range(cfg['cohort_count'])], 1)
+        Wls = np.linalg.solve(Gm @ Gm.T, Gm @ Uall)
+        for j in range(cfg['cohort_count']):
+            U0[(nm, j)] = Wls[:, j]
     ck, info = validate(res, Wz, cfg, G, REF, U0)
     ck.update(head)
     rej = {}

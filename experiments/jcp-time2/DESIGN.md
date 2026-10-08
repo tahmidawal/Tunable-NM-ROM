@@ -573,9 +573,36 @@ A local GB10 run of the FOM driver (mesh 256, all 38 cases, two dt factors, four
 every phase and the full audit: all checks and all twelve rejection tests behaved, except two. (i) The cross-job ROM
 agreement failed, as it must, because the local mesh (256) differs from `a1kfast` (1024). (ii) The FOM order check failed
 for **undamped CN on dev6 case 0**: the self-differences were $1.4\times10^{-2}$, $2.7\times10^{-3}$, $6.8\times10^{-5}$, $6.1\times10^{-6}$ at
-$\Delta t/\Delta t_0=2,1,1/2,1/4$, i.e. "orders" 2.4, 5.3, 3.5. That is the stiff-mode transient of CN (its amplification factor
-tends to −1 for $\Delta t\,\nu\lambda\gg1$, and the FOM carries every grid mode), not a coding error: CN-R — the same CN code
-after two BE steps — gives 1.96, 1.99, 2.00 on the same case, and CN gives 2.01, 2.00, 2.00 on case 2.
+$\Delta t/\Delta t_0=2,1,1/2,1/4$, i.e. "orders" 2.4, 5.3, 3.5. This is consistent with a pre-asymptotic stiff-mode transient of
+undamped CN (its amplification factor tends to −1 for $\Delta t\,\nu\lambda\gg1$, and the FOM carries every grid mode); second-order
+convergence of FOM-CN is not established on this case at these steps. Supporting, not proving: CN-R — the same CN code
+after two BE steps — gives 1.96, 1.99, 2.00 on the same case, and CN gives 2.01, 2.00, 2.00 on case 2. (Amended wording,
+A12.4.)
 **A11.1** The FOM order gate (A9.5) therefore applies to BE, CN-R and BDF2; undamped CN's orders are reported with the
 label "pre-asymptotic (stiff-mode transient)" when outside the band, and FOM-CN is not called second order unless the
 gate would have passed. This is also the brief's predicted CN ringing, seen in the full-order model.
+
+## Amendment A12 (2026-10-08, after `audits/codex-fom3d-4.md`; before `fom1k`/`b3d65`)
+
+**A12.1** `t2core.make_evolve` records per-step evidence (stationarity ratio, residual/tolerance ratio, exit code, LM
+iterations) in a fixed 800-entry buffer; the audits of `fom1k` and `b3d65` reconstruct every trajectory's verification
+and aggregates from it (`audit_t2.rom_steps_ok`). The numerics are unchanged (the manufactured certificate was
+regenerated). The already-run `a1kfast`/`a1kacc` jobs carry aggregate evidence only (their audits stand as run).
+**A12.2** An audit JSON records the sha256 of the exact `result.json` it audited; the cross-job agreement in
+`audit_fom.py` accepts only an `a1k*` result whose audit passed on those exact bytes.
+**A12.3** Eligibility of the deployed 3D fixed-sweep output as the comparator: every one of its 25 steps has a finite
+stationarity ratio and an exit code in 0–4 other than 3 (non-finite); reason 0 (no adaptive convergence) is allowed,
+because the deployed algorithm does one sweep per step by design. Its per-time errors are re-scored.
+**A12.4** A11's causal wording is restated as "consistent with", not "is".
+
+## Amendment A13 (2026-10-08, after a local one-case 3D machinery run; before `b3d65`)
+
+The local run (validation case 0 of cohort 923801, $65^3$, both rules, a reduced grid; development only) showed:
+(i) the generic adaptive BE at $\Delta t_0$ equals the deployed fixed-sweep BE to $2\times10^{-15}$ and reproduces the 3D lane's
+refined error for that case (1.1197 % at Gauss $24^3$, $R'=512$); (ii) the anchor (GAL-BDF2 at $\Delta t_0/16$) is 1.62 % from the
+refined reference while BE at $\Delta t_0$ is 1.12 % from it, although BE's distance to the anchor is 1.98 % and CN's 0.09 %.
+The 3D refined reference is itself backward Euler at only $\Delta t_0/4$; its own time error has the same sign as the ROM's
+BE time error, so a first-order ROM can look closer to it than a converged one. **Pre-registered consequence:** in 3D the
+error against the refined reference cannot rank first- against second-order schemes; it is reported, labelled
+"reference-limited (BE reference at $\Delta t_0/4$)", and H1-3D/H2-3D, which use it, are reported as reference-dependent.
+The 3D conclusions about time stepping rest on the anchor discrepancy (time error), the observed orders and the cost.

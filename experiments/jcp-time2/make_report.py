@@ -543,6 +543,9 @@ def main():
         for p_ in an['plots']:
             W(f'![{p_}](plots/{p_})')
             W('')
+    import report_extra as RX
+    RX.fom_section(W)
+    RX.d3_section(W)
     W('## What is provisional, and why')
     W('')
     W('- Every error against ST, S or TX: the references are backward Euler in time and sign-upwind in space at $8192^2$. '

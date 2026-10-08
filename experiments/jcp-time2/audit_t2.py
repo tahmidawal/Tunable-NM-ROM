@@ -76,6 +76,33 @@ class Decoder:
         return out
 
 
+def rom_steps_ok(st, form, dt, gtol, nstep=800, budget=600):
+    """(verified, consistent) of one ROM trajectory reconstructed from its per-step evidence (t2core step_* arrays):
+    every active step must have a valid exit code, finite stationarity ratio and residual/tolerance ratio, and meet
+    the form's acceptance test (LSPG: ratio <= gtol or residual <= tol; GAL: residual <= tol; never budget/damping
+    exits); aggregates must equal the reconstruction; padding must be untouched."""
+    try:
+        steps = int(round(.25 / dt))
+        gn, tr = np.array(st['step_gn'], float), np.array(st['step_tolratio'], float)
+        rs, it = np.array(st['step_reason']), np.array(st['step_it'])
+        if int(st['steps']) != steps or any(a.shape != (nstep,) for a in (gn, tr, rs, it)):
+            return False, False
+        g, t, r, i = gn[:steps], tr[:steps], rs[:steps], it[:steps]
+        if not (np.all((r >= 0) & (r <= 4)) and np.all(rs[steps:] == -1) and np.all(np.isnan(gn[steps:]))
+                and np.all((i >= 0) & (i <= budget)) and np.all(it[steps:] == -1)):
+            return False, False
+        conv = (t <= 1.) if form == 'GAL' else ((g <= gtol) | (t <= 1.))
+        okk = np.isfinite(g) & np.isfinite(t) & conv & (r != 0) & (r != 3)
+        ff = int(np.argmax(~okk)) if np.any(~okk) else -1
+        cons = (list(np.bincount(r, minlength=5)) == list(st['exits']) and int(st['nfail']) == int(np.sum(~okk))
+                and int(st['first_fail']) == ff and int(st['it_sum']) == int(i.sum()) and int(st['it_max']) == int(i.max())
+                and np.isclose(float(st['worst_ratio']), max(0., float(np.max(g))), rtol=1e-12, atol=0)
+                and np.isclose(float(st['worst_tolratio']), max(0., float(np.max(t))), rtol=1e-12, atol=0))
+        return bool(np.all(okk)), bool(cons)
+    except (KeyError, TypeError, ValueError):
+        return False, False
+
+
 def errs(F, R, n0r):
     pe = np.linalg.norm((F - R).reshape(6, -1), axis=1) / n0r
     return pe, float(pe[1:].max())
@@ -163,7 +190,8 @@ def main():
     res = json.loads((arc / 'output/result.json').read_text())
     logs = ''.join(f.read_text() for f in (arc / 'logs').glob('*.out')) if (arc / 'logs').exists() else ''
     att = res['config']['attempt']
-    out = dict(attempt=att, job_id=res['job_id'], commit=res['commit'], gpu=res['gpu'], checks={}, info={})
+    out = dict(attempt=att, job_id=res['job_id'], commit=res['commit'], gpu=res['gpu'], checks={}, info={},
+               result_sha256=hashlib.sha256((arc / 'output/result.json').read_bytes()).hexdigest())
     ck = out['checks']
     ck['complete'] = bool(res.get('complete'))
     ck['backend_gpu'] = res['backend'] == 'gpu' and 'jax_backend=gpu' in logs

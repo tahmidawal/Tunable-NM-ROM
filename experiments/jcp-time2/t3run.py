@@ -231,6 +231,7 @@ def main():
                         vs_generic_BE=dv(F[key(('LSPG', 'BE', DT0, 'prod'))]),
                         it_sum=int(np.sum(np.asarray(vo[2]))), reasons=np.bincount(np.asarray(vo[3]), minlength=5).tolist())
             vrow['reasons_per_step'] = np.asarray(vo[3]).tolist()
+            vrow['it_per_step'] = np.asarray(vo[2]).tolist()
             vrow['gn_per_step'] = np.asarray(vo[4]).tolist()
             if j < tc['cases']:
                 acc_sha[(name, 'vendor', j)] = sha(Wven[j])

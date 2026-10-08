@@ -38,6 +38,7 @@ SCHEMES = dict(BE=(1., -1., 0., 1., 0., 0), CN=(1., -1., 0., .5, .5, 0), CNR=(1.
 BE_CO = (1., -1., 0., 1., 0.)
 REASONS = {0: 'budget', 1: 'tol', 2: 'tiny_step', 3: 'damping_limit', 4: 'stationary'}
 ALT_TAU = 1e-5
+NSTEP = 800          # per-step evidence buffer (longest schedule: 400 steps)
 MUTATIONS = (None, 'a2flip', 'fn_lag', 'stale_hist', 'late_out', 'd_b1')
 
 
@@ -155,7 +156,9 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
         out0 = jnp.zeros((6, Rp), jnp.float64).at[0].set(w0)
         stats0 = dict(it_sum=jnp.int32(0), it_max=jnp.int32(0), rej=jnp.int32(0), exits=z5, nfail=jnp.int32(0),
                       first_fail=jnp.int32(-1), worst_ratio=jnp.float64(0.), worst_tolratio=jnp.float64(0.),
-                      alt_num=jnp.float64(0.), alt_den=jnp.float64(0.), amp=jnp.float64(0.))
+                      alt_num=jnp.float64(0.), alt_den=jnp.float64(0.), amp=jnp.float64(0.),
+                      step_gn=jnp.full(NSTEP, jnp.nan), step_tolratio=jnp.full(NSTEP, jnp.nan),
+                      step_reason=jnp.full(NSTEP, -1, jnp.int32), step_it=jnp.full(NSTEP, -1, jnp.int32))
         nA0 = jnp.linalg.norm(A @ w0) + 1e-300
         thr = ALT_TAU * jnp.max(jnp.abs(A @ w0))
 
@@ -200,7 +203,11 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
                       worst_tolratio=jnp.maximum(st['worst_tolratio'], rn / (tol + 1e-300)),
                       alt_num=st['alt_num'] + jnp.sum(jnp.where(event & (runs >= 3), jnp.abs(pr), 0.)),
                       alt_den=st['alt_den'] + jnp.sum(jnp.where(qual, jnp.abs(pr), 0.)),
-                      amp=jnp.maximum(st['amp'], jnp.linalg.norm(dcur) / nA0))
+                      amp=jnp.maximum(st['amp'], jnp.linalg.norm(dcur) / nA0),
+                      step_gn=st['step_gn'].at[jnp.minimum(k, NSTEP - 1)].set(gn),
+                      step_tolratio=st['step_tolratio'].at[jnp.minimum(k, NSTEP - 1)].set(rn / (tol + 1e-300)),
+                      step_reason=st['step_reason'].at[jnp.minimum(k, NSTEP - 1)].set(reason),
+                      step_it=st['step_it'].at[jnp.minimum(k, NSTEP - 1)].set(it))
             kk = k + 1
             store = (kk % sch['keep']) == 0
             idx = jnp.clip(kk // sch['keep'], 0, 5)

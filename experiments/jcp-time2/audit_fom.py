@@ -48,20 +48,23 @@ def fom_verified(st, ntol, dt):
     newt = np.array(st['step_newton'])
     if nst != steps or srel.shape != (NMAX,) or newt.shape != (NMAX,):
         return False, False
+    lres = np.array(st.get('step_lres', []), float)
+    if lres.shape != (NMAX,):
+        return False, False
     act = srel[:steps]
     good = np.isfinite(act) & (act <= ntol)
-    cons = int(st['nfail']) == int(np.sum(~good)) and bool(np.all(np.isnan(srel[steps:]))) and bool(np.all(newt[:steps] >= 0))
+    nw = newt[:steps]
+    ff = int(np.argmax(~good)) if np.any(~good) else -1
+    cons = (int(st['nfail']) == int(np.sum(~good)) and bool(np.all(np.isnan(srel[steps:]))) and bool(np.all((nw >= 0) & (nw <= 20)))
+            and bool(np.all(newt[steps:] == -1)) and bool(np.all(np.isnan(lres[steps:]))) and bool(np.all(np.isfinite(lres[:steps]) | (nw == 0)))
+            and int(st['it_sum']) == int(nw.sum()) and int(st['it_max']) == int(nw.max()) and int(st['first_fail']) == ff
+            and np.isclose(float(st['worst_rel']), float(np.nanmax(act)), rtol=1e-12, atol=0))
     return bool(np.all(good)), cons
 
 
 def rom_consistent(r, form, dt):
-    st = r['stats']
-    steps = int(round(.25 / dt))
-    ex = list(st['exits'])
-    ok = int(st['steps']) == steps and sum(ex) == steps and r['verified'] == (int(st['nfail']) == 0)
-    if r['verified']:
-        ok = ok and ex[0] == 0 and ex[3] == 0 and (form == 'LSPG' or float(st['worst_tolratio']) <= 1.)
-    return ok
+    v, c = AT.rom_steps_ok(r['stats'], form, dt, 1e-3)          # production tolerance of the ROM arms
+    return c and r['verified'] == v
 
 
 def validate(ev, cfg, refs, dec, a1k_rows):
@@ -274,6 +277,8 @@ def main():
         if not (f.exists() and au.exists()):
             continue
         R, A_ = json.loads(f.read_text()), json.loads(au.read_text())
+        if A_.get('result_sha256') != hashlib.sha256(f.read_bytes()).hexdigest():
+            continue                                    # the accepted audit must be of exactly these bytes
         rules_ok = all(R['config']['rules'][s_]['main']['rule'] == x['rule'] for x in cfg['rom_arms'] if x['setting'] == s_)
         if not (A_['all_pass'] and A_['job_id'] == R['job_id'] and R['mesh'] == res['mesh'] and rules_ok):
             continue

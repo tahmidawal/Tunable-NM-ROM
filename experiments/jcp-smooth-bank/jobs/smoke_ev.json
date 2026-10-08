@@ -1,0 +1,31 @@
+{
+ "attempt": "smokeev",
+ "purpose": "local real-mesh smoke of bankeval (frozen bank, deployed rotation, one dev6 case, L=256): every phase and control executes",
+ "mesh": 256,
+ "cohorts": [
+  "dev6"
+ ],
+ "case_subset": {
+  "dev6": [
+   0
+  ]
+ },
+ "refs": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output",
+ "tasks": [
+  {
+   "variants": [
+    {
+     "label": "frozen_deployed",
+     "deployed": true,
+     "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "rotation": "vendor/quad2d/inputs/rotation_R512.npz"
+    },
+    {
+     "label": "frozen_lane_smokerot",
+     "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+     "rotation": "/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad/smk/rotation_frozen.npz"
+    }
+   ]
+  }
+ ]
+}

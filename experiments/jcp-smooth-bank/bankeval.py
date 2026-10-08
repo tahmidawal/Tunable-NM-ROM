@@ -325,6 +325,7 @@ def evaluate(var, L, cases, refs, out, cfg):
                     labels[name] += [(coh, c, k + 1) for k in range(len(W) - 1)]
                 del v
             del arm
+            cache.clear()                     # bound device memory: rule blocks are rebuilt if needed again
             gc.collect()
 
         dev6 = [x for x in cases if x[0] == 'dev6']

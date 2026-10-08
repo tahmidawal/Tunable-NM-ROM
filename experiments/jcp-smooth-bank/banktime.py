@@ -67,6 +67,9 @@ def main():
             trust, _ = mdl.trust_linear(Rp)
             cold = Q.build_cold_linear(mdl, Rp, B.cold_codes(mdl, Rp, deployed))
             phase1 = {(r['arm'], r['case']): r['restricted_sha256'] for r in S['rows'] if r['cohort'] == 'dev6'}
+            assert ev.get('complete'), f"evaluation of {var['label']} incomplete"
+            cz = np.load(Path(a.evals) / f"coeffs_{var['label']}_{s}.npz")
+            phase1W = {(k.split('|')[0], int(k.split('|')[2])): cz[k] for k in cz.files if k.split('|')[1] == 'dev6'}
             for nm in rules:
                 X, w = Q.offmesh_rule(nm)
                 d = Q.offmesh_data(mdl, Rp, X, w, L, o['kx'], o['ky'], 'point')
@@ -74,7 +77,7 @@ def main():
                 fq, _ = Q.make_linear_query('point', Rp, L, B.DT, trust, step_budget=600, gtol=1e-3)
                 subjects.append(dict(label=var['label'], rule=nm, m=len(X),
                                      call=lambda u, nu, fq=fq, data=data, cold=cold: fq(u, nu, data, cold),
-                                     phase1=phase1))
+                                     phase1=phase1, phase1W=phase1W))
             rep['subjects'].append(dict(setting=s, label=var['label'], rules=rules))
         inputs = [(jnp.asarray(Q.e.initial(L, ph)), float(ph[4]), c) for c, ph in dev6]
         for sj in subjects:                       # compile + warm every subject on every case
@@ -91,10 +94,16 @@ def main():
                     jax.block_until_ready(v['fields'])
                     secs = time.perf_counter() - t1
                     h = QS.sha(np.asarray(v['fields'][:, ::s256, ::s256]))
+                    W, W1 = np.asarray(v['internal']), sj['phase1W'].get((sj['rule'], c))
+                    dW = float(np.linalg.norm(W - W1) / np.linalg.norm(W1)) if W1 is not None else None
+                    reason = np.asarray(v['reason'])
                     rep['invocations'].append(dict(setting=s, label=sj['label'], rule=sj['rule'], m=sj['m'], case=c,
                                                    rep=r_, position=pos, seconds=secs,
                                                    iterations_total=int(np.asarray(v['it']).sum()),
-                                                   output_matches_phase1=bool(h == sj['phase1'].get((sj['rule'], c)))))
+                                                   exits={QS.REASONS[k]: int(np.sum(reason == k)) for k in QS.REASONS},
+                                                   sha256=h, phase1_sha256=sj['phase1'].get((sj['rule'], c)),
+                                                   output_matches_phase1=bool(h == sj['phase1'].get((sj['rule'], c))),
+                                                   coeff_rel_diff_vs_phase1=dW))
                     del v
         (out / 'timing.json').write_text(json.dumps(QS.clean(rep), indent=1))
         del subjects
@@ -102,6 +111,10 @@ def main():
     for d_ in rep['invocations']:
         med.setdefault(f"{d_['setting']}|{d_['label']}|{d_['rule']}", []).append(d_['seconds'])
     rep['median_ms'] = {k: 1e3 * float(np.median(v)) for k, v in med.items()}
+    diffs = [d_['coeff_rel_diff_vs_phase1'] for d_ in rep['invocations']]
+    rep['max_coeff_rel_diff_vs_phase1'] = max((x for x in diffs if x is not None), default=None)
+    # valid only if every timed rollout reproduces the evaluation's (a different process/compile may differ by round-off)
+    rep['valid'] = bool(all(x is not None and x <= 1e-6 for x in diffs))
     rep['complete'] = True
     (out / 'timing.json').write_text(json.dumps(QS.clean(rep), indent=1))
     print('BANKTIME COMPLETE', json.dumps(rep['median_ms'], indent=1), flush=True)

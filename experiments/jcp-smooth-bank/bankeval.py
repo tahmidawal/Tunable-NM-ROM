@@ -99,14 +99,14 @@ def cohorts_checked():
     return out
 
 
-def load_refs(rdir, cases, coh_sha):
+def load_refs(rdir, cases, coh_sha, waive_cohort_hash=False):
     man = json.loads((Path(rdir) / 'result.json').read_text())
     assert man.get('complete') and man.get('all_accepted'), 'reference job incomplete'
     assert int(man['config']['mesh']) == 8192
     idx = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
     refs = {}
     for coh, c, _ in cases:
-        assert man['cohort_sha256'][coh] == coh_sha[coh], ('reference cohort', coh)
+        assert waive_cohort_hash or man['cohort_sha256'][coh] == coh_sha[coh], ('reference cohort', coh)
         for tag in ('ST', 'S'):
             ent = idx[(coh, c, tag)]
             assert ent['accepted'] and ent['max_relative_residual'] <= 2e-11, ent
@@ -182,10 +182,10 @@ def spectra(fields_by_n):
     for q, name in ((0, 'u'), (1, 'f')):
         Es = {n: cheb_envelope(v[q]) for n, v in fields_by_n.items()}
         ent = {}
-        for eps in (1e-4, 1e-8):
+        for eps, key in ((1e-4, '1e-04'), (1e-8, '1e-08')):
             a, b = n_eps(Es[256], eps), n_eps(Es[512], eps)
-            ent[f'n_{eps:g}'] = b if (a is not None and b is not None and abs(a - b) <= 2) else None
-            ent[f'n_{eps:g}_256_512'] = [a, b]
+            ent[f'n_{key}'] = b if (a is not None and b is not None and abs(a - b) <= 2) else None
+            ent[f'n_{key}_256_512'] = [a, b]
         ent['class'] = classify(Es[512])
         ent['envelope_512'] = Es[512].tolist()
         out[name] = ent
@@ -288,7 +288,7 @@ def evaluate(var, L, cases, refs, out, cfg):
             return dict(call=lambda u, nu, fq=fq, data=data: fq(u, nu, data, cold), m=m, kind=kind, rule=rule, gtol=gtol)
 
         pops, labels, coeffs = dict(gref=[], lat64=[]), dict(gref=[], lat64=[]), {}
-        keep_gref = {}
+        keep_gref, keep_full = {}, {}
 
         def rollout_arm(name, case_list):
             arm = build(name)
@@ -299,10 +299,11 @@ def evaluate(var, L, cases, refs, out, cfg):
                 jax.block_until_ready(v['fields'])
                 secs = time.perf_counter() - t1
                 fr = np.asarray(v['fields'][:, ::s256, ::s256])
+                full_finite = bool(jnp.all(jnp.isfinite(v['fields'])) & jnp.all(jnp.isfinite(v['internal'])))
                 it, reason, rn = (np.asarray(v[k]) for k in ('it', 'reason', 'rn'))
                 n0r = float(np.linalg.norm(np.asarray(u0)[::s256, ::s256]))
                 row = dict(arm=name, kind=arm['kind'], rule=arm['rule'], m=arm['m'], cohort=coh, case=c, gtol=arm['gtol'],
-                           finite=bool(np.isfinite(fr).all()), seconds_first=secs, iterations_total=int(it.sum()),
+                           finite=full_finite, seconds_first=secs, iterations_total=int(it.sum()),
                            iterations_max=int(it.max()), budget_exits=int(np.sum(reason == 0)),
                            nonaccepted_exits=int(np.sum((reason == 0) | (reason == 2) | (reason == 3))),
                            exits={QS.REASONS[k]: int(np.sum(reason == k)) for k in QS.REASONS},
@@ -313,10 +314,17 @@ def evaluate(var, L, cases, refs, out, cfg):
                     row[f'ref_{tg}_evolved'] = QS.evolved_max(pe)
                 if name == 'gref':
                     keep_gref[(coh, c)] = fr
+                    if coh == 'dev6':
+                        keep_full[(coh, c)] = v['fields']
                 elif (coh, c) in keep_gref:
                     pt = [float(np.linalg.norm(a - b)) / n0r for a, b in zip(fr, keep_gref[(coh, c)])]
-                    row['vs_gref_per_time'] = pt
-                    row['vs_gref_evolved'] = QS.evolved_max(pt)
+                    row['vs_gref_restricted_per_time'] = pt
+                    row['vs_gref_restricted_evolved'] = QS.evolved_max(pt)
+                    if (coh, c) in keep_full:                                  # qstudy's primary: full fields, full n0
+                        n0 = float(jnp.linalg.norm(u0))
+                        pf = [float(x) for x in jnp.linalg.norm((v['fields'] - keep_full[(coh, c)]).reshape(6, -1), axis=1) / n0]
+                        row['vs_gref_per_time'] = pf
+                        row['vs_gref_evolved'] = QS.evolved_max(pf)
                 R['rows'].append(row)
                 W = np.asarray(v['internal'])
                 coeffs[f'{name}|{coh}|{c}'] = W
@@ -343,7 +351,7 @@ def evaluate(var, L, cases, refs, out, cfg):
         proj = {}
         common = []
         for tg in ('S', 'ST'):
-            ev, eg, eg4, fdu, lab = [], [], [], [], []
+            ev, eg, eg2c, eg4, fdu, lab = [], [], [], [], [], []
             for coh, c, _ in cases:
                 F = refs[(coh, c, tg)]
                 for t in range(F.shape[0]):
@@ -355,6 +363,9 @@ def evaluate(var, L, cases, refs, out, cfg):
                     gpx, gpy = (Gx @ cf).reshape(255, 255), (Gy @ cf).reshape(255, 255)
                     eg.append(np.sqrt(np.sum((gpx - Dx) ** 2 + (gpy - Dy) ** 2) / np.sum(Dx ** 2 + Dy ** 2)))
                     D4x, D4y = d4_inner(F[t], h)
+                    Dxc, Dyc = Dx[1:-1, 1:-1], Dy[1:-1, 1:-1]
+                    eg2c.append(np.sqrt(np.sum((gpx[1:-1, 1:-1] - Dxc) ** 2 + (gpy[1:-1, 1:-1] - Dyc) ** 2)
+                                        / np.sum(Dxc ** 2 + Dyc ** 2)))
                     eg4.append(np.sqrt(np.sum((gpx[1:-1, 1:-1] - D4x) ** 2 + (gpy[1:-1, 1:-1] - D4y) ** 2)
                                        / np.sum(D4x ** 2 + D4y ** 2)))
                     fdu.append(np.sqrt(np.sum((Dx[1:-1, 1:-1] - D4x) ** 2 + (Dy[1:-1, 1:-1] - D4y) ** 2)
@@ -363,8 +374,9 @@ def evaluate(var, L, cases, refs, out, cfg):
                     if tg == 'S':
                         common.append(cf)
             q = lambda a: dict(median=float(np.median(a)), max=float(np.max(a)), p90=float(np.quantile(a, .9)))
-            proj[tg] = dict(states=len(ev), value=q(ev), grad_D2=q(eg), grad_D4=q(eg4), fd_target_uncertainty=q(fdu),
-                            value_per_state=ev, grad_D2_per_state=eg, labels=lab)
+            proj[tg] = dict(states=len(ev), value=q(ev), grad_D2=q(eg), grad_D2_common=q(eg2c), grad_D4=q(eg4),
+                            fd_target_uncertainty=q(fdu), value_per_state=ev, grad_D2_per_state=eg,
+                            grad_D2_common_per_state=eg2c, grad_D4_per_state=eg4, fd_per_state=fdu, labels=lab)
         R['projection'] = proj
         C_common = np.asarray(common)
         del Gv, Gx, Gy, Qg
@@ -398,7 +410,10 @@ def evaluate(var, L, cases, refs, out, cfg):
         Tc, _ = values('point', GREF)
         Tk, _ = values('point', GCHK)
         Tf, _ = values('flux', GREF)
-        R['C4'] = {p: dict(check_rho_max=float(rho(Tk, Tc)[sl[p]].max()), flux_rho_max=float(rho(Tf, Tc)[sl[p]].max()))
+        tn = np.linalg.norm(Tc, axis=1)
+        R['target_norm'] = {p: dict(min=float(tn[sl[p]].min()), zero_or_nonfinite=int(np.sum(~np.isfinite(tn[sl[p]]) | (tn[sl[p]] <= 0))))
+                            for p in sl}
+        R['C4'] = {p: dict(check_rho_max=float(rho(Tc, Tk)[sl[p]].max()), flux_rho_max=float(rho(Tf, Tc)[sl[p]].max()))
                    for p in sl}
         perstate = {}
         rules = [f'gauss{p}' for p in GAUSS] + [f'fib{n}' for n in FIB]
@@ -470,9 +485,14 @@ def evaluate(var, L, cases, refs, out, cfg):
                 agg[f'{q}|n_{eps}'] = dict(median=float(np.median(fin)) if fin else None, max=max(fin) if fin else None,
                                            unresolved=int(sum(v_ is None for v_ in vals)))
             kinds = [sp[q]['class']['kind'] for sp in spec_states]
-            agg[f'{q}|class'] = {k: kinds.count(k) for k in ('geometric', 'algebraic', 'inconclusive')}
+            agg[f'{q}|class'] = {k: kinds.count(k) for k in ('geometric', 'algebraic', 'inconclusive', 'unresolved')}
             agg[f'{q}|envelope_median'] = np.median([sp[q]['envelope_512'] for sp in spec_states], axis=0).tolist()
-        R['spectra'] = dict(states=[labels['gref'][i] for i in pick], aggregate=agg)
+        R['spectra'] = dict(states=[labels['gref'][i] for i in pick], aggregate=agg,
+                            note='bandwidth aggregates are over the states with a resolved n_eps (count of unresolved given)',
+                            per_state=[{q: {k: v for k, v in sp[q].items() if k != 'envelope_512'} for q in ('u', 'f')}
+                                       for sp in spec_states])
+        np.savez_compressed(out / f'spectra_{tag}_{s}.npz',
+                            **{f'{q}_{i}': np.asarray(sp[q]['envelope_512']) for i, sp in enumerate(spec_states) for q in ('u', 'f')})
         log(tag, s, 'SPECTRA', {k: v for k, v in agg.items() if 'envelope' not in k}, round(time.perf_counter() - t0))
         cache.clear()
         save()
@@ -508,7 +528,7 @@ def main():
         sub = cfg.get('case_subset', {}).get(coh)
         for c in (range(len(ph)) if sub is None else sub):
             cases.append((coh, int(c), ph[c]))
-    refs, rinfo = load_refs(cfg['refs'], cases, coh_sha)
+    refs, rinfo = load_refs(cfg['refs'], cases, coh_sha, bool(cfg.get('local_smoke_waives_cohort_hash')))
     meta = dict(config=cfg, task=a.task, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
                 gpu=jax.devices()[0].device_kind, backend=jax.default_backend(), jax_version=jax.__version__,
                 cohort_sha256=coh_sha, references=rinfo, cases=len(cases), controls=controls_once())

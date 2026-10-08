@@ -79,6 +79,7 @@ def metrics(E, b, s):
         E_S=worst(E, b, s, 'gref', 'ref_S_evolved'), E_ST=worst(E, b, s, 'gref', 'ref_ST_evolved'),
         e_val_med=P['value']['median'], e_val_max=P['value']['max'],
         e_grad_med=P['grad_D2']['median'], e_grad4_med=P['grad_D4']['median'], e_grad_max=P['grad_D2']['max'],
+        e_grad2c_med=P['grad_D2_common']['median'],
         fd_unc_med=P['fd_target_uncertainty']['median'],
         mstar={k: v for k, v in S['mstar'].items()}, tail=S.get('tail', {}), C4=S.get('C4', {}),
         spectra=S.get('spectra', {}).get('aggregate', {}), trust=S['trust'], A_sv=S.get('A_singular_values'),
@@ -88,6 +89,11 @@ def metrics(E, b, s):
            if r['arm'] not in ('gauss8',) and (not r['finite'] or r.get('nonaccepted_exits', 0) > 2)]
     tight = [r.get('vs_gref_evolved') for r in S['rows'] if r['arm'] == 'gref_tight']
     out['C6_failures'] = bad
+    failed_cases = {(r['cohort'], r['case']) for r in S['rows'] if r['arm'] == 'gref' and
+                    (not r['finite'] or r.get('nonaccepted_exits', 0) > 2)}
+    keep = [r for r in g if (r['cohort'], r['case']) not in failed_cases]
+    out['E_S_without_C6_failed'] = max(r['ref_S_evolved'] for r in keep) if keep else None
+    out['target_norm_ok'] = all(v['zero_or_nonfinite'] == 0 for v in S.get('target_norm', {}).values()) and bool(S.get('target_norm'))
     out['tight_max'] = max(tight) if tight else None
     c4 = S.get('C4', {})
     out['C4_pass'] = bool(c4) and all(v['check_rho_max'] <= 1e-5 and v['flux_rho_max'] <= 1e-5 for v in c4.values())
@@ -110,9 +116,14 @@ def eligible(E, T, b, s, M):
     for k in ('E_S', 'E_ST', 'e_val_med', 'e_grad_med', 'e_grad4_med'):
         if m[k] is None or not math.isfinite(m[k]) or m[k] <= 0:
             why.append(f'{k} missing')
-    tr = T.get(b, {}).get('rotation') if b in T else None
-    if tr and (tr['R_G_condition_number'] > 1e12 or tr['rotated_bank_orthonormality_deviation_at_train_mesh'] > 1e-6):
-        why.append('rotation conditioning')
+    if not m['target_norm_ok']:
+        why.append('zero/non-finite target norm')
+    if b != 'frozen_deployed':
+        tr = T['base'].get('rotation_frozen') if b == 'frozen_lane' and 'base' in T else T.get(b, {}).get('rotation')
+        if not tr:
+            why.append('rotation diagnostics missing')
+        elif tr['R_G_condition_number'] > 1e12 or tr['rotated_bank_orthonormality_deviation_at_train_mesh'] > 1e-6:
+            why.append('rotation conditioning')
     if not E[b]['C5a']['passed']:
         why.append('C5a')
     return why
@@ -133,23 +144,25 @@ def verdicts(E, T, M):
         return out
     noise = {}
     for s in SETTINGS:
-        for k in ('E_S', 'E_ST', 'e_val_med', 'e_grad_med', 'e_grad4_med'):
-            if ref in M and M[ref][s][k] and M[base][s][k]:
-                noise[(s, k)] = abs(M[base][s][k] / M[ref][s][k] - 1)
+        for k in ('E_S', 'E_ST', 'e_val_med', 'e_grad_med', 'e_grad2c_med', 'e_grad4_med'):
+            vals = [abs(M[base][s][k] / M[c_][s][k] - 1) for c_ in (ref, 'base_s1')
+                    if c_ in M and M[c_][s][k] and M[base][s][k]]
+            noise[(s, k)] = max(vals) if vals else float('inf')     # no comparator -> nothing is resolved
     out['noise'] = {f'{s}|{k}': v for (s, k), v in noise.items()}
-    resolved = lambda s, k, d: d is not None and abs(d) > 2 * noise.get((s, k), 0.)
+    resolved = lambda s, k, d: d is not None and abs(d) > 2 * noise.get((s, k), float('inf'))
     dlt = lambda t, s, k: (M[t][s][k] / M[base][s][k] - 1) if (M[t][s][k] and M[base][s][k]) else None
     for t in M:
-        if t in (base, ref, 'frozen_deployed'):
+        if t in (base, ref, 'frozen_deployed', 'base_s1'):
             continue
         v = dict(eligible={s: eligible(E, T, t, s, M) for s in SETTINGS})
         base_ok = {s: not eligible(E, T, base, s, M) for s in SETTINGS}
         ok = {s: base_ok[s] and not v['eligible'][s] for s in SETTINGS}
-        d = {s: {k: dlt(t, s, k) for k in ('E_S', 'E_ST', 'e_val_med', 'e_grad_med', 'e_grad4_med')} for s in SETTINGS}
+        d = {s: {k: dlt(t, s, k) for k in ('E_S', 'E_ST', 'e_val_med', 'e_grad_med', 'e_grad2c_med', 'e_grad4_med')} for s in SETTINGS}
         v['delta'] = d
         # H1 (A1.5 + A4)
-        h1g = all(ok[s] and d[s]['e_grad_med'] is not None and d[s]['e_grad_med'] <= -.2 and d[s]['e_grad4_med'] <= -.2
-                  and resolved(s, 'e_grad_med', d[s]['e_grad_med']) and resolved(s, 'e_grad4_med', d[s]['e_grad4_med'])
+        h1g = all(ok[s] and d[s]['e_grad2c_med'] is not None and d[s]['e_grad4_med'] is not None
+                  and d[s]['e_grad2c_med'] <= -.2 and d[s]['e_grad4_med'] <= -.2
+                  and resolved(s, 'e_grad2c_med', d[s]['e_grad2c_med']) and resolved(s, 'e_grad4_med', d[s]['e_grad4_med'])
                   for s in SETTINGS)
         h1v = all(ok[s] and d[s]['e_val_med'] <= .10 for s in SETTINGS)
         h1e = any(ok[s] and d[s]['E_S'] <= -.05 and resolved(s, 'E_S', d[s]['E_S']) and
@@ -165,10 +178,18 @@ def verdicts(E, T, M):
                 rf = red(mb, mt, 'G')
                 other = [o for o in SETTINGS if o != s][0]
                 rf_o = red(M[base][other]['mstar'][f'gref|G|{bb}'], M[t][other]['mstar'][f'gref|G|{bb}'], 'G')
-                same_dir = (ct is not None and (cb is None or ct <= cb)) or (ct is None and cb is None)
+                def no_worse(a_, b_):           # a_ (treatment) <= b_ (base), censored (None) larger than any finite
+                    return (a_ is not None and (b_ is None or a_ <= b_)) or (a_ is None and b_ is None)
+                same_dir = no_worse(ct, cb)
+                cbo, cto = M[base][other]['mstar'][f'common|G|{bb}'], M[t][other]['mstar'][f'common|G|{bb}']
+                mrefo = M[ref][other]['mstar'][f'gref|G|{bb}'] if ref in M else 'na'
+                mbo = M[base][other]['mstar'][f'gref|G|{bb}']
+                res_ = (mref == mb) and (mrefo == mbo) and all(
+                    M[x][y]['mstar'][f'gref|G|{bb}'] == M[base][y]['mstar'][f'gref|G|{bb}'] for x in ('base_s1',) if x in M for y in SETTINGS)
                 h2[f'{s}|{bb}'] = dict(reduction=rf, other_reduction=rf_o, common_same_direction=same_dir,
-                                       resolved=(mref == mb), passed=bool(ok[s] and ok[other] and rf >= 1.5 and rf_o >= 1.0
-                                                                          and same_dir and mref == mb))
+                                       common_same_direction_other=no_worse(cto, cbo), resolved=res_,
+                                       passed=bool(ok[s] and ok[other] and rf >= 1.5 and rf_o >= 1.0 and same_dir
+                                                   and no_worse(cto, cbo) and res_))
         v['H2'] = h2
         v['H2_passed'] = any(x['passed'] for x in h2.values())
         v['useful_winner'] = bool((v['H1']['passed'] or v['H2_passed']) and all(
@@ -179,8 +200,32 @@ def verdicts(E, T, M):
             mb, mt = M[base][s]['mstar']['gref|G|0.06'], M[t][s]['mstar']['gref|G|0.06']
             score += math.log2(((MMAX['G'] if mb is None else mb)) / (2 * MMAX['G'] if mt is None else mt))
         v['rank_score'] = score
+        v['mean_E_S'] = float(np.mean([M[t][x]['E_S'] for x in SETTINGS])) if all(M[t][x]['E_S'] for x in SETTINGS) else None
         out[t] = v
+    passers = [t for t in out if t not in ('noise',) and out[t]['H2_passed'] and out[t]['useful_winner']]
+    out['ranking_useful_H2'] = sorted(passers, key=lambda t: (-out[t]['rank_score'], out[t]['mean_E_S'] or float('inf')))
+    out['noise'] = {f'{s}|{k}': v for (s, k), v in noise.items()}
     return out
+
+
+R1_PINNED = dict(acc=dict(g64_lat64=0.01855400027, gref_ST=0.02746551840, lat64_ST=0.03383906214),
+                 fast=dict(g64_lat64=0.02329974040, gref_ST=0.04636993877, lat64_ST=0.05032507568))
+
+
+def r1_gate(E):
+    """R1 (A1.6): frozen bank + deployed rotation reproduces the 2D lane's dv1024 numbers (2 s.f. for rho, 0.01 pp)."""
+    if 'frozen_deployed' not in E:
+        return dict(passed=False, reason='frozen_deployed missing')
+    res = {}
+    for s in SETTINGS:
+        S = E['frozen_deployed']['settings'][s]
+        g = S['rho']['gauss64']['lat64']['max']
+        gs = worst(E, 'frozen_deployed', s, 'gref', 'ref_ST_evolved')
+        ls = worst(E, 'frozen_deployed', s, 'lat64', 'ref_ST_evolved')
+        p = R1_PINNED[s]
+        res[s] = dict(g64_lat64=g, g64_ok=f'{g:.1e}' == f"{p['g64_lat64']:.1e}", gref_ST=gs, gref_ok=abs(gs - p['gref_ST']) <= 1e-4,
+                      lat64_ST=ls, lat64_ok=abs(ls - p['lat64_ST']) <= 1e-4)
+    return dict(per_setting=res, passed=all(v['g64_ok'] and v['gref_ok'] and v['lat64_ok'] for v in res.values()))
 
 
 # ----------------------------------------------------------------------- plots ----
@@ -262,13 +307,16 @@ def e2e_plot(E, M, TM, out):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--train', default='tr1')
+    ap.add_argument('--train', default='tr1b')
     ap.add_argument('--eval', default='ev1')
     ap.add_argument('--out', default='report.md')
     a = ap.parse_args()
     T, E, TM, meta = load(a.train, a.eval)
     M = {b: {s: metrics(E, b, s) for s in SETTINGS} for b in E}
     V = verdicts(E, T, M)
+    R1 = r1_gate(E)
+    ctrl_ok = bool(meta) and all(all(x['controls'][k]['passed'] for k in ('C2', 'C3', 'C5b')) for x in meta)
+    gates_ok = R1['passed'] and ctrl_ok
     plots(E, M, HERE / 'plots')
     e2e_plot(E, M, TM, HERE / 'plots')
     banks = [b for b in ORDER if b in M]
@@ -339,6 +387,7 @@ def main():
             cl = sp.get('f|class', {})
             w(f"| {b} | {sp['u|n_1e-08']['median']} / {sp['u|n_1e-08']['max']} | {sp['f|n_1e-08']['median']} / {sp['f|n_1e-08']['max']} | {sp['f|n_1e-04']['median']} | "
               f"{cl.get('geometric', 0)}/{cl.get('algebraic', 0)}/{cl.get('inconclusive', 0)}/{cl.get('unresolved', 0)} |")
+        w('\nBandwidths are medians over the states whose n(ε) is resolved (256 vs 512 points agree within 2).\n')
         w('')
         w('### End-to-end (worst over the 38 cases, evolved error %, PROVISIONAL; ST beside S)\n')
         arms = ['gref', 'gauss32', 'gauss48', 'gauss64', 'gauss96', 'fib1597', 'fib4181', 'fib6765', 'lat64']
@@ -373,16 +422,23 @@ def main():
             f"tight-solver distance {fmt(M[b][s]['tight_max'])}, eligibility {'ok' if not el[s] else 'FAILED: ' + ', '.join(el[s])}"
             for s in SETTINGS) + '.')
     w('')
+    w(f"- **R1** (frozen bank with the deployed rotation reproduces the 2D lane at $1024^2$): {'pass' if R1['passed'] else 'FAIL'} — " + '; '.join(
+        f"{s}: Gauss 64² worst ρ on lat64 states {fmt(v['g64_lat64'])} (2D lane {fmt(R1_PINNED[s]['g64_lat64'])}), gref worst ST {pct(v['gref_ST'])}% ({pct(R1_PINNED[s]['gref_ST'])}%), lat64 worst ST {pct(v['lat64_ST'])}% ({pct(R1_PINNED[s]['lat64_ST'])}%)"
+        for s, v in R1.get('per_setting', {}).items()) + '.')
+    w('')
     w('## Verdicts (DESIGN A1.5, A2.4, A4; PROVISIONAL, development/validation; one seed per arm)\n')
+    if not gates_ok:
+        w('**Acceptance gates failed (R1 or a manufactured control): the verdicts below are NOT valid and are shown for diagnosis only.**\n')
     if 'noise' in V:
         w('Noise yardstick (|base / frozen-lane − 1|): ' + ', '.join(f'{k} {v:.3f}' for k, v in V['noise'].items()) + '.\n')
     for t, v in V.items():
-        if t == 'noise':
+        if t in ('noise', 'ranking_useful_H2'):
             continue
         h2 = '; '.join(f"{k}: ×{x['reduction']:.2f} ({'pass' if x['passed'] else 'no'}{'' if x['resolved'] else ', unresolved'})" for k, x in v['H2'].items())
         w(f"- **{t}**: H1 {'PASS' if v['H1']['passed'] else 'fail'} (gradient {v['H1']['grad']}, value {v['H1']['value']}, rollout {v['H1']['rollout']}); "
           f"H2 {'PASS' if v['H2_passed'] else 'fail'} [{h2}]; useful winner: {'YES' if v['useful_winner'] else 'no'}; rank score {v['rank_score']:.2f}. "
           + ' '.join(f"Δ{s}: E_S {pct(v['delta'][s]['E_S'])}%, e∇ {pct(v['delta'][s]['e_grad_med'])}%, e_val {pct(v['delta'][s]['e_val_med'])}%." for s in SETTINGS))
+    w(f"\nRanking of useful H2 winners (A2.4/A4): {', '.join(V.get('ranking_useful_H2', [])) or 'none'}.")
     w('')
     w('## Plots\n')
     for p in ('frontier', 'ladders', 'e2e', 'spectra'):

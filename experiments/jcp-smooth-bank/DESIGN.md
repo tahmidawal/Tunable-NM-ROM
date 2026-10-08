@@ -471,3 +471,13 @@ pass; C5b max error $1.7\times10^{-13}$ — pass.
   = **≤102 allocated GPU-h**.
 - **R2b** must pass locally (record in `audits/`) before `tr1` is submitted; the instrumented step returns all 4 096
   value-path indices.
+
+## Amendment A5 (2026-10-08, resources only; before any GPU number)
+
+Slurm 5016108 (`tr1`, 4 × A100-80GB, 32 CPUs) was cancelled while still PENDING (it never started): every A100-80GB
+node had at most 4 free CPUs, and the estimated start was 22:54. It is restaged as attempt `tr1b` with **8 CPUs**
+(2 BLAS threads per process; the training is GPU-bound) and **any A100 (40 or 80 GB)**. The original bank was trained
+on an A100-PCIE-40GB, and the Sobolev term adds under 2 GB of device memory (Codex code audits 1 and 2). All four arms
+run on one node and therefore on one GPU type. Training-time numbers are reported with the GPU type, and no timing
+comparison is made across jobs. Nothing else changes. The secondary projection against the training-mesh FOM
+(§5.1, secondary) is **dropped**; the primary S-reference projection is unchanged.

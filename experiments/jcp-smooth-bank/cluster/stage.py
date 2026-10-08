@@ -15,7 +15,7 @@ NAMESPACE = '/cluster/tufts/paralab/tawal01/jcpsmooth'
 BASE_FILES = [f'{LANE}/smoothtrain.py', f'{LANE}/deps/burgers2d_film.py', f'{LANE}/deps/sep_common.py',
               f'{LANE}/deps/sep_solvers_reference.py', f'{LANE}/cluster/stage.py',
               'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
-GRES = {'a100-80G': ('a100', '#SBATCH --constraint=a100-80G'), 'h100': ('h100', '')}
+GRES = {'a100-80G': ('a100', '#SBATCH --constraint=a100-80G'), 'a100': ('a100', ''), 'h100': ('h100', '')}
 
 
 def main():
@@ -89,7 +89,7 @@ PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_MEM_FRACTION=0.92
-export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8 MKL_NUM_THREADS=8
+export OPENBLAS_NUM_THREADS=2 OMP_NUM_THREADS=2 MKL_NUM_THREADS=2
 export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$TASK_ROOT/output"
 cd "$TASK_ROOT"

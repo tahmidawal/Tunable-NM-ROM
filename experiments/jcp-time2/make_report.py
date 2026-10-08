@@ -347,6 +347,7 @@ def plots(st, an, rule):
     ax.scatter([comp['ms']], [100 * comp['ST_median']], s=160, facecolors='none', edgecolors='#0b0b0b', lw=1.5,
                label='deployed: LSPG BE $\\Delta t_0$', zorder=5)
     ax.set_xscale('log')
+    ax.set_yscale('log')
     ax.set_xlabel('end-to-end query time per case (ms; median of paired A–B–A on one GPU, six dev6 timing cases)')
     ax.set_ylabel('median error vs ST over dev6 ∪ val32 (%), PROVISIONAL')
     ax.set_title(f'{s}: accuracy vs cost per time scheme ({RULE_NAME.get(rule, rule)}); x = unverified')

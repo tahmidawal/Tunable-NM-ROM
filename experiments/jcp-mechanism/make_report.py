@@ -689,6 +689,10 @@ def main():
                   + ', '.join(f"`{k}` {e(v['cont_max'])}" for k, v in nr['rules'].items()) + '.')
                 w('')
     # ---------------------------------------------------------------- labels
+    w('Percentile summaries: the 90th percentile is tabulated for the 3D continuum $\\rho$ only; the 2D tables give worst '
+      'and median, and the 2D 95th percentiles and all mesh-target percentiles are in the job JSONs (`rho` entries), '
+      'not tabulated here.')
+    w('')
     w('## 3. A1 outcome labels (DESIGN amendment 2)')
     w('')
     w('The 2D solver had no sensitivity rerun (DESIGN A2-5: untested); the 3D one only at 64³.')
@@ -848,6 +852,8 @@ GLOSSARY = [
     ('gates G1–G4', 'implementation checks: analytic derivative vs finite differences (G1); `nodes` blocks equal the mesh '
      'bank and the discrete sines, and the two ways of applying the tests agree (G2a–c); analytic Jacobian vs automatic '
      'differentiation (G3); reproduction of the earlier lanes (G4, report-only).'),
+    ('p90', 'the 90th percentile over states (90 % of states have a smaller value).'),
+    ('pp', 'percentage points: the difference between two percentages.'),
     ('validation / dev cohorts', '3D: 64 validation cases (seed 923801) and 24 certification draws; 2D: dev6 and val32.'),
 ]
 

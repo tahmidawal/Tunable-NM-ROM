@@ -151,6 +151,8 @@ $\rho$ on 400 `nodes`-reached states (first 8 cases; check 4.1e-08): `dense` 1.8
 
 $\rho$ on 400 `nodes`-reached states (first 8 cases; check 3.2e-08): `dense` 1.7e-02, `lat64` 3.1e-02, `fib1597` 6.4e-02, `fib121393` 8.1e-06, `gref` 0.0e+00, `nodes` 4.3e-05.
 
+Percentile summaries: the 90th percentile is tabulated for the 3D continuum $\rho$ only; the 2D tables give worst and median, and the 2D 95th percentiles and all mesh-target percentiles are in the job JSONs (`rho` entries), not tabulated here.
+
 ## 3. A1 outcome labels (DESIGN amendment 2)
 
 The 2D solver had no sensitivity rerun (DESIGN A2-5: untested); the 3D one only at $64^3$.
@@ -269,4 +271,6 @@ Own-mesh states (context, not fitted), median gap upwind / central / nodes: 256:
 - **acc / fast**: the two 2D linear settings: 384 bank columns with 1536 tests, and 128 columns with 512 tests.
 - **bank / tests**: the frozen coordinate network whose ordered columns span the reduced solution / the sine functions against which the residual is measured.
 - **gates G1–G4**: implementation checks: analytic derivative vs finite differences (G1); `nodes` blocks equal the mesh bank and the discrete sines, and the two ways of applying the tests agree (G2a–c); analytic Jacobian vs automatic differentiation (G3); reproduction of the earlier lanes (G4, report-only).
+- **p90**: the 90th percentile over states (90 % of states have a smaller value).
+- **pp**: percentage points: the difference between two percentages.
 - **validation / dev cohorts**: 3D: 64 validation cases (seed 923801) and 24 certification draws; 2D: dev6 and val32.

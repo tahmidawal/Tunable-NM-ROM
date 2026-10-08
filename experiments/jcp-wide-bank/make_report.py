@@ -250,12 +250,13 @@ def section_2d(d, audit, L):
         sa2 = [v for k, v in sa.items() if k != wk]
         sb2 = [v for k, v in sb.items() if k != wk]
         L.append('\n### What the 2D numbers say (PROVISIONAL)\n')
-        L.append(f"- **The 2D dial stops at $R'=384$ on this bank.** Against S, the deployed $R'=512$ rollout is worse than "
-                 f"$R'=384$ on {worse} of {len(sa)} cases; without the worst case ({wk[0]} {wk[1]}) the worst S error is still "
+        L.append(f"- **The 2D dial stops at $R'=384$ on this bank.** "
+                 f"**$R'=512$ is worse than $R'=384$ against S on {worse} of {len(sa)} cases**; without the worst case ({wk[0]} {wk[1]}) the worst S error is still "
                  f"{pct(max(sa2))} vs {pct(max(sb2))}. The span floor improves only slightly "
                  f"({pct(b['floor_S'][0], 3)} → {pct(a['floor_S'][0], 3)}), and the conditioning of $A$ grows "
                  f"({b['A_condition']:.1f} → {a['A_condition']:.1f}). The 512-column bank adds little representable content "
-                 "and costs accuracy in the reduced dynamics; the cause is not isolated here.")
+                 "and costs accuracy in the reduced dynamics. *This is a hypothesis, not a demonstrated cause:* no experiment "
+                 "here isolates whether the conditioning growth or something else degrades the $R'=512$ rollouts.")
         L.append(f"- **The ST median is flat across $R'$** ({', '.join(pct(by[(r, 4)]['dep_ST'][1]) for r in Rps if by.get((r, 4)))} "
                  f"for $R'$ = {', '.join(str(r) for r in Rps)}), while the S median falls "
                  f"({', '.join(pct(by[(r, 4)]['dep_S'][1]) for r in Rps if by.get((r, 4)))}). This is consistent with the "
@@ -264,9 +265,10 @@ def section_2d(d, audit, L):
         L.append(f"- **Cost grows steeply with $R'$**: the final-panel query time is "
                  f"{', '.join(('%.0f ms' % by[(r, 4)]['dep_ms_final']) for r in Rps if by.get((r, 4)) and by[(r, 4)].get('dep_ms_final'))} "
                  f"for $R'$ = {', '.join(str(r) for r in Rps)}, because the points needed ($m^\\star$) grow with the setting.")
-        L.append('- **$m^\\star$ depends jointly on $R\'$ and $M$ and on the tested ladder;** reducing $M$ does not reliably reduce '
-                 '$m^\\star$ (it sometimes increases it), contrary to the mechanism registered for 1d. In every setting the rollout '
-                 'distance, not $\\rho$, decides $m^\\star$.')
+        L.append('- **The mechanism registered for 1d is contradicted.** DESIGN 1d predicted that a smaller $M$ (lower test '
+                 'frequencies) would need fewer quadrature points. It does not: $m^\\star$ depends jointly on $R\'$ and $M$ and on '
+                 'the tested ladder, and reducing $M$ sometimes *increases* it. In every setting the rollout distance, not $\\rho$, '
+                 'decides $m^\\star$.')
         u = [k for k, v in h3.items() if v['useful']]
         L.append(f"- **Trim:** useful under the registered ST criterion only at {', '.join(f"$R'={k[0]}$, $\\kappa={k[1]}$" for k in u) or 'no setting'}; "
                  "every trim increases the worst error against S, so the acceptance is specific to the space+time reference.\n")

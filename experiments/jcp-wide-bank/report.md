@@ -67,10 +67,10 @@ Job `j1` 5012763 on NVIDIA A100 80GB PCIe, commit `97add8fc5`, mesh $1024^2$, co
 
 ### What the 2D numbers say (PROVISIONAL)
 
-- **The 2D dial stops at $R'=384$ on this bank.** Against S, the deployed $R'=512$ rollout is worse than $R'=384$ on 28 of 38 cases; without the worst case (val32 5) the worst S error is still 1.21 % vs 0.99 %. The span floor improves only slightly (0.687 % → 0.605 %), and the conditioning of $A$ grows (9.6 → 15.2). The 512-column bank adds little representable content and costs accuracy in the reduced dynamics; the cause is not isolated here.
+- **The 2D dial stops at $R'=384$ on this bank.** **$R'=512$ is worse than $R'=384$ against S on 28 of 38 cases**; without the worst case (val32 5) the worst S error is still 1.21 % vs 0.99 %. The span floor improves only slightly (0.687 % → 0.605 %), and the conditioning of $A$ grows (9.6 → 15.2). The 512-column bank adds little representable content and costs accuracy in the reduced dynamics. *This is a hypothesis, not a demonstrated cause:* no experiment here isolates whether the conditioning growth or something else degrades the $R'=512$ rollouts.
 - **The ST median is flat across $R'$** (1.04 %, 0.91 %, 0.91 %, 0.91 % for $R'$ = 128, 256, 384, 512), while the S median falls (0.41 %, 0.09 %, 0.05 %, 0.06 %). This is consistent with the backward-Euler time error at $\Delta t=0.005$ masking the spatial gains; it is not causally isolated here (lane C2 tests second-order time stepping).
 - **Cost grows steeply with $R'$**: the final-panel query time is 28 ms, 71 ms, 200 ms, 689 ms for $R'$ = 128, 256, 384, 512, because the points needed ($m^\star$) grow with the setting.
-- **$m^\star$ depends jointly on $R'$ and $M$ and on the tested ladder;** reducing $M$ does not reliably reduce $m^\star$ (it sometimes increases it), contrary to the mechanism registered for 1d. In every setting the rollout distance, not $\rho$, decides $m^\star$.
+- **The mechanism registered for 1d is contradicted.** DESIGN 1d predicted that a smaller $M$ (lower test frequencies) would need fewer quadrature points. It does not: $m^\star$ depends jointly on $R'$ and $M$ and on the tested ladder, and reducing $M$ sometimes *increases* it. In every setting the rollout distance, not $\rho$, decides $m^\star$.
 - **Trim:** useful under the registered ST criterion only at $R'=384$, $\kappa=3$; every trim increases the worst error against S, so the acceptance is specific to the space+time reference.
 
 ## 3D: the wider bank (1b)

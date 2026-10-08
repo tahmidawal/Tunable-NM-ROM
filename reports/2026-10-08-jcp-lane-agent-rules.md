@@ -7,6 +7,16 @@ These are the operating rules every subagent follows when it runs a JCP campaign
 - Commit small and often. After **every** commit run `bash experiments/jcp-<lane>/sync_github.sh`. Never `git push` an `exp/...` branch directly. Files over 50 MB are not mirrored: list them by SHA256 in a committed manifest.
 - `vendor/` holds byte-identical copies of the off-mesh code (`vendor/PROVENANCE.json`). Do not edit them; copy into the lane directory before changing anything.
 
+## Codex adversarial verification gates EVERY step (user instruction, 2026-10-08)
+Before you act on anything, an independent Codex adversarial agent must check it. Use `codex exec -C <worktree> -o <lane>/audits/codex-<step>-<n>.md "<prompt>" < /dev/null`. The prompt must ask Codex to *try to break* the item and to give a per-item verdict of CORRECT / WRONG / NEEDS-RESTATEMENT. Read the output yourself; Codex's report is a claim to check, not a result. Fix every WRONG and re-run the audit until it is clean, then proceed. The gated steps are:
+- the design (`DESIGN.md`) and each amendment;
+- every code file, before it runs at real size;
+- every cluster job, before submitting it: the config, the sbatch script, and that the outputs will answer the pre-registered question;
+- every result, before it is reported: recompute and check the numbers against the raw outputs, and check that every control fired;
+- the report and its plots, before you hand back.
+
+Keep every audit file, committed in `audits/`. List them in the hand-back message, with their verdicts.
+
 ## The sequence (no skipping)
 1. **`DESIGN.md` first** (pre-registration). It must state the question, the arms, the controls that must fail, the metrics, the pass/fail bars, the cohorts, the GPU-hour estimate and the deliverables. Use LaTeX for maths, and mermaid for any diagram.
 2. **Codex design audit**, run before any code: `codex exec -C <worktree> -o <lane>/audits/codex-design.md "<adversarial prompt asking for a per-item CORRECT / WRONG / NEEDS-RESTATEMENT verdict>" < /dev/null`. The `< /dev/null` is mandatory. Do not pass `-s read-only`; put the guardrails in the prompt instead. Fix every WRONG, and append dated amendments to `DESIGN.md` (never rewrite history).

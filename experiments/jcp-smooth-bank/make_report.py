@@ -383,7 +383,16 @@ def main():
         V['ranking_useful_H2'] = []
     if TM is not None:
         inv = TM.get('invocations', [])
-        ok_tm = (TM.get('complete') and TM.get('valid') and len(inv) == TM.get('expected_invocations', -1)
+        # exact coverage: every (setting, bank, rule) subject x every dev6 case x every repetition x both directions
+        want = {(sj['setting'], sj['label'], r_, c, rep_, pos_dir)
+                for sj in TM.get('subjects', []) for r_ in sj['rules'] for c in range(6)
+                for rep_ in range(TM.get('reps', 0)) for pos_dir in (0, 1)}
+        nsub = {sj['setting']: 0 for sj in TM.get('subjects', [])}
+        for sj in TM.get('subjects', []):
+            nsub[sj['setting']] += len(sj['rules'])
+        got = [(x['setting'], x['label'], x['rule'], x['case'], x['rep'], int(x['position'] >= nsub.get(x['setting'], 0)))
+               for x in inv]
+        ok_tm = (TM.get('complete') and TM.get('valid') and len(got) == len(set(got)) and set(got) == want
                  and all(math.isfinite(x['seconds']) and x['seconds'] > 0 for x in inv))
         if not ok_tm:
             TM = dict(TM, median_ms={}, invalid=True)

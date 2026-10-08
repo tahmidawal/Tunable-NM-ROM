@@ -1,0 +1,11 @@
+**Overall: GO for submission.** No files modified.
+
+1. **CORRECT — batch changes.** The `run.sbatch` diff contains only `tr1→tr1b` names/paths, 32→8 CPUs, 8→2 BLAS/OpenMP threads per process, and removal of the A100-80GB constraint. Four GPUs, 320G host memory, seven hours, precision settings, preflights and failure handling remain unchanged. Bash syntax passes.
+
+2. **CORRECT — scientific payload and provenance.** Both manifests and every provenance hash/size match the staged files and their recorded git commits. `smoothtrain.py`, all three dependencies and the frozen checkpoint are byte-identical. The four arms and training parameters are unchanged. Commit IDs differ (`6dd1bed0b→e51d2a051`); staging code and job metadata change only as needed for the resource adjustment.
+
+3. **CORRECT, narrowly — R2b gate satisfied.** The recorded deterministic-XLA run passes exact parameter/code parity across subsampled/full phases and compares all 4,096 value-path indices over 50 steps. Test/trainer/dependency content is unchanged since the evidence commit. This establishes the required local pass, **not default-autotuning bitwise reproducibility**. The evidence’s attribution of the default-mode discrepancy specifically to GEMM/Adam is plausible, not conclusively demonstrated.
+
+4. **NEEDS-RESTATEMENT — 40GB memory assurance.** The resident training array is **7.875 GiB per GPU**. Sobolev sampling remains **2,048×4,096 even during full-value training**; its four-neighbour gather is **0.25 GiB**, not two full-size derivative datasets. Job **2835788** confirms the same value-training dimensions ran on A100-PCIE-40GB. Consequently, 40GB is a reasonable submission target with **no obvious unavoidable OOM**, but full-value intermediates dominate memory and peak usage is unmeasured. “Adds under 2GB” is an estimate, not an established bound from those audits.
+
+5. **NEEDS-RESTATEMENT — “resources only.”** A5 also drops the secondary training-mesh FOM projection. That changes later evaluation scope, although it does not change this training job.

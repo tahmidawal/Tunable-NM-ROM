@@ -1,0 +1,82 @@
+<title>Off-Mesh Quadrature Plots</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@600&display=swap">
+<style>
+:root { --ground:#f5f7f4; --surface:#ffffff; --ink:#1a2320; --muted:#5a6862; --rule:#dbe2dd; --accent:#0072B2; --figbg:#ffffff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: dark; --ground:#121815; --surface:#1a221e; --ink:#e3eae6; --muted:#9aa8a1; --rule:#2b3631; --accent:#8db7e0; --figbg:#f4f6f3; } }
+:root[data-theme="dark"] { color-scheme: dark; --ground:#121815; --surface:#1a221e; --ink:#e3eae6; --muted:#9aa8a1; --rule:#2b3631; --accent:#8db7e0; --figbg:#f4f6f3; }
+* { box-sizing: border-box; }
+body { background: var(--ground); color: var(--ink); font: 16px/1.6 "IBM Plex Sans", system-ui, sans-serif; padding-inline: 16px; padding-block: 0 64px; }
+.wrap { max-width: 960px; margin: 0 auto; }
+header { padding-top: 28px; padding-bottom: 8px; }
+.eyebrow { text-transform: uppercase; letter-spacing: .09em; font-size: 11.5px; color: var(--muted); }
+h1 { font: 600 clamp(26px, 4vw, 36px)/1.15 "IBM Plex Serif", Georgia, serif; margin: 6px 0 8px; text-wrap: balance; }
+header p { color: var(--muted); margin: 0; max-width: 68ch; }
+.key { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 14px 0 0; font-size: 14px; color: var(--muted); }
+.key span::before { content: ""; display: inline-block; width: 14px; height: 4px; border-radius: 2px; margin-right: 6px; vertical-align: middle; background: var(--c); }
+.filters { display: flex; gap: 6px; margin: 18px 0 6px; }
+.filters button { font: 500 14px "IBM Plex Sans", sans-serif; color: var(--ink); background: var(--surface); border: 1px solid var(--rule); border-radius: 999px; padding: 5px 14px; cursor: pointer; }
+.filters button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.card { margin: 22px 0 0; padding: 18px 0 0; border-top: 1px solid var(--rule); }
+.tag { font-size: 11.5px; text-transform: uppercase; letter-spacing: .09em; color: var(--accent); font-weight: 600; }
+.card h2 { font: 600 21px/1.3 "IBM Plex Serif", Georgia, serif; margin: 4px 0 6px; text-wrap: balance; }
+.card figcaption p { margin: 0 0 12px; max-width: 72ch; }
+.card img { display: block; width: 100%; max-width: 100%; height: auto; background: var(--figbg); border-radius: 6px; border: 1px solid var(--rule); }
+.note { font-size: 14px; color: var(--muted); margin: 8px 0 0; max-width: 78ch; }
+</style>
+<div class="wrap">
+<header>
+  <div class="eyebrow">Tunable-NM-ROM · off-mesh quadrature lanes · 2026-10-01/02</div>
+  <h1>Off-mesh quadrature: the results in plots</h1>
+  <p>What happened when we replaced the old way of computing the nonlinear term with Hari's off-mesh quadrature rules, on our full-scale Burgers models. Every point is read straight from the run files.</p>
+  <div class="key"><span style="--c:#D55E00">old method / dense mesh solve</span><span style="--c:#0072B2">new off-mesh rule (Gauss)</span><span style="--c:#E69F00">lattice rule</span><span style="--c:#5B5B5B">full solver / controls</span></div>
+  <div class="filters" role="group" aria-label="Show">
+    <button type="button" data-f="all" aria-pressed="true">All</button>
+    <button type="button" data-f="3D" aria-pressed="false">Burgers 3D</button>
+    <button type="button" data-f="2D" aria-pressed="false">Burgers 2D</button>
+  </div>
+</header>
+<figure class="card" data-sec="3D">
+  <figcaption><span class="tag">Burgers 3D</span><h2>The new rule's error does not depend on the mesh.</h2><p>Red (old tensor) falls from 10.5% to 3.9% only because the mesh gets finer. Blue (new off-mesh rule) is flat at 2.83% on every mesh. Grey is the best full-solver setting on the same mesh.</p></figcaption>
+  <img src="figs/3d_error_vs_mesh.png" alt="The new rule's error does not depend on the mesh." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Lower is better. Each point is the worst error over 32 held-out test cases, measured against a refined (first-order) reference. Caveat: at 256³ the full solver is more accurate, and the reference itself is first-order, which the next experiments will fix.</p>
+</figure>
+<figure class="card" data-sec="3D">
+  <figcaption><span class="tag">Burgers 3D</span><h2>Lattice points beat Gauss points for the same budget; Sobol and Smolyak fail.</h2><p>Each line shows how the error of computing the nonlinear term falls as you add points. Yellow (lattice) sits below blue (Gauss) everywhere. Points above the dashed line fail the project's acceptance bar.</p></figcaption>
+  <img src="figs/3d_rule_ladder.png" alt="Lattice points beat Gauss points for the same budget; Sobol and Smolyak fail." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Log–log axes. Measured on validation states; one random lattice shift.</p>
+</figure>
+<figure class="card" data-sec="3D">
+  <figcaption><span class="tag">Burgers 3D</span><h2>The new rule is cheaper than the old one; the full solver only loses on big meshes.</h2><p>At R′ = 512 the new rule (blue) costs 34.1 → 76.7 ms against 47.9 → 90.1 ms for the tensor (red). Grey is the full solver at the same accuracy on the same mesh: far cheaper at 64³ (3.6 ms), far more expensive at 256³ (198.7 ms).</p></figcaption>
+  <img src="figs/3d_time_vs_mesh.png" alt="The new rule is cheaper than the old one; the full solver only loses on big meshes." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Log scale. Both reduced models still grow with the mesh, because reading the input and writing the output touch every mesh node.</p>
+</figure>
+<figure class="card" data-sec="3D">
+  <figcaption><span class="tag">Burgers 3D</span><h2>The new rule needs a small fraction of the memory.</h2><p>The old tensor stores a table that grows with the square of the bank width; the new rule stores only the bank evaluated at its points.</p></figcaption>
+  <img src="figs/3d_memory.png" alt="The new rule needs a small fraction of the memory." loading="lazy">
+  
+</figure>
+<figure class="card" data-sec="2D">
+  <figcaption><span class="tag">Burgers 2D</span><h2>Same story in 2D: the new rule is flat across meshes and best on coarse meshes.</h2><p>Accurate setting: new Gauss 96² stays at 2.64% while the dense mesh solve goes 5.58% → 1.62%. Fast setting: new Fibonacci 1597 stays at 4.36%.</p></figcaption>
+  <img src="figs/2d_error_vs_mesh.png" alt="Same story in 2D: the new rule is flat across meshes and best on coarse meshes." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Worst error over the 64 test cases against a space-and-time refined reference. At 4096² the dense solve was run on only 6 cases, so its last point is not directly comparable.</p>
+</figure>
+<figure class="card" data-sec="2D">
+  <figcaption><span class="tag">Burgers 2D</span><h2>Solve time stays flat as the mesh grows from 256² to 4096².</h2><p>Every rule is a flat line: cost depends on the number of points, not on the mesh. The old 63² lattice (red, dashed) is shown for comparison.</p></figcaption>
+  <img src="figs/2d_solve_time.png" alt="Solve time stays flat as the mesh grows from 256² to 4096²." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Measured on one H200 in the same job. The full query (including reading input and writing output on the mesh) still grows with the mesh.</p>
+</figure>
+<figure class="card" data-sec="2D">
+  <figcaption><span class="tag">Burgers 2D</span><h2>In 2D, Gauss and Fibonacci converge; Sobol is slow and Smolyak fails.</h2><p>Our 2D bank needs thousands of points before Gauss or Fibonacci pass the bar, far more than Hari's smaller model did.</p></figcaption>
+  <img src="figs/2d_rule_ladder.png" alt="In 2D, Gauss and Fibonacci converge; Sobol is slow and Smolyak fails." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Measured on the states reached on the 1024² test runs, accurate setting. The red triangle is the old mesh lattice measured against its own (mesh) target, so it is not directly comparable.</p>
+</figure>
+</div>
+<script>
+const btns = [...document.querySelectorAll('.filters button')];
+btns.forEach(b => b.addEventListener('click', () => {
+  btns.forEach(x => x.setAttribute('aria-pressed', x === b));
+  document.querySelectorAll('.card').forEach(c => { c.hidden = !(b.dataset.f === 'all' || c.dataset.sec === b.dataset.f); });
+}));
+</script>

@@ -59,7 +59,7 @@ _BURN = jax.jit(lambda a: a @ a / 512 + .01)
 
 
 def burn(seconds):
-    a = jnp.ones((512, 512), jnp.float64) * .01
+    a = jax.block_until_ready(_BURN(jnp.ones((512, 512), jnp.float64) * .01))   # compiled before the clock starts
     t = time.perf_counter()
     while time.perf_counter() - t < seconds:
         a = _BURN(a)
@@ -100,6 +100,7 @@ class MemSampler:
 
     def __init__(self, period=0.2):
         self.period, self.dev_max, self.host_max = period, 0, 0
+        self._lock = threading.Lock()
         self._stop = threading.Event()
         self._t = threading.Thread(target=self._run, daemon=True)
         self._t.start()
@@ -120,13 +121,17 @@ class MemSampler:
                 d = int(jax.devices()[0].memory_stats().get('bytes_in_use', -1))
             except Exception:  # noqa: BLE001
                 d = -1
-            self.dev_max, self.host_max = max(self.dev_max, d), max(self.host_max, self.host_rss())
+            h = self.host_rss()
+            with self._lock:
+                self.dev_max, self.host_max = max(self.dev_max, d), max(self.host_max, h)
             time.sleep(self.period)
 
     def interval(self):
-        """Return (device max, host max) since the previous call, and reset."""
-        out = dict(device_bytes_in_use_max=self.dev_max, host_rss_max=self.host_max, sample_period_s=self.period)
-        self.dev_max, self.host_max = 0, 0
+        """Return (device max, host max) since the previous call, and reset (sampled every period s: spikes
+        shorter than the period can be missed)."""
+        with self._lock:
+            out = dict(device_bytes_in_use_max=self.dev_max, host_rss_max=self.host_max, sample_period_s=self.period)
+            self.dev_max, self.host_max = 0, 0
         return out
 
 
@@ -278,6 +283,8 @@ def main():
     for tag, w_ in want['refs'].items():
         got = man['config']['refs'][tag]
         assert all(abs(float(got[k_]) - float(w_[k_])) <= 1e-15 * max(1., abs(float(w_[k_]))) for k_ in w_), (tag, got)
+    for fn, want_sha in cfg.get('refs_files_sha256', {}).items():          # K-ref: SHA256 of every reference file
+        assert sha_file(rdir / fn) == want_sha, ('reference file sha', fn)
     keys_ = [(x['cohort'], x['case'], x['ref']) for x in man['cases']]
     assert len(keys_) == len(set(keys_)), 'duplicate reference entries'
     idx = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
@@ -368,7 +375,7 @@ def main():
                 d, m = blocks[spec['name']]
                 data = dict(base, Gq=d['Gq'], Gs=d['Gs'], Psi=d['Psi'][:, :M])
                 arms[spec['name']] = dict(spec=spec, m=m, data=data,
-                                          call=(lambda u, nu, data=data: fq(u, nu, data, cold)))
+                                          call=(lambda u, nu, data=data, fq=fq, cold=cold: fq(u, nu, data, cold)))
             rep['settings'][key] = dict(
                 Rp=Rp, M=M, kappa=M / Rp, kappa_nominal=st.get('kappa'), trust=trust, tensor_bytes=8 * M * Rp * Rp,
                 A_singular_max=float(sv[0]), A_singular_min=float(sv[-1]), A_condition=float(sv[0] / sv[-1]),
@@ -437,10 +444,14 @@ def main():
                 _, dN = nlJ(cst, gd, None)
                 Jm = S_[:, None] * (np.asarray(base['A']) + dt * (np.asarray(dN) + cases[0][2][4] *
                                                                   np.asarray(base['lam'])[:, None] * np.asarray(base['A'])))
+                if not np.isfinite(Jm).all():
+                    jc[str(k_)] = dict(finite=False)
+                    continue
                 svj = np.linalg.svd(Jm, compute_uv=False)
-                jc[str(k_)] = dict(sigma_max=float(svj[0]), sigma_min=float(svj[-1]), condition=float(svj[0] / svj[-1]),
+                jc[str(k_)] = dict(singular_values=svj.tolist(), sigma_max=float(svj[0]), sigma_min=float(svj[-1]), condition=float(svj[0] / svj[-1]),
                                    rank=int(np.sum(svj > 1e-12 * svj[0])))
             rep['settings'][key]['jacobian_reached'] = dict(case=f'{cases[0][0]}{cases[0][1]}', states=jc)
+            del gd
 
             # ------------------------------------------------ phase 2: rho ----
             t1 = time.perf_counter()
@@ -505,9 +516,9 @@ def main():
                                       all_eligible=all(r['eligible'] for r in rows_by_arm[name]),
                                       fails_distance={t_: bool(dmax > tv) for t_, tv in taus.items()},
                                       fails_rho=bool(rho_max[name] > rho_bar))
+                    # A0-2: a control passing BOTH metric criteria invalidates m* (eligibility reported separately)
                     ctrl[name]['would_be_selected'] = {
-                        t_: bool(ctrl[name]['all_eligible'] and not ctrl[name]['fails_distance'][t_]
-                                 and not ctrl[name]['fails_rho']) for t_ in taus}
+                        t_: bool(not ctrl[name]['fails_distance'][t_] and not ctrl[name]['fails_rho']) for t_ in taus}
             disc = {t_: bool(ctrl and not any(v['would_be_selected'][t_] for v in ctrl.values())) for t_ in taus}
             rep['gates'][f'controls_{key}'] = dict(arms=ctrl, discriminating=disc)
             valid = bool(rep['gates'][f'converged_{key}']['passed'] and rep['gates'][f'continuum_target_{key}']['passed'])
@@ -551,17 +562,23 @@ def main():
             rep['settings'][key]['memory'] = dict(peak(), interval=mem.interval())
             rep['settings'][key]['seconds'] = time.perf_counter() - ts
             # deployed family (A2-8): the primary-tau m* arm with the lower median in THIS panel, fixed before the final
-            dep = [(summ['subjects'][sv_['arm']]['median_ms'], sv_['family'], sv_['arm']) for k_, sv_ in sel.items()
-                   if k_.startswith('primary|') and sv_['arm'] is not None]
+            tvalid = bool(summ['gates']['drift_pass'] and summ['gates']['deterministic'])
+            rep['timing'][key]['valid'] = tvalid
+            # deployed family: lower timed median if the panel passed K-time, else the smaller m (recorded)
+            dep = [((summ['subjects'][sv_['arm']]['median_ms'] if tvalid else sv_['m']), sv_['family'], sv_['arm'])
+                   for k_, sv_ in sel.items() if k_.startswith('primary|') and sv_['arm'] is not None]
             if dep:
                 ms_, fam_, arm_ = min(dep)
-                rep['selection'][key]['deployed'] = dict(family=fam_, arm=arm_, m=arms[arm_]['m'], median_ms=ms_)
+                rep['selection'][key]['deployed'] = dict(family=fam_, arm=arm_, m=arms[arm_]['m'],
+                                                         median_ms=summ['subjects'][arm_]['median_ms'],
+                                                         chosen_by='timed_median' if tvalid else 'smaller_m (K-time failed)')
                 shas = [sha1[(arm_, coh, c)] for coh, c, _ in tcases]
                 final.append((key, fam_, arm_, arms[arm_]['call'], base, dec, Rp, shas))
             else:
                 rep['selection'][key]['deployed'] = None
             log(f'TIMING {key}')
             save()
+            d = data = arm = v = None          # drop loop references to rule blocks (audit w2d-1 item 9)
             del arms, pop, C
             jax.clear_caches()
             gc.collect()
@@ -583,11 +600,14 @@ def main():
                     sol = np.linalg.lstsq(np.asarray(G257[:, :Rp]), np.asarray(r[-1]), rcond=1e-12)[0]   # A3-6
                     lres = float(np.linalg.norm(np.asarray(G257[:, :Rp]) @ sol - np.asarray(r[-1]))) / n0r
                     resid_check = (abs(lres - pe[-1]) / pe[-1]) if pe[-1] > 1e-12 else abs(lres - pe[-1])
+        assert rk > 0
         rep['floors'][f'R{Rp}'] = dict(
             rank=rk, condition=float(sf[0] / sf[rk - 1]), lstsq_vs_svd_rel=resid_check,
+            check_passed=bool(resid_check <= 1e-10),
             **{tag: dict(worst=max(x['evolved'] for x in v), median=float(np.median([x['evolved'] for x in v])),
                          cases=v) for tag, v in fl.items()})
         del Uf, blocks
+        d = data = arm = None
         gc.collect()
         save()
 
@@ -620,7 +640,7 @@ def main():
     rep['elapsed_seconds'] = el()
     rep['peak_bytes'] = peak()
     rep['checkpoint_sha256_after'] = sha_file(CKPT)
-    rep['complete'] = True
+    rep['complete'] = True          # execution finished; acceptance is decided by audit_w.py
     save()
     (out / 'COMPLETE').write_text('complete\n')
     print('W2D COMPLETE', flush=True)

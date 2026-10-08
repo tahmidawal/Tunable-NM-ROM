@@ -30,7 +30,21 @@ FILES = {
 }
 DRIVER_CMD = {'w2d': f'cd {LANE} && "$PY" w2d.py --config {{config}} --out "$TASK_ROOT/output"',
               'w3d': f'cd {LANE} && "$PY" w3d.py --config {{config}} --out "$TASK_ROOT/output"',
-              'train': f'/usr/bin/time -v "$PY" {LANE}/train3d/train2w.py --config {LANE}/{{config}} --out "$TASK_ROOT/output"'}
+              # DESIGN A4-J3: whole-process maxima by /usr/bin/time -v (train.err); a supervised sidecar samples the
+              # child's RSS every 30 s together with the last training log line (phase alignment without touching the
+              # trainer); stdout is unbuffered (-u) and echoed into the Slurm log at the end
+              'train': ('/usr/bin/time -v "$PY" -u ' + f'{LANE}/train3d/train2w.py --config {LANE}/{{config}} '
+                        '--out "$TASK_ROOT/output" > "$TASK_ROOT/output/train.out" 2> "$TASK_ROOT/output/train.err" &\n'
+                        'TPID=$!\n'
+                        '( set +e; while kill -0 $TPID 2>/dev/null; do C=$(pgrep -P $TPID | head -1); '
+                        'if [ -n "$C" ]; then echo "RSS_SAMPLE $(date -Is) $(ps -o rss= -p $C) kB | '
+                        '$(tail -n 1 "$TASK_ROOT/output/train.out" | cut -c1-200)" >> "$TASK_ROOT/output/rss.log"; fi; '
+                        'sleep 30; done ) &\n'
+                        'SPID=$!\n'
+                        'set +e; wait $TPID; RC=$?; set -e\n'
+                        'kill $SPID 2>/dev/null || true\n'
+                        'cat "$TASK_ROOT/output/train.out"; cat "$TASK_ROOT/output/train.err" >&2\n'
+                        '[ $RC -eq 0 ] || exit $RC')}
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
         'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
 
@@ -47,6 +61,8 @@ def main():
     p.add_argument('--extra', action='append', default=[], help='additional committed files (data inputs)')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
+    if a.driver == 'train':      # DESIGN A4-J3: H200 and >= 420 GB host memory
+        assert a.gpu == 'h200' and a.mem.endswith('G') and int(a.mem[:-1]) >= 420, (a.gpu, a.mem)
     files = FILES[a.driver] + a.extra + [f'{LANE}/{a.config}']
     out = ROOT / LANE / 'runs' / a.attempt
     out.mkdir(parents=True, exist_ok=False)
@@ -87,7 +103,7 @@ export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_MEM_FRACTION={a.mem_fraction}
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
 export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
-mkdir -p "$TMPDIR" "$XDG_CACHE_HOME"
+mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$TASK_ROOT/output"
 cd "$TASK_ROOT"
 sha256sum -c MANIFEST.sha256 --quiet
 export SOURCE_COMMIT=$(cat COMMIT.txt) SLURM_JOB_ID

@@ -1,0 +1,147 @@
+{
+ "meshes": [
+  65
+ ],
+ "banks": [
+  {
+   "name": "M2",
+   "model": "experiments/jcp-wide-bank/vendor/quad3d/inputs/model_M2",
+   "expected_sha256": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9",
+   "Rps": [
+    512
+   ],
+   "kappas": [
+    4
+   ],
+   "tensor": true
+  }
+ ],
+ "rules_files": [
+  [
+   "experiments/jcp-wide-bank/vendor/quad3d/rules/rules.npz",
+   "099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b"
+  ],
+  [
+   "experiments/jcp-wide-bank/rules3d/rules_extra.npz",
+   null
+  ]
+ ],
+ "ladder": [
+  {
+   "name": "lat2048",
+   "family": "lat"
+  },
+  {
+   "name": "lat4096",
+   "family": "lat"
+  },
+  {
+   "name": "lat8192",
+   "family": "lat"
+  },
+  {
+   "name": "lat16384",
+   "family": "lat"
+  },
+  {
+   "name": "lat32768",
+   "family": "lat"
+  },
+  {
+   "name": "lat65536",
+   "family": "lat"
+  },
+  {
+   "name": "gl12",
+   "family": "gauss"
+  },
+  {
+   "name": "gl16",
+   "family": "gauss"
+  },
+  {
+   "name": "gl20",
+   "family": "gauss"
+  },
+  {
+   "name": "gl24",
+   "family": "gauss"
+  },
+  {
+   "name": "gl32",
+   "family": "gauss"
+  },
+  {
+   "name": "gl40",
+   "family": "gauss"
+  },
+  {
+   "name": "lat256",
+   "family": "ctrl",
+   "control": true
+  },
+  {
+   "name": "smol8",
+   "family": "ctrl",
+   "control": true
+  }
+ ],
+ "converged": "gl48",
+ "check": "gl40",
+ "target": "gl80",
+ "target_check": "gl64",
+ "families": [
+  "lat",
+  "gauss"
+ ],
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "cert_draws": [
+  [
+   923811,
+   4
+  ]
+ ],
+ "refined_ref": "/cluster/tufts/paralab/tawal01/jcpwide/refs3d/ref_923801.npz",
+ "expected_ref": {
+  "n": 513,
+  "dt": 0.0025,
+  "ntol": 1e-06,
+  "ltol": 1e-07,
+  "accepted": true
+ },
+ "tau": 0.00025,
+ "tau_secondary": 0.001,
+ "rho_bar": 0.116,
+ "nonstat_fraction": 0.01,
+ "conv_bar": 2.5e-05,
+ "target_bar": 1e-05,
+ "dt": 0.01,
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "fom_timing": [
+  0.01,
+  0.1
+ ],
+ "timing_cases": 2,
+ "reps": 1,
+ "timing_seed": 20261008,
+ "audit_cases": [
+  0,
+  1
+ ],
+ "audit_rho_arm": "lat4096",
+ "jacobian_states": [
+  1,
+  12,
+  25
+ ],
+ "expected_offmesh_sha256": "c46656e48cec27c4d78d1a00f3d93e19b7911b6d34bae6bdf9e264d10d45cbb4",
+ "attempt": "s2",
+ "case_subset": [
+  0,
+  1,
+  2,
+  3
+ ]
+}

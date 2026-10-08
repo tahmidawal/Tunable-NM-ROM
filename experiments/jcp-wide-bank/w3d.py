@@ -303,10 +303,13 @@ def main():
                 S_rep = B_rep['settings'][key] = dict(
                     Rp=Rp, M=M, kappa_nominal=kap, kappa=M / Rp, trust=trust, tensor_bytes=8 * M * Rp * Rp,
                     A_condition=float(sv[0] / sv[-1]), A_rank=int(np.sum(sv > 1e-12 * sv[0])), arms={})
+                # the check rule is also a ladder candidate when it appears in the ladder: it runs ONCE (A2-12b) and is
+                # aliased under its ladder name after phase 1
+                alias = next((r for r in ladder if r['name'] == cfg['check']), None)
                 specs = ([dict(name='conv', rule=cfg['converged'], family='ref', control=False),
                           dict(name='check', rule=cfg['check'], family='ref', control=False)] +
                          [dict(name=r['name'], rule=r['name'], family=r['family'], control=bool(r.get('control')))
-                          for r in ladder])
+                          for r in ladder if r['name'] != cfg['check']])
                 q_off = OM.make_fsc_rule(n, Rp, M, OM.contract_offmesh, dt=dt, gtol=cfg['gtol'], trust=trust)
                 arms = {}
                 for sp in specs:
@@ -379,6 +382,13 @@ def main():
                         cases=rl)
                     log(f"[{n}|{bk['name']}|{key}] {nm}: worst refined {S_rep['arms'][nm]['worst_refined']:.4%} "
                         f"dist {S_rep['arms'][nm]['worst_dist_conv']:.2e} elig {S_rep['arms'][nm]['all_eligible']}")
+                if alias is not None:
+                    an = alias['name']
+                    arms[an] = dict(arms['check'], name=an, family=alias['family'], control=bool(alias.get('control')))
+                    recs[an] = recs['check']
+                    for j in cases:
+                        coefs[(n, bk['name'], key, an, j)] = coefs[(n, bk['name'], key, 'check', j)]
+                    S_rep['arms'][an] = dict(S_rep['arms']['check'], family=alias['family'], alias_of='check')
                 save()
                 # -------------------------------------------- phase 2: rho on the converged rule's reached states
                 Cs = np.concatenate(pop)
@@ -455,7 +465,7 @@ def main():
                 S_rep['jacobian_reached'] = jc
                 save()
                 # -------------------------------------------- phase 4: A-B-A timing + microbenchmark
-                timed = [nm for nm, s_ in arms.items() if not s_['control'] and nm != 'check']
+                timed = [nm for nm, s_ in arms.items() if not s_['control'] and nm != 'check']   # alias timed by name
                 prng = np.random.default_rng(cfg.get('timing_seed', 20261008))
                 xb = jnp.ones((2048, 2048))
 

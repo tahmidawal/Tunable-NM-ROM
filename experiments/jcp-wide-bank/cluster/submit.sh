@@ -8,10 +8,14 @@ NS=/cluster/tufts/paralab/tawal01/jcpwide
 LOCAL="$ROOT/experiments/jcp-wide-bank/runs/$A"
 [ -f "$LOCAL/run.sbatch" ]
 Q=$(ssh tufts-login 'squeue -u $USER -h -o "%i %j %T"')
-NLANE=$(echo "$Q" | awk '$2 ~ /^jw_/ && ($3=="RUNNING" || $3=="PENDING")' | grep -c . || true)
+NLANE=$(echo "$Q" | awk '$2 ~ /^jw_/' | grep -c . || true)     # any non-terminal state counts (squeue lists only those)
 echo "--- squeue before (lane running+pending=$NLANE)"; echo "$Q"
 if echo "$Q" | awk '{print $2}' | grep -qx "jw_$A"; then echo "jw_$A already queued: refusing"; exit 3; fi
 [ "$NLANE" -lt 1 ] || { echo "lane cap (1) reached"; exit 4; }
+ssh tufts-login "mkdir $NS/.submit.lock" || { echo "another lane submission in progress"; exit 5; }
+trap 'ssh tufts-login "rmdir $NS/.submit.lock"' EXIT
+N2=$(ssh tufts-login 'squeue -u $USER -h -o "%j"' | grep -c '^jw_' || true)
+[ "$N2" -lt 1 ] || { echo "lane cap (1) reached (re-check under lock)"; exit 4; }
 ssh tufts-login "test ! -e $NS/$A && mkdir -p $NS/$A"
 rsync -a "$LOCAL/" "tufts-login:$NS/$A/"
 ssh tufts-login "cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch run.sbatch"

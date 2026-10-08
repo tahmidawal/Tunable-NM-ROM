@@ -44,7 +44,7 @@ def sha(a):
 def tol_of(form, level):
     """(gtol, tolf) per form and tolerance level (DESIGN A1.5, A2.11)."""
     if form == 'LSPG':
-        return {'prod': (1e-3, 1e-9), 'tight': (1e-10, 0.), 'tighter': (1e-12, 0.)}[level]
+        return {'prod': (1e-3, 1e-9), 'tight': (1e-7, 0.), 'tighter': (1e-8, 0.)}[level]     # A5.1
     return {'prod': (0., 1e-10), 'tight': (0., 1e-13), 'tighter': (0., 1e-15)}[level]
 
 
@@ -134,7 +134,8 @@ def main():
     assert len(idx) == len(man['cases'])
     refs = {}
     for coh, c, ph in cases:
-        assert man['cohort_sha256'][coh] == rep['cohorts'][coh]['physical_sha256'], coh
+        if not cfg.get('local_smoke_waives_cohort_hash'):    # local GB10 numpy differs from the cluster by ~1 ulp
+            assert man['cohort_sha256'][coh] == rep['cohorts'][coh]['physical_sha256'], coh
         for tag in ('ST', 'S'):
             ent = idx[(coh, c, tag)]
             assert ent['accepted'] and ent['mesh'] == want['mesh'] and abs(ent['dt'] - want['refs'][tag]['dt']) <= 1e-15
@@ -176,7 +177,7 @@ def main():
                                A=T2.a_conditioning(base['A']))
         data, queries = {}, {}
         for role in rules:
-            for form in ('LSPG', 'GAL'):
+            for form in (('LSPG',) if role == 'old' else ('LSPG', 'GAL')):
                 data[(role, form)] = T2.form_data(base, blocks[role][0], form)
                 queries[(role, form)] = T2.make_query(Q, rules[role]['kind'], form, Rp, L, trust)
         vq, _ = Q.make_linear_query(rules['main']['kind'], Rp, L, DT0, trust, step_budget=600, gtol=1e-3)
@@ -204,7 +205,7 @@ def main():
             rST, rS = (jnp.asarray(refs[(coh, c, t_)]) for t_ in ('ST', 'S'))
             rTX = (16. * rST - rS) / 15.
             f257 = {}
-            anc_full = None
+            anc_full = gen_full = None
             for i in order:
                 r = runs[i]
                 t1 = time.perf_counter()
@@ -228,6 +229,8 @@ def main():
                     row[f'e_{tag}'] = max(pe[1:])
                 if k_ == anchor_key:
                     anc_full = f
+                if r == ('main', 'LSPG', 'BE', DT0, 'prod'):
+                    gen_full = f
                 if anc_full is not None:
                     row['anchor_full'] = max(float(x) for x in (jnp.linalg.norm((f - anc_full).reshape(6, -1), axis=1) / n0)[1:])
                 if r[4] == 'prod' and ci < cfg['timing']['cases'] and coh == cfg['timing']['cohort']:
@@ -261,7 +264,6 @@ def main():
             # G1a: vendor BE vs generic LSPG-BE at dt0, production tolerance
             vv = vq(u0, nu, vdata, cold)
             jax.block_until_ready(vv)
-            kg = key(('main', 'LSPG', 'BE', DT0, 'prod'))
             ig = runs.index(('main', 'LSPG', 'BE', DT0, 'prod'))
             Wv = np.asarray(vv['internal'])[::int(round(.05 / DT0))]
             frv = vv['fields'][:, ::s256, ::s256]
@@ -269,15 +271,14 @@ def main():
             rep['g1a'].append(dict(setting=s, cohort=coh, case=c,
                                    w0_rel=float(np.linalg.norm(w0set[ci] - Wv[0]) / np.linalg.norm(Wv[0])),
                                    W_rel=float(np.max(np.linalg.norm(Wset[ci, ig] - Wv, axis=1)) / np.linalg.norm(Wv[0])),
-                                   field_rel=max(float(x) for x in jnp.linalg.norm((vv['fields'] - Q.e.initial(L, ph)[None] * 0 -
-                                                 jnp.asarray(np.asarray(queries[('main', 'LSPG')](u0, nu, data[('main', 'LSPG')], cold, T2.sched('BE', DT0, 1e-3, 1e-9))['fields']))).reshape(6, -1), axis=1) / n0),
+                                   field_rel=max(float(x) for x in jnp.linalg.norm((vv['fields'] - gen_full).reshape(6, -1), axis=1) / n0),
                                    it_vendor=int(np.sum(np.asarray(vv['it']))), it_generic=gen_it))
             vrow = dict(setting=s, cohort=coh, case=c)
             for tag, R_ in (('ST', rST), ('S', rS)):
                 pe = [float(x) for x in jnp.linalg.norm((frv - R_).reshape(6, -1), axis=1) / n0r]
                 vrow[f'e_{tag}'] = max(pe[1:])
             rep['vendor_rows'].append(vrow)
-            del vv, f257, anc_full, rST, rS, rTX
+            del vv, f257, anc_full, gen_full, rST, rS, rTX
             print('CASE', s, ci, coh, c, el(), flush=True)
             if ci % 4 == 3:
                 save()
@@ -293,7 +294,7 @@ def main():
         cands = [r for r in cands if r[0] == 'main' or (r[2] == 'BE' and abs(r[3] - DT0) < 1e-15)]
         rng = np.random.default_rng(int(tc.get('seed', 20261008)))
         inputs = {ci: (jnp.asarray(Q.e.initial(L, ph)), float(ph[4])) for ci, (coh, c, ph) in tcases}
-        cache0 = {f'{k_[0]}|{k_[1]}': queries[k_]._cache_size() for k_ in queries}
+        cache0 = {f"{k_[0]}|{k_[1]}": getattr(queries[k_], "_cache_size", lambda: -1)() for k_ in queries}
         vend = ('vendor', 'LSPG', 'BE', DT0, 'prod')
 
         def timed(r, ci):
@@ -327,7 +328,7 @@ def main():
                 if B != vend:
                     ent['B_matches_accuracy'] = bool(hb == acc_sha.get((key(B), ci)))
                 inv.append(ent)
-        cache1 = {f'{k_[0]}|{k_[1]}': queries[k_]._cache_size() for k_ in queries}
+        cache1 = {f"{k_[0]}|{k_[1]}": getattr(queries[k_], "_cache_size", lambda: -1)() for k_ in queries}
         rep['timing'][s] = dict(cases=[f'{cases[ci][0]}|{cases[ci][1]}' for ci, _ in tcases], reps=tc['reps'],
                                 burn=tc['burn'], A=key(A_run), invocations=inv, cache_before=cache0, cache_after=cache1,
                                 gpu_uuid=smi)

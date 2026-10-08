@@ -463,3 +463,22 @@ coefficients with two cases swapped, (ii) the output rows shifted by one time, (
 38), the claim is made from the primary triple alone and labelled "(adjacent check unresolved)"; this includes
 $n_{\rm both}=0$. If $n_{\rm both}\ge19$ and fewer than 80 % of those cases have both orders in the band, the claim is withheld
 ("not established"). Otherwise the claim stands without qualification.
+
+## Amendment A5 (2026-10-08, after a sub-minute-per-run local machinery check, before the code audit)
+
+A local GB10 check (one dev6 case, $L=256$, fast setting, two $\Delta t$; development only, no verdict read) ran the
+driver end to end. It showed:
+
+**A5.1 LSPG tight tolerances were unattainable.** With `gtol` $10^{-10}$ / $10^{-12}$ the LM ended steps by tiny-step
+exits with achieved stationarity ratios between about $10^{-10}$ and $4\times10^{-9}$ (the floating-point floor of
+$\lVert J^{\mathsf T}r\rVert/(\lVert J\rVert\lVert r\rVert)$ for a nonzero LS residual), so every tight LSPG trajectory was unverified. New
+values: LSPG tight `gtol` $10^{-7}$, tighter $10^{-8}$ (tight/tighter distances in the check were $\sim10^{-12}$ of
+$\lVert u_0\rVert$, far below the self-differences $\sim10^{-4}$–$10^{-2}$). GAL levels unchanged (they verified).
+
+**A5.2 Cohort hash on the GB10.** Local NumPy reproduces the cohort descriptors to within $3.5\times10^{-18}$ but not
+bit-for-bit, so the sha256 differs from the cluster's. Cluster jobs keep the hash assertion; a local run may waive it
+(`local_smoke_waives_cohort_hash`), and `audit_t2.py` pins the values to $10^{-15}$ and checks the job's hash against the
+reference manifest.
+
+**A5.3 Jobs.** The 2D grid runs as two sequential jobs (`a1kfast`, then `a1kacc`) after the cluster smoke `smk`
+(both settings, $L=256$, dev6 cases 0 and 2); concurrency cap 1.

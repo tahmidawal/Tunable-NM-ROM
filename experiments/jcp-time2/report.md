@@ -9,6 +9,15 @@ Crank–Nicolson, Crank–Nicolson with a damped start, and BDF2 replace backwar
 | `a1kfast` | fast | $1024^2$ | 38 | NVIDIA A100 80GB PCIe | 5012974 | 0.28 | `0a4703af3` | pass |
 | `a1kacc` | acc | $1024^2$ | 38 | NVIDIA A100 80GB PCIe | 5015584 | 1.18 | `9c0ea67fa` | pass |
 
+## Summary (generated; all reference errors PROVISIONAL)
+
+- **2D `fast`** (Fibonacci 1597, $R'=128$): deployed BE at $\Delta t_0$ ST worst/median 4.637/1.035 %; LSPG CN at $\Delta t_0$ 5.171/0.419 % (paired time ratio 0.9933); LSPG CN at $2\Delta t_0$ 4.950/0.446 % (ratio 0.6142). Median anchor discrepancy (time-error estimate) 0.994 % → 0.036 % at $\Delta t_0$. H1 failed, H2 failed; orders: LSPG CN not established, LSPG CNR not established, LSPG BDF2 not established, GAL CN order 2, GAL BDF2 order 2.
+- **2D `acc`** (Gauss $96^2$, $R'=384$): deployed BE at $\Delta t_0$ ST worst/median 2.747/0.906 %; LSPG CN at $\Delta t_0$ 1.796/0.098 % (paired time ratio 1.0001); LSPG CN at $2\Delta t_0$ 1.803/0.259 % (ratio 0.5701). Median anchor discrepancy (time-error estimate) 0.978 % → 0.026 % at $\Delta t_0$. H1 passed, H2 passed; orders: LSPG CN not established, LSPG CNR order 2, LSPG BDF2 order 2, GAL CN order 2, GAL BDF2 order 2.
+- **Fair full-order comparison** (`fom1k`): `rom|acc|gauss96|LSPG|BE|1` vs the cheapest full-order configuration of equal or better cohort-worst ST error (`fom|CNR|2`): 1.76× (same job, same GPU; listed configurations only).
+- **Fair full-order comparison** (`fom1k`): `rom|acc|gauss96|LSPG|CN|2` vs the cheapest full-order configuration of equal or better cohort-worst ST error (`fom|CN|1`): 3.65× (same job, same GPU; listed configurations only).
+- **3D `gl24_R512`**: median anchor discrepancy of LSPG CN at $\Delta t_0$ 0.089 % (resolved cases), paired time ratio to the deployed fixed-sweep BE 1.673; orders: LSPG CN not established, LSPG BDF2 order 2, GAL CN order 2, GAL BDF2 order 2. Reference errors in 3D are reference-limited (A13).
+- **3D `lat4096_R256`**: median anchor discrepancy of LSPG CN at $\Delta t_0$ 0.085 % (resolved cases), paired time ratio to the deployed fixed-sweep BE 1.758; orders: LSPG CN not established, LSPG BDF2 not established, GAL CN order 2, GAL BDF2 order 2. Reference errors in 3D are reference-limited (A13).
+
 ## The reduced step
 
 A two-step linear multistep method with coefficients $(\alpha_0,\alpha_1,\alpha_2;\beta_0,\beta_1)$ on the tested residual

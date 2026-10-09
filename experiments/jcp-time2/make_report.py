@@ -404,6 +404,45 @@ def main():
         W(f"| `{att}` | {', '.join(res['config']['settings'])} | ${res['mesh']}^2$ | {n} | {res['gpu']} | {res['job_id']} | "
           f"{res.get('elapsed_seconds', 0) / 3600:.2f} | `{(res['commit'] or '')[:9]}` | {'pass' if aud['all_pass'] else 'FAIL: ' + ', '.join(k for k, v in aud['checks'].items() if not v)} |")
     W('')
+    W('## Summary (generated; all reference errors PROVISIONAL)')
+    W('')
+    for att, s_, rule, res, an, aud in sections:
+        T = {e['key']: e for e in an['table']}
+        b = T.get(k('main', 'LSPG', 'BE', DT0, 'prod'))
+        c1 = T.get(k('main', 'LSPG', 'CN', DT0, 'prod'))
+        c2 = T.get(k('main', 'LSPG', 'CN', 2 * DT0, 'prod'))
+        if not (b and c1 and c2) or not an['claims_eligible']:
+            continue
+        te = lambda e: e['time_err']['median'] if e['time_err'] else float('nan')
+        W(f"- **2D `{s_}`** ({RULE_NAME.get(rule, rule)}, $R'={res['setup'][s_]['R_prime']}$): deployed BE at $\\Delta t_0$ ST worst/median "
+          f"{pct(b['ST_worst'])}/{pct(b['ST_median'])} %; LSPG CN at $\\Delta t_0$ {pct(c1['ST_worst'])}/{pct(c1['ST_median'])} % "
+          f"(paired time ratio {c1['ratio']:.4f}); LSPG CN at $2\\Delta t_0$ {pct(c2['ST_worst'])}/{pct(c2['ST_median'])} % "
+          f"(ratio {c2['ratio']:.4f}). Median anchor discrepancy (time-error estimate) {pct(te(b))} % → {pct(te(c1))} % at $\\Delta t_0$. "
+          f"H1 {'passed' if an['H1']['passed'] else 'failed'}, H2 {'passed' if an['H2']['passed'] else 'failed'}; orders: "
+          + ', '.join(f"{kk.replace('|', ' ')} {an['orders'][kk]['claim']}" for kk in ('LSPG|CN', 'LSPG|CNR', 'LSPG|BDF2', 'GAL|CN', 'GAL|BDF2')) + '.')
+    fa = HERE / 'checks' / 'analysis-fom1k.json'
+    if fa.exists():
+        F = json.loads(fa.read_text())
+        if F.get('eligible'):
+            mm = {m['rom']: m for m in F['matched']}
+            for key_ in ('rom|acc|gauss96|LSPG|BE|1', 'rom|acc|gauss96|LSPG|CN|2'):
+                if key_ in mm:
+                    m = mm[key_]
+                    W(f"- **Fair full-order comparison** (`fom1k`): `{key_}` vs the cheapest full-order configuration of equal or better "
+                      f"cohort-worst ST error (`{m['fom']}`): {m['speedup']:.2f}× (same job, same GPU; listed configurations only).")
+    f3 = HERE / 'checks' / 'analysis-b3d65.json'
+    if f3.exists():
+        D = json.loads(f3.read_text())
+        if D.get('eligible'):
+            for arm, A in D['arms'].items():
+                T3 = {e['key']: e for e in A['table']}
+                c = T3.get('LSPG|CN|0.01|prod')
+                if c:
+                    W(f"- **3D `{arm}`**: median anchor discrepancy of LSPG CN at $\\Delta t_0$ {pct(c['anc'])} % (resolved cases), paired "
+                      f"time ratio to the deployed fixed-sweep BE {c['ratio']:.3f}; orders: " +
+                      ', '.join(f"{kk.replace('|', ' ')} {A['orders'][kk]['claim']}" for kk in ('LSPG|CN', 'LSPG|BDF2', 'GAL|CN', 'GAL|BDF2')) +
+                      '. Reference errors in 3D are reference-limited (A13).')
+    W('')
     W('## The reduced step')
     W('')
     W('A two-step linear multistep method with coefficients $(\\alpha_0,\\alpha_1,\\alpha_2;\\beta_0,\\beta_1)$ on the tested residual')

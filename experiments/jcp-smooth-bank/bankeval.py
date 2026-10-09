@@ -512,7 +512,7 @@ def evaluate(var, L, cases, refs, out, cfg):
     gc.collect()
 
 
-def fom_comparators(cases, refs, out, nodes_list=(129, 257)):
+def fom_comparators(cases, refs, outdir, nodes_list=(129, 257)):
     """A2.6: the training generator (deps/burgers2d_film.py, loaded by path so it cannot shadow other modules) at 129
     and 257 nodes per axis, scored on its own nodes and on the common 129-node restriction against the references."""
     import importlib.util
@@ -531,7 +531,7 @@ def fom_comparators(cases, refs, out, nodes_list=(129, 257)):
             row = dict(nodes=n, cohort=coh, case=c, max_rel_residual=float(np.max(resid)),
                        finite=bool(np.isfinite(F).all() and np.isfinite(resid).all()))
             row['accepted'] = bool(row['finite'] and row['max_rel_residual'] <= 1e-8)   # the generator's own bar
-            np.savez_compressed(out / f'fom_{n}_{coh}{c}.npz', fields=F, residuals=resid)
+            np.savez_compressed(outdir / f'fom_{n}_{coh}{c}.npz', fields=F, residuals=resid)
             for tg in ('ST', 'S'):
                 Rf = refs[(coh, c, tg)][:, ::st, ::st]
                 n0 = float(np.linalg.norm(Rf[0]))

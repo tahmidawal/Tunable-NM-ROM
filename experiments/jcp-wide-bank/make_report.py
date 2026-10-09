@@ -407,8 +407,8 @@ def section_3d(d, title, L, tag, audit=None):
              f"job-wide timing validity: **{d.get('timing_valid_jobwide')}**. Errors against the 513-node first-order "
              f"reference on the $63^3$ lattice: **PROVISIONAL**.\n")
     L.append('| mesh | bank | $R\'$ | $\\kappa$ | $M$ | deployed ($m$) | worst / median refined | converged worst / median | '
-             'floor worst | $m^\\star$ lattice / Gauss | query ms | Jacobian ms | off-mesh bytes | tensor bytes | gates conv / target / controls |')
-    L.append('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
+             'floor worst | $m^\\star$ lattice / Gauss ($\\tau=2.5\\times10^{-4}$) | same at $\\tau=10^{-3}$ | query ms | Jacobian ms | off-mesh bytes | tensor bytes | gates conv / target / controls |')
+    L.append('|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|')
     recs = []
     for n, m_ in d['meshes'].items():
         for bn, b in m_['banks'].items():
@@ -426,6 +426,7 @@ def section_3d(d, title, L, tag, audit=None):
                            jac=s['microbench'].get(dep['arm'], {}).get('jacobian_ms_median') if dep else None,
                            bytes=da['bytes'] if da else None, tensor_bytes=s['tensor_bytes'],
                            mlat=ent.get('primary|lat', {}).get('m'), mgau=ent.get('primary|gauss', {}).get('m'),
+                           mlat2=ent.get('secondary|lat', {}).get('m'), mgau2=ent.get('secondary|gauss', {}).get('m'),
                            tensor_worst=s['arms'].get('tensor', {}).get('worst_refined'),
                            gates=(s['gates']['converged']['passed'], s['gates']['target']['passed'],
                                   s['selection']['discriminating']['primary']))
@@ -437,7 +438,7 @@ def section_3d(d, title, L, tag, audit=None):
                 L.append(f"| {n} | {bn} | {s['Rp']} | {s['kappa_nominal']} | {s['M']} | "
                          f"{dep['arm'] + ' (' + str(dep['m']) + ')' if dep else 'unavailable'} | "
                          f"{pct(rec['dep_worst'])} / {pct(rec['dep_med'])} | {pct(rec['conv_worst'])} / {pct(rec['conv_med'])} | "
-                         f"{pct(rec['floor'])} | {rec['mlat']} / {rec['mgau']} | "
+                         f"{pct(rec['floor'])} | {rec['mlat']} / {rec['mgau']} | {rec['mlat2']} / {rec['mgau2']} | "
                          f"{('%.1f' % rec['ms']) if rec['ms'] and tv else 'withdrawn' if rec['ms'] else '–'} | "
                          f"{('%.3f' % rec['jac']) if rec['jac'] else '–'} | {gb(rec['bytes'])} | {gb(rec['tensor_bytes'])} | "
                          f"{rec['gates'][0]} / {rec['gates'][1]} / {rec['gates'][2]} |")
@@ -477,8 +478,25 @@ def section_3d(d, title, L, tag, audit=None):
             sr = (r['ms'] / b4['ms']) if tv and r['ms'] and b4['ms'] else None
             use = bool(acc and pr is not None and sr is not None and pr <= 0.9 and sr <= 0.9)
             L.append(f"| {r['n'] - 1}³ | {r['Rp']} | {r['kappa']} | {100 * dw:+.3f} pp | {100 * dm:+.3f} pp | {acc} | "
-                     f"{'%.2f' % pr if pr is not None else 'withdrawn'} | {'%.2f' % sr if sr is not None else 'withdrawn'} | {use} |")
+                     f"{'%.2f' % pr if pr is not None else ('missing (not measured)' if tv else 'withdrawn (K-time)')} | "
+                     f"{'%.2f' % sr if sr is not None else 'withdrawn (K-time)'} | {use} |")
         L.append('')
+        # what the numbers say (phrasing per audits/codex-results-j2.md)
+        ex = []
+        for r in trims:
+            b4 = by[(r['n'], r['bank'], r['Rp'], 4)]
+            wc = max(r['dep_cases'], key=r['dep_cases'].get)
+            others = [k for k in r['dep_cases'] if k != wc and k in b4['dep_cases']]
+            ex.append(f"$R'={r['Rp']}$, $\\kappa={r['kappa']}$: {100 * (max(r['dep_cases'][k] for k in others) - max(b4['dep_cases'][k] for k in others)):+.3f} pp "
+                      f"without case {wc}")
+        same_m = all(r['mgau'] == by[(r['n'], r['bank'], r['Rp'], 4)]['mgau'] and r['mlat'] == by[(r['n'], r['bank'], r['Rp'], 4)]['mlat']
+                     for r in trims)
+        L.append('**What the 3D trim numbers say (PROVISIONAL, post-hoc selection):** no tested trim meets the H3 accuracy '
+                 'requirement; the worst-error growth survives removing the worst case (' + '; '.join(ex) + '). Trimming $M$ '
+                 'lowers the setting-panel query time but ' + ('does not change' if same_m else 'does not reliably lower') +
+                 ' the primary $m^\\star$ at fixed $R\'$ — the mechanism registered for 1d is contradicted in 3D as well. The '
+                 'off-mesh rule is far more accurate than the mesh tensor against the refined reference, reproducing the '
+                 '2026-10-01 lane\'s validation pattern.\n')
     # H4 (3D dial on the new bank)
     for n in sorted({r['n'] for r in recs}):
         a_, b_ = by.get((n, 'W1024', 1024, 4)), by.get((n, 'W1024', 512, 4))
@@ -607,7 +625,8 @@ GLOSSARY = r"""## Glossary
 - **ST / S reference**: first-order references at $8192^2$: ST with time step $\Delta t/16$ (space + time), S with the ROM's $\Delta t$ (space only). In 3D: the 513-node, $\Delta t/4$ reference.
 - **worst / median**: over validation cases, of the largest relative error over the five evolved output times. **pp**: percentage points.
 - **projection floor**: the best possible error of the span against the reference (least squares at the shared nodes), with no time stepping, tests or quadrature.
-- **eligible**: finite rollout with no damping-limit (2D) / reason-3 (3D) exits and at most 1 % non-converged steps.
+- **eligible**: 2D, per rollout: finite, no damping-limit exit, at most 1 % of its steps on the iteration budget. 3D (A7), per arm and cohort: every rollout finite, no reason-3 exit, and non-stationary steps (reasons 0 and 2) at most 1 % of all pooled steps.
+- **adaptive_first**: number of initial time steps solved by full adaptive Levenberg–Marquardt before the solver switches to one cached-Jacobian sweep per step (3 in J2; 6 in J4 by amendment A8).
 - **K-conv, K-target, controls**: gates: the converged rollout agrees with its check; the continuum target agrees with its check; the under-resolved control rules (Gauss $8^2$, Smolyak-8; 3D `lat256`, `smol8`) must not pass both selection criteria.
 - **A–B–A timing, K-time**: timed reduced solves, then a fixed baseline, then the solves again, on one GPU in one job; K-time requires drift within 10 % and outputs identical to the untimed run. **paired ratio**: per case and phase, trimmed-setting time divided by the $\kappa=4$ setting's time.
 - **span floor (3D bank table)**: least-squares projection error of native-grid bank-validation snapshots onto the first $R'$ bank columns, worst over 96 cases × six times, each relative to its own norm.

@@ -113,14 +113,14 @@ Independent NumPy audit (`audit_w3.py`): **accepted**. GPU: **NVIDIA H100 PCIe**
 
 Job 5020855 on NVIDIA H100 PCIe, commit `b84d52c8f`, validation cohort 923801 × 64 cases; job-wide timing validity: **True**. Errors against the 513-node first-order reference on the $63^3$ lattice: **PROVISIONAL**.
 
-| mesh | bank | $R'$ | $\kappa$ | $M$ | deployed ($m$) | worst / median refined | converged worst / median | floor worst | $m^\star$ lattice / Gauss | query ms | Jacobian ms | off-mesh bytes | tensor bytes | gates conv / target / controls |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 65 | M2 | 512 | 4 | 2052 | lat32768 (32768) | 3.17 % / 1.12 % | 3.17 % / 1.12 % | 2.25 % | 32768 / 32768 | 104.3 | 2.662 | 0.81 GB | 4.30 GB | True / True / True |
-| 65 | M2 | 512 | 3 | 1538 | lat32768 (32768) | 3.29 % / 1.12 % | 3.29 % / 1.12 % | 2.25 % | 32768 / 32768 | 82.6 | 2.003 | 0.67 GB | 3.23 GB | True / True / True |
-| 65 | M2 | 512 | 2 | 1027 | gl32 (32768) | 4.72 % / 1.18 % | 4.72 % / 1.18 % | 2.25 % | 32768 / 32768 | 68.7 | 1.622 | 0.54 GB | 2.15 GB | True / True / True |
-| 65 | M2 | 256 | 4 | 1027 | gl24 (13824) | 4.70 % / 1.25 % | 4.70 % / 1.25 % | 4.01 % | 16384 / 13824 | 21.2 | 0.410 | 0.17 GB | 0.54 GB | True / True / True |
-| 65 | M2 | 256 | 3 | 771 | gl24 (13824) | 5.36 % / 1.25 % | 5.36 % / 1.25 % | 4.01 % | 16384 / 13824 | 18.2 | 0.324 | 0.14 GB | 0.40 GB | True / True / True |
-| 65 | M2 | 256 | 2 | 513 | gl24 (13824) | 7.78 % / 1.30 % | 7.79 % / 1.30 % | 4.01 % | 16384 / 13824 | 16.7 | 0.290 | 0.11 GB | 0.27 GB | True / True / True |
+| mesh | bank | $R'$ | $\kappa$ | $M$ | deployed ($m$) | worst / median refined | converged worst / median | floor worst | $m^\star$ lattice / Gauss ($\tau=2.5\times10^{-4}$) | same at $\tau=10^{-3}$ | query ms | Jacobian ms | off-mesh bytes | tensor bytes | gates conv / target / controls |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 65 | M2 | 512 | 4 | 2052 | lat32768 (32768) | 3.17 % / 1.12 % | 3.17 % / 1.12 % | 2.25 % | 32768 / 32768 | 16384 / 13824 | 104.3 | 2.662 | 0.81 GB | 4.30 GB | True / True / True |
+| 65 | M2 | 512 | 3 | 1538 | lat32768 (32768) | 3.29 % / 1.12 % | 3.29 % / 1.12 % | 2.25 % | 32768 / 32768 | 16384 / 13824 | 82.6 | 2.003 | 0.67 GB | 3.23 GB | True / True / True |
+| 65 | M2 | 512 | 2 | 1027 | gl32 (32768) | 4.72 % / 1.18 % | 4.72 % / 1.18 % | 2.25 % | 32768 / 32768 | 16384 / 32768 | 68.7 | 1.622 | 0.54 GB | 2.15 GB | True / True / True |
+| 65 | M2 | 256 | 4 | 1027 | gl24 (13824) | 4.70 % / 1.25 % | 4.70 % / 1.25 % | 4.01 % | 16384 / 13824 | 4096 / 8000 | 21.2 | 0.410 | 0.17 GB | 0.54 GB | True / True / True |
+| 65 | M2 | 256 | 3 | 771 | gl24 (13824) | 5.36 % / 1.25 % | 5.36 % / 1.25 % | 4.01 % | 16384 / 13824 | 4096 / 8000 | 18.2 | 0.324 | 0.14 GB | 0.40 GB | True / True / True |
+| 65 | M2 | 256 | 2 | 513 | gl24 (13824) | 7.78 % / 1.30 % | 7.79 % / 1.30 % | 4.01 % | 16384 / 13824 | 8192 / 8000 | 16.7 | 0.290 | 0.11 GB | 0.27 GB | True / True / True |
 
 Tensor rule (the incumbent, mesh backward-difference advection) on the same cases: 64³ M2 $R'=512$, $\kappa=4$: worst 10.22 %; 64³ M2 $R'=512$, $\kappa=3$: worst 10.22 %; 64³ M2 $R'=512$, $\kappa=2$: worst 10.23 %; 64³ M2 $R'=256$, $\kappa=4$: worst 10.44 %; 64³ M2 $R'=256$, $\kappa=3$: worst 10.43 %; 64³ M2 $R'=256$, $\kappa=2$: worst 10.42 %.
 
@@ -128,10 +128,12 @@ Tensor rule (the incumbent, mesh backward-difference advection) on the same case
 
 | mesh | $R'$ | $\kappa$ | worst change | median change | acceptable | paired ratio (final) | setting ratio | useful |
 |---|---|---|---|---|---|---|---|---|
-| 64³ | 512 | 3 | +0.127 pp | +0.007 pp | False | withdrawn | 0.79 | False |
-| 64³ | 512 | 2 | +1.553 pp | +0.067 pp | False | withdrawn | 0.66 | False |
+| 64³ | 512 | 3 | +0.127 pp | +0.007 pp | False | missing (not measured) | 0.79 | False |
+| 64³ | 512 | 2 | +1.553 pp | +0.067 pp | False | missing (not measured) | 0.66 | False |
 | 64³ | 256 | 3 | +0.655 pp | +0.002 pp | False | 0.85 | 0.86 | False |
 | 64³ | 256 | 2 | +3.079 pp | +0.049 pp | False | 0.80 | 0.79 | False |
+
+**What the 3D trim numbers say (PROVISIONAL, post-hoc selection):** no tested trim meets the H3 accuracy requirement; the worst-error growth survives removing the worst case ($R'=512$, $\kappa=3$: +0.108 pp without case 5; $R'=512$, $\kappa=2$: +1.057 pp without case 5; $R'=256$, $\kappa=3$: +0.140 pp without case 5; $R'=256$, $\kappa=2$: +1.141 pp without case 5). Trimming $M$ lowers the setting-panel query time but does not change the primary $m^\star$ at fixed $R'$ — the mechanism registered for 1d is contradicted in 3D as well. The off-mesh rule is far more accurate than the mesh tensor against the refined reference, reproducing the 2026-10-01 lane's validation pattern.
 
 ## Glossary
 
@@ -145,7 +147,8 @@ Tensor rule (the incumbent, mesh backward-difference advection) on the same case
 - **ST / S reference**: first-order references at $8192^2$: ST with time step $\Delta t/16$ (space + time), S with the ROM's $\Delta t$ (space only). In 3D: the 513-node, $\Delta t/4$ reference.
 - **worst / median**: over validation cases, of the largest relative error over the five evolved output times. **pp**: percentage points.
 - **projection floor**: the best possible error of the span against the reference (least squares at the shared nodes), with no time stepping, tests or quadrature.
-- **eligible**: finite rollout with no damping-limit (2D) / reason-3 (3D) exits and at most 1 % non-converged steps.
+- **eligible**: 2D, per rollout: finite, no damping-limit exit, at most 1 % of its steps on the iteration budget. 3D (A7), per arm and cohort: every rollout finite, no reason-3 exit, and non-stationary steps (reasons 0 and 2) at most 1 % of all pooled steps.
+- **adaptive_first**: number of initial time steps solved by full adaptive Levenberg–Marquardt before the solver switches to one cached-Jacobian sweep per step (3 in J2; 6 in J4 by amendment A8).
 - **K-conv, K-target, controls**: gates: the converged rollout agrees with its check; the continuum target agrees with its check; the under-resolved control rules (Gauss $8^2$, Smolyak-8; 3D `lat256`, `smol8`) must not pass both selection criteria.
 - **A–B–A timing, K-time**: timed reduced solves, then a fixed baseline, then the solves again, on one GPU in one job; K-time requires drift within 10 % and outputs identical to the untimed run. **paired ratio**: per case and phase, trimmed-setting time divided by the $\kappa=4$ setting's time.
 - **span floor (3D bank table)**: least-squares projection error of native-grid bank-validation snapshots onto the first $R'$ bank columns, worst over 96 cases × six times, each relative to its own norm.

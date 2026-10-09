@@ -153,7 +153,7 @@ def section_2d(d, audit, L):
              f"Independent audit (`audit_w.py`): **{'accepted' if audit and audit.get('accepted') else 'NOT accepted'}**. "
              f"Job-wide timing validity (K-time): **{tv}**. All errors below are **PROVISIONAL**: both references are "
              f"first-order upwind solutions at $8192^2$ (ST: $\\Delta t/16$; S: the ROM's own $\\Delta t$).\n")
-    L.append('### The dial at $M=4R\'$\n')
+    L.append('### The dial at $M=4R\'$ (errors PROVISIONAL)\n')
     L.append('| $R\'$ | $M$ | deployed rule ($m$) | worst / median vs ST | worst / median vs S | converged rollout vs ST | '
              'converged vs S | projection floor vs ST | floor vs S | query ms (final panel) | off-mesh bytes | tensor bytes |')
     L.append('|---|---|---|---|---|---|---|---|---|---|---|---|')
@@ -181,7 +181,7 @@ def section_2d(d, audit, L):
                  f"{('%+.3f pp' % (100 * dS)) if dS is not None else '–'}); combined verdict: **{both}**. "
                  + (f"Paired per case vs ST: median improvement {100 * float(np.median(imp)):+.3f} pp, "
                     f"{sum(x > 0 for x in imp)}/{len(imp)} cases improved." if imp else '') + '\n')
-    L.append('\n### All twelve settings (trim grid)\n')
+    L.append('\n### All twelve settings (trim grid; errors PROVISIONAL)\n')
     L.append('| $R\'$ | $\\kappa$ | $M$ | $m^\\star$ Gauss / Fibonacci ($\\tau=2.5\\times10^{-4}$) | same at $\\tau=10^{-3}$ | '
              '$m_d$ / $m_\\rho$ (Gauss) | deployed worst vs ST / S | query ms (setting panel) | gates conv / target / controls | cond $A$ |')
     L.append('|---|---|---|---|---|---|---|---|---|---|')
@@ -264,7 +264,8 @@ def section_2d(d, audit, L):
                  "(lane C2 tests second-order time stepping).")
         L.append(f"- **Cost grows steeply with $R'$**: the final-panel query time is "
                  f"{', '.join(('%.0f ms' % by[(r, 4)]['dep_ms_final']) for r in Rps if by.get((r, 4)) and by[(r, 4)].get('dep_ms_final'))} "
-                 f"for $R'$ = {', '.join(str(r) for r in Rps)}, because the points needed ($m^\\star$) grow with the setting.")
+                 f"for $R'$ = {', '.join(str(r) for r in Rps)}; $R'$, $M$ and the points needed ($m^\\star$) all grow together, so "
+                 "the cost growth is not attributed to any one of them.")
         L.append('- **The mechanism registered for 1d is contradicted.** DESIGN 1d predicted that a smaller $M$ (lower test '
                  'frequencies) would need fewer quadrature points. It does not: $m^\\star$ depends jointly on $R\'$ and $M$ and on '
                  'the tested ladder, and reducing $M$ sometimes *increases* it. In every setting the rollout distance, not $\\rho$, '
@@ -288,9 +289,8 @@ def plots_2d(S, by, Rps, tv):
         ax.plot(xs, ys, color=SERIES[i], lw=2, marker=MARKERS[i], ms=7, label=lab)
         ax.annotate(lab.split(' (')[0], (xs[-1], ys[-1]), textcoords='offset points', xytext=(6, 0), color=INK2, fontsize=8,
                     va='center')
-    ax.set_yscale('log')
+    ax.set_ylim(bottom=0)
     ax.set_xticks(xs)
-    plain(ax)
     style(ax, "2D dial (M = 4R'): worst error over 38 validation cases\nPROVISIONAL, first-order references", "R' (bank columns used)",
           'worst relative error (%)')
     ax.legend(frameon=False, fontsize=8, loc='lower left')
@@ -441,6 +441,7 @@ def section_3d(d, title, L, tag, audit=None):
                     rec['raw'] = dict(arm=a_r, m=m_r, ms=ms_r, bytes=8 * m_r * (2 * s['Rp'] + s['M']),
                                       jac=s['microbench'].get(a_r, {}).get('jacobian_ms_median'))
                 rec['dep_cases'] = {c['case']: c['worst_refined'] for c in da['cases']} if da else {}
+                rec['conv_cases'] = {c['case']: c['worst_refined'] for c in s['arms']['conv']['cases']}
                 recs.append(rec)
                 tv = d.get('timing_valid_jobwide')
                 L.append(f"| {n} | {bn} | {s['Rp']} | {s['kappa_nominal']} | {s['M']} | "
@@ -451,12 +452,27 @@ def section_3d(d, title, L, tag, audit=None):
                          f"{('%.3f' % rec['jac']) if rec['jac'] else '–'} | {gb(rec['bytes'])} | {gb(rec['tensor_bytes'])} | "
                          f"{rec['gates'][0]} / {rec['gates'][1]} / {rec['gates'][2]} |")
     L.append('')
+    L.append('Registered diagnostics per setting (A0-3, A0-12, A4-11): named sizes $m_d$ (distance criterion only) and '
+             '$m_\\rho$ ($\\rho$ criterion only) per family, median LM iterations per query of the converged rollout, '
+             'sampled peak device memory of the setting, and the condition number of $A$.\n')
+    L.append('| mesh nodes | bank | setting | $m_d$ lattice / Gauss | $m_\\rho$ lattice / Gauss | LM iterations per query | '
+             'peak device GB (sampled) | cond $A$ |')
+    L.append('|---|---|---|---|---|---|---|---|')
+    for n, m_ in d['meshes'].items():
+        for bn, b in m_['banks'].items():
+            for key, S in b['settings'].items():
+                e_ = S['selection']['entries']
+                L.append(f"| {n} | {bn} | {key} | {e_.get('primary|lat', {}).get('m_d')} / {e_.get('primary|gauss', {}).get('m_d')} | "
+                         f"{e_.get('rho_only|lat', {}).get('m_rho')} / {e_.get('rho_only|gauss', {}).get('m_rho')} | "
+                         f"{S['arms']['conv']['lm_iterations_per_query_median']:.0f} | "
+                         f"{S.get('memory', {}).get('device_bytes_in_use_max', 0) / 1e9:.1f} | {S['A_condition']:.1f} |")
+    L.append('')
     tv = d.get('timing_valid_jobwide')
     by = {(r['n'], r['bank'], r['Rp'], r['kappa']): r for r in recs}
     # tensor comparison
     tr = [r for r in recs if r['tensor_worst'] is not None]
     if tr:
-        L.append('Tensor rule (the incumbent, mesh backward-difference advection) on the same cases: ' +
+        L.append('Tensor rule (the incumbent, mesh backward-difference advection) on the same cases (PROVISIONAL): ' +
                  '; '.join(f"{r['n'] - 1}³ {r['bank']} $R'={r['Rp']}$, $\\kappa={r['kappa']}$: worst {pct(r['tensor_worst'])}"
                            for r in tr) + '.\n')
     # H3 trim (3D)
@@ -548,83 +564,120 @@ def section_3d(d, title, L, tag, audit=None):
         xm = d.get('cross_mesh', {})
         cm = {R_: xm.get(f'W1024|R{R_}_k4|conv', {}).get('worst') for R_ in (256, 512, 768, 1024)}
         nn = max(n for n, _ in W)
-        L.append("**What the 3D dial says (PROVISIONAL, benchmark-relative, solver per A8):**\n")
-        L.append(f"- **Widening the 3D bank does not lower the rollout error against this reference.** Converged-rollout median at "
-                 f"{nn - 1}³: " + ', '.join(f"$R'={R_}$ {pct(W[(nn, R_)]['conv_med'])}" for R_ in (256, 512, 768, 1024) if (nn, R_) in W)
-                 + '; worst: ' + ', '.join(f"{pct(W[(nn, R_)]['conv_worst'])}" for R_ in (256, 512, 768, 1024) if (nn, R_) in W)
-                 + f" (non-monotone). The projection floor against the same reference halves ({pct(W[(nn, 512)]['floor'], 2)} → "
-                 f"{pct(W[(nn, 1024)]['floor'], 2)}), so the extra columns represent the reference better but the reduced "
-                 "dynamics do not deliver it. *Hypothesis, not isolated here:* the backward-Euler time error at $\\Delta t=0.01$ "
-                 "(the reference uses $\\Delta t/4$) dominates beyond $R'\\approx512$, as the 2D S-vs-ST comparison suggests; a "
-                 "space-only 3D reference would test it.")
+        L.append("**What the 3D dial says (PROVISIONAL, benchmark-relative, solver per A8; diagnostics for $R'\\ge768$):**\n")
+        pairs = {}
+        for n_ in sorted({n for n, _ in W}):
+            a5, a10 = W[(n_, 512)]['conv_cases'], W[(n_, 1024)]['conv_cases']
+            ch = [a10[k] - a5[k] for k in a10 if k in a5]
+            pairs[n_] = dict(improved=sum(x < 0 for x in ch), n=len(ch), med=float(np.median(ch)),
+                             rel_worst=W[(n_, 1024)]['conv_worst'] / W[(n_, 512)]['conv_worst'] - 1)
+        fl5, fl10 = W[(nn, 512)]['floor'], W[(nn, 1024)]['floor']
+        L.append("- **Widening 512 → 1024 helps every case, but very little** (gate-ignored diagnostic, converged rollouts): "
+                 + '; '.join(f"{n_ - 1}³: {p['improved']}/{p['n']} cases improve, median paired change {100 * p['med']:+.4f} pp, "
+                             f"worst error {100 * p['rel_worst']:+.1f} % relative" for n_, p in pairs.items())
+                 + f". Meanwhile the projection floor against the same reference falls {pct(fl5)} → {pct(fl10)} "
+                 f"({100 * (fl10 / fl5 - 1):+.0f} %). Across the full ladder the median is nearly flat ("
+                 + ', '.join(f"$R'={R_}$ {pct(W[(nn, R_)]['conv_med'])}" for R_ in (256, 512, 768, 1024))
+                 + f", {nn - 1}³) and the worst error is non-monotone ("
+                 + ', '.join(f"{pct(W[(nn, R_)]['conv_worst'])}" for R_ in (256, 512, 768, 1024))
+                 + "). The extra columns represent the reference much better than the reduced dynamics exploit. "
+                 "*Hypothesis, not isolated here:* the backward-Euler time error at $\\Delta t=0.01$ (the reference uses "
+                 "$\\Delta t/4$) dominates beyond $R'\\approx512$, as the 2D S-vs-ST comparison suggests; a space-only 3D "
+                 "reference would test it. H4 compares joint $(R',M)$ settings, not rank alone.")
         kc = {(n_, R_): d['meshes'][str(n_)]['banks']['W1024']['settings'][f'R{R_}_k4']['gates']['converged']
               for n_ in sorted({n for n, _ in W}) for R_ in (256, 512, 768, 1024)
               if f'R{R_}_k4' in d['meshes'][str(n_)]['banks']['W1024']['settings']}
-        L.append("- **The registered verdict H4 is unavailable** wherever K-conv fails. Gauss-$48^3$ vs Gauss-$56^3$ rollout "
-                 "distance (bar " + sci(next(iter(kc.values()))['bar']) + "): " +
+        L.append("- **The registered verdict H4 is unavailable** because the converged-rule check (K-conv) fails at $R'\\ge768$: "
+                 "Gauss-$48^3$ vs Gauss-$56^3$ rollout distance (bar " + sci(next(iter(kc.values()))['bar']) + "): " +
                  '; '.join(f"{n_ - 1}³ $R'={R_}$ {sci(g_['check_worst_distance'])} ({'pass' if g_['passed'] else 'fail'})"
-                           for (n_, R_), g_ in kc.items()) + ". The wide-bank rollouts are more sensitive to small quadrature "
-                 "differences than the $R'\\le512$ ones.")
-        L.append("- **Mesh dependence grows with width:** worst cross-mesh distance (64³ vs 128³) of the converged rollout "
-                 + ', '.join(f"$R'={R_}$ {sci(v)}" for R_, v in cm.items() if v is not None) + '.')
-        L.append("- **The new bank's 512-column prefix is no better than `model_M2`** at equal width (worst "
-                 + ', '.join(f"{n - 1}³: {pct(W[(n, 512)]['conv_worst'])} vs "
-                             f"{pct(next(r for r in recs if r['bank'] == 'M2' and r['n'] == n and r['Rp'] == 512)['conv_worst'])}"
-                             for n in sorted({n for n, _ in W})) + '; medians ' +
-                 ', '.join(f"{n - 1}³: {pct(W[(n, 512)]['conv_med'])} vs "
-                           f"{pct(next(r for r in recs if r['bank'] == 'M2' and r['n'] == n and r['Rp'] == 512)['conv_med'])}"
-                           for n in sorted({n for n, _ in W})) + ').')
+                           for (n_, R_), g_ in kc.items()) + ". These are quadrature-distance failures, not eligibility "
+                 "failures: the wide-bank rollouts are more sensitive to small quadrature differences than the $R'\\le512$ ones.")
+        L.append("- **Mesh dependence rises with width, not monotonically:** worst cross-mesh distance (64³ vs 128³) of the "
+                 "converged rollout " + ', '.join(f"$R'={R_}$ {sci(v)}" for R_, v in cm.items() if v is not None)
+                 + " (the settings also differ in $M$).")
+        m2 = {n_: next(r for r in recs if r['bank'] == 'M2' and r['n'] == n_ and r['Rp'] == 512) for n_ in sorted({n for n, _ in W})}
+        L.append("- **The new bank's 512-column prefix vs `model_M2` at equal width:** worse worst-case error, slightly lower "
+                 "median (" + '; '.join(f"{n_ - 1}³: worst {pct(W[(n_, 512)]['conv_worst'])} vs {pct(m2[n_]['conv_worst'])}, "
+                                        f"median {pct(W[(n_, 512)]['conv_med'], 3)} vs {pct(m2[n_]['conv_med'], 3)}"
+                                        for n_ in m2) + "); no overall dominance.")
         t1024 = W[(nn, 1024)]['tensor_bytes']
-        L.append("- **Memory:** the tensor needs $8MR'^2$ bytes: " + gb(t1024) + f" at $R'=1024$ ($M={W[(nn, 1024)]['M']}$); "
+        pk = max((s_.get('memory', {}).get('device_bytes_in_use_max', 0) for m_ in d['meshes'].values()
+                  for b_ in m_['banks'].values() for s_ in b_['settings'].values()), default=None)
+        L.append("- **Advection storage:** the tensor needs $8MR'^2$ bytes: " + gb(t1024) + f" at $R'=1024$ ($M={W[(nn, 1024)]['M']}$); "
                  f"extrapolated with $M=4R'$, {gb(8 * 4 * 2048 ** 3)} at $R'=2048$ (computed). The off-mesh rule at $R'=1024$ "
-                 "(gate-ignored diagnostic) needs " + (gb(W[(nn, 1024)]['raw']['bytes']) if W[(nn, 1024)].get('raw') else '–')
-                 + ", so storage is no longer the binding constraint; accuracy and cost are.\n")
+                 "(gate-ignored diagnostic) stores " + (gb(W[(nn, 1024)]['raw']['bytes']) if W[(nn, 1024)].get('raw') else '–')
+                 + " of advection data. This is not the solver's total memory: the largest sampled device footprint of this job "
+                 f"was {gb(pk)} (0.2 s sampling, on an H200). For the advection term at the tested settings, storage is no longer "
+                 "the binding constraint; accuracy and cost are.")
+        L.append("- **Gate scope (A3-13):** the solver-equivalence and mesh-node assembly gates (G2, G4) run on a 32-column, "
+                 "128-test tensor; above $R'=512$ only G1, G3, the table Gram-condition gate and the converged/check agreement "
+                 "are checked. Every J4 setting is the linear-span coefficient solve; no nonlinear-manifold head is involved.\n")
     return recs
 
 
-def plots_3d(recs, tag):
+def plots_3d(recs, tag, posthoc=False):
     if not recs:
         return
-    f, ax = fig()
+    sfx = ' — selection POST HOC (A7)' if posthoc else ''
+    gpu = recs[0]['gpu']
+    banks = sorted({r['bank'] for r in recs})
+    meshes = sorted({r['n'] for r in recs})
+    nmax = max(meshes)
+
+    def wide():
+        f, ax = plt.subplots(figsize=(9.6, 4.6), dpi=150)
+        f.patch.set_facecolor(SURF)
+        return f, ax
+
+    def legend_out(ax):
+        ax.legend(frameon=False, fontsize=8, loc='upper left', bbox_to_anchor=(1.01, 1.0))
+    # ---- cost
+    f, ax = wide()
     i = 0
-    for bn in sorted({r['bank'] for r in recs}):
-        for n in sorted({r['n'] for r in recs}):
-            rs = sorted([r for r in recs if r['bank'] == bn and r['n'] == n and r['kappa'] == 4 and r['ms'] and r['tv']], key=lambda r: r['Rp'])
+    for bn in banks:
+        for n in meshes:
+            rs = sorted([r for r in recs if r['bank'] == bn and r['n'] == n and r['kappa'] == 4 and r['ms'] and r['tv']],
+                        key=lambda r: r['Rp'])
             if rs:
                 ax.plot([r['Rp'] for r in rs], [r['ms'] for r in rs], color=SERIES[i % 4], lw=2, marker=MARKERS[i % 4], ms=7,
-                        label=f'{bn}, {n - 1}³')
+                        label=f'{bn}, {n - 1}³: deployed rule')
+            rr = sorted([r for r in recs if r['bank'] == bn and r['n'] == n and r['kappa'] == 4 and not r['ms'] and r.get('raw')
+                         and r['tv']], key=lambda r: r['Rp'])
+            if rr:
+                ax.plot([r['Rp'] for r in rr], [r['raw']['ms'] for r in rr], color=SERIES[i % 4], lw=0, marker=MARKERS[i % 4],
+                        ms=9, markerfacecolor='none', markeredgewidth=2,
+                        label=f'{bn}, {n - 1}³: gate-ignored diagnostic rule (K-conv failed)')
+            if rs or rr:
                 i += 1
-    for n in sorted({r['n'] for r in recs}):
-        rr = sorted([r for r in recs if r['n'] == n and r['kappa'] == 4 and not r['ms'] and r.get('raw') and r['tv']],
-                    key=lambda r: r['Rp'])
-        if rr:
-            ax.plot([r['Rp'] for r in rr], [r['raw']['ms'] for r in rr], color=INK2, lw=0, marker='o', ms=8,
-                    markerfacecolor='none', markeredgewidth=2, label=f'{n - 1}³ gate-ignored diagnostic (K-conv failed)')
     ax.set_xticks(sorted({r['Rp'] for r in recs}))
-    style(ax, f"3D query time of the deployed rule vs R'\n(per-setting A–B–A medians, {recs[0]['gpu']}; K-time-valid jobs only)", "R'",
-          'median ms per query')
-    ax.legend(frameon=False, fontsize=8)
+    style(ax, f"3D query time vs R' (per-setting A–B–A medians, one {gpu}){sfx}", "R'", 'median ms per query')
+    legend_out(ax)
     save(f, f'3d_{tag}_cost_vs_Rp.png')
-    f, ax = fig()
+    # ---- m* vs M (finest mesh; banks and families separated)
+    f, ax = wide()
     i = 0
-    for fam, key in (('lattice', 'mlat'), ('Gauss', 'mgau')):
-        for n in sorted({r['n'] for r in recs}):
-            rs = sorted([r for r in recs if r['n'] == n and r[key]], key=lambda r: (r['Rp'], r['M']))
+    for bn in banks:
+        for fam, key in (('lattice', 'mlat'), ('Gauss', 'mgau')):
+            rs = sorted([r for r in recs if r['n'] == nmax and r['bank'] == bn and r[key]], key=lambda r: r['M'])
             if rs:
-                ax.plot([r['M'] for r in rs], [r[key] for r in rs], color=SERIES[i % 4], lw=0, marker=MARKERS[i % 4], ms=8,
-                        label=f'{fam}, {n - 1}³')
-                i += 1
+                ax.plot([r['M'] for r in rs], [r[key] for r in rs], color=SERIES[i % 4], lw=1, ls=':', marker=MARKERS[i % 4],
+                        ms=8, label=f'{bn}, {fam}')
+                for r in rs:
+                    ax.annotate(f"R'={r['Rp']}", (r['M'], r[key]), textcoords='offset points', xytext=(5, 4), fontsize=7,
+                                color=INK2)
+            i += 1
+    miss = sorted({r['Rp'] for r in recs if r['n'] == nmax and r['mlat'] is None and r['mgau'] is None})
     ax.set_xscale('log', base=2)
     ax.set_yscale('log', base=2)
     plain(ax, 'both')
-    style(ax, '3D points needed ($m^\\star$, $\\tau=2.5\\times10^{-4}$) vs test count M', 'M', '$m^\\star$')
-    ax.legend(frameon=False, fontsize=8)
+    style(ax, f"3D points needed ($m^\\star$, $\\tau=2.5\\times10^{{-4}}$) vs test count M, {nmax - 1}³{sfx}"
+              + (f"\n(unavailable, K-conv failed: R' = {', '.join(map(str, miss))})" if miss else ''), 'M (sine tests)',
+          '$m^\\star$ (points)')
+    legend_out(ax)
     save(f, f'3d_{tag}_mstar_vs_M.png')
-    banks = sorted({r['bank'] for r in recs})
-    meshes = sorted({r['n'] for r in recs})
-    f, ax = fig()
+    # ---- error vs R'
+    f, ax = wide()
     i = 0
-    nmax = max(meshes)
     for bn in banks:
         for n in meshes:
             if n != nmax and bn != 'W1024':
@@ -634,52 +687,60 @@ def plots_3d(recs, tag):
                 continue
             c = SERIES[i % 4]
             ax.plot([r['Rp'] for r in rs], [100 * r['conv_worst'] for r in rs], color=c, lw=2, label=f'{bn}, {n - 1}³: worst')
-            for r in rs:       # filled = deployed rule available; hollow = registered selection unavailable (gate failed)
+            for r in rs:
                 ax.plot([r['Rp']], [100 * r['conv_worst']], color=c, marker=MARKERS[i % 4], ms=8, lw=0,
                         markerfacecolor=c if r['dep'] else 'none', markeredgewidth=2)
             if n == nmax:
                 ax.plot([r['Rp'] for r in rs], [100 * r['conv_med'] for r in rs], color=c, lw=1.5, ls=':',
                         label=f'{bn}, {n - 1}³: median')
-            if bn == 'W1024' and n == nmax:
+            if bn == banks[-1] and n == nmax:
                 fl = [(r['Rp'], r['floor']) for r in rs if r['floor'] is not None]
                 ax.plot([x for x, _ in fl], [100 * y for _, y in fl], color=INK2, lw=1.5, ls='--', marker='x', ms=6,
                         label=f'{bn}, {n - 1}³: projection floor vs reference (worst)')
             i += 1
+    ax.plot([], [], color=INK2, marker='o', lw=0, markerfacecolor='none', markeredgewidth=2,
+            label='hollow marker: gate failed, converged rollout shown as diagnostic')
     ax.set_ylim(bottom=0)
     ax.set_xticks(sorted({r['Rp'] for r in recs}))
-    style(ax, "3D dial: refined error of the converged rollout over 64 validation cases\n"
-              "(M ≈ 4R'; hollow marker = registered selection unavailable; PROVISIONAL)", "R'", 'relative error (%)')
-    ax.legend(frameon=False, fontsize=8)
+    style(ax, f"3D: refined error of the converged rollout, 64 validation cases (M ≈ 4R'; PROVISIONAL){sfx}", "R'",
+          'relative error (%)')
+    legend_out(ax)
     save(f, f'3d_{tag}_error_vs_Rp.png')
-    f, ax = fig()
+    # ---- memory
+    f, ax = wide()
     xs = np.array([256, 384, 512, 768, 1024, 1536, 2048])
     ax.plot(xs, 8 * 4 * xs ** 3 / 1e9, color=SERIES[1], lw=2, marker=MARKERS[1], ms=7,
-            label='tensor, $8\\cdot4R\'\\cdot R\'^2$ (computed; built only for R\' ≤ 512)')
-    rs = sorted([r for r in recs if r['kappa'] == 4 and r['bytes']], key=lambda r: r['Rp'])
-    if rs:
-        ax.plot([r['Rp'] for r in rs], [r['bytes'] / 1e9 for r in rs], color=SERIES[0], lw=0, marker=MARKERS[0], ms=8,
-                label='off-mesh rule at $m^\\star$ (measured settings)')
-    rr = sorted([r for r in recs if r['kappa'] == 4 and not r['bytes'] and r.get('raw')], key=lambda r: r['Rp'])
-    if rr:
-        ax.plot([r['Rp'] for r in rr], [r['raw']['bytes'] / 1e9 for r in rr], color=SERIES[0], lw=0, marker='o', ms=8,
-                markerfacecolor='none', markeredgewidth=2, label='off-mesh, gate-ignored diagnostic rule (K-conv failed)')
+            label="tensor, $8\\cdot4R'\\cdot R'^2$ (computed; built only for R' ≤ 512)")
+    for k_, bn in enumerate(banks):
+        rs = sorted([r for r in recs if r['kappa'] == 4 and r['bytes'] and r['bank'] == bn and r['n'] == nmax], key=lambda r: r['Rp'])
+        if rs:
+            ax.plot([r['Rp'] for r in rs], [r['bytes'] / 1e9 for r in rs], color=SERIES[0], lw=0, marker=MARKERS[2 * k_ % 4],
+                    ms=8, label=f'off-mesh advection data at $m^\\star$, {bn}, {nmax - 1}³')
+        rr = sorted([r for r in recs if r['kappa'] == 4 and not r['bytes'] and r.get('raw') and r['bank'] == bn and r['n'] == nmax],
+                    key=lambda r: r['Rp'])
+        if rr:
+            ax.plot([r['Rp'] for r in rr], [r['raw']['bytes'] / 1e9 for r in rr], color=SERIES[0], lw=0, marker=MARKERS[2 * k_ % 4],
+                    ms=9, markerfacecolor='none', markeredgewidth=2, label=f'off-mesh, gate-ignored diagnostic rule, {bn}')
     ax.axhline(141, color=INK2, lw=1, ls='--')
-    ax.annotate('H200 memory (141 GB)', (xs[0], 141), textcoords='offset points', xytext=(0, 4), color=INK2, fontsize=8)
+    ax.annotate('H200 total device memory (141 GB, for scale)', (xs[0], 141), textcoords='offset points', xytext=(0, 4),
+                color=INK2, fontsize=8)
     ax.set_yscale('log')
     plain(ax)
-    style(ax, "3D advection memory vs R': tensor vs off-mesh", "R'", 'GB (log scale)')
-    ax.legend(frameon=False, fontsize=8, loc='lower right')
+    style(ax, f"3D advection-term storage vs R': tensor vs off-mesh rule{sfx}", "R'", 'GB (log scale)')
+    legend_out(ax)
     save(f, f'3d_{tag}_memory_vs_Rp.png')
 
 
-# ----------------------------------------------------------------------------------------------------- main
 def main():
     L = ['# C1 wide bank: the accuracy dial with wider banks under off-mesh quadrature\n',
          'Lane C1 of the JCP campaign: how far the accuracy dial extends when the ordered coordinate-network bank is '
          'widened, now that the off-mesh rule stores $m(2R\'+M)$ numbers instead of the $MR\'^2$ tensor. '
          '**Status: PROVISIONAL** — every accuracy number is scored against first-order references (the second-order '
          'references lane has not run); verdicts are benchmark-relative. Selection used validation cohorts only; no test '
-         'cohort was opened. Every number below is generated by `make_report.py` from the run JSONs; the pre-registration '
+         'cohort was opened. Every measured number below is generated by `make_report.py` from the run JSONs (registered '
+         'constants come from `DESIGN.md`; Slurm ids of failed attempts from the job log); 2D/3D errors are against the '
+         'first-order refined references, the 3D bank floors (section 1b) against native-grid bank-validation fields. '
+         'Scope: the linear-span coefficient solve only (no nonlinear-manifold head). The pre-registration '
          'is `DESIGN.md` (amendments A0–A8).\n']
     d1 = load('runs/j1/archive/output/result.json')
     a1 = load('checks/j1-audit.json')
@@ -691,7 +752,7 @@ def main():
     d2 = load('runs/j2/archive/output/result_A7.json') or load('runs/j2/archive/output/result.json')
     a2 = load('checks/j2-audit.json')
     r2 = section_3d(d2, '3D: test-count trim on the old bank (1d)', L, 'j2', audit=a2)
-    plots_3d(r2, 'j2')
+    plots_3d(r2, 'j2', posthoc=bool(d2 and d2.get('amendment')))
     d4 = load('runs/j4/archive/output/result.json')
     r4 = section_3d(d4, '3D: the scaling law on the wider bank (1c)', L, 'j4', audit=load('checks/j4-audit.json'))
     plots_3d(r4, 'j4')
@@ -720,13 +781,17 @@ def main():
     if r4:
         W = {(r['n'], r['Rp']): r for r in r4 if r['bank'] == 'W1024'}
         nn = max(n for n, _ in W)
+        p10 = {n_: sum(W[(n_, 1024)]['conv_cases'][k] < W[(n_, 512)]['conv_cases'][k] for k in W[(n_, 1024)]['conv_cases'])
+               for n_ in sorted({n for n, _ in W})}
         B.append(f"- **1c, 3D scaling law (64³, 128³):** the registered verdict H4 is **unavailable** (the converged-rule "
-                 f"check fails at $R'\\ge768$). Diagnostics: the converged-rollout median error at {nn - 1}³ is "
-                 + ', '.join(f"{pct(W[(nn, R_)]['conv_med'])}" for R_ in (256, 512, 768, 1024))
-                 + f" for $R'$ = 256, 512, 768, 1024, although the projection floor halves; widening the 3D bank does not "
-                 "lower the rollout error against this reference. Off-mesh storage stays small ("
-                 + (gb(W[(nn, 1024)]['raw']['bytes']) if W[(nn, 1024)].get('raw') else '–') + f" at $R'=1024$) where the "
-                 f"tensor would need {gb(W[(nn, 1024)]['tensor_bytes'])}.")
+                 f"check fails at $R'\\ge768$). Gate-ignored diagnostics: going from $R'=512$ to 1024 improves every case "
+                 f"({', '.join(f'{v}/64 at {n_ - 1}³' for n_, v in p10.items())}) but only slightly — the median error at "
+                 f"{nn - 1}³ is " + ', '.join(f"{pct(W[(nn, R_)]['conv_med'], 3)}" for R_ in (256, 512, 768, 1024))
+                 + f" for $R'$ = 256, 512, 768, 1024 — while the projection floor nearly halves ({pct(W[(nn, 512)]['floor'])} → "
+                 f"{pct(W[(nn, 1024)]['floor'])}). The off-mesh advection data at $R'=1024$ take "
+                 + (gb(W[(nn, 1024)]['raw']['bytes']) if W[(nn, 1024)].get('raw') else '–') + " where the tensor would need "
+                 f"{gb(W[(nn, 1024)]['tensor_bytes'])}; the query costs "
+                 + (f"{W[(nn, 1024)]['raw']['ms']:.0f} ms vs {W[(nn, 512)]['ms']:.0f} ms at $R'=512$ (one H200)." if W[(nn, 1024)].get('raw') else '.'))
     B.append('')
     jobs = [('J1 2D grid', d1, 'runs/j1/archive/output/result.json'), ('smoke s1 (2D)', load('runs/s1/archive/output/result.json'), ''),
             ('J3b training', t, ''), ('smoke s2c (3D trim)', load('runs/s2c/archive/output/result.json'), ''),
@@ -785,6 +850,15 @@ GLOSSARY = r"""## Glossary
 - **A–B–A timing, K-time**: timed reduced solves, then a fixed baseline, then the solves again, on one GPU in one job; K-time requires drift within 10 % and outputs identical to the untimed run. **paired ratio**: per case and phase, trimmed-setting time divided by the $\kappa=4$ setting's time.
 - **span floor (3D bank table)**: least-squares projection error of native-grid bank-validation snapshots onto the first $R'$ bank columns, worst over 96 cases × six times, each relative to its own norm.
 - **B1–B4′**: acceptance checks of the new 3D bank (finite training; ordering inverse and conditioning; equal-width comparison with the old bank; span gain from 512 to 1024).
+- **mesh nodes / 64³, 128³**: 3D meshes are named by cells; tables print node counts per axis (65 nodes = 64³ cells, 129 = 128³). 2D: $1024^2$ cells.
+- **$\kappa$ (nominal) and actual $M$**: in 3D the test count is $\kappa R'$ completed to the end of its eigenvalue shell, so the actual $M$ (printed) slightly exceeds $\kappa R'$.
+- **M2 / W1024**: the old 3D bank `model_M2` ($R=512$) and the new wide bank ($R=1024$, width 2048) trained in this lane.
+- **$A$, cond $A$**: the exact discrete linear part $A=\Phi^\top\hat G$ ($M\times R'$) of the reduced residual, and its condition number (largest / smallest singular value).
+- **query ms**: wall time of one complete reduced solve (initial projection, all time steps, decoding of the six output fields), median over the timed calls of one GPU job. **Jacobian ms**: one evaluation of the advection Jacobian alone, median of 50.
+- **floor check / flux check / K-target**: the projection floor's SVD and least-squares values must agree; the continuum target must agree with a finer Gauss rule and with the integrated-by-parts (flux) form.
+- **POD**: proper orthogonal decomposition (principal components of the training snapshots), used in bank training. **Smolyak**: a sparse-grid quadrature, here a must-fail control.
+- **GB**: $10^9$ bytes. **peak device GB (sampled)**: largest GPU memory in use, sampled every 0.2 s (short spikes can be missed).
+- **gate-ignored diagnostic**: what the selection rule would pick if the failed gate were ignored; reported for information, never as a registered result.
 - **PROVISIONAL**: scored against first-order references; not a physical-accuracy claim.
 """
 

@@ -128,12 +128,12 @@ def eligible(rec, nonstat_frac):
 
 def arm_eligible(rs, nonstat_frac):
     """DESIGN A7: arm-level eligibility pooled over a cohort (the cited 3D-lane contract): every rollout finite, zero
-    reason-3 exits, reason-0 steps <= nonstat_frac of all pooled steps."""
+    reason-3 exits, non-stationary steps (reasons 0 and 2) <= nonstat_frac of all pooled steps."""
     if not rs:
         return False
     reasons = np.concatenate([np.asarray(r['reasons']) for r in rs])
-    return bool(all(r['finite'] for r in rs) and int((reasons == 3).sum()) == 0 and
-                int((reasons == 0).sum()) <= nonstat_frac * len(reasons))
+    nonstat = int(((reasons == 0) | (reasons == 2)).sum())        # vendor/quad3d DESIGN: 0 and 2 are non-stationary
+    return bool(all(r['finite'] for r in rs) and int((reasons == 3).sum()) == 0 and nonstat <= nonstat_frac * len(reasons))
 
 
 def select_mstar(recs, rho_max, arms, family, tau, rho_bar, use_d=True, use_rho=True, nonstat_frac=0.01):
@@ -417,12 +417,12 @@ def main():
                         worst_refined=max(r['worst_refined'] for r in rl),
                         median_refined=float(np.median([r['worst_refined'] for r in rl])),
                         worst_dist_conv=(max(r['dist_conv'] for r in rl) if nm != 'conv' else 0.),
-                        all_eligible=all(r['eligible'] for r in rl), arm_eligible_pooled=arm_eligible(rl, nsf),
+                        all_eligible_per_rollout_legacy=all(r['eligible'] for r in rl), arm_eligible_pooled=arm_eligible(rl, nsf),
                         lm_iterations_per_query_median=float(np.median([sum(r['iterations']) for r in rl])),
                         reason_counts={str(k): int(sum(np.sum(np.asarray(r['reasons']) == k) for r in rl)) for k in range(5)},
                         cases=rl)
                     log(f"[{n}|{bk['name']}|{key}] {nm}: worst refined {S_rep['arms'][nm]['worst_refined']:.4%} "
-                        f"dist {S_rep['arms'][nm]['worst_dist_conv']:.2e} elig {S_rep['arms'][nm]['all_eligible']}")
+                        f"dist {S_rep['arms'][nm]['worst_dist_conv']:.2e} eligible(pooled, A7) {S_rep['arms'][nm]['arm_eligible_pooled']}")
                 if alias is not None:
                     an = alias['name']
                     arms[an] = dict(arms['check'], name=an, family=alias['family'], control=bool(alias.get('control')))

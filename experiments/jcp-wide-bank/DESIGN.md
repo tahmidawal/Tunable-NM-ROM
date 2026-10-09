@@ -573,10 +573,13 @@ non-stationary steps. On J2's first setting a single non-stationary step of vali
 every arm including the converged rollout and the tensor (0.06 % of the 1600 pooled steps), made every arm ineligible
 and the setting's $m^\star$ unavailable through K-conv.
 
-**Correction.** 3D eligibility of an arm = every field finite, zero reason-3 exits, and reason-0 steps $\le1\%$ of
-all steps, pooled over the validation cohort; the certification rollouts are pooled separately with the same rule.
+**Correction.** 3D eligibility of an arm = every field finite, zero reason-3 exits, and non-stationary steps (reasons
+0 **and 2**, as the cited contract defines them) $\le1\%$ of all steps, pooled over the validation cohort; the certification rollouts are pooled separately with the same rule.
 K-conv uses the same arm-level eligibility. 2D eligibility is unchanged (registered per rollout in A0-3; J1 had no
 budget exits). J2 (already running with the per-rollout rule) is re-selected offline by `reselect3d.py` from its
 persisted per-step exit records; the report shows **both** the as-run outcome (per-rollout rule) and the amended one,
-labelled. J4 runs with the corrected code. The decision was made from the exit counts only, before any $m^\star$,
-timing or accuracy of J2 under the pooled rule was computed.
+labelled. J4 runs with the corrected code. Chronology, stated plainly: the defect was found from the first setting's
+"deployed None" line; diagnosing it, I read that setting's job log, which prints each arm's worst refined error and
+distance next to its eligibility, and then the exit counts. No $m^\star$, deployment or timing under the pooled rule had
+been computed when this amendment was written, but the first setting's per-arm errors had been seen. The amendment
+restores the rule A0-3 cites; it does not use any of those values.

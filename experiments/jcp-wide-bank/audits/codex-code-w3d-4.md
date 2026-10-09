@@ -1,0 +1,15 @@
+Audited commit `93887267c`. No files modified.
+
+1. **FAIL — eligibility does not match the cited contract.** [Vendor DESIGN.md:240](experiments/jcp-wide-bank/vendor/quad3d/DESIGN.md#L240) explicitly counts **0 and 2** as non-stationary. [w3d.py:129](experiments/jcp-wide-bank/w3d.py#L129) counts only 0. Reason 2 **is reachable**: the first three steps use adaptive LM through `offmesh.py:171–182`; `vendor/burgers3d-span/common.py:437–440` emits 2 for a tiny step without convergence. An in-memory counterexample with every exit equal to 2 incorrectly passes eligibility. **Blocking fix:** count `(reason == 0) | (reason == 2)` and correct A7’s definition.
+
+2. **PASS for decision call sites; PARTIAL for diagnostics.** K-conv separately pools validation and certification; primary selection, distance-only and rho-only diagnostics all pass `nsf`. Controls now discriminate solely on distance/rho, matching A0-2. However, `arms[*].all_eligible` and console `elig` still report per-rollout eligibility; only the new `arm_eligible_pooled` reports the amended rule. Label those legacy diagnostics explicitly to avoid contradictory-looking results.
+
+3. **PARTIAL — selection replay matches, but complete fidelity is unverified.** The replay reproduces current gate/control/selection and setting-level deployment decisions and preserves the four replaced objects under `as_run`. I exercised it entirely in memory against the persisted S2c result; required record structures exist and preservation passed. **J2’s `result.json` is absent locally**, so its actual completeness cannot be certified.
+   
+   Two discrepancies remain in [reselect3d.py](experiments/jcp-wide-bank/reselect3d.py):
+   - It never adds/recomputes `arms[*].arm_eligible_pooled`, unlike amended `w3d`.
+   - Lines 82–84 unconditionally claim the original job had no deployed arms/final panel. The S2c replay demonstrably produces that false claim despite an existing final panel. **Fix:** derive panel availability from the input and distinguish coverage of newly selected arms. Require a complete J2 artifact before replay acceptance.
+
+4. **PARTIAL — pooling justification holds; chronology is unverified.** One exit among 25 steps fails 1%; one among 1,600 passes. Cohort pooling agrees with the cited contract, but excluding reason 2 does not. A7 records that the decision preceded amended selection, timing and accuracy inspection; the available artifacts do not independently establish that sequence. Moreover, `w3d` logs accuracy/distance beside eligibility during rollouts. That does not prove those values were read, but an “exit-counts-only” claim needs contemporaneous evidence or explicit qualification.
+
+**OK-TO-RUN: NO — fix reason-2 accounting and A7 wording; correct replay diagnostics/panel provenance; validate the completed J2 artifact before accepting amended results.**

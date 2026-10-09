@@ -30,6 +30,9 @@ def main():
                 S['as_run'] = dict(gates=S['gates'], controls=S.get('controls'), selection=S['selection'],
                                    deployed=S.get('deployed'))
                 recs = {nm: a['cases'] for nm, a in S['arms'].items() if 'cases' in a}
+                for nm, a in S['arms'].items():
+                    if 'cases' in a:
+                        a['arm_eligible_pooled'] = arm_eligible(a['cases'], nsf)
                 crecs = S['certification']
                 conv_ok = arm_eligible(recs['conv'], nsf) and arm_eligible(crecs['conv'], nsf)
                 chk_ok = arm_eligible(recs['check'], nsf) and arm_eligible(crecs['check'], nsf)
@@ -79,8 +82,13 @@ def main():
                 else:
                     S['deployed'] = None
                 S['gates'], S['controls'], S['selection'] = gates, ctrl, dict(valid=valid, discriminating=disc, entries=sel)
-    out['final_panel_note'] = ('the job-time final cross-setting panel had no deployed arms under the as-run rule; the H3 '
-                               'confirmation block is therefore missing for this job')
+    for n, m_ in out['meshes'].items():
+        ft = m_.get('final_timing')
+        timed = set(ft['subjects']) if ft else set()
+        new = [f"{bn}|{k}|{S['deployed']['arm']}" for bn, b in m_['banks'].items() for k, S in b['settings'].items()
+               if S.get('deployed')]
+        m_['final_panel_coverage'] = dict(job_final_panel_ran=bool(ft), amended_deployed=new,
+                                          covered=[k for k in new if k in timed], missing=[k for k in new if k not in timed])
     dst.write_text(json.dumps(out, indent=1))
     print('written', dst)
 

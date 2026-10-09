@@ -273,10 +273,11 @@ def section_2d(d, audit, L):
         u = [k for k, v in h3.items() if v['useful']]
         L.append(f"- **Trim:** useful under the registered ST criterion only at {', '.join(f"$R'={k[0]}$, $\\kappa={k[1]}$" for k in u) or 'no setting'}; "
                  "every trim increases the worst error against S, so the acceptance is specific to the space+time reference.\n")
-    L.append('Registered solver/memory diagnostics (2D, deployed rule): median LM iterations per query, budget/damping-limit '
-             'exits, sampled peak device GB per setting: ' + '; '.join(
+    L.append('Registered solver/memory diagnostics (2D, deployed rule, all 38 cases): median LM iterations per query, '
+             'budget/damping-limit exits, rejected LM steps, sampled peak device GB per setting: ' + '; '.join(
                  f"{e['key']} {np.median([r['iterations_total'] for r in rows if r['setting'] == e['key'] and e['deployed'] and r['arm'] == e['deployed']['arm']]):.0f} it, "
                  f"{sum(r['exits']['budget'] + r['exits']['damping_limit'] for r in rows if r['setting'] == e['key'] and e['deployed'] and r['arm'] == e['deployed']['arm'])} exits, "
+                 f"{sum(r['rejected_total'] for r in rows if r['setting'] == e['key'] and e['deployed'] and r['arm'] == e['deployed']['arm'])} rejected steps, "
                  f"{e['memory'].get('interval', {}).get('device_bytes_in_use_max', 0) / 1e9:.1f} GB"
                  for e in S.values() if e['deployed']) + '.\n')
     plots_2d(S, by, Rps, tv)

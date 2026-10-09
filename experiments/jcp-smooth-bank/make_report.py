@@ -573,7 +573,10 @@ def main():
             w(f"| {s} | {b} | {rule} | {inv[0]['m']} | {v:.1f} | {fmt(max(x['coeff_rel_diff_vs_phase1'] for x in inv))} |")
         w('')
     fc = [r for m_ in meta for r in m_.get('fom_comparators', [])]
-    if 'coarse' in E and fc:
+    fc_ok = bool(fc) and all(r.get('accepted') for r in fc) and len(fc) == 2 * N_CASES
+    if 'coarse' in E and fc and not fc_ok:
+        w('## Coarse-data control\n\nThe FOM comparators did not all pass their acceptance check (finite, relative residual ≤ 1e-8, 38 cases at each node count); the comparison is withheld.\n')
+    if 'coarse' in E and fc_ok:
         w('## Coarse-data control (A1.7, A2.6; PROVISIONAL)\n')
         w('Worst over the 38 cases of the evolved error % on the common 129-node restriction of the references (each cell ST / S). '
           '`coarse` was trained only on 129-node data; the FOMs are the training generator at 129 and 257 nodes.\n')

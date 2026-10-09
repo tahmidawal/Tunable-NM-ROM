@@ -488,3 +488,12 @@ Codex eval-code audit 3 could not establish from the local smoke run that two va
 Its conservative scaling needs a ≥5.5× effective A100 speed-up over the GB10 smoke. `ev1` therefore runs **one variant
 per GPU (6 GPUs, any A100), wall 10 h, 12 CPUs**. Timing (§5.8) then runs on the first device and keeps every bank's
 mesh bank for one setting resident (≈18 GiB for `acc`). Nothing scientific changes.
+
+## Amendment A7 (2026-10-09, round-2 evaluation; before `ev2` runs)
+
+`ev2` evaluates `base` again (the in-job comparator, reported as `base_ev2`) together with `base_s1`, `sob001`,
+`sob1` and `coarse`, one per GPU (5 A100s, any memory size, wall 10 h, ≤ 50 allocated GPU-h; `ev1` took 26 min). The
+coarse task also runs the FOM comparators (A2.6). Each comparator case is **accepted** only if its fields are
+finite and its maximum relative Newton residual is ≤ 1e-8, the generator's own bar. Its fields and residuals are
+saved. The coarse-control comparison is reported only if all 2 × 38 comparator cases are accepted. Round-1 verdicts
+are re-read with `base_s1` in the noise yardstick (A1.5), and the report shows them.

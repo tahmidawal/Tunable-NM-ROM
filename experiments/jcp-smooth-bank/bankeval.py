@@ -512,7 +512,7 @@ def evaluate(var, L, cases, refs, out, cfg):
     gc.collect()
 
 
-def fom_comparators(cases, refs, nodes_list=(129, 257)):
+def fom_comparators(cases, refs, out, nodes_list=(129, 257)):
     """A2.6: the training generator (deps/burgers2d_film.py, loaded by path so it cannot shadow other modules) at 129
     and 257 nodes per axis, scored on its own nodes and on the common 129-node restriction against the references."""
     import importlib.util
@@ -527,8 +527,11 @@ def fom_comparators(cases, refs, nodes_list=(129, 257)):
             U0 = bf.blob_ic(n, ph[0], ph[1], ph[2], ph[3])[None]
             snaps, res = rollout(jnp.asarray(U0), jnp.asarray([ph[4]]))
             F = np.asarray(snaps)[::10, 0].reshape(6, n, n)
-            row = dict(nodes=n, cohort=coh, case=c, max_rel_residual=float(np.max(np.asarray(res))),
-                       finite=bool(np.isfinite(F).all()))
+            resid = np.asarray(res)
+            row = dict(nodes=n, cohort=coh, case=c, max_rel_residual=float(np.max(resid)),
+                       finite=bool(np.isfinite(F).all() and np.isfinite(resid).all()))
+            row['accepted'] = bool(row['finite'] and row['max_rel_residual'] <= 1e-8)   # the generator's own bar
+            np.savez_compressed(out / f'fom_{n}_{coh}{c}.npz', fields=F, residuals=resid)
             for tg in ('ST', 'S'):
                 Rf = refs[(coh, c, tg)][:, ::st, ::st]
                 n0 = float(np.linalg.norm(Rf[0]))
@@ -572,7 +575,7 @@ def main():
     (out / f'meta_task{a.task}.json').write_text(json.dumps(QS.clean(meta), indent=1))
     log('CONTROLS', json.dumps(QS.clean({k: v.get('passed') for k, v in meta['controls'].items()})))
     if cfg['tasks'][a.task].get('fom_comparators'):
-        meta['fom_comparators'] = fom_comparators(cases, refs)
+        meta['fom_comparators'] = fom_comparators(cases, refs, out)
         (out / f'meta_task{a.task}.json').write_text(json.dumps(QS.clean(meta), indent=1))
     for var in cfg['tasks'][a.task]['variants']:
         log('VARIANT', var['label'])

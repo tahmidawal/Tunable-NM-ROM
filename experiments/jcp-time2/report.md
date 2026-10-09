@@ -361,6 +361,211 @@ Old method (deployed mesh lattice $63^2$, LSPG), worst / median ST error (%, PRO
 
 ![error_vs_cost_acc.png](plots/error_vs_cost_acc.png)
 
+## Fair full-order comparison (`fom1k`, $L=1024$; DESIGN section 9, A9–A11)
+
+Job 5017631 on NVIDIA A100 80GB PCIe; independent audit: pass. The full-order model uses the same two-step methods (sign-upwind advection, 5-point Laplacian, Newton–BiCGStab with the DST Helmholtz preconditioner), each at its calibrated Newton tolerance. Accuracy over the 38 dev6 ∪ val32 cases; timing over six dev6 cases × 3 repetitions on one GPU, ratios relative to the full-order BE at $\Delta t_0$. All errors are PROVISIONAL (first-order references); the full-order model is first order (upwind) in space at this mesh.
+
+FOM order check ($L=256$, dev6 cases 0 and 2; orders from the pairs starting at $2\Delta t_0$, $\Delta t_0$, $\Delta t_0/2$):
+
+| scheme | case | orders | status |
+|---|---|---|---|
+| BE | dev60 | 0.94, 0.97, 0.99 | in band (gated) |
+| CN | dev60 | 2.38, 5.32, 3.48 | pre-asymptotic (consistent with a stiff-mode transient); not gated (A11.1) |
+| CN-R | dev60 | 1.96, 1.99, 2.00 | in band (gated) |
+| BDF2 | dev60 | 2.04, 2.04, 2.02 | in band (gated) |
+| BE | dev62 | 0.84, 0.91, 0.95 | in band (gated) |
+| CN | dev62 | 2.01, 2.00, 2.00 | in band (reported only, A11.1) |
+| CN-R | dev62 | 1.89, 1.95, 1.98 | in band (gated) |
+| BDF2 | dev62 | 1.80, 1.97, 2.01 | in band (gated) |
+
+Accuracy (PROVISIONAL, % of $\lVert u_0\rVert$) and cost; rows not verified on all 38 cases or without a complete timing are marked and excluded from the matching:
+
+| solver | scheme | $\Delta t/\Delta t_0$ | tolerance | ST worst | ST median | verified | ms | ratio to FOM BE $\Delta t_0$ | eligible |
+|---|---|---|---|---|---|---|---|---|---|
+| FOM | BDF2 | 0.5 | ntol 1e-06 (calibrated) | 1.198 | 0.194 | 38/38 | 487.9 | 1.220 | yes |
+| FOM | BDF2 | 1 | ntol 1e-06 (calibrated) | 1.359 | 0.187 | 38/38 | 405.0 | 0.889 | yes |
+| FOM | BDF2 | 2 | ntol 1e-06 (calibrated) | 2.178 | 0.448 | 38/38 | 252.9 | 0.555 | yes |
+| FOM | BDF2 | 5 | ntol 0.0001 (calibrated) | 6.232 | 2.635 | 38/38 | 133.2 | 0.287 | yes |
+| FOM | BE | 0.5 | ntol 1e-06 (calibrated) | 2.173 | 0.511 | 38/38 | 538.5 | 1.361 | yes |
+| FOM | BE | 1 | ntol 1e-06 (calibrated) | 3.214 | 0.982 | 38/38 | 456.1 | 1.000 | yes |
+| FOM | BE | 2 | ntol 1e-06 (calibrated) | 5.140 | 1.860 | 38/38 | 285.2 | 0.615 | yes |
+| FOM | BE | 5 | ntol 0.0001 (calibrated) | 9.771 | 4.139 | 38/38 | 144.5 | 0.308 | yes |
+| FOM | CN-R | 0.5 | ntol 1e-06 (calibrated) | 1.187 | 0.193 | 38/38 | 415.3 | 1.054 | yes |
+| FOM | CN-R | 1 | ntol 1e-06 (calibrated) | 1.291 | 0.207 | 38/38 | 365.1 | 0.817 | yes |
+| FOM | CN-R | 2 | ntol 1e-06 (calibrated) | 1.938 | 0.684 | 38/38 | 236.7 | 0.518 | yes |
+| FOM | CN-R | 5 | ntol 0.0001 (calibrated) | 7.653 | 3.773 | 38/38 | 125.5 | 0.273 | yes |
+| FOM | CN | 0.5 | ntol 1e-06 (calibrated) | 1.157 | 0.211 | 38/38 | 496.3 | 1.169 | yes |
+| FOM | CN | 1 | ntol 1e-06 (calibrated) | 1.174 | 0.316 | 38/38 | 285.7 | 0.689 | yes |
+| FOM | CN | 2 | ntol 0.0001 (calibrated) | 3.589 | 0.648 | 38/38 | 175.7 | 0.408 | yes |
+| FOM | CN | 5 | ntol 0.0001 (calibrated) | 7.865 | 1.987 | 38/38 | 98.7 | 0.217 | yes |
+| ROM acc GAL | BDF2 | 0.5 | production | 1.837 | 0.070 | 38/38 | 295.1 | 0.636 | yes |
+| ROM acc GAL | BDF2 | 1 | production | 1.844 | 0.093 | 38/38 | 179.0 | 0.391 | yes |
+| ROM acc GAL | BDF2 | 10 | production | 12.362 | 6.467 | 38/38 | 52.5 | 0.106 | yes |
+| ROM acc GAL | BDF2 | 2 | production | 2.133 | 0.448 | 38/38 | 107.9 | 0.237 | yes |
+| ROM acc GAL | BDF2 | 5 | production | 5.613 | 2.597 | 38/38 | 62.1 | 0.123 | yes |
+| ROM acc GAL | BE | 0.5 | production | 1.790 | 0.431 | 38/38 | 293.2 | 0.636 | yes |
+| ROM acc GAL | BE | 1 | production | 2.730 | 0.906 | 38/38 | 178.9 | 0.385 | yes |
+| ROM acc GAL | BE | 10 | production | 14.748 | 7.117 | 38/38 | 53.1 | 0.103 | yes |
+| ROM acc GAL | BE | 2 | production | 4.839 | 1.796 | 38/38 | 108.5 | 0.235 | yes |
+| ROM acc GAL | BE | 5 | production | 9.554 | 4.091 | 38/38 | 62.7 | 0.123 | yes |
+| ROM acc GAL | CN-R | 0.5 | production | 1.849 | 0.062 | 38/38 | 289.9 | 0.627 | yes |
+| ROM acc GAL | CN-R | 1 | production | 1.820 | 0.135 | 38/38 | 174.6 | 0.373 | yes |
+| ROM acc GAL | CN-R | 10 | production | 12.932 | 7.065 | 38/38 | 51.3 | 0.101 | yes |
+| ROM acc GAL | CN-R | 2 | production | 1.896 | 0.658 | 38/38 | 107.6 | 0.233 | yes |
+| ROM acc GAL | CN-R | 5 | production | 7.422 | 3.723 | 38/38 | 62.2 | 0.122 | yes |
+| ROM acc GAL | CN | 0.5 | production | 1.861 | 0.083 | 38/38 | 290.1 | 0.626 | yes |
+| ROM acc GAL | CN | 1 | production | 1.851 | 0.099 | 38/38 | 174.5 | 0.374 | yes |
+| ROM acc GAL | CN | 10 | production | 12.793 | 5.182 | 38/38 | 83.1 | 0.153 | yes |
+| ROM acc GAL | CN | 2 | production | 1.928 | 0.264 | 38/38 | 111.8 | 0.248 | yes |
+| ROM acc GAL | CN | 5 | production | 8.157 | 1.949 | 38/38 | 85.1 | 0.172 | yes |
+| ROM acc LSPG | BDF2 | 0.5 | production | 1.783 | 0.070 | 38/38 | 258.1 | 0.569 | yes |
+| ROM acc LSPG | BDF2 | 1 | production | 1.710 | 0.096 | 38/38 | 134.7 | 0.296 | yes |
+| ROM acc LSPG | BDF2 | 10 | production | 12.366 | 6.468 | 38/38 | 44.7 | 0.089 | yes |
+| ROM acc LSPG | BDF2 | 2 | production | 2.000 | 0.448 | 38/38 | 75.5 | 0.164 | yes |
+| ROM acc LSPG | BDF2 | 5 | production | 5.582 | 2.597 | 38/38 | 49.1 | 0.100 | yes |
+| ROM acc LSPG | BE | 0.5 | production | 1.761 | 0.431 | 38/38 | 258.7 | 0.562 | yes |
+| ROM acc LSPG | BE | 1 | production | 2.747 | 0.906 | 38/38 | 134.7 | 0.296 | yes |
+| ROM acc LSPG | BE | 10 | production | 14.749 | 7.117 | 38/38 | 44.6 | 0.087 | yes |
+| ROM acc LSPG | BE | 2 | production | 4.854 | 1.796 | 38/38 | 76.0 | 0.164 | yes |
+| ROM acc LSPG | BE | 5 | production | 9.557 | 4.091 | 38/38 | 50.5 | 0.098 | yes |
+| ROM acc LSPG | CN-R | 0.5 | production | 1.804 | 0.063 | 38/38 | 259.0 | 0.557 | yes |
+| ROM acc LSPG | CN-R | 1 | production | 1.761 | 0.135 | 38/38 | 134.7 | 0.295 | yes |
+| ROM acc LSPG | CN-R | 10 | production | 12.932 | 7.065 | 38/38 | 44.2 | 0.084 | yes |
+| ROM acc LSPG | CN-R | 2 | production | 1.738 | 0.658 | 38/38 | 75.8 | 0.159 | yes |
+| ROM acc LSPG | CN-R | 5 | production | 7.426 | 3.723 | 38/38 | 49.5 | 0.099 | yes |
+| ROM acc LSPG | CN | 0.5 | production | 1.814 | 0.085 | 38/38 | 259.1 | 0.560 | yes |
+| ROM acc LSPG | CN | 1 | production | 1.796 | 0.098 | 38/38 | 134.8 | 0.295 | yes |
+| ROM acc LSPG | CN | 10 | production | 12.786 | 5.187 | 38/38 | 76.1 | 0.137 | yes |
+| ROM acc LSPG | CN | 2 | production | 1.803 | 0.259 | 38/38 | 78.3 | 0.175 | yes |
+| ROM acc LSPG | CN | 5 | production | 8.124 | 1.898 | 38/38 | 71.7 | 0.137 | yes |
+| ROM fast GAL | BDF2 | 0.5 | production | 5.609 | 0.419 | 38/38 | 54.3 | 0.117 | yes |
+| ROM fast GAL | BDF2 | 1 | production | 5.584 | 0.425 | 38/38 | 34.9 | 0.076 | yes |
+| ROM fast GAL | BDF2 | 10 | production | 12.112 | 6.474 | 38/38 | 12.7 | 0.025 | yes |
+| ROM fast GAL | BDF2 | 2 | production | 5.416 | 0.575 | 38/38 | 22.1 | 0.048 | yes |
+| ROM fast GAL | BDF2 | 5 | production | 6.446 | 2.630 | 38/38 | 14.3 | 0.028 | yes |
+| ROM fast GAL | BE | 0.5 | production | 4.916 | 0.541 | 38/38 | 54.8 | 0.117 | yes |
+| ROM fast GAL | BE | 1 | production | 4.783 | 1.029 | 38/38 | 34.7 | 0.073 | yes |
+| ROM fast GAL | BE | 10 | production | 14.784 | 7.109 | 38/38 | 12.6 | 0.025 | yes |
+| ROM fast GAL | BE | 2 | production | 5.637 | 1.873 | 38/38 | 22.6 | 0.049 | yes |
+| ROM fast GAL | BE | 5 | production | 9.644 | 4.107 | 38/38 | 14.1 | 0.029 | yes |
+| ROM fast GAL | CN-R | 0.5 | production | 5.604 | 0.415 | 38/38 | 54.0 | 0.117 | yes |
+| ROM fast GAL | CN-R | 1 | production | 5.585 | 0.423 | 38/38 | 34.1 | 0.072 | yes |
+| ROM fast GAL | CN-R | 10 | production | 12.922 | 7.063 | 38/38 | 12.4 | 0.024 | yes |
+| ROM fast GAL | CN-R | 2 | production | 5.530 | 0.727 | 38/38 | 22.4 | 0.048 | yes |
+| ROM fast GAL | CN-R | 5 | production | 7.866 | 3.741 | 38/38 | 14.0 | 0.029 | yes |
+| ROM fast GAL | CN | 0.5 | production | 5.614 | 0.419 | 38/38 | 54.3 | 0.116 | yes |
+| ROM fast GAL | CN | 1 | production | 5.621 | 0.423 | 38/38 | 34.1 | 0.073 | yes |
+| ROM fast GAL | CN | 10 | production | 12.051 | 4.546 | 38/38 | 16.1 | 0.030 | yes |
+| ROM fast GAL | CN | 2 | production | 5.650 | 0.454 | 38/38 | 22.7 | 0.050 | yes |
+| ROM fast GAL | CN | 5 | production | 5.870 | 1.274 | 38/38 | 15.3 | 0.030 | yes |
+| ROM fast LSPG | BDF2 | 0.5 | production | 5.281 | 0.416 | 38/38 | 48.0 | 0.099 | yes |
+| ROM fast LSPG | BDF2 | 1 | production | 5.036 | 0.421 | 38/38 | 26.1 | 0.058 | yes |
+| ROM fast LSPG | BDF2 | 10 | production | 12.225 | 6.483 | 38/38 | 10.7 | 0.021 | yes |
+| ROM fast LSPG | BDF2 | 2 | production | 4.696 | 0.569 | 38/38 | 15.8 | 0.035 | yes |
+| ROM fast LSPG | BDF2 | 5 | production | 6.311 | 2.635 | 38/38 | 11.0 | 0.021 | yes |
+| ROM fast LSPG | BE | 0.5 | production | 4.678 | 0.542 | 38/38 | 45.5 | 0.095 | yes |
+| ROM fast LSPG | BE | 1 | production | 4.637 | 1.035 | 38/38 | 25.9 | 0.056 | yes |
+| ROM fast LSPG | BE | 10 | production | 14.829 | 7.116 | 38/38 | 10.8 | 0.021 | yes |
+| ROM fast LSPG | BE | 2 | production | 5.770 | 1.873 | 38/38 | 15.9 | 0.034 | yes |
+| ROM fast LSPG | BE | 5 | production | 9.764 | 4.120 | 38/38 | 10.9 | 0.021 | yes |
+| ROM fast LSPG | CN-R | 0.5 | production | 5.349 | 0.413 | 38/38 | 44.9 | 0.096 | yes |
+| ROM fast LSPG | CN-R | 1 | production | 5.144 | 0.420 | 38/38 | 26.4 | 0.057 | yes |
+| ROM fast LSPG | CN-R | 10 | production | 12.932 | 7.071 | 38/38 | 10.7 | 0.020 | yes |
+| ROM fast LSPG | CN-R | 2 | production | 4.865 | 0.727 | 38/38 | 15.9 | 0.034 | yes |
+| ROM fast LSPG | CN-R | 5 | production | 8.103 | 3.753 | 38/38 | 10.8 | 0.021 | yes |
+| ROM fast LSPG | CN | 0.5 | production | 5.357 | 0.417 | 38/38 | 45.6 | 0.095 | yes |
+| ROM fast LSPG | CN | 1 | production | 5.171 | 0.419 | 38/38 | 26.0 | 0.056 | yes |
+| ROM fast LSPG | CN | 10 | production | 11.699 | 4.362 | 38/38 | 14.5 | 0.026 | yes |
+| ROM fast LSPG | CN | 2 | production | 4.950 | 0.446 | 38/38 | 15.8 | 0.034 | yes |
+| ROM fast LSPG | CN | 5 | production | 4.935 | 1.228 | 38/38 | 12.2 | 0.023 | yes |
+
+Matched comparison (A9.4; "best among the listed configurations" only): for each eligible ROM arm, the cheapest eligible FOM configuration whose cohort-worst ST error is no larger; speed-up = FOM time / ROM time (same job, same GPU). PROVISIONAL (both errors are against first-order references).
+
+| ROM arm | ROM ST worst | ROM ms | matched FOM | FOM ST worst | FOM ms | speed-up |
+|---|---|---|---|---|---|---|
+| `rom|acc|gauss96|GAL|BDF2|0.5` | 1.837 | 295.1 | `fom|CN|1` | 1.174 | 285.7 | 1.0× |
+| `rom|acc|gauss96|GAL|BDF2|1` | 1.844 | 179.0 | `fom|CN|1` | 1.174 | 285.7 | 1.6× |
+| `rom|acc|gauss96|GAL|BDF2|10` | 12.362 | 52.5 | `fom|CN|5` | 7.865 | 98.7 | 1.9× |
+| `rom|acc|gauss96|GAL|BDF2|2` | 2.133 | 107.9 | `fom|CNR|2` | 1.938 | 236.7 | 2.2× |
+| `rom|acc|gauss96|GAL|BDF2|5` | 5.613 | 62.1 | `fom|CN|2` | 3.589 | 175.7 | 2.8× |
+| `rom|acc|gauss96|GAL|BE|0.5` | 1.790 | 293.2 | `fom|CN|1` | 1.174 | 285.7 | 1.0× |
+| `rom|acc|gauss96|GAL|BE|1` | 2.730 | 178.9 | `fom|CNR|2` | 1.938 | 236.7 | 1.3× |
+| `rom|acc|gauss96|GAL|BE|10` | 14.748 | 53.1 | `fom|CN|5` | 7.865 | 98.7 | 1.9× |
+| `rom|acc|gauss96|GAL|BE|2` | 4.839 | 108.5 | `fom|CN|2` | 3.589 | 175.7 | 1.6× |
+| `rom|acc|gauss96|GAL|BE|5` | 9.554 | 62.7 | `fom|CN|5` | 7.865 | 98.7 | 1.6× |
+| `rom|acc|gauss96|GAL|CNR|0.5` | 1.849 | 289.9 | `fom|CN|1` | 1.174 | 285.7 | 1.0× |
+| `rom|acc|gauss96|GAL|CNR|1` | 1.820 | 174.6 | `fom|CN|1` | 1.174 | 285.7 | 1.6× |
+| `rom|acc|gauss96|GAL|CNR|10` | 12.932 | 51.3 | `fom|CN|5` | 7.865 | 98.7 | 1.9× |
+| `rom|acc|gauss96|GAL|CNR|2` | 1.896 | 107.6 | `fom|CN|1` | 1.174 | 285.7 | 2.7× |
+| `rom|acc|gauss96|GAL|CNR|5` | 7.422 | 62.2 | `fom|BDF2|5` | 6.232 | 133.2 | 2.1× |
+| `rom|acc|gauss96|GAL|CN|0.5` | 1.861 | 290.1 | `fom|CN|1` | 1.174 | 285.7 | 1.0× |
+| `rom|acc|gauss96|GAL|CN|1` | 1.851 | 174.5 | `fom|CN|1` | 1.174 | 285.7 | 1.6× |
+| `rom|acc|gauss96|GAL|CN|10` | 12.793 | 83.1 | `fom|CN|5` | 7.865 | 98.7 | 1.2× |
+| `rom|acc|gauss96|GAL|CN|2` | 1.928 | 111.8 | `fom|CN|1` | 1.174 | 285.7 | 2.6× |
+| `rom|acc|gauss96|GAL|CN|5` | 8.157 | 85.1 | `fom|CN|5` | 7.865 | 98.7 | 1.2× |
+| `rom|acc|gauss96|LSPG|BDF2|0.5` | 1.783 | 258.1 | `fom|CN|1` | 1.174 | 285.7 | 1.1× |
+| `rom|acc|gauss96|LSPG|BDF2|1` | 1.710 | 134.7 | `fom|CN|1` | 1.174 | 285.7 | 2.1× |
+| `rom|acc|gauss96|LSPG|BDF2|10` | 12.366 | 44.7 | `fom|CN|5` | 7.865 | 98.7 | 2.2× |
+| `rom|acc|gauss96|LSPG|BDF2|2` | 2.000 | 75.5 | `fom|CNR|2` | 1.938 | 236.7 | 3.1× |
+| `rom|acc|gauss96|LSPG|BDF2|5` | 5.582 | 49.1 | `fom|CN|2` | 3.589 | 175.7 | 3.6× |
+| `rom|acc|gauss96|LSPG|BE|0.5` | 1.761 | 258.7 | `fom|CN|1` | 1.174 | 285.7 | 1.1× |
+| `rom|acc|gauss96|LSPG|BE|1` | 2.747 | 134.7 | `fom|CNR|2` | 1.938 | 236.7 | 1.8× |
+| `rom|acc|gauss96|LSPG|BE|10` | 14.749 | 44.6 | `fom|CN|5` | 7.865 | 98.7 | 2.2× |
+| `rom|acc|gauss96|LSPG|BE|2` | 4.854 | 76.0 | `fom|CN|2` | 3.589 | 175.7 | 2.3× |
+| `rom|acc|gauss96|LSPG|BE|5` | 9.557 | 50.5 | `fom|CN|5` | 7.865 | 98.7 | 2.0× |
+| `rom|acc|gauss96|LSPG|CNR|0.5` | 1.804 | 259.0 | `fom|CN|1` | 1.174 | 285.7 | 1.1× |
+| `rom|acc|gauss96|LSPG|CNR|1` | 1.761 | 134.7 | `fom|CN|1` | 1.174 | 285.7 | 2.1× |
+| `rom|acc|gauss96|LSPG|CNR|10` | 12.932 | 44.2 | `fom|CN|5` | 7.865 | 98.7 | 2.2× |
+| `rom|acc|gauss96|LSPG|CNR|2` | 1.738 | 75.8 | `fom|CN|1` | 1.174 | 285.7 | 3.8× |
+| `rom|acc|gauss96|LSPG|CNR|5` | 7.426 | 49.5 | `fom|BDF2|5` | 6.232 | 133.2 | 2.7× |
+| `rom|acc|gauss96|LSPG|CN|0.5` | 1.814 | 259.1 | `fom|CN|1` | 1.174 | 285.7 | 1.1× |
+| `rom|acc|gauss96|LSPG|CN|1` | 1.796 | 134.8 | `fom|CN|1` | 1.174 | 285.7 | 2.1× |
+| `rom|acc|gauss96|LSPG|CN|10` | 12.786 | 76.1 | `fom|CN|5` | 7.865 | 98.7 | 1.3× |
+| `rom|acc|gauss96|LSPG|CN|2` | 1.803 | 78.3 | `fom|CN|1` | 1.174 | 285.7 | 3.6× |
+| `rom|acc|gauss96|LSPG|CN|5` | 8.124 | 71.7 | `fom|CN|5` | 7.865 | 98.7 | 1.4× |
+| `rom|fast|fib1597|GAL|BDF2|0.5` | 5.609 | 54.3 | `fom|CN|2` | 3.589 | 175.7 | 3.2× |
+| `rom|fast|fib1597|GAL|BDF2|1` | 5.584 | 34.9 | `fom|CN|2` | 3.589 | 175.7 | 5.0× |
+| `rom|fast|fib1597|GAL|BDF2|10` | 12.112 | 12.7 | `fom|CN|5` | 7.865 | 98.7 | 7.8× |
+| `rom|fast|fib1597|GAL|BDF2|2` | 5.416 | 22.1 | `fom|CN|2` | 3.589 | 175.7 | 8.0× |
+| `rom|fast|fib1597|GAL|BDF2|5` | 6.446 | 14.3 | `fom|BDF2|5` | 6.232 | 133.2 | 9.3× |
+| `rom|fast|fib1597|GAL|BE|0.5` | 4.916 | 54.8 | `fom|CN|2` | 3.589 | 175.7 | 3.2× |
+| `rom|fast|fib1597|GAL|BE|1` | 4.783 | 34.7 | `fom|CN|2` | 3.589 | 175.7 | 5.1× |
+| `rom|fast|fib1597|GAL|BE|10` | 14.784 | 12.6 | `fom|CN|5` | 7.865 | 98.7 | 7.8× |
+| `rom|fast|fib1597|GAL|BE|2` | 5.637 | 22.6 | `fom|CN|2` | 3.589 | 175.7 | 7.8× |
+| `rom|fast|fib1597|GAL|BE|5` | 9.644 | 14.1 | `fom|CN|5` | 7.865 | 98.7 | 7.0× |
+| `rom|fast|fib1597|GAL|CNR|0.5` | 5.604 | 54.0 | `fom|CN|2` | 3.589 | 175.7 | 3.3× |
+| `rom|fast|fib1597|GAL|CNR|1` | 5.585 | 34.1 | `fom|CN|2` | 3.589 | 175.7 | 5.1× |
+| `rom|fast|fib1597|GAL|CNR|10` | 12.922 | 12.4 | `fom|CN|5` | 7.865 | 98.7 | 8.0× |
+| `rom|fast|fib1597|GAL|CNR|2` | 5.530 | 22.4 | `fom|CN|2` | 3.589 | 175.7 | 7.9× |
+| `rom|fast|fib1597|GAL|CNR|5` | 7.866 | 14.0 | `fom|CN|5` | 7.865 | 98.7 | 7.0× |
+| `rom|fast|fib1597|GAL|CN|0.5` | 5.614 | 54.3 | `fom|CN|2` | 3.589 | 175.7 | 3.2× |
+| `rom|fast|fib1597|GAL|CN|1` | 5.621 | 34.1 | `fom|CN|2` | 3.589 | 175.7 | 5.2× |
+| `rom|fast|fib1597|GAL|CN|10` | 12.051 | 16.1 | `fom|CN|5` | 7.865 | 98.7 | 6.1× |
+| `rom|fast|fib1597|GAL|CN|2` | 5.650 | 22.7 | `fom|CN|2` | 3.589 | 175.7 | 7.7× |
+| `rom|fast|fib1597|GAL|CN|5` | 5.870 | 15.3 | `fom|CN|2` | 3.589 | 175.7 | 11.5× |
+| `rom|fast|fib1597|LSPG|BDF2|0.5` | 5.281 | 48.0 | `fom|CN|2` | 3.589 | 175.7 | 3.7× |
+| `rom|fast|fib1597|LSPG|BDF2|1` | 5.036 | 26.1 | `fom|CN|2` | 3.589 | 175.7 | 6.7× |
+| `rom|fast|fib1597|LSPG|BDF2|10` | 12.225 | 10.7 | `fom|CN|5` | 7.865 | 98.7 | 9.3× |
+| `rom|fast|fib1597|LSPG|BDF2|2` | 4.696 | 15.8 | `fom|CN|2` | 3.589 | 175.7 | 11.1× |
+| `rom|fast|fib1597|LSPG|BDF2|5` | 6.311 | 11.0 | `fom|BDF2|5` | 6.232 | 133.2 | 12.2× |
+| `rom|fast|fib1597|LSPG|BE|0.5` | 4.678 | 45.5 | `fom|CN|2` | 3.589 | 175.7 | 3.9× |
+| `rom|fast|fib1597|LSPG|BE|1` | 4.637 | 25.9 | `fom|CN|2` | 3.589 | 175.7 | 6.8× |
+| `rom|fast|fib1597|LSPG|BE|10` | 14.829 | 10.8 | `fom|CN|5` | 7.865 | 98.7 | 9.1× |
+| `rom|fast|fib1597|LSPG|BE|2` | 5.770 | 15.9 | `fom|CN|2` | 3.589 | 175.7 | 11.0× |
+| `rom|fast|fib1597|LSPG|BE|5` | 9.764 | 10.9 | `fom|CN|5` | 7.865 | 98.7 | 9.1× |
+| `rom|fast|fib1597|LSPG|CNR|0.5` | 5.349 | 44.9 | `fom|CN|2` | 3.589 | 175.7 | 3.9× |
+| `rom|fast|fib1597|LSPG|CNR|1` | 5.144 | 26.4 | `fom|CN|2` | 3.589 | 175.7 | 6.7× |
+| `rom|fast|fib1597|LSPG|CNR|10` | 12.932 | 10.7 | `fom|CN|5` | 7.865 | 98.7 | 9.3× |
+| `rom|fast|fib1597|LSPG|CNR|2` | 4.865 | 15.9 | `fom|CN|2` | 3.589 | 175.7 | 11.0× |
+| `rom|fast|fib1597|LSPG|CNR|5` | 8.103 | 10.8 | `fom|CN|5` | 7.865 | 98.7 | 9.1× |
+| `rom|fast|fib1597|LSPG|CN|0.5` | 5.357 | 45.6 | `fom|CN|2` | 3.589 | 175.7 | 3.9× |
+| `rom|fast|fib1597|LSPG|CN|1` | 5.171 | 26.0 | `fom|CN|2` | 3.589 | 175.7 | 6.8× |
+| `rom|fast|fib1597|LSPG|CN|10` | 11.699 | 14.5 | `fom|CN|5` | 7.865 | 98.7 | 6.8× |
+| `rom|fast|fib1597|LSPG|CN|2` | 4.950 | 15.8 | `fom|CN|2` | 3.589 | 175.7 | 11.1× |
+| `rom|fast|fib1597|LSPG|CN|5` | 4.935 | 12.2 | `fom|CN|2` | 3.589 | 175.7 | 14.4× |
+
+![fom_vs_rom.png](plots/fom_vs_rom.png)
+
 ## What is provisional, and why
 
 - Every error against ST, S or TX: the references are backward Euler in time and sign-upwind in space at $8192^2$. TX removes only the leading backward-Euler term and assumes the asymptotic regime. A second-order ROM can be closer to the true solution than ST is; its ST error then partly measures ST's own time error.

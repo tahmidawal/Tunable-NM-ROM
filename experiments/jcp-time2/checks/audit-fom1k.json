@@ -1,0 +1,132 @@
+{
+ "attempt": "fom1k",
+ "job_id": "5017631",
+ "commit": "07320515a44c70266cb73c50ab7c32877e21d131",
+ "checks": {
+  "timing_case_indices": true,
+  "fom_order_check": true,
+  "calibration_rule": true,
+  "timing_chosen_matches": true,
+  "fom_inventory": true,
+  "fom_evaluation": true,
+  "rom_inventory": true,
+  "rom_evaluation": true,
+  "cross_job_rom_agreement": true,
+  "timing_inventory": true,
+  "timing_values_and_hashes": true,
+  "fom_reproduction": true,
+  "complete": true,
+  "backend_precision": true,
+  "config_authenticated": true,
+  "references_pinned": true,
+  "rejections_fire": true,
+  "independent_BE_rerun": "True"
+ },
+ "info": {
+  "fom_orders_finest": {
+   "BE|dev60": 0.9850325925405105,
+   "CN|dev60": 3.483376900180502,
+   "CNR|dev60": 2.000533495791411,
+   "BDF2|dev60": 2.021638970472968,
+   "BE|dev62": 0.9512745484847451,
+   "CN|dev62": 2.000822283353272,
+   "CNR|dev62": 1.9790031114456814,
+   "BDF2|dev62": 2.0076460805703373
+  },
+  "calibration": {
+   "BE|0.5": [
+    1e-06,
+    1e-08
+   ],
+   "BE|1": [
+    1e-06,
+    1e-08
+   ],
+   "BE|2": [
+    1e-06,
+    1e-08
+   ],
+   "BE|5": [
+    0.0001,
+    1e-08
+   ],
+   "CN|0.5": [
+    1e-06,
+    1e-08
+   ],
+   "CN|1": [
+    1e-06,
+    1e-08
+   ],
+   "CN|2": [
+    0.0001,
+    1e-08
+   ],
+   "CN|5": [
+    0.0001,
+    1e-08
+   ],
+   "CNR|0.5": [
+    1e-06,
+    1e-08
+   ],
+   "CNR|1": [
+    1e-06,
+    1e-08
+   ],
+   "CNR|2": [
+    1e-06,
+    1e-08
+   ],
+   "CNR|5": [
+    0.0001,
+    1e-08
+   ],
+   "BDF2|0.5": [
+    1e-06,
+    1e-08
+   ],
+   "BDF2|1": [
+    1e-06,
+    1e-08
+   ],
+   "BDF2|2": [
+    1e-06,
+    1e-08
+   ],
+   "BDF2|5": [
+    0.0001,
+    1e-08
+   ]
+  },
+  "calibration_mismatch": [],
+  "fom_mismatch": [],
+  "fom_unverified": [],
+  "rom_mismatch": [],
+  "rom_unverified": [],
+  "cross_job_max_abs_diff": 1.5182083021314519e-15,
+  "cross_job_missing": 0,
+  "cross_job_pairs": 3040,
+  "repro_max_abs_diff": 1.6237011735142914e-15,
+  "rejections": {
+   "fom_error_perturbed": true,
+   "fom_error_nan": true,
+   "fom_tolerance_wrong": true,
+   "fom_verified_flag_flipped": true,
+   "fom_field_swapped": true,
+   "rom_coefficients_swapped": true,
+   "calibration_duplicate_case": true,
+   "calibration_negative_diff": true,
+   "timing_record_dropped": true,
+   "timing_nan": true,
+   "timing_hash_disconnected": true,
+   "fom_steps_zeroed": true,
+   "rom_flag_flipped": true,
+   "calibration_flag_flipped": true,
+   "order_nfail_missing": true
+  },
+  "independent_BE_rerun_diff": 1.9012841498841897e-15
+ },
+ "all_pass": true,
+ "result_sha256": "29268a2a01e21e9be78f8a22d9dc4d1076de6e39fa9ca58ebb79a409a6d41dfc"
+}

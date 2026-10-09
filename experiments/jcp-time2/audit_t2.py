@@ -69,7 +69,11 @@ class Decoder:
     def fields(self, W):
         """W (..., 6, R') -> (..., 6, 257, 257), zero boundary."""
         Rp = W.shape[-1]
-        GT = self.G @ self.T[:, :Rp]
+        if not hasattr(self, '_GT'):
+            self._GT = {}
+        if Rp not in self._GT:                       # cache the rotated bank per R' (performance only)
+            self._GT[Rp] = self.G @ self.T[:, :Rp]
+        GT = self._GT[Rp]
         U = (W @ GT.T).reshape(W.shape[:-1] + (255, 255))
         out = np.zeros(W.shape[:-1] + (257, 257))
         out[..., 1:-1, 1:-1] = U

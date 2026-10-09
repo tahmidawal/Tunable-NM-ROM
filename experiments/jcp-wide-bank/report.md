@@ -96,6 +96,43 @@ Floors here are **span** floors on the native-grid bank-validation fields (seed 
 
 B2′ (inverse check 5.8e-12, 65-grid condition 1.01e+04): **True**. B3 (new $R'=512$ floor at 129 nodes ≤ 1.10 × `model_M2`'s, comparison flag): **True** (3.23 % vs 3.12 %). B4 strict decrease 512 → 768 → 1024: **True**; B4′ material gain (1024 ≤ 0.8 × 512): **True** (1.29 % vs 3.23 %).
 
+## 3D: test-count trim on the old bank (1d)
+
+Independent NumPy audit (`audit_w3.py`): **accepted**. GPU: **NVIDIA H100 PCIe** (timings are comparable only within this job).
+
+**Selection is POST HOC (amendment A7).** This job ran with a per-rollout eligibility rule that deviated from the pooled rule A0-3 cites; one non-stationary step in one validation case made several settings unavailable. A7 was written *after* the first setting of this job had finished and its log (per-arm errors and distances) had been read, but before any selection under the pooled rule was computed. The table shows the amended (post hoc) deployment; the as-run outcome is given beside it. The job-time final cross-setting panel covered only the as-run deployments; the H3 confirmation block (final-panel paired ratio) is missing for: M2|R512_k4|lat32768, M2|R512_k3|lat32768, M2|R512_k2|gl32.
+
+| mesh | bank | setting | as-run deployed (per-rollout rule) | amended deployed (A7, post hoc) |
+|---|---|---|---|---|
+| 64³ | M2 | R512_k4 | unavailable (gates) | lat32768 (32768) |
+| 64³ | M2 | R512_k3 | unavailable (gates) | lat32768 (32768) |
+| 64³ | M2 | R512_k2 | unavailable (gates) | gl32 (32768) |
+| 64³ | M2 | R256_k4 | gl24 (13824) | gl24 (13824) |
+| 64³ | M2 | R256_k3 | gl24 (13824) | gl24 (13824) |
+| 64³ | M2 | R256_k2 | gl24 (13824) | gl24 (13824) |
+
+Job 5020855 on NVIDIA H100 PCIe, commit `b84d52c8f`, validation cohort 923801 × 64 cases; job-wide timing validity: **True**. Errors against the 513-node first-order reference on the $63^3$ lattice: **PROVISIONAL**.
+
+| mesh | bank | $R'$ | $\kappa$ | $M$ | deployed ($m$) | worst / median refined | converged worst / median | floor worst | $m^\star$ lattice / Gauss | query ms | Jacobian ms | off-mesh bytes | tensor bytes | gates conv / target / controls |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 65 | M2 | 512 | 4 | 2052 | lat32768 (32768) | 3.17 % / 1.12 % | 3.17 % / 1.12 % | 2.25 % | 32768 / 32768 | 104.3 | 2.662 | 0.81 GB | 4.30 GB | True / True / True |
+| 65 | M2 | 512 | 3 | 1538 | lat32768 (32768) | 3.29 % / 1.12 % | 3.29 % / 1.12 % | 2.25 % | 32768 / 32768 | 82.6 | 2.003 | 0.67 GB | 3.23 GB | True / True / True |
+| 65 | M2 | 512 | 2 | 1027 | gl32 (32768) | 4.72 % / 1.18 % | 4.72 % / 1.18 % | 2.25 % | 32768 / 32768 | 68.7 | 1.622 | 0.54 GB | 2.15 GB | True / True / True |
+| 65 | M2 | 256 | 4 | 1027 | gl24 (13824) | 4.70 % / 1.25 % | 4.70 % / 1.25 % | 4.01 % | 16384 / 13824 | 21.2 | 0.410 | 0.17 GB | 0.54 GB | True / True / True |
+| 65 | M2 | 256 | 3 | 771 | gl24 (13824) | 5.36 % / 1.25 % | 5.36 % / 1.25 % | 4.01 % | 16384 / 13824 | 18.2 | 0.324 | 0.14 GB | 0.40 GB | True / True / True |
+| 65 | M2 | 256 | 2 | 513 | gl24 (13824) | 7.78 % / 1.30 % | 7.79 % / 1.30 % | 4.01 % | 16384 / 13824 | 16.7 | 0.290 | 0.11 GB | 0.27 GB | True / True / True |
+
+Tensor rule (the incumbent, mesh backward-difference advection) on the same cases: 64³ M2 $R'=512$, $\kappa=4$: worst 10.22 %; 64³ M2 $R'=512$, $\kappa=3$: worst 10.22 %; 64³ M2 $R'=512$, $\kappa=2$: worst 10.23 %; 64³ M2 $R'=256$, $\kappa=4$: worst 10.44 %; 64³ M2 $R'=256$, $\kappa=3$: worst 10.43 %; 64³ M2 $R'=256$, $\kappa=2$: worst 10.42 %.
+
+**H3 (3D trim), PROVISIONAL:** acceptable if the deployed worst and median refined errors are within 0.05 pp of $\kappa=4$; useful if also the paired time ratio is $\le0.9$ in the final panel and the setting panels (only with job-wide K-time validity).
+
+| mesh | $R'$ | $\kappa$ | worst change | median change | acceptable | paired ratio (final) | setting ratio | useful |
+|---|---|---|---|---|---|---|---|---|
+| 64³ | 512 | 3 | +0.127 pp | +0.007 pp | False | withdrawn | 0.79 | False |
+| 64³ | 512 | 2 | +1.553 pp | +0.067 pp | False | withdrawn | 0.66 | False |
+| 64³ | 256 | 3 | +0.655 pp | +0.002 pp | False | 0.85 | 0.86 | False |
+| 64³ | 256 | 2 | +3.079 pp | +0.049 pp | False | 0.80 | 0.79 | False |
+
 ## Glossary
 
 - **bank, $R'$**: the frozen coordinate network $\hat G(x)$ whose columns are ordered by importance; a solve uses the first $R'$ columns, $u(x)=\hat G_{R'}(x)c$. **Wider bank**: more columns available.

@@ -378,10 +378,30 @@ def section_train(t, L):
 
 
 # ----------------------------------------------------------------------------------------------------- 3D panels (J2, J4)
-def section_3d(d, title, L, tag):
+def section_3d(d, title, L, tag, audit=None):
     if d is None:
         return None
     L.append(f'## {title}\n')
+    L.append(f"Independent NumPy audit (`audit_w3.py`): **{'accepted' if audit and audit.get('accepted') else 'NOT accepted / not run'}**. "
+             f"GPU: **{d['gpu']}** (timings are comparable only within this job).\n")
+    if d.get('amendment'):
+        L.append('**Selection is POST HOC (amendment A7).** This job ran with a per-rollout eligibility rule that deviated from '
+                 'the pooled rule A0-3 cites; one non-stationary step in one validation case made several settings unavailable. '
+                 'A7 was written *after* the first setting of this job had finished and its log (per-arm errors and distances) '
+                 'had been read, but before any selection under the pooled rule was computed. The table shows the amended '
+                 '(post hoc) deployment; the as-run outcome is given beside it. The job-time final cross-setting panel '
+                 + 'covered only the as-run deployments; the H3 confirmation block (final-panel paired ratio) is missing for: '
+                 + (', '.join(k for m_ in d['meshes'].values() for k in m_.get('final_panel_coverage', {}).get('missing', []))
+                    or 'none') + '.\n')
+        L.append('| mesh | bank | setting | as-run deployed (per-rollout rule) | amended deployed (A7, post hoc) |')
+        L.append('|---|---|---|---|---|')
+        for n, m_ in d['meshes'].items():
+            for bn, b in m_['banks'].items():
+                for key, S in b['settings'].items():
+                    ar, am = S['as_run'].get('deployed'), S.get('deployed')
+                    L.append(f"| {int(n) - 1}³ | {bn} | {key} | {ar['arm'] + ' (' + str(ar['m']) + ')' if ar else 'unavailable (' + str(S['as_run']['selection']['entries']['primary|lat'].get('reason')) + ')'} | "
+                             f"{am['arm'] + ' (' + str(am['m']) + ')' if am else 'unavailable'} |")
+        L.append('')
     L.append(f"Job {d.get('job_id')} on {d['gpu']}, commit `{(d.get('commit') or '')[:9]}`, validation cohort "
              f"{d['config']['cohort_seed']} × {len(d['config'].get('case_subset') or range(d['config']['cohort_count']))} cases; "
              f"job-wide timing validity: **{d.get('timing_valid_jobwide')}**. Errors against the 513-node first-order "
@@ -563,11 +583,12 @@ def main():
         res['2d'] = section_2d(d1, a1, L)
     t = load('runs/j3b/archive/output/training.json')
     res['train'] = section_train(t, L)
-    d2 = load('runs/j2/archive/output/result.json')
-    r2 = section_3d(d2, '3D: test-count trim on the old bank (1d)', L, 'j2')
+    d2 = load('runs/j2/archive/output/result_A7.json') or load('runs/j2/archive/output/result.json')
+    a2 = load('checks/j2-audit.json')
+    r2 = section_3d(d2, '3D: test-count trim on the old bank (1d)', L, 'j2', audit=a2)
     plots_3d(r2, 'j2')
     d4 = load('runs/j4/archive/output/result.json')
-    r4 = section_3d(d4, '3D: the scaling law on the wider bank (1c)', L, 'j4')
+    r4 = section_3d(d4, '3D: the scaling law on the wider bank (1c)', L, 'j4', audit=load('checks/j4-audit.json'))
     plots_3d(r4, 'j4')
     L.append(GLOSSARY)
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')

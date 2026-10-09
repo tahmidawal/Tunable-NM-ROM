@@ -1,0 +1,118 @@
+host=pax063 source_commit=b84d52c8f4163abeb31c4fd8132e050e53d21fdd
+NVIDIA H100 PCIe, GPU-a081608c-ebad-fca5-530a-972ce021379f, 81559 MiB
+10.235.106.26:/projects/paralab  4.6T  998G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[17.1s] [mesh 65] bank rows [(256, 250047), (256, 250047)] 3.9s
+[19.9s] [mesh 65] Gram cond 1.0000, A (2052, 512) 6.7s
+[20.5s] [mesh 65] bank rows [(256, 250047), (256, 250047)] 0.6s
+[20.7s] [mesh 65] Gram cond 1.0000, A (2052, 512) 0.8s
+[30.1s] [mesh 65] tensor (2052, 512, 512) 10.2s
+[35.6s] [mesh 65] bank rows [(32, 250047)] 1.2s
+[37.0s] [mesh 65] Gram cond 1.0000, A (133, 32) 2.7s
+[37.7s] [mesh 65] tensor (133, 32, 32) 3.4s
+[56.1s] [65|M2] gates {'gram_condition': 1.000000000000512, 'G1_derivative_vs_fd': 1.318580370885292e-07, 'G1_converged_points_fd4': 2.530015698604783e-13, 'G1_converged_points_fd2_diag': 1.867749393216895e-06, 'G2_meshnodes_offmesh_vs_tensor_32col': 1.0052392560507387e-15, 'G4_solver_vs_vendor_fields_32col': 0.0, 'G4_solver_vs_vendor_coefs_32col': 0.0, 'G4_iterations_reasons_equal': True, 'G3_jacobian_vs_jacfwd': 3.5227420826982903e-16, 'G3_adv_half_Jc': 8.436150706960835e-16}
+[120.8s] [65|M2|R512_k4] conv: worst refined 3.1656% dist 0.00e+00 elig False
+[143.6s] [65|M2|R512_k4] check: worst refined 3.1656% dist 1.91e-06 elig False
+[150.3s] [65|M2|R512_k4] lat2048: worst refined 7.7403% dist 7.50e-02 elig False
+[157.5s] [65|M2|R512_k4] lat4096: worst refined 3.0234% dist 6.37e-03 elig False
+[165.2s] [65|M2|R512_k4] lat8192: worst refined 3.2029% dist 1.32e-03 elig False
+[174.5s] [65|M2|R512_k4] lat16384: worst refined 3.1606% dist 2.96e-04 elig False
+[186.5s] [65|M2|R512_k4] lat32768: worst refined 3.1650% dist 5.09e-05 elig False
+[204.9s] [65|M2|R512_k4] lat65536: worst refined 3.1655% dist 1.42e-05 elig False
+[211.6s] [65|M2|R512_k4] gl12: worst refined 23.0846% dist 2.24e-01 elig True
+[214.8s] [65|M2|R512_k4] gl16: worst refined 3.2034% dist 1.82e-02 elig True
+[223.2s] [65|M2|R512_k4] gl20: worst refined 3.0936% dist 3.07e-03 elig False
+[232.2s] [65|M2|R512_k4] gl24: worst refined 3.1641% dist 5.01e-04 elig False
+[240.2s] [65|M2|R512_k4] gl32: worst refined 3.1655% dist 2.22e-05 elig False
+[246.7s] [65|M2|R512_k4] lat256: worst refined 47.6763% dist 4.69e-01 elig False
+[254.0s] [65|M2|R512_k4] smol8: worst refined 46.9751% dist 4.66e-01 elig False
+[265.0s] [65|M2|R512_k4] tensor: worst refined 10.2186% dist 9.89e-02 elig False
+[463.2s] [65|M2|R512_k4] done in 406s deployed None timing gates {'drift_worst': 1.0547185532081407, 'drift_pass': True, 'deterministic_max_diff': 0.0, 'deterministic': True}
+[503.6s] [65|M2|R512_k3] conv: worst refined 3.2933% dist 0.00e+00 elig False
+[522.6s] [65|M2|R512_k3] check: worst refined 3.2932% dist 3.40e-06 elig False
+[529.9s] [65|M2|R512_k3] lat2048: worst refined 11.7744% dist 1.14e-01 elig False
+[537.2s] [65|M2|R512_k3] lat4096: worst refined 3.1201% dist 9.11e-03 elig False
+[544.7s] [65|M2|R512_k3] lat8192: worst refined 3.3636% dist 2.20e-03 elig False
+[553.4s] [65|M2|R512_k3] lat16384: worst refined 3.2877% dist 3.72e-04 elig False
+[564.2s] [65|M2|R512_k3] lat32768: worst refined 3.2924% dist 6.81e-05 elig False
+[580.4s] [65|M2|R512_k3] lat65536: worst refined 3.2932% dist 1.67e-05 elig False
+[587.1s] [65|M2|R512_k3] gl12: worst refined 25.1124% dist 2.46e-01 elig True
+[590.1s] [65|M2|R512_k3] gl16: worst refined 3.2063% dist 2.56e-02 elig True
+[597.7s] [65|M2|R512_k3] gl20: worst refined 3.2100% dist 4.14e-03 elig False
+[606.0s] [65|M2|R512_k3] gl24: worst refined 3.2862% dist 7.92e-04 elig False
+[612.7s] [65|M2|R512_k3] gl32: worst refined 3.2930% dist 3.58e-05 elig False
+[619.2s] [65|M2|R512_k3] lat256: worst refined 46.3306% dist 4.56e-01 elig True
+[626.6s] [65|M2|R512_k3] smol8: worst refined 52.4434% dist 5.25e-01 elig False
+[636.6s] [65|M2|R512_k3] tensor: worst refined 10.2216% dist 9.94e-02 elig False
+[789.0s] [65|M2|R512_k3] done in 324s deployed None timing gates {'drift_worst': 1.039646701736639, 'drift_pass': True, 'deterministic_max_diff': 0.0, 'deterministic': True}
+[825.2s] [65|M2|R512_k2] conv: worst refined 4.7219% dist 0.00e+00 elig False
+[841.5s] [65|M2|R512_k2] check: worst refined 4.7218% dist 9.66e-06 elig False
+[848.7s] [65|M2|R512_k2] lat2048: worst refined 9.9936% dist 1.02e-01 elig False
+[855.7s] [65|M2|R512_k2] lat4096: worst refined 4.7662% dist 2.30e-02 elig False
+[863.0s] [65|M2|R512_k2] lat8192: worst refined 4.7140% dist 2.57e-03 elig False
+[871.3s] [65|M2|R512_k2] lat16384: worst refined 4.7197% dist 5.46e-04 elig False
+[881.7s] [65|M2|R512_k2] lat32768: worst refined 4.7222% dist 1.14e-04 elig False
+[895.6s] [65|M2|R512_k2] lat65536: worst refined 4.7216% dist 4.03e-05 elig False
+[902.6s] [65|M2|R512_k2] gl12: worst refined 26.9485% dist 2.64e-01 elig True
+[905.6s] [65|M2|R512_k2] gl16: worst refined 5.1273% dist 4.35e-02 elig True
+[912.9s] [65|M2|R512_k2] gl20: worst refined 4.6415% dist 1.76e-02 elig False
+[920.9s] [65|M2|R512_k2] gl24: worst refined 4.6541% dist 3.34e-03 elig False
+[926.8s] [65|M2|R512_k2] gl32: worst refined 4.7178% dist 1.49e-04 elig False
+[933.3s] [65|M2|R512_k2] lat256: worst refined 48.6562% dist 4.79e-01 elig False
+[940.9s] [65|M2|R512_k2] smol8: worst refined 83.6804% dist 8.31e-01 elig False
+[949.4s] [65|M2|R512_k2] tensor: worst refined 10.2304% dist 1.03e-01 elig False
+[1090.3s] [65|M2|R512_k2] done in 300s deployed None timing gates {'drift_worst': 1.020641496116323, 'drift_pass': True, 'deterministic_max_diff': 0.0, 'deterministic': True}
+[1133.4s] [65|M2|R256_k4] conv: worst refined 4.7026% dist 0.00e+00 elig True
+[1152.0s] [65|M2|R256_k4] check: worst refined 4.7026% dist 4.23e-07 elig True
+[1166.0s] [65|M2|R256_k4] lat2048: worst refined 4.8540% dist 1.49e-02 elig True
+[1180.0s] [65|M2|R256_k4] lat4096: worst refined 4.7121% dist 8.11e-04 elig True
+[1196.0s] [65|M2|R256_k4] lat8192: worst refined 4.6974% dist 3.61e-04 elig True
+[1210.5s] [65|M2|R256_k4] lat16384: worst refined 4.7029% dist 4.01e-05 elig True
+[1226.0s] [65|M2|R256_k4] lat32768: worst refined 4.7026% dist 4.82e-06 elig True
+[1243.0s] [65|M2|R256_k4] lat65536: worst refined 4.7026% dist 1.72e-06 elig True
+[1257.0s] [65|M2|R256_k4] gl12: worst refined 7.2972% dist 6.20e-02 elig True
+[1267.0s] [65|M2|R256_k4] gl16: worst refined 4.6951% dist 6.24e-03 elig True
+[1281.1s] [65|M2|R256_k4] gl20: worst refined 4.7031% dist 7.03e-04 elig True
+[1295.4s] [65|M2|R256_k4] gl24: worst refined 4.7025% dist 1.10e-04 elig True
+[1306.8s] [65|M2|R256_k4] gl32: worst refined 4.7027% dist 5.38e-06 elig True
+[1321.0s] [65|M2|R256_k4] lat256: worst refined 34.7673% dist 3.39e-01 elig True
+[1334.9s] [65|M2|R256_k4] smol8: worst refined 49.6666% dist 4.95e-01 elig False
+[1348.8s] [65|M2|R256_k4] tensor: worst refined 10.4381% dist 9.79e-02 elig True
+[1437.4s] [65|M2|R256_k4] done in 346s deployed {'family': 'gauss', 'arm': 'gl24', 'm': 13824, 'median_ms': 21.227287128567696, 'timing_valid': True, 'chosen_by': 'timed_median'} timing gates {'drift_worst': 1.016184093310952, 'drift_pass': True, 'deterministic_max_diff': 0.0, 'deterministic': True}
+[1469.8s] [65|M2|R256_k3] conv: worst refined 5.3579% dist 0.00e+00 elig True
+[1487.9s] [65|M2|R256_k3] check: worst refined 5.3579% dist 5.29e-07 elig True
+[1501.8s] [65|M2|R256_k3] lat2048: worst refined 5.6270% dist 1.84e-02 elig True
+[1515.9s] [65|M2|R256_k3] lat4096: worst refined 5.3666% dist 9.42e-04 elig True
+[1530.1s] [65|M2|R256_k3] lat8192: worst refined 5.3547% dist 3.68e-04 elig True
+[1544.8s] [65|M2|R256_k3] lat16384: worst refined 5.3578% dist 3.86e-05 elig True
+[1559.8s] [65|M2|R256_k3] lat32768: worst refined 5.3578% dist 4.94e-06 elig True
+[1576.0s] [65|M2|R256_k3] lat65536: worst refined 5.3579% dist 1.43e-06 elig True
+[1589.7s] [65|M2|R256_k3] gl12: worst refined 7.5287% dist 6.62e-02 elig True
+[1599.7s] [65|M2|R256_k3] gl16: worst refined 5.3371% dist 6.19e-03 elig True
+[1613.8s] [65|M2|R256_k3] gl20: worst refined 5.3670% dist 6.83e-04 elig True
+[1628.2s] [65|M2|R256_k3] gl24: worst refined 5.3580% dist 1.18e-04 elig True
+[1639.1s] [65|M2|R256_k3] gl32: worst refined 5.3579% dist 5.47e-06 elig True
+[1652.6s] [65|M2|R256_k3] lat256: worst refined 36.0724% dist 3.52e-01 elig True
+[1666.7s] [65|M2|R256_k3] smol8: worst refined 75.6052% dist 7.58e-01 elig False
+[1680.3s] [65|M2|R256_k3] tensor: worst refined 10.4341% dist 1.01e-01 elig True
+[1771.2s] [65|M2|R256_k3] done in 332s deployed {'family': 'gauss', 'arm': 'gl24', 'm': 13824, 'median_ms': 18.187025096267462, 'timing_valid': True, 'chosen_by': 'timed_median'} timing gates {'drift_worst': 1.017292338770104, 'drift_pass': True, 'deterministic_max_diff': 0.0, 'deterministic': True}
+[1802.4s] [65|M2|R256_k2] conv: worst refined 7.7858% dist 0.00e+00 elig True
+[1819.4s] [65|M2|R256_k2] check: worst refined 7.7858% dist 6.31e-07 elig True
+[1833.7s] [65|M2|R256_k2] lat2048: worst refined 8.1385% dist 1.36e-02 elig True
+[1847.6s] [65|M2|R256_k2] lat4096: worst refined 7.8344% dist 1.79e-03 elig True
+[1861.8s] [65|M2|R256_k2] lat8192: worst refined 7.7546% dist 6.51e-04 elig True
+[1876.2s] [65|M2|R256_k2] lat16384: worst refined 7.7855% dist 6.46e-05 elig True
+[1891.0s] [65|M2|R256_k2] lat32768: worst refined 7.7856% dist 8.10e-06 elig True
+[1906.7s] [65|M2|R256_k2] lat65536: worst refined 7.7858% dist 2.24e-06 elig True
+[1920.5s] [65|M2|R256_k2] gl12: worst refined 9.8179% dist 9.10e-02 elig True
+[1930.4s] [65|M2|R256_k2] gl16: worst refined 7.7884% dist 7.31e-03 elig True
+[1944.9s] [65|M2|R256_k2] gl20: worst refined 7.7965% dist 7.38e-04 elig True
+[1959.1s] [65|M2|R256_k2] gl24: worst refined 7.7816% dist 1.45e-04 elig True
+[1969.9s] [65|M2|R256_k2] gl32: worst refined 7.7855% dist 7.94e-06 elig True
+[1983.4s] [65|M2|R256_k2] lat256: worst refined 71.9035% dist 7.27e-01 elig False
+[1997.4s] [65|M2|R256_k2] smol8: worst refined 160.4985% dist 1.60e+00 elig False
+[2010.8s] [65|M2|R256_k2] tensor: worst refined 10.4249% dist 1.13e-01 elig False
+[2096.3s] [65|M2|R256_k2] done in 324s deployed {'family': 'gauss', 'arm': 'gl24', 'm': 13824, 'median_ms': 16.738418024033308, 'timing_valid': True, 'chosen_by': 'timed_median'} timing gates {'drift_worst': 1.010597307258441, 'drift_pass': True, 'deterministic_max_diff': 0.0, 'deterministic': True}
+W3D COMPLETE
+ALL-DONE

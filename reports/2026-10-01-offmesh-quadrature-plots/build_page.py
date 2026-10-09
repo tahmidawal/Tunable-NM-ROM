@@ -40,12 +40,21 @@ FIGS = [
  ("Mechanism", "a2_gap_vs_h", "New (8 Oct): the old method's error is exactly the stencil's order.",
   "The difference between the mesh's own sum and the true integral falls with slope 1 for the first-order upwind stencil and slope 2 for a second-order central stencil. With the exact gradient (green) it drops to the noise floor.",
   "Measured on fixed saved states; slopes are fitted over a pre-registered window. Dashed lines: a manufactured test state run through the same code (control)."),
+ ("Time", "c2_error_vs_cost_acc", "New (8 Oct): second-order time stepping makes the reduced model more accurate at the same cost.",
+  "Each line is one time-stepping scheme; points along a line are different step sizes. The black circle is the method we deployed (backward Euler). Moving to Crank–Nicolson or BDF2 at the same cost drops the median error about 9× (0.91 % to 0.10 %); at twice the step it is still more accurate and runs about 1.75× faster.",
+  "2D accurate setting (width 384), 38 validation cases, 1024². Errors against the space+time reference (provisional: the references are first-order). Lane jcp-time2, Codex-audited."),
+ ("Time", "c2_error_vs_dt_acc", "The new schemes really are second order.",
+  "Right panel: time error vs step size. Backward Euler (blue) falls with slope 1, while the second-order schemes fall with slope 2 and sit far below it. Left panel: worst error over all cases; second order stays low up to about twice the original step.",
+  "The least-squares form with plain Crank–Nicolson does not reach a clean order 2 (its test space depends on the step); the BDF2 and modified-CN variants do."),
+ ("Time", "c2_fom_vs_rom", "Against a fair, second-order full solver, our speed-up roughly doubles.",
+  "Squares are the full solver, circles the reduced model, each line one time scheme. Second-order stepping also makes the full solver faster and more accurate, so comparing against the old backward-Euler full solver would overstate our gain. Against the fair second-order full solver, the matched speed-up rises from 1.76× (both deployed as before) to 3.65× (reduced model with Crank–Nicolson at twice the step).",
+  "Both models timed in the same job on the same GPU (paired A–B–A, six cases). Matched means: the cheapest full-solver setting with equal or better worst-case error, among the settings run."),
 ]
 
 cards = []
 for sec, fn, head, body, note in FIGS:
     cards.append(f'''<figure class="card" data-sec="{sec}">
-  <figcaption><span class="tag">{'Why it works' if sec == 'Mechanism' else 'Burgers ' + sec}</span><h2>{head}</h2><p>{body}</p></figcaption>
+  <figcaption><span class="tag">{ {'Mechanism':'Why it works','Time':'Second-order time stepping'}.get(sec, 'Burgers ' + sec) }</span><h2>{head}</h2><p>{body}</p></figcaption>
   <img src="figs/{fn}.png" alt="{head}" loading="lazy">
   {f'<p class="note"><strong>How to read it:</strong> {note}</p>' if note else ''}
 </figure>''')

@@ -18908,3 +18908,31 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - **Implication.** K1 fired. The accuracy gain comes from the exact gradient (continuum evaluation), not from moving points off the mesh. Classical rules deliver the same accuracy with m of 4k–14k points, against every mesh node.
 **Wrong / changed.** The 2D G1 finite-difference gate was redesigned as a convergence check (amendment 6). Historical cohort hashes are now report-only (amendment 5). A non-finite target now marks a result invalid instead of being retried. The A2 population was halved by mistake; the code audit caught this before the run.
 **Open.** Should a new 2D separation rule be pre-registered? A 128³ solver-sensitivity rerun is pending. A3 and A4 are deferred. Merge question for the lanes: not yet asked; ask once the campaign finishes.
+
+### 2026-10-08 (night) — jcp-time2 (C2) complete
+**Where.** `exp/2026-10-08-jcp-time2`, last commit `a7a12528f`, mirror `1445e4735`. Jobs: 5012794, 5012974, 5015584 and 5017631 on A100; 5020049 and 5023437 on H200. All jobs were audited and the namespace `jcptime2` emptied. Codex gates ran at every step, and the final report audit came back clean.
+**Found.** All accuracy numbers are PROVISIONAL because the references are first-order.
+- Orders. The GAL forms CN, CN-R and BDF2 converge at order 2 in all settings and in 3D. LSPG CN is never established at order 2.
+- 2D accurate setting:
+  - BE goes from 2.747 / 0.906 % to 1.796 / 0.098 % with LSPG CN at Δt0, at equal cost.
+  - At 2Δt0, CN gives 1.803 / 0.259 % and runs about 1.75× faster. H1 and H2 pass.
+- Wide setting: H1 and H2 pass.
+- Fast setting: the median improves, but the worst case worsens, so H1 and H2 fail.
+- Fair full-order comparison (fom1k):
+  - FOM CN beats FOM BE on both accuracy and time.
+  - Matched ROM speed-ups are 1.76× for BE and 3.65× for CN at 2Δt0.
+- 3D:
+  - Time error falls 21× at about equal cost.
+  - The 3D BE reference cannot rank the schemes (A13).
+**Wrong / retracted.**
+- The "1–2 pp" BE gap I gave in the brief is the maximum. The median is 0.5–0.8 pp.
+- LSPG CN is not second order.
+- A speed-up measured against a BE FOM overstates the gain.
+- Amendments A5, A11 and A13 were made before any full-cohort results were read.
+- Large evidence files are tracked by SHA256 in `LARGE_FILES.sha256`.
+**Open.**
+- A fixed-sweep second-order 3D solver.
+- Second-order references.
+- Choice between GAL and LSPG CN-R / BDF2 for the paper.
+- Replication on test64 at 4096².
+- Merge question: ask the user at the end of the campaign.

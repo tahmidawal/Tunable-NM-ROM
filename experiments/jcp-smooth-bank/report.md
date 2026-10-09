@@ -10,16 +10,21 @@ Retrains the Burgers 2D coordinate-network bank with a gradient-matching (Sobole
 | `ev1` | evaluation at $1024^2$ | NVIDIA A100-PCIE-40GB | 5027022 | frozen_deployed, frozen_lane, base, sob01, sig2, sig1 |
 | `ev1` (timing) | paired timing | NVIDIA A100-PCIE-40GB | 5027022 | m* rules of every bank |
 
-## Answers in brief (generated; PROVISIONAL, development/validation, one seed per arm)
+## Answers in brief (generated; PROVISIONAL, development/validation, one training seed per bank)
 
-- **Points needed at the pre-registered bars do not move.** In `acc` every bank needs Gauss 56² (3136 points) for worst ρ ≤ 0.06 on its own reached states, and Gauss 32² gives worst ρ 1.61 for all of them. The onset is set by the M=1536 sine tests, not by the bank: restricted to the first 320 tests, Gauss 32² falls to 0.125 (base). In `fast`, sig1, sig2 and sob01 need 1600 points at 0.06 against base's 3136, but frozen-lane also needs 1600, so the difference is within retraining noise (H2 unresolved).
-- **Smoothness shows in the tail, not at the bars.** The fitted Gauss tail parameter rises from 1.0221 (base) to 1.0251 (sig2) and 1.0322 (sig1) in `acc`. At Gauss 128² the worst ρ is 3.57e-04 for sig1 against 9.27e-03 for base and 2.11e-03 for the frozen bank; at 256² it is 3.18e-06 vs 3.09e-04. Across every bank and setting the fitted tail parameter stays between 1.019 and 1.032: smaller σ steepens the tail measurably but modestly. The rungs where this happens lie beyond the 0.01 bar.
-- **No measurable representation cost of smoothing.** Projection floors (median, `acc`) are 2.43e-04 (base), 2.30e-04 (sig2), 2.24e-04 (sig1); the trained ‖B_j‖ stay near their initial scale (sig1 median 1.15).
-- **Sobolev training improves derivatives and the projection floor, not the ROM.** sob01 lowers the `acc` gradient error by 70% (D2) / 70% (D4) and the projection floor by 38%, but `fast` only by 20.2% / 17.8% (the D4 figure misses the 20% bar), and its converged-quadrature rollout error vs S changes by +1.7% (`acc`) and -0.01% (`fast`). H1 is not met.
-- **The ROM error is not representation-limited.** Against ST every bank sits at 2.747–2.926% (`acc`) — the time-discretisation error dominates; against S the spread is 1.034–1.409%, but base and frozen-lane (same recipe and seed) already differ by 34%, so no bank-to-bank difference in E_S is resolved.
-- **The rotation procedure matters more than the training recipe in `fast`.** The same frozen bank gives worst S error 3.451% with the deployed head-based rotation and 4.510% with the lane's least-squares rotation (R'=128); in `acc` (R'=384) the two agree (1.046% vs 1.034%). All retrained banks use the lane rotation and must be compared with frozen-lane, not with the 2D lane's numbers.
-- **Cost** is set by m alone: at the same rule every bank costs the same (`acc` Gauss 56²: 67.8–68.2 ms per query on one NVIDIA A100-PCIE-40GB).
-- **Pre-registered outcome:** no useful winner; nothing is promoted to 3D, and `comb` is not run (A1.5). Round 2 (λ ladder, coarse-data control, seed-1 base) is running.
+- **H2 (smoothness lowers the points needed): no resolved improvement.** In `acc` the own-state $m^*(0.06)$ is 3136 for every bank. In `fast` it is 3136 for `base` and 1600 / 1600 / 1600 for sig1 / sig2 / sob01. However, `frozen_lane` (the same recipe and seed as `base`) gives 1600, so the pre-registered verdict is UNRESOLVED, not a pass.
+- **Onset.** Gauss 32² gives worst ρ 1.61–1.61 in `acc` for every bank. The restricted-vector diagnostic (first 320 tests only, own denominator, solver not rerun) gives 0.107–0.142. This is consistent with a test-frequency contribution to the onset, which a smoother bank cannot remove.
+- **Tail.** Smaller initial σ gives steeper fitted Gauss tails in these runs: in `acc` the fitted parameter is 1.0221 (base), 1.0251 (sig2) and 1.0322 (sig1); over all banks and settings it spans 1.0185–1.0322. Worst ρ at Gauss 128² is 3.57e-04 (sig1), 9.27e-03 (base) and 2.11e-03 (frozen); at Gauss 256² it is 3.18e-06 (sig1) and 3.09e-04 (base). These rungs lie past the 0.01 bar.
+- **Representation.** Neither smaller-σ run increases the median `acc` projection floor (2.43e-04 base, 2.30e-04 sig2, 2.24e-04 sig1). The trained Fourier frequencies stay near their initial scale: the final median ‖B_j‖ is 1.15 for sig1 and 4.64 for base.
+- **H1 (Sobolev).** Against the common-support **mesh** derivative targets, sob01 lowers the median gradient error by 70.3% (D2) / 69.7% (D4) and the median projection floor by 38.2% in `acc`. In `fast` the reductions are only 20.2% / 17.8%. Its converged-quadrature rollout error vs S changes by +1.7% (`acc`) and -0.01% (`fast`), so there is no resolved rollout improvement in this run. H1 is not met.
+- **Rollout accuracy.** Lower projection and derivative errors did not produce a resolved rollout improvement, and the limiting contribution is not isolated here. Against ST every bank's worst `acc` error lies in 2.747–2.926%, and against S in 1.034–1.409%. The `base` vs `frozen_lane` comparator differs by 33.9% on `acc` $E_S$, so no treatment-versus-base `acc` $E_S$ change clears the pre-registered noise gate.
+- **Evaluation procedure.** The same frozen bank gives a worst `fast` S error of 3.451% under the 2D lane's deployed procedure (head-based rotation, trust radius and coefficient population) and 4.510% under this lane's least-squares procedure (A1.2). In `acc` the two are close (1.046% vs 1.034%). Retrained banks must be compared with `frozen_lane`.
+- **Cost.** At the fixed `acc` setting and rule (every bank's $m^*$ there is the same Gauss rung), the observed per-query medians lie in 67.8–68.2 ms on one NVIDIA A100-PCIE-40GB.
+- **Pre-registered outcome:** no useful winner, so nothing is promoted to 3D and `comb` is not run (A1.5). The round-1 verdicts are provisional until the seed-1 comparator `base_s1` (round 2) is evaluated.
+
+## Method in one screen
+
+Each backward-Euler step solves $r(c)=D\big(Ac-p+\Delta t\,(N(c)+\nu\Lambda Ac)\big)=0$ with the tested advection $N_a(c)=L\sum_q w_q\,\psi_a(x_q)\,u(x_q)\,(u_x+u_y)(x_q)$, where $u=G'(x)c$ is the rotated bank. For a rule $Q$ and a state $c$, $\rho_Q(c)=\lVert N^{Q}(c)-N^{\mathrm{G640}}(c)\rVert_2/\lVert N^{\mathrm{G640}}(c)\rVert_2$. The Sobolev arm adds $\lambda\,\overline{\lVert\nabla\hat u-D_hu\rVert^2}/\overline{\lVert D_hu\rVert^2}$ to the value loss, with $D_h$ second-order central differences on the training mesh. The projection floor is $\min_c\lVert G'c-u_{\rm ref}\rVert/\lVert u_{\rm ref}\rVert$ on the 257² nodes, and the gradient error is that of $\nabla(G'c^\star)$ against $D^{(2)}u_{\rm ref}$ or $D^{(4)}u_{\rm ref}$.
 
 ## Training
 
@@ -182,7 +187,7 @@ Each cell: ST / S.
 - `sob01` training data: R0 fingerprint matches the original job (pass).
 - `sig2` training data: R0 fingerprint matches the original job (pass).
 - `sig1` training data: R0 fingerprint matches the original job (pass).
-- R2b (local): the lane trainer at λ=0 is bit-identical to the original trainer only with deterministic XLA flags; with default autotuning it differs by 1.5e-2 in parameters after 8 steps (`audits/R2b-evidence.txt`). Retrains are therefore not bitwise reproducible, which is why the noise yardstick exists.
+- R2b (local GB10): lane trainer at λ=0 vs the original trainer, max parameter difference 1.503e-02 with default XLA autotuning and 0.000e+00 with deterministic XLA flags (`audits/R2b-evidence.txt`): bit-identical only under deterministic compilation, so retrains are not bitwise reproducible and the noise yardstick is needed.
 - C1 stress arm (Gauss 8²): worst ρ 7.04–15 over banks and settings, far above every bar, as expected.
 - `frozen_deployed`: C5a min rel. error 2.35e-07; acc: C4 pass, gref-vs-768 rollout 1.54e-11, tight-solver distance 9.77e-06, eligibility ok; fast: C4 pass, gref-vs-768 rollout 1.87e-10, tight-solver distance 1.31e-05, eligibility ok.
 - `frozen_lane`: C5a min rel. error 2.25e-07; acc: C4 pass, gref-vs-768 rollout 5.94e-11, tight-solver distance 3.10e-06, eligibility ok; fast: C4 pass, gref-vs-768 rollout 8.83e-11, tight-solver distance 1.70e-05, eligibility ok.
@@ -235,4 +240,18 @@ Ranking of useful H2 winners (A2.4/A4): none.
 - **n(ε)** — Chebyshev degree beyond which the coefficient envelope of a field stays below ε; a bandwidth.
 - **C2–C6, R0–R2** — pre-registered gates and controls (DESIGN A1.6, A2.5, A4).
 - **PROVISIONAL** — the references are first-order; accuracy numbers can move when second-order references exist.
+- **recon mean (train)** — mean over the 16 384 training states of the relative L2 error of the trained autodecoder (bank times head) on all training points.
+- **train LS floor** — relative error of the least-squares projection of each training state onto the full 512-column bank, on its training mesh (median / max over states).
+- **‖B_j‖** — length of the j-th random Fourier frequency vector (cycles per unit length), initial and after training.
+- **R2a / R0 / R2b** — replication gates: R0 = training data fingerprint equals the original job; R2a = loss at logged steps equals the original log; R2b = local bitwise parity of the trainer code.
+- **gref, lat64, Gauss p², Fibonacci n** — quadrature arms: Gauss 640² (the converged continuum rule), the deployed 63×63 mesh lattice, tensor Gauss–Legendre with p points per axis, rank-1 Fibonacci lattice with n points.
+- **evolved error** — the largest error over the five output times after t = 0 (the initial fit is excluded), relative to the initial field norm on the same nodes.
+- **common support** — interior nodes at least two nodes from the wall, where both the second- and fourth-order differences exist.
+- **interpolated m** — descriptive log-linear interpolation of the points needed between the confirmed rung and the rung below it.
+- **R²** — coefficient of determination of the tail fit (1 = a perfect straight line in log ρ against 2p).
+- **geometric / algebraic / inconclusive / unresolved** — classification of a Chebyshev envelope: geometric decay (analytic-like), power-law decay, neither fit clearly better, or too few resolved blocks.
+- **query ms** — wall time of one ROM query: initial fit, 50 implicit LM steps and decoding six output fields at 1024², median over paired repetitions.
+- **coefficient difference vs the evaluation rollout** — relative difference between the coefficients of a timed rollout and those of the same rollout in the evaluation phase (checks that the timed computation is the evaluated one).
+- **noise yardstick** — relative difference between base and frozen-lane (same recipe and seed; later also base vs base_s1); a treatment effect counts only if it is more than twice this.
+- **C6 / non-accepted exit** — an LM step that stopped on the budget, a tiny step or the damping limit instead of tolerance or stationarity.
 - **H1 / H2 / useful winner** — pre-registered hypotheses (Sobolev helps; smoothness reduces points) and the gate for promoting a bank (DESIGN A1.5).

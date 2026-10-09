@@ -24,7 +24,7 @@ LABEL = dict(frozen_deployed='frozen bank, deployed rotation', frozen_lane='froz
              base='base (retrain, σ=4)', sob01='sob01 (σ=4, λ=0.1)', sig2='sig2 (σ=2)', sig1='sig1 (σ=1)',
              sob001='sob001 (σ=4, λ=0.01)', sob1='sob1 (σ=4, λ=1)', coarse='coarse (129-node data)',
              base_s1='base_s1 (seed 1)', comb='comb')
-ORDER = ['frozen_deployed', 'frozen_lane', 'base', 'sob01', 'sig2', 'sig1', 'sob001', 'sob1', 'base_s1', 'coarse', 'comb']
+ORDER = ['frozen_deployed', 'frozen_lane', 'base', 'base_ev2', 'base_s1', 'sob001', 'sob01', 'sob1', 'sig2', 'sig1', 'coarse', 'comb']
 
 
 def fmt(x, p=2):
@@ -46,17 +46,25 @@ def mfmt(m, fam):
 
 
 def load(train, ev):
+    """train / ev: comma-separated job names. A label evaluated again in a later job is kept as <label>_<job>."""
     T = {}
-    for p in sorted((HERE / 'results' / train).glob('*/train.json')):
-        T[p.parent.name] = json.loads(p.read_text())
-    E = {}
-    for p in sorted((HERE / 'results' / ev / 'eval').glob('eval_*.json')):
-        d = json.loads(p.read_text())
-        E[d['label']] = d
-    tp = HERE / 'results' / ev / 'timing/timing.json'
-    TM = json.loads(tp.read_text()) if tp.exists() else None
-    meta = [json.loads(p.read_text()) for p in sorted((HERE / 'results' / ev / 'eval').glob('meta_task*.json'))]
-    return T, E, TM, meta
+    for tj in train.split(','):
+        for p in sorted((HERE / 'results' / tj).glob('*/train.json')):
+            T[p.parent.name] = json.loads(p.read_text())
+    E, TMS, meta = {}, {}, []
+    for ej in ev.split(','):
+        for p in sorted((HERE / 'results' / ej / 'eval').glob('eval_*.json')):
+            d = json.loads(p.read_text())
+            lab = d['label'] if d['label'] not in E else f"{d['label']}_{ej}"
+            d['label'], d['eval_job'] = lab, ej
+            E[lab] = d
+        tp = HERE / 'results' / ej / 'timing/timing.json'
+        if tp.exists():
+            TMS[ej] = json.loads(tp.read_text())
+        meta += [dict(json.loads(p.read_text()), eval_job=ej) for p in sorted((HERE / 'results' / ej / 'eval').glob('meta_task*.json'))]
+    TM = TMS.get(ev.split(',')[0])
+    TM_extra = {k: v for k, v in TMS.items() if k != ev.split(',')[0]}
+    return T, E, TM, meta, TM_extra
 
 
 # --------------------------------------------------------------------- metrics ----
@@ -207,7 +215,7 @@ def verdicts(E, T, M):
     resolved = lambda s, k, d: d is not None and abs(d) > 2 * noise.get((s, k), float('inf'))
     dlt = lambda t, s, k: (M[t][s][k] / M[base][s][k] - 1) if (M[t][s][k] and M[base][s][k]) else None
     for t in M:
-        if t in (base, ref, 'frozen_deployed', 'base_s1'):
+        if t in (base, ref, 'frozen_deployed', 'base_s1', 'base_ev2', 'coarse'):
             continue
         v = dict(eligible={s: eligible(E, T, t, s, M) for s in SETTINGS})
         base_ok = {s: not eligible(E, T, base, s, M) for s in SETTINGS}
@@ -285,6 +293,9 @@ def r1_gate(E):
 
 # ----------------------------------------------------------------------- plots ----
 
+CAPTION = 'dev6 ∪ val32 (38 cases), one training seed per bank, first-order references: PROVISIONAL'
+
+
 def plots(E, M, out):
     import matplotlib
     matplotlib.use('Agg')
@@ -292,60 +303,67 @@ def plots(E, M, out):
     out.mkdir(exist_ok=True)
     banks = [b for b in ORDER if b in M]
     cols = {b: c for b, c in zip(banks, plt.rcParams['axes.prop_cycle'].by_key()['color'] * 3)}
-    # frontier: one marker per bank; x = Gauss points to reach the bar on its own reached states
-    fig, ax = plt.subplots(2, 2, figsize=(11, 8.5))
+    # frontier: one marker per bank and bar (confirmed Gauss rungs), floor on the y axis
+    fig, ax = plt.subplots(2, 2, figsize=(12, 9))
     for j, s in enumerate(SETTINGS):
-        for i, (key, ylab) in enumerate((('e_val_max', 'projection floor, worst state (vs S) %'),
-                                        ('E_S', 'converged-quadrature rollout error, worst case (vs S) %'))):
+        for i, (key, ylab) in enumerate((('e_val_max', 'projection floor, worst state (vs S), %'),
+                                        ('E_S', 'converged-quadrature rollout error, worst case (vs S), %'))):
             for b in banks:
                 y = 100 * M[b][s][key]
-                for bb, mk, lab in ((0.06, 's', 'm*(ρ≤0.06), confirmed rung'), (0.01, 'o', 'm(ρ≤0.01), interpolated')):
-                    m = interp_m(E, b, s, bb) if bb == 0.01 else M[b][s]['mstar'][f'gref|G|{bb}']
+                for bb, mk in ((0.06, 's'), (0.01, 'o')):
+                    m = M[b][s]['mstar'][f'gref|G|{bb}']
                     if m is None:
                         continue
-                    ax[i, j].scatter(m, y, color=cols[b], marker=mk, s=55, label=(f'{b}' if bb == 0.01 else None))
-                    if bb == 0.01:
-                        ax[i, j].annotate(b, (m, y), fontsize=7, xytext=(4, 3), textcoords='offset points')
+                    ax[i, j].scatter(m, y, color=cols[b], marker=mk, s=60, alpha=.85,
+                                     label=(b if (bb == 0.06 and i == 0 and j == 0) else None))
             ax[i, j].set_xscale('log')
-            ax[i, j].set_xlabel('Gauss points needed (squares: ρ≤0.06 rung; circles: ρ≤0.01, interpolated)')
-            ax[i, j].set_ylabel(ylab); ax[i, j].set_title(s)
-    ax[0, 0].legend(fontsize=7)
-    fig.suptitle('Error floor vs quadrature points needed, one point per bank (PROVISIONAL references)')
+            ax[i, j].set_xlabel('Gauss points needed m* (confirmed rung): square ρ≤0.06, circle ρ≤0.01', fontsize=9)
+            ax[i, j].set_ylabel(ylab, fontsize=9)
+            ax[i, j].set_title(f'{s} (y axis zoomed, not from zero)', fontsize=10)
+    ax[0, 0].legend(fontsize=8, title='bank')
+    fig.suptitle('Error floor vs quadrature points needed, one marker per bank and bar\n' + CAPTION, fontsize=11)
     fig.tight_layout(); fig.savefig(out / 'frontier.png', dpi=140); plt.close(fig)
-    # derivatives: projection floor and gradient error per bank (both stencils on the common support)
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
-    w_ = .27
+    # derivatives
+    fig, ax = plt.subplots(1, 2, figsize=(13, 5))
     for j, s in enumerate(SETTINGS):
         x = np.arange(len(banks))
-        ax[j].bar(x - w_, [M[b][s]['e_val_med'] for b in banks], w_, label='projection floor (median)')
-        ax[j].bar(x, [M[b][s]['e_grad2c_med'] for b in banks], w_, label='gradient error vs D2 (median)')
-        ax[j].bar(x + w_, [M[b][s]['e_grad4_med'] for b in banks], w_, label='gradient error vs D4 (median)')
+        for k, (key, mk, lab) in enumerate((('e_val_med', 'o', 'projection floor (median)'),
+                                           ('e_grad2c_med', 's', 'gradient error vs D2, common support (median)'),
+                                           ('e_grad4_med', '^', 'gradient error vs D4, common support (median)'))):
+            ax[j].scatter(x + (k - 1) * .15, [M[b][s][key] for b in banks], marker=mk, s=55, label=lab)
         ax[j].set_yscale('log'); ax[j].set_xticks(x); ax[j].set_xticklabels(banks, rotation=30, fontsize=8)
-        ax[j].set_title(f'{s}: representation of the S reference states (257² nodes, PROVISIONAL)')
+        ax[j].set_ylabel('relative error (dimensionless)'); ax[j].set_title(f'{s}: S reference states on the 257² nodes', fontsize=10)
     ax[0].legend(fontsize=8)
+    fig.suptitle('Representation and mesh-derivative errors of each bank\n' + CAPTION, fontsize=11)
     fig.tight_layout(); fig.savefig(out / 'derivatives.png', dpi=140); plt.close(fig)
     # ladders
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4.8))
+    fig, ax = plt.subplots(1, 2, figsize=(13, 5.2))
     for j, s in enumerate(SETTINGS):
         for b in banks:
             R = E[b]['settings'][s]['rho']
-            ax[j].plot([p * p for p in GAUSS], [R[f'gauss{p}']['gref']['max'] for p in GAUSS], '-o', ms=3, color=cols[b], label=f'{b} Gauss')
-            ax[j].plot(FIB, [R[f'fib{n}']['gref']['max'] for n in FIB], '--', color=cols[b], alpha=.6)
+            ax[j].plot([p * p for p in GAUSS], [R[f'gauss{p}']['gref']['max'] for p in GAUSS], '-o', ms=3, color=cols[b], label=b)
+            ax[j].plot(FIB, [R[f'fib{n}']['gref']['max'] for n in FIB], '--', color=cols[b], alpha=.5)
         for bb in BARS:
             ax[j].axhline(bb, color='k', lw=.6, ls=':')
-        ax[j].set_xscale('log'); ax[j].set_yscale('log'); ax[j].set_title(f'{s}: worst ρ on own reached states (solid Gauss, dashed Fibonacci)')
-        ax[j].set_xlabel('points m'); ax[j].set_ylabel('worst ρ')
-    ax[0].legend(fontsize=7)
+            ax[j].text(70, bb * 1.15, f'bar {bb}', fontsize=7)
+        ax[j].set_xscale('log'); ax[j].set_yscale('log')
+        ax[j].set_title(f'{s}: worst ρ over own reached states', fontsize=10)
+        ax[j].set_xlabel('points m (solid: tensor Gauss; dashed: Fibonacci lattice)'); ax[j].set_ylabel('worst ρ (dimensionless)')
+    ax[0].legend(fontsize=8, title='bank (solid Gauss)')
+    fig.suptitle('Quadrature-error ladders\n' + CAPTION, fontsize=11)
     fig.tight_layout(); fig.savefig(out / 'ladders.png', dpi=140); plt.close(fig)
     # spectra
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
+    fig, ax = plt.subplots(1, 2, figsize=(13, 5))
     for j, s in enumerate(SETTINGS):
         for b in banks:
             env = M[b][s]['spectra'].get('f|envelope_median')
             if env:
                 ax[j].semilogy(env, color=cols[b], label=b)
-        ax[j].set_title(f'{s}: median Chebyshev envelope of f = u(u_x+u_y)'); ax[j].set_xlabel('degree j'); ax[j].set_ylim(1e-16, 2)
-    ax[0].legend(fontsize=7)
+        ax[j].set_title(f'{s}: median Chebyshev envelope of $f=u\\,(u_x+u_y)$', fontsize=10)
+        ax[j].set_xlabel('Chebyshev degree j (512 points per axis)'); ax[j].set_ylabel('normalised envelope $E_j$')
+        ax[j].set_ylim(1e-10, 2)
+    ax[0].legend(fontsize=8)
+    fig.suptitle('Spectra of the advection integrand on 64 own reached states (every 1e-8 bandwidth unresolved)\n' + CAPTION, fontsize=11)
     fig.tight_layout(); fig.savefig(out / 'spectra.png', dpi=140); plt.close(fig)
 
 
@@ -354,21 +372,23 @@ def e2e_plot(E, M, TM, out):
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
     banks = [b for b in ORDER if b in M]
-    fig, ax = plt.subplots(1, 3, figsize=(15, 4.5))
+    fig, ax = plt.subplots(1, 3, figsize=(17, 5.2))
     w = .38
     for j, s in enumerate(SETTINGS):
         x = np.arange(len(banks))
-        ax[j].bar(x - w / 2, [100 * M[b][s]['E_ST'] for b in banks], w, label='vs ST (space+time ref.)')
-        ax[j].bar(x + w / 2, [100 * M[b][s]['E_S'] for b in banks], w, label='vs S (space-only ref.)')
+        ax[j].bar(x - w / 2, [100 * M[b][s]['E_ST'] for b in banks], w, label='vs ST (space+time refined reference)')
+        ax[j].bar(x + w / 2, [100 * M[b][s]['E_S'] for b in banks], w, label='vs S (space-only refined reference)')
         ax[j].set_xticks(x); ax[j].set_xticklabels(banks, rotation=30, fontsize=8)
-        ax[j].set_ylabel('worst error % (PROVISIONAL)'); ax[j].set_title(f'{s}: converged-quadrature rollout error')
+        ax[j].set_ylabel('worst evolved error over 38 cases, %'); ax[j].set_title(f'{s}: converged-quadrature (Gauss 640²) rollout', fontsize=10)
     ax[0].legend(fontsize=8)
-    if TM:
+    if TM and TM.get('median_ms'):
         lab, val = [], []
         for k, v in TM['median_ms'].items():
             lab.append(k.replace('|', ' ')); val.append(v)
-        ax[2].barh(np.arange(len(val)), val); ax[2].set_yticks(np.arange(len(val))); ax[2].set_yticklabels(lab, fontsize=6)
-        ax[2].set_xlabel('median query ms (one GPU, A-B-A)'); ax[2].set_title(f"cost at m* rules ({TM['gpu']})")
+        ax[2].barh(np.arange(len(val)), val); ax[2].set_yticks(np.arange(len(val))); ax[2].set_yticklabels(lab, fontsize=8)
+        ax[2].set_xlabel('median ms per query (rollout + decode), paired A–B–A')
+        ax[2].set_title(f"cost at each bank's own m* rules ({TM['gpu']})\nnot matched to the accuracy panels", fontsize=10)
+    fig.suptitle('End-to-end accuracy and cost\n' + CAPTION, fontsize=11)
     fig.tight_layout(); fig.savefig(out / 'e2e.png', dpi=140); plt.close(fig)
 
 
@@ -376,11 +396,11 @@ def e2e_plot(E, M, TM, out):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument('--train', default='tr1b')
-    ap.add_argument('--eval', default='ev1')
+    ap.add_argument('--train', default='tr1b', help='comma-separated training jobs')
+    ap.add_argument('--eval', default='ev1', help='comma-separated evaluation jobs (the first one supplies the main timing table)')
     ap.add_argument('--out', default='report.md')
     a = ap.parse_args()
-    T, E, TM, meta = load(a.train, a.eval)
+    T, E, TM, meta, TM_extra = load(a.train, a.eval)
     M = {b: {s: metrics(E, b, s) for s in SETTINGS} for b in E}
     V = verdicts(E, T, M)
     R1 = r1_gate(E)
@@ -432,19 +452,39 @@ def main():
     if TM:
         w(f"| `{a.eval}` (timing) | paired timing | {TM['gpu']} | {TM['job_id']} | m* rules of every bank |")
     w('')
-    w('## Answers in brief (generated; PROVISIONAL, development/validation, one seed per arm)\n')
+    w('## Answers in brief (generated; PROVISIONAL, development/validation, one training seed per bank)\n')
     if all(x in M for x in ('base', 'frozen_lane', 'frozen_deployed', 'sob01', 'sig1', 'sig2')):
         mB = lambda b, s, k: M[b][s][k]
+        ms = lambda b, s, bb: M[b][s]['mstar'][f'gref|G|{bb}']
         R_ = lambda b, s, r, p='gref': E[b]['settings'][s]['rho'][r][p]['max']
-        w(f"- **Points needed at the pre-registered bars do not move.** In `acc` every bank needs Gauss 56² ({mB('base','acc','mstar')['gref|G|0.06']} points) for worst ρ ≤ 0.06 on its own reached states, and Gauss 32² gives worst ρ {fmt(R_('base','acc','gauss32'))} for all of them. The onset is set by the M={E['base']['settings']['acc']['M']} sine tests, not by the bank: restricted to the first 320 tests, Gauss 32² falls to {fmt(E['base']['settings']['acc']['rho']['gauss32']['gref']['max_320'])} (base). In `fast`, sig1, sig2 and sob01 need 1600 points at 0.06 against base's {mB('base','fast','mstar')['gref|G|0.06']}, but frozen-lane also needs {mB('frozen_lane','fast','mstar')['gref|G|0.06']}, so the difference is within retraining noise (H2 unresolved).")
-        w(f"- **Smoothness shows in the tail, not at the bars.** The fitted Gauss tail parameter rises from {M['base']['acc']['tail']['gref']['varrho']:.4f} (base) to {M['sig2']['acc']['tail']['gref']['varrho']:.4f} (sig2) and {M['sig1']['acc']['tail']['gref']['varrho']:.4f} (sig1) in `acc`. At Gauss 128² the worst ρ is {fmt(R_('sig1','acc','gauss128'))} for sig1 against {fmt(R_('base','acc','gauss128'))} for base and {fmt(R_('frozen_deployed','acc','gauss128'))} for the frozen bank; at 256² it is {fmt(R_('sig1','acc','gauss256'))} vs {fmt(R_('base','acc','gauss256'))}. Across every bank and setting the fitted tail parameter stays between {min(M[b][x]['tail']['gref']['varrho'] for b in banks for x in SETTINGS):.3f} and {max(M[b][x]['tail']['gref']['varrho'] for b in banks for x in SETTINGS):.3f}: smaller σ steepens the tail measurably but modestly. The rungs where this happens lie beyond the 0.01 bar.")
-        w(f"- **No measurable representation cost of smoothing.** Projection floors (median, `acc`) are {fmt(mB('base','acc','e_val_med'))} (base), {fmt(mB('sig2','acc','e_val_med'))} (sig2), {fmt(mB('sig1','acc','e_val_med'))} (sig1); the trained ‖B_j‖ stay near their initial scale (sig1 median {T['sig1']['train']['B_final']['0.5']:.2f}).")
         dS = lambda t, s, k: 100 * (M[t][s][k] / M['base'][s][k] - 1)
-        w(f"- **Sobolev training improves derivatives and the projection floor, not the ROM.** sob01 lowers the `acc` gradient error by {-dS('sob01','acc','e_grad2c_med'):.0f}% (D2) / {-dS('sob01','acc','e_grad4_med'):.0f}% (D4) and the projection floor by {-dS('sob01','acc','e_val_med'):.0f}%, but `fast` only by {-dS('sob01','fast','e_grad2c_med'):.1f}% / {-dS('sob01','fast','e_grad4_med'):.1f}% (the D4 figure misses the 20% bar), and its converged-quadrature rollout error vs S changes by {dS('sob01','acc','E_S'):+.1f}% (`acc`) and {dS('sob01','fast','E_S'):+.2f}% (`fast`). H1 is not met.")
-        w(f"- **The ROM error is not representation-limited.** Against ST every bank sits at {pct(min(M[b]['acc']['E_ST'] for b in banks))}–{pct(max(M[b]['acc']['E_ST'] for b in banks))}% (`acc`) — the time-discretisation error dominates; against S the spread is {pct(min(M[b]['acc']['E_S'] for b in banks))}–{pct(max(M[b]['acc']['E_S'] for b in banks))}%, but base and frozen-lane (same recipe and seed) already differ by {100 * V['noise']['acc|E_S']:.0f}%, so no bank-to-bank difference in E_S is resolved.")
-        w(f"- **The rotation procedure matters more than the training recipe in `fast`.** The same frozen bank gives worst S error {pct(mB('frozen_deployed','fast','E_S'))}% with the deployed head-based rotation and {pct(mB('frozen_lane','fast','E_S'))}% with the lane's least-squares rotation (R'=128); in `acc` (R'=384) the two agree ({pct(mB('frozen_deployed','acc','E_S'))}% vs {pct(mB('frozen_lane','acc','E_S'))}%). All retrained banks use the lane rotation and must be compared with frozen-lane, not with the 2D lane's numbers.")
-        w(f"- **Cost** is set by m alone: at the same rule every bank costs the same (`acc` Gauss 56²: {min(v for k, v in TM['median_ms'].items() if k.startswith('acc')):.1f}–{max(v for k, v in TM['median_ms'].items() if k.startswith('acc')):.1f} ms per query on one {TM['gpu']})." if TM and TM.get('median_ms') else '- Cost: timing suppressed.')
-        w('- **Pre-registered outcome:** no useful winner; nothing is promoted to 3D, and `comb` is not run (A1.5). Round 2 (λ ladder, coarse-data control, seed-1 base) is running.\n')
+        accm = sorted({ms(b, 'acc', 0.06) for b in banks})
+        w(f"- **H2 (smoothness lowers the points needed): no resolved improvement.** In `acc` the own-state $m^*(0.06)$ is {', '.join(map(str, accm))} for every bank. "
+          f"In `fast` it is {ms('base','fast',0.06)} for `base` and {ms('sig1','fast',0.06)} / {ms('sig2','fast',0.06)} / {ms('sob01','fast',0.06)} for sig1 / sig2 / sob01. "
+          f"However, `frozen_lane` (the same recipe and seed as `base`) gives {ms('frozen_lane','fast',0.06)}, so the pre-registered verdict is UNRESOLVED, not a pass.")
+        w(f"- **Onset.** Gauss 32² gives worst ρ {fmt(min(R_(b,'acc','gauss32') for b in banks))}–{fmt(max(R_(b,'acc','gauss32') for b in banks))} in `acc` for every bank. "
+          f"The restricted-vector diagnostic (first 320 tests only, own denominator, solver not rerun) gives {fmt(min(E[b]['settings']['acc']['rho']['gauss32']['gref']['max_320'] for b in banks))}–{fmt(max(E[b]['settings']['acc']['rho']['gauss32']['gref']['max_320'] for b in banks))}. "
+          f"This is consistent with a test-frequency contribution to the onset, which a smoother bank cannot remove.")
+        tv = [M[b][x]['tail']['gref']['varrho'] for b in banks for x in SETTINGS]
+        w(f"- **Tail.** Smaller initial σ gives steeper fitted Gauss tails in these runs: in `acc` the fitted parameter is {M['base']['acc']['tail']['gref']['varrho']:.4f} (base), {M['sig2']['acc']['tail']['gref']['varrho']:.4f} (sig2) and {M['sig1']['acc']['tail']['gref']['varrho']:.4f} (sig1); over all banks and settings it spans {min(tv):.4f}–{max(tv):.4f}. "
+          f"Worst ρ at Gauss 128² is {fmt(R_('sig1','acc','gauss128'))} (sig1), {fmt(R_('base','acc','gauss128'))} (base) and {fmt(R_('frozen_deployed','acc','gauss128'))} (frozen); at Gauss 256² it is {fmt(R_('sig1','acc','gauss256'))} (sig1) and {fmt(R_('base','acc','gauss256'))} (base). These rungs lie past the 0.01 bar.")
+        w(f"- **Representation.** Neither smaller-σ run increases the median `acc` projection floor ({fmt(mB('base','acc','e_val_med'))} base, {fmt(mB('sig2','acc','e_val_med'))} sig2, {fmt(mB('sig1','acc','e_val_med'))} sig1). The trained Fourier frequencies stay near their initial scale: the final median ‖B_j‖ is {T['sig1']['train']['B_final']['0.5']:.2f} for sig1 and {T['base']['train']['B_final']['0.5']:.2f} for base.")
+        w(f"- **H1 (Sobolev).** Against the common-support **mesh** derivative targets, sob01 lowers the median gradient error by {-dS('sob01','acc','e_grad2c_med'):.1f}% (D2) / {-dS('sob01','acc','e_grad4_med'):.1f}% (D4) and the median projection floor by {-dS('sob01','acc','e_val_med'):.1f}% in `acc`. "
+          f"In `fast` the reductions are only {-dS('sob01','fast','e_grad2c_med'):.1f}% / {-dS('sob01','fast','e_grad4_med'):.1f}%. Its converged-quadrature rollout error vs S changes by {dS('sob01','acc','E_S'):+.1f}% (`acc`) and {dS('sob01','fast','E_S'):+.2f}% (`fast`), so there is no resolved rollout improvement in this run. H1 is not met.")
+        w(f"- **Rollout accuracy.** Lower projection and derivative errors did not produce a resolved rollout improvement, and the limiting contribution is not isolated here. Against ST every bank's worst `acc` error lies in {pct(min(M[b]['acc']['E_ST'] for b in banks))}–{pct(max(M[b]['acc']['E_ST'] for b in banks))}%, and against S in {pct(min(M[b]['acc']['E_S'] for b in banks))}–{pct(max(M[b]['acc']['E_S'] for b in banks))}%. "
+          f"The `base` vs `frozen_lane` comparator differs by {100 * V['noise']['acc|E_S']:.1f}% on `acc` $E_S$, so no treatment-versus-base `acc` $E_S$ change clears the pre-registered noise gate.")
+        w(f"- **Evaluation procedure.** The same frozen bank gives a worst `fast` S error of {pct(mB('frozen_deployed','fast','E_S'))}% under the 2D lane's deployed procedure (head-based rotation, trust radius and coefficient population) and {pct(mB('frozen_lane','fast','E_S'))}% under this lane's least-squares procedure (A1.2). "
+          f"In `acc` the two are close ({pct(mB('frozen_deployed','acc','E_S'))}% vs {pct(mB('frozen_lane','acc','E_S'))}%). Retrained banks must be compared with `frozen_lane`.")
+        if TM and TM.get('median_ms'):
+            av = [v for k, v in TM['median_ms'].items() if k.startswith('acc|')]
+            w(f"- **Cost.** At the fixed `acc` setting and rule (every bank's $m^*$ there is the same Gauss rung), the observed per-query medians lie in {min(av):.1f}–{max(av):.1f} ms on one {TM['gpu']}.")
+        w('- **Pre-registered outcome:** no useful winner, so nothing is promoted to 3D and `comb` is not run (A1.5). The round-1 verdicts are provisional until the seed-1 comparator `base_s1` (round 2) is evaluated.\n')
+    w('## Method in one screen\n')
+    w('Each backward-Euler step solves $r(c)=D\\big(Ac-p+\\Delta t\\,(N(c)+\\nu\\Lambda Ac)\\big)=0$ with the tested advection '
+      '$N_a(c)=L\\sum_q w_q\\,\\psi_a(x_q)\\,u(x_q)\\,(u_x+u_y)(x_q)$, where $u=G\'(x)c$ is the rotated bank. For a rule $Q$ and a state $c$, '
+      '$\\rho_Q(c)=\\lVert N^{Q}(c)-N^{\\mathrm{G640}}(c)\\rVert_2/\\lVert N^{\\mathrm{G640}}(c)\\rVert_2$. The Sobolev arm adds '
+      '$\\lambda\\,\\overline{\\lVert\\nabla\\hat u-D_hu\\rVert^2}/\\overline{\\lVert D_hu\\rVert^2}$ to the value loss, with $D_h$ second-order central differences on the training mesh. '
+      'The projection floor is $\\min_c\\lVert G\'c-u_{\\rm ref}\\rVert/\\lVert u_{\\rm ref}\\rVert$ on the 257² nodes, and the gradient error is that of $\\nabla(G\'c^\\star)$ against $D^{(2)}u_{\\rm ref}$ or $D^{(4)}u_{\\rm ref}$.\n')
     w('## Training\n')
     w('| bank | σ (initial) | λ | steps | train h | recon mean (train) | train LS floor median / max | ‖B_j‖ median init→final | ‖B_j‖ max init→final | R2a | FD stencil sensitivity (train, median) |')
     w('|---|---|---|---|---|---|---|---|---|---|---|')
@@ -525,6 +565,31 @@ def main():
             inv = [x for x in TM['invocations'] if x['setting'] == s and x['label'] == b and x['rule'] == rule]
             w(f"| {s} | {b} | {rule} | {inv[0]['m']} | {v:.1f} | {fmt(max(x['coeff_rel_diff_vs_phase1'] for x in inv))} |")
         w('')
+    fc = [r for m_ in meta for r in m_.get('fom_comparators', [])]
+    if 'coarse' in E and fc:
+        w('## Coarse-data control (A1.7, A2.6; PROVISIONAL)\n')
+        w('Worst over the 38 cases of the evolved error % on the common 129-node restriction of the references (each cell ST / S). '
+          '`coarse` was trained only on 129-node data; the FOMs are the training generator at 129 and 257 nodes.\n')
+        w('| model | acc | fast |')
+        w('|---|---|---|')
+        for b in [x for x in ('coarse', 'base_ev2', 'base') if x in E]:
+            cells = [f"{pct(worst(E, b, s, 'gref', 'ref_ST_evolved_129'))} / {pct(worst(E, b, s, 'gref', 'ref_S_evolved_129'))}" for s in SETTINGS]
+            w(f"| ROM `{b}` (converged quadrature) | " + ' | '.join(cells) + ' |')
+        for n in (129, 257):
+            rr = [r for r in fc if r['nodes'] == n]
+            cell = f"{pct(max(r['ref_ST_evolved_129'] for r in rr))} / {pct(max(r['ref_S_evolved_129'] for r in rr))}"
+            w(f"| FOM, {n} nodes ({len(rr)} cases) | {cell} | {cell} |")
+        w('\nBeating the 129-node FOM supports only the limited claim that the off-mesh accuracy is not solely inherited from finer training data; not beating it would not show that finer data are necessary (A2.6).\n')
+    for ej, tm in TM_extra.items():
+        inv = tm.get('invocations', [])
+        if tm.get('valid') and tm.get('complete'):
+            w(f'## Cost, evaluation job `{ej}` (median ms per query, {tm["gpu"]}; not comparable across jobs)\n')
+            w('| setting | bank | rule | median ms |')
+            w('|---|---|---|---|')
+            for k, v in tm['median_ms'].items():
+                s_, b_, r_ = k.split('|')
+                w(f'| {s_} | {b_} | {r_} | {v:.1f} |')
+            w('')
     w('## Gates and controls\n')
     if meta:
         c = meta[0]['controls']
@@ -535,7 +600,10 @@ def main():
         r2a = T[b]['train'].get('R2a', [])
         w(f"- `{b}` training data: R0 fingerprint {'matches the original job (pass)' if d_.get('R0_fingerprint_matches_r3a') else 'not applicable'}"
           + ('; R2a ' + ', '.join(f"step {x['step']} {x['got']} vs original {x['want']} ({'equal' if x['match'] else 'differs; recorded only, A2.5'})" for x in r2a) if r2a else '') + '.')
-    w('- R2b (local): the lane trainer at λ=0 is bit-identical to the original trainer only with deterministic XLA flags; with default autotuning it differs by 1.5e-2 in parameters after 8 steps (`audits/R2b-evidence.txt`). Retrains are therefore not bitwise reproducible, which is why the noise yardstick exists.')
+    ev_ = (HERE / 'audits/R2b-evidence.txt').read_text()
+    import re as _re
+    dv = _re.findall(r'lane\(lam=0\) vs original ([0-9.e+-]+)', ev_)
+    w(f"- R2b (local GB10): lane trainer at λ=0 vs the original trainer, max parameter difference {dv[0] if dv else '?'} with default XLA autotuning and {dv[-1] if dv else '?'} with deterministic XLA flags (`audits/R2b-evidence.txt`): bit-identical only under deterministic compilation, so retrains are not bitwise reproducible and the noise yardstick is needed.")
     g8 = [E[b]['settings'][s]['rho']['gauss8']['gref']['max'] for b in banks for s in SETTINGS]
     w(f"- C1 stress arm (Gauss 8²): worst ρ {fmt(min(g8))}–{fmt(max(g8))} over banks and settings, far above every bar, as expected.")
     for b in banks:
@@ -598,6 +666,20 @@ GLOSSARY = [
     ('n(ε)', 'Chebyshev degree beyond which the coefficient envelope of a field stays below ε; a bandwidth.'),
     ('C2–C6, R0–R2', 'pre-registered gates and controls (DESIGN A1.6, A2.5, A4).'),
     ('PROVISIONAL', 'the references are first-order; accuracy numbers can move when second-order references exist.'),
+    ('recon mean (train)', 'mean over the 16 384 training states of the relative L2 error of the trained autodecoder (bank times head) on all training points.'),
+    ('train LS floor', 'relative error of the least-squares projection of each training state onto the full 512-column bank, on its training mesh (median / max over states).'),
+    ('‖B_j‖', 'length of the j-th random Fourier frequency vector (cycles per unit length), initial and after training.'),
+    ('R2a / R0 / R2b', 'replication gates: R0 = training data fingerprint equals the original job; R2a = loss at logged steps equals the original log; R2b = local bitwise parity of the trainer code.'),
+    ('gref, lat64, Gauss p², Fibonacci n', 'quadrature arms: Gauss 640² (the converged continuum rule), the deployed 63×63 mesh lattice, tensor Gauss–Legendre with p points per axis, rank-1 Fibonacci lattice with n points.'),
+    ('evolved error', 'the largest error over the five output times after t = 0 (the initial fit is excluded), relative to the initial field norm on the same nodes.'),
+    ('common support', 'interior nodes at least two nodes from the wall, where both the second- and fourth-order differences exist.'),
+    ('interpolated m', 'descriptive log-linear interpolation of the points needed between the confirmed rung and the rung below it.'),
+    ('R²', 'coefficient of determination of the tail fit (1 = a perfect straight line in log ρ against 2p).'),
+    ('geometric / algebraic / inconclusive / unresolved', 'classification of a Chebyshev envelope: geometric decay (analytic-like), power-law decay, neither fit clearly better, or too few resolved blocks.'),
+    ('query ms', 'wall time of one ROM query: initial fit, 50 implicit LM steps and decoding six output fields at 1024², median over paired repetitions.'),
+    ('coefficient difference vs the evaluation rollout', 'relative difference between the coefficients of a timed rollout and those of the same rollout in the evaluation phase (checks that the timed computation is the evaluated one).'),
+    ('noise yardstick', 'relative difference between base and frozen-lane (same recipe and seed; later also base vs base_s1); a treatment effect counts only if it is more than twice this.'),
+    ('C6 / non-accepted exit', 'an LM step that stopped on the budget, a tiny step or the damping limit instead of tolerance or stationarity.'),
     ('H1 / H2 / useful winner', 'pre-registered hypotheses (Sobolev helps; smoothness reduces points) and the gate for promoting a bank (DESIGN A1.5).'),
 ]
 

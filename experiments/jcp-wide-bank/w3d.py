@@ -126,13 +126,23 @@ def eligible(rec, nonstat_frac):
     return bool(rec['finite'] and int((rs == 3).sum()) == 0 and int((rs == 0).sum()) <= nonstat_frac * len(rs))
 
 
-def select_mstar(recs, rho_max, arms, family, tau, rho_bar, use_d=True, use_rho=True):
+def arm_eligible(rs, nonstat_frac):
+    """DESIGN A7: arm-level eligibility pooled over a cohort (the cited 3D-lane contract): every rollout finite, zero
+    reason-3 exits, reason-0 steps <= nonstat_frac of all pooled steps."""
+    if not rs:
+        return False
+    reasons = np.concatenate([np.asarray(r['reasons']) for r in rs])
+    return bool(all(r['finite'] for r in rs) and int((reasons == 3).sum()) == 0 and
+                int((reasons == 0).sum()) <= nonstat_frac * len(reasons))
+
+
+def select_mstar(recs, rho_max, arms, family, tau, rho_bar, use_d=True, use_rho=True, nonstat_frac=0.01):
     """Smallest-m non-control arm of `family`: all cases eligible, (use_d) worst distance <= tau, (use_rho) worst
     continuum rho <= rho_bar. Returns (name, m) or (None, None)."""
     cands = sorted([a for a in arms if a['family'] == family and not a['control']], key=lambda a: a['m'])
     for a in cands:
         rs = recs.get(a['name'], [])
-        if not rs or not all(r['eligible'] for r in rs):
+        if not arm_eligible(rs, nonstat_frac):
             continue
         if use_d:
             d = [r.get('dist_conv') for r in rs]
@@ -407,7 +417,7 @@ def main():
                         worst_refined=max(r['worst_refined'] for r in rl),
                         median_refined=float(np.median([r['worst_refined'] for r in rl])),
                         worst_dist_conv=(max(r['dist_conv'] for r in rl) if nm != 'conv' else 0.),
-                        all_eligible=all(r['eligible'] for r in rl),
+                        all_eligible=all(r['eligible'] for r in rl), arm_eligible_pooled=arm_eligible(rl, nsf),
                         lm_iterations_per_query_median=float(np.median([sum(r['iterations']) for r in rl])),
                         reason_counts={str(k): int(sum(np.sum(np.asarray(r['reasons']) == k) for r in rl)) for k in range(5)},
                         cases=rl)
@@ -450,9 +460,9 @@ def main():
                 np.savez(out / 'fields' / f'population_{n}_{bk["name"]}_{key}.npz', Cs=Cs, k=np.concatenate(kpop))
                 del tgt, chk
                 # -------------------------------------------- phase 3: gates, controls, selection
-                conv_ok = all(r['eligible'] for r in recs['conv']) and all(r['eligible'] for r in crecs['conv'])
+                conv_ok = arm_eligible(recs['conv'], nsf) and arm_eligible(crecs['conv'], nsf)          # A7: pooled
                 chk_d = max([r['dist_conv'] for r in recs['check']] + [r['dist_conv'] for r in crecs['check']])
-                chk_ok = all(r['eligible'] for r in recs['check']) and all(r['eligible'] for r in crecs['check'])
+                chk_ok = arm_eligible(recs['check'], nsf) and arm_eligible(crecs['check'], nsf)
                 S_rep['gates'] = dict(
                     converged=dict(conv_all_eligible=conv_ok, check_all_eligible=chk_ok, check_worst_distance=chk_d,
                                    bar=cfg['conv_bar'], passed=bool(conv_ok and chk_ok and chk_d <= cfg['conv_bar'])),
@@ -464,18 +474,18 @@ def main():
                 for nm, s_ in arms.items():
                     if s_['control']:
                         dm = max(r['dist_conv'] for r in recs[nm])
-                        ae = all(r['eligible'] for r in recs[nm])
-                        fd = {t_: bool(dm > tv) for t_, tv in taus.items()}
-                        fr = bool(rho_max[nm] > rho_bar)
+                        ae = arm_eligible(recs[nm], nsf)
+                        fd = {t_: bool(not (np.isfinite(dm) and dm <= tv)) for t_, tv in taus.items()}
+                        fr = bool(not (np.isfinite(rho_max[nm]) and rho_max[nm] <= rho_bar))
                         ctrl[nm] = dict(worst_distance=dm, rho_max=rho_max[nm], all_eligible=ae, fails_distance=fd,
-                                        fails_rho=fr, would_be_selected={t_: bool(ae and not fd[t_] and not fr) for t_ in taus})
+                                        fails_rho=fr, would_be_selected={t_: bool(not fd[t_] and not fr) for t_ in taus})  # A0-2
                 disc = {t_: bool(ctrl and not any(v['would_be_selected'][t_] for v in ctrl.values())) for t_ in taus}
                 valid = bool(S_rep['gates']['converged']['passed'] and S_rep['gates']['target']['passed'])
                 sel = {}
                 for t_, tv in taus.items():
                     for fam in cfg['families']:
-                        nm_, m_ = select_mstar(recs, rho_max, arm_list, fam, tv, rho_bar)
-                        nd, md = select_mstar(recs, rho_max, arm_list, fam, tv, rho_bar, use_rho=False)
+                        nm_, m_ = select_mstar(recs, rho_max, arm_list, fam, tv, rho_bar, nonstat_frac=nsf)
+                        nd, md = select_mstar(recs, rho_max, arm_list, fam, tv, rho_bar, use_rho=False, nonstat_frac=nsf)
                         ok = valid and disc[t_]
                         sel[f'{t_}|{fam}'] = dict(tau=tv, family=fam, gates_passed=ok, available=bool(ok and nm_ is not None),
                                                   reason=(None if ok and nm_ is not None else
@@ -484,7 +494,7 @@ def main():
                                                   arm=nm_ if ok else None,
                                                   m=m_ if ok else None, arm_raw=nm_, m_raw=m_, arm_d=nd, m_d=md)
                 for fam in cfg['families']:
-                    nr, mr = select_mstar(recs, rho_max, arm_list, fam, 0., rho_bar, use_d=False)
+                    nr, mr = select_mstar(recs, rho_max, arm_list, fam, 0., rho_bar, use_d=False, nonstat_frac=nsf)
                     sel[f'rho_only|{fam}'] = dict(arm_rho=nr, m_rho=mr)
                 S_rep['controls'] = ctrl
                 S_rep['certification'] = crecs

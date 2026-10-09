@@ -563,3 +563,20 @@ vendored central difference with $h=10^{-5}$ has truncation error ≈ $2\times10
 (`lat4096[:32]`, as `qpanel.py`) with the vendored 2nd-order difference, bar $10^{-6}$ unchanged, and (ii) adds a
 4th-order difference on the converged rule's first 32 points, bar $10^{-6}$; a derivative bug fails both. The
 2nd-order value on the converged points is kept as a diagnostic. No threshold is loosened.
+
+## Amendment A7 (2026-10-08, during J2, job 5020855; before any 3D selection was read)
+
+**Defect.** A0-3 registers the 3D eligibility as "zero reason-3 exits and at most 1 % non-stationary (reason-0) steps
+(the 3D lane's contract)". The cited contract (`vendor/quad3d/DESIGN.md`: "non-stationary exits $\le1\%$ of all
+steps") pools the steps of the arm's cohort. `w3d.py` applied the 1 % per 25-step rollout, which admits **zero**
+non-stationary steps. On J2's first setting a single non-stationary step of validation case 36, shared by almost
+every arm including the converged rollout and the tensor (0.06 % of the 1600 pooled steps), made every arm ineligible
+and the setting's $m^\star$ unavailable through K-conv.
+
+**Correction.** 3D eligibility of an arm = every field finite, zero reason-3 exits, and reason-0 steps $\le1\%$ of
+all steps, pooled over the validation cohort; the certification rollouts are pooled separately with the same rule.
+K-conv uses the same arm-level eligibility. 2D eligibility is unchanged (registered per rollout in A0-3; J1 had no
+budget exits). J2 (already running with the per-rollout rule) is re-selected offline by `reselect3d.py` from its
+persisted per-step exit records; the report shows **both** the as-run outcome (per-rollout rule) and the amended one,
+labelled. J4 runs with the corrected code. The decision was made from the exit counts only, before any $m^\star$,
+timing or accuracy of J2 under the pooled rule was computed.

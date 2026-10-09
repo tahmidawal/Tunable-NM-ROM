@@ -1,0 +1,15 @@
+host=pax142 source_commit=e37beb22a309d1e423536f1c81eb74b2754949dd gpus=0,1,2,3
+0, NVIDIA A100-PCIE-40GB, GPU-92ca1684-f78e-2bb4-94b2-6992046581d9, 40960 MiB
+1, NVIDIA A100-PCIE-40GB, GPU-f035c4c0-85b2-cc3e-5b3e-8c686397d2d6, 40960 MiB
+2, NVIDIA A100-PCIE-40GB, GPU-5bb4493d-682e-bf1a-2c90-7f9fc1f89dd7, 40960 MiB
+3, NVIDIA A100-PCIE-40GB, GPU-5c3989d2-e5cb-6afb-b029-fa03e7db50c7, 40960 MiB
+10.235.106.24:/projects/paralab  4.6T 1000G  3.6T  22% /cluster/tufts/paralab
+dev 0 jax_backend=gpu NVIDIA A100-PCIE-40GB
+dev 1 jax_backend=gpu NVIDIA A100-PCIE-40GB
+dev 2 jax_backend=gpu NVIDIA A100-PCIE-40GB
+dev 3 jax_backend=gpu NVIDIA A100-PCIE-40GB
+task sob001 exit=0
+task sob1 exit=0
+task coarse exit=0
+task base_s1 exit=0
+ALL-DONE

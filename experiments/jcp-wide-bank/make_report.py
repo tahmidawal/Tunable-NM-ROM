@@ -564,14 +564,22 @@ def plots_3d(recs, tag):
             if rs:
                 ax.plot([r['Rp'] for r in rs], [100 * r['dep_worst'] for r in rs], color=SERIES[i % 4], lw=2,
                         marker=MARKERS[i % 4], ms=7, label=f'{bn}, {n - 1}³: deployed worst')
+                fl = [(r['Rp'], r['floor']) for r in rs if r['floor'] is not None]
+                if fl and bn == 'W1024' and n == max(meshes):
+                    ax.plot([x for x, _ in fl], [100 * y for _, y in fl], color=INK2, lw=1.5, ls='--', marker='x', ms=6,
+                            label=f'{bn}: projection floor vs reference')
                 i += 1
+    ax.set_yscale('log')
+    plain(ax)
     ax.set_xticks(sorted({r['Rp'] for r in recs}))
-    style(ax, f"3D dial: worst refined error vs R' (M ≈ 4R', PROVISIONAL)", "R'", 'worst relative error (%)')
+    style(ax, f"3D dial: worst refined error over 64 validation cases vs R'\n(M ≈ 4R'; PROVISIONAL, first-order reference)", "R'",
+          'worst relative error (%, log)')
     ax.legend(frameon=False, fontsize=8)
     save(f, f'3d_{tag}_error_vs_Rp.png')
     f, ax = fig()
-    xs = np.array([256, 384, 512, 640, 768, 896, 1024])
-    ax.plot(xs, 8 * 4 * xs ** 3 / 1e9, color=SERIES[1], lw=2, marker=MARKERS[1], ms=7, label='tensor, $8\\cdot4R\'\\cdot R\'^2$')
+    xs = np.array([256, 384, 512, 768, 1024, 1536, 2048])
+    ax.plot(xs, 8 * 4 * xs ** 3 / 1e9, color=SERIES[1], lw=2, marker=MARKERS[1], ms=7,
+            label='tensor, $8\\cdot4R\'\\cdot R\'^2$ (computed; built only for R\' ≤ 512)')
     rs = sorted([r for r in recs if r['kappa'] == 4 and r['bytes']], key=lambda r: r['Rp'])
     if rs:
         ax.plot([r['Rp'] for r in rs], [r['bytes'] / 1e9 for r in rs], color=SERIES[0], lw=0, marker=MARKERS[0], ms=8,

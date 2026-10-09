@@ -58,12 +58,18 @@ FIGS = [
  ("Width", "c1_2d_error_vs_Rp", "In 2D the dial stops at width 384.",
   "Up to 384, wider is better against the space-only reference (orange). At 512 it gets worse on 28 of 38 cases while costing 3.4× more, and against the space+time reference (blue) nothing improves past 256 because the time error dominates.",
   "38 validation cases at 1024²; provisional. Green: the best the bank could possibly do (projection floor)."),
+ ("Bank", "c3_ladders", "New (9 Oct): a smoother bank only helps when you want very high quadrature accuracy.",
+  "Each line is one retrained bank. Down to the acceptance bars (0.116, 0.06) every bank needs the same number of points: that part is set by the high-frequency test functions, not the bank. Below about 0.001 the smoothest bank (σ = 1, olive) pulls away, roughly 100× more accurate at 256² points, at no cost in representation accuracy.",
+  "2D, 38 validation cases at 1024²; one training seed per bank; provisional."),
+ ("Bank", "c3_e2e", "Retrained banks don't change the reduced model's error — it is time-step limited.",
+  "Against the space+time reference (blue) every bank sits at about 2.7–3.0 %, the time-stepping floor that second-order stepping removes. Gradient (Sobolev) training cuts the bank's derivative error by up to 74 % but does not lower the reduced-model error. The bank trained only on coarse (129-node) data ('coarse') does as well as the rest: finer training data were not needed for the gain.",
+  "Orange: space-only reference. Right: cost per query is identical across banks at the same quadrature rule."),
 ]
 
 cards = []
 for sec, fn, head, body, note in FIGS:
     cards.append(f'''<figure class="card" data-sec="{sec}">
-  <figcaption><span class="tag">{ {'Mechanism':'Why it works','Time':'Second-order time stepping','Width':'Wider bank'}.get(sec, 'Burgers ' + sec) }</span><h2>{head}</h2><p>{body}</p></figcaption>
+  <figcaption><span class="tag">{ {'Mechanism':'Why it works','Time':'Second-order time stepping','Width':'Wider bank','Bank':'Derivative-aware bank'}.get(sec, 'Burgers ' + sec) }</span><h2>{head}</h2><p>{body}</p></figcaption>
   <img src="figs/{fn}.png" alt="{head}" loading="lazy">
   {f'<p class="note"><strong>How to read it:</strong> {note}</p>' if note else ''}
 </figure>''')

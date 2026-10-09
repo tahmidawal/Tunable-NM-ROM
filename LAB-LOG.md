@@ -12,7 +12,21 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-10-06
+# Where things stand — 2026-10-09
+
+**2026-10-09 — first JCP experiment week done.** Four lanes ran and were Codex-gated at every step. All accuracy numbers are provisional because the references are still first-order.
+- **Mechanism (`exp/2026-10-06-jcp-mechanism`).** The off-mesh accuracy gain comes from the exact gradient, not from where the quadrature points sit. Classical quadrature gives the same answer with 4k–14k points instead of every mesh node.
+- **Second-order time stepping (`exp/2026-10-08-jcp-time2`).** This is the clear win. In the 2D accurate setting the median error drops about 9× at equal cost. Against a fair second-order FOM, the matched speed-up rises from 1.76× to 3.65×. In 3D the time error falls 21× at about equal cost.
+- **Wider bank (`exp/2026-10-08-jcp-wide-bank`) and smoother/Sobolev bank (`exp/2026-10-08-jcp-smooth-bank`).** Each bank represents the solution better: the 3D projection floor falls 3.23 → 1.29 %, and the derivative error falls up to 74 %. But the ROM error does not follow, so the bank is no longer the bottleneck. The off-mesh rule's memory stays at 1.6 GB at R′=1024, against 34 GB for the tensor.
+- **Results page:** https://claude.ai/artifact/7TkSE1ebWFRdjEKvrkyHTb. The notebook is `notebook/jcp-notebook.pdf`.
+- **Next.**
+  - C2 stepping combined with the wide bank, against second-order references (the E0 lane has not started yet).
+  - A fixed-sweep second-order 3D solver.
+  - A test space with lower mixed frequencies.
+  - Group B lanes (references, FOM ladder, POD baselines), which have not started.
+  - Merge questions for the four lanes are still to be asked.
+
+## Earlier state — 2026-10-06
 
 **2026-10-06 — JCP paper campaign started.**
 - **The paper.** One combined Journal of Computational Physics paper: the tunable ordered coordinate-network bank (the ICLR material; ICLR will not be submitted) plus Hari's off-mesh classical-quadrature hyper-reduction.
@@ -18961,3 +18975,24 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - J4 with the Gauss 64³ escalation.
 - Sensitivity of the wide bank to quadrature, and growth in cond(A).
 - Ask the user at the end of the campaign whether to merge.
+
+### 2026-10-09 (morning) — jcp-smooth-bank (C3) complete
+**Where.** Branch `exp/2026-10-08-jcp-smooth-bank`, last commit `12f620782`, mirror `8ede69cba`. Jobs: tr1b 5016275, ev1 5027022, tr2 5027733, ev2r 5037650 (all A100). tr1 5016108 never started and was resubmitted. ev2 5037554 failed the GPU preflight on pax007 and was resubmitted excluding that node. Namespace `jcpsmooth` is empty.
+**Found.** All numbers PROVISIONAL; one seed per recipe.
+- **H2 not shown.** Every bank needs Gauss 56² in the accurate setting. The point count at the acceptance bar is set by the test functions, not the bank.
+- **Smoothness helps only in the tail.** σ=1 reaches worst ρ 3.2e-6 vs 3.1e-4 for base at 256².
+- **H1 not met.** Sobolev training lowers the gradient error by up to 74 %, but the ROM error against S does not improve (+62 % at λ=1).
+- **Time error dominates.** Every bank sits at 2.74–2.97 % against ST.
+- **Coarse-data control.** A bank trained on 129-node data gives 0.83 % worst error against S in the accurate setting, vs 7.58 % (129-node FOM) and 4.12 % (257-node FOM). This is narrow support for "finer training data were not necessary". That bank needs 16384 points.
+**Wrong / corrected.**
+- runs/SUMMARY-R3.md describes the wrong job; the deployed bank is r3a.
+- The 2D lane's overlap check used the wrong draw. Cohorts re-verified as disjoint.
+- Retrains are not bitwise reproducible without deterministic XLA flags.
+- In the fast setting, the 2D numbers depend on the rotation procedure (3.45 % vs 4.51 %).
+**Open.**
+- A test space with lower mixed frequencies.
+- Investigate the rotation effect.
+- Replicate Sobolev training with more seeds.
+- Scope the coarse-data result for the paper.
+- Four minor report items remain.
+- Merge question still to be asked.

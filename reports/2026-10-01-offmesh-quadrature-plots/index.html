@@ -38,6 +38,7 @@ header p { color: var(--muted); margin: 0; max-width: 68ch; }
     <button type="button" data-f="Mechanism" aria-pressed="false">Why it works</button>
     <button type="button" data-f="Time" aria-pressed="false">Time stepping</button>
     <button type="button" data-f="Width" aria-pressed="false">Wider bank</button>
+    <button type="button" data-f="Bank" aria-pressed="false">Smoother bank</button>
   </div>
 </header>
 <figure class="card" data-sec="3D">
@@ -114,6 +115,16 @@ header p { color: var(--muted); margin: 0; max-width: 68ch; }
   <figcaption><span class="tag">Wider bank</span><h2>In 2D the dial stops at width 384.</h2><p>Up to 384, wider is better against the space-only reference (orange). At 512 it gets worse on 28 of 38 cases while costing 3.4× more, and against the space+time reference (blue) nothing improves past 256 because the time error dominates.</p></figcaption>
   <img src="figs/c1_2d_error_vs_Rp.png" alt="In 2D the dial stops at width 384." loading="lazy">
   <p class="note"><strong>How to read it:</strong> 38 validation cases at 1024²; provisional. Green: the best the bank could possibly do (projection floor).</p>
+</figure>
+<figure class="card" data-sec="Bank">
+  <figcaption><span class="tag">Derivative-aware bank</span><h2>New (9 Oct): a smoother bank only helps when you want very high quadrature accuracy.</h2><p>Each line is one retrained bank. Down to the acceptance bars (0.116, 0.06) every bank needs the same number of points: that part is set by the high-frequency test functions, not the bank. Below about 0.001 the smoothest bank (σ = 1, olive) pulls away, roughly 100× more accurate at 256² points, at no cost in representation accuracy.</p></figcaption>
+  <img src="figs/c3_ladders.png" alt="New (9 Oct): a smoother bank only helps when you want very high quadrature accuracy." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> 2D, 38 validation cases at 1024²; one training seed per bank; provisional.</p>
+</figure>
+<figure class="card" data-sec="Bank">
+  <figcaption><span class="tag">Derivative-aware bank</span><h2>Retrained banks don't change the reduced model's error — it is time-step limited.</h2><p>Against the space+time reference (blue) every bank sits at about 2.7–3.0 %, the time-stepping floor that second-order stepping removes. Gradient (Sobolev) training cuts the bank's derivative error by up to 74 % but does not lower the reduced-model error. The bank trained only on coarse (129-node) data ('coarse') does as well as the rest: finer training data were not needed for the gain.</p></figcaption>
+  <img src="figs/c3_e2e.png" alt="Retrained banks don't change the reduced model's error — it is time-step limited." loading="lazy">
+  <p class="note"><strong>How to read it:</strong> Orange: space-only reference. Right: cost per query is identical across banks at the same quadrature rule.</p>
 </figure>
 </div>
 <script>

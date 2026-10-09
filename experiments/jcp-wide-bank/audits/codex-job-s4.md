@@ -18,3 +18,7 @@ was raised to 2 on H200s by the coordinator (2026-10-08, evening) so s4 overlaps
 **Resubmission (lane agent):** the first attempt stopped at gate G1 (s2, job 5018586) / was cancelled before starting
 (s4, job 5019404). Restaged unchanged except the A6 G1 fix, which was code-audited (audits/codex-code-w3d-3.md,
 OK-TO-RUN YES); configs, staged inputs and sbatch are otherwise identical to the audited attempt. New attempts: s2b / s4b.
+
+**Second resubmission (lane agent):** s4b (5019667) was cancelled before start because it ran the pre-A7 eligibility
+code. Restaged unchanged except the A7 code, which passed audits/codex-code-w3d-4.md + -5.md (OK-TO-RUN YES). New
+attempt: s4c.

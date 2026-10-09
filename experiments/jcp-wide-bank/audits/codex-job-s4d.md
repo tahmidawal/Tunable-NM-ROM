@@ -9,3 +9,6 @@
 Read-only audit completed; nothing modified or submitted.
 
 SUBMIT: YES
+**s4e (lane agent):** identical to s4d (H100, same config) except A8 (`adaptive_first` 6), code-audited in
+audits/codex-code-w3d-6.md (OK-TO-RUN YES). Purpose: verify that the A8 solver passes the 1 % pooled eligibility at
+R'=1024 before J4 is staged on an H200.

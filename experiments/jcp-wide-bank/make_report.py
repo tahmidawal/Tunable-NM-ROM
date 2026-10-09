@@ -409,6 +409,9 @@ def section_3d(d, title, L, tag):
                            tensor_worst=s['arms'].get('tensor', {}).get('worst_refined'),
                            gates=(s['gates']['converged']['passed'], s['gates']['target']['passed'],
                                   s['selection']['discriminating']['primary']))
+                rec['final_key'] = f"{bn}|{key}|{dep['arm']}" if dep else None
+                rec['tv'], rec['gpu'] = d.get('timing_valid_jobwide'), d['gpu']
+                rec['dep_cases'] = {c['case']: c['worst_refined'] for c in da['cases']} if da else {}
                 recs.append(rec)
                 tv = d.get('timing_valid_jobwide')
                 L.append(f"| {n} | {bn} | {s['Rp']} | {s['kappa_nominal']} | {s['M']} | "
@@ -419,12 +422,99 @@ def section_3d(d, title, L, tag):
                          f"{('%.3f' % rec['jac']) if rec['jac'] else '–'} | {gb(rec['bytes'])} | {gb(rec['tensor_bytes'])} | "
                          f"{rec['gates'][0]} / {rec['gates'][1]} / {rec['gates'][2]} |")
     L.append('')
+    tv = d.get('timing_valid_jobwide')
+    by = {(r['n'], r['bank'], r['Rp'], r['kappa']): r for r in recs}
+    # tensor comparison
+    tr = [r for r in recs if r['tensor_worst'] is not None]
+    if tr:
+        L.append('Tensor rule (the incumbent, mesh backward-difference advection) on the same cases: ' +
+                 '; '.join(f"{r['n'] - 1}³ {r['bank']} $R'={r['Rp']}$, $\\kappa={r['kappa']}$: worst {pct(r['tensor_worst'])}"
+                           for r in tr) + '.\n')
+    # H3 trim (3D)
+    trims = [r for r in recs if r['kappa'] < 4 and (r['n'], r['bank'], r['Rp'], 4) in by]
+    if trims:
+        L.append('**H3 (3D trim), PROVISIONAL:** acceptable if the deployed worst and median refined errors are within 0.05 pp '
+                 'of $\\kappa=4$; useful if also the paired time ratio is $\\le0.9$ in the final panel and the setting panels '
+                 '(only with job-wide K-time validity).\n')
+        L.append('| mesh | $R\'$ | $\\kappa$ | worst change | median change | acceptable | paired ratio (final) | setting ratio | useful |')
+        L.append('|---|---|---|---|---|---|---|---|---|')
+        for r in trims:
+            b4 = by[(r['n'], r['bank'], r['Rp'], 4)]
+            if None in (r['dep_worst'], b4['dep_worst']):
+                L.append(f"| {r['n'] - 1}³ | {r['Rp']} | {r['kappa']} | – | – | unavailable | – | – | – |")
+                continue
+            dw, dm = r['dep_worst'] - b4['dep_worst'], r['dep_med'] - b4['dep_med']
+            acc = dw <= PP and dm <= PP
+            ft = d['meshes'][str(r['n'])].get('final_timing') or {}
+            pr = None
+            if tv and ft:
+                med = {}
+                for x in ft['invocations']:
+                    med.setdefault((x['name'], x['case'], x['phase']), []).append(x['seconds'])
+                rat = [np.median(med[(r['final_key'], c, ph)]) / np.median(med[(b4['final_key'], c, ph)])
+                       for (k, c, ph) in med if k == r['final_key'] and (b4['final_key'], c, ph) in med]
+                pr = float(np.median(rat)) if rat else None
+            sr = (r['ms'] / b4['ms']) if tv and r['ms'] and b4['ms'] else None
+            use = bool(acc and pr is not None and sr is not None and pr <= 0.9 and sr <= 0.9)
+            L.append(f"| {r['n'] - 1}³ | {r['Rp']} | {r['kappa']} | {100 * dw:+.3f} pp | {100 * dm:+.3f} pp | {acc} | "
+                     f"{'%.2f' % pr if pr is not None else 'withdrawn'} | {'%.2f' % sr if sr is not None else 'withdrawn'} | {use} |")
+        L.append('')
+    # H4 (3D dial on the new bank)
+    for n in sorted({r['n'] for r in recs}):
+        a_, b_ = by.get((n, 'W1024', 1024, 4)), by.get((n, 'W1024', 512, 4))
+        if a_ and b_:
+            if None in (a_['dep_worst'], b_['dep_worst']):
+                v = 'unavailable'
+            elif abs(a_['dep_worst'] - b_['dep_worst']) < PP:
+                v = 'unresolved'
+            elif a_['dep_worst'] <= 0.8 * b_['dep_worst'] and a_['dep_med'] < b_['dep_med']:
+                v = 'meets the registered bar'
+            else:
+                v = 'does not meet the registered bar'
+            imp = [b_['dep_cases'][k] - a_['dep_cases'][k] for k in a_['dep_cases'] if k in b_['dep_cases']]
+            L.append(f"**H4 at {n - 1}³ ($R'=1024$ vs 512, new bank), PROVISIONAL, reference-limited:** *{v}* — worst "
+                     f"{pct(b_['dep_worst'])} → {pct(a_['dep_worst'])} ({100 * (a_['dep_worst'] - b_['dep_worst']):+.3f} pp, "
+                     f"{100 * (a_['dep_worst'] / b_['dep_worst'] - 1):+.1f} %), median {pct(b_['dep_med'])} → {pct(a_['dep_med'])}; "
+                     f"{sum(x > 0 for x in imp)}/{len(imp)} cases improved; projection floor {pct(b_['floor'])} → {pct(a_['floor'])}.\n")
+    if d.get('cross_mesh'):
+        L.append('Cross-mesh lattice distance of the same arm between 64³ and 128³ (worst over cases, relative to $\\lVert u_0\\rVert$): ' +
+                 '; '.join(f"{k.replace('|', ' ')} {sci(v['worst'])}" for k, v in sorted(d['cross_mesh'].items())
+                           if k.split('|')[-1] in ('conv',) or any(r.get('dep') and r['dep']['arm'] == k.split('|')[-1] for r in recs)) + '.\n')
     return recs
 
 
 def plots_3d(recs, tag):
     if not recs:
         return
+    f, ax = fig()
+    i = 0
+    for bn in sorted({r['bank'] for r in recs}):
+        for n in sorted({r['n'] for r in recs}):
+            rs = sorted([r for r in recs if r['bank'] == bn and r['n'] == n and r['kappa'] == 4 and r['ms'] and r['tv']], key=lambda r: r['Rp'])
+            if rs:
+                ax.plot([r['Rp'] for r in rs], [r['ms'] for r in rs], color=SERIES[i % 4], lw=2, marker=MARKERS[i % 4], ms=7,
+                        label=f'{bn}, {n - 1}³')
+                i += 1
+    ax.set_xticks(sorted({r['Rp'] for r in recs}))
+    style(ax, f"3D query time of the deployed rule vs R'\n(per-setting A–B–A medians, {recs[0]['gpu']}; K-time-valid jobs only)", "R'",
+          'median ms per query')
+    ax.legend(frameon=False, fontsize=8)
+    save(f, f'3d_{tag}_cost_vs_Rp.png')
+    f, ax = fig()
+    i = 0
+    for fam, key in (('lattice', 'mlat'), ('Gauss', 'mgau')):
+        for n in sorted({r['n'] for r in recs}):
+            rs = sorted([r for r in recs if r['n'] == n and r[key]], key=lambda r: (r['Rp'], r['M']))
+            if rs:
+                ax.plot([r['M'] for r in rs], [r[key] for r in rs], color=SERIES[i % 4], lw=0, marker=MARKERS[i % 4], ms=8,
+                        label=f'{fam}, {n - 1}³')
+                i += 1
+    ax.set_xscale('log', base=2)
+    ax.set_yscale('log', base=2)
+    plain(ax, 'both')
+    style(ax, '3D points needed ($m^\\star$, $\\tau=2.5\\times10^{-4}$) vs test count M', 'M', '$m^\\star$')
+    ax.legend(frameon=False, fontsize=8)
+    save(f, f'3d_{tag}_mstar_vs_M.png')
     banks = sorted({r['bank'] for r in recs})
     meshes = sorted({r['n'] for r in recs})
     f, ax = fig()

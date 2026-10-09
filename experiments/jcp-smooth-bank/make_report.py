@@ -1,6 +1,6 @@
 """Generate report.md and plots/*.png for jcp-smooth-bank from the pulled run JSONs (never hand-typed numbers).
 
-Inputs: runs/<train job>/archive/output/<arm>/train.json and runs/<eval job>/archive/output/{eval,timing}/.
+Inputs (committed): results/<train job>/<arm>/train.json and results/<eval job>/{eval,timing}/.
 Decision rules: DESIGN.md A1.5 as amended by A2.4 and A4 (implemented in `verdicts`).
 
     python make_report.py --train tr1 --eval ev1 [--out report.md]
@@ -47,15 +47,15 @@ def mfmt(m, fam):
 
 def load(train, ev):
     T = {}
-    for p in sorted((HERE / 'runs' / train / 'archive/output').glob('*/train.json')):
+    for p in sorted((HERE / 'results' / train).glob('*/train.json')):
         T[p.parent.name] = json.loads(p.read_text())
     E = {}
-    for p in sorted((HERE / 'runs' / ev / 'archive/output/eval').glob('eval_*.json')):
+    for p in sorted((HERE / 'results' / ev / 'eval').glob('eval_*.json')):
         d = json.loads(p.read_text())
         E[d['label']] = d
-    tp = HERE / 'runs' / ev / 'archive/output/timing/timing.json'
+    tp = HERE / 'results' / ev / 'timing/timing.json'
     TM = json.loads(tp.read_text()) if tp.exists() else None
-    meta = [json.loads(p.read_text()) for p in sorted((HERE / 'runs' / ev / 'archive/output/eval').glob('meta_task*.json'))]
+    meta = [json.loads(p.read_text()) for p in sorted((HERE / 'results' / ev / 'eval').glob('meta_task*.json'))]
     return T, E, TM, meta
 
 

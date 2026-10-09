@@ -1,0 +1,29 @@
+E1008 22:23:13.705858 3613333 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA A100-PCIE-40GB
+CONTROLS {"C2": true, "C3": true, "C5b": true}
+VARIANT frozen_lane
+frozen_lane acc ROLLOUT gref 270
+frozen_lane acc ROLLOUT lat64 297
+frozen_lane acc ROLLOUT gauss32 327
+frozen_lane acc ROLLOUT gauss48 352
+frozen_lane acc ROLLOUT gauss64 368
+frozen_lane acc ROLLOUT gauss96 388
+frozen_lane acc ROLLOUT fib1597 408
+frozen_lane acc ROLLOUT fib4181 430
+frozen_lane acc ROLLOUT fib6765 453
+frozen_lane acc PROJ value S med/max 0.00022713326030457252 0.011173233556833166 grad 0.01875645303452987
+frozen_lane acc RHO done {'gref|G|0.116': 3136, 'gref|G|0.06': 3136, 'gref|G|0.01': 6400} 917
+frozen_lane acc SPECTRA {'u|n_1e-04': {'median': 48.0, 'max': 161, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 53, 'inconclusive': 11, 'unresolved': 0}, 'f|n_1e-04': {'median': 133.0, 'max': 214, 'unresolved': 19}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 1, 'algebraic': 27, 'inconclusive': 36, 'unresolved': 0}} 938
+frozen_lane fast ROLLOUT gref 985
+frozen_lane fast ROLLOUT lat64 996
+frozen_lane fast ROLLOUT gauss32 1009
+frozen_lane fast ROLLOUT gauss48 1020
+frozen_lane fast ROLLOUT gauss64 1033
+frozen_lane fast ROLLOUT gauss96 1047
+frozen_lane fast ROLLOUT fib1597 1059
+frozen_lane fast ROLLOUT fib4181 1072
+frozen_lane fast ROLLOUT fib6765 1083
+frozen_lane fast PROJ value S med/max 0.0031880964948067863 0.0742988251599672 grad 0.033261296918236025
+frozen_lane fast RHO done {'gref|G|0.116': 1600, 'gref|G|0.06': 1600, 'gref|G|0.01': 16384} 1350
+frozen_lane fast SPECTRA {'u|n_1e-04': {'median': 69.0, 'max': 174, 'unresolved': 0}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 49, 'inconclusive': 15, 'unresolved': 0}, 'f|n_1e-04': {'median': 130.0, 'max': 216, 'unresolved': 38}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 1, 'algebraic': 21, 'inconclusive': 42, 'unresolved': 0}} 1359
+BANKEVAL COMPLETE

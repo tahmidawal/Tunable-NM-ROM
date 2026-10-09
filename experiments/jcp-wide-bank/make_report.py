@@ -432,6 +432,14 @@ def section_3d(d, title, L, tag, audit=None):
                                   s['selection']['discriminating']['primary']))
                 rec['final_key'] = f"{bn}|{key}|{dep['arm']}" if dep else None
                 rec['tv'], rec['gpu'] = d.get('timing_valid_jobwide'), d['gpu']
+                raw = [(s['timing']['subjects'].get(ent[f'primary|{f}']['arm_raw'], {}).get('median_ms'), f,
+                        ent[f'primary|{f}']['arm_raw'], ent[f'primary|{f}']['m_raw']) for f in ('lat', 'gauss')
+                       if ent.get(f'primary|{f}', {}).get('arm_raw')]
+                raw = [x for x in raw if x[0] is not None]
+                if raw:
+                    ms_r, f_r, a_r, m_r = min(raw)
+                    rec['raw'] = dict(arm=a_r, m=m_r, ms=ms_r, bytes=8 * m_r * (2 * s['Rp'] + s['M']),
+                                      jac=s['microbench'].get(a_r, {}).get('jacobian_ms_median'))
                 rec['dep_cases'] = {c['case']: c['worst_refined'] for c in da['cases']} if da else {}
                 recs.append(rec)
                 tv = d.get('timing_valid_jobwide')
@@ -510,6 +518,23 @@ def section_3d(d, title, L, tag, audit=None):
             else:
                 v = 'does not meet the registered bar'
             imp = [b_['dep_cases'][k] - a_['dep_cases'][k] for k in a_['dep_cases'] if k in b_['dep_cases']]
+            if v == 'unavailable':
+                why = []
+                S1 = d['meshes'][str(n)]['banks']['W1024']['settings']
+                for R_ in (1024, 512):
+                    g_ = S1[f'R{R_}_k4']['gates']['converged']
+                    if not g_['passed']:
+                        why.append(f"$R'={R_}$: K-conv failed (Gauss-$48^3$ check distance {sci(g_['check_worst_distance'])} "
+                                   f"> bar {sci(g_['bar'])})")
+                L.append(f"**H4 at {n - 1}³ ($R'=1024$ vs 512, new bank): unavailable** — " + '; '.join(why) + '. '
+                         + (f"Gate-ignored diagnostic rule at $R'=1024$: {a_['raw']['arm']} ($m={a_['raw']['m']}$, "
+                            f"{a_['raw']['ms']:.0f} ms per query, Jacobian {a_['raw']['jac']:.2f} ms, {gb(a_['raw']['bytes'])}; "
+                            f"the deployed $R'=512$ rule: {b_['dep']['arm']}, {b_['ms']:.0f} ms). " if a_.get('raw') and b_.get('dep') else '')
+                         + "Diagnostic only (A8 fallback: converged Gauss-$56^3$ rollouts; not a registered verdict; PROVISIONAL): "
+                         f"worst {pct(b_['conv_worst'])} → {pct(a_['conv_worst'])}, median {pct(b_['conv_med'])} → "
+                         f"{pct(a_['conv_med'])}; projection floor against the refined reference {pct(b_['floor'], 3)} → "
+                         f"{pct(a_['floor'], 3)}.\n")
+                continue
             L.append(f"**H4 at {n - 1}³ ($R'=1024$ vs 512, new bank), PROVISIONAL, reference-limited:** *{v}* — worst "
                      f"{pct(b_['dep_worst'])} → {pct(a_['dep_worst'])} ({100 * (a_['dep_worst'] - b_['dep_worst']):+.3f} pp, "
                      f"{100 * (a_['dep_worst'] / b_['dep_worst'] - 1):+.1f} %), median {pct(b_['dep_med'])} → {pct(a_['dep_med'])}; "
@@ -518,6 +543,42 @@ def section_3d(d, title, L, tag, audit=None):
         L.append('Cross-mesh lattice distance of the same arm between 64³ and 128³ (worst over cases, relative to $\\lVert u_0\\rVert$): ' +
                  '; '.join(f"{k.replace('|', ' ')} {sci(v['worst'])}" for k, v in sorted(d['cross_mesh'].items())
                            if k.split('|')[-1] in ('conv',) or any(r.get('dep') and r['dep']['arm'] == k.split('|')[-1] for r in recs)) + '.\n')
+    if tag == 'j4':
+        W = {(r['n'], r['Rp']): r for r in recs if r['bank'] == 'W1024'}
+        xm = d.get('cross_mesh', {})
+        cm = {R_: xm.get(f'W1024|R{R_}_k4|conv', {}).get('worst') for R_ in (256, 512, 768, 1024)}
+        nn = max(n for n, _ in W)
+        L.append("**What the 3D dial says (PROVISIONAL, benchmark-relative, solver per A8):**\n")
+        L.append(f"- **Widening the 3D bank does not lower the rollout error against this reference.** Converged-rollout median at "
+                 f"{nn - 1}³: " + ', '.join(f"$R'={R_}$ {pct(W[(nn, R_)]['conv_med'])}" for R_ in (256, 512, 768, 1024) if (nn, R_) in W)
+                 + '; worst: ' + ', '.join(f"{pct(W[(nn, R_)]['conv_worst'])}" for R_ in (256, 512, 768, 1024) if (nn, R_) in W)
+                 + f" (non-monotone). The projection floor against the same reference halves ({pct(W[(nn, 512)]['floor'], 2)} → "
+                 f"{pct(W[(nn, 1024)]['floor'], 2)}), so the extra columns represent the reference better but the reduced "
+                 "dynamics do not deliver it. *Hypothesis, not isolated here:* the backward-Euler time error at $\\Delta t=0.01$ "
+                 "(the reference uses $\\Delta t/4$) dominates beyond $R'\\approx512$, as the 2D S-vs-ST comparison suggests; a "
+                 "space-only 3D reference would test it.")
+        kc = {(n_, R_): d['meshes'][str(n_)]['banks']['W1024']['settings'][f'R{R_}_k4']['gates']['converged']
+              for n_ in sorted({n for n, _ in W}) for R_ in (256, 512, 768, 1024)
+              if f'R{R_}_k4' in d['meshes'][str(n_)]['banks']['W1024']['settings']}
+        L.append("- **The registered verdict H4 is unavailable** wherever K-conv fails. Gauss-$48^3$ vs Gauss-$56^3$ rollout "
+                 "distance (bar " + sci(next(iter(kc.values()))['bar']) + "): " +
+                 '; '.join(f"{n_ - 1}³ $R'={R_}$ {sci(g_['check_worst_distance'])} ({'pass' if g_['passed'] else 'fail'})"
+                           for (n_, R_), g_ in kc.items()) + ". The wide-bank rollouts are more sensitive to small quadrature "
+                 "differences than the $R'\\le512$ ones.")
+        L.append("- **Mesh dependence grows with width:** worst cross-mesh distance (64³ vs 128³) of the converged rollout "
+                 + ', '.join(f"$R'={R_}$ {sci(v)}" for R_, v in cm.items() if v is not None) + '.')
+        L.append("- **The new bank's 512-column prefix is no better than `model_M2`** at equal width (worst "
+                 + ', '.join(f"{n - 1}³: {pct(W[(n, 512)]['conv_worst'])} vs "
+                             f"{pct(next(r for r in recs if r['bank'] == 'M2' and r['n'] == n and r['Rp'] == 512)['conv_worst'])}"
+                             for n in sorted({n for n, _ in W})) + '; medians ' +
+                 ', '.join(f"{n - 1}³: {pct(W[(n, 512)]['conv_med'])} vs "
+                           f"{pct(next(r for r in recs if r['bank'] == 'M2' and r['n'] == n and r['Rp'] == 512)['conv_med'])}"
+                           for n in sorted({n for n, _ in W})) + ').')
+        t1024 = W[(nn, 1024)]['tensor_bytes']
+        L.append("- **Memory:** the tensor needs $8MR'^2$ bytes: " + gb(t1024) + f" at $R'=1024$ ($M={W[(nn, 1024)]['M']}$); "
+                 f"extrapolated with $M=4R'$, {gb(8 * 4 * 2048 ** 3)} at $R'=2048$ (computed). The off-mesh rule at $R'=1024$ "
+                 "(gate-ignored diagnostic) needs " + (gb(W[(nn, 1024)]['raw']['bytes']) if W[(nn, 1024)].get('raw') else '–')
+                 + ", so storage is no longer the binding constraint; accuracy and cost are.\n")
     return recs
 
 
@@ -533,6 +594,12 @@ def plots_3d(recs, tag):
                 ax.plot([r['Rp'] for r in rs], [r['ms'] for r in rs], color=SERIES[i % 4], lw=2, marker=MARKERS[i % 4], ms=7,
                         label=f'{bn}, {n - 1}³')
                 i += 1
+    for n in sorted({r['n'] for r in recs}):
+        rr = sorted([r for r in recs if r['n'] == n and r['kappa'] == 4 and not r['ms'] and r.get('raw') and r['tv']],
+                    key=lambda r: r['Rp'])
+        if rr:
+            ax.plot([r['Rp'] for r in rr], [r['raw']['ms'] for r in rr], color=INK2, lw=0, marker='o', ms=8,
+                    markerfacecolor='none', markeredgewidth=2, label=f'{n - 1}³ gate-ignored diagnostic (K-conv failed)')
     ax.set_xticks(sorted({r['Rp'] for r in recs}))
     style(ax, f"3D query time of the deployed rule vs R'\n(per-setting A–B–A medians, {recs[0]['gpu']}; K-time-valid jobs only)", "R'",
           'median ms per query')
@@ -584,6 +651,10 @@ def plots_3d(recs, tag):
     if rs:
         ax.plot([r['Rp'] for r in rs], [r['bytes'] / 1e9 for r in rs], color=SERIES[0], lw=0, marker=MARKERS[0], ms=8,
                 label='off-mesh rule at $m^\\star$ (measured settings)')
+    rr = sorted([r for r in recs if r['kappa'] == 4 and not r['bytes'] and r.get('raw')], key=lambda r: r['Rp'])
+    if rr:
+        ax.plot([r['Rp'] for r in rr], [r['raw']['bytes'] / 1e9 for r in rr], color=SERIES[0], lw=0, marker='o', ms=8,
+                markerfacecolor='none', markeredgewidth=2, label='off-mesh, gate-ignored diagnostic rule (K-conv failed)')
     ax.axhline(141, color=INK2, lw=1, ls='--')
     ax.annotate('H200 memory (141 GB)', (xs[0], 141), textcoords='offset points', xytext=(0, 4), color=INK2, fontsize=8)
     ax.set_yscale('log')
@@ -601,7 +672,7 @@ def main():
          '**Status: PROVISIONAL** — every accuracy number is scored against first-order references (the second-order '
          'references lane has not run); verdicts are benchmark-relative. Selection used validation cohorts only; no test '
          'cohort was opened. Every number below is generated by `make_report.py` from the run JSONs; the pre-registration '
-         'is `DESIGN.md` (amendments A0–A5).\n']
+         'is `DESIGN.md` (amendments A0–A8).\n']
     d1 = load('runs/j1/archive/output/result.json')
     a1 = load('checks/j1-audit.json')
     res = {}
@@ -616,6 +687,73 @@ def main():
     d4 = load('runs/j4/archive/output/result.json')
     r4 = section_3d(d4, '3D: the scaling law on the wider bank (1c)', L, 'j4', audit=load('checks/j4-audit.json'))
     plots_3d(r4, 'j4')
+    # ---------------- answers in brief + jobs + what went wrong (inserted after the title block)
+    B = ['## Answers in brief (all PROVISIONAL, first-order references)\n']
+    if d1:
+        S, by, h3 = res['2d']
+        a_, b_ = by[(512, 4)], by[(384, 4)]
+        B.append(f"- **1a, 2D dial ($R'$ = 128…512 at $M=4R'$, $1024^2$):** H1 ($R'=512$ vs 384) against ST: "
+                 f"*{verdict(a_, b_, 0.9, 'ST')}*; against S: *{verdict(a_, b_, 0.9, 'S')}*. Against the space-only reference S "
+                 f"the worst error falls from {pct(by[(128, 4)]['dep_S'][0])} ($R'=128$) to {pct(b_['dep_S'][0])} ($R'=384$) and "
+                 f"rises to {pct(a_['dep_S'][0])} at $R'=512$, while the query time rises from {by[(128, 4)]['dep_ms_final']:.0f} ms "
+                 f"to {b_['dep_ms_final']:.0f} and {a_['dep_ms_final']:.0f} ms. The 2D dial stops at $R'=384$ on this bank; "
+                 "against ST the median is flat (time-step error, hypothesis).")
+        u = [k for k, v in h3.items() if v['useful']]
+        B.append("- **1d, test-count trim:** the registered mechanism (smaller $M$ → fewer quadrature points) is "
+                 "**contradicted** in 2D and 3D: $m^\\star$ does not fall with $M$. 2D: useful under the registered ST criterion "
+                 "only at " + (', '.join(f"$R'={k[0]}$, $\\kappa={k[1]}$" for k in u) or 'no setting') +
+                 ", and every trim worsens the error against S. 3D (post-hoc selection, A7): no trim meets the accuracy bar.")
+    if res.get('train'):
+        f129 = t['floors_full']['129']
+        B.append(f"- **1b, wider 3D bank ($R=1024$, width 2048, baseline recipe, single seed):** trained in "
+                 f"{t['seconds'] / 3600:.2f} H200-hours; all acceptance checks pass; the worst span floor on bank-validation "
+                 f"fields at 129 nodes falls {pct(f129['512']['worst'])} → {pct(f129['768']['worst'])} → "
+                 f"{pct(f129['1024']['worst'])} for $R'$ = 512 → 768 → 1024.")
+    if r4:
+        W = {(r['n'], r['Rp']): r for r in r4 if r['bank'] == 'W1024'}
+        nn = max(n for n, _ in W)
+        B.append(f"- **1c, 3D scaling law (64³, 128³):** the registered verdict H4 is **unavailable** (the converged-rule "
+                 f"check fails at $R'\\ge768$). Diagnostics: the converged-rollout median error at {nn - 1}³ is "
+                 + ', '.join(f"{pct(W[(nn, R_)]['conv_med'])}" for R_ in (256, 512, 768, 1024))
+                 + f" for $R'$ = 256, 512, 768, 1024, although the projection floor halves; widening the 3D bank does not "
+                 "lower the rollout error against this reference. Off-mesh storage stays small ("
+                 + (gb(W[(nn, 1024)]['raw']['bytes']) if W[(nn, 1024)].get('raw') else '–') + f" at $R'=1024$) where the "
+                 f"tensor would need {gb(W[(nn, 1024)]['tensor_bytes'])}.")
+    B.append('')
+    jobs = [('J1 2D grid', d1, 'runs/j1/archive/output/result.json'), ('smoke s1 (2D)', load('runs/s1/archive/output/result.json'), ''),
+            ('J3b training', t, ''), ('smoke s2c (3D trim)', load('runs/s2c/archive/output/result.json'), ''),
+            ('J2 3D trim', load('runs/j2/archive/output/result.json'), ''),
+            ('smoke s4d (J4)', load('runs/s4d/archive/output/result.json'), ''),
+            ('smoke s4e (J4, A8)', load('runs/s4e/archive/output/result.json'), ''), ('J4 3D dial', d4, '')]
+    B.append('### Jobs (namespace `/cluster/tufts/paralab/tawal01/jcpwide/`, all collected and removed)\n')
+    B.append('| job | Slurm id | GPU | commit | hours |')
+    B.append('|---|---|---|---|---|')
+    for nm, j, _ in jobs:
+        if j:
+            hrs = (j.get('elapsed_seconds') or j.get('seconds') or 0) / 3600
+            B.append(f"| {nm} | {j.get('job_id')} | {j.get('gpu')} | `{(j.get('commit') or '')[:9]}` | {hrs:.2f} |")
+    B.append('\nAttempts that produced no result (logs or audit notes committed): `j3` (5012802, exit 127: no `/usr/bin/time` on '
+             'compute nodes, nothing ran); `s2` (5018586, stopped at gate G1, see A6); `s2b`, `s4`, `s4b`, `s4c` (cancelled '
+             'before starting: queue re-routing or superseded code).\n')
+    B.append('### What was wrong, changed or retracted\n')
+    s2c = load('runs/s2c/archive/output/result.json')
+    g1 = s2c['meshes']['65']['banks']['M2']['gates'] if s2c else {}
+    B.append('- **A6:** gate G1 was first evaluated at corner Gauss points where the 2nd-order finite difference itself has '
+             f"{sci(g1.get('G1_converged_points_fd2_diag'))} truncation error (bar 1e-6); the gate (bar unchanged) now uses the "
+             f"vendored point set ({sci(g1.get('G1_derivative_vs_fd'))}) plus a 4th-order check "
+             f"({sci(g1.get('G1_converged_points_fd4'))}).")
+    B.append('- **A7 (post hoc for J2):** the 3D eligibility rule was implemented per rollout instead of pooled over the '
+             "cohort as the cited contract says; J2's selection is re-selected offline and shown as-run and amended side by "
+             "side. A7 was written after J2's first setting log had been read.")
+    B.append("- **A8:** at $R'=1024$ the vendored solver missed stationarity on the steps just after its 3-step adaptive "
+             "phase; J4 uses 6 adaptive steps for every arm, so J4's numbers are not directly comparable with J2's.")
+    B.append('- **1d mechanism retracted:** the design predicted that a smaller test count needs fewer quadrature points; '
+             'the data contradict it in 2D and 3D.')
+    B.append('- **Training RSS sidecar** recorded nothing in J3b (wrong PID without `/usr/bin/time`); host memory came '
+             'from `sstat`/`sacct` instead (`runs/j3b_rss/`).')
+    B.append("- **2D \"dial extends\" expectation retracted:** $R'=512$ is worse than 384 against S on most cases "
+             '(conditioning growth is a hypothesis, not a demonstrated cause).\n')
+    L[2:2] = B
     L.append(GLOSSARY)
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')
     print('report.md written;', 'plots:', sorted(p.name for p in PLOTS.glob('*.png')) if PLOTS.exists() else [])

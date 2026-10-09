@@ -1,0 +1,7 @@
+{"source": "smoke s4e, job 5022113 (H100): largest setting (129 nodes, W1024, R'=1024, kappa 4, M=4097) 300 s for 4 validation + 4 certification cases + 2-case timing; per-case rollout sum over all arms 9.4 s; compile ~ 140 s; peak device 69.6 GB",
+ "per_setting_largest_s_H100": "rollouts 88 x 9.4 = 830; compile 140; rho (600 states) <= 300; timing (16 cases x 2 reps x 2 phases + 2 warm passes) ~ 770; total ~ 2000",
+ "relative_weights": "per mesh: W1024 R' 1024 (1.0), 768 (~0.6), 512 (~0.3), 256 (~0.12); M2 512 (~0.3), 256 (~0.12): 2.44 x 2000 s = 1.4 h per mesh",
+ "tensor_tables": "two 512-column tensor tables per mesh (one per bank): 65 nodes ~10 s each (J2), 129 nodes est. <= 2 min each",
+ "final_panels": "6 deployed subjects x 16 cases x 2 reps x 2 phases x <= 0.5 s + FOM phase ~ 400 s per mesh",
+ "projection_hours": "~3.1 (H100 rates; upper bound for an H200)",
+ "requested_hours": 12, "rule": "A4: max(2 x projection = 6.2 h, A3 request 12 h) = 12 h", "gpu": "H200 (coordinator: > 65 GB peak)"}

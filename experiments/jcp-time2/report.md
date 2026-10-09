@@ -566,6 +566,162 @@ Matched comparison (A9.4; "best among the listed configurations" only): for each
 
 ![fom_vs_rom.png](plots/fom_vs_rom.png)
 
+## Burgers 3D (`b3d65`, $65^3$, validation cohort 923801, first 16 cases; A10.2, A13)
+
+Job 5020049 on NVIDIA H200; audit: pass. Reference: the 3D lane's 513-node backward-Euler solution at $\Delta t=\Delta t_0/4$ on the 65-node lattice. **Errors against it are reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL: by A13 they cannot rank first- against second-order schemes.** The time-stepping evidence in 3D is the anchor discrepancy (distance to GAL-BDF2 at $\Delta t_0/16$, on the $63^3$ lattice), the observed orders and the cost. Comparator: the deployed fixed-sweep BE at $\Delta t_0=0.01$; timing: first four cases × 3 repetitions, paired A–B–A against it.
+
+### `gl24_R512`
+
+Deployed fixed-sweep BE at $\Delta t_0$: error worst / median 3.164 / 1.153 % (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL); anchor discrepancy median 1.870 %; 35.5 ms median; distance from the generic adaptive BE at $\Delta t_0$: median 0.000 %.
+
+| form | scheme | $\Delta t/\Delta t_0$ | error worst (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL) | error median | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |
+|---|---|---|---|---|---|---|---|---|---|
+| LSPG | BE | 0.125 | 4.880 | 0.718 | 0.257 | 16/16 | 16/16 | — | — |
+| LSPG | BE | 0.25 | 4.428 | 0.633 | 0.508 | 16/16 | 16/16 | — | — |
+| LSPG | BE | 0.5 | 3.737 | 0.674 | 0.987 | 16/16 | 16/16 | 3.192 | 109.2 |
+| LSPG | BE | 1 | 3.164 | 1.153 | 1.870 | 16/16 | 16/16 | 1.700 | 58.4 |
+| LSPG | BE | 2.5 | 5.339 | 3.279 | 4.156 | 16/16 | 16/16 | 1.021 | 34.9 |
+| LSPG | BE | 5 | 9.559 | 6.266 | 7.165 | 16/16 | 16/16 | 0.858 | 29.3 |
+| LSPG | CN | 0.125 | 5.361 | 0.885 | unresolved in most cases | 2/16 | 16/16 | — | — |
+| LSPG | CN | 0.25 | 5.315 | 0.887 | unresolved in most cases | 3/16 | 16/16 | — | — |
+| LSPG | CN | 0.5 | 5.232 | 0.897 | 0.028 | 15/16 | 16/16 | 3.113 | 108.7 |
+| LSPG | CN | 1 | 5.108 | 0.951 | 0.089 | 16/16 | 16/16 | 1.673 | 58.2 |
+| LSPG | CN | 2.5 | 4.974 | 1.342 | 0.533 | 16/16 | 16/16 | 1.094 | 37.8 |
+| LSPG | CN | 5 | 5.230 | 2.426 | 2.040 | 16/16 | 16/16 | 1.125 | 38.3 |
+| LSPG | CN-R | 0.125 | 5.357 | 0.877 | unresolved in most cases | 2/16 | 16/16 | — | — |
+| LSPG | CN-R | 0.25 | 5.299 | 0.859 | 0.039 | 16/16 | 16/16 | — | — |
+| LSPG | CN-R | 0.5 | 5.171 | 0.823 | 0.156 | 16/16 | 16/16 | 3.128 | 108.7 |
+| LSPG | CN-R | 1 | 4.879 | 0.748 | 0.595 | 16/16 | 16/16 | 1.692 | 59.4 |
+| LSPG | CN-R | 2.5 | 4.698 | 2.692 | 3.149 | 16/16 | 16/16 | 1.034 | 35.4 |
+| LSPG | CN-R | 5 | 9.559 | 5.918 | 6.641 | 16/16 | 16/16 | 0.856 | 29.7 |
+| LSPG | BDF2 | 0.125 | 5.343 | 0.882 | unresolved in most cases | 3/16 | 16/16 | — | — |
+| LSPG | BDF2 | 0.25 | 5.279 | 0.872 | 0.029 | 16/16 | 16/16 | — | — |
+| LSPG | BDF2 | 0.5 | 5.143 | 0.863 | 0.115 | 16/16 | 16/16 | 3.196 | 109.3 |
+| LSPG | BDF2 | 1 | 4.801 | 0.840 | 0.438 | 16/16 | 16/16 | 1.686 | 58.0 |
+| LSPG | BDF2 | 2.5 | 3.691 | 1.726 | 2.165 | 16/16 | 16/16 | 1.061 | 36.7 |
+| LSPG | BDF2 | 5 | 8.123 | 4.858 | 5.303 | 16/16 | 16/16 | 0.829 | 28.5 |
+| GAL | BE | 0.125 | 4.971 | 0.718 | 0.256 | 16/16 | 16/16 | — | — |
+| GAL | BE | 0.25 | 4.587 | 0.634 | 0.506 | 16/16 | 16/16 | — | — |
+| GAL | BE | 0.5 | 3.982 | 0.675 | 0.984 | 16/16 | 16/16 | 4.363 | 155.6 |
+| GAL | BE | 1 | 3.424 | 1.153 | 1.867 | 16/16 | 16/16 | 2.505 | 86.0 |
+| GAL | BE | 2.5 | 5.335 | 3.278 | 4.156 | 16/16 | 16/16 | 1.326 | 46.4 |
+| GAL | BE | 5 | 9.558 | 6.266 | 7.165 | 16/16 | 16/16 | 1.037 | 35.9 |
+| GAL | CN | 0.125 | 5.412 | 0.886 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | CN | 0.25 | 5.414 | 0.889 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | CN | 0.5 | 5.422 | 0.900 | 0.030 | 13/16 | 16/16 | 4.276 | 154.2 |
+| GAL | CN | 1 | 5.452 | 0.957 | 0.086 | 16/16 | 16/16 | 2.516 | 86.0 |
+| GAL | CN | 2.5 | 5.591 | 1.350 | 0.532 | 16/16 | 16/16 | 1.472 | 50.3 |
+| GAL | CN | 5 | 5.573 | 2.438 | 2.043 | 16/16 | 16/16 | 1.291 | 44.1 |
+| GAL | CN-R | 0.125 | 5.408 | 0.878 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | CN-R | 0.25 | 5.398 | 0.860 | 0.039 | 16/16 | 16/16 | — | — |
+| GAL | CN-R | 0.5 | 5.358 | 0.823 | 0.156 | 16/16 | 16/16 | 4.275 | 152.0 |
+| GAL | CN-R | 1 | 5.210 | 0.748 | 0.594 | 16/16 | 16/16 | 2.514 | 86.2 |
+| GAL | CN-R | 2.5 | 4.694 | 2.692 | 3.149 | 16/16 | 16/16 | 1.349 | 48.4 |
+| GAL | CN-R | 5 | 9.558 | 5.918 | 6.640 | 16/16 | 16/16 | 1.042 | 35.7 |
+| GAL | BDF2 | 0.125 | 5.411 | 0.883 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | BDF2 | 0.25 | 5.407 | 0.875 | 0.027 | 16/16 | 16/16 | — | — |
+| GAL | BDF2 | 0.5 | 5.384 | 0.865 | 0.114 | 16/16 | 16/16 | 4.416 | 157.6 |
+| GAL | BDF2 | 1 | 5.194 | 0.844 | 0.438 | 16/16 | 16/16 | 2.514 | 86.3 |
+| GAL | BDF2 | 2.5 | 4.027 | 1.726 | 2.165 | 16/16 | 16/16 | 1.332 | 48.5 |
+| GAL | BDF2 | 5 | 8.122 | 4.858 | 5.303 | 16/16 | 16/16 | 1.023 | 35.0 |
+
+Observed order (16 cases: a claim needs ≥ 13 valid primary triples; the adjacent check is unresolved below 8 cases with both triples valid):
+
+| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid |
+|---|---|---|---|---|---|---|
+| LSPG | BE | order 1 | 0.93 | 16/16 | 0.89 | 16 |
+| LSPG | CN | not established | 1.83 | 16/16 | 1.97 | 16 |
+| LSPG | CN-R | order 2 | 1.94 | 16/16 | 1.90 | 16 |
+| LSPG | BDF2 | order 2 | 2.00 | 16/16 | 1.94 | 16 |
+| LSPG | TH06 | order 1 | 0.95 | 16/16 | 0.92 | 16 |
+| GAL | BE | order 1 | 0.94 | 16/16 | 0.89 | 16 |
+| GAL | CN | order 2 | 2.00 | 16/16 | 2.00 | 16 |
+| GAL | CN-R | order 2 | 1.97 | 16/16 | 1.91 | 16 |
+| GAL | BDF2 | order 2 | 2.01 | 16/16 | 1.94 | 16 |
+| GAL | TH06 | order 1 | 0.96 | 16/16 | 0.93 | 16 |
+
+- H1-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t_0$, median ≤ 0.7× and worst ≤ the deployed fixed-sweep BE against the reference-limited (BE reference at $\Delta t_0/4$)): **failed** (none).
+- H2-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t\ge2\Delta t_0$, worst and median ≤ deployed, paired ratio ≤ 0.75): **failed** (none).
+
+![error_vs_dt_3d_gl24_R512.png](plots/error_vs_dt_3d_gl24_R512.png)
+
+### `lat4096_R256`
+
+Deployed fixed-sweep BE at $\Delta t_0$: error worst / median 4.712 / 1.427 % (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL); anchor discrepancy median 1.866 %; 11.9 ms median; distance from the generic adaptive BE at $\Delta t_0$: median 0.000 %.
+
+| form | scheme | $\Delta t/\Delta t_0$ | error worst (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL) | error median | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |
+|---|---|---|---|---|---|---|---|---|---|
+| LSPG | BE | 0.125 | 6.363 | 1.021 | 0.258 | 16/16 | 16/16 | — | — |
+| LSPG | BE | 0.25 | 5.932 | 0.943 | 0.506 | 16/16 | 16/16 | — | — |
+| LSPG | BE | 0.5 | 5.291 | 0.951 | 0.982 | 16/16 | 16/16 | 3.155 | 36.9 |
+| LSPG | BE | 1 | 4.712 | 1.427 | 1.866 | 16/16 | 16/16 | 1.756 | 20.6 |
+| LSPG | BE | 2.5 | 5.870 | 3.377 | 4.161 | 16/16 | 16/16 | 1.036 | 12.5 |
+| LSPG | BE | 5 | 9.587 | 6.313 | 7.166 | 16/16 | 16/16 | 0.980 | 11.5 |
+| LSPG | CN | 0.125 | 6.811 | 1.146 | unresolved in most cases | 5/16 | 16/16 | — | — |
+| LSPG | CN | 0.25 | 6.751 | 1.146 | unresolved in most cases | 6/16 | 16/16 | — | — |
+| LSPG | CN | 0.5 | 6.637 | 1.150 | 0.029 | 16/16 | 16/16 | 3.141 | 36.8 |
+| LSPG | CN | 1 | 6.458 | 1.181 | 0.085 | 16/16 | 16/16 | 1.758 | 20.4 |
+| LSPG | CN | 2.5 | 6.234 | 1.541 | 0.542 | 16/16 | 16/16 | 1.124 | 13.1 |
+| LSPG | CN | 5 | 6.374 | 2.652 | 2.042 | 16/16 | 16/16 | 1.172 | 14.0 |
+| LSPG | CN-R | 0.125 | 6.807 | 1.140 | unresolved in most cases | 7/16 | 16/16 | — | — |
+| LSPG | CN-R | 0.25 | 6.736 | 1.121 | 0.042 | 16/16 | 16/16 | — | — |
+| LSPG | CN-R | 0.5 | 6.580 | 1.059 | 0.157 | 16/16 | 16/16 | 3.191 | 36.5 |
+| LSPG | CN-R | 1 | 6.252 | 0.990 | 0.593 | 16/16 | 16/16 | 1.759 | 20.2 |
+| LSPG | CN-R | 2.5 | 5.250 | 2.699 | 3.145 | 16/16 | 16/16 | 1.007 | 12.5 |
+| LSPG | CN-R | 5 | 9.587 | 5.921 | 6.653 | 16/16 | 16/16 | 0.984 | 11.7 |
+| LSPG | BDF2 | 0.125 | 6.787 | 1.142 | unresolved in most cases | 6/16 | 16/16 | — | — |
+| LSPG | BDF2 | 0.25 | 6.699 | 1.132 | 0.032 | 16/16 | 16/16 | — | — |
+| LSPG | BDF2 | 0.5 | 6.533 | 1.104 | 0.128 | 16/16 | 16/16 | 3.162 | 36.8 |
+| LSPG | BDF2 | 1 | 6.161 | 1.031 | 0.445 | 16/16 | 16/16 | 1.739 | 20.3 |
+| LSPG | BDF2 | 2.5 | 5.058 | 1.911 | 2.159 | 16/16 | 16/16 | 1.074 | 12.5 |
+| LSPG | BDF2 | 5 | 8.152 | 4.859 | 5.299 | 16/16 | 16/16 | 0.877 | 10.9 |
+| GAL | BE | 0.125 | 6.480 | 1.026 | 0.253 | 16/16 | 16/16 | — | — |
+| GAL | BE | 0.25 | 6.136 | 0.951 | 0.500 | 16/16 | 16/16 | — | — |
+| GAL | BE | 0.5 | 5.594 | 0.960 | 0.974 | 16/16 | 16/16 | 4.274 | 51.9 |
+| GAL | BE | 1 | 5.022 | 1.429 | 1.859 | 16/16 | 16/16 | 2.629 | 29.8 |
+| GAL | BE | 2.5 | 5.868 | 3.366 | 4.158 | 16/16 | 16/16 | 1.429 | 16.8 |
+| GAL | BE | 5 | 9.583 | 6.305 | 7.166 | 16/16 | 16/16 | 1.154 | 13.7 |
+| GAL | CN | 0.125 | 6.878 | 1.149 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | CN | 0.25 | 6.880 | 1.151 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | CN | 0.5 | 6.888 | 1.160 | 0.027 | 13/16 | 16/16 | 4.169 | 50.2 |
+| GAL | CN | 1 | 6.918 | 1.196 | 0.085 | 16/16 | 16/16 | 2.581 | 30.0 |
+| GAL | CN | 2.5 | 7.075 | 1.580 | 0.525 | 16/16 | 16/16 | 1.551 | 17.8 |
+| GAL | CN | 5 | 7.137 | 2.732 | 2.047 | 16/16 | 16/16 | 1.421 | 17.3 |
+| GAL | CN-R | 0.125 | 6.874 | 1.143 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | CN-R | 0.25 | 6.865 | 1.128 | 0.039 | 16/16 | 16/16 | — | — |
+| GAL | CN-R | 0.5 | 6.828 | 1.076 | 0.155 | 16/16 | 16/16 | 4.202 | 50.5 |
+| GAL | CN-R | 1 | 6.688 | 1.010 | 0.592 | 16/16 | 16/16 | 2.623 | 30.1 |
+| GAL | CN-R | 2.5 | 5.863 | 2.700 | 3.145 | 16/16 | 16/16 | 1.478 | 17.1 |
+| GAL | CN-R | 5 | 9.583 | 5.920 | 6.643 | 16/16 | 16/16 | 1.126 | 13.1 |
+| GAL | BDF2 | 0.125 | 6.877 | 1.147 | unresolved in most cases | 0/16 | 16/16 | — | — |
+| GAL | BDF2 | 0.25 | 6.874 | 1.140 | 0.027 | 16/16 | 16/16 | — | — |
+| GAL | BDF2 | 0.5 | 6.855 | 1.117 | 0.113 | 16/16 | 16/16 | 4.315 | 52.4 |
+| GAL | BDF2 | 1 | 6.702 | 1.064 | 0.434 | 16/16 | 16/16 | 2.598 | 29.7 |
+| GAL | BDF2 | 2.5 | 5.627 | 1.963 | 2.160 | 16/16 | 16/16 | 1.438 | 17.1 |
+| GAL | BDF2 | 5 | 8.144 | 4.860 | 5.300 | 16/16 | 16/16 | 1.154 | 13.4 |
+
+Observed order (16 cases: a claim needs ≥ 13 valid primary triples; the adjacent check is unresolved below 8 cases with both triples valid):
+
+| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid |
+|---|---|---|---|---|---|---|
+| LSPG | BE | order 1 | 0.93 | 16/16 | 0.88 | 16 |
+| LSPG | CN | not established | 1.27 | 16/16 | 1.74 | 16 |
+| LSPG | CN-R | order 2 | 1.88 | 16/16 | 1.89 | 16 |
+| LSPG | BDF2 | not established | 1.92 | 16/16 | 1.95 | 16 |
+| LSPG | TH06 | order 1 | 0.93 | 16/16 | 0.88 | 16 |
+| GAL | BE | order 1 | 0.94 | 16/16 | 0.89 | 16 |
+| GAL | CN | order 2 | 2.00 | 16/16 | 2.00 | 16 |
+| GAL | CN-R | order 2 | 1.97 | 16/16 | 1.92 | 16 |
+| GAL | BDF2 | order 2 | 2.01 | 16/16 | 1.96 | 16 |
+| GAL | TH06 | order 1 | 0.95 | 16/16 | 0.93 | 16 |
+
+- H1-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t_0$, median ≤ 0.7× and worst ≤ the deployed fixed-sweep BE against the reference-limited (BE reference at $\Delta t_0/4$)): **failed** (none).
+- H2-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t\ge2\Delta t_0$, worst and median ≤ deployed, paired ratio ≤ 0.75): **failed** (none).
+
+![error_vs_dt_3d_lat4096_R256.png](plots/error_vs_dt_3d_lat4096_R256.png)
+
+3D definitions: anchor discrepancies are on the $63^3$ lattice; a value is shown only when at least half the eligible cases are resolved (≥ 3× the per-case anchor uncertainty indicator), and the median is over the resolved cases; timing is over four cases × 3 repetitions.
+
 ## What is provisional, and why
 
 - Every error against ST, S or TX: the references are backward Euler in time and sign-upwind in space at $8192^2$. TX removes only the leading backward-Euler term and assumes the asymptotic regime. A second-order ROM can be closer to the true solution than ST is; its ST error then partly measures ST's own time error.

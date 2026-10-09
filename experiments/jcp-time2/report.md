@@ -14,7 +14,7 @@ Crank–Nicolson, Crank–Nicolson with a damped start, and BDF2 replace backwar
 
 - **2D `fast`** (Fibonacci 1597, $R'=128$): deployed BE at $\Delta t_0$ ST worst/median 4.637/1.035 %; LSPG CN at $\Delta t_0$ 5.171/0.419 % (paired time ratio 0.9933); LSPG CN at $2\Delta t_0$ 4.950/0.446 % (ratio 0.6142). Median anchor discrepancy (time-error estimate) 0.994 % → 0.036 % at $\Delta t_0$. H1 failed, H2 failed; orders: LSPG CN not established, LSPG CNR not established, LSPG BDF2 not established, GAL CN order 2, GAL BDF2 order 2.
 - **2D `acc`** (Gauss $96^2$, $R'=384$): deployed BE at $\Delta t_0$ ST worst/median 2.747/0.906 %; LSPG CN at $\Delta t_0$ 1.796/0.098 % (paired time ratio 1.0001); LSPG CN at $2\Delta t_0$ 1.803/0.259 % (ratio 0.5701). Median anchor discrepancy (time-error estimate) 0.978 % → 0.026 % at $\Delta t_0$. H1 passed, H2 passed; orders: LSPG CN not established, LSPG CNR order 2, LSPG BDF2 order 2, GAL CN order 2, GAL BDF2 order 2.
-- **2D `wide`** (gauss128, $R'=512$): deployed BE at $\Delta t_0$ ST worst/median 2.837/0.907 %; LSPG CN at $\Delta t_0$ 2.166/0.111 % (paired time ratio 1.0146); LSPG CN at $2\Delta t_0$ 3.481/0.334 % (ratio 0.6342). Median anchor discrepancy (time-error estimate) 0.978 % → 0.039 % at $\Delta t_0$. H1 passed, H2 passed; orders: LSPG CN not established, LSPG CNR order 2, LSPG BDF2 not established, GAL CN order 2, GAL BDF2 order 2.
+- **2D `wide`** (Gauss $128^2$, $R'=512$): deployed BE at $\Delta t_0$ ST worst/median 2.837/0.907 %; LSPG CN at $\Delta t_0$ 2.166/0.111 % (paired time ratio 1.0146); LSPG CN at $2\Delta t_0$ 3.481/0.334 % (ratio 0.6342). Median anchor discrepancy (time-error estimate) 0.978 % → 0.039 % at $\Delta t_0$. H1 passed, H2 passed; orders: LSPG CN not established, LSPG CNR order 2, LSPG BDF2 not established, GAL CN order 2, GAL BDF2 order 2.
 - **Fair full-order comparison** (`fom1k`): `rom|acc|gauss96|LSPG|BE|1` vs the cheapest full-order configuration of equal or better cohort-worst ST error (`fom|CNR|2`): 1.76× (same job, same GPU; listed configurations only).
 - **Fair full-order comparison** (`fom1k`): `rom|acc|gauss96|LSPG|CN|2` vs the cheapest full-order configuration of equal or better cohort-worst ST error (`fom|CN|1`): 3.65× (same job, same GPU; listed configurations only).
 - **3D `gl24_R512`**: median anchor discrepancy of LSPG CN at $\Delta t_0$ 0.089 % (resolved cases), paired time ratio to the deployed fixed-sweep BE 1.673; orders: LSPG CN not established, LSPG BDF2 order 2, GAL CN order 2, GAL BDF2 order 2. Reference errors in 3D are reference-limited (A13).
@@ -372,7 +372,7 @@ Old method (deployed mesh lattice $63^2$, LSPG), worst / median ST error (%, PRO
 
 ![error_vs_cost_acc.png](plots/error_vs_cost_acc.png)
 
-## Setting `wide` (gauss128, $R'=512$, $M=2048$, $L=1024$, 38 cases)
+## Setting `wide` (Gauss $128^2$, $R'=512$, $M=2048$, $L=1024$, 38 cases)
 
 **Secondary setting (DESIGN A7).** Its rule (Gauss $128^2$) was not selected by any study at $R'=512$; the quadrature-sensitivity column (Gauss $192^2$) is an indicator, not a certificate, and exists only for the production arms with $\Delta t\ge\Delta t_0/2$.
 

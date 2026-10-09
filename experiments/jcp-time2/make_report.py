@@ -25,7 +25,7 @@ NAMES = dict(BE='BE', CN='CN', CNR='CN-R', BDF2='BDF2', TH06='TH06')
 COLORS = dict(BE='#2a78d6', CN='#eb6834', CNR='#1baf7a', BDF2='#eda100', TH06='#e87ba4')
 FORMS = ['LSPG', 'GAL']
 STYLE = dict(LSPG=dict(ls='-', marker='o'), GAL=dict(ls='--', marker='s'))
-RULE_NAME = dict(gauss96='Gauss $96^2$', fib1597='Fibonacci 1597', gauss192='Gauss $192^2$', fib6765='Fibonacci 6765',
+RULE_NAME = dict(gauss96='Gauss $96^2$', gauss128='Gauss $128^2$', fib1597='Fibonacci 1597', gauss192='Gauss $192^2$', fib6765='Fibonacci 6765',
                  lat64='mesh lattice $63^2$')
 
 

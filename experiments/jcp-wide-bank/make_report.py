@@ -273,6 +273,12 @@ def section_2d(d, audit, L):
         u = [k for k, v in h3.items() if v['useful']]
         L.append(f"- **Trim:** useful under the registered ST criterion only at {', '.join(f"$R'={k[0]}$, $\\kappa={k[1]}$" for k in u) or 'no setting'}; "
                  "every trim increases the worst error against S, so the acceptance is specific to the space+time reference.\n")
+    L.append('Registered solver/memory diagnostics (2D, deployed rule): median LM iterations per query, budget/damping-limit '
+             'exits, sampled peak device GB per setting: ' + '; '.join(
+                 f"{e['key']} {np.median([r['iterations_total'] for r in rows if r['setting'] == e['key'] and e['deployed'] and r['arm'] == e['deployed']['arm']]):.0f} it, "
+                 f"{sum(r['exits']['budget'] + r['exits']['damping_limit'] for r in rows if r['setting'] == e['key'] and e['deployed'] and r['arm'] == e['deployed']['arm'])} exits, "
+                 f"{e['memory'].get('interval', {}).get('device_bytes_in_use_max', 0) / 1e9:.1f} GB"
+                 for e in S.values() if e['deployed']) + '.\n')
     plots_2d(S, by, Rps, tv)
     return S, by, h3
 
@@ -358,6 +364,7 @@ def section_train(t, L):
     for n in ('33', '65', '129'):
         for r in ('256', '512', '768', '1024'):
             rows.append((n, r, ff.get(n, {}).get(r, {}).get('worst'), cf.get(n, {}).get(r, {}).get('worst')))
+    L.append('Span floors on native-grid bank-validation fields (not accuracy against the refined reference):\n')
     L.append('| mesh nodes | $R\'$ | new bank: worst full-grid floor | `model_M2`: same fields |')
     L.append('|---|---|---|---|')
     for n, r, a, c in rows:
@@ -456,8 +463,8 @@ def section_3d(d, title, L, tag, audit=None):
              '$m_\\rho$ ($\\rho$ criterion only) per family, median LM iterations per query of the converged rollout, '
              'sampled peak device memory of the setting, and the condition number of $A$.\n')
     L.append('| mesh nodes | bank | setting | $m_d$ lattice / Gauss | $m_\\rho$ lattice / Gauss | LM iterations per query | '
-             'peak device GB (sampled) | cond $A$ |')
-    L.append('|---|---|---|---|---|---|---|---|')
+             'peak device GB (sampled) | cond $A$ | converged rollout: non-stationary / reason-3 steps / rejected sweeps (all cases) |')
+    L.append('|---|---|---|---|---|---|---|---|---|')
     for n, m_ in d['meshes'].items():
         for bn, b in m_['banks'].items():
             for key, S in b['settings'].items():
@@ -465,7 +472,9 @@ def section_3d(d, title, L, tag, audit=None):
                 L.append(f"| {n} | {bn} | {key} | {e_.get('primary|lat', {}).get('m_d')} / {e_.get('primary|gauss', {}).get('m_d')} | "
                          f"{e_.get('rho_only|lat', {}).get('m_rho')} / {e_.get('rho_only|gauss', {}).get('m_rho')} | "
                          f"{S['arms']['conv']['lm_iterations_per_query_median']:.0f} | "
-                         f"{S.get('memory', {}).get('device_bytes_in_use_max', 0) / 1e9:.1f} | {S['A_condition']:.1f} |")
+                         f"{S.get('memory', {}).get('device_bytes_in_use_max', 0) / 1e9:.1f} | {S['A_condition']:.1f} | "
+                         f"{S['arms']['conv']['reason_counts'].get('0', 0)} / {S['arms']['conv']['reason_counts'].get('3', 0)} / "
+                         f"{sum(sum(c.get('rejected', [])) for c in S['arms']['conv']['cases'])} |")
     L.append('')
     tv = d.get('timing_valid_jobwide')
     by = {(r['n'], r['bank'], r['Rp'], r['kappa']): r for r in recs}
@@ -660,7 +669,7 @@ def plots_3d(recs, tag, posthoc=False):
         for fam, key in (('lattice', 'mlat'), ('Gauss', 'mgau')):
             rs = sorted([r for r in recs if r['n'] == nmax and r['bank'] == bn and r[key]], key=lambda r: r['M'])
             if rs:
-                ax.plot([r['M'] for r in rs], [r[key] for r in rs], color=SERIES[i % 4], lw=1, ls=':', marker=MARKERS[i % 4],
+                ax.plot([r['M'] for r in rs], [r[key] for r in rs], color=SERIES[i % 4], lw=0, marker=MARKERS[i % 4],
                         ms=8, label=f'{bn}, {fam}')
                 for r in rs:
                     ax.annotate(f"R'={r['Rp']}", (r['M'], r[key]), textcoords='offset points', xytext=(5, 4), fontsize=7,
@@ -720,7 +729,7 @@ def plots_3d(recs, tag, posthoc=False):
                     key=lambda r: r['Rp'])
         if rr:
             ax.plot([r['Rp'] for r in rr], [r['raw']['bytes'] / 1e9 for r in rr], color=SERIES[0], lw=0, marker=MARKERS[2 * k_ % 4],
-                    ms=9, markerfacecolor='none', markeredgewidth=2, label=f'off-mesh, gate-ignored diagnostic rule, {bn}')
+                    ms=9, markerfacecolor='none', markeredgewidth=2, label=f'off-mesh, gate-ignored diagnostic rule, {bn}, {nmax - 1}³')
     ax.axhline(141, color=INK2, lw=1, ls='--')
     ax.annotate('H200 total device memory (141 GB, for scale)', (xs[0], 141), textcoords='offset points', xytext=(0, 4),
                 color=INK2, fontsize=8)
@@ -735,7 +744,7 @@ def main():
     L = ['# C1 wide bank: the accuracy dial with wider banks under off-mesh quadrature\n',
          'Lane C1 of the JCP campaign: how far the accuracy dial extends when the ordered coordinate-network bank is '
          'widened, now that the off-mesh rule stores $m(2R\'+M)$ numbers instead of the $MR\'^2$ tensor. '
-         '**Status: PROVISIONAL** — every accuracy number is scored against first-order references (the second-order '
+         '**Status: PROVISIONAL** — every rollout accuracy number is scored against first-order references (the second-order '
          'references lane has not run); verdicts are benchmark-relative. Selection used validation cohorts only; no test '
          'cohort was opened. Every measured number below is generated by `make_report.py` from the run JSONs (registered '
          'constants come from `DESIGN.md`; Slurm ids of failed attempts from the job log); 2D/3D errors are against the '
@@ -805,9 +814,9 @@ def main():
         if j:
             hrs = (j.get('elapsed_seconds') or j.get('seconds') or 0) / 3600
             B.append(f"| {nm} | {j.get('job_id')} | {j.get('gpu')} | `{(j.get('commit') or '')[:9]}` | {hrs:.2f} |")
-    B.append('\nAttempts that produced no result (logs or audit notes committed): `j3` (5012802, exit 127: no `/usr/bin/time` on '
-             'compute nodes, nothing ran); `s2` (5018586, stopped at gate G1, see A6); `s2b`, `s4`, `s4b`, `s4c` (cancelled '
-             'before starting: queue re-routing or superseded code).\n')
+    led = load('runs/JOB-LEDGER.json') or {}
+    B.append('\nAttempts that produced no result (from `runs/JOB-LEDGER.json`): ' +
+             '; '.join(f"`{x['attempt']}` ({x['slurm_id']}): {x['outcome']}" for x in led.get('no_result', [])) + '.\n')
     B.append('### What was wrong, changed or retracted\n')
     s2c = load('runs/s2c/archive/output/result.json')
     g1 = s2c['meshes']['65']['banks']['M2']['gates'] if s2c else {}
@@ -819,7 +828,8 @@ def main():
              "cohort as the cited contract says; J2's selection is re-selected offline and shown as-run and amended side by "
              "side. A7 was written after J2's first setting log had been read.")
     B.append("- **A8:** at $R'=1024$ the vendored solver missed stationarity on the steps just after its 3-step adaptive "
-             "phase; J4 uses 6 adaptive steps for every arm, so J4's numbers are not directly comparable with J2's.")
+             "phase; J4 uses 6 adaptive steps for every arm, so J4's numbers are not directly comparable with J2's or with "
+             "the 2026-10-01 3D quadrature lane's (both 3 adaptive steps); any such comparison in this report is qualitative.")
     B.append('- **1d mechanism retracted:** the design predicted that a smaller test count needs fewer quadrature points; '
              'the data contradict it in 2D and 3D.')
     B.append('- **Training RSS sidecar** recorded nothing in J3b (wrong PID without `/usr/bin/time`); host memory came '
@@ -835,7 +845,7 @@ def main():
 GLOSSARY = r"""## Glossary
 
 - **bank, $R'$**: the frozen coordinate network $\hat G(x)$ whose columns are ordered by importance; a solve uses the first $R'$ columns, $u(x)=\hat G_{R'}(x)c$. **Wider bank**: more columns available.
-- **$M$, $\kappa=M/R'$**: number of sine test functions in the reduced residual and its ratio to $R'$; $\kappa=4$ is the existing convention. **Trim**: using $\kappa=2$ or 3.
+- **$M$, $\kappa$**: number of sine test functions in the reduced residual and its nominal ratio to $R'$ ($M=\kappa R'$ exactly in 2D; in 3D completed to the end of an eigenvalue shell, see below); $\kappa=4$ is the existing convention. **Trim**: using $\kappa=2$ or 3.
 - **off-mesh rule, $m$**: a fixed quadrature (Gauss $p^d$ or a rank-1 lattice / Fibonacci lattice) with $m$ points placed independently of the mesh, evaluating the advection term with the bank's exact gradient. **tensor**: the precomputed quadratic form it replaces, $MR'^2$ numbers.
 - **converged rollout**: the same solve with a very fine rule (2D Gauss $640^2$, 3D Gauss $48^3$/$56^3$); its check uses a finer or coarser rule (2D $768^2$, 3D $40^3$/$48^3$).
 - **$m^\star$**: the smallest rule in a family's ladder whose rollouts are eligible on every validation case, stay within $\tau$ of the converged rollout, and whose $\rho$ is at most 0.116. **$\tau$**: $2.5\times10^{-4}$ (primary) or $10^{-3}$ (secondary), relative to $\lVert u_0\rVert$. **$m_d$ / $m_\rho$**: the sizes chosen by only the distance or only the $\rho$ criterion (diagnostics).

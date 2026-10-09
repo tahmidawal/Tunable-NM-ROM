@@ -432,6 +432,19 @@ def main():
     if TM:
         w(f"| `{a.eval}` (timing) | paired timing | {TM['gpu']} | {TM['job_id']} | m* rules of every bank |")
     w('')
+    w('## Answers in brief (generated; PROVISIONAL, development/validation, one seed per arm)\n')
+    if all(x in M for x in ('base', 'frozen_lane', 'frozen_deployed', 'sob01', 'sig1', 'sig2')):
+        mB = lambda b, s, k: M[b][s][k]
+        R_ = lambda b, s, r, p='gref': E[b]['settings'][s]['rho'][r][p]['max']
+        w(f"- **Points needed at the pre-registered bars do not move.** In `acc` every bank needs Gauss 56² ({mB('base','acc','mstar')['gref|G|0.06']} points) for worst ρ ≤ 0.06 on its own reached states, and Gauss 32² gives worst ρ {fmt(R_('base','acc','gauss32'))} for all of them. The onset is set by the M={E['base']['settings']['acc']['M']} sine tests, not by the bank: restricted to the first 320 tests, Gauss 32² falls to {fmt(E['base']['settings']['acc']['rho']['gauss32']['gref']['max_320'])} (base). In `fast`, sig1, sig2 and sob01 need 1600 points at 0.06 against base's {mB('base','fast','mstar')['gref|G|0.06']}, but frozen-lane also needs {mB('frozen_lane','fast','mstar')['gref|G|0.06']}, so the difference is within retraining noise (H2 unresolved).")
+        w(f"- **Smoothness shows in the tail, not at the bars.** The fitted Gauss tail parameter rises from {M['base']['acc']['tail']['gref']['varrho']:.4f} (base) to {M['sig2']['acc']['tail']['gref']['varrho']:.4f} (sig2) and {M['sig1']['acc']['tail']['gref']['varrho']:.4f} (sig1) in `acc`. At Gauss 128² the worst ρ is {fmt(R_('sig1','acc','gauss128'))} for sig1 against {fmt(R_('base','acc','gauss128'))} for base and {fmt(R_('frozen_deployed','acc','gauss128'))} for the frozen bank; at 256² it is {fmt(R_('sig1','acc','gauss256'))} vs {fmt(R_('base','acc','gauss256'))}. Across every bank and setting the fitted tail parameter stays between {min(M[b][x]['tail']['gref']['varrho'] for b in banks for x in SETTINGS):.3f} and {max(M[b][x]['tail']['gref']['varrho'] for b in banks for x in SETTINGS):.3f}: smaller σ steepens the tail measurably but modestly. The rungs where this happens lie beyond the 0.01 bar.")
+        w(f"- **No measurable representation cost of smoothing.** Projection floors (median, `acc`) are {fmt(mB('base','acc','e_val_med'))} (base), {fmt(mB('sig2','acc','e_val_med'))} (sig2), {fmt(mB('sig1','acc','e_val_med'))} (sig1); the trained ‖B_j‖ stay near their initial scale (sig1 median {T['sig1']['train']['B_final']['0.5']:.2f}).")
+        dS = lambda t, s, k: 100 * (M[t][s][k] / M['base'][s][k] - 1)
+        w(f"- **Sobolev training improves derivatives and the projection floor, not the ROM.** sob01 lowers the `acc` gradient error by {-dS('sob01','acc','e_grad2c_med'):.0f}% (D2) / {-dS('sob01','acc','e_grad4_med'):.0f}% (D4) and the projection floor by {-dS('sob01','acc','e_val_med'):.0f}%, but `fast` only by {-dS('sob01','fast','e_grad2c_med'):.1f}% / {-dS('sob01','fast','e_grad4_med'):.1f}% (the D4 figure misses the 20% bar), and its converged-quadrature rollout error vs S changes by {dS('sob01','acc','E_S'):+.1f}% (`acc`) and {dS('sob01','fast','E_S'):+.2f}% (`fast`). H1 is not met.")
+        w(f"- **The ROM error is not representation-limited.** Against ST every bank sits at {pct(min(M[b]['acc']['E_ST'] for b in banks))}–{pct(max(M[b]['acc']['E_ST'] for b in banks))}% (`acc`) — the time-discretisation error dominates; against S the spread is {pct(min(M[b]['acc']['E_S'] for b in banks))}–{pct(max(M[b]['acc']['E_S'] for b in banks))}%, but base and frozen-lane (same recipe and seed) already differ by {100 * V['noise']['acc|E_S']:.0f}%, so no bank-to-bank difference in E_S is resolved.")
+        w(f"- **The rotation procedure matters more than the training recipe in `fast`.** The same frozen bank gives worst S error {pct(mB('frozen_deployed','fast','E_S'))}% with the deployed head-based rotation and {pct(mB('frozen_lane','fast','E_S'))}% with the lane's least-squares rotation (R'=128); in `acc` (R'=384) the two agree ({pct(mB('frozen_deployed','acc','E_S'))}% vs {pct(mB('frozen_lane','acc','E_S'))}%). All retrained banks use the lane rotation and must be compared with frozen-lane, not with the 2D lane's numbers.")
+        w(f"- **Cost** is set by m alone: at the same rule every bank costs the same (`acc` Gauss 56²: {min(v for k, v in TM['median_ms'].items() if k.startswith('acc')):.1f}–{max(v for k, v in TM['median_ms'].items() if k.startswith('acc')):.1f} ms per query on one {TM['gpu']})." if TM and TM.get('median_ms') else '- Cost: timing suppressed.')
+        w('- **Pre-registered outcome:** no useful winner; nothing is promoted to 3D, and `comb` is not run (A1.5). Round 2 (λ ladder, coarse-data control, seed-1 base) is running.\n')
     w('## Training\n')
     w('| bank | σ (initial) | λ | steps | train h | recon mean (train) | train LS floor median / max | ‖B_j‖ median init→final | ‖B_j‖ max init→final | R2a | FD stencil sensitivity (train, median) |')
     w('|---|---|---|---|---|---|---|---|---|---|---|')
@@ -479,7 +492,8 @@ def main():
             if not sp:
                 continue
             cl = sp.get('f|class', {})
-            w(f"| {b} | {fmt(sp['u|n_1e-08']['median'])} / {fmt(sp['u|n_1e-08']['max'])} | {fmt(sp['f|n_1e-08']['median'])} / {fmt(sp['f|n_1e-08']['max'])} | {fmt(sp['f|n_1e-04']['median'])} | "
+            nn = lambda e_: (f"unresolved ({e_['unresolved']}/{nsp})" if e_['median'] is None else f"{fmt(e_['median'])} / {fmt(e_['max'])} ({nsp - e_['unresolved']}/{nsp} resolved)")
+            w(f"| {b} | {nn(sp['u|n_1e-08'])} | {nn(sp['f|n_1e-08'])} | {fmt(sp['f|n_1e-04']['median'])} ({nsp - sp['f|n_1e-04']['unresolved']}/{nsp} resolved) | "
               f"{cl.get('geometric', 0)}/{cl.get('algebraic', 0)}/{cl.get('inconclusive', 0)}/{cl.get('unresolved', 0)} |")
         w('\nBandwidths are medians over the states whose n(ε) is resolved (256 vs 512 points agree within 2).\n')
         w('')
@@ -516,6 +530,14 @@ def main():
         c = meta[0]['controls']
         w(f"- C2 (bandwidth ordering, manufactured bumps): {'pass' if c['C2']['passed'] else 'FAIL'} ({c['C2']['n8_w02']} < {c['C2']['n8_w005']}); "
           f"C3 (kink classified algebraic): {'pass' if c['C3']['passed'] else 'FAIL'}; C5b (difference stencil response): {'pass' if c['C5b']['passed'] else 'FAIL'}.")
+    for b in [x for x in ORDER if x in T]:
+        d_ = T[b]['data']
+        r2a = T[b]['train'].get('R2a', [])
+        w(f"- `{b}` training data: R0 fingerprint {'matches the original job (pass)' if d_.get('R0_fingerprint_matches_r3a') else 'not applicable'}"
+          + ('; R2a ' + ', '.join(f"step {x['step']} {x['got']} vs original {x['want']} ({'equal' if x['match'] else 'differs; recorded only, A2.5'})" for x in r2a) if r2a else '') + '.')
+    w('- R2b (local): the lane trainer at λ=0 is bit-identical to the original trainer only with deterministic XLA flags; with default autotuning it differs by 1.5e-2 in parameters after 8 steps (`audits/R2b-evidence.txt`). Retrains are therefore not bitwise reproducible, which is why the noise yardstick exists.')
+    g8 = [E[b]['settings'][s]['rho']['gauss8']['gref']['max'] for b in banks for s in SETTINGS]
+    w(f"- C1 stress arm (Gauss 8²): worst ρ {fmt(min(g8))}–{fmt(max(g8))} over banks and settings, far above every bar, as expected.")
     for b in banks:
         el = {s: eligible(E, T, b, s, M) for s in SETTINGS}
         c5 = E[b]['C5a']['rel_error_by_step']
@@ -536,10 +558,14 @@ def main():
     for t, v in V.items():
         if t in ('noise', 'ranking_useful_H2', 'acceptance_gates'):
             continue
-        h2 = '; '.join(f"{k}: ×{x['reduction']:.2f} ({'pass' if x['passed'] else 'no'}{'' if x['resolved'] else ', unresolved'})" for k, x in v['H2'].items())
-        w(f"- **{t}**: H1 {'PASS' if v['H1']['passed'] else 'fail'} (gradient {v['H1']['grad']}, value {v['H1']['value']}, rollout {v['H1']['rollout']}); "
-          f"H2 {'PASS' if v['H2_passed'] else 'fail'} [{h2}]; useful winner: {'YES' if v['useful_winner'] else 'no'}; rank score {v['rank_score']:.2f}. "
-          + ' '.join(f"Δ{s}: E_S {pct(v['delta'][s]['E_S'])}%, e∇ {pct(v['delta'][s]['e_grad_med'])}%, e_val {pct(v['delta'][s]['e_val_med'])}%." for s in SETTINGS))
+        h2 = '; '.join(f"{k}: ×{x['reduction']:.2f} ({'pass' if x['passed'] else ('unresolved' if not x['resolved'] else 'no')})" for k, x in v['H2'].items())
+        would = [x for x in v['H2'].values() if x['reduction'] >= 1.5 and x['other_reduction'] >= 1
+                 and x['common_same_direction'] and x['common_same_direction_other']]
+        h2s = 'PASS' if v['H2_passed'] else ('UNRESOLVED (every other H2 condition holds at some bar, but base and frozen-lane disagree on m* there)'
+                                             if would and not any(x['resolved'] for x in would) else 'not met')
+        w(f"- **{t}**: H1 {'PASS' if v['H1']['passed'] else 'not met'} (gradient criterion {v['H1']['grad']}, value {v['H1']['value']}, rollout {v['H1']['rollout']}); "
+          f"H2 {h2s} [{h2}]; useful winner: {'YES' if v['useful_winner'] else 'no'}. "
+          + ' '.join(f"Δ{s}: E_S {pct(v['delta'][s]['E_S'])}%, gradient error (D2 / D4 on the common support) {pct(v['delta'][s]['e_grad2c_med'])}% / {pct(v['delta'][s]['e_grad4_med'])}%, projection floor {pct(v['delta'][s]['e_val_med'])}%." for s in SETTINGS))
     w(f"\nRanking of useful H2 winners (A2.4/A4): {', '.join(V.get('ranking_useful_H2', [])) or 'none'}.")
     w('')
     w('## Plots\n')

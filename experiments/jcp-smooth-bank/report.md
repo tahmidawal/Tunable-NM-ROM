@@ -10,6 +10,17 @@ Retrains the Burgers 2D coordinate-network bank with a gradient-matching (Sobole
 | `ev1` | evaluation at $1024^2$ | NVIDIA A100-PCIE-40GB | 5027022 | frozen_deployed, frozen_lane, base, sob01, sig2, sig1 |
 | `ev1` (timing) | paired timing | NVIDIA A100-PCIE-40GB | 5027022 | m* rules of every bank |
 
+## Answers in brief (generated; PROVISIONAL, development/validation, one seed per arm)
+
+- **Points needed at the pre-registered bars do not move.** In `acc` every bank needs Gauss 56² (3136 points) for worst ρ ≤ 0.06 on its own reached states, and Gauss 32² gives worst ρ 1.61 for all of them. The onset is set by the M=1536 sine tests, not by the bank: restricted to the first 320 tests, Gauss 32² falls to 0.125 (base). In `fast`, sig1, sig2 and sob01 need 1600 points at 0.06 against base's 3136, but frozen-lane also needs 1600, so the difference is within retraining noise (H2 unresolved).
+- **Smoothness shows in the tail, not at the bars.** The fitted Gauss tail parameter rises from 1.0221 (base) to 1.0251 (sig2) and 1.0322 (sig1) in `acc`. At Gauss 128² the worst ρ is 3.57e-04 for sig1 against 9.27e-03 for base and 2.11e-03 for the frozen bank; at 256² it is 3.18e-06 vs 3.09e-04. Across every bank and setting the fitted tail parameter stays between 1.019 and 1.032: smaller σ steepens the tail measurably but modestly. The rungs where this happens lie beyond the 0.01 bar.
+- **No measurable representation cost of smoothing.** Projection floors (median, `acc`) are 2.43e-04 (base), 2.30e-04 (sig2), 2.24e-04 (sig1); the trained ‖B_j‖ stay near their initial scale (sig1 median 1.15).
+- **Sobolev training improves derivatives and the projection floor, not the ROM.** sob01 lowers the `acc` gradient error by 70% (D2) / 70% (D4) and the projection floor by 38%, but `fast` only by 20.2% / 17.8% (the D4 figure misses the 20% bar), and its converged-quadrature rollout error vs S changes by +1.7% (`acc`) and -0.01% (`fast`). H1 is not met.
+- **The ROM error is not representation-limited.** Against ST every bank sits at 2.747–2.926% (`acc`) — the time-discretisation error dominates; against S the spread is 1.034–1.409%, but base and frozen-lane (same recipe and seed) already differ by 34%, so no bank-to-bank difference in E_S is resolved.
+- **The rotation procedure matters more than the training recipe in `fast`.** The same frozen bank gives worst S error 3.451% with the deployed head-based rotation and 4.510% with the lane's least-squares rotation (R'=128); in `acc` (R'=384) the two agree (1.046% vs 1.034%). All retrained banks use the lane rotation and must be compared with frozen-lane, not with the 2D lane's numbers.
+- **Cost** is set by m alone: at the same rule every bank costs the same (`acc` Gauss 56²: 67.8–68.2 ms per query on one NVIDIA A100-PCIE-40GB).
+- **Pre-registered outcome:** no useful winner; nothing is promoted to 3D, and `comb` is not run (A1.5). Round 2 (λ ladder, coarse-data control, seed-1 base) is running.
+
 ## Training
 
 | bank | σ (initial) | λ | steps | train h | recon mean (train) | train LS floor median / max | ‖B_j‖ median init→final | ‖B_j‖ max init→final | R2a | FD stencil sensitivity (train, median) |
@@ -58,12 +69,12 @@ Worst ρ at selected Gauss rungs (own reached states; in brackets: restricted to
 
 | bank | u: n(1e-8) median / max | f: n(1e-8) median / max | f: n(1e-4) median | f classification (geometric/algebraic/inconclusive/unresolved) |
 |---|---|---|---|---|
-| frozen_deployed | — / — | — / — | 145 | 1/24/39/0 |
-| frozen_lane | — / — | — / — | 133 | 1/27/36/0 |
-| base | — / — | — / — | 112 | 3/37/24/0 |
-| sob01 | — / — | — / — | 75.5 | 2/40/22/0 |
-| sig2 | — / — | — / — | 112 | 6/18/40/0 |
-| sig1 | — / — | — / — | 126 | 22/3/39/0 |
+| frozen_deployed | unresolved (64/64) | unresolved (64/64) | 145 (49/64 resolved) | 1/24/39/0 |
+| frozen_lane | unresolved (64/64) | unresolved (64/64) | 133 (45/64 resolved) | 1/27/36/0 |
+| base | unresolved (64/64) | unresolved (64/64) | 112 (45/64 resolved) | 3/37/24/0 |
+| sob01 | unresolved (64/64) | unresolved (64/64) | 75.5 (40/64 resolved) | 2/40/22/0 |
+| sig2 | unresolved (64/64) | unresolved (64/64) | 112 (48/64 resolved) | 6/18/40/0 |
+| sig1 | unresolved (64/64) | unresolved (64/64) | 126 (60/64 resolved) | 22/3/39/0 |
 
 Bandwidths are medians over the states whose n(ε) is resolved (256 vs 512 points agree within 2).
 
@@ -121,12 +132,12 @@ Worst ρ at selected Gauss rungs (own reached states; in brackets: restricted to
 
 | bank | u: n(1e-8) median / max | f: n(1e-8) median / max | f: n(1e-4) median | f classification (geometric/algebraic/inconclusive/unresolved) |
 |---|---|---|---|---|
-| frozen_deployed | — / — | — / — | 131 | 1/23/40/0 |
-| frozen_lane | — / — | — / — | 130 | 1/21/42/0 |
-| base | — / — | — / — | 129 | 4/39/21/0 |
-| sob01 | — / — | — / — | 123 | 1/46/17/0 |
-| sig2 | — / — | — / — | 129 | 6/15/43/0 |
-| sig1 | — / — | — / — | 130 | 17/3/44/0 |
+| frozen_deployed | unresolved (64/64) | unresolved (64/64) | 131 (27/64 resolved) | 1/23/40/0 |
+| frozen_lane | unresolved (64/64) | unresolved (64/64) | 130 (26/64 resolved) | 1/21/42/0 |
+| base | unresolved (64/64) | unresolved (64/64) | 129 (41/64 resolved) | 4/39/21/0 |
+| sob01 | unresolved (64/64) | unresolved (64/64) | 123 (41/64 resolved) | 1/46/17/0 |
+| sig2 | unresolved (64/64) | unresolved (64/64) | 129 (42/64 resolved) | 6/15/43/0 |
+| sig1 | unresolved (64/64) | unresolved (64/64) | 130 (60/64 resolved) | 17/3/44/0 |
 
 Bandwidths are medians over the states whose n(ε) is resolved (256 vs 512 points agree within 2).
 
@@ -167,6 +178,12 @@ Each cell: ST / S.
 ## Gates and controls
 
 - C2 (bandwidth ordering, manufactured bumps): pass (20 < 64); C3 (kink classified algebraic): pass; C5b (difference stencil response): pass.
+- `base` training data: R0 fingerprint matches the original job (pass); R2a step 1 2.402e+00 vs original 2.402e+00 (equal), step 5000 3.003e-03 vs original 2.125e-03 (differs; recorded only, A2.5).
+- `sob01` training data: R0 fingerprint matches the original job (pass).
+- `sig2` training data: R0 fingerprint matches the original job (pass).
+- `sig1` training data: R0 fingerprint matches the original job (pass).
+- R2b (local): the lane trainer at λ=0 is bit-identical to the original trainer only with deterministic XLA flags; with default autotuning it differs by 1.5e-2 in parameters after 8 steps (`audits/R2b-evidence.txt`). Retrains are therefore not bitwise reproducible, which is why the noise yardstick exists.
+- C1 stress arm (Gauss 8²): worst ρ 7.04–15 over banks and settings, far above every bar, as expected.
 - `frozen_deployed`: C5a min rel. error 2.35e-07; acc: C4 pass, gref-vs-768 rollout 1.54e-11, tight-solver distance 9.77e-06, eligibility ok; fast: C4 pass, gref-vs-768 rollout 1.87e-10, tight-solver distance 1.31e-05, eligibility ok.
 - `frozen_lane`: C5a min rel. error 2.25e-07; acc: C4 pass, gref-vs-768 rollout 5.94e-11, tight-solver distance 3.10e-06, eligibility ok; fast: C4 pass, gref-vs-768 rollout 8.83e-11, tight-solver distance 1.70e-05, eligibility ok.
 - `base`: C5a min rel. error 1.83e-07; acc: C4 pass, gref-vs-768 rollout 3.60e-11, tight-solver distance 3.03e-06, eligibility ok; fast: C4 pass, gref-vs-768 rollout 4.00e-11, tight-solver distance 1.70e-05, eligibility ok.
@@ -180,9 +197,9 @@ Each cell: ST / S.
 
 Noise yardstick (|base / frozen-lane − 1|): acc|E_S 0.339, acc|E_ST 0.009, acc|e_val_med 0.070, acc|e_grad_med 0.203, acc|e_grad2c_med 0.243, acc|e_grad4_med 0.238, fast|E_S 0.000, fast|E_ST 0.000, fast|e_val_med 0.000, fast|e_grad_med 0.063, fast|e_grad2c_med 0.003, fast|e_grad4_med 0.006.
 
-- **sig1**: H1 fail (gradient False, value True, rollout False); H2 fail [acc|0.06: ×1.00 (no, unresolved); fast|0.06: ×1.96 (no, unresolved); acc|0.01: ×1.00 (no, unresolved); fast|0.01: ×1.00 (no, unresolved)]; useful winner: no; rank score 0.97. Δacc: E_S -8.824%, e∇ 21.082%, e_val -7.806%. Δfast: E_S -0.063%, e∇ 11.839%, e_val -0.004%.
-- **sig2**: H1 fail (gradient False, value True, rollout False); H2 fail [acc|0.06: ×1.00 (no, unresolved); fast|0.06: ×1.96 (no, unresolved); acc|0.01: ×1.00 (no, unresolved); fast|0.01: ×1.00 (no, unresolved)]; useful winner: no; rank score 0.97. Δacc: E_S -13.784%, e∇ 10.033%, e_val -5.277%. Δfast: E_S 0.070%, e∇ -1.116%, e_val 0.019%.
-- **sob01**: H1 fail (gradient False, value True, rollout False); H2 fail [acc|0.06: ×1.00 (no, unresolved); fast|0.06: ×1.96 (no, unresolved); acc|0.01: ×0.69 (no, unresolved); fast|0.01: ×1.00 (no, unresolved)]; useful winner: no; rank score 0.97. Δacc: E_S 1.720%, e∇ -12.858%, e_val -38.207%. Δfast: E_S -0.011%, e∇ -16.106%, e_val -0.057%.
+- **sig1**: H1 not met (gradient criterion False, value True, rollout False); H2 UNRESOLVED (every other H2 condition holds at some bar, but base and frozen-lane disagree on m* there) [acc|0.06: ×1.00 (unresolved); fast|0.06: ×1.96 (unresolved); acc|0.01: ×1.00 (unresolved); fast|0.01: ×1.00 (unresolved)]; useful winner: no. Δacc: E_S -8.824%, gradient error (D2 / D4 on the common support) -29.405% / -30.227%, projection floor -7.806%. Δfast: E_S -0.063%, gradient error (D2 / D4 on the common support) -0.094% / 2.131%, projection floor -0.004%.
+- **sig2**: H1 not met (gradient criterion False, value True, rollout False); H2 UNRESOLVED (every other H2 condition holds at some bar, but base and frozen-lane disagree on m* there) [acc|0.06: ×1.00 (unresolved); fast|0.06: ×1.96 (unresolved); acc|0.01: ×1.00 (unresolved); fast|0.01: ×1.00 (unresolved)]; useful winner: no. Δacc: E_S -13.784%, gradient error (D2 / D4 on the common support) 9.251% / 9.731%, projection floor -5.277%. Δfast: E_S 0.070%, gradient error (D2 / D4 on the common support) -4.622% / -7.791%, projection floor 0.019%.
+- **sob01**: H1 not met (gradient criterion False, value True, rollout False); H2 not met [acc|0.06: ×1.00 (unresolved); fast|0.06: ×1.96 (unresolved); acc|0.01: ×0.69 (unresolved); fast|0.01: ×1.00 (unresolved)]; useful winner: no. Δacc: E_S 1.720%, gradient error (D2 / D4 on the common support) -70.348% / -69.680%, projection floor -38.207%. Δfast: E_S -0.011%, gradient error (D2 / D4 on the common support) -20.198% / -17.772%, projection floor -0.057%.
 
 Ranking of useful H2 winners (A2.4/A4): none.
 

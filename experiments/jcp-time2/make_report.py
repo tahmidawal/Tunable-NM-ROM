@@ -327,7 +327,7 @@ def plots(st, an, rule):
         a_.spines[['top', 'right']].set_visible(False)
     ax[0].legend(fontsize=7.5, frameon=False)
     ax[1].legend(fontsize=6.5, frameon=False, loc='upper left', bbox_to_anchor=(1.01, 1.0))
-    fig.suptitle(f'Burgers 2D, {RULE_NAME.get(rule, rule)}{" (secondary setting, unselected rule)" if s == "wide" else ""}, $L={st.res["mesh"]}$, {len(st.cases)} cases — errors are provisional '
+    fig.suptitle(f'Burgers 2D, {RULE_NAME.get(rule, rule)}{" (secondary setting, unselected rule; quadrature sensitivity: see report)" if s == "wide" else ""}, $L={st.res["mesh"]}$, {len(st.cases)} cases — errors are provisional '
                  '(first-order references); x = unverified', fontsize=10)
     fig.tight_layout()
     p1 = HERE / 'plots' / f'error_vs_dt_{s}.png'
@@ -355,7 +355,7 @@ def plots(st, an, rule):
     ax.set_yscale('log')
     ax.set_xlabel('end-to-end query time per case (ms; median of paired A–B–A on one GPU, six dev6 timing cases)')
     ax.set_ylabel('median error vs ST over dev6 ∪ val32 (%), PROVISIONAL')
-    ax.set_title(f'{s}: accuracy vs cost per time scheme ({RULE_NAME.get(rule, rule)}{", secondary" if s == "wide" else ""})\n'
+    ax.set_title(f'{s}: accuracy vs cost per time scheme ({RULE_NAME.get(rule, rule)}{", secondary, unselected rule; quadrature sensitivity in the report" if s == "wide" else ""})\n'
                  'lines join the $\\Delta t$ ladder (not an interpolated frontier); x = unverified', fontsize=9)
     ax.grid(True, which='major', color='#e4e4e0', lw=.6)
     ax.spines[['top', 'right']].set_visible(False)
@@ -432,7 +432,8 @@ def main():
         if not (b and c1 and c2) or not an['claims_eligible']:
             continue
         te = lambda e: e['time_err']['median'] if e['time_err'] else float('nan')
-        sec = ' — secondary setting, unselected rule (A7)' if s_ == 'wide' else ''
+        sec = (' — secondary setting, unselected rule (A7); quadrature sensitivity (Gauss $192^2$) is in its section for '
+               '$\\Delta t\\ge\\Delta t_0/2$ only, unavailable for finer steps') if s_ == 'wide' else ''
         W(f"- **2D `{s_}`{sec}** ({RULE_NAME.get(rule, rule)}, $R'={res['setup'][s_]['R_prime']}$): deployed BE at $\\Delta t_0$ ST worst/median "
           f"{pct(b['ST_worst'])}/{pct(b['ST_median'])} %; LSPG CN at $\\Delta t_0$ {pct(c1['ST_worst'])}/{pct(c1['ST_median'])} % "
           f"(paired time ratio {c1['ratio']:.4f}); LSPG CN at $2\\Delta t_0$ {pct(c2['ST_worst'])}/{pct(c2['ST_median'])} % "
@@ -646,8 +647,8 @@ def main():
     W("- **$R'$, $M$, $L$**: bank coefficients used, number of sine test functions, mesh intervals per side. **bank / rotation**: the trained coordinate network's basis functions, rotated to an ordered basis.")
     W('- **$\\Delta t_0$**: the deployed step, 0.005 in 2D and 0.01 in 3D. **LMM**: two-step linear multistep method (the common form of BE, CN, CN-R, BDF2, TH06).')
     W('- **Gauss $p^2$ / Fibonacci $n$ / lattice**: off-mesh quadrature rules (tensor Gauss with $p$ points per axis; a rank-1 Fibonacci lattice of $n$ points; the deployed $63^2$ mesh sub-lattice, an on-mesh rule). In 3D, `gl24` = Gauss $24^3$, `lat4096` = a 4096-point lattice rule.')
-    W('- **DST**: discrete sine transform (the diagonal preconditioner of the full-order Newton–BiCGStab solver). **ntol**: the Newton relative-residual tolerance; **calibrated / fallback_tight / unresolved**: the A9.2 calibration outcome.')
-    W('- **eligible**: a configuration verified on every case with a complete, finite timing (FOM: also calibrated); only eligible configurations enter matches, selections and plots.')
+    W('- **DST**: discrete sine transform (the diagonal preconditioner of the full-order Newton–BiCGStab solver). **ntol**: the Newton relative-residual tolerance. **Newton–BiCGStab**: Newton's method on the nonlinear step equation, each Newton correction solved by the BiCGStab Krylov method with the DST preconditioner. Calibration outcomes (A9.2): **calibrated** = the loosest of ntol $10^{-4}, 10^{-6}, 10^{-8}$ whose fields stay within 1 % of the tight solve's ST error on all six dev6 cases; **fallback_tight** = none did, the tight pair is used; **unresolved** = the tight solve itself failed (configuration excluded).')
+    W('- **eligible**: a configuration verified on every case with a complete, finite timing (FOM: also calibrated); only eligible configurations enter matches, selections and the cost plots. Accuracy and anchor plots show every configuration verified on every case, timed or not.')
     W('- **identifiers** `role|form|scheme|dt|level` (2D), `rom|setting|rule|form|scheme|dt-factor` and `fom|scheme|dt-factor` (`fom1k`), `form|scheme|dt|level` (3D): the run keys of the result files.')
     W('- **outside [1.7, 2.3] / [0.8, 1.25]**: number of valid primary orders outside that band. **3D anchor**: on the $63^3$ lattice, median over resolved cases only; 3D timing: four cases × 3.')
     (HERE / 'report.md').write_text('\n'.join(md) + '\n')

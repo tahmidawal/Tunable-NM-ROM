@@ -624,23 +624,31 @@ def plots_3d(recs, tag):
     meshes = sorted({r['n'] for r in recs})
     f, ax = fig()
     i = 0
+    nmax = max(meshes)
     for bn in banks:
         for n in meshes:
-            rs = sorted([r for r in recs if r['bank'] == bn and r['n'] == n and r['kappa'] == 4 and r['dep_worst']],
-                        key=lambda r: r['Rp'])
-            if rs:
-                ax.plot([r['Rp'] for r in rs], [100 * r['dep_worst'] for r in rs], color=SERIES[i % 4], lw=2,
-                        marker=MARKERS[i % 4], ms=7, label=f'{bn}, {n - 1}³: deployed worst')
+            if n != nmax and bn != 'W1024':
+                continue
+            rs = sorted([r for r in recs if r['bank'] == bn and r['n'] == n and r['kappa'] == 4], key=lambda r: r['Rp'])
+            if not rs:
+                continue
+            c = SERIES[i % 4]
+            ax.plot([r['Rp'] for r in rs], [100 * r['conv_worst'] for r in rs], color=c, lw=2, label=f'{bn}, {n - 1}³: worst')
+            for r in rs:       # filled = deployed rule available; hollow = registered selection unavailable (gate failed)
+                ax.plot([r['Rp']], [100 * r['conv_worst']], color=c, marker=MARKERS[i % 4], ms=8, lw=0,
+                        markerfacecolor=c if r['dep'] else 'none', markeredgewidth=2)
+            if n == nmax:
+                ax.plot([r['Rp'] for r in rs], [100 * r['conv_med'] for r in rs], color=c, lw=1.5, ls=':',
+                        label=f'{bn}, {n - 1}³: median')
+            if bn == 'W1024' and n == nmax:
                 fl = [(r['Rp'], r['floor']) for r in rs if r['floor'] is not None]
-                if fl and bn == 'W1024' and n == max(meshes):
-                    ax.plot([x for x, _ in fl], [100 * y for _, y in fl], color=INK2, lw=1.5, ls='--', marker='x', ms=6,
-                            label=f'{bn}: projection floor vs reference')
-                i += 1
-    ax.set_yscale('log')
-    plain(ax)
+                ax.plot([x for x, _ in fl], [100 * y for _, y in fl], color=INK2, lw=1.5, ls='--', marker='x', ms=6,
+                        label=f'{bn}, {n - 1}³: projection floor vs reference (worst)')
+            i += 1
+    ax.set_ylim(bottom=0)
     ax.set_xticks(sorted({r['Rp'] for r in recs}))
-    style(ax, f"3D dial: worst refined error over 64 validation cases vs R'\n(M ≈ 4R'; PROVISIONAL, first-order reference)", "R'",
-          'worst relative error (%, log)')
+    style(ax, "3D dial: refined error of the converged rollout over 64 validation cases\n"
+              "(M ≈ 4R'; hollow marker = registered selection unavailable; PROVISIONAL)", "R'", 'relative error (%)')
     ax.legend(frameon=False, fontsize=8)
     save(f, f'3d_{tag}_error_vs_Rp.png')
     f, ax = fig()

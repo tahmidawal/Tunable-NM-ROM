@@ -49,12 +49,21 @@ FIGS = [
  ("Time", "c2_fom_vs_rom", "Against a fair, second-order full solver, our speed-up roughly doubles.",
   "Squares are the full solver, circles the reduced model, each line one time scheme. Second-order stepping also makes the full solver faster and more accurate, so comparing against the old backward-Euler full solver would overstate our gain. Against the fair second-order full solver, the matched speed-up rises from 1.76× (both deployed as before) to 3.65× (reduced model with Crank–Nicolson at twice the step).",
   "Both models timed in the same job on the same GPU (paired A–B–A, six cases). Matched means: the cheapest full-solver setting with equal or better worst-case error, among the settings run."),
+ ("Width", "c1_3d_j4_memory_vs_Rp", "New (8 Oct): the memory wall is gone — width 1024 now fits.",
+  "The old tensor's storage grows with the square of the width and would need about 34 GB at width 1024 (and pass a whole H200 by width ~1700). The off-mesh rule needs about 1.6 GB.",
+  "Tensor values are computed from its formula; it was only ever built up to width 512."),
+ ("Width", "c1_3d_j4_error_vs_Rp", "But a wider bank barely improves the 3D reduced model — yet.",
+  "The newly trained 1024-column bank represents the solution much better (dashed black: projection floor falls about 47 % from width 512 to 1024). The reduced model's error does not follow: the median stays flat near 1.1 % and the worst case wobbles between about 3.4 and 4.4 %. Something other than the bank limits it — most likely the time step (lane C2) or the first-order reference.",
+  "64 validation cases; provisional. Hollow markers: a convergence gate failed at width ≥ 768, shown as a diagnostic only."),
+ ("Width", "c1_2d_error_vs_Rp", "In 2D the dial stops at width 384.",
+  "Up to 384, wider is better against the space-only reference (orange). At 512 it gets worse on 28 of 38 cases while costing 3.4× more, and against the space+time reference (blue) nothing improves past 256 because the time error dominates.",
+  "38 validation cases at 1024²; provisional. Green: the best the bank could possibly do (projection floor)."),
 ]
 
 cards = []
 for sec, fn, head, body, note in FIGS:
     cards.append(f'''<figure class="card" data-sec="{sec}">
-  <figcaption><span class="tag">{ {'Mechanism':'Why it works','Time':'Second-order time stepping'}.get(sec, 'Burgers ' + sec) }</span><h2>{head}</h2><p>{body}</p></figcaption>
+  <figcaption><span class="tag">{ {'Mechanism':'Why it works','Time':'Second-order time stepping','Width':'Wider bank'}.get(sec, 'Burgers ' + sec) }</span><h2>{head}</h2><p>{body}</p></figcaption>
   <img src="figs/{fn}.png" alt="{head}" loading="lazy">
   {f'<p class="note"><strong>How to read it:</strong> {note}</p>' if note else ''}
 </figure>''')

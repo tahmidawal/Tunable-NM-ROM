@@ -18936,3 +18936,28 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - Choice between GAL and LSPG CN-R / BDF2 for the paper.
 - Replication on test64 at 4096².
 - Merge question: ask the user at the end of the campaign.
+
+### 2026-10-09 (early) — jcp-wide-bank (C1) complete
+**Where.** The branch is `exp/2026-10-08-jcp-wide-bank` at last commit `2c3c397e0`, mirrored at `dbb3da96f`. The report is generated and passed the Codex final round 4 (REPORT-OK). Jobs: 5012313 and 5012763 on A100; 5012847 and 5022387 on H200; 5020724, 5020855, 5021867 and 5022113 on H100. Six attempts produced no output and are logged in `runs/JOB-LEDGER.json`. The namespace `jcpwide` has been emptied. The new bank is at `inputs/model_W1024/` and is tracked by SHA256.
+
+**Found.** All results are PROVISIONAL.
+- **2D dial stops at R′=384.** At R′=512 the result is worse against S on 28/38 cases. The bar for H1 was not met. The ST median is flat at 0.91 %.
+- **The 1d trim mechanism is contradicted** in both 2D and 3D. The only useful trim is 2D R′=384 with M/R′=3, which is 25 % faster for +0.004 pp error against ST.
+- **R=1024 3D bank trained.** The worst projection floor falls 3.23 → 1.29 % (R′ 512 → 1024).
+- **3D dial.** H4 is unavailable because the G48/G56 rollout-agreement gate fails at R′ ≥ 768. With that gate ignored, the change from 512 to 1024 is small: median −0.004 pp, worst −3.6 / −5.8 %.
+- **Memory.** At R′=1024 the off-mesh rule needs 1.61 GB, against 34.37 GB for the tensor.
+
+**Wrong / retracted.**
+- The 4-case preview "1.43 % at R′=1024, 128³" that I relayed is retracted. The full cohort gives about 3.4 %.
+- "2D dial extends" is retracted, and so is the 1d mechanism.
+- Amendment A7 was written post hoc, after J2's first log was read; both outcomes are shown in the report.
+- A8 changes the J4 solver, so J4 is not comparable with earlier 3D results.
+- J3 failed because `/usr/bin/time` was missing.
+- The RSS logger recorded nothing; `sstat` was used instead.
+- Two code-correctness checks ran only on a 32-column table.
+
+**Open.**
+- Is the plateau caused by time error? Run C2's stepping with the wide bank, against second-order references.
+- J4 with the Gauss 64³ escalation.
+- Sensitivity of the wide bank to quadrature, and growth in cond(A).
+- Ask the user at the end of the campaign whether to merge.

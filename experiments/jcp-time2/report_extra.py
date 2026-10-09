@@ -88,9 +88,9 @@ def fom_section(W, att='fom1k'):
     W('')
     W(f"Job {res['job_id']} on {res['gpu']}; independent audit: {why}. "
       + ('' if eligible else '**Not eligible for claims (audit, completeness or cohort): every claim below reads "unavailable".** ') +
-      'The full-order model uses the same two-step methods (sign-upwind advection, 5-point Laplacian, Newton–BiCGStab with the '
+      'The full-order model uses the same time-integration methods (sign-upwind advection, 5-point Laplacian, Newton–BiCGStab with the '
       'DST Helmholtz preconditioner), each at its calibrated Newton tolerance. Accuracy over the 38 dev6 ∪ val32 cases; timing '
-      'over six dev6 cases × 3 repetitions on one GPU, ratios relative to the full-order BE at $\\Delta t_0$. All errors are '
+      'over six dev6 cases × 3 repetitions on one GPU, ratios are medians of per-sample paired ratios relative to the full-order BE at $\\Delta t_0$ (not ratios of the median times). All errors are '
       'PROVISIONAL (first-order references); the full-order model is first order (upwind) in space at this mesh.')
     W('')
     W('FOM order check ($L=256$, dev6 cases 0 and 2; orders from the pairs starting at $2\\Delta t_0$, $\\Delta t_0$, $\\Delta t_0/2$):')
@@ -232,7 +232,7 @@ def d3_section(W, att='b3d65'):
               f"({RL}); anchor discrepancy median {pct(float(np.median(va)))} %; {num(A_ms)} ms median; distance from the generic "
               f"adaptive BE at $\\Delta t_0$: median {pct(float(np.median([v['vs_generic_BE'] for v in vend])))} %.")
         W('')
-        W(f'| form | scheme | $\\Delta t/\\Delta t_0$ | error worst ({RL}) | error median | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |')
+        W(f'| form | scheme | $\\Delta t/\\Delta t_0$ | error worst (%, {RL}) | error median (%) | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |')
         W('|---|---|---|---|---|---|---|---|---|---|')
         tab = []
         for form in ('LSPG', 'GAL'):
@@ -263,8 +263,8 @@ def d3_section(W, att='b3d65'):
         W('')
         W(f'Observed order ({n} cases: a claim needs ≥ {need} valid primary triples; the adjacent check is unresolved below {half:g} cases with both triples valid):')
         W('')
-        W('| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid |')
-        W('|---|---|---|---|---|---|---|')
+        W('| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid | both in [1.7, 2.3] | both in [0.8, 1.25] |')
+        W('|---|---|---|---|---|---|---|---|---|')
         orders = {}
         for form in ('LSPG', 'GAL'):
             for sc in SCHEMES + ['TH06']:
@@ -286,7 +286,10 @@ def d3_section(W, att='b3d65'):
                 o = dict(claim=claim, primary=float(np.median(pv)) if pv else None, valid=len(pv),
                          adjacent=float(np.median(av)) if av else None, both=len(both))
                 orders[f'{form}|{sc}'] = o
-                W(f"| {form} | {NAMES[sc]} | {claim} | {num(o['primary'], '.2f')} | {len(pv)}/{n} | {num(o['adjacent'], '.2f')} | {len(both)} |")
+                b2 = sum(1.7 <= p <= 2.3 and 1.7 <= q <= 2.3 for p, q in both)
+                b1 = sum(.8 <= p <= 1.25 and .8 <= q <= 1.25 for p, q in both)
+                o.update(both_in_2=b2, both_in_1=b1)
+                W(f"| {form} | {NAMES[sc]} | {claim} | {num(o['primary'], '.2f')} | {len(pv)}/{n} | {num(o['adjacent'], '.2f')} | {len(both)} | {b2} | {b1} |")
         W('')
         h1 = h2 = []
         if eligible and ve is not None:
@@ -305,7 +308,8 @@ def d3_section(W, att='b3d65'):
         fig, ax = plt.subplots(1, 2, figsize=(12, 4.4))
         for form, ls, mk in (('LSPG', '-', 'o'), ('GAL', '--', 's')):
             for sc in SCHEMES:
-                E = sorted([e for e in tab if eligible and e['form'] == form and e['scheme'] == sc and e['ok']], key=lambda e: e['f'])
+                E = sorted([e for e in tab if eligible and e['form'] == form and e['scheme'] == sc and e['verified'] == e['n']],
+                           key=lambda e: e['f'])      # accuracy/anchor plots: all verified steps (timing not required)
                 if not E:
                     continue
                 ax[0].plot([DT0 * e['f'] for e in E], [100 * e['worst'] for e in E], ls=ls, marker=mk, color=COLORS[sc], label=f'{form} {NAMES[sc]}')

@@ -363,7 +363,7 @@ Old method (deployed mesh lattice $63^2$, LSPG), worst / median ST error (%, PRO
 
 ## Fair full-order comparison (`fom1k`, $L=1024$; DESIGN section 9, A9–A11)
 
-Job 5017631 on NVIDIA A100 80GB PCIe; independent audit: pass. The full-order model uses the same two-step methods (sign-upwind advection, 5-point Laplacian, Newton–BiCGStab with the DST Helmholtz preconditioner), each at its calibrated Newton tolerance. Accuracy over the 38 dev6 ∪ val32 cases; timing over six dev6 cases × 3 repetitions on one GPU, ratios relative to the full-order BE at $\Delta t_0$. All errors are PROVISIONAL (first-order references); the full-order model is first order (upwind) in space at this mesh.
+Job 5017631 on NVIDIA A100 80GB PCIe; independent audit: pass. The full-order model uses the same time-integration methods (sign-upwind advection, 5-point Laplacian, Newton–BiCGStab with the DST Helmholtz preconditioner), each at its calibrated Newton tolerance. Accuracy over the 38 dev6 ∪ val32 cases; timing over six dev6 cases × 3 repetitions on one GPU, ratios are medians of per-sample paired ratios relative to the full-order BE at $\Delta t_0$ (not ratios of the median times). All errors are PROVISIONAL (first-order references); the full-order model is first order (upwind) in space at this mesh.
 
 FOM order check ($L=256$, dev6 cases 0 and 2; orders from the pairs starting at $2\Delta t_0$, $\Delta t_0$, $\Delta t_0/2$):
 
@@ -574,7 +574,7 @@ Job 5020049 on NVIDIA H200; audit: pass. Reference: the 3D lane's 513-node backw
 
 Deployed fixed-sweep BE at $\Delta t_0$: error worst / median 3.164 / 1.153 % (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL); anchor discrepancy median 1.870 %; 35.5 ms median; distance from the generic adaptive BE at $\Delta t_0$: median 0.000 %.
 
-| form | scheme | $\Delta t/\Delta t_0$ | error worst (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL) | error median | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |
+| form | scheme | $\Delta t/\Delta t_0$ | error worst (%, reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL) | error median (%) | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |
 |---|---|---|---|---|---|---|---|---|---|
 | LSPG | BE | 0.125 | 4.880 | 0.718 | 0.257 | 16/16 | 16/16 | — | — |
 | LSPG | BE | 0.25 | 4.428 | 0.633 | 0.508 | 16/16 | 16/16 | — | — |
@@ -627,18 +627,18 @@ Deployed fixed-sweep BE at $\Delta t_0$: error worst / median 3.164 / 1.153 % (r
 
 Observed order (16 cases: a claim needs ≥ 13 valid primary triples; the adjacent check is unresolved below 8 cases with both triples valid):
 
-| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid |
-|---|---|---|---|---|---|---|
-| LSPG | BE | order 1 | 0.93 | 16/16 | 0.89 | 16 |
-| LSPG | CN | not established | 1.83 | 16/16 | 1.97 | 16 |
-| LSPG | CN-R | order 2 | 1.94 | 16/16 | 1.90 | 16 |
-| LSPG | BDF2 | order 2 | 2.00 | 16/16 | 1.94 | 16 |
-| LSPG | TH06 | order 1 | 0.95 | 16/16 | 0.92 | 16 |
-| GAL | BE | order 1 | 0.94 | 16/16 | 0.89 | 16 |
-| GAL | CN | order 2 | 2.00 | 16/16 | 2.00 | 16 |
-| GAL | CN-R | order 2 | 1.97 | 16/16 | 1.91 | 16 |
-| GAL | BDF2 | order 2 | 2.01 | 16/16 | 1.94 | 16 |
-| GAL | TH06 | order 1 | 0.96 | 16/16 | 0.93 | 16 |
+| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid | both in [1.7, 2.3] | both in [0.8, 1.25] |
+|---|---|---|---|---|---|---|---|---|
+| LSPG | BE | order 1 | 0.93 | 16/16 | 0.89 | 16 | 0 | 13 |
+| LSPG | CN | not established | 1.83 | 16/16 | 1.97 | 16 | 10 | 1 |
+| LSPG | CN-R | order 2 | 1.94 | 16/16 | 1.90 | 16 | 15 | 0 |
+| LSPG | BDF2 | order 2 | 2.00 | 16/16 | 1.94 | 16 | 14 | 0 |
+| LSPG | TH06 | order 1 | 0.95 | 16/16 | 0.92 | 16 | 0 | 16 |
+| GAL | BE | order 1 | 0.94 | 16/16 | 0.89 | 16 | 0 | 15 |
+| GAL | CN | order 2 | 2.00 | 16/16 | 2.00 | 16 | 16 | 0 |
+| GAL | CN-R | order 2 | 1.97 | 16/16 | 1.91 | 16 | 16 | 0 |
+| GAL | BDF2 | order 2 | 2.01 | 16/16 | 1.94 | 16 | 16 | 0 |
+| GAL | TH06 | order 1 | 0.96 | 16/16 | 0.93 | 16 | 0 | 16 |
 
 - H1-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t_0$, median ≤ 0.7× and worst ≤ the deployed fixed-sweep BE against the reference-limited (BE reference at $\Delta t_0/4$)): **failed** (none).
 - H2-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t\ge2\Delta t_0$, worst and median ≤ deployed, paired ratio ≤ 0.75): **failed** (none).
@@ -649,7 +649,7 @@ Observed order (16 cases: a claim needs ≥ 13 valid primary triples; the adjace
 
 Deployed fixed-sweep BE at $\Delta t_0$: error worst / median 4.712 / 1.427 % (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL); anchor discrepancy median 1.866 %; 11.9 ms median; distance from the generic adaptive BE at $\Delta t_0$: median 0.000 %.
 
-| form | scheme | $\Delta t/\Delta t_0$ | error worst (reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL) | error median | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |
+| form | scheme | $\Delta t/\Delta t_0$ | error worst (%, reference-limited (BE reference at $\Delta t_0/4$), PROVISIONAL) | error median (%) | anchor disc. median, resolved cases only (%) | resolved / eligible | verified | ratio to deployed | ms |
 |---|---|---|---|---|---|---|---|---|---|
 | LSPG | BE | 0.125 | 6.363 | 1.021 | 0.258 | 16/16 | 16/16 | — | — |
 | LSPG | BE | 0.25 | 5.932 | 0.943 | 0.506 | 16/16 | 16/16 | — | — |
@@ -702,18 +702,18 @@ Deployed fixed-sweep BE at $\Delta t_0$: error worst / median 4.712 / 1.427 % (r
 
 Observed order (16 cases: a claim needs ≥ 13 valid primary triples; the adjacent check is unresolved below 8 cases with both triples valid):
 
-| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid |
-|---|---|---|---|---|---|---|
-| LSPG | BE | order 1 | 0.93 | 16/16 | 0.88 | 16 |
-| LSPG | CN | not established | 1.27 | 16/16 | 1.74 | 16 |
-| LSPG | CN-R | order 2 | 1.88 | 16/16 | 1.89 | 16 |
-| LSPG | BDF2 | not established | 1.92 | 16/16 | 1.95 | 16 |
-| LSPG | TH06 | order 1 | 0.93 | 16/16 | 0.88 | 16 |
-| GAL | BE | order 1 | 0.94 | 16/16 | 0.89 | 16 |
-| GAL | CN | order 2 | 2.00 | 16/16 | 2.00 | 16 |
-| GAL | CN-R | order 2 | 1.97 | 16/16 | 1.92 | 16 |
-| GAL | BDF2 | order 2 | 2.01 | 16/16 | 1.96 | 16 |
-| GAL | TH06 | order 1 | 0.95 | 16/16 | 0.93 | 16 |
+| form | scheme | claim | primary median $p$ | valid | adjacent median $p$ | both valid | both in [1.7, 2.3] | both in [0.8, 1.25] |
+|---|---|---|---|---|---|---|---|---|
+| LSPG | BE | order 1 | 0.93 | 16/16 | 0.88 | 16 | 0 | 13 |
+| LSPG | CN | not established | 1.27 | 16/16 | 1.74 | 16 | 2 | 4 |
+| LSPG | CN-R | order 2 | 1.88 | 16/16 | 1.89 | 16 | 14 | 0 |
+| LSPG | BDF2 | not established | 1.92 | 16/16 | 1.95 | 16 | 11 | 0 |
+| LSPG | TH06 | order 1 | 0.93 | 16/16 | 0.88 | 16 | 0 | 15 |
+| GAL | BE | order 1 | 0.94 | 16/16 | 0.89 | 16 | 0 | 14 |
+| GAL | CN | order 2 | 2.00 | 16/16 | 2.00 | 16 | 16 | 0 |
+| GAL | CN-R | order 2 | 1.97 | 16/16 | 1.92 | 16 | 16 | 0 |
+| GAL | BDF2 | order 2 | 2.01 | 16/16 | 1.96 | 16 | 16 | 0 |
+| GAL | TH06 | order 1 | 0.95 | 16/16 | 0.93 | 16 | 0 | 16 |
 
 - H1-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t_0$, median ≤ 0.7× and worst ≤ the deployed fixed-sweep BE against the reference-limited (BE reference at $\Delta t_0/4$)): **failed** (none).
 - H2-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\Delta t\ge2\Delta t_0$, worst and median ≤ deployed, paired ratio ≤ 0.75): **failed** (none).

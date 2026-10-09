@@ -1,0 +1,33 @@
+host=pax063 source_commit=6abf1117b9cb33fcbcbaf844b073a3001c76f00d
+NVIDIA H100 PCIe, GPU-a081608c-ebad-fca5-530a-972ce021379f, 81559 MiB
+10.235.106.32:/projects/paralab  4.6T  998G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[14.3s] [mesh 65] bank rows [(512, 250047)] 3.4s
+[17.4s] [mesh 65] Gram cond 1.0000, A (2052, 512) 6.5s
+[17.7s] [mesh 65] bank rows [(512, 250047)] 0.3s
+[18.0s] [mesh 65] Gram cond 1.0000, A (2052, 512) 0.6s
+[27.2s] [mesh 65] tensor (2052, 512, 512) 9.9s
+[32.4s] [mesh 65] bank rows [(32, 250047)] 1.2s
+[34.2s] [mesh 65] Gram cond 1.0000, A (133, 32) 3.0s
+[35.0s] [mesh 65] tensor (133, 32, 32) 3.9s
+[53.9s] [65|M2] gates {'gram_condition': 1.000000000000512, 'G1_derivative_vs_fd': 1.318580370885292e-07, 'G1_converged_points_fd4': 2.542068610118275e-13, 'G1_converged_points_fd2_diag': 1.867749393216895e-06, 'G2_meshnodes_offmesh_vs_tensor_32col': 1.0052392560507387e-15, 'G4_solver_vs_vendor_fields_32col': 0.0, 'G4_solver_vs_vendor_coefs_32col': 0.0, 'G4_iterations_reasons_equal': True, 'G3_jacobian_vs_jacfwd': 3.5227420826982903e-16, 'G3_adv_half_Jc': 8.436150706960835e-16}
+[89.5s] [65|M2|R512_k4] conv: worst refined 1.4390% dist 0.00e+00 elig True
+[96.4s] [65|M2|R512_k4] check: worst refined 1.4390% dist 4.49e-07 elig True
+[100.3s] [65|M2|R512_k4] lat2048: worst refined 2.7538% dist 2.62e-02 elig True
+[104.7s] [65|M2|R512_k4] lat4096: worst refined 1.4384% dist 9.35e-04 elig True
+[109.1s] [65|M2|R512_k4] lat8192: worst refined 1.4390% dist 1.69e-04 elig True
+[116.1s] [65|M2|R512_k4] lat16384: worst refined 1.4390% dist 3.69e-05 elig True
+[120.6s] [65|M2|R512_k4] lat32768: worst refined 1.4390% dist 2.92e-06 elig True
+[126.2s] [65|M2|R512_k4] lat65536: worst refined 1.4390% dist 1.90e-07 elig True
+[130.4s] [65|M2|R512_k4] gl12: worst refined 7.6042% dist 7.04e-02 elig True
+[130.6s] [65|M2|R512_k4] gl16: worst refined 1.4992% dist 7.53e-03 elig True
+[135.2s] [65|M2|R512_k4] gl20: worst refined 1.4390% dist 9.47e-04 elig True
+[139.5s] [65|M2|R512_k4] gl24: worst refined 1.4391% dist 1.11e-04 elig True
+[140.0s] [65|M2|R512_k4] gl32: worst refined 1.4390% dist 5.14e-06 elig True
+[144.3s] [65|M2|R512_k4] lat256: worst refined 28.3088% dist 2.79e-01 elig True
+[148.4s] [65|M2|R512_k4] smol8: worst refined 36.3555% dist 3.64e-01 elig False
+[152.5s] [65|M2|R512_k4] tensor: worst refined 6.6329% dist 6.70e-02 elig True
+[204.5s] [65|M2|R512_k4] done in 150s deployed {'family': 'lat', 'arm': 'lat8192', 'm': 8192, 'median_ms': 42.2725782264024, 'timing_valid': False, 'chosen_by': 'smaller_m (K-time failed; diagnostic only, DESIGN A5)'} timing gates {'drift_worst': 1.1395269208039285, 'drift_pass': False, 'deterministic_max_diff': 0.0, 'deterministic': True}
+W3D COMPLETE
+ALL-DONE

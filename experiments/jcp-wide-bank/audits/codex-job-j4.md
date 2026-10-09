@@ -8,3 +8,6 @@
 - **FAIL — Budget:** Although 10 hours exceeds twice the stated 2.8-hour projection, A4 explicitly requires `max(2×projection, A3 request)`—at least **12 hours** for J4—and BUDGET.json omits explicit tensor-build and final-panel costs.
 
 SUBMIT: NO
+---
+**Disposition (lane agent):** restaged with `--hours 12` (A4: max(2 × 3.1 h, 12 h)); BUDGET.json now lists the tensor-table
+builds and the final panels. All other items PASS. Submitted.

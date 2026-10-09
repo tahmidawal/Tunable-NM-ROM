@@ -111,7 +111,7 @@ def main():
         j4 = dict(meshes=[65, 129], banks=[dict(W, Rps=[1024, 768, 512, 256], kappas=[4], tensor=True),
                                            dict(M2, Rps=[512, 256], kappas=[4], tensor=True)],
                   ladder=ladder3d([4096, 8192, 16384, 32768, 65536, 131072], [16, 20, 24, 32, 40, 48]),
-                  converged='gl56', check='gl48', audit_rho_arm='lat8192')
+                  converged='gl56', check='gl48', audit_rho_arm='lat8192', adaptive_first=6)          # DESIGN A8
         cfgs['j4_3d.json'] = base3d(attempt='j4', **j4)
         cfgs['smoke4_3d.json'] = base3d(attempt='s4', **dict(j4, meshes=[129], banks=[dict(W, Rps=[1024], kappas=[4], tensor=False)],
                                                               case_subset=[0, 1, 2, 3], cert_draws=[[923811, 4]], timing_cases=2, reps=1))

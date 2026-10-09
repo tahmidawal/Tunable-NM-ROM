@@ -583,3 +583,20 @@ labelled. J4 runs with the corrected code. Chronology, stated plainly: the defec
 distance next to its eligibility, and then the exit counts. No $m^\star$, deployment or timing under the pooled rule had
 been computed when this amendment was written, but the first setting's per-arm errors had been seen. The amendment
 restores the rule A0-3 cites; it does not use any of those values.
+
+## Amendment A8 (2026-10-08, after the J4 smoke s4d, job 5021867; before J4 is staged)
+
+**What the smoke showed.** At 129 nodes, $R'=1024$, $M=4097$ (4 validation cases), the converged rollout and every
+resolved rule have reason-0 (non-stationary) exits at steps $k=3,4,5$ of 2 of the 4 cases: 5 of 100 pooled steps,
+above the 1 % bar of A7. These are the first fixed-sweep steps after the 3-step adaptive LM phase of the vendored
+solver; the refined errors of all resolved rules agree (1.43 % worst), the certification rollouts are stationary,
+and nothing diverges. As registered, K-conv would fail at $R'=1024$, making 1c unavailable for a solver-schedule reason.
+Peak device memory was 69.6 GB on an H100 (above the coordinator's ~65 GB bar): J4 runs on an H200.
+
+**Change (J4 only, every arm, both banks, every $R'$ alike).** The adaptive LM phase of the vendored solver
+(`make_fsc_rule(adaptive_first=…)`, an existing parameter) runs on the first **6** steps instead of 3; everything
+else (gtol, trust, sweeps, eligibility bar 1 %, K-conv bar) is unchanged. J4's results are therefore not
+directly comparable with J2's or the 2026-10-01 lane's solver (adaptive_first = 3); the report says so. The change is
+verified on a repeat of the smoke (s4e) before J4 is staged; if the 1 % bar still fails there, J4 runs as registered
+and reports 1c's $m^\star$-based verdicts as unavailable, with the converged-rollout errors shown as diagnostics.
+No gate is loosened.

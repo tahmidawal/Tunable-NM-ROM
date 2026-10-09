@@ -339,7 +339,7 @@ def main():
                 lean = jax.tree_util.tree_map(lambda x: block(jnp.asarray(x)), lean)
                 sv = np.linalg.svd(np.asarray(lean['A']), compute_uv=False)
                 S_rep_start_mem = mem.interval()['boundary']
-                S_rep = B_rep['settings'][key] = dict(start_memory=S_rep_start_mem, 
+                S_rep = B_rep['settings'][key] = dict(start_memory=S_rep_start_mem, adaptive_first=int(cfg.get('adaptive_first', 3)), 
                     Rp=Rp, M=M, kappa_nominal=kap, kappa=M / Rp, trust=trust, tensor_bytes=8 * M * Rp * Rp,
                     A_condition=float(sv[0] / sv[-1]), A_rank=int(np.sum(sv > 1e-12 * sv[0])), A_singular_values=sv.tolist(),
                     arms={})
@@ -350,7 +350,8 @@ def main():
                           dict(name='check', rule=cfg['check'], family='ref', control=False)] +
                          [dict(name=r['name'], rule=r['name'], family=r['family'], control=bool(r.get('control')))
                           for r in ladder if r['name'] != cfg['check']])
-                q_off = OM.make_fsc_rule(n, Rp, M, OM.contract_offmesh, dt=dt, gtol=cfg['gtol'], trust=trust)
+                af = int(cfg.get('adaptive_first', 3))              # DESIGN A8 (J4: 6), applied to every arm alike
+                q_off = OM.make_fsc_rule(n, Rp, M, OM.contract_offmesh, dt=dt, gtol=cfg['gtol'], trust=trust, adaptive_first=af)
                 arms = {}
                 for sp in specs:
                     Xr, wr = rules[sp['rule']]
@@ -360,7 +361,7 @@ def main():
                     d = dict(lean, Ts=block(jnp.asarray(tbt['Tsym'][:M, :Rp, :Rp])))
                     arms['tensor'] = dict(name='tensor', rule='tensor', family='tensor', control=False, m=None, data=d,
                                           kind='tensor', q=OM.make_fsc_rule(n, Rp, M, OM.contract_tensor, dt=dt,
-                                                                           gtol=cfg['gtol'], trust=trust))
+                                                                           gtol=cfg['gtol'], trust=trust, adaptive_first=af))
                 for nm, s_ in arms.items():
                     S_rep['arms'][nm] = dict(rule=s_['rule'], family=s_['family'], control=s_['control'], m=s_['m'],
                                              bytes=(8 * s_['m'] * (2 * Rp + M)) if s_['kind'] == 'offmesh'

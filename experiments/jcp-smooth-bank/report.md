@@ -12,8 +12,8 @@ Retrains the Burgers 2D coordinate-network bank with a gradient-matching (Sobole
 
 ## Answers in brief (generated; PROVISIONAL, development/validation, one training seed per bank)
 
-- **H2 (smoothness lowers the points needed): no resolved improvement.** In `acc` the own-state $m^*(0.06)$ is 3136 for every bank. In `fast` it is 3136 for `base` and 1600 / 1600 / 1600 for sig1 / sig2 / sob01. However, `frozen_lane` (the same recipe and seed as `base`) gives 1600, so the pre-registered verdict is UNRESOLVED, not a pass.
-- **Onset.** Gauss 32² gives worst ρ 1.61–1.61 in `acc` for every bank. The restricted-vector diagnostic (first 320 tests only, own denominator, solver not rerun) gives 0.107–0.142. This is consistent with a test-frequency contribution to the onset, which a smoother bank cannot remove.
+- **H2 (smoothness lowers the points needed): no resolved improvement** (sig1, sig2: UNRESOLVED; sob01: not met). In `acc` the own-state $m^*(0.06)$ is 3136 for every bank. In `fast` it is 3136 for `base` and 1600 / 1600 / 1600 for sig1 / sig2 / sob01. However, `frozen_lane` (the same recipe and seed as `base`) gives 1600, so the pre-registered verdict is UNRESOLVED, not a pass.
+- **Onset.** Gauss 32² gives worst ρ 1.61–1.61 in `acc` for every bank. The restricted-vector diagnostic (first 320 tests only, own denominator, solver not rerun) gives 0.107–0.142. This is consistent with a test-frequency contribution to the onset.
 - **Tail.** Smaller initial σ gives steeper fitted Gauss tails in these runs: in `acc` the fitted parameter is 1.0221 (base), 1.0251 (sig2) and 1.0322 (sig1); over all banks and settings it spans 1.0185–1.0322. Worst ρ at Gauss 128² is 3.57e-04 (sig1), 9.27e-03 (base) and 2.11e-03 (frozen); at Gauss 256² it is 3.18e-06 (sig1) and 3.09e-04 (base). These rungs lie past the 0.01 bar.
 - **Representation.** Neither smaller-σ run increases the median `acc` projection floor (2.43e-04 base, 2.30e-04 sig2, 2.24e-04 sig1). The trained Fourier frequencies stay near their initial scale: the final median ‖B_j‖ is 1.15 for sig1 and 4.64 for base.
 - **H1 (Sobolev).** Against the common-support **mesh** derivative targets, sob01 lowers the median gradient error by 70.3% (D2) / 69.7% (D4) and the median projection floor by 38.2% in `acc`. In `fast` the reductions are only 20.2% / 17.8%. Its converged-quadrature rollout error vs S changes by +1.7% (`acc`) and -0.01% (`fast`), so there is no resolved rollout improvement in this run. H1 is not met.
@@ -24,7 +24,7 @@ Retrains the Burgers 2D coordinate-network bank with a gradient-matching (Sobole
 
 ## Method in one screen
 
-Each backward-Euler step solves $r(c)=D\big(Ac-p+\Delta t\,(N(c)+\nu\Lambda Ac)\big)=0$ with the tested advection $N_a(c)=L\sum_q w_q\,\psi_a(x_q)\,u(x_q)\,(u_x+u_y)(x_q)$, where $u=G'(x)c$ is the rotated bank. For a rule $Q$ and a state $c$, $\rho_Q(c)=\lVert N^{Q}(c)-N^{\mathrm{G640}}(c)\rVert_2/\lVert N^{\mathrm{G640}}(c)\rVert_2$. The Sobolev arm adds $\lambda\,\overline{\lVert\nabla\hat u-D_hu\rVert^2}/\overline{\lVert D_hu\rVert^2}$ to the value loss, with $D_h$ second-order central differences on the training mesh. The projection floor is $\min_c\lVert G'c-u_{\rm ref}\rVert/\lVert u_{\rm ref}\rVert$ on the 257² nodes, and the gradient error is that of $\nabla(G'c^\star)$ against $D^{(2)}u_{\rm ref}$ or $D^{(4)}u_{\rm ref}$.
+Each backward-Euler step approximately minimises $\tfrac12\lVert r(c)\rVert_2^2$ by Levenberg–Marquardt, with $r(c)=D\big(Ac-p+\Delta t\,(N(c)+\nu\Lambda Ac)\big)$ ($A=\Phi^{\mathsf T}G'$ the exact projection on the $M$ sine tests, $\Lambda$ their eigenvalues, $D=(I+\Delta t\nu\Lambda)^{-1}$, $p$ the previous step) and the tested advection $N_a(c)=L\sum_q w_q\,\psi_a(x_q)\,u(x_q)\,(u_x+u_y)(x_q)$, where $u=G'(x)c$ is the rotated bank. For a rule $Q$ and a state $c$, $\rho_Q(c)=\lVert N^{Q}(c)-N^{\mathrm{G640}}(c)\rVert_2/\lVert N^{\mathrm{G640}}(c)\rVert_2$. The Sobolev arm adds $\lambda\,\overline{\lVert\nabla\hat u-D_hu\rVert^2}/\overline{\lVert D_hu\rVert^2}$ to the value loss, with $D_h$ second-order central differences on the training mesh. The projection floor is $\min_c\lVert G'c-u_{\rm ref}\rVert/\lVert u_{\rm ref}\rVert$ on the 257² nodes, and the gradient error is that of $\nabla(G'c^\star)$ against $D^{(2)}u_{\rm ref}$ or $D^{(4)}u_{\rm ref}$.
 
 ## Training
 
@@ -196,7 +196,7 @@ Each cell: ST / S.
 - `sig2`: C5a min rel. error 1.54e-07; acc: C4 pass, gref-vs-768 rollout 1.10e-13, tight-solver distance 3.06e-06, eligibility ok; fast: C4 pass, gref-vs-768 rollout 1.11e-13, tight-solver distance 1.70e-05, eligibility ok.
 - `sig1`: C5a min rel. error 1.75e-07; acc: C4 pass, gref-vs-768 rollout 5.81e-15, tight-solver distance 3.00e-06, eligibility ok; fast: C4 pass, gref-vs-768 rollout 5.83e-15, tight-solver distance 1.70e-05, eligibility ok.
 
-- **R1** (frozen bank with the deployed rotation reproduces the 2D lane at $1024^2$): pass — acc: Gauss 64² worst ρ on lat64 states 0.0186 (2D lane 0.0186), gref worst ST 2.747% (2.747%), lat64 worst ST 3.384% (3.384%); fast: Gauss 64² worst ρ on lat64 states 0.0233 (2D lane 0.0233), gref worst ST 4.637% (4.637%), lat64 worst ST 5.033% (5.033%).
+- **R1** (frozen bank with the deployed rotation reproduces the 2D lane's job 4735709 at $1024^2$; errors PROVISIONAL): pass — acc: Gauss 64² worst ρ on lat64 states 0.0186 (2D lane 0.0186), gref worst ST 2.747% (2.747%), lat64 worst ST 3.384% (3.384%); fast: Gauss 64² worst ρ on lat64 states 0.0233 (2D lane 0.0233), gref worst ST 4.637% (4.637%), lat64 worst ST 5.033% (5.033%).
 
 ## Verdicts (DESIGN A1.5, A2.4, A4; PROVISIONAL, development/validation; one seed per arm)
 

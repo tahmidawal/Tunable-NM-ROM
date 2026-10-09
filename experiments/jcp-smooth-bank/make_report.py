@@ -271,8 +271,8 @@ def verdicts(E, T, M):
     return out
 
 
-R1_PINNED = dict(acc=dict(g64_lat64=0.01855400027, gref_ST=0.02746551840, lat64_ST=0.03383906214),
-                 fast=dict(g64_lat64=0.02329974040, gref_ST=0.04636993877, lat64_ST=0.05032507568))
+R1_SRC = json.loads((HERE / 'results/r1_targets_from_2d_lane.json').read_text())   # extracted from the 2D lane's dv1024 result.json (sha256 recorded)
+R1_PINNED = R1_SRC['targets']
 
 
 def r1_gate(E):
@@ -316,6 +316,13 @@ def plots(E, M, out):
                         continue
                     ax[i, j].scatter(m, y, color=cols[b], marker=mk, s=60, alpha=.85,
                                      label=(b if (bb == 0.06 and i == 0 and j == 0) else None))
+            groups = {}
+            for b in banks:                              # name every bank at its (possibly shared) square marker
+                m = M[b][s]['mstar']['gref|G|0.06']
+                if m is not None:
+                    groups.setdefault((m, round(100 * M[b][s][key], 2)), []).append(b)
+            for (m, y), names in groups.items():
+                ax[i, j].annotate(', '.join(names), (m, y), fontsize=6, xytext=(5, -2), textcoords='offset points', va='top')
             ax[i, j].set_xscale('log')
             ax[i, j].set_xlabel('Gauss points needed m* (confirmed rung): square ρ≤0.06, circle ρ≤0.01', fontsize=9)
             ax[i, j].set_ylabel(ylab, fontsize=9)
@@ -387,7 +394,7 @@ def e2e_plot(E, M, TM, out):
             lab.append(k.replace('|', ' ')); val.append(v)
         ax[2].barh(np.arange(len(val)), val); ax[2].set_yticks(np.arange(len(val))); ax[2].set_yticklabels(lab, fontsize=8)
         ax[2].set_xlabel('median ms per query (rollout + decode), paired A–B–A')
-        ax[2].set_title(f"cost at each bank's own m* rules ({TM['gpu']})\nnot matched to the accuracy panels", fontsize=10)
+        ax[2].set_title(f"cost at each bank's own m* rules ({TM['gpu']})\\ntiming: dev6 only, 3 repetitions in both orders; not matched to the accuracy panels", fontsize=9)
     fig.suptitle('End-to-end accuracy and cost\n' + CAPTION, fontsize=11)
     fig.tight_layout(); fig.savefig(out / 'e2e.png', dpi=140); plt.close(fig)
 
@@ -459,12 +466,12 @@ def main():
         R_ = lambda b, s, r, p='gref': E[b]['settings'][s]['rho'][r][p]['max']
         dS = lambda t, s, k: 100 * (M[t][s][k] / M['base'][s][k] - 1)
         accm = sorted({ms(b, 'acc', 0.06) for b in banks})
-        w(f"- **H2 (smoothness lowers the points needed): no resolved improvement.** In `acc` the own-state $m^*(0.06)$ is {', '.join(map(str, accm))} for every bank. "
+        w(f"- **H2 (smoothness lowers the points needed): no resolved improvement** (sig1, sig2: UNRESOLVED; sob01: not met). In `acc` the own-state $m^*(0.06)$ is {', '.join(map(str, accm))} for every bank. "
           f"In `fast` it is {ms('base','fast',0.06)} for `base` and {ms('sig1','fast',0.06)} / {ms('sig2','fast',0.06)} / {ms('sob01','fast',0.06)} for sig1 / sig2 / sob01. "
           f"However, `frozen_lane` (the same recipe and seed as `base`) gives {ms('frozen_lane','fast',0.06)}, so the pre-registered verdict is UNRESOLVED, not a pass.")
         w(f"- **Onset.** Gauss 32² gives worst ρ {fmt(min(R_(b,'acc','gauss32') for b in banks))}–{fmt(max(R_(b,'acc','gauss32') for b in banks))} in `acc` for every bank. "
           f"The restricted-vector diagnostic (first 320 tests only, own denominator, solver not rerun) gives {fmt(min(E[b]['settings']['acc']['rho']['gauss32']['gref']['max_320'] for b in banks))}–{fmt(max(E[b]['settings']['acc']['rho']['gauss32']['gref']['max_320'] for b in banks))}. "
-          f"This is consistent with a test-frequency contribution to the onset, which a smoother bank cannot remove.")
+          f"This is consistent with a test-frequency contribution to the onset.")
         tv = [M[b][x]['tail']['gref']['varrho'] for b in banks for x in SETTINGS]
         w(f"- **Tail.** Smaller initial σ gives steeper fitted Gauss tails in these runs: in `acc` the fitted parameter is {M['base']['acc']['tail']['gref']['varrho']:.4f} (base), {M['sig2']['acc']['tail']['gref']['varrho']:.4f} (sig2) and {M['sig1']['acc']['tail']['gref']['varrho']:.4f} (sig1); over all banks and settings it spans {min(tv):.4f}–{max(tv):.4f}. "
           f"Worst ρ at Gauss 128² is {fmt(R_('sig1','acc','gauss128'))} (sig1), {fmt(R_('base','acc','gauss128'))} (base) and {fmt(R_('frozen_deployed','acc','gauss128'))} (frozen); at Gauss 256² it is {fmt(R_('sig1','acc','gauss256'))} (sig1) and {fmt(R_('base','acc','gauss256'))} (base). These rungs lie past the 0.01 bar.")
@@ -480,7 +487,7 @@ def main():
             w(f"- **Cost.** At the fixed `acc` setting and rule (every bank's $m^*$ there is the same Gauss rung), the observed per-query medians lie in {min(av):.1f}–{max(av):.1f} ms on one {TM['gpu']}.")
         w('- **Pre-registered outcome:** no useful winner, so nothing is promoted to 3D and `comb` is not run (A1.5). The round-1 verdicts are provisional until the seed-1 comparator `base_s1` (round 2) is evaluated.\n')
     w('## Method in one screen\n')
-    w('Each backward-Euler step solves $r(c)=D\\big(Ac-p+\\Delta t\\,(N(c)+\\nu\\Lambda Ac)\\big)=0$ with the tested advection '
+    w('Each backward-Euler step approximately minimises $\\tfrac12\\lVert r(c)\\rVert_2^2$ by Levenberg–Marquardt, with $r(c)=D\\big(Ac-p+\\Delta t\\,(N(c)+\\nu\\Lambda Ac)\\big)$ ($A=\\Phi^{\\mathsf T}G\'$ the exact projection on the $M$ sine tests, $\\Lambda$ their eigenvalues, $D=(I+\\Delta t\\nu\\Lambda)^{-1}$, $p$ the previous step) and the tested advection '
       '$N_a(c)=L\\sum_q w_q\\,\\psi_a(x_q)\\,u(x_q)\\,(u_x+u_y)(x_q)$, where $u=G\'(x)c$ is the rotated bank. For a rule $Q$ and a state $c$, '
       '$\\rho_Q(c)=\\lVert N^{Q}(c)-N^{\\mathrm{G640}}(c)\\rVert_2/\\lVert N^{\\mathrm{G640}}(c)\\rVert_2$. The Sobolev arm adds '
       '$\\lambda\\,\\overline{\\lVert\\nabla\\hat u-D_hu\\rVert^2}/\\overline{\\lVert D_hu\\rVert^2}$ to the value loss, with $D_h$ second-order central differences on the training mesh. '
@@ -614,7 +621,7 @@ def main():
             f"tight-solver distance {fmt(M[b][s]['tight_max'])}, eligibility {'ok' if not el[s] else 'FAILED: ' + ', '.join(el[s])}"
             for s in SETTINGS) + '.')
     w('')
-    w(f"- **R1** (frozen bank with the deployed rotation reproduces the 2D lane at $1024^2$): {'pass' if R1['passed'] else 'FAIL'} — " + '; '.join(
+    w(f"- **R1** (frozen bank with the deployed rotation reproduces the 2D lane's job {R1_SRC['job_id']} at $1024^2$; errors PROVISIONAL): {'pass' if R1['passed'] else 'FAIL'} — " + '; '.join(
         f"{s}: Gauss 64² worst ρ on lat64 states {fmt(v['g64_lat64'])} (2D lane {fmt(R1_PINNED[s]['g64_lat64'])}), gref worst ST {pct(v['gref_ST'])}% ({pct(R1_PINNED[s]['gref_ST'])}%), lat64 worst ST {pct(v['lat64_ST'])}% ({pct(R1_PINNED[s]['lat64_ST'])}%)"
         for s, v in R1.get('per_setting', {}).items()) + '.')
     w('')

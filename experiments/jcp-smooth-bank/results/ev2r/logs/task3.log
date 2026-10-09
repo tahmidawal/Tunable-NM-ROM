@@ -1,0 +1,29 @@
+E1009 03:49:13.153777 2491480 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu x64=True precision=highest gpu=NVIDIA A100 80GB PCIe
+CONTROLS {"C2": true, "C3": true, "C5b": true}
+VARIANT sob1
+sob1 acc ROLLOUT gref 233
+sob1 acc ROLLOUT lat64 249
+sob1 acc ROLLOUT gauss32 267
+sob1 acc ROLLOUT gauss48 285
+sob1 acc ROLLOUT gauss64 299
+sob1 acc ROLLOUT gauss96 315
+sob1 acc ROLLOUT fib1597 330
+sob1 acc ROLLOUT fib4181 347
+sob1 acc ROLLOUT fib6765 366
+sob1 acc PROJ value S med/max 0.00014430290861986632 0.01130213410850702 grad 0.01849129715941325
+sob1 acc RHO done {'gref|G|0.116': 3136, 'gref|G|0.06': 4096, 'gref|G|0.01': 16384} 709
+sob1 acc SPECTRA {'u|n_1e-04': {'median': 60.0, 'max': 190, 'unresolved': 5}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 35, 'inconclusive': 29, 'unresolved': 0}, 'f|n_1e-04': {'median': 85.0, 'max': 202, 'unresolved': 21}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 4, 'algebraic': 48, 'inconclusive': 12, 'unresolved': 0}} 727
+sob1 fast ROLLOUT gref 770
+sob1 fast ROLLOUT lat64 778
+sob1 fast ROLLOUT gauss32 785
+sob1 fast ROLLOUT gauss48 791
+sob1 fast ROLLOUT gauss64 800
+sob1 fast ROLLOUT gauss96 811
+sob1 fast ROLLOUT fib1597 820
+sob1 fast ROLLOUT fib4181 830
+sob1 fast ROLLOUT fib6765 839
+sob1 fast PROJ value S med/max 0.003186763593810359 0.07428828985120535 grad 0.028794823318219726
+sob1 fast RHO done {'gref|G|0.116': 1600, 'gref|G|0.06': 1600, 'gref|G|0.01': 9216} 1029
+sob1 fast SPECTRA {'u|n_1e-04': {'median': 63.0, 'max': 161, 'unresolved': 1}, 'u|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'u|class': {'geometric': 0, 'algebraic': 52, 'inconclusive': 12, 'unresolved': 0}, 'f|n_1e-04': {'median': 101.0, 'max': 206, 'unresolved': 26}, 'f|n_1e-08': {'median': None, 'max': None, 'unresolved': 64}, 'f|class': {'geometric': 1, 'algebraic': 51, 'inconclusive': 12, 'unresolved': 0}} 1038
+BANKEVAL COMPLETE

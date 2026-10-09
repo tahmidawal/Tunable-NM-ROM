@@ -1,0 +1,18 @@
+host=pax106 source_commit=2ff4bbde99bbff1a0d9fa0e7306a56d88c4626ce gpus=0,1,2,3,4
+0, NVIDIA A100 80GB PCIe, GPU-93ae5f8d-299a-28bc-9b53-07a050aa9da5, 81920 MiB
+1, NVIDIA A100 80GB PCIe, GPU-4d93df32-aec8-40bc-f107-d8fc98bdf033, 81920 MiB
+2, NVIDIA A100 80GB PCIe, GPU-9732c808-acc9-5c43-f0ce-4a81a2bf1719, 81920 MiB
+3, NVIDIA A100 80GB PCIe, GPU-c692ba0c-a68c-8e5c-5811-dbbe618d443c, 81920 MiB
+4, NVIDIA A100 80GB PCIe, GPU-958eaf8d-bc37-c972-8632-fe73352de1ac, 81920 MiB
+10.235.106.24:/projects/paralab  4.6T  997G  3.6T  22% /cluster/tufts/paralab
+dev 0 jax_backend=gpu NVIDIA A100 80GB PCIe
+dev 1 jax_backend=gpu NVIDIA A100 80GB PCIe
+dev 2 jax_backend=gpu NVIDIA A100 80GB PCIe
+dev 3 jax_backend=gpu NVIDIA A100 80GB PCIe
+dev 4 jax_backend=gpu NVIDIA A100 80GB PCIe
+task task0 exit=0
+task task1 exit=0
+task task2 exit=0
+task task3 exit=0
+task task4 exit=0
+ALL-DONE

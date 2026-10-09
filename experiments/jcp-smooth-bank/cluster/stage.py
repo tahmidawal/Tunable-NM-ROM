@@ -78,6 +78,7 @@ def main():
 #SBATCH --gres=gpu:{gtype}:{job["gpus"]}
 {constraint}
 #SBATCH --nodes=1
+{('#SBATCH --exclude=' + job['exclude']) if job.get('exclude') else ''}
 #SBATCH --cpus-per-task={job.get("cpus", 32)}
 #SBATCH --mem={job.get("mem", "320G")}
 #SBATCH --time={int(job["hours"]):02d}:00:00

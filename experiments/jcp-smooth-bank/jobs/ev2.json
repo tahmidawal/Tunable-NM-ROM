@@ -1,6 +1,6 @@
 {
- "attempt": "ev2",
- "purpose": "round-2 evaluation (DESIGN 3.3, A1.5, A1.7/A2.6): base (re-evaluated as in-job comparator), base_s1, sob001, sob1, coarse (+ FOM comparators at 129/257 nodes) at 1024^2; then paired timing",
+ "attempt": "ev2r",
+ "purpose": "round-2 evaluation (DESIGN 3.3, A1.5, A1.7/A2.6): base (re-evaluated as in-job comparator), base_s1, sob001, sob1, coarse (+ FOM comparators at 129/257 nodes) at 1024^2; then paired timing; resubmission of ev2 (Slurm 5037554 failed the GPU preflight on pax007), pax007 excluded",
  "gpus": 5,
  "hours": 10,
  "mem": "300G",
@@ -123,5 +123,6 @@
   "eval/eval_sob1.json",
   "eval/eval_coarse.json",
   "timing/timing.json"
- ]
+ ],
+ "exclude": "pax007"
 }

@@ -1,0 +1,37 @@
+E1009 03:46:50.810948  287537 platform_util.cc:271] Failed to create stream executor for device CUDA:0: CUDA error: : CUDA_ERROR_UNKNOWN: unknown error
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/xla_bridge.py", line 839, in backends
+    backend = _init_backend(platform)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/xla_bridge.py", line 923, in _init_backend
+    backend = registration.factory()
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/xla_bridge.py", line 576, in make_pjrt_c_api_client
+    return xla_client.make_c_api_client(plugin_name, updated_options, None)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jaxlib/xla_client.py", line 160, in make_c_api_client
+    return _xla.get_c_api_client(
+           ~~~~~~~~~~~~~~~~~~~~~^
+        plugin_name,
+        ^^^^^^^^^^^^
+    ...<4 lines>...
+        sort_devices_by_process_index,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+jax.errors.JaxRuntimeError: INTERNAL: no supported devices found for platform CUDA
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+    import jax,sys; b=jax.default_backend(); print(f'dev 2 jax_backend={b} {jax.devices()[0].device_kind}',flush=True); sys.exit(0 if b=='gpu' else 42)
+                      ~~~~~~~~~~~~~~~~~~~^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/xla_bridge.py", line 1044, in default_backend
+    return get_backend(None).platform
+           ~~~~~~~~~~~^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/xla_bridge.py", line 973, in get_backend
+    return _get_backend_uncached(platform)
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/xla_bridge.py", line 952, in _get_backend_uncached
+    bs = backends()
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/xla_bridge.py", line 855, in backends
+    raise RuntimeError(err_msg)
+RuntimeError: Unable to initialize backend 'cuda': INTERNAL: no supported devices found for platform CUDA (you may need to uninstall the failing plugin package, or set JAX_PLATFORMS=cpu to skip this backend.)

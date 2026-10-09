@@ -327,7 +327,7 @@ def plots(st, an, rule):
         a_.spines[['top', 'right']].set_visible(False)
     ax[0].legend(fontsize=7.5, frameon=False)
     ax[1].legend(fontsize=6.5, frameon=False, loc='upper left', bbox_to_anchor=(1.01, 1.0))
-    fig.suptitle(f'Burgers 2D, {RULE_NAME.get(rule, rule)}{" (secondary setting, unselected rule; quadrature sensitivity: see report)" if s == "wide" else ""}, $L={st.res["mesh"]}$, {len(st.cases)} cases — errors are provisional '
+    fig.suptitle(f'Burgers 2D, {RULE_NAME.get(rule, rule)}{"\n(secondary setting, unselected rule; quadrature sensitivity: see report)" if s == "wide" else ""}, $L={st.res["mesh"]}$, {len(st.cases)} cases — errors are provisional '
                  '(first-order references); x = unverified', fontsize=10)
     fig.tight_layout()
     p1 = HERE / 'plots' / f'error_vs_dt_{s}.png'
@@ -355,7 +355,7 @@ def plots(st, an, rule):
     ax.set_yscale('log')
     ax.set_xlabel('end-to-end query time per case (ms; median of paired A–B–A on one GPU, six dev6 timing cases)')
     ax.set_ylabel('median error vs ST over dev6 ∪ val32 (%), PROVISIONAL')
-    ax.set_title(f'{s}: accuracy vs cost per time scheme ({RULE_NAME.get(rule, rule)}{", secondary, unselected rule; quadrature sensitivity in the report" if s == "wide" else ""})\n'
+    ax.set_title(f'{s}: accuracy vs cost per time scheme ({RULE_NAME.get(rule, rule)}{",\nsecondary setting, unselected rule; quadrature sensitivity: see report" if s == "wide" else ""})\n'
                  'lines join the $\\Delta t$ ladder (not an interpolated frontier); x = unverified', fontsize=9)
     ax.grid(True, which='major', color='#e4e4e0', lw=.6)
     ax.spines[['top', 'right']].set_visible(False)

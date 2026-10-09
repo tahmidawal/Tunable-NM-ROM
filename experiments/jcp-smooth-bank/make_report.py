@@ -292,24 +292,38 @@ def plots(E, M, out):
     out.mkdir(exist_ok=True)
     banks = [b for b in ORDER if b in M]
     cols = {b: c for b, c in zip(banks, plt.rcParams['axes.prop_cycle'].by_key()['color'] * 3)}
-    # frontier
-    fig, ax = plt.subplots(2, 2, figsize=(10, 8))
+    # frontier: one marker per bank; x = Gauss points to reach the bar on its own reached states
+    fig, ax = plt.subplots(2, 2, figsize=(11, 8.5))
     for j, s in enumerate(SETTINGS):
-        for b in banks:
-            for i, (key, ylab) in enumerate((('e_val_max', 'projection floor (worst, vs S)'),
-                                            ('E_S', 'converged-quadrature rollout error (worst, vs S)'))):
-                for bb, mk in ((0.06, 'o'), (0.116, 's')):
-                    m = M[b][s]['mstar'][f'gref|G|{bb}']
-                    x = m if m is not None else 2 * MMAX['G']
-                    ax[i, j].scatter(x, M[b][s][key], color=cols[b], marker=mk, s=50,
-                                     facecolors='none' if m is None else cols[b],
-                                     label=f'{b} (ρ≤{bb})' if (i == 0 and j == 0) else None)
-                ax[i, j].set_xscale('log'); ax[i, j].set_yscale('log')
-                ax[i, j].set_xlabel('Gauss points needed m* (own reached states)'); ax[i, j].set_ylabel(ylab)
-                ax[i, j].set_title(f'{s}')
-    ax[0, 0].legend(fontsize=7, ncol=2)
-    fig.suptitle('Error floor vs quadrature points needed (one marker per bank and bar; hollow = not reached)')
+        for i, (key, ylab) in enumerate((('e_val_max', 'projection floor, worst state (vs S) %'),
+                                        ('E_S', 'converged-quadrature rollout error, worst case (vs S) %'))):
+            for b in banks:
+                y = 100 * M[b][s][key]
+                for bb, mk, lab in ((0.06, 's', 'm*(ρ≤0.06), confirmed rung'), (0.01, 'o', 'm(ρ≤0.01), interpolated')):
+                    m = interp_m(E, b, s, bb) if bb == 0.01 else M[b][s]['mstar'][f'gref|G|{bb}']
+                    if m is None:
+                        continue
+                    ax[i, j].scatter(m, y, color=cols[b], marker=mk, s=55, label=(f'{b}' if bb == 0.01 else None))
+                    if bb == 0.01:
+                        ax[i, j].annotate(b, (m, y), fontsize=7, xytext=(4, 3), textcoords='offset points')
+            ax[i, j].set_xscale('log')
+            ax[i, j].set_xlabel('Gauss points needed (squares: ρ≤0.06 rung; circles: ρ≤0.01, interpolated)')
+            ax[i, j].set_ylabel(ylab); ax[i, j].set_title(s)
+    ax[0, 0].legend(fontsize=7)
+    fig.suptitle('Error floor vs quadrature points needed, one point per bank (PROVISIONAL references)')
     fig.tight_layout(); fig.savefig(out / 'frontier.png', dpi=140); plt.close(fig)
+    # derivatives: projection floor and gradient error per bank (both stencils on the common support)
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4.5))
+    w_ = .27
+    for j, s in enumerate(SETTINGS):
+        x = np.arange(len(banks))
+        ax[j].bar(x - w_, [M[b][s]['e_val_med'] for b in banks], w_, label='projection floor (median)')
+        ax[j].bar(x, [M[b][s]['e_grad2c_med'] for b in banks], w_, label='gradient error vs D2 (median)')
+        ax[j].bar(x + w_, [M[b][s]['e_grad4_med'] for b in banks], w_, label='gradient error vs D4 (median)')
+        ax[j].set_yscale('log'); ax[j].set_xticks(x); ax[j].set_xticklabels(banks, rotation=30, fontsize=8)
+        ax[j].set_title(f'{s}: representation of the S reference states (257² nodes, PROVISIONAL)')
+    ax[0].legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(out / 'derivatives.png', dpi=140); plt.close(fig)
     # ladders
     fig, ax = plt.subplots(1, 2, figsize=(12, 4.8))
     for j, s in enumerate(SETTINGS):
@@ -529,7 +543,7 @@ def main():
     w(f"\nRanking of useful H2 winners (A2.4/A4): {', '.join(V.get('ranking_useful_H2', [])) or 'none'}.")
     w('')
     w('## Plots\n')
-    for p in ('frontier', 'ladders', 'e2e', 'spectra'):
+    for p in ('frontier', 'ladders', 'derivatives', 'e2e', 'spectra'):
         w(f'![{p}](plots/{p}.png)\n')
     w('## Glossary\n')
     for k, v in GLOSSARY:

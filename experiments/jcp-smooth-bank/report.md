@@ -192,6 +192,8 @@ Ranking of useful H2 winners (A2.4/A4): none.
 
 ![ladders](plots/ladders.png)
 
+![derivatives](plots/derivatives.png)
+
 ![e2e](plots/e2e.png)
 
 ![spectra](plots/spectra.png)

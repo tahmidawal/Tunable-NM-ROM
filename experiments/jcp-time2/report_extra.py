@@ -23,6 +23,7 @@ NAMES = dict(BE='BE', CN='CN', CNR='CN-R', BDF2='BDF2', TH06='TH06')
 SCHEMES = ['BE', 'CN', 'CNR', 'BDF2']
 FIN = lambda x: x is not None and np.isfinite(x)
 pct = lambda x: '—' if not FIN(x) else f'{100 * x:.3f}'
+esc = lambda x: str(x).replace('|', '\\|')
 num = lambda x, f='.1f': '—' if not FIN(x) else format(x, f)
 
 
@@ -134,15 +135,15 @@ def fom_section(W, att='fom1k'):
     for k in [k for k in keys if k.startswith('rom') and T[k]['ok']]:
         c = [f for f in foms if T[f]['worst'] <= T[k]['worst']]
         if not eligible:
-            W(f"| `{k}` | {pct(T[k]['worst'])} | {num(T[k]['ms'])} | unavailable | — | — | — |")
+            W(f"| `{esc(k)}` | {pct(T[k]['worst'])} | {num(T[k]['ms'])} | unavailable | — | — | — |")
             continue
         if not c:
-            W(f"| `{k}` | {pct(T[k]['worst'])} | {num(T[k]['ms'])} | none at this accuracy | — | — | — |")
+            W(f"| `{esc(k)}` | {pct(T[k]['worst'])} | {num(T[k]['ms'])} | none at this accuracy | — | — | — |")
             continue
         fbest = min(c, key=lambda f: T[f]['ms'])
         sp = T[fbest]['ms'] / T[k]['ms']
         match.append(dict(rom=k, fom=fbest, speedup=sp))
-        W(f"| `{k}` | {pct(T[k]['worst'])} | {num(T[k]['ms'])} | `{fbest}` | {pct(T[fbest]['worst'])} | {num(T[fbest]['ms'])} | {sp:.1f}× |")
+        W(f"| `{esc(k)}` | {pct(T[k]['worst'])} | {num(T[k]['ms'])} | `{esc(fbest)}` | {pct(T[fbest]['worst'])} | {num(T[fbest]['ms'])} | {sp:.1f}× |")
     W('')
     fig, ax = plt.subplots(1, 1, figsize=(7.5, 5))
     for fam, mk in (('fom', 's'), ('rom', 'o')):
@@ -161,7 +162,8 @@ def fom_section(W, att='fom1k'):
     ax.set_yscale('log')
     ax.set_xlabel('end-to-end time per case (ms; paired A–B–A, six dev6 cases, one GPU)')
     ax.set_ylabel('worst ST error over 38 cases (%), PROVISIONAL')
-    ax.set_title(f'Full-order vs reduced, same time schemes, $L={res["mesh"]}$' + ('' if eligible else ' — NOT ELIGIBLE (no series)'), fontsize=10)
+    ax.set_title(f'Full-order vs reduced, same time schemes, $L={res["mesh"]}$' + ('' if eligible else ' — NOT ELIGIBLE (no series)')
+                 + '\nlines join the $\\Delta t$ ladder of each scheme', fontsize=9)
     ax.grid(True, which='major', color='#e4e4e0', lw=.6)
     ax.spines[['top', 'right']].set_visible(False)
     ax.legend(fontsize=6.5, frameon=False, ncol=2)
@@ -301,9 +303,9 @@ def d3_section(W, att='b3d65'):
         else:
             v1 = v2 = 'unavailable'
         W(f"- H1-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\\Delta t_0$, median ≤ 0.7× and worst ≤ the deployed "
-          f"fixed-sweep BE against the {RL.split(',')[0]}): **{v1}** ({', '.join(h1) or 'none'}).")
+          f"fixed-sweep BE against the {RL.split(',')[0]}): **{v1}** ({', '.join(esc(x) for x in h1) or 'none'}).")
         W(f"- H2-3D (**reference-dependent, PROVISIONAL**; CN/BDF2-family at $\\Delta t\\ge2\\Delta t_0$, worst and median ≤ deployed, "
-          f"paired ratio ≤ 0.75): **{v2}** ({', '.join(h2) or 'none'}).")
+          f"paired ratio ≤ 0.75): **{v2}** ({', '.join(esc(x) for x in h2) or 'none'}).")
         W('')
         fig, ax = plt.subplots(1, 2, figsize=(12, 4.4))
         for form, ls, mk in (('LSPG', '-', 'o'), ('GAL', '--', 's')):
@@ -325,8 +327,8 @@ def d3_section(W, att='b3d65'):
         ax[1].set_yscale('log')
         ax[0].set_ylabel('worst error vs BE reference at $\\Delta t_0/4$ (%)\nREFERENCE-LIMITED, PROVISIONAL')
         ax[1].set_ylabel('median anchor discrepancy, resolved cases (%)')
-        ax[0].set_title(f'3D {arm}: error vs the BE ($\\Delta t_0/4$) reference', fontsize=10)
-        ax[1].set_title(f'3D {arm}: anchor discrepancy (GAL-BDF2, $\\Delta t_0/16$)', fontsize=10)
+        ax[0].set_title(f'3D {arm}: error vs BE ref. ($\\Delta t_0/4$)', fontsize=9)
+        ax[1].set_title(f'3D {arm}: anchor discrepancy', fontsize=9)
         ax[0].legend(fontsize=6.5, frameon=False)
         ax[1].legend(fontsize=6, frameon=False)
         fig.tight_layout()

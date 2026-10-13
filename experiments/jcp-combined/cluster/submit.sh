@@ -15,7 +15,8 @@ rsync -a --exclude refs "$LOCAL/" "tufts-login:$NS/.staging/$TAG/"
 rsync -a "$LOCAL/refs/" "tufts-login:$NS/.staging/$TAG/refs/"
 ssh tufts-login "cd $NS && flock -x -w 60 .submit.lock bash -c '
   set -euo pipefail
-  n=\$(squeue -u \$USER -h -o \"%j\" | grep -c \"^cb_\" || true)
+  q=\$(squeue -u \$USER -h -o \"%j\") || { echo \"squeue failed: refusing\"; exit 5; }
+  n=\$(printf \"%s\\n\" \"\$q\" | grep -c \"^cb_\" || true)
   if [ \"\$n\" -ge 3 ]; then echo \"3 cb_ jobs live: refusing (lane cap 3)\"; exit 4; fi
   test ! -e $NS/$A || { echo \"$NS/$A exists: refusing\"; exit 3; }
   mv $NS/.staging/$TAG $NS/$A

@@ -242,6 +242,17 @@
  "gates": {
   "vendor_be_residual_identity": 4.02417650773462e-14,
   "trust_fixture_clip_active": true,
+  "nonfinite_jacobian": {
+   "vendor": [
+    21,
+    3
+   ],
+   "numpy": [
+    21,
+    3
+   ],
+   "passed": true
+  },
   "vendor_be_trajectory": {
    "0.003125": {
     "state_distance": 4.3142406754008358e-16,
@@ -291,7 +302,7 @@
  "all_pass": true,
  "source_sha256": {
   "fs3.py": "8c7dd03b5619b873b7549ab29c66e2039bda8d9e3a1bea4c8ce349de373701ce",
-  "test_fs.py": "46489f867fc23d94e444a6c6af8197ffab483abf08bcebf61b4ab4fb067ddd1a",
+  "test_fs.py": "b6f51be2733f133e85076710a7264a75207109f45bc9ca487894ad2710458501",
   "t2core.py": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9",
   "test_lmm.py": "2bbb91a647bd718c45e64ab159f2171796868bb2bce1b8cec63c7ef7a2a053e4",
   "vendor/quad3d/offmesh.py": "c46656e48cec27c4d78d1a00f3d93e19b7911b6d34bae6bdf9e264d10d45cbb4",

@@ -19,7 +19,7 @@ NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-comb'
 REFSRC = ROOT.parent / '2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output'
 REF3 = ROOT.parent / '2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output'
 VQ, V3 = f'{LANE}/vendor/quad2d', f'{LANE}/vendor/quad3d'
-COMMON = [f'{LANE}/t2core.py', f'{LANE}/fs3.py', f'{LANE}/checks/test_fs.json', f'{LANE}/test_fs.py', f'{LANE}/test_lmm.py']
+COMMON = [f'{LANE}/t2core.py', f'{LANE}/fs3.py', f'{LANE}/timing.py', f'{LANE}/checks/test_fs.json', f'{LANE}/test_fs.py', f'{LANE}/test_lmm.py']
 FILES2 = COMMON + [f'{LANE}/c2common.py', f'{LANE}/c2grid.py', f'{LANE}/fom2.py', f'{VQ}/qcore.py', f'{VQ}/qstudy.py',
                    f'{VQ}/vendor/arms.py', f'{VQ}/vendor/hops.py', f'{VQ}/vendor/hfast.py', f'{VQ}/vendor/bkfast.py',
                    f'{VQ}/vendor/hari_quadrature.py', f'{VQ}/inputs/rotation_R512.npz',
@@ -145,6 +145,11 @@ find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE
 '''
     (out / 'run.sbatch').write_text(script)
+    # isolated import check of the staged tree (code audit 3 item 1): the driver must import from the staged files only
+    env = dict(__import__('os').environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='')
+    subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-S', '-c',
+                    'import sys; sys.path[:0] = ["."] + [p for p in __import__("site").getsitepackages()];'
+                    f'import {driver}'], cwd=out / LANE, env=env, check=True, capture_output=True)
     manifest = [f'{hashlib.sha256(p_.read_bytes()).hexdigest()}  {p_.relative_to(out)}'
                 for p_ in sorted(out.rglob('*')) if p_.is_file()]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')

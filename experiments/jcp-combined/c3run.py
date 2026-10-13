@@ -331,12 +331,14 @@ def main():
             rf = [r for r in rep['rows'] if r['setting'] == sname and r['spec'] == 'fs|BE|0.01|K1']
             steps_eq = all(x['steps']['reason'] == y['steps']['reason'] and x['steps']['it'] == y['steps']['it']
                            for x, y in zip(rv, rf))
-            exact = bool(max(per) <= 1e-12 and steps_eq)
+            finite_all = bool(np.isfinite(Wv).all() and np.isfinite(Wf).all() and np.isfinite(per).all())
+            exact = bool(finite_all and all(x <= 1e-12 for x in per) and steps_eq)
             Fv = np.stack([np.asarray(TB.decode(jnp.asarray(Wv[ci]), lean)) for ci in range(len(cases))])
             Ff = np.stack([np.asarray(TB.decode(jnp.asarray(Wf[ci]), lean)) for ci in range(len(cases))])
             fper = (np.linalg.norm(Ff - Fv, axis=2) / N0[:, None]).max(1)
             exits = lambda r: np.bincount(np.asarray(r['steps']['reason']), minlength=5).tolist()
-            approved = bool(max(per) <= 1e-8 and float(fper.max()) <= 1e-8 and
+            approved = bool(finite_all and np.isfinite(fper).all() and all(x <= 1e-8 for x in per) and
+                            all(x <= 1e-8 for x in fper) and
                             [x['valid'] for x in rv] == [x['valid'] for x in rf] and
                             [exits(x) for x in rv] == [exits(x) for x in rf] and
                             C3.pooled_eligible([(x['valid'], x['nonstationary'], x['steps_n']) for x in rv])['eligible'] ==
@@ -346,7 +348,8 @@ def main():
             ctrl = float(np.max(np.linalg.norm(cn[c0] - Wv[c0], axis=1)) / np.linalg.norm(Wv[c0][0]))
             S_rep['G_FS1'] = dict(per_case_coef_rel=per, per_case_field=fper.tolist(), steps_equal=steps_eq,
                                   outcome='exact' if exact else ('approved-equivalent' if approved else 'FAIL'),
-                                  cn_control=ctrl, cn_control_discriminating=bool(ctrl > 1e-6))
+                                  cn_control=ctrl, cn_control_discriminating=bool(np.isfinite(ctrl) and ctrl > 1e-6),
+                                  finite_all=finite_all)
             save()
             if not (exact or approved):
                 dump()

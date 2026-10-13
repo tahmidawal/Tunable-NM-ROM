@@ -160,7 +160,7 @@ def np_fused_lm(evalJ, w0, tol, gtol, lam0, budget=50, trust=np.inf):
         d = np.diag(Hm) + 1e-30
         try:
             step = chol_solve(Hm + np.diag(lam * d), -g)
-        except np.linalg.LinAlgError:
+        except (np.linalg.LinAlgError, ValueError):       # non-PD or non-finite matrix: a non-finite step (rejected)
             step = np.full_like(g, np.nan)
         nz = np.linalg.norm(step)
         step = step * (trust / (nz + 1e-300) if nz > trust else 1.)
@@ -213,7 +213,7 @@ def np_vendor_be(dt, a=AFIRST, prev_pred=False, trust=np.inf):
             d = np.diag(Hm) + 1e-30
             try:
                 dw = chol_solve(Hm + np.diag(lam * d), -g)
-            except np.linalg.LinAlgError:
+            except (np.linalg.LinAlgError, ValueError):
                 dw = np.full_like(g, np.nan)
             nz = np.linalg.norm(dw)
             dw = dw * (trust / (nz + 1e-300) if nz > trust else 1.)
@@ -258,6 +258,18 @@ def vendor_be_trajectory_check(dt, trust=False):
     return dict(state_distance=d, iterations_equal=its == o['it'].tolist(), reasons_equal=reasons == o['reason'].tolist(),
                 control_distance=dc, passed=bool(d <= 1e-9 and its == o['it'].tolist() and reasons == o['reason'].tolist()
                                                 and dc > 1e-9))
+
+
+def nonfinite_jacobian_fixture():
+    """Finite residual, NaN Jacobian: the vendor LM (common.make_fused_lm) and the NumPy transcription must agree on
+    iterations and exit reason (code audit 3 item 3)."""
+    from offmesh import C as Cv
+    r0 = np.array([1., 2., 3.])
+    evj = lambda w, _a=None: (jnp.asarray(r0) + 0. * jnp.sum(w), jnp.full((3, 2), jnp.nan))
+    lm = Cv.make_fused_lm(evj, 2, 50, jnp.inf, GTOL, clip=True)
+    w, rn, it, reason, gn, rej, lam = lm(jnp.zeros(2), None, 0., 1e-6)
+    _, _, it_n, reason_n, _ = np_fused_lm(lambda w_: (r0.copy(), np.full((3, 2), np.nan)), np.zeros(2), 0., GTOL, 1e-6)
+    return dict(vendor=(int(it), int(reason)), numpy=(int(it_n), int(reason_n)), passed=(int(it), int(reason)) == (int(it_n), int(reason_n)))
 
 
 def vendor_be_check(dt):
@@ -342,6 +354,9 @@ def main():
     rep['gates']['trust_fixture_clip_active'] = bool(any(np.linalg.norm(np.diff(fs_run_trust(dt)['W_all'], axis=0), axis=1).max()
                                                          >= .999 * TRUST_FIX for dt in DTS))
     ok &= rep['gates']['trust_fixture_clip_active']
+    rep['gates']['nonfinite_jacobian'] = nonfinite_jacobian_fixture()
+    ok &= rep['gates']['nonfinite_jacobian']['passed']
+    print('NONFINITE', rep['gates']['nonfinite_jacobian'], flush=True)
     rep['gates']['vendor_be_trajectory'] = vt
     ok &= all(v['passed'] for v in vt.values())
     print('VENDOR-BE', vt, flush=True)

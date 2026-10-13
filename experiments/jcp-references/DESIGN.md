@@ -595,3 +595,64 @@ check fails, with verdict `UNRESOLVED(<reason>)`, iff (i) any PS run is non-fini
 in that job, (iii) the spatial order $q$ is undefined or $<2.5$ at some $t_k$, or (iv) the stability heuristic
 $\Delta t\le0.66\cdot2.8/(2d\pi N_3\max|u|)$ with the recorded running maximum is violated after the one $\Delta t/2$
 rerun it triggers (`UNRESOLVED(stability)`).
+
+---
+
+## Amendment A3 (2026-10-13, after Codex design audit 3, `audits/codex-design-3.md`; before any code)
+
+Where A3 conflicts with earlier text, A3 governs.
+
+**A3.1 Direction-inconsistent cases are ineligible (items 15, counterexample $u_3=U+100v$).** A2.2's fallback
+$\epsilon_{ref}^{cons}$ is withdrawn for ranking. A case with $c>0.5$ at some $t_k$ gets outcome
+`direction-inconsistent` (added to A1.5's list): stored, reported, **not eligible**, K0-affected. $d_{23}/n_0$ is still
+reported for it, as a descriptive number only.
+
+**A3.2 Floor proxy: assumptions, both differences, arithmetic floor (items 17, floor-gate counterexample).**
+- Proxy per level: $\tau_L=10\sum_n\max(r_n,10^{-14})$, $r_n$ the achieved final relative residual of step $n$
+  (relative to $\lVert u^n\rVert$ on the full solver grid); $10^{-14}$ is an arithmetic floor so a computed zero
+  residual never implies zero numerical error. **Assumptions** (stated in the report): each step's residual perturbs
+  the trajectory by at most about its own size (stability factor $\le10$ over the run), the perturbation is spread
+  over the grid so the lattice-relative size matches the full-grid-relative size, and $\lVert u^n\rVert\le\lVert
+  u^0\rVert$ (Burgers' $L^2$ energy is non-increasing with Dirichlet walls), so $\tau_L$ is in units of $n_0$. These
+  are calibrated, not proven.
+- Condition (d) of §4 becomes: $d_{12}(t_k)/n_0\ge10(\tau_{L_1}+\tau_{L_2})$ **and**
+  $d_{23}(t_k)/n_0\ge10(\tau_{L_2}+\tau_{L_3})$ for every $k\ge1$.
+- Calibration (A2.1) compares production vs tight (Newton $10^{-13}$) **and** tight vs tighter (Newton
+  $3\times10^{-14}$, budget 60; the achieved residuals are recorded if the target is not reached) on the four
+  calibration cases; each measured difference must be $\le$ the proxy of the less accurate solution. The scope of this
+  calibration (four dev cases) is stated in the report; every case still uses its own residuals.
+
+**A3.3 Restricted metrics are diagnostic only (items 38, restriction metric identity).** `restrict` returns the
+recomputed numbers (A2.10) with `eligible=False` always; the dimension validation and the cross-check apply to the
+canonical lattice only, and no ranking may be made on a restricted metric in this lane's release. Valid factors: 2D
+$\{2,4,8,16,32,64,128\}$ on the 256-interval lattice; 3D $\{2,4,8,16,32\}$ on the 64-interval lattice.
+`metric_id` is the string `"<dim>|lattice=<intervals>|times=0:0.05:0.25|norm=fixed_t0|max_k>=1"`.
+
+**A3.4 G4 temporal ladder replaced (item 42; Codex's prototype: 3D non-finite at $\Delta t=0.01$ and $0.005$; 2D
+exact-error order contaminated by the spatial floor).** The temporal order is measured from **self-differences** at
+fixed $N=64$, which cancel the (identical) spatial error: $\Delta t\in\{2.5\times10^{-3},1.25\times10^{-3},
+6.25\times10^{-4}\}$ in 2D and 3D (Codex's prototype completed 3D at $2.5\times10^{-3}$), three-level observed order
+in $[3.5,4.5]$ at every $t_k$. The spatial ladder ($N=32,48,64$, $\Delta t=10^{-4}$, exact-error order $\ge3$) also
+records a $\Delta t/2$ rerun at $N=64$ in both dimensions; the ladder is interpreted only if the half-step difference
+is $\le10^{-3}\times$ the $N=64$ spatial error.
+
+**A3.5 E0 statuses are mutually exclusive (status overlap).** Required case-kinds: every case of every cohort ×
+$\{R_{ST},R_S\}$. Per dimension: `FAIL` iff the dimension is `suspended` or `unvalidated`; else `PASS` iff **every**
+required case-kind is eligible; else `PASS-WITH-K0-CASES` (at least one required case-kind ineligible; listed).
+
+**A3.6 PS run identity (item 54, escalation bookkeeping).** Every PS run has an immutable id
+`N<N>_dt<k>_a<attempt>` with $\Delta t=\Delta t_{base}/2^k$ and its record: $N$, $\Delta t$, attempt, purpose
+(`spatial`/`half`/`stability`/`escalate`), running max $|u|$ over stages, finiteness, the gate results of its job, and
+its lattice field. The cross-check record names the selected spatial-triple run ids and the selected half-step run id
+(after a stability rerun the triple is at $\Delta t_{base}/2$ and the half-step run at $\Delta t_{base}/4$).
+
+**A3.7 Loader uncertainty source (`resolved`).** `resolved(score_a, score_b)` re-reads $\epsilon_{ref}$ from the store
+record of the shared case (it must be finite and $\ge0$) and ignores any value passed in the dicts.
+
+**A3.8 Opening is out of this release (items 52, opening transaction, post-opening loader; B-open).** This lane
+generates, encrypts, hashes and quality-controls the sealed and OOD cohorts; it does **not** ship `open_sealed.py` in
+this release, and the loader has no code path for sealed/OOD cohorts. The opening requirements (an authoritative
+current roster committed by the coordinator with explicit exclusions; each listed selection's content and hash
+verified; the store version; an exclusive lock; resumable or aborted intents; a completion record bound to the
+published manifest hash and freeze-manifest hash; loader checks of all of these) are recorded here as the
+specification for the coordinator's opening tool, to be built and audited when the coordinator decides to open.

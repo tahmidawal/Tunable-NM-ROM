@@ -14,6 +14,13 @@ Per setting:
 A setting without a converged rule is 'unavailable' (no selection; the diagnostic-baseline ladder is reported only).
 Writes checks/SELECTION-3D.json (or --out). Smoke inputs are refused unless --allow-smoke.
 
+--posthoc (DESIGN A10, POST HOC, labelled as such everywhere downstream): the second selection arm is the verified
+adaptive tight LSPG-CN at 2.5 dt0 (`ad|LSPG|CN|0.025|tight`, eligible iff every run of the rule is valid, A5.1) in place
+of the fixed-sweep LSPG-CN K=2 arm; the converged rule is recomputed from the saved per-arm escalation statuses of the
+fixed-sweep BE arm and that adaptive CN arm (same A2.4 order: gl56 if (gl56, gl64) passes both, else gl64 if (gl64, gl80)
+passes both, else none). Everything else (tau, ladders, control, cost = sum of the timed fixed-sweep arms' median times,
+fallbacks) is unchanged. Writes checks/SELECTION-3D-POSTHOC.json by default.
+
     python select3d.py --runs runs/c3descW1024/archive/output runs/c3descW768/archive/output runs/c3descB/archive/output
 """
 from __future__ import annotations
@@ -32,6 +39,21 @@ TAU = 2.5e-4
 FAMILIES = dict(lattice=['lat8192', 'lat16384', 'lat32768', 'lat65536', 'lat131072'], gauss=['gl24', 'gl32', 'gl40', 'gl48'])
 CONTROL = 'lat256'
 SEL = ['fs|BE|0.01|K1', 'fs|CN|0.025|K2']
+SEL_POSTHOC = ['fs|BE|0.01|K1', 'ad|LSPG|CN|0.025|tight']
+TIMED = ['fs|BE|0.01|K1', 'fs|CN|0.025|K2']                 # the arms timed in the family panels (both modes)
+
+
+def posthoc_converged(pairs):
+    """A10.2: A2.4 order on the fixed-sweep BE status and the adaptive CN status of each escalation pair."""
+    def st(p):
+        if p not in pairs:
+            return 'absent'
+        v = pairs[p]
+        a, b = v['selection'][SEL_POSTHOC[0]]['status'], v['diagnostic'][SEL_POSTHOC[1]]['status']
+        return 'unresolved' if 'unresolved' in (a, b) else ('pass' if a == b == 'pass' else 'fail')
+    sts = {p: st(p) for p in ('gl48|gl56', 'gl56|gl64', 'gl64|gl80') if p in pairs}
+    conv = 'gl56' if sts.get('gl56|gl64') == 'pass' else ('gl64' if sts.get('gl64|gl80') == 'pass' else None)
+    return conv, sts
 
 
 def main():
@@ -39,11 +61,15 @@ def main():
     ap.add_argument('--runs', nargs='+', required=True)
     ap.add_argument('--out')
     ap.add_argument('--allow-smoke', action='store_true')
+    ap.add_argument('--posthoc', action='store_true', help='DESIGN A10 post-hoc selection (adaptive CN arm)')
     a = ap.parse_args()
+    sel = SEL_POSTHOC if a.posthoc else SEL
     import c3common as C3
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
     i65 = C3.lattice65_index(65)
-    out = dict(tau=TAU, families=FAMILIES, control=CONTROL, selection_arms=SEL, inputs=[], settings={})
+    out = dict(tau=TAU, families=FAMILIES, control=CONTROL, selection_arms=sel, timed_arms=TIMED,
+               posthoc=bool(a.posthoc), label='POST HOC (DESIGN A10)' if a.posthoc else 'pre-registered',
+               inputs=[], settings={})
     for rp in map(Path, a.runs):
         res = json.loads((rp / 'result.json').read_text())
         if res['config'].get('smoke') and not a.allow_smoke:
@@ -65,32 +91,46 @@ def main():
                                       worst={kk: vv['worst'] for kk, vv in {**v['selection'], **v['diagnostic']}.items()})
                               for k, v in esc['pairs'].items()},
                        operator_check=esc['operator_check'], fixed_vs_adaptive={k: v['worst'] for k, v in esc['fixed_vs_adaptive'].items()})
-            base = esc['converged'] or S['ladder_baseline']['rule']
+            conv = esc['converged']
+            if a.posthoc:
+                conv, ph = posthoc_converged(esc['pairs'])
+                ent.update(posthoc_pair_status=ph, posthoc_converged=conv)
+            base = conv or S['ladder_baseline']['rule']
             bk = C3.load_bank(s['bank'])
             G = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :int(s['Rp'])], X65))
             elig = dict(S.get('escalation_rule_eligibility', {}), **S.get('ladder_eligibility', {}))
+            if a.posthoc:                     # adaptive arm: eligible iff every run of the rule is valid (A5.1), from the rows
+                rows = [r for r in res['rows'] if r['setting'] == sname and r['spec'] == SEL_POSTHOC[1]]
+                for rule in {r['rule'] for r in rows}:
+                    rr_ = [r for r in rows if r['rule'] == rule]
+                    ok = sorted(r['case'] for r in rr_) == sorted(cases) and all(r['valid'] is True for r in rr_)
+                    elig.setdefault(rule, {})[SEL_POSTHOC[1]] = dict(eligible=bool(ok), runs=len(rr_),
+                                                                      invalid=sum(r['valid'] is not True for r in rr_))
 
             def dist(r1, r2, sk):
+                for r_ in (r1, r2):                       # A8.2: join by explicit case ids where saved
+                    ck = f'cases|{sname}|{r_}|{sk}'
+                    assert ck not in Wz.files or [int(x) for x in Wz[ck]] == list(cases), ck
                 A_, B_ = Wz[f'{sname}|{r1}|{sk}'], Wz[f'{sname}|{r2}|{sk}']
                 d = np.linalg.norm(np.einsum('cki,ip->ckp', A_ - B_, G), axis=2) / n0[:, None]
                 per = d[:, 1:].max(1)
                 return float(per.max()) if np.isfinite(per).all() else float('nan')
             rules = {}
             for rule in FAMILIES['lattice'] + FAMILIES['gauss'] + [CONTROL]:
-                if f'{sname}|{rule}|{SEL[0]}' not in Wz.files:
+                if any(f'{sname}|{rule}|{sk}' not in Wz.files for sk in sel):
                     continue
                 rr = {}
-                for sk in SEL:
+                for sk in sel:
                     e = elig.get(rule, {}).get(sk, {})
                     dd = dist(rule, base, sk) if rule != base else 0.
                     rr[sk] = dict(eligible=bool(e.get('eligible')), solver_distance=e.get('solver_distance'),
                                   nonstationary=e.get('nonstationary'), steps=e.get('steps'), dist_to_conv=dd,
                                   within_tau=bool(np.isfinite(dd) and dd <= TAU))
-                rr['qualifies'] = all(rr[sk]['eligible'] and rr[sk]['within_tau'] for sk in SEL)
+                rr['qualifies'] = all(rr[sk]['eligible'] and rr[sk]['within_tau'] for sk in sel)
                 rules[rule] = rr
             ent['rules'] = rules
             ent['ladder_baseline'] = S['ladder_baseline']
-            if esc['converged'] is None:
+            if conv is None:
                 ent.update(status='unavailable (no converged rule)', deployed=None)
                 out['settings'][sname] = ent
                 continue
@@ -126,7 +166,7 @@ def main():
                 for inv in p['invocations']:
                     med.setdefault(inv['B'], []).append(inv['tB'])               # A1.7: sum of median TIMES
                     slots.add((inv['B'], inv['case'], inv['rep']))
-                want = {f'{sname}|{r}|{sk}' for sk in SEL}
+                want = {f'{sname}|{r}|{sk}' for sk in TIMED}
                 expected = {(b, c, rp) for b in want for c in p['cases'] for rp in range(int(p['reps']))}
                 if set(med) != want or slots != expected or len(p['invocations']) != len(expected):
                     cost[fam] = None                                                # incomplete panel -> unavailable
@@ -145,10 +185,11 @@ def main():
                 ent.update(status='selected', deployed=mstar[fam], deployed_family=fam,
                            fallbacks=lad[i + 1:i + 3] + ['unavailable'])
             out['settings'][sname] = ent
-    dest = Path(a.out or HERE / 'checks' / 'SELECTION-3D.json')
+    dest = Path(a.out or HERE / 'checks' / ('SELECTION-3D-POSTHOC.json' if a.posthoc else 'SELECTION-3D.json'))
     dest.write_text(json.dumps(out, indent=1, default=float) + '\n')
     print(dest)
-    print(json.dumps({k: (v.get('status'), v.get('converged'), v.get('mstar'), v.get('deployed')) for k, v in out['settings'].items()}))
+    print(json.dumps({k: (v.get('status'), v.get('converged'), v.get('posthoc_converged'), v.get('mstar'), v.get('deployed'))
+                      for k, v in out['settings'].items()}))
 
 
 if __name__ == '__main__':

@@ -872,3 +872,33 @@ arm × 38 cases; 3D: selected arms × 64 + other arms × 32).
 **A9.6 G-score for budget outputs.** The budget analyzers are the G-score of the budget jobs: every job row reproduced per
 time against the original reference, plus the case-swap / time-shift (/ ST–S swap in 2D) negative controls, each of which
 must break agreement by $>10^{-6}$.
+
+## Amendment A10 (2026-10-13, POST HOC: written after the production escalation logs of `c3descW768` 5209535 and `c3descW1024` 5209530 were read; before any reference error, selection or timing ratio was read)
+
+**A10.1 Finding (pre-registered outcome).** In both production escalation jobs the fixed-sweep LSPG-CN $K=2$ selection arm
+at $\tfrac52\Delta t_0$ is ineligible under A6.2 at every rule: on a small subset of the 64 cases its distance to the
+verified adaptive tight CN solve of the same step is far above $2.5\times10^{-4}$ (the same cases at every rule; the job logs
+print the non-stationary step counts, the saved `escalation_rule_eligibility` / `ladder_eligibility` carry the distances).
+Every escalation pair's selection axis is therefore "unresolved", the job's converged rule is `None`, and the
+**pre-registered 3D rule selection is unavailable**. This is reported as the pre-registered result (`checks/SELECTION-3D.json`).
+The two-case smoke (A6.1) did not contain any of the affected cases.
+
+**A10.2 Post-hoc diagnostic selection.** So that the 3D second-order grid can still run on a defensible rule, a second
+selection is computed **post hoc** from the archived escalation outputs (no new runs) and labelled "POST HOC (A10)" in every
+downstream file, table and figure:
+- second selection arm = the adaptive tight LSPG-CN at $\tfrac52\Delta t_0$ (the existing diagnostic counterpart, run at every
+  escalation and ladder rule under A7.1), eligible at a rule iff every one of its runs is valid (every step verified, A5.1);
+  the first arm (fixed-sweep BE $K=1$ at $\Delta t_0$, A6.2 eligibility) is unchanged;
+- converged rule $r_\infty$ by the A2.4 order applied to the two arms' per-pair statuses already saved by the job:
+  Gauss $56^3$ if ($56^3$, $64^3$) passes both arms, else $64^3$ if ($64^3$, $80^3$) passes both, else none;
+- $m^\star$ per family, the control `lat256` non-qualification requirement, $\tau=2.5\times10^{-4}$, the cost (sum of the median
+  times of the two timed fixed-sweep arms in the family panels, A1.7), tie-breaking and fallbacks are unchanged.
+`select3d.py --posthoc` implements it and writes `checks/SELECTION-3D-POSTHOC.json`. The selection asks the same question
+(is the rule converged for the rollouts the grid will evaluate) with a solver whose own error is verified per step, instead
+of a fixed-sweep solver whose solver error is not small on every case.
+
+**A10.3 Consequences.** The 3D grid (`c3grid`) runs on the post-hoc deployed rule; every 3D result inherits the "POST HOC
+rule" label. The fixed-sweep CN arms remain grid candidates and are judged by the unchanged per-case H4 eligibility
+(A1.9, A6.2), so the fixed-sweep CN failure cases appear as ineligible there, not silently. The failing cases are
+investigated descriptively (which cases, which steps, whether $K=3$ or a smaller step fixes them) in the report, as part of
+the "why did the fast CN worst case get worse" question; that investigation selects nothing.

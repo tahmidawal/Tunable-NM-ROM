@@ -1,0 +1,185 @@
+"""jcp-references: order verification, Richardson uncertainty and case outcome (DESIGN §4, A1.5, A1.8, A2.1, A2.2,
+A3.1, A3.2). Pure NumPy, no JAX: used by the job, the collector and the loader; audit_ref.py re-implements it
+independently.
+
+Fields are lattice arrays of shape (6, ...) (2D (6, 257, 257); 3D (6, 63^3)); norms are Euclidean over the lattice.
+Outputs t_k, k >= 1 only; n0 = ||canonical t0 field||.
+"""
+from __future__ import annotations
+
+import math
+
+import numpy as np
+
+P_LO, P_HI = 1.8, 2.2          # order gate (§4 b)
+C_MAX = 0.5                    # direction consistency (A3.1)
+PECLET_MAX = 2.0               # cell Peclet (§4 c), running max |u| at the coarsest level
+FLOOR_STAB = 10.0              # tau_L = FLOOR_STAB * sum_n max(r_n, R_FLOOR)  (A3.2)
+R_FLOOR = 1e-14
+FLOOR_MARGIN = 10.0            # d_ij / n0 >= FLOOR_MARGIN * (tau_i + tau_j)
+ACCEPT_RESIDUAL = 2e-11        # per-step acceptance (§3.1)
+P_BRACKET = (0.25, 8.0)
+OUTCOMES = ('accepted', 'solver-fail', 'peclet-fail', 'unresolved-floor', 'order-fail', 'direction-inconsistent')
+METRIC_ID = {2: '2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1',
+             3: '3|lattice=64|times=0:0.05:0.25|norm=fixed_t0|max_k>=1'}
+
+
+def tnorm(a):
+    """Per-time Euclidean norm over the lattice: (6, ...) -> (6,)."""
+    a = np.asarray(a, np.float64)
+    return np.sqrt(np.sum(a.reshape(a.shape[0], -1) ** 2, axis=1))
+
+
+def ratio_fn(p, h1, h2, h3):
+    return (h1 ** p - h2 ** p) / (h2 ** p - h3 ** p)
+
+
+def is_dyadic(h1, h2, h3):
+    return abs(h1 / h2 - 2.0) < 1e-12 and abs(h2 / h3 - 2.0) < 1e-12
+
+
+def solve_order(d12, d23, h1, h2, h3):
+    """Observed order from two adjacent differences; None if undefined (zero, non-finite, unbracketed). Never clipped."""
+    if not (np.isfinite(d12) and np.isfinite(d23)) or d12 <= 0 or d23 <= 0:
+        return None
+    r = d12 / d23
+    if is_dyadic(h1, h2, h3):
+        return math.log2(r)
+    lo, hi = P_BRACKET
+    flo, fhi = ratio_fn(lo, h1, h2, h3), ratio_fn(hi, h1, h2, h3)
+    if not (flo <= r <= fhi):
+        return None
+    for _ in range(200):
+        mid = 0.5 * (lo + hi)
+        if ratio_fn(mid, h1, h2, h3) < r:
+            lo = mid
+        else:
+            hi = mid
+    return 0.5 * (lo + hi)
+
+
+def rich_factor(p, h2, h3):
+    """Richardson multiplier: error(u3) ~ (u3 - u2) * h3^p / (h2^p - h3^p)."""
+    return h3 ** p / (h2 ** p - h3 ** p)
+
+
+def floor_proxy(res, n_stages):
+    r = np.asarray(res, np.float64)[:n_stages]
+    if not np.all(np.isfinite(r)):
+        return float('inf')
+    return float(FLOOR_STAB * np.sum(np.maximum(r, R_FLOOR)))
+
+
+def steps_ok(res, n_stages, accept=ACCEPT_RESIDUAL):
+    r = np.asarray(res, np.float64)[:n_stages]
+    return bool(len(r) == n_stages and np.all(np.isfinite(r)) and np.all(r <= accept))
+
+
+def judge(levels, t0, nu):
+    """levels: three dicts (coarse -> fine) with keys L, lat (6, ...), tau (floor proxy), steps_ok, umax.
+    t0: canonical lattice t0 field. Returns the full per-time record and the outcome (precedence order of OUTCOMES)."""
+    assert len(levels) == 3
+    h = [1.0 / lv['L'] for lv in levels]
+    assert h[0] > h[1] > h[2]
+    u1, u2, u3 = (np.asarray(lv['lat'], np.float64) for lv in levels)
+    n0 = float(np.linalg.norm(np.asarray(t0, np.float64).ravel()))
+    t0_dev = max(float(np.linalg.norm((u[0] - t0).ravel())) / n0 for u in (u1, u2, u3))
+    d12, d23 = tnorm(u1 - u2), tnorm(u2 - u3)
+    p_t, eps_t, c_t = [], [], []
+    for k in range(1, 6):
+        p = solve_order(d12[k], d23[k], *h)
+        p_t.append(p)
+        if p is None:
+            eps_t.append(None)
+            c_t.append(None)
+            continue
+        eps_t.append(float(d23[k] / n0 * rich_factor(p, h[1], h[2])))
+        rho = ratio_fn(p, *h)
+        c_t.append(float(np.linalg.norm(((u1[k] - u2[k]) - rho * (u2[k] - u3[k])).ravel()) / d12[k]))
+    tau = [float(lv['tau']) for lv in levels]
+    peclet = float(levels[0]['umax'] * h[0] / nu)
+    checks = dict(
+        solver=all(lv['steps_ok'] for lv in levels),
+        peclet=bool(np.isfinite(peclet) and peclet < PECLET_MAX),
+        floor=bool(all(d12[k] / n0 >= FLOOR_MARGIN * (tau[0] + tau[1]) and
+                       d23[k] / n0 >= FLOOR_MARGIN * (tau[1] + tau[2]) for k in range(1, 6))),
+        order=bool(all(p is not None and P_LO <= p <= P_HI for p in p_t)),
+        direction=bool(all(c is not None and c <= C_MAX for c in c_t)),
+        t0_shared=bool(t0_dev <= 1e-13))
+    if not checks['solver']:
+        outcome = 'solver-fail'
+    elif not checks['peclet']:
+        outcome = 'peclet-fail'
+    elif not checks['floor']:
+        outcome = 'unresolved-floor'
+    elif not checks['order']:
+        outcome = 'order-fail'
+    elif not checks['direction']:
+        outcome = 'direction-inconsistent'
+    else:
+        outcome = 'accepted'
+    eps_ok = [e for e in eps_t if e is not None]
+    return dict(levels=[lv['L'] for lv in levels], h=h, n0=n0, t0_dev=t0_dev,
+                d12=(d12[1:] / n0).tolist(), d23=(d23[1:] / n0).tolist(), p=p_t, eps_t=eps_t,
+                eps_ref=(max(eps_ok) if len(eps_ok) == 5 else None), c=c_t, tau=tau, peclet=peclet,
+                umax=[float(lv['umax']) for lv in levels], checks=checks, outcome=outcome)
+
+
+def richardson_field(u2, u3, p_t, h2, h3):
+    """Diagnostic extrapolated field (no uncertainty attached): u3 + (u3 - u2) * h3^p/(h2^p - h3^p), per time."""
+    out = np.array(u3, np.float64, copy=True)
+    for k in range(1, 6):
+        p = p_t[k - 1]
+        if p is None:
+            out[k] = np.nan
+        else:
+            out[k] = u3[k] + (u3[k] - u2[k]) * rich_factor(p, h2, h3)
+    return out
+
+
+def rel_err(field, ref, n0):
+    """Campaign metric: per-time ||f - R|| / n0 (k >= 1) and its max."""
+    e = tnorm(np.asarray(field, np.float64) - np.asarray(ref, np.float64))[1:] / n0
+    return float(np.max(e)), e.tolist()
+
+
+# ----------------------------------------------------------------------------------------- cross-check (A2.4) --
+
+PS_Q_MIN = 2.5
+
+
+def crosscheck(fd_record, u3, ps, n0):
+    """Ordered cross-check procedure (A2.4/A2.12/A3.6). fd_record: judge() output of R_ST (final).
+    ps: dict(spatial=[(N, lat), (N, lat), (N, lat)] coarse->fine at dt, half=lat at N3 and dt/2, full=lat at N3 and dt,
+    finite=bool, gates_ok=bool, stability_ok=bool). Returns dict with verdict and numbers."""
+    rec = dict(x_ps=None, s_x=None, s_t=None, sigma=None, q=None, eps_ref=fd_record.get('eps_ref'))
+    if fd_record.get('outcome') != 'accepted' or rec['eps_ref'] is None or not np.isfinite(rec['eps_ref']):
+        return dict(rec, verdict='FD-INVALID')
+    eps = rec['eps_ref']
+    if not ps['finite']:
+        return dict(rec, verdict='UNRESOLVED', reason='non-finite')
+    if not ps['gates_ok']:
+        return dict(rec, verdict='UNRESOLVED', reason='gates')
+    (N1, a), (N2, b), (N3, c) = ps['spatial']
+    hs = [1.0 / N1, 1.0 / N2, 1.0 / N3]
+    da, db = tnorm(a - b), tnorm(b - c)
+    q = [solve_order(da[k], db[k], *hs) for k in range(1, 6)]
+    rec['q'] = q
+    if any(x is None or x < PS_Q_MIN for x in q):
+        return dict(rec, verdict='UNRESOLVED', reason='spatial-order')
+    if not ps['stability_ok']:
+        return dict(rec, verdict='UNRESOLVED', reason='stability')
+    s_x = float(np.max(db[1:]) / n0)
+    s_t = float(np.max(tnorm(ps['full'] - ps['half'])[1:]) / n0)
+    x_ps = float(np.max(tnorm(ps['half'] - u3)[1:]) / n0)
+    rec.update(s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x_ps, eta=x_ps / eps if eps > 0 else None)
+    if s_x + s_t > eps / 2:
+        return dict(rec, verdict='UNRESOLVED', reason='resolution')
+    return dict(rec, verdict='PASS' if x_ps <= 2 * eps else 'FAIL', reason=None)
+
+
+def dimension_status(verdicts):
+    """A2.5: suspended if any FAIL; validated if >= 6 of 8 PASS; else unvalidated."""
+    if any(v == 'FAIL' for v in verdicts):
+        return 'suspended'
+    return 'validated' if sum(v == 'PASS' for v in verdicts) >= 6 else 'unvalidated'

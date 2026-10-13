@@ -656,3 +656,46 @@ current roster committed by the coordinator with explicit exclusions; each liste
 verified; the store version; an exclusive lock; resumable or aborted intents; a completion record bound to the
 published manifest hash and freeze-manifest hash; loader checks of all of these) are recorded here as the
 specification for the coordinator's opening tool, to be built and audited when the coordinator decides to open.
+
+---
+
+## Amendment A4 (2026-10-13, during code development, after small local gate runs; before any real-size case)
+
+Local GB10 runs of the gates (`jaxrun`, f64, highest precision; no production case had been run) gave:
+G1 parity **bitwise identical** to both vendor FOMs (max relative difference 0, Newton counts equal, 2D $L=256$ and
+3D 65 nodes); G2 3D pass (true order 2.03–2.05, effectivity 0.94–0.99); G3a pass ($\le10^{-15}$); G4 pass in both
+dimensions (spatial order 3.96–4.00, temporal self-difference order 3.97–4.02, half-step ratio $\sim2\times10^{-6}$);
+projection test order 4.02/4.00. Three gates failed, each for a reason that is not a solver defect:
+
+**A4.1 G2 2D levels (pre-asymptotic).** With levels 128/256/512 the 2D true order at $t_1=0.05$ was 2.118 (bar
+$\le2.1$). A diagnostic coupled ladder 128→1024 gave true orders at $t_1$ of 2.209, 2.118, 2.063 for successive pairs
+(converging to 2 from above), and a space-only ladder (fixed fine $\Delta t$) gave 1.999 / 1.997: the excess is a
+higher-order transient of the Rannacher start at coarse $\Delta t$, which disappears under refinement. G2 2D therefore
+uses levels $L=256,512,1024$ with $\Delta t=0.05/16,0.05/32,0.05/64$ (bars unchanged). **Consequence noted for
+production:** an early-time observed order slightly above 2 is a known pre-asymptotic signature of this scheme; the
+production order gate $[1.8,2.2]$ is not changed, and a case that exceeds it is refined (§4), as pre-registered.
+
+**A4.2 G3b / G3c bars were below the f64 round-off floor.** IC coefficients (2D dev6 case 0, $N=2048$): differences
+between composite rules of 64/128/256/512/1024 panels were $2.1\times10^{-4}$, then $2.0, 1.6, 1.1\times10^{-13}$
+(relative $\ell_2$; max absolute $3.1$–$3.4\times10^{-14}$ with $\max|\hat u|=0.49$): converged at 128 panels, then a
+round-off plateau. ETDRK4 contour coefficients: 32 vs 64 points differ by $8\times10^{-12}$ relative and 64 vs 128 by
+$3.8\times10^{-11}$ — the difference **grows** with more points, the signature of cancellation where the radius-1
+contour passes close to the origin (worst at $h\hat L\approx-0.99$), not of an unconverged quadrature. New bars: G3b
+relative $\ell_2\le10^{-12}$ and max absolute $\le10^{-13}$; G3c $\le10^{-10}$. Both are far below anything that can
+affect a comparison at the $\epsilon_{ref}$ scale (expected $\gtrsim10^{-8}$).
+
+**A4.3 Composite Gauss–Legendre (A1.6/A2.6/A2.7 wording).** "Tensor Gauss–Legendre, 4096 points per axis" is
+implemented as a **composite** rule: 256 equal panels × 32 points (8192 points per axis), checked against 512 panels
+(G3b); the same rule integrates the G4 forcing factors. A single 4096-point rule would need an $O(n^3)$ eigen-solve
+and resolves the highest retained sine ($k=3071$) less safely than 32 points per panel of width 1/256.
+
+**A4.4 Implementation details fixed here.** (i) FD state is flat ($x$ slowest), as in both vendor FOMs, so G1 can be
+bitwise. (ii) The running maximum $|u|$ (Péclet, A1.2) is the maximum over all stages of the solver state. (iii) Tight
+attempts use Newton $10^{-13}$ / BiCGStab $10^{-12}$ / budget 40 and the same per-step **acceptance** rule
+$\le2\times10^{-11}$ (the tolerance target differs, the acceptance rule does not); their proxy uses their own
+achieved residuals. (iv) Every job first runs the unit gates and G1 and stops (exit 4) if any fails; PS jobs also run
+G3a–c and G4 for their dimension in the same job (A2.4 step 2). (v) `refjob.py` accepts a `smoke_override` config
+block (reduced levels) **for local functional smoke tests only**; any result carrying `SMOKE_OVERRIDE` is never
+collected into the store (collect refuses it) and never reported as a reference. (vi) The cross-check case list is
+computed by `cohorts.crosscheck_cases` (2D val32: the 4 smallest $\nu$ by index tie-break, plus the 4 lowest-index
+others; 3D val64 likewise). (vii) Store files are hard links of the pulled job outputs (no duplication on disk).

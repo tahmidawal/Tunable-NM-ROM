@@ -269,7 +269,8 @@ def main():
             if x.get('selected'):
                 fq = [mx(p_['delta_quad']) for p_ in per]
                 fc = [mx(p_['finalist_check']) for p_ in per] if 'finalist_check' in per[0] else [None]
-                fin = dict(delta_quad_worst=None if None in fq else max(fq), check_worst=None if None in fc else max(fc),
+                fin = dict(delta_quad_worst=None if (None in fq or not fq) else max(fq),
+                           check_worst=None if (None in fc or not fc) else max(fc),
                            unavailable_cases=sum(v is None for v in fq + fc))
                 fin['qualified'] = bool(fin['delta_quad_worst'] is not None and fin['delta_quad_worst'] <= TAU and
                                         fin['check_worst'] is not None and fin['check_worst'] <= cfg['conv_bar'])

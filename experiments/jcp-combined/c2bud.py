@@ -183,7 +183,9 @@ def main():
                 rep['rows'] = [x for x in rep['rows'] if x['setting'] != spec['name']]
                 conv_rule, check_rule = cfg['conv_rule'], cfg['check_rule']
                 st = CC.Setting(bank, spec, rules={'conv': conv_rule, 'check': check_rule, 'ctrl': cfg['control_rule']})
+                w_, ok_ = conv_check()                  # regenerate the check-rule evidence for the restored pair (N16)
                 S_rep.update(successor_used=False, conv_rule=conv_rule, check_rule=check_rule,
+                             conv_check_restored=dict(pair=[conv_rule, check_rule], worst=w_, all_verified=ok_),
                              converged_rule_status='converged rule unverified')
             save()
         # ---- B1 sham (bitwise re-run of the baseline arm) and B2 known effect (control rule) on the check set (A1.10)

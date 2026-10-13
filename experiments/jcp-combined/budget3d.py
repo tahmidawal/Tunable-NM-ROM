@@ -217,8 +217,8 @@ def main():
             if x.get('selected'):
                 fq = [mx(p_['delta_quad']) for p_ in fin_per]
                 ff = [mx(p_['finalist_finer']) for p_ in fin_per]
-                fin = dict(cases=len(fin_per), delta_quad_worst=None if None in fq else max(fq),
-                           finer_worst=None if None in ff else max(ff))
+                fin = dict(cases=len(fin_per), delta_quad_worst=None if (None in fq or not fq) else max(fq),
+                           finer_worst=None if (None in ff or not ff) else max(ff))
                 fin['qualified'] = bool(fin['delta_quad_worst'] is not None and fin['delta_quad_worst'] <= TAU and
                                         fin['finer_worst'] is not None and fin['finer_worst'] <= BAR and
                                         len(fin_per) == len(res['config'].get('case_subset') or range(cfg['cohort_count'])))

@@ -80,9 +80,14 @@ def main():
                         **{'global': an['selection']['global']}, tie=an['tie'], budget=budget)
     if a.selection3d:
         s3 = json.loads(Path(a.selection3d).read_text())
+        ph = bool(s3.get('posthoc'))                  # A10: the effective converged rule of a post-hoc selection is its own
         fz['3d_rules'] = dict(source=a.selection3d, source_sha256=hashlib.sha256(Path(a.selection3d).read_bytes()).hexdigest(),
-                              settings={k: dict(status=v['status'], converged=v.get('converged'), deployed=v.get('deployed'),
-                                                fallbacks=v.get('fallbacks')) for k, v in s3['settings'].items()})
+                              posthoc=ph, label=s3.get('label', 'pre-registered'), selection_arms=s3.get('selection_arms'),
+                              settings={k: dict(status=v['status'],
+                                                converged=v.get('posthoc_converged') if ph else v.get('converged'),
+                                                pre_registered_converged=v.get('converged'), deployed=v.get('deployed'),
+                                                fallbacks=v.get('fallbacks'), posthoc=ph,
+                                                label=s3.get('label', 'pre-registered')) for k, v in s3['settings'].items()})
     if a.analysis3d:
         a3 = json.loads(Path(a.analysis3d).read_text())
         fz['3d_solver'] = dict(source=a.analysis3d, source_sha256=hashlib.sha256(Path(a.analysis3d).read_bytes()).hexdigest(),

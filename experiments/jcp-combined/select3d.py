@@ -9,8 +9,10 @@ Per setting:
   m* per family (lattice: lat8192 ... lat131072; Gauss: gl24 ... gl48) = smallest rule with both arms eligible and worst
   distance <= tau = 2.5e-4 on every case; the control lat256 must NOT qualify (else the selection is withheld:
   non-discriminating);
-  deployed family = smaller sum of the two arms' median paired ratios in the family panels (A = r_inf fixed BE dt0; panels
-  must be valid); ties -> smaller m; fallbacks = the next two larger rungs of the deployed family, then 'unavailable'.
+  deployed family = smaller sum of the two timed fixed-sweep arms' median times tB in the family panels (A1.7 as amended:
+  raw median times, not ratios; the panels' A subject is the job's ladder baseline, i.e. the converged rule's fixed BE
+  dt0, or the finest escalation rule run when the job found no converged rule; panels must be valid and complete);
+  ties -> smaller m; fallbacks = the next two larger rungs of the deployed family, then 'unavailable'.
 A setting without a converged rule is 'unavailable' (no selection; the diagnostic-baseline ladder is reported only).
 Writes checks/SELECTION-3D.json (or --out). Smoke inputs are refused unless --allow-smoke.
 
@@ -41,6 +43,22 @@ CONTROL = 'lat256'
 SEL = ['fs|BE|0.01|K1', 'fs|CN|0.025|K2']
 SEL_POSTHOC = ['fs|BE|0.01|K1', 'ad|LSPG|CN|0.025|tight']
 TIMED = ['fs|BE|0.01|K1', 'fs|CN|0.025|K2']                 # the arms timed in the family panels (both modes)
+
+
+def ids_of(res, Wz, sname, rule, sk):
+    """Case ids of the rows of W_esc[sname|rule|sk]: the saved ids when present (jobs after A8.2), else the order in which
+    the job appended its result rows for that run (rows and W rows are written in the same case loop, c3run.rollouts);
+    the row count must equal the array's first dimension."""
+    k = f'{sname}|{rule}|{sk}'
+    if 'cases|' + k in Wz.files:
+        return [int(x) for x in Wz['cases|' + k]]
+    ids = [int(r['case']) for r in res['rows'] if r['setting'] == sname and r['rule'] == rule and r['spec'] == sk]
+    n = Wz[k].shape[0]
+    # a rule that is both an escalation and a ladder rule (gl48) is run twice; the saved W is the LAST run, and every
+    # block of rows must have the same case order
+    assert n and len(ids) % n == 0 and len(set(ids[-n:])) == n, k
+    assert all(ids[i:i + n] == ids[-n:] for i in range(0, len(ids), n)), k
+    return ids[-n:]
 
 
 def posthoc_converged(pairs):
@@ -103,14 +121,15 @@ def main():
                 rows = [r for r in res['rows'] if r['setting'] == sname and r['spec'] == SEL_POSTHOC[1]]
                 for rule in {r['rule'] for r in rows}:
                     rr_ = [r for r in rows if r['rule'] == rule]
-                    ok = sorted(r['case'] for r in rr_) == sorted(cases) and all(r['valid'] is True for r in rr_)
+                    nb = len(rr_) // max(len(cases), 1)          # repeated runs (gl48: escalation + ladder) all count
+                    ok = (nb >= 1 and sorted(r['case'] for r in rr_) == sorted(cases * nb)
+                          and all(r['valid'] is True for r in rr_))
                     elig.setdefault(rule, {})[SEL_POSTHOC[1]] = dict(eligible=bool(ok), runs=len(rr_),
                                                                       invalid=sum(r['valid'] is not True for r in rr_))
 
             def dist(r1, r2, sk):
-                for r_ in (r1, r2):                       # A8.2: join by explicit case ids where saved
-                    ck = f'cases|{sname}|{r_}|{sk}'
-                    assert ck not in Wz.files or [int(x) for x in Wz[ck]] == list(cases), ck
+                for r_ in (r1, r2):                       # A8.2: join by case ids (saved ids, else the job's row order)
+                    assert ids_of(res, Wz, sname, r_, sk) == list(cases), (sname, r_, sk)
                 A_, B_ = Wz[f'{sname}|{r1}|{sk}'], Wz[f'{sname}|{r2}|{sk}']
                 d = np.linalg.norm(np.einsum('cki,ip->ckp', A_ - B_, G), axis=2) / n0[:, None]
                 per = d[:, 1:].max(1)

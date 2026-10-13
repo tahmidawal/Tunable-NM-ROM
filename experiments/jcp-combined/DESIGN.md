@@ -893,12 +893,21 @@ downstream file, table and figure:
   Gauss $56^3$ if ($56^3$, $64^3$) passes both arms, else $64^3$ if ($64^3$, $80^3$) passes both, else none;
 - $m^\star$ per family, the control `lat256` non-qualification requirement, $\tau=2.5\times10^{-4}$, the cost (sum of the median
   times of the two timed fixed-sweep arms in the family panels, A1.7), tie-breaking and fallbacks are unchanged.
-`select3d.py --posthoc` implements it and writes `checks/SELECTION-3D-POSTHOC.json`. The selection asks the same question
-(is the rule converged for the rollouts the grid will evaluate) with a solver whose own error is verified per step, instead
-of a fixed-sweep solver whose solver error is not small on every case.
+`select3d.py --posthoc` implements it and writes `checks/SELECTION-3D-POSTHOC.json`. **What it establishes is narrower**
+than the pre-registered selection: quadrature agreement of the rule for the fixed-sweep BE trajectory and for the
+adaptive CN trajectory (whose steps pass the implemented stopping verification, which is a stopping criterion and not a
+bound on solver error), **not** for the fixed-sweep CN trajectories or for every grid candidate. Every later arm-specific
+gate (H4 solver eligibility, finalist qualification with the converged-rule check, A8.5/A8.6) therefore stays in force
+unchanged and is what qualifies any individual grid arm.
+
+**A10.2a Rules run twice.** Gauss $48^3$ is both an escalation rule and a ladder rule and was rolled out twice in each job
+(bitwise-identical rows); the saved trajectories are the second run. Offline tools join rows to trajectories by the
+last block and require every block to have the same case order; the production escalation jobs predate the explicit
+case-id arrays (A8.2), so the join uses the job's row order, which is the same loop that fills the trajectory array.
 
 **A10.3 Consequences.** The 3D grid (`c3grid`) runs on the post-hoc deployed rule; every 3D result inherits the "POST HOC
-rule" label. The fixed-sweep CN arms remain grid candidates and are judged by the unchanged per-case H4 eligibility
+rule" label (`freeze.py` records `posthoc`, `label`, the effective and the pre-registered converged rule per setting, and
+the 3D budget config carries the label). The fixed-sweep CN arms remain grid candidates and are judged by the unchanged per-case H4 eligibility
 (A1.9, A6.2), so the fixed-sweep CN failure cases appear as ineligible there, not silently. The failing cases are
 investigated descriptively (which cases, which steps, whether $K=3$ or a smaller step fixes them) in the report, as part of
 the "why did the fast CN worst case get worse" question; that investigation selects nothing.

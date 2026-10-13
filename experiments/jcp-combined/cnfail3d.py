@@ -27,6 +27,7 @@ def main():
     ap.add_argument('--out')
     a = ap.parse_args()
     import c3common as C3
+    import select3d as S3
     rp = Path(a.run)
     res = json.loads((rp / 'result.json').read_text())
     cfg = res['config']
@@ -45,10 +46,9 @@ def main():
         per_rule = {}
         for rule in rules:
             kf, ka = f'{sn}|{rule}|{FS}', f'{sn}|{rule}|{AD}'
-            if ka not in Wz.files:
-                continue
-            ids = [int(x) for x in Wz['cases|' + kf]] if 'cases|' + kf in Wz.files else cases
-            assert 'cases|' + ka not in Wz.files or [int(x) for x in Wz['cases|' + ka]] == ids, ka
+            assert ka in Wz.files, f'{ka}: adaptive comparator missing (complete coverage required)'
+            ids = S3.ids_of(res, Wz, sn, rule, FS)
+            assert ids == S3.ids_of(res, Wz, sn, rule, AD) and sorted(ids) == sorted(cases), (sn, rule)
             d = np.linalg.norm(np.einsum('cki,ip->ckp', Wz[kf] - Wz[ka], G), axis=2) / np.array([n0[j] for j in ids])[:, None]
             rows = {(r['case']): r for r in res['rows'] if r['setting'] == sn and r['rule'] == rule and r['spec'] == FS}
             arow = {(r['case']): r for r in res['rows'] if r['setting'] == sn and r['rule'] == rule and r['spec'] == AD}
@@ -58,24 +58,29 @@ def main():
                 gn = np.asarray(st['gn'], float)
                 cs[int(j)] = dict(dist_per_time=d[ci].tolist(), worst=float(d[ci, 1:].max()),
                                   reasons=np.bincount(np.asarray(st['reason']), minlength=5).tolist(),
-                                  gn_max=float(np.nanmax(gn)), gn_first_above_1e-3=int(np.argmax(gn > 1e-3)) if (gn > 1e-3).any() else None,
+                                  gn_max=float(np.nanmax(gn)), gn_first_step_above_1em3=int(np.argmax(gn > 1e-3)) if (gn > 1e-3).any() else None,
                                   rej=int(np.sum(st['rej'])), sat=int(np.sum(st['sat'])), valid=rows[j]['valid'],
                                   e_ref_fixed=rows[j].get('e_ref'), e_ref_adaptive=arow[j].get('e_ref') if j in arow else None,
                                   adaptive_it_total=int(np.sum(arow[j]['steps']['step_it'])) if j in arow else None)
+            adaptive_valid = all(arow[j]['valid'] is True for j in ids)       # the comparator must be verified (A5.1)
             fail = sorted(j for j, v in cs.items() if not (np.isfinite(v['worst']) and v['worst'] <= TAU))
             w = np.array([v['worst'] for v in cs.values()])
-            per_rule[rule] = dict(failing_cases=fail, n_failing=len(fail), median_worst=float(np.median(w)),
+            per_rule[rule] = dict(adaptive_comparator_all_valid=adaptive_valid,
+                                  fixed_all_valid=all(cs[j]['valid'] is True for j in ids), distance_failing_cases=fail, n_failing=len(fail), median_worst=float(np.median(w)),
                                   max_worst=float(np.max(w)), cases=cs)
-        sets = {r: tuple(v['failing_cases']) for r, v in per_rule.items()}
-        out['settings'][sn] = dict(rules=per_rule, failing_set_identical_across_rules=len(set(sets.values())) <= 1,
-                                   failing_union=sorted({j for v in sets.values() for j in v}))
+        # the control rule lat256 (a deliberately unconverged quadrature) is reported but excluded from the cross-rule claim
+        sets = {r: tuple(v['distance_failing_cases']) for r, v in per_rule.items() if r != 'lat256'}
+        out['settings'][sn] = dict(rules=per_rule, n_rules=len(per_rule),
+                                   failing_set_identical_across_non_control_rules=(len(sets) >= 2 and len(set(sets.values())) == 1)
+                                   if all(v['adaptive_comparator_all_valid'] for v in per_rule.values()) else None,
+                                   failing_union_non_control=sorted({j for v in sets.values() for j in v}))
     dest = Path(a.out or HERE / 'checks' / f'cnfail3d-{cfg["attempt"]}.json')
     dest.write_text(json.dumps(out, indent=1, default=float) + '\n')
     print(dest)
     for sn, v in out['settings'].items():
-        print(sn, 'identical' if v['failing_set_identical_across_rules'] else 'varies', v['failing_union'])
+        print(sn, 'identical' if v['failing_set_identical_across_non_control_rules'] else 'varies', v['failing_union_non_control'])
         for r, x in v['rules'].items():
-            print('  ', r, x['n_failing'], f"{x['median_worst']:.2e} {x['max_worst']:.2e}")
+            print('  ', r, x['n_failing'], f"{x['median_worst']:.2e} {x['max_worst']:.2e}", 'adaptive valid', x['adaptive_comparator_all_valid'])
 
 
 if __name__ == '__main__':

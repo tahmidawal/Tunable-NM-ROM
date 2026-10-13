@@ -40,7 +40,8 @@ def main():
                 continue
             sets.append(dict(base[n], rule=r['deployed'], conv=r['converged'], finer=FINER[r['converged']], arms=arms))
         c = MC.c3('c3bud', 'bud', sets, timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
-        c.update(budget_cases=32, control_rule='lat256', frozen_sha256=fsha)
+        c.update(budget_cases=32, control_rule='lat256', frozen_sha256=fsha,
+                 rule_selection_label=fz['3d_rules'].get('label', 'pre-registered'), rule_selection_posthoc=fz['3d_rules'].get('posthoc', False))
         c.pop('grid', None)
         (HERE / 'configs' / 'c3bud.json').write_text(json.dumps(c, indent=1) + '\n')
         print('c3bud', len(sets), 'settings')

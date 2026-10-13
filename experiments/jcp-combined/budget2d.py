@@ -85,6 +85,12 @@ def main():
         grid_rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in gres['rows']}
     grepro = dict(compared=0, failures=0, worst=0.)
     tags = list(ent['tags']) + list(ent.get('derived', {}))
+    import c2bud as C2B
+    cfg_cases = [(coh, c) for coh in cfg['cohorts'] for c in
+                 (cfg.get('case_subset', {}).get(coh) if cfg.get('case_subset', {}).get(coh) is not None
+                  else range(cohorts[coh]['n']))]
+    check_cases = [x for x in cfg_cases if x[0] == 'dev6'] + [x for x in cfg_cases if x[0] == 'val32'][:cfg['check_val32']]
+    inv_mismatch = 0
     for s in cfg['settings']:
         sname, Rp = s['name'], int(s['Rp'])
         z = np.load(run / f'WB_{sname}.npz')
@@ -92,6 +98,17 @@ def main():
         S_ = res['setup'][sname]
         Qb, _ = np.linalg.qr(G[:, :Rp])                                         # orthonormal basis of the span at the nodes
         dec = lambda W: score.decode2d(G, W[None] if W.ndim == 1 else W)
+        # configured inventory (A9.3; codex-code-7 N14): plan runs on every case, the check-rule copies of every r_inf run
+        # type and the control run on the check cases; must equal the JSON rows and the archived (non-NaN) entries
+        plan = C2B.budget_runs(s['arms'])
+        expk = {(C2B.key(r), coh, c) for r in plan for coh, c in cfg_cases}
+        expk |= {(C2B.key(('check',) + tuple(r[1:])), coh, c) for r in plan if r[0] == 'conv' for coh, c in check_cases}
+        expk |= {(C2B.key(('ctrl', 'LSPG', 'BE', DT0, 'prod')), coh, c) for coh, c in check_cases}
+        rowk = {(r_['run'], r_['cohort'], r_['case']) for r_ in res['rows'] if r_['setting'] == sname}
+        arck = {(k2, *ck.split('|')[:1], int(ck.split('|')[1])) for k2 in z.files if k2 not in ('w0', 'cases')
+                for ci, ck in enumerate(cks) if not np.isnan(z[k2][ci]).all()}
+        nrow_dup = len([1 for r_ in res['rows'] if r_['setting'] == sname]) - len(rowk)
+        inv_mismatch += len(expk ^ rowk) + len(expk ^ arck) + nrow_dup
         # in-job reproduction: every row of this setting ONCE, original reference only (A1.8; codex-code-5 N4)
         if repro['applicable']:
             for ci, ck in enumerate(cks):
@@ -115,16 +132,20 @@ def main():
                             else:                                   # invalid rollout: accounted separately (N7)
                                 repro['invalid'] = repro.get('invalid', 0) + 1
                                 repro['failures'] += 0 if (not np.isfinite(mine[j]) and not np.isfinite(y) and not r['verified']) else 1
-        if repro['applicable'] and len(cks) > 1:            # G-score negative controls for the budget archive (A9.6)
-            coh, c = cks[0].split('|')
+        kb = k_('main', 'LSPG', 'BE', DT0, 'prod')
+        valid_ci = [ci for ci, ck in enumerate(cks) if rows.get((sname, kb, ck.split('|')[0], int(ck.split('|')[1])), {}).get('verified')
+                    and rows[(sname, kb, ck.split('|')[0], int(ck.split('|')[1]))].get('e_ST') is not None]
+        if repro['applicable'] and len(valid_ci) < 2:
+            repro.setdefault('controls', {})[sname] = dict(all_break=False, unavailable='fewer than two valid baseline rows')
+        if repro['applicable'] and len(valid_ci) > 1:       # G-score negative controls for the budget archive (A9.6)
+            coh, c = cks[valid_ci[0]].split('|')
             c = int(c)
-            kb = k_('main', 'LSPG', 'BE', DT0, 'prod')
             r0 = rows[(sname, kb, coh, c)]
             n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
             refs0 = score.load_ref2d(ent, coh, c)
-            U0_ = dec(z[kb][0]) / n0
+            U0_ = dec(z[kb][valid_ci[0]]) / n0
             e_ = lambda U_, R_: max(float(np.linalg.norm(U_[j] - R_[j] / n0)) for j in range(1, 6))
-            ctl = dict(case_swap=abs(e_(dec(z[kb][1]) / n0, refs0['ST']) - r0['e_ST']),
+            ctl = dict(case_swap=abs(e_(dec(z[kb][valid_ci[1]]) / n0, refs0['ST']) - r0['e_ST']),
                        time_shift=abs(e_(np.roll(U0_, 1, 0), refs0['ST']) - r0['e_ST']),
                        ST_S_swap=abs(e_(U0_, refs0['S']) - r0['e_ST']))
             repro.setdefault('controls', {})[sname] = dict(ctl, all_break=bool(all(v > 1e-6 for v in ctl.values())))
@@ -234,8 +255,7 @@ def main():
                 for p_ in per:
                     comps = dict(e_P=mx(p_[f'e_P_{t}']), e_dyn=mx(p_[f'e_dyn_{t}']), delta_quad=mx(p_['delta_quad']),
                                  delta_time=mx(p_['delta_time']), delta_form=mx(p_['delta_form']), delta_solve=mx(p_['delta_solve']))
-                    comps = {k: v for k, v in comps.items() if v is not None}
-                    w = max(comps, key=comps.get) if comps else 'unavailable'
+                    w = max(comps, key=comps.get) if None not in comps.values() else 'unavailable (incomplete comparison)'
                     cnt[w] = cnt.get(w, 0) + 1
                 largest[t] = cnt
             unres = {}
@@ -278,10 +298,11 @@ def main():
         # B2 offline (codex-code-6 N8): delta_quad with the CONTROL rule as r, i.e. ||u(ctrl) - u(r_inf)|| for the baseline arm
         kc_, kv_ = k_('ctrl', 'LSPG', 'BE', DT0, 'prod'), k_('conv', 'LSPG', 'BE', DT0, 'prod')
         b2d = []
-        for ci, ck in enumerate(cks):
-            coh, c = ck.split('|')
-            c = int(c)
-            if kc_ not in z.files or np.isnan(z[kc_][ci]).all():
+        for coh, c in check_cases:                         # the configured check population (codex-code-7 N13)
+            ck = f'{coh}|{c}'
+            ci = cks.index(ck) if ck in cks else None
+            if ci is None or kc_ not in z.files or kv_ not in z.files:
+                b2d.append(float('nan'))
                 continue
             n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
             okk = rows.get((sname, kc_, coh, c), {}).get('verified') and rows.get((sname, kv_, coh, c), {}).get('verified')
@@ -306,15 +327,15 @@ def main():
                         B0_real_mismatch=dict(min_defect=b0m, passed=bool(b0m > 1e-6)),
                         B1=all((s_['B1'] or {}).get('all_equal') for s_ in out['settings'].values()),
                         reproduction=dict(repro, rows=nrows,
-                                          passed=(bool(repro['compared'] == 18 * nrows and repro['failures'] == 0 and
+                                          passed=(bool(repro['compared'] == 18 * nrows and repro['failures'] == 0 and inv_mismatch == 0 and
                                                        all(v['all_break'] for v in repro.get('controls', {}).values()) and
                                                        len(repro.get('controls', {})) == len(cfg['settings']))
                                                   if repro['applicable'] else 'not applicable (new reference)')),
-                        grid_reproduction=dict(grepro, expected=sum(len(s_['arms']) * len(next(iter(s_['arms'].values()))['per_case'])
-                                                                    for s_ in out['settings'].values()),
+                        inventory=dict(mismatch=inv_mismatch, passed=bool(inv_mismatch == 0)),
+                        grid_reproduction=dict(grepro, expected=sum(len(s_['arms']) for s_ in cfg['settings']) * len(cfg_cases),
                                                passed=(bool(grepro['failures'] == 0 and grepro['compared'] ==
-                                                            sum(len(s_['arms']) * len(next(iter(s_['arms'].values()))['per_case'])
-                                                                for s_ in out['settings'].values())) if a.grid else 'not run')))
+                                                            sum(len(s_['arms']) for s_ in cfg['settings']) * len(cfg_cases))
+                                                       if a.grid else 'not run')))
     dest = Path(a.out or HERE / 'checks' / f"budget2d-{run.parents[1].name}-{a.refs}.json")
     dest.write_text(json.dumps(out, default=float) + '\n')
     print(dest, json.dumps(out['gates'], default=float))

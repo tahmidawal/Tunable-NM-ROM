@@ -222,6 +222,8 @@ def score2d(ent, run, check):
         k0 = keys.index('LSPG|BE|0.005|prod')
         ci0 = cases.index('dev6|0')
         r = inrow[(s0, keys[k0], 'dev6', 0)]
+        if r.get('e_ST') is None:
+            raise SystemExit('G-score controls: the pinned dev6/0 baseline row is invalid (non-finite)')
         n0 = n0c[('dev6', 0)]
         refs = load_ref2d(ent, 'dev6', 0)
         U = decode2d(G, W[ci0, k0])
@@ -293,6 +295,8 @@ def score3d(ent, run, check):
         sname = key.split('|')[0]
         A = Wz[key]
         r0 = inrow[(sname, key.split('|')[1], key.split('|', 2)[2], cases[0])]
+        if r0.get('e_ref') is None:
+            raise SystemExit('G-score controls: the baseline row of the first case is invalid (non-finite)')
         e = lambda F_, j: max(float(np.linalg.norm(F_[k] - R[j][k])) / n0[j] for k in range(1, 6))
         F0 = A[0] @ G[sname]
         ctrl['case_swap'] = abs(e(A[1] @ G[sname], cases[0]) - r0['e_ref']) if len(cases) > 1 else None

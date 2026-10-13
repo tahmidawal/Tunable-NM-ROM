@@ -69,10 +69,13 @@ def main():
     out = dict(run=str(run), refs=a.refs, result_sha256=hashlib.sha256((run / 'result.json').read_bytes()).hexdigest(),
                provisional='reference-limited (BE reference at dt0/4)', settings={}, gates={})
     repro = dict(compared=0, failures=0, worst=0., applicable=(a.refs == '3d_first_order'))
+    inv_mismatch = {}
+    all_ids = list(cfg.get('case_subset') or range(cfg['cohort_count']))
     grepro = dict(compared=0, failures=0, worst=0.)
     for s in cfg['settings']:
         sname, Rp = s['name'], int(s['Rp'])
         rr = dict(r=s['rule'], conv=s['conv'], finer=s['finer'])
+        budget_ids = all_ids[:cfg['budget_cases']]
         bk = C3.load_bank(s['bank'])
         G = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :Rp], X65))
         Qb, _ = np.linalg.qr(G.T)
@@ -90,6 +93,20 @@ def main():
             n0[j] = float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j))[i65]))
         dec = lambda W, j: (W @ G) / n0[j]
         valid = lambda key, j: bool(rows.get((sname, key.split('|')[1], key.split('|', 2)[2], j), {}).get('valid'))
+        # configured inventory (A9.3; codex-code-7 N14) vs JSON rows vs archive (case ids)
+        plan = C3R.bud_specs(s['arms'])
+        sel_specs = [tuple(x['spec']) for x in s['arms'] if x.get('selected')]
+        expk = set()
+        for role, sp in plan:
+            ids_ = all_ids if (sp in sel_specs) else budget_ids
+            expk |= {(rr[role], sk(sp), j) for j in ids_}
+        expk |= {(rr['finer'], sk(sp), j) for role, sp in plan if role == 'conv' and sp not in sel_specs for j in budget_ids}
+        expk |= {(cfg['control_rule'], sk(('fs', 'BE', DT0, 1)), j) for j in budget_ids}
+        rowk = {(r_['rule'], r_['spec'], r_['case']) for r_ in res['rows'] if r_['setting'] == sname}
+        arck = {(k2.split('|')[1], k2.split('|', 2)[2], int(j)) for k2 in Wz.files if k2.startswith(f'{sname}|')
+                for j in Wz[f'cases|{k2}']}
+        ndup = len([1 for r_ in res['rows'] if r_['setting'] == sname]) - len(rowk)
+        inv_mismatch[sname] = len(expk ^ rowk) + len(expk ^ arck) + ndup
         # reproduction of every row (original reference only)
         if repro['applicable']:
             for key in [k for k in Wz.files if k.startswith(f'{sname}|')]:
@@ -111,7 +128,6 @@ def main():
                             or (not np.isfinite(x) and not np.isfinite(y) and not r['valid']) else 1
         # converged-rule check: every r_inf run type vs the finer rule on the cases where both exist
         conv_d, conv_ok, missing = 0., True, []
-        budget_ids = list(range(cfg['budget_cases'])) if not cfg.get('case_subset') else list(cfg['case_subset'])[:cfg['budget_cases']]
         plan_conv = sorted({sk(sp) for role, sp in C3R.bud_specs(s['arms']) if role == 'conv'})
         for spec_key in plan_conv:                         # the required inventory comes from the plan, not the archive
             key = f"{sname}|{rr['conv']}|{spec_key}"
@@ -209,8 +225,7 @@ def main():
             largest = {}
             for p_ in per:
                 comps = {k: mx(p_.get(k)) for k in ('e_P', 'e_dyn', 'delta_quad', 'delta_time', 'delta_form', 'delta_solve')}
-                comps = {k: v for k, v in comps.items() if v is not None}
-                w = max(comps, key=comps.get) if comps else 'unavailable'
+                w = max(comps, key=comps.get) if None not in comps.values() else 'unavailable (incomplete comparison)'
                 largest[w] = largest.get(w, 0) + 1
             b0 = [max(p_['B0']) for p_ in per if 'B0' in p_]
             clos, ctxc, unres = [], {'delta_quad': 0, 'delta_form': 0}, {}
@@ -257,8 +272,12 @@ def main():
             withheld.append('time attribution (B3 control non-discriminating)')
         ctl = {}
         tb_ = traj(rr['r'], ('fs', 'BE', DT0, 1))
-        if repro['applicable'] and tb_ and len(tb_[0]) > 1:      # G-score controls on the budget archive (A9.6)
-            j0, j1 = sorted(tb_[0])[:2]
+        okj = [j for j in sorted(tb_[0]) if rows.get((sname, rr['r'], base_key, j), {}).get('valid')
+               and rows[(sname, rr['r'], base_key, j)].get('e_ref') is not None] if tb_ else []
+        if repro['applicable'] and len(okj) < 2:
+            ctl = dict(all_break=False, unavailable='fewer than two valid baseline rows')
+        if repro['applicable'] and len(okj) > 1:      # G-score controls on the budget archive (A9.6)
+            j0, j1 = okj[:2]
             r0 = rows[(sname, rr['r'], base_key, j0)]
             R0 = np.asarray(z[f'c{j0}'])
             ee = lambda F_: max(float(np.linalg.norm(F_[k] - R0[k])) / n0[j0] for k in range(1, 6))
@@ -279,11 +298,12 @@ def main():
     fx = B2D.b0_fixtures()
     pinned = b0m[0] if b0m else None
     out['gates'] = dict(B0=dict(worst_relative=max(b0w) if b0w else None, passed=bool(b0w and max(b0w) <= 1e-10)),
-                        B0_fixtures=fx['passed'],
+                        B0_fixtures=fx['passed'], inventory=dict(mismatch=inv_mismatch, passed=bool(sum(inv_mismatch.values()) == 0)),
                         B0_real_mismatch=dict(pinned_defect=pinned, passed=bool(pinned is not None and pinned > 1e-6)),
                         B1=all((s_['B1'] or {}).get('all_equal') for s_ in out['settings'].values()),
                         reproduction=dict(repro, rows=nrows,
                                           passed=(bool(repro['compared'] == 6 * nrows and repro['failures'] == 0 and
+                                                       sum(inv_mismatch.values()) == 0 and
                                                        all(s_['gscore_controls'].get('all_break') for s_ in out['settings'].values()))
                                                   if repro['applicable'] else 'not applicable')),
                         grid_reproduction=dict(grepro, expected=n_exp,

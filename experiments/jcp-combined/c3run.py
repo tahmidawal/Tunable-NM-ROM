@@ -306,7 +306,13 @@ def main():
             S_rep['escalation'] = dict(pairs=pairs, converged=conv, bar=cfg['conv_bar'], fixed_vs_adaptive=sens,
                                        operator_check=opc, status='pass' if conv else 'unresolved')
             save()
-            if conv is not None:
+            # no converged rule: the ladder and the family panels still run against a DIAGNOSTIC baseline (the finest rule
+            # run), with no selection claim (codex-job-smk item 1); S_rep['ladder_baseline'] records which
+            base_rule = conv if conv is not None else ('gl80' if 'gl80' in esc else 'gl64')
+            S_rep['ladder_baseline'] = dict(rule=base_rule, diagnostic_only=conv is None)
+            if True:
+                conv_ = conv
+                conv = base_rule
                 # bounded residency (code audit 2 item 11): only the converged rule and ONE ladder rule are resident; the
                 # family panel runs per ladder rule (A = converged rule's fixed BE dt0, B = that rule's two selection arms)
                 A = (sname, conv, SEL[0])
@@ -317,6 +323,7 @@ def main():
                     time_panel(f'family|{sname}|{rule}', A, [(sname, rule, x) for x in SEL],
                                lambda sn, rl: (sol, prep_of(rl)), int(tc['seed']) + 100 * k_set + 1 + i_r, tc['cases'], tc['reps'])
                     drop(rule)
+                conv = conv_
             S_rep['peak_bytes'] = C3.peak_bytes()
             for rule in list(preps):
                 drop(rule)

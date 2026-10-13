@@ -173,17 +173,22 @@ def main():
         n0 = float(np.linalg.norm(np.asarray(u0)))
         for sc in fc['schemes']:
             F = {}
+            secs_o = {}
             for f in (2, 1, .5, .25, .125):
+                t1 = time.perf_counter()
                 v = f256(u0, float(ph[4]), fsched(sc, DT0 * f), *TIGHT)
+                jax.block_until_ready(v)
+                secs_o[f'{f:g}'] = time.perf_counter() - t1
                 F[f] = (np.asarray(v['fields']), int(v['stats']['nfail']))
                 ofields[f'{sc}__{coh}__{c}__{f:g}'] = F[f][0]
             d = {f: max(float(np.linalg.norm(F[f][0][j] - F[f / 2][0][j])) / n0 for j in range(1, 6)) for f in (2, 1, .5, .25)}
-            order.append(dict(cohort=coh, case=c, scheme=sc, d={f'{f:g}': v for f, v in d.items()},
+            order.append(dict(cohort=coh, case=c, scheme=sc, seconds=secs_o, d={f'{f:g}': v for f, v in d.items()},
                               nfail={f'{f:g}': F[f][1] for f in F},
                               orders={f'{f:g}': float(np.log2(d[f] / d[f / 2])) for f in (2, 1, .5)}))
     np.savez_compressed(out / 'order_fields.npz', **ofields)
     rep['fom']['order'] = order
     del f256, ofields
+    rep.setdefault('phase_marks', {})['fom_order_done'] = el()
     print('FOM ORDER', el(), flush=True)
     fom = fom2.make_fom_lmm(L)
     dev = [x for x in cases if x[0] == 'dev6']
@@ -196,15 +201,21 @@ def main():
             ref_all = True
             for coh, c, ph in dev:
                 u0, nu, n0r = U0[(coh, c)]
+                t1 = time.perf_counter()
                 v = fom(u0, nu, fsched(sc, dt), *TIGHT)
+                jax.block_until_ready(v)
+                t_tight = time.perf_counter() - t1
                 fr0 = np.asarray(v['fields'][:, ::s256, ::s256])
                 CAL[f'{sc}__{f:g}__tight__{coh}__{c}'] = fr0.astype(np.float32)
                 ref_ok = int(v['stats']['nfail']) == 0
                 ref_all = ref_all and ref_ok
                 eST = CC.errs(fr0, refs, coh, c, n0r)['e_ST']
-                row = dict(case=f'{coh}{c}', tight_verified=ref_ok, tight_e_ST=eST, diffs={})
+                row = dict(case=f'{coh}{c}', tight_verified=ref_ok, tight_e_ST=eST, diffs={}, seconds_tight=t_tight)
                 for nt in fc['ntols']:
+                    t1 = time.perf_counter()
                     w = fom(u0, nu, fsched(sc, dt), nt, LTOL)
+                    jax.block_until_ready(w)
+                    row.setdefault('seconds', {})[f'{nt:g}'] = time.perf_counter() - t1
                     fr = np.asarray(w['fields'][:, ::s256, ::s256])
                     dd = max(float(np.linalg.norm(fr[j] - fr0[j])) / n0r for j in range(1, 6))
                     row['diffs'][f'{nt:g}'] = dict(diff=dd, verified=int(w['stats']['nfail']) == 0)
@@ -222,6 +233,7 @@ def main():
     np.savez_compressed(out / 'calibration_fields.npz', **CAL)
     del CAL
     save()
+    rep.setdefault('phase_marks', {})['fom_calibration_done'] = el()
     print('FOM CALIBRATION', el(), flush=True)
     F64, frows, fsha = {}, [], {}
     for ci, (coh, c, ph) in enumerate(cases):
@@ -231,18 +243,21 @@ def main():
                 pair = chosen[(sc, f)]
                 if pair is None:
                     continue
+                t1 = time.perf_counter()
                 v = fom(u0, nu, fsched(sc, DT0 * f), *pair)
                 jax.block_until_ready(v)
+                secs_e = time.perf_counter() - t1
                 fr = np.asarray(v['fields'][:, ::s256, ::s256])
                 kk = f'fom|{sc}|{f:g}'
                 F64[f'{kk}|{coh}|{c}'.replace('|', '__')] = fr
                 if ci in tci:
                     fsha[(kk, ci)] = sha(fr)
-                frows.append(dict(run=kk, scheme=sc, dt=DT0 * f, ntol=pair[0], ltol=pair[1], cohort=coh, case=c,
+                frows.append(dict(run=kk, scheme=sc, dt=DT0 * f, ntol=pair[0], ltol=pair[1], cohort=coh, case=c, seconds=secs_e,
                                   verified=int(v['stats']['nfail']) == 0,
                                   stats={k_: np.asarray(x) for k_, x in v['stats'].items()}, **CC.errs(fr, refs, coh, c, n0r)))
         print('FOM EVAL', ci, el(), flush=True)
     rep['fom']['rows'] = frows
+    rep.setdefault('phase_marks', {})['fom_eval_done'] = el()
     F64['__coords_x'] = np.arange(257) / 256.          # nodes x = i/256 (both axes, 'ij' order), boundary included
     F64['__times'] = np.arange(6) * .05
     np.savez_compressed(out / 'fom_f257.npz', **F64)
@@ -312,10 +327,16 @@ def main():
         A = ('rom', sname, ('LSPG', 'BE', DT0, 'prod'))
         Bs = [('rom', sname, r) for r in timed_runs if r != A[2]] + [('rom', sname, 'vendor')]
         panel(f'setting|{sname}', A, Bs, int(tc['seed']) + 1 + k_)
+        rep.setdefault('phase_marks', {})[f'timing_{sname}_done'] = el()
     A = ('rom', cfg['common_baseline'], ('LSPG', 'BE', DT0, 'prod'))
     Bs = [('rom', s['name'], r) for s in cfg['settings'] for r in timed_runs if ('rom', s['name'], r) != A]
     Bs += [('fom', sc, f) for sc in fc['schemes'] for f in fc['dt_factors'] if chosen[(sc, f)] is not None]
     panel('common', A, Bs, int(tc['common_seed']))
+    try:
+        rep['peak_bytes_job'] = int(jax.devices()[0].memory_stats().get('peak_bytes_in_use', -1))
+    except Exception:  # noqa: BLE001
+        rep['peak_bytes_job'] = -1
+    rep['phase_seconds'] = dict(total=el())
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()

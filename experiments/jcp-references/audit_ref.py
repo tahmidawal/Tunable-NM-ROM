@@ -269,7 +269,8 @@ def audit_crosscheck(dim, summary):
         gates_ok = all(r['checks_ok'] and r['ic_quad_rel'] <= 1e-12 and r['ic_quad_max'] <= 1e-13
                        and r['contour_rel'] <= 1e-10 and r['job_gates_ok'] for r in sel_runs)
         finite = finite and bool(np.isfinite(u3).all())
-        if meta['outcome'] != 'accepted' or eps is None or not np.isfinite(eps):
+        n0_ok = bool(np.isfinite(n0) and n0 > 0)
+        if meta['outcome'] != 'accepted' or eps is None or not np.isfinite(eps) or not n0_ok:
             v = 'FD-INVALID'
         elif not (finite and gates_ok):
             v = 'UNRESOLVED'
@@ -305,7 +306,7 @@ def audit_crosscheck(dim, summary):
         if v == 'UNRESOLVED' and ps.get('ladder_attempt', 0) == 0:
             v = 'UNRESOLVED-PENDING-ESCALATION'
         # A10.3(iv): the pre-A10 rule on the same ladder, re-derived independently
-        if meta['outcome'] != 'accepted' or eps is None or not np.isfinite(eps):
+        if meta['outcome'] != 'accepted' or eps is None or not np.isfinite(eps) or not n0_ok:
             old_v = 'FD-INVALID'
         elif not (finite and gates_ok):
             old_v = 'UNRESOLVED'
@@ -314,7 +315,8 @@ def audit_crosscheck(dim, summary):
             q_ = [order(da_[k], db_[k], [1 / N for N in Ns]) for k in range(1, 6)]
             raw = float(np.max(db_[1:]) / n0) + float(np.max(norms(full - half)[1:]) / n0)
             xx = float(np.max(norms(half - u3)[1:]) / n0)
-            if any(x_ is None or x_ < 2.5 for x_ in q_) or not stab or not np.isfinite(raw) or raw > eps / 2:
+            if (any(x_ is None or x_ < 2.5 for x_ in q_) or not stab or not np.isfinite(raw) or not np.isfinite(xx)
+                    or raw > eps / 2):
                 old_v = 'UNRESOLVED'
             else:
                 old_v = 'PASS' if xx <= 2 * eps else 'FAIL'

@@ -269,6 +269,15 @@ for d in sorted(dims):
           f"{sci(v.get('ps_vs_richardson'))} | {fx(min(qq), 2) + '–' + fx(max(qq), 2) if qq else '—'} | "
           f"{(v.get('x2_old') or {}).get('verdict', '—')} |")
 w('')
+w('**Rule change disclosed (DESIGN A10/A10.3).** The PS validity rule was changed after inspecting PS '
+  'self-convergence data and before any comparison with the new second-order FD references of these cases: the '
+  'pre-registered requirement "PS spatial order $q\\ge2.5$" was replaced by the Richardson multiplier at the observed '
+  'order ($q\\ge0.5$) with a $10^{-12}$ round-off floor, because three accurate 2D PS ladders (first-order but '
+  '$\\sim10^{-9}$ self-differences, or differences at round-off) would otherwise have been declared unresolved. The '
+  'floor assumes any remaining PS spatial error is negligible at the $10^{-12}$ scale. The column "pre-A10 rule" gives '
+  'the verdict the original rule would have returned on the same ladder (not counting the escalation it might have '
+  'required). A PASS means conditional agreement on the scoring lattice at $t_1..t_5$; it is not a rigorous bound.')
+w('')
 w('$x_{PS}$ is the distance between the pseudo-spectral solution and the finest finite-difference level; it estimates '
   'the true error of that level, so $x_{PS}/\\epsilon_{ref}\\approx1$ means the Richardson estimate is sharp. '
   'X2 replaces the finest level by the old first-order reference and must FAIL.')

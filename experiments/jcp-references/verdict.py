@@ -185,7 +185,8 @@ def crosscheck(fd_record, u3, ps, n0):
     finite=bool, gates_ok=bool, stability_ok=bool). Returns dict with verdict and numbers."""
     rec = dict(x_ps=None, s_x=None, s_t=None, sigma=None, q=None, eps_ref=fd_record.get('eps_ref'))
     rec['old_rule_verdict'] = old_rule_verdict(fd_record, u3, ps, n0)
-    if fd_record.get('outcome') != 'accepted' or rec['eps_ref'] is None or not np.isfinite(rec['eps_ref']):
+    if (fd_record.get('outcome') != 'accepted' or rec['eps_ref'] is None or not np.isfinite(rec['eps_ref'])
+            or not (np.isfinite(n0) and n0 > 0)):
         return dict(rec, verdict='FD-INVALID')
     eps = rec['eps_ref']
     arrays = [x for _, x in ps['spatial']] + [ps['half'], ps['full'], u3]
@@ -216,7 +217,8 @@ def crosscheck(fd_record, u3, ps, n0):
 def old_rule_verdict(fd_record, u3, ps, n0):
     """A10.3(iv): the pre-A10 rule (q >= 2.5 at every time, raw s_x) on the SAME selected ladder, on every path."""
     eps = fd_record.get('eps_ref')
-    if fd_record.get('outcome') != 'accepted' or eps is None or not np.isfinite(eps):
+    if (fd_record.get('outcome') != 'accepted' or eps is None or not np.isfinite(eps)
+            or not (np.isfinite(n0) and n0 > 0)):
         return 'FD-INVALID'
     arrays = [x for _, x in ps['spatial']] + [ps['half'], ps['full'], u3]
     if not ps['finite'] or not ps['gates_ok'] or not all(np.isfinite(np.asarray(x)).all() for x in arrays):

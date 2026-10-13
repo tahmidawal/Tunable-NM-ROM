@@ -537,3 +537,110 @@ check, far below any reported difference).
 **A1.12 Scope (item 27).** This lane answers a provisional development-cohort question about the combined method; it does
 not complete E3's strong-reference, sealed-cohort, multi-mesh claim, and `FROZEN-SELECTION.json` does not replace the
 campaign's global sealing.
+
+## Amendment A2 (2026-10-13, after the re-audit `audits/codex-design-2.md`; before any code)
+
+Item labels: "Pn" = previous-audit item n with partial resolution; "Nn" = new finding n.
+
+**A2.1 G-FS1 acceptance (P5).** Two named outcomes: **exact** (coefficients $\le10^{-12}$ relative, iterations and exit
+reasons equal on every case) or **approved-equivalent** (the A2.9-style $10^{-8}$ trajectory and field criterion **and**
+identical per-case eligibility and identical verified-exit counts). Either lets the job proceed; which one occurred is
+reported. Anything else stops the job before any verdict.
+
+**A2.2 Manufactured mutations (P7, N13).** Each mutation has a designated scheme and an independent NumPy step-residual
+expectation: `stale_fn` → CN (uses $F(c_{n-1})$; residual check from step 2); `stale_hist` → BDF2 ($c_{n-2}$ for $c_{n-1}$;
+from step 3); `no_startup` → BDF2 (first step BDF2 with $c_{-1}=c_0$; step 1); `wrong_weight` → BDF2 ($S$ built with
+$\beta_1=0$, i.e. $S=1/\alpha_0$; trajectory and residual). Each must be detected on its own fixture; no mutation is required
+to discriminate other schemes.
+
+**A2.3 Interaction diagnostics (P13).** The endpoint comparison is renamed **context sensitivity** and is computed only when
+both distances exceed a resolution floor $10^{-8}$ (else "below floor"). Mixed differences use four explicitly inventoried
+corners with identical $w_0$, common times and unchanged other ingredients; an LSPG corner is never substituted by a GAL
+run; if any corner is unverified the contrast is "unavailable".
+
+**A2.4 Quadrature qualification (P14, P16, N5).**
+- 2D: the converged-rule check ($320^2$ vs $640^2$, successor $640^2$ vs $768^2$) runs for every $r_\infty$-dependent budget
+  trajectory type (deployed-end, ideal and its qualification runs, ideal-end, mixed-difference corners) on **dev6 ∪ the
+  first 10 val32 cases** (16 cases). Convergence claims are restricted to these checked cases; on the other 22 cases the
+  quadrature sensitivity is reported with the label "converged rule checked on 16/38 cases".
+- 3D: the accepted converged rule must also pass against its **finer** neighbour (A1.7 pair list is replaced by: converged
+  rule $r_\infty$ = the first of $56^3,64^3$ such that $d(r_\infty,\text{next finer})\le$ bar under both selection solvers on all 64
+  cases; next finer of $64^3$ is $80^3$). The C1 pair $(56^3,48^3)$ is reported but cannot by itself accept $56^3$. In
+  `c3bud` every $r_\infty$-dependent trajectory type is re-checked against the next finer rule on all 32 budget cases.
+  `M2_512` gets its own check ($56^3$ vs $64^3$, both selection solvers, 64 cases) inside `c3desc`.
+- **Finalist and fallback inventory (P16, N2):** `FROZEN-SELECTION.json` lists, per setting, the selected arm IDs and an
+  explicit ordered fallback list (the next two larger rungs of the same family, then "unavailable"). The finalist check
+  ($\delta_{\rm quad}\le\tau$) runs in the budget jobs on all budget cases (2D 38; 3D 32) **and**, in 3D, on all 64 cases for the
+  selected arms (they are cheap at the deployed rule; only the $r_\infty$ runs are costly, and the selected arms' $r_\infty$
+  runs at deployed steps are included). A selected arm failing it is reported as **failing qualification**; its selection
+  verdict is preserved; any fallback is a separate diagnostic unless it receives accuracy, solver, quadrature and same-job
+  timing qualification (which the budget jobs provide for the first fallback only).
+
+**A2.5 J4 statuses (P15, N6).** Per $R'$ and rule pair two fields are recorded: `selection_pair_status` ∈ {pass, fail,
+unresolved} from the two **fixed-sweep** selection solver arms only, and `adaptive_diagnostic_status` ∈ {pass, fail,
+unresolved} from the adaptive arms. Only the former gates selection; the latter is diagnostic and never vetoes. The
+operator-level check is reported as its own number (relative tested-operator difference on common states, denominator-zero
+→ "undefined"); the quantitative "amplification" wording is withdrawn.
+
+**A2.6 Tie policy made symmetric and complete (P17, P19, N9).**
+- Per case: arms $x,y$ tie iff $|e_x-e_y|\le2\varepsilon_{\rm ref}$ of that case.
+- Worst: tie iff $|\max_ie_{x,i}-\max_ie_{y,i}|\le2\max_i\varepsilon_{\rm ref,i}$ (cohort maximum of the threshold, symmetric).
+- Median: tie iff $|\mathrm{med}_ie_{x,i}-\mathrm{med}_ie_{y,i}|\le2\,\mathrm{med}_i\varepsilon_{\rm ref,i}$. These are declared heuristics. When E0
+  provides verified case-wise uncertainty $\eta_i$, comparisons use intervals $[\max(0,e_i-\eta_i),e_i+\eta_i]$ propagated to
+  medians and maxima by their endpoints, and arms tie iff the intervals overlap.
+- Step choice within a scheme × setting: smallest median $e_{\rm TX}$; ties (policy) → smaller cost; then larger step.
+- Global scheme algorithm: for each dial setting, the set of **winners** = candidate schemes whose accurate-equal-cost median
+  $e_{\rm TX}$ is not beaten (beaten = strictly smaller by more than the tie threshold) by any other candidate; every winner
+  gets one point. Highest points wins; ties → smaller sum of the four medians, where a scheme missing an arm at a setting is
+  ineligible for the sum comparison and ranks after every scheme with all four; then the fixed order LSPG-BDF2, LSPG-CN-R,
+  GAL-CN. If the global scheme has no eligible arm at a setting, H1/H2 steps involving that setting are **unavailable**.
+- Pareto dominance (H2a): point $p$ dominates $q$ iff $p$'s cost ≤ $q$'s and $p$'s error is not beaten by $q$'s (policy).
+
+**A2.7 H3 normalisation (N7).** All vectors are divided by $n_0$ (A1.4) before norms and inner products. $t^\ast$ is chosen
+separately for ST and for TX (ties → the earliest time). If $\lVert\delta_{\rm BE}\rVert=0$ or $\lVert\varepsilon_\infty\rVert=0$ the angle is
+"undefined" and H3 is not confirmed for that case. Confirmation is withheld if moving $e_\infty$ by $\pm U_{\rm anc}$ can reverse
+(a) or (c). The conclusion is scoped to cancellation at $t^\ast$; it does not claim to explain where the CN trajectory attains
+its maximum error.
+
+**A2.8 H4 populations and comparator (P20, N8).** Fixed comparison population per setting: the cases on which the
+comparator (deployed fixed-sweep BE, $\Delta t_0$) is resolved; H4 is evaluated only if this is ≥ 52 of 64 cases, else
+"anchor-limited". On that population, a candidate's unresolved cases are kept and enter with the conservative bound
+"anchor discrepancy = $3U_{\rm anc}$" (its error cannot be shown smaller). The comparator's own solver sensitivity
+(fixed BE vs adaptive tight BE) is reported, and the adaptive comparators of every candidate must be verified with tighter
+replay sensitivity $\le0.1\times$ the solver distance bar, else that candidate's step is "solver-unqualified". H4b witness:
+fixed-sweep candidates at $\Delta t_0$ only with ratio ≤ 1.1; the separately reported accurate-equal-cost selection uses ratio ≤
+1.0 at any step. Both are reported; they need not coincide.
+
+**A2.9 B0 negative controls (P21, N10).** Replaced by constructions that break the identity by construction: (i) a
+deterministic fixture ($v$ in span, $y$ arbitrary) where the projector is replaced by a known **non-orthogonal**
+idempotent $P'$ (oblique projection), expected defect computed analytically; (ii) $v$ plus a controlled out-of-span
+component of norm $10^{-3}$, expected defect $\ge$ known amount; (iii) a mismatched normaliser on only one term. Coordinate
+alignment is tested separately: decoding at the scoring nodes must reproduce the mesh-restricted in-job fields
+(G-score), and a one-node shift of the scoring coordinates must break that agreement.
+
+**A2.10 FOM storage and decisions (P23, N11).** FOM fields are saved losslessly (float64) at the $257^2$ shared nodes for
+every case and configuration (strict score reproduction), and as float32 on the full $1024^2$ mesh for lattice rescoring,
+with the float32 serialisation error bound recorded per file ($\max|x_{32}-x_{64}|/\max|x_{64}|$) and a separate archive
+gate (bound $\le10^{-6}$). Mesh shape and node coordinates are pinned. Under a new reference: the frozen inventories (ROM arm
+IDs, FOM configuration IDs, calibrated tolerances) are fixed; the matching and the H5 maximiser are **recomputed and
+labelled "reference-dependent rematching"**.
+
+**A2.11 Timing statistics (P24, N1, N12).**
+- 2D `c2grid`: per-setting A–B–A panels (A = that setting's LSPG-BE at $\Delta t_0$; B = every production arm of that setting
+  with $\Delta t\ge\Delta t_0/2$) drive selection; one common panel (A = `acc` LSPG-BE at $\Delta t_0$; B = every production arm
+  of every setting and every FOM configuration) gives the common cost axis (H2) and the FOM/ROM speed-ups (H5). H5 speed-up
+  per (ROM, FOM) pair = median over cases × repetitions of $t_{\rm FOM}/t_{\rm ROM}$ where both come from invocations of the
+  common panel normalised by their own flanking baselines, i.e. $\mathrm{med}(r_{\rm FOM})/\mathrm{med}(r_{\rm ROM})$ is **not** used;
+  instead each case/repetition's ratio $r_{\rm FOM,i}/r_{\rm ROM,i}$ (same case and repetition index) and its median.
+- 3D `c3grid`: per-setting panels (A = deployed fixed-sweep BE at $\Delta t_0$; B = every fixed-sweep candidate and the
+  adaptive arms) drive selection; the common panel contains **every potentially selectable arm** (all fixed-sweep
+  candidates at $\Delta t\ge\Delta t_0$) of every setting with baseline `W512` deployed BE (fallback: `M2_512` deployed BE if
+  W512 is unavailable); common-panel cases = the first 4 cases, 2 repetitions, seed 20261013.
+- Drift: the inherited 10 % gate applies to every panel; a failing panel is reported "timing-invalid" and is not used for
+  selection or H-verdicts (rerun in a new job by amendment).
+
+**A2.12 Inventory gate (P26).** `checks/inventory.json` (generated by the drivers' `--dry-run`) enumerates every run of every
+job including conditional successors (2D $640^2/768^2$, 3D $80^3$), qualification and tighter replays, mixed-difference
+corners, first fallbacks, timing invocations and decodes, with per-run step counts; `smk` measures per-run times per
+(setting, rule, solver type, step) and peak device memory; each job is submitted only when its projected wall time
+(with a 1.5× margin) fits its Slurm limit and its projected peak memory fits the GPU.

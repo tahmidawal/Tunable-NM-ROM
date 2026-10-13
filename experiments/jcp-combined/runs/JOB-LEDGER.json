@@ -1,0 +1,9 @@
+{"namespace": "/cluster/tufts/paralab/tawal01/jcp-comb",
+ "jobs": [
+  {"attempt": "smk2d", "slurm": 5208761, "gpu": "a100-80G", "commit": "c6b4c338c", "submitted": "2026-10-13", "role": "smoke (A4.6)"},
+  {"attempt": "smk3esc", "slurm": 5208766, "gpu": "h200", "commit": "c6b4c338c", "submitted": "2026-10-13", "role": "smoke (A4.6)"},
+  {"attempt": "smk3grid", "slurm": 5208768, "gpu": "h200", "commit": "c6b4c338c", "submitted": "2026-10-13", "role": "smoke (A4.6)"}
+ ],
+ "failed_attempts": [
+  {"attempt": "smk3esc", "note": "first submission attempt: rsync aborted by login-node connection drop before sbatch; partial staging dir removed; no job created"}
+ ]}

@@ -1,0 +1,66 @@
+{
+ "attempt": "smk3bud",
+ "driver": "c3run",
+ "mode": "bud",
+ "mesh": 65,
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "refined_ref": "REF3D",
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "conv_bar": 2.5e-05,
+ "settings": [
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat32768",
+   "conv": "gl56",
+   "finer": "gl64",
+   "arms": [
+    {
+     "spec": [
+      "vendor"
+     ],
+     "role": "baseline"
+    },
+    {
+     "spec": [
+      "fs",
+      "CN",
+      0.025,
+      2
+     ],
+     "role": "test-selected",
+     "selected": true
+    },
+    {
+     "spec": [
+      "fs",
+      "CN",
+      0.01,
+      1
+     ],
+     "role": "diagnostic"
+    }
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 0,
+  "reps": 0,
+  "burn": 0.1,
+  "seed": 20261013
+ },
+ "common_baseline": "W512",
+ "common_baseline_fallback": "M2_512",
+ "case_subset": [
+  0,
+  1,
+  2
+ ],
+ "budget_cases": 2,
+ "control_rule": "lat256",
+ "smoke": true
+}

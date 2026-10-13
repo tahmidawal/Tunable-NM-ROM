@@ -106,7 +106,7 @@ def main():
     print('SETUP', el(), flush=True)
     for spec in cfg['settings']:
         conv_rule, check_rule = cfg['conv_rule'], cfg['check_rule']
-        rules = {'conv': conv_rule, 'check': check_rule}
+        rules = {'conv': conv_rule, 'check': check_rule, 'ctrl': cfg['control_rule']}
         st = CC.Setting(bank, spec, rules=rules)
         S_rep = rep['setup'][spec['name']] = dict(Rp=st.Rp, M=st.M, rule=spec['rule'], m=st.m, arms=spec['arms'],
                                                    conv_rule=conv_rule, check_rule=check_rule, successor_used=False)
@@ -154,7 +154,7 @@ def main():
             del st
             gc.collect()
             conv_rule, check_rule = cfg['check_rule'], cfg['successor_check']
-            st = CC.Setting(bank, spec, rules={'conv': conv_rule, 'check': check_rule})
+            st = CC.Setting(bank, spec, rules={'conv': conv_rule, 'check': check_rule, 'ctrl': cfg['control_rule']})
             S_rep.update(successor_used=True, conv_rule=conv_rule, check_rule=check_rule)
             Wset.clear()
             w0set.clear()
@@ -170,6 +170,21 @@ def main():
             S_rep['converged_rule_status'] = 'verified (successor)' if worst <= cfg['conv_bar'] else 'converged rule unverified'
         else:
             S_rep['converged_rule_status'] = 'verified'
+        # ---- B1 sham (bitwise re-run of the baseline arm) and B2 known effect (control rule) on the check set (A1.10)
+        b1, b2 = [], []
+        base_r = ('main', 'LSPG', 'BE', DT0, 'prod')
+        for ci in check_set:
+            coh, c, ph = cases[ci]
+            u0, nu, n0r = U0[(coh, c)]
+            v1 = st.call(*base_r, u0, nu)
+            v2 = st.call(*base_r, u0, nu)
+            b1.append(bool(np.array_equal(np.asarray(v1['W']), np.asarray(v2['W']))))
+            _, fc_, _ = do(base_r, ci, role_override='ctrl')
+            fm_ = np.asarray(v1['fields'][:, ::s256, ::s256])
+            b2.append(field_dist(fm_, fc_, n0r))
+        S_rep['B1_sham_bitwise'] = dict(all_equal=all(b1), cases=len(b1))
+        S_rep['B2_control_rule'] = dict(rule=cfg['control_rule'], per_case=b2, exceeds_tau=sum(x > 2.5e-4 for x in b2),
+                                        discriminating=bool(sum(x > 2.5e-4 for x in b2) > len(b2) / 2))
         # ---- every run on every case (check-set conv runs were already done; repeats are skipped)
         done = {(r_['run'], r_['cohort'], r_['case']) for r_ in rep['rows'] if r_['setting'] == spec['name']}
         for ci in order:

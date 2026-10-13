@@ -65,6 +65,36 @@ def grid_specs(g):
     return sp
 
 
+H8, H16 = DT0 / 8, DT0 / 16
+
+
+def bud_specs(arms):
+    """3D budget runs (A1.4, A1.5) as (role, spec): role 'r' = deployed rule, 'conv' = r_inf, 'finer' = next finer."""
+    out = []
+    add = lambda x: out.append(x) if x not in out else None
+    for x in arms:
+        sp = tuple(x['spec'])
+        if sp[0] == 'vendor':
+            sc, dt, K = 'BE', DT0, 1
+        else:
+            _, sc, dt, K = sp
+        add(('r', sp))
+        add(('conv', sp))
+        add(('r', ('ad', 'LSPG', sc, dt, 'tight')))
+        add(('r', ('ad', 'GAL', sc, dt, 'tight')))
+        add(('r', ('fs', 'BDF2', H8, K)))
+        add(('r', ('ad', 'LSPG', sc, dt / 2, 'tight')))
+        add(('conv', ('fs', 'BDF2', H8, K)))
+        add(('r', ('ad', 'LSPG', 'BDF2', H8, 'tight')))
+        if x.get('selected'):
+            add(('finer', sp))
+    for r in [('conv', ('ad', 'GAL', 'BDF2', H8, 'tight')), ('conv', ('ad', 'GAL', 'BDF2', H16, 'tight')),
+              ('conv', ('ad', 'GAL', 'BDF2', H8, 'tighter')), ('conv', ('ad', 'GAL', 'BDF2', H16, 'tighter')),
+              ('r', ('ad', 'GAL', 'BDF2', H8, 'tight')), ('conv', ('ad', 'LSPG', 'BDF2', H8, 'tight'))]:
+        add(r)
+    return out
+
+
 def timed_adaptive(x):
     return x[0] == 'ad' and x[4] == 'tight' and (abs(x[3] - DT0) < 1e-12 or abs(x[3] - 2.5 * DT0) < 1e-12)
 
@@ -83,6 +113,10 @@ def inventory(cfg):
             nt = len([x for x in sp if (x[0] in ('fs', 'vendor') and x != ('fs', 'BE', DT0, 1)) or timed_adaptive(x)])
             inv['settings'][s['name']] = dict(runs=[C3.spec_key(x) for x in sp], steps_per_case=sum(nsteps(x) for x in sp),
                                               timing_invocations=3 * nt * tc['cases'] * tc['reps'])
+        elif cfg['mode'] == 'bud':
+            runs = [(s[role] if role != 'r' else s['rule'], C3.spec_key(sp)) for role, sp in bud_specs(s['arms'])]
+            runs += [(s['finer'], C3.spec_key(sp)) for role, sp in bud_specs(s['arms']) if role == 'conv']
+            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=0)
         else:
             runs = [(r, C3.spec_key(x)) for r in s['esc_rules'] for x in SEL + DIAG]
             runs += [('gl80 (conditional)', C3.spec_key(x)) for x in SEL + DIAG]
@@ -350,6 +384,54 @@ def main():
             S_rep['peak_bytes'] = C3.peak_bytes()
             for rule in list(preps):
                 drop(rule)
+        elif mode == 'bud':
+            # ---- 3D error budget (A1.4, A1.5, A2.4, A3.6): all runs on the budget cases; selected arms' r_inf and finer
+            # runs on every case; every r_inf-dependent run also with the finer rule on the budget cases (conv check)
+            nb = int(cfg['budget_cases'])
+            allc = list(cases)
+            sub = cases[:nb]
+            rmap = dict(r=s['rule'], conv=s['conv'], finer=s['finer'])
+            plan = bud_specs(s['arms'])
+            sel_specs = [tuple(x['spec']) for x in s['arms'] if x.get('selected')]
+            for role in ('r', 'conv', 'finer'):
+                rule = rmap[role]
+                specs_all = [sp for rl, sp in plan if rl == role and (sp in sel_specs and role in ('r', 'conv', 'finer'))]
+                specs_sub = [sp for rl, sp in plan if rl == role and sp not in specs_all]
+                if role == 'finer':          # conv check: every r_inf-dependent run type on the budget cases
+                    specs_sub += [sp for rl, sp in plan if rl == 'conv' and sp not in specs_all and sp not in specs_sub]
+                prep = prep_of(rule)
+                if specs_all:
+                    rollouts(sname, sol, rule, prep, specs_all, lean)
+                S_rep.setdefault('case_sets', {}).update({f'{rule}|{C3.spec_key(x)}': 'all' for x in specs_all})
+                S_rep['case_sets'].update({f'{rule}|{C3.spec_key(x)}': f'first {nb}' for x in specs_sub})
+                if specs_sub:
+                    cases[:] = sub
+                    try:
+                        rollouts(sname, sol, rule, prep, specs_sub, lean)
+                    finally:
+                        cases[:] = allc
+                drop(rule)
+            # B1 sham (bitwise re-run) and B2 known effect (control rule lat256) of the deployed BE on the budget cases
+            prep = prep_of(s['rule'])
+            b1 = []
+            for j in sub:
+                o1 = sol.run(('vendor',), U0[j], NU[j], prep)[1]
+                o2 = sol.run(('vendor',), U0[j], NU[j], prep)[1]
+                b1.append(bool(np.array_equal(np.asarray(o1), np.asarray(o2))))
+            cases[:] = sub
+            try:
+                ctl = rollouts(sname, sol, cfg['control_rule'], prep_of(cfg['control_rule']), [('vendor',)], lean)
+            finally:
+                cases[:] = allc
+            drop(cfg['control_rule'])
+            vk = f"{sname}|{s['rule']}|vendor|BE|0.01|K1"
+            dctl = (np.linalg.norm(np.einsum('cki,ji->ckj', ctl['vendor|BE|0.01|K1']['W'] - Wstore[vk][:nb], Lt), axis=2)
+                    / N0[:nb, None])[:, 1:].max(1) if vk in Wstore else None
+            S_rep.update(rules=rmap, budget_cases=nb, arms=s['arms'], peak_bytes=C3.peak_bytes(),
+                         B1_sham_bitwise=dict(all_equal=all(b1), cases=len(b1)),
+                         B2_control_rule=dict(rule=cfg['control_rule'],
+                                              per_case=None if dctl is None else dctl.tolist(),
+                                              discriminating=None if dctl is None else bool(np.mean(dctl > 2.5e-4) > .5)))
         else:
             rule = s['rule']
             prep = prep_of(rule)

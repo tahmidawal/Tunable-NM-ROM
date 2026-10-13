@@ -162,8 +162,9 @@ class Solvers:
     def fs(self, scheme, dt, K):
         k = ('fs', scheme, round(dt, 12), K)
         if k not in self.cache:
+            steps = int(round(.25 / dt))      # long schedules (budget-only, never timed) are not unrolled (compile time)
             self.cache[k] = fs3.make_fs_query(self.n, self.Rp, OM.contract_offmesh, scheme, dt, K, self.gtol, self.trust,
-                                              self.a, dt0=DT0)
+                                              self.a, dt0=DT0, unroll=steps <= 50)
         return self.cache[k]
 
     def vendor(self):

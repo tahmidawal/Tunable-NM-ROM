@@ -88,6 +88,24 @@ def main():
                                                           common_reps=1, common_seed=20261013))
     cfgs['smk3esc'] = c3('smk3esc', 'esc', [dict(esc_settings()[4], ladder=['lat32768', 'gl48', 'lat256'])],
                          case_subset=[0, 1], timing=dict(cases=2, reps=1, burn=0.1, seed=20261013))
+    # budget smokes (A1.0 step 6 drivers; arms are machinery choices, not a selection)
+    sarms = [dict(form='LSPG', scheme='BE', f=1, role='baseline'), dict(form='LSPG', scheme='BDF2', f=2, role='test-selected',
+                                                                        selected=True),
+             dict(form='GAL', scheme='CN', f=1, role='diagnostic')]
+    b2 = c2('smk2bud', settings=[dict(SETTINGS2[5], arms=sarms), dict(SETTINGS2[0], arms=sarms)],
+            case_subset={'dev6': [0, 2], 'val32': [0]})
+    b2.update(driver='c2bud', conv_rule='gauss320', check_rule='gauss640', successor_check='gauss768', control_rule='gauss8',
+              conv_bar=2.5e-5, check_val32=1)
+    for k_ in ('grid', 'fom', 'timing', 'common_baseline'):
+        b2.pop(k_, None)
+    cfgs['smk2bud'] = b2
+    a3 = [dict(spec=['vendor'], role='baseline'), dict(spec=['fs', 'CN', 0.025, 2], role='test-selected', selected=True),
+          dict(spec=['fs', 'CN', 0.01, 1], role='diagnostic')]
+    b3 = c3('smk3bud', 'bud', [dict(SETTINGS3[4], rule='lat32768', conv='gl56', finer='gl64', arms=a3)], case_subset=[0, 1, 2],
+            timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    b3.update(budget_cases=2, control_rule='lat256')
+    b3.pop('grid', None)
+    cfgs['smk3bud'] = b3
     for k, c in cfgs.items():
         if k.startswith(('smk', 'local')):
             c['smoke'] = True                     # A5.5: explicit smoke classification

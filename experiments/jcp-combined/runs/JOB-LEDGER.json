@@ -1,9 +1,62 @@
-{"namespace": "/cluster/tufts/paralab/tawal01/jcp-comb",
+{
+ "namespace": "/cluster/tufts/paralab/tawal01/jcp-comb",
  "jobs": [
-  {"attempt": "smk2d", "slurm": 5208761, "gpu": "a100-80G", "commit": "c6b4c338c", "submitted": "2026-10-13", "role": "smoke (A4.6)"},
-  {"attempt": "smk3esc", "slurm": 5208766, "gpu": "h200", "commit": "c6b4c338c", "submitted": "2026-10-13", "role": "smoke (A4.6)"},
-  {"attempt": "smk3grid", "slurm": 5208768, "gpu": "h200", "commit": "c6b4c338c", "submitted": "2026-10-13", "role": "smoke (A4.6)"}
+  {
+   "attempt": "smk2d",
+   "slurm": 5208761,
+   "gpu": "a100-80G",
+   "commit": "c6b4c338c",
+   "submitted": "2026-10-13",
+   "role": "smoke (A4.6)",
+   "status": "collected; all machinery gates passed"
+  },
+  {
+   "attempt": "smk3esc",
+   "slurm": 5208766,
+   "gpu": "h200",
+   "commit": "c6b4c338c",
+   "submitted": "2026-10-13",
+   "role": "smoke (A4.6)",
+   "status": "collected; all machinery gates passed"
+  },
+  {
+   "attempt": "smk3grid",
+   "slurm": 5208768,
+   "gpu": "h200",
+   "commit": "c6b4c338c",
+   "submitted": "2026-10-13",
+   "role": "smoke (A4.6)",
+   "status": "collected; all machinery gates passed"
+  },
+  {
+   "attempt": "c2grid",
+   "slurm": 5209526,
+   "gpu": "a100-80G",
+   "commit": "43d00da63",
+   "submitted": "2026-10-13",
+   "role": "2D grid + anchors + FOM + timing (A1.0)"
+  },
+  {
+   "attempt": "c3descW1024",
+   "slurm": 5209530,
+   "gpu": "h200",
+   "commit": "43d00da63",
+   "submitted": "2026-10-13",
+   "role": "3D escalation + selection, W1024 (A7.5)"
+  },
+  {
+   "attempt": "c3descW768",
+   "slurm": 5209535,
+   "gpu": "h200",
+   "commit": "43d00da63",
+   "submitted": "2026-10-13",
+   "role": "3D escalation + selection, W768 (A7.5)"
+  }
  ],
  "failed_attempts": [
-  {"attempt": "smk3esc", "note": "first submission attempt: rsync aborted by login-node connection drop before sbatch; partial staging dir removed; no job created"}
- ]}
+  {
+   "attempt": "smk3esc",
+   "note": "first submission attempt: rsync aborted by login-node connection drop before sbatch; partial staging dir removed; no job created"
+  }
+ ]
+}

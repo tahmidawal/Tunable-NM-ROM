@@ -726,3 +726,36 @@ refuses a production attempt without a passing certificate at HEAD.
 
 **A4.7 In-job 3D scoring.** In-job refined errors decode through the mesh rows at $n=65$ (whose interior is the $63^3$
 lattice); `score.py` recomputes them independently by evaluating the bank at the lattice coordinates (G-score).
+
+## Amendment A5 (2026-10-13, code time, after `audits/codex-code-2.md`; before any cluster job)
+
+**A5.1 Adaptive validity.** Adaptive (generic LM) arms are valid only if every step is verified (C2 A1.5); the 1 %
+pooled non-stationarity allowance of A4.5 applies to the fixed-sweep and vendor arms only.
+**A5.2 Timed adaptive subjects.** A4.3 is corrected to what is run: adaptive tight LSPG arms of every scheme and the
+adaptive GAL-CN arm, each at $\Delta t_0$ and $\tfrac52\Delta t_0$.
+**A5.3 Drift gate per subject (replaces the pooled median of A4.4).** A panel is valid iff every invocation's hashes match,
+every paired ratio is finite and positive, and **every subject's** median $t_{A_2}/t_{A_1}$ lies in $[1/1.1,1.1]$
+(`timing.panel_validity`; its self-test shows a 20 % drift injected into one subject is detected while the pooled median
+would have hidden it). Worst subject drift and the 5–95 % drift range are reported.
+**A5.4 FOM archive scope (corrects A4.2's wording).** E0 allows shared-subset lattices **or** audited interpolation; this
+lane supports only the shared-subset route (any lattice contained in the $257^2$ nodes, coordinates $x=i/256$ and output
+times saved in the archive). Other lattices need an FOM rerun or an audited interpolation, stated in the report.
+**A5.5 Smoke classification.** A config carries `"smoke": true` explicitly (not inferred from its name). Smoke results are
+used only for machinery checks and the resource certificate, never for verdicts.
+**A5.6 Residency (3D).** Escalation rules are released after use ($64^3$ kept for the operator check); the ladder runs one
+rule at a time and the family panel runs per ladder rule (A = converged rule's fixed BE at $\Delta t_0$, B = that rule's two
+selection arms), so at most the converged rule and one ladder rule are resident; grid mode keeps each setting's deployed
+rule (≤ ladder sizes) for the common panel.
+**A5.7 G-FS1 comparison and control.** Approved-equivalence also requires identical per-case exit-reason counts and
+identical pooled eligibility; the CN negative control is on the named case 923801/0. A non-discriminating control is
+flagged and every verdict that depends on G-FS1's discrimination (H4) is withheld until diagnosed.
+**A5.8 Manufactured test fidelity.** The NumPy vendor re-implementation follows the vendor exit semantics (initial
+non-finite → reason 3; tiny-step test on the pre-update state; Cholesky; non-finite steps rejected) and is also run with a
+finite trust radius where the clip is active; mutation detection additionally requires the independent intended-step
+stationarity ratio to exceed 10× the unmutated run's; the certificate hashes include the vendored 3D solver files.
+**A5.9 Deferred, before any result is read:** the resource-gate rework (code audit 2 items 10, 21: invocation-level
+inventory incl. common panels and warm-ups, rule-keyed rates, projected residency, GPU-type and source/config binding,
+fail-closed) is completed before the first **production** submission; the analysis-layer items 13–20 (common-panel
+validity in H2/H5, G-score coverage and controls, registry authentication, frozen selection and FOM rescoring under a new
+reference, exact H1/H2 transition rules, anchor qualification in H3, global-scheme tie rule) are completed and re-audited
+before any result is reported.

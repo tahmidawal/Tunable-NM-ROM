@@ -123,35 +123,57 @@ def intended_step(scheme, k, Wall, dt):
     return sol.x
 
 
+def intended_gn(scheme, k, Wall, dt):
+    """Independent stationarity ratio ||J^T r|| / (||J|| ||r||) of the INTENDED LSPG step k at the run's own state."""
+    a0, a1, a2, b0, b1, ns = fs3.SCHEMES[scheme]
+    if k < ns:
+        a0, a1, a2, b0, b1 = 1., -1., 0., 1., 0.
+    cn, cm, c = Wall[k], (Wall[k - 1] if k >= 1 else Wall[0]), Wall[k + 1]
+    S = 1. / (a0 + dt * b0 * NU * LAM)
+    r = S * (A @ (a0 * c + a1 * cn + a2 * cm) + dt * (b0 * TL.F_np(c) + b1 * TL.F_np(cn)))
+    J = S[:, None] * (a0 * A + dt * b0 * TL.dF_np(c))
+    return float(np.linalg.norm(J.T @ r) / (np.linalg.norm(J) * np.linalg.norm(r) + 1e-300))
+
+
 def step_discrepancy(scheme, k, Wall, dt):
     return float(np.linalg.norm(Wall[k + 1] - intended_step(scheme, k, Wall, dt)) / np.linalg.norm(C0))
 
 
+def chol_solve(H, g):
+    import scipy.linalg
+    c = scipy.linalg.cho_factor(H, lower=True)
+    return scipy.linalg.cho_solve(c, g)
+
+
 def np_fused_lm(evalJ, w0, tol, gtol, lam0, budget=50, trust=np.inf):
-    """NumPy transcription of common.make_fused_lm (clip=True, Cholesky)."""
+    """NumPy transcription of common.make_fused_lm (clip=True, Cholesky), including its exit semantics: an initial
+    non-finite residual exits with reason 3 before any iteration; the tiny-step test uses the PRE-update state."""
     ratio = lambda g, J, rn: np.linalg.norm(g) / (np.linalg.norm(J) * rn + 1e-300)
     w = w0.copy()
     r, J = evalJ(w)
     rn = np.linalg.norm(r)
     g = J.T @ r
-    reason = 4 if ratio(g, J, rn) <= gtol else (1 if rn <= tol else 0)
+    reason = (4 if ratio(g, J, rn) <= gtol else (1 if rn <= tol else 0)) if np.isfinite(rn) else 3
     lam, it, rej = lam0, 0, 0
     while it < budget and reason == 0:
         Hm = J.T @ J
         d = np.diag(Hm) + 1e-30
-        step = np.linalg.solve(Hm + np.diag(lam * d), -g)
+        try:
+            step = chol_solve(Hm + np.diag(lam * d), -g)
+        except np.linalg.LinAlgError:
+            step = np.full_like(g, np.nan)
         nz = np.linalg.norm(step)
         step = step * (trust / (nz + 1e-300) if nz > trust else 1.)
-        ok = np.all(np.isfinite(step))
+        ok = bool(np.all(np.isfinite(step)))
         wn = w + (step if ok else 0.)
         r2, J2 = evalJ(wn)
         rn2 = np.linalg.norm(r2)
         acc = ok and np.isfinite(rn2) and rn2 < rn
+        tiny = ok and np.linalg.norm(step) <= 1e-14 * (1 + np.linalg.norm(w))       # pre-update w, as the vendor
         if acc:
             w, r, J, rn = wn, r2, J2, rn2
         g = J.T @ r
         gn = ratio(g, J, rn)
-        tiny = ok and np.linalg.norm(step) <= 1e-14 * (1 + np.linalg.norm(w))
         reason = 4 if gn <= gtol else (1 if rn <= tol else (2 if tiny else (3 if (not acc) and lam >= 1e14 else 0)))
         lam = max(lam / 3, 1e-12) if acc else min(lam * 10, 1e14)
         it += 1
@@ -159,7 +181,7 @@ def np_fused_lm(evalJ, w0, tol, gtol, lam0, budget=50, trust=np.inf):
     return w, rn, it, reason, lam
 
 
-def np_vendor_be(dt, a=AFIRST, prev_pred=False):
+def np_vendor_be(dt, a=AFIRST, prev_pred=False, trust=np.inf):
     """Independent NumPy re-implementation of offmesh.make_fsc_rule (BE) on the manufactured system."""
     S = 1. / (1. + dt * NU * LAM)
     Juf = lambda c: np.einsum('mij,j->mi', TT + TT.transpose(0, 2, 1), c)
@@ -181,7 +203,7 @@ def np_vendor_be(dt, a=AFIRST, prev_pred=False):
         i = int(np.argmin([x if np.isfinite(x) else np.inf for x in rs]))
         w, Ju = cand[i], Ju3[i]
         if k < a:
-            w2, rn, it, reason, lam = np_fused_lm(lambda c: rj(Juf(c), c, p), w, 1e-13, GTOL, lam)
+            w2, rn, it, reason, lam = np_fused_lm(lambda c: rj(Juf(c), c, p), w, 1e-13, GTOL, lam, trust=trust)
             Ju2 = Juf(w2)
         else:
             r, J = rj(Ju, w, p)
@@ -189,16 +211,22 @@ def np_vendor_be(dt, a=AFIRST, prev_pred=False):
             Hm = J.T @ J
             g = J.T @ r
             d = np.diag(Hm) + 1e-30
-            dw = np.linalg.solve(Hm + np.diag(lam * d), -g)
-            wn = w + dw
+            try:
+                dw = chol_solve(Hm + np.diag(lam * d), -g)
+            except np.linalg.LinAlgError:
+                dw = np.full_like(g, np.nan)
+            nz = np.linalg.norm(dw)
+            dw = dw * (trust / (nz + 1e-300) if nz > trust else 1.)
+            okf = bool(np.all(np.isfinite(dw)))
+            wn = w + (dw if okf else 0.)
             Jun = Juf(wn)
             r2, J2 = rj(Jun, wn, p)
             rn2 = np.linalg.norm(r2)
-            acc = np.isfinite(rn2) and rn2 < rn
+            acc = okf and np.isfinite(rn2) and rn2 < rn
             lam = max(lam / 3, 1e-12) if acc else min(lam * 10, 1e14)
             w2, Ju2, r, J, rn = (wn, Jun, r2, J2, rn2) if acc else (w, Ju, r, J, rn)
             gn = np.linalg.norm(J.T @ r) / (np.linalg.norm(J) * rn + 1e-300)
-            it, reason = 1, (4 if gn <= GTOL else 0)
+            it, reason = 1, ((4 if gn <= GTOL else 0) if np.isfinite(rn) else 3)
         wv, wp, wp2 = w2, wv, wp
         Jv, Jp, Jp2 = Ju2, Jv, Jp
         Wall.append(w2)
@@ -207,10 +235,23 @@ def np_vendor_be(dt, a=AFIRST, prev_pred=False):
     return np.array(Wall), its, reasons
 
 
-def vendor_be_trajectory_check(dt):
-    o = fs_run('BE', dt, 1)
-    Wn, its, reasons = np_vendor_be(dt)
-    Wc, _, _ = np_vendor_be(dt, prev_pred=True)
+TRUST_FIX = 0.02 * float(np.linalg.norm(C0))      # finite-trust fixture: the step clip is active in early steps
+
+
+def fs_run_trust(dt):
+    key = ('BE-trust', dt)
+    if key not in _FS:
+        steps = int(round(.25 / dt))
+        ev = jax.jit(fs3.make_fs_evolve(RP, contract, 'BE', dt, 1, GTOL, TRUST_FIX, AFIRST, steps, unroll=False))
+        _FS[key] = {k: np.asarray(v) for k, v in ev(jnp.asarray(C0), NU, 1e-13, DATA).items()}
+    return _FS[key]
+
+
+def vendor_be_trajectory_check(dt, trust=False):
+    o = fs_run_trust(dt) if trust else fs_run('BE', dt, 1)
+    tr = TRUST_FIX if trust else np.inf
+    Wn, its, reasons = np_vendor_be(dt, trust=tr)
+    Wc, _, _ = np_vendor_be(dt, prev_pred=True, trust=tr)
     nrm = np.linalg.norm(C0)
     d = float(np.max(np.linalg.norm(o['W_all'] - Wn, axis=1)) / nrm)
     dc = float(np.max(np.linalg.norm(o['W_all'] - Wc, axis=1)) / nrm)
@@ -286,22 +327,30 @@ def main():
         sd_u = step_discrepancy(sc, ks, Wu_all, dtf)
         if mut == 'no_startup':            # the startup step is adaptive: check the intended equation at step 0
             sd_m, sd_u = step_discrepancy(sc, 0, Wm_all, dtf), step_discrepancy(sc, 0, Wu_all, dtf)
-        det = bool(dtraj > 10 * gate_b[sc] and sd_m > 10 * max(sd_u, 1e-16))
+        kk = 0 if mut == 'no_startup' else ks
+        gm, gu = intended_gn(sc, kk, Wm_all, dtf), intended_gn(sc, kk, Wu_all, dtf)
+        det = bool(dtraj > 10 * gate_b[sc] and sd_m > 10 * max(sd_u, 1e-16) and gm > 10 * max(gu, 1e-16))
         rep['mutations'][mut] = dict(scheme=sc, step=ks if mut != 'no_startup' else 0, trajectory_distance=dtraj,
                                      bar=10 * gate_b[sc], step_discrepancy_mutated=sd_m, step_discrepancy_unmutated=sd_u,
-                                     detected=det)
+                                     intended_gn_mutated=gm, intended_gn_unmutated=gu, detected=det)
         ok &= det
         print('MUT', mut, rep['mutations'][mut], flush=True)
     vb, _ = vendor_be_check(dtf)
     rep['gates']['vendor_be_residual_identity'] = vb          # reported only (algebraic identity on one trajectory)
     vt = {f'{dt:g}': vendor_be_trajectory_check(dt) for dt in DTS}
+    vt.update({f'{dt:g}|trust': vendor_be_trajectory_check(dt, trust=True) for dt in DTS})
+    rep['gates']['trust_fixture_clip_active'] = bool(any(np.linalg.norm(np.diff(fs_run_trust(dt)['W_all'], axis=0), axis=1).max()
+                                                         >= .999 * TRUST_FIX for dt in DTS))
+    ok &= rep['gates']['trust_fixture_clip_active']
     rep['gates']['vendor_be_trajectory'] = vt
     ok &= all(v['passed'] for v in vt.values())
     print('VENDOR-BE', vt, flush=True)
     rep['gates']['all_pass'] = bool(ok)
     rep['all_pass'] = bool(ok)
     rep['source_sha256'] = {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest()
-                            for f in ('fs3.py', 'test_fs.py', 't2core.py', 'test_lmm.py')}
+                            for f in ('fs3.py', 'test_fs.py', 't2core.py', 'test_lmm.py', 'vendor/quad3d/offmesh.py',
+                                      'vendor/quad3d/vendor/burgers3d-span/common.py',
+                                      'vendor/quad3d/vendor/burgers3d-retry/tables.py')}
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(rep, indent=1, default=float) + '\n')
     print('ALL_PASS', ok)

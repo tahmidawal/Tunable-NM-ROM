@@ -17,7 +17,9 @@
         panel (A = fs BE dt0; B = every fixed-sweep candidate, the vendor, and the adaptive tight arms at dt0 and 2.5 dt0,
         A4.3); one common panel (baseline W512 fs BE dt0, fallback M2_512; every fs candidate with dt >= dt0).
 Every timing panel checks that each timed output's W sha256 equals the accuracy-phase W (A and B, every invocation) and
-applies the 10 % drift gate (median t_A2 / t_A1 in [1/1.1, 1.1]); a failing panel is marked timing-invalid.
+applies the 10 % drift gate per subject (timing.panel_validity, A5.3); a failing panel is marked timing-invalid.
+Residency: escalation rules are dropped after use (64^3 kept for the operator check); ladder rules one at a time; grid
+mode keeps each setting's deployed rule for the common panel (deployed rules are <= the ladder sizes).
 Saved: W (6, R') of every run per case (W_<mode>.npz, keys setting|rule|spec), w0 per setting, full per-step evidence,
 refined errors per time on the 63^3 lattice (in-job mesh-row decode; score.py recomputes independently), peak device
 memory per setting, the run inventory, result.json.
@@ -35,6 +37,7 @@ from pathlib import Path
 
 import numpy as np
 import c3common as C3
+import timing as TM
 from c3common import C, TB, OM, DT0, jax, jnp, sha
 
 SEL = [('fs', 'BE', DT0, 1), ('fs', 'CN', 2.5 * DT0, 1)]
@@ -82,7 +85,7 @@ def inventory(cfg):
             runs = [(r, C3.spec_key(x)) for r in s['esc_rules'] for x in SEL + DIAG]
             runs += [('gl80 (conditional)', C3.spec_key(x)) for x in SEL + DIAG]
             runs += [(r, C3.spec_key(x)) for r in s['ladder'] for x in SEL]
-            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=3 * (2 * (len(s['ladder']) + 1) - 1) * tc['cases'] * tc['reps'])
+            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=3 * (2 * len(s['ladder']) + 1) * tc['cases'] * tc['reps'])
     return inv
 
 
@@ -206,11 +209,8 @@ def main():
                 inv.append(dict(B=name(Bs[b]), case=cases[ci], rep=rr, tA1=ta1, tB=tb, tA2=ta2, ratio=tb / (.5 * (ta1 + ta2)),
                                 drift=ta2 / ta1, A_sha=[h1, h2], A_expected=e1, B_sha=hb, B_expected=eb,
                                 hashes_ok=bool(e1 is not None and eb is not None and h1 == e1 and h2 == e1 and hb == eb)))
-        md = float(np.median([x['drift'] for x in inv])) if inv else float('nan')
-        hok = bool(inv) and all(x['hashes_ok'] for x in inv)
         rep['timing'][label] = dict(A=name(A), subjects=[name(x) for x in Bs], invocations=inv, cases=cases[:ncases],
-                                    reps=reps, burn=tc['burn'], seed=seed, gpu=C3.gpu_info(), median_drift=md,
-                                    hashes_ok=hok, valid=bool(hok and 1 / 1.1 <= md <= 1.1))
+                                    reps=reps, burn=tc['burn'], seed=seed, gpu=C3.gpu_info(), **TM.panel_validity(inv))
         save()
         print('TIMING', label, len(inv), 'valid', rep['timing'][label]['valid'], el(), flush=True)
 
@@ -307,12 +307,16 @@ def main():
                                        operator_check=opc, status='pass' if conv else 'unresolved')
             save()
             if conv is not None:
-                for rule in s['ladder']:
-                    rollouts(sname, sol, rule, prep_of(rule), SEL, lean)
+                # bounded residency (code audit 2 item 11): only the converged rule and ONE ladder rule are resident; the
+                # family panel runs per ladder rule (A = converged rule's fixed BE dt0, B = that rule's two selection arms)
                 A = (sname, conv, SEL[0])
-                Bs = [(sname, r, x) for r in s['ladder'] + [conv] for x in SEL if (sname, r, x) != A]
-                time_panel(f'family|{sname}', A, Bs, lambda sn, rule: (sol, prep_of(rule)), int(tc['seed']) + k_set,
-                           tc['cases'], tc['reps'])
+                time_panel(f'family|{sname}|{conv}', A, [(sname, conv, SEL[1])], lambda sn, rule: (sol, prep_of(rule)),
+                           int(tc['seed']) + 100 * k_set, tc['cases'], tc['reps'])
+                for i_r, rule in enumerate(s['ladder']):
+                    rollouts(sname, sol, rule, prep_of(rule), SEL, lean)
+                    time_panel(f'family|{sname}|{rule}', A, [(sname, rule, x) for x in SEL],
+                               lambda sn, rl: (sol, prep_of(rl)), int(tc['seed']) + 100 * k_set + 1 + i_r, tc['cases'], tc['reps'])
+                    drop(rule)
             S_rep['peak_bytes'] = C3.peak_bytes()
             for rule in list(preps):
                 drop(rule)
@@ -331,11 +335,15 @@ def main():
             Fv = np.stack([np.asarray(TB.decode(jnp.asarray(Wv[ci]), lean)) for ci in range(len(cases))])
             Ff = np.stack([np.asarray(TB.decode(jnp.asarray(Wf[ci]), lean)) for ci in range(len(cases))])
             fper = (np.linalg.norm(Ff - Fv, axis=2) / N0[:, None]).max(1)
+            exits = lambda r: np.bincount(np.asarray(r['steps']['reason']), minlength=5).tolist()
             approved = bool(max(per) <= 1e-8 and float(fper.max()) <= 1e-8 and
                             [x['valid'] for x in rv] == [x['valid'] for x in rf] and
-                            [x['nonstationary'] for x in rv] == [x['nonstationary'] for x in rf])
+                            [exits(x) for x in rv] == [exits(x) for x in rf] and
+                            C3.pooled_eligible([(x['valid'], x['nonstationary'], x['steps_n']) for x in rv])['eligible'] ==
+                            C3.pooled_eligible([(x['valid'], x['nonstationary'], x['steps_n']) for x in rf])['eligible'])
             cn = rollouts(sname, sol, rule, prep, [('fs', 'CN', DT0, 1)], lean)['fs|CN|0.01|K1']['W']
-            ctrl = float(np.max(np.linalg.norm(cn[0] - Wv[0], axis=1)) / np.linalg.norm(Wv[0][0]))
+            c0 = cases.index(0)                    # named control case 923801/0 (A1.2)
+            ctrl = float(np.max(np.linalg.norm(cn[c0] - Wv[c0], axis=1)) / np.linalg.norm(Wv[c0][0]))
             S_rep['G_FS1'] = dict(per_case_coef_rel=per, per_case_field=fper.tolist(), steps_equal=steps_eq,
                                   outcome='exact' if exact else ('approved-equivalent' if approved else 'FAIL'),
                                   cn_control=ctrl, cn_control_discriminating=bool(ctrl > 1e-6))

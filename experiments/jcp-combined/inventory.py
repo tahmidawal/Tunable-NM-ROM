@@ -120,3 +120,8 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+def verify_certificate(inv, **kw):
+    """Fail closed until the A5.9 resource-gate rework is implemented and audited (no production staging before it)."""
+    raise NotImplementedError('resource-gate rework (DESIGN A5.9) not yet implemented: production staging refused')

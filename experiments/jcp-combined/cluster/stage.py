@@ -9,9 +9,11 @@ import hashlib
 import json
 import shutil
 import subprocess
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / 'experiments' / 'jcp-combined'))
 LANE = 'experiments/jcp-combined'
 NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-comb'
 REFSRC = ROOT.parent / '2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output'
@@ -54,10 +56,11 @@ def main():
     assert cert['all_pass'], 'manufactured tests (G-FS2) did not pass'
     for f, h in cert['source_sha256'].items():
         assert hashlib.sha256(git_show(commit, f'{LANE}/{f}')).hexdigest() == h, f'G-FS2 certificate is for a different {f}'
-    if not a.attempt.startswith('smk'):           # A2.12 resource gate (code audit 1 item 10)
-        inv = json.loads(git_show(commit, f'{LANE}/checks/inventory-{a.attempt}.json'))
-        assert inv['fits'] and inv['requested_hours'] <= a.hours, ('resource gate', inv)
     cfgname = f'{LANE}/configs/{a.attempt}.json'
+    if not json.loads(git_show(commit, cfgname)).get('smoke'):   # A2.12 / A5.5 resource gate for production attempts
+        import inventory as INV_                                  # noqa: F401  (see inventory.verify_certificate)
+        inv = json.loads(git_show(commit, f'{LANE}/checks/inventory-{a.attempt}.json'))
+        INV_.verify_certificate(inv, commit=commit, cfg_bytes=git_show(commit, cfgname), gpu=a.gpu, hours=a.hours, mem=a.mem)
     cfg0 = json.loads((ROOT / cfgname).read_text())
     assert cfg0['attempt'] == a.attempt
     driver = cfg0['driver']

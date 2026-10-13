@@ -86,6 +86,8 @@ def main():
     cfgs['smk3esc'] = c3('smk3esc', 'esc', [dict(esc_settings()[4], ladder=['lat32768', 'gl48', 'lat256'])],
                          case_subset=[0, 1], timing=dict(cases=2, reps=1, burn=0.1, seed=20261013))
     for k, c in cfgs.items():
+        if k.startswith(('smk', 'local')):
+            c['smoke'] = True                     # A5.5: explicit smoke classification
         if 'timing_cases_override' in c:
             c['timing']['cases'] = c.pop('timing_cases_override')
         if k == 'local2d':

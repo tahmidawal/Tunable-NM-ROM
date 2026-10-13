@@ -216,7 +216,8 @@ def spec_key(spec):
 
 def run_valid(spec, o):
     """Per-run validity (code audit 1 item 2). fs/vendor: finite coefficients, no reason-3 step, no damping saturation
-    (fs only; the vendor does not report it). ad: every step verified (C2 A1.5). Pooled non-stationarity is separate."""
+    (fs only; the vendor does not report it). ad: every step verified (C2 A1.5) - stricter than the 1 % pooled
+    allowance, which applies to the fixed-sweep / vendor arms only (A5.1). Pooled non-stationarity is separate."""
     if spec[0] == 'ad':
         return bool(int(np.asarray(o['stats']['nfail'])) == 0 and np.isfinite(np.asarray(o['W'])).all())
     rs = np.asarray(o['reason'] if spec[0] == 'fs' else o[3])

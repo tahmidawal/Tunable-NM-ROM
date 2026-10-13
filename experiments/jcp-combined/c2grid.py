@@ -31,6 +31,7 @@ import numpy as np
 import c2common as CC
 from c2common import Q, QS, T2, DT0, sha
 import fom2
+import timing as TM
 import jax
 import jax.numpy as jnp
 
@@ -242,6 +243,8 @@ def main():
                                   stats={k_: np.asarray(x) for k_, x in v['stats'].items()}, **CC.errs(fr, refs, coh, c, n0r)))
         print('FOM EVAL', ci, el(), flush=True)
     rep['fom']['rows'] = frows
+    F64['__coords_x'] = np.arange(257) / 256.          # nodes x = i/256 (both axes, 'ij' order), boundary included
+    F64['__times'] = np.arange(6) * .05
     np.savez_compressed(out / 'fom_f257.npz', **F64)
     del F64
     save()
@@ -299,11 +302,8 @@ def main():
                 inv.append(dict(B=name(Bs[j]), case_index=ci, rep=rr, tA1=ta1, tB=tb, tA2=ta2, ratio=tb / (.5 * (ta1 + ta2)),
                                 drift=ta2 / ta1, A_sha=[h1, h2], A_expected=eA, B_sha=hb, B_expected=eB,
                                 hashes_ok=bool(eA is not None and eB is not None and h1 == eA and h2 == eA and hb == eB)))
-        md = float(np.median([x['drift'] for x in inv])) if inv else float('nan')
-        hok = bool(inv) and all(x['hashes_ok'] for x in inv)
         rep['timing'][label] = dict(A=name(A), subjects=[name(b) for b in Bs], invocations=inv, gpu=CC.gpu_info(),
-                                    cases=tci, reps=tc['reps'], burn=tc['burn'], seed=seed, median_drift=md, hashes_ok=hok,
-                                    valid=bool(hok and 1 / 1.1 <= md <= 1.1))
+                                    cases=tci, reps=tc['reps'], burn=tc['burn'], seed=seed, **TM.panel_validity(inv))
         save()
         print('TIMING', label, len(inv), el(), flush=True)
 

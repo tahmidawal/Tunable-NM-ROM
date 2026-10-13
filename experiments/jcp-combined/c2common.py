@@ -22,7 +22,6 @@ Q = T2.load_qcore()
 import qstudy as QS  # noqa: E402  (vendored: burn, clean, sha_file)
 
 DT0 = .005
-EXPECTED = {'test64': 'cd058fd2a297c20296b897e54cb186033a44a8db9527d98dcb2c2dad6044527c'}
 REFSRC_NAME = '2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output'
 
 
@@ -55,12 +54,12 @@ def check_env(cfg):
 
 def load_cases(cfg, rep):
     train = Q.e.params_draw(0, 128)
-    allc = {k: Q.cohort(k) for k in ('dev6', 'val32', 'test64')}
+    assert all(coh in ('dev6', 'val32') for coh in cfg['cohorts']), 'only development/validation cohorts are used'
+    allc = {k: Q.cohort(k) for k in cfg['cohorts']}            # no other cohort is generated (A7.2)
     for k1 in allc:
         assert not any(np.allclose(t, s) for t in train for s in allc[k1]), f'{k1} overlaps training'
     cases = []
     for coh in cfg['cohorts']:
-        assert coh in ('dev6', 'val32'), 'only development/validation cohorts are used in this lane'
         ph = allc[coh]
         h = sha(ph)
         rep['cohorts'][coh] = dict(n=len(ph), physical_sha256=h, physical=ph.tolist())

@@ -1,0 +1,63 @@
+{
+ "attempt": "c3descW1024",
+ "gpu": "h200",
+ "gpu_gb": 141.0,
+ "requested_hours": 48.0,
+ "mem": "200G",
+ "fits": true,
+ "commit_at_certification": "7254b14f55f0ae44069567ea1c462fedd768c86e",
+ "driver": "c3run",
+ "config_sha256": "3430cc6fcbf48ffb6fcdd002bcc45a463adb9a71043527142d1fee1ce6b4809a",
+ "sources_sha256": {
+  "experiments/jcp-combined/c3common.py": "815070703ef0e4d184928af39b71bbcd99ba197defee730b91fc7fb168723d8e",
+  "experiments/jcp-combined/c3run.py": "20ea1301cbe963d6383e725a400ed0b3b9684b125ad8f6711ad58bb755c9bdb0",
+  "experiments/jcp-combined/checks/test_fs.json": "8899ffad1e6f62f2118f53efae99a1928a5401600010ec006edc772181692437",
+  "experiments/jcp-combined/fs3.py": "8c7dd03b5619b873b7549ab29c66e2039bda8d9e3a1bea4c8ce349de373701ce",
+  "experiments/jcp-combined/inputs/model_W1024/bank.pkl": "86094f6884e55643240197e560f7dc1924bac3885aed79b20faf2e54446aa036",
+  "experiments/jcp-combined/inventory.py": "b47e062422765817fd19e71c65c29d5fb5dc27715238bcec1b206909760d2c2f",
+  "experiments/jcp-combined/rules3d/rules_extra.npz": "8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf",
+  "experiments/jcp-combined/t2core.py": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9",
+  "experiments/jcp-combined/test_fs.py": "b6f51be2733f133e85076710a7264a75207109f45bc9ca487894ad2710458501",
+  "experiments/jcp-combined/test_lmm.py": "2bbb91a647bd718c45e64ab159f2171796868bb2bce1b8cec63c7ef7a2a053e4",
+  "experiments/jcp-combined/timing.py": "64361e6377257ba3b9b3cc8c7d00405a58577aa60543d4c1e42dbd36f70ede52",
+  "experiments/jcp-combined/vendor/quad3d/inputs/model_M2/bank.pkl": "6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9",
+  "experiments/jcp-combined/vendor/quad3d/offmesh.py": "c46656e48cec27c4d78d1a00f3d93e19b7911b6d34bae6bdf9e264d10d45cbb4",
+  "experiments/jcp-combined/vendor/quad3d/qpanel.py": "3dcff5d90522d61bc558e1f067a224091061873969f86c0896d07cbaa2f9b934",
+  "experiments/jcp-combined/vendor/quad3d/rules/rules.npz": "099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b",
+  "experiments/jcp-combined/vendor/quad3d/vendor/burgers3d-retry/tables.py": "edc811b592cf68e4e76eb9eb4c6b8c86171425e7685ca4ccbbe02c4bff3d8b4d",
+  "experiments/jcp-combined/vendor/quad3d/vendor/burgers3d-span/common.py": "670475259683ef77f7af454d8b2b04fdd5ee3543373aa4a11353df4363c484b6",
+  "experiments/jcp-combined/vendor/quad3d/vendor/paper-b3d/vendor/b3d_common.py": "c5e36b4c6fc148f795613b0d5547014b6ffd43ad4b1f62db3768d8d733a6814f"
+ },
+ "smokes": [
+  {
+   "path": "runs/smk3esc/archive/output",
+   "job_id": "5208766",
+   "gpu": "NVIDIA H200",
+   "result_sha256": "aca6be0c2fa30042ca2e50fa3ec5c100cee779cd31efc413735b13ba1caf100c",
+   "complete": true,
+   "smoke": true,
+   "gates_passed": true
+  },
+  {
+   "path": "runs/smk3grid/archive/output",
+   "job_id": "5208768",
+   "gpu": "NVIDIA H200",
+   "result_sha256": "b05278e1b4d92a8a6dfd27232fe0ed76f0939cf2b39e08a9aa7027cae3f301c8",
+   "complete": true,
+   "smoke": true,
+   "gates_passed": true
+  }
+ ],
+ "detail": {
+  "W1024": {
+   "rollouts_s": 24635.353545067293,
+   "compile_s": 238.866947687231,
+   "timing_s": 49872.507788398805
+  }
+ },
+ "projected_seconds": 74746.72828115334,
+ "projected_peak_gb": 74.158269952,
+ "projected_hours_with_margin": 31.144470117147225,
+ "fits_time": true,
+ "fits_memory": true
+}

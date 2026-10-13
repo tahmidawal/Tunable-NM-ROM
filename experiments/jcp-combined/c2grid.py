@@ -165,7 +165,7 @@ def main():
     # ------------------------------------------------------------------ 2: FOM ----
     fc = cfg['fom']
     f256 = fom2.make_fom_lmm(256)
-    allc = {k: Q.cohort(k) for k in ('dev6', 'val32')}
+    allc = {k: Q.cohort(k) for k in cfg['cohorts']}
     order, ofields = [], {}
     for coh, c in fc['order_cases']:
         ph = allc[coh][c]

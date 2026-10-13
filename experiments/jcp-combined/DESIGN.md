@@ -798,3 +798,26 @@ answered by `c3desc` on all 64 cases.
 W512): the escalation and selection of each setting are independent, so no comparison crosses the two jobs (the family
 panels are per setting). The resource certificates (smoke-projected, 1.5× margin) are `c2grid` 14.2 h → requested 18 h
 (A100-80G), `c3descA` and `c3descB` requested below their certified projections (H200); the partition limit is 48 h.
+
+## Amendment A7 (2026-10-13, after `audits/codex-job-prod1.md`; before any production job)
+
+**A7.1 Ladder qualification.** Every ladder rule runs both selection arms **and their adaptive counterparts** (adaptive
+tight LSPG-BE at $\Delta t_0$, LSPG-CN at $\tfrac52\Delta t_0$) on all 64 cases, so A6.2 eligibility (validity plus fixed-vs-adaptive
+distance $\le2.5\times10^{-4}$ at that rule) is applied to every candidate rule; the selection requires it. Eligibilities are
+saved per rule.
+**A7.2 No other cohort generated.** The 2D loader generates only the configured development/validation cohorts (the
+earlier code also regenerated the historical test64 descriptors for an overlap check; no reference or score of test64 was
+ever loaded or computed).
+**A7.3 Operator check** is chunked over states (bounded intermediates).
+**A7.4 Resource certificate.** Every production job requests the partition maximum (48 h); the certificate (smoke-projected,
+1.5×) must fit it. The staging verifier recomputes the time and memory inequalities from the certificate's stored
+projection, derives capacity from the allocation type, re-hashes every staged file (complete manifest: lane code, vendored
+dependencies, inputs and `inventory.py`) and every smoke `result.json`, and re-checks the smokes' machinery gates and GPU
+type. The projection itself is an engineering estimate with stated approximations (cost proxy $mR'(M+2R')$ for 3D, smoke
+rates, timing priced at the most expensive subject); it is not a proof, and a job that nonetheless exceeds its limit is
+reported as a failed attempt and rerun, never silently truncated (results are saved per setting).
+**A7.5 Job split (supersedes A6.5).** 3D escalation/selection jobs: `c3descW1024`, `c3descW768`, `c3descB` (M2_512, W256,
+W512), one per directory, each certified separately.
+**A7.6 Corrections to A6 wording.** A6.1: the BE $K=1$ coefficient distance at $\tfrac54\Delta t_0$ is $\sim5\times10^{-6}$ (not 0). A6.4:
+the worst pairwise distances over the smoke's solvers are $1.45\times10^{-7}$ ($48^3$–$56^3$), $1.22\times10^{-8}$ ($56^3$–$64^3$),
+$1.76\times10^{-9}$ ($64^3$–$80^3$). A6.5's "below" read "above": requested hours exceed the certified projections.

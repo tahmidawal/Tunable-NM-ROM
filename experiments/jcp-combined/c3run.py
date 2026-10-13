@@ -1,7 +1,7 @@
 """jcp-combined 3D driver (DESIGN 3.2, 3.3, 8; A1.0, A1.2, A1.6, A1.7, A2.1, A2.4, A2.5, A2.11, A3.4, A4). Modes:
 
   esc   (`c3desc`) J4 escalation and rule-selection data. Per setting: escalation Gauss rules (W768/W1024: 48^3, 56^3,
-        64^3; others 56^3, 64^3) under the two fixed-sweep SELECTION arms (BE dt0 K=1; LSPG-CN 2.5 dt0 K=1) and the two
+        64^3; others 56^3, 64^3) under the two fixed-sweep SELECTION arms (BE dt0 K=1; LSPG-CN 2.5 dt0 K=2, A6.3) and the two
         adaptive DIAGNOSTIC arms (LSPG-BE dt0 tight; LSPG-CN 2.5 dt0 tight), all cases; the CN selection arm uses K = 2 (A6.3). Per rule pair (A2.5):
         selection_pair_status / adaptive_diagnostic_status in {pass, fail, unresolved}: pass iff every arm of the axis
         has eligible runs on both rules (A6.2: fixed-sweep arms valid and within 2.5e-4 of the adaptive tight solve of the
@@ -9,8 +9,9 @@
         is ineligible or a distance is non-finite; fail otherwise.
         Converged rule (A2.4) = 56^3 if (56^3, 64^3) passes the selection axis, else 64^3 if (64^3, 80^3) passes (80^3 is
         run only then), else none. Fixed-vs-adaptive sensitivities per rule (same scheme and step). Operator check on
-        the reached states of the 64^3 adaptive LSPG-BE run (A1.7). Then the ladder under the two selection arms and an
-        A-B-A family panel (A = converged rule's fixed BE dt0).
+        the reached states of the 64^3 adaptive LSPG-BE run (A1.7). Then the ladder under the two selection arms AND their
+        adaptive counterparts (A6.2 eligibility per candidate rule, A7.1) and an A-B-A family panel per ladder rule
+        (A = converged rule's fixed BE dt0).
   grid  (`c3grid`) per setting with its frozen deployed rule: G-FS1 first (vendor vs fs BE dt0 K=1, per case; A2.1:
         exact or approved-equivalent, otherwise the job stops) with the CN negative control on the first case; then
         fixed-sweep BE and CN / CN-R / BDF2 (K = 1, 2) on the step ladder, adaptive LSPG probes (tight, tighter) of every
@@ -85,7 +86,7 @@ def inventory(cfg):
         else:
             runs = [(r, C3.spec_key(x)) for r in s['esc_rules'] for x in SEL + DIAG]
             runs += [('gl80 (conditional)', C3.spec_key(x)) for x in SEL + DIAG]
-            runs += [(r, C3.spec_key(x)) for r in s['ladder'] for x in SEL]
+            runs += [(r, C3.spec_key(x)) for r in s['ladder'] for x in SEL + DIAG]
             inv['settings'][s['name']] = dict(runs=runs, timing_invocations=3 * (2 * len(s['ladder']) + 1) * tc['cases'] * tc['reps'])
     return inv
 
@@ -299,13 +300,15 @@ def main():
             Cs = esc['gl64'][C3.spec_key(DIAG[0])]['W'][:, 1:].reshape(-1, Rp)
             keep = np.isfinite(Cs).all(1)
             Csj = jnp.asarray(Cs[keep])
-            Nf = OM.adv_offmesh_batch(prep_of('gl64')['base'], Csj)
+            CH = 16                                          # chunked over states (A7.3: bounded intermediate memory)
+            adv = lambda d_, X_: jnp.concatenate([OM.adv_offmesh_batch(d_, X_[i_:i_ + CH]) for i_ in range(0, X_.shape[0], CH)])
+            Nf = adv(prep_of('gl64')['base'], Csj)
             den = np.asarray(jnp.linalg.norm(Nf, axis=1))
             opc = {}
             for rule in esc:
                 if rule == 'gl64':
                     continue
-                Nr = OM.adv_offmesh_batch(prep_of(rule)['base'], Csj)
+                Nr = adv(prep_of(rule)['base'], Csj)
                 num = np.asarray(jnp.linalg.norm(Nr - Nf, axis=1))
                 ok = den > 0
                 rel = num[ok] / den[ok]
@@ -333,12 +336,17 @@ def main():
                 A = (sname, conv, SEL[0])
                 time_panel(f'family|{sname}|{conv}', A, [(sname, conv, SEL[1])], lambda sn, rule: (sol, prep_of(rule)),
                            int(tc['seed']) + 100 * k_set, tc['cases'], tc['reps'])
+                lad = {}
                 for i_r, rule in enumerate(s['ladder']):
-                    rollouts(sname, sol, rule, prep_of(rule), SEL, lean)
+                    esc[rule] = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)     # A7.1: adaptive counterparts
+                    lad[rule] = {C3.spec_key(x): elig_of(rule, x) for x in SEL}
                     time_panel(f'family|{sname}|{rule}', A, [(sname, rule, x) for x in SEL],
                                lambda sn, rl: (sol, prep_of(rl)), int(tc['seed']) + 100 * k_set + 1 + i_r, tc['cases'], tc['reps'])
                     drop(rule)
                 conv = conv_
+                S_rep['ladder_eligibility'] = lad
+                S_rep['escalation_rule_eligibility'] = {r_: {C3.spec_key(x): elig_of(r_, x) for x in SEL}
+                                                        for r_ in s['esc_rules'] + (['gl80'] if 'gl80' in esc else [])}
             S_rep['peak_bytes'] = C3.peak_bytes()
             for rule in list(preps):
                 drop(rule)

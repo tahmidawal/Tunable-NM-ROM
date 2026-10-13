@@ -92,7 +92,11 @@ def main():
                 ent.update(status='unavailable (no converged rule)', deployed=None)
                 out['settings'][sname] = ent
                 continue
-            ctrl_q = rules.get(CONTROL, {}).get('qualifies')
+            if CONTROL not in rules:
+                ent.update(status='unavailable (control lat256 not evaluated)', deployed=None)
+                out['settings'][sname] = ent
+                continue
+            ctrl_q = rules[CONTROL]['qualifies']
             ent['control_qualifies'] = ctrl_q
             mstar = {}
             for fam, lad in FAMILIES.items():
@@ -113,10 +117,17 @@ def main():
                     continue
                 med = {}
                 for inv in p['invocations']:
-                    med.setdefault(inv['B'], []).append(inv['ratio'])
+                    med.setdefault(inv['B'], []).append(inv['tB'])               # A1.7: sum of median TIMES
+                want = {f'{sname}|{r}|{sk}' for sk in SEL}
+                ncomplete = int(p['reps']) * len(p['cases'])
+                if set(med) != want or any(len(v) != ncomplete for v in med.values()):
+                    cost[fam] = None                                                # incomplete panel -> unavailable
+                    continue
                 cost[fam] = float(sum(np.median(v) for v in med.values()))
             ent['family_cost'] = cost
             cands = [(c_, __import__('inventory').rule_points(mstar[f]), f) for f, c_ in cost.items() if c_ is not None]
+            if any(mstar[f] is not None and cost.get(f) is None for f in mstar):
+                cands = []                                                          # a qualifying family lacks evidence
             if not cands:
                 ent.update(status='unavailable (no qualifying rule with a valid panel)', deployed=None)
             else:

@@ -57,6 +57,7 @@ def main():
     ap.add_argument('--run', required=True)
     ap.add_argument('--refs', default='2d_first_order')
     ap.add_argument('--allow-smoke', action='store_true')
+    ap.add_argument('--grid', help='c2grid output dir: budget arm runs must reproduce the grid runs (fields <= 1e-8)')
     ap.add_argument('--out')
     a = ap.parse_args()
     import score
@@ -72,7 +73,13 @@ def main():
     out = dict(run=str(run), refs=a.refs, result_sha256=hashlib.sha256((run / 'result.json').read_bytes()).hexdigest(),
                provisional=True, B0_fixtures=b0_fixtures(), settings={}, gates={})
     rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in res['rows']}
-    repro = dict(compared=0, failures=0, worst=0.)
+    repro = dict(compared=0, failures=0, worst=0., applicable=(a.refs == '2d_first_order'))
+    gridz = {}
+    grid_rows = {}
+    if a.grid:
+        gres = json.loads((Path(a.grid) / 'result.json').read_text())
+        grid_rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in gres['rows']}
+    grepro = dict(compared=0, failures=0, worst=0.)
     tags = list(ent['tags']) + list(ent.get('derived', {}))
     for s in cfg['settings']:
         sname, Rp = s['name'], int(s['Rp'])
@@ -94,27 +101,47 @@ def main():
                 c = int(c)
                 n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
                 U = {nm: dec(z[key][ci]) / n0 for nm, key in K.items() if key and key in z.files}
+                ok_ = {nm: bool(rows.get((sname, key, coh, c), {}).get('verified')) for nm, key in K.items() if key}
+                stk = dict(star=('conv', 'GAL', 'BDF2', H8, 'tight'), star16=('conv', 'GAL', 'BDF2', H16, 'tight'),
+                           starx=('conv', 'GAL', 'BDF2', H8, 'tighter'), star16x=('conv', 'GAL', 'BDF2', H16, 'tighter'),
+                           starR=('main', 'GAL', 'BDF2', H8, 'tight'), starL=('conv', 'LSPG', 'BDF2', H8, 'tight'))
+                ok_.update({nm: bool(rows.get((sname, k_(*kk), coh, c), {}).get('verified')) for nm, kk in stk.items()})
+                need = lambda *nms: all(ok_.get(nm, False) for nm in nms)
+                if a.grid:                                   # grid reproduction of the arm run (same arm, other job)
+                    gk = '|'.join(K['a'].split('|')[1:])
+                    if sname not in gridz and (Path(a.grid) / f'W_{sname}.npz').exists():
+                        gz = np.load(Path(a.grid) / f'W_{sname}.npz')
+                        gridz[sname] = (gz['W'], [str(x) for x in gz['runs']], [str(x) for x in gz['cases']])
+                    if sname in gridz and gk in gridz[sname][1] and ck in gridz[sname][2]:
+                        Wg = gridz[sname][0][gridz[sname][2].index(ck), gridz[sname][1].index(gk)]
+                        dg = max(float(np.linalg.norm((dec(Wg) / n0 - U['a'])[j])) for j in range(1, 6))
+                        grepro['compared'] += 1
+                        grepro['worst'] = max(grepro['worst'], dg)
+                        grepro['failures'] += 0 if dg <= 1e-8 else 1
                 st = {nm: dec(z[k_(*kk)][ci]) / n0 for nm, kk in
                       dict(star=('conv', 'GAL', 'BDF2', H8, 'tight'), star16=('conv', 'GAL', 'BDF2', H16, 'tight'),
                            starx=('conv', 'GAL', 'BDF2', H8, 'tighter'), star16x=('conv', 'GAL', 'BDF2', H16, 'tighter'),
                            starR=('main', 'GAL', 'BDF2', H8, 'tight'), starL=('conv', 'LSPG', 'BDF2', H8, 'tight')).items()}
                 refs = score.load_ref2d(ent, coh, c)
                 nt = lambda X: [float(np.linalg.norm(X[j])) for j in range(6)]
+                NA = [None] * 6
                 d = {}
-                d['delta_quad'] = nt(U['a'] - U['conv'])
-                d['delta_solve'] = nt(U['a'] - U['tight'])
-                d['delta_form'] = nt(U['tight'] - U['tgal']) if 'tgal' in U else [0.] * 6
-                d['delta_time'] = nt(U['a'] - U['time'])
-                d['refine'] = nt(U['tight'] - U['half'])
-                d['D_a'] = nt(U['a'] - st['star'])
-                d['I_time_quad'] = nt(U['c1'] - U['conv'] - U['time'] + U['a'])
-                d['I_time_solve'] = nt(U['c2'] - U['tight'] - U['time'] + U['a'])
-                d['ctx_quad_ideal_end'] = nt(st['star'] - st['starR'])
-                d['ctx_form_ideal_end'] = nt(st['star'] - st['starL'])
-                d['U_star'] = [float(np.linalg.norm(st['star'][j] - st['star16'][j]) + np.linalg.norm(st['star'][j] - st['starx'][j])
-                                     + np.linalg.norm(st['star16'][j] - st['star16x'][j])) for j in range(6)]
+                # each component is available only if every trajectory it uses is verified (code audit 4 item 5)
+                d['delta_quad'] = nt(U['a'] - U['conv']) if need('a', 'conv') else NA
+                d['delta_solve'] = nt(U['a'] - U['tight']) if need('a', 'tight') else NA
+                d['delta_form'] = (nt(U['tight'] - U['tgal']) if need('tight', 'tgal') else NA) if 'tgal' in U else [0.] * 6
+                d['delta_time'] = nt(U['a'] - U['time']) if need('a', 'time') else NA
+                d['refine'] = nt(U['tight'] - U['half']) if need('tight', 'half') else NA
+                d['D_a'] = nt(U['a'] - st['star']) if need('a', 'star') else NA
+                d['I_time_quad'] = nt(U['c1'] - U['conv'] - U['time'] + U['a']) if need('c1', 'conv', 'time', 'a') else NA
+                d['I_time_solve'] = nt(U['c2'] - U['tight'] - U['time'] + U['a']) if need('c2', 'tight', 'time', 'a') else NA
+                d['ctx_quad_ideal_end'] = nt(st['star'] - st['starR']) if need('star', 'starR') else NA
+                d['ctx_form_ideal_end'] = nt(st['star'] - st['starL']) if need('star', 'starL') else NA
+                d['U_star'] = ([float(np.linalg.norm(st['star'][j] - st['star16'][j]) + np.linalg.norm(st['star'][j] - st['starx'][j])
+                                      + np.linalg.norm(st['star16'][j] - st['star16x'][j])) for j in range(6)]
+                               if need('star', 'star16', 'starx', 'star16x') else NA)
                 if 'check' in U:
-                    d['finalist_check'] = nt(U['conv'] - U['check'])
+                    d['finalist_check'] = nt(U['conv'] - U['check']) if need('conv', 'check') else NA
                 for t in tags:
                     Rn = refs[t] / n0
                     inner = Rn[:, 1:-1, 1:-1].reshape(6, -1)
@@ -128,16 +155,24 @@ def main():
                     d[f'e_P_{t}'] = eP.tolist()
                     d[f'e_dyn_{t}'] = edyn.tolist()
                     d[f'B0_{t}'] = [float(abs(es[j] ** 2 - eP[j] ** 2 - edyn[j] ** 2) / max(es[j] ** 2, 1e-300)) for j in range(1, 6)]
+                    # B0 fixture (iii) on real data: one term with a mismatched normaliser must break the identity
+                    d[f'B0_mismatch_{t}'] = float(abs(es[1] ** 2 - (eP[1] / 1.01) ** 2 - edyn[1] ** 2))
                     d[f'init_fit_{t}'] = float(np.linalg.norm(U['a'][0] - Rn[0]))
-                # in-job reproduction (per time, all three tags)
-                for nm, key in K.items():
-                    r = rows.get((sname, key, coh, c)) if key else None
-                    if r is None or nm not in U:
+                    ts = 1 + int(np.argmax(es[1:]))
+                    d[f'orthogonal_pair_at_tstar_{t}'] = dict(t_star=ts, e_star=float(es[ts]), e_P=float(eP[ts]), e_dyn=float(edyn[ts]))
+                    if d['D_a'][1] is not None:                     # triangle bound |e_tot - e_star| <= D_a per time
+                        et = nt(U['a'] - Rn)
+                        d[f'triangle_ok_{t}'] = all(abs(et[j] - es[j]) <= d['D_a'][j] + 1e-14 for j in range(1, 6))
+                # in-job reproduction: every row of this case, original reference only (A1.8)
+                for key in ([] if not repro['applicable'] else [k2 for k2 in z.files if k2 not in ('w0', 'cases')]):
+                    r = rows.get((sname, key, coh, c))
+                    if r is None:
                         continue
+                    Ux = dec(z[key][ci]) / n0
                     for t in ('ST', 'S', 'TX'):
                         if t not in refs:
                             continue
-                        mine = nt(U[nm] - refs[t] / n0)
+                        mine = nt(Ux - refs[t] / n0)
                         for j in range(6):
                             y = r[f'e_{t}_per_time'][j]
                             repro['compared'] += 1
@@ -145,51 +180,95 @@ def main():
                             repro['failures'] += 0 if abs(mine[j] - y) <= 1e-13 + 1e-10 * abs(y) else 1
                 per.append(dict(case=ck, **d))
             # summaries
-            mx = lambda v: max(v[1:])
+            mx = lambda v: None if v[1] is None else max(v[1:])
             summ = {}
             for comp in ('delta_quad', 'delta_solve', 'delta_form', 'delta_time', 'refine', 'D_a', 'I_time_quad',
                          'I_time_solve', 'U_star') + tuple(f'{p}_{t}' for p in ('e_tot', 'e_star', 'e_P', 'e_dyn') for t in tags):
-                v = [mx(p_[comp]) for p_ in per]
-                summ[comp] = dict(median=float(np.median(v)), worst=float(max(v)))
+                v = [mx(p_[comp]) for p_ in per if mx(p_[comp]) is not None]
+                summ[comp] = (dict(median=float(np.median(v)), worst=float(max(v)), available=len(v), cases=len(per))
+                              if v else dict(median=None, worst=None, available=0, cases=len(per)))
+            clos = []
+            for p_ in per:
+                dd = [mx(p_[k]) for k in ('delta_quad', 'delta_solve', 'delta_form', 'delta_time')]
+                if all(x is not None for x in dd) and mx(p_['D_a']) is not None:
+                    sq, sm = float(np.sqrt(sum(x * x for x in dd))), float(sum(dd))
+                    clos.append(dict(D_over_rss=(mx(p_['D_a']) / sq) if sq > 0 else ('both zero' if mx(p_['D_a']) == 0 else 'undefined'),
+                                     D_over_sum=(mx(p_['D_a']) / sm) if sm > 0 else ('both zero' if mx(p_['D_a']) == 0 else 'undefined')))
+            ctx_case = []
+            for p_ in per:
+                for comp, ide in (('delta_quad', 'ctx_quad_ideal_end'), ('delta_form', 'ctx_form_ideal_end')):
+                    x, y = mx(p_[comp]), mx(p_[ide])
+                    if x is None or y is None:
+                        continue
+                    ctx_case.append((comp, 'below floor' if min(x, y) <= 1e-8 else
+                                     ('context-sensitive' if max(x, y) > 2 * min(x, y) else 'consistent')))
             largest = {}
             for t in tags:
                 cnt = {}
                 for p_ in per:
                     comps = dict(e_P=mx(p_[f'e_P_{t}']), e_dyn=mx(p_[f'e_dyn_{t}']), delta_quad=mx(p_['delta_quad']),
                                  delta_time=mx(p_['delta_time']), delta_form=mx(p_['delta_form']), delta_solve=mx(p_['delta_solve']))
-                    w = max(comps, key=comps.get)
+                    comps = {k: v for k, v in comps.items() if v is not None}
+                    w = max(comps, key=comps.get) if comps else 'unavailable'
                     cnt[w] = cnt.get(w, 0) + 1
                 largest[t] = cnt
-            unres = {comp: sum(mx(p_[comp]) < 3 * mx(p_['U_star']) for p_ in per)
-                     for comp in ('delta_quad', 'delta_solve', 'delta_form', 'delta_time')}
+            unres = {}
+            for comp in ('delta_quad', 'delta_solve', 'delta_form', 'delta_time', 'refine', 'D_a', 'I_time_quad', 'I_time_solve'):
+                pairs_ = [(mx(p_[comp]), mx(p_['U_star'])) for p_ in per]
+                unres[comp] = dict(unresolved=sum(1 for v, u in pairs_ if v is not None and u is not None and v < 3 * u),
+                                   unavailable=sum(1 for v, u in pairs_ if v is None or u is None))
             b0 = max(max(p_[f'B0_{t}']) for p_ in per for t in tags)
+            b0m = min(p_[f'B0_mismatch_{t}'] for p_ in per for t in tags)
             fin = None
             if x.get('selected'):
-                fin = dict(delta_quad_worst=summ['delta_quad']['worst'],
-                           check_worst=max(mx(p_['finalist_check']) for p_ in per) if 'finalist_check' in per[0] else None)
-                fin['qualified'] = bool(fin['delta_quad_worst'] <= TAU and fin['check_worst'] is not None and
-                                        fin['check_worst'] <= cfg['conv_bar'])
-            ctx = dict(quad=dict(deployed_end=summ['delta_quad']['median'],
-                                 ideal_end=float(np.median([mx(p_['ctx_quad_ideal_end']) for p_ in per]))),
-                       form=dict(deployed_end=summ['delta_form']['median'],
-                                 ideal_end=float(np.median([mx(p_['ctx_form_ideal_end']) for p_ in per]))))
+                fq = [mx(p_['delta_quad']) for p_ in per]
+                fc = [mx(p_['finalist_check']) for p_ in per] if 'finalist_check' in per[0] else [None]
+                fin = dict(delta_quad_worst=None if None in fq else max(fq), check_worst=None if None in fc else max(fc),
+                           unavailable_cases=sum(v is None for v in fq + fc))
+                fin['qualified'] = bool(fin['delta_quad_worst'] is not None and fin['delta_quad_worst'] <= TAU and
+                                        fin['check_worst'] is not None and fin['check_worst'] <= cfg['conv_bar'])
+            med_ = lambda k: (lambda v: float(np.median(v)) if v else None)([mx(p_[k]) for p_ in per if mx(p_[k]) is not None])
+            ctx = dict(quad=dict(deployed_end=summ['delta_quad']['median'], ideal_end=med_('ctx_quad_ideal_end')),
+                       form=dict(deployed_end=summ['delta_form']['median'], ideal_end=med_('ctx_form_ideal_end')))
             for v in ctx.values():
+                if v['deployed_end'] is None or v['ideal_end'] is None:
+                    v['flag'] = 'unavailable'
+                    continue
                 v['flag'] = ('below floor' if min(v['deployed_end'], v['ideal_end']) <= 1e-8 else
                              ('context-sensitive' if max(v['deployed_end'], v['ideal_end']) > 2 * min(v['deployed_end'], v['ideal_end'])
                               else 'consistent'))
             armres[f"{f}|{sc}|{x['f']:g}"] = dict(arm=x, keys=K, summary=summ, largest=largest, unresolved_vs_Ustar=unres,
-                                                  B0_worst_relative=b0, finalist=fin, context=ctx, per_case=per)
+                                                  B0_worst_relative=b0, B0_mismatch_min_defect=b0m, closure=clos,
+                                                  context=ctx, context_per_case={k: sum(1 for c_, v in ctx_case if c_ == k and v == 'context-sensitive')
+                                                                                 for k in ('delta_quad', 'delta_form')},
+                                                  finalist=fin, per_case=per)
         b3 = None
         be = armres.get('LSPG|BE|1')
         if be:
-            dt_ = [max(p_['delta_time'][1:]) for p_ in be['per_case']]
+            dt_ = [max(p_['delta_time'][1:]) for p_ in be['per_case'] if p_['delta_time'][1] is not None]
             b3 = dict(exceeds=sum(v > 1e-3 for v in dt_), cases=len(dt_), discriminating=bool(sum(v > 1e-3 for v in dt_) > len(dt_) / 2))
+        b2 = S_.get('B2_control_rule') or {}
+        withheld = []
+        if not b2.get('discriminating'):
+            withheld.append('quadrature attribution (B2 control non-discriminating)')
+        if not (b3 or {}).get('discriminating'):
+            withheld.append('time attribution (B3 control non-discriminating)')
+        if S_.get('converged_rule_status') == 'converged rule unverified':
+            withheld.append('quadrature attribution (converged rule unverified)')
         out['settings'][sname] = dict(rule=s['rule'], conv_status=S_.get('converged_rule_status'), conv_check=S_.get('conv_check'),
                                       conv_check_successor=S_.get('conv_check_successor'), B1=S_.get('B1_sham_bitwise'),
-                                      B2=S_.get('B2_control_rule'), B3=b3, arms=armres)
+                                      B2=S_.get('B2_control_rule'), B3=b3, withheld=withheld, arms=armres)
     b0w = max(v['B0_worst_relative'] for s_ in out['settings'].values() for v in s_['arms'].values())
+    b0m = min(v['B0_mismatch_min_defect'] for s_ in out['settings'].values() for v in s_['arms'].values())
+    nrows = sum(1 for r in res['rows'])
     out['gates'] = dict(B0=dict(worst_relative=b0w, passed=bool(b0w <= 1e-10)), B0_fixtures=out['B0_fixtures']['passed'],
-                        reproduction=dict(repro, passed=bool(repro['compared'] > 0 and repro['failures'] == 0)))
+                        B0_real_mismatch=dict(min_defect=b0m, passed=bool(b0m > 1e-6)),
+                        B1=all((s_['B1'] or {}).get('all_equal') for s_ in out['settings'].values()),
+                        reproduction=dict(repro, rows=nrows,
+                                          passed=(bool(repro['compared'] == 18 * nrows and repro['failures'] == 0)
+                                                  if repro['applicable'] else 'not applicable (new reference)')),
+                        grid_reproduction=dict(grepro, passed=(bool(grepro['compared'] > 0 and grepro['failures'] == 0)
+                                                               if a.grid else 'not run')))
     dest = Path(a.out or HERE / 'checks' / f"budget2d-{run.parents[1].name}-{a.refs}.json")
     dest.write_text(json.dumps(out, default=float) + '\n')
     print(dest, json.dumps(out['gates'], default=float))

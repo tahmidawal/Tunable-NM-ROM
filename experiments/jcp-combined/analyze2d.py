@@ -50,7 +50,10 @@ def stats_timing(panel):
 
 def pareto(points):
     """Ordinary numerical Pareto front of (cost, err, id): no other point with cost <= and err <= and one strict (A3.1)."""
-    pts = sorted(set(points))
+    best = {}
+    for c, e, i in sorted(points):                      # exact duplicates collapse to the lowest arm id (A3.1)
+        best.setdefault((c, e), (c, e, i))
+    pts = list(best.values())
     return [p for p in pts if not any((q[0] <= p[0] and q[1] <= p[1] and (q[0] < p[0] or q[1] < p[1])) for q in pts)]
 
 
@@ -59,6 +62,7 @@ def main():
     ap.add_argument('--run', required=True)
     ap.add_argument('--scores', required=True)
     ap.add_argument('--frozen')
+    ap.add_argument('--certified-scores')
     ap.add_argument('--allow-smoke', action='store_true')
     ap.add_argument('--out')
     a = ap.parse_args()
@@ -67,8 +71,15 @@ def main():
     sc = json.loads(Path(a.scores).read_text())
     if res['config'].get('smoke') and not a.allow_smoke:
         raise SystemExit('smoke result: refused (A5.5)')
-    assert sc['gate']['status'] == 'pass', ('G-score gate not passed', sc['gate'])
-    assert sc['result_sha256'] == hashlib.sha256((run / 'result.json').read_bytes()).hexdigest(), 'scores not of this run'
+    rsha = hashlib.sha256((run / 'result.json').read_bytes()).hexdigest()
+    assert sc['result_sha256'] == rsha, 'scores not of this run'
+    if sc['refs'] == '2d_first_order':
+        assert sc['gate']['status'] == 'pass', ('G-score gate not passed', sc['gate'])
+    else:                     # new reference: reproduction is certified once against the original reference (A1.8)
+        assert a.certified_scores, 'a new-reference score file needs --certified-scores (original-reference pass)'
+        cert = json.loads(Path(a.certified_scores).read_text())
+        assert cert['refs'] == '2d_first_order' and cert['gate']['status'] == 'pass' and cert['result_sha256'] == rsha
+        assert a.frozen, 'a new reference is a rescoring: the frozen selection must be used (A1.8)'
     S, SF = sc['scores'], sc['fom_scores']
     cfg = res['config']
     settings = [s['name'] for s in cfg['settings']]
@@ -82,14 +93,20 @@ def main():
     n0 = {k: float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[k[0]]['physical'][k[1]])))) for k in cases}
     refs = {k: score.load_ref2d(ent, *k) for k in cases}
     if 'eta' in ent:
-        eps = {k: float(ent['eta'][f'{k[0]}|{k[1]}']) / 2 for k in cases}
-        tie_kind = 'verified uncertainty (E0)'
+        # verified case-wise uncertainty: comparisons by interval overlap with endpoint propagation (A2.6). The scalar
+        # threshold machinery below is then replaced: 2 eps_case := eta_x + eta_y is the overlap condition for two
+        # values carrying the same reference uncertainty; medians / worst values use the endpoint-propagated half widths.
+        eta = {k: float(ent['eta'][f'{k[0]}|{k[1]}']) for k in cases}
+        eps = dict(eta)                                      # per case: |x - y| <= 2 eta  <=>  [x +- eta] overlaps [y +- eta]
+        tie_kind = 'verified uncertainty (E0): interval overlap, endpoint propagation'
     else:
         assert all('ST' in refs[k] and 'S' in refs[k] for k in cases), 'no ST/S pair and no verified eta: no tie threshold'
         eps = {k: max(float(np.linalg.norm(refs[k]['ST'][j] - refs[k]['S'][j])) for j in range(1, 6)) / 15. / n0[k]
                for k in cases}
         tie_kind = 'heuristic temporal tie threshold'
     ev = list(eps.values())
+    # medians / worst values: endpoint propagation of [e - eps, e + eps] gives half widths median(eps) and max(eps)
+    # for a common reference; two values tie iff their propagated intervals overlap: threshold 2 x half width
     thr = dict(median=2 * float(np.median(ev)), worst=2 * max(ev))
     rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in res['rows']}
     out = dict(run=str(run), refs=sc['refs'], provisional=True, tie=dict(kind=tie_kind, **thr),
@@ -140,7 +157,7 @@ def main():
 
     # ---------------------------------------------------------------- selection (A3.2, A2.6) or frozen
     if a.frozen:
-        frz = json.loads(Path(a.frozen).read_text())
+        frz = json.loads(Path(a.frozen).read_text())['2d']                     # the frozen schema written by freeze.py
         sel, glob = frz['per_scheme_setting'], frz['global']['scheme']
         out['selection'] = {'frozen': str(a.frozen), 'frozen_sha256': hashlib.sha256(Path(a.frozen).read_bytes()).hexdigest(),
                             'per_scheme_setting': sel, 'global': frz['global']}

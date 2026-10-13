@@ -821,3 +821,34 @@ W512), one per directory, each certified separately.
 **A7.6 Corrections to A6 wording.** A6.1: the BE $K=1$ coefficient distance at $\tfrac54\Delta t_0$ is $\sim5\times10^{-6}$ (not 0). A6.4:
 the worst pairwise distances over the smoke's solvers are $1.45\times10^{-7}$ ($48^3$–$56^3$), $1.22\times10^{-8}$ ($56^3$–$64^3$),
 $1.76\times10^{-9}$ ($64^3$–$80^3$). A6.5's "below" read "above": requested hours exceed the certified projections.
+
+## Amendment A8 (2026-10-13, after `audits/codex-code-4.md`; before any budget job and before any result is read)
+
+**A8.1 Offline analysis on CPU (finding).** One offline 3D scoring run of the `smk3grid` smoke on the local GB10 **GPU**
+(accompanied by an XLA autotuner "Red zone modified" message) produced wrong reference errors for every R′ = 1024
+trajectory (168 % instead of 1.05 % for one case) while R′ = 512 agreed with the job to $10^{-16}$; the same computation
+repeated directly, and the scorer rerun on **CPU**, reproduce the job to $8\times10^{-17}$ (G-score pass, all controls
+breaking). The G-score gate caught the corruption. Every offline scoring, selection and analysis step of this lane
+therefore runs with `JAX_PLATFORMS=cpu` (the GPU jobs on the cluster are unaffected: they pass their own in-job gates
+and are rescored independently on CPU).
+**A8.2 Explicit case ids.** Every 3D trajectory array is saved with its case ids; scoring, budgets and selections join
+by id (the 3D budget mixes all-case and 32-case populations).
+**A8.3 Freeze-to-budget binding.** `make_budget_configs.py` writes the budget configs from the committed
+`FROZEN-SELECTION.json` and records its sha256; staging refuses a mismatch. The 3D budget baseline is the fixed-sweep
+BE $K=1$ at $\Delta t_0$ (identical to the vendor solver by G-FS1) throughout analysis, freeze, budget and controls; H4a and
+H4b witnesses are budgeted explicitly.
+**A8.4 3D H6 is descriptive.** No verified or heuristic tie threshold exists for the 3D reference (BE at $\Delta t_0/4$); H6's
+bars are evaluated on raw values and reported with the label "reference-limited (descriptive)", never as a pass/fail
+verdict.
+**A8.5 Budget validity and controls.** Every budget component is available only where all of its trajectories are
+verified/valid (else "unavailable", counted); B1 (bitwise sham) is a stopping gate in both budget drivers; a
+non-discriminating B2 or B3 control withholds the quadrature or time attribution respectively; the converged-rule check
+requires finite distances and verified rows, and if the 2D successor also fails the budget reports against Gauss
+$320^2$ labelled "converged rule unverified". Budget reproduction covers every job row (original reference only) and
+the arm runs must reproduce the grid jobs' runs to $10^{-8}$ (fields).
+**A8.6 Fallbacks.** A selected arm that fails its finalist qualification is reported as failing; its first fallback (from
+the frozen list) is qualified in a separate conditional follow-up job (`c2fb` / `c3fb`, accuracy + solver + quadrature +
+same-job timing), staged only if needed, under the same gates. No fallback replaces a selection silently.
+**A8.7 Rescoring certification.** A score file against a new reference is accepted only together with the passing
+original-reference G-score file of the same `result.json` and the frozen selection; with verified case-wise uncertainty
+$\eta$ the comparisons use interval overlap (ties at $|x-y|\le2\eta$, medians and worst values by endpoint propagation).

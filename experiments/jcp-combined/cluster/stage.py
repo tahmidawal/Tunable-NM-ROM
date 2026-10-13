@@ -20,7 +20,7 @@ REFSRC = ROOT.parent / '2026-10-01-quadrature-study/experiments/quadrature-study
 REF3 = ROOT.parent / '2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output'
 VQ, V3 = f'{LANE}/vendor/quad2d', f'{LANE}/vendor/quad3d'
 COMMON = [f'{LANE}/t2core.py', f'{LANE}/fs3.py', f'{LANE}/timing.py', f'{LANE}/checks/test_fs.json', f'{LANE}/test_fs.py', f'{LANE}/test_lmm.py']
-FILES2 = COMMON + [f'{LANE}/c2common.py', f'{LANE}/c2grid.py', f'{LANE}/fom2.py', f'{VQ}/qcore.py', f'{VQ}/qstudy.py',
+FILES2 = COMMON + [f'{LANE}/c2common.py', f'{LANE}/c2grid.py', f'{LANE}/c2bud.py', f'{LANE}/fom2.py', f'{VQ}/qcore.py', f'{VQ}/qstudy.py',
                    f'{VQ}/vendor/arms.py', f'{VQ}/vendor/hops.py', f'{VQ}/vendor/hfast.py', f'{VQ}/vendor/bkfast.py',
                    f'{VQ}/vendor/hari_quadrature.py', f'{VQ}/inputs/rotation_R512.npz',
                    f'{VQ}/inputs/rule_q0_m1024_qrg304_reachable.npz', 'experiments/mr-burgers2d/engines.py',
@@ -65,6 +65,9 @@ def main():
         print('resource certificate verified', inv['projected_seconds'] / 3600 * 1.5, 'h (x1.5) of', a.hours)
     cfg0 = json.loads((ROOT / cfgname).read_text())
     assert cfg0['attempt'] == a.attempt
+    if 'frozen_sha256' in cfg0:                   # budget configs are bound to the committed frozen selection (A8.3)
+        assert hashlib.sha256(git_show(commit, f'{LANE}/checks/FROZEN-SELECTION.json')).hexdigest() == cfg0['frozen_sha256'], \
+            'config does not match the committed FROZEN-SELECTION.json'
     driver = cfg0['driver']
     files = FILES3 if driver == 'c3run' else FILES2
     for name in files + [cfgname]:

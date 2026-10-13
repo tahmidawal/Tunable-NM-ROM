@@ -55,12 +55,14 @@ def main():
         rules = {s['name']: s['rule'] for s in res['config']['settings']}
         budget = {}
         for s, rule in rules.items():
-            arms = [dict(arm_of('LSPG|BE|0.005|prod'), role='baseline'), dict(arm_of('GAL|CN|0.005|prod'), role='diagnostic')]
+            arms = [dict(form='LSPG', scheme='BE', f=1, role='baseline'), dict(form='GAL', scheme='CN', f=1, role='diagnostic')]
             if g:
                 for kind in ('accurate_equal_cost', 'fast_equal_accuracy'):
                     x = an['selection']['per_scheme_setting'][f'{s}|{g}'].get(kind)
                     if x:
-                        arms.append(dict(arm_of(x['key']), role=kind, selected=True, fallback_rules=fallbacks2(rule)))
+                        form, sc, _, _ = x['key'].split('|')
+                        arms.append(dict(form=form, scheme=sc, f=x['f'], role=kind, selected=True,   # exact factor (5/3 safe)
+                                         fallback_rules=fallbacks2(rule)))
             uniq = []
             for x in arms:
                 k = (x['form'], x['scheme'], x['f'])

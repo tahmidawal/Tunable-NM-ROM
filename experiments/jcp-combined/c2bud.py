@@ -139,37 +139,53 @@ def main():
         def field_dist(A_, B_, n0r):
             return max(float(np.linalg.norm(A_[j] - B_[j])) / n0r for j in range(1, 6))
 
-        # ---- converged-rule check on the check set first (A2.4), successor decided in-job
-        worst, fields = 0., {}
-        for ci in check_set:
-            for r in conv_runs:
-                _, fa, n0r = do(r, ci)
-                _, fb, _ = do(r, ci, role_override='check')
-                worst = max(worst, field_dist(fa, fb, n0r))
+        # ---- converged-rule check on the check set first (A2.4), successor decided in-job (codex-code-4 item 4):
+        # acceptance needs every pair finite AND both rows verified; otherwise the check fails
+        def conv_check():
+            worst, ok = 0., True
+            for ci in check_set:
+                for r in conv_runs:
+                    Wa, fa, n0r = do(r, ci)
+                    Wb, fb, _ = do(r, ci, role_override='check')
+                    d_ = field_dist(fa, fb, n0r)
+                    rv = rep['rows'][-2:]
+                    ok = ok and bool(np.isfinite(d_) and all(x['verified'] for x in rv))
+                    worst = max(worst, d_) if np.isfinite(d_) else float('inf')
+            return worst, ok
+
+        worst, ok = conv_check()
         S_rep['conv_check'] = dict(pair=[conv_rule, check_rule], worst=worst, bar=cfg['conv_bar'], cases=len(check_set),
-                                   passed=bool(worst <= cfg['conv_bar']))
+                                   all_verified=ok, passed=bool(ok and worst <= cfg['conv_bar']))
         save()
-        if not S_rep['conv_check']['passed']:
-            # successor: r_inf = check rule (640^2), checked against the successor check (768^2); rerun the check set
+        if S_rep['conv_check']['passed']:
+            S_rep['converged_rule_status'] = 'verified'
+        else:
+            # successor: r_inf = 640^2 checked against 768^2
             del st
             gc.collect()
-            conv_rule, check_rule = cfg['check_rule'], cfg['successor_check']
-            st = CC.Setting(bank, spec, rules={'conv': conv_rule, 'check': check_rule, 'ctrl': cfg['control_rule']})
-            S_rep.update(successor_used=True, conv_rule=conv_rule, check_rule=check_rule)
             Wset.clear()
             w0set.clear()
             rep['rows'] = [x for x in rep['rows'] if x['setting'] != spec['name']]
-            worst = 0.
-            for ci in check_set:
-                for r in conv_runs:
-                    _, fa, n0r = do(r, ci)
-                    _, fb, _ = do(r, ci, role_override='check')
-                    worst = max(worst, field_dist(fa, fb, n0r))
+            conv_rule, check_rule = cfg['check_rule'], cfg['successor_check']
+            st = CC.Setting(bank, spec, rules={'conv': conv_rule, 'check': check_rule, 'ctrl': cfg['control_rule']})
+            worst, ok = conv_check()
             S_rep['conv_check_successor'] = dict(pair=[conv_rule, check_rule], worst=worst, bar=cfg['conv_bar'],
-                                                 passed=bool(worst <= cfg['conv_bar']))
-            S_rep['converged_rule_status'] = 'verified (successor)' if worst <= cfg['conv_bar'] else 'converged rule unverified'
-        else:
-            S_rep['converged_rule_status'] = 'verified'
+                                                 all_verified=ok, passed=bool(ok and worst <= cfg['conv_bar']))
+            if S_rep['conv_check_successor']['passed']:
+                S_rep.update(successor_used=True, conv_rule=conv_rule, check_rule=check_rule,
+                             converged_rule_status='verified (successor)')
+            else:
+                # A1.4: report against Gauss 320^2 labelled 'converged rule unverified' (no quadrature attribution)
+                del st
+                gc.collect()
+                Wset.clear()
+                w0set.clear()
+                rep['rows'] = [x for x in rep['rows'] if x['setting'] != spec['name']]
+                conv_rule, check_rule = cfg['conv_rule'], cfg['check_rule']
+                st = CC.Setting(bank, spec, rules={'conv': conv_rule, 'check': check_rule, 'ctrl': cfg['control_rule']})
+                S_rep.update(successor_used=False, conv_rule=conv_rule, check_rule=check_rule,
+                             converged_rule_status='converged rule unverified')
+            save()
         # ---- B1 sham (bitwise re-run of the baseline arm) and B2 known effect (control rule) on the check set (A1.10)
         b1, b2 = [], []
         base_r = ('main', 'LSPG', 'BE', DT0, 'prod')
@@ -183,6 +199,10 @@ def main():
             fm_ = np.asarray(v1['fields'][:, ::s256, ::s256])
             b2.append(field_dist(fm_, fc_, n0r))
         S_rep['B1_sham_bitwise'] = dict(all_equal=all(b1), cases=len(b1))
+        if not all(b1):                         # B1 is a stopping gate (codex-code-4 item 5)
+            save()
+            print('B1 FAILED: a re-run of the same compiled query is not bitwise identical; stopping', flush=True)
+            raise SystemExit(3)
         S_rep['B2_control_rule'] = dict(rule=cfg['control_rule'], per_case=b2, exceeds_tau=sum(x > 2.5e-4 for x in b2),
                                         discriminating=bool(sum(x > 2.5e-4 for x in b2) > len(b2) / 2))
         # ---- every run on every case (check-set conv runs were already done; repeats are skipped)

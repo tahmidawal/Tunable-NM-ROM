@@ -164,11 +164,12 @@ def main():
         tables[bname] = C3.Tables(n, banks[bname], sorted({int(s['Rp']) for s in cfg['settings'] if s['bank'] == bname}),
                                   log=lambda s_: print(s_, flush=True))
     print('SETUP', el(), flush=True)
-    Wstore, w0store, acc_sha, live = {}, {}, {}, {}
+    Wstore, w0store, acc_sha, live, Cstore = {}, {}, {}, {}, {}
     tc = cfg['timing']
 
     def dump():
-        np.savez_compressed(out / f'W_{mode}.npz', **Wstore, **{f'w0|{k}': v for k, v in w0store.items()})
+        np.savez_compressed(out / f'W_{mode}.npz', **Wstore, **{f'w0|{k}': v for k, v in w0store.items()},
+                            **{f'cases|{k}': v for k, v in Cstore.items()})
 
     def rollouts(sname, sol, rule, prep, specs, lean):
         """Run specs on every case. Returns {speckey: dict(W (cases, 6, R'), recs, elig)}."""
@@ -207,6 +208,7 @@ def main():
             el_ = C3.pooled_eligible(recs)
             res[sk] = dict(W=arr, recs=recs, elig=el_)
             Wstore[f'{sname}|{rule}|{sk}'] = arr
+            Cstore[f'{sname}|{rule}|{sk}'] = np.array(list(cases))           # explicit case ids (codex-code-4 item 3)
             print('RUN', sname, rule, sk, f'{time.perf_counter() - t_s:.1f}s', 'eligible', el_['eligible'],
                   el_['nonstationary'], '/', el_['steps'], el(), flush=True)
         return res
@@ -411,22 +413,33 @@ def main():
                     finally:
                         cases[:] = allc
                 drop(rule)
-            # B1 sham (bitwise re-run) and B2 known effect (control rule lat256) of the deployed BE on the budget cases
+            # B1 sham (bitwise re-run) and B2 known effect (control rule lat256) of the BASELINE fs BE dt0 K=1 (the same
+            # identity as analyze3d's comparator; G-FS1 makes it equal to the vendor) on the budget cases
+            base_sp = ('fs', 'BE', DT0, 1)
             prep = prep_of(s['rule'])
             b1 = []
             for j in sub:
-                o1 = sol.run(('vendor',), U0[j], NU[j], prep)[1]
-                o2 = sol.run(('vendor',), U0[j], NU[j], prep)[1]
+                o1 = sol.run(base_sp, U0[j], NU[j], prep)[1]
+                o2 = sol.run(base_sp, U0[j], NU[j], prep)[1]
                 b1.append(bool(np.array_equal(np.asarray(o1), np.asarray(o2))))
+            if not all(b1):
+                print('B1 FAILED: stopping', flush=True)
+                dump()
+                sys.exit(3)
             cases[:] = sub
             try:
-                ctl = rollouts(sname, sol, cfg['control_rule'], prep_of(cfg['control_rule']), [('vendor',)], lean)
+                ctl = rollouts(sname, sol, cfg['control_rule'], prep_of(cfg['control_rule']), [base_sp], lean)
+                ref_ = rollouts(sname, sol, s['rule'], prep, [base_sp], lean) if f"{sname}|{s['rule']}|fs|BE|0.01|K1" not in Wstore \
+                    else None
             finally:
                 cases[:] = allc
             drop(cfg['control_rule'])
-            vk = f"{sname}|{s['rule']}|vendor|BE|0.01|K1"
-            dctl = (np.linalg.norm(np.einsum('cki,ji->ckj', ctl['vendor|BE|0.01|K1']['W'] - Wstore[vk][:nb], Lt), axis=2)
-                    / N0[:nb, None])[:, 1:].max(1) if vk in Wstore else None
+            vk = f"{sname}|{s['rule']}|fs|BE|0.01|K1"
+            base_W = Wstore[vk]
+            ids = list(Cstore[vk])
+            sel_rows = [ids.index(j) for j in sub]
+            dctl = (np.linalg.norm(np.einsum('cki,ji->ckj', ctl['fs|BE|0.01|K1']['W'] - base_W[sel_rows], Lt), axis=2)
+                    / N0[:nb, None])[:, 1:].max(1)
             S_rep.update(rules=rmap, budget_cases=nb, arms=s['arms'], peak_bytes=C3.peak_bytes(),
                          B1_sham_bitwise=dict(all_equal=all(b1), cases=len(b1)),
                          B2_control_rule=dict(rule=cfg['control_rule'],

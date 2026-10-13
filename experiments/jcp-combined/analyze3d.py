@@ -54,6 +54,7 @@ def main():
         raise SystemExit('smoke result refused')
     assert sc['gate']['status'] == 'pass' and sc['result_sha256'] == hashlib.sha256((run / 'result.json').read_bytes()).hexdigest()
     import c3common as C3
+    SC = sc['scores']
     cfg = res['config']
     cases = cfg.get('case_subset') or list(range(cfg['cohort_count']))
     tab = C3.C.table(cfg['cohort_seed'], cfg['cohort_count'])
@@ -82,7 +83,7 @@ def main():
         for sk in W:
             Fs = F(sk)
             disc = dfield(Fs, Fanc[ANC[0]])
-            e = np.array([rows[(sname, sk)][j]['e_ref'] for j in cases])
+            e = np.array([SC[f'{sname}|{rule}|{sk}|{j}']['ref']['worst'] for j in cases])     # authenticated scores (item 11)
             ent = dict(valid=all(rows[(sname, sk)][j]['valid'] for j in cases),
                        nonstationary=sum(rows[(sname, sk)][j]['nonstationary'] for j in cases),
                        steps=sum(rows[(sname, sk)][j]['steps_n'] for j in cases),
@@ -97,14 +98,15 @@ def main():
                 ad, adx = f'ad|LSPG|{p[1]}|{p[2]}|tight', f'ad|LSPG|{p[1]}|{p[2]}|tighter'
                 if ad in W:
                     sd = dfield(Fs, F(ad))
-                    sens = float(dfield(F(ad), F(adx)).max()) if adx in W else float('nan')
-                    adv = all(rows[(sname, ad)][j]['valid'] for j in cases)
-                    bar = np.minimum(2.5e-4, .25 * disc)
+                    sens = dfield(F(ad), F(adx)) if adx in W else np.full(len(cases), np.nan)
+                    adv = all(rows[(sname, ad)][j]['valid'] for j in cases) and \
+                        (adx in W and all(rows[(sname, adx)][j]['valid'] for j in cases))      # tight AND tighter verified
+                    bar = np.minimum(2.5e-4, .25 * disc)                                         # per-case H4 bar (A1.9)
                     ent.update(solver_distance=sd.tolist(), solver_worst=float(sd.max()), probe_valid=adv,
-                               probe_tighter_sensitivity=sens,
+                               probe_tighter_sensitivity=sens.tolist(),
                                eligible_A62=bool(ent['valid'] and adv and float(sd.max()) <= 2.5e-4),
-                               eligible_H4=bool(ent['valid'] and adv and np.isfinite(sens) and sens <= .1 * 2.5e-4 and
-                                                bool(np.all(sd <= bar))))
+                               eligible_H4=bool(ent['valid'] and adv and np.all(np.isfinite(sens)) and
+                                                bool(np.all(sens <= .1 * bar)) and bool(np.all(sd <= bar))))  # A2.8 per case
             arms[sk] = ent
         S_ = dict(rule=rule, U_anc=U.tolist(), anchor_qualified=anc_ok.tolist(), panel_valid=panel.get('valid'),
                   gfs1=res['settings'][sname]['G_FS1'], arms=arms)
@@ -142,8 +144,15 @@ def main():
                 accurate_equal_cost=(min(aec, key=lambda k: (cand_stats(k)[1], arms[k]['ratio'])) if aec else None))
         out['hypotheses'].setdefault('H4', {})[sname] = h4
         sel = out['selection'].get(sname, {})
-        barms = [COMP, 'fs|CN|0.01|K1', 'fs|CN|0.025|K1'] + [v for v in sel.values() if v]
-        out['budget_arms'][sname] = sorted(set(barms))
+        h4w = [h4.get(k, {}).get('witnesses', [None])[0] for k in ('H4a', 'H4b')]
+        barms = {COMP: 'baseline', 'fs|CN|0.01|K1': 'diagnostic', 'fs|CN|0.025|K1': 'diagnostic'}
+        for role, v in list(sel.items()) + [('H4a_witness', h4w[0]), ('H4b_witness', h4w[1])]:
+            if v:
+                barms[v] = (barms.get(v, '') + '+' + role).lstrip('+') if v in barms else role
+        out['budget_arms'][sname] = [dict(spec=sp.split('|')[:1] + [sp.split('|')[1], float(sp.split('|')[2]),
+                                                                    int(sp.split('|')[3][1:])], key=sp, role=r,
+                                          selected=any(t in r for t in ('fast_equal', 'accurate_equal', 'witness')))
+                                     for sp, r in barms.items()]
     # ---------------- H6
     h6 = {}
     for s1, s2 in zip(DIAL[:-1], DIAL[1:]):
@@ -155,9 +164,11 @@ def main():
         e2 = np.array(out['settings'][s2]['arms'][x2]['per_case_ref'])
         imp = float(np.mean(e2 < e1))
         mc = float(np.median(e2) / np.median(e1) - 1)
+        # no verified or heuristic tie threshold exists for the 3D reference (BE at dt0/4, A13 of C2): H6 is reported
+        # DESCRIPTIVELY with the registered bars evaluated on raw values and labelled reference-limited (A8.4)
         h6[f'{s1}->{s2}'] = dict(arms=[x1, x2], median_change=mc, improved_fraction=imp,
-                                 verdict='extends' if (mc <= -.10 and imp >= .6) else 'does not extend',
-                                 label='reference-limited, PROVISIONAL')
+                                 bars_met=bool(mc <= -.10 and imp >= .6), verdict='reference-limited (descriptive)',
+                                 label='no tie threshold available for the 3D reference; PROVISIONAL')
     out['hypotheses']['H6'] = h6
     dest = Path(a.out or HERE / 'checks' / f"analysis3d-{run.parents[1].name}.json")
     dest.write_text(json.dumps(out, indent=1, default=float) + '\n')

@@ -588,3 +588,10 @@ and checks that a completion record exists.
 **A2.11 Row-wise RNG pinning (item 50).** NumPy's `default_rng` (PCG64) with the seed sequence `[seed, j]`; the NumPy
 version is recorded in every job's result JSON, and the unit test pins the first rows of each new cohort's **public
 dev-check seed** (not the secret seeds) to golden values.
+
+**A2.12 Erratum to A2.4 step 2 (same day, before audit).** Step 2 contains an abandoned half-sentence ("$s_t$ fails to
+be at least 4× smaller … (withdrawn; see next sentence)"); it has no force. Step 2 reads, in full: the PS validity
+check fails, with verdict `UNRESOLVED(<reason>)`, iff (i) any PS run is non-finite, (ii) a PS gate (G3a–c, G4) failed
+in that job, (iii) the spatial order $q$ is undefined or $<2.5$ at some $t_k$, or (iv) the stability heuristic
+$\Delta t\le0.66\cdot2.8/(2d\pi N_3\max|u|)$ with the recorded running maximum is violated after the one $\Delta t/2$
+rerun it triggers (`UNRESOLVED(stability)`).

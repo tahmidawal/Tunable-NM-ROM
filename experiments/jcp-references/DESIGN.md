@@ -799,3 +799,15 @@ everything passes. G6's stale-status test runs on an isolated copy of the metada
 execution including the host-to-device transfer of the IC (compilation is timed separately, ahead of time);
 `peak_bytes` is the process-lifetime device high-water mark at the end of the attempt. Both serve the GPU-hour
 re-estimate and the memory-fit check of §12; no timing claim about the references is made.
+
+---
+
+## Amendment A7 (2026-10-13, after the first cluster submission)
+
+**A7.1 RNG golden comparison.** The first `calib2d` job (5209647) and the `gates` job refused to run (exit 4,
+as designed) because the unit gate `Urng` failed on the cluster: its NumPy is 2.5.0, the local one 2.4.4. The raw
+generator streams are identical (every family row, the 3D integer blob counts and all uniform-derived values match
+exactly); one OOD viscosity, computed through `exp`, differs by $1.7\times10^{-18}$ (one ulp). The golden comparison
+is now exact for integer arrays and relative $\le10^{-14}$ for floating values. The cohort descriptors are therefore
+defined up to an ulp of `exp`/`log` across NumPy builds; every job records its NumPy version, and an ulp in $\nu$
+changes a reference by far less than any tolerance here.

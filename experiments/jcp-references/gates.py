@@ -268,8 +268,15 @@ def u_rng():
               and np.all((t3['w'] >= .07) & (t3['w'] < .10)) and np.all((t3['nu'] >= .01) & (t3['nu'] <= .0125893)))
     golden = json.loads(GOLDEN.read_text()) if GOLDEN.exists() else None
     now = rng_rows()
-    gold_ok = golden is not None and set(now) <= set(golden) and all(
-        np.array_equal(np.asarray(golden[k]), np.asarray(now[k])) for k in now if k != 'numpy')
+    def same(g, n):
+        g, n = np.asarray(g), np.asarray(n)
+        if g.shape != n.shape:
+            return False
+        if np.issubdtype(n.dtype, np.integer):
+            return bool(np.array_equal(g, n))
+        # A7.1: values derived through exp/log may differ by an ulp across NumPy builds (2.4.4 vs 2.5.0)
+        return bool(np.allclose(g, n, rtol=1e-14, atol=0.0))
+    gold_ok = golden is not None and set(now) <= set(golden) and all(same(golden[k], now[k]) for k in now if k != 'numpy')
     return dict(gate='Urng', prefix_stable=bool(prefix), ranges=bool(ranges), golden_match=bool(gold_ok),
                 numpy=np.__version__, **{'pass': bool(prefix and ranges and gold_ok)})
 

@@ -1,32 +1,63 @@
-"""jcp-combined offline scorer (DESIGN 4 "one-switch rescoring", A1.8, A2.9/A3.5 G-score, A2.10).
+"""jcp-combined offline scorer (DESIGN 4 "one-switch rescoring", A1.8, A2.10, A3.5, A4.7, A5.4; code audit 2 items 14-16).
 
-Decodes saved output coefficients W (6, R') through the bank evaluated AT THE REFERENCE'S OWN LATTICE COORDINATES
-(independent of the job's mesh-row decode) and scores them against a named reference from refs.json. The normaliser is
-the physical initial field evaluated at the reference nodes from the case formula (never the decoded W0).
+Decodes saved output coefficients W (6, R') through the bank evaluated AT THE REFERENCE'S OWN LATTICE COORDINATES (an
+independent path from the job's mesh-row decode) and scores them against an authenticated registry entry (refs.json).
+2D FOM archives (fom_f257.npz, 257^2 nodes) are scored too, so a new reference rescoring never mixes references.
 
-    python score.py --refs <name> --run <runs/<attempt>/archive/output> [--check] [--out checks/scores-<attempt>-<name>.json]
+    python score.py --refs <name> --run <runs/<attempt>/archive/output> [--check] [--out <json>]
 
---check: compare with the in-job errors (|x - y| <= 1e-13 + 1e-10 |y|, G-score) and run the negative controls (case swap,
-output-time shift, ST/S swap, one-node coordinate shift on dev6 case 0): each must break agreement by > 1e-6.
-Registry kinds:
-  2d_f257   2D references on the 257^2 nodes x = i/256 (files ref_<tag>_<cohort>_<case:03d>.npz, key f257); derived
-            tags (TX) are linear combinations declared in the registry.
-  3d_l65    3D references on the 63^3 lattice x = k/64 (one npz with arrays c<case> (6, 63^3)).
+Registry kinds (anything else is rejected):
+  2d_f257  references on the 257^2 nodes x = i/256 (boundary zero): files per (cohort, case, tag), manifest result.json
+           pinned by sha256 and every f257 file checked against the manifest's per-file sha256; derived tags (TX) are
+           declared linear combinations; normaliser = ||u0|| of the physical initial field at the nodes.
+  3d_l65   one npz on the 63^3 lattice x = k/64 pinned by sha256; normaliser = ||u0|| of the physical initial field.
+Every registry entry pins the bank checkpoint sha256 it may score (checked against the run's result.json) and its output
+times. --check (G-score): the in-job errors must be reproduced at EVERY output time for EVERY row (|x - y| <= 1e-13 +
+1e-10 |y|); full coverage and finite values are required; mandatory negative controls must each break agreement by > 1e-6
+(2D: case swap, output-time shift, ST/S swap, coordinate shift of the pinned dev6/0 field at t = 0.05; 3D: case swap,
+output-time shift, one-node lattice shift). gate.status in {unchecked, pass, fail}; exit status 1 on fail.
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import sys
 from pathlib import Path
 
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
 REG = json.loads((HERE / 'refs.json').read_text())
+KINDS = ('2d_f257', '3d_l65')
+REQUIRED = {'2d_f257': ('dir', 'tags', 'manifest', 'manifest_sha256', 'bank_sha256', 'times', 'nodes', 'normaliser'),
+            '3d_l65': ('file', 'sha256', 'bank_sha256', 'times', 'nodes', 'normaliser')}
+
+
+def sha_file(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def sha(a):
+    return hashlib.sha256(np.ascontiguousarray(np.asarray(a)).tobytes()).hexdigest()
 
 
 def tol_ok(x, y):
-    return abs(x - y) <= 1e-13 + 1e-10 * abs(y)
+    return bool(np.isfinite(x) and np.isfinite(y) and abs(x - y) <= 1e-13 + 1e-10 * abs(y))
+
+
+def validate_entry(name):
+    ent = REG[name]
+    if ent.get('kind') not in KINDS:
+        raise ValueError(f'unsupported registry kind {ent.get("kind")!r}')
+    miss = [k for k in REQUIRED[ent['kind']] if k not in ent]
+    if miss:
+        raise ValueError(f'registry entry {name} lacks {miss}')
+    if ent['kind'] == '2d_f257':
+        assert sha_file(Path(ent['dir']) / ent['manifest']) == ent['manifest_sha256'], 'reference manifest sha256'
+    else:
+        assert sha_file(ent['file']) == ent['sha256'], '3D reference sha256'
+    return ent
 
 
 # ------------------------------------------------------------------------------------------------ 2D
@@ -47,10 +78,20 @@ def decode2d(G, W):
     return U
 
 
+_MAN = {}
+
+
 def load_ref2d(ent, coh, c):
+    key = ent['dir']
+    if key not in _MAN:
+        man = json.loads((Path(ent['dir']) / ent['manifest']).read_text())
+        _MAN[key] = {(x['cohort'], x['case'], x['ref']): x for x in man['cases']}
     out = {}
     for tag, fn in ent['tags'].items():
-        out[tag] = np.load(Path(ent['dir']) / fn.format(cohort=coh, case=c))['f257']
+        z = np.load(Path(ent['dir']) / fn.format(cohort=coh, case=c))['f257']
+        m = _MAN[key][(coh, c, tag)]
+        assert m['accepted'] and sha(z) == m['f257_sha256'], ('reference file sha256', coh, c, tag)
+        out[tag] = z
     for tag, comb in ent.get('derived', {}).items():
         out[tag] = sum(w * out[t] for t, w in comb.items())
     return out
@@ -58,54 +99,95 @@ def load_ref2d(ent, coh, c):
 
 def score2d(ent, run, check):
     res = json.loads((run / 'result.json').read_text())
+    assert res['checkpoint_sha256'] == ent['bank_sha256'], 'run bank does not match the registry entry'
     cohorts = res['cohorts']
     Rps = [res['setup'][s['name']]['Rp'] for s in res['config']['settings']]
     Q, G = bank2d(max(Rps))
-    import engines as E   # noqa: F401  (qcore put it on the path)
-    out, gate = {}, dict(compared=0, worst=0., passed=True)
+    n0c = {}
+    out, gate = {}, dict(status='unchecked', compared=0, expected=0, worst=0., nonfinite=0)
     inrow = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in res['rows']}
+    tags = list(ent['tags']) + list(ent.get('derived', {}))
     for s in res['config']['settings']:
         z = np.load(run / f"W_{s['name']}.npz")
         W, keys, cases = z['W'], [str(k) for k in z['runs']], [str(c) for c in z['cases']]
         for ci, ck in enumerate(cases):
             coh, c = ck.split('|')
             c = int(c)
-            ph = np.asarray(cohorts[coh]['physical'][c])
-            n0 = float(np.linalg.norm(Q.e.initial(256, ph)))
+            if (coh, c) not in n0c:
+                n0c[(coh, c)] = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
+            n0 = n0c[(coh, c)]
             refs = load_ref2d(ent, coh, c)
             for ri, k in enumerate(keys):
                 U = decode2d(G, W[ci, ri])
-                pe = {t: [float(np.linalg.norm(U[j] - R[j])) / n0 for j in range(6)] for t, R in refs.items()}
+                pe = {t: [float(np.linalg.norm(U[j] - refs[t][j])) / n0 for j in range(6)] for t in tags}
                 out[f"{s['name']}|{k}|{coh}|{c}"] = {t: dict(per_time=v, worst=max(v[1:])) for t, v in pe.items()}
-                if check and (s['name'], k, coh, c) in inrow:
-                    r = inrow[(s['name'], k, coh, c)]
+                if check:
+                    r = inrow.get((s['name'], k, coh, c))
                     for t in ('ST', 'S', 'TX'):
-                        if t in pe:
+                        if t not in pe:
+                            continue
+                        gate['expected'] += 6
+                        if r is None:
+                            continue
+                        for j in range(6):
+                            x, y = pe[t][j], r[f'e_{t}_per_time'][j]
                             gate['compared'] += 1
-                            d = abs(max(pe[t][1:]) - r[f'e_{t}'])
-                            gate['worst'] = max(gate['worst'], d)
-                            gate['passed'] &= tol_ok(max(pe[t][1:]), r[f'e_{t}'])
+                            if not (np.isfinite(x) and np.isfinite(y)):
+                                gate['nonfinite'] += 1
+                                gate['failures'] = gate.get('failures', 0) + (0 if not (np.isfinite(x) or np.isfinite(y)) else 1)
+                                continue
+                            gate['worst'] = max(gate['worst'], abs(x - y))
+                            gate['failures'] = gate.get('failures', 0) + (0 if tol_ok(x, y) else 1)
+    # FOM archive (same reference, same nodes)
+    fom = {}
+    fp = run / 'fom_f257.npz'
+    frow = {(r['run'], r['cohort'], r['case']): r for r in res.get('fom', {}).get('rows', [])}
+    if fp.exists():
+        Fz = np.load(fp)
+        assert np.allclose(Fz['__coords_x'], np.arange(257) / 256) and np.allclose(Fz['__times'], np.arange(6) * .05)
+        for k in Fz.files:
+            if k.startswith('__'):
+                continue
+            kk, coh, c = k.replace('__', '|').rsplit('|', 2)
+            c = int(c)
+            refs = load_ref2d(ent, coh, c)
+            n0 = n0c.get((coh, c)) or float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
+            pe = {t: [float(np.linalg.norm(Fz[k][j] - refs[t][j])) / n0 for j in range(6)] for t in tags}
+            fom[f'{kk}|{coh}|{c}'] = {t: dict(per_time=v, worst=max(v[1:])) for t, v in pe.items()}
+            if check:
+                r = frow.get((kk, coh, c))
+                for t in ('ST', 'S', 'TX'):
+                    gate['expected'] += 6
+                    if r is None:
+                        continue
+                    for j in range(6):
+                        x, y = pe[t][j], r[f'e_{t}_per_time'][j]
+                        gate['compared'] += 1
+                        gate['worst'] = max(gate['worst'], abs(x - y)) if np.isfinite(x) and np.isfinite(y) else gate['worst']
+                        gate['failures'] = gate.get('failures', 0) + (0 if tol_ok(x, y) else 1)
     ctrl = {}
     if check:
         s0 = res['config']['settings'][0]['name']
         z = np.load(run / f'W_{s0}.npz')
         W, keys, cases = z['W'], [str(k) for k in z['runs']], [str(c) for c in z['cases']]
         k0 = keys.index('LSPG|BE|0.005|prod')
-        coh, c = cases[0].split('|')
-        c = int(c)
-        r = inrow[(s0, keys[k0], coh, int(c))]
-        ph = np.asarray(cohorts[coh]['physical'][c])
-        n0 = float(np.linalg.norm(Q.e.initial(256, ph)))
-        refs = load_ref2d(ent, coh, c)
-        U = decode2d(G, W[0, k0])
+        ci0 = cases.index('dev6|0')
+        r = inrow[(s0, keys[k0], 'dev6', 0)]
+        n0 = n0c[('dev6', 0)]
+        refs = load_ref2d(ent, 'dev6', 0)
+        U = decode2d(G, W[ci0, k0])
         e = lambda U_, R_: max(float(np.linalg.norm(U_[j] - R_[j])) / n0 for j in range(1, 6))
-        ctrl['case_swap'] = abs(e(decode2d(G, W[1, k0]), refs['ST']) - r['e_ST']) if len(cases) > 1 else None
+        other = next((i for i in range(len(cases)) if i != ci0), None)
+        ctrl['case_swap'] = abs(e(decode2d(G, W[other, k0]), refs['ST']) - r['e_ST']) if other is not None else None
         ctrl['time_shift'] = abs(e(np.roll(U, 1, 0), refs['ST']) - r['e_ST'])
         ctrl['ST_S_swap'] = abs(e(U, refs['S']) - r['e_ST'])
         _, Gs = bank2d(W.shape[-1], shift=1)
-        ctrl['coordinate_shift'] = abs(e(decode2d(Gs, W[0, k0]), refs['ST']) - r['e_ST'])
-        ctrl['all_break'] = all(v is None or v > 1e-6 for v in ctrl.values())
-    return out, gate, ctrl
+        ctrl['coordinate_shift_field_t005'] = float(np.linalg.norm(decode2d(Gs, W[ci0, k0])[1] - U[1])) / n0
+        mand = [v for k_, v in ctrl.items() if k_ != 'case_swap' or v is not None]
+        ctrl['all_break'] = bool(all(v > 1e-6 for v in mand) and (other is None or ctrl['case_swap'] > 1e-6))
+        ok = gate['compared'] == gate['expected'] and gate.get('failures', 0) == 0 and ctrl['all_break']
+        gate['status'] = 'pass' if ok else 'fail'
+    return out, gate, ctrl, fom
 
 
 # ------------------------------------------------------------------------------------------------ 3D
@@ -120,12 +202,15 @@ def score3d(ent, run, check):
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
     n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j))[i65])) for j in cases}
     Wz = np.load(run / f"W_{res['mode']}.npz")
-    out, gate = {}, dict(compared=0, worst=0., passed=True)
+    out, gate = {}, dict(status='unchecked', compared=0, expected=0, worst=0., nonfinite=0, failures=0)
     inrow = {(r['setting'], r['rule'], r['spec'], r['case']): r for r in res['rows']}
-    G = {}
+    G, banks = {}, {}
     for s in cfg['settings']:
         bk = C3.load_bank(s['bank'])
+        assert bk['sha256'] == ent['bank_sha256'].get(s['bank']), 'bank not pinned by the registry entry'
+        banks[s['name']] = bk
         G[s['name']] = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :int(s['Rp'])], X65))
+    R = {j: np.asarray(z[f'c{j}']) for j in cases}
     for key in Wz.files:
         if key.startswith('w0|'):
             continue
@@ -133,15 +218,41 @@ def score3d(ent, run, check):
         A = Wz[key]
         for ci, j in enumerate(cases):
             F = A[ci] @ G[sname]
-            R = np.asarray(z[f'c{j}'])
-            pe = [float(np.linalg.norm(F[k] - R[k])) / n0[j] for k in range(6)]
+            pe = [float(np.linalg.norm(F[k] - R[j][k])) / n0[j] for k in range(6)]
             out[f'{key}|{j}'] = dict(ref=dict(per_time=pe, worst=max(pe[1:])))
-            r = inrow.get((sname, rule, spec, j))
-            if check and r is not None and np.isfinite(pe).all():
-                gate['compared'] += 1
-                gate['worst'] = max(gate['worst'], abs(max(pe[1:]) - r['e_ref']))
-                gate['passed'] &= tol_ok(max(pe[1:]), r['e_ref'])
-    return out, gate, {}
+            if check:
+                gate['expected'] += 6
+                r = inrow.get((sname, rule, spec, j))
+                if r is None:
+                    continue
+                for k in range(6):
+                    x, y = pe[k], r['e_ref_per_time'][k]
+                    gate['compared'] += 1
+                    if not (np.isfinite(x) and np.isfinite(y)):
+                        gate['nonfinite'] += 1           # an invalid (non-finite) rollout: counted, never silently skipped
+                        gate['failures'] += 0 if not (np.isfinite(x) or np.isfinite(y)) else 1   # one-sided = failure
+                        continue
+                    gate['worst'] = max(gate['worst'], abs(x - y))
+                    gate['failures'] += 0 if tol_ok(x, y) else 1
+    ctrl = {}
+    if check:
+        key = next(k for k in Wz.files if k.endswith('|fs|BE|0.01|K1') or k.endswith('vendor|BE|0.01|K1'))
+        sname = key.split('|')[0]
+        A = Wz[key]
+        r0 = inrow[(sname, key.split('|')[1], key.split('|', 2)[2], cases[0])]
+        e = lambda F_, j: max(float(np.linalg.norm(F_[k] - R[j][k])) / n0[j] for k in range(1, 6))
+        F0 = A[0] @ G[sname]
+        ctrl['case_swap'] = abs(e(A[1] @ G[sname], cases[0]) - r0['e_ref']) if len(cases) > 1 else None
+        ctrl['time_shift'] = abs(e(np.roll(F0, 1, 0), cases[0]) - r0['e_ref'])
+        bk = banks[sname]
+        Rp = A.shape[-1]
+        Gs = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :Rp], X65 + 1. / 64))
+        ctrl['lattice_shift_field_t005'] = float(np.linalg.norm((A[0][1] @ Gs) - F0[1])) / n0[cases[0]]
+        ctrl['all_break'] = bool(all(v is None or v > 1e-6 for v in ctrl.values()))
+        # non-finite rows are allowed only where the in-job row itself is non-finite (an invalid rollout)
+        ok = gate['compared'] == gate['expected'] and gate['failures'] == 0 and ctrl['all_break']
+        gate['status'] = 'pass' if ok else 'fail'
+    return out, gate, ctrl, {}
 
 
 def main():
@@ -151,15 +262,19 @@ def main():
     ap.add_argument('--check', action='store_true')
     ap.add_argument('--out')
     a = ap.parse_args()
-    ent = REG[a.refs]
+    ent = validate_entry(a.refs)
     run = Path(a.run)
     fn = score2d if ent['kind'] == '2d_f257' else score3d
-    out, gate, ctrl = fn(ent, run, a.check)
-    rep = dict(refs=a.refs, registry_entry=ent, run=str(run), gate=gate, controls=ctrl, scores=out)
+    out, gate, ctrl, fom = fn(ent, run, a.check)
+    res = json.loads((run / 'result.json').read_text())
+    rep = dict(refs=a.refs, registry_entry=ent, run=str(run), result_sha256=sha_file(run / 'result.json'),
+               smoke=bool(res['config'].get('smoke')), gate=gate, controls=ctrl, scores=out, fom_scores=fom)
     dest = Path(a.out or HERE / 'checks' / f"scores-{run.parents[1].name}-{a.refs}.json")
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(rep) + '\n')
     print(dest, 'gate', gate, 'controls', ctrl)
+    if gate['status'] == 'fail':
+        sys.exit(1)
 
 
 if __name__ == '__main__':

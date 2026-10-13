@@ -1,0 +1,61 @@
+{
+ "attempt": "c2grid",
+ "gpu": "a100-80G",
+ "gpu_gb": 80.0,
+ "requested_hours": 18.0,
+ "mem": "200G",
+ "fits": true,
+ "commit_at_certification": "cd0954283d4f2b55452502b8ebb67963e3e762bb",
+ "config_sha256": "bd08e27fd120b203f215fa3d462eca6d52179114b03d595b05f829d21e7099f0",
+ "sources_sha256": {
+  "t2core.py": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9",
+  "fs3.py": "8c7dd03b5619b873b7549ab29c66e2039bda8d9e3a1bea4c8ce349de373701ce",
+  "timing.py": "64361e6377257ba3b9b3cc8c7d00405a58577aa60543d4c1e42dbd36f70ede52",
+  "c2common.py": "faee4438d4639c27557b1edf8ba826721a3dac26143fa55b5de2a4b204a96a31",
+  "c2grid.py": "7ee18683c20faa16661f9d49b8aee824c41a691c2bfe3ab9ab2685495a45e740",
+  "fom2.py": "48be7dd905f0b9de046e9a780ef65ba1080535d18d05e1f561509388b7e4a8ec",
+  "c3common.py": "815070703ef0e4d184928af39b71bbcd99ba197defee730b91fc7fb168723d8e",
+  "c3run.py": "b932ef1eb2a6c3b207b0a6d783fbb47bbdde4a677fd485a43853d49ed5eb2c4f"
+ },
+ "smokes": [
+  {
+   "path": "runs/smk2d/archive/output",
+   "job_id": "5208761",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "result_sha256": "be523f3cc8d58863098561355795f84e3934c14e616a678d2691c47a4a8e512f",
+   "complete": true,
+   "smoke": true
+  }
+ ],
+ "detail": {
+  "fast": {
+   "rollouts_s": 172.50074341893196,
+   "compile_s": 37.81478881184012
+  },
+  "R128": {
+   "rollouts_s": 218.84358936175704,
+   "compile_s": 25.267150240950286
+  },
+  "R256": {
+   "rollouts_s": 502.60508821345866,
+   "compile_s": 42.905837123282254
+  },
+  "acc": {
+   "rollouts_s": 897.2739857081324,
+   "compile_s": 46.163727938663214
+  },
+  "R384": {
+   "rollouts_s": 1373.8261887384579,
+   "compile_s": 29.743475314229727
+  },
+  "R512": {
+   "rollouts_s": 4596.60007227771,
+   "compile_s": 50.27613934408873
+  }
+ },
+ "projected_seconds": 34178.70458172851,
+ "projected_peak_gb": 17.249225472,
+ "projected_hours_with_margin": 14.241126909053547,
+ "fits_time": true,
+ "fits_memory": true
+}

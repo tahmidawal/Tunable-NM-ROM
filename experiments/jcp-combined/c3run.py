@@ -2,10 +2,11 @@
 
   esc   (`c3desc`) J4 escalation and rule-selection data. Per setting: escalation Gauss rules (W768/W1024: 48^3, 56^3,
         64^3; others 56^3, 64^3) under the two fixed-sweep SELECTION arms (BE dt0 K=1; LSPG-CN 2.5 dt0 K=1) and the two
-        adaptive DIAGNOSTIC arms (LSPG-BE dt0 tight; LSPG-CN 2.5 dt0 tight), all cases. Per rule pair (A2.5):
+        adaptive DIAGNOSTIC arms (LSPG-BE dt0 tight; LSPG-CN 2.5 dt0 tight), all cases; the CN selection arm uses K = 2 (A6.3). Per rule pair (A2.5):
         selection_pair_status / adaptive_diagnostic_status in {pass, fail, unresolved}: pass iff every arm of the axis
-        has pooled-eligible runs on both rules (every run valid, non-stationary steps <= 1 % pooled) and worst distance
-        <= conv_bar; unresolved iff some run is invalid / ineligible or a distance is non-finite; fail otherwise.
+        has eligible runs on both rules (A6.2: fixed-sweep arms valid and within 2.5e-4 of the adaptive tight solve of the
+        same scheme and step; adaptive arms every step verified) and worst distance <= conv_bar; unresolved iff some arm
+        is ineligible or a distance is non-finite; fail otherwise.
         Converged rule (A2.4) = 56^3 if (56^3, 64^3) passes the selection axis, else 64^3 if (64^3, 80^3) passes (80^3 is
         run only then), else none. Fixed-vs-adaptive sensitivities per rule (same scheme and step). Operator check on
         the reached states of the 64^3 adaptive LSPG-BE run (A1.7). Then the ladder under the two selection arms and an
@@ -40,7 +41,7 @@ import c3common as C3
 import timing as TM
 from c3common import C, TB, OM, DT0, jax, jnp, sha
 
-SEL = [('fs', 'BE', DT0, 1), ('fs', 'CN', 2.5 * DT0, 1)]
+SEL = [('fs', 'BE', DT0, 1), ('fs', 'CN', 2.5 * DT0, 2)]          # A6.3: CN selection arm K = 2
 DIAG = [('ad', 'LSPG', 'BE', DT0, 'tight'), ('ad', 'LSPG', 'CN', 2.5 * DT0, 'tight')]
 
 
@@ -241,12 +242,26 @@ def main():
                 if rule != 'gl64':
                     drop(rule)
 
+            def elig_of(rule, spec):
+                """A6.2: fixed-sweep arms: all runs valid and worst distance to the adaptive tight solve of the same scheme
+                and step <= 2.5e-4; adaptive arms: every step verified (pooled_eligible with zero allowance via nfail)."""
+                e = dict(esc[rule][C3.spec_key(spec)]['elig'])
+                if spec[0] == 'fs':
+                    adx = DIAG[SEL.index(spec)]
+                    dw, _ = dist(esc[rule][C3.spec_key(spec)]['W'], esc[rule][C3.spec_key(adx)]['W'], Lt)
+                    adv = esc[rule][C3.spec_key(adx)]['elig']['all_valid']
+                    e.update(solver_distance=dw, adaptive_valid=adv,
+                             eligible=bool(e['all_valid'] and adv and np.isfinite(dw) and dw <= 2.5e-4))
+                else:
+                    e['eligible'] = bool(e['all_valid'])
+                return e
+
             def axis_status(r1, r2, specs):
                 det, sts = {}, []
                 for spec in specs:
                     sk = C3.spec_key(spec)
                     worst, per = dist(esc[r1][sk]['W'], esc[r2][sk]['W'], Lt)
-                    el1, el2 = esc[r1][sk]['elig'], esc[r2][sk]['elig']
+                    el1, el2 = elig_of(r1, spec), elig_of(r2, spec)
                     if not (el1['eligible'] and el2['eligible']) or not np.isfinite(worst):
                         stt = 'unresolved'
                     else:

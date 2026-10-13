@@ -67,7 +67,9 @@ def main():
                       refs=str((HERE / '../../../2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/'
                                 'archive/output').resolve()), local_smoke_waives_cohort_hash=True),
     }
-    cfgs['c3desc'] = c3('c3desc', 'esc', esc_settings(), timing=dict(cases=4, reps=2, burn=0.1, seed=20261013))
+    es = esc_settings()
+    cfgs['c3descA'] = c3('c3descA', 'esc', [es[4], es[3]], timing=dict(cases=4, reps=2, burn=0.1, seed=20261013))
+    cfgs['c3descB'] = c3('c3descB', 'esc', [es[0], es[1], es[2]], timing=dict(cases=4, reps=2, burn=0.1, seed=20261013))
     loc3 = Path(HERE / '../../../2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output/'
                 'ref_923801.npz').resolve()
     cfgs['local3desc'] = c3('local3desc', 'esc', [dict(esc_settings()[1], ladder=['lat8192', 'lat256'])],

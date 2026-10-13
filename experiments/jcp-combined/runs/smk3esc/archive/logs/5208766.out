@@ -1,0 +1,36 @@
+host=pax008 source_commit=c6b4c338cb41f61be26d4762e5863974ec54cfb9
+NVIDIA H200, GPU-0603978b-01ce-16f6-4753-599dad36006b, 143771 MiB
+10.235.106.33:/projects/paralab  4.6T  999G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(1024, 250047)] 4.2s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 7.9s
+SETUP 20.6
+RUN W1024 gl48 fs|BE|0.01|K1 7.9s eligible True 0 / 50 34.4
+RUN W1024 gl48 fs|CN|0.025|K1 3.4s eligible False 13 / 20 37.8
+RUN W1024 gl48 ad|LSPG|BE|0.01|tight 6.0s eligible True 0 / 50 43.8
+RUN W1024 gl48 ad|LSPG|CN|0.025|tight 2.1s eligible True 0 / 20 45.9
+RUN W1024 gl56 fs|BE|0.01|K1 8.6s eligible True 0 / 50 56.9
+RUN W1024 gl56 fs|CN|0.025|K1 3.8s eligible False 13 / 20 60.7
+RUN W1024 gl56 ad|LSPG|BE|0.01|tight 8.2s eligible True 0 / 50 68.9
+RUN W1024 gl56 ad|LSPG|CN|0.025|tight 3.3s eligible True 0 / 20 72.2
+RUN W1024 gl64 fs|BE|0.01|K1 11.2s eligible True 0 / 50 84.4
+RUN W1024 gl64 fs|CN|0.025|K1 4.8s eligible False 13 / 20 89.2
+RUN W1024 gl64 ad|LSPG|BE|0.01|tight 10.6s eligible True 0 / 50 99.8
+RUN W1024 gl64 ad|LSPG|CN|0.025|tight 4.9s eligible True 0 / 20 104.7
+RUN W1024 gl80 fs|BE|0.01|K1 18.0s eligible True 0 / 50 125.2
+RUN W1024 gl80 fs|CN|0.025|K1 7.4s eligible False 13 / 20 132.7
+RUN W1024 gl80 ad|LSPG|BE|0.01|tight 18.7s eligible True 0 / 50 151.4
+RUN W1024 gl80 ad|LSPG|CN|0.025|tight 9.4s eligible True 0 / 20 160.8
+TIMING family|W1024|gl80 2 valid True 207.8
+RUN W1024 lat32768 fs|BE|0.01|K1 4.9s eligible True 0 / 50 213.4
+RUN W1024 lat32768 fs|CN|0.025|K1 2.5s eligible False 13 / 20 215.9
+TIMING family|W1024|lat32768 4 valid True 259.5
+RUN W1024 gl48 fs|BE|0.01|K1 1.8s eligible True 0 / 50 261.7
+RUN W1024 gl48 fs|CN|0.025|K1 1.2s eligible False 13 / 20 262.9
+TIMING family|W1024|gl48 4 valid True 310.6
+RUN W1024 lat256 fs|BE|0.01|K1 4.0s eligible True 0 / 50 318.2
+RUN W1024 lat256 fs|CN|0.025|K1 2.0s eligible False 14 / 20 320.2
+TIMING family|W1024|lat256 4 valid True 362.2
+C3RUN COMPLETE
+ALL-DONE

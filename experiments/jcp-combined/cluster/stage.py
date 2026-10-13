@@ -60,7 +60,8 @@ def main():
     if not json.loads(git_show(commit, cfgname)).get('smoke'):   # A2.12 / A5.5 resource gate for production attempts
         import inventory as INV_                                  # noqa: F401  (see inventory.verify_certificate)
         inv = json.loads(git_show(commit, f'{LANE}/checks/inventory-{a.attempt}.json'))
-        INV_.verify_certificate(inv, commit=commit, cfg_bytes=git_show(commit, cfgname), gpu=a.gpu, hours=a.hours, mem=a.mem)
+        INV_.verify_certificate(inv, commit=commit, cfg_bytes=git_show(commit, cfgname), gpu=a.gpu, hours=a.hours, mem=a.mem,
+                                git_show=lambda name: git_show(commit, name))
     cfg0 = json.loads((ROOT / cfgname).read_text())
     assert cfg0['attempt'] == a.attempt
     driver = cfg0['driver']

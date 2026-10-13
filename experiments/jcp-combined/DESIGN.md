@@ -759,3 +759,42 @@ fail-closed) is completed before the first **production** submission; the analys
 validity in H2/H5, G-score coverage and controls, registry authentication, frozen selection and FOM rescoring under a new
 reference, exact H1/H2 transition rules, anchor qualification in H3, global-scheme tie rule) are completed and re-audited
 before any result is reported.
+
+## Amendment A6 (2026-10-13, after the cluster smokes `smk2d` 5208761, `smk3esc` 5208766, `smk3grid` 5208768; before any production job)
+
+The smokes ran every phase on two validation cases (A4.6) and passed their machinery gates (2D: G1a exact to $10^{-15}$,
+288/288 runs verified, all seven panels valid, G-score 5472/5472 values to $8\times10^{-17}$ with every control breaking,
+the historical C2 rows reproduced to $6\times10^{-16}$; 3D: G-FS1 **exact** at W1024 and W512 with the CN control
+discriminating, every panel valid). No verdict is read from them (A5.5). They exposed a defect in the pre-registered
+eligibility of fixed-sweep arms, which this amendment fixes before production:
+
+**A6.1 Finding.** On the two smoke cases, fixed-sweep arms with $K=1$ at steps above $\Delta t_0$ end many steps without
+meeting the stationarity test `gtol` $10^{-3}$ (e.g. BE $K=1$ at $\tfrac54\Delta t_0$: 2/40 steps, CN $K=1$ at $\tfrac52\Delta t_0$:
+13/20) even where their coefficients agree with the converged adaptive solve of the same scheme and step to
+$\lesssim10^{-5}$ (BE at $\tfrac54\Delta t_0$: 0), while CN $K=1$ at $\tfrac52\Delta t_0$ is genuinely inaccurate (coefficient distance
+$1.5\times10^{-2}$ on one case). Stationarity after a fixed number of sweeps is therefore not a measure of a fixed-sweep
+solve's accuracy, and the pooled-stationarity criterion of A1.7/A4.5 would declare the CN selection arm ineligible for
+every rule (all escalation pairs "unresolved"). $K=2$ stays within $\sim4\times10^{-5}$ (coefficients) of the converged solve at
+every step up to $\tfrac52\Delta t_0$.
+
+**A6.2 Eligibility of fixed-sweep arms (replaces A4.5's pooled-stationarity clause for fixed-sweep arms, and A1.7's
+"eligible" for the selection arms).** A fixed-sweep arm is eligible on a cohort iff every run is valid (finite, no
+reason-3 step, no damping saturation) **and** its worst field distance (Gram metric, max over evolved times, relative to
+$\lVert u_0\rVert$) to the verified adaptive tight solve of the same scheme, step and startup is $\le2.5\times10^{-4}$. H4 keeps its
+stricter per-case bar $\min(2.5\times10^{-4},0.25\times$ own anchor discrepancy$)$ (A1.9). Non-stationary step counts are reported
+beside every arm. Adaptive arms keep "every step verified" (A5.1).
+
+**A6.3 Selection arms (replaces the second arm of §3.3 / A1.7).** The second selection arm is fixed-sweep LSPG-CN with
+**$K=2$** at $\tfrac52\Delta t_0$ (its adaptive diagnostic counterpart unchanged); the first remains the deployed fixed-sweep BE
+($K=1$) at $\Delta t_0$. The escalation's selection axis uses A6.2 eligibility at each rule (the fixed-vs-adaptive distance at
+that rule).
+
+**A6.4 J4 observation (smoke, 2 cases, no verdict).** At W1024 $R'=1024$ every escalation distance on the two smoke cases is
+far below the bar under every solver (Gauss $48^3$–$56^3$ $1.0\times10^{-7}$, $56^3$–$64^3$ $9.5\times10^{-9}$, $64^3$–$80^3$ $1.5\times10^{-9}$),
+whereas C1's J4 measured $1.7\times10^{-4}$ for $48^3$–$56^3$ over 64 cases. Whether C1's failure is driven by a few cases is
+answered by `c3desc` on all 64 cases.
+
+**A6.5 Job split (scheduling only).** `c3desc` is split by setting into `c3descA` (W1024, W768) and `c3descB` (M2_512, W256,
+W512): the escalation and selection of each setting are independent, so no comparison crosses the two jobs (the family
+panels are per setting). The resource certificates (smoke-projected, 1.5× margin) are `c2grid` 14.2 h → requested 18 h
+(A100-80G), `c3descA` and `c3descB` requested below their certified projections (H200); the partition limit is 48 h.

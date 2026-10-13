@@ -53,6 +53,7 @@ X1_LEVELS = {2: [(512, 2.5e-3), (1024, 1.25e-3), (2048, 6.25e-4)], 3: [(64, 5e-3
 _SOLVERS = {}
 _PS = {}
 T_BEGIN = time.perf_counter()
+PREV_MANIFEST = {}                  # hashes this job directory recorded in an earlier (interrupted) run
 QUIET = [False]                     # sealed jobs: no per-case / per-attempt telemetry on stdout (A5.5)
 
 
@@ -257,8 +258,11 @@ def mode_fd(cfg, outdir, rep):
         seed = int(seeds[f"{d}d/{cfg['cohort']}"])
     coh = CH.Cohort(d, cfg['cohort'], seed)
     cases = cfg.get('cases') or list(range(coh.n))
-    rep['cohort'] = dict(name=coh.name, n=coh.n, sha256=None if sealed else coh.sha256,
-                         cases=None if sealed else cases, n_cases=len(cases))
+    rep['cohort'] = dict(name=coh.name, n=coh.n, sha256=None if sealed else coh.sha256, cases=cases,
+                         n_cases=len(cases))          # case indices are not secret; descriptors are
+    if sealed and list(outdir.rglob('*.enc')):
+        raise SystemExit('sealed jobs never resume (A5.5): ciphertext already present in the job directory')
+    prev = {} if sealed else PREV_MANIFEST
     manifest, metas = [], []
     rep['cases'] = []
     done = 0
@@ -268,8 +272,10 @@ def mode_fd(cfg, outdir, rep):
             if sealed:
                 if any(Path(str(stem) + s).exists() for s in ('.npz.enc', '.json.enc')):
                     raise SystemExit('sealed jobs never resume (A5.5): output exists')
-            elif Path(str(stem) + '.json').exists():
-                # verified resume: both files present, npz loads, identity matches; re-enter manifest and record
+            elif Path(str(stem) + '.json').exists() and all(
+                    prev.get(str(Path(str(stem) + s).relative_to(outdir))) == SI.sha(Path(str(stem) + s).read_bytes())
+                    for s in ('.npz', '.json')):
+                # verified resume: both files match the hashes this job recorded when it wrote them (A6.5)
                 meta = json.loads(Path(str(stem) + '.json').read_text())
                 npz = Path(str(stem) + '.npz').read_bytes()
                 arr = np.load(str(stem) + '.npz')
@@ -281,6 +287,10 @@ def mode_fd(cfg, outdir, rep):
                                          p=meta['judge']['p'], seconds=meta.get('seconds'), resumed=True))
                 log(f'resumed (verified) {stem}')
                 continue
+            for s in ('.npz', '.json'):                    # unverifiable leftovers are recomputed, never trusted
+                if Path(str(stem) + s).exists():
+                    os.chmod(str(stem) + s, 0o644)
+                    os.remove(str(stem) + s)
             t = time.perf_counter()
             arrays, meta = solve_case(coh, j, kind)
             meta['job'] = job_info()
@@ -317,10 +327,13 @@ def mode_calib(cfg, outdir, rep):
     rep['calib'], rep['d1'], rep['x1'], rep['x4'] = [], [], [], None
     store = {}
 
+    rep['attempt_records'] = {}
+
     def keep(tag, rec, lat, res, nwt):
         store[tag] = lat
         store['res_' + tag] = res
         store['nwt_' + tag] = nwt
+        rep['attempt_records'][tag] = rec                # every attempt's record is kept (A6.2)
         return rec
 
     for j in cases:
@@ -336,7 +349,9 @@ def mode_calib(cfg, outdir, rep):
                                                           store[f'{kind}_c{j}_L{L}_{b}'])[1:]) / n0)
                 row = dict(case=j, kind=kind, L=L, dt=dt, prod_vs_tight=diff('prod', 'tight'),
                            tight_vs_tighter=diff('tight', 'tighter'), records=recs)
-                row['proxy_ok'] = bool(row['prod_vs_tight'] <= recs['prod']['tau'] and
+                solved = all(recs[q]['steps_ok'] and np.isfinite(recs[q]['tau']) for q in recs)
+                row['all_solves_ok'] = bool(solved)
+                row['proxy_ok'] = bool(solved and row['prod_vs_tight'] <= recs['prod']['tau'] and
                                        row['tight_vs_tighter'] <= recs['tight']['tau'])
                 row['ratio_prod'] = row['prod_vs_tight'] / recs['prod']['tau']
                 row['ratio_tight'] = row['tight_vs_tighter'] / recs['tight']['tau']
@@ -382,10 +397,10 @@ def mode_calib(cfg, outdir, rep):
             tag = f'ST_c0_L{L}_prod' if (i != 1 and 0 in cases) else f'X4_L{L}_dt{dtx:.3e}'
             if tag not in store:
                 keep(tag, *attempt(coh, 0, L, dtx, 'cnr', 'prod'))
-            lv.append(dict(L=L, lat=store[tag], tau=V.floor_proxy(store['res_' + tag], len(store['res_' + tag])),
-                           steps_ok=V.steps_ok(store['res_' + tag], len(store['res_' + tag])), umax=0.0))
+            r_ = rep['attempt_records'][tag]
+            lv.append(dict(L=L, lat=store[tag], tau=r_['tau'], steps_ok=r_['steps_ok'], umax=r_['umax_running']))
         jd = V.judge(lv, RC.ic_lattice(coh, 0), coh.nu(0))
-        rep['x4'] = dict(p=jd['p'], outcome=jd['outcome'], note='umax not used (probe)')
+        rep['x4'] = dict(p=jd['p'], outcome=jd['outcome'])
         log(f"X4: {rep['x4']}")
     np.savez(outdir / f'calib_{d}d_fields.npz', **store)
     rep['calib_fields_sha256'] = SI.sha((outdir / f'calib_{d}d_fields.npz').read_bytes())
@@ -408,15 +423,16 @@ def ps_case(coh, j, Ns, dt, attempt_no, purpose_tag, dt_base, ps_gates_ok):
             ic_max = float(np.max(np.abs(b0 - b0b)))
             Lk = jnp.asarray(PS.lin_eig(N, d, coh.nu(j)))
             c32, c64 = PS.etdrk4_coefs(Lk, dtx, 32), PS.etdrk4_coefs(Lk, dtx, 64)
-            contour = max(float(jnp.max(jnp.abs(c32[k] - c64[k])) / jnp.max(jnp.abs(c64[k])))
-                          for k in ('Q', 'f1', 'f2', 'f3'))
+            cv = [float(jnp.max(jnp.abs(c32[k] - c64[k])) / jnp.max(jnp.abs(c64[k]))) for k in ('Q', 'f1', 'f2', 'f3')]
+            contour = max(cv) if all(np.isfinite(cv)) else float('inf')
             del c32, c64, Lk, b0b
             S = PS.lattice_S(N, m)
             if (N, d) not in _PS:
                 _PS[(N, d)] = PS.make_ps(N, d)
             r = _PS[(N, d)](jnp.asarray(b0), coh.nu(j), dtx, S)
             kexp = int(round(np.log2(dt_base / dtx)))
-            checks_ok = bool(ic_rel <= 1e-12 and ic_max <= 1e-13 and contour <= 1e-10 and ps_gates_ok)
+            checks_ok = bool(np.isfinite(ic_rel) and ic_rel <= 1e-12 and ic_max <= 1e-13 and contour <= 1e-10
+                             and ps_gates_ok)
             runs.append(dict(id=f'N{N}_dt{kexp}_a{attempt_no}', N=N, dt=dtx, attempt=attempt_no, purpose=purpose,
                              umax=r['umax'], finite=r['finite'], ic_quad_rel=ic_rel, ic_quad_max=ic_max,
                              contour_rel=contour, job_gates_ok=ps_gates_ok, checks_ok=checks_ok, lat=r['lat'],
@@ -436,6 +452,7 @@ def mode_ps(cfg, outdir, rep):
     d = int(cfg['dim'])
     coh = CH.Cohort(d, cfg['cohort'])
     att = int(cfg.get('attempt', 0))
+    assert att in (0, 1), 'one escalation at most (A1.7)'
     Ns = cfg.get('Ns') or (PS_CFG[d]['Ns'] if att == 0 else PS_CFG[d]['esc'])
     dt_base = PS_CFG[d]['dt']
     for j in cfg['cases']:
@@ -486,6 +503,9 @@ def main():
         assert jax.default_backend() == 'gpu', jax.default_backend()
     assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
     print(f'jax_backend={jax.default_backend()} x64=True precision=highest', flush=True)
+    if (outdir / 'result.json').exists():           # read BEFORE the first save overwrites it (verified resume)
+        PREV_MANIFEST.update({m['file']: m['sha256'] for m in
+                              json.loads((outdir / 'result.json').read_text()).get('manifest', []) if 'sha256' in m})
     rep = dict(config={k: v for k, v in cfg.items() if k not in ('seeds_file', 'key')}, job=job_info(), complete=False)
     if cfg.get('smoke_override'):            # LOCAL FUNCTIONAL SMOKE ONLY (A4.4 v): reduced levels; never a reference
         assert not os.environ.get('SLURM_JOB_ID'), 'smoke_override is refused inside a cluster job'

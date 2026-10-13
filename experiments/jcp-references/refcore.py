@@ -158,7 +158,7 @@ def make_solver(d, L, adv='central', forcing=None, max_newton=20, lin_maxiter=No
             umax = jnp.maximum(umax, jnp.max(jnp.abs(u)))
             store = (units % sched['keep_units']) == 0
             idx = jnp.clip(units // sched['keep_units'], 0, 5)
-            out = jax.lax.cond(store, lambda o: o.at[idx].set(u), lambda o: o, out)   # in place
+            out = jax.lax.cond(store, lambda o: o.at[idx].set(u), lambda o: o, out)
             return k + 1, units, u, out, res_, nwt, umax
 
         out0 = jnp.zeros((6,) + u0.shape, jnp.float64).at[0].set(u0)

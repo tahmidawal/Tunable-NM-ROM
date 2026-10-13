@@ -142,7 +142,8 @@ def g3b_ic_quadrature(d, N):
 def g3c_contour(d, N, dt, nu):
     Lk = jnp.asarray(PS.lin_eig(N, d, nu))
     a, b = PS.etdrk4_coefs(Lk, dt, 32), PS.etdrk4_coefs(Lk, dt, 64)
-    worst = max(float(jnp.max(jnp.abs(a[k] - b[k])) / jnp.max(jnp.abs(b[k]))) for k in ('Q', 'f1', 'f2', 'f3'))
+    vals = [float(jnp.max(jnp.abs(a[k] - b[k])) / jnp.max(jnp.abs(b[k]))) for k in ('Q', 'f1', 'f2', 'f3')]
+    worst = max(vals) if all(np.isfinite(vals)) else float('inf')
     return dict(gate='G3c', d=d, N=N, dt=dt, nu=nu, worst_rel=worst, **{'pass': worst <= 1e-10})   # A4.2
 
 
@@ -287,7 +288,11 @@ def u_transforms():
         Sp = np.asarray(PS.sine_synth_last(jnp.asarray(b), M))
         Cp = np.asarray(PS.cos_synth_last(jnp.asarray(b), M))
         Ap = np.asarray(PS.analysis(jnp.asarray(b), M))
-        worst = max(worst, *(float(np.max(np.abs(x - y)) / np.max(np.abs(y))) for x, y in ((Sp, Sd), (Cp, Cd), (Ap, Ad))))
+        for x, y in ((Sp, Sd), (Cp, Cd), (Ap, Ad)):
+            v = float(np.max(np.abs(x - y)) / np.max(np.abs(y)))
+            worst = v if not np.isfinite(v) else max(worst, v)
+            if not np.isfinite(worst):
+                return dict(gate='Utransforms', worst_rel=None, **{'pass': False})
     # 2D derivative synthesis and lattice synthesis against direct sums
     N, M = 6, 9
     bb = rng.standard_normal((N - 1, N - 1))
@@ -306,7 +311,8 @@ def u_transforms():
     xl = np.arange(1, 8) / 8
     Sx = np.sin(np.pi * np.outer(xl, k))
     worst = max(worst, float(np.max(np.abs(lat[1:-1, 1:-1] - Sx @ bb @ Sx.T))))
-    return dict(gate='Utransforms', worst_rel=worst, **{'pass': worst <= 1e-12})
+    ok = bool(np.isfinite(worst) and worst <= 1e-12)
+    return dict(gate='Utransforms', worst_rel=worst if np.isfinite(worst) else None, **{'pass': ok})
 
 
 def u_ic3d():

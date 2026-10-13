@@ -43,6 +43,7 @@ SEALED = {(d, n) for d in NEW for n in NEW[d]}
 PUBLIC_CHECK_SEEDS = {2: 5550001, 3: 5550002}          # public seeds for the RNG unit test only (A2.11)
 HISTORICAL_SEEDS = {s for d in HISTORICAL for v in HISTORICAL[d].values() for s, _ in v}
 
+CALIB_COHORT = {2: 'dev6', 3: 'dev4'}
 LOGNU_FAMILY = (np.log(.01), np.log(.1))
 LOGNU_OOD = (np.log(.01), np.log(.01) + 0.1 * np.log(10.))
 

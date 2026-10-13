@@ -53,9 +53,15 @@ def main():
     data = json.dumps(seeds, sort_keys=True).encode()
     blob = SI.encrypt(data, key)
     assert SI.decrypt(blob, key) == data
-    fd = os.open(out, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o444)
+    tmp = out.with_suffix('.enc.tmp')
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o644)
     os.write(fd, blob)
+    os.fsync(fd)
     os.close(fd)
+    assert SI.decrypt(tmp.read_bytes(), key) == data
+    os.link(tmp, out)                                   # atomic, fails if `out` exists
+    os.remove(tmp)
+    os.chmod(out, 0o444)
     print(json.dumps(dict(seeds_plain_sha256=SI.sha(data), seeds_cipher_sha256=SI.sha(blob), redraws=redraws,
                           cohorts=NEW, key_path=str(key), seeds_path=str(out))))
 

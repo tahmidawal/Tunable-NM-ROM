@@ -68,7 +68,14 @@ def gather():
         for line in (rd / 'OUTPUTS.sha256').read_text().splitlines():
             h, f = line.split(None, 1)
             sums[f.strip()] = h
+        if sums.get('output/result.json') != sha(rj):
+            raise RuntimeError(f'{rd.name}: result.json does not match the job OUTPUTS.sha256')
         results[rd.name] = r
+        for cf in sorted((rd / 'output').glob('calib_*d_fields.npz')):     # floor-calibration evidence (A5.4)
+            if sums.get(str(cf.relative_to(rd))) != sha(cf) or r.get('calib_fields_sha256') != sha(cf):
+                raise RuntimeError(f'{cf}: calibration evidence hash mismatch')
+            dim = int(cf.name.split('_')[1][0])
+            link(cf, STORE / f"{dim}d/{CH.CALIB_COHORT[dim]}/floor/{cf.name}")
         out = rd / 'output'
         for f in sorted(out.glob('*d/*/*/c*.*')):
             if f.suffix in ('.npz', '.json') and not f.name.endswith('.tmp'):
@@ -83,8 +90,9 @@ def gather():
 
 
 def write_manifest():
+    STORE.mkdir(exist_ok=True)
     lines = []
-    for f in sorted(STORE.glob('*d/*/*/c*.*')):
+    for f in sorted(list(STORE.glob('*d/*/*/c*.*')) + list(STORE.glob('*d/*/floor/*.npz'))):
         lines.append(f'{sha(f)}  {f.relative_to(STORE)}')
     (STORE / 'MANIFEST.sha256').write_text('\n'.join(lines) + '\n')
     return hashlib.sha256((STORE / 'MANIFEST.sha256').read_bytes()).hexdigest()
@@ -123,6 +131,8 @@ def crosschecks(dim):
             full=np.asarray(a[full]), finite=ps['finite'], gates_ok=ps['gates_ok'], stability_ok=ps['stability_ok']),
             m['judge']['n0'])
         rec['ladder_attempts'] = [x.name for x in att]
+        if rec['verdict'] == 'UNRESOLVED' and ps.get('ladder_attempt', 0) == 0:
+            rec['verdict'] = 'UNRESOLVED-PENDING-ESCALATION'   # not terminal: one escalation is owed (A1.7)
         if rec.get('sigma') is not None:                # PS vs the Richardson field (diagnostic, A1.7)
             arr = np.load(STORE / f'{dim}d/{coh}/ST/c{j:03d}.npz')
             jd = m['judge']
@@ -218,7 +228,7 @@ def e0_verdict(dim, dstat, cases, xc, sealed_qc):
         for kind in ('ST', 'S'):
             q = sealed_qc.get((coh, kind))
             n = CH.count(dim, coh)
-            if q is None or q['case_kinds'] < n:
+            if q is None or q['case_kinds'] < n or sorted(q['case_set']) != list(range(n)):
                 missing.append(f'{coh}/*/{kind}')
             elif q['outcomes'].get('accepted', 0) < n:
                 bad.append(f"{coh}/{n - q['outcomes'].get('accepted', 0)} case(s)/{kind} (sealed: counts only)")
@@ -242,12 +252,16 @@ def main():
         if r['config']['mode'] == 'calib':
             summary.setdefault('calib', {})[str(r['config']['dim'])] = {k: r.get(k) for k in ('calib', 'd1', 'x1', 'x4')}
         if 'qc' in r:
+            cases_ = r['cohort']['cases']
             for kind, q in r['qc']['kinds'].items():
                 key = (r['config']['dim'], (r['config']['cohort'], kind))
                 if key not in sealed_qc:
-                    sealed_qc[key] = dict(q)
-                else:                                   # several jobs cover one sealed cohort: add counts
+                    sealed_qc[key] = dict(q, case_set=list(cases_))
+                else:                                   # several jobs cover one sealed cohort: disjoint case sets only
                     prev = sealed_qc[key]
+                    if set(prev['case_set']) & set(cases_):
+                        raise RuntimeError(f'overlapping sealed jobs for {key}: a retry must replace, not add')
+                    prev['case_set'] += list(cases_)
                     prev['case_kinds'] += q['case_kinds']
                     prev['outcomes'] = {o: prev['outcomes'].get(o, 0) + q['outcomes'].get(o, 0) for o in V.OUTCOMES}
             summary.setdefault('sealed_qc', {})[f"{r['config']['dim']}d/{r['config']['cohort']}/{name}"] = dict(

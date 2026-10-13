@@ -65,20 +65,21 @@ def run():
         except RS.ReferenceIntegrityError:
             out['perturb_raises'] = True
         del os.environ['JCPREF_STORE']
-    # stale STATUS refused
-    st_path = HERE / 'store' / 'STATUS.json'
-    orig = st_path.read_text()
-    try:
-        st = json.loads(orig)
+    # stale STATUS refused (on an isolated copy of the metadata; the canonical files are never touched)
+    with tempfile.TemporaryDirectory() as td:
+        meta = Path(td)
+        shutil.copyfile(HERE / 'store' / 'MANIFEST.sha256', meta / 'MANIFEST.sha256')
+        st = json.loads((HERE / 'store' / 'STATUS.json').read_text())
         st['store_version'] = '0' * 64
-        st_path.write_text(json.dumps(st))
+        (meta / 'STATUS.json').write_text(json.dumps(st))
+        os.environ['JCPREF_META'] = str(meta)
         try:
             RS.reference_status(2, 'val32', 0)
             out['stale_status_refused'] = False
         except RS.ReferenceIntegrityError:
             out['stale_status_refused'] = True
-    finally:
-        st_path.write_text(orig)
+        finally:
+            del os.environ['JCPREF_META']
     # G7 sealed refusals
     refusals = {}
     for d, coh in sorted(RS.SEALED):
@@ -93,7 +94,8 @@ def run():
         refusals[f'{d}d/{coh}'] = all(r)
     out['sealed_refused'] = refusals
     rr = RS.restrict(2, 'val32', 0, 'ST', 2)
-    out['restricted_never_eligible'] = rr['eligible'] is False
+    r3 = RS.restrict(3, 'val64', 0, 'ST', 2)
+    out['restricted_never_eligible'] = rr['eligible'] is False and r3['eligible'] is False
     f, _ = RS.load(2, 'val32', 0)
     sa = RS.score(f, 2, 'val32', 0)
     sb = dict(sa, case=1)
@@ -120,3 +122,5 @@ if __name__ == '__main__':
     (HERE / 'results').mkdir(exist_ok=True)
     (HERE / 'results' / 'test_refstore.json').write_text(json.dumps(r, indent=1) + '\n')
     print(json.dumps(r, indent=1))
+    if not r['all_pass']:
+        raise SystemExit(1)

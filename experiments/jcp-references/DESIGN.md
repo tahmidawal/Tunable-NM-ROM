@@ -760,3 +760,42 @@ the same number of draws.
 
 **A5.9 G5–G7 timing.** G5 (`audit_ref.py`), G6 and G7 (loader fault injections and refusals, `test_refstore.py`) run
 on the collected store, before any result is reported; the job-side gates are the pre-run gates (units, G1–G4).
+
+---
+
+## Amendment A6 (2026-10-13, after Codex code audit 2, `audits/codex-code-2.md`; before any real-size run)
+
+**A6.1 Defects repaired (reproduced by the audit).** Loader: the STATUS cross-check list is compared as a set (a
+lexical-vs-numeric sort made every status read fail); 3D `restrict` keeps the time axis of a one-frame IC. Gates: the
+transform unit gate and every contour comparison fail on any non-finite value (they could pass on NaN).
+Calibration: a row passes only if all three solves (prod, tight, tighter) met the per-step acceptance rule with a
+finite proxy, as well as both proxy inequalities. `make_seeds.py` writes the seed ciphertext to a temporary file,
+verifies it and links it atomically.
+
+**A6.2 Evidence kept.** Every calibration-job attempt record (base levels, D1, X1, X4) is stored in the result
+(`attempt_records`), X4 uses the recorded running maximum, and the calibration field file is linked into
+`store/<dim>d/<dev cohort>/floor/` and listed in the store manifest after its hash is checked against both the job's
+`OUTPUTS.sha256` and the job's own record.
+
+**A6.3 Resume and collection.** An ordinary `fd` job resumes a case only if both its files match the hashes the same
+job directory recorded when writing them (read before the job's first save); anything else is deleted and
+recomputed. A sealed job refuses to start in any directory that already holds ciphertext. The collector verifies each
+job's `result.json` against its `OUTPUTS.sha256`, creates `store/` if needed, and for sealed cohorts records the case
+indices of each job (indices are not secret; descriptors are), refusing overlapping jobs and requiring the union to
+be the whole cohort before E0 can leave `INCOMPLETE`. A cross-check case that is UNRESOLVED on its first ladder is
+reported `UNRESOLVED-PENDING-ESCALATION` (not terminal; it counts as not-PASS) until its one escalation ladder
+(`attempt: 1`, refused beyond 1) has been run.
+
+**A6.4 G5 audit.** Agreement is $|a-b|\le10^{-12}\max(|a|,|b|)+10^{-15}$ (pure relative agreement failed on
+round-off of quantities near $10^{-12}$); NaN semantics match production; the audit compares every stored per-time
+number ($n_0$, $d_{12}$, $d_{23}$, $\epsilon_{ref}(t_k)$, $c$, Péclet, floor flag, the descriptor $\nu$), re-checks
+acceptance of every attempt (superseded ones too), recomputes the cross-check numbers ($s_x,s_t,\sigma,x_{PS}$) and
+validity flags from the run evidence, recomputes the old-vs-new distances from the old files, requires every
+historical case × kind, measures the perturbation fault against the $10^{-6}$ bar of A1.13, and exits non-zero unless
+everything passes. G6's stale-status test runs on an isolated copy of the metadata (`$JCPREF_META`), and G6/G7 test
+3D restriction too.
+
+**A6.5 Timing and memory are for budgeting, not benchmarking.** `solve_seconds` is the wall time of the compiled
+execution including the host-to-device transfer of the IC (compilation is timed separately, ahead of time);
+`peak_bytes` is the process-lifetime device high-water mark at the end of the attempt. Both serve the GPU-hour
+re-estimate and the memory-fit check of §12; no timing claim about the references is made.

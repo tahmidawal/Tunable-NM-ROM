@@ -53,9 +53,14 @@ def _root():
     return Path(os.environ.get('JCPREF_STORE', HERE / 'store'))
 
 
+def _meta_dir():
+    """Where the committed MANIFEST.sha256 and STATUS.json live (tests may point it at a copy)."""
+    return Path(os.environ.get('JCPREF_META', HERE / 'store'))
+
+
 def _manifest():
     m = {}
-    for line in (HERE / 'store' / 'MANIFEST.sha256').read_text().splitlines():
+    for line in (_meta_dir() / 'MANIFEST.sha256').read_text().splitlines():
         if line.strip():
             h, p = line.split(None, 1)
             m[p.strip()] = h
@@ -63,17 +68,17 @@ def _manifest():
 
 
 def _status():
-    st = json.loads((HERE / 'store' / 'STATUS.json').read_text())
+    st = json.loads((_meta_dir() / 'STATUS.json').read_text())
     if st.get('store_version') != store_version():
         raise ReferenceIntegrityError('STATUS.json was written for another store version')
     for d, (coh, cases) in CROSSCHECK.items():
-        if sorted(st['crosscheck_cases'][str(d)]) != [f'{coh}/{c}' for c in sorted(cases)]:
+        if sorted(st['crosscheck_cases'][str(d)]) != sorted(f'{coh}/{c}' for c in cases):
             raise ReferenceIntegrityError('STATUS.json cross-check case list differs from the pre-registered one')
     return st
 
 
 def store_version():
-    return hashlib.sha256((HERE / 'store' / 'MANIFEST.sha256').read_bytes()).hexdigest()
+    return hashlib.sha256((_meta_dir() / 'MANIFEST.sha256').read_bytes()).hexdigest()
 
 
 def _check(dim, cohort, kind):
@@ -176,9 +181,10 @@ def restrict_field(fields, dim, factor):
     if dim == 2:
         return f[:, ::factor, ::factor]
     m = LATTICE[3]
-    g = f.reshape(6, m - 1, m - 1, m - 1)
+    nt = f.shape[0]
+    g = f.reshape(nt, m - 1, m - 1, m - 1)
     idx = np.arange(factor, m, factor) - 1
-    return g[:, idx][:, :, idx][:, :, :, idx].reshape(6, -1)
+    return g[:, idx][:, :, idx][:, :, :, idx].reshape(nt, -1)
 
 
 def restrict(dim, cohort, case, kind, factor):

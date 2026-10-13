@@ -61,7 +61,7 @@ def main():
                                   gn_max=float(np.nanmax(gn)), gn_first_above_1e-3=int(np.argmax(gn > 1e-3)) if (gn > 1e-3).any() else None,
                                   rej=int(np.sum(st['rej'])), sat=int(np.sum(st['sat'])), valid=rows[j]['valid'],
                                   e_ref_fixed=rows[j].get('e_ref'), e_ref_adaptive=arow[j].get('e_ref') if j in arow else None,
-                                  adaptive_it_total=int(np.sum(arow[j]['steps']['it'])) if j in arow else None)
+                                  adaptive_it_total=int(np.sum(arow[j]['steps']['step_it'])) if j in arow else None)
             fail = sorted(j for j, v in cs.items() if not (np.isfinite(v['worst']) and v['worst'] <= TAU))
             w = np.array([v['worst'] for v in cs.values()])
             per_rule[rule] = dict(failing_cases=fail, n_failing=len(fail), median_worst=float(np.median(w)),

@@ -442,9 +442,10 @@ def main():
                     / N0[:nb, None])[:, 1:].max(1)
             S_rep.update(rules=rmap, budget_cases=nb, arms=s['arms'], peak_bytes=C3.peak_bytes(),
                          B1_sham_bitwise=dict(all_equal=all(b1), cases=len(b1)),
-                         B2_control_rule=dict(rule=cfg['control_rule'],
-                                              per_case=None if dctl is None else dctl.tolist(),
-                                              discriminating=None if dctl is None else bool(np.mean(dctl > 2.5e-4) > .5)))
+                         B2_control_rule=dict(rule=cfg['control_rule'], per_case=dctl.tolist(),
+                                              complete=bool(ctl['fs|BE|0.01|K1']['elig']['all_valid'] and np.isfinite(dctl).all()),
+                                              discriminating=bool(ctl['fs|BE|0.01|K1']['elig']['all_valid'] and np.isfinite(dctl).all()
+                                                                  and np.mean(dctl > 2.5e-4) > .5)))
         else:
             rule = s['rule']
             prep = prep_of(rule)

@@ -99,7 +99,7 @@ def main():
     for k_ in ('grid', 'fom', 'timing', 'common_baseline'):
         b2.pop(k_, None)
     cfgs['smk2bud'] = b2
-    a3 = [dict(spec=['vendor'], role='baseline'), dict(spec=['fs', 'CN', 0.025, 2], role='test-selected', selected=True),
+    a3 = [dict(spec=['fs', 'BE', 0.01, 1], role='baseline'), dict(spec=['fs', 'CN', 0.025, 2], role='test-selected', selected=True),
           dict(spec=['fs', 'CN', 0.01, 1], role='diagnostic')]
     b3 = c3('smk3bud', 'bud', [dict(SETTINGS3[4], rule='lat32768', conv='gl56', finer='gl64', arms=a3)], case_subset=[0, 1, 2],
             timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))

@@ -19,6 +19,8 @@ output-time shift, one-node lattice shift). gate.status in {unchecked, pass, fai
 """
 from __future__ import annotations
 
+import offline  # noqa: F401  (A8.1: CPU, highest, x64 - before any JAX import)
+
 import argparse
 import hashlib
 import json
@@ -32,7 +34,7 @@ REG = json.loads((HERE / 'refs.json').read_text())
 KINDS = ('2d_f257', '3d_l65')
 REQUIRED = {'2d_f257': ('dir', 'tags', 'manifest', 'manifest_sha256', 'bank_sha256', 'rotation_sha256', 'times', 'nodes',
                          'normaliser'),
-            '3d_l65': ('file', 'sha256', 'bank_sha256', 'times', 'nodes', 'normaliser')}
+            '3d_l65': ('file', 'sha256', 'bank_sha256', 'times', 'nodes', 'normaliser', 'cohort_seed', 'cohort_table_sha256')}
 
 
 def sha_file(p):
@@ -118,8 +120,9 @@ def score2d(ent, run, check):
     assert res['checkpoint_sha256'] == ent['bank_sha256'] == sha_file(T2.CKPT), 'bank checkpoint differs from the registry'
     assert sha_file(Q_.ROTATION) == ent['rotation_sha256'], 'rotation differs from the registry'
     man = json.loads((Path(ent['dir']) / ent['manifest']).read_text())
-    for coh, v in res['cohorts'].items():           # case descriptors authenticated against the reference cohort contract
-        assert man['cohort_sha256'][coh] == v['physical_sha256'], ('case descriptors differ from the reference cohort', coh)
+    for coh, v in res['cohorts'].items():           # descriptors authenticated: hash of the ACTUAL array used for n0
+        h = sha(np.asarray(v['physical'], dtype=np.float64))
+        assert h == v['physical_sha256'] == man['cohort_sha256'][coh], ('case descriptors differ from the reference cohort', coh)
     cohorts = res['cohorts']
     Rps = [res['setup'][s['name']]['Rp'] for s in res['config']['settings']]
     Q, G = bank2d(max(Rps))
@@ -159,7 +162,14 @@ def score2d(ent, run, check):
                                 continue
                             gate['worst'] = max(gate['worst'], abs(x - y))
                             gate['failures'] = gate.get('failures', 0) + (0 if tol_ok(x, y) else 1)
-    if check:                                        # bidirectional coverage: every result row has an archive entry
+    if check:                                        # coverage: configured inventory == result rows == archive entries
+        import c2grid as C2G
+        cfg_ = res['config']
+        inv_runs = [C2G.key(r) for r in C2G.run_list(cfg_['grid'])]
+        cases_ = [(coh, str(c)) for coh in cfg_['cohorts'] for c in
+                  (cfg_.get('case_subset', {}).get(coh) if cfg_.get('case_subset', {}).get(coh) is not None
+                   else range(res['cohorts'][coh]['n']))]
+        expected = {(s_['name'], k, coh, c) for s_ in cfg_['settings'] for k in inv_runs for coh, c in cases_}
         arch = set()
         for s in res['config']['settings']:
             z = np.load(run / f"W_{s['name']}.npz")
@@ -167,6 +177,12 @@ def score2d(ent, run, check):
         rowk = {(r['setting'], r['run'], r['cohort'], str(r['case'])) for r in res['rows']}
         gate['rows_without_archive'] = len(rowk - arch)
         gate['archive_without_rows'] = len(arch - rowk)
+        gate['inventory_mismatch'] = len(expected ^ rowk)
+        fexp = {(f'fom|{sc}|{f:g}', coh, c) for sc in cfg_['fom']['schemes'] for f in cfg_['fom']['dt_factors']
+                if res['fom']['calibration'].get(f'{sc}|{f:g}', {}).get('status') in ('calibrated', 'fallback_tight')
+                for coh, c in cases_}
+        frk = {(r['run'], r['cohort'], str(r['case'])) for r in res.get('fom', {}).get('rows', [])}
+        gate['fom_inventory_mismatch'] = len(fexp ^ frk)
     # FOM archive (same reference, same nodes); required whenever the result has FOM rows
     fom = {}
     fp = run / 'fom_f257.npz'
@@ -176,6 +192,8 @@ def score2d(ent, run, check):
     if fp.exists():
         Fz = np.load(fp)
         assert np.allclose(Fz['__coords_x'], np.arange(257) / 256) and np.allclose(Fz['__times'], np.arange(6) * .05)
+        fkeys = {tuple(k.replace('__', '|').rsplit('|', 2)) for k in Fz.files if not k.startswith('__')}
+        gate['fom_archive_mismatch'] = len(fkeys ^ {(r['run'], r['cohort'], str(r['case'])) for r in res.get('fom', {}).get('rows', [])})
         for k in Fz.files:
             if k.startswith('__'):
                 continue
@@ -216,7 +234,8 @@ def score2d(ent, run, check):
         ctrl['coordinate_shift_field_t005'] = float(np.linalg.norm(decode2d(Gs, W[ci0, k0])[1] - U[1])) / n0
         ctrl['all_break'] = bool(other is not None and all(v is not None and v > 1e-6 for v in ctrl.values()))
         ok = (gate['compared'] == gate['expected'] and gate.get('failures', 0) == 0 and ctrl['all_break'] and
-              gate['rows_without_archive'] == 0 and gate['archive_without_rows'] == 0)
+              gate['rows_without_archive'] == 0 and gate['archive_without_rows'] == 0 and gate['inventory_mismatch'] == 0
+              and gate['fom_inventory_mismatch'] == 0 and gate.get('fom_archive_mismatch', 0) == 0)
         gate['status'] = 'pass' if ok else 'fail'
     return out, gate, ctrl, fom
 
@@ -228,6 +247,7 @@ def score3d(ent, run, check):
     z = np.load(ent['file'])
     cfg = res['config']
     tab = C3.C.table(cfg['cohort_seed'], cfg['cohort_count'])
+    assert cfg['cohort_seed'] == ent['cohort_seed'] and tab['sha256'] == ent['cohort_table_sha256'], 'cohort table differs'
     cases = cfg.get('case_subset') or list(range(cfg['cohort_count']))
     i65 = C3.lattice65_index(65)
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)

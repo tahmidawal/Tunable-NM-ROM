@@ -21,6 +21,8 @@ Budget arms (A1.5): fs BE dt0, the H4a/H4b selected arms, fs LSPG-CN K=1 at dt0 
 """
 from __future__ import annotations
 
+import offline  # noqa: F401  (A8.1: CPU, highest, x64 - before any JAX import)
+
 import argparse
 import hashlib
 import json
@@ -45,6 +47,8 @@ def main():
     ap.add_argument('--run', required=True)
     ap.add_argument('--scores', required=True)
     ap.add_argument('--allow-smoke', action='store_true')
+    ap.add_argument('--certified-scores')
+    ap.add_argument('--frozen')
     ap.add_argument('--out')
     a = ap.parse_args()
     run = Path(a.run)
@@ -52,7 +56,14 @@ def main():
     sc = json.loads(Path(a.scores).read_text())
     if res['config'].get('smoke') and not a.allow_smoke:
         raise SystemExit('smoke result refused')
-    assert sc['gate']['status'] == 'pass' and sc['result_sha256'] == hashlib.sha256((run / 'result.json').read_bytes()).hexdigest()
+    rsha = hashlib.sha256((run / 'result.json').read_bytes()).hexdigest()
+    assert sc['result_sha256'] == rsha, 'scores not of this run'
+    if sc['refs'] == '3d_first_order':
+        assert sc['gate']['status'] == 'pass', sc['gate']
+    else:                                                   # A8.7: certified original-reference reproduction + frozen
+        assert a.certified_scores and a.frozen, 'a new reference needs --certified-scores and --frozen'
+        cert = json.loads(Path(a.certified_scores).read_text())
+        assert cert['refs'] == '3d_first_order' and cert['gate']['status'] == 'pass' and cert['result_sha256'] == rsha
     import c3common as C3
     SC = sc['scores']
     cfg = res['config']
@@ -102,9 +113,12 @@ def main():
                     adv = all(rows[(sname, ad)][j]['valid'] for j in cases) and \
                         (adx in W and all(rows[(sname, adx)][j]['valid'] for j in cases))      # tight AND tighter verified
                     bar = np.minimum(2.5e-4, .25 * disc)                                         # per-case H4 bar (A1.9)
-                    ent.update(solver_distance=sd.tolist(), solver_worst=float(sd.max()), probe_valid=adv,
+                    if not (adv and np.all(np.isfinite(sens))):          # A3.4: unqualified probe -> diagnostic unavailable
+                        sd = np.full(len(cases), np.nan)
+                    ent.update(solver_distance=sd.tolist(), solver_worst=float(np.nanmax(sd)) if np.isfinite(sd).any() else None,
+                               probe_valid=adv,
                                probe_tighter_sensitivity=sens.tolist(),
-                               eligible_A62=bool(ent['valid'] and adv and float(sd.max()) <= 2.5e-4),
+                               eligible_A62=bool(ent['valid'] and adv and np.all(np.isfinite(sd)) and float(np.max(sd)) <= 2.5e-4),
                                eligible_H4=bool(ent['valid'] and adv and np.all(np.isfinite(sens)) and
                                                 bool(np.all(sens <= .1 * bar)) and bool(np.all(sd <= bar))))  # A2.8 per case
             arms[sk] = ent
@@ -144,14 +158,14 @@ def main():
                 accurate_equal_cost=(min(aec, key=lambda k: (cand_stats(k)[1], arms[k]['ratio'])) if aec else None))
         out['hypotheses'].setdefault('H4', {})[sname] = h4
         sel = out['selection'].get(sname, {})
-        h4w = [h4.get(k, {}).get('witnesses', [None])[0] for k in ('H4a', 'H4b')]
+        h4w = [(h4.get(k, {}).get('witnesses') or [None])[0] for k in ('H4a', 'H4b')]
         barms = {COMP: 'baseline', 'fs|CN|0.01|K1': 'diagnostic', 'fs|CN|0.025|K1': 'diagnostic'}
         for role, v in list(sel.items()) + [('H4a_witness', h4w[0]), ('H4b_witness', h4w[1])]:
             if v:
                 barms[v] = (barms.get(v, '') + '+' + role).lstrip('+') if v in barms else role
-        out['budget_arms'][sname] = [dict(spec=sp.split('|')[:1] + [sp.split('|')[1], float(sp.split('|')[2]),
-                                                                    int(sp.split('|')[3][1:])], key=sp, role=r,
-                                          selected=any(t in r for t in ('fast_equal', 'accurate_equal', 'witness')))
+        exact = {f'{DT0 * f_:.8g}': DT0 * f_ for f_ in cfg['grid']['dt_factors']}       # exact steps (codex-code-5 N3)
+        out['budget_arms'][sname] = [dict(spec=['fs', sp.split('|')[1], exact[sp.split('|')[2]], int(sp.split('|')[3][1:])],
+                                          key=sp, role=r, selected=any(t in r for t in ('fast_equal', 'accurate_equal', 'witness')))
                                      for sp, r in barms.items()]
     # ---------------- H6
     h6 = {}

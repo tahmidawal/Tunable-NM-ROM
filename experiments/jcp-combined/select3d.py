@@ -18,6 +18,8 @@ Writes checks/SELECTION-3D.json (or --out). Smoke inputs are refused unless --al
 """
 from __future__ import annotations
 
+import offline  # noqa: F401  (A8.1: CPU, highest, x64 - before any JAX import)
+
 import argparse
 import hashlib
 import json
@@ -92,6 +94,11 @@ def main():
                 ent.update(status='unavailable (no converged rule)', deployed=None)
                 out['settings'][sname] = ent
                 continue
+            absent = [r for r in FAMILIES['lattice'] + FAMILIES['gauss'] if r not in rules and r != base]
+            if absent:
+                ent.update(status=f'unavailable (ladder rules not evaluated: {absent})', deployed=None)
+                out['settings'][sname] = ent
+                continue
             if CONTROL not in rules:
                 ent.update(status='unavailable (control lat256 not evaluated)', deployed=None)
                 out['settings'][sname] = ent
@@ -115,12 +122,13 @@ def main():
                 if not p or not p.get('valid'):
                     cost[fam] = None
                     continue
-                med = {}
+                med, slots = {}, set()
                 for inv in p['invocations']:
                     med.setdefault(inv['B'], []).append(inv['tB'])               # A1.7: sum of median TIMES
+                    slots.add((inv['B'], inv['case'], inv['rep']))
                 want = {f'{sname}|{r}|{sk}' for sk in SEL}
-                ncomplete = int(p['reps']) * len(p['cases'])
-                if set(med) != want or any(len(v) != ncomplete for v in med.values()):
+                expected = {(b, c, rp) for b in want for c in p['cases'] for rp in range(int(p['reps']))}
+                if set(med) != want or slots != expected or len(p['invocations']) != len(expected):
                     cost[fam] = None                                                # incomplete panel -> unavailable
                     continue
                 cost[fam] = float(sum(np.median(v) for v in med.values()))

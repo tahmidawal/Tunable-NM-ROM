@@ -17,6 +17,8 @@ grid reproduction of each arm run against the c3grid run of the same arm (fields
 """
 from __future__ import annotations
 
+import offline  # noqa: F401  (A8.1: CPU, highest, x64 - before any JAX import)
+
 import argparse
 import hashlib
 import json
@@ -103,13 +105,19 @@ def main():
                         repro['failures'] += 0 if (np.isfinite(x) and np.isfinite(y) and abs(x - y) <= 1e-13 + 1e-10 * abs(y)) \
                             or (not np.isfinite(x) and not np.isfinite(y) and not r['valid']) else 1
         # converged-rule check: every r_inf run type vs the finer rule on the cases where both exist
-        conv_d, conv_ok = 0., True
+        conv_d, conv_ok, missing = 0., True, []
+        budget_ids = list(range(cfg['budget_cases'])) if not cfg.get('case_subset') else list(cfg['case_subset'])[:cfg['budget_cases']]
         for key in [k for k in Wz.files if k.startswith(f"{sname}|{rr['conv']}|")]:
             spec_key = key.split('|', 2)[2]
             fk = f"{sname}|{rr['finer']}|{spec_key}"
-            if fk not in Wz.files:
+            if fk not in Wz.files:                          # every r_inf run type needs its finer counterpart (A2.4)
+                missing.append(spec_key)
+                conv_ok = False
                 continue
             A_, B_ = dict(zip([int(x) for x in Wz[f'cases|{key}']], Wz[key])), dict(zip([int(x) for x in Wz[f'cases|{fk}']], Wz[fk]))
+            if not set(budget_ids) <= (set(A_) & set(B_)):
+                missing.append(spec_key + ' (cases)')
+                conv_ok = False
             for j in set(A_) & set(B_):
                 d = float((np.linalg.norm(dec(A_[j] - B_[j], j), axis=1))[1:].max())
                 conv_ok = conv_ok and valid(key, j) and valid(fk, j) and np.isfinite(d)
@@ -150,13 +158,17 @@ def main():
                                       np.linalg.norm(U['star16'][k] - U['star16x'][k])) for k in range(6)]
                                if need('star', 'star16', 'starx', 'star16x') else NA)
                 Rn = np.asarray(z[f'c{j}']) / n0[j]
-                d['e_tot'] = nt(U['a'] - Rn)
+                d['e_tot'] = nt(U['a'] - Rn) if need('a') else NA
                 if need('star'):
                     PR = (Rn @ Qb) @ Qb.T
                     eP, edyn, es = (np.linalg.norm(X, axis=1) for X in (Rn - PR, U['star'] - PR, U['star'] - Rn))
                     d.update(e_P=eP.tolist(), e_dyn=edyn.tolist(), e_star=es.tolist(),
                              B0=[float(abs(es[k] ** 2 - eP[k] ** 2 - edyn[k] ** 2) / max(es[k] ** 2, 1e-300)) for k in range(1, 6)],
-                             B0_mismatch=float(abs(es[1] ** 2 - (eP[1] / 1.01) ** 2 - edyn[1] ** 2)))
+                             B0_mismatch=float(abs(es[5] ** 2 - (eP[5] / .1) ** 2 - edyn[5] ** 2)))       # pinned A3.5(iii)
+                    ts = 1 + int(np.argmax(es[1:]))
+                    d['orthogonal_pair_at_tstar'] = dict(t_star=ts, e_star=float(es[ts]), e_P=float(eP[ts]), e_dyn=float(edyn[ts]))
+                    if d['D_a'][1] is not None and d['e_tot'][1] is not None:
+                        d['triangle_ok'] = all(abs(d['e_tot'][k] - es[k]) <= d['D_a'][k] + 1e-14 for k in range(1, 6))
                 if gz is not None and f"{sname}|{rr['r']}|{sk(spec)}" in gz.files:
                     gids = [int(v) for v in gz[f"cases|{sname}|{rr['r']}|{sk(spec)}"]] if f"cases|{sname}|{rr['r']}|{sk(spec)}" in gz.files \
                         else list(range(gz[f"{sname}|{rr['r']}|{sk(spec)}"].shape[0]))
@@ -188,27 +200,53 @@ def main():
                 w = max(comps, key=comps.get) if comps else 'unavailable'
                 largest[w] = largest.get(w, 0) + 1
             b0 = [max(p_['B0']) for p_ in per if 'B0' in p_]
-            arms[sk(spec)] = dict(arm=x, summary=summ, finalist=fin, largest=largest,
+            clos, ctxc, unres = [], {'delta_quad': 0, 'delta_form': 0}, {}
+            for p_ in per:
+                dd = [mx(p_[k]) for k in ('delta_quad', 'delta_solve', 'delta_form', 'delta_time')]
+                Dv = mx(p_['D_a'])
+                if None not in dd and Dv is not None:
+                    sq, sm = float(np.sqrt(sum(v * v for v in dd))), float(sum(dd))
+                    clos.append(dict(D_over_rss=(Dv / sq) if sq > 0 else ('both zero' if Dv == 0 else 'undefined'),
+                                     D_over_sum=(Dv / sm) if sm > 0 else ('both zero' if Dv == 0 else 'undefined')))
+                for comp, ide in (('delta_quad', 'ctx_quad_ideal_end'), ('delta_form', 'ctx_form_ideal_end')):
+                    dep_, ide_ = mx(p_[comp]), mx(p_[ide])
+                    if dep_ is not None and ide_ is not None and min(dep_, ide_) > 1e-8 and max(dep_, ide_) > 2 * min(dep_, ide_):
+                        ctxc[comp] += 1
+            for comp in ('delta_quad', 'delta_solve', 'delta_form', 'delta_time', 'refine', 'D_a', 'I_time_quad', 'I_time_solve'):
+                pr = [(mx(p_[comp]), mx(p_['U_star'])) for p_ in per]
+                unres[comp] = dict(unresolved=sum(1 for v, u in pr if v is not None and u is not None and v < 3 * u),
+                                   unavailable=sum(1 for v, u in pr if v is None or u is None))
+            arms[sk(spec)] = dict(arm=x, summary=summ, finalist=fin, largest=largest, closure=clos,
+                                  context_sensitive_cases=ctxc, unresolved_vs_Ustar=unres,
                                   B0_worst_relative=max(b0) if b0 else None,
-                                  B0_mismatch_min_defect=min((p_['B0_mismatch'] for p_ in per if 'B0_mismatch' in p_), default=None),
+                                  B0_mismatch_min_defect=(per[0].get('B0_mismatch') if per else None),     # pinned fixture
                                   per_case=per)
         S_ = res['settings'][sname]
         withheld = []
         if not (S_.get('B2_control_rule') or {}).get('discriminating'):
             withheld.append('quadrature attribution (B2 control non-discriminating)')
-        out['settings'][sname] = dict(rules=rr, conv_check=dict(worst=conv_d, all_valid=conv_ok,
+        if not (conv_ok and conv_d <= BAR):
+            withheld.append('quadrature attribution (converged rule not verified against the finer rule)')
+        out['settings'][sname] = dict(rules=rr, conv_check=dict(worst=conv_d, all_valid=conv_ok, missing=missing,
                                                                 passed=bool(conv_ok and conv_d <= BAR)),
                                       B1=S_.get('B1_sham_bitwise'), B2=S_.get('B2_control_rule'), withheld=withheld, arms=arms)
     b0w = [v['B0_worst_relative'] for s_ in out['settings'].values() for v in s_['arms'].values() if v['B0_worst_relative'] is not None]
     b0m = [v['B0_mismatch_min_defect'] for s_ in out['settings'].values() for v in s_['arms'].values() if v['B0_mismatch_min_defect'] is not None]
     nrows = len(res['rows'])
+    import budget2d as B2D
+    fx = B2D.b0_fixtures()
+    pinned = b0m[0] if b0m else None
     out['gates'] = dict(B0=dict(worst_relative=max(b0w) if b0w else None, passed=bool(b0w and max(b0w) <= 1e-10)),
-                        B0_real_mismatch=dict(min_defect=min(b0m) if b0m else None, passed=bool(b0m and min(b0m) > 1e-6)),
+                        B0_fixtures=fx['passed'],
+                        B0_real_mismatch=dict(pinned_defect=pinned, passed=bool(pinned is not None and pinned > 1e-6)),
                         B1=all((s_['B1'] or {}).get('all_equal') for s_ in out['settings'].values()),
                         reproduction=dict(repro, rows=nrows, passed=(bool(repro['compared'] == 6 * nrows and repro['failures'] == 0)
                                                                      if repro['applicable'] else 'not applicable')),
-                        grid_reproduction=dict(grepro, passed=(bool(grepro['compared'] > 0 and grepro['failures'] == 0) if a.grid
-                                                               else 'not run')))
+                        grid_reproduction=dict(grepro, expected=sum(len(v['per_case']) for s_ in out['settings'].values()
+                                                                    for v in s_['arms'].values()),
+                                               passed=(bool(grepro['failures'] == 0 and grepro['compared'] ==
+                                                            sum(len(v['per_case']) for s_ in out['settings'].values()
+                                                                for v in s_['arms'].values())) if a.grid else 'not run')))
     dest = Path(a.out or HERE / 'checks' / f"budget3d-{run.parents[1].name}-{a.refs}.json")
     dest.write_text(json.dumps(out, default=float) + '\n')
     print(dest, json.dumps(out['gates'], default=float))

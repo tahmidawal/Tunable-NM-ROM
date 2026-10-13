@@ -15,6 +15,8 @@ All accuracy numbers PROVISIONAL (first-order references).
 """
 from __future__ import annotations
 
+import offline  # noqa: F401  (A8.1: CPU, highest, x64 - before any JAX import)
+
 import argparse
 import hashlib
 import json
@@ -105,9 +107,15 @@ def main():
                for k in cases}
         tie_kind = 'heuristic temporal tie threshold'
     ev = list(eps.values())
-    # medians / worst values: endpoint propagation of [e - eps, e + eps] gives half widths median(eps) and max(eps)
-    # for a common reference; two values tie iff their propagated intervals overlap: threshold 2 x half width
-    thr = dict(median=2 * float(np.median(ev)), worst=2 * max(ev))
+    thr = dict(median=2 * float(np.median(ev)), worst=2 * max(ev))     # heuristic thresholds (A2.6)
+    ETA = 'eta' in ent
+
+    def agg_interval(vals, kind):
+        """Verified uncertainty: endpoints propagated through the median / max of the per-case intervals (A2.6, A8.7)."""
+        lo = [max(0., v - eps[kc]) for v, kc in zip(vals, cases)]
+        hi = [v + eps[kc] for v, kc in zip(vals, cases)]
+        f = np.median if kind == 'median' else np.max
+        return float(f(lo)), float(f(hi))
     rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in res['rows']}
     out = dict(run=str(run), refs=sc['refs'], provisional=True, tie=dict(kind=tie_kind, **thr),
                eps_ref={f'{k[0]}|{k[1]}': v for k, v in eps.items()}, arms={}, timing={}, selection={}, hypotheses={})
@@ -155,6 +163,18 @@ def main():
     arms = out['arms']
     common_ok = bool(panels.get('common', {}).get('valid'))
 
+    def vals(s_, k_, tag):
+        return [per_case[(s_, k_, kc)][f'e_{tag}'] for kc in cases]
+
+    def bt(A, B, tag, kind):
+        """True iff arm A = (setting, key) is BEATEN by arm B on the cohort `kind` (median / worst) of e_tag. Verified
+        uncertainty: B's propagated upper endpoint below A's lower endpoint (A8.7); heuristic: scalar threshold (A2.6)."""
+        va, vb = (vals(*A, tag) if isinstance(A, tuple) else A), (vals(*B, tag) if isinstance(B, tuple) else B)
+        if ETA:
+            return agg_interval(vb, kind)[1] < agg_interval(va, kind)[0]
+        f = np.median if kind == 'median' else np.max
+        return float(f(vb)) < float(f(va)) - thr[kind]
+
     # ---------------------------------------------------------------- selection (A3.2, A2.6) or frozen
     if a.frozen:
         frz = json.loads(Path(a.frozen).read_text())['2d']                     # the frozen schema written by freeze.py
@@ -181,11 +201,10 @@ def main():
                     cand.append(dict(key=k, f=f, cost=x['ratio_setting']['median'], med=x['median_TX'], worst=x['worst_TX'],
                                      medST=x['median_ST'], worstST=x['worst_ST']))
                 feas = [c for c in cand if c['cost'] <= 1.0]
-                unb = [c for c in feas if not any(beaten(c['med'], d['med'], thr['median']) for d in feas)]
+                unb = [c for c in feas if not any(bt((s, c['key']), (s, d['key']), 'TX', 'median') for d in feas)]
                 aec = min(unb, key=lambda c: (c['cost'], -c['f'])) if unb else None
-                fe = [c for c in cand if not (c['worstST'] > base['worst_ST'] + thr['worst'] or c['medST'] > base['median_ST'] +
-                                              thr['median'] or c['worst'] > base['worst_TX'] + thr['worst'] or
-                                              c['med'] > base['median_TX'] + thr['median'])]
+                bk_ = (s, BE0)
+                fe = [c for c in cand if not any(bt((s, c['key']), bk_, tg, kd) for tg in ('ST', 'TX') for kd in ('worst', 'median'))]
                 fea = min(fe, key=lambda c: (c['cost'], c['med'], -c['f'])) if fe else None
                 sel[name] = dict(accurate_equal_cost=aec, fast_equal_accuracy=fea)
         points = {k: 0 for k in CNAMES}
@@ -195,12 +214,13 @@ def main():
         for s in DIAL:
             meds = {k: sel[f'{s}|{k}']['accurate_equal_cost']['med'] for k in CNAMES
                     if s in settings and sel[f'{s}|{k}']['accurate_equal_cost']}
+            keys_ = {k: sel[f'{s}|{k}']['accurate_equal_cost']['key'] for k in meds}
             for k in CNAMES:
                 if k in meds:
                     sums[k] += meds[k]
                 else:
                     complete[k] = False
-            w = [k for k in meds if not any(beaten(meds[k], meds[o], thr['median']) for o in meds)]
+            w = [k for k in meds if not any(bt((s, keys_[k]), (s, keys_[o]), 'TX', 'median') for o in meds)]
             winners[s] = w
             for k in w:
                 points[k] += 1
@@ -224,7 +244,7 @@ def main():
                     cases=len(r_), median_from=A1[f'median_{tag}'], median_to=A2[f'median_{tag}'],
                     worst_from=A1[f'worst_{tag}'], worst_to=A2[f'worst_{tag}'],
                     median_change=A2[f'median_{tag}'] / A1[f'median_{tag}'] - 1.,
-                    median_tied=abs(A2[f'median_{tag}'] - A1[f'median_{tag}']) <= thr['median'])
+                    median_tied=not (bt((s1, k1), (s2, k2), tag, 'median') or bt((s2, k2), (s1, k1), tag, 'median')))
     h1 = {}
     for s1, s2 in zip(DIAL[:-1], DIAL[1:]):
         x1 = (sel.get(f'{s1}|{glob}') or {}).get('accurate_equal_cost') if glob else None
@@ -264,7 +284,8 @@ def main():
             if not PB or not PC:
                 cover[err] = dict(verdict='unavailable', reason='empty population')
                 continue
-            unc = [kq for cq, eq, kq in PB if not any(cp <= cq and not beaten(ep, eq, thr[tk]) for cp, ep, kp in PC)]
+            sk_ = lambda k__: tuple(k__.split('|', 1))
+            unc = [kq for cq, eq, kq in PB if not any(cp <= cq and not bt(sk_(kp), sk_(kq), 'TX', tk) for cp, ep, kp in PC)]
             cover[err] = dict(covered=len(PB) - len(unc), total=len(PB), uncovered=unc)
         a_pass = all('total' in v and v['covered'] == v['total'] for v in cover.values())
         dial = []
@@ -352,8 +373,9 @@ def main():
             for ak, x in arms.items():
                 if not (x['eligible'] and ak.endswith('prod') and (x.get('ratio_common') or ak == basek)):
                     continue
+                fvals = lambda fk: [SF[f'{fk}|{kc[0]}|{kc[1]}'][tag]['worst'] for kc in cases]
                 ef = [fk for fk, f_ in fv.items() if f_['verified'] and f_['status'] in ('calibrated', 'fallback_tight')
-                      and f_['cases'] == len(cases) and not beaten(f_[f'worst_{tag}'], x[f'worst_{tag}'], thr['worst'])]
+                      and f_['cases'] == len(cases) and not bt(fvals(fk), tuple(ak.split('|', 1)), tag, 'worst')]
                 best = None
                 for fk in ef:
                     num = idx.get(fk, {})

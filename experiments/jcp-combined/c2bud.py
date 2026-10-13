@@ -197,14 +197,16 @@ def main():
             b1.append(bool(np.array_equal(np.asarray(v1['W']), np.asarray(v2['W']))))
             _, fc_, _ = do(base_r, ci, role_override='ctrl')
             fm_ = np.asarray(v1['fields'][:, ::s256, ::s256])
-            b2.append(field_dist(fm_, fc_, n0r))
+            okv = bool(rep['rows'][-1]['verified'] and int(np.asarray(v1['stats']['nfail'])) == 0)
+            b2.append(field_dist(fm_, fc_, n0r) if okv else float('nan'))
         S_rep['B1_sham_bitwise'] = dict(all_equal=all(b1), cases=len(b1))
         if not all(b1):                         # B1 is a stopping gate (codex-code-4 item 5)
             save()
             print('B1 FAILED: a re-run of the same compiled query is not bitwise identical; stopping', flush=True)
             raise SystemExit(3)
         S_rep['B2_control_rule'] = dict(rule=cfg['control_rule'], per_case=b2, exceeds_tau=sum(x > 2.5e-4 for x in b2),
-                                        discriminating=bool(sum(x > 2.5e-4 for x in b2) > len(b2) / 2))
+                                        complete=bool(np.isfinite(b2).all()),
+                                        discriminating=bool(np.isfinite(b2).all() and sum(x > 2.5e-4 for x in b2) > len(b2) / 2))
         # ---- every run on every case (check-set conv runs were already done; repeats are skipped)
         done = {(r_['run'], r_['cohort'], r_['case']) for r_ in rep['rows'] if r_['setting'] == spec['name']}
         for ci in order:

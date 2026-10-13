@@ -25,6 +25,8 @@ t* = argmax_k e_star(t_k); 'largest measured sensitivity or discrepancy' counts 
 """
 from __future__ import annotations
 
+import offline  # noqa: F401  (A8.1: CPU, highest, x64 - before any JAX import)
+
 import argparse
 import hashlib
 import json
@@ -88,6 +90,25 @@ def main():
         S_ = res['setup'][sname]
         Qb, _ = np.linalg.qr(G[:, :Rp])                                         # orthonormal basis of the span at the nodes
         dec = lambda W: score.decode2d(G, W[None] if W.ndim == 1 else W)
+        # in-job reproduction: every row of this setting ONCE, original reference only (A1.8; codex-code-5 N4)
+        if repro['applicable']:
+            for ci, ck in enumerate(cks):
+                coh, c = ck.split('|')
+                c = int(c)
+                n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
+                refs = score.load_ref2d(ent, coh, c)
+                for key in [k2 for k2 in z.files if k2 not in ('w0', 'cases')]:
+                    r = rows.get((sname, key, coh, c))
+                    if r is None:
+                        continue
+                    Ux = dec(z[key][ci]) / n0
+                    for t in ('ST', 'S', 'TX'):
+                        mine = [float(np.linalg.norm((Ux - refs[t] / n0)[j])) for j in range(6)]
+                        for j in range(6):
+                            y = r[f'e_{t}_per_time'][j]
+                            repro['compared'] += 1
+                            repro['worst'] = max(repro['worst'], abs(mine[j] - y))
+                            repro['failures'] += 0 if abs(mine[j] - y) <= 1e-13 + 1e-10 * abs(y) else 1
         armres = {}
         for x in s['arms']:
             f, sc, h = x['form'], x['scheme'], DT0 * x['f']
@@ -150,34 +171,19 @@ def main():
                     eP = np.linalg.norm(inner - PR, axis=1)
                     edyn = np.linalg.norm(ustar - PR, axis=1)
                     es = np.linalg.norm(ustar - inner, axis=1)
-                    d[f'e_tot_{t}'] = nt(U['a'] - Rn)
-                    d[f'e_star_{t}'] = es.tolist()
-                    d[f'e_P_{t}'] = eP.tolist()
-                    d[f'e_dyn_{t}'] = edyn.tolist()
+                    d[f'e_tot_{t}'] = nt(U['a'] - Rn) if need('a') else NA
+                    d[f'e_star_{t}'] = es.tolist() if need('star') else NA
+                    d[f'e_P_{t}'] = eP.tolist()                                   # reference-only quantity
+                    d[f'e_dyn_{t}'] = edyn.tolist() if need('star') else NA
                     d[f'B0_{t}'] = [float(abs(es[j] ** 2 - eP[j] ** 2 - edyn[j] ** 2) / max(es[j] ** 2, 1e-300)) for j in range(1, 6)]
                     # B0 fixture (iii) on real data: one term with a mismatched normaliser must break the identity
-                    d[f'B0_mismatch_{t}'] = float(abs(es[1] ** 2 - (eP[1] / 1.01) ** 2 - edyn[1] ** 2))
+                    d[f'B0_mismatch_{t}'] = float(abs(es[5] ** 2 - (eP[5] / .1) ** 2 - edyn[5] ** 2))     # A3.5(iii)
                     d[f'init_fit_{t}'] = float(np.linalg.norm(U['a'][0] - Rn[0]))
                     ts = 1 + int(np.argmax(es[1:]))
                     d[f'orthogonal_pair_at_tstar_{t}'] = dict(t_star=ts, e_star=float(es[ts]), e_P=float(eP[ts]), e_dyn=float(edyn[ts]))
                     if d['D_a'][1] is not None:                     # triangle bound |e_tot - e_star| <= D_a per time
                         et = nt(U['a'] - Rn)
                         d[f'triangle_ok_{t}'] = all(abs(et[j] - es[j]) <= d['D_a'][j] + 1e-14 for j in range(1, 6))
-                # in-job reproduction: every row of this case, original reference only (A1.8)
-                for key in ([] if not repro['applicable'] else [k2 for k2 in z.files if k2 not in ('w0', 'cases')]):
-                    r = rows.get((sname, key, coh, c))
-                    if r is None:
-                        continue
-                    Ux = dec(z[key][ci]) / n0
-                    for t in ('ST', 'S', 'TX'):
-                        if t not in refs:
-                            continue
-                        mine = nt(Ux - refs[t] / n0)
-                        for j in range(6):
-                            y = r[f'e_{t}_per_time'][j]
-                            repro['compared'] += 1
-                            repro['worst'] = max(repro['worst'], abs(mine[j] - y))
-                            repro['failures'] += 0 if abs(mine[j] - y) <= 1e-13 + 1e-10 * abs(y) else 1
                 per.append(dict(case=ck, **d))
             # summaries
             mx = lambda v: None if v[1] is None else max(v[1:])
@@ -197,11 +203,11 @@ def main():
             ctx_case = []
             for p_ in per:
                 for comp, ide in (('delta_quad', 'ctx_quad_ideal_end'), ('delta_form', 'ctx_form_ideal_end')):
-                    x, y = mx(p_[comp]), mx(p_[ide])
-                    if x is None or y is None:
+                    dep_, ide_ = mx(p_[comp]), mx(p_[ide])
+                    if dep_ is None or ide_ is None:
                         continue
-                    ctx_case.append((comp, 'below floor' if min(x, y) <= 1e-8 else
-                                     ('context-sensitive' if max(x, y) > 2 * min(x, y) else 'consistent')))
+                    ctx_case.append((comp, 'below floor' if min(dep_, ide_) <= 1e-8 else
+                                     ('context-sensitive' if max(dep_, ide_) > 2 * min(dep_, ide_) else 'consistent')))
             largest = {}
             for t in tags:
                 cnt = {}
@@ -218,7 +224,7 @@ def main():
                 unres[comp] = dict(unresolved=sum(1 for v, u in pairs_ if v is not None and u is not None and v < 3 * u),
                                    unavailable=sum(1 for v, u in pairs_ if v is None or u is None))
             b0 = max(max(p_[f'B0_{t}']) for p_ in per for t in tags)
-            b0m = min(p_[f'B0_mismatch_{t}'] for p_ in per for t in tags)
+            b0m = per[0][f'B0_mismatch_{tags[0]}'] if per else None      # pinned fixture: first case, t = 0.25 (A3.5(iii))
             fin = None
             if x.get('selected'):
                 fq = [mx(p_['delta_quad']) for p_ in per]
@@ -245,8 +251,10 @@ def main():
         b3 = None
         be = armres.get('LSPG|BE|1')
         if be:
-            dt_ = [max(p_['delta_time'][1:]) for p_ in be['per_case'] if p_['delta_time'][1] is not None]
-            b3 = dict(exceeds=sum(v > 1e-3 for v in dt_), cases=len(dt_), discriminating=bool(sum(v > 1e-3 for v in dt_) > len(dt_) / 2))
+            dt_ = [None if p_['delta_time'][1] is None else max(p_['delta_time'][1:]) for p_ in be['per_case']]
+            comp_ = None not in dt_
+            b3 = dict(exceeds=sum(v > 1e-3 for v in dt_ if v is not None), cases=len(dt_), complete=comp_,
+                      discriminating=bool(comp_ and sum(v > 1e-3 for v in dt_) > len(dt_) / 2))
         b2 = S_.get('B2_control_rule') or {}
         withheld = []
         if not b2.get('discriminating'):
@@ -259,7 +267,7 @@ def main():
                                       conv_check_successor=S_.get('conv_check_successor'), B1=S_.get('B1_sham_bitwise'),
                                       B2=S_.get('B2_control_rule'), B3=b3, withheld=withheld, arms=armres)
     b0w = max(v['B0_worst_relative'] for s_ in out['settings'].values() for v in s_['arms'].values())
-    b0m = min(v['B0_mismatch_min_defect'] for s_ in out['settings'].values() for v in s_['arms'].values())
+    b0m = next(iter(next(iter(out['settings'].values()))['arms'].values()))['B0_mismatch_min_defect']
     nrows = sum(1 for r in res['rows'])
     out['gates'] = dict(B0=dict(worst_relative=b0w, passed=bool(b0w <= 1e-10)), B0_fixtures=out['B0_fixtures']['passed'],
                         B0_real_mismatch=dict(min_defect=b0m, passed=bool(b0m > 1e-6)),
@@ -267,8 +275,11 @@ def main():
                         reproduction=dict(repro, rows=nrows,
                                           passed=(bool(repro['compared'] == 18 * nrows and repro['failures'] == 0)
                                                   if repro['applicable'] else 'not applicable (new reference)')),
-                        grid_reproduction=dict(grepro, passed=(bool(grepro['compared'] > 0 and grepro['failures'] == 0)
-                                                               if a.grid else 'not run')))
+                        grid_reproduction=dict(grepro, expected=sum(len(s_['arms']) * len(s_['arms'][next(iter(s_['arms']))]['per_case'])
+                                                                    for s_ in out['settings'].values()),
+                                               passed=(bool(grepro['failures'] == 0 and grepro['compared'] ==
+                                                            sum(len(s_['arms']) * len(next(iter(s_['arms'].values()))['per_case'])
+                                                                for s_ in out['settings'].values())) if a.grid else 'not run')))
     dest = Path(a.out or HERE / 'checks' / f"budget2d-{run.parents[1].name}-{a.refs}.json")
     dest.write_text(json.dumps(out, default=float) + '\n')
     print(dest, json.dumps(out['gates'], default=float))

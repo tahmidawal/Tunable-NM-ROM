@@ -18996,3 +18996,17 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - Scope the coarse-data result for the paper.
 - Four minor report items remain.
 - Merge question still to be asked.
+
+## 2026-10-13
+
+### Steps 1 and 2 launched (coordinator)
+- User approved the next phase: **Step 1** = second-order references (E0) and **Step 2** = combined best method.
+- Step 1 runs in the existing lane `worktrees/2026-10-06-jcp-references` (branch `exp/2026-10-06-jcp-references`), cluster namespace `jcp-ref`, job cap 4. Scope: central + Crank–Nicolson references at three nested levels with the order checked per case; Richardson $\epsilon_{ref}$; a pseudo-spectral cross-check; a scoring lattice; a loader API; and a comparison of the old first-order references against the new ones. New sealed cohorts may be generated and QC'd, but **no ROM may be scored on them** (sealing is global).
+- Step 2 runs in the new lane `worktrees/2026-10-13-jcp-combined` (branch `exp/2026-10-13-jcp-combined`, mirror `origin/codeonly/exp/2026-10-13-jcp-combined`), namespace `jcp-comb`, job cap 3. Scope:
+  - C2 second-order stepping combined with the C1 wide banks (2D R′=384; 3D R=1024) across the full R′ dial;
+  - a fast fixed-sweep second-order 3D solver;
+  - J4 / the R′≥768 gate;
+  - a per-case error budget.
+  Numbers stay provisional until Step 1 lands, and scoring is built to be re-run against the new references.
+- Both lanes are Codex-gated at every step per `reports/2026-10-08-jcp-lane-agent-rules.md`.
+- Still open: merge decision for the four week-1 lanes; authorship with Hari.

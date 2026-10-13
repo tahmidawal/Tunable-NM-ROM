@@ -272,9 +272,8 @@ def mode_fd(cfg, outdir, rep):
             if sealed:
                 if any(Path(str(stem) + s).exists() for s in ('.npz.enc', '.json.enc')):
                     raise SystemExit('sealed jobs never resume (A5.5): output exists')
-            elif Path(str(stem) + '.json').exists() and all(
-                    prev.get(str(Path(str(stem) + s).relative_to(outdir))) == SI.sha(Path(str(stem) + s).read_bytes())
-                    for s in ('.npz', '.json')):
+            elif all(Path(str(stem) + s).exists() and prev.get(str(Path(str(stem) + s).relative_to(outdir)))
+                     == SI.sha(Path(str(stem) + s).read_bytes()) for s in ('.npz', '.json')):
                 # verified resume: both files match the hashes this job recorded when it wrote them (A6.5)
                 meta = json.loads(Path(str(stem) + '.json').read_text())
                 npz = Path(str(stem) + '.npz').read_bytes()
@@ -503,6 +502,8 @@ def main():
         assert jax.default_backend() == 'gpu', jax.default_backend()
     assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
     print(f'jax_backend={jax.default_backend()} x64=True precision=highest', flush=True)
+    if cfg.get('mode') == 'fd' and list(outdir.rglob('*.enc')):
+        raise SystemExit('sealed jobs never resume (A5.5): ciphertext already present in the job directory')
     if (outdir / 'result.json').exists():           # read BEFORE the first save overwrites it (verified resume)
         PREV_MANIFEST.update({m['file']: m['sha256'] for m in
                               json.loads((outdir / 'result.json').read_text()).get('manifest', []) if 'sha256' in m})

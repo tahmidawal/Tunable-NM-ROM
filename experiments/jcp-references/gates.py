@@ -305,12 +305,18 @@ def u_transforms():
     f = u_d * g_d
     A = (2.0 / M) * np.sin(np.pi * np.outer(k, np.arange(1, M)) / M)
     nb_d = -(A @ f @ A.T)
-    worst = max(worst, float(np.max(np.abs(np.asarray(nb) - nb_d)) / np.max(np.abs(nb_d))))
+    v = float(np.max(np.abs(np.asarray(nb) - nb_d)) / np.max(np.abs(nb_d)))
+    if not np.isfinite(v):
+        return dict(gate='Utransforms', worst_rel=None, **{'pass': False})
+    worst = max(worst, v)
     Sl = np.asarray(PS.lattice_S(N, 8))
     lat = np.asarray(PS.synth_lattice(jnp.asarray(bb), jnp.asarray(Sl), 2))
     xl = np.arange(1, 8) / 8
     Sx = np.sin(np.pi * np.outer(xl, k))
-    worst = max(worst, float(np.max(np.abs(lat[1:-1, 1:-1] - Sx @ bb @ Sx.T))))
+    v = float(np.max(np.abs(lat[1:-1, 1:-1] - Sx @ bb @ Sx.T)))
+    if not (np.isfinite(v) and np.isfinite(lat).all()):
+        return dict(gate='Utransforms', worst_rel=None, **{'pass': False})
+    worst = max(worst, v)
     ok = bool(np.isfinite(worst) and worst <= 1e-12)
     return dict(gate='Utransforms', worst_rel=worst if np.isfinite(worst) else None, **{'pass': ok})
 

@@ -71,10 +71,11 @@ def gather():
         if sums.get('output/result.json') != sha(rj):
             raise RuntimeError(f'{rd.name}: result.json does not match the job OUTPUTS.sha256')
         results[rd.name] = r
-        for cf in sorted((rd / 'output').glob('calib_*d_fields.npz')):     # floor-calibration evidence (A5.4)
-            if sums.get(str(cf.relative_to(rd))) != sha(cf) or r.get('calib_fields_sha256') != sha(cf):
-                raise RuntimeError(f'{cf}: calibration evidence hash mismatch')
-            dim = int(cf.name.split('_')[1][0])
+        if r['config']['mode'] == 'calib':              # floor-calibration evidence (A5.4): required, named
+            dim = int(r['config']['dim'])
+            cf = rd / 'output' / f'calib_{dim}d_fields.npz'
+            if not cf.exists() or sums.get(str(cf.relative_to(rd))) != sha(cf) or r.get('calib_fields_sha256') != sha(cf):
+                raise RuntimeError(f'{rd.name}: calibration evidence missing or hash mismatch')
             link(cf, STORE / f"{dim}d/{CH.CALIB_COHORT[dim]}/floor/{cf.name}")
         out = rd / 'output'
         for f in sorted(out.glob('*d/*/*/c*.*')):

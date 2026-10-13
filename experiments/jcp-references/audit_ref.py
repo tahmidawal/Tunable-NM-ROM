@@ -153,6 +153,11 @@ def close(a, b):
 
 
 def relclose(a, b):
+    # production serialises non-finite numbers as JSON null (V_clean): treat null and non-finite alike
+    if a is not None and not np.isfinite(a):
+        a = None
+    if b is not None and not np.isfinite(b):
+        b = None
     if a is None or b is None:
         return a is None and b is None
     if not (np.isfinite(a) and np.isfinite(b)):
@@ -213,7 +218,10 @@ def audit_case(dim, cohort, kind, j, desc_cache, t0_cache, arr=None, meta=None):
         if not relclose(a_, b_):
             issues.append(f'p mismatch {a_} vs {b_}')
             break
-    for key in ('c', 'd12', 'd23', 'eps_t'):
+    for key in ('c', 'd12', 'd23', 'eps_t', 'p'):
+        if len(jd[key]) != 5 or len(sj[key]) != 5:
+            issues.append(f'{key}: wrong length')
+            continue
         for a_, b_ in zip(jd[key], sj[key]):
             if not relclose(a_, b_):
                 issues.append(f'{key} mismatch {a_} vs {b_}')
@@ -235,7 +243,7 @@ def audit_crosscheck(dim, summary):
     for j in cases:
         att = sorted(STORE.glob(f'{dim}d/{coh}/PS/c{j:03d}_a*.json'))
         if not att:
-            out[j] = dict(verdict='MISSING', match=summary['dims'][str(dim)]['crosscheck'][f'{coh}/{j}']['verdict'] == 'MISSING')
+            out[j] = dict(verdict='MISSING', match=False)          # missing evidence never matches (completeness)
             continue
         ps = json.loads(att[-1].read_text())
         a = np.load(att[-1].with_suffix('.npz'))
@@ -250,6 +258,13 @@ def audit_crosscheck(dim, summary):
         full = sp[-1]
         nums = {}
         sel_runs = [runs[i] for i in ps['selected_spatial'] + [ps['selected_half']]]
+        # stability recomputed from dt, N3 and the recorded running maxima (A2.12 heuristic)
+        sel_att = [r for r in ps['runs'] if r['attempt'] == sel_runs[0]['attempt']]
+        um = max(r['umax'] for r in sel_att)
+        dt_sel = runs[ps['selected_spatial'][0]]['dt']
+        stab = bool(np.isfinite(um) and dt_sel <= 0.66 * 2.8 / (2 * dim * np.pi * Ns[-1] * um))
+        if stab != ps['stability_ok']:
+            nums['stability_mismatch'] = 1.0
         finite = all(np.isfinite(x).all() for x in sp + [half]) and all(r['finite'] for r in sel_runs)
         gates_ok = all(r['checks_ok'] and r['ic_quad_rel'] <= 1e-12 and r['ic_quad_max'] <= 1e-13
                        and r['contour_rel'] <= 1e-10 and r['job_gates_ok'] for r in sel_runs)
@@ -260,13 +275,14 @@ def audit_crosscheck(dim, summary):
         else:
             da, db = norms(sp[0] - sp[1]), norms(sp[1] - sp[2])
             q = [order(da[k], db[k], [1 / N for N in Ns]) for k in range(1, 6)]
-            if any(x is None or x < 2.5 for x in q) or not ps['stability_ok']:
+            if any(x is None or x < 2.5 for x in q) or not stab:
                 v = 'UNRESOLVED'
             else:
                 s_x = float(np.max(db[1:]) / n0)
                 s_t = float(np.max(norms(full - half)[1:]) / n0)
                 x = float(np.max(norms(half - u3)[1:]) / n0)
-                nums = dict(s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x)
+                nums = dict(nums, s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x, eta=x / eps)
+                nums.update({f'q{k}': v_ for k, v_ in enumerate(q)})
                 if not all(np.isfinite(list(nums.values()))):
                     v = 'UNRESOLVED'
                 else:
@@ -274,7 +290,9 @@ def audit_crosscheck(dim, summary):
         if v == 'UNRESOLVED' and ps.get('ladder_attempt', 0) == 0:
             v = 'UNRESOLVED-PENDING-ESCALATION'
         st = summary['dims'][str(dim)]['crosscheck'][f'{coh}/{j}']
-        num_ok = all(relclose(val, st.get(k)) for k, val in nums.items())
+        stq = {f'q{k}': v_ for k, v_ in enumerate(st.get('q') or [])}
+        num_ok = 'stability_mismatch' not in nums and all(
+            relclose(val, stq[k] if k.startswith('q') else st.get(k)) for k, val in nums.items())
         out[j] = dict(verdict=v, stored=st['verdict'], numbers=nums, match=bool(v == st['verdict'] and num_ok))
     return out
 
@@ -333,7 +351,7 @@ def main():
             sj = m0['judge']
             dp = max((abs(a_ - b_) for a_, b_ in zip(r['p'], sj['p']) if a_ is not None and b_ is not None), default=0)
             de = abs(r['eps_ref'] - sj['eps_ref']) / sj['eps_ref'] if r['eps_ref'] and sj['eps_ref'] else float('inf')
-            faults['perturb'] = dict(detected=bool(max(dp, de) > 1e-6 or r['outcome'] != m0['outcome']),
+            faults['perturb'] = dict(detected=bool(np.isfinite(de) and max(dp, de) > 1e-6),
                                      max_dp=dp, rel_d_eps=de, issues=r['issues'])
         else:
             faults['perturb'] = dict(detected=False, issues=['L=4096 not among the final levels of val32 case 0'])

@@ -1,0 +1,25 @@
+host=pax105 source_commit=605f2f9b3d4e863f16eece9c9a0c081052f504cc
+NVIDIA A100 80GB PCIe, GPU-662eb49d-1d4d-a693-a62c-7fbfef041e73, 81920 MiB
+10.235.106.29:/projects/paralab  4.6T 1000G  3.6T  22% /cluster/tufts/paralab
+/usr/bin/openssl
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[     38.0s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True, G4proj=True, G3a2=True, G42=True, G3b2=True, G3c2=True
+[     82.7s]   PS val32 c4 N1024_dt0_a0 umax=0.983 finite=True checks=True 45s peak=905612544
+[    173.0s]   PS val32 c4 N1536_dt0_a0 umax=0.983 finite=True checks=True 90s peak=905612544
+[    330.0s]   PS val32 c4 N2048_dt0_a0 umax=0.983 finite=True checks=True 157s peak=1525165568
+[    637.3s]   PS val32 c4 N2048_dt1_a0 umax=0.983 finite=True checks=True 307s peak=1560772608
+[    678.4s]   PS val32 c5 N1024_dt0_a0 umax=1.934 finite=True checks=True 41s peak=1560772608
+[    764.8s]   PS val32 c5 N1536_dt0_a0 umax=1.934 finite=True checks=True 86s peak=1560772608
+[    919.2s]   PS val32 c5 N2048_dt0_a0 umax=1.934 finite=True checks=True 154s peak=1560772608
+[   1225.5s]   PS val32 c5 N2048_dt1_a0 umax=1.934 finite=True checks=True 306s peak=1560772608
+[   1266.6s]   PS val32 c19 N1024_dt0_a0 umax=1.873 finite=True checks=True 41s peak=1560772608
+[   1353.0s]   PS val32 c19 N1536_dt0_a0 umax=1.873 finite=True checks=True 86s peak=1560772608
+[   1507.5s]   PS val32 c19 N2048_dt0_a0 umax=1.873 finite=True checks=True 154s peak=1560772608
+[   1814.0s]   PS val32 c19 N2048_dt1_a0 umax=1.873 finite=True checks=True 307s peak=1560772608
+[   1855.1s]   PS val32 c26 N1024_dt0_a0 umax=1.408 finite=True checks=True 41s peak=1560772608
+[   1941.6s]   PS val32 c26 N1536_dt0_a0 umax=1.408 finite=True checks=True 86s peak=1560772608
+[   2096.0s]   PS val32 c26 N2048_dt0_a0 umax=1.408 finite=True checks=True 154s peak=1560772608
+[   2402.4s]   PS val32 c26 N2048_dt1_a0 umax=1.408 finite=True checks=True 306s peak=1560772608
+JOB COMPLETE
+ALL-DONE

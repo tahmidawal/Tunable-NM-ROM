@@ -207,7 +207,7 @@ def audit_case(dim, cohort, kind, j, desc_cache, t0_cache, arr=None, meta=None):
         Ls.append(a['L'])
         taus.append(tau)
         oks.append(ok)
-    umax = atts[meta['final'][0]]['umax_running']
+    umax = (lambda v: float(v) if v is not None and np.isfinite(v) else float('inf'))(atts[meta['final'][0]].get('umax_running'))    # null (non-finite) -> inf -> Peclet fails
     jd = judge(us, Ls, taus, oks, umax, t0, nu)
     sj = meta['judge']
     if jd['outcome'] != meta['outcome']:
@@ -260,7 +260,7 @@ def audit_crosscheck(dim, summary):
         sel_runs = [runs[i] for i in ps['selected_spatial'] + [ps['selected_half']]]
         # stability recomputed from dt, N3 and the recorded running maxima (A2.12 heuristic)
         sel_att = [r for r in ps['runs'] if r['attempt'] == sel_runs[0]['attempt']]
-        um = max(r['umax'] for r in sel_att)
+        um = max((lambda v: float(v) if v is not None and np.isfinite(v) else float('inf'))(r.get('umax')) for r in sel_att)
         dt_sel = runs[ps['selected_spatial'][0]]['dt']
         stab = bool(np.isfinite(um) and dt_sel <= 0.66 * 2.8 / (2 * dim * np.pi * Ns[-1] * um))
         if stab != ps['stability_ok']:
@@ -281,7 +281,7 @@ def audit_crosscheck(dim, summary):
                 s_x = float(np.max(db[1:]) / n0)
                 s_t = float(np.max(norms(full - half)[1:]) / n0)
                 x = float(np.max(norms(half - u3)[1:]) / n0)
-                nums = dict(nums, s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x, eta=x / eps)
+                nums = dict(nums, s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x, eta=(x / eps if eps > 0 else None))
                 nums.update({f'q{k}': v_ for k, v_ in enumerate(q)})
                 if not all(np.isfinite(list(nums.values()))):
                     v = 'UNRESOLVED'
@@ -292,7 +292,9 @@ def audit_crosscheck(dim, summary):
         st = summary['dims'][str(dim)]['crosscheck'][f'{coh}/{j}']
         stq = {f'q{k}': v_ for k, v_ in enumerate(st.get('q') or [])}
         num_ok = 'stability_mismatch' not in nums and all(
-            relclose(val, stq[k] if k.startswith('q') else st.get(k)) for k, val in nums.items())
+            relclose(val, stq.get(k) if k.startswith('q') else st.get(k)) for k, val in nums.items())
+        if any(k.startswith('q') for k in nums) and len(stq) != 5:
+            num_ok = False
         out[j] = dict(verdict=v, stored=st['verdict'], numbers=nums, match=bool(v == st['verdict'] and num_ok))
     return out
 

@@ -826,3 +826,16 @@ Each dimension's eight cross-check cases are split over two jobs of four.
 
 **A8.2** The stability check rejects any non-finite running maximum before taking the maximum (Python's `max`
 could drop a NaN).
+
+---
+
+## Amendment A9 (2026-10-13, during the calibration jobs)
+
+**A9.1 Tighter-solve budget.** In the first real calibration (job 5209713, 2D, $L=2048$, $R_{ST}$ case 0) the tighter
+solve (Newton target $3\times10^{-14}$) cannot be reached in 2D: the residual stagnates at the round-off floor
+(achieved $3.8\times10^{-14}$, tight $7.2\times10^{-14}$, prod $7.1\times10^{-12}$), and every step spent its whole
+budget of 60 Newton iterations (12,120 iterations, 232 s against 6.5 s for the tight solve). At $L=8192$ this would
+exceed the 12-hour job limit, so the job was cancelled after its first row. The tighter budget becomes **8** Newton
+iterations per step (A3.2 already allows the target not to be reached; the achieved residuals are recorded and the
+proxy uses them). The 3D calibration job (5209714) keeps budget 60: it reaches the tighter target in a few iterations
+per step (306 and 586 Newton iterations in total at $L=128$ and $256$), so the budget never binds there.

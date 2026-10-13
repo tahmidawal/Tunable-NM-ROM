@@ -44,7 +44,7 @@ LEVELS = {  # kind -> dim -> dict(base [(L, dt)], refine (L, dt), scheme)
           3: dict(base=[(128, .005), (256, .005), (512, .005)], refine=(768, .005), scheme='be')},
 }
 TOL = {'prod': (1e-11, 1e-9, 20), 'retry': (1e-11, 1e-10, 40), 'tight': (1e-13, 1e-12, 40),
-       'tighter': (3e-14, 1e-12, 60)}
+       'tighter': (3e-14, 1e-12, 8)}         # A9.1: budget 8 (round-off floor; 60 only burned time)
 PS_CFG = {2: dict(Ns=[1024, 1536, 2048], dt=0.05 / 1600, esc=[1536, 2048, 3072]),      # A8.1
           3: dict(Ns=[128, 192, 256], dt=0.05 / 320, esc=[192, 256, 384])}
 CALIB_CASES = {2: ('dev6', [0, 4]), 3: ('dev4', [0, 2])}

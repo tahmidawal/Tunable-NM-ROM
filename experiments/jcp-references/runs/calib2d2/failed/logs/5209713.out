@@ -1,0 +1,8 @@
+host=pax105 source_commit=84b66688ed3bd80f475d1d78ad4d0b94a41f1559
+NVIDIA A100 80GB PCIe, GPU-c52a7f04-fc38-6157-cf19-5c7ff0945752, 81920 MiB
+10.235.106.29:/projects/paralab  4.6T  999G  3.6T  22% /cluster/tufts/paralab
+/usr/bin/openssl
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[     14.5s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[    261.2s] CALIB ST c0 L=2048: prod-tight 3.439e-13 (tau 2.230e-10) tight-tighter 8.622e-15 (tau 7.473e-11) ok=True prod solve 5.3s peak 939287808

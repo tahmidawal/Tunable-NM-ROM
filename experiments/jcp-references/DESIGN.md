@@ -278,3 +278,193 @@ Codex adversarial audits gate the design and each amendment, every code file bef
 before submission, every result and the report (`audits/codex-<step>-<n>.md`). One job per cluster directory under
 `/cluster/tufts/paralab/tawal01/jcp-ref/<job>/`, `squeue` before and after every submit, at most 4 concurrent jobs, at
 most one local `jaxrun`. Commit small and often; `bash experiments/jcp-references/sync_github.sh` after every commit.
+
+---
+
+## Amendment A1 (2026-10-13, after Codex design audit 1, `audits/codex-design-1.md`; before any code)
+
+Item numbers refer to the audit table. Every WRONG is repaired here; NEEDS-RESTATEMENT items are restated. Where A1
+conflicts with §1–§14, A1 governs.
+
+**A1.1 Common continuum IC and its representations (items 3, 26).** The continuum problem has IC $u_0$ (2D: the
+Gaussian, nonzero on the walls; 3D: the masked blobs). Finite-difference (FD) levels and both FD references use the
+nodal samples with zero wall nodes (`engines.initial`, `common.initial_interior`, with the single fixed 257-grid
+$s_\star$ in 3D at every resolution). The pseudo-spectral (PS) solver uses numerically integrated sine coefficients of
+the continuous $u_0$ (A1.6). The **canonical $t_0$ field** is the lattice restriction of the nodal samples; it defines
+$n_0$ for every comparison, including PS. The PS $t_0$ field is stored separately and is never overwritten. All order,
+$\epsilon_{ref}$ and cross-check quantities use $t_k$, $k\ge1$ only.
+
+**A1.2 Amplitude, CFL and Péclet (items 5, 10, 19).** No a-priori bound $|u|\le2$ is assumed. Each solver records the
+running maximum of $|u|$ over all steps (FD) or stages (PS). The CFL numbers of §3.1 are conditioning diagnostics, not
+stability claims (summed over directions they are 10.24 in 2D, 1.92 in 3D). The Péclet check (c) of §4 uses the
+running maximum. It is a sanity check that is not expected to fire on these families (nominal coarsest-level values
+0.098 in 2D, 1.56 in 3D); its rejection path is tested by a unit test with an injected $\nu$.
+
+**A1.3 Startup and preconditioner wording (items 7, 8).** The Rannacher start is used because it is the standard
+remedy for CN with non-smooth data; second order at positive times is **verified per case**, not claimed from theory.
+Each implicit stage solves $u - u^{n} + \theta\,\tau\,F_h(u) + (1-\theta)\,\tau\,F_h(u^n)=0$ with step length $\tau$ and
+implicitness $\theta$: CN stages $\tau=\Delta t$, $\theta=\tfrac12$; startup BE stages $\tau=\Delta t/2$, $\theta=1$.
+The preconditioner is the exact DST-basis inverse of $I+\theta\tau\nu\Lambda_h$, which is $I+\tfrac{\Delta t}{2}\nu
+\Lambda_h$ in both cases.
+
+**A1.4 Numerical floor (items 17, 18; WRONG → repaired).** The $10^{-10}$ floor is withdrawn. A **measured tolerance
+floor** $\tau_{tol}$ replaces it: on dev cases (2D dev6 cases 0 and 4, 3D dev4 cases 0 and 2) every level of $R_{ST}$
+and $R_S$ is re-solved at tight tolerances (Newton $10^{-13}$, BiCGStab $10^{-12}$, budget 40) and
+$\tau_{tol}=\max\lVert u^{tight}-u^{prod}\rVert/n_0$ over cases, levels and $t_k$ (per dimension and kind). Condition
+(d) of §4 becomes $d_{23}(t_k)/n_0\ge 10\,\tau_{tol}$ for every $k\ge1$. A case failing (d) is **not** refined in
+space (that shrinks $d_{23}$); it is re-solved once at the tight tolerances and $\tau_{tol}$ is re-measured for that
+case; if it still fails, it is classified **unresolved-floor** (its reference is extremely accurate, $\le d_{23}/n_0 +
+2\tau_{tol}$, but its order is unverified) and treated as K0-affected (no ranking), reported separately from order
+failures. Refinement (§4) is used only for failures of (b) or (c).
+
+**A1.5 Order solve and failure outcomes (items 13, 16, 20).** $p$ is solved by bisection on $[0.25,8]$ only when the
+ratio is bracketed; zero, NaN or infinite differences, or no bracket, give $p=$ `null` and the case fails (b) — never
+clipped, never replaced by 2. Outcomes are distinct and all recorded: `accepted`; `order-fail` (b); `peclet-fail` (c);
+`unresolved-floor` (A1.4); `solver-fail` (a, after the one retry of §4, which keeps the nonlinear target $10^{-11}$ and
+changes only the Newton budget to 40 and the BiCGStab tolerance to $10^{-10}$). A rejected case after refinement is
+"order unverified", not "inaccurate". Every attempt's level fields and metadata are kept (refinement history), not only
+the final three levels.
+
+**A1.6 PS spatial method restated (items 22, 23, 25, 27, 28, 29, 41, 42; item 23 WRONG → repaired).** The products are
+**not** band-limited in the tensor-sine basis, so the 3/2 rule is *oversampling*, not exact de-aliasing: the DST of the
+padded-grid product is a trapezoid-rule quadrature of the sine projection whose error is $O(M^{-4})$ for these
+integrands (Codex's counterexample: $7.96\times10^{-5}$ at $M=12$, $4.91\times10^{-6}$ at $M=24$, ratio 16.2). The PS
+solver is therefore a **high-order algebraic** method whose accuracy is measured, not assumed:
+- Conventions (tested mode by mode in unit tests): orthonormal DST-I of size $M-1$; derivative of
+  $\sin(k\pi x)$ is $k\pi\cos(k\pi x)$, synthesised by DCT-I on nodes $0..M$ with the standard endpoint halving.
+- Lattice evaluation by direct synthesis of the sine series at the lattice coordinates (so $N$ need not contain the
+  lattice). Resolutions: three per dimension, 2D $N\in\{1024,1536,2048\}$, 3D $N\in\{128,192,256\}$, and the observed
+  order $q$ from them (A1.7).
+- IC coefficients: tensor Gauss–Legendre, 4096 points per axis, **checked** against 8192 points (relative coefficient
+  difference $\le10^{-13}$, gate G3b).
+- ETDRK4 contour: 32 points, checked against 64 (coefficient difference $\le10^{-13}$, gate G3c).
+- Time step as §3.3; every cross-check case is also run at the finest $N$ with $\Delta t/2$ (A1.7), and the running
+  maximum of $|u|$ and finiteness of every stage are recorded.
+
+**A1.7 Cross-check decision table (items 30, 33, 34, 35; WRONG → repaired).** Per cross-check case:
+$x_{PS}=\max_{k\ge1}\lVert u_{PS}-u_3\rVert/n_0$ (finest $N$, $\Delta t$); spatial self-error
+$s_x=\max_k\lVert u_{PS}^{(N_3)}-u_{PS}^{(N_2)}\rVert/n_0$, accepted as a conservative bound only if the observed
+three-level PS order $q\ge2.5$ at every $t_k$ (for ratio $4/3$, $q\ge2.41$ makes $s_x\ge$ the Richardson error of
+$N_3$); temporal self-error $s_t=\max_k\lVert u_{PS}^{(\Delta t)}-u_{PS}^{(\Delta t/2)}\rVert/n_0$; total
+$\sigma_{PS}=s_x+s_t$ (IC and contour errors are gated to $\le10^{-13}$ separately). Then, exhaustively:
+
+| condition | verdict |
+|---|---|
+| PS solver non-finite, or $q<2.5$ / undefined at some $t_k$ | **UNRESOLVED** |
+| $\sigma_{PS}>\epsilon_{ref}/2$ | **UNRESOLVED** |
+| $\sigma_{PS}\le\epsilon_{ref}/2$ and $x_{PS}\le2\epsilon_{ref}$ | **PASS** |
+| $\sigma_{PS}\le\epsilon_{ref}/2$ and $x_{PS}>2\epsilon_{ref}$ | **FAIL** (the plan's K0: disagreement beyond $2\epsilon_{ref}$) |
+
+An UNRESOLVED case is escalated once: the PS triple becomes $(N_2,N_3,\tfrac32N_3)$ (2D 3072, 3D 384) with the
+fine-$N$ $\Delta t/2$ run repeated, ratio $N_3/N_4=2/3$, and the table is reapplied; a case still UNRESOLVED is
+terminal UNRESOLVED (never promoted to PASS). **Dimension policy:** the cross-check validates the Richardson estimator
+for the dimension. Any FAIL **suspends every reference of that dimension** (loader `dimension_status='suspended'`,
+nothing rankable) until diagnosed in a dated amendment. With no FAIL, terminal-UNRESOLVED cases are K0-affected
+individually, and the dimension is `validated` iff at least 6 of 8 cases PASS, else `unvalidated` (all its cases
+non-rankable). Case selection (item 32): ties in $\nu$ broken by lower index; the selection is not a worst-case claim.
+
+**A1.8 Vector consistency and separated refinements (item 15).** Reported for every case (not gated):
+$c=\max_k\lVert(u_1-u_2)-\rho(u_2-u_3)\rVert/\lVert u_1-u_2\rVert$, $\rho=(h_1^{p}-h_2^{p})/(h_2^{p}-h_3^{p})$ at the
+observed $p$ (small $c$ means the leading error is a common vector, as Richardson assumes). Diagnostic D1 on 2D dev6
+cases 0, 4 and 3D dev4 cases 0, 2: a time-only ladder (finest $h$, $\Delta t$ of the three levels) and a space-only
+ladder (finest $\Delta t$, three $h$) of $R_{ST}$, each with its observed order and magnitude, to show neither
+component is cancelling the other.
+
+**A1.9 Uncertainty wording and bars (items 21, 56, 57, 58).** $2\epsilon_{ref}$ is an **estimated** resolution
+threshold (the triangle-inequality bound holds for the true reference error $\delta$; $\epsilon_{ref}$ estimates
+$\delta$ under the asymptotic assumption the order check tests). Two bars are distinct and both are reported: (i) the
+case-level ranking rule "no ranking inside $2\epsilon_{ref}$" (implemented by the loader's pairwise function); (ii) the
+plan's design target "worst $\epsilon_{ref}\le0.1\times$ the smallest claimed difference" (checked by the consuming
+lane). The old-vs-new $\delta_{old}$ bound holds for re-scoring the **same arm fields** on the same lattice with the
+fixed-$t_0$ normalisation; the cohort maximum of $\delta_{old}$ bounds changes of cohort maxima/medians of paired
+errors; the median of $\delta_{old}$ is descriptive only. Item 59: the old 3D "1.7–2.3 %" is restated as a 1.70 %
+probe discrepancy (513 vs 257 nodes, case 923651/0) and a worst held-out Richardson displacement of 2.28 %, neither a
+verified true error; the old 3D reference also used loose tolerances ($10^{-6}/10^{-7}$). $R_S$ (item 11) is the
+BE-matched space-only reference; it is not time-matched to CN/BDF2 arms.
+
+**A1.10 New 2D cohorts are row-wise, prefix-stable (item 50; WRONG → repaired).** Historical cohorts keep
+`engines.params_draw(seed, count)` with their exact counts (it draws whole columns and is not prefix-stable). New 2D
+cohorts (sealed128, ood32) use a row-wise generator: row $j$ draws from `np.random.default_rng([seed, j])`, in the
+order $c_x,c_y,w,a,\log\nu$, with the family's (or OOD) ranges. New 3D cohorts use `b3d_common.draw_param_table`
+(row-wise already) with the OOD ranges substituted for OOD. A unit test checks prefix stability and that every new
+seed differs from every historical seed.
+
+**A1.11 Sealing restated (items 51, 52, 53; WRONG → repaired as far as a shared account allows).** All lanes run as one
+cluster user, so **no file permission is an access boundary**; this is stated plainly in the report. What is done:
+- A 256-bit key is generated on the cluster login node (`openssl rand`) into
+  `/cluster/tufts/paralab/tawal01/jcp-ref/custody/sealed.key` (mode 0400). The seeds file and **every sealed/OOD
+  artifact** (fields and per-case metadata) are written AES-256 encrypted (`openssl enc -aes-256-cbc -pbkdf2`, piped
+  from memory; no plaintext file is ever written). This protects against accidental reading (a lane globbing `*.npz`),
+  not against a deliberate one. **Open question for the user:** whether to move the key off the cluster to a custodian
+  (e.g. the user), which would make the encryption a real boundary.
+- Seeds: drawn by `secrets.randbits(31)`, rejected and redrawn only if they collide with a historical or other new seed
+  (redraws recorded); never replaced because of an outcome. Only the sha256 of the encrypted seed file and of the
+  plaintext seed JSON is committed.
+- QC aggregates pulled and reported for sealed/OOD cohorts follow a frozen schema: counts per outcome (A1.5),
+  refinement count, quantiles (min/median/max) of $p$, $\epsilon_{ref}$, Péclet and Newton totals, GPU-seconds. No
+  per-case values, no descriptors, no fields.
+- **The loader cannot read sealed/OOD data at all.** Opening is a coordinator act under the plan's global-freeze rule:
+  `open_sealed.py` (written by this lane, run only by the coordinator) refuses unless given a global freeze manifest
+  that lists every lane's committed selection hash and this lane's reference-store version, writes an immutable
+  opening record, and only then decrypts into the store. Post-opening method changes need a fresh cohort (plan).
+  G7 tests the refusal paths (missing manifest, manifest without the store version, wrong key).
+
+**A1.12 Store and loader restated (items 38, 54, 55; item 55 WRONG → repaired).** Per case and kind,
+`c<case>.npz` holds every attempted level's lattice field (`u_L<L>`), and `meta` JSON holds: dimension, cohort,
+case, descriptors and table/cohort hash, lattice id, output times, canonical $t_0$ field hash and $n_0$, levels and
+$\Delta t$ used, solver configuration and tolerances, per-step Newton evidence (max relative residual, total and max
+Newton count, step failures), running max $|u|$, Péclet, $p(t_k)$, $\epsilon_{ref}(t_k)$, $c$ (A1.8), outcome
+(A1.5), refinement history, job id, GPU, commit, and the cross-check disposition (cross-check cases) and dimension
+status. $u_R$ is **derived** by the loader, labelled diagnostic, with no uncertainty attached. API:
+- `load(dim, cohort, case, kind='ST', field='finest'|'richardson')` → `(fields, meta)`; sha256-checked.
+- `reference_status(dim, cohort, case, kind)` → `{accepted, outcome, eps_ref, dimension_status, eligible}`;
+  `eligible` = accepted and dimension validated.
+- `score(field, dim, cohort, case, kind)` → `{e, e_t, eps_ref, eligible}` (one arm; no ranking claim).
+- `resolved(e_a, e_b, eps_ref)` → `|e_a-e_b| > 2 eps_ref` (pairwise ranking rule).
+- `restrict(dim, cohort, case, kind, stride)` → reference levels restricted to a coarser sub-lattice **with $n_0$,
+  $p$, $\epsilon_{ref}$ recomputed there**; arms must be restricted to the same sub-lattice (item 38).
+
+**A1.13 Gates restated (items 39–44).**
+- G1 parity: identical $\Delta t$ (0.005), tolerances (2D: ntol $10^{-10}$, ltol $10^{-11}$ passed at query time;
+  3D: the same passed to the constructor), max Newton 20, nodal IC, outputs at $t_k$; bar $10^{-12}$ relative.
+- G2 MMS (positive times only): $u^*=(1+\tfrac12\sin 4\pi t)\,\prod_a\sin(\pi x_a)\,\exp(\prod_a x_a)$, $\nu=0.05$;
+  forcing $f=u^*_t+u^*\sum_a\partial_a u^*-\nu\Delta u^*$ computed by JAX automatic differentiation of the analytic
+  $u^*$ (independent of the FD operators), applied as $\tfrac12(f^{n+1}+f^n)$ in CN stages and $f^{n+1}$ in BE stages.
+  Levels 2D $L=128,256,512$ ($\Delta t=0.05/8,\ /16,\ /32$), 3D $L=32,64,128$ ($\Delta t=0.05/4,/8,/16$). Bars: true
+  order in $[1.9,2.1]$ at every $t_k$, $k\ge1$; effectivity $\epsilon_{ref}/e_{true}\in[0.5,2]$ on the finest level.
+  The forcing path is a separate argument, `None` in every production call.
+- G3a PS linear: nonlinear term off, IC a finite set of sine modes; vs the exact decay at $t_k$, $k\ge1$, error
+  $\le10^{-12}\lVert u(t_k)\rVert$. G3b/G3c: IC quadrature and contour checks (A1.6).
+- G4 PS MMS: the G2 $u^*$ (not band-limited in sines) with forcing projected by the same oversampled DST; spatial
+  ladder (three $N$ at $\Delta t$ small enough that $s_t$ is $<10^{-3}$ of the spatial error) with observed order
+  $\ge3$, temporal ladder (three $\Delta t$ at large $N$) with observed order in $[3.5,4.5]$; and the projection unit
+  test on Codex's $\sin(2\pi x)\sin^2(\pi y)$ example (observed quadrature order in $[3.5,4.5]$).
+- G5 audit: `audit_ref.py` (NumPy, no JAX) recomputes $p$, $\epsilon_{ref}$, $c$, outcomes, cross-check numbers and
+  $\delta_{old}$ from stored fields; recomputes the canonical $t_0$ field **from the descriptors** (independent code
+  path) and compares it with the stored one (detects a swapped case even when field and metadata are swapped
+  together); fault injection 1: cases 0 and 1 of 2D val32 swapped (fields+meta) must be detected by the $t_0$ check;
+  fault injection 2: $u_{L=4096}(t_3)$ of 2D val32 case 0 multiplied by 1.01 must change the recomputed $p$ or
+  $\epsilon_{ref}$ relative to the stored metadata by more than $10^{-6}$ (detected). Expected values are never
+  regenerated after injection. Newton acceptance is audited from the stored per-step evidence.
+- G6 loader: manifest pinned by commit; swapped files and a 1 %-perturbed field must raise.
+
+**A1.14 Controls restated (items 45–48).**
+- X1: upwind + BE with $\Delta t\propto h$: 2D dev6 at $L=512,1024,2048$ with $\Delta t=2.5,1.25,0.625\times10^{-3}$;
+  3D dev4 at $L=64,128,256$ with $\Delta t=5,2.5,1.25\times10^{-3}$. Expected rejection on every case; a case that
+  passes is reported as an accidental-order case (not hidden). X1b (deterministic): take accepted $R_{ST}$ levels of
+  2D dev6 case 0 and add $C h_i\,\phi$ ($\phi$ the normalised $t_k$ field, $C$ such that the injected term is
+  $10\times d_{23}$ at $h_3$); the gate must reject.
+- X2: the old first-order reference in place of $u_3$, judged with the **new** $\epsilon_{ref}$ and the same PS
+  resolution condition; expected FAIL on every cross-check case (a hypothesis; any non-FAIL is reported).
+- X3: kinds $R_{ST}$ (2D ST, 3D) and $R_S$ (2D S) on the non-sealed cohorts only; failing the 90 % threshold is
+  reported as "bias not resolved above $\epsilon_{ref}$", not "immaterial".
+- X4 is a **sensitivity probe**, not a must-fail control: 2D dev6 case 0, $R_{ST}$, the middle level's $\Delta t$
+  doubled.
+
+**A1.15 Compute (items 62, 63).** Solvers stream: only the six output states (plus the current/previous state and
+solver workspace) are held on the device; nothing per step is retained except scalar evidence. 3D factor
+$1+1/16+1/256$. The PS row becomes 3 resolutions + one $\Delta t/2$ run per case, re-estimated after the smoke
+(allocated 15 GPU-h; the 9 GPU-h row is withdrawn). Floor measurement (A1.4), D1 (A1.8), X1 and G-runs add ≈ 4 GPU-h.
+All per-case costs are **calibrated in the real-size smoke** and the table is re-issued as an amendment before the
+production jobs; production starts only if the calibrated total is $\le 120$ GPU-h (otherwise the user is asked).
+`--mem` is host memory; device memory is measured (`peak_bytes_in_use`) in the smoke.

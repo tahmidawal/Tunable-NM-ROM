@@ -283,7 +283,7 @@ def audit_crosscheck(dim, summary):
                 x = float(np.max(norms(half - u3)[1:]) / n0)
                 nums = dict(nums, s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x, eta=(x / eps if eps > 0 else None))
                 nums.update({f'q{k}': v_ for k, v_ in enumerate(q)})
-                if not all(np.isfinite(list(nums.values()))):
+                if not all(v_ is not None and np.isfinite(v_) for v_ in nums.values()):
                     v = 'UNRESOLVED'
                 else:
                     v = 'UNRESOLVED' if s_x + s_t > eps / 2 else ('PASS' if x <= 2 * eps else 'FAIL')

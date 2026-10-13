@@ -872,3 +872,19 @@ $\epsilon_{ref}$ still decides whether they can count.
 written before any 2D FD reference existed and before any $x_{PS}$ was computed in either dimension, so no PS-vs-FD
 outcome could inform it. The report lists, for every cross-check case, the verdict under A10.1 and the verdict the old
 rule ($q\ge2.5$, raw $s_x$) would have given.
+
+**A10.3 (same day, after Codex audit `audits/codex-design-5.md`).** (i) *Chronology, narrowed:* A10 was written after
+inspecting PS self-convergence and before any comparison with the **new second-order** FD references of the
+cross-check cases (none existed). Older first-order references of these cases exist in sibling worktrees; this lane
+made no comparison of PS with them before A10 (repository history records none; it cannot prove a negative).
+(ii) *Floor, no abrupt drop:* at a time with $d_{23}^{PS}/n_0\le10^{-12}$ the indicator is
+$\max\big(10^{-12},\ d_{23}^{PS}/n_0\cdot m\big)$ with $m$ the Richardson multiplier if $q\ge0.5$ is defined there,
+else $m=10$ (above the largest multiplier the $4/3$ and $3/2$ ladders admit, 6.46 and 4.45). The floor rests on an
+explicit assumption — that any remaining PS spatial error is negligible at the $10^{-12}$ scale — which small
+self-differences alone do not prove. (iii) *Validity from the arrays:* the cross-check rejects any non-finite PS or FD
+array directly instead of trusting the stored `finite` flag, and rejects a non-finite $\epsilon_{ref}$. (iv) *Disclosure:*
+every cross-check record carries `old_rule_verdict`, the verdict of the pre-A10 rule ($q\ge2.5$ at every time, raw
+$s_x$) **on the same selected ladder** (not the full old procedure, which could have required an escalation), computed
+on every path; the audit re-derives it and the report prints it beside the A10 verdict. (v) *Meaning of a PASS:*
+conditional agreement on the scoring lattice at $t_1..t_5$; it does not validate the PS initial representation, early
+times, or the absence of a bias shared by all PS resolutions, and it does not make $\epsilon_{ref}$ a rigorous bound.

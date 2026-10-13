@@ -257,13 +257,14 @@ w('')
 # --------------------------------------------------------------------------------------------- cross-check ---
 w('## Pseudo-spectral cross-check')
 w('')
-w('| dim | case | verdict | $\\epsilon_{ref}$ | $x_{PS}$ | $\\sigma_{PS}$ | $x_{PS}/\\epsilon_{ref}$ | PS vs Richardson | '
-  'PS spatial order | X2 (old ref) |')
-w('|---|---|---|---|---|---|---|---|---|---|')
+w('| dim | case | verdict (A10) | pre-A10 rule, same ladder | $\\epsilon_{ref}$ | $x_{PS}$ | $\\sigma_{PS}$ | '
+  '$x_{PS}/\\epsilon_{ref}$ | PS vs Richardson | PS spatial order | X2 (old reference field) |')
+w('|---|---|---|---|---|---|---|---|---|---|---|')
 for d in sorted(dims):
     for k, v in sorted(dims[d]['crosscheck'].items(), key=lambda kv: int(kv[0].split('/')[1])):
         qq = [x for x in (v.get('q') or []) if x is not None]
         w(f"| {DIMNAME[d]} | {k} | {v['verdict']}{' (' + v['reason'] + ')' if v.get('reason') else ''} | "
+          f"{v.get('old_rule_verdict', '—')} | "
           f"{sci(v.get('eps_ref'))} | {sci(v.get('x_ps'))} | {sci(v.get('sigma'))} | {fx(v.get('eta'), 2)} | "
           f"{sci(v.get('ps_vs_richardson'))} | {fx(min(qq), 2) + '–' + fx(max(qq), 2) if qq else '—'} | "
           f"{(v.get('x2_old') or {}).get('verdict', '—')} |")

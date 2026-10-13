@@ -167,8 +167,9 @@ def ps_spatial_indicator(da, db, Ns, n0):
         if not np.isfinite(db[k]):
             ok = False
             continue
-        if db[k] / n0 <= PS_ROUNDOFF:
-            ind.append(PS_ROUNDOFF)
+        if db[k] / n0 <= PS_ROUNDOFF:                   # A10.3(ii): no abrupt drop at the floor
+            m = rich_factor(qk, hs[1], hs[2]) if (qk is not None and qk >= PS_Q_MIN) else 10.0
+            ind.append(max(PS_ROUNDOFF, db[k] / n0 * max(1.0, m)))
             continue
         if qk is None or qk < PS_Q_MIN:
             ok = False
@@ -183,10 +184,12 @@ def crosscheck(fd_record, u3, ps, n0):
     ps: dict(spatial=[(N, lat), (N, lat), (N, lat)] coarse->fine at dt, half=lat at N3 and dt/2, full=lat at N3 and dt,
     finite=bool, gates_ok=bool, stability_ok=bool). Returns dict with verdict and numbers."""
     rec = dict(x_ps=None, s_x=None, s_t=None, sigma=None, q=None, eps_ref=fd_record.get('eps_ref'))
+    rec['old_rule_verdict'] = old_rule_verdict(fd_record, u3, ps, n0)
     if fd_record.get('outcome') != 'accepted' or rec['eps_ref'] is None or not np.isfinite(rec['eps_ref']):
         return dict(rec, verdict='FD-INVALID')
     eps = rec['eps_ref']
-    if not ps['finite']:
+    arrays = [x for _, x in ps['spatial']] + [ps['half'], ps['full'], u3]
+    if not ps['finite'] or not all(np.isfinite(np.asarray(x)).all() for x in arrays):
         return dict(rec, verdict='UNRESOLVED', reason='non-finite')
     if not ps['gates_ok']:
         return dict(rec, verdict='UNRESOLVED', reason='gates')
@@ -203,15 +206,31 @@ def crosscheck(fd_record, u3, ps, n0):
     s_t = float(np.max(tnorm(ps['full'] - ps['half'])[1:]) / n0)
     x_ps = float(np.max(tnorm(ps['half'] - u3)[1:]) / n0)
     rec.update(s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x_ps, eta=x_ps / eps if eps > 0 else None)
-    # A10.2: the verdict the pre-A10 rule (q >= 2.5 everywhere, raw s_x) would have given, for disclosure
-    raw = rec['s_x_raw'] + s_t
-    rec['old_rule_verdict'] = ('UNRESOLVED' if (not old_ok or raw > eps / 2) else
-                               ('PASS' if x_ps <= 2 * eps else 'FAIL'))
     if not all(np.isfinite(v) for v in (s_x, s_t, x_ps)):
         return dict(rec, verdict='UNRESOLVED', reason='non-finite')
     if s_x + s_t > eps / 2:
         return dict(rec, verdict='UNRESOLVED', reason='resolution')
     return dict(rec, verdict='PASS' if x_ps <= 2 * eps else 'FAIL', reason=None)
+
+
+def old_rule_verdict(fd_record, u3, ps, n0):
+    """A10.3(iv): the pre-A10 rule (q >= 2.5 at every time, raw s_x) on the SAME selected ladder, on every path."""
+    eps = fd_record.get('eps_ref')
+    if fd_record.get('outcome') != 'accepted' or eps is None or not np.isfinite(eps):
+        return 'FD-INVALID'
+    arrays = [x for _, x in ps['spatial']] + [ps['half'], ps['full'], u3]
+    if not ps['finite'] or not ps['gates_ok'] or not all(np.isfinite(np.asarray(x)).all() for x in arrays):
+        return 'UNRESOLVED'
+    (N1, a), (N2, b), (N3, c) = ps['spatial']
+    da, db = tnorm(a - b), tnorm(b - c)
+    q = [solve_order(da[k], db[k], 1.0 / N1, 1.0 / N2, 1.0 / N3) for k in range(1, 6)]
+    if any(x is None or x < 2.5 for x in q) or not ps['stability_ok']:
+        return 'UNRESOLVED'
+    raw = float(np.max(db[1:]) / n0) + float(np.max(tnorm(ps['full'] - ps['half'])[1:]) / n0)
+    x_ps = float(np.max(tnorm(ps['half'] - u3)[1:]) / n0)
+    if not (np.isfinite(raw) and np.isfinite(x_ps)) or raw > eps / 2:
+        return 'UNRESOLVED'
+    return 'PASS' if x_ps <= 2 * eps else 'FAIL'
 
 
 def dimension_status(verdicts):

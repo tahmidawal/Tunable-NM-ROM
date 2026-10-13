@@ -268,7 +268,8 @@ def audit_crosscheck(dim, summary):
         finite = all(np.isfinite(x).all() for x in sp + [half]) and all(r['finite'] for r in sel_runs)
         gates_ok = all(r['checks_ok'] and r['ic_quad_rel'] <= 1e-12 and r['ic_quad_max'] <= 1e-13
                        and r['contour_rel'] <= 1e-10 and r['job_gates_ok'] for r in sel_runs)
-        if meta['outcome'] != 'accepted' or eps is None:
+        finite = finite and bool(np.isfinite(u3).all())
+        if meta['outcome'] != 'accepted' or eps is None or not np.isfinite(eps):
             v = 'FD-INVALID'
         elif not (finite and gates_ok):
             v = 'UNRESOLVED'
@@ -280,8 +281,10 @@ def audit_crosscheck(dim, summary):
             for k in range(1, 6):
                 if not np.isfinite(db[k]):
                     okq = False
-                elif db[k] / n0 <= 1e-12:
-                    ind.append(1e-12)
+                elif db[k] / n0 <= 1e-12:                 # A10.3(ii)
+                    qq = q[k - 1]
+                    m = hh[2] ** qq / (hh[1] ** qq - hh[2] ** qq) if (qq is not None and qq >= 0.5) else 10.0
+                    ind.append(max(1e-12, db[k] / n0 * max(1.0, m)))
                 elif q[k - 1] is None or q[k - 1] < 0.5:
                     okq = False
                 else:
@@ -295,19 +298,34 @@ def audit_crosscheck(dim, summary):
                 x = float(np.max(norms(half - u3)[1:]) / n0)
                 nums = dict(nums, s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x, eta=(x / eps if eps > 0 else None))
                 nums.update({f'q{k}': v_ for k, v_ in enumerate(q)})
-                if not all(v_ is not None and np.isfinite(v_) for v_ in nums.values()):
+                if not all(v_ is not None and np.isfinite(v_) for k_, v_ in nums.items() if not k_.startswith('q')):
                     v = 'UNRESOLVED'
                 else:
                     v = 'UNRESOLVED' if s_x + s_t > eps / 2 else ('PASS' if x <= 2 * eps else 'FAIL')
         if v == 'UNRESOLVED' and ps.get('ladder_attempt', 0) == 0:
             v = 'UNRESOLVED-PENDING-ESCALATION'
+        # A10.3(iv): the pre-A10 rule on the same ladder, re-derived independently
+        if meta['outcome'] != 'accepted' or eps is None or not np.isfinite(eps):
+            old_v = 'FD-INVALID'
+        elif not (finite and gates_ok):
+            old_v = 'UNRESOLVED'
+        else:
+            da_, db_ = norms(sp[0] - sp[1]), norms(sp[1] - sp[2])
+            q_ = [order(da_[k], db_[k], [1 / N for N in Ns]) for k in range(1, 6)]
+            raw = float(np.max(db_[1:]) / n0) + float(np.max(norms(full - half)[1:]) / n0)
+            xx = float(np.max(norms(half - u3)[1:]) / n0)
+            if any(x_ is None or x_ < 2.5 for x_ in q_) or not stab or not np.isfinite(raw) or raw > eps / 2:
+                old_v = 'UNRESOLVED'
+            else:
+                old_v = 'PASS' if xx <= 2 * eps else 'FAIL'
         st = summary['dims'][str(dim)]['crosscheck'][f'{coh}/{j}']
         stq = {f'q{k}': v_ for k, v_ in enumerate(st.get('q') or [])}
         num_ok = 'stability_mismatch' not in nums and all(
             relclose(val, stq.get(k) if k.startswith('q') else st.get(k)) for k, val in nums.items())
         if any(k.startswith('q') for k in nums) and len(stq) != 5:
             num_ok = False
-        out[j] = dict(verdict=v, stored=st['verdict'], numbers=nums, match=bool(v == st['verdict'] and num_ok))
+        out[j] = dict(verdict=v, stored=st['verdict'], numbers=nums, old_rule=old_v,
+                      match=bool(v == st['verdict'] and num_ok and old_v == st.get('old_rule_verdict')))
     return out
 
 

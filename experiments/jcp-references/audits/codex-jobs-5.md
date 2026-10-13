@@ -1,0 +1,15 @@
+**SUBMIT — `experiments/jcp-references/runs/calib2d3`.** The calibration remains valid under A9. The claim that the payload changes *only* the TOL entry needs correction.
+
+| Check | Verdict | Evidence |
+|---|---|---|
+| Failure supports A9 | **PASS, narrowly** | The failed record has 202 stages, 12,120 Newton iterations, maximum 60: every stage exhausted its budget. Achieved maximum residual was \(3.795\times10^{-14}\); tight–tighter difference was \(8.622\times10^{-15}\), versus tight proxy \(7.473\times10^{-11}\). This supports stopping wasted iterations on this observed case; it does not prove the target is unreachable throughout 2D. |
+| Payload identity | **VERIFIED; delta claim incomplete** | Compared both provenance files and verified their hashes against the respective commits. Of 16 source entries, only `refjob.py` and `DESIGN.md` differ; the calibration config is identical. **`refjob.py` also contains A8’s PS step changes and NaN-safe stability check.** These do not execute in calibration mode and were covered by job audit 4. |
+| A2.1 / A3.2 | **PASS for job design** | Both trajectory differences remain checked against the less accurate solve’s proxy, computed from achieved residuals with the arithmetic floor. Budget exhaustion does not bypass validation. Budget 8’s actual calibration outcome remains to be measured. |
+| `steps_ok` and A5.4 | **PASS** | Every stage must remain finite and satisfy \(r_n\le2\times10^{-11}\); expected stage count and finite lattice fields are checked. Fields, residuals, Newton counts and hashes remain saved. Production still requires a passing dimension-specific calibration status. Acceptance does **not** certify attainment of the tighter target. |
+| A100, 16-hour allocation | **CREDIBLE estimate** | Estimated full workload is approximately **2.1 hours of solve time**, before compilation, transfers and output. Considerable headroom exists, but larger-grid iteration costs remain unmeasured. |
+| 2D budget 8 / running 3D budget 60 | **ACCEPTABLE** | Read-only inspection of job 5209714 confirms the recorded 306/586 iterations at \(L=128/256\), maximum 3 per stage, with tighter targets reached. Dimension-specific calibration and recorded budgets support the documented split. Current `TOL` is global: future 3D staging would also receive 8; the existing job retains 60 through its pinned payload. |
+| Bundle / batch script | **PASS** | All 19 manifest entries verify; `bash -n` passes. A100-80G, 16 hours, isolated directory, absolute venv, GPU preflight and f64/highest precision are present. |
+
+Runtime calculation: \(231.86(8/60)\approx30.9\) seconds for the capped tighter solve at 2048. Applying the requested \(64\times\) scaling gives approximately **340 / 417 / 1,979 seconds** for prod/tight/tighter at 8192. Accounting for both calibration cases, both kinds, all levels and D1/X1/X4 gives about **7,544 seconds**. This assumes comparable iteration costs; tight solves hitting their unchanged 40-iteration cap would increase it.
+
+No files modified, no lab-log entry written, and no job submitted.

@@ -147,9 +147,12 @@ echo ALL-DONE
     (out / 'run.sbatch').write_text(script)
     # isolated import check of the staged tree (code audit 3 item 1): the driver must import from the staged files only
     env = dict(__import__('os').environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='')
-    subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-S', '-c',
-                    'import sys; sys.path[:0] = ["."] + [p for p in __import__("site").getsitepackages()];'
-                    f'import {driver}'], cwd=out / LANE, env=env, check=True, capture_output=True)
+    chk = (f'import sys, {driver}; staged = {str(out)!r}; '
+           'mods = [m.__file__ for m in list(sys.modules.values()) if getattr(m, "__file__", None) and "/experiments/" in m.__file__]; '
+           'bad = [f for f in mods if not f.startswith(staged)]; assert not bad, bad; print(len(mods), "lane modules from the staged tree")')
+    r_ = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env, capture_output=True, text=True)
+    assert r_.returncode == 0, r_.stderr[-2000:]
+    print(r_.stdout.strip())
     manifest = [f'{hashlib.sha256(p_.read_bytes()).hexdigest()}  {p_.relative_to(out)}'
                 for p_ in sorted(out.rglob('*')) if p_.is_file()]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')

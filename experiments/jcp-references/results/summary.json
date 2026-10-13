@@ -1,0 +1,4428 @@
+{
+ "store_version": "f8203b8be6b9b54567b123c113c2c41d6e72bfa0e205beb1a49dae65f13b6b13",
+ "jobs": {
+  "calib3d2": {
+   "mode": "calib",
+   "dim": 3,
+   "cohort": null,
+   "complete": true,
+   "job": {
+    "job_id": "5209714",
+    "commit": "84b66688ed3bd80f475d1d78ad4d0b94a41f1559",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 1806.8197450814769,
+   "smoke_override": false
+  },
+  "fd3ddev4p0": {
+   "mode": "fd",
+   "dim": 3,
+   "cohort": "dev4",
+   "complete": true,
+   "job": {
+    "job_id": "5210564",
+    "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 761.3105687825009,
+   "smoke_override": false
+  },
+  "gates2": {
+   "mode": "gates",
+   "dim": 2,
+   "cohort": null,
+   "complete": true,
+   "job": {
+    "job_id": "5209722",
+    "commit": "538e66d083303900dec21568530662019ac261a0",
+    "gpu": "NVIDIA A100 80GB PCIe",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 115.66858050180599,
+   "smoke_override": false
+  },
+  "ps3dp0": {
+   "mode": "ps",
+   "dim": 3,
+   "cohort": "val64",
+   "complete": true,
+   "job": {
+    "job_id": "5209856",
+    "commit": "605f2f9b3d4e863f16eece9c9a0c081052f504cc",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 1996.9101778101176,
+   "smoke_override": false
+  }
+ },
+ "dims": {
+  "2": {
+   "dimension_status": "unvalidated",
+   "e0_verdict": "FAIL",
+   "ineligible": [],
+   "crosscheck": {
+    "val32/0": {
+     "verdict": "MISSING"
+    },
+    "val32/1": {
+     "verdict": "MISSING"
+    },
+    "val32/2": {
+     "verdict": "MISSING"
+    },
+    "val32/3": {
+     "verdict": "MISSING"
+    },
+    "val32/4": {
+     "verdict": "MISSING"
+    },
+    "val32/5": {
+     "verdict": "MISSING"
+    },
+    "val32/19": {
+     "verdict": "MISSING"
+    },
+    "val32/26": {
+     "verdict": "MISSING"
+    }
+   },
+   "cases": [
+    {
+     "cohort": "dev6",
+     "kind": "ST",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "ST",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "ST",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "ST",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "ST",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "ST",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "S",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "S",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "S",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "S",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "S",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "dev6",
+     "kind": "S",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "ST",
+     "case": 31,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val32",
+     "kind": "S",
+     "case": 31,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 31,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 32,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 33,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 34,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 35,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 36,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 37,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 38,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 39,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 40,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 41,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 42,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 43,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 44,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 45,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 46,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 47,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 48,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 49,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 50,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 51,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 52,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 53,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 54,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 55,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 56,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 57,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 58,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 59,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 60,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 61,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 62,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "ST",
+     "case": 63,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 31,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 32,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 33,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 34,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 35,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 36,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 37,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 38,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 39,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 40,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 41,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 42,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 43,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 44,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 45,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 46,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 47,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 48,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 49,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 50,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 51,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 52,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 53,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 54,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 55,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 56,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 57,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 58,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 59,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 60,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 61,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 62,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test64",
+     "kind": "S",
+     "case": 63,
+     "outcome": "MISSING"
+    }
+   ],
+   "old_vs_new": [],
+   "x3": {},
+   "old_coverage": {
+    "dev6": [],
+    "val32": [],
+    "test64": []
+   }
+  },
+  "3": {
+   "dimension_status": "unvalidated",
+   "e0_verdict": "FAIL",
+   "ineligible": [],
+   "crosscheck": {
+    "val64/0": {
+     "verdict": "MISSING"
+    },
+    "val64/1": {
+     "verdict": "MISSING"
+    },
+    "val64/2": {
+     "verdict": "MISSING"
+    },
+    "val64/3": {
+     "verdict": "MISSING"
+    },
+    "val64/5": {
+     "verdict": "MISSING"
+    },
+    "val64/33": {
+     "verdict": "MISSING"
+    },
+    "val64/43": {
+     "verdict": "MISSING"
+    },
+    "val64/47": {
+     "verdict": "MISSING"
+    }
+   },
+   "cases": [
+    {
+     "cohort": "dev4",
+     "kind": "ST",
+     "case": 0,
+     "outcome": "accepted",
+     "eps_ref": 7.893531637447057e-05,
+     "p": [
+      1.9921611091372955,
+      2.0018287758747144,
+      2.0095199856471546,
+      2.0111445455521406,
+      2.0105551452586337
+     ],
+     "c": [
+      0.008353609330864957,
+      0.017825424970815726,
+      0.018257795248306292,
+      0.015286206720501416,
+      0.012522267937366707
+     ],
+     "d23": [
+      0.00010179618354333494,
+      0.00019451962909019423,
+      0.0002388963365693712,
+      0.00023655963220834943,
+      0.00021951565111960996
+     ],
+     "tau": [
+      1.7566616132775933e-09,
+      4.1915802584960984e-10,
+      4.0199999999999994e-11
+     ],
+     "peclet": 1.029192177479475,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.011457118971081995,
+     "seconds": 159.97927517071366,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 1478
+    },
+    {
+     "cohort": "dev4",
+     "kind": "ST",
+     "case": 1,
+     "outcome": "accepted",
+     "eps_ref": 9.15483998547731e-05,
+     "p": [
+      1.992932522174192,
+      1.9998175228407498,
+      2.008567638148682,
+      2.011428512568434,
+      2.0114581364793755
+     ],
+     "c": [
+      0.006308140680485877,
+      0.016065119451677736,
+      0.01877805513245581,
+      0.016532839090265504,
+      0.013829380232954125
+     ],
+     "d23": [
+      0.00010001051407909448,
+      0.0001967080009946154,
+      0.0002667211020410523,
+      0.00027755757405550035,
+      0.0002616081944075207
+     ],
+     "tau": [
+      1.3993202361415279e-09,
+      5.028267909980097e-10,
+      4.0199999999999994e-11
+     ],
+     "peclet": 1.0257208797225967,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.011310562979338778,
+     "seconds": 150.40229986142367,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 1484
+    },
+    {
+     "cohort": "dev4",
+     "kind": "ST",
+     "case": 2,
+     "outcome": "accepted",
+     "eps_ref": 1.3786132166446832e-05,
+     "p": [
+      1.9975675080773962,
+      1.998927585746864,
+      1.999393980732113,
+      1.9995988882720492,
+      1.9997217756463475
+     ],
+     "c": [
+      0.0013481167360701507,
+      0.0011457644514737903,
+      0.0011135166878257104,
+      0.0010248011197188458,
+      0.0009221229755925736
+     ],
+     "d23": [
+      3.863863213287837e-05,
+      4.131742054633026e-05,
+      4.088608936898232e-05,
+      3.9394958619508456e-05,
+      3.747212727414878e-05
+     ],
+     "tau": [
+      1.3306688723491157e-11,
+      2.0199999999999996e-11,
+      4.0199999999999994e-11
+     ],
+     "peclet": 0.23687275433514188,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.024912294402235323,
+     "seconds": 103.7544585922733,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 1412
+    },
+    {
+     "cohort": "dev4",
+     "kind": "ST",
+     "case": 3,
+     "outcome": "accepted",
+     "eps_ref": 1.3807144016837256e-05,
+     "p": [
+      1.9973761600173556,
+      1.9985974547894314,
+      1.9991323123920925,
+      1.9994034161083114,
+      1.9995588991854842
+     ],
+     "c": [
+      0.002356855404103294,
+      0.0017283059464714627,
+      0.0014971061293120914,
+      0.0013654575320760493,
+      0.0012540897721985327
+     ],
+     "d23": [
+      4.132107872113825e-05,
+      3.556321857096374e-05,
+      2.9612650765078856e-05,
+      2.4798895542902946e-05,
+      2.124136048041943e-05
+     ],
+     "tau": [
+      1.5068048090020525e-11,
+      2.0199999999999996e-11,
+      4.0199999999999994e-11
+     ],
+     "peclet": 0.15461290550918827,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.05098977397724809,
+     "seconds": 99.54937644023448,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 1412
+    },
+    {
+     "cohort": "dev4",
+     "kind": "S",
+     "case": 0,
+     "outcome": "accepted",
+     "eps_ref": 6.18628008912252e-05,
+     "p": [
+      2.0002689332117494,
+      2.0037402502558708,
+      2.0068403276069895,
+      2.008245207698988,
+      2.0084511791066
+     ],
+     "c": [
+      0.004706020390910802,
+      0.009123528115637297,
+      0.010809095558928405,
+      0.010551518067241519,
+      0.009596503400466987
+     ],
+     "d23": [
+      7.400858031316409e-05,
+      0.00013907810986112798,
+      0.0001764806569909096,
+      0.00018700667049729262,
+      0.00018336839393512229
+     ],
+     "tau": [
+      4.999999999999999e-12,
+      4.999999999999999e-12,
+      4.999999999999999e-12
+     ],
+     "peclet": 1.029192177479475,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.011457118971081995,
+     "seconds": 84.25112355407327,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 450
+    },
+    {
+     "cohort": "dev4",
+     "kind": "S",
+     "case": 1,
+     "outcome": "accepted",
+     "eps_ref": 7.039762322895249e-05,
+     "p": [
+      1.9999718754301066,
+      2.002910586655337,
+      2.0062925097361846,
+      2.0082710630952905,
+      2.0090020868892906
+     ],
+     "c": [
+      0.0037986590650648257,
+      0.008299192409694702,
+      0.010705110541867157,
+      0.011002520124899924,
+      0.01029559388131377
+     ],
+     "d23": [
+      6.973274294255259e-05,
+      0.0001413267254273022,
+      0.00019253354276640693,
+      0.00021281188254049265,
+      0.0002121969450369376
+     ],
+     "tau": [
+      4.999999999999999e-12,
+      4.999999999999999e-12,
+      4.999999999999999e-12
+     ],
+     "peclet": 1.0257208797225967,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.011310562979338778,
+     "seconds": 85.2514215130359,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 450
+    },
+    {
+     "cohort": "dev4",
+     "kind": "S",
+     "case": 2,
+     "outcome": "accepted",
+     "eps_ref": 1.1602171154463837e-05,
+     "p": [
+      1.999603506835843,
+      2.000042144046581,
+      2.0002245478540575,
+      2.000299514602633,
+      2.000343803273484
+     ],
+     "c": [
+      0.0009720216777071421,
+      0.0011377615743689993,
+      0.001122403403584365,
+      0.001035377983857408,
+      0.0009357205648555343
+     ],
+     "d23": [
+      2.5349098081211936e-05,
+      3.28990823103199e-05,
+      3.481373729190118e-05,
+      3.468191756199371e-05,
+      3.365544487048303e-05
+     ],
+     "tau": [
+      4.588892506848864e-10,
+      4.6309326565768016e-10,
+      4.652547478108053e-10
+     ],
+     "peclet": 0.23687275433514188,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.024912294402235323,
+     "seconds": 30.90720173995942,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 318
+    },
+    {
+     "cohort": "dev4",
+     "kind": "S",
+     "case": 3,
+     "outcome": "accepted",
+     "eps_ref": 8.09731741022039e-06,
+     "p": [
+      1.9996667799354628,
+      2.000086639087601,
+      2.000284919004088,
+      2.000323022317975,
+      2.0002911533711067
+     ],
+     "c": [
+      0.00044950114098091167,
+      0.00048291452715531135,
+      0.0005778843624857767,
+      0.0006162672992847039,
+      0.0005888942008070735
+     ],
+     "d23": [
+      2.0838094291157126e-05,
+      2.4293897382583416e-05,
+      2.2717790568814863e-05,
+      2.0279332795089524e-05,
+      1.8106909736659576e-05
+     ],
+     "tau": [
+      5.081186677027939e-10,
+      5.103090657651458e-10,
+      5.147850235645343e-10
+     ],
+     "peclet": 0.15461290550918827,
+     "refined": false,
+     "tight": false,
+     "levels": [
+      128,
+      256,
+      512
+     ],
+     "nu": 0.05098977397724809,
+     "seconds": 29.966590894386172,
+     "gpu": "NVIDIA H200",
+     "job_id": "5210564",
+     "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+     "newton_total": 324
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 31,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 32,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 33,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 34,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 35,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 36,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 37,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 38,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 39,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 40,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 41,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 42,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 43,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 44,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 45,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 46,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 47,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 48,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 49,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 50,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 51,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 52,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 53,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 54,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 55,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 56,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 57,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 58,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 59,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 60,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 61,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 62,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "ST",
+     "case": 63,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 31,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 32,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 33,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 34,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 35,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 36,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 37,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 38,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 39,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 40,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 41,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 42,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 43,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 44,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 45,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 46,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 47,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 48,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 49,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 50,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 51,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 52,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 53,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 54,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 55,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 56,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 57,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 58,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 59,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 60,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 61,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 62,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "val64",
+     "kind": "S",
+     "case": 63,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "ST",
+     "case": 31,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 0,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 1,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 2,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 3,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 4,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 5,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 6,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 7,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 8,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 9,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 10,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 11,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 12,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 13,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 14,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 15,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 16,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 17,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 18,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 19,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 20,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 21,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 22,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 23,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 24,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 25,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 26,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 27,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 28,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 29,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 30,
+     "outcome": "MISSING"
+    },
+    {
+     "cohort": "test32",
+     "kind": "S",
+     "case": 31,
+     "outcome": "MISSING"
+    }
+   ],
+   "old_vs_new": [],
+   "x3": {},
+   "old_coverage": {
+    "dev4": [],
+    "val64": [],
+    "test32": []
+   }
+  }
+ },
+ "refused_jobs": {},
+ "calib": {
+  "3": {
+   "calib": [
+    {
+     "case": 0,
+     "kind": "ST",
+     "L": 128,
+     "dt": 0.0025,
+     "prod_vs_tight": 1.2978309693219683e-11,
+     "tight_vs_tighter": 0.0,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 128,
+       "dt": 0.0025,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 102,
+       "expected_stages": 102,
+       "steps_ok": true,
+       "max_res": 9.73389547564646e-12,
+       "tau": 1.7566616132775933e-09,
+       "newton_total": 270,
+       "newton_max": 3,
+       "umax_running": 1.509321884350628,
+       "lattice_finite": true,
+       "seconds": 3.3038767175748944,
+       "ic_seconds": 0.04371385741978884,
+       "compile_seconds": 1.0220001265406609,
+       "solve_seconds": 1.5424649780616164,
+       "peak_bytes": 394609920
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 128,
+       "dt": 0.0025,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 102,
+       "expected_stages": 102,
+       "steps_ok": true,
+       "max_res": 1.5380804815762286e-16,
+       "tau": 1.0199999999999995e-11,
+       "newton_total": 306,
+       "newton_max": 3,
+       "umax_running": 1.509321884350628,
+       "lattice_finite": true,
+       "seconds": 2.9020049842074513,
+       "ic_seconds": 0.04950277879834175,
+       "compile_seconds": 0.8391647581011057,
+       "solve_seconds": 2.004457578063011,
+       "peak_bytes": 410996992
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 128,
+       "dt": 0.0025,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 102,
+       "expected_stages": 102,
+       "steps_ok": true,
+       "max_res": 1.5380804815762286e-16,
+       "tau": 1.0199999999999995e-11,
+       "newton_total": 306,
+       "newton_max": 3,
+       "umax_running": 1.509321884350628,
+       "lattice_finite": true,
+       "seconds": 2.9111992744728923,
+       "ic_seconds": 0.050192187540233135,
+       "compile_seconds": 0.8432235512882471,
+       "solve_seconds": 2.0089508118107915,
+       "peak_bytes": 427384064
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 0.007388053336581226,
+     "ratio_tight": 0.0
+    },
+    {
+     "case": 0,
+     "kind": "ST",
+     "L": 256,
+     "dt": 0.00125,
+     "prod_vs_tight": 2.2871372891345993e-12,
+     "tight_vs_tighter": 2.7459454788741393e-13,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 256,
+       "dt": 0.00125,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 202,
+       "expected_stages": 202,
+       "steps_ok": true,
+       "max_res": 4.870190401117142e-13,
+       "tau": 4.1915802584960984e-10,
+       "newton_total": 404,
+       "newton_max": 2,
+       "umax_running": 1.510798311490115,
+       "lattice_finite": true,
+       "seconds": 14.446638908237219,
+       "ic_seconds": 1.1186373913660645,
+       "compile_seconds": 1.2577590588480234,
+       "solve_seconds": 11.819884482771158,
+       "peak_bytes": 3369105664
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 256,
+       "dt": 0.00125,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 202,
+       "expected_stages": 202,
+       "steps_ok": true,
+       "max_res": 9.793461892017119e-14,
+       "tau": 5.002162961724419e-11,
+       "newton_total": 529,
+       "newton_max": 3,
+       "umax_running": 1.510798311490115,
+       "lattice_finite": true,
+       "seconds": 22.804128752090037,
+       "ic_seconds": 0.3596753217279911,
+       "compile_seconds": 0.9358539283275604,
+       "solve_seconds": 21.498092985711992,
+       "peak_bytes": 3501756672
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 256,
+       "dt": 0.00125,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 202,
+       "expected_stages": 202,
+       "steps_ok": true,
+       "max_res": 2.9731145491203957e-14,
+       "tau": 2.2615034180744422e-11,
+       "newton_total": 586,
+       "newton_max": 3,
+       "umax_running": 1.510798311490115,
+       "lattice_finite": true,
+       "seconds": 25.220232481136918,
+       "ic_seconds": 0.3568813353776932,
+       "compile_seconds": 0.9990745391696692,
+       "solve_seconds": 23.852500605396926,
+       "peak_bytes": 3634407680
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 0.005456503628908691,
+     "ratio_tight": 0.005489516235047881
+    },
+    {
+     "case": 0,
+     "kind": "ST",
+     "L": 512,
+     "dt": 0.000625,
+     "prod_vs_tight": 3.186861480872257e-16,
+     "tight_vs_tighter": 0.0,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 512,
+       "dt": 0.000625,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 402,
+       "expected_stages": 402,
+       "steps_ok": true,
+       "max_res": 4.1355870430905736e-15,
+       "tau": 4.0199999999999994e-11,
+       "newton_total": 804,
+       "newton_max": 2,
+       "umax_running": 1.510875581490973,
+       "lattice_finite": true,
+       "seconds": 146.26849320810288,
+       "ic_seconds": 4.909289746545255,
+       "compile_seconds": 1.5084155360236764,
+       "solve_seconds": 139.56765844486654,
+       "peak_bytes": 27146761728
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 512,
+       "dt": 0.000625,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 402,
+       "expected_stages": 402,
+       "steps_ok": true,
+       "max_res": 4.129304626250765e-15,
+       "tau": 4.0199999999999994e-11,
+       "newton_total": 804,
+       "newton_max": 2,
+       "umax_running": 1.510875581490973,
+       "lattice_finite": true,
+       "seconds": 190.91815636400133,
+       "ic_seconds": 3.4311457546427846,
+       "compile_seconds": 0.8755372408777475,
+       "solve_seconds": 186.5969371451065,
+       "peak_bytes": 28214224384
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 512,
+       "dt": 0.000625,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 402,
+       "expected_stages": 402,
+       "steps_ok": true,
+       "max_res": 4.129304626250765e-15,
+       "tau": 4.0199999999999994e-11,
+       "newton_total": 804,
+       "newton_max": 2,
+       "umax_running": 1.510875581490973,
+       "lattice_finite": true,
+       "seconds": 190.84041578136384,
+       "ic_seconds": 3.4499505469575524,
+       "compile_seconds": 0.8816225556656718,
+       "solve_seconds": 186.4945518458262,
+       "peak_bytes": 29281687040
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 7.92751612157278e-06,
+     "ratio_tight": 0.0
+    },
+    {
+     "case": 0,
+     "kind": "S",
+     "L": 128,
+     "dt": 0.005,
+     "prod_vs_tight": 1.016672256484471e-16,
+     "tight_vs_tighter": 0.0,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 128,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 5.242546296979134e-16,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.509321884350628,
+       "lattice_finite": true,
+       "seconds": 1.2923379363492131,
+       "ic_seconds": 0.047334508039057255,
+       "compile_seconds": 0.0,
+       "solve_seconds": 1.2357771033421159,
+       "peak_bytes": 29281687040
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 128,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 5.23713525238634e-16,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.509321884350628,
+       "lattice_finite": true,
+       "seconds": 1.665448997169733,
+       "ic_seconds": 0.04868059419095516,
+       "compile_seconds": 0.0,
+       "solve_seconds": 1.6071148589253426,
+       "peak_bytes": 29281687040
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 128,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 5.23713525238634e-16,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.509321884350628,
+       "lattice_finite": true,
+       "seconds": 1.668222650885582,
+       "ic_seconds": 0.05090811476111412,
+       "compile_seconds": 0.0,
+       "solve_seconds": 1.6085347514599562,
+       "peak_bytes": 29281687040
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 2.0333445129689425e-05,
+     "ratio_tight": 0.0
+    },
+    {
+     "case": 0,
+     "kind": "S",
+     "L": 256,
+     "dt": 0.005,
+     "prod_vs_tight": 1.4209001237315714e-16,
+     "tight_vs_tighter": 0.0,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 256,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 2.007973766259165e-15,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.510798311490115,
+       "lattice_finite": true,
+       "seconds": 10.323271940462291,
+       "ic_seconds": 0.35396380815654993,
+       "compile_seconds": 0.0,
+       "solve_seconds": 9.95964097417891,
+       "peak_bytes": 29281687040
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 256,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 2.006058860434469e-15,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.510798311490115,
+       "lattice_finite": true,
+       "seconds": 13.429521976970136,
+       "ic_seconds": 0.35387879237532616,
+       "compile_seconds": 0.0,
+       "solve_seconds": 13.064772322773933,
+       "peak_bytes": 29281687040
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 256,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 2.006058860434469e-15,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.510798311490115,
+       "lattice_finite": true,
+       "seconds": 13.427582952193916,
+       "ic_seconds": 0.35638865921646357,
+       "compile_seconds": 0.0,
+       "solve_seconds": 13.058790531940758,
+       "peak_bytes": 29281687040
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 2.8418002474631433e-05,
+     "ratio_tight": 0.0
+    },
+    {
+     "case": 0,
+     "kind": "S",
+     "L": 512,
+     "dt": 0.005,
+     "prod_vs_tight": 1.9472197609967642e-16,
+     "tight_vs_tighter": 0.0,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 512,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 7.949278075333382e-15,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.510875581490973,
+       "lattice_finite": true,
+       "seconds": 75.36660900805146,
+       "ic_seconds": 3.4569583302363753,
+       "compile_seconds": 0.0,
+       "solve_seconds": 71.89609537087381,
+       "peak_bytes": 30349149952
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 512,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 7.944950535683043e-15,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.510875581490973,
+       "lattice_finite": true,
+       "seconds": 97.86473187897354,
+       "ic_seconds": 3.405850107781589,
+       "compile_seconds": 0.0,
+       "solve_seconds": 94.44502311572433,
+       "peak_bytes": 30349149952
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 512,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 7.944950535683043e-15,
+       "tau": 4.999999999999999e-12,
+       "newton_total": 150,
+       "newton_max": 3,
+       "umax_running": 1.510875581490973,
+       "lattice_finite": true,
+       "seconds": 97.87542108353227,
+       "ic_seconds": 3.4120037900283933,
+       "compile_seconds": 0.0,
+       "solve_seconds": 94.44897523429245,
+       "peak_bytes": 30349149952
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 3.8944395219935295e-05,
+     "ratio_tight": 0.0
+    },
+    {
+     "case": 2,
+     "kind": "ST",
+     "L": 128,
+     "dt": 0.0025,
+     "prod_vs_tight": 3.5169261374702345e-16,
+     "tight_vs_tighter": 4.442776261890237e-14,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 128,
+       "dt": 0.0025,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 102,
+       "expected_stages": 102,
+       "steps_ok": true,
+       "max_res": 8.29108523824699e-14,
+       "tau": 1.3306688723491157e-11,
+       "newton_total": 204,
+       "newton_max": 2,
+       "umax_running": 0.7553336053587735,
+       "lattice_finite": true,
+       "seconds": 0.6267690220847726,
+       "ic_seconds": 0.04888057243078947,
+       "compile_seconds": 0.0,
+       "solve_seconds": 0.5687888124957681,
+       "peak_bytes": 30349149952
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 128,
+       "dt": 0.0025,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 102,
+       "expected_stages": 102,
+       "steps_ok": true,
+       "max_res": 8.294342792387764e-14,
+       "tau": 1.332745521175523e-11,
+       "newton_total": 204,
+       "newton_max": 2,
+       "umax_running": 0.7553336053587735,
+       "lattice_finite": true,
+       "seconds": 0.8024765094742179,
+       "ic_seconds": 0.04850545432418585,
+       "compile_seconds": 0.0,
+       "solve_seconds": 0.7449653167277575,
+       "peak_bytes": 30349149952
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 128,
+       "dt": 0.0025,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 102,
+       "expected_stages": 102,
+       "steps_ok": true,
+       "max_res": 2.671818222823549e-14,
+       "tau": 1.0722533289578834e-11,
+       "newton_total": 210,
+       "newton_max": 3,
+       "umax_running": 0.7553336053587735,
+       "lattice_finite": true,
+       "seconds": 0.8228677613660693,
+       "ic_seconds": 0.0418019313365221,
+       "compile_seconds": 0.0,
+       "solve_seconds": 0.7732270574197173,
+       "peak_bytes": 30349149952
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 2.6429761832946297e-05,
+     "ratio_tight": 0.003333551823135425
+    },
+    {
+     "case": 2,
+     "kind": "ST",
+     "L": 256,
+     "dt": 0.00125,
+     "prod_vs_tight": 1.7879101696681868e-16,
+     "tight_vs_tighter": 0.0,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 256,
+       "dt": 0.00125,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 202,
+       "expected_stages": 202,
+       "steps_ok": true,
+       "max_res": 1.11661539025878e-15,
+       "tau": 2.0199999999999996e-11,
+       "newton_total": 404,
+       "newton_max": 2,
+       "umax_running": 0.7561089771296297,
+       "lattice_finite": true,
+       "seconds": 8.203573577105999,
+       "ic_seconds": 0.3481362583115697,
+       "compile_seconds": 0.0,
+       "solve_seconds": 7.846068188548088,
+       "peak_bytes": 30349149952
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 256,
+       "dt": 0.00125,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 202,
+       "expected_stages": 202,
+       "steps_ok": true,
+       "max_res": 1.0832114400673792e-15,
+       "tau": 2.0199999999999996e-11,
+       "newton_total": 404,
+       "newton_max": 2,
+       "umax_running": 0.7561089771296297,
+       "lattice_finite": true,
+       "seconds": 10.29806674644351,
+       "ic_seconds": 0.3512645699083805,
+       "compile_seconds": 0.0,
+       "solve_seconds": 9.936241737566888,
+       "peak_bytes": 30349149952
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 256,
+       "dt": 0.00125,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 202,
+       "expected_stages": 202,
+       "steps_ok": true,
+       "max_res": 1.0832114400673792e-15,
+       "tau": 2.0199999999999996e-11,
+       "newton_total": 404,
+       "newton_max": 2,
+       "umax_running": 0.7561089771296297,
+       "lattice_finite": true,
+       "seconds": 10.28648756351322,
+       "ic_seconds": 0.3445006050169468,
+       "compile_seconds": 0.0,
+       "solve_seconds": 9.929761032573879,
+       "peak_bytes": 30349149952
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 8.851040443901917e-06,
+     "ratio_tight": 0.0
+    },
+    {
+     "case": 2,
+     "kind": "ST",
+     "L": 512,
+     "dt": 0.000625,
+     "prod_vs_tight": 2.305489366523192e-16,
+     "tight_vs_tighter": 0.0,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 512,
+       "dt": 0.000625,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 402,
+       "expected_stages": 402,
+       "steps_ok": true,
+       "max_res": 1.1140876931074173e-15,
+       "tau": 4.0199999999999994e-11,
+       "newton_total": 804,
+       "newton_max": 2,
+       "umax_running": 0.7562066162257538,
+       "lattice_finite": true,
+       "seconds": 97.823671720922,
+       "ic_seconds": 3.3995023323222995,
+       "compile_seconds": 0.0,
+       "solve_seconds": 94.40938852261752,
+       "peak_bytes": 30349149952
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 512,
+       "dt": 0.000625,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 402,
+       "expected_stages": 402,
+       "steps_ok": true,
+       "max_res": 1.1139585511610123e-15,
+       "tau": 4.0199999999999994e-11,
+       "newton_total": 804,
+       "newton_max": 2,
+       "umax_running": 0.7562066162257538,
+       "lattice_finite": true,
+       "seconds": 124.72320443578064,
+       "ic_seconds": 3.4489090479910374,
+       "compile_seconds": 0.0,
+       "solve_seconds": 121.26000278629363,
+       "peak_bytes": 30349149952
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 512,
+       "dt": 0.000625,
+       "scheme": "cnr",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 402,
+       "expected_stages": 402,
+       "steps_ok": true,
+       "max_res": 1.1139585511610123e-15,
+       "tau": 4.0199999999999994e-11,
+       "newton_total": 804,
+       "newton_max": 2,
+       "umax_running": 0.7562066162257538,
+       "lattice_finite": true,
+       "seconds": 124.75942342262715,
+       "ic_seconds": 3.4257637383416295,
+       "compile_seconds": 0.0,
+       "solve_seconds": 121.31932856980711,
+       "peak_bytes": 30349149952
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 5.735048175430827e-06,
+     "ratio_tight": 0.0
+    },
+    {
+     "case": 2,
+     "kind": "S",
+     "L": 128,
+     "dt": 0.005,
+     "prod_vs_tight": 1.1278595257833002e-11,
+     "tight_vs_tighter": 1.880761491815824e-13,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 128,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 9.389640633077989e-12,
+       "tau": 4.588892506848864e-10,
+       "newton_total": 106,
+       "newton_max": 3,
+       "umax_running": 0.7553336053587735,
+       "lattice_finite": true,
+       "seconds": 0.4880161415785551,
+       "ic_seconds": 0.04804001562297344,
+       "compile_seconds": 0.0,
+       "solve_seconds": 0.4308671923354268,
+       "peak_bytes": 30349149952
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 128,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 9.648100889141245e-14,
+       "tau": 1.1867255518637012e-11,
+       "newton_total": 132,
+       "newton_max": 3,
+       "umax_running": 0.7553336053587735,
+       "lattice_finite": true,
+       "seconds": 0.7764751492068172,
+       "ic_seconds": 0.050491999834775925,
+       "compile_seconds": 0.0,
+       "solve_seconds": 0.7163056964054704,
+       "peak_bytes": 30349149952
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 128,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 2.897533064678016e-14,
+       "tau": 5.745527511282265e-12,
+       "newton_total": 145,
+       "newton_max": 3,
+       "umax_running": 0.7553336053587735,
+       "lattice_finite": true,
+       "seconds": 0.8439225237816572,
+       "ic_seconds": 0.050578901544213295,
+       "compile_seconds": 0.0,
+       "solve_seconds": 0.7844630936160684,
+       "peak_bytes": 30349149952
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 0.024578033242225312,
+     "ratio_tight": 0.015848327263723018
+    },
+    {
+     "case": 2,
+     "kind": "S",
+     "L": 256,
+     "dt": 0.005,
+     "prod_vs_tight": 1.1358086687041465e-11,
+     "tight_vs_tighter": 1.881416670478673e-13,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 256,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 9.499116224439211e-12,
+       "tau": 4.6309326565768016e-10,
+       "newton_total": 106,
+       "newton_max": 3,
+       "umax_running": 0.7561089771296297,
+       "lattice_finite": true,
+       "seconds": 3.7490722481161356,
+       "ic_seconds": 0.36076243966817856,
+       "compile_seconds": 0.0,
+       "solve_seconds": 3.379200715571642,
+       "peak_bytes": 30349149952
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 256,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 9.686115235169216e-14,
+       "tau": 1.1930618394934938e-11,
+       "newton_total": 132,
+       "newton_max": 3,
+       "umax_running": 0.7561089771296297,
+       "lattice_finite": true,
+       "seconds": 5.991133202798665,
+       "ic_seconds": 0.3503191387280822,
+       "compile_seconds": 0.0,
+       "solve_seconds": 5.63082613889128,
+       "peak_bytes": 30349149952
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 256,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 2.934242492679302e-14,
+       "tau": 5.766064235456787e-12,
+       "newton_total": 145,
+       "newton_max": 3,
+       "umax_running": 0.7561089771296297,
+       "lattice_finite": true,
+       "seconds": 6.558998647145927,
+       "ic_seconds": 0.35890037659555674,
+       "compile_seconds": 0.0,
+       "solve_seconds": 6.18981118965894,
+       "peak_bytes": 30349149952
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 0.024526564148823954,
+     "ratio_tight": 0.015769649218496634
+    },
+    {
+     "case": 2,
+     "kind": "S",
+     "L": 512,
+     "dt": 0.005,
+     "prod_vs_tight": 1.137817595047978e-11,
+     "tight_vs_tighter": 1.8816640727719178e-13,
+     "records": {
+      "prod": {
+       "purpose": "prod",
+       "L": 512,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-11,
+       "ltol": 1e-09,
+       "max_newton": 20,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 9.526650174776738e-12,
+       "tau": 4.652547478108053e-10,
+       "newton_total": 106,
+       "newton_max": 3,
+       "umax_running": 0.7562066162257538,
+       "lattice_finite": true,
+       "seconds": 27.610515548847616,
+       "ic_seconds": 3.4307660972699523,
+       "compile_seconds": 0.0,
+       "solve_seconds": 24.167815038003027,
+       "peak_bytes": 30349149952
+      },
+      "tight": {
+       "purpose": "tight",
+       "L": 512,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 1e-13,
+       "ltol": 1e-12,
+       "max_newton": 40,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 9.831747448914119e-14,
+       "tau": 1.4719353670454185e-11,
+       "newton_total": 132,
+       "newton_max": 3,
+       "umax_running": 0.7562066162257538,
+       "lattice_finite": true,
+       "seconds": 43.91899556480348,
+       "ic_seconds": 3.4068210273981094,
+       "compile_seconds": 0.0,
+       "solve_seconds": 40.498456365428865,
+       "peak_bytes": 30349149952
+      },
+      "tighter": {
+       "purpose": "tighter",
+       "L": 512,
+       "dt": 0.005,
+       "scheme": "be",
+       "adv": "central",
+       "ntol": 3e-14,
+       "ltol": 1e-12,
+       "max_newton": 60,
+       "stages": 50,
+       "expected_stages": 50,
+       "steps_ok": true,
+       "max_res": 2.872375346971394e-14,
+       "tau": 8.687849719578592e-12,
+       "newton_total": 148,
+       "newton_max": 3,
+       "umax_running": 0.7562066162257538,
+       "lattice_finite": true,
+       "seconds": 48.75922021083534,
+       "ic_seconds": 3.462236125022173,
+       "compile_seconds": 0.0,
+       "solve_seconds": 45.282130824401975,
+       "peak_bytes": 30349149952
+      }
+     },
+     "all_solves_ok": true,
+     "proxy_ok": true,
+     "ratio_prod": 0.02445579761199275,
+     "ratio_tight": 0.012783605278463674
+    }
+   ],
+   "d1": [
+    {
+     "case": 0,
+     "ladder": "time",
+     "p": [
+      1.9970840829609826,
+      1.9944406625297895,
+      1.9909996423739946,
+      1.988497698898404,
+      1.9866102626400926
+     ],
+     "d12": [
+      0.00022076005335660575,
+      0.0001565415127743239,
+      0.00011780953931756632,
+      9.004573811475318e-05,
+      6.964738052928196e-05
+     ],
+     "d23": [
+      5.530167397251165e-05,
+      3.928647492389579e-05,
+      2.9636700001807955e-05,
+      2.2691630793023596e-05,
+      1.757419772564075e-05
+     ]
+    },
+    {
+     "case": 0,
+     "ladder": "space",
+     "p": [
+      1.9996423827829777,
+      2.0061055447511924,
+      2.0111496056028715,
+      2.012058117063823,
+      2.0112896911463336
+     ],
+     "d12": [
+      0.0003491366750665161,
+      0.0007235146603716663,
+      0.0008982215178347951,
+      0.0009012308355580583,
+      0.0008454038178440912
+     ],
+     "d23": [
+      8.730580756740371e-05,
+      0.0001801147966441218,
+      0.0002228266329033666,
+      0.00022343242360873625,
+      0.0002097034994038575
+     ]
+    },
+    {
+     "case": 2,
+     "ladder": "time",
+     "p": [
+      1.9957554213351791,
+      1.995204695276885,
+      1.9945177649228847,
+      1.9937982733358421,
+      1.9930972593638376
+     ],
+     "d12": [
+      5.852155331600628e-05,
+      3.549872655710882e-05,
+      2.457245467312376e-05,
+      1.835878122874698e-05,
+      1.4401610458992704e-05
+     ],
+     "d23": [
+      1.4673496036842979e-05,
+      8.904228845204378e-06,
+      6.166501883755048e-06,
+      4.609467540420491e-06,
+      3.6176704328517196e-06
+     ]
+    },
+    {
+     "case": 2,
+     "ladder": "space",
+     "p": [
+      1.9995189300878191,
+      2.0000213004827185,
+      2.000221732620718,
+      2.0003002137669346,
+      2.000347069595105
+     ],
+     "d12": [
+      0.00010707652404613952,
+      0.00013734405579856604,
+      0.00014418003714581506,
+      0.00014293223812665137,
+      0.00013823128558351346
+     ],
+     "d23": [
+      2.677805872698973e-05,
+      3.433550700378537e-05,
+      3.603946983425352e-05,
+      3.572562452979591e-05,
+      3.4549508809947914e-05
+     ]
+    }
+   ],
+   "x1": [
+    {
+     "case": 0,
+     "p": [
+      0.8211825399349238,
+      0.7525003753631404,
+      0.7122195098304978,
+      0.6880423450712315,
+      0.6751349157914458
+     ],
+     "outcome": "peclet-fail"
+    },
+    {
+     "case": 1,
+     "p": [
+      0.8440166337923973,
+      0.7718217526503287,
+      0.7243778450602162,
+      0.6924120361675403,
+      0.6725323869763574
+     ],
+     "outcome": "peclet-fail"
+    },
+    {
+     "case": 2,
+     "p": [
+      0.912112879995268,
+      0.908558254224813,
+      0.9062844190964888,
+      0.9041284986136503,
+      0.9021586065995758
+     ],
+     "outcome": "order-fail"
+    },
+    {
+     "case": 3,
+     "p": [
+      0.9174858769998387,
+      0.9143383695340555,
+      0.9116331242029708,
+      0.9090343947283466,
+      0.9066748324719921
+     ],
+     "outcome": "order-fail"
+    }
+   ],
+   "x4": null
+  }
+ },
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G2",
+   "d": 2,
+   "p_true": [
+    2.0629779037788323,
+    2.0395397557941046,
+    2.032487372640585,
+    2.028072107995016,
+    2.020479903585288
+   ],
+   "p_obs": [
+    2.135522225912316,
+    2.0876914055919737,
+    2.073266593162256,
+    2.064248361379427,
+    2.0483148912846207
+   ],
+   "effectivity": [
+    0.9366035621620666,
+    0.9571008165135138,
+    0.9634631866230502,
+    0.9674815850772307,
+    0.9748452401395606
+   ],
+   "e_true_finest": [
+    3.6574964861605867e-06,
+    6.881711973124744e-06,
+    8.714961446280977e-06,
+    8.954094547305685e-06,
+    8.49269579225684e-06
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G2",
+   "d": 3,
+   "p_true": [
+    2.039180192689757,
+    2.04535352268903,
+    2.0409856618439495,
+    2.0366578124231056,
+    2.0316272635910257
+   ],
+   "p_obs": [
+    2.049961764102353,
+    2.1053519235903604,
+    2.1081833850358103,
+    2.1040901076813507,
+    2.0971852417963626
+   ],
+   "effectivity": [
+    0.9905513365365701,
+    0.9470518997810167,
+    0.9408349654523324,
+    0.9405775743555953,
+    0.9421280175389682
+   ],
+   "e_true_finest": [
+    0.00023671504717778812,
+    0.00037809458101962975,
+    0.00043088678155613465,
+    0.000413592780397202,
+    0.00035576862169424525
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G4proj",
+   "errors": [
+    5.066916832285884e-05,
+    3.1279405324768916e-06,
+    1.9489763380953207e-07
+   ],
+   "orders": [
+    4.017823158938515,
+    4.004424604283786
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G3a",
+   "d": 2,
+   "worst_rel": 2.379536930031623e-16,
+   "pass": true
+  },
+  {
+   "gate": "G4",
+   "d": 2,
+   "spatial_err": [
+    [
+     4.605904794520767e-07,
+     7.007084279101422e-07,
+     8.113408051763677e-07,
+     7.523922772275353e-07,
+     5.862507083394248e-07
+    ],
+    [
+     9.33758328375563e-08,
+     1.4075722013574695e-07,
+     1.619778265778345e-07,
+     1.4941661216606368e-07,
+     1.1593938401596975e-07
+    ],
+    [
+     2.985150043701257e-08,
+     4.48397309093126e-08,
+     5.147462694875548e-08,
+     4.738387824857294e-08,
+     3.6706969883998047e-08
+    ]
+   ],
+   "spatial_order": [
+    3.9640894147485315,
+    3.976410335510192,
+    3.984851879931472,
+    3.9921028090660307,
+    3.9978189847431542
+   ],
+   "spatial_order_coarse": [
+    3.9359163653946823,
+    3.958553443335913,
+    3.9737790233166286,
+    3.9868273294114998,
+    3.9970887572403972
+   ],
+   "half_step_ratio": 1.8705205465371645e-06,
+   "temporal_order": [
+    3.9722979697911036,
+    3.995186994277371,
+    4.000018256163333,
+    4.005306334170644,
+    4.008580841061941
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G3b",
+   "d": 2,
+   "N": 3072,
+   "rel_l2": 2.5519050134596703e-13,
+   "max_abs": 4.020296194475609e-14,
+   "pass": true
+  },
+  {
+   "gate": "G3c",
+   "d": 2,
+   "N": 3072,
+   "dt": 5e-05,
+   "nu": 0.01,
+   "worst_rel": 8.153755149521752e-12,
+   "pass": true
+  },
+  {
+   "gate": "G3a",
+   "d": 3,
+   "worst_rel": 1.0187177004321026e-15,
+   "pass": true
+  },
+  {
+   "gate": "G4",
+   "d": 3,
+   "spatial_err": [
+    [
+     1.0963995173328277e-06,
+     1.6496406906137013e-06,
+     1.8825631338504734e-06,
+     1.7156615810891225e-06,
+     1.3069117862419623e-06
+    ],
+    [
+     2.2245919956741978e-07,
+     3.317250720945435e-07,
+     3.7627331465227373e-07,
+     3.410639173690884e-07,
+     2.5863393122519186e-07
+    ],
+    [
+     7.114253990207552e-08,
+     1.0571949355035179e-07,
+     1.1963119037860075e-07,
+     1.0820587272987903e-07,
+     8.190771933302943e-08
+    ]
+   ],
+   "spatial_order": [
+    3.962910283539574,
+    3.97493392885217,
+    3.983224166854793,
+    3.990635389073233,
+    3.996844223198269
+   ],
+   "spatial_order_coarse": [
+    3.93386059673766,
+    3.955966168447004,
+    3.9709303813230745,
+    3.9842741429343875,
+    3.995432693651731
+   ],
+   "half_step_ratio": 2.320674961984341e-06,
+   "temporal_order": [
+    3.983918123021247,
+    3.9972747282726764,
+    4.003697520804814,
+    4.009519850981879,
+    4.017812838614214
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G3b",
+   "d": 3,
+   "N": 384,
+   "rel_l2": 1.0490775764083091e-14,
+   "max_abs": 1.2212453270876722e-15,
+   "pass": true
+  },
+  {
+   "gate": "G3c",
+   "d": 3,
+   "N": 384,
+   "dt": 0.00025,
+   "nu": 0.01,
+   "worst_rel": 7.576621623838863e-12,
+   "pass": true
+  }
+ ]
+}

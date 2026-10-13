@@ -1,0 +1,327 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 3,
+  "cohort": "dev4",
+  "cases": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "kinds": [
+   "ST",
+   "S"
+  ]
+ },
+ "job": {
+  "job_id": "5210564",
+  "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "calib_status": "ok",
+ "cohort": {
+  "name": "dev4",
+  "n": 4,
+  "sha256": "20048cc87a24b1c82753776224bb5619a1bbf274aa1829a98e3f76143e378b65",
+  "cases": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "n_cases": 4
+ },
+ "cases": [
+  {
+   "case": 0,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 7.893531637447057e-05,
+   "p": [
+    1.9921611091372955,
+    2.0018287758747144,
+    2.0095199856471546,
+    2.0111445455521406,
+    2.0105551452586337
+   ],
+   "seconds": 159.97927517071366
+  },
+  {
+   "case": 0,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 6.18628008912252e-05,
+   "p": [
+    2.0002689332117494,
+    2.0037402502558708,
+    2.0068403276069895,
+    2.008245207698988,
+    2.0084511791066
+   ],
+   "seconds": 84.25112355407327
+  },
+  {
+   "case": 1,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 9.15483998547731e-05,
+   "p": [
+    1.992932522174192,
+    1.9998175228407498,
+    2.008567638148682,
+    2.011428512568434,
+    2.0114581364793755
+   ],
+   "seconds": 150.40229986142367
+  },
+  {
+   "case": 1,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 7.039762322895249e-05,
+   "p": [
+    1.9999718754301066,
+    2.002910586655337,
+    2.0062925097361846,
+    2.0082710630952905,
+    2.0090020868892906
+   ],
+   "seconds": 85.2514215130359
+  },
+  {
+   "case": 2,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.3786132166446832e-05,
+   "p": [
+    1.9975675080773962,
+    1.998927585746864,
+    1.999393980732113,
+    1.9995988882720492,
+    1.9997217756463475
+   ],
+   "seconds": 103.7544585922733
+  },
+  {
+   "case": 2,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.1602171154463837e-05,
+   "p": [
+    1.999603506835843,
+    2.000042144046581,
+    2.0002245478540575,
+    2.000299514602633,
+    2.000343803273484
+   ],
+   "seconds": 30.90720173995942
+  },
+  {
+   "case": 3,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.3807144016837256e-05,
+   "p": [
+    1.9973761600173556,
+    1.9985974547894314,
+    1.9991323123920925,
+    1.9994034161083114,
+    1.9995588991854842
+   ],
+   "seconds": 99.54937644023448
+  },
+  {
+   "case": 3,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 8.09731741022039e-06,
+   "p": [
+    1.9996667799354628,
+    2.000086639087601,
+    2.000284919004088,
+    2.000323022317975,
+    2.0002911533711067
+   ],
+   "seconds": 29.966590894386172
+  }
+ ],
+ "manifest": [
+  {
+   "file": "3d/dev4/ST/c000.npz",
+   "sha256": "82b8f2217d7cf8d3dea6a13a90eef0174928805f4cd9b7d72256f4dc99f8ad4c"
+  },
+  {
+   "file": "3d/dev4/ST/c000.json",
+   "sha256": "9e0cda3f62553d79b9917e82121e4ba050be25ae363a3baf6e28dcee7eff35ac"
+  },
+  {
+   "file": "3d/dev4/S/c000.npz",
+   "sha256": "30e02cf3bc7936179750357bc9586c573bb208ec6000c64d17733688afdecefb"
+  },
+  {
+   "file": "3d/dev4/S/c000.json",
+   "sha256": "b45b128001f39824acf5ceb608aa51c7eaca0cf9d019d1a9b154e85b18b915c6"
+  },
+  {
+   "file": "3d/dev4/ST/c001.npz",
+   "sha256": "5bed1299a4683373c8c3a7cfee95e40298d1793100f5081d25a725fe0872edd2"
+  },
+  {
+   "file": "3d/dev4/ST/c001.json",
+   "sha256": "491fbd0b9ef4ab56c6a8502b6f5d07869b1482a496d92aace12d3808251c4ed6"
+  },
+  {
+   "file": "3d/dev4/S/c001.npz",
+   "sha256": "e3bb85f12b80ea4792229d9e1961cc46d3515defa2928ad9199319c0348f4d99"
+  },
+  {
+   "file": "3d/dev4/S/c001.json",
+   "sha256": "a405386609c5add1747b9ef3a6da91a54a5b6db5f61c9f15342f85641a20d6e8"
+  },
+  {
+   "file": "3d/dev4/ST/c002.npz",
+   "sha256": "94ecfcf2562f4cf906986e3cc031ff1040f89017d0126fffdb48e0c09deba105"
+  },
+  {
+   "file": "3d/dev4/ST/c002.json",
+   "sha256": "eeed62ece687e52ea945b7bdcd3635df1288c2cf88a39e78eeb4a35ba933667e"
+  },
+  {
+   "file": "3d/dev4/S/c002.npz",
+   "sha256": "8ac9d4e29cb61dad2565c02e94327b58244f5d9f3cac275127924b7842c2220b"
+  },
+  {
+   "file": "3d/dev4/S/c002.json",
+   "sha256": "c4bb2706235e6a49de87975be9386b28966f104c46ccaecde852b3cda19428c8"
+  },
+  {
+   "file": "3d/dev4/ST/c003.npz",
+   "sha256": "ea3905979f614e2f4dac78e2c01b5c59bcd59eaa69c92ba528ed06cfa24f9db2"
+  },
+  {
+   "file": "3d/dev4/ST/c003.json",
+   "sha256": "640610f80c1f8b3b14a6f1c1e34afd0b85064babb25520a24ca2082d6e28487f"
+  },
+  {
+   "file": "3d/dev4/S/c003.npz",
+   "sha256": "8cbbc7d9f62ecb333ae8c50bed01374cb7fd4f22535c7135f2cb0c6b44761e0d"
+  },
+  {
+   "file": "3d/dev4/S/c003.json",
+   "sha256": "e7974ae5fcfe4b0b589c37915b4e4c8c4eeaafe629209d30840f08e8d9435986"
+  }
+ ],
+ "seconds": 761.3105687825009,
+ "peak_bytes": 27916148480
+}

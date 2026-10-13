@@ -242,7 +242,7 @@ def audit_crosscheck(dim, summary):
     out = {}
     for j in cases:
         att = sorted(STORE.glob(f'{dim}d/{coh}/PS/c{j:03d}_a*.json'))
-        if not att:
+        if not att or not (STORE / f'{dim}d/{coh}/ST/c{j:03d}.json').exists():
             out[j] = dict(verdict='MISSING', match=False)          # missing evidence never matches (completeness)
             continue
         ps = json.loads(att[-1].read_text())

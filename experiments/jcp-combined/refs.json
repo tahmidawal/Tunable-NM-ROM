@@ -1,0 +1,17 @@
+{
+ "2d_first_order": {
+  "kind": "2d_f257",
+  "note": "2D-lane references at 8192^2, sign-upwind + BE: ST (dt0/16), S (dt0); TX = (16 ST - S)/15 (Richardson, first-order-in-time assumption). PROVISIONAL. Nodes x = i/256, i = 0..256 (boundary zero), normaliser ||u0|| of the physical initial field at these nodes.",
+  "dir": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output",
+  "tags": {"ST": "ref_ST_{cohort}_{case:03d}.npz", "S": "ref_S_{cohort}_{case:03d}.npz"},
+  "derived": {"TX": {"ST": 1.0666666666666667, "S": -0.06666666666666667}},
+  "manifest": "result.json",
+  "bank_ckpt_sha256": "see c2grid result.json checkpoint_sha256"
+ },
+ "3d_first_order": {
+  "kind": "3d_l65",
+  "note": "3D-lane refined reference: 513 nodes, BE at dt0/4 (0.0025), on the 63^3 lattice x = k/64; reference-limited (C2 A13). PROVISIONAL.",
+  "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output/ref_923801.npz",
+  "sha256": "36e84e3dbac2f5cf1b3350c311c1f16d17ecfcd4dc217ded836ba30613c6cc8b"
+ }
+}

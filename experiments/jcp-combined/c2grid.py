@@ -8,7 +8,8 @@
      coefficient vectors W (6, R') and w0 (W_<setting>.npz), statistics, e_ST / e_S / e_TX per time (in-job scoring;
      offline score.py recomputes them through an independent decode path).
   2  FOM (C2 fom2.make_fom_lmm): order check at L=256 on two dev6 cases; tolerance calibration on dev6 (C2 A9.2);
-     evaluation of every resolved configuration on every case (fields saved float64 on the 257^2 nodes, A4.2).
+     evaluation of every resolved configuration on every case (fields saved float64 on the 257^2 nodes, A4.2: the
+     scoring lattice of any later reference is a subset of every compared mesh, including 256^2, plan E0).
   3  timing on one GPU: (a) per-setting A-B-A panels (A = that setting's LSPG-BE dt0, B = every production arm with
      dt >= dt0/2 of that setting and the vendor BE query); (b) one common panel (A = the `acc` setting's LSPG-BE dt0;
      B = every production arm with dt >= dt0/2 of every setting and every resolved FOM configuration). Every timed
@@ -141,10 +142,20 @@ def main():
                                    it_vendor=int(np.sum(np.asarray(vv['it'])))))
             if ci in tci:
                 Wsha[(st.name, 'vendor', ci)] = sha(Wv)
+            g_ = rep['g1a'][-1]
+            g_['passed'] = bool(g_['W_rel'] <= 1e-8 and g_['w0_rel'] <= 1e-12)     # C2 A2.9 (same-job gate, A1.10)
+            if not g_['passed']:
+                save()
+                print('G1a FAILED: generic LSPG-BE differs from the vendor query; stopping before any verdict', g_, flush=True)
+                raise SystemExit(3)
             del vv
             print('CASE', st.name, ci, coh, c, el(), flush=True)
             if ci % 8 == 7:
                 save()
+        try:
+            rep['setup'][st.name]['peak_bytes'] = int(jax.devices()[0].memory_stats().get('peak_bytes_in_use', -1))
+        except Exception:  # noqa: BLE001
+            rep['setup'][st.name]['peak_bytes'] = -1
         np.savez_compressed(out / f'W_{st.name}.npz', W=Wset, w0=w0set, runs=np.array([key(r) for r in runs]),
                             cases=np.array([f'{coh}|{c}' for coh, c, _ in cases]))
         save()
@@ -284,11 +295,15 @@ def main():
                 ta1, h1 = timed(A, ci)
                 tb, hb = timed(Bs[j], ci)
                 ta2, h2 = timed(A, ci)
+                eA, eB = expected(A, ci), expected(Bs[j], ci)
                 inv.append(dict(B=name(Bs[j]), case_index=ci, rep=rr, tA1=ta1, tB=tb, tA2=ta2, ratio=tb / (.5 * (ta1 + ta2)),
-                                drift=ta2 / ta1, A_sha=[h1, h2], A_expected=expected(A, ci), B_sha=hb,
-                                B_expected=expected(Bs[j], ci)))
+                                drift=ta2 / ta1, A_sha=[h1, h2], A_expected=eA, B_sha=hb, B_expected=eB,
+                                hashes_ok=bool(eA is not None and eB is not None and h1 == eA and h2 == eA and hb == eB)))
+        md = float(np.median([x['drift'] for x in inv])) if inv else float('nan')
+        hok = bool(inv) and all(x['hashes_ok'] for x in inv)
         rep['timing'][label] = dict(A=name(A), subjects=[name(b) for b in Bs], invocations=inv, gpu=CC.gpu_info(),
-                                    cases=tci, reps=tc['reps'], burn=tc['burn'], seed=seed)
+                                    cases=tci, reps=tc['reps'], burn=tc['burn'], seed=seed, median_drift=md, hashes_ok=hok,
+                                    valid=bool(hok and 1 / 1.1 <= md <= 1.1))
         save()
         print('TIMING', label, len(inv), el(), flush=True)
 
@@ -296,11 +311,11 @@ def main():
         sname = spec['name']
         A = ('rom', sname, ('LSPG', 'BE', DT0, 'prod'))
         Bs = [('rom', sname, r) for r in timed_runs if r != A[2]] + [('rom', sname, 'vendor')]
-        panel(f'setting|{sname}', A, Bs, int(tc['seed']) + k_)
+        panel(f'setting|{sname}', A, Bs, int(tc['seed']) + 1 + k_)
     A = ('rom', cfg['common_baseline'], ('LSPG', 'BE', DT0, 'prod'))
     Bs = [('rom', s['name'], r) for s in cfg['settings'] for r in timed_runs if ('rom', s['name'], r) != A]
     Bs += [('fom', sc, f) for sc in fc['schemes'] for f in fc['dt_factors'] if chosen[(sc, f)] is not None]
-    panel('common', A, Bs, int(tc['seed']) + 100)
+    panel('common', A, Bs, int(tc['common_seed']))
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()

@@ -685,3 +685,44 @@ $\delta_{\rm quad}\le\tau$ on all 64. If the reference check fails: quadrature q
 it withheld, frozen selection record preserved. Other budget diagnostics stay on 32 cases. 2D: the same for selected arms on
 all 38 cases (2D $r_\infty$ runs at deployed steps are affordable); the 16-case restriction of A2.4 applies to the other
 budget trajectory types only.
+
+## Amendment A4 (2026-10-13, code time, after `audits/codex-code-1.md` and the manufactured tests; before any cluster job)
+
+**A4.1 G-FS2 comparator (A1.3).** The adaptive LSPG comparator of gate (b) runs at the job's tight level (`gtol`
+$10^{-7}$) and must be verified. At $10^{-12}$ the inherited adaptive LSPG ends most steps on tiny-step exits on the
+manufactured system (204 of 320 steps at $h=0.05/64$, unverified), and its $t=0.25$ state is $1.05\times10^{-3}$ from the exact
+rollout; this is C2's known unattainable-tolerance behaviour (C2 A5.1), not a defect in C2's results, which used $10^{-7}$.
+An independent SciPy rollout of the exact intended LSPG steps is the second comparator; the adaptive comparator must agree
+with it within $10^{-3}\times$ its own oracle error (100× tighter than gate (b)). Added gate (e): an independent NumPy
+re-implementation of the vendor fixed-sweep BE algorithm must reproduce fs3's BE $K=1$ trajectory (states $\le10^{-9}$,
+iterations and exits equal), with a previous-state-predictor control that must differ. `test_fs.py` exits non-zero on
+any failure; SciPy success is asserted.
+
+**A4.2 FOM storage (replaces the full-mesh float32 clause of A1.8/A2.10).** FOM fields are saved losslessly (float64) on
+the $257^2$ nodes only. Reason: the plan's E0 requires a scoring lattice that is a subset of **every** compared mesh, and the
+compared meshes include $256^2$; the $257^2$ nodes are therefore a superset of any admissible future scoring lattice.
+Full-mesh float32 storage (≈ 15 GB for 38 cases × 16 configurations) adds no admissible rescoring capability. A future
+reference on another lattice requires an FOM rerun (stated in the report).
+
+**A4.3 3D per-setting timing subjects (A2.11).** The adaptive arms timed in each per-setting panel are the tight-level
+adaptive LSPG arms of every scheme at $\Delta t_0$ and $\tfrac52\Delta t_0$ and the adaptive GAL-CN arm at $\tfrac52\Delta t_0$
+(not every adaptive step): the adaptive arms are solver probes, not deployment candidates, and timing all of them would
+roughly triple the 3D timing cost. Form data (GAL QR) are prepared once per rule outside every timed call.
+
+**A4.4 Gates enforced in-job.** 2D G1a: per case $\lVert W^{\rm gen}-W^{\rm ven}\rVert/\lVert W^{\rm ven}_0\rVert\le10^{-8}$ and
+$w_0$ $\le10^{-12}$, else the job stops. 3D G-FS1: per case, exact or approved-equivalent (A2.1), else the job stops before the
+grid. Every timing panel records `hashes_ok` (A and B hashes non-missing and equal to the accuracy phase, every invocation)
+and `valid` (hashes ok and median $t_{A_2}/t_{A_1}\in[1/1.1,1.1]$); invalid panels are unusable for selection.
+
+**A4.5 Validity and eligibility (3D).** Per run: finite coefficients, no reason-3 step, no damping saturation (fs only).
+Pooled over the cohort: all runs valid and non-stationary steps (reasons 0 and 2; adaptive arms: failed steps) ≤ 1 %. The
+escalation statuses use pooled eligibility per arm and rule; numerators and denominators are saved.
+
+**A4.6 Smokes.** The cluster smoke is three attempts: `smk2d` (2D, $L=1024$, dev6 cases 0 and 2, all settings, reduced
+step ladder, every phase), `smk3esc` and `smk3grid` (3D, $65^3$, cases 0 and 1, W1024 at $R'=1024$ with the escalation rules
+through $64^3$ and the conditional $80^3$, and W512). `inventory.py` turns each smoke into the resource certificate
+`checks/inventory-<attempt>.json` (1.5× margin on the projected wall time, peak memory ≤ 90 % of the GPU); `stage.py`
+refuses a production attempt without a passing certificate at HEAD.
+
+**A4.7 In-job 3D scoring.** In-job refined errors decode through the mesh rows at $n=65$ (whose interior is the $63^3$
+lattice); `score.py` recomputes them independently by evaluating the bank at the lattice coordinates (G-score).

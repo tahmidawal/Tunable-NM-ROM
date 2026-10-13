@@ -18,7 +18,7 @@ def c2(attempt, mesh=1024, settings=SETTINGS2, case_subset=None, dtf=DTF, fom=FO
     c = dict(attempt=attempt, driver='c2grid', mesh=mesh, cohorts=['dev6', 'val32'], settings=settings,
              grid=dict(forms_schemes=FS, dt_factors=dtf, anchor_factors=[1 / 8, 1 / 16]), refs=refs,
              ref_contract=REF_CONTRACT, fom=fom, common_baseline='acc',
-             timing=dict(cohort='dev6', cases=6, reps=reps, burn=0.1, seed=20261013))
+             timing=dict(cohort='dev6', cases=6, reps=reps, burn=0.1, seed=20261013, common_seed=20261013))
     if case_subset:
         c['case_subset'] = case_subset
     c.update(kw)
@@ -35,7 +35,7 @@ SETTINGS3 = [dict(name='M2_512', bank='M2', Rp=512, a=3), dict(name='W256', bank
 def c3(attempt, mode, settings, count=64, case_subset=None, refined_ref=REF3, timing=None, **kw):
     c = dict(attempt=attempt, driver='c3run', mode=mode, mesh=65, cohort_seed=923801, cohort_count=count,
              refined_ref=refined_ref, gtol=1e-3, trust_fraction=0.05, conv_bar=2.5e-5, settings=settings,
-             timing=timing or dict(cases=8, reps=3, burn=0.1, seed=20261013, common_cases=4, common_reps=2),
+             timing=timing or dict(cases=8, reps=3, burn=0.1, seed=20261013, common_cases=4, common_reps=2, common_seed=20261013),
              grid=dict(dt_factors=[1, 1.25, 5 / 3, 2.5, 5], fs_schemes=['CN', 'CNR', 'BDF2'], Ks=[1, 2],
                        gal_factors=[1, 2.5], anchor_factors=[1 / 8, 1 / 16]),
              common_baseline='W512', common_baseline_fallback='M2_512')
@@ -70,12 +70,21 @@ def main():
     cfgs['c3desc'] = c3('c3desc', 'esc', esc_settings(), timing=dict(cases=4, reps=2, burn=0.1, seed=20261013))
     loc3 = Path(HERE / '../../../2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output/'
                 'ref_923801.npz').resolve()
-    cfgs['local3desc'] = c3('local3desc', 'esc', [dict(esc_settings()[4], ladder=['lat32768', 'lat256'])],
+    cfgs['local3desc'] = c3('local3desc', 'esc', [dict(esc_settings()[1], ladder=['lat8192', 'lat256'])],
                             case_subset=[0], refined_ref=str(loc3),
                             timing=dict(cases=1, reps=1, burn=0.1, seed=20261013))
-    cfgs['local3grid'] = c3('local3grid', 'grid', [dict(SETTINGS3[4], rule='lat32768'), dict(SETTINGS3[2], rule='lat16384')],
-                            case_subset=[0], refined_ref=str(loc3),
-                            timing=dict(cases=1, reps=1, burn=0.1, seed=20261013, common_cases=1, common_reps=1))
+    lg = c3('local3grid', 'grid', [dict(SETTINGS3[1], rule='lat8192'), dict(SETTINGS3[0], rule='gl24')],
+            case_subset=[0], refined_ref=str(loc3),
+            timing=dict(cases=1, reps=1, burn=0.1, seed=20261013, common_cases=1, common_reps=1, common_seed=20261013))
+    lg['grid'] = dict(dt_factors=[1, 2.5], fs_schemes=['CN'], Ks=[1, 2], gal_factors=[2.5], anchor_factors=[1 / 8])
+    lg['common_baseline'] = 'W256'
+    cfgs['local3grid'] = lg
+    # cluster smokes (A1.0): 65^3, two cases, both modes, every phase, R' = 1024 included (memory and compile gate)
+    cfgs['smk3grid'] = c3('smk3grid', 'grid', [dict(SETTINGS3[4], rule='lat32768'), dict(SETTINGS3[2], rule='lat16384')],
+                          case_subset=[0, 1], timing=dict(cases=2, reps=1, burn=0.1, seed=20261013, common_cases=2,
+                                                          common_reps=1, common_seed=20261013))
+    cfgs['smk3esc'] = c3('smk3esc', 'esc', [dict(esc_settings()[4], ladder=['lat32768', 'gl48', 'lat256'])],
+                         case_subset=[0, 1], timing=dict(cases=2, reps=1, burn=0.1, seed=20261013))
     for k, c in cfgs.items():
         if 'timing_cases_override' in c:
             c['timing']['cases'] = c.pop('timing_cases_override')

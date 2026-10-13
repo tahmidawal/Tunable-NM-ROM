@@ -233,12 +233,35 @@
  },
  "gates": {
   "vendor_be_residual_identity": 4.02417650773462e-14,
+  "vendor_be_trajectory": {
+   "0.003125": {
+    "state_distance": 5.8350978803114895e-16,
+    "iterations_equal": true,
+    "reasons_equal": true,
+    "control_distance": 4.7935435895844214e-05,
+    "passed": true
+   },
+   "0.0015625": {
+    "state_distance": 4.2772841163759117e-16,
+    "iterations_equal": true,
+    "reasons_equal": true,
+    "control_distance": 1.9540966442028106e-05,
+    "passed": true
+   },
+   "0.00078125": {
+    "state_distance": 1.1976552744667873e-15,
+    "iterations_equal": true,
+    "reasons_equal": true,
+    "control_distance": 3.8952483301427845e-06,
+    "passed": true
+   }
+  },
   "all_pass": true
  },
  "all_pass": true,
  "source_sha256": {
   "fs3.py": "8c7dd03b5619b873b7549ab29c66e2039bda8d9e3a1bea4c8ce349de373701ce",
-  "test_fs.py": "07dc56b040ccbbcdc241a215f729e6a359191022984cb01654a5a64325ac260f",
+  "test_fs.py": "349d664fecf07a5ea4fc1b4c35e29825c0d1ae1f9b2f13403f1c93765dabe217",
   "t2core.py": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9",
   "test_lmm.py": "2bbb91a647bd718c45e64ab159f2171796868bb2bce1b8cec63c7ef7a2a053e4"
  }

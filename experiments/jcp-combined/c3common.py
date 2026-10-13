@@ -185,19 +185,25 @@ class Solvers:
             self.cache[k] = jax.jit(query)
         return self.cache[k]
 
-    def run(self, spec, u0, nu, data):
-        """spec: ('fs', scheme, dt, K) | ('vendor',) | ('ad', form, scheme, dt, level). Returns (output, W (6,R'), w0)."""
+    def run(self, spec, u0, nu, prep):
+        """spec: ('fs', scheme, dt, K) | ('vendor',) | ('ad', form, scheme, dt, level); prep = prepare(data) (form data
+        built once outside any timing, code audit 1 item 6). Returns (output, W (6,R'), w0)."""
         if spec[0] == 'fs':
-            o = self.fs(spec[1], spec[2], spec[3])(u0, nu, data)
+            o = self.fs(spec[1], spec[2], spec[3])(u0, nu, prep['base'])
             return o, o['W'], o['w0']
         if spec[0] == 'vendor':
-            o = self.vendor()(u0, nu, data, {})
+            o = self.vendor()(u0, nu, prep['base'], {})
             keep = int(round(.05 / DT0))
             return o, o[1][::keep], o[1][0]
         _, form, scheme, dt, lev = spec
         g, t_ = tol_of(form, lev)
-        o = self.ad(form)(u0, nu, T2.form_data(data, {}, form) if form == 'GAL' else data, T2.sched(scheme, dt, g, t_))
+        o = self.ad(form)(u0, nu, prep[form], T2.sched(scheme, dt, g, t_))
         return o, o['W'], o['w0']
+
+
+def prepare(data):
+    """Base rule data plus the LSPG / GAL form data of t2core (hmask; GAL: thin QR of A), built once per rule."""
+    return dict(base=data, LSPG=T2.form_data(data, {}, 'LSPG'), GAL=T2.form_data(data, {}, 'GAL'))
 
 
 def spec_key(spec):
@@ -208,9 +214,9 @@ def spec_key(spec):
     return f'ad|{spec[1]}|{spec[2]}|{spec[3]:.8g}|{spec[4]}'
 
 
-def verified(spec, o):
-    """fs/vendor: finite, no reason-3, damping not saturated, non-stationary (reason 0 or 2) <= 1 % of steps
-    (C1 A7 eligibility, per rollout here; pooled eligibility is computed offline). ad: every step verified (C2 A1.5)."""
+def run_valid(spec, o):
+    """Per-run validity (code audit 1 item 2). fs/vendor: finite coefficients, no reason-3 step, no damping saturation
+    (fs only; the vendor does not report it). ad: every step verified (C2 A1.5). Pooled non-stationarity is separate."""
     if spec[0] == 'ad':
         return bool(int(np.asarray(o['stats']['nfail'])) == 0 and np.isfinite(np.asarray(o['W'])).all())
     rs = np.asarray(o['reason'] if spec[0] == 'fs' else o[3])
@@ -219,11 +225,43 @@ def verified(spec, o):
     return bool(np.isfinite(W).all() and int((rs == 3).sum()) == 0 and sat == 0)
 
 
+def nonstationary(spec, o):
+    """(non-stationary steps, steps): reasons 0 (budget / not stationary after the sweeps) and 2 (tiny step), C1 A7."""
+    if spec[0] == 'ad':
+        st = o['stats']
+        k = int(st['steps'])
+        r = np.asarray(st['step_reason'])[:k]
+        return int(np.sum(np.asarray(st['nfail']))), k
+    rs = np.asarray(o['reason'] if spec[0] == 'fs' else o[3])
+    return int(((rs == 0) | (rs == 2)).sum()), int(len(rs))
+
+
+def pooled_eligible(records, frac=0.01):
+    """Pooled eligibility over a cohort: every run valid and non-stationary steps <= frac of all pooled steps."""
+    num = sum(r[1] for r in records)
+    den = sum(r[2] for r in records)
+    return dict(all_valid=all(r[0] for r in records), nonstationary=num, steps=den,
+                eligible=bool(all(r[0] for r in records) and den > 0 and num <= frac * den))
+
+
 def step_record(spec, o):
+    """Full per-step evidence (A1.2; code audit 1 item 9)."""
     if spec[0] == 'fs':
-        return {k: np.asarray(o[k]).tolist() for k in ('reason', 'it', 'rej', 'pred', 'sat')}
+        d = {k: np.asarray(o[k]).tolist() for k in ('reason', 'it', 'rej', 'pred', 'sat', 'gn', 'rn', 'lam')}
+        return d
     if spec[0] == 'vendor':
-        return dict(reason=np.asarray(o[3]).tolist(), it=np.asarray(o[2]).tolist(), rej=np.asarray(o[6]).tolist())
+        return dict(reason=np.asarray(o[3]).tolist(), it=np.asarray(o[2]).tolist(), gn=np.asarray(o[4]).tolist(),
+                    rn=np.asarray(o[5]).tolist(), rej=np.asarray(o[6]).tolist())
     st = o['stats']
+    k = int(st['steps'])
     return dict(nfail=int(st['nfail']), it_sum=int(st['it_sum']), exits=np.asarray(st['exits']).tolist(),
-                worst_ratio=float(st['worst_ratio']))
+                worst_ratio=float(st['worst_ratio']), steps=k,
+                step_gn=np.asarray(st['step_gn'])[:k].tolist(), step_tolratio=np.asarray(st['step_tolratio'])[:k].tolist(),
+                step_reason=np.asarray(st['step_reason'])[:k].tolist(), step_it=np.asarray(st['step_it'])[:k].tolist())
+
+
+def peak_bytes():
+    try:
+        return int(jax.devices()[0].memory_stats().get('peak_bytes_in_use', -1))
+    except Exception:  # noqa: BLE001
+        return -1

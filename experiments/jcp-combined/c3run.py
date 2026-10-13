@@ -1,18 +1,26 @@
-"""jcp-combined 3D driver (DESIGN 3.2, 3.3, 8; A1.0, A1.2, A1.6, A1.7, A2.4, A2.5, A2.11, A3.4). Modes:
+"""jcp-combined 3D driver (DESIGN 3.2, 3.3, 8; A1.0, A1.2, A1.6, A1.7, A2.1, A2.4, A2.5, A2.11, A3.4, A4). Modes:
 
-  esc   (`c3desc`) J4 escalation and rule-selection data. Per setting: Gauss rules of the escalation (W768/W1024: 48^3,
-        56^3, 64^3; others 56^3, 64^3) under the two fixed-sweep selection solver arms (BE dt0 K=1; LSPG-CN 2.5 dt0 K=1)
-        and, for W768/W1024, the two adaptive diagnostic arms (LSPG-BE dt0 tight, LSPG-CN 2.5 dt0 tight). In-job decision
-        (A2.4): converged rule = first of 56^3, 64^3 whose distance to the next finer rule is <= conv_bar under both
-        selection arms on every case with every run verified; Gauss 80^3 is run (all arms of the setting) only if 56^3
-        fails. Operator-level check on common states. Then the ladder (lattice + Gauss + control lat256) under both
-        selection arms; an A-B-A panel of every ladder rule's two selection arms (selection itself is offline).
-  grid  (`c3grid`) per setting with its frozen deployed rule: the vendor fixed-sweep BE (G-FS1), fixed-sweep BE and
-        CN/CN-R/BDF2 (K = 1, 2) on the step ladder, adaptive LSPG probes (tight and tighter) of every fixed-sweep scheme
-        and step, adaptive GAL-CN, anchors GAL-BDF2 at dt0/8 and dt0/16 (tight, tighter); per-setting A-B-A panels and
-        one common panel (A2.11).
-Saved: W (6, R') of every run per case (W_<mode>.npz, keys setting|rule|spec), w0 per setting, per-step records, refined
-errors per time on the 63^3 lattice (in-job; score.py recomputes), result.json.
+  esc   (`c3desc`) J4 escalation and rule-selection data. Per setting: escalation Gauss rules (W768/W1024: 48^3, 56^3,
+        64^3; others 56^3, 64^3) under the two fixed-sweep SELECTION arms (BE dt0 K=1; LSPG-CN 2.5 dt0 K=1) and the two
+        adaptive DIAGNOSTIC arms (LSPG-BE dt0 tight; LSPG-CN 2.5 dt0 tight), all cases. Per rule pair (A2.5):
+        selection_pair_status / adaptive_diagnostic_status in {pass, fail, unresolved}: pass iff every arm of the axis
+        has pooled-eligible runs on both rules (every run valid, non-stationary steps <= 1 % pooled) and worst distance
+        <= conv_bar; unresolved iff some run is invalid / ineligible or a distance is non-finite; fail otherwise.
+        Converged rule (A2.4) = 56^3 if (56^3, 64^3) passes the selection axis, else 64^3 if (64^3, 80^3) passes (80^3 is
+        run only then), else none. Fixed-vs-adaptive sensitivities per rule (same scheme and step). Operator check on
+        the reached states of the 64^3 adaptive LSPG-BE run (A1.7). Then the ladder under the two selection arms and an
+        A-B-A family panel (A = converged rule's fixed BE dt0).
+  grid  (`c3grid`) per setting with its frozen deployed rule: G-FS1 first (vendor vs fs BE dt0 K=1, per case; A2.1:
+        exact or approved-equivalent, otherwise the job stops) with the CN negative control on the first case; then
+        fixed-sweep BE and CN / CN-R / BDF2 (K = 1, 2) on the step ladder, adaptive LSPG probes (tight, tighter) of every
+        scheme and step, adaptive GAL-CN (tight), anchors GAL-BDF2 dt0/8 and dt0/16 (tight, tighter); per-setting A-B-A
+        panel (A = fs BE dt0; B = every fixed-sweep candidate, the vendor, and the adaptive tight arms at dt0 and 2.5 dt0,
+        A4.3); one common panel (baseline W512 fs BE dt0, fallback M2_512; every fs candidate with dt >= dt0).
+Every timing panel checks that each timed output's W sha256 equals the accuracy-phase W (A and B, every invocation) and
+applies the 10 % drift gate (median t_A2 / t_A1 in [1/1.1, 1.1]); a failing panel is marked timing-invalid.
+Saved: W (6, R') of every run per case (W_<mode>.npz, keys setting|rule|spec), w0 per setting, full per-step evidence,
+refined errors per time on the 63^3 lattice (in-job mesh-row decode; score.py recomputes independently), peak device
+memory per setting, the run inventory, result.json.
 
     python c3run.py --config configs/<attempt>.json --out <dir> [--dry-run]
 """
@@ -21,6 +29,7 @@ from __future__ import annotations
 import argparse
 import gc
 import json
+import sys
 import time
 from pathlib import Path
 
@@ -28,9 +37,12 @@ import numpy as np
 import c3common as C3
 from c3common import C, TB, OM, DT0, jax, jnp, sha
 
+SEL = [('fs', 'BE', DT0, 1), ('fs', 'CN', 2.5 * DT0, 1)]
+DIAG = [('ad', 'LSPG', 'BE', DT0, 'tight'), ('ad', 'LSPG', 'CN', 2.5 * DT0, 'tight')]
+
 
 def grid_specs(g):
-    sp = [('vendor',)]
+    sp = []
     for f in g['dt_factors']:
         dt = DT0 * f
         sp.append(('fs', 'BE', dt, 1))
@@ -48,8 +60,30 @@ def grid_specs(g):
     return sp
 
 
-SEL = [('fs', 'BE', DT0, 1), ('fs', 'CN', 2.5 * DT0, 1)]
-DIAG = [('ad', 'LSPG', 'BE', DT0, 'tight'), ('ad', 'LSPG', 'CN', 2.5 * DT0, 'tight')]
+def timed_adaptive(x):
+    return x[0] == 'ad' and x[4] == 'tight' and (abs(x[3] - DT0) < 1e-12 or abs(x[3] - 2.5 * DT0) < 1e-12)
+
+
+def nsteps(spec):
+    return 25 if spec[0] == 'vendor' else int(round(.25 / (spec[2] if spec[0] == 'fs' else spec[3])))
+
+
+def inventory(cfg):
+    """A2.12 run inventory per case (incl. conditional successors) and timing invocations."""
+    inv = dict(mode=cfg['mode'], cases=len(cfg.get('case_subset') or range(cfg['cohort_count'])), settings={})
+    tc = cfg['timing']
+    for s in cfg['settings']:
+        if cfg['mode'] == 'grid':
+            sp = [('vendor',)] + grid_specs(cfg['grid'])
+            nt = len([x for x in sp if (x[0] in ('fs', 'vendor') and x != ('fs', 'BE', DT0, 1)) or timed_adaptive(x)])
+            inv['settings'][s['name']] = dict(runs=[C3.spec_key(x) for x in sp], steps_per_case=sum(nsteps(x) for x in sp),
+                                              timing_invocations=3 * nt * tc['cases'] * tc['reps'])
+        else:
+            runs = [(r, C3.spec_key(x)) for r in s['esc_rules'] for x in SEL + DIAG]
+            runs += [('gl80 (conditional)', C3.spec_key(x)) for x in SEL + DIAG]
+            runs += [(r, C3.spec_key(x)) for r in s['ladder'] for x in SEL]
+            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=3 * (2 * (len(s['ladder']) + 1) - 1) * tc['cases'] * tc['reps'])
+    return inv
 
 
 def main():
@@ -61,14 +95,7 @@ def main():
     cfg = json.loads(Path(a.config).read_text())
     mode = cfg['mode']
     if a.dry_run:
-        inv = {}
-        for s in cfg['settings']:
-            if mode == 'grid':
-                sp = grid_specs(cfg['grid'])
-                inv[s['name']] = dict(specs=len(sp), steps=sum(25 if x[0] == 'vendor' else int(round(.25 / x[2] if x[0] == 'fs' else .25 / x[3])) for x in sp))
-            else:
-                inv[s['name']] = dict(esc_rules=s['esc_rules'], ladder=s['ladder'])
-        print(json.dumps(inv, indent=1))
+        print(json.dumps(inventory(cfg), indent=1))
         return
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
@@ -76,235 +103,272 @@ def main():
     begin = time.perf_counter()
     el = lambda: round(time.perf_counter() - begin, 1)
     n = int(cfg['mesh'])
+    assert n == 65, 'the in-job lattice decode uses the 65-node mesh rows (interior = the 63^3 lattice)'
     rep = dict(config=cfg, mode=mode, commit=C3.os.environ.get('SOURCE_COMMIT'), job_id=C3.os.environ.get('SLURM_JOB_ID'),
                backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=C3.gpu_info(),
                jax_version=jax.__version__, mesh=n, offmesh_sha256=C3.sha_file(OM.__file__),
-               fs3_sha256=C3.sha_file(C3.HERE / 'fs3.py'), settings={}, rows=[], timing={}, complete=False)
+               fs3_sha256=C3.sha_file(C3.HERE / 'fs3.py'), inventory=inventory(cfg), settings={}, rows=[], timing={},
+               complete=False)
     save = lambda: C.dump(out / 'result.json', C.clean(rep))
     tab, cases, REF = C3.load_cohort(cfg, rep)
     rules = C3.load_rules()
-    i65 = jnp.asarray(C3.lattice65_index(n))
     U0 = {j: jax.block_until_ready(jnp.asarray(C.initial_interior(n, tab, j))) for j in cases}
     NU = {j: float(tab['nu'][j]) for j in cases}
-    N0 = {j: float(jnp.linalg.norm(U0[j])) for j in cases}
+    N0 = np.array([float(jnp.linalg.norm(U0[j])) for j in cases])
     N0R = {j: float(np.linalg.norm(REF[j][0])) for j in cases}
+    i65 = np.asarray(C3.lattice65_index(n))
     for j in cases:
-        assert float(np.abs(np.asarray(U0[j])[np.asarray(i65)] - REF[j][0]).max()) <= 1e-12 * max(1., np.abs(REF[j][0]).max())
+        assert float(np.abs(np.asarray(U0[j])[i65] - REF[j][0]).max()) <= 1e-12 * max(1., np.abs(REF[j][0]).max())
     tables, banks = {}, {}
     for bname in sorted({s['bank'] for s in cfg['settings']}):
         banks[bname] = C3.load_bank(bname)
         tables[bname] = C3.Tables(n, banks[bname], sorted({int(s['Rp']) for s in cfg['settings'] if s['bank'] == bname}),
                                   log=lambda s_: print(s_, flush=True))
     print('SETUP', el(), flush=True)
-    Wstore, w0store = {}, {}
-    live = {}                     # setting -> (Solvers, {rule: data}) kept for timing panels
-    acc_sha = {}
+    Wstore, w0store, acc_sha, live = {}, {}, {}, {}
+    tc = cfg['timing']
 
-    def rollouts(sname, sol, rule, data, specs, Lt, store=True):
-        """Run specs on every case; record rows; return {speckey: (cases,6,R') array} and verified flags."""
-        res, ver = {}, {}
+    def dump():
+        np.savez_compressed(out / f'W_{mode}.npz', **Wstore, **{f'w0|{k}': v for k, v in w0store.items()})
+
+    def rollouts(sname, sol, rule, prep, specs, lean):
+        """Run specs on every case. Returns {speckey: dict(W (cases, 6, R'), recs, elig)}."""
+        res = {}
         for spec in specs:
             sk = C3.spec_key(spec)
             arr = np.full((len(cases), 6, sol.Rp), np.nan)
-            vs = []
+            recs = []
             t_s = time.perf_counter()
             for ci, j in enumerate(cases):
                 t1 = time.perf_counter()
-                o, W, w0 = sol.run(spec, U0[j], NU[j], data)
+                o, W, w0 = sol.run(spec, U0[j], NU[j], prep)
                 jax.block_until_ready(o)
                 secs = time.perf_counter() - t1
-                W = np.asarray(W)
+                W, w0 = np.asarray(W), np.asarray(w0)
                 arr[ci] = W
-                w0 = np.asarray(w0)
                 if sname not in w0store:
                     w0store[sname] = np.full((len(cases), sol.Rp), np.nan)
                 if np.isnan(w0store[sname][ci]).all():
                     w0store[sname][ci] = w0
-                assert np.array_equal(w0, w0store[sname][ci]), 'initial coefficients differ across runs'
-                v = C3.verified(spec, o)
-                vs.append(v)
-                F = W @ np.asarray(live_G65[sname])
+                assert np.array_equal(w0, w0store[sname][ci]), 'initial coefficients differ across runs (A1.4)'
+                v = C3.run_valid(spec, o)
+                ns_, st_ = C3.nonstationary(spec, o)
+                recs.append((v, ns_, st_))
+                F = np.asarray(TB.decode(jnp.asarray(W), lean))       # mesh rows; at n = 65 the interior is the lattice
                 e = np.linalg.norm(F - REF[j], axis=1) / N0R[j]
-                rep['rows'].append(dict(setting=sname, rule=rule, spec=sk, case=j, verified=v, seconds_first=secs,
-                                        e_ref_per_time=e.tolist(), e_ref=float(e[1:].max()), steps=C3.step_record(spec, o)))
-                if ci < cfg['timing']['cases']:
+                row = dict(setting=sname, rule=rule, spec=sk, case=j, valid=v, nonstationary=ns_, steps_n=st_,
+                           seconds_first=secs, e_ref_per_time=e.tolist(), e_ref=float(e[1:].max()),
+                           steps=C3.step_record(spec, o))
+                if spec[0] == 'fs':
+                    row['a_eff'] = sol.fs(spec[1], spec[2], spec[3]).a_eff
+                rep['rows'].append(row)
+                if ci < tc['cases']:
                     acc_sha[(sname, rule, sk, ci)] = sha(W)
                 del o
-            res[sk], ver[sk] = arr, vs
-            if store:
-                Wstore[f'{sname}|{rule}|{sk}'] = arr
-            print('RUN', sname, rule, sk, f'{time.perf_counter() - t_s:.1f}s', 'verified', sum(vs), '/', len(vs), el(), flush=True)
-        return res, ver
+            el_ = C3.pooled_eligible(recs)
+            res[sk] = dict(W=arr, recs=recs, elig=el_)
+            Wstore[f'{sname}|{rule}|{sk}'] = arr
+            print('RUN', sname, rule, sk, f'{time.perf_counter() - t_s:.1f}s', 'eligible', el_['eligible'],
+                  el_['nonstationary'], '/', el_['steps'], el(), flush=True)
+        return res
 
     def dist(A_, B_, Lt):
-        """worst over cases of max over evolved times of ||G (a - b)|| / ||u0|| (Gram-Cholesky field metric, C1)."""
-        # Gram G G^T = L L^T  =>  ||G^T c|| = ||L^T c||; for row vectors c^T L = (A - B) @ L = (A - B) @ Lt.T (as C1 w3d)
-        d = np.linalg.norm(np.einsum('cki,ji->ckj', A_ - B_, Lt), axis=2) / np.array([N0[j] for j in cases])[:, None]
-        return float(d[:, 1:].max()), d[:, 1:].max(1).tolist()
+        """per case: max over evolved times of ||G^T (a - b)|| / ||u0||, Gram G G^T = L L^T, rows (a - b) @ L = @ Lt.T."""
+        d = np.linalg.norm(np.einsum('cki,ji->ckj', A_ - B_, Lt), axis=2) / N0[:, None]
+        per = d[:, 1:].max(1)
+        return (float(per.max()) if np.isfinite(per).all() else float('nan')), per.tolist()
 
-    tc = cfg['timing']
-    tcases = cases[:tc['cases']]
-
-    def time_panel(label, sname, sol, A, Bs, data_of, sol_of=None, ncases=None, reps=None):
-        """A-B-A panel. A, Bs: (rule, spec) (or (setting, rule, spec) with sol_of for the common panel)."""
-        def unpack(x):
-            if sol_of is None:
-                return sname, sol, x[0], x[1]
-            return x[0], sol_of(x[0]), x[1], x[2]
+    def time_panel(label, A, Bs, get, seed, ncases, reps):
+        """A-B-A panel; A, Bs = (setting, rule, spec); get(setting, rule) -> (sol, prep)."""
+        name = lambda x: f'{x[0]}|{x[1]}|{C3.spec_key(x[2])}'
 
         def one(x, ci):
-            sn, so, rule, spec = unpack(x)
-            j = tcases[ci]
-            t_, h_ = _timed(so, spec, U0[j], NU[j], data_of(sn, rule) if sol_of else data_of(rule), tc['burn'])
-            return t_, h_, acc_sha.get((sn, rule, C3.spec_key(spec), ci))
-        name = lambda x: '|'.join([unpack(x)[0], unpack(x)[2], C3.spec_key(unpack(x)[3])])
-        nc = ncases or len(tcases)
-        nr = reps or tc['reps']
-        for x in [A] + Bs:                      # warm every subject on every timing case
-            for ci in range(nc):
+            sol, prep = get(x[0], x[1])
+            j = cases[ci]
+            C3.burn(tc['burn'])
+            t1 = time.perf_counter()
+            o, W, _ = sol.run(x[2], U0[j], NU[j], prep)
+            jax.block_until_ready(o)
+            secs = time.perf_counter() - t1
+            return secs, sha(np.asarray(W)), acc_sha.get((x[0], x[1], C3.spec_key(x[2]), ci))
+        for x in [A] + Bs:
+            for ci in range(ncases):
                 one(x, ci)
-        rng = np.random.default_rng(int(tc['seed']) + len(rep['timing']))
+        rng = np.random.default_rng(seed)
         inv = []
-        for rr in range(nr):
-            order_ = [(b, ci) for b in range(len(Bs)) for ci in range(nc)]
+        for rr in range(reps):
+            order_ = [(b, ci) for b in range(len(Bs)) for ci in range(ncases)]
             rng.shuffle(order_)
             for b, ci in order_:
                 ta1, h1, e1 = one(A, ci)
                 tb, hb, eb = one(Bs[b], ci)
                 ta2, h2, _ = one(A, ci)
-                inv.append(dict(B=name(Bs[b]), case=tcases[ci], rep=rr, tA1=ta1, tB=tb, tA2=ta2, ratio=tb / (.5 * (ta1 + ta2)),
-                                drift=ta2 / ta1, A_sha=[h1, h2], A_expected=e1, B_sha=hb, B_expected=eb))
-        rep['timing'][label] = dict(A=name(A), subjects=[name(x) for x in Bs], invocations=inv, cases=tcases[:nc],
-                                    reps=nr, burn=tc['burn'], gpu=C3.gpu_info())
+                inv.append(dict(B=name(Bs[b]), case=cases[ci], rep=rr, tA1=ta1, tB=tb, tA2=ta2, ratio=tb / (.5 * (ta1 + ta2)),
+                                drift=ta2 / ta1, A_sha=[h1, h2], A_expected=e1, B_sha=hb, B_expected=eb,
+                                hashes_ok=bool(e1 is not None and eb is not None and h1 == e1 and h2 == e1 and hb == eb)))
+        md = float(np.median([x['drift'] for x in inv])) if inv else float('nan')
+        hok = bool(inv) and all(x['hashes_ok'] for x in inv)
+        rep['timing'][label] = dict(A=name(A), subjects=[name(x) for x in Bs], invocations=inv, cases=cases[:ncases],
+                                    reps=reps, burn=tc['burn'], seed=seed, gpu=C3.gpu_info(), median_drift=md,
+                                    hashes_ok=hok, valid=bool(hok and 1 / 1.1 <= md <= 1.1))
         save()
-        print('TIMING', label, len(inv), el(), flush=True)
+        print('TIMING', label, len(inv), 'valid', rep['timing'][label]['valid'], el(), flush=True)
 
-    def common_panel(base, subj):
-        A = (base, live[base][1], ('fs', 'BE', DT0, 1))
-        Bs = [x for x in subj if x != A]
-        time_panel('common', None, None, A, Bs, lambda sn, rule: live[sn][2], sol_of=lambda sn: live[sn][0],
-                   ncases=tc['common_cases'], reps=tc['common_reps'])
-
-    live_G65 = {}
-    X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
-    for s in cfg['settings']:
+    for k_set, s in enumerate(cfg['settings']):
         sname, bname, Rp, a_ = s['name'], s['bank'], int(s['Rp']), int(s['a'])
         bk, tb = banks[bname], tables[bname]
         trust = float(cfg['trust_fraction'] * bk['spread'][str(Rp)])
         sol = C3.Solvers(n, Rp, trust, cfg['gtol'], a_)
         lean = tb.lean(Rp)
         Lt = np.asarray(lean['L']).T
-        live_G65[sname] = TB.feature_rows(bk['params'], bk['T'][:, :Rp], X65)
         S_rep = rep['settings'][sname] = dict(bank=bname, Rp=Rp, M=tb.M_of[Rp], trust=trust, a=a_)
-        datas = {}
+        preps = {}
 
-        def data_of(rule):
-            if rule not in datas:
+        def prep_of(rule, _preps=preps, _tb=tb, _Rp=Rp):
+            if rule not in _preps:
                 X, w = rules[rule]
-                datas[rule] = tb.rule_data(Rp, X, w)
-            return datas[rule]
+                _preps[rule] = C3.prepare(_tb.rule_data(_Rp, X, w))
+            return _preps[rule]
+
+        def drop(rule, _preps=preps):
+            _preps.pop(rule, None)
+            gc.collect()
 
         if mode == 'esc':
             esc = {}
-            specs = SEL + (DIAG if s.get('diagnostic') else [])
             for rule in s['esc_rules']:
-                esc[rule] = rollouts(sname, sol, rule, data_of(rule), specs, Lt)
-            dd = {}
+                esc[rule] = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)
+                if rule != 'gl64':
+                    drop(rule)
 
-            def pair(r1, r2):
-                out_ = {}
+            def axis_status(r1, r2, specs):
+                det, sts = {}, []
                 for spec in specs:
                     sk = C3.spec_key(spec)
-                    worst, per = dist(esc[r1][0][sk], esc[r2][0][sk], Lt)
-                    ok = all(esc[r1][1][sk]) and all(esc[r2][1][sk])
-                    out_[sk] = dict(worst=worst, per_case=per, all_verified=ok,
-                                    pass_bar=bool(ok and worst <= cfg['conv_bar']))
-                return out_
+                    worst, per = dist(esc[r1][sk]['W'], esc[r2][sk]['W'], Lt)
+                    el1, el2 = esc[r1][sk]['elig'], esc[r2][sk]['elig']
+                    if not (el1['eligible'] and el2['eligible']) or not np.isfinite(worst):
+                        stt = 'unresolved'
+                    else:
+                        stt = 'pass' if worst <= cfg['conv_bar'] else 'fail'
+                    det[sk] = dict(worst=worst, per_case=per, status=stt, eligibility=[el1, el2])
+                    sts.append(stt)
+                total = 'unresolved' if 'unresolved' in sts else ('pass' if all(x == 'pass' for x in sts) else 'fail')
+                return total, det
+
+            pairs = {}
+
+            def do_pair(r1, r2):
+                sp_, sd = axis_status(r1, r2, SEL)
+                ad_, ad = axis_status(r1, r2, DIAG)
+                pairs[f'{r1}|{r2}'] = dict(selection_pair_status=sp_, adaptive_diagnostic_status=ad_, selection=sd,
+                                           diagnostic=ad)
+                return sp_
             rr = s['esc_rules']
             for i in range(len(rr) - 1):
-                dd[f'{rr[i]}|{rr[i + 1]}'] = pair(rr[i], rr[i + 1])
-            sel_ok = lambda pr: all(pr[C3.spec_key(x)]['pass_bar'] for x in SEL)
+                do_pair(rr[i], rr[i + 1])
             conv = None
-            if 'gl56|gl64' in dd and sel_ok(dd['gl56|gl64']):
+            if pairs['gl56|gl64']['selection_pair_status'] == 'pass':
                 conv = 'gl56'
             else:
-                esc['gl80'] = rollouts(sname, sol, 'gl80', data_of('gl80'), specs, Lt)
-                dd['gl64|gl80'] = pair('gl64', 'gl80')
-                if sel_ok(dd['gl64|gl80']):
+                esc['gl80'] = rollouts(sname, sol, 'gl80', prep_of('gl80'), SEL + DIAG, lean)
+                drop('gl80')
+                if do_pair('gl64', 'gl80') == 'pass':
                     conv = 'gl64'
-            S_rep['escalation'] = dict(pairs=dd, converged=conv, bar=cfg['conv_bar'],
-                                       status='pass' if conv else 'unresolved')
-            # operator-level check on common states (W768/W1024): reached states of the finest adaptive BE run
-            if s.get('diagnostic'):
-                fin = 'gl80' if 'gl80' in esc else 'gl64'
-                Cs = esc[fin][0][C3.spec_key(DIAG[0])].reshape(-1, Rp)
-                Cs = jnp.asarray(Cs[np.isfinite(Cs).all(1)])
-                Nf = OM.adv_offmesh_batch(data_of(fin), Cs)
-                opc = {}
-                for rule in esc:
-                    if rule == fin:
-                        continue
-                    Nr = OM.adv_offmesh_batch(data_of(rule), Cs)
-                    den = jnp.linalg.norm(Nf, axis=1)
-                    rel = jnp.where(den > 0, jnp.linalg.norm(Nr - Nf, axis=1) / jnp.maximum(den, 1e-300), jnp.nan)
-                    opc[f'{rule}|{fin}'] = dict(worst=float(jnp.nanmax(rel)), median=float(jnp.nanmedian(rel)),
-                                                states=int(Cs.shape[0]))
-                S_rep['operator_check'] = opc
+            sens = {}
+            for rule in esc:
+                for fsx, adx in zip(SEL, DIAG):
+                    worst, per = dist(esc[rule][C3.spec_key(fsx)]['W'], esc[rule][C3.spec_key(adx)]['W'], Lt)
+                    sens[f'{rule}|{C3.spec_key(fsx)}|vs|{C3.spec_key(adx)}'] = dict(worst=worst, per_case=per)
+            # operator-level check on common states: the 64^3 adaptive LSPG-BE reached states (A1.7, A2.5)
+            Cs = esc['gl64'][C3.spec_key(DIAG[0])]['W'][:, 1:].reshape(-1, Rp)
+            keep = np.isfinite(Cs).all(1)
+            Csj = jnp.asarray(Cs[keep])
+            Nf = OM.adv_offmesh_batch(prep_of('gl64')['base'], Csj)
+            den = np.asarray(jnp.linalg.norm(Nf, axis=1))
+            opc = {}
+            for rule in esc:
+                if rule == 'gl64':
+                    continue
+                Nr = OM.adv_offmesh_batch(prep_of(rule)['base'], Csj)
+                num = np.asarray(jnp.linalg.norm(Nr - Nf, axis=1))
+                ok = den > 0
+                rel = num[ok] / den[ok]
+                opc[f'{rule}|gl64'] = dict(worst=float(rel.max()) if ok.any() else None,
+                                           median=float(np.median(rel)) if ok.any() else None, states=int(len(den)),
+                                           undefined=int((~ok).sum()), nonfinite_states_dropped=int((~keep).sum()))
+                del Nr
+                if rule != conv:
+                    drop(rule)
+            del Nf
+            if conv != 'gl64':
+                drop('gl64')
+            S_rep['escalation'] = dict(pairs=pairs, converged=conv, bar=cfg['conv_bar'], fixed_vs_adaptive=sens,
+                                       operator_check=opc, status='pass' if conv else 'unresolved')
             save()
             if conv is not None:
-                ladder = s['ladder']
-                for rule in ladder:
-                    if rule in esc:
-                        continue
-                    rollouts(sname, sol, rule, data_of(rule), SEL, Lt)
-                # A-B-A panel of every ladder rule's two selection arms (A = conv rule's fixed BE dt0)
-                panel_subjects = [(rule, spec) for rule in ladder + [conv] for spec in SEL]
-                time_panel(f'family|{sname}', sname, sol, (conv, SEL[0]), panel_subjects, data_of)
-            for rule in list(datas):
-                datas.pop(rule)
-            gc.collect()
+                for rule in s['ladder']:
+                    rollouts(sname, sol, rule, prep_of(rule), SEL, lean)
+                A = (sname, conv, SEL[0])
+                Bs = [(sname, r, x) for r in s['ladder'] + [conv] for x in SEL if (sname, r, x) != A]
+                time_panel(f'family|{sname}', A, Bs, lambda sn, rule: (sol, prep_of(rule)), int(tc['seed']) + k_set,
+                           tc['cases'], tc['reps'])
+            S_rep['peak_bytes'] = C3.peak_bytes()
+            for rule in list(preps):
+                drop(rule)
         else:
             rule = s['rule']
-            specs = grid_specs(cfg['grid'])
-            res, ver = rollouts(sname, sol, rule, data_of(rule), specs, Lt)
-            # G-FS1 (A2.1): fs BE dt0 K=1 vs vendor
-            fv, vv = res[C3.spec_key(('fs', 'BE', DT0, 1))], res['vendor|BE|0.01|K1']
-            rel = float(np.nanmax(np.abs(fv - vv)) / np.nanmax(np.abs(vv)))
-            S_rep['G_FS1'] = dict(coef_max_rel=rel, exact_coefficients=bool(rel <= 1e-12))
-            S_rep['G_FS1']['steps_equal'] = all(
-                ra['steps']['reason'] == rb['steps']['reason'] and ra['steps']['it'] == rb['steps']['it']
-                for ra, rb in zip([r for r in rep['rows'] if r['setting'] == sname and r['spec'] == 'fs|BE|0.01|K1'],
-                                  [r for r in rep['rows'] if r['setting'] == sname and r['spec'] == 'vendor|BE|0.01|K1']))
-            live[sname] = (sol, rule, data_of(rule))
-            fs_c = [x for x in specs if x[0] == 'fs' and x != ('fs', 'BE', DT0, 1)] + [('vendor',)]
-            time_panel(f'setting|{sname}', sname, sol, (rule, ('fs', 'BE', DT0, 1)), [(rule, x) for x in fs_c],
-                       lambda r_: live[sname][2])
+            prep = prep_of(rule)
+            # ---- G-FS1 first (A2.1): vendor vs fs BE dt0 K=1 on every case; CN negative control on the first case
+            g = rollouts(sname, sol, rule, prep, [('vendor',), ('fs', 'BE', DT0, 1)], lean)
+            Wv, Wf = g['vendor|BE|0.01|K1']['W'], g['fs|BE|0.01|K1']['W']
+            per = [float(np.max(np.linalg.norm(Wf[ci] - Wv[ci], axis=1)) / np.linalg.norm(Wv[ci][0])) for ci in range(len(cases))]
+            rv = [r for r in rep['rows'] if r['setting'] == sname and r['spec'] == 'vendor|BE|0.01|K1']
+            rf = [r for r in rep['rows'] if r['setting'] == sname and r['spec'] == 'fs|BE|0.01|K1']
+            steps_eq = all(x['steps']['reason'] == y['steps']['reason'] and x['steps']['it'] == y['steps']['it']
+                           for x, y in zip(rv, rf))
+            exact = bool(max(per) <= 1e-12 and steps_eq)
+            Fv = np.stack([np.asarray(TB.decode(jnp.asarray(Wv[ci]), lean)) for ci in range(len(cases))])
+            Ff = np.stack([np.asarray(TB.decode(jnp.asarray(Wf[ci]), lean)) for ci in range(len(cases))])
+            fper = (np.linalg.norm(Ff - Fv, axis=2) / N0[:, None]).max(1)
+            approved = bool(max(per) <= 1e-8 and float(fper.max()) <= 1e-8 and
+                            [x['valid'] for x in rv] == [x['valid'] for x in rf] and
+                            [x['nonstationary'] for x in rv] == [x['nonstationary'] for x in rf])
+            cn = rollouts(sname, sol, rule, prep, [('fs', 'CN', DT0, 1)], lean)['fs|CN|0.01|K1']['W']
+            ctrl = float(np.max(np.linalg.norm(cn[0] - Wv[0], axis=1)) / np.linalg.norm(Wv[0][0]))
+            S_rep['G_FS1'] = dict(per_case_coef_rel=per, per_case_field=fper.tolist(), steps_equal=steps_eq,
+                                  outcome='exact' if exact else ('approved-equivalent' if approved else 'FAIL'),
+                                  cn_control=ctrl, cn_control_discriminating=bool(ctrl > 1e-6))
+            save()
+            if not (exact or approved):
+                dump()
+                print('G-FS1 FAILED: stopping before any verdict', S_rep['G_FS1']['outcome'], flush=True)
+                sys.exit(3)
+            specs = [x for x in grid_specs(cfg['grid']) if C3.spec_key(x) not in ('fs|BE|0.01|K1', 'fs|CN|0.01|K1')]
+            rollouts(sname, sol, rule, prep, specs, lean)
+            S_rep['peak_bytes'] = C3.peak_bytes()
+            live[sname] = (sol, rule, prep)
+            allsp = [('vendor',)] + grid_specs(cfg['grid'])
+            Bs = [(sname, rule, x) for x in allsp if (x[0] in ('fs', 'vendor') and x != ('fs', 'BE', DT0, 1)) or timed_adaptive(x)]
+            time_panel(f'setting|{sname}', (sname, rule, ('fs', 'BE', DT0, 1)), Bs,
+                       lambda sn, rl: (live[sn][0], live[sn][2]), int(tc['seed']) + 1 + k_set, tc['cases'], tc['reps'])
+        dump()
         save()
-        np.savez_compressed(out / f'W_{mode}.npz', **Wstore, **{f'w0|{k}': v for k, v in w0store.items()})
 
     if mode == 'grid':
         base = cfg['common_baseline'] if cfg['common_baseline'] in live else cfg['common_baseline_fallback']
-        subj = []
-        for sname, (sol, rule, data) in live.items():
-            for x in grid_specs(cfg['grid']):
-                if x[0] == 'fs' and x[2] >= DT0 - 1e-12:
-                    subj.append((sname, rule, x))
-        common_panel(base, subj)
+        A = (base, live[base][1], ('fs', 'BE', DT0, 1))
+        Bs = [(sname, rule, x) for sname, (sol, rule, prep) in live.items() for x in grid_specs(cfg['grid'])
+              if x[0] == 'fs' and x[2] >= DT0 - 1e-12 and (sname, rule, x) != A]
+        time_panel('common', A, Bs, lambda sn, rl: (live[sn][0], live[sn][2]), int(tc['common_seed']),
+                   tc['common_cases'], tc['common_reps'])
+    rep['peak_bytes_job'] = C3.peak_bytes()
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()
-    np.savez_compressed(out / f'W_{mode}.npz', **Wstore, **{f'w0|{k}': v for k, v in w0store.items()})
+    dump()
     (out / 'COMPLETE').write_text('complete\n')
     print('C3RUN COMPLETE', flush=True)
-
-
-# timing helpers are defined at module level but need the driver state; they are bound in main() via closures below
-def _timed(sol, spec, u0, nu, data, burn_s):
-    C3.burn(burn_s)
-    t1 = time.perf_counter()
-    o, W, _ = sol.run(spec, u0, nu, data)
-    jax.block_until_ready(o)
-    return time.perf_counter() - t1, sha(np.asarray(W))
 
 
 if __name__ == '__main__':

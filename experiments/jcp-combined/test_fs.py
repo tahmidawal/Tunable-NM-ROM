@@ -16,8 +16,12 @@ N(c) = sum T c c, so Ju(c) = (T + T^T) c is linear in c and N = 0.5 Ju c (the of
       INTENDED step equation (from the run's own history) differs from the run's step by > 10 x the unmutated run's
       discrepancy on the designated step;
   (d) reported: the previous-state predictor ('prev_pred') vs the quadratic predictor;
-  (e) GATE: the BE branch equals an independent copy of the vendor arithmetic (make_fsc_rule's _lm_step_parts) - the
-      fixed-sweep BE (K = 1) and the vendor-path recomputation agree bitwise on this system.
+  (e) GATE (code audit 1 item 3): an independent NumPy re-implementation of the vendor fixed-sweep BE algorithm
+      (offmesh.make_fsc_rule: quadratic predictor with extrapolated Ju, fused LM on the first a steps, then one damped,
+      clipped LM sweep per step with damping carried) reproduces the fs3 BE K=1 trajectory (states <= 1e-9 relative,
+      LM iterations and exit reasons equal); CONTROL: the same NumPy solver with the previous-state predictor must
+      differ by > 1e-9 (the comparison can fail).
+The script exits non-zero unless every gate passes.
 """
 from __future__ import annotations
 
@@ -115,11 +119,104 @@ def intended_step(scheme, k, Wall, dt):
     def jac(c):
         return S[:, None] * (a0 * A + dt * b0 * TL.dF_np(c))
     sol = scipy.optimize.least_squares(res, Wall[k + 1], jac=jac, xtol=1e-15, ftol=1e-15, gtol=1e-15, method='lm')
+    assert sol.success, ('SciPy least squares failed', scheme, k, sol.message)
     return sol.x
 
 
 def step_discrepancy(scheme, k, Wall, dt):
     return float(np.linalg.norm(Wall[k + 1] - intended_step(scheme, k, Wall, dt)) / np.linalg.norm(C0))
+
+
+def np_fused_lm(evalJ, w0, tol, gtol, lam0, budget=50, trust=np.inf):
+    """NumPy transcription of common.make_fused_lm (clip=True, Cholesky)."""
+    ratio = lambda g, J, rn: np.linalg.norm(g) / (np.linalg.norm(J) * rn + 1e-300)
+    w = w0.copy()
+    r, J = evalJ(w)
+    rn = np.linalg.norm(r)
+    g = J.T @ r
+    reason = 4 if ratio(g, J, rn) <= gtol else (1 if rn <= tol else 0)
+    lam, it, rej = lam0, 0, 0
+    while it < budget and reason == 0:
+        Hm = J.T @ J
+        d = np.diag(Hm) + 1e-30
+        step = np.linalg.solve(Hm + np.diag(lam * d), -g)
+        nz = np.linalg.norm(step)
+        step = step * (trust / (nz + 1e-300) if nz > trust else 1.)
+        ok = np.all(np.isfinite(step))
+        wn = w + (step if ok else 0.)
+        r2, J2 = evalJ(wn)
+        rn2 = np.linalg.norm(r2)
+        acc = ok and np.isfinite(rn2) and rn2 < rn
+        if acc:
+            w, r, J, rn = wn, r2, J2, rn2
+        g = J.T @ r
+        gn = ratio(g, J, rn)
+        tiny = ok and np.linalg.norm(step) <= 1e-14 * (1 + np.linalg.norm(w))
+        reason = 4 if gn <= gtol else (1 if rn <= tol else (2 if tiny else (3 if (not acc) and lam >= 1e14 else 0)))
+        lam = max(lam / 3, 1e-12) if acc else min(lam * 10, 1e14)
+        it += 1
+        rej += int(not acc)
+    return w, rn, it, reason, lam
+
+
+def np_vendor_be(dt, a=AFIRST, prev_pred=False):
+    """Independent NumPy re-implementation of offmesh.make_fsc_rule (BE) on the manufactured system."""
+    S = 1. / (1. + dt * NU * LAM)
+    Juf = lambda c: np.einsum('mij,j->mi', TT + TT.transpose(0, 2, 1), c)
+    rj = lambda Ju, c, p: ((A @ c - p + dt * (0.5 * Ju @ c + NU * LAM * (A @ c))) * S, A + (dt * S)[:, None] * Ju)
+    steps = int(round(.25 / dt))
+    wv = wp = wp2 = C0.copy()
+    Jv = Jp = Jp2 = Juf(C0)
+    lam = 1e-6
+    Wall, its, reasons = [C0.copy()], [], []
+    for k in range(steps):
+        p = A @ wv
+        if prev_pred:
+            cand, Ju3 = [wv], [Jv]
+        else:
+            we, Je = 2 * wv - wp, 2 * Jv - Jp
+            wq, Jq = (3 * wv - 3 * wp + wp2, 3 * Jv - 3 * Jp + Jp2) if k >= 2 else (we, Je)
+            cand, Ju3 = [wv, we, wq], [Jv, Je, Jq]
+        rs = [np.linalg.norm(rj(J_, c_, p)[0]) for J_, c_ in zip(Ju3, cand)]
+        i = int(np.argmin([x if np.isfinite(x) else np.inf for x in rs]))
+        w, Ju = cand[i], Ju3[i]
+        if k < a:
+            w2, rn, it, reason, lam = np_fused_lm(lambda c: rj(Juf(c), c, p), w, 1e-13, GTOL, lam)
+            Ju2 = Juf(w2)
+        else:
+            r, J = rj(Ju, w, p)
+            rn = np.linalg.norm(r)
+            Hm = J.T @ J
+            g = J.T @ r
+            d = np.diag(Hm) + 1e-30
+            dw = np.linalg.solve(Hm + np.diag(lam * d), -g)
+            wn = w + dw
+            Jun = Juf(wn)
+            r2, J2 = rj(Jun, wn, p)
+            rn2 = np.linalg.norm(r2)
+            acc = np.isfinite(rn2) and rn2 < rn
+            lam = max(lam / 3, 1e-12) if acc else min(lam * 10, 1e14)
+            w2, Ju2, r, J, rn = (wn, Jun, r2, J2, rn2) if acc else (w, Ju, r, J, rn)
+            gn = np.linalg.norm(J.T @ r) / (np.linalg.norm(J) * rn + 1e-300)
+            it, reason = 1, (4 if gn <= GTOL else 0)
+        wv, wp, wp2 = w2, wv, wp
+        Jv, Jp, Jp2 = Ju2, Jv, Jp
+        Wall.append(w2)
+        its.append(int(it))
+        reasons.append(int(reason))
+    return np.array(Wall), its, reasons
+
+
+def vendor_be_trajectory_check(dt):
+    o = fs_run('BE', dt, 1)
+    Wn, its, reasons = np_vendor_be(dt)
+    Wc, _, _ = np_vendor_be(dt, prev_pred=True)
+    nrm = np.linalg.norm(C0)
+    d = float(np.max(np.linalg.norm(o['W_all'] - Wn, axis=1)) / nrm)
+    dc = float(np.max(np.linalg.norm(o['W_all'] - Wc, axis=1)) / nrm)
+    return dict(state_distance=d, iterations_equal=its == o['it'].tolist(), reasons_equal=reasons == o['reason'].tolist(),
+                control_distance=dc, passed=bool(d <= 1e-9 and its == o['it'].tolist() and reasons == o['reason'].tolist()
+                                                and dc > 1e-9))
 
 
 def vendor_be_check(dt):
@@ -196,8 +293,11 @@ def main():
         ok &= det
         print('MUT', mut, rep['mutations'][mut], flush=True)
     vb, _ = vendor_be_check(dtf)
-    rep['gates']['vendor_be_residual_identity'] = vb
-    ok &= vb <= 1e-12
+    rep['gates']['vendor_be_residual_identity'] = vb          # reported only (algebraic identity on one trajectory)
+    vt = {f'{dt:g}': vendor_be_trajectory_check(dt) for dt in DTS}
+    rep['gates']['vendor_be_trajectory'] = vt
+    ok &= all(v['passed'] for v in vt.values())
+    print('VENDOR-BE', vt, flush=True)
     rep['gates']['all_pass'] = bool(ok)
     rep['all_pass'] = bool(ok)
     rep['source_sha256'] = {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest()
@@ -205,6 +305,8 @@ def main():
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     Path(a.out).write_text(json.dumps(rep, indent=1, default=float) + '\n')
     print('ALL_PASS', ok)
+    if not ok:
+        sys.exit(1)
 
 
 if __name__ == '__main__':

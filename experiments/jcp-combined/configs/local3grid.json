@@ -11,18 +11,18 @@
  "conv_bar": 2.5e-05,
  "settings": [
   {
-   "name": "W1024",
+   "name": "W256",
    "bank": "W1024",
-   "Rp": 1024,
+   "Rp": 256,
    "a": 6,
-   "rule": "lat32768"
+   "rule": "lat8192"
   },
   {
-   "name": "W512",
-   "bank": "W1024",
+   "name": "M2_512",
+   "bank": "M2",
    "Rp": 512,
-   "a": 6,
-   "rule": "lat16384"
+   "a": 3,
+   "rule": "gl24"
   }
  ],
  "timing": {
@@ -31,35 +31,29 @@
   "burn": 0.1,
   "seed": 20261013,
   "common_cases": 1,
-  "common_reps": 1
+  "common_reps": 1,
+  "common_seed": 20261013
  },
  "grid": {
   "dt_factors": [
    1,
-   1.25,
-   1.6666666666666667,
-   2.5,
-   5
+   2.5
   ],
   "fs_schemes": [
-   "CN",
-   "CNR",
-   "BDF2"
+   "CN"
   ],
   "Ks": [
    1,
    2
   ],
   "gal_factors": [
-   1,
    2.5
   ],
   "anchor_factors": [
-   0.125,
-   0.0625
+   0.125
   ]
  },
- "common_baseline": "W512",
+ "common_baseline": "W256",
  "common_baseline_fallback": "M2_512",
  "case_subset": [
   0

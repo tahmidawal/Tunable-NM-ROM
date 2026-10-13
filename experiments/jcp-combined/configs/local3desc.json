@@ -11,18 +11,17 @@
  "conv_bar": 2.5e-05,
  "settings": [
   {
-   "name": "W1024",
+   "name": "W256",
    "bank": "W1024",
-   "Rp": 1024,
+   "Rp": 256,
    "a": 6,
    "esc_rules": [
-    "gl48",
     "gl56",
     "gl64"
    ],
-   "diagnostic": true,
+   "diagnostic": false,
    "ladder": [
-    "lat32768",
+    "lat8192",
     "lat256"
    ]
   }

@@ -1,0 +1,165 @@
+{
+ "attempt": "c3desc",
+ "driver": "c3run",
+ "mode": "esc",
+ "mesh": 65,
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "refined_ref": "REF3D",
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "conv_bar": 2.5e-05,
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "esc_rules": [
+    "gl56",
+    "gl64"
+   ],
+   "diagnostic": false,
+   "ladder": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "lat256"
+   ]
+  },
+  {
+   "name": "W256",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "esc_rules": [
+    "gl56",
+    "gl64"
+   ],
+   "diagnostic": false,
+   "ladder": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "lat256"
+   ]
+  },
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "esc_rules": [
+    "gl56",
+    "gl64"
+   ],
+   "diagnostic": false,
+   "ladder": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "lat256"
+   ]
+  },
+  {
+   "name": "W768",
+   "bank": "W1024",
+   "Rp": 768,
+   "a": 6,
+   "esc_rules": [
+    "gl48",
+    "gl56",
+    "gl64"
+   ],
+   "diagnostic": true,
+   "ladder": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "lat256"
+   ]
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "esc_rules": [
+    "gl48",
+    "gl56",
+    "gl64"
+   ],
+   "diagnostic": true,
+   "ladder": [
+    "lat8192",
+    "lat16384",
+    "lat32768",
+    "lat65536",
+    "lat131072",
+    "gl24",
+    "gl32",
+    "gl40",
+    "gl48",
+    "lat256"
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 4,
+  "reps": 2,
+  "burn": 0.1,
+  "seed": 20261013
+ },
+ "grid": {
+  "dt_factors": [
+   1,
+   1.25,
+   1.6666666666666667,
+   2.5,
+   5
+  ],
+  "fs_schemes": [
+   "CN",
+   "CNR",
+   "BDF2"
+  ],
+  "Ks": [
+   1,
+   2
+  ],
+  "gal_factors": [
+   1,
+   2.5
+  ],
+  "anchor_factors": [
+   0.125,
+   0.0625
+  ]
+ },
+ "common_baseline": "W512",
+ "common_baseline_fallback": "M2_512"
+}

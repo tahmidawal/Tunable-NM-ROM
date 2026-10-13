@@ -1,0 +1,67 @@
+{
+ "attempt": "local3grid",
+ "driver": "c3run",
+ "mode": "grid",
+ "mesh": 65,
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "refined_ref": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output/ref_923801.npz",
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "conv_bar": 2.5e-05,
+ "settings": [
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat32768"
+  },
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384"
+  }
+ ],
+ "timing": {
+  "cases": 1,
+  "reps": 1,
+  "burn": 0.1,
+  "seed": 20261013,
+  "common_cases": 1,
+  "common_reps": 1
+ },
+ "grid": {
+  "dt_factors": [
+   1,
+   1.25,
+   1.6666666666666667,
+   2.5,
+   5
+  ],
+  "fs_schemes": [
+   "CN",
+   "CNR",
+   "BDF2"
+  ],
+  "Ks": [
+   1,
+   2
+  ],
+  "gal_factors": [
+   1,
+   2.5
+  ],
+  "anchor_factors": [
+   0.125,
+   0.0625
+  ]
+ },
+ "common_baseline": "W512",
+ "common_baseline_fallback": "M2_512",
+ "case_subset": [
+  0
+ ]
+}

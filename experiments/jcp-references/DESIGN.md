@@ -468,3 +468,123 @@ $1+1/16+1/256$. The PS row becomes 3 resolutions + one $\Delta t/2$ run per case
 All per-case costs are **calibrated in the real-size smoke** and the table is re-issued as an amendment before the
 production jobs; production starts only if the calibrated total is $\le 120$ GPU-h (otherwise the user is asked).
 `--mem` is host memory; device memory is measured (`peak_bytes_in_use`) in the smoke.
+
+---
+
+## Amendment A2 (2026-10-13, after Codex design audit 2, `audits/codex-design-2.md`; before any code)
+
+Where A2 conflicts with A1 or §1–§14, A2 governs.
+
+**A2.1 Numerical floor, case-specific (items 17, 18).** A1.4 is replaced. For every case, kind and level the solver
+records the achieved final relative residual $r_n$ of every step. The **floor proxy** of a level is
+$\tau_L = 10\sum_n r_n$ (residual accumulation with a stability factor of 10; it is a conditional proxy, not a bound).
+The proxy is **validated** on the dev cases of A1.4 (every level re-solved at Newton $10^{-13}$, BiCGStab $10^{-12}$,
+budget 40): the measured $\max_k\lVert u^{tight}-u^{prod}\rVert/n_0$ must be $\le\tau_L$ on every dev case and level;
+if it is not, the factor 10 is raised to $10\times$ the worst observed ratio by a dated amendment before production.
+Condition (d) of §4 becomes $d_{23}(t_k)/n_0\ge10(\tau_{L_2}+\tau_{L_3})$ for every $k\ge1$. A case failing (d) is
+re-solved **at all three levels** at the tight tolerances (attempt `tight`), $\tau$ and every difference, order and
+$\epsilon_{ref}$ are recomputed from the tight attempt, and (d) is re-judged with the tight proxies. A case that still
+fails is `unresolved-floor`: order unverified, **no accuracy claim of any kind** (the bound "$\le d_{23}/n_0+2\tau$" of
+A1.4 is withdrawn), K0-affected.
+
+**A2.2 Direction consistency has a consequence (item 15).** $c$ (A1.8) stays a diagnostic for acceptance, but if
+$c>0.5$ at some $t_k$, that case's uncertainty is replaced by the Richardson-free value
+$\epsilon_{ref}^{cons}=\max_{k\ge1}d_{23}(t_k)/n_0$ (the last difference; larger than $\epsilon_{ref}$ whenever
+$p\ge1$ and ratio 2), and the case is flagged `direction-inconsistent`. D1 is a diagnostic on four cases only, not
+evidence about other cases.
+
+**A2.3 PS uncertainty is a conditional indicator; the compared PS field is the half-step one (items 28, 30, A1-q).**
+The compared field is $u_{PS}=u_{PS}^{(N_3,\Delta t/2)}$. $s_t=\max_k\lVert u^{(N_3,\Delta t)}-u^{(N_3,\Delta
+t/2)}\rVert/n_0$ (under a fourth-order model the error of the half-step field is $s_t/15$; under any order $\ge1$ it is
+$\le s_t$). $s_x$ (A1.7, spatial ladder at $\Delta t$) with $q\ge2.5$. $\sigma_{PS}=s_x+s_t$ is a **conditional
+indicator** of the PS error under a single-leading-error model; a bias common to all PS resolutions is invisible to it.
+What guards against common bias is that PS and FD share no discretisation (only the PDE, the descriptors and the
+continuum IC).
+
+**A2.4 Ordered cross-check procedure (items 33, 34, 29, PS vs $R_S$).** For each cross-check case, in this order:
+1. **FD validity.** If the case's $R_{ST}$ outcome is not `accepted` (A1.5/A2.1) or $\epsilon_{ref}$ is undefined, the
+   verdict is `FD-INVALID` (no replacement case; it counts as not-PASS).
+2. **PS validity.** If any PS run is non-finite, the PS gates G3/G4 failed in that job, the spatial order $q$ is
+   undefined (A1.5 policy: no bracket, zero, NaN) or $<2.5$ at some $t_k$, or $s_t$ fails to be at least 4× smaller
+   than the $(\Delta t, 2\Delta t)$-free bound $\max_k\lVert u^{(N_3,\Delta t)}\rVert$ … (withdrawn; see next
+   sentence) — the temporal check is: the running max $|u|$ must satisfy
+   $\Delta t\le0.66\cdot2.8/(2d\pi N_3\max|u|)$; if not, the PS triple is rerun at $\Delta t/2$ once; still violated →
+   `UNRESOLVED(stability)`. Any of the other failures → `UNRESOLVED(<reason>)`.
+3. **Resolution.** $\sigma_{PS}>\epsilon_{ref}/2$ → `UNRESOLVED(resolution)`.
+4. **Discrepancy.** $x_{PS}\le2\epsilon_{ref}$ → `PASS`; otherwise `FAIL`.
+`UNRESOLVED` (any reason) is escalated once as A1.7; terminal `UNRESOLVED` and `FD-INVALID` are never PASS. The
+§3.3 "explicit-advection limit" is withdrawn as a guarantee; it is the heuristic in step 2.
+The cross-check compares PS with $R_{ST}$ only. $R_S$ (fixed-step BE) has a different target and gets no PS check; it
+shares the spatial code with $R_{ST}$, so it inherits the dimension status.
+
+**A2.5 Status truth table (A1-vs-§10, item 55).**
+- *Dimension status:* `suspended` if any cross-check case FAILs; else `validated` if $\ge6$ of 8 PASS; else
+  `unvalidated`.
+- *Case eligibility* (`eligible`, per kind): outcome `accepted` **and** dimension `validated` **and** (the case is not
+  a cross-check case, or its verdict is PASS).
+- *E0 per dimension:* `PASS` iff the dimension is `validated` and every case of every cohort is `accepted`;
+  `PASS-WITH-K0-CASES` iff `validated` and some cases are not eligible (listed by cohort and case); `FAIL` iff
+  `suspended` or `unvalidated`. §10's "all 8 PASS" is replaced by this table. E0 overall = the pair of dimension
+  verdicts (no single pooled verdict).
+
+**A2.6 Coefficient checks and forcing at stages (items 25, 27).** IC coefficients: $\lVert\hat u^{4096}-\hat
+u^{8192}\rVert_2\le10^{-13}\lVert\hat u^{8192}\rVert_2$ and $\max|\hat u^{4096}-\hat u^{8192}|\le10^{-15}$, at the
+largest $N$ used (escalation included). ETDRK4 coefficients: for each of the four coefficient arrays,
+$\max|C^{32}-C^{64}|\le10^{-12}\max|C^{64}|$; this is a coefficient check, not a trajectory bound. With forcing (G4
+only) the forcing is evaluated at the stage times $t_n,\ t_n+\Delta t/2,\ t_n+\Delta t/2,\ t_n+\Delta t$.
+
+**A2.7 Gates G2/G3a/G4 frozen (items 41, 42; item 42 WRONG → repaired).** The manufactured solution of A1.13 is
+replaced (for G2 and G4) by the separable, wall-compatible
+$u^*=A(t)\prod_a\varphi(x_a)$, $\varphi(x)=\sin(\pi x)\exp(\tfrac12\sin^2\pi x)$, $A(t)=1+\tfrac12\sin4\pi t$,
+$\nu=0.05$: $\varphi$ is odd and 2-periodic and analytic, so $u^*$ has an infinite but spectrally decaying sine
+expansion and satisfies every even-derivative wall condition. Each forcing term is a product of 1D functions
+($u^*_t$; $u^*\partial_au^*=A^2\varphi\varphi'(x_a)\prod_{b\ne a}\varphi^2(x_b)$; $\Delta u^*$), with $\varphi',\varphi''$
+by JAX automatic differentiation of $\varphi$. FD (G2) evaluates the forcing at the nodes. PS (G4) gets the forcing's
+sine coefficients by tensor Gauss–Legendre (4096 points per axis) of the 1D factors — independent of the DST and free
+of the wall-trapezoid error Codex demonstrated. G4 bars: spatial ladder ($N=32,48,64$ in 2D and 3D, $\Delta t=10^{-4}$)
+observed order $\ge3$ at every $t_k$; temporal ladder ($N=64$, $\Delta t=0.01,0.005,0.0025$) order in $[3.5,4.5]$;
+projection unit test on $\sin2\pi x\sin^2\pi y$ with order in $[3.5,4.5]$ (A1.6). G3a frozen: $\nu=0.01$, 2D modes
+$(1,1),(3,2),(17,5),(40,40)$ with coefficients $1,0.5,-0.3,0.1$; 3D modes $(1,1,1),(2,3,1),(9,4,7),(30,30,30)$ with
+$1,0.5,-0.2,0.05$; bar $\lVert u-u_{exact}\rVert/\lVert u_{exact}\rVert\le10^{-12}$ on the lattice at every
+$t_k$, $k\ge1$, at $N=128$.
+
+**A2.8 G5 identity and X1b (items 43, 45; WRONG → repaired).** G5 computes the expected descriptors from the
+pinned (dimension, cohort, case-index) mapping of the committed cohort definitions (`cohorts.py`), never from the
+stored metadata, and compares the canonical $t_0$ field so a swap of fields and metadata together is detected. X1b
+becomes a synthetic exact first-order sequence $u_i=U+C\,h_i\,\phi$ on the stored $t_k$ fields of 2D dev6 case 0,
+for both the dyadic triple and the refined triple $(3,1.5,1)$: $p=1$ exactly, so the gate must reject (a test of the
+gate's code path, not of a solver).
+
+**A2.9 Sealing classified (items 51–53, encryption, opening).** The sealing is **cooperative and unenforced** on the
+shared cluster account: encryption prevents accidental reading only. The key file holds a 64-character hex line used
+by `openssl enc -aes-256-cbc -pbkdf2 -md sha256 -pass file:<key>`; CBC is unauthenticated, so the sha256 of every
+ciphertext **and** of every plaintext is recorded (the plaintext hashes only in the encrypted manifest; the ciphertext
+hashes and the encrypted manifest's hash in git), and every decryption is verified against them. Failed generation
+attempts are recorded in the QC aggregates (counts per outcome, including solver failures); quantiles exclude undefined
+values and state the denominator; QC aggregates are published once per completed sealed job. Opening (coordinator
+only, `open_sealed.py`): (1) refuse unless the global freeze manifest lists every lane of a trusted roster (the
+plan's lane table, read from a commit given on the command line), each with a commit hash and a selection file whose
+sha256 is verified by `git show`, plus this lane's store version; (2) refuse if an opening record already exists for
+that cohort; (3) write an opening-intent record; (4) decrypt into a temporary directory and verify every plaintext
+hash; (5) atomically rename into the store and append the manifest; (6) write the completion record. **Before a
+verified global opening**, the loader cannot read sealed/OOD data; after it, the loader reads them like any cohort
+and checks that a completion record exists.
+
+**A2.10 Store schema and loader (items 38, 54, 55).**
+- Fields are keyed by attempt and level, `a<k>_L<L>` (attempt table in `meta`: purpose `prod`/`tight`/`refine`/
+  `retry`, tolerances), with per-step arrays `res_a<k>_L<L>` (final relative residual) and `nwt_a<k>_L<L>` (Newton
+  count). `meta.final` names the attempt/levels used for the verdict. PS ladders of cross-check cases are stored in
+  `store/<dim>/<cohort>/PS/c<case>.npz` (all $N$ and the half-step field at the lattice, plus PS $t_0$). Floor
+  validation evidence (A2.1) is stored in `store/<dim>/dev*/floor/`.
+- `score(...)` returns a dict carrying `(dim, cohort, case, kind, metric_id, store_version, e, e_t, eps_ref,
+  eligible)`; `resolved(score_a, score_b)` raises unless both are eligible and agree on dim, cohort, case, kind,
+  metric_id and store_version, and returns $|e_a-e_b|>2\epsilon_{ref}$ (using the case's $\epsilon_{ref}$ or
+  $\epsilon_{ref}^{cons}$, A2.2).
+- `restrict(dim, cohort, case, kind, factor)` restricts coordinate-wise (3D fields reshaped to $(6,63,63,63)$; the
+  sub-lattice is $x=k\cdot factor/64$, resp. $/256$), recomputes $n_0$, $p$, $\epsilon_{ref}$, $c$ **and the outcome**
+  on the sub-lattice, and, for cross-check cases, the cross-check verdict from the stored PS fields; the dimension
+  status is unchanged.
+
+**A2.11 Row-wise RNG pinning (item 50).** NumPy's `default_rng` (PCG64) with the seed sequence `[seed, j]`; the NumPy
+version is recorded in every job's result JSON, and the unit test pins the first rows of each new cohort's **public
+dev-check seed** (not the secret seeds) to golden values.

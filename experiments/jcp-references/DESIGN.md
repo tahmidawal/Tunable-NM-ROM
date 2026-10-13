@@ -811,3 +811,18 @@ exactly); one OOD viscosity, computed through `exp`, differs by $1.7\times10^{-1
 is now exact for integer arrays and relative $\le10^{-14}$ for floating values. The cohort descriptors are therefore
 defined up to an ulp of `exp`/`log` across NumPy builds; every job records its NumPy version, and an ulp in $\nu$
 changes a reference by far less than any tolerance here.
+
+---
+
+## Amendment A8 (2026-10-13, after Codex job audit 3, before any pseudo-spectral run)
+
+**A8.1 PS base steps.** With the pre-registered steps ($5\times10^{-5}$ in 2D, $2.5\times10^{-4}$ in 3D) the stability
+heuristic of A2.12 holds only for running maxima below about 1.44 (2D) and 1.53 (3D), so every cross-check case with
+amplitude near the family maximum of 2 would predictably rerun its whole ladder at $\Delta t/2$ (Codex counted 2 of 8
+cases in 2D and 4 of 8 in 3D from the initial amplitudes; the 3D job could not fit 12 h). The base steps become
+$\Delta t=0.05/1600$ (2D) and $0.05/320$ (3D), for which the heuristic holds up to a running maximum of about 2.3
+(2D) and 2.45 (3D). Everything else in A1.6/A2.3/A2.4 is unchanged (half-step run, one stability rerun, escalation).
+Each dimension's eight cross-check cases are split over two jobs of four.
+
+**A8.2** The stability check rejects any non-finite running maximum before taking the maximum (Python's `max`
+could drop a NaN).

@@ -26,8 +26,10 @@ for d, cohs in FD.items():
     for coh, (n, k) in cohs.items():
         for i, cs in enumerate(chunks(n, k)):
             w(f'fd{d}d{coh}p{i}', dict(mode='fd', dim=d, cohort=coh, cases=cs, kinds=['ST', 'S']))
-w('ps2d', dict(mode='ps', dim=2, cohort='val32', cases=[0, 1, 2, 3, 4, 5, 19, 26], attempt=0))
-w('ps3d', dict(mode='ps', dim=3, cohort='val64', cases=[0, 1, 2, 3, 5, 33, 43, 47], attempt=0))
+for i, cs in enumerate(([0, 1, 2, 3], [4, 5, 19, 26])):
+    w(f'ps2dp{i}', dict(mode='ps', dim=2, cohort='val32', cases=cs, attempt=0))
+for i, cs in enumerate(([0, 1, 2, 3], [5, 33, 43, 47])):
+    w(f'ps3dp{i}', dict(mode='ps', dim=3, cohort='val64', cases=cs, attempt=0))
 seeds = HERE / 'checks' / 'sealed_seeds.json'
 if seeds.exists():
     s = json.loads(seeds.read_text())

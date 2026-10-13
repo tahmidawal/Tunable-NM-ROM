@@ -45,8 +45,8 @@ LEVELS = {  # kind -> dim -> dict(base [(L, dt)], refine (L, dt), scheme)
 }
 TOL = {'prod': (1e-11, 1e-9, 20), 'retry': (1e-11, 1e-10, 40), 'tight': (1e-13, 1e-12, 40),
        'tighter': (3e-14, 1e-12, 60)}
-PS_CFG = {2: dict(Ns=[1024, 1536, 2048], dt=5e-5, esc=[1536, 2048, 3072]),
-          3: dict(Ns=[128, 192, 256], dt=2.5e-4, esc=[192, 256, 384])}
+PS_CFG = {2: dict(Ns=[1024, 1536, 2048], dt=0.05 / 1600, esc=[1536, 2048, 3072]),      # A8.1
+          3: dict(Ns=[128, 192, 256], dt=0.05 / 320, esc=[192, 256, 384])}
 CALIB_CASES = {2: ('dev6', [0, 4]), 3: ('dev4', [0, 2])}
 X1_LEVELS = {2: [(512, 2.5e-3), (1024, 1.25e-3), (2048, 6.25e-4)], 3: [(64, 5e-3), (128, 2.5e-3), (256, 1.25e-3)]}
 
@@ -443,8 +443,10 @@ def ps_case(coh, j, Ns, dt, attempt_no, purpose_tag, dt_base, ps_gates_ok):
 
 
 def stability_ok(runs, d, dt, N3):
-    umax = max(r['umax'] for r in runs)
-    return bool(np.isfinite(umax) and dt <= 0.66 * 2.8 / (2 * d * np.pi * N3 * umax))
+    um = [r['umax'] for r in runs]
+    if not all(np.isfinite(u) for u in um):        # NaN-safe: any non-finite maximum fails (A8.2)
+        return False
+    return bool(dt <= 0.66 * 2.8 / (2 * d * np.pi * N3 * max(um)))
 
 
 def mode_ps(cfg, outdir, rep):

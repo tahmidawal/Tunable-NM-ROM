@@ -48,23 +48,38 @@ def link(src, dst):
 
 
 def gather():
-    """Link every pulled non-sealed FD / PS file into the store; return {attempt: result.json}."""
-    results = {}
+    """Link every pulled non-sealed FD / PS file of complete, gate-passing jobs into the store, after verifying each
+    against the job's own OUTPUTS.sha256. Returns ({attempt: result.json}, {attempt: reason refused})."""
+    results, refused = {}, {}
+    if list(RUNS.glob('*/output/**/*.enc')):
+        raise RuntimeError('encrypted (sealed) artifacts found in a local run directory: they must stay on the cluster')
     for rd in sorted(RUNS.glob('*/')):
-        rj = rd / 'result.json'
+        rj = rd / 'output' / 'result.json'
         if not rj.exists():
             continue
-        results[rd.name] = json.loads(rj.read_text())
-        if results[rd.name].get('SMOKE_OVERRIDE'):
-            continue                                   # A4.4(v): smoke outputs never enter the store
+        r = json.loads(rj.read_text())
+        if r.get('SMOKE_OVERRIDE'):
+            refused[rd.name] = 'smoke override'        # A4.4(v): never collected, never summarised
+            continue
+        if not (r.get('complete') and r.get('gates_all_pass')):
+            refused[rd.name] = 'incomplete or gate failure'
+            continue
+        sums = {}
+        for line in (rd / 'OUTPUTS.sha256').read_text().splitlines():
+            h, f = line.split(None, 1)
+            sums[f.strip()] = h
+        results[rd.name] = r
         out = rd / 'output'
         for f in sorted(out.glob('*d/*/*/c*.*')):
             if f.suffix in ('.npz', '.json') and not f.name.endswith('.tmp'):
                 dim, coh = int(f.parts[-4][0]), f.parts[-3]
                 if CH.is_sealed(dim, coh):
                     raise RuntimeError(f'sealed file pulled locally: {f}')
+                rel = str(f.relative_to(rd))
+                if sums.get(rel) != sha(f):
+                    raise RuntimeError(f'{rel}: does not match the job OUTPUTS.sha256')
                 link(f, STORE / f.relative_to(out))
-    return results
+    return results, refused
 
 
 def write_manifest():
@@ -90,13 +105,14 @@ def crosschecks(dim):
     out = {}
     coh = 'val32' if dim == 2 else 'val64'
     for j in CH.crosscheck_cases(dim):
-        pj = STORE / f'{dim}d/{coh}/PS/c{j:03d}.json'
+        att = sorted(STORE.glob(f'{dim}d/{coh}/PS/c{j:03d}_a*.json'))
         m = fd_meta(dim, coh, 'ST', j)
-        if not pj.exists() or m is None:
+        if not att or m is None:
             out[f'{coh}/{j}'] = dict(verdict='MISSING')
             continue
+        pj = att[-1]                                    # the latest (escalated) ladder governs (A1.7)
         ps = json.loads(pj.read_text())
-        a = np.load(STORE / f'{dim}d/{coh}/PS/c{j:03d}.npz')
+        a = np.load(pj.with_suffix('.npz'))
         u3, _ = fd_finest(dim, coh, 'ST', j)
         Ns = ps['Ns']
         runs = {r['id']: r for r in ps['runs']}
@@ -106,9 +122,17 @@ def crosschecks(dim):
             spatial=[(runs[i]['N'], np.asarray(a[i])) for i in ps['selected_spatial']], half=np.asarray(a[half]),
             full=np.asarray(a[full]), finite=ps['finite'], gates_ok=ps['gates_ok'], stability_ok=ps['stability_ok']),
             m['judge']['n0'])
-        # X2: the old first-order reference in place of u3, judged with the NEW eps_ref (A1.14)
+        rec['ladder_attempts'] = [x.name for x in att]
+        if rec.get('sigma') is not None:                # PS vs the Richardson field (diagnostic, A1.7)
+            arr = np.load(STORE / f'{dim}d/{coh}/ST/c{j:03d}.npz')
+            jd = m['judge']
+            if all(p is not None for p in jd['p']):
+                uR = V.richardson_field(arr[m['final'][1]], arr[m['final'][2]], jd['p'], jd['h'][1], jd['h'][2])
+                rec['ps_vs_richardson'] = float(np.max(V.tnorm(np.asarray(a[half]) - uR)[1:]) / jd['n0'])
+        # X2: the old first-order reference in place of u3, judged with the NEW eps_ref and the PS resolution
+        # condition sigma <= eps_ref / 2 (A1.14)
         old = old_reference(dim, coh, j, 'ST')
-        if old is not None and rec.get('sigma') is not None:
+        if old is not None and rec.get('sigma') is not None and rec['sigma'] <= rec['eps_ref'] / 2:
             x_old = float(np.max(V.tnorm(np.asarray(a[half]) - old)[1:]) / m['judge']['n0'])
             rec['x2_old'] = dict(x_ps=x_old, verdict='FAIL' if x_old > 2 * rec['eps_ref'] else 'PASS')
         rec['t0_ps_vs_canonical'] = float(np.linalg.norm((np.asarray(a['t0_ps']) - np.asarray(a['t0'])).ravel())
@@ -178,22 +202,36 @@ def V_clean(x):
     return x
 
 
-def e0_verdict(dim, dstat, cases, xc):
-    """A3.5: FAIL iff suspended/unvalidated; PASS iff every required case-kind eligible; else PASS-WITH-K0-CASES."""
+def e0_verdict(dim, dstat, cases, xc, sealed_qc):
+    """A3.5: FAIL iff suspended/unvalidated; PASS iff every required case-kind (every cohort incl. sealed/OOD x both
+    kinds) is eligible; else PASS-WITH-K0-CASES. INCOMPLETE while any required cohort-kind has not been generated."""
     if dstat != 'validated':
         return 'FAIL', []
-    bad = []
+    bad, missing = [], []
     for c in cases:
         x = xc.get(f"{c['cohort']}/{c['case']}")
-        if c['outcome'] != 'accepted' or (x is not None and x['verdict'] != 'PASS'):
+        if c['outcome'] == 'MISSING':
+            missing.append(f"{c['cohort']}/{c['case']}/{c['kind']}")
+        elif c['outcome'] != 'accepted' or (x is not None and x['verdict'] != 'PASS'):
             bad.append(f"{c['cohort']}/{c['case']}/{c['kind']}")
+    for coh in CH.NEW[dim]:
+        for kind in ('ST', 'S'):
+            q = sealed_qc.get((coh, kind))
+            n = CH.count(dim, coh)
+            if q is None or q['case_kinds'] < n:
+                missing.append(f'{coh}/*/{kind}')
+            elif q['outcomes'].get('accepted', 0) < n:
+                bad.append(f"{coh}/{n - q['outcomes'].get('accepted', 0)} case(s)/{kind} (sealed: counts only)")
+    if missing:
+        return 'INCOMPLETE', bad + [f'missing: {m}' for m in missing]
     return ('PASS' if not bad else 'PASS-WITH-K0-CASES'), bad
 
 
 def main():
-    results = gather()
+    results, refused = gather()
     version = write_manifest()
-    summary = dict(store_version=version, jobs={}, dims={})
+    summary = dict(store_version=version, jobs={}, dims={}, refused_jobs=refused)
+    sealed_qc = {}
     for name, r in results.items():
         summary['jobs'][name] = dict(mode=r['config']['mode'], dim=r['config'].get('dim'),
                                      cohort=r['config'].get('cohort'), complete=r.get('complete'), job=r.get('job'),
@@ -204,14 +242,24 @@ def main():
         if r['config']['mode'] == 'calib':
             summary.setdefault('calib', {})[str(r['config']['dim'])] = {k: r.get(k) for k in ('calib', 'd1', 'x1', 'x4')}
         if 'qc' in r:
+            for kind, q in r['qc']['kinds'].items():
+                key = (r['config']['dim'], (r['config']['cohort'], kind))
+                if key not in sealed_qc:
+                    sealed_qc[key] = dict(q)
+                else:                                   # several jobs cover one sealed cohort: add counts
+                    prev = sealed_qc[key]
+                    prev['case_kinds'] += q['case_kinds']
+                    prev['outcomes'] = {o: prev['outcomes'].get(o, 0) + q['outcomes'].get(o, 0) for o in V.OUTCOMES}
             summary.setdefault('sealed_qc', {})[f"{r['config']['dim']}d/{r['config']['cohort']}/{name}"] = dict(
                 qc=r['qc'], manifest_cipher_sha256=r['sealed_manifest']['cipher_sha256'],
                 manifest_plain_sha256=r['sealed_manifest']['plain_sha256'], n_ciphertexts=len(r['sealed_manifest']['ciphertexts']))
-    status = dict(store_version=version, dimension_status={}, crosscheck={})
+    status = dict(store_version=version, dimension_status={}, crosscheck={}, crosscheck_cases={})
     for dim in (2, 3):
         xc = crosschecks(dim)
         verdicts = [v['verdict'] for v in xc.values()]
-        dstat = V.dimension_status(verdicts) if 'MISSING' not in verdicts else 'unvalidated'
+        assert len(verdicts) == 8
+        dstat = V.dimension_status(verdicts)            # FAIL precedes MISSING (A2.5)
+        status['crosscheck_cases'][str(dim)] = sorted(xc)
         cases = []
         for cohort in CH.HISTORICAL[dim]:
             for kind in ('ST', 'S'):
@@ -227,11 +275,23 @@ def main():
                                       nu=m['desc']['nu'], seconds=m.get('seconds'), gpu=m['job']['gpu'],
                                       job_id=m['job']['job_id'], commit=m['job']['commit'],
                                       newton_total=sum(a['newton_total'] for a in m['attempts'])))
-        e0, bad = e0_verdict(dim, dstat, cases, xc)
+        sq = {k: v for (d_, k), v in sealed_qc.items() if d_ == dim}
+        e0, bad = e0_verdict(dim, dstat, cases, xc, sq)
+        ovn = old_vs_new(dim)
+        x3 = {}
+        for kind in ('ST', 'S'):
+            rows = [r for r in ovn if r['kind'] == kind]
+            if rows:
+                x3[kind] = dict(n=len(rows), fires=sum(r['fires'] for r in rows),
+                                fraction=sum(r['fires'] for r in rows) / len(rows),
+                                bar_090=bool(sum(r['fires'] for r in rows) / len(rows) >= 0.9),
+                                cohorts=sorted({r['cohort'] for r in rows}))
         status['dimension_status'][str(dim)] = dstat
         status['crosscheck'][str(dim)] = {k: v['verdict'] for k, v in xc.items()}
         summary['dims'][str(dim)] = dict(dimension_status=dstat, e0_verdict=e0, ineligible=bad, crosscheck=xc,
-                                         cases=cases, old_vs_new=old_vs_new(dim))
+                                         cases=cases, old_vs_new=ovn, x3=x3,
+                                         old_coverage={c: sorted({r['kind'] for r in ovn if r['cohort'] == c})
+                                                       for c in CH.HISTORICAL[dim]})
     (STORE / 'STATUS.json').write_text(json.dumps(V_clean(status), indent=1) + '\n')
     RES.mkdir(exist_ok=True)
     (RES / 'summary.json').write_text(json.dumps(V_clean(summary), indent=1) + '\n')

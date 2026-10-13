@@ -107,12 +107,24 @@ def g3a_linear(d, N=128, nu=0.01):
     S = PS.lattice_S(N, m)
     r = PS.make_ps(N, d, nonlin_on=False)(jnp.asarray(b0), nu, 0.01, S)
     L = PS.lin_eig(N, d, nu)
-    worst = 0.0
+    # exact solution synthesised INDEPENDENTLY of pscore (direct NumPy sums over the listed modes)
+    m_ = RC.LATTICE[d]
+    x = np.arange(1, m_) / m_
+    rels = []
     for k, t in enumerate(RC.TIMES):
-        ex = np.asarray(PS.synth_lattice(jnp.asarray(b0 * np.exp(L * t)), S, d))
+        ex = 0.0
+        for mo, c in zip(modes, coefs):
+            lam = -nu * np.pi ** 2 * sum(q * q for q in mo)
+            f = c * np.exp(lam * t)
+            fac = [np.sin(np.pi * q * x) for q in mo]
+            ex = ex + f * (np.multiply.outer(fac[0], fac[1]) if d == 2 else
+                           np.multiply.outer(np.multiply.outer(fac[0], fac[1]), fac[2]))
+        ex = np.pad(ex, 1) if d == 2 else ex.reshape(-1)
         if k >= 1:
-            worst = max(worst, float(np.linalg.norm(r['lat'][k] - ex) / np.linalg.norm(ex)))
-    return dict(gate='G3a', d=d, worst_rel=worst, **{'pass': worst <= 1e-12})
+            rels.append(float(np.linalg.norm(r['lat'][k] - ex) / np.linalg.norm(ex)))
+    ok = bool(r['finite'] and np.all(np.isfinite(rels)) and max(rels) <= 1e-12)
+    return dict(gate='G3a', d=d, worst_rel=float(np.max(rels)) if np.all(np.isfinite(rels)) else None,
+                **{'pass': ok})
 
 
 def g3b_ic_quadrature(d, N):
@@ -160,15 +172,17 @@ def g4_mms(d):
     lat = [_ps_mms(N, d, 1e-4) for N in Ns]
     e = [V.tnorm(u - ex)[1:] / n0 for u in lat]
     q_sp = [math.log(e[1][k] / e[2][k]) / math.log(64 / 48) for k in range(5)]
+    q_sp0 = [math.log(e[0][k] / e[1][k]) / math.log(48 / 32) for k in range(5)]
     half = _ps_mms(64, d, 5e-5)
     sep = float(np.max(V.tnorm(half - lat[2])[1:] / n0) / np.min(e[2]))
     dts = [2.5e-3, 1.25e-3, 6.25e-4]
     tl = [_ps_mms(64, d, dt) for dt in dts]
     d12, d23 = V.tnorm(tl[0] - tl[1])[1:], V.tnorm(tl[1] - tl[2])[1:]
     q_t = [math.log2(d12[k] / d23[k]) if d23[k] > 0 and d12[k] > 0 else None for k in range(5)]
-    ok = (all(q >= 3 for q in q_sp) and sep <= 1e-3 and all(q is not None and 3.5 <= q <= 4.5 for q in q_t)
+    ok = (all(q >= 3 for q in q_sp + q_sp0) and sep <= 1e-3 and all(q is not None and 3.5 <= q <= 4.5 for q in q_t)
           and all(np.isfinite(x).all() for x in lat + tl + [half]))
-    return dict(gate='G4', d=d, spatial_err=[x.tolist() for x in e], spatial_order=q_sp, half_step_ratio=sep,
+    return dict(gate='G4', d=d, spatial_err=[x.tolist() for x in e], spatial_order=q_sp, spatial_order_coarse=q_sp0,
+                half_step_ratio=sep,
                 temporal_order=q_t, **{'pass': bool(ok)})
 
 
@@ -191,7 +205,8 @@ def g4_projection():
 def u_order_solve():
     cases = [V.solve_order(0.0, 1.0, .5, .25, .125), V.solve_order(1.0, 0.0, .5, .25, .125),
              V.solve_order(np.nan, 1.0, .5, .25, .125), V.solve_order(1e6, 1.0, 3., 1.5, 1.),
-             V.solve_order(1.0, 1.0, 3., 1.5, 1.)]
+             V.solve_order(1.0, 1.0, 3., 1.5, 1.), V.solve_order(1.0, 1.0, .5, .25, .125),
+             V.solve_order(0.5, 1.0, .5, .25, .125), V.solve_order(1024., 1.0, .5, .25, .125)]
     p2 = V.solve_order(5.4, 1.0, 3., 1.5, 1.)
     ok = all(c is None for c in cases) and abs(p2 - 2.0) < 1e-9 and abs(V.solve_order(4.0, 1.0, .5, .25, .125) - 2) < 1e-12
     return dict(gate='Uorder', undefined=[c for c in cases], p_refined_5p4=p2, **{'pass': bool(ok)})
@@ -231,9 +246,14 @@ def u_peclet():
 
 def rng_rows():
     s2, s3 = CH.PUBLIC_CHECK_SEEDS[2], CH.PUBLIC_CHECK_SEEDS[3]
-    return {'2d_family': CH.rowwise_2d(s2, 3, 'family').tolist(), '2d_ood': CH.rowwise_2d(s2, 3, 'ood').tolist(),
-            '3d_ood_nu': CH._draw3d_table(s3, 3, 'ood')['nu'].tolist(),
-            '3d_ood_w': CH._draw3d_table(s3, 3, 'ood')['w'].tolist(), 'numpy': np.__version__}
+    out = {'2d_family': CH.rowwise_2d(s2, 3, 'family').tolist(), '2d_ood': CH.rowwise_2d(s2, 3, 'ood').tolist(),
+           '3d_ood_nu': CH._draw3d_table(s3, 3, 'ood')['nu'].tolist(),
+           '3d_ood_w': CH._draw3d_table(s3, 3, 'ood')['w'].tolist(), 'numpy': np.__version__}
+    for kind in ('family', 'ood'):
+        t = CH._draw3d_table(s3, 3, kind)
+        for k in ('B', 'c', 'w', 'rho', 'A', 'nu'):
+            out[f'3d_{kind}_all_{k}'] = np.asarray(t[k]).tolist()
+    return out
 
 
 def u_rng():
@@ -247,9 +267,55 @@ def u_rng():
               and np.all((t3['w'] >= .07) & (t3['w'] < .10)) and np.all((t3['nu'] >= .01) & (t3['nu'] <= .0125893)))
     golden = json.loads(GOLDEN.read_text()) if GOLDEN.exists() else None
     now = rng_rows()
-    gold_ok = golden is not None and all(np.allclose(golden[k], now[k], rtol=0, atol=0) for k in golden if k != 'numpy')
+    gold_ok = golden is not None and set(now) <= set(golden) and all(
+        np.array_equal(np.asarray(golden[k]), np.asarray(now[k])) for k in now if k != 'numpy')
     return dict(gate='Urng', prefix_stable=bool(prefix), ranges=bool(ranges), golden_match=bool(gold_ok),
                 numpy=np.__version__, **{'pass': bool(prefix and ranges and gold_ok)})
+
+
+def u_transforms():
+    """Mode-by-mode check of pscore's synthesis/analysis against direct O(n^2) NumPy sums (independent of the FFT path)."""
+    rng = np.random.default_rng(3)
+    worst = 0.0
+    for M in (6, 12, 17):
+        b = rng.standard_normal(M - 1)
+        j = np.arange(1, M)
+        k = np.arange(1, M)
+        Sd = np.sin(np.pi * np.outer(j, k) / M) @ b
+        Cd = np.cos(np.pi * np.outer(j, k) / M) @ b
+        Ad = (2.0 / M) * np.sin(np.pi * np.outer(k, j) / M) @ b
+        Sp = np.asarray(PS.sine_synth_last(jnp.asarray(b), M))
+        Cp = np.asarray(PS.cos_synth_last(jnp.asarray(b), M))
+        Ap = np.asarray(PS.analysis(jnp.asarray(b), M))
+        worst = max(worst, *(float(np.max(np.abs(x - y)) / np.max(np.abs(y))) for x, y in ((Sp, Sd), (Cp, Cd), (Ap, Ad))))
+    # 2D derivative synthesis and lattice synthesis against direct sums
+    N, M = 6, 9
+    bb = rng.standard_normal((N - 1, N - 1))
+    k = np.arange(1, N)
+    x = np.arange(1, M) / M
+    S, Cx = np.sin(np.pi * np.outer(x, k)), np.cos(np.pi * np.outer(x, k))
+    u_d = S @ bb @ S.T
+    g_d = (Cx * (np.pi * k)) @ bb @ S.T + S @ bb @ (Cx * (np.pi * k)).T
+    nb, _ = PS.nonlinear(jnp.asarray(bb), N, 2)
+    f = u_d * g_d
+    A = (2.0 / M) * np.sin(np.pi * np.outer(k, np.arange(1, M)) / M)
+    nb_d = -(A @ f @ A.T)
+    worst = max(worst, float(np.max(np.abs(np.asarray(nb) - nb_d)) / np.max(np.abs(nb_d))))
+    Sl = np.asarray(PS.lattice_S(N, 8))
+    lat = np.asarray(PS.synth_lattice(jnp.asarray(bb), jnp.asarray(Sl), 2))
+    xl = np.arange(1, 8) / 8
+    Sx = np.sin(np.pi * np.outer(xl, k))
+    worst = max(worst, float(np.max(np.abs(lat[1:-1, 1:-1] - Sx @ bb @ Sx.T))))
+    return dict(gate='Utransforms', worst_rel=worst, **{'pass': worst <= 1e-12})
+
+
+def u_ic3d():
+    """Chunked 3D IC (used above 256 intervals) equals the vendor unchunked IC."""
+    T = CH.Cohort(3, 'dev4').T
+    a = CH.ic_3d_chunked(128, T, 1, chunk=5000)
+    b = np.asarray(CH.C3.initial_interior(129, T, 1))
+    dev = float(np.max(np.abs(a - b)) / np.max(np.abs(b)))
+    return dict(gate='Uic3d', max_rel=dev, **{'pass': dev <= 1e-14})
 
 
 def u_crypto():
@@ -277,7 +343,7 @@ def run_all(which, ps_N=None, ps_dt=None, ps_nu=0.01, dims=(2, 3), units=True):
     """which: 'fd' (G1, G2, units), 'ps' (G3, G4, units), 'units', 'all'. ps_N: {d: largest N used} for G3b/G3c."""
     res = []
     t = time.perf_counter()
-    for f in ([u_order_solve, u_x1b, u_peclet, u_rng, u_crypto] if units else []):
+    for f in ([u_order_solve, u_x1b, u_peclet, u_rng, u_crypto, u_transforms, u_ic3d] if units else []):
         res.append(f())
     if which in ('fd', 'all'):
         for d in dims:

@@ -699,3 +699,64 @@ block (reduced levels) **for local functional smoke tests only**; any result car
 collected into the store (collect refuses it) and never reported as a reference. (vi) The cross-check case list is
 computed by `cohorts.crosscheck_cases` (2D val32: the 4 smallest $\nu$ by index tie-break, plus the 4 lowest-index
 others; 3D val64 likewise). (vii) Store files are hard links of the pulled job outputs (no duplication on disk).
+
+---
+
+## Amendment A5 (2026-10-13, after Codex code audit 1, `audits/codex-code-1.md`; before any real-size run)
+
+**A5.1 Solver failure is terminal after the one retry.** §4's "then treated as (b)" is withdrawn: after the retry of
+A1.5 a level that still fails its steps gives the case the terminal outcome `solver-fail` (no refinement: a finer
+level is harder to solve, not easier). Reported, never dropped.
+
+**A5.2 Outcome precedence and the shared-IC check.** Outcomes, in precedence: `ic-mismatch` (a level's $t_0$ lattice
+field differs from the canonical one by more than $10^{-13}$ relative — new; it blocks acceptance), `solver-fail`,
+`unresolved-floor` (precedes `peclet-fail`, so a case whose floor fails after the tight attempt is terminal
+`unresolved-floor`, as A2.1 says), `peclet-fail`, `order-fail`, `direction-inconsistent`, else `accepted`. The
+procedure acts on the individual checks (floor → tight; order/Péclet → refine), not on the precedence label.
+
+**A5.3 Order solve.** The bracket $[0.25,8]$ applies to the dyadic closed form too (orders outside it are undefined);
+this removes the $p=0$ division by zero Codex reproduced.
+
+**A5.4 Calibration evidence and production refusal.** The calibration job saves every field and per-step residual /
+Newton array (base levels × prod/tight/tighter, D1, X1, X4) with a sha256, and writes `calib_status` (proxy_ok on
+every row, worst ratios). The result is committed as `checks/calib_<d>d.json`; every `fd` job refuses to run unless
+that file exists, passed, and records the FLOOR_STAB the job uses. The refinement levels are **not** calibrated
+(cost: 2D $L=12288$ × three tolerances); they use the same case-specific proxy, a stated limitation.
+
+**A5.5 Sealed jobs.** Silent: no per-case or per-attempt line reaches stdout (only gate results and "item k/n
+written"). Never resumed (a sealed job directory with existing ciphertext refuses to run). Ciphertexts are written
+atomically and read-only. The seed file is decrypted only after its committed ciphertext hash matches, and its
+plaintext hash is verified after decryption. Seeds come from `make_seeds.py` (login node, once): `secrets.randbits(31)`,
+redrawn only on collision with a historical, public-check or other new seed (redraw count recorded). The QC aggregate
+is per kind, with every outcome counted (zeros included) and the denominators of the quantiles stated.
+
+**A5.6 Resources and submission.** 3D `fd` jobs must be staged on an H200 with $\ge200$ GB host memory (the 769-node
+refinement level); 2D on an 80 GB+ GPU. Every attempt records compile time (ahead-of-time compilation), solve time and
+device `peak_bytes_in_use`; the smoke's measured costs re-issue §12 before production. Submission: local `flock`,
+exclusive remote `mkdir`, the lane cap of 4 jobs, `squeue` before and after; the only extra sbatch flag accepted is
+`--dependency=afterok:…`.
+
+**A5.7 Pseudo-spectral attempts and per-run checks.** PS output files are keyed by ladder attempt
+(`c<case>_a<k>`), and run ids by $(N,\Delta t,$ attempt$)$; the collector uses the latest ladder. Every run carries its
+own IC-quadrature check (256 vs 512 panels at that $N$) and contour check (32 vs 64 points at that $N,\Delta t,\nu$),
+plus the job's gate result; a selected run failing any of them makes the case `UNRESOLVED(gates)`. G3a now compares
+with an exact solution synthesised by direct NumPy sums (independent of `pscore`) and fails on any non-finite value;
+G4 gates both spatial pairs (32→48 and 48→64); a new unit gate checks the FFT-based sine/cosine synthesis, the
+analysis, the 2D nonlinear term and the lattice synthesis against direct $O(n^2)$ sums. The G4 forcing closure captures
+three small coefficient tensors (G4 sizes only); production PS captures none.
+
+**A5.8 Collection and loader.** The collector links only files of complete, gate-passing, non-smoke jobs, each
+verified against the job's `OUTPUTS.sha256`, refuses if any ciphertext is present locally, computes the dimension
+status from all eight pre-registered verdicts with FAIL taking precedence over MISSING, applies X2 only when
+$\sigma_{PS}\le\epsilon_{ref}/2$, reports X3 per kind with its coverage, and includes the sealed/OOD cohorts in the
+E0 verdict through their QC counts (`INCOMPLETE` until they exist). `STATUS.json` records the store version and the
+pre-registered cross-check case list; the loader refuses a status written for another store version, takes
+cross-check membership from its own pinned list, marks the Richardson field as carrying no uncertainty, and computes
+the restricted cross-check from the stored PS runs.
+
+**A5.8b** For 3D new cohorts, A2.11's "`default_rng` with `[seed, j]`" applies to the **2D** generator only; the 3D
+generator stays the vendor's sequential `draw_param_table` (A1.10), which is prefix-stable because every row consumes
+the same number of draws.
+
+**A5.9 G5–G7 timing.** G5 (`audit_ref.py`), G6 and G7 (loader fault injections and refusals, `test_refstore.py`) run
+on the collected store, before any result is reported; the job-side gates are the pre-run gates (units, G1–G4).

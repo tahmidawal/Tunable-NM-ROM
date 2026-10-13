@@ -19,7 +19,8 @@ R_FLOOR = 1e-14
 FLOOR_MARGIN = 10.0            # d_ij / n0 >= FLOOR_MARGIN * (tau_i + tau_j)
 ACCEPT_RESIDUAL = 2e-11        # per-step acceptance (§3.1)
 P_BRACKET = (0.25, 8.0)
-OUTCOMES = ('accepted', 'solver-fail', 'peclet-fail', 'unresolved-floor', 'order-fail', 'direction-inconsistent')
+OUTCOMES = ('accepted', 'ic-mismatch', 'solver-fail', 'unresolved-floor', 'peclet-fail', 'order-fail',
+            'direction-inconsistent')     # precedence order of the failures (A5.2)
 METRIC_ID = {2: '2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1',
              3: '3|lattice=64|times=0:0.05:0.25|norm=fixed_t0|max_k>=1'}
 
@@ -43,9 +44,10 @@ def solve_order(d12, d23, h1, h2, h3):
     if not (np.isfinite(d12) and np.isfinite(d23)) or d12 <= 0 or d23 <= 0:
         return None
     r = d12 / d23
-    if is_dyadic(h1, h2, h3):
-        return math.log2(r)
     lo, hi = P_BRACKET
+    if is_dyadic(h1, h2, h3):
+        p = math.log2(r)
+        return p if lo <= p <= hi else None          # same bracket policy as the non-uniform solve (A1.5)
     flo, fhi = ratio_fn(lo, h1, h2, h3), ratio_fn(hi, h1, h2, h3)
     if not (flo <= r <= fhi):
         return None
@@ -59,8 +61,12 @@ def solve_order(d12, d23, h1, h2, h3):
 
 
 def rich_factor(p, h2, h3):
-    """Richardson multiplier: error(u3) ~ (u3 - u2) * h3^p / (h2^p - h3^p)."""
-    return h3 ** p / (h2 ** p - h3 ** p)
+    """Richardson multiplier: error(u3) ~ (u3 - u2) * h3^p / (h2^p - h3^p); p is bracketed in [0.25, 8] by
+    solve_order, so the denominator is positive."""
+    den = h2 ** p - h3 ** p
+    if not (np.isfinite(den) and den > 0):
+        raise ValueError(f'invalid Richardson denominator for p={p}')
+    return h3 ** p / den
 
 
 def floor_proxy(res, n_stages):
@@ -106,12 +112,14 @@ def judge(levels, t0, nu):
         order=bool(all(p is not None and P_LO <= p <= P_HI for p in p_t)),
         direction=bool(all(c is not None and c <= C_MAX for c in c_t)),
         t0_shared=bool(t0_dev <= 1e-13))
-    if not checks['solver']:
+    if not checks['t0_shared']:
+        outcome = 'ic-mismatch'
+    elif not checks['solver']:
         outcome = 'solver-fail'
-    elif not checks['peclet']:
-        outcome = 'peclet-fail'
     elif not checks['floor']:
         outcome = 'unresolved-floor'
+    elif not checks['peclet']:
+        outcome = 'peclet-fail'
     elif not checks['order']:
         outcome = 'order-fail'
     elif not checks['direction']:
@@ -173,13 +181,16 @@ def crosscheck(fd_record, u3, ps, n0):
     s_t = float(np.max(tnorm(ps['full'] - ps['half'])[1:]) / n0)
     x_ps = float(np.max(tnorm(ps['half'] - u3)[1:]) / n0)
     rec.update(s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x_ps, eta=x_ps / eps if eps > 0 else None)
+    if not all(np.isfinite(v) for v in (s_x, s_t, x_ps)):
+        return dict(rec, verdict='UNRESOLVED', reason='non-finite')
     if s_x + s_t > eps / 2:
         return dict(rec, verdict='UNRESOLVED', reason='resolution')
     return dict(rec, verdict='PASS' if x_ps <= 2 * eps else 'FAIL', reason=None)
 
 
 def dimension_status(verdicts):
-    """A2.5: suspended if any FAIL; validated if >= 6 of 8 PASS; else unvalidated."""
+    """A2.5: suspended if any FAIL (takes precedence over missing cases); validated if >= 6 of the 8 PASS; else
+    unvalidated. `verdicts` must list all 8 pre-registered cases ('MISSING' for an absent one)."""
     if any(v == 'FAIL' for v in verdicts):
         return 'suspended'
     return 'validated' if sum(v == 'PASS' for v in verdicts) >= 6 else 'unvalidated'

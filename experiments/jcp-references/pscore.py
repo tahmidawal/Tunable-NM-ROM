@@ -150,8 +150,8 @@ def make_ps(N, d, nonlin_on=True, forcing=None):
             v, t, umax = jblock(v, t, umax, co, jnp.float64(dt), keep)
             lats.append(synth_lattice(v, lat_S, d))
         lat = np.stack([np.asarray(x) for x in lats])
-        return dict(lat=lat, umax=float(umax), finite=bool(np.isfinite(lat).all() and np.isfinite(float(umax))),
-                    coef_final=v)
+        fin = bool(np.isfinite(lat).all() and np.isfinite(float(umax)) and bool(jnp.all(jnp.isfinite(v))))
+        return dict(lat=lat, umax=float(umax), finite=fin, coef_final=v)
     return run
 
 

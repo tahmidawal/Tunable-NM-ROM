@@ -140,9 +140,31 @@ def table_3d(name, seed=None):
     return _finish_table(_draw3d_table(int(seed), n, kind))
 
 
-def ic_3d(L, tab, j):
-    """Canonical interior IC (flat, x slowest) on the (L+1)-node grid."""
-    return np.asarray(C3.initial_interior(L + 1, tab, j), float)
+def ic_3d(L, tab, j, chunk=1 << 24):
+    """Canonical interior IC (flat, x slowest) on the (L+1)-node grid: common.initial_interior for L <= 256; above that
+    the same b3d_common._blob_sum evaluated on coordinate chunks (memory; elementwise identical formula, checked
+    against the unchunked vendor call by the unit gate Uic3d)."""
+    if L <= 256:
+        return np.asarray(C3.initial_interior(L + 1, tab, j), float)
+    return ic_3d_chunked(L, tab, j, chunk)
+
+
+def ic_3d_chunked(L, tab, j, chunk=1 << 24):
+    n = L + 1
+    ni = n - 2
+    ax = np.linspace(0.0, 1.0, n)[1:-1]
+    row = b3.table_row(tab, j)
+    out = np.empty(ni ** 3)
+    plane = ni * ni
+    step = max(1, chunk // plane)
+    Y, Z = np.meshgrid(ax, ax, indexing='ij')
+    yz = np.stack([Y.ravel(), Z.ravel()], 1)
+    for i0 in range(0, ni, step):
+        xs = ax[i0:i0 + step]
+        coords = np.concatenate([np.concatenate([np.full((plane, 1), x), yz], 1) for x in xs])
+        s = np.asarray(b3._blob_sum(coords, row))
+        out[i0 * plane:(i0 + len(xs)) * plane] = row['A'] * s / float(tab['s_star'][j])
+    return out
 
 
 # ------------------------------------------------------------------------------------------------------ generic --
@@ -181,8 +203,13 @@ class Cohort:
 def crosscheck_cases(dim):
     """DESIGN §6/A1.7: the 4 validation cases with the smallest nu (ties by lower index) and the 4 lowest-index
     remaining cases. 2D val32, 3D val64."""
-    c = Cohort(dim, 'val32' if dim == 2 else 'val64')
-    nus = np.array([c.nu(j) for j in range(c.n)])
+    if dim == 2:
+        nus = descriptors_2d('val32')[:, 4]
+    else:
+        (s, n), = HISTORICAL[3]['val64']
+        nus = b3.draw_param_table(s, n)['nu']           # raw draws only (s_star does not affect nu)
+    nus = np.asarray(nus, float)
+    c = type('C', (), {'n': len(nus)})
     low = list(np.lexsort((np.arange(c.n), nus))[:4])
     rest = [j for j in range(c.n) if j not in low][:4]
     return sorted(int(j) for j in low + rest)

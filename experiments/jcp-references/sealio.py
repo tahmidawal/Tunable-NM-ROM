@@ -44,15 +44,23 @@ def npz_bytes(**arrays) -> bytes:
 
 
 def write_sealed(path, data: bytes, key):
-    """Encrypt and write; returns (plaintext sha256, ciphertext sha256)."""
+    """Encrypt and write atomically, read-only; returns (plaintext sha256, ciphertext sha256)."""
+    import os
     blob = encrypt(data, key)
     assert decrypt(blob, key) == data
-    Path(path).write_bytes(blob)
+    tmp = Path(str(path) + '.tmp')
+    tmp.write_bytes(blob)
+    os.replace(tmp, path)
+    os.chmod(path, 0o444)
     return sha(data), sha(blob)
 
 
-def read_seeds(path, key, expect_plain_sha=None):
-    data = decrypt(Path(path).read_bytes(), key)
-    if expect_plain_sha is not None:
-        assert sha(data) == expect_plain_sha, 'seed file plaintext hash mismatch'
+def read_seeds(path, key, expect_plain_sha, expect_cipher_sha):
+    """Decrypt the secret seed file, verifying the committed ciphertext hash BEFORE and the plaintext hash AFTER."""
+    blob = Path(path).read_bytes()
+    if sha(blob) != expect_cipher_sha:
+        raise ValueError('seed file ciphertext hash mismatch')
+    data = decrypt(blob, key)
+    if sha(data) != expect_plain_sha:
+        raise ValueError('seed file plaintext hash mismatch (wrong key?)')
     return json.loads(data)

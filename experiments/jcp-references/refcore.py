@@ -21,6 +21,7 @@ Only the six output states are kept on the device (streaming). f64; every large 
 from __future__ import annotations
 
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -174,11 +175,28 @@ def make_solver(d, L, adv='central', forcing=None, max_newton=20, lin_maxiter=No
         l1 = jnp.asarray(C3.lam1(L + 1))
         lam = l1[:, None, None] + l1[None, :, None] + l1[None, None, :]
     jq = jax.jit(query)
+    cache = {}
 
     def run(u0, nu, dt, scheme, ntol, ltol):
+        """Ahead-of-time compiled on first use (compile time recorded in run.compile_seconds, 0 afterwards)."""
         sched = schedule(dt, scheme, ntol, ltol)
-        return jq(jnp.asarray(u0, jnp.float64).reshape(-1), jnp.float64(nu), sched, lam)
+        args = (jnp.asarray(u0, jnp.float64).reshape(-1), jnp.float64(nu), sched, lam)
+        run.compile_seconds = 0.0
+        if 'exe' not in cache:
+            t = time.perf_counter()
+            cache['exe'] = jq.lower(*args).compile()
+            run.compile_seconds = time.perf_counter() - t
+        return cache['exe'](*args)
+    run.compile_seconds = 0.0
     return run
+
+
+def peak_bytes():
+    """Device peak bytes in use so far (None where the backend does not report it)."""
+    try:
+        return (jax.devices()[0].memory_stats() or {}).get('peak_bytes_in_use')
+    except Exception:
+        return None
 
 
 SCHEMES = {'cnr': (4, 0.5), 'cn': (0, 0.5), 'be': (0, 1.0)}

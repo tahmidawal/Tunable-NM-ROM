@@ -17,7 +17,9 @@ ROOT = Path(__file__).resolve().parents[3]
 NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-ref'
 LANE = 'experiments/jcp-references'
 BASE = [f'{LANE}/{f}' for f in ('cohorts.py', 'refcore.py', 'pscore.py', 'verdict.py', 'gates.py', 'sealio.py',
-                                 'refjob.py', 'checks/rng_golden.json', 'cluster/stage.py')]
+                                 'refjob.py', 'checks/rng_golden.json', 'cluster/stage.py', 'cluster/submit.sh',
+                                 'DESIGN.md')]
+OPTIONAL = [f'{LANE}/checks/calib_2d.json', f'{LANE}/checks/calib_3d.json']   # production refusal input (A5.4)
 BASE += ['experiments/mr-burgers2d/engines.py', 'experiments/separable-decoder/sep_common.py',
          f'{LANE}/vendor/quad3d/vendor/burgers3d-span/common.py',
          f'{LANE}/vendor/quad3d/vendor/paper-b3d/vendor/b3d_common.py']
@@ -35,7 +37,13 @@ def main():
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     cfg_rel = a.config if a.config.startswith('experiments/') else f'{LANE}/{a.config}'
-    files = list(dict.fromkeys(BASE + [cfg_rel]))
+    cfg = json.loads((ROOT / cfg_rel).read_text())
+    assert not cfg.get('smoke_override'), 'smoke_override configs are local only'
+    if cfg['mode'] == 'fd' and int(cfg['dim']) == 3:      # 3D refinement level (769 nodes) needs an H200 (A5.6)
+        assert a.gpu == 'h200' and int(a.mem.rstrip('G')) >= 200, '3D fd jobs: --gpu h200 --mem >= 200G'
+    if cfg['mode'] == 'fd' and int(cfg['dim']) == 2:
+        assert a.gpu in ('a100-80G', 'h100', 'h200'), '2D fd jobs need an 80 GB+ GPU'
+    files = list(dict.fromkeys(BASE + [f for f in OPTIONAL if (ROOT / f).exists()] + [cfg_rel]))
     out = ROOT / LANE / 'runs' / a.attempt
     out.mkdir(parents=True, exist_ok=False)
     remote = f'{NAMESPACE}/{a.attempt}'

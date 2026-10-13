@@ -37,6 +37,8 @@ SEALED = {(2, 'sealed128'), (2, 'ood32'), (3, 'sealed64'), (3, 'ood16')}
 COHORTS = {2: ('dev6', 'val32', 'test64'), 3: ('dev4', 'val64', 'test32')}
 LATTICE = {2: 256, 3: 64}
 STRIDES = {2: (2, 4, 8, 16, 32, 64, 128), 3: (2, 4, 8, 16, 32)}
+# pre-registered cross-check cases (cohorts.crosscheck_cases; pinned here so membership never comes from STATUS alone)
+CROSSCHECK = {2: ('val32', (0, 1, 2, 3, 4, 5, 19, 26)), 3: ('val64', (0, 1, 2, 3, 5, 33, 43, 47))}
 
 
 class SealedCohortError(PermissionError):
@@ -61,7 +63,13 @@ def _manifest():
 
 
 def _status():
-    return json.loads((HERE / 'store' / 'STATUS.json').read_text())
+    st = json.loads((HERE / 'store' / 'STATUS.json').read_text())
+    if st.get('store_version') != store_version():
+        raise ReferenceIntegrityError('STATUS.json was written for another store version')
+    for d, (coh, cases) in CROSSCHECK.items():
+        if sorted(st['crosscheck_cases'][str(d)]) != [f'{coh}/{c}' for c in sorted(cases)]:
+            raise ReferenceIntegrityError('STATUS.json cross-check case list differs from the pre-registered one')
+    return st
 
 
 def store_version():
@@ -109,7 +117,10 @@ def load(dim, cohort, case, kind='ST', field='finest'):
         return [np.asarray(arr[i]) for i in ids], meta
     if field == 'richardson':
         jd = meta['judge']
-        return V.richardson_field(arr[ids[1]], arr[ids[2]], jd['p'], jd['h'][1], jd['h'][2]), meta
+        m2 = dict(meta, field='richardson', uncertainty=None,
+                  note='diagnostic extrapolation; eps_ref does NOT apply to this field')
+        m2['judge'] = dict(jd, eps_ref=None, eps_t=None)
+        return V.richardson_field(arr[ids[1]], arr[ids[2]], jd['p'], jd['h'][1], jd['h'][2]), m2
     raise KeyError(field)
 
 
@@ -118,8 +129,9 @@ def reference_status(dim, cohort, case, kind='ST'):
     meta = json.loads(_read(f'{dim}d/{cohort}/{kind}/c{case:03d}.json'))
     st = _status()
     dstat = st['dimension_status'][str(dim)]
-    xc = st['crosscheck'].get(str(dim), {}).get(f'{cohort}/{case}')
-    eligible = bool(meta['outcome'] == 'accepted' and dstat == 'validated' and (xc is None or xc == 'PASS'))
+    is_xc = cohort == CROSSCHECK[dim][0] and case in CROSSCHECK[dim][1]
+    xc = st['crosscheck'].get(str(dim), {}).get(f'{cohort}/{case}') if is_xc else None
+    eligible = bool(meta['outcome'] == 'accepted' and dstat == 'validated' and (not is_xc or xc == 'PASS'))
     return dict(accepted=meta['outcome'] == 'accepted', outcome=meta['outcome'], eps_ref=meta['judge']['eps_ref'],
                 dimension_status=dstat, crosscheck=xc, eligible=eligible)
 
@@ -174,11 +186,32 @@ def restrict(dim, cohort, case, kind, factor):
     DIAGNOSTIC ONLY: eligible is always False (A3.3)."""
     levels, meta = load(dim, cohort, case, kind, field='levels')
     arr, _ = _load_raw(dim, cohort, case, kind)
-    t0 = restrict_field(arr['t0'], dim, factor)
+    t0 = restrict_field(np.asarray(arr['t0'])[None], dim, factor)[0]
     att = {a['id']: a for a in meta['attempts']}
     lv = [dict(L=att[i]['L'], lat=restrict_field(u, dim, factor), tau=att[i]['tau'], steps_ok=att[i]['steps_ok'],
                umax=att[i]['umax_running']) for i, u in zip(meta['final'], levels)]
     jd = V.judge(lv, t0, meta['desc']['nu'])
-    return dict(judge=jd, factor=factor, metric_id=V.METRIC_ID[dim].replace(f'lattice={LATTICE[dim]}',
-                                                                             f'lattice={LATTICE[dim] // factor}'),
-                eligible=False, fields=lv[2]['lat'])
+    out = dict(judge=jd, factor=factor, metric_id=V.METRIC_ID[dim].replace(f'lattice={LATTICE[dim]}',
+                                                                            f'lattice={LATTICE[dim] // factor}'),
+               eligible=False, fields=lv[2]['lat'], crosscheck=None)
+    if kind == 'ST' and cohort == CROSSCHECK[dim][0] and case in CROSSCHECK[dim][1]:
+        out['crosscheck'] = _restricted_crosscheck(dim, cohort, case, factor, jd, lv[2]['lat'])
+    return out
+
+
+def _restricted_crosscheck(dim, cohort, case, factor, jd, u3):
+    """The ordered cross-check recomputed on the sub-lattice from the stored PS runs (diagnostic, A2.10)."""
+    import io
+    man = _manifest()
+    cands = sorted(k for k in man if k.startswith(f'{dim}d/{cohort}/PS/c{case:03d}_a') and k.endswith('.json'))
+    if not cands:
+        return None
+    rel = cands[-1][:-5]
+    ps = json.loads(_read(rel + '.json'))
+    a = np.load(io.BytesIO(_read(rel + '.npz')))
+    runs = {r['id']: r for r in ps['runs']}
+    R = lambda i: restrict_field(np.asarray(a[i]), dim, factor)
+    full = next(i for i in ps['selected_spatial'] if runs[i]['N'] == ps['Ns'][-1])
+    return V.crosscheck(jd, u3, dict(spatial=[(runs[i]['N'], R(i)) for i in ps['selected_spatial']],
+                                     half=R(ps['selected_half']), full=R(full), finite=ps['finite'],
+                                     gates_ok=ps['gates_ok'], stability_ok=ps['stability_ok']), jd['n0'])

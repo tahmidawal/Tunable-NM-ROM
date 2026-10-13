@@ -351,3 +351,189 @@ discrepancy, the J4 escalation distances, and the FOM comparison.
   cohorts (replication only, not used here).
 - **PROVISIONAL**: scored against first-order references; not a physical-accuracy claim. **pp**: percentage points of
   $\lVert u_0\rVert$.
+
+---
+
+## Amendment A1 (2026-10-13, after the Codex design audit `audits/codex-design-1.md`; before any code)
+
+Item numbers refer to that audit. Where A1 and the text above disagree, A1 governs.
+
+**A1.0 Job structure (items 8, 20, 24, 26).** Budgets are computed **after** selection, so every selected arm is budgeted.
+New sequence (concurrent cap 3 unchanged):
+1. `smk` — cluster real-size smoke (2D $L=1024$, dev6 cases 0 and 2, every phase on a reduced grid; 3D $65^3$, one case,
+   $R'=1024$, every phase). Its measured per-phase times produce the deduplicated run inventory and wall-time/memory
+   estimates (`checks/inventory.json`) that gate the submission of every later job.
+2. `c2grid` (A100-80G) — the whole 2D grid of §3.1 on all 38 cases, the 2D anchors and their qualification (A1.6), the FOM
+   (order check, calibration, accuracy on 38 cases), and all 2D timing, **in one job on one GPU** (the grid is cheap:
+   C2's `acc` grid was 1.18 A100-h; accuracy of every timed arm is therefore same-job, item 24).
+3. `c3desc` (H200) — J4 escalation and 3D rule selection (A1.7).
+4. `c3grid` (H200, after `c3desc` is audited) — the 3D grid of §3.2 on 64 cases, anchors and qualification on 64 cases,
+   per-setting A–B–A timing and one common cross-setting panel.
+5. Offline selection from `c2grid`/`c3grid`, frozen in `checks/FROZEN-SELECTION.json` (sha256 committed) **before** step 6.
+6. `c2bud` and `c3bud` — budgets (§5 as amended) of the selected arms and the pre-specified diagnostic arms (A1.5);
+   2D all 38 cases, 3D first 32 cases.
+
+Revised estimate ≈ 20 GPU-h (25 with contingency): `smk` 1, `c2grid` 3, `c3desc` 3.5, `c3grid` 4, `c2bud` 4, `c3bud` 4.
+The estimate is a placeholder until `smk` replaces it with measured numbers (item 26).
+
+**A1.1 Wording (items 2, 6, 9, 12).** (i) "$F(c_n)$ costs no additional Jacobian contraction"; the fixed-sweep solver
+caches the accepted $Ac_n$ and $F(c_n)=\tfrac12J_u(c_n)c_n+\nu\Lambda Ac_n$ (computed once per step from the carried
+$J_u(c_n)$; its arithmetic is inside the timed query). (ii) LSPG CN, CN-R and BDF2 are called **CN-, CN-R-, BDF2-family**
+schemes; no formal order is claimed for any new setting or for the fixed-sweep solver. Hypotheses are about measured
+accuracy and cost. Observed self-convergence slopes are reported descriptively where the runs exist. §3.3's
+"representative second-order arm" reads "representative CN-family arm". (iii) $\delta_{\rm time}$ is renamed the
+**temporal-discretisation package sensitivity** (scheme, step, startup, LSPG weights and, for fixed sweeps, the adaptive
+fraction change together), and a **within-scheme refinement distance** $\lVert u_{a[\sigma\to\text{tight}]}-u_{a[\sigma\to\text{tight},h\to h/2]}\rVert$
+is added for attribution to time error proper. (iv) $\delta_{\rm test}$ is renamed **form sensitivity** ($M$ and the sine
+tests are unchanged). (v) $e_{\rm dyn}$ is renamed the **ideal-ROM vs projected-reference discrepancy**; it is a measured
+composite (initial fit, finite tests, residual anchor/quadrature/solver error), not a causal attribution. The initial-fit
+error ($t=0$) is reported separately. "What limits next" reads "the largest measured sensitivity or discrepancy", which is not
+necessarily the change that would most improve accuracy.
+
+**A1.2 Fixed-sweep solver details (items 3, 4, 5, 21).**
+- Adaptive start in **time**: $a_{\rm eff}(h)=\min\big(N_{\rm steps},\max(\lceil a\,\Delta t_0/h\rceil,\,n_{\rm startup})\big)$ with
+  $a=6$ (W1024) or 3 (`M2_512`). At $h=\Delta t_0$ this is the deployed count; at $5\Delta t_0$ (5 steps), 2 adaptive steps
+  for $a=6$. The adaptive and fixed step counts of every arm are recorded; an arm whose steps are all adaptive is labelled
+  so.
+- Recorded per step: the chosen predictor candidate, accepted/rejected sweeps, the damping value carried, damping
+  saturation ($\lambda\ge10^{14}$, a new explicit flag, since the vendor fixed-sweep phase reports reason 3 only for a
+  non-finite residual), the stationarity ratio, and the residual norm. Second-order *behaviour* of the fixed-sweep
+  algorithm is a measured property (anchor discrepancy versus step), not a consequence of the predictor.
+- **G-FS1 restated.** `fs3` keeps the vendor arithmetic path for the BE residual (the BE branch evaluates the vendor
+  expression $(Ac-p+\Delta t(\tfrac12J_uc+\nu\lambda Ac))S$ verbatim; schemes are static Python branches). Same-job gate:
+  coefficients $\le10^{-12}$ relative, iterations and exit reasons equal on every case of the job. If it fails, the
+  fallback criterion is C2's A2.9 ($\max_k\lVert W^{\rm fs}_k-W^{\rm ven}_k\rVert/\lVert W^{\rm ven}_0\rVert\le10^{-8}$ and fields $\le10^{-8}$),
+  reported with the diagnosis. Negative control: CN coefficients on the named non-stationary case `923801/0` must differ by
+  $>10^{-6}$ (empirical expectation; if it does not, the control is reported non-discriminating and investigated).
+
+**A1.3 G-FS2 restated (item 7).** CPU, the C2 manufactured system (quadratic $N=\tfrac12J(c)c$). Oracle: SciPy Radau on
+the Galerkin ODE (as C2 `test_lmm.py`), error $\max_k\lVert c_k-c_{\rm orc}(t_k)\rVert/\lVert c_0\rVert$. Reported: (a) the fixed-sweep
+($K=1,2$) and adaptive LSPG errors against the oracle at $h\in\{0.05/16,0.05/32,0.05/64\}$ and their observed slopes
+(descriptive); (b) **gate:** fixed-sweep vs adaptive LSPG distance (same scheme, step, startup) $\le0.1\times$ the
+adaptive run's oracle error at every tested step for $K=2$, and reported for $K=1$; (c) **mandatory mutation controls**
+(each must change the trajectory by $>10\times$ the gate-(b) distance at the finest step, or fail an independent NumPy
+step-residual check): `stale_hist` (BDF2 uses $c_{n-2}$), `no_startup` (BDF2 without its BE start), `stale_fn` (CN uses
+$F(c_{n-1})$), `wrong_weight` ($S$ built with $\beta_1$). The previous-state predictor is reported as an empirical
+comparison only.
+
+**A1.4 Budget definitions restated (items 8, 10, 11, 13, 14).**
+- **Per-time notation.** Every component is a function of the output time $t_k$, $k=1..5$, with the common denominator
+  $n_0=\lVert u_0(X)\rVert$ (physical initial field on the shared nodes $X$). The identity B0 is checked **per time**:
+  $\lVert u_\star(t_k)-u_{\rm ref}(t_k)\rVert^2=e_P(t_k)^2+e_{\rm dyn}(t_k)^2$. Tables report each component's max over $t_k$ and,
+  separately, the orthogonal pair at $t^\ast=\arg\max_k\lVert u_\star-u_{\rm ref}\rVert$. Plots show ablation sensitivities as
+  **grouped** bars/points, never stacked as additive parts of the total error.
+- **Form and solver ablations are chained at the tight level (item 8).** The solver ablation is $a\to a[\sigma\to\text{tight}]$
+  (2D: LSPG `gtol` $10^{-7}$; GAL residual $10^{-13}\lVert Ac_n\rVert$; 3D fixed-sweep → generic adaptive LM at the tight
+  level, same scheme, step, startup and predictor). The form sensitivity is measured **from the tight-solver arm**:
+  $\delta_{\rm form}=\lVert u_{a[\sigma\to\text{tight}]}-u_{a[\sigma\to\text{tight},f\to\text{GAL}]}\rVert$ — one ingredient changed,
+  with well-defined semantics in both forms (adaptive LM to its stopping test). No fixed-sweep GAL algorithm is defined or
+  used. The ideal-end changes are $\star[r_\infty\to r]$ and $\star[\text{GAL}\to\text{LSPG}]$ (both tight); $\star[\text{tight}\to\sigma]$
+  is dropped (undefined for the ideal GAL model).
+- **Identical initial coefficients** across every ablation of an arm (same $R'$, same initial fit; asserted in-job).
+- **Mixed differences (item 13).** Saved signed per-time coefficient states give, for every budget arm,
+  $I_{\rm time\times quad}=u(r_\infty,\star_t)-u(r_\infty,s,h)-u(r,\star_t)+u(r,s,h)$ and
+  $I_{\rm time\times solve}=u(\text{tight},\star_t)-u(\text{tight},s,h)-u(\sigma,\star_t)+u(\sigma,s,h)$ (with $\star_t=(\text{BDF2},h_\star)$,
+  everything else fixed), reported as $\max_k\lVert I\rVert/n_0$ beside the two main effects. The closure ratios and
+  triangle bounds are kept as descriptive diagnostics (0/0 := reported as "both zero"; $x/0$ := "undefined").
+- **Ideal and anchors qualified (item 14).** 2D: the ideal ($r_\infty$, GAL-BDF2, $\Delta t_0/8$, tight) is accompanied on
+  **every** case by the same at $\Delta t_0/16$ and a tighter-tolerance replay; its uncertainty indicator is
+  $U_\star=\lVert u_\star^{h_0/8}-u_\star^{h_0/16}\rVert+s^{h_0/8}+s^{h_0/16}$ (C2 A2.8). 3D: the same on all 32 budget cases.
+  Components smaller than $3U_\star$ are reported as unresolved.
+- **Converged rule (2D).** Gauss $320^2$ is checked against Gauss $640^2$ on dev6 for **every** budget run that uses $r_\infty$
+  (deployed-end $a[r\to r_\infty]$, the ideal, its qualification runs and the ideal-end runs). Bar $2.5\times10^{-5}$. Fail →
+  pre-registered successor Gauss $640^2$ checked against Gauss $768^2$ on dev6; fail again → the quadrature sensitivity is
+  reported against $320^2$ labelled "converged rule unverified" and no quadrature attribution is claimed.
+
+**A1.5 Budget arms (items 16, 20).** 2D, per setting (six): LSPG-BE at $\Delta t_0$; the selected scheme's
+accurate-equal-cost and fast-equal-accuracy arms (A1.9); GAL-CN at $\Delta t_0$ (diagnostic). 3D, per setting (five): the
+deployed fixed-sweep BE at $\Delta t_0$; the H4a and H4b selected arms (including any $K=2$ or non-standard step);
+fixed-sweep LSPG-CN $K=1$ at $\Delta t_0$ and $\tfrac52\Delta t_0$ (diagnostics). **Finalist quadrature check:** every selected
+arm's $\delta_{\rm quad}$ must be $\le\tau=2.5\times10^{-4}$ on every budget case; otherwise the arm is flagged "rule
+inadequate for this arm" and the next larger rung of its family (frozen in `FROZEN-SELECTION.json` as the fallback) is
+reported beside it. This applies equally to the inherited 2D rules.
+
+**A1.6 Anchors (2D grid and 3D grid; items 14, 18, 20).** The deployed-rule anchor GAL-BDF2 at $\Delta t_0/8$ (tight)
+is run on every case with $\Delta t_0/16$ and tighter replays (2D: 38 cases; 3D: all 64). Anchor uncertainty $U_{\rm anc}$
+as C2 A2.8. A case is **resolved** for an arm iff the arm's anchor discrepancy exceeds $3U_{\rm anc}$. H3 uses this
+deployed-rule anchor (not the converged-rule ideal).
+
+**A1.7 J4 escalation and 3D selection restated (items 15, 16).**
+- Rules Gauss $48^3,56^3,64^3$ (and $80^3$ if reached) at $R'\in\{768,1024\}$ (and $56^3,64^3$ at 256, 512) on all 64 cases,
+  under four solver arms: fixed-sweep BE $\Delta t_0$ ($a=6$), adaptive tight LSPG-BE $\Delta t_0$, fixed-sweep LSPG-CN
+  $K=1$ at $\tfrac52\Delta t_0$, adaptive tight LSPG-CN at $\tfrac52\Delta t_0$. Two **separate axes** are reported: the
+  quadrature-agreement distances $d_\sigma(p,q)$ per solver arm, and the solver sensitivities
+  $\lVert u_{\rm fixed}-u_{\rm adaptive}\rVert$ (same scheme and step) per rule; plus an **operator-level** check on common states
+  (the reached states of the $64^3$ adaptive BE run): $\max\lVert N_p(c)-N_q(c)\rVert/\lVert N_q(c)\rVert$, which separates operator
+  difference from rollout amplification.
+- **Converged pair** for an $R'$: the first of $(56^3,48^3)$ (C1's), $(56^3,64^3)$, $(64^3,80^3)$ — converged rule first — whose
+  $d_\sigma\le$ bar for **both selection solver arms** (fixed BE $\Delta t_0$, fixed CN $\tfrac52\Delta t_0$) on all 64 cases, every
+  run eligible. None → **unresolved** ($R'$ not selected; reported). Gauss $80^3$ runs on all 64 cases if reached.
+- Explanations are labelled, not inferred beyond the data: "consistent with an under-resolved check" when the C1 pair fails
+  but $(56^3,64^3)$ passes; "solver sensitivity contributes" when a pair passes under the adaptive arms and fails under the
+  fixed-sweep arms; "operator-level difference small, amplified by the rollout" when the operator distance is
+  $<0.1\times$ the rollout distance. Non-finite or ineligible runs → "unresolved".
+- **Selection** requires the converged pair checked under both selection solvers (above). Deployed family: the family whose
+  $m^\star$ has the smaller sum of median times of the two selection arms in the `c3desc` A–B–A panel (deterministic; ties
+  by smaller $m$). No admissible family → the setting is reported unavailable.
+
+**A1.8 References and tie policy (items 17, 22, 23).** $\varepsilon_{\rm ref}$ is renamed the **heuristic temporal tie
+threshold** (ST's leading BE term if the first-order expansion holds; it does not certify TX or the spatial error). It is
+applied consistently: per-case paired comparisons (ties at $2\varepsilon_{\rm ref}$), cohort medians (tie iff the difference is
+$\le2\,\mathrm{median}\,\varepsilon_{\rm ref}$), worst values (tie iff $\le2\varepsilon_{\rm ref}$ of the worst case), in the scheme selection,
+Pareto dominance, H1, H2, H5 and H6. When lane E0's verified uncertainty exists it replaces this threshold by one
+registry switch. **Rescoring contract:** the registry pins bank and rotation sha256, case descriptors, coordinate ordering,
+boundary convention, output times and the normalisation (physical initial field evaluated **at the reference's nodes** from
+the case formula; never the decoded $W_0$); decoding is chunked. Rescoring applies to the same cases and saved times;
+frozen selections are kept when references change (a rescore is not a reselection). FOM fields of `c2grid` are saved on the
+full $1024^2$ mesh (float32) for every case and configuration, so H5 can be rescored at any lattice that is a subset of the
+mesh (other lattices need an audited interpolation or a rerun, stated).
+
+**A1.9 Selection and hypotheses restated (items 18, 19, 20, 25).**
+- **Scheme × setting first:** for each candidate scheme-form (GAL-CN, LSPG-CN-R, LSPG-BDF2) and each setting, its
+  accurate-equal-cost arm = smallest median $e_{\rm TX}$ over its eligible steps with median paired ratio ≤ 1 against that
+  setting's LSPG-BE at $\Delta t_0$; its fast-equal-accuracy arm = cheapest eligible step with worst and median $e_{\rm ST}$ and
+  $e_{\rm TX}$ ≤ that setting's LSPG-BE at $\Delta t_0$ (within the tie policy). A scheme with no eligible arm loses that setting.
+  **Global scheme:** the one whose accurate-equal-cost arm has the smallest median $e_{\rm TX}$ on most of the four dial
+  settings (ties per A1.8 count for neither); then smaller sum of the four medians; then the fixed order LSPG-BDF2,
+  LSPG-CN-R, GAL-CN. H1 and H2 use the global scheme's own arms.
+- **H1** unchanged in bars; it is stated that the dial changes $R'$, $M$, the rule and the selected step jointly.
+- **H2(b)** restated: along R128→R256→R384, cost strictly increasing and median $e_{\rm TX}$ non-increasing (tie policy) at
+  both transitions; R384→R512 reported. H2(a) dominance uses the tie policy.
+- **H3** restated: per case, at the common time $t^\ast=\arg\max_k e_\infty(t_k)$, with $\delta_{\rm BE}=u_{\rm BE}-u_{\rm anc}$ and
+  $\varepsilon_\infty=u_{\rm anc}-u_{\rm ref}$ (deployed-rule anchor): (a) $e_{\rm BE}(t^\ast)<e_\infty(t^\ast)$ and
+  $|e_{\rm CN}(t^\ast)-e_\infty(t^\ast)|\le0.2\,|e_{\rm BE}(t^\ast)-e_\infty(t^\ast)|$; (b) $\cos\angle(\delta_{\rm BE},\varepsilon_\infty)\le-0.3$;
+  (c) $e_\infty(t^\ast)^2-e_{\rm BE}(t^\ast)^2\ge0.5\,\lVert\delta_{\rm BE}(t^\ast)\rVert^2$ (i.e. the cancelling cross term is at least
+  $1.5\lVert\delta_{\rm BE}\rVert^2$). Evaluated against ST and TX for the `fast` worst case (primary) and reported for every case.
+- **H4** restated: per case, eligibility of a fixed-sweep candidate additionally requires its solver distance (to the
+  adaptive tight run of the same scheme, step and startup) $\le\min(2.5\times10^{-4},\,0.25\times$ its own anchor discrepancy$)$;
+  H4a/H4b are evaluated on the resolved cases (A1.6) and require ≥ 80 % of the 64 cases resolved for the comparator,
+  otherwise "anchor-limited". H6 distinguishes the deployed-rule selected arm (reported) from converged-rule diagnostics
+  (budget only).
+- **H5** restated as "best among the listed calibrated configurations, development cohorts, $L=1024$". Comparator
+  inventory (frozen): the `acc` setting's LSPG-BE, LSPG-CN, LSPG-CN-R, LSPG-BDF2 and GAL-CN at
+  $\Delta t/\Delta t_0\in\{\tfrac12,1,2,5,10\}$ (C2's evaluated set). The combined set is every eligible ROM arm of every
+  setting. Unmatched arms are reported as unmatched. FOM: C2's order check at $L=256$ (with FOM-CN's "pre-asymptotic"
+  qualification), calibration (A9.2) and per-step residual verification are carried over; the tie policy applies to the
+  matching.
+
+**A1.10 Gates and controls restated (item 21).** Same-job implementation checks are strict gates (G-FS1, B1, timing
+determinism, G-score). Historical reproductions (G1: C2/C1 rows across jobs and GPUs) are **diagnostics**: reported, and a
+failure beyond $10^{-6}$ is investigated before any verdict is read, but it is not by itself a stop. Score agreement:
+$|x-y|\le10^{-13}+10^{-10}|y|$. Empirical controls (B2, B3, CN-vs-BE, `lat256`): if one does not fail as expected it is
+reported as **non-discriminating** and the verdict that relies on it is withheld until diagnosed. B0 negative controls
+(must break the identity by $>10^{-6}$): a one-node coordinate shift of the reference, a projector from a perturbed
+basis, and a mismatched normaliser. G-score negative controls: case swap, time shift, ST/S swap (C2 A3.6). Tight
+tolerances spelled out: LSPG tight `gtol` $10^{-7}$, tighter $10^{-8}$; GAL tight $10^{-13}$, tighter $10^{-15}$ (C2 A5.1).
+
+**A1.11 Timing (item 24).** Every timed subject is the end-to-end query (initial fit, stepping including diagnostics, decode
+of the six output fields). Every invocation (case, repetition, $t_{A_1},t_B,t_{A_2}$, output hash) is saved; aggregate =
+median over cases × repetitions of per-invocation paired ratios, with IQR and MAD outliers. 3D: per-setting panels
+(randomised order, 0.1 s burn, warm JIT, drift reported) **and** one common cross-setting panel with a single baseline
+(W512 deployed BE) containing every setting's deployed BE and selected arms, so absolute costs across widths are on one
+axis; absolute ms are always reported. Cross-job reproducibility (accuracy job vs timing job) is no longer needed in 2D
+(same job); in 3D `c3bud` vs `c3grid` arms are compared by field distance $\le10^{-8}$ (an implementation-consistency
+check, far below any reported difference).
+
+**A1.12 Scope (item 27).** This lane answers a provisional development-cohort question about the combined method; it does
+not complete E3's strong-reference, sealed-cohort, multi-mesh claim, and `FROZEN-SELECTION.json` does not replace the
+campaign's global sealing.

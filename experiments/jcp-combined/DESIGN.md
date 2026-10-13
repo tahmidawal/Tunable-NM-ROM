@@ -644,3 +644,44 @@ job including conditional successors (2D $640^2/768^2$, 3D $80^3$), qualificatio
 corners, first fallbacks, timing invocations and decodes, with per-run step counts; `smk` measures per-run times per
 (setting, rule, solver type, step) and peak device memory; each job is submitted only when its projected wall time
 (with a 1.5× margin) fits its Slurm limit and its projected peak memory fits the GPU.
+
+## Amendment A3 (2026-10-13, after `audits/codex-design-3.md`; before any code)
+
+**A3.1 Pareto fronts and H2a (F1).** Fronts are ordinary Pareto fronts on numerical (cost, error): $p$ dominates $q$ iff
+cost$_p\le$ cost$_q$ and error$_p\le$ error$_q$ with at least one strict; exact duplicates collapse to the lowest arm ID. The
+tie policy is applied only afterwards, in **H2a coverage**: every eligible BE arm $q$ (of every setting) must have an
+eligible candidate-scheme arm $p$ with cost$_p\le$ cost$_q$ and error$_p$ not beaten by error$_q$ (A2.6 "beaten"), for worst and
+for median $e_{\rm TX}$ separately.
+
+**A3.2 Step selection (F2; replaces the "step choice" bullet of A2.6).**
+- *Accurate-equal-cost* (scheme × setting): feasible = eligible arms with median paired ratio ≤ 1; the **unbeaten set** = feasible
+  arms whose median $e_{\rm TX}$ is not beaten by any other feasible arm; choose the minimum cost in it, then the larger step.
+- *Fast-equal-accuracy*: feasible = eligible arms whose worst and median $e_{\rm ST}$ and $e_{\rm TX}$ are each not beaten by the
+  setting's LSPG-BE at $\Delta t_0$ (i.e. are ≤ it or tied); choose the minimum cost, then the smaller median $e_{\rm TX}$, then the
+  larger step.
+- Empty feasible set → unavailable. With E0 intervals, "beaten" = interval strictly above.
+
+**A3.3 H3 robustness (F3; replaces the last sentences of A2.7).** With $E=\lVert\varepsilon_\infty\rVert$, $D=\lVert\delta_{\rm BE}\rVert$,
+$U=U_{\rm anc}$ (all at $t^\ast$, normalised), confirmation additionally requires the conservative guards: (a′)
+$e_{\rm BE}<E-U$ and $|e_{\rm CN}-E|+U\le0.2\,(E-U-e_{\rm BE})$; (b′) $\langle\delta_{\rm BE},\varepsilon_\infty\rangle+U(D+E)+U^2\le-0.3\,(D+U)(E+U)$
+(a sufficient bound on the perturbed cosine for any anchor perturbation of norm ≤ $U$); (c′)
+$\max(0,E-U)^2-e_{\rm BE}^2\ge\tfrac12(D+U)^2$. If (a)–(c) hold but a guard fails: "consistent with cancellation, not
+resolved against anchor uncertainty". $U$ is an indicator, not a certified bound; the result is labelled so.
+
+**A3.4 H4 comparator probe (P20/N8).** The deployed BE comparator's adaptive-tight probe gets the same verification and
+tighter-replay contract as the candidates' probes; if it fails, its solver-sensitivity diagnostic is "unavailable" and H4
+remains a comparison against the deployed fixed-sweep BE as run.
+
+**A3.5 B0 fixtures (F4; replaces A2.9 (i)–(iii)).** Unit-normalised analytic fixtures, absolute-defect test (must exceed
+$10^{-6}$; expected values exact): (i) orthogonal $P=\mathrm{diag}(1,0)$, $v=e_1+10^{-3}e_2$, $y=e_2$: defect $-2\times10^{-3}$;
+(ii) oblique $P'=\begin{pmatrix}1&\tfrac12\\0&0\end{pmatrix}$, $v=e_1$, $y=e_2$: defect $\tfrac12$; (iii) normaliser mismatch on
+one term with a fixed real-data case (defect computed and must exceed $10^{-6}$). The coordinate-shift control uses a pinned
+spatially varying case (dev6 case 0 at $t=0.05$), on which the shift must break G-score agreement by more than $10^{-6}$.
+
+**A3.6 Finalist reference qualification on 64 cases (F5, P14, P16, N5).** In 3D, for every selected arm and every fallback
+claimed as fully qualified, both its $r_\infty$ trajectory **and** the next-finer-rule trajectory under the arm's own
+scheme, step, $K$ and solver run on all 64 cases (`c3bud`); qualification = $d(r_\infty,\text{finer})\le$ bar and
+$\delta_{\rm quad}\le\tau$ on all 64. If the reference check fails: quadrature qualification "unavailable", conclusions that need
+it withheld, frozen selection record preserved. Other budget diagnostics stay on 32 cases. 2D: the same for selected arms on
+all 38 cases (2D $r_\infty$ runs at deployed steps are affordable); the 16-case restriction of A2.4 applies to the other
+budget trajectory types only.

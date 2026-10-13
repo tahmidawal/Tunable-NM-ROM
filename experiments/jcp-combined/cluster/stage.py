@@ -65,6 +65,8 @@ def main():
         print('resource certificate verified', inv['projected_seconds'] / 3600 * 1.5, 'h (x1.5) of', a.hours)
     cfg0 = json.loads((ROOT / cfgname).read_text())
     assert cfg0['attempt'] == a.attempt
+    if (cfg0['driver'] == 'c2bud' or cfg0.get('mode') == 'bud') and not cfg0.get('smoke'):
+        assert 'frozen_sha256' in cfg0, 'a production budget config must be bound to FROZEN-SELECTION.json (A8.3)'
     if 'frozen_sha256' in cfg0:                   # budget configs are bound to the committed frozen selection (A8.3)
         assert hashlib.sha256(git_show(commit, f'{LANE}/checks/FROZEN-SELECTION.json')).hexdigest() == cfg0['frozen_sha256'], \
             'config does not match the committed FROZEN-SELECTION.json'

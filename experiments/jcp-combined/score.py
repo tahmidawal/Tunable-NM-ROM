@@ -153,7 +153,7 @@ def score2d(ent, run, check):
                         if r is None:
                             continue
                         for j in range(6):
-                            x, y = pe[t][j], r[f'e_{t}_per_time'][j]
+                            x, y = pe[t][j], (np.nan if r[f'e_{t}_per_time'][j] is None else r[f'e_{t}_per_time'][j])
                             gate['compared'] += 1
                             if not (np.isfinite(x) and np.isfinite(y)):
                                 gate['nonfinite'] += 1     # allowed only for an invalid (unverified) in-job rollout
@@ -210,7 +210,7 @@ def score2d(ent, run, check):
                     if r is None:
                         continue
                     for j in range(6):
-                        x, y = pe[t][j], r[f'e_{t}_per_time'][j]
+                        x, y = pe[t][j], (np.nan if r[f'e_{t}_per_time'][j] is None else r[f'e_{t}_per_time'][j])
                         gate['compared'] += 1
                         gate['worst'] = max(gate['worst'], abs(x - y)) if np.isfinite(x) and np.isfinite(y) else gate['worst']
                         gate['failures'] = gate.get('failures', 0) + (0 if tol_ok(x, y) else 1)
@@ -279,7 +279,7 @@ def score3d(ent, run, check):
                 if r is None:
                     continue
                 for k in range(6):
-                    x, y = pe[k], r['e_ref_per_time'][k]
+                    x, y = pe[k], (np.nan if r['e_ref_per_time'][k] is None else r['e_ref_per_time'][k])
                     gate['compared'] += 1
                     if not (np.isfinite(x) and np.isfinite(y)):
                         gate['nonfinite'] += 1           # allowed only for an invalid in-job rollout
@@ -310,8 +310,21 @@ def score3d(ent, run, check):
             arch |= {(*key.split('|', 2), j) for j in ids}
         rowk = {(r['setting'], r['rule'], r['spec'], r['case']) for r in res['rows']}
         gate.update(rows_without_archive=len(rowk - arch), archive_without_rows=len(arch - rowk))
+        import c3run as C3R                       # required inventory from the driver plan (codex-code-6 item 13)
+        inv = C3R.inventory(cfg)
+        exp = set()
+        for s_ in cfg['settings']:
+            for item in inv['settings'][s_['name']]['runs']:
+                rule, spk = (item if isinstance(item, (list, tuple)) else (s_.get('rule'), item))
+                if 'conditional' in rule:
+                    rule = rule.replace(' (conditional)', '')
+                    if not any(k_.startswith(f"{s_['name']}|{rule}|") for k_ in Wz.files):
+                        continue                  # the conditional successor was not triggered
+                exp |= {(s_['name'], rule, spk, j) for j in (cases if res['mode'] != 'bud' else
+                                                             [int(x) for x in Wz.get(f"cases|{s_['name']}|{rule}|{spk}", [])])}
+        gate['inventory_mismatch'] = len(exp - rowk)
         ok = (gate['compared'] == gate['expected'] and gate['failures'] == 0 and ctrl['all_break'] and
-              gate['rows_without_archive'] == 0 and gate['archive_without_rows'] == 0)
+              gate['rows_without_archive'] == 0 and gate['archive_without_rows'] == 0 and gate['inventory_mismatch'] == 0)
         gate['status'] = 'pass' if ok else 'fail'
     return out, gate, ctrl, {}
 

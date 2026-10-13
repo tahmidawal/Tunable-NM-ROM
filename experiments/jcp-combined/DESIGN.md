@@ -852,3 +852,23 @@ same-job timing), staged only if needed, under the same gates. No fallback repla
 **A8.7 Rescoring certification.** A score file against a new reference is accepted only together with the passing
 original-reference G-score file of the same `result.json` and the frozen selection; with verified case-wise uncertainty
 $\eta$ the comparisons use interval overlap (ties at $|x-y|\le2\eta$, medians and worst values by endpoint propagation).
+
+## Amendment A9 (2026-10-13, after `audits/codex-code-6.md`; before any budget job and before any result is read)
+
+**A9.1 B2 and B3 are computed offline from the archived runs.** B2 (known effect): $\delta_{\rm quad}$ with the control rule
+substituted for $r$, i.e. $\lVert u_{\rm ctrl}-u_{r_\infty}\rVert$ of the baseline arm, on the check / budget cases; discriminating iff
+complete (every control and converged run valid, distance finite) and $>\tau$ on more than half the cases. B3 (time
+ablation can fail): the baseline's $\delta_{\rm time}>10^{-3}$ on more than half of the complete, valid budget population. A
+non-discriminating control withholds the matching attribution (A8.5). The in-job B2 numbers are informational.
+**A9.2 Budget population.** Budget statistics and "largest component" classifications use only the budget population
+(2D: all 38 cases; 3D: the first 32); the all-case runs of selected arms serve only the finalist qualification.
+**A9.3 Inventories from the plan.** The converged-rule check inventory (budgets) and the scorer's coverage (3D) are
+derived from the configured plan (`c3run.bud_specs` / `c3run.inventory`), not from what was archived; a missing required
+trajectory fails the check.
+**A9.4 Non-finite results.** Rows serialised as `null` (non-finite) are accounted as invalid; a non-finite pair passes the
+reproduction gate only when the in-job row is itself invalid, and is never counted as a finite agreement.
+**A9.5 Grid reproduction** is mandatory for production budgets; its expected population comes from the config (2D: every
+arm × 38 cases; 3D: selected arms × 64 + other arms × 32).
+**A9.6 G-score for budget outputs.** The budget analyzers are the G-score of the budget jobs: every job row reproduced per
+time against the original reference, plus the case-swap / time-shift (/ ST–S swap in 2D) negative controls, each of which
+must break agreement by $>10^{-6}$.

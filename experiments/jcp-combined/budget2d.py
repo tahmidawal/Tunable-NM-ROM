@@ -67,6 +67,8 @@ def main():
     res = json.loads((run / 'result.json').read_text())
     if res['config'].get('smoke') and not a.allow_smoke:
         raise SystemExit('smoke result refused')
+    if not res['config'].get('smoke') and not a.grid:
+        raise SystemExit('production budgets require --grid (grid reproduction, A8.5)')
     ent = score.validate_entry(a.refs)
     assert res['checkpoint_sha256'] == ent['bank_sha256']
     cfg = res['config']
@@ -105,10 +107,27 @@ def main():
                     for t in ('ST', 'S', 'TX'):
                         mine = [float(np.linalg.norm((Ux - refs[t] / n0)[j])) for j in range(6)]
                         for j in range(6):
-                            y = r[f'e_{t}_per_time'][j]
+                            y = np.nan if r[f'e_{t}_per_time'][j] is None else r[f'e_{t}_per_time'][j]
                             repro['compared'] += 1
-                            repro['worst'] = max(repro['worst'], abs(mine[j] - y))
-                            repro['failures'] += 0 if abs(mine[j] - y) <= 1e-13 + 1e-10 * abs(y) else 1
+                            if np.isfinite(mine[j]) and np.isfinite(y):
+                                repro['worst'] = max(repro['worst'], abs(mine[j] - y))
+                                repro['failures'] += 0 if abs(mine[j] - y) <= 1e-13 + 1e-10 * abs(y) else 1
+                            else:                                   # invalid rollout: accounted separately (N7)
+                                repro['invalid'] = repro.get('invalid', 0) + 1
+                                repro['failures'] += 0 if (not np.isfinite(mine[j]) and not np.isfinite(y) and not r['verified']) else 1
+        if repro['applicable'] and len(cks) > 1:            # G-score negative controls for the budget archive (A9.6)
+            coh, c = cks[0].split('|')
+            c = int(c)
+            kb = k_('main', 'LSPG', 'BE', DT0, 'prod')
+            r0 = rows[(sname, kb, coh, c)]
+            n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
+            refs0 = score.load_ref2d(ent, coh, c)
+            U0_ = dec(z[kb][0]) / n0
+            e_ = lambda U_, R_: max(float(np.linalg.norm(U_[j] - R_[j] / n0)) for j in range(1, 6))
+            ctl = dict(case_swap=abs(e_(dec(z[kb][1]) / n0, refs0['ST']) - r0['e_ST']),
+                       time_shift=abs(e_(np.roll(U0_, 1, 0), refs0['ST']) - r0['e_ST']),
+                       ST_S_swap=abs(e_(U0_, refs0['S']) - r0['e_ST']))
+            repro.setdefault('controls', {})[sname] = dict(ctl, all_break=bool(all(v > 1e-6 for v in ctl.values())))
         armres = {}
         for x in s['arms']:
             f, sc, h = x['form'], x['scheme'], DT0 * x['f']
@@ -180,7 +199,8 @@ def main():
                     d[f'B0_mismatch_{t}'] = float(abs(es[5] ** 2 - (eP[5] / .1) ** 2 - edyn[5] ** 2))     # A3.5(iii)
                     d[f'init_fit_{t}'] = float(np.linalg.norm(U['a'][0] - Rn[0]))
                     ts = 1 + int(np.argmax(es[1:]))
-                    d[f'orthogonal_pair_at_tstar_{t}'] = dict(t_star=ts, e_star=float(es[ts]), e_P=float(eP[ts]), e_dyn=float(edyn[ts]))
+                    d[f'orthogonal_pair_at_tstar_{t}'] = (dict(t_star=ts, e_star=float(es[ts]), e_P=float(eP[ts]), e_dyn=float(edyn[ts]))
+                                                         if need('star') else None)
                     if d['D_a'][1] is not None:                     # triangle bound |e_tot - e_star| <= D_a per time
                         et = nt(U['a'] - Rn)
                         d[f'triangle_ok_{t}'] = all(abs(et[j] - es[j]) <= d['D_a'][j] + 1e-14 for j in range(1, 6))
@@ -255,7 +275,20 @@ def main():
             comp_ = None not in dt_
             b3 = dict(exceeds=sum(v > 1e-3 for v in dt_ if v is not None), cases=len(dt_), complete=comp_,
                       discriminating=bool(comp_ and sum(v > 1e-3 for v in dt_) > len(dt_) / 2))
-        b2 = S_.get('B2_control_rule') or {}
+        # B2 offline (codex-code-6 N8): delta_quad with the CONTROL rule as r, i.e. ||u(ctrl) - u(r_inf)|| for the baseline arm
+        kc_, kv_ = k_('ctrl', 'LSPG', 'BE', DT0, 'prod'), k_('conv', 'LSPG', 'BE', DT0, 'prod')
+        b2d = []
+        for ci, ck in enumerate(cks):
+            coh, c = ck.split('|')
+            c = int(c)
+            if kc_ not in z.files or np.isnan(z[kc_][ci]).all():
+                continue
+            n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
+            okk = rows.get((sname, kc_, coh, c), {}).get('verified') and rows.get((sname, kv_, coh, c), {}).get('verified')
+            b2d.append(max(float(np.linalg.norm((dec(z[kc_][ci]) / n0 - dec(z[kv_][ci]) / n0)[j])) for j in range(1, 6))
+                       if okk else float('nan'))
+        b2 = dict(rule=cfg['control_rule'], per_case=b2d, complete=bool(b2d and np.isfinite(b2d).all()),
+                  discriminating=bool(b2d and np.isfinite(b2d).all() and sum(v > TAU for v in b2d) > len(b2d) / 2))
         withheld = []
         if not b2.get('discriminating'):
             withheld.append('quadrature attribution (B2 control non-discriminating)')
@@ -265,7 +298,7 @@ def main():
             withheld.append('quadrature attribution (converged rule unverified)')
         out['settings'][sname] = dict(rule=s['rule'], conv_status=S_.get('converged_rule_status'), conv_check=S_.get('conv_check'),
                                       conv_check_successor=S_.get('conv_check_successor'), B1=S_.get('B1_sham_bitwise'),
-                                      B2=S_.get('B2_control_rule'), B3=b3, withheld=withheld, arms=armres)
+                                      B2=b2, B3=b3, withheld=withheld, arms=armres)
     b0w = max(v['B0_worst_relative'] for s_ in out['settings'].values() for v in s_['arms'].values())
     b0m = next(iter(next(iter(out['settings'].values()))['arms'].values()))['B0_mismatch_min_defect']
     nrows = sum(1 for r in res['rows'])
@@ -273,9 +306,11 @@ def main():
                         B0_real_mismatch=dict(min_defect=b0m, passed=bool(b0m > 1e-6)),
                         B1=all((s_['B1'] or {}).get('all_equal') for s_ in out['settings'].values()),
                         reproduction=dict(repro, rows=nrows,
-                                          passed=(bool(repro['compared'] == 18 * nrows and repro['failures'] == 0)
+                                          passed=(bool(repro['compared'] == 18 * nrows and repro['failures'] == 0 and
+                                                       all(v['all_break'] for v in repro.get('controls', {}).values()) and
+                                                       len(repro.get('controls', {})) == len(cfg['settings']))
                                                   if repro['applicable'] else 'not applicable (new reference)')),
-                        grid_reproduction=dict(grepro, expected=sum(len(s_['arms']) * len(s_['arms'][next(iter(s_['arms']))]['per_case'])
+                        grid_reproduction=dict(grepro, expected=sum(len(s_['arms']) * len(next(iter(s_['arms'].values()))['per_case'])
                                                                     for s_ in out['settings'].values()),
                                                passed=(bool(grepro['failures'] == 0 and grepro['compared'] ==
                                                             sum(len(s_['arms']) * len(next(iter(s_['arms'].values()))['per_case'])

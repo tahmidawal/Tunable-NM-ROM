@@ -54,6 +54,9 @@ def main():
     res = json.loads((run / 'result.json').read_text())
     if res['config'].get('smoke') and not a.allow_smoke:
         raise SystemExit('smoke result refused')
+    if not res['config'].get('smoke') and not a.grid:
+        raise SystemExit('production budgets require --grid (grid reproduction, A8.5)')
+    import c3run as C3R
     ent = score.validate_entry(a.refs)
     z = np.load(ent['file'])
     cfg = res['config']
@@ -98,18 +101,25 @@ def main():
                     F = Wz[key][ci] @ G
                     R = np.asarray(z[f'c{j}'])
                     for k in range(6):
-                        x, y = float(np.linalg.norm(F[k] - R[k])) / n0[j], r['e_ref_per_time'][k]
+                        x, y = float(np.linalg.norm(F[k] - R[k])) / n0[j], (np.nan if r['e_ref_per_time'][k] is None else r['e_ref_per_time'][k])
                         repro['compared'] += 1
                         if np.isfinite(x) and np.isfinite(y):
                             repro['worst'] = max(repro['worst'], abs(x - y))
+                        if not (np.isfinite(x) and np.isfinite(y)):
+                            repro['invalid'] = repro.get('invalid', 0) + 1
                         repro['failures'] += 0 if (np.isfinite(x) and np.isfinite(y) and abs(x - y) <= 1e-13 + 1e-10 * abs(y)) \
                             or (not np.isfinite(x) and not np.isfinite(y) and not r['valid']) else 1
         # converged-rule check: every r_inf run type vs the finer rule on the cases where both exist
         conv_d, conv_ok, missing = 0., True, []
         budget_ids = list(range(cfg['budget_cases'])) if not cfg.get('case_subset') else list(cfg['case_subset'])[:cfg['budget_cases']]
-        for key in [k for k in Wz.files if k.startswith(f"{sname}|{rr['conv']}|")]:
-            spec_key = key.split('|', 2)[2]
+        plan_conv = sorted({sk(sp) for role, sp in C3R.bud_specs(s['arms']) if role == 'conv'})
+        for spec_key in plan_conv:                         # the required inventory comes from the plan, not the archive
+            key = f"{sname}|{rr['conv']}|{spec_key}"
             fk = f"{sname}|{rr['finer']}|{spec_key}"
+            if key not in Wz.files:
+                missing.append(spec_key + ' (r_inf run)')
+                conv_ok = False
+                continue
             if fk not in Wz.files:                          # every r_inf run type needs its finer counterpart (A2.4)
                 missing.append(spec_key)
                 conv_ok = False
@@ -179,6 +189,8 @@ def main():
                         grepro['failures'] += 0 if dg <= 1e-8 else 1
                 per.append(d)
             mx = lambda v: None if v is None or v[1] is None else max(v[1:])
+            fin_per = per                                         # finalist: every case (A3.6)
+            per = [p_ for p_ in per if p_['case'] in budget_ids]  # budget statistics: the budget population only (N9)
             summ = {}
             for comp in ('delta_quad', 'delta_solve', 'delta_form', 'delta_time', 'refine', 'D_a', 'I_time_quad', 'I_time_solve',
                          'U_star', 'e_tot', 'e_P', 'e_dyn', 'e_star'):
@@ -187,12 +199,13 @@ def main():
                                   available=len(v), cases=len(per))
             fin = None
             if x.get('selected'):
-                fq = [mx(p_['delta_quad']) for p_ in per]
-                ff = [mx(p_['finalist_finer']) for p_ in per]
-                fin = dict(cases=len(per), delta_quad_worst=None if None in fq else max(fq), finer_worst=None if None in ff else max(ff))
+                fq = [mx(p_['delta_quad']) for p_ in fin_per]
+                ff = [mx(p_['finalist_finer']) for p_ in fin_per]
+                fin = dict(cases=len(fin_per), delta_quad_worst=None if None in fq else max(fq),
+                           finer_worst=None if None in ff else max(ff))
                 fin['qualified'] = bool(fin['delta_quad_worst'] is not None and fin['delta_quad_worst'] <= TAU and
                                         fin['finer_worst'] is not None and fin['finer_worst'] <= BAR and
-                                        len(per) == len(res['config'].get('case_subset') or range(cfg['cohort_count'])))
+                                        len(fin_per) == len(res['config'].get('case_subset') or range(cfg['cohort_count'])))
             largest = {}
             for p_ in per:
                 comps = {k: mx(p_.get(k)) for k in ('e_P', 'e_dyn', 'delta_quad', 'delta_time', 'delta_form', 'delta_solve')}
@@ -220,19 +233,48 @@ def main():
                                   context_sensitive_cases=ctxc, unresolved_vs_Ustar=unres,
                                   B0_worst_relative=max(b0) if b0 else None,
                                   B0_mismatch_min_defect=(per[0].get('B0_mismatch') if per else None),     # pinned fixture
-                                  per_case=per)
+                                  per_case=fin_per)
         S_ = res['settings'][sname]
+        base_key = 'fs|BE|0.01|K1'
+        tc_, tv_ = traj(cfg['control_rule'], ('fs', 'BE', DT0, 1)), traj(rr['conv'], ('fs', 'BE', DT0, 1))
+        b2d = []
+        for j in budget_ids:
+            if tc_ and tv_ and j in tc_[0] and j in tv_[0] and valid(tc_[1], j) and valid(tv_[1], j):
+                b2d.append(float(np.linalg.norm(dec(tc_[0][j] - tv_[0][j], j), axis=1)[1:].max()))
+            else:
+                b2d.append(float('nan'))
+        b2 = dict(rule=cfg['control_rule'], per_case=b2d, complete=bool(b2d and np.isfinite(b2d).all()),
+                  discriminating=bool(b2d and np.isfinite(b2d).all() and sum(v > TAU for v in b2d) > len(b2d) / 2))
+        bt_ = arms.get(base_key)
+        dtv = [None if p_['delta_time'][1] is None else max(p_['delta_time'][1:]) for p_ in (bt_['per_case'] if bt_ else [])
+               if p_['case'] in budget_ids]
+        b3 = dict(exceeds=sum(v > 1e-3 for v in dtv if v is not None), cases=len(dtv), complete=bool(dtv and None not in dtv),
+                  discriminating=bool(dtv and None not in dtv and sum(v > 1e-3 for v in dtv) > len(dtv) / 2))
         withheld = []
-        if not (S_.get('B2_control_rule') or {}).get('discriminating'):
+        if not b2['discriminating']:
             withheld.append('quadrature attribution (B2 control non-discriminating)')
+        if not b3['discriminating']:
+            withheld.append('time attribution (B3 control non-discriminating)')
+        ctl = {}
+        tb_ = traj(rr['r'], ('fs', 'BE', DT0, 1))
+        if repro['applicable'] and tb_ and len(tb_[0]) > 1:      # G-score controls on the budget archive (A9.6)
+            j0, j1 = sorted(tb_[0])[:2]
+            r0 = rows[(sname, rr['r'], base_key, j0)]
+            R0 = np.asarray(z[f'c{j0}'])
+            ee = lambda F_: max(float(np.linalg.norm(F_[k] - R0[k])) / n0[j0] for k in range(1, 6))
+            F0 = tb_[0][j0] @ G
+            ctl = dict(case_swap=abs(ee(tb_[0][j1] @ G) - r0['e_ref']), time_shift=abs(ee(np.roll(F0, 1, 0)) - r0['e_ref']))
+            ctl['all_break'] = bool(all(v > 1e-6 for v in ctl.values()))
         if not (conv_ok and conv_d <= BAR):
             withheld.append('quadrature attribution (converged rule not verified against the finer rule)')
         out['settings'][sname] = dict(rules=rr, conv_check=dict(worst=conv_d, all_valid=conv_ok, missing=missing,
                                                                 passed=bool(conv_ok and conv_d <= BAR)),
-                                      B1=S_.get('B1_sham_bitwise'), B2=S_.get('B2_control_rule'), withheld=withheld, arms=arms)
+                                      B1=S_.get('B1_sham_bitwise'), B2=b2, B3=b3, gscore_controls=ctl, withheld=withheld, arms=arms)
     b0w = [v['B0_worst_relative'] for s_ in out['settings'].values() for v in s_['arms'].values() if v['B0_worst_relative'] is not None]
     b0m = [v['B0_mismatch_min_defect'] for s_ in out['settings'].values() for v in s_['arms'].values() if v['B0_mismatch_min_defect'] is not None]
     nrows = len(res['rows'])
+    ncases_all = len(cfg.get('case_subset') or range(cfg['cohort_count']))
+    n_exp = sum((ncases_all if x.get('selected') else int(cfg['budget_cases'])) for s_ in cfg['settings'] for x in s_['arms'])
     import budget2d as B2D
     fx = B2D.b0_fixtures()
     pinned = b0m[0] if b0m else None
@@ -240,13 +282,13 @@ def main():
                         B0_fixtures=fx['passed'],
                         B0_real_mismatch=dict(pinned_defect=pinned, passed=bool(pinned is not None and pinned > 1e-6)),
                         B1=all((s_['B1'] or {}).get('all_equal') for s_ in out['settings'].values()),
-                        reproduction=dict(repro, rows=nrows, passed=(bool(repro['compared'] == 6 * nrows and repro['failures'] == 0)
-                                                                     if repro['applicable'] else 'not applicable')),
-                        grid_reproduction=dict(grepro, expected=sum(len(v['per_case']) for s_ in out['settings'].values()
-                                                                    for v in s_['arms'].values()),
-                                               passed=(bool(grepro['failures'] == 0 and grepro['compared'] ==
-                                                            sum(len(v['per_case']) for s_ in out['settings'].values()
-                                                                for v in s_['arms'].values())) if a.grid else 'not run')))
+                        reproduction=dict(repro, rows=nrows,
+                                          passed=(bool(repro['compared'] == 6 * nrows and repro['failures'] == 0 and
+                                                       all(s_['gscore_controls'].get('all_break') for s_ in out['settings'].values()))
+                                                  if repro['applicable'] else 'not applicable')),
+                        grid_reproduction=dict(grepro, expected=n_exp,
+                                               passed=(bool(grepro['failures'] == 0 and grepro['compared'] == n_exp) if a.grid
+                                                       else 'not run')))
     dest = Path(a.out or HERE / 'checks' / f"budget3d-{run.parents[1].name}-{a.refs}.json")
     dest.write_text(json.dumps(out, default=float) + '\n')
     print(dest, json.dumps(out['gates'], default=float))

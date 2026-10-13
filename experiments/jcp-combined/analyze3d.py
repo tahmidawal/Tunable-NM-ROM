@@ -113,13 +113,14 @@ def main():
                     adv = all(rows[(sname, ad)][j]['valid'] for j in cases) and \
                         (adx in W and all(rows[(sname, adx)][j]['valid'] for j in cases))      # tight AND tighter verified
                     bar = np.minimum(2.5e-4, .25 * disc)                                         # per-case H4 bar (A1.9)
-                    if not (adv and np.all(np.isfinite(sens))):          # A3.4: unqualified probe -> diagnostic unavailable
+                    if not (adv and np.all(np.isfinite(sens)) and np.all(sens <= .1 * np.minimum(2.5e-4, .25 * disc))):
+                        sd_raw = sd                                      # A3.4: unqualified probe -> diagnostic unavailable
                         sd = np.full(len(cases), np.nan)
                     ent.update(solver_distance=sd.tolist(), solver_worst=float(np.nanmax(sd)) if np.isfinite(sd).any() else None,
                                probe_valid=adv,
                                probe_tighter_sensitivity=sens.tolist(),
                                eligible_A62=bool(ent['valid'] and adv and np.all(np.isfinite(sd)) and float(np.max(sd)) <= 2.5e-4),
-                               eligible_H4=bool(ent['valid'] and adv and np.all(np.isfinite(sens)) and
+                               eligible_H4=bool(ent['valid'] and adv and np.all(np.isfinite(sens)) and np.all(np.isfinite(sd)) and
                                                 bool(np.all(sens <= .1 * bar)) and bool(np.all(sd <= bar))))  # A2.8 per case
             arms[sk] = ent
         S_ = dict(rule=rule, U_anc=U.tolist(), anchor_qualified=anc_ok.tolist(), panel_valid=panel.get('valid'),
@@ -153,9 +154,14 @@ def main():
                       H4a=dict(verdict='pass' if a_c else 'fail', witnesses=sorted(a_c, key=lambda k: arms[k]['ratio'])),
                       H4b=dict(verdict='pass' if b_c else 'fail', witnesses=sorted(b_c, key=lambda k: cand_stats(k)[1])),
                       candidates={sk: dict(worst=cand_stats(sk)[0], median=cand_stats(sk)[1], ratio=arms[sk]['ratio']) for sk in fs})
-            out['selection'][sname] = dict(
-                fast_equal_accuracy=(min(fea, key=lambda k: (arms[k]['ratio'], cand_stats(k)[1])) if fea else None),
-                accurate_equal_cost=(min(aec, key=lambda k: (cand_stats(k)[1], arms[k]['ratio'])) if aec else None))
+            if a.frozen:                                         # rescoring: the frozen selection is used unchanged (A8.7)
+                fz3 = json.loads(Path(a.frozen).read_text())['3d_solver']['selection']
+                out['selection'][sname] = fz3.get(sname, {})
+                out['selection_frozen_sha256'] = hashlib.sha256(Path(a.frozen).read_bytes()).hexdigest()
+            else:
+                out['selection'][sname] = dict(
+                    fast_equal_accuracy=(min(fea, key=lambda k: (arms[k]['ratio'], cand_stats(k)[1])) if fea else None),
+                    accurate_equal_cost=(min(aec, key=lambda k: (cand_stats(k)[1], arms[k]['ratio'])) if aec else None))
         out['hypotheses'].setdefault('H4', {})[sname] = h4
         sel = out['selection'].get(sname, {})
         h4w = [(h4.get(k, {}).get('witnesses') or [None])[0] for k in ('H4a', 'H4b')]

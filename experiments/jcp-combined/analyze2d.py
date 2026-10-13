@@ -300,7 +300,8 @@ def main():
             b = 'unavailable'
         else:
             b = all(need[i + 1]['cost_common'] > need[i]['cost_common'] and
-                    need[i + 1]['median_TX'] <= need[i]['median_TX'] + thr['median'] for i in range(2))
+                    not bt((need[i + 1]['setting'], need[i + 1]['arm']), (need[i]['setting'], need[i]['arm']), 'TX', 'median')
+                    for i in range(2))
         out['hypotheses']['H2'] = dict(fronts=fronts, a=cover, a_pass=a_pass, dial=dial, b=b)
 
     # ---------------------------------------------------------------- H3 (A1.9, A2.7, A3.3)

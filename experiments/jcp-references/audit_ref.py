@@ -274,11 +274,23 @@ def audit_crosscheck(dim, summary):
             v = 'UNRESOLVED'
         else:
             da, db = norms(sp[0] - sp[1]), norms(sp[1] - sp[2])
-            q = [order(da[k], db[k], [1 / N for N in Ns]) for k in range(1, 6)]
-            if any(x is None or x < 2.5 for x in q) or not stab:
+            hh = [1 / N for N in Ns]
+            q = [order(da[k], db[k], hh) for k in range(1, 6)]
+            ind, okq = [], True                          # A10.1, re-implemented
+            for k in range(1, 6):
+                if not np.isfinite(db[k]):
+                    okq = False
+                elif db[k] / n0 <= 1e-12:
+                    ind.append(1e-12)
+                elif q[k - 1] is None or q[k - 1] < 0.5:
+                    okq = False
+                else:
+                    qq = q[k - 1]
+                    ind.append(db[k] / n0 * max(1.0, hh[2] ** qq / (hh[1] ** qq - hh[2] ** qq)))
+            if not okq or not stab:
                 v = 'UNRESOLVED'
             else:
-                s_x = float(np.max(db[1:]) / n0)
+                s_x = max(ind)
                 s_t = float(np.max(norms(full - half)[1:]) / n0)
                 x = float(np.max(norms(half - u3)[1:]) / n0)
                 nums = dict(nums, s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x, eta=(x / eps if eps > 0 else None))

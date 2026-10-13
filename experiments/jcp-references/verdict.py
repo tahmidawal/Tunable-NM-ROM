@@ -153,7 +153,29 @@ def rel_err(field, ref, n0):
 
 # ----------------------------------------------------------------------------------------- cross-check (A2.4) --
 
-PS_Q_MIN = 2.5
+PS_Q_MIN = 0.5          # A10.1 (was 2.5 under A1.7)
+PS_ROUNDOFF = 1e-12     # A10.1 round-off level of the PS self-difference (relative to n0)
+
+
+def ps_spatial_indicator(da, db, Ns, n0):
+    """A10.1: per-time spatial error indicator of the finest PS level; returns (s_x or None, q list, ok, old_rule)."""
+    hs = [1.0 / N for N in Ns]
+    q, ind, ok = [], [], True
+    for k in range(1, 6):
+        qk = solve_order(da[k], db[k], *hs)
+        q.append(qk)
+        if not np.isfinite(db[k]):
+            ok = False
+            continue
+        if db[k] / n0 <= PS_ROUNDOFF:
+            ind.append(PS_ROUNDOFF)
+            continue
+        if qk is None or qk < PS_Q_MIN:
+            ok = False
+            continue
+        ind.append(db[k] / n0 * max(1.0, rich_factor(qk, hs[1], hs[2])))
+    old_rule_ok = all(x is not None and x >= 2.5 for x in q)
+    return (max(ind) if ok and len(ind) == 5 else None), q, ok, old_rule_ok
 
 
 def crosscheck(fd_record, u3, ps, n0):
@@ -169,18 +191,22 @@ def crosscheck(fd_record, u3, ps, n0):
     if not ps['gates_ok']:
         return dict(rec, verdict='UNRESOLVED', reason='gates')
     (N1, a), (N2, b), (N3, c) = ps['spatial']
-    hs = [1.0 / N1, 1.0 / N2, 1.0 / N3]
     da, db = tnorm(a - b), tnorm(b - c)
-    q = [solve_order(da[k], db[k], *hs) for k in range(1, 6)]
+    s_x, q, ok, old_ok = ps_spatial_indicator(da, db, [N1, N2, N3], n0)
     rec['q'] = q
-    if any(x is None or x < PS_Q_MIN for x in q):
+    rec['s_x_raw'] = float(np.max(db[1:]) / n0)
+    rec['old_rule_order_ok'] = old_ok
+    if not ok:
         return dict(rec, verdict='UNRESOLVED', reason='spatial-order')
     if not ps['stability_ok']:
         return dict(rec, verdict='UNRESOLVED', reason='stability')
-    s_x = float(np.max(db[1:]) / n0)
     s_t = float(np.max(tnorm(ps['full'] - ps['half'])[1:]) / n0)
     x_ps = float(np.max(tnorm(ps['half'] - u3)[1:]) / n0)
     rec.update(s_x=s_x, s_t=s_t, sigma=s_x + s_t, x_ps=x_ps, eta=x_ps / eps if eps > 0 else None)
+    # A10.2: the verdict the pre-A10 rule (q >= 2.5 everywhere, raw s_x) would have given, for disclosure
+    raw = rec['s_x_raw'] + s_t
+    rec['old_rule_verdict'] = ('UNRESOLVED' if (not old_ok or raw > eps / 2) else
+                               ('PASS' if x_ps <= 2 * eps else 'FAIL'))
     if not all(np.isfinite(v) for v in (s_x, s_t, x_ps)):
         return dict(rec, verdict='UNRESOLVED', reason='non-finite')
     if s_x + s_t > eps / 2:

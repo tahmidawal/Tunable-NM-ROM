@@ -839,3 +839,36 @@ exceed the 12-hour job limit, so the job was cancelled after its first row. The 
 iterations per step (A3.2 already allows the target not to be reached; the achieved residuals are recorded and the
 proxy uses them). The 3D calibration job (5209714) keeps budget 60: it reaches the tighter target in a few iterations
 per step (306 and 586 Newton iterations in total at $L=128$ and $256$), so the budget never binds there.
+
+---
+
+## Amendment A10 (2026-10-13, after the first PS jobs, BEFORE any 2D finite-difference reference or any PS-vs-FD comparison)
+
+**What was seen.** Only pseudo-spectral self-convergence data (jobs 5209854, 5209856; no FD reference of these
+cases existed, so no $x_{PS}$ had been or could be computed). 3D: spatial order $q\approx5.6$–$5.9$, spatial
+self-difference $s_x$ between $1.4\times10^{-10}$ and $9.4\times10^{-9}$. 2D val32 cases 0 and 2 (Gaussians that do not
+vanish on the walls; the PS initial field differs from the nodal one by $\sim2\times10^{-3}$ there): a stable **first**
+order, $q=1.01$–$1.02$ at every $t_k$, with $s_x=2.7\times10^{-9}$ and $8.3\times10^{-10}$. 2D case 1: $s_x=1.4\times
+10^{-15}$, at round-off, so $q$ is undefined at $t_1$. Case 3: $q\approx4$.
+
+**Why the rule changes.** A1.7/A2.3 required $q\ge2.5$ so that $s_x$ (the raw last difference) would be a
+conservative indicator for the ratio-4/3 ladder. That requirement turns accurate PS solutions into `UNRESOLVED`
+whenever the PS converges slowly but with a tiny constant, or is already at round-off — it tests the *form* of the PS
+convergence rather than its *size*. The purpose (a conservative, conditional PS error indicator) is served directly by
+the Richardson multiplier at the observed order.
+
+**A10.1 New PS spatial indicator.** Per $t_k$, with the selected triple $N_1<N_2<N_3$ and $d_{12}^{PS},d_{23}^{PS}$:
+- if $d_{23}^{PS}(t_k)/n_0\le10^{-12}$ (round-off level), the spatial indicator at $t_k$ is $10^{-12}$ and no order is
+  required at that time;
+- otherwise the observed order $q(t_k)$ must be defined (bracket $[0.25,8]$, A1.5 policy) and $q(t_k)\ge0.5$, and the
+  indicator is $d_{23}^{PS}/n_0\cdot\max\!\big(1,\ N_3^{-q}/(N_2^{-q}-N_3^{-q})\big)$ (the Richardson estimate of the
+  error of $N_3$, never smaller than the raw difference); else `UNRESOLVED(spatial-order)`.
+$s_x=\max_k$ of the indicator. Everything else in A2.3/A2.4/A3.6 is unchanged: $\sigma_{PS}=s_x+s_t$ must be
+$\le\epsilon_{ref}/2$ (resolution), then PASS iff $x_{PS}\le2\epsilon_{ref}$. With $q=1$ and ratio $4/3$ the multiplier
+is 3, so the 2D first-order cases above carry indicators of order $10^{-8}$; the resolution test against
+$\epsilon_{ref}$ still decides whether they can count.
+
+**A10.2 Disclosure.** This amendment was written after seeing PS self-convergence data and is reported as such. It was
+written before any 2D FD reference existed and before any $x_{PS}$ was computed in either dimension, so no PS-vs-FD
+outcome could inform it. The report lists, for every cross-check case, the verdict under A10.1 and the verdict the old
+rule ($q\ge2.5$, raw $s_x$) would have given.

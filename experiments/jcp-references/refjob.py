@@ -404,7 +404,8 @@ def mode_calib(cfg, outdir, rep):
         log(f"X4: {rep['x4']}")
     np.savez(outdir / f'calib_{d}d_fields.npz', **store)
     rep['calib_fields_sha256'] = SI.sha((outdir / f'calib_{d}d_fields.npz').read_bytes())
-    rep['calib_status'] = dict(dim=d, floor_stab=V.FLOOR_STAB, proxy_ok_all=all(r['proxy_ok'] for r in rep['calib']),
+    rep['calib_status'] = dict(dim=d, floor_stab=V.FLOOR_STAB, provisional=False,
+                               proxy_ok_all=all(r['proxy_ok'] for r in rep['calib']),
                                worst_ratio_prod=max(r['ratio_prod'] for r in rep['calib']),
                                worst_ratio_tight=max(r['ratio_tight'] for r in rep['calib']),
                                job=job_info(), fields_sha256=rep['calib_fields_sha256'])

@@ -51,6 +51,7 @@ def gather():
     """Link every pulled non-sealed FD / PS file of complete, gate-passing jobs into the store, after verifying each
     against the job's own OUTPUTS.sha256. Returns ({attempt: result.json}, {attempt: reason refused})."""
     results, refused = {}, {}
+    verified_calib = verified_calibrations()
     if list(RUNS.glob('*/output/**/*.enc')):
         raise RuntimeError('encrypted (sealed) artifacts found in a local run directory: they must stay on the cluster')
     for rd in sorted(RUNS.glob('*/')):
@@ -64,19 +65,17 @@ def gather():
         if not (r.get('complete') and r.get('gates_all_pass')):
             refused[rd.name] = 'incomplete or gate failure'
             continue
-        if r['config']['mode'] == 'fd' and r.get('calib_status') == 'provisional':
-            cs = HERE / 'checks' / f"calib_{r['config']['dim']}d.json"
-            final = json.loads(cs.read_text()) if cs.exists() else {}
-            calib_jobs = [json.loads(x.read_text()) for x in RUNS.glob('*/output/result.json')]
-            evidence = [c for c in calib_jobs if c['config']['mode'] == 'calib' and c.get('complete')
-                        and int(c['config']['dim']) == int(r['config']['dim'])
-                        and c.get('calib_fields_sha256') == final.get('fields_sha256')
-                        and (c.get('calib_status') or {}).get('proxy_ok_all')]
-            if (final.get('provisional', True) or not final.get('proxy_ok_all') or final.get('floor_stab') != V.FLOOR_STAB
-                    or int(final.get('dim', -1)) != int(r['config']['dim']) or not evidence):
-                # A11.3: release only against a final, passing status bound to the factor the cases were judged with
-                # and to a collected, complete calibration job carrying the same evidence hash
-                refused[rd.name] = 'held: provisional calibration not final, failed, or not bound to its evidence (A11)'
+        if r['config']['mode'] == 'fd':
+            # A11.4: case-level release check (covers resumed cases); sealed jobs never resume -> job-level status
+            dim = int(r['config']['dim'])
+            if 'sealed_manifest' in r:
+                factors = {('provisional' if r.get('calib_status') == 'provisional' else 'ok', V.FLOOR_STAB)}
+            else:
+                factors = {(json.loads(f.read_text()).get('calib_status', 'ok'), json.loads(f.read_text())['floor_stab'])
+                           for f in (rd / 'output').glob('*d/*/*/c*.json') if '/PS/' not in str(f)}
+            ok_rel, why = release_ok(dim, factors, verified_calib)
+            if not ok_rel:
+                refused[rd.name] = f'held (A11): {why}'
                 continue
         sums = {}
         for line in (rd / 'OUTPUTS.sha256').read_text().splitlines():
@@ -105,6 +104,45 @@ def gather():
                     raise RuntimeError(f'{rel}: does not match the job OUTPUTS.sha256')
                 link(f, STORE / f.relative_to(out))
     return results, refused
+
+
+def verified_calibrations():
+    """{dim: [(fields_sha256, floor_stab)]} of calibration jobs that are complete, gate-passing, OUTPUTS-verified,
+    whose evidence file matches both the job's OUTPUTS.sha256 and its own record, and whose proxy passed (A11.4)."""
+    out = {2: [], 3: []}
+    for rd in sorted(RUNS.glob('*/')):
+        rj = rd / 'output' / 'result.json'
+        if not rj.exists() or not (rd / 'OUTPUTS.sha256').exists():
+            continue
+        r = json.loads(rj.read_text())
+        if r['config']['mode'] != 'calib' or r.get('SMOKE_OVERRIDE') or not (r.get('complete') and r.get('gates_all_pass')):
+            continue
+        sums = dict((ln.split(None, 1)[1].strip(), ln.split(None, 1)[0])
+                    for ln in (rd / 'OUTPUTS.sha256').read_text().splitlines() if ln.strip())
+        dim = int(r['config']['dim'])
+        cf = rd / 'output' / f'calib_{dim}d_fields.npz'
+        st = r.get('calib_status') or {}
+        if (sums.get('output/result.json') == sha(rj) and cf.exists() and sums.get(str(cf.relative_to(rd))) == sha(cf)
+                and r.get('calib_fields_sha256') == sha(cf) and st.get('proxy_ok_all') is True):
+            out[dim].append((sha(cf), st.get('floor_stab')))
+    return out
+
+
+def release_ok(dim, factors, verified_calib):
+    """factors: set of (calib_status, floor_stab) of the cases. 'ok' cases were produced under a final status already;
+    provisional ones need checks/calib_<d>d.json final (provisional is False), passing, same dim, the same factor as
+    every case, and evidence equal to a verified calibration job with that factor."""
+    if not any(s == 'provisional' for s, _ in factors):
+        return True, ''
+    cs = HERE / 'checks' / f'calib_{dim}d.json'
+    final = json.loads(cs.read_text()) if cs.exists() else {}
+    if final.get('provisional') is not False or final.get('proxy_ok_all') is not True or int(final.get('dim', -1)) != dim:
+        return False, 'calibration status not final and passing'
+    if any(f != final.get('floor_stab') for _, f in factors):
+        return False, 'cases judged with a different floor factor than the final calibration'
+    if (final.get('fields_sha256'), final.get('floor_stab')) not in verified_calib[dim]:
+        return False, 'final status not bound to a verified calibration job'
+    return True, ''
 
 
 def write_manifest():

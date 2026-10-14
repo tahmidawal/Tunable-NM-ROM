@@ -915,3 +915,14 @@ the stored per-step residuals, sealed QC regenerated) would then be written and 
 Memory of the 2D refinement level, from the compiled executables: $L=8192$ 15.6 GB (observed peak 16.1 GB),
 $L=12288$ 35.0 GB (2.4 arguments, 25.4 temporaries, 7.3 outputs), within an 80 GB A100. Jobs of 32 cases get a 24 h
 limit (refinement or tight-attempt contingency).
+
+**A11.4 (after Codex job audit 8).** Release is authorised only from *verified* calibration jobs (complete,
+gate-passing, `result.json` and evidence file both matching the job's `OUTPUTS.sha256` and the job's own record, proxy
+passed) and is checked **per case**: every case of a job (resumed cases included) records the calibration status and
+floor factor it was produced under; provisional cases are released only if the final status is explicitly
+`provisional: false`, passing, of the same dimension, records the same factor as every case, and carries the evidence
+hash of a verified calibration job with that factor. Sealed jobs (never resumed) are checked at job level. Future
+calibration jobs write `provisional: false` explicitly. Walltime: a tight attempt at $L=8192$ can take ~3.5 h; a
+16-case (12 h) job absorbs one, a 32-case (24 h) job about two; a non-sealed job that times out is resumed by a fresh
+submission (verified resume), a sealed one is rerun from scratch in a new directory (QC counts once: overlapping
+sealed jobs are refused).

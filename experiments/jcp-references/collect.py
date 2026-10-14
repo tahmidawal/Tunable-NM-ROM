@@ -68,6 +68,9 @@ def gather():
         for line in (rd / 'OUTPUTS.sha256').read_text().splitlines():
             h, f = line.split(None, 1)
             sums[f.strip()] = h
+        if any(not (rd / f).exists() for f in sums if not f.endswith('.enc')):
+            refused[rd.name] = 'pull incomplete'          # a pull in progress: never link a partial job
+            continue
         if sums.get('output/result.json') != sha(rj):
             raise RuntimeError(f'{rd.name}: result.json does not match the job OUTPUTS.sha256')
         results[rd.name] = r

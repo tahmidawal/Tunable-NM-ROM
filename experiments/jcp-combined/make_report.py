@@ -238,7 +238,8 @@ def main():
     sc2 = load(CK / 'scores-c2grid-2d_first_order.json')
     sel_pre = load(CK / 'SELECTION-3D.json')
     sel_ph = load(CK / 'SELECTION-3D-POSTHOC.json')
-    an3 = load(CK / 'analysis3d-c3grid.json')
+    an3o = load(CK / 'analysis3d-c3grid.json')
+    an3 = load(CK / 'analysis3d-c3grid-3d_e0.json') or an3o          # A13: E0 primary for reference errors
     b2o = [load(p) for p in sorted(glob.glob(str(CK / 'budget2d-c2bud[ABC]-2d_first_order.json')))]
     b2e = [load(p) for p in sorted(glob.glob(str(CK / 'budget2d-c2bud[ABC]-2d_e0.json')))]
     b2 = b2e if len(b2e) == len(b2o) and b2e else b2o                 # A13: E0 primary when complete
@@ -491,7 +492,8 @@ def main():
     else:
         r(f"Rule selection label carried by the grid: **{an3.get('rule_selection_label')}**. Comparator: the deployed "
           'fixed-sweep BE at Δt₀ (K = 1) on the same bank, R′ and rule. Anchor discrepancy = distance to GAL-BDF2 at '
-          'Δt₀/8 (time-converged, reference-free); reference errors are reference-limited (PROVISIONAL).', '')
+          'Δt₀/8 (time-converged, reference-free; H4 and the selections use only it). Reference errors: '
+          f"{an3['provisional']}.", '')
         rows = []
         for s, h in an3['hypotheses']['H4'].items():
             sel = an3['selection'].get(s, {})
@@ -506,13 +508,29 @@ def main():
                     row += [k, fx(x['ratio']), sci(x['anchor_median_all']), pc(x['median_ref'])]
                 else:
                     row += ['none', '—', '—', '—']
-            row += [sci(comp['anchor_median_all']), pc(comp['median_ref'])]
+            dg = (an3o or an3)['hypotheses']['H4'][s].get('cheapest_equal_accuracy_diagnostic')
+            row += [sci(comp['anchor_median_all']), pc(comp['median_ref']),
+                    f"{dg['key']} ({fx(dg['ratio'])})" if dg else '—']
             rows.append(row)
         r.table(['setting', 'rule', 'anchor-resolved cases', 'H4a', 'H4b', 'fast-equal-accuracy arm', 'time ratio',
                  'median anchor disc.', 'median ref. error', 'accurate-equal-cost arm', 'time ratio', 'median anchor disc.',
-                 'median ref. error', 'BE median anchor disc.', 'BE median ref. error'], rows)
+                 'median ref. error', 'BE median anchor disc.', 'BE median ref. error',
+                 'cheapest equal-accuracy arm (diagnostic, ratio)'], rows)
+        r('The registered fast-equal-accuracy arm is H4a\'s cheapest (Δt ≥ 1.25 Δt₀, anchor discrepancy no worse than '
+          'the comparator, paired ratio ≤ 0.6); where H4a fails it is "none". The last column is a diagnostic only '
+          '(A15: an earlier frozen selection used it by mistake and was retracted before any budget job).', '')
         h6 = an3['hypotheses'].get('H6', {})
-        if h6:
+        if h6 and an3['refs'] == '3d_e0':
+            r('H6 (3D dial, against E0 with per-case ties at 2 ε_ref): ' + '; '.join(
+                f"{k}: **{v['verdict']}** (median change {('%+.1f %%' % (100 * v['median_change']))}, resolved {v.get('resolved')}, "
+                f"improved/worsened {v.get('improved_resolved')}/{v.get('worsened_resolved')}, ties {v.get('ties')})"
+                for k, v in h6.items()) + '.', '')
+            h6 = (an3o or {}).get('hypotheses', {}).get('H6', {})
+            if h6:
+                r('First-order H6 (PROVISIONAL, descriptive): ' + '; '.join(
+                    f"{k}: median change {('%+.1f %%' % (100 * v['median_change'])) if 'median_change' in v else '—'}, "
+                    f"bars met {v.get('bars_met', '—')}" for k, v in h6.items()) + '.', '')
+        elif h6:
             r('H6 (3D dial, descriptive, reference-limited): ' + '; '.join(
                 f"{k}: median change {('%+.1f %%' % (100 * v['median_change'])) if 'median_change' in v else '—'}, "
                 f"improved {fx(v.get('improved_fraction'))}, bars met {v.get('bars_met', '—')}" for k, v in h6.items()) + '.', '')

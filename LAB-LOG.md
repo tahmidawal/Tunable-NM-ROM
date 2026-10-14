@@ -19010,3 +19010,15 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   Numbers stay provisional until Step 1 lands, and scoring is built to be re-run against the new references.
 - Both lanes are Codex-gated at every step per `reports/2026-10-08-jcp-lane-agent-rules.md`.
 - Still open: merge decision for the four week-1 lanes; authorship with Hari.
+
+### E0 second-order references complete (lane `exp/2026-10-06-jcp-references`, last commit cc04f4b54, mirror 66ee55015)
+- **What ran.** Namespace `jcp-ref`, 39.7 GPU-h on A100/H200; job ids are in the lane report. All steps were Codex-gated; the report audit is READY.
+- **Result.** 3D passes: 200/200 historical case-kinds, observed order 1.99–2.02, $\epsilon_{ref}$ median about 2.5e-5, cross-check 8/8. 2D passes with 13 flagged non-rankable case-kinds (191/204), cross-check 8/8.
+- **Sealed cohorts.** Generated and QC'd but **not opened**: 3D 128/128, 2D 230/256, plus OOD 32 and 64.
+- **Old first-order references were off by:** 3D median about 0.7 %, maximum 2.81 %; 2D maximum 0.35 %. 3D numbers will move on re-scoring.
+- **Retracted / caveat.**
+  - Cross-check rule A10 was changed after seeing the pseudo-spectral data. Under the original rule, 2D would FAIL (1/8 cross-checks); both verdicts are reported.
+  - The earlier "1.7–2.3 %" old-3D-reference error was an understatement; the maximum is 2.81 %.
+  - Sealing is cooperative only: the key is on the shared account.
+- **Loader.** `refstore.py` with `JCPREF_STORE=/cluster/tufts/paralab/tawal01/jcp-ref/store`. The Step 2 (combined) agent has been told to score against it, under a dated, Codex-audited amendment.
+- **Open (user).** Key custody; revisiting the 2D floor check before opening; the opening tool; a CN-matched space-only reference; merging this lane.

@@ -13703,6 +13703,8 @@
      "fires": 102,
      "fraction": 1.0,
      "bar_090": true,
+     "n_accepted": 101,
+     "fires_accepted": 101,
      "cohorts": [
       "dev6",
       "test64",
@@ -13714,6 +13716,8 @@
      "fires": 102,
      "fraction": 1.0,
      "bar_090": true,
+     "n_accepted": 90,
+     "fires_accepted": 90,
      "cohorts": [
       "dev6",
       "test64",
@@ -25016,6 +25020,8 @@
      "fires": 96,
      "fraction": 1.0,
      "bar_090": true,
+     "n_accepted": 96,
+     "fires_accepted": 96,
      "cohorts": [
       "test32",
       "val64"
@@ -28055,5 +28061,28 @@
    "worst_rel": 7.576621623838863e-12,
    "pass": true
   }
- ]
+ ],
+ "x1b_stored": {
+  "dyadic": {
+   "p": [
+    1.000000000000029,
+    0.9999999999999949,
+    1.000000000000002,
+    1.0000000000000244,
+    1.0000000000000187
+   ],
+   "outcome": "order-fail"
+  },
+  "refined": {
+   "p": [
+    0.9999999999999851,
+    0.9999999999999676,
+    0.9999999999999851,
+    0.999999999999988,
+    0.9999999999999163
+   ],
+   "outcome": "order-fail"
+  },
+  "fires": true
+ }
 }

@@ -272,6 +272,30 @@ def V_clean(x):
     return x
 
 
+def x1b_stored():
+    """A2.8 X1b on the STORED 2D dev6 case-0 R_ST fields: u_i = U + C h_i phi with U the finest field, phi the per-time
+    normalised finest field (zero at t0), C such that the injected term at h_3 is 10 x d23 (A1.14); dyadic and refined
+    triples; the order gate must reject both."""
+    m = fd_meta(2, 'dev6', 'ST', 0)
+    if m is None:
+        return None
+    a = np.load(STORE / '2d/dev6/ST/c000.npz')
+    U = np.asarray(a[m['final'][2]], float)
+    phi = np.zeros_like(U)
+    for k in range(1, 6):
+        phi[k] = U[k] / np.linalg.norm(U[k].ravel())
+    n0 = m['judge']['n0']
+    out = {}
+    for name, Ls in (('dyadic', (2048, 4096, 8192)), ('refined', (4096, 8192, 12288))):
+        d23 = max(m['judge']['d23']) * n0
+        C = 10 * d23 / (1.0 / Ls[2])
+        lv = [dict(L=L, lat=U + C * (1.0 / L) * phi, tau=0.0, steps_ok=True, umax=1.0) for L in Ls]
+        j = V.judge(lv, np.asarray(a['t0']), m['desc']['nu'])
+        out[name] = dict(p=j['p'], outcome=j['outcome'])
+    out['fires'] = all(v['outcome'] != 'accepted' for v in out.values())
+    return out
+
+
 def e0_verdict(dim, dstat, cases, xc, sealed_qc):
     """A3.5: FAIL iff suspended/unvalidated; PASS iff every required case-kind (every cohort incl. sealed/OOD x both
     kinds) is eligible; else PASS-WITH-K0-CASES. INCOMPLETE while any required cohort-kind has not been generated."""
@@ -356,9 +380,11 @@ def main():
         for kind in ('ST', 'S'):
             rows = [r for r in ovn if r['kind'] == kind]
             if rows:
+                acc = [r for r in rows if r['outcome'] == 'accepted']
                 x3[kind] = dict(n=len(rows), fires=sum(r['fires'] for r in rows),
                                 fraction=sum(r['fires'] for r in rows) / len(rows),
                                 bar_090=bool(sum(r['fires'] for r in rows) / len(rows) >= 0.9),
+                                n_accepted=len(acc), fires_accepted=sum(r['fires'] for r in acc),
                                 cohorts=sorted({r['cohort'] for r in rows}))
         status['dimension_status'][str(dim)] = dstat
         status['crosscheck'][str(dim)] = {k: v['verdict'] for k, v in xc.items()}
@@ -366,6 +392,7 @@ def main():
                                          cases=cases, old_vs_new=ovn, x3=x3,
                                          old_coverage={c: sorted({r['kind'] for r in ovn if r['cohort'] == c})
                                                        for c in CH.HISTORICAL[dim]})
+    summary['x1b_stored'] = x1b_stored()
     (STORE / 'STATUS.json').write_text(json.dumps(V_clean(status), indent=1) + '\n')
     RES.mkdir(exist_ok=True)
     (RES / 'summary.json').write_text(json.dumps(V_clean(summary), indent=1) + '\n')

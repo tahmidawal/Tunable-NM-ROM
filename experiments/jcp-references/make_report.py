@@ -186,6 +186,10 @@ for d in sorted(cal, key=int):
         ps_ = [p for x in c['x1'] for p in x['p'] if p is not None]
         w(f"- **X1 ({DIMNAME[int(d)]})**: the first-order upwind + backward-Euler ladder was rejected on {rej} of "
           f"{len(c['x1'])} dev cases (observed orders {fx(min(ps_), 2) if ps_ else '—'}–{fx(max(ps_), 2) if ps_ else '—'}).")
+    if int(d) == 2 and S.get('x1b_stored'):
+        xb = S['x1b_stored']
+        w(f"- **X1b (stored dev6 case-0 fields, synthetic first-order defect)**: dyadic `{xb['dyadic']['outcome']}`, "
+          f"refined `{xb['refined']['outcome']}` (dyadic orders {', '.join(fx(p, 3) for p in xb['dyadic']['p'] if p is not None)}).")
     if c.get('x4'):
         w(f"- **X4 probe ({DIMNAME[int(d)]})**: middle level's $\\Delta t$ doubled → outcome `{c['x4']['outcome']}`, "
           f"orders {', '.join(fx(p, 2) for p in c['x4']['p'] if p is not None)} (a sensitivity probe, not a must-fail control).")
@@ -239,6 +243,12 @@ for d in sorted(dims):
               f"{fx(min(ps_), 3) if ps_ else '—'}–{fx(max(ps_), 3) if ps_ else '—'} | {pct(q(ep)[1], 3)} | {pct(q(ep)[2], 3)} | "
               f"{'; '.join('/'.join(map(str, x)) for x in lv)} |")
 w('')
+ntight = {d: sum(1 for c in dims[d]['cases'] if c.get('tight')) for d in dims}
+w('Tight re-solves (after a floor failure): ' + ', '.join(f"{DIMNAME[d]} {ntight[d]}" for d in sorted(dims)) +
+  ' historical case-kinds. A11.1 had expected none; in 2D they are the high-viscosity $R_S$ cases, whose level '
+  'differences are small enough that the conservative floor proxy binds (backward Euler at $\\Delta t_0$ on $L=8192$ '
+  'does not push the step residual below about $10^{-11}$).')
+w('')
 bad = [(d, c) for d in sorted(dims) for c in dims[d]['cases'] if c['outcome'] not in ('accepted', 'MISSING')]
 if bad:
     w('**Cases not accepted (K0-affected; stored and flagged, never dropped):** ' +
@@ -278,9 +288,19 @@ w('**Rule change disclosed (DESIGN A10/A10.3).** The PS validity rule was change
   'the verdict the original rule would have returned on the same ladder (not counting the escalation it might have '
   'required). A PASS means conditional agreement on the scoring lattice at $t_1..t_5$; it is not a rigorous bound.')
 w('')
+xcs2 = dims.get(2, {}).get('crosscheck', {})
+if xcs2:
+    n_new = sum(v['verdict'] == 'PASS' for v in xcs2.values())
+    n_old = sum(v.get('old_rule_verdict') == 'PASS' for v in xcs2.values())
+    w(f'**Consequence of A10 in 2D:** {n_new}/8 PASS under the amended rule; under the original rule on the same '
+      f'ladders {n_old}/8 would PASS and the 2D dimension status would be `unvalidated` instead of `validated`. In 3D '
+      'both rules give the same verdicts.')
+    w('')
 w('$x_{PS}$ is the distance between the pseudo-spectral solution and the finest finite-difference level; it estimates '
   'the true error of that level, so $x_{PS}/\\epsilon_{ref}\\approx1$ means the Richardson estimate is sharp. '
-  'X2 replaces the finest level by the old first-order reference and must FAIL.')
+  'X2 replaces the finest level by the old first-order reference and must FAIL. Where the PS–Richardson distance is a '
+  'sizeable fraction of $\\epsilon_{ref}$ (2D case 0: effectivity above 1), Richardson extrapolation does not remove '
+  'the error and $\\epsilon_{ref}$ underestimates the finest level\'s distance to PS by the effectivity shown.')
 w('')
 
 # --------------------------------------------------------------------------------------------- old vs new ----
@@ -305,7 +325,8 @@ w('')
 for d in sorted(dims):
     for kind, x in (dims[d].get('x3') or {}).items():
         w(f"- X3 ({DIMNAME[d]}, {kind}): the old reference differs from the new by more than $\\epsilon_{{ref}}$ on "
-          f"{x['fires']}/{x['n']} cases ({pct(x['fraction'], 3)}; bar 90 % {'met' if x['bar_090'] else 'NOT met'}).")
+          f"{x['fires']}/{x['n']} cases ({pct(x['fraction'], 3)}; bar 90 % {'met' if x['bar_090'] else 'NOT met'}); "
+          f"on accepted references only, {x.get('fires_accepted')}/{x.get('n_accepted')}.")
 w('')
 w('Not covered: 3D dev4 (no old reference exists for it) and the 3D space-only kind (there was no old 3D S reference).')
 w('')

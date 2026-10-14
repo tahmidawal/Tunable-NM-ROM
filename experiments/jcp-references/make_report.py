@@ -398,17 +398,21 @@ w('Generated and quality-controlled by this lane; never scored. Their seeds were
 w('')
 w('Reported per job and kind, following the pre-registered QC schema (DESIGN A1.11/A2.9/A5.5): counts per outcome, '
   'and the minimum/median/maximum of $\\epsilon_{ref}$ and of the observed order — aggregates only, no per-case value, '
-  'descriptor or field.')
+  'descriptor or field. Quantiles are over all case-kinds of the job, rejected ones included (n = defined values; N = 5 output times × case-kinds).')
 w('')
 sq = S.get('sealed_qc') or {}
 if sq:
-    w('| job | kind | case-kinds | accepted | other outcomes | refined | $\\epsilon_{ref}$ median | $\\epsilon_{ref}$ max | p min–max |')
-    w('|---|---|---|---|---|---|---|---|---|')
+    w('| job | kind | case-kinds | accepted | other outcomes | refined | $\\epsilon_{ref}$ min / median / max (n) | '
+      'observed order min / median / max (n of N; undefined) |')
+    w('|---|---|---|---|---|---|---|---|')
     for name, v in sorted(sq.items()):
         for kind, k in v['qc']['kinds'].items():
             oth = ', '.join(f'{o} {n}' for o, n in k['outcomes'].items() if n and o != 'accepted') or 'none'
+            e, pp = k['eps_ref'], k['p']
             w(f"| `{name}` | {kind} | {k['case_kinds']} | {k['outcomes'].get('accepted', 0)} | {oth} | {k['refined']} | "
-              f"{pct(k['eps_ref']['median'], 3)} | {pct(k['eps_ref']['max'], 3)} | {fx(k['p']['min'], 3)}–{fx(k['p']['max'], 3)} |")
+              f"{pct(e['min'], 3)} / {pct(e['median'], 3)} / {pct(e['max'], 3)} ({e['n']}) | "
+              f"{fx(pp['min'], 3)} / {fx(pp['median'], 3)} / {fx(pp['max'], 3)} ({pp['n']} of {k['p_values']}; "
+              f"{k['p_undefined']}) |")
 else:
     w('No sealed or OOD cohort has been generated yet.')
 w('')
@@ -461,9 +465,15 @@ for k, v in [
     ('all solves ok / ok', 'every step of all three calibration solves met the acceptance residual / additionally the '
      'proxy bounded both measured changes.'),
     ('D1', 'diagnostic ladders refining only time or only space, to see each error component\'s order and size.'),
-    ('effectivity', 'estimated error divided by a measured one. In the cross-check: $x_{PS}/\\epsilon_{ref}$ (about 1 '
-     'when the Richardson estimate matches the independent pseudo-spectral solution). In gate G2: $\\epsilon_{ref}$ '
-     'divided by the exact error against the manufactured solution.'),
+    ('effectivity', 'two conventions, named where used. Cross-check: $x_{PS}/\\epsilon_{ref}$, the measured distance to '
+     'the independent solution divided by the estimated uncertainty (about 1 when the estimate is sharp). Gate G2: '
+     '$\\epsilon_{ref}$ divided by the exact error against the manufactured solution.'),
+    ('p_refined_5p4 (gate Uorder)', 'the order the solver returns for a level-difference ratio of 5.4 on the 3:1.5:1 '
+     'refinement ladder; it must be exactly 2.'),
+    ('spatial_order / spatial_order_coarse (gate G4)', 'pseudo-spectral spatial order from the 48→64 / 32→48 '
+     'resolution pairs.'),
+    ('half_step_ratio (gate G4)', 'change when the time step is halved, divided by the spatial error; tiny means the '
+     'spatial ladder is not contaminated by time error.'),
     ('$p_{true}$ / $p_{obs}$', 'order measured against an exact manufactured solution / from level differences only.'),
     ('PS spatial order', 'the convergence order of the pseudo-spectral solver itself, from its three resolutions.'),
     ('Richardson extrapolation', 'combining levels to cancel the leading error term; here a diagnostic field only.'),

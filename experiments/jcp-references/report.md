@@ -236,26 +236,26 @@ Not covered: 3D dev4 (no old reference exists for it) and the 3D space-only kind
 
 Generated and quality-controlled by this lane; never scored. Their seeds were drawn on the cluster (`make_seeds.py`, 0 redraws) and are committed only as hashes; fields and per-case metadata exist only as AES-256 ciphertext on the cluster. **The sealing is cooperative and unenforced**: every lane runs as one cluster user, so the encryption protects against accidental reading only, and the key sits in a custody directory on the same account.
 
-Reported per job and kind, following the pre-registered QC schema (DESIGN A1.11/A2.9/A5.5): counts per outcome, and the minimum/median/maximum of $\epsilon_{ref}$ and of the observed order — aggregates only, no per-case value, descriptor or field.
+Reported per job and kind, following the pre-registered QC schema (DESIGN A1.11/A2.9/A5.5): counts per outcome, and the minimum/median/maximum of $\epsilon_{ref}$ and of the observed order — aggregates only, no per-case value, descriptor or field. Quantiles are over all case-kinds of the job, rejected ones included (n = defined values; N = 5 output times × case-kinds).
 
-| job | kind | case-kinds | accepted | other outcomes | refined | $\epsilon_{ref}$ median | $\epsilon_{ref}$ max | p min–max |
-|---|---|---|---|---|---|---|---|---|
-| `2d/ood32/fd2dood32p0` | S | 32 | 32 | none | 0 | 6.86e-05 % | 0.00011 % | 2.000–2.000 |
-| `2d/ood32/fd2dood32p0` | ST | 32 | 32 | none | 0 | 0.00114 % | 0.00245 % | 1.936–1.996 |
-| `2d/sealed128/fd2dsealed128p0` | S | 32 | 30 | unresolved-floor 2 | 0 | 1.02e-05 % | 3.96e-05 % | 2.000–2.000 |
-| `2d/sealed128/fd2dsealed128p0` | ST | 32 | 31 | order-fail 1 | 1 | 0.000246 % | 0.000944 % | 1.735–2.145 |
-| `2d/sealed128/fd2dsealed128p1` | S | 32 | 27 | unresolved-floor 5 | 0 | 1e-05 % | 8.42e-05 % | 2.000–2.000 |
-| `2d/sealed128/fd2dsealed128p1` | ST | 32 | 31 | order-fail 1 | 1 | 0.000331 % | 0.000879 % | 1.935–2.329 |
-| `2d/sealed128/fd2dsealed128p2` | S | 32 | 24 | unresolved-floor 8 | 0 | 1.05e-05 % | 9.05e-05 % | 2.000–2.000 |
-| `2d/sealed128/fd2dsealed128p2` | ST | 32 | 32 | none | 0 | 0.00037 % | 0.0013 % | 1.870–2.123 |
-| `2d/sealed128/fd2dsealed128p3` | S | 32 | 26 | unresolved-floor 6 | 0 | 1.1e-05 % | 0.000118 % | 2.000–2.000 |
-| `2d/sealed128/fd2dsealed128p3` | ST | 32 | 29 | order-fail 3 | 3 | 0.000268 % | 0.00105 % | 1.635–2.419 |
-| `3d/ood16/fd3dood16p0` | S | 16 | 16 | none | 0 | 0.00633 % | 0.0115 % | 1.999–2.014 |
-| `3d/ood16/fd3dood16p0` | ST | 16 | 16 | none | 0 | 0.00789 % | 0.0178 % | 1.989–2.017 |
-| `3d/sealed64/fd3dsealed64p0` | S | 32 | 32 | none | 0 | 0.00126 % | 0.00764 % | 1.999–2.018 |
-| `3d/sealed64/fd3dsealed64p0` | ST | 32 | 32 | none | 0 | 0.00242 % | 0.0108 % | 1.989–2.028 |
-| `3d/sealed64/fd3dsealed64p1` | S | 32 | 32 | none | 0 | 0.0013 % | 0.00994 % | 1.999–2.011 |
-| `3d/sealed64/fd3dsealed64p1` | ST | 32 | 32 | none | 0 | 0.00227 % | 0.0137 % | 1.989–2.015 |
+| job | kind | case-kinds | accepted | other outcomes | refined | $\epsilon_{ref}$ min / median / max (n) | observed order min / median / max (n of N; undefined) |
+|---|---|---|---|---|---|---|---|
+| `2d/ood32/fd2dood32p0` | S | 32 | 32 | none | 0 | 3.16e-05 % / 6.86e-05 % / 0.00011 % (32) | 2.000 / 2.000 / 2.000 (160 of 160; 0) |
+| `2d/ood32/fd2dood32p0` | ST | 32 | 32 | none | 0 | 0.000345 % / 0.00114 % / 0.00245 % (32) | 1.936 / 1.973 / 1.996 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p0` | S | 32 | 30 | unresolved-floor 2 | 0 | 2.66e-06 % / 1.02e-05 % / 3.96e-05 % (32) | 2.000 / 2.000 / 2.000 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p0` | ST | 32 | 31 | order-fail 1 | 1 | 4.62e-05 % / 0.000246 % / 0.000944 % (32) | 1.735 / 1.999 / 2.145 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p1` | S | 32 | 27 | unresolved-floor 5 | 0 | 2.52e-06 % / 1e-05 % / 8.42e-05 % (32) | 2.000 / 2.000 / 2.000 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p1` | ST | 32 | 31 | order-fail 1 | 1 | 0.000103 % / 0.000331 % / 0.000879 % (32) | 1.935 / 1.995 / 2.329 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p2` | S | 32 | 24 | unresolved-floor 8 | 0 | 2.14e-06 % / 1.05e-05 % / 9.05e-05 % (32) | 2.000 / 2.000 / 2.000 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p2` | ST | 32 | 32 | none | 0 | 9.48e-05 % / 0.00037 % / 0.0013 % (32) | 1.870 / 1.995 / 2.123 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p3` | S | 32 | 26 | unresolved-floor 6 | 0 | 2.46e-06 % / 1.1e-05 % / 0.000118 % (32) | 2.000 / 2.000 / 2.000 (160 of 160; 0) |
+| `2d/sealed128/fd2dsealed128p3` | ST | 32 | 29 | order-fail 3 | 3 | 5.75e-05 % / 0.000268 % / 0.00105 % (32) | 1.635 / 1.995 / 2.419 (160 of 160; 0) |
+| `3d/ood16/fd3dood16p0` | S | 16 | 16 | none | 0 | 0.00308 % / 0.00633 % / 0.0115 % (16) | 1.999 / 2.002 / 2.014 (80 of 80; 0) |
+| `3d/ood16/fd3dood16p0` | ST | 16 | 16 | none | 0 | 0.00339 % / 0.00789 % / 0.0178 % (16) | 1.989 / 2.001 / 2.017 (80 of 80; 0) |
+| `3d/sealed64/fd3dsealed64p0` | S | 32 | 32 | none | 0 | 0.000611 % / 0.00126 % / 0.00764 % (32) | 1.999 / 2.000 / 2.018 (160 of 160; 0) |
+| `3d/sealed64/fd3dsealed64p0` | ST | 32 | 32 | none | 0 | 0.000854 % / 0.00242 % / 0.0108 % (32) | 1.989 / 1.999 / 2.028 (160 of 160; 0) |
+| `3d/sealed64/fd3dsealed64p1` | S | 32 | 32 | none | 0 | 0.000579 % / 0.0013 % / 0.00994 % (32) | 1.999 / 2.000 / 2.011 (160 of 160; 0) |
+| `3d/sealed64/fd3dsealed64p1` | ST | 32 | 32 | none | 0 | 0.00124 % / 0.00227 % / 0.0137 % (32) | 1.989 / 1.999 / 2.015 (160 of 160; 0) |
 
 ## Using the references (loader API)
 
@@ -286,7 +286,10 @@ Cohorts: 2D `dev6`, `val32`, `test64`; 3D `dev4`, `val64` (seed 923801), `test32
 - **prod − tight, tight − tighter**: how much the solution changes when the solver tolerance is tightened; the proxy columns are the floor estimates that must exceed them.
 - **all solves ok / ok**: every step of all three calibration solves met the acceptance residual / additionally the proxy bounded both measured changes.
 - **D1**: diagnostic ladders refining only time or only space, to see each error component's order and size.
-- **effectivity**: estimated error divided by a measured one. In the cross-check: $x_{PS}/\epsilon_{ref}$ (about 1 when the Richardson estimate matches the independent pseudo-spectral solution). In gate G2: $\epsilon_{ref}$ divided by the exact error against the manufactured solution.
+- **effectivity**: two conventions, named where used. Cross-check: $x_{PS}/\epsilon_{ref}$, the measured distance to the independent solution divided by the estimated uncertainty (about 1 when the estimate is sharp). Gate G2: $\epsilon_{ref}$ divided by the exact error against the manufactured solution.
+- **p_refined_5p4 (gate Uorder)**: the order the solver returns for a level-difference ratio of 5.4 on the 3:1.5:1 refinement ladder; it must be exactly 2.
+- **spatial_order / spatial_order_coarse (gate G4)**: pseudo-spectral spatial order from the 48→64 / 32→48 resolution pairs.
+- **half_step_ratio (gate G4)**: change when the time step is halved, divided by the spatial error; tiny means the spatial ladder is not contaminated by time error.
 - **$p_{true}$ / $p_{obs}$**: order measured against an exact manufactured solution / from level differences only.
 - **PS spatial order**: the convergence order of the pseudo-spectral solver itself, from its three resolutions.
 - **Richardson extrapolation**: combining levels to cancel the leading error term; here a diagnostic field only.

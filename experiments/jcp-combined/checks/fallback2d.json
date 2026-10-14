@@ -1,0 +1,308 @@
+{
+ "scheme": "LSPG-CNR",
+ "tie": {
+  "kind": "heuristic temporal tie threshold",
+  "median": 0.0012183987509198336,
+  "worst": 0.0035348908256613103
+ },
+ "label": "first-order scoring (selection reference, PROVISIONAL); E0 beside (A13)",
+ "settings": {
+  "fast": {
+   "fallback_setting": "R128",
+   "fallback_rule": "fib4181",
+   "grid": "c2grid",
+   "budget": "budget2d-c2budC",
+   "budget_gates_ok": true,
+   "arms": {
+    "accurate_equal_cost": {
+     "key": "LSPG|CNR|0.005|prod",
+     "verified_all": true,
+     "timing_valid": true,
+     "timing_method": "c2grid common panel: ratio of the two median paired ratios (not a directly paired median)",
+     "finalist": {
+      "delta_quad_worst": 0.0001007557670683901,
+      "check_worst": 2.2113210620794353e-07,
+      "unavailable_cases": 0,
+      "qualified": true
+     },
+     "first_order": {
+      "ST": {
+       "median": 0.004197606328678598,
+       "worst": 0.051419466105736084
+      },
+      "TX": {
+       "median": 0.004440986264087194,
+       "worst": 0.051743608141548485
+      }
+     },
+     "e0_ST": {
+      "median": 0.004504668717791409,
+      "worst": 0.052003624387805134
+     },
+     "deployed_BE": {
+      "ST": {
+       "median": 0.010348051002823187,
+       "worst": 0.04637343247435758
+      },
+      "TX": {
+       "median": 0.010905690595851586,
+       "worst": 0.04748190927346209
+      }
+     },
+     "criterion": {
+      "name": "paired time ratio vs the original deployed BE <= 1",
+      "value": 1.3086486603669716,
+      "ok": false
+     },
+     "qualified": false
+    },
+    "fast_equal_accuracy": {
+     "key": "LSPG|CNR|0.01|prod",
+     "verified_all": true,
+     "timing_valid": true,
+     "timing_method": "c2grid common panel: ratio of the two median paired ratios (not a directly paired median)",
+     "finalist": {
+      "delta_quad_worst": 0.00013026924824029762,
+      "check_worst": 2.236207785586386e-07,
+      "unavailable_cases": 0,
+      "qualified": true
+     },
+     "first_order": {
+      "ST": {
+       "median": 0.007270081627072319,
+       "worst": 0.04863595025494781
+      },
+      "TX": {
+       "median": 0.00794835339356461,
+       "worst": 0.04909037215292043
+      }
+     },
+     "e0_ST": {
+      "median": 0.00791993619293753,
+      "worst": 0.04948400907351236
+     },
+     "deployed_BE": {
+      "ST": {
+       "median": 0.010348051002823187,
+       "worst": 0.04637343247435758
+      },
+      "TX": {
+       "median": 0.010905690595851586,
+       "worst": 0.04748190927346209
+      }
+     },
+     "criterion": {
+      "name": "worst and median ST and TX no worse than the deployed BE (first-order tie policy)",
+      "beaten_by_BE": {
+       "ST|median": false,
+       "ST|worst": false,
+       "TX|median": false,
+       "TX|worst": false
+      },
+      "ok": true,
+      "cost_ratio": 0.7621724614675539
+     },
+     "qualified": true
+    }
+   }
+  },
+  "acc": {
+   "fallback_setting": "R384",
+   "fallback_rule": "gauss128",
+   "grid": "c2grid",
+   "budget": "budget2d-c2budB",
+   "budget_gates_ok": true,
+   "arms": {
+    "accurate_equal_cost": {
+     "key": "LSPG|CNR|0.005|prod",
+     "verified_all": true,
+     "timing_valid": true,
+     "timing_method": "c2grid common panel: ratio of the two median paired ratios (not a directly paired median)",
+     "finalist": {
+      "delta_quad_worst": 0.00011047564566752784,
+      "check_worst": 8.841868239071168e-07,
+      "unavailable_cases": 0,
+      "qualified": true
+     },
+     "first_order": {
+      "ST": {
+       "median": 0.0013547754980634047,
+       "worst": 0.01756860747412253
+      },
+      "TX": {
+       "median": 0.0019475735354319407,
+       "worst": 0.017574302023504122
+      }
+     },
+     "e0_ST": {
+      "median": 0.00197872739877035,
+      "worst": 0.017752691043501696
+     },
+     "deployed_BE": {
+      "ST": {
+       "median": 0.009063327178847993,
+       "worst": 0.027465142977963628
+      },
+      "TX": {
+       "median": 0.009672095611977434,
+       "worst": 0.029185087869184768
+      }
+     },
+     "criterion": {
+      "name": "paired time ratio vs the original deployed BE <= 1",
+      "value": 1.561259438549059,
+      "ok": false
+     },
+     "qualified": false
+    },
+    "fast_equal_accuracy": {
+     "key": "LSPG|CNR|0.01|prod",
+     "verified_all": true,
+     "timing_valid": true,
+     "timing_method": "c2grid common panel: ratio of the two median paired ratios (not a directly paired median)",
+     "finalist": {
+      "delta_quad_worst": 0.00014880952735140648,
+      "check_worst": 1.086383888732424e-06,
+      "unavailable_cases": 0,
+      "qualified": true
+     },
+     "first_order": {
+      "ST": {
+       "median": 0.0065763461888241,
+       "worst": 0.017336353793596406
+      },
+      "TX": {
+       "median": 0.007151949881902235,
+       "worst": 0.018360929355333597
+      }
+     },
+     "e0_ST": {
+      "median": 0.007260647954044833,
+      "worst": 0.019006262050062568
+     },
+     "deployed_BE": {
+      "ST": {
+       "median": 0.009063327178847993,
+       "worst": 0.027465142977963628
+      },
+      "TX": {
+       "median": 0.009672095611977434,
+       "worst": 0.029185087869184768
+      }
+     },
+     "criterion": {
+      "name": "worst and median ST and TX no worse than the deployed BE (first-order tie policy)",
+      "beaten_by_BE": {
+       "ST|median": false,
+       "ST|worst": false,
+       "TX|median": false,
+       "TX|worst": false
+      },
+      "ok": true,
+      "cost_ratio": 0.8642272626541461
+     },
+     "qualified": true
+    }
+   }
+  },
+  "R256": {
+   "fallback_setting": "R256fb",
+   "fallback_rule": "gauss128",
+   "grid": "c2fbgrid",
+   "budget": "budget2d-c2fbbud",
+   "budget_gates_ok": true,
+   "arms": {
+    "accurate_equal_cost": {
+     "key": "LSPG|CNR|0.005|prod",
+     "verified_all": true,
+     "timing_valid": true,
+     "timing_method": "c2fbgrid common panel (baseline: deployed R256 BE), median paired ratio",
+     "finalist": {
+      "delta_quad_worst": 7.384341549680728e-05,
+      "check_worst": 4.989546058568235e-07,
+      "unavailable_cases": 0,
+      "qualified": true
+     },
+     "first_order": {
+      "ST": {
+       "median": 0.0014855851618666722,
+       "worst": 0.024715411504012758
+      },
+      "TX": {
+       "median": 0.0020962743663608513,
+       "worst": 0.02490699149259084
+      }
+     },
+     "e0_ST": {
+      "median": 0.0020864799787331935,
+      "worst": 0.025175101948827622
+     },
+     "deployed_BE": {
+      "ST": {
+       "median": 0.009096834603897347,
+       "worst": 0.03058786573585687
+      },
+      "TX": {
+       "median": 0.009703727134316605,
+       "worst": 0.03211564661522126
+      }
+     },
+     "criterion": {
+      "name": "paired time ratio vs the original deployed BE <= 1",
+      "value": 1.4938919965970032,
+      "ok": false
+     },
+     "qualified": false
+    },
+    "fast_equal_accuracy": {
+     "key": "LSPG|CNR|0.01|prod",
+     "verified_all": true,
+     "timing_valid": true,
+     "timing_method": "c2fbgrid common panel (baseline: deployed R256 BE), median paired ratio",
+     "finalist": {
+      "delta_quad_worst": 8.286087246516343e-05,
+      "check_worst": 7.514415809678099e-07,
+      "unavailable_cases": 0,
+      "qualified": true
+     },
+     "first_order": {
+      "ST": {
+       "median": 0.006675315464601694,
+       "worst": 0.023768632231913445
+      },
+      "TX": {
+       "median": 0.007254217172336243,
+       "worst": 0.02416618660921684
+      }
+     },
+     "e0_ST": {
+      "median": 0.007339023692625476,
+      "worst": 0.024716601750012633
+     },
+     "deployed_BE": {
+      "ST": {
+       "median": 0.009096834603897347,
+       "worst": 0.03058786573585687
+      },
+      "TX": {
+       "median": 0.009703727134316605,
+       "worst": 0.03211564661522126
+      }
+     },
+     "criterion": {
+      "name": "worst and median ST and TX no worse than the deployed BE (first-order tie policy)",
+      "beaten_by_BE": {
+       "ST|median": false,
+       "ST|worst": false,
+       "TX|median": false,
+       "TX|worst": false
+      },
+      "ok": true,
+      "cost_ratio": 0.8155089883575903
+     },
+     "qualified": true
+    }
+   }
+  }
+ }
+}

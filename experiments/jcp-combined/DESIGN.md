@@ -1071,3 +1071,7 @@ configs and certificates regenerated, and re-audited.
 
 **A15.2 Correction of a commit message.** The `budget3d.py` fix of commit `52779085e` replaced a leftover first-order
 reference access in the G-score case-swap / time-shift controls (not "at the B0 fixture").
+
+**A14.4 (fallback analysis).** `c2fbgrid` runs only the LSPG-BE and LSPG-CN-R arms, so the `c2fbbud` budget's GAL-CN
+diagnostic arm has no grid twin; its grid-reproduction gate is therefore evaluated on the arms the fallback grid ran (no
+failure and full 38-case coverage of those arms). `fallback2d.py` computes the qualification table.

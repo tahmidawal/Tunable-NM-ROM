@@ -63,7 +63,21 @@ def main():
                   else range(res['cohorts'][coh]['n']))]
         rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in res['rows']}
         bo = load(CK / f'{bud}-2d_first_order.json')
-        bgates_ok = all(((v.get('passed') is True) if isinstance(v, dict) else v is True) for v in bo['gates'].values())
+        bg = bo['gates']
+        bgates_ok = all(((v.get('passed') is True) if isinstance(v, dict) else v is True)
+                        for k_, v in bg.items() if k_ != 'grid_reproduction')
+        # A14.4: the fallback grid (c2fbgrid) runs only LSPG-BE and LSPG-CN-R; the budget's GAL-CN diagnostic arm has no grid
+        # twin there, so grid reproduction must pass on every arm the grid ran (no failure, full coverage of those arms)
+        gr = bg['grid_reproduction']
+        if s == 'R256':
+            import c2grid as C2G
+            grid_keys = {C2G.key(r) for r in C2G.run_list(cfg['grid'])}
+            barms = bo['settings'][fb]['arms'].values()
+            n_in = sum(1 for a_ in barms if f"{a_['arm']['form']}|{a_['arm']['scheme']}|{0.005 * a_['arm']['f']:.8g}|prod" in grid_keys)
+            gr_ok = gr['failures'] == 0 and gr['compared'] == n_in * len(cases)
+        else:
+            gr_ok = gr.get('passed') is True
+        bgates_ok = bool(bgates_ok and gr_ok)
         # the ORIGINAL deployed BE of s (in c2grid for fast/acc; in c2fbgrid for R256 at gauss96, identical model)
         be_src = 'c2grid' if s != 'R256' else 'c2fbgrid'
         sc_be = load(CK / f'scores-{be_src}-2d_first_order.json')

@@ -331,20 +331,43 @@ def certificate_binding(attempt, driver):
                 sources_sha256={f: sha_bytes((root / f).read_bytes()) for f in staged_sources(driver)})
 
 
-def smoke_gates(sm):
-    """Machinery gates a smoke must have passed to be used as resource evidence."""
-    if sm['config']['driver'] == 'c2bud':          # budget smoke (fail closed, codex-results2d-1 item 2): every configured
-        # setting present with its conv check passed, B1 bitwise and B2 complete; every planned (run, case) row and every
-        # check-set twin / control row present exactly once and verified (the control-rule rows only present)
+def offline_budget_gates(sm):
+    """The smoke's committed offline budget analysis (checks/budget{2d,3d}-<attempt>-<ref>.json) must exist, be bound to
+    this result.json (sha256) and to the current analyzer source (sha256), and pass its machinery gates: B0, the B0
+    analytic fixtures, the relative real-data mismatch control (A12), B1, job-row reproduction with every G-score control
+    breaking, and the inventory check (codex-results2d-2)."""
+    two = sm['config']['driver'] == 'c2bud'
+    name = f"budget{'2d' if two else '3d'}-{sm['config']['attempt']}-{'2d' if two else '3d'}_first_order.json"
+    f = HERE / 'checks' / name
+    if not f.exists():
+        return False
+    o = json.loads(f.read_text())
+    an = HERE / ('budget2d.py' if two else 'budget3d.py')
+    ok = o.get('analyzer_sha256') == sha_bytes(an.read_bytes())
+    res_p = Path(o['run']) / 'result.json'
+    res_p = res_p if res_p.is_absolute() else HERE / res_p
+    ok = ok and res_p.exists() and sha_bytes(res_p.read_bytes()) == o.get('result_sha256') and \
+        json.loads(res_p.read_text()).get('job_id') == sm.get('job_id')
+    g = o.get('gates', {})
+    ok = ok and all(bool(g.get(k_, {}).get('passed') if isinstance(g.get(k_), dict) else g.get(k_))
+                    for k_ in ('B0', 'B0_fixtures', 'B0_real_mismatch', 'B1', 'reproduction', 'inventory'))
+    ok = ok and g.get('reproduction', {}).get('passed') is True
+    return bool(ok)
+
+
+def budget_smoke_gates(sm):
+    """Fail closed (codex-results2d-1 item 2, codex-results2d-2): complete per-setting evidence and exact coverage."""
+    ok = bool(sm.get('complete')) and bool(sm['rows'])
+    if sm['config']['driver'] == 'c2bud':
         import c2bud as CB
         cases = [(coh, c) for coh in sm['config']['cohorts']
                  for c in ((sm['config'].get('case_subset') or {}).get(coh) or range(6 if coh == 'dev6' else 32))]
         chk = [x for x in cases if x[0] == 'dev6'] + [x for x in cases if x[0] == 'val32'][:sm['config']['check_val32']]
-        ok = bool(sm.get('complete')) and bool(sm['rows'])
         for s_ in sm['config']['settings']:
             v = sm['setup'].get(s_['name'], {})
-            ok = ok and bool(v.get('conv_check', {}).get('passed')) and bool(v.get('B1_sham_bitwise', {}).get('all_equal')) \
-                and bool(v.get('B2_control_rule', {}).get('complete'))
+            b1, b2 = v.get('B1_sham_bitwise', {}), v.get('B2_control_rule', {})
+            ok = ok and bool(v.get('conv_check', {}).get('passed')) and b1.get('all_equal') is True and \
+                b1.get('cases') == len(chk) and b2.get('complete') is True and len(b2.get('per_case', [])) == len(chk)
             rows = [r for r in sm['rows'] if r['setting'] == s_['name']]
             got = [(r['run'], r['cohort'], r['case']) for r in rows]
             runs = CB.budget_runs(s_['arms'])
@@ -353,21 +376,39 @@ def smoke_gates(sm):
             want |= {(CB.key(('ctrl', 'LSPG', 'BE', CB.DT0, 'prod')), coh, c) for coh, c in chk}
             ok = ok and len(got) == len(set(got)) and set(got) == want
             ok = ok and all(r['verified'] for r in rows if not r['run'].startswith('ctrl|'))
-        return ok
-    if sm['config'].get('mode') == 'bud':          # 3D budget smoke (fail closed): every configured setting present with
-        # B1 bitwise and a complete B2 control; every planned (rule, spec) run present for its case set, valid rows
-        import c3run as CR
-        ok = bool(sm.get('complete')) and bool(sm['rows'])
+    else:
         cases = list(sm['config'].get('case_subset') or range(sm['config']['cohort_count']))
+        ctrl = sm['config'].get('control_rule')
         for s_ in sm['config']['settings']:
             v = sm['settings'].get(s_['name'], {})
-            ok = ok and bool(v.get('B1_sham_bitwise', {}).get('all_equal')) and bool(v.get('B2_control_rule', {}).get('complete'))
-            have = {(r['rule'], r['spec']) for r in sm['rows'] if r['setting'] == s_['name']}
-            want = {(rl, sp_) for rl, sp_ in CR.inventory(sm['config'])['settings'][s_['name']]['runs']}
-            ok = ok and want <= have and bool(cases)
-            ok = ok and all(r['valid'] is True for r in sm['rows'] if r['setting'] == s_['name']
-                            and r['rule'] != sm['config'].get('control_rule'))
-        return ok
+            nb = int(v.get('budget_cases', -1))
+            first = cases[:nb]
+            b1, b2 = v.get('B1_sham_bitwise', {}), v.get('B2_control_rule', {})
+            ok = ok and nb >= 1 and b1.get('all_equal') is True and b1.get('cases') == nb and b2.get('complete') is True \
+                and len(b2.get('per_case', [])) == nb
+            rows = [r for r in sm['rows'] if r['setting'] == s_['name']]
+            by = {}
+            for r in rows:
+                by.setdefault((r['rule'], r['spec']), []).append(r['case'])
+            cs = v.get('case_sets', {})
+            want = {}
+            for k_, how in cs.items():
+                rl, sp_ = k_.split('|', 1)
+                want[(rl, sp_)] = cases if how == 'all' else (first if how == f'first {nb}' else None)
+            want[(ctrl, 'fs|BE|0.01|K1')] = first
+            ok = ok and all(w_ is not None for w_ in want.values()) and set(by) == set(want)
+            ok = ok and all(sorted(by[k_]) == sorted(w_) and len(by[k_]) == len(set(by[k_])) for k_, w_ in want.items()
+                            if k_ in by)
+            plan = {(rl, sp_) for rl, sp_ in __import__('c3run').inventory(sm['config'])['settings'][s_['name']]['runs']}
+            ok = ok and plan <= set(by)
+            ok = ok and all(r['valid'] is True for r in rows if r['rule'] != ctrl)
+    return bool(ok and offline_budget_gates(sm))
+
+
+def smoke_gates(sm):
+    """Machinery gates a smoke must have passed to be used as resource evidence."""
+    if sm['config']['driver'] == 'c2bud' or sm['config'].get('mode') == 'bud':
+        return budget_smoke_gates(sm)
     ext = all(s_.get('ext_rules') for s_ in sm['config']['settings'])   # A11 extension smoke: no timing panels by design
     ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and (ext or bool(sm.get('timing')))
     if ext:      # complete inventory: every planned rule (the last one omitted only after a passing A10 pair), every

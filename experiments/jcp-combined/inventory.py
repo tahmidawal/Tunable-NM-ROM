@@ -346,7 +346,8 @@ def offline_budget_gates(sm, path):
     an = HERE / ('budget2d.py' if two else 'budget3d.py')
     if o.get('analyzer_sha256') != sha_bytes(an.read_bytes()):
         return False
-    if o.get('result_sha256') != sha_bytes((Path(path) / 'result.json').read_bytes()):
+    raw = (Path(path) / 'result.json').read_bytes()
+    if o.get('result_sha256') != sha_bytes(raw) or json.loads(raw) != sm:      # the supplied smoke IS that file
         return False
     g = o.get('gates', {})
     t = lambda d, k='passed': isinstance(d, dict) and d.get(k) is True
@@ -357,13 +358,16 @@ def offline_budget_gates(sm, path):
     per = 18 if two else 6
     ok = ok and t(rp) and rp.get('applicable') is True and rp.get('compared') == per * nrows and nrows > 0 \
         and rp.get('failures') == 0
+    brk = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and np.isfinite(v) and v > 1e-6
     if two:
         ctl = rp.get('controls', {})
         ok = ok and set(ctl) == {s_['name'] for s_ in sm['config']['settings']} and all(
-            v.get('all_break') is True and all(k_ in v for k_ in ('case_swap', 'time_shift', 'ST_S_swap')) for v in ctl.values())
+            v.get('all_break') is True and all(brk(v.get(k_)) for k_ in ('case_swap', 'time_shift', 'ST_S_swap'))
+            for v in ctl.values())
     else:
-        ok = ok and all(o['settings'].get(s_['name'], {}).get('gscore_controls', {}).get('all_break') is True
-                        for s_ in sm['config']['settings'])
+        for s_ in sm['config']['settings']:
+            gc_ = o['settings'].get(s_['name'], {}).get('gscore_controls', {})
+            ok = ok and gc_.get('all_break') is True and all(brk(gc_.get(k_)) for k_ in ('case_swap', 'time_shift'))
     return bool(ok)
 
 

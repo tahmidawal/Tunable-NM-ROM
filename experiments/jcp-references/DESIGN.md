@@ -930,3 +930,17 @@ sealed jobs are refused).
 **A11.5 (after Codex job audit 9).** Every `fd` job records the floor factor it judges with in its `result.json`
 (`floor_stab`); the release check of a sealed job uses that recorded factor (not the collector's constant) and holds a
 sealed job produced under a provisional status that does not record one (jobs produced under a final status, such as the 3D sealed jobs, are released normally). The sealed/OOD 2D jobs are restaged with this change.
+
+---
+
+## Amendment A12 (2026-10-14, after the historical cohorts finished)
+
+**A12.1 G5 perturbation predicate.** The 1 % perturbation of $u_{L=4096}(t_3)$ (2D val32 case 0) makes the observed
+order at $t_3$ fall outside the bracket (undefined) and changes the outcome to `order-fail`; the A6.4 predicate
+counted only finite changes above $10^{-6}$ and so reported "not detected". A value that becomes undefined now counts
+as a change (infinite), as A1.13 intends ("must change the recomputed $p$ or $\epsilon_{ref}$").
+
+**A12.2 Disclosure of the A10 consequence (no rule change).** On the eight 2D cross-check cases the A10 rule gives
+8 PASS; the pre-A10 rule on the same ladders would give 1 PASS and 7 UNRESOLVED, i.e. a 2D dimension status of
+`unvalidated` instead of `validated`. A10 was written before any of these comparisons existed (A10.2/A10.3); this
+consequence is reported prominently next to the result, with the per-case effectivities.

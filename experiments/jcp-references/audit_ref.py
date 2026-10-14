@@ -383,10 +383,16 @@ def main():
             a0[i4096[0]][3] *= 1.01
             r = audit_case(2, 'val32', 'ST', 0, desc_cache, t0_cache, arr=a0, meta=m0)
             sj = m0['judge']
-            dp = max((abs(a_ - b_) for a_, b_ in zip(r['p'], sj['p']) if a_ is not None and b_ is not None), default=0)
-            de = abs(r['eps_ref'] - sj['eps_ref']) / sj['eps_ref'] if r['eps_ref'] and sj['eps_ref'] else float('inf')
-            faults['perturb'] = dict(detected=bool(np.isfinite(de) and max(dp, de) > 1e-6),
-                                     max_dp=dp, rel_d_eps=de, issues=r['issues'])
+            # a change is a difference > 1e-6, or a value that becomes undefined (A1.13 bar; definedness change counts)
+            dps = [abs(a_ - b_) if (a_ is not None and b_ is not None) else (0.0 if a_ is b_ else float('inf'))
+                   for a_, b_ in zip(r['p'], sj['p'])]
+            dp = max(dps)
+            if r['eps_ref'] is None or sj['eps_ref'] is None:
+                de = 0.0 if r['eps_ref'] is sj['eps_ref'] else float('inf')
+            else:
+                de = abs(r['eps_ref'] - sj['eps_ref']) / sj['eps_ref']
+            faults['perturb'] = dict(detected=bool(max(dp, de) > 1e-6), max_dp=dp, rel_d_eps=de,
+                                     outcome_after=r['outcome'], issues=r['issues'])
         else:
             faults['perturb'] = dict(detected=False, issues=['L=4096 not among the final levels of val32 case 0'])
     else:

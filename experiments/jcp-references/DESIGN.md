@@ -888,3 +888,21 @@ $s_x$) **on the same selected ladder** (not the full old procedure, which could 
 on every path; the audit re-derives it and the report prints it beside the A10 verdict. (v) *Meaning of a PASS:*
 conditional agreement on the scoring lattice at $t_1..t_5$; it does not validate the PS initial representation, early
 times, or the absence of a bias shared by all PS resolutions, and it does not make $\epsilon_{ref}$ a rigorous bound.
+
+---
+
+## Amendment A11 (2026-10-14, while the 2D calibration job 5209895 runs)
+
+**A11.1 Calibration cost.** At $L=8192$ the round-off floor of the relative residual exceeds the tight target
+$10^{-13}$ (it scales with $\Delta t\,\nu/h^2$; achieved $8.2\times10^{-14}$ already at $L=4096$), so the tight solve
+spends its 40-iteration budget every step: the first $L=8192$ calibration row took 3.5 h (the production solve 282 s).
+The row passed with a wide margin (production-vs-tight change $3.1\times10^{-14}$ against a proxy of
+$1.2\times10^{-9}$). The remaining rows need about 6 more hours. Production tight attempts (taken only after a floor
+failure) would cost the same; none is expected given these margins, and any that occurs is recorded.
+
+**A11.2 Provisional start, held release.** To use idle capacity, 2D production may start under a **provisional**
+calibration status (`checks/calib_2d.json` with `provisional: true`, written from the completed rows, all passing).
+Every case produced under it carries `calib_status: provisional`. The collector refuses to link such jobs into the
+store until `checks/calib_2d.json` is replaced by the final status of the completed calibration job and that status
+passes. If the final calibration fails, the floor check of every held case is re-judged from its stored per-step
+residuals with the recalibrated factor (no rerun is needed for that), as A2.1 prescribes, and the result is reported.

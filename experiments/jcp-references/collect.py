@@ -64,6 +64,12 @@ def gather():
         if not (r.get('complete') and r.get('gates_all_pass')):
             refused[rd.name] = 'incomplete or gate failure'
             continue
+        if r['config']['mode'] == 'fd' and r.get('calib_status') == 'provisional':
+            cs = HERE / 'checks' / f"calib_{r['config']['dim']}d.json"
+            final = json.loads(cs.read_text()) if cs.exists() else {}
+            if final.get('provisional', True) or not final.get('proxy_ok_all'):
+                refused[rd.name] = 'held: produced under a provisional calibration that is not yet final (A11)'
+                continue
         sums = {}
         for line in (rd / 'OUTPUTS.sha256').read_text().splitlines():
             h, f = line.split(None, 1)

@@ -239,7 +239,7 @@ def calib_status_ok(d):
         return False, f"calibrated FLOOR_STAB {st.get('floor_stab')} != {V.FLOOR_STAB}"
     if not st.get('proxy_ok_all'):
         return False, 'calibration proxy failed'
-    return True, 'ok'
+    return True, 'provisional' if st.get('provisional') else 'ok'      # A11: provisional outputs are held
 
 
 def mode_fd(cfg, outdir, rep):
@@ -293,6 +293,7 @@ def mode_fd(cfg, outdir, rep):
             t = time.perf_counter()
             arrays, meta = solve_case(coh, j, kind)
             meta['job'] = job_info()
+            meta['calib_status'] = rep['calib_status']
             meta['seconds'] = time.perf_counter() - t
             write_case(outdir, arrays, meta, sealed, key, manifest)
             metas.append(meta)

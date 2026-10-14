@@ -55,6 +55,96 @@
    "seconds": 3856.093589874916,
    "smoke_override": false
   },
+  "fd2dood32p0": {
+   "mode": "fd",
+   "dim": 2,
+   "cohort": "ood32",
+   "complete": true,
+   "job": {
+    "job_id": "5224164",
+    "commit": "5a0c3ddc0041d7a109ce8bccd644b5692d33eedb",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 6215.440375898033,
+   "smoke_override": false
+  },
+  "fd2dsealed128p0": {
+   "mode": "fd",
+   "dim": 2,
+   "cohort": "sealed128",
+   "complete": true,
+   "job": {
+    "job_id": "5221871",
+    "commit": "5a0c3ddc0041d7a109ce8bccd644b5692d33eedb",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 7054.532628731802,
+   "smoke_override": false
+  },
+  "fd2dsealed128p1": {
+   "mode": "fd",
+   "dim": 2,
+   "cohort": "sealed128",
+   "complete": true,
+   "job": {
+    "job_id": "5222963",
+    "commit": "5a0c3ddc0041d7a109ce8bccd644b5692d33eedb",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 8396.345423419029,
+   "smoke_override": false
+  },
+  "fd2dsealed128p2": {
+   "mode": "fd",
+   "dim": 2,
+   "cohort": "sealed128",
+   "complete": true,
+   "job": {
+    "job_id": "5223268",
+    "commit": "5a0c3ddc0041d7a109ce8bccd644b5692d33eedb",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 9526.403328775428,
+   "smoke_override": false
+  },
+  "fd2dsealed128p3": {
+   "mode": "fd",
+   "dim": 2,
+   "cohort": "sealed128",
+   "complete": true,
+   "job": {
+    "job_id": "5223502",
+    "commit": "5a0c3ddc0041d7a109ce8bccd644b5692d33eedb",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 10737.941515494138,
+   "smoke_override": false
+  },
   "fd2dtest64p0": {
    "mode": "fd",
    "dim": 2,
@@ -383,7 +473,7 @@
  "dims": {
   "2": {
    "dimension_status": "validated",
-   "e0_verdict": "INCOMPLETE",
+   "e0_verdict": "PASS-WITH-K0-CASES",
    "ineligible": [
     "dev6/1/S",
     "val32/21/S",
@@ -398,10 +488,8 @@
     "test64/56/S",
     "test64/58/S",
     "test64/63/S",
-    "missing: sealed128/*/ST",
-    "missing: sealed128/*/S",
-    "missing: ood32/*/ST",
-    "missing: ood32/*/S"
+    "sealed128/5 case(s)/ST (sealed: counts only)",
+    "sealed128/21 case(s)/S (sealed: counts only)"
    ],
    "crosscheck": {
     "val32/0": {
@@ -27444,6 +27532,486 @@
   }
  },
  "sealed_qc": {
+  "2d/ood32/fd2dood32p0": {
+   "qc": {
+    "gpu_seconds": 6215.438367808238,
+    "kinds": {
+     "S": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 32,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 96,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9999992462725236,
+       "median": 2.0000282841707477,
+       "max": 2.0000621758056103
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 3.1595404671383165e-07,
+       "median": 6.856377889705682e-07,
+       "max": 1.1014865967005992e-06
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.0229957191556883,
+       "median": 0.05716375337617659,
+       "max": 0.08933319323793701
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 342.0,
+       "median": 387.5,
+       "max": 442.0
+      }
+     },
+     "ST": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 32,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 96,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9355596825661516,
+       "median": 1.9734273099614237,
+       "max": 1.9963478300916322
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 3.4503707831379957e-06,
+       "median": 1.1373192219010671e-05,
+       "max": 2.452962564049826e-05
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.0229957191556883,
+       "median": 0.05716375337617659,
+       "max": 0.08933319323793701
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 2812.0,
+       "median": 2812.0,
+       "max": 2845.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "af8aa5b718e92b45e9ddb27170c0b1e46b03bfddfb9a4726bafc6d4e7d3447c2",
+   "manifest_plain_sha256": "31ff9a9b43ce9640ece41d774191e0c9ece03d89e50222b5271728f5902d062a",
+   "n_ciphertexts": 128
+  },
+  "2d/sealed128/fd2dsealed128p0": {
+   "qc": {
+    "gpu_seconds": 7054.530278285034,
+    "kinds": {
+     "S": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 30,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 2,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 2,
+      "attempts": 102,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9998561562109531,
+       "median": 1.9999998517324298,
+       "max": 2.000055678865258
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 2.6562639523448294e-08,
+       "median": 1.0151381184438729e-07,
+       "max": 3.9612305338270975e-07
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.005542594435056801,
+       "median": 0.017678515379349835,
+       "max": 0.05131170202067606
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 303.0,
+       "median": 351.0,
+       "max": 7232.0
+      }
+     },
+     "ST": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 31,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 1,
+       "direction-inconsistent": 0
+      },
+      "refined": 1,
+      "tight": 0,
+      "attempts": 97,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.7345753050640553,
+       "median": 1.9986683712412734,
+       "max": 2.1450073262301
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 4.6165059099574163e-07,
+       "median": 2.455190130066488e-06,
+       "max": 9.44327172524439e-06
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.004924635732484991,
+       "median": 0.017678515379349835,
+       "max": 0.05131170202067606
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 2812.0,
+       "median": 2815.0,
+       "max": 5230.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "6355139cc317869bf16dd2d86d6bca73c2e620416f6b3b02bfb082f6b8fb32d2",
+   "manifest_plain_sha256": "d680cbbf1c551c07ee707060d2323c43bee0aaea803f31b292d8cc115bc86766",
+   "n_ciphertexts": 128
+  },
+  "2d/sealed128/fd2dsealed128p1": {
+   "qc": {
+    "gpu_seconds": 8396.343130153604,
+    "kinds": {
+     "S": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 27,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 5,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 5,
+      "attempts": 111,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9999103494178447,
+       "median": 2.000001619539906,
+       "max": 2.000179519708265
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 2.5168242168255245e-08,
+       "median": 1.0027785241891842e-07,
+       "max": 8.420900355210996e-07
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.0039062067445559557,
+       "median": 0.017449946033398032,
+       "max": 0.050048255705530245
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 318.0,
+       "median": 375.0,
+       "max": 7234.0
+      }
+     },
+     "ST": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 31,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 1,
+       "direction-inconsistent": 0
+      },
+      "refined": 1,
+      "tight": 0,
+      "attempts": 97,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.934749517288415,
+       "median": 1.9953310363368775,
+       "max": 2.329499943359605
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 1.026822619071536e-06,
+       "median": 3.3116834946902925e-06,
+       "max": 8.786673021073502e-06
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.0039062067445559557,
+       "median": 0.016206726444576817,
+       "max": 0.050048255705530245
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 2812.0,
+       "median": 2814.0,
+       "max": 5231.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "2c76dc80acc84b3e986f51fc10920da025431f7f2981977e594bd3e1da42c394",
+   "manifest_plain_sha256": "929dde310ad73d5ed14f366ba2a86bfe5dd8763a9aff6436f4f45f6d438a4b88",
+   "n_ciphertexts": 128
+  },
+  "2d/sealed128/fd2dsealed128p2": {
+   "qc": {
+    "gpu_seconds": 9526.401162452996,
+    "kinds": {
+     "S": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 24,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 8,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 8,
+      "attempts": 120,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9998034745462463,
+       "median": 2.000002853126132,
+       "max": 2.0001978682200936
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 2.1407196194653717e-08,
+       "median": 1.0521062117527232e-07,
+       "max": 9.054326658285438e-07
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.003633993730101176,
+       "median": 0.022051895502676756,
+       "max": 0.07290170311945578
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 306.0,
+       "median": 450.0,
+       "max": 7234.0
+      }
+     },
+     "ST": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 32,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 96,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.8703793491505625,
+       "median": 1.9952853801888852,
+       "max": 2.1230654841887
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 9.480289636919278e-07,
+       "median": 3.6990997733799428e-06,
+       "max": 1.299319088961323e-05
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.003633993730101176,
+       "median": 0.022051895502676756,
+       "max": 0.07290170311945578
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 2812.0,
+       "median": 2815.0,
+       "max": 2828.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "1cd923b7df79f5a8fc8c189aab3969e262c651ce82187963985b8ecb6be56a7b",
+   "manifest_plain_sha256": "2910f5e49139a229094a02b87b54a4f73a4b4c8082c3fba4002160133a21f8d4",
+   "n_ciphertexts": 128
+  },
+  "2d/sealed128/fd2dsealed128p3": {
+   "qc": {
+    "gpu_seconds": 10737.93220720347,
+    "kinds": {
+     "S": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 26,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 6,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 6,
+      "attempts": 114,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.999687789793257,
+       "median": 2.0000012689651188,
+       "max": 2.000253902772554
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 2.4562480547226757e-08,
+       "median": 1.0975662459787199e-07,
+       "max": 1.1772341628643088e-06
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.006882941596891512,
+       "median": 0.0132697621102114,
+       "max": 0.07658726762717463
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 309.0,
+       "median": 362.5,
+       "max": 7233.0
+      }
+     },
+     "ST": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 29,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 3,
+       "direction-inconsistent": 0
+      },
+      "refined": 3,
+      "tight": 0,
+      "attempts": 99,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.6351407543936167,
+       "median": 1.995322722985616,
+       "max": 2.4187599508739277
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 5.750351038987454e-07,
+       "median": 2.683929723336085e-06,
+       "max": 1.0496134954411582e-05
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.005096564296928289,
+       "median": 0.0132697621102114,
+       "max": 0.07658726762717463
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 2812.0,
+       "median": 2815.0,
+       "max": 5231.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "a3e4126a096970d89387955a993e5f8ab7f05623f0c32cf623fb8570087a287e",
+   "manifest_plain_sha256": "421cf7a800400c8edd6166e212bd2b608fa163f2da25c19c94a3da78b1dfce33",
+   "n_ciphertexts": 128
+  },
   "3d/ood16/fd3dood16p0": {
    "qc": {
     "gpu_seconds": 3084.237836176995,

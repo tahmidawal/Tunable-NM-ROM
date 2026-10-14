@@ -1,0 +1,799 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "ood32",
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31
+  ],
+  "kinds": [
+   "ST",
+   "S"
+  ],
+  "seeds_plain_sha256": "b9cc9ad6c2ad92578f588c9d6ceff0f8faf216b42bd0c3f15b37bfcb4c7e37ea",
+  "seeds_cipher_sha256": "2a9a626d53a45a05170c425ad3a18148a9414937194f576390e4b6e23f061d0d"
+ },
+ "job": {
+  "job_id": "5224164",
+  "commit": "5a0c3ddc0041d7a109ce8bccd644b5692d33eedb",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "calib_status": "provisional",
+ "floor_stab": 10.0,
+ "cohort": {
+  "name": "ood32",
+  "n": 32,
+  "sha256": null,
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12,
+   13,
+   14,
+   15,
+   16,
+   17,
+   18,
+   19,
+   20,
+   21,
+   22,
+   23,
+   24,
+   25,
+   26,
+   27,
+   28,
+   29,
+   30,
+   31
+  ],
+  "n_cases": 32
+ },
+ "sealed_manifest": {
+  "plain_sha256": "31ff9a9b43ce9640ece41d774191e0c9ece03d89e50222b5271728f5902d062a",
+  "cipher_sha256": "af8aa5b718e92b45e9ddb27170c0b1e46b03bfddfb9a4726bafc6d4e7d3447c2",
+  "ciphertexts": [
+   {
+    "file": "2d/ood32/ST/c000.npz.enc",
+    "cipher": "80f5bb541e5a75f4a61d686376bbd3404d75b38db6bade6660f6f276bb6eed60"
+   },
+   {
+    "file": "2d/ood32/ST/c000.json.enc",
+    "cipher": "59566486cf2619cc3fa931e457ba5ef67319a92750cdf15a6c14e305d3985e6a"
+   },
+   {
+    "file": "2d/ood32/S/c000.npz.enc",
+    "cipher": "95c6368e15ae51764a51fe61dd42504eba97fbe322ec51be421f432b462ae0e5"
+   },
+   {
+    "file": "2d/ood32/S/c000.json.enc",
+    "cipher": "3d36dee0d23ce8b3a403c295d4d43846b457e4d34cb3bb25d1d5177a5f6d3d75"
+   },
+   {
+    "file": "2d/ood32/ST/c001.npz.enc",
+    "cipher": "a11f44bc50d81e45eb8c658141e050fcf18ce183734388256b99233d8d824a1f"
+   },
+   {
+    "file": "2d/ood32/ST/c001.json.enc",
+    "cipher": "33e908dcff2d05ecad9ac906ed86abe20a57782c101d90d3d4c6483e142ac819"
+   },
+   {
+    "file": "2d/ood32/S/c001.npz.enc",
+    "cipher": "b60a77094eede6139675386e9175974b123728e72a078eb68a8778acc2b7fc84"
+   },
+   {
+    "file": "2d/ood32/S/c001.json.enc",
+    "cipher": "7bfefc9a9f58078dc5a70c2a87018b7f43f7a7e7e135a79d16cc685f84d56b37"
+   },
+   {
+    "file": "2d/ood32/ST/c002.npz.enc",
+    "cipher": "0a83e7cf1e5b6cdb928139e4be2533ce757b0e9e70c7d78c007e15997e1e71e4"
+   },
+   {
+    "file": "2d/ood32/ST/c002.json.enc",
+    "cipher": "4f2337734cdcbc37bca5e25b19e26b0ecb59bba8c0afaace9f14466df79865f7"
+   },
+   {
+    "file": "2d/ood32/S/c002.npz.enc",
+    "cipher": "0bab17158542816659055360e4fbcd6dcb9ea9fb5003f446e61a904167f3501d"
+   },
+   {
+    "file": "2d/ood32/S/c002.json.enc",
+    "cipher": "df95904d9d337ae2b01d431340382778b826aee144320179549d65ec299f6b0a"
+   },
+   {
+    "file": "2d/ood32/ST/c003.npz.enc",
+    "cipher": "553acf43677ff3d78ab3560443ce7d609309dc9f3bf77e9f10ebb91fbbe16253"
+   },
+   {
+    "file": "2d/ood32/ST/c003.json.enc",
+    "cipher": "dda4eaa93fdce2652bdd74b9226bc3b39a450d23d4b97cfb46145e8fbefb0f3c"
+   },
+   {
+    "file": "2d/ood32/S/c003.npz.enc",
+    "cipher": "7874937ed4fc73fb8e1ac17beae6a59348a576c7f71a10c3f0f7c50099a50415"
+   },
+   {
+    "file": "2d/ood32/S/c003.json.enc",
+    "cipher": "dd7be091cae803799b149bc5f1c958b3cf8fdae3370005e514a6d2d1eea8fd47"
+   },
+   {
+    "file": "2d/ood32/ST/c004.npz.enc",
+    "cipher": "43df8fb1c10db85599f39ebc5afea91eb3b01f6b1fcc4d4174a09ecb3113153f"
+   },
+   {
+    "file": "2d/ood32/ST/c004.json.enc",
+    "cipher": "cd6bab0f6232975436df4440f409cbd0eabaffa92ed235bff823ee93288fb194"
+   },
+   {
+    "file": "2d/ood32/S/c004.npz.enc",
+    "cipher": "b37c04fb7756495dee847f7192d3f33666678b90b9595895dbeb6d9e329f962b"
+   },
+   {
+    "file": "2d/ood32/S/c004.json.enc",
+    "cipher": "c34813ed05f0be30d81da97f8934ef1ea097aedfe3ca6559ecf6cdd6e2aa9b6d"
+   },
+   {
+    "file": "2d/ood32/ST/c005.npz.enc",
+    "cipher": "b5fa5c60dc5cd0f17ab5e2872d966b8246fa12deb2842a9d34c7aa5b76677a35"
+   },
+   {
+    "file": "2d/ood32/ST/c005.json.enc",
+    "cipher": "acf3383eefc54ceacdb58a62c5957524e70556cd40677921e93b2972388572d3"
+   },
+   {
+    "file": "2d/ood32/S/c005.npz.enc",
+    "cipher": "2a085a4f532b33adbad98ccf78e06b55032c3b6611ab27db01ec5fa2bb447487"
+   },
+   {
+    "file": "2d/ood32/S/c005.json.enc",
+    "cipher": "bcfd57ebcc9fcf7f3dcb076bc3abf2df98fa2a321044b05e0d8b3993eb97cdc9"
+   },
+   {
+    "file": "2d/ood32/ST/c006.npz.enc",
+    "cipher": "eb19e85a015963f3f12c7d823f4f279c3999217bbcc3c1e3103d283324fa9e4f"
+   },
+   {
+    "file": "2d/ood32/ST/c006.json.enc",
+    "cipher": "bfead26118d5f40f80c53a08cde445fa11fd31fb2b2286a2e100b0922645b8c7"
+   },
+   {
+    "file": "2d/ood32/S/c006.npz.enc",
+    "cipher": "8d270f480725941887641e94653ff69f0319e48b7013598bbd085fff17b09c50"
+   },
+   {
+    "file": "2d/ood32/S/c006.json.enc",
+    "cipher": "3c73413f1f22bc47e7f53ce0e734305eacf9e172f10ea197dfea57b0d68ace3d"
+   },
+   {
+    "file": "2d/ood32/ST/c007.npz.enc",
+    "cipher": "f3523585c20f37de4cbd6786065164b725dd88735159577c6e798fbea294d298"
+   },
+   {
+    "file": "2d/ood32/ST/c007.json.enc",
+    "cipher": "a1d6385ba6d67fef765a8f77324f8af263b70403c68eabd0f3f90c0b8b4b6757"
+   },
+   {
+    "file": "2d/ood32/S/c007.npz.enc",
+    "cipher": "b23e9c93bb2abe1b5b285fe47e5a97409288227e2d856c01ccdbc3d0c1e73f3a"
+   },
+   {
+    "file": "2d/ood32/S/c007.json.enc",
+    "cipher": "3773a6a8296358e57e73bad588a71876848e83fbc3604ce0797baf06512c3e91"
+   },
+   {
+    "file": "2d/ood32/ST/c008.npz.enc",
+    "cipher": "0922f3c5b367607e8484062405fefa806346b808b3bd1e5d3997f6a635af92e6"
+   },
+   {
+    "file": "2d/ood32/ST/c008.json.enc",
+    "cipher": "02983fa039a1bfc2d374329b430a0190dc435db7353c1135f227ea2a77e8ee39"
+   },
+   {
+    "file": "2d/ood32/S/c008.npz.enc",
+    "cipher": "f835cb87b8a13481a515a8ed0234d6316dcfd1d365dc5f718eadc57df1cd1120"
+   },
+   {
+    "file": "2d/ood32/S/c008.json.enc",
+    "cipher": "af562e2f5b215df99ccf11623ba9a835bfc85fa71b9c01327788070fa57b46ad"
+   },
+   {
+    "file": "2d/ood32/ST/c009.npz.enc",
+    "cipher": "ff7886843bab45e40e2aa155c1f202bcd84034cb65e2ce988bb74b60d8a5f867"
+   },
+   {
+    "file": "2d/ood32/ST/c009.json.enc",
+    "cipher": "097dca8a2ea85da54082fad925e087eb5fbedca533e6f155d156ab2d7b27c0e6"
+   },
+   {
+    "file": "2d/ood32/S/c009.npz.enc",
+    "cipher": "a3aaddaf50aec4608ae332662017f96783298f1298d7f3cd5e052442c6f86e6a"
+   },
+   {
+    "file": "2d/ood32/S/c009.json.enc",
+    "cipher": "f46f24e2004b20657a502e04a6e3855f42b174cb4eaaf4b5f5656dd65c39f0f5"
+   },
+   {
+    "file": "2d/ood32/ST/c010.npz.enc",
+    "cipher": "b44fd4673db9090eca0dd9e928dd43f1eeedf8d48f7660dfde4c51bc7f928411"
+   },
+   {
+    "file": "2d/ood32/ST/c010.json.enc",
+    "cipher": "0ff05c8a3cb5c23d2280438d59ac7a12a52e619b768b979d3fb3f98954ff5c2f"
+   },
+   {
+    "file": "2d/ood32/S/c010.npz.enc",
+    "cipher": "1b5fc574a5b772b48219bc7a6f3d2d1660b4a8febad13508bb3709bb8660d7c6"
+   },
+   {
+    "file": "2d/ood32/S/c010.json.enc",
+    "cipher": "84925bd2b48603d55dccbeae92c6b2d6756180f564c0ead900880e1f6f71433c"
+   },
+   {
+    "file": "2d/ood32/ST/c011.npz.enc",
+    "cipher": "c4989d12400c7afb11376f6caca97856ee32921e277040c6d611bf5f3ae02c9f"
+   },
+   {
+    "file": "2d/ood32/ST/c011.json.enc",
+    "cipher": "bb6693af2a2cdf240a34b736fefacbe18353dfcf6e8024c875d7054414ee6005"
+   },
+   {
+    "file": "2d/ood32/S/c011.npz.enc",
+    "cipher": "8838ad5205bd7a8e91b5e07819c34625ea9407660ac2fa78332c7e7bbf52138c"
+   },
+   {
+    "file": "2d/ood32/S/c011.json.enc",
+    "cipher": "1e732ba09cf62a0172269d53362a917fdc4b22a8f7b44afd840b40cea069d686"
+   },
+   {
+    "file": "2d/ood32/ST/c012.npz.enc",
+    "cipher": "8a792c61c6f8410ce4476c84f02741377a466f1fba15e0476ac1d5929088d489"
+   },
+   {
+    "file": "2d/ood32/ST/c012.json.enc",
+    "cipher": "1a959cad9dc9960c0703c0e32d50a73e0148ec18e1cd5589bca5f17130cf338e"
+   },
+   {
+    "file": "2d/ood32/S/c012.npz.enc",
+    "cipher": "8cf4cdd678ce227b5678d91a53941cf65bd3077e630e071280cb4967051e6113"
+   },
+   {
+    "file": "2d/ood32/S/c012.json.enc",
+    "cipher": "2dc72861b87ce810ec33dd2962a68d52bac5e6dd688393a7a4f573b941bdd022"
+   },
+   {
+    "file": "2d/ood32/ST/c013.npz.enc",
+    "cipher": "7d9413223931f81297ddb5ccd3e8ccc36bf0ace7961759dd9b4776eeb44ba2b1"
+   },
+   {
+    "file": "2d/ood32/ST/c013.json.enc",
+    "cipher": "117daad8719f238b39d473ad6c935382292660bc78635e923c2229976110f5f1"
+   },
+   {
+    "file": "2d/ood32/S/c013.npz.enc",
+    "cipher": "cd3dc46ec5e843b944a157fed369a331e24f8a16c911e885ce3c24556a558920"
+   },
+   {
+    "file": "2d/ood32/S/c013.json.enc",
+    "cipher": "b0e3d4958fe855809ff1987e5ff6ee3fd94e967a1dfe240e3ad64b646eeab97f"
+   },
+   {
+    "file": "2d/ood32/ST/c014.npz.enc",
+    "cipher": "fd252be125c90808c271c9a4bfc5affd42c32aef12169e8439c9bf0b4e8fb29c"
+   },
+   {
+    "file": "2d/ood32/ST/c014.json.enc",
+    "cipher": "a937a99a44f7ea41afd4408311b1dadfd1a74f7a96696016b364a50f96afb492"
+   },
+   {
+    "file": "2d/ood32/S/c014.npz.enc",
+    "cipher": "8929c11eeef6e2decb01bbcb694b017a3c4aa22af5fba198e2dbdbfb30cdd055"
+   },
+   {
+    "file": "2d/ood32/S/c014.json.enc",
+    "cipher": "3d460797ab52ab062750e7fbc34170d0327e7aef4aebf92275a4b31fdd082088"
+   },
+   {
+    "file": "2d/ood32/ST/c015.npz.enc",
+    "cipher": "4455efe9575ea1f0a5cf34d89293e676b781c594ff4d3cbf00f83bed21591f91"
+   },
+   {
+    "file": "2d/ood32/ST/c015.json.enc",
+    "cipher": "ac58395518ef5e7f786c5f00cbaca6ad3e1168cef37ca8ae45aa8c3314fe1c02"
+   },
+   {
+    "file": "2d/ood32/S/c015.npz.enc",
+    "cipher": "c46bdea32e1d23f9d14fd5b86fb7609bdc883eebeb3569d764027d56481893e7"
+   },
+   {
+    "file": "2d/ood32/S/c015.json.enc",
+    "cipher": "65937279b33c1c3cadafd7dda8b5ef1de1493678954b2ebb0fb45f2eb6f8d0e3"
+   },
+   {
+    "file": "2d/ood32/ST/c016.npz.enc",
+    "cipher": "b69ff6b169178406800a0a0d094fa49d6ba4b35556a82bb401e2a6950c4052f9"
+   },
+   {
+    "file": "2d/ood32/ST/c016.json.enc",
+    "cipher": "b0c6a20b4c7b8cf62d9c4707446ac8831b99c15b7bc8de9c1bc391d57a001d9c"
+   },
+   {
+    "file": "2d/ood32/S/c016.npz.enc",
+    "cipher": "79d1c185e5fd43723f5ec7b83e6abb366c0477c70a191c35bc19de08a8bfdf73"
+   },
+   {
+    "file": "2d/ood32/S/c016.json.enc",
+    "cipher": "74313397c87732d550420e8f2e761565b02e1982cccc9ce0ed606be8322e4e23"
+   },
+   {
+    "file": "2d/ood32/ST/c017.npz.enc",
+    "cipher": "229b1d4fe078d181df8d03b5bababa6ff599b9f866d17463b83e7cb34c0a7828"
+   },
+   {
+    "file": "2d/ood32/ST/c017.json.enc",
+    "cipher": "b0d3249cf0a846650b767f998736cdb902d026a7644d98e05eea7f83ab248897"
+   },
+   {
+    "file": "2d/ood32/S/c017.npz.enc",
+    "cipher": "c660904f8e40c768b56b429c8de3033f8377e043bbb292edf21c3aa527155c10"
+   },
+   {
+    "file": "2d/ood32/S/c017.json.enc",
+    "cipher": "1e90ce5fd34a1901ba9d67d1ee356edc1f1204b418c1b72688d708793940fa1b"
+   },
+   {
+    "file": "2d/ood32/ST/c018.npz.enc",
+    "cipher": "a423390c8eaf9d2efe35cec45832a1fce4d2de183a1f6f7ff26aac9d2fcbe8c7"
+   },
+   {
+    "file": "2d/ood32/ST/c018.json.enc",
+    "cipher": "1273b34b7f2d75aede1390366621352bd8ba1618facf4d42acff4dbfe9a1cf2c"
+   },
+   {
+    "file": "2d/ood32/S/c018.npz.enc",
+    "cipher": "6ce3fb950bffc952ae6591f8faee44cff9d948b71d4aad3368dbff3035ea6bec"
+   },
+   {
+    "file": "2d/ood32/S/c018.json.enc",
+    "cipher": "0280eb437ef4000316df22f2de7be317b65f4d75ea3b93223082cfad6f533877"
+   },
+   {
+    "file": "2d/ood32/ST/c019.npz.enc",
+    "cipher": "e98fbf16fd542df23b6e0dc7586ac9806c7d2605fe807c0f258ef0f909b0be29"
+   },
+   {
+    "file": "2d/ood32/ST/c019.json.enc",
+    "cipher": "8b78180d8eb0730357e8594e3bf967dc13e69cb2ef09186b9cf1f9a83d7ba40f"
+   },
+   {
+    "file": "2d/ood32/S/c019.npz.enc",
+    "cipher": "5cac11ec28790805d3846914112e48d0e021a3a990b9557c16a85ba60afc5dc6"
+   },
+   {
+    "file": "2d/ood32/S/c019.json.enc",
+    "cipher": "ba69252f641e95f32b5a38af9c29733afdfc61593e6dc9d9cb85a4cc6ccd378a"
+   },
+   {
+    "file": "2d/ood32/ST/c020.npz.enc",
+    "cipher": "15be1fde2f431b6ff7e7f206ad35fc62da233194b99813e601b8047f42276907"
+   },
+   {
+    "file": "2d/ood32/ST/c020.json.enc",
+    "cipher": "3bdbab48ba699d61ff9b64234eac343015a94c2c755667d04f41d45c1cd334c0"
+   },
+   {
+    "file": "2d/ood32/S/c020.npz.enc",
+    "cipher": "e1a3a625e8ce9d6480075c025be9376202a736439f38974e9ec1b92c06889a53"
+   },
+   {
+    "file": "2d/ood32/S/c020.json.enc",
+    "cipher": "3e2dccb3fa3a79f455f99b32abfbbac25a5c9e54abcc2433ce7df2534f432454"
+   },
+   {
+    "file": "2d/ood32/ST/c021.npz.enc",
+    "cipher": "807d2973225c948c1227e3984bccdfe5e09eca4dc97ea3bb05a1db4594aacb95"
+   },
+   {
+    "file": "2d/ood32/ST/c021.json.enc",
+    "cipher": "10420d663dbbd4eae880bde4625ee258451dbf92d776f15207bfbd5d0b28ede0"
+   },
+   {
+    "file": "2d/ood32/S/c021.npz.enc",
+    "cipher": "b300054c0725aa00881ffa4d74970fb7b4867b133cb718c9bea4863104231d7c"
+   },
+   {
+    "file": "2d/ood32/S/c021.json.enc",
+    "cipher": "62b5ac510f3a3b7804c0140db61910a7e5d9bcfb7227a7eb4840ae037e38f3c1"
+   },
+   {
+    "file": "2d/ood32/ST/c022.npz.enc",
+    "cipher": "18ad2466ec8a88795965cbcdec0a3ffd528131ffcce0e7f9592f623996594283"
+   },
+   {
+    "file": "2d/ood32/ST/c022.json.enc",
+    "cipher": "0153dcbf4b8d960a9c84f889913a75f582ef2e786ace64746085d420d0ecac06"
+   },
+   {
+    "file": "2d/ood32/S/c022.npz.enc",
+    "cipher": "d5070c54fc42220eeb177021e5d79f9166bf4a526182562eaeab1cdb49d3fcf9"
+   },
+   {
+    "file": "2d/ood32/S/c022.json.enc",
+    "cipher": "75725b77c6b7b4e4fe5e56ff7fd4af0a35ed54487cc9c99a9b99c7464358630e"
+   },
+   {
+    "file": "2d/ood32/ST/c023.npz.enc",
+    "cipher": "e4b234d6fa002d362a36a296815234ea1cbafb7d31e3a983ae20d5db1a1775d4"
+   },
+   {
+    "file": "2d/ood32/ST/c023.json.enc",
+    "cipher": "91e71182faafdf8b5ca41b1b6c150c81ff369e9073cff09a7344014e529d8b63"
+   },
+   {
+    "file": "2d/ood32/S/c023.npz.enc",
+    "cipher": "187815b9e5986a92580a029ab8bd228891b2a26b1c11ea879a73c5eb1b8be20e"
+   },
+   {
+    "file": "2d/ood32/S/c023.json.enc",
+    "cipher": "d168b37be4df4f85101ea73547df3efefe6ab599d442423465ecfa0c8741dcfd"
+   },
+   {
+    "file": "2d/ood32/ST/c024.npz.enc",
+    "cipher": "b58aaec79bf965cc09896da8574fbf13a54dffd0145b05a4248e259f2f71b7cd"
+   },
+   {
+    "file": "2d/ood32/ST/c024.json.enc",
+    "cipher": "2a2eef57d5247e9cf9e15b52ad7e66754da72b7780d1763cef0b7942f4a7a24a"
+   },
+   {
+    "file": "2d/ood32/S/c024.npz.enc",
+    "cipher": "26915bf81183502468b3112bf3af2cc355e73efa6b9bfcaafbdc8b96f9b8f97c"
+   },
+   {
+    "file": "2d/ood32/S/c024.json.enc",
+    "cipher": "5fc96e30fbe0348e61b9d2df98373a8c6d93b85a108c3f8cb65c95a5dd9694ae"
+   },
+   {
+    "file": "2d/ood32/ST/c025.npz.enc",
+    "cipher": "c9f3c149e444df1c505335a372ecec85277dad9e9cb5caa2d5d91df569b5c72d"
+   },
+   {
+    "file": "2d/ood32/ST/c025.json.enc",
+    "cipher": "d5ec497a3947895119aef92387e5e88b876823a5e05b91b0ad598e582399d98a"
+   },
+   {
+    "file": "2d/ood32/S/c025.npz.enc",
+    "cipher": "3bc4b533b85c7dfea0b94630c084aafa8addd97f8870367918b983cad5cbc000"
+   },
+   {
+    "file": "2d/ood32/S/c025.json.enc",
+    "cipher": "532554f29f25164ea7e5f625ebedad474777f2afaac3664096769b0fe0ea2809"
+   },
+   {
+    "file": "2d/ood32/ST/c026.npz.enc",
+    "cipher": "7d79521edd5082c3ab4cfcb764e1fad0921ae37ab3c4409555157a761e45c32b"
+   },
+   {
+    "file": "2d/ood32/ST/c026.json.enc",
+    "cipher": "8122054a574216f6bcfe59d861b177c5aab530cd6b34c7d993df69886d433e0d"
+   },
+   {
+    "file": "2d/ood32/S/c026.npz.enc",
+    "cipher": "956b1aa9812fd79645735ddbba909301471735b554b831cfd787cbcdf9d720bc"
+   },
+   {
+    "file": "2d/ood32/S/c026.json.enc",
+    "cipher": "00d1601a12600ae669883e4adbabbb653d4659f44db057a418f50e8c8e2e46a9"
+   },
+   {
+    "file": "2d/ood32/ST/c027.npz.enc",
+    "cipher": "56009e03f46dcecb85bb029d2213a3cfd0d8d894262b4ea397639168fc875eea"
+   },
+   {
+    "file": "2d/ood32/ST/c027.json.enc",
+    "cipher": "b18a67c35a1bce6a68fa2ba4de53525fc549d68d170f9ded039ede01ca2018a5"
+   },
+   {
+    "file": "2d/ood32/S/c027.npz.enc",
+    "cipher": "6c9e9929984bf255066d5fb044cc41bb28c09fb0025d3f594468c2811c0089e6"
+   },
+   {
+    "file": "2d/ood32/S/c027.json.enc",
+    "cipher": "8ef30dbede60d8662f176719768e91dbd3d690e8ef29b1ef3bb210197f9147db"
+   },
+   {
+    "file": "2d/ood32/ST/c028.npz.enc",
+    "cipher": "08a228beabd96727447c9ac46a49cb459387b1807a778f9c43f5ecab40eee719"
+   },
+   {
+    "file": "2d/ood32/ST/c028.json.enc",
+    "cipher": "d8de2a9afb1c92fdc66d18cc25db8a1b24055daff4740695170c7b5ec9d99d68"
+   },
+   {
+    "file": "2d/ood32/S/c028.npz.enc",
+    "cipher": "78d3c27e2587b2a4d2859b118f44ce4a4f5ffc6addf305925a7a573f32b0f2a4"
+   },
+   {
+    "file": "2d/ood32/S/c028.json.enc",
+    "cipher": "aac73178f1ce101dbe8d7dd48d448eb110bfddfef0d4ce0f3f63ea00b7ba1f78"
+   },
+   {
+    "file": "2d/ood32/ST/c029.npz.enc",
+    "cipher": "2450efa6de10dc076b04e70424a6387cd22d1316dfbf228f0497de4a7880feaa"
+   },
+   {
+    "file": "2d/ood32/ST/c029.json.enc",
+    "cipher": "fd4ec515e4c4abf9b133ec578bee43872906e2da3309236838d073047e8a16f2"
+   },
+   {
+    "file": "2d/ood32/S/c029.npz.enc",
+    "cipher": "d2e0e40494dde06396f3d9f005966b866606aaeaa40eb0b0317b6b2ec771cead"
+   },
+   {
+    "file": "2d/ood32/S/c029.json.enc",
+    "cipher": "7cdaecf6dee65a021e26145f056de3b4d2a3b4f9511ab4de9c58072ff96a4c78"
+   },
+   {
+    "file": "2d/ood32/ST/c030.npz.enc",
+    "cipher": "17cc7a08b32309373dffc0bb4b66458781a2e9ed4ec2ce6876ec3ca57cd60503"
+   },
+   {
+    "file": "2d/ood32/ST/c030.json.enc",
+    "cipher": "f1fb7a1297ed333c67ff475ce900acaae9e80180063ae7e576f363cc2d2fd42b"
+   },
+   {
+    "file": "2d/ood32/S/c030.npz.enc",
+    "cipher": "8e61b006665182741d6f7b1b315be45a6b0d59078781f83e5dda578b6b8148a8"
+   },
+   {
+    "file": "2d/ood32/S/c030.json.enc",
+    "cipher": "7f66d75e10ebbb929db4879889d0412f532a69a3285aa3c3279e97075bf1f176"
+   },
+   {
+    "file": "2d/ood32/ST/c031.npz.enc",
+    "cipher": "7421d57fe8cb087beeb229e7ea3355b087bcd6eba75261420926f54bedd03397"
+   },
+   {
+    "file": "2d/ood32/ST/c031.json.enc",
+    "cipher": "3476508261ef70ba53fae9fc1ee37e0e62538f8e2fb0de9d7ece1486065a044e"
+   },
+   {
+    "file": "2d/ood32/S/c031.npz.enc",
+    "cipher": "89276c50832a8153a7bc4402edb13ed342083db89e14d87e5853a9c6eaa26632"
+   },
+   {
+    "file": "2d/ood32/S/c031.json.enc",
+    "cipher": "5ba4f31d25546b183d1594d2bde48ed9d59dc69d01ab24d6a8aca3e0b1670207"
+   }
+  ]
+ },
+ "qc": {
+  "gpu_seconds": 6215.438367808238,
+  "kinds": {
+   "S": {
+    "case_kinds": 32,
+    "outcomes": {
+     "accepted": 32,
+     "ic-mismatch": 0,
+     "solver-fail": 0,
+     "unresolved-floor": 0,
+     "peclet-fail": 0,
+     "order-fail": 0,
+     "direction-inconsistent": 0
+    },
+    "refined": 0,
+    "tight": 0,
+    "attempts": 96,
+    "failed_attempts": 0,
+    "p": {
+     "n": 160,
+     "min": 1.9999992462725236,
+     "median": 2.0000282841707477,
+     "max": 2.0000621758056103
+    },
+    "p_undefined": 0,
+    "p_values": 160,
+    "eps_ref": {
+     "n": 32,
+     "min": 3.1595404671383165e-07,
+     "median": 6.856377889705682e-07,
+     "max": 1.1014865967005992e-06
+    },
+    "eps_ref_undefined": 0,
+    "peclet": {
+     "n": 32,
+     "min": 0.0229957191556883,
+     "median": 0.05716375337617659,
+     "max": 0.08933319323793701
+    },
+    "newton_total": {
+     "n": 32,
+     "min": 342.0,
+     "median": 387.5,
+     "max": 442.0
+    }
+   },
+   "ST": {
+    "case_kinds": 32,
+    "outcomes": {
+     "accepted": 32,
+     "ic-mismatch": 0,
+     "solver-fail": 0,
+     "unresolved-floor": 0,
+     "peclet-fail": 0,
+     "order-fail": 0,
+     "direction-inconsistent": 0
+    },
+    "refined": 0,
+    "tight": 0,
+    "attempts": 96,
+    "failed_attempts": 0,
+    "p": {
+     "n": 160,
+     "min": 1.9355596825661516,
+     "median": 1.9734273099614237,
+     "max": 1.9963478300916322
+    },
+    "p_undefined": 0,
+    "p_values": 160,
+    "eps_ref": {
+     "n": 32,
+     "min": 3.4503707831379957e-06,
+     "median": 1.1373192219010671e-05,
+     "max": 2.452962564049826e-05
+    },
+    "eps_ref_undefined": 0,
+    "peclet": {
+     "n": 32,
+     "min": 0.0229957191556883,
+     "median": 0.05716375337617659,
+     "max": 0.08933319323793701
+    },
+    "newton_total": {
+     "n": 32,
+     "min": 2812.0,
+     "median": 2812.0,
+     "max": 2845.0
+    }
+   }
+  }
+ },
+ "seconds": 6215.440375898033,
+ "peak_bytes": 16270945536
+}

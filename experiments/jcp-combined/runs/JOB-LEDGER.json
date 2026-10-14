@@ -42,7 +42,8 @@
    "gpu": "h200",
    "commit": "43d00da63",
    "submitted": "2026-10-13",
-   "role": "3D escalation + selection, W1024 (A7.5)"
+   "role": "3D escalation + selection, W1024 (A7.5)",
+   "status": "complete, collected"
   },
   {
    "attempt": "c3descW768",
@@ -59,7 +60,24 @@
    "gpu": "h200",
    "commit": "9c10d673b",
    "submitted": "2026-10-13",
-   "role": "3D escalation + selection, M2_512/W256/W512 (A7.5)"
+   "role": "3D escalation + selection, M2_512/W256/W512 (A7.5)",
+   "status": "complete, collected"
+  },
+  {
+   "attempt": "smk3bud",
+   "slurm": 5212781,
+   "gpu": "h200",
+   "commit": "886482410",
+   "submitted": "2026-10-13",
+   "role": "3D budget smoke"
+  },
+  {
+   "attempt": "smk2bud",
+   "slurm": 5213594,
+   "gpu": "a100-80G",
+   "commit": "886482410",
+   "submitted": "2026-10-13",
+   "role": "2D budget smoke"
   }
  ],
  "failed_attempts": [

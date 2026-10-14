@@ -110471,23 +110471,23 @@
  },
  "selection": {
   "M2_512": {
-   "fast_equal_accuracy": "fs|BDF2|0.0125|K1",
+   "fast_equal_accuracy": null,
    "accurate_equal_cost": "fs|BDF2|0.0125|K1"
   },
   "W256": {
-   "fast_equal_accuracy": "fs|CN|0.0125|K1",
+   "fast_equal_accuracy": null,
    "accurate_equal_cost": "fs|CN|0.0125|K1"
   },
   "W512": {
-   "fast_equal_accuracy": "fs|BDF2|0.0125|K1",
+   "fast_equal_accuracy": null,
    "accurate_equal_cost": "fs|BDF2|0.0125|K1"
   },
   "W768": {
-   "fast_equal_accuracy": "fs|BDF2|0.016666667|K2",
+   "fast_equal_accuracy": null,
    "accurate_equal_cost": "fs|CN|0.016666667|K2"
   },
   "W1024": {
-   "fast_equal_accuracy": "fs|BDF2|0.016666667|K2",
+   "fast_equal_accuracy": null,
    "accurate_equal_cost": "fs|CN|0.01|K1"
   }
  },
@@ -110534,7 +110534,7 @@
      1
     ],
     "key": "fs|BDF2|0.0125|K1",
-    "role": "fast_equal_accuracy+accurate_equal_cost",
+    "role": "accurate_equal_cost",
     "selected": true
    }
   ],
@@ -110580,7 +110580,7 @@
      1
     ],
     "key": "fs|CN|0.0125|K1",
-    "role": "fast_equal_accuracy+accurate_equal_cost",
+    "role": "accurate_equal_cost",
     "selected": true
    }
   ],
@@ -110626,7 +110626,7 @@
      1
     ],
     "key": "fs|BDF2|0.0125|K1",
-    "role": "fast_equal_accuracy+accurate_equal_cost",
+    "role": "accurate_equal_cost",
     "selected": true
    }
   ],
@@ -110663,17 +110663,6 @@
     "key": "fs|CN|0.025|K1",
     "role": "diagnostic",
     "selected": false
-   },
-   {
-    "spec": [
-     "fs",
-     "BDF2",
-     0.016666666666666666,
-     2
-    ],
-    "key": "fs|BDF2|0.016666667|K2",
-    "role": "fast_equal_accuracy",
-    "selected": true
    },
    {
     "spec": [
@@ -110720,17 +110709,6 @@
     "key": "fs|CN|0.025|K1",
     "role": "diagnostic",
     "selected": false
-   },
-   {
-    "spec": [
-     "fs",
-     "BDF2",
-     0.016666666666666666,
-     2
-    ],
-    "key": "fs|BDF2|0.016666667|K2",
-    "role": "fast_equal_accuracy",
-    "selected": true
    }
   ]
  },
@@ -110839,6 +110817,11 @@
       "median": 0.02021938801181509,
       "ratio": 0.8370301923642891
      }
+    },
+    "cheapest_equal_accuracy_diagnostic": {
+     "key": "fs|BDF2|0.0125|K1",
+     "ratio": 0.8738871423994811,
+     "label": "diagnostic: cheapest eligible arm with worst and median anchor <= the comparator, no step or ratio constraint; NOT the registered fast-equal-accuracy selection"
     }
    },
    "W256": {
@@ -110949,6 +110932,11 @@
       "median": 0.020340227778235447,
       "ratio": 0.786627757746806
      }
+    },
+    "cheapest_equal_accuracy_diagnostic": {
+     "key": "fs|CN|0.0125|K1",
+     "ratio": 0.8479403442892961,
+     "label": "diagnostic: cheapest eligible arm with worst and median anchor <= the comparator, no step or ratio constraint; NOT the registered fast-equal-accuracy selection"
     }
    },
    "W512": {
@@ -111054,6 +111042,11 @@
       "median": 0.0203288412351336,
       "ratio": 0.7679744213756232
      }
+    },
+    "cheapest_equal_accuracy_diagnostic": {
+     "key": "fs|BDF2|0.0125|K1",
+     "ratio": 0.8625319427097133,
+     "label": "diagnostic: cheapest eligible arm with worst and median anchor <= the comparator, no step or ratio constraint; NOT the registered fast-equal-accuracy selection"
     }
    },
    "W768": {
@@ -111149,6 +111142,11 @@
       "median": 0.020326651051481237,
       "ratio": 0.7426664810356924
      }
+    },
+    "cheapest_equal_accuracy_diagnostic": {
+     "key": "fs|BDF2|0.016666667|K2",
+     "ratio": 0.9615042272571971,
+     "label": "diagnostic: cheapest eligible arm with worst and median anchor <= the comparator, no step or ratio constraint; NOT the registered fast-equal-accuracy selection"
     }
    },
    "W1024": {
@@ -111239,6 +111237,11 @@
       "median": 0.02032598485364802,
       "ratio": 0.7206031706591316
      }
+    },
+    "cheapest_equal_accuracy_diagnostic": {
+     "key": "fs|BDF2|0.016666667|K2",
+     "ratio": 0.9558181358936904,
+     "label": "diagnostic: cheapest eligible arm with worst and median anchor <= the comparator, no step or ratio constraint; NOT the registered fast-equal-accuracy selection"
     }
    }
   },

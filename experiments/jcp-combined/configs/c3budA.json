@@ -60,7 +60,7 @@
       1
      ],
      "key": "fs|BDF2|0.0125|K1",
-     "role": "fast_equal_accuracy+accurate_equal_cost",
+     "role": "accurate_equal_cost",
      "selected": true
     }
    ]
@@ -115,7 +115,7 @@
       1
      ],
      "key": "fs|CN|0.0125|K1",
-     "role": "fast_equal_accuracy+accurate_equal_cost",
+     "role": "accurate_equal_cost",
      "selected": true
     }
    ]
@@ -170,7 +170,7 @@
       1
      ],
      "key": "fs|BDF2|0.0125|K1",
-     "role": "fast_equal_accuracy+accurate_equal_cost",
+     "role": "accurate_equal_cost",
      "selected": true
     }
    ]
@@ -220,17 +220,6 @@
     {
      "spec": [
       "fs",
-      "BDF2",
-      0.016666666666666666,
-      2
-     ],
-     "key": "fs|BDF2|0.016666667|K2",
-     "role": "fast_equal_accuracy",
-     "selected": true
-    },
-    {
-     "spec": [
-      "fs",
       "CN",
       0.016666666666666666,
       2
@@ -252,7 +241,7 @@
  "common_baseline_fallback": "M2_512",
  "budget_cases": 32,
  "control_rule": "lat256",
- "frozen_sha256": "f47442d93053b2a772ea3cdbe645c3d928c90c5872fee7e91cd5615299364c26",
+ "frozen_sha256": "8d106e19be35431d37093cd7dc86d71e9da656b00db634e4ddde862f6c29640b",
  "rule_selection_label": "POST HOC (DESIGN A10, A11 extension)",
  "rule_selection_posthoc": true
 }

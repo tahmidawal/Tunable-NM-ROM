@@ -719,26 +719,26 @@
  },
  "3d_solver": {
   "source": "checks/analysis3d-c3grid.json",
-  "source_sha256": "bc58d46a1dfc162c013a93a068928afdc6c71a0c06060125e96fa2d8eb785d4f",
+  "source_sha256": "ea609d372bfc322e30a0268af03a1c98e1b283b567515ad61962891569a76abc",
   "selection": {
    "M2_512": {
-    "fast_equal_accuracy": "fs|BDF2|0.0125|K1",
+    "fast_equal_accuracy": null,
     "accurate_equal_cost": "fs|BDF2|0.0125|K1"
    },
    "W256": {
-    "fast_equal_accuracy": "fs|CN|0.0125|K1",
+    "fast_equal_accuracy": null,
     "accurate_equal_cost": "fs|CN|0.0125|K1"
    },
    "W512": {
-    "fast_equal_accuracy": "fs|BDF2|0.0125|K1",
+    "fast_equal_accuracy": null,
     "accurate_equal_cost": "fs|BDF2|0.0125|K1"
    },
    "W768": {
-    "fast_equal_accuracy": "fs|BDF2|0.016666667|K2",
+    "fast_equal_accuracy": null,
     "accurate_equal_cost": "fs|CN|0.016666667|K2"
    },
    "W1024": {
-    "fast_equal_accuracy": "fs|BDF2|0.016666667|K2",
+    "fast_equal_accuracy": null,
     "accurate_equal_cost": "fs|CN|0.01|K1"
    }
   },
@@ -785,7 +785,7 @@
       1
      ],
      "key": "fs|BDF2|0.0125|K1",
-     "role": "fast_equal_accuracy+accurate_equal_cost",
+     "role": "accurate_equal_cost",
      "selected": true
     }
    ],
@@ -831,7 +831,7 @@
       1
      ],
      "key": "fs|CN|0.0125|K1",
-     "role": "fast_equal_accuracy+accurate_equal_cost",
+     "role": "accurate_equal_cost",
      "selected": true
     }
    ],
@@ -877,7 +877,7 @@
       1
      ],
      "key": "fs|BDF2|0.0125|K1",
-     "role": "fast_equal_accuracy+accurate_equal_cost",
+     "role": "accurate_equal_cost",
      "selected": true
     }
    ],
@@ -914,17 +914,6 @@
      "key": "fs|CN|0.025|K1",
      "role": "diagnostic",
      "selected": false
-    },
-    {
-     "spec": [
-      "fs",
-      "BDF2",
-      0.016666666666666666,
-      2
-     ],
-     "key": "fs|BDF2|0.016666667|K2",
-     "role": "fast_equal_accuracy",
-     "selected": true
     },
     {
      "spec": [
@@ -971,17 +960,6 @@
      "key": "fs|CN|0.025|K1",
      "role": "diagnostic",
      "selected": false
-    },
-    {
-     "spec": [
-      "fs",
-      "BDF2",
-      0.016666666666666666,
-      2
-     ],
-     "key": "fs|BDF2|0.016666667|K2",
-     "role": "fast_equal_accuracy",
-     "selected": true
     }
    ]
   }

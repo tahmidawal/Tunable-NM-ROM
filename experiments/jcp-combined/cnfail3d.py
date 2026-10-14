@@ -76,7 +76,7 @@ def main():
         sets = {r: tuple(v['distance_failing_cases']) for r, v in per_rule.items() if r != 'lat256'}
         out['settings'][sn] = dict(rules=per_rule, n_rules=len(per_rule),
                                    failing_set_identical_across_non_control_rules=(len(sets) >= 2 and len(set(sets.values())) == 1)
-                                   if all(v['adaptive_comparator_all_valid'] for v in per_rule.values()) else None,
+                                   if all(v['adaptive_comparator_all_valid'] for r, v in per_rule.items() if r != 'lat256') else None,
                                    failing_union_non_control=sorted({j for v in sets.values() for j in v}))
     dest = Path(a.out or HERE / 'checks' / f'cnfail3d-{cfg["attempt"]}.json')
     dest.write_text(json.dumps(out, indent=1, default=float) + '\n')

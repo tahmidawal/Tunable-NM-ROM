@@ -77,7 +77,9 @@ def main():
     for r in res['rows']:
         rows.setdefault((r['setting'], r['spec']), {})[r['case']] = r
     out = dict(run=str(run), refs=sc['refs'], provisional='reference-limited (BE reference at dt0/4)', settings={},
-               selection={}, budget_arms={}, hypotheses={})
+               selection={}, budget_arms={}, hypotheses={},
+               rule_selection_label=cfg.get('rule_selection_label', 'pre-registered'),          # A10.3
+               rule_selection_posthoc=bool(cfg.get('rule_selection_posthoc', False)))
     common = res['timing'].get('common', {})
     for s in cfg['settings']:
         sname, rule = s['name'], s['rule']

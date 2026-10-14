@@ -346,7 +346,9 @@ def main():
     out, gate, ctrl, fom = fn(ent, run, a.check)
     res = json.loads((run / 'result.json').read_text())
     rep = dict(refs=a.refs, registry_entry=ent, run=str(run), result_sha256=sha_file(run / 'result.json'),
-               smoke=bool(res['config'].get('smoke')), gate=gate, controls=ctrl, scores=out, fom_scores=fom)
+               smoke=bool(res['config'].get('smoke')), gate=gate, controls=ctrl, scores=out, fom_scores=fom,
+               rule_selection_label=res['config'].get('rule_selection_label', 'pre-registered'),   # A10.3
+               rule_selection_posthoc=bool(res['config'].get('rule_selection_posthoc', False)))
     dest = Path(a.out or HERE / 'checks' / f"scores-{run.parents[1].name}-{a.refs}.json")
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.write_text(json.dumps(rep) + '\n')

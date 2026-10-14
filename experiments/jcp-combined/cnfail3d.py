@@ -42,7 +42,11 @@ def main():
         sn = s['name']
         bk = C3.load_bank(s['bank'])
         G = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :int(s['Rp'])], X65))
-        rules = sorted({k.split('|')[1] for k in Wz.files if k.startswith(sn + '|') and k.endswith(FS)})
+        found = sorted({k.split('|')[1] for k in Wz.files if k.startswith(sn + '|') and k.endswith(FS)})
+        esc = res['settings'][sn]['escalation']
+        expected = set(s['esc_rules']) | set(s['ladder']) | ({'gl80'} if 'gl64|gl80' in esc['pairs'] else set())
+        assert set(found) == expected, f'{sn}: rule coverage {sorted(set(found) ^ expected)} differs from the configured plan'
+        rules = sorted(expected)
         per_rule = {}
         for rule in rules:
             kf, ka = f'{sn}|{rule}|{FS}', f'{sn}|{rule}|{AD}'

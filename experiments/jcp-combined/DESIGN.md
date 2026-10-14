@@ -877,7 +877,8 @@ must break agreement by $>10^{-6}$.
 
 **A10.1 Finding (pre-registered outcome).** In both production escalation jobs the fixed-sweep LSPG-CN $K=2$ selection arm
 at $\tfrac52\Delta t_0$ is ineligible under A6.2 at every rule: on a small subset of the 64 cases its distance to the
-verified adaptive tight CN solve of the same step is far above $2.5\times10^{-4}$ (the same cases at every rule; the job logs
+verified adaptive tight CN solve of the same step is far above $2.5\times10^{-4}$ (the same seven cases at every non-control rule in both jobs, with one further case
+just above the bar at one W1024 rule; the control `lat256` fails on every case; `checks/cnfail3d-c3desc*.json`; the job logs
 print the non-stationary step counts, the saved `escalation_rule_eligibility` / `ladder_eligibility` carry the distances).
 Every escalation pair's selection axis is therefore "unresolved", the job's converged rule is `None`, and the
 **pre-registered 3D rule selection is unavailable**. This is reported as the pre-registered result (`checks/SELECTION-3D.json`).
@@ -901,13 +902,15 @@ gate (H4 solver eligibility, finalist qualification with the converged-rule chec
 unchanged and is what qualifies any individual grid arm.
 
 **A10.2a Rules run twice.** Gauss $48^3$ is both an escalation rule and a ladder rule and was rolled out twice in each job
-(bitwise-identical rows); the saved trajectories are the second run. Offline tools join rows to trajectories by the
+(identical saved numerical diagnostics apart from elapsed time; only the second run's trajectories are saved, so
+bitwise equality of the two trajectory copies is not established from the archive). Offline tools join rows to trajectories by the
 last block and require every block to have the same case order; the production escalation jobs predate the explicit
 case-id arrays (A8.2), so the join uses the job's row order, which is the same loop that fills the trajectory array.
 
 **A10.3 Consequences.** The 3D grid (`c3grid`) runs on the post-hoc deployed rule; every 3D result inherits the "POST HOC
-rule" label (`freeze.py` records `posthoc`, `label`, the effective and the pre-registered converged rule per setting, and
-the 3D budget config carries the label). The fixed-sweep CN arms remain grid candidates and are judged by the unchanged per-case H4 eligibility
+rule" label (`freeze.py` records `posthoc`, `label`, the effective and the pre-registered converged rule per setting; the
+`c3grid` and `c3bud` configs carry the label, and `score.py`, `analyze3d.py` and `budget3d.py` copy it from the config
+into their outputs). The fixed-sweep CN arms remain grid candidates and are judged by the unchanged per-case H4 eligibility
 (A1.9, A6.2), so the fixed-sweep CN failure cases appear as ineligible there, not silently. The failing cases are
 investigated descriptively (which cases, which steps, whether $K=3$ or a smaller step fixes them) in the report, as part of
 the "why did the fast CN worst case get worse" question; that investigation selects nothing.

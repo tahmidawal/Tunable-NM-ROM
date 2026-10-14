@@ -67,7 +67,9 @@ def main():
     rows = {(r['setting'], r['rule'], r['spec'], r['case']): r for r in res['rows']}
     gz = np.load(Path(a.grid) / 'W_grid.npz') if a.grid else None
     out = dict(run=str(run), refs=a.refs, result_sha256=hashlib.sha256((run / 'result.json').read_bytes()).hexdigest(),
-               provisional='reference-limited (BE reference at dt0/4)', settings={}, gates={})
+               provisional='reference-limited (BE reference at dt0/4)', settings={}, gates={},
+               rule_selection_label=cfg.get('rule_selection_label', 'pre-registered'),          # A10.3
+               rule_selection_posthoc=bool(cfg.get('rule_selection_posthoc', False)))
     repro = dict(compared=0, failures=0, worst=0., applicable=(a.refs == '3d_first_order'))
     inv_mismatch = {}
     all_ids = list(cfg.get('case_subset') or range(cfg['cohort_count']))

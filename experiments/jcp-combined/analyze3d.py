@@ -86,7 +86,7 @@ def main():
         bk = C3.load_bank(s['bank'])
         G = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :int(s['Rp'])], X65))
         W = {k.split('|', 2)[2]: Wz[k] for k in Wz.files if k.startswith(f'{sname}|{rule}|')}
-        F = lambda sk: np.einsum('cki,ip->ckp', W[sk], G)
+        F = lambda sk: W[sk] @ G                       # BLAS matmul (the same product as the einsum it replaced)
         Fanc = {k: F(k) for k in ANC}
         dfield = lambda A_, B_: (np.linalg.norm(A_ - B_, axis=2) / n0[:, None])[:, 1:].max(1)
         U = dfield(Fanc[ANC[0]], Fanc[ANC[1]]) + dfield(Fanc[ANC[0]], Fanc[ANC[2]]) + dfield(Fanc[ANC[1]], Fanc[ANC[3]])

@@ -231,7 +231,7 @@ for d in sorted(dims):
             if not cs:
                 w(f'| {DIMNAME[d]} | {coh} | {kind} | 0 (missing {miss}) | — | — | — | — | — | — | — |')
                 continue
-            ps_ = [p for c in cs for p in c['p'] if p is not None]
+            ps_ = [p for c in cs for p in (c.get('p') or []) if p is not None]
             ep = [c['eps_ref'] for c in cs if c['outcome'] == 'accepted']
             lv = sorted({tuple(c['levels']) for c in cs})
             w(f"| {DIMNAME[d]} | {coh} | {kind} | {len(cs)}{f' (missing {miss})' if miss else ''} | "
@@ -404,7 +404,7 @@ PLOTS.mkdir(exist_ok=True)
 fig, axes = plt.subplots(1, 2, figsize=(10, 3.6), constrained_layout=True)
 for ax, d in zip(axes, sorted(dims)):
     for kind, col in (('ST', C1), ('S', C2)):
-        ps_ = [p for c in dims[d]['cases'] if c['kind'] == kind for p in c['p'] if p is not None]
+        ps_ = [p for c in dims[d]['cases'] if c['kind'] == kind for p in (c.get('p') or []) if p is not None]
         if ps_:
             ax.hist(ps_, bins=np.linspace(1.6, 2.4, 41), color=col, alpha=.7, label=f'$R_{{{kind}}}$')
     ax.axvspan(1.8, 2.2, color=CG, alpha=.12, label='accepted band')
@@ -422,11 +422,11 @@ for ax, d in zip(axes, sorted(dims)):
         if r:
             ax.scatter([x['eps_ref'] for x in r], [x['delta_old'] for x in r], s=14, color=col, marker=mk,
                        label=f'{kind} ({len(r)} cases)')
-    lim = ax.get_xlim()
-    xs = np.logspace(-12, 0, 10)
-    ax.plot(xs, xs, color=CG, lw=1, ls='--', label='$\\delta_{old}=\\epsilon_{ref}$')
-    ax.set_xscale('log')
-    ax.set_yscale('log')
+    if rows:
+        xs = np.logspace(-9, -1, 10)
+        ax.plot(xs, xs, color=CG, lw=1, ls='--', label='$\\delta_{old}=\\epsilon_{ref}$')
+        ax.set_xscale('log')
+        ax.set_yscale('log')
     ax.set_xlabel('$\\epsilon_{ref}$ (new reference uncertainty)')
     ax.set_ylabel('$\\delta_{old}$ (old vs new)')
     ax.set_title(f'{DIMNAME[d]}: old first-order reference vs new')
@@ -443,7 +443,8 @@ for d in sorted(dims):
             ax.bar(xs + .2, 2 * v['eps_ref'], .4, color=CG, label='$2\\epsilon_{ref}$' if xs == 0 else None)
         labels.append(f'{DIMNAME[d]} {k.split("/")[1]}')
         xs += 1
-ax.set_yscale('log')
+if xs and any(v.get('x_ps') for d in dims for v in dims[d]['crosscheck'].values()):
+    ax.set_yscale('log')
 ax.set_xticks(range(len(labels)), labels, rotation=60, fontsize=7)
 ax.set_title('Cross-check: PS distance vs resolution limit (PASS iff blue ≤ grey)')
 ax.legend(frameon=False)
@@ -454,10 +455,11 @@ fig, axes = plt.subplots(1, 2, figsize=(10, 3.6), constrained_layout=True)
 for ax, d in zip(axes, sorted(dims)):
     for i, coh in enumerate(COH[d]):
         for kind, col, off in (('ST', C1, -.15), ('S', C2, .15)):
-            e = [c['eps_ref'] for c in dims[d]['cases'] if c['cohort'] == coh and c['kind'] == kind and c['eps_ref']]
+            e = [c['eps_ref'] for c in dims[d]['cases'] if c['cohort'] == coh and c['kind'] == kind and c.get('eps_ref')]
             ax.scatter(np.full(len(e), i + off), e, s=10, color=col, label=kind if i == 0 else None)
     ax.set_xticks(range(len(COH[d])), COH[d])
-    ax.set_yscale('log')
+    if any(c.get('eps_ref') for c in dims[d]['cases']):
+        ax.set_yscale('log')
     ax.set_ylabel('$\\epsilon_{ref}$')
     ax.set_title(f'{DIMNAME[d]}: reference uncertainty per case')
     ax.legend(frameon=False)

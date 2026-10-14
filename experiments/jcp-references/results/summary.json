@@ -37,6 +37,60 @@
    "seconds": 761.3105687825009,
    "smoke_override": false
   },
+  "fd3dood16p0": {
+   "mode": "fd",
+   "dim": 3,
+   "cohort": "ood16",
+   "complete": true,
+   "job": {
+    "job_id": "5216306",
+    "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 3084.2552034379914,
+   "smoke_override": false
+  },
+  "fd3dsealed64p0": {
+   "mode": "fd",
+   "dim": 3,
+   "cohort": "sealed64",
+   "complete": true,
+   "job": {
+    "job_id": "5215129",
+    "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 5189.618022269569,
+   "smoke_override": false
+  },
+  "fd3dsealed64p1": {
+   "mode": "fd",
+   "dim": 3,
+   "cohort": "sealed64",
+   "complete": true,
+   "job": {
+    "job_id": "5216302",
+    "commit": "698f3d810715fd2da9b9f2d428385dde236f973b",
+    "gpu": "NVIDIA H200",
+    "backend": "gpu",
+    "jax": "0.10.2",
+    "numpy": "2.5.0",
+    "precision": "highest"
+   },
+   "gates_all_pass": true,
+   "seconds": 4898.863535176963,
+   "smoke_override": false
+  },
   "fd3dtest32p0": {
    "mode": "fd",
    "dim": 3,
@@ -1449,13 +1503,8 @@
   },
   "3": {
    "dimension_status": "validated",
-   "e0_verdict": "INCOMPLETE",
-   "ineligible": [
-    "missing: sealed64/*/ST",
-    "missing: sealed64/*/S",
-    "missing: ood16/*/ST",
-    "missing: ood16/*/S"
-   ],
+   "e0_verdict": "PASS",
+   "ineligible": [],
    "crosscheck": {
     "val64/0": {
      "x_ps": 4.1960778504024705e-05,
@@ -13935,6 +13984,296 @@
     }
    ],
    "x4": null
+  }
+ },
+ "sealed_qc": {
+  "3d/ood16/fd3dood16p0": {
+   "qc": {
+    "gpu_seconds": 3084.237836176995,
+    "kinds": {
+     "S": {
+      "case_kinds": 16,
+      "outcomes": {
+       "accepted": 16,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 48,
+      "failed_attempts": 0,
+      "p": {
+       "n": 80,
+       "min": 1.998923788027103,
+       "median": 2.002068874529292,
+       "max": 2.0137282703299055
+      },
+      "p_undefined": 0,
+      "p_values": 80,
+      "eps_ref": {
+       "n": 16,
+       "min": 3.0819969497843494e-05,
+       "median": 6.328399420901012e-05,
+       "max": 0.00011451170752177118
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 16,
+       "min": 0.3545778101087799,
+       "median": 0.7807745825954416,
+       "max": 1.356170379684034
+      },
+      "newton_total": {
+       "n": 16,
+       "min": 321.0,
+       "median": 397.5,
+       "max": 450.0
+      }
+     },
+     "ST": {
+      "case_kinds": 16,
+      "outcomes": {
+       "accepted": 16,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 48,
+      "failed_attempts": 0,
+      "p": {
+       "n": 80,
+       "min": 1.988965045968483,
+       "median": 2.0007486363085567,
+       "max": 2.0171503794002157
+      },
+      "p_undefined": 0,
+      "p_values": 80,
+      "eps_ref": {
+       "n": 16,
+       "min": 3.3868787001424324e-05,
+       "median": 7.886120680994355e-05,
+       "max": 0.0001775255813885371
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 16,
+       "min": 0.3545778101087799,
+       "median": 0.7807745825954416,
+       "max": 1.356170379684034
+      },
+      "newton_total": {
+       "n": 16,
+       "min": 1412.0,
+       "median": 1415.5,
+       "max": 1494.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "4557c850b218f896263eebfd42d4872d8dcabadbcc76112540ac48657479774d",
+   "manifest_plain_sha256": "90128d5209cbe60c5aa9ed73fd2356c3383038867365b7c37d151a68aab12d40",
+   "n_ciphertexts": 64
+  },
+  "3d/sealed64/fd3dsealed64p0": {
+   "qc": {
+    "gpu_seconds": 5189.610126083717,
+    "kinds": {
+     "S": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 32,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 96,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9994921396442946,
+       "median": 2.0004040022311687,
+       "max": 2.0181853870545505
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 6.108297582453667e-06,
+       "median": 1.2611058249295573e-05,
+       "max": 7.635448443652924e-05
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.05513839347649466,
+       "median": 0.21782886257521414,
+       "max": 1.2493763398192645
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 300.0,
+       "median": 346.5,
+       "max": 450.0
+      }
+     },
+     "ST": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 32,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 96,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9890443463870606,
+       "median": 1.9985693259854391,
+       "max": 2.0277174236561044
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 8.54340032470345e-06,
+       "median": 2.4205330802651984e-05,
+       "max": 0.00010768160332672052
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.05513839347649466,
+       "median": 0.21782886257521414,
+       "max": 1.2493763398192645
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 1412.0,
+       "median": 1412.0,
+       "max": 1569.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "e5ef9f754ca2d68cfa87bbc235146adfad05dea677da8246bfc534e98261972c",
+   "manifest_plain_sha256": "e10a276c481f0dedb17f9f4a57d7878de86bdf9ab07743f100161f5fe98212bf",
+   "n_ciphertexts": 128
+  },
+  "3d/sealed64/fd3dsealed64p1": {
+   "qc": {
+    "gpu_seconds": 4898.861778062768,
+    "kinds": {
+     "S": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 32,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 96,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9990714735101807,
+       "median": 2.000323409173431,
+       "max": 2.0113406193725725
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 5.7901767406812635e-06,
+       "median": 1.3047679997419639e-05,
+       "max": 9.938528361510895e-05
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.06274935078561454,
+       "median": 0.23661668131805724,
+       "max": 1.2358420811695687
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 300.0,
+       "median": 339.0,
+       "max": 450.0
+      }
+     },
+     "ST": {
+      "case_kinds": 32,
+      "outcomes": {
+       "accepted": 32,
+       "ic-mismatch": 0,
+       "solver-fail": 0,
+       "unresolved-floor": 0,
+       "peclet-fail": 0,
+       "order-fail": 0,
+       "direction-inconsistent": 0
+      },
+      "refined": 0,
+      "tight": 0,
+      "attempts": 96,
+      "failed_attempts": 0,
+      "p": {
+       "n": 160,
+       "min": 1.9893496376180417,
+       "median": 1.9987836092066955,
+       "max": 2.014840615404411
+      },
+      "p_undefined": 0,
+      "p_values": 160,
+      "eps_ref": {
+       "n": 32,
+       "min": 1.239228350683134e-05,
+       "median": 2.265045085883843e-05,
+       "max": 0.00013673831115183657
+      },
+      "eps_ref_undefined": 0,
+      "peclet": {
+       "n": 32,
+       "min": 0.06274935078561454,
+       "median": 0.23661668131805724,
+       "max": 1.2358420811695687
+      },
+      "newton_total": {
+       "n": 32,
+       "min": 1412.0,
+       "median": 1412.0,
+       "max": 1490.0
+      }
+     }
+    }
+   },
+   "manifest_cipher_sha256": "e4e02d48e64bf10440aeebc57bedc739ccf03bf747e97170aa05e253ecc4daf3",
+   "manifest_plain_sha256": "7cf388b65a61bdcce4df2e5d4229908973749098284847b753d4130dc3ac2f8c",
+   "n_ciphertexts": 128
   }
  },
  "gates": [

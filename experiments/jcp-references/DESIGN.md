@@ -906,3 +906,12 @@ Every case produced under it carries `calib_status: provisional`. The collector 
 store until `checks/calib_2d.json` is replaced by the final status of the completed calibration job and that status
 passes. If the final calibration fails, the floor check of every held case is re-judged from its stored per-step
 residuals with the recalibrated factor (no rerun is needed for that), as A2.1 prescribes, and the result is reported.
+
+**A11.3 (after Codex job audit 7).** Release of provisionally produced cases requires a final status
+(`provisional: false`) that passed, records the same dimension and the **same** floor factor (FLOOR_STAB) the cases
+were judged with, and whose evidence hash equals that of a collected, complete calibration job. If the final
+calibration changes the factor or fails, the held cases stay refused; a re-judgment tool (floor check recomputed from
+the stored per-step residuals, sealed QC regenerated) would then be written and audited as its own amendment.
+Memory of the 2D refinement level, from the compiled executables: $L=8192$ 15.6 GB (observed peak 16.1 GB),
+$L=12288$ 35.0 GB (2.4 arguments, 25.4 temporaries, 7.3 outputs), within an 80 GB A100. Jobs of 32 cases get a 24 h
+limit (refinement or tight-attempt contingency).

@@ -5,7 +5,7 @@
 #SBATCH --constraint=a100-80G
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=120G
-#SBATCH --time=12:00:00
+#SBATCH --time=24:00:00
 #SBATCH --output=/cluster/tufts/paralab/tawal01/jcp-ref/fd2dsealed128p2/logs/%j.out
 #SBATCH --error=/cluster/tufts/paralab/tawal01/jcp-ref/fd2dsealed128p2/logs/%j.err
 set -euo pipefail

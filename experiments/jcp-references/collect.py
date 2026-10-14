@@ -67,8 +67,16 @@ def gather():
         if r['config']['mode'] == 'fd' and r.get('calib_status') == 'provisional':
             cs = HERE / 'checks' / f"calib_{r['config']['dim']}d.json"
             final = json.loads(cs.read_text()) if cs.exists() else {}
-            if final.get('provisional', True) or not final.get('proxy_ok_all'):
-                refused[rd.name] = 'held: produced under a provisional calibration that is not yet final (A11)'
+            calib_jobs = [json.loads(x.read_text()) for x in RUNS.glob('*/output/result.json')]
+            evidence = [c for c in calib_jobs if c['config']['mode'] == 'calib' and c.get('complete')
+                        and int(c['config']['dim']) == int(r['config']['dim'])
+                        and c.get('calib_fields_sha256') == final.get('fields_sha256')
+                        and (c.get('calib_status') or {}).get('proxy_ok_all')]
+            if (final.get('provisional', True) or not final.get('proxy_ok_all') or final.get('floor_stab') != V.FLOOR_STAB
+                    or int(final.get('dim', -1)) != int(r['config']['dim']) or not evidence):
+                # A11.3: release only against a final, passing status bound to the factor the cases were judged with
+                # and to a collected, complete calibration job carrying the same evidence hash
+                refused[rd.name] = 'held: provisional calibration not final, failed, or not bound to its evidence (A11)'
                 continue
         sums = {}
         for line in (rd / 'OUTPUTS.sha256').read_text().splitlines():

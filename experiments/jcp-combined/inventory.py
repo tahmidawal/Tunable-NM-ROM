@@ -111,6 +111,7 @@ def project_3d(cfg, smokes, inv, rep):
     ncases = inv['cases']
     M_of = lambda Rp: 4 * Rp + 64                  # complete_M(4R') exceeds 4R' by less than one shell (conservative)
     total, detail, allcalls = 0., {}, []
+    common_subj, common_A = [], None
     for s in cfg['settings']:
         Rp = int(s['Rp'])
         rlist = inv['settings'][s['name']]['runs']
@@ -147,11 +148,19 @@ def project_3d(cfg, smokes, inv, rep):
         detail[s['name']] = dict(rollouts_s=tot, compile_s=comp, timing_s=tt)
         total += tot + comp + tt
         allcalls += calls
+        common_subj += [t_ for sp_, t_ in timed.items() if sp_.startswith('fs|') and float(sp_.split('|')[2]) >= .01 - 1e-12]
+        if s['name'] == cfg.get('common_baseline'):
+            common_A = timed.get('fs|BE|0.01|K1')
     if cfg['mode'] == 'grid':
         tc = cfg['timing']
         nsub = sum(1 for s in cfg['settings'] for x in inv['settings'][s['name']]['runs'] if x.startswith('fs|'))
-        total += (3 * nsub * tc['common_cases'] * tc['common_reps'] + nsub * tc['common_cases']) * \
-            (float(np.mean(allcalls)) + tc['burn'])
+        # common panel (codex-results3dsel-1): A = the common baseline's fs BE dt0, every subject and every warm-up priced
+        # at the most expensive fixed-sweep subject with dt >= dt0 over all settings
+        if not common_subj or common_A is None:
+            return fail(rep, 'common panel subjects or baseline not priced')
+        tB = max(common_subj)
+        total += (3 * nsub * tc['common_cases'] * tc['common_reps']) * (2 / 3 * common_A + 1 / 3 * tB + tc['burn']) + \
+            (nsub + 1) * tc['common_cases'] * (tB + tc['burn'])
     peaks = [sm.get('peak_bytes_job', -1) for sm in smokes]
     if min(peaks) <= 0:
         return fail(rep, 'a smoke lacks a positive peak')

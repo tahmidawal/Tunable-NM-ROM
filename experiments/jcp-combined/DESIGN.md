@@ -970,9 +970,11 @@ $96^3$ had run all four arms on both smoke cases). The vendored code is not modi
 converged rule up to $96^3$ and is reported without a 3D grid. The re-run smoke is `smk3ext2` (two cases, $80^3$ and $96^3$).
 The failed smoke's logs are archived in `runs/smk3ext/failed-5215974/` and recorded in the job ledger.
 
-**A11.4 (contract binding, after the extension job).** The in-job cohort-table hash is not node-stable: the table's peak
-normaliser is computed on the GPU and its last bit differs between H200 nodes (two different hashes among the 3D jobs;
-one case's initial coefficients differ by one unit in the last place, trajectories agree to $\sim10^{-15}$). The selector
+**A11.4 (contract binding, after the extension job).** The in-job cohort-table hash is not node-stable: two different
+hashes occur among the 3D jobs, all on H200 nodes; between `c3descW1024` and `c3extW1024` only case 1's initial
+coefficients differ (largest relative difference $\approx1.2\times10^{-16}$) and the $80^3$ trajectories agree to
+$\sim10^{-15}$. The table includes a peak normaliser computed in the job (on the GPU), the most likely source; this is
+not proven. The selector
 therefore binds the extension to the escalation job by cohort seed and count and by the initial coefficients of every
-case (agreement $\le10^{-12}$ relative), not by the in-job table hash; offline scoring keeps checking the CPU table hash
+case (agreement $\le10^{-12}$ relative, per case), not by the in-job table hash; offline scoring keeps checking the CPU table hash
 against the registry (`score.py`).

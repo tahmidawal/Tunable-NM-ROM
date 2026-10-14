@@ -160,8 +160,9 @@ def main():
                 # every case to agree to 1e-12 relative instead (offline scoring checks the CPU table hash, score.py).
                 assert {k_: xr['cohort'][k_] for k_ in ('seed', 'count')} == {k_: res['cohort'][k_] for k_ in ('seed', 'count')}
                 w0x, w0r = xz[f'w0|{sname}'], Wz[f'w0|{sname}']
-                assert w0x.shape == w0r.shape and float(np.max(np.abs(w0x - w0r)) / np.max(np.abs(w0r))) <= 1e-12, \
-                    'extension initial coefficients differ'
+                assert w0x.shape == w0r.shape and float(np.max(np.max(np.abs(w0x - w0r), axis=1) /
+                                                               np.max(np.abs(w0r), axis=1))) <= 1e-12, \
+                    'extension initial coefficients differ'                          # per case
                 assert (xc.get('case_subset') or list(range(xc['cohort_count']))) == list(cases)
                 assert bool(xc.get('smoke')) == bool(cfg.get('smoke')), 'smoke and production archives cannot be mixed'
                 if not cfg.get('smoke'):

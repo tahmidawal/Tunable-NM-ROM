@@ -34,7 +34,8 @@
    "gpu": "a100-80G",
    "commit": "43d00da63",
    "submitted": "2026-10-13",
-   "role": "2D grid + anchors + FOM + timing (A1.0)"
+   "role": "2D grid + anchors + FOM + timing (A1.0)",
+   "status": "complete, collected"
   },
   {
    "attempt": "c3descW1024",
@@ -69,7 +70,8 @@
    "gpu": "h200",
    "commit": "886482410",
    "submitted": "2026-10-13",
-   "role": "3D budget smoke"
+   "role": "3D budget smoke",
+   "status": "complete, collected; machinery gates passed"
   },
   {
    "attempt": "smk2bud",
@@ -77,7 +79,8 @@
    "gpu": "a100-80G",
    "commit": "886482410",
    "submitted": "2026-10-13",
-   "role": "2D budget smoke"
+   "role": "2D budget smoke",
+   "status": "complete, collected; machinery gates passed"
   },
   {
    "attempt": "smk3ext2",
@@ -95,6 +98,22 @@
    "commit": "42dfeb454",
    "submitted": "2026-10-13",
    "role": "A11 W1024 escalation extension gl80->gl96, 64 cases (POST HOC)"
+  },
+  {
+   "attempt": "c2budA",
+   "slurm": 5218146,
+   "gpu": "a100-80G",
+   "commit": "0bc851461",
+   "submitted": "2026-10-13",
+   "role": "2D error budget (R512, R256)"
+  },
+  {
+   "attempt": "c2budB",
+   "slurm": 5218149,
+   "gpu": "a100-80G",
+   "commit": "0bc851461",
+   "submitted": "2026-10-13",
+   "role": "2D error budget (R384, acc)"
   }
  ],
  "failed_attempts": [

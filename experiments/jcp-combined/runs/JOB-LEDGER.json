@@ -117,12 +117,12 @@
    "role": "2D error budget (R384, acc)"
   },
   {
-   "attempt": "c2budC",
-   "slurm": 5218166,
-   "gpu": "a100-80G",
-   "commit": "780fadc6a",
+   "attempt": "c3grid",
+   "slurm": 5219449,
+   "gpu": "h200",
+   "commit": "1cf409c9a",
    "submitted": "2026-10-13",
-   "role": "2D error budget (fast, R128)"
+   "role": "3D second-order grid + timing, 5 settings, POST HOC rules (A10/A11)"
   }
  ],
  "failed_attempts": [
@@ -136,6 +136,13 @@
    "gpu": "h200",
    "commit": "ee068a8a2",
    "note": "A11 extension smoke: gl96 ran (all four arms, 2 cases); gl112 (1.4M points, R'=1024) OOM in the vendored offmesh_tables test_block (42.9 GiB allocation) -> A11.3 drops gl112; logs and partial result in runs/smk3ext/failed-5215974"
+  },
+  {
+   "attempt": "c2budC",
+   "slurm": 5218166,
+   "gpu": "a100-80G",
+   "commit": "780fadc6a",
+   "note": "cancelled while PENDING (never started) to free a lane slot for c3grid; cluster dir removed; to be re-staged and resubmitted"
   }
  ]
 }

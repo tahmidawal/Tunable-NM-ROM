@@ -1,0 +1,27 @@
+E1014 10:35:28.481373 3419707 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+E1014 10:35:33.978817 3419769 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+W1014 14:11:07.160348 3419724 bfc_allocator.cc:514] Allocator (GPU_0_bfc) ran out of memory trying to allocate 27.01GiB (rounded to 28998107136)requested by op 
+If the cause is memory fragmentation maybe the environment variable 'TF_GPU_ALLOCATOR=cuda_malloc_async' will improve the situation. 
+Current allocation summary follows.
+Current allocation summary follows.
+W1014 14:11:07.160927 3419724 bfc_allocator.cc:525] ****______*******_*******____*************************************************************__________
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/c3budW1024/experiments/jcp-combined/c3run.py", line 589, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/c3budW1024/experiments/jcp-combined/c3run.py", line 481, in main
+    prep = prep_of(rule)
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/c3budW1024/experiments/jcp-combined/c3run.py", line 294, in prep_of
+    _preps[rule] = C3.prepare(_tb.rule_data(_Rp, X, w))
+                              ~~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/c3budW1024/experiments/jcp-combined/c3common.py", line 137, in rule_data
+    om = OM.offmesh_tables(self.n, self.bank['params'], self.bank['T'][:, :Rp], X, w, self.kx[:M])
+  File "/cluster/tufts/paralab/tawal01/jcp-comb/c3budW1024/experiments/jcp-combined/vendor/quad3d/offmesh.py", line 75, in offmesh_tables
+    P = jax.block_until_ready(test_block(n, X, w, kxyz))
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2509, in block_until_ready
+    try_to_block(arrays[0])
+    ~~~~~~~~~~~~^^^^^^^^^^^
+  File "/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/api.py", line 2492, in try_to_block
+    return x.block_until_ready()
+           ~~~~~~~~~~~~~~~~~~~^^
+jax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 27.01GiB. [tf-allocator-allocation-error=''] [executable_name='jit_multiply']

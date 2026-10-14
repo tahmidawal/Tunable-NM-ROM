@@ -155,14 +155,6 @@
    "status": "complete, collected"
   },
   {
-   "attempt": "c3budW1024",
-   "slurm": 5231969,
-   "gpu": "h200",
-   "commit": "51730ce18",
-   "submitted": "2026-10-14",
-   "role": "3D error budget, W1024 (r_inf gl80, finer gl96)"
-  },
-  {
    "attempt": "c3budA",
    "slurm": 5231973,
    "gpu": "h200",
@@ -189,6 +181,13 @@
    "gpu": "a100-80G",
    "commit": "780fadc6a",
    "note": "cancelled while PENDING (never started) to free a lane slot for c3grid; cluster dir removed; to be re-staged and resubmitted"
+  },
+  {
+   "attempt": "c3budW1024",
+   "slurm": 5231969,
+   "gpu": "h200",
+   "commit": "51730ce18",
+   "note": "OOM (27 GiB) preparing the finer rule Gauss 96^3 after 3.6 h: c3run bud mode kept a local reference to the Gauss 80^3 tables while preparing the next rule; fixed (A16); no result.json was written; logs in runs/c3budW1024/failed-5231969; rerun as c3budW1024r"
   }
  ]
 }

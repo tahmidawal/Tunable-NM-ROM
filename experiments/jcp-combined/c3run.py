@@ -489,7 +489,8 @@ def main():
                         rollouts(sname, sol, rule, prep, specs_sub, lean)
                     finally:
                         cases[:] = allc
-                drop(rule)
+                prep = None              # release the local reference BEFORE the next rule is prepared (c3budW1024 5231969
+                drop(rule)               # ran out of memory preparing Gauss 96^3 while Gauss 80^3 was still referenced here)
             # B1 sham (bitwise re-run) and B2 known effect (control rule lat256) of the BASELINE fs BE dt0 K=1 (the same
             # identity as analyze3d's comparator; G-FS1 makes it equal to the vendor) on the budget cases
             base_sp = ('fs', 'BE', DT0, 1)

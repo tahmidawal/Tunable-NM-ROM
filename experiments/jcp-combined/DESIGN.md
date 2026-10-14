@@ -1075,3 +1075,12 @@ reference access in the G-score case-swap / time-shift controls (not "at the B0 
 **A14.4 (fallback analysis).** `c2fbgrid` runs only the LSPG-BE and LSPG-CN-R arms, so the `c2fbbud` budget's GAL-CN
 diagnostic arm has no grid twin; its grid-reproduction gate is therefore evaluated on the arms the fallback grid ran (no
 failure and full 38-case coverage of those arms). `fallback2d.py` computes the qualification table.
+
+## Amendment A16 (2026-10-14, after `c3budW1024` 5231969 failed)
+
+`c3budW1024` ran out of device memory after 3.6 h when preparing the finer rule (Gauss $96^3$, $R'=1024$): the bud-mode
+loop of `c3run.py` kept a local reference to the converged rule's (Gauss $80^3$) tables while preparing the next rule,
+so both were resident (the resource certificate assumed one rule at a time, as the escalation extension does). The
+reference is now released before the next rule is prepared; nothing else changes. The job wrote no result (results are
+saved per setting) and is rerun unchanged as `c3budW1024r` with a regenerated certificate. `c3budA` (smaller rules)
+was unaffected.

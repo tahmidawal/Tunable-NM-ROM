@@ -84,6 +84,13 @@
   {
    "attempt": "smk3esc",
    "note": "first submission attempt: rsync aborted by login-node connection drop before sbatch; partial staging dir removed; no job created"
+  },
+  {
+   "attempt": "smk3ext",
+   "slurm": 5215974,
+   "gpu": "h200",
+   "commit": "ee068a8a2",
+   "note": "A11 extension smoke: gl96 ran (all four arms, 2 cases); gl112 (1.4M points, R'=1024) OOM in the vendored offmesh_tables test_block (42.9 GiB allocation) -> A11.3 drops gl112; logs and partial result in runs/smk3ext/failed-5215974"
   }
  ]
 }

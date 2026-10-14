@@ -937,14 +937,17 @@ else $96^3$ if ($96^3$, $112^3$) passes, else none. The extension's $80^3$ traje
 $80^3$ trajectories (field distance $\le10^{-10}$ for every arm) or the extension is not used. The ladder runs, the
 selection procedure for $m^\star$ (re-applied, not its earlier value), the control requirement, $\tau$ and the cost are
 those of `c3descW1024` (its ladder distances are recomputed against the new $r_\infty$, whose trajectories exist in that
-job for $80^3$ and in the extension for $96^3$). The selector accepts the extension only if its numerical contract (bank,
-$R'$, startup steps, mesh, `gtol`, trust fraction, bar, cohort, reference) and population equal the escalation job's
+job for $80^3$ and in the extension for $96^3$). The selector accepts the extension only for W1024 and only if its numerical contract
+(bank, $R'$, startup steps, mesh, `gtol`, trust fraction, bar, cohort size and table hash, reference identified by its
+sha256, size and step, not by its job-specific staged path) and population equal the escalation job's
 (production: all 64 cases), all four arms' $80^3$ trajectories reproduce, and every extension pair status it recomputes
 from the trajectories and rows agrees with the job's. The extension is exploratory selection on the validation cohort
 motivated by its own outcome, not independent confirmation; case 5 is treated exactly like every other case.
 `select3d.py --posthoc --ext <archive>` implements it; its label is "POST HOC (DESIGN A10, A11 extension)". A cluster
 smoke `smk3ext` (two cases, $96^3$ and $112^3$, the largest rule) gates memory and rate before the production job; its
-machinery gate has no timing panel by design (every planned rule run, every row valid, every pair finite). The local
+machinery gate has no timing panel by design and instead requires the complete inventory: every planned rule (the last
+omitted only after a passing A10 pair), every (rule, arm, case) row present once and valid, and every consecutive pair
+recorded with all arms on all three axes finite. The local
 run `local3ext` (W256, Gauss $24^3$–$40^3$) is control-flow evidence only (it exercised the branch that runs the
 conditional rule; it was on the local GPU, which logged the XLA "Red zone" warning of A8.1).
 If no converged rule is found, W1024 is reported without a 3D grid (the R′ dial then ends at 768 in the second-order
@@ -959,3 +962,10 @@ The control now uses the **relative** defect $|e_\star^2-(e_P/0.1)^2-e_{\rm dyn}
 gate itself ($\le10^{-10}$), and must exceed $10^{-6}$; the 3D budget uses the same definition. The budget smokes otherwise
 passed their machinery gates (B0 $\le10^{-10}$, analytic fixtures, B1 bitwise, inventory, job-row reproduction with every
 G-score control breaking; 3D B2 and B3 discriminating, converged-rule check passing); grid reproduction is not run in a smoke.
+
+**A11.3 (after the smoke `smk3ext` 5215974 failed).** Gauss $112^3$ (1.4 M points) at $R'=1024$ does not fit a 141 GB H200
+with the vendored, unchunked table builder (out of memory allocating 42.9 GiB in the test-function block, after
+$96^3$ had run all four arms on both smoke cases). The vendored code is not modified, so the extension stops at $96^3$:
+`c3extW1024` runs Gauss $80^3$ and $96^3$; $r_\infty=80^3$ if ($80^3$, $96^3$) passes the A10 axis, otherwise W1024 has no
+converged rule up to $96^3$ and is reported without a 3D grid. The re-run smoke is `smk3ext2` (two cases, $80^3$ and $96^3$).
+The failed smoke's logs are archived in `runs/smk3ext/failed-5215974/` and recorded in the job ledger.

@@ -249,11 +249,24 @@ def smoke_gates(sm):
     """Machinery gates a smoke must have passed to be used as resource evidence."""
     ext = all(s_.get('ext_rules') for s_ in sm['config']['settings'])   # A11 extension smoke: no timing panels by design
     ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and (ext or bool(sm.get('timing')))
-    if ext:                       # every planned rule run, every row valid and finite, every pair recorded with finite distances
+    if ext:      # complete inventory: every planned rule (the last one omitted only after a passing A10 pair), every
+                 # (rule, arm, case) row present once and valid, every consecutive pair recorded with all arms finite
+        arms = ['fs|BE|0.01|K1', 'fs|CN|0.025|K2', 'ad|LSPG|BE|0.01|tight', 'ad|LSPG|CN|0.025|tight']
+        cases = list(sm['config'].get('case_subset') or range(sm['config']['cohort_count']))
         for s_ in sm['config']['settings']:
             x = sm['settings'][s_['name']].get('extension', {})
-            ok = ok and x.get('rules') == s_['ext_rules'][:len(x.get('rules', []))] and len(x.get('rules', [])) >= 2
-            ok = ok and all(np.isfinite(d['worst']) for p in x.get('pairs', {}).values() for d in p['posthoc'].values())
+            rr, plan = x.get('rules', []), s_['ext_rules']
+            ok = ok and len(rr) >= 2 and rr == plan[:len(rr)]
+            if ok and len(rr) < len(plan):
+                ok = len(plan) >= 3 and len(rr) == len(plan) - 1 and \
+                    x['pairs'].get(f'{rr[-2]}|{rr[-1]}', {}).get('posthoc_status') == 'pass'
+            want = {f'{a_}|{b_}' for a_, b_ in zip(rr, rr[1:])}
+            ok = ok and set(x.get('pairs', {})) == want
+            for p in x.get('pairs', {}).values():
+                for ax, ks in (('selection', arms[:2]), ('diagnostic', arms[2:]), ('posthoc', [arms[0], arms[3]])):
+                    ok = ok and set(p.get(ax, {})) == set(ks) and all(np.isfinite(p[ax][k]['worst']) for k in ks)
+            got = sorted((r['rule'], r['spec'], r['case']) for r in sm['rows'] if r['setting'] == s_['name'])
+            ok = ok and got == sorted((r_, a_, c_) for r_ in rr for a_ in arms for c_ in cases)
         ok = ok and bool(sm['rows']) and all(r['valid'] is True for r in sm['rows'])
     if sm['config']['driver'] == 'c2grid':
         ok = ok and bool(sm['g1a']) and all(g.get('passed') for g in sm['g1a']) and all(r['verified'] for r in sm['rows'])

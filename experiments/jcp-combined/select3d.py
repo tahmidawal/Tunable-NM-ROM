@@ -148,8 +148,13 @@ def main():
                 xs_cfg = next(t for t in xc['settings'] if t['name'] == sname)
                 for k_ in ('bank', 'Rp', 'a'):
                     assert xs_cfg[k_] == s[k_], ('extension contract', k_)
-                for k_ in ('mesh', 'gtol', 'trust_fraction', 'conv_bar', 'cohort_seed', 'cohort_count', 'refined_ref'):
+                assert sname == 'W1024', 'A11 extends the W1024 escalation only'
+                for k_ in ('mesh', 'gtol', 'trust_fraction', 'conv_bar', 'cohort_seed', 'cohort_count'):
                     assert xc[k_] == cfg[k_], ('extension contract', k_)
+                # reference identity by content (the staged path is job-specific), cohort table by hash
+                assert {k_: xr['reference'][k_] for k_ in ('sha256', 'n', 'dt')} == \
+                    {k_: res['reference'][k_] for k_ in ('sha256', 'n', 'dt')}, 'extension reference differs'
+                assert xr['cohort'] == res['cohort'], 'extension cohort table differs'
                 assert (xc.get('case_subset') or list(range(xc['cohort_count']))) == list(cases)
                 assert bool(xc.get('smoke')) == bool(cfg.get('smoke')), 'smoke and production archives cannot be mixed'
                 if not cfg.get('smoke'):
@@ -159,7 +164,9 @@ def main():
 
                 def xW(rule, sk):
                     assert ids_of(xr, xz, sname, rule, sk) == list(cases), ('extension case ids', rule, sk)
-                    return xz[f'{sname}|{rule}|{sk}']
+                    w_ = xz[f'{sname}|{rule}|{sk}']
+                    assert w_.shape == (len(cases), 6, int(s['Rp'])), ('extension shape', rule, sk, w_.shape)
+                    return w_
 
                 def fd(A_, B_):
                     d_ = np.linalg.norm(np.einsum('cki,ip->ckp', A_ - B_, G), axis=2) / n0[:, None]

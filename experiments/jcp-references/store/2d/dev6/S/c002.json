@@ -1,0 +1,211 @@
+{
+ "dim": 2,
+ "cohort": "dev6",
+ "case": 2,
+ "kind": "S",
+ "desc": {
+  "cx": 0.45131714866409367,
+  "cy": 0.5960642645978614,
+  "w": 0.09280172370327633,
+  "a": 1.5231312745422343,
+  "nu": 0.014089575881689515
+ },
+ "cohort_sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+ "metric_id": "2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1",
+ "lattice": 256,
+ "times": [
+  0.0,
+  0.05,
+  0.1,
+  0.15000000000000002,
+  0.2,
+  0.25
+ ],
+ "t0_sha256": "243b2f71aaf38ef4834c4f1625485ee72bca708732d7862f75c57f7a6fef20e5",
+ "scheme": "be",
+ "attempts": [
+  {
+   "purpose": "prod",
+   "L": 2048,
+   "dt": 0.005,
+   "scheme": "be",
+   "adv": "central",
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "max_newton": 20,
+   "stages": 50,
+   "expected_stages": 50,
+   "steps_ok": true,
+   "max_res": 1.343154568608179e-13,
+   "tau": 6.552617676119628e-11,
+   "newton_total": 150,
+   "newton_max": 3,
+   "umax_running": 1.5231279788426384,
+   "lattice_finite": true,
+   "seconds": 4.954972030129284,
+   "ic_seconds": 0.07866190792992711,
+   "compile_seconds": 0.0,
+   "solve_seconds": 4.87285862211138,
+   "peak_bytes": 16975360000,
+   "id": "a0_L2048"
+  },
+  {
+   "purpose": "prod",
+   "L": 4096,
+   "dt": 0.005,
+   "scheme": "be",
+   "adv": "central",
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "max_newton": 20,
+   "stages": 50,
+   "expected_stages": 50,
+   "steps_ok": true,
+   "max_res": 5.358160596629003e-13,
+   "tau": 2.61960170626255e-10,
+   "newton_total": 150,
+   "newton_max": 3,
+   "umax_running": 1.5231291996929184,
+   "lattice_finite": true,
+   "seconds": 20.796587597113103,
+   "ic_seconds": 0.32655306113883853,
+   "compile_seconds": 0.0,
+   "solve_seconds": 20.46547182276845,
+   "peak_bytes": 16975360000,
+   "id": "a1_L4096"
+  },
+  {
+   "purpose": "prod",
+   "L": 8192,
+   "dt": 0.005,
+   "scheme": "be",
+   "adv": "central",
+   "ntol": 1e-11,
+   "ltol": 1e-09,
+   "max_newton": 20,
+   "stages": 50,
+   "expected_stages": 50,
+   "steps_ok": true,
+   "max_res": 2.1448559095572834e-12,
+   "tau": 1.047726478175707e-09,
+   "newton_total": 150,
+   "newton_max": 3,
+   "umax_running": 1.5231312246581352,
+   "lattice_finite": true,
+   "seconds": 101.92193187400699,
+   "ic_seconds": 1.292923026252538,
+   "compile_seconds": 0.0,
+   "solve_seconds": 100.6174969249405,
+   "peak_bytes": 16975360000,
+   "id": "a2_L8192"
+  }
+ ],
+ "final": [
+  "a0_L2048",
+  "a1_L4096",
+  "a2_L8192"
+ ],
+ "history": [
+  {
+   "levels": [
+    "a0_L2048",
+    "a1_L4096",
+    "a2_L8192"
+   ],
+   "outcome": "accepted",
+   "checks": {
+    "solver": true,
+    "peclet": true,
+    "floor": true,
+    "order": true,
+    "direction": true,
+    "t0_shared": true
+   }
+  }
+ ],
+ "judge": {
+  "levels": [
+   2048,
+   4096,
+   8192
+  ],
+  "h": [
+   0.00048828125,
+   0.000244140625,
+   0.0001220703125
+  ],
+  "n0": 64.13694654990235,
+  "t0_dev": 0.0,
+  "d12": [
+   2.3381380229395202e-06,
+   3.694862468394733e-06,
+   4.074288775084382e-06,
+   3.913259987271275e-06,
+   3.5617602583449122e-06
+  ],
+  "d23": [
+   5.845333306065679e-07,
+   9.237050939000029e-07,
+   1.0185545549823026e-06,
+   9.782959836735447e-07,
+   8.904227570376848e-07
+  ],
+  "p": [
+   2.0000029003480138,
+   2.000016435635327,
+   2.000024983612959,
+   2.0000280384493703,
+   2.0000280420413645
+  ],
+  "eps_t": [
+   1.948439212576727e-07,
+   3.078970210605178e-07,
+   3.395103457134238e-07,
+   3.260902111571398e-07,
+   2.9679989363478284e-07
+  ],
+  "eps_ref": 3.395103457134238e-07,
+  "c": [
+   2.419855883154259e-05,
+   3.667082377332132e-05,
+   3.847981781442363e-05,
+   3.568405816323881e-05,
+   3.171447220833758e-05
+  ],
+  "tau": [
+   6.552617676119628e-11,
+   2.61960170626255e-10,
+   1.047726478175707e-09
+  ],
+  "peclet": 0.052784756593402614,
+  "umax": [
+   1.5231279788426384,
+   1.5231291996929184,
+   1.5231312246581352
+  ],
+  "checks": {
+   "solver": true,
+   "peclet": true,
+   "floor": true,
+   "order": true,
+   "direction": true,
+   "t0_shared": true
+  },
+  "outcome": "accepted"
+ },
+ "outcome": "accepted",
+ "refined": false,
+ "tight_used": false,
+ "floor_stab": 10.0,
+ "job": {
+  "job_id": "5217591",
+  "commit": "19ab153e946476c0824f02800bec6018f4371ecb",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "calib_status": "provisional",
+ "seconds": 127.6815327280201
+}

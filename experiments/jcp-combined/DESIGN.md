@@ -1055,3 +1055,19 @@ the deployed BE's under A3.2's tie policy (cost is then only reported). For `fas
 original deployed BE is estimated as the ratio of the two arms' median paired ratios in the `c2grid` common panel (a
 ratio of medians, not a directly measured paired median); for R256 it is measured directly in `c2fbgrid`'s common panel.
 No fallback replaces a selection silently; both are reported side by side, with the failing finalist verdict preserved.
+
+## Amendment A15 (2026-10-14, after `audits/codex-results3d-1.md`; before any 3D budget job)
+
+**A15.1 Retraction: 3D fast-equal-accuracy selection.** DESIGN §6 defines the 3D fast-equal-accuracy arm as **H4a's
+cheapest** (an eligible candidate with $\Delta t\ge\tfrac54\Delta t_0$, worst and median anchor discrepancy no larger than the
+deployed BE's, and median paired ratio $\le0.6$). `analyze3d.py` selected instead the cheapest eligible candidate with
+equal or better anchor discrepancy **without** the step and 0.6 constraints, and that selection was frozen
+(`FROZEN-SELECTION.json` sha `f47442d9…`, commit `52779085e`) and written into the 3D budget configs. This is retracted
+before any budget job ran. Under the registered rule H4a fails at every setting, so **no 3D fast-equal-accuracy arm
+exists** (selection "unavailable"); the broader cheapest equal-accuracy arm is kept in the analysis output only as a
+labelled diagnostic (its paired ratios are 0.85–0.96, i.e. no speed-up of the 0.6 kind). The accurate-equal-cost
+selections and every H4 verdict are unchanged. The analysis is re-run, the 3D solver selection re-frozen, the 3D budget
+configs and certificates regenerated, and re-audited.
+
+**A15.2 Correction of a commit message.** The `budget3d.py` fix of commit `52779085e` replaced a leftover first-order
+reference access in the G-score case-swap / time-shift controls (not "at the B0 fixture").

@@ -161,9 +161,18 @@ def main():
                 out['selection'][sname] = fz3.get(sname, {})
                 out['selection_frozen_sha256'] = hashlib.sha256(Path(a.frozen).read_bytes()).hexdigest()
             else:
+                # DESIGN 6: fast-equal-accuracy = H4a's cheapest (dt >= 1.25 dt0, worst and median anchor <= the
+                # comparator's, ratio <= 0.6); none -> unavailable (codex-results3d-1: an earlier version selected from
+                # the broader equal-accuracy set without the step and 0.6 constraints - retracted). The broader cheapest
+                # equal-accuracy arm is reported as a DIAGNOSTIC only, never a selection.
                 out['selection'][sname] = dict(
-                    fast_equal_accuracy=(min(fea, key=lambda k: (arms[k]['ratio'], cand_stats(k)[1])) if fea else None),
+                    fast_equal_accuracy=(min(a_c, key=lambda k: (arms[k]['ratio'], cand_stats(k)[1])) if a_c else None),
                     accurate_equal_cost=(min(aec, key=lambda k: (cand_stats(k)[1], arms[k]['ratio'])) if aec else None))
+                h4['cheapest_equal_accuracy_diagnostic'] = (
+                    dict(key=min(fea, key=lambda k: (arms[k]['ratio'], cand_stats(k)[1])),
+                         ratio=arms[min(fea, key=lambda k: (arms[k]['ratio'], cand_stats(k)[1]))]['ratio'],
+                         label='diagnostic: cheapest eligible arm with worst and median anchor <= the comparator, no step or '
+                               'ratio constraint; NOT the registered fast-equal-accuracy selection') if fea else None)
         out['hypotheses'].setdefault('H4', {})[sname] = h4
         sel = out['selection'].get(sname, {})
         h4w = [(h4.get(k, {}).get('witnesses') or [None])[0] for k in ('H4a', 'H4b')]

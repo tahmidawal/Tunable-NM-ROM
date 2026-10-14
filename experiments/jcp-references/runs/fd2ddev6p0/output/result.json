@@ -1,0 +1,427 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "dev6",
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "kinds": [
+   "ST",
+   "S"
+  ]
+ },
+ "job": {
+  "job_id": "5217591",
+  "commit": "19ab153e946476c0824f02800bec6018f4371ecb",
+  "gpu": "NVIDIA A100 80GB PCIe",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "calib_status": "provisional",
+ "cohort": {
+  "name": "dev6",
+  "n": 6,
+  "sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "n_cases": 6
+ },
+ "cases": [
+  {
+   "case": 0,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.2979413974249933e-06,
+   "p": [
+    2.0379656202076246,
+    2.0268525533984065,
+    2.026024484861028,
+    2.0254010784755483,
+    2.0274202850168623
+   ],
+   "seconds": 325.97394366003573
+  },
+  {
+   "case": 0,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 4.04516750450996e-08,
+   "p": [
+    1.9999564264329115,
+    1.9999753377604816,
+    1.9999896891828548,
+    1.999999499225347,
+    2.000004612169653
+   ],
+   "seconds": 60.79599406803027
+  },
+  {
+   "case": 1,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 5.054166691346835e-06,
+   "p": [
+    1.9918154091519784,
+    1.9857279400540484,
+    1.9822059358610649,
+    1.9807990569663432,
+    1.9798475797297839
+   ],
+   "seconds": 331.06564470985904
+  },
+  {
+   "case": 1,
+   "kind": "S",
+   "outcome": "unresolved-floor",
+   "refined": false,
+   "tight": true,
+   "eps_ref": 5.682855852559924e-08,
+   "p": [
+    2.0000010877433447,
+    2.0000027415142068,
+    2.0000015503616106,
+    2.0000005858406715,
+    2.000000340759293
+   ],
+   "seconds": 1259.2253321739845
+  },
+  {
+   "case": 2,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 7.308479841780376e-06,
+   "p": [
+    1.9966276442938766,
+    1.9940829210682642,
+    1.9923913942228928,
+    1.99123778149128,
+    1.9903017687628108
+   ],
+   "seconds": 448.0494524128735
+  },
+  {
+   "case": 2,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.395103457134238e-07,
+   "p": [
+    2.0000029003480138,
+    2.000016435635327,
+    2.000024983612959,
+    2.0000280384493703,
+    2.0000280420413645
+   ],
+   "seconds": 127.6815327280201
+  },
+  {
+   "case": 3,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.7132195390691405e-06,
+   "p": [
+    1.986874476975279,
+    1.9420742405255076,
+    1.9206556198517957,
+    1.9032102889417764,
+    1.8856986010489867
+   ],
+   "seconds": 391.61576587567106
+  },
+  {
+   "case": 3,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.7862747194181352e-07,
+   "p": [
+    1.9998470766152185,
+    1.9999043256423295,
+    1.9999537632495645,
+    1.9999764723276543,
+    1.9999846282606222
+   ],
+   "seconds": 112.1004400709644
+  },
+  {
+   "case": 4,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.8383037767517785e-06,
+   "p": [
+    1.9971371563071578,
+    1.9951677292519523,
+    1.9912182917064187,
+    1.9896260681011777,
+    1.989291809351974
+   ],
+   "seconds": 340.51324028288946
+  },
+  {
+   "case": 4,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.3743330134661035e-07,
+   "p": [
+    2.000002036757835,
+    2.000001296609961,
+    1.9999975121160962,
+    1.99999968062584,
+    2.00000326352171
+   ],
+   "seconds": 64.58186133531854
+  },
+  {
+   "case": 5,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 4.947585007729046e-06,
+   "p": [
+    1.9925189073762894,
+    1.9880735536641194,
+    1.9843267770731667,
+    1.980614625708058,
+    1.9767913334075975
+   ],
+   "seconds": 325.083733655978
+  },
+  {
+   "case": 5,
+   "kind": "S",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.0997935133803847e-07,
+   "p": [
+    2.0000032040004068,
+    1.9999999012508294,
+    2.0000009408116957,
+    2.0000007005985765,
+    2.0000003583490735
+   ],
+   "seconds": 52.53889727080241
+  }
+ ],
+ "manifest": [
+  {
+   "file": "2d/dev6/ST/c000.npz",
+   "sha256": "f7eb1f2c20c4bdf56c549053f4c361aa1cff0f4326a834cc3dc9c7e6ac107931"
+  },
+  {
+   "file": "2d/dev6/ST/c000.json",
+   "sha256": "bc4131452bc54518a91443698d6fb69a1ae4e43ffe8d4c11f3bd5fc9017c61bf"
+  },
+  {
+   "file": "2d/dev6/S/c000.npz",
+   "sha256": "06be9768049beae87d906fa4bdde338746194149127b98a6c1203bc4ca9e4236"
+  },
+  {
+   "file": "2d/dev6/S/c000.json",
+   "sha256": "a15ca7b30c52dea58888b69e66ac5a0cf60c3d4072c393eec25e230362a8be28"
+  },
+  {
+   "file": "2d/dev6/ST/c001.npz",
+   "sha256": "40149628034260f7c5760f97535b771e1efa303359b683439e30ddc6635bdce2"
+  },
+  {
+   "file": "2d/dev6/ST/c001.json",
+   "sha256": "3b2c354fbf67c23bfed31f2e57810eaa2a9d62a8e604472f9ffb22daf3bd134f"
+  },
+  {
+   "file": "2d/dev6/S/c001.npz",
+   "sha256": "faaa6e090bb14da0e60987023c99f4901045e84d1953284090272611673689a1"
+  },
+  {
+   "file": "2d/dev6/S/c001.json",
+   "sha256": "f7afb5c7b53753c82275afaad84254f203851001af1da1a1d7cd80f9704dea50"
+  },
+  {
+   "file": "2d/dev6/ST/c002.npz",
+   "sha256": "f4a0bf2dfb92343a335a1b4a53ffaf09a3172e1a554e399219b56db549877666"
+  },
+  {
+   "file": "2d/dev6/ST/c002.json",
+   "sha256": "f29c54b0f13a10398e8a7148c495890a183c748b61fbf603d10fa47ea4a20c90"
+  },
+  {
+   "file": "2d/dev6/S/c002.npz",
+   "sha256": "c625076e793e5fe58f8b4060c75e5dc69f80c9708fd667d995b8e927ba2b4740"
+  },
+  {
+   "file": "2d/dev6/S/c002.json",
+   "sha256": "4a81675490bb3f88c26c798ec7dc44c720fa9af902bb2d73dcaa6f9487035c6c"
+  },
+  {
+   "file": "2d/dev6/ST/c003.npz",
+   "sha256": "be4ebba338bc6584c3ff92287ea0b90e1fa24e5ca1ede523cbe5c9080502b2f7"
+  },
+  {
+   "file": "2d/dev6/ST/c003.json",
+   "sha256": "f4528e2b64a901867b543eb89cce31b6ce8cbd5770ce2effdeca3f0d01c6615a"
+  },
+  {
+   "file": "2d/dev6/S/c003.npz",
+   "sha256": "5e3b1980ed7765e4b0a8e498967699f6da864b14d3f323c59eb19aa71b24e8c8"
+  },
+  {
+   "file": "2d/dev6/S/c003.json",
+   "sha256": "e6146babefde7abdee641a20b6920615f6f4464ca6f58d3e981f29e3a76cc394"
+  },
+  {
+   "file": "2d/dev6/ST/c004.npz",
+   "sha256": "eb3ff6713046013f548234d3e81cf09c62a0995db78e6abd972ad9ac7264d1f7"
+  },
+  {
+   "file": "2d/dev6/ST/c004.json",
+   "sha256": "754a6cba0a3ef7050fd388d72ea3b3fdaece84ba3b04d07ae87042574982121d"
+  },
+  {
+   "file": "2d/dev6/S/c004.npz",
+   "sha256": "2bc47c07c6e60469b1c277f1d4e695d87b9d1bb7258e7a584f69ead3d53a9500"
+  },
+  {
+   "file": "2d/dev6/S/c004.json",
+   "sha256": "e4a12575ea249aab4a9645dc7e44be82bb6c53562145a66baad87e70292eb976"
+  },
+  {
+   "file": "2d/dev6/ST/c005.npz",
+   "sha256": "9e2a8be640412065c87d58060e10fc90157504523d9ac7335f7cc040b442f538"
+  },
+  {
+   "file": "2d/dev6/ST/c005.json",
+   "sha256": "6c011c28b6d32a3abc6b81eeec70eb5be7ab3abb10f12449ddd0b90acacca12b"
+  },
+  {
+   "file": "2d/dev6/S/c005.npz",
+   "sha256": "19ecf4e4b8e73f5d0fe3410a518d1ef42674a65f51dc7f4618a527ce4f6c6ddf"
+  },
+  {
+   "file": "2d/dev6/S/c005.json",
+   "sha256": "709ed86f3ec2f93374f80742ec3d8d1819323ac6975173509424e3b03cbb61a4"
+  }
+ ],
+ "seconds": 3856.093589874916,
+ "peak_bytes": 16975360000
+}

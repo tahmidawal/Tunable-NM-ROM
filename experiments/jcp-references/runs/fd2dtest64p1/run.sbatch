@@ -1,8 +1,8 @@
 #!/bin/bash
 #SBATCH --job-name=jr_fd2dtest64p1
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:a100:1
-#SBATCH --constraint=a100-80G
+#SBATCH --gres=gpu:h200:1
+
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=120G
 #SBATCH --time=12:00:00

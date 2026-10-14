@@ -259,6 +259,11 @@ Cost method: c2fbgrid common panel (baseline: deployed R256 BE), median paired r
 - **Gauss 112³ at R′ = 1024 is infeasible** on a 141 GB H200 with the vendored table builder (smoke `smk3ext` failed out of memory, A11.3); the extension stops at 96³.
 - **B0 real-data mismatch control was non-discriminating** as an absolute test on the 2D smoke; it is now relative (A12).
 - **Offline scoring on the local GB10 GPU corrupted R′ = 1024 decodes** (caught by the G-score gate); all offline analysis runs on CPU (A8.1).
+- **Retracted: the first frozen 3D fast-equal-accuracy selection** (A15). It ignored H4a's step and 0.6-ratio constraints; under the registered rule no 3D fast-equal-accuracy arm exists. Caught by the Codex results audit before any 3D budget job ran; the retracted frozen file is kept in `checks/frozen-versions/`.
+- **Deployed 2D rules are too coarse for the selected second-order arms at `fast`, `acc` and R256** (finalist quadrature check, A14); the first-order selection verdicts stand, labelled "rule inadequate for this arm", and the fallbacks are reported beside them.
+- **First-order 2D/3D conclusions that change under E0** (A13): 2D H1 R256→R384 and R384→R512 were "reference-limited" against the first-order references and are resolved against E0 (see H1); 3D H6 was descriptive and two of its three transitions reverse direction against E0. The first-order numbers are kept beside the E0 ones and are superseded by them; the frozen selections are unchanged.
+- **The in-job 3D cohort-table hash is not stable across H200 nodes** (A11.4): the extension job is bound to the escalation job by the initial coefficients instead; offline scoring checks the CPU table hash.
+- **A leftover first-order reference access in `budget3d.py`** (G-score controls) was missed by the A13 code audit and caught when the smoke budget analysis was re-run; fixed before any production 3D budget analysis.
 
 ## Jobs
 

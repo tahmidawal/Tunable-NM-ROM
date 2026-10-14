@@ -166,19 +166,23 @@ W1024 extension (A11): pair statuses recomputed {'gl80|gl96': 'pass'} (agree wit
 
 ### 3D second-order grid (H4, H6) and speed-up
 
-Rule selection label carried by the grid: **POST HOC (DESIGN A10, A11 extension)**. Comparator: the deployed fixed-sweep BE at Δt₀ (K = 1) on the same bank, R′ and rule. Anchor discrepancy = distance to GAL-BDF2 at Δt₀/8 (time-converged, reference-free; H4 and the selections use only it). Reference errors: PROVISIONAL (first-order reference) - reference-limited (BE at dt0/4).
+Rule selection label carried by the grid: **POST HOC (DESIGN A10, A11 extension)**. Comparator: the deployed fixed-sweep BE at Δt₀ (K = 1) on the same bank, R′ and rule. Anchor discrepancy = distance to GAL-BDF2 at Δt₀/8 (time-converged, reference-free; H4 and the selections use only it). Reference errors: E0 second-order reference: accuracy against an order-verified reference for eligible case-kinds (flagged case-kinds are scored but not ranked); rankings conditional on eps_ref (a Richardson estimate under the asymptotic assumption, not a rigorous bound; the cross-check rule was amended post data, E0 A10); R_S is time-matched to the BE arms at dt0 only, every other S value is an unmatched diagnostic.
 
 | setting | rule | anchor-resolved cases | H4a | H4b | fast-equal-accuracy arm | time ratio | median anchor disc. | median ref. error | accurate-equal-cost arm | time ratio | median anchor disc. | median ref. error | BE median anchor disc. | BE median ref. error | cheapest equal-accuracy arm (diagnostic, ratio) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| M2_512 | gl32 | 63/64 | fail | pass | none | — | — | — | fs / BDF2 / 0.0125 / K1 | 0.874 | 5.97e-03 | 0.767 % | 1.53e-02 | 1.12 % | fs / BDF2 / 0.0125 / K1 (0.874) |
-| W256 | gl24 | 64/64 | fail | pass | none | — | — | — | fs / CN / 0.0125 / K1 | 0.848 | 1.13e-03 | 0.97 % | 1.56e-02 | 1.25 % | fs / CN / 0.0125 / K1 (0.848) |
-| W512 | lat32768 | 64/64 | fail | pass | none | — | — | — | fs / BDF2 / 0.0125 / K1 | 0.863 | 5.96e-03 | 0.764 % | 1.53e-02 | 1.11 % | fs / BDF2 / 0.0125 / K1 (0.863) |
-| W768 | lat32768 | 64/64 | fail | pass | none | — | — | — | fs / CN / 0.016666667 / K2 | 0.981 | 2.04e-03 | 0.924 % | 1.53e-02 | 1.1 % | fs / BDF2 / 0.016666667 / K2 (0.962) |
-| W1024 | lat65536 | 64/64 | fail | pass | none | — | — | — | fs / CN / 0.01 / K1 | 0.992 | 7.41e-04 | 0.806 % | 1.53e-02 | 1.1 % | fs / BDF2 / 0.016666667 / K2 (0.956) |
+| M2_512 | gl32 | 63/64 | fail | pass | none | — | — | — | fs / BDF2 / 0.0125 / K1 | 0.874 | 5.97e-03 | 0.642 % | 1.53e-02 | 1.57 % | fs / BDF2 / 0.0125 / K1 (0.874) |
+| W256 | gl24 | 64/64 | fail | pass | none | — | — | — | fs / CN / 0.0125 / K1 | 0.848 | 1.13e-03 | 0.589 % | 1.56e-02 | 1.68 % | fs / CN / 0.0125 / K1 (0.848) |
+| W512 | lat32768 | 64/64 | fail | pass | none | — | — | — | fs / BDF2 / 0.0125 / K1 | 0.863 | 5.96e-03 | 0.641 % | 1.53e-02 | 1.57 % | fs / BDF2 / 0.0125 / K1 (0.863) |
+| W768 | lat32768 | 64/64 | fail | pass | none | — | — | — | fs / CN / 0.016666667 / K2 | 0.981 | 2.04e-03 | 0.255 % | 1.53e-02 | 1.54 % | fs / BDF2 / 0.016666667 / K2 (0.962) |
+| W1024 | lat65536 | 64/64 | fail | pass | none | — | — | — | fs / CN / 0.01 / K1 | 0.992 | 7.41e-04 | 0.12 % | 1.53e-02 | 1.53 % | fs / BDF2 / 0.016666667 / K2 (0.956) |
 
 The registered fast-equal-accuracy arm is H4a's cheapest (Δt ≥ 1.25 Δt₀, anchor discrepancy no worse than the comparator, paired ratio ≤ 0.6); where H4a fails it is "none". The last column is a diagnostic only (A15: an earlier frozen selection used it by mistake and was retracted before any budget job).
 
-H6 (3D dial, descriptive, reference-limited): W256->W512: median change -21.2 %, improved 1, bars met True; W512->W768: median change +21.0 %, improved 0.0469, bars met False; W768->W1024: median change -12.8 %, improved 1, bars met True.
+H6 compares the **selected accurate-equal-cost configurations** along the dial (scheme, step and K change with R′ and the rule), so it is a statement about the deployed dial, not an isolated bank-width effect. Median / worst error of the selected arm per rung (E0): M2_512 0.642 % / 4.41 %; W256 0.589 % / 6.31 %; W512 0.641 % / 5.37 %; W768 0.255 % / 6.7 %; W1024 0.12 % / 5.57 %. The worst error rises at W512->W768 although the median bars are met.
+
+H6 (3D dial, against E0 with per-case ties at 2 ε_ref): W256->W512: **does not extend** (median change +8.9 %, resolved 63, improved/worsened 33/30, ties 1); W512->W768: **dial extends** (median change -60.2 %, resolved 64, improved/worsened 63/1, ties 0); W768->W1024: **dial extends** (median change -52.9 %, resolved 64, improved/worsened 64/0, ties 0).
+
+First-order H6 (PROVISIONAL, descriptive): W256->W512: median change -21.2 %, bars met True; W512->W768: median change +21.0 %, bars met False; W768->W1024: median change -12.8 %, bars met True.
 
 ![3D speed-up](plots/speedup3d.png)
 
@@ -328,6 +332,7 @@ Chronological; the opening statement of each audit (its verdict line). Every WRO
 | `audits/codex-results3d-1.md` | JOB GATE: HOLD both `c3budA` and `c3budW1024`. Their resource certificates pass, but the frozen fast-equal-accuracy selection violates the registered selection rule. |
 | `audits/codex-results2d-e0-1.md` | Overall: NEEDS-RESTATEMENT for provenance/reporting; the audited numerical results are CORRECT. No files were created, modified, or appended. |
 | `audits/codex-results3d-2.md` | JOB GATE: SUBMIT `c3budW1024` and `c3budA`. The round-1 selection blocker is resolved. |
+| `audits/codex-results3d-e0-1.md` | Overall: NEEDS-RESTATEMENT. The rescoring and A13 H6 calculations are correct. The interpretation must distinguish a selected-configuration dial from a bank-width effect, and reporting needs the qualifications below. No … |
 
 ## Glossary
 

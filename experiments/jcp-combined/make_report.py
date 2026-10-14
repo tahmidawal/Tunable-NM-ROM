@@ -522,6 +522,15 @@ def main():
           '(A15: an earlier frozen selection used it by mistake and was retracted before any budget job).', '')
         h6 = an3['hypotheses'].get('H6', {})
         if h6 and an3['refs'] == '3d_e0':
+            sel_ = an3['selection']
+            wst = {s_: an3['settings'][s_]['arms'][sel_[s_]['accurate_equal_cost']] for s_ in sel_ if sel_[s_].get('accurate_equal_cost')}
+            worse = [k for k, v in h6.items() if all(x in wst for x in k.split('->')) and
+                     wst[k.split('->')[1]]['worst_ref'] > wst[k.split('->')[0]]['worst_ref']]
+            r('H6 compares the **selected accurate-equal-cost configurations** along the dial (scheme, step and K change '
+              'with R′ and the rule), so it is a statement about the deployed dial, not an isolated bank-width effect. '
+              'Median / worst error of the selected arm per rung (E0): ' + '; '.join(
+                  f"{k} {pc(v['median_ref'])} / {pc(v['worst_ref'])}" for k, v in wst.items()) + '.'
+              + (f" The worst error rises at {', '.join(worse)} although the median bars are met." if worse else ''), '')
             r('H6 (3D dial, against E0 with per-case ties at 2 ε_ref): ' + '; '.join(
                 f"{k}: **{v['verdict']}** (median change {('%+.1f %%' % (100 * v['median_change']))}, resolved {v.get('resolved')}, "
                 f"improved/worsened {v.get('improved_resolved')}/{v.get('worsened_resolved')}, ties {v.get('ties')})"

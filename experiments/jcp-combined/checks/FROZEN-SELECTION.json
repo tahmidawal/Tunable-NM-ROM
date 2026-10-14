@@ -640,5 +640,81 @@
     ]
    }
   }
+ },
+ "3d_rules": {
+  "source": "checks/SELECTION-3D-POSTHOC.json",
+  "source_sha256": "fbb2ffba312f5604ffe346739f6b454b86959a58658d0b4c3ae68d60241bb255",
+  "posthoc": true,
+  "label": "POST HOC (DESIGN A10, A11 extension)",
+  "selection_arms": [
+   "fs|BE|0.01|K1",
+   "ad|LSPG|CN|0.025|tight"
+  ],
+  "settings": {
+   "W1024": {
+    "status": "selected",
+    "converged": "gl80",
+    "pre_registered_converged": null,
+    "deployed": "lat65536",
+    "fallbacks": [
+     "lat131072",
+     "unavailable"
+    ],
+    "posthoc": true,
+    "label": "POST HOC (DESIGN A10, A11 extension)"
+   },
+   "W768": {
+    "status": "selected",
+    "converged": "gl64",
+    "pre_registered_converged": null,
+    "deployed": "lat32768",
+    "fallbacks": [
+     "lat65536",
+     "lat131072",
+     "unavailable"
+    ],
+    "posthoc": true,
+    "label": "POST HOC (DESIGN A10, A11 extension)"
+   },
+   "M2_512": {
+    "status": "selected",
+    "converged": "gl56",
+    "pre_registered_converged": null,
+    "deployed": "gl32",
+    "fallbacks": [
+     "gl40",
+     "gl48",
+     "unavailable"
+    ],
+    "posthoc": true,
+    "label": "POST HOC (DESIGN A10, A11 extension)"
+   },
+   "W256": {
+    "status": "selected",
+    "converged": "gl56",
+    "pre_registered_converged": null,
+    "deployed": "gl24",
+    "fallbacks": [
+     "gl32",
+     "gl40",
+     "unavailable"
+    ],
+    "posthoc": true,
+    "label": "POST HOC (DESIGN A10, A11 extension)"
+   },
+   "W512": {
+    "status": "selected",
+    "converged": "gl56",
+    "pre_registered_converged": null,
+    "deployed": "lat32768",
+    "fallbacks": [
+     "lat65536",
+     "lat131072",
+     "unavailable"
+    ],
+    "posthoc": true,
+    "label": "POST HOC (DESIGN A10, A11 extension)"
+   }
+  }
  }
 }

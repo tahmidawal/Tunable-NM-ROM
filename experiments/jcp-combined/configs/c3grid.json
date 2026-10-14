@@ -1,0 +1,95 @@
+{
+ "attempt": "c3grid",
+ "driver": "c3run",
+ "mode": "grid",
+ "mesh": 65,
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "refined_ref": "REF3D",
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "conv_bar": 2.5e-05,
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "gl32",
+   "converged": "gl56"
+  },
+  {
+   "name": "W256",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "rule": "gl24",
+   "converged": "gl56"
+  },
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat32768",
+   "converged": "gl56"
+  },
+  {
+   "name": "W768",
+   "bank": "W1024",
+   "Rp": 768,
+   "a": 6,
+   "rule": "lat32768",
+   "converged": "gl64"
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat65536",
+   "converged": "gl80"
+  }
+ ],
+ "timing": {
+  "cases": 8,
+  "reps": 3,
+  "burn": 0.1,
+  "seed": 20261013,
+  "common_cases": 4,
+  "common_reps": 2,
+  "common_seed": 20261013
+ },
+ "grid": {
+  "dt_factors": [
+   1,
+   1.25,
+   1.6666666666666667,
+   2.5,
+   5
+  ],
+  "fs_schemes": [
+   "CN",
+   "CNR",
+   "BDF2"
+  ],
+  "Ks": [
+   1,
+   2
+  ],
+  "gal_factors": [
+   1,
+   2.5
+  ],
+  "anchor_factors": [
+   0.125,
+   0.0625
+  ]
+ },
+ "common_baseline": "W512",
+ "common_baseline_fallback": "M2_512",
+ "frozen_sha256": "306e226adba78c7b52a25d6946ddd88ed52e8a06fcf4c6052c223d8af3e25a8b",
+ "rule_selection_label": "POST HOC (DESIGN A10, A11 extension)",
+ "rule_selection_posthoc": true,
+ "settings_without_rule": []
+}

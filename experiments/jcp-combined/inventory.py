@@ -114,7 +114,7 @@ def project_3d(cfg, smokes, inv, rep):
     for s in cfg['settings']:
         Rp = int(s['Rp'])
         rlist = inv['settings'][s['name']]['runs']
-        tot, comp, calls, seen = 0., 0., [], set()
+        tot, comp, calls, seen, timed = 0., 0., [], set(), {}
         for item in rlist:
             rule, spec = (item if isinstance(item, (list, tuple)) else (s.get('rule'), item))
             rule = rule.replace(' (conditional)', '')
@@ -124,6 +124,10 @@ def project_3d(cfg, smokes, inv, rep):
             t = rates[f] * cost3(rule_points(rule), Rp, M_of(Rp)) * steps_of(spec)
             tot += t * ncases
             calls.append(t)
+            sp_ = spec.split('|')
+            if sp_[0] in ('fs', 'vendor') or (sp_[0] == 'ad' and sp_[-1] == 'tight' and
+                                              any(abs(float(sp_[3]) - f_ * .01) < 1e-12 for f_ in (1, 2.5))):
+                timed[spec] = t                    # a subject of the per-setting A-B-A panel (c3run grid mode, A4.3)
             if (rule, spec) not in seen:
                 comp += comps[f]
                 seen.add((rule, spec))
@@ -133,6 +137,11 @@ def project_3d(cfg, smokes, inv, rep):
                        and x[0].startswith('gl')), default=0)
             tA = rates[('fs', 'BE', 'K1')] * cost3(big, Rp, M_of(Rp)) * 25
             tt = nt * (2 / 3 * tA + 1 / 3 * float(np.max(calls)) + cfg['timing']['burn']) * (1 + 1 / 3)
+        elif cfg['mode'] == 'grid' and timed and 'fs|BE|0.01|K1' in timed:
+            # per-setting panel (A-B-A): two thirds of the invocations are the baseline A (fs BE dt0), one third a subject,
+            # every subject priced at the most expensive TIMED subject (not at the most expensive run of the grid)
+            tA = timed['fs|BE|0.01|K1']
+            tt = nt * (2 / 3 * tA + 1 / 3 * max(timed.values()) + cfg['timing']['burn']) * (1 + 1 / 3)
         else:
             tt = nt * (float(np.max(calls)) + cfg['timing']['burn']) * (1 + 1 / 3)
         detail[s['name']] = dict(rollouts_s=tot, compile_s=comp, timing_s=tt)

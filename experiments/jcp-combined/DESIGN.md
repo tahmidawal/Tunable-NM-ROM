@@ -1046,7 +1046,12 @@ same baseline in one job; ratio of the two medians). R256 at Gauss $128^2$ exist
 conditional jobs (A8.6): `c2fbgrid` (settings R256 at Gauss $96^2$ and R256fb at Gauss $128^2$; LSPG-BE and LSPG-CN-R at
 $\Delta t_0$ and $2\Delta t_0$, anchors; per-setting panels and a common panel with baseline the deployed R256 LSPG-BE at
 Gauss $96^2$; no FOM) and `c2fbbud` (the budget of R256fb with the two selected arms, the BE baseline and the GAL-CN
-diagnostic; finalist check against Gauss $320^2$/$640^2$). The fallback is "qualified" iff its finalist check passes and its
-cost against the deployed R256 BE in the common panel satisfies the arm's original cost criterion (accurate arm ≤ 1,
-fast arm: its error bar against the deployed BE as in A3.2). No fallback replaces a selection silently; both are
-reported side by side.
+diagnostic; finalist check against Gauss $320^2$/$640^2$). **A14.3 Qualification (after `audits/codex-a14-1.md`; the inherited gates, unchanged).** A fallback arm is "qualified"
+iff all of: every run verified on all 38 cases (accuracy), valid timing panel, its all-case finalist check passes
+($\delta_{\rm quad}\le\tau$ on every case and the converged-rule check), the applicable reproduction gates pass, and the
+arm's ORIGINAL selection criterion holds against the original deployed BE of its setting: for the accurate arm the
+paired time ratio $\le1$ (A3.2); for the fast arm accuracy feasibility — worst and median ST and TX errors no larger than
+the deployed BE's under A3.2's tie policy (cost is then only reported). For `fast` and `acc` the cost against the
+original deployed BE is estimated as the ratio of the two arms' median paired ratios in the `c2grid` common panel (a
+ratio of medians, not a directly measured paired median); for R256 it is measured directly in `c2fbgrid`'s common panel.
+No fallback replaces a selection silently; both are reported side by side, with the failing finalist verdict preserved.

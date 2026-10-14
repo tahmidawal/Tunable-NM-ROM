@@ -1,0 +1,92 @@
+{
+ "attempt": "c2bud",
+ "gpu": "a100-80G",
+ "gpu_gb": 80.0,
+ "requested_hours": 48.0,
+ "mem": "128G",
+ "fits": true,
+ "commit_at_certification": "0cd7891c9fdca5bd709938eb1da9a4861eed4c89",
+ "driver": "c2bud",
+ "config_sha256": "c2967ec2c404840af133f4d0a23241a2cc9dbe8072afde094f3769b973814f95",
+ "sources_sha256": {
+  "experiments/jcp-combined/c2bud.py": "02b6681bd2251bff21874db2ba9c17d65a81037c3ce55bc6ca562b9947af2274",
+  "experiments/jcp-combined/c2common.py": "7003fabf739fe3a11423d028919ff2b12ed61427771541aec3af26bd1ee0dd82",
+  "experiments/jcp-combined/c2grid.py": "b76712fdea3743aca21ac61280db596297652ce0e2c8fec4d93a311916ceb0b8",
+  "experiments/jcp-combined/checks/test_fs.json": "8899ffad1e6f62f2118f53efae99a1928a5401600010ec006edc772181692437",
+  "experiments/jcp-combined/fom2.py": "48be7dd905f0b9de046e9a780ef65ba1080535d18d05e1f561509388b7e4a8ec",
+  "experiments/jcp-combined/fs3.py": "8c7dd03b5619b873b7549ab29c66e2039bda8d9e3a1bea4c8ce349de373701ce",
+  "experiments/jcp-combined/inventory.py": "6d0a530d04ed12248cf8e4bd9c26f715b7b27f77ea4cc94a450f6848d281ae0d",
+  "experiments/jcp-combined/t2core.py": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9",
+  "experiments/jcp-combined/test_fs.py": "b6f51be2733f133e85076710a7264a75207109f45bc9ca487894ad2710458501",
+  "experiments/jcp-combined/test_lmm.py": "2bbb91a647bd718c45e64ab159f2171796868bb2bce1b8cec63c7ef7a2a053e4",
+  "experiments/jcp-combined/timing.py": "64361e6377257ba3b9b3cc8c7d00405a58577aa60543d4c1e42dbd36f70ede52",
+  "experiments/jcp-combined/vendor/quad2d/inputs/rotation_R512.npz": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+  "experiments/jcp-combined/vendor/quad2d/inputs/rule_q0_m1024_qrg304_reachable.npz": "6a32568f7b176b8774b31c8c96abf3da61b88dcf8b5ad657ced3f7c840ebe165",
+  "experiments/jcp-combined/vendor/quad2d/qcore.py": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b",
+  "experiments/jcp-combined/vendor/quad2d/qstudy.py": "58ec24ea916c062b96d1cae1adb1420e5c87f5b3408d3073d9c6bb9b5f3d35fe",
+  "experiments/jcp-combined/vendor/quad2d/vendor/arms.py": "093233a253d40d440ec909d4045619c9eeaee4c8a82c442dd917e3cc77541728",
+  "experiments/jcp-combined/vendor/quad2d/vendor/bkfast.py": "ccb6887006a93365e84030bfe835a5e2b9d7f65f4312beef006cbeb1bef12c82",
+  "experiments/jcp-combined/vendor/quad2d/vendor/hari_quadrature.py": "c6403d05e25a4ea5e4f4cc8879e94ac23f582d81b018571cf1abdb8da5d99fb6",
+  "experiments/jcp-combined/vendor/quad2d/vendor/hfast.py": "693b947c92ea4d65708eea4d1f6a17214901ce4712bc5e3dd8c4a91f3d339286",
+  "experiments/jcp-combined/vendor/quad2d/vendor/hops.py": "99a331f8ea549ec307fdf3235d7f11b57c059305136f264c3f2f74ad3e505820",
+  "experiments/mr-burgers2d/engines.py": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+  "experiments/mr-burgers2d/iterative_paths.py": "19f3add9e5f3e2498d2fd433be4a525fa6d4589c71ec15527a29bc6ae8ba3ba0",
+  "experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "experiments/separable-decoder/sep_common.py": "a74f0279b7e5299c6e4fd7b445f78e29d9567b5614fec060935e73da4fcdf1d4"
+ },
+ "smokes": [
+  {
+   "path": "runs/smk2bud/archive/output",
+   "job_id": "5213594",
+   "gpu": "NVIDIA A100 80GB PCIe",
+   "result_sha256": "a971aaf9fb4f80357e1f522682738a379072e1d60762aafe092a60e34a65309c",
+   "complete": true,
+   "smoke": true,
+   "gates_passed": true
+  }
+ ],
+ "detail": {
+  "fast": {
+   "rollouts_s": 8719.330495999893,
+   "compile_s": 38.36326229106635
+  },
+  "R128": {
+   "rollouts_s": 8719.330495999893,
+   "compile_s": 38.36326229106635
+  },
+  "R256": {
+   "rollouts_s": 8719.330495999893,
+   "compile_s": 38.36326229106635
+  },
+  "acc": {
+   "rollouts_s": 8719.330495999893,
+   "compile_s": 38.36326229106635
+  },
+  "R384": {
+   "rollouts_s": 8719.330495999893,
+   "compile_s": 38.36326229106635
+  },
+  "R512": {
+   "rollouts_s": 8719.330495999893,
+   "compile_s": 38.36326229106635
+  }
+ },
+ "priced_by_role_fallback": [
+  "check|LSPG|CNR|0.005|prod",
+  "check|LSPG|CNR|0.01|prod",
+  "conv|LSPG|CNR|0.005|prod",
+  "conv|LSPG|CNR|0.01|prod",
+  "main|GAL|CNR|0.005|tight",
+  "main|GAL|CNR|0.01|tight",
+  "main|LSPG|CNR|0.0025|tight",
+  "main|LSPG|CNR|0.005|prod",
+  "main|LSPG|CNR|0.005|tight",
+  "main|LSPG|CNR|0.01|prod",
+  "main|LSPG|CNR|0.01|tight"
+ ],
+ "projected_seconds": 52546.16254974576,
+ "projected_peak_gb": 40.820703436799995,
+ "projected_hours_with_margin": 21.8942343957274,
+ "fits_time": true,
+ "fits_memory": true
+}

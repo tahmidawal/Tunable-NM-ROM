@@ -237,6 +237,52 @@ def project_2d(cfg, smokes, inv, rep):
     return rep
 
 
+def project_bud2(cfg, smokes, inv, rep):
+    """2D budget (c2bud) projection: per run signature (role, form, scheme, tolerance level) the steady seconds per step
+    measured on the smoke (max over its settings and cases after the first; the smoke ran R' = 512 with the production
+    conv/check rules, the most expensive setting), a production run = rate x steps x every case (conservative: the
+    check runs actually use 16 or all cases); a signature the smoke did not run is priced at the most expensive measured
+    signature of the same role; compile = max (first - steady) per (setting, run). Memory = max smoke per-setting peak x
+    (768/640)^2 (the conditional successor rule Gauss 768^2 replaces 640^2)."""
+    rates, comps = {}, {}
+    for sm in smokes:
+        by = {}
+        for r in sm['rows']:
+            by.setdefault((r['setting'], r['run']), []).append(r)
+        for (st, run), rs in by.items():
+            role, form, sc, dt, lev = run.split('|')
+            steps = int(round(.25 / float(dt)))
+            steady = float(np.median([x['seconds_first'] for x in rs[1:]])) if len(rs) > 1 else float(rs[0]['seconds_first'])
+            f = (role, form, sc, lev)
+            rates[f] = max(rates.get(f, 0.), steady / steps)
+            comps[f] = max(comps.get(f, 0.), max(0., rs[0]['seconds_first'] - steady))
+    ncases = sum(len(cfg.get('case_subset', {}).get(c) or range(6 if c == 'dev6' else 32)) for c in cfg['cohorts'])
+    total, detail, fallbacks = 0., {}, set()
+    for st, runs in inv['runs'].items():
+        tot, comp = 0., 0.
+        for run in runs:
+            role, form, sc, dt, lev = run.split('|')
+            f = (role, form, sc, lev)
+            if f not in rates:
+                same = [v for k, v in rates.items() if k[0] == role]
+                if not same:
+                    return fail(rep, f'no smoke measurement for role {role}')
+                rt, cp = max(same), max(v for k, v in comps.items() if k[0] == role)
+                fallbacks.add(run)
+            else:
+                rt, cp = rates[f], comps[f]
+            tot += rt * int(round(.25 / float(dt))) * ncases
+            comp += cp
+        detail[st] = dict(rollouts_s=tot, compile_s=comp)
+        total += tot + comp
+    peaks = [v.get('peak_bytes', -1) for sm in smokes for v in sm['setup'].values()]
+    if not peaks or min(peaks) <= 0:
+        return fail(rep, 'a budget smoke lacks a positive per-setting peak')
+    rep.update(detail=detail, priced_by_role_fallback=sorted(fallbacks), projected_seconds=total,
+               projected_peak_gb=max(peaks) * (768 / 640) ** 2 / 1e9)
+    return rep
+
+
 def certificate_binding(attempt, driver):
     commit = subprocess.check_output(['git', '-C', str(HERE), 'rev-parse', 'HEAD'], text=True).strip()
     root = HERE.parents[1]
@@ -247,6 +293,12 @@ def certificate_binding(attempt, driver):
 
 def smoke_gates(sm):
     """Machinery gates a smoke must have passed to be used as resource evidence."""
+    if sm['config']['driver'] == 'c2bud':          # budget smoke: no timing panels; every row verified, conv check passed
+        return bool(sm.get('complete')) and bool(sm['rows']) and all(r['verified'] for r in sm['rows']) and \
+            all(v.get('conv_check', {}).get('passed') for v in sm['setup'].values())
+    if sm['config'].get('mode') == 'bud':          # 3D budget smoke: no timing panels; B1 bitwise sham passed
+        return bool(sm.get('complete')) and bool(sm['rows']) and \
+            all(v.get('B1_sham_bitwise', {}).get('all_equal') for v in sm['settings'].values())
     ext = all(s_.get('ext_rules') for s_ in sm['config']['settings'])   # A11 extension smoke: no timing panels by design
     ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and (ext or bool(sm.get('timing')))
     if ext:      # complete inventory: every planned rule (the last one omitted only after a passing A10 pair), every
@@ -309,7 +361,7 @@ def main():
                                               '--config', str(HERE / 'configs' / f'{a.attempt}.json'), '--out', '/dev/null',
                                               '--dry-run'], text=True, cwd=HERE))
     if rep['fits']:
-        (project_3d if cfg['driver'] == 'c3run' else project_2d)(cfg, smokes, inv, rep)
+        (project_3d if cfg['driver'] == 'c3run' else project_bud2 if cfg['driver'] == 'c2bud' else project_2d)(cfg, smokes, inv, rep)
     if rep.get('projected_seconds') is not None:
         rep['projected_hours_with_margin'] = 1.5 * rep['projected_seconds'] / 3600
         rep['fits_time'] = bool(rep['projected_hours_with_margin'] <= a.hours)

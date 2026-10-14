@@ -920,22 +920,42 @@ the "why did the fast CN worst case get worse" question; that investigation sele
 **A11.1 Finding (pre-registered and A10 outcomes).** At W1024 ($R'=1024$) no escalation pair passes, under either the
 pre-registered or the A10 axis, up to Gauss $80^3$: the fixed-sweep BE distance falls with the rule ($48^3$–$56^3$, $56^3$–$64^3$,
 $64^3$–$80^3$) but stays above the bar $2.5\times10^{-5}$ on **one case** (case 5 of cohort 923801), while every other case is
-orders of magnitude below it (`checks/SELECTION-3D-POSTHOC-W1024only.json`, per-case distances in the job's escalation
-record). At W768 the same case is the worst one and passes at ($64^3$, $80^3$). This answers the "why does J4 fail at
-$R'\ge768$" question: C1's failure (an under-resolved $48^3$ check) is driven by a single case whose quadrature converges
-slowly in the rule size, and that convergence is slower at $R'=1024$ than at $R'=768$. W1024's rule selection is therefore
+at least about 15 times below it at every pair (`checks/SELECTION-3D-POSTHOC-W1024only.json`, per-case distances in the job's escalation
+record). At W768 the same case is the worst one and passes the A10 and adaptive axes at ($64^3$, $80^3$) (its
+pre-registered axis stays unresolved because the fixed-sweep CN arm is ineligible, A10.1). This identifies what drives the
+"J4 fails at $R'\ge768$" observation: the quadrature disagreement between successive rules is concentrated in a single
+case whose successive-rule differences decrease slowly with the rule size, more slowly at $R'=1024$ than at $R'=768$; it
+is an identification of the driving case and its rule dependence, not a causal account of why that case is hard. W1024's rule selection is therefore
 **unavailable** under both A2.4 and A10, and is reported so.
 
 **A11.2 Escalation extension (post hoc, W1024 only).** To find whether a converged rule exists for W1024 at all, a separate
 job `c3extW1024` continues the escalation on all 64 cases with the two selection arms and their adaptive counterparts at
-Gauss $80^3$, $96^3$ and, only if ($80^3$, $96^3$) fails the A10 axis, $112^3$ (new rules from the vendored, unchanged
+Gauss $80^3$, $96^3$ and, unless ($80^3$, $96^3$) passes the A10 axis (i.e. on fail or unresolved), $112^3$ (new rules from the vendored, unchanged
 generator, `rules3d/make_rules_ext2.py`, sha256-pinned). Each consecutive pair gets the pre-registered selection axis,
 the adaptive axis and the A10 axis. The A2.4 order is continued: $r_\infty=80^3$ if ($80^3$, $96^3$) passes the A10 axis,
 else $96^3$ if ($96^3$, $112^3$) passes, else none. The extension's $80^3$ trajectories must reproduce the escalation job's
-$80^3$ trajectories (field distance $\le10^{-10}$ for every arm) or the extension is not used. The ladder, $m^\star$, the
-control requirement, $\tau$ and the cost are taken unchanged from `c3descW1024` (its ladder distances are recomputed
-against the new $r_\infty$, whose trajectories exist in that job for $80^3$ and in the extension for $96^3$).
+$80^3$ trajectories (field distance $\le10^{-10}$ for every arm) or the extension is not used. The ladder runs, the
+selection procedure for $m^\star$ (re-applied, not its earlier value), the control requirement, $\tau$ and the cost are
+those of `c3descW1024` (its ladder distances are recomputed against the new $r_\infty$, whose trajectories exist in that
+job for $80^3$ and in the extension for $96^3$). The selector accepts the extension only if its numerical contract (bank,
+$R'$, startup steps, mesh, `gtol`, trust fraction, bar, cohort, reference) and population equal the escalation job's
+(production: all 64 cases), all four arms' $80^3$ trajectories reproduce, and every extension pair status it recomputes
+from the trajectories and rows agrees with the job's. The extension is exploratory selection on the validation cohort
+motivated by its own outcome, not independent confirmation; case 5 is treated exactly like every other case.
 `select3d.py --posthoc --ext <archive>` implements it; its label is "POST HOC (DESIGN A10, A11 extension)". A cluster
-smoke `smk3ext` (two cases, $96^3$ and $112^3$) gates memory and rate before the production job, as for every job.
+smoke `smk3ext` (two cases, $96^3$ and $112^3$, the largest rule) gates memory and rate before the production job; its
+machinery gate has no timing panel by design (every planned rule run, every row valid, every pair finite). The local
+run `local3ext` (W256, Gauss $24^3$–$40^3$) is control-flow evidence only (it exercised the branch that runs the
+conditional rule; it was on the local GPU, which logged the XLA "Red zone" warning of A8.1).
 If no converged rule is found, W1024 is reported without a 3D grid (the R′ dial then ends at 768 in the second-order
 grid) and the extension distances are reported descriptively.
+
+## Amendment A12 (2026-10-13, after the budget smokes `smk3bud` 5212781 and `smk2bud` 5213594; before any production budget)
+
+**A12.1 B0 real-data mismatch control is relative.** The A3.5(iii) control (one term with a mismatched normaliser) was
+tested as an **absolute** defect $>10^{-6}$. Its value is about $99\,e_P^2$, which is below $10^{-6}$ whenever the projection
+floor $e_P$ is small: on the 2D budget smoke it was non-discriminating (the gate failed while every other B0 check passed).
+The control now uses the **relative** defect $|e_\star^2-(e_P/0.1)^2-e_{\rm dyn}^2|/e_\star^2$, the same normalisation as the B0
+gate itself ($\le10^{-10}$), and must exceed $10^{-6}$; the 3D budget uses the same definition. The budget smokes otherwise
+passed their machinery gates (B0 $\le10^{-10}$, analytic fixtures, B1 bitwise, inventory, job-row reproduction with every
+G-score control breaking; 3D B2 and B3 discriminating, converged-rule check passing); grid reproduction is not run in a smoke.

@@ -247,7 +247,14 @@ def certificate_binding(attempt, driver):
 
 def smoke_gates(sm):
     """Machinery gates a smoke must have passed to be used as resource evidence."""
-    ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and bool(sm.get('timing'))
+    ext = all(s_.get('ext_rules') for s_ in sm['config']['settings'])   # A11 extension smoke: no timing panels by design
+    ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and (ext or bool(sm.get('timing')))
+    if ext:                       # every planned rule run, every row valid and finite, every pair recorded with finite distances
+        for s_ in sm['config']['settings']:
+            x = sm['settings'][s_['name']].get('extension', {})
+            ok = ok and x.get('rules') == s_['ext_rules'][:len(x.get('rules', []))] and len(x.get('rules', [])) >= 2
+            ok = ok and all(np.isfinite(d['worst']) for p in x.get('pairs', {}).values() for d in p['posthoc'].values())
+        ok = ok and bool(sm['rows']) and all(r['valid'] is True for r in sm['rows'])
     if sm['config']['driver'] == 'c2grid':
         ok = ok and bool(sm['g1a']) and all(g.get('passed') for g in sm['g1a']) and all(r['verified'] for r in sm['rows'])
     else:

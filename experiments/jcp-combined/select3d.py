@@ -96,7 +96,7 @@ def main():
     import c3common as C3
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
     i65 = C3.lattice65_index(65)
-    out = dict(tau=TAU, families=FAMILIES, control=CONTROL, selection_arms=sel, timed_arms=TIMED,
+    out = dict(smoke_inputs=False, tau=TAU, families=FAMILIES, control=CONTROL, selection_arms=sel, timed_arms=TIMED,
                posthoc=bool(a.posthoc),
                label=('POST HOC (DESIGN A10' + (', A11 extension' if EXT else '') + ')') if a.posthoc else 'pre-registered',
                extension_inputs=[dict(path=str(v[0]), job_id=v[1].get('job_id'), gpu=v[1].get('gpu'),
@@ -107,6 +107,7 @@ def main():
         res = json.loads((rp / 'result.json').read_text())
         if res['config'].get('smoke') and not a.allow_smoke:
             raise SystemExit(f'{rp}: smoke result refused')
+        out['smoke_inputs'] = out['smoke_inputs'] or bool(res['config'].get('smoke'))
         assert res.get('complete') and res['mode'] == 'esc', rp
         out['inputs'].append(dict(path=str(rp), job_id=res.get('job_id'), gpu=res.get('gpu'),
                                   result_sha256=hashlib.sha256((rp / 'result.json').read_bytes()).hexdigest()))
@@ -138,35 +139,71 @@ def main():
                 return z_[f'{sname}|{rule}|{sk}']
             if a.posthoc and conv is None and sname in EXT:
                 # A11: extension pairs in the A2.4 order continued (gl80 if (gl80, gl96) passes the A10 axis, else gl96 if
-                # (gl96, gl112) passes); the extension's re-run of gl80 must reproduce this job's gl80 trajectories
+                # (gl96, gl112) passes). Accepted only if (codex-a11-1 items 6, 7): the numerical contract matches this
+                # job's setting; the population is this job's (production: all 64 cases of 923801); every arm's gl80
+                # trajectories reproduce this job's to <= 1e-10 (all four arms, complete); and every extension pair status
+                # is RECOMPUTED here from the trajectories, the rows and this job's bar and agrees with the job's.
                 xp, xr, xz = EXT[sname]
-                assert xr['config']['cohort_seed'] == cfg['cohort_seed'] and \
-                    (xr['config'].get('case_subset') or list(range(xr['config']['cohort_count']))) == list(cases)
+                xc = xr['config']
+                xs_cfg = next(t for t in xc['settings'] if t['name'] == sname)
+                for k_ in ('bank', 'Rp', 'a'):
+                    assert xs_cfg[k_] == s[k_], ('extension contract', k_)
+                for k_ in ('mesh', 'gtol', 'trust_fraction', 'conv_bar', 'cohort_seed', 'cohort_count', 'refined_ref'):
+                    assert xc[k_] == cfg[k_], ('extension contract', k_)
+                assert (xc.get('case_subset') or list(range(xc['cohort_count']))) == list(cases)
+                assert bool(xc.get('smoke')) == bool(cfg.get('smoke')), 'smoke and production archives cannot be mixed'
+                if not cfg.get('smoke'):
+                    assert cfg['cohort_seed'] == 923801 and list(cases) == list(range(64)), 'production population'
                 xs = xr['settings'][sname]['extension']
+                ARMS = SEL + ['ad|LSPG|BE|0.01|tight', SEL_POSTHOC[1]]
+
+                def xW(rule, sk):
+                    assert ids_of(xr, xz, sname, rule, sk) == list(cases), ('extension case ids', rule, sk)
+                    return xz[f'{sname}|{rule}|{sk}']
+
+                def fd(A_, B_):
+                    d_ = np.linalg.norm(np.einsum('cki,ip->ckp', A_ - B_, G), axis=2) / n0[:, None]
+                    per_ = d_[:, 1:].max(1)
+                    return float(per_.max()) if np.isfinite(per_).all() else float('nan')
                 repro = {}
-                for sk in SEL + SEL_POSTHOC[1:] + ['ad|LSPG|BE|0.01|tight']:
-                    if f'{sname}|gl80|{sk}' in xz.files and f'{sname}|gl80|{sk}' in Wz.files:
-                        assert ids_of(xr, xz, sname, 'gl80', sk) == ids_of(res, Wz, sname, 'gl80', sk) == list(cases)
-                        d_ = np.linalg.norm(np.einsum('cki,ip->ckp', xz[f'{sname}|gl80|{sk}'] - Wz[f'{sname}|gl80|{sk}'], G),
-                                            axis=2) / n0[:, None]
-                        repro[sk] = float(np.nanmax(d_)) if np.isfinite(d_).all() else float('nan')
-                rep_ok = bool(repro) and all(np.isfinite(v) and v <= 1e-10 for v in repro.values())
-                xst = {k: v['posthoc_status'] for k, v in xs['pairs'].items()}
+                for sk in ARMS:
+                    A_, B_ = xW('gl80', sk), W_of('gl80', sk)
+                    assert A_.shape == B_.shape == (len(cases), 6, int(s['Rp'])), sk
+                    repro[sk] = fd(A_, B_)
+                rep_ok = all(np.isfinite(v) and v <= 1e-10 for v in repro.values()) and len(repro) == len(ARMS)
+
+                def xelig(rule, sk):
+                    rows_ = [r for r in xr['rows'] if r['setting'] == sname and r['rule'] == rule and r['spec'] == sk]
+                    ok_ = sorted(r['case'] for r in rows_) == sorted(cases) and all(r['valid'] is True for r in rows_)
+                    if sk.startswith('fs|'):
+                        adx = 'ad|LSPG|BE|0.01|tight' if sk == SEL[0] else SEL_POSTHOC[1]
+                        ok_ = ok_ and xelig(rule, adx) and fd(xW(rule, sk), xW(rule, adx)) <= 2.5e-4
+                    return bool(ok_)
+                recomputed, agree = {}, True
+                for pk, pv in xs['pairs'].items():
+                    r1, r2 = pk.split('|')
+                    sts = []
+                    for sk in (SEL[0], SEL_POSTHOC[1]):
+                        w_ = fd(xW(r1, sk), xW(r2, sk))
+                        sts.append('unresolved' if not (xelig(r1, sk) and xelig(r2, sk)) or not np.isfinite(w_)
+                                   else ('pass' if w_ <= cfg['conv_bar'] else 'fail'))
+                    st_ = 'unresolved' if 'unresolved' in sts else ('pass' if all(x_ == 'pass' for x_ in sts) else 'fail')
+                    recomputed[pk] = st_
+                    agree = agree and st_ == pv['posthoc_status']
                 xconv = None
-                if rep_ok:
-                    xconv = 'gl80' if xst.get('gl80|gl96') == 'pass' else ('gl96' if xst.get('gl96|gl112') == 'pass' else None)
-                ent['extension'] = dict(path=str(xp), job_id=xr.get('job_id'), pair_status=xst, reproduction_gl80=repro,
-                                        reproduction_passed=rep_ok, converged=xconv,
+                if rep_ok and agree:
+                    xconv = 'gl80' if recomputed.get('gl80|gl96') == 'pass' else \
+                        ('gl96' if recomputed.get('gl96|gl112') == 'pass' else None)
+                ent['extension'] = dict(path=str(xp), job_id=xr.get('job_id'), pair_status_job=
+                                        {k: v['posthoc_status'] for k, v in xs['pairs'].items()},
+                                        pair_status_recomputed=recomputed, statuses_agree=agree,
+                                        reproduction_gl80=repro, reproduction_passed=rep_ok, converged=xconv,
                                         worst={k: {kk: vv['worst'] for kk, vv in v['posthoc'].items()} for k, v in xs['pairs'].items()})
                 conv = xconv
                 ent['posthoc_converged'] = conv
                 for r_ in xs['rules']:
-                    if r_ not in ('gl80',):
+                    if r_ != 'gl80':
                         src[r_] = (xr, xz)
-                for r_, e_ in xs['rule_eligibility'].items():
-                    if r_ not in ('gl80',):
-                        S.setdefault('escalation_rule_eligibility', {})[r_] = {k: v for k, v in e_.items() if k in SEL}
-                        S['escalation_rule_eligibility'][r_][SEL_POSTHOC[1]] = dict(eligible=bool(e_[SEL_POSTHOC[1]]['eligible']))
             base = conv or S['ladder_baseline']['rule']
             elig = dict(S.get('escalation_rule_eligibility', {}), **S.get('ladder_eligibility', {}))
             if a.posthoc:                     # adaptive arm: eligible iff every run of the rule is valid (A5.1), from the rows

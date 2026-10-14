@@ -192,7 +192,8 @@ def main():
                     eP, edyn, es = (np.linalg.norm(X, axis=1) for X in (Rn - PR, U['star'] - PR, U['star'] - Rn))
                     d.update(e_P=eP.tolist(), e_dyn=edyn.tolist(), e_star=es.tolist(),
                              B0=[float(abs(es[k] ** 2 - eP[k] ** 2 - edyn[k] ** 2) / max(es[k] ** 2, 1e-300)) for k in range(1, 6)],
-                             B0_mismatch=float(abs(es[5] ** 2 - (eP[5] / .1) ** 2 - edyn[5] ** 2)))       # pinned A3.5(iii)
+                             B0_mismatch=float(abs(es[5] ** 2 - (eP[5] / .1) ** 2 - edyn[5] ** 2)
+                                               / max(es[5] ** 2, 1e-300)))       # pinned A3.5(iii), relative (A12.1)
                     ts = 1 + int(np.argmax(es[1:]))
                     d['orthogonal_pair_at_tstar'] = dict(t_star=ts, e_star=float(es[ts]), e_P=float(eP[ts]), e_dyn=float(edyn[ts]))
                     if d['D_a'][1] is not None and d['e_tot'][1] is not None:

@@ -217,7 +217,9 @@ def main():
                     d[f'e_dyn_{t}'] = edyn.tolist() if need('star') else NA
                     d[f'B0_{t}'] = [float(abs(es[j] ** 2 - eP[j] ** 2 - edyn[j] ** 2) / max(es[j] ** 2, 1e-300)) for j in range(1, 6)]
                     # B0 fixture (iii) on real data: one term with a mismatched normaliser must break the identity
-                    d[f'B0_mismatch_{t}'] = float(abs(es[5] ** 2 - (eP[5] / .1) ** 2 - edyn[5] ** 2))     # A3.5(iii)
+                    # A12.1: RELATIVE defect (the B0 gate's own normalisation); the absolute defect is ~ 99 e_P^2, which is
+                    # below 1e-6 whenever the projection floor is small, so the absolute test was non-discriminating
+                    d[f'B0_mismatch_{t}'] = float(abs(es[5] ** 2 - (eP[5] / .1) ** 2 - edyn[5] ** 2) / max(es[5] ** 2, 1e-300))
                     d[f'init_fit_{t}'] = float(np.linalg.norm(U['a'][0] - Rn[0]))
                     ts = 1 + int(np.argmax(es[1:]))
                     d[f'orthogonal_pair_at_tstar_{t}'] = (dict(t_star=ts, e_star=float(es[ts]), e_P=float(eP[ts]), e_dyn=float(edyn[ts]))

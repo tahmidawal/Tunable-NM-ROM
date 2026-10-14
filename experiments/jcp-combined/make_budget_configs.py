@@ -11,7 +11,7 @@ from pathlib import Path
 import make_configs as MC
 
 HERE = Path(__file__).resolve().parent
-FINER = {'gl56': 'gl64', 'gl64': 'gl80'}
+FINER = {'gl56': 'gl64', 'gl64': 'gl80', 'gl80': 'gl96', 'gl96': 'gl112'}      # A11 successors
 
 
 def main():

@@ -11001,3 +11001,1810 @@ RUN W256 gl40 ad|LSPG|CN|0.025|tight 4.2s eligible True 0 / 10 851.7
 PAIR W256 gl32 gl40 pass pass pass 851.8
 C3RUN COMPLETE
 
+exec
+/bin/bash -lc "sed -n '1,450p' experiments/jcp-combined/c3run.py" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+"""jcp-combined 3D driver (DESIGN 3.2, 3.3, 8; A1.0, A1.2, A1.6, A1.7, A2.1, A2.4, A2.5, A2.11, A3.4, A4). Modes:
+
+  esc   (`c3desc`) J4 escalation and rule-selection data. Per setting: escalation Gauss rules (W768/W1024: 48^3, 56^3,
+        64^3; others 56^3, 64^3) under the two fixed-sweep SELECTION arms (BE dt0 K=1; LSPG-CN 2.5 dt0 K=2, A6.3) and the two
+        adaptive DIAGNOSTIC arms (LSPG-BE dt0 tight; LSPG-CN 2.5 dt0 tight), all cases; the CN selection arm uses K = 2 (A6.3). Per rule pair (A2.5):
+        selection_pair_status / adaptive_diagnostic_status in {pass, fail, unresolved}: pass iff every arm of the axis
+        has eligible runs on both rules (A6.2: fixed-sweep arms valid and within 2.5e-4 of the adaptive tight solve of the
+        same scheme and step; adaptive arms every step verified) and worst distance <= conv_bar; unresolved iff some arm
+        is ineligible or a distance is non-finite; fail otherwise.
+        Converged rule (A2.4) = 56^3 if (56^3, 64^3) passes the selection axis, else 64^3 if (64^3, 80^3) passes (80^3 is
+        run only then), else none. Fixed-vs-adaptive sensitivities per rule (same scheme and step). Operator check on
+        the reached states of the 64^3 adaptive LSPG-BE run (A1.7). Then the ladder under the two selection arms AND their
+        adaptive counterparts (A6.2 eligibility per candidate rule, A7.1) and an A-B-A family panel per ladder rule
+        (A = converged rule's fixed BE dt0).
+  grid  (`c3grid`) per setting with its frozen deployed rule: G-FS1 first (vendor vs fs BE dt0 K=1, per case; A2.1:
+        exact or approved-equivalent, otherwise the job stops) with the CN negative control on the first case; then
+        fixed-sweep BE and CN / CN-R / BDF2 (K = 1, 2) on the step ladder, adaptive LSPG probes (tight, tighter) of every
+        scheme and step, adaptive GAL-CN (tight), anchors GAL-BDF2 dt0/8 and dt0/16 (tight, tighter); per-setting A-B-A
+        panel (A = fs BE dt0; B = every fixed-sweep candidate, the vendor, and the adaptive tight arms at dt0 and 2.5 dt0,
+        A4.3); one common panel (baseline W512 fs BE dt0, fallback M2_512; every fs candidate with dt >= dt0).
+Every timing panel checks that each timed output's W sha256 equals the accuracy-phase W (A and B, every invocation) and
+applies the 10 % drift gate per subject (timing.panel_validity, A5.3); a failing panel is marked timing-invalid.
+Residency: escalation rules are dropped after use (64^3 kept for the operator check); ladder rules one at a time; grid
+mode keeps each setting's deployed rule for the common panel (deployed rules are <= the ladder sizes).
+Saved: W (6, R') of every run per case (W_<mode>.npz, keys setting|rule|spec), w0 per setting, full per-step evidence,
+refined errors per time on the 63^3 lattice (in-job mesh-row decode; score.py recomputes independently), peak device
+memory per setting, the run inventory, result.json.
+
+    python c3run.py --config configs/<attempt>.json --out <dir> [--dry-run]
+"""
+from __future__ import annotations
+
+import argparse
+import gc
+import json
+import sys
+import time
+from pathlib import Path
+
+import numpy as np
+import c3common as C3
+import timing as TM
+from c3common import C, TB, OM, DT0, jax, jnp, sha
+
+SEL = [('fs', 'BE', DT0, 1), ('fs', 'CN', 2.5 * DT0, 2)]          # A6.3: CN selection arm K = 2
+DIAG = [('ad', 'LSPG', 'BE', DT0, 'tight'), ('ad', 'LSPG', 'CN', 2.5 * DT0, 'tight')]
+
+
+def grid_specs(g):
+    sp = []
+    for f in g['dt_factors']:
+        dt = DT0 * f
+        sp.append(('fs', 'BE', dt, 1))
+        for sc in g['fs_schemes']:
+            for K in g['Ks']:
+                sp.append(('fs', sc, dt, K))
+        for sc in ['BE'] + g['fs_schemes']:
+            for lev in ('tight', 'tighter'):
+                sp.append(('ad', 'LSPG', sc, dt, lev))
+    for f in g['gal_factors']:
+        sp.append(('ad', 'GAL', 'CN', DT0 * f, 'tight'))
+    for f in g['anchor_factors']:
+        for lev in ('tight', 'tighter'):
+            sp.append(('ad', 'GAL', 'BDF2', DT0 * f, lev))
+    return sp
+
+
+H8, H16 = DT0 / 8, DT0 / 16
+
+
+def bud_specs(arms):
+    """3D budget runs (A1.4, A1.5) as (role, spec): role 'r' = deployed rule, 'conv' = r_inf, 'finer' = next finer."""
+    out = []
+    add = lambda x: out.append(x) if x not in out else None
+    for x in arms:
+        sp = tuple(x['spec'])
+        if sp[0] == 'vendor':
+            sc, dt, K = 'BE', DT0, 1
+        else:
+            _, sc, dt, K = sp
+        add(('r', sp))
+        add(('conv', sp))
+        add(('r', ('ad', 'LSPG', sc, dt, 'tight')))
+        add(('r', ('ad', 'GAL', sc, dt, 'tight')))
+        add(('r', ('fs', 'BDF2', H8, K)))
+        add(('r', ('ad', 'LSPG', sc, dt / 2, 'tight')))
+        add(('conv', ('fs', 'BDF2', H8, K)))
+        add(('r', ('ad', 'LSPG', 'BDF2', H8, 'tight')))
+        if x.get('selected'):
+            add(('finer', sp))
+    for r in [('conv', ('ad', 'GAL', 'BDF2', H8, 'tight')), ('conv', ('ad', 'GAL', 'BDF2', H16, 'tight')),
+              ('conv', ('ad', 'GAL', 'BDF2', H8, 'tighter')), ('conv', ('ad', 'GAL', 'BDF2', H16, 'tighter')),
+              ('r', ('ad', 'GAL', 'BDF2', H8, 'tight')), ('conv', ('ad', 'LSPG', 'BDF2', H8, 'tight'))]:
+        add(r)
+    return out
+
+
+def timed_adaptive(x):
+    return x[0] == 'ad' and x[4] == 'tight' and (abs(x[3] - DT0) < 1e-12 or abs(x[3] - 2.5 * DT0) < 1e-12)
+
+
+def nsteps(spec):
+    return 25 if spec[0] == 'vendor' else int(round(.25 / (spec[2] if spec[0] == 'fs' else spec[3])))
+
+
+def inventory(cfg):
+    """A2.12 run inventory per case (incl. conditional successors) and timing invocations."""
+    inv = dict(mode=cfg['mode'], cases=len(cfg.get('case_subset') or range(cfg['cohort_count'])), settings={})
+    tc = cfg['timing']
+    for s in cfg['settings']:
+        if cfg['mode'] == 'grid':
+            sp = [('vendor',)] + grid_specs(cfg['grid'])
+            nt = len([x for x in sp if (x[0] in ('fs', 'vendor') and x != ('fs', 'BE', DT0, 1)) or timed_adaptive(x)])
+            inv['settings'][s['name']] = dict(runs=[C3.spec_key(x) for x in sp], steps_per_case=sum(nsteps(x) for x in sp),
+                                              timing_invocations=3 * nt * tc['cases'] * tc['reps'])
+        elif cfg['mode'] == 'bud':
+            runs = [(s[role] if role != 'r' else s['rule'], C3.spec_key(sp)) for role, sp in bud_specs(s['arms'])]
+            runs += [(s['finer'], C3.spec_key(sp)) for role, sp in bud_specs(s['arms']) if role == 'conv']
+            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=0)
+        elif s.get('ext_rules'):                      # A11 extension: last rule conditional, no panels
+            runs = [(r, C3.spec_key(x)) for r in s['ext_rules'][:-1] for x in SEL + DIAG]
+            runs += [(s['ext_rules'][-1] + (' (conditional)' if len(s['ext_rules']) >= 3 else ''), C3.spec_key(x))
+                     for x in SEL + DIAG]
+            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=0)
+        else:
+            runs = [(r, C3.spec_key(x)) for r in s['esc_rules'] for x in SEL + DIAG]
+            runs += [('gl80 (conditional)', C3.spec_key(x)) for x in SEL + DIAG]
+            runs += [(r, C3.spec_key(x)) for r in s['ladder'] for x in SEL + DIAG]
+            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=3 * (2 * len(s['ladder']) + 1) * tc['cases'] * tc['reps'])
+    return inv
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--config', required=True)
+    ap.add_argument('--out', required=True)
+    ap.add_argument('--dry-run', action='store_true')
+    a = ap.parse_args()
+    cfg = json.loads(Path(a.config).read_text())
+    mode = cfg['mode']
+    if a.dry_run:
+        print(json.dumps(inventory(cfg), indent=1))
+        return
+    out = Path(a.out)
+    out.mkdir(parents=True, exist_ok=True)
+    C3.check_env(cfg)
+    begin = time.perf_counter()
+    el = lambda: round(time.perf_counter() - begin, 1)
+    n = int(cfg['mesh'])
+    assert n == 65, 'the in-job lattice decode uses the 65-node mesh rows (interior = the 63^3 lattice)'
+    rep = dict(config=cfg, mode=mode, commit=C3.os.environ.get('SOURCE_COMMIT'), job_id=C3.os.environ.get('SLURM_JOB_ID'),
+               backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=C3.gpu_info(),
+               jax_version=jax.__version__, mesh=n, offmesh_sha256=C3.sha_file(OM.__file__),
+               fs3_sha256=C3.sha_file(C3.HERE / 'fs3.py'), inventory=inventory(cfg), settings={}, rows=[], timing={},
+               complete=False)
+    save = lambda: C.dump(out / 'result.json', C.clean(rep))
+    tab, cases, REF = C3.load_cohort(cfg, rep)
+    rules = C3.load_rules()
+    U0 = {j: jax.block_until_ready(jnp.asarray(C.initial_interior(n, tab, j))) for j in cases}
+    NU = {j: float(tab['nu'][j]) for j in cases}
+    N0 = np.array([float(jnp.linalg.norm(U0[j])) for j in cases])
+    N0R = {j: float(np.linalg.norm(REF[j][0])) for j in cases}
+    i65 = np.asarray(C3.lattice65_index(n))
+    for j in cases:
+        assert float(np.abs(np.asarray(U0[j])[i65] - REF[j][0]).max()) <= 1e-12 * max(1., np.abs(REF[j][0]).max())
+    tables, banks = {}, {}
+    for bname in sorted({s['bank'] for s in cfg['settings']}):
+        banks[bname] = C3.load_bank(bname)
+        tables[bname] = C3.Tables(n, banks[bname], sorted({int(s['Rp']) for s in cfg['settings'] if s['bank'] == bname}),
+                                  log=lambda s_: print(s_, flush=True))
+    print('SETUP', el(), flush=True)
+    Wstore, w0store, acc_sha, live, Cstore = {}, {}, {}, {}, {}
+    tc = cfg['timing']
+
+    def dump():
+        np.savez_compressed(out / f'W_{mode}.npz', **Wstore, **{f'w0|{k}': v for k, v in w0store.items()},
+                            **{f'cases|{k}': v for k, v in Cstore.items()})
+
+    def rollouts(sname, sol, rule, prep, specs, lean):
+        """Run specs on every case. Returns {speckey: dict(W (cases, 6, R'), recs, elig)}."""
+        res = {}
+        for spec in specs:
+            sk = C3.spec_key(spec)
+            arr = np.full((len(cases), 6, sol.Rp), np.nan)
+            recs = []
+            t_s = time.perf_counter()
+            for ci, j in enumerate(cases):
+                t1 = time.perf_counter()
+                o, W, w0 = sol.run(spec, U0[j], NU[j], prep)
+                jax.block_until_ready(o)
+                secs = time.perf_counter() - t1
+                W, w0 = np.asarray(W), np.asarray(w0)
+                arr[ci] = W
+                if sname not in w0store:
+                    w0store[sname] = np.full((len(cases), sol.Rp), np.nan)
+                if np.isnan(w0store[sname][ci]).all():
+                    w0store[sname][ci] = w0
+                assert np.array_equal(w0, w0store[sname][ci]), 'initial coefficients differ across runs (A1.4)'
+                v = C3.run_valid(spec, o)
+                ns_, st_ = C3.nonstationary(spec, o)
+                recs.append((v, ns_, st_))
+                F = np.asarray(TB.decode(jnp.asarray(W), lean))       # mesh rows; at n = 65 the interior is the lattice
+                e = np.linalg.norm(F - REF[j], axis=1) / N0R[j]
+                row = dict(setting=sname, rule=rule, spec=sk, case=j, valid=v, nonstationary=ns_, steps_n=st_,
+                           seconds_first=secs, e_ref_per_time=e.tolist(), e_ref=float(e[1:].max()),
+                           steps=C3.step_record(spec, o))
+                if spec[0] == 'fs':
+                    row['a_eff'] = sol.fs(spec[1], spec[2], spec[3]).a_eff
+                rep['rows'].append(row)
+                if ci < tc['cases']:
+                    acc_sha[(sname, rule, sk, ci)] = sha(W)
+                del o
+            el_ = C3.pooled_eligible(recs)
+            res[sk] = dict(W=arr, recs=recs, elig=el_)
+            Wstore[f'{sname}|{rule}|{sk}'] = arr
+            Cstore[f'{sname}|{rule}|{sk}'] = np.array(list(cases))           # explicit case ids (codex-code-4 item 3)
+            print('RUN', sname, rule, sk, f'{time.perf_counter() - t_s:.1f}s', 'eligible', el_['eligible'],
+                  el_['nonstationary'], '/', el_['steps'], el(), flush=True)
+        return res
+
+    def dist(A_, B_, Lt):
+        """per case: max over evolved times of ||G^T (a - b)|| / ||u0||, Gram G G^T = L L^T, rows (a - b) @ L = @ Lt.T."""
+        d = np.linalg.norm(np.einsum('cki,ji->ckj', A_ - B_, Lt), axis=2) / N0[:, None]
+        per = d[:, 1:].max(1)
+        return (float(per.max()) if np.isfinite(per).all() else float('nan')), per.tolist()
+
+    def time_panel(label, A, Bs, get, seed, ncases, reps):
+        """A-B-A panel; A, Bs = (setting, rule, spec); get(setting, rule) -> (sol, prep)."""
+        name = lambda x: f'{x[0]}|{x[1]}|{C3.spec_key(x[2])}'
+
+        def one(x, ci):
+            sol, prep = get(x[0], x[1])
+            j = cases[ci]
+            C3.burn(tc['burn'])
+            t1 = time.perf_counter()
+            o, W, _ = sol.run(x[2], U0[j], NU[j], prep)
+            jax.block_until_ready(o)
+            secs = time.perf_counter() - t1
+            return secs, sha(np.asarray(W)), acc_sha.get((x[0], x[1], C3.spec_key(x[2]), ci))
+        for x in [A] + Bs:
+            for ci in range(ncases):
+                one(x, ci)
+        rng = np.random.default_rng(seed)
+        inv = []
+        for rr in range(reps):
+            order_ = [(b, ci) for b in range(len(Bs)) for ci in range(ncases)]
+            rng.shuffle(order_)
+            for b, ci in order_:
+                ta1, h1, e1 = one(A, ci)
+                tb, hb, eb = one(Bs[b], ci)
+                ta2, h2, _ = one(A, ci)
+                inv.append(dict(B=name(Bs[b]), case=cases[ci], rep=rr, tA1=ta1, tB=tb, tA2=ta2, ratio=tb / (.5 * (ta1 + ta2)),
+                                drift=ta2 / ta1, A_sha=[h1, h2], A_expected=e1, B_sha=hb, B_expected=eb,
+                                hashes_ok=bool(e1 is not None and eb is not None and h1 == e1 and h2 == e1 and hb == eb)))
+        rep['timing'][label] = dict(A=name(A), subjects=[name(x) for x in Bs], invocations=inv, cases=cases[:ncases],
+                                    reps=reps, burn=tc['burn'], seed=seed, gpu=C3.gpu_info(), **TM.panel_validity(inv))
+        save()
+        print('TIMING', label, len(inv), 'valid', rep['timing'][label]['valid'], el(), flush=True)
+
+    for k_set, s in enumerate(cfg['settings']):
+        sname, bname, Rp, a_ = s['name'], s['bank'], int(s['Rp']), int(s['a'])
+        bk, tb = banks[bname], tables[bname]
+        trust = float(cfg['trust_fraction'] * bk['spread'][str(Rp)])
+        sol = C3.Solvers(n, Rp, trust, cfg['gtol'], a_)
+        lean = tb.lean(Rp)
+        Lt = np.asarray(lean['L']).T
+        S_rep = rep['settings'][sname] = dict(bank=bname, Rp=Rp, M=tb.M_of[Rp], trust=trust, a=a_)
+        preps = {}
+
+        def prep_of(rule, _preps=preps, _tb=tb, _Rp=Rp):
+            if rule not in _preps:
+                X, w = rules[rule]
+                _preps[rule] = C3.prepare(_tb.rule_data(_Rp, X, w))
+            return _preps[rule]
+
+        def drop(rule, _preps=preps):
+            _preps.pop(rule, None)
+            gc.collect()
+
+        if mode == 'esc' and s.get('ext_rules'):
+            # ---- A11 (POST HOC) escalation extension: rules run in order, each dropped after its rollouts; every
+            # consecutive pair gets the selection axis (fixed BE, fixed CN K=2), the adaptive axis (both adaptive arms) and
+            # the A10 post-hoc axis (fixed BE + adaptive CN); the last rule runs only if the previous pair fails the A10 axis.
+            # No ladder, no operator check, no timing panel.
+            ext, pairs = {}, {}
+
+            def elig_x(rule, spec):
+                e = dict(ext[rule][C3.spec_key(spec)]['elig'])
+                if spec[0] == 'fs':
+                    adx = DIAG[SEL.index(spec)]
+                    dw, _ = dist(ext[rule][C3.spec_key(spec)]['W'], ext[rule][C3.spec_key(adx)]['W'], Lt)
+                    adv = ext[rule][C3.spec_key(adx)]['elig']['all_valid']
+                    e.update(solver_distance=dw, adaptive_valid=adv,
+                             eligible=bool(e['all_valid'] and adv and np.isfinite(dw) and dw <= 2.5e-4))
+                else:
+                    e['eligible'] = bool(e['all_valid'])
+                return e
+
+            def axis_x(r1, r2, specs):
+                det, sts = {}, []
+                for spec in specs:
+                    sk = C3.spec_key(spec)
+                    worst, per = dist(ext[r1][sk]['W'], ext[r2][sk]['W'], Lt)
+                    el1, el2 = elig_x(r1, spec), elig_x(r2, spec)
+                    stt = ('unresolved' if not (el1['eligible'] and el2['eligible']) or not np.isfinite(worst)
+                           else ('pass' if worst <= cfg['conv_bar'] else 'fail'))
+                    det[sk] = dict(worst=worst, per_case=per, status=stt, eligibility=[el1, el2])
+                    sts.append(stt)
+                return ('unresolved' if 'unresolved' in sts else ('pass' if all(x == 'pass' for x in sts) else 'fail')), det
+            rr = list(s['ext_rules'])
+            for i, rule in enumerate(rr):
+                if i == len(rr) - 1 and i >= 2 and pairs[f'{rr[i - 2]}|{rr[i - 1]}']['posthoc_status'] == 'pass':
+                    break                                       # conditional last rule not needed
+                res_ = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)
+                ext[rule] = {k: dict(W=v['W'], elig=v['elig']) for k, v in res_.items()}
+                drop(rule)
+                if i:
+                    r1 = rr[i - 1]
+                    sp_, sd = axis_x(r1, rule, SEL)
+                    ad_, ad = axis_x(r1, rule, DIAG)
+                    ph_, phd = axis_x(r1, rule, [SEL[0], DIAG[1]])
+                    pairs[f'{r1}|{rule}'] = dict(selection_pair_status=sp_, adaptive_diagnostic_status=ad_,
+                                                 posthoc_status=ph_, selection=sd, diagnostic=ad, posthoc=phd)
+                    print('PAIR', sname, r1, rule, sp_, ad_, ph_, el(), flush=True)
+                save()
+            S_rep['extension'] = dict(rules=list(ext), pairs=pairs, bar=cfg['conv_bar'],
+                                      rule_eligibility={r_: {C3.spec_key(x): elig_x(r_, x) for x in SEL + DIAG} for r_ in ext})
+            S_rep['peak_bytes'] = C3.peak_bytes()
+            for rule in list(preps):
+                drop(rule)
+        elif mode == 'esc':
+            esc = {}
+            for rule in s['esc_rules']:
+                esc[rule] = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)
+                if rule != 'gl64':
+                    drop(rule)
+
+            def elig_of(rule, spec):
+                """A6.2: fixed-sweep arms: all runs valid and worst distance to the adaptive tight solve of the same scheme
+                and step <= 2.5e-4; adaptive arms: every step verified (pooled_eligible with zero allowance via nfail)."""
+                e = dict(esc[rule][C3.spec_key(spec)]['elig'])
+                if spec[0] == 'fs':
+                    adx = DIAG[SEL.index(spec)]
+                    dw, _ = dist(esc[rule][C3.spec_key(spec)]['W'], esc[rule][C3.spec_key(adx)]['W'], Lt)
+                    adv = esc[rule][C3.spec_key(adx)]['elig']['all_valid']
+                    e.update(solver_distance=dw, adaptive_valid=adv,
+                             eligible=bool(e['all_valid'] and adv and np.isfinite(dw) and dw <= 2.5e-4))
+                else:
+                    e['eligible'] = bool(e['all_valid'])
+                return e
+
+            def axis_status(r1, r2, specs):
+                det, sts = {}, []
+                for spec in specs:
+                    sk = C3.spec_key(spec)
+                    worst, per = dist(esc[r1][sk]['W'], esc[r2][sk]['W'], Lt)
+                    el1, el2 = elig_of(r1, spec), elig_of(r2, spec)
+                    if not (el1['eligible'] and el2['eligible']) or not np.isfinite(worst):
+                        stt = 'unresolved'
+                    else:
+                        stt = 'pass' if worst <= cfg['conv_bar'] else 'fail'
+                    det[sk] = dict(worst=worst, per_case=per, status=stt, eligibility=[el1, el2])
+                    sts.append(stt)
+                total = 'unresolved' if 'unresolved' in sts else ('pass' if all(x == 'pass' for x in sts) else 'fail')
+                return total, det
+
+            pairs = {}
+
+            def do_pair(r1, r2):
+                sp_, sd = axis_status(r1, r2, SEL)
+                ad_, ad = axis_status(r1, r2, DIAG)
+                pairs[f'{r1}|{r2}'] = dict(selection_pair_status=sp_, adaptive_diagnostic_status=ad_, selection=sd,
+                                           diagnostic=ad)
+                return sp_
+            rr = s['esc_rules']
+            for i in range(len(rr) - 1):
+                do_pair(rr[i], rr[i + 1])
+            conv = None
+            if pairs['gl56|gl64']['selection_pair_status'] == 'pass':
+                conv = 'gl56'
+            else:
+                esc['gl80'] = rollouts(sname, sol, 'gl80', prep_of('gl80'), SEL + DIAG, lean)
+                drop('gl80')
+                if do_pair('gl64', 'gl80') == 'pass':
+                    conv = 'gl64'
+            sens = {}
+            for rule in esc:
+                for fsx, adx in zip(SEL, DIAG):
+                    worst, per = dist(esc[rule][C3.spec_key(fsx)]['W'], esc[rule][C3.spec_key(adx)]['W'], Lt)
+                    sens[f'{rule}|{C3.spec_key(fsx)}|vs|{C3.spec_key(adx)}'] = dict(worst=worst, per_case=per)
+            # operator-level check on common states: the 64^3 adaptive LSPG-BE reached states (A1.7, A2.5)
+            Cs = esc['gl64'][C3.spec_key(DIAG[0])]['W'][:, 1:].reshape(-1, Rp)
+            keep = np.isfinite(Cs).all(1)
+            Csj = jnp.asarray(Cs[keep])
+            CH = 16                                          # chunked over states (A7.3: bounded intermediate memory)
+            adv = lambda d_, X_: jnp.concatenate([OM.adv_offmesh_batch(d_, X_[i_:i_ + CH]) for i_ in range(0, X_.shape[0], CH)])
+            Nf = adv(prep_of('gl64')['base'], Csj)
+            den = np.asarray(jnp.linalg.norm(Nf, axis=1))
+            opc = {}
+            for rule in esc:
+                if rule == 'gl64':
+                    continue
+                Nr = adv(prep_of(rule)['base'], Csj)
+                num = np.asarray(jnp.linalg.norm(Nr - Nf, axis=1))
+                ok = den > 0
+                rel = num[ok] / den[ok]
+                opc[f'{rule}|gl64'] = dict(worst=float(rel.max()) if ok.any() else None,
+                                           median=float(np.median(rel)) if ok.any() else None, states=int(len(den)),
+                                           undefined=int((~ok).sum()), nonfinite_states_dropped=int((~keep).sum()))
+                del Nr
+                if rule != conv:
+                    drop(rule)
+            del Nf
+            if conv != 'gl64':
+                drop('gl64')
+            S_rep['escalation'] = dict(pairs=pairs, converged=conv, bar=cfg['conv_bar'], fixed_vs_adaptive=sens,
+                                       operator_check=opc, status='pass' if conv else 'unresolved')
+            save()
+            # no converged rule: the ladder and the family panels still run against a DIAGNOSTIC baseline (the finest rule
+            # run), with no selection claim (codex-job-smk item 1); S_rep['ladder_baseline'] records which
+            base_rule = conv if conv is not None else ('gl80' if 'gl80' in esc else 'gl64')
+            S_rep['ladder_baseline'] = dict(rule=base_rule, diagnostic_only=conv is None)
+            if True:
+                conv_ = conv
+                conv = base_rule
+                # bounded residency (code audit 2 item 11): only the converged rule and ONE ladder rule are resident; the
+                # family panel runs per ladder rule (A = converged rule's fixed BE dt0, B = that rule's two selection arms)
+                A = (sname, conv, SEL[0])
+                time_panel(f'family|{sname}|{conv}', A, [(sname, conv, SEL[1])], lambda sn, rule: (sol, prep_of(rule)),
+                           int(tc['seed']) + 100 * k_set, tc['cases'], tc['reps'])
+                lad = {}
+                for i_r, rule in enumerate(s['ladder']):
+                    esc[rule] = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)     # A7.1: adaptive counterparts
+                    lad[rule] = {C3.spec_key(x): elig_of(rule, x) for x in SEL}
+                    time_panel(f'family|{sname}|{rule}', A, [(sname, rule, x) for x in SEL],
+                               lambda sn, rl: (sol, prep_of(rl)), int(tc['seed']) + 100 * k_set + 1 + i_r, tc['cases'], tc['reps'])
+                    drop(rule)
+                conv = conv_
+                S_rep['ladder_eligibility'] = lad
+                S_rep['escalation_rule_eligibility'] = {r_: {C3.spec_key(x): elig_of(r_, x) for x in SEL}
+                                                        for r_ in s['esc_rules'] + (['gl80'] if 'gl80' in esc else [])}
+            S_rep['peak_bytes'] = C3.peak_bytes()
+            for rule in list(preps):
+                drop(rule)
+        elif mode == 'bud':
+            # ---- 3D error budget (A1.4, A1.5, A2.4, A3.6): all runs on the budget cases; selected arms' r_inf and finer
+            # runs on every case; every r_inf-dependent run also with the finer rule on the budget cases (conv check)
+            nb = int(cfg['budget_cases'])
+            allc = list(cases)
+            sub = cases[:nb]
+
+exec
+/bin/bash -lc "sed -n '30,115p' experiments/jcp-combined/c3common.py; sed -n '1,115p' experiments/jcp-combined/make_configs.py; sed -n '20,44p' experiments/jcp-combined/cluster/stage.py; rg --files experiments/jcp-combined | rg '(local3ext|c3descW(1024|768)/archive/output)'" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+from offmesh import C, TB  # noqa: E402
+from qpanel import lattice65_index  # noqa: E402
+import t2core as T2  # noqa: E402
+import fs3  # noqa: E402
+
+DT0 = .01
+BANKS = {'W1024': (HERE / 'inputs' / 'model_W1024' / 'bank.pkl',
+                   '86094f6884e55643240197e560f7dc1924bac3885aed79b20faf2e54446aa036'),
+         'M2': (HERE / 'vendor' / 'quad3d' / 'inputs' / 'model_M2' / 'bank.pkl',
+                '6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9')}
+RULE_FILES = [(HERE / 'vendor' / 'quad3d' / 'rules' / 'rules.npz',
+               '099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b'),
+              (HERE / 'rules3d' / 'rules_extra.npz', '8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf'),
+              # A11 (POST HOC): Gauss 96^3 and 112^3 for the W1024 escalation extension (rules3d/make_rules_ext2.py)
+              (HERE / 'rules3d' / 'rules_gl96.npz', 'c1691085e539bd1edce9005449a219aeb1865623eff6aac996a85287a6d6689a'),
+              (HERE / 'rules3d' / 'rules_gl112.npz', 'c593bdd429f39e9939aefed28112e81fb482603798e55d4685d40cbe58d88067')]
+
+
+def sha(a):
+    return hashlib.sha256(np.ascontiguousarray(np.asarray(a)).tobytes()).hexdigest()
+
+
+def sha_file(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def gpu_info():
+    try:
+        return subprocess.check_output(['nvidia-smi', '--query-gpu=name,uuid', '--format=csv,noheader'],
+                                       text=True).strip().splitlines()
+    except Exception:  # noqa: BLE001
+        return []
+
+
+_BURN = jax.jit(lambda a: a @ a / 512 + .01)
+
+
+def burn(seconds):
+    a = jax.block_until_ready(_BURN(jnp.ones((512, 512), jnp.float64) * .01))
+    t = time.perf_counter()
+    while time.perf_counter() - t < seconds:
+        a = jax.block_until_ready(_BURN(a))
+
+
+def check_env(cfg):
+    if not cfg.get('allow_cpu_smoke'):
+        assert jax.default_backend() == 'gpu', jax.default_backend()
+    assert os.environ['JAX_DEFAULT_MATMUL_PRECISION'] == 'highest'
+    print(f'jax_backend={jax.default_backend()} x64=True precision=highest', flush=True)
+
+
+def load_rules():
+    rules = {}
+    for p, want in RULE_FILES:
+        assert sha_file(p) == want, p
+        z = np.load(p)
+        for k in z.files:
+            if k.endswith('_X'):
+                nm = k[:-2]
+                X, w = np.asarray(z[k]), np.asarray(z[nm + '_w'])
+                assert nm not in rules or (np.array_equal(rules[nm][0], X) and np.array_equal(rules[nm][1], w)), nm
+                rules[nm] = (X, w)
+    return rules
+
+
+def load_bank(name):
+    p, want = BANKS[name]
+    assert sha_file(p) == want, (name, sha_file(p))
+    b = pickle.loads(p.read_bytes())
+    return dict(name=name, params=jax.tree_util.tree_map(jnp.asarray, b['params']), T=np.asarray(b['rotation']),
+                spread=b['coefficient_rms_spread'], sha256=want)
+
+
+def load_cohort(cfg, rep):
+    tab = C.table(cfg['cohort_seed'], cfg['cohort_count'])
+    assert cfg['cohort_seed'] == 923801, 'only the validation cohort 923801 is used in this lane'
+    rep['cohort'] = dict(seed=cfg['cohort_seed'], count=cfg['cohort_count'], table_sha256=tab['sha256'])
+    rr = Path(cfg['refined_ref'])
+    dn = json.loads(rr.with_suffix('.done').read_text())
+    assert dn['sha256'] == sha_file(rr) and dn['accepted'] and dn['seed'] == cfg['cohort_seed'], dn
+    z = np.load(rr)
+    assert int(z['n']) == 513 and abs(float(z['dt']) - .0025) < 1e-15 and int(z['count']) >= cfg['cohort_count']
+    cases = cfg.get('case_subset') or list(range(cfg['cohort_count']))
+    REF = {j: np.asarray(z[f'c{j}']) for j in cases}
+    rep['reference'] = dict(path=str(rr), sha256=dn['sha256'], n=513, dt=.0025)
+    return tab, cases, REF
+"""Write the job configs of jcp-combined (DESIGN 3, A1.0). python make_configs.py"""
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+REF_CONTRACT = {"mesh": 8192, "refs": {"ST": {"dt": 0.0003125, "ntol": 1e-11, "ltol": 1e-09, "accept_residual": 2e-11},
+                                       "S": {"dt": 0.005, "ntol": 1e-11, "ltol": 1e-09, "accept_residual": 2e-11}}}
+SETTINGS2 = [dict(name='fast', Rp=128, rule='fib1597'), dict(name='R128', Rp=128, rule='fib4181'),
+             dict(name='R256', Rp=256, rule='gauss96'), dict(name='acc', Rp=384, rule='gauss96'),
+             dict(name='R384', Rp=384, rule='gauss128'), dict(name='R512', Rp=512, rule='gauss192')]
+FS = [['LSPG', 'BE'], ['LSPG', 'CN'], ['LSPG', 'CNR'], ['LSPG', 'BDF2'], ['GAL', 'CN']]
+DTF = [0.5, 1, 5 / 3, 2, 2.5, 5, 10]
+FOM = dict(schemes=['BE', 'CN', 'CNR', 'BDF2'], dt_factors=[0.5, 1, 2, 5], ntols=[1e-4, 1e-6, 1e-8],
+           order_cases=[['dev6', 0], ['dev6', 2]])
+
+
+def c2(attempt, mesh=1024, settings=SETTINGS2, case_subset=None, dtf=DTF, fom=FOM, reps=3, refs='REFS_DIR', **kw):
+    c = dict(attempt=attempt, driver='c2grid', mesh=mesh, cohorts=['dev6', 'val32'], settings=settings,
+             grid=dict(forms_schemes=FS, dt_factors=dtf, anchor_factors=[1 / 8, 1 / 16]), refs=refs,
+             ref_contract=REF_CONTRACT, fom=fom, common_baseline='acc',
+             timing=dict(cohort='dev6', cases=6, reps=reps, burn=0.1, seed=20261013, common_seed=20261013))
+    if case_subset:
+        c['case_subset'] = case_subset
+    c.update(kw)
+    return c
+
+
+REF3 = 'REF3D'
+LADDER = ['lat8192', 'lat16384', 'lat32768', 'lat65536', 'lat131072', 'gl24', 'gl32', 'gl40', 'gl48', 'lat256']
+SETTINGS3 = [dict(name='M2_512', bank='M2', Rp=512, a=3), dict(name='W256', bank='W1024', Rp=256, a=6),
+             dict(name='W512', bank='W1024', Rp=512, a=6), dict(name='W768', bank='W1024', Rp=768, a=6),
+             dict(name='W1024', bank='W1024', Rp=1024, a=6)]
+
+
+def c3(attempt, mode, settings, count=64, case_subset=None, refined_ref=REF3, timing=None, **kw):
+    c = dict(attempt=attempt, driver='c3run', mode=mode, mesh=65, cohort_seed=923801, cohort_count=count,
+             refined_ref=refined_ref, gtol=1e-3, trust_fraction=0.05, conv_bar=2.5e-5, settings=settings,
+             timing=timing or dict(cases=8, reps=3, burn=0.1, seed=20261013, common_cases=4, common_reps=2, common_seed=20261013),
+             grid=dict(dt_factors=[1, 1.25, 5 / 3, 2.5, 5], fs_schemes=['CN', 'CNR', 'BDF2'], Ks=[1, 2],
+                       gal_factors=[1, 2.5], anchor_factors=[1 / 8, 1 / 16]),
+             common_baseline='W512', common_baseline_fallback='M2_512')
+    if case_subset:
+        c['case_subset'] = case_subset
+    c.update(kw)
+    return c
+
+
+def esc_settings():
+    out = []
+    for s in SETTINGS3:
+        big = s['Rp'] >= 768
+        out.append(dict(s, esc_rules=(['gl48', 'gl56', 'gl64'] if big else ['gl56', 'gl64']), diagnostic=big,
+                        ladder=LADDER))
+    return out
+
+
+def main():
+    cfgs = {
+        'c2grid': c2('c2grid'),
+        # cluster smoke (A1.0): real mesh, two dev6 cases, every phase, all settings, reduced step ladder
+        'smk2d': c2('smk2d', case_subset={'dev6': [0, 2], 'val32': []}, dtf=[0.5, 1, 2.5, 10], reps=1,
+                    fom=dict(FOM, dt_factors=[1, 2]), timing_cases_override=2),
+        # local machinery run (GB10, one jaxrun, development only): L=256, one case, two settings
+        'local2d': c2('local2d', mesh=256, settings=[SETTINGS2[0], dict(name='acc', Rp=384, rule='gauss96')],
+                      case_subset={'dev6': [0], 'val32': []}, dtf=[1, 2.5], reps=1,
+                      fom=dict(FOM, schemes=['BE', 'CNR'], dt_factors=[1], order_cases=[['dev6', 0]]),
+                      refs=str((HERE / '../../../2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/'
+                                'archive/output').resolve()), local_smoke_waives_cohort_hash=True),
+    }
+    es = esc_settings()
+    cfgs['c3descW1024'] = c3('c3descW1024', 'esc', [es[4]], timing=dict(cases=4, reps=2, burn=0.1, seed=20261013))
+    cfgs['c3descW768'] = c3('c3descW768', 'esc', [es[3]], timing=dict(cases=4, reps=2, burn=0.1, seed=20261013))
+    cfgs['c3descB'] = c3('c3descB', 'esc', [es[0], es[1], es[2]], timing=dict(cases=4, reps=2, burn=0.1, seed=20261013))
+    loc3 = Path(HERE / '../../../2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output/'
+                'ref_923801.npz').resolve()
+    cfgs['local3desc'] = c3('local3desc', 'esc', [dict(esc_settings()[1], ladder=['lat8192', 'lat256'])],
+                            case_subset=[0], refined_ref=str(loc3),
+                            timing=dict(cases=1, reps=1, burn=0.1, seed=20261013))
+    lg = c3('local3grid', 'grid', [dict(SETTINGS3[1], rule='lat8192'), dict(SETTINGS3[0], rule='gl24')],
+            case_subset=[0], refined_ref=str(loc3),
+            timing=dict(cases=1, reps=1, burn=0.1, seed=20261013, common_cases=1, common_reps=1, common_seed=20261013))
+    lg['grid'] = dict(dt_factors=[1, 2.5], fs_schemes=['CN'], Ks=[1, 2], gal_factors=[2.5], anchor_factors=[1 / 8])
+    lg['common_baseline'] = 'W256'
+    cfgs['local3grid'] = lg
+    # cluster smokes (A1.0): 65^3, two cases, both modes, every phase, R' = 1024 included (memory and compile gate)
+    cfgs['smk3grid'] = c3('smk3grid', 'grid', [dict(SETTINGS3[4], rule='lat32768'), dict(SETTINGS3[2], rule='lat16384')],
+                          case_subset=[0, 1], timing=dict(cases=2, reps=1, burn=0.1, seed=20261013, common_cases=2,
+                                                          common_reps=1, common_seed=20261013))
+    cfgs['smk3esc'] = c3('smk3esc', 'esc', [dict(esc_settings()[4], ladder=['lat32768', 'gl48', 'lat256'])],
+                         case_subset=[0, 1], timing=dict(cases=2, reps=1, burn=0.1, seed=20261013))
+    # A11 (POST HOC): W1024 escalation extension (Gauss 80^3 -> 96^3 -> 112^3 conditional), all 64 cases; its smoke runs
+    # the two largest rules on two cases (memory and rate gate for 112^3)
+    cfgs['c3extW1024'] = c3('c3extW1024', 'esc', [dict(SETTINGS3[4], ext_rules=['gl80', 'gl96', 'gl112'])],
+                            timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    cfgs['smk3ext'] = c3('smk3ext', 'esc', [dict(SETTINGS3[4], ext_rules=['gl96', 'gl112'])], case_subset=[0, 1],
+                         timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    cfgs['local3ext'] = c3('local3ext', 'esc', [dict(SETTINGS3[1], ext_rules=['gl24', 'gl32', 'gl40'])], case_subset=[0],
+                           refined_ref=str(loc3), timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    for k_ in ('c3extW1024', 'smk3ext', 'local3ext'):
+        cfgs[k_].pop('grid', None)
+    # budget smokes (A1.0 step 6 drivers; arms are machinery choices, not a selection)
+    sarms = [dict(form='LSPG', scheme='BE', f=1, role='baseline'), dict(form='LSPG', scheme='BDF2', f=2, role='test-selected',
+                                                                        selected=True),
+             dict(form='GAL', scheme='CN', f=1, role='diagnostic')]
+    b2 = c2('smk2bud', settings=[dict(SETTINGS2[5], arms=sarms), dict(SETTINGS2[0], arms=sarms)],
+            case_subset={'dev6': [0, 2], 'val32': [0]})
+    b2.update(driver='c2bud', conv_rule='gauss320', check_rule='gauss640', successor_check='gauss768', control_rule='gauss8',
+              conv_bar=2.5e-5, check_val32=1)
+    for k_ in ('grid', 'fom', 'timing', 'common_baseline'):
+        b2.pop(k_, None)
+    cfgs['smk2bud'] = b2
+    a3 = [dict(spec=['fs', 'BE', 0.01, 1], role='baseline'), dict(spec=['fs', 'CN', 0.025, 2], role='test-selected', selected=True),
+          dict(spec=['fs', 'CN', 0.01, 1], role='diagnostic')]
+    b3 = c3('smk3bud', 'bud', [dict(SETTINGS3[4], rule='lat32768', conv='gl56', finer='gl64', arms=a3)], case_subset=[0, 1, 2],
+            timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+REF3 = ROOT.parent / '2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output'
+VQ, V3 = f'{LANE}/vendor/quad2d', f'{LANE}/vendor/quad3d'
+COMMON = [f'{LANE}/t2core.py', f'{LANE}/fs3.py', f'{LANE}/timing.py', f'{LANE}/checks/test_fs.json', f'{LANE}/test_fs.py', f'{LANE}/test_lmm.py']
+FILES2 = COMMON + [f'{LANE}/c2common.py', f'{LANE}/c2grid.py', f'{LANE}/c2bud.py', f'{LANE}/fom2.py', f'{VQ}/qcore.py', f'{VQ}/qstudy.py',
+                   f'{VQ}/vendor/arms.py', f'{VQ}/vendor/hops.py', f'{VQ}/vendor/hfast.py', f'{VQ}/vendor/bkfast.py',
+                   f'{VQ}/vendor/hari_quadrature.py', f'{VQ}/inputs/rotation_R512.npz',
+                   f'{VQ}/inputs/rule_q0_m1024_qrg304_reachable.npz', 'experiments/mr-burgers2d/engines.py',
+                   'experiments/mr-burgers2d/iterative_paths.py', 'experiments/separable-decoder/sep_common.py',
+                   'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
+FILES3 = COMMON + [f'{LANE}/c3common.py', f'{LANE}/c3run.py', f'{V3}/offmesh.py', f'{V3}/qpanel.py',
+                   f'{V3}/vendor/burgers3d-span/common.py', f'{V3}/vendor/burgers3d-retry/tables.py',
+                   f'{V3}/vendor/paper-b3d/vendor/b3d_common.py', f'{V3}/inputs/model_M2/bank.pkl', f'{V3}/rules/rules.npz',
+                   f'{LANE}/inputs/model_W1024/bank.pkl', f'{LANE}/rules3d/rules_extra.npz',
+                   f'{LANE}/rules3d/rules_gl96.npz', f'{LANE}/rules3d/rules_gl112.npz']
+GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
+        'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
+
+
+def git_show(commit, name):
+    return subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}'])
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('attempt')
+experiments/jcp-combined/configs/local3ext.json
+experiments/jcp-combined/runs/c3descW1024/archive/output/result.json
+experiments/jcp-combined/runs/c3descW1024/archive/output/W_esc.npz
+experiments/jcp-combined/runs/c3descW1024/archive/output/COMPLETE
+experiments/jcp-combined/runs/c3descW768/archive/output/result.json
+experiments/jcp-combined/runs/c3descW768/archive/output/W_esc.npz
+experiments/jcp-combined/runs/c3descW768/archive/output/COMPLETE
+
+exec
+/bin/bash -lc "rg -n 'def rule_data|def prepare|class Solvers|def pooled_eligible|def run_valid' experiments/jcp-combined/c3common.py; sed -n '130,330p' experiments/jcp-combined/c3common.py; rg -n 'replic|A2.4|A2.5' experiments/jcp-combined/DESIGN.md; rg --files --hidden -g '*result.json' -g '"'!vendor/**'"' experiments/jcp-combined | rg local3ext; tail -n 22 experiments/jcp-combined/make_configs.py; rg -n 'def table' experiments/jcp-combined/vendor/quad3d/vendor/burgers3d-span/common.py; rg -n 'rule_data|prepare_rule|feature_rows' experiments/jcp-combined/vendor/quad3d/offmesh.py" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ exited 1 in 0ms:
+135:    def rule_data(self, Rp, X, w):
+157:class Solvers:
+208:def prepare(data):
+221:def run_valid(spec, o):
+244:def pooled_eligible(records, frac=0.01):
+        M = self.M_of[Rp]
+        tb = self.tb
+        d = dict(GTb=TB.rows_prefix(tb['GTb'], Rp), L=tb['L'][:Rp, :Rp], A=tb['A'][:M, :Rp], lam=tb['lam'][:M])
+        return jax.tree_util.tree_map(lambda x: jax.block_until_ready(jnp.asarray(x)), d)
+
+    def rule_data(self, Rp, X, w):
+        M = self.M_of[Rp]
+        om = OM.offmesh_tables(self.n, self.bank['params'], self.bank['T'][:, :Rp], X, w, self.kx[:M])
+        return dict(self.lean(Rp), B=om['B'], D=om['D'], P=om['P'])
+
+
+def nl3(c, d):
+    return ((d['B'] @ c) * (d['D'] @ c)) @ d['P']
+
+
+def nlJ3(c, d, Tm):
+    Bc, Dc = d['B'] @ c, d['D'] @ c
+    return (Bc * Dc) @ d['P'], d['P'].T @ (Dc[:, None] * d['B'] + Bc[:, None] * d['D'])
+
+
+def tol_of(form, level):
+    """C2 tolerances (A1.10): LSPG tight 1e-7 / tighter 1e-8; GAL 1e-13 / 1e-15; prod as deployed."""
+    if form == 'LSPG':
+        return {'prod': (1e-3, 1e-9), 'tight': (1e-7, 0.), 'tighter': (1e-8, 0.)}[level]
+    return {'prod': (0., 1e-10), 'tight': (0., 1e-13), 'tighter': (0., 1e-15)}[level]
+
+
+class Solvers:
+    """Compiled queries of one setting (cached per static signature)."""
+
+    def __init__(self, n, Rp, trust, gtol, a):
+        self.n, self.Rp, self.trust, self.gtol, self.a = n, Rp, trust, gtol, a
+        self.cache = {}
+        self.ev = {f: T2.make_evolve(nl3, nlJ3, f, Rp, trust) for f in ('LSPG', 'GAL')}
+
+    def fs(self, scheme, dt, K):
+        k = ('fs', scheme, round(dt, 12), K)
+        if k not in self.cache:
+            steps = int(round(.25 / dt))      # long schedules (budget-only, never timed) are not unrolled (compile time)
+            self.cache[k] = fs3.make_fs_query(self.n, self.Rp, OM.contract_offmesh, scheme, dt, K, self.gtol, self.trust,
+                                              self.a, dt0=DT0, unroll=steps <= 50)
+        return self.cache[k]
+
+    def vendor(self):
+        k = ('vendor',)
+        if k not in self.cache:
+            self.cache[k] = OM.make_fsc_rule(self.n, self.Rp, None, OM.contract_offmesh, dt=DT0, gtol=self.gtol,
+                                             trust=self.trust, adaptive_first=self.a)
+        return self.cache[k]
+
+    def ad(self, form):
+        k = ('ad', form)
+        if k not in self.cache:
+            evolve = self.ev[form]
+
+            def query(u0, nu, data, sch):
+                w0, s0 = TB.project(u0, data)
+                W, st = evolve(w0, nu, jnp.linalg.norm(s0), data, sch)
+                return dict(fields=TB.decode(W, data), W=W, w0=w0, stats=st)
+            self.cache[k] = jax.jit(query)
+        return self.cache[k]
+
+    def run(self, spec, u0, nu, prep):
+        """spec: ('fs', scheme, dt, K) | ('vendor',) | ('ad', form, scheme, dt, level); prep = prepare(data) (form data
+        built once outside any timing, code audit 1 item 6). Returns (output, W (6,R'), w0)."""
+        if spec[0] == 'fs':
+            o = self.fs(spec[1], spec[2], spec[3])(u0, nu, prep['base'])
+            return o, o['W'], o['w0']
+        if spec[0] == 'vendor':
+            o = self.vendor()(u0, nu, prep['base'], {})
+            keep = int(round(.05 / DT0))
+            return o, o[1][::keep], o[1][0]
+        _, form, scheme, dt, lev = spec
+        g, t_ = tol_of(form, lev)
+        o = self.ad(form)(u0, nu, prep[form], T2.sched(scheme, dt, g, t_))
+        return o, o['W'], o['w0']
+
+
+def prepare(data):
+    """Base rule data plus the LSPG / GAL form data of t2core (hmask; GAL: thin QR of A), built once per rule."""
+    return dict(base=data, LSPG=T2.form_data(data, {}, 'LSPG'), GAL=T2.form_data(data, {}, 'GAL'))
+
+
+def spec_key(spec):
+    if spec[0] == 'fs':
+        return f'fs|{spec[1]}|{spec[2]:.8g}|K{spec[3]}'
+    if spec[0] == 'vendor':
+        return 'vendor|BE|0.01|K1'
+    return f'ad|{spec[1]}|{spec[2]}|{spec[3]:.8g}|{spec[4]}'
+
+
+def run_valid(spec, o):
+    """Per-run validity (code audit 1 item 2). fs/vendor: finite coefficients, no reason-3 step, no damping saturation
+    (fs only; the vendor does not report it). ad: every step verified (C2 A1.5) - stricter than the 1 % pooled
+    allowance, which applies to the fixed-sweep / vendor arms only (A5.1). Pooled non-stationarity is separate."""
+    if spec[0] == 'ad':
+        return bool(int(np.asarray(o['stats']['nfail'])) == 0 and np.isfinite(np.asarray(o['W'])).all())
+    rs = np.asarray(o['reason'] if spec[0] == 'fs' else o[3])
+    sat = int(np.asarray(o['sat']).sum()) if spec[0] == 'fs' else 0
+    W = np.asarray(o['W'] if spec[0] == 'fs' else o[1])
+    return bool(np.isfinite(W).all() and int((rs == 3).sum()) == 0 and sat == 0)
+
+
+def nonstationary(spec, o):
+    """(non-stationary steps, steps): reasons 0 (budget / not stationary after the sweeps) and 2 (tiny step), C1 A7."""
+    if spec[0] == 'ad':
+        st = o['stats']
+        k = int(st['steps'])
+        r = np.asarray(st['step_reason'])[:k]
+        return int(np.sum(np.asarray(st['nfail']))), k
+    rs = np.asarray(o['reason'] if spec[0] == 'fs' else o[3])
+    return int(((rs == 0) | (rs == 2)).sum()), int(len(rs))
+
+
+def pooled_eligible(records, frac=0.01):
+    """Pooled eligibility over a cohort: every run valid and non-stationary steps <= frac of all pooled steps."""
+    num = sum(r[1] for r in records)
+    den = sum(r[2] for r in records)
+    return dict(all_valid=all(r[0] for r in records), nonstationary=num, steps=den,
+                eligible=bool(all(r[0] for r in records) and den > 0 and num <= frac * den))
+
+
+def step_record(spec, o):
+    """Full per-step evidence (A1.2; code audit 1 item 9)."""
+    if spec[0] == 'fs':
+        d = {k: np.asarray(o[k]).tolist() for k in ('reason', 'it', 'rej', 'pred', 'sat', 'gn', 'rn', 'lam')}
+        return d
+    if spec[0] == 'vendor':
+        return dict(reason=np.asarray(o[3]).tolist(), it=np.asarray(o[2]).tolist(), gn=np.asarray(o[4]).tolist(),
+                    rn=np.asarray(o[5]).tolist(), rej=np.asarray(o[6]).tolist())
+    st = o['stats']
+    k = int(st['steps'])
+    return dict(nfail=int(st['nfail']), it_sum=int(st['it_sum']), exits=np.asarray(st['exits']).tolist(),
+                worst_ratio=float(st['worst_ratio']), steps=k,
+                step_gn=np.asarray(st['step_gn'])[:k].tolist(), step_tolratio=np.asarray(st['step_tolratio'])[:k].tolist(),
+                step_reason=np.asarray(st['step_reason'])[:k].tolist(), step_it=np.asarray(st['step_it'])[:k].tolist())
+
+
+def peak_bytes():
+    try:
+        return int(jax.devices()[0].memory_stats().get('peak_bytes_in_use', -1))
+    except Exception:  # noqa: BLE001
+        return -1
+247:No historical test cohort (2D `test64`, 3D 923901) is used in this lane unless an amendment adds a replication after the
+351:  cohorts (replication only, not used here).
+561:**A2.4 Quadrature qualification (P14, P16, N5).**
+579:**A2.5 J4 statuses (P15, N6).** Per $R'$ and rule pair two fields are recorded: `selection_pair_status` ∈ {pass, fail,
+686:all 38 cases (2D $r_\infty$ runs at deployed steps are affordable); the 16-case restriction of A2.4 applies to the other
+893:- converged rule $r_\infty$ by the A2.4 order applied to the two arms' per-pair statuses already saved by the job:
+927:**unavailable** under both A2.4 and A10, and is reported so.
+933:the adaptive axis and the A10 axis. The A2.4 order is continued: $r_\infty=80^3$ if ($80^3$, $96^3$) passes the A10 axis,
+    cfgs['smk2bud'] = b2
+    a3 = [dict(spec=['fs', 'BE', 0.01, 1], role='baseline'), dict(spec=['fs', 'CN', 0.025, 2], role='test-selected', selected=True),
+          dict(spec=['fs', 'CN', 0.01, 1], role='diagnostic')]
+    b3 = c3('smk3bud', 'bud', [dict(SETTINGS3[4], rule='lat32768', conv='gl56', finer='gl64', arms=a3)], case_subset=[0, 1, 2],
+            timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    b3.update(budget_cases=2, control_rule='lat256')
+    b3.pop('grid', None)
+    cfgs['smk3bud'] = b3
+    for k, c in cfgs.items():
+        if k.startswith(('smk', 'local')):
+            c['smoke'] = True                     # A5.5: explicit smoke classification
+        if 'timing_cases_override' in c:
+            c['timing']['cases'] = c.pop('timing_cases_override')
+        if k == 'local2d':
+            c['timing']['cases'] = 1
+        (HERE / 'configs').mkdir(exist_ok=True)
+        (HERE / 'configs' / f'{k}.json').write_text(json.dumps(c, indent=1) + '\n')
+        print(k)
+
+
+if __name__ == '__main__':
+    main()
+91:def table(seed, count):
+96:def table_sha(tab):
+
+exec
+/bin/bash -lc "PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import json, pathlib, numpy as np
+p=pathlib.Path('experiments/jcp-combined')
+for nm in ['c3descW1024','c3descW768']:
+ r=json.loads((p/'runs'/nm/'archive/output/result.json').read_text()); sn=nm.replace('c3desc',''); s=r['settings'][sn]
+ print(nm,'cohort',r.get('cohort'),'cfg',r['config'],'keys',s.keys())
+ for pair,v in s['escalation']['pairs'].items():
+  print(pair,v['selection_pair_status'],v['adaptive_diagnostic_status'])
+  for sk,d in {**v['selection'],**v['diagnostic']}.items():
+   a=np.array(d['per_case'],dtype=float); ii=np.argsort(a)[-3:][::-1]
+   print(sk,d['status'],'worst',d['worst'],'above',np.flatnonzero(a>2.5e-5).tolist(),'top',list(zip(ii.tolist(),a[ii].tolist())))
+print('local dirs',list(p.glob('**/local3ext')))
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 47ms:
+c3descW1024 cohort {'seed': 923801, 'count': 64, 'table_sha256': 'b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c'} cfg {'attempt': 'c3descW1024', 'driver': 'c3run', 'mode': 'esc', 'mesh': 65, 'cohort_seed': 923801, 'cohort_count': 64, 'refined_ref': '/cluster/tufts/paralab/tawal01/jcp-comb/c3descW1024/refs/ref_923801.npz', 'gtol': 0.001, 'trust_fraction': 0.05, 'conv_bar': 2.5e-05, 'settings': [{'name': 'W1024', 'bank': 'W1024', 'Rp': 1024, 'a': 6, 'esc_rules': ['gl48', 'gl56', 'gl64'], 'diagnostic': True, 'ladder': ['lat8192', 'lat16384', 'lat32768', 'lat65536', 'lat131072', 'gl24', 'gl32', 'gl40', 'gl48', 'lat256']}], 'timing': {'cases': 4, 'reps': 2, 'burn': 0.1, 'seed': 20261013}, 'grid': {'dt_factors': [1, 1.25, 1.6666666666666667, 2.5, 5], 'fs_schemes': ['CN', 'CNR', 'BDF2'], 'Ks': [1, 2], 'gal_factors': [1, 2.5], 'anchor_factors': [0.125, 0.0625]}, 'common_baseline': 'W512', 'common_baseline_fallback': 'M2_512'} keys dict_keys(['bank', 'Rp', 'M', 'trust', 'a', 'escalation', 'ladder_baseline', 'ladder_eligibility', 'escalation_rule_eligibility', 'peak_bytes'])
+gl48|gl56 unresolved fail
+fs|BE|0.01|K1 fail worst 0.00017164869370230441 above [5] top [(5, 0.00017164869370230441), (43, 1.6369438470148022e-06), (30, 7.464934054626891e-07)]
+fs|CN|0.025|K2 unresolved worst 0.00018317757591458417 above [5] top [(5, 0.00018317757591458417), (43, 3.872463656242343e-06), (7, 1.166507374687332e-06)]
+ad|LSPG|BE|0.01|tight fail worst 0.00017033375927389747 above [5] top [(5, 0.00017033375927389747), (43, 1.5989024775061556e-06), (30, 7.474314082496749e-07)]
+ad|LSPG|CN|0.025|tight fail worst 0.0003589263756244809 above [5] top [(5, 0.0003589263756244809), (43, 5.240857539582432e-06), (30, 1.378671934826566e-06)]
+gl56|gl64 unresolved fail
+fs|BE|0.01|K1 fail worst 0.00011143310460008367 above [5] top [(5, 0.00011143310460008367), (43, 2.061538944836693e-07), (30, 1.8222814963495058e-07)]
+fs|CN|0.025|K2 unresolved worst 0.00011883986713584989 above [5] top [(5, 0.00011883986713584989), (43, 3.718286157329255e-07), (7, 2.747952493375954e-07)]
+ad|LSPG|BE|0.01|tight fail worst 0.00011061915352930069 above [5] top [(5, 0.00011061915352930069), (43, 1.9364344453710235e-07), (30, 1.8497877880108717e-07)]
+ad|LSPG|CN|0.025|tight fail worst 0.00023303052976777656 above [5] top [(5, 0.00023303052976777656), (43, 8.455641011070719e-07), (30, 2.0545215760992454e-07)]
+gl64|gl80 unresolved fail
+fs|BE|0.01|K1 fail worst 2.694246575820481e-05 above [5] top [(5, 2.694246575820481e-05), (30, 4.3280898370297244e-08), (10, 3.6778776460858883e-08)]
+fs|CN|0.025|K2 unresolved worst 2.8865293912617974e-05 above [5] top [(5, 2.8865293912617974e-05), (7, 6.227045480295648e-08), (30, 5.744430326774057e-08)]
+ad|LSPG|BE|0.01|tight fail worst 2.673904861365059e-05 above [5] top [(5, 2.673904861365059e-05), (30, 4.40332710847573e-08), (10, 3.678334249476878e-08)]
+ad|LSPG|CN|0.025|tight fail worst 5.641906299104824e-05 above [5] top [(5, 5.641906299104824e-05), (43, 6.918713952169238e-08), (10, 3.9245893738957514e-08)]
+c3descW768 cohort {'seed': 923801, 'count': 64, 'table_sha256': 'b7993291f4f6cf0e60d68169ff1ecd07ca3d26f47d8c61a89a5f3f3ef8be9b4c'} cfg {'attempt': 'c3descW768', 'driver': 'c3run', 'mode': 'esc', 'mesh': 65, 'cohort_seed': 923801, 'cohort_count': 64, 'refined_ref': '/cluster/tufts/paralab/tawal01/jcp-comb/c3descW768/refs/ref_923801.npz', 'gtol': 0.001, 'trust_fraction': 0.05, 'conv_bar': 2.5e-05, 'settings': [{'name': 'W768', 'bank': 'W1024', 'Rp': 768, 'a': 6, 'esc_rules': ['gl48', 'gl56', 'gl64'], 'diagnostic': True, 'ladder': ['lat8192', 'lat16384', 'lat32768', 'lat65536', 'lat131072', 'gl24', 'gl32', 'gl40', 'gl48', 'lat256']}], 'timing': {'cases': 4, 'reps': 2, 'burn': 0.1, 'seed': 20261013}, 'grid': {'dt_factors': [1, 1.25, 1.6666666666666667, 2.5, 5], 'fs_schemes': ['CN', 'CNR', 'BDF2'], 'Ks': [1, 2], 'gal_factors': [1, 2.5], 'anchor_factors': [0.125, 0.0625]}, 'common_baseline': 'W512', 'common_baseline_fallback': 'M2_512'} keys dict_keys(['bank', 'Rp', 'M', 'trust', 'a', 'escalation', 'ladder_baseline', 'ladder_eligibility', 'escalation_rule_eligibility', 'peak_bytes'])
+gl48|gl56 unresolved fail
+fs|BE|0.01|K1 fail worst 3.0561537869269944e-05 above [5] top [(5, 3.0561537869269944e-05), (43, 4.784632789696281e-07), (30, 2.7010560917250004e-07)]
+fs|CN|0.025|K2 unresolved worst 4.6971126151034844e-05 above [5] top [(5, 4.6971126151034844e-05), (43, 9.426879867454776e-07), (30, 6.090828474800688e-07)]
+ad|LSPG|BE|0.01|tight fail worst 3.0408856169769613e-05 above [5] top [(5, 3.0408856169769613e-05), (43, 4.800321375531476e-07), (30, 2.7097721826618654e-07)]
+ad|LSPG|CN|0.025|tight fail worst 6.396356391010783e-05 above [5] top [(5, 6.396356391010783e-05), (43, 8.267477025228867e-07), (30, 5.925320514261007e-07)]
+gl56|gl64 unresolved fail
+fs|BE|0.01|K1 pass worst 1.7913831559842638e-05 above [] top [(5, 1.7913831559842638e-05), (10, 1.6861017181715676e-07), (43, 9.028815951315758e-08)]
+fs|CN|0.025|K2 unresolved worst 2.98659090339059e-05 above [5] top [(5, 2.98659090339059e-05), (30, 2.388283753006783e-07), (10, 1.7571222962055234e-07)]
+ad|LSPG|BE|0.01|tight pass worst 1.7834726429886678e-05 above [] top [(5, 1.7834726429886678e-05), (10, 1.686166316563448e-07), (30, 8.862459376771171e-08)]
+ad|LSPG|CN|0.025|tight fail worst 3.917795309892922e-05 above [5] top [(5, 3.917795309892922e-05), (30, 3.4761380043089465e-07), (43, 2.2856011442400208e-07)]
+gl64|gl80 unresolved pass
+fs|BE|0.01|K1 pass worst 4.568580674200197e-06 above [] top [(5, 4.568580674200197e-06), (10, 3.9855787927899955e-08), (43, 2.4007821860083698e-08)]
+fs|CN|0.025|K2 unresolved worst 7.378184527196696e-06 above [] top [(5, 7.378184527196696e-06), (30, 6.069781364219798e-08), (10, 4.201177849526313e-08)]
+ad|LSPG|BE|0.01|tight pass worst 4.546184261201302e-06 above [] top [(5, 4.546184261201302e-06), (10, 3.9857497765909684e-08), (43, 2.3488306387470163e-08)]
+ad|LSPG|CN|0.025|tight pass worst 9.770076969881865e-06 above [] top [(5, 9.770076969881865e-06), (30, 8.537009637746867e-08), (43, 5.870810005925856e-08)]
+local dirs []
+
+exec
+/bin/bash -lc "rg --files --hidden --no-ignore experiments/jcp-combined /tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad | rg 'local3ext|smk3ext|c3ext'; sed -n '1,145p' experiments/jcp-combined/vendor/quad3d/offmesh.py; sed -n '82,102p' experiments/jcp-combined/vendor/quad3d/vendor/burgers3d-span/common.py; rg -n 'ext_rules|esc_rules|conditional|memory|peak|smoke' experiments/jcp-combined/inventory.py" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad/local3ext.log
+/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad/local3ext/result.json
+/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad/local3ext/W_esc.npz
+/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad/local3ext/COMPLETE
+experiments/jcp-combined/configs/c3extW1024.json
+experiments/jcp-combined/configs/local3ext.json
+experiments/jcp-combined/configs/smk3ext.json
+"""quadrature-burgers3d: off-mesh advection for the frozen Burgers 3D span model, and the solver that uses it.
+
+The reduced model is unchanged from burgers3d-retry (vendor/burgers3d-retry/tables.py, make_fsc): span u = G_hat[:, :R'] c,
+LSPG on the M lowest discrete sine tests Phi (mesh-orthonormal), scaled residual
+    r = S * ( A c - A c_prev + dt ( adv(c) + nu lam * A c ) ),  A = Phi^T G_hat (exact, by DST),  S = 1/(1 + dt nu lam),
+cached-predictor fixed-sweep Levenberg-Marquardt (adaptive LM on the first 3 steps, then one sweep per step).
+ONLY adv(c) and its Jacobian Ju(c) = d adv / dc change. Every rule here is a symmetric quadratic form in c, so
+adv(c) = 0.5 Ju(c) c and Ju is linear in c (the cached predictor stays exact):
+
+  tensor   adv_m = 0.5 c^T Tsym_m c,  Tsym_m = Phi_m^T (G_i * D^- G_j) + (i <-> j)     (the incumbent; burgers3d-retry)
+  offmesh  adv_m = sum_q P_qm (B c)_q (D c)_q,  B = G_hat(x_q), D = (d_x + d_y + d_z) G_hat(x_q) (analytic, one JVP),
+           P_qm = (n-1)^{3/2} w_q psi_m(x_q),  psi_m = 2^{3/2} sin(pi kx x) sin(pi ky y) sin(pi kz z)
+           Ju(c) = P^T ( diag(D c) B + diag(B c) D )                                   (Hari's "point" form, hybrid)
+  dense    adv = Phi^T a_upwind(G_hat c) on every interior node, the FOM's sign-upwind stencil (Ju by JVP per column);
+           piecewise quadratic, so Ju is NOT linear in c: the predictor re-evaluates Ju at each candidate.
+
+The off-mesh term is a quadrature of the continuum advection u (u_x + u_y + u_z); it differs from the mesh stencil by the
+stencil's O(h) consistency gap, which is the point of measuring both a continuum and a mesh target.
+All large arrays are explicit jit arguments.
+"""
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+import numpy as np
+import jax
+jax.config.update('jax_enable_x64', True)
+import jax.numpy as jnp
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE / 'vendor' / 'burgers3d-span'))
+sys.path.insert(0, str(HERE / 'vendor' / 'burgers3d-retry'))
+import common as C  # noqa: E402
+import tables as TB  # noqa: E402
+
+DT = C.DT
+
+
+# ------------------------------------------------------------------ point blocks
+def point_blocks(bank, T, X, chunk=1 << 15):
+    """(B, D) at points X (m, 3): B = G_hat(X) (m, R), D = sum of the three coordinate derivatives (m, R).
+    One forward-mode JVP with tangent (1,1,1) per point (points are independent rows of features)."""
+    Tj = jnp.asarray(T)
+
+    @jax.jit
+    def f(p, x, T):
+        g = lambda xx: C.features(p, xx) @ T
+        return jax.jvp(g, (x,), (jnp.ones_like(x),))
+    Bs, Ds = [], []
+    for s in range(0, len(X), chunk):
+        b, d = f(bank, jnp.asarray(X[s:s + chunk]), Tj)
+        Bs.append(b)
+        Ds.append(d)
+    return jnp.concatenate(Bs, 0), jnp.concatenate(Ds, 0)
+
+
+def psi(X, kxyz):
+    """psi_m(x_q) (m, M), L2-orthonormal sines on the unit cube."""
+    X = jnp.asarray(X)
+    k = jnp.asarray(np.asarray(kxyz), dtype=jnp.float64)
+    out = 2.0 ** 1.5 * jnp.ones((X.shape[0], k.shape[0]))
+    for a in range(3):
+        out = out * jnp.sin(jnp.pi * X[:, a:a + 1] * k[None, :, a])
+    return out
+
+
+def test_block(n, X, w, kxyz):
+    """P (m, M) = (n-1)^{3/2} w_q psi_m(x_q): the off-mesh rule reproducing the mesh-tested term."""
+    return (n - 1) ** 1.5 * jnp.asarray(w)[:, None] * psi(X, kxyz)
+
+
+def offmesh_tables(n, bank, T, X, w, kxyz, chunk=1 << 15):
+    B, D = point_blocks(bank, T, X, chunk)
+    P = jax.block_until_ready(test_block(n, X, w, kxyz))
+    return dict(B=B, D=D, P=P)
+
+
+# ------------------------------------------------------------------ advection rules: contract(data, w) -> Ju (M, R')
+def contract_tensor(data, w):
+    return jnp.einsum('mij,j->mi', data['Ts'], w)
+
+
+def contract_offmesh(data, w):
+    B, D, P = data['B'], data['D'], data['P']
+    Bw, Dw = B @ w, D @ w
+    return P.T @ (Dw[:, None] * B + Bw[:, None] * D)
+
+
+def adv_offmesh_batch(data, Cs):
+    """adv for a batch of coefficient rows Cs (S, R') -> (S, M)."""
+    return ((Cs @ data['B'].T) * (Cs @ data['D'].T)) @ data['P']
+
+
+def make_contract_dense(n, M, kxyz, chunk=16):
+    """Exact sign-upwind advection on every interior node (the FOM's stencil), Jacobian by JVP column by column."""
+    idx = tuple(jnp.asarray(np.asarray(kxyz)[:M, a]) for a in range(3))
+
+    def contract(data, w):
+        u = TB.decode(w[None], data)[0]
+        rows = jnp.concatenate(data['GTb'], 0)                                   # (R', N)
+        Rp = rows.shape[0]
+        pad = (-Rp) % chunk
+        rows_p = jnp.concatenate((rows, jnp.zeros((pad, rows.shape[1]))), 0).reshape(-1, chunk, rows.shape[1])
+
+        def blk(G):
+            cols = jax.vmap(lambda g: jax.jvp(lambda v: C.upwind(v, n), (u,), (g,))[1])(G)
+            return C.phiT(cols, n, idx)                                         # (chunk, M)
+        J = jax.lax.map(blk, rows_p).reshape(-1, M)[:Rp]
+        return J.T
+    return contract
+
+
+# ------------------------------------------------------------------ solver (tables.make_fsc with the rule injected)
+def make_fsc_rule(n, Rp, M, contract, dt=DT, gtol=1e-3, trust=jnp.inf, adaptive_first=3, linear_jac=True,
+                  unroll=True):
+    """Identical to vendor tables.make_fsc except that contract(data, w) is a parameter, and, when the rule's Jacobian
+    is not linear in c (linear_jac=False, dense upwind), the predictor evaluates Ju at each candidate."""
+    steps, keep = int(round(0.25 / dt)), int(round(0.05 / dt))
+    assert abs(steps * dt - 0.25) < 1e-12 and abs(keep * dt - 0.05) < 1e-12
+
+    def query(u0, nu, data, hp):
+        A, lam_ = data['A'], data['lam']
+        S = 1.0 / (1.0 + dt * nu * lam_)
+        w0, s0 = TB.project(u0, data)
+        ic = jnp.stack([0., 4., 0., jnp.linalg.norm(u0) ** 2 - jnp.linalg.norm(s0) ** 2])
+        rj = TB._lm_step_parts(A, S, lam_, dt, nu)
+
+        def sweep(w, Ju, r, J, rn, lam, p):
+            Hm = J.T @ J
+            g = J.T @ r
+            d = jnp.diag(Hm) + 1e-30
+            cf = jax.scipy.linalg.cho_factor(Hm + jnp.diag(lam * d), lower=True)
+            dw = jax.scipy.linalg.cho_solve(cf, -g)
+            nz = jnp.linalg.norm(dw)
+            dw = dw * jnp.where(nz > trust, trust / (nz + 1e-300), 1.)
+            ok = jnp.all(jnp.isfinite(dw))
+            wn = w + jnp.where(ok, dw, 0.)
+            Jun = contract(data, wn)
+            r2, J2 = rj(Jun, wn, p)
+            rn2 = jnp.linalg.norm(r2)
+            acc = ok & jnp.isfinite(rn2) & (rn2 < rn)
+            lam2 = jnp.where(acc, jnp.maximum(lam / 3, 1e-12), jnp.minimum(lam * 10, 1e14))
+            sel = lambda a, b: jnp.where(acc, a, b)
+            return sel(wn, w), sel(Jun, Ju), sel(r2, r), sel(J2, J), sel(rn2, rn), lam2, (~acc).astype(jnp.int32)
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def block(x):
+    return jax.block_until_ready(x)
+
+
+# ------------------------------------------------------------------ family ---
+
+def table(seed, count):
+    """paper-b3d raw parameter table with its 257^3 peak normalisation (prefix-stable rows)."""
+    return b3.build_param_table(int(seed), int(count))
+
+
+def table_sha(tab):
+    return tab['sha256']
+
+
+def initial_interior(n, tab, j):
+    """Interior initial field (ni^3, flat, x slowest) of row j at mesh n (paper-b3d blob family)."""
+    ni = n - 2
+3:Projects a PRODUCTION attempt's wall time and peak device memory from pulled, complete cluster smokes run on the SAME GPU
+5:source file, the smoke result.json sha256s, job ids and GPU type. stage.py calls verify_certificate() and refuses on any
+9:  2D (c2grid): steady seconds per step measured per (setting, form, scheme, level) on the smoke's non-first case; a
+12:     recorded smoke calibration seconds x (production / smoke configurations) x (smallest-step ratio); order as measured.
+14:     c = m R' (M + 2 R'); a production run = max smoke (rate / c) x c_prod x steps (conservative); compile per
+15:     production signature = max smoke compile of its family.
+18:  memory: 2D = smoke whole-job peak + resident production initial fields; 3D = max smoke whole-job peak + tables of any
+19:     bank the smokes never held + the chunked operator-check intermediates + rule-data bytes (8 (2 R' + M) m) of every
+20:     production grid setting whose deployed rule the smokes did not hold.
+21:  staging (verify_certificate) recomputes the inequalities, re-hashes every staged file and every smoke result, and
+22:     re-checks the smoke machinery gates and GPU type; capacity comes from the allocation type (A7.4).
+23:Anything missing (unmeasured family, incomplete smoke, GPU mismatch, non-positive peak) -> fits = false.
+24:Projected total x 1.5 must fit the requested hours; projected peak must be <= 0.9 x the GPU memory.
+26:    python inventory.py --attempt c3desc --smokes runs/smk3esc/archive/output runs/smk3grid/archive/output \
+95:def project_3d(cfg, smokes, inv, rep):
+97:    for sm in smokes:
+120:            rule = rule.replace(' (conditional)', '')
+123:                return fail(rep, f'no smoke measurement for family {f}')
+132:            big = max((rule_points(x[0].replace(' (conditional)', '')) for x in rlist if isinstance(x, (list, tuple))
+146:    peaks = [sm.get('peak_bytes_job', -1) for sm in smokes]
+147:    if min(peaks) <= 0:
+148:        return fail(rep, 'a smoke lacks a positive peak')
+149:    peak = max(peaks)
+151:    smoke_banks = {s_['bank'] for sm in smokes for s_ in sm['config']['settings']}
+152:    for s in cfg['settings']:                         # tables of a bank the smokes never held (GTb + A + Gram), all R
+153:        if s['bank'] not in smoke_banks:
+156:            smoke_banks.add(s['bank'])
+159:    held = {(r['setting'], r['rule']) for sm in smokes for r in sm['rows']}
+164:    rep.update(detail=detail, projected_seconds=total, projected_peak_gb=(peak + extra) / 1e9)
+168:def project_2d(cfg, smokes, inv, rep):
+169:    sm = smokes[0]
+191:                return fail(rep, f'no smoke measurement for {f}')
+206:            return fail(rep, f'no FOM smoke measurement for {scn}')
+214:        return fail(rep, 'the smoke recorded no calibration timings')
+216:    # production calibration = recorded smoke calibration x (production / smoke configurations) x (smallest-step ratio)
+232:    peak = sm.get('peak_bytes_job', -1)
+233:    if peak <= 0:
+234:        return fail(rep, 'no positive smoke peak')
+236:    rep.update(detail=detail, projected_seconds=total, projected_peak_gb=(peak + extra) / 1e9)
+248:def smoke_gates(sm):
+249:    """Machinery gates a smoke must have passed to be used as resource evidence."""
+261:    ap.add_argument('--smokes', nargs='+', required=True)
+268:    assert not cfg.get('smoke'), 'a smoke attempt needs no certificate'
+272:    smokes = []
+273:    for p in map(Path, a.smokes):
+275:        rep.setdefault('smokes', []).append(dict(path=str(p), job_id=sm.get('job_id'), gpu=sm.get('gpu'),
+277:                                                  complete=sm.get('complete'), smoke=sm['config'].get('smoke'),
+278:                                                  gates_passed=smoke_gates(sm)))
+279:        if not smoke_gates(sm):
+280:            fail(rep, f'smoke {p} did not pass its machinery gates')
+281:        if not (sm.get('complete') and sm['config'].get('smoke') and (p / 'COMPLETE').exists()):
+282:            fail(rep, f'smoke {p} incomplete or not a smoke')
+284:            fail(rep, f'smoke GPU {sm.get("gpu")} differs from {a.gpu}')
+286:            fail(rep, f'smoke driver {sm["config"]["driver"]} differs from {cfg["driver"]}')
+287:        smokes.append(sm)
+292:        (project_3d if cfg['driver'] == 'c3run' else project_2d)(cfg, smokes, inv, rep)
+296:        rep['fits_memory'] = bool(rep['projected_peak_gb'] <= .9 * a.gpu_gb)
+297:        rep['fits'] = bool(rep['fits'] and rep['fits_time'] and rep['fits_memory'])
+313:    for sm in inv['smokes']:
+316:        assert sha_bytes((p / 'result.json').read_bytes()) == sm['result_sha256'], f'smoke {p} changed'
+318:        assert res['config'].get('smoke') and (p / 'COMPLETE').exists() and smoke_gates(res), f'smoke {p} not usable'
+319:        assert str(res.get('gpu', '')).startswith(GPU_NAMES[gpu].split(' 80GB')[0]), 'smoke GPU type differs'
+321:    peak = float(inv['projected_peak_gb'])
+322:    assert np.isfinite(proj_h) and np.isfinite(peak) and proj_h > 0 and peak > 0, 'non-finite projection'
+324:    assert peak <= .9 * CAPACITY_GB[gpu], f'projected peak {peak:.1f} GB exceeds 90 % of {CAPACITY_GB[gpu]} GB'
+
+exec
+/bin/bash -lc "PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import numpy as np, pathlib, hashlib, json, runpy
+p=pathlib.Path('experiments/jcp-combined'); gen=runpy.run_path(str(p/'vendor/quad3d/rules.py'))['gauss_tensor3']; meta=json.loads((p/'rules3d/rules_ext2.json').read_text())['rules']
+for n in [64,96,112]:
+ f=p/'vendor/quad3d/rules/rules.npz' if n==64 else p/f'rules3d/rules_gl{n}.npz'
+ z=np.load(f); x,w=gen(n); key=f'gl{n}'; print(key,'matches generator',np.array_equal(x,z[key+'_X']),np.array_equal(w,z[key+'_w']),'shape',x.shape,'dtype',x.dtype,w.dtype,'positive',bool((w>0).all()),'bytes',f.stat().st_size)
+ if n"'!=64: print('"'hashes match',hashlib.sha256(f.read_bytes()).hexdigest()==meta[key]['npz_sha256'],hashlib.sha256(x.tobytes()+w.tobytes()).hexdigest()==meta[key]['sha256'])
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 234ms:
+gl64 matches generator True True shape (262144, 3) dtype float64 float64 positive True bytes 29505730
+gl96 matches generator True True shape (884736, 3) dtype float64 float64 positive True bytes 28312062
+hashes match True True
+gl112 matches generator True True shape (1404928, 3) dtype float64 float64 positive True bytes 44958210
+hashes match True True
+
+exec
+/bin/bash -lc "nl -ba experiments/jcp-combined/select3d.py | sed -n '85,215p'; sed -n '95,166p' experiments/jcp-combined/inventory.py; sed -n '248,259p' experiments/jcp-combined/inventory.py; sed -n '560,586p' experiments/jcp-combined/DESIGN.md; rg -n 'def form_data' experiments/jcp-combined/t2core.py; tail -n 25 experiments/jcp-combined/c3run.py" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+    85	    assert a.posthoc or not a.ext, 'the A11 extension is part of the post-hoc selection only'
+    86	    EXT = {}
+    87	    for xp in map(Path, a.ext):
+    88	        xr = json.loads((xp / 'result.json').read_text())
+    89	        if xr['config'].get('smoke') and not a.allow_smoke:
+    90	            raise SystemExit(f'{xp}: smoke result refused')
+    91	        assert xr.get('complete') and xr['mode'] == 'esc', xp
+    92	        for s_ in xr['config']['settings']:
+    93	            assert s_.get('ext_rules') and s_['name'] not in EXT, s_['name']
+    94	            EXT[s_['name']] = (xp, xr, np.load(xp / 'W_esc.npz'))
+    95	    sel = SEL_POSTHOC if a.posthoc else SEL
+    96	    import c3common as C3
+    97	    X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
+    98	    i65 = C3.lattice65_index(65)
+    99	    out = dict(tau=TAU, families=FAMILIES, control=CONTROL, selection_arms=sel, timed_arms=TIMED,
+   100	               posthoc=bool(a.posthoc),
+   101	               label=('POST HOC (DESIGN A10' + (', A11 extension' if EXT else '') + ')') if a.posthoc else 'pre-registered',
+   102	               extension_inputs=[dict(path=str(v[0]), job_id=v[1].get('job_id'), gpu=v[1].get('gpu'),
+   103	                                      result_sha256=hashlib.sha256((v[0] / 'result.json').read_bytes()).hexdigest())
+   104	                                 for v in EXT.values()],
+   105	               inputs=[], settings={})
+   106	    for rp in map(Path, a.runs):
+   107	        res = json.loads((rp / 'result.json').read_text())
+   108	        if res['config'].get('smoke') and not a.allow_smoke:
+   109	            raise SystemExit(f'{rp}: smoke result refused')
+   110	        assert res.get('complete') and res['mode'] == 'esc', rp
+   111	        out['inputs'].append(dict(path=str(rp), job_id=res.get('job_id'), gpu=res.get('gpu'),
+   112	                                  result_sha256=hashlib.sha256((rp / 'result.json').read_bytes()).hexdigest()))
+   113	        cfg = res['config']
+   114	        cases = cfg.get('case_subset') or list(range(cfg['cohort_count']))
+   115	        tab = C3.C.table(cfg['cohort_seed'], cfg['cohort_count'])
+   116	        n0 = np.array([float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j))[i65])) for j in cases])
+   117	        Wz = np.load(rp / 'W_esc.npz')
+   118	        for s in cfg['settings']:
+   119	            sname = s['name']
+   120	            S = res['settings'][sname]
+   121	            esc = S['escalation']
+   122	            ent = dict(bank=s['bank'], Rp=s['Rp'], escalation_status=esc['status'], converged=esc['converged'],
+   123	                       pairs={k: dict(selection=v['selection_pair_status'], adaptive=v['adaptive_diagnostic_status'],
+   124	                                      worst={kk: vv['worst'] for kk, vv in {**v['selection'], **v['diagnostic']}.items()})
+   125	                              for k, v in esc['pairs'].items()},
+   126	                       operator_check=esc['operator_check'], fixed_vs_adaptive={k: v['worst'] for k, v in esc['fixed_vs_adaptive'].items()})
+   127	            conv = esc['converged']
+   128	            if a.posthoc:
+   129	                conv, ph = posthoc_converged(esc['pairs'])
+   130	                ent.update(posthoc_pair_status=ph, posthoc_converged=conv)
+   131	            bk = C3.load_bank(s['bank'])
+   132	            G = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :int(s['Rp'])], X65))
+   133	            src = {}                                   # rule -> (result, W archive) holding its trajectories
+   134	
+   135	            def W_of(rule, sk):
+   136	                r_, z_ = src.get(rule, (res, Wz))
+   137	                assert ids_of(r_, z_, sname, rule, sk) == list(cases), (sname, rule, sk)
+   138	                return z_[f'{sname}|{rule}|{sk}']
+   139	            if a.posthoc and conv is None and sname in EXT:
+   140	                # A11: extension pairs in the A2.4 order continued (gl80 if (gl80, gl96) passes the A10 axis, else gl96 if
+   141	                # (gl96, gl112) passes); the extension's re-run of gl80 must reproduce this job's gl80 trajectories
+   142	                xp, xr, xz = EXT[sname]
+   143	                assert xr['config']['cohort_seed'] == cfg['cohort_seed'] and \
+   144	                    (xr['config'].get('case_subset') or list(range(xr['config']['cohort_count']))) == list(cases)
+   145	                xs = xr['settings'][sname]['extension']
+   146	                repro = {}
+   147	                for sk in SEL + SEL_POSTHOC[1:] + ['ad|LSPG|BE|0.01|tight']:
+   148	                    if f'{sname}|gl80|{sk}' in xz.files and f'{sname}|gl80|{sk}' in Wz.files:
+   149	                        assert ids_of(xr, xz, sname, 'gl80', sk) == ids_of(res, Wz, sname, 'gl80', sk) == list(cases)
+   150	                        d_ = np.linalg.norm(np.einsum('cki,ip->ckp', xz[f'{sname}|gl80|{sk}'] - Wz[f'{sname}|gl80|{sk}'], G),
+   151	                                            axis=2) / n0[:, None]
+   152	                        repro[sk] = float(np.nanmax(d_)) if np.isfinite(d_).all() else float('nan')
+   153	                rep_ok = bool(repro) and all(np.isfinite(v) and v <= 1e-10 for v in repro.values())
+   154	                xst = {k: v['posthoc_status'] for k, v in xs['pairs'].items()}
+   155	                xconv = None
+   156	                if rep_ok:
+   157	                    xconv = 'gl80' if xst.get('gl80|gl96') == 'pass' else ('gl96' if xst.get('gl96|gl112') == 'pass' else None)
+   158	                ent['extension'] = dict(path=str(xp), job_id=xr.get('job_id'), pair_status=xst, reproduction_gl80=repro,
+   159	                                        reproduction_passed=rep_ok, converged=xconv,
+   160	                                        worst={k: {kk: vv['worst'] for kk, vv in v['posthoc'].items()} for k, v in xs['pairs'].items()})
+   161	                conv = xconv
+   162	                ent['posthoc_converged'] = conv
+   163	                for r_ in xs['rules']:
+   164	                    if r_ not in ('gl80',):
+   165	                        src[r_] = (xr, xz)
+   166	                for r_, e_ in xs['rule_eligibility'].items():
+   167	                    if r_ not in ('gl80',):
+   168	                        S.setdefault('escalation_rule_eligibility', {})[r_] = {k: v for k, v in e_.items() if k in SEL}
+   169	                        S['escalation_rule_eligibility'][r_][SEL_POSTHOC[1]] = dict(eligible=bool(e_[SEL_POSTHOC[1]]['eligible']))
+   170	            base = conv or S['ladder_baseline']['rule']
+   171	            elig = dict(S.get('escalation_rule_eligibility', {}), **S.get('ladder_eligibility', {}))
+   172	            if a.posthoc:                     # adaptive arm: eligible iff every run of the rule is valid (A5.1), from the rows
+   173	                rows = [r for r in res['rows'] if r['setting'] == sname and r['spec'] == SEL_POSTHOC[1]]
+   174	                for rule in {r['rule'] for r in rows}:
+   175	                    rr_ = [r for r in rows if r['rule'] == rule]
+   176	                    nb = len(rr_) // max(len(cases), 1)          # repeated runs (gl48: escalation + ladder) all count
+   177	                    ok = (nb >= 1 and sorted(r['case'] for r in rr_) == sorted(cases * nb)
+   178	                          and all(r['valid'] is True for r in rr_))
+   179	                    elig.setdefault(rule, {})[SEL_POSTHOC[1]] = dict(eligible=bool(ok), runs=len(rr_),
+   180	                                                                      invalid=sum(r['valid'] is not True for r in rr_))
+   181	
+   182	            def dist(r1, r2, sk):
+   183	                A_, B_ = W_of(r1, sk), W_of(r2, sk)     # A8.2: joined by case ids (saved ids, else the job's row order)
+   184	                d = np.linalg.norm(np.einsum('cki,ip->ckp', A_ - B_, G), axis=2) / n0[:, None]
+   185	                per = d[:, 1:].max(1)
+   186	                return float(per.max()) if np.isfinite(per).all() else float('nan')
+   187	            rules = {}
+   188	            for rule in FAMILIES['lattice'] + FAMILIES['gauss'] + [CONTROL]:
+   189	                if any(f'{sname}|{rule}|{sk}' not in Wz.files for sk in sel):
+   190	                    continue
+   191	                rr = {}
+   192	                for sk in sel:
+   193	                    e = elig.get(rule, {}).get(sk, {})
+   194	                    dd = dist(rule, base, sk) if rule != base else 0.
+   195	                    rr[sk] = dict(eligible=bool(e.get('eligible')), solver_distance=e.get('solver_distance'),
+   196	                                  nonstationary=e.get('nonstationary'), steps=e.get('steps'), dist_to_conv=dd,
+   197	                                  within_tau=bool(np.isfinite(dd) and dd <= TAU))
+   198	                rr['qualifies'] = all(rr[sk]['eligible'] and rr[sk]['within_tau'] for sk in sel)
+   199	                rules[rule] = rr
+   200	            ent['rules'] = rules
+   201	            ent['ladder_baseline'] = S['ladder_baseline']
+   202	            if conv is None:
+   203	                ent.update(status='unavailable (no converged rule)', deployed=None)
+   204	                out['settings'][sname] = ent
+   205	                continue
+   206	            absent = [r for r in FAMILIES['lattice'] + FAMILIES['gauss'] if r not in rules and r != base]
+   207	            if absent:
+   208	                ent.update(status=f'unavailable (ladder rules not evaluated: {absent})', deployed=None)
+   209	                out['settings'][sname] = ent
+   210	                continue
+   211	            if CONTROL not in rules:
+   212	                ent.update(status='unavailable (control lat256 not evaluated)', deployed=None)
+   213	                out['settings'][sname] = ent
+   214	                continue
+   215	            ctrl_q = rules[CONTROL]['qualifies']
+def project_3d(cfg, smokes, inv, rep):
+    rates, comps = {}, {}
+    for sm in smokes:
+        S = sm['settings']
+        by = {}
+        for r in sm['rows']:
+            by.setdefault((r['setting'], r['rule'], r['spec']), []).append(r)
+        for (s, rule, spec), rs in by.items():
+            rs = sorted(rs, key=lambda x: x['case'])
+            if len(rs) < 2:
+                continue
+            c = cost3(rule_points(rule), S[s]['Rp'], S[s]['M'])
+            steady = float(np.median([x['seconds_first'] for x in rs[1:]]))
+            f = fam3(spec)
+            rates[f] = max(rates.get(f, 0.), steady / steps_of(spec) / c)
+            comps[f] = max(comps.get(f, 0.), max(0., rs[0]['seconds_first'] - steady))
+    ncases = inv['cases']
+    M_of = lambda Rp: 4 * Rp + 64                  # complete_M(4R') exceeds 4R' by less than one shell (conservative)
+    total, detail, allcalls = 0., {}, []
+    for s in cfg['settings']:
+        Rp = int(s['Rp'])
+        rlist = inv['settings'][s['name']]['runs']
+        tot, comp, calls, seen = 0., 0., [], set()
+        for item in rlist:
+            rule, spec = (item if isinstance(item, (list, tuple)) else (s.get('rule'), item))
+            rule = rule.replace(' (conditional)', '')
+            f = fam3(spec)
+            if f not in rates:
+                return fail(rep, f'no smoke measurement for family {f}')
+            t = rates[f] * cost3(rule_points(rule), Rp, M_of(Rp)) * steps_of(spec)
+            tot += t * ncases
+            calls.append(t)
+            if (rule, spec) not in seen:
+                comp += comps[f]
+                seen.add((rule, spec))
+        nt = inv['settings'][s['name']]['timing_invocations']
+        if cfg['mode'] == 'esc':           # family panels: A = the converged rule's fixed BE dt0 (priced at the largest rule)
+            big = max((rule_points(x[0].replace(' (conditional)', '')) for x in rlist if isinstance(x, (list, tuple))
+                       and x[0].startswith('gl')), default=0)
+            tA = rates[('fs', 'BE', 'K1')] * cost3(big, Rp, M_of(Rp)) * 25
+            tt = nt * (2 / 3 * tA + 1 / 3 * float(np.max(calls)) + cfg['timing']['burn']) * (1 + 1 / 3)
+        else:
+            tt = nt * (float(np.max(calls)) + cfg['timing']['burn']) * (1 + 1 / 3)
+        detail[s['name']] = dict(rollouts_s=tot, compile_s=comp, timing_s=tt)
+        total += tot + comp + tt
+        allcalls += calls
+    if cfg['mode'] == 'grid':
+        tc = cfg['timing']
+        nsub = sum(1 for s in cfg['settings'] for x in inv['settings'][s['name']]['runs'] if x.startswith('fs|'))
+        total += (3 * nsub * tc['common_cases'] * tc['common_reps'] + nsub * tc['common_cases']) * \
+            (float(np.mean(allcalls)) + tc['burn'])
+    peaks = [sm.get('peak_bytes_job', -1) for sm in smokes]
+    if min(peaks) <= 0:
+        return fail(rep, 'a smoke lacks a positive peak')
+    peak = max(peaks)
+    extra = 0
+    smoke_banks = {s_['bank'] for sm in smokes for s_ in sm['config']['settings']}
+    for s in cfg['settings']:                         # tables of a bank the smokes never held (GTb + A + Gram), all R
+        if s['bank'] not in smoke_banks:
+            R = 1024 if s['bank'] == 'W1024' else 512
+            extra += 8 * (250047 * R + M_of(R) * R + R * R)
+            smoke_banks.add(s['bank'])
+    if cfg['mode'] == 'esc':                          # chunked operator check: 2 x (16 states x m) intermediates at 80^3
+        extra += 2 * 8 * 16 * 80 ** 3 * 2
+    held = {(r['setting'], r['rule']) for sm in smokes for r in sm['rows']}
+    if cfg['mode'] == 'grid':
+        for s in cfg['settings']:
+            if (s['name'], s['rule']) not in held:
+                extra += 8 * (2 * int(s['Rp']) + M_of(int(s['Rp']))) * rule_points(s['rule'])
+    rep.update(detail=detail, projected_seconds=total, projected_peak_gb=(peak + extra) / 1e9)
+    return rep
+
+def smoke_gates(sm):
+    """Machinery gates a smoke must have passed to be used as resource evidence."""
+    ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and bool(sm.get('timing'))
+    if sm['config']['driver'] == 'c2grid':
+        ok = ok and bool(sm['g1a']) and all(g.get('passed') for g in sm['g1a']) and all(r['verified'] for r in sm['rows'])
+    else:
+        ok = ok and all(v.get('G_FS1', {}).get('outcome', 'exact') != 'FAIL' for v in sm['settings'].values())
+    return ok
+
+
+def main():
+    ap = argparse.ArgumentParser()
+
+**A2.4 Quadrature qualification (P14, P16, N5).**
+- 2D: the converged-rule check ($320^2$ vs $640^2$, successor $640^2$ vs $768^2$) runs for every $r_\infty$-dependent budget
+  trajectory type (deployed-end, ideal and its qualification runs, ideal-end, mixed-difference corners) on **dev6 ∪ the
+  first 10 val32 cases** (16 cases). Convergence claims are restricted to these checked cases; on the other 22 cases the
+  quadrature sensitivity is reported with the label "converged rule checked on 16/38 cases".
+- 3D: the accepted converged rule must also pass against its **finer** neighbour (A1.7 pair list is replaced by: converged
+  rule $r_\infty$ = the first of $56^3,64^3$ such that $d(r_\infty,\text{next finer})\le$ bar under both selection solvers on all 64
+  cases; next finer of $64^3$ is $80^3$). The C1 pair $(56^3,48^3)$ is reported but cannot by itself accept $56^3$. In
+  `c3bud` every $r_\infty$-dependent trajectory type is re-checked against the next finer rule on all 32 budget cases.
+  `M2_512` gets its own check ($56^3$ vs $64^3$, both selection solvers, 64 cases) inside `c3desc`.
+- **Finalist and fallback inventory (P16, N2):** `FROZEN-SELECTION.json` lists, per setting, the selected arm IDs and an
+  explicit ordered fallback list (the next two larger rungs of the same family, then "unavailable"). The finalist check
+  ($\delta_{\rm quad}\le\tau$) runs in the budget jobs on all budget cases (2D 38; 3D 32) **and**, in 3D, on all 64 cases for the
+  selected arms (they are cheap at the deployed rule; only the $r_\infty$ runs are costly, and the selected arms' $r_\infty$
+  runs at deployed steps are included). A selected arm failing it is reported as **failing qualification**; its selection
+  verdict is preserved; any fallback is a separate diagnostic unless it receives accuracy, solver, quadrature and same-job
+  timing qualification (which the budget jobs provide for the first fallback only).
+
+**A2.5 J4 statuses (P15, N6).** Per $R'$ and rule pair two fields are recorded: `selection_pair_status` ∈ {pass, fail,
+unresolved} from the two **fixed-sweep** selection solver arms only, and `adaptive_diagnostic_status` ∈ {pass, fail,
+unresolved} from the adaptive arms. Only the former gates selection; the latter is diagnostic and never vetoes. The
+operator-level check is reported as its own number (relative tested-operator difference on common states, denominator-zero
+→ "undefined"); the quantitative "amplification" wording is withdrawn.
+
+**A2.6 Tie policy made symmetric and complete (P17, P19, N9).**
+- Per case: arms $x,y$ tie iff $|e_x-e_y|\le2\varepsilon_{\rm ref}$ of that case.
+236:def form_data(base, blocks, form):
+            allsp = [('vendor',)] + grid_specs(cfg['grid'])
+            Bs = [(sname, rule, x) for x in allsp if (x[0] in ('fs', 'vendor') and x != ('fs', 'BE', DT0, 1)) or timed_adaptive(x)]
+            time_panel(f'setting|{sname}', (sname, rule, ('fs', 'BE', DT0, 1)), Bs,
+                       lambda sn, rl: (live[sn][0], live[sn][2]), int(tc['seed']) + 1 + k_set, tc['cases'], tc['reps'])
+        dump()
+        save()
+
+    if mode == 'grid':
+        base = cfg['common_baseline'] if cfg['common_baseline'] in live else cfg['common_baseline_fallback']
+        A = (base, live[base][1], ('fs', 'BE', DT0, 1))
+        Bs = [(sname, rule, x) for sname, (sol, rule, prep) in live.items() for x in grid_specs(cfg['grid'])
+              if x[0] == 'fs' and x[2] >= DT0 - 1e-12 and (sname, rule, x) != A]
+        time_panel('common', A, Bs, lambda sn, rl: (live[sn][0], live[sn][2]), int(tc['common_seed']),
+                   tc['common_cases'], tc['common_reps'])
+    rep['peak_bytes_job'] = C3.peak_bytes()
+    rep['elapsed_seconds'] = el()
+    rep['complete'] = True
+    save()
+    dump()
+    (out / 'COMPLETE').write_text('complete\n')
+    print('C3RUN COMPLETE', flush=True)
+
+
+if __name__ == '__main__':
+    main()
+
+exec
+/bin/bash -lc "PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import json,pathlib,numpy as np
+p=pathlib.Path('/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad/local3ext')
+r=json.loads((p/'result.json').read_text());print('complete',r['complete'],'config',r['config'],'backend',r['backend'],'gpu',r['gpu'],'peak_job',r.get('peak_bytes_job'));s=r['settings']['W256'];print('setting', {k:v for k,v in s.items() if k"'!='"'extension'})
+e=s['extension'];print('rules',e['rules'],'inventory',r['inventory'],'row_count',len(r['rows']),'all valid',all(x['valid'] for x in r['rows']))
+for k,v in e['pairs'].items():
+ print(k, {a:v[a] for a in ['selection_pair_status','adaptive_diagnostic_status','posthoc_status']}, {sk:d['worst'] for sk,d in v['posthoc'].items()})
+z=np.load(p/'W_esc.npz'); print('arrays',[(k,z[k].shape,bool(np.isfinite(z[k]).all())) for k in z.files]);
+r2=json.loads(pathlib.Path('experiments/jcp-combined/runs/c3descW1024/archive/output/result.json').read_text()); M=r2['settings']['W1024']['M'];print('production M',M,'B D P GB',8*(2*1024+M)*112**3/1e9,'one mRp GB',8*1024*112**3/1e9)
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+complete True config {'attempt': 'local3ext', 'driver': 'c3run', 'mode': 'esc', 'mesh': 65, 'cohort_seed': 923801, 'cohort_count': 64, 'refined_ref': '/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-burgers3d/experiments/quadrature-burgers3d/runs/ref1/code/output/ref_923801.npz', 'gtol': 0.001, 'trust_fraction': 0.05, 'conv_bar': 2.5e-05, 'settings': [{'name': 'W256', 'bank': 'W1024', 'Rp': 256, 'a': 6, 'ext_rules': ['gl24', 'gl32', 'gl40']}], 'timing': {'cases': 0, 'reps': 0, 'burn': 0.1, 'seed': 20261013}, 'common_baseline': 'W512', 'common_baseline_fallback': 'M2_512', 'case_subset': [0], 'smoke': True} backend gpu gpu NVIDIA GB10 peak_job 8397121536
+setting {'bank': 'W1024', 'Rp': 256, 'M': 1027, 'trust': 0.005882790156315673, 'a': 6, 'peak_bytes': 8397121536}
+rules ['gl24', 'gl32', 'gl40'] inventory {'mode': 'esc', 'cases': 1, 'settings': {'W256': {'runs': [['gl24', 'fs|BE|0.01|K1'], ['gl24', 'fs|CN|0.025|K2'], ['gl24', 'ad|LSPG|BE|0.01|tight'], ['gl24', 'ad|LSPG|CN|0.025|tight'], ['gl32', 'fs|BE|0.01|K1'], ['gl32', 'fs|CN|0.025|K2'], ['gl32', 'ad|LSPG|BE|0.01|tight'], ['gl32', 'ad|LSPG|CN|0.025|tight'], ['gl40 (conditional)', 'fs|BE|0.01|K1'], ['gl40 (conditional)', 'fs|CN|0.025|K2'], ['gl40 (conditional)', 'ad|LSPG|BE|0.01|tight'], ['gl40 (conditional)', 'ad|LSPG|CN|0.025|tight']], 'timing_invocations': 0}}} row_count 12 all valid True
+gl24|gl32 {'selection_pair_status': 'fail', 'adaptive_diagnostic_status': 'fail', 'posthoc_status': 'fail'} {'fs|BE|0.01|K1': 2.6634357647574414e-05, 'ad|LSPG|CN|0.025|tight': 3.574463623672655e-05}
+gl32|gl40 {'selection_pair_status': 'pass', 'adaptive_diagnostic_status': 'pass', 'posthoc_status': 'pass'} {'fs|BE|0.01|K1': 1.304254858095276e-06, 'ad|LSPG|CN|0.025|tight': 1.5598466339382605e-06}
+arrays [('W256|gl24|fs|BE|0.01|K1', (1, 6, 256), True), ('W256|gl24|fs|CN|0.025|K2', (1, 6, 256), True), ('W256|gl24|ad|LSPG|BE|0.01|tight', (1, 6, 256), True), ('W256|gl24|ad|LSPG|CN|0.025|tight', (1, 6, 256), True), ('W256|gl32|fs|BE|0.01|K1', (1, 6, 256), True), ('W256|gl32|fs|CN|0.025|K2', (1, 6, 256), True), ('W256|gl32|ad|LSPG|BE|0.01|tight', (1, 6, 256), True), ('W256|gl32|ad|LSPG|CN|0.025|tight', (1, 6, 256), True), ('W256|gl40|fs|BE|0.01|K1', (1, 6, 256), True), ('W256|gl40|fs|CN|0.025|K2', (1, 6, 256), True), ('W256|gl40|ad|LSPG|BE|0.01|tight', (1, 6, 256), True), ('W256|gl40|ad|LSPG|CN|0.025|tight', (1, 6, 256), True), ('w0|W256', (1, 256), True), ('cases|W256|gl24|fs|BE|0.01|K1', (1,), True), ('cases|W256|gl24|fs|CN|0.025|K2', (1,), True), ('cases|W256|gl24|ad|LSPG|BE|0.01|tight', (1,), True), ('cases|W256|gl24|ad|LSPG|CN|0.025|tight', (1,), True), ('cases|W256|gl32|fs|BE|0.01|K1', (1,), True), ('cases|W256|gl32|fs|CN|0.025|K2', (1,), True), ('cases|W256|gl32|ad|LSPG|BE|0.01|tight', (1,), True), ('cases|W256|gl32|ad|LSPG|CN|0.025|tight', (1,), True), ('cases|W256|gl40|fs|BE|0.01|K1', (1,), True), ('cases|W256|gl40|fs|CN|0.025|K2', (1,), True), ('cases|W256|gl40|ad|LSPG|BE|0.01|tight', (1,), True), ('cases|W256|gl40|ad|LSPG|CN|0.025|tight', (1,), True)]
+production M 4097 B D P GB 69.06626048 one mRp GB 11.509170176
+
+exec
+/bin/bash -lc "rg -n 'gl80|gl64|finer|posthoc' experiments/jcp-combined/make_budget_configs.py; sed -n '236,254p' experiments/jcp-combined/t2core.py; nl -ba experiments/jcp-combined/cluster/stage.py | sed -n '52,80p'; nl -ba experiments/jcp-combined/DESIGN.md | tail -n 32; git status --short" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+14:FINER = {'gl56': 'gl64', 'gl64': 'gl80'}
+41:            sets.append(dict(base[n], rule=r['deployed'], conv=r['converged'], finer=FINER[r['converged']], arms=arms))
+44:                 rule_selection_label=fz['3d_rules'].get('label', 'pre-registered'), rule_selection_posthoc=fz['3d_rules'].get('posthoc', False))
+def form_data(base, blocks, form):
+    """base: A, lam, G (qstudy.Mesh.base); blocks: rule blocks. Adds hmask, and for GAL the thin QR of A."""
+    d = dict(base, **blocks)
+    lam = d['lam']
+    d['hmask'] = (lam > jnp.median(lam)).astype(jnp.float64)
+    if form == 'GAL':
+        Qm, Rm = jnp.linalg.qr(d['A'], mode='reduced')
+        d.update(Qm=Qm, Rm=Rm, QtLA=Qm.T @ (lam[:, None] * d['A']))
+    return jax.block_until_ready(d)
+
+
+def a_conditioning(A):
+    s = np.linalg.svd(np.asarray(A), compute_uv=False)
+    return dict(rank=int(np.sum(s > s[0] * 1e-13)), cond=float(s[0] / s[-1]), smax=float(s[0]), smin=float(s[-1]))
+
+
+def make_query(Q, kind, form, Rp, L, trust, mutation=None, budget=600):
+    """End-to-end query (initial fit + LMM stepping + decode of the six output fields), as qcore.make_linear_query."""
+    import engines as e
+    52	    remote = f'{NAMESPACE}/{a.attempt}'
+    53	    commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
+    54	    dirty = subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain', '--', LANE], text=True)
+    55	    assert not [l for l in dirty.splitlines() if not l[3:].startswith(f'{LANE}/runs')], dirty
+    56	    cert = json.loads(git_show(commit, f'{LANE}/checks/test_fs.json'))
+    57	    assert cert['all_pass'], 'manufactured tests (G-FS2) did not pass'
+    58	    for f, h in cert['source_sha256'].items():
+    59	        assert hashlib.sha256(git_show(commit, f'{LANE}/{f}')).hexdigest() == h, f'G-FS2 certificate is for a different {f}'
+    60	    cfgname = f'{LANE}/configs/{a.attempt}.json'
+    61	    if not json.loads(git_show(commit, cfgname)).get('smoke'):   # A2.12 / A5.5 resource gate for production attempts
+    62	        import inventory as INV_                                  # noqa: F401  (see inventory.verify_certificate)
+    63	        inv = json.loads(git_show(commit, f'{LANE}/checks/inventory-{a.attempt}.json'))
+    64	        INV_.verify_certificate(inv, commit=commit, cfg_bytes=git_show(commit, cfgname), gpu=a.gpu, hours=a.hours, mem=a.mem,
+    65	                                git_show=lambda name: git_show(commit, name))
+    66	        print('resource certificate verified', inv['projected_seconds'] / 3600 * 1.5, 'h (x1.5) of', a.hours)
+    67	    cfg0 = json.loads((ROOT / cfgname).read_text())
+    68	    assert cfg0['attempt'] == a.attempt
+    69	    if (cfg0['driver'] == 'c2bud' or cfg0.get('mode') == 'bud') and not cfg0.get('smoke'):
+    70	        assert 'frozen_sha256' in cfg0, 'a production budget config must be bound to FROZEN-SELECTION.json (A8.3)'
+    71	    if 'frozen_sha256' in cfg0:                   # budget configs are bound to the committed frozen selection (A8.3)
+    72	        assert hashlib.sha256(git_show(commit, f'{LANE}/checks/FROZEN-SELECTION.json')).hexdigest() == cfg0['frozen_sha256'], \
+    73	            'config does not match the committed FROZEN-SELECTION.json'
+    74	    driver = cfg0['driver']
+    75	    files = FILES3 if driver == 'c3run' else FILES2
+    76	    for name in files + [cfgname]:
+    77	        assert (ROOT / name).read_bytes() == git_show(commit, name), name
+    78	    import numpy as np
+    79	    reffiles = []
+    80	    if driver == 'c3run':
+   910	**A10.3 Consequences.** The 3D grid (`c3grid`) runs on the post-hoc deployed rule; every 3D result inherits the "POST HOC
+   911	rule" label (`freeze.py` records `posthoc`, `label`, the effective and the pre-registered converged rule per setting; the
+   912	`c3grid` and `c3bud` configs carry the label, and `score.py`, `analyze3d.py` and `budget3d.py` copy it from the config
+   913	into their outputs). The fixed-sweep CN arms remain grid candidates and are judged by the unchanged per-case H4 eligibility
+   914	(A1.9, A6.2), so the fixed-sweep CN failure cases appear as ineligible there, not silently. The failing cases are
+   915	investigated descriptively (which cases, which steps, whether $K=3$ or a smaller step fixes them) in the report, as part of
+   916	the "why did the fast CN worst case get worse" question; that investigation selects nothing.
+   917	
+   918	## Amendment A11 (2026-10-13, POST HOC: written after the `c3descW1024` 5209530 escalation statuses were read; before any reference error, selection outcome or timing ratio of W1024 was read)
+   919	
+   920	**A11.1 Finding (pre-registered and A10 outcomes).** At W1024 ($R'=1024$) no escalation pair passes, under either the
+   921	pre-registered or the A10 axis, up to Gauss $80^3$: the fixed-sweep BE distance falls with the rule ($48^3$–$56^3$, $56^3$–$64^3$,
+   922	$64^3$–$80^3$) but stays above the bar $2.5\times10^{-5}$ on **one case** (case 5 of cohort 923801), while every other case is
+   923	orders of magnitude below it (`checks/SELECTION-3D-POSTHOC-W1024only.json`, per-case distances in the job's escalation
+   924	record). At W768 the same case is the worst one and passes at ($64^3$, $80^3$). This answers the "why does J4 fail at
+   925	$R'\ge768$" question: C1's failure (an under-resolved $48^3$ check) is driven by a single case whose quadrature converges
+   926	slowly in the rule size, and that convergence is slower at $R'=1024$ than at $R'=768$. W1024's rule selection is therefore
+   927	**unavailable** under both A2.4 and A10, and is reported so.
+   928	
+   929	**A11.2 Escalation extension (post hoc, W1024 only).** To find whether a converged rule exists for W1024 at all, a separate
+   930	job `c3extW1024` continues the escalation on all 64 cases with the two selection arms and their adaptive counterparts at
+   931	Gauss $80^3$, $96^3$ and, only if ($80^3$, $96^3$) fails the A10 axis, $112^3$ (new rules from the vendored, unchanged
+   932	generator, `rules3d/make_rules_ext2.py`, sha256-pinned). Each consecutive pair gets the pre-registered selection axis,
+   933	the adaptive axis and the A10 axis. The A2.4 order is continued: $r_\infty=80^3$ if ($80^3$, $96^3$) passes the A10 axis,
+   934	else $96^3$ if ($96^3$, $112^3$) passes, else none. The extension's $80^3$ trajectories must reproduce the escalation job's
+   935	$80^3$ trajectories (field distance $\le10^{-10}$ for every arm) or the extension is not used. The ladder, $m^\star$, the
+   936	control requirement, $\tau$ and the cost are taken unchanged from `c3descW1024` (its ladder distances are recomputed
+   937	against the new $r_\infty$, whose trajectories exist in that job for $80^3$ and in the extension for $96^3$).
+   938	`select3d.py --posthoc --ext <archive>` implements it; its label is "POST HOC (DESIGN A10, A11 extension)". A cluster
+   939	smoke `smk3ext` (two cases, $96^3$ and $112^3$) gates memory and rate before the production job, as for every job.
+   940	If no converged rule is found, W1024 is reported without a 3D grid (the R′ dial then ends at 768 in the second-order
+   941	grid) and the extension distances are reported descriptively.
+ M experiments/jcp-combined/audits/codex-a11-1.log
+
+exec
+/bin/bash -lc "PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import ast,pathlib,numpy as np,textwrap,json
+p=pathlib.Path('experiments/jcp-combined')
+src=(p/'select3d.py').read_text();tree=ast.parse(src);main=next(x for x in tree.body if isinstance(x,ast.FunctionDef) and x.name=='main');loop=next(x for x in ast.walk(main) if isinstance(x,ast.For) and isinstance(x.target,ast.Name) and x.target.id=='sk' and 'repro' in ast.get_source_segment(src,x));gate=next(x for x in ast.walk(main) if isinstance(x,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='rep_ok' for t in x.targets))
+class Z(dict):
+ @property
+ def files(self): return list(self)
+sel=['fs|BE|0.01|K1','fs|CN|0.025|K2'];ph=[sel[0],'ad|LSPG|CN|0.025|tight'];k='W1024|gl80|'+sel[0]
+env=dict(np=np,SEL=sel,SEL_POSTHOC=ph,sname='W1024',xz=Z({k:np.zeros((1,6,1))}),Wz=Z({k:np.zeros((1,6,1))}),xr={},res={},cases=[0],G=np.ones((1,2)),n0=np.ones(1),ids_of=lambda *args:[0],repro={})
+exec(compile(ast.Module(body=[loop,gate],type_ignores=[]),'<read-only gate probe>','exec'),env)
+print('actual gl80 gate with ONLY ONE OF FOUR ARMS:',env['rep_ok'],env['repro'])
+invs=ast.parse((p/'inventory.py').read_text());fn=next(x for x in invs.body if isinstance(x,ast.FunctionDef) and x.name=='smoke_gates');e={};exec(compile(ast.Module(body=[fn],type_ignores=[]),'<gate>','exec'),e)
+r=json.loads(pathlib.Path('/tmp/claude-1002/-home-tahmid-Dev-Tunable-NM-ROM-Claude/22f52704-19c7-469e-a16f-b0c31c8a26e6/scratchpad/local3ext/result.json').read_text()); print('actual smoke_gates(local3ext):',e['smoke_gates'](r));print('structural empty timing means smk3ext also refused')
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+actual gl80 gate with ONLY ONE OF FOUR ARMS: True {'fs|BE|0.01|K1': 0.0}
+actual smoke_gates(local3ext): False
+structural empty timing means smk3ext also refused
+
+exec
+/bin/bash -lc "PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import ast,pathlib,numpy as np,itertools
+src=pathlib.Path('experiments/jcp-combined/c3run.py').read_text(); t=ast.parse(src)
+names=['elig_x','elig_of','axis_x','axis_status'];defs={x.name:x for x in ast.walk(t) if isinstance(x,ast.FunctionDef) and x.name in names}
+class C:
+ @staticmethod
+ def spec_key(s):return '|'.join(map(str,s))
+SEL=[('fs','BE',.01,1),('fs','CN',.025,2)];DIAG=[('ad','LSPG','BE',.01,'tight'),('ad','LSPG','CN',.025,'tight')]
+e=dict(np=np,C3=C,SEL=SEL,DIAG=DIAG,Lt=None,cfg={'conv_bar':2.5e-5})
+exec(compile(ast.Module(body=list(defs.values()),type_ignores=[]),'<axis comparison>','exec'),e)
+n=0
+for valid,sd,pd in itertools.product([True,False],[0.,2.5e-4,2.6e-4,np.nan],[0.,2.5e-5,2.6e-5,np.nan]):
+ data={r:{C.spec_key(s):{'W':(r,s),'elig':{'all_valid':valid,'eligible':False,'nonstationary':9,'steps':10}} for s in SEL+DIAG} for r in ['a','b']}
+ def dist(a,b,lt):return (sd if a[0]==b[0] else pd),[]
+ e.update(ext=data,esc=data,dist=dist)
+ for specs in [SEL,DIAG,[SEL[0],DIAG[1]]]:
+  a=e['axis_x']('a','b',specs);b=e['axis_status']('a','b',specs)
+  assert a[0]==b[0] and all(a[1][k]['status']==b[1][k]['status'] for k in a[1]);n+=1
+print('extension/original axis status comparisons passed:',n)
+branch=next(x for x in ast.walk(t) if isinstance(x,ast.If) and 'i == len(rr) - 1' in ast.get_source_segment(src,x.test));test=compile(ast.Expression(branch.test),'<conditional>','eval')
+for st in ['pass','fail','unresolved']:
+ print('last rule skip with prior',st,eval(test,dict(i=2,rr=['gl80','gl96','gl112'],pairs={'gl80|gl96':{'posthoc_status':st}})))
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined
+ succeeded in 0ms:
+extension/original axis status comparisons passed: 96
+last rule skip with prior pass True
+last rule skip with prior fail False
+last rule skip with prior unresolved False
+
+codex
+**Overall: WRONG — A11 is a defensible post-hoc experiment, but its implementation is not ready for acceptance.** The main blockers are an incomplete reproduction gate, insufficient archive binding, and a resource-certification path that rejects the new smoke.
+
+I performed read-only inspection, regenerated quadrature arrays in memory, and exercised extracted gate/status code without running solvers or writing files.
+
+1. **A11.1 numerical claim — CORRECT, with wording needing restatement.**
+
+   The archived distances confirm that **case 5 is the only case above \(2.5\times10^{-5}\)** at every W1024 escalation pair, for all four arms.
+
+   | Setting / pair | Fixed BE worst | Adaptive CN worst | A10 status |
+   |---|---:|---:|---|
+   | W1024, 48–56 | 1.716486937e-4 | 3.589263756e-4 | fail |
+   | W1024, 56–64 | 1.114331046e-4 | 2.330305298e-4 | fail |
+   | W1024, 64–80 | 2.694246576e-5 | 5.641906299e-5 | fail |
+   | W768, 64–80 | 4.568580674e-6 | 9.770076970e-6 | pass |
+
+   Case 5 is the worst throughout. However:
+   - “Every other case is orders of magnitude below” overstates the first pair: the next-largest fixed-BE distance is \(1.63694\times10^{-6}\), only **15.3× below the bar**.
+   - W768 passes **A10 and the adaptive axis** at 64–80; its pre-registered selection axis remains **unresolved** because fixed CN is ineligible.
+   - The data identify the case driving quadrature disagreement and show decreasing successive-rule differences. They do not establish a complete causal explanation of solver behaviour or eliminate A10’s separate eligibility failure.
+
+2. **Rule generation, hashes, loading and staging — CORRECT.**
+
+   Both new files match the vendored generator **array-for-array**; file and array hashes match `rules_ext2.json`. The regenerated gl64 also matches. Coordinates and weights are float64, weights are positive, and sums agree with one. Point counts are 884,736 and 1,404,928.
+
+   `RULE_FILES` pins both files, and `FILES3` stages both. No rule-generation discrepancy found.
+
+3. **Conditional final rule and inventory — CORRECT; A11 wording NEEDS-RESTATEMENT.**
+
+   [c3run.py:310](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/c3run.py:310) skips gl112 exactly when 80–96 **passes** A10. It runs gl112 after either **fail or unresolved**. The two-rule smoke always runs both rules. Inventory includes all four arms and correctly marks the production last rule conditional, with no timing panels.
+
+   Replace “only if … fails” with **“unless … passes”** to remove ambiguity between the explicit `fail` and `unresolved` statuses.
+
+4. **Driver eligibility and axis semantics — CORRECT.**
+
+   `elig_x` matches `elig_of`: fixed arms require valid runs, valid adaptive counterparts, and finite fixed–adaptive distance ≤ \(2.5\times10^{-4}\); adaptive arms require all runs valid. Pair statuses preserve unresolved precedence and the convergence bar.
+
+   I compared the extracted original and extension implementations across **96 combinations**, including threshold boundaries, invalid runs and non-finite distances; statuses agreed. The A10 axis correctly uses fixed BE plus adaptive CN.
+
+5. **Continued A2.4 order and trajectory source lookup — CORRECT for matching, complete archives.**
+
+   The selector tries gl80 from 80–96, then gl96 from 96–112, only when the original A10 selection has no converged rule. `W_of` correctly reads gl80 and ladder trajectories from the original archive, and gl96 from the extension. Ladder distances are recomputed; original timing panels and candidate eligibility remain the selection inputs.
+
+   A11’s “\(m^\star\) … taken unchanged” should mean **the selection procedure**, not its previously computed value.
+
+6. **gl80 reproduction gate — WRONG.**
+
+   At [select3d.py:147](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/select3d.py:147), absent arms are silently skipped. Acceptance requires only a **nonempty** reproduction dictionary.
+
+   I exercised that exact code with only the fixed-BE gl80 array present in both archives: **`rep_ok=True`**, despite three missing arms.
+
+   The numerical test itself is correct: finite field distance, normalized by the physical initial norm, ≤ \(10^{-10}\), across all supplied cases and times. The defect is coverage. Require **exactly all four expected arms**, expected array shapes and complete case coverage before accepting.
+
+7. **Resistance to mismatched archives and invalid evidence — WRONG.**
+
+   [select3d.py:143](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/select3d.py:143) checks matching cohort seed and configured case list; accessed arrays also undergo ordered-ID checks. Flagged smokes are refused by default. Those protections work.
+
+   Missing protections remain:
+   - No binding of extension bank, \(R'\), startup `a`, mesh, `gtol`, trust fraction or convergence bar to the original setting.
+   - No enforcement that this production extension is **W1024, cohort 923801, all 64 cases**. Matching reduced subsets can pass if unflagged.
+   - Extension `posthoc_status` is trusted without recomputing its consistency with distances, eligibility and the prescribed bar. A run using a looser `conv_bar` can supply a passing status.
+   - Imported converged-rule eligibility is not independently checked against complete extension rows before selection.
+   - `--allow-smoke` permits smoke-derived output without an explicit smoke designation in the selection output.
+
+   Require a matching numerical contract, exact production population, complete extension evidence, and independently reconstructed acceptance statuses.
+
+8. **Memory and residency — CORRECT structurally; capacity unverified.**
+
+   Prepared rule arrays are dropped after each rule’s rollouts. Retained trajectories are NumPy coefficient arrays; solver caches take large rule arrays as arguments. I found no reference retaining every prepared rule.
+
+   However, at gl112 and \(R'=1024\), the actual \(M=4097\) gives **69.07 GB for B, D and P alone**. A single additional \(m\times R'\) float64 temporary is **11.51 GB**. Setup and contraction temporaries, mesh tables and compilation allocations add to this. Dropping previous rules does not establish that the peak fits.
+
+   The proposed full-size cluster smoke is necessary.
+
+9. **Cluster smoke/resource integration — WRONG.**
+
+   `smk3ext` intentionally produces no timing panels. But [inventory.py:248](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/inventory.py:248) requires `bool(sm['timing'])` in `smoke_gates`.
+
+   Therefore **a successfully completed smk3ext is still rejected as resource evidence**. I confirmed the same rejection on the supplied local extension output. Production staging requires the certificate, so A11’s proposed certification workflow cannot work as written. It needs an extension-specific machinery gate and evidence covering the largest rule.
+
+10. **Local machinery evidence — NEEDS-RESTATEMENT.**
+
+    The output is complete: 12 finite trajectories, all rows marked valid, first pair failing and second passing. It exercises the branch that **runs** the conditional rule, not the branch that skips it.
+
+    It does not validate production memory: it uses W256 and gl24–40, with an 8.40 GB reported peak. Moreover, the log contains **“Red zone modified”**, the warning already implicated in A8’s local-GPU corruption, and takes about **852 seconds**, exceeding the repository’s local smoke limit. Treat it as control-flow evidence, not accepted numerical validation.
+
+11. **Post-hoc disclosure, replication and case-5 treatment — CORRECT, with a scope qualification.**
+
+    A11 explicitly declares itself post hoc, and the selector labels extension use accordingly. The configured production job uses validation cohort **923801**, not replication cohort **923901**. I found no replication-based selection in this path.
+
+    Case 5 is neither excluded nor given different solver settings, weights or thresholds. The extension runs all 64 cases uniformly. The decision to extend W1024 was nevertheless motivated by observed validation outcomes; it remains exploratory selection on that cohort, not independent confirmation. The claim about what humans had previously read cannot be verified from code.
+
+12. **Downstream qualification integration — WRONG, adjacent blocker.**
+
+    [make_budget_configs.py:14](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/make_budget_configs.py:14) still defines only `gl56 → gl64` and `gl64 → gl80`. A successful A11 selection of **gl80 or gl96** causes budget-config generation to fail at `FINER[r['converged']]`. The required successor mappings are missing.
+
+**Acceptance verdict: withhold.** The extension experiment and driver semantics are sound, but the selector can accept incomplete or incompatible evidence, and the smoke-certification and downstream-budget paths need correction. No files were created, modified or appended by my tool actions.
+tokens used
+67,960
+**Overall: WRONG — A11 is a defensible post-hoc experiment, but its implementation is not ready for acceptance.** The main blockers are an incomplete reproduction gate, insufficient archive binding, and a resource-certification path that rejects the new smoke.
+
+I performed read-only inspection, regenerated quadrature arrays in memory, and exercised extracted gate/status code without running solvers or writing files.
+
+1. **A11.1 numerical claim — CORRECT, with wording needing restatement.**
+
+   The archived distances confirm that **case 5 is the only case above \(2.5\times10^{-5}\)** at every W1024 escalation pair, for all four arms.
+
+   | Setting / pair | Fixed BE worst | Adaptive CN worst | A10 status |
+   |---|---:|---:|---|
+   | W1024, 48–56 | 1.716486937e-4 | 3.589263756e-4 | fail |
+   | W1024, 56–64 | 1.114331046e-4 | 2.330305298e-4 | fail |
+   | W1024, 64–80 | 2.694246576e-5 | 5.641906299e-5 | fail |
+   | W768, 64–80 | 4.568580674e-6 | 9.770076970e-6 | pass |
+
+   Case 5 is the worst throughout. However:
+   - “Every other case is orders of magnitude below” overstates the first pair: the next-largest fixed-BE distance is \(1.63694\times10^{-6}\), only **15.3× below the bar**.
+   - W768 passes **A10 and the adaptive axis** at 64–80; its pre-registered selection axis remains **unresolved** because fixed CN is ineligible.
+   - The data identify the case driving quadrature disagreement and show decreasing successive-rule differences. They do not establish a complete causal explanation of solver behaviour or eliminate A10’s separate eligibility failure.
+
+2. **Rule generation, hashes, loading and staging — CORRECT.**
+
+   Both new files match the vendored generator **array-for-array**; file and array hashes match `rules_ext2.json`. The regenerated gl64 also matches. Coordinates and weights are float64, weights are positive, and sums agree with one. Point counts are 884,736 and 1,404,928.
+
+   `RULE_FILES` pins both files, and `FILES3` stages both. No rule-generation discrepancy found.
+
+3. **Conditional final rule and inventory — CORRECT; A11 wording NEEDS-RESTATEMENT.**
+
+   [c3run.py:310](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/c3run.py:310) skips gl112 exactly when 80–96 **passes** A10. It runs gl112 after either **fail or unresolved**. The two-rule smoke always runs both rules. Inventory includes all four arms and correctly marks the production last rule conditional, with no timing panels.
+
+   Replace “only if … fails” with **“unless … passes”** to remove ambiguity between the explicit `fail` and `unresolved` statuses.
+
+4. **Driver eligibility and axis semantics — CORRECT.**
+
+   `elig_x` matches `elig_of`: fixed arms require valid runs, valid adaptive counterparts, and finite fixed–adaptive distance ≤ \(2.5\times10^{-4}\); adaptive arms require all runs valid. Pair statuses preserve unresolved precedence and the convergence bar.
+
+   I compared the extracted original and extension implementations across **96 combinations**, including threshold boundaries, invalid runs and non-finite distances; statuses agreed. The A10 axis correctly uses fixed BE plus adaptive CN.
+
+5. **Continued A2.4 order and trajectory source lookup — CORRECT for matching, complete archives.**
+
+   The selector tries gl80 from 80–96, then gl96 from 96–112, only when the original A10 selection has no converged rule. `W_of` correctly reads gl80 and ladder trajectories from the original archive, and gl96 from the extension. Ladder distances are recomputed; original timing panels and candidate eligibility remain the selection inputs.
+
+   A11’s “\(m^\star\) … taken unchanged” should mean **the selection procedure**, not its previously computed value.
+
+6. **gl80 reproduction gate — WRONG.**
+
+   At [select3d.py:147](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/select3d.py:147), absent arms are silently skipped. Acceptance requires only a **nonempty** reproduction dictionary.
+
+   I exercised that exact code with only the fixed-BE gl80 array present in both archives: **`rep_ok=True`**, despite three missing arms.
+
+   The numerical test itself is correct: finite field distance, normalized by the physical initial norm, ≤ \(10^{-10}\), across all supplied cases and times. The defect is coverage. Require **exactly all four expected arms**, expected array shapes and complete case coverage before accepting.
+
+7. **Resistance to mismatched archives and invalid evidence — WRONG.**
+
+   [select3d.py:143](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/select3d.py:143) checks matching cohort seed and configured case list; accessed arrays also undergo ordered-ID checks. Flagged smokes are refused by default. Those protections work.
+
+   Missing protections remain:
+   - No binding of extension bank, \(R'\), startup `a`, mesh, `gtol`, trust fraction or convergence bar to the original setting.
+   - No enforcement that this production extension is **W1024, cohort 923801, all 64 cases**. Matching reduced subsets can pass if unflagged.
+   - Extension `posthoc_status` is trusted without recomputing its consistency with distances, eligibility and the prescribed bar. A run using a looser `conv_bar` can supply a passing status.
+   - Imported converged-rule eligibility is not independently checked against complete extension rows before selection.
+   - `--allow-smoke` permits smoke-derived output without an explicit smoke designation in the selection output.
+
+   Require a matching numerical contract, exact production population, complete extension evidence, and independently reconstructed acceptance statuses.
+
+8. **Memory and residency — CORRECT structurally; capacity unverified.**
+
+   Prepared rule arrays are dropped after each rule’s rollouts. Retained trajectories are NumPy coefficient arrays; solver caches take large rule arrays as arguments. I found no reference retaining every prepared rule.
+
+   However, at gl112 and \(R'=1024\), the actual \(M=4097\) gives **69.07 GB for B, D and P alone**. A single additional \(m\times R'\) float64 temporary is **11.51 GB**. Setup and contraction temporaries, mesh tables and compilation allocations add to this. Dropping previous rules does not establish that the peak fits.
+
+   The proposed full-size cluster smoke is necessary.
+
+9. **Cluster smoke/resource integration — WRONG.**
+
+   `smk3ext` intentionally produces no timing panels. But [inventory.py:248](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/inventory.py:248) requires `bool(sm['timing'])` in `smoke_gates`.
+
+   Therefore **a successfully completed smk3ext is still rejected as resource evidence**. I confirmed the same rejection on the supplied local extension output. Production staging requires the certificate, so A11’s proposed certification workflow cannot work as written. It needs an extension-specific machinery gate and evidence covering the largest rule.
+
+10. **Local machinery evidence — NEEDS-RESTATEMENT.**
+
+    The output is complete: 12 finite trajectories, all rows marked valid, first pair failing and second passing. It exercises the branch that **runs** the conditional rule, not the branch that skips it.
+
+    It does not validate production memory: it uses W256 and gl24–40, with an 8.40 GB reported peak. Moreover, the log contains **“Red zone modified”**, the warning already implicated in A8’s local-GPU corruption, and takes about **852 seconds**, exceeding the repository’s local smoke limit. Treat it as control-flow evidence, not accepted numerical validation.
+
+11. **Post-hoc disclosure, replication and case-5 treatment — CORRECT, with a scope qualification.**
+
+    A11 explicitly declares itself post hoc, and the selector labels extension use accordingly. The configured production job uses validation cohort **923801**, not replication cohort **923901**. I found no replication-based selection in this path.
+
+    Case 5 is neither excluded nor given different solver settings, weights or thresholds. The extension runs all 64 cases uniformly. The decision to extend W1024 was nevertheless motivated by observed validation outcomes; it remains exploratory selection on that cohort, not independent confirmation. The claim about what humans had previously read cannot be verified from code.
+
+12. **Downstream qualification integration — WRONG, adjacent blocker.**
+
+    [make_budget_configs.py:14](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/make_budget_configs.py:14) still defines only `gl56 → gl64` and `gl64 → gl80`. A successful A11 selection of **gl80 or gl96** causes budget-config generation to fail at `FINER[r['converged']]`. The required successor mappings are missing.
+
+**Acceptance verdict: withhold.** The extension experiment and driver semantics are sound, but the selector can accept incomplete or incompatible evidence, and the smoke-certification and downstream-budget paths need correction. No files were created, modified or appended by my tool actions.

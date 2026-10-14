@@ -246,6 +246,7 @@ def mode_fd(cfg, outdir, rep):
     d = int(cfg['dim'])
     ok, why = calib_status_ok(d)
     rep['calib_status'] = why
+    rep['floor_stab'] = V.FLOOR_STAB                    # A11.5: the factor this job judges with (sealed release)
     if not ok and not cfg.get('smoke_override'):
         log(f'REFUSING fd mode: {why}', sealed_ok=True)
         raise SystemExit(5)

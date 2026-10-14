@@ -69,7 +69,11 @@ def gather():
             # A11.4: case-level release check (covers resumed cases); sealed jobs never resume -> job-level status
             dim = int(r['config']['dim'])
             if 'sealed_manifest' in r:
-                factors = {('provisional' if r.get('calib_status') == 'provisional' else 'ok', V.FLOOR_STAB)}
+                if r.get('calib_status') == 'provisional' and r.get('floor_stab') is None:
+                    refused[rd.name] = 'held (A11.5): sealed job does not record its floor factor'
+                    continue
+                factors = {('provisional' if r.get('calib_status') == 'provisional' else 'ok',
+                            r.get('floor_stab', V.FLOOR_STAB))}
             else:
                 factors = {(json.loads(f.read_text()).get('calib_status', 'ok'), json.loads(f.read_text())['floor_stab'])
                            for f in (rd / 'output').glob('*d/*/*/c*.json') if '/PS/' not in str(f)}

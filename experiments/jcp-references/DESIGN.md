@@ -926,3 +926,7 @@ calibration jobs write `provisional: false` explicitly. Walltime: a tight attemp
 16-case (12 h) job absorbs one, a 32-case (24 h) job about two; a non-sealed job that times out is resumed by a fresh
 submission (verified resume), a sealed one is rerun from scratch in a new directory (QC counts once: overlapping
 sealed jobs are refused).
+
+**A11.5 (after Codex job audit 9).** Every `fd` job records the floor factor it judges with in its `result.json`
+(`floor_stab`); the release check of a sealed job uses that recorded factor (not the collector's constant) and holds a
+sealed job produced under a provisional status that does not record one (jobs produced under a final status, such as the 3D sealed jobs, are released normally). The sealed/OOD 2D jobs are restaged with this change.

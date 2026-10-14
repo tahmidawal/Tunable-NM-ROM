@@ -95,6 +95,27 @@ def bud_specs(arms):
     return out
 
 
+def bud_case_plan(s, cases, nb, control_rule):
+    """Pure restatement of the bud-mode loop (used by the resource/smoke gates, codex-results2d-3): {(rule, spec_key):
+    case list} of every rollout the 3D budget performs on one setting, incl. the B2 control-rule baseline runs."""
+    rmap = dict(r=s['rule'], conv=s['conv'], finer=s['finer'])
+    plan = bud_specs(s['arms'])
+    sel_specs = [tuple(x['spec']) for x in s['arms'] if x.get('selected')]
+    out = {}
+    for role in ('r', 'conv', 'finer'):
+        rule = rmap[role]
+        specs_all = [sp for rl, sp in plan if rl == role and sp in sel_specs]
+        specs_sub = [sp for rl, sp in plan if rl == role and sp not in specs_all]
+        if role == 'finer':
+            specs_sub += [sp for rl, sp in plan if rl == 'conv' and sp not in specs_all and sp not in specs_sub]
+        for sp in specs_all:
+            out[(rule, C3.spec_key(sp))] = list(cases)
+        for sp in specs_sub:
+            out[(rule, C3.spec_key(sp))] = list(cases[:nb])
+    out[(control_rule, C3.spec_key(('fs', 'BE', DT0, 1)))] = list(cases[:nb])
+    return out
+
+
 def timed_adaptive(x):
     return x[0] == 'ad' and x[4] == 'tight' and (abs(x[3] - DT0) < 1e-12 or abs(x[3] - 2.5 * DT0) < 1e-12)
 

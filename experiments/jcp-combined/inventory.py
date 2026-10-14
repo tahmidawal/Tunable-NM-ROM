@@ -331,42 +331,55 @@ def certificate_binding(attempt, driver):
                 sources_sha256={f: sha_bytes((root / f).read_bytes()) for f in staged_sources(driver)})
 
 
-def offline_budget_gates(sm):
+def offline_budget_gates(sm, path):
     """The smoke's committed offline budget analysis (checks/budget{2d,3d}-<attempt>-<ref>.json) must exist, be bound to
-    this result.json (sha256) and to the current analyzer source (sha256), and pass its machinery gates: B0, the B0
-    analytic fixtures, the relative real-data mismatch control (A12), B1, job-row reproduction with every G-score control
-    breaking, and the inventory check (codex-results2d-2)."""
+    THIS smoke's result.json bytes (sha256 of <path>/result.json) and to the current analyzer source (sha256), and pass
+    its machinery gates with strict booleans and complete counts (codex-results2d-2/3): B0 (True), B0 analytic fixtures
+    (True), the relative real-data mismatch control (True), B1 (True), job-row reproduction (True, with the expected number
+    of comparisons, every comparison successful, and every G-score negative control present and breaking), inventory
+    (True)."""
     two = sm['config']['driver'] == 'c2bud'
-    name = f"budget{'2d' if two else '3d'}-{sm['config']['attempt']}-{'2d' if two else '3d'}_first_order.json"
-    f = HERE / 'checks' / name
-    if not f.exists():
+    f = HERE / 'checks' / f"budget{'2d' if two else '3d'}-{sm['config']['attempt']}-{'2d' if two else '3d'}_first_order.json"
+    if path is None or not f.exists():
         return False
     o = json.loads(f.read_text())
     an = HERE / ('budget2d.py' if two else 'budget3d.py')
-    ok = o.get('analyzer_sha256') == sha_bytes(an.read_bytes())
-    res_p = Path(o['run']) / 'result.json'
-    res_p = res_p if res_p.is_absolute() else HERE / res_p
-    ok = ok and res_p.exists() and sha_bytes(res_p.read_bytes()) == o.get('result_sha256') and \
-        json.loads(res_p.read_text()).get('job_id') == sm.get('job_id')
+    if o.get('analyzer_sha256') != sha_bytes(an.read_bytes()):
+        return False
+    if o.get('result_sha256') != sha_bytes((Path(path) / 'result.json').read_bytes()):
+        return False
     g = o.get('gates', {})
-    ok = ok and all(bool(g.get(k_, {}).get('passed') if isinstance(g.get(k_), dict) else g.get(k_))
-                    for k_ in ('B0', 'B0_fixtures', 'B0_real_mismatch', 'B1', 'reproduction', 'inventory'))
-    ok = ok and g.get('reproduction', {}).get('passed') is True
+    t = lambda d, k='passed': isinstance(d, dict) and d.get(k) is True
+    ok = t(g.get('B0')) and g.get('B0_fixtures') is True and t(g.get('B0_real_mismatch')) and g.get('B1') is True \
+        and t(g.get('inventory'))
+    rp = g.get('reproduction', {})
+    nrows = len(sm['rows'])
+    per = 18 if two else 6
+    ok = ok and t(rp) and rp.get('applicable') is True and rp.get('compared') == per * nrows and nrows > 0 \
+        and rp.get('failures') == 0
+    if two:
+        ctl = rp.get('controls', {})
+        ok = ok and set(ctl) == {s_['name'] for s_ in sm['config']['settings']} and all(
+            v.get('all_break') is True and all(k_ in v for k_ in ('case_swap', 'time_shift', 'ST_S_swap')) for v in ctl.values())
+    else:
+        ok = ok and all(o['settings'].get(s_['name'], {}).get('gscore_controls', {}).get('all_break') is True
+                        for s_ in sm['config']['settings'])
     return bool(ok)
 
 
-def budget_smoke_gates(sm):
-    """Fail closed (codex-results2d-1 item 2, codex-results2d-2): complete per-setting evidence and exact coverage."""
+def budget_smoke_gates(sm, path=None):
+    """Fail closed (codex-results2d-1/2/3): complete per-setting evidence and exact coverage DERIVED FROM THE CONFIG."""
     ok = bool(sm.get('complete')) and bool(sm['rows'])
     if sm['config']['driver'] == 'c2bud':
         import c2bud as CB
         cases = [(coh, c) for coh in sm['config']['cohorts']
                  for c in ((sm['config'].get('case_subset') or {}).get(coh) or range(6 if coh == 'dev6' else 32))]
         chk = [x for x in cases if x[0] == 'dev6'] + [x for x in cases if x[0] == 'val32'][:sm['config']['check_val32']]
+        ok = ok and set(sm['setup']) == {s_['name'] for s_ in sm['config']['settings']}
         for s_ in sm['config']['settings']:
             v = sm['setup'].get(s_['name'], {})
             b1, b2 = v.get('B1_sham_bitwise', {}), v.get('B2_control_rule', {})
-            ok = ok and bool(v.get('conv_check', {}).get('passed')) and b1.get('all_equal') is True and \
+            ok = ok and v.get('conv_check', {}).get('passed') is True and b1.get('all_equal') is True and \
                 b1.get('cases') == len(chk) and b2.get('complete') is True and len(b2.get('per_case', [])) == len(chk)
             rows = [r for r in sm['rows'] if r['setting'] == s_['name']]
             got = [(r['run'], r['cohort'], r['case']) for r in rows]
@@ -375,40 +388,34 @@ def budget_smoke_gates(sm):
             want |= {(CB.key(('check',) + r[1:]), coh, c) for r in runs if r[0] == 'conv' for coh, c in chk}
             want |= {(CB.key(('ctrl', 'LSPG', 'BE', CB.DT0, 'prod')), coh, c) for coh, c in chk}
             ok = ok and len(got) == len(set(got)) and set(got) == want
-            ok = ok and all(r['verified'] for r in rows if not r['run'].startswith('ctrl|'))
+            ok = ok and all(r['verified'] is True for r in rows if not r['run'].startswith('ctrl|'))
     else:
+        import c3run as CR
         cases = list(sm['config'].get('case_subset') or range(sm['config']['cohort_count']))
-        ctrl = sm['config'].get('control_rule')
+        ctrl = sm['config']['control_rule']
+        nb = int(sm['config']['budget_cases'])
+        ok = ok and 1 <= nb <= len(cases) and set(sm['settings']) == {s_['name'] for s_ in sm['config']['settings']}
         for s_ in sm['config']['settings']:
             v = sm['settings'].get(s_['name'], {})
-            nb = int(v.get('budget_cases', -1))
-            first = cases[:nb]
             b1, b2 = v.get('B1_sham_bitwise', {}), v.get('B2_control_rule', {})
-            ok = ok and nb >= 1 and b1.get('all_equal') is True and b1.get('cases') == nb and b2.get('complete') is True \
-                and len(b2.get('per_case', [])) == nb
-            rows = [r for r in sm['rows'] if r['setting'] == s_['name']]
+            ok = ok and v.get('budget_cases') == nb and b1.get('all_equal') is True and b1.get('cases') == nb and \
+                b2.get('complete') is True and len(b2.get('per_case', [])) == nb
+            want = CR.bud_case_plan(s_, cases, nb, ctrl)              # derived from the config, not from the result
             by = {}
-            for r in rows:
-                by.setdefault((r['rule'], r['spec']), []).append(r['case'])
-            cs = v.get('case_sets', {})
-            want = {}
-            for k_, how in cs.items():
-                rl, sp_ = k_.split('|', 1)
-                want[(rl, sp_)] = cases if how == 'all' else (first if how == f'first {nb}' else None)
-            want[(ctrl, 'fs|BE|0.01|K1')] = first
-            ok = ok and all(w_ is not None for w_ in want.values()) and set(by) == set(want)
-            ok = ok and all(sorted(by[k_]) == sorted(w_) and len(by[k_]) == len(set(by[k_])) for k_, w_ in want.items()
-                            if k_ in by)
-            plan = {(rl, sp_) for rl, sp_ in __import__('c3run').inventory(sm['config'])['settings'][s_['name']]['runs']}
-            ok = ok and plan <= set(by)
-            ok = ok and all(r['valid'] is True for r in rows if r['rule'] != ctrl)
-    return bool(ok and offline_budget_gates(sm))
+            for r in sm['rows']:
+                if r['setting'] == s_['name']:
+                    by.setdefault((r['rule'], r['spec']), []).append(int(r['case']))
+            ok = ok and set(by) == set(want) and all(by[k_] == w_ for k_, w_ in want.items() if k_ in by)
+            cs = {tuple(k_.split('|', 1)): how for k_, how in v.get('case_sets', {}).items()}
+            ok = ok and cs == {k_: ('all' if w_ == cases else f'first {nb}') for k_, w_ in want.items() if k_[0] != ctrl}
+            ok = ok and all(r['valid'] is True for r in sm['rows'] if r['setting'] == s_['name'] and r['rule'] != ctrl)
+    return bool(ok and offline_budget_gates(sm, path))
 
 
-def smoke_gates(sm):
+def smoke_gates(sm, path=None):
     """Machinery gates a smoke must have passed to be used as resource evidence."""
     if sm['config']['driver'] == 'c2bud' or sm['config'].get('mode') == 'bud':
-        return budget_smoke_gates(sm)
+        return budget_smoke_gates(sm, path)
     ext = all(s_.get('ext_rules') for s_ in sm['config']['settings'])   # A11 extension smoke: no timing panels by design
     ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and (ext or bool(sm.get('timing')))
     if ext:      # complete inventory: every planned rule (the last one omitted only after a passing A10 pair), every
@@ -457,8 +464,8 @@ def main():
         rep.setdefault('smokes', []).append(dict(path=str(p), job_id=sm.get('job_id'), gpu=sm.get('gpu'),
                                                   result_sha256=sha_bytes((p / 'result.json').read_bytes()),
                                                   complete=sm.get('complete'), smoke=sm['config'].get('smoke'),
-                                                  gates_passed=smoke_gates(sm)))
-        if not smoke_gates(sm):
+                                                  gates_passed=smoke_gates(sm, p)))
+        if not smoke_gates(sm, p):
             fail(rep, f'smoke {p} did not pass its machinery gates')
         if not (sm.get('complete') and sm['config'].get('smoke') and (p / 'COMPLETE').exists()):
             fail(rep, f'smoke {p} incomplete or not a smoke')
@@ -497,7 +504,7 @@ def verify_certificate(inv, commit, cfg_bytes, gpu, hours, mem, git_show=None):
         p = p if p.is_absolute() else HERE / p
         assert sha_bytes((p / 'result.json').read_bytes()) == sm['result_sha256'], f'smoke {p} changed'
         res = json.loads((p / 'result.json').read_text())
-        assert res['config'].get('smoke') and (p / 'COMPLETE').exists() and smoke_gates(res), f'smoke {p} not usable'
+        assert res['config'].get('smoke') and (p / 'COMPLETE').exists() and smoke_gates(res, p), f'smoke {p} not usable'
         assert str(res.get('gpu', '')).startswith(GPU_NAMES[gpu].split(' 80GB')[0]), 'smoke GPU type differs'
     proj_h = 1.5 * float(inv['projected_seconds']) / 3600
     peak = float(inv['projected_peak_gb'])

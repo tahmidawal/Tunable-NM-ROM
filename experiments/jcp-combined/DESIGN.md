@@ -1082,5 +1082,6 @@ failure and full 38-case coverage of those arms). `fallback2d.py` computes the q
 loop of `c3run.py` kept a local reference to the converged rule's (Gauss $80^3$) tables while preparing the next rule,
 so both were resident (the resource certificate assumed one rule at a time, as the escalation extension does). The
 reference is now released before the next rule is prepared; nothing else changes. The job wrote no result (results are
-saved per setting) and is rerun unchanged as `c3budW1024r` with a regenerated certificate. `c3budA` (smaller rules)
-was unaffected.
+saved per setting) and is rerun unchanged as `c3budW1024r` with a regenerated certificate. `c3budA` runs the old code
+with the same retention pattern but smaller rules; it had already prepared its largest rule (W768, Gauss $80^3$) without
+running out of memory when this was written.

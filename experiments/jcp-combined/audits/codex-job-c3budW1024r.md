@@ -1,0 +1,15 @@
+**SUBMIT `c3budW1024r`** on the certified H200 / 200G / 48-hour allocation. No blocking finding.
+
+- **Root cause supported.** Python evaluates `prep_of(rule)` before replacing the previous `prep`. Removing the dictionary entry alone therefore left Gauss 80³’s tables alive during Gauss 96³ construction. Those retained `B/D/P` arrays occupy **25.17 GB**. The failed allocation was **27.0066 GiB**, exactly the size of Gauss 96³’s `P` array at M=4097; the traceback places it in `test_block`. This is strong causal evidence, although no allocation snapshot proves it was the sole contributor.
+
+- **Fix sufficient for this retention bug.** Setting `prep = None` before `drop(rule)` removes the remaining outer reference. `prepare()`’s base/LSPG/GAL dictionaries share the large arrays and become unreachable together. Solver caches retain functions and compiled signatures; rule arrays are dynamic arguments, not captured constants. Rollout outputs and `Wstore` retain coefficients/statistics, not quadrature tables. `Tables` retains mesh/bank data, not previously constructed rule tables. I found no other reference retaining the converged rule.
+
+- **Numerics unchanged.** The patch changes object lifetime only—no arithmetic, inputs, solver settings, case order or selection. No numerical change is expected; this audit did not perform a bitwise GPU replay.
+
+- **Configuration and certificate pass.** The configurations differ only in `attempt`. The existing certificate verifier passes against HEAD; every certified source matches the working files, both smoke bindings/gates pass, and the frozen-selection hash matches. The certificate’s earlier `commit_at_certification` is informational; its actual source hashes include the fix.
+
+- **Memory projection is usable again, with qualifications.** `smk3ext2` successfully prepared and ran gl96 with the same R′/M and recorded **103.728 GB** peak, below the certificate’s **126.9 GB** ceiling. The fix restores that smoke’s large-rule lifetime pattern. The quoted peak is an estimate, not a rigorous production upper bound: production retains additional initial fields (~0.124 GB), compiled variants and bookkeeping. Also, B2 deliberately holds the deployed rule alongside tiny `lat256`; “one rule resident” applies to the large-rule loop. These qualifications do not invalidate the available headroom.
+
+- **A16 is substantively correct; “c3budA was unaffected” needs narrower wording.** Its old code has the same retention bug, but smaller allocations. Live inspection confirms job **5231973** is running and has already prepared its largest rule, **W768/gl80**, completing several rollouts without an OOM. Thus the critical preparation transition has succeeded. There is no evidence requiring cancellation, but the job is not yet complete.
+
+No files were created, modified or appended by this audit. No job was submitted.

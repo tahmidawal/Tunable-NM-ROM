@@ -93,8 +93,10 @@ def label_of(name):
     """Accuracy label of a registry entry (A13): first-order references -> PROVISIONAL; E0 -> conditional."""
     k = REG[name]['kind']
     if k in ('2d_e0', '3d_e0'):
-        return ('E0 second-order reference: accuracy against an order-verified reference; rankings conditional on eps_ref '
-                '(a Richardson estimate under the asymptotic assumption, not a rigorous bound)')
+        return ('E0 second-order reference: accuracy against an order-verified reference for eligible case-kinds (flagged '
+                'case-kinds are scored but not ranked); rankings conditional on eps_ref (a Richardson estimate under the '
+                'asymptotic assumption, not a rigorous bound; the cross-check rule was amended post data, E0 A10); R_S is '
+                'time-matched to the BE arms at dt0 only, every other S value is an unmatched diagnostic')
     return 'PROVISIONAL (first-order reference)' + (' - reference-limited (BE at dt0/4)' if k == '3d_l65' else '')
 
 
@@ -113,25 +115,33 @@ def refstore(ent):
     return _RS[d]
 
 
-def e0_load(ent, dim, cohort, case, kind, n0_ours=None):
-    """E0 field (dim 2: (6, 257, 257); dim 3: (6, 63^3)) with the A13 contract checks: store version, the normaliser
-    equals ours to 1e-12 relative and the reference's t0 field equals our initial field to 1e-12 relative."""
+E0_COHORTS = {2: ('dev6', 'val32'), 3: ('val64',)}      # A13: the lane's selection cohorts only (no test, sealed, OOD)
+
+
+def e0_load(ent, dim, cohort, case, kind, n0_ours, u0_ours):
+    """E0 field (dim 2: (6, 257, 257); dim 3: (6, 63^3)) with the MANDATORY A13 contract checks (codex-a13-1 item 1):
+    allowed cohort, store version, the E0 normaliser equals ours to 1e-12 relative, and the reference's t0 field equals
+    our initial field (same array convention) to 1e-12 relative."""
+    assert cohort in E0_COHORTS[dim], ('cohort not allowed in this lane', dim, cohort)
     RS_ = refstore(ent)
     assert RS_.store_version() == ent['store_version']
     R, meta = RS_.load(dim, cohort, case, kind)
-    if n0_ours is not None:
-        assert abs(meta['judge']['n0'] / n0_ours - 1) <= 1e-12, ('E0 normaliser differs from ours', cohort, case, kind)
-    return np.asarray(R), meta
+    R = np.asarray(R)
+    u0 = np.asarray(u0_ours, dtype=np.float64)
+    assert abs(meta['judge']['n0'] / float(n0_ours) - 1) <= 1e-12, ('E0 normaliser differs from ours', cohort, case, kind)
+    assert R[0].shape == u0.shape and float(np.abs(R[0] - u0).max()) <= 1e-12 * float(np.abs(u0).max()), \
+        ('E0 t0 field differs from our initial field', cohort, case, kind)
+    return R, meta
 
 
-def load_ref3d(ent, j, n0_ours=None, _cache={}):
-    """3D reference field (6, 63^3) of case j of the registry entry's cohort."""
+def load_ref3d(ent, j, n0_ours=None, u0_ours=None, _cache={}):
+    """3D reference field (6, 63^3) of case j of the registry entry's cohort (E0: n0_ours and u0_ours mandatory)."""
     if ent['kind'] == '3d_l65':
         k = ent['file']
         if k not in _cache:
             _cache[k] = np.load(k)
         return np.asarray(_cache[k][f'c{j}'])
-    return e0_load(ent, 3, ent['cohort'], int(j), 'ST', n0_ours)[0]
+    return e0_load(ent, 3, ent['cohort'], int(j), 'ST', n0_ours, u0_ours)[0]
 
 
 # ------------------------------------------------------------------------------------------------ 2D
@@ -155,9 +165,9 @@ def decode2d(G, W):
 _MAN = {}
 
 
-def load_ref2d(ent, coh, c, n0_ours=None):
+def load_ref2d(ent, coh, c, n0_ours=None, u0_ours=None):
     if ent['kind'] == '2d_e0':                       # A13: R_ST (primary) and R_S (BE-matched at dt0 only)
-        out = {tag: e0_load(ent, 2, coh, int(c), kind, n0_ours)[0] for tag, kind in ent['tags'].items()}
+        out = {tag: e0_load(ent, 2, coh, int(c), kind, n0_ours, u0_ours)[0] for tag, kind in ent['tags'].items()}
         for tag, comb in ent.get('derived', {}).items():
             out[tag] = sum(w * out[t] for t, w in comb.items())
         return out
@@ -208,11 +218,7 @@ def score2d(ent, run, check):
             if (coh, c) not in n0c:
                 n0c[(coh, c)] = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
             n0 = n0c[(coh, c)]
-            refs = load_ref2d(ent, coh, c, n0_ours=n0 if E0 else None)
-            if E0:                                   # A13 contract: E0's t0 field is our physical initial field
-                u0_ = np.asarray(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c])))
-                for t_ in ent['tags']:
-                    assert float(np.abs(refs[t_][0] - u0_).max()) <= 1e-12 * float(np.abs(u0_).max()), ('E0 t0 field', coh, c, t_)
+            refs = load_ref2d(ent, coh, c, n0_ours=n0, u0_ours=Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c])))
             for ri, k in enumerate(keys):
                 U = decode2d(G, W[ci, ri])
                 pe = {t: [float(np.linalg.norm(U[j] - refs[t][j])) / n0 for j in range(6)] for t in tags}
@@ -272,7 +278,8 @@ def score2d(ent, run, check):
                 continue
             kk, coh, c = k.replace('__', '|').rsplit('|', 2)
             c = int(c)
-            refs = load_ref2d(ent, coh, c)
+            u0f = Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))
+            refs = load_ref2d(ent, coh, c, n0_ours=float(np.linalg.norm(u0f)), u0_ours=u0f)
             n0 = n0c.get((coh, c)) or float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
             pe = {t: [float(np.linalg.norm(Fz[k][j] - refs[t][j])) / n0 for j in range(6)] for t in tags}
             fom[f'{kk}|{coh}|{c}'] = {t: dict(per_time=v, worst=max(v[1:])) for t, v in pe.items()}
@@ -298,7 +305,7 @@ def score2d(ent, run, check):
         if r.get('e_ST') is None:
             raise SystemExit('G-score controls: the pinned dev6/0 baseline row is invalid (non-finite)')
         n0 = n0c[('dev6', 0)]
-        refs = load_ref2d(ent, 'dev6', 0)
+        refs = load_ref2d(ent, 'dev6', 0)            # (check runs only for the original first-order entry)
         U = decode2d(G, W[ci0, k0])
         e = lambda U_, R_: max(float(np.linalg.norm(U_[j] - R_[j])) / n0 for j in range(1, 6))
         other = next((i for i in range(len(cases)) if i != ci0), None)
@@ -331,11 +338,7 @@ def score3d(ent, run, check):
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
     n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j))[i65])) for j in cases}
     Wz = np.load(run / f"W_{res['mode']}.npz")
-    R = {j: load_ref3d(ent, j, n0_ours=n0[j] if E0 else None) for j in cases}
-    if E0:                                           # A13 contract: E0's t0 field is our physical initial field
-        for j in cases:
-            u0_ = np.asarray(C3.C.initial_interior(65, tab, j))[i65]
-            assert float(np.abs(R[j][0] - u0_).max()) <= 1e-12 * float(np.abs(u0_).max()), ('E0 t0 field', j)
+    R = {j: load_ref3d(ent, j, n0_ours=n0[j], u0_ours=np.asarray(C3.C.initial_interior(65, tab, j))[i65]) for j in cases}
     out, gate = {}, dict(status='unchecked', compared=0, expected=0, worst=0., nonfinite=0, failures=0)
     inrow = {(r['setting'], r['rule'], r['spec'], r['case']): r for r in res['rows']}
     G, banks = {}, {}

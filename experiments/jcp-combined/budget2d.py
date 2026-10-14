@@ -61,7 +61,18 @@ def main():
     ap.add_argument('--allow-smoke', action='store_true')
     ap.add_argument('--grid', help='c2grid output dir: budget arm runs must reproduce the grid runs (fields <= 1e-8)')
     ap.add_argument('--out')
+    ap.add_argument('--certified', help='A13/A8.7: the passing 2d_first_order budget output of the same run (required for a new reference)')
+    ap.add_argument('--frozen', help='A13/A8.7: the frozen selection the budget configs were bound to (required for a new reference)')
     a = ap.parse_args()
+    CERT = None
+    if a.refs != '2d_first_order':                       # rescoring: certified by the original-reference budget analysis
+        assert a.certified and a.frozen, 'a new reference needs --certified and --frozen (A8.7, A13.3)'
+        CERT = json.loads(Path(a.certified).read_text())
+        assert CERT['refs'] == '2d_first_order', 'certificate is not an original-reference budget'
+        g_ = CERT['gates']
+        assert all((v.get('passed') is True) if isinstance(v, dict) and k_ != 'grid_reproduction' else
+                   (v is True if k_ != 'grid_reproduction' else v.get('passed') is True)
+                   for k_, v in g_.items()), ('original-reference budget gates not all passed', g_)
     import score
     run = Path(a.run)
     res = json.loads((run / 'result.json').read_text())
@@ -116,7 +127,7 @@ def main():
                 coh, c = ck.split('|')
                 c = int(c)
                 n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
-                refs = score.load_ref2d(ent, coh, c)
+                refs = score.load_ref2d(ent, coh, c, n0_ours=n0, u0_ours=Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c])))
                 for key in [k2 for k2 in z.files if k2 not in ('w0', 'cases')]:
                     r = rows.get((sname, key, coh, c))
                     if r is None:
@@ -143,7 +154,7 @@ def main():
             c = int(c)
             r0 = rows[(sname, kb, coh, c)]
             n0 = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
-            refs0 = score.load_ref2d(ent, coh, c)
+            refs0 = score.load_ref2d(ent, coh, c, n0_ours=n0, u0_ours=Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c])))
             U0_ = dec(z[kb][valid_ci[0]]) / n0
             e_ = lambda U_, R_: max(float(np.linalg.norm(U_[j] - R_[j] / n0)) for j in range(1, 6))
             ctl = dict(case_swap=abs(e_(dec(z[kb][valid_ci[1]]) / n0, refs0['ST']) - r0['e_ST']),
@@ -184,7 +195,8 @@ def main():
                       dict(star=('conv', 'GAL', 'BDF2', H8, 'tight'), star16=('conv', 'GAL', 'BDF2', H16, 'tight'),
                            starx=('conv', 'GAL', 'BDF2', H8, 'tighter'), star16x=('conv', 'GAL', 'BDF2', H16, 'tighter'),
                            starR=('main', 'GAL', 'BDF2', H8, 'tight'), starL=('conv', 'LSPG', 'BDF2', H8, 'tight')).items()}
-                refs = score.load_ref2d(ent, coh, c)
+                refs = score.load_ref2d(ent, coh, c, n0_ours=n0 * 1.0,
+                                        u0_ours=Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c])))
                 nt = lambda X: [float(np.linalg.norm(X[j])) for j in range(6)]
                 NA = [None] * 6
                 d = {}
@@ -327,6 +339,14 @@ def main():
     b0w = max(v['B0_worst_relative'] for s_ in out['settings'].values() for v in s_['arms'].values())
     b0m = next(iter(next(iter(out['settings'].values()))['arms'].values()))['B0_mismatch_min_defect']
     nrows = sum(1 for r in res['rows'])
+    if CERT is not None:                         # A13: bind to the certification and carry the reference flags
+        assert CERT['result_sha256'] == out['result_sha256'], 'certificate is for another result.json'
+        # the exact frozen-selection file version the budget job was bound to at staging (A8.3)
+        assert res['config'].get('frozen_sha256') == hashlib.sha256(Path(a.frozen).read_bytes()).hexdigest(), \
+            'frozen file is not the version this budget job was bound to'
+        out['certified_by'] = dict(path=a.certified, sha256=hashlib.sha256(Path(a.certified).read_bytes()).hexdigest(),
+                                   frozen=a.frozen, frozen_sha256=hashlib.sha256(Path(a.frozen).read_bytes()).hexdigest())
+    out['not_rankable'] = ent.get('not_rankable', [])
     out['gates'] = dict(B0=dict(worst_relative=b0w, passed=bool(b0w <= 1e-10)), B0_fixtures=out['B0_fixtures']['passed'],
                         B0_real_mismatch=dict(min_defect=b0m, passed=bool(b0m > 1e-6)),
                         B1=all((s_['B1'] or {}).get('all_equal') for s_ in out['settings'].values()),

@@ -1019,4 +1019,13 @@ The anchor-based 3D quantities (H4) are reference-free and unchanged.
 PROVISIONAL. Numbers against E0 drop "PROVISIONAL" only in E0's sense: they are measured against an order-verified
 second-order reference, and rankings are conditional on $\epsilon_{\rm ref}$ being a valid estimate (asymptotic regime;
 cross-checked on 8 cases per dimension), not a rigorous bound. The E0 report's old-versus-new distances (2D up to 0.349 %,
-3D up to 2.81 %) bound how far each first-order number can move.
+3D up to 2.81 %) bound how far each first-order **ST** (and 2D **S**) error of a case can move on the same fields and
+lattice; they do not bound the change from the old TX to the new ST, nor medians, ratios or hypothesis statistics.
+
+**A13.5 (after `audits/codex-a13-1.md`).** (i) The contract checks are mandatory in the loader for every consumer (scorer,
+analyses, budgets): allowed cohorts only (2D dev6, val32; 3D val64), store version, normaliser and $t_0$ field. (ii) H3's
+uncertainty guards add $\eta$ of the case to the anchor uncertainty under E0. (iii) Budget rescoring against E0 requires the
+passing first-order budget analysis of the same `result.json` (`--certified`) and the exact frozen-selection version the
+job was bound to (`--frozen`), and carries the non-rankable flags. (iv) In 2D, $R_S$-based numbers are time-matched only
+for LSPG-BE at $\Delta t_0$; every other S value is an unmatched diagnostic, labelled so. (v) The 3D E0 analysis runs only
+after the first-order 3D solver selection is frozen.

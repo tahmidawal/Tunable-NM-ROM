@@ -47,7 +47,18 @@ def main():
     ap.add_argument('--refs', default='3d_first_order')
     ap.add_argument('--allow-smoke', action='store_true')
     ap.add_argument('--out')
+    ap.add_argument('--certified', help='A13/A8.7: the passing 3d_first_order budget output of the same run (required for a new reference)')
+    ap.add_argument('--frozen', help='A13/A8.7: the frozen selection the budget configs were bound to (required for a new reference)')
     a = ap.parse_args()
+    CERT = None
+    if a.refs != '3d_first_order':                       # rescoring: certified by the original-reference budget analysis
+        assert a.certified and a.frozen, 'a new reference needs --certified and --frozen (A8.7, A13.3)'
+        CERT = json.loads(Path(a.certified).read_text())
+        assert CERT['refs'] == '3d_first_order', 'certificate is not an original-reference budget'
+        g_ = CERT['gates']
+        assert all((v.get('passed') is True) if isinstance(v, dict) and k_ != 'grid_reproduction' else
+                   (v is True if k_ != 'grid_reproduction' else v.get('passed') is True)
+                   for k_, v in g_.items()), ('original-reference budget gates not all passed', g_)
     import score
     import c3common as C3
     run = Path(a.run)
@@ -60,7 +71,8 @@ def main():
     ent = score.validate_entry(a.refs)
     cfg = res['config']
     E0_ = ent['kind'] == '3d_e0'                       # A13: E0 reference through the registry loader
-    zref = lambda j: score.load_ref3d(ent, j, n0_ours=n0[j] if E0_ else None)
+    zref = lambda j: score.load_ref3d(ent, j, n0_ours=n0[j],
+                                      u0_ours=np.asarray(C3.C.initial_interior(65, tab, j))[i65])
     tab = C3.C.table(cfg['cohort_seed'], cfg['cohort_count'])
     i65 = C3.lattice65_index(65)
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
@@ -302,6 +314,14 @@ def main():
     import budget2d as B2D
     fx = B2D.b0_fixtures()
     pinned = b0m[0] if b0m else None
+    if CERT is not None:                         # A13: bind to the certification and carry the reference flags
+        assert CERT['result_sha256'] == out['result_sha256'], 'certificate is for another result.json'
+        # the exact frozen-selection file version the budget job was bound to at staging (A8.3)
+        assert res['config'].get('frozen_sha256') == hashlib.sha256(Path(a.frozen).read_bytes()).hexdigest(), \
+            'frozen file is not the version this budget job was bound to'
+        out['certified_by'] = dict(path=a.certified, sha256=hashlib.sha256(Path(a.certified).read_bytes()).hexdigest(),
+                                   frozen=a.frozen, frozen_sha256=hashlib.sha256(Path(a.frozen).read_bytes()).hexdigest())
+    out['not_rankable'] = ent.get('not_rankable', [])
     out['gates'] = dict(B0=dict(worst_relative=max(b0w) if b0w else None, passed=bool(b0w and max(b0w) <= 1e-10)),
                         B0_fixtures=fx['passed'], inventory=dict(mismatch=inv_mismatch, passed=bool(sum(inv_mismatch.values()) == 0)),
                         B0_real_mismatch=dict(pinned_defect=pinned, passed=bool(pinned is not None and pinned > 1e-6)),

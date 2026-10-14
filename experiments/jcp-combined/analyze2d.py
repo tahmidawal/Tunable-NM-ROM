@@ -93,7 +93,8 @@ def main():
     ent = score.REG[sc['refs']]
     Q, G = score.bank2d(max(res['setup'][s]['Rp'] for s in settings))
     n0 = {k: float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[k[0]]['physical'][k[1]])))) for k in cases}
-    refs = {k: score.load_ref2d(ent, *k) for k in cases}
+    refs = {k: score.load_ref2d(ent, *k, n0_ours=n0[k], u0_ours=Q.e.initial(256, np.asarray(cohorts[k[0]]['physical'][k[1]])))
+            for k in cases}
     if 'eta' in ent:
         # verified case-wise uncertainty: comparisons by interval overlap with endpoint propagation (A2.6). The scalar
         # threshold machinery below is then replaced: 2 eps_case := eta_x + eta_y is the overlap condition for two
@@ -328,6 +329,8 @@ def main():
                 E, D = float(np.linalg.norm(ep)), float(np.linalg.norm(dl))
                 eBE, eCN = float(np.linalg.norm(Ub[ts] - Rn[ts])), float(np.linalg.norm(Uc[ts] - Rn[ts]))
                 U = pc['U_t'][ts]                               # anchor uncertainty indicator AT t* (A3.3)
+                if ETA:                                         # A13: plus the E0 reference uncertainty of the case
+                    U = U + eps[kc]
                 ip = float(dl @ ep)
                 cos = ip / (D * E) if D > 0 and E > 0 else None
                 ca = eBE < E and abs(eCN - E) <= .2 * abs(eBE - E)
@@ -344,7 +347,8 @@ def main():
             wc = max(cks, key=lambda ck: per_case[('fast', kcn, (ck.split('|')[0], int(ck.split('|')[1])))][f'e_{tag}'])
             h3[tag] = dict(worst_case=wc, primary=allc[wc], cases=allc,
                            confirmed_count=sum(v.get('verdict') == 'confirmed' for v in allc.values()),
-                           note='indicator-based; U_anc is not a certified bound; scoped to cancellation at t*')
+                           note=('indicator-based; U_anc is not a certified bound; scoped to cancellation at t*' +
+                                 ('; under E0 the guards add eta = eps_ref (conditional Richardson estimate)' if ETA else '')))
         out['hypotheses']['H3'] = h3
 
     # ---------------------------------------------------------------- H5 (A1.9 frozen inventory; common panel valid)

@@ -1,0 +1,19 @@
+host=pax011 source_commit=42dfeb454b099ce1e82dd5c87c4e4d061a408d10
+NVIDIA H200, GPU-3dd61a63-f64b-8d49-7857-b2e355e808cf, 143771 MiB
+10.235.106.32:/projects/paralab  4.6T 1005G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(1024, 250047)] 4.5s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 7.9s
+SETUP 18.2
+RUN W1024 gl80 fs|BE|0.01|K1 259.2s eligible True 2 / 1600 283.4
+RUN W1024 gl80 fs|CN|0.025|K2 193.2s eligible False 60 / 640 476.6
+RUN W1024 gl80 ad|LSPG|BE|0.01|tight 503.5s eligible True 0 / 1600 980.1
+RUN W1024 gl80 ad|LSPG|CN|0.025|tight 265.1s eligible True 0 / 640 1245.1
+RUN W1024 gl96 fs|BE|0.01|K1 440.6s eligible True 2 / 1600 1687.5
+RUN W1024 gl96 fs|CN|0.025|K2 330.1s eligible False 60 / 640 2017.5
+RUN W1024 gl96 ad|LSPG|BE|0.01|tight 864.0s eligible True 0 / 1600 2881.5
+RUN W1024 gl96 ad|LSPG|CN|0.025|tight 455.9s eligible True 0 / 640 3337.4
+PAIR W1024 gl80 gl96 unresolved pass pass 3338.8
+C3RUN COMPLETE
+ALL-DONE

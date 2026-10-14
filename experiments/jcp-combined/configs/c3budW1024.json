@@ -1,0 +1,82 @@
+{
+ "attempt": "c3budW1024",
+ "driver": "c3run",
+ "mode": "bud",
+ "mesh": 65,
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "refined_ref": "REF3D",
+ "gtol": 0.001,
+ "trust_fraction": 0.05,
+ "conv_bar": 2.5e-05,
+ "settings": [
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat65536",
+   "conv": "gl80",
+   "finer": "gl96",
+   "arms": [
+    {
+     "spec": [
+      "fs",
+      "BE",
+      0.01,
+      1
+     ],
+     "key": "fs|BE|0.01|K1",
+     "role": "baseline",
+     "selected": false
+    },
+    {
+     "spec": [
+      "fs",
+      "CN",
+      0.01,
+      1
+     ],
+     "key": "fs|CN|0.01|K1",
+     "role": "diagnostic+accurate_equal_cost+H4b_witness",
+     "selected": true
+    },
+    {
+     "spec": [
+      "fs",
+      "CN",
+      0.025,
+      1
+     ],
+     "key": "fs|CN|0.025|K1",
+     "role": "diagnostic",
+     "selected": false
+    },
+    {
+     "spec": [
+      "fs",
+      "BDF2",
+      0.016666666666666666,
+      2
+     ],
+     "key": "fs|BDF2|0.016666667|K2",
+     "role": "fast_equal_accuracy",
+     "selected": true
+    }
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 0,
+  "reps": 0,
+  "burn": 0.1,
+  "seed": 20261013
+ },
+ "common_baseline": "W512",
+ "common_baseline_fallback": "M2_512",
+ "budget_cases": 32,
+ "control_rule": "lat256",
+ "frozen_sha256": "f47442d93053b2a772ea3cdbe645c3d928c90c5872fee7e91cd5615299364c26",
+ "rule_selection_label": "POST HOC (DESIGN A10, A11 extension)",
+ "rule_selection_posthoc": true
+}

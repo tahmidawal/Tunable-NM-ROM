@@ -56,12 +56,17 @@ def main():
             if r['deployed'] is None or r['converged'] is None:
                 continue
             sets.append(dict(base[n], rule=r['deployed'], conv=r['converged'], finer=FINER[r['converged']], arms=arms))
-        c = MC.c3('c3bud', 'bud', sets, timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
-        c.update(budget_cases=32, control_rule='lat256', frozen_sha256=fsha,
-                 rule_selection_label=fz['3d_rules'].get('label', 'pre-registered'), rule_selection_posthoc=fz['3d_rules'].get('posthoc', False))
-        c.pop('grid', None)
-        (HERE / 'configs' / 'c3bud.json').write_text(json.dumps(c, indent=1) + '\n')
-        print('c3bud', len(sets), 'settings')
+        # two jobs (resource certificate <= 48 h each): W1024 alone (r_inf Gauss 80^3, finer 96^3), the other four together
+        groups = dict(c3budW1024=['W1024'], c3budA=['M2_512', 'W256', 'W512', 'W768'])
+        assert sorted(sum(groups.values(), [])) == sorted(x['name'] for x in sets), 'every 3D budget setting in exactly one job'
+        for att, names in groups.items():
+            c = MC.c3(att, 'bud', [x for x in sets if x['name'] in names], timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+            c.update(budget_cases=32, control_rule='lat256', frozen_sha256=fsha,
+                     rule_selection_label=fz['3d_rules'].get('label', 'pre-registered'),
+                     rule_selection_posthoc=fz['3d_rules'].get('posthoc', False))
+            c.pop('grid', None)
+            (HERE / 'configs' / f'{att}.json').write_text(json.dumps(c, indent=1) + '\n')
+            print(att, names)
 
 
 if __name__ == '__main__':

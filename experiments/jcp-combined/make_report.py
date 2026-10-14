@@ -239,8 +239,11 @@ def main():
     sel_pre = load(CK / 'SELECTION-3D.json')
     sel_ph = load(CK / 'SELECTION-3D-POSTHOC.json')
     an3 = load(CK / 'analysis3d-c3grid.json')
-    b2 = [load(p) for p in sorted(glob.glob(str(CK / 'budget2d-c2bud*-2d_first_order.json')))]
-    b3 = load(CK / 'budget3d-c3bud-3d_first_order.json')
+    b2o = [load(p) for p in sorted(glob.glob(str(CK / 'budget2d-c2bud[ABC]-2d_first_order.json')))]
+    b2e = [load(p) for p in sorted(glob.glob(str(CK / 'budget2d-c2bud[ABC]-2d_e0.json')))]
+    b2 = b2e if len(b2e) == len(b2o) and b2e else b2o                 # A13: E0 primary when complete
+    b3o = load(CK / 'budget3d-c3bud-3d_first_order.json')
+    b3 = load(CK / 'budget3d-c3bud-3d_e0.json') or b3o
     ledger = load(HERE / 'runs' / 'JOB-LEDGER.json')
     done = dict(grid2d=an is not None, sel3d=sel_ph is not None, grid3d=an3 is not None, bud2d=bool(b2), bud3d=b3 is not None)
     pending = [k for k, v in done.items() if not v]
@@ -541,7 +544,9 @@ def main():
     head = ['setting', 'arm', 'role', 'δ_quad', 'δ_solve', 'δ_form', 'δ_time', 'D_a', 'e_tot', 'e_P', 'e_dyn',
             'largest component (cases)', 'finalist qualified']
     if b2:
-        r('### 2D budget (median over 38 cases; errors against ST)', '')
+        e0b = b2[0]['refs'] == '2d_e0'
+        r(f"### 2D budget (median over 38 cases; e_tot, e_P, e_dyn against {'the E0 R_ST reference' if e0b else 'ST (PROVISIONAL)'})", '',
+          f"Label: {b2[0]['provisional']}." + (f" Not rankable (scored, never ranked): {', '.join(b2[0].get('not_rankable', []))}." if e0b else ''), '')
         st2 = {}
         for b in b2:
             st2.update(b['settings'])
@@ -556,6 +561,25 @@ def main():
         r('![2D budget](plots/budget2d.png)', '')
     else:
         r('2D budget pending (`c2budA/B/C`).', '')
+    fb2 = load(CK / 'fallback2d.json')
+    if fb2:
+        r('### 2D finalist failures and their fallbacks (A14, pre-registered conditional step)', '',
+          'The selected arms whose deployed rule fails the finalist quadrature check (δ_quad ≤ τ on every case) keep their '
+          'selection verdict, labelled "rule inadequate for this arm"; their first fallback rule is qualified separately '
+          '(accuracy, solver, quadrature, timing, and the arm\'s original criterion against the original deployed BE). '
+          'Accuracy in this table: first-order (the selection reference, PROVISIONAL) and E0 R_ST beside it.', '')
+        rows = []
+        for s_, e in fb2['settings'].items():
+            for k, a in e['arms'].items():
+                c_ = a['criterion']
+                rows.append([s_, k.replace('_', ' '), armname(a['key']), f"{e['fallback_setting']} ({e['fallback_rule']})",
+                             'yes' if a['finalist'].get('qualified') else 'no', sci(a['finalist'].get('delta_quad_worst')),
+                             pc(a['first_order']['TX']['median']), pc(a['e0_ST']['median']),
+                             fx(c_.get('value', c_.get('cost_ratio'))), 'yes' if c_['ok'] else 'no',
+                             '**yes**' if a['qualified'] else '**no**'])
+        r.table(['setting', 'arm', 'step', 'fallback (rule)', 'finalist pass', 'worst δ_quad', 'median TX (old)',
+                 'median E0 R_ST', 'cost vs original BE', 'original criterion met', 'fallback qualified'], rows)
+        r('Cost method: ' + '; '.join(sorted({a['timing_method'] for e in fb2['settings'].values() for a in e['arms'].values()})) + '.', '')
     if b3:
         r('### 3D budget (median over the first 32 cases)', '')
         r.table(head, budget_rows(b3['settings'], 'e_P', 'e_dyn', 'e_tot'))

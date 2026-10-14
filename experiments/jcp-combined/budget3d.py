@@ -296,7 +296,7 @@ def main():
         if repro['applicable'] and len(okj) > 1:      # G-score controls on the budget archive (A9.6)
             j0, j1 = okj[:2]
             r0 = rows[(sname, rr['r'], base_key, j0)]
-            R0 = np.asarray(z[f'c{j0}'])
+            R0 = zref(j0)
             ee = lambda F_: max(float(np.linalg.norm(F_[k] - R0[k])) / n0[j0] for k in range(1, 6))
             F0 = tb_[0][j0] @ G
             ctl = dict(case_swap=abs(ee(tb_[0][j1] @ G) - r0['e_ref']), time_shift=abs(ee(np.roll(F0, 1, 0)) - r0['e_ref']))

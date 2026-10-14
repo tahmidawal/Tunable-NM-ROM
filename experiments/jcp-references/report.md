@@ -28,7 +28,7 @@ Order-verified central-difference + Crank–Nicolson references ($R_{ST}$) and s
 | `ps3dp0` | ps | 3 | val64 | NVIDIA H200 | 5209856 | 0.55 | `605f2f9b3` | pass |
 | `ps3dp1` | ps | 3 | val64 | NVIDIA H200 | 5210824 | 0.55 | `605f2f9b3` | pass |
 
-Collected jobs used 28.1 GPU-hours (wall time of each single-GPU job; failed and refused submissions listed in the lane log are not included). Cluster namespace `/cluster/tufts/paralab/tawal01/jcp-ref/`.
+Collected jobs used 28.1 GPU-hours (sum of single-GPU job wall times). Not collected: `calib2d1` (job 5209647, refused at the unit-gate check (A7.1)); `calib2d2` (job 5209713, cancelled during calibration (A9.1)); `gates1` (job 5209646, refused at the unit-gate check (A7.1)); `calib3d1` (5209648) was cancelled before it started, and two A100 jobs that never started were moved to H200s; together these used well under one GPU-hour. The pre-registered estimate was about 92 GPU-hours (§12); the 2D calibration alone took 8.1 h because the tight solves run at the round-off floor at $L=8192$ (A11.1). Cluster namespace `/cluster/tufts/paralab/tawal01/jcp-ref/`.
 
 ## Summary (generated)
 
@@ -72,7 +72,7 @@ flowchart LR
 | gate | dim | result | key numbers |
 |---|---|---|---|
 | Uorder | — | pass | undefined [None, None, None, None, None, None, None, None]; p_refined_5p4 2.000 |
-| X1b | — | pass | dyadic {'p': [1.0000000000000009, 0.9999999999999997, 1.0000000000000009, 1.0000000000000002, 0.9999999999999996], 'outcome': 'order-fail'}; refined {'p': [1.0000000000000018, 0.9999999999999978, 1.0000000000000004, 0.9999999999999998, 1.0000000000000004], 'outcome': 'order-fail'}; second_order_control accepted |
+| X1b | — | pass | dyadic order-fail; refined order-fail; second-order control accepted |
 | Upeclet | — | pass | ok accepted; injected peclet-fail |
 | Urng | — | pass | prefix_stable True; ranges True; golden_match True; numpy 2.5.0 |
 | Ucrypto | — | pass | round_trip True; wrong_key_detected True |
@@ -80,9 +80,7 @@ flowchart LR
 | Uic3d | — | pass | max_rel 2.99e-16 |
 | G1 | 2 | pass | L 256; max_rel_diff 0.00e+00; newton_equal True |
 | G1 | 3 | pass | L 64; max_rel_diff 0.00e+00; newton_equal True |
-| G1 | 2 | pass | L 256; max_rel_diff 0.00e+00; newton_equal True |
 | G2 | 2 | pass | p_true 2.063, 2.040, 2.032, 2.028, 2.020; p_obs 2.136, 2.088, 2.073, 2.064, 2.048; effectivity 0.937, 0.957, 0.963, 0.967, 0.975 |
-| G1 | 3 | pass | L 64; max_rel_diff 0.00e+00; newton_equal True |
 | G2 | 3 | pass | p_true 2.039, 2.045, 2.041, 2.037, 2.032; p_obs 2.050, 2.105, 2.108, 2.104, 2.097; effectivity 0.991, 0.947, 0.941, 0.941, 0.942 |
 | G4proj | — | pass | errors 5.07e-05, 3.13e-06, 1.95e-07; orders 4.018, 4.004 |
 | G3a | 2 | pass | worst_rel 2.38e-16 |
@@ -99,7 +97,7 @@ flowchart LR
 
 - **X1 (2D)**: the first-order upwind + backward-Euler ladder was rejected on 6 of 6 dev cases (observed orders 0.92–0.98).
 - **X1b (stored dev6 case-0 fields, synthetic first-order defect)**: dyadic `order-fail`, refined `order-fail` (dyadic orders 1.000, 1.000, 1.000, 1.000, 1.000).
-- **X4 probe (2D)**: middle level's $\Delta t$ doubled → outcome `order-fail`, orders  (a sensitivity probe, not a must-fail control).
+- **X4 probe (2D)**: middle level's $\Delta t$ doubled → outcome `order-fail`, observed order undefined at every output time (the doubled step makes the middle level worse than the coarse one) — a sensitivity probe, not a must-fail control; it did discriminate here.
 - **X1 (3D)**: the first-order upwind + backward-Euler ladder was rejected on 4 of 4 dev cases (observed orders 0.67–0.92).
 
 ## Solver-floor calibration and D1

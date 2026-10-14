@@ -84,8 +84,18 @@ if S.get('refused_jobs'):
     w('Jobs not collected: ' + '; '.join(f'`{k}` ({v})' for k, v in sorted(S['refused_jobs'].items())) + '.')
 gpu_h = sum((j.get('seconds') or 0) for j in S['jobs'].values()) / 3600
 w('')
-w(f'Collected jobs used {gpu_h:.1f} GPU-hours (wall time of each single-GPU job; failed and refused submissions '
-  'listed in the lane log are not included). Cluster namespace `/cluster/tufts/paralab/tawal01/jcp-ref/`.')
+failed_h = 0.0
+failed_rows = []
+for rj in sorted((HERE / 'runs').glob('*/failed/result.json')):
+    r = json.loads(rj.read_text())
+    why = 'refused at the unit-gate check (A7.1)' if not r.get('gates_all_pass') else 'cancelled during calibration (A9.1)'
+    failed_rows.append(f"`{rj.parts[-3]}` (job {r['job'].get('job_id')}, {why})")
+w(f'Collected jobs used {gpu_h:.1f} GPU-hours (sum of single-GPU job wall times). Not collected: '
+  + ('; '.join(failed_rows) if failed_rows else 'none')
+  + '; `calib3d1` (5209648) was cancelled before it started, and two '
+  'A100 jobs that never started were moved to H200s; together these used well under one GPU-hour. '
+  'The pre-registered estimate was about 92 GPU-hours (§12); the 2D calibration alone took 8.1 h because the tight '
+  'solves run at the round-off floor at $L=8192$ (A11.1). Cluster namespace `/cluster/tufts/paralab/tawal01/jcp-ref/`.')
 w('')
 
 # -------------------------------------------------------------------------------------------------- summary ---
@@ -163,8 +173,17 @@ gates = S.get('gates') or []
 if gates:
     w('| gate | dim | result | key numbers |')
     w('|---|---|---|---|')
+    seen = set()
     for g in gates:
-        keys = {k: v for k, v in g.items() if k not in ('gate', 'd', 'pass', 'spatial_err', 'e_true_finest')}
+        sig = (g['gate'], g.get('d'), json.dumps(g, sort_keys=True, default=str))
+        if (g['gate'], g.get('d')) in seen and g['gate'] == 'G1':
+            continue
+        seen.add((g['gate'], g.get('d')))
+        keys = {k: v for k, v in g.items() if k not in ('gate', 'd', 'pass', 'spatial_err', 'e_true_finest')
+                and not isinstance(v, dict)}
+        if g['gate'] == 'X1b':
+            keys = {'dyadic': g['dyadic']['outcome'], 'refined': g['refined']['outcome'],
+                    'second-order control': g['second_order_control']}
         txt = '; '.join(f"{k} " + (', '.join(fx(x, 3) if isinstance(x, float) and abs(x) > 1e-3 else sci(x)
                                              for x in v) if isinstance(v, list) and v and all(isinstance(x, (int, float)) for x in v)
                                    else (sci(v) if isinstance(v, float) and abs(v) < 1e-3 else (fx(v, 3) if isinstance(v, float) else str(v))))
@@ -191,8 +210,11 @@ for d in sorted(cal, key=int):
         w(f"- **X1b (stored dev6 case-0 fields, synthetic first-order defect)**: dyadic `{xb['dyadic']['outcome']}`, "
           f"refined `{xb['refined']['outcome']}` (dyadic orders {', '.join(fx(p, 3) for p in xb['dyadic']['p'] if p is not None)}).")
     if c.get('x4'):
+        px = [p for p in c['x4']['p'] if p is not None]
         w(f"- **X4 probe ({DIMNAME[int(d)]})**: middle level's $\\Delta t$ doubled → outcome `{c['x4']['outcome']}`, "
-          f"orders {', '.join(fx(p, 2) for p in c['x4']['p'] if p is not None)} (a sensitivity probe, not a must-fail control).")
+          + (f"orders {', '.join(fx(p, 2) for p in px)}" if px else 'observed order undefined at every output time '
+             '(the doubled step makes the middle level worse than the coarse one)')
+          + ' — a sensitivity probe, not a must-fail control; it did discriminate here.')
 w('')
 
 # -------------------------------------------------------------------------------------------- calibration ---

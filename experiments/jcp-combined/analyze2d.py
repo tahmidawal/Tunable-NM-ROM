@@ -117,7 +117,8 @@ def main():
         f = np.median if kind == 'median' else np.max
         return float(f(lo)), float(f(hi))
     rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in res['rows']}
-    out = dict(run=str(run), refs=sc['refs'], provisional=True, tie=dict(kind=tie_kind, **thr),
+    out = dict(run=str(run), refs=sc['refs'], provisional=score.label_of(sc['refs']), tie=dict(kind=tie_kind, **thr),
+               not_rankable=ent.get('not_rankable', []),
                eps_ref={f'{k[0]}|{k[1]}': v for k, v in eps.items()}, arms={}, timing={}, selection={}, hypotheses={})
     panels = {k: dict(valid=v.get('valid'), worst_subject_drift=v.get('worst_subject_drift'), hashes_ok=v.get('hashes_ok'),
                       subjects=stats_timing(v), invocations=v['invocations']) for k, v in res['timing'].items()}

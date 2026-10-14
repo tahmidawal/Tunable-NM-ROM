@@ -31,10 +31,16 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 REG = json.loads((HERE / 'refs.json').read_text())
-KINDS = ('2d_f257', '3d_l65')
+KINDS = ('2d_f257', '3d_l65', '2d_e0', '3d_e0')
 REQUIRED = {'2d_f257': ('dir', 'tags', 'manifest', 'manifest_sha256', 'bank_sha256', 'rotation_sha256', 'times', 'nodes',
                          'normaliser'),
-            '3d_l65': ('file', 'sha256', 'bank_sha256', 'times', 'nodes', 'normaliser', 'cohort_seed', 'cohort_table_sha256')}
+            '3d_l65': ('file', 'sha256', 'bank_sha256', 'times', 'nodes', 'normaliser', 'cohort_seed', 'cohort_table_sha256'),
+            # DESIGN A13: the E0 second-order references, read through the E0 lane's loader (refstore) at a pinned store
+            # version; per-case uncertainty eta = eps_ref of R_ST, per-case-kind eligibility (K0 flags)
+            '2d_e0': ('loader_dir', 'store_version', 'tags', 'bank_sha256', 'rotation_sha256', 'times', 'nodes', 'normaliser',
+                      'eta', 'case_kinds'),
+            '3d_e0': ('loader_dir', 'store_version', 'cohort', 'bank_sha256', 'times', 'nodes', 'normaliser', 'cohort_seed',
+                      'eta', 'case_kinds')}
 
 
 def sha_file(p):
@@ -49,7 +55,12 @@ def tol_ok(x, y):
     return bool(np.isfinite(x) and np.isfinite(y) and abs(x - y) <= 1e-13 + 1e-10 * abs(y))
 
 
-CONTRACT = {'2d_f257': dict(times=[0.0, 0.05, 0.1, 0.15, 0.2, 0.25],
+E0N = '||R(t0)||_2 of the E0 reference at the nodes (= ||u0||_2 of the physical initial field to round-off, checked per case)'
+CONTRACT = {'2d_e0': dict(times=[0.0, 0.05, 0.1, 0.15, 0.2, 0.25],
+                          nodes='257^2 nodes x=i/256, y=j/256, i,j=0..256, ij order, boundary rows/cols zero', normaliser=E0N),
+            '3d_e0': dict(times=[0.0, 0.05, 0.1, 0.15, 0.2, 0.25], nodes='63^3 lattice x=k/64, k=1..63, ij(k) order (x slowest)',
+                          normaliser=E0N),
+            '2d_f257': dict(times=[0.0, 0.05, 0.1, 0.15, 0.2, 0.25],
                            nodes='257^2 nodes x=i/256, y=j/256, i,j=0..256, ij order, boundary rows/cols zero',
                            normaliser='||u0||_2 of the physical initial field (engines.initial(256, case descriptors)) at the nodes'),
             '3d_l65': dict(times=[0.0, 0.05, 0.1, 0.15, 0.2, 0.25], nodes='63^3 lattice x=k/64, k=1..63, ij(k) order (x slowest)',
@@ -71,9 +82,56 @@ def validate_entry(name):
             raise ValueError(f'registry {name}: unsupported {k} {ent[k]!r} (this scorer implements {v!r})')
     if ent['kind'] == '2d_f257':
         assert sha_file(Path(ent['dir']) / ent['manifest']) == ent['manifest_sha256'], 'reference manifest sha256'
-    else:
+    elif ent['kind'] == '3d_l65':
         assert sha_file(ent['file']) == ent['sha256'], '3D reference sha256'
+    else:
+        assert refstore(ent).store_version() == ent['store_version'], 'E0 store version differs from the registry pin'
     return ent
+
+
+def label_of(name):
+    """Accuracy label of a registry entry (A13): first-order references -> PROVISIONAL; E0 -> conditional."""
+    k = REG[name]['kind']
+    if k in ('2d_e0', '3d_e0'):
+        return ('E0 second-order reference: accuracy against an order-verified reference; rankings conditional on eps_ref '
+                '(a Richardson estimate under the asymptotic assumption, not a rigorous bound)')
+    return 'PROVISIONAL (first-order reference)' + (' - reference-limited (BE at dt0/4)' if k == '3d_l65' else '')
+
+
+_RS = {}
+
+
+def refstore(ent):
+    """The E0 loader (read-only import from the E0 lane; it checks every file's sha256 against its manifest)."""
+    d = ent['loader_dir']
+    if d not in _RS:
+        if d not in sys.path:
+            sys.path.insert(0, d)
+        import refstore as RS_
+        assert Path(RS_.__file__).resolve().parent == Path(d).resolve(), 'refstore imported from an unexpected place'
+        _RS[d] = RS_
+    return _RS[d]
+
+
+def e0_load(ent, dim, cohort, case, kind, n0_ours=None):
+    """E0 field (dim 2: (6, 257, 257); dim 3: (6, 63^3)) with the A13 contract checks: store version, the normaliser
+    equals ours to 1e-12 relative and the reference's t0 field equals our initial field to 1e-12 relative."""
+    RS_ = refstore(ent)
+    assert RS_.store_version() == ent['store_version']
+    R, meta = RS_.load(dim, cohort, case, kind)
+    if n0_ours is not None:
+        assert abs(meta['judge']['n0'] / n0_ours - 1) <= 1e-12, ('E0 normaliser differs from ours', cohort, case, kind)
+    return np.asarray(R), meta
+
+
+def load_ref3d(ent, j, n0_ours=None, _cache={}):
+    """3D reference field (6, 63^3) of case j of the registry entry's cohort."""
+    if ent['kind'] == '3d_l65':
+        k = ent['file']
+        if k not in _cache:
+            _cache[k] = np.load(k)
+        return np.asarray(_cache[k][f'c{j}'])
+    return e0_load(ent, 3, ent['cohort'], int(j), 'ST', n0_ours)[0]
 
 
 # ------------------------------------------------------------------------------------------------ 2D
@@ -97,7 +155,12 @@ def decode2d(G, W):
 _MAN = {}
 
 
-def load_ref2d(ent, coh, c):
+def load_ref2d(ent, coh, c, n0_ours=None):
+    if ent['kind'] == '2d_e0':                       # A13: R_ST (primary) and R_S (BE-matched at dt0 only)
+        out = {tag: e0_load(ent, 2, coh, int(c), kind, n0_ours)[0] for tag, kind in ent['tags'].items()}
+        for tag, comb in ent.get('derived', {}).items():
+            out[tag] = sum(w * out[t] for t, w in comb.items())
+        return out
     key = ent['dir']
     if key not in _MAN:
         man = json.loads((Path(ent['dir']) / ent['manifest']).read_text())
@@ -119,11 +182,17 @@ def score2d(ent, run, check):
     Q_ = T2.load_qcore()
     assert res['checkpoint_sha256'] == ent['bank_sha256'] == sha_file(T2.CKPT), 'bank checkpoint differs from the registry'
     assert sha_file(Q_.ROTATION) == ent['rotation_sha256'], 'rotation differs from the registry'
-    man = json.loads((Path(ent['dir']) / ent['manifest']).read_text())
-    for coh, v in res['cohorts'].items():           # descriptors authenticated: hash of the ACTUAL array used for n0
-        h = sha(np.asarray(v['physical'], dtype=np.float64))
-        assert h == v['physical_sha256'] == man['cohort_sha256'][coh], ('case descriptors differ from the reference cohort', coh)
+    if ent['kind'] == '2d_f257':
+        man = json.loads((Path(ent['dir']) / ent['manifest']).read_text())
+        for coh, v in res['cohorts'].items():       # descriptors authenticated: hash of the ACTUAL array used for n0
+            h = sha(np.asarray(v['physical'], dtype=np.float64))
+            assert h == v['physical_sha256'] == man['cohort_sha256'][coh], ('case descriptors differ from the reference cohort', coh)
+    else:                                           # A13: E0 binds the cohort through its own descriptors; our initial
+        for coh, v in res['cohorts'].items():       # field must equal the E0 reference's t0 field (checked per case below)
+            assert sha(np.asarray(v['physical'], dtype=np.float64)) == v['physical_sha256']
     cohorts = res['cohorts']
+    E0 = ent['kind'] == '2d_e0'
+    check = check and not E0                         # A13: no in-job rows exist against E0; certified via the original
     Rps = [res['setup'][s['name']]['Rp'] for s in res['config']['settings']]
     Q, G = bank2d(max(Rps))
     n0c = {}
@@ -139,7 +208,11 @@ def score2d(ent, run, check):
             if (coh, c) not in n0c:
                 n0c[(coh, c)] = float(np.linalg.norm(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c]))))
             n0 = n0c[(coh, c)]
-            refs = load_ref2d(ent, coh, c)
+            refs = load_ref2d(ent, coh, c, n0_ours=n0 if E0 else None)
+            if E0:                                   # A13 contract: E0's t0 field is our physical initial field
+                u0_ = np.asarray(Q.e.initial(256, np.asarray(cohorts[coh]['physical'][c])))
+                for t_ in ent['tags']:
+                    assert float(np.abs(refs[t_][0] - u0_).max()) <= 1e-12 * float(np.abs(u0_).max()), ('E0 t0 field', coh, c, t_)
             for ri, k in enumerate(keys):
                 U = decode2d(G, W[ci, ri])
                 pe = {t: [float(np.linalg.norm(U[j] - refs[t][j])) / n0 for j in range(6)] for t in tags}
@@ -246,16 +319,23 @@ def score2d(ent, run, check):
 def score3d(ent, run, check):
     import c3common as C3
     res = json.loads((run / 'result.json').read_text())
-    z = np.load(ent['file'])
     cfg = res['config']
     tab = C3.C.table(cfg['cohort_seed'], cfg['cohort_count'])
-    assert cfg['cohort_seed'] == ent['cohort_seed'] and tab['sha256'] == ent['cohort_table_sha256'], 'cohort table differs'
+    E0 = ent['kind'] == '3d_e0'
+    check = check and not E0                         # A13: no in-job rows exist against E0; certified via the original
+    assert cfg['cohort_seed'] == ent['cohort_seed'], 'cohort seed differs'
+    if not E0:
+        assert tab['sha256'] == ent['cohort_table_sha256'], 'cohort table differs'
     cases = cfg.get('case_subset') or list(range(cfg['cohort_count']))
     i65 = C3.lattice65_index(65)
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
     n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j))[i65])) for j in cases}
     Wz = np.load(run / f"W_{res['mode']}.npz")
-    R = {j: np.asarray(z[f'c{j}']) for j in cases}
+    R = {j: load_ref3d(ent, j, n0_ours=n0[j] if E0 else None) for j in cases}
+    if E0:                                           # A13 contract: E0's t0 field is our physical initial field
+        for j in cases:
+            u0_ = np.asarray(C3.C.initial_interior(65, tab, j))[i65]
+            assert float(np.abs(R[j][0] - u0_).max()) <= 1e-12 * float(np.abs(u0_).max()), ('E0 t0 field', j)
     out, gate = {}, dict(status='unchecked', compared=0, expected=0, worst=0., nonfinite=0, failures=0)
     inrow = {(r['setting'], r['rule'], r['spec'], r['case']): r for r in res['rows']}
     G, banks = {}, {}
@@ -342,8 +422,10 @@ def main():
     a = ap.parse_args()
     ent = validate_entry(a.refs)
     run = Path(a.run)
-    fn = score2d if ent['kind'] == '2d_f257' else score3d
+    fn = score2d if ent['kind'] in ('2d_f257', '2d_e0') else score3d
     out, gate, ctrl, fom = fn(ent, run, a.check)
+    if ent['kind'] in ('2d_e0', '3d_e0'):
+        gate = dict(gate, status='not applicable (new reference: certified by the original-reference G-score, A8.7/A13)')
     res = json.loads((run / 'result.json').read_text())
     rep = dict(refs=a.refs, registry_entry=ent, run=str(run), result_sha256=sha_file(run / 'result.json'),
                smoke=bool(res['config'].get('smoke')), gate=gate, controls=ctrl, scores=out, fom_scores=fom,

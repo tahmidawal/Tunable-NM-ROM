@@ -76,7 +76,7 @@ def main():
     Q, G = score.bank2d(max(int(s['Rp']) for s in cfg['settings']))
     out = dict(run=str(run), refs=a.refs, result_sha256=hashlib.sha256((run / 'result.json').read_bytes()).hexdigest(),
                analyzer_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-               provisional=True, B0_fixtures=b0_fixtures(), settings={}, gates={})
+               provisional=score.label_of(a.refs), B0_fixtures=b0_fixtures(), settings={}, gates={})
     rows = {(r['setting'], r['run'], r['cohort'], r['case']): r for r in res['rows']}
     repro = dict(compared=0, failures=0, worst=0., applicable=(a.refs == '2d_first_order'))
     gridz = {}

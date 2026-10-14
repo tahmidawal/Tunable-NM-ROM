@@ -58,8 +58,9 @@ def main():
         raise SystemExit('production budgets require --grid (grid reproduction, A8.5)')
     import c3run as C3R
     ent = score.validate_entry(a.refs)
-    z = np.load(ent['file'])
     cfg = res['config']
+    E0_ = ent['kind'] == '3d_e0'                       # A13: E0 reference through the registry loader
+    zref = lambda j: score.load_ref3d(ent, j, n0_ours=n0[j] if E0_ else None)
     tab = C3.C.table(cfg['cohort_seed'], cfg['cohort_count'])
     i65 = C3.lattice65_index(65)
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
@@ -68,7 +69,7 @@ def main():
     gz = np.load(Path(a.grid) / 'W_grid.npz') if a.grid else None
     out = dict(run=str(run), refs=a.refs, result_sha256=hashlib.sha256((run / 'result.json').read_bytes()).hexdigest(),
                analyzer_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-               provisional='reference-limited (BE reference at dt0/4)', settings={}, gates={},
+               provisional=score.label_of(a.refs), settings={}, gates={},
                rule_selection_label=cfg.get('rule_selection_label', 'pre-registered'),          # A10.3
                rule_selection_posthoc=bool(cfg.get('rule_selection_posthoc', False)))
     repro = dict(compared=0, failures=0, worst=0., applicable=(a.refs == '3d_first_order'))
@@ -119,7 +120,7 @@ def main():
                     if r is None:
                         continue
                     F = Wz[key][ci] @ G
-                    R = np.asarray(z[f'c{j}'])
+                    R = zref(j)
                     for k in range(6):
                         x, y = float(np.linalg.norm(F[k] - R[k])) / n0[j], (np.nan if r['e_ref_per_time'][k] is None else r['e_ref_per_time'][k])
                         repro['compared'] += 1
@@ -186,7 +187,7 @@ def main():
                 d['U_star'] = ([float(np.linalg.norm(U['star'][k] - U['star16'][k]) + np.linalg.norm(U['star'][k] - U['starx'][k]) +
                                       np.linalg.norm(U['star16'][k] - U['star16x'][k])) for k in range(6)]
                                if need('star', 'star16', 'starx', 'star16x') else NA)
-                Rn = np.asarray(z[f'c{j}']) / n0[j]
+                Rn = zref(j) / n0[j]
                 d['e_tot'] = nt(U['a'] - Rn) if need('a') else NA
                 if need('star'):
                     PR = (Rn @ Qb) @ Qb.T

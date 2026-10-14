@@ -76,7 +76,7 @@ def main():
     rows = {}
     for r in res['rows']:
         rows.setdefault((r['setting'], r['spec']), {})[r['case']] = r
-    out = dict(run=str(run), refs=sc['refs'], provisional='reference-limited (BE reference at dt0/4)', settings={},
+    out = dict(run=str(run), refs=sc['refs'], provisional=__import__('score').label_of(sc['refs']), settings={},
                selection={}, budget_arms={}, hypotheses={},
                rule_selection_label=cfg.get('rule_selection_label', 'pre-registered'),          # A10.3
                rule_selection_posthoc=bool(cfg.get('rule_selection_posthoc', False)))
@@ -186,6 +186,25 @@ def main():
         e2 = np.array(out['settings'][s2]['arms'][x2]['per_case_ref'])
         imp = float(np.mean(e2 < e1))
         mc = float(np.median(e2) / np.median(e1) - 1)
+        reg = __import__('score').REG[sc['refs']]
+        if 'eta' in reg:
+            # DESIGN A13: E0 reference with per-case eta = eps_ref(R_ST): a case is resolved iff |e2 - e1| > 2 eta and its
+            # reference is eligible; ties are excluded from the improvement denominator and counted (as H1(b) in 2D);
+            # fewer than half the cases resolved -> reference-limited. eta is a conditional Richardson estimate.
+            eta = np.array([float(reg['eta'][str(j)]) for j in cases])
+            elig = np.array([bool(reg['case_kinds'][f"{reg['cohort']}|{j}"]['ST']['eligible']) for j in cases])
+            res_ = elig & (np.abs(e2 - e1) > 2 * eta)
+            nres = int(res_.sum())
+            impr = int((res_ & (e2 < e1)).sum())
+            frac = impr / nres if nres else None
+            ok = bool(nres >= len(cases) / 2 and mc <= -.10 and frac is not None and frac >= .6)
+            verdict = 'reference-limited' if nres < len(cases) / 2 else ('dial extends' if ok else 'does not extend')
+            h6[f'{s1}->{s2}'] = dict(arms=[x1, x2], median_change=mc, improved_fraction=imp, resolved=nres,
+                                     improved_resolved=impr, worsened_resolved=int((res_ & (e2 > e1)).sum()),
+                                     ties=int((~res_ & elig).sum()), not_rankable=int((~elig).sum()),
+                                     improved_fraction_resolved=frac, bars_met=ok, verdict=verdict,
+                                     label='E0 reference; ties at 2 eps_ref (conditional Richardson estimate, A13)')
+            continue
         # no verified or heuristic tie threshold exists for the 3D reference (BE at dt0/4, A13 of C2): H6 is reported
         # DESCRIPTIVELY with the registered bars evaluated on raw values and labelled reference-limited (A8.4)
         h6[f'{s1}->{s2}'] = dict(arms=[x1, x2], median_change=mc, improved_fraction=imp,

@@ -978,3 +978,45 @@ not proven. The selector
 therefore binds the extension to the escalation job by cohort seed and count and by the initial coefficients of every
 case (agreement $\le10^{-12}$ relative, per case), not by the in-job table hash; offline scoring keeps checking the CPU table hash
 against the registry (`score.py`).
+
+## Amendment A13 (2026-10-14, after the E0 references landed; before any score against them was read)
+
+The E0 lane (`exp/2026-10-06-jcp-references`, report `experiments/jcp-references/report.md`, store version
+`3ec3b5492748…`) delivered order-verified second-order references for the historical cohorts: 2D dev6, val32 (and
+test64, not used here) and 3D val64 (= seed 923801). Instruction from the campaign coordinator (2026-10-14): score
+against them as the primary reference, keep the first-order references beside them for continuity, respect E0's
+non-rankable flags, and phrase the accuracy label as E0 allows.
+
+**A13.1 Registry entries** (`refs.json`, written by `make_e0_registry.py`, pinned to the store version; files are read
+through the E0 loader `refstore.py`, which verifies every file's sha256 against the E0 manifest; nothing under `sealed/`
+or `custody/` and no sealed/OOD cohort is touched — the loader refuses them):
+- `2d_e0`: tags `ST` = $R_{ST}$ (central differences + Crank–Nicolson with a Rannacher start; the primary reference for
+  every arm) and `S` = $R_S$ (central + backward Euler at $\Delta t_0=0.005$; time-matched to the LSPG-BE arms at
+  $\Delta t_0$ only — no CN-matched space-only reference exists). The first-order construction TX is retired: under E0 the
+  pre-registered TX-based machinery (selection rules, H1–H3, budgets) is evaluated on $R_{ST}$ (TX is an alias of ST in this
+  entry), so "TX" and "ST" columns coincide when scored against E0 and are reported once.
+- `3d_e0`: $R_{ST}$ of cohort val64. The 3D space-only $R_S$ (BE at 0.005) does not match the 3D ROM step 0.01 and is not used.
+- Normaliser: $\lVert R(t_0)\rVert$ of the E0 reference at the scoring nodes, which equals our $\lVert u_0\rVert$ at the nodes to
+  round-off; the scorer asserts this per case (relative $10^{-12}$) and that $R(t_0)$ equals our initial field (relative
+  $10^{-12}$). Lattices and output times are unchanged (2D $257^2$ nodes incl. walls, 3D the $63^3$ lattice).
+
+**A13.2 Uncertainty and ties.** Each case carries $\eta=\epsilon_{\rm ref}(R_{ST})$ (E0's Richardson estimate). Rankings
+use E0's rule: two arms are ranked on a case only if their errors differ by more than $2\eta$ **and** the case-kind is
+eligible. In the 2D analysis this is the pre-registered verified-uncertainty path (A8.7: interval overlap, endpoint
+propagation for medians and worst values); in 3D, H6 becomes a paired, tie-aware statement (resolved iff
+$|e_2-e_1|>2\eta$ on an eligible case; improved fraction over resolved cases; fewer than half resolved → reference-limited).
+Non-eligible case-kinds in our cohorts — 2D `dev6/1/S`, `val32/21/S`, `val32/24/S` (E0 outcome `unresolved-floor`);
+none in 3D val64 — are scored and reported but never ranked (S is never a ranking reference in this lane; the flags are
+carried into every output).
+
+**A13.3 What does not change.** Every selection stays frozen (2D: `FROZEN-SELECTION.json`, made against the first-order
+references as pre-registered; 3D: the rule selection and the solver selection are reference-free). Rescoring follows
+A8.7: an E0 score file is accepted only together with the passing first-order G-score of the same `result.json` and the
+frozen selection; there is no in-job row to reproduce against E0, so the E0 score file's own gate reads "not applicable".
+The anchor-based 3D quantities (H4) are reference-free and unchanged.
+
+**A13.4 Reporting.** E0 is the primary scoring in `report.md`; the first-order numbers stay beside them, labelled
+PROVISIONAL. Numbers against E0 drop "PROVISIONAL" only in E0's sense: they are measured against an order-verified
+second-order reference, and rankings are conditional on $\epsilon_{\rm ref}$ being a valid estimate (asymptotic regime;
+cross-checked on 8 cases per dimension), not a rigorous bound. The E0 report's old-versus-new distances (2D up to 0.349 %,
+3D up to 2.81 %) bound how far each first-order number can move.

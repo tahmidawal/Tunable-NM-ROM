@@ -89,7 +89,8 @@ w('')
 FJ = json.loads((RES / 'failed_jobs.json').read_text())['jobs'] if (RES / 'failed_jobs.json').exists() else []
 failed_h = sum(j['seconds'] for j in FJ) / 3600
 cal2 = [r for r in results_of('calib').values() if int(r['config']['dim']) == 2]
-w(f'Collected jobs used {gpu_h:.1f} GPU-hours (sum of single-GPU job wall times). Not collected (from Slurm '
+w(f'Recorded single-GPU runtime of the collected jobs: {gpu_h:.1f} GPU-hours (each job\'s own timer, from start of '
+  'the Python job to its end; queueing and node set-up are not included). Not collected (Slurm elapsed time, '
   f'accounting, `results/failed_jobs.json`): ' + '; '.join(f"{j['name']} ({j['job_id']}, {j['state'].split()[0].lower()}, "
                                                            f"{j['elapsed']}: {j['reason']})" for j in FJ)
   + f' — {failed_h:.2f} GPU-hours in total. The pre-registered planning estimate (DESIGN §12, a configuration value) '
@@ -114,7 +115,7 @@ for d in sorted(dims):
       f"{'; ' + str(sum(c['refined'] for c in cs)) + ' refined, of which ' + str(sum(c['refined'] and c['outcome'] == 'accepted' for c in cs)) + ' accepted after refinement' if any(c['refined'] for c in cs) else ''}. "
       f"$\\epsilon_{{ref}}$ of $R_{{ST}}$: median {pct(q(st)[1], 3)}, worst {pct(q(st)[2], 3)}; of $R_S$: median "
       f"{pct(q(ss)[1], 3)}, worst {pct(q(ss)[2], 3)}. Cross-check: {xcv.count('PASS')} PASS, {xcv.count('FAIL')} FAIL, "
-      f"{len(xcv) - xcv.count('PASS') - xcv.count('FAIL')} other of 8. "
+      f"{len(xcv) - xcv.count('PASS') - xcv.count('FAIL')} other of {len(xcv)}. "
       + ' '.join(f"Old first-order {k} reference vs new: median {pct(q(ov[k])[1], 3)}, max {pct(q(ov[k])[2], 3)} "
                  f"({len(ov[k])} cases)." for k in ('ST', 'S') if ov[k]))
 w('')
@@ -316,9 +317,10 @@ if xcs2:
     n_new = sum(v['verdict'] == 'PASS' for v in xcs2.values())
     n_old = sum(v.get('old_rule_verdict') == 'PASS' for v in xcs2.values())
     n3_same = sum(v['verdict'] == v.get('old_rule_verdict') for v in dims.get(3, {}).get('crosscheck', {}).values())
-    w(f'**Consequence of A10 in 2D:** {n_new}/8 PASS under the amended rule; under the original rule on the same '
-      f'ladders {n_old}/8 would PASS, so the 2D dimension status would be `unvalidated` instead of `validated`. In 3D '
-      f'the two rules agree on {n3_same}/8 cases.')
+    n2, n3 = len(xcs2), len(dims.get(3, {}).get('crosscheck', {}))
+    w(f'**Consequence of A10 in 2D:** {n_new}/{n2} PASS under the amended rule; under the original rule on the same '
+      f'ladders {n_old}/{n2} would PASS, so the 2D dimension status would be `unvalidated` instead of `validated`. In '
+      f'3D the two rules agree on {n3_same}/{n3} cases.')
     w('')
 w('$x_{PS}$ is the distance between the pseudo-spectral solution and the finest finite-difference level; it estimates '
   'the true error of that level, so $x_{PS}/\\epsilon_{ref}\\approx1$ means the Richardson estimate is sharp. '
@@ -338,11 +340,13 @@ for k, v in [
     ('A5–A6', 'code-audit repairs: solver failure terminal after one retry; IC-mismatch outcome; NaN-safe gates; '
      'sealed jobs silent and never resumed; verified resume; independent audit tolerances.'),
     ('A7', 'the RNG golden test compared floats bitwise; the cluster NumPy differs by one ulp in an exp-derived '
-     'viscosity, so two jobs refused to run; the comparison became exact for integers and $10^{-14}$ relative for floats.'),
+     'viscosity, so the first gate and calibration jobs refused to run (listed under *What ran*); the comparison became '
+     'exact for integers and $10^{-14}$ relative for floats.'),
     ('A8', 'pseudo-spectral base steps lowered before any PS run so the stability heuristic holds up to the family '
      'amplitude; PS jobs split in two.'),
     ('A9', 'the 2D tighter calibration solve cannot reach its target at the round-off floor; its Newton budget was '
-     'reduced from 60 to 8 per step and the first 2D calibration job was cancelled.'),
+     'reduced from 60 to 8 per step and the 2D calibration job that had reached the solves was cancelled (listed '
+     'under *What ran*).'),
     ('A10', '**post-data rule change (disclosed):** the PS spatial-order requirement was replaced (see the cross-check '
      'section); written after inspecting PS self-convergence, before any PS-versus-FD comparison existed.'),
     ('A11', 'the 2D calibration took far longer than planned; 2D production started under a provisional calibration '
@@ -391,6 +395,10 @@ w('Generated and quality-controlled by this lane; never scored. Their seeds were
   'AES-256 ciphertext on the cluster. **The sealing is cooperative and unenforced**: every lane runs as one cluster '
   'user, so the encryption protects against accidental reading only, and the key sits in a custody directory on the '
   'same account.')
+w('')
+w('Reported per job and kind, following the pre-registered QC schema (DESIGN A1.11/A2.9/A5.5): counts per outcome, '
+  'and the minimum/median/maximum of $\\epsilon_{ref}$ and of the observed order — aggregates only, no per-case value, '
+  'descriptor or field.')
 w('')
 sq = S.get('sealed_qc') or {}
 if sq:
@@ -453,7 +461,9 @@ for k, v in [
     ('all solves ok / ok', 'every step of all three calibration solves met the acceptance residual / additionally the '
      'proxy bounded both measured changes.'),
     ('D1', 'diagnostic ladders refining only time or only space, to see each error component\'s order and size.'),
-    ('effectivity', '$x_{PS}/\\epsilon_{ref}$: about 1 when the Richardson estimate matches the independent check.'),
+    ('effectivity', 'estimated error divided by a measured one. In the cross-check: $x_{PS}/\\epsilon_{ref}$ (about 1 '
+     'when the Richardson estimate matches the independent pseudo-spectral solution). In gate G2: $\\epsilon_{ref}$ '
+     'divided by the exact error against the manufactured solution.'),
     ('$p_{true}$ / $p_{obs}$', 'order measured against an exact manufactured solution / from level differences only.'),
     ('PS spatial order', 'the convergence order of the pseudo-spectral solver itself, from its three resolutions.'),
     ('Richardson extrapolation', 'combining levels to cancel the leading error term; here a diagnostic field only.'),

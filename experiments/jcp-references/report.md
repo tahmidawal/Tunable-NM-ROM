@@ -33,7 +33,7 @@ Order-verified central-difference + Crank–Nicolson references ($R_{ST}$) and s
 | `ps3dp0` | ps | 3 | val64 | NVIDIA H200 | 5209856 | 0.55 | `605f2f9b3` | pass |
 | `ps3dp1` | ps | 3 | val64 | NVIDIA H200 | 5210824 | 0.55 | `605f2f9b3` | pass |
 
-Collected jobs used 39.7 GPU-hours (sum of single-GPU job wall times). Not collected (from Slurm accounting, `results/failed_jobs.json`): jr_gates1 (5209646, failed, 00:02:13: refused at the unit-gate check (A7.1)); jr_calib2d1 (5209647, failed, 00:00:28: refused at the unit-gate check (A7.1)); jr_calib3d1 (5209648, cancelled, 00:00:00: cancelled before start (A7.1)); jr_calib2d2 (5209713, cancelled, 00:08:53: cancelled during calibration (A9.1)); jr_fd2dval32p1 (5217960, cancelled, 00:00:00: cancelled before start; restaged on H200); jr_fd2dtest64p0 (5219092, cancelled, 00:00:00: cancelled before start; restaged on H200) — 0.19 GPU-hours in total. The pre-registered planning estimate (DESIGN §12, a configuration value) was about 92 GPU-hours; the 2D calibration alone took 8.1 h because the tight solves run at the round-off floor at $L=8192$ (A11.1). Cluster namespace `/cluster/tufts/paralab/tawal01/jcp-ref/`.
+Recorded single-GPU runtime of the collected jobs: 39.7 GPU-hours (each job's own timer, from start of the Python job to its end; queueing and node set-up are not included). Not collected (Slurm elapsed time, accounting, `results/failed_jobs.json`): jr_gates1 (5209646, failed, 00:02:13: refused at the unit-gate check (A7.1)); jr_calib2d1 (5209647, failed, 00:00:28: refused at the unit-gate check (A7.1)); jr_calib3d1 (5209648, cancelled, 00:00:00: cancelled before start (A7.1)); jr_calib2d2 (5209713, cancelled, 00:08:53: cancelled during calibration (A9.1)); jr_fd2dval32p1 (5217960, cancelled, 00:00:00: cancelled before start; restaged on H200); jr_fd2dtest64p0 (5219092, cancelled, 00:00:00: cancelled before start; restaged on H200) — 0.19 GPU-hours in total. The pre-registered planning estimate (DESIGN §12, a configuration value) was about 92 GPU-hours; the 2D calibration alone took 8.1 h because the tight solves run at the round-off floor at $L=8192$ (A11.1). Cluster namespace `/cluster/tufts/paralab/tawal01/jcp-ref/`.
 
 ## Summary (generated)
 
@@ -204,9 +204,9 @@ $x_{PS}$ is the distance between the pseudo-spectral solution and the finest fin
 - **A1–A3**: design repairs before any code, after three Codex audits (decision tables, sealing classified as cooperative, floor proxy, PS indicator, loader eligibility).
 - **A4**: gate bars set below the f64 round-off floor were raised with evidence; the 2D manufactured-solution levels were moved one refinement up (pre-asymptotic Rannacher transient).
 - **A5–A6**: code-audit repairs: solver failure terminal after one retry; IC-mismatch outcome; NaN-safe gates; sealed jobs silent and never resumed; verified resume; independent audit tolerances.
-- **A7**: the RNG golden test compared floats bitwise; the cluster NumPy differs by one ulp in an exp-derived viscosity, so two jobs refused to run; the comparison became exact for integers and $10^{-14}$ relative for floats.
+- **A7**: the RNG golden test compared floats bitwise; the cluster NumPy differs by one ulp in an exp-derived viscosity, so the first gate and calibration jobs refused to run (listed under *What ran*); the comparison became exact for integers and $10^{-14}$ relative for floats.
 - **A8**: pseudo-spectral base steps lowered before any PS run so the stability heuristic holds up to the family amplitude; PS jobs split in two.
-- **A9**: the 2D tighter calibration solve cannot reach its target at the round-off floor; its Newton budget was reduced from 60 to 8 per step and the first 2D calibration job was cancelled.
+- **A9**: the 2D tighter calibration solve cannot reach its target at the round-off floor; its Newton budget was reduced from 60 to 8 per step and the 2D calibration job that had reached the solves was cancelled (listed under *What ran*).
 - **A10**: **post-data rule change (disclosed):** the PS spatial-order requirement was replaced (see the cross-check section); written after inspecting PS self-convergence, before any PS-versus-FD comparison existed.
 - **A11**: the 2D calibration took far longer than planned; 2D production started under a provisional calibration status whose outputs were held until the final calibration passed (it did) and were then released through a verified, per-case check. The expectation that no production case would need a tight re-solve was wrong.
 - **A12**: the independent audit's perturbation-fault predicate did not count a value becoming undefined as a change; corrected. Disclosure of the A10 consequence.
@@ -235,6 +235,8 @@ Not covered: 3D dev4 (no old reference exists for it) and the 3D space-only kind
 ## Sealed and out-of-distribution cohorts (quality control only)
 
 Generated and quality-controlled by this lane; never scored. Their seeds were drawn on the cluster (`make_seeds.py`, 0 redraws) and are committed only as hashes; fields and per-case metadata exist only as AES-256 ciphertext on the cluster. **The sealing is cooperative and unenforced**: every lane runs as one cluster user, so the encryption protects against accidental reading only, and the key sits in a custody directory on the same account.
+
+Reported per job and kind, following the pre-registered QC schema (DESIGN A1.11/A2.9/A5.5): counts per outcome, and the minimum/median/maximum of $\epsilon_{ref}$ and of the observed order — aggregates only, no per-case value, descriptor or field.
 
 | job | kind | case-kinds | accepted | other outcomes | refined | $\epsilon_{ref}$ median | $\epsilon_{ref}$ max | p min–max |
 |---|---|---|---|---|---|---|---|---|
@@ -284,7 +286,7 @@ Cohorts: 2D `dev6`, `val32`, `test64`; 3D `dev4`, `val64` (seed 923801), `test32
 - **prod − tight, tight − tighter**: how much the solution changes when the solver tolerance is tightened; the proxy columns are the floor estimates that must exceed them.
 - **all solves ok / ok**: every step of all three calibration solves met the acceptance residual / additionally the proxy bounded both measured changes.
 - **D1**: diagnostic ladders refining only time or only space, to see each error component's order and size.
-- **effectivity**: $x_{PS}/\epsilon_{ref}$: about 1 when the Richardson estimate matches the independent check.
+- **effectivity**: estimated error divided by a measured one. In the cross-check: $x_{PS}/\epsilon_{ref}$ (about 1 when the Richardson estimate matches the independent pseudo-spectral solution). In gate G2: $\epsilon_{ref}$ divided by the exact error against the manufactured solution.
 - **$p_{true}$ / $p_{obs}$**: order measured against an exact manufactured solution / from level differences only.
 - **PS spatial order**: the convergence order of the pseudo-spectral solver itself, from its three resolutions.
 - **Richardson extrapolation**: combining levels to cancel the leading error term; here a diagnostic field only.

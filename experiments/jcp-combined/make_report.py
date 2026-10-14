@@ -243,10 +243,23 @@ def main():
     b2o = [load(p) for p in sorted(glob.glob(str(CK / 'budget2d-c2bud[ABC]-2d_first_order.json')))]
     b2e = [load(p) for p in sorted(glob.glob(str(CK / 'budget2d-c2bud[ABC]-2d_e0.json')))]
     b2 = b2e if len(b2e) == len(b2o) and b2e else b2o                 # A13: E0 primary when complete
-    b3o = load(CK / 'budget3d-c3bud-3d_first_order.json')
-    b3 = load(CK / 'budget3d-c3bud-3d_e0.json') or b3o
+    def merge3(tag):
+        fs_ = [load(CK / f'budget3d-{a_}-{tag}.json') for a_ in ('c3budA', 'c3budW1024r')]
+        fs_ = [f_ for f_ in fs_ if f_]
+        if not fs_:
+            return None
+        m_ = dict(fs_[0], settings={}, gates={}, parts=[f_['run'] for f_ in fs_], complete=len(fs_) == 2)
+        for f_ in fs_:
+            m_['settings'].update(f_['settings'])
+            for k_, v_ in f_['gates'].items():
+                m_['gates'][f"{Path(f_['run']).parents[1].name}:{k_}"] = v_
+        return m_
+    b3o = merge3('3d_first_order')
+    b3e = merge3('3d_e0')
+    b3 = b3e if (b3e and b3o and b3e['complete'] == b3o['complete']) else b3o
     ledger = load(HERE / 'runs' / 'JOB-LEDGER.json')
-    done = dict(grid2d=an is not None, sel3d=sel_ph is not None, grid3d=an3 is not None, bud2d=bool(b2), bud3d=b3 is not None)
+    done = dict(grid2d=an is not None, sel3d=sel_ph is not None, grid3d=an3 is not None, bud2d=bool(b2),
+                bud3d=bool(b3 and b3.get('complete')))
     pending = [k for k, v in done.items() if not v]
 
     r('# jcp-combined: second-order stepping with a wide bank and a fast fixed-sweep solver, with an error budget', '',
@@ -629,7 +642,8 @@ def main():
                  'median E0 R_ST', 'cost vs original BE', 'original criterion met', 'fallback qualified'], rows)
         r('Cost method: ' + '; '.join(sorted({a['timing_method'] for e in fb2['settings'].values() for a in e['arms'].values()})) + '.', '')
     if b3:
-        r('### 3D budget (median over the first 32 cases)', '')
+        r(f"### 3D budget (median over the first 32 cases; e_tot, e_P, e_dyn against {'the E0 R_ST reference' if b3['refs'] == '3d_e0' else 'the first-order BE reference (PROVISIONAL)'})", '',
+          f"Label: {b3['provisional']}." + ('' if b3.get('complete') else ' Partial: W1024 pending.'), '')
         r.table(head, budget_rows(b3['settings'], 'e_P', 'e_dyn', 'e_tot'))
         r('Budget gates: ' + ', '.join(f"{k} {(v.get('passed') if isinstance(v, dict) else v)}" for k, v in b3['gates'].items()) + '.', '')
         plot_budget(b3['settings'], 'budget3d.png', '3D', 'e_P', 'e_dyn')

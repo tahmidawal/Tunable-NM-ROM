@@ -88,6 +88,16 @@ def main():
                                                           common_reps=1, common_seed=20261013))
     cfgs['smk3esc'] = c3('smk3esc', 'esc', [dict(esc_settings()[4], ladder=['lat32768', 'gl48', 'lat256'])],
                          case_subset=[0, 1], timing=dict(cases=2, reps=1, burn=0.1, seed=20261013))
+    # A11 (POST HOC): W1024 escalation extension (Gauss 80^3 -> 96^3 -> 112^3 conditional), all 64 cases; its smoke runs
+    # the two largest rules on two cases (memory and rate gate for 112^3)
+    cfgs['c3extW1024'] = c3('c3extW1024', 'esc', [dict(SETTINGS3[4], ext_rules=['gl80', 'gl96', 'gl112'])],
+                            timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    cfgs['smk3ext'] = c3('smk3ext', 'esc', [dict(SETTINGS3[4], ext_rules=['gl96', 'gl112'])], case_subset=[0, 1],
+                         timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    cfgs['local3ext'] = c3('local3ext', 'esc', [dict(SETTINGS3[1], ext_rules=['gl24', 'gl32', 'gl40'])], case_subset=[0],
+                           refined_ref=str(loc3), timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
+    for k_ in ('c3extW1024', 'smk3ext', 'local3ext'):
+        cfgs[k_].pop('grid', None)
     # budget smokes (A1.0 step 6 drivers; arms are machinery choices, not a selection)
     sarms = [dict(form='LSPG', scheme='BE', f=1, role='baseline'), dict(form='LSPG', scheme='BDF2', f=2, role='test-selected',
                                                                         selected=True),

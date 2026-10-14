@@ -80,13 +80,28 @@ def main():
     ap.add_argument('--out')
     ap.add_argument('--allow-smoke', action='store_true')
     ap.add_argument('--posthoc', action='store_true', help='DESIGN A10 post-hoc selection (adaptive CN arm)')
+    ap.add_argument('--ext', nargs='*', default=[], help='DESIGN A11 escalation-extension archives (with --posthoc only)')
     a = ap.parse_args()
+    assert a.posthoc or not a.ext, 'the A11 extension is part of the post-hoc selection only'
+    EXT = {}
+    for xp in map(Path, a.ext):
+        xr = json.loads((xp / 'result.json').read_text())
+        if xr['config'].get('smoke') and not a.allow_smoke:
+            raise SystemExit(f'{xp}: smoke result refused')
+        assert xr.get('complete') and xr['mode'] == 'esc', xp
+        for s_ in xr['config']['settings']:
+            assert s_.get('ext_rules') and s_['name'] not in EXT, s_['name']
+            EXT[s_['name']] = (xp, xr, np.load(xp / 'W_esc.npz'))
     sel = SEL_POSTHOC if a.posthoc else SEL
     import c3common as C3
     X65 = np.stack(np.meshgrid(*(np.arange(1, 64) / 64.,) * 3, indexing='ij'), -1).reshape(-1, 3)
     i65 = C3.lattice65_index(65)
     out = dict(tau=TAU, families=FAMILIES, control=CONTROL, selection_arms=sel, timed_arms=TIMED,
-               posthoc=bool(a.posthoc), label='POST HOC (DESIGN A10)' if a.posthoc else 'pre-registered',
+               posthoc=bool(a.posthoc),
+               label=('POST HOC (DESIGN A10' + (', A11 extension' if EXT else '') + ')') if a.posthoc else 'pre-registered',
+               extension_inputs=[dict(path=str(v[0]), job_id=v[1].get('job_id'), gpu=v[1].get('gpu'),
+                                      result_sha256=hashlib.sha256((v[0] / 'result.json').read_bytes()).hexdigest())
+                                 for v in EXT.values()],
                inputs=[], settings={})
     for rp in map(Path, a.runs):
         res = json.loads((rp / 'result.json').read_text())
@@ -113,9 +128,46 @@ def main():
             if a.posthoc:
                 conv, ph = posthoc_converged(esc['pairs'])
                 ent.update(posthoc_pair_status=ph, posthoc_converged=conv)
-            base = conv or S['ladder_baseline']['rule']
             bk = C3.load_bank(s['bank'])
             G = np.asarray(C3.TB.feature_rows(bk['params'], bk['T'][:, :int(s['Rp'])], X65))
+            src = {}                                   # rule -> (result, W archive) holding its trajectories
+
+            def W_of(rule, sk):
+                r_, z_ = src.get(rule, (res, Wz))
+                assert ids_of(r_, z_, sname, rule, sk) == list(cases), (sname, rule, sk)
+                return z_[f'{sname}|{rule}|{sk}']
+            if a.posthoc and conv is None and sname in EXT:
+                # A11: extension pairs in the A2.4 order continued (gl80 if (gl80, gl96) passes the A10 axis, else gl96 if
+                # (gl96, gl112) passes); the extension's re-run of gl80 must reproduce this job's gl80 trajectories
+                xp, xr, xz = EXT[sname]
+                assert xr['config']['cohort_seed'] == cfg['cohort_seed'] and \
+                    (xr['config'].get('case_subset') or list(range(xr['config']['cohort_count']))) == list(cases)
+                xs = xr['settings'][sname]['extension']
+                repro = {}
+                for sk in SEL + SEL_POSTHOC[1:] + ['ad|LSPG|BE|0.01|tight']:
+                    if f'{sname}|gl80|{sk}' in xz.files and f'{sname}|gl80|{sk}' in Wz.files:
+                        assert ids_of(xr, xz, sname, 'gl80', sk) == ids_of(res, Wz, sname, 'gl80', sk) == list(cases)
+                        d_ = np.linalg.norm(np.einsum('cki,ip->ckp', xz[f'{sname}|gl80|{sk}'] - Wz[f'{sname}|gl80|{sk}'], G),
+                                            axis=2) / n0[:, None]
+                        repro[sk] = float(np.nanmax(d_)) if np.isfinite(d_).all() else float('nan')
+                rep_ok = bool(repro) and all(np.isfinite(v) and v <= 1e-10 for v in repro.values())
+                xst = {k: v['posthoc_status'] for k, v in xs['pairs'].items()}
+                xconv = None
+                if rep_ok:
+                    xconv = 'gl80' if xst.get('gl80|gl96') == 'pass' else ('gl96' if xst.get('gl96|gl112') == 'pass' else None)
+                ent['extension'] = dict(path=str(xp), job_id=xr.get('job_id'), pair_status=xst, reproduction_gl80=repro,
+                                        reproduction_passed=rep_ok, converged=xconv,
+                                        worst={k: {kk: vv['worst'] for kk, vv in v['posthoc'].items()} for k, v in xs['pairs'].items()})
+                conv = xconv
+                ent['posthoc_converged'] = conv
+                for r_ in xs['rules']:
+                    if r_ not in ('gl80',):
+                        src[r_] = (xr, xz)
+                for r_, e_ in xs['rule_eligibility'].items():
+                    if r_ not in ('gl80',):
+                        S.setdefault('escalation_rule_eligibility', {})[r_] = {k: v for k, v in e_.items() if k in SEL}
+                        S['escalation_rule_eligibility'][r_][SEL_POSTHOC[1]] = dict(eligible=bool(e_[SEL_POSTHOC[1]]['eligible']))
+            base = conv or S['ladder_baseline']['rule']
             elig = dict(S.get('escalation_rule_eligibility', {}), **S.get('ladder_eligibility', {}))
             if a.posthoc:                     # adaptive arm: eligible iff every run of the rule is valid (A5.1), from the rows
                 rows = [r for r in res['rows'] if r['setting'] == sname and r['spec'] == SEL_POSTHOC[1]]
@@ -128,9 +180,7 @@ def main():
                                                                       invalid=sum(r['valid'] is not True for r in rr_))
 
             def dist(r1, r2, sk):
-                for r_ in (r1, r2):                       # A8.2: join by case ids (saved ids, else the job's row order)
-                    assert ids_of(res, Wz, sname, r_, sk) == list(cases), (sname, r_, sk)
-                A_, B_ = Wz[f'{sname}|{r1}|{sk}'], Wz[f'{sname}|{r2}|{sk}']
+                A_, B_ = W_of(r1, sk), W_of(r2, sk)     # A8.2: joined by case ids (saved ids, else the job's row order)
                 d = np.linalg.norm(np.einsum('cki,ip->ckp', A_ - B_, G), axis=2) / n0[:, None]
                 per = d[:, 1:].max(1)
                 return float(per.max()) if np.isfinite(per).all() else float('nan')

@@ -39,7 +39,10 @@ BANKS = {'W1024': (HERE / 'inputs' / 'model_W1024' / 'bank.pkl',
                 '6687f259947ec08a986732db157db69c66f1110ab28125a029de17b4aa389af9')}
 RULE_FILES = [(HERE / 'vendor' / 'quad3d' / 'rules' / 'rules.npz',
                '099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b'),
-              (HERE / 'rules3d' / 'rules_extra.npz', '8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf')]
+              (HERE / 'rules3d' / 'rules_extra.npz', '8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf'),
+              # A11 (POST HOC): Gauss 96^3 and 112^3 for the W1024 escalation extension (rules3d/make_rules_ext2.py)
+              (HERE / 'rules3d' / 'rules_gl96.npz', 'c1691085e539bd1edce9005449a219aeb1865623eff6aac996a85287a6d6689a'),
+              (HERE / 'rules3d' / 'rules_gl112.npz', 'c593bdd429f39e9939aefed28112e81fb482603798e55d4685d40cbe58d88067')]
 
 
 def sha(a):

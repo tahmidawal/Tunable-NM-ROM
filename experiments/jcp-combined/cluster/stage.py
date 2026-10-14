@@ -29,7 +29,8 @@ FILES2 = COMMON + [f'{LANE}/c2common.py', f'{LANE}/c2grid.py', f'{LANE}/c2bud.py
 FILES3 = COMMON + [f'{LANE}/c3common.py', f'{LANE}/c3run.py', f'{V3}/offmesh.py', f'{V3}/qpanel.py',
                    f'{V3}/vendor/burgers3d-span/common.py', f'{V3}/vendor/burgers3d-retry/tables.py',
                    f'{V3}/vendor/paper-b3d/vendor/b3d_common.py', f'{V3}/inputs/model_M2/bank.pkl', f'{V3}/rules/rules.npz',
-                   f'{LANE}/inputs/model_W1024/bank.pkl', f'{LANE}/rules3d/rules_extra.npz']
+                   f'{LANE}/inputs/model_W1024/bank.pkl', f'{LANE}/rules3d/rules_extra.npz',
+                   f'{LANE}/rules3d/rules_gl96.npz', f'{LANE}/rules3d/rules_gl112.npz']
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
         'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
 

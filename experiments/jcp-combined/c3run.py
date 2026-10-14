@@ -117,6 +117,11 @@ def inventory(cfg):
             runs = [(s[role] if role != 'r' else s['rule'], C3.spec_key(sp)) for role, sp in bud_specs(s['arms'])]
             runs += [(s['finer'], C3.spec_key(sp)) for role, sp in bud_specs(s['arms']) if role == 'conv']
             inv['settings'][s['name']] = dict(runs=runs, timing_invocations=0)
+        elif s.get('ext_rules'):                      # A11 extension: last rule conditional, no panels
+            runs = [(r, C3.spec_key(x)) for r in s['ext_rules'][:-1] for x in SEL + DIAG]
+            runs += [(s['ext_rules'][-1] + (' (conditional)' if len(s['ext_rules']) >= 3 else ''), C3.spec_key(x))
+                     for x in SEL + DIAG]
+            inv['settings'][s['name']] = dict(runs=runs, timing_invocations=0)
         else:
             runs = [(r, C3.spec_key(x)) for r in s['esc_rules'] for x in SEL + DIAG]
             runs += [('gl80 (conditional)', C3.spec_key(x)) for x in SEL + DIAG]
@@ -272,7 +277,58 @@ def main():
             _preps.pop(rule, None)
             gc.collect()
 
-        if mode == 'esc':
+        if mode == 'esc' and s.get('ext_rules'):
+            # ---- A11 (POST HOC) escalation extension: rules run in order, each dropped after its rollouts; every
+            # consecutive pair gets the selection axis (fixed BE, fixed CN K=2), the adaptive axis (both adaptive arms) and
+            # the A10 post-hoc axis (fixed BE + adaptive CN); the last rule runs only if the previous pair fails the A10 axis.
+            # No ladder, no operator check, no timing panel.
+            ext, pairs = {}, {}
+
+            def elig_x(rule, spec):
+                e = dict(ext[rule][C3.spec_key(spec)]['elig'])
+                if spec[0] == 'fs':
+                    adx = DIAG[SEL.index(spec)]
+                    dw, _ = dist(ext[rule][C3.spec_key(spec)]['W'], ext[rule][C3.spec_key(adx)]['W'], Lt)
+                    adv = ext[rule][C3.spec_key(adx)]['elig']['all_valid']
+                    e.update(solver_distance=dw, adaptive_valid=adv,
+                             eligible=bool(e['all_valid'] and adv and np.isfinite(dw) and dw <= 2.5e-4))
+                else:
+                    e['eligible'] = bool(e['all_valid'])
+                return e
+
+            def axis_x(r1, r2, specs):
+                det, sts = {}, []
+                for spec in specs:
+                    sk = C3.spec_key(spec)
+                    worst, per = dist(ext[r1][sk]['W'], ext[r2][sk]['W'], Lt)
+                    el1, el2 = elig_x(r1, spec), elig_x(r2, spec)
+                    stt = ('unresolved' if not (el1['eligible'] and el2['eligible']) or not np.isfinite(worst)
+                           else ('pass' if worst <= cfg['conv_bar'] else 'fail'))
+                    det[sk] = dict(worst=worst, per_case=per, status=stt, eligibility=[el1, el2])
+                    sts.append(stt)
+                return ('unresolved' if 'unresolved' in sts else ('pass' if all(x == 'pass' for x in sts) else 'fail')), det
+            rr = list(s['ext_rules'])
+            for i, rule in enumerate(rr):
+                if i == len(rr) - 1 and i >= 2 and pairs[f'{rr[i - 2]}|{rr[i - 1]}']['posthoc_status'] == 'pass':
+                    break                                       # conditional last rule not needed
+                res_ = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)
+                ext[rule] = {k: dict(W=v['W'], elig=v['elig']) for k, v in res_.items()}
+                drop(rule)
+                if i:
+                    r1 = rr[i - 1]
+                    sp_, sd = axis_x(r1, rule, SEL)
+                    ad_, ad = axis_x(r1, rule, DIAG)
+                    ph_, phd = axis_x(r1, rule, [SEL[0], DIAG[1]])
+                    pairs[f'{r1}|{rule}'] = dict(selection_pair_status=sp_, adaptive_diagnostic_status=ad_,
+                                                 posthoc_status=ph_, selection=sd, diagnostic=ad, posthoc=phd)
+                    print('PAIR', sname, r1, rule, sp_, ad_, ph_, el(), flush=True)
+                save()
+            S_rep['extension'] = dict(rules=list(ext), pairs=pairs, bar=cfg['conv_bar'],
+                                      rule_eligibility={r_: {C3.spec_key(x): elig_x(r_, x) for x in SEL + DIAG} for r_ in ext})
+            S_rep['peak_bytes'] = C3.peak_bytes()
+            for rule in list(preps):
+                drop(rule)
+        elif mode == 'esc':
             esc = {}
             for rule in s['esc_rules']:
                 esc[rule] = rollouts(sname, sol, rule, prep_of(rule), SEL + DIAG, lean)

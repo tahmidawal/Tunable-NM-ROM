@@ -914,3 +914,28 @@ into their outputs). The fixed-sweep CN arms remain grid candidates and are judg
 (A1.9, A6.2), so the fixed-sweep CN failure cases appear as ineligible there, not silently. The failing cases are
 investigated descriptively (which cases, which steps, whether $K=3$ or a smaller step fixes them) in the report, as part of
 the "why did the fast CN worst case get worse" question; that investigation selects nothing.
+
+## Amendment A11 (2026-10-13, POST HOC: written after the `c3descW1024` 5209530 escalation statuses were read; before any reference error, selection outcome or timing ratio of W1024 was read)
+
+**A11.1 Finding (pre-registered and A10 outcomes).** At W1024 ($R'=1024$) no escalation pair passes, under either the
+pre-registered or the A10 axis, up to Gauss $80^3$: the fixed-sweep BE distance falls with the rule ($48^3$–$56^3$, $56^3$–$64^3$,
+$64^3$–$80^3$) but stays above the bar $2.5\times10^{-5}$ on **one case** (case 5 of cohort 923801), while every other case is
+orders of magnitude below it (`checks/SELECTION-3D-POSTHOC-W1024only.json`, per-case distances in the job's escalation
+record). At W768 the same case is the worst one and passes at ($64^3$, $80^3$). This answers the "why does J4 fail at
+$R'\ge768$" question: C1's failure (an under-resolved $48^3$ check) is driven by a single case whose quadrature converges
+slowly in the rule size, and that convergence is slower at $R'=1024$ than at $R'=768$. W1024's rule selection is therefore
+**unavailable** under both A2.4 and A10, and is reported so.
+
+**A11.2 Escalation extension (post hoc, W1024 only).** To find whether a converged rule exists for W1024 at all, a separate
+job `c3extW1024` continues the escalation on all 64 cases with the two selection arms and their adaptive counterparts at
+Gauss $80^3$, $96^3$ and, only if ($80^3$, $96^3$) fails the A10 axis, $112^3$ (new rules from the vendored, unchanged
+generator, `rules3d/make_rules_ext2.py`, sha256-pinned). Each consecutive pair gets the pre-registered selection axis,
+the adaptive axis and the A10 axis. The A2.4 order is continued: $r_\infty=80^3$ if ($80^3$, $96^3$) passes the A10 axis,
+else $96^3$ if ($96^3$, $112^3$) passes, else none. The extension's $80^3$ trajectories must reproduce the escalation job's
+$80^3$ trajectories (field distance $\le10^{-10}$ for every arm) or the extension is not used. The ladder, $m^\star$, the
+control requirement, $\tau$ and the cost are taken unchanged from `c3descW1024` (its ladder distances are recomputed
+against the new $r_\infty$, whose trajectories exist in that job for $80^3$ and in the extension for $96^3$).
+`select3d.py --posthoc --ext <archive>` implements it; its label is "POST HOC (DESIGN A10, A11 extension)". A cluster
+smoke `smk3ext` (two cases, $96^3$ and $112^3$) gates memory and rate before the production job, as for every job.
+If no converged rule is found, W1024 is reported without a 3D grid (the R′ dial then ends at 768 in the second-order
+grid) and the extension distances are reported descriptively.

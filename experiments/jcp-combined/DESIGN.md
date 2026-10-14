@@ -969,3 +969,10 @@ $96^3$ had run all four arms on both smoke cases). The vendored code is not modi
 `c3extW1024` runs Gauss $80^3$ and $96^3$; $r_\infty=80^3$ if ($80^3$, $96^3$) passes the A10 axis, otherwise W1024 has no
 converged rule up to $96^3$ and is reported without a 3D grid. The re-run smoke is `smk3ext2` (two cases, $80^3$ and $96^3$).
 The failed smoke's logs are archived in `runs/smk3ext/failed-5215974/` and recorded in the job ledger.
+
+**A11.4 (contract binding, after the extension job).** The in-job cohort-table hash is not node-stable: the table's peak
+normaliser is computed on the GPU and its last bit differs between H200 nodes (two different hashes among the 3D jobs;
+one case's initial coefficients differ by one unit in the last place, trajectories agree to $\sim10^{-15}$). The selector
+therefore binds the extension to the escalation job by cohort seed and count and by the initial coefficients of every
+case (agreement $\le10^{-12}$ relative), not by the in-job table hash; offline scoring keeps checking the CPU table hash
+against the registry (`score.py`).

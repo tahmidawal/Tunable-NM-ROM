@@ -97,7 +97,8 @@
    "gpu": "h200",
    "commit": "42dfeb454",
    "submitted": "2026-10-13",
-   "role": "A11 W1024 escalation extension gl80->gl96, 64 cases (POST HOC)"
+   "role": "A11 W1024 escalation extension gl80->gl96, 64 cases (POST HOC)",
+   "status": "complete, collected"
   },
   {
    "attempt": "c2budA",
@@ -114,6 +115,14 @@
    "commit": "0bc851461",
    "submitted": "2026-10-13",
    "role": "2D error budget (R384, acc)"
+  },
+  {
+   "attempt": "c2budC",
+   "slurm": 5218166,
+   "gpu": "a100-80G",
+   "commit": "780fadc6a",
+   "submitted": "2026-10-13",
+   "role": "2D error budget (fast, R128)"
   }
  ],
  "failed_attempts": [

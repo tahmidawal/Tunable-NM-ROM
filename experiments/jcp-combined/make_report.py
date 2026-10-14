@@ -172,6 +172,37 @@ def plot_fom(an):
     plt.close(fig)
 
 
+def plot_speedup3d(an3):
+    fig, ax = plt.subplots(figsize=(7.2, 4.6))
+    cols = dict(M2_512='#9ca3af', W256='#60a5fa', W512='#2563eb', W768='#7c3aed', W1024='#db2777')
+    mk = dict(CN='^', CNR='s', BDF2='D', BE='o')
+    for s, S in an3['settings'].items():
+        comp = S['arms']['fs|BE|0.01|K1']
+        for k, x in S['arms'].items():
+            if not k.startswith('fs|') or x.get('ratio') is None:
+                continue
+            sc = k.split('|')[1]
+            el = x.get('eligible_H4', k == 'fs|BE|0.01|K1')
+            ax.scatter(1 / x['ratio'], x['anchor_median_all'] / max(comp['anchor_median_all'], 1e-300), marker=mk.get(sc, 'x'),
+                       facecolors=cols.get(s, 'k') if el else 'none', edgecolors=cols.get(s, 'k'), s=30)
+    for s, c in cols.items():
+        ax.scatter([], [], marker='o', color=c, label=s)
+    for sc, m in mk.items():
+        ax.scatter([], [], marker=m, color='k', label=sc)
+    ax.axvline(1, color='k', lw=.6)
+    ax.axhline(1, color='k', lw=.6)
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlabel('speed-up vs deployed fixed-sweep BE Δt₀ (1 / paired time ratio)')
+    ax.set_ylabel('median anchor discrepancy / BE comparator')
+    ax.set_title('3D fixed-sweep second order: speed vs time accuracy (open = not H4-eligible)')
+    ax.legend(fontsize=7, ncol=2)
+    ax.grid(alpha=.3, which='both')
+    fig.tight_layout()
+    fig.savefig(PL / 'speedup3d.png', dpi=130)
+    plt.close(fig)
+
+
 # --------------------------------------------------------------------------------------------------------- main
 def main():
     PL.mkdir(exist_ok=True)
@@ -406,6 +437,36 @@ def main():
     r('### 3D second-order grid (H4, H6) and speed-up', '')
     if an3 is None:
         r('Pending (`c3grid`).', '')
+    else:
+        r(f"Rule selection label carried by the grid: **{an3.get('rule_selection_label')}**. Comparator: the deployed "
+          'fixed-sweep BE at Δt₀ (K = 1) on the same bank, R′ and rule. Anchor discrepancy = distance to GAL-BDF2 at '
+          'Δt₀/8 (time-converged, reference-free); reference errors are reference-limited (PROVISIONAL).', '')
+        rows = []
+        for s, h in an3['hypotheses']['H4'].items():
+            sel = an3['selection'].get(s, {})
+            A = an3['settings'][s]['arms']
+            comp = A['fs|BE|0.01|K1']
+            row = [s, an3['settings'][s]['rule'], f"{h.get('population', '—')}/{h.get('cases', '—')}",
+                   h.get('verdict') or h.get('H4a', {}).get('verdict', '—'), h.get('H4b', {}).get('verdict', '—')]
+            for kind in ('fast_equal_accuracy', 'accurate_equal_cost'):
+                k = sel.get(kind)
+                if k:
+                    x = A[k]
+                    row += [k, fx(x['ratio']), sci(x['anchor_median_all']), pc(x['median_ref'])]
+                else:
+                    row += ['none', '—', '—', '—']
+            row += [sci(comp['anchor_median_all']), pc(comp['median_ref'])]
+            rows.append(row)
+        r.table(['setting', 'rule', 'anchor-resolved cases', 'H4a', 'H4b', 'fast-equal-accuracy arm', 'time ratio',
+                 'median anchor disc.', 'median ref. error', 'accurate-equal-cost arm', 'time ratio', 'median anchor disc.',
+                 'median ref. error', 'BE median anchor disc.', 'BE median ref. error'], rows)
+        h6 = an3['hypotheses'].get('H6', {})
+        if h6:
+            r('H6 (3D dial, descriptive, reference-limited): ' + '; '.join(
+                f"{k}: median change {('%+.1f %%' % (100 * v['median_change'])) if 'median_change' in v else '—'}, "
+                f"improved {fx(v.get('improved_fraction'))}, bars met {v.get('bars_met', '—')}" for k, v in h6.items()) + '.', '')
+        plot_speedup3d(an3)
+        r('![3D speed-up](plots/speedup3d.png)', '')
     r('## Error budget', '')
     if not b2 and b3 is None:
         r('Pending (`c2budA/B/C`, `c3bud`).', '')

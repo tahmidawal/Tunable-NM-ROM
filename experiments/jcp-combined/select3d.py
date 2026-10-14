@@ -154,7 +154,14 @@ def main():
                 # reference identity by content (the staged path is job-specific), cohort table by hash
                 assert {k_: xr['reference'][k_] for k_ in ('sha256', 'n', 'dt')} == \
                     {k_: res['reference'][k_] for k_ in ('sha256', 'n', 'dt')}, 'extension reference differs'
-                assert xr['cohort'] == res['cohort'], 'extension cohort table differs'
+                # the in-job cohort-table sha256 is NOT node-stable: its peak normaliser s_star is computed on the GPU and
+                # differs in the last bit between H200 nodes (observed 2026-10-13: two hashes among the 3D jobs, one case's
+                # initial coefficients differing by 1 ulp). Bind seed and count, and require the initial coefficients of
+                # every case to agree to 1e-12 relative instead (offline scoring checks the CPU table hash, score.py).
+                assert {k_: xr['cohort'][k_] for k_ in ('seed', 'count')} == {k_: res['cohort'][k_] for k_ in ('seed', 'count')}
+                w0x, w0r = xz[f'w0|{sname}'], Wz[f'w0|{sname}']
+                assert w0x.shape == w0r.shape and float(np.max(np.abs(w0x - w0r)) / np.max(np.abs(w0r))) <= 1e-12, \
+                    'extension initial coefficients differ'
                 assert (xc.get('case_subset') or list(range(xc['cohort_count']))) == list(cases)
                 assert bool(xc.get('smoke')) == bool(cfg.get('smoke')), 'smoke and production archives cannot be mixed'
                 if not cfg.get('smoke'):

@@ -1029,3 +1029,24 @@ passing first-order budget analysis of the same `result.json` (`--certified`) an
 job was bound to (`--frozen`), and carries the non-rankable flags. (iv) In 2D, $R_S$-based numbers are time-matched only
 for LSPG-BE at $\Delta t_0$; every other S value is an unmatched diagnostic, labelled so. (v) The 3D E0 analysis runs only
 after the first-order 3D solver selection is frozen.
+
+## Amendment A14 (2026-10-14, after the 2D budget analyses `checks/budget2d-c2bud{A,B,C}-2d_first_order.json`; the conditional fallback step pre-registered in A2.4/A8.6)
+
+**A14.1 Finalist outcome.** Against the converged rule (Gauss $320^2$, itself verified against $640^2$ in every setting),
+the selected LSPG-CN-R arms (at $\Delta t_0$ and $2\Delta t_0$) qualify at R128 (Fibonacci 4181), R384 (Gauss $128^2$) and
+R512 (Gauss $192^2$), and **fail** the finalist quadrature check ($\delta_{\rm quad}\le\tau$ on every case) at `fast`
+(Fibonacci 1597), `acc` (Gauss $96^2$, $R'=384$) and R256 (Gauss $96^2$). Per A2.4 the selection verdicts are preserved and
+the failing arms are reported as "rule inadequate for this arm".
+
+**A14.2 First fallbacks.** The frozen first fallbacks are: `fast` → Fibonacci 4181, `acc` → Gauss $128^2$, R256 → Gauss
+$128^2$. The first two are, model for model, the dial settings R128 ($R'=128$, Fibonacci 4181) and R384 ($R'=384$,
+Gauss $128^2$), which already received accuracy, solver, quadrature (finalist pass) and timing in the same production jobs;
+their cost against the original deployed BE is read from the common A–B–A panel of `c2grid` (both arms timed against the
+same baseline in one job; ratio of the two medians). R256 at Gauss $128^2$ exists in no setting, so it is qualified in two
+conditional jobs (A8.6): `c2fbgrid` (settings R256 at Gauss $96^2$ and R256fb at Gauss $128^2$; LSPG-BE and LSPG-CN-R at
+$\Delta t_0$ and $2\Delta t_0$, anchors; per-setting panels and a common panel with baseline the deployed R256 LSPG-BE at
+Gauss $96^2$; no FOM) and `c2fbbud` (the budget of R256fb with the two selected arms, the BE baseline and the GAL-CN
+diagnostic; finalist check against Gauss $320^2$/$640^2$). The fallback is "qualified" iff its finalist check passes and its
+cost against the deployed R256 BE in the common panel satisfies the arm's original cost criterion (accurate arm ≤ 1,
+fast arm: its error bar against the deployed BE as in A3.2). No fallback replaces a selection silently; both are
+reported side by side.

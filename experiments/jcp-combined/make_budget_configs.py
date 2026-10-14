@@ -35,6 +35,19 @@ def main():
                 c.pop(k, None)
             (HERE / 'configs' / f'{att}.json').write_text(json.dumps(c, indent=1) + '\n')
             print(att, names)
+    if a.only in (None, '2d') and '2d' in fz:
+        # A14: conditional fallback budget for R256 (frozen first fallback gauss128), same arms as R256's frozen budget
+        b = fz['2d']['budget']['R256']
+        fb = fz['2d']['per_scheme_setting']                   # (recorded for provenance only)
+        sets = [dict(name='R256fb', Rp=256, rule='gauss128', arms=b['arms'], fallback_of=dict(setting='R256', rule=b['rule']))]
+        c = MC.c2('c2fbbud', settings=sets)
+        c.update(driver='c2bud', conv_rule='gauss320', check_rule='gauss640', successor_check='gauss768',
+                 control_rule='gauss8', conv_bar=2.5e-5, check_val32=10, frozen_sha256=fsha)
+        for k in ('grid', 'fom', 'timing', 'common_baseline'):
+            c.pop(k, None)
+        (HERE / 'configs' / 'c2fbbud.json').write_text(json.dumps(c, indent=1) + '\n')
+        print('c2fbbud', [x['name'] for x in sets], 'fallback of R256', b['rule'])
+        del fb
     if a.only in (None, '3d') and '3d_solver' in fz and '3d_rules' in fz:
         base = {s['name']: s for s in MC.SETTINGS3}
         sets = []

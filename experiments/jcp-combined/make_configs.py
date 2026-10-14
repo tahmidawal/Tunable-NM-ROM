@@ -99,6 +99,20 @@ def main():
                            refined_ref=str(loc3), timing=dict(cases=0, reps=0, burn=0.1, seed=20261013))
     for k_ in ('c3extW1024', 'smk3ext2', 'local3ext'):
         cfgs[k_].pop('grid', None)
+    # A14 (pre-registered conditional fallback qualification, A8.6): the R256 selected arms fail the finalist quadrature
+    # check at gauss96; their first fallback gauss128 is qualified in c2fbgrid (accuracy + same-job timing against the
+    # deployed R256 LSPG-BE at gauss96) and c2fbbud (quadrature, solver, budget). No FOM in the fallback grid.
+    FB = [dict(name='R256', Rp=256, rule='gauss96'), dict(name='R256fb', Rp=256, rule='gauss128')]
+    nofom = dict(schemes=[], dt_factors=[], ntols=[], order_cases=[])
+    fbgrid = dict(forms_schemes=[['LSPG', 'BE'], ['LSPG', 'CNR']], dt_factors=[1, 2], anchor_factors=[1 / 8, 1 / 16])
+    cfgs['c2fbgrid'] = c2('c2fbgrid', settings=FB, fom=nofom, common_baseline='R256')
+    cfgs['c2fbgrid']['grid'] = fbgrid
+    cfgs['local2dfb'] = c2('local2dfb', mesh=256, settings=FB, case_subset={'dev6': [0], 'val32': []}, reps=1, fom=nofom,
+                           common_baseline='R256',
+                           refs=str((HERE / '../../../2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/'
+                                     'archive/output').resolve()), local_smoke_waives_cohort_hash=True)
+    cfgs['local2dfb']['grid'] = dict(fbgrid, anchor_factors=[1 / 8])
+    cfgs['local2dfb']['timing']['cases'] = 1
     # budget smokes (A1.0 step 6 drivers; arms are machinery choices, not a selection)
     sarms = [dict(form='LSPG', scheme='BE', f=1, role='baseline'), dict(form='LSPG', scheme='BDF2', f=2, role='test-selected',
                                                                         selected=True),

@@ -1,0 +1,81 @@
+{
+ "attempt": "local2dfb",
+ "driver": "c2grid",
+ "mesh": 256,
+ "cohorts": [
+  "dev6",
+  "val32"
+ ],
+ "settings": [
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss96"
+  },
+  {
+   "name": "R256fb",
+   "Rp": 256,
+   "rule": "gauss128"
+  }
+ ],
+ "grid": {
+  "forms_schemes": [
+   [
+    "LSPG",
+    "BE"
+   ],
+   [
+    "LSPG",
+    "CNR"
+   ]
+  ],
+  "dt_factors": [
+   1,
+   2
+  ],
+  "anchor_factors": [
+   0.125
+  ]
+ },
+ "refs": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/refdv/archive/output",
+ "ref_contract": {
+  "mesh": 8192,
+  "refs": {
+   "ST": {
+    "dt": 0.0003125,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   },
+   "S": {
+    "dt": 0.005,
+    "ntol": 1e-11,
+    "ltol": 1e-09,
+    "accept_residual": 2e-11
+   }
+  }
+ },
+ "fom": {
+  "schemes": [],
+  "dt_factors": [],
+  "ntols": [],
+  "order_cases": []
+ },
+ "common_baseline": "R256",
+ "timing": {
+  "cohort": "dev6",
+  "cases": 1,
+  "reps": 1,
+  "burn": 0.1,
+  "seed": 20261013,
+  "common_seed": 20261013
+ },
+ "case_subset": {
+  "dev6": [
+   0
+  ],
+  "val32": []
+ },
+ "local_smoke_waives_cohort_hash": true,
+ "smoke": true
+}

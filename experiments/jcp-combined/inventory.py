@@ -200,19 +200,34 @@ def project_2d(cfg, smokes, inv, rep):
         comps[f] = max(comps.get(f, 0.), max(0., rs[0]['seconds_first'] - steady))
     ncases = sum(len(cfg.get('case_subset', {}).get(c) or range(6 if c == 'dev6' else 32)) for c in cfg['cohorts'])
     total, detail, calls = 0., {}, {}
+    smk_set = {s_['name']: s_ for s_ in sm['config']['settings']}
+
+    def price_as(s):
+        """A14: a setting the smoke did not run is priced from the smoke setting with the same R' whose main rule is the
+        largest, every rate scaled up by the main-rule point ratio when it exceeds 1 (all grid runs use the main rule)."""
+        if s['name'] in smk_set:
+            return s['name'], 1.
+        same = [n for n, x in smk_set.items() if int(x['Rp']) == int(s['Rp'])]
+        if not same:
+            return None, None
+        n = max(same, key=lambda n_: rule_points(smk_set[n_]['rule']))
+        return n, max(1., rule_points(s['rule']) / rule_points(smk_set[n]['rule']))
     for s in cfg['settings']:
         tot, comp = 0., 0.
+        src, fac = price_as(s)
+        if src is None:
+            return fail(rep, f"no smoke setting with R' = {s['Rp']} to price {s['name']}")
         for k in inv['runs']:
             form, sc, dt, lev = k.split('|')
-            f = (s['name'], form, sc, lev)
+            f = (src, form, sc, lev)
             if f not in rates:
                 return fail(rep, f'no smoke measurement for {f}')
-            t = rates[f] * steps_of(k)
+            t = rates[f] * steps_of(k) * fac
             tot += t * ncases
             comp += comps[f]
             calls.setdefault(s['name'], []).append((k, t))
-        tot += ncases * rates.get((s['name'], 'LSPG', 'BE', 'prod'), 0.) * 50          # the vendor G1a query per case
-        detail[s['name']] = dict(rollouts_s=tot, compile_s=comp)
+        tot += ncases * rates.get((src, 'LSPG', 'BE', 'prod'), 0.) * 50 * fac          # the vendor G1a query per case
+        detail[s['name']] = dict(rollouts_s=tot, compile_s=comp, priced_as=f'{src} x {fac:.3g}')
         total += tot + comp
     fe = {}
     for r in sm['fom'].get('rows', []):
@@ -232,7 +247,8 @@ def project_2d(cfg, smokes, inv, rep):
         return fail(rep, 'the smoke recorded no calibration timings')
     sm_f = sm['config']['fom']['dt_factors']
     # production calibration = recorded smoke calibration x (production / smoke configurations) x (smallest-step ratio)
-    total += cal_s * (len(fc['schemes']) * len(fc['dt_factors'])) / len(cal) * max(1., min(sm_f) / min(fc['dt_factors']))
+    if fc['schemes'] and fc['dt_factors']:                                              # A14: no FOM -> no calibration
+        total += cal_s * (len(fc['schemes']) * len(fc['dt_factors'])) / len(cal) * max(1., min(sm_f) / min(fc['dt_factors']))
     total += sum(sum(x['seconds'].values()) for x in sm['fom'].get('order', [])) * \
         len(fc['order_cases']) * len(fc['schemes']) / max(1, len(sm['fom'].get('order', [])))
     tc = cfg['timing']
@@ -244,7 +260,7 @@ def project_2d(cfg, smokes, inv, rep):
     nrom = len(timed) * len(cfg['settings'])
     nfom = len(fom_eval)
     mc = float(np.mean([mean_call(s['name']) for s in cfg['settings']]))
-    mf = float(np.mean(list(fom_eval.values())))
+    mf = float(np.mean(list(fom_eval.values()))) if fom_eval else 0.                   # A14: a grid without FOM
     total += (3 * tc['cases'] * tc['reps'] + tc['cases']) * (nrom * (mc + tc['burn']) + nfom * (mf + tc['burn'])) + \
         2 * tc['cases'] * tc['reps'] * (nrom + nfom) * (mc + tc['burn'])                  # the two flanking baselines
     peak = sm.get('peak_bytes_job', -1)

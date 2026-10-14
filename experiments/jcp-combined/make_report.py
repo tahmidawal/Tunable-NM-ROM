@@ -72,7 +72,7 @@ class R:
         self.lines.append('| ' + ' | '.join(head) + ' |')
         self.lines.append('|' + '|'.join('---' for _ in head) + '|')
         for r in rows:
-            self.lines.append('| ' + ' | '.join(str(x) for x in r) + ' |')
+            self.lines.append('| ' + ' | '.join(str(x).replace('|', ' / ') for x in r) + ' |')
         self.lines.append('')
 
 
@@ -169,6 +169,30 @@ def plot_fom(an):
     ax.legend(fontsize=7, ncol=3)
     fig.tight_layout()
     fig.savefig(PL / 'fom2d.png', dpi=130)
+    plt.close(fig)
+
+
+def plot_budget(settings, name, dim, eP, edyn):
+    labs, vals = [], []
+    comps = [('delta_quad', 'δ_quad'), ('delta_solve', 'δ_solve'), ('delta_form', 'δ_form'), ('delta_time', 'δ_time'),
+             (eP, 'e_P (floor)'), (edyn, 'e_dyn')]
+    for sn, S in settings.items():
+        for ak, A in S['arms'].items():
+            labs.append(f'{sn}\n{ak}')
+            vals.append([(A['summary'].get(k) or {}).get('median') or 0. for k, _ in comps])
+    v = np.array(vals) * 100
+    fig, ax = plt.subplots(figsize=(max(8, .55 * len(labs)), 4.8))
+    bottom = np.zeros(len(labs))
+    for i, (_, lab) in enumerate(comps):
+        ax.bar(range(len(labs)), v[:, i], bottom=bottom, label=lab)
+        bottom += v[:, i]
+    ax.set_xticks(range(len(labs)))
+    ax.set_xticklabels(labs, rotation=90, fontsize=6)
+    ax.set_ylabel('median component (% of ‖u₀‖), stacked for display only')
+    ax.set_title(f'{dim} error budget per setting and arm (components are separate ablations; e_P, e_dyn PROVISIONAL)')
+    ax.legend(fontsize=7)
+    fig.tight_layout()
+    fig.savefig(PL / name, dpi=130)
     plt.close(fig)
 
 
@@ -467,9 +491,55 @@ def main():
                 f"improved {fx(v.get('improved_fraction'))}, bars met {v.get('bars_met', '—')}" for k, v in h6.items()) + '.', '')
         plot_speedup3d(an3)
         r('![3D speed-up](plots/speedup3d.png)', '')
-    r('## Error budget', '')
-    if not b2 and b3 is None:
-        r('Pending (`c2budA/B/C`, `c3bud`).', '')
+    r('## Error budget (each component its own ablation; none is a remainder)', '',
+      '$e_{\\rm tot}=\\lVert u_a-u_{\\rm ref}\\rVert$; floor $e_P=\\lVert(I-\\Pi_{R\'})u_{\\rm ref}\\rVert$; reduced dynamics '
+      '$e_{\\rm dyn}=\\lVert u_\\star-\\Pi_{R\'}u_{\\rm ref}\\rVert$ (ideal model $\\star$ = converged rule, GAL, BDF2, $\\Delta t_0/8$, '
+      'tight); $\\delta_{\\rm quad},\\delta_{\\rm solve},\\delta_{\\rm form},\\delta_{\\rm time}$ = distance of the arm to the same arm '
+      'with only the rule / solver tolerance / test space / (scheme, step) changed to the ideal; $D_a=\\lVert u_a-u_\\star\\rVert$ '
+      'measured directly. All are maxima over the five evolved output times relative to $\\lVert u_0\\rVert$, medians over the '
+      'budget population (2D: 38 cases; 3D: first 32). $e_{\\rm tot}$, $e_P$, $e_{\\rm dyn}$ are PROVISIONAL (first-order '
+      'references); the $\\delta$\'s and $D_a$ are reference-free.', '')
+    comps = ['delta_quad', 'delta_solve', 'delta_form', 'delta_time', 'D_a']
+
+    def budget_rows(settings, eP, edyn, etot):
+        rows = []
+        for sn, S in settings.items():
+            for ak, A in S['arms'].items():
+                sm_ = A['summary']
+                med = lambda k: sm_.get(k, {}).get('median')
+                lg = A.get('largest') or {}
+                lg = lg.get('ST', lg) if isinstance(lg, dict) else lg
+                rows.append([sn, ak, A['arm'].get('role', '')] + [sci(med(k)) for k in comps] +
+                            [pc(med(etot)), pc(med(eP)), pc(med(edyn)),
+                             ', '.join(f'{k} {v}' for k, v in (lg.items() if isinstance(lg, dict) else [])) or '—',
+                             'yes' if (A.get('finalist') or {}).get('qualified') else ('no' if A.get('finalist') else '—')])
+        return rows
+    head = ['setting', 'arm', 'role', 'δ_quad', 'δ_solve', 'δ_form', 'δ_time', 'D_a', 'e_tot', 'e_P', 'e_dyn',
+            'largest component (cases)', 'finalist qualified']
+    if b2:
+        r('### 2D budget (median over 38 cases; errors against ST)', '')
+        st2 = {}
+        for b in b2:
+            st2.update(b['settings'])
+        r.table(head, budget_rows(st2, 'e_P_ST', 'e_dyn_ST', 'e_tot_ST'))
+        gl = [f"{Path(b['run']).parents[1].name}: " + ', '.join(f"{k} {'pass' if (v.get('passed') if isinstance(v, dict) else v) is True else (v.get('passed') if isinstance(v, dict) else v)}"
+                                                               for k, v in b['gates'].items()) for b in b2]
+        r('Budget gates: ' + '; '.join(gl) + '.', '')
+        wh = {sn: S.get('withheld') for sn, S in st2.items() if S.get('withheld')}
+        if wh:
+            r('Withheld attributions (non-discriminating control): ' + '; '.join(f'{k}: {v}' for k, v in wh.items()) + '.', '')
+        plot_budget(st2, 'budget2d.png', '2D', 'e_P_ST', 'e_dyn_ST')
+        r('![2D budget](plots/budget2d.png)', '')
+    else:
+        r('2D budget pending (`c2budA/B/C`).', '')
+    if b3:
+        r('### 3D budget (median over the first 32 cases)', '')
+        r.table(head, budget_rows(b3['settings'], 'e_P', 'e_dyn', 'e_tot'))
+        r('Budget gates: ' + ', '.join(f"{k} {(v.get('passed') if isinstance(v, dict) else v)}" for k, v in b3['gates'].items()) + '.', '')
+        plot_budget(b3['settings'], 'budget3d.png', '3D', 'e_P', 'e_dyn')
+        r('![3D budget](plots/budget3d.png)', '')
+    else:
+        r('3D budget pending (`c3bud`).', '')
 
     # ------------------------------------------------------------------------------------------------ retractions
     r('## Corrections and retractions', '',

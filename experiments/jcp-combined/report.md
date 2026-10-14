@@ -89,8 +89,8 @@ A step is **reference-limited** when fewer than half of the 38 cases are resolve
 
 | reference | worst case | output index t* | e(BE Δt₀) | e(CN Δt₀) | e(anchor) = e∞ | cos(δ_BE, ε∞) | criteria a b c | verdict |
 |---|---|---|---|---|---|---|---|---|
-| ST | val32|19 | 5 | 4.64 % | 5.17 % | 5.61 % | -0.569 | no yes yes | cancellation not supported |
-| TX | val32|19 | 5 | 4.75 % | 5.2 % | 5.63 % | -0.547 | no yes yes | cancellation not supported |
+| ST | val32 / 19 | 5 | 4.64 % | 5.17 % | 5.61 % | -0.569 | no yes yes | cancellation not supported |
+| TX | val32 / 19 | 5 | 4.75 % | 5.2 % | 5.63 % | -0.547 | no yes yes | cancellation not supported |
 
 Pre-registered explanation (error cancellation) at the worst case val32|19: **cancellation not supported** (ST; TX: cancellation not supported); failing criteria: a. Criterion (a) needs |e(CN) − e∞| ≤ 0.2 |e(BE) − e∞|; here |e(CN) − e∞| = 0.44 % and |e(BE) − e∞| = 0.974 %. The fast setting's LSPG-BE worst ST is 4.64 %; fast LSPG-CNR accurate arm worst ST 5.14 %; R128 LSPG-CNR accurate arm worst ST 5.14 %; R256 LSPG-CNR accurate arm worst ST 2.47 %. The budget names the component that limits that case.
 
@@ -162,9 +162,13 @@ W1024 extension (A11): pair statuses recomputed {'gl80|gl96': 'pass'} (agree wit
 
 Pending (`c3grid`).
 
-## Error budget
+## Error budget (each component its own ablation; none is a remainder)
 
-Pending (`c2budA/B/C`, `c3bud`).
+$e_{\rm tot}=\lVert u_a-u_{\rm ref}\rVert$; floor $e_P=\lVert(I-\Pi_{R'})u_{\rm ref}\rVert$; reduced dynamics $e_{\rm dyn}=\lVert u_\star-\Pi_{R'}u_{\rm ref}\rVert$ (ideal model $\star$ = converged rule, GAL, BDF2, $\Delta t_0/8$, tight); $\delta_{\rm quad},\delta_{\rm solve},\delta_{\rm form},\delta_{\rm time}$ = distance of the arm to the same arm with only the rule / solver tolerance / test space / (scheme, step) changed to the ideal; $D_a=\lVert u_a-u_\star\rVert$ measured directly. All are maxima over the five evolved output times relative to $\lVert u_0\rVert$, medians over the budget population (2D: 38 cases; 3D: first 32). $e_{\rm tot}$, $e_P$, $e_{\rm dyn}$ are PROVISIONAL (first-order references); the $\delta$'s and $D_a$ are reference-free.
+
+2D budget pending (`c2budA/B/C`).
+
+3D budget pending (`c3bud`).
 
 ## Corrections and retractions
 
@@ -192,12 +196,13 @@ Pending (`c2budA/B/C`, `c3bud`).
 | c3extW1024 | 5217010 | h200 | 42dfeb454 | A11 W1024 escalation extension gl80->gl96, 64 cases (POST HOC) | complete, collected |
 | c2budA | 5218146 | a100-80G | 0bc851461 | 2D error budget (R512, R256) |  |
 | c2budB | 5218149 | a100-80G | 0bc851461 | 2D error budget (R384, acc) |  |
-| c2budC | 5218166 | a100-80G | 780fadc6a | 2D error budget (fast, R128) |  |
+| c3grid | 5219449 | h200 | 1cf409c9a | 3D second-order grid + timing, 5 settings, POST HOC rules (A10/A11) |  |
 
 | failed attempt | Slurm id | note |
 |---|---|---|
 | smk3esc | — | first submission attempt: rsync aborted by login-node connection drop before sbatch; partial staging dir removed; no job created |
 | smk3ext | 5215974 | A11 extension smoke: gl96 ran (all four arms, 2 cases); gl112 (1.4M points, R'=1024) OOM in the vendored offmesh_tables test_block (42.9 GiB allocation) -> A11.3 drops gl112; logs and partial result in runs/smk3ext/failed-5215974 |
+| c2budC | 5218166 | cancelled while PENDING (never started) to free a lane slot for c3grid; cluster dir removed; to be re-staged and resubmitted |
 
 ## Codex audits
 
@@ -233,6 +238,8 @@ Chronological; the opening statement of each audit (its verdict line). Every WRO
 | `audits/codex-results2d-3.md` | HOLD: c2budA, c2budB, c2budC. Audited HEAD `d1beec3d2d87b56fa1e63ea90cb65a977cf9e9e8`. The original single-field mutations now fail closed, but additional in-memory mutations expose remaining gaps. |
 | `audits/codex-results2d-4.md` | HOLD: c2budA, c2budB, c2budC. Audited HEAD `a87c14df41293796d8552e30989d3a19b1095991`. Configuration-derived coverage is repaired, but G-score evidence validation still accepts failed controls—even through certificate ve… |
 | `audits/codex-results2d-5.md` | SUBMIT: c2budA, c2budB, c2budC. Audited HEAD `840c96c5649f8e651efb622bb4fd85c8356838b2`. |
+| `audits/codex-results3dsel-1.md` | HOLD c3grid pending correction and regeneration of the resource certificate. The selections are supported; the blocker is common-panel pricing, not insufficient allocation. |
+| `audits/codex-results3dsel-2.md` | SUBMIT c3grid at HEAD `1f1b16986`. The common-panel pricing blocker is resolved. |
 
 ## Glossary
 

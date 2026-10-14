@@ -94,7 +94,7 @@ def plot_pareto2d(an, tag):
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('median paired time ratio vs common baseline (acc LSPG-BE Δt₀)')
-    ax.set_ylabel(f'median error vs {tag} (% of ‖u₀‖, PROVISIONAL)')
+    ax.set_ylabel(f"median error vs {'E0 R_ST' if an['refs'] == '2d_e0' else tag} (% of ‖u₀‖{'' if an['refs'] == '2d_e0' else ', PROVISIONAL'})")
     ax.set_title(f'2D error–cost: BE (open) vs second order (filled), by bank width — {tag}')
     ax.legend(fontsize=8, ncol=2)
     ax.grid(alpha=.3, which='both')
@@ -103,20 +103,22 @@ def plot_pareto2d(an, tag):
     plt.close(fig)
 
 
-def plot_dial2d(an):
+def plot_dial2d(an, an_sel):
     arms = an['arms']
     dial = ['R128', 'R256', 'R384', 'R512']
     rp = [128, 256, 384, 512]
-    g = an['selection']['global']['scheme']
+    g = an_sel['selection']['global']['scheme']
+    E0 = an['refs'] == '2d_e0'
     fig, ax = plt.subplots(figsize=(6.5, 4.2))
-    for tag, ls in (('TX', '-'), ('ST', '--')):
+    for tag, ls in ((('ST', '-'),) if E0 else (('TX', '-'), ('ST', '--'))):
         be = [arms[f'{s}|LSPG|BE|0.005|prod'][f'median_{tag}'] * 100 for s in dial]
-        sel = [an['selection']['per_scheme_setting'][f'{s}|{g}']['accurate_equal_cost'] for s in dial]
+        sel = [an_sel['selection']['per_scheme_setting'][f'{s}|{g}']['accurate_equal_cost'] for s in dial]
         so = [arms[f"{s}|{x['key']}"][f'median_{tag}'] * 100 for s, x in zip(dial, sel)]
-        ax.plot(rp, be, 'o' + ls, color='#6b7280', label=f'LSPG-BE Δt₀ vs {tag}')
-        ax.plot(rp, so, '^' + ls, color='#db2777', label=f'{g} accurate-equal-cost vs {tag}')
+        lab = 'E0 R_ST' if E0 else tag
+        ax.plot(rp, be, 'o' + ls, color='#6b7280', label=f'LSPG-BE Δt₀ vs {lab}')
+        ax.plot(rp, so, '^' + ls, color='#db2777', label=f'{g} accurate-equal-cost vs {lab}')
     ax.set_xlabel("bank width R′")
-    ax.set_ylabel('median error (% of ‖u₀‖, PROVISIONAL)')
+    ax.set_ylabel('median error (% of ‖u₀‖)' + ('' if E0 else ', PROVISIONAL'))
     ax.set_yscale('log')
     ax.set_xticks(rp)
     ax.set_title('2D dial under BE and second order')
@@ -165,7 +167,7 @@ def plot_fom(an):
     ax.set_xticks(np.arange(len(sets)) + .4 - w / 2)
     ax.set_xticklabels(sets)
     ax.set_ylabel('best matched speed-up vs FOM (same job, same GPU)')
-    ax.set_title('2D: ROM vs second-order FOM at matched worst error (ST), PROVISIONAL')
+    ax.set_title('2D: ROM vs second-order-in-time FOM at matched worst error' + (' (E0 R_ST)' if an['refs'] == '2d_e0' else ' (ST, PROVISIONAL)'))
     ax.legend(fontsize=7, ncol=3)
     fig.tight_layout()
     fig.savefig(PL / 'fom2d.png', dpi=130)
@@ -231,7 +233,8 @@ def plot_speedup3d(an3):
 def main():
     PL.mkdir(exist_ok=True)
     r = R()
-    an = load(CK / 'analysis-c2grid-2d_first_order.json')
+    an_old = load(CK / 'analysis-c2grid-2d_first_order.json')
+    an = load(CK / 'analysis-c2grid-2d_e0.json') or an_old            # A13: E0 is the primary scoring when available
     sc2 = load(CK / 'scores-c2grid-2d_first_order.json')
     sel_pre = load(CK / 'SELECTION-3D.json')
     sel_ph = load(CK / 'SELECTION-3D-POSTHOC.json')
@@ -274,106 +277,127 @@ def main():
     if an is None:
         r('Pending.', '')
     else:
-        g = an['selection']['global']['scheme']
-        gl = an['selection']['global']
+        E0 = an['refs'] == '2d_e0'
+        P = 'ST' if E0 else 'TX'                     # primary reference column (A13: under E0 TX is an alias of ST)
+        PL_ = 'E0 R_ST' if E0 else 'TX (PROVISIONAL)'
+        g = an['selection']['global']['scheme'] if not E0 else an_old['selection']['global']['scheme']
+        r(f"**Primary scoring: {'the E0 second-order references' if E0 else 'the first-order references'}** — "
+          f"{an['provisional']}." + (f" Non-rankable case-kinds (scored, never ranked): {', '.join(an.get('not_rankable', [])) or 'none'}." if E0 else ''), '')
         if sc2:
             gt = sc2['gate']
-            r(f"**Scoring gate.** `score.py` re-decoded every saved trajectory on CPU and reproduced {gt['compared']} of "
-              f"{gt['expected']} job values (worst difference {sci(gt['worst'])}); every negative control broke agreement "
-              f"(case swap {sci(sc2['controls']['case_swap'])}, time shift {sci(sc2['controls']['time_shift'])}, ST↔S swap "
-              f"{sci(sc2['controls']['ST_S_swap'])}).", '')
-        r(f"**Tie thresholds** (heuristic, from ST−TX): medians {pc(an['tie']['median'])}, worst values "
-          f"{pc(an['tie']['worst'])}; paired per-case ties at $2\\varepsilon_{{\\rm ref}}$.", '')
-        r('### Which second-order scheme', '',
+            r(f"**Scoring gate (first-order, certifies every rescoring).** `score.py` re-decoded every saved trajectory on CPU "
+              f"and reproduced {gt['compared']} of {gt['expected']} job values (worst difference {sci(gt['worst'])}); every "
+              f"negative control broke agreement (case swap {sci(sc2['controls']['case_swap'])}, time shift "
+              f"{sci(sc2['controls']['time_shift'])}, ST↔S swap {sci(sc2['controls']['ST_S_swap'])}).", '')
+        if E0:
+            ev = list(an['eps_ref'].values())
+            r(f"**Ties (E0).** Per case $\\eta=\\epsilon_{{\\rm ref}}(R_{{ST}})$ (median {pc(float(np.median(ev)))}, largest "
+              f"{pc(max(ev))}); two arms are ranked on a case only if their errors differ by more than $2\\eta$; medians and "
+              'worst values compare by interval overlap with endpoint propagation.', '')
+        else:
+            r(f"**Tie thresholds** (heuristic, from ST−TX): medians {pc(an['tie']['median'])}, worst values "
+              f"{pc(an['tie']['worst'])}.", '')
+        gl = an_old['selection']['global']
+        r('### Which second-order scheme (selected against the first-order references, frozen)', '',
           f"Scheme wins over the four dial settings: " + ', '.join(f"{k} {v}" for k, v in gl['points'].items()) +
           f"; tie broken by the smaller sum of the four medians (" +
-          ', '.join(f"{k} {pc(v)}" for k, v in gl['sums'].items()) + f"). **Selected scheme: {g}.**", '')
+          ', '.join(f"{k} {pc(v)}" for k, v in gl['sums'].items()) + f", PROVISIONAL). **Selected scheme: {g}.**", '')
         rows = []
+        fr = an_old['selection']['per_scheme_setting']
         for s in ['fast', 'R128', 'R256', 'acc', 'R384', 'R512']:
             be = an['arms'][f'{s}|LSPG|BE|0.005|prod']
-            ps = an['selection']['per_scheme_setting'][f'{s}|{g}']
             for kind, lab in (('accurate_equal_cost', 'accurate, equal cost'), ('fast_equal_accuracy', 'fast, equal accuracy')):
-                x = ps.get(kind)
+                x = fr[f'{s}|{g}'].get(kind)
                 if not x:
-                    rows.append([s, lab, 'none', '—', '—', '—', '—', '—'])
+                    rows.append([s, lab, 'none'] + ['—'] * 6)
                     continue
                 a = an['arms'][f"{s}|{x['key']}"]
-                rows.append([s, lab, armname(x['key']), fx(x['cost']), pc(a['median_TX']), pc(a['worst_TX']),
-                             pc(a['median_ST']), pc(a['median_S'])])
-            rows.append([s, 'baseline', 'LSPG-BE at 1Δt₀', '1', pc(be['median_TX']), pc(be['worst_TX']), pc(be['median_ST']),
-                         pc(be['median_S'])])
-        r('Per setting, the selected scheme\'s two arms against that setting\'s deployed LSPG-BE (errors PROVISIONAL):', '')
-        r.table(['setting', 'role', 'arm', 'cost / own BE', 'median TX', 'worst TX', 'median ST', 'median S'], rows)
+                ao = an_old['arms'][f"{s}|{x['key']}"]
+                rows.append([s, lab, armname(x['key']), fx(x['cost']), pc(a[f'median_{P}']), pc(a[f'worst_{P}']),
+                             'unmatched' if E0 else pc(a['median_S']), pc(ao['median_TX']), pc(ao['median_ST'])])
+            bo = an_old['arms'][f'{s}|LSPG|BE|0.005|prod']
+            rows.append([s, 'baseline', 'LSPG-BE at 1Δt₀', '1', pc(be[f'median_{P}']), pc(be[f'worst_{P}']), pc(be['median_S']),
+                         pc(bo['median_TX']), pc(bo['median_ST'])])
+        r(f"Per setting, the selected scheme's frozen arms against that setting's deployed LSPG-BE. Primary columns against "
+          f"{PL_}; S is the space-only reference time-matched to LSPG-BE at Δt₀ only; the last two columns are the "
+          'first-order scores (PROVISIONAL, continuity):', '')
+        r.table(['setting', 'role', 'arm', 'cost / own BE', f'median {PL_}', f'worst {PL_}', 'median S (BE-matched)',
+                 'old median TX', 'old median ST'], rows)
 
         H = an['hypotheses']
         r('### H1: does the wide bank pay off once time error is removed?', '')
         rows = []
+        tags = (('ST', 'TX'),) if E0 else (('TX', 'TX'), ('ST', 'ST_sensitivity'))
         for step, v in H['H1'].items():
-            for tag, k in (('TX', 'TX'), ('ST', 'ST_sensitivity')):
+            for tag, k in tags:
                 x = v[k]
-                rows.append([step, tag, v['verdict'] if tag == 'TX' else '', pc(x['median_from']), pc(x['median_to']),
+                rows.append([step, 'E0 R_ST' if E0 else tag, v['verdict'], pc(x['median_from']), pc(x['median_to']),
                              f"{100 * x['median_change']:+.1f} %", f"{x['improved']}/{x['worsened']}/{x['ties']}",
                              pc(x['worst_from']), pc(x['worst_to'])])
-            for tag in ('TX', 'ST'):
-                x = v['BE_dt0'][tag]
-                rows.append([step, f'{tag} (LSPG-BE Δt₀)', '', pc(x['median_from']), pc(x['median_to']),
-                             f"{100 * x['median_change']:+.1f} %", f"{x['improved']}/{x['worsened']}/{x['ties']}",
-                             pc(x['worst_from']), pc(x['worst_to'])])
+            x = v['BE_dt0']['TX' if E0 else 'TX']
+            rows.append([step, ('E0 R_ST' if E0 else 'TX') + ' (LSPG-BE Δt₀)', '', pc(x['median_from']), pc(x['median_to']),
+                         f"{100 * x['median_change']:+.1f} %", f"{x['improved']}/{x['worsened']}/{x['ties']}",
+                         pc(x['worst_from']), pc(x['worst_to'])])
         r.table(['dial step', 'reference', 'verdict', 'median from', 'median to', 'change', 'improved/worsened/tied',
                  'worst from', 'worst to'], rows)
-        r('A step is **reference-limited** when fewer than half of the 38 cases are resolved (paired difference above '
-          '$2\\varepsilon_{\\rm ref}$): the first-order references cannot rank those arms. Verdicts: ' +
-          '; '.join(f"{k} **{v['verdict']}**" for k, v in H['H1'].items()) + '.', '')
+        if E0 and an_old:
+            r('First-order verdicts (PROVISIONAL, continuity): ' + '; '.join(
+                f"{k} {v['verdict']}" for k, v in an_old['hypotheses']['H1'].items()) + '.', '')
+        r('A step is **reference-limited** when fewer than half of the 38 cases are resolved (paired difference above the '
+          'tie threshold). Verdicts: ' + '; '.join(f"{k} **{v['verdict']}**" for k, v in H['H1'].items()) + '.', '')
         r('![2D dial](plots/dial2d.png)', '')
 
         h2 = H['H2']
         r('### H2: does tunability survive?', '',
-          f"(a) Every eligible LSPG-BE arm is covered by a second-order arm with lower or equal cost and error: worst-TX "
-          f"{h2['a']['worst_TX']['covered']}/{h2['a']['worst_TX']['total']}, median-TX {h2['a']['median_TX']['covered']}/"
+          f"(a) Every eligible LSPG-BE arm is covered by a second-order arm with lower or equal cost and error: worst "
+          f"{h2['a']['worst_TX']['covered']}/{h2['a']['worst_TX']['total']}, median {h2['a']['median_TX']['covered']}/"
           f"{h2['a']['median_TX']['total']} → **{'pass' if h2['a_pass'] else 'fail'}**. (b) Along the dial, the "
-          f"accurate-equal-cost arms' common-baseline cost and median TX: " +
+          f"accurate-equal-cost arms' common-baseline cost and median error ({PL_}): " +
           '; '.join(f"{d['setting']} {fx(d['cost_common'])}× / {pc(d['median_TX'])}" for d in h2['dial']) +
           f" → **{'pass' if h2['b'] else 'fail'}**.", '',
-          '![2D Pareto TX](plots/pareto2d_TX.png)', '', '![2D Pareto ST](plots/pareto2d_ST.png)', '')
+          '![2D Pareto](plots/pareto2d_ST.png)', '')
 
         h3 = H['H3']
         r('### H3: why did the fast setting\'s worst case get worse under CN?', '')
         rows = []
-        for tag in ('ST', 'TX'):
-            p = h3[tag]['primary']
-            rows.append([tag, h3[tag]['worst_case'], p['t_star'], pc(p['e_BE']), pc(p['e_CN']), pc(p['e_inf']), fx(p['cos']),
-                         ' '.join('yes' if x else 'no' for x in p['guards']), p['verdict']])
+        for tag in (('ST',) if E0 else ('ST', 'TX')):
+            p_ = h3[tag]['primary']
+            rows.append(['E0 R_ST' if E0 else tag, h3[tag]['worst_case'], p_['t_star'], pc(p_['e_BE']), pc(p_['e_CN']),
+                         pc(p_['e_inf']), fx(p_['cos']), ' '.join('yes' if x else 'no' for x in p_['guards']), p_['verdict']])
         r.table(['reference', 'worst case', 'output index t*', 'e(BE Δt₀)', 'e(CN Δt₀)', 'e(anchor) = e∞', 'cos(δ_BE, ε∞)',
-                 'criteria a b c', 'verdict'], rows)
+                 'guards a b c', 'verdict'], rows)
         wc = h3['ST']['worst_case']
         comp = []
         for s in ('fast', 'R128', 'R256'):
-            x = an['selection']['per_scheme_setting'][f'{s}|{g}']['accurate_equal_cost']
-            comp.append(f"{s} {g} accurate arm worst ST {pc(an['arms'][f'{s}|' + x['key']]['worst_ST'])}")
+            x = fr[f'{s}|{g}']['accurate_equal_cost']
+            comp.append(f"{s} {g} accurate arm worst {pc(an['arms'][f'{s}|' + x['key']]['worst_ST'])}")
         p_ = h3['ST']['primary']
         failed = [n for n, ok_ in zip('abc', p_['guards']) if not ok_]
-        r(f"Pre-registered explanation (error cancellation) at the worst case {wc}: **{p_['verdict']}** (ST; TX: "
-          f"{h3['TX']['primary']['verdict']})" + (f"; failing criteria: {', '.join(failed)}" if failed else '') +
+        r(f"Pre-registered explanation (error cancellation) at the worst case {wc}: **{p_['verdict']}**" +
+          (f"; failing guards: {', '.join(failed)}" if failed else '') +
           f". Criterion (a) needs |e(CN) − e∞| ≤ 0.2 |e(BE) − e∞|; here |e(CN) − e∞| = {pc(abs(p_['e_CN'] - p_['e_inf']))} "
-          f"and |e(BE) − e∞| = {pc(abs(p_['e_BE'] - p_['e_inf']))}. The fast setting's LSPG-BE worst ST is "
-          f"{pc(an['arms']['fast|LSPG|BE|0.005|prod']['worst_ST'])}; " + '; '.join(comp) + '. The budget names the '
-          'component that limits that case.', '')
+          f"and |e(BE) − e∞| = {pc(abs(p_['e_BE'] - p_['e_inf']))}. The fast setting's LSPG-BE worst error is "
+          f"{pc(an['arms']['fast|LSPG|BE|0.005|prod']['worst_ST'])}; " + '; '.join(comp) + f" (against {PL_}). "
+          + h3['ST'].get('note', ''), '')
 
         h5 = H['H5']
         cnr = {k: v for k, v in h5['ST']['matches'].items() if f'|{g.replace("-", "|")}|' in f'|{k}'}
         bc = max(cnr.items(), key=lambda kv: kv[1]['speedup']) if cnr else None
         r('### H5: speed against the second-order full-order model (same job, same GPU)', '',
-          f"Best matched speed-up of any eligible ROM arm: **{fx(h5['ST']['best_combined'][0])}×** "
-          f"({h5['ST']['best_combined'][1]}, matched on worst ST); the C2 `acc` arms re-measured in this job: "
-          f"{fx(h5['ST']['best_comparator'][0])}× ({h5['ST']['best_comparator'][1]}). Verdict: **{h5['ST']['verdict']}** "
-          f"(TX: {h5['TX']['verdict']}). Scope: the winner is an LSPG-CN arm (not second order, excluded from scheme "
-          f"selection); the best matched speed-up of the selected scheme {g} is "
+          f"Matched on worst error against {PL_}. Best matched speed-up of any eligible ROM arm: "
+          f"**{fx(h5['ST']['best_combined'][0])}×** ({h5['ST']['best_combined'][1]}); the C2 `acc` arms re-measured in "
+          f"this job: {fx(h5['ST']['best_comparator'][0])}× ({h5['ST']['best_comparator'][1]}). Verdict: "
+          f"**{h5['ST']['verdict']}**. Scope: the overall winner may be an LSPG-CN arm (not second order, excluded from "
+          f"scheme selection); the best matched speed-up of the selected scheme {g} is "
           + (f"{fx(bc[1]['speedup'])}× ({bc[0]})." if bc else 'not available.') +
           ' The FOM is second order in time only; its advection stays sign-upwind (first order in space).', '',
           '![FOM comparison](plots/fom2d.png)', '')
-        plot_pareto2d(an, 'TX')
+        if E0 and an_old:
+            ho = an_old['hypotheses']['H5']['ST']
+            r(f"First-order matching (PROVISIONAL, continuity): best {fx(ho['best_combined'][0])}× ({ho['best_combined'][1]}), "
+              f"comparator {fx(ho['best_comparator'][0])}×, verdict {ho['verdict']}.", '')
         plot_pareto2d(an, 'ST')
-        plot_dial2d(an)
+        plot_dial2d(an, an_old)
         plot_fom(an)
 
     # ------------------------------------------------------------------------------------------------ 3D escalation

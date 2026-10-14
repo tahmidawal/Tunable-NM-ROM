@@ -25,78 +25,75 @@ flowchart TB
 
 ## 2D (Burgers 2D, dev6 + val32 = 38 cases)
 
-**Scoring gate.** `score.py` re-decoded every saved trajectory on CPU and reproduced 171000 of 171000 job values (worst difference 8.33e-17); every negative control broke agreement (case swap 1.12e+00, time shift 1.76e-01, ST↔S swap 2.90e-03).
+**Primary scoring: the first-order references** — True.
 
-**Tie thresholds** (heuristic, from ST−TX): medians 0.122 %, worst values 0.353 %; paired per-case ties at $2\varepsilon_{\rm ref}$.
+**Scoring gate (first-order, certifies every rescoring).** `score.py` re-decoded every saved trajectory on CPU and reproduced 171000 of 171000 job values (worst difference 8.33e-17); every negative control broke agreement (case swap 1.12e+00, time shift 1.76e-01, ST↔S swap 2.90e-03).
 
-### Which second-order scheme
+**Tie thresholds** (heuristic, from ST−TX): medians 0.122 %, worst values 0.353 %.
 
-Scheme wins over the four dial settings: LSPG-BDF2 3, LSPG-CNR 4, GAL-CN 4; tie broken by the smaller sum of the four medians (LSPG-BDF2 1.15 %, LSPG-CNR 1.04 %, GAL-CN 1.07 %). **Selected scheme: LSPG-CNR.**
+### Which second-order scheme (selected against the first-order references, frozen)
 
-Per setting, the selected scheme's two arms against that setting's deployed LSPG-BE (errors PROVISIONAL):
+Scheme wins over the four dial settings: LSPG-BDF2 3, LSPG-CNR 4, GAL-CN 4; tie broken by the smaller sum of the four medians (LSPG-BDF2 1.15 %, LSPG-CNR 1.04 %, GAL-CN 1.07 %, PROVISIONAL). **Selected scheme: LSPG-CNR.**
 
-| setting | role | arm | cost / own BE | median TX | worst TX | median ST | median S |
-|---|---|---|---|---|---|---|---|
-| fast | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.999 | 0.444 % | 5.18 % | 0.42 % | 0.94 % |
-| fast | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.611 | 0.795 % | 4.91 % | 0.727 % | 0.601 % |
-| fast | baseline | LSPG-BE at 1Δt₀ | 1 | 1.09 % | 4.75 % | 1.03 % | 0.412 % |
-| R128 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.998 | 0.444 % | 5.17 % | 0.42 % | 0.94 % |
-| R128 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.587 | 0.795 % | 4.91 % | 0.727 % | 0.601 % |
-| R128 | baseline | LSPG-BE at 1Δt₀ | 1 | 1.09 % | 4.75 % | 1.04 % | 0.412 % |
-| R256 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.999 | 0.21 % | 2.49 % | 0.149 % | 0.851 % |
-| R256 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.561 | 0.725 % | 2.42 % | 0.668 % | 0.587 % |
-| R256 | baseline | LSPG-BE at 1Δt₀ | 1 | 0.97 % | 3.21 % | 0.91 % | 0.0924 % |
-| acc | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.998 | 0.195 % | 1.76 % | 0.135 % | 0.847 % |
-| acc | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.56 | 0.715 % | 1.84 % | 0.658 % | 0.587 % |
-| acc | baseline | LSPG-BE at 1Δt₀ | 1 | 0.967 % | 2.92 % | 0.906 % | 0.0508 % |
-| R384 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.996 | 0.195 % | 1.76 % | 0.135 % | 0.847 % |
-| R384 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.551 | 0.715 % | 1.84 % | 0.658 % | 0.587 % |
-| R384 | baseline | LSPG-BE at 1Δt₀ | 1 | 0.967 % | 2.92 % | 0.906 % | 0.0508 % |
-| R512 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.986 | 0.196 % | 2.15 % | 0.137 % | 0.85 % |
-| R512 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.536 | 0.715 % | 2.24 % | 0.657 % | 0.587 % |
-| R512 | baseline | LSPG-BE at 1Δt₀ | 1 | 0.968 % | 3 % | 0.907 % | 0.0595 % |
+Per setting, the selected scheme's frozen arms against that setting's deployed LSPG-BE. Primary columns against TX (PROVISIONAL); S is the space-only reference time-matched to LSPG-BE at Δt₀ only; the last two columns are the first-order scores (PROVISIONAL, continuity):
+
+| setting | role | arm | cost / own BE | median TX (PROVISIONAL) | worst TX (PROVISIONAL) | median S (BE-matched) | old median TX | old median ST |
+|---|---|---|---|---|---|---|---|---|
+| fast | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.999 | 0.444 % | 5.18 % | 0.94 % | 0.444 % | 0.42 % |
+| fast | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.611 | 0.795 % | 4.91 % | 0.601 % | 0.795 % | 0.727 % |
+| fast | baseline | LSPG-BE at 1Δt₀ | 1 | 1.09 % | 4.75 % | 0.412 % | 1.09 % | 1.03 % |
+| R128 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.998 | 0.444 % | 5.17 % | 0.94 % | 0.444 % | 0.42 % |
+| R128 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.587 | 0.795 % | 4.91 % | 0.601 % | 0.795 % | 0.727 % |
+| R128 | baseline | LSPG-BE at 1Δt₀ | 1 | 1.09 % | 4.75 % | 0.412 % | 1.09 % | 1.04 % |
+| R256 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.999 | 0.21 % | 2.49 % | 0.851 % | 0.21 % | 0.149 % |
+| R256 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.561 | 0.725 % | 2.42 % | 0.587 % | 0.725 % | 0.668 % |
+| R256 | baseline | LSPG-BE at 1Δt₀ | 1 | 0.97 % | 3.21 % | 0.0924 % | 0.97 % | 0.91 % |
+| acc | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.998 | 0.195 % | 1.76 % | 0.847 % | 0.195 % | 0.135 % |
+| acc | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.56 | 0.715 % | 1.84 % | 0.587 % | 0.715 % | 0.658 % |
+| acc | baseline | LSPG-BE at 1Δt₀ | 1 | 0.967 % | 2.92 % | 0.0508 % | 0.967 % | 0.906 % |
+| R384 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.996 | 0.195 % | 1.76 % | 0.847 % | 0.195 % | 0.135 % |
+| R384 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.551 | 0.715 % | 1.84 % | 0.587 % | 0.715 % | 0.658 % |
+| R384 | baseline | LSPG-BE at 1Δt₀ | 1 | 0.967 % | 2.92 % | 0.0508 % | 0.967 % | 0.906 % |
+| R512 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.986 | 0.196 % | 2.15 % | 0.85 % | 0.196 % | 0.137 % |
+| R512 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.536 | 0.715 % | 2.24 % | 0.587 % | 0.715 % | 0.657 % |
+| R512 | baseline | LSPG-BE at 1Δt₀ | 1 | 0.968 % | 3 % | 0.0595 % | 0.968 % | 0.907 % |
 
 ### H1: does the wide bank pay off once time error is removed?
 
 | dial step | reference | verdict | median from | median to | change | improved/worsened/tied | worst from | worst to |
 |---|---|---|---|---|---|---|---|---|
 | R128->R256 | TX | pass | 0.444 % | 0.21 % | -52.8 % | 27/0/11 | 5.17 % | 2.49 % |
-| R128->R256 | ST |  | 0.42 % | 0.149 % | -64.6 % | 27/0/11 | 5.14 % | 2.47 % |
+| R128->R256 | ST | pass | 0.42 % | 0.149 % | -64.6 % | 27/0/11 | 5.14 % | 2.47 % |
 | R128->R256 | TX (LSPG-BE Δt₀) |  | 1.09 % | 0.97 % | -11.1 % | 14/0/24 | 4.75 % | 3.21 % |
-| R128->R256 | ST (LSPG-BE Δt₀) |  | 1.04 % | 0.91 % | -12.1 % | 14/0/24 | 4.64 % | 3.06 % |
 | R256->R384 | TX | reference-limited | 0.21 % | 0.195 % | -7.1 % | 6/0/32 | 2.49 % | 1.76 % |
-| R256->R384 | ST |  | 0.149 % | 0.135 % | -8.8 % | 6/0/32 | 2.47 % | 1.76 % |
+| R256->R384 | ST | reference-limited | 0.149 % | 0.135 % | -8.8 % | 6/0/32 | 2.47 % | 1.76 % |
 | R256->R384 | TX (LSPG-BE Δt₀) |  | 0.97 % | 0.967 % | -0.3 % | 0/0/38 | 3.21 % | 2.92 % |
-| R256->R384 | ST (LSPG-BE Δt₀) |  | 0.91 % | 0.906 % | -0.4 % | 0/0/38 | 3.06 % | 2.75 % |
 | R384->R512 | TX | reference-limited | 0.195 % | 0.196 % | +0.7 % | 0/5/33 | 1.76 % | 2.15 % |
-| R384->R512 | ST |  | 0.135 % | 0.137 % | +1.5 % | 0/6/32 | 1.76 % | 2.14 % |
+| R384->R512 | ST | reference-limited | 0.135 % | 0.137 % | +1.5 % | 0/6/32 | 1.76 % | 2.14 % |
 | R384->R512 | TX (LSPG-BE Δt₀) |  | 0.967 % | 0.968 % | +0.0 % | 0/1/37 | 2.92 % | 3 % |
-| R384->R512 | ST (LSPG-BE Δt₀) |  | 0.906 % | 0.907 % | +0.0 % | 0/1/37 | 2.75 % | 2.84 % |
 
-A step is **reference-limited** when fewer than half of the 38 cases are resolved (paired difference above $2\varepsilon_{\rm ref}$): the first-order references cannot rank those arms. Verdicts: R128->R256 **pass**; R256->R384 **reference-limited**; R384->R512 **reference-limited**.
+A step is **reference-limited** when fewer than half of the 38 cases are resolved (paired difference above the tie threshold). Verdicts: R128->R256 **pass**; R256->R384 **reference-limited**; R384->R512 **reference-limited**.
 
 ![2D dial](plots/dial2d.png)
 
 ### H2: does tunability survive?
 
-(a) Every eligible LSPG-BE arm is covered by a second-order arm with lower or equal cost and error: worst-TX 42/42, median-TX 42/42 → **pass**. (b) Along the dial, the accurate-equal-cost arms' common-baseline cost and median TX: R128 0.239× / 0.444 %; R256 0.568× / 0.21 %; R384 1.56× / 0.195 %; R512 5.36× / 0.196 % → **pass**.
+(a) Every eligible LSPG-BE arm is covered by a second-order arm with lower or equal cost and error: worst 42/42, median 42/42 → **pass**. (b) Along the dial, the accurate-equal-cost arms' common-baseline cost and median error (TX (PROVISIONAL)): R128 0.239× / 0.444 %; R256 0.568× / 0.21 %; R384 1.56× / 0.195 %; R512 5.36× / 0.196 % → **pass**.
 
-![2D Pareto TX](plots/pareto2d_TX.png)
-
-![2D Pareto ST](plots/pareto2d_ST.png)
+![2D Pareto](plots/pareto2d_ST.png)
 
 ### H3: why did the fast setting's worst case get worse under CN?
 
-| reference | worst case | output index t* | e(BE Δt₀) | e(CN Δt₀) | e(anchor) = e∞ | cos(δ_BE, ε∞) | criteria a b c | verdict |
+| reference | worst case | output index t* | e(BE Δt₀) | e(CN Δt₀) | e(anchor) = e∞ | cos(δ_BE, ε∞) | guards a b c | verdict |
 |---|---|---|---|---|---|---|---|---|
 | ST | val32 / 19 | 5 | 4.64 % | 5.17 % | 5.61 % | -0.569 | no yes yes | cancellation not supported |
 | TX | val32 / 19 | 5 | 4.75 % | 5.2 % | 5.63 % | -0.547 | no yes yes | cancellation not supported |
 
-Pre-registered explanation (error cancellation) at the worst case val32|19: **cancellation not supported** (ST; TX: cancellation not supported); failing criteria: a. Criterion (a) needs |e(CN) − e∞| ≤ 0.2 |e(BE) − e∞|; here |e(CN) − e∞| = 0.44 % and |e(BE) − e∞| = 0.974 %. The fast setting's LSPG-BE worst ST is 4.64 %; fast LSPG-CNR accurate arm worst ST 5.14 %; R128 LSPG-CNR accurate arm worst ST 5.14 %; R256 LSPG-CNR accurate arm worst ST 2.47 %. The budget names the component that limits that case.
+Pre-registered explanation (error cancellation) at the worst case val32|19: **cancellation not supported**; failing guards: a. Criterion (a) needs |e(CN) − e∞| ≤ 0.2 |e(BE) − e∞|; here |e(CN) − e∞| = 0.44 % and |e(BE) − e∞| = 0.974 %. The fast setting's LSPG-BE worst error is 4.64 %; fast LSPG-CNR accurate arm worst 5.14 %; R128 LSPG-CNR accurate arm worst 5.14 %; R256 LSPG-CNR accurate arm worst 2.47 % (against TX (PROVISIONAL)). indicator-based; U_anc is not a certified bound; scoped to cancellation at t*
 
 ### H5: speed against the second-order full-order model (same job, same GPU)
 
-Best matched speed-up of any eligible ROM arm: **17.7×** (fast|LSPG|CN|0.025|prod, matched on worst ST); the C2 `acc` arms re-measured in this job: 3.8× (acc|LSPG|BDF2|0.025|prod). Verdict: **pass** (TX: pass). Scope: the winner is an LSPG-CN arm (not second order, excluded from scheme selection); the best matched speed-up of the selected scheme LSPG-CNR is 13.6× (fast|LSPG|CNR|0.0125|prod). The FOM is second order in time only; its advection stays sign-upwind (first order in space).
+Matched on worst error against TX (PROVISIONAL). Best matched speed-up of any eligible ROM arm: **17.7×** (fast|LSPG|CN|0.025|prod); the C2 `acc` arms re-measured in this job: 3.8× (acc|LSPG|BDF2|0.025|prod). Verdict: **pass**. Scope: the overall winner may be an LSPG-CN arm (not second order, excluded from scheme selection); the best matched speed-up of the selected scheme LSPG-CNR is 13.6× (fast|LSPG|CNR|0.0125|prod). The FOM is second order in time only; its advection stays sign-upwind (first order in space).
 
 ![FOM comparison](plots/fom2d.png)
 
@@ -196,7 +193,8 @@ $e_{\rm tot}=\lVert u_a-u_{\rm ref}\rVert$; floor $e_P=\lVert(I-\Pi_{R'})u_{\rm 
 | c3extW1024 | 5217010 | h200 | 42dfeb454 | A11 W1024 escalation extension gl80->gl96, 64 cases (POST HOC) | complete, collected |
 | c2budA | 5218146 | a100-80G | 0bc851461 | 2D error budget (R512, R256) |  |
 | c2budB | 5218149 | a100-80G | 0bc851461 | 2D error budget (R384, acc) |  |
-| c3grid | 5219449 | h200 | 1cf409c9a | 3D second-order grid + timing, 5 settings, POST HOC rules (A10/A11) |  |
+| c3grid | 5219449 | h200 | 1cf409c9a | 3D second-order grid + timing, 5 settings, POST HOC rules (A10/A11) | complete, collected |
+| c2budC | 5225286 | a100-80G | 29dc2743a | 2D error budget (fast, R128); resubmission after the cancelled 5218166 |  |
 
 | failed attempt | Slurm id | note |
 |---|---|---|
@@ -240,6 +238,8 @@ Chronological; the opening statement of each audit (its verdict line). Every WRO
 | `audits/codex-results2d-5.md` | SUBMIT: c2budA, c2budB, c2budC. Audited HEAD `840c96c5649f8e651efb622bb4fd85c8356838b2`. |
 | `audits/codex-results3dsel-1.md` | HOLD c3grid pending correction and regeneration of the resource certificate. The selections are supported; the blocker is common-panel pricing, not insufficient allocation. |
 | `audits/codex-results3dsel-2.md` | SUBMIT c3grid at HEAD `1f1b16986`. The common-panel pricing blocker is resolved. |
+| `audits/codex-a13-1.md` | Overall: NOT READY for production E0 scoring. The registry and core scoring conventions check out, but the budget paths bypass promised safeguards, and the frozen 3D solver selection is missing. |
+| `audits/codex-a13-2.md` | c2grid (2D): READY for production E0 scoring. |
 
 ## Glossary
 

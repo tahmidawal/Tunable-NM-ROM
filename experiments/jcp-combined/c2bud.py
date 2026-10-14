@@ -76,9 +76,31 @@ def main():
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
     if a.dry_run:
+        # complete call inventory (codex-results2d-1 item 1): every run on every case; the check-rule twin of every
+        # r_inf-dependent run on the check set; B1 (two baseline calls) and B2 (one control-rule call) on the check set;
+        # the conditional successor (conv runs at the check rule, twins at the successor rule) and restoration (conv runs
+        # at the converged rule, twins at the check rule) phases on the check set
         inv = {s['name']: [key(r) for r in budget_runs(s['arms'])] for s in cfg['settings']}
+        ncase = sum(len((cfg.get('case_subset') or {}).get(c) or range(6 if c == 'dev6' else 32)) for c in cfg['cohorts'])
+        nchk = len((cfg.get('case_subset') or {}).get('dev6') or range(6)) + \
+            min(cfg['check_val32'], len((cfg.get('case_subset') or {}).get('val32') or range(32)))
+        calls = {}
+        for s in cfg['settings']:
+            runs = budget_runs(s['arms'])
+            conv = [r for r in runs if r[0] == 'conv']
+            base = ('main', 'LSPG', 'BE', DT0, 'prod')
+            calls[s['name']] = dict(
+                all_cases=dict(runs=[key(r) for r in runs], cases=ncase),
+                check_set=dict(runs=[key(('check',) + r[1:]) for r in conv] + [key(base), key(base), key(('ctrl',) + base[1:])],
+                               cases=nchk),
+                conditional=dict(successor=dict(conv_at=cfg['check_rule'], check_at=cfg['successor_check'],
+                                                runs=[key(r) for r in conv]),
+                                 restoration=dict(conv_at=cfg['conv_rule'], check_at=cfg['check_rule'],
+                                                  runs=[key(r) for r in conv]), cases=nchk))
         print(json.dumps(dict(runs=inv, steps={k: sum(int(round(.25 / float(x.split('|')[3]))) for x in v)
-                                                for k, v in inv.items()}), indent=1))
+                                                for k, v in inv.items()}, calls=calls, cases=ncase, check_cases=nchk,
+                              rules=dict(conv=cfg['conv_rule'], check=cfg['check_rule'], successor=cfg['successor_check'],
+                                         control=cfg['control_rule'])), indent=1))
         return
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

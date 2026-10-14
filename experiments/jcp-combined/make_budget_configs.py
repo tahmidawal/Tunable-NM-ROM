@@ -23,14 +23,18 @@ def main():
     fsha = hashlib.sha256(fp.read_bytes()).hexdigest()
     if a.only in (None, '2d') and '2d' in fz:
         rules = {s['name']: s for s in MC.SETTINGS2}
-        sets = [dict(rules[n], arms=b['arms']) for n, b in fz['2d']['budget'].items()]
-        c = MC.c2('c2bud', settings=sets)
-        c.update(driver='c2bud', conv_rule='gauss320', check_rule='gauss640', successor_check='gauss768',
-                 control_rule='gauss8', conv_bar=2.5e-5, check_val32=10, frozen_sha256=fsha)
-        for k in ('grid', 'fom', 'timing', 'common_baseline'):
-            c.pop(k, None)
-        (HERE / 'configs' / 'c2bud.json').write_text(json.dumps(c, indent=1) + '\n')
-        print('c2bud', len(sets), 'settings')
+        # three jobs (resource certificate: <= 48 h each with the worst-case conditional successor path priced in)
+        groups = dict(c2budA=['R512', 'R256'], c2budB=['R384', 'acc'], c2budC=['fast', 'R128'])
+        assert sorted(sum(groups.values(), [])) == sorted(fz['2d']['budget']), 'every frozen setting in exactly one job'
+        for att, names in groups.items():
+            sets = [dict(rules[n], arms=fz['2d']['budget'][n]['arms']) for n in names]
+            c = MC.c2(att, settings=sets)
+            c.update(driver='c2bud', conv_rule='gauss320', check_rule='gauss640', successor_check='gauss768',
+                     control_rule='gauss8', conv_bar=2.5e-5, check_val32=10, frozen_sha256=fsha)
+            for k in ('grid', 'fom', 'timing', 'common_baseline'):
+                c.pop(k, None)
+            (HERE / 'configs' / f'{att}.json').write_text(json.dumps(c, indent=1) + '\n')
+            print(att, names)
     if a.only in (None, '3d') and '3d_solver' in fz and '3d_rules' in fz:
         base = {s['name']: s for s in MC.SETTINGS3}
         sets = []

@@ -238,13 +238,18 @@ def project_2d(cfg, smokes, inv, rep):
 
 
 def project_bud2(cfg, smokes, inv, rep):
-    """2D budget (c2bud) projection: per run signature (role, form, scheme, tolerance level) the steady seconds per step
-    measured on the smoke (max over its settings and cases after the first; the smoke ran R' = 512 with the production
-    conv/check rules, the most expensive setting), a production run = rate x steps x every case (conservative: the
-    check runs actually use 16 or all cases); a signature the smoke did not run is priced at the most expensive measured
-    signature of the same role; compile = max (first - steady) per (setting, run). Memory = max smoke per-setting peak x
-    (768/640)^2 (the conditional successor rule Gauss 768^2 replaces 640^2)."""
-    rates, comps = {}, {}
+    """2D budget (c2bud) projection over the COMPLETE call inventory of `c2bud.py --dry-run` (codex-results2d-1 item 1):
+    every run on every case; on the check set the check-rule twin of every r_inf-dependent run, two B1 baseline calls
+    and one control-rule call; and the conditional successor (conv runs at the check rule, twins at the successor rule,
+    priced at (768/640)^2 x the check-rule rate) plus restoration (conv runs at the converged rule, twins at the check
+    rule) phases, always included (worst case). Rate per signature (role, form, scheme, level) = steady seconds per step
+    on the smoke (median over cases after the first; one case -> its time), max over the smoke's settings; a signature
+    the smoke did not run is priced at the most expensive measured signature of the same role. A setting the smoke did
+    not run is priced from a smoke setting with the SAME R' (hence the same M and the same converged/check/control
+    rules), its 'main'-role rates scaled up by the main-rule point ratio when that ratio exceeds 1; with no same-R'
+    smoke setting, from the most expensive smoke setting whose R' is >= its own (no downward R' scaling).
+    Compile = max (first - steady) per distinct signature. Memory = max smoke per-setting peak x (768/640)^2."""
+    rates, comps, by_setting = {}, {}, {}
     for sm in smokes:
         by = {}
         for r in sm['rows']:
@@ -256,30 +261,65 @@ def project_bud2(cfg, smokes, inv, rep):
             f = (role, form, sc, lev)
             rates[f] = max(rates.get(f, 0.), steady / steps)
             comps[f] = max(comps.get(f, 0.), max(0., rs[0]['seconds_first'] - steady))
-    ncases = sum(len(cfg.get('case_subset', {}).get(c) or range(6 if c == 'dev6' else 32)) for c in cfg['cohorts'])
-    total, detail, fallbacks = 0., {}, set()
-    for st, runs in inv['runs'].items():
-        tot, comp = 0., 0.
-        for run in runs:
-            role, form, sc, dt, lev = run.split('|')
-            f = (role, form, sc, lev)
-            if f not in rates:
-                same = [v for k, v in rates.items() if k[0] == role]
-                if not same:
-                    return fail(rep, f'no smoke measurement for role {role}')
-                rt, cp = max(same), max(v for k, v in comps.items() if k[0] == role)
-                fallbacks.add(run)
-            else:
-                rt, cp = rates[f], comps[f]
-            tot += rt * int(round(.25 / float(dt))) * ncases
-            comp += cp
-        detail[st] = dict(rollouts_s=tot, compile_s=comp)
-        total += tot + comp
+            by_setting.setdefault(st, {}).setdefault(f, 0.)
+            by_setting[st][f] = max(by_setting[st][f], steady / steps)
+    fallbacks = set()
+
+    def t(run, rate_tab, factor=1.):
+        role, form, sc, dt, lev = run.split('|')
+        f = (role, form, sc, lev)
+        if f in rate_tab:
+            rt = rate_tab[f]
+        else:
+            same = [v for k, v in rate_tab.items() if k[0] == role] or [v for k, v in rates.items() if k[0] == role]
+            if not same:
+                raise KeyError(f'no smoke measurement for role {role}')
+            rt = max(same)
+            fallbacks.add(run)
+        return rt * int(round(.25 / float(dt))) * factor
+    smk_cfg = {s_['name']: s_ for sm in smokes for s_ in sm['config']['settings']}
+
+    def table_for(st):
+        if st in by_setting:
+            return by_setting[st], st
+        me = next(s_ for s_ in cfg['settings'] if s_['name'] == st)
+        same = [n for n, s_ in smk_cfg.items() if int(s_['Rp']) == int(me['Rp']) and n in by_setting]
+        if same:
+            n = same[0]
+            fac = max(1., rule_points(me['rule']) / rule_points(smk_cfg[n]['rule']))
+            return {k: (v * fac if k[0] == 'main' else v) for k, v in by_setting[n].items()}, f'{n} (main x {fac:.3g})'
+        up = [n for n, s_ in smk_cfg.items() if int(s_['Rp']) >= int(me['Rp']) and n in by_setting]
+        if not up:
+            raise KeyError(f'no smoke setting with R\' >= {me["Rp"]} for {st}')
+        n = max(up, key=lambda n_: sum(by_setting[n_].values()))
+        return by_setting[n], n
+    total, detail, seen = 0., {}, set()
+    succ = (768 / 640) ** 2
+    try:
+        for st, c in inv['calls'].items():
+            tab, priced_as = table_for(st)
+            a_ = sum(t(r, tab) for r in c['all_cases']['runs']) * c['all_cases']['cases']
+            b_ = sum(t(r, tab) for r in c['check_set']['runs']) * c['check_set']['cases']
+            cond = c['conditional']
+            conv_runs = cond['successor']['runs']
+            twin = lambda r: 'check|' + r.split('|', 1)[1]
+            d_ = sum(t(twin(r), tab) * (1 + succ) + t(r, tab) + t(twin(r), tab) for r in conv_runs) * cond['cases']
+            comp = 0.
+            for r in c['all_cases']['runs'] + c['check_set']['runs']:
+                f = tuple(r.split('|')[i] for i in (0, 1, 2, 4))
+                if f not in seen:
+                    comp += comps.get(f, max(comps.values()))
+                    seen.add(f)
+            detail[st] = dict(all_cases_s=a_, check_set_s=b_, conditional_s=d_, compile_s=comp,
+                              priced_as=priced_as)
+            total += a_ + b_ + d_ + comp
+    except KeyError as e:
+        return fail(rep, str(e))
     peaks = [v.get('peak_bytes', -1) for sm in smokes for v in sm['setup'].values()]
     if not peaks or min(peaks) <= 0:
         return fail(rep, 'a budget smoke lacks a positive per-setting peak')
     rep.update(detail=detail, priced_by_role_fallback=sorted(fallbacks), projected_seconds=total,
-               projected_peak_gb=max(peaks) * (768 / 640) ** 2 / 1e9)
+               projected_peak_gb=max(peaks) * succ / 1e9)
     return rep
 
 
@@ -293,12 +333,41 @@ def certificate_binding(attempt, driver):
 
 def smoke_gates(sm):
     """Machinery gates a smoke must have passed to be used as resource evidence."""
-    if sm['config']['driver'] == 'c2bud':          # budget smoke: no timing panels; every row verified, conv check passed
-        return bool(sm.get('complete')) and bool(sm['rows']) and all(r['verified'] for r in sm['rows']) and \
-            all(v.get('conv_check', {}).get('passed') for v in sm['setup'].values())
-    if sm['config'].get('mode') == 'bud':          # 3D budget smoke: no timing panels; B1 bitwise sham passed
-        return bool(sm.get('complete')) and bool(sm['rows']) and \
-            all(v.get('B1_sham_bitwise', {}).get('all_equal') for v in sm['settings'].values())
+    if sm['config']['driver'] == 'c2bud':          # budget smoke (fail closed, codex-results2d-1 item 2): every configured
+        # setting present with its conv check passed, B1 bitwise and B2 complete; every planned (run, case) row and every
+        # check-set twin / control row present exactly once and verified (the control-rule rows only present)
+        import c2bud as CB
+        cases = [(coh, c) for coh in sm['config']['cohorts']
+                 for c in ((sm['config'].get('case_subset') or {}).get(coh) or range(6 if coh == 'dev6' else 32))]
+        chk = [x for x in cases if x[0] == 'dev6'] + [x for x in cases if x[0] == 'val32'][:sm['config']['check_val32']]
+        ok = bool(sm.get('complete')) and bool(sm['rows'])
+        for s_ in sm['config']['settings']:
+            v = sm['setup'].get(s_['name'], {})
+            ok = ok and bool(v.get('conv_check', {}).get('passed')) and bool(v.get('B1_sham_bitwise', {}).get('all_equal')) \
+                and bool(v.get('B2_control_rule', {}).get('complete'))
+            rows = [r for r in sm['rows'] if r['setting'] == s_['name']]
+            got = [(r['run'], r['cohort'], r['case']) for r in rows]
+            runs = CB.budget_runs(s_['arms'])
+            want = {(CB.key(r), coh, c) for r in runs for coh, c in cases}
+            want |= {(CB.key(('check',) + r[1:]), coh, c) for r in runs if r[0] == 'conv' for coh, c in chk}
+            want |= {(CB.key(('ctrl', 'LSPG', 'BE', CB.DT0, 'prod')), coh, c) for coh, c in chk}
+            ok = ok and len(got) == len(set(got)) and set(got) == want
+            ok = ok and all(r['verified'] for r in rows if not r['run'].startswith('ctrl|'))
+        return ok
+    if sm['config'].get('mode') == 'bud':          # 3D budget smoke (fail closed): every configured setting present with
+        # B1 bitwise and a complete B2 control; every planned (rule, spec) run present for its case set, valid rows
+        import c3run as CR
+        ok = bool(sm.get('complete')) and bool(sm['rows'])
+        cases = list(sm['config'].get('case_subset') or range(sm['config']['cohort_count']))
+        for s_ in sm['config']['settings']:
+            v = sm['settings'].get(s_['name'], {})
+            ok = ok and bool(v.get('B1_sham_bitwise', {}).get('all_equal')) and bool(v.get('B2_control_rule', {}).get('complete'))
+            have = {(r['rule'], r['spec']) for r in sm['rows'] if r['setting'] == s_['name']}
+            want = {(rl, sp_) for rl, sp_ in CR.inventory(sm['config'])['settings'][s_['name']]['runs']}
+            ok = ok and want <= have and bool(cases)
+            ok = ok and all(r['valid'] is True for r in sm['rows'] if r['setting'] == s_['name']
+                            and r['rule'] != sm['config'].get('control_rule'))
+        return ok
     ext = all(s_.get('ext_rules') for s_ in sm['config']['settings'])   # A11 extension smoke: no timing panels by design
     ok = bool(sm.get('complete')) and all(v.get('valid') for v in sm.get('timing', {}).values()) and (ext or bool(sm.get('timing')))
     if ext:      # complete inventory: every planned rule (the last one omitted only after a passing A10 pair), every

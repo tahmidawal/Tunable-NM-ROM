@@ -19022,3 +19022,15 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - Sealing is cooperative only: the key is on the shared account.
 - **Loader.** `refstore.py` with `JCPREF_STORE=/cluster/tufts/paralab/tawal01/jcp-ref/store`. The Step 2 (combined) agent has been told to score against it, under a dated, Codex-audited amendment.
 - **Open (user).** Key custody; revisiting the 2D floor check before opening; the opening tool; a CN-matched space-only reference; merging this lane.
+
+### 3D speed lane launched (coordinator)
+- **Why.** Step 2 found that second-order stepping gives large 3D accuracy gains at equal cost but almost no speed-up at equal accuracy: H4a failed, with the best ratio at truly equal accuracy about 0.96 at W1024. Two causes:
+  - bigger steps used K=2 sweeps, costing about 1.44× per step, and the two-sweep CN fails to converge on 7–15 of 64 cases;
+  - a fixed per-query overhead does not scale with step count.
+- **Approved by the user.** A new lane `worktrees/2026-10-14-jcp-speed3d` (branch `exp/2026-10-14-jcp-speed3d`, mirror `origin/codeonly/exp/2026-10-14-jcp-speed3d`), namespace `jcp-speed3d`, job cap 3. It tries four routes:
+  1. one pass at big steps (extrapolated predictor, Jacobian reuse);
+  2. narrower bank or fewer points with second order against the wide-bank BE, on a common time baseline;
+  3. overhead profiling, a mesh-free online path and batched queries;
+  4. ROM against the FOM at 64³–256³ (384³ if feasible), scored against E0.
+- It builds on Step 2's code (copied with provenance from `exp/2026-10-13-jcp-combined` @6aee084a8) and is Codex-gated throughout.
+- **Step 2 status.** Resumed after a usage-limit stop. Job 5241089 (c3budW1024r, the last 3D budget job) is running; then the final report.

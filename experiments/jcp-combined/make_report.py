@@ -184,6 +184,19 @@ def plot_fom(an):
     plt.close(fig)
 
 
+def finer_invalid(setting):
+    """Number of unverified runs at the finer rule of a 3D budget setting (from the budget job's rows)."""
+    for a_ in ('c3budA', 'c3budW1024r'):
+        res = load(HERE / 'runs' / a_ / 'archive' / 'output' / 'result.json')
+        if not res:
+            continue
+        cfg_s = next((x for x in res['config']['settings'] if x['name'] == setting), None)
+        if cfg_s:
+            return sum(1 for r_ in res['rows'] if r_['setting'] == setting and r_['rule'] == cfg_s['finer']
+                       and r_['valid'] is not True)
+    return None
+
+
 def tstats(panel, subj):
     """Per-subject timing statistics from an A-B-A panel: median ratio, IQR, MAD-outlier count, median absolute times."""
     inv = [i for i in panel['invocations'] if i['B'] == subj]
@@ -517,6 +530,7 @@ def main():
         plot_j4(esc_rows)
 
     cnf = {Path(p).stem.replace('cnfail3d-', ''): load(p) for p in sorted(glob.glob(str(CK / 'cnfail3d-c3desc*.json')))}
+    extra = []
     if cnf:
         r('### The fixed-sweep CN arm fails on a fixed subset of cases', '')
         rows = []
@@ -829,7 +843,8 @@ def main():
           '; '.join(f"{k} worst {sci(v.get('worst'))}, all runs valid {v.get('all_valid')}, passed {v.get('passed')}"
                     for k, v in cc3.items()) + '.'
           + (' Withheld attributions: ' + '; '.join(f'{k}: {v}' for k, v in wh3.items()) + '. The check fails closed '
-             'because one run at the finer rule is unverified (convergence unverified, not shown inadequate); the selected '
+             'because ' + ', '.join(f'{k}: {finer_invalid(k)}' for k in wh3) + ' run(s) at the finer rule are unverified '
+             '(convergence unverified, not shown inadequate); the selected '
              'arms\' own finalist checks can still pass because they compare only those arms\' trajectories at the '
              'deployed, converged and finer rules, all verified.' if wh3 else '')
           + ' Controls: ' + '; '.join(f"{k}: B2 {'discriminating' if (v.get('B2') or {}).get('discriminating') else 'NOT discriminating'}, "
@@ -1026,7 +1041,7 @@ def main():
                     if sel_ph else '') + '.')
     if cnf:
         S.append('- **3D fixed-sweep CN (K = 2, 2.5 Δt₀)** departs from the verified adaptive solve on a persistent set of '
-                 'cases (the same at every adequate rule, with one exception at W1024), so the pre-registered rule selection '
+                 f"cases (the same at every adequate rule, with {len(extra)} rule-dependent exception(s)), so the pre-registered rule selection "
                  'was unavailable; the POST HOC selection uses the adaptive CN arm.')
     if an3 is not None:
         h4 = an3['hypotheses']['H4']
@@ -1059,7 +1074,7 @@ def main():
         wh = [k for k, v in b3['settings'].items() if v.get('withheld')]
         S.append('- **3D budget: largest measured component** (per setting-arm; a sensitivity, not a causal share): '
                  + ', '.join(f'{k} {v}' for k, v in sorted(cnt3.items(), key=lambda kv: -kv[1]))
-                 + ('; quadrature attribution withheld at ' + ', '.join(wh) + ' (converged-rule check failed closed on one unverified replay at the finer rule: convergence unverified, not shown inadequate)' if wh else '')
+                 + ('; quadrature attribution withheld at ' + ', '.join(f'{k} ({finer_invalid(k)} unverified run(s) at the finer rule; convergence unverified, not shown inadequate)' for k in wh) if wh else '')
                  + '.')
     r.lines[SUMMARY_AT:SUMMARY_AT] = ['## Answers in brief (generated)', ''] + S + ['']
     (HERE / 'report.md').write_text('\n'.join(r.lines) + '\n')

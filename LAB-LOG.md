@@ -19034,3 +19034,24 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   4. ROM against the FOM at 64³–256³ (384³ if feasible), scored against E0.
 - It builds on Step 2's code (copied with provenance from `exp/2026-10-13-jcp-combined` @6aee084a8) and is Codex-gated throughout.
 - **Step 2 status.** Resumed after a usage-limit stop. Job 5241089 (c3budW1024r, the last 3D budget job) is running; then the final report.
+
+### Step 2 (combined) complete (lane `exp/2026-10-13-jcp-combined`, last commit a3c9e170d, mirror c51cecdbd)
+- **Status.** 44 Codex audits; the final report audit is READY. Namespace `jcp-comb` is empty; jobs are in `runs/JOB-LEDGER.json`. Scoring is primarily against E0, with E0's conditional label; first-order scores sit beside them as provisional.
+- **2D.**
+  - Selected LSPG-CN-R. At equal cost the median falls 0.98 → 0.20 % and the worst 3.0 → 1.8 % (acc).
+  - H1: R128→R256 passes; R256→R384 fails the bar (−5.2 %); R512 does not pay off.
+  - H2 tunability passes.
+  - H5: 13.6× for the selected scheme (17.7× from a non-second-order CN arm) against the second-order-in-time FOM.
+  - H3 cancellation is not supported.
+  - The finalist quadrature check fails for the selected arms; the fast-arm fallbacks qualify.
+- **3D.**
+  - H4b (accuracy at equal cost) passes at every width: W1024 median 0.12 % vs 1.53 %. Worst errors remain 4.4–6.7 %.
+  - H4a (speed at equal accuracy) fails at every width; the best ratios are 0.85–0.96.
+  - H6 extends W512→W768→W1024.
+  - The J4 failure comes from case 5; W1024 needs Gauss 80³.
+  - The rule selection is POST HOC (A10, A11).
+- **Retracted.** The A15 frozen 3D selection (before any budget job). Several first-order verdicts changed under E0 (A13). GB10 GPU offline decodes at R′=1024 were corrupted, so analysis moved to CPU.
+- **Notes.**
+  - A Codex audit had appended to LAB-LOG on main without permission; the lane agent removed it.
+  - main has an uncommitted `.gitignore` change (`runs/.harvest.log`) of unknown origin. It is not from this lane and is left untouched.
+- **Open.** Merge decision; 3D fixed-sweep CN with K=3; a chunked builder for Gauss 112³. The 3D speed work continues in `exp/2026-10-14-jcp-speed3d`.

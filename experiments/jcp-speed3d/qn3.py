@@ -78,7 +78,9 @@ def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, 
     kr = BIG if (k_ref is None or (isinstance(k_ref, float) and math.isinf(k_ref))) else int(k_ref)
     qmax = 0 if mutation == 'q0' else int(q_max)
 
-    def evolve(w0, nu, data):
+    def evolve(w0, nu, data, hist=None, k0=0):
+        """hist = (c_{n-1}, c_{n-2}, c_{n-3}) (each (Bt, R')) and k0 (static int) start a replay at step k0 with a given
+        history (DESIGN A2.2); default: a full trajectory from k = 0 with c_{-1} = c_{-2} = c_{-3} = c_0."""
         A, lam = data['A'], data['lam']
         Bt = w0.shape[0]
 
@@ -134,8 +136,8 @@ def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, 
             sw = (k == ns) & (ns > 0)
             per = (k - last_ref) >= kr
             slow = q_prev > qmax // 2
-            due = ((k == 0) | sw | per | slow | fail_prev) & ~dead
-            rcode = jnp.where(k == 0, 1, jnp.where(sw, 2, jnp.where(fail_prev, 5, jnp.where(slow, 4,
+            due = ((k == k0) | sw | per | slow | fail_prev) & ~dead
+            rcode = jnp.where(k == k0, 1, jnp.where(sw, 2, jnp.where(fail_prev, 5, jnp.where(slow, 4,
                               jnp.where(per, 3, 0))))).astype(jnp.int32)
             rcode = jnp.broadcast_to(rcode, (Bt,))
 
@@ -221,7 +223,7 @@ def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, 
             dead = dead | bad
             c = jnp.where(dead[:, None], cn, c)                                        # frozen at the last finite state
             advc = jnp.where(dead[:, None], advn, adv(c, data))
-            rec = dict(n_ref=n_full, n_exec=n_exec, q=q, n_bt=nbt, n_clip=nclip, n_mu=nmu,
+            rec = dict(n_ref=n_full, n_exec=jnp.broadcast_to(n_exec, (Bt,)), q=q, n_bt=nbt, n_clip=nclip, n_mu=nmu,
                        refresh=jnp.where(due, rcode, 0), pred=pidx, gam=gam, rn=rn, reason=reason)
             carry = (c, cn, cm, cm2, advc, advn, H, Lf, Jn, mu, last_ref, q, reason != 4, dead)
             return carry, (c, rec)
@@ -229,9 +231,10 @@ def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, 
         M = A.shape[0]
         adv0 = adv(w0, data)
         H0 = jnp.zeros((Bt, Rp, Rp))
-        carry = (w0, w0, w0, w0, adv0, adv0, H0, H0, jnp.ones((Bt,)), jnp.full((Bt,), mu0),
-                 jnp.zeros((Bt,), jnp.int32), jnp.zeros((Bt,), jnp.int32), jnp.zeros((Bt,), bool), jnp.zeros((Bt,), bool))
-        _, (cs, rec) = jax.lax.scan(step, carry, jnp.arange(steps))
+        cm, cm2, cm3 = (w0, w0, w0) if hist is None else hist
+        carry = (w0, cm, cm2, cm3, adv0, adv(cm, data), H0, H0, jnp.ones((Bt,)), jnp.full((Bt,), mu0),
+                 jnp.full((Bt,), k0, jnp.int32), jnp.zeros((Bt,), jnp.int32), jnp.zeros((Bt,), bool), jnp.zeros((Bt,), bool))
+        _, (cs, rec) = jax.lax.scan(step, carry, jnp.arange(k0, k0 + steps))
         return dict(W_all=jnp.concatenate((w0[None], cs)), **rec)
     return evolve
 

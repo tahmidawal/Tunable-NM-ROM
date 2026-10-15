@@ -203,7 +203,13 @@ def make_query(sp, st, path='mesh', decode=True, n=65):
         if decode:
             o['fields'] = decode_lattice(o['W'], d)
         return o
-    return jax.jit(query)
+    q = jax.jit(query)
+    # components for the H3.1 profile (separately jitted; DESIGN A1.8: indicative)
+    q.project = jax.jit(lambda u0, d: proj(u0, d))
+    q.evolve = jax.jit(lambda w0, nu, scale, d: evolve(w0, nu, scale, d))
+    q.decode = jax.jit(decode_lattice)
+    q.keep, q.steps = keep, steps
+    return q
 
 
 # ------------------------------------------------------------------------------------- validity and records

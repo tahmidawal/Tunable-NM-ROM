@@ -44,10 +44,13 @@ def fin(x, n=None, pos=False):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--out', required=True)
+    ap.add_argument('--mesh384', action='store_true', help='evaluate the separate L = 384 pilot job instead')
+    ap.add_argument('--sacct-state', default=None)
+    ap.add_argument('--log', default=None)
     a = ap.parse_args()
     O = Path(a.out)
     job, commit = os.environ.get('SLURM_JOB_ID'), os.environ.get('SOURCE_COMMIT')
-    G, PILOT = {}, {}
+    G = {}
 
     def gate(name, ok, **ev):
         G[name] = dict(result='pass' if bool(ok) else 'fail', **ev)
@@ -112,15 +115,6 @@ def main():
                 rc.setdefault(p[0], []).append(int(p[1][3:]))
         for w in ['test_s3_M2', 'test_s3_W1024', 'test_fom', 'smkgrid', 'smkfom', 'smkprof', 'smkmesh']:
             gate(f'step {w} ran once, exit 0', rc.get(w) == [0], rc=rc.get(w))
-        # A1.9: the L = 384 pilot runs in its own process; a resource termination (OOM kill / XLA out of memory) is a
-        # reported infeasible mesh, any other failure fails the smoke
-        r384 = rc.get('smkmesh384')
-        log = (O / 'smkmesh384.log').read_text(errors='replace') if (O / 'smkmesh384.log').exists() else ''
-        oom = r384 is not None and r384 != [0] and (r384[0] in (137, -9) or any(t in log for t in
-                                                                                ('RESOURCE_EXHAUSTED', 'Out of memory', 'out of memory', 'Killed', 'MemoryError')))
-        PILOT['oom'] = oom
-        gate('step smkmesh384 ran once: exit 0, or terminated for resources (reported infeasible)', r384 == [0] or oom,
-             rc=r384, resource_termination=oom)
 
     def bound(r, cfgname):
         cfg = json.loads((HERE / 'configs' / f'{cfgname}.json').read_text())
@@ -305,9 +299,6 @@ def main():
 
     # ------------------------------------------------------------------------------------------------------ mesh
     def mesh(cfgname='smkmesh'):
-        if cfgname == 'smkmesh384' and PILOT.get('oom'):
-            gate('smkmesh384: dropped, infeasible (A1.9, reported)', True)
-            return
         r = load(O / cfgname / 'result.json')
         cfg = bound(r, cfgname)
         cases, tc, b = cfg['case_subset'], cfg['timing'], cfg['mesh']
@@ -366,14 +357,25 @@ def main():
                 panel(f"{cfgname} L{L} panel {rom['label']}", r['timing'].get(f"mesh|L{L}|{rom['label']}"), sorted(set(fom_keys)),
                       cases[:tc['cases']], tc['reps'])
 
-    for name, fn in (('steps', steps), ('tests', tests), ('grid', grid), ('fom', fom), ('prof', prof), ('mesh', mesh),
-                     ('mesh384', lambda: mesh('smkmesh384'))):
-        section(name, fn)
+    if a.mesh384:
+        # A1.9: the L = 384 pilot is its own Slurm job (own memory cgroup). Completed: its mesh gates. Failed: a reported
+        # infeasible mesh only if Slurm recorded OUT_OF_MEMORY for it (sacct state passed in --sacct-state) or the LAST 40
+        # log lines end in a resource error; any other failure fails.
+        r = load(O / 'smkmesh384' / 'result.json')
+        if r is not None and r.get('complete') is True:
+            section('mesh384', lambda: mesh('smkmesh384'))
+        else:
+            tail = '\n'.join(Path(a.log).read_text(errors='replace').splitlines()[-40:]) if a.log and Path(a.log).exists() else ''
+            res = a.sacct_state == 'OUT_OF_MEMORY' or any(t in tail for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'MemoryError'))
+            gate('smkmesh384 job: failed for resources (reported infeasible, A1.9)', res, sacct=a.sacct_state, tail=tail[-600:])
+    else:
+        for name, fn in (('steps', steps), ('tests', tests), ('grid', grid), ('fom', fom), ('prof', prof), ('mesh', mesh)):
+            section(name, fn)
     ok = len(G) > 0 and all(v['result'] == 'pass' for v in G.values())
     out = dict(verdict='PASS' if ok else 'FAIL', failing=[k for k, v in G.items() if v['result'] != 'pass'], n_gates=len(G), gates=G,
                offline_after_collection=['K4 (score3.py on smkgrid)', 'K9 (analyze.k9 on smkgrid)'],
                deferred_A4_5=['K10 (FOM matcher)', 'G3', 'H3.2/K5 qualification verdict'])
-    (O / 'ACCEPTANCE.json').write_text(json.dumps(out, indent=1, default=float) + '\n')
+    (O / ('ACCEPTANCE-mesh384.json' if a.mesh384 else 'ACCEPTANCE.json')).write_text(json.dumps(out, indent=1, default=float) + '\n')
     print(out['verdict'], out['n_gates'], out['failing'][:20])
 
 

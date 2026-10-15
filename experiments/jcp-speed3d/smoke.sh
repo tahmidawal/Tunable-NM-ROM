@@ -11,7 +11,7 @@ step() { local name=$1; shift; local t0=$(date +%s); echo "=== $name"; "$@" > "$
 step test_s3_M2 "$PY" test_s3.py --setting M2_512 --rule gl32 --cases 0 5 7 --out "$O/test_s3-M2_512.json"
 step test_s3_W1024 "$PY" test_s3.py --setting W1024 --rule lat65536 --cases 0 5 7 --out "$O/test_s3-W1024.json"
 step test_fom "$PY" test_fom.py --L 64 --skip-e0 --out "$O/test_fom.json"
-for c in smkgrid smkfom smkprof smkmesh smkmesh384; do step "$c" "$PY" s3run.py --config "configs/$c.json" --out "$O/$c"; done
+for c in smkgrid smkfom smkprof smkmesh; do step "$c" "$PY" s3run.py --config "configs/$c.json" --out "$O/$c"; done
 step accept "$PY" smoke_accept.py --out "$O"
 cat "$O/STEPS.txt"
 exit 0

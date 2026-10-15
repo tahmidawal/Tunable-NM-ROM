@@ -249,7 +249,32 @@ The selected arms whose deployed rule fails the finalist quadrature check (δ_qu
 
 Cost method: c2fbgrid common panel (baseline: deployed R256 BE), median paired ratio; c2grid common panel: ratio of the two median paired ratios (not a directly paired median).
 
-3D budget pending (`c3bud`).
+### 3D budget (median over the first 32 cases; e_tot, e_P, e_dyn against the E0 R_ST reference)
+
+Label: E0 second-order reference: accuracy against an order-verified reference for eligible case-kinds (flagged case-kinds are scored but not ranked); rankings conditional on eps_ref (a Richardson estimate under the asymptotic assumption, not a rigorous bound; the cross-check rule was amended post data, E0 A10); R_S is time-matched to the BE arms at dt0 only, every other S value is an unmatched diagnostic. Partial: W1024 pending.
+
+| setting | arm | role | δ_quad | δ_solve | δ_form | δ_time | D_a | e_tot | e_P | e_dyn | largest component (cases) | finalist qualified |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| M2_512 | fs / BE / 0.01 / K1 | baseline | 1.54e-06 | 2.41e-06 | 1.29e-04 | 1.50e-02 | 1.50e-02 | 1.54 % | 0.159 % | 0.0743 % | delta_time 31, e_dyn 1 | — |
+| M2_512 | fs / CN / 0.01 / K1 | diagnostic+H4b_witness | 1.85e-06 | 2.76e-06 | 9.82e-05 | 6.84e-04 | 6.84e-04 | 0.214 % | 0.159 % | 0.0743 % | e_P 25, delta_time 6, e_dyn 1 | yes |
+| M2_512 | fs / CN / 0.025 / K1 | diagnostic | 2.14e-06 | 1.09e-04 | 1.98e-04 | 4.21e-03 | 4.20e-03 | 0.558 % | 0.159 % | 0.0743 % | e_P 7, delta_time 22, delta_solve 3 | — |
+| M2_512 | fs / BDF2 / 0.0125 / K1 | accurate_equal_cost | 1.73e-06 | 4.64e-06 | 1.35e-04 | 5.69e-03 | 5.70e-03 | 0.627 % | 0.159 % | 0.0743 % | delta_time 28, e_dyn 1, e_P 3 | yes |
+| W256 | fs / BE / 0.01 / K1 | baseline | 6.61e-06 | 2.29e-06 | 3.45e-04 | 1.47e-02 | 1.47e-02 | 1.63 % | 0.468 % | 0.175 % | delta_time 28, e_P 4 | — |
+| W256 | fs / CN / 0.01 / K1 | diagnostic+H4b_witness | 8.19e-06 | 4.70e-06 | 2.60e-04 | 6.20e-04 | 6.23e-04 | 0.51 % | 0.468 % | 0.175 % | e_P 32 | yes |
+| W256 | fs / CN / 0.025 / K1 | diagnostic | 9.72e-06 | 4.75e-05 | 5.16e-04 | 3.95e-03 | 3.93e-03 | 0.839 % | 0.468 % | 0.175 % | e_P 17, delta_time 14, delta_solve 1 | — |
+| W256 | fs / CN / 0.0125 / K1 | accurate_equal_cost | 8.23e-06 | 7.60e-06 | 3.10e-04 | 9.86e-04 | 9.74e-04 | 0.525 % | 0.468 % | 0.175 % | e_P 30, delta_time 2 | yes |
+| W512 | fs / BE / 0.01 / K1 | baseline | 2.44e-08 | 2.41e-06 | 1.09e-04 | 1.50e-02 | 1.50e-02 | 1.53 % | 0.137 % | 0.0694 % | delta_time 31, e_dyn 1 | — |
+| W512 | fs / CN / 0.01 / K1 | diagnostic+H4b_witness | 2.82e-08 | 2.79e-06 | 8.84e-05 | 6.81e-04 | 6.80e-04 | 0.197 % | 0.137 % | 0.0694 % | e_P 22, delta_time 7, e_dyn 3 | yes |
+| W512 | fs / CN / 0.025 / K1 | diagnostic | 2.94e-08 | 4.99e-05 | 1.67e-04 | 4.22e-03 | 4.20e-03 | 0.52 % | 0.137 % | 0.0694 % | e_P 6, delta_time 25, delta_solve 1 | — |
+| W512 | fs / BDF2 / 0.0125 / K1 | accurate_equal_cost | 2.68e-08 | 4.15e-06 | 1.22e-04 | 5.68e-03 | 5.69e-03 | 0.62 % | 0.137 % | 0.0694 % | delta_time 28, e_dyn 2, e_P 2 | yes |
+| W768 | fs / BE / 0.01 / K1 | baseline | 4.26e-08 | 2.04e-06 | 5.25e-05 | 1.50e-02 | 1.50e-02 | 1.51 % | 0.0574 % | 0.0614 % | delta_time 31, e_dyn 1 | — |
+| W768 | fs / CN / 0.01 / K1 | diagnostic+H4b_witness | 5.48e-08 | 2.69e-06 | 4.46e-05 | 6.89e-04 | 6.90e-04 | 0.166 % | 0.0574 % | 0.0614 % | e_dyn 11, delta_time 12, e_P 9 | yes |
+| W768 | fs / CN / 0.025 / K1 | diagnostic | 6.35e-08 | 6.05e-05 | 8.59e-05 | 4.25e-03 | 4.25e-03 | 0.484 % | 0.0574 % | 0.0614 % | delta_time 29, delta_solve 2, e_P 1 | — |
+| W768 | fs / CN / 0.016666667 / K2 | accurate_equal_cost | 5.51e-08 | 3.93e-06 | 6.52e-05 | 1.86e-03 | 1.87e-03 | 0.24 % | 0.0574 % | 0.0614 % | e_dyn 7, delta_time 20, e_P 5 | yes |
+
+Budget gates: c3budA:B0 True, c3budA:B0_fixtures True, c3budA:inventory True, c3budA:B0_real_mismatch True, c3budA:B1 True, c3budA:reproduction not applicable, c3budA:grid_reproduction True.
+
+![3D budget](plots/budget3d.png)
 
 ## Corrections and retractions
 
@@ -286,14 +311,15 @@ Cost method: c2fbgrid common panel (baseline: deployed R256 BE), median paired r
 | c2budC | 5225286 | a100-80G | 29dc2743a | 2D error budget (fast, R128); resubmission after the cancelled 5218166 | complete, collected |
 | c2fbgrid | 5228777 | a100-80G | 91f723746 | A14 fallback grid: R256 gauss96 vs gauss128 (accuracy + timing) | complete, collected |
 | c2fbbud | 5228780 | a100-80G | 91f723746 | A14 fallback budget: R256fb (gauss128) | complete, collected |
-| c3budW1024 | 5231969 | h200 | 51730ce18 | 3D error budget, W1024 (r_inf gl80, finer gl96) |  |
-| c3budA | 5231973 | h200 | 51730ce18 | 3D error budget, M2_512/W256/W512/W768 |  |
+| c3budA | 5231973 | h200 | 51730ce18 | 3D error budget, M2_512/W256/W512/W768 | complete, collected |
+| c3budW1024r | 5241089 | h200 | a7711b82c | 3D error budget, W1024 (rerun after the A16 fix) |  |
 
 | failed attempt | Slurm id | note |
 |---|---|---|
 | smk3esc | — | first submission attempt: rsync aborted by login-node connection drop before sbatch; partial staging dir removed; no job created |
 | smk3ext | 5215974 | A11 extension smoke: gl96 ran (all four arms, 2 cases); gl112 (1.4M points, R'=1024) OOM in the vendored offmesh_tables test_block (42.9 GiB allocation) -> A11.3 drops gl112; logs and partial result in runs/smk3ext/failed-5215974 |
 | c2budC | 5218166 | cancelled while PENDING (never started) to free a lane slot for c3grid; cluster dir removed; to be re-staged and resubmitted |
+| c3budW1024 | 5231969 | OOM (27 GiB) preparing the finer rule Gauss 96^3 after 3.6 h: c3run bud mode kept a local reference to the Gauss 80^3 tables while preparing the next rule; fixed (A16); no result.json was written; logs in runs/c3budW1024/failed-5231969; rerun as c3budW1024r |
 
 ## Codex audits
 
@@ -338,6 +364,7 @@ Chronological; the opening statement of each audit (its verdict line). Every WRO
 | `audits/codex-results2d-e0-1.md` | Overall: NEEDS-RESTATEMENT for provenance/reporting; the audited numerical results are CORRECT. No files were created, modified, or appended. |
 | `audits/codex-results3d-2.md` | JOB GATE: SUBMIT `c3budW1024` and `c3budA`. The round-1 selection blocker is resolved. |
 | `audits/codex-results3d-e0-1.md` | Overall: NEEDS-RESTATEMENT. The rescoring and A13 H6 calculations are correct. The interpretation must distinguish a selected-configuration dial from a bank-width effect, and reporting needs the qualifications below. No … |
+| `audits/codex-job-c3budW1024r.md` | SUBMIT `c3budW1024r` on the certified H200 / 200G / 48-hour allocation. No blocking finding. |
 
 ## Glossary
 

@@ -646,6 +646,12 @@ def main():
           f"Label: {b3['provisional']}." + ('' if b3.get('complete') else ' Partial: W1024 pending.'), '')
         r.table(head, budget_rows(b3['settings'], 'e_P', 'e_dyn', 'e_tot'))
         r('Budget gates: ' + ', '.join(f"{k} {(v.get('passed') if isinstance(v, dict) else v)}" for k, v in b3['gates'].items()) + '.', '')
+        wh3 = {sn: S_.get('withheld') for sn, S_ in b3['settings'].items() if S_.get('withheld')}
+        cc3 = {sn: S_.get('conv_check', {}) for sn, S_ in b3['settings'].items()}
+        r('Converged-rule check per setting (r_inf vs the next finer rule, every r_inf-dependent run type, 32 cases): ' +
+          '; '.join(f"{k} worst {sci(v.get('worst'))}, all runs valid {v.get('all_valid')}, passed {v.get('passed')}"
+                    for k, v in cc3.items()) + '.'
+          + (' Withheld attributions: ' + '; '.join(f'{k}: {v}' for k, v in wh3.items()) + '.' if wh3 else ''), '')
         plot_budget(b3['settings'], 'budget3d.png', '3D', 'e_P', 'e_dyn')
         r('![3D budget](plots/budget3d.png)', '')
     else:

@@ -21,7 +21,8 @@ REF1_SHA = '36e84e3dbac2f5cf1b3350c311c1f16d17ecfcd4dc217ded836ba30613c6cc8b'
 V3 = f'{LANE}/vendor/quad3d'
 FILES = [f'{LANE}/{f}' for f in ('c3common.py', 'fs3.py', 'fs3p.py', 'qn3.py', 't2core.py', 'timing.py', 's3common.py',
                                  's3ctx.py', 's3run.py', 's3modes.py', 'replay.py', 'bigtables.py', 'fomcore.py', 'fomrun.py',
-                                 'pscore.py', 'psjax.py', 'test_s3.py', 'test_fom.py', 'e0loader/refstore.py',
+                                 'pscore.py', 'psjax.py', 'test_s3.py', 'test_fom.py', 'smoke.sh', 'smoke_accept.py', 'analyze.py',
+                                 'offline.py', 'e0loader/refstore.py',
                                  'e0loader/verdict.py', 'inputs/model_W1024/bank.pkl', 'rules3d/rules_extra.npz')] + \
     [f'{V3}/offmesh.py', f'{V3}/qpanel.py', f'{V3}/vendor/burgers3d-span/common.py', f'{V3}/vendor/burgers3d-retry/tables.py',
      f'{V3}/vendor/paper-b3d/vendor/b3d_common.py', f'{V3}/inputs/model_M2/bank.pkl', f'{V3}/rules/rules.npz']

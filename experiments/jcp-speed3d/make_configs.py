@@ -36,21 +36,23 @@ def main():
     # cluster smoke (real size, cases 0, 5, 7; every mode; DESIGN A1.10, A1.12)
     sm = dict(BASE, smoke=True, case_subset=[0, 5, 7], timing=dict(cases=2, reps=1, burn=0.05, seed=1))
     w('smkgrid', dict(sm, mode='grid', settings=[dict(SETTINGS['M2_512'], reduced=['gl24']), dict(SETTINGS['W1024'], reduced=[])],
-                      dts=[0.01, 0.025]))
-    w('smkfom', dict(sm, mode='fom', settings=[], fom=dict(fd=[['UB', 64, [0.01]], ['CC', 64, [0.0125]], ['UB', 128, [0.01]]],
+                      dts=[0.01, 0.05 / 3, 0.025]))
+    w('smkfom', dict(sm, mode='fom', settings=[], fom=dict(fd=[['UB', 64, [0.01]], ['UC', 64, [0.0125]], ['CC', 64, [0.0125]], ['UB', 128, [0.01]]],
                                                             ps=dict(Ns=[32], dts=[0.01]), calib_cases=[0, 5], save_cases=[0])))
-    w('smkprof', dict(sm, mode='prof', settings=[SETTINGS['M2_512'], SETTINGS['W1024']], extra_rules=['gl12', 'gl56'],
+    w('smkprof', dict(sm, mode='prof', settings=[SETTINGS['M2_512'], SETTINGS['W1024']], extra_rules=['gl12', 'gl56', 'gl24'],
                       prof=dict(configs=[dict(label='C_old', setting='M2_512', rule='gl32', spec='fs|BE|0.01|K1'),
                                          dict(label='qnCN', setting='M2_512', rule='gl32', spec='qn|CN|0.025|k4'),
                                          dict(label='W1024BE', setting='W1024', rule='lat65536', spec='fs|BE|0.01|K1'),
-                                         dict(label='W1024qn', setting='W1024', rule='lat65536', spec='qn|CN|0.025|k4')],
-                                mf=['qnCN', 'W1024qn'], k5_rule='gl12', profile=['C_old', 'qnCN', 'W1024BE'],
-                                batch=dict(labels=['qnCN', 'C_old'], sizes=[1, 3]), confirm=[['C_old', 'qnCN']],
-                                confirm_cases=2, confirm_reps=1, conv={'qnCN': 'gl56'}, reduced_adt=['qnCN'])))
-    w('smkmesh', dict(sm, mode='mesh', settings=[SETTINGS['M2_512'], SETTINGS['W1024']],
+                                         dict(label='W1024qn', setting='W1024', rule='lat65536', spec='qn|CN|0.025|k4'),
+                                         dict(label='qnCNred', setting='M2_512', rule='gl24', spec='qn|CN|0.025|k4'),
+                                         dict(label='qnBDF2', setting='M2_512', rule='gl32', spec='qn|BDF2|0.016666667|k1')],
+                                mf=['qnCN', 'W1024qn'], k5_rule='gl12', profile=['C_old', 'qnCN', 'W1024BE', 'qnBDF2'],
+                                batch=dict(labels=['qnCN', 'C_old', 'W1024qn'], sizes=[1, 3]), confirm=[['C_old', 'qnCN']],
+                                confirm_cases=2, confirm_reps=1, conv={'qnCN': 'gl56'}, reduced_adt=['qnCNred'])))
+    w('smkmesh', dict(sm, mode='mesh', settings=[SETTINGS['M2_512'], SETTINGS['W256'], SETTINGS['W1024']],
                       mesh=dict(Ls=[64, 128, 384], roms=[dict(label='qnCN', setting='M2_512', rule='gl32', spec='qn|CN|0.025|k4'),
                                                          dict(label='W1024qn', setting='W1024', rule='lat65536', spec='qn|CN|0.025|k4')],
-                                same=[['UB', 0.01], ['CC', 0.01]], matched=[['qnCN', 'ps|N32|0.01']],
+                                same=[['UB', 0.01], ['CC', 0.01]], matched=[['qnCN', 'ps|N32|0.01'], ['qnCN', 'fd|CC|L128|0.0125|t1']],
                                 calib_small=[0], calib_large=[0], acc_cases=2)))
 
 

@@ -85,12 +85,19 @@ class FOMs:
         if sp[0] == 'ps':
             return fin, dict(finite=fin)
         ntol = TOLS[sp[4]][0]
+        _, fam, L, dt, _ = sp
+        scheme = FAM[fam][1]
         k = int(np.asarray(info['stages']))
+        want = FC.n_stages(dt, scheme)
+        units_ok = int(np.asarray(info['units'])) == 2 * int(round(0.25 / dt))
         resall, nwtall = np.asarray(info['res']), np.asarray(info['nwt'])
-        complete = 0 < k <= len(resall)
+        complete = bool(k == want and units_ok and k <= len(resall) and k <= len(nwtall))
         res, nwt = resall[:k], nwtall[:k]
         fin = fin and bool(np.isfinite(np.asarray(info['out'])).all())
-        ok = bool(fin and complete and np.all(np.isfinite(res)) and np.all(res <= ntol) and np.all(nwt >= 0))
+        # A4.2: a stage is converged iff its recorded relative residual <= ntol (the refcore loop exits on that test or at the
+        # Newton limit; a limit exit with the residual met counts as converged and is flagged); every count in [0, limit]
+        ok = bool(fin and complete and np.all(np.isfinite(res)) and np.all(res <= ntol)
+                  and np.all((nwt >= 0) & (nwt <= MAX_NEWTON)))
         return ok, dict(stages=k, complete=complete, worst_res=float(np.max(res)) if len(res) else None,
                         max_newton=int(nwt.max()) if len(nwt) else None,
                         at_newton_limit=int(np.sum(nwt >= MAX_NEWTON)) if len(nwt) else None)

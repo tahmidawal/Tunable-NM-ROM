@@ -48,7 +48,8 @@
  ],
  "extra_rules": [
   "gl12",
-  "gl56"
+  "gl56",
+  "gl24"
  ],
  "prof": {
   "configs": [
@@ -75,6 +76,18 @@
     "setting": "W1024",
     "rule": "lat65536",
     "spec": "qn|CN|0.025|k4"
+   },
+   {
+    "label": "qnCNred",
+    "setting": "M2_512",
+    "rule": "gl24",
+    "spec": "qn|CN|0.025|k4"
+   },
+   {
+    "label": "qnBDF2",
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "qn|BDF2|0.016666667|k1"
    }
   ],
   "mf": [
@@ -85,12 +98,14 @@
   "profile": [
    "C_old",
    "qnCN",
-   "W1024BE"
+   "W1024BE",
+   "qnBDF2"
   ],
   "batch": {
    "labels": [
     "qnCN",
-    "C_old"
+    "C_old",
+    "W1024qn"
    ],
    "sizes": [
     1,
@@ -109,7 +124,7 @@
    "qnCN": "gl56"
   },
   "reduced_adt": [
-   "qnCN"
+   "qnCNred"
   ]
  }
 }

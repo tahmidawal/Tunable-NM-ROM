@@ -11,6 +11,7 @@ Config blocks (all keyed by the mode name):
 from __future__ import annotations
 
 import gc
+import math
 import time
 
 import numpy as np
@@ -230,6 +231,9 @@ def mode_prof(cx):
     # (c) H3.1 profile (indicative): components timed against the fused query
     for lab in blk.get('profile', []):
         sn, rule, sp = _cfg_of(blk, lab)
+        if sp[0] == 'ad':
+            P['profile'][lab] = dict(skipped='ADT configurations are not profiled')
+            continue
         st, d = cx.ST[sn], cx.ST[sn].data(rule)
         q = cx.q_of(sn, sp)
         memo = {}
@@ -247,30 +251,38 @@ def mode_prof(cx):
         w0s = {j: q.project(cx.U0[j], d) for j in cases[:tc['cases']]}
         ev = {j: q.evolve(w0s[j][0], cx.NU[j], w0s[j][1], d) for j in cases[:tc['cases']]}
         Wo = {j: ev[j]['W_all'][::q.keep] if 'W_all' in ev[j] else ev[j]['W'] for j in cases[:tc['cases']]}
+        # stage inputs from the configuration's own trajectory (audit code-2 #5): mid step k, history (c_k, c_{k-1}), start
+        # state = the linear predictor 2 c_k - c_{k-1}; ADT configurations have no internal trajectory and are not profiled
+        steps_, _ = S.nsteps(sp[2])
+        kmid = steps_ // 2
+        Wall = {j: (ev[j]['W_all'] if 'W_all' in ev[j] else None) for j in cases[:tc['cases']]}
+        cn = {j: Wall[j][kmid] for j in Wall}
+        cm = {j: Wall[j][kmid - 1] for j in Wall}
+        cp = {j: 2. * cn[j] - cm[j] for j in Wall}
         contract = jax.jit(lambda c, dd: C3.OM.contract_offmesh(dd, c))
-        Ju = {j: contract(w0s[j][0][0], d) for j in cases[:tc['cases']]}
+        Ju = {j: contract(cp[j][0], d) for j in Wall}
         a0, a1, a2, b0, b1, _ns = qn3.SCHEMES[sp[1]]
         dtp = sp[2]
 
         def stage_S(nu, dd):
             return 1.0 / (a0 + dtp * b0 * nu[:, None] * dd['lam'][None, :])
 
-        def nrm_chol(c, J, nu, dd):
+        def nrm_chol(J, nu, dd):
             """The production QN refresh after the contraction: J~ = A + dt b0 S Ju, H = J~^T J~, chol(H + mu0 diag H)."""
             S_ = stage_S(nu, dd)[0]
             Jt = dd['A'] + (dtp * b0 * S_)[:, None] * J
             H = Jt.T @ Jt
             return jnp.linalg.cholesky(H + qn3.MU0 * jnp.diag(jnp.diag(H)))
         jt = jax.jit(nrm_chol)
-        Lf = {j: jt(w0s[j][0], Ju[j], cx.NU[j], d) for j in cases[:tc['cases']]}
+        Lf = {j: jt(Ju[j], cx.NU[j], d) for j in Wall}
 
-        def qn_iter(c, nu, L_, dd):
-            """One production QN iteration of the configured scheme and step at state c with history c_n = c_{n-1} = c:
-            exact residual, exact gradient (matrix-free), Cholesky solve, trust clip, one trial residual."""
+        def qn_iter(c, c_n, c_m, nu, L_, dd):
+            """One production QN iteration at a real stage: exact residual, exact gradient (matrix-free), Cholesky solve,
+            trust clip, the trial residual (the accepted-step path; backtracking adds trial residuals of the same cost)."""
             S_ = stage_S(nu, dd)
-            Ac = c @ dd['A'].T
-            hist = a1 * Ac + a2 * Ac + dtp * b1 * (qn3.adv(c, dd) + nu[:, None] * dd['lam'][None, :] * Ac)
-            res = lambda x: S_ * (a0 * (x @ dd['A'].T) + hist + dtp * b0 * (qn3.adv(x, dd) + nu[:, None] * dd['lam'][None, :] * (x @ dd['A'].T)))
+            lamA = lambda x: nu[:, None] * dd['lam'][None, :] * (x @ dd['A'].T)
+            hist = a1 * (c_n @ dd['A'].T) + a2 * (c_m @ dd['A'].T) + dtp * b1 * (qn3.adv(c_n, dd) + lamA(c_n))
+            res = lambda x: S_ * (a0 * (x @ dd['A'].T) + hist + dtp * b0 * (qn3.adv(x, dd) + lamA(x)))
             r = res(c)
             Bc, Dc = qn3.bd(c, dd)
             g = r @ dd['A'] + dtp * b0 * qn3.jut(Bc, Dc, S_ * r, dd)
@@ -278,14 +290,18 @@ def mode_prof(cx):
             dlt = dlt * jnp.minimum(1., st.trust / (jnp.linalg.norm(dlt) + 1e-300))
             return res(c + dlt[None])
         qi = jax.jit(qn_iter)
+        kr = sp[3] if (sp[0] == 'qn' and sp[3] != 0) else (1 if sp[0] != 'qn' else math.inf)
+        evq = qn3.make_qn_evolve(st.Rp, sp[1], sp[2], 1, st.trust, kr)
+        qstep = jax.jit(lambda c_n, h, nu, dd: evq(c_n, nu, dd, hist=h, k0=kmid)['W_all'])
         floor = jax.jit(lambda x: x + 1.)
         subs = [subj('project', lambda j: q.project(cx.U0[j], d)[0]),
                 subj('evolve', lambda j: q.evolve(w0s[j][0], cx.NU[j], w0s[j][1], d)['W']
                      if sp[0] == 'ad' else q.evolve(w0s[j][0], cx.NU[j], w0s[j][1], d)['W_all']),
                 subj('decode', lambda j: q.decode(Wo[j], d)),
-                subj('contraction', lambda j: contract(w0s[j][0][0], d)),
-                subj('normal+cholesky', lambda j: jt(w0s[j][0], Ju[j], cx.NU[j], d)),
-                subj('qn_iteration', lambda j: qi(w0s[j][0], cx.NU[j], Lf[j], d)),
+                subj('contraction', lambda j: contract(cp[j][0], d)),
+                subj('normal+cholesky', lambda j: jt(Ju[j], cx.NU[j], d)),
+                subj('qn_iteration', lambda j: qi(cp[j], cn[j], cm[j], cx.NU[j], Lf[j], d)),
+                subj('qn_step_with_refresh', lambda j: qstep(cn[j], (cm[j], Wall[j][kmid - 2], Wall[j][kmid - 3]), cx.NU[j], d)),
                 subj('dispatch_floor', lambda j: floor(jnp.float64(j)))]
         if sp[0] in ('fs', 'fsp'):
             steps, _ = S.nsteps(sp[2])
@@ -438,10 +454,8 @@ def mode_mesh(cx):
             ent['cases'] = fom_accuracy(cx, foms, sp, cases[:blk['acc_cases']], inputs, hashes, R1)
             subj.append(sp)
             cx.save()
-        for rl, fk in blk.get('matched', []):
+        for rl, fk in blk.get('matched', []):            # timed against the ROM at every mesh (audit code-2 #4)
             sp = FR.parse(fk)
-            if L != 64:                 # H4.3 is cross-resolution against the ROM at n = 65: timed in the L = 64 block
-                continue
             if fk not in E['fom']:
                 E['fom'][fk] = dict(key=fk, matched_for=[rl], cases=fom_accuracy(cx, foms, sp, cases[:tc['cases']], inputs,
                                                                                   hashes, R1))

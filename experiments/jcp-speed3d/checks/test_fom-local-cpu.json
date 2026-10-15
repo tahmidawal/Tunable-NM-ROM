@@ -1,0 +1,78 @@
+{
+ "backend": "cpu",
+ "checks": {
+  "run_UB": {
+   "seconds": 9.252841935958713,
+   "converged": [
+    true,
+    {
+     "stages": 25,
+     "complete": true,
+     "worst_res": 9.408768333456978e-09,
+     "max_newton": 2,
+     "at_newton_limit": 0
+    }
+   ]
+  },
+  "run_UC": {
+   "seconds": 6.551610735012218,
+   "converged": [
+    true,
+    {
+     "stages": 22,
+     "complete": true,
+     "worst_res": 7.464635023114204e-09,
+     "max_newton": 2,
+     "at_newton_limit": 0
+    }
+   ]
+  },
+  "run_CC": {
+   "seconds": 11.427912862040102,
+   "converged": [
+    true,
+    {
+     "stages": 22,
+     "complete": true,
+     "worst_res": 6.72782304516083e-10,
+     "max_newton": 3,
+     "at_newton_limit": 0
+    }
+   ]
+  },
+  "G6_UB": true,
+  "G6_UC": true,
+  "G6_CC": true,
+  "G6v": {
+   "rel": 0.0,
+   "pass_": true
+  },
+  "K8": {
+   "diff": 0.08122351978084658,
+   "fires": true
+  },
+  "G7": {
+   "0": {
+    "rel": 5.77967142783312e-16,
+    "half_dt_diff": 0.00017993019037504726
+   },
+   "1": {
+    "rel": 5.793656940251327e-16,
+    "half_dt_diff": 6.650489314098741e-05
+   },
+   "pass": true,
+   "control_fires": true
+  },
+  "G5_M2_512": {
+   "M": 2052,
+   "M_ref": 2052,
+   "kxyz_equal": true,
+   "lam_equal": true,
+   "A_rel": 2.155722419759169e-15,
+   "pass": true,
+   "K7_rel": 0.02352929179785104,
+   "K7_fires": true
+  }
+ },
+ "mandatory_failures": []
+}

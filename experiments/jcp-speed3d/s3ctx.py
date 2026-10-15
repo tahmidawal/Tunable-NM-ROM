@@ -56,7 +56,12 @@ class Ctx:
         self.tab = C3.C.table(seed, count)
         self.cases = list(cfg.get('case_subset') or range(count))
         self.rep['cohort'] = dict(seed=seed, count=count, table_sha256=self.tab['sha256'], cases=self.cases)
-        self.U0 = {j: jax.block_until_ready(jnp.asarray(C3.C.initial_interior(65, self.tab, j))[None]) for j in self.cases}
+        self.U0, prep = {}, []
+        for j in self.cases:
+            t_ = time.perf_counter()
+            self.U0[j] = jax.block_until_ready(jnp.asarray(C3.C.initial_interior(65, self.tab, j))[None])
+            prep.append(time.perf_counter() - t_)
+        self.rep['input_prep_seconds'] = {'rom_mesh65': prep}
         self.NU = {j: jnp.asarray([float(self.tab['nu'][j])]) for j in self.cases}
         self.N0 = {j: float(jnp.linalg.norm(self.U0[j])) for j in self.cases}
         sets = list(cfg.get('settings', []))
@@ -106,7 +111,9 @@ class Ctx:
         k = (rule, j)
         if k not in self.UX:
             X, _ = self.rules[rule]
+            t_ = time.perf_counter()
             self.UX[k] = jax.block_until_ready(jnp.asarray(C3.C.b3.blob_ic_3d(65, self.tab, j, coords=X))[None])
+            self.rep.setdefault('input_prep_seconds', {}).setdefault(f'rom_mf|{rule}', []).append(time.perf_counter() - t_)
         return self.UX[k]
 
     def inp(self, path, rule, j):
@@ -163,6 +170,9 @@ class Ctx:
             if walls:
                 self.Wstore[f'wall|{tag}|{key}'] = np.stack(walls)
             res[key] = dict(W=arr, valid=vals, nonst=nst, steps=nsteps_)
+            fs_ = [r['seconds_first'] for r in self.rep['rows'][-len(ids):]]
+            if len(fs_) >= 2:                            # first call includes the JIT compile
+                self.rep.setdefault('compile_estimate_seconds', {})[f'{tag}|{key}'] = fs_[0] - float(np.median(fs_[1:]))
             print('RUN', tag, key, f'{time.perf_counter() - t_s:.1f}s', 'valid', all(vals), 'nonst', sum(nst), '/',
                   sum(nsteps_), self.el(), flush=True)
         return res

@@ -1,0 +1,13 @@
+jax_backend=cpu
+UB {'seconds': 9.252841935958713, 'converged': (True, {'stages': 25, 'complete': True, 'worst_res': 9.408768333456978e-09, 'max_newton': 2, 'at_newton_limit': 0})}
+UC {'seconds': 6.551610735012218, 'converged': (True, {'stages': 22, 'complete': True, 'worst_res': 7.464635023114204e-09, 'max_newton': 2, 'at_newton_limit': 0})}
+CC {'seconds': 11.427912862040102, 'converged': (True, {'stages': 22, 'complete': True, 'worst_res': 6.72782304516083e-10, 'max_newton': 3, 'at_newton_limit': 0})}
+G6 {'G6_UB': True, 'G6_UC': True, 'G6_CC': True}
+G6v 0.0
+K8 0.08122351978084658 G7 {0: {'rel': 5.77967142783312e-16, 'half_dt_diff': 0.00017993019037504726}, 1: {'rel': 5.793656940251327e-16, 'half_dt_diff': 6.650489314098741e-05}, 'pass': True, 'control_fires': True}
+[mesh 65] bank rows [(512, 250047)] 5.2s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 10.2s
+[bigtables n=65 R=512] slab 0/63 0.2s
+[bigtables n=66 R=512] slab 0/64 0.2s
+G5 {'M': 2052, 'M_ref': 2052, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 2.155722419759169e-15, 'pass': True, 'K7_rel': 0.02352929179785104, 'K7_fires': True}
+DONE all mandatory gates pass

@@ -493,3 +493,28 @@ supersedes the execution diagram of §9.
   distance-only case whose replayed step is already stationary is reported "baseline already stationary"; replay covers
   only fixed-sweep steps (a failing step inside the adaptive start is reported as such and not replayed).
 * A1.2 + A2.1 are implemented as one checklist in the docstring of `qn3.py`.
+
+---
+
+## Amendment A4 (2026-10-15, before any cluster job; from `audits/codex-code-1.md`, `codex-code-2.md`)
+
+* **A4.1 Smoke acceptance.** The cluster smoke (`smoke.sh`) runs `test_s3.py` (M2_512 gl32 and W1024 lat65536, cases
+  0, 5, 7), `test_fom.py` (L = 64; G6 against E0 `refcore` needs the E0 source and is run on CPU locally:
+  `checks/test_fom-local-cpu.json`), and the four smoke modes; `smoke_accept.py` writes `ACCEPTANCE.json`. The smoke is
+  accepted only if every gate there passes; job completion is not acceptance. G8 is checked locally on Step 2's stored
+  outputs (`checks/test_g8.json`).
+* **A4.2 FOM stage convergence (clarifies A2.5).** A stage is converged iff its recorded relative residual is
+  $\le n_{\rm tol}$; the `refcore` Newton loop stops on that test or at its 20-iteration limit, so a limit exit with the
+  residual met is converged (counted and flagged), and a limit exit without it is not. Evidence must be complete: the
+  number of stages equals the schedule's (`n_stages`), the time units reach 0.25, and every stage has a residual and a
+  Newton count in [0, 20].
+* **A4.3 Profile kernels (A1.1, A1.8).** Contraction, normal matrix + Cholesky, one QN iteration (exact residual,
+  exact gradient, solve, trust clip, one trial residual = the accepted-step path) and one full QN step with a refresh are
+  timed at a real stage of the configuration's own trajectory (mid step $k$, history $c_k,c_{k-1}$, start state the
+  linear predictor $2c_k-c_{k-1}$). JIT compile time is estimated per configuration as the first call minus the median
+  of the later calls; input preparation (IC on the mesh, at the rule points, sine coefficients) is timed separately.
+* **A4.4 Matched FOM timing (H4.3).** Every matched FOM configuration is timed against the ROM at every mesh of the
+  route-4 job (cross-resolution).
+* **A4.5 Deferred (implemented before the decision each one feeds, never after it):** the selection/freeze script, the
+  FOM matcher with K10, the confirmation-based final H1.4/H2 verdicts, the H3.2/K5 qualification verdict and G3, the
+  analysis completeness/provenance checks, and the smoke-derived resource certificates.

@@ -423,24 +423,22 @@ def mode_mesh(cx):
                     E['rom'][r['label']] = dict(infeasible=repr(e)[:400])
                     continue
             tag = f'{sn}|{rule}|mf|n{n}'
-            try:
+            try:                    # A1.9: the whole pilot (ROM, ADT tight / tighter) is one feasible / infeasible outcome
                 rr = cx.rollouts(sn, rule, [sp], cases, path='mf', data=d, n=n, tag=tag)
-            except Exception as e:  # noqa: BLE001  (A1.9: a pilot that does not fit is dropped and reported)
+                ad = ('ad', sp[1], sp[2], 'tight')
+                ra = cx.rollouts(sn, rule, [ad], cases, path='mf', data=d, n=n, tag=tag)
+                adt2 = ('ad', sp[1], sp[2], 'tighter')
+                rt = cx.rollouts(sn, rule, [adt2], cases[:8], path='mf', data=d, n=n, tag=tag)
+                E['rom'][r['label']] = dict(tables=info, dist_to_adt=cx.dist_cases(sn, rr[S.spec_key(sp)]['W'], ra[S.spec_key(ad)]['W'],
+                                                                                   cases).tolist(),
+                                            adt_valid=ra[S.spec_key(ad)]['valid'], adt_tighter_valid=rt[S.spec_key(adt2)]['valid'],
+                                            adt_tight_tighter=float(cx.dist_cases(sn, ra[S.spec_key(ad)]['W'][:8], rt[S.spec_key(adt2)]['W'],
+                                                                                  cases[:8])[:, 1:].max()))
+                datas[r['label']] = d
+            except Exception as e:  # noqa: BLE001
                 E['rom'][r['label']] = dict(infeasible=repr(e)[:400], tables=info)
                 del d
                 gc.collect()
-                continue
-            datas[r['label']] = d
-            ad = ('ad', sp[1], sp[2], 'tight')
-            ra = cx.rollouts(sn, rule, [ad], cases, path='mf', data=d, n=n, tag=tag)
-            rt = cx.rollouts(sn, rule, [('ad', sp[1], sp[2], 'tighter')], cases[:8], path='mf', data=d, n=n, tag=tag)
-            E['rom'][r['label']] = dict(tables=info, dist_to_adt=cx.dist_cases(sn, rr[S.spec_key(sp)]['W'], ra[S.spec_key(ad)]['W'],
-                                                                               cases).tolist(),
-                                        adt_valid=ra[S.spec_key(ad)]['valid'],
-                                        adt_tighter_valid=rt[S.spec_key(('ad', sp[1], sp[2], 'tighter'))]['valid'],
-                                        adt_tight_tighter=float(cx.dist_cases(sn, ra[S.spec_key(ad)]['W'][:8],
-                                                                              rt[S.spec_key(('ad', sp[1], sp[2], 'tighter'))]['W'],
-                                                                              cases[:8])[:, 1:].max()))
             cx.save()
             cx.dump()
         # FOMs at this mesh: same-mesh diagnostics (calibrated) and matched configurations
@@ -486,7 +484,11 @@ def mode_mesh(cx):
             Bs = [fom_subject(cx, foms, x, inputs, hashes) for x in subj]
             if not Bs:
                 continue
-            cx.time_panel(f'mesh|L{L}|{r["label"]}', A, Bs, int(tc['seed']) + 200 + 10 * L + i, tc['cases'], tc['reps'])
+            try:
+                cx.time_panel(f'mesh|L{L}|{r["label"]}', A, Bs, int(tc['seed']) + 200 + 10 * L + i, tc['cases'], tc['reps'])
+            except Exception as e:  # noqa: BLE001  (A1.9: reported; the ROM entry is marked infeasible at this mesh)
+                E['rom'][r['label']] = dict(E['rom'].get(r['label'], {}), infeasible=f'timing: {repr(e)[:380]}')
+                gc.collect()
         E['peak_bytes'] = C3.peak_bytes()
         del datas, foms, inputs
         gc.collect()

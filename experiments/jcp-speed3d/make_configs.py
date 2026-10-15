@@ -53,7 +53,7 @@ def main():
                       mesh=dict(Ls=[64, 128, 384], roms=[dict(label='qnCN', setting='M2_512', rule='gl32', spec='qn|CN|0.025|k4'),
                                                          dict(label='W1024qn', setting='W1024', rule='lat65536', spec='qn|CN|0.025|k4')],
                                 same=[['UB', 0.01], ['CC', 0.01]], matched=[['qnCN', 'ps|N32|0.01'], ['qnCN', 'fd|CC|L128|0.0125|t1']],
-                                calib_small=[0], calib_large=[0], acc_cases=2)))
+                                calib_small=[0], calib_large=[0], acc_cases=1), timing=dict(cases=1, reps=1, burn=0.05, seed=1)))
 
 
 if __name__ == '__main__':

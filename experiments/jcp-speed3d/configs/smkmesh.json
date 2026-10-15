@@ -1,0 +1,93 @@
+{
+ "attempt": "smkmesh",
+ "driver": "s3run",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "dts": [
+  0.01,
+  0.0125,
+  0.016666666666666666,
+  0.025
+ ],
+ "smoke": true,
+ "case_subset": [
+  0,
+  5,
+  7
+ ],
+ "timing": {
+  "cases": 2,
+  "reps": 1,
+  "burn": 0.05,
+  "seed": 1
+ },
+ "mode": "mesh",
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "gl32",
+   "reduced": [
+    "gl24",
+    "lat16384"
+   ]
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat65536",
+   "reduced": [
+    "lat32768"
+   ]
+  }
+ ],
+ "mesh": {
+  "Ls": [
+   64,
+   128,
+   384
+  ],
+  "roms": [
+   {
+    "label": "qnCN",
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "qn|CN|0.025|k4"
+   },
+   {
+    "label": "W1024qn",
+    "setting": "W1024",
+    "rule": "lat65536",
+    "spec": "qn|CN|0.025|k4"
+   }
+  ],
+  "same": [
+   [
+    "UB",
+    0.01
+   ],
+   [
+    "CC",
+    0.01
+   ]
+  ],
+  "matched": [
+   [
+    "qnCN",
+    "ps|N32|0.01"
+   ]
+  ],
+  "calib_small": [
+   0
+  ],
+  "calib_large": [
+   0
+  ],
+  "acc_cases": 2
+ }
+}

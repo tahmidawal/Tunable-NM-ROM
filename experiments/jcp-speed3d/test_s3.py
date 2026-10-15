@@ -92,13 +92,16 @@ def main():
         for i in range(len(a.cases)):
             gc = np.asarray(cert(oa['W_all'][:, i], NU[i], d))
             gr = np.asarray(oa['gn'][:, i])
+            if not (np.isfinite(gc).all() and np.isfinite(gr).all()):
+                worst = float('inf')
+                continue
             dlt = np.abs(gc - gr)[a_eff:] - (1e-9 * np.abs(gr[a_eff:]) + 1e-12)
             worst = max(worst, float(dlt.max()))
-        chk[f'G2_{sch}_{dt}'] = dict(worst_excess=worst, ok=worst <= 0)
+        chk[f'G2_{sch}_{dt}'] = dict(worst_excess=worst, ok=bool(np.isfinite(worst) and worst <= 0))
         print('G2', sch, dt, worst, flush=True)
 
     if a.quick:
-        json.dump(rep, open(a.out, 'w'), indent=1, default=float)
+        finish(rep, a.out)
         return
     # QN arms + ADT + controls
     adt = {}
@@ -148,8 +151,32 @@ def main():
                      w0_dist=(np.linalg.norm((np.asarray(om['w0']) - np.asarray(S.project_mesh(U0, d)[0])) @ G, axis=1) / n0).tolist())
     print('mf', chk['mf'], flush=True)
     rep['seconds'] = time.perf_counter() - t0
-    json.dump(rep, open(a.out, 'w'), indent=1, default=float)
-    print('DONE', rep['seconds'], flush=True)
+    finish(rep, a.out)
+
+
+def finish(rep, out):
+    """Mandatory gates (audit code-1 #11): G0, G1 bitwise, G2; and, in the full test, QN-1 CN 2.5 within the bar, K2 / K3
+    fire, G4 <= 1e-8, K6 fires. Non-zero exit if any fails."""
+    c = rep['checks']
+    fails = [k for k in ('G0_bitwise',) if not all(c.get(k, [False]))]
+    fails += [k for k, v in c.items() if k.startswith('G1_') and not (v['bitwise'] and v['extra_finite'])]
+    fails += [k for k, v in c.items() if k.startswith('G2_') and not v['ok']]
+    if 'qn|CN|0.025|k1' in c:
+        if not max(c['qn|CN|0.025|k1']['dist']) <= 2.5e-4:
+            fails.append('QN1 CN 2.5 distance')
+        if not min(c['qn|CN|0.025|k1|q0']['nonstationary']) > 0:
+            fails.append('K2')
+        if not max(c['qn|CN|0.025|k1|noJuT']['dist'] + c['qn|BE|0.01|k1|noJuT']['dist']) > 2.5e-4:
+            fails.append('K3')
+        if not max(c['G4_dist']) <= 1e-8:
+            fails.append('G4')
+        if not max(c['K6_dist']) > 2.5e-5:
+            fails.append('K6')
+    rep['mandatory_failures'] = fails
+    json.dump(rep, open(out, 'w'), indent=1, default=float)
+    print('DONE', 'FAILURES' if fails else 'all mandatory gates pass', fails, flush=True)
+    if fails:
+        raise SystemExit(5)
 
 
 if __name__ == '__main__':

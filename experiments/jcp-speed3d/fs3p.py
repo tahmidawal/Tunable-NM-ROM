@@ -1,7 +1,8 @@
 """jcp-speed3d fs3p (DESIGN A1.3): copy of jcp-combined fs3.py with two extra predictor candidates (static flag
 `extra`): P3 cubic extrapolation 4c_n-6c_{n-1}+4c_{n-2}-c_{n-3} and P4 the IMEX predictor (advection extrapolated
-2adv_n-adv_{n-1}, least squares with A = QA RA). Their residuals use the cheap exact residual; if one of them is chosen
-its Jacobian is formed (one extra contraction; such steps are identified by the predictor index 3 or 4). The carry gains c_{n-3}. With extra=False the
+2adv_n-adv_{n-1}, least squares with A = QA RA). P3's residual and Jacobian come from the cubic extrapolation of the
+carried Jacobians (exact: Ju is linear in c); P4's residual is the cheap exact residual and, if P4 is chosen, its Jacobian
+is formed (one extra contraction; such steps have predictor index 4). The carry gains c_{n-3} and Ju(c_{n-3}). With extra=False the
 predictor is fs3's and gate G1 requires bitwise equality with fs3. Original docstring follows.
 
 jcp-combined: fixed-sweep two-step LMM solver for the off-mesh Burgers 3D ROM (DESIGN 2.1, A1.1, A1.2, A2.1, A2.2).
@@ -127,24 +128,25 @@ def make_fs_evolve(Rp, contract, scheme, dt, K, gtol, trust, a_eff, steps, linea
             hist = c1_ * p + c2_ * (A @ wp) + dt * d1_ * Fn
             return S, hist, d0_, c0_
 
-        def predict(rj, k, wv, wp, wp2, Jv, Jp, Jp2, wp3=None):
+        def predict(rj, k, wv, wp, wp2, Jv, Jp, Jp2, wp3=None, Jp3=None):
             if extra:
                 cand_, Ju_, i_ = predict0(rj, k, wv, wp, wp2, Jv, Jp, Jp2)
                 S, hist, d0_, c0_ = cheap_res(k, wv, wp, Jv, wv)
                 advc = lambda c: ((data['B'] @ c) * (data['D'] @ c)) @ data['P']
                 resn = lambda c: jnp.linalg.norm(S * (c0_ * (A @ c) + hist + dt * d0_ * (advc(c) + nu * lam_ * (A @ c))))
                 p3 = 4. * wv - 6. * wp + 4. * wp2 - wp3
+                J3 = 4. * Jv - 6. * Jp + 4. * Jp2 - Jp3
                 adv_t = jnp.where(k >= 1, 2. * (0.5 * Jv @ wv) - 0.5 * Jp @ wp, 0.5 * Jv @ wv)
                 y = (S * (hist + dt * d0_ * adv_t)) @ data['QA']
                 p4 = -jax.scipy.linalg.solve_triangular(data['RA'], y, lower=False)
                 r0 = jnp.linalg.norm(rj(Ju_, cand_)[0])
-                r3 = jnp.where(k >= 3, resn(p3), jnp.inf)
+                r3 = jnp.where(k >= 3, jnp.linalg.norm(rj(J3, p3)[0]), jnp.inf)
                 r4 = resn(p4)
                 rs = jnp.stack((r0, r3, r4))
                 rs = jnp.where(jnp.isfinite(rs), rs, jnp.inf)
                 j = jnp.argmin(rs)
                 cand = jnp.stack((cand_, p3, p4))[j]
-                Ju = jax.lax.cond(j == 0, lambda: Ju_, lambda: contract(data, cand))
+                Ju = jax.lax.cond(j == 2, lambda: contract(data, p4), lambda: jnp.where(j == 1, J3, Ju_))
                 idx = jnp.where(j == 0, i_, jnp.where(j == 1, 3, 4)).astype(jnp.int32)
                 return cand, Ju, idx
             return predict0(rj, k, wv, wp, wp2, Jv, Jp, Jp2)
@@ -166,9 +168,9 @@ def make_fs_evolve(Rp, contract, scheme, dt, K, gtol, trust, a_eff, steps, linea
             return cand[i], Ju3[i], i.astype(jnp.int32)
 
         def step(carry, k):
-            wv, wp, wp2, Jv, Jp, Jp2, lam, wp3 = carry
+            wv, wp, wp2, Jv, Jp, Jp2, lam, wp3, Jp3 = carry
             rj, _ = parts(k, wv, wp, wp2, Jv, Jp)
-            w, Ju, pi = predict(rj, k, wv, wp, wp2, Jv, Jp, Jp2, wp3)
+            w, Ju, pi = predict(rj, k, wv, wp, wp2, Jv, Jp, Jp2, wp3, Jp3)
             r, J = rj(Ju, w)
             rn = jnp.linalg.norm(r)
             rej = jnp.int32(0)
@@ -178,19 +180,19 @@ def make_fs_evolve(Rp, contract, scheme, dt, K, gtol, trust, a_eff, steps, linea
             gn = jnp.linalg.norm(J.T @ r) / (jnp.linalg.norm(J) * rn + 1e-300)
             reason = jnp.where(jnp.isfinite(rn), jnp.where(gn <= gtol, 4, 0), 3).astype(jnp.int32)
             rec = (w, rn, jnp.int32(K), reason, gn, rej, pi, lam, (lam >= SAT).astype(jnp.int32))
-            return (w, wv, wp, Ju, Jv, Jp, lam, wp2), rec
+            return (w, wv, wp, Ju, Jv, Jp, lam, wp2, Jp2), rec
 
         def astep(carry, k):
-            wv, wp, wp2, Jv, Jp, Jp2, lam, wp3 = carry
+            wv, wp, wp2, Jv, Jp, Jp2, lam, wp3, Jp3 = carry
             rj, _ = parts(k, wv, wp, wp2, Jv, Jp)
             wi, _, pi = predict0(rj, k, wv, wp, wp2, Jv, Jp, Jp2)
             lmA = make_lm(lambda w, _a: rj(contract(data, w), w), Rp, lm_budget, trust, gtol, clip=True)
             w2, rn, it, reason, gn, rej, lam2 = lmA(wi, None, tol_ad, lam)
             rec = (w2, rn, it, reason, gn, rej, pi, lam2, (lam2 >= SAT).astype(jnp.int32))
-            return (w2, wv, wp, contract(data, w2), Jv, Jp, lam2, wp2), rec
+            return (w2, wv, wp, contract(data, w2), Jv, Jp, lam2, wp2, Jp2), rec
 
         J0 = contract(data, w0)
-        carry = (w0, w0, w0, J0, J0, J0, jnp.asarray(1e-6, dtype=jnp.float64), w0)
+        carry = (w0, w0, w0, J0, J0, J0, jnp.asarray(1e-6, dtype=jnp.float64), w0, J0)
         outs = []
         if a_eff > 0:
             carry, o1 = jax.lax.scan(astep, carry, jnp.arange(a_eff))

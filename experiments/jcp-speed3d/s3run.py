@@ -40,7 +40,7 @@ def grid_plan(s, rule, cfg):
                 sv.append(('fsp', sch, dt, 1))
                 for kr in (1, 4, 0):
                     sv.append(('qn', sch, dt, kr))
-            for sch in ('CN', 'BDF2'):
+            for sch in SCHEMES:
                 sv.append(('fs', sch, dt, 2))
         sv += [('qn', 'CN', .025, 1, 'q0'), ('qn', 'CN', .025, 1, 'noJuT'), ('qn', 'BE', DT0, 1, 'noJuT')]   # K2, K3
     else:                                     # route 2 reduced rules: FS-K1, FS-K2, QN-4; CN, BDF2 (+ BE)
@@ -48,7 +48,6 @@ def grid_plan(s, rule, cfg):
             for sch in SCHEMES:
                 sv.append(('fs', sch, dt, 1))
                 sv.append(('qn', sch, dt, 4))
-            for sch in ('CN', 'BDF2'):
                 sv.append(('fs', sch, dt, 2))
     adt = sorted({('ad', sp[1], sp[2], 'tight') for sp in sv}, key=S.spec_key)
     return adt, sv

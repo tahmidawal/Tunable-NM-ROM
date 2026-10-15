@@ -87,8 +87,18 @@ def main():
         tb = C3.Tables(65, bank, [512], log=print)
         rep['checks']['G5_M2_512'] = BT.check65(bank['params'], bank['T'], 512, tb, log=print)
         print('G5', rep['checks']['G5_M2_512'], flush=True)
+    c = rep['checks']
+    fails = [k for k in ('G6_UB', 'G6_UC', 'G6_CC') if k in c and not c[k]]
+    fails += [] if 'G6v' not in c or c['G6v']['pass_'] else ['G6v']
+    fails += [] if c['K8']['fires'] else ['K8']
+    fails += [] if (c['G7']['pass'] and c['G7']['control_fires']) else ['G7']
+    fails += [k for k in c if k.startswith('G5') and not (c[k]['pass'] and c[k]['K7_fires'])]
+    fails += [k for k in c if k.startswith('run_') and not c[k]['converged'][0]]
+    rep['mandatory_failures'] = fails
     json.dump(rep, open(a.out, 'w'), indent=1, default=float)
-    print('DONE', flush=True)
+    print('DONE', fails or 'all mandatory gates pass', flush=True)
+    if fails:
+        raise SystemExit(5)
 
 
 if __name__ == '__main__':

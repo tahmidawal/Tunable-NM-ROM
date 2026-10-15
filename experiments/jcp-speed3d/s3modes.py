@@ -93,7 +93,7 @@ def fom_calibrate(cx, foms, fam, L, dt, ccases, inputs):
             t = time.perf_counter()
             F, info = foms.run(sp, u, float(cx.NU[j][0]))
             F = np.asarray(jax.block_until_ready(F))
-            ok, det = foms.converged(sp, info)
+            ok, det = foms.converged(sp, info, F)
             rec[j] = dict(converged=ok, seconds=time.perf_counter() - t, **det)
             if lev == 0:
                 F0[j] = F
@@ -128,8 +128,8 @@ def fom_accuracy(cx, foms, sp, ids, inputs, hashes, R1, save_cases=()):
         F, info = foms.run(sp, u, float(cx.NU[j][0]))
         F = jax.block_until_ready(F)
         secs = time.perf_counter() - t
-        ok, det = foms.converged(sp, info)
         Fn = np.asarray(F)
+        ok, det = foms.converged(sp, info, Fn)
         hashes[(FR.key(sp), j)] = C3.sha(Fn)
         rec[j] = dict(converged=ok, seconds_first=secs, **det, **(score_fom(cx, Fn, j, R1) if np.isfinite(Fn).all() else {}))
         if j in save_cases:
@@ -139,6 +139,22 @@ def fom_accuracy(cx, foms, sp, ids, inputs, hashes, R1, save_cases=()):
     print('FOM', FR.key(sp), 'converged', all(r['converged'] for r in rec.values()),
           'median e', np.median([r.get('e', np.nan) for r in rec.values()]), cx.el(), flush=True)
     return rec
+
+
+def fom_warm_times(cx, foms, sp, inputs, hashes, ncases, reps):
+    """Screening cost of a FOM configuration (A1.9; audit code-1 #6): after one warm call per case, `reps` timed calls per
+    case (burn-in before each), output hash checked against the accuracy phase. Same job, same GPU."""
+    sub = fom_subject(cx, foms, sp, inputs, hashes)
+    out = []
+    for ci in range(ncases):
+        jax.block_until_ready(sub['run'](ci))
+    for _ in range(reps):
+        for ci in range(ncases):
+            C3.burn(cx.cfg['timing']['burn'])
+            t = time.perf_counter()
+            F = jax.block_until_ready(sub['run'](ci))
+            out.append(dict(case=cx.cases[ci], seconds=time.perf_counter() - t, hash_ok=C3.sha(np.asarray(F)) == sub['expect'](ci)))
+    return dict(times=out, median=float(np.median([x['seconds'] for x in out])), hashes_ok=all(x['hash_ok'] for x in out))
 
 
 # ------------------------------------------------------------------------------------------------------ fom
@@ -156,6 +172,7 @@ def mode_fom(cx):
                 sp = ('fd', fam, L, dt, cal['chosen'])
                 ent['key'] = FR.key(sp)
                 ent['cases'] = fom_accuracy(cx, foms, sp, cx.cases, inputs, hashes, R1, blk.get('save_cases', ()))
+                ent['warm'] = fom_warm_times(cx, foms, sp, inputs, hashes, cx.cfg['timing']['cases'], cx.cfg['timing']['reps'])
             res['fd'][f'{fam}|L{L}|{dt:.8g}'] = ent
             cx.save()
             cx.dump()
@@ -168,6 +185,8 @@ def mode_fom(cx):
             sp = ('ps', N, dt)
             res['ps'][FR.key(sp)] = dict(key=FR.key(sp), cases=fom_accuracy(cx, foms, sp, cx.cases, inputs, hashes, R1,
                                                                              blk.get('save_cases', ())))
+            res['ps'][FR.key(sp)]['warm'] = fom_warm_times(cx, foms, sp, inputs, hashes, cx.cfg['timing']['cases'],
+                                                           cx.cfg['timing']['reps'])
             cx.save()
             cx.dump()
 
@@ -190,6 +209,10 @@ def mode_prof(cx):
     for lab in blk.get('mf', []):
         sn, rule, sp = _cfg_of(blk, lab)
         st = cx.ST[sn]
+        cnd = st.mf_cond(rule)
+        if not (np.isfinite(cnd['cond']) and cnd['cond'] < 1e10 and cnd['m'] >= st.Rp):
+            P['mf'][lab] = dict(invalid='mesh-free Gram rank / condition check failed (A1.8)', cond=cnd)
+            continue
         r = cx.rollouts(sn, rule, [sp], cases, path='mf')
         ad = ('ad', sp[1], sp[2], 'tight')
         ra = cx.rollouts(sn, rule, [ad], cases, path='mf')
@@ -226,15 +249,34 @@ def mode_prof(cx):
         Wo = {j: ev[j]['W_all'][::q.keep] if 'W_all' in ev[j] else ev[j]['W'] for j in cases[:tc['cases']]}
         contract = jax.jit(lambda c, dd: C3.OM.contract_offmesh(dd, c))
         Ju = {j: contract(w0s[j][0][0], d) for j in cases[:tc['cases']]}
-        jt = jax.jit(lambda J, dd: jnp.linalg.cholesky((dd['A'] + .01 * J).T @ (dd['A'] + .01 * J)
-                                                       + 1e-10 * jnp.eye(dd['A'].shape[1])))
-        Lf = {j: jt(Ju[j], d) for j in cases[:tc['cases']]}
+        a0, a1, a2, b0, b1, _ns = qn3.SCHEMES[sp[1]]
+        dtp = sp[2]
+
+        def stage_S(nu, dd):
+            return 1.0 / (a0 + dtp * b0 * nu[:, None] * dd['lam'][None, :])
+
+        def nrm_chol(c, J, nu, dd):
+            """The production QN refresh after the contraction: J~ = A + dt b0 S Ju, H = J~^T J~, chol(H + mu0 diag H)."""
+            S_ = stage_S(nu, dd)[0]
+            Jt = dd['A'] + (dtp * b0 * S_)[:, None] * J
+            H = Jt.T @ Jt
+            return jnp.linalg.cholesky(H + qn3.MU0 * jnp.diag(jnp.diag(H)))
+        jt = jax.jit(nrm_chol)
+        Lf = {j: jt(w0s[j][0], Ju[j], cx.NU[j], d) for j in cases[:tc['cases']]}
 
         def qn_iter(c, nu, L_, dd):
-            r = dd['A'] @ c[0] + .01 * qn3.adv(c, dd)[0]
+            """One production QN iteration of the configured scheme and step at state c with history c_n = c_{n-1} = c:
+            exact residual, exact gradient (matrix-free), Cholesky solve, trust clip, one trial residual."""
+            S_ = stage_S(nu, dd)
+            Ac = c @ dd['A'].T
+            hist = a1 * Ac + a2 * Ac + dtp * b1 * (qn3.adv(c, dd) + nu[:, None] * dd['lam'][None, :] * Ac)
+            res = lambda x: S_ * (a0 * (x @ dd['A'].T) + hist + dtp * b0 * (qn3.adv(x, dd) + nu[:, None] * dd['lam'][None, :] * (x @ dd['A'].T)))
+            r = res(c)
             Bc, Dc = qn3.bd(c, dd)
-            g = r @ dd['A'] + .01 * qn3.jut(Bc, Dc, r[None], dd)[0]
-            return jax.scipy.linalg.cho_solve((L_, True), g)
+            g = r @ dd['A'] + dtp * b0 * qn3.jut(Bc, Dc, S_ * r, dd)
+            dlt = -jax.scipy.linalg.cho_solve((L_, True), g[0])
+            dlt = dlt * jnp.minimum(1., st.trust / (jnp.linalg.norm(dlt) + 1e-300))
+            return res(c + dlt[None])
         qi = jax.jit(qn_iter)
         floor = jax.jit(lambda x: x + 1.)
         subs = [subj('project', lambda j: q.project(cx.U0[j], d)[0]),
@@ -242,7 +284,7 @@ def mode_prof(cx):
                      if sp[0] == 'ad' else q.evolve(w0s[j][0], cx.NU[j], w0s[j][1], d)['W_all']),
                 subj('decode', lambda j: q.decode(Wo[j], d)),
                 subj('contraction', lambda j: contract(w0s[j][0][0], d)),
-                subj('normal+cholesky', lambda j: jt(Ju[j], d)),
+                subj('normal+cholesky', lambda j: jt(w0s[j][0], Ju[j], cx.NU[j], d)),
                 subj('qn_iteration', lambda j: qi(w0s[j][0], cx.NU[j], Lf[j], d)),
                 subj('dispatch_floor', lambda j: floor(jnp.float64(j)))]
         if sp[0] in ('fs', 'fsp'):
@@ -253,7 +295,9 @@ def mode_prof(cx):
             subs.append(subj('adaptive_start', lambda j: evsj(w0s[j][0][0], cx.NU[j][0], 1e-12 * w0s[j][1][0], d)))
         A = cx.rom_subject(sn, rule, sp)
         cx.time_panel(f'profile|{lab}', A, subs, int(tc['seed']) + 50, tc['cases'], tc['reps'])
-        P['profile'][lab] = dict(n_full_per_query=None)
+        P['profile'][lab] = dict(note='components separately jitted (indicative, A1.8); qn_iteration and normal+cholesky use the '
+                                      'configured scheme and step with the production arithmetic; G3 and the post-start split are '
+                                      'computed in the analysis')
     # (d) H3.3 batching: latency and throughput per batch size; G4, K6 (wrong viscosity), K6+ (whole-query permutation)
     for lab in blk.get('batch', {}).get('labels', []):
         sn, rule, sp = _cfg_of(blk, lab)
@@ -268,12 +312,14 @@ def mode_prof(cx):
             NUb = jnp.concatenate([cx.NU[j] for j in ids])
             try:
                 o = jax.block_until_ready(q(U, NUb, d))
-                ts = []
+                ts, hok = [], []
+                h0 = C3.sha(np.asarray(o['W']))
                 for _ in range(3):
                     C3.burn(tc['burn'])
                     t = time.perf_counter()
-                    jax.block_until_ready(q(U, NUb, d)['W'])
+                    Wt = jax.block_until_ready(q(U, NUb, d)['W'])
                     ts.append(time.perf_counter() - t)
+                    hok.append(C3.sha(np.asarray(Wt)) == h0)
                 Wb = np.moveaxis(np.asarray(o['W']), 1, 0)
                 g4 = cx.dist_cases(sn, Wb, single[:B], ids)[:, 1:].max(1)
                 ow = np.moveaxis(np.asarray(q(U, jnp.roll(NUb, 1), d)['W']), 1, 0)
@@ -282,9 +328,9 @@ def mode_prof(cx):
                 op = np.moveaxis(np.asarray(q(U[perm], NUb[perm], d)['W']), 1, 0)
                 k6p = cx.dist_cases(sn, op, single[:B][perm], [ids[i] for i in perm])[:, 1:].max(1)
                 outc = 'exact' if g4.max() <= 1e-8 else ('within tolerance' if g4.max() <= 2.5e-5 else 'fail')
-                rec[B] = dict(seconds=ts, median_seconds=float(np.median(ts)), throughput=B / float(np.median(ts)),
+                rec[B] = dict(seconds=ts, hashes_ok=all(hok), median_seconds=float(np.median(ts)), throughput=B / float(np.median(ts)),
                               G4=outc, G4_max=float(g4.max()), G4_count_above_1e8=int((g4 > 1e-8).sum()),
-                              K6_min=None if k6 is None else float(k6.min()), K6_fires=None if k6 is None else bool(k6.min() > 2.5e-5),
+                              K6_max=None if k6 is None else float(k6.max()), K6_fires=None if k6 is None else bool(k6.max() > 2.5e-5),
                               K6plus_max=float(k6p.max()), K6plus_pass=bool(k6p.max() <= 2.5e-5))
             except Exception as e:  # noqa: BLE001  (out of memory etc.: recorded as infeasible)
                 rec[B] = dict(infeasible=repr(e)[:400])
@@ -324,16 +370,21 @@ def mode_mesh(cx):
     cases = cx.cases
     M_ = cx.rep['mesh'] = dict(G5={}, per_L={})
     foms_all = {}
-    # G5 / K7 once per (bank, R')
-    for r in blk['roms']:
-        st = cx.ST[r['setting']]
-        k = f'{st.bank}|{st.Rp}'
+    # G5 / K7 for every ROM bank and for the registered population (M2_512, W256; A1.9) when loaded
+    need = {(cx.ST[r['setting']].bank, cx.ST[r['setting']].Rp, r['setting']) for r in blk['roms']}
+    need |= {(cx.ST[s].bank, cx.ST[s].Rp, s) for s in ('M2_512', 'W256') if s in cx.ST}
+    for bank, Rp, sname in sorted(need):
+        st = cx.ST[sname]
+        k = f'{bank}|{Rp}'
         if k not in M_['G5']:
             M_['G5'][k] = BT.check65(st.bk['params'], st.bk['T'], st.Rp, st.tb, log=lambda s: print(s, flush=True))
+            M_['G5'][k]['gate'] = bool(M_['G5'][k]['pass'] and M_['G5'][k]['K7_fires'])
             print('G5', k, M_['G5'][k], flush=True)
             cx.save()
-    if not all(v['pass'] for v in M_['G5'].values()):
-        print('G5 FAILED: no mesh n > 65 tables are used', flush=True)
+    g5ok = all(v['gate'] for v in M_['G5'].values())
+    M_['G5_all'] = g5ok
+    if not g5ok:
+        print('G5/K7 FAILED: no mesh n > 65 tables are used', flush=True)
     for L in blk['Ls']:
         n = L + 1
         E = M_['per_L'][L] = dict(rom={}, fom={})
@@ -346,7 +397,7 @@ def mode_mesh(cx):
                 d = st.data(rule)
                 info = dict(M=st.M, seconds_A=None)
             else:
-                if not all(v['pass'] for v in M_['G5'].values()):
+                if not g5ok:
                     continue
                 X, w = cx.rules[rule]
                 try:
@@ -363,6 +414,7 @@ def mode_mesh(cx):
             E['rom'][r['label']] = dict(tables=info, dist_to_adt=cx.dist_cases(sn, rr[S.spec_key(sp)]['W'], ra[S.spec_key(ad)]['W'],
                                                                                cases).tolist(),
                                         adt_valid=ra[S.spec_key(ad)]['valid'],
+                                        adt_tighter_valid=rt[S.spec_key(('ad', sp[1], sp[2], 'tighter'))]['valid'],
                                         adt_tight_tighter=float(cx.dist_cases(sn, ra[S.spec_key(ad)]['W'][:8],
                                                                               rt[S.spec_key(('ad', sp[1], sp[2], 'tighter'))]['W'],
                                                                               cases[:8])[:, 1:].max()))
@@ -388,7 +440,7 @@ def mode_mesh(cx):
             cx.save()
         for rl, fk in blk.get('matched', []):
             sp = FR.parse(fk)
-            if (sp[0] == 'fd' and sp[2] != L) or (sp[0] == 'ps' and L != blk['Ls'][0]):
+            if L != 64:                 # H4.3 is cross-resolution against the ROM at n = 65: timed in the L = 64 block
                 continue
             if fk not in E['fom']:
                 E['fom'][fk] = dict(key=fk, matched_for=[rl], cases=fom_accuracy(cx, foms, sp, cases[:tc['cases']], inputs,
@@ -406,7 +458,7 @@ def mode_mesh(cx):
                                name=f"{r['label']}|n{n}")
             Bs = [fom_subject(cx, foms, x, inputs, hashes) for x in subj]
             if not Bs:
-                Bs = [cx.t1_subject()]
+                continue
             cx.time_panel(f'mesh|L{L}|{r["label"]}', A, Bs, int(tc['seed']) + 200 + 10 * L + i, tc['cases'], tc['reps'])
         E['peak_bytes'] = C3.peak_bytes()
         del datas, foms, inputs
@@ -423,7 +475,11 @@ def mode_rep(cx):
     for r in blk['roms']:
         sn, rule, sp = r['setting'], r['rule'], S.parse_key(r['spec'])
         for path in r.get('paths', ['mesh']):
-            cx.rollouts(sn, rule, [sp], cases, path=path)
+            rr = cx.rollouts(sn, rule, [sp], cases, path=path)
+            ad = ('ad', sp[1], sp[2], 'tight')
+            ra = cx.rollouts(sn, rule, [ad], cases, path=path)
+            Rr.setdefault('dist_to_adt', {})[f"{r['label']}|{path}"] = cx.dist_cases(
+                sn, rr[S.spec_key(sp)]['W'], ra[S.spec_key(ad)]['W'], cases).tolist()
         Rr['roms'][r['label']] = dict(setting=sn, rule=rule, spec=r['spec'], paths=r.get('paths', ['mesh']))
     foms, inputs, hashes = FR.FOMs(), {}, {}
     for fk in blk.get('foms', []):

@@ -26,6 +26,7 @@ REF1 = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrat
             'quadrature-burgers3d/runs/ref1/code/output/ref_923801.npz')
 REF1_SHA = '36e84e3dbac2f5cf1b3350c311c1f16d17ecfcd4dc217ded836ba30613c6cc8b'
 STORE_VERSION = '3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0'
+STATUS_SHA = 'af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005'
 COHORT = {923801: 'val64', 923901: 'test32'}
 BANKS = {'M2_512': ('M2', 512), 'W256': ('W1024', 256), 'W512': ('W1024', 512), 'W768': ('W1024', 768), 'W1024': ('W1024', 1024)}
 
@@ -36,6 +37,9 @@ def refstore():
     import refstore as RS
     assert Path(RS.__file__).resolve().parent == E0DIR
     assert RS.store_version() == STORE_VERSION
+    import hashlib
+    st = hashlib.sha256((E0DIR / 'store' / 'STATUS.json').read_bytes()).hexdigest()
+    assert st == STATUS_SHA, 'E0 STATUS.json differs from the pin'
     return RS
 
 
@@ -94,7 +98,7 @@ def main():
     tab = C3.C.table(seed, int(cfg['cohort_count']))
     refs = Refs(seed, tab)
     Wz = np.load(rp / f"W_{res['mode']}.npz")
-    out = dict(run=str(rp), job_id=res.get('job_id'), seed=seed, cohort=refs.coh, store_version=STORE_VERSION,
+    out = dict(run=str(rp), job_id=res.get('job_id'), seed=seed, cohort=refs.coh, store_version=STORE_VERSION, status_sha=STATUS_SHA,
                label=('E0 second-order reference R_ST (conditional Richardson estimate, not a rigorous bound; its '
                       'cross-check rule was amended after data, E0 A10); first-order scores PROVISIONAL'),
                scores={}, controls={}, gates={})
@@ -121,9 +125,10 @@ def main():
     s0 = k0.split('|')[0]
     ids = [int(x) for x in Wz[f'cases|{k0}']]
     G = glat(s0)
-    F0, F1 = Wz[k0][0] @ G, Wz[k0][1] @ G
+    F0 = Wz[k0][0] @ G                         # A1.10: case 0's field against case 1's reference
     e00 = err(F0, refs.get(ids[0]))[1]
-    out['controls']['K4_case_swap'] = abs(err(F1, refs.get(ids[0]))[1] - e00)
+    out['controls']['K4_cases'] = [ids[0], ids[1]]
+    out['controls']['K4_case_swap'] = abs(err(F0, refs.get(ids[1]))[1] - e00)
     out['controls']['K4_time_shift'] = abs(err(np.roll(F0, 1, 0), refs.get(ids[0]))[1] - e00)
     out['controls']['K4_fires'] = bool(out['controls']['K4_case_swap'] > 1e-6 and out['controls']['K4_time_shift'] > 1e-6)
     # gate: in-job ADT distances reproduced for one spec per grid rule

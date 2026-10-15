@@ -89,6 +89,12 @@ def make_fs_step(Rp, scheme, dt, nu, data):
         sel = lambda x, y: jnp.where(acc, x, y)
         return sel(wn, w), sel(Jun, Ju), sel(r2, r), sel(J2, J), sel(rn2, rn), lam2, clip, ~acc
 
+    def gamma_at(k, wv, wp, w):
+        """Fresh certified ratio of state w as the result of step k with history (wv, wp) (Step 2 test)."""
+        rj = parts(k, wv, wp, contract(data, wv))
+        r, J = rj(contract(data, w), w)
+        return jnp.linalg.norm(J.T @ r) / (jnp.linalg.norm(J) * jnp.linalg.norm(r) + 1e-300)
+
     def run(k, wv, wp, wp2, pidx, lam, trust, K):
         Jv, Jp, Jp2 = contract(data, wv), contract(data, wp), contract(data, wp2)
         rj = parts(k, wv, wp, Jv)
@@ -106,6 +112,7 @@ def make_fs_step(Rp, scheme, dt, nu, data):
             rejs.append(rejected)
         gn = jnp.linalg.norm(J.T @ r) / (jnp.linalg.norm(J) * rn + 1e-300)
         return w, gn, jnp.stack(clips), jnp.stack(rejs)
+    run.gamma_at = gamma_at
     return run
 
 
@@ -150,12 +157,15 @@ def replay_case(st, data, scheme, dt, nu, W_all, rec, n_star, K_rec=2):
     out['ii_trust10'] = dict(gamma=g2, success=g2 <= 1e-3, clips=cl2)
     out['iii_damping'] = dict(gamma=g3, success=g3 <= 1e-3)
     # (iv) QN-1 from the same start (history c_{n*-1}, c_{n*-2}, c_{n*-3}; one step at index n*)
-    ev = qn3.make_qn_evolve(st.Rp, scheme, dt, 1, st.trust, 1)
+    ev = qn3.make_qn_evolve(st.Rp, scheme, dt, 1, st.trust, 1, force_pred=pidx)
     wp3 = W[max(k - 3, 0)]
-    o = jax.jit(lambda a, b, c, dd, e: ev(a, b, dd, hist=c, k0=k))(wv[None], jnp.asarray([nu]), (wp[None], wp2[None], wp3[None]),
-                                                                 data, None)
+    o = jax.jit(lambda a, b, c, dd: ev(a, b, dd, hist=c, k0=k))(wv[None], jnp.asarray([nu]), (wp[None], wp2[None], wp3[None]),
+                                                              data)
+    wq = o['W_all'][1, 0]
+    gq = float(jax.jit(step.gamma_at)(k, wv, wp, wq))
     out['iv_qn1'] = dict(reason=int(np.asarray(o['reason'])[0, 0]), q=int(np.asarray(o['q'])[0, 0]),
-                         gam_in=float(np.asarray(o['gam'])[0, 0]))
+                         gam_in=float(np.asarray(o['gam'])[0, 0]), pred=int(np.asarray(o['pred'])[0, 0]),
+                         gamma_cert=gq, success=bool(gq <= 1e-3))
     succ = [kmin is not None and kmin <= 4, g2 <= 1e-3, g3 <= 1e-3]
     if sum(succ) >= 2:
         lab = 'mixed'

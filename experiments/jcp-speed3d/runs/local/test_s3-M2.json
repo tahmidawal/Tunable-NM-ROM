@@ -9,15 +9,15 @@
  ],
  "checks": {
   "G0_bitwise": [
-   false,
-   false
+   true,
+   true
   ],
   "G1_CN_0.025": {
-   "bitwise": false,
+   "bitwise": true,
    "extra_finite": true,
    "extra_pred_counts": [
-    4,
-    0,
+    2,
+    2,
     0,
     0,
     16
@@ -28,14 +28,14 @@
    "ok": true
   },
   "G1_BDF2_0.0125": {
-   "bitwise": false,
+   "bitwise": true,
    "extra_finite": true,
    "extra_pred_counts": [
-    4,
-    0,
     2,
-    24,
-    10
+    2,
+    2,
+    32,
+    2
    ]
   },
   "G2_BDF2_0.0125": {
@@ -52,18 +52,18 @@
   ],
   "fs|CN|0.025|K2": {
    "dist": [
-    0.2079612492814304,
-    0.28045659421750574
+    3.577420789459989e-05,
+    0.015754381298156733
    ],
    "nonstationary": [
-    3,
-    10
+    0,
+    8
    ],
    "valid": [
     true,
     true
    ],
-   "seconds_batch": 3.692963899113238
+   "seconds_batch": 5.2848028829321265
   },
   "qn|CN|0.025|k1": {
    "dist": [
@@ -78,7 +78,7 @@
     true,
     true
    ],
-   "seconds_batch": 9.559514614986256,
+   "seconds_batch": 9.818539245985448,
    "n_ref": 20,
    "q": 39,
    "q_max_step": 4,
@@ -103,7 +103,7 @@
     true,
     true
    ],
-   "seconds_batch": 10.292280192952603,
+   "seconds_batch": 10.672247068956494,
    "n_ref": 6,
    "q": 62,
    "q_max_step": 6,
@@ -128,7 +128,7 @@
     true,
     true
    ],
-   "seconds_batch": 11.88546769414097,
+   "seconds_batch": 12.648942792089656,
    "n_ref": 2,
    "q": 89,
    "q_max_step": 6,
@@ -153,7 +153,7 @@
     true,
     true
    ],
-   "seconds_batch": 6.453823539894074,
+   "seconds_batch": 6.47882494982332,
    "n_ref": 20,
    "q": 0,
    "q_max_step": 0,
@@ -178,7 +178,7 @@
     true,
     true
    ],
-   "seconds_batch": 15.610384326195344,
+   "seconds_batch": 16.273960531922057,
    "n_ref": 25,
    "q": 194,
    "q_max_step": 12,
@@ -203,7 +203,7 @@
     true,
     true
    ],
-   "seconds_batch": 48.73936604196206,
+   "seconds_batch": 50.77769732312299,
    "n_ref": 67,
    "q": 407,
    "q_max_step": 12,
@@ -228,7 +228,7 @@
     true,
     true
    ],
-   "seconds_batch": 18.49782176897861,
+   "seconds_batch": 20.06433187192306,
    "n_ref": 50,
    "q": 53,
    "q_max_step": 2,
@@ -263,5 +263,6 @@
    ]
   }
  },
- "seconds": 434.7072523199022
+ "seconds": 465.74719592998736,
+ "mandatory_failures": []
 }

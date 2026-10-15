@@ -42,8 +42,16 @@ class Ctx:
                         rows=[], timing={}, settings={}, gates={}, complete=False)
         seed, count = int(cfg['cohort_seed']), int(cfg['cohort_count'])
         assert seed in (923801, 923901), seed
-        if seed == 923901:
+        if seed == 923901:                           # A1.11: replication only, after the freeze (audit code-1 #6)
+            import hashlib
             assert cfg['mode'] == 'rep' and cfg.get('frozen_sha256'), 'cohort 923901 is replication-only (DESIGN A1.11)'
+            fz = HERE / 'checks' / 'FROZEN-SELECTION.json'
+            assert hashlib.sha256(fz.read_bytes()).hexdigest() == cfg['frozen_sha256'], 'freeze file differs from the pin'
+            frozen = json.loads(fz.read_text())
+            allowed = {(x['setting'], x['rule'], x['spec']) for x in frozen['rom_configs']}
+            for r in cfg['rep']['roms']:
+                assert (r['setting'], r['rule'], r['spec']) in allowed, ('not in the freeze', r)
+            assert set(cfg['rep'].get('foms', [])) <= set(frozen.get('fom_configs', [])), 'FOM not in the freeze'
         self.seed = seed
         self.tab = C3.C.table(seed, count)
         self.cases = list(cfg.get('case_subset') or range(count))
@@ -164,6 +172,13 @@ class Ctx:
         """A-B-A panel (Step 2 rules). A subject is a dict: name, run(ci) -> output array (hashed), expect(ci) -> the
         accuracy-phase hash or None. Warm JIT: every subject once per panel case before timing."""
         burn = self.cfg['timing']['burn']
+        missing = [x['name'] for x in [A] + Bs for ci in range(ncases) if x['expect'](ci) is None]
+        if missing:                                  # audit code-1 #5: never time without accuracy-phase hashes
+            self.rep['timing'][label] = dict(A=A['name'], subjects=[x['name'] for x in Bs], valid=False,
+                                             missing_expected=sorted(set(missing)), invocations=[])
+            self.save()
+            print('TIMING', label, 'SKIPPED: missing accuracy-phase hashes', sorted(set(missing))[:5], flush=True)
+            return
 
         def one(x, ci):
             C3.burn(burn)
@@ -207,14 +222,25 @@ class Ctx:
         return dict(name=name or f'{tag}|{key}', run=run, expect=lambda ci: self.acc_sha.get((tag, key, self.cases[ci])))
 
     def t1_subject(self):
-        """T1 control: C_old dispatched twice, both synchronized; hash of the second, checked equal to the first."""
+        """T1 control: C_old dispatched twice, each synchronized; the timed output is the device stack of both (no host
+        hashing inside the timer); expected = the stack of the accuracy-phase output twice. Gate: ratio in [1.8, 2.2]
+        (checked in the analysis)."""
         x = self.rom_subject(COLD['name'], COLD['rule'], COLD_SPEC)
+        tag = f"{COLD['name']}|{COLD['rule']}"
+        key = S.spec_key(COLD_SPEC)
 
         def run(ci):
             a = jax.block_until_ready(x['run'](ci))
             b = jax.block_until_ready(x['run'](ci))
-            return b if C3.sha(np.asarray(a)) == C3.sha(np.asarray(b)) else b * np.nan
-        return dict(name='T1|C_old twice', run=run, expect=x['expect'])
+            return jnp.stack((a, b))
+
+        def expect(ci):
+            k = f'{tag}|{key}'
+            if k not in self.Wstore or self.cases[ci] not in list(self.Cstore[k]):
+                return None
+            W = self.Wstore[k][list(self.Cstore[k]).index(self.cases[ci])]
+            return C3.sha(np.stack((W, W)))
+        return dict(name='T1|C_old twice', run=run, expect=expect)
 
     # ------------------------------------------------------------------------------------------------ scoring
     def e0(self):

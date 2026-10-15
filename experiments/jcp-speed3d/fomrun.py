@@ -14,6 +14,7 @@ import jax.numpy as jnp
 import fomcore as FC
 import psjax
 
+MAX_NEWTON = 20          # fomcore.make_solver default (E0 refcore)
 TOLS = ((1e-8, 1e-9), (1e-6, 1e-7), (1e-4, 1e-5))
 FAM = dict(UB=('upwind', 'be'), UC=('upwind', 'cnr'), CC=('central', 'cnr'))
 
@@ -27,8 +28,14 @@ def key(sp):
 def parse(k):
     p = k.split('|')
     if p[0] == 'fd':
-        return ('fd', p[1], int(p[2][1:]), float(p[3]), int(p[4][1:]))
-    return ('ps', int(p[1][1:]), float(p[2]))
+        return ('fd', p[1], int(p[2][1:]), S_canon(p[3]), int(p[4][1:]))
+    return ('ps', int(p[1][1:]), S_canon(p[2]))
+
+
+def S_canon(x):
+    k = round(0.05 / float(x))
+    assert k >= 1 and abs(0.05 / k - float(x)) <= 1e-7 * float(x), x
+    return 0.05 / k
 
 
 def lattice_index(L):
@@ -70,14 +77,20 @@ class FOMs:
         return f, o
 
     @staticmethod
-    def converged(sp, info):
-        """A2.5: finite outputs and every stage's recorded relative residual <= ntol (no max-Newton exit)."""
+    def converged(sp, info, F=None):
+        """A2.5 (audit code-1 #8): finite lattice output; FD: complete per-stage evidence (stages <= buffer, every recorded
+        relative residual finite and <= ntol, Newton counts recorded); a stage that stopped at the Newton limit counts as
+        converged only if its residual met ntol (the refcore loop exits on either), and is flagged."""
+        fin = F is None or bool(np.isfinite(np.asarray(F)).all())
         if sp[0] == 'ps':
-            return True, dict()
+            return fin, dict(finite=fin)
         ntol = TOLS[sp[4]][0]
         k = int(np.asarray(info['stages']))
-        res = np.asarray(info['res'])[:min(k, len(np.asarray(info['res'])))]
-        nwt = np.asarray(info['nwt'])[:len(res)]
-        fin = bool(np.isfinite(np.asarray(info['out'])).all())
-        ok = bool(fin and np.all(np.isfinite(res)) and np.all(res <= ntol))
-        return ok, dict(stages=k, worst_res=float(np.max(res)) if len(res) else None, max_newton=int(nwt.max()) if len(nwt) else None)
+        resall, nwtall = np.asarray(info['res']), np.asarray(info['nwt'])
+        complete = 0 < k <= len(resall)
+        res, nwt = resall[:k], nwtall[:k]
+        fin = fin and bool(np.isfinite(np.asarray(info['out'])).all())
+        ok = bool(fin and complete and np.all(np.isfinite(res)) and np.all(res <= ntol) and np.all(nwt >= 0))
+        return ok, dict(stages=k, complete=complete, worst_res=float(np.max(res)) if len(res) else None,
+                        max_newton=int(nwt.max()) if len(nwt) else None,
+                        at_newton_limit=int(np.sum(nwt >= MAX_NEWTON)) if len(nwt) else None)

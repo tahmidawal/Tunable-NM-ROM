@@ -68,15 +68,22 @@ def spec_key(sp):
     raise KeyError(sp)
 
 
+def canon_dt(x):
+    """Every step of the lane is 0.05/k (k integer): the display value of a key is mapped back exactly (audit code-1 #4)."""
+    k = round(0.05 / float(x))
+    assert k >= 1 and abs(0.05 / k - float(x)) <= 1e-7 * float(x), x
+    return 0.05 / k
+
+
 def parse_key(k):
     p = k.split('|')
     if p[0] in ('fs', 'fsp'):
-        return (p[0], p[1], float(p[2]), int(p[3][1:]))
+        return (p[0], p[1], canon_dt(p[2]), int(p[3][1:]))
     if p[0] == 'qn':
         kr = 0 if p[3] == 'kinf' else int(p[3][1:])
-        return ('qn', p[1], float(p[2]), kr) + ((p[4],) if len(p) > 4 else ())
+        return ('qn', p[1], canon_dt(p[2]), kr) + ((p[4],) if len(p) > 4 else ())
     if p[0] == 'ad':
-        return ('ad', p[2], float(p[3]), p[4])
+        return ('ad', p[2], canon_dt(p[3]), p[4])
     raise KeyError(k)
 
 
@@ -236,7 +243,7 @@ def step_record(sp, o, b):
         return dict(nfail=int(np.asarray(stt['nfail'])[b]), it_sum=int(np.asarray(stt['it_sum'])[b]), steps=k,
                     step_it=np.asarray(stt['step_it'])[b, :k].tolist(), step_gn=np.asarray(stt['step_gn'])[b, :k].tolist())
     keys = ('reason', 'it', 'rej', 'pred', 'sat', 'gn', 'rn', 'lam') if sp[0] in ('fs', 'fsp') else \
-        ('reason', 'n_ref', 'n_exec', 'q', 'n_bt', 'n_clip', 'n_mu', 'refresh', 'pred', 'gam', 'rn')
+        ('reason', 'n_ref', 'n_exec', 'q', 'n_bt', 'n_clip', 'n_mu', 'mu', 'refresh', 'pred', 'gam', 'rn')   # n_exec: per batch
     return {k: np.asarray(o[k][:, b]).tolist() for k in keys}
 
 

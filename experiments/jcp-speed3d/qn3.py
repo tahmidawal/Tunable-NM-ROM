@@ -70,7 +70,7 @@ def factor(H, mu):
 
 
 # ------------------------------------------------------------------------------------------------- solver
-def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, mu0=MU0, mutation=None):
+def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, mu0=MU0, mutation=None, force_pred=None):
     """evolve(w0 (Bt, R'), nu (Bt,), data) -> dict(W_all (steps+1, Bt, R'), per-step records (steps, Bt)).
     data: A (M, R'), lam (M,), B, D (m, R'), P (m, M), QA (M, R'), RA (R', R') with A = QA RA."""
     assert scheme in SCHEMES and mutation in MUTATIONS
@@ -126,6 +126,8 @@ def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, 
             rs = jnp.stack([jnp.linalg.norm(st['res'](cand[i]), axis=1) for i in range(5)])   # (5, Bt)
             rs = jnp.where(act[:, None] & jnp.isfinite(rs), rs, jnp.inf)
             i = jnp.argmin(rs, axis=0)                                               # ties: lowest index
+            if force_pred is not None:                       # replay (A2.2 iv): the saved candidate of the replayed step
+                i = jnp.full_like(i, int(force_pred))
             allbad = jnp.all(~jnp.isfinite(rs), axis=0)
             return jnp.take_along_axis(cand, i[None, :, None], 0)[0], i.astype(jnp.int32), allbad
 
@@ -223,7 +225,7 @@ def make_qn_evolve(Rp, scheme, dt, steps, trust, k_ref, g_in=G_IN, q_max=Q_MAX, 
             dead = dead | bad
             c = jnp.where(dead[:, None], cn, c)                                        # frozen at the last finite state
             advc = jnp.where(dead[:, None], advn, adv(c, data))
-            rec = dict(n_ref=n_full, n_exec=jnp.broadcast_to(n_exec, (Bt,)), q=q, n_bt=nbt, n_clip=nclip, n_mu=nmu,
+            rec = dict(n_ref=n_full, n_exec=jnp.broadcast_to(n_exec, (Bt,)), q=q, n_bt=nbt, n_clip=nclip, n_mu=nmu, mu=mu,
                        refresh=jnp.where(due, rcode, 0), pred=pidx, gam=gam, rn=rn, reason=reason)
             carry = (c, cn, cm, cm2, advc, advn, H, Lf, Jn, mu, last_ref, q, reason != 4, dead)
             return carry, (c, rec)

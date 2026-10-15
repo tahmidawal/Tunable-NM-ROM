@@ -1,0 +1,7 @@
+jax_backend=cpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 5.3s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 10.0s
+SETUP 67.7
+FOM fd|UB|L64|0.01|t1 converged True median e 0.10126661618296305 103.7
+FOM ps|N16|0.01 converged True median e 0.013188075075429082 105.2
+S3RUN COMPLETE

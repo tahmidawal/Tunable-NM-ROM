@@ -35,7 +35,7 @@ def git_show(commit, name):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
-    p.add_argument('--gpu', default='h200', choices=sorted(GRES))
+    p.add_argument('--gpu', default='h200', choices=['h200'])            # DESIGN §9: every lane timing on H200
     p.add_argument('--mem', default='200G')
     p.add_argument('--hours', type=int, default=24)
     p.add_argument('--cmd', default=None, help='alternative command (smoke tests): run inside the lane directory')
@@ -54,11 +54,16 @@ def main():
         res = json.loads(git_show(commit, f'{LANE}/checks/resources-{a.attempt}.json'))
         assert res['config_sha256'] == hashlib.sha256(git_show(commit, cfgname)).hexdigest(), 'resource certificate is for another config'
         assert res['gpu'] == a.gpu and res['hours_allocated'] == a.hours and res['projected_hours_x1.5'] <= a.hours, res
-    for name in FILES + [cfgname]:
+    files = list(FILES)
+    if cfg0['mode'] == 'rep':                                        # A1.11: the immutable freeze is staged and pinned
+        fz = f'{LANE}/checks/FROZEN-SELECTION.json'
+        assert hashlib.sha256(git_show(commit, fz)).hexdigest() == cfg0['frozen_sha256'], 'freeze pin mismatch'
+        files.append(fz)
+    for name in files + [cfgname]:
         assert (ROOT / name).read_bytes() == git_show(commit, name), name
     out.mkdir(parents=True)
     proof = []
-    for name in FILES + [cfgname]:
+    for name in files + [cfgname]:
         content = git_show(commit, name)
         dest = out / name
         dest.parent.mkdir(parents=True, exist_ok=True)

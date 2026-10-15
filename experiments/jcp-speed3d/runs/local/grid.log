@@ -1,0 +1,16 @@
+jax_backend=cpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 9.9s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 20.9s
+SETUP 188.4
+RUN M2_512|gl24 ad|LSPG|BDF2|0.025|tight 47.6s valid True nonst 0 / 0 242.7
+RUN M2_512|gl24 ad|LSPG|BE|0.01|tight 82.3s valid True nonst 0 / 0 325.0
+RUN M2_512|gl24 ad|LSPG|BE|0.025|tight 48.7s valid True nonst 0 / 0 373.6
+RUN M2_512|gl24 ad|LSPG|CN|0.025|tight 47.8s valid True nonst 0 / 0 421.4
+RUN M2_512|gl24 ad|LSPG|BDF2|0.025|tighter 14.5s valid True nonst 0 / 0 435.9
+RUN M2_512|gl24 ad|LSPG|BE|0.01|tighter 25.9s valid True nonst 0 / 0 461.8
+RUN M2_512|gl24 ad|LSPG|BE|0.025|tighter 14.1s valid True nonst 0 / 0 476.0
+RUN M2_512|gl24 ad|LSPG|CN|0.025|tighter 17.3s valid True nonst 0 / 0 493.3
+RUN M2_512|gl24 fs|BE|0.025|K1 21.3s valid True nonst 17 / 30 517.4
+RUN M2_512|gl24 fsp|BE|0.025|K1 34.7s valid True nonst 12 / 30 552.1
+RUN M2_512|gl24 qn|BE|0.025|k1 26.0s valid True nonst 0 / 30 578.1
+RUN M2_512|gl24 qn|BE|0.025|k4 21.0s valid True nonst 0 / 30 599.1

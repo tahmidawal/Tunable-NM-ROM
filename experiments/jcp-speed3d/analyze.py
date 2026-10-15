@@ -29,6 +29,18 @@ LABEL = ('E0 R_ST (conditional Richardson estimate under the asymptotic assumpti
          'cross-check rule was amended after data, E0 A10). Study prospectively specified conditional on Step 2 exploration.')
 
 
+def ec_pass(dmax):
+    """The E-c classifier (shared by eligibility and K9): every case's lattice distance (max over evolved times) <= BAR."""
+    dmax = np.asarray(dmax, float)
+    return bool(np.isfinite(dmax).all() and dmax.max() <= BAR)
+
+
+def t1_ok(t):
+    """T1 gate of one panel: median ratio of the 'C_old twice' subject in [1.8, 2.2]."""
+    r = [x['ratio'] for x in t.get('invocations', []) if x['B'].startswith('T1')]
+    return bool(r) and 1.8 <= float(np.median(r)) <= 2.2
+
+
 def spec_parts(spec):
     p = spec.split('|')
     return p[0], p[1], float(p[2]), p[3]
@@ -52,6 +64,9 @@ def load_job(rp):
 def configs_of(res, sc):
     """{config key: record} for every non-ADT, non-mutation grid configuration of one job."""
     cases = res['cohort']['cases']
+    # job-level acceptance (audit code-1 #9): complete job, full validation cohort, K4 and the distance re-check pass
+    job_ok = bool(res.get('complete') and res['cohort']['seed'] == 923801 and len(cases) == 64
+                  and sc['controls'].get('K4_fires') and sc['gates'].get('dist_ok'))
     rows = {}
     for r in res['rows']:
         rows.setdefault(f"{r['tag']}|{r['spec']}", []).append(r)
@@ -61,7 +76,7 @@ def configs_of(res, sc):
             continue
         for x in t['invocations']:
             panel.setdefault(x['B'], []).append(x)
-        panel_valid = t['valid']
+        panel_valid = bool(t['valid'] and t1_ok(t))
         for s in t['subjects']:
             panel.setdefault(f'__valid__{s}', panel_valid)
     out = {}
@@ -82,9 +97,10 @@ def configs_of(res, sc):
                 nst = sum(r['nonstationary'] for r in rs)
                 nstep = sum(r['steps_n'] for r in rs)
                 sco = sc['scores'][key]
-                e = np.array([sco[str(j)]['e'] for j in cases])
-                eta = np.array([sco[str(j)]['eps_ref'] for j in cases])
-                e1 = np.array([sco[str(j)]['first_order']['e'] for j in cases]) if 'first_order' in sco[str(cases[0])] else None
+                rk = [j for j in cases if sco[str(j)]['eligible']]          # E0: ineligible case-kinds scored, not ranked
+                e = np.array([sco[str(j)]['e'] for j in rk])
+                eta = np.array([sco[str(j)]['eps_ref'] for j in rk])
+                e1 = np.array([sco[str(j)]['first_order']['e'] for j in rk]) if 'first_order' in sco[str(cases[0])] else None
                 inv = panel.get(key, [])
                 ratio = float(np.median([x['ratio'] for x in inv])) if inv else None
                 tB = float(np.median([x['tB'] for x in inv])) if inv else None
@@ -93,7 +109,8 @@ def configs_of(res, sc):
                 rec = dict(setting=sn, rule=rule, deployed=rule == dep_rule, spec=spec, kind=kind, scheme=sch, dt=dt, solver=spec.split('|')[0] +
                            ('-' + spec.split('|')[3] if kind in ('fs', 'fsp', 'qn') else ''),
                            Ea=all(r['valid'] for r in rs), Eb_frac=nst / max(nstep, 1), Eb=nst <= POOL * nstep,
-                           Ec=bool(adt_valid and np.isfinite(dmax).all() and dmax.max() <= BAR), dist_worst=float(dmax.max()),
+                           Ec=bool(adt_valid and ec_pass(dmax)), dist_worst=float(dmax.max()), ranked_cases=len(rk),
+                           unranked_cases=len(cases) - len(rk),
                            adt_valid=adt_valid, adt_gate=adt_gate, median=float(np.median(e)), worst=float(e.max()),
                            e=e.tolist(), eta=eta.tolist(),
                            median_first_order=None if e1 is None else float(np.median(e1)),
@@ -101,7 +118,8 @@ def configs_of(res, sc):
                            ratio=ratio, t_B=tB, t_A=tA, panel_valid=panel.get(f'__valid__{key}'),
                            job=res.get('job_id'), gpu=res.get('gpu'), commit=res.get('commit'))
                 rec['eligible'] = bool(rec['Ea'] and rec['Eb'] and rec['Ec'])
-                rec['selectable'] = bool(rec['eligible'] and ratio is not None and rec['panel_valid'] and adt_gate is True)
+                rec['selectable'] = bool(rec['eligible'] and ratio is not None and rec['panel_valid'] and adt_gate is True
+                                         and job_ok and len(rk) == len(cases))
                 out[key] = rec
     return out
 
@@ -144,7 +162,8 @@ def k9(res, Wz, glat_fn):
     if key not in Wz.files:
         return None
     import c3common as C3
-    W = Wz[key][0]
+    ids = [int(x) for x in Wz[f'cases|{key}']]
+    W = Wz[key][ids.index(0)]
     G = glat_fn(sn)
     tab = C3.C.table(923801, 64)
     n0 = float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, 0))))
@@ -156,7 +175,7 @@ def k9(res, Wz, glat_fn):
         s = f * BAR / d1
         Wp = W + s * v
         d = float((np.linalg.norm((Wp - W) @ G, axis=1) / n0)[1:].max())
-        out[str(f)] = dict(constructed=d, within=d <= BAR)
+        out[str(f)] = dict(constructed=d, within=ec_pass([d]))
     out['fires'] = bool(out['0.5']['within'] and not out['2.0']['within'] and abs(out['0.5']['constructed'] - .5 * BAR) < 1e-12
                         and abs(out['2.0']['constructed'] - 2 * BAR) < 1e-12)
     return out
@@ -193,7 +212,7 @@ def h1(C):
     out = dict(H12={}, H13={}, H14={})
     sets = sorted({v['setting'] for v in C.values()})
     for sn in sets:
-        dep = [v for v in C.values() if v['setting'] == sn and v['deployed']]
+        dep = [dict(v, eligible=v['selectable'], elig_raw=v['eligible']) for v in C.values() if v['setting'] == sn and v['deployed']]   # gates applied
         get = lambda solver, sch, dt: next((v for v in dep if v['solver'] == solver and v['scheme'] == sch
                                             and abs(v['dt'] - dt) < 1e-9), None)
         for sch in ('CN', 'BDF2'):
@@ -211,7 +230,7 @@ def h1(C):
                     best = None
                 else:
                     best = min(qs, key=lambda q: q['ratio'])
-                    if fs2 is None or not fs2['eligible']:
+                    if fs2 is None or not fs2['elig_raw']:
                         v = 'rescue'
                     else:
                         v = 'pass (screening)' if best['ratio'] <= .6 * fs2['ratio'] else 'fail (screening)'
@@ -241,6 +260,15 @@ def main():
         Wz = np.load(Path(rp) / 'W_grid.npz')
         if k9r is None:
             k9r = k9(res, Wz, SC.glat)
+    # controls block the claims they protect (A1.10): K1/K2 -> every H1 eligibility verdict of the setting; K3 -> QN configs
+    for k, v in C.items():
+        c = ctl.get(v['setting'], {})
+        if not (c.get('K1_fires') and c.get('K2_fires')):
+            v['selectable'] = False
+            v['blocked_by'] = 'K1/K2 did not fire'
+        if v['kind'] == 'qn' and not c.get('K3_fires'):
+            v['selectable'] = False
+            v['blocked_by'] = 'K3 did not fire'
     sel = {name: select(C, key) for name, key in COMPARATORS.items() if key in C}
     out = dict(label=LABEL, jobs=jobs, configs=C, controls=ctl, K9=k9r, H11=h11, H1=h1(C), H2=sel)
     Path(a.out).write_text(json.dumps(out, indent=1, default=float) + '\n')

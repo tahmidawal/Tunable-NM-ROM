@@ -237,3 +237,182 @@ Estimate: smoke 1 h; g1 3 h, g2 4 h, g3 5 h; f1 4 h; p1 3 h; m1 8 h; reruns 20 %
 archives; files over 50 MB in `LARGE_FILES.sha256`), `checks/` (scores, analyses, selections), `report.md` (generated;
 level-1 title, status line, LaTeX, mermaid, glossary), plots (PNG): time–error Pareto of all routes, overhead breakdown,
 batched throughput, ROM and FOM time against mesh size.
+
+---
+
+## Amendment A1 (2026-10-14, before any code; answers `audits/codex-design-1.md`, verdict NOT READY)
+
+Status of the study: **prospectively specified conditional on Step 2's exploration.** The deployed rules (Step 2 POST
+HOC), dropping CN-R, the reduced-rule candidates and the step ladder were chosen after seeing Step 2 data on the same
+validation cohort; every table carries this label. The numbering below follows the audit's required amendments.
+
+**A1.1 Cost accounting (audit item 1).** §0 and §1 are restated: forming $J_u$ costs $\approx2mMR'$ flops; one adjoint
+product $J_u^{\mathsf T}v$ given $Bc,Dc$ costs $\approx2m(M+2R')$ (forming/product $\approx MR'/(M+2R')\approx2R'/3$
+for $M=4R'$); a residual adds $\approx2m(2R'+M)$ for $Bc,Dc,P^{\mathsf T}(\cdot)$ and $2MR'$ for $Ac$. Flop ratios do not
+give wall-time shares (GEMM vs bandwidth-bound products). The `fs3` start uses $a_{\rm eff}=\lceil a\Delta t_0/\Delta t\rceil$
+adaptive steps (fewer at larger steps), each forming the Jacobian at its initial and returned state plus once per LM
+iteration; source-level startup contraction counts are about 22 ($\Delta t_0$) and 17 ($2.5\Delta t_0$) for W1024 CN.
+"Jacobian formation dominates the query time" is an **unverified hypothesis**, tested by the H3.1 profile, which now
+times separately: Jacobian formation (`contract`), normal matrix + Cholesky, one cheap QN iteration (residual +
+gradient + triangular solves), projection, decode, and the startup phase.
+
+**A1.2 QN specification (audit item 2).** The claim "QN converges to ADT's stationary point" is withdrawn. Restated:
+any fixed point of QN satisfies $g=J^{\mathsf T}r=0$, the same equation as the LSPG stationary point; convergence and
+agreement with ADT are **empirical**, established only by certification (γ) and the solver distance at the five output
+times (the conclusion is limited to these). A failed certification makes the configuration ineligible; the timed
+trajectory is never repaired. Executable specification, per batch member (batch-first code, B = 1 for single queries):
+
+```
+constants: g_in = 5e-4, q_max = 12, mu0 = 1e-10, trust as fs3, k_ref in {1, 4, inf}
+carry: c_n, c_{n-1}, c_{n-2}, c_{n-3}; adv_n, adv_{n-1}; H (R'xR', unregularised J~^T J~), Lfac = chol(H + mu diag H),
+       Jn = ||J~||_F, mu, last_ref (step index), q_prev (iterations of the previous step), fail_prev (bool)
+step k = 0..N-1:
+  co = BE coefficients if k < n_startup(scheme) else the scheme's; S = 1/(a0 + dt b0 nu lam); F_n = adv_n + nu lam A c_n
+  hist = a1 A c_n + a2 A c_{n-1} + dt b1 F_n;  r(c) = S*(a0 A c + hist + dt b0 (adv(c) + nu lam A c))
+  g(c, r) = A^T r + dt b0 Ju(c)^T (S r)                    [mutation K3: g = A^T r]
+  predictor: candidates (index order) P0 = c_n; P1 = 2c_n - c_{n-1} (k>=1); P2 = 3c_n - 3c_{n-1} + c_{n-2} (k>=2);
+     P3 = 4c_n - 6c_{n-1} + 4c_{n-2} - c_{n-3} (k>=3); P4 = IMEX: argmin_c ||A c + S*(hist + dt b0 adv~)||, adv~ = adv_n (k=0)
+     or 2adv_n - adv_{n-1} (k>=1), solved as c = -R_A^{-1} Q_A^T (S*(hist + dt b0 adv~)) with A = Q_A R_A (one QR per
+     setting and mesh). Inactive candidates have residual +inf; c = the candidate of smallest ||r|| (ties: lowest index).
+  refresh_due = (k == 0) or (k == n_startup > 0) or (k - last_ref >= k_ref) or (q_prev > q_max/2) or fail_prev
+  if refresh_due: Ju = contract(c); J~ = A + dt b0 S*Ju; H = J~^T J~; Jn = ||J~||_F; mu = mu0; Lfac = chol(H + mu diag H);
+     last_ref = k; n_full += 1
+  emergency_used = False; r = r(c); g = g(c, r); gam = ||g|| / (Jn ||r|| + 1e-300)
+  done = (||r|| == 0) or (gam <= g_in); q = 0
+  while not done and q < q_max and finite:
+     q += 1; d = -cho_solve(Lfac, g); if ||d|| > trust: d *= trust/||d|| (n_clip += 1); if d non-finite: reason 3, stop
+     accepted = False
+     for alpha in (1, 1/2, 1/4):                   (n_backtrack += 1 for alpha < 1)
+        c' = c + alpha d; r' = r(c'); if finite(r') and ||r'|| < ||r||: accepted = True; break
+     if accepted: c, r = c', r'; g = g(c, r); gam = ||g|| / (Jn ||r|| + 1e-300); done = gam <= g_in
+     elif not emergency_used: (refresh at the current c as above; last_ref = k); emergency_used = True; n_full += 1
+     else: mu = 10 mu; Lfac = chol(H + mu diag H) (n_mu += 1)
+  reason = 4 if done else (3 if non-finite else 0); q_prev = q; fail_prev = (reason != 4)
+  c_{n+1} = c; adv_{n+1} = adv(c); shift histories
+```
+A non-positive-definite factor (non-finite `Lfac`) is treated as non-finite (reason 3). `mu` is reset only at a refresh.
+In a batch, any refresh flag computes the contraction for every member (one batched call) and updates only the flagged
+members, so batched and single runs follow the same per-member branches up to rounding. Records per step: `n_full`,
+`q`, `n_backtrack`, `n_clip`, `n_mu`, refresh reason, predictor index, final `gam`, reason.
+
+**A1.3 Predictor (audit item 3).** FSP-K1 = `fs3` copy (`fs3p.py`) with candidates P3 and P4 above added to `fs3`'s
+P0–P2, same activation indices and tie rule; FSP keeps `fs3`'s $a_{\rm eff}$ adaptive start, so P3/P4 enter only in
+the fixed-sweep phase with full history. P0–P2 residuals are computed exactly as in `fs3` (extrapolated $J_u$); P3's
+with the extrapolated $J_u$ (one more carried Jacobian); P4's with the cheap exact residual, and if P4 is chosen its
+$J_u$ is formed (one extra contraction, counted). With P3/P4 statically disabled the module executes `fs3`'s original
+code path (gate G1: bitwise equal W and records to FS-K1 on 2 cases). "IMEX predictor" names an extrapolation of order
+two in the advection only; it is not a claim about the scheme's order (for BE it is a first-order semi-implicit guess).
+
+**A1.4 Eligibility, certification, references (audit item 4).** Step 2's A6.2 is: validity + solver distance to the
+verified adaptive solve $\le2.5\cdot10^{-4}$ on every case. This lane **adds** a new requirement (E-b): certified
+non-stationary steps $\le1\%$ of pooled steps. All three (E-a validity, E-b, E-c distance) are applied to every
+configuration including the comparators, recomputed here. ADT validity: every step verified (Step 2 rule); plus
+an ADT gate: `tight` vs `tighter` ADT runs of the same (scheme, step) on cases 0–7 at each setting's deployed rule
+must agree within $2.5\cdot10^{-5}$ (else that (scheme, step) is unresolved and its configurations unselectable).
+Certification: $\gamma_n=\|J^{\mathsf T}r\|/(\|J\|_F\|r\|+10^{-300})$, non-finite ⇒ non-stationary; G2 tolerance
+$|\gamma_{\rm cert}-\gamma_{\rm rec}|\le10^{-9}\gamma_{\rm rec}+10^{-12}$ on FS fixed-sweep steps. References:
+`refstore.load(3,'val64',j,'ST',field='finest')` at a pinned `store_version`; the manifest and `STATUS.json` hashes are
+recorded; a case enters ranking only if `reference_status(...)['eligible']` (Step 2 found all 64 eligible; checked again).
+"Ties-or-beats" means "not resolved as worse", not proven equality; reports use that wording.
+
+**A1.5 Timing claims (audit item 5).** Common-baseline ratios (A = C_old) are used for **screening and selection
+only**. Every claimed speed-up is **confirmed** in one job on one physical GPU by a direct panel A = comparator,
+B = winner (cases 0–7, 3 repetitions, Step 2 rules), and the H1.4/H2 verdicts use the confirmed paired median ratio;
+the screening value is shown beside. T1 is two separately dispatched, synchronized jitted calls whose outputs are both
+fetched (hash-checked).
+
+**A1.6 H1.1 (audit item 6).** E1–E3 are renamed **descriptive indicators**, not causes. Cases examined: per setting,
+those failing E-a, E-b or E-c with FS-K2 CN $2.5\Delta t_0$ at the deployed rule (empty set ⇒ "none to diagnose").
+Per case, the first certified non-stationary step $n^\*$ (or, if none, the first output interval where the distance
+exceeds the bar, recorded as "distance-only") is **replayed** from the FS-K2 run's saved states $(c_{n^\*}, c_{n^\*-1},
+c_{n^\*-2})$ and carried damping, with the same predictor candidate, under controlled interventions: (i) K = 2..12
+full sweeps (smallest K with $\gamma\le10^{-3}$), (ii) trust $\times10$ with K = 2, (iii) damping reset to $10^{-12}$
+with K = 2, (iv) QN from the same start. Reported per case: which interventions reach stationarity. A case is
+attributed to "too few sweeps" iff (i) succeeds with K ≤ 4 and (ii), (iii) fail; to "trust clip" iff (ii) succeeds and
+(i) needs K > 4; to "damping" iff (iii) succeeds and (i) needs K > 4; otherwise "mixed / unexplained". Within-step
+clip and rejection events are recorded per sweep.
+
+**A1.7 Hypothesis bookkeeping (audit item 7).** H1.4 outcomes per cell: pass / fail / **rescue** (QN eligible, FS-K2
+ineligible: reported separately, not a failure) / unavailable (QN ineligible). Selection population: screening panel
+cases 0–3 × 2 repetitions; "cheapest" = lowest median screening ratio; within 3 % ties go to the lower median E0 error,
+then the lower worst; a configuration with an invalid timing panel is not selectable. If no eligible configuration
+ties-or-beats a comparator, H2 for it is "unavailable". The decomposition is renamed: **best-BE improvement**
+$S_{\rm BE}={\rm cost}(C)/{\rm cost}(B^\*)$ ($B^\*$ the cheapest eligible BE configuration that ties-or-beats C, any
+bank/rule/step/solver) and **additional improvement from second-order schemes** $S_C/S_{\rm BE}={\rm cost}(B^\*)/{\rm cost}(W^\*)$;
+neither isolates a single factor. Both confirmed in the A1.5 panel (B\* is added to it).
+
+**A1.8 Route 3 (audit item 8).** H3.1: the components of A1.1 are timed separately; the profile is **indicative**
+(separately compiled pieces); G3 remains a consistency check. H3.2 (mesh-free projection, solved with Cholesky of
+$B^{\mathsf T}WB$; the configuration is invalid if its condition number exceeds $10^{10}$) qualifies iff (a) the
+mesh-free runs are eligible under E-a/E-b/E-c with the ADT comparator **initialised by the same mesh-free projection**,
+(b) median and worst E0 errors tie-or-beat the mesh path's or exceed them by at most 1 % relatively, and (c) no case's
+error exceeds its mesh-path error by more than $\max(2\eta,\,0.1\,e_{\rm mesh})$. K5 is replaced: the projection with
+the full-rank but coarse rule gl12 (1728 points ≥ R′) must fail (b) or (c) for at least one setting (rank checked).
+G4 outcomes are explicit: **exact** (field distance ≤ 1e-8 on every case), **within tolerance** (≤ 2.5e-5, reported
+with the count), **fail**. K6 = wrong-viscosity association (member i receives viscosity of member i+1 while keeping
+its own IC; expected outputs unchanged) must fail; positive control K6+: a whole-query permutation must pass
+(exact or within tolerance). The primary speed claim is single-query latency; batch throughput is reported separately
+and never substituted for it.
+
+**A1.9 Route 4 (audit item 9).**
+* *Query contract (also item 13).* Input: ν and the initial field on the method's own input points (FD and mesh-path
+  ROM: interior mesh nodes; mesh-free ROM: rule points; PS: sine coefficients), prepared outside the timer for every
+  method; the preparation time of each is measured and reported separately. Output: the six fields on the 63³ scoring
+  lattice, on the device, inside the timer (FD: lattice slicing inside the jit; PS: synthesis inside the jit; ROM:
+  decode at the lattice). Offline setup (tables, factorizations, compilation) reported separately.
+* *FOM ladder (calibrated on all 64 cases).* F-UB: $L=64$, $\Delta t\in\{0.01,0.005,0.0025\}$; $L=128$, $\{0.01,0.005\}$.
+  F-UC and F-CC: $L=64$, $\{0.025,0.0125,0.01,0.005\}$; $L=128$, $\{0.0125,0.01\}$. F-PS: $N\in\{16,24,32,48,64\}$ ×
+  $\{0.025,0.01,0.005\}$.
+* *Tolerance qualification (FD).* Per (family, L, Δt), on cases 0–3: the loosest $(n_{\rm tol},l_{\rm tol})$ of the three
+  levels such that every stage converged (final residual ≤ $n_{\rm tol}$, no max-Newton exit, finite) and the lattice
+  output differs from the tightest level's by ≤ $10^{-6}\,n_0$ at every output time on all four cases. Production runs
+  at that level; a production case with any unconverged stage makes the configuration invalid (not matchable).
+* *PS.* A pure-JAX timed entry point `psjax.py` reusing `pscore`'s `nonlinear` and contour-mean ETDRK4 coefficients
+  (eigenvalues in `jnp`, traced ν), one jit including lattice synthesis; gate G7: equal to `pscore.make_ps(...).run`
+  lattice output to $10^{-12}$ relative on 2 cases at N = 32; control: half Δt must differ by $>10^{-9}$.
+* *H4.3 is cross-resolution:* the matched FOM is the cheapest calibrated configuration of the family over the whole
+  ladder (any L, Δt, N) that ties-or-beats the ROM on median and worst. Its speed-up is always an **upper bound relative to
+  an unrestricted, optimally tuned FOM family** (finite ladder); a match at the ladder's cheapest member is flagged
+  "boundary". Matched timings are paired in one job (A = ROM, B = FOM), cases 0–3, 2 repetitions.
+* *H4.2 same-mesh (diagnostic):* $L\in\{64,128,256,384\}$, F-UB $\Delta t=0.01$ and F-CC $\Delta t=0.01$ (added to the
+  ladder at every L), accuracy on cases 0–7 at L = 256, 384 (diagnostic, labelled 8-case), timing paired against the ROM
+  at mesh $n=L+1$; all meshes in one job (H4.1 needs it), same timing population.
+* *ROM tables at mesh n, streaming algorithm (`bigtables.py`).* Modes $(k_x,k_y,k_z)$, eigenvalues and $M$ from
+  `common.modes(n, complete_M(n, 4R'))`. With $\phi_k(j)=\sqrt{2/(n-1)}\sin(\pi kj/(n-1))$, $K_a=\max k_a$: for each
+  x-slab $a=1..n-2$: evaluate $\hat G$ at the slab's $(n-2)^2$ nodes ($(n-2)^2\times R'$, chunked by rows), contract
+  $z$ with $\Phi_z[:, :K_z]$, then $y$ with $\Phi_y[:, :K_y]$ → $(K_y,K_z,R')$, accumulate $T[k_x]\mathrel{+}=\phi_{k_x}(a)\,(\cdot)$
+  into $T\in\mathbb R^{K_x\times K_y\times K_z\times R'}$; finally $A_{m,:}=T[k_{x,m},k_{y,m},k_{z,m},:]$. Nothing of size
+  $N\times R'$ is stored; no Gram matrix (mesh-free path). $P$ at mesh $n$ = `offmesh.test_block(n, X, w, kxyz_n)`.
+  G5 per quantity at $n=65$ against `tables.build_tables`: identical `kxyz` and $M$, identical $\lambda$, $A$ equal to
+  $10^{-11}$ relative (Frobenius), for M2_512 and W256 (and W1024 if it fits). K7: $A$ at $n=66$ restricted to the same
+  mode triples differs from $n=65$ by $>10^{-4}$ relative.
+* *Feasibility certificate.* The cluster smoke runs one F-UB and one F-CC case at $L=384$ and `bigtables` at $n=385$ for
+  $R'=1024$, recording peak device memory and time; the production `m1` allocation is projected from it (stop rule:
+  a mesh whose pilot does not fit or projects over the allocation is dropped and reported as infeasible).
+
+**A1.10 Controls (audit item 10).** Smoke cases are fixed: 923801 cases 0, 5, 7 (5 and 7 failed FS-K2 CN 2.5Δt₀ at every
+Step 2 setting). Controls K1–K3 are evaluated on the production cohort; a control that does not fire **blocks the
+claim it protects** (K1/K2 block H1 eligibility verdicts, K3 blocks QN eligibility); no case hunting. K4: swap = case
+0's field scored against case 1's reference; shift = output times rolled by one; failure predicate: score changes by
+$>10^{-6}$. K9 (new, distance classifier): an eligible run's output W perturbed along a fixed random direction to field
+distances $0.5\times$ and $2\times$ the $2.5\cdot10^{-4}$ bar must be classified within / beyond. K10 (new, FOM matcher):
+two synthetic ladder entries — zero time but an unconverged stage; zero time but errors $10\times$ the ROM's — must be
+rejected by the matcher. G6 (FD port): lane `fomcore` equals E0 `refcore` bit-for-bit on one case at L = 64 for each of
+F-UB, F-UC, F-CC (CPU); `fomcore` F-UB at $\Delta t=0.005$ equals the vendor `common.make_fom(65, .005, ...)` to
+$10^{-12}$ relative at equal tolerances; K8 (F-CC vs F-UB differ) kept.
+
+**A1.11 Freeze and replication (audit item 11).** Order: g1–g3 + f1 → H1/H2 screening selection → p1 (profile,
+mesh-free qualification on validation, batching, confirmation panels A1.5) and m1 (route 4) → **one immutable
+`checks/FROZEN-SELECTION.json`** containing every validation-selected decision (H1/H2 winners, H3.2 qualifications, the
+matched FOM configurations) → r1: replication on 923901 (E0 `test32`) of the frozen ROM configurations, comparators and
+matched FOM configurations, accuracy only (plus one paired timing panel per comparator, reported as replication).
+923901 is historical, not untouched; called "replication cohort".
+
+**A1.12 Resources (audit item 12).** Each production config gets a run inventory (`s3run.py --dry-run`) and a projection
+from the cluster smoke's measured per-run times (compile, ADT, certification, panels) × 1.5; the job's wall-time
+allocation must cover it (else split). All jobs H200. Timing comparisons are only made within a job.
+
+**A1.13 Reduced quadrature (audit item 13).** Reduced rules are **empirically validated surrogates**: no
+quadrature-equivalence claim. For every H2 winner and B\* the lane also runs the same configuration with the setting's
+converged rule (Step 2: M2_512/W256/W512 gl56, W768 gl64, W1024 gl80) and reports $\delta_{\rm quad}$ (field distance)
+beside its accuracy.

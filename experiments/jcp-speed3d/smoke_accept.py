@@ -367,9 +367,9 @@ def main():
         else:
             lines = [l for l in (Path(a.log).read_text(errors='replace').splitlines() if a.log and Path(a.log).exists() else [])
                      if l.strip()]
-            last = lines[-40:]                                  # terminal evidence only (job audit smoke1-5)
-            errs = [l for l in last if 'error' in l.lower() or 'RESOURCE_EXHAUSTED' in l]
-            term = errs[-1] if errs else ''                     # the terminating exception line (stderr)
+            last = lines[-40:]
+            term = lines[-1] if lines else ''                   # the LAST stderr line must itself be the resource error
+            #                                                     (Python's final traceback line; job audits smoke1-5/-6)
             res = a.sacct_state == 'OUT_OF_MEMORY' or (
                 a.sacct_state == 'FAILED' and any(t in term for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'MemoryError'))
                 and not any(t in ' '.join(last) for t in ('TIME LIMIT', 'CANCELLED')))

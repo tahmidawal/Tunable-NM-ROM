@@ -483,3 +483,13 @@ finalist's reduced rule (in p1) and every route-4 mesh (in m1). (e) All latencie
 with preparation cost beside them. (f) FSP's fixed phase may start before cubic history exists (e.g. M2_512,
 $2.5\Delta t_0$, $a_{\rm eff}=2$); the $k\ge3$ mask handles it ("with full history" in A1.3 is withdrawn). (g) A1.11
 supersedes the execution diagram of §9.
+
+---
+
+## Amendment A3 (2026-10-14; `audits/codex-design-3.md` verdict READY, non-blocking clarifications adopted)
+
+* A2.3 orientation: $G_{\rm lat}\in\mathbb R^{63^3\times R'}$ (bank rows at the lattice points), decode $(W_a-W_b)_kG_{\rm lat}^{\mathsf T}$.
+* A2.2 replay: the baseline-replay check on $\gamma$ uses $|\gamma_{\rm replay}-\gamma_{\rm rec}|\le10^{-6}\gamma_{\rm rec}+10^{-9}$; a
+  distance-only case whose replayed step is already stationary is reported "baseline already stationary"; replay covers
+  only fixed-sweep steps (a failing step inside the adaptive start is reported as such and not replayed).
+* A1.2 + A2.1 are implemented as one checklist in the docstring of `qn3.py`.

@@ -518,3 +518,14 @@ supersedes the execution diagram of §9.
 * **A4.5 Deferred (implemented before the decision each one feeds, never after it):** the selection/freeze script, the
   FOM matcher with K10, the confirmation-based final H1.4/H2 verdicts, the H3.2/K5 qualification verdict and G3, the
   analysis completeness/provenance checks, and the smoke-derived resource certificates.
+
+---
+
+## Amendment A5 (2026-10-15; coordinator guidance on the smoke-acceptance audits)
+
+The smoke acceptance (`smoke_accept.py`) exists to catch real bugs — wrong numbers, missing outputs, controls that do not
+fire, results from the wrong job — not to resist a deliberate forger with write access to the output directory (no one in
+this setup forges outputs). The standard is the round-6 version: every predicate recomputed from the raw outputs. From
+`audits/codex-code-6.md` on, findings that require deliberately fabricated files are recorded as NOTED (not blocking) in the
+audit response and fixed only if cheap; only findings where honest code or honest cluster behaviour could give a false PASS
+or a false FAIL block the smoke. The Codex gates on the job config, the results and the report are unchanged.

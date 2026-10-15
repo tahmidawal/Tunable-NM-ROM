@@ -1,0 +1,46 @@
+{
+ "backend": "cpu",
+ "device": "cpu",
+ "setting": "M2_512",
+ "rule": "gl24",
+ "cases": [
+  0,
+  5
+ ],
+ "checks": {
+  "G0_bitwise": [
+   true,
+   true
+  ],
+  "G1_CN_0.025": {
+   "bitwise": true,
+   "extra_finite": true,
+   "extra_pred_counts": [
+    2,
+    2,
+    0,
+    0,
+    16
+   ]
+  },
+  "G2_CN_0.025": {
+   "worst_excess": 0.0,
+   "ok": true
+  },
+  "G1_BDF2_0.0125": {
+   "bitwise": true,
+   "extra_finite": true,
+   "extra_pred_counts": [
+    2,
+    2,
+    2,
+    32,
+    2
+   ]
+  },
+  "G2_BDF2_0.0125": {
+   "worst_excess": 0.0,
+   "ok": true
+  }
+ }
+}

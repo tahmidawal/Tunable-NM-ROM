@@ -790,6 +790,19 @@ def main():
                         cnt[top] = cnt.get(top, 0) + 1
         S.append('- **2D budget: what limits next** (largest component per setting-arm, by number of setting-arms): '
                  + ', '.join(f'{k} {v}' for k, v in sorted(cnt.items(), key=lambda kv: -kv[1])) + '.')
+    if b3:
+        cnt3 = {}
+        for s_, S_ in b3['settings'].items():
+            for ak, A in S_['arms'].items():
+                lg = A.get('largest') or {}
+                if lg:
+                    top = max(lg.items(), key=lambda kv: kv[1])[0]
+                    cnt3[top] = cnt3.get(top, 0) + 1
+        wh = [k for k, v in b3['settings'].items() if v.get('withheld')]
+        S.append('- **3D budget: what limits next** (largest component per setting-arm): '
+                 + ', '.join(f'{k} {v}' for k, v in sorted(cnt3.items(), key=lambda kv: -kv[1]))
+                 + ('; quadrature attribution withheld at ' + ', '.join(wh) + ' (converged-rule check failed closed)' if wh else '')
+                 + '.')
     r.lines[SUMMARY_AT:SUMMARY_AT] = ['## Answers in brief (generated)', ''] + S + ['']
     (HERE / 'report.md').write_text('\n'.join(r.lines) + '\n')
     print(HERE / 'report.md', 'pending:', pending)

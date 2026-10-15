@@ -10,6 +10,7 @@
 - **3D fixed-sweep CN (K = 2, 2.5 Δt₀)** departs from the verified adaptive solve on a fixed set of cases (the same at every rule), so the pre-registered rule selection was unavailable; the POST HOC selection uses the adaptive CN arm.
 - **3D fast solver (H4).** H4a (speed at equal accuracy, ratio ≤ 0.6): M2_512 fail, W256 fail, W512 fail, W768 fail, W1024 fail; H4b (accuracy at equal cost): M2_512 pass, W256 pass, W512 pass, W768 pass, W1024 pass. Read together: the second-order fixed-sweep solver buys accuracy at equal cost, not speed at equal accuracy.
 - **2D budget: what limits next** (largest component per setting-arm, by number of setting-arms): delta_time 16, e_P 7, e_dyn 1.
+- **3D budget: what limits next** (largest component per setting-arm): delta_time 13, e_P 5, e_dyn 1; quadrature attribution withheld at M2_512 (converged-rule check failed closed).
 
 ## How the work was done
 

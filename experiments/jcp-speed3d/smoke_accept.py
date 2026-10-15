@@ -367,9 +367,12 @@ def main():
         else:
             lines = [l for l in (Path(a.log).read_text(errors='replace').splitlines() if a.log and Path(a.log).exists() else [])
                      if l.strip()]
-            errs = [l for l in lines if 'Error' in l or 'RESOURCE_EXHAUSTED' in l]
-            term = errs[-1] if errs else ''                     # the terminating exception line (last error line, stderr)
-            res = a.sacct_state == 'OUT_OF_MEMORY' or any(t in term for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'MemoryError'))
+            last = lines[-40:]                                  # terminal evidence only (job audit smoke1-5)
+            errs = [l for l in last if 'error' in l.lower() or 'RESOURCE_EXHAUSTED' in l]
+            term = errs[-1] if errs else ''                     # the terminating exception line (stderr)
+            res = a.sacct_state == 'OUT_OF_MEMORY' or (
+                a.sacct_state == 'FAILED' and any(t in term for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'MemoryError'))
+                and not any(t in ' '.join(last) for t in ('TIME LIMIT', 'CANCELLED')))
             tail = term
             gate('smkmesh384 job: failed for resources (reported infeasible, A1.9)', res, sacct=a.sacct_state, tail=tail[-600:])
     else:

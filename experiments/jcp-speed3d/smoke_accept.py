@@ -32,7 +32,23 @@ def main():
     a = ap.parse_args()
     O = Path(a.out)
     job = os.environ.get('SLURM_JOB_ID')
+    commit = os.environ.get('SOURCE_COMMIT')
     G = {}
+    BAR = 2.5e-4
+
+    def ident(obj, what):
+        """Every artifact must carry this execution's job id and source commit (both required)."""
+        gate(f'{what} bound to job {job} / commit {commit}', job is not None and commit is not None and obj is not None
+             and obj.get('job_id') == job and obj.get('commit') == commit,
+             found=None if obj is None else [obj.get('job_id'), obj.get('commit')])
+
+    def panel_ok(tm, ncases, reps):
+        if tm is None or not tm.get('valid') or tm.get('missing_expected'):
+            return False
+        inv = tm['invocations']
+        if len(inv) != len(tm['subjects']) * ncases * reps or not inv:
+            return False
+        return all(x['hashes_ok'] and np.isfinite(x['ratio']) and x['ratio'] > 0 for x in inv)
 
     def gate(name, ok, **ev):
         G[name] = dict(result='pass' if ok else 'fail', **ev)
@@ -45,6 +61,7 @@ def main():
 
     def steps():
         lines = (O / 'STEPS.txt').read_text().splitlines()
+        gate('STEPS.txt bound to this job', bool(lines) and lines[0] == f'job={job} commit={commit}', head=lines[:1])
         rc = {l.split()[0]: int(l.split()[1].split('=')[1]) for l in lines if ' rc=' in l}
         want = ['test_s3_M2', 'test_s3_W1024', 'test_fom', 'smkgrid', 'smkfom', 'smkprof', 'smkmesh']
         for w in want:
@@ -52,28 +69,48 @@ def main():
 
     def bound(r, cfgname):
         cfg = json.loads((HERE / 'configs' / f'{cfgname}.json').read_text())
-        gate(f'{cfgname} bound to this attempt', r is not None and r['config'] == cfg and (job is None or r.get('job_id') == job),
-             job=None if r is None else r.get('job_id'))
+        gate(f'{cfgname} config identical', r is not None and r['config'] == cfg)
+        ident(r, cfgname)
         gate(f'{cfgname} complete', r is not None and bool(r.get('complete')))
         return cfg
 
     def tests():
-        for s in ('M2_512', 'W1024'):
-            t = load(O / f'test_s3-{s}.json')
-            need = ['G0_bitwise', 'G1_CN_0.025', 'G1_BDF2_0.0125', 'G2_CN_0.025', 'G2_BDF2_0.0125', 'qn|CN|0.025|k1',
-                    'qn|CN|0.025|k1|q0', 'qn|CN|0.025|k1|noJuT', 'G4_dist', 'K6_dist', 'mf']
-            gate(f'test_s3 {s}: every gate present, cases 0 5 7, no failures',
-                 t is not None and t.get('mandatory_failures') == [] and all(k in t['checks'] for k in need)
-                 and t['cases'] == [0, 5, 7], failures=None if t is None else t.get('mandatory_failures'))
+        for s_ in ('M2_512', 'W1024'):
+            t = load(O / f'test_s3-{s_}.json')
+            ident(t, f'test_s3 {s_}')
+            c = {} if t is None else t['checks']
+            gate(f'test_s3 {s_} cases 0 5 7', t is not None and t['cases'] == [0, 5, 7])
+            gate(f'test_s3 {s_} G0 bitwise', c.get('G0_bitwise') == [True, True, True])
+            for k in ('G1_CN_0.025', 'G1_BDF2_0.0125'):
+                gate(f'test_s3 {s_} {k}', bool(c.get(k, {}).get('bitwise')) and bool(c.get(k, {}).get('extra_finite')))
+            for k in ('G2_CN_0.025', 'G2_BDF2_0.0125'):
+                gate(f'test_s3 {s_} {k}', c.get(k, {}).get('ok') is True)
+            q1 = c.get('qn|CN|0.025|k1', {})
+            gate(f'test_s3 {s_} QN-1 CN 2.5 within the bar, valid', len(q1.get('dist', [])) == 3 and max(q1['dist']) <= BAR
+                 and all(q1.get('valid', [])), dist=q1.get('dist'))
+            k2 = c.get('qn|CN|0.025|k1|q0', {})
+            gate(f'test_s3 {s_} K2 fires', len(k2.get('nonstationary', [])) == 3 and min(k2['nonstationary']) > 0)
+            k3 = c.get('qn|CN|0.025|k1|noJuT', {}).get('dist', []) + c.get('qn|BE|0.01|k1|noJuT', {}).get('dist', [])
+            gate(f'test_s3 {s_} K3 fires', len(k3) == 6 and max(k3) > BAR)
+            g4 = c.get('G4_dist', [])
+            gate(f'test_s3 {s_} G4', len(g4) == 3 and np.isfinite(g4).all() and max(g4) <= 1e-8, G4=g4)
+            k6 = c.get('K6_dist', [])
+            gate(f'test_s3 {s_} K6 fires', len(k6) == 3 and max(k6) > 2.5e-5)
+            mf = c.get('mf', {})
+            gate(f'test_s3 {s_} mf projection conditioned', mf.get('cond', {}).get('cond', np.inf) < 1e10)
         t = load(O / 'test_fom.json')
-        need = ['run_UB', 'run_UC', 'run_CC', 'G6v', 'K8', 'G7', 'G5_M2_512']
-        gate('test_fom: G6v, K8, G7, G5/K7 M2, FOM runs converge; no failures',
-             t is not None and t.get('mandatory_failures') == [] and all(k in t['checks'] for k in need),
-             failures=None if t is None else t.get('mandatory_failures'))
+        ident(t, 'test_fom')
+        c = {} if t is None else t['checks']
+        for k in ('run_UB', 'run_UC', 'run_CC'):
+            gate(f'test_fom {k} converged', bool(c.get(k, {}).get('converged', [False])[0]))
+        gate('test_fom G6v (vendor FOM)', bool(c.get('G6v', {}).get('pass_')), rel=c.get('G6v', {}).get('rel'))
+        gate('test_fom K8 fires', bool(c.get('K8', {}).get('fires')))
+        gate('test_fom G7 (PS port) + control', bool(c.get('G7', {}).get('pass')) and bool(c.get('G7', {}).get('control_fires')))
+        gate('test_fom G5/K7 M2', bool(c.get('G5_M2_512', {}).get('pass')) and bool(c.get('G5_M2_512', {}).get('K7_fires')))
         for f, need in (('checks/test_fom-local-cpu.json', ['G6_UB', 'G6_UC', 'G6_CC']), ('checks/test_g8.json', None)):
             t = load(HERE / f)
             ok = t is not None and (all(t['checks'].get(k) is True for k in need) if need else bool(t.get('pass_')))
-            gate(f'local evidence {f} (staged copy)', ok, sha256=C3.sha_file(HERE / f) if (HERE / f).exists() else None)
+            gate(f'local evidence {f} (staged, committed copy)', ok, sha256=C3.sha_file(HERE / f) if (HERE / f).exists() else None)
 
     def grid():
         r = load(O / 'smkgrid' / 'result.json')
@@ -82,7 +119,7 @@ def main():
         gate('smkgrid settings', sorted(r['settings']) == sorted(names))
         for sn in names:
             tm = r['timing'].get(f'screen|{sn}')
-            gate(f'smkgrid panel screen|{sn} present + valid + hashes', tm is not None and bool(tm.get('valid')),
+            gate(f'smkgrid panel screen|{sn} complete, valid, hashes', panel_ok(tm, cfg['timing']['cases'], cfg['timing']['reps']),
                  missing_expected=None if tm is None else tm.get('missing_expected'))
             gate(f'smkgrid panel screen|{sn} T1 in [1.8, 2.2]', tm is not None and AN.t1_ok(tm))
             n_inv = 0 if tm is None else len(tm['invocations'])
@@ -109,14 +146,19 @@ def main():
         gate('smkfom FD population', sorted(r['fom']['fd']) == sorted(want))
         for k, v in r['fom']['fd'].items():
             gate(f'smkfom {k} calibrated', v['calibration'].get('chosen') is not None, cal_status=v['calibration'].get('status'))
-            gate(f'smkfom {k} converged + scored (all cases)', 'cases' in v and len(v['cases']) == len(cfg['case_subset']) and
+            gate(f'smkfom {k} converged + scored on exactly the cases', 'cases' in v and
+                 sorted(int(x) for x in v['cases']) == sorted(cfg['case_subset']) and
                  all(c['converged'] and np.isfinite(c.get('e', np.nan)) for c in v['cases'].values()))
-            gate(f'smkfom {k} warm hashes', 'warm' in v and bool(v['warm']['hashes_ok']))
+            nw = cfg['timing']['cases'] * cfg['timing']['reps']
+            gate(f'smkfom {k} warm timing complete + hashes', 'warm' in v and len(v['warm']['times']) == nw and
+                 bool(v['warm']['hashes_ok']) and all(np.isfinite(x['seconds']) for x in v['warm']['times']))
         wantp = [f'ps|N{N}|{dt:.8g}' for N in cfg['fom']['ps']['Ns'] for dt in cfg['fom']['ps']['dts']]
         gate('smkfom PS population', sorted(r['fom']['ps']) == sorted(wantp))
         for k, v in r['fom']['ps'].items():
-            gate(f'smkfom {k} finite + scored', all(c['converged'] and np.isfinite(c.get('e', np.nan)) for c in v['cases'].values()))
-            gate(f'smkfom {k} warm hashes', bool(v['warm']['hashes_ok']))
+            gate(f'smkfom {k} finite + scored on exactly the cases', sorted(int(x) for x in v['cases']) == sorted(cfg['case_subset'])
+                 and all(c['converged'] and np.isfinite(c.get('e', np.nan)) for c in v['cases'].values()))
+            nw = cfg['timing']['cases'] * cfg['timing']['reps']
+            gate(f'smkfom {k} warm timing complete + hashes', len(v['warm']['times']) == nw and bool(v['warm']['hashes_ok']))
 
     def prof():
         r = load(O / 'smkprof' / 'result.json')
@@ -124,11 +166,11 @@ def main():
         b = cfg['prof']
         for lab in b['profile']:
             tm = r['timing'].get(f'profile|{lab}')
-            gate(f'smkprof profile {lab} panel valid', tm is not None and bool(tm.get('valid')),
+            gate(f'smkprof profile {lab} panel complete + valid', panel_ok(tm, cfg['timing']['cases'], cfg['timing']['reps']),
                  missing_expected=None if tm is None else tm.get('missing_expected'))
         for la, lb in b['confirm']:
             tm = r['timing'].get(f'confirm|{la}|{lb}')
-            gate(f'smkprof confirm {la}|{lb} valid', tm is not None and bool(tm.get('valid')))
+            gate(f'smkprof confirm {la}|{lb} complete + valid', panel_ok(tm, b['confirm_cases'], b['confirm_reps']))
         P = r['prof']
         for lab in b['batch']['labels']:
             for B in b['batch']['sizes']:
@@ -143,7 +185,9 @@ def main():
                     gate(f'smkprof batch {lab} B={B} K6 fires', bool(x['K6_fires']))
         for lab in b['mf']:
             m = P['mf'].get(lab, {})
-            gate(f'smkprof mf {lab} ran (cond gate passed)', 'dist_to_adt' in m, info=m.get('invalid'))
+            d = np.asarray(m.get('dist_to_adt', []), float)
+            gate(f'smkprof mf {lab} ran on every case, ADT valid, finite', d.shape == (len(cfg['case_subset']), 6) and
+                 np.isfinite(d).all() and all(m.get('adt_valid', [])), info=m.get('invalid'))
             k = P['k5'].get(lab, {})
             gate(f'smkprof K5 {lab} gl12 rank / condition ok (qualification deferred, A4.5)', bool(k.get('rank_ok')), cond=k.get('cond'))
         for lab in b['conv']:
@@ -159,6 +203,7 @@ def main():
         gate('smkmesh G5/K7 all banks incl. W256 and M2', bool(M.get('G5_all')) and 'W1024|256' in M['G5'] and 'M2|512' in M['G5'],
              G5={k: v.get('gate') for k, v in M['G5'].items()})
         b = cfg['mesh']
+        nc, tcs = len(cfg['case_subset']), cfg['timing']
         for L in b['Ls']:
             E = M['per_L'].get(str(L))
             gate(f'smkmesh L{L} present', E is not None)
@@ -166,17 +211,25 @@ def main():
                 continue
             for rom in b['roms']:
                 v = E['rom'].get(rom['label'], {})
-                ok = 'dist_to_adt' in v and all(v['adt_valid']) and v.get('adt_tighter_valid') is not None and all(v['adt_tighter_valid'])
-                gate(f'smkmesh L{L} ROM {rom["label"]} (ADT valid, pilot)', ok, info=v.get('infeasible'), tables=v.get('tables'))
+                d = np.asarray(v.get('dist_to_adt', []), float)
+                ok = (d.shape == (nc, 6) and np.isfinite(d).all() and len(v.get('adt_valid', [])) == nc and all(v['adt_valid'])
+                      and len(v.get('adt_tighter_valid') or []) == min(8, nc) and all(v['adt_tighter_valid'])
+                      and np.isfinite(v.get('adt_tight_tighter', np.nan)))
+                gate(f'smkmesh L{L} ROM {rom["label"]} complete (pilot)', ok, info=v.get('infeasible'), tables=v.get('tables'))
             for fam, dt in b['same']:
                 v = E['fom'].get(f'{fam}|{dt:.8g}', {})
-                gate(f'smkmesh L{L} FOM {fam} {dt} (pilot)', 'cases' in v and all(c['converged'] for c in v['cases'].values()),
+                cs = v.get('cases', {})
+                gate(f'smkmesh L{L} FOM {fam} {dt} complete (pilot)', sorted(int(x) for x in cs) == sorted(cfg['case_subset'][:b['acc_cases']])
+                     and all(c['converged'] and np.isfinite(c.get('e', np.nan)) for c in cs.values()),
                      info=v.get('infeasible') or (v.get('calibration') or {}).get('status'))
             for rl, fk in b['matched']:
-                gate(f'smkmesh L{L} matched {fk}', fk in E['fom'])
-                for rom in b['roms']:
-                    tm = r['timing'].get(f"mesh|L{L}|{rom['label']}")
-                    gate(f"smkmesh L{L} panel {rom['label']} valid", tm is not None and bool(tm.get('valid')))
+                cs = E['fom'].get(fk, {}).get('cases', {})
+                gate(f'smkmesh L{L} matched {fk} complete', sorted(int(x) for x in cs) == sorted(cfg['case_subset'][:tcs['cases']])
+                     and all(c['converged'] and np.isfinite(c.get('e', np.nan)) for c in cs.values()))
+            for rom in b['roms']:
+                tm = r['timing'].get(f"mesh|L{L}|{rom['label']}")
+                gate(f"smkmesh L{L} panel {rom['label']} complete + valid", panel_ok(tm, tcs['cases'], tcs['reps']))
+
     for name, fn in (('steps', steps), ('tests', tests), ('grid', grid), ('fom', fom), ('prof', prof), ('mesh', mesh)):
         section(name, fn)
     ok = all(v['result'] == 'pass' for v in G.values()) and len(G) > 0

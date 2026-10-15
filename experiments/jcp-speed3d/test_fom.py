@@ -45,7 +45,8 @@ def main():
     ap.add_argument('--skip-g5', action='store_true')
     ap.add_argument('--skip-e0', action='store_true', help='cluster: the E0 lane source is not staged')
     a = ap.parse_args()
-    rep = dict(backend=jax.default_backend(), checks={})
+    import os
+    rep = dict(backend=jax.default_backend(), checks={}, job_id=os.environ.get('SLURM_JOB_ID'), commit=os.environ.get('SOURCE_COMMIT'))
     print(f'jax_backend={jax.default_backend()}', flush=True)
     tab = C3.C.table(923801, 64)
     j = 0

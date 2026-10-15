@@ -37,8 +37,9 @@ def main():
     ap.add_argument('--quick', action='store_true', help='G0-G2 only')
     a = ap.parse_args()
     t0 = time.perf_counter()
+    import os
     rep = dict(backend=jax.default_backend(), device=jax.devices()[0].device_kind, setting=a.setting, rule=a.rule,
-               cases=a.cases, checks={})
+               cases=a.cases, checks={}, job_id=os.environ.get('SLURM_JOB_ID'), commit=os.environ.get('SOURCE_COMMIT'))
     print(f'jax_backend={jax.default_backend()}', flush=True)
     bname, Rp, aa = BANKS[a.setting]
     bank = C3.load_bank(bname)

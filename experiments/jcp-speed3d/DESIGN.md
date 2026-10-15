@@ -416,3 +416,70 @@ allocation must cover it (else split). All jobs H200. Timing comparisons are onl
 quadrature-equivalence claim. For every H2 winner and B\* the lane also runs the same configuration with the setting's
 converged rule (Step 2: M2_512/W256/W512 gl56, W768 gl64, W1024 gl80) and reports $\delta_{\rm quad}$ (field distance)
 beside its accuracy.
+
+---
+
+## Amendment A2 (2026-10-14, before any run; answers `audits/codex-design-2.md`, verdict NOT READY)
+
+**A2.1 QN semantics (blocking 1).** Replaces the corresponding lines of A1.2.
+* *Initialisation:* $c_{-1}=c_{-2}=c_{-3}=c_0$, $\mathrm{adv}_{-1}=\mathrm{adv}_0=\mathrm{adv}(c_0)$, $H=0$, `Lfac`$=0$, `Jn`$=1$,
+  $\mu=\mu_0$, `last_ref`$=0$, `q_prev`$=0$, `fail_prev`$=$False, `dead`$=$False (all finite, so masked history terms are
+  finite zeros-times-finite).
+* *One refresh operation* `refresh(c, mask)`: for masked members sets $H,\ $`Lfac`$=\mathrm{chol}(H+\mu_0\,\mathrm{diag}H)$,
+  `Jn`, $\mu=\mu_0$, `last_ref`$=k$, and increments the per-member counter `n_ref` once. Separately, the per-step counter
+  `n_exec` records contractions **executed** (in a batch: Bt per call, whether or not a member was flagged). After every
+  refresh (step-start or emergency) `gam` and `done` are recomputed with the new `Jn`. An emergency refresh triggered in
+  the last allowed iteration is performed and counted; no further solve follows.
+* *Candidates:* a candidate whose residual norm is non-finite is masked like an inactive one; if all five are masked the
+  member is non-finite at this step.
+* *Finiteness:* a member is `bad` at a step if any of: all candidates masked, non-finite residual norm, gradient,
+  `gam`, step $d$, or `Lfac`. Reason precedence: 3 (bad) > 4 (done) > 0. A member that is bad at step $k$ becomes `dead`:
+  its state is frozen at its last finite value, it records reason 3 at every later step, and its run is invalid (E-a).
+* *Batch masks:* `act = ~done & ~bad & ~dead`. Only active members change state, damping or counters inside the
+  iteration loop; step-start refresh flags are intersected with `~dead`, emergency flags with `act`.
+
+**A2.2 H1.1 replay (blocking 2).** Replaces the procedure of A1.6.
+* *Cases:* per setting, the cases of FS-K2 CN $2.5\Delta t_0$ at the deployed rule that are invalid, or have ≥ 1
+  certified non-stationary step, or exceed the solver-distance bar (the per-case parts of E-a, E-b, E-c).
+* *Replayed step $n^\*$:* the first step with reason 3 or damping saturation (validity failures); else the first certified
+  non-stationary step; else (distance-only) the step of largest certified $\gamma$ within the first output interval whose
+  output exceeds the bar.
+* *Start:* the saved $c_{n^\*},c_{n^\*-1},c_{n^\*-2}$; the damping entering step $n^\*$ (the value carried out of step
+  $n^\*-1$, recorded); the saved predictor index of step $n^\*$; Jacobian history recomputed by contraction. *Baseline
+  replay:* K = 2 from this start must reproduce the recorded $c_{n^\*+1}$ to $10^{-10}$ relative and $\gamma$ to
+  $10^{-6}$ relative; otherwise the case is "replay not reproducible" and no intervention is interpreted.
+* *Interventions:* (i) K = 2..12 sweeps (smallest K with $\gamma\le10^{-3}$, or "> 12"); (ii) K = 2 with trust
+  $\times10$; (iii) K = 2 with damping reset to $10^{-12}$; (iv) QN-1 (step-start refresh at the same candidate).
+* *Labels (mutually exclusive, in this precedence):* "mixed" if two or more of {(i) with K ≤ 4, (ii), (iii)} succeed;
+  else "too few sweeps" if (i) with K ≤ 4; else "trust clip" if (ii); else "damping" if (iii); else "unexplained".
+  Scope: a statement about the replayed step, not a cause of the trajectory's accuracy failure.
+
+**A2.3 Distance metric (blocking 3).** Every field distance in this lane (E-c, ADT tight/tighter agreement, H3.2, K9,
+controls) is the **scoring-lattice distance** $\max_{k=1..5}\|(W_a-W_b)_k\,G_{\rm lat}\|_2/n_0$, $G_{\rm lat}$ the bank
+rows at the $63^3$ lattice, $n_0=\|u_0\|_2$ on the lattice. At $n=65$ the lattice is exactly the interior mesh, so this
+equals Step 2's Gram-metric distance (verified by gate G8 on stored Step 2 W's: equal to $10^{-12}$ relative). At
+$n>65$ it is a lattice metric, not a mesh metric; labelled so. For route 4, ADT `tight` runs of each timed ROM
+configuration at each mesh are made on all 64 cases (E-c at that mesh), with a tight/tighter check on cases 0–7.
+
+**A2.4 Mode indexing (blocking 4).** `common.modes` returns one-based triples; the executable gather is
+$A_{m,:}=T[k_{x,m}-1,\,k_{y,m}-1,\,k_{z,m}-1,:]$, and column $j-1$ of each sine table holds mode $j$:
+$\Phi[a-1,j-1]=\sqrt{2/(n-1)}\sin(\pi j a/(n-1))$, $a=1..n-2$ (one-based node index, denominator $n-1$).
+
+**A2.5 FOM qualification reference (blocking 5).** The tightest level itself must pass (finite, every stage's recorded
+**relative** residual $\le n_{\rm tol}$, no max-Newton exit) on all four calibration cases; otherwise the (family, L,
+Δt) configuration is **unavailable** (no fallback). Lattice difference: $\max_{k}\|u_{\rm lev}(t_k)-u_{\rm tight}(t_k)\|_2/n_0$
+on the scoring lattice, $n_0=\|R(t_0)\|_2$.
+
+**A2.6 K9 (blocking 6).** Origin: the ADT comparator output $W^{\rm ADT}$ of M2_512 BE $\Delta t_0$ at the deployed rule,
+case 0. Direction $v$: a fixed seeded (seed 20261014) standard normal $(6\times R')$ array with row 0 zeroed, scaled so
+that the lattice distance of $W^{\rm ADT}+sv$ to $W^{\rm ADT}$ is exactly $0.5\tau$ and $2\tau$ ($\tau=2.5\cdot10^{-4}$,
+verified before classification). The E-c classifier applied to (synthetic, $W^{\rm ADT}$) must return within / beyond.
+
+**A2.7 Non-blocking items, adopted.** (a) Route 4's matched-accuracy panels (cases 0–3, 2 repetitions) are an explicit
+exception to A1.5's 8×3 confirmation panel; the H2 confirmations keep 8×3. (b) Decomposition: each factor is the
+median of its own direct paired panel; their product is not claimed to equal the total. (c) K5 counts only if gl12
+passes rank and condition ($<10^{10}$) checks. (d) ADT tight/tighter (cases 0–7, $2.5\cdot10^{-5}$) is also run for every
+finalist's reduced rule (in p1) and every route-4 mesh (in m1). (e) All latencies are **prepared-input latencies**,
+with preparation cost beside them. (f) FSP's fixed phase may start before cubic history exists (e.g. M2_512,
+$2.5\Delta t_0$, $a_{\rm eff}=2$); the $k\ge3$ mask handles it ("with full history" in A1.3 is withdrawn). (g) A1.11
+supersedes the execution diagram of §9.

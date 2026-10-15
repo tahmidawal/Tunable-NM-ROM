@@ -736,7 +736,27 @@ def main():
       '- **pre-registered / POST HOC**: decided before results were read / decided after (labelled; exploratory).',
       '- **dev6, val32, 923801**: development and validation cohorts (selection allowed); test64 / 923901 are replication-only '
       'and were not used.',
-      '- **pp, % of ‖u₀‖**: errors are reported relative to the initial-condition norm.', '')
+      '- **pp, % of ‖u₀‖**: errors are reported relative to the initial-condition norm.',
+      '- **ideal model ⋆, e_⋆**: the reduced model with every ingredient at its ideal (converged rule, Galerkin, BDF2 at Δt₀/8, '
+      'tight solver); e_⋆ its error against the reference.',
+      '- **e_tot, e_P, e_dyn**: an arm\'s total error; the bank\'s projection floor (best possible error in the span); the '
+      'ideal model\'s distance to the projected reference (e_⋆² = e_P² + e_dyn² exactly, gate B0).',
+      '- **δ_quad, δ_solve, δ_form, δ_time, D_a**: distance between an arm and the same arm with only the quadrature rule / '
+      'solver tolerance / test space (LSPG→Galerkin) / scheme-and-step changed to the ideal; D_a the direct distance to the '
+      'ideal model. Each is its own ablation; none is a remainder.',
+      '- **largest component (cases)**: per case, which of the measured components above is biggest; counted over cases. A '
+      'sensitivity ranking, not a causal attribution.',
+      '- **finalist check, τ**: a selected arm must stay within τ = 2.5×10⁻⁴ of itself run with the converged rule on every '
+      'case; failing means the deployed rule is too coarse for that arm.',
+      '- **fallback**: the next finer rule of the same family, frozen in advance, qualified separately.',
+      '- **B0–B3, G-score, controls**: machinery gates — B0 the exact Pythagorean identity, B1 a bitwise re-run, B2 a '
+      'deliberately bad rule that must be detected, B3 a time ablation that must be detectable; G-score the independent '
+      're-decoding of every saved trajectory; negative controls (case swap, time shift, ...) that must break agreement.',
+      '- **E0, R_ST, R_S, ε_ref (η)**: the campaign\'s order-verified second-order references (central differences + '
+      'Crank–Nicolson; R_S backward Euler at Δt₀ for BE-matched comparison only) and their per-case Richardson uncertainty.',
+      '- **H1–H6**: the pre-registered hypotheses of DESIGN §6 (wide bank pays off; tunability; CN worst-case cancellation; '
+      '3D speed/accuracy of the fixed-sweep solver; speed vs the FOM; 3D dial).',
+      '- **anchor-resolved cases**: cases where the comparator\'s anchor discrepancy exceeds 3× the anchor uncertainty.', '')
     # ------------------------------------------------------------------------------------------------ summary
     S = []
     if an is not None:
@@ -788,7 +808,7 @@ def main():
                     if lg:
                         top = max(lg.items(), key=lambda kv: kv[1])[0]
                         cnt[top] = cnt.get(top, 0) + 1
-        S.append('- **2D budget: what limits next** (largest component per setting-arm, by number of setting-arms): '
+        S.append('- **2D budget: largest measured component** (per setting-arm; a one-ingredient sensitivity, not a causal share or a guaranteed gain): '
                  + ', '.join(f'{k} {v}' for k, v in sorted(cnt.items(), key=lambda kv: -kv[1])) + '.')
     if b3:
         cnt3 = {}
@@ -799,9 +819,9 @@ def main():
                     top = max(lg.items(), key=lambda kv: kv[1])[0]
                     cnt3[top] = cnt3.get(top, 0) + 1
         wh = [k for k, v in b3['settings'].items() if v.get('withheld')]
-        S.append('- **3D budget: what limits next** (largest component per setting-arm): '
+        S.append('- **3D budget: largest measured component** (per setting-arm; a sensitivity, not a causal share): '
                  + ', '.join(f'{k} {v}' for k, v in sorted(cnt3.items(), key=lambda kv: -kv[1]))
-                 + ('; quadrature attribution withheld at ' + ', '.join(wh) + ' (converged-rule check failed closed)' if wh else '')
+                 + ('; quadrature attribution withheld at ' + ', '.join(wh) + ' (converged-rule check failed closed on one unverified replay at the finer rule: convergence unverified, not shown inadequate)' if wh else '')
                  + '.')
     r.lines[SUMMARY_AT:SUMMARY_AT] = ['## Answers in brief (generated)', ''] + S + ['']
     (HERE / 'report.md').write_text('\n'.join(r.lines) + '\n')

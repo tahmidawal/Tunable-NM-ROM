@@ -9,8 +9,8 @@
 - **3D converged-rule gate (J4).** Cases above the bar at any successive pair (fixed-sweep BE): M2_512 0, W256 0, W512 0, W1024 1, W768 1; worst case at every pair: case 5. POST HOC converged rules: W1024 gl80, W768 gl64, M2_512 gl56, W256 gl56, W512 gl56.
 - **3D fixed-sweep CN (K = 2, 2.5 Δt₀)** departs from the verified adaptive solve on a fixed set of cases (the same at every rule), so the pre-registered rule selection was unavailable; the POST HOC selection uses the adaptive CN arm.
 - **3D fast solver (H4).** H4a (speed at equal accuracy, ratio ≤ 0.6): M2_512 fail, W256 fail, W512 fail, W768 fail, W1024 fail; H4b (accuracy at equal cost): M2_512 pass, W256 pass, W512 pass, W768 pass, W1024 pass. Read together: the second-order fixed-sweep solver buys accuracy at equal cost, not speed at equal accuracy.
-- **2D budget: what limits next** (largest component per setting-arm, by number of setting-arms): delta_time 16, e_P 7, e_dyn 1.
-- **3D budget: what limits next** (largest component per setting-arm): delta_time 13, e_P 5, e_dyn 1; quadrature attribution withheld at M2_512 (converged-rule check failed closed).
+- **2D budget: largest measured component** (per setting-arm; a one-ingredient sensitivity, not a causal share or a guaranteed gain): delta_time 16, e_P 7, e_dyn 1.
+- **3D budget: largest measured component** (per setting-arm; a sensitivity, not a causal share): delta_time 13, e_P 5, e_dyn 1; quadrature attribution withheld at M2_512 (converged-rule check failed closed on one unverified replay at the finer rule: convergence unverified, not shown inadequate).
 
 ## How the work was done
 
@@ -371,6 +371,7 @@ Chronological; the opening statement of each audit (its verdict line). Every WRO
 | `audits/codex-results3d-2.md` | JOB GATE: SUBMIT `c3budW1024` and `c3budA`. The round-1 selection blocker is resolved. |
 | `audits/codex-results3d-e0-1.md` | Overall: NEEDS-RESTATEMENT. The rescoring and A13 H6 calculations are correct. The interpretation must distinguish a selected-configuration dial from a bank-width effect, and reporting needs the qualifications below. No … |
 | `audits/codex-job-c3budW1024r.md` | SUBMIT `c3budW1024r` on the certified H200 / 200G / 48-hour allocation. No blocking finding. |
+| `audits/codex-results3dbud-1.md` | Overall: NEEDS-RESTATEMENT for interpretation; the saved numerical results and gate decisions are CORRECT. I found no incorrect finalist decision or component classification. The qualification concerns “what limits next”… |
 
 ## Glossary
 
@@ -389,4 +390,14 @@ Chronological; the opening statement of each audit (its verdict line). Every WRO
 - **pre-registered / POST HOC**: decided before results were read / decided after (labelled; exploratory).
 - **dev6, val32, 923801**: development and validation cohorts (selection allowed); test64 / 923901 are replication-only and were not used.
 - **pp, % of ‖u₀‖**: errors are reported relative to the initial-condition norm.
+- **ideal model ⋆, e_⋆**: the reduced model with every ingredient at its ideal (converged rule, Galerkin, BDF2 at Δt₀/8, tight solver); e_⋆ its error against the reference.
+- **e_tot, e_P, e_dyn**: an arm's total error; the bank's projection floor (best possible error in the span); the ideal model's distance to the projected reference (e_⋆² = e_P² + e_dyn² exactly, gate B0).
+- **δ_quad, δ_solve, δ_form, δ_time, D_a**: distance between an arm and the same arm with only the quadrature rule / solver tolerance / test space (LSPG→Galerkin) / scheme-and-step changed to the ideal; D_a the direct distance to the ideal model. Each is its own ablation; none is a remainder.
+- **largest component (cases)**: per case, which of the measured components above is biggest; counted over cases. A sensitivity ranking, not a causal attribution.
+- **finalist check, τ**: a selected arm must stay within τ = 2.5×10⁻⁴ of itself run with the converged rule on every case; failing means the deployed rule is too coarse for that arm.
+- **fallback**: the next finer rule of the same family, frozen in advance, qualified separately.
+- **B0–B3, G-score, controls**: machinery gates — B0 the exact Pythagorean identity, B1 a bitwise re-run, B2 a deliberately bad rule that must be detected, B3 a time ablation that must be detectable; G-score the independent re-decoding of every saved trajectory; negative controls (case swap, time shift, ...) that must break agreement.
+- **E0, R_ST, R_S, ε_ref (η)**: the campaign's order-verified second-order references (central differences + Crank–Nicolson; R_S backward Euler at Δt₀ for BE-matched comparison only) and their per-case Richardson uncertainty.
+- **H1–H6**: the pre-registered hypotheses of DESIGN §6 (wide bank pays off; tunability; CN worst-case cancellation; 3D speed/accuracy of the fixed-sweep solver; speed vs the FOM; 3D dial).
+- **anchor-resolved cases**: cases where the comparator's anchor discrepancy exceeds 3× the anchor uncertainty.
 

@@ -47,7 +47,7 @@ def main():
     a = ap.parse_args()
     O = Path(a.out)
     job, commit = os.environ.get('SLURM_JOB_ID'), os.environ.get('SOURCE_COMMIT')
-    G = {}
+    G, PILOT = {}, {}
 
     def gate(name, ok, **ev):
         G[name] = dict(result='pass' if bool(ok) else 'fail', **ev)
@@ -112,6 +112,15 @@ def main():
                 rc.setdefault(p[0], []).append(int(p[1][3:]))
         for w in ['test_s3_M2', 'test_s3_W1024', 'test_fom', 'smkgrid', 'smkfom', 'smkprof', 'smkmesh']:
             gate(f'step {w} ran once, exit 0', rc.get(w) == [0], rc=rc.get(w))
+        # A1.9: the L = 384 pilot runs in its own process; a resource termination (OOM kill / XLA out of memory) is a
+        # reported infeasible mesh, any other failure fails the smoke
+        r384 = rc.get('smkmesh384')
+        log = (O / 'smkmesh384.log').read_text(errors='replace') if (O / 'smkmesh384.log').exists() else ''
+        oom = r384 is not None and r384 != [0] and (r384[0] in (137, -9) or any(t in log for t in
+                                                                                ('RESOURCE_EXHAUSTED', 'Out of memory', 'out of memory', 'Killed', 'MemoryError')))
+        PILOT['oom'] = oom
+        gate('step smkmesh384 ran once: exit 0, or terminated for resources (reported infeasible)', r384 == [0] or oom,
+             rc=r384, resource_termination=oom)
 
     def bound(r, cfgname):
         cfg = json.loads((HERE / 'configs' / f'{cfgname}.json').read_text())
@@ -295,14 +304,17 @@ def main():
                  and x.get('tight_valid') == [True] * n8 and x.get('tighter_valid') == [True] * n8, worst=x.get('worst'))
 
     # ------------------------------------------------------------------------------------------------------ mesh
-    def mesh():
-        r = load(O / 'smkmesh' / 'result.json')
-        cfg = bound(r, 'smkmesh')
+    def mesh(cfgname='smkmesh'):
+        if cfgname == 'smkmesh384' and PILOT.get('oom'):
+            gate('smkmesh384: dropped, infeasible (A1.9, reported)', True)
+            return
+        r = load(O / cfgname / 'result.json')
+        cfg = bound(r, cfgname)
         cases, tc, b = cfg['case_subset'], cfg['timing'], cfg['mesh']
         M = r['mesh']
         for key in ('M2|512', 'W1024|256', 'W1024|1024'):
             g = M['G5'].get(key, {})
-            gate(f'smkmesh G5/K7 {key} recomputed', g.get('M') == g.get('M_ref') and g.get('kxyz_equal') is True and
+            gate(f'{cfgname} G5/K7 {key} recomputed', g.get('M') == g.get('M_ref') and g.get('kxyz_equal') is True and
                  g.get('lam_equal') is True and fin([g.get('A_rel'), g.get('K7_rel')]) and g['A_rel'] <= 1e-11 and g['K7_rel'] > 1e-4)
         def resource(v):
             """A1.9: a mesh whose pilot does not fit is dropped and reported infeasible (only for L >= 256)."""
@@ -310,29 +322,29 @@ def main():
             return any(t in e for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'out of memory', 'OOM', 'MemoryError'))
         for L in b['Ls']:
             E = M['per_L'].get(str(L))
-            gate(f'smkmesh L{L}: present', E is not None)
+            gate(f'{cfgname} L{L}: present', E is not None)
             if E is None:
                 continue
             fom_keys, dropped = [], set()
             for rom in b['roms']:
                 v = E['rom'].get(rom['label'], {})
                 if L >= 256 and 'infeasible' in v and resource(v):
-                    gate(f'smkmesh L{L} ROM {rom["label"]}: dropped, infeasible (A1.9, reported)', True, info=v['infeasible'][:200])
+                    gate(f'{cfgname} L{L} ROM {rom["label"]}: dropped, infeasible (A1.9, reported)', True, info=v['infeasible'][:200])
                     dropped.add(rom['label'])
                     continue
                 d = np.asarray(v.get('dist_to_adt', []), float)
                 ok = (d.shape == (len(cases), 6) and np.isfinite(d).all() and v.get('adt_valid') == [True] * len(cases)
                       and v.get('adt_tighter_valid') == [True] * min(8, len(cases)) and fin([v.get('adt_tight_tighter')])
                       and v['adt_tight_tighter'] <= 2.5e-5)
-                gate(f'smkmesh L{L} ROM {rom["label"]}: complete, ADT valid, tight/tighter <= 2.5e-5', ok, info=v.get('infeasible'),
+                gate(f'{cfgname} L{L} ROM {rom["label"]}: complete, ADT valid, tight/tighter <= 2.5e-5', ok, info=v.get('infeasible'),
                      tables=v.get('tables'), adt_tt=v.get('adt_tight_tighter'))
             for fam, dt in b['same']:
                 v = E['fom'].get(f'{fam}|{dt:.8g}', {})
                 if L >= 256 and 'infeasible' in v and resource(v):
-                    gate(f'smkmesh L{L} FOM {fam} {dt}: dropped, infeasible (A1.9, reported)', True, info=v['infeasible'][:200])
+                    gate(f'{cfgname} L{L} FOM {fam} {dt}: dropped, infeasible (A1.9, reported)', True, info=v['infeasible'][:200])
                     continue
                 cs = v.get('cases', {})
-                gate(f'smkmesh L{L} FOM {fam} {dt}: converged + scored on exactly the cases',
+                gate(f'{cfgname} L{L} FOM {fam} {dt}: converged + scored on exactly the cases',
                      sorted(int(j) for j in cs) == sorted(cases[:b['acc_cases']]) and
                      all(c.get('converged') is True and fin([c.get('e')]) for c in cs.values()),
                      info=v.get('infeasible') or (v.get('calibration') or {}).get('status'))
@@ -340,17 +352,22 @@ def main():
                     fom_keys.append(v['key'])
             for rl, fk in b['matched']:
                 cs = E['fom'].get(fk, {}).get('cases', {})
-                gate(f'smkmesh L{L} matched {fk}: converged + scored on exactly the timing cases',
+                gate(f'{cfgname} L{L} matched {fk}: converged + scored on exactly the timing cases',
                      sorted(int(j) for j in cs) == sorted(cases[:tc['cases']]) and
                      all(c.get('converged') is True and fin([c.get('e')]) for c in cs.values()))
                 fom_keys.append(fk)
+            for lab, pf in E.get('panel_failures', {}).items():
+                gate(f'{cfgname} L{L} panel {lab}: failed (reported), resource failure at L >= 256 only',
+                     L >= 256 and resource(dict(infeasible=pf.get('error', ''))), error=pf.get('error'), subjects=pf.get('subjects'))
+                dropped.add(lab)
             for rom in b['roms']:
                 if rom['label'] in dropped:
                     continue
-                panel(f"smkmesh L{L} panel {rom['label']}", r['timing'].get(f"mesh|L{L}|{rom['label']}"), sorted(set(fom_keys)),
+                panel(f"{cfgname} L{L} panel {rom['label']}", r['timing'].get(f"mesh|L{L}|{rom['label']}"), sorted(set(fom_keys)),
                       cases[:tc['cases']], tc['reps'])
 
-    for name, fn in (('steps', steps), ('tests', tests), ('grid', grid), ('fom', fom), ('prof', prof), ('mesh', mesh)):
+    for name, fn in (('steps', steps), ('tests', tests), ('grid', grid), ('fom', fom), ('prof', prof), ('mesh', mesh),
+                     ('mesh384', lambda: mesh('smkmesh384'))):
         section(name, fn)
     ok = len(G) > 0 and all(v['result'] == 'pass' for v in G.values())
     out = dict(verdict='PASS' if ok else 'FAIL', failing=[k for k, v in G.items() if v['result'] != 'pass'], n_gates=len(G), gates=G,

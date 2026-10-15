@@ -49,11 +49,14 @@ def main():
                                 mf=['qnCN', 'W1024qn'], k5_rule='gl12', profile=['C_old', 'qnCN', 'W1024BE', 'qnBDF2'],
                                 batch=dict(labels=['qnCN', 'C_old', 'W1024qn'], sizes=[1, 3]), confirm=[['C_old', 'qnCN']],
                                 confirm_cases=2, confirm_reps=1, conv={'qnCN': 'gl56'}, reduced_adt=['qnCNred'])))
-    w('smkmesh', dict(sm, mode='mesh', settings=[SETTINGS['M2_512'], SETTINGS['W256'], SETTINGS['W1024']],
-                      mesh=dict(Ls=[64, 128, 384], roms=[dict(label='qnCN', setting='M2_512', rule='gl32', spec='qn|CN|0.025|k4'),
+    mesh_sm = dict(sm, mode='mesh', settings=[SETTINGS['M2_512'], SETTINGS['W256'], SETTINGS['W1024']],
+                   mesh=dict(Ls=[64, 128], roms=[dict(label='qnCN', setting='M2_512', rule='gl32', spec='qn|CN|0.025|k4'),
                                                          dict(label='W1024qn', setting='W1024', rule='lat65536', spec='qn|CN|0.025|k4')],
                                 same=[['UB', 0.01], ['CC', 0.01]], matched=[['qnCN', 'ps|N32|0.01'], ['qnCN', 'fd|CC|L128|0.0125|t1']],
-                                calib_small=[0], calib_large=[0], acc_cases=1), timing=dict(cases=1, reps=1, burn=0.05, seed=1)))
+                                calib_small=[0], calib_large=[0], acc_cases=1), timing=dict(cases=1, reps=1, burn=0.05, seed=1))
+    w('smkmesh', mesh_sm)
+    # the L = 384 pilot in its own process (job audit smoke1-2): a host OOM kill is recorded, not fatal to the smoke
+    w('smkmesh384', dict(mesh_sm, mesh=dict(mesh_sm['mesh'], Ls=[384])))
 
 
 if __name__ == '__main__':

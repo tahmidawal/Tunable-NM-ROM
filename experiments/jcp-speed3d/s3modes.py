@@ -486,8 +486,8 @@ def mode_mesh(cx):
                 continue
             try:
                 cx.time_panel(f'mesh|L{L}|{r["label"]}', A, Bs, int(tc['seed']) + 200 + 10 * L + i, tc['cases'], tc['reps'])
-            except Exception as e:  # noqa: BLE001  (A1.9: reported; the ROM entry is marked infeasible at this mesh)
-                E['rom'][r['label']] = dict(E['rom'].get(r['label'], {}), infeasible=f'timing: {repr(e)[:380]}')
+            except Exception as e:  # noqa: BLE001  (A1.9: the panel failure is recorded with its subjects; nothing is inferred)
+                E.setdefault('panel_failures', {})[r['label']] = dict(error=repr(e)[:400], subjects=[x['name'] for x in Bs])
                 gc.collect()
         E['peak_bytes'] = C3.peak_bytes()
         del datas, foms, inputs

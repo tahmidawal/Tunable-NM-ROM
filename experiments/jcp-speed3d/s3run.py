@@ -77,8 +77,6 @@ def mode_grid(cx):
     cfg, tc = cx.cfg, cx.cfg['timing']
     cases = cx.cases
     cold_tag = f"{COLD['name']}|{COLD['rule']}"
-    if COLD['name'] not in [s['name'] for s in cfg['settings']]:
-        cx.rollouts(COLD['name'], COLD['rule'], [COLD_SPEC], cases[:tc['cases']])
     for k_set, s in enumerate(cfg['settings']):
         sname = s['name']
         st = cx.ST[sname]
@@ -132,6 +130,8 @@ def mode_grid(cx):
             subjects += [(rule, sp) for sp in sv if len(sp) <= 4]          # controls (mutations) are not timed
             cx.save()
             cx.dump()
+        if f"{cold_tag}|{S.spec_key(COLD_SPEC)}" not in cx.Wstore:      # A's accuracy-phase hashes (always required)
+            cx.rollouts(COLD['name'], COLD['rule'], [COLD_SPEC], cases[:tc['cases']])
         A = cx.rom_subject(COLD['name'], COLD['rule'], COLD_SPEC)
         Bs = [cx.rom_subject(sname, rule, sp) for rule, sp in subjects] + [cx.t1_subject()]
         cx.time_panel(f'screen|{sname}', A, Bs, int(tc['seed']) + k_set, tc['cases'], tc['reps'])

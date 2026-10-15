@@ -14,3 +14,36 @@ RUN M2_512|gl24 fs|BE|0.025|K1 21.3s valid True nonst 17 / 30 517.4
 RUN M2_512|gl24 fsp|BE|0.025|K1 34.7s valid True nonst 12 / 30 552.1
 RUN M2_512|gl24 qn|BE|0.025|k1 26.0s valid True nonst 0 / 30 578.1
 RUN M2_512|gl24 qn|BE|0.025|k4 21.0s valid True nonst 0 / 30 599.1
+RUN M2_512|gl24 qn|BE|0.025|kinf 22.0s valid True nonst 0 / 30 621.2
+RUN M2_512|gl24 fs|CN|0.025|K1 32.5s valid True nonst 21 / 30 653.6
+RUN M2_512|gl24 fsp|CN|0.025|K1 35.7s valid True nonst 16 / 30 689.3
+RUN M2_512|gl24 qn|CN|0.025|k1 25.3s valid True nonst 0 / 30 714.6
+RUN M2_512|gl24 qn|CN|0.025|k4 20.9s valid True nonst 0 / 30 735.5
+RUN M2_512|gl24 qn|CN|0.025|kinf 21.9s valid True nonst 0 / 30 757.4
+RUN M2_512|gl24 fs|BDF2|0.025|K1 32.1s valid True nonst 21 / 30 789.5
+RUN M2_512|gl24 fsp|BDF2|0.025|K1 40.2s valid True nonst 13 / 30 829.7
+RUN M2_512|gl24 qn|BDF2|0.025|k1 24.7s valid True nonst 0 / 30 854.3
+RUN M2_512|gl24 qn|BDF2|0.025|k4 23.2s valid True nonst 0 / 30 877.6
+RUN M2_512|gl24 qn|BDF2|0.025|kinf 22.0s valid True nonst 0 / 30 899.5
+RUN M2_512|gl24 fs|BE|0.025|K2 42.1s valid True nonst 1 / 30 941.6
+RUN M2_512|gl24 fs|CN|0.025|K2 42.2s valid True nonst 16 / 30 983.8
+RUN M2_512|gl24 fs|BDF2|0.025|K2 40.8s valid True nonst 0 / 30 1024.6
+RUN M2_512|gl24 qn|CN|0.025|k1|q0 23.0s valid True nonst 30 / 30 1047.6
+RUN M2_512|gl24 qn|CN|0.025|k1|noJuT 36.0s valid True nonst 30 / 30 1083.5
+RUN M2_512|gl24 qn|BE|0.01|k1|noJuT 70.3s valid True nonst 75 / 75 1153.9
+REPLAY M2_512 {5: 'mixed', 7: 'mixed'} 1231.9
+RUN M2_512|gl20 ad|LSPG|BDF2|0.025|tight 9.8s valid True nonst 0 / 0 1243.0
+RUN M2_512|gl20 ad|LSPG|BE|0.025|tight 9.9s valid True nonst 0 / 0 1252.9
+RUN M2_512|gl20 ad|LSPG|CN|0.025|tight 11.1s valid True nonst 0 / 0 1264.1
+RUN M2_512|gl20 fs|BE|0.025|K1 6.3s valid True nonst 15 / 30 1270.3
+RUN M2_512|gl20 qn|BE|0.025|k4 4.8s valid True nonst 0 / 30 1275.2
+RUN M2_512|gl20 fs|BE|0.025|K2 8.0s valid True nonst 0 / 30 1283.2
+RUN M2_512|gl20 fs|CN|0.025|K1 6.4s valid True nonst 19 / 30 1289.6
+RUN M2_512|gl20 qn|CN|0.025|k4 4.5s valid True nonst 0 / 30 1294.1
+RUN M2_512|gl20 fs|CN|0.025|K2 8.4s valid True nonst 16 / 30 1302.5
+RUN M2_512|gl20 fs|BDF2|0.025|K1 6.4s valid True nonst 19 / 30 1308.9
+RUN M2_512|gl20 qn|BDF2|0.025|k4 4.8s valid True nonst 0 / 30 1313.8
+RUN M2_512|gl20 fs|BDF2|0.025|K2 8.1s valid True nonst 0 / 30 1321.9
+RUN M2_512|gl32 fs|BE|0.01|K1 21.2s valid True nonst 0 / 50 1352.2
+TIMING screen|M2_512 56 valid True 2289.9
+S3RUN COMPLETE

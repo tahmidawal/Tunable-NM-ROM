@@ -23,7 +23,7 @@ flowchart TB
   G2 --> S2[score + analyze2d + freeze 2D]:::doc
   E3 --> S3[select3d: pre-registered = unavailable; POST HOC A10 selection]:::posthoc
   X3 --> S3
-  S3 --> C3[c3grid: 3D second-order grid + timing]:::job
+  S3 --> C3[c3grid: 3D CN/BDF2-family fixed-sweep grid + timing]:::job
   S2 --> B2[c2budA/B/C: 2D error budget]:::job
   B2 --> FB[A14: finalist failures -> c2fbgrid + c2fbbud fallback qualification]:::posthoc
   C3 --> F3[analyze3d + freeze 3D solver; A15 retraction and re-freeze]:::doc
@@ -75,6 +75,23 @@ Per setting, the selected scheme's frozen arms against that setting's deployed L
 | R512 | accurate, equal cost | LSPG-CN-R at 1Δt₀ | 0.986 | 0.199 % | 2.17 % | unmatched | 0.196 % | 0.137 % |
 | R512 | fast, equal accuracy | LSPG-CN-R at 2Δt₀ | 0.536 | 0.726 % | 2.3 % | unmatched | 0.715 % | 0.657 % |
 | R512 | baseline | LSPG-BE at 1Δt₀ | 1 | 0.979 % | 3.09 % | 0.0541 % | 0.968 % | 0.907 % |
+
+**2D timing detail** (A–B–A against the setting's LSPG-BE at Δt₀, one NVIDIA A100 80GB PCIe, warm JIT):
+
+| setting | role | arm | invocations | median ratio | IQR | MAD outliers | median time B | median time A (BE) |
+|---|---|---|---|---|---|---|---|---|
+| fast | accurate equal cost | LSPG-CN-R at 1Δt₀ | 18 | 0.999 | 0.992–1.01 | 0 | 0.0251 s | 0.025 s |
+| fast | fast equal accuracy | LSPG-CN-R at 2Δt₀ | 18 | 0.611 | 0.601–0.621 | 0 | 0.0152 s | 0.0251 s |
+| R128 | accurate equal cost | LSPG-CN-R at 1Δt₀ | 18 | 0.998 | 0.992–1.01 | 3 | 0.0329 s | 0.0329 s |
+| R128 | fast equal accuracy | LSPG-CN-R at 2Δt₀ | 18 | 0.587 | 0.583–0.59 | 3 | 0.0192 s | 0.0327 s |
+| R256 | accurate equal cost | LSPG-CN-R at 1Δt₀ | 18 | 0.999 | 0.985–1 | 3 | 0.0794 s | 0.0805 s |
+| R256 | fast equal accuracy | LSPG-CN-R at 2Δt₀ | 18 | 0.561 | 0.545–0.58 | 0 | 0.0472 s | 0.0809 s |
+| acc | accurate equal cost | LSPG-CN-R at 1Δt₀ | 18 | 0.998 | 0.993–1 | 1 | 0.139 s | 0.138 s |
+| acc | fast equal accuracy | LSPG-CN-R at 2Δt₀ | 18 | 0.56 | 0.538–0.569 | 0 | 0.0784 s | 0.139 s |
+| R384 | accurate equal cost | LSPG-CN-R at 1Δt₀ | 18 | 0.996 | 0.988–0.999 | 1 | 0.221 s | 0.222 s |
+| R384 | fast equal accuracy | LSPG-CN-R at 2Δt₀ | 18 | 0.551 | 0.531–0.559 | 0 | 0.122 s | 0.222 s |
+| R512 | accurate equal cost | LSPG-CN-R at 1Δt₀ | 18 | 0.986 | 0.968–0.996 | 1 | 0.798 s | 0.822 s |
+| R512 | fast equal accuracy | LSPG-CN-R at 2Δt₀ | 18 | 0.536 | 0.52–0.55 | 2 | 0.436 s | 0.811 s |
 
 ### H1: does the wide bank pay off once time error is removed?
 
@@ -197,9 +214,24 @@ First-order H6 (PROVISIONAL, reference-limited (descriptive)): W256->W512: media
 
 ![3D speed-up](plots/speedup3d.png)
 
+**3D timing detail** (A–B–A against the deployed fixed-sweep BE at Δt₀; one NVIDIA H200; absolute times are medians per rollout of one case):
+
+| setting | role | arm | invocations | median ratio | IQR | MAD outliers | median time B | median time A (BE) | common-panel ratio |
+|---|---|---|---|---|---|---|---|---|---|
+| M2_512 | accurate equal cost | fs / BDF2 / 0.0125 / K1 | 24 | 0.874 | 0.862–0.893 | 0 | 0.0537 s | 0.062 s | 0.776 |
+| M2_512 | cheapest equal accuracy (diagnostic) | fs / BDF2 / 0.0125 / K1 | 24 | 0.874 | 0.862–0.893 | 0 | 0.0537 s | 0.062 s | 0.776 |
+| W256 | accurate equal cost | fs / CN / 0.0125 / K1 | 24 | 0.848 | 0.837–0.865 | 2 | 0.0164 s | 0.0194 s | 0.231 |
+| W256 | cheapest equal accuracy (diagnostic) | fs / CN / 0.0125 / K1 | 24 | 0.848 | 0.837–0.865 | 2 | 0.0164 s | 0.0194 s | 0.231 |
+| W512 | accurate equal cost | fs / BDF2 / 0.0125 / K1 | 24 | 0.863 | 0.851–0.882 | 0 | 0.06 s | 0.0712 s | 0.881 |
+| W512 | cheapest equal accuracy (diagnostic) | fs / BDF2 / 0.0125 / K1 | 24 | 0.863 | 0.851–0.882 | 0 | 0.06 s | 0.0712 s | 0.881 |
+| W768 | accurate equal cost | fs / CN / 0.016666667 / K2 | 24 | 0.981 | 0.971–0.999 | 2 | 0.156 s | 0.159 s | 2.19 |
+| W768 | cheapest equal accuracy (diagnostic) | fs / BDF2 / 0.016666667 / K2 | 24 | 0.962 | 0.946–0.979 | 0 | 0.152 s | 0.159 s | 2.15 |
+| W1024 | accurate equal cost | fs / CN / 0.01 / K1 | 24 | 0.992 | 0.979–1.01 | 0 | 0.527 s | 0.531 s | 7.17 |
+| W1024 | cheapest equal accuracy (diagnostic) | fs / BDF2 / 0.016666667 / K2 | 24 | 0.956 | 0.928–0.981 | 0 | 0.505 s | 0.531 s | 7.05 |
+
 ## Error budget (each component its own ablation; none is a remainder)
 
-$e_{\rm tot}=\lVert u_a-u_{\rm ref}\rVert$; floor $e_P=\lVert(I-\Pi_{R'})u_{\rm ref}\rVert$; reduced dynamics $e_{\rm dyn}=\lVert u_\star-\Pi_{R'}u_{\rm ref}\rVert$ with the ideal model $\star$ (converged rule, Galerkin, BDF2 at $\Delta t_0/8$, tight solver). The ablations: $\delta_{\rm quad}=\lVert u_a-u_{a[r\to r_\infty]}\rVert$; $\delta_{\rm solve}=\lVert u_a-u_{a[\sigma\to{\rm tight}]}\rVert$; $\delta_{\rm form}=\lVert u_{a[\sigma\to{\rm tight}]}-u_{a[\sigma\to{\rm tight},\,f\to{\rm GAL}]}\rVert$ (LSPG vs Galerkin at the tight tolerance; the test functions themselves are unchanged); $\delta_{\rm time}=\lVert u_a-u_{a[(s,h)\to({\rm BDF2},\Delta t_0/8)]}\rVert$, a **package**: scheme, step, startup steps, LSPG weights and (3D) the adaptive fraction change together; $D_a=\lVert u_a-u_\star\rVert$ measured directly. Every quantity is a maximum over the five evolved output times relative to $\lVert u_0\rVert$; tables show medians over the budget population. The identity $e_\star^2=e_P^2+e_{\rm dyn}^2$ holds **at each output time** (gate B0), not between separately maximised or aggregated values. The δ's and $D_a$ are reference-free; $e_{\rm tot}$, $e_P$, $e_{\rm dyn}$ carry the label of the reference named in each table. Components below the ideal model's own uncertainty $U_\star$ (anchor $\Delta t_0/8$ vs $\Delta t_0/16$ and tight vs tighter) are counted as unresolved in the diagnostics tables.
+$e_{\rm tot}=\lVert u_a-u_{\rm ref}\rVert$; floor $e_P=\lVert(I-\Pi_{R'})u_{\rm ref}\rVert$; reduced dynamics $e_{\rm dyn}=\lVert u_\star-\Pi_{R'}u_{\rm ref}\rVert$ with the ideal model $\star$ (converged rule, Galerkin, BDF2 at $\Delta t_0/8$, tight solver). The ablations: $\delta_{\rm quad}=\lVert u_a-u_{a[r\to r_\infty]}\rVert$; $\delta_{\rm solve}=\lVert u_a-u_{a[\sigma\to{\rm tight}]}\rVert$; $\delta_{\rm form}=\lVert u_{a[\sigma\to{\rm tight}]}-u_{a[\sigma\to{\rm tight},\,f\to{\rm GAL}]}\rVert$ (LSPG vs Galerkin at the tight tolerance; the test functions themselves are unchanged); $\delta_{\rm time}=\lVert u_a-u_{a[(s,h)\to({\rm BDF2},\Delta t_0/8)]}\rVert$, a **package**: scheme, step, startup steps, LSPG weights and (3D) the adaptive fraction change together; $D_a=\lVert u_a-u_\star\rVert$ measured directly. Every quantity is a maximum over the five evolved output times relative to $\lVert u_0\rVert$; tables show medians over the budget population. The identity $e_\star^2=e_P^2+e_{\rm dyn}^2$ holds **at each output time** (gate B0), not between separately maximised or aggregated values. The δ's and $D_a$ are reference-free; $e_{\rm tot}$, $e_P$, $e_{\rm dyn}$ carry the label of the reference named in each table. Components at most $3U_\star$ (three times the ideal model's own uncertainty, from the $\Delta t_0/8$ vs $\Delta t_0/16$ and tight vs tighter replays) are counted as unresolved in the diagnostics tables.
 
 ### 2D budget (median over 38 cases; e_tot, e_P, e_dyn against E0 R_ST (order-verified second-order reference; rankings conditional on ε_ref, a Richardson estimate, not a rigorous bound))
 
@@ -232,36 +264,65 @@ Not rankable under E0 (scored, never ranked): dev6|1|S, val32|21|S, val32|24|S. 
 | R128 | LSPG / CNR / 1 | accurate_equal_cost | 1.77e-06 | 4.94e-06 | 3.52e-04 | 1.92e-03 | 1.96e-03 | 0.45 % | 0.364 % | 0.172 % | e_P 25, delta_time 10, e_dyn 3 | yes |
 | R128 | LSPG / CNR / 2 | fast_equal_accuracy | 1.55e-06 | 1.09e-05 | 6.28e-04 | 7.29e-03 | 7.30e-03 | 0.792 % | 0.364 % | 0.172 % | delta_time 25, e_P 10, e_dyn 3 | yes |
 
-First-order e_tot (PROVISIONAL, continuity), median per setting-arm: R512 LSPG|BE|1 0.907 %; R512 GAL|CN|1 0.11 %; R512 LSPG|CNR|1 0.137 %; R512 LSPG|CNR|2 0.657 %; R256 LSPG|BE|1 0.91 %; R256 GAL|CN|1 0.119 %; R256 LSPG|CNR|1 0.149 %; R256 LSPG|CNR|2 0.668 %; R384 LSPG|BE|1 0.906 %; R384 GAL|CN|1 0.0985 %; R384 LSPG|CNR|1 0.135 %; R384 LSPG|CNR|2 0.658 %; acc LSPG|BE|1 0.906 %; acc GAL|CN|1 0.0986 %; acc LSPG|CNR|1 0.135 %; acc LSPG|CNR|2 0.658 %; fast LSPG|BE|1 1.03 %; fast GAL|CN|1 0.423 %; fast LSPG|CNR|1 0.42 %; fast LSPG|CNR|2 0.727 %; R128 LSPG|BE|1 1.04 %; R128 GAL|CN|1 0.422 %; R128 LSPG|CNR|1 0.42 %; R128 LSPG|CNR|2 0.727 %.
+First-order e_tot / e_P / e_dyn against ST (PROVISIONAL, continuity), medians per setting-arm: R512 LSPG|BE|1 0.907 % / 0.0246 % / 0.08 %; R512 GAL|CN|1 0.11 % / 0.0246 % / 0.08 %; R512 LSPG|CNR|1 0.137 % / 0.0246 % / 0.08 %; R512 LSPG|CNR|2 0.657 % / 0.0246 % / 0.08 %; R256 LSPG|BE|1 0.91 % / 0.0667 % / 0.0867 %; R256 GAL|CN|1 0.119 % / 0.0667 % / 0.0867 %; R256 LSPG|CNR|1 0.149 % / 0.0667 % / 0.0867 %; R256 LSPG|CNR|2 0.668 % / 0.0667 % / 0.0867 %; R384 LSPG|BE|1 0.906 % / 0.0281 % / 0.0754 %; R384 GAL|CN|1 0.0985 % / 0.0281 % / 0.0754 %; R384 LSPG|CNR|1 0.135 % / 0.0281 % / 0.0754 %; R384 LSPG|CNR|2 0.658 % / 0.0281 % / 0.0754 %; acc LSPG|BE|1 0.906 % / 0.0281 % / 0.0754 %; acc GAL|CN|1 0.0986 % / 0.0281 % / 0.0754 %; acc LSPG|CNR|1 0.135 % / 0.0281 % / 0.0754 %; acc LSPG|CNR|2 0.658 % / 0.0281 % / 0.0754 %; fast LSPG|BE|1 1.03 % / 0.359 % / 0.187 %; fast GAL|CN|1 0.423 % / 0.359 % / 0.187 %; fast LSPG|CNR|1 0.42 % / 0.359 % / 0.187 %; fast LSPG|CNR|2 0.727 % / 0.359 % / 0.187 %; R128 LSPG|BE|1 1.04 % / 0.359 % / 0.187 %; R128 GAL|CN|1 0.422 % / 0.359 % / 0.187 %; R128 LSPG|CNR|1 0.42 % / 0.359 % / 0.187 %; R128 LSPG|CNR|2 0.727 % / 0.359 % / 0.187 %.
 
 **Budget diagnostics** (worst values; counts of cases where a component is not resolved against the ideal model's own uncertainty; closure; context sensitivity):
 
-| setting | arm | worst δ_quad | worst δ_solve | worst δ_time | δ_quad unresolved vs U⋆ | δ_solve unresolved vs U⋆ | δ_form unresolved vs U⋆ | median U⋆ | median closure D_a/√Σδ² | context (ideal-end vs deployed-end) |
-|---|---|---|---|---|---|---|---|---|---|---|
-| R512 | LSPG / BE / 1 | 8.09e-05 | 1.52e-05 | 3.03e-02 | 38/38 | 38/38 | 6/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R512 | GAL / CN / 1 | 1.22e-04 | 3.06e-10 | 1.56e-03 | 38/38 | 38/38 | 38/38 | 1.29e-05 | 1 | quad: consistent, form: below floor |
-| R512 | LSPG / CNR / 1 | 1.08e-04 | 4.15e-05 | 5.03e-03 | 38/38 | 38/38 | 6/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R512 | LSPG / CNR / 2 | 1.34e-04 | 9.13e-05 | 1.82e-02 | 38/38 | 38/38 | 6/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R256 | LSPG / BE / 1 | 2.07e-04 | 2.51e-05 | 3.06e-02 | 37/38 | 38/38 | 6/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R256 | GAL / CN / 1 | 3.04e-04 | 3.00e-10 | 1.24e-03 | 33/38 | 38/38 | 38/38 | 1.29e-05 | 1 | quad: consistent, form: below floor |
-| R256 | LSPG / CNR / 1 | 2.70e-04 | 4.89e-05 | 5.12e-03 | 36/38 | 38/38 | 9/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R256 | LSPG / CNR / 2 | 2.74e-04 | 4.04e-04 | 1.81e-02 | 36/38 | 37/38 | 7/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R384 | LSPG / BE / 1 | 9.71e-05 | 1.70e-05 | 2.97e-02 | 38/38 | 38/38 | 9/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R384 | GAL / CN / 1 | 7.06e-05 | 3.05e-10 | 1.30e-03 | 38/38 | 38/38 | 38/38 | 1.29e-05 | 1 | quad: consistent, form: below floor |
-| R384 | LSPG / CNR / 1 | 1.10e-04 | 4.46e-05 | 4.83e-03 | 38/38 | 38/38 | 12/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| R384 | LSPG / CNR / 2 | 1.49e-04 | 8.25e-05 | 1.77e-02 | 38/38 | 38/38 | 9/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| acc | LSPG / BE / 1 | 2.90e-04 | 1.71e-05 | 2.97e-02 | 37/38 | 38/38 | 9/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| acc | GAL / CN / 1 | 1.77e-04 | 3.05e-10 | 1.30e-03 | 35/38 | 38/38 | 38/38 | 1.29e-05 | 1 | quad: consistent, form: below floor |
-| acc | LSPG / CNR / 1 | 2.86e-04 | 4.47e-05 | 4.82e-03 | 36/38 | 38/38 | 12/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| acc | LSPG / CNR / 2 | 4.13e-04 | 8.35e-05 | 1.77e-02 | 36/38 | 38/38 | 9/38 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
-| fast | LSPG / BE / 1 | 6.89e-04 | 5.04e-05 | 3.66e-02 | 23/38 | 35/38 | 0/38 | 1.27e-05 | 1 | quad: consistent, form: context-sensitive |
-| fast | GAL / CN / 1 | 8.21e-04 | 3.38e-10 | 1.21e-03 | 20/38 | 38/38 | 38/38 | 1.27e-05 | 0.999 | quad: consistent, form: below floor |
-| fast | LSPG / CNR / 1 | 7.61e-04 | 4.99e-05 | 6.91e-03 | 22/38 | 35/38 | 0/38 | 1.27e-05 | 0.989 | quad: consistent, form: context-sensitive |
-| fast | LSPG / CNR / 2 | 7.18e-04 | 3.60e-04 | 2.01e-02 | 23/38 | 32/38 | 0/38 | 1.27e-05 | 0.997 | quad: consistent, form: context-sensitive |
-| R128 | LSPG / BE / 1 | 1.13e-04 | 5.04e-05 | 3.66e-02 | 37/38 | 35/38 | 0/38 | 1.27e-05 | 1 | quad: consistent, form: context-sensitive |
-| R128 | GAL / CN / 1 | 9.63e-05 | 3.39e-10 | 1.21e-03 | 37/38 | 38/38 | 38/38 | 1.27e-05 | 1 | quad: consistent, form: below floor |
-| R128 | LSPG / CNR / 1 | 1.01e-04 | 4.98e-05 | 6.96e-03 | 37/38 | 35/38 | 0/38 | 1.27e-05 | 0.988 | quad: consistent, form: context-sensitive |
-| R128 | LSPG / CNR / 2 | 1.30e-04 | 3.60e-04 | 2.02e-02 | 37/38 | 32/38 | 0/38 | 1.27e-05 | 0.998 | quad: consistent, form: context-sensitive |
+| setting | arm | worst δ_quad | worst δ_solve | worst δ_form | worst δ_time | median refine | median I_time,quad | median I_time,solve | δ_quad unresolved (≤3U⋆) | δ_solve unresolved | δ_form unresolved | δ_time unresolved | unavailable (all components) | median U⋆ | median closure D_a/√Σδ² | context (ideal-end vs deployed-end) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| R512 | LSPG / BE / 1 | 8.09e-05 | 1.52e-05 | 2.20e-03 | 3.03e-02 | 4.77e-03 | 8.01e-08 | 6.66e-06 | 38/38 | 38/38 | 6/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R512 | GAL / CN / 1 | 1.22e-04 | 3.06e-10 | 0.00e+00 | 1.56e-03 | 2.52e-04 | 5.69e-08 | 8.27e-11 | 38/38 | 38/38 | 38/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: below floor |
+| R512 | LSPG / CNR / 1 | 1.08e-04 | 4.15e-05 | 3.50e-03 | 5.03e-03 | 1.42e-03 | 5.86e-08 | 6.74e-06 | 38/38 | 38/38 | 6/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R512 | LSPG / CNR / 2 | 1.34e-04 | 9.13e-05 | 4.92e-03 | 1.82e-02 | 5.35e-03 | 1.00e-07 | 7.03e-06 | 38/38 | 38/38 | 6/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R256 | LSPG / BE / 1 | 2.07e-04 | 2.51e-05 | 3.64e-03 | 3.06e-02 | 4.77e-03 | 1.18e-06 | 6.84e-06 | 37/38 | 38/38 | 6/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R256 | GAL / CN / 1 | 3.04e-04 | 3.00e-10 | 0.00e+00 | 1.24e-03 | 1.95e-04 | 5.61e-07 | 9.47e-11 | 33/38 | 38/38 | 38/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: below floor |
+| R256 | LSPG / CNR / 1 | 2.70e-04 | 4.89e-05 | 4.11e-03 | 5.12e-03 | 1.42e-03 | 8.33e-07 | 6.93e-06 | 36/38 | 38/38 | 9/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R256 | LSPG / CNR / 2 | 2.74e-04 | 4.04e-04 | 6.27e-03 | 1.81e-02 | 5.35e-03 | 1.07e-06 | 7.06e-06 | 36/38 | 37/38 | 7/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R384 | LSPG / BE / 1 | 9.71e-05 | 1.70e-05 | 2.18e-03 | 2.97e-02 | 4.77e-03 | 2.57e-07 | 5.87e-06 | 38/38 | 38/38 | 9/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R384 | GAL / CN / 1 | 7.06e-05 | 3.05e-10 | 0.00e+00 | 1.30e-03 | 1.95e-04 | 3.07e-07 | 8.10e-11 | 38/38 | 38/38 | 38/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: below floor |
+| R384 | LSPG / CNR / 1 | 1.10e-04 | 4.46e-05 | 3.38e-03 | 4.83e-03 | 1.42e-03 | 1.95e-07 | 5.95e-06 | 38/38 | 38/38 | 12/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| R384 | LSPG / CNR / 2 | 1.49e-04 | 8.25e-05 | 4.90e-03 | 1.77e-02 | 5.35e-03 | 2.58e-07 | 6.50e-06 | 38/38 | 38/38 | 9/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| acc | LSPG / BE / 1 | 2.90e-04 | 1.71e-05 | 2.17e-03 | 2.97e-02 | 4.77e-03 | 6.55e-07 | 5.87e-06 | 37/38 | 38/38 | 9/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| acc | GAL / CN / 1 | 1.77e-04 | 3.05e-10 | 0.00e+00 | 1.30e-03 | 1.95e-04 | 8.99e-07 | 8.12e-11 | 35/38 | 38/38 | 38/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: below floor |
+| acc | LSPG / CNR / 1 | 2.86e-04 | 4.47e-05 | 3.38e-03 | 4.82e-03 | 1.42e-03 | 6.89e-07 | 5.89e-06 | 36/38 | 38/38 | 12/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| acc | LSPG / CNR / 2 | 4.13e-04 | 8.35e-05 | 4.89e-03 | 1.77e-02 | 5.35e-03 | 7.74e-07 | 6.50e-06 | 36/38 | 38/38 | 9/38 | 0/38 | 0 | 1.29e-05 | 1 | quad: consistent, form: context-sensitive |
+| fast | LSPG / BE / 1 | 6.89e-04 | 5.04e-05 | 9.12e-03 | 3.66e-02 | 4.83e-03 | 4.70e-06 | 1.83e-05 | 23/38 | 35/38 | 0/38 | 0/38 | 0 | 1.27e-05 | 1 | quad: consistent, form: context-sensitive |
+| fast | GAL / CN / 1 | 8.21e-04 | 3.38e-10 | 0.00e+00 | 1.21e-03 | 1.85e-04 | 5.88e-07 | 1.08e-10 | 20/38 | 38/38 | 38/38 | 0/38 | 0 | 1.27e-05 | 0.999 | quad: consistent, form: below floor |
+| fast | LSPG / CNR / 1 | 7.61e-04 | 4.99e-05 | 7.33e-03 | 6.91e-03 | 1.44e-03 | 2.67e-06 | 1.72e-05 | 22/38 | 35/38 | 0/38 | 0/38 | 0 | 1.27e-05 | 0.989 | quad: consistent, form: context-sensitive |
+| fast | LSPG / CNR / 2 | 7.18e-04 | 3.60e-04 | 1.19e-02 | 2.01e-02 | 5.37e-03 | 5.30e-06 | 2.40e-05 | 23/38 | 32/38 | 0/38 | 0/38 | 0 | 1.27e-05 | 0.997 | quad: consistent, form: context-sensitive |
+| R128 | LSPG / BE / 1 | 1.13e-04 | 5.04e-05 | 9.25e-03 | 3.66e-02 | 4.83e-03 | 5.84e-07 | 1.86e-05 | 37/38 | 35/38 | 0/38 | 0/38 | 0 | 1.27e-05 | 1 | quad: consistent, form: context-sensitive |
+| R128 | GAL / CN / 1 | 9.63e-05 | 3.39e-10 | 0.00e+00 | 1.21e-03 | 1.85e-04 | 6.22e-08 | 1.07e-10 | 37/38 | 38/38 | 38/38 | 0/38 | 0 | 1.27e-05 | 1 | quad: consistent, form: below floor |
+| R128 | LSPG / CNR / 1 | 1.01e-04 | 4.98e-05 | 7.32e-03 | 6.96e-03 | 1.44e-03 | 3.42e-07 | 1.79e-05 | 37/38 | 35/38 | 0/38 | 0/38 | 0 | 1.27e-05 | 0.988 | quad: consistent, form: context-sensitive |
+| R128 | LSPG / CNR / 2 | 1.30e-04 | 3.60e-04 | 1.19e-02 | 2.02e-02 | 5.37e-03 | 6.22e-07 | 2.38e-05 | 37/38 | 32/38 | 0/38 | 0/38 | 0 | 1.27e-05 | 0.998 | quad: consistent, form: context-sensitive |
+
+**Orthogonal pair at the common time $t^\ast$** (where $e_\star^2=e_P^2+e_{\rm dyn}^2$ holds) and worst values:
+
+| setting | arm | cases | median e_⋆ at t* | median e_P at t* | median e_dyn at t* | worst e_tot | worst e_P | worst e_dyn |
+|---|---|---|---|---|---|---|---|---|
+| R512 | LSPG / BE / 1 | 38 | 0.0564 % | 0.0248 % | 0.0505 % | 3.09 % | 1.11 % | 2.12 % |
+| R512 | GAL / CN / 1 | 38 | 0.0564 % | 0.0248 % | 0.0505 % | 2.35 % | 1.11 % | 2.12 % |
+| R512 | LSPG / CNR / 1 | 38 | 0.0564 % | 0.0248 % | 0.0505 % | 2.17 % | 1.11 % | 2.12 % |
+| R512 | LSPG / CNR / 2 | 38 | 0.0564 % | 0.0248 % | 0.0505 % | 2.3 % | 1.11 % | 2.12 % |
+| R256 | LSPG / BE / 1 | 38 | 0.091 % | 0.067 % | 0.0498 % | 3.32 % | 2.1 % | 1.74 % |
+| R256 | GAL / CN / 1 | 38 | 0.091 % | 0.067 % | 0.0498 % | 2.72 % | 2.1 % | 1.74 % |
+| R256 | LSPG / CNR / 1 | 38 | 0.091 % | 0.067 % | 0.0498 % | 2.52 % | 2.1 % | 1.74 % |
+| R256 | LSPG / CNR / 2 | 38 | 0.091 % | 0.067 % | 0.0498 % | 2.47 % | 2.1 % | 1.74 % |
+| R384 | LSPG / BE / 1 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 3.01 % | 1.29 % | 1.49 % |
+| R384 | GAL / CN / 1 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 1.85 % | 1.29 % | 1.49 % |
+| R384 | LSPG / CNR / 1 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 1.78 % | 1.29 % | 1.49 % |
+| R384 | LSPG / CNR / 2 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 1.9 % | 1.29 % | 1.49 % |
+| acc | LSPG / BE / 1 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 3.01 % | 1.29 % | 1.49 % |
+| acc | GAL / CN / 1 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 1.85 % | 1.29 % | 1.49 % |
+| acc | LSPG / CNR / 1 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 1.78 % | 1.29 % | 1.49 % |
+| acc | LSPG / CNR / 2 | 38 | 0.034 % | 0.0282 % | 0.0189 % | 1.9 % | 1.29 % | 1.49 % |
+| fast | LSPG / BE / 1 | 38 | 0.414 % | 0.364 % | 0.172 % | 4.84 % | 4.15 % | 3.87 % |
+| fast | GAL / CN / 1 | 38 | 0.414 % | 0.364 % | 0.172 % | 5.65 % | 4.15 % | 3.87 % |
+| fast | LSPG / CNR / 1 | 38 | 0.414 % | 0.364 % | 0.172 % | 5.2 % | 4.15 % | 3.87 % |
+| fast | LSPG / CNR / 2 | 38 | 0.414 % | 0.364 % | 0.172 % | 4.95 % | 4.15 % | 3.87 % |
+| R128 | LSPG / BE / 1 | 38 | 0.414 % | 0.364 % | 0.172 % | 4.84 % | 4.15 % | 3.87 % |
+| R128 | GAL / CN / 1 | 38 | 0.414 % | 0.364 % | 0.172 % | 5.65 % | 4.15 % | 3.87 % |
+| R128 | LSPG / CNR / 1 | 38 | 0.414 % | 0.364 % | 0.172 % | 5.2 % | 4.15 % | 3.87 % |
+| R128 | LSPG / CNR / 2 | 38 | 0.414 % | 0.364 % | 0.172 % | 4.95 % | 4.15 % | 3.87 % |
 
 Controls: R512: B2 discriminating, B3 38/38 cases; R256: B2 discriminating, B3 38/38 cases; R384: B2 discriminating, B3 38/38 cases; acc: B2 discriminating, B3 38/38 cases; fast: B2 discriminating, B3 38/38 cases; R128: B2 discriminating, B3 38/38 cases.
 
@@ -319,31 +380,55 @@ Cost method: c2fbgrid common panel (baseline: deployed R256 BE), median paired r
 | W1024 | fs / CN / 0.01 / K1 | diagnostic+accurate_equal_cost+H4b_witness | 1.16e-08 | 1.64e-06 | 3.72e-05 | 6.76e-04 | 6.78e-04 | 0.117 % | 0.0319 % | 0.0594 % | e_dyn 16, delta_time 14, e_P 2 | yes |
 | W1024 | fs / CN / 0.025 / K1 | diagnostic | 1.13e-08 | 6.10e-05 | 6.01e-05 | 4.26e-03 | 4.26e-03 | 0.461 % | 0.0319 % | 0.0594 % | delta_time 30, delta_solve 2 | — |
 
-First-order e_tot (PROVISIONAL, reference-limited; continuity), median per setting-arm: M2_512 fs|BE|0.01|K1 1.09 %; M2_512 fs|CN|0.01|K1 0.865 %; M2_512 fs|CN|0.025|K1 1.01 %; M2_512 fs|BDF2|0.0125|K1 0.795 %; W256 fs|BE|0.01|K1 1.18 %; W256 fs|CN|0.01|K1 0.955 %; W256 fs|CN|0.025|K1 1.12 %; W256 fs|CN|0.0125|K1 0.97 %; W512 fs|BE|0.01|K1 1.08 %; W512 fs|CN|0.01|K1 0.864 %; W512 fs|CN|0.025|K1 1.01 %; W512 fs|BDF2|0.0125|K1 0.793 %; W768 fs|BE|0.01|K1 1.06 %; W768 fs|CN|0.01|K1 0.862 %; W768 fs|CN|0.025|K1 0.997 %; W768 fs|CN|0.016666667|K2 0.934 %; W1024 fs|BE|0.01|K1 1.05 %; W1024 fs|CN|0.01|K1 0.862 %; W1024 fs|CN|0.025|K1 0.995 %.
+First-order e_tot / e_P / e_dyn (PROVISIONAL, reference-limited; continuity), medians per setting-arm: M2_512 fs|BE|0.01|K1 1.09 % / 0.135 % / 0.821 %; M2_512 fs|CN|0.01|K1 0.865 % / 0.135 % / 0.821 %; M2_512 fs|CN|0.025|K1 1.01 % / 0.135 % / 0.821 %; M2_512 fs|BDF2|0.0125|K1 0.795 % / 0.135 % / 0.821 %; W256 fs|BE|0.01|K1 1.18 % / 0.403 % / 0.846 %; W256 fs|CN|0.01|K1 0.955 % / 0.403 % / 0.846 %; W256 fs|CN|0.025|K1 1.12 % / 0.403 % / 0.846 %; W256 fs|CN|0.0125|K1 0.97 % / 0.403 % / 0.846 %; W512 fs|BE|0.01|K1 1.08 % / 0.118 % / 0.82 %; W512 fs|CN|0.01|K1 0.864 % / 0.118 % / 0.82 %; W512 fs|CN|0.025|K1 1.01 % / 0.118 % / 0.82 %; W512 fs|BDF2|0.0125|K1 0.793 % / 0.118 % / 0.82 %; W768 fs|BE|0.01|K1 1.06 % / 0.0511 % / 0.819 %; W768 fs|CN|0.01|K1 0.862 % / 0.0511 % / 0.819 %; W768 fs|CN|0.025|K1 0.997 % / 0.0511 % / 0.819 %; W768 fs|CN|0.016666667|K2 0.934 % / 0.0511 % / 0.819 %; W1024 fs|BE|0.01|K1 1.05 % / 0.0247 % / 0.818 %; W1024 fs|CN|0.01|K1 0.862 % / 0.0247 % / 0.818 %; W1024 fs|CN|0.025|K1 0.995 % / 0.0247 % / 0.818 %.
 
 **Budget diagnostics:**
 
-| setting | arm | worst δ_quad | worst δ_solve | worst δ_time | δ_quad unresolved vs U⋆ | δ_solve unresolved vs U⋆ | δ_form unresolved vs U⋆ | median U⋆ | median closure D_a/√Σδ² | context (ideal-end vs deployed-end) |
-|---|---|---|---|---|---|---|---|---|---|---|
-| M2_512 | fs / BE / 0.01 / K1 | 2.21e-05 | 2.89e-05 | 3.80e-02 | 32/32 | 32/32 | 14/32 | 4.25e-05 | 1 | delta_quad 0, delta_form 32 |
-| M2_512 | fs / CN / 0.01 / K1 | 3.33e-05 | 2.98e-05 | 3.65e-03 | 32/32 | 32/32 | 18/32 | 4.25e-05 | 0.983 | delta_quad 0, delta_form 32 |
-| M2_512 | fs / CN / 0.025 / K1 | 3.76e-05 | 4.17e-01 | 4.17e-01 | 32/32 | 18/32 | 9/32 | 4.25e-05 | 0.993 | delta_quad 3, delta_form 32 |
-| M2_512 | fs / BDF2 / 0.0125 / K1 | 2.91e-05 | 8.81e-05 | 1.49e-02 | 32/32 | 32/32 | 12/32 | 4.25e-05 | 1 | delta_quad 0, delta_form 32 |
-| W256 | fs / BE / 0.01 / K1 | 6.08e-05 | 6.84e-05 | 4.06e-02 | 32/32 | 32/32 | 3/32 | 4.11e-05 | 1 | delta_quad 0, delta_form 32 |
-| W256 | fs / CN / 0.01 / K1 | 8.96e-05 | 4.82e-05 | 5.23e-03 | 32/32 | 32/32 | 3/32 | 4.11e-05 | 0.895 | delta_quad 0, delta_form 32 |
-| W256 | fs / CN / 0.025 / K1 | 1.65e-04 | 3.47e-01 | 3.49e-01 | 32/32 | 20/32 | 3/32 | 4.11e-05 | 0.961 | delta_quad 0, delta_form 32 |
-| W256 | fs / CN / 0.0125 / K1 | 8.70e-05 | 8.25e-05 | 6.84e-03 | 32/32 | 32/32 | 3/32 | 4.11e-05 | 0.922 | delta_quad 0, delta_form 32 |
-| W512 | fs / BE / 0.01 / K1 | 1.55e-05 | 2.90e-05 | 4.06e-02 | 32/32 | 32/32 | 15/32 | 4.26e-05 | 1 | delta_quad 1, delta_form 32 |
-| W512 | fs / CN / 0.01 / K1 | 3.48e-05 | 3.34e-05 | 3.47e-03 | 32/32 | 32/32 | 19/32 | 4.26e-05 | 0.983 | delta_quad 0, delta_form 32 |
-| W512 | fs / CN / 0.025 / K1 | 4.85e-06 | 3.91e-01 | 3.91e-01 | 32/32 | 21/32 | 11/32 | 4.26e-05 | 0.995 | delta_quad 4, delta_form 32 |
-| W512 | fs / BDF2 / 0.0125 / K1 | 2.89e-05 | 9.60e-05 | 1.48e-02 | 32/32 | 32/32 | 13/32 | 4.26e-05 | 1 | delta_quad 0, delta_form 32 |
-| W768 | fs / BE / 0.01 / K1 | 7.07e-05 | 2.17e-05 | 5.11e-02 | 32/32 | 32/32 | 22/32 | 4.28e-05 | 1 | delta_quad 2, delta_form 32 |
-| W768 | fs / CN / 0.01 / K1 | 1.69e-04 | 5.76e-05 | 1.08e-02 | 32/32 | 32/32 | 23/32 | 4.28e-05 | 0.995 | delta_quad 0, delta_form 32 |
-| W768 | fs / CN / 0.025 / K1 | 1.42e-05 | 2.97e-01 | 2.97e-01 | 32/32 | 20/32 | 17/32 | 4.28e-05 | 0.998 | delta_quad 7, delta_form 32 |
-| W768 | fs / CN / 0.016666667 / K2 | 1.61e-04 | 5.48e-05 | 1.67e-02 | 32/32 | 32/32 | 22/32 | 4.28e-05 | 0.998 | delta_quad 0, delta_form 32 |
-| W1024 | fs / BE / 0.01 / K1 | 7.39e-05 | 2.97e-05 | 4.34e-02 | 32/32 | 32/32 | 24/32 | 4.29e-05 | 1 | delta_quad 1, delta_form 32 |
-| W1024 | fs / CN / 0.01 / K1 | 1.47e-04 | 6.82e-05 | 7.88e-03 | 32/32 | 32/32 | 24/32 | 4.29e-05 | 0.998 | delta_quad 0, delta_form 32 |
-| W1024 | fs / CN / 0.025 / K1 | 7.73e-06 | 2.97e-01 | 2.97e-01 | 32/32 | 19/32 | 21/32 | 4.29e-05 | 0.999 | delta_quad 4, delta_form 32 |
+| setting | arm | worst δ_quad | worst δ_solve | worst δ_form | worst δ_time | median refine | median I_time,quad | median I_time,solve | δ_quad unresolved (≤3U⋆) | δ_solve unresolved | δ_form unresolved | δ_time unresolved | unavailable (all components) | median U⋆ | median closure D_a/√Σδ² | context (ideal-end vs deployed-end) |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| M2_512 | fs / BE / 0.01 / K1 | 2.21e-05 | 2.89e-05 | 4.55e-03 | 3.80e-02 | 7.21e-03 | 4.70e-07 | 3.23e-06 | 32/32 | 32/32 | 14/32 | 0/32 | 0 | 4.25e-05 | 1 | delta_quad 0, delta_form 32 |
+| M2_512 | fs / CN / 0.01 / K1 | 3.33e-05 | 2.98e-05 | 4.50e-03 | 3.65e-03 | 4.96e-04 | 1.62e-07 | 3.14e-06 | 32/32 | 32/32 | 18/32 | 0/32 | 0 | 4.25e-05 | 0.983 | delta_quad 0, delta_form 32 |
+| M2_512 | fs / CN / 0.025 / K1 | 3.76e-05 | 4.17e-01 | 8.45e-03 | 4.17e-01 | 3.16e-03 | 4.92e-07 | 1.09e-04 | 32/32 | 18/32 | 9/32 | 0/32 | 0 | 4.25e-05 | 0.993 | delta_quad 3, delta_form 32 |
+| M2_512 | fs / BDF2 / 0.0125 / K1 | 2.91e-05 | 8.81e-05 | 5.91e-03 | 1.49e-02 | 4.32e-03 | 3.42e-07 | 6.48e-06 | 32/32 | 32/32 | 12/32 | 0/32 | 0 | 4.25e-05 | 1 | delta_quad 0, delta_form 32 |
+| W256 | fs / BE / 0.01 / K1 | 6.08e-05 | 6.84e-05 | 6.80e-03 | 4.06e-02 | 7.12e-03 | 2.55e-06 | 1.11e-05 | 32/32 | 32/32 | 3/32 | 0/32 | 0 | 4.11e-05 | 1 | delta_quad 0, delta_form 32 |
+| W256 | fs / CN / 0.01 / K1 | 8.96e-05 | 4.82e-05 | 6.26e-03 | 5.23e-03 | 4.68e-04 | 8.73e-07 | 1.64e-05 | 32/32 | 32/32 | 3/32 | 0/32 | 0 | 4.11e-05 | 0.895 | delta_quad 0, delta_form 32 |
+| W256 | fs / CN / 0.025 / K1 | 1.65e-04 | 3.47e-01 | 1.17e-02 | 3.49e-01 | 2.92e-03 | 2.36e-06 | 4.65e-05 | 32/32 | 20/32 | 3/32 | 0/32 | 0 | 4.11e-05 | 0.961 | delta_quad 0, delta_form 32 |
+| W256 | fs / CN / 0.0125 / K1 | 8.70e-05 | 8.25e-05 | 7.47e-03 | 6.84e-03 | 7.31e-04 | 1.10e-06 | 1.84e-05 | 32/32 | 32/32 | 3/32 | 0/32 | 0 | 4.11e-05 | 0.922 | delta_quad 0, delta_form 32 |
+| W512 | fs / BE / 0.01 / K1 | 1.55e-05 | 2.90e-05 | 4.49e-03 | 4.06e-02 | 7.20e-03 | 6.17e-09 | 3.36e-06 | 32/32 | 32/32 | 15/32 | 0/32 | 0 | 4.26e-05 | 1 | delta_quad 1, delta_form 32 |
+| W512 | fs / CN / 0.01 / K1 | 3.48e-05 | 3.34e-05 | 4.34e-03 | 3.47e-03 | 4.96e-04 | 2.15e-09 | 3.29e-06 | 32/32 | 32/32 | 19/32 | 0/32 | 0 | 4.26e-05 | 0.983 | delta_quad 0, delta_form 32 |
+| W512 | fs / CN / 0.025 / K1 | 4.85e-06 | 3.91e-01 | 8.28e-03 | 3.91e-01 | 3.15e-03 | 7.15e-09 | 5.18e-05 | 32/32 | 21/32 | 11/32 | 0/32 | 0 | 4.26e-05 | 0.995 | delta_quad 4, delta_form 32 |
+| W512 | fs / BDF2 / 0.0125 / K1 | 2.89e-05 | 9.60e-05 | 5.75e-03 | 1.48e-02 | 4.32e-03 | 4.46e-09 | 5.10e-06 | 32/32 | 32/32 | 13/32 | 0/32 | 0 | 4.26e-05 | 1 | delta_quad 0, delta_form 32 |
+| W768 | fs / BE / 0.01 / K1 | 7.07e-05 | 2.17e-05 | 1.23e-02 | 5.11e-02 | 7.21e-03 | 1.96e-08 | 2.04e-06 | 32/32 | 32/32 | 22/32 | 0/32 | 0 | 4.28e-05 | 1 | delta_quad 2, delta_form 32 |
+| W768 | fs / CN / 0.01 / K1 | 1.69e-04 | 5.76e-05 | 1.37e-02 | 1.08e-02 | 5.00e-04 | 1.34e-08 | 2.87e-06 | 32/32 | 32/32 | 23/32 | 0/32 | 0 | 4.28e-05 | 0.995 | delta_quad 0, delta_form 32 |
+| W768 | fs / CN / 0.025 / K1 | 1.42e-05 | 2.97e-01 | 2.29e-02 | 2.97e-01 | 3.20e-03 | 3.78e-08 | 6.04e-05 | 32/32 | 20/32 | 17/32 | 0/32 | 0 | 4.28e-05 | 0.998 | delta_quad 7, delta_form 32 |
+| W768 | fs / CN / 0.016666667 / K2 | 1.61e-04 | 5.48e-05 | 1.90e-02 | 1.67e-02 | 1.39e-03 | 2.53e-08 | 3.91e-06 | 32/32 | 32/32 | 22/32 | 0/32 | 0 | 4.28e-05 | 0.998 | delta_quad 0, delta_form 32 |
+| W1024 | fs / BE / 0.01 / K1 | 7.39e-05 | 2.97e-05 | 8.37e-03 | 4.34e-02 | 7.21e-03 | 1.68e-09 | 1.28e-06 | 32/32 | 32/32 | 24/32 | 0/32 | 0 | 4.29e-05 | 1 | delta_quad 1, delta_form 32 |
+| W1024 | fs / CN / 0.01 / K1 | 1.47e-04 | 6.82e-05 | 1.00e-02 | 7.88e-03 | 4.96e-04 | 8.30e-10 | 1.80e-06 | 32/32 | 32/32 | 24/32 | 0/32 | 0 | 4.29e-05 | 0.998 | delta_quad 0, delta_form 32 |
+| W1024 | fs / CN / 0.025 / K1 | 7.73e-06 | 2.97e-01 | 1.62e-02 | 2.97e-01 | 3.22e-03 | 2.10e-09 | 6.10e-05 | 32/32 | 19/32 | 21/32 | 0/32 | 0 | 4.29e-05 | 0.999 | delta_quad 4, delta_form 32 |
+
+**Orthogonal pair at the common time $t^\ast$** and worst values:
+
+| setting | arm | cases | median e_⋆ at t* | median e_P at t* | median e_dyn at t* | worst e_tot | worst e_P | worst e_dyn |
+|---|---|---|---|---|---|---|---|---|
+| M2_512 | fs / BE / 0.01 / K1 | 32 | 0.173 % | 0.159 % | 0.0656 % | 4.46 % | 2.85 % | 4.15 % |
+| M2_512 | fs / CN / 0.01 / K1 | 32 | 0.173 % | 0.159 % | 0.0656 % | 4.74 % | 2.85 % | 4.15 % |
+| M2_512 | fs / CN / 0.025 / K1 | 32 | 0.173 % | 0.159 % | 0.0656 % | 41.6 % | 2.85 % | 4.15 % |
+| M2_512 | fs / BDF2 / 0.0125 / K1 | 32 | 0.173 % | 0.159 % | 0.0656 % | 4.41 % | 2.85 % | 4.15 % |
+| W256 | fs / BE / 0.01 / K1 | 32 | 0.495 % | 0.468 % | 0.139 % | 5.9 % | 4.95 % | 4.56 % |
+| W256 | fs / CN / 0.01 / K1 | 32 | 0.495 % | 0.468 % | 0.139 % | 6.37 % | 4.95 % | 4.56 % |
+| W256 | fs / CN / 0.025 / K1 | 32 | 0.495 % | 0.468 % | 0.139 % | 34 % | 4.95 % | 4.56 % |
+| W256 | fs / CN / 0.0125 / K1 | 32 | 0.495 % | 0.468 % | 0.139 % | 6.31 % | 4.95 % | 4.56 % |
+| W512 | fs / BE / 0.01 / K1 | 32 | 0.151 % | 0.137 % | 0.0637 % | 4.86 % | 2.84 % | 5.39 % |
+| W512 | fs / CN / 0.01 / K1 | 32 | 0.151 % | 0.137 % | 0.0637 % | 5.8 % | 2.84 % | 5.39 % |
+| W512 | fs / CN / 0.025 / K1 | 32 | 0.151 % | 0.137 % | 0.0637 % | 39 % | 2.84 % | 5.39 % |
+| W512 | fs / BDF2 / 0.0125 / K1 | 32 | 0.151 % | 0.137 % | 0.0637 % | 5.37 % | 2.84 % | 5.39 % |
+| W768 | fs / BE / 0.01 / K1 | 32 | 0.0815 % | 0.0535 % | 0.0614 % | 5.28 % | 2.16 % | 8.11 % |
+| W768 | fs / CN / 0.01 / K1 | 32 | 0.0815 % | 0.0535 % | 0.0614 % | 7.17 % | 2.16 % | 8.11 % |
+| W768 | fs / CN / 0.025 / K1 | 32 | 0.0815 % | 0.0535 % | 0.0614 % | 29.5 % | 2.16 % | 8.11 % |
+| W768 | fs / CN / 0.016666667 / K2 | 32 | 0.0815 % | 0.0535 % | 0.0614 % | 6.7 % | 2.16 % | 8.11 % |
+| W1024 | fs / BE / 0.01 / K1 | 32 | 0.0659 % | 0.025 % | 0.0594 % | 4.59 % | 1.64 % | 6.25 % |
+| W1024 | fs / CN / 0.01 / K1 | 32 | 0.0659 % | 0.025 % | 0.0594 % | 5.57 % | 1.64 % | 6.25 % |
+| W1024 | fs / CN / 0.025 / K1 | 32 | 0.0659 % | 0.025 % | 0.0594 % | 29.5 % | 1.64 % | 6.25 % |
 
 Budget gates: c3budA:B0 True, c3budA:B0_fixtures True, c3budA:inventory True, c3budA:B0_real_mismatch True, c3budA:B1 True, c3budA:reproduction not applicable, c3budA:grid_reproduction True, c3budW1024r:B0 True, c3budW1024r:B0_fixtures True, c3budW1024r:inventory True, c3budW1024r:B0_real_mismatch True, c3budW1024r:B1 True, c3budW1024r:reproduction not applicable, c3budW1024r:grid_reproduction True.
 
@@ -360,13 +445,13 @@ Converged-rule check per setting (r_inf vs the next finer rule, every r_inf-depe
 - **B0 real-data mismatch control was non-discriminating** as an absolute test on the 2D smoke; it is now relative (A12).
 - **Offline scoring on the local GB10 GPU corrupted R′ = 1024 decodes** (caught by the G-score gate); all offline analysis runs on CPU (A8.1).
 - **Retracted: the first frozen 3D fast-equal-accuracy selection** (A15). It ignored H4a's step and 0.6-ratio constraints; under the registered rule no 3D fast-equal-accuracy arm exists. Caught by the Codex results audit before any 3D budget job ran; the retracted frozen file is kept in `checks/frozen-versions/`.
-- **Deployed 2D rules are too coarse for the selected second-order arms at `fast`, `acc` and R256** (finalist quadrature check, A14); the first-order selection verdicts stand, labelled "rule inadequate for this arm", and the fallbacks are reported beside them.
+- **Deployed 2D rules are too coarse for the selected LSPG-CN-R arms at `fast`, `acc` and R256** (finalist quadrature check, A14); the first-order selection verdicts stand, labelled "rule inadequate for this arm", and the fallbacks are reported beside them.
 - **First-order 2D/3D conclusions that change under E0** (A13): 2D H1 R256→R384 and R384→R512 were "reference-limited" against the first-order references and are resolved against E0 (see H1); 3D H6 was descriptive and two of its three transitions reverse direction against E0. The first-order numbers are kept beside the E0 ones and are superseded by them; the frozen selections are unchanged.
 - **The in-job 3D cohort-table hash is not stable across H200 nodes** (A11.4): the extension job is bound to the escalation job by the initial coefficients instead; offline scoring checks the CPU table hash.
 - **A leftover first-order reference access in `budget3d.py`** (G-score controls) was missed by the A13 code audit and caught when the smoke budget analysis was re-run; fixed before any production 3D budget analysis.
-- **The first W1024 3D budget job (`c3budW1024`) ran out of memory** after 3.6 h because the budget loop kept the converged rule's tables alive while preparing the finer rule (A16); fixed and rerun as `c3budW1024r`.
+- **The first W1024 3D budget job (`c3budW1024`) ran out of memory** because the budget loop kept the converged rule's tables alive while preparing the finer rule (A16); fixed and rerun as `c3budW1024r`.
 - **No formal-order claims for the reduced arms** (DESIGN A1.1): the report speaks of CN / CN-R / BDF2-family stepping and measured accuracy and cost; the E0 references are second order, the ROM arms are not claimed to be.
-- **An earlier draft of this report** stacked non-additive budget components and stated the B0 identity without its per-time scope; both corrected after the report audit.
+- **Earlier drafts of this report** stacked non-additive budget components, stated the B0 identity without its per-time scope, misdefined $\delta_{\rm form}$ in the glossary and used second-order wording for the reduced arms; corrected after the report audits (`codex-report-1.md`, `codex-report-2.md`).
 
 ## Jobs
 
@@ -401,7 +486,7 @@ Converged-rule check per setting (r_inf vs the next finer rule, every r_inf-depe
 
 ## Codex audits
 
-Chronological; the opening statement of each audit (its verdict line). Every HOLD / NOT READY on a job or a selection was resolved and re-audited before that job ran or that selection was used; reporting and interpretation findings were fixed in later report versions. The full findings are in the files.
+Chronological; the opening statement of each audit (its verdict line). Every HOLD / NOT READY on a job or a selection was resolved and re-audited before that job ran or that selection was used. Reporting findings are addressed report version by report version; the last report audit (`codex-report-*.md`) states what remains. The full findings are in the files.
 
 | audit | opening statement |
 |---|---|
@@ -445,41 +530,38 @@ Chronological; the opening statement of each audit (its verdict line). Every HOL
 | `audits/codex-job-c3budW1024r.md` | SUBMIT `c3budW1024r` on the certified H200 / 200G / 48-hour allocation. No blocking finding. |
 | `audits/codex-results3dbud-1.md` | Overall: NEEDS-RESTATEMENT for interpretation; the saved numerical results and gate decisions are CORRECT. I found no incorrect finalist decision or component classification. The qualification concerns “what limits next”… |
 | `audits/codex-report-1.md` | Overall: NOT READY. The generated numerical tables reproduce their source JSONs, but several claims and definitions contradict the design amendments or repeat findings already corrected in earlier audits. |
+| `audits/codex-report-2.md` | Overall: NOT READY. Many round-1 corrections landed, but the glossary still contradicts the repaired definitions, required diagnostics remain incomplete, and several new statements overstate what was fixed. |
 
 ## Glossary
 
-- **bank, R′, dial**: the frozen ordered coordinate network; a solve uses its first R′ columns; the dial is the sequence of R′ settings (R128 → R256 → R384 → R512 in 2D; W256 … W1024 in 3D). `fast` and `acc` are the 2D settings deployed before this lane; `M2_512` the deployed 3D setting.
-- **rule, m, m\***: an off-mesh quadrature for the advection term (Gauss pᵈ tensor, Fibonacci or rank-1 lattice) with m points; m\* is the smallest rule of a family whose rollouts stay within τ = 2.5×10⁻⁴ of the converged rule's.
-- **converged rule, J4, bar**: a rule fine enough that the next finer rule changes the rollout by at most the bar 2.5×10⁻⁵ (worst case over 64 cases, field distance relative to ‖u₀‖); J4 is that check.
-- **BE, CN, CN-R, BDF2**: backward Euler; Crank–Nicolson; CN with two BE start steps; second-order backward differentiation with one BE start step. **LSPG / GAL**: least-squares and Galerkin solves of each step.
-- **fixed-sweep solver, K**: after a few adaptive steps, exactly K Levenberg–Marquardt sweeps per time step with an extrapolated predictor (the deployed 3D BE solver is K = 1). **Adaptive (tight)**: iterate each step until its stopping test passes ("verified").
-- **solver distance**: field distance between a fixed-sweep run and the verified adaptive run of the same scheme and step; eligible if ≤ 2.5×10⁻⁴ on every case.
-- **ST / S / TX**: 2D references at 8192² with Δt₀/16 / Δt₀ / their Richardson combination, all first-order accurate in time; the 3D reference is BE at Δt₀/4 on 513³ nodes. **PROVISIONAL**: scored against these first-order references; not a physical-accuracy claim.
-- **tie, ε_ref, resolved**: a paired difference below 2ε_ref (ε_ref = per-case ST–TX distance) is a tie; a case is resolved when it is not a tie; a verdict with fewer than half the cases resolved is **reference-limited**.
-- **accurate-equal-cost / fast-equal-accuracy**: the lowest-median-error candidate arm costing no more than the setting's LSPG-BE at Δt₀; the cheapest candidate arm whose worst and median errors are no larger than that BE arm's.
-- **cost / own BE, common-baseline cost**: median paired A–B–A time ratio against the setting's own LSPG-BE at Δt₀, or against one common baseline (acc LSPG-BE Δt₀ in 2D).
-- **anchor, e∞**: GAL-BDF2 at Δt₀/8, tight tolerance (time-converged reduced solution) and its error.
-- **matched speed-up**: FOM time / ROM time for the cheapest calibrated FOM configuration whose worst error is no larger than the ROM arm's; same job, same GPU.
+- **bank, $R'$, dial**: the frozen ordered coordinate network; a solve uses its first $R'$ columns; the dial is the sequence of $R'$ settings (R128 → R256 → R384 → R512 in 2D; W256 … W1024 in 3D). `fast` and `acc` are the 2D settings deployed before this lane; `M2_512` the deployed 3D setting.
+- **rule, $m$, $m^\star$**: an off-mesh quadrature for the advection term (Gauss tensor, Fibonacci or rank-1 lattice) with $m$ points; $m^\star$ is the smallest rule of a family whose rollouts stay within $\tau$ of the converged rule's.
+- **converged rule $r_\infty$, J4, bar**: a rule fine enough that the next finer rule changes the rollout by at most the bar (worst case over the cohort, field distance relative to $\lVert u_0\rVert$); J4 is that check.
+- **BE, CN, CN-R, BDF2**: backward Euler; Crank–Nicolson; CN with two BE start steps; the two-step backward differentiation formula with one BE start step. The report calls CN / CN-R / BDF2 the "CN/BDF2 family" and makes no formal-order claim for the reduced arms (DESIGN A1.1).
+- **LSPG / GAL**: least-squares (Petrov–Galerkin) and Galerkin solves of each time step with the same test functions.
+- **fixed-sweep solver, $K$; `fs` / `ad`; LM**: after a few adaptive steps, exactly $K$ Levenberg–Marquardt (LM) sweeps per step with an extrapolated predictor (`fs`); `ad` = adaptive solver run to its stopping test ("verified").
+- **solver distance**: field distance between a fixed-sweep run and the verified adaptive run of the same scheme and step; eligibility requires it to be at most $\tau$ (per-case H4 bar: at most $\min(\tau, 0.25\times$ own anchor discrepancy$)$).
+- **ST / S / TX (first-order references, PROVISIONAL)**: 2D first-order references at fine resolution: ST with a small time step, S at $\Delta t_0$, TX their Richardson combination; the 3D first-order reference is backward Euler at a reduced step (reference-limited).
+- **E0, $R_{ST}$, $R_S$, $\epsilon_{\rm ref}$ ($\eta$)**: the campaign's order-verified second-order references (central differences + Crank–Nicolson) and their per-case Richardson uncertainty (a conditional estimate, not a bound). $R_S$ (backward Euler at $\Delta t_0$) exists in 2D only and is time-matched only to the 2D LSPG-BE arms at $\Delta t_0$; every other S value is an unmatched diagnostic. 3D uses $R_{ST}$ only.
+- **tie, resolved, reference-limited**: first-order references: a paired difference below a heuristic threshold from the ST–TX distance is a tie; E0: two arms are ranked on a case only if their errors differ by more than $2\eta$ and the case-kind is eligible, medians and worst values by interval overlap. A case is resolved when it is not a tie; a verdict with fewer than half the cases resolved is reference-limited.
+- **selection rules**: 2D accurate-equal-cost = smallest median error among a scheme's eligible steps with paired time ratio $\le 1$ against the setting's LSPG-BE at $\Delta t_0$; 2D fast-equal-accuracy = cheapest eligible step whose worst and median ST and TX errors are no worse than that BE's (tie policy). 3D accurate-equal-cost = smallest median anchor discrepancy with ratio $\le 1$; 3D fast-equal-accuracy must meet H4a ($\Delta t\ge1.25\Delta t_0$, anchor discrepancy no worse than the comparator, ratio $\le 0.6$).
+- **H4b witness**: an eligible 3D fixed-sweep arm at $\Delta t_0$ with median anchor discrepancy $\le 0.1\times$ the comparator's and ratio $\le 1.1$; it proves H4b and is distinct from the accurate-equal-cost selection.
+- **H1–H6**: the pre-registered hypotheses of DESIGN §6: the wide bank pays off; tunability survives; CN worst-case cancellation; 3D fixed-sweep speed (H4a) and accuracy (H4b); speed against the FOM; the 3D dial.
+- **$t^\ast$, guards a / b / c (H3)**: $t^\ast$ is the output time of the largest anchor error; (a) CN lands near the time-converged error relative to BE, (b) the BE time error points against the anchor error (cosine $\le -0.3$), (c) the cancelling cross term is large; the guards repeat (a)–(c) with the anchor (and, under E0, reference) uncertainty added.
+- **cost / own BE, common-baseline cost, paired time ratio**: median over A–B–A invocations of candidate time divided by the mean of a baseline run just before and after it, on one GPU; against the setting's own LSPG-BE at $\Delta t_0$ (2D) or deployed fixed-sweep BE (3D), or against one common baseline. IQR = interquartile range of the per-invocation ratios; outliers = invocations more than $3\times1.4826\times$ MAD from the median.
+- **anchor, anchor discrepancy, anchor-resolved**: GAL-BDF2 at $\Delta t_0/8$, tight tolerance (time-converged reduced solution) and the distance of a rollout from it; a case is anchor-resolved when the comparator's discrepancy exceeds $3\times$ the anchor uncertainty.
+- **FOM, matched speed-up**: the full-order finite-difference model on the same mesh with CN/BDF2-family time stepping and calibrated Newton tolerances; matched speed-up = FOM time / ROM time for the cheapest calibrated FOM configuration whose worst error is no larger than the ROM arm's.
+- **arm keys**: grid keys carry absolute steps: `form|scheme|Δt|level` (2D; `prod` = production tolerance) and `fs|scheme|Δt|K` / `ad|form|scheme|Δt|level` (3D); 2D budget keys `form|scheme|f` carry the step factor $f=\Delta t/\Delta t_0$; $\Delta t_0$ = 0.005 (2D) and 0.01 (3D).
+- **ideal model $\star$**: the reduced model with every ingredient at its ideal: converged rule, Galerkin, BDF2 at $\Delta t_0/8$, tight solver.
+- **$e_{\rm tot}$, $e_\star$, $e_P$, $e_{\rm dyn}$**: an arm's error, the ideal model's error, the projection floor (the best error in the span) and the ideal model's distance to the projected reference; $e_\star^2=e_P^2+e_{\rm dyn}^2$ holds at each output time (gate B0), not between separately maximised or aggregated values. The orthogonal pair is reported at the common time $t^\ast$.
+- **$\delta_{\rm quad}$, $\delta_{\rm solve}$, $\delta_{\rm form}$, $\delta_{\rm time}$, $D_a$**: rule changed to $r_\infty$; solver tolerance changed to tight; LSPG vs Galerkin both at the tight tolerance (same test functions); the time package (scheme, step, startup steps, LSPG weights, 3D adaptive fraction) changed to BDF2 at $\Delta t_0/8$; $D_a$ the direct distance to the ideal model. Each is a separate measurement; none is a remainder.
+- **refine, mixed differences**: refine = change when the arm's own step is halved (tight solver); mixed differences $I_{\rm time,quad}$ and $I_{\rm time,solve}$ = how much the time ablation changes when the rule or the solver is also changed (interaction indicators).
+- **$U_\star$, unresolved, unavailable**: $U_\star$ = the ideal model's own uncertainty (time-step and tolerance replays); a component is unresolved on a case if it is at most $3U_\star$; unavailable if a needed trajectory is unverified.
+- **closure, context**: closure = $D_a/\sqrt{\sum\delta^2}$, a descriptive ratio of separately maximised quantities (it does not establish orthogonality or an additive decomposition); context = whether a component measured from the ideal end differs by more than $2\times$ from the deployed end.
+- **largest component (cases)**: per case, which measured component is biggest, counted over cases; a sensitivity ranking, not a causal share.
+- **finalist check, $\tau$, fallback**: a selected arm must stay within $\tau=2.5\times10^{-4}$ of itself run with the converged rule on every case (and the converged-vs-finer check must pass); a failing arm keeps its selection labelled "rule inadequate"; its frozen fallback (next finer rule of the family) is qualified separately.
+- **B0–B3, G-score, controls**: B0 the per-time Pythagorean identity; B1 a bitwise re-run; B2 a deliberately bad rule that must be detected; B3 a time ablation that must be detectable; G-score the independent re-decoding of every saved trajectory; negative controls (case swap, time shift, ...) that must break agreement.
 - **pre-registered / POST HOC**: decided before results were read / decided after (labelled; exploratory).
 - **dev6, val32, 923801**: development and validation cohorts (selection allowed); test64 / 923901 are replication-only and were not used.
-- **pp, % of ‖u₀‖**: errors are reported relative to the initial-condition norm.
-- **ideal model ⋆, e_⋆**: the reduced model with every ingredient at its ideal (converged rule, Galerkin, BDF2 at Δt₀/8, tight solver); e_⋆ its error against the reference.
-- **e_tot, e_P, e_dyn**: an arm's total error; the bank's projection floor (best possible error in the span); the ideal model's distance to the projected reference (e_⋆² = e_P² + e_dyn² exactly, gate B0).
-- **δ_quad, δ_solve, δ_form, δ_time, D_a**: distance between an arm and the same arm with only the quadrature rule / solver tolerance / test space (LSPG→Galerkin) / scheme-and-step changed to the ideal; D_a the direct distance to the ideal model. Each is its own ablation; none is a remainder.
-- **largest component (cases)**: per case, which of the measured components above is biggest; counted over cases. A sensitivity ranking, not a causal attribution.
-- **finalist check, τ**: a selected arm must stay within τ = 2.5×10⁻⁴ of itself run with the converged rule on every case; failing means the deployed rule is too coarse for that arm.
-- **fallback**: the next finer rule of the same family, frozen in advance, qualified separately.
-- **B0–B3, G-score, controls**: machinery gates — B0 the exact Pythagorean identity, B1 a bitwise re-run, B2 a deliberately bad rule that must be detected, B3 a time ablation that must be detectable; G-score the independent re-decoding of every saved trajectory; negative controls (case swap, time shift, ...) that must break agreement.
-- **E0, R_ST, R_S, ε_ref (η)**: the campaign's order-verified second-order references (central differences + Crank–Nicolson; R_S backward Euler at Δt₀ for BE-matched comparison only) and their per-case Richardson uncertainty.
-- **H1–H6**: the pre-registered hypotheses of DESIGN §6 (wide bank pays off; tunability; CN worst-case cancellation; 3D speed/accuracy of the fixed-sweep solver; speed vs the FOM; 3D dial).
-- **anchor-resolved cases**: cases where the comparator's anchor discrepancy exceeds 3× the anchor uncertainty.
-- **selection rules**: 2D accurate-equal-cost = smallest median error among a scheme's eligible steps with paired time ratio ≤ 1 against the setting's LSPG-BE at Δt₀; 2D fast-equal-accuracy = cheapest eligible step whose worst and median ST and TX errors are no worse than that BE's (tie policy). 3D: the same roles judged on the reference-free anchor discrepancy; the 3D fast-equal-accuracy arm must additionally meet H4a (Δt ≥ 1.25 Δt₀, ratio ≤ 0.6).
-- **H4b witness**: an eligible 3D fixed-sweep arm at Δt₀ with median anchor discrepancy ≤ 0.1× the comparator's and ratio ≤ 1.1; it proves H4b, and is distinct from the accurate-equal-cost selection.
-- **ties under first-order vs E0 references**: first-order: a heuristic threshold from the ST–TX distance; E0: per-case ε_ref (η), two arms ranked only if their errors differ by more than 2η; medians and worst values by interval overlap.
-- **t\*, guards a / b / c (H3)**: t\* is the output time of the largest anchor error; (a) CN lands near the time-converged error relative to BE, (b) the BE time error points against the anchor error (cosine ≤ −0.3), (c) the cancelling cross term is large; the guards repeat (a)–(c) with the anchor (and, under E0, reference) uncertainty added.
-- **FOM**: the full-order finite-difference model on the same mesh, with CN/BDF2-family time stepping and calibrated Newton tolerances.
-- **LM, fs / ad**: Levenberg–Marquardt; `fs` = fixed-sweep solver, `ad` = adaptive solver run to its stopping test.
-- **arm keys**: `form|scheme|Δt|level` in 2D (Δt in time units, `prod` = production tolerance) and `fs|scheme|Δt|K` / `ad|form|scheme|Δt|level` in 3D; Δt₀ = 0.005 (2D) and 0.01 (3D).
-- **paired time ratio statistics**: medians over A–B–A invocations; q25–q75 are stored in the analysis files; a panel is valid only if every subject's median A-drift lies within 10 %.
-- **U⋆, closure, context**: U⋆ the ideal model's own uncertainty (time step and tolerance replays); closure = D_a divided by the root-sum-square of the δ's (≈ 1 when the ablations are nearly orthogonal); context = whether a component measured from the ideal end differs by more than 2× from the deployed end.
+- **% of $\lVert u_0\rVert$, pp**: errors relative to the initial-condition norm, in percent; pp = percentage points (a difference of two such percentages).
 

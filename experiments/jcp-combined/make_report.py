@@ -184,6 +184,19 @@ def plot_fom(an):
     plt.close(fig)
 
 
+def tstats(panel, subj):
+    """Per-subject timing statistics from an A-B-A panel: median ratio, IQR, MAD-outlier count, median absolute times."""
+    inv = [i for i in panel['invocations'] if i['B'] == subj]
+    if not inv:
+        return None
+    x = np.array([i['ratio'] for i in inv])
+    med = float(np.median(x))
+    mad = float(np.median(np.abs(x - med)))
+    out = int(np.sum(np.abs(x - med) > 3 * 1.4826 * mad)) if mad > 0 else 0
+    return dict(n=len(x), median=med, q25=float(np.percentile(x, 25)), q75=float(np.percentile(x, 75)), outliers=out,
+                tB=float(np.median([i['tB'] for i in inv])), tA=float(np.median([.5 * (i['tA1'] + i['tA2']) for i in inv])))
+
+
 def plot_budget(settings, name, dim, eP, edyn, refs):
     """Grouped (not stacked: the components are separate, non-additive measurements, A1.4) median components per arm."""
     labs, vals = [], []
@@ -296,7 +309,7 @@ def main():
       '  G2 --> S2[score + analyze2d + freeze 2D]:::doc',
       '  E3 --> S3[select3d: pre-registered = unavailable; POST HOC A10 selection]:::posthoc',
       '  X3 --> S3',
-      '  S3 --> C3[c3grid: 3D second-order grid + timing]:::job',
+      '  S3 --> C3[c3grid: 3D CN/BDF2-family fixed-sweep grid + timing]:::job',
       '  S2 --> B2[c2budA/B/C: 2D error budget]:::job',
       '  B2 --> FB[A14: finalist failures -> c2fbgrid + c2fbbud fallback qualification]:::posthoc',
       '  C3 --> F3[analyze3d + freeze 3D solver; A15 retraction and re-freeze]:::doc',
@@ -367,6 +380,20 @@ def main():
           'first-order scores (PROVISIONAL, continuity):', '')
         r.table(['setting', 'role', 'arm', 'cost / own BE', f'median {PL_}', f'worst {PL_}', 'median S (BE-matched)',
                  'old median TX', 'old median ST'], rows)
+        res2 = load(HERE / 'runs' / 'c2grid' / 'archive' / 'output' / 'result.json')
+        trow = []
+        for s_ in ['fast', 'R128', 'R256', 'acc', 'R384', 'R512']:
+            for kind in ('accurate_equal_cost', 'fast_equal_accuracy'):
+                x = fr[f'{s_}|{g}'].get(kind)
+                if not x:
+                    continue
+                t_ = tstats(res2['timing'].get(f'setting|{s_}', {}), f"{s_}|{x['key']}")
+                if t_:
+                    trow.append([s_, kind.replace('_', ' '), armname(x['key']), t_['n'], fx(t_['median']),
+                                 f"{fx(t_['q25'])}–{fx(t_['q75'])}", t_['outliers'], f"{t_['tB']:.3g} s", f"{t_['tA']:.3g} s"])
+        r(f"**2D timing detail** (A–B–A against the setting's LSPG-BE at Δt₀, one {res2.get('gpu')}, warm JIT):", '')
+        r.table(['setting', 'role', 'arm', 'invocations', 'median ratio', 'IQR', 'MAD outliers', 'median time B',
+                 'median time A (BE)'], trow)
 
         H = an['hypotheses']
         r('### H1: does the wide bank pay off once time error is removed?', '')
@@ -611,6 +638,24 @@ def main():
                 f"improved {fx(v.get('improved_fraction'))}, bars met {v.get('bars_met', '—')}" for k, v in h6.items()) + '.', '')
         plot_speedup3d(an3)
         r('![3D speed-up](plots/speedup3d.png)', '')
+        res3 = load(HERE / 'runs' / 'c3grid' / 'archive' / 'output' / 'result.json')
+        rows = []
+        for s_, sel_ in an3['selection'].items():
+            pan = res3['timing'].get(f'setting|{s_}', {})
+            rule = an3['settings'][s_]['rule']
+            for role, k in [('accurate equal cost', sel_.get('accurate_equal_cost'))] + \
+                    [('cheapest equal accuracy (diagnostic)', ((an3o or an3)['hypotheses']['H4'][s_].get('cheapest_equal_accuracy_diagnostic') or {}).get('key'))]:
+                if not k:
+                    continue
+                t_ = tstats(pan, f'{s_}|{rule}|{k}')
+                cm = an3['settings'][s_]['arms'][k].get('ratio_common')
+                if t_:
+                    rows.append([s_, role, k, t_['n'], fx(t_['median']), f"{fx(t_['q25'])}–{fx(t_['q75'])}", t_['outliers'],
+                                 f"{t_['tB']:.3g} s", f"{t_['tA']:.3g} s", fx(cm)])
+        r(f"**3D timing detail** (A–B–A against the deployed fixed-sweep BE at Δt₀; one {res3.get('gpu')}; absolute times "
+          'are medians per rollout of one case):', '')
+        r.table(['setting', 'role', 'arm', 'invocations', 'median ratio', 'IQR', 'MAD outliers', 'median time B',
+                 'median time A (BE)', 'common-panel ratio'], rows)
     r('## Error budget (each component its own ablation; none is a remainder)', '',
       '$e_{\\rm tot}=\\lVert u_a-u_{\\rm ref}\\rVert$; floor $e_P=\\lVert(I-\\Pi_{R\'})u_{\\rm ref}\\rVert$; reduced dynamics '
       '$e_{\\rm dyn}=\\lVert u_\\star-\\Pi_{R\'}u_{\\rm ref}\\rVert$ with the ideal model $\\star$ (converged rule, Galerkin, BDF2 at '
@@ -623,8 +668,9 @@ def main():
       'times relative to $\\lVert u_0\\rVert$; tables show medians over the budget population. The identity '
       '$e_\\star^2=e_P^2+e_{\\rm dyn}^2$ holds **at each output time** (gate B0), not between separately maximised or aggregated '
       'values. The δ\'s and $D_a$ are reference-free; $e_{\\rm tot}$, $e_P$, $e_{\\rm dyn}$ carry the label of the reference '
-      'named in each table. Components below the ideal model\'s own uncertainty $U_\\star$ (anchor $\\Delta t_0/8$ vs $\\Delta t_0/16$ '
-      'and tight vs tighter) are counted as unresolved in the diagnostics tables.', '')
+      'named in each table. Components at most $3U_\\star$ (three times the ideal model\'s own uncertainty, from the '
+      '$\\Delta t_0/8$ vs $\\Delta t_0/16$ and tight vs tighter replays) '
+      'are counted as unresolved in the diagnostics tables.', '')
     comps = ['delta_quad', 'delta_solve', 'delta_form', 'delta_time', 'D_a']
 
     def budget_rows(settings, eP, edyn, etot):
@@ -655,13 +701,34 @@ def main():
                 ctx = A.get('context') or {}
                 ctxs = ', '.join(f"{k}: {v.get('flag')}" for k, v in ctx.items()) if ctx else \
                     ', '.join(f'{k} {v}' for k, v in (A.get('context_sensitive_cases') or {}).items())
-                rows.append([sn, ak, wv('delta_quad'), wv('delta_solve'), wv('delta_time'), ucount('delta_quad'),
-                             ucount('delta_solve'), ucount('delta_form'), sci((sm_.get('U_star') or {}).get('median')),
+                mdv = lambda k: sci((sm_.get(k) or {}).get('median'))
+                unav = sum((v_ or {}).get('unavailable', 0) for v_ in un.values())
+                rows.append([sn, ak, wv('delta_quad'), wv('delta_solve'), wv('delta_form'), wv('delta_time'),
+                             mdv('refine'), mdv('I_time_quad'), mdv('I_time_solve'),
+                             ucount('delta_quad'), ucount('delta_solve'), ucount('delta_form'), ucount('delta_time'),
+                             unav, sci((sm_.get('U_star') or {}).get('median')),
                              fx(float(np.median(cl))) if cl else '—', ctxs or '—'])
         return rows
-    dhead = ['setting', 'arm', 'worst δ_quad', 'worst δ_solve', 'worst δ_time', 'δ_quad unresolved vs U⋆',
-             'δ_solve unresolved vs U⋆', 'δ_form unresolved vs U⋆', 'median U⋆', 'median closure D_a/√Σδ²',
-             'context (ideal-end vs deployed-end)']
+    dhead = ['setting', 'arm', 'worst δ_quad', 'worst δ_solve', 'worst δ_form', 'worst δ_time', 'median refine',
+             'median I_time,quad', 'median I_time,solve', 'δ_quad unresolved (≤3U⋆)', 'δ_solve unresolved',
+             'δ_form unresolved', 'δ_time unresolved', 'unavailable (all components)', 'median U⋆',
+             'median closure D_a/√Σδ²', 'context (ideal-end vs deployed-end)']
+
+    def pair_rows(settings, key, eP, edyn, etot):
+        rows = []
+        for sn, S in settings.items():
+            for ak, A in S['arms'].items():
+                pairs = [x.get(key) for x in A.get('per_case', []) if x.get(key)]
+                if not pairs:
+                    continue
+                md = lambda f: float(np.median([q[f] for q in pairs]))
+                wsum = A['summary']
+                rows.append([sn, ak, len(pairs), pc(md('e_star')), pc(md('e_P')), pc(md('e_dyn')),
+                             pc((wsum.get(etot) or {}).get('worst')), pc((wsum.get(eP) or {}).get('worst')),
+                             pc((wsum.get(edyn) or {}).get('worst'))])
+        return rows
+    phead = ['setting', 'arm', 'cases', 'median e_⋆ at t*', 'median e_P at t*', 'median e_dyn at t*', 'worst e_tot',
+             'worst e_P', 'worst e_dyn']
     if b2:
         e0b = b2[0]['refs'] == '2d_e0'
         st2 = {}
@@ -678,12 +745,15 @@ def main():
             st2o = {}
             for b in b2o:
                 st2o.update(b['settings'])
-            r('First-order e_tot (PROVISIONAL, continuity), median per setting-arm: ' + '; '.join(
-                f"{sn} {ak} {pc((A['summary'].get('e_tot_ST') or {}).get('median'))}" for sn, S_ in st2o.items()
+            r('First-order e_tot / e_P / e_dyn against ST (PROVISIONAL, continuity), medians per setting-arm: ' + '; '.join(
+                f"{sn} {ak} {pc((A['summary'].get('e_tot_ST') or {}).get('median'))} / {pc((A['summary'].get('e_P_ST') or {}).get('median'))}"
+                f" / {pc((A['summary'].get('e_dyn_ST') or {}).get('median'))}" for sn, S_ in st2o.items()
                 for ak, A in S_['arms'].items()) + '.', '')
         r('**Budget diagnostics** (worst values; counts of cases where a component is not resolved against the ideal '
           'model\'s own uncertainty; closure; context sensitivity):', '')
         r.table(dhead, diag_rows(st2))
+        r('**Orthogonal pair at the common time $t^\\ast$** (where $e_\\star^2=e_P^2+e_{\\rm dyn}^2$ holds) and worst values:', '')
+        r.table(phead, pair_rows(st2, 'orthogonal_pair_at_tstar_ST', 'e_P_ST', 'e_dyn_ST', 'e_tot_ST'))
         r('Controls: ' + '; '.join(f"{k}: B2 {'discriminating' if (v.get('B2') or {}).get('discriminating') else 'NOT discriminating'}, "
                                    f"B3 {(v.get('B3') or {}).get('exceeds')}/{(v.get('B3') or {}).get('cases')} cases"
                                    for k, v in st2.items()) + '.', '')
@@ -742,11 +812,14 @@ def main():
           ('' if b3.get('complete') else 'Partial: W1024 pending.'), '')
         r.table(head, budget_rows(b3['settings'], 'e_P', 'e_dyn', 'e_tot'))
         if b3o and b3['refs'] == '3d_e0':
-            r('First-order e_tot (PROVISIONAL, reference-limited; continuity), median per setting-arm: ' + '; '.join(
-                f"{sn} {ak} {pc((A['summary'].get('e_tot') or {}).get('median'))}" for sn, S_ in b3o['settings'].items()
+            r('First-order e_tot / e_P / e_dyn (PROVISIONAL, reference-limited; continuity), medians per setting-arm: ' + '; '.join(
+                f"{sn} {ak} {pc((A['summary'].get('e_tot') or {}).get('median'))} / {pc((A['summary'].get('e_P') or {}).get('median'))}"
+                f" / {pc((A['summary'].get('e_dyn') or {}).get('median'))}" for sn, S_ in b3o['settings'].items()
                 for ak, A in S_['arms'].items()) + '.', '')
         r('**Budget diagnostics:**', '')
         r.table(dhead, diag_rows(b3['settings']))
+        r('**Orthogonal pair at the common time $t^\\ast$** and worst values:', '')
+        r.table(phead, pair_rows(b3['settings'], 'orthogonal_pair_at_tstar', 'e_P', 'e_dyn', 'e_tot'))
         r('Budget gates: ' + ', '.join(f"{k} {(v.get('passed') if isinstance(v, dict) else v)}" for k, v in b3['gates'].items()) + '.', '')
         wh3 = {sn: S_.get('withheld') for sn, S_ in b3['settings'].items() if S_.get('withheld')}
         cc3 = {sn: S_.get('conv_check', {}) for sn, S_ in b3['settings'].items()}
@@ -783,7 +856,7 @@ def main():
       '- **Retracted: the first frozen 3D fast-equal-accuracy selection** (A15). It ignored H4a\'s step and 0.6-ratio '
       'constraints; under the registered rule no 3D fast-equal-accuracy arm exists. Caught by the Codex results audit before '
       'any 3D budget job ran; the retracted frozen file is kept in `checks/frozen-versions/`.',
-      '- **Deployed 2D rules are too coarse for the selected second-order arms at `fast`, `acc` and R256** (finalist '
+      '- **Deployed 2D rules are too coarse for the selected LSPG-CN-R arms at `fast`, `acc` and R256** (finalist '
       'quadrature check, A14); the first-order selection verdicts stand, labelled "rule inadequate for this arm", and the '
       'fallbacks are reported beside them.',
       '- **First-order 2D/3D conclusions that change under E0** (A13): 2D H1 R256→R384 and R384→R512 were "reference-limited" '
@@ -794,12 +867,13 @@ def main():
       'escalation job by the initial coefficients instead; offline scoring checks the CPU table hash.',
       '- **A leftover first-order reference access in `budget3d.py`** (G-score controls) was missed by the A13 code audit '
       'and caught when the smoke budget analysis was re-run; fixed before any production 3D budget analysis.',
-      '- **The first W1024 3D budget job (`c3budW1024`) ran out of memory** after 3.6 h because the budget loop kept the '
+      '- **The first W1024 3D budget job (`c3budW1024`) ran out of memory** because the budget loop kept the '
       'converged rule\'s tables alive while preparing the finer rule (A16); fixed and rerun as `c3budW1024r`.',
       '- **No formal-order claims for the reduced arms** (DESIGN A1.1): the report speaks of CN / CN-R / BDF2-family '
       'stepping and measured accuracy and cost; the E0 references are second order, the ROM arms are not claimed to be.',
-      '- **An earlier draft of this report** stacked non-additive budget components and stated the B0 identity without its '
-      'per-time scope; both corrected after the report audit.', '')
+      '- **Earlier drafts of this report** stacked non-additive budget components, stated the B0 identity without its '
+      'per-time scope, misdefined $\\delta_{\\rm form}$ in the glossary and used second-order wording for the reduced arms; '
+      'corrected after the report audits (`codex-report-1.md`, `codex-report-2.md`).', '')
 
     # ------------------------------------------------------------------------------------------------ provenance
     if ledger:
@@ -816,83 +890,102 @@ def main():
         aud.append([f'`audits/{Path(p).name}`', first[:220] + ('…' if len(first) > 220 else '')])
     r('## Codex audits', '')
     r('Chronological; the opening statement of each audit (its verdict line). Every HOLD / NOT READY on a job or a '
-      'selection was resolved and re-audited before that job ran or that selection was used; reporting and interpretation '
-      'findings were fixed in later report versions. The full findings are in the files.', '')
+      'selection was resolved and re-audited before that job ran or that selection was used. Reporting findings are '
+      'addressed report version by report version; the last report audit (`codex-report-*.md`) states what remains. The '
+      'full findings are in the files.', '')
     r.table(['audit', 'opening statement'], aud)
 
     # ------------------------------------------------------------------------------------------------ glossary
-    r('## Glossary', '',
-      '- **bank, R′, dial**: the frozen ordered coordinate network; a solve uses its first R′ columns; the dial is the '
-      'sequence of R′ settings (R128 → R256 → R384 → R512 in 2D; W256 … W1024 in 3D). `fast` and `acc` are the 2D settings '
-      'deployed before this lane; `M2_512` the deployed 3D setting.',
-      '- **rule, m, m\\***: an off-mesh quadrature for the advection term (Gauss pᵈ tensor, Fibonacci or rank-1 lattice) '
-      'with m points; m\\* is the smallest rule of a family whose rollouts stay within τ = 2.5×10⁻⁴ of the converged rule\'s.',
-      '- **converged rule, J4, bar**: a rule fine enough that the next finer rule changes the rollout by at most the bar '
-      '2.5×10⁻⁵ (worst case over 64 cases, field distance relative to ‖u₀‖); J4 is that check.',
-      '- **BE, CN, CN-R, BDF2**: backward Euler; Crank–Nicolson; CN with two BE start steps; second-order backward '
-      'differentiation with one BE start step. **LSPG / GAL**: least-squares and Galerkin solves of each step.',
-      '- **fixed-sweep solver, K**: after a few adaptive steps, exactly K Levenberg–Marquardt sweeps per time step with an '
-      'extrapolated predictor (the deployed 3D BE solver is K = 1). **Adaptive (tight)**: iterate each step until its '
-      'stopping test passes ("verified").',
-      '- **solver distance**: field distance between a fixed-sweep run and the verified adaptive run of the same scheme and '
-      'step; eligible if ≤ 2.5×10⁻⁴ on every case.',
-      '- **ST / S / TX**: 2D references at 8192² with Δt₀/16 / Δt₀ / their Richardson combination, all first-order '
-      'accurate in time; the 3D reference is BE at Δt₀/4 on 513³ nodes. **PROVISIONAL**: scored against these first-order '
-      'references; not a physical-accuracy claim.',
-      '- **tie, ε_ref, resolved**: a paired difference below 2ε_ref (ε_ref = per-case ST–TX distance) is a tie; a case is '
-      'resolved when it is not a tie; a verdict with fewer than half the cases resolved is **reference-limited**.',
-      '- **accurate-equal-cost / fast-equal-accuracy**: the lowest-median-error candidate arm costing no more than the '
-      "setting's LSPG-BE at Δt₀; the cheapest candidate arm whose worst and median errors are no larger than that BE arm's.",
-      '- **cost / own BE, common-baseline cost**: median paired A–B–A time ratio against the setting\'s own LSPG-BE at Δt₀, or '
-      'against one common baseline (acc LSPG-BE Δt₀ in 2D).',
-      '- **anchor, e∞**: GAL-BDF2 at Δt₀/8, tight tolerance (time-converged reduced solution) and its error.',
-      '- **matched speed-up**: FOM time / ROM time for the cheapest calibrated FOM configuration whose worst error is no '
-      'larger than the ROM arm\'s; same job, same GPU.',
-      '- **pre-registered / POST HOC**: decided before results were read / decided after (labelled; exploratory).',
-      '- **dev6, val32, 923801**: development and validation cohorts (selection allowed); test64 / 923901 are replication-only '
-      'and were not used.',
-      '- **pp, % of ‖u₀‖**: errors are reported relative to the initial-condition norm.',
-      '- **ideal model ⋆, e_⋆**: the reduced model with every ingredient at its ideal (converged rule, Galerkin, BDF2 at Δt₀/8, '
-      'tight solver); e_⋆ its error against the reference.',
-      '- **e_tot, e_P, e_dyn**: an arm\'s total error; the bank\'s projection floor (best possible error in the span); the '
-      'ideal model\'s distance to the projected reference (e_⋆² = e_P² + e_dyn² exactly, gate B0).',
-      '- **δ_quad, δ_solve, δ_form, δ_time, D_a**: distance between an arm and the same arm with only the quadrature rule / '
-      'solver tolerance / test space (LSPG→Galerkin) / scheme-and-step changed to the ideal; D_a the direct distance to the '
-      'ideal model. Each is its own ablation; none is a remainder.',
-      '- **largest component (cases)**: per case, which of the measured components above is biggest; counted over cases. A '
-      'sensitivity ranking, not a causal attribution.',
-      '- **finalist check, τ**: a selected arm must stay within τ = 2.5×10⁻⁴ of itself run with the converged rule on every '
-      'case; failing means the deployed rule is too coarse for that arm.',
-      '- **fallback**: the next finer rule of the same family, frozen in advance, qualified separately.',
-      '- **B0–B3, G-score, controls**: machinery gates — B0 the exact Pythagorean identity, B1 a bitwise re-run, B2 a '
-      'deliberately bad rule that must be detected, B3 a time ablation that must be detectable; G-score the independent '
-      're-decoding of every saved trajectory; negative controls (case swap, time shift, ...) that must break agreement.',
-      '- **E0, R_ST, R_S, ε_ref (η)**: the campaign\'s order-verified second-order references (central differences + '
-      'Crank–Nicolson; R_S backward Euler at Δt₀ for BE-matched comparison only) and their per-case Richardson uncertainty.',
-      '- **H1–H6**: the pre-registered hypotheses of DESIGN §6 (wide bank pays off; tunability; CN worst-case cancellation; '
-      '3D speed/accuracy of the fixed-sweep solver; speed vs the FOM; 3D dial).',
-      '- **anchor-resolved cases**: cases where the comparator\'s anchor discrepancy exceeds 3× the anchor uncertainty.',
-      '- **selection rules**: 2D accurate-equal-cost = smallest median error among a scheme\'s eligible steps with paired '
-      'time ratio ≤ 1 against the setting\'s LSPG-BE at Δt₀; 2D fast-equal-accuracy = cheapest eligible step whose worst and '
-      'median ST and TX errors are no worse than that BE\'s (tie policy). 3D: the same roles judged on the reference-free '
-      'anchor discrepancy; the 3D fast-equal-accuracy arm must additionally meet H4a (Δt ≥ 1.25 Δt₀, ratio ≤ 0.6).',
-      '- **H4b witness**: an eligible 3D fixed-sweep arm at Δt₀ with median anchor discrepancy ≤ 0.1× the comparator\'s and '
-      'ratio ≤ 1.1; it proves H4b, and is distinct from the accurate-equal-cost selection.',
-      '- **ties under first-order vs E0 references**: first-order: a heuristic threshold from the ST–TX distance; E0: per-case '
-      'ε_ref (η), two arms ranked only if their errors differ by more than 2η; medians and worst values by interval overlap.',
-      '- **t\\*, guards a / b / c (H3)**: t\\* is the output time of the largest anchor error; (a) CN lands near the '
-      'time-converged error relative to BE, (b) the BE time error points against the anchor error (cosine ≤ −0.3), (c) the '
-      'cancelling cross term is large; the guards repeat (a)–(c) with the anchor (and, under E0, reference) uncertainty added.',
-      '- **FOM**: the full-order finite-difference model on the same mesh, with CN/BDF2-family time stepping and calibrated '
-      'Newton tolerances.',
-      '- **LM, fs / ad**: Levenberg–Marquardt; `fs` = fixed-sweep solver, `ad` = adaptive solver run to its stopping test.',
-      '- **arm keys**: `form|scheme|Δt|level` in 2D (Δt in time units, `prod` = production tolerance) and '
-      '`fs|scheme|Δt|K` / `ad|form|scheme|Δt|level` in 3D; Δt₀ = 0.005 (2D) and 0.01 (3D).',
-      '- **paired time ratio statistics**: medians over A–B–A invocations; q25–q75 are stored in the analysis files; a panel '
-      'is valid only if every subject\'s median A-drift lies within 10 %.',
-      '- **U⋆, closure, context**: U⋆ the ideal model\'s own uncertainty (time step and tolerance replays); closure = D_a '
-      'divided by the root-sum-square of the δ\'s (≈ 1 when the ablations are nearly orthogonal); context = whether a '
-      'component measured from the ideal end differs by more than 2× from the deployed end.', '')
+    G = [
+        ('bank, $R\'$, dial', 'the frozen ordered coordinate network; a solve uses its first $R\'$ columns; the dial is the '
+         'sequence of $R\'$ settings (R128 → R256 → R384 → R512 in 2D; W256 … W1024 in 3D). `fast` and `acc` are the 2D '
+         'settings deployed before this lane; `M2_512` the deployed 3D setting.'),
+        ('rule, $m$, $m^\\star$', 'an off-mesh quadrature for the advection term (Gauss tensor, Fibonacci or rank-1 lattice) '
+         'with $m$ points; $m^\\star$ is the smallest rule of a family whose rollouts stay within $\\tau$ of the converged rule\'s.'),
+        ('converged rule $r_\\infty$, J4, bar', 'a rule fine enough that the next finer rule changes the rollout by at most '
+         'the bar (worst case over the cohort, field distance relative to $\\lVert u_0\\rVert$); J4 is that check.'),
+        ('BE, CN, CN-R, BDF2', 'backward Euler; Crank–Nicolson; CN with two BE start steps; the two-step backward '
+         'differentiation formula with one BE start step. The report calls CN / CN-R / BDF2 the "CN/BDF2 family" and makes '
+         'no formal-order claim for the reduced arms (DESIGN A1.1).'),
+        ('LSPG / GAL', 'least-squares (Petrov–Galerkin) and Galerkin solves of each time step with the same test functions.'),
+        ('fixed-sweep solver, $K$; `fs` / `ad`; LM', 'after a few adaptive steps, exactly $K$ Levenberg–Marquardt (LM) '
+         'sweeps per step with an extrapolated predictor (`fs`); `ad` = adaptive solver run to its stopping test ("verified").'),
+        ('solver distance', 'field distance between a fixed-sweep run and the verified adaptive run of the same scheme and '
+         'step; eligibility requires it to be at most $\\tau$ (per-case H4 bar: at most $\\min(\\tau, 0.25\\times$ own anchor '
+         'discrepancy$)$).'),
+        ('ST / S / TX (first-order references, PROVISIONAL)', '2D first-order references at fine resolution: ST with a small '
+         'time step, S at $\\Delta t_0$, TX their Richardson combination; the 3D first-order reference is backward Euler at a '
+         'reduced step (reference-limited).'),
+        ('E0, $R_{ST}$, $R_S$, $\\epsilon_{\\rm ref}$ ($\\eta$)', 'the campaign\'s order-verified second-order references '
+         '(central differences + Crank–Nicolson) and their per-case Richardson uncertainty (a conditional estimate, not a '
+         'bound). $R_S$ (backward Euler at $\\Delta t_0$) exists in 2D only and is time-matched only to the 2D LSPG-BE arms at '
+         '$\\Delta t_0$; every other S value is an unmatched diagnostic. 3D uses $R_{ST}$ only.'),
+        ('tie, resolved, reference-limited', 'first-order references: a paired difference below a heuristic threshold from '
+         'the ST–TX distance is a tie; E0: two arms are ranked on a case only if their errors differ by more than $2\\eta$ '
+         'and the case-kind is eligible, medians and worst values by interval overlap. A case is resolved when it is not a '
+         'tie; a verdict with fewer than half the cases resolved is reference-limited.'),
+        ('selection rules', '2D accurate-equal-cost = smallest median error among a scheme\'s eligible steps with paired '
+         'time ratio $\\le 1$ against the setting\'s LSPG-BE at $\\Delta t_0$; 2D fast-equal-accuracy = cheapest eligible step '
+         'whose worst and median ST and TX errors are no worse than that BE\'s (tie policy). 3D accurate-equal-cost = smallest '
+         'median anchor discrepancy with ratio $\\le 1$; 3D fast-equal-accuracy must meet H4a ($\\Delta t\\ge1.25\\Delta t_0$, '
+         'anchor discrepancy no worse than the comparator, ratio $\\le 0.6$).'),
+        ('H4b witness', 'an eligible 3D fixed-sweep arm at $\\Delta t_0$ with median anchor discrepancy $\\le 0.1\\times$ the '
+         'comparator\'s and ratio $\\le 1.1$; it proves H4b and is distinct from the accurate-equal-cost selection.'),
+        ('H1–H6', 'the pre-registered hypotheses of DESIGN §6: the wide bank pays off; tunability survives; CN worst-case '
+         'cancellation; 3D fixed-sweep speed (H4a) and accuracy (H4b); speed against the FOM; the 3D dial.'),
+        ('$t^\\ast$, guards a / b / c (H3)', '$t^\\ast$ is the output time of the largest anchor error; (a) CN lands near the '
+         'time-converged error relative to BE, (b) the BE time error points against the anchor error (cosine $\\le -0.3$), (c) '
+         'the cancelling cross term is large; the guards repeat (a)–(c) with the anchor (and, under E0, reference) '
+         'uncertainty added.'),
+        ('cost / own BE, common-baseline cost, paired time ratio', 'median over A–B–A invocations of candidate time divided '
+         'by the mean of a baseline run just before and after it, on one GPU; against the setting\'s own LSPG-BE at $\\Delta t_0$ '
+         '(2D) or deployed fixed-sweep BE (3D), or against one common baseline. IQR = interquartile range of the per-invocation '
+         'ratios; outliers = invocations more than $3\\times1.4826\\times$ MAD from the median.'),
+        ('anchor, anchor discrepancy, anchor-resolved', 'GAL-BDF2 at $\\Delta t_0/8$, tight tolerance (time-converged reduced '
+         'solution) and the distance of a rollout from it; a case is anchor-resolved when the comparator\'s discrepancy '
+         'exceeds $3\\times$ the anchor uncertainty.'),
+        ('FOM, matched speed-up', 'the full-order finite-difference model on the same mesh with CN/BDF2-family time stepping '
+         'and calibrated Newton tolerances; matched speed-up = FOM time / ROM time for the cheapest calibrated FOM '
+         'configuration whose worst error is no larger than the ROM arm\'s.'),
+        ('arm keys', 'grid keys carry absolute steps: `form|scheme|Δt|level` (2D; `prod` = production tolerance) and '
+         '`fs|scheme|Δt|K` / `ad|form|scheme|Δt|level` (3D); 2D budget keys `form|scheme|f` carry the step factor '
+         '$f=\\Delta t/\\Delta t_0$; $\\Delta t_0$ = 0.005 (2D) and 0.01 (3D).'),
+        ('ideal model $\\star$', 'the reduced model with every ingredient at its ideal: converged rule, Galerkin, BDF2 at '
+         '$\\Delta t_0/8$, tight solver.'),
+        ('$e_{\\rm tot}$, $e_\\star$, $e_P$, $e_{\\rm dyn}$', 'an arm\'s error, the ideal model\'s error, the projection floor (the '
+         'best error in the span) and the ideal model\'s distance to the projected reference; $e_\\star^2=e_P^2+e_{\\rm dyn}^2$ '
+         'holds at each output time (gate B0), not between separately maximised or aggregated values. The orthogonal pair '
+         'is reported at the common time $t^\\ast$.'),
+        ('$\\delta_{\\rm quad}$, $\\delta_{\\rm solve}$, $\\delta_{\\rm form}$, $\\delta_{\\rm time}$, $D_a$', 'rule changed to $r_\\infty$; '
+         'solver tolerance changed to tight; LSPG vs Galerkin both at the tight tolerance (same test functions); the time '
+         'package (scheme, step, startup steps, LSPG weights, 3D adaptive fraction) changed to BDF2 at $\\Delta t_0/8$; $D_a$ the '
+         'direct distance to the ideal model. Each is a separate measurement; none is a remainder.'),
+        ('refine, mixed differences', 'refine = change when the arm\'s own step is halved (tight solver); mixed differences '
+         '$I_{\\rm time,quad}$ and $I_{\\rm time,solve}$ = how much the time ablation changes when the rule or the solver is '
+         'also changed (interaction indicators).'),
+        ('$U_\\star$, unresolved, unavailable', '$U_\\star$ = the ideal model\'s own uncertainty (time-step and tolerance replays); '
+         'a component is unresolved on a case if it is at most $3U_\\star$; unavailable if a needed trajectory is unverified.'),
+        ('closure, context', 'closure = $D_a/\\sqrt{\\sum\\delta^2}$, a descriptive ratio of separately maximised quantities (it '
+         'does not establish orthogonality or an additive decomposition); context = whether a component measured from the '
+         'ideal end differs by more than $2\\times$ from the deployed end.'),
+        ('largest component (cases)', 'per case, which measured component is biggest, counted over cases; a sensitivity '
+         'ranking, not a causal share.'),
+        ('finalist check, $\\tau$, fallback', 'a selected arm must stay within $\\tau=2.5\\times10^{-4}$ of itself run with the '
+         'converged rule on every case (and the converged-vs-finer check must pass); a failing arm keeps its selection '
+         'labelled "rule inadequate"; its frozen fallback (next finer rule of the family) is qualified separately.'),
+        ('B0–B3, G-score, controls', 'B0 the per-time Pythagorean identity; B1 a bitwise re-run; B2 a deliberately bad rule '
+         'that must be detected; B3 a time ablation that must be detectable; G-score the independent re-decoding of every '
+         'saved trajectory; negative controls (case swap, time shift, ...) that must break agreement.'),
+        ('pre-registered / POST HOC', 'decided before results were read / decided after (labelled; exploratory).'),
+        ('dev6, val32, 923801', 'development and validation cohorts (selection allowed); test64 / 923901 are replication-only '
+         'and were not used.'),
+        ('% of $\\lVert u_0\\rVert$, pp', 'errors relative to the initial-condition norm, in percent; pp = percentage points (a '
+         'difference of two such percentages).'),
+    ]
+    r('## Glossary', '')
+    for term, d_ in G:
+        r(f'- **{term}**: {d_}')
+    r('')
     # ------------------------------------------------------------------------------------------------ summary
     S = []
     if an is not None:

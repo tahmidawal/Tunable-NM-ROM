@@ -46,7 +46,7 @@ def main():
     ap.add_argument('--out', required=True)
     ap.add_argument('--mesh384', action='store_true', help='evaluate the separate L = 384 pilot job instead')
     ap.add_argument('--sacct-state', default=None)
-    ap.add_argument('--log', default=None)
+    ap.add_argument('--log', default=None, help="the pilot job's stderr log (.err)")
     a = ap.parse_args()
     O = Path(a.out)
     job, commit = os.environ.get('SLURM_JOB_ID'), os.environ.get('SOURCE_COMMIT')
@@ -365,8 +365,12 @@ def main():
         if r is not None and r.get('complete') is True:
             section('mesh384', lambda: mesh('smkmesh384'))
         else:
-            tail = '\n'.join(Path(a.log).read_text(errors='replace').splitlines()[-40:]) if a.log and Path(a.log).exists() else ''
-            res = a.sacct_state == 'OUT_OF_MEMORY' or any(t in tail for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'MemoryError'))
+            lines = [l for l in (Path(a.log).read_text(errors='replace').splitlines() if a.log and Path(a.log).exists() else [])
+                     if l.strip()]
+            errs = [l for l in lines if 'Error' in l or 'RESOURCE_EXHAUSTED' in l]
+            term = errs[-1] if errs else ''                     # the terminating exception line (last error line, stderr)
+            res = a.sacct_state == 'OUT_OF_MEMORY' or any(t in term for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'MemoryError'))
+            tail = term
             gate('smkmesh384 job: failed for resources (reported infeasible, A1.9)', res, sacct=a.sacct_state, tail=tail[-600:])
     else:
         for name, fn in (('steps', steps), ('tests', tests), ('grid', grid), ('fom', fom), ('prof', prof), ('mesh', mesh)):

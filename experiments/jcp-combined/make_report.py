@@ -446,15 +446,15 @@ def main():
         failed = [n for n, ok_ in zip('abc', p_['guards']) if not ok_]
         r(f"Pre-registered explanation (error cancellation) at the worst case {wc}: **{p_['verdict']}**" +
           (f"; failing guards: {', '.join(failed)}" if failed else '') +
-          f". Criterion (a) needs |e(CN) − e∞| ≤ 0.2 |e(BE) − e∞|; here |e(CN) − e∞| = {pc(abs(p_['e_CN'] - p_['e_inf']))} "
-          f"and |e(BE) − e∞| = {pc(abs(p_['e_BE'] - p_['e_inf']))}. The fast setting's LSPG-BE worst error is "
+          f". Criterion (a) needs $|e_{{\\rm CN}}-e_\\infty|\\le0.2\\,|e_{{\\rm BE}}-e_\\infty|$; here $|e_{{\\rm CN}}-e_\\infty|$ = {pc(abs(p_['e_CN'] - p_['e_inf']))} "
+          f"and $|e_{{\\rm BE}}-e_\\infty|$ = {pc(abs(p_['e_BE'] - p_['e_inf']))}. The fast setting's LSPG-BE worst error is "
           f"{pc(an['arms']['fast|LSPG|BE|0.005|prod']['worst_ST'])}; " + '; '.join(comp) + f" (against {PL_}). "
           + h3['ST'].get('note', ''), '')
 
         h5 = H['H5']
         cnr = {k: v for k, v in h5['ST']['matches'].items() if f'|{g.replace("-", "|")}|' in f'|{k}'}
         bc = max(cnr.items(), key=lambda kv: kv[1]['speedup']) if cnr else None
-        r('### H5: speed against the second-order full-order model (same job, same GPU)', '',
+        r('### H5: speed against the full-order model with CN/BDF2-family time stepping (same job, same GPU)', '',
           f"Matched on worst error against {PL_}. Best matched speed-up of any eligible ROM arm: "
           f"**{fx(h5['ST']['best_combined'][0])}×** ({h5['ST']['best_combined'][1]}); the C2 `acc` arms re-measured in "
           f"this job: {fx(h5['ST']['best_comparator'][0])}× ({h5['ST']['best_comparator'][1]}). Verdict: "
@@ -594,12 +594,13 @@ def main():
             acc_k = sel.get('accurate_equal_cost')
             row += [sci(comp['anchor_median_all']), pc(comp['median_ref']),
                     pc(ao[acc_k]['median_ref']) if (ao and acc_k) else '—',
+                    pc(ao['fs|BE|0.01|K1']['median_ref']) if ao else '—',
                     f"{dg['key']} ({fx(dg['ratio'])})" if dg else '—']
             rows.append(row)
         r.table(['setting', 'rule', 'anchor-resolved cases', 'H4a', 'H4b', 'fast-equal-accuracy arm', 'time ratio',
                  'median anchor disc.', 'median ref. error', 'accurate-equal-cost arm', 'time ratio', 'median anchor disc.',
                  'median ref. error', 'BE median anchor disc.', 'BE median ref. error',
-                 'accurate arm median ref. error, first-order (PROVISIONAL)',
+                 'accurate arm median ref. error, first-order (PROVISIONAL)', 'BE median ref. error, first-order (PROVISIONAL)',
                  'cheapest equal-accuracy arm (diagnostic, ratio)'], rows)
         dgr = [d_['ratio'] for d_ in ((an3o or an3)['hypotheses']['H4'][s_].get('cheapest_equal_accuracy_diagnostic')
                                      for s_ in (an3o or an3)['hypotheses']['H4']) if d_]
@@ -656,6 +657,7 @@ def main():
           'are medians per rollout of one case):', '')
         r.table(['setting', 'role', 'arm', 'invocations', 'median ratio', 'IQR', 'MAD outliers', 'median time B',
                  'median time A (BE)', 'common-panel ratio'], rows)
+        r(f"Common-panel baseline: `{res3['timing'].get('common', {}).get('A')}`.", '')
     r('## Error budget (each component its own ablation; none is a remainder)', '',
       '$e_{\\rm tot}=\\lVert u_a-u_{\\rm ref}\\rVert$; floor $e_P=\\lVert(I-\\Pi_{R\'})u_{\\rm ref}\\rVert$; reduced dynamics '
       '$e_{\\rm dyn}=\\lVert u_\\star-\\Pi_{R\'}u_{\\rm ref}\\rVert$ with the ideal model $\\star$ (converged rule, Galerkin, BDF2 at '
@@ -668,7 +670,7 @@ def main():
       'times relative to $\\lVert u_0\\rVert$; tables show medians over the budget population. The identity '
       '$e_\\star^2=e_P^2+e_{\\rm dyn}^2$ holds **at each output time** (gate B0), not between separately maximised or aggregated '
       'values. The δ\'s and $D_a$ are reference-free; $e_{\\rm tot}$, $e_P$, $e_{\\rm dyn}$ carry the label of the reference '
-      'named in each table. Components at most $3U_\\star$ (three times the ideal model\'s own uncertainty, from the '
+      'named in each table. Components smaller than $3U_\\star$ (three times the ideal model\'s own uncertainty, from the '
       '$\\Delta t_0/8$ vs $\\Delta t_0/16$ and tight vs tighter replays) '
       'are counted as unresolved in the diagnostics tables.', '')
     comps = ['delta_quad', 'delta_solve', 'delta_form', 'delta_time', 'D_a']
@@ -710,7 +712,7 @@ def main():
                              fx(float(np.median(cl))) if cl else '—', ctxs or '—'])
         return rows
     dhead = ['setting', 'arm', 'worst δ_quad', 'worst δ_solve', 'worst δ_form', 'worst δ_time', 'median refine',
-             'median I_time,quad', 'median I_time,solve', 'δ_quad unresolved (≤3U⋆)', 'δ_solve unresolved',
+             'median I_time,quad', 'median I_time,solve', 'δ_quad unresolved (<3U⋆)', 'δ_solve unresolved',
              'δ_form unresolved', 'δ_time unresolved', 'unavailable (all components)', 'median U⋆',
              'median closure D_a/√Σδ²', 'context (ideal-end vs deployed-end)']
 
@@ -845,7 +847,8 @@ def main():
       'the post-hoc A10 selection (adaptive CN arm), labelled as such.',
       '- **The two-case smokes did not contain any failing case**, so the A6 choice of $K=2$ looked safe on the smoke and '
       'was not.',
-      '- **C1\'s J4 failure was not only an under-resolved 48³ check**: at R′ = 1024 the successive-rule distance of one case '
+      f"- **C1's J4 failure was not only an under-resolved 48³ check**: at R′ = 1024 the successive-rule distance of "
+      f"{max((x['n_over'] for p_, x in esc_rows.get('W1024', {}).items() if p_ == 'gl64|gl80'), default='—')} case(s) "
       'stays above the bar up to 64³ vs 80³ (A11); the extension to 96³ is post hoc.',
       '- **Gauss 112³ at R′ = 1024 is infeasible** on one H200 with the vendored table builder (smoke `smk3ext` failed '
       'out of memory, A11.3); the extension stops at 96³.',
@@ -859,10 +862,12 @@ def main():
       '- **Deployed 2D rules are too coarse for the selected LSPG-CN-R arms at `fast`, `acc` and R256** (finalist '
       'quadrature check, A14); the first-order selection verdicts stand, labelled "rule inadequate for this arm", and the '
       'fallbacks are reported beside them.',
-      '- **First-order 2D/3D conclusions that change under E0** (A13): 2D H1 R256→R384 and R384→R512 were "reference-limited" '
-      'against the first-order references and are resolved against E0 (see H1); 3D H6 was descriptive and two of its three '
-      'transitions reverse direction against E0. The first-order numbers are kept beside the E0 ones and are superseded by '
-      'them; the frozen selections are unchanged.',
+      f"- **First-order 2D/3D conclusions that change under E0** (A13): 2D H1 steps "
+      f"{', '.join(k for k, v in (an_old or {}).get('hypotheses', {}).get('H1', {}).items() if v['verdict'] != an['hypotheses']['H1'][k]['verdict']) or 'none'} "
+      'change verdict (see H1); of the 3D H6 transitions, '
+      f"{sum(1 for k, v in (an3o or {}).get('hypotheses', {}).get('H6', {}).items() if 'median_change' in v and k in an3['hypotheses']['H6'] and (v['median_change'] < 0) != (an3['hypotheses']['H6'][k]['median_change'] < 0))}"
+      f" of {len((an3o or {}).get('hypotheses', {}).get('H6', {}))} reverse the direction of the median change. The first-order "
+      'numbers are kept beside the E0 ones and are superseded by them; the frozen selections are unchanged.',
       '- **The in-job 3D cohort-table hash is not stable across H200 nodes** (A11.4): the extension job is bound to the '
       'escalation job by the initial coefficients instead; offline scoring checks the CPU table hash.',
       '- **A leftover first-order reference access in `budget3d.py`** (G-score controls) was missed by the A13 code audit '
@@ -879,7 +884,8 @@ def main():
     if ledger:
         r('## Jobs', '')
         r.table(['attempt', 'Slurm id', 'GPU', 'commit', 'role', 'status'],
-                [[e['attempt'], e.get('slurm', '—'), e.get('gpu', '—'), e.get('commit', '—'), e.get('role', ''),
+                [[e['attempt'], e.get('slurm', '—'), e.get('gpu', '—'), e.get('commit', '—'),
+                  e.get('role', '').replace('second-order', 'CN/BDF2-family'),
                   e.get('status', '')] for e in ledger['jobs']])
         r.table(['failed attempt', 'Slurm id', 'note'],
                 [[e['attempt'], e.get('slurm', '—'), e.get('note', '')] for e in ledger.get('failed_attempts', [])])
@@ -920,8 +926,9 @@ def main():
          '(central differences + Crank–Nicolson) and their per-case Richardson uncertainty (a conditional estimate, not a '
          'bound). $R_S$ (backward Euler at $\\Delta t_0$) exists in 2D only and is time-matched only to the 2D LSPG-BE arms at '
          '$\\Delta t_0$; every other S value is an unmatched diagnostic. 3D uses $R_{ST}$ only.'),
-        ('tie, resolved, reference-limited', 'first-order references: a paired difference below a heuristic threshold from '
-         'the ST–TX distance is a tie; E0: two arms are ranked on a case only if their errors differ by more than $2\\eta$ '
+        ('tie, resolved, reference-limited', '2D first-order references: a paired difference below a heuristic threshold '
+         'from the ST–TX distance is a tie (no tie threshold exists for the 3D first-order reference, whose comparisons are '
+         'descriptive and reference-limited); E0: two arms are ranked on a case only if their errors differ by more than $2\\eta$ '
          'and the case-kind is eligible, medians and worst values by interval overlap. A case is resolved when it is not a '
          'tie; a verdict with fewer than half the cases resolved is reference-limited.'),
         ('selection rules', '2D accurate-equal-cost = smallest median error among a scheme\'s eligible steps with paired '
@@ -964,7 +971,7 @@ def main():
          '$I_{\\rm time,quad}$ and $I_{\\rm time,solve}$ = how much the time ablation changes when the rule or the solver is '
          'also changed (interaction indicators).'),
         ('$U_\\star$, unresolved, unavailable', '$U_\\star$ = the ideal model\'s own uncertainty (time-step and tolerance replays); '
-         'a component is unresolved on a case if it is at most $3U_\\star$; unavailable if a needed trajectory is unverified.'),
+         'a component is unresolved on a case if it is smaller than $3U_\\star$; unavailable if a needed trajectory is unverified.'),
         ('closure, context', 'closure = $D_a/\\sqrt{\\sum\\delta^2}$, a descriptive ratio of separately maximised quantities (it '
          'does not establish orthogonality or an additive decomposition); context = whether a component measured from the '
          'ideal end differs by more than $2\\times$ from the deployed end.'),

@@ -375,7 +375,8 @@ def mode_prof(cx):
         t1, t2 = ('ad', sp[1], sp[2], 'tight'), ('ad', sp[1], sp[2], 'tighter')
         ra = cx.rollouts(sn, rule, [t1, t2], cases[:8])
         P['reduced_adt'][lab] = dict(worst=float(cx.dist_cases(sn, ra[S.spec_key(t1)]['W'], ra[S.spec_key(t2)]['W'],
-                                                               cases[:8])[:, 1:].max()))
+                                                               cases[:8])[:, 1:].max()),
+                                     tight_valid=ra[S.spec_key(t1)]['valid'], tighter_valid=ra[S.spec_key(t2)]['valid'])
     cx.dump()
     cx.save()
 
@@ -421,9 +422,15 @@ def mode_mesh(cx):
                 except Exception as e:  # noqa: BLE001
                     E['rom'][r['label']] = dict(infeasible=repr(e)[:400])
                     continue
-            datas[r['label']] = d
             tag = f'{sn}|{rule}|mf|n{n}'
-            rr = cx.rollouts(sn, rule, [sp], cases, path='mf', data=d, n=n, tag=tag)
+            try:
+                rr = cx.rollouts(sn, rule, [sp], cases, path='mf', data=d, n=n, tag=tag)
+            except Exception as e:  # noqa: BLE001  (A1.9: a pilot that does not fit is dropped and reported)
+                E['rom'][r['label']] = dict(infeasible=repr(e)[:400], tables=info)
+                del d
+                gc.collect()
+                continue
+            datas[r['label']] = d
             ad = ('ad', sp[1], sp[2], 'tight')
             ra = cx.rollouts(sn, rule, [ad], cases, path='mf', data=d, n=n, tag=tag)
             rt = cx.rollouts(sn, rule, [('ad', sp[1], sp[2], 'tighter')], cases[:8], path='mf', data=d, n=n, tag=tag)
@@ -451,7 +458,13 @@ def mode_mesh(cx):
                 continue
             sp = ('fd', fam, L, dt, cal['chosen'])
             ent['key'] = FR.key(sp)
-            ent['cases'] = fom_accuracy(cx, foms, sp, cases[:blk['acc_cases']], inputs, hashes, R1)
+            try:
+                ent['cases'] = fom_accuracy(cx, foms, sp, cases[:blk['acc_cases']], inputs, hashes, R1)
+            except Exception as e:  # noqa: BLE001  (A1.9: reported as infeasible; never timed)
+                ent.pop('cases', None)
+                ent['infeasible'] = repr(e)[:400]
+                gc.collect()
+                continue
             subj.append(sp)
             cx.save()
         for rl, fk in blk.get('matched', []):            # timed against the ROM at every mesh (audit code-2 #4)

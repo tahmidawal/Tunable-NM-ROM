@@ -139,10 +139,14 @@ def main():
                  fin(q1.get('dist'), 3) and max(q1['dist']) <= BAR and q1.get('valid') == [True] * 3
                  and q1.get('nonstationary') == [0, 0, 0], dist=q1.get('dist'))
             k2 = c.get('qn|CN|0.025|k1|q0', {})
-            gate(f'test_s3 {s_}: K2 fires', fin(k2.get('nonstationary'), 3) and min(k2['nonstationary']) > 0)
+            gate(f'test_s3 {s_}: K2 fires (configuration ineligible: E-a, E-b or E-c)', fin(k2.get('nonstationary'), 3) and
+                 fin(k2.get('dist'), 3) and (sum(k2['nonstationary']) > 0.3 or max(k2['dist']) > BAR or not all(k2.get('valid', []))))
+            for k in ('ADT_CN_0.025_valid', 'ADT_BE_0.01_valid'):
+                gate(f'test_s3 {s_}: {k} (every step verified, 3 cases)', c.get(k) == [True] * 3)
             k3 = c.get('qn|CN|0.025|k1|noJuT', {}).get('dist', []) + c.get('qn|BE|0.01|k1|noJuT', {}).get('dist', [])
             gate(f'test_s3 {s_}: K3 fires', fin(k3, 6) and max(k3) > BAR)
-            gate(f'test_s3 {s_}: G4 <= 1e-8', fin(c.get('G4_dist'), 3) and max(c['G4_dist']) <= 1e-8, G4=c.get('G4_dist'))
+            gate(f'test_s3 {s_}: G4 exact or within tolerance (<= 2.5e-5)', fin(c.get('G4_dist'), 3) and max(c['G4_dist']) <= 2.5e-5,
+                 G4=c.get('G4_dist'), exact=fin(c.get('G4_dist'), 3) and max(c['G4_dist']) <= 1e-8)
             gate(f'test_s3 {s_}: K6 fires', fin(c.get('K6_dist'), 3) and max(c['K6_dist']) > 2.5e-5)
             cnd = c.get('mf', {}).get('cond', {})
             gate(f'test_s3 {s_}: mf Gram conditioned, rank (m >= R\')', fin([cnd.get('cond')]) and cnd['cond'] < 1e10
@@ -193,6 +197,9 @@ def main():
                     if sp[0] != 'ad':
                         ok = ok and all(len(x.get('gam_cert', [])) == x.get('steps_n') == S.nsteps(sp[2])[0] for x in rs)
                     gate(f'smkgrid {sn}|{rule}|{S.spec_key(sp)}: rows on exactly the cases (+ certification)', ok)
+                av = r['settings'][sn]['rules'][rule]['adt_valid']
+                gate(f'smkgrid {sn}|{rule}: ADT tight valid on every case for every (scheme, step)',
+                     sorted(av) == sorted(S.spec_key(x) for x in adt) and all(v == [True] * len(cases) for v in av.values()))
                 d = r['settings'][sn]['rules'][rule]['dist_to_adt']
                 gate(f'smkgrid {sn}|{rule}: distances for every spec, finite', sorted(d) == sorted(S.spec_key(x) for x in sv) and
                      all(np.asarray(v, float).shape == (len(cases), 6) and np.isfinite(v).all() for v in d.values()))
@@ -283,7 +290,9 @@ def main():
             gate(f'smkprof conv {lab}: delta_quad on every case, finite', dq.shape == (len(cases), 6) and np.isfinite(dq).all())
         for lab in b['reduced_adt']:
             x = P['reduced_adt'].get(lab, {})
-            gate(f'smkprof reduced ADT {lab}: tight/tighter <= 2.5e-5', fin([x.get('worst')]) and x['worst'] <= 2.5e-5, worst=x.get('worst'))
+            n8 = min(8, len(cases))
+            gate(f'smkprof reduced ADT {lab}: tight/tighter <= 2.5e-5, both valid', fin([x.get('worst')]) and x['worst'] <= 2.5e-5
+                 and x.get('tight_valid') == [True] * n8 and x.get('tighter_valid') == [True] * n8, worst=x.get('worst'))
 
     # ------------------------------------------------------------------------------------------------------ mesh
     def mesh():
@@ -295,26 +304,39 @@ def main():
             g = M['G5'].get(key, {})
             gate(f'smkmesh G5/K7 {key} recomputed', g.get('M') == g.get('M_ref') and g.get('kxyz_equal') is True and
                  g.get('lam_equal') is True and fin([g.get('A_rel'), g.get('K7_rel')]) and g['A_rel'] <= 1e-11 and g['K7_rel'] > 1e-4)
+        def resource(v):
+            """A1.9: a mesh whose pilot does not fit is dropped and reported infeasible (only for L >= 256)."""
+            e = str(v.get('infeasible', ''))
+            return any(t in e for t in ('RESOURCE_EXHAUSTED', 'Out of memory', 'out of memory', 'OOM', 'MemoryError'))
         for L in b['Ls']:
             E = M['per_L'].get(str(L))
             gate(f'smkmesh L{L}: present', E is not None)
             if E is None:
                 continue
-            fom_keys = []
+            fom_keys, dropped = [], set()
             for rom in b['roms']:
                 v = E['rom'].get(rom['label'], {})
+                if L >= 256 and 'infeasible' in v and resource(v):
+                    gate(f'smkmesh L{L} ROM {rom["label"]}: dropped, infeasible (A1.9, reported)', True, info=v['infeasible'][:200])
+                    dropped.add(rom['label'])
+                    continue
                 d = np.asarray(v.get('dist_to_adt', []), float)
                 ok = (d.shape == (len(cases), 6) and np.isfinite(d).all() and v.get('adt_valid') == [True] * len(cases)
-                      and v.get('adt_tighter_valid') == [True] * min(8, len(cases)) and fin([v.get('adt_tight_tighter')]))
-                gate(f'smkmesh L{L} ROM {rom["label"]}: complete, ADT valid (pilot)', ok, info=v.get('infeasible'), tables=v.get('tables'))
+                      and v.get('adt_tighter_valid') == [True] * min(8, len(cases)) and fin([v.get('adt_tight_tighter')])
+                      and v['adt_tight_tighter'] <= 2.5e-5)
+                gate(f'smkmesh L{L} ROM {rom["label"]}: complete, ADT valid, tight/tighter <= 2.5e-5', ok, info=v.get('infeasible'),
+                     tables=v.get('tables'), adt_tt=v.get('adt_tight_tighter'))
             for fam, dt in b['same']:
                 v = E['fom'].get(f'{fam}|{dt:.8g}', {})
+                if L >= 256 and 'infeasible' in v and resource(v):
+                    gate(f'smkmesh L{L} FOM {fam} {dt}: dropped, infeasible (A1.9, reported)', True, info=v['infeasible'][:200])
+                    continue
                 cs = v.get('cases', {})
-                gate(f'smkmesh L{L} FOM {fam} {dt}: converged + scored on exactly the cases (pilot)',
+                gate(f'smkmesh L{L} FOM {fam} {dt}: converged + scored on exactly the cases',
                      sorted(int(j) for j in cs) == sorted(cases[:b['acc_cases']]) and
                      all(c.get('converged') is True and fin([c.get('e')]) for c in cs.values()),
                      info=v.get('infeasible') or (v.get('calibration') or {}).get('status'))
-                if 'key' in v:
+                if 'key' in v and 'cases' in v:
                     fom_keys.append(v['key'])
             for rl, fk in b['matched']:
                 cs = E['fom'].get(fk, {}).get('cases', {})
@@ -323,6 +345,8 @@ def main():
                      all(c.get('converged') is True and fin([c.get('e')]) for c in cs.values()))
                 fom_keys.append(fk)
             for rom in b['roms']:
+                if rom['label'] in dropped:
+                    continue
                 panel(f"smkmesh L{L} panel {rom['label']}", r['timing'].get(f"mesh|L{L}|{rom['label']}"), sorted(set(fom_keys)),
                       cases[:tc['cases']], tc['reps'])
 

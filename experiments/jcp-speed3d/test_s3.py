@@ -165,11 +165,15 @@ def finish(rep, out):
     if 'qn|CN|0.025|k1' in c:
         if not max(c['qn|CN|0.025|k1']['dist']) <= 2.5e-4:
             fails.append('QN1 CN 2.5 distance')
-        if not min(c['qn|CN|0.025|k1|q0']['nonstationary']) > 0:
+        if not all(all(c.get(k, [False])) for k in ('ADT_CN_0.025_valid', 'ADT_BE_0.01_valid')):
+            fails.append('ADT validity')
+        k2 = c['qn|CN|0.025|k1|q0']                  # configuration-level ineligibility (DESIGN §5): E-a, E-b or E-c fails
+        steps = 10 * len(k2['nonstationary'])
+        if not (sum(k2['nonstationary']) > 0.01 * steps or max(k2['dist']) > 2.5e-4 or not all(k2['valid'])):
             fails.append('K2')
         if not max(c['qn|CN|0.025|k1|noJuT']['dist'] + c['qn|BE|0.01|k1|noJuT']['dist']) > 2.5e-4:
             fails.append('K3')
-        if not max(c['G4_dist']) <= 1e-8:
+        if not max(c['G4_dist']) <= 2.5e-5:          # A1.8: exact (<= 1e-8) or within tolerance (<= 2.5e-5)
             fails.append('G4')
         if not max(c['K6_dist']) > 2.5e-5:
             fails.append('K6')

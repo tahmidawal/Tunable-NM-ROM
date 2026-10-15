@@ -40,6 +40,8 @@ def main():
     p.add_argument('--mem', default='200G')
     p.add_argument('--hours', type=int, default=24)
     p.add_argument('--cmd', default=None, help='alternative command (smoke tests): run inside the lane directory')
+    p.add_argument('--extra-configs', nargs='*', default=[], help='further config names staged with this attempt (smoke)')
+    p.add_argument('--extra-files', nargs='*', default=[], help='further committed lane files staged (e.g. local gate evidence)')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     out = ROOT / LANE / 'runs' / a.attempt
@@ -55,7 +57,7 @@ def main():
         res = json.loads(git_show(commit, f'{LANE}/checks/resources-{a.attempt}.json'))
         assert res['config_sha256'] == hashlib.sha256(git_show(commit, cfgname)).hexdigest(), 'resource certificate is for another config'
         assert res['gpu'] == a.gpu and res['hours_allocated'] == a.hours and res['projected_hours_x1.5'] <= a.hours, res
-    files = list(FILES)
+    files = list(FILES) + [f'{LANE}/configs/{c}.json' for c in a.extra_configs] + [f'{LANE}/{f}' for f in a.extra_files]
     if cfg0['mode'] == 'rep':                                        # A1.11: the immutable freeze is staged and pinned
         fz = f'{LANE}/checks/FROZEN-SELECTION.json'
         assert hashlib.sha256(git_show(commit, fz)).hexdigest() == cfg0['frozen_sha256'], 'freeze pin mismatch'
@@ -90,7 +92,7 @@ def main():
 #SBATCH --output={remote}/logs/%j.out
 #SBATCH --error={remote}/logs/%j.err
 set -euo pipefail
-TASK_ROOT={remote}
+export TASK_ROOT={remote}
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest

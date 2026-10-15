@@ -125,10 +125,11 @@ def main():
     s0 = k0.split('|')[0]
     ids = [int(x) for x in Wz[f'cases|{k0}']]
     G = glat(s0)
-    F0 = Wz[k0][0] @ G                         # A1.10: case 0's field against case 1's reference
-    e00 = err(F0, refs.get(ids[0]))[1]
-    out['controls']['K4_cases'] = [ids[0], ids[1]]
-    out['controls']['K4_case_swap'] = abs(err(F0, refs.get(ids[1]))[1] - e00)
+    ca, cb = (0, 1) if {0, 1} <= set(ids) else (ids[0], ids[1])     # A1.10: case 0's field vs case 1's reference
+    F0 = Wz[k0][ids.index(ca)] @ G
+    e00 = err(F0, refs.get(ca))[1]
+    out['controls']['K4_cases'] = [ca, cb]
+    out['controls']['K4_case_swap'] = abs(err(F0, refs.get(cb))[1] - e00)
     out['controls']['K4_time_shift'] = abs(err(np.roll(F0, 1, 0), refs.get(ids[0]))[1] - e00)
     out['controls']['K4_fires'] = bool(out['controls']['K4_case_swap'] > 1e-6 and out['controls']['K4_time_shift'] > 1e-6)
     # gate: in-job ADT distances reproduced for one spec per grid rule

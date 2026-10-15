@@ -535,6 +535,7 @@ Chronological; the opening statement of each audit (its verdict line). Every HOL
 | `audits/codex-report-2.md` | Overall: NOT READY. Many round-1 corrections landed, but the glossary still contradicts the repaired definitions, required diagnostics remain incomplete, and several new statements overstate what was fixed. |
 | `audits/codex-report-3.md` | Overall: NOT READY. The new numerical tables check out, but several reporting requirements remain unresolved. |
 | `audits/codex-report-4.md` | Overall: NOT READY. The round-3 repairs are largely correct, but the blanket claim that every measured number is generated remains false. |
+| `audits/codex-report-5.md` | Overall: READY. |
 
 ## Glossary
 

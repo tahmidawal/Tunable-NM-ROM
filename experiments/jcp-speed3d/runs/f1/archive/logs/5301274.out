@@ -1,0 +1,42 @@
+host=pax011 source_commit=6f61b238a35f4e55282e28cc60223bd406eaedd3
+NVIDIA H200, GPU-3dd61a63-f64b-8d49-7857-b2e355e808cf, 143771 MiB
+10.235.106.23:/projects/paralab  4.6T 1022G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 4.1s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.9s
+SETUP 15.9
+FOM fd|UB|L64|0.01|t1 converged True median e 0.04129116342747393 30.5
+FOM fd|UB|L64|0.005|t1 converged True median e 0.03831188366744522 41.7
+FOM fd|UB|L64|0.0025|t0 converged True median e 0.03752643382101918 60.4
+FOM fd|UC|L64|0.025|t1 converged True median e 0.03910990347137048 71.5
+FOM fd|UC|L64|0.0125|t1 converged True median e 0.03682843251841844 80.6
+FOM fd|UC|L64|0.01|t1 converged True median e 0.0367827500806118 91.0
+FOM fd|UC|L64|0.005|t0 converged True median e 0.036723361856003583 105.4
+FOM fd|CC|L64|0.025|t1 converged True median e 0.016689303776783796 118.4
+FOM fd|CC|L64|0.0125|t1 converged True median e 0.004672888770861671 130.4
+FOM fd|CC|L64|0.01|t1 converged True median e 0.0031680279207178304 143.8
+FOM fd|CC|L64|0.005|t0 converged True median e 0.0016074724045265238 161.4
+FOM fd|UB|L128|0.01|t1 converged True median e 0.02711254332643844 199.8
+FOM fd|UB|L128|0.005|t1 converged True median e 0.022648288322104127 246.5
+FOM fd|UC|L128|0.0125|t1 converged True median e 0.01961569101916592 284.6
+FOM fd|UC|L128|0.01|t1 converged True median e 0.019484756483987446 318.6
+FOM fd|CC|L128|0.0125|t1 converged True median e 0.004447812453715814 355.9
+FOM fd|CC|L128|0.01|t1 converged True median e 0.0028976790430437814 391.1
+FOM ps|N16|0.025 converged True median e 0.00041622091645059697 413.7
+FOM ps|N16|0.01 converged True median e 0.00019973869497327422 433.5
+FOM ps|N16|0.005 converged True median e 0.00020030109937113866 454.4
+FOM ps|N24|0.025 converged False median e nan 476.3
+FOM ps|N24|0.01 converged True median e 2.7203607847893574e-05 498.1
+FOM ps|N24|0.005 converged True median e 2.8037741823652076e-05 520.9
+FOM ps|N32|0.025 converged False median e nan 545.4
+FOM ps|N32|0.01 converged True median e 2.527377726907577e-05 569.3
+FOM ps|N32|0.005 converged True median e 2.5563028630991562e-05 594.7
+FOM ps|N48|0.025 converged False median e nan 623.3
+FOM ps|N48|0.01 converged True median e 2.521569630303839e-05 650.7
+FOM ps|N48|0.005 converged True median e 2.5548778181412694e-05 679.7
+FOM ps|N64|0.025 converged False median e nan 712.9
+FOM ps|N64|0.01 converged True median e 2.5174806893689007e-05 744.8
+FOM ps|N64|0.005 converged True median e 2.5532116262860733e-05 779.0
+S3RUN COMPLETE
+ALL-DONE

@@ -1,0 +1,21 @@
+E1015 19:42:40.713086   94018 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu
+[mesh 65] bank rows [(1024, 250047)] 4.1s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 7.1s
+setup 20.6
+G0 [True, True, True]
+G1 CN 0.025 {'bitwise': True, 'extra_finite': True, 'extra_pred_counts': [4, 3, 3, 0, 20]}
+G2 CN 0.025 0.0
+G1 BDF2 0.0125 {'bitwise': True, 'extra_finite': True, 'extra_pred_counts': [3, 3, 9, 45, 0]}
+G2 BDF2 0.0125 0.0
+fs|CN|0.025|K2 {"dist": [1.976230573341686e-07, 0.0637996502283329, 0.12035597314334984], "nonstationary": [0, 7, 7], "valid": [true, true, true], "seconds_batch": 1.459812588058412}
+qn|CN|0.025|k1 {"dist": [1.112829730782693e-05, 0.00024442816387027405, 2.831117381721899e-05], "nonstationary": [0, 0, 0], "valid": [true, true, true], "seconds_batch": 0.6136469328776002, "n_ref": 30, "q": 91, "q_max_step": 5, "reasons": [0, 0, 0, 0, 30]}
+qn|CN|0.025|k4 {"dist": [6.124907897048431e-05, 0.0006364004904022833, 8.072343610396412e-05], "nonstationary": [0, 0, 0], "valid": [true, true, true], "seconds_batch": 0.5725864190608263, "n_ref": 12, "q": 155, "q_max_step": 12, "reasons": [0, 0, 0, 0, 30]}
+qn|CN|0.025|kinf {"dist": [6.124907897048431e-05, 0.0006364004904022833, 8.072343610396412e-05], "nonstationary": [0, 0, 0], "valid": [true, true, true], "seconds_batch": 0.570723082870245, "n_ref": 12, "q": 155, "q_max_step": 12, "reasons": [0, 0, 0, 0, 30]}
+qn|CN|0.025|k1|q0 {"dist": [0.665490912317676, 0.5213758997620751, 0.6528745268091497], "nonstationary": [10, 10, 10], "valid": [true, true, true], "seconds_batch": 0.45358778443187475, "n_ref": 30, "q": 0, "q_max_step": 0, "reasons": [30, 0, 0, 0, 0]}
+qn|CN|0.025|k1|noJuT {"dist": [0.00035534928694665933, 0.014804347587379146, 0.0014328783566046484], "nonstationary": [10, 10, 10], "valid": [true, true, true], "seconds_batch": 0.8274968839250505, "n_ref": 31, "q": 326, "q_max_step": 12, "reasons": [15, 0, 0, 0, 15]}
+qn|BE|0.01|k1|noJuT {"dist": [0.00018048302366638206, 0.0077692214892986534, 0.0005605505219240847], "nonstationary": [25, 25, 25], "valid": [true, true, true], "seconds_batch": 1.9846116439439356, "n_ref": 79, "q": 552, "q_max_step": 12, "reasons": [13, 0, 0, 0, 62]}
+qn|BE|0.01|k1 {"dist": [8.726136814439919e-07, 9.34497601601929e-06, 4.338943871959745e-06], "nonstationary": [0, 0, 0], "valid": [true, true, true], "seconds_batch": 1.256204071920365, "n_ref": 75, "q": 86, "q_max_step": 3, "reasons": [0, 0, 0, 0, 75]}
+G4 [5.197882903597945e-15, 4.2834877541921805e-15, 5.808094805311367e-15] K6 [0.0033353131965617572, 0.06453340196760224, 0.05331435836608282]
+mf {'cond': {'cond': 1.0202899630103541, 'm': 65536}, 'dist_to_mesh': [7.12500383786585e-07, 6.914138119236152e-07, 3.7126791221606e-07], 'w0_dist': [4.109209276106433e-06, 3.658815184527622e-06, 2.1884355958080666e-06]}
+DONE all mandatory gates pass []

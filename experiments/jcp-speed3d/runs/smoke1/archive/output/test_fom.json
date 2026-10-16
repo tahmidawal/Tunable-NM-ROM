@@ -1,0 +1,77 @@
+{
+ "backend": "gpu",
+ "checks": {
+  "run_UB": {
+   "seconds": 1.8802244709804654,
+   "converged": [
+    true,
+    {
+     "stages": 25,
+     "complete": true,
+     "worst_res": 9.408768333155233e-09,
+     "max_newton": 2,
+     "at_newton_limit": 0
+    }
+   ]
+  },
+  "run_UC": {
+   "seconds": 0.07300288276746869,
+   "converged": [
+    true,
+    {
+     "stages": 22,
+     "complete": true,
+     "worst_res": 7.464635025350512e-09,
+     "max_newton": 2,
+     "at_newton_limit": 0
+    }
+   ]
+  },
+  "run_CC": {
+   "seconds": 1.196190157905221,
+   "converged": [
+    true,
+    {
+     "stages": 22,
+     "complete": true,
+     "worst_res": 6.727823062798982e-10,
+     "max_newton": 3,
+     "at_newton_limit": 0
+    }
+   ]
+  },
+  "G6v": {
+   "rel": 0.0,
+   "pass_": true
+  },
+  "K8": {
+   "diff": 0.08122351978084656,
+   "fires": true
+  },
+  "G7": {
+   "0": {
+    "rel": 7.431006121499735e-16,
+    "half_dt_diff": 0.00017993019037554285
+   },
+   "1": {
+    "rel": 4.05555985817594e-16,
+    "half_dt_diff": 6.650489314139316e-05
+   },
+   "pass": true,
+   "control_fires": true
+  },
+  "G5_M2_512": {
+   "M": 2052,
+   "M_ref": 2052,
+   "kxyz_equal": true,
+   "lam_equal": true,
+   "A_rel": 1.3286348848571252e-15,
+   "pass": true,
+   "K7_rel": 0.023529291797851036,
+   "K7_fires": true
+  }
+ },
+ "job_id": "5299842",
+ "commit": "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1",
+ "mandatory_failures": []
+}

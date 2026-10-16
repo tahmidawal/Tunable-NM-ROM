@@ -1,0 +1,30 @@
+host=pax009 source_commit=9f8093d64ff6984851c34d5aad7ebf4240a7e6d1
+NVIDIA H200, GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec, 143771 MiB
+10.235.106.22:/projects/paralab  4.6T 1019G  3.6T  22% /cluster/tufts/paralab
+jax_backend=gpu
+=== test_s3_M2
+test_s3_M2 rc=0 seconds=128
+=== test_s3_W1024
+test_s3_W1024 rc=0 seconds=159
+=== test_fom
+test_fom rc=0 seconds=38
+=== smkgrid
+smkgrid rc=0 seconds=2088
+=== smkfom
+smkfom rc=0 seconds=47
+=== smkprof
+smkprof rc=0 seconds=210
+=== smkmesh
+smkmesh rc=0 seconds=141
+=== accept
+accept rc=0 seconds=3
+job=5299842 commit=9f8093d64ff6984851c34d5aad7ebf4240a7e6d1
+test_s3_M2 rc=0 seconds=128
+test_s3_W1024 rc=0 seconds=159
+test_fom rc=0 seconds=38
+smkgrid rc=0 seconds=2088
+smkfom rc=0 seconds=47
+smkprof rc=0 seconds=210
+smkmesh rc=0 seconds=141
+accept rc=0 seconds=3
+ALL-DONE

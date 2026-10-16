@@ -1,0 +1,1200 @@
+{
+ "verdict": "PASS",
+ "failing": [],
+ "n_gates": 336,
+ "gates": {
+  "STEPS.txt bound to this job": {
+   "result": "pass",
+   "head": [
+    "job=5299842 commit=9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "step test_s3_M2 ran once, exit 0": {
+   "result": "pass",
+   "rc": [
+    0
+   ]
+  },
+  "step test_s3_W1024 ran once, exit 0": {
+   "result": "pass",
+   "rc": [
+    0
+   ]
+  },
+  "step test_fom ran once, exit 0": {
+   "result": "pass",
+   "rc": [
+    0
+   ]
+  },
+  "step smkgrid ran once, exit 0": {
+   "result": "pass",
+   "rc": [
+    0
+   ]
+  },
+  "step smkfom ran once, exit 0": {
+   "result": "pass",
+   "rc": [
+    0
+   ]
+  },
+  "step smkprof ran once, exit 0": {
+   "result": "pass",
+   "rc": [
+    0
+   ]
+  },
+  "step smkmesh ran once, exit 0": {
+   "result": "pass",
+   "rc": [
+    0
+   ]
+  },
+  "test_s3 M2_512: bound to job 5299842 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299842",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "test_s3 M2_512: setting, rule, cases 0 5 7": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: G0 bitwise (3 cases)": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: G1_CN_0.025": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: G1_BDF2_0.0125": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: G2_CN_0.025 (recomputed worst excess <= 0)": {
+   "result": "pass",
+   "worst": 0.0
+  },
+  "test_s3 M2_512: G2_BDF2_0.0125 (recomputed worst excess <= 0)": {
+   "result": "pass",
+   "worst": 0.0
+  },
+  "test_s3 M2_512: QN-1 CN 2.5 valid, certified stationary, within the bar": {
+   "result": "pass",
+   "dist": [
+    4.812418853717635e-05,
+    8.729604193254655e-05,
+    4.8097941698083414e-05
+   ]
+  },
+  "test_s3 M2_512: K2 fires (configuration ineligible: E-a, E-b or E-c)": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: ADT_CN_0.025_valid (every step verified, 3 cases)": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: ADT_BE_0.01_valid (every step verified, 3 cases)": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: K3 fires": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: G4 exact or within tolerance (<= 2.5e-5)": {
+   "result": "pass",
+   "G4": [
+    3.329907850104904e-15,
+    3.043263250233175e-15,
+    5.489679758007001e-15
+   ],
+   "exact": true
+  },
+  "test_s3 M2_512: K6 fires": {
+   "result": "pass"
+  },
+  "test_s3 M2_512: mf Gram conditioned, rank (m >= R')": {
+   "result": "pass"
+  },
+  "test_s3 W1024: bound to job 5299842 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299842",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "test_s3 W1024: setting, rule, cases 0 5 7": {
+   "result": "pass"
+  },
+  "test_s3 W1024: G0 bitwise (3 cases)": {
+   "result": "pass"
+  },
+  "test_s3 W1024: G1_CN_0.025": {
+   "result": "pass"
+  },
+  "test_s3 W1024: G1_BDF2_0.0125": {
+   "result": "pass"
+  },
+  "test_s3 W1024: G2_CN_0.025 (recomputed worst excess <= 0)": {
+   "result": "pass",
+   "worst": 0.0
+  },
+  "test_s3 W1024: G2_BDF2_0.0125 (recomputed worst excess <= 0)": {
+   "result": "pass",
+   "worst": 0.0
+  },
+  "test_s3 W1024: QN-1 CN 2.5 valid, certified stationary, within the bar": {
+   "result": "pass",
+   "dist": [
+    1.112829730782693e-05,
+    0.00024442816387027405,
+    2.831117381721899e-05
+   ]
+  },
+  "test_s3 W1024: K2 fires (configuration ineligible: E-a, E-b or E-c)": {
+   "result": "pass"
+  },
+  "test_s3 W1024: ADT_CN_0.025_valid (every step verified, 3 cases)": {
+   "result": "pass"
+  },
+  "test_s3 W1024: ADT_BE_0.01_valid (every step verified, 3 cases)": {
+   "result": "pass"
+  },
+  "test_s3 W1024: K3 fires": {
+   "result": "pass"
+  },
+  "test_s3 W1024: G4 exact or within tolerance (<= 2.5e-5)": {
+   "result": "pass",
+   "G4": [
+    5.197882903597945e-15,
+    4.2834877541921805e-15,
+    5.808094805311367e-15
+   ],
+   "exact": true
+  },
+  "test_s3 W1024: K6 fires": {
+   "result": "pass"
+  },
+  "test_s3 W1024: mf Gram conditioned, rank (m >= R')": {
+   "result": "pass"
+  },
+  "test_fom: bound to job 5299842 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299842",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "test_fom: run_UB converged with complete evidence": {
+   "result": "pass"
+  },
+  "test_fom: run_UC converged with complete evidence": {
+   "result": "pass"
+  },
+  "test_fom: run_CC converged with complete evidence": {
+   "result": "pass"
+  },
+  "test_fom: G6v (vendor FOM) rel <= 1e-12": {
+   "result": "pass",
+   "rel": 0.0
+  },
+  "test_fom: K8 fires (diff > 1e-6)": {
+   "result": "pass",
+   "diff": 0.08122351978084656
+  },
+  "test_fom: G7 rel <= 1e-12 and half-step control > 1e-9 on 2 cases": {
+   "result": "pass"
+  },
+  "test_fom: G5/K7 M2 recomputed": {
+   "result": "pass"
+  },
+  "local evidence G6 (bitwise vs E0 refcore, UB UC CC)": {
+   "result": "pass"
+  },
+  "local evidence G8 (lattice = Gram distance)": {
+   "result": "pass"
+  },
+  "smkgrid: config identical": {
+   "result": "pass"
+  },
+  "smkgrid: bound to job 5299842 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299842",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "smkgrid: complete": {
+   "result": "pass"
+  },
+  "smkgrid: settings exactly": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|BDF2|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|BDF2|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|BDF2|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|BE|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|BE|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|BE|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|CN|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|CN|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|ad|LSPG|CN|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BE|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|BE|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.01|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.01|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|CN|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|CN|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.01|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.01|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BDF2|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|BDF2|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.01|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.01|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BE|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|CN|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BDF2|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BE|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|BE|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.016666667|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.016666667|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|CN|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|CN|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.016666667|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.016666667|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BDF2|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|BDF2|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.016666667|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.016666667|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BE|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|CN|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BDF2|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BE|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|BE|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.025|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.025|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|CN|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|CN|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.025|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.025|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BDF2|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fsp|BDF2|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.025|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BDF2|0.025|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BE|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|CN|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|fs|BDF2|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.025|k1|q0: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|CN|0.025|k1|noJuT: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32|qn|BE|0.01|k1|noJuT: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32: ADT tight valid on every case for every (scheme, step)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl32: distances for every spec, finite": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|BDF2|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|BDF2|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|BDF2|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|BE|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|BE|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|BE|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|CN|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|CN|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|ad|LSPG|CN|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BE|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|BE|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BE|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|CN|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|CN|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|CN|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BDF2|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|BDF2|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BDF2|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BE|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|BE|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BE|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|CN|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|CN|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|CN|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BDF2|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|BDF2|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BDF2|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BE|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|BE|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BE|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|CN|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|CN|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|CN|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BDF2|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|qn|BDF2|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24|fs|BDF2|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24: ADT tight valid on every case for every (scheme, step)": {
+   "result": "pass"
+  },
+  "smkgrid M2_512|gl24: distances for every spec, finite": {
+   "result": "pass"
+  },
+  "smkgrid panel screen|M2_512": {
+   "result": "pass",
+   "why": []
+  },
+  "smkgrid M2_512: T1 recomputed median in [1.8, 2.2]": {
+   "result": "pass",
+   "t1": 2.00465713716365
+  },
+  "smkgrid M2_512: K1 evaluated": {
+   "result": "pass"
+  },
+  "smkgrid M2_512: K2 evaluated": {
+   "result": "pass"
+  },
+  "smkgrid M2_512: K3_CN evaluated": {
+   "result": "pass"
+  },
+  "smkgrid M2_512: K3_BE evaluated": {
+   "result": "pass"
+  },
+  "smkgrid M2_512: K1 fires": {
+   "result": "pass"
+  },
+  "smkgrid M2_512: K2 fires": {
+   "result": "pass"
+  },
+  "smkgrid M2_512: K3 fires": {
+   "result": "pass"
+  },
+  "smkgrid M2_512: ADT tight/tighter <= 2.5e-5 for every (scheme, step)": {
+   "result": "pass",
+   "worst": [
+    1.4780546399342308e-08,
+    2.368173157950182e-08,
+    8.62975397758896e-09,
+    9.57153629377454e-09,
+    9.889485338187401e-09,
+    2.8738734003728434e-09,
+    1.584989610871743e-08,
+    1.7431289922509676e-08,
+    1.5792760834382653e-08
+   ]
+  },
+  "smkgrid M2_512: replay records, no error": {
+   "result": "pass",
+   "labels": {
+    "5": "mixed",
+    "7": "mixed"
+   }
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|BDF2|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|BDF2|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|BDF2|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|BE|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|BE|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|BE|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|CN|0.016666667|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|CN|0.01|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|ad|LSPG|CN|0.025|tight: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BE|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|BE|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.01|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.01|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|CN|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|CN|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.01|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.01|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BDF2|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|BDF2|0.01|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.01|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.01|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.01|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BE|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|CN|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BDF2|0.01|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BE|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|BE|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.016666667|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.016666667|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|CN|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|CN|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.016666667|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.016666667|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BDF2|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|BDF2|0.016666667|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.016666667|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.016666667|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.016666667|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BE|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|CN|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BDF2|0.016666667|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BE|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|BE|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.025|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.025|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|CN|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|CN|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.025|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.025|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BDF2|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fsp|BDF2|0.025|K1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.025|k1: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.025|k4: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BDF2|0.025|kinf: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BE|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|CN|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|fs|BDF2|0.025|K2: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.025|k1|q0: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|CN|0.025|k1|noJuT: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536|qn|BE|0.01|k1|noJuT: rows on exactly the cases (+ certification)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536: ADT tight valid on every case for every (scheme, step)": {
+   "result": "pass"
+  },
+  "smkgrid W1024|lat65536: distances for every spec, finite": {
+   "result": "pass"
+  },
+  "smkgrid panel screen|W1024": {
+   "result": "pass",
+   "why": []
+  },
+  "smkgrid W1024: T1 recomputed median in [1.8, 2.2]": {
+   "result": "pass",
+   "t1": 2.0096919069656938
+  },
+  "smkgrid W1024: K1 evaluated": {
+   "result": "pass"
+  },
+  "smkgrid W1024: K2 evaluated": {
+   "result": "pass"
+  },
+  "smkgrid W1024: K3_CN evaluated": {
+   "result": "pass"
+  },
+  "smkgrid W1024: K3_BE evaluated": {
+   "result": "pass"
+  },
+  "smkgrid W1024: K1 fires": {
+   "result": "pass"
+  },
+  "smkgrid W1024: K2 fires": {
+   "result": "pass"
+  },
+  "smkgrid W1024: K3 fires": {
+   "result": "pass"
+  },
+  "smkgrid W1024: ADT tight/tighter <= 2.5e-5 for every (scheme, step)": {
+   "result": "pass",
+   "worst": [
+    8.018145777424207e-09,
+    1.8178518765163986e-07,
+    8.098038762974172e-08,
+    5.752863107231707e-09,
+    5.599196109701155e-08,
+    4.085268985975127e-09,
+    2.8185505234976557e-08,
+    1.7515200894641845e-07,
+    7.696007004619157e-09
+   ]
+  },
+  "smkgrid W1024: replay records, no error": {
+   "result": "pass",
+   "labels": {
+    "5": "mixed",
+    "7": "mixed"
+   }
+  },
+  "smkfom: config identical": {
+   "result": "pass"
+  },
+  "smkfom: bound to job 5299842 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299842",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "smkfom: complete": {
+   "result": "pass"
+  },
+  "smkfom: FD population exactly": {
+   "result": "pass"
+  },
+  "smkfom UB|L64|0.01: level 0 converged on the calibration cases": {
+   "result": "pass"
+  },
+  "smkfom UB|L64|0.01: calibrated level chosen": {
+   "result": "pass"
+  },
+  "smkfom UB|L64|0.01: converged + finite scores on exactly the cases": {
+   "result": "pass"
+  },
+  "smkfom UB|L64|0.01: warm timing exact": {
+   "result": "pass"
+  },
+  "smkfom UC|L64|0.0125: level 0 converged on the calibration cases": {
+   "result": "pass"
+  },
+  "smkfom UC|L64|0.0125: calibrated level chosen": {
+   "result": "pass"
+  },
+  "smkfom UC|L64|0.0125: converged + finite scores on exactly the cases": {
+   "result": "pass"
+  },
+  "smkfom UC|L64|0.0125: warm timing exact": {
+   "result": "pass"
+  },
+  "smkfom CC|L64|0.0125: level 0 converged on the calibration cases": {
+   "result": "pass"
+  },
+  "smkfom CC|L64|0.0125: calibrated level chosen": {
+   "result": "pass"
+  },
+  "smkfom CC|L64|0.0125: converged + finite scores on exactly the cases": {
+   "result": "pass"
+  },
+  "smkfom CC|L64|0.0125: warm timing exact": {
+   "result": "pass"
+  },
+  "smkfom UB|L128|0.01: level 0 converged on the calibration cases": {
+   "result": "pass"
+  },
+  "smkfom UB|L128|0.01: calibrated level chosen": {
+   "result": "pass"
+  },
+  "smkfom UB|L128|0.01: converged + finite scores on exactly the cases": {
+   "result": "pass"
+  },
+  "smkfom UB|L128|0.01: warm timing exact": {
+   "result": "pass"
+  },
+  "smkfom: PS population exactly": {
+   "result": "pass"
+  },
+  "smkfom ps|N32|0.01: finite + scored on exactly the cases": {
+   "result": "pass"
+  },
+  "smkfom ps|N32|0.01: warm timing exact": {
+   "result": "pass"
+  },
+  "smkprof: config identical": {
+   "result": "pass"
+  },
+  "smkprof: bound to job 5299842 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299842",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "smkprof: complete": {
+   "result": "pass"
+  },
+  "smkprof profile C_old": {
+   "result": "pass",
+   "why": []
+  },
+  "smkprof profile qnCN": {
+   "result": "pass",
+   "why": []
+  },
+  "smkprof profile W1024BE": {
+   "result": "pass",
+   "why": []
+  },
+  "smkprof profile qnBDF2": {
+   "result": "pass",
+   "why": []
+  },
+  "smkprof confirm C_old|qnCN": {
+   "result": "pass",
+   "why": []
+  },
+  "smkprof: batch labels exactly": {
+   "result": "pass"
+  },
+  "smkprof batch qnCN: sizes exactly": {
+   "result": "pass"
+  },
+  "smkprof batch qnCN B=1: feasible, 3 finite timings, hashes": {
+   "result": "pass",
+   "error": null
+  },
+  "smkprof batch qnCN B=1: G4 <= 2.5e-5 (recomputed)": {
+   "result": "pass",
+   "G4": 0.0
+  },
+  "smkprof batch qnCN B=1: K6+ (permutation) <= 2.5e-5": {
+   "result": "pass"
+  },
+  "smkprof batch qnCN B=3: feasible, 3 finite timings, hashes": {
+   "result": "pass",
+   "error": null
+  },
+  "smkprof batch qnCN B=3: G4 <= 2.5e-5 (recomputed)": {
+   "result": "pass",
+   "G4": 6.199827131834237e-15
+  },
+  "smkprof batch qnCN B=3: K6+ (permutation) <= 2.5e-5": {
+   "result": "pass"
+  },
+  "smkprof batch qnCN B=3: K6 fires (> 2.5e-5)": {
+   "result": "pass"
+  },
+  "smkprof batch C_old: sizes exactly": {
+   "result": "pass"
+  },
+  "smkprof batch C_old B=1: feasible, 3 finite timings, hashes": {
+   "result": "pass",
+   "error": null
+  },
+  "smkprof batch C_old B=1: G4 <= 2.5e-5 (recomputed)": {
+   "result": "pass",
+   "G4": 0.0
+  },
+  "smkprof batch C_old B=1: K6+ (permutation) <= 2.5e-5": {
+   "result": "pass"
+  },
+  "smkprof batch C_old B=3: feasible, 3 finite timings, hashes": {
+   "result": "pass",
+   "error": null
+  },
+  "smkprof batch C_old B=3: G4 <= 2.5e-5 (recomputed)": {
+   "result": "pass",
+   "G4": 7.692047432167063e-15
+  },
+  "smkprof batch C_old B=3: K6+ (permutation) <= 2.5e-5": {
+   "result": "pass"
+  },
+  "smkprof batch C_old B=3: K6 fires (> 2.5e-5)": {
+   "result": "pass"
+  },
+  "smkprof batch W1024qn: sizes exactly": {
+   "result": "pass"
+  },
+  "smkprof batch W1024qn B=1: feasible, 3 finite timings, hashes": {
+   "result": "pass",
+   "error": null
+  },
+  "smkprof batch W1024qn B=1: G4 <= 2.5e-5 (recomputed)": {
+   "result": "pass",
+   "G4": 0.0
+  },
+  "smkprof batch W1024qn B=1: K6+ (permutation) <= 2.5e-5": {
+   "result": "pass"
+  },
+  "smkprof batch W1024qn B=3: feasible, 3 finite timings, hashes": {
+   "result": "pass",
+   "error": null
+  },
+  "smkprof batch W1024qn B=3: G4 <= 2.5e-5 (recomputed)": {
+   "result": "pass",
+   "G4": 6.010545087069216e-15
+  },
+  "smkprof batch W1024qn B=3: K6+ (permutation) <= 2.5e-5": {
+   "result": "pass"
+  },
+  "smkprof batch W1024qn B=3: K6 fires (> 2.5e-5)": {
+   "result": "pass"
+  },
+  "smkprof mf qnCN: every case, ADT valid on every case, finite": {
+   "result": "pass",
+   "info": null
+  },
+  "smkprof K5 qnCN: gl12 full rank and conditioned (qualification deferred, A4.5)": {
+   "result": "pass",
+   "cond": {
+    "cond": 17870.749282177836,
+    "m": 1728
+   }
+  },
+  "smkprof K5 qnCN: runs on exactly the cases": {
+   "result": "pass"
+  },
+  "smkprof mf W1024qn: every case, ADT valid on every case, finite": {
+   "result": "pass",
+   "info": null
+  },
+  "smkprof K5 W1024qn: gl12 full rank and conditioned (qualification deferred, A4.5)": {
+   "result": "pass",
+   "cond": {
+    "cond": 24423830.527913556,
+    "m": 1728
+   }
+  },
+  "smkprof K5 W1024qn: runs on exactly the cases": {
+   "result": "pass"
+  },
+  "smkprof conv qnCN: delta_quad on every case, finite": {
+   "result": "pass"
+  },
+  "smkprof reduced ADT qnCNred: tight/tighter <= 2.5e-5, both valid": {
+   "result": "pass",
+   "worst": 1.6034322780629634e-08
+  },
+  "smkmesh: config identical": {
+   "result": "pass"
+  },
+  "smkmesh: bound to job 5299842 / commit 9f8093d64ff6984851c34d5aad7ebf4240a7e6d1": {
+   "result": "pass",
+   "found": [
+    "5299842",
+    "9f8093d64ff6984851c34d5aad7ebf4240a7e6d1"
+   ]
+  },
+  "smkmesh: complete": {
+   "result": "pass"
+  },
+  "smkmesh G5/K7 M2|512 recomputed": {
+   "result": "pass"
+  },
+  "smkmesh G5/K7 W1024|256 recomputed": {
+   "result": "pass"
+  },
+  "smkmesh G5/K7 W1024|1024 recomputed": {
+   "result": "pass"
+  },
+  "smkmesh L64: present": {
+   "result": "pass"
+  },
+  "smkmesh L64 ROM qnCN: complete, ADT valid, tight/tighter <= 2.5e-5": {
+   "result": "pass",
+   "info": null,
+   "tables": {
+    "M": 2052,
+    "seconds_A": null
+   },
+   "adt_tt": 1.5793470343851614e-08
+  },
+  "smkmesh L64 ROM W1024qn: complete, ADT valid, tight/tighter <= 2.5e-5": {
+   "result": "pass",
+   "info": null,
+   "tables": {
+    "M": 4097,
+    "seconds_A": null
+   },
+   "adt_tt": 7.696028273458385e-09
+  },
+  "smkmesh L64 FOM UB 0.01: converged + scored on exactly the cases": {
+   "result": "pass",
+   "info": "qualified"
+  },
+  "smkmesh L64 FOM CC 0.01: converged + scored on exactly the cases": {
+   "result": "pass",
+   "info": "qualified"
+  },
+  "smkmesh L64 matched ps|N32|0.01: converged + scored on exactly the timing cases": {
+   "result": "pass"
+  },
+  "smkmesh L64 matched fd|CC|L128|0.0125|t1: converged + scored on exactly the timing cases": {
+   "result": "pass"
+  },
+  "smkmesh L64 panel qnCN": {
+   "result": "pass",
+   "why": []
+  },
+  "smkmesh L64 panel W1024qn": {
+   "result": "pass",
+   "why": []
+  },
+  "smkmesh L128: present": {
+   "result": "pass"
+  },
+  "smkmesh L128 ROM qnCN: complete, ADT valid, tight/tighter <= 2.5e-5": {
+   "result": "pass",
+   "info": null,
+   "tables": {
+    "M": 2049,
+    "seconds_A": 3.6933863451704383,
+    "kxyz_sha": "eae4a4deb54db354862532a339f0ec38d8d9db19fcceae64e2d387206fa0fc82"
+   },
+   "adt_tt": 1.7504441722070644e-08
+  },
+  "smkmesh L128 ROM W1024qn: complete, ADT valid, tight/tighter <= 2.5e-5": {
+   "result": "pass",
+   "info": null,
+   "tables": {
+    "M": 4097,
+    "seconds_A": 3.7434768341481686,
+    "kxyz_sha": "cec08e650d103c426eab1c025eb08dd072306ac1167a6bc7bdcff54b6f26ae78"
+   },
+   "adt_tt": 4.619233223563285e-09
+  },
+  "smkmesh L128 FOM UB 0.01: converged + scored on exactly the cases": {
+   "result": "pass",
+   "info": "qualified"
+  },
+  "smkmesh L128 FOM CC 0.01: converged + scored on exactly the cases": {
+   "result": "pass",
+   "info": "qualified"
+  },
+  "smkmesh L128 matched ps|N32|0.01: converged + scored on exactly the timing cases": {
+   "result": "pass"
+  },
+  "smkmesh L128 matched fd|CC|L128|0.0125|t1: converged + scored on exactly the timing cases": {
+   "result": "pass"
+  },
+  "smkmesh L128 panel qnCN": {
+   "result": "pass",
+   "why": []
+  },
+  "smkmesh L128 panel W1024qn": {
+   "result": "pass",
+   "why": []
+  }
+ },
+ "offline_after_collection": [
+  "K4 (score3.py on smkgrid)",
+  "K9 (analyze.k9 on smkgrid)"
+ ],
+ "deferred_A4_5": [
+  "K10 (FOM matcher)",
+  "G3",
+  "H3.2/K5 qualification verdict"
+ ]
+}

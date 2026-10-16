@@ -1,0 +1,11 @@
+E1015 20:20:44.234597  151033 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 3.7s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.3s
+SETUP 14.5
+FOM fd|UB|L64|0.01|t1 converged True median e 0.10126512002106769 18.4
+FOM fd|UC|L64|0.0125|t1 converged True median e 0.09178727805522402 21.7
+FOM fd|CC|L64|0.0125|t1 converged True median e 0.008020587069316982 24.8
+FOM fd|UB|L128|0.01|t1 converged True median e 0.06781100688189796 33.1
+FOM ps|N32|0.01 converged True median e 0.0004307387233889601 41.3
+S3RUN COMPLETE

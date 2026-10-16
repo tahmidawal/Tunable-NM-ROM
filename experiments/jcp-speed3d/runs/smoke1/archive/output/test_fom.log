@@ -1,0 +1,13 @@
+E1015 19:45:18.866332  101849 numa_hwloc.cc:121] Call to hwloc_set_cpubind() failed: Invalid argument [22]
+jax_backend=gpu
+UB {'seconds': 1.8802244709804654, 'converged': (True, {'stages': 25, 'complete': True, 'worst_res': 9.408768333155233e-09, 'max_newton': 2, 'at_newton_limit': 0})}
+UC {'seconds': 0.07300288276746869, 'converged': (True, {'stages': 22, 'complete': True, 'worst_res': 7.464635025350512e-09, 'max_newton': 2, 'at_newton_limit': 0})}
+CC {'seconds': 1.196190157905221, 'converged': (True, {'stages': 22, 'complete': True, 'worst_res': 6.727823062798982e-10, 'max_newton': 3, 'at_newton_limit': 0})}
+G6v 0.0
+K8 0.08122351978084656 G7 {0: {'rel': 7.431006121499735e-16, 'half_dt_diff': 0.00017993019037554285}, 1: {'rel': 4.05555985817594e-16, 'half_dt_diff': 6.650489314139316e-05}, 'pass': True, 'control_fires': True}
+[mesh 65] bank rows [(512, 250047)] 3.6s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.2s
+[bigtables n=65 R=512] slab 0/63 2.7s
+[bigtables n=66 R=512] slab 0/64 2.2s
+G5 {'M': 2052, 'M_ref': 2052, 'kxyz_equal': True, 'lam_equal': True, 'A_rel': 1.3286348848571252e-15, 'pass': True, 'K7_rel': 0.023529291797851036, 'K7_fires': True}
+DONE all mandatory gates pass

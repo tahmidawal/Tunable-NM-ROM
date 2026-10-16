@@ -43,6 +43,34 @@ def row3d(key, label, old, R="512"):
 T3D = "\n".join(row3d(*r) for r in RULES)
 
 
+KEEP_SOLVE = {"acc": ("mesh lattice $63^2$", "Gauss $64^2$", "Gauss $96^2$", "Gauss $128^2$", "Fibonacci 6765"),
+              "fast": ("mesh lattice $63^2$", "Gauss $64^2$", "Fibonacci 1597", "Fibonacci 6765")}
+# 2D solve-time table, parsed from the 2D lane report (section T5, held-out job t4096, one H200)
+REP = os.path.join(ROOT, "worktrees/2026-10-01-quadrature-study/reports/2026-10-01-burgers2d-offmesh-quadrature.md")
+_lines = open(REP).read().split("### T5.", 1)[1].splitlines()
+SOLVE_ROWS = []
+for ln in _lines:
+    if ln.startswith("| acc |") or ln.startswith("| fast |"):
+        c = [x.strip() for x in ln.strip("|").split("|")]
+        if c[1] in KEEP_SOLVE.get(c[0], ()):
+            SOLVE_ROWS.append(c)
+    elif SOLVE_ROWS and not ln.startswith("|"):
+        break
+
+
+def solve_row(c):
+    setting, arm, a, b, d, ratio, ok = c
+    for k, v in (("$63^2$", "63²"), ("$64^2$", "64²"), ("$96^2$", "96²"), ("$128^2$", "128²")):
+        arm = arm.replace(k, v)
+    old = arm.startswith("mesh lattice")
+    name = ("Old: " + arm) if old else arm
+    cls = ' class="old"' if old else ""
+    return f"<tr{cls}><td>{'accurate' if setting == 'acc' else 'fast'}</td><td>{name}</td><td>{a}</td><td>{b}</td><td>{d}</td><td><b>{float(ratio):.2f}</b></td></tr>"
+
+
+TSOLVE = "\n".join(solve_row(c) for c in SOLVE_ROWS)
+
+
 def fig(name, alt, cap):
     return f'<figure><img src="figs/{name}" alt="{html.escape(alt)}" loading="lazy"><figcaption>{cap}</figcaption></figure>'
 
@@ -97,7 +125,7 @@ dl{{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;max-width:
 <p class="status">All numbers are from validation or held-out cases, scored against the older first-order references, so they are <b>provisional</b> (3D can move by up to about 2.8 %).</p>
 <nav><b>Contents</b><ol>
 <li><a href="#rules">Quadrature rules vs what we had</a></li><li><a href="#acc">Accuracy no longer depends on the mesh</a></li>
-<li><a href="#table">Every rule as a full Burgers solve: accuracy vs speed</a></li></ol></nav>
+<li><a href="#flat">Solve cost doesn&#39;t depend on the mesh</a></li><li><a href="#table">Every rule as a full Burgers solve: accuracy vs speed</a></li></ol></nav>
 
 <h2 id="rules">1 · Quadrature rules vs what we had</h2>
 {fig("3d_rule_ladder.png", "3D rule ladder", "3D: error in the nonlinear integral (ρ) against number of points, at three meshes. The dashed line is the acceptance bar. Lattice and Gauss converge fast; Sobol needs more points; Smolyak and the 256-point lattice fail. The panels are identical: the rules don't depend on the mesh.")}
@@ -107,7 +135,15 @@ dl{{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;max-width:
 {fig("3d_error_vs_mesh.png", "3D error vs mesh", "3D, held-out cases: the old exact tensor goes 10.5 → 6.1 → 3.9 %; off-mesh is flat at 2.83 % (512-wide bank) and 4.49 % (256-wide).")}
 {fig("2d_error_vs_mesh.png", "2D error vs mesh", "2D, 64 held-out cases: off-mesh is flat at 2.6 % (accurate) and 4.4 % (fast); the mesh methods start at 5.6–6.3 %.")}
 
-<h2 id="table">3 · Every rule as a full Burgers solve: accuracy vs speed</h2>
+<h2 id="flat">3 · Solve cost doesn't depend on the mesh</h2>
+<p><b>2D, held-out job, one H200.</b> Median solve time per query in ms (query time minus output decode). Ratio = time at 4096² ÷ time at 256². Across all 40 rule and setting combinations the ratio was 0.97–1.04, while the mesh grew 256×.</p>
+<div class="tw"><table>
+<tr><th>Setting</th><th>Rule</th><th>256²</th><th>1024²</th><th>4096²</th><th>Ratio 4096²/256²</th></tr>
+{TSOLVE}
+</table></div>
+<p class="take">The solve never touches the mesh, so it is flat. The <b>full query</b> still grows a little, because reading the initial field and decoding the output are done on the mesh: decode takes about 0.2 ms at 256² and about 14–18 ms at 4096² (accurate setting).</p>
+
+<h2 id="table">4 · Every rule as a full Burgers solve: accuracy vs speed</h2>
 <p><b>3D, held-out cases (64), 512-wide bank.</b> Error is worst / typical (the same at every mesh for off-mesh rules). The speed-up is the time of the cheapest full simulation that is at least as accurate, divided by our time, in the same job on the same GPU; below 1× is slower. The "finer reference" column requires the full simulation to match our accuracy against the finer reference.</p>
 <div class="tw"><table>
 <tr><th>Method</th><th>Points</th><th>Error</th><th>64³</th><th>128³</th><th>256³</th><th>256³, finer ref.</th><th>ms at 256³</th></tr>

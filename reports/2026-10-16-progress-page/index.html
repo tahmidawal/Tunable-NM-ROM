@@ -44,7 +44,7 @@ dl{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;max-width:8
 <p class="status">All numbers are from validation or held-out cases, scored against the older first-order references, so they are <b>provisional</b> (3D can move by up to about 2.8 %).</p>
 <nav><b>Contents</b><ol>
 <li><a href="#rules">Quadrature rules vs what we had</a></li><li><a href="#acc">Accuracy no longer depends on the mesh</a></li>
-<li><a href="#why">Why it works</a></li><li><a href="#table">Every rule as a full Burgers solve: accuracy vs speed</a></li></ol></nav>
+<li><a href="#table">Every rule as a full Burgers solve: accuracy vs speed</a></li></ol></nav>
 
 <h2 id="rules">1 · Quadrature rules vs what we had</h2>
 <figure><img src="figs/3d_rule_ladder.png" alt="3D rule ladder" loading="lazy"><figcaption>3D: error in the nonlinear integral (ρ) against number of points, at three meshes. The dashed line is the acceptance bar. Lattice and Gauss converge fast; Sobol needs more points; Smolyak and the 256-point lattice fail. The panels are identical: the rules don't depend on the mesh.</figcaption></figure>
@@ -54,11 +54,7 @@ dl{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;max-width:8
 <figure><img src="figs/3d_error_vs_mesh.png" alt="3D error vs mesh" loading="lazy"><figcaption>3D, held-out cases: the old exact tensor goes 10.5 → 6.1 → 3.9 %; off-mesh is flat at 2.83 % (512-wide bank) and 4.49 % (256-wide).</figcaption></figure>
 <figure><img src="figs/2d_error_vs_mesh.png" alt="2D error vs mesh" loading="lazy"><figcaption>2D, 64 held-out cases: off-mesh is flat at 2.6 % (accurate) and 4.4 % (fast); the mesh methods start at 5.6–6.3 %.</figcaption></figure>
 
-<h2 id="why">3 · Why it works: the exact derivative</h2>
-<figure><img src="figs/a2_gap_vs_h.png" alt="Gap vs mesh spacing" loading="lazy"><figcaption>Gap between the mesh-based nonlinear integral and the true integral, against mesh spacing h (finer to the right). Upwind falls with slope 1 and central with slope 2, as theory predicts. Mesh nodes with the exact derivative (green) are thousands of times smaller.</figcaption></figure>
-<figure><img src="figs/a1_error_vs_mesh.png" alt="Mechanism arms" loading="lazy"><figcaption>Mesh nodes plus the exact derivative match Hari's off-mesh rule (overlapping lines at the bottom), so the gain is the exact derivative. Quadrature makes it cheap: about 14k points instead of millions of nodes.</figcaption></figure>
-
-<h2 id="table">4 · Every rule as a full Burgers solve: accuracy vs speed</h2>
+<h2 id="table">3 · Every rule as a full Burgers solve: accuracy vs speed</h2>
 <p><b>3D, held-out cases (64), 512-wide bank.</b> Error is worst / typical (the same at every mesh for off-mesh rules). The speed-up is the time of the cheapest full simulation that is at least as accurate, divided by our time, in the same job on the same GPU; below 1× is slower. The "finer reference" column requires the full simulation to match our accuracy against the finer reference.</p>
 <div class="tw"><table>
 <tr><th>Method</th><th>Points</th><th>Error</th><th>64³</th><th>128³</th><th>256³</th><th>256³, finer ref.</th><th>ms at 256³</th></tr>
@@ -89,18 +85,4 @@ dl{display:grid;grid-template-columns:max-content 1fr;gap:.3rem 1rem;max-width:8
 </table></div>
 <p class="take">Every working rule gives the same accuracy. Speed depends on mesh size: slower on small meshes, about even in the middle, clearly faster on large ones.</p>
 
-<h2 id="gloss">Glossary</h2>
-<dl>
-<dt>Bank</dt><dd>The trained set of smooth shapes the solution is built from; R′ = how many are used.</dd>
-<dt>Off-mesh quadrature</dt><dd>Computing the nonlinear integral at chosen points, not at mesh nodes (Hari's idea).</dd>
-<dt>Gauss rule</dt><dd>The classic best points per axis, repeated on a grid (n³ points in 3D).</dd>
-<dt>Lattice (Fibonacci, CBC, Korobov)</dt><dd>An evenly tilted point grid with equal weights; any point count; a random shift gives error bars.</dd>
-<dt>Sobol, Halton</dt><dd>Quasi-random space-filling sequences.</dd>
-<dt>Smolyak</dt><dd>A sparse grid built for high dimensions; poor for our 2–3D oscillatory integrals.</dd>
-<dt>ρ</dt><dd>Error of the nonlinear integral relative to its size; the acceptance bar is 0.116.</dd>
-<dt>Worst / typical error</dt><dd>Largest and median error over the cases, as % of the initial field.</dd>
-<dt>Speed-up</dt><dd>Time of the cheapest full simulation at least as accurate, divided by our time; same GPU and job.</dd>
-<dt>Provisional</dt><dd>Scored against the old first-order references; will be re-scored.</dd>
-</dl>
-<p style="color:var(--muted);font-size:.85rem;margin-top:2rem">Sources: lane reports on branches exp/2026-10-01-quadrature-{study,burgers3d}, exp/2026-10-06-jcp-mechanism, exp/2026-10-08-jcp-{time2,wide-bank,smooth-bank}, exp/2026-10-06-jcp-references, exp/2026-10-13-jcp-combined, and the campaign notebook. The 3D table is generated from select-ho.json by make_page.py.</p>
 </div>

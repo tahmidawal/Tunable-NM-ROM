@@ -22,6 +22,20 @@ with $B,D,P$ precomputed once offline.
 \end{itemize}
 \end{frame}
 
+
+\begin{frame}{What we did since bringing in Hari's quadrature}
+\small
+\begin{enumerate}
+\item \textbf{Plugged Hari's off-mesh rules into our tunable model} for Burgers 2D and 3D, and ran every rule family as a full PDE solve: Gauss, lattices (Fibonacci, CBC, Korobov), Sobol, Smolyak, and the flux form, against the old mesh methods (dense sum, mesh lattice, exact tensor).
+\item \textbf{Found why it works} (mechanism study): exact derivative vs.\ mesh differencing.
+\item \textbf{Fixed the next bottleneck:} second-order time stepping (CN-R, BDF2, Galerkin).
+\item \textbf{Tested what else limits accuracy:} a wider bank (up to 1024 shapes) and smoother or derivative-trained banks.
+\item \textbf{Built trustworthy references:} order-verified second-order solutions, cross-checked by a spectral solver; sealed held-out cohorts.
+\item \textbf{Combined the winners} (second-order stepping with the wide bank) and scored them against the new references.
+\item \textbf{Now running:} 3D speed (one-pass solver, narrower bank, batching, large-mesh comparison against spectral).
+\end{enumerate}
+\vspace{0.3em}\footnotesize Every step was pre-registered and adversarially checked by an independent reviewer (Codex) before it ran.
+\end{frame}
 \begin{frame}{1. Accuracy no longer depends on the mesh (3D Burgers)}
 \fig{3d_error_vs_mesh.png}
 \say{Off-mesh: \textbf{2.83\,\% at every mesh}. The old tensor goes 10.5 $\to$ 6.1 $\to$ 3.9\,\%.}
@@ -42,6 +56,37 @@ with $B,D,P$ precomputed once offline.
 \say{Gauss and lattices converge fast. Sobol needs about 4$\times$ more points; Smolyak fails. Deployed: Gauss (accurate setting), lattice (fast setting).}
 \end{frame}
 
+
+\begin{frame}{Every rule as a full Burgers solve: accuracy vs.\ speed}
+\footnotesize
+\textbf{3D, held-out test cases (64), bank 512} --- worst / typical error is the same at every mesh for off-mesh rules; speed-up vs.\ the cheapest equally accurate full simulation (same job, same GPU)
+\par\vspace{0.2em}
+\begin{tabular}{lrcccc}
+\hline
+Rule & points & worst / typical & $64^3$ & $128^3$ & $256^3$\\\hline
+Old exact tensor & -- & 3.9 / 1.3\,\% (at $256^3$) & 0.16$\times$ & 0.53$\times$ & 2.2$\times$\\
+Lattice & 4{,}096 & \textbf{2.8 / 1.1\,\%} & 0.18$\times$ & 0.54$\times$ & \textbf{3.1$\times$}\\
+Gauss $24^3$ (deployed) & 13{,}824 & 2.8 / 1.1\,\% & 0.11$\times$ & 0.34$\times$ & 2.6$\times$\\
+Gauss $32^3$ & 32{,}768 & 2.8 / 1.1\,\% & 0.06$\times$ & 0.20$\times$ & 1.9$\times$\\
+Sobol & 16{,}384 & 3.3 / 1.2\,\% & 0.10$\times$ & 0.32$\times$ & 2.5$\times$\\
+Smolyak / lattice 256 & small & \textbf{fail} (37--42\,\%) & & & \\\hline
+\end{tabular}
+\par\vspace{0.5em}
+\textbf{2D, held-out test cases (64), accurate setting} --- worst error at $256^2 / 1024^2 / 4096^2$; speed-up at $4096^2$
+\par\vspace{0.2em}
+\begin{tabular}{lrcc}
+\hline
+Rule & points & worst error & speed-up $4096^2$\\\hline
+Full simulation & -- & 5.5 / 2.9 / 2.4\,\% & 1$\times$\\
+Old mesh lattice $63^2$ & 3{,}969 & 5.6 / 3.3 / 1.6\,\% & 11$\times$\\
+Gauss $64^2$ & 4{,}096 & \textbf{2.6 / 2.6 / 1.6\,\%} & \textbf{13$\times$}\\
+Fibonacci & 6{,}765 & 2.6 / 2.6 / 1.6\,\% & 10$\times$\\
+Sobol & 4{,}096 & 2.8 / 2.8 / 1.6\,\% & --\\
+Gauss $32^2$ & 1{,}024 & \textbf{fail} (9.0 / 8.8 / 2.7\,\%) & --\\\hline
+\end{tabular}
+\par\vspace{0.4em}
+Every working rule gives the same accuracy; speed depends on mesh size. We are slower on small meshes and faster on large ones. All numbers use first-order references (provisional).
+\end{frame}
 \begin{frame}{5. Why it works: the exact derivative}
 \fig[0.5]{a2_gap_vs_h.png}
 \say{The old error was the mesh's own differencing error: slope 1 for upwind, 2 for central, exactly as theory says. Mesh nodes with the exact derivative reproduce the off-mesh result, so the win is the exact derivative, and quadrature makes it cheap (about 14k points against millions of nodes).}

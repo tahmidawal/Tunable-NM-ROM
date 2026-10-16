@@ -201,6 +201,8 @@ def project_mesh(cfg, smoke):
             ta, _ = lookup(tab, r['setting'], S.spec_key(('ad', sp[1], sp[2], 'tight')))
             tot += 120 + nc * (t['run'] + t['cert'] + ta['run']) + 8 * ta['run']
             tot += tc['cases'] * tc['reps'] * (nf + len(b['matched'])) * (tf + 2 * t['run'])
+            if L == 64:                                   # A6 match|<label> panel (mesh-path ROM vs its matched FOMs)
+                tot += tc['cases'] * tc['reps'] * len(b['matched']) * (meshes.get(128, tf) + 2 * t['run']) + tc['cases'] * t['run']
     return 2 * tot / 3600, dict(fom_seconds_per_solve=meshes)
 
 

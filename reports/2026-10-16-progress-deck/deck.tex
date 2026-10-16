@@ -1,0 +1,75 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+\usetheme{default}\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}{\hfill\scriptsize\insertframenumber\,/\,\inserttotalframenumber\hspace{1em}\vspace{0.6em}}
+\definecolor{acc}{HTML}{0B5D7A}\setbeamercolor{frametitle}{fg=acc}\setbeamercolor{title}{fg=acc}
+\setbeamerfont{frametitle}{series=\bfseries}
+\newcommand{\say}[1]{\par\vspace{0.3em}{\small #1}}
+\newcommand{\fig}[2][0.62]{\centering\includegraphics[height=#1\textheight,width=\textwidth,keepaspectratio]{figs/#2}}
+\title{Tunable bank + off-mesh quadrature}
+\subtitle{Progress toward the JCP paper}
+\date{16 October 2026}
+\begin{document}
+\frame{\titlepage
+\centering\footnotesize Numbers from the lanes' generated reports. Slides 1--6 and 8 use the earlier first-order references (provisional); slide 7 uses the new order-verified second-order references.}
+
+\begin{frame}{The idea: evaluate the nonlinear term off the mesh}
+\begin{itemize}
+\item \textbf{Before:} the reduced model's nonlinear integral $\int\psi\,u(u_x{+}u_y)$ was computed \emph{on the simulation mesh} (dense sum, fitted EQ, or a giant precomputed tensor). Cost and error both depended on the mesh.
+\item \textbf{Hari's idea:} our bank $u(x)=G(x)c$ is a continuous function. Evaluate it and its \emph{exact} autodiff derivative at a few thousand textbook quadrature points (Gauss, lattice):
+\[ N(c)=P^{\top}\big[(Bc)\odot(Dc)\big] \]
+with $B,D,P$ precomputed once offline.
+\item No fitting, no per-mesh retraining, and the same points at every mesh.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{1. Accuracy no longer depends on the mesh (3D Burgers)}
+\fig{3d_error_vs_mesh.png}
+\say{Off-mesh: \textbf{2.83\,\% at every mesh}. The old tensor goes 10.5 $\to$ 6.1 $\to$ 3.9\,\%.}
+\end{frame}
+
+\begin{frame}{2. Neither does cost (2D Burgers)}
+\fig{2d_solve_time.png}
+\say{Solve time is identical from $256^2$ to $4096^2$, a mesh 256$\times$ larger.}
+\end{frame}
+
+\begin{frame}{3. Memory: wide banks become possible}
+\fig{c1_3d_j4_memory_vs_Rp.png}
+\say{The tensor needs 34\,GB at width 1024 and exceeds a whole H200 past about 1600. Off-mesh stays under 2\,GB.}
+\end{frame}
+
+\begin{frame}{4. Which quadrature rules work}
+\fig{2d_rule_ladder.png}
+\say{Gauss and lattices converge fast. Sobol needs about 4$\times$ more points; Smolyak fails. Deployed: Gauss (accurate setting), lattice (fast setting).}
+\end{frame}
+
+\begin{frame}{5. Why it works: the exact derivative}
+\fig[0.5]{a2_gap_vs_h.png}
+\say{The old error was the mesh's own differencing error: slope 1 for upwind, 2 for central, exactly as theory says. Mesh nodes with the exact derivative reproduce the off-mesh result, so the win is the exact derivative, and quadrature makes it cheap (about 14k points against millions of nodes).}
+\end{frame}
+
+\begin{frame}{6. Next bottleneck, time stepping: fixed with second-order schemes}
+\fig{c2_error_vs_cost_acc.png}
+\say{At equal cost, second-order schemes (CN-R, BDF2) have about 9$\times$ less error than backward Euler (circled).}
+\end{frame}
+
+\begin{frame}{7. Where we are: against new order-verified references}
+\fig{s2_pareto2d.png}
+\say{2D: median error 0.98 $\to$ 0.20\,\% at equal cost; about \textbf{14$\times$} faster than a full simulation that is second order in time. 3D: median 1.5 $\to$ 0.12\,\% at equal cost.}
+\end{frame}
+
+\begin{frame}{8. Honest limit: 3D speed}
+\fig[0.55]{3d_time_vs_mesh.png}
+\say{We only win at large meshes (2.6$\times$ at $256^3$). Early, unaudited runs show a spectral solver beating us clearly at $64^3$. Large-mesh comparisons ($128^3$--$384^3$) are running now.}
+\end{frame}
+
+\begin{frame}{Next steps}
+\begin{itemize}
+\item 3D speed lane (running): one-pass solver at big steps, narrower bank, batching, large-mesh comparison against spectral.
+\item Standard ROM baselines: POD with DEIM, ECSW and GNAT.
+\item A harder example where spectral solvers struggle: non-box geometry, sharp fronts, non-polynomial nonlinearity.
+\item Open the sealed test cohorts for the final paper numbers.
+\end{itemize}
+\vspace{0.5em}
+\textbf{Done this cycle:} order-verified second-order references (3D clean pass; 2D pass, 13 of 204 cases flagged), and second-order stepping combined with the wide bank.
+\end{frame}
+\end{document}

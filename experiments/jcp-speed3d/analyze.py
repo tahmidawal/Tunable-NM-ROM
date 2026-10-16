@@ -58,6 +58,8 @@ def load_job(rp):
     rp = Path(rp)
     res = json.loads((rp / 'result.json').read_text())
     sc = json.loads((HERE / 'checks' / f"scores-{res['config']['attempt']}.json").read_text())
+    # A4.5 provenance: the score file must be of this very run (path and job id)
+    assert Path(sc['run']).resolve() == rp.resolve() and sc.get('job_id') == res.get('job_id'), 'score file is of another run'
     return res, sc
 
 
@@ -65,8 +67,9 @@ def configs_of(res, sc):
     """{config key: record} for every non-ADT, non-mutation grid configuration of one job."""
     cases = res['cohort']['cases']
     # job-level acceptance (audit code-1 #9): complete job, full validation cohort, K4 and the distance re-check pass
-    job_ok = bool(res.get('complete') and res['cohort']['seed'] == 923801 and len(cases) == 64
+    job_ok = bool(res.get('complete') and res['cohort']['seed'] == 923801 and sorted(cases) == list(range(64))
                   and sc['controls'].get('K4_fires') and sc['gates'].get('dist_ok'))
+    tc = res['config']['timing']
     rows = {}
     for r in res['rows']:
         rows.setdefault(f"{r['tag']}|{r['spec']}", []).append(r)
@@ -89,7 +92,8 @@ def configs_of(res, sc):
                 if len(spec.split('|')) > 4:             # mutation controls: handled separately
                     continue
                 key = f'{sn}|{rule}|{spec}'
-                rs = sorted(rows[key], key=lambda r: cases.index(r['case']))
+                rs = sorted(rows.get(key, []), key=lambda r: cases.index(r['case']))
+                rows_ok = [r['case'] for r in rs] == list(cases)                     # exactly one row per case
                 kind, sch, dt, _ = spec_parts(spec)
                 ak = f'ad|LSPG|{sch}|{dt:.8g}|tight'
                 adt_valid = all(rr['adt_valid'][ak])
@@ -97,12 +101,16 @@ def configs_of(res, sc):
                 nst = sum(r['nonstationary'] for r in rs)
                 nstep = sum(r['steps_n'] for r in rs)
                 sco = sc['scores'][key]
-                rk = [j for j in cases if sco[str(j)]['eligible']]          # E0: ineligible case-kinds scored, not ranked
+                rk = [j for j in cases if str(j) in sco and sco[str(j)]['eligible']]   # E0: ineligible scored, not ranked
                 e = np.array([sco[str(j)]['e'] for j in rk])
+                if len(rk) == 0:
+                    e = np.array([np.nan])
                 eta = np.array([sco[str(j)]['eps_ref'] for j in rk])
                 e1 = np.array([sco[str(j)]['first_order']['e'] for j in rk]) if 'first_order' in sco[str(cases[0])] else None
                 inv = panel.get(key, [])
-                ratio = float(np.median([x['ratio'] for x in inv])) if inv else None
+                pop = sorted((x['case'], x['rep']) for x in inv)
+                inv_ok = pop == sorted((c, r) for c in cases[:tc['cases']] for r in range(tc['reps']))
+                ratio = float(np.median([x['ratio'] for x in inv])) if (inv and inv_ok) else None
                 tB = float(np.median([x['tB'] for x in inv])) if inv else None
                 tA = float(np.median([.5 * (x['tA1'] + x['tA2']) for x in inv])) if inv else None
                 adt_gate = adt_ok.get(ak)
@@ -117,9 +125,10 @@ def configs_of(res, sc):
                            worst_first_order=None if e1 is None else float(e1.max()),
                            ratio=ratio, t_B=tB, t_A=tA, panel_valid=panel.get(f'__valid__{key}'),
                            job=res.get('job_id'), gpu=res.get('gpu'), commit=res.get('commit'))
-                rec['eligible'] = bool(rec['Ea'] and rec['Eb'] and rec['Ec'])
-                rec['selectable'] = bool(rec['eligible'] and ratio is not None and rec['panel_valid'] and adt_gate is True
-                                         and job_ok and len(rk) == len(cases))
+                rec['eligible'] = bool(rows_ok and rec['Ea'] and rec['Eb'] and rec['Ec'])
+                rec['evidence_ok'] = bool(rows_ok and ratio is not None and rec['panel_valid'] and adt_gate is True and job_ok
+                                          and len(rk) == len(cases))
+                rec['selectable'] = bool(rec['eligible'] and rec['evidence_ok'])
                 out[key] = rec
     return out
 
@@ -208,36 +217,49 @@ def select(C, comp_key):
                 status='selected' if w else 'unavailable')
 
 
-def h1(C):
+def h1(C, ctl):
+    """H1.2-H1.4 on deployed rules. Tri-state verdicts: 'eligible' / 'ineligible' (scientific) / 'unavailable' (evidence or
+    gates missing: ADT gate, timing panel, completeness) / 'blocked' (K1 or K2 did not fire at the setting, A1.10)."""
     out = dict(H12={}, H13={}, H14={})
-    sets = sorted({v['setting'] for v in C.values()})
-    for sn in sets:
-        dep = [dict(v, eligible=v['selectable'], elig_raw=v['eligible']) for v in C.values() if v['setting'] == sn and v['deployed']]   # gates applied
+
+    def verdict(v, sn):
+        if v is None:
+            return 'not run'
+        c = ctl.get(sn, {})
+        if not (c.get('K1_fires') and c.get('K2_fires')):
+            return 'blocked (K1/K2 did not fire)'
+        if v['kind'] == 'qn' and not c.get('K3_fires'):
+            return 'blocked (K3 did not fire)'
+        if not v['eligible']:
+            return 'ineligible'
+        return 'eligible' if v['adt_gate'] is True and v['evidence_ok'] else 'unavailable (evidence)'
+    for sn in sorted({v['setting'] for v in C.values()}):
+        dep = [v for v in C.values() if v['setting'] == sn and v['deployed']]
         get = lambda solver, sch, dt: next((v for v in dep if v['solver'] == solver and v['scheme'] == sch
                                             and abs(v['dt'] - dt) < 1e-9), None)
         for sch in ('CN', 'BDF2'):
-            x = get('fsp-K1', sch, .025)
-            out['H12'][f'{sn}|{sch}'] = None if x is None else x['eligible']
+            out['H12'][f'{sn}|{sch}'] = verdict(get('fsp-K1', sch, .025), sn)
             for dt in (.0125, .05 / 3, .025):
                 for k in ('k1', 'k4', 'kinf'):
-                    x = get(f'qn-{k}', sch, dt)
-                    out['H13'][f'{sn}|{sch}|{dt:.8g}|{k}'] = None if x is None else x['eligible']
+                    out['H13'][f'{sn}|{sch}|{dt:.8g}|{k}'] = verdict(get(f'qn-{k}', sch, dt), sn)
                 fs2 = get('fs-K2', sch, dt)
-                qs = [get(f'qn-{k}', sch, dt) for k in ('k1', 'k4', 'kinf')]
-                qs = [q for q in qs if q is not None and q['eligible'] and q['ratio'] is not None]
+                qs = [q for q in (get(f'qn-{k}', sch, dt) for k in ('k1', 'k4', 'kinf'))
+                      if q is not None and verdict(q, sn) == 'eligible']
+                vf = verdict(fs2, sn)
                 if not qs:
-                    v = 'unavailable'
-                    best = None
+                    v, best = 'unavailable (no eligible QN with valid timing)', None
                 else:
                     best = min(qs, key=lambda q: q['ratio'])
-                    if fs2 is None or not fs2['elig_raw']:
+                    if vf == 'ineligible':
                         v = 'rescue'
+                    elif vf != 'eligible':
+                        v = f'unavailable (FS-K2 {vf})'
                     else:
                         v = 'pass (screening)' if best['ratio'] <= .6 * fs2['ratio'] else 'fail (screening)'
-                out['H14'][f'{sn}|{sch}|{dt:.8g}'] = dict(verdict=v, qn=None if best is None else f"{best['setting']}|{best['rule']}|{best['spec']}",
-                                                         fs2=None if fs2 is None else f"{fs2['setting']}|{fs2['rule']}|{fs2['spec']}",
-                                                         ratio_screen=None if best is None or fs2 is None or fs2['ratio'] is None
-                                                         else best['ratio'] / fs2['ratio'])
+                out['H14'][f'{sn}|{sch}|{dt:.8g}'] = dict(
+                    verdict=v, qn=None if best is None else f"{best['setting']}|{best['rule']}|{best['spec']}",
+                    fs2=None if fs2 is None else f"{fs2['setting']}|{fs2['rule']}|{fs2['spec']}",
+                    ratio_screen=None if best is None or v not in ('pass (screening)', 'fail (screening)') else best['ratio'] / fs2['ratio'])
     return out
 
 
@@ -260,17 +282,14 @@ def main():
         Wz = np.load(Path(rp) / 'W_grid.npz')
         if k9r is None:
             k9r = k9(res, Wz, SC.glat)
-    # controls block the claims they protect (A1.10): K1/K2 -> every H1 eligibility verdict of the setting; K3 -> QN configs
+    # controls block the claims they protect (A1.10): K1/K2 -> the H1 verdicts of the setting (in h1); K3 -> QN eligibility
     for k, v in C.items():
         c = ctl.get(v['setting'], {})
-        if not (c.get('K1_fires') and c.get('K2_fires')):
-            v['selectable'] = False
-            v['blocked_by'] = 'K1/K2 did not fire'
         if v['kind'] == 'qn' and not c.get('K3_fires'):
             v['selectable'] = False
             v['blocked_by'] = 'K3 did not fire'
     sel = {name: select(C, key) for name, key in COMPARATORS.items() if key in C}
-    out = dict(label=LABEL, jobs=jobs, configs=C, controls=ctl, K9=k9r, H11=h11, H1=h1(C), H2=sel)
+    out = dict(label=LABEL, jobs=jobs, configs=C, controls=ctl, K9=k9r, H11=h11, H1=h1(C, ctl), H2=sel)
     Path(a.out).write_text(json.dumps(out, indent=1, default=float) + '\n')
     for k, v in sel.items():
         print(k, v['status'], v['winner'], v['S_screen'], 'B*', v['B_star'], v['S_BE_screen'])

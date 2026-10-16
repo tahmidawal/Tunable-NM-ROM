@@ -1,0 +1,43 @@
+{
+ "attempt": "g2",
+ "driver": "s3run",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "dts": [
+  0.01,
+  0.0125,
+  0.016666666666666666,
+  0.025
+ ],
+ "mode": "grid",
+ "settings": [
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat32768",
+   "reduced": [
+    "lat16384",
+    "gl24"
+   ]
+  },
+  {
+   "name": "W768",
+   "bank": "W1024",
+   "Rp": 768,
+   "a": 6,
+   "rule": "lat32768",
+   "reduced": [
+    "lat16384"
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 4,
+  "reps": 2,
+  "burn": 0.1,
+  "seed": 20261014
+ }
+}

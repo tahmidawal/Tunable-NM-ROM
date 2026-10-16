@@ -23,67 +23,94 @@ import analyze as AN
 FAMILIES = ('UB', 'UC', 'CC', 'PS')
 
 
-def candidates(f1, cases):
-    """{family: [dict(key, e, eta, cost, admissible, why)]} from an f1 result.json."""
-    out = {f: [] for f in FAMILIES}
+def validate(fam, key, ent, cal_ok, cases):
+    """One admissibility validator for real and synthetic (K10) entries: calibrated; converged with complete evidence and
+    finite scores on every one of the cases; hash-checked finite positive warm timings. Returns the candidate record with
+    per-case errors, eta and reference eligibility keyed by case id."""
+    cs = ent.get('cases', {})
+    why = []
+    if not cal_ok:
+        why.append('not calibrated')
+    if sorted(int(j) for j in cs) != sorted(cases):
+        why.append('case population')
+    if not all(c.get('converged') is True and np.isfinite(c.get('e', np.nan)) for c in cs.values()):
+        why.append('not converged / non-finite')
+    w = ent.get('warm') or {}
+    times = [x.get('seconds') for x in w.get('times', [])]
+    if not (times and w.get('hashes_ok') is True and np.isfinite(times).all() and min(times) > 0):
+        why.append('warm timing')
+    e = {int(j): c.get('e', np.nan) for j, c in cs.items()}
+    eta = {int(j): c.get('eps_ref', np.nan) for j, c in cs.items()}
+    el = {int(j): c.get('eligible', False) for j, c in cs.items()}
+    return dict(family=fam, key=key, e=e, eta=eta, eligible=el, cost=float(np.median(times)) if times else np.inf,
+                admissible=not why, why=why)
 
-    def add(fam, key, ent, cal_ok):
-        cs = ent.get('cases', {})
-        why = []
-        if not cal_ok:
-            why.append('not calibrated')
-        if sorted(int(j) for j in cs) != sorted(cases):
-            why.append('case population')
-        if not all(c.get('converged') is True and np.isfinite(c.get('e', np.nan)) for c in cs.values()):
-            why.append('not converged / non-finite')
-        w = ent.get('warm') or {}
-        times = [x.get('seconds') for x in w.get('times', [])]
-        if not (times and w.get('hashes_ok') is True and np.isfinite(times).all() and min(times) > 0):
-            why.append('warm timing')
-        e = np.array([cs[str(j)]['e'] if str(j) in cs else np.nan for j in cases], float)
-        eta = np.array([cs[str(j)].get('eps_ref', np.nan) if str(j) in cs else np.nan for j in cases], float)
-        out[fam].append(dict(key=key, e=e, eta=eta, cost=float(np.median(times)) if times else np.inf,
-                             admissible=not why, why=why))
+
+def candidates(f1, cases):
+    out = {f: [] for f in FAMILIES}
     for k, v in f1['fom']['fd'].items():
         fam = k.split('|')[0]
-        add(fam, v.get('key', k), v, v.get('calibration', {}).get('chosen') is not None)
+        out[fam].append(validate(fam, v.get('key', k), v, v.get('calibration', {}).get('chosen') is not None, cases))
     for k, v in f1['fom']['ps'].items():
-        add('PS', k, v, True)
+        out['PS'].append(validate('PS', k, v, True, cases))
     return out
 
 
-def match_one(rom, cands, k10=True):
-    """rom: dict(e, eta, label) on the cases; cands: one family's list. Returns the match record."""
-    pool = list(cands)
-    if k10:
-        n = len(rom['e'])
-        bad1 = dict(key='K10|unconverged', e=np.zeros(n), eta=rom['eta'], cost=0., admissible=False, why=['not converged / non-finite'])
-        bad2 = dict(key='K10|inaccurate', e=10 * np.asarray(rom['e']), eta=rom['eta'], cost=0., admissible=True, why=[])
-        pool += [bad1, bad2]
+def aligned(rom, cand):
+    """ROM and FOM errors on the common reference-eligible cases (ROM ranked ids that the FOM record also marks eligible);
+    eta must agree (same reference, same store)."""
+    ids = [j for j in rom['ranked_ids'] if cand['eligible'].get(j)]
+    er = np.array([rom['e'][rom['ranked_ids'].index(j)] for j in ids])
+    eta = np.array([rom['eta'][rom['ranked_ids'].index(j)] for j in ids])
+    ef = np.array([cand['e'][j] for j in ids])
+    assert np.allclose(eta, [cand['eta'][j] for j in ids], rtol=0, atol=1e-15), 'eta differs between ROM and FOM scores'
+    return ef, er, eta, ids
+
+
+def k10_entries(rom, cases, template):
+    """Two synthetic raw entries through the SAME validator (audit select-1): (a) one unconverged case, otherwise perfect
+    and zero-cost; (b) converged and zero-cost with errors beyond the ROM's upper endpoint on every case by a margin
+    (e = 10 e_ROM + 4 eta + 1e-3), so the tie rule must reject it at any accuracy level."""
+    er = {j: rom['e'][rom['ranked_ids'].index(j)] if j in rom['ranked_ids'] else 1. for j in cases}
+    eta = {j: rom['eta'][rom['ranked_ids'].index(j)] if j in rom['ranked_ids'] else 0. for j in cases}
+    warm = dict(times=[dict(case=cases[0], seconds=1e-9, hash_ok=True)], hashes_ok=True)
+    a = dict(cases={str(j): dict(converged=(i != 0), e=0., eps_ref=eta[j], eligible=True) for i, j in enumerate(cases)}, warm=warm)
+    b = dict(cases={str(j): dict(converged=True, e=10 * er[j] + 4 * eta[j] + 1e-3, eps_ref=eta[j], eligible=True) for j in cases},
+             warm=warm)
+    return [validate('K10', 'K10|unconverged', a, True, cases), validate('K10', 'K10|inaccurate', b, True, cases)]
+
+
+def match_one(rom, cands, cases):
+    pool = list(cands) + k10_entries(rom, cases, None)
     adm = [c for c in pool if c['admissible']]
+    real_adm = [c for c in adm if not c['key'].startswith('K10')]
     ok = []
     for c in adm:
-        med, wst = AN.ties_or_beats(c['e'], rom['e'], rom['eta'])
+        ef, er, eta, ids = aligned(rom, c)
+        if not ids:
+            continue
+        med, wst = AN.ties_or_beats(ef, er, eta)
         if med and wst:
             ok.append(c)
-    k10_fail = any(c['key'].startswith('K10') for c in ok)
-    if k10_fail:
+    if any(c['key'].startswith('K10') for c in ok):
         return dict(status='K10 FAILED: a synthetic entry was matched', matched=None)
+    if not real_adm:
+        return dict(status='unavailable (no admissible FOM configuration in the family)', matched=None,
+                    inadmissible={c['key']: c['why'] for c in cands})
     if not ok:
-        return dict(status='no matched FOM in the ladder (ROM more accurate than every admissible configuration)',
-                    matched=None, admissible=[c['key'] for c in adm if not c['key'].startswith('K10')])
+        return dict(status='no joint median-and-worst match in the ladder', matched=None, admissible=[c['key'] for c in real_adm])
     best = min(ok, key=lambda c: c['cost'])
-    real = [c for c in adm if not c['key'].startswith('K10')]
-    cheapest = min(real, key=lambda c: c['cost'])
-    return dict(status='matched', matched=best['key'], cost_screen=best['cost'], median=float(np.median(best['e'])),
-                worst=float(np.max(best['e'])), boundary=best['key'] == cheapest['key'], upper_bound=True,
-                n_admissible=len(real), n_matching=len([c for c in ok if not c['key'].startswith('K10')]))
+    cheapest = min(real_adm, key=lambda c: c['cost'])
+    ef, er, eta, ids = aligned(rom, best)
+    return dict(status='matched', matched=best['key'], cost_screen=best['cost'], median=float(np.median(ef)),
+                worst=float(np.max(ef)), ranked_cases=len(ids), boundary=best['key'] == cheapest['key'], upper_bound=True,
+                n_admissible=len(real_adm), n_matching=len(ok))
 
 
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--f1', required=True)
-    ap.add_argument('--roms', required=True, help='json: {label: {e: [...64], eta: [...64]}} on cases 0..63')
+    ap.add_argument('--roms', required=True, help='checks/rom-scores.json: {label: {key, e, eta, ranked_ids, eligible}}')
     ap.add_argument('--out', required=True)
     a = ap.parse_args()
     f1 = json.loads((Path(a.f1) / 'result.json').read_text())
@@ -95,10 +122,11 @@ def main():
                '(finite FOM ladder); boundary = matched at the family\'s cheapest admissible configuration', matches={},
                admissibility={f: {c['key']: c['why'] for c in v} for f, v in C.items()})
     for lab, r in roms.items():
-        r = dict(e=np.asarray(r['e'], float), eta=np.asarray(r['eta'], float))
-        out['matches'][lab] = {f: match_one(r, C[f]) for f in FAMILIES}
-    out['K10_all_rejected'] = all('K10' not in str(m.get('matched')) and 'K10 FAILED' not in m['status']
-                                  for v in out['matches'].values() for m in v.values())
+        if r.get('eligibility') != 'eligible':          # only eligible configurations receive H4.3 matches
+            out['matches'][lab] = {f: dict(status=f"ROM not eligible ({r.get('eligibility')})", matched=None) for f in FAMILIES}
+            continue
+        out['matches'][lab] = {f: match_one(r, C[f], cases) for f in FAMILIES}
+    out['K10_all_rejected'] = all('K10 FAILED' not in m['status'] for v in out['matches'].values() for m in v.values())
     Path(a.out).write_text(json.dumps(out, indent=1, default=float) + '\n')
     print(json.dumps({k: {f: (m['status'][:20], m.get('matched')) for f, m in v.items()} for k, v in out['matches'].items()}, indent=1))
 

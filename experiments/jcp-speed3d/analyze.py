@@ -46,6 +46,17 @@ def spec_parts(spec):
     return p[0], p[1], float(p[2]), p[3]
 
 
+def common(a, c):
+    """Errors of records a and c on their common reference-eligible (ranked) case ids, with eta (which must agree)."""
+    ia, ic = dict(zip(a['ranked_ids'], range(len(a['ranked_ids'])))), dict(zip(c['ranked_ids'], range(len(c['ranked_ids']))))
+    ids = [j for j in a['ranked_ids'] if j in ic]
+    ea = np.array([a['e'][ia[j]] for j in ids])
+    ec = np.array([c['e'][ic[j]] for j in ids])
+    eta = np.array([a['eta'][ia[j]] for j in ids])
+    assert np.allclose(eta, [c['eta'][ic[j]] for j in ids], rtol=0, atol=1e-15), 'reference uncertainty differs'
+    return ea, ec, eta, ids
+
+
 def ties_or_beats(ea, ec, eta):
     """Step 2 rule (interval overlap with endpoint propagation) on median and worst."""
     ea, ec, eta = np.asarray(ea), np.asarray(ec), np.asarray(eta)
@@ -101,6 +112,7 @@ def configs_of(res, sc):
                 nst = sum(r['nonstationary'] for r in rs)
                 nstep = sum(r['steps_n'] for r in rs)
                 sco = sc['scores'][key]
+                scores_ok = all(str(j) in sco and np.isfinite(sco[str(j)]['e']) for j in cases)
                 rk = [j for j in cases if str(j) in sco and sco[str(j)]['eligible']]   # E0: ineligible scored, not ranked
                 e = np.array([sco[str(j)]['e'] for j in rk])
                 if len(rk) == 0:
@@ -120,14 +132,17 @@ def configs_of(res, sc):
                            Ec=bool(adt_valid and ec_pass(dmax)), dist_worst=float(dmax.max()), ranked_cases=len(rk),
                            unranked_cases=len(cases) - len(rk),
                            adt_valid=adt_valid, adt_gate=adt_gate, median=float(np.median(e)), worst=float(e.max()),
-                           e=e.tolist(), eta=eta.tolist(),
+                           e=e.tolist(), eta=eta.tolist(), ranked_ids=list(rk),
                            median_first_order=None if e1 is None else float(np.median(e1)),
                            worst_first_order=None if e1 is None else float(e1.max()),
                            ratio=ratio, t_B=tB, t_A=tA, panel_valid=panel.get(f'__valid__{key}'),
                            job=res.get('job_id'), gpu=res.get('gpu'), commit=res.get('commit'))
-                rec['eligible'] = bool(rows_ok and rec['Ea'] and rec['Eb'] and rec['Ec'])
-                rec['evidence_ok'] = bool(rows_ok and ratio is not None and rec['panel_valid'] and adt_gate is True and job_ok
-                                          and len(rk) == len(cases))
+                # evidence for eligibility (A4.5; audit select-1): complete rows, verified ADT, ADT tight/tighter gate passed
+                ev_elig = bool(rows_ok and adt_valid and adt_gate is True and job_ok)
+                rec['eligibility'] = ('unresolved' if not ev_elig else
+                                      ('eligible' if (rec['Ea'] and rec['Eb'] and rec['Ec']) else 'ineligible'))
+                rec['eligible'] = rec['eligibility'] == 'eligible'
+                rec['evidence_ok'] = bool(ev_elig and scores_ok and len(rk) > 0 and ratio is not None and rec['panel_valid'])
                 rec['selectable'] = bool(rec['eligible'] and rec['evidence_ok'])
                 out[key] = rec
     return out
@@ -190,31 +205,38 @@ def k9(res, Wz, glat_fn):
     return out
 
 
+def pick(C, keys):
+    """A1.7: cheapest by screening ratio; within 3 % cost ties the lower median, then the lower worst."""
+    if not keys:
+        return None
+    keys = sorted(keys, key=lambda k: C[k]['ratio'])
+    best = C[keys[0]]['ratio']
+    tied = [k for k in keys if C[k]['ratio'] <= 1.03 * best]
+    return sorted(tied, key=lambda k: (C[k]['median'], C[k]['worst']))[0]
+
+
 def select(C, comp_key):
     c = C[comp_key]
-    cand = [k for k, v in C.items() if v['selectable']]
+    if not c['selectable']:            # the comparator itself needs eligibility and comparison evidence (audit select-1)
+        return dict(comparator=comp_key, status=f"comparator unavailable ({c['eligibility']}, evidence_ok={c['evidence_ok']})",
+                    winner=None, B_star=None, comparator_eligibility=c['eligibility'])
     match = []
-    for k in cand:
-        med, wst = ties_or_beats(C[k]['e'], c['e'], C[k]['eta'])
-        # eta per case is the same reference uncertainty for both arms (same case): endpoint propagation uses +/- eta
-        if med and wst:
+    for k, v in C.items():
+        if not v['selectable']:
+            continue
+        ea, ec, eta, ids = common(v, c)
+        med, wst = ties_or_beats(ea, ec, eta)
+        if med and wst and len(ids) > 0:
             match.append(k)
-
-    def pick(keys):
-        if not keys:
-            return None
-        keys = sorted(keys, key=lambda k: C[k]['ratio'])
-        best = C[keys[0]]['ratio']
-        tied = [k for k in keys if C[k]['ratio'] <= 1.03 * best]
-        return sorted(tied, key=lambda k: (C[k]['median'], C[k]['worst']))[0]
-    w = pick(match)
-    b = pick([k for k in match if C[k]['scheme'] == 'BE'])
-    return dict(comparator=comp_key, comparator_eligible=c['eligible'], comparator_median=c['median'],
-                comparator_worst=c['worst'], comparator_ratio=c['ratio'], n_matching=len(match),
-                winner=w, B_star=b,
+    w = pick(C, match)
+    b = pick(C, [k for k in match if C[k]['scheme'] == 'BE'])
+    return dict(comparator=comp_key, comparator_eligibility=c['eligibility'], comparator_median=c['median'],
+                comparator_worst=c['worst'], comparator_ratio=c['ratio'], n_matching=len(match), winner=w, B_star=b,
+                winner_is_comparator=w == comp_key,
                 S_screen=None if w is None else c['ratio'] / C[w]['ratio'],
                 S_BE_screen=None if b is None else c['ratio'] / C[b]['ratio'],
-                status='selected' if w else 'unavailable')
+                decomposition='available' if b is not None else 'unavailable (no eligible BE configuration ties-or-beats C)',
+                status='selected' if w else 'unavailable (no eligible configuration ties-or-beats C)')
 
 
 def h1(C, ctl):
@@ -230,9 +252,11 @@ def h1(C, ctl):
             return 'blocked (K1/K2 did not fire)'
         if v['kind'] == 'qn' and not c.get('K3_fires'):
             return 'blocked (K3 did not fire)'
-        if not v['eligible']:
+        if v['eligibility'] == 'unresolved':
+            return 'unavailable (evidence)'
+        if v['eligibility'] == 'ineligible':
             return 'ineligible'
-        return 'eligible' if v['adt_gate'] is True and v['evidence_ok'] else 'unavailable (evidence)'
+        return 'eligible' if v['evidence_ok'] else 'unavailable (evidence)'
     for sn in sorted({v['setting'] for v in C.values()}):
         dep = [v for v in C.values() if v['setting'] == sn and v['deployed']]
         get = lambda solver, sch, dt: next((v for v in dep if v['solver'] == solver and v['scheme'] == sch
@@ -249,7 +273,9 @@ def h1(C, ctl):
                 if not qs:
                     v, best = 'unavailable (no eligible QN with valid timing)', None
                 else:
-                    best = min(qs, key=lambda q: q['ratio'])
+                    bk = pick({f"{q['setting']}|{q['rule']}|{q['spec']}": q for q in qs},
+                              [f"{q['setting']}|{q['rule']}|{q['spec']}" for q in qs])
+                    best = next(q for q in qs if f"{q['setting']}|{q['rule']}|{q['spec']}" == bk)
                     if vf == 'ineligible':
                         v = 'rescue'
                     elif vf != 'eligible':
@@ -268,13 +294,15 @@ def main():
     ap.add_argument('--runs', nargs='+', required=True)
     ap.add_argument('--out', default=str(HERE / 'checks' / 'analysis-grid.json'))
     a = ap.parse_args()
-    C, ctl, h11, jobs, k9r = {}, {}, {}, [], None
+    C, ctl, h11, jobs, k9r, dup = {}, {}, {}, [], None, []
     import score3 as SC
     for rp in a.runs:
         res, sc = load_job(rp)
         jobs.append(dict(attempt=res['config']['attempt'], job=res.get('job_id'), gpu=res.get('gpu'), commit=res.get('commit'),
                          complete=res.get('complete'), K4=sc['controls'], dist_gate=sc['gates']))
-        C.update(configs_of(res, sc))
+        new = configs_of(res, sc)
+        dup += sorted(set(new) & set(C))
+        C.update(new)
         ctl.update(controls(res, sc))
         for sn, sv in res['settings'].items():
             rule = next(iter(sv['rules']))
@@ -288,8 +316,25 @@ def main():
         if v['kind'] == 'qn' and not c.get('K3_fires'):
             v['selectable'] = False
             v['blocked_by'] = 'K3 did not fire'
+    # population (audit select-1): every planned grid configuration of g1-g3 present exactly once
+    import s3run as SR
+    import s3common as S
+    want = set()
+    for att in ('g1', 'g2', 'g3'):
+        cfg = json.loads((HERE / 'configs' / f'{att}.json').read_text())
+        for s_ in cfg['settings']:
+            for rule in [s_['rule']] + s_.get('reduced', []):
+                want |= {f"{s_['name']}|{rule}|{S.spec_key(x)}" for x in SR.grid_plan(s_, rule, cfg)[1] if len(x) <= 4}
+    population = dict(missing=sorted(want - set(C)), extra=sorted(set(C) - want), duplicates=dup)
+    complete = not population['missing'] and not population['duplicates']
+    k9ok = bool(k9r and k9r.get('fires'))
+    if not (complete and k9ok):                      # A1.10 / A4.5: no selection on a partial population or without K9
+        for v in C.values():
+            v['selectable'] = False
+            v['blocked_by'] = 'population incomplete' if not complete else 'K9 did not fire'
     sel = {name: select(C, key) for name, key in COMPARATORS.items() if key in C}
-    out = dict(label=LABEL, jobs=jobs, configs=C, controls=ctl, K9=k9r, H11=h11, H1=h1(C, ctl), H2=sel)
+    out = dict(label=LABEL, jobs=jobs, population=population, K9_gate=k9ok, configs=C, controls=ctl, K9=k9r, H11=h11,
+               H1=h1(C, ctl), H2=sel)
     Path(a.out).write_text(json.dumps(out, indent=1, default=float) + '\n')
     for k, v in sel.items():
         print(k, v['status'], v['winner'], v['S_screen'], 'B*', v['B_star'], v['S_BE_screen'])

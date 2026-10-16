@@ -48,13 +48,15 @@ def screen():
     sel = dict(analysis_sha256=sha(HERE / 'checks' / 'analysis-grid.json'), comparators={}, h14_pairs=[], note=(
         'screening selections on the validation cohort 923801 (common-baseline ratios); final verdicts only from the p1 '
         'confirmation panels (A1.5)'))
+    for c, key in COMP.items():                         # comparators first: canonical labels (audit select-1)
+        labels[c] = key
     for c, key in COMP.items():
-        lab(c, key)
         h = A['H2'].get(c, {})
         w = lab(f'W_{c}', h.get('winner'))
         b = lab(f'B_{c}', h.get('B_star'))
         sel['comparators'][c] = dict(key=key, winner=h.get('winner'), winner_label=w, B_star=h.get('B_star'), B_star_label=b,
-                                     status=h.get('status'), S_screen=h.get('S_screen'), S_BE_screen=h.get('S_BE_screen'))
+                                     status=h.get('status'), S_screen=h.get('S_screen'), S_BE_screen=h.get('S_BE_screen'),
+                                     winner_is_comparator=h.get('winner') == key, decomposition=h.get('decomposition'))
     for cell, v in A['H1']['H14'].items():
         if v['verdict'] in ('pass (screening)', 'fail (screening)'):
             q = lab(f'H14q_{cell}', v['qn'])
@@ -68,7 +70,8 @@ def screen():
         for l_ in (c, v['winner_label'], v['B_star_label']):
             if l_ and l_ not in roms:
                 cfg = C[labels[l_]]
-                roms[l_] = dict(key=labels[l_], e=cfg['e'], eta=cfg['eta'], ranked_cases=cfg['ranked_cases'])
+                roms[l_] = dict(key=labels[l_], e=cfg['e'], eta=cfg['eta'], ranked_ids=cfg['ranked_ids'],
+                                eligibility=cfg['eligibility'], selectable=cfg['selectable'])
     (HERE / 'checks' / 'rom-scores.json').write_text(json.dumps(roms, indent=1) + '\n')
     # p1
     configs = []
@@ -78,11 +81,18 @@ def screen():
     winners = [v['winner_label'] for v in sel['comparators'].values() if v['winner_label']]
     bstars = [v['B_star_label'] for v in sel['comparators'].values() if v['B_star_label']]
     fin = sorted(set(winners + bstars))
-    confirm = []
+    confirm, identity = [], []
     for c, v in sel['comparators'].items():
         for l_ in (v['winner_label'], v['B_star_label']):
-            if l_ and [c, l_] not in confirm and l_ != c:
+            if l_ and l_ == c:
+                identity.append(dict(comparator=c, selected=l_, ratio=1.0, note='winner/B* is the comparator itself: ratio 1, H2 fails the bar'))
+            elif l_ and [c, l_] not in confirm:
                 confirm.append([c, l_])
+        w_, b_ = v['winner_label'], v['B_star_label']
+        if w_ and b_ and w_ != b_ and [b_, w_] not in confirm:   # A2.7(b): each decomposition factor from its own panel
+            confirm.append([b_, w_])
+    sel['identity_pairs'] = identity
+    (HERE / 'checks' / 'SELECTION-SCREEN.json').write_text(json.dumps(sel, indent=1) + '\n')
     confirm += [[p['fs2'], p['qn']] for p in sel['h14_pairs']]
     settings = sorted({split(k)[0] for k in labels.values()})
     sets = []
@@ -109,7 +119,9 @@ def mesh():
     assert fm['K10_all_rejected'], 'K10 did not reject the synthetic FOM entries: no match may be used'
     labels = sel['labels']
     winners = [v['winner_label'] for v in sel['comparators'].values() if v['winner_label']]
+    scores = json.loads((HERE / 'checks' / 'rom-scores.json').read_text())
     roms_l = sorted(set(winners + ['C_old', 'C_W1024']) & set(labels))
+    roms_l = [l_ for l_ in roms_l if scores.get(l_, {}).get('eligibility') == 'eligible']   # matches only for eligible ROMs
     roms = [dict(label=l_, setting=split(labels[l_])[0], rule=split(labels[l_])[1], spec=split(labels[l_])[2]) for l_ in roms_l]
     matched = []
     for l_ in roms_l:

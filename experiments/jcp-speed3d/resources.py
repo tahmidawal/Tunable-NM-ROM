@@ -128,6 +128,81 @@ def project_fom(cfg, smoke):
     return total / 3600, detail
 
 
+def rule_m(rule):
+    import s3common as S
+    return len(S.load_rules([rule])[rule][1])
+
+
+def project_prof(cfg, smoke):
+    """p1: every term at its measured smoke cost x 2 (conservative); conv-rule runs scaled by the point-count ratio."""
+    import s3common as S
+    res = json.loads((smoke / 'smkgrid' / 'result.json').read_text())
+    tab = grid_table(res)
+    b, tc = cfg['prof'], cfg['timing']
+    nc = cfg['cohort_count']
+    lab = {c['label']: c for c in b['configs']}
+    run = {}
+    for l_, c in lab.items():
+        t, _ = lookup(tab, c['setting'], c['spec'])
+        sp = S.parse_key(c['spec'])
+        ta, _ = lookup(tab, c['setting'], S.spec_key(('ad', sp[1], sp[2], 'tight')))
+        run[l_] = (t, ta)
+    tot = 0.
+    for l_, (t, ta) in run.items():
+        tot += 60 + nc * (t['run'] + t['cert'])                                     # mesh path
+    for l_ in b['mf']:
+        t, ta = run[l_]
+        tot += 120 + nc * (2 * (t['run'] + t['cert']) + ta['run'])                 # mf + K5 + ADT mf
+    for l_ in b['profile']:
+        t, _ = run[l_]
+        tot += tc['cases'] * tc['reps'] * 10 * 3 * t['run'] + 300                  # ~10 subjects
+    for l_ in b['batch']['labels']:
+        t, _ = run[l_]
+        tot += sum(5 * B * t['run'] for B in b['batch']['sizes']) + 300
+    for la, lb in b['confirm']:
+        tot += b['confirm_cases'] * b['confirm_reps'] * 3 * max(run[la][0]['run'], run[lb][0]['run'])
+    for l_, crule in b['conv'].items():
+        t, _ = run[l_]
+        f = rule_m(crule) / rule_m(lab[l_]['rule'])
+        tot += 300 + nc * (t['run'] + t['cert']) * f
+    for l_ in b['reduced_adt']:
+        tot += 16 * run[l_][1]['run']
+    return 2 * tot / 3600, dict(n_configs=len(lab))
+
+
+def project_mesh(cfg, smoke):
+    """m1: FOM solve time per mesh from the smoke (L64 / L128 smkmesh, L384 smkmesh384 pilot; L256 interpolated as L^4
+    between 128 and 384), ROM costs from the smoke grid; every term x 2."""
+    import s3common as S
+    res = json.loads((smoke / 'smkgrid' / 'result.json').read_text())
+    tab = grid_table(res)
+    meshes = {}
+    for p in (smoke / 'smkmesh' / 'result.json', smoke.parent.parent.parent / 'smkmesh384' / 'archive' / 'output' / 'smkmesh384' / 'result.json'):
+        r = json.loads(Path(p).read_text())
+        for L, E in r['mesh']['per_L'].items():
+            ts = [c['seconds_first'] for v in E['fom'].values() if 'cases' in v for c in v['cases'].values()]
+            if ts:
+                meshes[int(L)] = max(ts)
+    if 256 not in meshes:
+        meshes[256] = meshes[128] * 16 if 384 not in meshes else max(meshes[128] * 16, meshes[384] * (256 / 384) ** 4)
+    b, tc = cfg['mesh'], cfg['timing']
+    nc = cfg['cohort_count']
+    tot = 0.
+    for L in b['Ls']:
+        tf = meshes[L]
+        ncal = len(b['calib_small'] if L <= 128 else b['calib_large'])
+        nf = len(b['same'])
+        tot += nf * (3 * ncal + b['acc_cases']) * tf
+        tot += len(b['matched']) * tc['cases'] * meshes.get(128, tf)
+        for r in b['roms']:
+            t, _ = lookup(tab, r['setting'], r['spec'])
+            sp = S.parse_key(r['spec'])
+            ta, _ = lookup(tab, r['setting'], S.spec_key(('ad', sp[1], sp[2], 'tight')))
+            tot += 120 + nc * (t['run'] + t['cert'] + ta['run']) + 8 * ta['run']
+            tot += tc['cases'] * tc['reps'] * (nf + len(b['matched'])) * (tf + 2 * t['run'])
+    return 2 * tot / 3600, dict(fom_seconds_per_solve=meshes)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--smoke', required=True)
@@ -144,13 +219,18 @@ def main():
         h, det = project_grid(cfg, smoke)
     elif cfg['mode'] == 'fom':
         h, det = project_fom(cfg, smoke)
+    elif cfg['mode'] == 'prof':
+        h, det = project_prof(cfg, smoke)
+    elif cfg['mode'] == 'mesh':
+        h, det = project_mesh(cfg, smoke)
     else:
-        raise SystemExit('certificates for prof / mesh / rep are written when their configs exist')
+        raise SystemExit('certificates for rep are written when its config exists')
     setup = 0.5
     out = dict(attempt=a.config, config_sha256=hashlib.sha256(cfgp.read_bytes()).hexdigest(), gpu=a.gpu,
                hours_allocated=a.hours, projected_hours=h + setup, **{'projected_hours_x1.5': 1.5 * (h + setup)},
                detail=det, smoke=str(smoke), smoke_acceptance=acc['verdict'],
-               smoke_job=json.loads((smoke / 'smkgrid' / 'result.json').read_text()).get('job_id'))
+               smoke_job=json.loads((smoke / 'smkgrid' / 'result.json').read_text()).get('job_id'),
+               note='estimates with headroom from measured smoke costs (not demonstrated upper bounds); prof / mesh terms x 2')
     (HERE / 'checks' / f'resources-{a.config}.json').write_text(json.dumps(out, indent=1) + '\n')
     print(a.config, f"projected {h + setup:.2f} h, x1.5 = {1.5 * (h + setup):.2f} h of {a.hours}")
 

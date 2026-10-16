@@ -474,6 +474,23 @@ def mode_mesh(cx):
                 E['fom'][fk].setdefault('matched_for', []).append(rl)
             if sp not in subj:
                 subj.append(sp)
+        # H4.3 (audit select-1): at L = 64 the matched FOMs are also timed against the selected ROM itself (mesh path, n = 65),
+        # whose accuracy the match was made on; the mesh-free panels below are the H4.1 / H4.2 diagnostics
+        if L == 64:
+            mfoms = [FR.parse(fk) for _, fk in blk.get('matched', [])]
+            for i, r in enumerate(blk['roms']):
+                sn, rule, sp = r['setting'], r['rule'], S.parse_key(r['spec'])
+                mine = [FR.parse(fk) for rl, fk in blk.get('matched', []) if rl == r['label']]
+                if not mine:
+                    continue
+                cx.rollouts(sn, rule, [sp], cases[:tc['cases']])          # mesh-path accuracy-phase hashes
+                A = cx.rom_subject(sn, rule, sp, name=f"{r['label']}|meshpath|n65")
+                Bs = [fom_subject(cx, foms, x, inputs, hashes) for x in dict.fromkeys(mine)]
+                try:
+                    cx.time_panel(f'match|{r["label"]}', A, Bs, int(tc['seed']) + 900 + i, tc['cases'], tc['reps'])
+                except Exception as e:  # noqa: BLE001
+                    E.setdefault('panel_failures', {})[f'match|{r["label"]}'] = dict(error=repr(e)[:400])
+            del mfoms
         # timing: A = each ROM configuration at this mesh, Bs = the FOMs above
         for i, r in enumerate(blk['roms']):
             if r['label'] not in datas:

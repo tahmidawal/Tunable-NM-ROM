@@ -121,7 +121,8 @@ def mesh():
     if 'W256' not in settings:
         sets.append(dict(MC.SETTINGS['W256']))                   # G5/K7 population (A1.9)
     m1 = dict(MC.BASE, attempt='m1', mode='mesh', settings=sets, timing=MC.TIMING, mesh=dict(
-        Ls=[64, 128, 256, 384], roms=roms,         # one job: H4.1 needs every mesh in one job (A1.9); 384 fits (pilot) same=[['UB', 0.01], ['CC', 0.01]], matched=matched,
+        # one job: H4.1 needs every mesh in one job (A1.9); L = 384 fits (pilot smkmesh384)
+        Ls=[64, 128, 256, 384], roms=roms, same=[['UB', 0.01], ['CC', 0.01]], matched=matched,
         calib_small=[0, 1, 2, 3], calib_large=[0, 1], acc_cases=8),
         selection_sha256=sha(HERE / 'checks' / 'SELECTION-SCREEN.json'), fom_match_sha256=sha(HERE / 'checks' / 'fom-match.json'))
     (HERE / 'configs' / 'm1.json').write_text(json.dumps(m1, indent=1) + '\n')

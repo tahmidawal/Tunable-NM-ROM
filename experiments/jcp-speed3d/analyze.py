@@ -247,6 +247,8 @@ def h1(C, ctl):
     def verdict(v, sn):
         if v is None:
             return 'not run'
+        if v.get('blocked_by'):                          # population / K9 / K3 claim gates (audit select-2)
+            return f"blocked ({v['blocked_by']})"
         c = ctl.get(sn, {})
         if not (c.get('K1_fires') and c.get('K2_fires')):
             return 'blocked (K1/K2 did not fire)'
@@ -337,7 +339,7 @@ def main():
                H1=h1(C, ctl), H2=sel)
     Path(a.out).write_text(json.dumps(out, indent=1, default=float) + '\n')
     for k, v in sel.items():
-        print(k, v['status'], v['winner'], v['S_screen'], 'B*', v['B_star'], v['S_BE_screen'])
+        print(k, v['status'], v.get('winner'), v.get('S_screen'), 'B*', v.get('B_star'), v.get('S_BE_screen'))
 
 
 if __name__ == '__main__':

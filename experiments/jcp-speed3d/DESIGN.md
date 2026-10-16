@@ -529,3 +529,15 @@ this setup forges outputs). The standard is the round-6 version: every predicate
 `audits/codex-code-6.md` on, findings that require deliberately fabricated files are recorded as NOTED (not blocking) in the
 audit response and fixed only if cheap; only findings where honest code or honest cluster behaviour could give a false PASS
 or a false FAIL block the smoke. The Codex gates on the job config, the results and the report are unchanged.
+
+---
+
+## Amendment A6 (2026-10-15, before any production result is read; from `audits/codex-select-2.md`)
+
+**H4.3 scope.** The matched-accuracy speed-up of H4.3 is defined for the selected ROM configuration as selected: the
+mesh path at $n=65$, whose E0 errors were matched. Its matched FOM configurations (any mesh, any step) are timed against
+it in one panel of the m1 job (`match|<label>`). The A4.4 timings of the same FOMs against the mesh-free ROM at every mesh
+(`mesh|L<L>|<label>`) are reported as H4.1/H4.2 diagnostics; at a mesh $n>65$ a speed-up is labelled "matched" only if
+that mesh-specific ROM's own E0 median and worst still tie-or-beat-match the FOM configuration (recomputed in the final
+analysis); otherwise it is reported as an unmatched same-job timing with both errors beside it. Claim gates (population,
+K9, K3, evidence) apply to H1 verdicts and to FOM matching exactly as to H2 selection.

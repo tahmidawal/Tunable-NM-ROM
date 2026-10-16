@@ -3,8 +3,9 @@ measured per-run times (same GPU type, H200) and write checks/resources-<attempt
 
 Grid (g1-g3): per setting and spec of the plan, per-case run time, certification time and compile estimate are taken from
 the smoke grid rows of the same setting and spec when present; otherwise from the closest measured proxy, always an upper
-bound: W256 <- M2_512, W512 / W768 <- W1024; a reduced rule <- the same setting's deployed rule; a missing step <- the
-measured step of the same (kind, scheme) with the largest step count scaled by the step-count ratio. Timing panel:
+proxy: W256 <- M2_512, W512 / W768 <- W1024; a reduced rule <- the same setting's deployed rule; a missing step <- the
+measured step of the same (kind, scheme) with the largest step count scaled by the step-count ratio. These are ESTIMATES
+with headroom (allocation x 1.5), not demonstrated upper bounds (audits select-1/-2). Timing panel:
 subjects x cases x reps x (two A runs + one B run + three burn-ins), plus one warm call per subject and case. ADT tighter
 (8 cases) and the replay (the FS-K2 CN 2.5 run cost per failing case, x 15 interventions) are added. FOM (f1): per
 configuration the smoke's measured seconds per solve of the same family and mesh (scaled by stage count), times

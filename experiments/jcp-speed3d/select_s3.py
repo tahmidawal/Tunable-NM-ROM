@@ -121,7 +121,7 @@ def mesh():
     winners = [v['winner_label'] for v in sel['comparators'].values() if v['winner_label']]
     scores = json.loads((HERE / 'checks' / 'rom-scores.json').read_text())
     roms_l = sorted(set(winners + ['C_old', 'C_W1024']) & set(labels))
-    roms_l = [l_ for l_ in roms_l if scores.get(l_, {}).get('eligibility') == 'eligible']   # matches only for eligible ROMs
+    roms_l = [l_ for l_ in roms_l if scores.get(l_, {}).get('selectable') is True]   # matches only for claim-admissible ROMs
     roms = [dict(label=l_, setting=split(labels[l_])[0], rule=split(labels[l_])[1], spec=split(labels[l_])[2]) for l_ in roms_l]
     matched = []
     for l_ in roms_l:

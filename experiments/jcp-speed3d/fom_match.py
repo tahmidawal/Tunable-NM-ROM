@@ -122,8 +122,9 @@ def main():
                '(finite FOM ladder); boundary = matched at the family\'s cheapest admissible configuration', matches={},
                admissibility={f: {c['key']: c['why'] for c in v} for f, v in C.items()})
     for lab, r in roms.items():
-        if r.get('eligibility') != 'eligible':          # only eligible configurations receive H4.3 matches
-            out['matches'][lab] = {f: dict(status=f"ROM not eligible ({r.get('eligibility')})", matched=None) for f in FAMILIES}
+        if not r.get('selectable'):                      # eligible AND evidence AND every claim gate (audit select-2)
+            out['matches'][lab] = {f: dict(status=f"ROM not admissible for claims (eligibility {r.get('eligibility')}, "
+                                                  f"selectable {r.get('selectable')})", matched=None) for f in FAMILIES}
             continue
         out['matches'][lab] = {f: match_one(r, C[f], cases) for f in FAMILIES}
     out['K10_all_rejected'] = all('K10 FAILED' not in m['status'] for v in out['matches'].values() for m in v.values())

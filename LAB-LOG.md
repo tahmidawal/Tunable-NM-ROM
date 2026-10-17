@@ -12,7 +12,24 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-10-09
+# Where things stand — 2026-10-17
+
+**2026-10-17 — references done, combined method done, 3D speed running, full plan audited.**
+- **E0 second-order references (`exp/2026-10-06-jcp-references`): done.**
+  - 3D passes; 2D passes with 13 non-rankable case-kinds.
+  - Sealed cohorts are generated but not opened: **2D 128 physical cases (256 case-kinds), 3D 64 physical cases (128 case-kinds).**
+  - E0's ε_ref is a conditional Richardson estimate. The A10 cross-check rule was changed post data.
+- **Step 2 combined (`exp/2026-10-13-jcp-combined`): done.**
+  - Against E0, second-order stepping at equal cost: 2D median 0.98 → 0.20 %; 3D W1024 median 1.53 → 0.12 %.
+  - 3D worst errors are still 4.4–6.7 %, and there is no 3D speed gain at equal accuracy.
+  - The 3D rule selection is post hoc.
+- **3D speed (`exp/2026-10-14-jcp-speed3d`): running.**
+  - Production jobs g1–g3 and f1 are in namespace `jcp-speed3d`.
+  - Early, unaudited f1 result: a spectral FOM beats the ROM clearly at 64³.
+- **Full experiment plan:** `reports/2026-10-17-full-experiment-plan/` (PLAN.md plus the Codex audit). Verdict NEEDS-RESTATEMENT; see the 2026-10-17 entry.
+- **Still open (user):** merges (7 finished lanes); custody of the sealed-cohort key; the 2D floor check before opening; authorship with Hari; which "k" the advisor means.
+
+## Earlier state — 2026-10-09
 
 **2026-10-09 — first JCP experiment week done.** Four lanes ran and were Codex-gated at every step. All accuracy numbers are provisional because the references are still first-order.
 - **Mechanism (`exp/2026-10-06-jcp-mechanism`).** The off-mesh accuracy gain comes from the exact gradient, not from where the quadrature points sit. Classical quadrature gives the same answer with 4k–14k points instead of every mesh node.
@@ -19055,3 +19072,37 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - A Codex audit had appended to LAB-LOG on main without permission; the lane agent removed it.
   - main has an uncommitted `.gitignore` change (`runs/.harvest.log`) of unknown origin. It is not from this lane and is left untouched.
 - **Open.** Merge decision; 3D fixed-sweep CN with K=3; a chunked builder for Gauss 112³. The 3D speed work continues in `exp/2026-10-14-jcp-speed3d`.
+
+
+## 2026-10-17
+
+### Full experiment plan drafted and Codex-audited (coordinator)
+- **Why.** The user's advisor wants to see that cost depends on the latent dimension k, not on the mesh. The user asked for experiments on every angle and dimension.
+- **What.** Draft `reports/2026-10-17-full-experiment-plan/PLAN.md` (groups A–F). Codex read-only audit `codex-plan-audit-1.md`: **NEEDS-RESTATEMENT; do not launch from the draft.**
+- **Verified by the coordinator against the files:**
+  - The sealed-cohort counts in the draft were doubled. They are 128 physical 2D cases and 64 physical 3D cases (256 and 128 case-kinds).
+  - M=4R' is hard-coded in combined 2D (`c2common.py:121,130`).
+  - The imported exponential PDE is steady Bratu, not time-dependent Frank-Kamenetskii.
+  - This log's "Where things stand" block was stale (still dated 10-09); it has been rewritten.
+- **Retracted (coordinator, in conversation):**
+  - "Sealed cohort 2D 256 / 3D 128 cases" was case-kinds, not physical cases.
+  - The plan's 450–650 GPU-h total was mis-summed; the listed ranges give 420–670.
+  - The proposed "≤5 % flatness" bar is stricter than the historical evidence. The dev panel had a 0.937–1.060 range, and the registered bars are [0.8, 1.25] and max/min ≤ 1.25.
+- **Audit's main points:**
+  - Use r=R' for bank coefficients and K for the head latent.
+  - A1 confounds r, M and m; add fixed-M and fixed-m panels.
+  - Solver and quadrature qualification (E3, E4) must come before frontier building.
+  - C1 must let the FOM mesh vary freely.
+  - Standard-ROM baselines (C3) should move earlier, since they could falsify the framing.
+  - D3 is infeasible with existing assets; D5's motivation is wrong (the sine spectral FOM works on the Dirichlet box).
+  - Every group needs explicit must-fail controls.
+  - Avoid duplicating speed3d (A7, A8, E3, C1, C2).
+- **Corrected priority 1 (audit):**
+  - a development-only manifest;
+  - a kernel-scaling panel on existing bank prefixes (2D r=32–512; 3D W1024 r=64–1024) with fixed-m, fixed-M and nominal panels;
+  - a bounded 2D mesh-cost panel (r=128/256/384 × 256²–4096²);
+  - accuracy qualification before any Pareto front;
+  - a small fixed-r quadrature slice;
+  - memory and offline-cost inventory;
+  - a 10–20 GPU-h pilot cap.
+- **Next.** Restate the plan per the audit and re-audit it. The user plans to start this work in a separate session.

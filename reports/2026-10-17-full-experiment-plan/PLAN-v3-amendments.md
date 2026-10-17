@@ -44,7 +44,7 @@
   3. a cross-mesh orchestration job;
   4. E0 scoring wired to the run path (the combined E0 registry and loader, reused);
   5. an own-state indicator for the quadrature slice.
-- **Stop and defer order if the cap is reached** (the last item is dropped first):
+- **Stop and defer order if the cap is reached** (the first item listed is dropped first):
   P1f-offline → P1e 3D → P1b → R512 diagnostic → P1d 4096² subset → P1c 4096².
   P1a, P1c at 256²/1024² and P1d at 256² are never dropped. Dropped items are reported as deferred, not silently omitted.
 

@@ -19126,3 +19126,20 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - 2–3 read-only Codex watchdog loops, which check heartbeats, processes, cluster jobs and stale waiters;
   - the coordinator resuming stalled agents with SendMessage and logging every intervention in `campaign/watchdog/INTERVENTIONS.md`.
 - The user will start that session separately.
+
+### Burgers 2D/3D campaign launched (coordinator, session started 2026-10-17 23:25 UTC)
+- **What.** Coordinator session for `reports/2026-10-17-full-experiment-plan/AGENT-PROMPT-burgers.md` (priorities 1–4, then a final compiled report). Coordination files in `reports/2026-10-17-full-experiment-plan/campaign/`: `briefs/COMMON-BRIEF.md` (binding for all lanes: scoring contract, Q1 contract, frozen mode lists, compute, heartbeat, hand-back), per-lane briefs, `LANES.json` (registry read by watchdogs), `watchdog/` (loop script, prompt, reports, `INTERVENTIONS.md`).
+- **Lanes launched.**
+  - `jcp-speed3d` **resumed** in its worktree (agent stopped mid-lane earlier): collect g1 5301580, g2 5301264, g3 5301270 (completed 10-15/16, never collected), score on CPU, select/match, results audit, then p1 and m1. Cap 3 jobs.
+  - `jcp-p1-scaling` (priority 1, P1a–P1g + Q3) in the existing `worktrees/2026-10-17-jcp-p1-scaling` (setup commit `8bd0d20b6`). Cap 4 jobs, 20 GPU-h including contingency.
+  - `jcp-hr-baselines` (C3) phase I only (design, code, smoke; no production until priority 1 is reported) in the existing scaffold worktree. Namespace `jcp-hrb`.
+- **Priority-1 design restated by the coordinator and Codex-audited before launch:** `campaign/P1-RESTATEMENT.md` + `P1-RESTATEMENT-AMENDMENTS.md` (AM-1..AM-8); audits `codex-p1-restatement-{1,2,3,4}.md`: NEEDS-RESTATEMENT ×3, then READY.
+- **Wrong / corrected (in the plan, found by the audits):**
+  - v4's "1024² reused from combined" is false for R256: the archived `c2grid` R256 arm is `gauss96`, but the frozen P1 rule is `gauss128`. All 228 1024² P1d rollouts are now re-run fresh with in-job Q1 certification; archived R128/R384 arrays become a reproduction gate.
+  - v4's P1a fixture (R384 states "truncated to each r") cannot supply r=512; now uses `W_R512.npz`.
+  - The proposed Q2 "δ_quad bar for ρ" mixed two quantities; Q2 is now a rollout-distance bar (2.5e-4, every case) plus a ρ bar (0.116, borrowed from quadrature-study B5) against the next finer rule on own reached states.
+  - Several must-fail controls were not guaranteed to fire (an injected 2× timing fault on real data can give "inconclusive"; a sign-flipped Jacobian can still converge to stationary points; a zero-multiplication does not prevent elision). They were replaced by fixed synthetic fixtures and independently established discriminating fixtures.
+  - "P1 uses no randomised rules" was false: Fibonacci lattices carry a seeded random shift (seed 0). P1 uses one frozen realisation.
+- **Watchdogs.** Two read-only Codex loops (`wd.sh`, 24 h deadline, about every 10 min staggered). First intervention: killed three orphaned 16-day-old `until` waiter loops from a 2026-10-01 session (logged in `INTERVENTIONS.md`).
+- **Cluster at launch:** queue empty; A100/H200/L40S free. Local disk 94 % full (228 GB free), flagged in the common brief.
+- **Open.** Priorities 2–4 lanes wait on priority 1. GPU-hour ledger starts at 0 for this campaign (speed3d's past jobs are counted in its own ledger).

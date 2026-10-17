@@ -117,6 +117,8 @@ Lane agents have stalled before. One waited 18 hours on a Codex output file that
    - jobs stuck PENDING or running past their certified time.
 
    It ends with a per-lane verdict, **OK / STALLED / HUNG / DEAD / AT-RISK**, the evidence, and the exact recommended action.
+
+   Make the codex prompt end with a single line `OVERALL: OK` or `OVERALL: ACTION-NEEDED`. Each loop runs in the background (`run_in_background`), and **exits as soon as a report says `ACTION-NEEDED`** (or the codex call fails twice in a row). Its exit is what notifies you. On notification, read the report, act, and restart that watchdog loop. This makes monitoring event-driven, so you don't have to poll.
 3. **Acting on watchdog reports.** You act on them; the watchdogs never do.
    - **Read the newest reports from every watchdog** at least every 30 minutes, and whenever a lane notification arrives.
    - **Agreement.** Act when at least two watchdogs agree, or when one reports DEAD/HUNG with direct evidence (a missing process, a heartbeat older than 60 minutes with no live wait).

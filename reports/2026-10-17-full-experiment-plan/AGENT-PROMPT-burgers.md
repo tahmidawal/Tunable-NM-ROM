@@ -4,7 +4,9 @@ Copy everything below the line into a new Claude Code session started in `/home/
 
 ---
 
-You are the **coordinator** of an experiment campaign for a Journal of Computational Physics paper. Your job is to run the experiments in the campaign plan for **viscous Burgers in 2D and 3D**, end to end, and hand back verified results. You do not run experiments yourself. You **plan, delegate, verify, monitor and report**. Work autonomously; stop and ask me only for the decisions listed under "Ask me only for these".
+You are the **coordinator** of an experiment campaign for a Journal of Computational Physics paper. Your job is to run **all** the experiments in the campaign plan for **viscous Burgers in 2D and 3D**, end to end, and at the very end **compile every result into one final report**. You do not run experiments yourself. You **plan, delegate, verify, monitor and compile**.
+
+**Run fully autonomously.** Do not stop to ask the user anything. Where the plan leaves a decision open, take the conservative default in section 7, record it in the lab log, and carry on. Keep going through priorities 1 → 4 until every in-scope experiment is done (or properly recorded as failed or deferred), then compile the results (section 8). Your final message is the hand-back.
 
 ## 1. Read first (in this order, before doing anything)
 
@@ -21,7 +23,11 @@ You are the **coordinator** of an experiment campaign for a Journal of Computati
    - `worktrees/2026-10-13-jcp-combined`: second-order stepping with the wide bank; the E0 scoring registry; the finalist qualification table.
    - `worktrees/2026-10-08-jcp-wide-bank`: banks up to R′ = 1024 and configurable test count M.
    - `worktrees/2026-10-08-jcp-time2`, `worktrees/2026-10-06-jcp-mechanism`, `worktrees/2026-10-01-quadrature-study`, `worktrees/2026-10-01-quadrature-burgers3d`.
-7. `worktrees/2026-10-14-jcp-speed3d`: **may still be running** (namespace `jcp-speed3d`). It owns 3D speed, batching, the mesh-free query and the 3D FOM comparison. **Do not duplicate it or write to it.** Consume its results only after its own audits pass, using the reuse map in `PLAN-v3-amendments.md` (V3-4) and the restrictions in V4-6.
+7. `worktrees/2026-10-14-jcp-speed3d` (namespace `jcp-speed3d`) owns 3D speed, batching, the mesh-free query and the 3D FOM comparison. **Its agent was stopped mid-lane.**
+   - Its production jobs g1 5301264, g2 5301270 and g3 5301580 all COMPLETED on 2026-10-15/16 but were **never collected**. Their outputs are still in `/cluster/tufts/paralab/tawal01/jcp-speed3d/{g1,g2,g3}`.
+   - f1 5301274 was collected. The last lane commit was `f98843cb1`.
+   - **Your first action:** launch a lane agent that resumes this lane in its existing worktree. It reads its `DESIGN.md` (amendments A1–A6), `runs/JOB-LEDGER.json`, `audits/` and the last commits, then: collects g1–g3; scores offline on CPU; runs selection and matching; gets the Codex results audit; then runs p1 and m1 with their job audits; then the final report and report audit.
+   - Do not duplicate its scope elsewhere. Consume its results only after its audits pass, using the reuse map in `PLAN-v3-amendments.md` (V3-4) and the restrictions in V4-6.
 
 ## 2. Scope
 
@@ -137,8 +143,8 @@ The campaign directory is `reports/2026-10-17-full-experiment-plan/campaign/` on
 - **Never hand-type a number** into a report: generate it from run outputs.
 - **Retractions matter more than successes.** If a result contradicts an earlier claim, say so plainly.
 - Never mention or include the heat POD-128 comparison.
-- **After priority 1,** publish a plain-language results page for me. I read on a phone, so keep it simple: plots, one-line takeaways, no jargon. Update it as later priorities land. Send PDFs and pages with SendUserFile and the Artifact tool.
-- **Do not merge branches.** When lanes finish, ask me whether to merge them.
+- After each priority, update one running results page (Artifact tool, plain language) so the user can glance at progress on a phone. Do not message them otherwise.
+- Do not merge branches.
 
 ## 6. Lessons from earlier lanes (apply them)
 
@@ -152,11 +158,24 @@ The campaign directory is `reports/2026-10-17-full-experiment-plan/campaign/` on
 - An agent can die on a usage limit. Resume it with SendMessage, telling it where it was.
 - Before a large disk write, check that the GB10 disk has headroom (`df -h`). Keep big arrays on the cluster paralab space.
 
-## 7. Ask me only for these
+## 7. Defaults for open decisions (do not ask; apply and record)
 
-- Which "k" my advisor means, if the evidence makes it matter: bank width R′ (assumed), or the head's latent K.
-- Anything that needs opening a sealed or OOD cohort, retraining beyond the plan, or a budget beyond the plan's caps.
-- Merging branches.
-- A kill criterion firing (governing plan K0–K2), or a result that would change the paper's framing. The likely one: the spectral FOM beating us.
+- **"k" means bank width r = R′.** Run the head-size sweep (C5, K ∈ {4, 8, 16, 32}) in priority 3 as well, so both readings are covered.
+- **Sealed and OOD cohorts stay closed.** No retraining beyond the plan. If a priority's cap would be exceeded, defer the lowest-priority items (each lane's defer order) and record them; never exceed a cap.
+- **Never merge branches.** List the finished branches in the final report as awaiting the user's merge decision.
+- **If a kill criterion fires (governing plan K0–K2), or a result would change the paper's framing** (most likely the spectral FOM beating us), do not stop. Record it prominently, follow the plan's written consequence (for example, report the speed-up honestly and lead with mesh-independence), and continue.
+- **Do not message the user mid-campaign.** Progress goes in the lab log and the notebook.
 
-Otherwise proceed without asking. Report progress to me in plain language when a priority completes, or when something important happens.
+## 8. Final compilation (the deliverable)
+
+When every in-scope experiment is done, failed or deferred:
+1. **Generate a final results report** with a script under `reports/2026-10-17-full-experiment-plan/final/` (`make_final.py` → `report.md`, with figures). Every number comes from lane outputs; none is hand-typed. Structure:
+   - **Hypothesis verdicts:** for each of H-cost-N, H-cost-r, H-acc-N, H-acc-r, H-comp (per dimension and FOM family) and H-base, give pass, fail or inconclusive, with the key number and plot.
+   - **Per-priority results,** with plots: scaling against k, scaling against mesh, the accuracy–cost front, the speed-up against each FOM family, POD baselines, rule families, test space, the error budget, long-horizon runs, robustness.
+   - **The P1g recheck:** how much the earlier "flat accuracy" results moved under frozen mode lists.
+   - **Retractions and corrections, deferred items, a GPU-hour ledger, and the lane list** with branches and mirror commits.
+   - **A plain-language glossary.**
+2. **Have Codex audit the final report** (recompute numbers from raw outputs). Fix every issue and re-audit until clean.
+3. **Publish it.** Make a plain-language web page (Artifact tool) and a PDF (send with SendUserFile). The user reads on a phone, so it should be plots, one-line takeaways and no jargon. Also add a notebook entry, rebuild `notebook/jcp-notebook.pdf`, and update the lab log's "Where things stand".
+4. **Stop all watchdogs.**
+5. **Final hand-back message:** the links, the hypothesis verdicts in plain words, anything retracted, the deferred items, the total GPU-hours, and the branches awaiting merge.

@@ -1,229 +1,89 @@
 <title>JCP Experiment Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f3f5f7;--paper:#ffffff;--ink:#16212a;--muted:#5a6772;--acc:#0b5d7a;--acc2:#b4541a;--soft:#e6f0f4;--line:#d9e0e6;--good:#1f7a4d;--warn:#9a6a00;--bad:#b3261e;--gsoft:#e7f4ec;--wsoft:#fbf2dc;--bsoft:#fbe7e5;color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1418;--paper:#161f26;--ink:#e2e9ee;--muted:#98a6b1;--acc:#6cc0de;--acc2:#f0a06b;--soft:#1b2c35;--line:#2a3640;--good:#5fcf98;--warn:#e8c25a;--bad:#ff8a80;--gsoft:#16291f;--wsoft:#2c2614;--bsoft:#33201e;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0e1418;--paper:#161f26;--ink:#e2e9ee;--muted:#98a6b1;--acc:#6cc0de;--acc2:#f0a06b;--soft:#1b2c35;--line:#2a3640;--good:#5fcf98;--warn:#e8c25a;--bad:#ff8a80;--gsoft:#16291f;--wsoft:#2c2614;--bsoft:#33201e;color-scheme:dark}
-body{background:var(--bg);color:var(--ink);font:16px/1.55 "Source Sans 3",system-ui,-apple-system,sans-serif}
-.wrap{max-width:1000px;margin:0 auto;padding-inline:16px;padding-block:28px 64px}
-h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;text-wrap:balance;line-height:1.2}
-h1{font-size:clamp(1.6rem,4vw,2.2rem);margin:0 0 .3rem;color:var(--acc)}
-h2{font-size:1.4rem;margin:2.6rem 0 .8rem;padding-top:.7rem;border-top:2px solid var(--line)}
-h3{font-size:1.08rem;margin:1.6rem 0 .4rem}
-p,li{max-width:76ch}
-.sub{color:var(--muted);margin:0 0 1rem}
-.status{background:var(--soft);border-left:4px solid var(--acc);padding:.7rem 1rem;border-radius:4px}
-nav ol{columns:2;column-gap:2rem;padding-left:1.2rem;margin:.4rem 0} @media (max-width:600px){nav ol{columns:1}}
-nav a,a{color:var(--acc)}
-.tw{overflow-x:auto;margin:.8rem 0 1.2rem;background:var(--paper);border:1px solid var(--line);border-radius:8px}
-table{border-collapse:collapse;width:100%;font-size:.9rem;font-variant-numeric:tabular-nums}
-th,td{padding:.45rem .6rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{background:var(--soft);font-weight:600;white-space:nowrap}
-.pill{display:inline-block;font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:.08rem .45rem;border-radius:3px;white-space:nowrap}
-.ok{background:var(--gsoft);color:var(--good)} .mid{background:var(--wsoft);color:var(--warn)} .no{background:var(--bsoft);color:var(--bad)} .info{background:var(--soft);color:var(--acc)}
-.grp{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.2rem 1rem .6rem;margin:1rem 0}
-.grp h3{margin-top:.8rem}
-.grp ul{padding-left:1.1rem;margin:.3rem 0}
-.grp li{margin:.3rem 0}
-.k{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.85em}
-.note{color:var(--muted);font-size:.9rem}
-.formula{font-family:"JetBrains Mono",ui-monospace,monospace;background:var(--paper);border:1px solid var(--line);padding:.5rem .8rem;border-radius:6px;display:inline-block;font-size:.9rem;max-width:100%;overflow-x:auto}
-.flow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:.6rem 0}
-.flow span{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:.3rem .6rem;font-size:.88rem}
-.flow b{color:var(--muted)}
+:root{--bg:#f3f5f7;--paper:#ffffff;--ink:#16212a;--muted:#5a6772;--acc:#0b5d7a;--acc2:#b4541a;--soft:#e6f0f4;--line:#d9e0e6;--warmsoft:#fbf0e6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1418;--paper:#161f26;--ink:#e2e9ee;--muted:#98a6b1;--acc:#6cc0de;--acc2:#f0a06b;--soft:#1b2c35;--line:#2a3640;--warmsoft:#2c2219;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1418;--paper:#161f26;--ink:#e2e9ee;--muted:#98a6b1;--acc:#6cc0de;--acc2:#f0a06b;--soft:#1b2c35;--line:#2a3640;--warmsoft:#2c2219;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 "Source Sans 3",system-ui,-apple-system,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:32px 64px}
+h1,h2{font-family:"Source Serif 4",Georgia,serif;text-wrap:balance;line-height:1.2}
+h1{font-size:clamp(1.7rem,5vw,2.3rem);margin:0 0 .3rem;color:var(--acc)}
+h2{font-size:1.35rem;margin:2.4rem 0 .7rem}
+.sub{color:var(--muted);margin:0 0 1.4rem}
+.box{background:var(--soft);border-radius:8px;padding:.9rem 1.1rem}
+.warn{background:var(--warmsoft);border-left:4px solid var(--acc2);border-radius:6px;padding:.9rem 1.1rem}
+ol,ul{padding-left:1.3rem} li{margin:.45rem 0}
+.steps{list-style:none;padding:0;counter-reset:s;display:grid;gap:10px}
+.steps li{counter-increment:s;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.7rem 1rem .7rem 3.1rem;position:relative;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:1rem;top:.75rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--acc);color:var(--paper);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.tw{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:8px;margin:.8rem 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{padding:.55rem .75rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:600}
+.muted{color:var(--muted);font-size:.92rem}
 </style>
 <div class="wrap">
-<h1>Full experiment plan for the JCP paper</h1>
-<p class="sub">Tunable bank + off-mesh quadrature · plan v4 (v2 + v3 + v4 amendments) · 17 October 2026</p>
-<p class="status"><b>Status: draft, not pre-registered.</b> This plan was written to answer the advisor's request to show that cost depends on the latent dimension, not on the mesh, and to test the method from every angle. Codex has audited it three times. Each audit said <b>needs restatement</b>, with fewer and narrower problems each round. v4 fixes the third audit's priority-1 blockers and sets concrete rules for the rest. <b>A fourth audit has not been run yet.</b> Each lane built from this plan still needs its own pre-registered design, a Codex audit and a real-size smoke test before it runs.</p>
+<h1>The experiment plan, simply</h1>
+<p class="sub">What we need to show for the JCP paper, and how · 17 October 2026</p>
 
-<nav><b>Contents</b><ol>
-<li><a href="#audit">Audit trail</a></li><li><a href="#claims">Claims as testable hypotheses</a></li>
-<li><a href="#knobs">Notation and knobs</a></li><li><a href="#assets">What exists, runs, and is qualified</a></li>
-<li><a href="#contract">Scoring and integrity rules</a></li><li><a href="#p1">Priority 1: the first 20 GPU-hours</a></li>
-<li><a href="#groups">All experiment groups</a></li><li><a href="#budget">Order, dependencies and budget</a></li>
-<li><a href="#decide">Decisions needed from you</a></li><li><a href="#files">Files</a></li></ol></nav>
+<div class="box"><b>In one sentence:</b> show that our reduced model's cost and accuracy depend on <b>its own size (k)</b> and not on <b>the mesh size</b>; that it holds up against other methods; and that it works beyond one test problem.</div>
 
-<h2 id="audit">1 · Audit trail</h2>
+<h2>What we want to show</h2>
+<ol>
+<li><b>Cost depends on k, not on the mesh.</b> Making the mesh bigger shouldn't make our solve slower; making k bigger should, in a predictable way.</li>
+<li><b>Accuracy depends on k, not on the mesh.</b> And bigger k should help, up to a point.</li>
+<li><b>We're faster than the full simulation</b> at the same accuracy, at least on large meshes.</li>
+<li><b>We're as good as, or better than, standard reduced models</b> (POD with DEIM, ECSW or GNAT).</li>
+<li><b>It works beyond one problem:</b> other settings, other equations, 2D and 3D.</li>
+</ol>
+<p class="muted">Each of these is set up so it <i>can</i> fail. We already know two things that fail the strong version: in 2D the biggest bank (512) is slightly worse than 384, and some hard 3D cases still have 4–7 % error. We report those, not hide them.</p>
+
+<h2>Step 1: the first small batch (≤ 20 GPU-hours)</h2>
+<p>Uses only what we already have. No new training, no new equations.</p>
+<ol class="steps">
+<li><b>Time each part of the solver as k grows</b> (k from 32 to 512 in 2D, 64 to 1024 in 3D). This shows exactly how cost scales with k. This is the advisor's question.</li>
+<li><b>Time the solve on three mesh sizes</b> (256², 1024², 4096²) for k = 128, 256 and 384. This shows the cost stays flat as the mesh grows.</li>
+<li><b>Check accuracy on the same settings,</b> against our trustworthy reference solutions.</li>
+<li><b>Check every setting is numerically sound first:</b> the solver converged, and there are enough quadrature points. Anything that fails is reported, not used.</li>
+<li><b>A quick recheck of an earlier result</b> (see the note below).</li>
+<li><b>Record memory use</b> and the one-time setup cost.</li>
+</ol>
+<p class="muted">A small test run first measures what each job really costs, so we don't go over 20 hours. If we run out, we drop the least important items first, and say so.</p>
+
+<div class="warn"><b>Something the review caught.</b> In 2D, the set of test functions the model uses changes slightly with the mesh, once there are more than about 1,000 of them. In the accurate setting, 4 of 1,536 differ between meshes. So our earlier "accuracy is flat across meshes" result compared slightly different setups. The effect is probably tiny, but we'll measure it in step 1, and from now on we fix the same set for every mesh.</div>
+
+<h2>Step 2 and beyond</h2>
 <div class="tw"><table>
-<tr><th>Version</th><th>Codex verdict</th><th>Main problems found</th></tr>
-<tr><td>v1 (first draft)</td><td><span class="pill no">Needs restatement</span></td><td>Sealed case counts doubled (really 128 physical 2D and 64 3D cases). Claims assumed their outcome. Solver and quadrature checks came too late. The k sweep confounded k with the test count and point count. The FOM comparison omitted the FOM mesh. Existing code was treated as validated. Speed3d work was duplicated and the baselines delayed.</td></tr>
-<tr><td>v2 (restated)</td><td><span class="pill no">Needs restatement</span>, much narrower</td><td>The 3D space-only reference does not match the 3D time step. Qualification was attached to bank sizes, not exact configurations. Priority 1 was not concrete (the 4096² bank alone needs about 64 GiB). Pass/fail rules were promised but not defined.</td></tr>
-<tr><td>v3 (amendments)</td><td><span class="pill no">Needs restatement</span>, narrow</td><td>The freeze roster was resolved. Remaining: <b>2D test modes change with the mesh</b> (see below); the rollout count was wrong (324 new, not 552); old qualification labels were reused instead of re-certified; the IC-projection description was wrong; the three-mesh sign test cannot ever reject; overlapping intervals were treated as "matching"; the FOM bound label pointed the wrong way.</td></tr>
-<tr><td>v4 (amendments)</td><td><span class="pill mid">Not yet audited</span></td><td>Fixes all four priority-1 blockers and gives concrete replacements for the two later ones: frozen mode lists in both dimensions plus a recheck of earlier results; the full Q1 contract certified in-job; a corrected inventory; a cumulative 20 GPU-h ledger; a corrected IC contract and scaling model; valid statistical tests.</td></tr>
+<tr><th>Next</th><th>What</th><th>Why</th></tr>
+<tr><td><b>2</b></td><td>Build a simple standard reduced model (POD) to compare against. Full speed comparison against the full simulation, including spectral, in 2D. (3D comes from the speed work already running.)</td><td>Reviewers will ask first. It could also change our story, so it's better to know early.</td></tr>
+<tr><td><b>3</b></td><td>Separate the effect of k from the number of test functions and points. Try every quadrature type as a full solve. Longer run times. A break-down of where the error comes from.</td><td>Makes the "depends on k" story airtight.</td></tr>
+<tr><td><b>4</b></td><td>Repeat with different random seeds. Different starting conditions and viscosities. Full set of standard reduced models.</td><td>Shows the results aren't luck.</td></tr>
+<tr><td><b>Later</b></td><td>New equations (Allen–Cahn, an exponential one), 3D Navier–Stokes, a non-box shape.</td><td>Each is its own small project; decide if it belongs in this paper.</td></tr>
+<tr><td><b>Final</b></td><td>Freeze every choice, then open the held-back test cases once (128 in 2D, 64 in 3D).</td><td>The paper's final numbers.</td></tr>
 </table></div>
 
-<div class="status" style="border-left-color:var(--acc2);margin-top:1rem"><b>A real finding from audit 3, not just a plan fix.</b> In 2D, the test functions are picked by sorting eigenvalues that depend on the mesh. For up to 1,024 tests the chosen set is identical at every mesh, but at <b>1,536 tests (the accurate setting) it differs by 4 functions</b> between 256² and 1024², and by 8 at 2,048. So earlier cross-mesh comparisons in the accurate setting used slightly different test spaces at different meshes. The effect is probably small, but it hasn't been measured. v4 freezes one mode list per setting and adds a cheap recheck (P1g) of the earlier "flat accuracy" results.</div>
-
-<h2 id="claims">2 · Claims as testable hypotheses</h2>
-<p>Each claim is written so that it can fail. Known evidence against the strong versions is recorded up front.</p>
-<div class="tw"><table>
-<tr><th>Hypothesis</th><th>What we test</th><th>Pass / fail rule</th><th>Known evidence against</th></tr>
-<tr><td><b>H-cost-N</b><br>cost independent of mesh</td><td>Solve time at fixed (r, test modes, m, scheme, Δt, tolerances) across meshes</td><td>Ratio of slowest to fastest mesh, with a 95 % case-level bootstrap interval. <b>Pass</b> if the upper bound is ≤ 1.25, <b>fail</b> if the lower bound is > 1.25, otherwise <b>inconclusive</b>. An injected 1.5× timing fault must be flagged as a fail.</td><td>The full query (IC projection plus decode) grows with the mesh; it is reported separately.</td></tr>
-<tr><td><b>H-cost-r</b><br>cost scales with r as predicted</td><td>Each iteration component timed separately against r</td><td>Fit t(r) = a + b·r<sup>p</sup> per component. Pre-declared p at fixed (M, m): nonlinear term 1, Jacobian 1, normal equations 2, Cholesky 3. A component disagrees if its p falls outside the 95 % bootstrap interval; <i>a</i> is the fitted fixed cost.</td><td>Small matrices may not reach their asymptotic slopes.</td></tr>
-<tr><td><b>H-acc-N</b><br>accuracy independent of mesh</td><td>Per-case error at fixed r across meshes</td><td>Per-case slope of error against log N, with a Wilcoxon test across cases for a trend. Equivalence by TOST on paired differences, margin max(2ε_ref, 0.1 × error at 1024²); this is relative stability, so absolute errors are shown beside it. (Replaces a three-mesh sign test that could never reject.)</td><td>The linear terms and IC projection are mesh-dependent in the deployed hybrid.</td></tr>
-<tr><td><b>H-acc-r</b><br>accuracy improves with r</td><td>Each consecutive rank step, on qualified configurations</td><td>Every rank step is reported. A step counts only if ≥ 50 % of eligible cases are resolved, and "improves" if &gt; 50 % of those improve <b>and</b> the median paired change is &lt; 0. "Monotone" requires every step to improve. Ranks are registered now (2D 128–512, 3D 256–1024).</td><td>2D 384 → 512 worsened on 22 of 38 cases.</td></tr>
-<tr><td><b>H-comp</b><br>faster than the full simulation</td><td>Per dimension, against each FOM family (upwind/BE, central-CN, spectral) and their union, with the FOM free to use any mesh</td><td>"≥ 2× faster" is claimed only for the cells that pass. Kill criterion K2 is applied as written. A finite FOM ladder gives an upper bound on the FOM's best cost, and therefore an <b>upper bound on our speed-up</b>; every match is labelled so.</td><td>Unaudited early data: a spectral solver clearly wins at 64³.</td></tr>
-<tr><td><b>H-base</b><br>vs standard reduced models</td><td>POD-LSPG with ECSW / Q-DEIM / GNAT, at equal tuning budgets</td><td>"Dominated" means better in both time and worst error, with non-overlapping intervals. "Matches" requires a paired equivalence test (TOST) with a declared margin; mere overlap counts as "unresolved". When the fronts cross, report "neither dominates".</td><td>Not built yet.</td></tr>
-</table></div>
-<p><b>Cost model</b> (from the actual code, per operation, not a rollout theorem):<br>
-<span class="formula">nonlinear term O(m·r + m·M) · Jacobian O(m·M·r) · JᵀJ O(M·r²) · Cholesky O(r³)</span></p>
-
-<h2 id="knobs">3 · Notation and knobs</h2>
-<div class="tw"><table>
-<tr><th>Symbol</th><th>Meaning</th><th>Range</th></tr>
-<tr><td><b>r = R′</b></td><td>latent dimension: number of bank coefficients solved for (our "k")</td><td>2D 32–512 · 3D 64–1024</td></tr>
-<tr><td><b>K</b></td><td>latent size of the nonlinear head (a different thing; the head setting failed in 2D)</td><td>4, 8, 16, 32 if the advisor means this</td></tr>
-<tr><td>M</td><td>number of test functions; nominally 4r. <b>The chosen set depends on the mesh</b>: in 3D through shell completion, and in 2D at M ≥ 1536. Fixed-mode panels therefore use one frozen, hashed mode list per setting.</td><td>M/r = 1 (weak control), 2, 3, 4, 8</td></tr>
-<tr><td>m</td><td>quadrature points</td><td>from failing, through just passing, to converged</td></tr>
-<tr><td>N</td><td>mesh</td><td>2D 256²–4096² · 3D 64³–384³</td></tr>
-<tr><td>Δt, scheme</td><td>time step and stepping method</td><td>Δt₀/8 – 5Δt₀; BE, CN, CN-R, BDF2, Galerkin-CN</td></tr>
-<tr><td>Rule family</td><td>quadrature type</td><td>Gauss, lattice, Sobol, Halton, Monte Carlo, Smolyak (control)</td></tr>
-<tr><td>Other</td><td>test space, solver, ν and IC family, PDE, bank recipe and seed, batch size</td><td>see the groups below</td></tr>
-</table></div>
-
-<h2 id="assets">4 · What exists, runs, and is qualified</h2>
-<div class="tw"><table>
-<tr><th>Asset</th><th>Exists</th><th>Runs end to end</th><th>Qualified</th></tr>
-<tr><td>2D bank R512, prefixes r ≤ 512</td><td><span class="pill ok">yes</span></td><td>r = 128–512</td><td>per configuration: the selected arms pass at R128, R384, R512; the R256/acc/fast accurate arms fail; the fast fallbacks pass</td></tr>
-<tr><td>2D prefixes r = 32, 64 · 3D prefixes r = 64, 128</td><td><span class="pill ok">yes</span></td><td><span class="pill mid">not run</span></td><td>kernel timing only, until qualified</td></tr>
-<tr><td>3D banks M2 (R512), W1024</td><td><span class="pill ok">yes</span></td><td>r = 256–1024</td><td>post-hoc rule selection; worst errors 4.4–6.7 %</td></tr>
-<tr><td>Configurable test count M</td><td>wide-bank drivers yes; combined hard-codes 4r</td><td>M/r = 2, 3, 4</td><td>needs a driver change and requalification</td></tr>
-<tr><td>Gauss, lattice, Sobol, Smolyak</td><td><span class="pill ok">yes</span></td><td><span class="pill ok">yes</span></td><td>per configuration</td></tr>
-<tr><td>Halton (2D)</td><td>generator and generic arm</td><td>integral error only</td><td><span class="pill no">no</span></td></tr>
-<tr><td>Monte Carlo · 3D Halton</td><td><span class="pill no">no</span></td><td><span class="pill no">no</span></td><td><span class="pill no">no</span></td></tr>
-<tr><td>Central-CN and spectral FOMs (2D and 3D)</td><td><span class="pill ok">yes</span></td><td><span class="pill ok">yes</span></td><td>through E0's gates; competitive timing still needs its own checks</td></tr>
-<tr><td>Fixed-sweep and QN solvers</td><td><span class="pill ok">yes</span></td><td><span class="pill ok">yes</span></td><td>fixed CN K=2 at 2.5Δt₀ fails on 7–15 of 64 3D cases</td></tr>
-<tr><td>POD + DEIM / ECSW / GNAT</td><td><span class="pill no">no</span> (scaffold only)</td><td><span class="pill no">no</span></td><td><span class="pill no">no</span></td></tr>
-<tr><td>Allen–Cahn</td><td>prototype (Hari's package)</td><td>small CPU only</td><td><span class="pill no">no</span></td></tr>
-<tr><td>Exponential nonlinearity</td><td>steady Bratu only</td><td>—</td><td>a time-dependent version is new work</td></tr>
-<tr><td>NS 3D off-mesh · non-box geometry</td><td><span class="pill no">no</span></td><td><span class="pill no">no</span></td><td><span class="pill no">no</span></td></tr>
-</table></div>
-
-<h2 id="contract">5 · Scoring and integrity rules (apply everywhere)</h2>
+<h2>The ground rules</h2>
 <ul>
-<li><b>Selection only on development and validation cases</b> (2D dev6 and val32; 3D 923801). The older test cohorts are for replication only. The sealed cohorts (2D: 128 physical cases; 3D: 64) and the reserved out-of-distribution cohorts stay closed until the final freeze.</li>
-<li><b>References.</b> The order-verified space+time reference (ST) is primary. The space-only reference (S) applies <b>only to backward Euler at Δt = 0.005</b>: that is 2D only, since 3D steps at 0.01, so <b>3D S is never used</b>. Eligibility is looked up per case-kind (historical: 13 non-rankable, 12 S + 1 ST). Two arms rank on a case only if they differ by more than 2ε_ref. ε_ref is a conditional estimate and is labelled so.</li>
-<li><b>Qualification is per exact configuration</b>: bank hash, r, mode list, rule, mesh, scheme, Δt, solver, initialisation, weighting and metric. It is certified fresh in each job, at every step. The full contract:
-  <ul>
-  <li>every run valid (finite, no damping saturation);</li>
-  <li>stationarity γ ≤ 1e-3, with at most 1 % of steps failing, pooled;</li>
-  <li>within 2.5e-4 of a careful adaptive solve on <b>every</b> case;</li>
-  <li>careful and extra-careful solves agree to 2.5e-5 on a subset.</li>
-  </ul>
-  Old qualification labels count as prior evidence only. Three labels are kept separate: <b>numerical qualification</b>, <b>role qualification</b> (for example "equal cost") and <b>frontier usefulness</b>.</li>
-<li><b>Post-hoc labels carry forward:</b> E0's changed cross-check rule; combined's post-hoc 3D rule selection; the retracted A15 selection.</li>
-<li><b>Statistics:</b> the case is the unit, and time snapshots are never treated as independent. Failures are reported, and seeds and draws get their own intervals.</li>
-<li><b>Timing:</b> paired A–B–A in one job on one GPU, warm and burned in, with timed outputs equal to scored outputs. Hardware is compared only through dimensionless ratios.</li>
-<li><b>Checks come in three kinds:</b> <span class="pill ok">positive gates</span> that must pass; <span class="pill no">negative controls</span> that must fail (injected timing fault, doubled work, wrong-mesh tables, under-resolved rule, wrong-gradient solver, case or time swaps, bad lattice vector); and <span class="pill info">sensitivity probes</span> that are reported only. Each says which claim it blocks.</li>
+<li>Choose settings only on practice cases. The held-back test cases stay closed until the very end.</li>
+<li>Score everything against the new trustworthy references.</li>
+<li>Only settings that pass the "numerically sound" checks go into headline results.</li>
+<li>Time things fairly: same GPU, same job, side by side.</li>
+<li>Every claim gets a clear pass/fail rule, written down before we look at results.</li>
+<li>Codex checks each step before it runs.</li>
 </ul>
 
-<h2 id="p1">6 · Priority 1: the first 20 GPU-hours (contingency included)</h2>
-<p>Existing banks only: no retraining, no new PDEs, no sealed data. A smoke run measures the real costs first, and no job is submitted without a cost certificate.</p>
-<div class="tw"><table>
-<tr><th>Panel</th><th>Ranks r</th><th>Meshes</th><th>Cases</th><th>What</th></tr>
-<tr><td><b>P1a</b> kernel timing, 2D</td><td>32, 64, 128, 256, 384, 512</td><td>1024²</td><td>12 fixtures: output steps 1 and 5 of the R384 CN-R runs, dev6 cases 0–5, truncated to each r</td><td>Nonlinear term, Jacobian, normal equations and Cholesky timed separately. Three panels: fixed modes and points (1536 frozen modes, 9216 Gauss points); fixed points with M = 4r; and the deployed setting.</td></tr>
-<tr><td><b>P1b</b> kernel timing, 3D</td><td>64–1024 (W1024)</td><td>65³</td><td>12 fixtures: BE steps 1 and 5, cases 0–5</td><td>Same. Fixed pair: the frozen 65³ mode list for r = 512 with Gauss 24³ (13,824 points). Actual shell M recorded.</td></tr>
-<tr><td><b>P1c</b> cost against mesh, 2D</td><td>128, 256, 384 (+512 at 1024²)</td><td>256², 1024², 4096²</td><td>dev6 × 3 repeats</td><td>Solve, IC sampling, decode and full query timed separately, for BE and LSPG-CN-R. Frozen rules: R128 Fibonacci 4,181; R256 and R384 Gauss 128²; R512 Gauss 192². Interleaved against a fixed reference configuration (r = 384, 1024²).</td></tr>
-<tr><td><b>P1d</b> accuracy, 2D</td><td>128, 256, 384</td><td>256² and 4096² new; 1024² reused</td><td>38 at 256²; a labelled 16-case subset at 4096²</td><td>E0 error, qualification gates and per-case eligibility.</td></tr>
-<tr><td><b>P1e</b> quadrature slice</td><td>256 (2D), 512 (3D)</td><td>1024² / 65³</td><td>dev6 / 6</td><td>A failing, the deployed and a finer rule, on own reached states.</td></tr>
-<tr><td><b>P1g</b> recheck of earlier results</td><td>384</td><td>256², 4096²</td><td>38 / 16</td><td>Re-run the accurate setting with the frozen 1024² mode list, and report how much the earlier "flat accuracy" numbers move. Never dropped.</td></tr>
-<tr><td><b>P1f</b> memory and offline cost</td><td colspan="4">Measured peak memory for every panel; offline costs from logs (W1024: training job 1.85 h, bank fit 1.14 h).</td></tr>
-</table></div>
-<ul>
-<li><b>Size:</b> 324 new accuracy runs (plus 228 reused at 1024²), 324 timed runs (+36 for the R512 diagnostic), 152 recheck runs, and a careful-solve anchor for every accuracy run.</li>
-<li><b>Cumulative cap:</b> a ledger of measured GPU-hours; a job is submitted only if spent plus projected stays ≤ 20. If the core can't finish, the result is "P1 incomplete", with no verdict.</li>
-<li><b>4096² needs a memory pilot first.</b> The full R512 bank is about 64 GiB, so it runs on an H200; if peak memory exceeds 120 GB, a slimmer r ≤ 384 bank (about 48 GiB) is used and labelled.</li>
-<li><b>Code to write first</b> (audited, then smoke-tested): a kernel timing harness; a split query (initialisation, evolution and decode separately, with an equivalence check); a cross-mesh orchestration job; E0 scoring in the run path; and an own-state quadrature indicator.</li>
-<li><b>If the cap is hit, items are dropped in this order:</b> offline inventory → 3D quadrature slice → 3D kernel → R512 diagnostic → 4096² accuracy subset → 4096² timing. The core (2D kernel timing, cost against mesh at 256²/1024², accuracy at 256², and the P1g recheck) is never dropped. If 4096² is dropped, the mesh claims are reported as "two-mesh evidence, verdict not reached".</li>
-<li><b>IC contract:</b> the existing 2D query samples the starting field at the quadrature points; it does not project the full field. P1c keeps this, so 1024² results can be reused, and labels it.</li>
-</ul>
+<h2>Time and cost</h2>
+<p>Roughly <b>380–700 GPU-hours</b> for steps 1–4 and the final run, about <b>4–10 days</b> of GPU time on 3–4 GPUs. Calendar time is longer, because of coding and checks. New equations are extra.</p>
 
-<h2 id="groups">7 · All experiment groups</h2>
+<h2>Decisions for you</h2>
+<ol>
+<li><b>Which "k" does your advisor mean?</b> The bank size (what we assumed), or the size of the small nonlinear "head" network?</li>
+<li><b>Are new equations in this paper,</b> or saved for later?</li>
+<li><b>Who holds the key</b> to the held-back test cases?</li>
+<li><b>Merge the finished branches?</b> And authorship with Hari.</li>
+</ol>
 
-<div class="grp"><h3>Q · Qualification (runs first; gates everything on a headline curve)</h3><ul>
-<li><b>Q1 solver:</b> stationarity, distance to a careful solve (≤ 2.5e-4 on every case) and iteration counts, per configuration.</li>
-<li><b>Q2 quadrature:</b> agreement between successive rules for that bank, solver, Δt and own reached states, on both the integral-error and rollout-distance bars, with a memory pilot for large rules.</li>
-<li><b>Q3 conditioning:</b> conditioning of A, the weighted J and JᵀJ against r; fixes chosen on validation and labelled when they change the problem.</li>
-</ul></div>
-
-<div class="grp"><h3>A · Cost</h3><ul>
-<li><b>A1 cost against mesh:</b> fixed-work, fixed-configuration and deployed-policy panels. In 3D, one fixed mode list is reused across meshes.</li>
-<li><b>A2 per-component scaling</b> against r, with FLOP and memory-traffic counts.</li>
-<li><b>A3 factorial r × M × m:</b> separates representation size from test-space and quadrature growth.</li>
-<li><b>A4 points needed, m*(r, M):</b> discrete candidates, both bars, own states; "none" is a valid outcome.</li>
-<li><b>A5 peak memory</b> against r, with table storage and the tensor line for comparison.</li>
-<li><b>A6 offline cost</b> (shared, per prefix, per mesh) and break-even, computed only against a qualified competitor.</li>
-<li><b>A7 batching and A8 mesh-free path:</b> owned by the 3D speed lane. A 2D version uses the same experimental contract.</li>
-</ul></div>
-
-<div class="grp"><h3>B · Accuracy</h3><ul>
-<li><b>B1 error</b> against r × mesh, qualified configurations only.</li>
-<li><b>B2 error budget:</b> separate ablations plus interactions (not an additive split).</li>
-<li><b>B3 every rule family</b> as full solves, staged: existing families first, then Monte Carlo and 3D Halton after their code is audited.</li>
-<li><b>B4 time order:</b> observed, never assumed from the method's name.</li>
-<li><b>B5 qualified accuracy–cost front:</b> it need not be monotone, and failed configurations are shown separately.</li>
-<li><b>B6 test space:</b> M/r ∈ {2, 3, 4, 8}, M = r as a weak control, Galerkin as a different equation, and a low mixed-frequency test set.</li>
-<li><b>B7 longer run times:</b> needs new references beyond T = 0.25.</li>
-<li><b>B8 physical diagnostics:</b> boundary error, energy, overshoots, and whether the scoring grid misses fine features (needs a finer observation route).</li>
-</ul></div>
-
-<div class="grp"><h3>C · Competition</h3><ul>
-<li><b>C1 full-simulation ladder:</b> upwind/BE, central-CN and spectral, across Δt × tolerance × <b>FOM mesh</b>. The comparator is chosen on validation, and every match is labelled as a finite-ladder upper bound.</li>
-<li><b>C2 crossover:</b> both the same-mesh crossover and the best accuracy-matched one (FOM on any mesh).</li>
-<li><b>C3 standard ROMs</b> (moved up to priority 2): first a minimal POD-LSPG with ECSW and Q-DEIM; later GNAT, POD + exact tensor, EQ on our bank, and a CROM-style sampler. Equal tuning budgets.</li>
-<li><b>C4 decoder ablation:</b> matched data, budget, rank and norms.</li>
-<li><b>C5 linear span vs nonlinear head:</b> repair the head or drop the "nonlinear manifold" claim. The head-size K sweep goes here if the advisor means K.</li>
-</ul></div>
-
-<div class="grp"><h3>D · Generality (each is its own development project)</h3><ul>
-<li><b>D1 parameters:</b> pre-declared ν and IC ranges, using newly drawn development cases. Reserved out-of-distribution cohorts stay closed.</li>
-<li><b>D2 Allen–Cahn at full scale.</b> Predicted: no advection-stencil gap.</li>
-<li><b>D3 exponential nonlinearity:</b> the time-dependent Frank–Kamenetskii problem is new work; a steady Bratu study is an optional smaller step.</li>
-<li><b>D4 NS 3D off-mesh:</b> not implemented; needs divergence and pressure checks.</li>
-<li><b>D5 geometry:</b> a domain that demonstrably lacks a fast separable transform (for example L-shaped or curved). Mixed boundary conditions alone don't qualify.</li>
-</ul></div>
-
-<div class="grp"><h3>E · Robustness</h3><ul>
-<li><b>E1 randomised rules:</b> lattice shifts and Sobol scrambles. Coverage is checked for the deployed single draw, and a bad lattice vector must be caught by an independent family. The 2D code must first expose its seed.</li>
-<li><b>E2 seeds:</b> repeat the full recipe (training, ordering, selection) 3–5 times.</li>
-<li><b>E5 hardware:</b> paired within one GPU; dimensionless results compared across A100 and H200.</li>
-</ul></div>
-
-<div class="grp"><h3>F · Final confirmation</h3><ul>
-<li><b>F1 global freeze manifest</b> covering every lane on the roster: E0, mechanism, time2, wide-bank, smooth-bank, combined, speed3d, this plan's lanes and the C3 baseline. It freezes:
-  <ul>
-  <li>banks, mode lists, metrics and cohort membership;</li>
-  <li>code versions;</li>
-  <li>every threshold, fallback and comparator.</li>
-  </ul>
-  It is hashed and Codex-audited. D2–D5 and C4 are excluded unless they freeze first.</li>
-<li><b>F2 open the sealed cohorts once:</b> 2D 128 physical cases (256 case-kinds) and 3D 64 (128). This requires the freeze, a decision on key custody, and building the opening tool.</li>
-</ul></div>
-
-<h2 id="budget">8 · Order, dependencies and budget</h2>
-<div class="flow"><span>P1 pilot</span><b>→</b><span>Q qualification</span><b>→</b><span>C3 minimal baseline</span><b>→</b><span>B5 front / C2 crossover</span><b>→</b><span>F1 freeze</span><b>→</b><span>F2 open sealed</span></div>
-<p class="note">Critical path. The 3D speed lane's audited results feed into priority 2.</p>
-<div class="tw"><table>
-<tr><th>Priority</th><th>Contents</th><th>GPU-hours</th></tr>
-<tr><td>1</td><td>P1a–P1g pilot (section 6)</td><td><b>≤ 20</b> (contingency included)</td></tr>
-<tr><td>2</td><td>C3 minimal; Q1–Q3; B1, B4, B5; 2D C1/C2</td><td>60–110</td></tr>
-<tr><td>3</td><td>A3, A4, B2, B3, B6, B7, B8, C5</td><td>80–160</td></tr>
-<tr><td>4</td><td>E1, E2, E5, C3 full, C4, D1</td><td>120–220</td></tr>
-<tr><td>F</td><td>freeze and opening</td><td>30–50</td></tr>
-<tr><td><b>Total</b></td><td>base 310–560; with 25 % contingency on priorities 2–F</td><td><b>≈ 383–695</b></td></tr>
-</table></div>
-<p>That is about <b>4–10 days of continuous GPU time</b> on 3–4 GPUs. Calendar time is longer, because of queues, coding and audits. New PDEs and geometry (D2–D5) are priced separately.</p>
-
-<h2 id="decide">9 · Decisions needed from you</h2>
-<ul>
-<li><b>Which "k" does your advisor mean?</b> Bank width r = R′ (assumed), or the nonlinear head's K? If it's K, the C5 sweep moves up.</li>
-<li><b>Who holds the key</b> to the sealed cohorts (it's on the shared cluster account now), and should the over-cautious 2D floor check be revisited before opening?</li>
-<li><b>Scope:</b> are the new PDEs and geometry (D2–D5) in this paper, or deferred?</li>
-<li><b>Merges</b> of the seven finished lanes, and <b>authorship</b> with Hari.</li>
-</ul>
-
-<h2 id="files">10 · Files</h2>
-<p class="note">In the repository, <span class="k">reports/2026-10-17-full-experiment-plan/</span>: <span class="k">PLAN.md</span> (v1), <span class="k">PLAN-v2.md</span>, <span class="k">PLAN-v3-amendments.md</span>, <span class="k">PLAN-v4-amendments.md</span>, and the Codex audits <span class="k">codex-plan-audit-1.md</span>, <span class="k">-2.md</span> and <span class="k">-3.md</span>.</p>
+<h2>Where this plan stands</h2>
+<p>Codex has reviewed it three times. Each time it found fewer and smaller problems, and each has been fixed. The latest version hasn't had a fourth review yet. The full technical details, with every rule and threshold, are in the repository under <code>reports/2026-10-17-full-experiment-plan/</code>, for whoever runs the experiments.</p>
 </div>

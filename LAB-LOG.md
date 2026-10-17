@@ -19118,3 +19118,11 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - A finite FOM ladder bounds our speed-up from above (it does not bound "FOM efficiency").
   - The three-mesh sign test was degenerate; it is replaced by per-case slopes with a Wilcoxon test, plus TOST.
 - **Report page:** https://claude.ai/artifact/EyoxTFo3QkaZaKdM2C8XBu (source `reports/2026-10-17-full-experiment-plan/report/index.html`).
+
+### Scope: NS 2D/3D added; campaign prompt for Burgers 2D/3D written (coordinator)
+- **User decision.** Incompressible Navier–Stokes 2D and 3D are added to the paper's scope. They run as a separate, later campaign. The scope note is `PLAN-v4-amendments.md` V4-7.
+- **Campaign prompt.** A self-contained prompt for a new coordinator session to run the Burgers 2D/3D campaign (plan priorities 1–4) is at `reports/2026-10-17-full-experiment-plan/AGENT-PROMPT-burgers.md`. It covers:
+  - lane subagents, each Codex-gated at every step;
+  - 2–3 read-only Codex watchdog loops, which check heartbeats, processes, cluster jobs and stale waiters;
+  - the coordinator resuming stalled agents with SendMessage and logging every intervention in `campaign/watchdog/INTERVENTIONS.md`.
+- The user will start that session separately.

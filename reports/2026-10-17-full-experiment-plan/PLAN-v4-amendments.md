@@ -83,3 +83,17 @@
 ## Budget change
 
 P1g adds about 1–2 GPU-h inside the 20 GPU-h cap. Because it checks earlier published claims, it joins the **never-dropped core**. Everything else in the budget is unchanged.
+
+## V4-7. Scope decision (user, 2026-10-17): add Navier–Stokes 2D and 3D
+
+- The user added **incompressible Navier–Stokes in 2D and 3D** to the paper's scope, alongside viscous Burgers 2D/3D.
+- **Existing assets:**
+  - NS 3D has a coordinate-network bank and a mesh ROM (`exp/2026-10-01-ns3d-coordnet-bank`). Off-mesh quadrature has not been implemented for it.
+  - A 2D incompressible NS appears in the historical roadmap. No current off-mesh lane exists.
+- **What NS needs** (each its own lane, after the Burgers work):
+  - divergence-free handling and pressure;
+  - the co-moving/translation treatment used by the NS 3D lane;
+  - order-verified references;
+  - a spectral FOM comparator.
+
+  The plan predicts **no accuracy gain against a spectral FOM** (governing plan, E6b), so the NS claims are cost and mesh-independence. Burgers priorities 1–4 are unchanged.

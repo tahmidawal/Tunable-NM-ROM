@@ -19106,3 +19106,15 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - memory and offline-cost inventory;
   - a 10–20 GPU-h pilot cap.
 - **Next.** Restate the plan per the audit and re-audit it. The user plans to start this work in a separate session.
+
+### Plan audits 2–3, v3/v4 amendments, report page (coordinator)
+- **Audit 2** on v2: NEEDS-RESTATEMENT, six blockers. **v3** amendments written.
+- **Audit 3** on v3: NEEDS-RESTATEMENT, four priority-1 blockers and two later ones. **v4** amendments written. Audit 4 has not been run.
+- **Finding (audit 3, from the code; recomputed by Codex, not yet re-run by the coordinator).** The 2D test-mode set is chosen by sorting mesh-dependent discrete Laplacian eigenvalues (`hops.py:35–41`). It is identical across meshes for M ≤ 1024, but differs by 4 modes between 256² and 1024² at M = 1536 (the accurate setting) and by 8 at M = 2048. So the earlier cross-mesh comparisons in the 2D accurate setting used slightly different test spaces. The effect on the "flat accuracy" claims is unmeasured; the v4 P1g recheck (never dropped) measures it.
+- **Corrections from the audits:**
+  - 3D S is unmatched: 3D Δt₀ = 0.01, while S is BE at 0.005.
+  - The P1 accuracy count is 324 new runs (+228 reused), not 552.
+  - The 2D query samples the IC at quadrature points; it does not project the full field.
+  - A finite FOM ladder bounds our speed-up from above (it does not bound "FOM efficiency").
+  - The three-mesh sign test was degenerate; it is replaced by per-case slopes with a Wilcoxon test, plus TOST.
+- **Report page:** https://claude.ai/artifact/EyoxTFo3QkaZaKdM2C8XBu (source `reports/2026-10-17-full-experiment-plan/report/index.html`).

@@ -29,7 +29,8 @@
    "mem": "200G",
    "hours": 24,
    "commit": "6f61b238a",
-   "role": "grid W512 + W768"
+   "role": "grid W512 + W768",
+   "status": "complete (sacct COMPLETED), collected 2026-10-17 by resumed lane agent; OUTPUTS.sha256 verified; jax_backend=gpu in log"
   },
   {
    "attempt": "g3",
@@ -38,7 +39,8 @@
    "mem": "200G",
    "hours": 24,
    "commit": "6f61b238a",
-   "role": "grid W1024"
+   "role": "grid W1024",
+   "status": "complete (sacct COMPLETED), collected 2026-10-17 by resumed lane agent; OUTPUTS.sha256 verified; jax_backend=gpu in log; stderr: JAX UserWarning \"large amount of constants captured during lowering (3.26GB)\" - no crash, recorded as a caveat"
   },
   {
    "attempt": "f1",
@@ -57,7 +59,8 @@
    "mem": "200G",
    "hours": 24,
    "commit": "6f61b238a",
-   "role": "grid M2_512 + W256"
+   "role": "grid M2_512 + W256",
+   "status": "complete (sacct COMPLETED), collected 2026-10-17 by resumed lane agent; OUTPUTS.sha256 verified; jax_backend=gpu in log"
   }
  ]
 }

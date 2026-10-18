@@ -1,0 +1,223 @@
+{
+ "config": {
+  "mode": "ps",
+  "dim": 2,
+  "cohort": "val32",
+  "cases": [
+   0,
+   19
+  ],
+  "horizon": 1.0
+ },
+ "job": {
+  "job_id": "5818780",
+  "commit": "3e276a1a80f00b114f036a40b16dcafac982e442",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "manifest": [
+  {
+   "file": "2d/val32/T1/PS/c000_a0.npz",
+   "sha256": "dd6c55cbec2b8bef5f785d04f9ab61e3c82a6d25de5c04e8f57326f337450404"
+  },
+  {
+   "file": "2d/val32/T1/PS/c000_a0.json",
+   "sha256": "5430337df1dfafb5a21374cb58298849221e4890d5ed57d86af758b0a04a25ef"
+  },
+  {
+   "file": "2d/val32/T1/PS/c019_a0.npz",
+   "sha256": "9876693469971b04793cacc929764fe837caf32069d6669689fcc3a8e7df901b"
+  },
+  {
+   "file": "2d/val32/T1/PS/c019_a0.json",
+   "sha256": "fa81c1033186535b86d4b5eb82cbf3170c1e58d16583d3fe31c20e42eef76e60"
+  }
+ ],
+ "cases": [
+  {
+   "case": 0,
+   "stability_ok": true,
+   "finite": true,
+   "gates_ok": true
+  },
+  {
+   "case": 19,
+   "stability_ok": true,
+   "finite": true,
+   "gates_ok": true
+  }
+ ],
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G4proj",
+   "errors": [
+    5.066916832285884e-05,
+    3.1279405324768916e-06,
+    1.9489763380953207e-07
+   ],
+   "orders": [
+    4.017823158938515,
+    4.004424604283786
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G3a",
+   "d": 2,
+   "worst_rel": 2.379536930031623e-16,
+   "pass": true
+  },
+  {
+   "gate": "G4",
+   "d": 2,
+   "spatial_err": [
+    [
+     4.605904794520767e-07,
+     7.007084279101422e-07,
+     8.113408051763677e-07,
+     7.523922772275353e-07,
+     5.862507083394248e-07
+    ],
+    [
+     9.33758328375563e-08,
+     1.4075722013574695e-07,
+     1.619778265778345e-07,
+     1.4941661216606368e-07,
+     1.1593938401596975e-07
+    ],
+    [
+     2.985150043701257e-08,
+     4.48397309093126e-08,
+     5.147462694875548e-08,
+     4.738387824857294e-08,
+     3.6706969883998047e-08
+    ]
+   ],
+   "spatial_order": [
+    3.9640894147485315,
+    3.976410335510192,
+    3.984851879931472,
+    3.9921028090660307,
+    3.9978189847431542
+   ],
+   "spatial_order_coarse": [
+    3.9359163653946823,
+    3.958553443335913,
+    3.9737790233166286,
+    3.9868273294114998,
+    3.9970887572403972
+   ],
+   "half_step_ratio": 1.8705205465371645e-06,
+   "temporal_order": [
+    3.9722979697911036,
+    3.995186994277371,
+    4.000018256163333,
+    4.005306334170644,
+    4.008580841061941
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G3b",
+   "d": 2,
+   "N": 2048,
+   "rel_l2": 1.561919484606633e-13,
+   "max_abs": 3.445105935554957e-14,
+   "pass": true
+  },
+  {
+   "gate": "G3c",
+   "d": 2,
+   "N": 2048,
+   "dt": 3.125e-05,
+   "nu": 0.01,
+   "worst_rel": 8.886121005708101e-12,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "seconds": 2159.3027762193233,
+ "peak_bytes": 1474739456
+}

@@ -22,7 +22,7 @@ FILES = [f'{LANE}/{f}' for f in ('hrcore.py', 'rom.py', 'build.py', 'nnls.py', '
                                   'e0/refcore.py', 'e0/refstore.py', 'e0/verdict.py', 'e0/cohorts.py',
                                   'e0/store/MANIFEST.sha256', 'e0/store/STATUS.json', 'inputs/model_W1024/bank.pkl',
                                   'rules3d/rules_extra.npz', 'rules3d/rules_gl96.npz', 'rules3d/rules_gl112.npz',
-                                  'smoke_accept.py', 'tests/test_core.py', 'checks/test_core.json', 'tune.py',
+                                  'smoke_accept.py', 'tests/test_core.py', 'checks/test_core.json', 'tune.py', 'stageb.py',
                                   'p1core.py', 'p1common.py', 'inputs/p1_analysis.json', 'inputs/p1_EXPORT.json',
                                   'inputs/speed3d_EXPORT.json', 'inputs/speed3d_batch1_e0.json')] + \
     [f'{VQ}/qcore.py', f'{VQ}/qstudy.py', f'{VQ}/vendor/arms.py', f'{VQ}/vendor/hops.py', f'{VQ}/vendor/hfast.py',
@@ -44,7 +44,7 @@ def git_show(commit, name):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
-    p.add_argument('--driver', required=True, choices=['smoke', 'tune'])
+    p.add_argument('--driver', required=True, choices=['smoke', 'tune', 'stageb'])
     p.add_argument('--config', required=True)
     p.add_argument('--gpu', default='h200', choices=sorted(GRES))
     p.add_argument('--mem', default='200G')
@@ -56,7 +56,7 @@ def main():
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     cfgname = f'{LANE}/{a.config}'
-    files = FILES + [cfgname]
+    files = FILES + [cfgname] + [f'{LANE}/{x}' for x in json.loads(git_show(commit, cfgname)).get('stage_files', [])]
     for name in files:
         assert (ROOT / name).read_bytes() == git_show(commit, name), f'{name} differs from HEAD'
     out.mkdir(parents=True)

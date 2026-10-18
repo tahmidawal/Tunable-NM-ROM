@@ -1,0 +1,302 @@
+"""jcp-hr-baselines phase-II Stage-B + timing job for one cell (DESIGN A1.6, A2.6, A5.3, A6.6, A24.4, A26.5).
+
+Inputs: the frozen Stage-B membership (checks/FROZEN-STAGEB-<cell>.json, sha256-checked) and the tuning job's
+artifacts (basis, HR data; sha256-checked against the frozen file). Steps:
+  1. G-ours again (A24.5): every admitted X replayed on the 6 timing cases (exported errors to 1e-10 relative);
+  2. every Stage-B member on the full verdict cohort (2D dev6 + val32, 3D 923801 0-63): prod runs with its solver,
+     tight native anchors on every case (shared per discrete problem), tighter on the cohort's first two cases, Q1,
+     E0 scores; on the screening cases the outputs are compared with the tuning job's (replay of the construction);
+  3. A-B-A timing (A6.6): every admitted X against every member Q1-qualified here, on the 6 timing cases, 3 triples per
+     case with drift retries, each timed output checked against its scored output (<= 1e-12).
+Picks and labels are computed offline from this job's data (A26.5). Writes <out>/stageb.json and <out>/arrays/.
+
+Usage: python stageb.py <config.json> <out_dir>
+"""
+from __future__ import annotations
+
+import hashlib
+import json
+import os
+import sys
+import time
+import traceback
+from pathlib import Path
+
+import numpy as np
+import jax
+jax.config.update('jax_enable_x64', True)
+import jax.numpy as jnp
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+sys.path.insert(0, str(HERE / 'e0'))
+import hrcore as H  # noqa: E402
+import rom as RM  # noqa: E402
+import build as BD  # noqa: E402
+import pipeline as PL  # noqa: E402
+import score as SC  # noqa: E402
+import stats as ST  # noqa: E402
+
+T0 = time.perf_counter()
+TIMED_TOL = 1e-12
+DEFER_FRAC = 0.9
+
+
+def log(*a):
+    print(f'[{time.perf_counter() - T0:8.1f}s]', *a, flush=True)
+
+
+def sha(p):
+    return hashlib.sha256(Path(p).read_bytes()).hexdigest()
+
+
+def disc_finite(a, b):
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    if a.shape != b.shape or not (np.all(np.isfinite(a)) and np.all(np.isfinite(b))):
+        return float('nan')
+    return float(np.max(np.abs(a - b)))
+
+
+def timed_triples(fA, fB, argsA, argsB, checkA, checkB, reps=3, burn_s=0.1, max_retry=3):
+    """A-B-A triples (A3.9, A6.6), as smoke.timed_triples: every attempt kept; drift |tA1/tA2 - 1| > 0.25 retried."""
+    rec = []
+    for rep in range(reps):
+        for attempt in range(max_retry + 1):
+            ts, ds = [], []
+            for f, a, chk in ((fA, argsA, checkA), (fB, argsB, checkB), (fA, argsA, checkA)):
+                PL.burn(burn_s)
+                t0 = time.perf_counter()
+                o = jax.block_until_ready(f(*a))
+                ts.append(time.perf_counter() - t0)
+                ds.append(float(chk(o)))
+            ok = abs(ts[0] / ts[2] - 1.) <= 0.25
+            rec.append(dict(rep=rep, attempt=attempt, tA1=ts[0], tB=ts[1], tA2=ts[2], valid=bool(ok),
+                            dA1=ds[0], dB=ds[1], dA2=ds[2]))
+            if ok:
+                break
+    return rec
+
+
+def parse(cid):
+    kind, r, hp, scheme, dt, solver, gen = cid.split('|')
+    return kind, int(r), hp, scheme, float(dt), solver
+
+
+def main():
+    cfg = json.loads(Path(sys.argv[1]).read_text())
+    out = Path(sys.argv[2])
+    (out / 'arrays').mkdir(parents=True, exist_ok=True)
+    if not cfg.get('allow_cpu'):
+        assert jax.default_backend() == 'gpu', jax.default_backend()
+    assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'
+    log(f'jax_backend={jax.default_backend()} devices={jax.devices()}')
+    res = dict(config=cfg, env=dict(backend=jax.default_backend(), devices=[str(x) for x in jax.devices()],
+                                    job=os.environ.get('SLURM_JOB_ID'), commit=cfg.get('commit')),
+               phases={}, ours={}, members={}, timing={}, inventory={})
+
+    def save():
+        PL.dump(out / 'stageb.json.tmp', res)
+        os.replace(out / 'stageb.json.tmp', out / 'stageb.json')
+
+    def phase(name, fn):
+        t0 = time.perf_counter()
+        try:
+            v = fn()
+            res['phases'][name] = dict(status='ok', seconds=time.perf_counter() - t0, device_peak=PL.device_peak())
+        except Exception as e:  # noqa: BLE001
+            res['phases'][name] = dict(status='error', error=f'{type(e).__name__}: {e}',
+                                       trace=traceback.format_exc()[-3000:], seconds=time.perf_counter() - t0)
+            log(f'ERR  {name}: {type(e).__name__}: {e}')
+            v = None
+        save()
+        return v
+
+    # ---- inputs, integrity ------------------------------------------------------------------------------------------
+    fz_path = HERE / cfg['frozen']
+    assert sha(fz_path) == cfg['frozen_sha256'], 'frozen Stage-B file differs from the audited one'
+    FZ = json.loads(fz_path.read_text())
+    tdir = Path(cfg['tune_dir'])
+    for a, h in FZ['artifacts'].items():
+        assert sha(tdir / a) == h, f'artifact {a} differs from the frozen hash'
+    tune = json.loads((tdir / 'tune.json').read_text())
+    assert sha(tdir / 'tune.json') == FZ['tune_json_sha256']
+    d, L = tune['config']['d'], tune['config']['L']
+    assert (d, L) == (cfg['d'], cfg['L'])
+    budget_s = 3600. * cfg.get('budget_hours', 1e9)
+    zf = np.load(tdir / 'artifacts' / 'Phi.npz')
+    allr = [int(x) for x in zf['ranks']]
+    cell = PL.Cell(d, L, log=log)
+    cell.set_basis(jnp.asarray(zf['Phi']), {r: float(t) for r, t in zip(allr, zf['trust'])})
+    cell.constructible_r = {int(x) for x in zf['constructible']}
+    del zf
+    # cohorts: case identities '<cohort>|<j>'; the timing cases are the first six of the selection cohort
+    if d == 2:
+        cohorts = [('dev6', H.Family(2, 'dev6')), ('val32', H.Family(2, 'val32'))]
+    else:
+        cohorts = [('val64', H.Family(3, 'val64', count=64))]
+    if cfg.get('dry'):
+        cohorts = [(c, f) for c, f in cohorts[:1]]
+    fam = {c: f for c, f in cohorts}
+    cases = [f'{c}|{j}' for c, f in cohorts for j in (range(f.n) if not cfg.get('dry') else range(3))]
+    timing = [f'{cohorts[0][0]}|{j}' for j in (ST.TIMING_CASES if not cfg.get('dry') else (0, 1, 2))]
+    refs = {c: SC.Refs(d, c, f, list(range(f.n)) if not cfg.get('dry') else [0, 1, 2]) for c, f in cohorts}
+    n0 = {k: refs[k.split('|')[0]].n0(int(k.split('|')[1])) for k in cases}
+
+    def ic(k):
+        c, j = k.split('|')
+        return fam[c].ic(L, int(j)), fam[c].nu(int(j))
+
+    def score(k, F):
+        c, j = k.split('|')
+        return refs[c].score_safe(F, int(j))
+
+    # ---- 1. G-ours again ---------------------------------------------------------------------------------------------
+    admitted = [k for k, x in FZ['X'].items() if 'front' in x]
+    OX = {}
+
+    def ours_pass():
+        import ours as OU
+        if d == 2:
+            exp = json.loads((HERE / 'inputs' / 'p1_analysis.json').read_text())['configurations']
+            ref_e = {k: {t: exp[k]['e0_per_case'][t] for t in timing} for k in admitted}
+            ox = OU.OursP1(L, admitted, log=log) if admitted else None
+        else:
+            exp = json.loads((HERE / 'inputs' / 'speed3d_batch1_e0.json').read_text())['configs']
+            ref_e = {k: {t: exp[k]['e0'][t.split('|')[1]] for t in timing} for k in admitted}
+        oxs = {}
+        for key in admitted:
+            rec = dict(status='construction_failed', cases={})
+            res['ours'][key] = rec
+            try:
+                if d == 2:
+                    o_, fx = ox, ox.fn(key)
+                else:
+                    st_, rule, kind, scheme, dt, K = key.split('|')
+                    if (st_, rule) not in oxs:
+                        bank, Rp, a = OU.S3_SETTINGS[st_]
+                        oxs[(st_, rule)] = OU.Ours3D(bank, Rp, rule, a=a, log=log)
+                    o_ = oxs[(st_, rule)]
+                    fx = o_.fn(('fs', scheme, float(dt), int(K[1:])))
+                for t in timing:
+                    c, j = t.split('|')
+                    u, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))
+                    Fw = o_.lattice(jax.block_until_ready(fx(u, v)))
+                    e = score(t, Fw)['e']
+                    rel = abs(e - ref_e[key][t]) / abs(ref_e[key][t]) if np.isfinite(e) else float('inf')
+                    rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)
+                    np.savez(out / 'arrays' / f'X~{key.replace("|", "~")}~{t.replace("|", "~")}.npz', F=Fw)
+                worst = max(c_['replay_rel'] for c_ in rec['cases'].values())
+                rec.update(status='complete', G_ours=bool(worst <= 1e-10), replay_worst_rel=worst)
+                if rec['G_ours']:
+                    OX[key] = (o_, fx)
+            except Exception as e:  # noqa: BLE001
+                rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
+            save()
+            log(f'   ours {key}: {rec["status"]} G-ours={rec.get("G_ours")}')
+        return len(OX)
+    phase('ours_pass', ours_pass)
+
+    # ---- 2. Stage-B members on the full verdict cohort ---------------------------------------------------------------
+    def arm(kind, r, hp):
+        Phi_r = cell.Phi[:, :r]
+        if kind == 'none':
+            return cell.arm_data('none', r, '-')[0]
+        z = np.load(tdir / 'artifacts' / f'HR~{kind}~{r}~{hp}.npz')
+        if kind == 'ecsw':
+            dat, _ = BD.ecsw_data(Phi_r, z['nodes'], z['weights'], d, L)
+            return dict(dat, Phi=Phi_r)
+        idx = H.stencil_index(z['P'], d, L)
+        return jax.block_until_ready(dict(Pst=H.stencil_rows(Phi_r, idx), T1=jnp.asarray(z['T1']),
+                                          T2=jnp.asarray(z['T2']), T3E=jnp.asarray(z['T3E']), Phi=Phi_r))
+
+    groups = {}
+    for m in FZ['members']:
+        kind, r, hp, scheme, dt, solver = parse(m)
+        groups.setdefault((kind, r, hp, scheme, dt), []).append(m)
+        res['inventory'][m] = dict(status='not_run')
+    DATA = {}
+    for (kind, r, hp, scheme, dt), mems in sorted(groups.items(), key=lambda kv: str(kv[0])):
+        def grp(kind=kind, r=r, hp=hp, scheme=scheme, dt=dt, mems=mems):
+            dat = arm(kind, r, hp)
+            opt = (scheme, dt)
+            tight = {k: cell.run(kind, r, dat, 'native', opt, 'tight', *ic(k)) for k in cases}
+            tighter = {k: cell.run(kind, r, dat, 'native', opt, 'tighter', *ic(k)) for k in cases[:2]}
+            for m in mems:
+                solver = parse(m)[5]
+                try:
+                    recs = {k: cell.run(kind, r, dat, solver, opt, 'prod', *ic(k)) for k in cases}
+                    q1 = PL.q1_config(recs, tight, tighter, n0, cases[:2], cases)
+                    e0 = {k: score(k, recs[k]['fields_lat']) for k in cases}
+                    tz = np.load(tdir / 'arrays' / f"{tune['stageA'][m]['stage']}~{m.replace('|', '~')}.npz")
+                    scr = [t for t in timing]
+                    rep = max(float(np.max(np.abs(recs[t]['W'] - tz['W'][i]))) for i, t in enumerate(scr))
+                    np.savez(out / 'arrays' / f'B~{m.replace("|", "~")}.npz',
+                             W=np.stack([recs[k]['W'] for k in cases]), Wtight=np.stack([tight[k]['W'] for k in cases]),
+                             Wtighter=np.stack([tighter[k]['W'] for k in cases[:2]]),
+                             gamma=np.stack([recs[k]['gamma'] for k in cases]))
+                    es = [e0[k]['e'] for k in cases]
+                    res['members'][m] = dict(q1=q1, e0=e0, replay_vs_tune_W=rep, cases=cases,
+                                             certs={k: recs[k]['cert'] for k in cases},
+                                             anchors=dict(tight={k: tight[k]['cert'] for k in cases},
+                                                          tighter={k: tighter[k]['cert'] for k in cases[:2]}),
+                                             W=float(np.max(es)) if all(np.isfinite(es)) else float('nan'),
+                                             med=float(np.median(es)) if all(np.isfinite(es)) else float('nan'))
+                    res['inventory'][m] = dict(status='complete')
+                    log(f'   {m}: q1={q1["q1"]} W={res["members"][m]["W"]:.4g} replay={rep:.1e}')
+                    if q1['q1']:
+                        DATA[m] = dat
+                except Exception as e:  # noqa: BLE001
+                    res['inventory'][m] = dict(status='run_failed', reason=f'{type(e).__name__}: {e}')
+                save()
+            if not any(m in DATA for m in mems):
+                del dat
+            return True
+        if phase(f'B|{kind}|{r}|{hp}|{scheme}|{dt:.8g}', grp) is None:
+            for m in mems:
+                if res['inventory'][m]['status'] == 'not_run':
+                    res['inventory'][m] = dict(status='run_failed', reason='anchors / construction failed')
+            save()
+
+    # ---- 3. A-B-A timing: every admitted X against every member Q1-qualified here ------------------------------------
+    def aba():
+        mem = sorted(DATA, key=lambda m: ST.total_order_key(dict(
+            W=res['members'][m]['W'], med=res['members'][m]['med'], t=0., r=parse(m)[1], kind=parse(m)[0],
+            hr_points=0, scheme=parse(m)[3], dt=parse(m)[4], solver=parse(m)[5], id=m)))
+        for key, (o_, fx) in OX.items():
+            for m in mem:
+                pk = f'{key}||{m}'
+                if time.perf_counter() - T0 > DEFER_FRAC * budget_s:
+                    res['timing'][pk] = dict(status='not_timed', reason='budget')
+                    continue
+                kind, r, hp, scheme, dt, solver = parse(m)
+                q = cell.query(kind, r, solver)
+                sch = RM.schedule(d, scheme, dt, 'prod_native' if solver == 'native' else 'prod')
+                dat = DATA[m]
+                fB = lambda u, v, q=q, dat=dat, sch=sch: q(u, v, dat, sch)['fields']
+                fX = lambda u, v, fx=fx: fx(u, v)['fields']
+                rec = {}
+                try:
+                    for t in timing:
+                        c, j = t.split('|')
+                        ux, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))
+                        ub = jnp.asarray(fam[c].ic(L, int(j)))
+                        sX = o_.lattice(jax.block_until_ready(fx(ux, v)))          # warm + scored outputs
+                        sB = cell.lattice(jax.block_until_ready(fB(ub, v)))
+                        chkX = lambda o, s=sX: disc_finite(o_.lattice(dict(fields=o)), s)
+                        chkB = lambda o, s=sB: disc_finite(cell.lattice(o), s)
+                        rec[t] = dict(triples=timed_triples(fX, fB, (ux, v), (ub, v), chkX, chkB))
+                    ok = all(all(np.isfinite(x) and x <= TIMED_TOL for tr in rc['triples']
+                                 for x in (tr['dA1'], tr['dB'], tr['dA2'])) for rc in rec.values())
+                    res['timing'][pk] = dict(status='complete', cases=rec, outputs_ok=bool(ok))
+                except Exception as e:  # noqa: BLE001
+                    res['timing'][pk] = dict(status='run_failed', reason=f'{type(e).__name__}: {e}', cases=rec)
+                save()
+        return len(res['timing'])
+    phase('aba', aba)
+    res['total_seconds'] = time.perf_counter() - T0
+    save()
+    log('done')
+
+
+if __name__ == '__main__':
+    main()

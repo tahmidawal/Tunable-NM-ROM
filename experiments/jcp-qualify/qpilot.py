@@ -83,10 +83,13 @@ def main():
                     F = jax.block_until_ready(q['decode'](W, d_))
                     cert = (QA.T2.make_certifier(q['nl'], r) if form == 'LSPG' else QA.QC.make_gal_certifier(q['nl'], r))
                     o = jax.block_until_ready(cert(s_['states'], nu, d_, sch))
+                    # qtime keeps the tight, tighter, successor and check replays' outputs referenced together with F
+                    held = [jax.block_until_ready(QA.run(bank, st_, rr, form, sc, DT0 * f, lev, u0, nu))
+                            for rr, lev in ((role, 'tight'), (role, 'tighter'), (role, 'prod'), (role, 'prod'))]
                     rep['runs'].append(dict(setting=name, rule=rl, form=form, scheme=sc, factor=f,
                                             seconds=time.perf_counter() - t1, valid=P.run_valid(v)))
                     step(f'{name} {rl} {form} {sc} split+certifier live')
-                    del v, W, s_, F, o
+                    del v, W, s_, F, o, held
             step(f'{name} rollouts')
         for k in range(len(pair)):
             keep[name].drop_role(f'x{k}')

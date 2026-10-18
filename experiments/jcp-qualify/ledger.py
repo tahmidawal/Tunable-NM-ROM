@@ -69,8 +69,18 @@ def validate(d, new, exempt=None):
             if new[f'fballow{m}'] < 2:
                 probs.append(f'fballow{m} < 2 GPU-h')
         elif f'q2known{m}' in new:
-            if not (f'nofb{m}' in new or any(k.startswith(f'fb{m}') for k in list(new) + list(live) + list(done))):
+            fbs = [k for k in new if k.startswith(f'fb{m}')] + [k for k in live | done if k.startswith(f'fb{m}')]
+            if f'nofb{m}' in new:
+                pass
+            elif not fbs:
                 probs.append(f'q2known{m} without a fallback job or nofb{m} marker')
+            else:
+                probs += [f'fallback {k} needs a positive projection' for k in new if k.startswith(f'fb{m}') and new[k] <= 0]
+                t_live = any(k.startswith(f'time{m}') for k in live | done)
+                if not t_live and f'time{m}enlarged' not in new:          # A5.1: the unsubmitted panel was re-priced
+                    probs.append(f'time{m} not marked re-priced with its fallback subjects (time{m}enlarged)')
+                if t_live and not any(k.startswith(f'time{m}r') and v > 0 for k, v in new.items()):
+                    probs.append(f'time{m} already submitted: a repeat panel time{m}r<k> must be reserved')
         else:
             probs.append(f'no fallback allowance or q2known marker for mesh {m}')
     probs += [f'pending entry already live: {k}' for k in set(new) & live]

@@ -762,3 +762,10 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 * m1 FOM statistics (H4.2 diagnostic) are computed only when every case converged and was scored; the table and the
   export show convergence and the scored/total count. Codex prompts now follow COMMON-BRIEF §11 (no large copies; at most
   2 GB scratch in one reused `/tmp/speed3d-audit-scratch/`, deleted after each round; ≥ 60 GB free before each audit).
+
+---
+
+## Amendment A24 (2026-10-18; disposition of `audits/codex-code-20.md`, NOT READY on one item)
+
+* m1 coverage also requires every configured same-mesh FOM diagnostic (each family and step of `mesh.same` at every L)
+  to be calibrated, converged and scored on all its cases, and timed in a valid panel (`same_mesh_foms_complete`).

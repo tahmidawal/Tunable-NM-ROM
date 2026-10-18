@@ -545,11 +545,15 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                primary_unions_resolved=all(not h['union']['unresolved_families'] for h in out['H43'].values()),
                mesh_unions_resolved=all(not union_of(row)['unresolved_families'] for h in out['H43'].values()
                                         for row in h['per_mesh'].values()),
+               same_mesh_foms_complete=all(
+                   (lambda e: bool(e and e.get('calibration_status') == 'qualified' and not e.get('infeasible')
+                                   and e.get('statistics_complete') and e.get('seconds_warm') is not None))(
+                       out['per_L'][str(L)]['fom'].get(f'{fam}|{dt:.8g}')) for L in blk['Ls'] for fam, dt in blk['same']),
                cohort=res['cohort']['seed'] == 923801 and sorted(cases) == list(range(64)))
     acc['integrity_ok'] = bool(acc['complete_flag'] and acc['K4'] and acc['G5'] and acc['cohort'])
     acc['coverage_complete'] = bool(acc['every_rom_every_mesh'] and acc['every_rom_scored'] and acc['every_mesh_panel_valid'] and acc['match_panels_valid']
                                     and acc['no_panel_failures'] and acc['primary_unions_resolved']
-                                    and acc['mesh_unions_resolved'])
+                                    and acc['mesh_unions_resolved'] and acc['same_mesh_foms_complete'])
     acc['accepted_for_claims'] = acc['integrity_ok']
     out['acceptance'] = acc
     if not acc['integrity_ok']:

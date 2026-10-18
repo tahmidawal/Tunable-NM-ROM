@@ -10,6 +10,16 @@ ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 NS=/cluster/tufts/paralab/tawal01/jcp-hrb
 LOCAL="$ROOT/experiments/jcp-hr-baselines/runs/$A"
 [ -f "$LOCAL/run.sbatch" ]
+# A33.2: the attempt must hold a ledger reservation and the ledger total (measured or reserved) must be <= 30 GPU-h
+/home/tahmid/Dev/.venv/bin/python - "$ROOT/experiments/jcp-hr-baselines/runs/GPU-LEDGER.json" "$A" <<'PY'
+import json, sys
+L = json.load(open(sys.argv[1]))
+assert any(j['attempt'] == sys.argv[2] for j in L['jobs']), 'no ledger reservation for this attempt'
+tot = sum(float(j['measured_gpu_hours']) if j.get('measured_gpu_hours') is not None else float(j['requested_hours'])
+          for j in L['jobs'])
+assert tot <= 30.0 + 1e-9, ('ledger total exceeds 30 GPU-h', tot)
+print(f'ledger total (measured or reserved) {tot:.3f} GPU-h <= 30')
+PY
 echo "--- squeue before"; timeout 60 $SSH tufts-login 'squeue -u $USER -h -o "%i %j %T"'
 TAG="$A.$(hostname).$$.$(date +%s%N)"
 timeout 60 $SSH tufts-login "mkdir -p $NS/.staging && mkdir $NS/.staging/$TAG"

@@ -68,6 +68,12 @@ def main():
         reserve = 7.5 if a.driver == 'tune' else 0.0
         assert committed + c0['wall_hours'] + reserve <= 30.0 + 1e-9, \
             ('ledger: spent/committed + this wall + Stage-B reserve exceeds 30 GPU-h', committed, c0['wall_hours'])
+        # A33.2: reserve this attempt's maximum (its wall limit) in the ledger at staging, so every later staging or
+        # retry is checked against it; collect replaces requested_hours by the measured value
+        led['jobs'].append(dict(attempt=a.attempt, slurm=None, gpu=a.gpu, commit=commit, role=f'{a.driver} {a.config}',
+                                requested_hours=float(c0['wall_hours']), measured_gpu_hours=None,
+                                status='reserved at staging'))
+        (ROOT / LANE / 'runs' / 'GPU-LEDGER.json').write_text(json.dumps(led, indent=1) + '\n')
     out.mkdir(parents=True)
     proof = []
     for name in files:

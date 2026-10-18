@@ -138,6 +138,12 @@ def main():
         for option in options:
             for solver in ('native', 'common'):
                 set_status(PL.cfg_id(kind, r, hp, option[0], option[1], solver), 'not_run')
+    O.res['fom_limiting'] = {}                          # A33.1: FOM inventory predeclared at job setup
+    for cname_ in (('dev6', 'val32') if d == 2 else ('val64',)):
+        nn = (6 if cname_ == 'dev6' else 32) if d == 2 else 64
+        for option in options:
+            for j in (range(nn) if not cfg.get('dry') else [0, 1]):
+                O.res['fom_limiting'][f'{cname_}|{j}|{option[0]}|{option[1]:.8g}'] = dict(status='not_run')
     refs = O.phase('refs', lambda: SC.Refs(d, coh, fam, SCREEN))
     if refs is None:
         return
@@ -356,9 +362,16 @@ def main():
             pname = f'{tag}|{kind}|{r}|{hp}|{option[0]}|{option[1]:.8g}'
 
             def block(option=option):
-                tight = {j: cell.run(kind, r, dat, 'native', option, 'tight', fam.ic(L, j), fam.nu(j)) for j in SCREEN}
-                tighter = {j: cell.run(kind, r, dat, 'native', option, 'tighter', fam.ic(L, j), fam.nu(j))
-                           for j in SCREEN[:2]}
+                tight, tighter = {}, {}
+                apart = O.res.setdefault('anchors_partial', {}).setdefault(pname, {})
+                for j in SCREEN:                       # A33.1: each anchor checkpointed as it completes
+                    tight[j] = cell.run(kind, r, dat, 'native', option, 'tight', fam.ic(L, j), fam.nu(j))
+                    apart[f'tight|{j}'] = dict(cert=tight[j]['cert'], W=tight[j]['W'])
+                    O.save()
+                for j in SCREEN[:2]:
+                    tighter[j] = cell.run(kind, r, dat, 'native', option, 'tighter', fam.ic(L, j), fam.nu(j))
+                    apart[f'tighter|{j}'] = dict(cert=tighter[j]['cert'], W=tighter[j]['W'])
+                    O.save()
                 for solver in ('native', 'common'):
                     cid = cids[(option, solver)]
                     try:
@@ -402,6 +415,9 @@ def main():
                     except Exception as e:  # noqa: BLE001
                         set_status(cid, 'run_failed', reason=f'{type(e).__name__}: {e}', stage=tag)
                     O.save()
+                O.res['anchors_partial'].pop(pname, None)
+                O.res['search_hours'] = sum(v['seconds'] for k_, v in O.res['phases'].items()
+                                            if k_.startswith('A|') or k_.startswith('EXT|')) / 3600
                 return True
             if O.phase(pname, block) is None:                       # anchors failed: both solvers of this option
                 for s in ('native', 'common'):
@@ -420,17 +436,13 @@ def main():
     O.res['search_hours_registered'] = (time.perf_counter() - search_t0) / 3600
 
     # ---- 4. full-rank limiting comparator (central FOM) on the verdict cohort ------------------------------------
-    O.res['fom_limiting'] = {}
-
     def fom_runs():
         fom = H.make_fom(d, L)
         cohorts = [('dev6', H.Family(2, 'dev6')), ('val32', H.Family(2, 'val32'))] if d == 2 else [('val64', fam)]
         ntol = 1e-10
-        for cname, f_ in cohorts:                      # A32.4: predeclared inventory
-            for option in options:
-                for j in (range(f_.n) if not cfg.get('dry') else [0, 1]):
-                    O.res['fom_limiting'][f'{cname}|{j}|{option[0]}|{option[1]:.8g}'] = dict(status='not_run')
-        O.save()
+        for cname, f_ in cohorts:                      # the setup inventory must match the cohorts
+            assert all(f'{cname}|{j}|{o[0]}|{o[1]:.8g}' in O.res['fom_limiting']
+                       for o in options for j in (range(f_.n) if not cfg.get('dry') else [0, 1]))
         for cname, f_ in cohorts:
             jj = list(range(f_.n)) if not cfg.get('dry') else [0, 1]
             rf = SC.Refs(d, cname, f_, jj)
@@ -474,8 +486,11 @@ def main():
                             Ws = []
                             for j in SCREEN:
                                 o = cell.run('none', r, datp, 'native', option, 'prod', fam.ic(L, j), fam.nu(j))
-                                rec['cases'][j] = dict(e0=refs.score_safe(o['fields_lat'], j), cert=o['cert'])
+                                rec['cases'][j] = dict(e0=refs.score_safe(o['fields_lat'], j), cert=o['cert'],
+                                                       W=o['W'])
                                 Ws.append(o['W'])
+                                O.res['probe_runs'][cid] = rec
+                                O.save()
                             O.npz('arrays', f'PROBE~{cid}', W=np.stack(Ws))
                         except Exception as e:  # noqa: BLE001
                             rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')

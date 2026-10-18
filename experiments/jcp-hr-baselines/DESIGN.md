@@ -1663,3 +1663,29 @@ frozen inventory, counts assessed pairs, propagates saturation (256² → 1024²
 and adds Stage-B selection costs to C-search; Stage B shares basis prefixes per rank and HR data per (kind, r, hp) with
 bounded device memory; Stage-B preflight checks its tuning directory and frozen files. These are implemented and
 code-audited clean before the first Stage-B submission.
+
+---
+
+## Amendment A33 (2026-10-18) — code audit 21 (A and B NOT READY): tuning-side fixes; Stage-B chain list
+
+**A33.1 Tuning job evidence (items 10, 14, 8).** Every anchor run (tight, tighter) and every probe case is checkpointed
+as it completes; the full-rank-comparator inventory is predeclared at job setup (before any expensive work);
+`search_hours` (classified `A|` + `EXT|` phase time) is rewritten after every screening block, so a truncated job still
+carries its search expenditure.
+
+**A33.2 Spending reservation (item 19).** Staging a tune/stageb attempt appends a ledger entry reserving its wall limit
+(`requested_hours`, status "reserved at staging"); the ledger total counts measured hours where known and reservations
+otherwise. Staging refuses unless total + this wall (+ the 7.5 h Stage-B reserve for tuning attempts) ≤ 30; `submit.sh`
+re-checks that the attempt holds a reservation and that the ledger total ≤ 30 before any transfer. A retry is a new
+attempt with its own reservation; collection replaces the reservation by the measured value.
+
+**A33.3 Stage-B chain, to be fixed and audited READY before any Stage-B job (items 2, 4–8, 10, 12, 18, 20, 21).**
+Retry-exhaustion check for invalid final attempts; reconciliation of frozen members, comparators and cases (missing work
+→ incomplete, never favourable); one qualification formatter applied to every emitted conclusion (batch, qualification,
+DIAGNOSTIC ONLY for 3D batch 1); a required, hashed and identity-checked 256² saturation result for the 1024² analysis
+and "unassessed" for unavailable checks; ECSW coverage from the expected inventory; search accounting reconstructed from
+checkpointed phases plus selection-relevant Stage-B timing, with the A3.1/A4.3 budget wording; per-case/attempt
+checkpoints of Stage-B anchors, comparator cases and timing attempts; an offline ECSW artifact validator before freezing;
+Stage-B preflight and membership-derived resource admission at staging; unique-pair counting; Stage-B timing in the
+registered total order. "Recomputed from evidence" in A32.6 for the freeze means: summary certificates aggregated plus
+Q1 distances recomputed from saved coefficients, until the certificate recomputation from per-step evidence is added.

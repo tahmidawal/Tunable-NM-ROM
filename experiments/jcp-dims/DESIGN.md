@@ -796,6 +796,6 @@ mode inputs; a missing hash aborts. (b) Every job-level field of an attempt's ar
 `KAPPAS`, `R_LIST`) against the values in force when the existing cache was built (unchanged since the setup commit), so
 any later change invalidates it while the existing cache — whose raw archives are offloaded — stays valid. (d)
 `resources.py` reads offloaded jobs' retained metadata (`runs/<job>/slim`); the smoke `result.json` files were fetched
-from the burgers-archive and checked against the committed sha256 listings; recomputed certificates equal the recorded
+from the burgers-archive and checked against the sha256 listings (committed copies: `checks/archive-listings/smk{2,3}.sha256-listing`); recomputed certificates equal the recorded
 ones (`f2kA` 11.2667, `b2f` 1.9548, `f2kB` 1.7404, `k3a` 8.3966, `b3f` 2.4419 h).
 **A11.3** A5.4's release time corrected to ~14:45 UTC (the coordinator's record).

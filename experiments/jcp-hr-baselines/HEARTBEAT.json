@@ -1,18 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T14:24:07Z",
- "step": "code audit 29 NOT READY (kkt after deadline) -> A40 + G-deadline; gate suite test17 + code audit 30 running; t2d1024a 5508660 RUNNING (Stage A)",
+ "utc": "2026-10-18T14:32:35Z",
+ "step": "code audit 30 READY (NNLS); found G-qrdel/G-deadline were not in the gate list -> registered (selective PASS); full gate suite test18 running; then stage t3d64b + job audit; t2d1024a 5508660 RUNNING",
  "waiting_on": {
   "slurm_jobs": [
    5508660
   ],
-  "codex_output": "audits/codex-code-30.md",
-  "codex_pid": [
-   2870255
-  ],
-  "local_pid": 2869776
+  "codex_output": null,
+  "codex_pid": [],
+  "local_pid": 2896132
  },
- "expected_finish_utc": "2026-10-18T15:24:07Z",
+ "expected_finish_utc": "2026-10-18T16:02:35Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

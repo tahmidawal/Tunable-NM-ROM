@@ -1,0 +1,262 @@
+% ===========================================================================
+% methods.tex -- Method section (main text).
+%
+% Tightened from the 2026-09-16 version; the per-PDE instance derivations
+% (Poisson identity, Crank--Nicolson heat step, Burgers stencil, the Gram
+% path, the NNLS fit) now live in sections/method-details.tex (Appendix A),
+% The correction ladder u = G(h_theta(z) + C_q y) is first-class here because
+% the rank q is the paper's knob.
+%
+% Sources checked (paths relative to the worktree root), unchanged:
+%   experiments/separable-decoder/sep_common.py
+%   experiments/mr-burgers2d/engines.py, accuracy_paths.py
+%   experiments/cost-to-tolerance/ctol_tol.py
+%   worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/b2d_tensor_common.py
+%   worktrees/2026-09-15-cheap-corrections/experiments/cheap-corrections/{cheap_ladder,varpro}.py
+%   worktrees/2026-09-16-q-ridge/experiments/q-ridge/q_eqcert.py   (held-out rho certification)
+%
+% NO NUMBER IS TYPED BY HAND.  Numeric slots are macros from tables/numbers.tex.
+% ===========================================================================
+
+\section{Method}
+\label{sec:method}
+
+We reduce a discretised PDE by restricting its state to the image of a frozen
+learned decoder and solving, in a small number of coordinates, a least-squares
+problem built from a fixed set of smooth weak tests. The decoder has three parts
+whose separation is the point of the paper: a spatial \emph{bank}, a neural
+\emph{head}, and a set of linear \emph{correction} directions that the solver may
+switch on at run time. \S\ref{sec:method:manifold} defines the decoder,
+\S\ref{sec:method:ladder} the correction ladder, \S\ref{sec:method:weak} the
+solve that is actually run, \S\ref{sec:method:precomp} the offline operators and
+the quadrature rules with their certification, \S\ref{sec:method:tuning} what is
+fixed and what is chosen at run time, and \S\ref{sec:method:layers} the error
+decomposition every result is reported in. Per-PDE derivations, solver constants
+and exit codes are in Appendix~\ref{app:method}; Figure~\ref{fig:arch} shows
+the data flow and, by colour, when each quantity is fixed, and
+Appendix~\ref{app:arch} lists the blocks.
+
+\subsection{Setting and trial manifold}
+\label{sec:method:manifold}
+
+All problems are posed on $[0,1]^2$ with homogeneous Dirichlet data and
+discretised by second-order finite differences on a uniform grid of $N$
+intervals per axis; the unknown is the vector of interior nodal values
+$u\in\Real^{n}$, $n=(N-1)^2$, and $\Aop$ is the negative discrete Laplacian.
+Four sizes must be kept apart: $R$ is the width of the spatial bank, $k$ the
+latent dimension of the head, $M$ the number of retained weak tests, and $m$ the
+number of quadrature nodes where sampling is used. The trial manifold is
+\begin{equation}
+  \umanifold(\latent) \;=\; \bank\,\head(\latent),
+  \qquad
+  \bank\in\Real^{n\times R},\quad
+  \head:\Real^{k}\to\Real^{R},\quad k\le R\ll n,
+  \label{eq:decoder}
+\end{equation}
+with the bank built once per mesh from a random-Fourier-feature coordinate
+network $g_\phi$ \citep{Tancik2020FourierFeatures} and a smooth vanishing
+factor that enforces the boundary condition exactly at every resolution,
+\begin{equation}
+  \bank_{x,:} = \bcmask(x)\,g_\phi(x)\T,
+  \qquad
+  \bcmask(x) = 16\,x_1(1-x_1)\,x_2(1-x_2).
+  \label{eq:bank}
+\end{equation}
+The head is a two-layer SiLU MLP plus a linear skip,
+$\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, so its Jacobian
+$\dhead=D\varphi_\theta+W\T$ retains a latent-independent component; the rank
+of $\jac{\umanifold}=\bank\,\dhead$ is at most $\min\{k,\rank\bank\}$ and the
+skip makes equality generic without proving it; the elliptic solver checks the
+numerical rank of the projected Jacobian at every query and counts a failed
+check as an invalid solve (the ``valid'' column of Table~\ref{tab:linear}).
+The skip is a design choice, adopted so that the cold solve has a
+latent-independent descent direction; we do not ablate it in this paper. There is no
+encoder in the deployed path: latent codes come from an auto-decoder fit at
+training time and from a least-squares fit against the supplied input at query
+time (\S\ref{sec:method:weak}).
+% apply to the method described here.
+
+Two consequences of \eqref{eq:decoder} organise everything that follows. The
+manifold lies inside the $R$-dimensional span of the bank, so the bank's linear
+projection error is a floor on the achievable field error whatever the head or
+the solver does; nonlinearity in $\head$ buys a smaller \emph{solved} dimension,
+not an escape from the span. And all $x$-dependence factors through $\bank$, so
+the decoder restricted to any node set $S$ is the cached matrix $\bank_{S,:}$
+times $\head(\latent)$: per-node evaluation costs $O(|S|R)$ whatever $n$ is,
+which is what makes both node sampling and exact operator preassembly available
+from one decoder.
+
+\subsection{The correction ladder}
+\label{sec:method:ladder}
+
+The deployed model augments the head's output with $q$ fixed directions
+$\corr\in\Real^{R\times q}$ and solves for the latent code and the correction
+coefficients together,
+\begin{equation}
+  \umanifold(\latent,y) \;=\; \bank\big(\head(\latent) + \corr\,y\big),
+  \qquad \latent\in\Real^{k},\; y\in\Real^{q},\; 0\le q\le R .
+  \label{eq:ladder}
+\end{equation}
+\begin{figure}[t]
+\centering
+\resizebox{0.8\linewidth}{!}{\input{figures/architecture}}
+\caption{Architecture and data flow of the model in \eqref{eq:ladder}. Colour
+says when each quantity is fixed: purple, trained once and frozen for every
+result in the paper; blue, assembled offline once per mesh; orange, computed
+inside the timed query; green, chosen at run time among artefacts that already
+exist; grey, supplied, or a comparator. This is a schematic of the pipeline,
+not a measurement, and reads no job output. What it shows: the only things
+that change between operating points are the three green controls (the rank
+$q$, the stored quadrature rule or dense evaluation, and the tolerance), so
+every point of the family comes from one training run.}
+\label{fig:arch}
+\end{figure}
+The columns of $\corr$ are chosen offline once per checkpoint by a principal
+component analysis of the head's own residual on the training codes (the part of
+the bank-projected training states the head fails to reach), ordered so that
+$C_{q}$ is a prefix of $C_{q'}$ for $q<q'$; the ladder is nested and no rung
+needs retraining. Three rungs have names. At $q=0$ the model is the frozen
+head. At $q=R$ the head is irrelevant---any $\head(\latent)$ can be cancelled
+by $y$---and the model is the linear reduced model on the bank's span, solved
+without a nonlinear iteration. In between, $q$ moves the reachable set from the
+head's image towards the bank's span, and the solved dimension from $k$ to
+$k+q$.
+
+How $y$ is solved determines the cost. When the weak residual is linear in the
+coefficients (Poisson, heat) the inner minimisation over $y$ is a linear least
+squares with a projector that does not depend on $\latent$, so $y$ is eliminated
+exactly and the nonlinear iteration stays $k$-dimensional at every $q$
+(Appendix~\ref{app:method:poisson}, variable projection with a constant
+projector \citep{GolubPereyra1973}). When the residual is quadratic in the
+coefficients (Burgers) the elimination is not closed-form; we damp the
+$(\latent,y)$ blocks separately inside one Levenberg--Marquardt step
+(\emph{block-damped} variable projection): in the same job a joint LM on
+$(\latent,y)$ at $q=64$ leaves $\nBlockJointBudgetExits$ budget exits and plain
+variable projection is an order of magnitude slower, while the block-damped
+step exits stationary everywhere at the same error
+(Table~\ref{tab:solver-variants}). The test count $M$ must exceed $k+q$; the headline ladder holds $M$
+fixed across rungs so that $q$ is the only control (\S\ref{sec:exp:qxm}).
+
+\subsection{Weak residual, objective, and solver}
+\label{sec:method:weak}
+
+Let $\tests\in\Real^{M\times n}$ collect the $M$ lowest tensor-product sine
+vectors of the square, orthonormal in the discrete inner product; they are the
+eigenvectors of the five-point operator, $\tests\Aop=\rowscale\tests$, and this
+identity is asserted numerically in every job. With $\rfull(\cdot)$ the fully
+discrete residual of the PDE at hand, the reduced problem solved online is
+\begin{equation}
+  (\latent^{\star},y^{\star})
+  =
+  \argmin_{\latent,\,y}\;
+  \tfrac12\,\norm{\rweak(\latent,y)}_2^2,
+  \qquad
+  \rweak(\latent,y) = \rowscale_\star^{-1}\,\tests\,\rfull\!\big(\umanifold(\latent,y)\big)
+  \in\Real^{M},
+  \qquad M>k+q ,
+  \label{eq:objective}
+\end{equation}
+with a diagonal row scaling $\rowscale_\star$ stated per PDE in
+Appendix~\ref{app:method}; it changes which solution is selected and is part of
+the method. This is a least-squares Petrov--Galerkin condition with an
+explicit, latent-independent test space \citep{Carlberg2011LSPG,LeeCarlberg2020},
+not tangent Galerkin, and overdetermined rather than square.
+Each attempt solves the damped normal system
+$(H+\lambda\,\diag(\diag H))\,\delta=-g$ with $H=\jac{}\T\jac{}$, $g=\jac{}\T\rweak$
+from forward-mode differentiation through $\head$ \citep{Bradbury2018JAX}, and
+accepts the step only if it is finite, within a fixed trust radius, and strictly
+decreases the residual: damped Levenberg--Marquardt with a monotone test
+\citep{Marquardt1963}, no line search.
+Three exit families are recorded and never conflated: the scale-free
+stationarity measure
+\begin{equation}
+  \station{\latent}{y}
+  =
+  \frac{\norm{\jac{}\T\rweak}_2}{\normF{\jac{}}\;\norm{\rweak}_2}
+  \le\eta_{\mathrm{tol}},
+  \label{eq:stationarity}
+\end{equation}
+a residual threshold, and the stalls (budget exhausted, vanishing step, damping
+limit, non-finite value); outputs produced under a stall are reported as
+early-stopped, never as converged. Stationarity certifies a first-order
+critical point of \eqref{eq:objective} on the frozen manifold and nothing
+more: not a global minimum, nothing about the $n-M$ untested residual
+components, no bound on the field error. For an arm whose reduced fit is
+\emph{attainable} (a POD basis fitted to its own initial condition, the free
+bank) the residual falls to round-off and \eqref{eq:stationarity} is $0/0$, so
+a separate completion status accepts an attained fit and the stricter flag is
+printed beside it. No query uses the solution it predicts: the elliptic solve
+starts from the cached training code nearest the projected source; the Burgers
+query fits $(\latent,y)$ to the supplied initial field on a fixed
+$48\times48$ Gauss--Legendre rule independent of the query mesh, and each time
+step is warm-started at the previous code. The interpolation of the input is
+charged to the query.
+
+\subsection{Precomputed operators, quadrature, and validation}
+\label{sec:method:precomp}
+
+For a fixed linear operator the tested residual is exactly precomputable:
+$\tests(\Aop\,\umanifold-f)=B\,(\head(\latent)+\corr y)-b$ with
+$B=\tests\Aop\bank=\rowscale\,\tests\bank\in\Real^{M\times R}$ assembled offline
+by two one-dimensional sine transforms, with no sampling anywhere. Linear terms
+are therefore never approximated, on any PDE here. For Burgers the advection
+$\tests N(\bank h)$ with the sign-upwind stencil $N$ is the only term that
+resists preassembly (a fixed tensor $T_{iab}$ exists only where the upwind
+switch is inactive, Appendix~\ref{app:method:burgers}); it is evaluated either
+\emph{densely} on every interior node, which costs $O(nR)$ per residual, or on
+an \emph{empirical quadrature} rule of $m$ nodes with non-negative weights
+\citep{Hernandez2017EQ,YanoPatera2019LPEQ}, which costs $O(mR)$ through the
+cached $5m\times R$ stencil block.
+
+A rule is fitted offline by non-negative least squares
+\citep{LawsonHanson1974NNLS} on decoder outputs at $n_{\rm fit}$ stored codes,
+with a hard cap of $m$ nodes (Appendix~\ref{app:method:eq}); changing $m$
+re-solves the fit, rules are not nested, and deployment selects among stored
+rules. \emph{A rule is never accepted on its NNLS fit residual}; we score it by
+the held-out relative error of the projected advection term,
+\begin{equation}
+  \rho(u)=\frac{\norm{\sum_{i\in\mathcal S}w_i\tests_{:,i}N_i(u)-\tests N(u)}_2}{\norm{\tests N(u)}_2},
+  \qquad
+  \rho_{\max}\le\nEqtopBar\ \text{(primary bar)},\quad \rho_{\max}\le\nEqtopTightBar\ \text{(tight)},
+  \label{eq:rho}
+\end{equation}
+over states the solver actually reaches on trajectories disjoint from the fit
+and evaluation cases, and then re-draw the construction: a rule is
+\emph{confirmed} only if every re-draw passes (\S\ref{sec:exp:eq}). The
+primary bar is \nEqtopBarOrigin. Second, the fit states must be reachable states too, and at the top rungs
+($q\ge128$) their \emph{number} binds before the node count does
+(\S\ref{sec:exp:eq}).
+
+\subsection{What is fixed, what is chosen, and how error is reported}
+\label{sec:method:tuning}
+
+Every operating point uses one frozen artefact per PDE: the weights $\theta$,
+the bank $\bank$ and $R$, the latent dimension $k$, the directions $\corr$, the
+time discretisation and the query contract are identical across the family.
+Selected at run time are (i) the correction rank $q$, a prefix of the stored
+directions; (ii) the quadrature, dense or one of the stored validated rules;
+(iii) the stopping tolerance and attempt budget. The first two select among
+offline-prepared artefacts; only the third is a pure run-time number. The test
+count $M$ is a design parameter of the weak problem and is held fixed along the
+headline ladder; where earlier cells raised it with $q$ we say so and report
+the effect separately (\S\ref{sec:exp:qxm}). Nothing is re-optimised at query
+time, and no operating point is reported without its exit reasons.
+% the projected operator; the k x k damped system is solved directly.
+
+\label{sec:method:layers}
+Every panel reports three numbers, never one. The \emph{bank floor} is the
+relative error of the orthogonal projection of the truth onto
+$\operatorname{range}\bank$, what no head and no solver can beat. The
+\emph{best-found} error is the smallest error any point of the augmented
+manifold $\{\bank(\head(\latent)+\corr y)\}$ attains for that case, found by a
+multistart oracle and therefore an upper bound on the true minimum. The
+\emph{solved} error is what the deployed iteration returns. Their differences
+assign the deployed error to representation, reduction and solver, and a lever
+can only move the layer it acts on: $q$ moves the reduction layer, tolerance
+and budget the solver layer, nothing at inference the floor.
+
+\label{sec:method:limits}
+The construction provides no accuracy certificate, no escape from the bank, and
+no convergence theory; $\bank$, $\tests$, $B$ and the rules are rebuilt at each
+resolution even though $\theta$ transfers, and that setup is charged
+separately.

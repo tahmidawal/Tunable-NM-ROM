@@ -11,8 +11,8 @@ import os
 import re
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "report_src.md")
-OUT = os.path.join(HERE, "Coordinate-ROM-Findings.md")
+SRC = os.path.join(HERE, "2026-08-17-four-pde-results-illustrated.md")
+OUT = os.path.join(HERE, "2026-08-17-four-pde-results-illustrated.built.md")
 SEARCH = [HERE, "/home/tahmid/Dev/pod-ae-nmrom"]
 
 

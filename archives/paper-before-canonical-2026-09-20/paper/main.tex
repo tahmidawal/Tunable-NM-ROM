@@ -1,0 +1,930 @@
+% ===========================================================================
+% main.tex -- Tunable Non-linear Manifold ROMs for Elliptic, Parabolic, and
+% Hyperbolic PDEs via Matrix-Free Petrov--Galerkin Projection
+% ICLR 2027 submission (anonymous).  Rebuilt 2026-09-17 from the previous
+% submission's source (kept outside the release tree in private/): same title shape, same
+% section order, same voice; sentences rewritten only where they described the
+% old ViT/LinearCP decoder or a claim the new results overturned.
+% Build:  ./build.sh   (regenerates tables, then latexmk -pdf).
+% NO NUMBER IS TYPED IN THIS TREE: every numeric value is a macro from
+% tables/numbers.tex or a cell of tables/T*.tex, both written by gen_tables.py
+% from the lanes' machine-readable outputs.
+% ---------------------------------------------------------------------------
+% STATUS FOR THE READER (removed before submission; mirrored in WRITING-STATUS.md)
+%  * Final tables: every T*; no pending cell (T13, the sealed cohort, landed
+%    at lane commit be9415ab, job 3804465).
+%  * Abstract: now the readability pass's Abstract A (<= 250 words) with the
+%    first-use glosses and "on one checkpoint" restored; the previous
+%    397-word abstract and Abstract B (~200 words, one line shorter) are in
+%    ABSTRACT-2026-09-17.md for the user to pick.
+%  * Reader map: Table 1 in Section 5 ("Experiments at a glance") lists every
+%    experiment with its question, jobs and table/figure refs; appendix
+%    floats are numbered by appendix section (Table E.3, Figure B.1), so a
+%    main-text pointer like "(Table E.5)" is visibly an appendix pointer.
+%    Main-text tables are 1-3 in reading order. The glance table is
+%    Appendix A (Table A.1): the ICLR 2027 kit allows 9 main-text pages at
+%    submission, so it could not stay in Section 5.
+%  * In flight: nothing. ns2d closed at 9830d202 (ns302, 4x data, fails
+%    H-ORACLE at 1.46; no phase-3 job ever submitted); T11e has four
+%    settings and the NS cell-level sentence in 6.5 is final. The paper is
+%    complete on the evidence side. b-lowvisc closed at df92e40d: T20/T20b in the extended-results
+%    appendix under the F4 under-resolution caveat, two sentences in 6.5, one
+%    Limitations clause; not a headline. T12 (three seeds) is now the
+%    development-cohort table; the sealed cohort (T13) is the headline for
+%    the scheduled ladder. ns304 (3808502) is in T11g/T11h and two sentences
+%    of 6.5, every one of them labelled exploratory after a failed phase-2
+%    gate (not phase 3). ns303 (3808498, family dimension 8) is the last row
+%    block of T11e and one sentence of 6.5; NS cell-level statement in 6.5.
+%  * Provisional: the two top EQ rungs are single-draw.
+%  * Open decisions for the user: (1) the headline Burgers metric (worst over
+%    evolved times vs worst over all times) -- both printed; decisive at 1024^2,
+%    where reduced rungs are non-dominated on the evolved metric only;
+%    (2) the title was changed by the user on 2026-09-17 (two words: "and
+%    Hyperbolic", "Petrov--Galerkin"); the abstract's opening premise was
+%    re-worded on 2026-09-17 (round-2 review B1) to match §5.1's evidence.
+% ===========================================================================
+\documentclass{article}
+\usepackage{iclr2027_conference,times}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc,fit,backgrounds,shapes.geometric}
+\usepackage{caption}
+\captionsetup{font=small,labelfont=bf}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{microtype}
+\usepackage{placeins}
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+
+\graphicspath{{figures/}}
+\input{macros}
+\input{tables/numbers}
+
+% short-hands used in prose
+\newcommand{\corr}{C_q}
+\newcommand{\evolved}{\emph{evolved}}
+\newcommand{\alltimes}{\emph{all-times}}
+
+\title{Tunable Non-linear Manifold ROMs for Elliptic, Parabolic, and Hyperbolic PDEs via Matrix-Free Petrov--Galerkin Projection}
+
+% Authors must not appear in the submitted version.
+\author{Anonymous authors\\Paper under double-blind review}
+
+\begin{document}
+\maketitle
+
+% =====================================================================
+\begin{abstract}
+
+Neural operators \citep{Li2020FNO,Lu2021DeepONet} deliver one (accuracy,
+speed) point per trained model; at deployment only the evaluation grid can change, moving
+cost, not representation. We present a non-linear manifold reduced order
+model (NM-ROM) for elliptic, parabolic and hyperbolic PDEs, exposing a
+family of accuracy/cost points from one decoder, controlled by
+the correction rank $q$ and three solver-side knobs. The framework combines
+a matrix-free least-squares Petrov--Galerkin residual projection
+\citep{Bradbury2018JAX}, empirical-quadrature (EQ) hyper-reduction fitted
+by non-negative least squares (NNLS) \citep{Hernandez2017EQ,YanoPatera2019LPEQ},
+exact boundary enforcement, and a separable decoder: a per-node Fourier-feature
+coordinate-network bank \citep{Tancik2020FourierFeatures} times
+a small head with a linear skip, plus nested corrections. Across 2D
+Burgers, Poisson, heat and waves, the scheduled ladder (one model per
+rank $q$) is monotone in $q$ on Burgers on three seeds and a sealed cohort
+opened once after every choice was frozen (top-rung error
+\nSealedAllTopMin--\nSealedAllTopMax\,\% over \nSealedCheckpoints{}
+checkpoints); the fixed-test-count ladder meets a pre-registered bar on one
+checkpoint; against a fine reference every rung's error stays within
+$\nPanelRungRefOverDiscMax\times$ the discretisation error; the
+quadrature rules are confirmed on re-draw at $q\le32$ only; and the cost
+results, each from one job, show the head
+$\nLshapeNeuralCheaperVsCheapestTwoFiftySix\times$ and
+$\nLshapeNeuralCheaperVsCheapestFiveTwelve\times$ cheaper than the cheapest
+full-order solve on L-shaped Poisson at $256^2$ and $512^2$, with
+POD-128 cheaper for $\nLshapePodOverHeadErrFiveTwelve\,\%$ more error.
+Nothing reduced is on the frontier at $256^2$ or $512^2$, where a tuned
+full-order solver is cheaper and more accurate; on Poisson, heat and
+waves the family collapses to a linear model, showing when the nonlinear
+manifold pays.
+
+\end{abstract}
+
+% =====================================================================
+\section{Introduction}
+\label{sec:intro}
+
+Neural operators for partial differential equations (PDEs)
+\citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator,Li2024PINO,BoulleTownsend2024} have
+become a strong empirical baseline. But each trained model produces
+essentially one (accuracy, wall-clock) operating point. The only
+deployment-time knob is the evaluation grid, and it moves cost without
+changing what the model can represent (\S\ref{sec:results:operators}).
+Classical Full Order Methods (FOMs) \citep{Hughes2000FEM}, solved
+iteratively \citep{HestenesStiefel1952CG}, expose this knob through their
+tolerance. Where a fast transform applies, they are hard to beat on
+wall-clock.
+
+Two families of methods sit on either side of this gap. Neural
+operators and PDE foundation models
+\citep{HerdePoseidon2024,McCabeMPP2024,HaoDPOT2024,Chen2024UnsupervisedNO} deliver fast
+amortised inference. But they fix what the model can represent at
+training time. Reduced order models (ROMs) address the same problem from
+the opposite direction. Linear projection-based ROMs
+\citep{BennerGugercinWillcox2015,Sirovich1987POD} inherit the FOM's
+guarantees. But they hit the Kolmogorov $n$-width barrier on
+advection-dominated regimes \citep{CohenDeVore2015}: no fixed linear
+subspace of modest dimension approximates solutions whose shape moves.
+Non-linear manifold ROMs (NM-ROMs) \citep{LeeCarlberg2020,KimChoi2022NMROM}
+lift this barrier with a learned manifold. But they have rarely been
+measured head-to-head against neural operators and tuned full-order
+solvers in the same job. The open question is whether a single trained
+NM-ROM can expose a deployment-time accuracy/cost tradeoff that neither
+alternative offers. The second question is where, if anywhere, it is worth
+having, once the comparators are measured in the same allocation.
+
+This paper answers that question with measurements on 2D Burgers,
+Poisson, heat and waves. The answer is mixed. We present an NM-ROM
+framework whose distinguishing property is a \emph{deployment-time
+accuracy/cost family traced by a single trained model}. At inference, one
+primary knob and three solver-side knobs trade accuracy for cost. The
+primary knob is the rank $q$ of a linear correction the solver may switch
+on. The three solver-side knobs are the iteration cap, the stopping
+tolerance, and the Empirical Quadrature (EQ) sample count. The machinery is a decoder that enforces Dirichlet
+conditions exactly, a damped Levenberg--Marquardt latent solver
+\citep{Marquardt1963}, Empirical Quadrature
+\citep{Hernandez2017EQ,YanoPatera2019LPEQ} validated on reachable states,
+and a matrix-free JAX implementation \citep{Bradbury2018JAX}.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item \textbf{A tunable NM-ROM with a deployment-time accuracy/cost
+      family from a single trained model, and a matched-dimension
+      result.} With the test count $M$ held fixed so that $q$ is the
+      only control, the Burgers $256^2$ ladder (one rung per $q$) is
+      monotone with every rung converged, spanning $\nQxmErrSpan\times$
+      in same-grid error for $\nQxmCostSpan\times$ in cost inside one
+      allocation (\S\ref{sec:results:tunability}). At matched $k=16$
+      inside one bank, the neural head reaches $\nAblBurgersNeural\,\%$,
+      where the best linear map reaches $\nAblBurgersLinear\,\%$ and
+      POD-16 reaches $\nAblBurgersPodSixteen\,\%$ (\S\ref{sec:results:head}).
+\item \textbf{Architectural choices that make this family
+      achievable.} We identify three constraints a decoder must satisfy:
+      cold-start convergence, EQ compatibility, and mesh-independent
+      per-node evaluation. We show that a separable decoder
+      (coordinate-network bank, head with a linear skip, nested
+      corrections) meets all three.
+\item \textbf{Precomputed weak operators and validated quadrature.}
+      Exact preassembly of every linear term, Empirical Quadrature for
+      the one nonlinear term, and a validation rule that accepts a fitted
+      quadrature only by its held-out error on reachable states and by
+      independent re-draws, never by its fitting residual.
+\item \textbf{Where the family is not worth having, reported as such.}
+      At $256^2$ on the square, no reduced subject is on the
+      non-dominated set once a tuned full-order solver and a neural
+      operator on the same data are in the job. On Poisson, heat and
+      waves, the top rung is the linear model and also the cheapest
+      point. On an L-shaped Poisson domain, where no fast transform
+      applies, reduced models are cheaper than the cheapest same-job
+      full-order solve (timed in the same allocation), POD-128 more so
+      than the head
+      (\S\ref{sec:results:operators}, \S\ref{sec:results:collapse}).
+\end{enumerate}
+
+\paragraph{What we do not claim.} No speedup over an efficient full-order
+solver on the square; no accuracy superiority over neural operators; no
+frontier over POD at every rank; no cost ratio across jobs; no theory;
+and every number is development-cohort evidence, from the cases used
+while tuning (\S\ref{sec:limitations}).
+
+% =====================================================================
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Linear and non-linear manifold ROMs.}
+Linear projection-based ROMs
+\citep{BennerGugercinWillcox2015,Sirovich1987POD,Berkooz1993,QuarteroniManzoniNegri2015,HesthavenRozzaStamm2016}
+suffer from the Kolmogorov $n$-width barrier on advection-dominated and
+moving-front problems
+\citep{CohenDeVore2015,GreifUrban2019,OhlbergerRave2016}. NM-ROMs lift this barrier with a non-linear trial manifold:
+\citet{LeeCarlberg2020} introduced convolutional-autoencoder NM-ROMs with
+LSPG projection \citep{Carlberg2011LSPG}, followed by shallow masked
+autoencoders with sample-mesh hyper-reduction \citep{KimChoi2022NMROM},
+reduced over-collocation \citep{RomorStabileRozza2023}, domain-decomposed
+sparse autoencoders \citep{Diaz2024DomainDecompNMROM}, quadratic
+manifolds \citep{GeelenWrightWillcox2022,BarnettFarhat2022},
+feature-tracking variants with EQ \citep{MirhoseiniZahr2023},
+POD-pre-compressed DL-ROMs \citep{FrescaManzoni2022PODDLROM} and
+neural-field ROMs \citep{KimWenLeeChoiCNFROM2024}. We differ from these by a separable decoder --- a coordinate-network
+bank \citep{Tancik2020FourierFeatures} times a small head with a linear
+skip --- augmented by nested \emph{correction} directions chosen offline
+once, so that a rank $q$ is selected at run time without refit, a family
+from one trained decoder analogous to runtime-tunable networks
+\citep{YuSlimmable2019,Cai2020OnceForAll}. NN-augmented projection ROMs
+\citep{BarnettFarhatMaday2023} and online-adaptive bases
+\citep{PeherstorferWillcox2015Adaptive,Carlberg2015hRefinement} add a
+nonlinear correction to a linear basis; ours is the reverse composition,
+the nonlinear head inside the linear bank with the linear part as the
+correction. The projection is least-squares Petrov--Galerkin
+\citep{Carlberg2011LSPG} and the linear terms are preassembled as in
+tensorial POD \citep{StefanescuSandu2014,WederSchwerdtnerPeherstorfer2024};
+we claim no novelty for either.
+
+\paragraph{Neural operators, hyper-reduction, and differentiable programming.}
+Neural-operator surrogates
+\citep{Li2020FNO,Lu2021DeepONet,Kovachki2023NeuralOperator,LiGeoFNO2023,TranFFNO2023,Cao2021GalerkinTransformer,LiOFormer2023,HaoGNOT2023,WuTransolver2024,WangLNO2024,WenGAOT2025,HuLinearNO2025,Shikhman2026BoundaryIndexed}
+and PDE foundation models
+\citep{HerdePoseidon2024,McCabeMPP2024,HaoDPOT2024,HolzschuhPDETransformer2025}
+deliver one fixed (accuracy, speed) point per trained model and
+typically approximate boundary conditions via penalty terms, with
+partial fixes via distance functions or hard constraints
+\citep{SukumarSrivastava2022,BerroneBC2022,BrechtHardConstraints2023,WangBENO2024,LippePDERefiner2023};
+hybrid solver-in-the-loop methods
+\citep{UmSolverInTheLoop2020,Kochkov2021PNAS,KopanicakovaKarniadakis2024,EshaghiNOWS2025,Raissi2019,Karniadakis2021PIML}
+embed operators in classical iterations. We instead use the network solely for manifold learning with a
+least-squares Petrov--Galerkin projection \citep{Carlberg2011LSPG} for
+the residual, and compare against an FNO, a U-Net
+\citep{Ronneberger2015UNet,Takamoto2022PDEBench} and a Transolver
+\citep{WuTransolver2024} on identical data at an equal wall budget
+(\S\ref{sec:results:operators}). For hyper-reduction we retain classical EQ fitted by non-negative least squares (NNLS)
+\citep{Hernandez2017EQ,YanoPatera2019LPEQ,LawsonHanson1974NNLS} over DEIM
+\citep{ChaturantabutSorensen2010}, ECSW
+\citep{FarhatECSW2014,Chapman2017AcceleratedECSW}, GNAT
+\citep{Carlberg2013GNAT} and their neural and high-order variants
+\citep{NegriManzoniAmsallem2015,HirschPichiHesthavenNEIM2024,Nguyen2024HighOrderEIM};
+the difference is that only the nonlinear term is sampled and that a
+fitted rule is accepted by its held-out error and by re-draws, not by
+its fit residual. On separable cells the discrete sine transform \citep{Swarztrauber1977}
+is a direct solve faster than every reduced model we measure;
+preconditioned Krylov methods \citep{HestenesStiefel1952CG,Saad2003} are
+the iterative comparator.
+
+% =====================================================================
+\section{Methodology}\label{sec:method}
+
+We turn a learned manifold into a practical PDE solver through three
+components: a trial manifold whose decoder enforces Dirichlet conditions
+exactly and carries nested linear correction directions
+(\S\ref{sec:method:manifold}); a least-squares Petrov--Galerkin
+projection of the discrete residual onto fixed weak tests
+(\S\ref{sec:method:weak}); and exact preassembly of every linear term
+with Empirical Quadrature for the one nonlinear term
+(\S\ref{sec:method:precomp}); \S\ref{sec:decoder} gives the architecture.
+Throughout, $u \in \Real^{n}$ is the
+full-order state on a uniform grid of $N$ intervals per axis,
+$\Aop \in \Real^{n \times n}$ the negative five-point Laplacian on
+$[0,1]^2$; $R$ is the bank width, $k$ the latent dimension, $M$ the number
+of weak tests and $m$ the number of quadrature nodes.
+Figure~\ref{fig:arch} (Appendix~\ref{app:arch}) shows the data flow;
+Appendix~\ref{app:method} gives the per-PDE derivations and exit codes.
+
+\subsection{Trial Manifold with Exact Dirichlet Enforcement}
+\label{sec:method:manifold}
+
+We train a decoder $\mathcal{D} : \Real^k \to \Real^n$, $k \ll n$, with
+latent state $z$ and no encoder in the deployed path, separable into a
+frozen spatial \emph{bank} $\bank\in\Real^{n\times R}$ times a small
+neural \emph{head} $\head:\Real^{k}\to\Real^{R}$, $k\le R\ll n$, the bank
+built once per mesh from a random-Fourier-feature coordinate network
+$g_\phi$ \citep{Tancik2020FourierFeatures},
+\begin{equation}
+  \bank_{x,:} = \bcmask(x)\,g_\phi(x)\T,
+  \qquad
+  \bcmask(x) = 16\,x_1(1-x_1)\,x_2(1-x_2).
+  \label{eq:bank}
+\end{equation}
+To strictly enforce the homogeneous Dirichlet condition on the boundary
+$\Gamma$, we utilize the smooth vanishing factor $\bcmask$, zero on
+$\Gamma$, folded into every column of the bank, so that
+$\partial u/\partial z = 0$ on $\Gamma$ at every resolution (homogeneous
+data only).
+
+\paragraph{The correction ladder.}
+\label{sec:method:ladder}
+The deployed model augments the head's output with $q$ fixed directions
+$\corr\in\Real^{R\times q}$ and solves for the latent code and the
+correction coefficients together,
+\begin{equation}
+  u(\latent,y) \;=\; \bank\big(\head(\latent) + \corr\,y\big),
+  \qquad \latent\in\Real^{k},\; y\in\Real^{q},\; 0\le q\le R .
+  \label{eq:ladder}
+\end{equation}
+The columns of $\corr$ are chosen offline once per checkpoint by a
+principal component analysis of the head's own residual on the training
+codes, ordered so that $C_{q}$ is a prefix of $C_{q'}$ for $q<q'$; the
+ladder is nested and no rung needs retraining. At $q=0$ the model is the
+frozen head; at $q=R$ the head is irrelevant and the model is the linear
+reduced model on the bank's span, solved without a nonlinear iteration;
+in between, $q$ moves the reachable set from the head's image towards
+the bank's span, and the solved dimension from $k$ to $k+q$. Two consequences follow: the bank's projection error is a floor on the
+achievable error whatever the head or the solver does, so nonlinearity
+in $\head$ buys a smaller \emph{solved} dimension, not an escape from the
+span; and all $x$-dependence factors through $\bank$, which makes node
+sampling and exact preassembly available from one decoder.
+
+\subsection{Projecting the PDE onto the Manifold}
+\label{sec:method:weak}
+
+Each PDE we consider gives a discretised residual $\rfull(u)$ that
+should vanish at the true solution. We substitute the trial manifold
+$u(\latent,y)$ into $\rfull$ and project onto a fixed, latent-independent
+test space: $\tests\in\Real^{M\times n}$ collects the $M$ lowest
+tensor-product sine vectors of the square, eigenvectors of the five-point
+operator, $\tests\Aop=\rowscale\tests$. The reduced problem solved online
+is
+\begin{equation}
+  (\latent^{\star},y^{\star})
+  =
+  \argmin_{\latent,\,y}\;
+  \tfrac12\,\norm{\rweak(\latent,y)}_2^2,
+  \qquad
+  \rweak(\latent,y) = \rowscale_\star^{-1}\,\tests\,\rfull\!\big(u(\latent,y)\big)
+  \in\Real^{M},
+  \qquad M>k+q ,
+  \label{eq:objective}
+\end{equation}
+with a diagonal row scaling $\rowscale_\star$ stated per PDE in
+Appendix~\ref{app:method}: a least-squares Petrov--Galerkin condition
+with an explicit test space \citep{Carlberg2011LSPG,LeeCarlberg2020}, not
+tangent Galerkin, overdetermined rather than square, solved by a method
+appropriate to each PDE's structure.
+
+\paragraph{Elliptic (Poisson).}
+The Poisson residual is $\rfull(u) = \Aop u - f$, and projection gives
+$\rweak(\latent,y)=B_0(\head(\latent)+\corr y)-b_0$, $B_0=\tests\bank$
+(Appendix~\ref{app:method:poisson}); the projector onto
+$\operatorname{range}(B_0\corr)$ does not depend on $\latent$, so $y$ is
+eliminated exactly \citep{GolubPereyra1973}, the iteration stays
+$k$-dimensional at every $q$, and $q=R$ is a linear solve.
+
+\paragraph{Parabolic (heat).}
+The heat semi-discretisation $du/dt = -\kappa\, \Aop u$ is advanced with
+Crank--Nicolson; the reduced step substitutes the manifold into the fully
+discrete equation \emph{before} projecting and solves
+$\latent_{n+1}=\argmin_{\latent}\norm{B_0\head(\latent)-D\,B_0\head(\latent_n)}_2$
+(Appendix~\ref{app:method:heat}), a nonlinear least-squares problem, not
+a linear system; at $q=R$ the trajectory is the exact modal propagation
+of the bank coefficients.
+
+\paragraph{Hyperbolic (Burgers).}
+For $u_t+u(u_x+u_y)=\nu\Delta u$ with a sign-upwind stencil and backward
+Euler (Appendix~\ref{app:method:burgers}) the weak residual is quadratic
+in the coefficients, so $y$ is not eliminated in closed form; we damp the
+$(\latent,y)$ blocks separately inside one Levenberg--Marquardt step
+(\emph{block-damped} variable projection), which exits stationary
+everywhere where a joint LM leaves $\nBlockJointBudgetExits$ budget exits
+(Table~\ref{tab:solver-variants}).
+
+\paragraph{Solver and exits.}
+Each attempt solves the damped normal system
+$(H+\lambda\,\diag(\diag H))\,\delta=-g$, $H=\jac{}\T\jac{}$,
+$g=\jac{}\T\rweak$, accepting the step only if it strictly decreases the
+residual: damped Levenberg--Marquardt with a monotone test
+\citep{Marquardt1963}. Three exit families are recorded and never conflated: the scale-free
+stationarity measure
+$\station{\latent}{y}=\norm{\jac{}\T\rweak}_2/(\normF{\jac{}}\norm{\rweak}_2)\le\eta_{\mathrm{tol}}$
+\refstepcounter{equation}\label{eq:stationarity}(\theequation), a
+residual threshold, and the stalls, reported as early-stopped, never as
+converged. No query uses the solution it predicts: the elliptic solve starts from
+the cached training code nearest the projected source, the Burgers query
+fits $(\latent,y)$ to the supplied initial field
+(Appendix~\ref{app:method:codes}).
+
+\subsection{Hyper-reduction}
+\label{sec:method:precomp}
+
+The non-linear manifold reduces the DOF count from $n$ to $k+q$, but a
+projected term such as $\tests N(\bank c)$ still costs $O(n)$. For a fixed linear operator
+the tested residual is exactly precomputable,
+$\tests(\Aop\,u-f)=B\,(\head(\latent)+\corr y)-b$ with
+$B=\rowscale\,\tests\bank$ assembled offline by two sine transforms, so
+linear terms are never approximated; the Burgers advection
+$\tests N(\bank c)$ is the only term that resists preassembly, evaluated
+\emph{densely}, $O(nR)$ per residual, or on an \emph{empirical quadrature}
+rule of $m$ nodes \citep{Hernandez2017EQ,YanoPatera2019LPEQ}, $O(mR)$. The rule is a non-negative \emph{per-node} weight vector, \emph{independent
+of the snapshot}, fitted by NNLS \citep{LawsonHanson1974NNLS} to reproduce
+the projected advection term at $n_{\rm fit}$ stored codes with a hard cap
+of $m$ nodes (Appendix~\ref{app:method:eq}); changing $m$ re-solves the
+fit, rules are not nested, and deployment selects among stored rules. \emph{A rule is never accepted on its NNLS fit residual}; we score it by
+the held-out relative error $\rho$ of the projected advection term
+\eqref{eq:rho} over states the solver actually reaches on trajectories
+disjoint from the fit and evaluation cases, against a primary bar
+$\rho_{\max}\le\nEqtopBar$ fixed before any certification job ran and a
+tight bar $\nEqtopTightBar$, and then re-draw the construction: a rule is
+\emph{confirmed} only if every re-draw passes
+(\S\ref{sec:results:tunability}).
+
+\subsection{Model Architecture}
+\label{sec:decoder}
+
+Three properties of the problem motivate our architecture: the latent
+iteration is initialised cold, so the decoder Jacobian must retain a
+well-conditioned linear component, which motivates a \emph{linear skip}
+in the head; hyper-reduction retains a sparse subset of mesh nodes, so
+the decoder must evaluate at any node in mesh-independent time, which
+motivates a \emph{per-node bank}; and the family must reach from the
+head's image to the bank's whole span without retraining, which
+motivates the nested \emph{correction directions}.
+
+\paragraph{Linear skip, for cold-start convergence.}
+The head is a two-layer SiLU MLP plus a linear skip,
+$\head(\latent)=\varphi_\theta(\latent)+W\T\latent$, so its Jacobian
+retains a latent-independent component along which the cold solve can
+descend; the elliptic solver checks the numerical rank of the projected
+Jacobian at every query. The skip is a design choice, not ablated here.
+
+\paragraph{No encoder; per-node bank.} No encoder is needed: the query
+fits $(\latent,y)$ against the supplied input. The decoder restricted to
+a rule's support is a cached block times the coefficients, and the
+network's parameters do not depend on the mesh.
+
+\paragraph{What is fixed, what is chosen, and how error is reported.}
+\label{sec:method:tuning}
+Every operating point uses one frozen artefact per PDE; selected at run
+time are the rank $q$, the quadrature (dense or a stored rule) and the
+stopping tolerance and budget; $M$ is held fixed along the headline ladder.
+\label{sec:method:layers}
+Every panel reports three numbers: the \emph{bank floor} (projection
+error onto $\operatorname{range}\bank$), the \emph{best-found} error (the
+smallest any point of the augmented manifold attains, from a multistart
+oracle) and the \emph{solved} error the iteration returns.
+
+% =====================================================================
+\section{Implementation}
+\label{sec:impl}
+
+\subsection{Matrix-free Projected Operators via JAX}
+Every linear term is preassembled once per mesh as the $M\times R$
+matrix $B$, so the online residual and Jacobian of a linear PDE are
+$B\,(\head(\latent)+\corr y)-b$ and $B\,[\dhead\;\;\corr]$, with $\dhead$
+from a forward-mode Jacobian-Vector Product \citep{Bradbury2018JAX}; the
+sampled Burgers advection uses the cached stencil block. The damped
+normal system is solved directly; no Krylov solve is applied to the
+projected operator.
+
+\subsection{Training Protocol}
+
+The bank and the head are trained in two stages, both as auto-decoders:
+the coordinate network $g_\phi$ is fitted to the training states through
+\eqref{eq:bank}, then frozen, and the head is fitted with a code library
+$Z$ on the bank-projected states; $\corr$ is then the principal
+components of the head's residual on the training codes. Sizes, cohorts
+and offline cost are in Appendix~\ref{app:training-schedule}; every
+headline uses one checkpoint per PDE, named by hash in
+Table~\ref{tab:provenance}.
+
+% =====================================================================
+\section{Experimental Setup and Benchmark Problems}
+\label{sec:setup}
+
+All full-order comparators and reduced solves are benchmarked in one
+Slurm allocation on one GPU per job to provide a direct
+hardware-to-hardware comparison; \emph{no ratio is ever formed across
+jobs or GPUs}. Table~\ref{tab:problems} specifies each cell and
+Table~\ref{tab:spec} the sampled families.
+
+\paragraph{Problems.}
+\emph{Burgers (hyperbolic, the hero):} $u_t+u(u_x+u_y)=\nu\Delta u$ on
+$(0,1)^2$ at $256^2$ intervals with a frozen-checkpoint ladder from
+$64^2$ to $1024^2$; errors are against the same job's converged
+full-order solve on the same grid (discretisation error
+$\nPanelRefDiscretisation\,\%$ at $256^2$ against a $4096^2$ reference).
+\emph{Poisson (elliptic):} $-\Delta u = f$, ground truth the verified
+discrete solution from the direct sine transform, at $256^2$ and $1024^2$
+on the square and on the L-shaped domain $(0,1)^2\setminus[\tfrac12,1)^2$
+at $64^2$ to $512^2$, where a sparse direct solve replaces the transform.
+\emph{Heat and waves:} $\partial_t u - \kappa \Delta u = 0$ with
+Crank--Nicolson and $u_{tt}=c^2\Delta u$ with reflective walls.
+
+\paragraph{Metrics and timing.}
+We report the relative $L^2$ error against the reference of each cell,
+maximised over cases and output times; for Burgers two maxima are
+reported everywhere and neither is chosen, worst over \emph{all} times
+(bounded below by the decoder's compression of the input at $t=0$) and
+worst over the \emph{evolved} times $t>0$. Every cost is the median over repetitions of a completed computation
+after a burn-in, arms interleaved in a recorded random order, in
+float64; ``device ms'' is the device time with inputs and outputs
+resident, ``complete-query ms'' the host-to-host time charging the dense
+input and output, and every column says which; offline setup is charged
+separately. Only \emph{admissible} solves --- stationarity $10^{-6}$ at
+every step or a residual-rule exit, with a passing quadrature rule ---
+enter a frontier or a ratio, so the $10^{-3}$ arms are reported but never
+counted (Table~\ref{tab:panel-all}).
+
+\paragraph{Baselines.}
+FNO, a PDEBench-style U-Net and a Transolver are trained on the
+identical dataset and split at an equal wall budget; only the FNO is
+timed in the same allocation as the ROM. POD-LSPG, the same projection on a POD basis instead of the trained
+manifold, runs through the same weak objective, tests, solver and stopping rule. Full-order comparators
+are always in the same job: preconditioned Newton (Burgers); the direct
+sine transform and tuned CG (Poisson, heat, waves); sparse direct, CG and
+IC(0)-PCG (L-shape). The NM-ROM of \citet{KimChoi2022NMROM} is not run
+under this protocol and is not compared; the earlier comparison against
+plain CG is kept in Appendix~\ref{app:extended:cg} for continuity. Every table names its job
+id, GPU and checkpoint (Table~\ref{tab:provenance}), every solve carries
+its exit reason, and every number is emitted by one generator from
+audited records.
+
+
+% =====================================================================
+\section{Numerical Experiments and Results}
+\label{sec:results}
+
+All results here have full tables in the appendix; Table~\ref{tab:glance}
+maps experiments to question, jobs and tables.
+
+
+Every number is one checkpoint per PDE on development cases unless seeds
+are stated, and costs compare only inside one allocation. The losses come
+first.
+
+\subsection{Comparison against Neural Operators and Full-Order Solvers}
+\label{sec:results:operators}\label{sec:exp:panel}
+
+Two plain sentences first. At $256^2$ and $512^2$ a well-tuned
+full-order solver is cheaper and more accurate than every reduced model,
+ours included. At $1024^2$ \nPanelTenTwentyFourReducedNonDomEvolved{} of
+the \nPanelTenTwentyFourReducedCount{} admissible reduced subjects, the
+cheapest quadrature rungs, are on the non-dominated set, on the
+evolved-times metric only; the flip lies between $512^2$ and $1024^2$.
+The same-job costs follow (Table~\ref{tab:panel-main}): on one A100
+model the cheapest reduced query costs $\nPanelCheapestRatio\times$ the
+cheapest full-order setting at $256^2$ and
+$\nPanelFiveTwelveCheapestRatio\times$ at $512^2$, a trend on shared
+hardware; at $1024^2$ on an H200 it costs
+$\nPanelTenTwentyFourCheapestRatio\times$, a separate fact.
+
+\begin{table}[htbp]
+\centering
+\caption{The same-allocation panels on Burgers, one job per mesh
+(Tables~\ref{tab:tunability}, \ref{tab:tunability-fivetwelve},
+\ref{tab:tunability-tentwentyfour}); same-job ratios only; $256^2$ and
+$512^2$ share the GPU model, $1024^2$ does not. ``Admissible'' is the
+\S\ref{sec:setup} rule; the $10^{-3}$ arms are timed in
+Table~\ref{tab:panel-all} but counted nowhere here.}
+\label{tab:panel-main}
+\resizebox{\linewidth}{!}{\input{tables/T05m_panel_summary}}
+\end{table}
+
+\paragraph{Nothing reduced is on the frontier at $256^2$ or $512^2$.}
+Table~\ref{tab:panel-main} and Figure~\ref{fig:family} come from one
+allocation on one A100 (job \provPanelJob) holding correction rungs,
+POD-LSPG, the unrestricted bank, the FNO and full-order Newton.
+\textbf{\nPanelReducedNonDomEvolved{} of the \nPanelReducedCount{}
+admissible reduced subjects are non-dominated} on either metric once the
+full-order controls are in: the most accurate, POD-512 at
+$\nPanelPodFiveTwelveErr\,\%$ and $\nPanelPodFiveTwelveMs$\,ms, loses
+on both axes to \nPanelFomBeatingMostAccurate{} same-job full-order
+settings (cheapest $\nPanelFomNtThreeFineErr\,\%$,
+$\nPanelFomNtThreeFineMs$\,ms) and the FNO reaches $\nPanelFnoErr\,\%$ at
+$\nPanelFnoMs$\,ms. At $512^2$ on the same GPU (job
+\provPanelFiveTwelveJob) \nPanelFiveTwelveReducedNonDomEvolved{} of
+\nPanelFiveTwelveReducedCount{} are non-dominated, the frontier is
+Newton alone and POD-512
+($\nPanelFiveTwelvePodFiveTwelveErr\,\%$) is beaten on both axes by
+\nPanelFiveTwelveFomBeatingMostAccurate{} same-job settings.
+
+\paragraph{At $1024^2$ the statement is mesh-qualified.}
+On one H200 (job \provPanelTenTwentyFourJob) the
+\nPanelTenTwentyFourReducedNonDomEvolved{} reduced subjects
+non-dominated on (GPU ms, worst \evolved\ error) are the $q=0$, $16$ and
+$32$ rungs with rules transferred from $256^2$. On \alltimes\ none is at
+either mesh, because the $t=0$ compression
+($\nPanelTenTwentyFourFrontierTzeroMin$--$\nPanelTenTwentyFourFrontierTzeroMax\,\%$
+on those rungs) bounds it: which metric is the headline decides whether
+this is a gain. The transferred rules at $q\ge64$ miss the primary bar
+there; why is open.
+
+\paragraph{Neural operators on the same data.}
+Neural operators trained on the same data are more accurate than the
+reduced model, and the one that was timed against it is also cheaper
+(Table~\ref{tab:operators}). Worst error on the matched \nOpCohortSize-case cohort:
+U-Net-small $\nOpEightUnetSmall$, Transolver-refine
+$\nOpEightTsolRefine$, \textbf{ROM $\nOpEightRom$}, FNO-large
+$\nOpEightFnoLarge$, efficient full-order solver
+$\nOpEightFomEfficient\,\%$ ($\nOpArmsBeatingRom$ operator arms beat the
+ROM; the FNO's $\nPanelFnoErr\,\%$ above is on the six-case cohort).
+An earlier FNO-only finding to the contrary is withdrawn; it survives a
+float64 and a second-seed control
+(Appendix~\ref{app:extended:operators}), all but one operator number is
+a lower bound, and the Poisson gap is larger
+(Table~\ref{tab:operators-poisson}). Their own knob, evaluation resolution, is usable for
+\nResUsableList{} only (Table~\ref{tab:resolution}); it moves cost, $q$
+moves what the model can represent.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.62\linewidth]{fig_tunability_family}
+\caption{The family on Burgers $256^2$. \textbf{A}: worst evolved error
+against $q$ for the fixed-$M$ and scheduled ladders (b-qxm; no cost
+axis, costs span jobs). \textbf{B}: the same-allocation panel (job
+\provPanelJob), every admissible subject on (GPU ms, worst evolved
+error), step line the non-dominated set. \textbf{C}:
+the EQ ladder against its dense twins in one job (job
+\provEqtopLadderJob; rules confirmed at $q=\nEqtopConfirmedRungs$,
+marginal at $q=\nEqtopMarginalRungs$, i.e.\ passing on some re-draws only).}
+\label{fig:family}
+\end{figure}
+
+\subsection{Best Configurations per Problem and Resolution}
+\label{sec:results:best}
+
+The same trained decoder serves every resolution. With one frozen
+checkpoint per PDE transferred across $64$--$1024$ intervals, the cached
+reduced solve costs $\nMeshBurgersCachedFirst\to\nMeshBurgersCachedLast$\,ms
+on Burgers, while the unknowns grow $\nMeshBurgersUnknownGrowth\times$
+(Table~\ref{tab:mesh}). The complete host-to-host query grows
+$\nMeshBurgersCompleteRatio\times$ through dense input and output. There
+is no crossover against the cheapest same-job full-order arm at any rung
+on the square (FOM/ROM \nMeshBurgersFomOverRomRange{} on Burgers,
+\nMeshPoissonFomOverRomRange{} on Poisson; Table~\ref{tab:speed}).
+
+\subsection{Which Knob to Turn}
+\label{sec:results:tunability}
+
+The rank $q$ is the only deployment-time knob moving accuracy. The
+quadrature rule and the tolerance move cost. Training data and head
+capacity move the floor but need retraining (Tables~\ref{tab:qxm},
+\ref{tab:knobs}, \ref{tab:training}).
+
+\begin{table}[htbp]
+\centering
+\caption{The correction ladder on Burgers $256^2$: fixed-$M$ inside job
+\provQxmWithinJob{} (top) and scheduled $M=4(K+q)$ in the panel job
+\provPanelJob{} (bottom), development-cohort errors; the scheduled rows add
+the same checkpoint's sealed-cohort error (b-seeds job \nSealedJob, the
+headline), the error against the $4096^2$ reference (``vs ref''; discretisation
+error $\nPanelRefDiscretisationTwo\,\%$) and the EQ rule's status; costs are per job.}
+\label{tab:ladder-main}
+\resizebox{\linewidth}{!}{\input{tables/T04m_fixedM_main}}
+\end{table}
+
+\paragraph{Rank against test count: the family at fixed $M$.}
+The rank alone moves the error: hold the test count fixed, add correction
+directions, and the error falls at every step while the cost rises
+(Table~\ref{tab:ladder-main}). The ROM approximates the discrete system,
+so the same-grid error is what the knob controls. Against the fine reference the knob moves the error only from
+$\nPanelQzeroRef$ to $\nPanelBestRungRef\,\%$ ($\nPanelRefSpan\times$),
+because at $256^2$ every rung's reference error is
+$\nPanelRungRefOverDiscMin$--$\nPanelRungRefOverDiscMax\times$ the mesh's
+own discretisation error of $\nPanelRefDiscretisationTwo\,\%$: the
+reduction adds little on top of the discretisation. And a same-job full-order setting at $\nPanelFomBestRefMs$\,ms
+reaches $\nPanelFomBestRef\,\%$ against the reference, more accurate than
+every reduced subject at a small fraction of the top rung's cost; at
+$512^2$ the ladder runs $\nPanelFiveTwelveQzeroRef$ to
+$\nPanelFiveTwelveBestRungRef\,\%$ against the reference over a converged
+same-grid error of $\nPanelFiveTwelveRefDiscretisationTwo\,\%$, all
+\nPanelFiveTwelveReducedAboveDiscCount{} reduced subjects above it
+and the \nPanelFiveTwelveFomBelowDiscCount{} full-order settings below it
+coarser solves cancelling against the reference, not better ones; at $1024^2$
+the rungs run $\nPanelTenTwentyFourQzeroRef$ to
+$\nPanelTenTwentyFourBestRungRef\,\%$ over
+$\nPanelTenTwentyFourRefDiscretisationTwo\,\%$. The knob moves the reduction error, not the physical error. At fixed $M=256$ the ladder spans only $\nQxmTwoFiftySixErrSpan\times$
+and \textbf{fails} the pre-registered bar
+(Table~\ref{tab:qxm}: monotone on evolved, every rung converged, error
+span $\ge2\times$, and two generator clauses, $\ge3$ non-dominated points
+and cost span $\ge2\times$). \textbf{At $M=\nQxmFixedM$ the ladder $q=0,64,128,256$,
+inside one job is monotone, every rung converged, spans
+$\nQxmErrSpan\times$ in evolved error for $\nQxmCostSpan\times$ in cost
+with $\nQxmNonDom$ non-dominated points} and passes. $M=1088$ is the pre-registered pure-rank ladder (the largest fixed
+$M$ holding every rung to $q=256$); the $q=\nQxmExtQtop$ extension did not converge and enters no span; $M$ at $q=256$
+saturates at $M^\star=\nQxmMstarTwoFiftySix$.
+
+Sealed cohort and seeds (Tables~\ref{tab:sealed}, \ref{tab:seeds}). The
+sealed cohort was opened once, after every choice was frozen; on it all
+\nSealedCheckpoints{} checkpoints (the incumbent and \nSeedsCount{} fresh
+seeds) give a ladder monotone on both metrics, \nSealedKnobBarCount{} of
+them meeting the knob bar, with top-rung errors of
+\nSealedAllTopMin--\nSealedAllTopMax\,\%. The one
+checkpoint-specific number is the incumbent's uncorrected $q=0$ rung,
+\nSealedIncQzero\,\% sealed against \nPanelQzeroEvolved\,\% in
+development (the seeds: \nSealedSeedsQzeroMin--\nSealedSeedsQzeroMax\,\%):
+one sealed case converged to a wrong branch, and the first correction rung
+removes it ($q=16$: \nSealedAllQsixteenMin--\nSealedAllQsixteenMax\,\% on
+every checkpoint). The pre-registered sealed-over-development ratio thus
+fails at $q=0$ for the incumbent alone (\nSealedCtwoIncQzeroRatio; worst
+seed-mean ratio \nSealedCtwoWorstSeedRatio); the sealed numbers are the
+headline and the development table records seed variability (the incumbent
+beats every seed there at $q=\nSeedsIncumbentBetterQs$). Rungs not
+converged everywhere (\nSealedUnconvergedCells{} sealed, the one bar
+failure; one seed at $q=256$ in development) are reported as run, not tuned; the fixed-$M$
+ladder, one development-cohort checkpoint, is unchanged.
+
+\paragraph{Quadrature and tolerance move cost.}
+Quadrature is a cost lever at equal error ($\nPanelEqSpeedupZero\times$
+at $q=0$, $\nPanelEqSpeedupOneTwoEight\times$ at $q=128$) and the
+tolerance $10^{-6}\to10^{-3}$ removes a further
+$\nPanelTolSavingZero$--$\nPanelTolSavingOneTwoEight\,\%$
+(Table~\ref{tab:tunability}; those arms are not admissible). The earlier ladder's rule set breaks
+upward at $q=256$; the replication-selected set is monotone at both
+tolerances,
+$\nPanelEqtopTwinSpeedupMin$--$\nPanelEqtopTwinSpeedupMax\times$ cheaper
+than its dense twins, its $q=\nPanelEqtopSingleDrawQs$ rules single-draw
+(Table~\ref{tab:ladder-main}). Transferred to $512^2$ (Table~\ref{tab:tunability-fivetwelve}) it stays
+monotone; its $q=128$ and $256$ transfers pass the primary bar there
+though single-draw at source, the ladder-rule transfers at $q\ge64$ do not, and at $q=256$
+the transfer reaches $\nPanelFiveTwelveEqtopxferQTwoFiftySixErr\,\%$ in
+$\nPanelFiveTwelveEqtopxferQTwoFiftySixTwinSpeedup\times$ less time than
+its twin. Solver knobs move cost only (Table~\ref{tab:knobs}).
+
+\paragraph{Validate on reachable states, then re-draw.}
+\label{sec:exp:eq}
+A quadrature rule must be judged on the states the solver reaches, not
+on its fit to the states it was built from. The NNLS fit residual says nothing about held-out error
+(Figure~\ref{fig:cert}: a rule fitting to $\nEqtopStaticWorstFit$ reaches
+$\rho_{\max}=\nEqtopStaticWorstRho$ held-out, $\nEqtopStaticWorstOverBar\times$
+the primary bar).
+\textbf{The pre-registered replication re-drew every construction}
+(Table~\ref{tab:replication}): $\rho_{\max}$ moves
+$\nEqtopSpreadMin$--$\nEqtopSpreadMax\times$ within one construction; the
+ladder's rules are \textbf{confirmed at $q=\nEqtopConfirmedRungs$ and
+marginal at $q=\nEqtopMarginalRungs$}; one passing rule does not certify its construction; a re-draw does
+(Appendix~\ref{app:extended:eq}). One gate failed: same-source rule pairs transferred to
+$512^2$ are not bitwise identical (each transfer refits its own
+draw), and one $q=32$ source passes the primary bar in one
+transfer and only the secondary in the other, an
+$\nPanelFiveTwelveTransferRhoSpreadQthirtyTwo\times$ spread in
+$\rho_{\max}$, unexplained; no falsification clause fired.
+
+\subsection{The Head against Linear Maps at Matched Dimension}
+\label{sec:results:head}
+
+At the same latent dimension the neural head is more accurate than any
+linear map in the same bank. Per millisecond it is not. At matched $k=16$ it is compared with the
+optimal rank-$k$ affine map, a quadratic map, the free bank and
+POD-LSPG in the same solver (Tables~\ref{tab:head-burgers},
+\ref{tab:head-poisson}). On Burgers the head reaches
+$\nAblBurgersNeural\,\%$ against $\nAblBurgersLinear\,\%$ (best linear
+map) and $\nAblBurgersPodSixteen\,\%$ (POD-16); on Poisson at $1024^2$ it wins per dimension ($\nAblPoissonNeural\,\%$ against
+$\nAblPoissonLinear\,\%$) and loses per ms to POD-128
+($\nAblPoissonPodOneTwentyEight\,\%$ at
+$\nAblPoissonPodOneTwentyEightMs$ vs $\nAblPoissonNeuralMs$\,ms).
+In three layers (Table~\ref{tab:layers}) the reduction layer sits
+$\nAblBurgersReductionOverFloor\times$ above the floor, the solver
+layer costs $\nAblBurgersSolverGapPp$\,pp on the all-times metric, where
+the $t=0$ term dominates: the head binds.
+
+\subsection{Where the Family Collapses: Linear PDEs, Navier--Stokes, and the L-shaped Domain}
+\label{sec:results:collapse}
+
+On linear PDEs there is no trade. The corrections are solved exactly and
+the top rung is the most accurate and cheapest. On Poisson at
+$1024^2$ (Table~\ref{tab:linear}) the rungs run
+$\nPlinTenTwentyFourQzeroErr\to\nPlinTenTwentyFourQtwoFiftySixErr\,\%$ at
+flat cost, and $q=R$ lands on the floor at $\nPlinTenTwentyFourTopErr\,\%$
+as the \emph{cheapest} point ($\nPlinTenTwentyFourTopMs$ vs
+$\nPlinTenTwentyFourDstMs$\,ms exact). Heat and the reflective wave
+do likewise (Appendix~\ref{app:extended:linear}). Against unpreconditioned
+CG at $10^{-6}$, the previous comparator, reduced rungs are
+\nCgPoissonSpeedupMin--\nCgPoissonSpeedupMax$\times$ faster on Poisson in the
+same job; the transform is faster still by
+\nCgPoissonDstFasterMin--\nCgPoissonDstFasterMax$\times$, hence our
+comparator (Appendix~\ref{app:extended:cg}). \textbf{The collapse
+is confounded with a weak bank}:
+$\nLinearBankOverPodMin$--$\nLinearBankOverPodMax\times$ worse than a POD
+basis of equal rank on both cells. No reduced arm beats the direct
+solve.
+
+\textbf{Navier--Stokes collapses differently.} On 2D
+incompressible flow (nonlinear residual) the family was gated before any ladder (Table~\ref{tab:ns}): at $K=16$ and $32$ the
+held-out oracle beats POD-$K$ by only $\nNsOracleRatio\times$ and
+$\nNsKthirtyTwoOracleRatio\times$ against a bar of
+$\nNsOracleBar$ (oracle values are upper bounds), and at $t=0$ POD-32 is more accurate (POD/oracle
+$\nNsKthirtyTwoPodOverOracleTzero$): linear wins where data lie in a
+low-dimensional subspace. Retraining the head on 128--512
+trajectories moves the oracle
+$\nNsScalePlainNOneTwentyEight$ to $\nNsScalePlainNTwoFiftySix$ to
+$\nNsScalePlainNFiveTwelve\,\%$ (gains $\nNsScaleGainFirstDoubling\,\%$ then
+$\nNsScaleGainSecondDoubling\,\%$; ``\nNsScalePlainVerdict''
+by the pre-registered rule, Table~\ref{tab:ns-scaling}; the bank saw all
+512). A family of dimension \nNsFamDimLow{} instead of
+\nNsFamDimBase{} lowers every error \nNsFamDropMin--\nNsFamDropMax$\times$ yet
+leaves the head's edge over POD-16 at \nNsFamOracleRatio$\times$ and the
+gap near \nNsFamHeldoutOverTrain: the edge does not grow as the manifold eases. With
+$\nNsDataFactor\times$ the data (\nNsDataTrainN{} trajectories) the gap
+closes from \nNsDataBaseGap{} to \nNsDataHeldoutOverTrain{} as the
+head no longer fits the training data: the limit moved to
+capacity (ratio \nNsDataOracleRatio). Across $K=16$ and $32$,
+family dimension \nNsFamDimBase{} and \nNsFamDimLow, and
+128--\nNsDataTrainN{} trajectories, this head class never beats POD-$K$
+by the pre-registered $\nNsOracleBar\times$ on held-out decaying 2D
+Navier--Stokes (ratios \nNsCellRatioMin--\nNsCellRatioMax). An exploratory ladder on that
+manifold (Table~\ref{tab:ns-ladder}; not phase 3) closes the
+manifold gap only at $q=R$, where the head no longer matters; POD-LSPG at
+matched dimension is more accurate at every rung and cheaper below the
+top, no neural rung non-dominated: the falsification clause's
+named outcome. A trade between
+rungs needs a residual nonlinear in the coefficients and a manifold that
+beats POD held-out: Poisson, heat and waves lack the first, this cell the
+second, Burgers had both and still lost on cost. At ten-fold lower viscosity
+(Appendix~\ref{app:extended:lowvisc}) linear floors collapse
+$\nLvLinearCollapseMin$--$\nLvLinearCollapseMax\times$ while the head degrades
+$\nLvNeuralDegradeMin$--$\nLvNeuralDegradeMax\times$, every neural rung beats
+every POD-LSPG rank, $q\ge\nLvReducedOnlyNeuralMinQ$ is on the
+reduced-only frontier: the manifold's edge appears where the Kolmogorov
+width is worst. Nothing reduced is on the full-order frontier,
+the fixed-$M$ ladder spans \nLvLadderErrSpan{} and the mesh is
+under-resolved (discretisation error $\nLvDiscMin$--$\nLvDiscMax\,\%$):
+reduced-versus-reduced only.
+
+\begin{table}[t]
+\centering
+\caption{L-shaped Poisson, solve layer at $M=257$, one job per mesh
+(complete-query ms; ratios inside each job): the cheapest full-order arm,
+POD-128 and the head at $q=64$ (full sets: Table~\ref{tab:lshape-solve}).}
+\label{tab:lshape-main}
+\resizebox{\linewidth}{!}{\input{tables/T18m_lshape_main}}
+\end{table}
+
+\textbf{On the L-shaped domain (Poisson, a linear residual; no fast
+transform) reduced models are cheaper, POD most of all.} The direct solve's cost climbs with the mesh, at
+$512^2$ CG at tolerance $10^{-2}$ is the cheaper full-order arm ($\nLshapeCheapestFomMsFiveTwelve$\,ms
+at $\nLshapeCheapestFomErrFiveTwelve\,\%$, more accurate than any reduced
+arm), and the reduced arms stay nearly flat (Table~\ref{tab:lshape-main}). Against the cheapest same-job full-order arm the head at $q=64$ is
+$\nLshapeNeuralCheaperVsCheapestTwoFiftySix\times$ and
+$\nLshapeNeuralCheaperVsCheapestFiveTwelve\times$ cheaper, POD-128
+$\nLshapePodCheaperVsCheapestTwoFiftySix\times$ and
+$\nLshapePodCheaperVsCheapestFiveTwelve\times$; the head is non-dominated
+only on accuracy
+($\nLshapeHeadOverPodCostTwoFiftySix$--$\nLshapeHeadOverPodCostFiveTwelve\,\%$
+more cost than POD-128, $\nLshapePodOverHeadErrFiveTwelve\,\%$ less error).
+Nothing is claimed beyond $512^2$; the banks' reconstruction degrades from
+$\nLshapeDevelopmentWorst$ to $\nLshapeValidationWorst\,\%$ on unswept
+validation sources (Table~\ref{tab:lshape}).
+
+\FloatBarrier
+% =====================================================================
+\paragraph{Limitations.}
+\label{sec:limitations}
+(i) We use one checkpoint per PDE. Burgers' checkpoint is a favourable
+draw in development (Table~\ref{tab:seeds}), and the fixed-$M$ ladder uses
+only that seed. A cold-start solve at $q=0$ can converge to a wrong
+branch; one sealed case did (\nSealedIncQzero\,\%, Table~\ref{tab:sealed}).
+Raising $q\ge16$ removed it, with no guarantee. (ii) Uniform Cartesian
+differences, 2D only. Our cohorts are small
+(Table~\ref{tab:problems}). The low-viscosity cell is under-resolved. (iii)
+We ran no cold-start comparison with \citet{KimChoi2022NMROM} and no
+skip ablation. (iv) Operator numbers are lower bounds
+(\nOpAllImproving{} arms still improving). Quadrature rules above
+$q=32$ are marginal; one transfer-draw spread in $\rho_{\max}$ is
+\nPanelFiveTwelveTransferRhoSpreadQthirtyTwo$\times$, unexplained. One cell shows a cross-job spread of
+$\nQxmAnchorSpreadPct\,\%$. The $1024^2$ frontier rests on one job. (v)
+Against the fine reference the knob moves the error only
+$\nPanelRefSpan\times$. (vi) No convergence or quadrature-error theory.
+
+% =====================================================================
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+We built an NM-ROM for elliptic, parabolic and hyperbolic PDEs with a
+deployment-time accuracy/cost family per model. Rank $q$ and three
+solver knobs span $\nQxmErrSpan\times$ in same-grid error for
+$\nQxmCostSpan\times$ in cost on 2D Burgers in one job. It does
+not beat a tuned full-order solver or a neural operator on the same data
+at $256^2$. Where no fast transform applies reduced models are cheaper,
+plain POD most of all. Next: a resolved low-viscosity cell,
+unstructured meshes, another Navier--Stokes head class.
+
+% =====================================================================
+\section*{Reproducibility statement}\label{sec:repro}
+Every table and every number in the prose is generated by one script
+(\texttt{paper/gen\_tables.py}) from the machine-readable outputs of the
+runs named in Appendix~\ref{app:provenance}; the script records the SHA256
+of every file it reads. Each run's job id, GPU, source commit and
+checkpoint hash are in Table~\ref{tab:provenance}. Solver definitions,
+stopping rules and exit-reason codes are in \S\ref{sec:method:weak} and
+Appendix~\ref{app:method}; timing and cohort protocol in
+\S\ref{sec:setup}. An anonymised repository with the generator, the
+provenance registry, the lane summaries and the audit JSONs, and the
+checkpoints by hash, accompanies the submission; it is built from the
+paper directory as committed, with nothing outside it, and the header
+comment of this file is stripped.
+
+\section*{AI use statement}
+Language-model assistants were used to draft and edit prose, to write the
+table generator and the figure scripts, and to audit run records; every
+number in the paper comes from the recorded run outputs through that
+generator and none was produced by a language model. The authors take
+full responsibility for the content.
+
+% =====================================================================
+\bibliographystyle{plainnat}
+\input{bib-inline}
+
+\clearpage
+\appendix
+% appendix tables and figures are numbered by appendix section (E.3, B.1, ...) so that a main-text
+% reference like "Table E.3" is visibly a pointer into the appendix, never a missing main-text float
+\setcounter{table}{0}\setcounter{figure}{0}
+\makeatletter\@addtoreset{table}{section}\@addtoreset{figure}{section}\makeatother
+\renewcommand{\thetable}{\Alph{section}.\arabic{table}}
+\renewcommand{\thefigure}{\Alph{section}.\arabic{figure}}
+\input{sections/appendix}
+
+\end{document}

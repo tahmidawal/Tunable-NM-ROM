@@ -1,0 +1,81 @@
+\entry{2026-10-06}{Campaign start and Phase 0}
+
+\subsection*{Thesis}
+A reduced trial basis that is a \emph{continuous, importance-ordered} function of position,
+$u(x)=G(x)c$, gives two properties.
+\textbf{Ordered:} one trained model offers an accuracy/cost dial at deployment (width $R'$, head on or off).
+\textbf{Continuous:} the nonlinear term is an integral, so it can be hyper-reduced by classical quadrature (tensor Gauss, rank-1 lattices) at points that ignore the mesh, instead of quadrature fitted to snapshots on the mesh.
+The paper combines the discarded ICLR material (the dial) with Hari's off-mesh quadrature study.
+The ICLR paper will not be submitted.
+
+\subsection*{Decisions (user, 2026-10-06)}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+topic & decision\\
+\midrule
+Paper & One combined JCP paper; ICLR dropped.\\
+Off-mesh code & Copied byte-identically into each lane's \texttt{vendor/} with \texttt{PROVENANCE.json} (not forked from the quadrature branches).\\
+Full-order comparators & Run \emph{and compare against} all three of coarse-grid, second-order and spectral solvers, in addition to Newton--BiCGStab/GMRES and IMEX-CG. Supersedes the 2026-09-21 ``named iterative only'' rule.\\
+Examples & Keep the current PDEs and add harder ones (chosen in the lane designs).\\
+NS 3D & Keep the lane and keep improving its coordinate-network bank.\\
+Worktrees & Claude names and creates them without asking (now in \texttt{CLAUDE.md} and \texttt{AGENTS.md}).\\
+Notebook & This LaTeX notebook, rebuilt after every update.\\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Phase 0 checklist}
+\begin{itemize}
+\item \done\ Plan and five planning notes, revised after a Codex audit: \path{reports/2026-10-06-jcp-offmesh-paper-plan.md}.
+\item \done\ Paper outline (PDF): \texttt{reports/2026-10-06-jcp-combined-paper-outline/}.
+\item \done\ Literature check of the unread preprints and a 2024--2026 sweep (plan appendix \texttt{07}); see below.
+\item \done\ Week-1 lanes created (table below).
+\item \done\ \texttt{CLAUDE.md}, \texttt{AGENTS.md} and memory updated with the decisions.
+\item \you\ Withdraw the ICLR submission on OpenReview if it is still active.
+\item \you\ Agree authorship and the split of work with Hari; get his consent to use his code and results.
+\end{itemize}
+
+\subsection*{Literature check: outcome}
+None of arXiv 2505.14595 ($\Phi$-ROM, a grid-based contrast), 2507.07830 (meshless SPH projection, no hyper-reduction), 2508.21279 (energy-conservative EQP, a fitted method) or the LiCROM cubature (random mesh vertices, equal weights) pre-empts the claims.
+No ROM paper found uses weighted classical quadrature for the reduced residual.
+Per contribution:
+\begin{itemize}
+\item ordered tunable bank: \textbf{novel for ROMs}; credit nested dropout (Rippel et al.~2014), slimmable networks, POD truncation, LiCROM;
+\item classical quadrature replacing fitted hyper-reduction: \textbf{novel as a combination}; ingredients partly pre-empted (Monte Carlo/uniform points in Simplicits, SNF-ROM, Weder et al.; lattices in PINN training; fitted off-mesh points in CECM);
+\item decoupling from the mesh's $O(h)$ error: \textbf{partly pre-empted} (SNF-ROM has the mechanism); Ingimarson--Rebholz--Iliescu (CMAME 2022) argue the opposite position and must be addressed;
+\item rule-family behaviour on tensor sine tests: \textbf{novel in the ROM setting}, as known theory with a new consequence;
+\item data-free error indicator: \textbf{partly pre-empted in principle}; call it an indicator, never a certificate.
+\end{itemize}
+Still to read before submission: arXiv 2607.27471, 2607.10965, 2602.01397, 2504.15657.
+
+\subsection*{Week-1 lanes}
+All fork from \texttt{exp/2026-10-01-ns3d-coordnet-bank} @ \texttt{21c175a1b}; each mirrors to
+\texttt{origin/codeonly/exp/<lane>} with its own \texttt{sync\_github.sh}, and vendors 69 files of off-mesh code, each checked blob by blob against its source commit
+(\texttt{exp/2026-10-01-quadrature-study} @ \texttt{84d28e303}, \texttt{exp/2026-10-01-quadrature-burgers3d} @ \texttt{aab6b6927}).
+
+\medskip
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+lane (\texttt{worktrees/}, branch \texttt{exp/}\dots) & experiments & role\\
+\midrule
+\texttt{2026-10-06-jcp-references} & E0 & order-verified second-order references; pseudo-spectral cross-check; sealed and out-of-distribution cohorts in a read-only store\\
+\texttt{2026-10-06-jcp-mechanism} & E1, E2 & rule ladders against theory; second-order stencil tensor, mesh-node analytic gradient, coarse-trained bank, all-continuum arm\\
+\texttt{2026-10-06-jcp-fom-pareto} & E4 & full-order cost ladders (iterative, IMEX-CG, second-order, coarse-grid, spectral); timing harness\\
+\texttt{2026-10-06-jcp-hr-baselines} & E5 & POD-LSPG/Galerkin with ECSW, Q-DEIM, GNAT; POD + exact tensor; best-practice EQ; CROM-style sampler\\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Harder examples: candidates for the designs}
+\begin{itemize}
+\item time-dependent reaction--diffusion with $e^u$ (Frank-Kamenetskii): non-polynomial, so no tensor exists;
+\item porous-medium diffusion $\nabla\cdot(u^m\nabla u)$ with non-integer $m$;
+\item Burgers at lower viscosity / narrower bumps, to find where the rule size and bank floor break;
+\item a non-box domain (e.g.\ L-shape with a distance-function Dirichlet factor and a composite rule);
+\item NS 3D with an improved coordinate-network bank.
+\end{itemize}
+
+\subsection*{Carried-forward corrections (from the Codex audit of the plan)}
+\retracted{the explicit Gauss strip-width bound in planning note 03; ``lattices converge like $m^{-3}$'' as an asymptotic rate (only a conditional upper bound); Hari's ``super-algebraic lattice'' and ``tent adds a kink'' statements for this integrand; the per-lane sealing of test cohorts (now global); the 5\,\% timing fault under a 10\,\% gate; Gauss ``exactness'' on sines; the rule-doubling ``certificate''; the 5--7-day schedule (at least 7.6 days on four GPUs).}
+
+\subsection*{Next (Phase 1)}
+For each week-1 lane: write \texttt{DESIGN.md} $\to$ Codex design audit $\to$ code $\to$ Codex code audit $\to$ real-size smoke with every control firing $\to$ cluster jobs $\to$ Codex results audit $\to$ generated report and a notebook entry.
+Lanes run as separate subagents, one worktree each, with distinct cluster namespaces.

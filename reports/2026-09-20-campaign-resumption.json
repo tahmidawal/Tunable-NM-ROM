@@ -1,0 +1,43 @@
+{
+  "checked_utc": "2026-09-20T15:23:42Z",
+  "previous_target_utc": "2026-09-20T12:07:00Z",
+  "target_met": false,
+  "agent_interruption": "Two active workers explicitly reported account usage-limit failures; active agent work stopped before successor submissions.",
+  "queue_empty_on_resume": true,
+  "final_cohorts_unopened": true,
+  "jobs": [
+    {
+      "lane": "Burgers",
+      "attempt": "b3d005",
+      "job_id": 3997404,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "02:53:07"
+    },
+    {
+      "lane": "Heat",
+      "attempt": "head04",
+      "job_id": 3997378,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "01:07:49"
+    },
+    {
+      "lane": "Poisson",
+      "attempt": "seed04",
+      "job_id": 3996479,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "01:13:48"
+    },
+    {
+      "lane": "Navier\u2013Stokes",
+      "attempt": "coverage04",
+      "job_id": 3997427,
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "01:17:40"
+    }
+  ],
+  "resumption": "User requested updates; coordinator verified completed jobs and resumed the previously authorized collection/tuning/final tasks with three lane workers. NS awaits an available worker slot; no GPU rental needed."
+}

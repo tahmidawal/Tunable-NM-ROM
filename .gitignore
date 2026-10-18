@@ -1,30 +1,29 @@
+# Python
 __pycache__/
 *.pyc
-experiments/*/cluster/stage/
+*.egg-info/
+.pytest_cache/
+.ipynb_checkpoints/
+build/
+dist/
 
-# Full transfer fields are preserved exactly in checked archive chunks.
-experiments/mr-heat2d/runs/transfer04/archive/outputs/fields/*.npz
+# Generated artifacts — regenerate via the scripts in heat/ or poisson/
+data/
+checkpoints/
+*.npz
 
-# Linear heat full fields are preserved exactly in checksum-verified archive parts.
-experiments/mr-heat2d/runs/linear05/archive/outputs/fields/*.npz
+# Large modified-CP pilot fields: retained locally, indexed by tracked manifests.
+/artifacts/modcp-eq/2026-09-10/raw/
+*.pkl
+*.log
+*.out
+*.err
 
-# Nonlinear heat fields are preserved in checksum-verified archive parts.
-experiments/mr-heat2d/runs/nonlinear06/archive/outputs/fields/*.npz
+# Per-cell run artefacts under best-results/ — these are regenerable, not source.
+best-results/**/__pycache__/
 
-experiments/mr-heat2d/runs/nonlinear07/archive/outputs/fields/*.npz
-
-# Exact full fields retained in checked archive parts.
-experiments/mr-heat2d/runs/cp_algebra08/archive/outputs/fields/*.npz
-experiments/mr-heat2d/runs/iterative_cg09/archive/outputs/fields/*.npz
-
-# Heat accuracy fields are preserved exactly in checksum-verified archive parts.
-experiments/mr-heat2d/runs/accuracy10/archive/outputs/fields/*.npz
-
-# ns2d: the compressed job archive is preserved as checksum-verified 48 MB chunks under
-# experiments/ns2d/artifacts/<attempt>/; the staged copy of the 31 MB reference npz is
-# byte-identical to experiments/ns2d/configs/dev8_eval_ref.npz (MANIFEST-verified in-job).
-experiments/ns2d/runs/*/archive/collection.tar.gz
-experiments/ns2d/runs/*/archive/experiments/ns2d/configs/dev8_eval_ref.npz
-
-# ns3d-grok diagnostic fields stay on disk; only summary.json is committed.
-experiments/ns3d-grok/runs/**/*.npy
+# session lock and LaTeX build intermediates
+.lablog.lock
+*.aux
+*.fls
+*.fdb_latexmk

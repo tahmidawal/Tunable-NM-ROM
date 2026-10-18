@@ -1,0 +1,127 @@
+{
+  "policy": "Full raw fields retained locally outside Git; this tracked manifest identifies immutable root archive paths. Raw timing/error JSON, source, proofs, audits, and checkpoints are tracked separately.",
+  "extraction": "Verify SHA256, create an empty destination, then tar -xf ARCHIVE -C DESTINATION. Consult member_prefixes before choosing a destination; never overwrite an existing run.",
+  "archives": {
+    "burgers2d-validation-initial.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/burgers2d-validation-initial.tar",
+      "sha256": "5a6c6db854706a80f425419590f864edf0a197fe362bfc3a8fcfb8b5df273e9e",
+      "bytes": 35799040,
+      "source_path": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/raw-archives/validation_initial.tar",
+      "role": "Saved validation inputs for initial-fit diagnosis",
+      "job_id": "3500795",
+      "member_count": 7,
+      "member_prefixes": [
+        "validation_initial"
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    },
+    "burgers2d-diagnose01.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/burgers2d-diagnose01.tar",
+      "sha256": "e1bb6444587514b2e28fd8a7f77b1d30316741a4471a30c8b38e5b1e3daf9dc0",
+      "bytes": 14243840,
+      "source_path": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/raw-archives/diagnose01.tar",
+      "role": "Validation-only multistart fits and exact CP affine-span diagnostic",
+      "job_id": "3504454",
+      "member_count": 60,
+      "member_prefixes": [
+        "diagnose01"
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    },
+    "burgers2d-validation01.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/burgers2d-validation01.tar",
+      "sha256": "619ec23e8ef8d6ac44561a278a6da11c1bc6262336e9e779d3fe40f68757a30f",
+      "bytes": 59244656640,
+      "source_path": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/raw-archives/validation01.tar",
+      "role": "Complete immutable validation cohort, paired timing proxies, full fields, checkpoints, quadrature and selection proofs",
+      "job_id": "3500795",
+      "member_count": 2685,
+      "member_prefixes": [
+        "COLLECT.sha256",
+        "COMMIT.txt",
+        "MANIFEST.sha256",
+        "PROVENANCE.json",
+        "RESUME_ARTIFACTS.json",
+        "code",
+        "logs",
+        "out",
+        "run.sbatch"
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    },
+    "wave-reflective-validation02.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/wave-reflective-validation02.tar",
+      "sha256": "3183d50289173492043cca1ade538345afcaaf14ef7f7146ed11f272426226cb",
+      "bytes": 19001743360,
+      "source_path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/validation_reflective02/verified-cluster.tar",
+      "role": "Complete immutable validation cohort and timing proxies, bounded observations, checkpoint and quadrature identities, and selection proofs",
+      "job_id": "3503439",
+      "member_count": 3112,
+      "member_prefixes": [
+        "."
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    },
+    "wave-absorbing-validation02.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/wave-absorbing-validation02.tar",
+      "sha256": "5e18b47ce2aebbe6aa09f0f9c5043469ab7ea139f16fdf30af25ee6ae7c2c20e",
+      "bytes": 17960181760,
+      "source_path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/validation_absorbing02/verified-cluster.tar",
+      "role": "Complete immutable validation cohort and timing proxies, bounded observations, checkpoint and quadrature identities, and selection proofs",
+      "job_id": "3503457",
+      "member_count": 2984,
+      "member_prefixes": [
+        "."
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    },
+    "burgers2d-evaluation01.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/burgers2d-evaluation01.tar",
+      "sha256": "f39290ebcf47a962d5ef8664882101cb2abe5c52e7d1ef5f6f7f40855ccade9f",
+      "bytes": 4960747520,
+      "source_path": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/raw-archives/evaluation01.tar",
+      "role": "Complete frozen final evaluation with full fields, all paired timing repetitions, checkpoints, quadrature and global validation seal",
+      "job_id": "3518411",
+      "member_count": 252,
+      "member_prefixes": [
+        "COLLECT.sha256",
+        "COMMIT.txt",
+        "MANIFEST.sha256",
+        "PROVENANCE.json",
+        "RESUME_ARTIFACTS.json",
+        "code",
+        "logs",
+        "out",
+        "run.sbatch"
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    },
+    "wave-reflective-evaluation01.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/wave-reflective-evaluation01.tar",
+      "sha256": "11933f53190c9729aca52efd855b7cf26f2800f52fdb60e1026e3006ca378874",
+      "bytes": 53227530240,
+      "source_path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/evaluation_reflective01/verified-cluster.tar",
+      "role": "Complete frozen reflective-wave evaluation, full fields and shared references, paired repetitions, quadrature and global validation seal",
+      "job_id": "3518421",
+      "member_count": 601,
+      "member_prefixes": [
+        "."
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    },
+    "wave-absorbing-evaluation01.tar": {
+      "path": "artifacts/modcp-eq/2026-09-10/raw/wave-absorbing-evaluation01.tar",
+      "sha256": "9490ab5556714b7023237adee2551afb72f46a2ec066935ffb6ade156f5e0260",
+      "bytes": 37208576000,
+      "source_path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/evaluation_absorbing01/verified-cluster.tar",
+      "role": "Complete frozen absorbing-wave evaluation, full fields and shared references, paired repetitions, quadrature and global validation seal",
+      "job_id": "3518429",
+      "member_count": 473,
+      "member_prefixes": [
+        "."
+      ],
+      "retention": "hard link under main; worktree cleanup may unlink only the worktree name"
+    }
+  },
+  "updated_utc": "2026-09-10T23:39:47.981972+00:00"
+}

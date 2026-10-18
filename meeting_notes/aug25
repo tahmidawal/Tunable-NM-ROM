@@ -1,0 +1,203 @@
+Speaker 1: Question which you have to answer here, okay?
+Tahmid Awal (You):  Okay.
+Speaker 1:  Where are the weights for the quadrature coming from?
+Tahmid Awal (You):  So the— So the— there's also an MLP in there, like, so if that's what you're asking, like.
+Speaker 1:  When you use it in the overall thing.
+Tahmid Awal (You):  Oh, okay.
+Speaker 1:  Remember, our integral for the error metric that drives our optimization is summation of weights times the FI.
+Tahmid Awal (You):  Yes.
+Speaker 1:  Your network right now computes F at Xi, but you need specifics, so you might be using uniform weights right now, which is incorrect. So what you should really be doing instead is to get your— that first part, the spatial part of your network, that should not only be giving you this representation, the value at the— it should also be giving you Wi. Or you need to have a third thing which is only optimizing and giving you the weights for that.
+Speaker 1:  It's com— basically coming, and that is easy. Or you can do it analytically beforehand.
+Speaker 1:  You know, like, for this domain, the ML approach might be a little bit better in the sense that it is factoring in the function itself, so when you train the data, it's effectively— not only is it building a representation for the function at those points, it's also giving you the weights for the quadrature.
+Tahmid Awal (You):  Yeah, yeah, makes sense.
+Speaker 1:  Right? Which means that your error metric now should be driven by the integral of that function over the domain.
+Tahmid Awal (You):  Yes, yeah.
+Speaker 1:  Right?
+Tahmid Awal (You):  Yeah.
+Speaker 1:  So— so that is a much, much cleaner problem which is defined, and you can test it independently if you want. But somewhere in this process, you need to learn the quadrature scheme as well.
+Tahmid Awal (You):  Mm-hm, mm-hm, yeah. Totally makes sense.
+Speaker 1:  Correct?
+Tahmid Awal (You):  So, yeah. So, Harjit, would you— so this is what I was thinking as, like, the next step of this architecture, unless you think, like, this is not— this architecture is not a direction worth pursuing. So I was thinking, like, would I— I should modify the training process somehow, using the loss function, or maybe, like, make some architectural modifications as well, so that the quadrature weights are trained as a part of the network itself.
+Tahmid Awal (You):  Would that—
+Speaker 1:  So it depends on what design you want to take. So there are two or three different approaches you could take, right? So what you have is, okay, I— I don't have an objection to it as such.
+Speaker 1:  I think you should at least— if you've tried it, you should go ahead and do it. But I would definitely say that I don't know how you're doing the integral.
+Speaker 1:  If you're doing the integral with uniform weights, that's— I mean, for a random distribution, that might be there, but it's not going to be tailored for the data itself, right?
+Tahmid Awal (You):  Yeah.
+Speaker 1:  So— so you can— you can explicitly say that the way you train it is twofold, right? So the first part is where you train your default autoencoder.
+Tahmid Awal (You):  Yeah.
+Speaker 1:  But along with doing the autoencoder, you can say that you're going to train this— whatever— sampling decoder, which— where you specify how many points.
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  And what it's going to do is that it's going to optimize for the positions.
+Tahmid Awal (You):  Yeah.
+Speaker 1:  And the quadrature weights, right?
+Tahmid Awal (You):  Yeah.
+Speaker 1:  Along with the decoder, so that the integral is— the error in the integral is minimized.
+Tahmid Awal (You):  Yes, that's— that— that was kind of the next step I was thinking of taking as well, yeah.
+Speaker 1:  So if you do that, then that pipeline is there. And again.
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  Remember what I said. You have to think in terms of the errors. The error— the base error is the L2 error over the points, compared to the full dense reconstruction.
+Speaker 1:  So L2 error in the points. Error in the integral, because now you've got a quadrature thrown in, correct?
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  The way I would— you would integrate over the whole domain when you have a dense reconstruction is very different from how you would— you're going to do the quadrature when you have samples.
+Tahmid Awal (You):  Mm-hm, okay.
+Speaker 1:  Correct? So if my original thing was some quad grade, what am I doing? You're going to each element, applying gauze quadrature into that element.
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  Correct?
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  And then summing up across all your elements. This is your standard finite element procedure where you sum over all elements and integral within the element. Now, because I have a random sampling of values, right?
+Tahmid Awal (You):  Yes.
+Speaker 1:  These are not going to be— I'm not— I'm never probably going to get even a single element.
+Tahmid Awal (You):  Yeah.
+Speaker 1:  Correct?
+Tahmid Awal (You):  Yeah.
+Speaker 1:  So that is what you have to think about, how you want to do it. Now, there are other ways to do this if you want, but I think that we should really think also in terms of how we are sampling. Maybe the sample is not at nodes, but sampling is of elements, in which case the integral part is a little bit better defined, but you still have to then extend it for everybody else.
+Speaker 1:  So I think that in either case, I would actually say that if we want to think from a research perspective, this whole part, like, how do we do this sampled decoding, sampled integration, right?
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  And then there's a third part, correct? Which is, if I sample and integrate, what is the error in my gradient itself? Because that is gradient and the Hessian, and that's what is going to drive the overall optimization.
+Tahmid Awal (You):  Yeah.
+Speaker 1:  So—
+Tahmid Awal (You):  I think.
+Speaker 1:  So I think that that is important.
+Tahmid Awal (You):  Yeah, I'll think about— I'll think about modifying the architecture, and I think I have a good direction of the loss function as well. I'll— I'll see what— what that gets me.
+Speaker 3:  Isn't there any previous research on purely on empirical quadrature stuff we can maybe reuse? I mean, not necessarily an ML-based thing.
+Speaker 1:  So should we reuse classical or ML-based?
+Speaker 3:  I mean, either way. I mean, if it helps something, I'll just say.
+Speaker 1:  Class— classical is there. Classical, there are plenty of ways in which you can do this.
+Tahmid Awal (You):  I'm going to look into the machine learning-based empirical quadrature and see if there's.
+Speaker 1:  I— I don't think that there's— so the machine learning part, which is where it is, like I said, Goodwin is right in the sense that if you only want to do the quadrature over some arbitrary set of points, it's very straightforward in terms of how you would define it, right? The— the— the trickier part, and especially if you want to think from the perspective of random points, right?
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  You can think of radial basis function, which are there. Basically, you choose some sort of a splatting style, so each sample assumes that there is a Gaussian as the basis function.
+Tahmid Awal (You):  Mm-hm, mm-hm.
+Speaker 1:  Right? So remember, we have to think of a basis function, correct?
+Tahmid Awal (You):  Yeah.
+Speaker 1:  So what would you define if you had a random sample? You basically define a Gaussian over it and say that across my entire domain, that's what it is, and then you design a quadrature scheme specifically for that basis function.
+Tahmid Awal (You):  Yeah, I see. I— I did found a paper that tried PINS with learnable quadrature. I'll look into it and see what they're talking about.
+Speaker 1:  Yeah. But— but remember, the part that— and if you find a paper, please send it to me. You know, send it to everyone, because I think it's going to be interesting.
+Speaker 1:  And that part is of this partial decoding. You know, specifically at some points, decoding at certain—
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  A function at a given set of points. With the correct complexity. It's— it's trivial if you are paying the price of the full decode.
+Tahmid Awal (You):  Yeah.
+Speaker 1:  Okay?
+Tahmid Awal (You):  Yep.
+Speaker 3:  You— you said that there are existing analytical methods, right? So are— are they—
+Speaker 1:  Yes.
+Speaker 3:  That means we can pick our own points and then assume some basis and do this? I see.
+Speaker 1:  Yes, of course.
+Speaker 3:  Okay.
+Speaker 3:  So in— in— in this case, we are trying to pick points in a sensible fashion as well, right?
+Speaker 1:  So— so again, it depends on what we can achieve, right? So there are two ways to think of this.
+Speaker 3:  Yeah.
+Speaker 1:  One way to think of it is that for a given data, right, and what we have sort of thought in terms of the number of samples that we want, you can say that this is the ideal distribution of points for the functions for a given error, right?
+Speaker 3:  Yeah. So that depends on the— the nature of the function aspect, right? I mean.
+Speaker 1:  Correct, exactly.
+Speaker 3:  In which regions we want to sample more, something like that?
+Speaker 1:  Yes.
+Speaker 3:  Okay.
+Speaker 1:  Yes. So this is sort of like combining AMR.
+Speaker 3:  Yeah.
+Speaker 1:  With this quadrature in some sense, right? So when we do it in the finite element way, we sort of separate them out into two independent aspects, right?
+Speaker 3:  Yeah.
+Speaker 1:  The— the density of the elements decides that, which is the function independence, right?
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  Whereas the quadrature is very consistent and repeatedly applied.
+Speaker 3:  Yeah, yeah. The linear element.
+Speaker 1:  Yeah. Here, you— you're sort of mixing them both together, correct?
+Speaker 3:  I see. Yeah, so the density.
+Speaker 1:  Yeah, so the density of the samples will dictate the AMR, but your quadrature now has to adapt for this variability, which means that it— it's expensive to be dynamic on this, correct?
+Speaker 3:  Yeah. So AMR is sort of like a global-wise data-driven quadrature, right?
+Speaker 1:  It is. And then.
+Speaker 3:  Yeah.
+Speaker 1:  So what we are saying is that the quadrature is localized, so.
+Speaker 3:  Yeah.
+Speaker 1:  Across the elements, I'm only summing it up. I'm not integrating, correct?
+Speaker 3:  Yeah, yeah, yeah, yeah.
+Speaker 1:  So I mean, the sum is the most trivial version of an integral, correct?
+Speaker 3:  Yeah, yeah. That makes sense.
+Speaker 1:  So if you think from, uh, your Simpson's rule or trapezoidal rule, that's what you're doing. We've just divided up. We've decided that my elements are now the rectangles that I was using for Simpson's.
+Speaker 3:  Yeah. Got it, got it.
+Speaker 1:  So— so that's the difference here. Now, if you have samples, we have to now think in terms of how to represent it, how do I get my error bounds, and other things, right? So you still have to— you'll have to come up with a basis if you want correct bounds.
+Speaker 1:  And so.
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  One option is to use something like a Gaussian. There are people who will do this with splines and b-splines. You're assuming certain.
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  Smoothness properties, but then once you have those, then you can say that, okay, when I have these samples, this is what I'm claiming my basis func— my actual function looks like, and so then I can define what my quadrature weights are going to be for that particular case.
+Speaker 3:  Yeah, yeah, yeah, yeah. That makes sense. Yeah, so yeah.
+Speaker 1:  So— so that is the numerical part of it. Here, I think the way— so we should think philosophically here, right? So philosophically, the issue is that I can either say this that, okay, I only want these samples.
+Speaker 1:  It's trained specifically for the data that I'm interested in, the problem, Poisson wave, whatever, assuming it can be done, and then I'm using the same samples with this thing, so there is a fixed error and I'm willing to pay for this. The other approach could be to say that since this error is only driving an optimization function, correct?
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  As I do my fixed-point iteration to get closer to the solution, where I sample can change dynamically. So every time I'm still paying a fixed K-sample cost, and when I start off, maybe it is somewhat uniformly scattered over the whole domain, but as I get closer to the solution, it adjusts and the error is driven primarily by the places where the mismatch is.
+Speaker 1:  Does that make sense?
+Speaker 3:  Does that make sense.
+Speaker 1:  And that is.
+Speaker 3:  We will sample more from places where things matter most for the errors, for the loss function.
+Speaker 1:  Correct. And so as you get closer, you're still getting away with it. Now, of course, this is complicated, right, because you— the— the notion of where the samples are has to come in for decoding, computing this error, computing all of it, but also in terms of when you get back to the part of computing the gradient, the error should not now say that, you know— that's why I said the gradient is sort of the holy grail, because that's what is driving the optimization.
+Speaker 1:  You could potentially have lower error in the integral, but a much higher error in the vector space corresponding to the gradients, which would completely ruin everything, right? Because that has to still drive our optimization.
+Speaker 1:  So you should always measure all three of those.
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  They are related, you know, the L2 error, the integral error, and the gradient error, but that's how you would look at it. Okay?
+Tahmid Awal (You):  Okay.
+Speaker 1:  And like I said, it's— it's a super nice problem because it's very well defined. We know mathematically what we can expect, and as Goodwin was asking now, we can always— for certain components, we can go completely into the traditional numerical methods way as well.
+Tahmid Awal (You):  Yeah.
+Speaker 1:  But if you can do all of this, I think if you can get to the point, then that would work beautifully, because you get the complexity reduction and you get the correct solution and it'll work.
+Tahmid Awal (You):  Yeah.
+Speaker 1:  Okay. Think about it, but like I said, don't. You should really be measuring all of those.
+Tahmid Awal (You):  Components.
+Speaker 1:  Separately.
+Tahmid Awal (You):  Yeah, totally.
+Speaker 1:  You know, ideally, maybe all the way to the gradient and the Hessian as well.
+Tahmid Awal (You):  Mm-hm.
+Speaker 1:  But at the very least, you know, let's at least start with L2 error on the sampled points and the error in the integral.
+Tahmid Awal (You):  Okay.
+Speaker 1:  Which means that you have to basically incorporate the quadrature scheme as well.
+Tahmid Awal (You):  Yes, okay. Sounds good.
+Speaker 1:  Jack?
+Speaker 4:  I— I got your comments. I'm kind of noodling on some pieces, so I— I understand what you're asking.
+Speaker 4:  On the— on the AI space, I was— I was grinding to get you something on Sunday.
+
+
+----------
+
+Flow Summary
+
+Discussion of extending the neural autoencoder to learn quadrature weights alongside sample positions, so the integral-based error metric is properly tailored to the data rather than using uniform weights.
+
+
+
+Learning Quadrature in the Network
+
+Current integral likely uses uniform weights; network should also output Wi per sample
+
+Train autoencoder jointly with sampling decoder optimizing sample positions and quadrature weights
+
+ML approach factors in the function itself, yielding data-tailored weights
+
+
+
+Sampling, Basis & Classical Options
+
+Random samples rarely form elements; need basis (e.g. Gaussian splat, splines) to define quadrature and error bounds
+
+Classical analytical methods exist; Tahmid Awal to look into PINN paper with learnable quadrature
+
+Philosophical choice: fixed samples per problem vs. dynamically adapting sample locations during fixed-point iteration
+
+
+
+Error Metrics
+
+Measure L2 error on sampled points, integral error, and gradient/Hessian error separately
+
+Gradient error is the holy grail since it drives optimization; low integral error can still ruin gradients
+
+
+
+Next Steps
+
+(Tahmid Awal) Modify architecture and loss so quadrature weights are trained as part of the network
+
+(Tahmid Awal) Read the PINN-with-learnable-quadrature paper and share it with the group
+
+(Tahmid Awal) Incorporate quadrature scheme and report L2 error on sampled points plus integral error
+
+
+

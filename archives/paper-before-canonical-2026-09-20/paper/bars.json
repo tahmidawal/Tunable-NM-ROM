@@ -1,0 +1,22 @@
+{
+  "_comment": "Pre-registered bars read by gen_tables.py (review r2, N1). Each value names the DESIGN that fixed it and the commit at which it was fixed; none is typed in the generator.",
+  "eqtop_primary_bar": {
+    "value": 0.116,
+    "source": "b-eqtop/DESIGN.md \u00a75 (byte-identical from commit 33e8bced, 2026-09-17 01:11, through the pinned 8542c604); origin q-ridge/DESIGN.md amendment A3, commit a1822ae6 (2026-09-16); every b-eqtop job post-dates it"
+  },
+  "eqtop_tight_bar": {
+    "value": 0.06,
+    "source": "b-eqtop/DESIGN.md \u00a75, same commits"
+  },
+  "ns_oracle_bar": {
+    "value": 2.0,
+    "source": "ns2d/DESIGN.md H-ORACLE gate: oracle median <= 1/2 x POD-K held-out, i.e. ratio >= 2.0; pre-registered at commit 1281ff73 (2026-09-17 00:55), before jobs 3783796/3787319/3787320"
+  },
+  "ns_scaling_slope_band": {
+    "value": [
+      -0.25,
+      -0.1
+    ],
+    "source": "ns2d/DESIGN.md \u00a7A9 (pre-registered data-scaling rule for the head-only diagnosis): least-squares log-log slope of the held-out oracle in the training-trajectory count; steeper than -0.25 = data-limited, shallower than -0.10 = head-limited, inside the band = ambiguous"
+  }
+}

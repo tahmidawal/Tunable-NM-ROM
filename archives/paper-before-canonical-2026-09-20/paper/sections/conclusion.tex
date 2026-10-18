@@ -1,0 +1,13 @@
+% sections/conclusion.tex
+\section{Conclusion}
+\label{sec:conclusion}
+
+One trained decoder exposes a monotone accuracy--cost family at run time through
+the rank of the correction it allows, spanning $\nQxmErrSpan\times$ in error for
+$\nQxmCostSpan\times$ in cost on 2D Burgers in one allocation. The trade is real
+where the residual is nonlinear in the coefficients and no fast transform makes
+the full-order solve cheap, and it collapses where neither holds. Where the
+full-order solve has no fast transform, as on the L-shaped domain, the reduced
+query is the cheaper option from $256^2$ upward and
+$\nLshapeNeuralCheaperFiveTwelve\times$ cheaper at $512^2$; nothing is claimed
+beyond that mesh.

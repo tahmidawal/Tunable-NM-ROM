@@ -1,0 +1,306 @@
+{
+  "selection": "First validation case and first optimizer repeat, fixed by index for both boundaries; illustrative case, not a cohort summary or a best/worst selection.",
+  "numerical_work": "Saved-array matrix products, plotting and independent metric checks only. No PDE solve, training, fitting or new test data.",
+  "boundaries": {
+    "reflective": {
+      "case": 0,
+      "optimizer_seed": 691200,
+      "intervals": 256,
+      "rank": 64,
+      "latent": 16,
+      "primary_dt": 0.0025,
+      "initial_displacement_norm": 0.19201758285002338,
+      "initial_state_norm": 1.6095412232443627,
+      "initial_energy": 1.2953114746614798,
+      "parameters": [
+        0.466961743879224,
+        0.4305649335231267,
+        0.41660572809956714,
+        0.366197064560389,
+        0.8728556067414628,
+        1.00894790835607,
+        0.0,
+        0.0,
+        0.15161942095621836,
+        0.13380311362457928
+      ],
+      "times": [
+        0.0,
+        0.8,
+        1.6,
+        2.4000000000000004
+      ],
+      "source_job": "3338483",
+      "source_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+      "input_sha256": {
+        "out/campaign/result.json": "5e282204d4e86827ee85e4801674b191c50acb56bbbee52e52b5ba632a3d5e28",
+        "out/campaign/dirichlet/data_manifest.json": "289e9966406126812b628d1909fc1d1e7ac51dd8acef1211cd75d77d032d5809",
+        "out/campaign/dirichlet/truth_spotchecks.npz": "002e43817e564af1c92e5d2e83c99c32d54fa239ad69213a9f8662bdbd2d7ccd",
+        "out/campaign/dirichlet/bank_tables.npz": "6f773c0942c91e8b320ae452499e1d217479d3bbbb255bec7995dda770b3e122",
+        "out/campaign/dirichlet/learned_bank_linear_r.npz": "814c84a0e9bb97c41cdade9e3427bb86a3a73f15dc340975f3af5a0ea31212f9",
+        "out/campaign/dirichlet/mlp_691200/rollouts.npz": "88ff479522f0e36ee38a68932d7891fa5720b1b3a73c4da44b5b35d139e95f8b"
+      },
+      "metrics": {
+        "linear": {
+          "maximum_absolute_metric_discrepancy": {
+            "displacement": 4.336808689942018e-19,
+            "velocity": 0.0,
+            "energy_state": 3.469446951953614e-18
+          },
+          "displacement": [
+            0.002794535301874181,
+            0.0035411203657036467,
+            0.005722571979912703,
+            0.006791928455535114
+          ],
+          "velocity": [
+            0.0,
+            0.010589500187495087,
+            0.014999293705857676,
+            0.018465246851455588
+          ],
+          "energy_state": [
+            0.016050360411759865,
+            0.020211001680428293,
+            0.0238654297620648,
+            0.029455577392740767
+          ],
+          "current_field_displacement": [
+            0.002794535301874181,
+            0.004816012245153582,
+            0.007894008492398887,
+            0.01529566555596249
+          ],
+          "current_field_velocity": [
+            null,
+            0.013297092390014038,
+            0.024712227603057194,
+            0.02347701821084001
+          ]
+        },
+        "mlp": {
+          "maximum_absolute_metric_discrepancy": {
+            "displacement": 2.7755575615628914e-17,
+            "velocity": 2.7755575615628914e-17,
+            "energy_state": 1.3877787807814457e-17
+          },
+          "displacement": [
+            0.018416706709100245,
+            0.04534386256313352,
+            0.08392419129353604,
+            0.11978251396022682
+          ],
+          "velocity": [
+            0.0,
+            0.07595963941460127,
+            0.12080704382766734,
+            0.31779651889206617
+          ],
+          "energy_state": [
+            0.04384298187858462,
+            0.116909527327009,
+            0.17028629075697638,
+            0.36929458878053584
+          ],
+          "current_field_displacement": [
+            0.018416706709100245,
+            0.06166878693580332,
+            0.11576932210103687,
+            0.2697545012410894
+          ],
+          "current_field_velocity": [
+            null,
+            0.09538149349115099,
+            0.19903678277570683,
+            0.40405171517013677
+          ]
+        }
+      },
+      "mlp_primary_time_refinement_passed": true,
+      "plots": {
+        "displacement": {
+          "png": "2026-09-07-fresh-wave-reflective-displacement-fields.png",
+          "pdf": "2026-09-07-fresh-wave-reflective-displacement-fields.pdf",
+          "symmetric_field_limits": [
+            0.8739146506035019,
+            0.2856105911334946,
+            0.2976625552945897,
+            0.29383849915171173
+          ],
+          "absolute_error_limits": [
+            0.8739146506035019,
+            0.2856105911334946,
+            0.2976625552945897,
+            0.29383849915171173
+          ]
+        },
+        "velocity": {
+          "png": "2026-09-07-fresh-wave-reflective-velocity-fields.png",
+          "pdf": "2026-09-07-fresh-wave-reflective-velocity-fields.pdf",
+          "symmetric_field_limits": [
+            3.410167163064129,
+            3.410167163064129,
+            2.5884472823334375,
+            2.9545388210515307
+          ],
+          "absolute_error_limits": [
+            3.410167163064129,
+            3.410167163064129,
+            2.5884472823334375,
+            2.9545388210515307
+          ]
+        }
+      }
+    },
+    "absorbing": {
+      "case": 0,
+      "optimizer_seed": 691200,
+      "intervals": 256,
+      "rank": 64,
+      "latent": 16,
+      "primary_dt": 0.0025,
+      "initial_displacement_norm": 0.19201758285002338,
+      "initial_state_norm": 1.609541223244363,
+      "initial_energy": 1.2953114746614802,
+      "parameters": [
+        0.466961743879224,
+        0.4305649335231267,
+        0.41660572809956714,
+        0.366197064560389,
+        0.8728556067414628,
+        1.00894790835607,
+        0.0,
+        0.0,
+        0.15161942095621836,
+        0.13380311362457928
+      ],
+      "times": [
+        0.0,
+        0.8,
+        1.6,
+        2.4000000000000004
+      ],
+      "source_job": "3338658",
+      "source_commit": "fdcc6491657363005cc9060a0cae21dac320a974",
+      "input_sha256": {
+        "out/campaign/result.json": "43477d18df7ea5644843c98673eba74499bbcf426cf82f8c15ea63581cb73aa3",
+        "out/campaign/absorbing/data_manifest.json": "53edc2d730d912a35b30017033f534e812303abafacf71ba7dc5c92b1caf358c",
+        "out/campaign/absorbing/truth_spotchecks.npz": "783a88120f24f8d6ec9a6dbd9042ed5bbe948fb5fd0ab116bb16f7f45e70450e",
+        "out/campaign/absorbing/bank_tables.npz": "04d94905fc708e565f0d2b28809d40253005890e659443c4bb09b7ecaeee9862",
+        "out/campaign/absorbing/learned_bank_linear_r.npz": "02f1f9f169a8ec9460def702d9e660dd1e3d698b006c98ef6855cdeae98599dd",
+        "out/campaign/absorbing/mlp_691200/rollouts.npz": "61fa8bbc43a6011bc6b13640210010a1a0ef18c88b4986f79fa52c9bca44e838"
+      },
+      "metrics": {
+        "linear": {
+          "maximum_absolute_metric_discrepancy": {
+            "displacement": 4.336808689942018e-19,
+            "velocity": 4.336808689942018e-19,
+            "energy_state": 0.0
+          },
+          "displacement": [
+            0.003397924286786204,
+            0.005477754031823704,
+            0.0025094436594445026,
+            0.0013022695445546475
+          ],
+          "velocity": [
+            0.0,
+            0.009602362298175262,
+            0.004634535110948758,
+            0.0018340848693003955
+          ],
+          "energy_state": [
+            0.021082850648444215,
+            0.024213547630262056,
+            0.006944521964826014,
+            0.002975038609347384
+          ],
+          "current_field_displacement": [
+            0.003397924286786204,
+            0.02884164425634429,
+            0.1276380663342286,
+            0.6796551481658412
+          ],
+          "current_field_velocity": [
+            null,
+            0.058247227907510725,
+            0.31484136536186674,
+            1.129362936466177
+          ]
+        },
+        "mlp": {
+          "maximum_absolute_metric_discrepancy": {
+            "displacement": 3.469446951953614e-18,
+            "velocity": 4.336808689942018e-19,
+            "energy_state": 3.469446951953614e-18
+          },
+          "displacement": [
+            0.016786476590077544,
+            0.018146526976591085,
+            0.00958410807883631,
+            0.004349636944472754
+          ],
+          "velocity": [
+            0.0,
+            0.035812546148835375,
+            0.013241740833578751,
+            0.0036717588262931184
+          ],
+          "energy_state": [
+            0.04159483173474792,
+            0.04985173727773242,
+            0.01932040106188533,
+            0.006547744925664118
+          ],
+          "current_field_displacement": [
+            0.016786476590077544,
+            0.09554566935761954,
+            0.4874773809393743,
+            2.2700777687112628
+          ],
+          "current_field_velocity": [
+            null,
+            0.21723628756184915,
+            0.8995611564065702,
+            2.2609359029496607
+          ]
+        }
+      },
+      "mlp_primary_time_refinement_passed": true,
+      "plots": {
+        "displacement": {
+          "png": "2026-09-07-fresh-wave-absorbing-displacement-fields.png",
+          "pdf": "2026-09-07-fresh-wave-absorbing-displacement-fields.pdf",
+          "symmetric_field_limits": [
+            0.8732111851212595,
+            0.08285348877114124,
+            0.00742318605457698,
+            0.002206179408582323
+          ],
+          "absolute_error_limits": [
+            0.8732111851212595,
+            0.08285348877114124,
+            0.00742318605457698,
+            0.0022225861846065834
+          ]
+        },
+        "velocity": {
+          "png": "2026-09-07-fresh-wave-absorbing-velocity-fields.png",
+          "pdf": "2026-09-07-fresh-wave-absorbing-velocity-fields.pdf",
+          "symmetric_field_limits": [
+            0.9591993450268198,
+            0.9591993450268198,
+            0.06168657048031895,
+            0.013008147571138804
+          ],
+          "absolute_error_limits": [
+            0.9591993450268198,
+            0.9591993450268198,
+            0.06168657048031895,
+            0.015783543206092265
+          ]
+        }
+      }
+    }
+  }
+}

@@ -91,5 +91,5 @@ for tag, d in (("**Poisson**", POISSON), ("**Burgers**", BURGERS)):
         lbl = "every point" if mm == NINT else str(mm)
         rows.append(f"| {lbl} | {100*mm/NINT:.0f}% | {e:.2e} | {c:.1f} | "
                     f"{'exact' if f == 0 else f'{f:.1e}'} |")
-open(os.path.join(HERE, "eq_table.md"), "w").write("\n".join(rows) + "\n")
+open(os.path.join(HERE, "2026-08-18-quadrature-points-table.md"), "w").write("\n".join(rows) + "\n")
 print("wrote eq_table.md")

@@ -1,0 +1,89 @@
+<title>JCP Experiment Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f7;--paper:#ffffff;--ink:#16212a;--muted:#5a6772;--acc:#0b5d7a;--acc2:#b4541a;--soft:#e6f0f4;--line:#d9e0e6;--warmsoft:#fbf0e6;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1418;--paper:#161f26;--ink:#e2e9ee;--muted:#98a6b1;--acc:#6cc0de;--acc2:#f0a06b;--soft:#1b2c35;--line:#2a3640;--warmsoft:#2c2219;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1418;--paper:#161f26;--ink:#e2e9ee;--muted:#98a6b1;--acc:#6cc0de;--acc2:#f0a06b;--soft:#1b2c35;--line:#2a3640;--warmsoft:#2c2219;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 "Source Sans 3",system-ui,-apple-system,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding-inline:16px;padding-block:32px 64px}
+h1,h2{font-family:"Source Serif 4",Georgia,serif;text-wrap:balance;line-height:1.2}
+h1{font-size:clamp(1.7rem,5vw,2.3rem);margin:0 0 .3rem;color:var(--acc)}
+h2{font-size:1.35rem;margin:2.4rem 0 .7rem}
+.sub{color:var(--muted);margin:0 0 1.4rem}
+.box{background:var(--soft);border-radius:8px;padding:.9rem 1.1rem}
+.warn{background:var(--warmsoft);border-left:4px solid var(--acc2);border-radius:6px;padding:.9rem 1.1rem}
+ol,ul{padding-left:1.3rem} li{margin:.45rem 0}
+.steps{list-style:none;padding:0;counter-reset:s;display:grid;gap:10px}
+.steps li{counter-increment:s;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:.7rem 1rem .7rem 3.1rem;position:relative;margin:0}
+.steps li::before{content:counter(s);position:absolute;left:1rem;top:.75rem;width:1.5rem;height:1.5rem;border-radius:50%;background:var(--acc);color:var(--paper);display:grid;place-items:center;font-weight:700;font-size:.85rem}
+.tw{overflow-x:auto;background:var(--paper);border:1px solid var(--line);border-radius:8px;margin:.8rem 0}
+table{border-collapse:collapse;width:100%;font-size:.95rem}
+th,td{padding:.55rem .75rem;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{background:var(--soft);font-weight:600}
+.muted{color:var(--muted);font-size:.92rem}
+</style>
+<div class="wrap">
+<h1>The experiment plan, simply</h1>
+<p class="sub">What we need to show for the JCP paper, and how · 17 October 2026</p>
+
+<div class="box"><b>In one sentence:</b> show that our reduced model's cost and accuracy depend on <b>its own size (k)</b> and not on <b>the mesh size</b>; that it holds up against other methods; and that it works beyond one test problem.</div>
+
+<h2>What we want to show</h2>
+<ol>
+<li><b>Cost depends on k, not on the mesh.</b> Making the mesh bigger shouldn't make our solve slower; making k bigger should, in a predictable way.</li>
+<li><b>Accuracy depends on k, not on the mesh.</b> And bigger k should help, up to a point.</li>
+<li><b>We're faster than the full simulation</b> at the same accuracy, at least on large meshes.</li>
+<li><b>We're as good as, or better than, standard reduced models</b> (POD with DEIM, ECSW or GNAT).</li>
+<li><b>It works beyond one problem:</b> other settings, other equations, 2D and 3D.</li>
+</ol>
+<p class="muted">Each of these is set up so it <i>can</i> fail. We already know two things that fail the strong version: in 2D the biggest bank (512) is slightly worse than 384, and some hard 3D cases still have 4–7 % error. We report those, not hide them.</p>
+
+<h2>Step 1: the first small batch (≤ 20 GPU-hours)</h2>
+<p>Uses only what we already have. No new training, no new equations.</p>
+<ol class="steps">
+<li><b>Time each part of the solver as k grows</b> (k from 32 to 512 in 2D, 64 to 1024 in 3D). This shows exactly how cost scales with k. This is the advisor's question.</li>
+<li><b>Time the solve on three mesh sizes</b> (256², 1024², 4096²) for k = 128, 256 and 384. This shows the cost stays flat as the mesh grows.</li>
+<li><b>Check accuracy on the same settings,</b> against our trustworthy reference solutions.</li>
+<li><b>Check every setting is numerically sound first:</b> the solver converged, and there are enough quadrature points. Anything that fails is reported, not used.</li>
+<li><b>A quick recheck of an earlier result</b> (see the note below).</li>
+<li><b>Record memory use</b> and the one-time setup cost.</li>
+</ol>
+<p class="muted">A small test run first measures what each job really costs, so we don't go over 20 hours. If we run out, we drop the least important items first, and say so.</p>
+
+<div class="warn"><b>Something the review caught.</b> In 2D, the set of test functions the model uses changes slightly with the mesh, once there are more than about 1,000 of them. In the accurate setting, 4 of 1,536 differ between meshes. So our earlier "accuracy is flat across meshes" result compared slightly different setups. The effect is probably tiny, but we'll measure it in step 1, and from now on we fix the same set for every mesh.</div>
+
+<h2>Step 2 and beyond</h2>
+<div class="tw"><table>
+<tr><th>Next</th><th>What</th><th>Why</th></tr>
+<tr><td><b>2</b></td><td>Build a simple standard reduced model (POD) to compare against. Full speed comparison against the full simulation, including spectral, in 2D. (3D comes from the speed work already running.)</td><td>Reviewers will ask first. It could also change our story, so it's better to know early.</td></tr>
+<tr><td><b>3</b></td><td>Separate the effect of k from the number of test functions and points. Try every quadrature type as a full solve. Longer run times. A break-down of where the error comes from.</td><td>Makes the "depends on k" story airtight.</td></tr>
+<tr><td><b>4</b></td><td>Repeat with different random seeds. Different starting conditions and viscosities. Full set of standard reduced models.</td><td>Shows the results aren't luck.</td></tr>
+<tr><td><b>Later</b></td><td>New equations (Allen–Cahn, an exponential one), 3D Navier–Stokes, a non-box shape.</td><td>Each is its own small project; decide if it belongs in this paper.</td></tr>
+<tr><td><b>Final</b></td><td>Freeze every choice, then open the held-back test cases once (128 in 2D, 64 in 3D).</td><td>The paper's final numbers.</td></tr>
+</table></div>
+
+<h2>The ground rules</h2>
+<ul>
+<li>Choose settings only on practice cases. The held-back test cases stay closed until the very end.</li>
+<li>Score everything against the new trustworthy references.</li>
+<li>Only settings that pass the "numerically sound" checks go into headline results.</li>
+<li>Time things fairly: same GPU, same job, side by side.</li>
+<li>Every claim gets a clear pass/fail rule, written down before we look at results.</li>
+<li>Codex checks each step before it runs.</li>
+</ul>
+
+<h2>Time and cost</h2>
+<p>Roughly <b>380–700 GPU-hours</b> for steps 1–4 and the final run, about <b>4–10 days</b> of GPU time on 3–4 GPUs. Calendar time is longer, because of coding and checks. New equations are extra.</p>
+
+<h2>Decisions for you</h2>
+<ol>
+<li><b>Which "k" does your advisor mean?</b> The bank size (what we assumed), or the size of the small nonlinear "head" network?</li>
+<li><b>Are new equations in this paper,</b> or saved for later?</li>
+<li><b>Who holds the key</b> to the held-back test cases?</li>
+<li><b>Merge the finished branches?</b> And authorship with Hari.</li>
+</ol>
+
+<h2>Where this plan stands</h2>
+<p>Codex has reviewed it three times. Each time it found fewer and smaller problems, and each has been fixed. The latest version hasn't had a fourth review yet. The full technical details, with every rule and threshold, are in the repository under <code>reports/2026-10-17-full-experiment-plan/</code>, for whoever runs the experiments.</p>
+</div>

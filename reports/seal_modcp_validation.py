@@ -1,0 +1,211 @@
+"""Seal all three validation panels before owners may draw evaluation cohorts.
+
+This records identities, coverage, and the already-selected settings. It never
+selects configurations. Run after source/reference/selection audits. Wave
+validation stores bounded observations, so independent recomputation of every
+full-grid field error applies to final evaluation, not unsaved validation fields.
+"""
+import argparse
+from collections import defaultdict
+from datetime import datetime, timezone
+import json
+from math import prod, isclose
+from pathlib import Path
+from statistics import median
+
+from generate_modcp_comparison import provenance_check, relative
+from modcp_audit import digest, summarize_rows, row_error
+
+
+CASES = {'burgers2d', 'wave_reflective', 'wave_absorbing'}
+
+
+def verify_selection_rules(data, groups, proxies):
+    """Recompute the declared validation-only choice, including losing arms."""
+    burgers = data['case_name'] == 'burgers2d'
+    for mesh, method in sorted({(n, arm) for n, arm, _ in groups}):
+        candidates = []
+        for key, rows in groups.items():
+            if key[:2] != (mesh, method):
+                continue
+            proxy = proxies[key]
+            completed = all(row['finite'] and row['completed'] for row in rows)
+            completed &= all(row['finite'] and row.get('completed', completed) for row in proxy)
+            error = max(row_error(row) for row in rows+proxy)
+            candidates.append(dict(name=key[2], completed=completed, error=error,
+                                   cost=median(row['seconds'] for row in proxy)))
+        declarations = [s for s in data['selections'] if (s['intervals'], s['method']) == (mesh, method)]
+        any_target = False
+        for selection in (s for s in declarations if s['target'] is not None):
+            eligible = [c for c in candidates if c['completed'] and c['error'] <= selection['target']]
+            ordering = (lambda c: (c['cost'], c['name'])) if burgers else (lambda c: (c['cost'], c['error'], c['name']))
+            chosen = min(eligible, key=ordering)['name'] if eligible else None
+            if selection['configuration'] != chosen:
+                raise ValueError('Frozen target selection differs from declared validation proxy ordering')
+            any_target |= chosen is not None
+        diagnostics = [s for s in declarations if s['target'] is None]
+        expected_count = int(not any_target) if burgers else 1
+        if len(diagnostics) != expected_count:
+            raise ValueError('Frozen selection omits or duplicates the declared diagnostic')
+        if diagnostics:
+            eligible = candidates if burgers else [c for c in candidates if c['completed'] and c['error'] < float('inf')]
+            chosen = (min(eligible, key=lambda c: (c['error'], c['cost'], c['name'])) if eligible else
+                      min(candidates, key=lambda c: (c['error'], c['name'])))
+            if diagnostics[0]['configuration'] != chosen['name']:
+                raise ValueError('Frozen diagnostic differs from declared validation error ordering')
+
+
+def entry(path):
+    path = Path(path).resolve()
+    data = json.loads(path.read_text())
+    case, cfg = data['case_name'], data['config']
+    if case not in CASES or data['status'] != 'validation_frozen' or cfg.get('smoke') or cfg.get('smoke_only'):
+        raise ValueError('Only a completed scientific validation panel can be sealed')
+    provenance_check(data['provenance'])
+    if data.get('evaluation_opened') or any(r.get('split') == 'evaluation' for r in data.get('references', [])):
+        raise ValueError('Evaluation was opened before the global seal')
+    if data.get('physical_cases', {}).get('evaluation'):
+        raise ValueError('Evaluation parameters were generated before the global seal')
+    if cfg['meshes'] != [256, 512] or cfg['validation_case_ids'] != list(range(16)):
+        raise ValueError('Validation panel does not cover the approved meshes/cohort')
+    groups = defaultdict(list)
+    for row in data['invocations']:
+        if row['split'] != 'validation':
+            raise ValueError('Evaluation was opened before the global seal')
+        groups[row['intervals'], row['method'], row['configuration']].append(row)
+        if case != 'burgers2d' and row['finite'] and not all(
+                key in (row.get('errors') or {}) for key in ('displacement', 'velocity', 'energy_state')):
+            raise ValueError('Wave validation omits a required physical error component')
+        if 'provenance' in row and any(str(row['provenance'][k]) != str(data['provenance'][k]) for k in ('job_id', 'gpu', 'commit')):
+            raise ValueError('Validation timing panel mixes allocations or source versions')
+    for rows in groups.values():
+        summary = summarize_rows(rows, cfg['validation_case_ids'], cfg['validation_repetitions'], .01)
+        if not summary['complete_coverage']:
+            raise ValueError('A validation configuration has incomplete case/repetition coverage')
+    for mesh in cfg['meshes']:
+        methods = {method for n, method, _ in groups if n == mesh}
+        if not {'cp', 'modcp', 'film'}.issubset(methods) or not methods.difference({'cp', 'modcp', 'film'}):
+            raise ValueError('Validation omits a decoder arm or classical comparison')
+        if case == 'burgers2d':
+            inventory = dict(cp=24, modcp=24, film=24, newton_bicgstab=9)
+        else:
+            rom_count = prod(len(cfg[k]) for k in ('eq_multipliers', 'gn_caps', 'gn_tolerances', 'time_steps'))
+            inventory = dict(cp=rom_count, modcp=rom_count, film=rom_count,
+                             cg=len(cfg['cg_tolerances'])*len(cfg['time_steps']), rk4=len(cfg['rk4_cfls']))
+            if case == 'wave_reflective':
+                inventory.update(spectral=1, cn_direct=len(cfg['time_steps']))
+        actual = {method: sum(n == mesh and m == method for n, m, _ in groups) for method in methods}
+        if actual != inventory:
+            raise ValueError('Validation omits part of the declared configuration sweep')
+        for method in methods:
+            declarations = [s['target'] for s in data['selections'] if s['intervals'] == mesh and s['method'] == method and s['target'] is not None]
+            if sorted(declarations) != sorted(cfg['targets']):
+                raise ValueError('Frozen selection omits or duplicates a method/target declaration')
+    proxies = defaultdict(list)
+    for row in data['selection_timings']:
+        proxies[row['intervals'], row['method'], row['configuration']].append(row)
+        if case != 'burgers2d' and row['finite'] and not all(
+                key in (row.get('errors') or {}) for key in ('displacement', 'velocity', 'energy_state')):
+            raise ValueError('Wave selection proxy omits a required physical error component')
+        if 'provenance' in row and any(str(row['provenance'][k]) != str(data['provenance'][k]) for k in ('job_id', 'gpu', 'commit')):
+            raise ValueError('Selection proxy mixes allocations or source versions')
+    if proxies.keys() != groups.keys():
+        raise ValueError('Selection proxies do not cover the entire validation sweep')
+    for key, rows in proxies.items():
+        # Older Burgers validation proxies retain finite/error/hash but no
+        # completion field; compare them to their actual case-zero invocation.
+        base = next(r for r in groups[key] if r['case'] == 0 and r['rep'] == 0)
+        if not summarize_rows(rows, [0], 7, .01)['complete_coverage']:
+            raise ValueError('Selection proxy repetitions are incomplete')
+        for row in rows:
+            if row['finite'] != base['finite'] or not isclose(row_error(row), row_error(base), rel_tol=1e-8, abs_tol=1e-10):
+                raise ValueError('Selection proxy physical output differs from its validation case')
+            if 'completed' in row and row['completed'] != base['completed']:
+                raise ValueError('Selection proxy completion differs from its validation case')
+            if 'field_sha256' in row and row['field_sha256'] != base.get('field_sha256'):
+                raise ValueError('Selection proxy field hash differs from its validation case')
+    verify_selection_rules(data, groups, proxies)
+    for selection in data['selections']:
+        key = selection['intervals'], selection['method'], selection.get('configuration')
+        if key[-1] is not None and key not in groups:
+            raise ValueError('Frozen selection does not identify a completed validation setting')
+        if key[-1] is not None and selection['target'] is not None:
+            if not summarize_rows(groups[key], cfg['validation_case_ids'], 1, selection['target'])['qualified']:
+                raise ValueError('Frozen target selection fails its own validation target')
+    names = ['selections.json', 'selection_freeze.json'] if case == 'burgers2d' else [
+        f'frozen_selection_{n}.json' for n in cfg['meshes']]
+    proofs = {name: digest(path.parent/name) for name in names}
+    evidence = {}
+    quadrature = {}
+    if case == 'burgers2d':
+        expected_rules = {f'rules/{arm}_L{n}_q{q}.pkl' for arm in ('cp', 'modcp', 'film')
+                          for n in cfg['meshes'] for q in (4, 8)}
+        actual_rules = {str(p.relative_to(path.parent)) for p in (path.parent/'rules').glob('*.pkl')}
+        if actual_rules != expected_rules:
+            raise ValueError('Frozen Burgers rule inventory differs from the declared sweep')
+        quadrature = {name: digest(path.parent/name) for name in sorted(expected_rules)}
+        if json.loads((path.parent/names[0]).read_text()) != data['selections']:
+            raise ValueError('Burgers proof selections differ from handoff')
+        freeze = json.loads((path.parent/names[1]).read_text())
+        if freeze['selection_sha256'] != proofs['selections.json']:
+            raise ValueError('Burgers frozen selection hash mismatch')
+        for field, name, key in (('validation_invocations_sha256', 'invocations.jsonl', 'invocations'),
+                                 ('selection_timings_sha256', 'selection_timings.jsonl', 'selection_timings')):
+            evidence[name] = digest(path.parent/name)
+            records = [json.loads(line) for line in (path.parent/name).read_text().splitlines()]
+            if records != data[key]:
+                raise ValueError('Burgers raw validation records differ from frozen handoff')
+            # The immutable initial validation source predates a separate proxy
+            # hash. Its handoff already embeds every proxy. Attest both raw files
+            # in this coordinator seal without rewriting the original proof.
+            if (field in freeze or key == 'invocations') and freeze[field] != evidence[name]:
+                raise ValueError('Burgers frozen validation evidence hash mismatch')
+    else:
+        for name in names:
+            freeze = json.loads((path.parent/name).read_text())
+            if name != f"frozen_selection_{freeze['intervals']}.json":
+                raise ValueError('Wave selection proof mesh differs from its filename')
+            if freeze['evaluation_opened_at_selection'] is not False:
+                raise ValueError('Wave evaluation opened at selection')
+            if freeze['selections'] != [s for s in data['selections'] if s['intervals'] == freeze['intervals']]:
+                raise ValueError('Wave proof selections differ from handoff')
+            declared = {s['configuration'] for s in freeze['selections'] if s['configuration'] is not None}
+            executable = [s['id'] for s in freeze['selected_settings']]
+            if len(executable) != len(set(executable)) or set(executable) != declared:
+                raise ValueError('Wave executable settings differ from frozen selection IDs')
+            for artifact, expected in freeze['quadrature_sha256'].items():
+                if digest(path.parent/artifact) != expected:
+                    raise ValueError('Wave frozen quadrature hash mismatch')
+                quadrature[artifact] = expected
+        expected_rules = {f'quadrature/{arm}_{n}_{q}/rule.npz' for arm in ('cp', 'modcp', 'film')
+                          for n in cfg['meshes'] for q in cfg['eq_multipliers']}
+        if set(quadrature) != expected_rules:
+            raise ValueError('Frozen wave rule inventory differs from the declared sweep')
+    seed = cfg['seeds']['evaluation'] if case == 'burgers2d' else cfg['evaluation_seed']
+    return case, dict(handoff_sha256=digest(path), selection_proof_sha256=proofs,
+                      validation_evidence_sha256=evidence,
+                      quadrature_sha256=quadrature,
+                      evaluation_seed=seed, source_commit=data['provenance']['commit'],
+                      validation_job_id=data['provenance']['job_id'], source=relative(path),
+                      selected_configurations=data['selections'])
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--input', action='append', type=Path, required=True)
+    parser.add_argument('--output', type=Path, required=True)
+    args = parser.parse_args()
+    entries = [entry(path) for path in args.input]
+    cases = dict(entries)
+    if len(entries) != len(CASES) or cases.keys() != CASES:
+        raise ValueError('Exactly one completed validation panel per pilot case is required')
+    if args.output.exists():
+        raise ValueError('Refusing to replace an existing global cohort seal')
+    seal = dict(schema='modcp-global-validation-seal-v1', cases=cases,
+                created_utc=datetime.now(timezone.utc).isoformat(), evaluation_generated=False)
+    args.output.write_text(json.dumps(seal, indent=2, allow_nan=False)+'\n')
+    print(json.dumps({'path': str(args.output), 'sha256': digest(args.output)}, indent=2))
+
+
+if __name__ == '__main__':
+    main()

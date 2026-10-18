@@ -1,0 +1,296 @@
+<title>Quadrature, Step by Step</title>
+<meta name="description" content="Study guide to the quadrature rules in Hari's off-mesh study">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<script>
+window.MathJax = { tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']] }, svg: { fontCache: 'global' } };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-svg-full.min.js"></script>
+<style>
+:root {
+  --ground: #f5f7f4; --surface: #ffffff; --ink: #1a2320; --muted: #5a6862; --rule: #dbe2dd;
+  --accent: #2b5d8c; --gold: #9a6f08;
+  --lesson-bg: #eef5ef; --lesson-ink: #2f6b3d;
+  --ours-bg: #fbf3e6; --ours-ink: #8a5a12;
+  --try-bg: #eef3f9; --try-ink: #2b5d8c;
+  --fig-bg: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --ground: #121815; --surface: #1a221e; --ink: #e3eae6; --muted: #9aa8a1; --rule: #2b3631;
+    --accent: #8db7e0; --gold: #d9ad4a;
+    --lesson-bg: #17261b; --lesson-ink: #8fcf9d;
+    --ours-bg: #2a2114; --ours-ink: #e3b66a;
+    --try-bg: #162130; --try-ink: #8db7e0;
+    --fig-bg: #f4f6f3;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ground: #121815; --surface: #1a221e; --ink: #e3eae6; --muted: #9aa8a1; --rule: #2b3631;
+  --accent: #8db7e0; --gold: #d9ad4a;
+  --lesson-bg: #17261b; --lesson-ink: #8fcf9d;
+  --ours-bg: #2a2114; --ours-ink: #e3b66a;
+  --try-bg: #162130; --try-ink: #8db7e0;
+  --fig-bg: #f4f6f3;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--ground); color: var(--ink);
+  font: 16px/1.65 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  padding-inline: 16px; padding-block: 0 64px;
+}
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 48px; }
+nav.steps { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; padding-top: 40px; font-size: 13.5px; }
+nav.steps .label { text-transform: uppercase; letter-spacing: .08em; font-size: 11px; color: var(--muted); margin-bottom: 10px; }
+nav.steps ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+nav.steps a { display: grid; grid-template-columns: 2.4em 1fr; color: var(--ink); text-decoration: none; padding: 4px 8px; border-radius: 4px; }
+nav.steps a span { color: var(--muted); font-variant-numeric: tabular-nums; }
+nav.steps a:hover, nav.steps a:focus-visible { background: var(--surface); outline: none; }
+main { max-width: 70ch; min-width: 0; }
+header.top { padding-top: 40px; border-bottom: 1px solid var(--rule); padding-bottom: 20px; margin-bottom: 8px; }
+.eyebrow { text-transform: uppercase; letter-spacing: .09em; font-size: 11.5px; color: var(--muted); }
+h1 { font: 600 clamp(28px, 4.2vw, 40px)/1.15 "IBM Plex Serif", Georgia, serif; margin: 8px 0 10px; text-wrap: balance; }
+.dek { color: var(--muted); margin: 0; }
+section { padding-top: 36px; scroll-margin-top: 16px; }
+h2 { font: 600 24px/1.25 "IBM Plex Serif", Georgia, serif; margin: 0 0 12px; text-wrap: balance; display: flex; gap: 12px; align-items: baseline; }
+h2 .n { font: 400 13px "IBM Plex Mono", ui-monospace, monospace; color: var(--accent); white-space: nowrap; }
+h3 { font: 600 17px/1.3 "IBM Plex Sans", sans-serif; margin: 22px 0 6px; }
+p { margin: 0 0 12px; }
+ul, ol.plain { margin: 0 0 12px; padding-left: 1.3em; }
+li { margin-bottom: 4px; }
+code { font: 13.5px "IBM Plex Mono", ui-monospace, monospace; background: var(--surface); border: 1px solid var(--rule); padding: 1px 5px; border-radius: 3px; word-break: break-word; }
+.note { background: var(--surface); border: 1px solid var(--rule); border-radius: 6px; padding: 12px 14px; font-size: 14.5px; color: var(--muted); margin: 18px 0 0; }
+.box { border-radius: 6px; padding: 12px 16px; margin: 16px 0; }
+.box .tag { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; font-weight: 600; margin-bottom: 4px; }
+.box p:last-child, .box ul:last-child { margin-bottom: 0; }
+.lesson { background: var(--lesson-bg); } .lesson .tag { color: var(--lesson-ink); }
+.ours { background: var(--ours-bg); } .ours .tag { color: var(--ours-ink); }
+.try { background: var(--try-bg); } .try .tag { color: var(--try-ink); }
+figure { margin: 16px 0; }
+figure img { display: block; width: 100%; max-width: 100%; height: auto; background: var(--fig-bg); border-radius: 6px; border: 1px solid var(--rule); padding: 6px; }
+figure.narrow img { max-width: 560px; }
+figcaption { font-size: 13px; color: var(--muted); margin-top: 6px; }
+.tbl { overflow-x: auto; margin: 12px 0 16px; }
+table { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; min-width: 100%; }
+th, td { padding: 6px 12px; text-align: right; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-weight: 600; color: var(--muted); font-size: 12.5px; border-bottom: 1.5px solid var(--ink); }
+.math { overflow-x: auto; overflow-y: hidden; }
+.cheat td { white-space: normal; text-align: left; vertical-align: top; }
+details { border-top: 1px solid var(--rule); padding: 10px 0; }
+details summary { cursor: pointer; font-weight: 500; }
+details summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+details p { margin: 6px 0 0 1.1em; color: var(--muted); }
+dl.gloss { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; font-size: 14.5px; }
+dl.gloss dt { font-weight: 600; }
+dl.gloss dd { margin: 0; color: var(--muted); }
+a { color: var(--accent); }
+@media (max-width: 860px) {
+  .wrap { grid-template-columns: 1fr; gap: 0; }
+  nav.steps { position: static; padding-top: 24px; }
+  nav.steps ol { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  header.top { padding-top: 16px; }
+  dl.gloss { grid-template-columns: 1fr; gap: 2px 0; }
+  dl.gloss dd { margin-bottom: 8px; }
+}
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<div class="wrap">
+<nav class="steps" aria-label="Steps">
+  <div class="label">The steps</div>
+  <ol>
+    <li><a href="#s0"><span>0</span>The problem</a></li>
+    <li><a href="#s1"><span>1</span>1D basics</a></li>
+    <li><a href="#s2"><span>2</span>Oscillation</a></li>
+    <li><a href="#s3"><span>3</span>Five point sets</a></li>
+    <li><a href="#s4"><span>4</span>The race</a></li>
+    <li><a href="#s5"><span>5</span>Why lattices work</a></li>
+    <li><a href="#s6"><span>6</span>Tent transform</a></li>
+    <li><a href="#s7"><span>7</span>Mesh vs truth</a></li>
+    <li><a href="#s8"><span>8</span>Into the ROM</a></li>
+    <li><a href="#cheat"><span>—</span>Cheat sheet</a></li>
+    <li><a href="#check"><span>—</span>Check yourself</a></li>
+    <li><a href="#gloss"><span>—</span>Glossary</a></li>
+  </ol>
+</nav>
+
+<main>
+<header class="top">
+  <div class="eyebrow">Tunable-NM-ROM · study guide · 2026-10-07</div>
+  <h1>Quadrature, step by step</h1>
+  <p class="dek">The rules in Hari's off-mesh study — Gauss, rank-1 lattices (Fibonacci and CBC), Sobol, Smolyak and Monte Carlo — and why they matter for our reduced model.</p>
+  <div class="note">Every number and figure here is produced by <code>exercises.py</code> (in <code>understand/2026-10-07-quadrature-study-guide/</code>), using an unchanged copy of Hari's rule code. The 2D test integrand is an <em>illustrative</em> smooth bump that behaves like ours; our real bank is harder and needs more points, so these are teaching numbers, not paper numbers.</div>
+</header>
+
+<section id="s0">
+  <h2><span class="n">Step 0</span>The one problem every rule solves</h2>
+  <p>Every time step, our reduced model needs, for each sine test function $\psi_{ab}(x,y)=\sin(a\pi x)\sin(b\pi y)$,</p>
+  <div class="math">$$N_{ab}=\int_0^1\!\!\int_0^1 f\,dx\,dy,\qquad f=\psi_{ab}\,u\,(u_x+u_y),\qquad u=G(x,y)\,c .$$</div>
+  <p>We cannot integrate exactly, so we pick $m$ points $x_q$ and weights $w_q$:</p>
+  <div class="math">$$\int f\;\approx\;\sum_{q=1}^{m} w_q\,f(x_q).$$</div>
+  <p><strong>That is all a quadrature rule is: a list of points and weights.</strong> The rules differ only in where the points go and how they are weighted. Three facts about our integrand decide which rule wins:</p>
+  <ul>
+    <li>it is very <strong>smooth</strong> (the bank is an analytic neural network);</li>
+    <li>it <strong>vanishes at the walls</strong> (the field and each sine test are zero on the boundary);</li>
+    <li>it <strong>oscillates</strong>, because the tests go up to frequencies of roughly 25–45.</li>
+  </ul>
+</section>
+
+<section id="s1">
+  <h2><span class="n">Step 1</span>Three ways to integrate in 1D</h2>
+  <ul>
+    <li><strong>Equal spacing</strong> (midpoint rule): $x_k=(k+\tfrac12)/n$, all weights $1/n$. This is the 1D version of a lattice.</li>
+    <li><strong>Monte Carlo</strong>: $n$ random points, weights $1/n$.</li>
+    <li><strong>Gauss–Legendre</strong>: $p$ special points (roots of the Legendre polynomial $P_p$) with special weights. It is the unique $p$-point rule that is <em>exact for every polynomial of degree up to $2p-1$</em>.</li>
+  </ul>
+  <p><strong>Check Gauss's promise.</strong> A degree-5 polynomial needs $2p-1\ge 5$, so $p=3$:</p>
+  <div class="tbl">{{t1_gauss_poly}}</div>
+  <p>At $p=3$ the error drops to rounding level, exactly as promised.</p>
+  <figure><img src="figs/s1_1d.png" alt="Error against number of points in 1D for Gauss, equal spacing and Monte Carlo, on e^x and on sin squared times e^x"><figcaption>Left: an integrand that does not vanish at the ends. Right: one that does.</figcaption></figure>
+  <p><strong>Look at the right panel.</strong> When the integrand vanishes at both ends, equal spacing suddenly gets much better. Doubling the points cuts the error by:</p>
+  <div class="tbl">{{t1_uniform_ratio}}</div>
+  <p>A ratio of 4 means error $\propto h^2$; a ratio of 16 means error $\propto h^4$. Vanishing at the ends removes the “seam” when the function is wrapped around periodically, and equal spacing is excellent for periodic functions.</p>
+  <div class="box lesson"><div class="tag">Lesson</div><ul>
+    <li>Gauss is the champion for smooth functions: its error falls geometrically.</li>
+    <li>Equal spacing is mediocre in general, but very good when the integrand vanishes at the ends.</li>
+    <li>Monte Carlo is slow everywhere: error falls only like $1/\sqrt n$.</li>
+  </ul></div>
+</section>
+
+<section id="s2">
+  <h2><span class="n">Step 2</span>Oscillation: Gauss must first “see” the wiggles</h2>
+  <p>Multiply a smooth bump by $\sin(a\pi x)$ and integrate with Gauss:</p>
+  <figure class="narrow"><img src="figs/s2_oscillation.png" alt="Gauss error against number of points for test frequencies 1, 10 and 25"></figure>
+  <div class="tbl">{{t2_onset}}</div>
+  <p>Nothing happens until $p$ resolves the oscillation (roughly $p\gtrsim a$); then the error collapses.</p>
+  <div class="box ours"><div class="tag">What this means for our ROM</div><p>Our tests reach $a,b\approx 25$–$45$, so a Gauss rule needs at least that many points <em>per direction</em> before it works. In 3D that is $p^3$ points — why Gauss $16^3$ failed on our 3D model and $24^3$–$32^3$ worked.</p></div>
+</section>
+
+<section id="s3">
+  <h2><span class="n">Step 3</span>Going to 2D: five ways to place points</h2>
+  <figure><img src="figs/s3_points.png" alt="Point sets for tensor Gauss, Fibonacci lattice, Sobol, Smolyak and Monte Carlo"><figcaption>Dot size shows the weight; open black circles in Smolyak are negative weights.</figcaption></figure>
+  <h3>Tensor Gauss</h3>
+  <p>Take the 1D Gauss rule in each direction and form all pairs: $x_q=(x_i,x_j)$, $w_q=w_iw_j$. That is $p^2$ points in 2D and $p^3$ in 3D — geometric convergence, but the point count is cubed in 3D.</p>
+  <h3>Rank-1 lattice (Fibonacci in 2D, CBC in 3D)</h3>
+  <p>Choose an integer vector $z$ and a random shift $\Delta$, equal weights:</p>
+  <div class="math">$$x_k=\Big\{\tfrac{k\,z}{m}+\Delta\Big\},\qquad w_k=\tfrac1m,\qquad k=0,\dots,m-1,$$</div>
+  <p>where $\{\cdot\}$ keeps the fractional part (wraps around the square). The points form a tilted, perfectly even grid.</p>
+  <ul>
+    <li><strong>Fibonacci (2D):</strong> $m=F_k$ and $z=(1,F_{k-1})$, e.g. $m=233$, $z=(1,144)$ — the best possible lattice in 2D.</li>
+    <li><strong>CBC (3D and up):</strong> “component by component”: pick $z_1=1$, then the $z_2$ that minimises an error measure, then $z_3$ given those, and so on. Cheap to build, close to optimal in any dimension.</li>
+  </ul>
+  <h3>Sobol (quasi-Monte Carlo)</h3>
+  <p>A deterministic sequence built from binary digits so that every small box gets its fair share of points (“low discrepancy”). Weights $1/m$. “Scrambled” randomly permutes digits, keeping the evenness and making error estimates unbiased.</p>
+  <h3>Smolyak sparse grid</h3>
+  <p>Instead of the full $p\times p$ grid, add up <em>small</em> tensor grids at different resolutions, with plus and minus signs:</p>
+  <div class="math">$$A(q,d)=\sum_{q-d+1\le|\mathbf i|\le q}(-1)^{q-|\mathbf i|}\binom{d-1}{q-|\mathbf i|}\,Q_{i_1}\otimes\cdots\otimes Q_{i_d}.$$</div>
+  <p>Fine resolution along one axis is only combined with coarse resolution along the other, so the points form a cross. Far fewer than $p^d$ points, but some weights are negative.</p>
+  <h3>Monte Carlo</h3>
+  <p>Random points, weights $1/m$ — the baseline every other rule should beat.</p>
+</section>
+
+<section id="s4">
+  <h2><span class="n">Step 4</span>The race on an integrand like ours</h2>
+  <p>Integrand $f=\psi_{ab}\,u\,(u_x+u_y)$ with a smooth bump $u$ that vanishes on the walls. Error is divided by $\int|f|$, the size of the integrand. Two tests: a gentle $\psi_{3,4}$ and a mixed high-frequency $\psi_{12,12}$.</p>
+  <figure><img src="figs/s4_convergence.png" alt="Error against number of points for five rules on two test functions"><figcaption>Dashed line: the project's acceptance bar, 0.116.</figcaption></figure>
+  <div class="tbl">{{t4_at4096}}</div>
+  <div class="box lesson"><div class="tag">Lesson</div><ul>
+    <li><strong>Gauss and the lattice are orders of magnitude ahead</strong> — both exploit smoothness.</li>
+    <li><strong>Sobol and Monte Carlo plateau</strong> — they don't exploit smoothness at all.</li>
+    <li><strong>Smolyak is fine on the gentle test and far worse on $\psi_{12,12}$.</strong> A sparse grid keeps detail in one direction at a time; a test that is high-frequency in both directions is exactly what it throws away.</li>
+  </ul></div>
+</section>
+
+<section id="s5">
+  <h2><span class="n">Step 5</span>Why the lattice works: aliasing</h2>
+  <p>Write $f$ as a Fourier series $f(x)=\sum_h \hat f(h)e^{2\pi i h\cdot x}$. A lattice sum gets every frequency exactly right <em>except</em> those it cannot tell apart from zero, the “dual lattice” $h\cdot z\equiv 0 \pmod m$:</p>
+  <div class="math">$$\frac1m\sum_k f(x_k)-\int f=\sum_{\substack{h\ne0\\ h\cdot z\equiv 0\ (\mathrm{mod}\ m)}}\hat f(h)\,e^{2\pi i h\cdot\Delta}.$$</div>
+  <ul>
+    <li>A good $z$ (Fibonacci or CBC) pushes those aliased frequencies out to very high $h$.</li>
+    <li>A smooth integrand has tiny Fourier coefficients there, so the error is tiny.</li>
+    <li>Vanishing at the walls makes the wrapped function nearly seamless, so its coefficients decay fast (Step 1 again).</li>
+    <li>The remaining kink at the walls gives an <em>algebraic</em> rate, not Gauss's geometric one — but it does not worsen with dimension, while Gauss needs $p^d$ points. <strong>That is why lattices beat Gauss in 3D.</strong></li>
+  </ul>
+  <p><strong>Random shift.</strong> Moving the lattice by a random offset changes the error a little; the spread over 32 shifts is a free error indicator:</p>
+  <div class="tbl">{{t5_shifts}}</div>
+</section>
+
+<section id="s6">
+  <h2><span class="n">Step 6</span>The tent transform, and why it does not help here</h2>
+  <p>Lattices are designed for periodic functions. The textbook fix for a non-periodic integrand is the tent map $x\mapsto 1-|2x-1|$, which folds the square so the function becomes periodic. Ours already vanishes at the walls, so the tent only doubles the frequencies the rule must resolve:</p>
+  <div class="tbl">{{t6_tent}}</div>
+  <div class="box ours"><div class="tag">What this means for our ROM</div><p>Hari saw the same: the tent always hurt. His explanation (“it adds a kink”) is wrong for this integrand — the tent actually makes it smoother; the loss comes from the doubled frequencies. The paper will carry this correction.</p></div>
+</section>
+
+<section id="s7">
+  <h2><span class="n">Step 7</span>The twist: the mesh's answer is not the true answer</h2>
+  <p>The full-order solver does not compute $\int f$. It computes a <strong>mesh sum</strong> with a first-order upwind difference:</p>
+  <div class="math">$$h^2\sum_{\text{nodes } i}\psi_{ab}(x_i)\,u_i\,(D^{\mathrm{up}}u)_i,\qquad D^{\mathrm{up}}u\approx u_x+u_y+O(h).$$</div>
+  <div class="tbl">{{t7_gap}}</div>
+  <figure class="narrow"><img src="figs/s7_gap.png" alt="Gap between the upwind mesh sum and the true integral, halving with each mesh doubling"></figure>
+  <p>The gap halves with every mesh doubling: an $O(h)$ discretisation error.</p>
+  <ul>
+    <li>The <strong>old methods</strong> (mesh sub-lattice, fitted EQ, precomputed tensor) all reproduce the mesh sum, gap included.</li>
+    <li>An <strong>off-mesh rule</strong> integrates the true $\int f$ with the bank's exact gradient, so the gap never enters.</li>
+  </ul>
+  <div class="box ours"><div class="tag">What this means for our ROM</div><p>This is why, on the 3D model, the old tensor's error shrank with the mesh while the off-mesh error stayed the same at every mesh. It is also why the paper needs second-order references: part of the gain may simply be that the first-order mesh sum is crude.</p></div>
+</section>
+
+<section id="s8">
+  <h2><span class="n">Step 8</span>Putting it into the reduced model</h2>
+  <ol class="plain">
+    <li><strong>Offline, once:</strong> decode the bank and its gradient at the $m$ rule points, $B=G(x_q)$ and $D=\partial G(x_q)$, each $m\times R'$.</li>
+    <li><strong>Online, every iteration:</strong> $u(x_q)=Bc$, $(u_x+u_y)(x_q)=Dc$; multiply pointwise, weight by $w_q\psi_{ab}(x_q)$ and sum: $N(c)=P^\top[(Bc)\odot(Dc)]$.</li>
+    <li><strong>Cost</strong> depends on $m$, $R'$ and $M$ only, not on the mesh. <strong>Storage</strong> is $m(2R'+M)$ numbers instead of $MR'^2$ for the precomputed tensor.</li>
+    <li><strong>No fitting:</strong> the points are a formula, the same for every mesh and dataset.</li>
+  </ol>
+  <div class="box try"><div class="tag">Try it</div><p>Run <code>/home/tahmid/Dev/.venv/bin/python exercises.py</code> in the guide's folder, then change the test frequencies or the bump width in <code>integrand()</code> and watch which rules break first.</p></div>
+</section>
+
+<section id="cheat">
+  <h2><span class="n">Summary</span>Cheat sheet</h2>
+  <div class="tbl"><table class="cheat">
+    <thead><tr><th>rule</th><th>points</th><th>weights</th><th>error falls (smooth integrand)</th><th>role here</th></tr></thead>
+    <tbody>
+      <tr><td>Gauss (tensor)</td><td>$p^d$, Legendre roots</td><td>Gauss weights</td><td>geometrically, once $p$ resolves the tests</td><td>best in 2D</td></tr>
+      <tr><td>Lattice (Fibonacci/CBC)</td><td>$m$, tilted even grid</td><td>$1/m$</td><td>algebraically; fast when the integrand vanishes at the walls; no penalty for dimension</td><td>best in 3D</td></tr>
+      <tr><td>Sobol</td><td>$m$, base-2 low discrepancy</td><td>$1/m$</td><td>about $1/m$</td><td>control</td></tr>
+      <tr><td>Smolyak</td><td>sparse cross</td><td>mixed signs</td><td>fine for gentle tests; fails on mixed high frequencies</td><td>must-fail control</td></tr>
+      <tr><td>Monte Carlo</td><td>$m$ random</td><td>$1/m$</td><td>$1/\sqrt m$</td><td>baseline</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="check">
+  <h2><span class="n">Quiz</span>Check yourself</h2>
+  <details><summary>Why does 3-point Gauss integrate $x^5$ exactly but not $x^6$?</summary><p>It is exact up to degree $2p-1=5$.</p></details>
+  <details><summary>Why does equal spacing get much better when the integrand vanishes at the ends?</summary><p>The periodic wrap has no seam, so the Fourier coefficients decay fast.</p></details>
+  <details><summary>Why is Gauss $16^3$ useless for our 3D model?</summary><p>16 points per direction cannot resolve test frequencies of 25 and above.</p></details>
+  <details><summary>Why do lattices beat Gauss in 3D but not in 2D?</summary><p>Gauss pays $p^d$ points; the lattice's rate does not degrade with dimension.</p></details>
+  <details><summary>Why does Smolyak fail on $\psi_{12,12}$ but not on $\psi_{3,4}$?</summary><p>It discards detail that is high in both directions at once.</p></details>
+  <details><summary>How can an off-mesh rule be more accurate than the solver's own mesh sum?</summary><p>The mesh sum carries an $O(h)$ upwind error; the off-mesh rule targets the true integral.</p></details>
+  <details><summary>What still grows with the mesh in an off-mesh ROM?</summary><p>Projecting the initial field and decoding the output on the mesh.</p></details>
+</section>
+
+<section id="gloss">
+  <h2><span class="n">Terms</span>Glossary</h2>
+  <dl class="gloss">
+    <dt>quadrature rule</dt><dd>points $x_q$ and weights $w_q$ approximating an integral by $\sum w_q f(x_q)$.</dd>
+    <dt>$m$, $p$</dt><dd>number of points; points per direction for a tensor rule ($m=p^d$).</dd>
+    <dt>geometric / algebraic</dt><dd>error $\sim\varrho^{-p}$ (straight line on a log plot) vs error $\sim m^{-k}$ (straight line on a log–log plot).</dd>
+    <dt>test function $\psi_{ab}$</dt><dd>the sine $\sin(a\pi x)\sin(b\pi y)$ the equation is checked against.</dd>
+    <dt>dual lattice / aliasing</dt><dd>frequencies a lattice cannot distinguish from zero; they are its entire error.</dd>
+    <dt>random shift</dt><dd>moving the whole lattice by a random offset; the spread over shifts estimates the error.</dd>
+    <dt>low discrepancy</dt><dd>points that fill every sub-box evenly (Sobol).</dd>
+    <dt>sparse grid</dt><dd>a signed combination of small tensor grids (Smolyak).</dd>
+    <dt>upwind difference</dt><dd>a one-sided derivative from the side the flow comes from; first-order accurate.</dd>
+    <dt>$O(h)$ gap</dt><dd>mesh sum minus true integral; halves when the mesh is refined.</dd>
+    <dt>bank $G$, $R'$, $M$</dt><dd>the network basis, the number of basis functions used, the number of test functions.</dd>
+    <dt>off-mesh</dt><dd>evaluating the bank at rule points that are not mesh nodes.</dd>
+  </dl>
+</section>
+</main>
+</div>

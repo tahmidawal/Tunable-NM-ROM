@@ -1,0 +1,13 @@
+# latexmk build products
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.synctex.gz
+
+# generated figures are evidence, not build products
+!figures/*.pdf

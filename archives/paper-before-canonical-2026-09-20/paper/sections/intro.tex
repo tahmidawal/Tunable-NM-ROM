@@ -1,0 +1,80 @@
+% sections/intro.tex -- every number here is a macro from tables/numbers.tex.
+\section{Introduction}
+\label{sec:intro}
+
+A projection-based reduced-order model (ROM) solves the discretised equations in
+a few coordinates and so inherits the solver's controls; a linear ROM exposes an
+obvious accuracy--cost family through its basis rank
+\citep{BennerGugercinWillcox2015}. A \emph{nonlinear-manifold} ROM
+\citep{LeeCarlberg2020,KimChoi2022NMROM} trades that rank for a learned decoder
+whose few coordinates reach further than the same number of linear modes, and
+in doing so appears to give the family up: the decoder is fixed once trained,
+and the solver's remaining controls (tolerance, iteration budget) move cost far
+more than they move accuracy. This paper recovers an accuracy control for a
+nonlinear-manifold ROM without retraining, gives it a structural meaning, and is
+precise about what it is worth.
+
+The decoder writes the solution as a fixed spatial \emph{bank} $\bank$ of $R$
+functions times a small neural \emph{head} $\head$ of $k$ coordinates, and at
+inference the solver may add $q$ fixed linear directions,
+$u=\bank(\head(\latent)+\corr y)$. The rank $q$ moves the reachable set from
+the head's image ($q=0$) to the bank's whole span ($q=R$), where the model is a
+linear ROM with no nonlinear iteration: a control with a structural meaning.
+The paper's three parts are the control, the architecture that admits it, and
+the condition under which it is a trade; the losses are reported as losses.
+
+\paragraph{Contributions.}
+\begin{enumerate}
+\item \textbf{A run-time accuracy control from one trained decoder, and a
+  matched-dimension result.} With the test count $M$ held fixed so that $q$ is
+  the only control, the Burgers $256^2$ ladder is monotone, every rung
+  converges, and its rungs span $\nQxmErrSpan\times$ in error for
+  $\nQxmCostSpan\times$ in cost inside one allocation (\S\ref{sec:exp:qxm}),
+  meeting a bar fixed before any run. Quadrature rules fitted offline and
+  validated on reachable states cut the cost about $5\times$ at
+  four-decimal-identical error, and the tolerance is a
+  further cost lever (\S\ref{sec:exp:panel}). At matched latent dimension
+  $k=16$ inside one bank, the neural head reaches $\nAblBurgersNeural\,\%$
+  where the best linear map reaches $\nAblBurgersLinear\,\%$ and POD-16
+  $\nAblBurgersPodSixteen\,\%$ (\S\ref{sec:exp:head}). The family does not beat
+  a tuned full-order solver or a well-trained neural operator at $256^2$
+  (\S\ref{sec:exp:panel}, \S\ref{sec:exp:operators}).
+\item \textbf{The architectural choices that admit the control.} A bank that
+  evaluates per node, so the cached reduced cost is flat while the mesh grows
+  $\nMeshBurgersUnknownGrowth\times$ (measured, \S\ref{sec:exp:mesh}); a linear
+  skip in the head so the cold start has a latent-independent descent direction
+  (a design choice, not ablated); and the bank/head/correction split with exact
+  elimination of the corrections where the residual is linear (measured,
+  \S\ref{sec:method:ladder}).
+\item \textbf{Where the control is not worth having.} Where the weak residual
+  is nonlinear in the coefficients (Burgers) the corrections cost a growing
+  nonlinear solve and the ladder is a trade. Where it is linear (Poisson, heat,
+  waves) the corrections are eliminated exactly, the top rung is the linear
+  model and also the cheapest point, and the collapse is confounded with a weak
+  bank: on those cells the learned bank is three to four times worse than a POD
+  basis of the same rank, while on Burgers the two are comparable
+  (\S\ref{sec:exp:linear}). Where no fast transform exists and the full-order
+  cost grows with the mesh, the trade does appear: on an L-shaped domain a
+  reduced arm is on the non-dominated set from $256^2$ upward, cheaper than a
+  sparse direct solve by $\nLshapeNeuralCheaper\times$ at $256^2$ and
+  $\nLshapeNeuralCheaperFiveTwelve\times$ at $512^2$, at about two percent
+  error and never more accurate than it.
+\item \textbf{Two reporting practices.} Every result is reported as bank floor,
+  best-found and solved error, so each lever's effect lands on the layer it acts
+  on (\S\ref{sec:method:layers}); and quadrature rules are validated on states
+  the solver actually reaches, never by their fitting residual, which predicts
+  nothing---and even that validation is draw-sensitive, so one passing rule is
+  not a certificate of its construction (\S\ref{sec:exp:eq}).
+\end{enumerate}
+
+\paragraph{What we do not claim.} No speedup over an efficient full-order
+solver on the square at $256^2$ (none of the \nPanelReducedCount{} admissible
+reduced subjects in the same-allocation panel is non-dominated; at $1024^2$
+\nPanelTenTwentyFourReducedNonDomEvolved{} of
+\nPanelTenTwentyFourReducedCount{} are, on the evolved metric only, and a
+$512^2$ panel is queued to bracket that); no accuracy superiority over neural
+operators (a U-Net and a Transolver beat the ROM); no frontier over POD at
+every rank (POD-512 beats the best dense rung on the evolved metric); no cost
+ratio across jobs; no convergence theory; and every number is
+development-cohort evidence, single-seed except for the Burgers scheduled
+ladder (\S\ref{sec:limitations}).

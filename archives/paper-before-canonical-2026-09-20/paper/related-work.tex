@@ -1,0 +1,75 @@
+% ===========================================================================
+% related-work.tex -- positioning.  Every sentence that says something is new
+% is followed by what is not.  No sentence claims dominance or a speedup.
+% ===========================================================================
+
+\section{Related work and what is new here}
+\label{sec:related}
+
+\paragraph{Linear and nonlinear manifold ROMs.}
+Projection on a linear subspace \citep{Sirovich1987POD,
+BennerGugercinWillcox2015} is limited on advection-dominated problems by the
+slow decay of the Kolmogorov width \citep{CohenDeVore2015,OhlbergerRave2016}.
+Nonlinear manifold ROMs replace the subspace with the image of a learned
+decoder: \citet{LeeCarlberg2020} introduced convolutional-autoencoder manifolds
+with least-squares Petrov--Galerkin projection \citep{Carlberg2011LSPG}, and
+\citet{KimChoi2022NMROM} made the decoder evaluable on a sample mesh, which is
+what makes hyper-reduction possible on a nonlinear manifold. Our trial manifold
+is of this family; the decoder is separable (a coordinate network supplying a
+spatial bank, composed with a nonlinear coefficient map), and it is that
+factorisation, not the projection, that we rely on. The projection is
+least-squares Petrov--Galerkin with a fixed test space and we claim no novelty
+for it (\S\ref{sec:method:weak}). Quadratic manifolds
+\citep{GeelenWrightWillcox2022,BarnettFarhat2022,WederSchwerdtnerPeherstorfer2024}
+and tensorial POD \citep{StefanescuSandu2014} precompute polynomial reduced
+operators; our linear terms are preassembled the same way and that construction
+is not new.
+
+\paragraph{Hybrid linear--nonlinear reduction.}
+Adding a nonlinear correction to a linear basis is a family of its own.
+Quadratic manifolds \citep{GeelenWrightWillcox2022,BarnettFarhat2022} are a
+linear part plus a fixed quadratic map of the same coordinates;
+NN-augmented projection ROMs \citep{BarnettFarhatMaday2023} keep a small linear
+basis and let a network close the gap to a larger one; POD-DL-ROM
+\citep{FrescaManzoni2022PODDLROM} composes a POD trunk with a learned head;
+adaptive and hierarchical bases enlarge a linear basis online by low-rank
+updates \citep{PeherstorferWillcox2015Adaptive} or by splitting basis vectors
+\citep{Carlberg2015hRefinement}. Our model is the reverse composition: the
+nonlinear head sits inside the linear bank, and the linear part is the
+\emph{correction}. What is new is narrow and we state it precisely: the
+correction directions are a nested prefix chosen offline once, so a rank is
+selected at run time without any refit; where the residual is linear the
+corrections are eliminated through a projector that does not depend on the
+latent code, so the nonlinear iteration stays $k$-dimensional at every $q$ and
+the $q=R$ rung is a linear solve with no iteration at all; and the ladder is
+measured against POD, the free bank and full-order controls in one allocation.
+Not new: residual PCA, augmenting a manifold with linear directions, variable
+projection \citep{GolubPereyra1973}.
+
+\paragraph{Neural operators.}
+FNO \citep{Li2020FNO}, DeepONet \citep{Lu2021DeepONet} and the operator-learning
+literature \citep{Kovachki2023NeuralOperator}, U-Net backbones
+\citep{Ronneberger2015UNet} as the standard strong baseline of PDEBench
+\citep{Takamoto2022PDEBench}, and Transolver \citep{Wu2024Transolver} learn a
+map between function spaces and evaluate it in one pass; they are non-intrusive
+and apply where no solver exists. We do not treat the two as substitutes: we
+hold the data and split fixed across an FNO, a U-Net and a Transolver at an
+equal wall budget and report the result whichever way it falls. It falls
+against us (\S\ref{sec:exp:operators}).
+
+\paragraph{Hyper-reduction and its validation.}
+We use empirical quadrature in the non-negative least-squares form of
+\citet{Hernandez2017EQ}, with the LP variant \citep{YanoPatera2019LPEQ},
+energy-based mesh sampling \citep{FarhatECSW2014,Chapman2017AcceleratedECSW},
+GNAT \citep{Carlberg2013GNAT} and DEIM \citep{ChaturantabutSorensen2010} as
+the nearby alternatives, unchanged. What we add is a rule about how a fitted
+rule may be accepted: not by its fit residual, but by its error on states the
+solver actually visits, with the fit built on such states, and then only if
+independent re-draws of the construction pass too (\S\ref{sec:exp:eq}).
+
+\paragraph{Classical solvers.}
+On separable constant-coefficient cells the discrete sine transform is a direct
+solve \citep{Swarztrauber1977} faster than every reduced model we measure, and
+preconditioned Krylov methods \citep{Saad2003} are the iterative comparator;
+we name the direct solver wherever it applies and report it in every job. We
+claim no new projection or hyper-reduction algorithm.

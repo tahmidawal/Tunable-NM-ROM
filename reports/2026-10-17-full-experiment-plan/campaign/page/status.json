@@ -1,0 +1,8 @@
+{"headline": "Priority 1 is done and the 3D speed study is done. In 2D, cost and accuracy do not depend on the mesh, and accuracy improves with bank width up to r = 384. In 3D, cost is also flat in the mesh, but a spectral full-order solver is faster at equal accuracy. Priority 2 (baselines, 2D full-solver comparison) is starting.",
+ "lanes": [
+  {"name": "Priority 1 scaling", "state": "done", "cls": "pass", "what": "2D cost/accuracy vs r and mesh; 3D kernels. 1.9 GPU-h."},
+  {"name": "3D speed", "state": "done", "cls": "pass", "what": "3D speed-ups, mesh panel, full-solver comparison. 10.9 GPU-h."},
+  {"name": "POD baselines", "state": "building", "cls": "inc", "what": "Standard POD reduced models with hyper-reduction; code and smoke test."},
+  {"name": "Qualification + 2D front", "state": "next", "cls": "inc", "what": "Priority 2."},
+  {"name": "2D full-solver ladder", "state": "next", "cls": "inc", "what": "Priority 2."}
+ ]}

@@ -1,0 +1,48 @@
+% macros.tex -- notation for the NM-ROM methods section.
+% Symbol conventions (kept deliberately disjoint from the old submission, which
+% overloaded K for both the discrete operator and a latent-adjacent quantity):
+%   N  intervals per axis        n  interior unknowns
+%   R  spatial bank width        k  latent dimension
+%   M  number of retained weak tests    m  number of empirical-quadrature nodes
+
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\Nat}{\mathbb{N}}
+
+% --- discrete objects -------------------------------------------------------
+\newcommand{\Aop}{A}                    % fixed linear discrete operator
+\newcommand{\bank}{G}                   % frozen spatial bank, n x R
+\newcommand{\head}{h_\theta}            % nonlinear coefficient map, R^k -> R^R
+\newcommand{\tests}{P}                  % weak test matrix, M x n
+\newcommand{\rowscale}{\Lambda}         % diagonal row scaling
+\newcommand{\lift}{u_{g}}               % boundary lift
+\newcommand{\bcmask}{\mu}               % boundary mask / vanishing factor
+\newcommand{\latent}{z}
+\newcommand{\umanifold}{u}
+
+% --- operators and norms ----------------------------------------------------
+\newcommand{\jac}[1]{J_{#1}}
+\newcommand{\dhead}{D\head}
+\newcommand{\norm}[1]{\lVert #1 \rVert}
+\newcommand{\normF}[1]{\lVert #1 \rVert_{F}}
+\newcommand{\inner}[2]{\langle #1, #2 \rangle}
+\newcommand{\T}{^{\top}}
+\newcommand{\Tr}{\operatorname{tr}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\rank}{\operatorname{rank}}
+\newcommand{\argmin}{\operatorname*{arg\,min}}
+
+% --- residuals --------------------------------------------------------------
+\newcommand{\rfull}{r}                  % full discrete residual
+\newcommand{\rweak}{r_{w}}              % weak (projected, row-scaled) residual
+\newcommand{\station}[2]{\eta(#1,#2)}   % normalized-gradient stationarity measure
+
+% --- placeholders for generated numbers -------------------------------------
+% Every numeric value in this manuscript must come from a generator script that
+% reads the run JSONs. \todo marks a slot that the generator has not yet filled.
+\newcommand{\todo}[1]{{\color{red}\textbf{[\,#1\,]}}}
+\newcommand{\gen}[1]{\todo{pending: #1}}
+
+% Subscripted variants (the base macros already carry a subscript, so
+% \head_a / \rweak_n would be a double subscript).
+\newcommand{\headc}[1]{h_{\theta,#1}}   % one component of the head output
+\newcommand{\rweakn}[1]{r_{w,#1}}       % the weak residual of time step #1

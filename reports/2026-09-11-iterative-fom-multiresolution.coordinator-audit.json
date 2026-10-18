@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "result_sha256": "23ef1c7825cf062b561890a4257b0d4cc01d67bb0b4652abf95889ac9544a504",
+  "source_script_sha256": "b0971d8831129b1010eea5f4fa40c77a0c8b2853fb4b5e991bf8d55fb09e93cd",
+  "scope": "First declared development case, largest requested mesh, both boundaries, frozen NMROM and tight CG; all output times and all retained repetition identities. Displacement only; owner audit covers every field and velocity/energy diagnostics.",
+  "checks": [
+    {
+      "boundary": "dirichlet",
+      "intervals": 1024,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "timed_invocations": 3,
+      "field_sha256": "a345a8d9789038b5b5138e02f476f0862acf84c6233174f2eb334898cf859647",
+      "worst_current_relative": 0.03564746182709969,
+      "worst_initial_normalized": 0.014027703850300438,
+      "maximum_metric_difference": 0.0
+    },
+    {
+      "boundary": "dirichlet",
+      "intervals": 1024,
+      "case": 0,
+      "method": "cg_1e-06",
+      "timed_invocations": 3,
+      "field_sha256": "780a4816565825a99e1f29726db3006528fc01ef6f5cc11a4e6da25d9b4feb8b",
+      "worst_current_relative": 0.002598050581813892,
+      "worst_initial_normalized": 0.0012942752125307197,
+      "maximum_metric_difference": 0.0
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 1024,
+      "case": 0,
+      "method": "frozen_mlp32_seed691200",
+      "timed_invocations": 3,
+      "field_sha256": "e8e90a6f65565f37c7cb3484a15a034ba88b9050af76ced8426a9a99c53b9cff",
+      "worst_current_relative": 2.465566775581009,
+      "worst_initial_normalized": 0.019609909315513995,
+      "maximum_metric_difference": 0.0
+    },
+    {
+      "boundary": "absorbing",
+      "intervals": 1024,
+      "case": 0,
+      "method": "cg_1e-06",
+      "timed_invocations": 3,
+      "field_sha256": "b788264708a70cefb65b974edf36542df6987c3e2cfb5b9df868b55ea296a6c0",
+      "worst_current_relative": 0.0015574519922329985,
+      "worst_initial_normalized": 0.00019955434464343343,
+      "maximum_metric_difference": 0.0
+    }
+  ],
+  "distinct_displacement_fields": 4,
+  "timed_invocation_identities": 12,
+  "maximum_metric_difference": 0.0
+}

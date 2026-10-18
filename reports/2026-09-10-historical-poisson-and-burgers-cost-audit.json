@@ -1,0 +1,832 @@
+{
+  "status": "Historical source/timing reconciliation only; no new GPU runs or independent field regeneration.",
+  "sources": {
+    "reports/2026-09-07-multiresolution-pilots.json": {
+      "sha256": "50ec5190550753f684063b5c4c89853d4b79fd9cadab53bacc49ec5550ee1778",
+      "bytes": 137141
+    },
+    "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/runs/steps05/out/pilot.json": {
+      "sha256": "689a2abab1efd920d0a5ad74debb17b126c4601706cbb24225571f4c17d1d865",
+      "bytes": 3774563
+    },
+    "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot05/summary.json": {
+      "sha256": "2fc723ee6f63c97130ec1c505918122b6c699f4d91d6cbbf2cb93c3f6b3bc35f",
+      "bytes": 2306225
+    },
+    "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/pilot04/summary.json": {
+      "sha256": "a972b79be044b2ea922e66f82d59ce38a4e4b14661ba8e6d573d0b38c585efe7",
+      "bytes": 4573959
+    },
+    "worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/runs/b2dtensor/n64/out/sep_b2d_tensor_n64.json": {
+      "sha256": "1e5004bcfd90a4e3f892e8d777441f576434c0adb78983bd330a13ce01353da7",
+      "bytes": 289846
+    },
+    "worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/runs/b2dtensor/n256/out/sep_b2d_tensor_n256.json": {
+      "sha256": "031a5c250e22932c377bae85083f45c6f7974bddada05dd006913e39d7ec824b",
+      "bytes": 289296
+    },
+    "worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/runs/b2dtensor/n512/out/sep_b2d_tensor_n512.json": {
+      "sha256": "94bba587f477943a306515a7261b74ae32912ffc9f54cd2244d66d68b9cddb54",
+      "bytes": 228378
+    },
+    "worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/runs/b2dtensor/n1024/out/sep_b2d_tensor_n1024.json": {
+      "sha256": "a507a3e61ca62efed322ceacf93c75b4612dc1868123c938e988bf94c5a8e686",
+      "bytes": 285794
+    },
+    "worktrees/2026-08-22-separable-decoder/experiments/separable-decoder/runs/sepdec_r1/out/sep_poisson_K16_R64.json": {
+      "sha256": "ec478420a05ed57b170e575eb1e7ba0e07a7ca22e5e9895c8f2bc8895239af04",
+      "bytes": 5867
+    },
+    "worktrees/2026-08-23-sepdec-n128/experiments/separable-decoder/runs/sepdec_n128_j1/out/sep_poisson_K16_R96.json": {
+      "sha256": "fab3e581b01cbe762d78a2b49f42c4bf099152a42821a24225928cf1aa70d142",
+      "bytes": 93992
+    },
+    "worktrees/2026-08-23-sepdec-n256/experiments/separable-decoder/runs/n256_j4/out/sep_poisson_K16_R64_s200k.json": {
+      "sha256": "b6433fd28e2c32a244484761309b55e8f77e3e709409a854db9cdbf65b54c1fd",
+      "bytes": 109663
+    },
+    "worktrees/2026-08-23-sepdec-n512/experiments/separable-decoder/runs/sepdec_n512_j1/out/sep_poisson_K16_R64_nff128_ffs4.json": {
+      "sha256": "0dcb4429eb8143d033788dd01670a2d38445e4d76c145050e390564fdec9a939",
+      "bytes": 50952
+    },
+    "worktrees/2026-08-23-sepdec-n1024/experiments/separable-decoder/runs/sepdec_n1024_j1/out/sep_poisson_N1024_K16_R64.json": {
+      "sha256": "c4dc66513e428e3dee45df29c36f207f1be19ef22795d077eb943f43bd3a1138",
+      "bytes": 218358
+    },
+    "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n128/out/sep_poisson_qf_qf_N128.json": {
+      "sha256": "e9c769ab4d51f111fad294aadfcae8d89bde6b809f14881420cc9541454df258",
+      "bytes": 108867
+    },
+    "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n256/out/sep_poisson_qf_qf_N256.json": {
+      "sha256": "ec5cc09d7320994db23d3a6a8b6357670f09ffef10d5b722fff662a92a9db2b1",
+      "bytes": 108894
+    },
+    "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/runs/b1dqf/qf_n512/out/sep_poisson_qf_qf_N512.json": {
+      "sha256": "051ae898062d13a3bcc898dcfed1e1a85f03d8ab3e004b3b877018e53e9b7566",
+      "bytes": 109118
+    },
+    "worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/sep_b2d_tensor.py": {
+      "sha256": "1f0aec32a43e995672589e77632ee89654a3b29d12d2a91c5e45cfcd8d9f3c64",
+      "bytes": 60908
+    },
+    "worktrees/2026-08-29-b2d-tensor/experiments/separable-decoder/sep_burgers_r4.py": {
+      "sha256": "ed954cb420a5df6516a069991383fd710e136d2efae832c23f0d61c5ea669b68",
+      "bytes": 54171
+    },
+    "worktrees/2026-08-27-b1d-poissonqf/experiments/separable-decoder/sep_poisson_qf.py": {
+      "sha256": "fec29856c3a55a8ee2180b19b056f12de843320f693b4913b64ed4e434be2734",
+      "bytes": 26572
+    },
+    "worktrees/2026-08-23-sepdec-n1024/experiments/separable-decoder/sep_poisson.py": {
+      "sha256": "5897720907cd7500cd0e09a70ac42c9375859574a2555363e57bd892679bef17",
+      "bytes": 19221
+    },
+    "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/engines.py": {
+      "sha256": "820039e5840abaf92dc911f9de8c6a427f97cbd2617f1e7a5169e66c19fa62e4",
+      "bytes": 16058
+    },
+    "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/rollout.py": {
+      "sha256": "dc1e82b4e03a1a588c24b796d754fbeaf9da31b0fb2b700ad8e78ae4af965a4e",
+      "bytes": 19348
+    },
+    "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/core.py": {
+      "sha256": "4aa5f134815fb61a0282d6d28e254beda4fd0f990d5869dd48bcd528da198c44",
+      "bytes": 9124
+    },
+    "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/speed_core.py": {
+      "sha256": "3f701fed25ff7cbb9b537e54e38af6c13b97cf4735408d601d8cc1c6805942a4",
+      "bytes": 5363
+    },
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/MULTIRESOLUTION-PAPER-DESIGN.md": {
+      "sha256": "82577469cad159b41b2da602b1fdb95f7dea9f8972b50394a7301e490be9ddae",
+      "bytes": 18129
+    }
+  },
+  "checks": [
+    {
+      "label": "b64 case0 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case0 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case1 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case1 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case2 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case2 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case3 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case3 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case4 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case4 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case5 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case5 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case6 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case6 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case7 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 case7 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 paired ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 paired FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 ratio",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 mean error",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 roll pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b64 e2e pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case0 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case0 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case1 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case1 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case2 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case2 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case3 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case3 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case4 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case4 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case5 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case5 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case6 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case6 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case7 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 case7 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 paired ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 paired FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 ratio",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 mean error",
+      "absolute_difference": 3.469446951953614e-18
+    },
+    {
+      "label": "b256 roll pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b256 e2e pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case0 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case0 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case1 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case1 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case2 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case2 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case3 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case3 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case4 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case4 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case5 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case5 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case6 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case6 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case7 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 case7 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 paired ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 paired FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 ratio",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 mean error",
+      "absolute_difference": 3.469446951953614e-18
+    },
+    {
+      "label": "b512 roll pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b512 e2e pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case0 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case0 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case1 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case1 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case2 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case2 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case3 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case3 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case4 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case4 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case5 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case5 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case6 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case6 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case7 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 case7 FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 paired ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 paired FOM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 ratio",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 mean error",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 roll pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "b1024 e2e pooled median",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "p128 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "p128 CG",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "p256 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "p256 CG",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "p1024 ROM",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "p1024 CG",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "p1024 direct",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf128 full",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf128 eq",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf128 qf",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf256 full",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf256 eq",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf256 qf",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf512 full",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf512 eq",
+      "absolute_difference": 0.0
+    },
+    {
+      "label": "qf512 qf",
+      "absolute_difference": 0.0
+    }
+  ],
+  "old_burgers": [
+    {
+      "N": 64,
+      "gpu": "NVIDIA A100-PCIE-40GB",
+      "job": "3038943",
+      "k": 16,
+      "r": 64,
+      "M": 64,
+      "steps": 50,
+      "dt": 0.005,
+      "cases": 8,
+      "solve_ms": 27.54328300943598,
+      "paired_rom_ms": 29.568643018137664,
+      "paired_fom_ms": 12.365432980004698,
+      "historical_ratio": 0.4181941312768271,
+      "mean_error": 0.023094142325882052,
+      "max_time_case_error": 0.17910756178838472,
+      "tensor_over_eq_e2e": 0.9625623057370144,
+      "eq_fom_ratio": 0.4065248755706499,
+      "pair_outliers": 0
+    },
+    {
+      "N": 256,
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "job": "3038921",
+      "k": 16,
+      "r": 64,
+      "M": 64,
+      "steps": 50,
+      "dt": 0.005,
+      "cases": 8,
+      "solve_ms": 27.69848151365295,
+      "paired_rom_ms": 29.534122470067814,
+      "paired_fom_ms": 17.24468602333218,
+      "historical_ratio": 0.5838902456238302,
+      "mean_error": 0.024512144519479098,
+      "max_time_case_error": 0.1639813929011854,
+      "tensor_over_eq_e2e": 0.9564735066075348,
+      "eq_fom_ratio": 0.5589444879370079,
+      "pair_outliers": 0
+    },
+    {
+      "N": 512,
+      "gpu": "NVIDIA H200",
+      "job": "3038922",
+      "k": 16,
+      "r": 64,
+      "M": 64,
+      "steps": 50,
+      "dt": 0.005,
+      "cases": 8,
+      "solve_ms": 19.967189989984035,
+      "paired_rom_ms": 21.504806994926184,
+      "paired_fom_ms": 21.006766008213162,
+      "historical_ratio": 0.976840480975694,
+      "mean_error": 0.02456235036848281,
+      "max_time_case_error": 0.1557794359892696,
+      "tensor_over_eq_e2e": 0.9517694851540409,
+      "eq_fom_ratio": 0.9173526933066914,
+      "pair_outliers": 0
+    },
+    {
+      "N": 1024,
+      "gpu": "NVIDIA A100 80GB PCIe",
+      "job": "3038923",
+      "k": 16,
+      "r": 64,
+      "M": 64,
+      "steps": 50,
+      "dt": 0.005,
+      "cases": 8,
+      "solve_ms": 27.13101050176192,
+      "paired_rom_ms": 34.11013897857629,
+      "paired_fom_ms": 117.68830099026673,
+      "historical_ratio": 3.4502439601370067,
+      "mean_error": 0.06381390296015381,
+      "max_time_case_error": 0.3372463968521949,
+      "tensor_over_eq_e2e": 0.9429646615528611,
+      "eq_fom_ratio": 3.306957786081605,
+      "pair_outliers": 0
+    }
+  ],
+  "old_poisson_cg": [
+    {
+      "N": 64,
+      "rom_ms": 2.05890997312963,
+      "cg_ms": 1.3065305538475513,
+      "mean_error": 0.03750693761428289,
+      "ratio": 0.6345739109037243,
+      "rom_outliers": null,
+      "cg_outliers": null,
+      "r": 64,
+      "M": 64,
+      "job": "2802238"
+    },
+    {
+      "N": 128,
+      "rom_ms": 3.0946163460612297,
+      "cg_ms": 3.745392430573702,
+      "mean_error": 0.03062116675845366,
+      "ratio": 1.2102929771377857,
+      "rom_outliers": 0,
+      "cg_outliers": 0,
+      "r": 96,
+      "M": 64,
+      "job": "2825804"
+    },
+    {
+      "N": 256,
+      "rom_ms": 2.539270557463169,
+      "cg_ms": 8.155920542776585,
+      "mean_error": 0.02892941943672902,
+      "ratio": 3.2119147441006324,
+      "rom_outliers": 0,
+      "cg_outliers": 0,
+      "r": 64,
+      "M": 64,
+      "job": "2827131"
+    },
+    {
+      "N": 512,
+      "rom_ms": 3.056721296161413,
+      "cg_ms": 26.356543879956007,
+      "mean_error": 0.031542744060897895,
+      "ratio": 8.622488387493547,
+      "rom_outliers": null,
+      "cg_outliers": null,
+      "r": 64,
+      "M": 64,
+      "job": "2825500"
+    },
+    {
+      "N": 1024,
+      "rom_ms": 3.50190419703722,
+      "cg_ms": 98.31409808248281,
+      "mean_error": 0.0347639125618938,
+      "ratio": 28.07446821808012,
+      "rom_outliers": 0,
+      "cg_outliers": 0,
+      "r": 64,
+      "M": 64,
+      "job": "2825838"
+    }
+  ],
+  "old_poisson_direct": [
+    {
+      "N": 1024,
+      "ms": 0.6388355977833271,
+      "mean_error": 6.993080949041622e-15
+    }
+  ],
+  "old_poisson_qf": [
+    {
+      "N": 128,
+      "full_ms": 3.980734999913693,
+      "eq_ms": 3.144559250358725,
+      "qf_ms": 2.932349500042619,
+      "mean_error": 0.03062619669856108,
+      "censored": 1.0,
+      "job": "2967090"
+    },
+    {
+      "N": 256,
+      "full_ms": 4.964701750395761,
+      "eq_ms": 2.754035249381559,
+      "qf_ms": 2.680481999504991,
+      "mean_error": 0.031414930260123354,
+      "censored": 1.0,
+      "job": "2967093"
+    },
+    {
+      "N": 512,
+      "full_ms": 11.105033249805274,
+      "eq_ms": 3.0863337501614296,
+      "qf_ms": 2.8668532499978028,
+      "mean_error": 0.03153807389932145,
+      "censored": 1.0,
+      "job": "2967094"
+    }
+  ],
+  "current": {
+    "Burgers": {
+      "pde": "Burgers",
+      "intervals": 1024,
+      "setting": "rom_L1024_fixed_gauss_ic180_dt0.01_stall0.01_starts1",
+      "cases": 4,
+      "metric": "Initial L2, full grid",
+      "worst_error": 0.046351173283721805,
+      "rom_ms": 49.4630069588311,
+      "fom_ms": 24.903443991206586,
+      "paired_ratio": 0.523878979508877,
+      "baseline": "Tested envelope",
+      "target": 0.05,
+      "rom_timing_outliers": 0,
+      "rom_timing_repetitions": 12,
+      "fom_timing_outliers": 0,
+      "fom_timing_repetitions": 12
+    },
+    "Poisson": {
+      "pde": "Poisson",
+      "intervals": 512,
+      "setting": "original_relative / skinny_sine_products / nearest_cached_scaled_weak_prediction",
+      "cases": 30,
+      "metric": "Steady L2, common grid",
+      "worst_error": 0.06801557399516912,
+      "rom_ms": 4.018242529127747,
+      "fom_ms": 2.2671520127914846,
+      "paired_ratio": 0.5612880281538819,
+      "baseline": "Tested envelope",
+      "target": 0.1,
+      "rom_timing_outliers": 0,
+      "rom_timing_repetitions": 90,
+      "fom_timing_outliers": 0,
+      "fom_timing_repetitions": 90
+    }
+  },
+  "current_burgers_checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+  "current_burgers_checkpoint_cfg": {
+    "pde": "burgers2d",
+    "round": 3,
+    "N": 256,
+    "k": 16,
+    "r": 512,
+    "steps": 300000,
+    "lr": 0.001,
+    "p_sub": 4096,
+    "wd": 1e-05,
+    "ema_decay": 0.999,
+    "full_last": 10000,
+    "time_cap": 12600.0,
+    "lam_orth": 0.0001,
+    "snap_norm": false,
+    "max_snaps": 16384,
+    "t_early": 5,
+    "n_traj": 576,
+    "pool": 0,
+    "eq_Ms": [
+      64,
+      256
+    ],
+    "eq_cand_cap": 65536,
+    "step_tols": [
+      1e-09,
+      1e-06
+    ],
+    "n_test": 8,
+    "gn_budget": 30,
+    "num_steps": 50,
+    "dt": 0.005,
+    "tr_factor": 0.01,
+    "seed": 0,
+    "data_seed": 0,
+    "test_seed": 1,
+    "reps": 5,
+    "warm": 2,
+    "pair_reps": 3,
+    "ic_top": 12,
+    "ic_budget": 100,
+    "ic_enc_budget": 50,
+    "enc_steps": 12000,
+    "extrap": 1.0,
+    "oracle_budget": 150,
+    "sstep_ts": [
+      1,
+      2,
+      3,
+      5,
+      10,
+      25,
+      50
+    ],
+    "sstep_budget": 120,
+    "newton_tols": [
+      0.3,
+      0.1,
+      0.03,
+      0.01,
+      0.003,
+      0.001,
+      0.0001
+    ],
+    "lin_fracs": [
+      0.05,
+      0.5
+    ],
+    "max_newton": 20,
+    "baseline": "tolerance-Newton, exact-Helmholtz-preconditioned BiCGStab (n512/n1024 recipe); STANDARDISED across N",
+    "feat_chunk": 0,
+    "arch_overrides": {
+      "n_ff": 128,
+      "g_hidden": 1024,
+      "h_hidden": 256
+    },
+    "x64": true,
+    "matmul_precision": "highest",
+    "backend": "gpu",
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "slurm_job": "2835788",
+    "node": "pax003",
+    "hfit_arm": "mid",
+    "hfit_source_ckpt": "sep_burgers_r3_N256_K16_R512.pkl",
+    "hfit_spec": {
+      "hidden": 512,
+      "layers": 2
+    },
+    "hfit_extra_seed": 1000,
+    "hfit_extra_traj": 4032,
+    "hfit_n_traj": 4608
+  }
+}

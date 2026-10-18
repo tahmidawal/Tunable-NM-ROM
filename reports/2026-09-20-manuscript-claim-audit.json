@@ -1,0 +1,57 @@
+{
+  "status": "source claim review; measured values unchanged",
+  "source": "worktrees/2026-09-16-paper-refresh/paper/main.tex",
+  "source_sha256": "bbc85b7e3ab29ce1d774b97797181e384e1b4eb1c371072bbf45ccc014ca19c5",
+  "source_commit": "ac4d010b2d53f2d14e0f4a5ef987911794b56e72",
+  "findings": [
+    {
+      "id": "operator_resolution_scope",
+      "line": 91,
+      "source_excerpt": "at deployment only the evaluation grid can change, moving\ncost, not representation.",
+      "issue": "Overgeneralizes operator deployment choices and understates measured resolution-dependent accuracy. Existing resolution experiments already show accuracy/cost movement.",
+      "proposed_direction": "State the controlled comparison: at a fixed evaluation grid and inference procedure, each frozen operator contributes one operating point; resolution changes can change both numerical error and cost.",
+      "status": "requires manuscript-owner disposition"
+    },
+    {
+      "id": "scheduled_ladder_checkpoint",
+      "line": 102,
+      "source_excerpt": "the scheduled ladder (one model per\nrank $q$)",
+      "issue": "Can imply separately trained models for different correction ranks, contradicting the frozen-decoder design.",
+      "proposed_direction": "Describe one frozen decoder with a prescribed test-count schedule; correction directions/solver assets are prepared offline but network weights do not retrain across the ladder.",
+      "status": "requires manuscript-owner disposition"
+    },
+    {
+      "id": "linear_rom_guarantees",
+      "line": 142,
+      "source_excerpt": "Linear projection-based ROMs\n\\citep{BennerGugercinWillcox2015,Sirovich1987POD} inherit the FOM's\nguarantees.",
+      "issue": "Unqualified guarantee inheritance is not established; reduced stability and approximation depend on projection and trial space.",
+      "proposed_direction": "Say linear projection ROMs restrict the full-order equations to a lower-dimensional trial space.",
+      "status": "requires manuscript-owner disposition"
+    },
+    {
+      "id": "only_accuracy_control",
+      "line": 654,
+      "source_excerpt": "The rank $q$ is the only deployment-time knob moving accuracy.",
+      "issue": "The paper itself measures an effect of test count and records numerical failures under changed solver budgets; exclusivity exceeds evidence.",
+      "proposed_direction": "At a fixed grid and residual test space, correction rank changes the trial space. Describe tolerance and certified quadrature as numerical-cost controls in the measured accurate regime.",
+      "status": "requires manuscript-owner disposition"
+    },
+    {
+      "id": "any_linear_map",
+      "line": 761,
+      "source_excerpt": "At the same latent dimension the neural head is more accurate than any\nlinear map in the same bank.",
+      "issue": "Universal claim exceeds tested comparators and conflates a training-optimal affine fit with held-out worst-case optimality.",
+      "proposed_direction": "Limit to the tested Burgers affine/quadratic/POD comparators and achieved fits; do not claim superiority over every possible linear subspace.",
+      "status": "requires manuscript-owner disposition"
+    },
+    {
+      "id": "reduction_vs_physical",
+      "line": 691,
+      "source_excerpt": "The knob moves the reduction error, not the physical error.",
+      "issue": "Categorical denial conflicts with the preceding measured physical error variation. Discretization limits physical gains, rather than making them identically absent.",
+      "proposed_direction": "Say correction rank chiefly changes reduction error in these panels, while discretization error limits the gain against the fine reference.",
+      "status": "requires manuscript-owner disposition"
+    }
+  ],
+  "scope": "Targeted internal review grounded in retained experiments and mathematical scope; not a new literature survey. Preserve title and all measured numeric cells, with any necessary abstract wording correction recorded explicitly."
+}

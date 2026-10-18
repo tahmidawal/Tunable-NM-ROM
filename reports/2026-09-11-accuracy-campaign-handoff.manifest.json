@@ -1,0 +1,87 @@
+{
+  "prepared_date": "2026-09-13",
+  "numbers_finalized": "2026-09-11",
+  "report_commit": "fa0f0c21b7da0098c12d2a95cd2efa9aa332743c",
+  "canonical_log": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md",
+  "snapshot_only": true,
+  "merge_performed": false,
+  "tree_state": {
+    "Poisson": {
+      "path": "worktrees/2026-09-07-mr-poisson2d",
+      "commit": "ef2552800756bd9e6be1b9f44776b0406f056d51",
+      "branch": "exp/2026-09-07-mr-poisson2d",
+      "dirty": false
+    },
+    "Heat": {
+      "path": "worktrees/2026-09-07-mr-heat2d",
+      "commit": "5974d3e0df3f2e0906059564a72511de375ea2a5",
+      "branch": "exp/2026-09-07-mr-heat2d",
+      "dirty": false
+    },
+    "Burgers": {
+      "path": "worktrees/2026-09-07-mr-burgers2d",
+      "commit": "ad9e2e7efa7894230cc0494db948ce17fd5f67ee",
+      "branch": "exp/2026-09-07-mr-burgers2d",
+      "dirty": false
+    },
+    "Reflective waves": {
+      "path": "worktrees/2026-09-07-mr-wave2d",
+      "commit": "277ef65c267dd1fee9090c50b6294dcc83ba2531",
+      "branch": "exp/2026-09-07-mr-wave2d",
+      "dirty": false
+    }
+  },
+  "checkpoints": [
+    {
+      "pde": "Heat",
+      "role": "Selected head",
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/runs/accuracy10/archive/outputs/checkpoints/initial_tail.pkl",
+      "sha256": "cb4786b0f3dcfbcf4eccd9704a60b0180d9d5b6244b46f12594e3afd90d0d369"
+    },
+    {
+      "pde": "Poisson",
+      "role": "original_relative",
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/correction_accuracy10/checkpoints/original_relative.pkl",
+      "sha256": "81f945571da60bbfe9adfba5969727ade137c940b212bc6a6e25c525273d417a"
+    },
+    {
+      "pde": "Poisson",
+      "role": "r128_joint",
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/correction_accuracy10/checkpoints/r128_joint.pkl",
+      "sha256": "a128e7635c318faae215c3bc3d9885ac479616caeaf81f02936e73f871583b3c"
+    },
+    {
+      "pde": "Poisson",
+      "role": "Frozen correction basis",
+      "path": "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/runs/capacity_accuracy09/r128_joint-training-correction-basis.npz",
+      "sha256": "88d088d0665ea6bafc949433a1764b3032e8773a47a45f94e4bb0fc1036f5456"
+    },
+    {
+      "pde": "Burgers",
+      "role": "Original retained head",
+      "path": "worktrees/2026-09-07-mr-burgers2d/experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+      "sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589"
+    },
+    {
+      "pde": "Reflective waves",
+      "role": "Selected complete coefficient decoder and fixed training-code candidate library.",
+      "path": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/head_trained_nested40.npz",
+      "sha256": "f481e82f73dbec2f743ca25473bc0b4c7c6c68618370caf1d5cf4fb66687f4e3"
+    },
+    {
+      "pde": "Reflective waves",
+      "role": "Selected training-only affine initializer; supplied-field fitting still runs online.",
+      "path": "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/runs/accel10/cluster/out/pilot/initializer_trained_nested40.npz",
+      "sha256": "154ec67eae3da47f97b16cd4838de52b685c22fd7e6e02c978294e0de45fbc60"
+    }
+  ],
+  "sources": {
+    "reports/2026-09-11-accuracy-improvements-and-wave-speed.json": "67a5639286ba0ee5bb8f36b44455e898c9b3ada3a0072aedea7f13f5e777f417",
+    "reports/2026-09-11-accuracy-integration.json": "c5d5b362128bbb42615b25552fbf3560c2de1386618fa61332faf6719cb421fc",
+    "worktrees/2026-09-07-mr-poisson2d/experiments/multiresolution-poisson/accuracy-integration/integration-inventory.json": "a6a860fe46399b1e658e6ebcd5b143fc40d70b71713296f14a1c29fed6dcc1e0",
+    "worktrees/2026-09-07-mr-burgers2d/experiments/mr-burgers2d/INTEGRATION-accuracy.json": "7671d090ff838efd4aa21b9add96d74a837972bd951eabc25f1c4eab16c5b5b4",
+    "worktrees/2026-09-07-mr-wave2d/experiments/multiresolution-wave/integration-inventory.json": "e347e664becb26480477f7085b6b4bb5475f822854e590b7119f7254c61fa635"
+  },
+  "generator_sha256": "f5552be9b4eb860681c555d6fc9c840721119325b7bd5fac59787dc0521885d8",
+  "document_sha256": "04ea3f2a962b89ea5cca5f5337c2a30cbd763844e829f2385fcb75501229e795"
+}

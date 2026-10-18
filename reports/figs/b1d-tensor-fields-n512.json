@@ -1,0 +1,83 @@
+{
+ "N": 512,
+ "ckpt": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-29-b1d-tensor/experiments/separable-decoder/runs/b1dqf/b1ds_n512/out/sep_b1d_scale_n512.pkl",
+ "nodes": "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/2026-08-29-b1d-tensor/experiments/separable-decoder/runs/b1dqf/b1ds_n512/out/sep_b1d_scale_n512_nodes.npz",
+ "backend": "gpu",
+ "times": [
+  0,
+  10,
+  25,
+  50
+ ],
+ "picked": {
+  "median": 0,
+  "worst": 7
+ },
+ "per_traj": {
+  "0": {
+   "oracle": 0.00465455876358363,
+   "tensor": 0.0046545587250900345,
+   "NNLS-32": 0.004620298675902429,
+   "nu": 0.09154975652989632,
+   "tensor_vs_oracle_field_max": 6.666238805260745e-10
+  },
+  "1": {
+   "oracle": 0.006627180253469721,
+   "tensor": 0.006627164800666766,
+   "NNLS-32": 0.006732564547494106,
+   "nu": 0.0530627728533645,
+   "tensor_vs_oracle_field_max": 1.3695793148379723e-07
+  },
+  "2": {
+   "oracle": 0.002269526707409285,
+   "tensor": 0.0022695266125734065,
+   "NNLS-32": 0.003605738490658748,
+   "nu": 0.03477177458389653,
+   "tensor_vs_oracle_field_max": 4.999998213151158e-09
+  },
+  "3": {
+   "oracle": 0.0071421221102866365,
+   "tensor": 0.007142366997111988,
+   "NNLS-32": 0.007503170235446313,
+   "nu": 0.01891869623340886,
+   "tensor_vs_oracle_field_max": 1.0365057862642255e-06
+  },
+  "4": {
+   "oracle": 0.0045519221249217074,
+   "tensor": 0.00455190015361995,
+   "NNLS-32": 0.004828568040870264,
+   "nu": 0.014476114474600768,
+   "tensor_vs_oracle_field_max": 3.1867539567165934e-07
+  },
+  "5": {
+   "oracle": 0.002199876587950981,
+   "tensor": 0.002199876585082726,
+   "NNLS-32": 0.0022391342307217475,
+   "nu": 0.09330940352106007,
+   "tensor_vs_oracle_field_max": 9.18932810897081e-11
+  },
+  "6": {
+   "oracle": 0.003259935344778917,
+   "tensor": 0.0032599446974962507,
+   "NNLS-32": 0.003371962224404819,
+   "nu": 0.03281471113454857,
+   "tensor_vs_oracle_field_max": 9.616862678748948e-08
+  },
+  "7": {
+   "oracle": 0.008308318428804645,
+   "tensor": 0.008308305098057193,
+   "NNLS-32": 0.008653673104042667,
+   "nu": 0.013057667708101713,
+   "tensor_vs_oracle_field_max": 2.3106988669504392e-07
+  }
+ },
+ "mean_over_traj": {
+  "oracle": 0.00487668004015069,
+  "tensor": 0.00487670545871229,
+  "NNLS-32": 0.005194388693692637
+ },
+ "figures": [
+  "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/figs/b1d-tensor-fields-n512.png",
+  "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/figs/b1d-tensor-errors-n512.png"
+ ]
+}

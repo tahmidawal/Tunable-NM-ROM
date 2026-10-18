@@ -1,0 +1,35 @@
+% sections/setup.tex
+\section{Experimental setup}
+\label{sec:setup}
+
+\textbf{Problems.} Table~\ref{tab:problems} (appendix) specifies each PDE,
+domain, discretisation, mesh, reduced sizes, reference and cohort. Burgers 2D
+at $256^2$ with one frozen checkpoint is the hero; Poisson, heat and the
+reflective wave are the linear cases; the L-shaped Poisson domain is the cell
+where no fast transform exists.
+\textbf{Metrics.} Burgers errors are relative $L^2$ trajectory errors against
+the same job's converged full-order solve on the same grid (removing the
+mesh's own discretisation error, $\nPanelRefDiscretisation\,\%$ at $256^2$
+against a $4096^2$ reference), maximised over cases and output times. Two
+maxima are reported everywhere and neither is chosen: worst over \emph{all}
+times, which includes $t=0$ and is bounded below by the decoder's compression
+of the supplied field, and worst over the \emph{evolved} times $t>0$, with the
+$t=0$ compression as its own column. Poisson and wave errors are against the
+exact discrete solution.
+\textbf{Timing.} Every cost is the median over retained repetitions of a
+completed device computation, timed in one Slurm allocation on one GPU after a
+burn-in, with device synchronisation around every region, arms interleaved in a
+recorded random order, float64 and highest matmul precision. Device query
+(input and outputs resident) and complete host-to-host query are both reported.
+\emph{No ratio is ever formed across jobs or GPUs.} Offline setup is charged
+once per mesh and reported separately.
+\textbf{Comparators} are always in the same job: Newton with a modal Helmholtz
+preconditioner at several tolerances (Burgers); the direct sine transform and
+tuned conjugate gradients (Poisson, heat, waves); sparse direct and IC(0)-PCG
+(L-shape); POD-LSPG through the same weak objective, tests, solver and stopping
+rule; neural operators on the identical dataset and split with recorded index
+hashes, an equal wall budget and the same selection rule.
+\textbf{Provenance.} Every table names its job id, GPU and checkpoint here or
+in Table~\ref{tab:provenance}; every solve carries its exit reason; every error
+is recomputed from saved fields by an independent NumPy audit; every number is
+emitted by one generator from those records.

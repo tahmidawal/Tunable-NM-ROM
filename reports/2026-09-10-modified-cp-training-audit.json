@@ -1,0 +1,307 @@
+{
+  "scope": "checkpoint integrity and training completion only; no rollout accuracy or speed conclusion",
+  "checkpoints": [
+    {
+      "path": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/out/checkpoints/cp.pkl",
+      "sha256": "31d3317d5c7ec114de400575d2c1c875cdde0b1394ba80080983d1609e6c9df2",
+      "configuration": {
+        "architecture": "cp",
+        "k": 16,
+        "rank": 64,
+        "outputs": 1,
+        "intervals": 256,
+        "boundary": "dirichlet",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        384,
+        16
+      ],
+      "parameter_count": 120577,
+      "completed_updates": 16000,
+      "metadata": {
+        "training_cases": 64,
+        "updates": 16000,
+        "parent": "cp_pretrain"
+      },
+      "finite_f64": true,
+      "case_name": "burgers2d"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/out/checkpoints/modcp.pkl",
+      "sha256": "f862d5ce220cef2f2920b86e92f481f7f083f762e9631d2393e899388eb85eb4",
+      "configuration": {
+        "architecture": "modcp",
+        "k": 16,
+        "rank": 64,
+        "outputs": 1,
+        "intervals": 256,
+        "boundary": "dirichlet",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        384,
+        16
+      ],
+      "parameter_count": 135553,
+      "completed_updates": 16000,
+      "metadata": {
+        "training_cases": 64,
+        "updates": 16000,
+        "parent": "cp_pretrain"
+      },
+      "finite_f64": true,
+      "case_name": "burgers2d"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-burgers2d/experiments/modcp-eq/runs/train01/out/checkpoints/film.pkl",
+      "sha256": "87caf24a131cb197ffac9d1762e97e9b42b37737b691981ddf1ce3ee921fdf18",
+      "configuration": {
+        "architecture": "film",
+        "k": 16,
+        "rank": 64,
+        "outputs": 1,
+        "intervals": 256,
+        "boundary": "dirichlet",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        384,
+        16
+      ],
+      "parameter_count": 30386,
+      "completed_updates": 16000,
+      "metadata": {
+        "training_cases": 64,
+        "updates": 16000
+      },
+      "finite_f64": true,
+      "case_name": "burgers2d"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/out/training/checkpoints/cp.pkl",
+      "sha256": "98f88123e90331143129a738ae58215dfcb0998dc0a01e6ebcb1a9f658b23021",
+      "configuration": {
+        "architecture": "cp",
+        "k": 32,
+        "rank": 64,
+        "outputs": 2,
+        "intervals": 256,
+        "boundary": "dirichlet",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        3136,
+        32
+      ],
+      "parameter_count": 177154,
+      "completed_updates": 16000,
+      "metadata": {
+        "fixed_component_scales": [
+          0.2109358131777948,
+          1.8290247937500075
+        ],
+        "training_seed": 910601,
+        "model_seed": 910700,
+        "training_data_sha256": "7cd6d4fdc5a4b4e88aee1c573bd3bd260e9ca8a30338dd2d54128a62d7a0919b",
+        "complete": true,
+        "total_training_steps": 16000,
+        "nt": 49
+      },
+      "finite_f64": true,
+      "case_name": "wave_reflective"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/out/training/checkpoints/modcp.pkl",
+      "sha256": "49c3fc9a44fbc3ba8d722c1d3af9b3635ea8392cdcee256cefaab0c8d2faaeed",
+      "configuration": {
+        "architecture": "modcp",
+        "k": 32,
+        "rank": 64,
+        "outputs": 2,
+        "intervals": 256,
+        "boundary": "dirichlet",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        3136,
+        32
+      ],
+      "parameter_count": 204546,
+      "completed_updates": 16000,
+      "metadata": {
+        "fixed_component_scales": [
+          0.2109358131777948,
+          1.8290247937500075
+        ],
+        "training_seed": 910601,
+        "model_seed": 910700,
+        "training_data_sha256": "7cd6d4fdc5a4b4e88aee1c573bd3bd260e9ca8a30338dd2d54128a62d7a0919b",
+        "complete": true,
+        "total_training_steps": 16000,
+        "nt": 49
+      },
+      "finite_f64": true,
+      "case_name": "wave_reflective"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_reflective01/cluster/out/training/checkpoints/film.pkl",
+      "sha256": "751236329027571655b018d1faa4e6ae855e09525013ae56636a036520cd1d33",
+      "configuration": {
+        "architecture": "film",
+        "k": 32,
+        "rank": 64,
+        "outputs": 2,
+        "intervals": 256,
+        "boundary": "dirichlet",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        3136,
+        32
+      ],
+      "parameter_count": 40388,
+      "completed_updates": 16000,
+      "metadata": {
+        "fixed_component_scales": [
+          0.2109358131777948,
+          1.8290247937500075
+        ],
+        "training_seed": 910601,
+        "model_seed": 910700,
+        "training_data_sha256": "7cd6d4fdc5a4b4e88aee1c573bd3bd260e9ca8a30338dd2d54128a62d7a0919b",
+        "complete": true,
+        "total_training_steps": 16000,
+        "nt": 49
+      },
+      "finite_f64": true,
+      "case_name": "wave_reflective"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/out/training/checkpoints/cp.pkl",
+      "sha256": "110c01295474657c8dd379af8142b39ad1a16a4fde5b06d495145570862cb45e",
+      "configuration": {
+        "architecture": "cp",
+        "k": 32,
+        "rank": 64,
+        "outputs": 2,
+        "intervals": 256,
+        "boundary": "free",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        3136,
+        32
+      ],
+      "parameter_count": 177154,
+      "completed_updates": 16000,
+      "metadata": {
+        "fixed_component_scales": [
+          0.2109358131777948,
+          1.8290247937500077
+        ],
+        "training_seed": 910601,
+        "model_seed": 910700,
+        "training_data_sha256": "85ead3a729d7faef227252de364ead98b2d470d2caa6d1b914ccb61af9fe2443",
+        "complete": true,
+        "total_training_steps": 16000,
+        "nt": 49
+      },
+      "finite_f64": true,
+      "case_name": "wave_absorbing"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/out/training/checkpoints/modcp.pkl",
+      "sha256": "1c7590a2d5c71dd10ddd86e857dbf28e40ed8e584789630f2633acb83fa2c829",
+      "configuration": {
+        "architecture": "modcp",
+        "k": 32,
+        "rank": 64,
+        "outputs": 2,
+        "intervals": 256,
+        "boundary": "free",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        3136,
+        32
+      ],
+      "parameter_count": 204546,
+      "completed_updates": 16000,
+      "metadata": {
+        "fixed_component_scales": [
+          0.2109358131777948,
+          1.8290247937500077
+        ],
+        "training_seed": 910601,
+        "model_seed": 910700,
+        "training_data_sha256": "85ead3a729d7faef227252de364ead98b2d470d2caa6d1b914ccb61af9fe2443",
+        "complete": true,
+        "total_training_steps": 16000,
+        "nt": 49
+      },
+      "finite_f64": true,
+      "case_name": "wave_absorbing"
+    },
+    {
+      "path": "worktrees/2026-09-10-modcp-wave2d/experiments/modcp-eq/runs/train_absorbing01/cluster/out/training/checkpoints/film.pkl",
+      "sha256": "328033f2d5ae48293964d003eaeed8dab1f4fc8cc3d345a594df32e887ecc92e",
+      "configuration": {
+        "architecture": "film",
+        "k": 32,
+        "rank": 64,
+        "outputs": 2,
+        "intervals": 256,
+        "boundary": "free",
+        "width": 64,
+        "inr_width": 128,
+        "head_width": 256,
+        "frequencies": 8
+      },
+      "code_shape": [
+        3136,
+        32
+      ],
+      "parameter_count": 40388,
+      "completed_updates": 16000,
+      "metadata": {
+        "fixed_component_scales": [
+          0.2109358131777948,
+          1.8290247937500077
+        ],
+        "training_seed": 910601,
+        "model_seed": 910700,
+        "training_data_sha256": "85ead3a729d7faef227252de364ead98b2d470d2caa6d1b914ccb61af9fe2443",
+        "complete": true,
+        "total_training_steps": 16000,
+        "nt": 49
+      },
+      "finite_f64": true,
+      "case_name": "wave_absorbing"
+    }
+  ]
+}

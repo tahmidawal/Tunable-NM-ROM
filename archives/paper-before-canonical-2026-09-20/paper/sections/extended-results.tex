@@ -1,0 +1,294 @@
+% sections/extended-results.tex -- detail moved out of the main text for the page budget.
+\section{Extended results}
+\label{app:extended}
+
+\subsection{Neural operators: controls and the resolution knob}
+\label{app:extended:operators}
+Both pre-registered controls were run on the selected U-Net
+(Table~\ref{tab:op-controls}): its float64 twin lands at
+$\nOpCtrlMediumFSixtyFour\,\%$ and its second-seed twin at
+$\nOpCtrlMediumSeedTwo\,\%$, both below the ROM, so that comparison is not
+a seed or precision artefact --- though the float64 margin is
+$\nOpCtrlMediumFSixtyFourMargin$\,pp and, at equal wall clock, the float64
+twins ran
+$\nOpCtrlMediumFSixtyFourEpochRatio$--$\nOpCtrlTsolSmallFSixtyFourEpochRatio\times$
+of their parents' epochs, so precision is confounded with an epoch effect.
+The Transolver arm below the ROM has no twin and remains a single-seed
+float32 result. Every operator number is a lower bound
+(\nOpLaneImproving{} of this lane's arms and \nOpFnoImproving{} FNO arms
+were still improving at their budget). The operators' own knob,
+evaluation resolution, was tested under a pre-registered rule
+(Table~\ref{tab:resolution}; speedups are within one model's own curve in
+one job and carry no comparison to the ROM or the solver):
+\nResUsableList{} is usable --- one step, $256\to128$, buys the whole gain
+($\nResFnoSpeedup\times$ its own speed at $\nResFnoErrRatio\times$ its own
+error), below which the query is launch-bound
+($\nResFnoMsOneTwentyEight$, $\nResFnoMsSixtyFour$,
+$\nResFnoMsThirtyTwo$\,ms) while the error rises to
+$\nResFnoErrRatioSixtyFour\times$ and $\nResFnoErrRatioThirtyTwo\times$
+--- while \nResDegenerateList{} are not (the U-Net breaks at once, the
+Transolver is cost-flat). At rung 128 no family is within
+$\nResMinFloorRatioOneTwentyEight\times$ of the interpolation floor, so the
+off-resolution error is the network's, not the grid's.
+
+\subsection{Quadrature: the fit-state count and the replication}
+\label{app:extended:eq}
+Scored by \eqref{eq:rho} on reachable states, the top-rung blocker is the
+number of fit states, not the node count: 14- and 8-state rules at $q=128$
+and $256$ fail at $m=2048$ ($\rho_{\max}=\nEqtopParentOneTwentyEightRho$,
+$\nEqtopParentTwoFiftySixRho$) where 64-state rules pass in that draw
+($\nEqtopPrimaryOneTwentyEightRho$, $\nEqtopPrimaryTwoFiftySixRho$;
+Table~\ref{tab:eqcert}). Rebuilt with the cheapest rule passing the
+primary bar per rung and timed in one allocation, the EQ ladder runs
+$\nEqtopLadderFirstErr\to\nEqtopLadderLastErr\,\%$ at
+$\nEqtopLadderFirstMs\to\nEqtopLadderLastMs$\,ms
+(Table~\ref{tab:eqladder}; offline cost in Table~\ref{tab:offline}). In
+the replication (pool and fit-state subset, four draws at fixed $q$, $m$,
+fit-state count; Table~\ref{tab:replication}) the rules are confirmed at
+$q=\nEqtopConfirmedRungs$ and marginal at $q=\nEqtopMarginalRungs$ (draws
+passing / draws); at $q=256$ the rule the ladder ran is the only one of
+$\nEqtopTopDraws$ draws of its recipe to meet the bar (re-draws
+$\nEqtopTopRedrawRange$). ``Every rung carries a certified rule'' is
+withdrawn as a statement about the construction, and four earlier
+readings are withdrawn by the same data.
+
+\subsection{The head at matched dimension: metric dependence and the three layers}
+\label{app:extended:head}
+On Burgers, on the all-times metric no POD rank up to $k'=128$ matches the
+head ($\nAblBurgersPodOneTwentyEight\,\%$), while on evolved times POD-128
+reaches $\nPanelPodOneTwentyEightErr\,\%$ against the $q=0$ rung's
+$\nPanelQzeroEvolved\,\%$ (both on the development cohort; the rung's
+sealed value is $\nSealedIncQzero\,\%$, Table~\ref{tab:sealed}). In three layers (Table~\ref{tab:layers}): floor
+$\nAblBurgersFloor\,\%$, best-found $\nAblBurgersBestFound\,\%$, solved
+$\nAblBurgersNeural\,\%$. On Poisson a wider head moves the
+best-found/floor ratio only from $\nPlinHeadRatioPrimary$ to
+$\nPlinHeadRatioBest$ (Table~\ref{tab:head-capacity}).
+
+\subsection{Navier--Stokes: the head-only data-scaling diagnosis}
+\label{app:extended:ns-scaling}
+Job \provNsScaleJob{} retrained only the head on the frozen $K=16$,
+$R=256$ bank with 128, 256 and 512 training trajectories under three
+recipes and scored the held-out oracle at $256^2$
+(Table~\ref{tab:ns-scaling}). The pre-registered rule
+(\provNsScalingBandSource) returns ``\nNsScalePlainVerdict'' for every
+recipe; the decelerating slope and the inertness of regularisation lean
+towards a head-limited reading, which the lane does not upgrade beyond
+ambiguous. Caveat, pre-registered: the frozen bank was trained on all 512
+trajectories, so the small-$n$ arms are optimistic.
+
+\begin{table}[h]
+\centering
+\caption{Navier--Stokes head-only data scaling (job \provNsScaleJob):
+held-out oracle median per recipe and training-set size, POD-16 at
+matched dimension, the held-out/train ratio, the selected training step,
+and the pre-registered log-log slope with its verdict (band
+$\nNsScaleBandLo$ to $\nNsScaleBandHi$).}
+\label{tab:ns-scaling}
+\resizebox{\linewidth}{!}{\input{tables/T11f_ns_scaling}}
+\end{table}
+
+\paragraph{Exploratory ladder after the failed gate (not a phase-3 result).}
+\label{app:extended:ns-ladder}
+Every number in this paragraph and in Tables~\ref{tab:ns-ladder} and
+\ref{tab:ns-fom} is exploratory after a failed phase-2 gate: the
+$K=\nNsExpK$, $R=\nNsExpR$ manifold failed the held-out oracle bar
+(Table~\ref{tab:ns}), so the ladder answers a mechanism question only, not
+the pre-registered phase-3 question. Job \provNsExpJob{} (\provNsExpGpu)
+ran the correction ladder $q\in\{0,\nNsExpQList\}$ at one fixed test
+count $M=\nNsExpM$ on \nNsExpCases{} development cases with
+\nNsExpReps{} timed repetitions, same-job POD-LSPG at every matched
+dimension $k'=K+q$, and a full-order Newton-tolerance ladder in the same
+job. The correction rank closes the manifold gap: the manifold layer (median
+over cases of the worst evolved time) falls from $\nNsExpManifoldQzero$
+to $\nNsExpManifoldTop\,\%$, the bank floor ($\nNsExpBankFloor\,\%$),
+but reaches it only at $q=R=\nNsExpQtop$, where the head no longer
+matters; the residual directions capture \nNsExpEnergyList\,\% of the
+head-residual energy at $q=\nNsExpQList$. On the matched statistic (the
+same median-over-cases of the worst evolved time on both sides) the solve
+layer is \nNsExpSolveOverManifoldMin--\nNsExpSolveOverManifoldMax$\times$
+the manifold layer, decreasing with $q$ from
+\nNsExpSolveOverManifoldQzero{} at $q=0$ to \nNsExpSolveOverManifoldQtop{}
+at $q=R$ (an earlier median over all 48 states, $t=0$ included, gave
+\nNsExpSolveOverManifoldMedFortyEightMin--\nNsExpSolveOverManifoldMedFortyEightMax$\times$
+and is superseded: it compared two different statistics). The loss
+accumulates along the trajectory: at $q=0$ the per-time solved/manifold
+ratio runs \nNsExpSolveOverManifoldPerTimeList{} from $t=0.2$ to $t=1$.
+The ROM's enstrophy over the reference at $t=1$ is
+\nNsExpEnstrophyQzero{} (median) at $q=0$, \nNsExpEnstrophyQthirtyTwo{} at
+$q=32$, a deficit of \nNsExpEnstrophyMidMin--\nNsExpEnstrophyMidMax{} at
+$q=64$--$256$ and \nNsExpEnstrophyQtop{} at $q=R$ (POD-32 control
+\nNsExpEnstrophyPodThirtyTwo). Zero budget exits:
+worst evolved $\nNsExpQzeroWorst\to\nNsExpTopWorst\,\%$
+($\nNsExpGain\times$ for $\nNsExpCostRatio\times$ in cost), monotone in
+the median (\nNsExpMonotoneMedian) but not in the worst
+(\nNsExpMonotoneWorst; one inversion at the first rung). POD-LSPG at the
+same dimension is more accurate at every rung
+(\nNsExpPodMoreAccurateEveryRung) and cheaper at \nNsExpPodCheaperCount{}
+of \nNsExpRungCount{} rungs (all but $q=\nNsExpQtop$, where both cost
+about the same); the non-dominated set on (ms, worst evolved) is
+\nNsExpNonDomList{} --- \nNsExpNonDomNeuralCount{} neural rungs, the
+falsification clause's named outcome for this head. The loosest
+full-order setting that converges reaches $\nNsExpFomLooseWorst\,\%$ at
+$\nNsExpFomLooseMs$\,ms (converged reference $\nNsExpFomRefMs$\,ms).
+
+\begin{table}[h]
+\centering
+\caption{Navier--Stokes, \textbf{exploratory after a failed phase-2 gate}
+(job \provNsExpJob): the correction ladder on the $K=\nNsExpK$,
+$R=\nNsExpR$ manifold at fixed $M=\nNsExpM$, its three-layer decomposition
+(manifold layer and bank floor as the median over cases of the worst
+evolved time, and the solved/manifold ratio on that matched statistic), the
+share of head-residual energy the $q$ directions capture, and same-job
+POD-LSPG at the matched dimension $k'=K+q$; costs are median ms inside this
+job. ``Non-dom.'' marks membership of the non-dominated set on (ms, worst
+evolved error) over every subject in the job.}
+\label{tab:ns-ladder}
+\resizebox{\linewidth}{!}{\input{tables/T11g_ns_ladder}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{Navier--Stokes, \textbf{exploratory after a failed phase-2 gate}
+(job \provNsExpJob): the full-order Newton-tolerance ladder timed in the
+same job as Table~\ref{tab:ns-ladder}; the last row is the converged
+reference.}
+\label{tab:ns-fom}
+\resizebox{0.7\linewidth}{!}{\input{tables/T11h_ns_fom}}
+\end{table}
+
+\subsection{The linear cells in full}
+\label{app:extended:linear}
+Poisson at $1024^2$ ($R=512$, $K=32$; Table~\ref{tab:linear}): the middle
+rungs cost a flat
+$\nPlinTenTwentyFourMidMsMin$--$\nPlinTenTwentyFourMidMsMax$\,ms; the
+pre-registered degenerate-curve criterion passes (at $256^2$ only its
+literal cost-span clause fails, because the top rung is
+$\nPlinTwoFiftySixTopOverMidCost\times$ cheaper than the middle rungs);
+solver effort buys nothing at $q=0$ (floor $\nPlinTenTwentyFourFloor$,
+best-found $\nPlinTenTwentyFourBestFoundQzero$, solved
+$\nPlinTenTwentyFourQzeroErr\,\%$ at $M=129$). Heat at $1024^2$ (an
+earlier cell of the same family, Table~\ref{tab:heat}): the bank evolved
+linearly reaches $\nHeatBankErrTenTwentyFour\,\%$ at
+$\nHeatBankMsTenTwentyFour$\,ms against the head's
+$\nHeatHeadErrTenTwentyFour\,\%$ at $\nHeatHeadMsTenTwentyFour$\,ms, with
+the direct solve at $\nHeatFomMsTenTwentyFour$\,ms. The reflective wave
+(Table~\ref{tab:waves}): the top rung, the bank under exact modal
+propagation with no head, is not strictly the most accurate rung (strict
+reading: \nWaveTopStrictBestTwoFiftySix{}) but matches the $q=32$ rung
+within the pre-registered integrator tie band of
+$\nWaveTieBandPpTwoFiftySix$\,pp at every mesh ($256^2$:
+$\nWaveBankErrTwoFiftySix$ against $\nWaveQthirtytwoErrTwoFiftySix\,\%$),
+and is
+$\nWaveBankOverHeadCostSixtyFour$--$\nWaveBankOverHeadCostTenTwentyFour\times$
+cheaper than the cheapest head rung on device ms (on complete-query ms
+the dense input and output dominate both, Table~\ref{tab:waves}); the head ladder is monotone in $q$
+(\nWaveHeadLadderMonotoneTwoFiftySix{}), cost is not. On waves POD $k'=64$
+reaches $\nWavePodErrTwoFiftySix\,\%$ against the bank's
+$\nWaveBankErrTwoFiftySix\,\%$ at the same cost. On the L-shaped domain
+the sparse direct solve costs $\nLshapeSpluMsSixtyFour$,
+$\nLshapeSpluMsOneTwentyEight$, $\nLshapeSpluMsTwoFiftySix$,
+$\nLshapeSpluMsFiveTwelve$\,ms at $64^2$, $128^2$, $256^2$, $512^2$; at
+$64^2$ it dominates everything and at $128^2$ only POD rungs join the
+non-dominated set (\nLshapeOneTwentyEightBestReduced{} at
+$\nLshapeOneTwentyEightBestReducedErr\,\%$,
+$\nLshapeOneTwentyEightBestReducedCheaper\times$ the direct solve's cost),
+cheapness rather than a trade; at $512^2$ the best POD rung,
+\nLshapeFiveTwelveBestPod{}, reaches $\nLshapeFiveTwelveBestPodErr\,\%$ at
+$\nLshapeFiveTwelveBestPodMs$\,ms. In a separate job at $M=1024$, whose
+costs are not comparable with those above, the free rung $q=R$ is the one
+place the learned bank beats the linear baseline on both axes, at
+$\nLshapeFreeOverFloor\times$ its own bank floor with no solver iterations
+(Table~\ref{tab:lshape-free}).
+
+\subsection{Against the previous submission's comparator: conjugate gradient}
+\label{app:extended:cg}
+An earlier version of this work compared the reduced solve against
+unpreconditioned conjugate gradient (CG) at tolerance $10^{-6}$. That
+comparison is retained here as a secondary one, same job only
+(Table~\ref{tab:cg}): on Poisson the reduced rungs are
+\nCgPoissonSpeedupMin--\nCgPoissonSpeedupMax$\times$ faster than CG
+$10^{-6}$ in the same job, but the direct transform (DST) solve is faster
+than every rung by \nCgPoissonDstFasterMin--\nCgPoissonDstFasterMax$\times$,
+which is why the paper compares against the transform. On the L-shaped
+domain, where no transform applies, the lane timed CG at its own
+tolerances (tightest \nCgLshapeCgTol) and an IC(0)-preconditioned CG on
+the CPU: the head is \nCgLshapeSpeedupMin--\nCgLshapeSpeedupMax$\times$
+faster than the tightest CG across \nCgLshapeMeshes, and the sparse direct
+solve is the competitive comparator (Table~\ref{tab:lshape-main}).
+
+\begin{table}[h]
+\centering
+\caption{Secondary comparison against the previous submission's comparator,
+unpreconditioned CG, beside the competitive one, all inside one job per
+mesh: the reduced rungs (and the linear top rung and POD) with their
+complete-query ms, the CG solve at the tolerance shown, the direct solve
+(DST on the square, SuperLU on the L-shape) and the ratios. Poisson from
+the p-linear jobs, L-shape from the lshape jobs (CG at its own tolerances,
+the tightest shown; the IC(0)-PCG arm runs on the CPU). Burgers has no CG
+comparator (its full-order solver is Newton). Heat is omitted: its
+committed CG record is per-invocation raw timing of an earlier decoder
+family and is not re-aggregated here.}
+\label{tab:cg}
+\resizebox{\linewidth}{!}{\input{tables/T21_cg_comparator}}
+\end{table}
+
+\subsection{Burgers at ten times lower viscosity (under-resolved; reduced-versus-reduced only)}
+\label{app:extended:lowvisc}
+A second Burgers cell (lane b-lowvisc; training job \provLvTrainJob, gate
+job \provLvGateJob, panel job \provLvPanelJob{} on \provLvGpu) keeps the
+incumbent recipe and mesh and lowers the viscosity range ten-fold. The
+pre-registered under-resolution clause (F4) applies: the converged
+discrete operator itself sits $\nLvDiscMin$--$\nLvDiscMax\,\%$ from the
+$4096^2$ reference ($\nLvFfourDiscRatio\times$ the incumbent cell's
+discretisation error), so every number below is evidence about reduced
+models against each other on the same discrete system, not about the PDE.
+Two things did happen. Linear reduction collapses: the POD-512 floor
+degrades \nLvPodFiveTwelveCollapse{} and the trained linear bank's floor
+\nLvBankFloorCollapse{} ($\nLvBankFloorInc\to\nLvBankFloorLow\,\%$)
+against the incumbent cell, while the neural head's solved $q=0$ error
+degrades \nLvSolvedRatio{} ($\nLvSolvedInc\to\nLvSolvedLow\,\%$) and its
+best-found \nLvBestFoundRatio{} (an upper bound here: solved over
+best-found is \nLvSolvedOverBestFound); the pre-registered F2 clause
+therefore does not fire (\nLvFtwoFires). And every neural rung of the fixed-$M=1088$ ladder, from
+$q=\nLvNeuralBeatsPodFromQ$, beats every POD-LSPG rank $k'=16$--$512$ (best
+$\nLvPodBestReduced\,\%$; not monotone past $k'=256$, the $k'=512$ solve
+being solver-limited), and from $q=\nLvNeuralBeatsLinearFromQ$ up also the
+free bank's own solve ($\nLvFreeBank\,\%$ at $\nLvFreeBankMs$\,ms): on
+the reduced-only frontier the neural rungs $q=\nLvReducedOnlyNeuralQs$ are
+non-dominated. What did not happen:
+no reduced subject is non-dominated against the full-order grid (criterion
+P fails; the non-dominated set is \nLvNonDomList; the cheapest full-order
+setting beating every reduced subject is \nLvCheapestDominatingFom{} at
+$\nLvCheapestDominatingFomMs$\,ms and $\nLvCheapestDominatingFomErr\,\%$),
+the fixed-$M$ ladder is monotone and converged but spans only
+\nLvLadderErrSpan{} in error for \nLvLadderCostSpan{} in cost
+($\nLvLadderQzero\to\nLvLadderQtop\,\%$, $\nLvLadderQzeroMs\to\nLvLadderQtopMs$\,ms),
+so the $2\times$ knob bar is not met, the $M=256$ control is not monotone
+(test-starved at $q=128$, as in the incumbent cell), and every reduced row's
+error against the reference ($\nLvLadderRefMin$--$\nLvLadderRefMax\,\%$)
+is the discretisation error. \nLvSubjects{} subjects, \nLvBudgetExitsTotal{}
+budget exits.
+
+\begin{table}[h]
+\centering
+\caption{Burgers at ten times lower viscosity, panel job \provLvPanelJob{}
+(\provLvGpu): the neural ladder at fixed $M=1088$, the $M=256$ control and
+the $(256, 2176)$ subject. \textbf{F4 applies}: the mesh is under-resolved
+(the converged discrete operator is $\nLvDiscMin$--$\nLvDiscMax\,\%$ from the
+$4096^2$ reference), so ``vs ref'' is the discretisation error and every
+comparison is reduced-versus-reduced on the same discrete system. Costs are
+median device ms inside this job; ``non-dom.'' against all subjects and
+against reduced subjects only.}
+\label{tab:lowvisc-ladder}
+\resizebox{\linewidth}{!}{\input{tables/T20_lowvisc_ladder}}
+\end{table}
+
+\begin{table}[h]
+\centering
+\caption{The same job as Table~\ref{tab:lowvisc-ladder}: POD-LSPG at matched
+dimension, the free $R=512$ bank and the full-order tolerance/step grid.
+\textbf{F4 applies} (under-resolved mesh); the non-dominated set against
+all subjects is \nLvNonDomList.}
+\label{tab:lowvisc-panel}
+\resizebox{\linewidth}{!}{\input{tables/T20b_lowvisc_panel}}
+\end{table}

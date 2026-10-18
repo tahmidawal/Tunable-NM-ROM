@@ -1,0 +1,38 @@
+\documentclass[11pt]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,tabularx}
+\usepackage{enumitem}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{xurl}
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,urlcolor=MidnightBlue]{hyperref}
+\setlist{itemsep=1pt,topsep=3pt}
+\setlength{\parskip}{4pt}\setlength{\parindent}{0pt}
+
+% status tags
+\newcommand{\done}{\textsf{\small\textcolor{ForestGreen}{[done]}}}
+\newcommand{\todo}{\textsf{\small\textcolor{BrickRed}{[todo]}}}
+\newcommand{\wip}{\textsf{\small\textcolor{BurntOrange}{[in progress]}}}
+\newcommand{\you}{\textsf{\small\textcolor{RoyalPurple}{[user]}}}
+\newcommand{\retracted}[1]{\textcolor{BrickRed}{\textbf{Retracted:} #1}}
+% one entry = one \entry{date}{title}
+\newcommand{\entry}[2]{\clearpage\section{#1 --- #2}}
+
+\title{\textbf{JCP campaign notebook}\\[4pt]\large Continuous coordinate-network bases for Petrov--Galerkin reduced models}
+\author{Tunable-NM-ROM project}
+\date{Rebuilt \today}
+
+\begin{document}
+\maketitle
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small\raggedright
+\textbf{What this is.} The working notebook for the JCP paper: one entry per update, newest last,
+built by \texttt{notebook/build.sh}. It records decisions, designs, results (generated, never typed),
+and anything retracted. The canonical chronology stays in \texttt{LAB-LOG.md}; the plan is
+\texttt{reports/2026-10-06-jcp-offmesh-paper-plan.md}; the outline is
+\texttt{reports/2026-10-06-jcp-combined-paper-outline/}.}}
+\tableofcontents
+\input{entries}
+\end{document}

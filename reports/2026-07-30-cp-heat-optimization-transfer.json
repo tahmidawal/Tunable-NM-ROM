@@ -1,0 +1,133 @@
+{
+  "scope": "Historical source and aggregate arithmetic audit only; not a new accepted GPU benchmark.",
+  "rows": [
+    {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/history/cp-heat-transfer-20260910/neurips/share-bundle/results/raw/heat2d_n128_nm_rom_recompiled_acc_red_r8A_redgraph_20260730T065419Z.json",
+      "sha256": "177eef9884c6cfb83fc7ec0f15478149540262e214fc0737cc732a1dba0a4b22",
+      "pde": "heat2d",
+      "N": 128,
+      "variant": "recompiled_acc_red_r8A_redgraph",
+      "rom_median_ms": 35.78839043620974,
+      "fom_median_ms": 38.081696489825845,
+      "speedup_median_ratio": 1.0795664969363805,
+      "mean_final_relative_error": 0.00863504393491894,
+      "maximum_final_relative_error": 0.02036323957145214,
+      "faster_cases": 5,
+      "cases": 10,
+      "outliers": {
+        "rom": 0,
+        "fom": 0
+      },
+      "job": "1994862",
+      "node": "pax010",
+      "source_summary": "r8A_redgraph_h2d_n128_acc_20260730T062534Z_1994862.json",
+      "exclusive_node": false,
+      "repeats": 9,
+      "xla_flags": "--xla_gpu_graph_level=3",
+      "x64": true
+    },
+    {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/history/cp-heat-transfer-20260910/neurips/share-bundle/results/raw/heat2d_n128_nm_rom_recompiled_acc_v4w_r8A_redgraph_20260730T065419Z.json",
+      "sha256": "3d17c05b8e4a21003fd350738e1e4d312899b293b5cc599affd0f98e2433208b",
+      "pde": "heat2d",
+      "N": 128,
+      "variant": "recompiled_acc_v4w_r8A_redgraph",
+      "rom_median_ms": 213.05788890458643,
+      "fom_median_ms": 38.081696489825845,
+      "speedup_median_ratio": 0.25878214669872535,
+      "mean_final_relative_error": 0.010919723426923156,
+      "maximum_final_relative_error": 0.020245270803570747,
+      "faster_cases": 0,
+      "cases": 10,
+      "outliers": {
+        "rom": 0,
+        "fom": 0
+      },
+      "job": "1994862",
+      "node": "pax010",
+      "source_summary": "r8A_redgraph_h2d_n128_acc_20260730T062534Z_1994862.json",
+      "exclusive_node": false,
+      "repeats": 9,
+      "xla_flags": "--xla_gpu_graph_level=3",
+      "x64": true
+    },
+    {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/history/cp-heat-transfer-20260910/neurips/share-bundle/results/raw/heat2d_n128_nm_rom_recompiled_fast_red_r8A_redgraph_20260730T065419Z.json",
+      "sha256": "ee9ffd9695b92e8bc3b2b1e4cd38038f2709f0a67c7bf643e43c9780297460b8",
+      "pde": "heat2d",
+      "N": 128,
+      "variant": "recompiled_fast_red_r8A_redgraph",
+      "rom_median_ms": 31.35253710206598,
+      "fom_median_ms": 38.274755934253335,
+      "speedup_median_ratio": 1.2140409938058998,
+      "mean_final_relative_error": 0.012747706478694453,
+      "maximum_final_relative_error": 0.030362632125616074,
+      "faster_cases": 5,
+      "cases": 10,
+      "outliers": {
+        "rom": 0,
+        "fom": 0
+      },
+      "job": "1994862",
+      "node": "pax010",
+      "source_summary": "r8A_redgraph_h2d_n128_fast_20260730T062732Z_1994862.json",
+      "exclusive_node": false,
+      "repeats": 9,
+      "xla_flags": "--xla_gpu_graph_level=3",
+      "x64": true
+    },
+    {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/history/cp-heat-transfer-20260910/neurips/share-bundle/results/raw/heat2d_n128_nm_rom_recompiled_fast_v4w_r8A_redgraph_20260730T065419Z.json",
+      "sha256": "8e0cbceec7101ffa088e73d76ea16264431e7f8e39bfa2a7de901015a0627735",
+      "pde": "heat2d",
+      "N": 128,
+      "variant": "recompiled_fast_v4w_r8A_redgraph",
+      "rom_median_ms": 95.06829746533185,
+      "fom_median_ms": 38.274755934253335,
+      "speedup_median_ratio": 0.5775992466839407,
+      "mean_final_relative_error": 0.014432443189434707,
+      "maximum_final_relative_error": 0.030258897691965103,
+      "faster_cases": 1,
+      "cases": 10,
+      "outliers": {
+        "rom": 0,
+        "fom": 0
+      },
+      "job": "1994862",
+      "node": "pax010",
+      "source_summary": "r8A_redgraph_h2d_n128_fast_20260730T062732Z_1994862.json",
+      "exclusive_node": false,
+      "repeats": 9,
+      "xla_flags": "--xla_gpu_graph_level=3",
+      "x64": true
+    },
+    {
+      "path": "worktrees/2026-09-07-mr-heat2d/experiments/mr-heat2d/history/cp-heat-transfer-20260910/neurips/share-bundle/results/raw/heat3d_n128_nm_rom_recompiled_acc_v5w_r8B_graph_20260730T065419Z.json",
+      "sha256": "8dedc93636a9ceed0132bfea2fee46994f9520afe0cdaf09c8b4866df83eeacb",
+      "pde": "heat3d",
+      "N": 128,
+      "variant": "recompiled_acc_v5w_r8B_graph",
+      "rom_median_ms": 29.340511886402965,
+      "fom_median_ms": 121.74234702251852,
+      "speedup_median_ratio": 4.116510122107439,
+      "mean_final_relative_error": 0.18320561163127422,
+      "maximum_final_relative_error": 0.378932386636734,
+      "faster_cases": 10,
+      "cases": 10,
+      "outliers": {
+        "rom": 0,
+        "fom": 0
+      },
+      "job": "1994862",
+      "node": "pax010",
+      "source_summary": "r8B_graph_h3d_n128_acc_20260730T063607Z_1994862.json",
+      "exclusive_node": false,
+      "repeats": 9,
+      "xla_flags": "--xla_gpu_graph_level=3",
+      "x64": null
+    }
+  ],
+  "source_manifest_sha256": "79502f422c4daac3322912fe0fa66ff5f8afac3f0eef952d47e8bad4e58a7639",
+  "report_sha256": "901745cfcd31ba70518607cb09ee3da203bfddb75cc624ca7e5598eb55c8ca94",
+  "generator_sha256": "6d72a11966467b00adc09b1b621b39ab328dcb00dd9019325862dd281ebe68a0"
+}

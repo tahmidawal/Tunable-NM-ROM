@@ -1,0 +1,68 @@
+{
+  "purpose": "Immutable dated handoff; LAB-LOG.md remains canonical",
+  "numerical_work_performed": false,
+  "repository_snapshot": {
+    "main_before_handoff": "1e1a3503a1a1f9e4ec8e2387187aabece8322228",
+    "worktrees": {
+      "2026-09-04-separable-tensor-consolidated": {
+        "branch": "exp/2026-09-04-separable-tensor-consolidated",
+        "commit": "da479125b13aaa3e15b5cae33f72709705129838"
+      },
+      "2026-09-06-burgers3d-repair": {
+        "branch": "exp/2026-09-06-burgers3d-repair",
+        "commit": "3cfd5f64fa18bab530007fc9affa240be7fc066b"
+      },
+      "2026-09-06-wave-head-transfer": {
+        "branch": "exp/2026-09-06-wave-head-transfer",
+        "commit": "906cbe6f6f9fbe9376c05d2dccb3a4c1c7d7d66e"
+      },
+      "2026-09-06-b3d-anchor": {
+        "branch": "exp/2026-09-06-b3d-anchor",
+        "commit": "f0622144e9517f4023fb8356b202a9cd7c534c63"
+      },
+      "2026-09-06-b3d-quadratic": {
+        "branch": "exp/2026-09-06-b3d-quadratic",
+        "commit": "4dbe77cbb3a6269ee3894d264bbc4769799b1500"
+      },
+      "2026-09-06-b3d-encoder": {
+        "branch": "exp/2026-09-06-b3d-encoder",
+        "commit": "d2ef9e12f55469c77bc27ea50f4b87dcded304bb"
+      },
+      "2026-09-06-b3d-mixture": {
+        "branch": "exp/2026-09-06-b3d-mixture",
+        "commit": "9ffaf558e2942a7cb4fb20f1b6c5bfdea54afdb5"
+      }
+    }
+  },
+  "inputs_sha256": {
+    "reports/animations/2026-09-07-wave-evolution.json": "6041362fe8ad68d1ebeece2dc52511cc7a20d184eb6071333c3d0beb339f0d6c",
+    "reports/figures/2026-09-07-fresh-wave-fields.json": "b4e4f88c8e870bab54af2086d322f9d49e56fbe1cbab3e688434adc5f73e7e61",
+    "worktrees/2026-09-06-b3d-anchor/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json": "7f984398210bf276bb568f0f00924852fc6e5a6c24701ea167a9f2bb927ec512",
+    "worktrees/2026-09-06-b3d-encoder/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json": "f65f2080b71296b3b3b26254adc39e9c876fbf036542d8cab073f1214b5048c8",
+    "worktrees/2026-09-06-b3d-mixture/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json": "d5639665981f67524658c32051e7e5832694dfb4475ee2ac4ccafebb8bf909bf",
+    "worktrees/2026-09-06-b3d-quadratic/experiments/separable-decoder/runs/b3d_architecture/screen40/out/result.json": "e9502ca582f2197a54c4688a47d0ac5e71d39509b295392ff86c621d81c58a20",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/b3d_architecture/mlp128/out/result.json": "b631307c22c0145647f4c1cb63a088322424d6b5cf25918a9d0fb16059634da1",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/b3d_architecture/mlp192/out/result.json": "de8308045e80ac5ff1c3309adf2c49fc5cc193334e17a5e8278813539603bfee",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/b3d_architecture/review/campaign-audit.json": "7ff9ff2dedbaeb105689c14b0299aa9257c4435e679bb1a1512a744ea66641e3",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/b3d_repair/pilot_head33/out/result.json": "24340e41eef580031c8f03a6a7cfd6ab084307bf9c1426c3e11705f375499608",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/absorbing02/cluster/out/campaign/result.json": "43477d18df7ea5644843c98673eba74499bbcf426cf82f8c15ea63581cb73aa3",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/reflective01/cluster/out/campaign/result.json": "5e282204d4e86827ee85e4801674b191c50acb56bbbee52e52b5ba632a3d5e28",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquad20001/cluster/out/refinement/result.json": "21849028f54fe25c4d4ac30ed20dc883ef325907e5fe81b5d750be9f0624efe8",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquad20101/cluster/out/refinement/result.json": "1e829480c85b45bac6ddb6db09b97791e6c3e5f96dc41436c6f801f112144854",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20002/cluster/out/refinement/result.json": "d9081c6bd61cdf5bfa620641a3523f8f7eaa1f478af8f02c64f583d91ec21519",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/refquadvel20101/cluster/out/refinement/result.json": "808cf8f8980536c0b56d97657dd6b623deb497ee754cc737d4c0ca1fa19081ff",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/final-review-disposition.json": "f0fde346824b89474deddaa0c6938d92b87a71c8d8cbd356c6c02f5d34585e7c",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/refquad20001-audit.json": "3072f01d3541fc7767f01807abb43b187cc31542b3adb8b0772f75d22f423de4",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/refquad20101-audit.json": "2e78e7d064a6b55104e07d27cc0e0c265d757f2181b3729224ba881f4a91d361",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/refquadvel20002-audit.json": "5a00fa4be0ac7b78e32a76031cab44b70c0523ed73e205baaa861ed9effdcbda",
+    "worktrees/2026-09-06-burgers3d-repair/experiments/separable-decoder/runs/fresh_wave_campaign/review/refquadvel20101-audit.json": "696ec411c4b7dbe4c428a9838e93cdc47644cfaaf768dab87f7f2e4cce441ebc"
+  },
+  "generator_sha256": "3f1354bdc19bb3048a2fdffb261315c63b22d98c5f415d64ae20388da00967cb",
+  "report_sha256": "ddf08b14227710abc7e761a9d46b34ca7b4daac9b582fb2fbc86c7ca1e8a2214",
+  "command": [
+    "/home/tahmid/Dev/.venv/bin/python",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/reports/gen_2026_09_07_nmrom_handoff.py",
+    "--repo",
+    "/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude"
+  ]
+}

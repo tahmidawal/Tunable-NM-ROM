@@ -1,0 +1,74 @@
+%% Architecture and data flow of the NM-ROM with precomputed weak operators.
+%% Colour encodes WHEN a quantity is fixed:
+%%   trained  - learned once, frozen for every result in the paper
+%%   offline  - assembled once per mesh, before any query (mesh-dependent)
+%%   solved   - computed inside the timed query
+%%   control  - a deployment-time choice among already-existing artefacts
+%%   external - supplied by the caller, or a comparator
+flowchart TB
+
+  subgraph TRAIN["Training (once, mesh of the training data)"]
+    direction LR
+    SNAP["snapshots"] --> AD["auto-decoder fit<br/>joint over g_phi, h_theta and per-snapshot codes Z"]
+    AD --> GPHI["coordinate network g_phi"]
+    AD --> HTH["coefficient map h_theta<br/>MLP + linear skip"]
+    AD --> ZLIB["training code library Z"]
+  end
+
+  subgraph OFF["Offline assembly (once per mesh; mesh-dependent)"]
+    direction TB
+    GPHI --> BANK["spatial bank<br/>G = mu(x) g_phi(x)^T,  n x R"]
+    BANK --> BLIN["linear weak operator<br/>B = P A G,  b = P(f - A u_g)"]
+    BANK --> TQ["quadratic tensor<br/>T_iab, symmetrised to Q<br/>storage O(M R^2)"]
+    BANK --> EQF["empirical quadrature fit<br/>NNLS on decoder outputs<br/>one stored rule per m"]
+    TESTS["weak tests P<br/>M lowest sine modes<br/>+ row scaling"] --> BLIN
+    TESTS --> TQ
+    TESTS --> EQF
+    HTH --> EQF
+    ZLIB --> EQF
+  end
+
+  subgraph QUERY["Timed device query"]
+    direction TB
+    IN["dense input field / source<br/>(supplied)"] --> PROJ["project and fit initial code<br/>mesh-independent Gauss rule or modal projection"]
+    PROJ --> Z0["initial latent z_0"]
+    Z0 --> LM["damped Levenberg-Marquardt on z<br/>min ||r_w(z)||, M > k<br/>residual and Jacobian from cached operators"]
+    BLIN --> LM
+    TQ -.->|"exact route<br/>requires u >= 0"| LM
+    EQF -.->|"sampled route<br/>5m cached bank rows"| LM
+    HTH --> LM
+    LM --> EXIT["exit reason + normalized gradient<br/>eta = ||J^T r|| / (||J||_F ||r||)"]
+    LM --> ZSTAR["latent z*"]
+    ZSTAR --> DEC["dense decode<br/>u = u_g + G h_theta(z*),  O(nR)"]
+    DEC --> OUT["requested dense fields<br/>(output, charged)"]
+  end
+
+  subgraph CTRL["Deployment-time controls (fixed checkpoint)"]
+    direction LR
+    CAP["LM iteration cap"] --> LM
+    TOL["stopping tolerance<br/>eta_tol and residual threshold"] --> LM
+    RULE["which stored EQ rule<br/>discrete selection, not a knob"] --> EQF
+  end
+
+  subgraph CMP["Comparators (same job, same GPU)"]
+    direction LR
+    DST["direct DST<br/>separable operators only"]
+    CG["tolerance-tuned CG"]
+    NEWT["Newton-BiCGStab<br/>modal Helmholtz preconditioner"]
+    NO["neural operator<br/>identical data and split"]
+  end
+
+  OUT --> METRIC["physical error vs complete query cost<br/>reported with exit reasons"]
+  CMP --> METRIC
+
+  classDef trained  fill:#e8dcff,stroke:#6b3fa0,stroke-width:2px,color:#1b1030;
+  classDef offline  fill:#dceeff,stroke:#2f6fa8,stroke-width:2px,color:#0b2233;
+  classDef solved   fill:#ffe6cc,stroke:#c2701a,stroke-width:2px,color:#331a05;
+  classDef control  fill:#e2f7e1,stroke:#2f8f3f,stroke-width:2px,color:#0d2a11;
+  classDef external fill:#f0f0f0,stroke:#666666,stroke-width:1.5px,color:#222222;
+
+  class SNAP,AD,GPHI,HTH,ZLIB trained;
+  class BANK,BLIN,TQ,EQF,TESTS offline;
+  class PROJ,Z0,LM,ZSTAR,DEC,EXIT solved;
+  class CAP,TOL,RULE control;
+  class IN,OUT,DST,CG,NEWT,NO,METRIC external;

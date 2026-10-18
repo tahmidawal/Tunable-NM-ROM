@@ -1884,3 +1884,26 @@ a new attempt (`s2d1024b`) on the same frozen membership with its own reservatio
 a CPU dry run and a job audit.
 
 **A42.1 (code audit 31).** Forced full-JSON saves added after each comparator case, each timing pair (also when skipped by the budget guard) and each timing comparator (success or failure); the evidence file is closed in a `finally` around the timing phase (line buffering already flushes every completed line before any later failure). evidence.jsonl is recovery/audit evidence; the analysis consumes only stageb.json, so a truncated job yields "role incomplete", never a filled role.
+
+---
+
+## Amendment A43 (2026-10-18) — 3D tuning result, Stage-B projection correction, budget order
+
+**A43.1 Projection run-count scaling (correction of A41.2).** A Stage-A block contains (6 tight + 2 tighter) anchors
+and, for each of 2 solvers, 6 production and 6 warm runs: 32 run-equivalents. A Stage-B group of n members runs
+(64 or 38) tight anchors, 2 tighter anchors and n × (64 or 38) production runs. The group cost is therefore the
+block time × (ncase + 2 + ncase · n)/32, replacing A41.2's block time × ncase/6, which counted each block's warm and
+anchor work as if it scaled with the cohort and overstated the 3D projection about 1.8× (13.97 h → 7.82 h). The
+projection remains an estimate; the wall limit and the ledger are the hard controls. `freeze_stageb.py` is an offline
+tool (not staged in any job bundle); the change affects only the projection and the wall limit chosen from it.
+
+**A43.2 3D tuning (t3d64b, job 5542231, H200, 7 h 30 min).** 1,056 configurations complete, 72 construction-failed:
+the r = 1,024 ECSW path ran out of device memory at its first append (11.95 GiB allocation), so that rank's ECSW
+configurations are "not constructible (memory)" and the 3D cell carries "ECSW coverage incomplete". 836 pass Q1 on
+the screening cases; 9/9 comparators pass G-ours; in-cell adequacy fails at r = 768 (ratio 1.18) and r = 1,024
+(1.58), so every favourable or neutral 3D conclusion is withheld (A2.2); observed baseline domination is reported.
+
+**A43.3 Budget order.** Measured spend after the 2D 1024² Stage B: 16.163 GPU-h. The 3D Stage-B job (projection
+7.82 h, wall 8.5 h) runs before the 2D 256² Stage-B job, per the registered defer order (A30.1: the 2D 256² cell is
+dropped before any 3D item); the 256² Stage-B job is submitted only if its wall fits the remaining ledger allowance
+after the 3D job is reconciled, otherwise that cell is reported as deferred (its tuning results are still reported).

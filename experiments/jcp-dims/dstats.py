@@ -269,7 +269,7 @@ def h2q(C, comp, qualified, panel=None):
                 n_matching=len(match))
 
 
-def panel_accept(inv, certified, expected, required=None, band=(1 / 1.1, 1.1)):
+def panel_accept(inv, certified, expected, required=None, band=(1 / 1.1, 1.1), inventory=None):
     """A1.1 / A2.4 (3D panels): a panel is accepted iff every invocation's hashes match, every timed subject (and A) is
     linked to an in-job certified run on every panel case (certified[(name, case)] is True), every subject has its
     expected invocation count, ratios are finite and positive, and every subject's median drift is in the band."""
@@ -286,6 +286,10 @@ def panel_accept(inv, certified, expected, required=None, band=(1 / 1.1, 1.1)):
     rogue = sorted(k for k in cnt if k not in expected)
     if rogue:
         return dict(valid=False, reason='unexpected subjects', rogue=rogue)
+    if inventory is not None:                     # exact (subject, case, repetition) multiset (code audit 4)
+        got = sorted((x['B'], x['case'], x['rep']) for x in inv)
+        if got != sorted(inventory):
+            return dict(valid=False, reason='invocation inventory differs (duplicate, missing or unexpected)')
     hok = all(x.get('hashes_ok') for x in inv)
     fin = all(np.isfinite(x['ratio']) and x['ratio'] > 0 for x in inv)
     by = {}

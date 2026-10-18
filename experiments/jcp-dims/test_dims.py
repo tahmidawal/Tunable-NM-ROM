@@ -225,6 +225,14 @@ def t_panel():
     check('panel: no required keys -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 4})['valid'])
     check('panel: unexpected subject -> invalid', not DS.panel_accept(inv + [dict(B='rogue', ratio=.5, drift=1., hashes_ok=True)],
                                                                        {('b', 0): True, ('A', 0): True}, {'b': 4}, req)['valid'])
+    inv2 = [dict(B='b', case=0, rep=0, ratio=.5, drift=1., hashes_ok=True)] * 2
+    check('panel: duplicated invocation hides a missing case -> invalid',
+          not DS.panel_accept(inv2, {('b', 0): True, ('A', 0): True, ('b', 1): True, ('A', 1): True}, {'b': 2},
+                              [('A', 0), ('A', 1), ('b', 0), ('b', 1)], inventory=[('b', 0, 0), ('b', 1, 0)])['valid'])
+    inv3 = [dict(B='b', case=0, rep=0, ratio=.5, drift=1., hashes_ok=True), dict(B='b', case=1, rep=0, ratio=.5, drift=1., hashes_ok=True)]
+    check('panel: exact inventory -> valid', DS.panel_accept(inv3, {('b', 0): True, ('A', 0): True, ('b', 1): True, ('A', 1): True},
+                                                            {'b': 2}, [('A', 0), ('A', 1), ('b', 0), ('b', 1)],
+                                                            inventory=[('b', 0, 0), ('b', 1, 0)])['valid'])
     check('panel: hash fault -> invalid', not DS.panel_accept(inv[:3] + [dict(inv[0], hashes_ok=False)], {('b', 0): True},
                                                              {'b': 4}, req)['valid'])
 

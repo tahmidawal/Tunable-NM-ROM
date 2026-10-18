@@ -436,7 +436,8 @@ def run_panel(cx, ad, blk):
     expected = {(('T1|' if s_.get('double') else '') + f"{s_['setting']}|{s_['rule']}|{s_['spec']}"): len(cases) * reps
                 for s_ in blk['subjects']}
     required = [(A['name'], ci) for ci in cases] + [(n_, ci) for n_ in expected for ci in cases]
-    acc = DS.panel_accept(inv, {k: v for k, v in certified.items()}, expected, required)
+    inventory = [(n_, cx.cases[ci], rr) for n_ in expected for ci in cases for rr in range(reps)]
+    acc = DS.panel_accept(inv, {k: v for k, v in certified.items()}, expected, required, inventory=inventory)
     cx.rep['timing'][blk['label']] = dict(A=A['name'], invocations=inv, cases=[cx.cases[c] for c in cases], reps=reps,
                                           burn=burn, seed=blk['seed'], blocks=blog, payload_keys=names_of,
                                           certified={f'{k[0]}#{cx.cases[k[1]]}': v for k, v in certified.items()},

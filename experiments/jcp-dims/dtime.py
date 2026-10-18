@@ -97,7 +97,7 @@ def main():
     rng = np.random.default_rng(int(cfg['seed']))
 
     def build(sp, roles=True):
-        rl = {k: sp[k] for k in ('qp', 'qpp') if sp.get(k) and roles}
+        rl = {k: sp[k] for k in ('qp',) if sp.get(k) and roles}      # A1.4: q++ only after q+ is dropped (code audit 4)
         return P.Setting(bank, label(sp), int(sp['Rp']), sp['rule'], sp.get('policy', 'frozen'), roles=rl,
                          forms=('LSPG', 'GAL'), nrec=0, M=int(sp.get('M', 4 * int(sp['Rp']))))
 
@@ -109,7 +109,41 @@ def main():
         g, t_ = DC.tol_of(sp['form'], 'prod', square=square)
         return dt, S, q, st.data[('main', sp['form'])], T2.sched(sp['scheme'], dt, g, t_), t_, square
 
-    W0, ref = {}, {}
+    W0, ref, QPF = {}, {}, {}
+
+    def certify_qpp(st, sp):
+        """Second certification phase (A1.4): q++ replays with only the main and q++ tables live; finer-rule distance
+        q+ vs q++ from the stored q+ lattice fields. Writes S_<label>_qpp.npz and updates the certification rows."""
+        lb = label(sp)
+        dt, S, q, d, sch, tolf, square = parts(st, sp)
+        rows = rep['subjects'][lb]['certification']
+        Wq = np.full((len(tci), 6, st.Rp), np.nan)
+        vq = np.zeros(len(tci), bool)
+        for j, ci in enumerate(tci):
+            u0, nu, _ = U0[ci]
+            qq = jax.block_until_ready(QA.run(bank, st, 'qpp', sp['form'], sp['scheme'], dt, 'prod', u0, nu))
+            Wq[j], vq[j] = np.asarray(qq['W']), P.run_valid(qq)
+            fq_, n0 = QPF.pop((lb, ci))
+            rows[j].update(dist_qp_qpp=P.fdist(fq_, P.restrict(qq['fields'], L), n0), qpp_valid=bool(vq[j]))
+            del qq
+        np.savez_compressed(out / f"S_{lb.replace('|', '_')}_qpp.npz", case_ids=np.array([f'{cases[ci][0]}|{cases[ci][1]}' for ci in tci]),
+                            W_qpp=Wq, valid_qpp=vq, qpp_rule=sp['qpp'])
+
+    def certify_all(st, sps):
+        for sp in sps:
+            certify(st, sp)
+        st.drop_role('qp')
+        st.rules.pop('qp', None)
+        gc.collect()
+        qpps = {sp.get('qpp') for sp in sps if sp.get('qpp')}
+        assert len(qpps) <= 1, ('block q++ differ', qpps)
+        if qpps:
+            st.add_role(bank, 'qpp', qpps.pop(), forms=('LSPG', 'GAL'))
+            for sp in sps:
+                certify_qpp(st, sp)
+            st.drop_role('qpp')
+            st.rules.pop('qpp', None)
+            gc.collect()
 
     def certify(st, sp):
         """In-job certification of one subject on the timing cases (qualify qtime, plus A2.1 / A3.3)."""
@@ -190,10 +224,7 @@ def main():
                 for kk in range(6):
                     cv = jnp.asarray(C['W'][j, kk])
                     C['rho'][j, kk] = P.rho(np.asarray(nl(cv, st.data[('main', 'LSPG')])), np.asarray(nl(cv, st.data[('qp', 'LSPG')])))
-                if 'qpp' in st.rules:
-                    qq = jax.block_until_ready(QA.run(bank, st, 'qpp', form, sp['scheme'], dt, 'prod', u0, nu))
-                    C['W_qpp'][j] = np.asarray(qq['W'])
-                    row.update(dist_qp_qpp=P.fdist(fq_, P.restrict(qq['fields'], L), n0), qpp_valid=P.run_valid(qq))
+                QPF[(lb, ci)] = (fq_, n0)                  # q+ fields kept (257^2 lattice) for the later q++ phase
             rows.append(row)
         rep['subjects'][lb] = dict(spec=sp, m=st.m, M=st.M, rules=dict(st.rules), mode_hash=st.mode_hash, meta=st.meta,
                                    trust=st.trust, steps=S, dt=dt, square=square, mem_after=P.mem(),
@@ -213,11 +244,7 @@ def main():
     A = cfg['A']
     la = label(A)
     stA = build(A)
-    certify(stA, A)
-    for kk in ('qp', 'qpp'):
-        stA.drop_role(kk)
-        stA.rules.pop(kk, None)
-    gc.collect()
+    certify_all(stA, [A])
     dA = parts(stA, A)
 
     def timed_A(ci):
@@ -284,12 +311,8 @@ def main():
         st = build(cfg['subjects'][js[0]])
         for j in js:
             sp = cfg['subjects'][j]
-            assert sp.get('qp') == st.rules.get('qp') and sp.get('qpp') == st.rules.get('qpp'), ('block roles differ', sp)
-            certify(st, sp)
-        for kk in ('qp', 'qpp'):                    # A1.4: q+ / q++ tables only during certification
-            st.drop_role(kk)
-            st.rules.pop(kk, None)
-        gc.collect()
+            assert sp.get('qp') == st.rules.get('qp'), ('block roles differ', sp)
+        certify_all(st, [cfg['subjects'][j] for j in js])     # A1.4: q+ then q++, never both with main
         time_block(st, js)
         # release the block (A1.4): setting, compiled queries, arrays
         for k_ in [k_ for k_ in QA.QQ.c if k_[0] == id(st)]:

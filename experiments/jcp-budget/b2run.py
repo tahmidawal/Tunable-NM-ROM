@@ -79,10 +79,14 @@ def main():
     bank = P.Bank(L, cfg['edges'], nrb=cfg.get('bank_blocks'))
     rep['setup']['bank'] = dict(edges=bank.edges, seconds=bank.build_seconds, bytes=bank.bytes, mem=P.mem())
     s256 = L // 256
-    U0 = {}
-    for i, (coh, c, ph) in enumerate(cases):
-        u0n = Q.e.initial(L, ph)
-        U0[i] = (jnp.asarray(u0n), float(ph[4]), float(np.linalg.norm(u0n[::s256, ::s256])), u0n)
+    class LazyIC(dict):
+        """Mesh ICs built on first use only (code audit 1: never all 38 when a job uses a subset)."""
+        def __missing__(self, i):
+            u0n = Q.e.initial(L, cases[i][2])
+            v = (jnp.asarray(u0n), float(cases[i][2][4]), float(np.linalg.norm(u0n[::s256, ::s256])), u0n)
+            self[i] = v
+            return v
+    U0 = LazyIC()
     cid = lambda i: f'{cases[i][0]}|{cases[i][1]}'
     save()
     print('SETUP', el(), P.mem(), flush=True)
@@ -107,6 +111,8 @@ def main():
                     w0ls[i] = LS.C[k]
             rep['setup'][f'LS_R{Rp}'] = dict(cond=LS.cond, seconds=LS.seconds, worst_orth=max(r['orth'] for r in lsrec.values()),
                                              records=lsrec, G_B5=bool(all(r['accepted'] for r in lsrec.values())))
+            np.savez_compressed(out / f'LS_R{Rp}.npz', case_ids=np.array([cid(i) for i in w0ls]),
+                                C=np.array([w0ls[i] for i in w0ls]) if w0ls else np.zeros((0, Rp)))
         if 'pilot' in cfg:
             run_pilot(cfg, rep, bank, st, mem_, U0, w0ls, cases, out)
             save()
@@ -292,11 +298,11 @@ def run_b7(cfg, rep, bank, st, Rp, mem_, U0, cases, cid, out, save, el):
                 k = dev.index(i)
                 rtt = B.run_corner(st, dict(sp, level='tighter'), u0, nu, nout=nout, horizon=T)
                 R['W_tighter'][k], R['valid_tighter'][k] = rtt['W'], rtt['valid']
-                rqq = B.run_corner(st, dict(sp, role='qpp'), u0, nu, nout=nout, horizon=T)
+                rqq = B.run_corner(st, dict(sp, role='qpp'), u0, nu, nout=nout, horizon=T, anchor=True)
                 R['W_qpp'][k], R['valid_qpp'][k] = rqq['W'], rqq['valid']
             if i in q2:
                 k = q2.index(i)
-                rq = B.run_corner(st, dict(sp, role='qp'), u0, nu, nout=nout, horizon=T)
+                rq = B.run_corner(st, dict(sp, role='qp'), u0, nu, nout=nout, horizon=T, anchor=True)
                 R['W_qp'][k], R['valid_qp'][k] = rq['W'], rq['valid']
                 for kk in range(nout):
                     cv = jnp.asarray(R['W'][j, kk])
@@ -336,6 +342,12 @@ def load_ref(cfg, coh, c):
         rel = str(p.relative_to(Path(b['refs_dir'])))
         assert man.get(rel) == B.file_sha(p), ('reference file not in the manifest or changed', rel)
     meta = json.loads(pj.read_text())
+    T = float(b['horizon'])
+    want = dict(dim=2, cohort=coh, case=int(c), kind='ST', horizon=T)
+    got = {k: meta.get(k) for k in want}
+    assert got == want, ('reference identity differs from the request', got, want)
+    assert np.allclose(meta['times'], np.arange(int(round(T / .05)) + 1) * .05, rtol=0, atol=1e-12), 'reference time list'
+    assert meta.get('fine_file') == pf.name and meta.get('fine_sha256') == B.file_sha(pf), 'fine file identity'
     z, zf = np.load(pz), np.load(pf)
     fin = meta['final'][2]
     return meta, np.asarray(z[fin]), np.asarray(zf['fine_' + fin]), np.asarray(zf['t0_fine'])
@@ -357,6 +369,7 @@ def run_b8(cfg, rep, bank, members, cases, cid, out, save):
         if r is not None:
             refs[i] = r
     rep['b8']['refs_found'] = [cid(i) for i in refs]
+    FQ = {}
     s4 = B.FINE_L // 256
     for m in members:
         mk = mkey(m)
@@ -366,13 +379,23 @@ def run_b8(cfg, rep, bank, members, cases, cid, out, save):
         z7 = np.load(f7)
         Rp = int(m['Rp'])
         G = Q.BK.prefix(fb.Grot, fb.edges, Rp)
+        if Rp not in FQ:                                     # fine-lattice span basis (interior nodes) for the floor
+            Gf = jnp.concatenate([B.prefix_blocks(rb, fb.edges, Rp) for rb in fb.Grot], axis=0)
+            FQ[Rp] = jnp.linalg.qr(Gf, mode='reduced')[0]
+            del Gf
+        Qf = FQ[Rp]
+        lsf = out / f'LS_R{Rp}.npz'
+        LSC = {}
+        if lsf.exists():
+            zl = np.load(lsf)
+            LSC = {str(c_): zl['C'][k] for k, c_ in enumerate(zl['case_ids'])}
         n = len(ids)
         K = lambda *s: np.full((n,) + s, np.nan)
         D = dict(case_ids=np.array([cid(i) for i in ids]), has_ref=np.zeros(n, bool), e_fine=K(nout), e_257=K(nout),
                  n0_fine=K(), n0_257=K(), E_rom=K(nout), D_rom=K(nout), E_ref=K(nout), D_ref=K(nout), umax_rom=K(nout),
                  umin_rom=K(nout), umax_ref=K(nout), umin_ref=K(nout), wall_max_rom=K(), band_err2=K(nout), all_err2=K(nout),
                  alias_e257=K(nout), alias_efine=K(nout), CE_zero=K(nout - 1), CE_pred=K(nout - 1), CE_meas=K(nout - 1),
-                 e0_ic=K())
+                 e0_ic=K(), e0_ic_ls=K(), eP_fine=K(nout))
         b7ids = [str(x) for x in z7['case_ids']]
         for j, i in enumerate(ids):
             if cid(i) not in b7ids or i not in refs:
@@ -399,6 +422,11 @@ def run_b8(cfg, rep, bank, members, cases, cid, out, save):
             D['band_err2'][j] = np.asarray(jnp.sum(jnp.where(jnp.asarray(band), E ** 2, 0.), axis=(1, 2)))
             D['all_err2'][j] = np.asarray(jnp.sum(jnp.where(jnp.asarray(inter), E ** 2, 0.), axis=(1, 2)))
             D['e0_ic'][j] = float(jnp.linalg.norm(E[0])) / n0f
+            RfI = Rf[:, 1:-1, 1:-1].reshape(nout, -1)
+            D['eP_fine'][j] = np.asarray(jnp.linalg.norm(RfI - (RfI @ Qf) @ Qf.T, axis=1)) / n0f     # fine floor per time
+            if cid(i) in LSC:                                   # IC projection: LS init decoded on the fine route (6.4)
+                Fl = B.decode(G, LSC[cid(i)][None], B.FINE_L)
+                D['e0_ic_ls'][j] = float(jnp.linalg.norm(Fl[0] - Rf[0])) / n0f
             if i in chk:                                         # C-A (A1.6): guaranteed alias, e_257 unchanged
                 ef = np.asarray(jnp.linalg.norm(E.reshape(nout, -1), axis=1))
                 for k in range(1, nout):
@@ -430,38 +458,45 @@ def run_controls(cfg, rep, bank, st, U0, w0ls, cases, cid, out, save):
     c = cfg['controls']
     ids = P.select(cases, c.get('cases', 'dev6'))
     res = {}
+    # every control run keeps its validity (code audit 1: comparators must be valid / converged anchors)
+    VAL = {}
+
+    def rc(name, spec, i, **kw):
+        u0, nu, n0, _ = U0[i]
+        r = B.run_corner(st, spec, u0, nu, **kw)
+        VAL.setdefault(name, []).append(bool(r['valid']))
+        return r['W']
+
     # C-Q: fixture R384 LSPG-BE dt0 with the deployed rule replaced by an under-resolved rule; I_Q = u(qinf) - u(ctrl)
     st.add_role('ctrlq', c.get('under_resolved', 'gauss32'))
     st.add_role('qinf', cfg['b2']['qinf'])
     fx = dict(Rp=st.Rp, form='LSPG', scheme='BE', factor=1)
     Wq = {k: [] for k in ('ctrl', 'qinf')}
     for i in ids:
-        u0, nu, n0, _ = U0[i]
-        Wq['ctrl'].append(B.run_corner(st, dict(B.corner_spec(fx, frozenset()), role='ctrlq'), u0, nu)['W'])
-        Wq['qinf'].append(B.run_corner(st, B.corner_spec(fx, frozenset('Q')), u0, nu)['W'])
+        Wq['ctrl'].append(rc('Q_ctrl', dict(B.corner_spec(fx, frozenset()), role='ctrlq'), i))
+        Wq['qinf'].append(rc('Q_qinf', B.corner_spec(fx, frozenset('Q')), i))
     st.drop_role('ctrlq')
-    # C-S: R384 LSPG-CNR dt0 with LM budget 0 vs the tight corner
+    # C-S: R384 LSPG-CNR dt0 with LM budget 0 vs the tight corner (a converged anchor)
     fs = dict(Rp=st.Rp, form='LSPG', scheme='CNR', factor=1)
     Ws = {k: [] for k in ('b0', 'tight', 'prod', 'prod2')}
     Wi = {k: [] for k in ('pert', 'pert_ls')}
     sham = []
     st.add_role('sham', st.rules['main'])
     for i in ids:
-        u0, nu, n0, _ = U0[i]
-        Ws['b0'].append(B.run_corner(st, B.corner_spec(fs, frozenset()), u0, nu, budget=0)['W'])
-        Ws['tight'].append(B.run_corner(st, B.corner_spec(fs, frozenset('S')), u0, nu)['W'])
-        Ws['prod'].append(B.run_corner(st, B.corner_spec(fs, frozenset()), u0, nu)['W'])
-        Ws['prod2'].append(B.run_corner(st, B.corner_spec(fs, frozenset()), u0, nu)['W'])           # G-B1 prod -> prod
-        sham.append(B.run_corner(st, dict(B.corner_spec(fs, frozenset()), role='sham'), u0, nu)['W'])  # G-B1 q -> q (rebuilt)
+        Ws['b0'].append(rc('S_b0', B.corner_spec(fs, frozenset()), i, budget=0))
+        Ws['tight'].append(rc('S_tight', B.corner_spec(fs, frozenset('S')), i))
+        Ws['prod'].append(rc('S_prod', B.corner_spec(fs, frozenset()), i))
+        Ws['prod2'].append(rc('S_prod2', B.corner_spec(fs, frozenset()), i))                   # G-B1 prod -> prod
+        sham.append(rc('sham', dict(B.corner_spec(fs, frozenset()), role='sham'), i))           # G-B1 q -> q (rebuilt)
         # C-I: perturbed deployed init (x 1.01) and its LS-switched corner
-        Wi['pert'].append(B.run_corner(st, B.corner_spec(fs, frozenset()), u0, nu, w0_scale=1.01)['W'])
-        Wi['pert_ls'].append(B.run_corner(st, B.corner_spec(fs, frozenset('I')), u0, nu, w0_ls=w0ls[i])['W'])
+        Wi['pert'].append(rc('I_pert', B.corner_spec(fs, frozenset()), i, w0_scale=1.01))
+        Wi['pert_ls'].append(rc('I_pert_ls', B.corner_spec(fs, frozenset('I')), i, w0_ls=w0ls[i]))
     st.drop_role('sham')
     st.drop_role('qinf')
     np.savez_compressed(out / 'CTRL_b2.npz', case_ids=np.array([cid(i) for i in ids]),
                         **{f'Q_{k}': np.array(v) for k, v in Wq.items()}, **{f'S_{k}': np.array(v) for k, v in Ws.items()},
                         **{f'I_{k}': np.array(v) for k, v in Wi.items()}, sham=np.array(sham),
-                        w0_ls=np.array([w0ls[i] for i in ids]))
+                        w0_ls=np.array([w0ls[i] for i in ids]), **{f'valid_{k}': np.array(v) for k, v in VAL.items()})
     res['b2_controls'] = dict(cases=[cid(i) for i in ids], under_resolved=c.get('under_resolved', 'gauss32'),
                               sham_rule_bitwise=bool(np.array_equal(np.array(sham), np.array(Ws['prod']))),
                               prod_rerun_bitwise=bool(np.array_equal(np.array(Ws['prod2']), np.array(Ws['prod']))))
@@ -506,17 +541,19 @@ def run_pilot(cfg, rep, bank, st, mem_, U0, w0ls, cases, out):
     st.add_role('qcheck', p['qcheck'])
     rec['qcheck'] = P.mem()
     sM = B.BSetting(bank, st.Rp, M=P.MMAX)
-    sM.add_role('main', st.rules['main'])
+    for role, rl in (('main', st.rules['main']), ('qinf', p['qinf']), ('qcheck', p['qcheck'])):
+        sM.add_role(role, rl)                                  # the production M-table path (code audit 1)
     rec['m2048'] = P.mem()
     fb = bank if bank.L == B.FINE_L else P.Bank(B.FINE_L, cfg['edges'])
     rec['fine_bank'] = P.mem()
     m = mem_[0]
     r = B.run_corner(st, B.corner_spec(m, frozenset('QTSI')), u0, nu, w0_ls=w0ls[i])
     r2 = B.run_corner(st, dict(B.corner_spec(m, frozenset('QS')), role='qcheck'), u0, nu, w0_ls=w0ls[i])
+    r3 = B.run_corner({st.M: st, sM.M: sM}, dict(B.corner_spec(m, frozenset('QSM')), role='qcheck'), u0, nu, w0_ls=w0ls[i])
     F = B.decode(Q.BK.prefix(fb.Grot, fb.edges, st.Rp), r['W'], B.FINE_L)
     jax.block_until_ready(F)
     rec['after_runs'] = P.mem()
-    rec['valid'] = [r['valid'], r2['valid']]
+    rec['valid'] = [r['valid'], r2['valid'], r3['valid']]
     rep.setdefault('pilot', {})[f'R{st.Rp}'] = rec
     del sM, fb, F
 

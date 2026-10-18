@@ -98,8 +98,8 @@ def run_member_b7(cx, m, b, ids, rep):
     r = cx.rollouts(sname, rule, [sp], ids, tag=tag('prod'), certify=True)[key]
     rt = cx.rollouts(sname, rule, [tight], ids, tag=tag('tight'), certify=False)[S.spec_key(tight)]
     rtt = cx.rollouts(sname, rule, [tighter], dev, tag=tag('tighter'), certify=False)[S.spec_key(tighter)]
-    rq = cx.rollouts(sname, m['qp'], [sp], q2, tag=tag('qp'), certify=False)[key]
-    rqq = cx.rollouts(sname, m['qpp'], [sp], qpp, tag=tag('qpp'), certify=False)[key]
+    rq = cx.rollouts(sname, m['qp'], [sp], q2, tag=tag('qp'), certify=cert(sp))[key]          # A3.5: solver-specific
+    rqq = cx.rollouts(sname, m['qpp'], [sp], qpp, tag=tag('qpp'), certify=cert(sp))[key]
     d, dq = st.data(rule), st.data(m['qp'])
     rho = []
     for ci, j in enumerate(q2):

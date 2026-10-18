@@ -31,7 +31,14 @@ def main():
         assert steps and all((d / 'COMPLETE').exists() for d in steps), 'a staged step lacks its COMPLETE marker'
         log = '\n'.join(p.read_text() for p in (out / 'logs').glob('*.out'))
         assert 'ALL-DONE' in log, 'job log lacks ALL-DONE'
-        subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'] + (['--ignore-missing'] if (out / 'FINE-ON-CLUSTER').exists() else []), cwd=out, check=True)
+        fine_remote = (out / 'FINE-ON-CLUSTER').exists()
+        subprocess.run(['sha256sum', '-c', 'OUTPUTS-local.sha256' if fine_remote else 'OUTPUTS.sha256', '--quiet'], cwd=out,
+                       check=True)
+        if fine_remote:      # every fine file must already be in refs/ with its recorded hash before the job dir goes
+            fl = [l for l in (out / 'OUTPUTS.sha256').read_text().splitlines() if l.endswith('_fine.npz')]
+            chk = '\n'.join(f"{h}  {NAMESPACE}/refs/{f.split('/', 2)[2]}" for h, f in (l.split(None, 1) for l in fl))
+            r = subprocess.run(SSH + ['sha256sum -c --quiet -'], input=chk + '\n', text=True, capture_output=True)
+            assert r.returncode == 0, f'fine files not verified in refs/: {r.stdout} {r.stderr}'
         q = subprocess.run(SSH + [f'squeue -h -n jb_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
         assert not q.strip(), f'job jb_{a.attempt} still queued/running: {q}'
         st = subprocess.run(SSH + [f'sacct -n -X -P --name jb_{a.attempt} -S now-7days -o State'], capture_output=True,
@@ -41,15 +48,23 @@ def main():
         print('removed', remote)
         return
  
-    if a.promote:                                       # references: output/<step>/<d>d/... -> refs/<d>d/... (no overwrite)
-        cmd = (f'cd {shlex.quote(remote)} && sha256sum -c OUTPUTS.sha256 --quiet && for s in output/*/; do '
-               f'for d in "$s"2d "$s"3d; do [ -d "$d" ] || continue; '
-               f'(cd "$s" && find "$(basename $d)" -type f -name "c*" | while read f; do '
-               f'test ! -e {NAMESPACE}/refs/"$f" || {{ echo "exists: $f"; exit 9; }}; '
-               f'mkdir -p {NAMESPACE}/refs/"$(dirname $f)"; cp -p "$f" {NAMESPACE}/refs/"$f"; chmod 444 {NAMESPACE}/refs/"$f"; done); done; done '
-               f'&& cd {NAMESPACE}/refs && find . -type f -name "c*" | sort | xargs sha256sum > REFS-MANIFEST.sha256')
-        subprocess.run(SSH + [cmd], check=True)
-        print('promoted into', f'{NAMESPACE}/refs')
+    if a.promote:       # references: output/<step>/<d>d/... -> refs/<d>d/...; check all, then copy, verify, fail fast
+        refs = f'{NAMESPACE}/refs'
+        script = f"""set -euo pipefail
+cd {shlex.quote(remote)}
+sha256sum -c OUTPUTS.sha256 --quiet
+grep -E '  output/[^/]+/(2d|3d)/' OUTPUTS.sha256 > PROMOTE.list || {{ echo 'nothing to promote'; exit 8; }}
+while read -r h f; do rel=${{f#output/*/}}; if [ -e {refs}/"$rel" ]; then echo "exists: $rel"; exit 9; fi; done < PROMOTE.list
+while read -r h f; do rel=${{f#output/*/}}; mkdir -p {refs}/"$(dirname "$rel")"; cp -p "$f" {refs}/"$rel"
+  echo "$h  {refs}/$rel" | sha256sum -c --quiet; chmod 444 {refs}/"$rel"; done < PROMOTE.list
+cd {refs} && find . -type f -name 'c*' | sort | xargs sha256sum > REFS-MANIFEST.sha256.tmp && mv REFS-MANIFEST.sha256.tmp REFS-MANIFEST.sha256
+echo PROMOTED $(wc -l < {shlex.quote(remote)}/PROMOTE.list)
+"""
+        r = subprocess.run(SSH + ['bash -s'], input=script, text=True, capture_output=True)
+        print(r.stdout, r.stderr)
+        if r.returncode != 0 or 'PROMOTED' not in r.stdout:
+            raise SystemExit(f'promotion failed (exit {r.returncode})')
+        (HERE / 'runs' / a.attempt / 'PROMOTED').write_text(r.stdout)
         return
     out.mkdir(parents=True, exist_ok=False)
     excl = " --exclude='*_fine.npz'" if a.no_fine else ''
@@ -62,10 +77,14 @@ def main():
         subprocess.run(['timeout', '3600', 'scp', '-q', f'tufts-login:{remote}/{name}', str(out / name)], check=True)
     subprocess.run(['sha256sum', '-c', 'collection.tar.sha256'], cwd=out, check=True)
     subprocess.run(['tar', '-xf', 'collection.tar'], cwd=out, check=True)
-    subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'] + (['--ignore-missing'] if a.no_fine else []), cwd=out,
-                   check=True)
+    if a.no_fine:            # only *_fine.npz may be absent locally; every other output is checked
+        keep = [l for l in (out / 'OUTPUTS.sha256').read_text().splitlines() if l.strip() and not l.endswith('_fine.npz')]
+        (out / 'OUTPUTS-local.sha256').write_text('\n'.join(keep) + '\n')
+        subprocess.run(['sha256sum', '-c', 'OUTPUTS-local.sha256', '--quiet'], cwd=out, check=True)
+    else:
+        subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
     if a.no_fine:
-        (out / 'FINE-ON-CLUSTER').write_text('*_fine.npz left in the cluster refs/ directory (listed in OUTPUTS.sha256)\n')
+        (out / 'FINE-ON-CLUSTER').write_text('*_fine.npz not pulled; they must be promoted into refs/ before cleanup\n')
     (out / 'collection.tar').unlink()
     if a.partial:
         (out / 'PARTIAL').write_text('partial collection\n')

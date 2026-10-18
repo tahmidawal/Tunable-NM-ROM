@@ -21,6 +21,7 @@ NALL=$(echo "$Q" | grep -c . || true)
 echo "--- squeue before (lane=$NLANE account=$NALL)"; echo "$Q"
 if echo "$Q" | awk '{print $2}' | grep -qx "jb_$A"; then echo "jb_$A already queued: refusing"; exit 3; fi
 [ "$NLANE" -lt 3 ] || { echo "lane cap 3 reached"; exit 4; }
+if [[ "$A" == smk* ]] && echo "$Q" | awk '{print $2}' | grep -q '^jb_smk'; then echo "a smoke is already queued/running: one at a time"; exit 8; fi
 [ "$NALL" -lt 8 ] || { echo "campaign cap 8 reached"; exit 5; }
 "$PY" "$LANE/ledger.py" reserve "$A" "$HOURS" || { echo "GPU-hour reservation refused"; exit 6; }
 # before sbatch is attempted a failure is unambiguous: release; after, keep the reservation (AMBIGUOUS) until squeue/sacct

@@ -1,16 +1,16 @@
 {
  "lane": "jcp-budget",
- "utc": "2026-10-18T12:53:26Z",
- "step": "3: code; local CPU functional test of b2run running",
+ "utc": "2026-10-18T13:20:19Z",
+ "step": "4: codex code audit 1",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": null,
-  "local_pid": 2575023
+  "codex_output": "audits/codex-code-1.md",
+  "codex_pid": 2625371,
+  "local_pid": null
  },
  "expected_finish_utc": null,
- "last_commit": "b1bc47759",
+ "last_commit": "51c2690cd",
  "gpu_hours_spent": 0.0,
  "gpu_hours_cap": 45,
- "notes": "pre-release: design/code/smoke only"
+ "notes": "local jaxrun now via campaign/jaxslot.sh (brief 13); 3D CPU test stopped (to cluster smk2)"
 }

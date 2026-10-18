@@ -41,7 +41,8 @@ import verdict as V
 LEVELS = {2: dict(base=[(2048, 1.25e-3), (4096, 6.25e-4), (8192, 3.125e-4)], refine=(12288, 0.05 / 240)),
           3: dict(base=[(128, 2.5e-3), (256, 1.25e-3), (512, 6.25e-4)], refine=(768, 0.05 / 120))}   # E0 'ST'
 TOL = {'prod': (1e-11, 1e-9, 20), 'retry': (1e-11, 1e-10, 40), 'tight': (1e-13, 1e-12, 40)}           # E0 TOL
-PS_CFG = {2: dict(Ns=[1024, 1536, 2048], dt=0.05 / 1600), 3: dict(Ns=[128, 192, 256], dt=0.05 / 320)}  # E0 PS_CFG
+PS_CFG = {2: dict(Ns=[1024, 1536, 2048], dt=0.05 / 1600, esc=[1536, 2048, 3072]),
+          3: dict(Ns=[128, 192, 256], dt=0.05 / 320, esc=[192, 256, 384])}                          # E0 PS_CFG (A8.1)
 X1_LEVELS = {2: [(512, 2.5e-3), (1024, 1.25e-3), (2048, 6.25e-4)], 3: [(64, 5e-3), (128, 2.5e-3), (256, 1.25e-3)]}
 ALLOWED = {2: ('dev6', 'val32'), 3: ('val64',)}
 T_BEGIN = time.perf_counter()
@@ -355,23 +356,25 @@ def stability_ok(runs, d, dt, N3):
 def mode_ps(cfg, outdir, rep):
     d, T = int(cfg['dim']), float(cfg['horizon'])
     coh = CH.Cohort(d, cfg['cohort'])
-    Ns, dt_base = PS_CFG[d]['Ns'], PS_CFG[d]['dt']
+    att = int(cfg.get('attempt', 0))                 # A2.3: one escalation ladder (E0 A1.7), staged after an UNRESOLVED verdict
+    assert att in (0, 1)
+    Ns, dt_base = PS_CFG[d]['Ns' if att == 0 else 'esc'], PS_CFG[d]['dt']
     for j in cfg['cases']:
-        stem = outdir / f'{d}d' / coh.name / f'T{T:g}' / 'PS' / f'c{j:03d}'
+        stem = outdir / f'{d}d' / coh.name / f'T{T:g}' / 'PS' / f'c{j:03d}_a{att}'
         dt = dt_base
-        runs = ps_case(coh, j, Ns, dt, 0, 'spatial', dt_base, rep['gates_all_pass'], T)
+        runs = ps_case(coh, j, Ns, dt, 2 * att, 'spatial', dt_base, rep['gates_all_pass'], T)
         stab = stability_ok(runs, d, dt, Ns[-1])
         if not stab:
             dt = dt / 2
-            runs += ps_case(coh, j, Ns, dt, 1, 'stability', dt_base, rep['gates_all_pass'], T)
-            stab = stability_ok([r for r in runs if r['attempt'] == 1], d, dt, Ns[-1])
+            runs += ps_case(coh, j, Ns, dt, 2 * att + 1, 'stability', dt_base, rep['gates_all_pass'], T)
+            stab = stability_ok([r for r in runs if r['attempt'] == 2 * att + 1], d, dt, Ns[-1])
         sel_att = max(r['attempt'] for r in runs)
         sel = [r for r in runs if r['attempt'] == sel_att]
         spatial = [next(r['id'] for r in sel if r['N'] == N and r['dt'] == dt) for N in Ns]
         half = next(r['id'] for r in sel if r['N'] == Ns[-1] and r['dt'] == dt / 2)
         arrays = {r['id']: r['lat'] for r in runs}
         arrays['t0'] = RC.ic_lattice(coh, j)
-        meta = dict(dim=d, cohort=coh.name, case=j, horizon=T, desc=coh.desc(j), Ns=Ns, dt_base=dt_base,
+        meta = dict(dim=d, cohort=coh.name, case=j, horizon=T, desc=coh.desc(j), Ns=Ns, dt_base=dt_base, ladder_attempt=att,
                     runs=[{k: v for k, v in r.items() if k != 'lat'} for r in runs], selected_spatial=spatial,
                     selected_half=half, stability_ok=stab, gates_ok=bool(all(r['checks_ok'] for r in sel)),
                     finite=bool(all(r['finite'] for r in sel)), job=job_info())
@@ -406,7 +409,7 @@ def main():
     if not cfg.get('skip_g1'):
         pre['gates'].append(G.g1_parity(d))
     if cfg['mode'] == 'ps':
-        Ns = PS_CFG[d]['Ns']
+        Ns = PS_CFG[d]['Ns' if int(cfg.get('attempt', 0)) == 0 else 'esc']
         pre['gates'] += G.run_all('ps', ps_N={d: Ns[-1]}, ps_dt={d: PS_CFG[d]['dt']}, dims=(d,), units=False)['gates']
     rep['gates'] = pre['gates']
     rep['gates_all_pass'] = all(g['pass'] for g in pre['gates'])

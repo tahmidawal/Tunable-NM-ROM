@@ -39,6 +39,8 @@ def main():
     p.add_argument('--mem-fraction', default='0.92')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
+    if a.attempt.startswith('smk'):            # coordinator rule: smokes <= 2 GPU-h each, one at a time (submit.sh)
+        assert a.hours <= 2.0, 'a smoke job may reserve at most 2 GPU-h'
     cert = ROOT / LANE / 'checks' / f'resources-{a.attempt}.json'
     if not (a.attempt.startswith('smk') or a.attempt.startswith('pilot')):
         # production attempts need a smoke-derived certificate; the time limit must cover projection x 1.5 (A1.11)
@@ -47,6 +49,7 @@ def main():
         for drv, cf in [r.split(':', 1) for r in a.run]:     # the certificate is bound to the exact configs and runs
             assert c_['configs'].get(cf) == hashlib.sha256((ROOT / LANE / cf).read_bytes()).hexdigest(), cf
         assert sorted(c_['runs']) == sorted(a.run), (c_['runs'], a.run)
+        assert c_.get('gpu') == a.gpu, ('certificate GPU type differs', c_.get('gpu'), a.gpu)
     runs = []
     for r in a.run:
         drv, cfg = r.split(':', 1)

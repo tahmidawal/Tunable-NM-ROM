@@ -115,6 +115,8 @@ def main():
     write('ref2t1', dict(mode='fd', dim=2, cohort='dev6', cases=list(range(6)), horizon=1.0, fine=False, allow_refine=False))
     write('ref2t1v', dict(mode='fd', dim=2, cohort='val32', cases=list(range(10)) + [19], horizon=1.0, fine=False, allow_refine=False))
     write('ps2t1', dict(mode='ps', dim=2, cohort='val32', cases=[0, 19], horizon=1.0))
+    write('b1024t1', dict(attempt='b1024t1', mesh=1024, edges=EDGES, cases='sub16', members=M2[1024],
+                          b7=dict(horizon=1.0, q2_cases='sub16', tighter_cases='dev6')))      # B7 T = 1.0 (last deferred)
 
 
 if __name__ == '__main__':

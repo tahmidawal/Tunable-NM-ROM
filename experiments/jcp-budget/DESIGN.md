@@ -736,3 +736,22 @@ resolved ($e^{257}>2\varepsilon^{257}$); unresolved check cases are counted, not
 
 **Inventory change:** 2D pairwise corners 16 → 22 per case (+6 short runs; b1024/b256/b4096 +15 %), `ref2t1` +0.4:
 total ≈ 34.5 GPU-h, ×1.25 ≈ 43 ≤ 45. If a certificate exceeds the cap, the defer order of §9 applies.
+
+## Amendment A4 (2026-10-18, after `audits/codex-code-1.md`, NEEDS-FIX; no real-size run yet)
+
+Clarifications and decisions made while fixing the code (none changes a registered estimand or bar):
+- **B8 3D is deferred now** (defer order item 2): its fine-route decode at $129^3$ is not implemented in this lane's code;
+  B8 3D, C-A 3D and C-E 3D are reported as "deferred (defer item 2)". All other 3D items stay.
+- **Smoke references are not promoted** into `refs/`: production regenerates dev6 case 0 (`ref2a`), so no smoke
+  artefact can enter a production verdict; the smoke's fine files are pulled for the smoke acceptance only.
+- **PS escalation** is a separate attempt (`attempt = 1`, E0 `esc` sizes) staged after `anaref.py` reports an
+  UNRESOLVED (spatial-order or resolution) verdict, exactly as E0 ran it; its cost is in the `ps2`/`ps3` reserve.
+- **Smoke predicates** for the empirical controls are "fires on ≥ 1 smoke case"; production uses the registered
+  predicates on the check populations.
+- **Campaign-wide job cap:** `submit.sh` refuses at ≥ 8 account jobs observed at submission (squeue before and after);
+  a race with another lane submitting in the same seconds is possible and is the coordinator's to arbitrate (residual
+  risk, recorded).
+- **Dominance denominators:** dominance is computed over complete cases and needs ≥ `minpop` complete cases and ≥ 75 %
+  of eligible cases complete (A2.4); pair labels use the eligible-case denominator of A1.4 with ≥ `minpop` available.
+- **Identities vs effects:** G-B0 and G-B2 are evaluated on every run-valid corner (they are identities); effects,
+  pair labels and dominance use corners that are also quadrature-verified (G-B4, A3.2).

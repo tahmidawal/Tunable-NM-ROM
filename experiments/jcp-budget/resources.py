@@ -87,11 +87,12 @@ def project(drv, cfg):
     if drv == 'b2run':
         r = b2_rates()
         n = ncases(cfg['cases'])
-        corners = 38 if cfg['b2'].get('design') == 'full' else 22
-        per_corner = r['corner_case'] / r['corners']
-        t = len(cfg['members']) * n * per_corner * corners
-        if 'b7' in cfg:
-            t += len(cfg['members']) * n * r['b7_case']
+        t = 0.
+        if 'b2' in cfg:
+            corners = 38 if cfg['b2'].get('design') == 'full' else 22
+            t += len(cfg['members']) * n * (r['corner_case'] / r['corners']) * corners
+        if 'b7' in cfg:                       # B7 cost scales with the horizon (smoke measured at T = 0.5)
+            t += len(cfg['members']) * n * r['b7_case'] * float(cfg['b7']['horizon']) / .5
         t += r['overhead'] * (n / r['ncase']) * (len(cfg['members']) / r['members'])
         if cfg['mesh'] == 4096:
             t = t * MESH4096 + pilot_seconds()
@@ -109,7 +110,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--attempt', required=True)
     ap.add_argument('--run', action='append', required=True)
+    ap.add_argument('--gpu', default='h200', help='the GPU type the smoke timings were measured on (H200); bound into the certificate')
     a = ap.parse_args()
+    assert a.gpu == 'h200', 'timings were measured on H200; another GPU type needs its own smoke'
     tot, det, cfgs = 0., {}, {}
     for r in a.run:
         drv, cf = r.split(':', 1)
@@ -121,7 +124,7 @@ def main():
         cfgs[cf] = hashlib.sha256(p.read_bytes()).hexdigest()
     proj = tot / 3600
     tl = math.ceil(1.5 * proj * 4) / 4
-    out = dict(attempt=a.attempt, runs=a.run, configs=cfgs, projection_hours=proj, time_limit_hours=max(tl, .5), detail=det,
+    out = dict(attempt=a.attempt, runs=a.run, configs=cfgs, gpu=a.gpu, projection_hours=proj, time_limit_hours=max(tl, .5), detail=det,
                label='estimate from the smokes (not a bound)')
     dest = HERE / 'checks' / f'resources-{a.attempt}.json'
     dest.write_text(json.dumps(out, indent=1) + '\n')

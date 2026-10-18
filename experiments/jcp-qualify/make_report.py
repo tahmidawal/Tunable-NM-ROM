@@ -30,6 +30,14 @@ def g(x, d=3):
     return '—' if x is None else (f'{x:.{d}g}' if isinstance(x, (int, float)) else str(x))
 
 
+def esc(x):
+    return str(x).replace('|', ' \\| ')
+
+
+def rng(x):
+    return '—' if not x else f'{x[0]:.3g}–{x[1]:.3g}'
+
+
 def parse(k):
     p = k.split('|')
     return dict(mesh=p[0], r=int(p[1][1:]), form=p[2], scheme=p[3], factor=float(p[4]), fb=len(p) > 5)
@@ -241,7 +249,7 @@ def main():
     w('|---|---|---|')
     for k, v in sorted(AN['B1']['h_acc_n'].items()):
         sen = (v.get('sensitivity_P4096_38') or {}).get('outcome')
-        w(f"| {k} | {v.get('outcome')} | {g(sen)} |")
+        w(f"| {esc(k)} | {v.get('outcome')} | {g(sen)} |")
     w('')
     w('H-acc-r per mesh and family (majority improvement on resolved cases; ties within $2\\varepsilon_{\\rm ref}$; never "every case"):')
     w('')
@@ -249,7 +257,7 @@ def main():
     w('|---|---|---|---|---|---|')
     for k, v in sorted(AN['B1']['h_acc_r'].items()):
         cell = lambda t: (f"{v[t].get('outcome')} ({v[t].get('improve', '—')}/{v[t].get('worsen', '—')}/{v[t].get('tie', '—')}/{v[t].get('unqualified', '—')})" if isinstance(v.get(t), dict) else '—')
-        w(f"| {k} | {cell('128->256')} | {cell('256->384')} | {cell('384->512')} | {v.get('range_128_384')} | {v.get('range_128_512')} |")
+        w(f"| {esc(k)} | {cell('128->256')} | {cell('256->384')} | {cell('384->512')} | {v.get('range_128_384')} | {v.get('range_128_512')} |")
     w('')
     w('Counts in brackets: improve / worsen / tie / unqualified cases. P1\'s own verdicts for its two Δt₀ families are cited in `checks/analysis.json` (`B1.p1_cited`; its $4096^2$ transitions are on the 16-case subset).')
     w('')
@@ -260,7 +268,7 @@ def main():
     for k, v in AN.get('B4', {}).items():
         if isinstance(v, dict) and 'label' in v and isinstance(v['label'], dict):
             lab = v['label']
-            w(f"| {k} | {lab['label']} | {lab['interpretable']} | {g(lab.get('p_median'))} | {g(lab.get('p_range'))} |")
+            w(f"| {esc(k.replace('_', ' '))} | {lab['label']} | {lab['interpretable']} | {g(lab.get('p_median'))} | {rng(lab.get('p_range'))} |")
     w('')
     w('An "order 2" label is a **finite-range observed order** over $\\Delta t_0\\dots\\Delta t_0/4$ against a same-form anchor at $\\Delta t_0/64$; for the LSPG CN family the jcp-time2 analysis predicts asymptotic order 1, which this measurement does not contradict or confirm.')
     w('')
@@ -297,12 +305,12 @@ def main():
         w('|---|---|---|---|---|---|')
         for k, v in T3['tested'].items():
             rp = v.get('reproduction') or {}
-            w(f"| {k} | {v['label']} | {g(v['worst_dist_qp'])} | {g(v['rho_max'])} | {g(v['worst_dist_qp_qpp'])} | {g(rp.get('worst'))} |")
+            w(f"| {esc(k)} | {v['label']} | {g(v['worst_dist_qp'])} | {g(v['rho_max'])} | {g(v['worst_dist_qp_qpp'])} | {g(rp.get('worst'))} |")
         w('')
         c = T3.get('control', {})
         w(f"Under-resolved control (W512 lat8192 → lat16384): label {c.get('label')}, worst distance {g(c.get('worst_dist_qp'))}, fired {c.get('passed')}.")
         w('')
-        w(f"Qualified subset front (median): {', '.join(T3['qualified_subset_front']['median']) or 'none'}; (worst): {', '.join(T3['qualified_subset_front']['worst']) or 'none'}. Open candidates: {len(T3['open_candidates'])}.")
+        w(f"Qualified subset front (median): {', '.join('`' + x + '`' for x in T3['qualified_subset_front']['median']) or 'none'}; (worst): {', '.join('`' + x + '`' for x in T3['qualified_subset_front']['worst']) or 'none'}. Open candidates: {len(T3['open_candidates'])}.")
         w('')
     w('## Controls')
     w('')

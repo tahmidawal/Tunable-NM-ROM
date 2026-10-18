@@ -33,17 +33,33 @@ def sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
-def rho_of(cases_rec):
-    """Valid ratios per timing case: valid triple (drift) with every output discrepancy finite and <= 1e-12."""
-    out = {}
+def rho_of(cases_rec, reps=3, max_retry=3):
+    """A32.9: the timing contract recomputed from raw evidence. Per timing case: exactly `reps` repeats, attempts
+    numbered 0..k contiguously with k <= max_retry, a triple is valid iff all three times are finite and positive,
+    |tA1/tA2 - 1| <= 0.25 (drift recomputed, the stored flag is ignored) and every output discrepancy is finite and
+    <= 1e-12; a valid attempt must end its repeat. Returns (rho, problems)."""
+    out, bad = {}, []
     for t, rc in cases_rec.items():
-        vals = []
+        vals, by = [], {}
         for tr in rc['triples']:
-            ok = tr['valid'] and all(np.isfinite(x) and x <= TIMED_TOL for x in (tr['dA1'], tr['dB'], tr['dA2']))
-            if ok:
-                vals.append(tr['tB'] / (0.5 * (tr['tA1'] + tr['tA2'])))
+            by.setdefault(tr['rep'], []).append(tr)
+        if sorted(by) != list(range(reps)):
+            bad.append((t, 'repeat inventory'))
+        for rep, ats in by.items():
+            if [a['attempt'] for a in ats] != list(range(len(ats))) or len(ats) > max_retry + 1:
+                bad.append((t, rep, 'attempt inventory'))
+            for k, tr in enumerate(ats):
+                ts = (tr['tA1'], tr['tB'], tr['tA2'])
+                ok = all(np.isfinite(x) and x > 0 for x in ts) and abs(tr['tA1'] / tr['tA2'] - 1.) <= 0.25
+                outs = all(x is not None and np.isfinite(x) and x <= TIMED_TOL for x in (tr['dA1'], tr['dB'], tr['dA2']))
+                if not outs:
+                    bad.append((t, rep, k, 'output check'))
+                if ok and k < len(ats) - 1:
+                    bad.append((t, rep, k, 'valid attempt not last'))
+                if ok and outs:
+                    vals.append(tr['tB'] / (0.5 * (tr['tA1'] + tr['tA2'])))
         out[int(t.split('|')[1])] = vals
-    return out
+    return out, bad
 
 
 def main():
@@ -60,33 +76,58 @@ def main():
     else:
         exp = json.loads((HERE / 'inputs' / 'speed3d_batch1_e0.json').read_text())['configs']
         eX_all = {k: {f'val64|{j}': v for j, v in exp[k]['e0'].items()} for k in B['ours']}
+    assert sha(tdir / 'tune.json') == FZ['tune_json_sha256'], 'tuning JSON differs from the frozen one'   # A32.9
     members = B['members']
+    elig = list(B['eligible_cases'])                                           # A32.1: the store's fixed mask
     any_m = next(iter(members.values()), None)
-    cases = any_m['cases'] if any_m else []
-    elig = [c for c in cases if all(members[m]['e0'][c].get('eligible') for m in members)]
     eps = np.array([any_m['e0'][c]['eps_ref'] for c in elig]) if any_m else np.zeros(0)
+    sat_other = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--sat256=')]
+    sat256 = (json.loads(Path(sat_other[0]).read_text()).get('saturation') or {}).get('adequate') if sat_other else None
+    cf = T.get('construction_failures') or {}
+    ecsw_cov = [k for k in cf if k.startswith('ecsw|')]
+    limited = sorted({str(v.get('quality')) for v in T['stageA'].values() if v.get('kind') == 'ecsw'} - {'ok', 'None'})
+    sel_s = sum(v['seconds'] for k, v in B['phases'].items() if k.startswith('B|'))
     flags = dict(adequate=(T.get('adequacy') or {}).get('adequate'), saturation=(T.get('saturation') or {}).get('adequate'),
-                 basis_used=T.get('basis_used'), diagnostic_only=bool(d == 3),
-                 search_hours=T.get('search_hours'), allocation_hours=T['config'].get('search_allocation_hours'),
-                 inventory=T.get('inventory_counts'), deferred=T.get('deferred'))
-    if flags['search_hours'] is not None and flags['allocation_hours'] is not None:
-        flags['budget'] = ('baseline search within ours\' allocation' if flags['search_hours'] <= flags['allocation_hours']
-                           else 'baseline search exceeded ours\' allocation')
-    out = dict(cell=cell, flags=flags, eligible_cases=elig, X={}, stageb_sha256=sha(bdir / 'stageb.json'),
+                 saturation_256=sat256, basis_used=T.get('basis_used'),
+                 snapshot_limited=bool(T['config']['L'] == 1024 and sat256 is False),
+                 ecsw_coverage=('ECSW coverage incomplete' if ecsw_cov else 'complete'), ecsw_failures=ecsw_cov,
+                 ecsw_quality_limited=limited,
+                 search_hours=(T.get('search_hours') or 0.) + sel_s / 3600, search_hours_tuning=T.get('search_hours'),
+                 search_hours_stageB=sel_s / 3600, allocation_hours=T['config'].get('search_allocation_hours'),
+                 inventory=T.get('inventory_counts'), deferred=T.get('deferred'),
+                 stageB_inventory={s_: sum(1 for v in B['inventory'].values() if v['status'] == s_)
+                                   for s_ in ('complete', 'replay_failed', 'run_failed', 'not_run')})
+    if flags['allocation_hours'] is not None:
+        flags['budget'] = ('baseline search within ours\' allocation (upper bound)' if
+                           flags['search_hours'] <= flags['allocation_hours'] else 'baseline search exceeded ours\' allocation')
+    withhold = (flags['adequate'] is False or flags['saturation'] is False or flags['snapshot_limited'])
+    out = dict(cell=cell, flags=flags, eligible_cases=elig, withhold=withhold, X={}, stageb_sha256=sha(bdir / 'stageb.json'),
                tune_sha256=sha(tdir / 'tune.json'), frozen_sha256=B['config']['frozen_sha256'])
     for key, xr in B['ours'].items():
-        if not (xr.get('G_ours') and FZ['X'].get(key, {}).get('front') is not None):
-            out['X'][key] = dict(label='not assessed', reason='G-ours failed or X not admitted')
+        fx = FZ['X'].get(key, {})
+        tag = dict(batch=fx.get('batch'), qualification=fx.get('qualification'),
+                   diagnostic_only=bool(d == 3 and fx.get('batch') == 1))
+        if not (xr.get('G_ours') and fx.get('front') is not None):
+            out['X'][key] = dict(tag, label='not assessed', reason='G-ours failed or X not admitted')
+            continue
+        if not elig or any(c not in eX_all[key] for c in elig):
+            out['X'][key] = dict(tag, label='not assessed', reason='no eligible case-kind or missing exported errors')
             continue
         eX = np.array([eX_all[key][c] for c in elig])
         envX = ST.envelope(eX, eps)
-        cand = []
+        cand, excluded, incomplete = [], {}, []
         for m, mv in members.items():
-            tm = B['timing'].get(f'{key}||{m}')
-            if not (mv['q1']['q1'] and tm and tm.get('status') == 'complete'):
+            if not (mv['q1']['q1'] and mv.get('replay_ok')):
+                excluded[m] = 'not Q1-qualified on the verdict cohort' if not mv['q1']['q1'] else 'replay failed'
                 continue
-            rho = rho_of(tm['cases'])
-            if sorted(rho) != list(ST.TIMING_CASES) or not all(rho.values()):
+            tm = B['timing'].get(f'{key}||{m}') or {}
+            if tm.get('status') != 'complete' or not tm.get('outputs_ok'):
+                incomplete.append(m)
+                continue
+            rho, bad = rho_of(tm['cases'])
+            if bad or sorted(rho) != list(ST.TIMING_CASES) or not all(rho.values()):
+                incomplete.append(m)
+                excluded[m] = f'timing contract: {bad[:3]}'
                 continue
             eB = np.array([mv['e0'][c]['e'] for c in elig])
             ts = ST.time_stats(rho)
@@ -94,41 +135,48 @@ def main():
             cand.append(dict(id=m, ratio=ts['median'], W=float(np.max(eB)), med=float(np.median(eB)), r=int(r),
                              kind=kind, hr_points=int(FZ['member_info'][m]['hr_points']), scheme=scheme, dt=float(dt),
                              solver=solver, eB=eB, rho=rho, quality=FZ['member_info'][m].get('quality')))
-        untimed = [m for m, mv in members.items() if mv['q1']['q1'] and
-                   (B['timing'].get(f'{key}||{m}') or {}).get('status') != 'complete']
-        if untimed:                                     # A30.1 (2): a role is never filled from an incomplete set
-            out['X'][key] = dict(label='role incomplete (timing)', untimed=untimed, W_X=float(np.max(eX)) if len(eX) else None)
+        if incomplete:                                 # A30.1 (2): never fill a role from an incomplete set
+            out['X'][key] = dict(tag, label='role incomplete (timing)', incomplete=incomplete, excluded=excluded,
+                                 W_X=float(np.max(eX)))
             continue
         if not cand:
-            out['X'][key] = dict(label='baseline incomplete at this mesh', W_X=float(np.max(eX)) if len(eX) else None)
+            out['X'][key] = dict(tag, label='baseline incomplete at this mesh', W_X=float(np.max(eX)), excluded=excluded)
             continue
         b_acc, b_cost, F = ST.picks([{k: v for k, v in c.items() if k not in ('eB', 'rho')} for c in cand],
                                     float(np.max(eX)))
         byid = {c['id']: c for c in cand}
-        rec = dict(W_X=float(np.max(eX)), med_X=float(np.median(eX)), front=[f['id'] for f in F], roles={},
-                   exploratory={})
-        for role, p in (('B_acc', b_acc), ('B_cost', b_cost)):
-            if p is None:
+        rec = dict(tag, W_X=float(np.max(eX)), med_X=float(np.median(eX)), front=[f['id'] for f in F], roles={},
+                   exploratory={}, excluded=excluded, n_candidates=len(cand))
+        for role, p_ in (('B_acc', b_acc), ('B_cost', b_cost)):
+            if p_ is None:
                 rec['roles'][role] = dict(label='no baseline in role')
                 continue
-            c = byid[p['id']]
+            c = byid[p_['id']]
             lab = ST.pair_label(eX, c['eB'], eps, c['rho'])
-            rec['roles'][role] = dict(id=c['id'], quality=c['quality'], T=c['ratio'], W=c['W'], **{
+            rec['roles'][role] = dict(id=c['id'], quality=c['quality'], T=c['ratio'], W=c['W'], med=c['med'], **{
                 k: v for k, v in lab.items() if k in ('label', 'time', 'envX', 'envB', 'qualifier', 'reason')})
         for c in cand:
             envB = ST.envelope(c['eB'], eps)
             if envB['worst'][0] > envX['worst'][1]:
                 continue                                  # worst envelope entirely above X's: not labelled
             lab = ST.pair_label(eX, c['eB'], eps, c['rho'])
-            rec['exploratory'][c['id']] = dict(label=lab['label'] + ' (exploratory, unadjusted)', T=c['ratio'], W=c['W'],
-                                               quality=c['quality'])
+            rec['exploratory'][c['id']] = dict(label=lab['label'] + ' (exploratory, unadjusted)', T=c['ratio'],
+                                               W=c['W'], med=c['med'], quality=c['quality'])
+        assessed = len([v for v in rec['roles'].values() if 'id' in v]) + len(rec['exploratory'])
+        rec['n_assessed_pairs'] = assessed
+        rec['n_not_assessed'] = len(cand) - len({v['id'] for v in rec['roles'].values() if 'id' in v} |
+                                                set(rec['exploratory']))
         dom_reg = [r_ for r_, v in rec['roles'].items() if v.get('label', '').startswith('baseline dominates')]
         dom_exp = [i for i, v in rec['exploratory'].items() if v['label'].startswith('baseline dominates')]
         rec['cell_line'] = ('observed domination of X by a registered pick' if dom_reg else
                             'observed domination of X by a non-registered Stage-B configuration' if dom_exp else
-                            f'no observed domination among the {len(cand)} configurations compared')
-        if not flags.get('adequate') and not dom_reg and not dom_exp:
-            rec['cell_line'] += ' (withheld: basis possibly under-sampled, A2.2)'
+                            f'no observed domination among the {assessed} pairs assessed')
+        if withhold and not dom_reg and not dom_exp:
+            rec['cell_line'] += ' (withheld: basis possibly under-sampled / snapshot-limited, A1.3/A2.2)'
+        if ecsw_cov or limited:
+            rec['cell_line'] += f' [ECSW: {flags["ecsw_coverage"]}; quality-limited: {limited}]'
+        if tag['diagnostic_only']:
+            rec['cell_line'] = 'DIAGNOSTIC ONLY (batch 1, A22.0): ' + rec['cell_line']
         out['X'][key] = rec
     p = HERE / 'checks' / f'VERDICT-{cell}.json'
     p.write_text(json.dumps(out, indent=1, default=float) + '\n')

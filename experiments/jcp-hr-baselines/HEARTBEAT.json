@@ -1,16 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T23:22:11Z",
- "step": "job audit 8 DO-NOT-SUBMIT only because A43.1 was cited but not written -> A43 written; job audit 9 running; c2d256 re-freeze running; no jobs on the cluster; ledger 16.163 measured + 8.5 reserved",
+ "utc": "2026-10-18T23:26:33Z",
+ "step": "s3d64a (3D Stage B) RUNNING 5917329 after job audits 8-9; s2d256a staged (4 h, A100; ledger 28.663 incl. reservations); job audit 10 running; 2D 1024 verdict computed (results audit pending)",
  "waiting_on": {
-  "slurm_jobs": [],
-  "codex_output": "audits/codex-job-9.md",
+  "slurm_jobs": [
+   5917329
+  ],
+  "codex_output": "audits/codex-job-10.md",
   "codex_pid": [
-   4085476
+   4115481
   ],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T23:41:11Z",
+ "expected_finish_utc": "2026-10-18T23:45:33Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

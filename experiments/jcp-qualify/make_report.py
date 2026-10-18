@@ -78,7 +78,7 @@ def plots():
                            edgecolor='#0b0b0b' if on else 'none', linewidth=.8, zorder=3 if on else 2)
                 if on:
                     i_ = sorted(front, key=lambda kk: cand[kk]['c']).index(k)
-                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(9, 6) if i_ % 2 == 0 else (-44, -12),
+                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(9, 6) if i_ % 2 == 0 else (9, -13),
                                 textcoords='offset points', fontsize=6.5,
                                 bbox=dict(boxstyle='round,pad=0.1', fc='white', ec='none', alpha=.8))
             pts = sorted((cand[k]['c'], cand[k][stat]) for k in front)
@@ -92,8 +92,9 @@ def plots():
         axs[0].set_ylabel(f'{stat} error over 38 cases\n{LBL}')
         for key, col in COL.items():
             axs[-1].scatter([], [], color=col, label=SCH[key])
-        axs[-1].legend(frameon=False, fontsize=8, title='marker size ∝ r; outlined = front')
-        fig.tight_layout()
+        fig.legend(*axs[-1].get_legend_handles_labels(), frameon=False, fontsize=8, ncol=3, loc='lower center',
+                   title='marker size ∝ r; outlined = front', bbox_to_anchor=(.5, 0))
+        fig.tight_layout(rect=(0, .1, 1, 1))
         fig.savefig(pd / f'front2d_{stat}.png', dpi=150)
         plt.close(fig)
         made.append(f'plots/front2d_{stat}.png')

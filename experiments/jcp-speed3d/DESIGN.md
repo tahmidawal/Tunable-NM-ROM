@@ -769,3 +769,17 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 
 * m1 coverage also requires every configured same-mesh FOM diagnostic (each family and step of `mesh.same` at every L)
   to be calibrated, converged and scored on all its cases, and timed in a valid panel (`same_mesh_foms_complete`).
+
+---
+
+## Amendment A25 (2026-10-18; `audits/codex-results-pm-1.md` READY for the freeze; non-blocking restatements adopted)
+
+* Report wording: the decomposition column is "direct paired B*/W* speed-up" (own panel; product need not equal $S$);
+  selections are per comparator (the CN winner chosen against C_W768 does not tie-or-beat C_W1024's worst error; the
+  BDF2 winner does); latencies are prepared-input latencies with input preparation reported separately (from the jobs'
+  `input_prep_seconds`, now exported by `analyze_pm.py`); route-4 confirmations are 4 cases × 2 repetitions (A2.7(a));
+  central + CN-R shares E0's discretization family; K2 is scoped to this lane's selected configurations and ladder.
+* **Freeze written** (`checks/FROZEN-SELECTION.json`, A1.11) after the p1/m1 results audit; `configs/r1.json` holds 52
+  frozen ROM configurations (8 H2 comparators/winners/B*, 44 H1.4 pair members; mesh-free paths for the 4 H3.2-qualified
+  ones), the 3 matched FOM configurations, and one replication timing panel per comparator. Certificate: 5.47 h projected
+  (8.2 h ×1.5, allocation 12 h); ledger 10.58 + 5.47 = 16.05 ≤ 34 GPU-hours.

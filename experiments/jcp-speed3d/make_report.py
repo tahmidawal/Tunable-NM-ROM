@@ -337,7 +337,12 @@ def main():
                      f"{f(ww['median'])} / {f(ww['worst'])}" if ww else '–', f(v['S_screen']), f(h.get('S_confirmed')),
                      h.get('verdict', 'screening only'), pretty(v['B_star']), f(h.get('S_BE_confirmed')), f(h.get('S_scheme_confirmed'))])
     w(table(['comparator', 'comparator median / worst', 'winner W*', 'W* median / worst', 'S screen', 'S confirmed', 'H2',
-             'B* (best BE)', 'S_BE confirmed', 'S_C/S_BE confirmed'], rows))
+             'B* (best BE)', 'S_BE confirmed', 'direct paired B*/W* speed-up'], rows))
+    w('')
+    w('Each factor of the decomposition comes from its own direct confirmation panel (A2.7(b)); their product need not equal '
+      'the total $S$, and neither factor isolates one methodological change. The selection is per comparator: the winner '
+      'ties-or-beats *its* comparator on median and worst (for example the CN winner chosen against C_W768 does not tie-or-beat '
+      "C_W1024's worst error; the BDF2 winner does).")
     w('')
     w(f"Eligible configurations: {sum(v['eligible'] for v in C.values())} of {len(C)}. Reduced rules are empirically "
       "validated surrogates, not quadrature-equivalent (A1.13).")
@@ -411,7 +416,10 @@ def main():
     w('## Route 4 — against the full simulation, by mesh (H4)')
     w('')
     w('Contract: **mesh-free / scoring-lattice** (ν and the initial field on each method\'s own input points, outputs '
-      'on the $63^3$ scoring lattice); it is not the full-field query. Matched labels do not transfer across meshes (A6).')
+      'on the $63^3$ scoring lattice); it is not the full-field query. Matched labels do not transfer across meshes (A6). '
+      'All latencies are **prepared-input latencies** (A2.7(e)); input preparation is outside every timer and reported '
+      'separately below — it is not added to the ratios. Central + CN-R is E0\'s own discretization family, so its error '
+      'against E0 partly measures the reference\'s own level difference.')
     w('')
     rows = []
     for l_, d in fm['matches'].items():
@@ -490,7 +498,22 @@ def main():
         w('')
         w(table(['ROM', 'upwind/BE', 'upwind/CN-R', 'central/CN-R', 'spectral', 'union'], rows))
         w('')
-        w(f"**K2 (governing plan): {m1['K2'].upper() if m1['K2'] == 'fires' else m1['K2']}.**")
+        yes = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('reaches_2x')]
+        no = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('reaches_2x') is False]
+        nm = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('state') == 'no ladder match']
+        w(f"Cells reaching ≥ 2× at L = {hc['L']}: {', '.join(yes) or 'none'}. Matched cells below 2×: {', '.join(no) or 'none'}. "
+          f"No ladder member as accurate as the ROM (nothing claimed for these cells; a FOM outside the ladder would be needed): {', '.join(nm) or 'none'}. "
+          "Against the union of families (the best validated FOM): " + '; '.join(
+              f"{l_} {f(c['union']['speedup'])}×" for l_, c in hc['cells'].items()) + '.')
+        w('')
+        w(f"**K2 (governing plan): {m1['K2'].upper() if m1['K2'] == 'fires' else m1['K2']}** — scoped to this lane's selected 3D "
+          'configurations and its finite FOM ladder.')
+        w('')
+        rows = [[k, f(v['median'] * 1e3), f(v['max'] * 1e3), v['n']] for k, v in m1.get('input_prep', {}).items()]
+        w('Input preparation (outside the timers; ms per query; `rom_mesh65` = IC on the mesh, `rom_mf|<rule>` = IC at the rule '
+          'points, `fd|L` = FD interior field, `ps|N` = sine coefficients):')
+        w('')
+        w(table(['input', 'median (ms)', 'max (ms)', 'queries'], rows))
         w('')
         ps = [v['families'].get('PS', {}) for v in m1['H43'].values()]
         ps_sp = [x.get('speedup') for x in ps if x.get('speedup') is not None]
@@ -557,7 +580,9 @@ def main():
         ('median / worst', 'median and maximum over the ranked validation cases of the max-over-output-times relative error.'),
         ('ties-or-beats', 'not resolved as worse: median(e_a − η) ≤ median(e_b + η), same for the maximum.'),
         ('screening ratio', 'median paired time ratio to C_old inside each grid job.'),
-        ('confirmed', 'from a direct A–B–A panel A = comparator, B = selected configuration, 8 cases × 3 repetitions, one job.'),
+        ('confirmed', 'from a direct A–B–A panel A = comparator, B = selected configuration, in one job: 8 cases × 3 repetitions '
+                      'for H1.4/H2; 4 cases × 2 repetitions for the route-4 matched panels (A2.7(a)).'),
+        ('prepared-input latency', 'warm query time with the inputs already on the device in each method\'s own format; preparation is reported separately.'),
         ('C_old, C_W768, C_W1024', 'comparators: the deployed BE configurations of M2_512, W768, W1024.'),
         ('W*, B*', 'H2 winner (cheapest eligible configuration that ties-or-beats C) and best BE configuration doing so.'),
         ('S', 'speed-up = cost(comparator) / cost(selected).'),

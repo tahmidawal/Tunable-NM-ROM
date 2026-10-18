@@ -120,6 +120,11 @@ def tob_or_within(a, m, rel=0.01):
                 median=float(np.median(ea)), worst=float(np.max(ea)), median_mesh=float(np.median(em)), worst_mesh=float(np.max(em)))
 
 
+def prep_of(res):
+    """A1.9 / A2.7(e): input-preparation seconds (outside every timer) per input kind: median, max, count."""
+    return {k: dict(median=float(np.median(v)), max=float(np.max(v)), n=len(v)) for k, v in (res.get('input_prep_seconds') or {}).items() if v}
+
+
 def tri(xs):
     """All-of over every expected item: False if any measured False, True only if every item is measured True, else None."""
     if any(x is False for x in xs):
@@ -143,7 +148,7 @@ def analyze_p1(rp, sel, grid, scp):
     lab = {c['label']: c for c in blk['configs']}
     Rp = {s: v['Rp'] for s, v in MC.SETTINGS.items()}
     out = dict(job=res['job_id'], gpu=res['gpu'], commit=res['commit'], complete=res.get('complete'),
-               cohort=dict(seed=res['cohort']['seed'], n=len(cases)), K4=sc['controls'])
+               cohort=dict(seed=res['cohort']['seed'], n=len(cases)), K4=sc['controls'], input_prep=prep_of(res))
     ccases = cases[:blk.get('confirm_cases', 8)]
     # ---- confirmation panels (A1.5)
     conf = {}
@@ -387,6 +392,7 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
     cases = res['cohort']['cases']
     tcases = cases[:tc['cases']]
     out = dict(job=res['job_id'], gpu=res['gpu'], commit=res['commit'], complete=res.get('complete'), K4=sc['controls'],
+               input_prep=prep_of(res),
                G5=M_['G5'], G5_all=M_['G5_all'], label='mesh-free / scoring-lattice contract (not the full-field query)',
                per_L={}, H41={}, H43={}, panel_failures={})
     f1recs = {v.get('key'): v for v in list(f1['fom']['fd'].values()) + list(f1['fom']['ps'].values())}

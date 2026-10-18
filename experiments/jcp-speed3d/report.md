@@ -128,11 +128,13 @@ K4 (scoring swap / shift) fires in every grid job (swap changes 0.675–0.677, s
 
 ## Route 2 — narrower bank, fewer points, second-order schemes (H2)
 
-| comparator | comparator median / worst | winner W* | W* median / worst | S screen | S confirmed | H2 | B* (best BE) | S_BE confirmed | S_C/S_BE confirmed |
+| comparator | comparator median / worst | winner W* | W* median / worst | S screen | S confirmed | H2 | B* (best BE) | S_BE confirmed | direct paired B*/W* speed-up |
 |---|---|---|---|---|---|---|---|---|---|
 | C_old | 0.0157 / 0.0446 | M2_512 gl24, FS-K1 BDF2, Δt = 0.0125 | 0.00642 / 0.0441 | 2.00 | 2.01 | pass | M2_512 gl24, FS-K1 BE, Δt = 0.01 | 1.75 | 1.16 |
 | C_W768 | 0.0154 / 0.0528 | M2_512 gl24, QN-4 CN, Δt = 0.01667 | 0.00335 / 0.0465 | 5.22 | 5.37 | pass | W768 lat16384, QN-4 BE, Δt = 0.01 | 2.13 | 2.50 |
 | C_W1024 | 0.0153 / 0.0459 | M2_512 gl24, FS-K1 BDF2, Δt = 0.0125 | 0.00642 / 0.0441 | 16.8 | 17.2 | pass | W1024 lat32768, FS-K1 BE, Δt = 0.01 | 1.91 | 8.96 |
+
+Each factor of the decomposition comes from its own direct confirmation panel (A2.7(b)); their product need not equal the total $S$, and neither factor isolates one methodological change. The selection is per comparator: the winner ties-or-beats *its* comparator on median and worst (for example the CN winner chosen against C_W768 does not tie-or-beat C_W1024's worst error; the BDF2 winner does).
 
 Eligible configurations: 436 of 684. Reduced rules are empirically validated surrogates, not quadrature-equivalent (A1.13).
 
@@ -197,7 +199,7 @@ Throughput at B = 16 over B = 1: C_old 0.971× (misses the 2× bar); W_C_W768 3.
 
 ## Route 4 — against the full simulation, by mesh (H4)
 
-Contract: **mesh-free / scoring-lattice** (ν and the initial field on each method's own input points, outputs on the $63^3$ scoring lattice); it is not the full-field query. Matched labels do not transfer across meshes (A6).
+Contract: **mesh-free / scoring-lattice** (ν and the initial field on each method's own input points, outputs on the $63^3$ scoring lattice); it is not the full-field query. Matched labels do not transfer across meshes (A6). All latencies are **prepared-input latencies** (A2.7(e)); input preparation is outside every timer and reported separately below — it is not added to the ratios. Central + CN-R is E0's own discretization family, so its error against E0 partly measures the reference's own level difference.
 
 Screening FOM matches from the f1 ladder (cheapest calibrated FOM whose median **and** worst tie-or-beat the ROM; "no ladder match" = no ladder member does so jointly on median and worst):
 
@@ -293,7 +295,23 @@ ROM (mesh-free path) per mesh: eligibility at that mesh (E-a, E-b, E-c against t
 | W_C_W768 | no ladder match | no ladder match | 2.03 ✓ | 0.158 | 0.158 |
 | W_C_old | no ladder match | no ladder match | 1.68 | 0.135 | 0.135 |
 
-**K2 (governing plan): FIRES.**
+Cells reaching ≥ 2× at L = 384: W_C_W768 vs CC. Matched cells below 2×: C_W1024 vs CC, C_W1024 vs PS, C_old vs CC, C_old vs PS, W_C_W768 vs PS, W_C_old vs CC, W_C_old vs PS. No ladder member as accurate as the ROM (nothing claimed for these cells; a FOM outside the ladder would be needed): C_W1024 vs UB, C_W1024 vs UC, C_old vs UB, C_old vs UC, W_C_W768 vs UB, W_C_W768 vs UC, W_C_old vs UB, W_C_old vs UC. Against the union of families (the best validated FOM): C_W1024 0.00786×; C_old 0.0701×; W_C_W768 0.158×; W_C_old 0.135×.
+
+**K2 (governing plan): FIRES** — scoped to this lane's selected 3D configurations and its finite FOM ladder.
+
+Input preparation (outside the timers; ms per query; `rom_mesh65` = IC on the mesh, `rom_mf|<rule>` = IC at the rule points, `fd|L` = FD interior field, `ps|N` = sine coefficients):
+
+| input | median (ms) | max (ms) | queries |
+|---|---|---|---|
+| rom_mesh65 | 6.04 | 698 | 64 |
+| rom_mf\|lat65536 | 3.99 | 637 | 64 |
+| rom_mf\|gl32 | 3.77 | 617 | 64 |
+| rom_mf\|gl24 | 3.61 | 631 | 64 |
+| fd\|L64 | 7.72 | 17.1 | 20 |
+| ps\|N16 | 12.0 | 34.3 | 16 |
+| fd\|L128 | 41.0 | 755 | 8 |
+| fd\|L256 | 352 | 1.12e+03 | 8 |
+| fd\|L384 | 1.22e+03 | 1.97e+03 | 8 |
 
 The early unaudited f1 observation "spectral FOM clearly beats the ROM at 64³" is **confirmed** by the paired panels: the matched spectral FOM (ps|N16|0.025; cross-resolution) gives ROM speed-ups 0.00747–0.135× (below 1 = the FOM is faster at equal-or-better accuracy).
 
@@ -348,6 +366,7 @@ The early unaudited f1 observation "spectral FOM clearly beats the ROM at 64³" 
 | codex-results-1.md | NOT READY |
 | codex-results-2.md | NOT READY |
 | codex-results-3.md | READY |
+| codex-results-pm-1.md | READY |
 | codex-select-1.md | NOT READY |
 | codex-select-2.md | NOT READY |
 | codex-select-3.md | READY |
@@ -368,7 +387,8 @@ The early unaudited f1 observation "spectral FOM clearly beats the ROM at 64³" 
 - **median / worst** — median and maximum over the ranked validation cases of the max-over-output-times relative error.
 - **ties-or-beats** — not resolved as worse: median(e_a − η) ≤ median(e_b + η), same for the maximum.
 - **screening ratio** — median paired time ratio to C_old inside each grid job.
-- **confirmed** — from a direct A–B–A panel A = comparator, B = selected configuration, 8 cases × 3 repetitions, one job.
+- **confirmed** — from a direct A–B–A panel A = comparator, B = selected configuration, in one job: 8 cases × 3 repetitions for H1.4/H2; 4 cases × 2 repetitions for the route-4 matched panels (A2.7(a)).
+- **prepared-input latency** — warm query time with the inputs already on the device in each method's own format; preparation is reported separately.
 - **C_old, C_W768, C_W1024** — comparators: the deployed BE configurations of M2_512, W768, W1024.
 - **W*, B*** — H2 winner (cheapest eligible configuration that ties-or-beats C) and best BE configuration doing so.
 - **S** — speed-up = cost(comparator) / cost(selected).

@@ -90,7 +90,15 @@ def main():
             roles = {kk: sp[kk] for kk in ('qp', 'qpp') if sp.get(kk)}
             settings[k] = P.Setting(banks[k[0]], f'{k}', k[1], k[2], k[3], roles=roles, nrec=NREC)
             settings[k].live_bytes = P.mem()['in_use'] - b0
-        return settings[k]
+        st_ = settings[k]
+        for kk in ('qp', 'qpp'):                      # a later subject of the same setting may ask for Q2 roles
+            if sp.get(kk) and kk not in st_.rules:
+                b0 = P.mem()['in_use']
+                st_.add_role(banks[k[0]], kk, sp[kk])
+                st_.live_bytes += P.mem()['in_use'] - b0
+            elif sp.get(kk):
+                assert st_.rules[kk] == sp[kk], (kk, st_.rules[kk], sp[kk])
+        return st_
 
     subs = [cfg['A']] + cfg['subjects']
     W0, ref = {}, {}
@@ -121,6 +129,8 @@ def main():
             F = jax.block_until_ready(q['decode'](W, d))
             W0[(lb, ci)] = (w0, scale)
             ref[(lb, ci)] = ident(W, s_)
+            if lb in cfg.get('inject_identity_fault', []):     # smoke control (A4.1): a wrong reference must invalidate
+                ref[(lb, ci)] = 'injected-' + ref[(lb, ci)]
             f = P.restrict(F, L)
             g, _ = cert(s_['states'], nu, d, sch)
             S_ = NREC - 1
@@ -213,15 +223,18 @@ def main():
                               hashes_ok=bool(ha1 == ref[(la, ci)] and ha2 == ref[(la, ci)] and ident(W, s_) == ref[(lb, ci)])))
             if BAND[0] <= drift <= BAND[1]:
                 break
-        x = dict(tries[-1], valid=bool(BAND[0] <= tries[-1]['drift'] <= BAND[1]), retries=len(tries) - 1,
-                 drifts=[t_['drift'] for t_ in tries], all_hashes_ok=all(t_['hashes_ok'] for t_ in tries))
+        all_ok = all(t_['hashes_ok'] for t_ in tries)
+        x = dict(tries[-1], valid=bool(BAND[0] <= tries[-1]['drift'] <= BAND[1] and all_ok), retries=len(tries) - 1,
+                 drifts=[t_['drift'] for t_ in tries], all_hashes_ok=all_ok,
+                 drift_ok=bool(BAND[0] <= tries[-1]['drift'] <= BAND[1]))
         rep['invocations'].append(x)
-        ta1, _ = timed_A(ci)
+        ta1, hf1 = timed_A(ci)
         QS.burn(burn)
         tf, fo = sync_time(lambda: q['fused'](u0, nu, d, st.cold, sch))
-        ta2, _ = timed_A(ci)
+        ta2, hf2 = timed_A(ci)
+        hok = bool(ident(fo['W'], fo['stats']) == ref[(lb, ci)] and hf1 == ref[(la, ci)] and hf2 == ref[(la, ci)])
         rep['fused'].append(dict(B=lb, case=x['case'], rep=r_, tA1=ta1, tA2=ta2, t_fused=tf, ratio=tf / (.5 * (ta1 + ta2)),
-                                 drift=ta2 / ta1, hash_ok=bool(ident(fo['W'], fo['stats']) == ref[(lb, ci)])))
+                                 drift=ta2 / ta1, hash_ok=hok, valid=bool(hok and BAND[0] <= ta2 / ta1 <= BAND[1])))
         if len(rep['invocations']) % 24 == 0:
             save()
             print('TRIPLETS', len(rep['invocations']), el(), flush=True)
@@ -245,8 +258,8 @@ def main():
                 t2, o2 = sync_time(lambda: run_evolve(sp, ci))
                 rep['doubled'].append(dict(subject=lb, case=f'{cases[ci][0]}|{cases[ci][1]}', rep=r_, t_single1=t1, t_double=tb,
                                            t_single2=t2, ratio=tb / (.5 * (t1 + t2)), drift=t2 / t1,
-                                           same_iterations=bool(np.array_equal(np.asarray(oa[1]['step_it']), np.asarray(ob[1]['step_it']))
-                                                                and ident(*oa) == ref[(lb, ci)] and ident(*ob) == ref[(lb, ci)])))
+                                           same_iterations=bool(np.array_equal(np.asarray(oa[1]['step_it']), np.asarray(ob[1]['step_it']))),
+                                           identity_ok=bool(all(ident(*o_) == ref[(lb, ci)] for o_ in (o1, oa, ob, o2)))))
     save()
 
     for sp in cfg.get('components', []):                 # A1.2 / A2.2 diagnostic

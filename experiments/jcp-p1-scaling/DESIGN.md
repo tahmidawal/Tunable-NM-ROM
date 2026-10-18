@@ -648,3 +648,18 @@ the overhead; all P1c timings are labelled "solver with internal-state recording
 $(M,m)$; it does not establish total solver-time scaling in $r$ (A2.2). Component arithmetic is tied to the solver by
 numerical equivalence (the kernel `J`/`N` of `p1comp` equal the solver's `nlJ`/`nl` on the fixtures to $10^{-12}$
 relative, checked in the smoke), not by a wall-time band.
+
+---
+
+## Amendment A4 (2026-10-18, before any lane job; answers `audits/codex-design-4.md`, NEEDS-RESTATEMENT — implementation enforcement only)
+
+**A4.1 Identity is enforced, not only recorded.** A timing triplet is **valid** only if its drift is in band **and**
+every execution in it — every attempt's A flanks and B evolution, including retries — reproduces its scoring run's
+identity hash (W, every internal state, per-step exit reasons and iteration counts). The fused triplet's A flanks are
+checked the same way (descriptive panel; an identity failure marks it invalid). Doubled work: the two single flanks and
+both executions of the double interval must reproduce the identity hash, in addition to identical iteration counts; an
+identity failure makes that control "invalid" (blocking H-cost-N and H-cost-r like a failure). The analysis
+(`analyze.py`) treats any identity failure of a subject as "identity failure: timing claims for this subject blocked",
+independent of the drift-based invalid fraction. Smoke demonstration: one smoke subject is run with an injected wrong
+reference hash (`inject_identity_fault`); all its triplets must come out invalid and its H-cost-N statistic "verdict not
+reached".

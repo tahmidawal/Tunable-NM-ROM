@@ -374,6 +374,34 @@ def t_nnls():
     return out
 
 
+@gate('G-qrdel blocked QR column deletion vs the Givens reference (A38.1)')
+def t_qrdel():
+    import nnls as NN
+    rng = np.random.default_rng(7)
+    worst = 0.
+    for trial in range(60):
+        m, K = int(rng.integers(150, 400)), 128
+        k = int(rng.integers(3, K))
+        j = int(rng.integers(0, k))
+        A = rng.standard_normal((m, k))
+        b = rng.standard_normal(m)
+        Qa, Ra = np.linalg.qr(A)
+        sg = np.where(np.diag(Ra) < 0, -1., 1.)
+        Qa, Ra = Qa * sg, Ra * sg[:, None]
+        Q = jnp.zeros((m, K)).at[:, :k].set(Qa)
+        R = jnp.eye(K).at[:k, :k].set(Ra)
+        t = jnp.zeros(K).at[:k].set(Qa.T @ b)
+        Qg, Rg, tg = (np.asarray(x) for x in NN._qr_delete_givens(Q, R, t, k, j))
+        Qw, Rw, tw = (np.asarray(x) for x in NN._qr_delete(jnp.array(Q), jnp.array(R), jnp.array(t), k, j))
+        Ad = np.delete(A, j, axis=1)
+        e = max(np.abs(Qw - Qg).max(), np.abs(Rw - Rg).max(), np.abs(tw - tg).max(),
+                np.abs(Qw[:, :k - 1] @ Rw[:k - 1, :k - 1] - Ad).max(), np.abs(np.tril(Rw, -1)).max(),
+                np.abs(Rw[k - 1:, k - 1:] - np.eye(K - k + 1)).max(), np.abs(Qw[:, k - 1:]).max())
+        worst = max(worst, e)
+    assert worst <= 1e-12, worst
+    return f'60 random deletions, worst {worst:.1e}'
+
+
 @gate('G-qdeim pivots vs scipy, exact interpolation on span(U)')
 def t_qdeim():
     rng = np.random.default_rng(1)

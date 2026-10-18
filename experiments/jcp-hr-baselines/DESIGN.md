@@ -1511,3 +1511,17 @@ the comparators load lazily, with pinned hashes).
 
 **A26.7 A19 wording.** A19.4's "design audit round 14 clean" refers to the accepted successor of round 14: the first
 later design audit returning CLEAN (or NEEDS-RESTATEMENT with no WRONG item and every restatement applied).
+
+---
+
+## Amendment A27 (2026-10-18) — jcp-qualify FRONT-2D v1 (coordinator A19.6)
+
+jcp-qualify `runs/FRONT-2D.json` v1 (commit 2374fafe1 "frozen after results audits 1–2", file sha256 prefix
+a51ac1a250f00d4b; its results audit 2 is RESULTS-CONFIRMED) lists at 256² and 1024² the fronts of its qualified
+configurations. Under A21.1 only LSPG members at Δt₀ = 0.005 with scheme BE or CN-R are admissible; they are
+`256|R128|LSPG|BE|1`, `256|R384|LSPG|CNR|1`, `1024|R128|LSPG|BE|1`, `1024|R384|LSPG|CNR|1` (frozen F_2048 prefix, rules
+fib4181 / gauss128) — exactly the batch-1 identities `256|R128|BE`, `256|R384|CNR`, `1024|R128|BE`, `1024|R384|CNR`
+(same bank, R′, rule, mode policy, scheme and step). No second 2D batch is therefore needed; the report marks these four
+as "FRONT-2D members" and lists the other front members (GAL, other steps, 4096²) as "not assessed (no registered
+baseline option / mesh outside C3-minimal)". jcp-qualify also reports that speed3d's H2 winners fail its 3D Q2; the 3D
+batch-1 comparison stays diagnostic-only (A22.0) and its report wording carries that.

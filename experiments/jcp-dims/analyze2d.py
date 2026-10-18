@@ -206,6 +206,9 @@ def gcert_rows(d, lb, s, rows):
     tol = float(z['tol'][1])
     out = []
     for j, r_ in enumerate(rows):
+        if j >= len(z['cert']) or not np.size(z['cert'][j]):
+            out.append(dict(r_, gcert_ok_A61=False))
+            continue
         if str(z['form']) == 'GAL' or bool(z['square']):
             g = DC.gcert(z['raw'][j], z['tolratio'][j], tol * z['scale'][j], z['scale'][j])
         else:
@@ -231,11 +234,19 @@ def timing_costs():
         for x in ok:
             per.setdefault(x['case'], []).append(x['ratio'])
         rows = s['certification']
-        steps = int(s['steps']) * len(rows)
-        cover = [r_['case'] for r_ in rows] == DSC.DEV6
+        S_reg = int(round(.25 / (.005 * float(s['spec']['factor']))))       # registered steps, from the subject spec
+        z_ = np.load(d / f"S_{lb.replace('|', '_')}.npz")
+        cert_ = np.asarray(z_['cert'], float)
+        form_, square_ = str(z_['form']), bool(z_['square'])
+        bar_ = 1e-7 if (form_ == 'LSPG' and square_) else (1e-8 if form_ == 'GAL' else 1e-3)
+        inv_cert = cert_.shape == (6, S_reg) and all(np.shape(z_[k_]) == (6, S_reg) for k_ in ('raw', 'tolratio', 'scale', 'rec')
+                                                    if k_ in z_.files and (form_ == 'GAL' or square_ or k_ == 'rec'))
+        noncert_ = int(np.sum(~(np.isfinite(cert_) & (cert_ <= bar_)))) if inv_cert else None
+        steps = 6 * S_reg
+        cover = [r_['case'] for r_ in rows] == DSC.DEV6 and inv_cert
         q1 = bool(rows and cover and all(r_['valid'] and r_['tight_valid'] and r_['tighter_valid'] and r_['gcert_ok_A61']
                                          for r_ in gcert_rows(d, lb, s, rows))
-                  and sum(r_['noncertified'] for r_ in rows) <= .01 * steps and all(r_['dist_tight'] <= 2.5e-4 for r_ in rows)
+                  and noncert_ is not None and noncert_ <= .01 * steps and all(r_['dist_tight'] <= 2.5e-4 for r_ in rows)
                   and all(r_['dist_tight_tighter'] <= 2.5e-5 for r_ in rows))
         q2 = False                                         # no successor: unverified, never qualified (A1.5)
         if s['spec'].get('qp'):

@@ -27,6 +27,7 @@ FILES = [f'{LANE}/{f}' for f in ('hrcore.py', 'rom.py', 'build.py', 'nnls.py', '
      f'{VQ}/inputs/rule_q0_m1024_qrg304_reachable.npz', f'{V3}/offmesh.py', f'{V3}/qpanel.py', f'{V3}/rules/rules.npz',
      f'{V3}/vendor/burgers3d-span/common.py', f'{V3}/vendor/burgers3d-retry/tables.py',
      f'{V3}/vendor/paper-b3d/vendor/b3d_common.py', 'experiments/mr-burgers2d/engines.py',
+     'experiments/mr-burgers2d/iterative_paths.py',
      'experiments/separable-decoder/sep_common.py',
      'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),

@@ -1244,3 +1244,9 @@ recorded as a phase-II implementation item with its own code audit, and the smok
   tolerances frozen and its checkpoints compared with the full-QR path on the smoke fixtures) or a reduced production
   scope is registered, and the resource certificate is regenerated for the final algorithm including the 16r
   continuation and the retry. The 30 GPU-h cap and the incomplete-coverage labels stand.
+
+**A18.6 (code audit 16, design audit 13).** A18.1's persistence applies to the **support checkpoints** (the registered
+knob); tolerance crossings are reported as scalars only. The fixture archive `runs/nnls_fixture/` is completed by the
+logs `t4.log`, `t7.log` and `G.sha256` (generated on the local CPU after A18; committed when present), and `t_old.py`
+is pinned to the pre-A17 `nnls.py` (commit c57098e00) that produced `old_algorithm_t.log`. Until those logs are
+committed, the repaired-path versus reference comparison of A18.3 is "incompletely archived".

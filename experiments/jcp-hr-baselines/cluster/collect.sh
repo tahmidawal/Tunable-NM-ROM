@@ -16,8 +16,12 @@ case "$ST" in COMPLETED|FAILED|CANCELLED|TIMEOUT|OUT_OF_MEMORY|NODE_FAIL|PREEMPT
   *) echo "job $JOB state '$ST' is not terminal or unknown: refusing"; exit 3;; esac
 timeout 300 $SSH tufts-login "bash -o pipefail -euc 'cd $NS/$A && mkdir -p output && find logs output -type f -print0 | sort -z | xargs -0 sha256sum'" > "$LOCAL/REMOTE.sha256.new"
 mkdir -p "$LOCAL/archive"
-timeout 3600 rsync -e "$SSH" -a "tufts-login:$NS/$A/logs" "tufts-login:$NS/$A/output" "$LOCAL/archive/"
-( cd "$LOCAL/archive" && sha256sum -c "../REMOTE.sha256.new" --quiet )
+# COMMON-BRIEF 16: pull only files < 100 MB (results, logs, manifests); every pulled file is verified against the
+# fresh remote manifest, which is committed and lists the large files that stay on the cluster
+timeout 3600 rsync -e "$SSH" -a --max-size=100m "tufts-login:$NS/$A/logs" "tufts-login:$NS/$A/output" "$LOCAL/archive/"
+( cd "$LOCAL/archive" && grep -F -f <(find . -type f | sed 's|^\./||') "../REMOTE.sha256.new" | sha256sum -c --quiet )
+( cd "$LOCAL/archive" && comm -13 <(find . -type f | sed 's|^\./||' | sort) <(awk '{print $2}' "../REMOTE.sha256.new" | sort) ) > "$LOCAL/REMOTE-ONLY.txt"
+echo "files left on the cluster (>= 100 MB): $(wc -l < "$LOCAL/REMOTE-ONLY.txt")"
 mv "$LOCAL/REMOTE.sha256.new" "$LOCAL/REMOTE.sha256"
 echo "transfer verified against the fresh remote manifest ($(wc -l < "$LOCAL/REMOTE.sha256") files)"
 timeout 60 $SSH tufts-login "sacct -j $JOB --format=JobID,State,Elapsed,AllocTRES%60,ExitCode -P" > "$LOCAL/archive/sacct.txt"

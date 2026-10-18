@@ -63,19 +63,19 @@
    "commit": "13fbab1d645b2b9f376cf02634ea9d77c61f12c2",
    "role": "tune configs/tune_2d256.json",
    "requested_hours": 2.0,
-   "measured_gpu_hours": null,
-   "status": "submitted"
+   "measured_gpu_hours": 1.0433,
+   "status": "COMPLETED; collected"
   },
   {
    "attempt": "s2d1024a",
-   "slurm": null,
+   "slurm": 5674029,
    "gpu": "h200",
    "commit": "0ce8cf761dd7578618840afa97dc9370422e0b17",
    "role": "stageb configs/stageb_c2d1024.json",
    "requested_hours": 3.5,
    "measured_gpu_hours": null,
-   "status": "reserved at staging"
+   "status": "submitted"
   }
  ],
- "spent_gpu_hours": 4.2053
+ "spent_gpu_hours": 5.2486
 }

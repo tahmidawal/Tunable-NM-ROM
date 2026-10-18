@@ -82,6 +82,8 @@ class Cell:
         passed = basis_certified(pe, dev, rl)
         fallback = None
         if not all(passed.values()):          # A5.2: blocked randomised SVD; the tail always comes from the Gram
+            Phi_host = np.asarray(Phi)             # A14.2: only one candidate basis on the device at a time
+            del Phi
             with self.T(f'pod_fallback[{gen}]'):
                 Phi2, sr, dev2 = BD.pod_rsvd(S, rmax)
                 pe2, C2 = BD.projection_errors(S, Phi2, rl, sig)
@@ -90,6 +92,10 @@ class Cell:
             if sum(passed2.values()) > sum(passed.values()):          # A6.1: one basis per cell, the one certifying more
                 Phi, pe, C, dev, passed = Phi2, pe2, C2, dev2, passed2
                 fallback['used'] = True
+            else:
+                del Phi2
+                Phi = jax.block_until_ready(jnp.asarray(Phi_host))
+            del Phi_host
         rho = int(np.sum(sig > 1e-10 * sig[0]))          # reported only (A5.2)
         trust = BD.trust_radii(C, rl, self.d)
         gate = dict(orthonormality=dev, orth_ok=dev <= 1e-10, numerical_rank_reported=rho, fallback=fallback,
@@ -121,6 +127,8 @@ class Cell:
         passed = basis_certified(pe, devN, pl)
         fallback = None
         if not all(passed.values()):
+            U_host = np.asarray(U)                 # A14.2: only one candidate basis on the device at a time
+            del U
             with self.T('adv_pod_fallback'):
                 U2, sr, devN2 = BD.pod_rsvd(S, pmax)
                 pe2, _ = BD.projection_errors(S, U2, pl, sigN)
@@ -129,6 +137,10 @@ class Cell:
             if sum(passed2.values()) > sum(passed.values()):
                 U, pe, devN, passed = U2, pe2, devN2, passed2
                 fallback['used'] = True
+            else:
+                del U2
+                U = jax.block_until_ready(jnp.asarray(U_host))
+            del U_host
         ok = all(passed.values())
         rhoN = int(np.sum(sigN > 1e-10 * sigN[0]))
         self.U, self.sigN = U, sigN

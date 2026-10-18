@@ -1102,3 +1102,19 @@ confined to the job directory; `smoke_accept.py` exits non-zero unless ALL passe
 completion only. The staged config differs from the HEAD blob only by the added `commit` field (by design of
 `stage.py`). Whether the full workload fits the hour is unproven; phases not reached are skipped and fail acceptance
 (fail-closed), and the phase-I hand-back then reports exactly which controls were not demonstrated.
+
+---
+
+## Amendment A14 (2026-10-18) — findings of the phase-I cluster smoke `smk1` (job 5354834, H200)
+
+**A14.1 Smoke p_max is a shape pilot only.** The reduced smoke snapshot sets (2D 2,304; 3D 4,104 snapshots) cannot be
+expected to certify an advection basis at p_max = 2,048 / 4,096 (in smk1 the 2D state POD's numerical rank was 1,652).
+The maximal Q-DEIM B-QR in the smoke is therefore a memory/shape pilot that may use an uncertified p_max (recorded),
+and acceptance certifies the advection POD only at the p the smoke actually runs (p_s and the N-under ladder). In
+production, A6.1 applies unchanged: a p not certified on the full snapshot set is not constructible.
+
+**A14.2 Memory-lean POD fallback.** smk1's 2D advection POD failed its certificate at some registered p, the
+randomised fallback then ran out of device memory (16.5 GiB allocation) with both candidate bases resident. Now only one
+candidate basis is on the device at a time (the other is parked on the host), the sign normalisation works on column
+chunks, and the method-of-snapshots divisor is floored at $10^{-14}\sigma_1$ so columns beyond the numerical rank stay
+finite (and are rejected by the certificate, never used).

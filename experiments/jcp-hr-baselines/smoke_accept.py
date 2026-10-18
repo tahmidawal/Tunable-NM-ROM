@@ -223,7 +223,7 @@ def main():
         while p >= 1:
             ladder.append(p)
             p //= 2
-        plist = [str(p) for p in sorted(set([c['ps'], c['pmax']] + ladder))]
+        plist = [str(p) for p in sorted(set([c['ps']] + ladder))]       # A14.1: p_max is a shape pilot, reported only
         put(f'{key}|G-pod(adv)', all(p in ap and cert_ok(ap[p]) for p in plist) and fin(a.get('orthonormality'))
             and a['orthonormality'] <= 1e-10, p=plist)
         q = R.get('qdeim_pilot') or {}

@@ -84,7 +84,9 @@ def pod(S, rmax, nb=1 << 16):
     lam, V = jnp.linalg.eigh(G)
     lam, V = lam[::-1], V[:, ::-1]
     sig = jnp.sqrt(jnp.maximum(lam, 0.))
-    W = V[:, :rmax] / sig[:rmax]
+    # A14.2: beyond the numerical rank sigma ~ 0; a floored divisor keeps W finite (those columns are then arbitrary
+    # directions re-orthonormalised by the QR below and are rejected by the certificate, never used silently)
+    W = V[:, :rmax] / jnp.maximum(sig[:rmax], 1e-14 * sig[0])
     del G, V
     blocks = [jnp.asarray(S[:, a:b]).T @ W for a, b in _blocks(S.shape[1], nb)]
     Phi = jnp.concatenate(blocks, 0)
@@ -92,7 +94,8 @@ def pod(S, rmax, nb=1 << 16):
     for _ in range(2):
         Phi, _r = jnp.linalg.qr(Phi, mode='reduced')
     # fix signs so that the basis is deterministic (largest-|.| entry of each column positive)
-    sgn = jnp.sign(Phi[jnp.argmax(jnp.abs(Phi), axis=0), jnp.arange(rmax)])
+    am = jnp.concatenate([jnp.argmax(jnp.abs(Phi[:, a:b]), axis=0) for a, b in _blocks(rmax, 128)])   # column chunks
+    sgn = jnp.sign(Phi[am, jnp.arange(rmax)])
     Phi = Phi * jnp.where(sgn == 0, 1., sgn)[None, :]
     dev = float(jnp.max(jnp.abs(Phi.T @ Phi - jnp.eye(rmax))))
     return jax.block_until_ready(Phi), np.asarray(sig), dev

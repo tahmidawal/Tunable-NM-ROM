@@ -227,7 +227,7 @@ def run_cell(cfg, c, res, outdir, save):
     while p >= 1:
         ladder_p.append(p)
         p //= 2
-    p_list = sorted(set([c['ps'], c['pmax']] + ladder_p))
+    p_list = sorted(set([c['ps'], c['pmax']] + ladder_p))         # p_max: reported only (A14.1)
     R['p_list'] = p_list
     P('adv_pod', lambda: cell.build_adv(S, c['pmax'], p_list), 240)
     del S
@@ -235,7 +235,9 @@ def run_cell(cfg, c, res, outdir, save):
 
     def qdeim_pilot():
         t0 = time.perf_counter()
-        dat, info = cell.qdeim(c['rmax'], c['pmax'])               # maximal B-QR shape (memory pilot)
+        # maximal B-QR shape: a MEMORY/SHAPE pilot (A3.6, A14.1); the reduced smoke snapshot set need not certify p_max
+        dat, info = cell.qdeim(c['rmax'], c['pmax'], allow_uncertified_p=True)
+        info = dict(info, p_max_certified=c['pmax'] in getattr(cell, 'constructible_p', set()))
         jax.block_until_ready(dat['T1'])
         out = dict(info, seconds=time.perf_counter() - t0, device_peak=PL.device_peak(), r=c['rmax'],
                    B_shape=[cell.n, 2 * c['rmax'] + c['pmax']], T1_shape=list(dat['T1'].shape))

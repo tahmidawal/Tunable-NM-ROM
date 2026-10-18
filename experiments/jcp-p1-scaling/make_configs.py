@@ -62,10 +62,10 @@ def timing(edges4096, smoke=False):
     if smoke:
         meshes = {'256': dict(edges=FULL), '1024': dict(edges=FULL)}
         subs = [subj(256, 128, 'CNR'), subj(1024, 128, 'CNR'), subj(256, 384, 'CNR'), subj(1024, 384, 'CNR'),
-                subj(1024, 512, 'CNR'), subj(256, 128, 'BE')]
+                subj(1024, 512, 'CNR'), subj(256, 128, 'BE'), subj(256, 128, 'BE', 'nominal')]
         cfg = dict(attempt='smktime', driver='p1time', meshes=meshes, A=subj(1024, 384, 'CNR'), subjects=subs, cases='dev2',
-                   reps=2, burn=.1, seed=20261017, inject_identity_fault=['256|R128|fib4181|frozen|BE'],
-                   doubled=[dict(subj(1024, 384, 'CNR'), cases='dev2'), dict(subj(256, 128, 'CNR'), cases='dev2')],
+                   reps=2, burn=.1, seed=20261017, inject_identity_fault=['256|R128|fib4181|nominal|BE'],
+                   doubled=[dict(subj(1024, 384, 'CNR'), cases='dev2'), dict(subj(256, 128, 'BE'), cases='dev2')],
                    components=[dict(subj(1024, 384, 'CNR'), case=['dev6', 0], reps=30),
                                dict(subj(1024, 512, 'CNR'), case=['dev6', 0], reps=30)],
                    recording_overhead=[dict(subj(1024, 128, 'CNR'), cases='dev2'), dict(subj(1024, 384, 'CNR'), cases='dev2')])
@@ -112,7 +112,7 @@ def smoke_acc():
                    under_resolved_successor='gauss64', b0_scheme='CNR', b0_cases='dev6'),
               dict(config='R384', kind='order', case=['dev6', 0], factors=[1, .5, .25], anchor=.0625, anchor2=.03125,
                    qplus='gauss160', qplusplus='gauss192'),
-              dict(config='R384', kind='vendor', cases='dev2', rules=['gauss128', 'gauss32', 'gauss64', 'gauss96', 'fib6765', 'gauss640']),
+              dict(config='R384', kind='vendor', cases='dev6', rules=['gauss128', 'gauss32', 'gauss64', 'gauss96', 'fib6765', 'gauss640']),
               dict(config='R128', kind='p1e', failing='gauss32', successor='gauss64', cases='dev2', scheme='BE')]
     return dict(attempt='smkacc', driver='p1acc', mesh=1024, edges=FULL, configs=c, blocks=blocks)
 

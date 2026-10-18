@@ -67,8 +67,14 @@ def dN(c, t):
 
 
 def rho(c, t, tp):
+    """A2.4: both zero -> nan (trivial); successor zero -> inf; non-finite -> inf."""
     a, b = N(c, t), N(c, tp)
-    return float(np.linalg.norm(a - b) / np.linalg.norm(b))
+    if not (np.isfinite(a).all() and np.isfinite(b).all()):
+        return float('inf')
+    nb = float(np.linalg.norm(b))
+    if nb == 0.:
+        return float('nan') if float(np.linalg.norm(a)) == 0. else float('inf')
+    return float(np.linalg.norm(a - b) / nb)
 
 
 def gammas(states, A, lam, t, scheme, dt, nu):

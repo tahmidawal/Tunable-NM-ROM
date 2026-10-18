@@ -22,6 +22,18 @@ def main():
     cfg = json.loads((C / 'configs/c2grid.json').read_text())
     s512 = [s for s in cfg['settings'] if s['name'] == 'R512'][0]
     assert s512 == dict(name='R512', Rp=512, rule='gauss192') and cfg['mesh'] == 1024
+    # archived configuration (code audit 1): the job's own setup block, mesh, checkpoint and commit
+    res = json.loads((C / 'runs/c2grid/archive/output/result.json').read_text())
+    setup = {k: v for k, v in res['setup'].items() if k != 'bank'}
+    assert res['mesh'] == 1024 and setup['R512']['Rp'] == 512 and setup['R512']['rule'] == 'gauss192' and setup['R512']['m'] == 36864
+    arch = dict(mesh=res['mesh'], commit=res['commit'], job_id=res['job_id'], gpu=res['gpu'], jax_version=res['jax_version'],
+                checkpoint_sha256=res['checkpoint_sha256'], bank=res['setup']['bank'],
+                setup={k: dict(Rp=v['Rp'], M=v['M'], rule=v['rule'], m=v['m'], trust=v['trust'], A_cond=v['A']['cond'])
+                       for k, v in setup.items()},
+                cohorts={k: v['physical_sha256'] for k, v in res['cohorts'].items()}, config=res['config'])
+    (HERE / 'checks').mkdir(exist_ok=True)
+    (HERE / 'checks/combined-c2grid-manifest.json').write_text(json.dumps(arch, indent=1, default=str))
+    del res
     a = C / 'runs/c2grid/archive/output/W_R512.npz'
     z = np.load(a)
     runs, cases = list(z['runs']), list(z['cases'])

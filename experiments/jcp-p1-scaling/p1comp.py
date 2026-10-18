@@ -21,10 +21,10 @@ import qstudy as QS
 
 
 def _time(fn, args, reps, burn, warm=3):
-    """0.1 s burn (outside the interval), warm calls, then `reps` synchronised calls; returns all raw times."""
+    """0.1 s burn (outside the interval), then warm calls, then `reps` synchronised calls (A1.10); all raw times."""
+    QS.burn(burn)
     for _ in range(warm):
         jax.block_until_ready(fn(*args))
-    QS.burn(burn)
     ts = []
     for _ in range(reps):
         t = time.perf_counter()
@@ -115,14 +115,16 @@ def component_times(st, scheme, nu, w0, scale, reps=30, burn=.1):
     dt = jnp.asarray(P.DT0, jnp.float64)
     w = jnp.asarray(w0)
     hist = comps['hist_cn'](w, w, nu, d)
-    out = {}
-    out['hist_be'] = float(np.median(_time(comps['hist_be'], (w, w, nu, d), reps, burn)))
-    out['hist_cn'] = float(np.median(_time(comps['hist_cn'], (w, w, nu, d), reps, burn)))
-    out['pred'] = float(np.median(_time(comps['pred'], (w, w, w, hist, nu, d, co, dt), reps, burn)))
-    out['init'] = float(np.median(_time(comps['init'], (w, hist, nu, d, co, dt), reps, burn)))
+    raw = {}
+    raw['hist_be'] = _time(comps['hist_be'], (w, w, nu, d), reps, burn)
+    raw['hist_cn'] = _time(comps['hist_cn'], (w, w, nu, d), reps, burn)
+    raw['pred'] = _time(comps['pred'], (w, w, w, hist, nu, d, co, dt), reps, burn)
+    raw['init'] = _time(comps['init'], (w, hist, nu, d, co, dt), reps, burn)
     r, J, g, rn, _ = comps['init'](w, hist, nu, d, co, dt)
     lam = jnp.asarray(1e-6, jnp.float64)
-    out['iter'] = float(np.median(_time(comps['iter'], (w, r, J, g, rn, lam, hist, nu, d, co, dt), reps, burn)))
+    raw['iter'] = _time(comps['iter'], (w, r, J, g, rn, lam, hist, nu, d, co, dt), reps, burn)
+    out = {k: float(np.median(v)) for k, v in raw.items()}
+    out['raw'] = raw
     return out
 
 

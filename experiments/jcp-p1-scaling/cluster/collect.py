@@ -24,7 +24,11 @@ def main():
     out = HERE / 'runs' / a.attempt / 'archive'
     if a.cleanup:
         assert (out / 'OUTPUTS.sha256').exists(), 'collect first'
+        assert not (out / 'PARTIAL').exists(), 'a partial collection never authorises cleanup'
+        assert (out / 'output').exists() and any((out / 'output').rglob('COMPLETE')), 'no COMPLETE marker in the archive'
         subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
+        q = subprocess.run(SSH + [f'squeue -h -n p1s_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
+        assert not q.strip(), f'job p1s_{a.attempt} still queued/running: {q}'
         subprocess.run(SSH + [f'rm -rf {shlex.quote(remote)}'], check=True)
         print('removed', remote)
         return
@@ -40,6 +44,8 @@ def main():
     subprocess.run(['tar', '-xf', 'collection.tar'], cwd=out, check=True)
     subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
     (out / 'collection.tar').unlink()
+    if a.partial:
+        (out / 'PARTIAL').write_text('partial collection\n')
     print(out)
 
 

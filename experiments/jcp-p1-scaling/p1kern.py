@@ -112,6 +112,7 @@ def main():
             d1 = ref_kernel()
             ok = (1 / 1.1) <= d1 / d0 <= 1.1
             rep['drift'].setdefault(panel, []).append(dict(start=d0, end=d1, ratio=d1 / d0, ok=ok))
+            rep.setdefault('all_attempts', {}).setdefault(panel, []).append(rows)   # every attempt kept (code audit 1)
             if ok:
                 break
         rep['panels'][panel] = dict(rows=rows, drift_ok=ok, attempts=attempt + 1, ranks=pr)
@@ -129,6 +130,17 @@ def main():
         s_ = PC.dispatch_sync(fn, args, reps=10, burn=float(cfg['burn']))
         s_['passed'] = bool(1.8 <= s_['ratio_median'] <= 2.2)
         rep['sync'][comp] = s_
+    # A3.3: the kernel components equal the solver's tested advection and its Jacobian (qcore point form) on a fixture
+    data = dict(Gq=Gq, Gs=Gs, Psi=Psi)
+    nl, nlJ = Q.tested_value('point', L), Q.tested_jac('point', L)
+    eqN, eqJ = [], []
+    for cf in fixtures:                                   # A3.3: on every fixture, at the largest rank
+        cc_ = jnp.asarray(cf[:Rmax])
+        vN, vJ = nl(cc_, data), nlJ(cc_, data, None)[1]
+        eqN.append(float(jnp.max(jnp.abs(PC.k_N(cc_, Gq, Gs, Psi) - vN)) / jnp.max(jnp.abs(vN))))
+        eqJ.append(float(jnp.max(jnp.abs(PC.k_J(cc_, Gq, Gs, Psi) - vJ)) / jnp.max(jnp.abs(vJ))))
+    rep['component_equivalence'] = dict(N=max(eqN), J=max(eqJ), per_fixture=dict(N=eqN, J=eqJ),
+                                        passed=bool(max(eqN) <= 1e-12 and max(eqJ) <= 1e-12))
     rep['memory'] = P.mem()
     rep['elapsed_seconds'] = el()
     rep['complete'] = True

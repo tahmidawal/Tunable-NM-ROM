@@ -1,0 +1,207 @@
+{
+ "mesh": 1024,
+ "commit": "43d00da630149f8660b5af8045e4b0d4730eb072",
+ "job_id": "5209526",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "jax_version": "0.10.2",
+ "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+ "bank": {
+  "edges": [
+   0,
+   128,
+   256,
+   384,
+   512
+  ],
+  "seconds": 10.282082385849208,
+  "M_max": 2048
+ },
+ "setup": {
+  "fast": {
+   "Rp": 128,
+   "M": 512,
+   "rule": "fib1597",
+   "m": 1597,
+   "trust": 1.5688229056821106,
+   "A_cond": 2.112011520492635
+  },
+  "R128": {
+   "Rp": 128,
+   "M": 512,
+   "rule": "fib4181",
+   "m": 4181,
+   "trust": 1.5688229056821106,
+   "A_cond": 2.112011520492635
+  },
+  "R256": {
+   "Rp": 256,
+   "M": 1024,
+   "rule": "gauss96",
+   "m": 9216,
+   "trust": 1.5689852201938264,
+   "A_cond": 4.61574126412098
+  },
+  "acc": {
+   "Rp": 384,
+   "M": 1536,
+   "rule": "gauss96",
+   "m": 9216,
+   "trust": 1.5689859107113286,
+   "A_cond": 9.558898148005417
+  },
+  "R384": {
+   "Rp": 384,
+   "M": 1536,
+   "rule": "gauss128",
+   "m": 16384,
+   "trust": 1.5689859107113286,
+   "A_cond": 9.558898148005417
+  },
+  "R512": {
+   "Rp": 512,
+   "M": 2048,
+   "rule": "gauss192",
+   "m": 36864,
+   "trust": 1.5689859151305452,
+   "A_cond": 15.23000556293739
+  }
+ },
+ "cohorts": {
+  "dev6": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "val32": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70"
+ },
+ "config": {
+  "attempt": "c2grid",
+  "driver": "c2grid",
+  "mesh": 1024,
+  "cohorts": [
+   "dev6",
+   "val32"
+  ],
+  "settings": [
+   {
+    "name": "fast",
+    "Rp": 128,
+    "rule": "fib1597"
+   },
+   {
+    "name": "R128",
+    "Rp": 128,
+    "rule": "fib4181"
+   },
+   {
+    "name": "R256",
+    "Rp": 256,
+    "rule": "gauss96"
+   },
+   {
+    "name": "acc",
+    "Rp": 384,
+    "rule": "gauss96"
+   },
+   {
+    "name": "R384",
+    "Rp": 384,
+    "rule": "gauss128"
+   },
+   {
+    "name": "R512",
+    "Rp": 512,
+    "rule": "gauss192"
+   }
+  ],
+  "grid": {
+   "forms_schemes": [
+    [
+     "LSPG",
+     "BE"
+    ],
+    [
+     "LSPG",
+     "CN"
+    ],
+    [
+     "LSPG",
+     "CNR"
+    ],
+    [
+     "LSPG",
+     "BDF2"
+    ],
+    [
+     "GAL",
+     "CN"
+    ]
+   ],
+   "dt_factors": [
+    0.5,
+    1,
+    1.6666666666666667,
+    2,
+    2.5,
+    5,
+    10
+   ],
+   "anchor_factors": [
+    0.125,
+    0.0625
+   ]
+  },
+  "refs": "/cluster/tufts/paralab/tawal01/jcp-comb/c2grid/refs",
+  "ref_contract": {
+   "mesh": 8192,
+   "refs": {
+    "ST": {
+     "dt": 0.0003125,
+     "ntol": 1e-11,
+     "ltol": 1e-09,
+     "accept_residual": 2e-11
+    },
+    "S": {
+     "dt": 0.005,
+     "ntol": 1e-11,
+     "ltol": 1e-09,
+     "accept_residual": 2e-11
+    }
+   }
+  },
+  "fom": {
+   "schemes": [
+    "BE",
+    "CN",
+    "CNR",
+    "BDF2"
+   ],
+   "dt_factors": [
+    0.5,
+    1,
+    2,
+    5
+   ],
+   "ntols": [
+    0.0001,
+    1e-06,
+    1e-08
+   ],
+   "order_cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     2
+    ]
+   ]
+  },
+  "common_baseline": "acc",
+  "timing": {
+   "cohort": "dev6",
+   "cases": 6,
+   "reps": 3,
+   "burn": 0.1,
+   "seed": 20261013,
+   "common_seed": 20261013
+  }
+ }
+}

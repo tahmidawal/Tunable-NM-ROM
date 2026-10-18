@@ -183,16 +183,26 @@ def main():
     A = cfg['A']
     la = label(A)
 
-    def run_evolve(sp, ci):
+    ARGS = {}
+
+    def evolve_args(sp, ci):
+        """Prebuilt (function, arguments) of one evolution: nothing but the dispatch is inside a timed interval."""
         lb = label(sp)
-        st = setting(sp)
-        w0, scale = W0[(lb, ci)]
-        return st.q['LSPG']['evolve'](w0, U0[(int(sp['mesh']), ci)][1], scale, st.data[('main', 'LSPG')],
-                                      st.sched('LSPG', sp['scheme'], DT0, 'prod'))
+        if (lb, ci) not in ARGS:
+            st = setting(sp)
+            w0, scale = W0[(lb, ci)]
+            ARGS[(lb, ci)] = (st.q['LSPG']['evolve'], (w0, U0[(int(sp['mesh']), ci)][1], scale, st.data[('main', 'LSPG')],
+                                                       st.sched('LSPG', sp['scheme'], DT0, 'prod')))
+        return ARGS[(lb, ci)]
+
+    def run_evolve(sp, ci):
+        fn, args = evolve_args(sp, ci)
+        return fn(*args)
 
     def timed_A(ci):
+        fn, args = evolve_args(A, ci)
         QS.burn(burn)
-        t, o = sync_time(lambda: run_evolve(A, ci))
+        t, o = sync_time(lambda: fn(*args))
         return t, ident(*o)
 
     rng = np.random.default_rng(int(cfg['seed']))
@@ -207,11 +217,13 @@ def main():
         d = st.data[('main', 'LSPG')]
         sch = st.sched('LSPG', sp['scheme'], DT0, 'prod')
         u0, nu, _ = U0[(L, ci)]
+        cold = st.cold
+        evolve_args(A, ci)
         tries = []
         for attempt in range(3):
             ta1, ha1 = timed_A(ci)
             QS.burn(burn)
-            ti, (w0, scale) = sync_time(lambda: q['init'](u0, st.cold))
+            ti, (w0, scale) = sync_time(lambda: q['init'](u0, cold))
             QS.burn(burn)
             te, (W, s_) = sync_time(lambda: q['evolve'](w0, nu, scale, d, sch))
             QS.burn(burn)
@@ -226,11 +238,11 @@ def main():
         all_ok = all(t_['hashes_ok'] for t_ in tries)
         x = dict(tries[-1], valid=bool(BAND[0] <= tries[-1]['drift'] <= BAND[1] and all_ok), retries=len(tries) - 1,
                  drifts=[t_['drift'] for t_ in tries], all_hashes_ok=all_ok,
-                 drift_ok=bool(BAND[0] <= tries[-1]['drift'] <= BAND[1]))
+                 drift_ok=bool(BAND[0] <= tries[-1]['drift'] <= BAND[1]), attempts=tries)
         rep['invocations'].append(x)
         ta1, hf1 = timed_A(ci)
         QS.burn(burn)
-        tf, fo = sync_time(lambda: q['fused'](u0, nu, d, st.cold, sch))
+        tf, fo = sync_time(lambda: q['fused'](u0, nu, d, cold, sch))
         ta2, hf2 = timed_A(ci)
         hok = bool(ident(fo['W'], fo['stats']) == ref[(lb, ci)] and hf1 == ref[(la, ci)] and hf2 == ref[(la, ci)])
         rep['fused'].append(dict(B=lb, case=x['case'], rep=r_, tA1=ta1, tA2=ta2, t_fused=tf, ratio=tf / (.5 * (ta1 + ta2)),
@@ -244,20 +256,23 @@ def main():
     for sp in cfg.get('doubled', []):                    # AM-8
         lb = label(sp)
         for ci in P.select(cases, sp.get('cases', cfg['cases'])):
+            fn, args = evolve_args(sp, ci)
             for r_ in range(int(cfg['reps'])):
                 QS.burn(burn)
-                t1, o1 = sync_time(lambda: run_evolve(sp, ci))
+                t1, o1 = sync_time(lambda: fn(*args))
                 QS.burn(burn)
                 t0 = time.perf_counter()
-                oa = run_evolve(sp, ci)
+                oa = fn(*args)
                 jax.block_until_ready(oa)
-                ob = run_evolve(sp, ci)
+                ob = fn(*args)
                 jax.block_until_ready(ob)
                 tb = time.perf_counter() - t0
                 QS.burn(burn)
-                t2, o2 = sync_time(lambda: run_evolve(sp, ci))
+                t2, o2 = sync_time(lambda: fn(*args))
                 rep['doubled'].append(dict(subject=lb, case=f'{cases[ci][0]}|{cases[ci][1]}', rep=r_, t_single1=t1, t_double=tb,
                                            t_single2=t2, ratio=tb / (.5 * (t1 + t2)), drift=t2 / t1,
+                                           drift_ok=bool(BAND[0] <= t2 / t1 <= BAND[1]),
+                                           it=[np.asarray(o_[1]['step_it'])[:NREC - 1].tolist() for o_ in (o1, oa, ob, o2)],
                                            same_iterations=bool(np.array_equal(np.asarray(oa[1]['step_it']), np.asarray(ob[1]['step_it']))),
                                            identity_ok=bool(all(ident(*o_) == ref[(lb, ci)] for o_ in (o1, oa, ob, o2)))))
     save()
@@ -290,13 +305,14 @@ def main():
             w0, scale = W0[(lb, ci)]
             nu = U0[(int(sp['mesh']), ci)][1]
             jax.block_until_ready(q0['evolve'](w0, nu, scale, d, sch))
+            fn, args = evolve_args(sp, ci)
             for r_ in range(int(cfg['reps'])):
                 QS.burn(burn)
-                t1, _ = sync_time(lambda: run_evolve(sp, ci))
+                t1, _ = sync_time(lambda: fn(*args))
                 QS.burn(burn)
                 tb, ob = sync_time(lambda: q0['evolve'](w0, nu, scale, d, sch))
                 QS.burn(burn)
-                t2, _ = sync_time(lambda: run_evolve(sp, ci))
+                t2, _ = sync_time(lambda: fn(*args))
                 Wr = np.asarray(run_evolve(sp, ci)[0])
                 rep['recording_overhead'].append(dict(subject=lb, case=f'{cases[ci][0]}|{cases[ci][1]}', rep=r_, t_rec1=t1,
                                                       t_norec=tb, t_rec2=t2, ratio_norec_over_rec=tb / (.5 * (t1 + t2)),

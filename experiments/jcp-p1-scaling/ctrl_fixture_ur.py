@@ -47,7 +47,8 @@ def main():
         rh[f'dev6|{c}'] = dict(file=str(f), sha256=hashlib.sha256(f.read_bytes()).hexdigest(),
                                rho=[NC.rho(W[k], t32, t64) for k in range(6)])
     res = dict(fixture=dict(Rp=384, M=1536, mesh=1024, scheme='LSPG-BE dt0', rule='gauss32', successor='gauss64',
-                            cases='dev6', source_job=r.get('job_id'), source=str(QS / 'result.json')),
+                            cases='dev6', source_job=r.get('job_id'), source=str(QS / 'result.json'),
+                            source_sha256=hashlib.sha256((QS / 'result.json').read_bytes()).hexdigest()),
                rollout=roll, rollout_min_lower_bound=min(x['lower_bound'] for x in roll),
                rollout_established=bool(min(x['lower_bound'] for x in roll) > 2.5e-4), rho_own=rh,
                rho_max=max(max(v['rho']) for v in rh.values()))

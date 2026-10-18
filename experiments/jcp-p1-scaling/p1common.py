@@ -174,6 +174,12 @@ class Bank:
         return self._cold[Rp]
 
 
+def fingerprint(d):
+    """Identity of a data dict: shapes of every array and the sha256 of the mesh/list-dependent small arrays."""
+    return sha(np.concatenate([np.asarray(d['lam']).ravel(), np.asarray(d['A'][:, 0]).ravel(),
+                               np.asarray([float(np.prod(v.shape)) for k, v in sorted(d.items()) if hasattr(v, 'shape')])]))
+
+
 def rule_points(rule):
     X, w = Q.offmesh_rule(rule)
     return X, w, sha(np.concatenate([X.ravel(), w]))
@@ -219,7 +225,8 @@ class Setting:
             self.data[(role, form)] = T2.form_data(self.base, blk, form)
         self.table_bytes[role] = mem()['in_use'] - b0
         self.meta[role] = dict(L=self.L, mesh_hash=bank.mesh_hash, mode_hash=self.mode_hash, rule=rl, rule_sha256=rsha,
-                               m=len(X), Rp=self.Rp, M=self.M, policy=self.policy)
+                               m=len(X), Rp=self.Rp, M=self.M, policy=self.policy,
+                               fingerprint=fingerprint(self.data[(role, forms[0])]))
         del blk
 
     def drop_role(self, role):
@@ -234,6 +241,10 @@ class Setting:
         ops = bank.ops(self.policy)
         if mt['mode_hash'] != list_hash(ops['kx'][:self.M], ops['ky'][:self.M]):
             raise ValueError('table mode list differs from the bank operators of its policy')
+        if fingerprint(self.data[(role, 'LSPG')]) != mt['fingerprint']:     # the arrays themselves (code audit 1)
+            raise ValueError('table arrays differ from the ones built for this setting (substituted data)')
+        if not np.array_equal(np.asarray(self.data[(role, 'LSPG')]['lam']), np.asarray(ops['lam'][:self.M])):
+            raise ValueError('table eigenvalues differ from the bank operators (wrong mesh or list)')
 
     def sched(self, form, scheme, dt, level):
         g, t_ = tol_of(form, level)
@@ -243,6 +254,8 @@ class Setting:
 def run_query(bank, st, role, form, scheme, dt, level, u0, nu, record=True):
     """End-to-end fused query, guarded by the table metadata check."""
     st.check(role, bank)
+    if record:     # the recording buffer must hold exactly the schedule (code audit 1: no silent overwrite)
+        assert int(round(.25 / dt)) + 1 == st.nrec, (dt, st.nrec)
     q = (st.q if record else st.q0)[form]
     return q['fused'](u0, nu, st.data[(role, form)], st.cold, st.sched(form, scheme, dt, level))
 
@@ -264,8 +277,17 @@ def run_valid(v):
     are not invalid by themselves; they are counted (budget_exits) and judged by the certified gamma."""
     st = v['stats']
     ex = np.asarray(st['exits'])
-    W = np.asarray(v['W'])
-    return bool(np.isfinite(W).all() and ex[3] == 0)
+    ok = bool(np.isfinite(np.asarray(v['W'])).all() and ex[3] == 0)
+    for k in ('fields', 'w0'):                       # code audit 1: every output, not only the coefficients
+        if k in v:
+            ok = ok and bool(np.isfinite(np.asarray(v[k])).all())
+    if 'states' in st:                               # every recorded internal step
+        ok = ok and bool(np.isfinite(np.asarray(st['states'])).all())
+    if 'step_gn' in st:                              # no non-finite step (recorded stationarity ratio of every step)
+        k_ = int(st['steps']) if 'steps' in st else None
+        g = np.asarray(st['step_gn'])[:k_]
+        ok = ok and bool(np.isfinite(g).all())
+    return ok
 
 
 def budget_exits(v):

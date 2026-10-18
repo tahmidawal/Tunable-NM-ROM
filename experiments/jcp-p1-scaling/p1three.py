@@ -34,6 +34,7 @@ sys.path.insert(0, str(HERE / 'vendor' / 'quad3d'))
 sys.path.insert(0, str(HERE / 'vendor' / 'quad2d'))
 import offmesh as OM  # noqa: E402  (vendored, unchanged)
 from offmesh import C, TB  # noqa: E402
+import p1core  # noqa: E402,F401  (sets the import paths of the 2D vendored code that qstudy needs)
 import qstudy as QS  # noqa: E402
 import p1comp as PC  # noqa: E402
 
@@ -68,6 +69,17 @@ def load_rules(names):
     missing = set(names) - set(out)
     assert not missing, missing
     return out
+
+
+def rho_a24(a, b):
+    """A2.4 semantics (same as p1common.rho): both zero -> nan (trivial); b = 0 != a -> inf; non-finite -> inf."""
+    a, b = np.asarray(a), np.asarray(b)
+    if not (np.isfinite(a).all() and np.isfinite(b).all()):
+        return float('inf')
+    nb = float(np.linalg.norm(b))
+    if nb == 0.:
+        return float('nan') if float(np.linalg.norm(a)) == 0. else float('inf')
+    return float(np.linalg.norm(a - b) / nb)
 
 
 def main():
@@ -169,6 +181,7 @@ def kern(cfg, rep, save, bank, tb, kx, M_of, Mfix, ranks, n, el):
             d1 = ref_kernel()
             ok = (1 / 1.1) <= d1 / d0 <= 1.1
             rep['drift'].setdefault(panel, []).append(dict(start=d0, end=d1, ratio=d1 / d0, ok=ok))
+            rep.setdefault('all_attempts', {}).setdefault(panel, []).append(rows)
             if ok:
                 break
         rep['panels'][panel] = dict(rows=rows, drift_ok=ok, attempts=attempt + 1, ranks=ranks)
@@ -186,10 +199,14 @@ def kern(cfg, rep, save, bank, tb, kx, M_of, Mfix, ranks, n, el):
         rep['sync'][comp] = s_
     # equivalence of the kernel components with the vendored 3D advection and Jacobian (A3.3)
     data = dict(B=B, D=D, P=P)
-    rep['component_equivalence'] = dict(
-        N=float(jnp.max(jnp.abs(PC.k_N(c, B, D, P) - OM.adv_offmesh_batch(data, c[None])[0])) /
-                jnp.max(jnp.abs(OM.adv_offmesh_batch(data, c[None])[0]))),
-        J=float(jnp.max(jnp.abs(PC.k_J(c, B, D, P) - OM.contract_offmesh(data, c))) / jnp.max(jnp.abs(OM.contract_offmesh(data, c)))))
+    eqN, eqJ = [], []
+    for cf in fixtures:
+        cc_ = jnp.asarray(cf[:Rmax])
+        vN, vJ = OM.adv_offmesh_batch(data, cc_[None])[0], OM.contract_offmesh(data, cc_)
+        eqN.append(float(jnp.max(jnp.abs(PC.k_N(cc_, B, D, P) - vN)) / jnp.max(jnp.abs(vN))))
+        eqJ.append(float(jnp.max(jnp.abs(PC.k_J(cc_, B, D, P) - vJ)) / jnp.max(jnp.abs(vJ))))
+    rep['component_equivalence'] = dict(N=max(eqN), J=max(eqJ), per_fixture=dict(N=eqN, J=eqJ),
+                                        passed=bool(max(eqN) <= 1e-12 and max(eqJ) <= 1e-12))
     save()
 
 
@@ -225,14 +242,14 @@ def p1e(cfg, rep, save, bank, tb, kx, M_of, n, el):
             W = np.asarray(o[1])[::keep]
             Wst[(rule, j)], Fst[(rule, j)] = W, np.asarray(o[0])
             rs = np.asarray(o[3])
-            valid[(rule, j)] = bool(np.isfinite(W).all() and int((rs == 3).sum()) == 0)
+            valid[(rule, j)] = bool(np.isfinite(np.asarray(o[1])).all() and np.isfinite(np.asarray(o[0])).all()
+                                    and np.isfinite(np.asarray(o[4])).all() and int((rs == 3).sum()) == 0)
             if nxt is not None:
                 rh = []
                 for k in range(6):
                     a_ = np.asarray(nl3(jnp.asarray(W[k]), data))
                     b_ = np.asarray(nl3(jnp.asarray(W[k]), nxt))
-                    nb = float(np.linalg.norm(b_))
-                    rh.append(float(np.linalg.norm(a_ - b_) / nb) if nb > 0 else (float('nan') if np.linalg.norm(a_) == 0 else float('inf')))
+                    rh.append(rho_a24(a_, b_))
                 rep['p1e'].setdefault('rho', {}).setdefault(f'{rule}|{chain[i + 1]}', {})[str(j)] = rh
             print('P1E', rule, j, el(), flush=True)
         del om, nxt, data

@@ -39,6 +39,11 @@ def main():
     p.add_argument('--mem-fraction', default='0.92')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
+    cert = ROOT / LANE / 'checks' / f'resources-{a.attempt}.json'
+    if not (a.attempt.startswith('smk') or a.attempt.startswith('pilot')):
+        # production attempts need a smoke-derived certificate; the time limit must cover projection x 1.5 (A1.11)
+        c_ = json.loads(cert.read_text())
+        assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
     runs = []
     for r in a.run:
         drv, cfg = r.split(':', 1)
@@ -108,7 +113,7 @@ echo ALL-DONE
     (out / 'RESERVATION.json').write_text(json.dumps(dict(attempt=a.attempt, gpu=a.gpu, time_limit_hours=h, runs=runs,
                                                           commit=commit), indent=1) + '\n')
     manifest = [f'{hashlib.sha256(p_.read_bytes()).hexdigest()}  {p_.relative_to(out)}'
-                for p_ in sorted(out.rglob('*')) if p_.is_file() and p_.name != 'RESERVATION.json']
+                for p_ in sorted(out.rglob('*')) if p_.is_file()]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')
     print(out)
     print(remote, 'time limit', tl)

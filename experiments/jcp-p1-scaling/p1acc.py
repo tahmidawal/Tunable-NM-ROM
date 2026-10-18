@@ -138,6 +138,8 @@ def main():
             if cc.get('qp'):
                 R.update(q2_ids=np.array(q2), W_qp=np.full((len(q2), 6, st.Rp), np.nan), valid_qp=np.zeros(len(q2), bool),
                          rho=np.full((len(q2), 6), np.nan))
+            R.update(dev_case_ids=np.array([f'{cases[i][0]}|{cases[i][1]}' for i in dev]),
+                     q2_case_ids=np.array([f'{cases[i][0]}|{cases[i][1]}' for i in q2]) if cc.get('qp') else np.array([], str))
             R.update(dev_ids=np.array(dev), W_tighter=np.full((len(dev), 6, st.Rp), np.nan),
                      valid_tighter=np.zeros(len(dev), bool))
             if cc.get('qpp'):
@@ -200,24 +202,7 @@ def main():
             np.savez_compressed(out / f"R_{cc['name']}_{sc}.npz", **R)
             crep['schemes'][sc] = dict(n=len(ids), mem=P.mem())
             save()
-        # reproduction gate (AM-1)
-        rp = (cfg.get('reproduce') or {}).get(cc['name'])
-        if rp:
-            z = np.load(rp['archive'])
-            runs, acases = list(z['runs']), list(z['cases'])
-            g = []
-            for sc in cc['schemes']:
-                Rz = np.load(out / f"R_{cc['name']}_{sc}.npz")
-                ri = runs.index(rp['runs'][sc])
-                for j, cid in enumerate(Rz['case_ids']):
-                    Wa = z['W'][acases.index(cid), ri]
-                    g.append(dict(scheme=sc, case=str(cid), rel=float(np.max(np.linalg.norm(Rz['W'][j] - Wa, axis=1)) /
-                                                                 np.linalg.norm(Wa[0])),
-                                  w0_rel=float(np.linalg.norm(Rz['w0'][j] - z['w0'][acases.index(cid)]) /
-                                               np.linalg.norm(z['w0'][acases.index(cid)]))))
-            crep['reproduction'] = dict(archive=rp['archive'], archive_sha256=QS.sha_file(rp['archive']), rows=g,
-                                        worst=max(x['rel'] for x in g), passed=bool(max(x['rel'] for x in g) <= 1e-10))
-            print('REPRODUCTION', cc['name'], crep['reproduction']['worst'], flush=True)
+        # reproduction gate (AM-1): offline, p1score.reproduction (numerical manifest + W vs the combined archive)
         # extra blocks bound to this configuration
         for blk in cfg.get('blocks', []):
             if blk['config'] != cc['name']:
@@ -296,8 +281,10 @@ def run_order(blk, bank, cc, cases, go, U0, out):
                 F[(role, f_)], Wr[f'{role}|{f_:g}'], ok[f'{role}|{f_:g}'] = f, np.asarray(v['W']), P.run_valid(v)
         v, f, _ = go(st, 'main', form, 'CNR', DT0 * blk['factors'][-1], 'tighter', ci)
         F[('tighter', blk['factors'][-1])], Wr[f"tighter|{blk['factors'][-1]:g}"] = f, np.asarray(v['W'])
+        ok[f"tighter|{blk['factors'][-1]:g}"] = P.run_valid(v)
         v, f, _ = go(st, 'qpp', form, 'CNR', DT0 * blk['factors'][-1], 'tight', ci)
         F[('qpp', blk['factors'][-1])], Wr[f"qpp|{blk['factors'][-1]:g}"] = f, np.asarray(v['W'])
+        ok[f"qpp|{blk['factors'][-1]:g}"] = P.run_valid(v)
         an = blk['anchor']
         e = {f_: P.fdist(F[('main', f_)], F[('main', an)], n0) for f_ in blk['factors']}
         eq = {f_: P.fdist(F[('qp', f_)], F[('qp', an)], n0) for f_ in blk['factors']}
@@ -316,8 +303,9 @@ def run_order(blk, bank, cc, cases, go, U0, out):
                          finer_rule_dist=P.fdist(F[('qp', fin)], F[('qpp', fin)], n0),
                          anchor_dist=P.fdist(F[('main', an)], F[('main', blk['anchor2'])], n0),
                          solver_dist=P.fdist(F[('main', fin)], F[('tighter', fin)], n0), valid=ok,
-                         interpretable=bool(all(checks.values())),
-                         passed=bool(all(checks.values()) and 1.8 <= slope <= 2.2) if form == 'GAL' else None)
+                         all_valid=bool(all(ok.values())),
+                         interpretable=bool(all(checks.values()) and all(ok.values())),
+                         passed=bool(all(checks.values()) and all(ok.values()) and 1.8 <= slope <= 2.2) if form == 'GAL' else None)
         np.savez_compressed(out / f'ORDER_{form}.npz', **Wr)
     del st
     gc.collect()
@@ -427,6 +415,14 @@ def run_controls(blk, bank, st, cc, cases, go, U0, out, cert):
             raised.append(False)
         except ValueError as e_:
             raised.append(str(e_))
+    saved = st.data[('main', 'LSPG')]                     # substituted same-shape arrays must be refused too
+    st.data[('main', 'LSPG')] = dict(saved, lam=saved['lam'] * (1 + 1e-6))
+    try:
+        st.check('main', bank)
+        raised.append(False)
+    except ValueError as e_:
+        raised.append(str(e_))
+    st.data[('main', 'LSPG')] = saved
     res['wrong_mesh'] = dict(raised=raised, passed=all(bool(x) for x in raised))
     del sts, small
     gc.collect()

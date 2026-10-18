@@ -132,6 +132,30 @@ def t_h_cost_r():
     print('op-model exponents', pf, pb)
 
 
+def t_missing_mesh():
+    rng = np.random.default_rng(0)
+    t = 1. + .01 * rng.standard_normal((6, 2, 3))
+    o = S.h_cost_n(t, np.ones_like(t, bool), [256, 1024], nboot=500)
+    check('H-cost-N two meshes -> registered verdict not reached', o['outcome'].startswith('two-mesh'), outcome=o['outcome'])
+    e = .01 + 1e-5 * rng.standard_normal(16)
+    o = S.h_acc_n({'P256': (e, e, np.zeros(16))}, None)
+    check('H-acc-N one pair -> registered verdict not reached', o['outcome'].startswith('two-mesh'), outcome=o['outcome'])
+
+
+def t_validity():
+    import jax.numpy as jnp
+    import p1common as P
+    v = dict(W=jnp.ones((6, 4)), fields=jnp.full((6, 3, 3), jnp.nan),
+             stats=dict(exits=jnp.zeros(5, int), states=jnp.ones((51, 4)), step_gn=jnp.zeros(800), steps=50))
+    check('validity rejects non-finite fields with finite W', not P.run_valid(v))
+    v2 = dict(v, fields=jnp.ones((6, 3, 3)))
+    v2['stats'] = dict(v['stats'], states=jnp.full((51, 4), jnp.nan))
+    check('validity rejects non-finite internal states', not P.run_valid(v2))
+    v3 = dict(v, fields=jnp.ones((6, 3, 3)))
+    v3['stats'] = dict(v['stats'], exits=jnp.asarray([3, 0, 0, 0, 47]))
+    check('validity accepts budget exits (A1.4)', P.run_valid(v3))
+
+
 def t_q3_rank_deficient():
     rng = np.random.default_rng(0)
     A = rng.standard_normal((1536, 384))
@@ -141,7 +165,7 @@ def t_q3_rank_deficient():
 
 
 if __name__ == '__main__':
-    for f in (t_wilcoxon_vs_scipy, t_synthetic_timing_fault, t_synthetic_accuracy_trend, t_h_acc_r, t_h_cost_r, t_q3_rank_deficient):
+    for f in (t_wilcoxon_vs_scipy, t_synthetic_timing_fault, t_synthetic_accuracy_trend, t_h_acc_r, t_h_cost_r, t_q3_rank_deficient, t_missing_mesh, t_validity):
         f()
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / 'test_p1.json').write_text(json.dumps(RESULTS, indent=1, default=float))

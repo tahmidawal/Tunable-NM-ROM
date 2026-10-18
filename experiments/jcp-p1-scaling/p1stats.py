@@ -103,7 +103,9 @@ def h_acc_n(pairs, slopes, qualified=True, alpha=.05):
             res['trend'] = dict(testable=True, n_nonzero=nz, p=p, rejects=bool(p < alpha),
                                 median_slope=float(np.median(s)))
     P_ = res['pairs']
-    if not P_ or any(v['empty'] for v in P_.values()):
+    if set(P_) != {'P256', 'P4096'}:               # registered verdict needs both pairs (three meshes)
+        out = 'two-mesh evidence, registered three-mesh verdict not reached'
+    elif any(v['empty'] for v in P_.values()):
         out = 'inconclusive'
     else:
         all_eq = all(v['equivalent'] for v in P_.values())
@@ -161,7 +163,7 @@ def h_acc_r_range(outcomes):
 
 # ------------------------------------------------------------------ H-cost-N (4.1, AM-4, A1.9) ----
 
-def h_cost_n(ratio, valid, meshes, nboot=NBOOT, seed=SEED, bar=1.25):
+def h_cost_n(ratio, valid, meshes, nboot=NBOOT, seed=SEED, bar=1.25, registered=3):
     """ratio, valid: arrays (n_cases, n_meshes, n_reps) of B/A ratios and triplet validity for ONE subject family
     (r, scheme) across meshes. Returns the registered outcome."""
     ratio = np.asarray(ratio, float)
@@ -169,6 +171,7 @@ def h_cost_n(ratio, valid, meshes, nboot=NBOOT, seed=SEED, bar=1.25):
     nc, nm, nr = ratio.shape
     if nm != len(meshes) or nm < 2:
         return dict(outcome='verdict not reached', reason='missing mesh')
+    two_mesh = nm < registered                    # the registered verdict needs all three meshes (V4-3)
     n_inv = (~valid).sum(axis=(0, 2))
     inv_frac = n_inv / (nc * nr)
     if np.any(3 * n_inv > nc * nr):                     # > 1/3 invalid, in integer arithmetic
@@ -199,6 +202,9 @@ def h_cost_n(ratio, valid, meshes, nboot=NBOOT, seed=SEED, bar=1.25):
         return dict(base, outcome='inconclusive (insufficient valid timings)')
     lo, hi = np.percentile(bs, [2.5, 97.5])
     base.update(ci=[float(lo), float(hi)])
+    if two_mesh:
+        proc = 'pass' if hi <= bar else ('fail' if lo > bar else 'inconclusive')
+        return dict(base, outcome='two-mesh evidence, registered three-mesh verdict not reached', procedure_outcome=proc)
     if hi <= bar:
         return dict(base, outcome='pass')
     if lo > bar:

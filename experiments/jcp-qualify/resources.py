@@ -72,8 +72,8 @@ def acc_projection(cfg):
     for b in cfg.get('blocks', []):
         if b['kind'] == 'order':
             sm = r['elapsed'].get('R384|block|order')
-            # upper envelope: the whole smoke block (TH06 on six cases + three one-case arms, all at R384) is charged to
-            # the six TH06 cases only, i.e. per case-arm >= any arm's true cost in the smoke
+            # ESTIMATE (A6.1, not a bound): the whole smoke block (TH06 on six cases + three one-case arms, all at R384) is
+            # charged to the six TH06 cases, i.e. 1.5 x the block's mean cost per case-arm
             n_prod = sum(ncases(a.get('cases', b['cases'])) for a in b['arms'])
             sec = sm / 6 * n_prod
             det[f"order|{b['setting']}"] = sec

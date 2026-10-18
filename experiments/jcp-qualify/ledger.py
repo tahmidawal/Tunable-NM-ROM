@@ -96,7 +96,8 @@ def failing_from_analysis(m, d=None):
     if not want <= set(an):
         return None
     ok_att = {j['attempt'] for j in (d or {}).get('jobs', []) if j['state'] == 'COMPLETED' and j['attempt'].startswith(f'acc{m}')}
-    if any(not (str(an[k].get('attempt') or '') in ok_att and 'lane' in str(an[k].get('source'))) for k in want):
+    if any(not (str(an[k].get('attempt') or '') in ok_att and str(an[k].get('source')) == f"lane {an[k].get('attempt')}")
+           for k in want):
         return None                                  # provenance: every label from a completed accuracy job of this lane
     return sorted(k for k in want if an[k]['Q2'].get('label') != 'pass')
 
@@ -113,7 +114,8 @@ def validate(d, new, exempt=None):
     done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
     probs = [f'bad value {k}' for k, v in new.items()
              if isinstance(v, bool) or not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
-    pat = re.compile(r'^(fballow(256|1024|4096)|fb(256|1024|4096)[a-z0-9]*|time(256|1024|4096)r[0-9]+)$')
+    pat = re.compile(r'^(fballow(256|1024|4096)|fb(256|1024|4096)[a-z0-9]*|time(256|1024|4096)r[0-9]+|'
+                     r'(acc(256|1024|4096)|order|q3d)r[0-9]+)$')          # A6.1 retries carry the suffix r<k>
     probs += [f'unknown pending key {k}' for k in new if k not in MANDATORY and not pat.match(k)]
     probs += [f'{k}: a job projection below 0.25 GPU-h' for k, v in new.items()
               if not k.startswith('fballow') and isinstance(v, (int, float)) and not isinstance(v, bool) and v < .25]
@@ -125,7 +127,10 @@ def validate(d, new, exempt=None):
         cert = HERE / 'checks' / f'resources-{k}.json'
         if cert.exists() and isinstance(v, (int, float)) and v < json.loads(cert.read_text())['time_limit_hours'] - 1e-9:
             probs.append(f'{k} pending below its certificate')
-    probs += [f'missing mandatory {k}' for k in MANDATORY if k != exempt and k not in new and k not in live and k not in done]
+    def covered(k):                                 # a mandatory job or any of its retries k r<n>
+        names = {k} | {x for x in set(new) | live | done | ({exempt} if exempt else set()) if re.match(rf'^{k}r[0-9]+$', x)}
+        return any(x == exempt or x in new or x in live or x in done for x in names)
+    probs += [f'missing mandatory {k}' for k in MANDATORY if not covered(k)]
     fs = d.get('fallback_state', {})
     for m in (256, 1024, 4096):
         if str(m) not in fs:

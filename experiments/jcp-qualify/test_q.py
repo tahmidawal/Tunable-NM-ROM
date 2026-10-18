@@ -43,6 +43,10 @@ def t_dominance():
     pts = {i: pt(float(c), float(e), float(s)) for i, (c, e, s) in enumerate(zip(rng.uniform(.5, 2, 60), rng.uniform(.01, .05, 60), rng.uniform(0, 1e-4, 60)))}
     mutual = any(QS.dominates(pts[i], pts[j]) and QS.dominates(pts[j], pts[i]) for i in pts for j in pts if i != j)
     check('dominance never mutual', not mutual)
+    import analyze as AN
+    rec = lambda c, m, ok: dict(c=c, c_ev=c, median=m, worst=m, eps=0., acc_label=ok, timing_label=True, usable=True, complete38=True)
+    fr = AN.fronts_from_records({'q': rec(1., .01, True), 'u': rec(.5, .005, False)})
+    check('unqualified dominator excluded from the front', fr['median|c'] == ['q'] and fr['worst|c'] == ['q'], front=fr)
 
 
 def t_order():

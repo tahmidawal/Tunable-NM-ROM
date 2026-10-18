@@ -1,119 +1,119 @@
-"""Smoke-derived cost certificates (DESIGN 9.1, A1.11; pattern of jcp-speed3d resources.py). Writes
-checks/resources-<attempt>.json with projection_hours; cluster/stage.py requires time limit >= 1.5 x projection.
+"""jcp-qualify smoke-derived cost certificates (DESIGN 8; P1 resources.py pattern). Writes checks/resources-<attempt>.json
+with projection_hours and time_limit_hours = ceil_0.25(1.5 x projection); cluster/stage.py requires the time limit to
+cover 1.5 x projection, the configs and runs to match. ESTIMATES, not bounds: the scheduler limit is the enforced bound.
 
-Measurements: the smoke's p1acc log ("RUN <config> <scheme> <cohort> <case> <elapsed>": per-case wall time of the whole
-per-case block - prod + certification + tight + tighter + q+ + q++ + Q3), its configs' setup seconds, the smoke timing
-job's per-triplet wall time, the kernel jobs' elapsed time, and the H200 pilot's per-run seconds at 4096^2.
-Proxies are conservative ESTIMATES (not established bounds; iteration counts and compilation are not bounded): a configuration not measured takes the measured configuration with the next larger
-(r, m), scaled by the point-count ratio m / m_measured when larger; 256^2 takes the 1024^2 time; 4096^2 multiplies by the
-pilot's 4096^2 / smoke 1024^2 per-run ratio (>= 1). Every projection is an ESTIMATE x 1.5 in the time limit, enforced by
-the scheduler (the reservation is the time limit, not the projection).
+Measurements: smkA (qacc) rep['elapsed'] per setting|arm (wall seconds incl. compilation, over its cases) and per
+block; smkB (qtime) elapsed and triplet count; smk3 (q3run) elapsed per member (log 'MEMBER' lines) and setup; the
+4096^2 pilot run seconds. Proxies (conservative): an arm not measured takes the measured arm of the same
+(form, scheme, factor) at the next larger measured r (R256, R384 -> R512); 256^2 takes the 1024^2 time; 4096^2
+multiplies by MESH4096 = 2.0 (P1 ledger: its acc4096 per-rollout time did not exceed acc1024's); case counts scale
+linearly (compilation scaled too: conservative). Q2 / tighter / Q3 extras are inside the measured per-case blocks.
 
-    python resources.py --smoke runs/<smoke>/archive/output --pilot runs/<pilot>/archive/output --attempt acc1024
+    python resources.py --attempt acc1024 --run qacc:configs/acc1024.json
 """
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import math
 import re
 from pathlib import Path
 
-import numpy as np
+import analyze as AN
 
 HERE = Path(__file__).resolve().parent
+MESH4096 = 2.0
+NC = {'all38': 38, 'sub16': 16, 'dev6': 6, 'dev2': 2}
 
 
-def rule_m(rule):
-    if rule.startswith('gauss'):
-        return int(rule[5:]) ** 2
-    if rule.startswith('fib'):
-        return int(rule[3:])
-    raise ValueError(rule)
+def ncases(c):
+    return NC[c] if isinstance(c, str) else len(c)
 
 
-NCASE = {'all38': 38, 'sub16': 16, 'dev6': 6, 'dev2': 2}
+def smoke_acc():
+    d = AN.out_dir('smkA', 'qacc')
+    r = json.loads((d / 'result.json').read_text())
+    assert r['complete'], 'smoke incomplete: no certificate'
+    per = {}
+    for s in r['config']['settings']:
+        for arm in s['arms']:
+            k = f"{s['name']}|{arm['form']}_{arm['scheme']}_{float(arm['factor']):g}"
+            per[(s['Rp'], arm['form'], arm['scheme'], float(arm['factor']))] = r['elapsed'][k] / ncases(arm['cases'])
+    return r, per
 
 
-def acc_projection(cfg, smoke_dir, pilot):
-    """Measured wall seconds of the smoke (rep['elapsed']: per (config, scheme) including compilation, per setup, per
-    block) scaled to the production workload: x (cases / smoke cases) (compilation scaled too: conservative),
-    x max(1, m / m_proxy) for the rule, x the pilot's 4096^2 / 1024^2 ratio at 4096^2. Estimates, not bounds."""
-    r = json.loads((smoke_dir / 'p1acc_smkacc' / 'result.json').read_text())
-    assert r['complete'], 'smoke accuracy job incomplete'
-    el = r['elapsed']
-    ccfg = {c['name']: c for c in r['config']['configs']}
-    meas = {}
-    for name, c in ccfg.items():
-        for sc in c['schemes']:
-            meas[(c['Rp'], c['rule'], sc)] = (el[f'{name}|{sc}'] / NCASE[c['cases']], el[f'{name}|setup'])
-    mesh_f = max(1., pilot['run_ratio_4096_over_1024']) if cfg['mesh'] == 4096 else 1.
-    total, detail = 0., {}
-    for c in cfg['configs']:
-        n = NCASE[c['cases']]
-        for sc in c['schemes']:
-            cand = [(k, v) for k, v in meas.items() if k[0] >= c['Rp'] and k[2] == sc] or \
-                   [(k, v) for k, v in meas.items() if k[0] >= c['Rp']]
-            k, (t_case, t_setup) = min(cand, key=lambda kv: (kv[0][0], -rule_m(kv[0][1])))
-            f = max(1., max(rule_m(c['rule']), rule_m(c.get('qp', c['rule']))) / rule_m(k[1]))
-            sec = t_setup * f + n * t_case * f * mesh_f
-            detail[f"{c['name']}|{sc}"] = dict(proxy=list(k), factor=f, mesh_factor=mesh_f, seconds=sec)
+def acc_projection(cfg):
+    r, per = smoke_acc()
+    mesh_f = MESH4096 if cfg['mesh'] == 4096 else 1.
+    total, det = 0., {}
+    for s in cfg['settings']:
+        for arm in s['arms']:
+            key = (arm['form'], arm['scheme'], float(arm['factor']))
+            cand = sorted(rr for (rr, *k) in per if tuple(k) == key and rr >= s['Rp'])
+            assert cand, ('no measured proxy', s['Rp'], key)
+            t_case = per[(cand[0],) + key]
+            sec = ncases(arm['cases']) * t_case * mesh_f
+            det[f"{s['name']}|{key}"] = dict(proxy_r=cand[0], seconds=sec)
             total += sec
+        total += 120. * mesh_f                     # setting setup (tables, compile of certifiers)
     for b in cfg.get('blocks', []):
-        meas_b = el.get(f"{b['config'] if b['kind'] != 'p1e' else 'R128'}|block|{b['kind']}")
-        assert meas_b is not None, b
-        scale = 3. * 4. if b['kind'] == 'p1e' else 1.     # smoke p1e: dev2 at R128; production: dev6 at R256 (x3 cases, x4 work)
-        detail[f"block|{b['kind']}"] = meas_b * scale
-        total += meas_b * scale
-    setup = r['phases']['setup'] * mesh_f + 600.
-    return (total + setup) / 3600, detail
+        if b['kind'] == 'order':
+            sm = r['elapsed'].get('R384|block|order')
+            ncase_smoke = 6 + 3                    # smoke: TH06 on dev6 + three one-case arms
+            n_prod = sum(ncases(a.get('cases', b['cases'])) for a in b['arms'])
+            sec = sm / ncase_smoke * n_prod
+            det[f"order|{b['setting']}"] = sec
+            total += sec
+    setup = r['phases']['setup'] * mesh_f + 900.
+    return (total + setup) / 3600, det
+
+
+def time_projection(cfg):
+    d = AN.out_dir('smkB', 'qtime')
+    t = json.loads((d / 'result.json').read_text())
+    assert t['complete']
+    _, per = smoke_acc()
+    mesh = [int(m) for m in cfg['meshes'] if int(m) != 1024] or [1024]
+    mesh_f = MESH4096 if mesh[0] == 4096 else 1.
+    per_trip = t['elapsed_seconds'] / max(1, len(t['invocations']))      # includes certification of the smoke subjects
+    n = len(cfg['subjects']) * 6 * cfg['reps']
+    cert = 0.
+    for sp in cfg['subjects']:
+        key = (sp['form'], sp['scheme'], float(sp['factor']))
+        cand = sorted(rr for (rr, *k) in per if tuple(k) == key and rr >= sp['Rp'])
+        cert += 6 * per[(cand[0],) + key] * mesh_f
+    sec = n * per_trip * mesh_f + cert + 1800.
+    return sec / 3600, dict(per_triplet_seconds=per_trip, triplets=n, certification_seconds=cert)
+
+
+def q3_projection(cfg):
+    d = AN.out_dir('smk3', 'q3run')
+    r = json.loads((d / 'result.json').read_text())
+    assert r['complete']
+    n_smoke = len(r['members']) + (1 if r.get('control') else 0)
+    per_member = r['elapsed_seconds'] / max(1, n_smoke)
+    n = len(cfg['members']) + (1 if cfg.get('control') else 0)
+    return (n * per_member * 1.5 + 1200.) / 3600, dict(per_member_seconds=per_member, members=n)
 
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--smoke', action='append', required=True, help='smoke archive output dirs (smkA, smkB)')
-    ap.add_argument('--pilot', required=True)
     ap.add_argument('--attempt', required=True)
-    ap.add_argument('--run', action='append', required=True, help='driver:config exactly as passed to cluster/stage.py')
+    ap.add_argument('--run', action='append', required=True)
     a = ap.parse_args()
-    smokes = [Path(x) for x in a.smoke]
-    find = lambda sub: next(d for d in smokes if (d / sub / 'result.json').exists())
-    for sub in ('p1acc_smkacc', 'p1time_smktime', 'p1kern_smkkern', 'p1three_smkkern3d'):   # A5.2: all four complete
-        assert json.loads((find(sub) / sub / 'result.json').read_text())['complete'], f'smoke {sub} incomplete'
-    smoke = find('p1acc_smkacc')
-    pil = json.loads((Path(a.pilot) / 'pilot_pilot' / 'result.json').read_text())
-    assert pil['complete'], 'pilot incomplete: no certificate (DESIGN A5.2)'
-    # comparable measurement (code audit 3): the pilot's own warm recording fused query, R384-gauss128-frozen-CN-R,
-    # 4096^2 vs 1024^2 on the same H200, times the H200/A100 ratio is NOT applied (A100 projections stay A100)
-    f = {x['mesh']: x['fused_seconds'] for x in pil['runs'] if x.get('Rp') == 384 and x.get('rule') == 'gauss128'
-         and x.get('policy') == 'frozen' and x.get('scheme') == 'CNR' and 'fused_seconds' in x}
-    assert 4096 in f and 1024 in f and np.isfinite([f[4096], f[1024]]).all() and min(f.values()) > 0, f
-    pilot = dict(run_ratio_4096_over_1024=max(1., float(f[4096] / f[1024])), fused_seconds=f)
-    cfg = json.loads((HERE / 'configs' / f'{a.attempt}.json').read_text())
-    if cfg['driver'] == 'p1acc':
-        h, detail = acc_projection(cfg, smoke, pilot)
-    elif cfg['driver'] == 'p1time':
-        t = json.loads((find('p1time_smktime') / 'p1time_smktime' / 'result.json').read_text())
-        assert t['complete']
-        per_trip = t['elapsed_seconds'] / max(1, len(t['invocations']))
-        n = len(cfg['subjects']) * 6 * cfg['reps']
-        h = (n * per_trip * pilot['run_ratio_4096_over_1024'] + 1800.) / 3600
-        detail = dict(per_triplet_seconds=per_trip, triplets=n)
-    elif cfg['driver'] == 'p1kern':
-        k = json.loads((find('p1kern_smkkern') / 'p1kern_smkkern' / 'result.json').read_text())
-        assert k['complete']
-        h = k['elapsed_seconds'] * (6 / 4) * 3 / 3600 + .1
-        detail = dict(smoke_seconds=k['elapsed_seconds'])
-    else:
-        k = json.loads((find('p1three_smkkern3d') / 'p1three_smkkern3d' / 'result.json').read_text())
-        assert k['complete']
-        h = k['elapsed_seconds'] * (6 / 2) * 2 / 3600 + .2 if cfg['mode'] == 'kern' else k['setup_seconds'] * 4 / 3600 + .5
-        detail = dict(smoke_seconds=k['elapsed_seconds'])
-    out = dict(attempt=a.attempt, projection_hours=round(h, 3), time_limit_hours=float(np.ceil(1.5 * h * 4) / 4),
-               detail=detail, pilot=pilot, smoke=[str(x) for x in smokes], runs=a.run,
-               configs={r.split(':', 1)[1]: __import__('hashlib').sha256((HERE / r.split(':', 1)[1]).read_bytes()).hexdigest()
-                        for r in a.run})
-    (HERE / 'checks').mkdir(exist_ok=True)
-    (HERE / 'checks' / f'resources-{a.attempt}.json').write_text(json.dumps(out, indent=1))
+    h, det = 0., {}
+    for run in a.run:
+        drv, cf = run.split(':', 1)
+        cfg = json.loads((HERE / cf).read_text())
+        fn = dict(qacc=acc_projection, qtime=time_projection, q3run=q3_projection)[drv]
+        hh, dd = fn(cfg)
+        h += hh
+        det[run] = dict(hours=hh, detail=dd)
+    out = dict(attempt=a.attempt, projection_hours=round(h, 3), time_limit_hours=math.ceil(1.5 * h * 4) / 4, detail=det,
+               runs=a.run, configs={r.split(':', 1)[1]: hashlib.sha256((HERE / r.split(':', 1)[1]).read_bytes()).hexdigest()
+                                    for r in a.run})
+    (HERE / 'checks' / f'resources-{a.attempt}.json').write_text(json.dumps(out, indent=1) + '\n')
     print(json.dumps({k: v for k, v in out.items() if k != 'detail'}))
 
 

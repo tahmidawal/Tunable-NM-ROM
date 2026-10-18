@@ -38,16 +38,16 @@ def fam(form, sc, f):
     return f'{form}|{sc}|{f:g}'
 
 
-def ckey(mesh, r, form, sc, f):
-    return f'{mesh}|R{r}|{form}|{sc}|{f:g}'
+def ckey(mesh, r, form, sc, f, fb=False):
+    return f'{mesh}|R{r}|{form}|{sc}|{f:g}' + ('|fb' if fb else '')
 
 
 def factors(form, sc):
     return (1., 2., LARGE[(form, sc)])
 
 
-def out_dir(att, drv):
-    d = RUNS / att / 'archive' / 'output' / f'{drv}_{att}'
+def out_dir(att, drv, stem=None):
+    d = RUNS / att / 'archive' / 'output' / f'{drv}_{stem or att}'
     return d if (d / 'result.json').exists() else None
 
 
@@ -101,8 +101,11 @@ def p1_config(mesh, r, sc, p1an, ext=None):
         qe = ext['q']
         g = np.concatenate([np.asarray(z['gamma'], float).ravel(), np.asarray(ext['R']['cert'], float).ravel()])
         pooled = int(np.sum(~(g <= SC.GAMMA)))
-        q['Q1'] = {'p1_pass': lab['Q1']['pass'], 'ext22_pass': qe['Q1']['pass'], 'pooled_noncertified': pooled,
-                   'pooled_steps': int(g.size), 'pass': bool(lab['Q1']['pass'] and qe['Q1']['pass'] and pooled <= .01 * g.size)}
+        other = lambda d_: all(v for k, v in d_.items() if k not in ('pass', 'certificate', 'stationarity'))
+        mf = manifest_equal_p1(z, ext['R'])
+        q['Q1'] = {'p1_non_certificate_predicates': other(lab['Q1']), 'ext22_non_certificate_predicates': other(qe['Q1']),
+                   'pooled_noncertified': pooled, 'pooled_steps': int(g.size), 'numerical_manifest_equal': mf,
+                   'pass': bool(other(lab['Q1']) and other(qe['Q1']) and pooled <= .01 * g.size and mf)}
         q['numerically_qualified'] = bool(q['Q1']['pass'] and q['Q2'].get('label') == 'pass')
         q['source'] = 'P1 (cited, 16 cases) + lane ext22 (pooled Q1)'
         e0.update(ext['e0'])
@@ -125,8 +128,12 @@ def stats(entry):
     E, el = per_case(entry), eligible(entry)
     v = [E[c] for c in ALL38 if c in E and el[c]]
     ep = [eps(entry)[c] for c in ALL38 if c in E and el[c]]
+    o = np.argsort(v) if v else []
+    mid = [int(o[(len(v) - 1) // 2]), int(o[len(v) // 2])] if v else []
     return dict(n=len(v), median=float(np.median(v)) if v else None, worst=float(np.max(v)) if v else None,
-                eps_median=float(np.median(ep)) if ep else None, complete38=len(v) == len(ALL38))
+                eps_median=float(np.median(ep)) if ep else None, complete38=len(v) == len(ALL38),
+                eps_of_median_cases=float(max(ep[i] for i in mid)) if v else None,      # eps of the case(s) defining the
+                eps_of_worst_case=float(ep[int(np.argmax(v))]) if v else None)          # median / the worst (roles)
 
 
 def case_qualified(entry):
@@ -137,25 +144,56 @@ def case_qualified(entry):
             for c in entry['e0']}
 
 
+def manifest_equal_p1(z, R):
+    """Numerical-configuration equality of the lane's ext22 run with P1's archive (AM-1 rule; provenance not compared)."""
+    keys = ('Rp', 'mesh', 'rule', 'scheme', 'dt', 'mode_hash', 'policy', 'level', 'budget', 'time_tag', 'metric_id_target')
+    ok = all(str(z[k]) == str(R[k]) for k in keys) and np.array_equal(np.asarray(z['tol'], float), np.asarray(R['tol'], float)) \
+        and str(R['form']) == 'LSPG' and np.array_equal(z['kx'], R['kx']) and np.array_equal(z['ky'], R['ky'])
+    return bool(ok)
+
+
+def manifest_equal_combined(R, rp):
+    """Numerical-configuration equality with combined's c2grid configuration (mesh 1024, frozen = builder list at 1024^2,
+    rule per setting, prod tolerances, budget 600, metric) before the reproduction gate is read (AM-1 / AM-7)."""
+    dev = json.loads((HERE / 'runs' / 'MANIFEST-dev.json').read_text())
+    comb = json.loads((Path(str(SC.COMB)).parents[3] / 'configs' / 'c2grid.json').read_text())
+    rule = {s['Rp']: s['rule'] for s in comb['settings'] if s['name'] == f'R{rp}'}
+    M = 4 * rp
+    return bool(int(R['mesh']) == comb['mesh'] == 1024 and rule.get(rp) == str(R['rule']) and str(R['policy']) == 'frozen'
+                and str(R['mode_hash']) == dev['mode_lists'][f'1024|frozen|{M}']['hash'] == dev['mode_lists'][f'1024|nominal|{M}']['hash']
+                and str(R['level']) == 'prod' and int(R['budget']) == 600 and str(R['time_tag']) == SC.TIME_TAG
+                and [str(R['form']), str(R['scheme'])] in comb['grid']['forms_schemes'])
+
+
 def build_2d():
     p1an = json.loads((P1 / 'checks' / 'analysis.json').read_text())
     C, gates, cache = {}, {}, {}
     for mesh in MESHES:
-        d = out_dir(f'acc{mesh}', 'qacc')
-        res = json.loads((d / 'result.json').read_text()) if d else None
-        if res is not None:
-            assert res['complete'], f'acc{mesh} incomplete'
         ext = {}
-        for s in (res['config']['settings'] if res else []):
-            for arm in s['arms']:
-                e = lane_config(mesh, d, res, cache, s['name'], arm)
-                if arm.get('ext22'):
-                    ext[(s['Rp'], arm['scheme'])] = e
-                    continue
-                C[ckey(mesh, s['Rp'], arm['form'], arm['scheme'], float(arm['factor']))] = e
-                if mesh == 1024 and s['Rp'] in (128, 384, 512):
-                    gates[ckey(mesh, s['Rp'], arm['form'], arm['scheme'], float(arm['factor']))] = SC.combined_reproduction(
-                        e['R'], s['Rp'], arm['form'], arm['scheme'], DT0 * float(arm['factor']))
+        atts = [f'acc{mesh}'] + sorted(p.name for p in RUNS.glob(f'fb{mesh}*'))
+        for att in atts:
+            d = out_dir(att, 'qacc')
+            if d is None:
+                continue
+            res = json.loads((d / 'result.json').read_text())
+            assert res['complete'], f'{att} incomplete'
+            for s in res['config']['settings']:
+                fb = s['name'].endswith('fb')
+                for arm in s['arms']:
+                    e = lane_config(mesh, d, res, cache, s['name'], arm)
+                    if arm.get('ext22'):
+                        ext[(s['Rp'], arm['scheme'])] = e
+                        continue
+                    k = ckey(mesh, s['Rp'], arm['form'], arm['scheme'], float(arm['factor']), fb)
+                    assert k not in C, ('duplicate configuration', k)
+                    C[k] = e
+                    if mesh == 1024 and s['Rp'] in (128, 384, 512) and not fb:     # registered gate (DESIGN 7): blocks
+                        g = SC.combined_reproduction(e['R'], s['Rp'], arm['form'], arm['scheme'], DT0 * float(arm['factor']))
+                        g['manifest_equal'] = manifest_equal_combined(e['R'], s['Rp'])
+                        g['passed'] = bool(g['passed'] and g['manifest_equal'])
+                        gates[k] = g
+                        e['q']['reproduction_gate'] = g['passed']
+                        e['q']['numerically_qualified'] = bool(e['q']['numerically_qualified'] and g['passed'])
         for r in RS:
             for sc in ('BE', 'CNR'):
                 if inherited(r, 'LSPG', sc, 1., mesh):
@@ -221,9 +259,18 @@ def b4():
         return dict(status='not reached')
     out = b4_from(d, json.loads((d / 'result.json').read_text()))
     th = out.get('R384|GAL_TH06')
-    out['TH06_control'] = dict(status='not reached') if th is None else dict(
-        label=th['label']['label'], interpretable=th['label']['interpretable'],
-        passed=bool(th['label']['label'] == 'order 1' and th['label']['interpretable'] >= 5))
+    sm = out_dir('smkA', 'qacc')
+    th_s = b4_from(sm, json.loads((sm / 'result.json').read_text())).get('R384|GAL_TH06') if sm else None
+    ok = bool(th is not None and th['label']['label'] == 'order 1' and th['label']['interpretable'] >= 5)
+    agree = bool(th_s is not None and th is not None and th_s['label']['label'] == th['label']['label'])
+    out['TH06_control'] = dict(label=th['label']['label'] if th else None, interpretable=th['label']['interpretable'] if th else 0,
+                               smoke_label=th_s['label']['label'] if th_s else None, agrees_with_smoke=agree,
+                               passed=bool(ok and agree))
+    if not out['TH06_control']['passed']:                 # A1.4: a failed / unavailable control blocks every B4 label
+        for k, v in out.items():
+            if k != 'TH06_control' and isinstance(v, dict) and 'label' in v:
+                v['label_unblocked'] = v['label']
+                v['label'] = dict(v['label'], label='blocked (TH06 control failed or unavailable)')
     return out
 
 
@@ -315,6 +362,21 @@ def timing(mesh, C):
                                            all(x['same_iterations'] and x['identity_ok'] for x in dbl))))
 
 
+def is_candidate(rec):
+    """DESIGN 6: both numerical labels, usable timing, the 38-case population."""
+    return bool(rec['acc_label'] and rec['timing_label'] and rec['usable'] and rec['complete38'] and rec['c'] is not None)
+
+
+def fronts_from_records(records):
+    """Fronts over the candidate records only (unqualified records never enter, even if they would dominate)."""
+    cand = {k: v for k, v in records.items() if is_candidate(v)}
+    fr = {}
+    for stat in ('median', 'worst'):
+        for cost in ('c', 'c_ev'):
+            fr[f'{stat}|{cost}'] = QS.front({k: dict(c=v[cost], e=v[stat], eps=v['eps']) for k, v in cand.items()})[0]
+    return fr
+
+
 def front2d(C, T):
     out = {}
     for mesh in MESHES:
@@ -322,7 +384,7 @@ def front2d(C, T):
         if tm is None:
             out[mesh] = dict(status='timing not reached')
             continue
-        cand, unq = {}, {}
+        cand, unq, unq_rec = {}, {}, {}
         for lb, s in tm['subjects'].items():
             sp = s['spec']
             k = ckey(mesh, int(sp['Rp']), sp['form'], sp['scheme'], float(sp['factor']))
@@ -331,17 +393,15 @@ def front2d(C, T):
                 unq[k] = 'no accuracy entry'
                 continue
             st = stats(e)
-            ok = bool(e['q']['numerically_qualified'] and s['timing_label']['numerically_qualified'] and s['usable']
-                      and st['complete38'])
             rec = dict(c=s['c'], c_ev=s['c_ev'], median=st['median'], worst=st['worst'], eps=st['eps_median'],
                        acc_label=e['q']['numerically_qualified'], timing_label=s['timing_label']['numerically_qualified'],
-                       usable=s['usable'])
-            (cand if ok else unq).__setitem__(k, rec)
-        fr = {}
-        for stat in ('median', 'worst'):
-            for cost in ('c', 'c_ev'):
-                pts = {k: dict(c=v[cost], e=v[stat], eps=v['eps']) for k, v in cand.items()}
-                fr[f'{stat}|{cost}'] = QS.front(pts)[0]
+                       usable=s['usable'], complete38=st['complete38'])
+            if is_candidate(rec):
+                cand[k] = rec
+            else:
+                unq[k] = rec
+                unq_rec[k] = rec
+        fr = fronts_from_records({**cand, **unq_rec})
         out[mesh] = dict(candidates=cand, unqualified=unq, fronts=fr,
                          members=sorted(set(fr['median|c']) | set(fr['worst|c']), key=lambda k: cand[k]['c']))
     return out
@@ -354,7 +414,7 @@ def roles(C, T):
         if tm is None:
             continue
         cost = {ckey(mesh, int(s['spec']['Rp']), s['spec']['form'], s['spec']['scheme'], float(s['spec']['factor'])): s['c']
-                for s in tm['subjects'].values()}
+                for s in tm['subjects'].values() if s['usable'] and s['timing_label']['numerically_qualified']}
         for k, c in cost.items():
             e = C.get(k)
             if e is None or not e['q']['numerically_qualified'] or c is None:
@@ -363,11 +423,14 @@ def roles(C, T):
             b = ckey(mesh, r, 'LSPG', 'BE', 1.)
             if b not in C or cost.get(b) is None:
                 continue
+            if not C[b]['q']['numerically_qualified']:
+                continue
             sx, sb = stats(e), stats(C[b])
-            tie = 2 * max(sx['eps_median'], sb['eps_median'])
+            tie_m = 2 * max(sx['eps_of_median_cases'], sb['eps_of_median_cases'])
+            tie_w = 2 * max(sx['eps_of_worst_case'], sb['eps_of_worst_case'])
             ratio = c / cost[b]
-            fast = ratio <= .6 and sx['median'] <= sb['median'] + tie and sx['worst'] <= sb['worst'] + tie
-            acc = ratio <= 1.1 and sx['median'] < sb['median'] - tie
+            fast = ratio <= .6 and sx['median'] <= sb['median'] + tie_m and sx['worst'] <= sb['worst'] + tie_w
+            acc = ratio <= 1.1 and sx['median'] < sb['median'] - tie_m
             out[k] = dict(cost_vs_BE=ratio, role=('fast-equal-accuracy' if fast else '') + (' accurate-equal-cost' if acc else '') or 'no role')
     return out
 
@@ -393,9 +456,12 @@ def q3d():
     fm, _ = QS.front(F3.points(passed, 'median')) if passed else ([], {})
     fw, _ = QS.front(F3.points(passed, 'worst')) if passed else ([], {})
     pm, pw = F3.points(C, 'median'), F3.points(C, 'worst')
-    open_ = [k for k in C if k not in tested and not any(QS.dominates(pm[x], pm[k]) for x in passed)
-             and not any(QS.dominates(pw[x], pw[k]) for x in passed)]
-    out.update(tested=tested, qualified_subset_front=dict(median=fm, worst=fw), open_candidates=open_,
+    open_ = [k for k in C if k not in tested and not (any(QS.dominates(pm[x], pm[k]) for x in passed)
+                                                      and any(QS.dominates(pw[x], pw[k]) for x in passed))]
+    ctrl_ok = bool(out.get('control', {}).get('passed'))
+    if not ctrl_ok:                                        # the 3D under-resolved control blocks Q2-3D and B5-3D (A1.8)
+        fm, fw = [], []
+    out.update(tested=tested, qualified_subset_front=dict(median=fm, worst=fw), open_candidates=open_, control_fired=ctrl_ok,
                label='qualified subset of the tested candidates (never a completeness claim, A2.1)',
                contract='speed3d screening contract: full-field 65^3 mesh-path rollout; ratios from separate jobs against C_old')
     return out
@@ -426,12 +492,37 @@ def label3d(m, att):
         lab = 'unverified (finer rule not converged)'
     else:
         lab = 'pass'
+    pop_ok = m['cases'] == list(range(64)) and (not m.get('qpp') or m.get('qpp_cases') == list(range(8)))
+    off = offline3d(m, att)
     rep = repro3d(m, att)
-    if rep is not None and not rep['passed'] and lab == 'pass':
-        lab = 'blocked (reproduction gate failed)'
-    return dict(label=lab, worst_dist_qp=float(dq.max()), rho_max=float(rho_ok.max()) if rho_ok.size else None,
+    if not all(m['valid']):
+        lab = 'fail (own runs invalid)'
+    elif lab == 'pass' and not pop_ok:
+        lab = 'blocked (population)'
+    elif lab == 'pass' and not off['agrees']:
+        lab = 'blocked (offline recomputation missing or disagrees)'
+    elif lab == 'pass' and not (rep and rep['passed']):
+        lab = 'blocked (reproduction gate failed or missing)'
+    return dict(label=lab, population_ok=pop_ok, offline=off, worst_dist_qp=float(dq.max()), rho_max=float(rho_ok.max()) if rho_ok.size else None,
                 worst_dist_qp_qpp=float(np.max(m['dist_qp_qpp'])) if m.get('qpp') else None, rollout=roll, rho=rbar,
                 convergence=conv, own_runs_valid=all(m['valid']), reproduction=rep, qp=m['qp'], qpp=m.get('qpp'), attempt=att)
+
+
+def offline3d(m, att):
+    """Agreement of the in-job Q2-3D numbers with q3offline.py (distances on every case, rho on cases 0-1)."""
+    p = HERE / 'checks' / f'q3offline-{att}.json'
+    if not p.exists():
+        return dict(agrees=False, reason='missing')
+    o = json.loads(p.read_text())
+    key = m['key'] if m.get('label') != 'control' else 'control|' + m['key']
+    o = o.get(key) or o.get('control|' + m['key'])
+    if o is None:
+        return dict(agrees=False, reason='member missing')
+    ag = lambda a_, b_: all(abs(x - y) <= 1e-9 * abs(y) + 1e-13 for x, y in zip(a_, b_)) and len(a_) == len(b_)
+    rj = np.asarray(m['rho'], float)[:2].ravel().tolist()
+    ok = ag(o['dist_qp'], m['dist_qp']) and (not m.get('qpp') or ag(o['dist_qp_qpp'], m['dist_qp_qpp'])) and \
+        all((np.isnan(x) and np.isnan(y)) or abs(x - y) <= 1e-9 * abs(y) + 1e-13 for x, y in zip(o['rho_cases01'], rj))
+    return dict(agrees=bool(ok))
 
 
 def repro3d(m, att):
@@ -483,8 +574,27 @@ def main():
     out = dict(configurations=cfgs, reproduction_combined=gates, B1=B1, B4=b4(),
                timing={m: {k: v for k, v in t.items()} for m, t in T.items()}, fronts=F, roles=roles(C, T) if T else {},
                threeD=None if a.skip_3d else q3d())
+    p1an = json.loads((P1 / 'checks' / 'analysis.json').read_text())
+    out['B1']['p1_cited'] = dict(h_acc_n=p1an['h_acc_n'], h_acc_r=p1an['h_acc_r'],
+                                 note='P1 verdicts cited (A1.5); P1 4096^2 transitions are on its 16-case subset')
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / 'analysis.json').write_text(json.dumps(out, indent=1, default=str) + '\n')
+    exp = dict(lane='jcp-qualify', label='E0 R_ST: conditional Richardson estimate (E0 A10; combined A10, A11, retracted A15 carried)',
+               configurations={k: dict(numerically_qualified=v['numerically_qualified'], Q1_pass=v['Q1'].get('pass'),
+                                       Q2=v['Q2'].get('label'), median=v['stats']['median'], worst=v['stats']['worst'],
+                                       n=v['stats']['n'], source=v['source']) for k, v in cfgs.items()},
+               h_acc_n={k: v.get('outcome') for k, v in B1['h_acc_n'].items()},
+               h_acc_r={k: {t: x.get('outcome') if isinstance(x, dict) else x for t, x in v.items()} for k, v in B1['h_acc_r'].items()},
+               B4={k: (v['label'] if isinstance(v, dict) and 'label' in v else v) for k, v in out['B4'].items()},
+               fronts={str(m): dict(members=f.get('members'), fronts=f.get('fronts'),
+                                    cost_contract='full-field 2D query; median fused / reference A, one H200 job per mesh')
+                       for m, f in F.items()},
+               roles=out['roles'],
+               threeD=None if out['threeD'] is None else dict(label=out['threeD']['label'], contract=out['threeD']['contract'],
+                                                             tested={k: v['label'] for k, v in out['threeD']['tested'].items()},
+                                                             front=out['threeD']['qualified_subset_front'],
+                                                             open_candidates=len(out['threeD']['open_candidates'])))
+    (RUNS / 'EXPORT.json').write_text(json.dumps(exp, indent=1, default=str) + '\n')
     print('configurations', len(cfgs), 'qualified', sum(v['numerically_qualified'] for v in cfgs.values()))
 
 

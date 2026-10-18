@@ -55,12 +55,25 @@ def arms_for(r, mesh):
     return out
 
 
-def acc_config(mesh, rs=(128, 256, 384, 512), fallback=False):
+def acc_config(mesh, rs=(128, 256, 384, 512)):
     sets = []
     for r in rs:
-        q, qp, qpp = (FALLBACK if fallback else RULES)[r]
-        sets.append(dict(name=f'R{r}' + ('fb' if fallback else ''), Rp=r, rule=q, qp=qp, qpp=qpp, arms=arms_for(r, mesh)))
+        q, qp, qpp = RULES[r]
+        sets.append(dict(name=f'R{r}', Rp=r, rule=q, qp=qp, qpp=qpp, arms=arms_for(r, mesh)))
     return dict(attempt=f'acc{mesh}', driver='qacc', mesh=mesh, edges=EDGES, settings=sets)
+
+
+def fallback_config(mesh, failed, attempt):
+    """DESIGN 2.3 / A4.1: one fallback configuration (main rule q+, successor q++, check q+++) per failed configuration
+    key '<mesh>|R<r>|<form>|<scheme>|<factor>', all 38 cases, full Q1/Q2/Q3 treatment; setting names carry 'fb'."""
+    by_r = {}
+    for k in failed:
+        m, r, form, sc, f = k.split('|')
+        assert int(m) == mesh, k
+        by_r.setdefault(int(r[1:]), []).append(dict(form=form, scheme=sc, factor=float(f), cases='all38', q2_cases='sub16'))
+    sets = [dict(name=f'R{r}fb', Rp=r, rule=FALLBACK[r][0], qp=FALLBACK[r][1], qpp=FALLBACK[r][2], arms=arms)
+            for r, arms in sorted(by_r.items())]
+    return dict(attempt=attempt, driver='qacc', mesh=mesh, edges=EDGES, settings=sets, fallback_of=sorted(failed))
 
 
 def subjects(mesh):
@@ -98,7 +111,7 @@ def smoke_acc():
     sets = []
     for r in (128, 512):
         q, qp, qpp = RULES[r]
-        arms = [dict(form=form, scheme=sc, factor=f, cases='dev6' if r == 128 else 'dev2', q2_cases='dev6')
+        arms = [dict(form=form, scheme=sc, factor=f, cases='dev6', q2_cases='dev6')
                 for form, sc in SCHEMES for f in (1, 2, LARGE[(form, sc)])]
         sets.append(dict(name=f'R{r}', Rp=r, rule=q, qp=qp, qpp=qpp, arms=arms))
     q, qp, qpp = RULES[384]
@@ -132,6 +145,12 @@ def pilot_config():
 
 
 def main():
+    if len(sys.argv) > 1 and sys.argv[1] == '--fallback':          # python make_configs.py --fallback <mesh> '<json keys>'
+        mesh, keys = int(sys.argv[2]), json.loads(sys.argv[3])
+        att = f'fb{mesh}'
+        (HERE / 'configs' / f'{att}.json').write_text(json.dumps(fallback_config(mesh, keys, att), indent=1) + '\n')
+        print('wrote', att)
+        return
     got, bar = larger_step_check()
     want = dict(LARGE)
     print('larger step', {f'{a}-{b}': v for (a, b), v in got.items()}, 'bar', bar)

@@ -30,7 +30,7 @@ COMB = PS.COMB
 def certified(cert, form):
     """Per-step certificate classification (A1.3): LSPG gamma <= 1e-3; GAL eta <= 1e-8; non-finite never certified."""
     c = np.asarray(cert, float)
-    return c <= (GAMMA if form == 'LSPG' else ETA)
+    return np.isfinite(c) & (c <= (GAMMA if form == 'LSPG' else ETA))
 
 
 def gcert_ok(R, form, tolf):
@@ -41,10 +41,10 @@ def gcert_ok(R, form, tolf):
         return False
     if form == 'LSPG':
         r = np.asarray(R['rec'], float)
-        return bool(np.all(np.abs(c - r) <= 1e-7 * np.abs(r) + 1e-12))
+        return bool(np.all(np.isfinite(c) & np.isfinite(r) & (np.abs(c - r) <= 1e-7 * np.abs(r) + 1e-12)))
     tr, sc, raw = (np.asarray(R[k], float) for k in ('tolratio', 'scale', 'raw'))
     pos = sc > 0
-    ok_pos = np.abs(c - tr * tolf) <= 1e-6 * np.abs(tr * tolf) + 1e-13
+    ok_pos = np.isfinite(c) & np.isfinite(tr) & (np.abs(c - tr * tolf) <= 1e-6 * np.abs(tr * tolf) + 1e-13)
     ok_zero = np.isfinite(tr) & np.isfinite(raw) & (np.abs(raw - tr * 1e-300) <= 1e-6 * np.abs(tr * 1e-300) + 1e-15)
     return bool(np.all(np.where(pos, ok_pos, ok_zero)))
 
@@ -185,21 +185,38 @@ def qualify(R, rows, expect, rho_tables=None):
     if q2 is None:
         out['Q2'] = dict(label='not run here')
     else:
-        if out['disagreements']:
-            q2['label'] = 'fail (offline disagreement)'
-        elif not (q2['successor_valid'] and q2['check_valid']):
-            q2['label'] = 'unverified (successor invalid)'
-        elif q2['rho_max'] is None:
-            q2['label'] = 'unverified (no rho indicators)'
-        elif not (q2['rollout'] and q2['rho']):
-            q2['label'] = 'fail'
-        elif not q2['convergence']:
-            q2['label'] = 'unverified (finer rule not converged)'
-        else:
-            q2['label'] = 'pass'
+        q2['label'] = q2_label(q2, bool(out['disagreements']))
         out['Q2'] = q2
     out['numerically_qualified'] = bool(out['Q1']['pass'] and out['Q2'].get('label') == 'pass')
     return out
+
+
+def q2_label(q2, disagreement=False):
+    """Q2 label precedence (DESIGN 4.2; P1 A1.13, A2.4). q2: dict(successor_valid, check_valid, rho_max, rollout, rho,
+    convergence). Used by qualify and by the smoke's under-resolved control (the same classifier)."""
+    if disagreement:
+        return 'fail (offline disagreement)'
+    if not (q2['successor_valid'] and q2['check_valid']):
+        return 'unverified (successor invalid)'
+    if q2['rho_max'] is None:
+        return 'unverified (no rho indicators)'
+    if not (q2['rollout'] and q2['rho']):
+        return 'fail'
+    if not q2['convergence']:
+        return 'unverified (finer rule not converged)'
+    return 'pass'
+
+
+def q2_from_runs(W, W_succ, rho, n0, Rp, succ_valid):
+    """The Q2 predicate on raw arrays (offline decode): used for the under-resolved control (no check rule there, so
+    convergence is reported as not applicable and does not gate the fail outcome)."""
+    d = [NC.fdist(NC.decode257(W[i], Rp), NC.decode257(W_succ[i], Rp), n0[i]) for i in range(len(W))]
+    r = np.asarray(rho, float).ravel()
+    r = r[~np.isnan(r)]
+    q2 = dict(rollout=dmax(d) <= BAR_Q2, worst_dist_qp=dmax(d), rho_max=dmax(r) if r.size else None,
+              rho=bool(r.size) and dmax(r) <= BAR_RHO, successor_valid=bool(succ_valid), check_valid=True, convergence=True)
+    q2['label'] = q2_label(q2)
+    return q2
 
 
 def combined_reproduction(R, rp, form, scheme, dt):

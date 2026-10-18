@@ -196,6 +196,15 @@ def main():
                             factor=float(sp['factor']), dt=dt, steps=S, rule=sp['rule'], Rp=st.Rp, mesh=L, tol=np.array(P.tol_of(form, 'prod')),
                             kx=np.asarray(st.kx), ky=np.asarray(st.ky), A=np.asarray(st.base['A']), lam=np.asarray(st.base['lam']), **C)
         print('SUBJECT', lb, el(), flush=True)
+        k_ = (int(sp['mesh']), int(sp['Rp']), sp['rule'])     # A2.4: drop this setting's Q2 tables as soon as no later
+        rest = subs[subs.index(sp) + 1:]                      # subject of the same setting needs them
+        if not any((int(x['mesh']), int(x['Rp']), x['rule']) == k_ and label(x) not in rep['subjects'] for x in rest):
+            for kk in ('qp', 'qpp'):
+                st.drop_role(kk)
+                st.rules.pop(kk, None)
+            import gc
+            gc.collect()
+            rep['memory'][f'after_certification|{k_}'] = P.mem()
         save()
 
     for st_ in settings.values():                      # A2.4: Q2 tables only during certification

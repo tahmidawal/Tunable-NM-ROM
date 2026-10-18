@@ -64,7 +64,9 @@ def main():
         totals(d)
         if cmd == 'reserve':
             att, h = sys.argv[2], float(sys.argv[3])
-            if any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
+            if 'pending_core' not in d:
+                print('refused: no pending-core inventory set (ledger.py pending; DESIGN A3.1)'); rc = 8
+            elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print('attempt already has a live reservation'); rc = 2
             elif d['spent_gpu_hours'] + d['reserved_gpu_hours'] + h + pend(d, att) > CAP:
                 print(f"refused: spent {d['spent_gpu_hours']} + reserved {d['reserved_gpu_hours']} + {h} + pending core "
@@ -73,10 +75,14 @@ def main():
                 d['jobs'].append(dict(attempt=att, job_id=None, time_limit_hours=h, state='PENDING_SUBMIT', gpu=None,
                                       elapsed_hours=None))
         elif cmd == 'pending':             # DESIGN A3.1, A4.1, A5.1: projected time limits of not-yet-submitted
-            d['pending_core'] = json.loads(sys.argv[2])   # non-deferrable jobs and fallback allowances, one transaction
+            new = json.loads(sys.argv[2])                  # non-deferrable jobs and fallback allowances, one transaction
+            live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
+            assert not (set(new) & live), ('pending entries that are already live reservations', set(new) & live)
+            d['pending_core'] = new
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')
+            d.get('pending_core', {}).pop(sys.argv[2], None)      # now a live reservation: never counted twice
         elif cmd == 'ambiguous':
             for j in d['jobs']:
                 if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':
@@ -95,6 +101,7 @@ def main():
                         print('sacct/squeue failed: reservation kept'); rc = 3
                     elif ids:
                         j.update(job_id=ids[-1], state='SUBMITTED')
+                        d.get('pending_core', {}).pop(att, None)
                     elif len(sys.argv) > 3 and sys.argv[3] == '--confirmed-absent':   # only after a manual check
                         j.update(state='RELEASED', elapsed_hours=0.)
                     else:

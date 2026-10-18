@@ -307,11 +307,14 @@ def run_controls(blk, bank, st, sc_, cases, go, U0, out, certs):
         Ws.append(np.asarray(w['W']))
         rho = [P.rho(np.asarray(nl(jnp.asarray(Wu[-1][kk]), st.data[('ur', 'LSPG')])),
                      np.asarray(nl(jnp.asarray(Wu[-1][kk]), st.data[('ur_succ', 'LSPG')]))) for kk in range(6)]
-        rows.append(dict(case=f'{cases[ci][0]}|{cases[ci][1]}', dist=P.fdist(f, g, n0), rho=rho, valid=P.run_valid(v)))
+        rows.append(dict(case=f'{cases[ci][0]}|{cases[ci][1]}', dist=P.fdist(f, g, n0), rho=rho, valid=P.run_valid(v),
+                         succ_valid=P.run_valid(w), n0=n0))
     res['under_resolved'] = dict(rule=blk['under_resolved'], successor=blk['under_resolved_successor'], rows=rows,
                                  fails_rollout_bar=any(r_['dist'] > 2.5e-4 for r_ in rows),
                                  rho_max=max(max(r_['rho']) for r_ in rows))
-    np.savez_compressed(out / 'CTRL_under_resolved.npz', W=np.array(Wu), W_succ=np.array(Ws))
+    np.savez_compressed(out / 'CTRL_under_resolved.npz', W=np.array(Wu), W_succ=np.array(Ws), Rp=st.Rp,
+                        rho=np.array([r_['rho'] for r_ in rows]), n0=np.array([r_['n0'] for r_ in rows]),
+                        succ_valid=np.array([r_['succ_valid'] for r_ in rows]), case_ids=np.array([r_['case'] for r_ in rows]))
     st.drop_role('ur')
     st.drop_role('ur_succ')
     # premature-exit solver (LM budget 0): Q1 negative control, LSPG (P1 A1.6) and GAL (DESIGN 7)

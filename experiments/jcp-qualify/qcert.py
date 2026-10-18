@@ -78,7 +78,7 @@ def recorded_eta(tolratio, scale, tolf):
 def certified_gal(eta):
     import numpy as np
     e = np.asarray(eta, float)
-    return e <= ETA_BAR                       # NaN / inf never certified
+    return np.isfinite(e) & (e <= ETA_BAR)    # NaN / +-inf never certified
 
 
 def gcert_gal(eta, raw, scale, tolratio, tolf):
@@ -89,7 +89,7 @@ def gcert_gal(eta, raw, scale, tolratio, tolf):
         return False
     pos = sc > 0
     rec = tr * tolf
-    ok_pos = np.abs(eta - rec) <= 1e-6 * np.abs(rec) + 1e-13
+    ok_pos = np.isfinite(eta) & np.isfinite(rec) & (np.abs(eta - rec) <= 1e-6 * np.abs(rec) + 1e-13)
     raw_rec = tr * 1e-300
     ok_zero = np.isfinite(tr) & np.isfinite(raw) & (np.abs(raw - raw_rec) <= 1e-6 * np.abs(raw_rec) + 1e-15)
     return bool(np.all(np.where(pos, ok_pos, ok_zero)))

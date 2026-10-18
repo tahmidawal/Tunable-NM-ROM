@@ -58,9 +58,10 @@ def smk_acc():
                 req(f'{ak}: zero-update motion > 100 x 2.5e-4 (independent establishment)', z['motion'] > 100 * 2.5e-4, motion=z['motion'])
                 req(f'{ak}: zero-update control fires (distance > 2.5e-4)', z['dist'] > 2.5e-4, dist=z['dist'])
     c = res.get('controls', {})
-    ur = c.get('under_resolved', {})
-    req('under-resolved rule fails Q2 rollout bar', ur.get('fails_rollout_bar'), worst=max(r_['dist'] for r_ in ur.get('rows', [{'dist': 0}])))
-    req('under-resolved rule rho_max > 0.116', (ur.get('rho_max') or 0) > .116, rho_max=ur.get('rho_max'))
+    z = np.load(d / 'CTRL_under_resolved.npz')       # the actual Q2 classifier on the control's own arrays (offline decode)
+    q2 = SC.q2_from_runs(z['W'], z['W_succ'], z['rho'], z['n0'], int(z['Rp']), bool(np.all(z['succ_valid'])))
+    req('under-resolved rule: Q2 classifier returns fail', q2['label'] == 'fail' and not q2['rollout'] and not q2['rho'],
+        worst=q2['worst_dist_qp'], rho_max=q2['rho_max'], label=q2['label'])
     for form in ('LSPG', 'GAL'):
         b = c.get(f'budget0_{form}', {})
         req(f'Q1 negative ({form}, LM budget 0): pooled non-certified > 1 %', (b.get('pooled_fraction') or 0) > .01,
@@ -128,15 +129,19 @@ def smk_time():
     req('injected identity fault invalidates every triplet of its subject', inj and all(not x['valid'] for x in inj))
     ok = [x for x in res['invocations'] if x['B'] not in bad]
     req('identity holds for every other subject', ok and all(x['all_hashes_ok'] for x in ok))
+    fz = [x for x in res['fused'] if x['B'] not in bad]
+    req('fused triplets: identity holds and drift in band for the other subjects', fz and all(x['hash_ok'] for x in fz)
+        and sum(not x['valid'] for x in fz) <= len(fz) / 3)
+    req('fused triplets of the injected subject invalid', all(not x['valid'] for x in res['fused'] if x['B'] in bad))
     dbl = res['doubled']
     med = float(np.median([x['ratio'] for x in dbl])) if dbl else None
     req('doubled work B/A in [1.8, 2.2] with identical iterations and identity', dbl and 1.8 <= med <= 2.2 and
-        all(x['same_iterations'] and x['identity_ok'] for x in dbl), median=med)
+        all(x['same_iterations'] and x['identity_ok'] and x['drift_ok'] for x in dbl), median=med)
     for lb, s in res['subjects'].items():
         rep(f'timing-job certification {lb}', rows=[{k: r_.get(k) for k in ('case', 'valid', 'noncertified', 'gcert_ok', 'dist_tight', 'dist_qp')}
                                                    for r_ in s['certification']])
         req(f'{lb}: G-cert holds in the timing job', all(r_['gcert_ok'] for r_ in s['certification']))
-    p = AN.out_dir('smkB', 'qpilot')
+    p = AN.out_dir('smkB', 'qpilot', 'pilot')
     if p is None:
         req('pilot archive present', False)
     else:
@@ -162,7 +167,7 @@ def smk_3d():
 
 
 def cpu_tests():
-    for name in ('test_q.json',):
+    for name in ('test_q.json', 'test_p1.json'):
         p = HERE / 'checks' / name
         r = json.loads(p.read_text()) if p.exists() else {}
         req(f'CPU {name} all pass', r and all(v['passed'] for v in r.values()))

@@ -269,7 +269,10 @@ def analyse_member(run, mk, member, mesh, span, star, refs, failed, star_ok, chk
         if 'QTFSI' in corners and all(raw[c] for c in corners if set(c) <= set('QTFSI') or c == '0'):
             effr = mobius({c: Fi[c] for c in corners if set(c) <= set('QTFSI') or c == '0'}, raw)   # bookkeeping check
             tot = sum(v for k, v in effr.items() if set(k) <= set('QTFSI'))
-            rel = float(np.linalg.norm(Fi['QTFSI'] - Fi['0'] - tot) / max(np.linalg.norm(Fi['QTFSI'] - Fi['0']), 1e-300))
+            # A6: the bar is relative to the rounding scale of the 32-term sum (the largest corner norm), not to the
+            # (much smaller) difference u_all - u_0
+            scale = max(float(np.linalg.norm(Fi[c])) for c in corners if set(c) <= set('QTFSI') or c == '0')
+            rel = float(np.linalg.norm(Fi['QTFSI'] - Fi['0'] - tot) / max(scale, 1e-300))
             st['gb2'] = max(st['gb2'], rel)
             st['gb2_n'] += 1
             d['closure_rel'] = rel

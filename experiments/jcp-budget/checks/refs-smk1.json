@@ -1,0 +1,285 @@
+{
+ "runs": [
+  "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk1/archive/output"
+ ],
+ "G_R1": [
+  {
+   "cohort": "dev6",
+   "case": 0,
+   "gpu": "NVIDIA H200",
+   "e0_gpu": "NVIDIA A100 80GB PCIe",
+   "same_gpu": false,
+   "levels": [
+    {
+     "L": 2048,
+     "e0": "a0_L2048",
+     "d_t": [
+      0.0,
+      2.2524127087743608e-15,
+      2.347238503897874e-15,
+      2.5584718874381778e-15,
+      2.4952813112120007e-15,
+      2.5279895485465107e-15
+     ],
+     "bars": [
+      0.0,
+      1e-08,
+      8.999485487840312e-09,
+      6.961313977551921e-09,
+      5.587588838811566e-09,
+      4.436911207974265e-09
+     ],
+     "passed": true
+    },
+    {
+     "L": 4096,
+     "e0": "a1_L4096",
+     "d_t": [
+      0.0,
+      3.4942589671618866e-15,
+      3.7907931966942646e-15,
+      3.6775783077046234e-15,
+      3.5286106837078563e-15,
+      3.313932655358682e-15
+     ],
+     "bars": [
+      0.0,
+      1e-08,
+      8.999485487840312e-09,
+      6.961313977551921e-09,
+      5.587588838811566e-09,
+      4.436911207974265e-09
+     ],
+     "passed": true
+    },
+    {
+     "L": 8192,
+     "e0": "a2_L8192",
+     "d_t": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "bars": [
+      0.0,
+      1e-08,
+      8.999485487840312e-09,
+      6.961313977551921e-09,
+      5.587588838811566e-09,
+      4.436911207974265e-09
+     ],
+     "passed": true
+    }
+   ],
+   "passed": true
+  }
+ ],
+ "cases": [
+  {
+   "dim": 2,
+   "cohort": "dev6",
+   "case": 0,
+   "horizon": 0.5,
+   "outcome": "accepted",
+   "fine_requested": true,
+   "refined": false,
+   "tight": false,
+   "G_R3_flag": true,
+   "G_R3_local": true,
+   "judge": {
+    "outcome": "accepted",
+    "eps_ref": 1.297941397390563e-06,
+    "agree": true,
+    "windows": {
+     "W1": {
+      "outcome": "accepted",
+      "eps": 1.297941397390563e-06,
+      "stored_eps": 1.297941397390563e-06,
+      "stored_outcome": "accepted",
+      "agree": true
+     },
+     "W2": {
+      "outcome": "accepted",
+      "eps": 3.4554504613436473e-07,
+      "stored_eps": 3.4554504613436473e-07,
+      "stored_outcome": "accepted",
+      "agree": true
+     }
+    }
+   },
+   "fine_windows": {
+    "W1": "accepted",
+    "W2": "accepted"
+   },
+   "fine_eps": {
+    "W1": 1.2975730397519192e-06,
+    "W2": 3.454471725869785e-07
+   },
+   "seconds": 278.1113217342645,
+   "gpu": "NVIDIA H200",
+   "G_R2": {
+    "t0_bitwise": true,
+    "pairs": [
+     {
+      "new": "a0_L2048",
+      "e0": "a0_L2048",
+      "matched": true,
+      "d_t": [
+       0.0,
+       2.2524127087743608e-15,
+       2.347238503897874e-15,
+       2.5584718874381778e-15,
+       2.4952813112120007e-15,
+       2.5279895485465107e-15
+      ],
+      "bars": [
+       0.0,
+       1e-08,
+       8.999485487840312e-09,
+       6.961313977551921e-09,
+       5.587588838811566e-09,
+       4.436911207974265e-09
+      ],
+      "t0_bitwise": true,
+      "passed": true
+     },
+     {
+      "new": "a1_L4096",
+      "e0": "a1_L4096",
+      "matched": true,
+      "d_t": [
+       0.0,
+       3.3395518517247285e-15,
+       3.611226666330788e-15,
+       3.678168044171376e-15,
+       3.431848934761246e-15,
+       3.253464042617428e-15
+      ],
+      "bars": [
+       0.0,
+       1e-08,
+       8.999485487840312e-09,
+       6.961313977551921e-09,
+       5.587588838811566e-09,
+       4.436911207974265e-09
+      ],
+      "t0_bitwise": true,
+      "passed": true
+     },
+     {
+      "new": "a2_L8192",
+      "e0": "a2_L8192",
+      "matched": true,
+      "d_t": [
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0,
+       0.0
+      ],
+      "bars": [
+       0.0,
+       1e-08,
+       8.999485487840312e-09,
+       6.961313977551921e-09,
+       5.587588838811566e-09,
+       4.436911207974265e-09
+      ],
+      "t0_bitwise": true,
+      "passed": true
+     }
+    ],
+    "evaluable": true,
+    "passed": true,
+    "e0_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+   },
+   "final": [
+    "a0_L2048",
+    "a1_L4096",
+    "a2_L8192"
+   ],
+   "sha256": {
+    ".json": "9beeeab26656f39ddbaf9f054e2a431b182635add90832aa91c9a181775bfb26",
+    ".npz": "50caa285d54d93786bb472f9e4cd0d26304e5cf86b1d653a52802c462daac24d"
+   },
+   "eligibility": {
+    "W1": {
+     "accepted": true,
+     "G_R2": true,
+     "designated": false,
+     "crosscheck": null,
+     "prefix": true,
+     "G_R3": true,
+     "tier": "unvalidated (no cross-check)",
+     "eligible": true,
+     "sha256": {
+      ".json": "9beeeab26656f39ddbaf9f054e2a431b182635add90832aa91c9a181775bfb26",
+      ".npz": "50caa285d54d93786bb472f9e4cd0d26304e5cf86b1d653a52802c462daac24d"
+     },
+     "final": [
+      "a0_L2048",
+      "a1_L4096",
+      "a2_L8192"
+     ]
+    },
+    "W2": {
+     "accepted": true,
+     "G_R2": true,
+     "designated": false,
+     "crosscheck": null,
+     "prefix": true,
+     "G_R3": true,
+     "tier": "unvalidated (no cross-check)",
+     "eligible": true,
+     "sha256": {
+      ".json": "9beeeab26656f39ddbaf9f054e2a431b182635add90832aa91c9a181775bfb26",
+      ".npz": "50caa285d54d93786bb472f9e4cd0d26304e5cf86b1d653a52802c462daac24d"
+     },
+     "final": [
+      "a0_L2048",
+      "a1_L4096",
+      "a2_L8192"
+     ]
+    }
+   }
+  }
+ ],
+ "x1": [
+  {
+   "dim": 2,
+   "case": 0,
+   "outcome": "order-fail",
+   "p": [
+    0.9841807575145688,
+    0.9805518966770209,
+    0.9782412172920693,
+    0.9760525828808811,
+    0.9741853689429625,
+    0.9732458751585114,
+    0.9732793936852576,
+    0.9739854247017818,
+    0.9750467677801571,
+    0.9762398643239701
+   ],
+   "fired": true,
+   "evaluable": true
+  }
+ ],
+ "ps": [],
+ "tiers": {},
+ "prefix_T1": [],
+ "summary": {
+  "G_R1": true,
+  "G_R2": true,
+  "G_R3": true,
+  "G_R3_local_all": true,
+  "judge_agree": true,
+  "C_R1": true,
+  "prefix_T1": null,
+  "tiers": {}
+ }
+}

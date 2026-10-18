@@ -770,3 +770,17 @@ through the shared campaign sbatch lock (§14; exit 75 = account at cap 8 → re
 Job-audit 1 of `smk1` (FIX-FIRST) added two acceptance rows before submission: an offline G-B6 check of every saved
 corner tuple against the configuration, and C-A evaluated through the production classifier (≥ 1 resolved case
 classified "inconsistent").
+
+## Amendment A6 (2026-10-18, after the `smk1` smoke, before any production job)
+
+- **G-B2 bar restated (a defect of the check, found on real data).** The registered bar "$\le10^{-12}\lVert u_{\rm all}-
+  u_\varnothing\rVert$" mixes scales: the Möbius sum adds 32 corners of norm about $n_0$, so its rounding is about
+  $10^{-15}n_0\cdot32$, while $\lVert u_{\rm all}-u_\varnothing\rVert$ is about $10^{-3}n_0$; the smoke gave relative
+  residuals up to $3.4\times10^{-12}$ (bookkeeping exact, bar too tight). The bar becomes
+  $\lVert u_{\rm all}-u_\varnothing-\sum_SI_S\rVert\le10^{-12}\max_S\lVert u_S\rVert$ (same in 3D). G-B2 remains a
+  bookkeeping check; no estimand changes.
+- **Reference identity across numpy versions.** The cohort sha256 recorded on the cluster (numpy 2.5) differs from the
+  local one (numpy 2.4) because the log-uniform viscosity draw passes through `np.exp`, whose last bit differs across
+  versions (the shared IC differs by $2.2\times10^{-16}$ for the same reason). The offline identity check therefore
+  compares the recorded case descriptor with the local cohort descriptor to $10^{-13}$ relative instead of the hash;
+  the in-job check (same numpy as the generator) keeps the hash.

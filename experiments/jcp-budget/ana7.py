@@ -84,8 +84,8 @@ def load_newref(refs, cid, T, dim=2):
     lat = {2: 256, 3: 64}[dim]
     if meta.get('lattice') != lat or meta.get('metric_id') != f'{dim}|lattice={lat}|times=0:0.05:{T:g}|norm=fixed_t0|max_k>=1':
         raise A2.IdentityError('reference lattice / metric')
-    if meta.get('cohort_sha256') != COHORT_SHA(dim, coh):
-        raise A2.IdentityError('reference cohort hash')
+    if not same_case(meta, dim, coh, int(c)):
+        raise A2.IdentityError('reference case descriptor differs from the cohort')
     rec = ANAREF_SHA.get((dim, coh, int(c), T))
     if rec is not None and (rec['sha256']['.npz'] != MAN.get(rel + '.npz') or rec['sha256']['.json'] != MAN.get(rel + '.json')
                             or rec['final'] != meta['final']):
@@ -96,6 +96,26 @@ def load_newref(refs, cid, T, dim=2):
 
 _CSHA = {}
 ANAREF_SHA = {}
+
+
+def same_case(meta, dim, coh, c):
+    """The reference's recorded case descriptor equals this machine's cohort descriptor to 1e-13 relative. (The cohort
+    sha256 is computed from float64 draws that can differ in the last bit across numpy versions (np.exp of the
+    log-uniform viscosity), so the cluster-written hash is compared only when numpy versions agree.)"""
+    sys.path.insert(0, str(HERE / 'ref'))
+    import cohorts as CH
+    co = _COH.setdefault((dim, coh), CH.Cohort(dim, coh))
+    want = co.desc(c)
+    got = meta.get('desc') or {}
+    def flat(x):
+        return np.concatenate([np.ravel(np.asarray(v, float)) for k, v in sorted(x.items())]) if isinstance(x, dict) else np.asarray(x, float)
+    try:
+        return bool(sorted(got) == sorted(want) and np.allclose(flat(got), flat(want), rtol=1e-13, atol=0))
+    except Exception:  # noqa: BLE001
+        return False
+
+
+_COH = {}
 
 
 def COHORT_SHA(dim, coh):

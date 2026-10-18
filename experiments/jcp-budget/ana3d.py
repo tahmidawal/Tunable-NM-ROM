@@ -272,7 +272,8 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
         fac = {nm: F[nm] for nm in ('0', 'Q', 'T', 'S', 'QT', 'QS', 'TS', 'QTS')}
         effr = A2.mobius(fac, {k: raw[k] for k in fac})
         if 'QTS' in effr:
-            rel = float(np.linalg.norm(F['QTS'] - F['0'] - sum(effr.values())) / max(np.linalg.norm(F['QTS'] - F['0']), 1e-300))
+            scale = max(float(np.linalg.norm(F[c])) for c in fac)            # A6: rounding scale of the sum
+            rel = float(np.linalg.norm(F['QTS'] - F['0'] - sum(effr.values())) / max(scale, 1e-300))
             S['gb2'], S['gb2_n'] = max(S['gb2'], rel), S['gb2_n'] + 1
         eff = A2.mobius(fac, {k: val[k] for k in fac})
         d['main'] = {x: (mx(eff[x]) if x in eff else None) for x in ('Q', 'T', 'S')}

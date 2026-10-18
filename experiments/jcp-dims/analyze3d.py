@@ -137,31 +137,38 @@ def collect():
 
 
 def q1_of(c):
+    """3D Q1 on the registered population. Every inventory (ids, summary arrays and the coefficient trajectories'
+    shapes) is checked BEFORE any distance is computed; an incomplete inventory returns population=False (missing)."""
     exp = c['expected_cases']
     tcs = [j for j in CHK if j in exp]
+    n, r = len(exp), int(c['r'])
     if c['kind'] == 'ladder':
         e = c['entry']
-        pop = (e['cases'] == exp and e['tighter_cases'] == tcs and len(e['dist_adt']) == len(exp) and len(e['valid']) == len(exp)
-               and len(e['adt_valid']) == len(exp) and len(e['adt_tighter_valid']) == len(tcs) and len(e['adt_tight_tighter']) == len(tcs))
-        off = odist(c['W'], c['W_adt'], c['setting'], c['cases']) if c['W_adt'] is not None else None
-        agree = off is not None and bool(np.allclose(off, e['dist_adt'], rtol=1e-9, atol=1e-13))
-        return dict(population=bool(pop), valid=all(e['valid']),
-                    certificate=bool(e['steps'] == len(exp) * spec_steps(e['spec']) and e['nonstationary'] <= .01 * e['steps']),
+        pop = bool(e['cases'] == exp and e['tighter_cases'] == tcs and len(e['dist_adt']) == n and len(e['valid']) == n
+                   and len(e['adt_valid']) == n and len(e['adt_tighter_valid']) == len(tcs) and len(e['adt_tight_tighter']) == len(tcs)
+                   and np.shape(c['W']) == (n, 6, r) and c['W_adt'] is not None and np.shape(c['W_adt']) == (n, 6, r))
+        if not pop:
+            return dict(population=False)
+        off = odist(c['W'], c['W_adt'], c['setting'], c['cases'])
+        agree = bool(np.allclose(off, e['dist_adt'], rtol=1e-9, atol=1e-13))
+        return dict(population=True, valid=all(e['valid']),
+                    certificate=bool(e['steps'] == n * spec_steps(e['spec']) and e['nonstationary'] <= .01 * e['steps']),
                     distance=fin_max(e['dist_adt']) <= BAR, anchors_valid=all(e['adt_valid']) and all(e['adt_tighter_valid']),
                     tight_tighter=bool(e['adt_tight_tighter']) and fin_max(e['adt_tight_tighter']) <= BAR_TT, offline_adt_agrees=agree)
     z = c['z']
-    S_ = z['cert'].shape[1]
     tids = [int(x) for x in z['tighter_ids']]
+    steps_reg = int(round(.25 / float(c['expected_dt'])))           # from the registered block, not from the archive
+    pop = bool(c['cases'] == exp and tids == tcs and len(z['valid']) == n and len(z['valid_tighter']) == len(tcs)
+               and len(z['valid_tight']) == n and len(z['gcert']) == n and len(z['noncert']) == n
+               and z['cert'].shape == (n, steps_reg) and len(z['dist_tight']) == n and len(z['dist_tight_tighter']) == len(tcs)
+               and z['W'].shape == (n, 6, r) and z['W_tight'].shape == (n, 6, r) and z['W_tighter'].shape == (len(tcs), 6, r))
+    if not pop:
+        return dict(population=False)
     off_t = odist(z['W'], z['W_tight'], c['setting'], c['cases'])
     off_tt = odist(z['W_tight'][[c['cases'].index(j) for j in tids]], z['W_tighter'], c['setting'], tids) if tids else np.array([])
     agree = bool(np.allclose(off_t, z['dist_tight'], rtol=1e-9, atol=1e-13) and np.allclose(off_tt, z['dist_tight_tighter'], rtol=1e-9, atol=1e-13))
-    n = len(exp)
-    steps_reg = int(round(.25 / float(c['expected_dt'])))           # from the registered block, not from the archive
-    return dict(population=bool(c['cases'] == exp and tids == tcs and len(z['valid']) == n and len(z['valid_tighter']) == len(tcs)
-                                and len(z['valid_tight']) == n and len(z['gcert']) == n and len(z['noncert']) == n
-                                and z['cert'].shape == (n, steps_reg) and len(z['dist_tight']) == n and len(z['dist_tight_tighter']) == len(tcs)),
-                offline_tight_agrees=agree, valid=bool(np.all(z['valid'])),
-                certificate=bool(np.sum(z['noncert']) <= .01 * len(c['cases']) * S_), gcert=bool(np.all(z['gcert'])),
+    return dict(population=True, offline_tight_agrees=agree, valid=bool(np.all(z['valid'])),
+                certificate=bool(np.sum(z['noncert']) <= .01 * n * steps_reg), gcert=bool(np.all(z['gcert'])),
                 distance=fin_max(z['dist_tight']) <= BAR, anchors_valid=bool(np.all(z['valid_tight']) and np.all(z['valid_tighter'])),
                 tight_tighter=fin_max(z['dist_tight_tighter']) <= BAR_TT)
 
@@ -260,6 +267,9 @@ def ladder_q2(C, keys, i):
     if cn['cases'] != c['cases'] or cn['M'] != c['M'] or cn['spec'] != c['spec'] or cn['setting'] != c['setting'] \
             or mode_hash(cn) != mode_hash(c):
         return dict(label='blocked (successor identity)')
+    if np.shape(cn['W']) != np.shape(c['W']) or np.shape(c['W']) != (len(c['cases']), 6, int(c['r'])) \
+            or len(e['dist_next']) != len(c['cases']) or len(e['next_valid']) != len(c['cases']):
+        return dict(label='unverified (successor invalid)', note='successor inventory incomplete')
     if len(cn['valid_cases']) != len(c['cases']) or bool(all(cn['valid_cases'].values())) != bool(all(e['next_valid'])):
         return dict(label='blocked (successor validity inconsistent)')
     off = odist(c['W'], cn['W'], c['setting'], c['cases'])
@@ -275,6 +285,8 @@ def ladder_q2(C, keys, i):
                 or mode_hash(cnn) != mode_hash(c):
             return dict(label='blocked (successor identity)')
         idx = [c['cases'].index(j) for j in CHK if j in c['cases']]
+        if np.shape(cnn['W']) != np.shape(c['W']) or len(en['dist_next']) != len(c['cases']):
+            return dict(label='unverified (finer rule unavailable)', note='check inventory incomplete')
         dchk = odist(cn['W'][idx], cnn['W'][idx], c['setting'], [c['cases'][j] for j in idx])
         if not np.allclose(dchk, [en['dist_next'][j] for j in idx], rtol=1e-9, atol=1e-13):
             return dict(label='blocked (offline recomputation disagrees)')
@@ -334,7 +346,14 @@ def rounds():
                 chk = (all(m['valid_qpp']), fin_max(m['dist_qp_qpp'])) if m.get('qpp') else None
                 lab = DS.q2_label(True, (all(m['valid_qp']), fin_max(dq)), float(rho.max()) if rho.size else np.nan, chk)
                 st = key.split('|')[0]
+                if not all(m['wkeys'].get(x_) in W.files for x_ in (['q', 'qp'] + (['qpp'] if m.get('qpp') else []))):
+                    out[key] = dict(label='missing (incomplete population)', round=k, note='trajectories not archived')
+                    continue
                 Wq, Wp = W[m['wkeys']['q']], W[m['wkeys']['qp']]
+                r_ = int(re.search(r'\d+$', base(st)).group(0))
+                if Wq.shape != (64, 6, r_) or Wp.shape != (64, 6, r_) or (m.get('qpp') and W[m['wkeys']['qpp']].shape != (8, 6, r_)):
+                    out[key] = dict(label='missing (incomplete population)', round=k, note='trajectory inventory')
+                    continue
                 agree = bool(np.allclose(odist(Wq, Wp, st, ALL64), m['dist_qp'], rtol=1e-9, atol=1e-13))
                 if m.get('qpp'):
                     Wpp = W[m['wkeys']['qpp']]

@@ -12,7 +12,15 @@ below it is append-only, oldest first.
 
 ---
 
-# Where things stand — 2026-10-17
+# Where things stand — 2026-10-18
+
+**2026-10-18 — Burgers 2D/3D campaign running (coordinator session; `reports/2026-10-17-full-experiment-plan/campaign/`).**
+- **Priority 1 (`exp/2026-10-17-jcp-p1-scaling`): done, 1.9 of 20 GPU-h.** In 2D, solve cost and accuracy are both mesh-independent (H-cost-N and H-acc-N pass, 8/8, 256²–4096²). Accuracy improves with r over 128→384 but not 384→512. Kernel cost grows more slowly in r than operation counts predict (7/8 exponent fits fail).
+- **3D speed (`exp/2026-10-14-jcp-speed3d`): done.** 2.0–17× faster than our earlier 3D configurations; cost flat 64³→384³. **K2 fires**: a pseudo-spectral FOM beats every selected 3D ROM at equal accuracy (0.008–0.16×). Per the plan, the paper leads with mesh-independence and reports speed honestly.
+- **Running:** C3 POD baselines (`exp/2026-10-06-jcp-hr-baselines`, phase I code). Priority 2 lanes (qualification + accuracy front, 2D FOM ladder) are being launched.
+- **Still open (user):** merges (now 9 finished lanes); custody of the sealed-cohort key; the 2D floor check before opening; authorship with Hari.
+
+## Earlier state — 2026-10-17
 
 **2026-10-17 — references done, combined method done, 3D speed running, full plan audited.**
 - **E0 second-order references (`exp/2026-10-06-jcp-references`): done.**
@@ -19156,3 +19164,23 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - **Consequence (plan's written rule for K2).** The paper reports the 3D speed-up honestly (no win over the spectral FOM on the box) and leads with mesh-independence of cost. Recorded as framing-relevant; campaign continues.
 - **Open.** Upwind ladder L ≥ 256 to decide the upwind cells; flat cost holds for the deployment mode policy, not a fixed test space (no fixed-mode panel ran — P1b covers the 3D kernel side); r1 eligibility is not a fresh Q1 certificate. Merge decision: awaiting the user.
 - **Coordinator interventions so far** (`campaign/watchdog/INTERVENTIONS.md`): killed 7 verified orphaned waiters from closed sessions; deleted 78 GB of finished Codex audit scratch copies (`/tmp/speed3d-roundN-audit`, disk had fallen to 95 GB free) and added a disk-hygiene rule; killed a self-matching `pgrep` waiter in jcp-p1-scaling; two false-positive watchdog flags fixed in the prompt.
+
+### 2026-10-18 — priority 1 complete (lane `exp/2026-10-17-jcp-p1-scaling`, last commit 5b782026b, mirror 3b589dad5)
+- **What ran.** Namespace `jcp-p1-scaling` (now empty). Jobs: smkA 5352740, smkB 5352742, smkC 5352968 (A100 smokes); pilot 5352744 (H200, 4096² memory 113.5 GB peak, so the full bank was used); time 5352971 (H200); acc1024 5352981, acc256 5352982 (A100); acc4096 5353180, kern2d 5353832, kern3d 5353833, p1e3d 5354002 (H200). All `jax_backend=gpu`. **1.91 GPU-h of the 20 cap**, nothing deferred. Report `experiments/jcp-p1-scaling/report.md` (generated), EXPORT `runs/EXPORT.json`. Audits: design 1–4 NEEDS-RESTATEMENT, 5 READY; code 1–3 NEEDS-FIX, 4 READY-FOR-SMOKE; jobs 1–2 FIX-FIRST, 3 SUBMIT, 4 SUBMIT (kern) / FIX-FIRST (p1e3d), 5 FIX-FIRST (offline, fixed); results 1–3 NEEDS-FIX, 4 RESULTS-AND-REPORT-CONFIRMED. The agent stopped once on the account usage limit and was resumed.
+- **Found (generated report; E0 R_ST conditional).**
+  - **H-cost-N pass, 8/8** (R128/R256/R384 × BE/CN-R frozen; R384 nominal ×2): R = 1.01–1.02, all 95 % upper bounds ≤ 1.04. Coordinator recheck from raw invocations (median B/A of evolve time over flanking A mean): R = 1.0085–1.016.
+  - **H-acc-N pass, 8/8**: all cases within margin (38 at 256², 16 at 4096²). R128 CN-R has a small detectable trend (Wilcoxon p = 0.0063) — equivalence within margin, not zero dependence.
+  - **H-acc-r:** 128→256→384 "improves" at every mesh and scheme (monotone over 128–384). 384→512 at 1024² "does not improve" (BE 4/16/18 improve/worsen/tie; CN-R 6/22/10) → not monotone over the registered 128–512 range. Examples: 256² R384 CN-R median 0.20 %, worst 1.8 %; BE median ≈ 0.98 % at every r ≥ 256 (time error dominates BE).
+  - **H-cost-r: 7/8 component fits fail** at fixed (M, m). 2D: N p = 1.17, J 1.08, JTJ 1.92, Cholesky 1.24 (declared 1, 1, 2, 3); 3D: N 1.01 (pass), J 1.03, JTJ 1.33, Cholesky 1.03. Labelled "hardware scaling" or "operation-model" by the registered rule; small dense GPU kernels are far from their asymptotic regime.
+  - Q1 + Q2 pass for all 22 rollout configurations; reproduction of the archived combined 1024² R128/R384 results ≤ 2.9e-15 / 0.
+  - P1e: 3D lat8192 fails the 2.5e-4 rollout bar (4.2e-3); 2D gauss64, registered as the failing rule, **passes** both bars.
+- **P1g (frozen mode lists; checks earlier claims).** The builder's mode set differs only at 256² (2 of 1536 modes swapped at M = 1536); at 4096² it is a permutation of the 1024² set. Freezing moves trajectories by ≈ 5–9e-4 but errors by 0.01–0.05 pp; the earlier per-case cross-mesh spreads (0.008–0.014 pp) become 0.013–0.015 pp for BE. **Correction of interpretation, not of numbers:** the earlier "flat accuracy" comparisons at 256² used a slightly different test space; the conclusion stands.
+- **Wrong / retracted.** Coordinator restatement: "mode lists differ at 4096²" — wrong (permutation only). Plan v4: "1024² reused from combined" — false for R256 (gauss96 vs gauss128); all 1024² runs redone fresh. The registered 2D failing rule gauss64 does not fail. The first smoke acceptance failed 5 checks, all defects in the checks (A6). The component-sum control was demoted to a diagnostic (deviation from AM-5, disclosed in A2.2). A smoke-acceptance file was mislabelled and replaced by a reconstruction.
+- **Open.** 3D cost vs mesh and 3D Q1 come from speed3d (mesh-free contract); combined in the final report. Merge decision: awaiting the user.
+
+### 2026-10-18 — priority 2 launched (coordinator)
+- **Results page** (updated after each priority, generated by `campaign/page/make_page.py` from lane EXPORT files): https://claude.ai/artifact/MaZocvqPrsNjGZQYJAPiwF
+- **New lanes** (worktrees created from `21c175a1b`, sparse, vendored, mirrored):
+  - `exp/2026-10-18-jcp-qualify` (@775eef470, mirror c4ca956c9), namespace `jcp-qualify`, cap 3 jobs / 35 GPU-h: Q1–Q3 for every 2D front configuration (r 128–512 × BE/CN-R/GAL-CN × Δt₀/2Δt₀/one larger step × 256²/1024²/4096²), Q2 for the 3D front members from speed3d, B1, B4, B5 fronts; publishes `runs/FRONT-2D.json` for fom2d.
+  - `exp/2026-10-18-jcp-fom2d` (@38f4f6a49, mirror 1d5f10b0d), namespace `jcp-fom2d`, cap 3 jobs / 30 GPU-h: 2D FOM ladder (upwind+BE, central+CN-R, sine spectral) × Δt × tolerance × FOM mesh, validation-selected; C2 crossover (same-mesh and any-mesh) against FRONT-2D; 2D H-comp per family and union; K2 at 4096².
+  - `jcp-hr-baselines` (C3) continues phase I; it is released for production (cap 2 jobs, 30 GPU-h) when phase I hands back. Priority-2 budget total 95 GPU-h (plan 60–110).

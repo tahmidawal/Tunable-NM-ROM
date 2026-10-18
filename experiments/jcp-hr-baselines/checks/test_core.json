@@ -7,7 +7,7 @@
   "nnls.py": "c0c5792e7e0eb9d5e36e3c4d7ab848e9ec9631b6639560cf78ade2a59f6ac498",
   "stats.py": "239ffc93efb4f04a2e9873a8743726d1a87a3be05104ae8660e6db123caf7483",
   "pipeline.py": "bd398a9f9274e23bee09738bb07fdc3c8757bde54d4f292478846461d0f74c97",
-  "tests/test_core.py": "2463b177508861c954245aded23a2018db7b11794d4172f00d935a93180adcd6"
+  "tests/test_core.py": "f8109d5d9a3415bf50161062083af620b54ed32a23c1d206fe9900d2d7f6640a"
  },
  "gates": {
   "provenance-train-draw-2d": [
@@ -49,6 +49,14 @@
   "G-nnls greedy NNLS vs scipy (objective, KKT, tau stop)": [
    "PASS",
    "['1.8e-15', '1.8e-15', '5.3e-15', {0.1: 35, 0.01: 47, 0.001: 49}, {'supports': {5: 5, 12: 12, 20: 20}, 'dup_banned': 0, 'dup_reason': 'kkt'}, {'update_vs_full': 'identical supports', 'drift': 1.5543122344752192e-15, 'refactors': 7}, {'production_interval': {'refactors': 2, 'drift': 7.549516567451064e-15, 'deletions': 200, 'dependent_skips': 0}}]"
+  ],
+  "G-qrdel blocked QR column deletion vs the Givens reference (A38.1)": [
+   "PASS",
+   "60 random + 7 boundary deletions, worst 1.1e-14; refactor-then-delete LS error 6.1e-16"
+  ],
+  "G-deadline NNLS per-path budget: deadline crossings never yield kkt/optimum (A39-A40)": [
+   "PASS",
+   "deadline crossings -> ['time', 'time', 'time', 'time']"
   ],
   "G-qdeim pivots vs scipy, exact interpolation on span(U)": [
    "PASS",

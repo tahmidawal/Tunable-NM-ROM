@@ -1,16 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T14:07:40Z",
- "step": "t3d64a CANCELLED at 53 min (0.8875 GPU-h, collected): 3D ECSW r=256 path took 1447 s (1044 Givens deletes ~1.35 s each; r=128 was 37 s) -> r=512..1024 would exceed the 12 h wall. Profiling the NNLS delete locally (jaxslot) to fix; t2d1024a 5508660 still RUNNING",
+ "utc": "2026-10-18T14:14:33Z",
+ "step": "A38: blocked QR deletion + per-path NNLS budget (t3d64a cancelled for Givens cost); gate suite test15 (with G-qrdel) running; code audit 28 (NNLS change) running; t2d1024a 5508660 RUNNING (Stage A r=256)",
  "waiting_on": {
   "slurm_jobs": [
    5508660
   ],
-  "codex_output": null,
-  "codex_pid": [],
-  "local_pid": 2817900
+  "codex_output": "audits/codex-code-28.md",
+  "codex_pid": [
+   2836376
+  ],
+  "local_pid": 2835577
  },
- "expected_finish_utc": "2026-10-18T14:37:40Z",
+ "expected_finish_utc": "2026-10-18T15:14:33Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

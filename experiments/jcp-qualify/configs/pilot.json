@@ -1,0 +1,51 @@
+{
+ "attempt": "pilot",
+ "driver": "qpilot",
+ "mesh": 4096,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "also_bank": 1024,
+ "settings": [
+  {
+   "Rp": 128,
+   "rules": [
+    "fib4181",
+    "fib6765",
+    "fib10946",
+    "fib17711"
+   ]
+  },
+  {
+   "Rp": 256,
+   "rules": [
+    "gauss128",
+    "gauss160",
+    "gauss192",
+    "gauss256"
+   ]
+  },
+  {
+   "Rp": 384,
+   "rules": [
+    "gauss128",
+    "gauss160",
+    "gauss192",
+    "gauss256"
+   ]
+  },
+  {
+   "Rp": 512,
+   "rules": [
+    "gauss192",
+    "gauss256",
+    "gauss320",
+    "gauss384"
+   ]
+  }
+ ]
+}

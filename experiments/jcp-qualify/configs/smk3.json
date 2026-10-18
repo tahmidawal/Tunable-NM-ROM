@@ -1,0 +1,80 @@
+{
+ "attempt": "smk3",
+ "driver": "q3run",
+ "mode": "q2",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "settings": [
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat32768",
+   "reduced": [],
+   "extra": [
+    "gl24",
+    "gl32",
+    "gl40",
+    "lat8192",
+    "lat16384"
+   ]
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat65536",
+   "reduced": [],
+   "extra": [
+    "lat32768",
+    "lat131072"
+   ]
+  }
+ ],
+ "members": [
+  {
+   "key": "W512|gl24|fs|CN|0.01|K1",
+   "qp": "gl32",
+   "qpp": "gl40"
+  },
+  {
+   "key": "W1024|lat32768|fs|CN|0.01|K1",
+   "qp": "lat65536",
+   "qpp": "lat131072"
+  }
+ ],
+ "qpp_cases": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7
+ ],
+ "timing": {
+  "cases": 4,
+  "reps": 2,
+  "burn": 0.1,
+  "seed": 20261018
+ },
+ "control": {
+  "key": "W512|lat8192|fs|BE|0.01|K1",
+  "qp": "lat16384",
+  "qpp": null
+ },
+ "pilot": [
+  {
+   "setting": "W1024",
+   "rule": "lat131072"
+  },
+  {
+   "setting": "W1024",
+   "rule": "lat65536"
+  }
+ ]
+}

@@ -1,0 +1,143 @@
+{
+ "dominance cost-only": {
+  "passed": true
+ },
+ "dominance error-only": {
+  "passed": true
+ },
+ "dominance tie band keeps both": {
+  "passed": true,
+  "front": [
+   "x",
+   "y"
+  ]
+ },
+ "dominance eps margin": {
+  "passed": true
+ },
+ "dominance non-transitive chain recorded pairwise": {
+  "passed": true,
+  "front": [
+   "C"
+  ]
+ },
+ "dominance never mutual": {
+  "passed": true
+ },
+ "order classifier first order": {
+  "passed": true,
+  "label": {
+   "label": "order 1",
+   "interpretable": 6,
+   "p_median": 0.9996643278731596,
+   "p_range": [
+    0.9990568035512519,
+    1.0014478408088767
+   ]
+  }
+ },
+ "order classifier second order": {
+  "passed": true,
+  "label": {
+   "label": "order 2 (finite-range observed order over dt0..dt0/4)",
+   "interpretable": 6,
+   "p_median": 2.0002616610821087,
+   "p_range": [
+    1.9991759893552037,
+    2.0011879425656662
+   ]
+  }
+ },
+ "order pre-asymptotic not interpretable": {
+  "passed": true,
+  "res": {
+   "p": 1.7499999999999967,
+   "pairwise": [
+    2.0,
+    1.5000000000000002
+   ],
+   "interpretable": false,
+   "checks": {
+    "defined": true,
+    "asymptotic": false,
+    "anchor": true,
+    "solver": true,
+    "quadrature": true,
+    "finer_rule": true,
+    "valid": true
+   }
+  }
+ },
+ "order anchor-contaminated not interpretable": {
+  "passed": true,
+  "res": {
+   "p": 1.9999999999999998,
+   "pairwise": [
+    2.0,
+    2.0
+   ],
+   "interpretable": false,
+   "checks": {
+    "defined": true,
+    "asymptotic": true,
+    "anchor": false,
+    "solver": true,
+    "quadrature": true,
+    "finer_rule": true,
+    "valid": true
+   }
+  }
+ },
+ "order zero error not interpretable": {
+  "passed": true,
+  "res": {
+   "p": null,
+   "pairwise": null,
+   "interpretable": false,
+   "checks": {
+    "defined": false
+   }
+  }
+ },
+ "order fewer than 5 interpretable -> not established": {
+  "passed": true,
+  "label": {
+   "label": "order not established (not interpretable)",
+   "interpretable": 4,
+   "p_median": null,
+   "p_range": null
+  }
+ },
+ "GAL classifier boundaries": {
+  "passed": true,
+  "got": [
+   true,
+   true,
+   false,
+   false,
+   false,
+   true
+  ]
+ },
+ "GAL G-cert positive scale": {
+  "passed": true
+ },
+ "GAL G-cert detects mismatch": {
+  "passed": true
+ },
+ "GAL G-cert zero scale": {
+  "passed": true
+ },
+ "GAL recorded eta zero scale": {
+  "passed": true
+ },
+ "GAL G-cert unrecoverable overflow": {
+  "passed": true
+ },
+ "Delta-t swap raises": {
+  "passed": true
+ },
+ "S at 2 dt0 raises": {
+  "passed": true
+ }
+}

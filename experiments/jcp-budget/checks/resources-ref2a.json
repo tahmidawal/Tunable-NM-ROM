@@ -1,0 +1,19 @@
+{
+ "attempt": "ref2a",
+ "runs": [
+  "ref/refrun:configs/ref2a_dev6.json",
+  "ref/refrun:configs/ref2a_val32.json"
+ ],
+ "configs": {
+  "configs/ref2a_dev6.json": "f1017ace8e5a60776c3b4cb4cd939628d2acddc2e1c55fe935023f04460d4460",
+  "configs/ref2a_val32.json": "5741cdc2929444a095ded3e334b8dd88e41a643674429ccecd6dacb8dd441942"
+ },
+ "gpu": "h200",
+ "projection_hours": 1.6389114825858526,
+ "time_limit_hours": 2.5,
+ "detail": {
+  "ref/refrun:configs/ref2a_dev6.json": 0.7692411970909064,
+  "ref/refrun:configs/ref2a_val32.json": 0.8696702854949463
+ },
+ "label": "estimate from the smokes (not a bound)"
+}

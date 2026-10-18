@@ -479,7 +479,8 @@ def main():
     for k, v in acc.items():
         extra = {kk: vv for kk, vv in v.items() if kk in ('status', 'reason', 'problems', 'missing_or_failed', 'error')}
         print(f"{k}: {v['ok']}" + ('' if v['ok'] or k == 'ALL' else f'  {json.dumps(extra, default=str)[:400]}'))
+    return 0 if acc['ALL']['ok'] else 1
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

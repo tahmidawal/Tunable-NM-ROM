@@ -1,14 +1,14 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T05:10:57Z",
- "step": "5: design audit 8 READY, code audit 8 GO, CPU gates ALL PASS; staging phase-I cluster smoke + Codex job audit",
+ "utc": "2026-10-18T05:11:30Z",
+ "step": "6: codex job audit of smoke smk1 (staged, not submitted)",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": null,
+  "codex_output": "audits/codex-job-smk1-1.md",
+  "codex_pid": 1230790,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T05:50:57Z",
+ "expected_finish_utc": "2026-10-18T05:41:30Z",
  "last_commit": "f89e11c58",
  "gpu_hours_spent": 0,
  "gpu_hours_cap": 30,

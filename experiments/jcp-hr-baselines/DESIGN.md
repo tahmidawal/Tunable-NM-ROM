@@ -1095,3 +1095,10 @@ phase II the storage contract is registered in the phase-II release amendment: e
 the job (and by an offline checker on the pulled per-configuration summaries), only the selection-relevant fields
 (Stage-B candidates and picks) are pulled, every pulled artifact is checksummed, and the local footprint is bounded by a
 manifest-derived peak replacing §12's obsolete "≤ 2 GB per cell" statement. No required evidence is dropped silently.
+
+**A13.5 (job audit smk1-1) Smoke job mechanics.** The smoke driver runs under a hard `timeout` of the wall time minus
+4 minutes, so the per-phase checkpointed evidence is always checksummed; caches (XDG, CUDA, JAX compilation) are
+confined to the job directory; `smoke_accept.py` exits non-zero unless ALL passes, and "ALL-DONE" in the log means job
+completion only. The staged config differs from the HEAD blob only by the added `commit` field (by design of
+`stage.py`). Whether the full workload fits the hour is unproven; phases not reached are skipped and fail acceptance
+(fail-closed), and the phase-I hand-back then reports exactly which controls were not demonstrated.

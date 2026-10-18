@@ -44,6 +44,31 @@ def head_of(name):
     return NH.Head(HERE / f'heads/head_mid_k{m.group(1)}_s{m.group(2)}.npz')
 
 
+# ------------------------------------------------------------------ training acceptance ----
+
+INC_RECON, INC_ORACLE = 0.007507219122474576, 0.005200570538097191      # hfit_dn256b_full.json arms.mid
+
+
+def accept_train(tr):
+    """DESIGN 2.3 / A1.7 / A2.2 / A5 gates of the training job, recomputed from its result."""
+    want = ['identity'] + [f'mid_k{K}_s{s}' for K in KS for s in SEEDS] + ['probe_k16_s0_2000']
+    a = tr['arms']
+    idn = a.get('identity', {})
+    out = dict(complete=bool(tr.get('complete')), arms_present=sorted(a) == sorted(want),
+               whitening=bool(tr['gates']['whitening_round_trip'] < 1e-10 and tr['gates']['q_equals_LT_h'] < 1e-10),
+               disjointness=bool(all(tr['gates']['disjointness'][c]['min_maxabs_distance'] > 1e-9 for c in ('dev6', 'val32'))),
+               identity_recon_rel=abs(idn['recon_train']['mean'] - INC_RECON) / INC_RECON if idn else None,
+               identity_oracle_rel=abs(idn['oracle_test']['mean'] - INC_ORACLE) / INC_ORACLE if idn else None,
+               compact_exact=bool(all(v.get('compact_vs_emitted') == 0. for k, v in a.items() if k != 'identity')),
+               steps_done=bool(all(v['train']['steps_done'] == (2000 if k.startswith('probe') else 200000)
+                                   for k, v in a.items() if k != 'identity')),
+               finite=bool(all(np.isfinite([v['recon_train']['mean'], v['oracle_test']['mean']]).all() for v in a.values())))
+    out['identity'] = bool(idn and out['identity_recon_rel'] <= 1e-9 and out['identity_oracle_rel'] <= 1e-3)
+    out['accepted'] = bool(all(out[k] for k in ('complete', 'arms_present', 'whitening', 'disjointness', 'identity',
+                                                 'compact_exact', 'steps_done', 'finite')))
+    return out
+
+
 # ------------------------------------------------------------------ rules ----
 
 def rules():
@@ -272,6 +297,11 @@ def main_all():
                                    code_gain=v['oracle_train_from_codes']['gain_vs_recon'])
                            for k, v in tr['arms'].items()}
         exp['training_meta'] = dict(job=tr['config']['slurm_job'], gpu=tr['config']['gpu'], gates=tr['gates'])
+        exp['training_acceptance'] = accept_train(tr)
+        tp, tf = tr['arms'].get('probe_k16_s0_2000'), tr['arms'].get('mid_k16_s0')
+        if tp and tf:                                   # A1.7 sensitivity probe (reported, no required outcome)
+            exp['training_probe'] = dict(oracle_probe=tp['oracle_test']['mean'], oracle_full=tf['oracle_test']['mean'],
+                                         ratio=tp['oracle_test']['mean'] / tf['oracle_test']['mean'])
     recs = {}
     if (out_dir('acc1024', 'hacc') / 'result.json').exists():
         _, recs = acc_records('acc1024')
@@ -307,7 +337,7 @@ def main_all():
             ratio = float(np.median([k16['per_case'][c]['e'] for c in cs]) / np.median([inc['per_case'][c]['e'] for c in cs]))
             orat = exp['training']['mid_k16_s0']['oracle'] / exp['training']['identity']['oracle']
             exp['repro'] = dict(oracle_ratio=orat, rom_median_ratio=ratio,
-                                label='reproduces' if abs(orat - 1) <= .15 and ratio <= 1.25 else 'does not reproduce')
+                                label='reproduces' if abs(orat - 1) <= .15 and 1 / 1.25 <= ratio <= 1.25 else 'does not reproduce')
     (RUNS / 'EXPORT.json').write_text(json.dumps(exp, indent=1, default=lambda o: o.tolist() if hasattr(o, 'tolist') else str(o)) + '\n')
     print('EXPORT written')
 

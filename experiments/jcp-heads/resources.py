@@ -45,8 +45,9 @@ def m_of(rule):
 def train_proj(cfg):
     tr = jl(out('smk1', 'htrain', 'smk1train') / 'result.json')
     inc = jl(INC_HFIT)['arms']['mid']['train']
-    per_step = max(inc['seconds'] / inc['steps_done'],
-                   max(tr['arms'][a]['train']['seconds'] / tr['arms'][a]['train']['steps_done'] for a in ('smk_k4_s0', 'smk_k32_s0')) / 2)
+    per_step = max(inc['seconds'] / inc['steps_done'],                    # conservative: the slower of the incumbent's
+                   max(tr['arms'][a]['train']['seconds'] / tr['arms'][a]['train']['steps_done'] for a in ('smk_k4_s0', 'smk_k32_s0')))
+    #                                                                     full-fit rate and the smoke's (compile-inclusive) rate
     kfac = max(1., tr['arms']['smk_k32_s0']['train']['seconds'] / tr['arms']['smk_k4_s0']['train']['seconds'])
     evals = max(tr['arms'][a]['seconds'] - tr['arms'][a]['train']['seconds'] for a in ('smk_k4_s0', 'smk_k32_s0'))
     ident = tr['arms']['identity']['seconds']

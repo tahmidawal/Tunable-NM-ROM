@@ -435,3 +435,134 @@ local GB10 only for CPU analysis (`JAX_PLATFORMS=cpu`) and at most one `jaxrun`.
 | revised cost certificate and reservations (round 1–2) | §9.1 |
 | matched timing boundaries and warm-up for doubled work (round 4) | §6, §7 |
 | frozen Fibonacci realisation (round 2) | §2.2, §6 probes |
+
+---
+
+## Amendment A1 (2026-10-18, before any lane job; answers `audits/codex-design-1.md`, NEEDS-RESTATEMENT)
+
+Supersedes the text above wherever they differ. Numbered by the audit's blockers, then its remaining items.
+
+**A1.1 Under-resolved-rule control (blocker 1), re-fixtured with independently established expected results.**
+Fixture: R384, $M=1536$ (frozen list, identical to the $1024^2$ builder list), `gauss32` with successor `gauss64`,
+**LSPG-BE** $\Delta t_0$, $1024^2$, dev6 (6 cases). Independent evidence, computed and committed **before any lane job**
+(`ctrl_fixture_ur.py` → `checks/ctrl-fixture-under-resolved.json`), from the historical quadrature-study job dv1024
+(4735709; vendor BE query on the same numerical configuration):
+- rollout bar: per case $d(g_{32},g_{64})\ge d(g_{32},g_{\rm ref})-d(g_{64},g_{\rm ref})$ (triangle inequality, same
+  scoring lattice and normalisation, the job's per-case `vs_gref_restricted_evolved`): lower bounds
+  $1.05\times10^{-3}$ … $3.36\times10^{-2}$ on all six dev6 cases, every one $>2.5\times10^{-4}$;
+- ρ bar: NumPy ρ(gauss32 vs gauss64) with numpy Gauss–Legendre rules and the NumPy bank (`npcheck.py`), on
+  **gauss32's own** reached output states (historical audit trajectories dev6|0, dev6|2): 1.27–1.58, $>0.116$.
+Required in the smoke: the actual Q2 predicate of this configuration (rollout vs `gauss64` replay, and in-job ρ on its
+own states) must **fail** — rollout distance $>2.5\times10^{-4}$ on ≥ 1 case and $\rho_{\max}>0.116$; and the offline
+NumPy ρ on the smoke's own gauss32 states must agree with the in-job ρ (tolerance A1.3). Disposition if the smoke
+does not fail although the independent evidence says it must: the Q2 code is wrong (blocks Q2 and every front). The
+G1a-type vendor-vs-generic bridge (A1.5) is run on this fixture's configuration too. The earlier CN-R / gauss128-state
+fixture is withdrawn.
+
+**A1.2 Component sum vs fused (blocker 1), restated as a sanity band with complete accounting.** Matched scope, for
+$(r\in\{384,512\}$, $1024^2$, nominal rule, LSPG-CN-R$)$ on dev6|0 (small $r$ excluded: their per-dispatch overhead is
+comparable to the work). Components timed as separately synchronised dispatches of the solver's own sub-computations:
+`hist` ($Ac_k$, $Ac_{k-1}$ and, on CN steps, $F(c_k)$), `pred` (the batched `vmap` of the three candidate residual norms
+and the argmin), `init` (initial `evalJ` + gradient $J^{\mathsf T}r$ + ratio), `iter` (one LM body: $J^{\mathsf T}J$,
+damped Cholesky solve, clip, `evalJ` at the trial point, gradient, ratio, accept/reject select). Model time
+$\sum_n[t_{\rm hist}(n)+t_{\rm pred}+t_{\rm init}+i_n\,t_{\rm iter}]$ with $i_n$ the recorded LM iterations of step $n$ of
+the same query (rejected iterations included; CN-R steps 0–1 are BE, so $t_{\rm hist}$ without $F$). Predicate:
+model / evolution time ∈ **[0.5, 2.0]** (a factor-2 sanity band: separate dispatches pay launch costs the fused loop
+does not, so equality is not expected). Outside the band → H-cost-r blocked ("components do not represent the solver's
+work"); inside → the ratio is reported.
+
+**A1.3 Agreement tolerances (blocker 3).** All in-job vs independent agreements use absolute + relative tolerances:
+G-cert $|\gamma_{\rm cert}-\gamma_{\rm rec}|\le10^{-7}\gamma_{\rm rec}+10^{-12}$; offline recomputation of distances,
+errors and ρ: $|x_{\rm off}-x_{\rm job}|\le10^{-9}|x_{\rm job}|+10^{-13}$; NumPy γ vs certifier γ:
+$\le10^{-6}\gamma+10^{-12}$.
+
+**A1.4 Validity follows the governing contract (blocker 3).** A run is **valid** iff all outputs finite, no non-finite
+step, and no damping-saturation exit (reason 3; a non-finite residual at step entry is reason 3). Budget exits
+(reason 0) are **not** invalid by themselves; they are counted and reported per configuration, and such steps are judged
+by their certified γ (non-stationary if $\gamma>10^{-3}$). This replaces §5.1 item 1's budget clause. The same
+validity applies to tight/tighter anchors; an invalid anchor makes its case unqualified (unchanged).
+
+**A1.5 Cross-hardware qualification transfer (blocker 3).** P1c subjects inherit the P1d numerical label of the same
+configuration only through a **transfer gate**: for every subject and dev6 case, the timing job's scoring-run W
+(H200) decoded at the scoring lattice vs the accuracy job's W of the same configuration and case: distance
+$\le2.5\times10^{-5}$ (the tight/tighter bar). A subject failing it gets the label "qualification not transferred"; its
+timing is reported, its numerical label is not. (At $4096^2$ both are H200 jobs; the gate is applied identically.)
+Also, vendor-vs-generic bridge: in `acc1024` (and the smoke) the vendor BE query (`qcore.make_linear_query`, `point`)
+is run on dev6 for every rule used by a historical claim (gauss32, gauss64, gauss96, fib6765, gauss640) and for
+R384-gauss128; generic LSPG-BE vs vendor: $\max_k\lVert\Delta W_k\rVert/\lVert W_0\rVert\le10^{-8}$ and
+$w_0$ to $10^{-12}$ (combined G1a). A failure blocks the historical comparisons that rely on that rule.
+
+**A1.6 Q1 negative fixture (blocker 4).** Population: the six dev6 cases × 50 steps = 300 pooled steps of
+R384-`gauss128` LSPG-CN-R $1024^2$ run with LM budget 0 (the solver returns its **selected initial candidate**: the
+lowest-residual of $c_k$, linear and quadratic extrapolation — not necessarily the quadratic predictor). Independent
+establishment: NumPy γ (`npcheck.gammas`, hand-written residual and Jacobian, A and Λ saved by the job, rule tables from
+numpy Gauss–Legendre + NumPy bank) on **all 300** steps must give > 3 non-stationary steps (> 1 % of 300). Required: the
+in-job certifier's pooled non-stationary fraction > 1 %, and per-step agreement with NumPy (A1.3).
+
+**A1.7 CN-R order check: quadrature contamination as a trajectory distance (blocker 4).** Check (iv) becomes
+$\max_k\lVert(u_q(h)-u_q(h_a))_k-(u_{q^+}(h)-u_{q^+}(h_a))_k\rVert/\lVert u_0\rVert\le0.1\,(e(\Delta t_0/2)-e(\Delta t_0/4))$
+at $h=\Delta t_0/4$, $h_a=\Delta t_0/16$ (the change of the error **vector**, not of its magnitude), plus finer-rule
+convergence $d(u_{q^+}(h),u_{q^{++}}(h))\le2.5\times10^{-4}$ at $h=\Delta t_0/4$ ($q^{++}$ = gauss192). Checks (i)–(iii)
+unchanged ((iii) is a direct trajectory distance already).
+
+**A1.8 P1g historical claims (blocker 5): every H1/H4 rule is re-checked.** P1g's historical-rule arms run, LSPG-BE
+$\Delta t_0$, on all 38 dev6∪val32 cases: rules `gauss64`, `fib6765`, `gauss640` (= gref, $m=409{,}600$) for H1 and
+`gauss96` for H4; frozen + nominal at $256^2$ and $4096^2$, frozen at $1024^2$; tight anchors on every case, tighter on
+dev6 (Q1). Q2 is not run for these historical-rule arms: their claim is a within-rule frozen-vs-nominal difference
+(rule error common to both arms); this scope is stated next to every P1g number. The moved numbers reported next to H1
+and H4 are the per-case spreads (max over meshes − min over meshes of the worst ST error) under frozen vs nominal,
+against the historical first-order reference (to compare with 0.014 / 0.012 / 0.012 / 0.008 pp) and against E0.
+Reproduction diagnostic: the nominal-list runs at $256^2$, $1024^2$ and $4096^2$ re-create the historical
+configuration; their per-case first-order ST errors are compared with the historical job rows (dv256 4735696, dv1024
+4735709, dv4096 4735717) and the largest difference reported (no gate; it shows that "nominal" is the historical
+construction). H2 (test64) and H3 stay "not re-run". Memory: gauss640 tables at R384
+$8\cdot409600\cdot(768+1536)\approx7.5$ GB, fine on a100-80G with the $1024^2$/$256^2$ banks and on the H200.
+
+**A1.9 Verdict procedures made total (blocker 2).**
+- *H-cost-N.* Invalid triplets are excluded. A bootstrap resample in which any (subject, mesh) of the statistic has no
+  valid triplet is **undefined**; if > 2.5 % of resamples are undefined the outcome is "inconclusive (insufficient valid
+  timings)", else the percentile interval is taken over the defined resamples.
+- *H-acc-N.* The false statement "a pair with $n<6$ cannot reject" is **withdrawn** (with $n=5$ and all $d_i=0$ the exact
+  one-sided p is $2^{-5}=0.031$). Margin floor: $\delta_i=\max(2\varepsilon_{{\rm ref},i},0.1\,e_i(1024^2),10^{-12})$.
+  Wilcoxon specification (implemented in `p1stats.py`, verified against SciPy 1.17.1, the pinned analysis version):
+  drop zeros (`zero_method='wilcox'`), no continuity correction; exact null distribution when the remaining $n\le50$
+  and the $|d|$ have no ties, otherwise the normal approximation with tie-corrected variance; a one-sided test whose
+  shifted sample is all zeros (n = 0 after dropping) **does not reject** ($p=1$). An empty pair population → inconclusive.
+- *H-acc-r.* Empty eligible population → inconclusive (before step 1).
+- *H-cost-r.* Fit $t=a+e^{\beta}r^p$ (so $b=e^\beta>0$), `least_squares` with bounds $a\ge0$, $p\in[0,4]$, $\beta$ free,
+  `x_scale='jac'`, start $a_0=\min_r t$, $p_0$ = declared $p$, $\beta_0$ from a log-linear fit of $t-a_0$; failure = status
+  ≤ 0, non-finite parameters, or relative RMS residual > 0.2. Boundary of a **measured** fit: $p\le10^{-6}$,
+  $p\ge4-10^{-6}$, or **unidentified exponent** $b\,r_{\max}^p<0.01\,a$ (cost flat in $r$); $a\to0$ is **not** a boundary
+  (pure power laws are legitimate). Operation-count fits use the same functional form, keep their exponent at any
+  boundary, and never go through the boundary rule. Secondary label of a fail, **as AM-4 literally**: "operation-model"
+  iff $|p_F-p|>0.25$ **or** $|p_B-p|>0.25$ (the FLOP or byte model itself departs from the declared $p$ over the range);
+  otherwise "hardware scaling". $p_F$, $p_B$ and the measured interval are always reported beside it.
+- *Synthetic H-cost-r control* (CPU): $t=a+br^2$ with $a=2\times10^{-5}$ s, $b$ such that $b\cdot512^2=10^{-2}$ s, 6 cases ×
+  2 fixtures, multiplicative noise $1+0.01z$ (`default_rng(0)`), $r\in\{32,\dots,512\}$: declared $p=3$ → **fail**; declared
+  $p=2$ → **pass**.
+
+**A1.10 Timing and kernel protocol details (item 6).** Every burn is outside the measured interval. Kernels: a 0.1 s
+GPU burn before every (panel, $r$, fixture, component) block, then 3 warm calls, then 30 synchronised calls; **all 30 raw
+times are persisted**, the median is the fixture value. The smoke's kernel run includes the largest ranks of each fixed
+panel (2D $r=512$; and a 3D mini-run at $r\in\{64,1024\}$ of the P1b fixed panel) so the dispatch-sync control is shown
+at the ranks it governs. Hardware sensitivity probe (reported only): a matched mini A–B–A panel (A plus R128/R384 CN-R
+subjects at $256^2$ and $1024^2$) in the a100-80G smoke vs the same subjects' ratios in the H200 timing job.
+
+**A1.11 Enforceable budget (item 6).** The reservation counts each queued/running job's **sbatch time limit** (an
+enforceable bound), not its projection: submit only if spent + Σ time limits of queued/running lane jobs + this job's
+time limit ≤ 20 GPU-h (1 GPU per job). Time limit = certified projection × 1.5, rounded up to 0.25 h; the certificate
+expands every executed call (A flanks, retries at the worst-case 2 per triplet, warm/scoring calls, burns, split and fused
+calls, doubled-work, controls, certification, tight/tighter/Q2/Q3, compilation per distinct shape, setup). On completion
+the ledger records `sacct` elapsed and releases the reservation.
+
+**A1.12 P1e-3D scope (P1e row).** P1e-3D is descriptive and carries no qualification label: population = 923801 cases
+0–5; rollout validity per A1.4 (finite, no damping saturation, using the fixed-sweep solver's own flags); distances on the
+$63^3$ interior scoring lattice relative to $\lVert u_0\rVert$ there, max over the five evolved outputs; ρ of the tested
+advection on each rule's own six output states against the next rule of the slice (lat8192→lat32768→gl56→gl64);
+failing / deployed / finer judged against the same two bars (rollout $2.5\times10^{-4}$, ρ 0.116) and reported.
+
+**A1.13 Q2 edge cases.** ρ with $\lVert N_{q^+}(c)\rVert=0$ is undefined and excluded (counted); a successor replay
+that is invalid (A1.4) makes Q2 "unverified (successor invalid)" for that configuration.
+
+**A1.14 Wording.** §2.3 table: "out" = in the frozen list, not in the nominal $256^2$ list; "in" = in the nominal list,
+not in the frozen list. §12's claim of completeness is replaced by this amendment's items.

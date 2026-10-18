@@ -1,0 +1,81 @@
+{
+ "fixture": {
+  "Rp": 384,
+  "M": 1536,
+  "mesh": 1024,
+  "scheme": "LSPG-BE dt0",
+  "rule": "gauss32",
+  "successor": "gauss64",
+  "cases": "dev6",
+  "source_job": "4735709",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/dv1024/archive/output/result.json"
+ },
+ "rollout": [
+  {
+   "case": 0,
+   "d32_gref": 0.00407856762092461,
+   "d64_gref": 8.176186345923236e-06,
+   "lower_bound": 0.004070391434578687
+  },
+  {
+   "case": 1,
+   "d32_gref": 0.0010519195474558531,
+   "d64_gref": 5.403487315672729e-06,
+   "lower_bound": 0.0010465160601401803
+  },
+  {
+   "case": 2,
+   "d32_gref": 0.03366624100370754,
+   "d64_gref": 6.711483335783743e-05,
+   "lower_bound": 0.03359912617034971
+  },
+  {
+   "case": 3,
+   "d32_gref": 0.01035721117669889,
+   "d64_gref": 1.9299419075371467e-05,
+   "lower_bound": 0.010337911757623518
+  },
+  {
+   "case": 4,
+   "d32_gref": 0.007070623831281092,
+   "d64_gref": 2.602841169841545e-06,
+   "lower_bound": 0.007068020990111251
+  },
+  {
+   "case": 5,
+   "d32_gref": 0.002046955464857556,
+   "d64_gref": 1.0757006657743578e-05,
+   "lower_bound": 0.0020361984581998126
+  }
+ ],
+ "rollout_min_lower_bound": 0.0010465160601401803,
+ "rollout_established": true,
+ "rho_own": {
+  "dev6|0": {
+   "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/dv1024/archive/output/audit_acc_gauss32_dev60.npz",
+   "sha256": "84a40a85f0da7adfe252caa712b425c042deaed267742e8bfb26001e71b29aad",
+   "rho": [
+    1.3566219413779712,
+    1.3266025530199899,
+    1.3058267647521469,
+    1.2875341010086172,
+    1.2769425971813313,
+    1.2727756313871847
+   ]
+  },
+  "dev6|2": {
+   "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-01-quadrature-study/experiments/quadrature-study/runs/dv1024/archive/output/audit_acc_gauss32_dev62.npz",
+   "sha256": "bf32ea92532da69055dabe389aa4ed0f8c6902022cb0a2c05798910b13ed5caf",
+   "rho": [
+    1.5816420465831023,
+    1.540820688895262,
+    1.5060647400361111,
+    1.453416674874888,
+    1.3975390149987759,
+    1.339454695391223
+   ]
+  }
+ },
+ "rho_max": 1.5816420465831023,
+ "rho_established": true
+}

@@ -92,7 +92,7 @@ def main():
         add('G-L1 (every B7 run reproduces the archive on its first six outputs)', 'gate',
             bool(S7['b7']) and all(v['G_L1']['passed'] for v in S7['b7'].values()), {k: v['G_L1'] for k, v in S7['b7'].items()})
         b8 = S7['b8']
-        add('B8 produced for every member', 'gate', bool(b8) and set(b8) == set(S7['b7']))
+        add('B7 and B8 produced for every CONFIGURED member', 'gate', S7['coverage']['passed'], S7['coverage'])
         add('C-A (alias: raw detection and classifier, >= 1 case)', 'control',
             bool(b8) and any(v['C_A']['raw'] for v in b8.values()) and all(all(v['C_A']['raw']) and all(v['C_A']['classifier'])
                                                                          for v in b8.values() if v['C_A']['raw']),

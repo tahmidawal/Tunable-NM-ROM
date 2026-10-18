@@ -474,9 +474,15 @@ def main():
               if acc('CTRL#S#tight', 'ad|LSPG|BDF2|0.025|tight', j) else None for i, j in enumerate(s0i)]
         out['controls']['C_S'] = dict(dist=ds, fired=bool(sum(x is not None and x > TAU for x in ds) > len(ds) / 2),
                                       fired_any=bool(sum(x is not None and x > TAU for x in ds) >= 1))
-        gq = [g for r_ in res['rows'] if r_['tag'] == 'CTRL#S#q0' for g in (r_.get('gam_cert') or [None])]
-        fr = (sum(not (g is not None and np.isfinite(g) and g <= 1e-3) for g in gq) / len(gq)) if gq else None
-        out['controls']['G_Q'] = dict(fraction=fr, n=len(gq), fired=bool(fr is not None and fr > .01))      # recomputed
+        q0 = [r_ for r_ in res['rows'] if r_['tag'] == 'CTRL#S#q0' and r_['spec'] == 'qn|BDF2|0.025|k4|q0']
+        want = set(cfg['controls'].get('cases', range(4)))
+        evaluable = (bool(q0) and {r_['case'] for r_ in q0} == want and
+                     all(isinstance(r_.get('gam_cert'), list) and len(r_['gam_cert']) == r_.get('steps_n', -1) > 0 and
+                         all(g is not None and np.isfinite(g) for g in r_['gam_cert']) for r_ in q0))
+        gq = [g for r_ in q0 for g in r_['gam_cert']] if evaluable else []
+        fr = (sum(g > 1e-3 for g in gq) / len(gq)) if gq else None
+        out['controls']['G_Q'] = dict(evaluable=evaluable, fraction=fr, n=len(gq),
+                                      fired=bool(evaluable and fr is not None and fr > .01))     # recomputed from certificates
         raised = {}                                      # C-score on the production loader (identity checks inside it)
         other = cases[-1] if len(cases) > 1 else cases[0] + 1
         for nm, kw in (('case_swap', dict(j=cases[0], expect_case=other, time_tag=A2.TIME_TAG)),

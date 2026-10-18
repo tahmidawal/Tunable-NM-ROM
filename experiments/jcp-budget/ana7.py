@@ -585,8 +585,15 @@ def main():
     EL = elig_of(json.loads(Path(a.anaref).read_text()), T)
     out = dict(run=str(run), mesh=mesh, horizon=T, b7={}, b8={},
                label='W1 against E0 R_ST (primary); windows against this lane\'s R_ST realisation; eps conditional')
-    members = {mk: v['member'] for mk, v in res['b7'].items()}
+    # expected members come from the CONFIGURATION (code audit 4), not from the produced records
+    members = {f"R{m['Rp']}|{m['form']}|{m['scheme']}|{float(m['factor']):g}": m for m in res['config']['members']}
+    out['coverage'] = dict(configured=sorted(members), b7_missing=sorted(set(members) - set(res['b7'])),
+                           b8_missing=sorted(mk for mk in members if not (run / f"B8_{mk.replace('|', '_')}.npz").exists()),
+                           b7_extra=sorted(set(res['b7']) - set(members)))
+    out['coverage']['passed'] = not (out['coverage']['b7_missing'] or out['coverage']['b8_missing'] or out['coverage']['b7_extra'])
     for mk, m in members.items():
+        if mk not in res['b7']:
+            continue                                         # recorded as missing coverage above
         out['b7'][mk] = b7_member(run, mk, m, mesh, a.refs, EL, T, minpop)
         b8 = b8_member(run, mk, EL, T, minpop)
         if b8 is not None:

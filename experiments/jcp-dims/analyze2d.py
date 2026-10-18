@@ -29,9 +29,14 @@ R_LIST = (128, 256, 384, 512)
 KAPPAS = (1, 2, 3, 4, 8)
 PRIMARY = 'gauss256'
 RHO_SUBSET_MAX = 4e7
+DEP_PINS = '|'.join(['dn256b ckpt ' + 'sep_hfit_dense_mid_N256_dense.pkl',
+                     hashlib.sha256((Path(__file__).resolve().parent / 'vendor' / 'quad2d' / 'inputs' / 'rotation_R512.npz').read_bytes()).hexdigest(),
+                     hashlib.sha256((Path(__file__).resolve().parents[1] / 'separable-decoder' / 'runs' / 'dn256b' / 'out' /
+                                     'sep_hfit_dense_mid_N256_dense.pkl').read_bytes()).hexdigest()])
 CODE_VERSION = hashlib.sha256(b''.join((Path(__file__).resolve().parent / f).read_bytes()
                                        for f in ('analyze2d.py', 'dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py', 'dcert.py', 'p1score.py',
-                                                 'rules2d.py'))).hexdigest()                  # A6.1: independent rho recomputed when m * M <= 4e7 (dev6|0, six outputs)
+                                                 'rules2d.py', 'vendor/quad2d/npbank.py'))
+                              + DEP_PINS.encode()).hexdigest()                  # A6.1: independent rho recomputed when m * M <= 4e7 (dev6|0, six outputs)
 
 
 def sha_file(p):
@@ -240,7 +245,7 @@ def timing_costs():
                   sorted((x['case'], x['rep']) for x in res['invocations'] if x['B'] == lb) == want)
         out[lb] = dict(inventory_ok=inv_ok, c=float(np.median([x['ratio'] for x in ok])) if ok else None,
                        c_ev=float(np.median([x['ratio'] for x in res['invocations'] if x['B'] == lb and x['valid']] or [np.nan])),
-                       per_case={k: float(np.median(v)) for k, v in per.items()},
+                       per_case={k: [float(x) for x in v] for k, v in per.items()},     # valid fused triplet ratios per case
                        usable=bool(inv_ok and len(ok) >= len(fz) * 2 / 3 and sorted(per) == sorted(DSC.DEV6)),
                        qualified=bool(q1 and q2), q1=q1, q2=q2)
     return out
@@ -285,9 +290,10 @@ def shapley(C, Q, out, cost, B=10000):
         lbs = {kk: t2_label(C[v]) for kk, v in corners.items()}
         if cost and all(lbs[kk] in cost and cost[lbs[kk]]['usable'] and cost[lbs[kk]]['qualified'] for kk in corners):
             cases = sorted(set.intersection(*[set(cost[lbs[kk]]['per_case']) for kk in corners]))
-            Cc = {kk: np.array([cost[lbs[kk]]['per_case'][c] for c in cases]) for kk in corners}
-            f_c = {kk: float(np.median(v)) for kk, v in Cc.items()}
-            bc = np.array([DS.shapley3({kk: float(np.median(v[ix])) for kk, v in Cc.items()})
+            Cc = {kk: [cost[lbs[kk]]['per_case'][c] for c in cases] for kk in corners}
+            pool = lambda lst, ix: float(np.median(np.concatenate([lst[i] for i in ix])))    # DESIGN 4: median over triplets
+            f_c = {kk: pool(v, range(len(cases))) for kk, v in Cc.items()}
+            bc = np.array([DS.shapley3({kk: pool(v, ix) for kk, v in Cc.items()})
                            for ix in (rng.integers(0, len(cases), len(cases)) for _ in range(B))])
             clo, chi = np.percentile(bc, [2.5, 97.5], axis=0)
             dtot = np.array([f_c[(1, 1, 1)] - f_c[(0, 0, 0)]])
@@ -516,7 +522,7 @@ def main():
                 B = []
                 for _ in range(10000):
                     ix = rng.integers(0, 6, 6)
-                    cb = np.array([np.median([x[3]['per_case'][DSC.DEV6[i]] for i in ix]) for x in cells])
+                    cb = np.array([np.median(np.concatenate([x[3]['per_case'][DSC.DEV6[i]] for i in ix])) for x in cells])
                     eb = DS.elasticity(r_, M_, m_, cb)
                     if eb['status'] == 'ok':
                         B.append(eb['beta'])

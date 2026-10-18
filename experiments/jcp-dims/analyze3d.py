@@ -40,6 +40,21 @@ BAR, BAR_TT, RHO = 2.5e-4, 2.5e-5, .116
 COMPARATORS = {'C_old': 'M2_512|gl32|fs|BE|0.01|K1', 'C_W768': 'W768|lat32768|fs|BE|0.01|K1',
                'C_W1024': 'W1024|lat65536|fs|BE|0.01|K1'}
 ALL64, CHK = list(range(64)), list(range(8))
+_DEP = None
+
+
+def dep_pins():
+    """Hash of every numerical dependency of the offline checks (checker code, banks, rules, fixture), bound into caches."""
+    global _DEP
+    if _DEP is None:
+        import hashlib
+        h = hashlib.sha256()
+        for f in ('analyze3d.py', 'rules3d_names.py', 'vendor/quad3d/npcore.py', 'vendor/quad3d/rules.py', 'inputs/model_W1024/bank.pkl',
+                  'vendor/quad3d/inputs/model_M2/bank.pkl', 'vendor/quad3d/rules/rules.npz', 'rules3d/rules_extra.npz',
+                  'rules3d/rules_dims.npz', 'inputs/fixture3d.npz', 'score3.py'):
+            h.update((HERE / f).read_bytes())
+        _DEP = h.hexdigest()
+    return _DEP
 
 
 def out_dir(att):
@@ -160,7 +175,7 @@ def rho_offline(c, qp):
     import hashlib
     bind = hashlib.sha256(np.ascontiguousarray(np.asarray(c['W'])[[c['cases'].index(0), c['cases'].index(1)]]).tobytes()
                           + json.dumps(np.asarray(c['entry']['rho'], float)[[c['cases'].index(0), c['cases'].index(1)]].tolist()).encode()
-                          + (HERE / 'analyze3d.py').read_bytes() + (HERE / 'rules3d_names.py').read_bytes()).hexdigest()
+                          + dep_pins().encode() + str(c['M']).encode()).hexdigest()
     ck = f"{c['setting']}|{c['rule']}|{qp}|{c['spec']}|{c['att']}|{bind}"
     if ck in cache:
         return cache[ck]
@@ -218,12 +233,12 @@ def fixgate_offline3d(rules):
     for rl in rules:
         X, w = RN.make(rl, pinned)
         sh = RN.sha_rule(X, w)
-        if rl in cache and cache[rl]['sha256'] == sh:
+        if rl in cache and cache[rl]['sha256'] == sh and cache[rl].get('deps') == dep_pins():
             continue
         if Nt is None:
             Nt = N('gl64')[0]
         a, _ = N(rl)
-        cache[rl] = dict(sha256=sh, rho=[float(np.linalg.norm(x - y) / np.linalg.norm(y)) if np.isfinite(x).all() else float('inf')
+        cache[rl] = dict(sha256=sh, deps=dep_pins(), rho=[float(np.linalg.norm(x - y) / np.linalg.norm(y)) if np.isfinite(x).all() else float('inf')
                                          for x, y in zip(a, Nt)])
         cp.write_text(json.dumps(cache, indent=1) + '\n')
     return cache
@@ -320,7 +335,7 @@ def rounds():
                 if not all(m['valid']):
                     lab = 'fail (own runs invalid)'
                 elif not pop:
-                    lab = 'blocked (population)'
+                    lab = 'missing (incomplete population)'            # not a completed test: stays a candidate
                 elif lab == 'pass' and not agree:
                     lab = 'blocked (offline recomputation disagrees)'
                 elif lab == 'pass' and ro is not None and not ro['agree']:
@@ -532,7 +547,9 @@ def cert_of_job(res, d):
                 cert[k] = bool([int(x) for x in z['case_ids']] == blk['cases'] and [int(x) for x in z['tighter_ids']] == blk['tighter_cases']
                                and len(z['valid']) == n and np.all(z['valid']) and len(z['valid_tight']) == n and np.all(z['valid_tight'])
                                and len(z['valid_tighter']) == len(blk['tighter_cases']) and np.all(z['valid_tighter'])
-                               and len(z['gcert']) == n and np.all(z['gcert']) and np.sum(z['noncert']) <= .01 * n * z['cert'].shape[1]
+                               and len(z['gcert']) == n and np.all(z['gcert']) and len(z['noncert']) == n and z['cert'].shape[0] == n
+                               and len(z['dist_tight']) == n and len(z['dist_tight_tighter']) == len(blk['tighter_cases'])
+                               and np.sum(z['noncert']) <= .01 * n * z['cert'].shape[1]
                                and fin_max(z['dist_tight']) <= BAR and fin_max(z['dist_tight_tighter']) <= BAR_TT)
     return cert
 
@@ -616,7 +633,8 @@ def after_screen(out, C, lab, e0_of, qual):
     import front3d as F3                                                 # open candidates (qualify A2.1)
     cand = F3.candidates()
     tested = dict(json.loads((QUALIFY / 'runs' / 'EXPORT.json').read_text())['threeD']['tested'])
-    tested.update({k: v['label'] for k, v in out['rounds'].items() if v.get('label') != 'control'})
+    tested.update({k: v['label'] for k, v in out['rounds'].items() if v.get('label') != 'control'
+                   and not v['label'].startswith(('missing', 'blocked'))})        # missing / blocked evidence is not a test
     passed = [k for k, v in tested.items() if v == 'pass' and k in cand]
     openc = []
     for k in cand:

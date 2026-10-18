@@ -90,7 +90,7 @@ def load_newref(refs, cid, T, dim=2):
     if rec is not None and (rec['sha256']['.npz'] != MAN.get(rel + '.npz') or rec['sha256']['.json'] != MAN.get(rel + '.json')
                             or rec['final'] != meta['final']):
         raise A2.IdentityError('reference differs from the one the anaref eligibility was established on')
-    z = np.load(str(stem) + '.npz')
+    z = A2.npz(str(stem) + '.npz')
     return meta, np.asarray(z[meta['final'][2]])
 
 
@@ -240,7 +240,7 @@ def window_rows(row, F, Rn, meta, nout, EL, cid):
 
 
 def b7_member(run, mk, member, mesh, refs, EL, T, minpop):
-    z = np.load(run / f"B7_{mk.replace('|', '_')}.npz")
+    z = A2.npz(run / f"B7_{mk.replace('|', '_')}.npz")
     r = int(member['Rp'])
     nout = int(z['nout'])
     ck = [str(x) for x in z['case_ids']]
@@ -325,7 +325,7 @@ def b8_member(run, mk, EL, T, minpop):
     p = run / f"B8_{mk.replace('|', '_')}.npz"
     if not p.exists():
         return None
-    z = np.load(p)
+    z = A2.npz(p)
     ck = [str(x) for x in z['case_ids']]
     nout = z['e_fine'].shape[1]
     rows, ca_raw, ca_cls, ce = [], [], [], []
@@ -516,13 +516,13 @@ def fine_recompute(run, members, fine_dir, T, check_ids):
         p, p7 = run / f"B8_{mk.replace('|', '_')}.npz", run / f"B7_{mk.replace('|', '_')}.npz"
         if not (p.exists() and p7.exists()):
             continue
-        z, z7 = np.load(p), np.load(p7)
+        z, z7 = A2.npz(p), A2.npz(p7)
         ck7 = [str(c) for c in z7['case_ids']]
         r = int(m['Rp'])
         lsf = run / f'LS_R{r}.npz'
         LSC = {}
         if lsf.exists():
-            zl = np.load(lsf)
+            zl = A2.npz(lsf)
             LSC = {str(c_): zl['C'][k] for k, c_ in enumerate(zl['case_ids'])}
         for i, cid in enumerate([str(c) for c in z['case_ids']]):
             if (mk, cid) not in expected:
@@ -542,7 +542,7 @@ def fine_recompute(run, members, fine_dir, T, check_ids):
             meta, Rl = load_newref(ARGS.refs, cid, T)
             if meta.get('fine_sha256') != sha(ff):
                 raise A2.IdentityError(f'fine file {ff} differs from its recorded sha256')
-            Rf = np.asarray(np.load(ff)['fine_' + meta['final'][2]])
+            Rf = np.asarray(A2.npz(ff)['fine_' + meta['final'][2]])
             if feats is None:
                 feats = np.concatenate([NC.NB.features_grad(P, X[s:s + 8192])[0] for s in range(0, len(X), 8192)])
                 feats[wall] = 0.

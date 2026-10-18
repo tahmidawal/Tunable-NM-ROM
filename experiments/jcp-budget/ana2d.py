@@ -39,6 +39,23 @@ sys.path.insert(0, str(E0))
 import refstore as RS  # noqa: E402
 sys.path.pop(0)
 WT = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees')
+
+class npz:
+    """np.load of an .npz with per-key caching: NpzFile decompresses a member on EVERY access, so z['W'][i] inside a
+    per-case loop re-reads the whole array (performance only; values identical)."""
+    def __init__(self, p):
+        self._z = np.load(p)
+        self.files = self._z.files
+        self._c = {}
+
+    def __getitem__(self, k):
+        if k not in self._c:
+            self._c[k] = self._z[k]
+        return self._c[k]
+
+    def __contains__(self, k):
+        return k in self.files
+
 ING = ('Q', 'T', 'F', 'S', 'I', 'M')
 TAU, CONV_BAR = 2.5e-4, 2.5e-5
 METRIC_ID = RS.V.METRIC_ID[2]
@@ -188,7 +205,7 @@ def archive_f257(mesh, member):
         for f in sorted(glob.glob(pat)):
             if QCACHE and f.startswith(str(QCACHE)):
                 verify_cached(f)
-            z = np.load(f)
+            z = npz(f)
             meta = dict(rule=str(z['rule']), Rp=int(z['Rp']), mesh=int(z['mesh']), scheme=str(z['scheme']),
                         form=str(z['form']) if 'form' in z.files else 'LSPG', policy=str(z['policy']),
                         dt=float(z['dt']) if 'dt' in z.files else None)
@@ -208,8 +225,8 @@ def gb4_member(run, mk, r, refs, exp_corners, exp_cases):
     """Per Q-containing corner type: max over check cases of the check-rule distance; None entries = invalid run. The
     expected inventory (configured design's Q corners x configured check cases) is checked independently: a missing
     corner type or case is a FAILED check."""
-    z = np.load(run / f"B2_{mk.replace('|', '_')}.npz")
-    zc = np.load(run / f"B2CHK_{mk.replace('|', '_')}.npz")
+    z = npz(run / f"B2_{mk.replace('|', '_')}.npz")
+    zc = npz(run / f"B2CHK_{mk.replace('|', '_')}.npz")
     got_cases, got_corners = [str(x) for x in zc['case_ids']], [str(x) for x in zc['corners']]
     if sorted(got_cases) != sorted(exp_cases) or sorted(got_corners) != sorted(exp_corners):
         return {c: dict(worst=None, n=0, passed=False, note='check inventory differs from the configuration')
@@ -231,7 +248,7 @@ def gb4_member(run, mk, r, refs, exp_corners, exp_cases):
 
 
 def gb4_star(run, r, refs):
-    zs, zsc = np.load(run / f'STAR_R{r}.npz'), np.load(run / f'STARCHK_R{r}.npz')
+    zs, zsc = npz(run / f'STAR_R{r}.npz'), npz(run / f'STARCHK_R{r}.npz')
     ids = {str(c): i for i, c in enumerate(zs['case_ids'])}
     vals = []
     for i, c in enumerate(zsc['case_ids']):
@@ -249,7 +266,7 @@ def gb4_star(run, r, refs):
 # ----------------------------------------------------------------------------------------------------- pass 2 --
 
 def analyse_member(run, mk, member, mesh, span, star, refs, failed, star_ok, chk_ids):
-    z = np.load(run / f"B2_{mk.replace('|', '_')}.npz")
+    z = npz(run / f"B2_{mk.replace('|', '_')}.npz")
     ck = [str(x) for x in z['case_ids']]
     corners = [str(x) for x in z['corners']]
     r = int(member['Rp'])
@@ -491,21 +508,21 @@ def main():
     for rk, rr in res['b2'].items():
         r = int(rk[1:])
         span = Span(r)
-        zs = np.load(run / f'STAR_R{r}.npz')
+        zs = npz(run / f'STAR_R{r}.npz')
         star = dict(ids={str(c): i for i, c in enumerate(zs['case_ids'])}, W={k: zs[f'W_{k}'] for k in STARS},
                     valid={k: zs[f'valid_{k}'] for k in STARS})
         sg = gb4_star(run, r, refs)
-        zsc_ = np.load(run / f'STARCHK_R{r}.npz')
+        zsc_ = npz(run / f'STARCHK_R{r}.npz')
         exp_chk_ = [c for c in case_set(cfg['b2'].get('check_cases', 'dev6')) if c in case_set(cfg['cases'])]
         if sorted(str(x) for x in zsc_['case_ids']) != sorted(exp_chk_) or \
                 [str(x) for x in zs['case_ids']] != case_set(cfg['cases']):
             sg = dict(sg, passed=False, note='star inventory differs from the configuration')
-        chk_ids = {str(c) for c in np.load(run / f'STARCHK_R{r}.npz')['case_ids']}
+        chk_ids = {str(c) for c in npz(run / f'STARCHK_R{r}.npz')['case_ids']}
         for mk, mm in rr['members'].items():
             exp_q = [skey(S) for S in subsets_of(cfg['b2'].get('design', 'pairwise')) if 'Q' in S]
             exp_chk = [c for c in case_set(cfg['b2'].get('check_cases', 'dev6')) if c in case_set(cfg['cases'])]
             g4 = gb4_member(run, mk, r, refs, exp_q, exp_chk)
-            zb = np.load(run / f"B2_{mk.replace('|', '_')}.npz")
+            zb = npz(run / f"B2_{mk.replace('|', '_')}.npz")
             cov_bad = ([str(x) for x in zb['case_ids']] != case_set(cfg['cases']) or
                        [str(x) for x in zb['corners']] != [skey(S) for S in subsets_of(cfg['b2'].get('design', 'pairwise'))])
             if cov_bad:
@@ -579,7 +596,7 @@ def controls(run, res, refs):
     p = run / 'CTRL_b2.npz'
     if not p.exists():
         return out
-    z = np.load(p)
+    z = npz(p)
     ids = [str(x) for x in z['case_ids']]
     r = int(res['config']['controls'].get('Rp', 384))
     n0 = {c: refs(c)[1] for c in ids}
@@ -605,7 +622,7 @@ def controls(run, res, refs):
     out['G_B1']['passed'] = bool(out['G_B1']['offline_bitwise'] and out['G_B1']['sham_rule_bitwise'] and out['G_B1']['prod_rerun_bitwise'])
     gq = run / 'CTRL_gq.npz'                     # recomputed from the certificate evidence; missing evidence fails
     if gq.exists():
-        zg = np.load(gq)
+        zg = npz(gq)
         cl, cg = np.asarray(zg['cert_LSPG'], float), np.asarray(zg['cert_GAL'], float)
         S_ = int(round(.25 / .005))                       # the schedule of the fixture: dt0 to T = 0.25 (50 steps)
         conf = case_set(res['config']['controls'].get('cases', 'dev6'))     # configured control cases, not produced ids

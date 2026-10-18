@@ -894,3 +894,7 @@ raises). The cache is deleted after that mesh's analyses. P1-scaling archives (s
   difference). Restated: the shared-IC requirement is met when either the saved `t0` arrays agree bitwise, or E0's
   saved `t0` is inconsistent with its own levels and every matched level's initial row agrees bitwise
   (`G_R2.t0_ok`, with `e0_t0_self_consistent` and `levels_t0_bitwise` recorded). Case 43 is a cross-check case only.
+
+**A12.1 (2026-10-18).** `ana2d.npz` caches `.npz` members per key (NumPy re-decompresses a member on every access);
+performance only. On the smoke data `ana7` output is byte-identical (sorted JSON) and `ana2d` differs only in the
+recorded paths (run directory, cached-archive source paths).

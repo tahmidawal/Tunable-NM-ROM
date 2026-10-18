@@ -124,7 +124,8 @@ def gpu_of(d):
 
 
 NUMERIC_FILES = ('dacc.py', 'p1common.py', 'p1core.py', 'qcert.py', 'dcert.py', 'rules2d.py', 'vendor/quad2d/qcore.py',
-                 'vendor/quad2d/inputs/rotation_R512.npz', 'inputs/fixture2d.npz', 'vendor/quad2d/vendor/hari_quadrature.py')
+                 'vendor/quad2d/inputs/rotation_R512.npz', 'inputs/fixture2d.npz', 'vendor/quad2d/vendor/hari_quadrature.py',
+                 'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl')   # the decoder checkpoint
 
 
 def code_signature(d):
@@ -143,6 +144,8 @@ def load_all():
     blocks (fixgate) only from a complete attempt."""
     C, RAW = {}, {}
     for att in JOBS:
+        cp_ = HERE / 'configs' / f'{att}.json'
+        orig = {x['name']: x for x in json.loads(cp_.read_text())['settings']} if cp_.exists() else {}
         for d in attempt_dirs(att):
             res = json.loads((d / 'result.json').read_text())
             for s in res['config']['settings']:
@@ -150,9 +153,9 @@ def load_all():
                     continue
                 for a in s['arms']:
                     k = f"{s['name']}|{a['form']}|{a['scheme']}"
+                    if json.dumps(s, sort_keys=True) != json.dumps(orig.get(s['name']), sort_keys=True):
+                        raise SystemExit(f'A9.3: setting {s["name"]} of attempt {d} differs from configs/{att}.json')
                     if k in C:
-                        if C[k].get('arm_cfg') != json.dumps([s, a], sort_keys=True) and k not in ARM_CONFLICT:
-                            ARM_CONFLICT.append(k)              # A9.3: the same arm configured differently in two attempts
                         continue
                     e = config_entry(att, d, res, s['name'], a, score=(s['policy'] != 'lmf'))   # LMF scored after A2.2 stability
                     if e is not None:

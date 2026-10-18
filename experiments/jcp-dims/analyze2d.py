@@ -110,9 +110,10 @@ def attempt_dirs(job):
                    key=lambda p: int(p.name[len(job) + 1:]), reverse=True) + [runs / job]
     out = []
     for c in cands:
-        d = c / 'archive' / 'output' / f'dacc_{job}'
-        if (d / 'result.json').exists():
-            out.append(d)
+        for stem in (job, c.name):                         # a retry config is named after its attempt (make_retry.py)
+            d = c / 'archive' / 'output' / f'dacc_{stem}'
+            if (d / 'result.json').exists() and d not in out:
+                out.append(d)
     return out
 
 

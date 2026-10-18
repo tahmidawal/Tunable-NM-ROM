@@ -35,9 +35,10 @@ def out_dir(att, drv, stem=None):
     cands = sorted((p for p in RUNS.glob(f'{att}r*') if re.fullmatch(rf'{re.escape(att)}r\d+', p.name)),
                    key=lambda p: int(p.name[len(att) + 1:]), reverse=True) + [RUNS / att]
     for c in cands:
-        d = c / 'archive' / 'output' / f'{drv}_{stem}'
-        if (d / 'result.json').exists() and json.loads((d / 'result.json').read_text()).get('complete'):
-            return d
+        for st_ in (stem, c.name):
+            d = c / 'archive' / 'output' / f'{drv}_{st_}'
+            if (d / 'result.json').exists() and json.loads((d / 'result.json').read_text()).get('complete'):
+                return d
     d = RUNS / att / 'archive' / 'output' / f'{drv}_{stem}'
     return d if (d / 'result.json').exists() else None
 

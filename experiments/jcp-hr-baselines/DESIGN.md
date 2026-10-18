@@ -1740,3 +1740,19 @@ metadata that references them; the active phase is recorded.
 (or, for an optimum alias, the terminal solution), and the selected path's terminal evidence must pass the A24.1 checks
 (in-mesh unique integer nodes, positive finite weights, residual reproduction, solver KKT certificate for KKT stops);
 the ECSW path artifacts are hashed into the frozen dependencies.
+
+---
+
+## Amendment A36 (2026-10-18) — code audit 25 (Stage-B chain, NOT READY)
+
+**A36.1** Every pair outcome in the verdict's pair inventory goes through the same qualification/restriction formatter as
+roles and cell lines. **A36.2** V accounting carries an upper bound: the ledger's measured allocations of the bound
+tuning and Stage-B attempts (`--tune-attempt`, `--stageb-attempt`), "unknown" until both are collected. **A36.3** One
+comparator object exists at a time in the Stage-B job, also during G-ours. The memory model counts the cell's
+full-width Phi/LPhi/DPhi, three r_max slices, the comparator's own peak (the tuning job's `ours_pass` device peak) and
+a 25 % margin on the device, and Phi, reference fields, certified and comparator timing fields and transient slices on
+the host; staging compares it with the requested GPU (× the 0.92 memory fraction × 0.92) and `--mem` (× 0.9). The
+time projection is labelled an estimate; the hard GPU-hour controls remain the wall limit and the ledger. **A36.4** A
+replay failure, or an eligible-case score that is missing or non-finite, makes the candidate set incomplete (role
+incomplete; favourable/neutral conclusions withheld; reason kept). **A36.5** The freeze's KKT check is smoke_accept's
+predicate (finite values, non-negative tolerance).

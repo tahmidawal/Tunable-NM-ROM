@@ -177,24 +177,16 @@ def main():
         if d == 2:
             exp = json.loads((HERE / 'inputs' / 'p1_analysis.json').read_text())['configurations']
             ref_e = {k: {t: exp[k]['e0_per_case'][t] for t in timing} for k in admitted}
-            ox = OU.OursP1(L, admitted, log=log) if admitted else None
+            ox = None                                  # A36.3: one comparator object live at a time
         else:
             exp = json.loads((HERE / 'inputs' / 'speed3d_batch1_e0.json').read_text())['configs']
             ref_e = {k: {t: exp[k]['e0'][t.split('|')[1]] for t in timing} for k in admitted}
-        oxs = {}
         for key in admitted:
             rec = dict(status='construction_failed', cases={}, batch=FZ['X'][key].get('batch'),
                        qualification=FZ['X'][key].get('qualification'))
             res['ours'][key] = rec
             try:
-                if d == 2:
-                    o_, fx = ox, ox.fn(key)
-                else:
-                    st_, rule = key.split('|')[:2]
-                    if (st_, rule) not in oxs:
-                        oxs[(st_, rule)] = OU.OursS3(st_, rule, log=log)
-                    o_ = oxs[(st_, rule)]
-                    fx = o_.fn(key)
+                o_, fx = make_x(key)
                 for t in timing:
                     c, j = t.split('|')
                     u, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))
@@ -209,6 +201,7 @@ def main():
                 rec.update(status='complete', G_ours=bool(worst <= 1e-10), replay_worst_rel=worst)
                 if rec['G_ours']:
                     OX[key] = True                     # A35.3: objects released; rebuilt per X for timing
+                del o_, fx
             except Exception as e:  # noqa: BLE001
                 rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
             save()

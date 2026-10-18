@@ -140,9 +140,15 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
         got = {ln.split()[1]: ln.split()[0] for ln in r3.stdout.splitlines()}
         bad = [k for k, h in need.items() if got.get(k) != h]
         assert not bad, ('remote tuning dependencies differ from the frozen hashes', bad[:5])
-        proj = fz['verify']['projection']['hours_certified']
+        pj = fz['verify']['projection']
+        proj = pj['hours_estimate']
         usable = c0['wall_hours'] - 4 / 60                 # driver deadline = wall - 4 min (OUTPUTS checksums)
-        assert proj <= usable and fz['verify']['projection']['memory_ok'], ('Stage-B admission', proj, usable)
+        dev_cap = {'h200': 141e9, 'a100-80G': 80e9, 'h100': 80e9, 'a100': 40e9}[a.gpu] * 0.92 * 0.92   # mem fraction
+        host_cap = float(a.mem.rstrip('G')) * 1e9 * 0.9
+        assert proj <= usable, ('Stage-B time estimate exceeds the usable driver time', proj, usable)
+        assert pj['device_bytes_model'] <= dev_cap and pj['host_bytes_model'] <= host_cap, \
+            ('Stage-B memory model exceeds the requested resources', pj['device_bytes_model'], dev_cap,
+             pj['host_bytes_model'], host_cap)
         print(f'stageb preflight: {len(need)} remote dependencies verified; projection {proj:.2f} h <= {c0["wall_hours"]} h')
     if a.driver == 'tune':                         # every lazily loaded asset the configuration needs (code audit 19)
         chk2 = (f'import json, ours; cfg = json.load(open({str(out / cfgname)!r})); print(ours.check_assets(cfg))')

@@ -96,8 +96,9 @@ def ecsw_validate(tdir, T, members):
                        <= 1e-10 * max(sel['final_relres'], 1e-300) + 1e-14)
         if sel['reason'] == 'kkt':                     # A23/A24.1: a KKT stop must carry the solver's certificate
             k_ = sel.get('kkt') or {}
-            term_ok &= bool(k_.get('ok') is True and k_['support_max_abs_gradient'] <= k_['tol']
-                            and k_['off_support_max_gradient'] <= k_['tol'])
+            vals = [k_.get('support_max_abs_gradient'), k_.get('off_support_max_gradient'), k_.get('tol')]
+            term_ok &= bool(k_.get('ok') is True and all(v is not None and np.isfinite(v) for v in vals)
+                            and k_['tol'] >= 0 and vals[0] <= k_['tol'] and vals[1] <= k_['tol'])   # smoke_accept's
         # the online sample is exactly the selected path's checkpoint (or, for an optimum alias, its terminal solution)
         cn, cw = zt[f'{a}~{hp}~nodes'], zt[f'{a}~{hp}~weights']
         o1, o2 = np.argsort(nd), np.argsort(cn)
@@ -189,15 +190,24 @@ def main():
     sec += len(adm) * 2 * 300.                                              # comparator setup twice (G-ours, timing)
     sec += len(members) * 60. + len(grp) * 60.                              # compilation, checkpoint writes
     # A35.3 memory: one basis (Phi, all ranks), one live HR data set, one comparator, timing-case fields on the host
+    # A36.3 memory model of simultaneous allocations: the cell keeps Phi, LPhi, DPhi at full basis width; the live
+    # online data set holds at most three r_max-wide slices (none: Phi_r, LPhi_r, DPhi_r); one comparator at a time,
+    # bounded by the tuning job's ours_pass device peak (that phase runs first, after refs, so its process-cumulative
+    # peak is the comparators' own); workspace margin 25 %.
     nn = (T['config']['L'] - 1) ** d_
     rmax = max(int(m.split('|')[1]) for m in members) if members else 0
-    dev = 8 * nn * (int(np.load(tdir / 'artifacts' / 'Phi.npz', mmap_mode='r')['Phi'].shape[1]) + 3 * rmax)
-    peak_tune = max((v.get('device_peak') or 0) for k, v in T['phases'].items() if k.startswith(('A|', 'ours_pass')))
-    host = 8 * len(members) * len(TIMING) * 6 * (257 ** 2 if d_ == 2 else 63 ** 3) + 8 * nn * rmax * 2
-    projection = dict(seconds_model=sec, hours_certified=2 * sec / 3600, note='2x the model (compilation, retries)',
-                      device_bytes_model=dev, tuning_peak_device_bytes=peak_tune, host_bytes_model=host,
-                      memory_ok=bool(dev <= 120e9 and host <= 150e9))
-    assert projection['memory_ok'], projection
+    rphi = int(np.load(tdir / 'artifacts' / 'Phi.npz', mmap_mode='r')['Phi'].shape[1])
+    comp = int((T['phases'].get('ours_pass') or {}).get('device_peak') or 0)
+    dev = 1.25 * (8 * nn * (3 * rphi + 3 * rmax) + comp)
+    lat = 257 ** 2 if d_ == 2 else 63 ** 3
+    host = 1.25 * (8 * nn * rphi                                         # Phi loaded on the host
+                   + 8 * ncase * 6 * lat                                  # reference fields of the cohort
+                   + 8 * len(members) * len(TIMING) * 6 * lat             # certified timing-case fields
+                   + 8 * len(adm) * len(TIMING) * 6 * lat                 # comparator scored fields
+                   + 8 * 2 * nn * rmax)                                   # transient slices
+    projection = dict(seconds_estimate=sec, hours_estimate=2 * sec / 3600,
+                      note='an estimate (fixed multipliers); the hard GPU-hour controls are the wall limit and the ledger',
+                      device_bytes_model=dev, host_bytes_model=host, comparator_peak_bytes=comp)
     ecsw_ok = dict(ecsw_ok)
     ver = dict(projection=projection, ecsw_members_validated=len(ecsw_ok), configs_rechecked=sum(1 for c in A if T['inventory'].get(c, {}).get('status') == 'complete'),
                worst_abs_distance_mismatch=mism_all, ok=True)

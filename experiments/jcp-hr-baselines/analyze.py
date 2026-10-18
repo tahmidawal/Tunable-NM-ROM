@@ -85,11 +85,28 @@ def accounting(T, B):
                active_phase=dict(tuning=T.get('active_phase'), stageB=B.get('active_phase')))
     out['V_hours'] = out['V_hours_tuning'] + out['V_hours_stageB']
     out['V_is_lower_bound'] = not (out['tuning_finished'] and out['stageB_finished'])
+    # A36.2: upper bound = the measured allocations of the two attempts in the ledger (unknown if not collected)
+    led = json.loads((HERE / 'runs' / 'GPU-LEDGER.json').read_text())
+    alloc = {}
+    for role, att in (('tuning', ATTEMPTS.get('tune')), ('stageB', ATTEMPTS.get('stageb'))):
+        rec = [j for j in led['jobs'] if j['attempt'] == att] if att else []
+        alloc[role] = (float(rec[0]['measured_gpu_hours']) if rec and rec[0].get('measured_gpu_hours') is not None
+                       else None)
+    out['allocation_hours'] = alloc
+    out['V_upper_bound_hours'] = (None if None in alloc.values() else alloc['tuning'] + alloc['stageB'])
     return out
+
+
+ATTEMPTS = {}
 
 
 def main():
     cell, tdir, bdir = sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3])
+    for a in sys.argv:                                 # --tune-attempt=<name> --stageb-attempt=<name> (ledger binding)
+        if a.startswith('--tune-attempt='):
+            ATTEMPTS['tune'] = a.split('=', 1)[1]
+        if a.startswith('--stageb-attempt='):
+            ATTEMPTS['stageb'] = a.split('=', 1)[1]
     T = json.loads((tdir / 'tune.json').read_text())
     B = json.loads((bdir / 'stageb.json').read_text())
     fz = HERE / B['config']['frozen']
@@ -112,7 +129,7 @@ def main():
     tune_constr = sorted(c for c, v in inv.items() if v['status'] == 'construction_failed')
     tune_deferred = sorted(c for c, v in inv.items() if v['status'] == 'deferred')
     missing_members = {m: (B['inventory'].get(m) or {}).get('status', 'absent') for m in FZ['members']
-                       if (B['inventory'].get(m) or {}).get('status') not in ('complete', 'replay_failed')}
+                       if (B['inventory'].get(m) or {}).get('status') != 'complete'}       # replay failures included
     expected_X = [k for k, x in FZ['X'].items() if 'front' in x]
     # ---- saturation / adequacy (A1.3, A2.2): unavailable = unassessed = withheld ---------------------------------------
     sat256 = None
@@ -141,7 +158,8 @@ def main():
     if tune_unfinished:
         restrictions.append(f'tuning coverage incomplete ({len(tune_unfinished)} registered configurations unfinished)')
     if missing_members:
-        restrictions.append(f'Stage B incomplete ({len(missing_members)} frozen members without results)')
+        restrictions.append(f'Stage B incomplete ({len(missing_members)} frozen members without valid results: '
+                            f'{sorted(set(missing_members.values()))})')
     if ecsw_bad or any(k.startswith('ecsw|') for k in cf):
         restrictions.append('ECSW coverage incomplete (A3.11)')
     if limited:
@@ -165,14 +183,16 @@ def main():
                'qualified subset, not a completeness claim (3D batch 2, A29): ' if tag['batch'] == 2 and d == 3 else '')
         if restrictions:
             fav = not text.startswith('baseline dominates')
+            fav = 'baseline dominates' not in text
             if fav and blocks_favourable and any(w in text for w in ('ours dominates', 'matches', 'neither', 'no observed')):
                 text += ' (withheld: ' + '; '.join(restrictions) + ')'
             else:
                 text += ' [' + '; '.join(restrictions) + ']'
         return pre + text + ' [developmental, in-sample, unadjusted]'
 
-    def pairs_inventory(key, outcome):                 # A35.1: every (X, frozen member) pair has an outcome
-        return {m: outcome.get(m, 'not assessed') for m in FZ['members']}
+    def pairs_inventory(key, outcome):                 # A35.1/A36.1: every pair has a qualified outcome
+        tg = tag_of(key)
+        return {m: qualify(tg, outcome.get(m, 'not assessed')) for m in FZ['members']}
 
     for key in FZ['X']:
         tag = tag_of(key)
@@ -202,7 +222,13 @@ def main():
                 outcome[m] = 'excluded: not Q1-qualified on the verdict cohort'
                 continue
             if not mv.get('replay_ok'):
-                outcome[m] = 'excluded: replay failed'
+                outcome[m] = 'missing (replay failed)'
+                incomplete.append(m)
+                continue
+            evs = [mv['e0'].get(c, {}).get('e') for c in elig]                        # A36.4: full, finite scores
+            if any(e is None or not np.isfinite(e) for e in evs):
+                outcome[m] = 'missing (incomplete or non-finite eligible-case scores)'
+                incomplete.append(m)
                 continue
             tm = B['timing'].get(f'{key}||{m}') or {}
             if tm.get('status') != 'complete' or not tm.get('outputs_ok'):

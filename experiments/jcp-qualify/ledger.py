@@ -56,42 +56,56 @@ def totals(d):
     return d
 
 
+FROZEN_RULE = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
+
+
+def staged_subjects(att):
+    """Configuration keys of the subjects of a staged timing attempt (its RESERVATION runs -> staged config)."""
+    out = set()
+    rf = HERE / 'runs' / att / 'RESERVATION.json'
+    if not rf.exists():
+        return out
+    for drv, cf in json.loads(rf.read_text())['runs']:
+        c = json.loads((HERE / cf).read_text()) if not (HERE / 'runs' / att / 'experiments').exists() else \
+            json.loads(next((HERE / 'runs' / att).rglob(Path(cf).name)).read_text())
+        for sp in c.get('subjects', []):
+            r = int(sp['Rp'])
+            out.add(f"{sp['mesh']}|R{r}|{sp['form']}|{sp['scheme']}|{float(sp['factor']):g}" + ('|fb' if sp['rule'] != FROZEN_RULE[r] else ''))
+    return out
+
+
 def validate(d, new, exempt=None):
-    """A3.1 / A4.1 / A5.1 inventory rules: finite non-negative hours; every mandatory job not yet live or completed is
-    listed (the attempt being reserved is exempt); per mesh either an allowance fballow<m> >= 2 GPU-h, or q2known<m> with
-    either a listed fallback job fb<m> or an explicit nofb<m> marker (Q2 labels known, no fallback needed)."""
+    """A3.1 / A4.1 / A5.1 inventory rules. pending entries are numeric GPU-h only (finite, >= 0, not bool); every
+    mandatory job not yet live or completed is listed (the attempt being reserved is exempt). Per mesh: while its Q2
+    labels are unknown, an allowance fballow<m> >= 2; once known (ledger.py fbstate <m> '<keys>', append-only), every
+    listed fallback configuration needs a fallback job fb<m>* that is pending (> 0), live or completed, and the mesh's
+    timing must cover the fallback subjects: a not-yet-submitted panel is re-priced by its certificate at staging
+    (cluster/stage.py checks the fallback subjects are in the config and resources.py prices them); a panel already
+    submitted or completed without them requires a repeat time<m>r<k> pending (> 0), live or completed that covers them."""
     live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
     done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
-    probs = [f'bad value {k}' for k, v in new.items() if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
+    probs = [f'bad value {k}' for k, v in new.items()
+             if isinstance(v, bool) or not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
     probs += [f'missing mandatory {k}' for k in MANDATORY if k != exempt and k not in new and k not in live and k not in done]
+    fs = d.get('fallback_state', {})
     for m in (256, 1024, 4096):
-        if f'fballow{m}' in new:
-            if new[f'fballow{m}'] < 2:
-                probs.append(f'fballow{m} < 2 GPU-h')
-        elif f'q2known{m}' in new:
-            fbs = [k for k in new if k.startswith(f'fb{m}')] + [k for k in live | done if k.startswith(f'fb{m}')]
-            if f'nofb{m}' in new:
-                pass
-            elif not fbs:
-                probs.append(f'q2known{m} without a fallback job or nofb{m} marker')
-            else:
-                probs += [f'fallback {k} needs a positive projection' for k in new if k.startswith(f'fb{m}') and new[k] <= 0]
-                t_live = any(k == f'time{m}' for k in live | done)
-                nfb = new.get(f'fbsubjects{m}', 0)
-                if not (isinstance(nfb, (int, float)) and nfb >= 1):
-                    probs.append(f'fbsubjects{m} (number of fallback timing subjects) missing')
-                elif not t_live:                                       # A5.1: the unsubmitted panel is re-priced
-                    base = d.get('baseline', {}).get(f'time{m}')
-                    if base is None or new.get(f'time{m}', 0) < base * (1 + nfb / 36) - 1e-9:
-                        probs.append(f'time{m} projection not enlarged for {nfb} fallback subjects (baseline {base})')
-                else:                                                  # panel already run: covered, or a repeat
-                    covered = f'time{m}coversfb' in new
-                    rep_ok = any(k.startswith(f'time{m}r') and v > 0 for k, v in new.items()) or \
-                        any(k.startswith(f'time{m}r') for k in live | done)
-                    if not (covered or rep_ok):
-                        probs.append(f'time{m} already submitted without the fallback subjects: reserve a repeat time{m}r<k>')
-        else:
-            probs.append(f'no fallback allowance or q2known marker for mesh {m}')
+        if str(m) not in fs:
+            if new.get(f'fballow{m}', 0) < 2:
+                probs.append(f'fballow{m} >= 2 GPU-h required until the Q2 labels of mesh {m} are recorded (fbstate)')
+            continue
+        keys = fs[str(m)]
+        if not keys:
+            continue
+        has_fb = any(k.startswith(f'fb{m}') and not k.startswith('fballow') and new[k] > 0 for k in new) or \
+            any(k.startswith(f'fb{m}') for k in live | done) or exempt and exempt.startswith(f'fb{m}')
+        if not has_fb:
+            probs.append(f'fallback configurations of mesh {m} without a fallback job')
+        panels = [a for a in live | done if a == f'time{m}' or a.startswith(f'time{m}r')]
+        if panels and not any(set(keys) <= staged_subjects(a) for a in panels):
+            rep = [k for k, v in new.items() if k.startswith(f'time{m}r') and v > 0] + \
+                ([exempt] if exempt and exempt.startswith(f'time{m}r') else [])
+            if not rep:
+                probs.append(f'time{m} ran without the fallback subjects: a repeat time{m}r<k> must be pending')
     probs += [f'pending entry already live: {k}' for k in set(new) & live]
     return probs
 
@@ -130,10 +144,13 @@ def main():
                 print('refused pending inventory:', probs); rc = 9
             else:
                 d['pending_core'] = new
-                base = d.setdefault('baseline', {})                  # first projection of each panel (A5.1 reference)
-                for k, v in new.items():
-                    if k.startswith('time') and k[4:].isdigit() and f'q2known{k[4:]}' not in new:
-                        base[k] = v                                 # tracks the certificate until the mesh's Q2 is known
+        elif cmd == 'fbstate':             # record a mesh's Q2 outcome: the fallback configuration keys (append-only)
+            m, keys = sys.argv[2], json.loads(sys.argv[3])
+            old = d.setdefault('fallback_state', {}).get(m)
+            if old is not None and not set(old) <= set(keys):
+                print('refused: fallback state is append-only'); rc = 11
+            else:
+                d['fallback_state'][m] = sorted(set(keys))
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')

@@ -47,6 +47,17 @@ def main():
         for drv, cf in [r.split(':', 1) for r in a.run]:     # the certificate is bound to the exact configs and runs
             assert c_['configs'].get(cf) == hashlib.sha256((ROOT / LANE / cf).read_bytes()).hexdigest(), cf
         assert sorted(c_['runs']) == sorted(a.run), (c_['runs'], a.run)
+    if a.attempt.startswith('time'):            # A5.1: a timing panel must contain every recorded fallback configuration
+        m = a.attempt[4:].split('r')[0]
+        led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
+        fb = set(led.get('fallback_state', {}).get(m, []))
+        frozen = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
+        have = set()
+        for r in a.run:
+            for sp in json.loads((ROOT / LANE / r.split(':', 1)[1]).read_text()).get('subjects', []):
+                rr = int(sp['Rp'])
+                have.add(f"{sp['mesh']}|R{rr}|{sp['form']}|{sp['scheme']}|{float(sp['factor']):g}" + ('|fb' if sp['rule'] != frozen[rr] else ''))
+        assert fb <= have, ('timing panel lacks fallback subjects', sorted(fb - have))
     runs = []
     for r in a.run:
         drv, cfg = r.split(':', 1)

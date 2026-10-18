@@ -105,7 +105,7 @@ def fin_max(x):
 # ------------------------------------------------------------------------------------------------ evidence
 def collect():
     C, jobs = {}, {}
-    for att in ('m3a', 'm3b', 'k3', 'b3f', 'b3m'):
+    for att in ('m3a', 'm3b', 'k3a', 'k3b', 'k3', 'b3f', 'b3m'):      # k3a + k3b = the split k3 inventory (A10.2)
         d = out_dir(att)
         if d is None:
             continue

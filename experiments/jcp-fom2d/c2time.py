@@ -194,7 +194,9 @@ def main():
                                    repro_checked=sum(r['repro'] is not None for r in rows))
         print('SCORED', lb, rep['subjects'][lb]['repro_ok'], el(), flush=True)
     rep['gates']['G-RR'] = all(rep['subjects'][lb]['repro_ok'] and rep['subjects'][lb]['repro_checked'] == len(cases)
-                               for lb in roms if lb != cfg['A']['label'])           # every target ROM carries target_e
+                               and all(r_.get('valid') is True for r_ in rep['subjects'][lb]['scoring'])
+                               for lb in roms if lb != cfg['A']['label'])           # every target ROM: target_e and Q1-valid runs
+    rep['gates']['A-valid'] = all(r_.get('valid') is True for r_ in rep['subjects'][cfg['A']['label']]['scoring'])
     rep['gates']['G-FR'] = all(rep['subjects'][k]['repro_ok'] and rep['subjects'][k]['repro_checked'] == len(cases)
                                for k in fkeys)
     rep['memory']['scoring'] = P.mem()
@@ -286,7 +288,7 @@ def main():
     for x in rep['stage1']:
         s1.setdefault(x['B'], {})[x['case']] = x
     for g in cfg['groups']:
-        sl = top[g['id']]
+        sl = [k for k in top[g['id']] if k not in VETO]          # a candidate vetoed during stage 0/1 is never selected
         # A2.1: selection population = cases valid for EVERY shortlisted candidate; >= 5 of the cases or no selection
         pop = [cid(c) for c in cases if all(s1.get(k, {}).get(cid(c), {}).get('valid') for k in sl)]
         cost = {k: float(np.median([s1[k][c]['ratio'] for c in pop])) for k in sl} if pop else {}
@@ -355,6 +357,15 @@ def main():
         rep['controls']['T-id'] = dict(row=x, alias=lb, source=src_lb, source_vetoed=src_lb in VETO,
                                        fires=bool(lb in VETO and not x['valid']),
                                        note='control-only alias; the production subject is not vetoed by the control')
+    for k in cfg.get('pilot_foms', []):                  # A1.6 combined-workload memory pilot (untimed, bank resident)
+        sp = FR.parse(k)
+        x, tp = FR.prepare(sp, cases[0][2])
+        t, F = sync_time(foms.callable(sp, x, float(cases[0][2][4]), ('mesh', N)))
+        rep.setdefault('pilot_foms', {})[k] = dict(seconds_first=t, prep_seconds=tp, finite=bool(np.isfinite(np.asarray(F[:, ::64, ::64])).all()),
+                                                   mem=P.mem())
+        del F, x
+        print('PILOT', k, round(t, 2), P.mem(), flush=True)
+    rep['compile_log'] = foms.compile_log
     rep['veto'] = sorted(VETO)
     rep['memory']['end'] = P.mem()
     rep['elapsed_seconds'] = el()

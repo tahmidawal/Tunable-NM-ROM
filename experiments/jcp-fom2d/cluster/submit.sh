@@ -33,6 +33,9 @@ trap '"$PY" "$LANE/ledger.py" release "$A"; echo "staging failed before sbatch: 
 timeout 120 ssh -o ConnectTimeout=20 tufts-login "test ! -e $NS/$A && mkdir -p $NS/$A"
 rsync -a "$LOCAL/" "tufts-login:$NS/$A/"
 timeout 120 ssh -o ConnectTimeout=20 tufts-login "cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet"
+QR=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h -o %i") || { "$PY" "$LANE/ledger.py" release "$A"; echo "squeue failed: released"; exit 9; }
+ACCR=$(echo "$QR" | grep -c . || true)
+[ "$ACCR" -le 6 ] || { "$PY" "$LANE/ledger.py" release "$A"; echo "account at $ACCR jobs just before sbatch: margin rule, released"; exit 5; }   # A5.2
 trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: reservation KEPT; run ledger.py settle $A"' ERR
 OUT=$(timeout 120 ssh -o ConnectTimeout=20 tufts-login "cd $NS/$A && sbatch run.sbatch")
 echo "$OUT"

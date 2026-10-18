@@ -154,13 +154,28 @@ class FOMs:
         """A zero-argument function doing exactly the timed work of one query (solve + output map)."""
         if sp[0] == 'ps':
             q = self.psq(sp[1], sp[2], target)
-            return lambda: q(x, nu)[0]        # the running maximum is computed in the same program (validity evidence)
+            name = f"ps|N{sp[1]}|{sp[2]:.8g}|{target if target == 'lattice' else target[1]}"
+
+            def fps():
+                o = q(x, nu)[0]               # the running maximum is computed in the same program (validity evidence)
+                if name not in self.compile_log:
+                    self._log(name, q)
+                return o
+            return fps
         _, fam, L, dt, lev = sp
         adv, scheme = FAM[fam]
         ntol, ltol = TOLS[lev]
-        s = self.solver(L, adv, NEWTON_LIMIT.get(lev, MAX_NEWTON))
+        lim = NEWTON_LIMIT.get(lev, MAX_NEWTON)
+        s = self.solver(L, adv, lim)
         m = self.fmap(L, target)
-        return lambda: m(s(x, nu, dt, scheme, ntol, ltol)['out'])
+        name = f'fd|{adv}|L{L}|lim{lim}'
+
+        def ffd():
+            o = m(s(x, nu, dt, scheme, ntol, ltol)['out'])
+            if name not in self.compile_log:
+                self._log(name, s)
+            return o
+        return ffd
 
     @staticmethod
     def converged(sp, info, F):

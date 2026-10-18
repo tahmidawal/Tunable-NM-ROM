@@ -48,6 +48,7 @@ def main():
     a = ap.parse_args()
     M = json.loads(Path(a.match).read_text())
     assert not M['blocked'], 'the C1 matcher is blocked (acceptance failed): no C2 configs'
+    assert M.get('extension_complete') is True, 'the A3.2 extension round is required and not complete: no C2 configs'
     T = json.loads(Path(a.targets).read_text())['targets']
     L = ladder_scores(a.ladder)
     K2 = json.loads(Path(a.k2).read_text())

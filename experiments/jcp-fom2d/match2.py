@@ -375,14 +375,23 @@ def main():
                 hits.append(dict(target=lab, comparator=mb[f]['joint']['key'], population=t.get('population')))
         mn = ed_base.get(f, {}).get('min_res')
         new_res = None if mn is None else (mn // 2 if f in ('UB', 'CC') else mn - 4)
-        ok_new = new_res is not None and (new_res >= 16 if f in ('UB', 'CC') else new_res >= 4)
+        tested = {resolution(k)[0] for k in cfgs if FR.family(k) == f} | \
+                 {int(g.split('|')[2][1:]) for g in groups if g.split('|')[1] == f}        # any tested base/extension resolution
+        tested_base = {resolution(k)[0] for k in base if FR.family(k) == f} | \
+                      {int(g.split('|')[2][1:]) for g in groups if g.split('|')[1] == f and groups[g]['_dir'] not in
+                       [str(Path(x)) for x in a.extension_ladder]}
+        ok_new = new_res is not None and (new_res >= 16 if f in ('UB', 'CC') else new_res >= 4) and new_res not in tested_base
         dts = sorted({resolution(k)[1] for k in base if FR.family(k) == f}) if f != 'PS' else \
             sorted({resolution(k)[1] for k in base if FR.family(k) == 'PS'})
-        req = [] if not (hits and ok_new) else [f'fd|{f}|L{new_res}|{d:.8g}' if f != 'PS' else f'ps|N{new_res}|{d:.8g}' for d in dts]
-        have = {k for k in adm if k not in base} | {g for g in groups if Path(groups[g]['_dir']).as_posix() in
-                                                    [str(Path(x).as_posix()) for x in a.extension_ladder]}
-        done = all(any(h.startswith(r) for h in have) for r in req)
+        req = [] if not (hits and ok_new) else [(f, new_res, d) for d in dts]
+        ext_dirs = [str(Path(x)) for x in a.extension_ladder]
+        have = {(FR.family(k), resolution(k)[0], resolution(k)[1]) for k in cfgs if k not in base} | \
+               {(g.split('|')[1], int(g.split('|')[2][1:]), FR.canon_dt(g.split('|')[3])) for g in groups
+                if groups[g]['_dir'] in ext_dirs}
+        done = all(any(h[0] == r[0] and h[1] == r[1] and abs(h[2] - r[2]) < 1e-15 for h in have) for r in req)
+        req = [f'fd|{f}|L{r}|{d:.8g}' if f != 'PS' else f'ps|N{r}|{d:.8g}' for _, r, d in req]
         trig[f] = dict(fires=bool(hits), hits=hits, base_min_resolution=mn, added_resolution=new_res if ok_new else None,
+                       tested_resolutions=sorted(tested),
                        required=req, completed=bool(done) if req else None)
     res['extension_trigger'] = trig
     res['extension_complete'] = all(v['completed'] is not False for v in trig.values())

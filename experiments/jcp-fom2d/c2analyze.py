@@ -95,7 +95,7 @@ def main():
         A = r['config']['A']['label']
         veto = set(r.get('veto', []))
         ctl = r.get('controls', {})
-        panel_ok = bool(A not in veto and r['gates'].get('G-RR') and r['gates'].get('G-FR')
+        panel_ok = bool(A not in veto and r['gates'].get('G-RR') and r['gates'].get('G-FR') and r['gates'].get('A-valid')
                         and ctl.get('T-dbl', {}).get('fires') and ctl.get('T-fault', {}).get('fires')
                         and ctl.get('T-fault', {}).get('separation_ok')
                         and ctl.get('T-id', {}).get('fires'))
@@ -141,7 +141,7 @@ def main():
         uni = plan['meshes']['4096'].get('k2_universe')
         rows = {}
         for tk in uni or []:
-            gid = plan['meshes']['4096']['targets'][tk]['union_joint_group']
+            gid = plan['meshes']['4096']['targets'][tk].get('union_joint_group')
             c = res['cells'].get(f'4096|{gid}', {})
             rows[tk] = dict(S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), status=c.get('status', 'ok'),
                             two_x_class=c.get('two_x_class'), two_x=c.get('two_x'))

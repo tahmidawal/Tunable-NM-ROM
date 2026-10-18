@@ -338,7 +338,7 @@ def main():
         rep['pilots'][pk] = dict(record=recs[0], warm=recs2[0], mem=mem(),
                                  units=nunit, seconds_per_unit=recs2[0]['seconds_first'] / max(nunit or 1, 1),
                                  newton_total=recs2[0]['evidence'].get('newton_total'))
-        rep['compile_log'] = foms.compile_log
+        rep['compile_log'] = {**rep.get('compile_log', {}), **foms.compile_log}   # merged across resumes
         save()
         print('PILOT', pk, round(recs[0]['seconds_first'], 2), round(recs2[0]['seconds_first'], 3), mem(), flush=True)
     # ---- acceptance (fail closed): every gate passed, every control fired, every requested config recorded ------------
@@ -354,7 +354,16 @@ def main():
     acc['all_groups_recorded'] = all(g in rep.get('groups', {}) for g in want)
     acc['all_ps_recorded'] = all(FR.key(('ps', int(N), FR.canon_dt(d))) in rep['configs'] for N, d in cfg.get('ps', []))
     acc['all_pilots_recorded'] = all(pk in rep.get('pilots', {}) for pk in cfg.get('pilots', []))
-    rep['compile_log'] = foms.compile_log
+    rep['compile_log'] = {**rep.get('compile_log', {}), **foms.compile_log}   # merged across resumes
+    if cfg.get('pilots'):                    # resource evidence: every pilot's executables have a logged compile time
+        need = set()
+        for pk in cfg['pilots']:
+            sp = FR.parse(pk)
+            if sp[0] == 'fd':
+                need |= {f"fd|{FR.FAM[sp[1]][0]}|L{sp[2]}|lim20", f'map|L{sp[2]}|256'}
+            else:
+                need.add(f'ps|N{sp[1]}|{sp[2]:.8g}|lattice')
+        acc['compile_log_complete'] = need <= set(rep['compile_log'])
     rep['acceptance'] = acc
     rep['accepted'] = bool(all(acc.values()))
     rep['elapsed_seconds'] = el()

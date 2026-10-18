@@ -150,7 +150,19 @@ if E.get('configs_1024'):
     w(table(['configuration', 'rule', 'M', 'Q1 / Q2', 'numerically qualified', 'median error', 'worst error', 'Q3 flags'], rows))
     w('')
     w('Numerical qualification means local stationarity and solver / quadrature convergence only; it says nothing about '
-      'accuracy (A1.3).')
+      'accuracy (A1.3). Failing predicates of the configurations that are not numerically qualified:')
+    w('')
+    rows = []
+    for key, c in sorted(E['configs_1024'].items()):
+        if c['qualified']:
+            continue
+        rows.append([key, ', '.join(k for k, v in c['Q1'].items() if v is False and k != 'pass') or '—', c['Q2'].get('label'),
+                     g3(c['Q2'].get('worst_dist_qp'))])
+    w(table(['configuration', 'Q1 predicates failing', 'Q2 label', 'Q2 worst successor distance'], rows))
+    w('')
+    w('Q1 predicates: `all_valid` (finite, no damping saturation, initial fit converged), `anchors_verified` (tight solves '
+      'certified), `certificate` (≤ 1 % non-stationary steps), `distance` (production within 2.5e-4 of the tight solve on '
+      'every case), `tight_tighter` (tight within 2.5e-5 of tighter on dev6).')
     w('')
 
 # ------------------------------------------------------------------ error vs K ----
@@ -273,16 +285,51 @@ if E.get('lh'):
     ps = E.get('lh_per_seed')
     if ps:
         rows = []
-        for s, P in ps.items():
+        for key, P in ps.items():
+            sc, s = key.split('|')
             for K in KS:
                 e = P.get(str(K)) or P.get(K)
                 if e and 'lh_dim' in e:
-                    rows.append([s, K, e['lh_dim']['dominance'], pct(e.get('median_H'))])
+                    rows.append([sc, s, K, e['lh_dim']['dominance'], (e.get('lh_cost') or {}).get('at_most_cost'), pct(e.get('median_H'))])
+                elif e:
+                    rows.append([sc, s, K, e.get('status'), '—', '—'])
         if rows:
-            w('Per-seed sensitivity (each individual head against linear r = K, BE):')
+            w('Per-seed sensitivity (each individual head; single-seed pools):')
             w('')
-            w(table(['seed', 'K', 'Q-LH-dim', 'head median'], rows))
+            w(table(['scheme', 'seed', 'K', 'Q-LH-dim', 'at most equal cost', 'head median'], rows))
             w('')
+    l256 = E.get('lh_256')
+    if l256:
+        w(f"**256² (deferrable panel; {l256['BE']['scope']}):**")
+        w('')
+        rows = []
+        for K in KS:
+            e = l256['BE']['per_K'].get(str(K)) or l256['BE']['per_K'].get(K)
+            if e:
+                rows.append([K, e.get('S'), e.get('S_prime'), (e.get('lh_dim') or {}).get('dominance', e.get('status')),
+                             (e.get('lh_cost') or {}).get('at_most_cost', e.get('status'))])
+        w(table(['K', 'qualified seeds (256²)', 'timing-usable seeds', 'Q-LH-dim', 'at most equal cost'], rows))
+        w('')
+
+cm = E.get('cross_mesh_256_1024')
+if cm:
+    w('## 6b. Head and linear errors across meshes (256² vs 1024², descriptive; governing-plan E3c context)')
+    w('')
+    rows = [[k, pct(v['median_abs_change']), pct(v['max_abs_change']), v['worst_case'], 'yes' if v['both_qualified'] else 'no']
+            for k, v in sorted(cm.items())]
+    w(table(['configuration', 'median |change| (pp of u0)', 'max |change|', 'case of max', 'qualified at both'], rows))
+    w('')
+if E.get('cost'):
+    w('## 6c. Timing-job qualification and usability')
+    w('')
+    rows = []
+    for m, cmp_ in sorted(E['cost'].items(), key=lambda kv: int(kv[0])):
+        for lb, c in sorted(cmp_.items()):
+            rows.append([lb, c.get('timing_job_label'), (c.get('consistency') or {}).get('max_trajectory_distance', '—'),
+                         'yes' if c.get('equivalence') else 'no', g3(c.get('subject_drift')), 'yes' if c.get('usable') else 'no'])
+    w(table(['subject', 'timing-job Q1/Q2 (dev6)', 'max distance to accuracy-job trajectory', 'split = fused',
+             'subject drift', 'usable for cost labels'], rows))
+    w('')
 
 # ------------------------------------------------------------------ provenance ----
 w('## 7. Jobs, budget, deferrals')

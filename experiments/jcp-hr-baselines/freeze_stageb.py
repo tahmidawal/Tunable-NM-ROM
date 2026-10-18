@@ -56,7 +56,10 @@ def recheck(tdir, T, cid, P, n0):
     tv = [v['runs'][str(j)]['timed_vs_scored'] for j in TIMING]
     timing_ok = bool(all(x is not None and np.isfinite(x) and x <= 1e-12 for x in tv))
     ref = [v['q1']['dist'][str(j)] for j in TIMING]
-    mism = max(abs(x - y) for x, y in zip(dist, ref))
+    # A41.1: absolute agreement within 1e-9 (GPU vs host summation order; four orders below the smallest Q1
+    # threshold 2.5e-5), and the Q1 decision must agree exactly (asserted by the caller)
+    mism = max(abs(x - y) if np.isfinite(x) and np.isfinite(y) else (0. if not np.isfinite(x) and not np.isfinite(y)
+               else np.inf) for x, y in zip(dist, ref))
     return q1, timing_ok, mism
 
 
@@ -144,7 +147,7 @@ def main():
         elig[cid] = dict(id=cid, t=v['t'], W=W, med=float(np.median(es)), tcase=tt, r=v['r'], kind=v['kind'],
                          hr_points=v['hr_points'] or 0, scheme=v['scheme'], dt=v['dt'], solver=v['solver'],
                          stage=v['stage'], quality=v.get('quality'))
-    assert mism_all <= 1e-12, ('Q1 distance recomputation mismatch', mism_all)          # A32.8: blocking
+    assert mism_all <= 1e-9, ('Q1 distance recomputation mismatch', mism_all)          # A32.8/A41.1: blocking
     items = [dict(id=c['id'], t=c['t'], W=c['W']) for c in elig.values()]
     F = ST.front(items)
     near = ST.near_front(items, F)
@@ -179,17 +182,24 @@ def main():
     grp = {}
     for m in members:
         grp.setdefault(tuple(m.split('|')[:5]), []).append(m)
+    # A41.2 calibrated on the tuning job's own measurements: a member group (one discrete problem: anchors + its
+    # solvers) costs its Stage-A block time scaled by cohort size / screening size (the Stage-A block also contains
+    # warm re-runs, so this is an upper estimate); A-B-A = pairs x 6 cases x 3 triples x 1.3 (drift retries) x
+    # (2 t_X + t_B + 3 x 0.1 s burn + 0.05 s); comparator setup = 2 x the tuning job's ours_pass time; compilation
+    # 15 s per member; factor 1.5 on the total.
     sec = 0.
     for g, ms in grp.items():
-        tg = max(elig[m]['t'] for m in ms)
-        sec += 1.6 * tg * (ncase + 2)                                        # tight on all cases + tighter on two
-        sec += sum(1.6 * elig[m]['t'] * ncase for m in ms)                   # prod runs
+        kind, r, hp, scheme, dt = g
+        blk = [v['seconds'] for k, v in T['phases'].items()
+               if k.split('|')[1:] == [kind, r, hp, scheme, f'{float(dt):.8g}'] and k.startswith(('A|', 'EXT|'))]
+        assert blk, ('no tuning block time for', g)
+        sec += max(blk) * ncase / len(TIMING)
     adm = [k for k, x in X.items() if 'front' in x]
     tx = {k: float(np.median([c['seconds_warm'] for c in T['ours_pass'][k]['cases'].values()])) for k in adm}
-    sec += sum(len(TIMING) * 3 * 1.5 * (2 * tx[k] + elig[m]['t'] + 0.3) for k in adm for m in members)
-    sec += len(adm) * 2 * 300.                                              # comparator setup twice (G-ours, timing)
-    sec += len(members) * 60. + len(grp) * 60.                              # compilation, checkpoint writes
-    # A35.3 memory: one basis (Phi, all ranks), one live HR data set, one comparator, timing-case fields on the host
+    sec += sum(len(TIMING) * 3 * 1.3 * (2 * tx[k] + elig[m]['t'] + 0.35) for k in adm for m in members)
+    sec += 2 * float((T['phases'].get('ours_pass') or {}).get('seconds') or 600.)
+    sec += 15. * len(members)
+    sec *= 1.5
     # A36.3 memory model of simultaneous allocations: the cell keeps Phi, LPhi, DPhi at full basis width; the live
     # online data set holds at most three r_max-wide slices (none: Phi_r, LPhi_r, DPhi_r); one comparator at a time,
     # bounded by the tuning job's ours_pass device peak (that phase runs first, after refs, so its process-cumulative
@@ -205,7 +215,7 @@ def main():
                    + 8 * len(members) * len(TIMING) * 6 * lat             # certified timing-case fields
                    + 8 * len(adm) * len(TIMING) * 6 * lat                 # comparator scored fields
                    + 8 * 2 * nn * rmax)                                   # transient slices
-    projection = dict(seconds_estimate=sec, hours_estimate=2 * sec / 3600,
+    projection = dict(seconds_estimate=sec, hours_estimate=sec / 3600,
                       note='an estimate (fixed multipliers); the hard GPU-hour controls are the wall limit and the ledger',
                       device_bytes_model=dev, host_bytes_model=host, comparator_peak_bytes=comp)
     ecsw_ok = dict(ecsw_ok)

@@ -1849,3 +1849,21 @@ refactorisation (`max_iter`). Neither can create an optimum alias (A23 requires 
 residual/gradient pass, one append, one solve, one deletion batch or refactorisation, plus the terminal evidence.
 G-deadline exercises the first outer, first post-gradient, first inner and second outer checks; the second
 post-gradient case was verified by code audit 30's probes. Code audit 30: READY for this change.
+
+---
+
+## Amendment A41 (2026-10-18) — first Stage-B freeze (2D 1024²)
+
+**A41.1** The freeze's recomputation of the Q1 distances from saved coefficients agrees with the in-job values to
+1.5e-11 absolute (GPU versus host summation order); the blocking tolerance is 1e-9 absolute — four orders of magnitude
+below the smallest Q1 threshold (2.5e-5) — with the Q1 decision itself required to agree exactly (it does, for every
+configuration). The earlier 1e-12 bound was below the summation-order noise.
+
+**A41.2** The Stage-B time projection is calibrated on the tuning job's own measurements (each member group's Stage-A
+block time × cohort/screening size; A–B–A from measured warm times; comparator setup from the tuning job's
+`ours_pass` time; 15 s compilation per member; × 1.5). For 2D 1024² (35 members, 8 X) it gives 2.93 h; the Stage-B
+attempt's wall is 3.5 h. Staging still refuses a projection above the usable driver time.
+
+**A41.3 Order of the remaining jobs (lane cap 2, t3d64b running).** t2d256a (tuning, 2 h) next — it provides the
+saturation result the 1024² analysis requires — then the 1024² Stage-B job, then the 256² and 3D Stage-B jobs. Every
+Stage-B attempt gets a job audit.

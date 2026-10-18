@@ -251,7 +251,17 @@ def score_config(R, kinds=('ST',)):
     return res
 
 
-def manifest_equal(job, name, R):
+def generator_identity(job_prov):
+    """A6.2 bound to the evaluated job: the job's staged rule-generator files (its PROVENANCE.json) equal the combined
+    archive's (its PROVENANCE.json), by sha256."""
+    arch = json.loads((COMB.parent / 'PROVENANCE.json').read_text())
+    want = {x['source'].split('vendor/quad2d/')[-1]: x['sha256'] for x in arch if 'vendor/quad2d/' in x['source']}
+    got = {x['source'].split('vendor/quad2d/')[-1]: x['sha256'] for x in job_prov if 'vendor/quad2d/' in x['source']}
+    keys = ('qcore.py', 'vendor/hari_quadrature.py')
+    return all(k in want and k in got and want[k] == got[k] for k in keys)
+
+
+def manifest_equal(job, name, R, job_prov=None):
     """AM-1 / AM-7: numerical-configuration equality of a fresh 1024^2 configuration with the combined archive.
     Compared: mesh, r, M, ordered mode identities (hash of the 1024^2 builder list = the archive's construction), rule,
     m and the rule-point hash, trust, A condition number, policy, bank edges, checkpoint and rotation sha256, cohorts,
@@ -265,7 +275,7 @@ def manifest_equal(job, name, R):
                modes=str(R['mode_hash']) == dev['mode_lists'][f'1024|frozen|{M}']['hash'] ==
                dev['mode_lists'][f'1024|nominal|{M}']['hash'],
                rule=c['rules']['main'] == a['rule'], m=c['m']['main'] == a['m'],
-               rule_points=c['meta']['main']['m'] == a['m'] and dev['code']['rule_generator_identical_to_archive'],
+               rule_points=c['meta']['main']['m'] == a['m'] and job_prov is not None and generator_identity(job_prov),
                trust=abs(c['trust'] - a['trust']) <= 1e-12 * a['trust'],
                A_cond=abs(c['A_cond'] - a['A_cond']) <= 1e-9 * a['A_cond'], policy=c['policy'] == 'frozen',
                checkpoint=job['checkpoint_sha256'] == arch['checkpoint_sha256'] == dev['checkpoint_sha256'],
@@ -283,7 +293,7 @@ def manifest_equal(job, name, R):
                 jax=arch['jax_version']), new=dict(commit=job['commit'], gpu=job['gpu'], jax=job['jax_version'])))
 
 
-def reproduction(R, name, scheme, run_key, job):
+def reproduction(R, name, scheme, run_key, job, job_prov=None):
     z = np.load(COMB / f'W_{name}.npz')
     runs, ac = list(z['runs']), list(z['cases'])
     ri = runs.index(run_key)
@@ -291,6 +301,6 @@ def reproduction(R, name, scheme, run_key, job):
     for j, cid in enumerate([str(x) for x in R['case_ids']]):
         Wa = z['W'][ac.index(cid), ri]
         rows.append(dict(case=cid, rel=float(np.max(np.linalg.norm(R['W'][j] - Wa, axis=1)) / np.linalg.norm(Wa[0]))))
-    man = manifest_equal(job, name, R)
+    man = manifest_equal(job, name, R, job_prov)
     worst = dmax(r_['rel'] for r_ in rows)
     return dict(rows=rows, worst=worst, manifest=man, passed=bool(worst <= 1e-10 and man['equal']))

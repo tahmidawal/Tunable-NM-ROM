@@ -65,7 +65,8 @@ def acc_checks(d):
             req(f'acc {name} {sc}: G-cert', q['gcert_all'])
             rep(f'acc {name} {sc}: Q1/Q2 labels (smoke population)', Q1=q['Q1'], Q2=q['Q2'])
             if name in ('R128', 'R384'):
-                g = SC.reproduction(R, name, sc, f'LSPG|{sc}|0.005|prod', r)
+                g = SC.reproduction(R, name, sc, f'LSPG|{sc}|0.005|prod', r,
+                                    json.loads((d.parents[1] / 'PROVENANCE.json').read_text()))
                 req(f'PRELIMINARY reproduction gate {name} {sc} (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)', g['passed'],
                     worst=g['worst'], manifest=g['manifest'])
             if name == 'R384' and sc == 'CNR':

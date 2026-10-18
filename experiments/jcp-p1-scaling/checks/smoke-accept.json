@@ -1728,31 +1728,31 @@
  },
  "2D dispatch-sync N at r=512": {
   "required": true,
-  "passed": false,
-  "ratio": 1.3129395012320266
+  "passed": true,
+  "ratio": 1.9715232411800918
  },
  "2D dispatch-sync J at r=512": {
   "required": true,
-  "passed": false,
-  "ratio": 1.7370003948960475
+  "passed": true,
+  "ratio": 1.993723582583613
  },
  "2D dispatch-sync JTJ at r=512": {
   "required": true,
   "passed": true,
-  "ratio": 1.9541494298609887
+  "ratio": 1.9860319329599343
  },
  "2D dispatch-sync chol at r=512": {
   "required": true,
   "passed": true,
-  "ratio": 1.9841928081875826
+  "ratio": 1.9921964965909142
  },
  "2D drift fixed": {
   "required": false,
   "rows": [
    {
-    "start": 0.0004690936766564846,
-    "end": 0.0004698703996837139,
-    "ratio": 1.0016557951340668,
+    "start": 0.00047327950596809387,
+    "end": 0.00046877656131982803,
+    "ratio": 0.9904856546892833,
     "ok": true
    }
   ]
@@ -1772,31 +1772,31 @@
  },
  "3D dispatch-sync N at r=1024": {
   "required": true,
-  "passed": false,
-  "ratio": 1.478337466692031
+  "passed": true,
+  "ratio": 1.989125238389406
  },
  "3D dispatch-sync J at r=1024": {
   "required": true,
   "passed": true,
-  "ratio": 1.9169730398133695
+  "ratio": 1.9981188782620787
  },
  "3D dispatch-sync JTJ at r=1024": {
   "required": true,
   "passed": true,
-  "ratio": 1.9989777672604028
+  "ratio": 1.9947535533323344
  },
  "3D dispatch-sync chol at r=1024": {
   "required": true,
   "passed": true,
-  "ratio": 1.996924172032224
+  "ratio": 2.002441994187234
  },
  "3D drift fixed": {
   "required": false,
   "rows": [
    {
-    "start": 0.0008770022541284561,
-    "end": 0.0008761882781982422,
-    "ratio": 0.9990718656350287,
+    "start": 0.0008781077340245247,
+    "end": 0.0008776290342211723,
+    "ratio": 0.9994548507150046,
     "ok": true
    }
   ]
@@ -1812,7 +1812,7 @@
  "3D kernel components equal the solver advection / Jacobian on every fixture (<= 1e-12)": {
   "required": true,
   "passed": true,
-  "worst": 2.1932661717424652e-16
+  "worst": 3.01880800405084e-16
  },
  "CPU synthetic controls (test_p1.py): every registered control present and passing": {
   "required": true,

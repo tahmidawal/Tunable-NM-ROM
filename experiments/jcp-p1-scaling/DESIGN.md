@@ -712,3 +712,14 @@ revision 1 was committed before any job). The preliminary reproduction gate then
 
 **A6.3 Pilot outcome.** Upper-bound footprint (timing job's full resident state plus the $4096^2$ accuracy extras):
 peak 113.5 GB < 120 GB on the H200 → the **full** R512 bank is used at $4096^2$ (no prefix-retaining label).
+
+**A6 erratum and outcome (2026-10-18).** (i) `checks/smoke-accept-1.json` as first committed was a copy of the *re-run*
+(three failures), not the original record; it is replaced by a reconstruction made by re-running the pre-A6 code
+(commit `0f086d280`: `p1score.py`, `smoke_accept.py`, manifest revision 1) on the same archives, which reproduces the
+five failures listed above. (ii) Manifest revision 2 differs from revision 1 not only by the rule-generator fields: it
+also records a newer commit, drops the `written_before_any_lane_job` flag (replaced by `revision`/`revision_note`), and
+updates `p1core_sha256`/`p1common_sha256` to the code the smoke ran (the code-audit fixes made between revision 1 and
+the smoke). (iii) The A6.2 rule-identity check is now bound to the evaluated job: the job's staged `PROVENANCE.json`
+hashes of `qcore.py` and `hari_quadrature.py` must equal the combined archive's. (iv) `smkC` (5352968) re-showed the
+kernel dispatch-sync control with the A6.1 protocol: 2D 1.97–1.99, 3D 1.99–2.00, all in [1.8, 2.2]; the final
+acceptance (`checks/smoke-accept.json`, archives smkA + smkC + smkB) passes every required control.

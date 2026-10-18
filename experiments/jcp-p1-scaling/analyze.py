@@ -101,14 +101,15 @@ def h_acc_n(A, r, sc, name1024='R{r}', name_other='R{r}'):
     el = {m: eligible(e[m]) for m in MESHES if e[m] is not None}
     ep = eps(e[1024])
     pairs = {}
+    sub16 = set(SC.case_set('sub16'))
     for m, tag in ((256, 'P256'), (4096, 'P4096')):
         if e[m] is None:
             continue
-        cs = [c for c in E[m] if c in E[1024] and el[m][c] and el[1024][c]]
+        cs = [c for c in E[m] if c in E[1024] and el[m][c] and el[1024][c] and (m != 4096 or c in sub16)]
         pairs[tag] = (np.array([E[m][c] for c in cs]), np.array([E[1024][c] for c in cs]), np.array([ep[c] for c in cs]))
     slopes = None
     if e[4096] is not None:
-        cs = [c for c in E[4096] if all(c in E[m] and el[m][c] for m in MESHES)]
+        cs = [c for c in E[4096] if c in sub16 and all(c in E[m] and el[m][c] for m in MESHES)]
         slopes = [np.polyfit(np.log2(MESHES), [E[m][c] for m in MESHES], 1)[0] for c in cs]
     qual = all(e[m]['q']['numerically_qualified'] for m in MESHES if e[m] is not None)
     out = S.h_acc_n(pairs, slopes, qualified=qual)
@@ -169,6 +170,14 @@ def timing(t_dir, A):
         tq[lb] = dict(timing_job=q['numerically_qualified'], Q1=q['Q1']['pass'], Q2=q['Q2'].get('label'),
                       accuracy_job=acc['q']['numerically_qualified'] if acc else None,
                       both=bool(q['numerically_qualified'] and acc and acc['q']['numerically_qualified']))
+    dbl = {}
+    for sub in sorted({x['subject'] for x in t['doubled']}):
+        xs = [x for x in t['doubled'] if x['subject'] == sub]
+        ok = [x['ratio'] for x in xs if x['drift_ok']]
+        med = float(np.median(ok)) if ok else float('nan')
+        dbl[sub] = dict(median=med, passed=bool(ok and len(ok) >= len(xs) / 2 and 1.8 <= med <= 2.2 and
+                                                all(x['same_iterations'] and x['identity_ok'] for x in xs)))
+    controls_ok = bool(dbl and all(v['passed'] for v in dbl.values()) and all(x['passed'] for x in t['equivalence']))
     res = {}
     for r_ in (128, 256, 384):
         for sc in ('BE', 'CNR'):
@@ -185,6 +194,8 @@ def timing(t_dir, A):
                     continue
                 ratio, valid = arr(lbs)
                 o = S.h_cost_n(ratio, valid, list(MESHES))
+                if not controls_ok:            # doubled-work or split-equivalence control misbehaved: claim blocked
+                    o = dict(o, procedure_outcome=o['outcome'], outcome='blocked (timing control misbehaved)')
                 desc = {}
                 for k in ('t_init', 't_evolve', 't_decode'):
                     v_, _ = arr(lbs, k)
@@ -195,24 +206,19 @@ def timing(t_dir, A):
                          fused_ratio_median=fu, qualification={l_: tq.get(l_) for l_ in lbs},
                          label='deployment policy (mode set varies with mesh)' if pol == 'nominal' else 'frozen mode list')
                 res[f'R{r_}|{sc}|{pol}'] = o
-    dbl = {}
-    for sub in sorted({x['subject'] for x in t['doubled']}):
-        xs = [x for x in t['doubled'] if x['subject'] == sub]
-        ok = [x['ratio'] for x in xs if x['drift_ok']]
-        med = float(np.median(ok)) if ok else float('nan')
-        dbl[sub] = dict(median=med, passed=bool(ok and 1.8 <= med <= 2.2 and all(x['same_iterations'] and x['identity_ok'] for x in xs)))
-    return dict(h_cost_n=res, doubled=dbl, veto=veto, timing_qualification=tq, components=t['components'],
+    return dict(controls_ok=controls_ok, h_cost_n=res, doubled=dbl, veto=veto, timing_qualification=tq, components=t['components'],
                 equivalence_all=all(x['passed'] for x in t['equivalence']), gpu=t['gpu'],
                 memory={lb: dict(live_bytes=s_['live_bytes'], compiled=s_['compiled']) for lb, s_ in t['subjects'].items()},
                 banks=t['banks'])
 
 
-def kernels(k_dir, ranks, tag):
+def kernels(k_dir, ranks, tag, timing_controls_ok=True):
     k = json.loads((k_dir / 'result.json').read_text())
     assert k['complete']
     rows = k['panels']['fixed']['rows']
     cases = sorted({r_['case'] for r_ in rows})
-    blocked = not (all(v['passed'] for v in k['sync'].values()) and k['panels']['fixed']['drift_ok'] and k['component_equivalence']['passed'])
+    blocked = not (all(v['passed'] for v in k['sync'].values()) and k['panels']['fixed']['drift_ok'] and
+                   k['component_equivalence']['passed'] and timing_controls_ok)       # doubled work also governs H-cost-r
     out = {}
     for comp, p in (('N', 1.), ('J', 1.), ('JTJ', 2.), ('chol', 3.)):
         T = np.full((len(cases), 2, len(ranks)), np.nan)
@@ -338,7 +344,9 @@ def main():
     if 1024 in A:
         for name in ('R128', 'R384'):
             for sc in ('BE', 'CNR'):
-                res['reproduction'][f'{name}|{sc}'] = SC.reproduction(A[1024][(name, sc)]['R'], name, sc, f'LSPG|{sc}|0.005|prod', accinfo[1024])
+                res['reproduction'][f'{name}|{sc}'] = SC.reproduction(
+                    A[1024][(name, sc)]['R'], name, sc, f'LSPG|{sc}|0.005|prod', accinfo[1024],
+                    json.loads((RUNS / 'acc1024' / 'archive' / 'PROVENANCE.json').read_text()))
         res['p1e']['2d'] = accinfo[1024].get('p1e')
         res['order'] = accinfo[1024].get('order')
         res['vendor_bridge'] = accinfo[1024].get('vendor_bridge')
@@ -346,9 +354,10 @@ def main():
     td = out_dir('time', 'p1time_time')
     res['timing'] = timing(td, A) if td else 'not reached'
     kd = out_dir('kern2d', 'p1kern_kern2d')
-    res['kernels_2d'] = kernels(kd, [32, 64, 128, 256, 384, 512], '2D') if kd else 'not reached'
+    tok = res['timing']['controls_ok'] if isinstance(res['timing'], dict) else False
+    res['kernels_2d'] = kernels(kd, [32, 64, 128, 256, 384, 512], '2D', tok) if kd else 'not reached'
     k3 = out_dir('kern3d', 'p1three_kern3d')
-    res['kernels_3d'] = kernels(k3, [64, 128, 256, 512, 768, 1024], '3D') if k3 else 'not reached (deferred or failed)'
+    res['kernels_3d'] = kernels(k3, [64, 128, 256, 512, 768, 1024], '3D', tok) if k3 else 'not reached (deferred or failed)'
     e3 = out_dir('p1e3d', 'p1three_p1e3d')
     res['p1e']['3d'] = json.loads((e3 / 'result.json').read_text())['p1e'] if e3 else 'not reached (deferred or failed)'
     res['memory'] = {m: dict(setup=accinfo[m]['setup'], memory=accinfo[m]['memory'],

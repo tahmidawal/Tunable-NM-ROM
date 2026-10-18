@@ -1298,3 +1298,34 @@ committed, the repaired-path versus reference comparison of A18.3 is "incomplete
   flops each), i.e. about $10^{14}$ flops for a full 16r path — no longer cubic in the support. The phase-II resource
   certificate uses GPU timings of this path measured in the first phase-II job's NNLS stage (the certificate for that
   job uses a conservative projection, stated in its job audit).
+
+---
+
+## Amendment A21 (2026-10-18) — design audit 14 (`audits/codex-design-14.md`, NEEDS-RESTATEMENT, items 4–6)
+
+**A21.1 2D comparator admission (item 4).** A 2D configuration of ours is compared only if its time-stepping option is
+one of the baseline's registered 2D options (BE or CN-R at Δt = 0.005). Front members with other schemes or steps
+(e.g. BE/CN-R at 0.01 or 0.0125, GAL-CN) are listed as "**not assessed (no registered baseline option)**"; registering
+further baseline options would need a new amendment with regenerated construction, controls and resources.
+**Batch 1 (frozen now):** the jcp-p1-scaling `runs/EXPORT.json` (lane commit 5b782026b, file sha256 prefix
+8e3b120855c702f2) configurations marked qualified at the baseline meshes: 256² {R128, R256, R384, R384nom} × {BE, CNR}
+and 1024² {R128, R256, R384, R512} × {BE, CNR}, all at Δt₀. Their per-case errors are re-derived by replay (G-ours).
+
+**A21.2 3D comparators and query contract (item 5).** The 3D comparison uses the **full-field mesh-path** contract of
+speed3d's grid (65³ rollout; `contract.grid`), the same contract as the baselines' query; the mesh-free m1 contract is
+reported only as "not assessed (different query contract)". A19's "mesh-free" wording is superseded by this mapping
+(the coordinator's instruction was to label the contract; this lane's baseline is a full-field query). **Batch 1
+(frozen now):** speed3d `runs/EXPORT.json` (lane commit 691465d88, sha256 prefix 209f3f49924161e2) deployed-rule
+configurations `M2_512|gl32`, `W256|gl24`, `W512|lat32768`, `W768|lat32768`, `W1024|lat65536`, each `fs|BE|0.01|K1`,
+all "eligible" (Q1, jobs 5301580/5301264/5301270), with the finalists' converged-rule δ_quad as their quadrature
+evidence; they are labelled "Q1 + deployed-rule δ_quad". Reduced-rule arms (e.g. the H2 winners on gl24 for M2_512)
+enter only in a later batch once jcp-qualify's 3D Q2 for that exact configuration is committed and audited. Timed inputs:
+ours' query = `TB.project` of the full-field IC + stepping + decode (speed3d `p1` component definitions; table
+preparation excluded and reported separately as setup), the baseline's = $\Phi^\top u_0$ + stepping + full-field decode.
+
+**A21.3 Versioned comparator batches (item 6).** Each batch is a dated amendment listing the exact X identities, source
+commits and file hashes. For a new batch: (i) X's same-job paired ratios against every screened baseline configuration
+are measured in a new tuning-job timing pass, (ii) X's specific front is recomputed and any new Stage-B members are run
+with full Q1, (iii) its picks are frozen (sha256) before its verdict job, (iv) the added cost is certified and charged
+to the baseline's V ledger; ours' V ledger adds the qualification/mesh-free work that selected or certified the
+imported X, counting inherited evidence once.

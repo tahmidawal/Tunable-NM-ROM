@@ -1250,3 +1250,28 @@ knob); tolerance crossings are reported as scalars only. The fixture archive `ru
 logs `t4.log`, `t7.log` and `G.sha256` (generated on the local CPU after A18; committed when present), and `t_old.py`
 is pinned to the pre-A17 `nnls.py` (commit c57098e00) that produced `old_algorithm_t.log`. Until those logs are
 committed, the repaired-path versus reference comparison of A18.3 is "incompletely archived".
+
+---
+
+## Amendment A19 (2026-10-18) — coordinator decisions (coordinator, 2026-10-18)
+
+1. **smk2 released** (coordinator, 2026-10-18): one more phase-I cluster smoke, ≤ 1 GPU-h.
+2. **A2.3 ratified** (coordinator, 2026-10-18): POD snapshots come from the central-difference FOM on the training draws;
+   rationale: it gives the baseline its best data, which is conservative for our method. The registered generator probe
+   (sign-upwind vs central) is reported in the report.
+3. **A4.3 ratified** (coordinator, 2026-10-18) with the wording "within the registered factor-1.25 band"; "equal
+   budget" is never used.
+4. **Production preconditions** (coordinator, 2026-10-18): before any production job, (a) design audit round 14 must be
+   clean, (b) the NNLS updating QR (A18.5) is implemented and code-audited, (c) the resource certificate is regenerated
+   for the final algorithm.
+5. **Phase II released** (coordinator, 2026-10-18): if smk2's acceptance is ALL = true and item 4 holds, the lane
+   continues autonomously into phase II (job audits → production → results audit → `make_report.py` → report audit →
+   final hand-back with `runs/EXPORT.json`). Caps: 2 concurrent jobs; 30 GPU-h total including the 0.878 spent;
+   campaign cap 8.
+6. **Comparators (ours)** (coordinator, 2026-10-18): 2D from `runs/FRONT-2D.json` of the jcp-qualify lane
+   (`worktrees/2026-10-18-jcp-qualify`, used once committed and audited there; it carries Q1 + Q2 labels) and the 2D
+   configurations certified in jcp-p1-scaling `runs/EXPORT.json`; 3D from jcp-speed3d `runs/EXPORT.json` (Q1
+   certificates; **mesh-free contract — labelled so**; its reduced-rule arms are called qualified only with jcp-qualify's
+   3D Q2). If FRONT-2D.json is not ready when needed, the P1-certified configurations are used first and the front
+   members added later. This supersedes §8's "full-field contract only" for 3D: 3D pairs are labelled "ours under the
+   mesh-free query contract".

@@ -78,7 +78,7 @@ def plots():
                            edgecolor='#0b0b0b' if on else 'none', linewidth=.8, zorder=3 if on else 2)
                 if on:
                     i_ = sorted(front, key=lambda kk: cand[kk]['c']).index(k)
-                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(8, 7 if i_ % 2 == 0 else -12) if i_ % 3 != 2 else (-34, 4),
+                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(9, 6) if i_ % 2 == 0 else (-44, -12),
                                 textcoords='offset points', fontsize=6.5,
                                 bbox=dict(boxstyle='round,pad=0.1', fc='white', ec='none', alpha=.8))
             pts = sorted((cand[k]['c'], cand[k][stat]) for k in front)
@@ -403,12 +403,12 @@ def main():
             k = f'{m}|R{r}|LSPG|CNR|2'
             v = C.get(k)
             if v and not v['Q1'].get('pass'):
-                w(f"- **{m}², R{r} LSPG-CN-R at 2Δt₀** fails Q1 here: worst distance to the tight solve {g(v.get('worst_dist_tight'))} on {v.get('worst_dist_tight_case')} (bar 2.5·10⁻⁴), although its Q2 label is {v['Q2'].get('label')}. jcp-combined's finalist table (`worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/report.md`, finalist and fallback tables) calls the R128 and R256-fallback \"fast equal accuracy\" arms of this scheme and step qualified under its own finalist criterion; under the every-case Q1 contract of V4-2 they are **not** numerically qualified. Combined's measured errors and timings are not retracted; its qualification label for these arms is.")
+                w(f"- **{m}², R{r} LSPG-CN-R at 2Δt₀** fails Q1 here: worst distance to the tight solve ${g(v.get('worst_dist_tight'))}$ on {v.get('worst_dist_tight_case')} (bar $2.5\\times10^{{-4}}$), although its Q2 label is {v['Q2'].get('label')}. jcp-combined's finalist table (`worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/report.md`, finalist and fallback tables) calls the R128 and R256-fallback \"fast equal accuracy\" arms of this scheme and step qualified under its own finalist criterion; under the every-case Q1 contract of V4-2 they are **not** numerically qualified. Combined's measured errors and timings are not retracted; its qualification label for these arms is.")
     T3 = AN.get('threeD') or {}
     for k in ('M2_512|gl24|fs|BDF2|0.0125|K1', 'M2_512|gl24|qn|CN|0.016666667|k4'):
         v = (T3.get('tested') or {}).get(k)
         if v:
-            w(f"- **speed3d H2 winner `{k}`**: Q2-3D {v['label']} (successor-rule distance {g(v['worst_dist_qp'])} > 2.5·10⁻⁴, ρ {g(v['rho_max'])}). speed3d already labels reduced rules \"empirically validated surrogates, not quadrature-equivalent\" (`worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/report.md`); its speed-ups stand as measured, but the winners must not be described as quadrature-qualified.")
+            w(f"- **speed3d H2 winner `{k}`**: Q2-3D {v['label']} (successor-rule distance ${g(v['worst_dist_qp'])}>2.5\\times10^{{-4}}$, $\\rho_{{\\max}}={g(v['rho_max'])}$). speed3d already labels reduced rules \"empirically validated surrogates, not quadrature-equivalent\" (`worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/report.md`); its speed-ups stand as measured, but the winners must not be described as quadrature-qualified.")
     w('- **P1:** no numerical retraction; its $4096^2$ R128/R256 results are on its 16-case subset (extended here to 38 cases for the front).')
     w('')
     w('## Deviations and retractions')

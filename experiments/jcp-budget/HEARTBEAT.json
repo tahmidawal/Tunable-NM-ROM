@@ -1,18 +1,16 @@
 {
  "lane": "jcp-budget",
- "utc": "2026-10-18T14:20:20Z",
- "step": "5: real-size smoke smk1 on the cluster",
+ "utc": "2026-10-18T14:58:38Z",
+ "step": "6: codex job audit smk2 (3D smoke)",
  "waiting_on": {
-  "slurm_jobs": [
-   "5534971"
-  ],
-  "codex_output": null,
-  "codex_pid": null,
+  "slurm_jobs": [],
+  "codex_output": "audits/codex-job-smk2-1.md",
+  "codex_pid": 2964207,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T16:50:20Z",
- "last_commit": "d9da0660f",
- "gpu_hours_spent": 0.0,
+ "expected_finish_utc": "2026-10-18T15:58:38Z",
+ "last_commit": "c68c6f02a",
+ "gpu_hours_spent": 0.374,
  "gpu_hours_cap": 45,
- "notes": "production released (A5); smk2 (3D) after smk1"
+ "notes": "smk1 passed; production released"
 }

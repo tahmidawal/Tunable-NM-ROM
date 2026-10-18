@@ -30,6 +30,18 @@ from s3ctx import Ctx
 DT0 = S.DT0
 
 
+def mem(cx, tag):
+    """Allocator telemetry after a synchronised phase (code/job audit: B3 peak evidence for the certificates)."""
+    try:
+        st = jax.devices()[0].memory_stats() or {}
+        rec = dict(in_use=int(st.get('bytes_in_use', -1)), peak=int(st.get('peak_bytes_in_use', -1)),
+                   limit=int(st.get('bytes_limit', -1)))
+    except Exception:  # noqa: BLE001
+        rec = dict(in_use=-1, peak=-1, limit=-1)
+    cx.rep.setdefault('memory', {})[tag] = rec
+    print('MEM', tag, rec, flush=True)
+
+
 def cert(spc):
     """A3.5: fixed-sweep / QN runs are certified per step (speed3d gamma); adaptive runs carry their own stopping test."""
     return spc[0] in ('fs', 'fsp', 'qn')
@@ -158,6 +170,7 @@ def main():
     cx = Ctx(cfg, a.out)
     cx.rep.update(b2={}, b7={}, controls={})
     ids = list(cx.cases)
+    mem(cx, 'setup')
     if 'b2' in cfg:
         b = cfg['b2']
         chk = [j for j in b.get('check_cases', range(4)) if j in ids]
@@ -165,14 +178,17 @@ def main():
             run_star(cx, sname, b, ids, chk, cx.rep)
         for m in cfg['members']:
             run_member_b2(cx, m, b, ids, chk, cx.rep)
+            mem(cx, f"b2|{m['key']}")
     if 'controls' in cfg:
         run_controls(cx, dict(cfg['controls'], qinf=cfg['b2']['qinf']), cx.rep)
+        mem(cx, 'controls')
     if 'b7' in cfg:
         S.HORIZON[0] = float(cfg['b7']['horizon'])
         cx.queries.clear()
         cx.certs.clear()
         for m in cfg['members']:
             run_member_b7(cx, m, cfg['b7'], ids, cx.rep)
+            mem(cx, f"b7|{m['key']}")
     cx.dump()
     for sname in sorted({m['key'].split('|')[0] for m in cfg['members']}):      # lattice basis for the offline analysis
         np.save(Path(a.out) / f'GLAT_{sname}.npy', np.asarray(cx.Gl[sname]))

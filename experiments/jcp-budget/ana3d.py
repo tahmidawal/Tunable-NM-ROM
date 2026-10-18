@@ -326,13 +326,12 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
                 d['C_F'] = control_floor3(R, PR, eP, n0, eps or 0., d['U_star'], B, Fs['star'], eff, d)
         else:
             d['U_star'] = d['e_dyn_star'] = None
-        if val['0']:
-            if j in arch:
-                g = mx(F['0'] - B.dec(arch[j]))
-                d['G_B3'] = g
-                S['gb3'].append(g)
-            else:
-                S['gb3_missing'] += 1
+        if val['0'] and j in arch:
+            g = mx(F['0'] - B.dec(arch[j]))
+            d['G_B3'] = g
+            S['gb3'].append(g)
+        else:                                          # an invalid deployed corner or no archive: a missing comparison
+            S['gb3_missing'] += 1
         per.append(d)
     return per, S, srcs
 
@@ -569,7 +568,10 @@ def main():
     out['gates'] = dict(G_B0=dict(worst=S['gb0'], n=S['gb0_n'], passed=bool(S['gb0_n'] > 0 and S['gb0'] <= 1e-10)),
                         G_B2=dict(worst=S['gb2'], n=S['gb2_n'], passed=bool(S['gb2_n'] > 0 and S['gb2'] <= 1e-12)),
                         G_B3=dict(worst=max(S['gb3']) if S['gb3'] else None, n=len(S['gb3']), missing=S['gb3_missing'],
-                                  passed=bool(S['gb3'] and S['gb3_missing'] == 0 and max(S['gb3']) <= 1e-8)))
+                                  expected=len(cfg['members']) * len(cases) if 'b2' in cfg else 0,
+                                  passed=bool(S['gb3'] and S['gb3_missing'] == 0 and
+                                              len(S['gb3']) == len(cfg['members']) * len(cases) and
+                                              all(np.isfinite(S['gb3'])) and max(S['gb3']) <= 1e-8)))
     if 'controls' in cfg:
         B = bases.get('W256') or Basis(np.load(run / 'GLAT_W256.npy'))
 

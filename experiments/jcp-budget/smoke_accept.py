@@ -133,6 +133,9 @@ def main():
         add('C-F (3D)', 'control', B['controls']['C_F']['fired'], B['controls']['C_F'])
         add('C-score (3D)', 'control', B['controls']['C_score']['fired'], B['controls']['C_score'])
         add('G-Q (3D q0 certifier)', 'control', (B['controls'].get('G_Q') or {}).get('fired'))
+        mem3 = json.loads((b3 / 'result.json').read_text()).get('memory', {})
+        pk = max((v.get('peak', -1) for v in mem3.values()), default=-1)
+        add('3D peak device memory recorded and <= 120 GiB', 'gate', 0 < pk <= 120 * 2 ** 30, dict(peak_GiB=pk / 2 ** 30))
         rows.append(dict(name='3D B7 Q1/Q2 at T (reported)', kind='report', passed=True,
                          detail={k: dict(Q1=v['Q1'], Q2=v['Q2']) for k, v in B['b7'].items()}))
     ok = all(r['passed'] for r in rows if r['kind'] in ('gate', 'control'))

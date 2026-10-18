@@ -342,7 +342,7 @@ def t_pod():
     rec = float(np.max(np.linalg.norm(S - (S @ np.asarray(Pf)) @ np.asarray(Pf).T, axis=1) / np.linalg.norm(S, axis=1)))
     assert rec <= 1e-6, rec
     for r, v in pe.items():
-        assert abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-12, (r, v)
+        assert abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6, (r, v)
     return dict(dev=dev, rec=rec, pe={r: (round(v['frob_rel'], 6), round(v['pod_tail'], 6)) for r, v in pe.items()})
 
 

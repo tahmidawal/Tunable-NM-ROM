@@ -21,9 +21,11 @@ import jax.numpy as jnp
 _GtG = jax.jit(lambda G, cols: G.T @ G[:, cols])
 
 
-def _lh_refit(A, g, x0, act_tol=0.0, max_inner=None):
+def _lh_refit(A, g, x0, act_tol=0.0, max_inner=None, ls_cols=None):
     """Lawson-Hanson inner loop on the normal system restricted to the current support.
-    A (k, k) = G_S^T G_S, g (k,) = G_S^T b, x0 (k,) >= 0 feasible start. Returns x (k,) >= 0 and a keep mask."""
+    A (k, k) = G_S^T G_S, g (k,) = G_S^T b, x0 (k,) >= 0 feasible start. Returns x (k,) >= 0 and a keep mask.
+    ls_cols(idx) -> least-squares solution on the ORIGINAL columns G_S[:, idx] (A4.7), used when the passive-set
+    Cholesky fails or is inaccurate."""
     k = len(g)
     x = x0.copy()
     P = np.ones(k, bool)
@@ -41,8 +43,8 @@ def _lh_refit(A, g, x0, act_tol=0.0, max_inner=None):
                 z = None
         except np.linalg.LinAlgError:
             z = None
-        if z is None:          # (near-)dependent support columns: minimum-norm least-squares solve
-            z = sla.lstsq(As, g[idx], cond=1e-13, check_finite=False)[0]
+        if z is None:          # (near-)dependent support columns: least squares on the original columns (A4.7)
+            z = ls_cols(idx) if ls_cols is not None else sla.lstsq(As, g[idx], cond=1e-13, check_finite=False)[0]
         if np.all(z > act_tol):
             x[:] = 0.
             x[idx] = z
@@ -80,6 +82,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
     x = np.zeros(0)
     path = []
     reason = 'kkt'
+    bj = jnp.asarray(b)
     banned = np.zeros(N, bool)          # indices added and immediately dropped (numerically dependent): never re-added
 
     def relres():
@@ -88,8 +91,6 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
         A = buf[S][:, slots]
         r2 = bb - 2 * x @ Gb[S] + x @ A @ x
         return math.sqrt(max(r2, 0.0)) / max(nb, 1e-300)
-
-    bj = jnp.asarray(b)
 
     def exact_relres():
         """||G_S x - b|| / ||b|| evaluated directly (the normal-equation estimate loses accuracy below ~1e-8)."""
@@ -137,7 +138,9 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
         S = np.concatenate([S, new])
         x = np.concatenate([x, np.zeros(B)])
         A = buf[S][:, slots]
-        xs, keep = _lh_refit(A, Gb[S], x)
+        Scur = S.copy()
+        ls = lambda idx, Sc=Scur: np.asarray(jnp.linalg.lstsq(G[:, jnp.asarray(Sc[idx])], bj, rcond=1e-13)[0])
+        xs, keep = _lh_refit(A, Gb[S], x, ls_cols=ls)
         newpos = np.arange(len(S) - B, len(S))
         banned[S[newpos[~keep[newpos]]]] = True
         S, x, slots = S[keep], xs[keep], slots[keep]
@@ -147,4 +150,15 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
     rr = relres()
     record(rr)
     rr = exact_relres()
-    return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()))
+    kkt = None
+    if reason == 'kkt':        # A4.7: the optimum is checked against ALL candidates (banned ones included)
+        res_ = (bj - (G[:, jnp.asarray(S)] @ jnp.asarray(x) if len(S) else 0.))
+        wfull = np.asarray(G.T @ res_)
+        if len(S):
+            wfull[S] = -np.inf
+        gmax = float(np.max(wfull)) if N > len(S) else 0.
+        kkt = dict(max_positive_gradient=gmax, bound=1e-9 * float(jnp.linalg.norm(G)) * nb,
+                   ok=bool(gmax <= 1e-9 * float(jnp.linalg.norm(G)) * nb))
+        if not kkt['ok']:
+            reason = 'incomplete (KKT violated)'
+    return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()), kkt=kkt)

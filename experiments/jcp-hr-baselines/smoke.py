@@ -98,7 +98,7 @@ def run_cell(cfg, c, res, outdir):
     cell = PL.Cell(d, L, log=log)
     fam_tr = H.Family(d, 'train')
     coh = 'dev6' if d == 2 else 'val64'
-    fam = H.Family(d, coh, count=None if d == 2 else max(c['cases']) + 1)
+    fam = H.Family(d, coh, count=None if d == 2 else max(c['cases'] + c['under_fixtures']) + 1)
     cases = c['cases']
     opt_main = H.OPTIONS[d][0]
     arrays = {}
@@ -157,7 +157,7 @@ def run_cell(cfg, c, res, outdir):
     R['probe_cost'] = phase(R, 'generator_probe_cost', probe_cost, 120, cfg)
 
     # ---- P5 advection POD (maximal p), Q-DEIM pilots
-    rhoN = phase(R, 'adv_pod', lambda: cell.build_adv(S, c['pmax']), 240, cfg)
+    rhoN = phase(R, 'adv_pod', lambda: cell.build_adv(S, c['pmax'], [c['ps'], c['pmax']]), 240, cfg)
     del S
     R['adv'] = {k: v for k, v in cell.info.get('adv', {}).items() if k != 'sigma'}
 
@@ -319,30 +319,31 @@ def run_cell(cfg, c, res, outdir):
         j = c['under_fixtures'][0]
         u0j, nuj = jnp.asarray(fam.ic(L, j)), fam.nu(j)
         base = cell.run(kind, rs, dat, 'native', opt_main, 'prod', u0j, nuj)
-        # (a) isolated tuples with an independent jacfwd oracle (A3.2)
+        # (a) isolated tuples, perturbation ladder, independent jacfwd oracle (A4.1)
         scf, rJ = RM.make_arm(kind, d, L)
         sch = RM.schedule(d, opt_main[0], opt_main[1], 'prod')
         Cs = jnp.asarray(base['C'])
         be = jnp.asarray(H.BE_CO)
-        flagged, oracle, unpert_same = [], [], []
-        for n_ in range(int(sch['steps'])):
+        tuples, skipped = [], 0
+        for n_ in range(0, int(sch['steps']), 5):
             co = be if n_ < int(sch['nstart']) else sch['co']
             const = scf(Cs[n_], Cs[max(n_ - 1, 0)], nuj, co, sch['dt'], dat)
             c1 = Cs[n_ + 1]
-            if n_ % 5 == 0:
-                r1, J1 = rJ(c1, const, nuj, co, sch['dt'], dat)
-                _, sv, vt = jnp.linalg.svd(J1, full_matrices=False)
-                t = 100. * jnp.linalg.norm(r1) / sv[0]
-                c1 = c1 + t * vt[0]
-            r, J = rJ(c1, const, nuj, co, sch['dt'], dat)
-            g_cert = float(RM.ratio(J, r))
-            Ja = jax.jacfwd(lambda x: rJ(x, const, nuj, co, sch['dt'], dat)[0])(c1)
-            g_or = float(jnp.linalg.norm(Ja.T @ r) / (jnp.linalg.norm(Ja) * jnp.linalg.norm(r) + 1e-300))
-            (flagged if n_ % 5 == 0 else unpert_same).append((g_cert > 1e-3, g_or > 1e-3,
-                                                             bool(base['gamma'][n_] > 1e-3)))
-            oracle.append((n_, g_cert, g_or))
-        a = dict(perturbed=[dict(cert=f, oracle=o) for f, o, _ in flagged],
-                 unperturbed=[dict(cert=f, oracle=o, original=b) for f, o, b in unpert_same], gammas=oracle)
+            r1, J1 = rJ(c1, const, nuj, co, sch['dt'], dat)
+            _, sv, vt = jnp.linalg.svd(J1, full_matrices=False)
+            if float(sv[0]) == 0.:
+                skipped += 1
+                continue
+            t0_ = max(100. * float(jnp.linalg.norm(r1)) / float(sv[0]), 1e-6 * float(jnp.linalg.norm(c1)), 1e-12)
+            for k in range(7):
+                for sgn in (1., -1.):
+                    cp = c1 + sgn * t0_ * 2 ** k * vt[0]
+                    r, J = rJ(cp, const, nuj, co, sch['dt'], dat)
+                    g_cert = float(RM.ratio(J, r))
+                    Ja = jax.jacfwd(lambda x: rJ(x, const, nuj, co, sch['dt'], dat)[0])(cp)
+                    g_or = float(jnp.linalg.norm(Ja.T @ r) / (jnp.linalg.norm(Ja) * jnp.linalg.norm(r) + 1e-300))
+                    tuples.append(dict(step=n_, k=k, sign=sgn, cert=g_cert, oracle=g_or))
+        a = dict(tuples=tuples, skipped=skipped)
         # (b) wrong-gradient solver (reported only)
         mut = cell.run(kind, rs, dat, 'native', opt_main, 'prod', u0j, nuj, mutation='drop_adv_jac')
         tight = cell.run(kind, rs, dat, 'common', opt_main, 'tight', u0j, nuj)

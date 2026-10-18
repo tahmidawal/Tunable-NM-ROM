@@ -20,7 +20,7 @@ def fixtures(d):
         T = H.C3.b3.draw_param_table(923801, 6)
         nu, amp = T['nu'], T['A']
     order = sorted(range(6), key=lambda j: (nu[j], -amp[j], j))
-    return sorted(order[:2])
+    return order[:2]                     # smallest nu first (N-grad uses the first, A1.9)
 
 
 def cell(d, L, n_traj, rmax, ranks, pmax, rs, ps, n_adeq, n_probe, opts, pilot):

@@ -98,6 +98,34 @@ def pod(S, rmax, nb=1 << 16):
     return jax.block_until_ready(Phi), np.asarray(sig), dev
 
 
+def pod_rsvd(S, rmax, oversample=64, power=2, nb=1 << 16, seed=0):
+    """A4.7 fallback: blocked randomised SVD of S^T (n, n_s) with power iterations and re-orthonormalisation.
+    Returns (Phi (n, rmax), singular values (rmax + oversample,), orthonormality deviation)."""
+    m, n = S.shape
+    k = min(rmax + oversample, m)
+    Om = jnp.asarray(np.random.default_rng(seed).standard_normal((m, k)))
+
+    def StX(X):                         # S^T X  -> (n, k), assembled in row blocks of S^T
+        return jnp.concatenate([jnp.asarray(S[:, a:b]).T @ X for a, b in _blocks(n, nb)], 0)
+
+    def SY(Y):                          # S Y -> (m, k)
+        out = jnp.zeros((m, Y.shape[1]))
+        for a, b in _blocks(n, nb):
+            out = out + jnp.asarray(S[:, a:b]) @ Y[a:b]
+        return out
+    Y = StX(Om)
+    Qy, _ = jnp.linalg.qr(Y, mode='reduced')
+    for _ in range(power):
+        Z, _ = jnp.linalg.qr(SY(Qy), mode='reduced')
+        Qy, _ = jnp.linalg.qr(StX(Z), mode='reduced')
+    Bm = SY(Qy).T                       # (k, m) = Q^T S^T
+    Ub, sb, _ = jnp.linalg.svd(Bm, full_matrices=False)
+    Phi = Qy @ Ub[:, :rmax]
+    Phi, _ = jnp.linalg.qr(Phi, mode='reduced')
+    dev = float(jnp.max(jnp.abs(Phi.T @ Phi - jnp.eye(rmax))))
+    return jax.block_until_ready(Phi), np.asarray(sb), dev
+
+
 def project_codes(S, Phi, nb=1 << 16):
     """C = S Phi (n_s, r) with S on the host."""
     C = jnp.zeros((S.shape[0], Phi.shape[1]))
@@ -108,13 +136,13 @@ def project_codes(S, Phi, nb=1 << 16):
 
 
 def projection_errors(S, Phi, ranks, sig, nb=1 << 16):
-    """Per rank: RMS relative projection error of the snapshot rows, and the optimal (POD-tail) value
-    sqrt(sum_{i>r} sig_i^2 / sum_i sig_i^2) for the G-pod optimality gate (A2)."""
+    """Per rank: RMS relative projection error of the snapshot rows, the relative Frobenius error, and the optimal
+    (POD-tail) value sqrt((||S||_F^2 - sum_{i<=r} sig_i^2) / ||S||_F^2) for the G-pod optimality gate (A3.3)."""
     C = np.asarray(project_codes(S, Phi, nb))
     n2 = np.zeros(S.shape[0])
     for a, b in _blocks(S.shape[1], nb):
         n2 += np.sum(S[:, a:b] ** 2, 1)
-    tot = float(np.sum(sig ** 2))
+    tot = float(np.sum(n2))                       # ||S||_F^2 directly (exact; independent of how many sigma are known)
     out = {}
     for r in ranks:
         e2 = np.maximum(n2 - np.sum(C[:, :r] ** 2, 1), 0.)

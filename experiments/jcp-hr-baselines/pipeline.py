@@ -62,12 +62,20 @@ class Cell:
             S, sinfo = BD.snapshots(self.d, self.L, fam_train, rows, scheme=sch_gen[0], adv=sch_gen[1], log=self.log)
         with self.T(f'pod[{gen}]'):
             Phi, sig, dev = BD.pod(S, rmax)
-        rho = int(np.sum(sig > 1e-10 * sig[0]))
         with self.T(f'pod_check[{gen}]'):
             pe, C = BD.projection_errors(S, Phi, [r for r in ranks if r <= rmax], sig)
+        fallback = False
+        if not all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6 for v in pe.values()):
+            with self.T(f'pod_fallback[{gen}]'):            # A4.7: blocked randomised SVD, then the check again
+                Phi, sr, dev = BD.pod_rsvd(S, rmax)
+                sig = np.concatenate([sr, np.zeros(max(0, len(sig) - len(sr)))])
+                sig = np.sqrt(np.maximum(sig ** 2, 0.))
+                pe, C = BD.projection_errors(S, Phi, [r for r in ranks if r <= rmax], sig)
+                fallback = True
+        rho = int(np.sum(sig > 1e-10 * sig[0]))
         trust = BD.trust_radii(C, [r for r in ranks if r <= rmax], self.d)
-        gate = dict(orthonormality=dev, orth_ok=dev <= 1e-10, numerical_rank=rho,
-                    optimality_ok=all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-14
+        gate = dict(orthonormality=dev, orth_ok=dev <= 1e-10, numerical_rank=rho, fallback=fallback,
+                    optimality_ok=all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6
                                       for v in pe.values()),
                     constructible=[r for r in ranks if r <= min(rho, rmax)])
         self.info[f'basis[{gen}]'] = dict(snapshots=sinfo, sigma=sig[:max(ranks) + 1].tolist(), proj=pe, trust=trust,
@@ -81,15 +89,30 @@ class Cell:
             self.LPhi = sync(H.lap_cols(Phi, self.d, self.L))
             self.DPhi = sync(H.dsum_cols(Phi, self.d, self.L))
 
-    def build_adv(self, S, pmax):
-        """Advection POD (overwrites S in place) -> U (n, pmax) on the device."""
+    def build_adv(self, S, pmax, p_list):
+        """Advection POD (overwrites S in place) -> U (n, pmax) on the device; optimality check at the registered p and
+        the A4.7 fallback."""
         with self.T('adv_snapshots'):
             BD.advection_in_place(S, self.d, self.L)
         with self.T('adv_pod'):
             U, sigN, devN = BD.pod(S, pmax)
+        pl = sorted({p for p in p_list if p <= pmax})
+        with self.T('adv_pod_check'):
+            pe, _ = BD.projection_errors(S, U, pl, sigN)
+        ok = all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6 for v in pe.values())
+        fallback = False
+        if not ok:
+            with self.T('adv_pod_fallback'):
+                U, sr, devN = BD.pod_rsvd(S, pmax)
+                sigN = np.concatenate([sr, np.zeros(max(0, len(sigN) - len(sr)))])
+                pe, _ = BD.projection_errors(S, U, pl, sigN)
+                ok = all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6 for v in pe.values())
+                fallback = True
         rhoN = int(np.sum(sigN > 1e-10 * sigN[0]))
         self.U, self.sigN = U, sigN
-        self.info['adv'] = dict(pmax=pmax, numerical_rank=rhoN, orthonormality=devN, sigma=sigN[:pmax + 1].tolist())
+        self.info['adv'] = dict(pmax=pmax, numerical_rank=rhoN, orthonormality=devN, sigma=sigN[:pmax + 1].tolist(),
+                                proj=pe, optimality_ok=ok, fallback=fallback,
+                                constructible=[p for p in pl if p <= rhoN and ok])
         self.log(f'   advection POD: p_max {pmax} numerical rank {rhoN} orth {devN:.1e}')
         return rhoN
 

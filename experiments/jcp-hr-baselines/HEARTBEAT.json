@@ -1,17 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T15:26:42Z",
- "step": "t3d64b 5542231 RUNNING 44 min (ECSW r512 in 492 s); t2d256a 5551475 RUNNING 18 min (ECSW r256 done); s2d1024a staged, submits when a slot frees",
+ "utc": "2026-10-18T18:17:53Z",
+ "step": "resumed (coordinator #3): collecting t2d256a (COMPLETED), then submitting s2d1024a; offloading raw archives per COMMON-BRIEF 16",
  "waiting_on": {
   "slurm_jobs": [
-   5542231,
-   5551475
+   5542231
   ],
   "codex_output": null,
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T17:26:42Z",
+ "expected_finish_utc": "2026-10-18T18:37:53Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

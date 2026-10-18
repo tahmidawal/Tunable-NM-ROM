@@ -41,7 +41,7 @@ def f(x, d=3):
 
 
 def table(head, rows):
-    out = ['| ' + ' | '.join(head) + ' |', '|' + '|'.join('---' for _ in head) + '|']
+    out = ['| ' + ' | '.join(str(h).replace('|', '\\|') for h in head) + ' |', '|' + '|'.join('---' for _ in head) + '|']
     out += ['| ' + ' | '.join(str(c).replace('|', '\\|') for c in r) + ' |' for r in rows]
     return '\n'.join(out)
 
@@ -222,6 +222,7 @@ def main():
     cov_note = '' if not final else ('' if (p1['acceptance']['coverage_complete'] and m1['acceptance']['coverage_complete']) else
                                      ' (some items unavailable; see the acceptance lines and the per-item states)')
     made = plots(G, PM)
+    H14_all = p1['H14'] if p1 else G['H1']['H14']
     L = []
     w = L.append
     w('# jcp-speed3d — can the 3D second-order accuracy gain become a real speed-up?')
@@ -250,6 +251,22 @@ def main():
           + ('no selected ROM reaches 2× against the best matched FOM (the union of families). ' if m1['K2_fires'] else '')
           + 'Matched speed-ups use a finite FOM ladder: an upper bound on optimal FOM cost, hence an **upper bound on the '
             'claimed ROM speed-up**.')
+    w('')
+    import collections as _c
+    cnt = lambda xs: ', '.join(f'{n} {k}' for k, n in sorted(_c.Counter(xs).items()))
+    vt = [['H1.2 FSP-K1 eligible at 2.5Δt₀ (expected to fail)', cnt(G['H1']['H12'].values())],
+          ['H1.3 QN-k eligible at Δt ≥ 1.25Δt₀', cnt(G['H1']['H13'].values())],
+          ['H1.4 QN ≤ 0.6 × FS-K2 (confirmed)', cnt(v['verdict'].split(' (')[0] for v in H14_all.values())]]
+    if p1:
+        vt += [[f'H2 vs {c} (S ≥ 1/0.6, confirmed)', f"{v['verdict']} (S = {f(v['S_confirmed'])})"] for c, v in p1['H2'].items()]
+        vt += [['H3.1 G3 (component sum within 15 % of the fused query)', cnt(f(v.get('G3')) for v in p1['H31'].values())],
+               ['H3.2 mesh-free path qualified', cnt(v.get('status') for v in p1['H32'].values())],
+               ['H3.3 throughput B = 16 ≥ 2 × B = 1', cnt(f(v.get('bar_2x')) for v in p1['H33'].values())]]
+    if m1:
+        vt += [['H4.1 flat ROM cost over L (max/min ≤ 1.25)', cnt(v['verdict'] for v in m1['H41'].values())],
+               ['H4.3 matched union speed-up ≥ 2× at n = 65', cnt(f(v['union'].get('reaches_2x')) for v in m1['H43'].values())],
+               ['K2 (governing plan) at the largest mesh', m1['K2']]]
+    w(table(['hypothesis / criterion', 'outcome (counts over cells)'], vt))
     w('')
     w('```mermaid')
     w('flowchart LR')

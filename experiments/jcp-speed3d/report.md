@@ -9,6 +9,21 @@
 - **H2 vs C_W1024:** winner M2_512 gl24, FS-K1 BDF2, Δt = 0.0125; speed-up screened 16.8×, confirmed 17.2× → **pass** (bar $1/0.6\approx1.67$).
 - **Against the full simulation (route 4, L = 384):** K2 of the governing plan **FIRES** — no selected ROM reaches 2× against the best matched FOM (the union of families). Matched speed-ups use a finite FOM ladder: an upper bound on optimal FOM cost, hence an **upper bound on the claimed ROM speed-up**.
 
+| hypothesis / criterion | outcome (counts over cells) |
+|---|---|
+| H1.2 FSP-K1 eligible at 2.5Δt₀ (expected to fail) | 10 ineligible |
+| H1.3 QN-k eligible at Δt ≥ 1.25Δt₀ | 42 eligible, 48 ineligible |
+| H1.4 QN ≤ 0.6 × FS-K2 (confirmed) | 20 fail, 2 pass, 3 rescue, 5 unavailable |
+| H2 vs C_old (S ≥ 1/0.6, confirmed) | pass (S = 2.01) |
+| H2 vs C_W768 (S ≥ 1/0.6, confirmed) | pass (S = 5.37) |
+| H2 vs C_W1024 (S ≥ 1/0.6, confirmed) | pass (S = 17.2) |
+| H3.1 G3 (component sum within 15 % of the fused query) | 4 yes |
+| H3.2 mesh-free path qualified | 4 qualified |
+| H3.3 throughput B = 16 ≥ 2 × B = 1 | 2 no, 1 yes |
+| H4.1 flat ROM cost over L (max/min ≤ 1.25) | 4 pass |
+| H4.3 matched union speed-up ≥ 2× at n = 65 | 4 no |
+| K2 (governing plan) at the largest mesh | fires |
+
 ```mermaid
 flowchart LR
   G[g1-g3 grid: 684 configurations, validation cohort]:::job --> S[screen + select H1/H2]:::doc
@@ -33,6 +48,7 @@ flowchart LR
 | g1 | 5301580 | h200 | 1.75 | 6f61b238a | grid M2_512 + W256 |
 | p1 | 5352455 | h200 | 0.791 | b4b2cfe4b | profile, mesh-free + K5, batching + G4/K6, A1.5 confirmation panels (31 pairs), conv-rule sensitivity, reduced-rule ADT |
 | m1 | 5352457 | h200 | 0.886 | b4b2cfe4b | route 4: tables n=65..385 (G5/K7), ROM mf + ADT per mesh, same-mesh FOM calibration/accuracy/timing, A6 match panels |
+| r1 | 5353792 | h200 | – | c79a3e0b8 | A1.11 replication on 923901 (E0 test32): 52 frozen ROM configs (+4 mf paths), 3 matched FOMs, 3 comparator panels |
 
 GPU-hours spent: **10.6** of the 34 cap (DESIGN A7). Cluster namespace `/cluster/tufts/paralab/tawal01/jcp-speed3d/`; every log carries `jax_backend=gpu`.
 
@@ -250,7 +266,7 @@ ROM (mesh-free path) per mesh: eligibility at that mesh (E-a, E-b, E-c against t
 
 **H4.2** same-mesh diagnostic (not an equal-accuracy claim; FOM errors on the first cases listed; speed-up = FOM time / ROM time per ROM in the order C_W1024, C_old, W_C_W768, W_C_old; valid panels only):
 
-| L | family|Δt | calibrated configuration | calibration | converged | scored/cases | median | worst | FOM time (s) | speed-ups |
+| L | family\|Δt | calibrated configuration | calibration | converged | scored/cases | median | worst | FOM time (s) | speed-ups |
 |---|---|---|---|---|---|---|---|---|---|
 | 64 | UB\|0.01 | fd\|UB\|L64\|0.01\|t1 | qualified | yes | 8/8 | 0.0643 | 0.122 | 0.0619 | 0.118, 1.03, 2.23, 2.12 |
 | 64 | CC\|0.01 | fd\|CC\|L64\|0.01\|t1 | qualified | yes | 8/8 | 0.00491 | 0.00688 | 0.0556 | 0.107, 0.923, 2.00, 1.90 |
@@ -356,6 +372,8 @@ The early unaudited f1 observation "spectral FOM clearly beats the ROM at 64³" 
 | codex-job-p1m1-1.md | SUBMIT |
 | codex-job-p1m1-2.md | SUBMIT |
 | codex-job-prod1.md | SUBMIT |
+| codex-job-r1-1.md | DO NOT SUBMIT |
+| codex-job-r1-2.md | SUBMIT |
 | codex-job-smoke1-2.md | see file |
 | codex-job-smoke1-3.md | see file |
 | codex-job-smoke1-4.md | see file |

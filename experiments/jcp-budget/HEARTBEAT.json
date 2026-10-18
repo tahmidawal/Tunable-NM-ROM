@@ -1,17 +1,18 @@
 {
  "lane": "jcp-budget",
- "utc": "2026-10-18T15:05:54Z",
- "step": "5/6: 3D smoke smk2 running; refs job audit round 2 running",
+ "utc": "2026-10-18T15:10:48Z",
+ "step": "6: b-job audit; refs and 3D smoke on the cluster",
  "waiting_on": {
   "slurm_jobs": [
-   "5550659"
+   "5550659",
+   "5552268"
   ],
-  "codex_output": "audits/codex-job-refs2d-2.md",
-  "codex_pid": 2989174,
+  "codex_output": "audits/codex-job-b2d-1.md",
+  "codex_pid": 3032832,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T16:35:54Z",
- "last_commit": "c676046fa",
+ "expected_finish_utc": "2026-10-18T16:10:48Z",
+ "last_commit": "281fc66d0",
  "gpu_hours_spent": 0.374,
  "gpu_hours_cap": 45,
  "notes": "pre-release: design/code/smoke only"

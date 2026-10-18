@@ -525,15 +525,26 @@
    "kind": "gate",
    "passed": true,
    "detail": {
-    "configured": [
+    "per_run": {
+     "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk1/archive/output/b2run_smk1_b1024": {
+      "configured": [
+       "R128|GAL|CN|2",
+       "R128|LSPG|BE|1",
+       "R384|LSPG|CNR|1"
+      ],
+      "duplicates": [],
+      "b7_missing": [],
+      "b8_missing": [],
+      "b7_extra": [],
+      "passed": true
+     }
+    },
+    "passed": true,
+    "merged_members": [
      "R128|GAL|CN|2",
      "R128|LSPG|BE|1",
      "R384|LSPG|CNR|1"
-    ],
-    "b7_missing": [],
-    "b8_missing": [],
-    "b7_extra": [],
-    "passed": true
+    ]
    }
   },
   {
@@ -703,11 +714,6 @@
       "ref_fine_walls_zero": true,
       "passed": true
      }
-    ],
-    "expected": [
-     "R128|GAL|CN|2|dev6|0",
-     "R128|LSPG|BE|1|dev6|0",
-     "R384|LSPG|CNR|1|dev6|0"
     ],
     "missing": [],
     "passed": true

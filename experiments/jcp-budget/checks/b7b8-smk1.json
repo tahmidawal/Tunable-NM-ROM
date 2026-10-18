@@ -1,5 +1,7 @@
 {
- "run": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk1/archive/output/b2run_smk1_b1024",
+ "runs": [
+  "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk1/archive/output/b2run_smk1_b1024"
+ ],
  "mesh": 1024,
  "horizon": 0.5,
  "b7": {
@@ -954,17 +956,131 @@
    "G_D1": true
   }
  },
- "label": "W1 against E0 R_ST (primary); windows against this lane's R_ST realisation; eps conditional",
  "coverage": {
-  "configured": [
+  "per_run": {
+   "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk1/archive/output/b2run_smk1_b1024": {
+    "configured": [
+     "R128|GAL|CN|2",
+     "R128|LSPG|BE|1",
+     "R384|LSPG|CNR|1"
+    ],
+    "duplicates": [],
+    "b7_missing": [],
+    "b8_missing": [],
+    "b7_extra": [],
+    "passed": true
+   }
+  },
+  "passed": true,
+  "merged_members": [
    "R128|GAL|CN|2",
    "R128|LSPG|BE|1",
    "R384|LSPG|CNR|1"
-  ],
-  "b7_missing": [],
-  "b8_missing": [],
-  "b7_extra": [],
-  "passed": true
+  ]
+ },
+ "label": "W1 against E0 R_ST (primary); windows against this lane's R_ST realisation; eps conditional",
+ "fine_recompute_runs": {
+  "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-budget/experiments/jcp-budget/runs/smk1/archive/output/b2run_smk1_b1024": {
+   "rows": [
+    {
+     "member": "R128|GAL|CN|2",
+     "case": "dev6|0",
+     "worst_rel": 5.5927612747869606e-14,
+     "per_array": {
+      "n0_fine": 3.1278188945111027e-16,
+      "n0_257": 0.0,
+      "e_fine": 4.572158265718275e-15,
+      "e_257": 4.145598324717397e-15,
+      "E_rom": 2.258662453127944e-16,
+      "D_rom": 1.8266179060851662e-15,
+      "E_ref": 1.617402785474998e-16,
+      "D_ref": 2.1232239660708095e-16,
+      "umax_rom": 1.8390422939174158e-15,
+      "umin_rom": 5.5927612747869606e-14,
+      "umax_ref": 0.0,
+      "umin_ref": 0.0,
+      "wall_max_rom": 0.0,
+      "band_err2": 1.6878356404409745e-15,
+      "all_err2": 8.328386358003629e-15,
+      "e0_ic": 5.837991439457093e-16,
+      "e0_ic_ls": 5.838727772616186e-16,
+      "eP_fine": 1.352024126514293e-14,
+      "alias_efine": 3.973571644145765e-15,
+      "alias_e257": 4.413056281150779e-15,
+      "CE_meas": 1.3947224145589813e-14
+     },
+     "ref_fine_walls_zero": true,
+     "passed": true
+    },
+    {
+     "member": "R128|LSPG|BE|1",
+     "case": "dev6|0",
+     "worst_rel": 6.322838371249756e-14,
+     "per_array": {
+      "n0_fine": 3.1278188945111027e-16,
+      "n0_257": 0.0,
+      "e_fine": 5.841970788007503e-16,
+      "e_257": 2.417032937698829e-15,
+      "E_rom": 2.203629396647491e-16,
+      "D_rom": 1.8266179060851662e-15,
+      "E_ref": 1.617402785474998e-16,
+      "D_ref": 2.1232239660708095e-16,
+      "umax_rom": 1.4514334397679339e-15,
+      "umin_rom": 6.322838371249756e-14,
+      "umax_ref": 0.0,
+      "umin_ref": 0.0,
+      "wall_max_rom": 0.0,
+      "band_err2": 2.013532263774331e-15,
+      "all_err2": 6.768258152598813e-16,
+      "e0_ic": 5.837991439457093e-16,
+      "e0_ic_ls": 5.838727772616186e-16,
+      "eP_fine": 1.352024126514293e-14,
+      "alias_efine": 9.577466707590014e-16,
+      "alias_e257": 2.6029585482910463e-15,
+      "CE_meas": 1.3947224145589813e-14
+     },
+     "ref_fine_walls_zero": true,
+     "passed": true
+    },
+    {
+     "member": "R384|LSPG|CNR|1",
+     "case": "dev6|0",
+     "worst_rel": 9.905277149944481e-14,
+     "per_array": {
+      "n0_fine": 3.1278188945111027e-16,
+      "n0_257": 0.0,
+      "e_fine": 3.4636691028442355e-15,
+      "e_257": 3.405872131008415e-14,
+      "E_rom": 2.0030782461393943e-16,
+      "D_rom": 1.8820758097365417e-15,
+      "E_ref": 1.617402785474998e-16,
+      "D_ref": 2.1232239660708095e-16,
+      "umax_rom": 2.4608152125051226e-15,
+      "umin_rom": 5.300544850124691e-14,
+      "umax_ref": 0.0,
+      "umin_ref": 0.0,
+      "wall_max_rom": 0.0,
+      "band_err2": 1.0665251820119574e-14,
+      "all_err2": 7.647352824783718e-15,
+      "e0_ic": 2.120948209391928e-15,
+      "e0_ic_ls": 7.327960764077577e-16,
+      "eP_fine": 9.905277149944481e-14,
+      "alias_efine": 1.0901964735793507e-14,
+      "alias_e257": 3.405872131008415e-14,
+      "CE_meas": 1.3947224145589813e-14
+     },
+     "ref_fine_walls_zero": true,
+     "passed": true
+    }
+   ],
+   "expected": [
+    "R128|GAL|CN|2|dev6|0",
+    "R128|LSPG|BE|1|dev6|0",
+    "R384|LSPG|CNR|1|dev6|0"
+   ],
+   "missing": [],
+   "passed": true
+  }
  },
  "front_order": {
   "all": {
@@ -1224,11 +1340,6 @@
     "ref_fine_walls_zero": true,
     "passed": true
    }
-  ],
-  "expected": [
-   "R128|GAL|CN|2|dev6|0",
-   "R128|LSPG|BE|1|dev6|0",
-   "R384|LSPG|CNR|1|dev6|0"
   ],
   "missing": [],
   "passed": true

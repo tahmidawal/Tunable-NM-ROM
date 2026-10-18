@@ -597,9 +597,12 @@ BAND_FRAC = _band_frac()
 
 
 def main():
+    """One or more b2run output directories of the SAME mesh and horizon (A8: the 1024^2 partitions b1024a + b1024b):
+    members are merged (a member present in two runs is an error), coverage is checked per run against its own
+    configuration, and the front order / ranking / lane statement are computed over the merged member set."""
     global ARGS
     ap = argparse.ArgumentParser()
-    ap.add_argument('--run', required=True)
+    ap.add_argument('--run', required=True, action='append')
     ap.add_argument('--refs', required=True)
     ap.add_argument('--manifest', required=True, help='sha256 manifest of the reference files (REFS-MANIFEST or OUTPUTS)')
     ap.add_argument('--anaref', required=True)
@@ -608,28 +611,41 @@ def main():
     ap.add_argument('--out')
     ARGS = a = ap.parse_args()
     MAN.update(load_manifest(a.manifest))
-    run = Path(a.run)
-    res = json.loads((run / 'result.json').read_text())
-    a.cfg = res['config']
-    T = float(res['config']['b7']['horizon'])
-    mesh = int(res['config']['mesh'])
+    runs = [Path(r) for r in a.run]
+    ress = [json.loads((r / 'result.json').read_text()) for r in runs]
+    Ts = {float(r_['config']['b7']['horizon']) for r_ in ress}
+    meshes = {int(r_['config']['mesh']) for r_ in ress}
+    assert len(Ts) == 1 and len(meshes) == 1, ('runs differ in horizon or mesh', Ts, meshes)
+    T, mesh = Ts.pop(), meshes.pop()
     minpop = a.minpop if a.minpop is not None else (6 if mesh == 4096 else 8)
     EL = elig_of(json.loads(Path(a.anaref).read_text()), T)
-    out = dict(run=str(run), mesh=mesh, horizon=T, b7={}, b8={},
+    out = dict(runs=[str(r) for r in runs], mesh=mesh, horizon=T, b7={}, b8={}, coverage=dict(per_run={}),
                label='W1 against E0 R_ST (primary); windows against this lane\'s R_ST realisation; eps conditional')
-    # expected members come from the CONFIGURATION (code audit 4), not from the produced records
-    members = {f"R{m['Rp']}|{m['form']}|{m['scheme']}|{float(m['factor']):g}": m for m in res['config']['members']}
-    out['coverage'] = dict(configured=sorted(members), b7_missing=sorted(set(members) - set(res['b7'])),
-                           b8_missing=sorted(mk for mk in members if not (run / f"B8_{mk.replace('|', '_')}.npz").exists()),
-                           b7_extra=sorted(set(res['b7']) - set(members)))
-    out['coverage']['passed'] = not (out['coverage']['b7_missing'] or out['coverage']['b8_missing'] or out['coverage']['b7_extra'])
-    for mk, m in members.items():
-        if mk not in res['b7']:
-            continue                                         # recorded as missing coverage above
-        out['b7'][mk] = b7_member(run, mk, m, mesh, a.refs, EL, T, minpop)
-        b8 = b8_member(run, mk, EL, T, minpop)
-        if b8 is not None:
-            out['b8'][mk] = b8
+    members, owner = {}, {}
+    for run, res in zip(runs, ress):
+        ARGS.cfg = res['config']
+        mine = {f"R{m['Rp']}|{m['form']}|{m['scheme']}|{float(m['factor']):g}": m for m in res['config']['members']}
+        dup = sorted(set(mine) & set(members))
+        cov = dict(configured=sorted(mine), duplicates=dup, b7_missing=sorted(set(mine) - set(res['b7'])),
+                   b8_missing=sorted(mk for mk in mine if not (run / f"B8_{mk.replace('|', '_')}.npz").exists()),
+                   b7_extra=sorted(set(res['b7']) - set(mine)))
+        cov['passed'] = not (dup or cov['b7_missing'] or cov['b8_missing'] or cov['b7_extra'])
+        out['coverage']['per_run'][str(run)] = cov
+        for mk, m in mine.items():
+            if mk in members or mk not in res['b7']:
+                continue
+            members[mk], owner[mk] = m, run
+            out['b7'][mk] = b7_member(run, mk, m, mesh, a.refs, EL, T, minpop)
+            b8 = b8_member(run, mk, EL, T, minpop)
+            if b8 is not None:
+                out['b8'][mk] = b8
+        if a.fine:
+            cc = res['config']['b8'].get('check_cases', 'dev6')
+            check_ids = set(A2.case_set(cc)) if isinstance(cc, str) else {f'{x[0]}|{x[1]}' for x in cc}
+            fr = fine_recompute(run, mine, a.fine, T, check_ids)
+            out.setdefault('fine_recompute_runs', {})[str(run)] = fr
+    out['coverage']['passed'] = all(c['passed'] for c in out['coverage']['per_run'].values())
+    out['coverage']['merged_members'] = sorted(members)
     lspg = [mk for mk, m in members.items() if m['form'] == 'LSPG']
     out['front_order'] = dict(all=front_order(out['b7'], list(members), minpop), lspg=front_order(out['b7'], lspg, minpop))
     if out['b8']:
@@ -643,11 +659,10 @@ def main():
             statement=('the 257^2 lattice is adequate for the qualified 2D front (relative to the 1025^2 route)'
                        if lab and all(x == 'adequate' for x in lab) and rk == 'adequate' else 'not established'))
     if a.fine:
-        cc = res['config']['b8'].get('check_cases', 'dev6')
-        check_ids = ({f'dev6|{k}' for k in range(6)} if cc == 'dev6' else {f'dev6|{k}' for k in range(2)} if cc == 'dev2'
-                     else {f'{x[0]}|{x[1]}' for x in cc})
-        out['fine_recompute'] = fine_recompute(run, members, a.fine, T, check_ids)
-    dest = Path(a.out or HERE / 'checks' / f"b7b8-{run.parents[1].name}-{mesh}.json")
+        frs = list(out['fine_recompute_runs'].values())
+        out['fine_recompute'] = dict(rows=[r_ for f in frs for r_ in f['rows']], missing=[m_ for f in frs for m_ in f['missing']],
+                                     passed=bool(frs and all(f['passed'] for f in frs)))
+    dest = Path(a.out or HERE / 'checks' / f"b7b8-{runs[0].parents[1].name}-{mesh}.json")
     dest.write_text(json.dumps(out, indent=1, default=float) + '\n')
     print(dest, json.dumps({mk: (v['qualified_at_T'], v['stability']['pass'], {k: g['label'] for k, g in v['growth'].items()})
                             for mk, v in out['b7'].items()}))

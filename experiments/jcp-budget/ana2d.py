@@ -441,7 +441,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--run')
     ap.add_argument('--minpop', type=int, default=None)
-    ap.add_argument('--compare', nargs=3, help='three budget2d json files (256, 1024, 4096) -> mesh comparison')
+    ap.add_argument('--compare', nargs='+', help='budget2d json files (256, 1024 partitions, 4096) -> mesh comparison')
     ap.add_argument('--out')
     a = ap.parse_args()
     if a.compare:
@@ -621,9 +621,14 @@ def mesh_compare(files, outp):
     """A1.4: dominant ingredient on sub16 at the three meshes (same / differs / inconclusive) and per-component median
     ratios 4096/1024 and 256/1024 with case-bootstrap 95 % intervals."""
     D = {}
-    for f in files:
+    for f in files:                                   # A8: several files per mesh (1024^2 partitions) are merged member-wise
         j = json.loads(Path(f).read_text())
-        D[j['mesh']] = j
+        if j['mesh'] not in D:
+            D[j['mesh']] = dict(mesh=j['mesh'], members={})
+        dup = set(j['members']) & set(D[j['mesh']]['members'])
+        if dup:
+            raise SystemExit(f'member present in two analyses of mesh {j["mesh"]}: {sorted(dup)}')
+        D[j['mesh']]['members'].update(j['members'])
     out = dict(members={})
     common = set.intersection(*[set(D[m]['members']) for m in D])
     for mk in sorted(common):

@@ -417,3 +417,168 @@ Every GPU number from the cluster (H200 throughout); local GB10 only for CPU ana
 one `jaxrun`. Codex audits read-only, no large copies (≤ 2 GB scratch under `/tmp/jcp-dims-audit-scratch/`, deleted
 after each round), `df -h /home` ≥ 60 GB before each audit. Waits on PIDs with an overall deadline. Big arrays stay on the
 cluster until pulled into `runs/` (local disk ~130 GB free; large `.npz` listed by sha256 in `LARGE_FILES.sha256`).
+
+---
+
+## Amendment A1 (2026-10-18, before any lane job; answers `audits/codex-design-1.md`, NEEDS-RESTATEMENT)
+
+Supersedes the text above wherever they differ. Numbered by the audit's ranked blockers, then its other items.
+
+**A1.1 Timing-job certification restored (blocker 1).** The §4 "timing-job identity" shortcut is **withdrawn**. `dtime`
+keeps qualify's contract: every subject's untimed scoring run (dev6) is the recording program, certified in-job at every
+step with a fresh autodiff Jacobian (LSPG $\gamma$, GAL $\eta$; A1.2 for $\kappa=1$), with tight replays on every dev6 case,
+tighter replays on dev6, and Q2 on dev6 from the **same job**: the rollout bar against the next rung's scoring run (every
+rung of a timed ladder is a subject, so the successor exists in-job; a subject whose successor is not a subject gets an
+explicit $q^+$ replay), $q^{++}$ likewise, ρ on its own six dev6 states against the $q^+$ table. Timed executions must
+reproduce the scoring run's identity hash (W, every internal state, per-step exit reasons and iteration counts; qualify
+A4.1). The cross-job comparison with the accuracy job's archive (≤ 1e-10) is reported as an extra check, not a substitute.
+A cell's **timing-job label** is "numerically qualified (dev6)" iff all of this passes; A3 cost verdicts and fronts use
+only cells qualified in both the accuracy job (38 cases) and the timing job (dev6). 3D: `t3s`/`t3c` subjects are
+re-run untimed and certified in-job exactly as speed3d's `rollouts` + ADT do, with hash identity of timed outputs.
+
+**A1.2 Controls separated from scientific outcomes (blocker 2).**
+- The GAL = LSPG agreement gate at $\kappa=1$ is **withdrawn**; the lattice distance between the two forms at $\kappa=1$ is
+  reported as measured evidence (no gate, no block).
+- **Square-system certificate.** At $\kappa=1$ ($M=r$, $A$ square) the LSPG stationarity ratio has the root pathology of
+  qualify A2.5 (bounded below by about $\sigma_{\min}(J)/\lVert J\rVert_F$ at any non-zero residual), so for LSPG at
+  $\kappa=1$ the per-step certificate is the residual predicate $\eta_n=\lVert\mathcal R_n(c_{n+1})\rVert/\lVert Ac_n\rVert
+  \le10^{-8}$ (unweighted residual; $D$ is a positive diagonal, so the root sets coincide). This is a stated deviation for
+  the square case only; the literal $\gamma_n$ is reported. G-cert for these steps compares the recomputed residual norm
+  with the solver's recorded `tolratio` × tolerance (A3.2 of qualify for the zero-scale case).
+- **$M=r$ must-degrade control** (brief): outcome "**fired**" iff the $\kappa$ 1→4 transition at that $r$ "improves" by
+  the §6.1a rule on numerically qualified cells; "**did not fire**" iff both cells are qualified and the transition "does
+  not improve" — an **adverse scientific result**, reported as such, and B6 transition verdicts at that $r$ are labelled
+  "test-space sensitivity not demonstrated at this $r$" (blocked as the brief requires, never repaired by changing the
+  criterion); "**unavailable (<reason>)**" if either cell is not numerically qualified or the transition is inconclusive —
+  then the B6 verdicts at that $r$ are "blocked (control unavailable)". A qualification failure is **never** counted as
+  degradation. The fraction of invalid runs and E0 errors of the $\kappa=1$ cells are reported regardless.
+- **Smolyak** (2D and 3D) is a scientific family with a registered prediction, not a must-fail gate; `smol8` is not a control.
+- **Bad generating vector** (2D `badlat`, 3D `badlat`): before any GPU use, an **independent CPU establishment** (NumPy,
+  `npcheck`-style independent decode, not the job code) computes, at a frozen fixture — 2D: R384, $M=1536$, the six saved
+  output states of dev6|0 from qualify's `acc1024` LSPG-CN-R $\Delta t_0$ archive; 3D: W512, $M=2052$, the six saved states of
+  case 0 of qualify's `q3d` archive of `W512|lat16384|fs|CN|0.01|K1` — the target-relative tested-advection error
+  $\rho_{\rm tgt}=\lVert N_{\rm bad}(c)-N_{\rm tgt}(c)\rVert/\lVert N_{\rm tgt}(c)\rVert$ (target gauss384 / gl64) for the
+  bad rule at the size of the family's finest rung; the fixture is admitted only if $\rho_{\rm tgt}\ge1$ at every state
+  (a tested advection wrong by ≥ 100 %). The control then requires the §6.3 cross-family gate to flag the bad rule on ≥ 1
+  case (or the bad rule's cell to be not Q1-qualified, which is reported separately and does **not** count as the gate
+  firing — the control is then "unavailable"). An admitted fixture that the gate does not flag blocks every point-
+  efficiency verdict.
+- **3D $M$ override (independent check).** For W512 the setting with $M=1027$ must satisfy, for the same rule (lat16384)
+  and three fixed coefficient vectors (dev states of the reproduction fixture): (i) $A_{1027}$, $\lambda_{1027}$ and the
+  $P$ columns equal the first 1027 rows/columns of the default ($M=2052$) setting's arrays (≤ 1e-13 relative; the tables
+  are built at $M_{\max}$ and sliced, so this checks the slicing path), (ii) the tested advection $N(c)$ of the override
+  equals the first 1027 entries of the default's $N(c)$ (≤ 1e-12), (iii) the recorded mode hash equals the hash of
+  `C.modes(65, 1027)` computed independently on CPU, and the table shapes are $(1027,512)$ and $(m,1027)$. The default-$M$
+  reproduction against speed3d's archive stays as a second, separate gate. Failure blocks every non-default 3D cell.
+- **Cross-GPU reproduction:** a failed ≤ 1e-10 gate opens a diagnosis (driver, edit, provenance, GPU type); no attribution
+  is made in advance and no 2D cell is read until it is resolved.
+
+**A1.3 3D explicit-mode path (blocker 3).** `d3common.TablesM`/`SettingM` replace `c3common.Tables`/`s3common.Setting`
+(installed before `s3ctx.Ctx` is built): the setting config carries an explicit $M$ (default: speed3d's
+`complete_M(65, 4r)`); tables are built once per bank at $M_{\max}$ = the largest $M$ requested for that bank (W512
+$\kappa=8$ requires `complete_M(65, 4096)` = **4097**, so the W1024 bank is built at 4097 whenever κ=8 runs); every
+setting records $M$, the mode-list hash of `kxyz[:M]`, the rule sha256 (points + weights); `lean`, `rule_data`, the rule
+cache and all identities carry $M$. The $\kappa=1$ control uses exactly 512 modes (shell-breaking, labelled). 3D lists for
+$\kappa=2,3,4,8$ at $r=512$: `complete_M` of 1024, 1536, 2048, 4096 = 1027, 1538, 2052, 4097.
+
+**A1.4 Table lifetimes and the memory pilot (blocker 4).** No job retains tables beyond their use: `dacc` processes one
+(cell, rung) setting at a time (main + $q^+$ role tables live, then dropped; compiled queries cleared per setting);
+`dtime` keeps only the reference A's tables persistent and builds each cell's ladder tables rung by rung (at most the
+current and the next rung live), timing that cell's subjects in a block with fresh A–B–A triplets (randomised order inside
+the block, block order randomised); 3D runners drop each rule's data (`Setting.drop`) after its last use (at most the
+current rung, $q^+$ and target alive). The smokes pilot the **actual** live footprint of the heaviest block of each job
+type: `dacc` R512 $M=4096$ rungs gauss256→320→384 with LSPG and GAL forms; `dtime` the reference A plus that block; 3D the
+W1024 ladder tail gl48→gl56→gl64 and lat131072→lat262144 at $M=4097$ with the ADT and adaptive GAL queries compiled.
+Peak device bytes ≤ 120 GB (decimal), else the cell or block is "not reached (memory)". The local CBC search for
+lat262144 is CPU pre-processing (quadratic; run once locally, minutes), not charged to the GPU ledger, recorded in
+`rules3d/rules_dims.json` with its runtime. For signed-weight rules (Smolyak) the 3D mesh-free Gram/Cholesky of
+`Setting.data` is skipped (it is never used on the mesh path) so an indefinite Gram cannot invalidate a run.
+
+**A1.5 Qualification state machine and decision precedence (blocker 5).** Labels per configuration, in this precedence:
+1. **missing** — any registered run of its population absent (job failure / not run): no Q label, "not reached".
+2. **Q1 fail** — any production run invalid; pooled non-certified > 1 %; any tight or tighter anchor invalid (the case
+   is then unqualified and Q1 fails, qualify §4.1); any distance > bar or non-finite; G-cert or offline recomputation
+   mismatch.
+3. **Q2** (only if the next rung's runs exist): "**unverified (ladder top)**" for the top two rungs of a ladder (not
+   qualified); "**unverified (successor invalid)**" if any $q^+$ run is invalid or missing on the population; else
+   **fail** if any case's rollout distance > 2.5e-4 or is non-finite, or $\rho_{\max}>0.116$ (ρ conventions of
+   `p1common.rho`: $0/0$ → excluded and counted, $b=0\ne a$ → $+\infty$, non-finite → $+\infty$); else "**unverified
+   (finer rule unavailable)**" if $q^{++}$ runs are missing/invalid on the check cases; "**unverified (finer rule not
+   converged)**" if they fail the bar; else **pass**.
+4. **Numerically qualified** iff Q1 pass and Q2 pass. Unverified ≠ qualified, ≠ failed.
+
+Decision-rule edge cases (frozen):
+- Any comparison with **zero eligible cases** → "inconclusive (no eligible cases)"; the §6.1a resolution test requires a
+  non-empty eligible population.
+- **$m^\*$**: requires every candidate below it to carry a terminal label (pass/fail/unverified); a missing lower
+  candidate → "not reached (incomplete ladder)". "Stable" requires every larger candidate labelled and qualified; a missing
+  larger candidate → "$m^\*$ = X (stability unverified: incomplete ladder)".
+- **Random families**: per-draw outcomes all listed; the number of draws with a finite $m^\*_s$ is reported; the family
+  $m^\*$ is the smallest candidate qualified in **all five** draws (else "none"); the median-draw $m^\*$ treats "none" as
+  $+\infty$ (censored) and is reported as "> top candidate" when censored; ranges are over finite draws with the censored
+  count beside them.
+- **3D width $m^\*$** = the smallest candidate qualified for **every** registered spec (the intersection; "none" if
+  empty); per-spec $m^\*$ reported beside.
+- **Cross-family gate**: evaluated only if the family's finest rung and the target are both valid and Q1-qualified on
+  every case; otherwise "gate unavailable" and that family's point-efficiency verdicts are "inconclusive (gate
+  unavailable)".
+- **Shapley (§6.1c)**: computed on the common population of cases eligible and valid in all eight corner cells; $m^\*$
+  values are frozen at their full-sample values (not re-selected in the bootstrap); the accuracy bootstrap resamples the
+  38 cases, the cost bootstrap resamples the six dev6 timing cases (jointly across cells), separately; contributions are
+  reported in absolute units, normalised shares only when $|\Delta|>2\times$ the median $\varepsilon_{\rm ref}$ of the
+  population. Wording: "a selection-conditioned description of the difference between two deployed configurations, not a
+  decomposition of the error norm".
+- **H2q precedence** (§6.5): (1) comparator unavailable (missing runs, Q1 not passed, or invalid screening entry) →
+  "inconclusive (comparator unavailable)"; (2) no numerically qualified configuration with a valid screening entry ties-
+  or-beats $C$ → "no qualified tie-or-beat configuration **among the tested candidates** (bounded search)"; (3)
+  confirmation panel invalid (speed3d `timing.py` validity: hashes, finite ratios, median drift in band, complete 24
+  invocations) → "inconclusive (panel invalid)"; (4) $S_C\ge1/0.6$ → **pass**; else **fail ("the selected candidate failed
+  confirmation")** — never "no qualified speed-up exists". Tie-or-beat uses speed3d `analyze.py:48–65` exactly: per-case
+  endpoints ($e_i\pm\eta_i$) aggregated (median / max over cases) before the comparison, not an aggregate uncertainty added
+  afterwards. Screening validity = speed3d's (`analyze.py:208–229`: valid panel, comparator selectable first).
+
+**A1.6 3D Galerkin and the defer / core sets (blocker 6).**
+- **3D GAL is included.** The adaptive Galerkin path exists (`c3common.Solvers.ad('GAL')`, `t2core`). The lane runs
+  adaptive **GAL-CN** and adaptive **LSPG-CN** at $\Delta t_0=0.01$, prod tolerances, through `p1core.make_evolve` (the
+  P1 copy of `t2core.make_evolve` with internal-state recording; dimension-agnostic, taking `c3common.nl3`/`nlJ3` and the
+  3D form data of `t2core.form_data`), so both are certified in-job (LSPG γ, GAL η, qualify A1.3/A2.5; the κ = 1 rule of
+  A1.2) with tight/tighter anchors. Panel: W512, $\kappa\in\{1,2,3,4,8\}$, lattice rungs lat65536 (primary), lat131072
+  ($q^+$), lat262144 ($q^{++}$), 64 cases. The fixed-sweep `fs|CN|0.01|K1` κ-panel of §2.3 (3B) stays (deployment
+  solver), with the lattice ladder lat16384 … lat262144.
+- **Deferral is over unique configurations.** B6 $M/r=8$ deferral removes only configurations that exist solely as κ = 8:
+  2D LSPG-CN-R cells (384, 3072) and (512, 4096) (all rungs) — (128, 1024) and (256, 2048) are shared with the deployed-
+  path corners and the fixed-$M$ panel and are never dropped; the κ = 8 cells of GAL-CN, LSPG-CN and LSPG-BE (none shared);
+  3D κ = 8 ($M=4097$) of every 3D form. The **A3 3D fixed-$m$ panel** is computed inside the never-dropped `m3` ladders, so
+  deferring it saves no GPU time; it is therefore **not deferred** (stated, so the defer order's third item is void in
+  effect). Low mixed-frequency: the LMF arm of `f2k` (its own settings). B3 stage (ii): jobs `b2m`, `b3m`.
+- **Core (never dropped)**, per the brief: the 2D Gauss ladders of every non-κ=8-only $\mathcal F_2$ cell (LSPG-CN-R);
+  the 2D family panel stage (i); the 3D rounds and `m3` ladders (with the BE spec, A1.7) and `t3s`/`t3c`; B6 $\kappa\in\{1,
+  2,4\}$ for every 2D scheme and every 3D form. Everything else is non-deferrable but not core (κ = 3 cells, `b3f`, `k3`
+  fixed-(M, m) panel, `t2`).
+
+**A1.7 Manifests, comparators, fixtures (blocker 7).**
+- `make_configs.py` writes `configs/MANIFEST-cells.json`: every configuration name, its full numerical identity (bank,
+  rotation, $r$, $M$, list policy and hash, rule name with draw, $m$, scheme, form, Δt, tolerance level, budget,
+  initialisation, weighting, output times, metric id), its $q^+$/$q^{++}$ links, and the candidate lists per (family, draw,
+  cell, scheme); its counts are asserted against §2 and audited with the code. Rule names are the concrete parser names
+  (`sobol2048s3`, not "sobol$2^{11}$").
+- **3D Smolyak ladder (frozen):** smolyak8, 9, 10, 11, 12, 13 ($m$ = 2,559; 6,271; 15,103; 35,839; 83,967; 194,559;
+  signed weights, boundary nodes removed); candidates smolyak8 … smolyak11.
+- **3D Sobol ladder:** sob8192 … sob262144 ($2^{13}..2^{18}$) per draw; candidates sob8192 … sob65536.
+- **BE spec added to `m3`.** The `m3` ladders run three specs: `fs|BE|0.01|K1` (deployed BE, the comparators' solver),
+  `fs|CN|0.01|K1`, `qn|BDF2|0.025|k4`. The comparators' own Q2 labels are then ladder labels (C_old = M2_512 gl32 BE;
+  C_W768 = W768 lat32768 BE; C_W1024 = W1024 lat65536 BE), and $C^q_w$ (§6.5) = the BE configuration of width $w$ at its
+  BE-spec $m^\*$ (Gauss or lattice, the cheaper by `t3s` cost), if one exists; the comparator's Q1 is required in every
+  case (speed3d eligibility recomputed in-job).
+- The 2D LSPG-BE arm is not given an $m^\*$ (it runs only at gauss256/320/384: Q labels at gauss256 only).
+- Previously failed qualify configurations are not re-tested; configurations whose $q^{++}$ is now available (lat262144)
+  are tested afresh in round 4 if exposed (the 16 exposed include `W1024|lat65536|…`).
+
+**A1.8 Other corrections.**
+- Elasticity fit (§5): computed only if ≥ 12 qualified cells, the design matrix has full column rank with condition
+  number ≤ 1e3, all costs positive and finite; else "fit unavailable"; the bootstrap resamples the six dev6 timing cases
+  jointly across cells; labelled "descriptive full-query elasticities, not kernel exponents".
+- Wording: every 3D absence statement says "among the tested candidates (bounded search)"; a winner failing confirmation
+  is "the selected candidate failed confirmation".
+- K2 and the retraction of the speed3d winners' qualification are carried unchanged; nothing in H2q is a comparison with
+  the best FOM.

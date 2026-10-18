@@ -29,7 +29,7 @@ import qstudy as QS  # noqa: E402  (vendored: burn, clean, sha_file)
 
 DT0 = .005
 FROZEN_L = 1024
-MMAX = 2048
+MMAX = 4096          # jcp-dims EDIT: test counts up to 8r at r = 512 (DESIGN 2.1)
 NOUT = 6
 
 
@@ -112,10 +112,23 @@ def lam_of(L, kx, ky):
     return 4 * L ** 2 * (np.sin(np.pi * kx / (2 * L)) ** 2 + np.sin(np.pi * ky / (2 * L)) ** 2)
 
 
+def lmf_list(L, M):
+    """jcp-dims EDIT (DESIGN 2.2, B6-LMF): hyperbolic cross. All modes 1 <= kx, ky <= L-1 ordered by kx*ky ascending,
+    ties by the discrete eigenvalue, then by kx (lexsort, stable); the first M."""
+    k = np.arange(1, L)
+    KX, KY = (a.ravel() for a in np.meshgrid(k, k, indexing='ij'))
+    lam = lam_of(L, KX, KY)
+    o = np.lexsort((KX, lam, KX * KY))[:M]
+    return KX[o].astype(np.int64), KY[o].astype(np.int64)
+
+
 def mode_list(policy, L, M=MMAX):
-    """Ordered (kx, ky) of the M test modes under a policy at mesh L."""
+    """Ordered (kx, ky) of the M test modes under a policy at mesh L ('frozen': modes_lean(1024, M); 'nominal':
+    modes_lean(L, M); 'lmf': the hyperbolic cross at 1024, jcp-dims EDIT)."""
+    assert policy in ('frozen', 'nominal', 'lmf')
+    if policy == 'lmf':
+        return lmf_list(FROZEN_L, M)
     src = FROZEN_L if policy == 'frozen' else L
-    assert policy in ('frozen', 'nominal')
     kx, ky, _ = Q.H.modes_lean(src, M)
     return np.asarray(kx), np.asarray(ky)
 
@@ -198,7 +211,9 @@ def fingerprint(d):
 
 
 def rule_points(rule):
-    X, w = Q.offmesh_rule(rule)
+    """jcp-dims EDIT: named 2D rules incl. draws (DESIGN 2.2); see rules2d.points."""
+    import rules2d
+    X, w = rules2d.points(rule)
     return X, w, sha(np.concatenate([X.ravel(), w]))
 
 
@@ -207,9 +222,10 @@ class Setting:
 
     data[(role, form)] are jit arguments; meta[role] is the identity the query wrapper checks."""
 
-    def __init__(self, bank, name, Rp, rule, policy='frozen', roles=None, forms=('LSPG',), nrec=0, budget=600, mutation=None, nstep=T2.NSTEP):
+    def __init__(self, bank, name, Rp, rule, policy='frozen', roles=None, forms=('LSPG',), nrec=0, budget=600, mutation=None, nstep=T2.NSTEP, M=None):
         self.name, self.Rp, self.policy = name, int(Rp), policy
-        self.M = 4 * self.Rp
+        self.M = 4 * self.Rp if M is None else int(M)          # jcp-dims EDIT: explicit test count (DESIGN 2.1)
+        assert self.Rp <= self.M <= MMAX, (self.Rp, self.M)
         self.L = bank.L
         assert self.Rp in bank.edges, (self.Rp, bank.edges)
         ops = bank.ops(policy)

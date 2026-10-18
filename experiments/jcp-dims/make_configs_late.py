@@ -104,6 +104,11 @@ def t3c():
     for comp, v in sel.items():
         if v.get('winner'):
             keys |= {v['winner'], v['comparator']}
+    cq = an.get('h2q_Cq', {})
+    for w, v in cq.items():                              # secondary qualified-vs-qualified pairs (DESIGN 6.5)
+        sw = v['result'].get('winner')
+        if sw:
+            keys |= {sw, v['Cq']}
     blocks = cert_blocks(sorted(keys), list(range(8)))
     for comp, v in sel.items():
         if v.get('winner'):
@@ -111,6 +116,12 @@ def t3c():
             sp = lambda k: dict(setting=k.split('|')[0], rule=k.split('|')[1],
                                 spec='|'.join(k.split('|')[2:]) + ('|prod' if k.split('|')[2] == 'ad' else ''))
             blocks.append(dict(kind='panel', label=f'confirm|{comp}', A=sp(c), subjects=[sp(w)], cases=8, reps=3, seed=20261020))
+    for w, v in cq.items():
+        sw = v['result'].get('winner')
+        if sw:
+            sp = lambda k: dict(setting=k.split('|')[0], rule=k.split('|')[1],
+                                spec='|'.join(k.split('|')[2:]) + ('|prod' if k.split('|')[2] == 'ad' else ''))
+            blocks.append(dict(kind='panel', label=f'confirm|Cq|{w}', A=sp(v['Cq']), subjects=[sp(sw)], cases=8, reps=3, seed=20261021))
     rules = sorted({k.split('|')[1] for k in keys})
     M3.job('t3c', settings_for(sorted(keys)), blocks, rules)
     print('t3c panels', sum(b['kind'] == 'panel' for b in blocks))

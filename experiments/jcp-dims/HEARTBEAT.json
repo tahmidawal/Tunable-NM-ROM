@@ -1,18 +1,19 @@
 {
  "lane": "jcp-dims",
- "utc": "2026-10-18T14:46:19Z",
- "step": "6: f2a 5537385, f2br1 5543641 running; smk3 collected, acceptance",
+ "utc": "2026-10-18T14:48:56Z",
+ "step": "7: production f2a 5537385, f2br1 5543641, q3r4 5544437 running; m3a/m3b staged+audited (submit as slots free)",
  "waiting_on": {
   "slurm_jobs": [
    "5537385",
-   "5543641"
+   "5543641",
+   "5544437"
   ],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": null,
- "last_commit": "79c2d8425",
+ "expected_finish_utc": "2026-10-18T15:48:56Z",
+ "last_commit": "9e85dbe02",
  "gpu_hours_spent": 0.7303,
  "gpu_hours_cap": 55,
  "notes": ""

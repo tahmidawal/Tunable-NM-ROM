@@ -28,7 +28,9 @@ JOBS = ('f2a', 'f2b', 'f2k', 'f2l', 'b2f', 'b2m')
 R_LIST = (128, 256, 384, 512)
 KAPPAS = (1, 2, 3, 4, 8)
 PRIMARY = 'gauss256'
-RHO_SUBSET_MAX = 4e7                  # A6.1: independent rho recomputed when m * M <= 4e7 (dev6|0, six outputs)
+RHO_SUBSET_MAX = 4e7
+CODE_VERSION = hashlib.sha256(b''.join((Path(__file__).resolve().parent / f).read_bytes()
+                                       for f in ('analyze2d.py', 'dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py'))).hexdigest()                  # A6.1: independent rho recomputed when m * M <= 4e7 (dev6|0, six outputs)
 
 
 def sha_file(p):
@@ -50,16 +52,20 @@ def config_entry(att, d, res, setting, arm, score=True):
     if not p.exists():
         return None
     sh = sha_file(p)
+    ver = CODE_VERSION + '|' + json.dumps(arm['cases'])
     cp = CACHE / f'{att}__{setting}__{form}_{scheme}_{fac:g}.json'
     if cp.exists():
         c = json.loads(cp.read_text())
-        if c.get('sha256') == sh and (c.get('e0') is not None or not score):
+        if c.get('sha256') == sh and c.get('version') == ver and (c.get('e0') is not None or not score):
+            if not score:
+                c['e0'] = None                             # LMF: never expose scores before the stability gate
             return c
     R = dict(np.load(p))
     rows = [r_ for r_ in res['rows'] if r_['setting'] == setting and r_['arm'] == f'{form}_{scheme}_{fac:g}']
     q = DSC.q1(R, rows, arm['cases'])
     sc = DSC.scores(R) if score else None
-    e = dict(sha256=sh, job=att, setting=setting, form=form, scheme=scheme, factor=fac, r=int(R['Rp']), M=int(R['M']),
+    e = dict(sha256=sh, version=ver, population_ok=[str(x) for x in R['case_ids']] == DSC.expected_ids(arm['cases']),
+             job=att, setting=setting, form=form, scheme=scheme, factor=fac, r=int(R['Rp']), M=int(R['M']),
              policy=str(R['policy']), rule=str(R['rule']), square=bool(R['square']), case_ids=[str(x) for x in R['case_ids']],
              Q1=q['Q1'], disagreements=[str(x) for x in q['disagreements'][:5]], pooled=q['pooled_noncertified'],
              steps=q['pooled_steps'], worst_dist_tight=max(v['dist_tight'] for v in q['per_case'].values()),
@@ -120,8 +126,8 @@ def ladder_labels(C, RAW, lad):
     out = []
     for i, k in enumerate(keys):
         e = C.get(k)
-        if e is None:
-            out.append(dict(key=k, label='missing', Q1=None, Q2=None))
+        if e is None or not e.get('population_ok', False):
+            out.append(dict(key=k, label='missing', Q1=None, Q2=None, note=None if e is None else 'registered population incomplete'))
             continue
         for j in (i, i + 1, i + 2):
             if j < len(keys) and Rs[j] is None:
@@ -222,11 +228,14 @@ def timing_costs():
                 q2 = q2 and all(r_.get('qpp_valid') and r_.get('dist_qp_qpp', 1) <= 2.5e-4 for r_ in rows)
             else:
                 q2 = False                                 # no check rung: unverified, not qualified
-        out[lb] = dict(c=float(np.median([x['ratio'] for x in ok])) if ok else None,
+        reps = int(res['config']['reps'])
+        want = sorted((c_, r__) for c_ in DSC.DEV6 for r__ in range(reps))
+        inv_ok = (sorted((x['case'], x['rep']) for x in fz) == want and
+                  sorted((x['case'], x['rep']) for x in res['invocations'] if x['B'] == lb) == want)
+        out[lb] = dict(inventory_ok=inv_ok, c=float(np.median([x['ratio'] for x in ok])) if ok else None,
                        c_ev=float(np.median([x['ratio'] for x in res['invocations'] if x['B'] == lb and x['valid']] or [np.nan])),
                        per_case={k: float(np.median(v)) for k, v in per.items()},
-                       usable=bool(fz and len(ok) >= len(fz) * 2 / 3 and res.get('counts_complete') is True
-                                   and sorted(per) == sorted(DSC.DEV6)),
+                       usable=bool(inv_ok and len(ok) >= len(fz) * 2 / 3 and sorted(per) == sorted(DSC.DEV6)),
                        qualified=bool(q1 and q2), q1=q1, q2=q2)
     return out
 
@@ -418,6 +427,8 @@ def main():
             ctl = trans(C, Q, ks[1], ks[4])
             control = DS.control_mr(ctl['label'], (Q.get(ks[1], False), Q.get(ks[4], False)))
             labs = [tr[x]['label'] for x in ('2->3', '3->4')]
+            if control != 'fired':                         # primary transitions blocked too (raw labels kept)
+                tr = {x: dict(v, raw_label=v['label'], label=f"blocked (M = r control: {control})") for x, v in tr.items()}
             B6[f'R{r}|{form}-{sch}'] = dict(transitions=tr, control_1_to_4=ctl, control=control,
                                              range_2_4=DS.range_verdict(labs) if control == 'fired' else
                                              ('test-space sensitivity not demonstrated at this r' if control == 'did not fire'
@@ -429,9 +440,10 @@ def main():
                 if g in C and ref in C:
                     a, b, eps, el = arrays(C, g, ref)
                     lab, p = DS.two_way(a, b, eps, el, qualified=(Q.get(g, False), Q.get(ref, False)), names=('GAL', 'LSPG'))
-                    ctl = B6[f'R{r}|LSPG-CN']['control']        # A1.2 / A2.1: B6 verdicts at r need the form-matched control
-                    if ctl != 'fired':
-                        lab = f'blocked (LSPG-CN M = r control: {ctl}); raw: {lab}'
+                    other = 'LSPG-CN' if 'LSPG-CN (primary)' in nm else 'LSPG-CNR'
+                    ctls = (B6[f'R{r}|GAL-CN']['control'], B6[f'R{r}|{other}']['control'])   # both forms' controls (A2.1)
+                    if ctls != ('fired', 'fired'):
+                        lab = f'blocked (M = r controls GAL / {other}: {ctls}); raw: {lab}'
                     B6.setdefault(f'R{r}|kappa{k}|GAL-vs-LSPG', {})[nm] = dict(label=lab, stats=p)
             if k == 1 and g in C and f'R{r}M{r}k{PRIMARY}|LSPG|CN' in C:
                 Rg, Rl = R_of(RAW, g), R_of(RAW, f'R{r}M{r}k{PRIMARY}|LSPG|CN')
@@ -496,7 +508,7 @@ def main():
             if el['status'] == 'ok':                      # A1.8: joint bootstrap of the six dev6 timing cases
                 rng = np.random.default_rng(1)
                 B = []
-                for _ in range(2000):
+                for _ in range(10000):
                     ix = rng.integers(0, 6, 6)
                     cb = np.array([np.median([x[3]['per_case'][DSC.DEV6[i]] for i in ix]) for x in cells])
                     eb = DS.elasticity(r_, M_, m_, cb)

@@ -74,7 +74,23 @@ def load_e0_3d(j, coh='val64', time_tag=None, expect_case=None):
     return np.asarray(R), float(meta['judge']['n0']), st['eps_ref'], st['eligible']
 
 
-def tag_acceptance(res, Wz):
+def expected_cases(k, cfg):
+    """The configured case population of a run type '<tag>|<spec>' (independent of the produced records)."""
+    allc = list(cfg['case_subset'])
+    b2, b7, ct = cfg.get('b2', {}), cfg.get('b7', {}), cfg.get('controls', {})
+    if k.startswith('CTRL#'):
+        return [j for j in ct.get('cases', range(4)) if j in allc]
+    if '#B7T' in k:
+        part = k.split('#B7T')[1].split('#')[1].split('|')[0]
+        return {'prod': allc, 'tight': allc, 'tighter': [j for j in b7.get('tighter_cases', range(6)) if j in allc],
+                'qp': [j for j in b7.get('q2_cases', range(8)) if j in allc],
+                'qpp': [j for j in b7.get('qpp_cases', range(4)) if j in allc]}[part]
+    if '#check' in k:
+        return [j for j in b2.get('check_cases', range(4)) if j in allc]
+    return allc
+
+
+def tag_acceptance(res, Wz, cfg):
     """{'<tag>|<spec>': {case: accepted}} with the A3.5 solver-specific rule. Adaptive specs -> the run's validity
     (nfail == 0). Fixed-sweep / QN specs -> validity AND, for every case stored for that run type, a per-step certificate
     whose length equals the schedule's step count (round(T / dt), T = 0.5 for B7 tags, else 0.25), every entry finite;
@@ -87,12 +103,13 @@ def tag_acceptance(res, Wz):
         spec = rows[0]['spec']
         kind = spec.split('|')[0]
         if kind not in ('fs', 'fsp', 'qn'):
-            out[k] = {r['case']: bool(r['valid']) for r in rows}
+            ok_cov = {r['case'] for r in rows} == set(expected_cases(k, cfg))
+            out[k] = {r['case']: bool(r['valid'] and ok_cov) for r in rows}
             continue
         T = .5 if '#B7T0.5#' in k else (1. if '#B7T1#' in k else .25)
         dt = float(spec.split('|')[2])
         steps = int(round(T / (.05 / round(.05 / dt))))
-        cases_expected = set(int(c) for c in Wz[f'cases|{k}']) if f'cases|{k}' in Wz.files else None
+        cases_expected = set(expected_cases(k, cfg))
         cert = [r.get('gam_cert') for r in rows]
         complete = (cases_expected is not None and {r['case'] for r in rows} == cases_expected and
                     all(isinstance(g, list) and len(g) == steps and all(x is not None and np.isfinite(x) for x in g) for g in cert))
@@ -165,7 +182,7 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
         R, n0, eps, elig = refs[j]
         raw = {nm: bool(ACC.get(f'{key}#{nm}|{spec_of[nm]}', {}).get(j)) for nm in names}
         val = {nm: raw[nm] and nm not in failed for nm in names}
-        F = {nm: B.dec(W[nm][ids_of[nm].index(j)]) for nm in names}
+        F = {nm: (B.dec(W[nm][ids_of[nm].index(j)]) if j in ids_of[nm] else np.full(R.shape, np.nan)) for nm in names}
         PR = B.proj(R)
         eP = nt(R - PR, n0)
         d = dict(case=j, eligible=elig, eps_ref=eps, valid=val, e_P=float(eP[1:].max()), e_P_t0=float(eP[0]))
@@ -362,11 +379,16 @@ def b7_3d(res, Wz, B, mk, v, refs, ACC, refdir, EL, minpop):
     acc = lambda nm, j: bool(ACC.get(f'{tg(nm)}|{sk[nm]}', {}).get(j))
     arch, srcs = archive_q3d(mk)
     rows = []
-    for i, j in enumerate(Pi):
+    allc = list(res['config']['case_subset'])
+    for j in allc:
         n0 = refs[j][1]
+        if j not in Pi:                                       # a configured case without a produced run: invalid
+            rows.append(dict(case=j, valid=False, dist_tight=float('inf'), E_rom=[0.]))
+            continue
+        i = Pi.index(j)
         F = B.dec(P[i])
         row = dict(case=j, valid=acc('prod', j))
-        row['dist_tight'] = float(np.max(nt(F - B.dec(Tt[Ti.index(j)]), n0)[1:])) if acc('tight', j) else float('inf')
+        row['dist_tight'] = float(np.max(nt(F - B.dec(Tt[Ti.index(j)]), n0)[1:])) if (acc('tight', j) and j in Ti) else float('inf')
         if j in arch:
             row['G_L1'] = float(np.max(nt(F[:6] - B.dec(arch[j]), n0)[1:]))
         row['E_rom'] = [.5 * float(np.sum(F[k] ** 2)) for k in range(len(F))]
@@ -379,15 +401,17 @@ def b7_3d(res, Wz, B, mk, v, refs, ACC, refdir, EL, minpop):
             n0n = A7.window_rows(row, F, Rn, meta, len(F), EL, f'{COHORT[923801]}|{j}')
             row['e_P_t'] = (np.linalg.norm(Rn - B.proj(Rn), axis=1) / n0n).tolist()       # long-horizon floor
         rows.append(row)
-    dtt = [float(np.max(nt(B.dec(Tt[Ti.index(j)]) - B.dec(TT[i]), refs[j][1])[1:])) if (acc('tight', j) and acc('tighter', j))
-           else float('inf') for i, j in enumerate(TTi)]
-    dqp = [float(np.max(nt(B.dec(P[Pi.index(j)]) - B.dec(QP[i]), refs[j][1])[1:])) if acc('qp', j) else float('inf')
-           for i, j in enumerate(QPi)]
-    dqq = [float(np.max(nt(B.dec(QP[QPi.index(j)]) - B.dec(QQ[i]), refs[j][1])[1:])) if (acc('qp', j) and acc('qpp', j))
-           else float('inf') for i, j in enumerate(QQi)]
+    b7c = res['config']['b7']
+    want = lambda key, dflt: [j for j in b7c.get(key, dflt) if j in allc]
+    dtt = [float(np.max(nt(B.dec(Tt[Ti.index(j)]) - B.dec(TT[TTi.index(j)]), refs[j][1])[1:]))
+           if (j in Ti and j in TTi and acc('tight', j) and acc('tighter', j)) else float('inf') for j in want('tighter_cases', range(6))]
+    dqp = [float(np.max(nt(B.dec(P[Pi.index(j)]) - B.dec(QP[QPi.index(j)]), refs[j][1])[1:]))
+           if (j in Pi and j in QPi and acc('qp', j)) else float('inf') for j in want('q2_cases', range(8))]
+    dqq = [float(np.max(nt(B.dec(QP[QPi.index(j)]) - B.dec(QQ[QQi.index(j)]), refs[j][1])[1:]))
+           if (j in QPi and j in QQi and acc('qp', j) and acc('qpp', j)) else float('inf') for j in want('qpp_cases', range(4))]
     stat = [x for rr in v['rho_status'] for x in rr]                # explicit status (JSON turns inf into null)
     rho = np.asarray([x for rr, ss in zip(v['rho'], v['rho_status']) for x, st_ in zip(rr, ss) if st_ == 'ok'], float)
-    q1 = dict(all_valid=all(r_['valid'] for r_ in rows),
+    q1 = dict(all_valid=all(r_['valid'] for r_ in rows) and len(rows) == len(allc),
               nonstationary_fraction=v['nonstationary'] / max(1, v['steps']),
               worst_dist_tight=max(r_['dist_tight'] for r_ in rows), worst_tt=max(dtt) if dtt else None)
     q1['pass'] = bool(q1['all_valid'] and q1['nonstationary_fraction'] <= .01 and q1['worst_dist_tight'] <= TAU and
@@ -402,8 +426,8 @@ def b7_3d(res, Wz, B, mk, v, refs, ACC, refdir, EL, minpop):
         ('unverified (finer rule not converged)' if ok else 'fail')
     gl1 = [r_['G_L1'] for r_ in rows if 'G_L1' in r_]
     return dict(Q1=q1, Q2=q2, qualified_at_T=bool(q1['pass'] and q2['label'] == 'pass'), rows=rows,
-                G_L1=dict(worst=max(gl1) if gl1 else None, n=len(gl1), expected=len(rows), sources=srcs,
-                          passed=bool(gl1 and len(gl1) == len(rows) and max(gl1) <= 1e-8)),
+                G_L1=dict(worst=max(gl1) if gl1 else None, n=len(gl1), expected=len(allc), sources=srcs,
+                          passed=bool(gl1 and len(gl1) == len(allc) and max(gl1) <= 1e-8)),
                 stability=A7.stability_of(rows, q1['all_valid']), growth=A7.growth_of(rows, len(P[0]), minpop))
 
 
@@ -426,7 +450,7 @@ def main():
     if a.manifest:
         A7.MAN.update(A7.load_manifest(a.manifest))
     EL = A7.elig_of(json.loads(Path(a.anaref).read_text()), float(cfg['b7']['horizon']), dim=3) if (a.anaref and 'b7' in cfg) else {}
-    ACC = tag_acceptance(res, Wz)
+    ACC = tag_acceptance(res, Wz, cfg)
     out = dict(run=str(run), members={}, gates={}, controls={}, b7={})
     keys = [m['key'] for m in cfg['members']]
     out['coverage'] = dict(configured=keys,

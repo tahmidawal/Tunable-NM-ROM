@@ -44,6 +44,26 @@ TAU, CONV_BAR = 2.5e-4, 2.5e-5
 METRIC_ID = RS.V.METRIC_ID[2]
 TIME_TAG = 't0,t1,t2,t3,t4,t5'
 SUB16 = {f'dev6|{c}' for c in range(6)} | {f'val32|{c}' for c in range(10)}
+
+
+def case_set(which):
+    """The configured case list (p1common.select names) as ordered case ids, independent of any produced record."""
+    if which == 'all38':
+        return [f'dev6|{c}' for c in range(6)] + [f'val32|{c}' for c in range(32)]
+    if which == 'sub16':
+        return [f'dev6|{c}' for c in range(6)] + [f'val32|{c}' for c in range(10)]
+    if which == 'dev6':
+        return [f'dev6|{c}' for c in range(6)]
+    if which == 'dev2':
+        return ['dev6|0', 'dev6|1']
+    return [f'{a}|{b}' for a, b in which]
+
+
+def subsets_of(design):
+    S1 = [frozenset()] + [frozenset([x]) for x in ING]
+    S2 = [frozenset(c) for c in itertools.combinations(ING, 2)]
+    full = [frozenset(c) for n in (3, 4, 5) for c in itertools.combinations(('Q', 'T', 'F', 'S', 'I'), n)]
+    return S1 + S2 + (full if design == 'full' else [])
 STARS = ('star', 'star16', 'starx', 'star16x')
 RNG = np.random.default_rng(0)
 
@@ -159,10 +179,16 @@ def archive_f257(mesh, member):
 
 # ----------------------------------------------------------------------------------------------------- pass 1 --
 
-def gb4_member(run, mk, r, refs):
-    """Per Q-containing corner type: max over check cases of the check-rule distance; None entries = invalid run."""
+def gb4_member(run, mk, r, refs, exp_corners, exp_cases):
+    """Per Q-containing corner type: max over check cases of the check-rule distance; None entries = invalid run. The
+    expected inventory (configured design's Q corners x configured check cases) is checked independently: a missing
+    corner type or case is a FAILED check."""
     z = np.load(run / f"B2_{mk.replace('|', '_')}.npz")
     zc = np.load(run / f"B2CHK_{mk.replace('|', '_')}.npz")
+    got_cases, got_corners = [str(x) for x in zc['case_ids']], [str(x) for x in zc['corners']]
+    if sorted(got_cases) != sorted(exp_cases) or sorted(got_corners) != sorted(exp_corners):
+        return {c: dict(worst=None, n=0, passed=False, note='check inventory differs from the configuration')
+                for c in exp_corners}
     ck = [str(x) for x in z['case_ids']]
     corners = [str(x) for x in z['corners']]
     res = {}
@@ -432,6 +458,7 @@ def main():
 
     tot = dict(gb0=0., gb0_n=0, gb2=0., gb2_n=0, mism=[], gb3=[], gb3_missing=0)
     gb4 = {}
+    case_cov_bad = []
     for rk, rr in res['b2'].items():
         r = int(rk[1:])
         span = Span(r)
@@ -439,9 +466,21 @@ def main():
         star = dict(ids={str(c): i for i, c in enumerate(zs['case_ids'])}, W={k: zs[f'W_{k}'] for k in STARS},
                     valid={k: zs[f'valid_{k}'] for k in STARS})
         sg = gb4_star(run, r, refs)
+        zsc_ = np.load(run / f'STARCHK_R{r}.npz')
+        exp_chk_ = [c for c in case_set(cfg['b2'].get('check_cases', 'dev6')) if c in case_set(cfg['cases'])]
+        if sorted(str(x) for x in zsc_['case_ids']) != sorted(exp_chk_) or \
+                [str(x) for x in zs['case_ids']] != case_set(cfg['cases']):
+            sg = dict(sg, passed=False, note='star inventory differs from the configuration')
         chk_ids = {str(c) for c in np.load(run / f'STARCHK_R{r}.npz')['case_ids']}
         for mk, mm in rr['members'].items():
-            g4 = gb4_member(run, mk, r, refs)
+            exp_q = [skey(S) for S in subsets_of(cfg['b2'].get('design', 'pairwise')) if 'Q' in S]
+            exp_chk = [c for c in case_set(cfg['b2'].get('check_cases', 'dev6')) if c in case_set(cfg['cases'])]
+            g4 = gb4_member(run, mk, r, refs, exp_q, exp_chk)
+            zb = np.load(run / f"B2_{mk.replace('|', '_')}.npz")
+            cov_bad = ([str(x) for x in zb['case_ids']] != case_set(cfg['cases']) or
+                       [str(x) for x in zb['corners']] != [skey(S) for S in subsets_of(cfg['b2'].get('design', 'pairwise'))])
+            if cov_bad:
+                case_cov_bad.append(mk)
             failed = {c for c, v in g4.items() if not v['passed']}
             per, st, srcs = analyse_member(run, mk, mm['member'], mesh, span, star, refs, failed, sg['passed'], chk_ids)
             for k in ('gb0', 'gb2'):
@@ -460,7 +499,9 @@ def main():
     prod = [mk for rr in res['b2'].values() for mk in rr['members']]
     out['coverage'] = dict(configured=conf, missing=[k for k in conf if k not in prod], extra=[k for k in prod if k not in conf],
                            star_missing=[r_ for r_ in sorted({int(m['Rp']) for m in cfg['members']}) if f'R{r_}' not in res['b2']])
-    out['coverage']['passed'] = not (out['coverage']['missing'] or out['coverage']['extra'] or out['coverage']['star_missing'])
+    out['coverage']['case_or_corner_inventory_differs'] = case_cov_bad
+    out['coverage']['passed'] = not (out['coverage']['missing'] or out['coverage']['extra'] or out['coverage']['star_missing']
+                                     or case_cov_bad)
     out['gates'] = dict(
         G_B0=dict(worst=tot['gb0'], n=tot['gb0_n'], passed=bool(tot['gb0_n'] > 0 and tot['gb0'] <= 1e-10)),
         B0_real_mismatch=dict(min_defect=min(tot['mism']) if tot['mism'] else None,
@@ -520,11 +561,14 @@ def controls(run, res, refs):
     gq = run / 'CTRL_gq.npz'                     # recomputed from the certificate evidence; missing evidence fails
     if gq.exists():
         zg = np.load(gq)
-        fl = float(np.mean(~(np.asarray(zg['cert_LSPG']) <= float(zg['gamma_bar']))))
-        fg = float(np.mean(~(np.asarray(zg['cert_GAL']) <= float(zg['eta_bar']))))
-        out['G_Q'] = dict(fraction_LSPG=fl, fraction_GAL=fg, wrong_table_raised=bool(zg['wrong_table_raised']),
-                          fired=bool(zg['cert_LSPG'].size and zg['cert_GAL'].size and fl > .01 and fg > .01 and
-                                     bool(zg['wrong_table_raised'])))
+        cl, cg = np.asarray(zg['cert_LSPG'], float), np.asarray(zg['cert_GAL'], float)
+        S_ = int(round(.25 / .005))                       # the schedule of the fixture: dt0 to T = 0.25 (50 steps)
+        n_ = min(2, len(ids))
+        evaluable = bool(cl.shape == (n_, S_) and cg.shape == (n_, S_) and np.isfinite(cl).all() and np.isfinite(cg).all())
+        fl = float(np.mean(cl > float(zg['gamma_bar']))) if evaluable else None
+        fg = float(np.mean(cg > float(zg['eta_bar']))) if evaluable else None
+        out['G_Q'] = dict(evaluable=evaluable, fraction_LSPG=fl, fraction_GAL=fg, wrong_table_raised=bool(zg['wrong_table_raised']),
+                          fired=bool(evaluable and fl > .01 and fg > .01 and bool(zg['wrong_table_raised'])))
     else:
         out['G_Q'] = dict(fired=False, note='no certificate evidence')
     # C-score on the actual scoring path (score_e0 / load_e0): each mismatch must raise

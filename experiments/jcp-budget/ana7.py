@@ -201,6 +201,10 @@ def b7_member(run, mk, member, mesh, refs, EL, T, minpop):
     r = int(member['Rp'])
     nout = int(z['nout'])
     ck = [str(x) for x in z['case_ids']]
+    b7c = ARGS.cfg['b7']
+    allc = A2.case_set(b7c.get('cases', ARGS.cfg['cases']))
+    inv_ok = (ck == allc and [str(x) for x in z['dev_case_ids']] == [c for c in A2.case_set(b7c.get('tighter_cases', 'dev6')) if c in allc]
+              and [str(x) for x in z['q2_case_ids']] == [c for c in A2.case_set(b7c.get('q2_cases', 'sub16')) if c in allc])
     arch, srcs = A2.archive_f257(mesh, member)
     dev, q2 = [str(x) for x in z['dev_case_ids']], [str(x) for x in z['q2_case_ids']]
     rows = []
@@ -247,7 +251,8 @@ def b7_member(run, mk, member, mesh, refs, EL, T, minpop):
               worst_dist_tight=max(x['dist_tight'] for x in rows),
               worst_tt=max([x['dist_tt'] for x in rows if 'dist_tt' in x], default=None),
               budget_exits=sum(x['budget_exits'] for x in rows))
-    q1['pass'] = bool(q1['all_valid'] and q1['gcert'] and q1['noncert_fraction'] <= .01 and q1['worst_dist_tight'] <= BAR_Q1
+    q1['inventory_matches_configuration'] = inv_ok
+    q1['pass'] = bool(inv_ok and q1['all_valid'] and q1['gcert'] and q1['noncert_fraction'] <= .01 and q1['worst_dist_tight'] <= BAR_Q1
                       and q1['worst_tt'] is not None and q1['worst_tt'] <= BAR_TT)
     qr = [x for x in rows if 'dist_qp' in x]
     q2r = dict(population=len(qr), worst_dist_qp=max([x['dist_qp'] for x in qr], default=None),
@@ -261,8 +266,8 @@ def b7_member(run, mk, member, mesh, refs, EL, T, minpop):
     gl1 = [x['G_L1'] for x in rows if 'G_L1' in x]
     return dict(rows=rows, Q1=q1, Q2=q2r, Q2_population=f'Q2 on {len(qr)} cases (not individual evidence for others)',
                 qualified_at_T=bool(q1['pass'] and q2r['label'] == 'pass'),
-                G_L1=dict(worst=max(gl1) if gl1 else None, n=len(gl1), expected=len(rows), sources=srcs,
-                          passed=bool(gl1 and len(gl1) == len(rows) and max(gl1) <= 1e-8)),
+                G_L1=dict(worst=max(gl1) if gl1 else None, n=len(gl1), expected=len(allc), sources=srcs,
+                          passed=bool(inv_ok and gl1 and len(gl1) == len(allc) and max(gl1) <= 1e-8)),
                 stability=stability_of(rows, q1['all_valid']), growth=growth_of(rows, nout, minpop))
 
 
@@ -579,6 +584,7 @@ def main():
     MAN.update(load_manifest(a.manifest))
     run = Path(a.run)
     res = json.loads((run / 'result.json').read_text())
+    a.cfg = res['config']
     T = float(res['config']['b7']['horizon'])
     mesh = int(res['config']['mesh'])
     minpop = a.minpop if a.minpop is not None else (6 if mesh == 4096 else 8)

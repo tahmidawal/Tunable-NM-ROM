@@ -11670,5 +11670,46 @@
   ],
   "spent_gpu_hours": 1.9133,
   "reserved_gpu_hours": 0
+ },
+ "offline_sunk": {
+  "w1024_bank_fit_hours": 1.14,
+  "w1024_job_total_hours": 1.85,
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-08-jcp-wide-bank/experiments/jcp-wide-bank/report.md:111"
+ },
+ "smoke_first": {
+  "failed": [
+   "PRELIMINARY reproduction gate R384 BE (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)",
+   "PRELIMINARY reproduction gate R384 CNR (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)",
+   "2D dispatch-sync N at r=512",
+   "2D dispatch-sync J at r=512",
+   "3D dispatch-sync N at r=1024"
+  ],
+  "required": 82
+ },
+ "recording_overhead": {
+  "ratio_norec_over_rec_median": 0.9900328183761563,
+  "ratio_min": 0.9703838780623504,
+  "ratio_max": 1.0031810434480208,
+  "W_rel_max": 0.0
+ },
+ "historical_claims": {
+  "H1": {
+   "source": "reports/2026-10-01-burgers2d-offmesh-quadrature.md:102-129",
+   "claim": "per-case three-mesh spread of the worst first-order ST error, dev6+val32",
+   "values_pp": {
+    "H64": 0.014,
+    "H640": 0.012,
+    "HF6765": 0.012
+   }
+  },
+  "H4": {
+   "source": "worktrees/2026-10-06-jcp-mechanism/experiments/jcp-mechanism/report.md:94",
+   "claim": "per-case 256^2 vs 1024^2 spread, dev6+val32",
+   "values_pp": {
+    "H96": 0.008,
+    "H640": 0.008
+   }
+  },
+  "note": "published values quoted from the cited file:line (constants of analyze.py)"
  }
 }

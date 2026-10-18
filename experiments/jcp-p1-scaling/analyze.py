@@ -402,9 +402,56 @@ def main():
     sm = HERE / 'checks' / 'smoke-accept.json'
     res['smoke'] = json.loads(sm.read_text()) if sm.exists() else None
     res['ledger'] = json.loads((RUNS / 'GPU-LEDGER.json').read_text())
+    # provenance-bearing values used in the report (results audit 2): parsed from their sources, not typed
+    wb = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-08-jcp-wide-bank/experiments/jcp-wide-bank/report.md')
+    import re as _re
+    for i, line in enumerate(wb.read_text().splitlines(), 1):
+        m_ = _re.search(r'bank time ([\d.]+) h; total ([\d.]+) h', line)
+        if m_:
+            res['offline_sunk'] = dict(w1024_bank_fit_hours=float(m_.group(1)), w1024_job_total_hours=float(m_.group(2)),
+                                       source=f'{wb}:{i}')
+            break
+    s1 = HERE / 'checks' / 'smoke-accept-1.json'
+    if s1.exists():
+        d1 = json.loads(s1.read_text())
+        res['smoke_first'] = dict(failed=[k for k, v in d1.items() if v.get('required') and not v['passed']],
+                                  required=sum(1 for v in d1.values() if v.get('required')))
+    sb = RUNS / 'smkB' / 'archive' / 'output' / 'p1time_smktime' / 'result.json'
+    if sb.exists():
+        ro = json.loads(sb.read_text())['recording_overhead']
+        res['recording_overhead'] = dict(ratio_norec_over_rec_median=float(np.median([x['ratio_norec_over_rec'] for x in ro])),
+                                         ratio_min=float(min(x['ratio_norec_over_rec'] for x in ro)),
+                                         ratio_max=float(max(x['ratio_norec_over_rec'] for x in ro)), W_rel_max=float(max(x['W_rel'] for x in ro)))
+    res['historical_claims'] = dict(HIST_CLAIMS, note='published values quoted from the cited file:line (constants of analyze.py)')
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / 'analysis.json').write_text(json.dumps(res, indent=1, default=lambda o: o.tolist() if hasattr(o, 'tolist') else str(o)))
-    export = dict(lane='jcp-p1-scaling', status='see report.md', references='E0 R_ST (conditional Richardson eps_ref)',
+    tm = res['timing'] if isinstance(res['timing'], dict) else {}
+    kv = lambda k: {c: dict(outcome=v['outcome'], secondary=v.get('secondary'), p_fit=v['point'].get('p'), ci=v.get('ci'),
+                            p_decl=v['p_decl'], p_flops=v.get('p_flops'), p_bytes=v.get('p_bytes'))
+                    for c, v in res[k]['verdicts'].items()} if isinstance(res[k], dict) else res[k]
+    export_detail = dict(
+        h_cost_n={k: dict(outcome=v.get('outcome'), R=v.get('R'), ci=v.get('ci'), medians=v.get('medians'),
+                          label=v.get('label')) for k, v in tm.get('h_cost_n', {}).items()},
+        h_cost_n_scope='evolution time of the solver WITH internal-state recording (A3.2; smoke non-recording/recording ratio '
+                       f"{res.get('recording_overhead', {}).get('ratio_norec_over_rec_median')}); full-field contract; not the full query. "
+                       'Identity audit limitation: in-job identity comparisons of every timed execution passed; per-execution hashes not archived.',
+        timing_controls=dict(doubled=tm.get('doubled'), split_fused_equivalence=tm.get('equivalence_all'), controls_ok=tm.get('controls_ok')),
+        h_cost_r_2d=kv('kernels_2d'), h_cost_r_3d=kv('kernels_3d'),
+        h_cost_r_scope='component-kernel scaling at fixed (M, m); secondary label is the registered A1.9 classification rule, not a causal finding',
+        h_acc_n={k: dict(outcome=v['outcome'], pairs={p: {kk: vv for kk, vv in x.items() if kk != 'd'} for p, x in v.get('pairs', {}).items()},
+                         trend=v.get('trend'), abs_error_medians=v.get('abs_error_medians')) for k, v in res['h_acc_n'].items()},
+        h_acc_r=res['h_acc_r'],
+        accuracy_common_population={k: dict(e0_median_sub16=v['e0_median_sub16'], e0_median_own=v['e0_median'], cases_own=v['cases'],
+                                            e0_S_median_eligible=v.get('e0_S_median_eligible'))
+                                    for k, v in res['configurations'].items()},
+        p1e=dict(two_d=res['p1e'].get('2d_judged'), three_d=res['p1e'].get('3d_judged'),
+                 note='2D registered failing rule gauss64 passed both bars against gauss96 (pre-data expectation wrong)'),
+        p1g={k: {kk: vv for kk, vv in v.items()} for k, v in res['p1g'].items()},
+        reproduction={k: dict(worst=v['worst'], passed=v['passed'], manifest_equal=v['manifest']['equal']) for k, v in res['reproduction'].items()},
+        pilot=res.get('pilot') and {k: res['pilot'][k] for k in ('peak_bytes', 'prefix_retaining_required')},
+        gpu_hours=dict(spent=res['ledger']['spent_gpu_hours'], cap=res['ledger']['cap_gpu_hours']))
+    export = dict(lane='jcp-p1-scaling', status='see report.md', references='E0 R_ST (conditional Richardson eps_ref; accuracy = conditional E0 estimates)',
+                  detail=export_detail,
                   verdicts=dict(h_cost_n={k: v.get('outcome') for k, v in (res['timing']['h_cost_n'].items() if isinstance(res['timing'], dict) else [])},
                                 h_cost_r_2d={k: v['outcome'] for k, v in res['kernels_2d']['verdicts'].items()} if isinstance(res['kernels_2d'], dict) else 'not reached',
                                 h_cost_r_3d={k: v['outcome'] for k, v in res['kernels_3d']['verdicts'].items()} if isinstance(res['kernels_3d'], dict) else res['kernels_3d'],

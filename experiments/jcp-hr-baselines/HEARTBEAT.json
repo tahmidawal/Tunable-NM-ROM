@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T09:02:50Z",
- "step": "8: smk2 staged (not submitted); codex job audit smk2 running; local 2D dry run of final code running",
+ "utc": "2026-10-18T09:11:23Z",
+ "step": "phase I done up to the second smoke; awaiting coordinator release (smk2 staged and job-audited SUBMIT; phase II not started)",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-job-smk2-1.md",
-  "codex_pid": 1945936,
-  "local_pid": 1944049
+  "codex_output": null,
+  "codex_pid": null,
+  "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T09:42:50Z",
- "last_commit": "b4371eda5",
+ "expected_finish_utc": null,
+ "last_commit": "736506551",
  "gpu_hours_spent": 0.878,
  "gpu_hours_cap": 30,
- "notes": "smk1 0.878 GPU-h spent; NNLS path to 16r cycles (6444 its for 256 support on CPU fixture) -> fixing"
+ "notes": "smk1 (5354834) ACCEPTANCE ALL=false -> A14-A18 fixes; final CPU dry run passes all CPU-testable gates; request: release one more <=1 GPU-h smoke (smk2)"
 }

@@ -1,0 +1,54 @@
+{
+ "mesh": 1024,
+ "edges": [
+  0,
+  4,
+  8,
+  16,
+  32,
+  64,
+  128,
+  256,
+  384,
+  512
+ ],
+ "ladder": [
+  16,
+  24,
+  32,
+  48,
+  64,
+  96,
+  128,
+  160,
+  192,
+  256,
+  320
+ ],
+ "selectable_max": 192,
+ "population": "sub16",
+ "check": "dev6",
+ "groups": [
+  {
+   "name": "Hinc",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "Hinc",
+     "kind": "head",
+     "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl"
+    }
+   ]
+  },
+  {
+   "name": "L8",
+   "arms": [
+    {
+     "name": "L8",
+     "kind": "lin",
+     "Rp": 8
+    }
+   ]
+  }
+ ]
+}

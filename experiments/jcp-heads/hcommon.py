@@ -41,9 +41,26 @@ class Head:
     def __init__(self, path, bank_model):
         self.path = Path(path)
         self.sha256 = sha_file(self.path)
-        ck = pickle.load(open(self.path, 'rb'))
-        self.Z = np.asarray(ck['Z_tr'])
-        self.K = int(self.Z.shape[1])
+        if self.path.suffix == '.npz':          # compact archive (DESIGN A5): head weights on the incumbent bank
+            z = np.load(self.path)
+            nl_ = int(z['n_layers'])
+            ck = dict(params=dict(Q.LD_host(bank_model.params), h=[(z[f'h{i}_w'], z[f'h{i}_b']) for i in range(nl_)],
+                                  h_lin=z['h_lin']),
+                      cfg=dict(k=int(z['k']), jcp_heads_name=str(z['name']), jcp_heads_seed0=int(z['seed0']),
+                               jcp_heads_steps=int(z['steps']), hfit_arm='mid', pkl_sha256=str(z['pkl_sha256'])))
+            self.Zsub = np.asarray(z['Zsub'])
+            self.trust = float(z['trust'])
+            self.code_std, self.code_max_dev, self.n_codes = float(z['code_std']), float(z['code_max_dev']), int(z['n_codes'])
+            self.Z = None
+            self.K = int(self.Zsub.shape[1])
+        else:
+            ck = pickle.load(open(self.path, 'rb'))
+            self.Z = np.asarray(ck['Z_tr'])
+            self.K = int(self.Z.shape[1])
+            self.Zsub = HC.zsub_of(self.Z)
+            self.trust = HC.trust_of(self.Z)
+            zn = np.linalg.norm(self.Z - self.Z.mean(0), axis=1)
+            self.code_std, self.code_max_dev, self.n_codes = float(np.std(self.Z)), float(zn.max()), len(self.Z)
         self.cfg = {k: v for k, v in ck.get('cfg', {}).items() if k != 'hfit_pick'}
         params = jax.tree_util.tree_map(jnp.asarray, Q.LD_host(ck['params']))
         ref = bank_model.params
@@ -56,8 +73,6 @@ class Head:
         assert np.asarray(params['h_lin']).shape == (self.K, 512)
         self.params = params
         self.pf = Q.BK.fold_head(params, bank_model.Lrot, 512)
-        self.trust = HC.trust_of(self.Z)
-        self.Zsub = HC.zsub_of(self.Z)
         self._cold = None
 
     def cold(self, bank_model):

@@ -1,0 +1,108 @@
+{
+ "mesh": 4096,
+ "edges": [
+  0,
+  4,
+  8,
+  16,
+  32,
+  64,
+  128,
+  256,
+  384,
+  512
+ ],
+ "edges_A": [
+  0,
+  128,
+  256,
+  384
+ ],
+ "rule": "gauss192",
+ "qp": "gauss256",
+ "qpp": "gauss320",
+ "A": {
+  "mesh": 1024,
+  "name": "A_R384",
+  "kind": "lin",
+  "Rp": 384,
+  "rule": "gauss128",
+  "scheme": "CNR"
+ },
+ "heads": [
+  {
+   "name": "P4s0",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 16
+  },
+  {
+   "name": "P4s1",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 16
+  },
+  {
+   "name": "P4s2",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 16
+  },
+  {
+   "name": "P8s0",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 32
+  },
+  {
+   "name": "P8s1",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 32
+  },
+  {
+   "name": "P8s2",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 32
+  },
+  {
+   "name": "P16s0",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 64
+  },
+  {
+   "name": "P16s1",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 64
+  },
+  {
+   "name": "P16s2",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 64
+  },
+  {
+   "name": "P32s0",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 128
+  },
+  {
+   "name": "P32s1",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 128
+  },
+  {
+   "name": "P32s2",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "M": 128
+  },
+  {
+   "name": "Pinc",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl"
+  }
+ ],
+ "lin": [
+  4,
+  8,
+  16,
+  32,
+  64,
+  128,
+  256,
+  384
+ ]
+}

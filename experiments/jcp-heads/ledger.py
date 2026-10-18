@@ -1,18 +1,20 @@
-"""GPU-hour ledger with atomic time-limit reservations (DESIGN 9.1, A1.11, A2.6). runs/GPU-LEDGER.json, guarded by an
+"""[jcp-heads, adapted from jcp-qualify @4399491eb ledger.py: same reservation mechanics; the mesh-fallback machinery is
+removed (no fallback configurations in this lane); mandatory set and job-name prefix edited.]
+
+GPU-hour ledger with atomic time-limit reservations (DESIGN 8, A1.9, A2.7). runs/GPU-LEDGER.json, guarded by an
 exclusive file lock (runs/GPU-LEDGER.lock) for every read-modify-write.
 
-    python ledger.py pending '<json>'             set the pending core reservations {attempt: hours} (A3.1, A4.1)
-    python ledger.py reserve <attempt> <hours>    atomically: refuse unless spent + reserved + hours + pending <= 35 and the attempt
-                                                  has no live reservation; then record a PENDING_SUBMIT reservation
-    python ledger.py bind <attempt> <jobid>       the reservation is now job <jobid> (state SUBMITTED)
+    python ledger.py pending '<json>'             set the pending non-deferrable reservations {attempt: hours}
+    python ledger.py reserve <attempt> <hours>    atomically: refuse unless spent + reserved + hours + pending(other) <= 35
+                                                  and the attempt has no live reservation; record PENDING_SUBMIT
+    python ledger.py bind <attempt> <jobid>       the reservation is now job <jobid> (SUBMITTED)
     python ledger.py release <attempt>            submission failed before sbatch returned a job id
+    python ledger.py ambiguous <attempt>          sbatch outcome unknown: keep the reservation
+    python ledger.py settle <attempt> [--confirmed-absent]   resolve by the job name jh_<attempt>
     python ledger.py reconcile                    sacct (all attempts incl. requeues, -D): terminal -> elapsed recorded
     python ledger.py show
-    python ledger.py ambiguous <attempt>          sbatch outcome unknown: keep the reservation
-    python ledger.py settle <attempt>             resolve an ambiguous / pending reservation by the job name jq_<attempt>
-Time limits are never raised (no scontrol update); a job needing more time is resubmitted as a new attempt.
-A PENDING_SUBMIT reservation never expires by itself (a crash between reserve and bind keeps the hours reserved until
-an explicit release after checking squeue). Every attempt of a job (requeues) is summed from sacct -D.
+Smokes (smk*) are charged like any job. Time limits are never raised. A failed / timed-out non-deferrable job returns
+to the pending inventory (DESIGN A2.7).
 """
 import fcntl
 import json
@@ -27,11 +29,10 @@ HERE = Path(__file__).resolve().parent
 LED = HERE / 'runs' / 'GPU-LEDGER.json'
 LOCK = HERE / 'runs' / 'GPU-LEDGER.lock'
 CAP = 35.
-# non-deferrable jobs (DESIGN A3.1): each must be in the pending inventory until it has a live or completed reservation
-MANDATORY = ('acc1024', 'acc4096', 'acc256', 'time1024', 'time4096', 'time256', 'order', 'q3d')
-# a failed / timed-out mandatory job is not COMPLETED, so the next 'pending' call must list it again (validated)
+MANDATORY = ('train', 'rule1024', 'acc1024', 'time1024', 'time256')       # DESIGN A2.7
 TERMINAL = ('COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY', 'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE',
             'RELEASED')
+SSH = ['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login']
 
 
 @contextmanager
@@ -40,7 +41,7 @@ def locked():
     with open(LOCK, 'w') as fh:
         fcntl.flock(fh, fcntl.LOCK_EX)
         try:
-            d = json.loads(LED.read_text()) if LED.exists() else dict(cap_gpu_hours=CAP, jobs=[])
+            d = json.loads(LED.read_text()) if LED.exists() else dict(cap_gpu_hours=CAP, jobs=[], pending_core={})
             yield d
             totals(d)
             tmp = LED.with_suffix('.tmp')
@@ -57,116 +58,28 @@ def totals(d):
     return d
 
 
-FROZEN_RULE = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
-
-
-def staged_subjects(att):
-    """Configuration keys of the subjects of a staged timing attempt (its RESERVATION runs -> staged config)."""
-    out = set()
-    rf = HERE / 'runs' / att / 'RESERVATION.json'
-    if not rf.exists():
-        return out
-    for drv, cf in json.loads(rf.read_text())['runs']:
-        c = json.loads((HERE / cf).read_text()) if not (HERE / 'runs' / att / 'experiments').exists() else \
-            json.loads(next((HERE / 'runs' / att).rglob(Path(cf).name)).read_text())
-        for sp in c.get('subjects', []):
-            r = int(sp['Rp'])
-            out.add(f"{sp['mesh']}|R{r}|{sp['form']}|{sp['scheme']}|{float(sp['factor']):g}" + ('|fb' if sp['rule'] != FROZEN_RULE[r] else ''))
-    return out
-
-
-def staged_fallback_of(att):
-    """Configuration keys a staged fallback attempt runs (its config's 'fallback_of')."""
-    out = set()
-    rf = HERE / 'runs' / att / 'RESERVATION.json'
-    if rf.exists():
-        for drv, cf in json.loads(rf.read_text())['runs']:
-            c = json.loads(next((HERE / 'runs' / att).rglob(Path(cf).name)).read_text())
-            out |= set(c.get('fallback_of', []))
-    return out
-
-
-def failing_from_analysis(m, d=None):
-    """The mesh's configurations whose Q2 is not 'pass' (non-fallback), from checks/analysis.json (A4.1 evidence). The
-    analysis must contain every configuration of the mesh's accuracy config (completeness), else None (refused)."""
-    an = json.loads((HERE / 'checks' / 'analysis.json').read_text())['configurations']
-    cfg = json.loads((HERE / 'configs' / f'acc{m}.json').read_text())
-    want = {f"{m}|R{s_['Rp']}|{a_['form']}|{a_['scheme']}|{float(a_['factor']):g}" for s_ in cfg['settings'] for a_ in s_['arms']
-            if not a_.get('ext22')}
-    if not want <= set(an):
-        return None
-    ok_att = {j['attempt'] for j in (d or {}).get('jobs', []) if j['state'] == 'COMPLETED' and j['attempt'].startswith(f'acc{m}')}
-    if any(not (str(an[k].get('attempt') or '') in ok_att and str(an[k].get('source')) == f"lane {an[k].get('attempt')}")
-           for k in want):
-        return None                                  # provenance: every label from a completed accuracy job of this lane
-    return sorted(k for k in want if an[k]['Q2'].get('label') != 'pass')
+def done_or_live(d, att):
+    """A mandatory job is covered when an attempt of it (att or a retry att r<n>) is live or COMPLETED."""
+    pat = re.compile(rf'^{re.escape(att)}(r\d+)?$')
+    return any(pat.match(j['attempt']) and (j['state'] not in TERMINAL or j['state'] == 'COMPLETED') for j in d['jobs'])
 
 
 def validate(d, new, exempt=None):
-    """A3.1 / A4.1 / A5.1 inventory rules. pending entries are numeric GPU-h only (finite, >= 0, not bool); every
-    mandatory job not yet live or completed is listed (the attempt being reserved is exempt). Per mesh: while its Q2
-    labels are unknown, an allowance fballow<m> >= 2; once known (ledger.py fbstate <m> '<keys>', append-only), every
-    listed fallback configuration needs a fallback job fb<m>* that is pending (> 0), live or completed, and the mesh's
-    timing must cover the fallback subjects: a not-yet-submitted panel is re-priced by its certificate at staging
-    (cluster/stage.py checks the fallback subjects are in the config and resources.py prices them); a panel already
-    submitted or completed without them requires a repeat time<m>r<k> pending (> 0), live or completed that covers them."""
-    live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
-    done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
-    probs = [f'bad value {k}' for k, v in new.items()
-             if isinstance(v, bool) or not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
-    pat = re.compile(r'^(fballow(256|1024|4096)|fb(256|1024|4096)[a-z0-9]*|time(256|1024|4096)r[0-9]+|'
-                     r'(acc(256|1024|4096)|order|q3d)r[0-9]+)$')          # A6.1 retries carry the suffix r<k>
-    probs += [f'unknown pending key {k}' for k in new if k not in MANDATORY and not pat.match(k)]
-    probs += [f'{k}: a job projection below 0.25 GPU-h' for k, v in new.items()
-              if not k.startswith('fballow') and isinstance(v, (int, float)) and not isinstance(v, bool) and v < .25]
-    for k, v in new.items():                       # a certified job is never pending below its certificate
-        base_ = re.match(r'^(time(256|1024|4096))r[0-9]+$', k)
-        if base_ and (HERE / 'checks' / f'resources-{base_.group(1)}.json').exists() and isinstance(v, (int, float)) and \
-                v < json.loads((HERE / 'checks' / f'resources-{base_.group(1)}.json').read_text())['time_limit_hours'] - 1e-9:
-            probs.append(f'{k} (repeat panel) pending below the original panel certificate')
-        retry = re.match(r'^((acc(256|1024|4096))|order|q3d)r[0-9]+$', k)       # A6.1: a retry runs at twice the limit
-        if retry and (HERE / 'checks' / f'resources-{retry.group(1)}.json').exists() and isinstance(v, (int, float)) and \
-                v < 2 * json.loads((HERE / 'checks' / f'resources-{retry.group(1)}.json').read_text())['time_limit_hours'] - 1e-9:
-            probs.append(f'{k} (retry) pending below twice the original certificate')
-        cert = HERE / 'checks' / f'resources-{k}.json'
-        if cert.exists() and isinstance(v, (int, float)) and v < json.loads(cert.read_text())['time_limit_hours'] - 1e-9:
-            probs.append(f'{k} pending below its certificate')
-    def covered(k):                                 # a mandatory job or any of its retries k r<n>
-        names = {k} | {x for x in set(new) | live | done | ({exempt} if exempt else set()) if re.match(rf'^{k}r[0-9]+$', x)}
-        return any(x == exempt or x in new or x in live or x in done for x in names)
-    probs += [f'missing mandatory {k}' for k in MANDATORY if not covered(k)]
-    fs = d.get('fallback_state', {})
-    for m in (256, 1024, 4096):
-        if str(m) not in fs:
-            if new.get(f'fballow{m}', 0) < 2:
-                probs.append(f'fballow{m} >= 2 GPU-h required until the Q2 labels of mesh {m} are recorded (fbstate)')
+    probs = []
+    for k, v in new.items():
+        if not (isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) and v >= 0):
+            probs.append(f'{k}: hours must be a finite number >= 0')
+        if not any(re.match(rf'^{m}(r\d+)?$', k) for m in MANDATORY):
+            probs.append(f'unknown pending key {k}')
+    for m in MANDATORY:
+        if m == exempt or done_or_live(d, m):
             continue
-        keys = fs[str(m)]
-        if not keys:
-            continue
-        covered = set()
-        for a_ in live | done | ({exempt} if exempt else set()):
-            if a_.startswith(f'fb{m}') and not a_.startswith('fballow'):
-                covered |= staged_fallback_of(a_)
-        def fb_floor(k):                               # a certified fallback job: its certificate; else the allowance
-            c_ = HERE / 'checks' / f'resources-{k}.json'
-            return json.loads(c_.read_text())['time_limit_hours'] if c_.exists() else 2.
-        pend_fb = any(k.startswith(f'fb{m}') and not k.startswith('fballow') and new[k] >= fb_floor(k) - 1e-9 for k in new)
-        if not (set(keys) <= covered or pend_fb):
-            probs.append(f'fallback configurations of mesh {m} not covered by a live/completed or pending fallback job')
-        fbkeys = {k + '|fb' for k in keys}                 # the fallback configuration's identity in a timing panel
-        panels = [a for a in live | done if a == f'time{m}' or a.startswith(f'time{m}r')]
-        if panels and not any(fbkeys <= staged_subjects(a) for a in panels):
-            rep = [k for k, v in new.items() if k.startswith(f'time{m}r') and v > 0] + \
-                ([exempt] if exempt and exempt.startswith(f'time{m}r') else [])
-            if not rep:
-                probs.append(f'time{m} ran without the fallback subjects: a repeat time{m}r<k> must be pending')
-    probs += [f'pending entry already live: {k}' for k in set(new) & live]
+        if not any(re.match(rf'^{m}(r\d+)?$', k) and new[k] > 0 for k in new):
+            probs.append(f'mandatory job {m} neither live/completed nor pending')
     return probs
 
 
 def pend(d, att):
-    """Pending core reservation excluding the attempt being submitted (A3.1)."""
     return round(sum(v for k, v in d.get('pending_core', {}).items() if k != att), 4)
 
 
@@ -177,75 +90,41 @@ def main():
         totals(d)
         if cmd == 'reserve':
             att, h = sys.argv[2], float(sys.argv[3])
+            base = re.sub(r'r\d+$', '', att)
+            exempt = base if base in MANDATORY else None
             if not (math.isfinite(h) and h > 0):
                 print('refused: reservation hours must be finite and positive'); rc = 10
-            elif 'pending_core' not in d:
-                print('refused: no pending-core inventory set (ledger.py pending; DESIGN A3.1)'); rc = 8
-            elif validate(d, {k: v for k, v in d['pending_core'].items()}, exempt=att):
-                print('refused: pending inventory no longer valid:', validate(d, d['pending_core'], exempt=att)); rc = 8
-            elif att.startswith('time') and not {k + '|fb' for k in d.get('fallback_state', {}).get(att[4:].split('r')[0], [])} <= staged_subjects(att):
-                print('refused: the staged timing panel lacks recorded fallback subjects (restage it)'); rc = 12
+            elif not att.startswith('smk') and validate(d, d.get('pending_core', {}), exempt=exempt):
+                print('refused: pending inventory invalid:', validate(d, d.get('pending_core', {}), exempt=exempt)); rc = 8
             elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print('attempt already has a live reservation'); rc = 2
             elif d['spent_gpu_hours'] + d['reserved_gpu_hours'] + h + pend(d, att) > CAP:
-                print(f"refused: spent {d['spent_gpu_hours']} + reserved {d['reserved_gpu_hours']} + {h} + pending core "
+                print(f"refused: spent {d['spent_gpu_hours']} + reserved {d['reserved_gpu_hours']} + {h} + pending "
                       f"{pend(d, att)} > {CAP}"); rc = 1
             else:
-                popped = d['pending_core'].pop(att, None)     # from now on a live reservation: never counted twice
+                popped = d.setdefault('pending_core', {}).pop(att, None)
                 d['jobs'].append(dict(attempt=att, job_id=None, time_limit_hours=h, state='PENDING_SUBMIT', gpu=None,
                                       elapsed_hours=None, pending_hours=popped))
-        elif cmd == 'pending':             # DESIGN A3.1, A4.1, A5.1: projected time limits of not-yet-submitted
-            new = json.loads(sys.argv[2])                  # non-deferrable jobs and fallback allowances, one transaction
+        elif cmd == 'pending':
+            new = json.loads(sys.argv[2])
             probs = validate(d, new)
             if probs:
                 print('refused pending inventory:', probs); rc = 9
             else:
                 d['pending_core'] = new
-        elif cmd == 'fbstate':             # one transaction (A4.1): record a mesh's Q2 outcome AND the new pending inventory
-            m, newp = sys.argv[2], json.loads(sys.argv[3])
-            keys = failing_from_analysis(m, d)         # derived from the analysed accuracy job, never typed
-            old = d.setdefault('fallback_state', {}).get(m)
-            tl = HERE / 'checks' / f'resources-time{m}.json'
-            t_live = any(j['attempt'] == f'time{m}' and (j['state'] not in TERMINAL or j['state'] == 'COMPLETED')
-                         for j in d['jobs'])                # a failed panel does not count: it is re-priced like a new one
-            fbsub = {k + '|fb' for k in keys or []}
-            cfg_t = HERE / 'configs' / f'time{m}.json'
-            covered_cfg = cfg_t.exists() and fbsub <= {
-                f"{x['mesh']}|R{x['Rp']}|{x['form']}|{x['scheme']}|{float(x['factor']):g}" + ('|fb' if x['rule'] != FROZEN_RULE[int(x['Rp'])] else '')
-                for x in json.loads(cfg_t.read_text())['subjects']}
-            recert = tl.exists() and json.loads(tl.read_text())['configs'].get(f'configs/time{m}.json') == \
-                __import__('hashlib').sha256(cfg_t.read_bytes()).hexdigest() if cfg_t.exists() else False
-            trial = dict(d, fallback_state=dict(d['fallback_state'], **{m: keys}))
-            probs = validate(trial, newp)
-            if keys is None:
-                print('refused: analysis incomplete for this mesh (every configuration of configs/acc<m>.json needed)'); rc = 13
-            elif keys and not t_live and not (covered_cfg and recert):
-                print('refused: configs/time<m>.json must contain the fallback subjects and be re-certified (resources.py) '
-                      'before the fallback state is recorded (A5.1)'); rc = 14
-            elif old is not None and not set(old) <= set(keys):
-                print('refused: fallback state is append-only'); rc = 11
-            elif probs:
-                print('refused:', probs); rc = 9
-            else:
-                d['fallback_state'][m] = keys
-                d['pending_core'] = newp
-                print('fallback state', m, keys)
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')
-            d.get('pending_core', {}).pop(sys.argv[2], None)      # now a live reservation: never counted twice
+            d.get('pending_core', {}).pop(sys.argv[2], None)
         elif cmd == 'ambiguous':
             for j in d['jobs']:
                 if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':
                     j['state'] = 'AMBIGUOUS'
-        elif cmd == 'settle':                 # find the job by its unique name; bind it, or release if it never existed
+        elif cmd == 'settle':
             att = sys.argv[2]
-            o = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
-                                f"sacct -n -X -P --name jq_{att} -S now-7days -o JobID"], capture_output=True, text=True)
-            ids = [x for x in o.stdout.split() if x.strip()]
-            qq = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
-                                 f'squeue -h -u tawal01 -n jq_{att} -o %i'], capture_output=True, text=True)
-            ids += [x for x in qq.stdout.split() if x.strip()]
+            o = subprocess.run(SSH + [f"sacct -n -X -P --name jh_{att} -S now-7days -o JobID"], capture_output=True, text=True)
+            qq = subprocess.run(SSH + [f'squeue -h -u tawal01 -n jh_{att} -o %i'], capture_output=True, text=True)
+            ids = [x for x in (o.stdout + ' ' + qq.stdout).split() if x.strip()]
             for j in d['jobs']:
                 if j['attempt'] == att and j['state'] in ('AMBIGUOUS', 'PENDING_SUBMIT'):
                     if o.returncode != 0 or qq.returncode != 0:
@@ -253,9 +132,9 @@ def main():
                     elif ids:
                         j.update(job_id=ids[-1], state='SUBMITTED')
                         d.get('pending_core', {}).pop(att, None)
-                    elif len(sys.argv) > 3 and sys.argv[3] == '--confirmed-absent':   # only after a manual check
+                    elif len(sys.argv) > 3 and sys.argv[3] == '--confirmed-absent':
                         j.update(state='RELEASED', elapsed_hours=0.)
-                        if j.get('pending_hours') is not None:        # restore the pending core reservation
+                        if j.get('pending_hours') is not None:
                             d['pending_core'][att] = j['pending_hours']
                     else:
                         print('no record found: reservation kept (re-run later, or pass --confirmed-absent)'); rc = 4
@@ -263,14 +142,13 @@ def main():
             for j in d['jobs']:
                 if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':
                     j.update(state='RELEASED', elapsed_hours=0.)
-                    if j.get('pending_hours') is not None:            # restore the pending core reservation
-                        d['pending_core'][sys.argv[2]] = j['pending_hours']
+                    if j.get('pending_hours') is not None:
+                        d.setdefault('pending_core', {})[sys.argv[2]] = j['pending_hours']
         elif cmd == 'reconcile':
             for j in d['jobs']:
                 if j['state'] in TERMINAL or not j['job_id']:
                     continue
-                o = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
-                                    f"sacct -j {j['job_id']} -X -D -n -P -o State,ElapsedRaw,AllocTRES,NodeList,TimelimitRaw"],
+                o = subprocess.run(SSH + [f"sacct -j {j['job_id']} -X -D -n -P -o State,ElapsedRaw,AllocTRES,NodeList,TimelimitRaw"],
                                    capture_output=True, text=True).stdout.strip().splitlines()
                 if not o:
                     continue
@@ -279,13 +157,13 @@ def main():
                 j['attempts'] = len(rows)
                 j['state'], j['node'] = st, rows[-1][3]
                 if st in TERMINAL and st != 'COMPLETED' and j.get('pending_hours') is not None:
-                    d.setdefault('pending_core', {})[j['attempt']] = j['pending_hours']   # failed core job: re-pend
+                    d.setdefault('pending_core', {})[j['attempt']] = j['pending_hours']   # failed mandatory: re-pend
                 j['gpu'] = next((x for x in rows[-1][2].split(',') if x.startswith('gres/gpu')), None)
                 j['elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows) / 3600, 4)
-                j['prior_elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows[:-1]) / 3600, 4)   # earlier requeues
+                j['prior_elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows[:-1]) / 3600, 4)
                 tl = rows[-1][4]
                 if tl.isdigit() and int(tl) / 60 > j['time_limit_hours'] + 1e-9:
-                    j['time_limit_hours'] = int(tl) / 60          # a raised limit is charged (A2.6)
+                    j['time_limit_hours'] = int(tl) / 60
         out = {k: v for k, v in totals(d).items() if k != 'jobs'}
     print(json.dumps(out))
     sys.exit(rc)

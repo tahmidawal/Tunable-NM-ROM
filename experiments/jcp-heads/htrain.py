@@ -13,7 +13,7 @@ changes and nothing else:
 The objective, optimiser, schedule, batch, normalisation, initialisation, RNG keys (PRNGKey(SEED0 + 11) for the fit,
 PRNGKey(SEED0 + 7) for the oracle encoder) and the diagnostics are the copied text.
 
-    python htrain.py --plan configs/train.json --npz <coeff npz> --ckpt <incumbent pkl> --out <dir>
+    python htrain.py --config configs/<attempt>.json --out <dir>     (plan: {"npz", "ckpt", "arms": [{name, k, seed, steps?, identity?}]})
 """
 from __future__ import annotations
 
@@ -54,13 +54,16 @@ def sha_file(p):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument('--plan', required=True)
-    ap.add_argument('--npz', required=True)
-    ap.add_argument('--ckpt', required=True)
+    ap.add_argument('--config', '--plan', dest='plan', required=True)
+    ap.add_argument('--npz')
+    ap.add_argument('--ckpt')
     ap.add_argument('--out', required=True)
     ap.add_argument('--allow-cpu', action='store_true')
     a = ap.parse_args()
     plan = json.loads(Path(a.plan).read_text())
+    a.npz = a.npz or plan['npz']                 # absolute cluster path of the frozen training file (sha256-checked)
+    a.ckpt = a.ckpt or plan['ckpt']              # the incumbent checkpoint, staged with the job
+    a.allow_cpu = a.allow_cpu or bool(plan.get('allow_cpu_smoke'))
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     dev = jax.devices()[0]
@@ -75,6 +78,17 @@ def main():
     d = np.load(a.npz)
     with open(a.ckpt, 'rb') as f:
         ck = pickle.load(f)
+    # DESIGN 2.2: every dev6 / val32 descriptor is absent from the training descriptors of all 4,608 trajectories
+    import p1core
+    Qc = p1core.load_qcore()
+    mu = np.unique(np.asarray(d['mu_tr']), axis=0)
+    disjoint = {}
+    for coh in ('dev6', 'val32'):
+        ph = np.asarray(Qc.cohort(coh))
+        dmin = float(min(np.min(np.max(np.abs(mu - x[None]), axis=1)) for x in ph))
+        assert dmin > 1e-9, f'{coh} descriptor present in the training data'
+        disjoint[coh] = dict(min_maxabs_distance=dmin, n=len(ph))
+    disjoint['n_training_descriptors'] = int(len(mu))
     pick_all = np.asarray(d['pick'])
     assert np.array_equal(np.asarray(ck['cfg']['hfit_pick']), pick_all), 'incumbent codes not aligned with the data pick'
     p_ck = jax.tree_util.tree_map(jnp.asarray, ck['params'])
@@ -112,7 +126,7 @@ def main():
                               gpu=getattr(dev, 'device_kind', str(dev)), slurm_job=os.environ.get('SLURM_JOB_ID'),
                               node=os.environ.get('SLURMD_NODENAME', 'local'),
                               source_commit=os.environ.get('SOURCE_COMMIT')),
-                  gates=dict(whitening_round_trip=rt, q_equals_LT_h=wt),
+                  gates=dict(whitening_round_trip=rt, q_equals_LT_h=wt, disjointness=disjoint),
                   floors=dict(train_span_floor_mean=float(fl_tr.mean()), train_span_floor_max=float(fl_tr.max()),
                               test_span_floor_mean=float(fl_te.mean()), test_span_floor_max=float(fl_te.max())),
                   arms={}, complete=False)
@@ -211,6 +225,18 @@ def main():
                 pickle.dump(dict(params=newp, Z_tr=np.asarray(Z), cfg=cfg), f)
             ent['emitted'] = path.name
             ent['emitted_sha256'] = sha_file(path)
+            # compact archive (DESIGN A5): head weights + candidate codes + trust and code statistics from ALL codes
+            Zn = np.asarray(Z)
+            zdev = np.linalg.norm(Zn - Zn.mean(0), axis=1)
+            cpath = out / f'head_{name}.npz'
+            hw = {f'h{i}_w': np.asarray(w) for i, (w, b) in enumerate(newp['h'])}
+            hw.update({f'h{i}_b': np.asarray(b) for i, (w, b) in enumerate(newp['h'])})
+            np.savez(cpath, h_lin=np.asarray(newp['h_lin']), n_layers=len(newp['h']), Zsub=Zn[::max(1, len(Zn) // 8192)],
+                     trust=.01 * float(zdev.max()), code_std=float(np.std(Zn)), code_max_dev=float(zdev.max()),
+                     n_codes=len(Zn), k=int(k), seed0=seed0, steps=steps, name=name, source_ckpt_sha256=sha_ck,
+                     npz_sha256=sha_npz, pkl_sha256=ent['emitted_sha256'], **hw)
+            ent['compact'] = cpath.name
+            ent['compact_sha256'] = sha_file(cpath)
             # bank parameters untouched (identity of every non-head leaf)
             for kk in ck['params']:
                 if kk not in ('h', 'h_lin', 'hB'):

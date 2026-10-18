@@ -103,9 +103,8 @@ class HeadArm:
     def describe(self):
         hd = self.head
         nparam = int(sum(np.size(x) for x in jax.tree_util.tree_leaves((hd.params['h'], hd.params['h_lin']))))
-        zn = np.linalg.norm(hd.Z - hd.Z.mean(0), axis=1)
         return dict(kind='head', K=self.K, M=self.M, head=str(hd.path.name), head_sha256=hd.sha256, trust=hd.trust,
-                    head_params=nparam, code_std=float(np.std(hd.Z)), code_max_dev=float(zn.max()),
+                    head_params=nparam, code_std=hd.code_std, code_max_dev=hd.code_max_dev, n_codes=hd.n_codes,
                     candidates=int(len(hd.Zsub)), cfg={k: hd.cfg.get(k) for k in ('k', 'jcp_heads_name', 'jcp_heads_seed0',
                                                                                      'jcp_heads_steps', 'hfit_arm')},
                     rules=dict(self.rules), m=dict(self.st.m), meta=self.st.meta, mode_hash=self.st.mode_hash)

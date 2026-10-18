@@ -604,3 +604,16 @@ reasons: Q2 at the size's rule, Q1, timing completeness) are reported beside eve
 the at-most-cost accuracy result, not a verdict that overrides it; the at-most-cost result is computed on the
 possibly-affordable set $\mathcal P_K$ regardless (A3.2), and is "no possibly-affordable rung" only when every qualified
 rung is certified costlier.
+
+---
+
+## Amendment A5 (2026-10-18; design audit 5: READY for exploratory validation evidence; two minor clarifications)
+
+- "No possibly-affordable rung" carries its reason: "every qualified rung certified costlier" or "no numerically
+  qualified linear rung" (A4.3; non-positive either way).
+- Q-LH-dim's paired tests are **unadjusted and exploratory**; Q-LH-dim is a gate of the F5 reading, not an input of the
+  family-wise Holm adjustment (A4.1 wording corrected).
+- Implementation note (no change of design): each trained head is archived as a compact `head_<name>.npz` (the head's
+  MLP and skip weights, the initial-fit candidate codes $Z[::16]$, the trust radius and code statistics computed from all
+  codes, and the training cfg), which with the incumbent checkpoint's bank parameters defines the decoder exactly; the
+  full emitted pkl stays on the cluster only while the lane runs and its sha256 is recorded.

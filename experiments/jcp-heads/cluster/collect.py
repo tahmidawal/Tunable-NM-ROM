@@ -1,4 +1,6 @@
-"""Checksum-collect one completed attempt into runs/<attempt>/archive; then (separately) clean the remote dir.
+"""[jcp-heads copy of jcp-qualify @4399491eb cluster/collect.py; edited: namespace, job-name prefix jh_.]
+
+Checksum-collect one completed attempt into runs/<attempt>/archive; then (separately) clean the remote dir.
 
     python cluster/collect.py <attempt> [--partial]
     python cluster/collect.py <attempt> --cleanup     (after the archive is verified and committed/manifested)
@@ -9,7 +11,7 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
-NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-qualify'
+NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-heads'
 SSH = ['timeout', '600', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login']
 
 
@@ -30,9 +32,9 @@ def main():
         log = '\n'.join(p.read_text() for p in (out / 'logs').glob('*.out'))
         assert 'ALL-DONE' in log, 'job log lacks ALL-DONE'
         subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
-        q = subprocess.run(SSH + [f'squeue -h -n jq_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
-        assert not q.strip(), f'job jq_{a.attempt} still queued/running: {q}'
-        st = subprocess.run(SSH + [f'sacct -n -X -P --name jq_{a.attempt} -S now-7days -o State'], capture_output=True,
+        q = subprocess.run(SSH + [f'squeue -h -n jh_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
+        assert not q.strip(), f'job jh_{a.attempt} still queued/running: {q}'
+        st = subprocess.run(SSH + [f'sacct -n -X -P --name jh_{a.attempt} -S now-7days -o State'], capture_output=True,
                             text=True, check=True).stdout.split()
         assert st and st[-1].split()[0] == 'COMPLETED', f'accounting state {st}'
         subprocess.run(SSH + [f'rm -rf {shlex.quote(remote)}'], check=True)

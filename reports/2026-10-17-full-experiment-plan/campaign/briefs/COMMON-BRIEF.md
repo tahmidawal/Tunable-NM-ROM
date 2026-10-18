@@ -155,3 +155,11 @@ bash /home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-17-full-experiment-p
 ```
 Exit code 75 = no slot freed within the wait; retry later or use the cluster. Prefer the cluster for
 anything longer than a few minutes.
+
+## 14. Campaign-wide submission lock (added 2026-10-18 14:20 UTC)
+Every `sbatch` goes through one shared lock on the cluster so the account-wide cap of 8 cannot race:
+```
+ssh -o ConnectTimeout=20 tufts-login 'flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock \
+  bash -c "n=\$(squeue -u tawal01 -h | wc -l); [ \$n -lt 8 ] || exit 75; cd <jobdir> && sbatch run.sbatch"'
+```
+(exit 75 = account at cap; retry later). Count queued + running; check squeue again after submitting.

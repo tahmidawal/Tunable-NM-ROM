@@ -1,16 +1,14 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T12:25:28Z",
- "step": "design audit 21 CLEAN (A19.4a met at 47bc19088); waiting: code audit 20, gate suite test14",
+ "utc": "2026-10-18T12:31:25Z",
+ "step": "code audit 20 WRONG -> A32 + fixes (tune + Stage-B chain) committed; design audit 21 CLEAN; gate suite test14 still running (G-nnls); next: dry reruns, code audit 21",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-20.md",
-  "codex_pid": [
-   2490835
-  ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": 2488995
  },
- "expected_finish_utc": "2026-10-18T12:55:28Z",
+ "expected_finish_utc": "2026-10-18T13:01:25Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:05:35Z",
- "step": "job audit 1 DO-NOT-SUBMIT (bytecode in bundles) -> fixed; job audit 2 running; then submit t3d64a + t2d1024a",
+ "utc": "2026-10-18T13:06:42Z",
+ "step": "job audit 2 DO-NOT-SUBMIT (submit guard gap) -> fixed; job audit 3 running; then submit t3d64a + t2d1024a",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-job-2.md",
+  "codex_output": "audits/codex-job-3.md",
   "codex_pid": [
-   2629417
+   2635340
   ],
   "local_pid": 2584678
  },
- "expected_finish_utc": "2026-10-18T13:35:35Z",
+ "expected_finish_utc": "2026-10-18T13:36:42Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

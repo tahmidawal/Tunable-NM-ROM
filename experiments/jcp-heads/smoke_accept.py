@@ -39,6 +39,9 @@ def rows_ok(rows, key, bar, n):
 
 def smk1():
     res = {}
+    res['steps_complete'] = bool(all((out_dir('smk1', d_, st_) / 'COMPLETE').exists() and
+                                     json.loads((out_dir('smk1', d_, st_) / 'result.json').read_text()).get('complete')
+                                     for d_, st_ in (('htrain', 'smk1train'), ('hacc', 'smk1acc'), ('hrule', 'smk1rule'))))
     # ---- training pipeline (DESIGN 2.3, A1.7, A2.2)
     tr = json.loads((out_dir('smk1', 'htrain', 'smk1train') / 'result.json').read_text())
     ident = tr['arms']['identity']
@@ -132,7 +135,7 @@ def smk1():
     res['gcert'] = dict(passed=bool(all(v['gcert_all'] for v in res['hinc_real_size'].values())
                                     and all(r['gcert_ok'] for r in acc['rows'])))
     res['train']['short_heads_ok'] = bool(all(v['ok'] for v in comp.values()))
-    res['all_controls_pass'] = bool(res['train']['identity_pass'] and res['train']['whitening'] and res['train']['disjointness']
+    res['all_controls_pass'] = bool(res['steps_complete'] and res['train']['identity_pass'] and res['train']['whitening'] and res['train']['disjointness']
                                     and res['train']['short_heads_ok'] and res['gcert']['passed']
                                     and res['repro_head']['passed'] and res['repro_lin']['passed'] and res['jacobian']['passed']
                                     and res['wrong_mesh']['passed'] and res['budget0']['passed'] and res['zero_update']['passed']
@@ -148,60 +151,101 @@ def _modes(R):
     return kx[:M], ky[:M]
 
 
-def smk2():
+BAND = (1 / 1.1, 1.1)
+BAD = '1024|L16|gauss24|BE'
+PILOT_BAR, PILOT_ALLOW = 120e9, 1.10
+
+
+def lab_(sp):
+    return f"{sp['mesh']}|{sp['name']}|{sp['rule']}|{sp['scheme']}"
+
+
+def close(a, b, rel_=1e-9):
+    return bool(np.isfinite([a, b]).all() and abs(a - b) <= rel_ * abs(b))
+
+
+def accept_timing(r, cfg, pl):
+    """Pure acceptance of a timing smoke (result r, its committed config cfg, pilot result pl). Coverage of every
+    configured identity is required (a missing record fails); stored ratios and flags are recomputed from the raw times."""
     res = {}
-    td = out_dir('smk2', 'htime', 'smk2time')
-    r = json.loads((td / 'result.json').read_text())
-    res['equivalence'] = dict(passed=bool(all(e['passed'] for e in r['equivalence'])), n=len(r['equivalence']))
-    bad = '1024|L16|gauss24|BE'
-    inv_bad = [x for x in r['invocations'] if x['B'] == bad] + [x for x in r['fused'] if x['B'] == bad]
-    res['identity_fault'] = dict(n=len(inv_bad), all_invalid=bool(inv_bad and not any(x['valid'] for x in inv_bad)))
-    good = [x for x in r['invocations'] + r['fused'] if x['B'] != bad]
-    res['other_valid_fraction'] = float(np.mean([x['valid'] for x in good]))
-    # fused coverage bound to the committed config, validity recomputed here: every non-fault subject x configured case
-    # needs >= 1 fused repeat with finite positive times, identity hashes reproduced and drift in band
-    cfg = json.loads((HERE / 'configs' / 'smk2time.json').read_text())
-    lab_ = lambda sp: f"{sp['mesh']}|{sp['name']}|{sp['rule']}|{sp['scheme']}"
-    want_subj = sorted({lab_(sp) for sp in cfg['subjects']} - {bad})
-    want_cases = sorted(f'{a}|{b}' for a, b in cfg['cases'])
-    BAND = (1 / 1.1, 1.1)
+    cases = sorted(f'{a}|{b}' for a, b in cfg['cases'])
+    cert_cases = sorted(f'{a}|{b}' for a, b in cfg['cert_cases'])
+    reps = cfg['reps']
+    labels = [lab_(sp) for sp in cfg['subjects']]
+    all_lab = sorted({lab_(cfg['A'])} | set(labels))
+    res['complete'] = bool(r.get('complete'))
+    res['subjects_present'] = bool(sorted(r['subjects']) == all_lab)
+    eq = {e['subject']: e for e in r['equivalence']}
+    res['equivalence'] = dict(passed=bool(sorted(eq) == all_lab and all(e['passed'] and np.isfinite(e['fields_rel'])
+                                                                         and e['fields_rel'] <= 1e-12 and e['same_iterations']
+                                                                         for e in eq.values())), n=len(eq))
+    cert_ok = True
+    for lb in all_lab:
+        rows = r['subjects'].get(lb, {}).get('certification', [])
+        cert_ok &= sorted(x['case'] for x in rows) == cert_cases
+        cert_ok &= all(x['valid'] and x['gcert_ok'] and np.isfinite([x['dist_tight'], x['dist_tight_tighter']]).all() for x in rows)
+    res['certification_ok'] = bool(cert_ok)
+    want = sorted((lb, c, k) for lb in labels for c in cases for k in range(int(reps[c.split('|')[0]])))
+
+    def ident(xs):
+        return sorted((x['B'], x['case'], x['rep']) for x in xs)
+    res['split_coverage'] = bool(ident(r['invocations']) == want)
+    res['fused_coverage_ids'] = bool(ident(r['fused']) == want)
+
+    def split_ok(x):
+        t = [x['tA1'], x['tA2'], x['t_evolve'], x['t_init'], x['t_decode']]
+        return bool(np.isfinite(t).all() and min(t) > 0 and close(x['ratio'], x['t_evolve'] / (.5 * (x['tA1'] + x['tA2'])))
+                    and close(x['drift'], x['tA2'] / x['tA1']) and x['all_hashes_ok'] and BAND[0] <= x['drift'] <= BAND[1])
 
     def fused_ok(x):
-        t = [x['tA1'], x['tA2'], x['t_fused'], x['ratio']]
-        return bool(np.isfinite(t).all() and min(t) > 0 and x['hash_ok'] and x.get('all_hashes_ok', x['hash_ok'])
-                    and BAND[0] <= x['tA2'] / x['tA1'] <= BAND[1])
+        t = [x['tA1'], x['tA2'], x['t_fused']]
+        return bool(np.isfinite(t).all() and min(t) > 0 and close(x['ratio'], x['t_fused'] / (.5 * (x['tA1'] + x['tA2'])))
+                    and x['hash_ok'] and x.get('all_hashes_ok', x['hash_ok']) and BAND[0] <= x['tA2'] / x['tA1'] <= BAND[1])
+    res['split_flag_agrees'] = bool(all(split_ok(x) == bool(x['valid']) for x in r['invocations']))
     res['fused_valid_flag_agrees'] = bool(all(fused_ok(x) == bool(x['valid']) for x in r['fused']))
-    cov = {}
-    for lb in want_subj:
-        for c_ in want_cases:
-            cov[(lb, c_)] = any(fused_ok(x) for x in r['fused'] if x['B'] == lb and x['case'] == c_)
-    res['subjects_present'] = bool(sorted(set(r['subjects']) - {lab_(cfg['A'])}) == sorted(want_subj + [bad]))
-    res['fused_coverage'] = dict(missing=[list(k) for k, ok in cov.items() if not ok], n=len(cov), passed=bool(cov and all(cov.values())))
+    bad_x = [x for x in r['invocations'] + r['fused'] if x['B'] == BAD]
+    res['identity_fault'] = dict(n=len(bad_x), all_invalid=bool(bad_x and not any(x['valid'] for x in bad_x)))
+    cov = {(lb, c): any(fused_ok(x) for x in r['fused'] if x['B'] == lb and x['case'] == c) for lb in labels if lb != BAD
+           for c in cases}
+    res['fused_coverage'] = dict(missing=[list(k) for k, ok in cov.items() if not ok], passed=bool(cov and all(cov.values())))
+    import timing as TM
+    res['panel_validity_without_fault'] = TM.panel_validity([x for x in r['invocations'] if x['B'] != BAD])['valid']
+    dwant = sorted((lab_(sp), f'{a}|{b}', k) for sp in cfg.get('doubled', []) for a, b in sp['cases'] for k in range(3))
     dbl = r['doubled']
-    res['doubled'] = dict(ratios=[x['ratio'] for x in dbl], passed=bool(dbl and all(1.8 <= x['ratio'] <= 2.2 and x['identity_ok']
-                                                                                     and x['same_iterations'] and x['drift_ok']
-                                                                                     for x in dbl)))
-    res['subjects'] = {k: dict(cert=[(c_['valid'], c_['gcert_ok'], c_['tight_verified'], c_['tighter_verified']) for c_ in v['certification']])
-                       for k, v in r['subjects'].items()}
+    dok = all(np.isfinite([x['t_single1'], x['t_double'], x['t_single2']]).all() and min(x['t_single1'], x['t_double'], x['t_single2']) > 0
+              and close(x['ratio'], x['t_double'] / (.5 * (x['t_single1'] + x['t_single2'])))
+              and 1.8 <= x['ratio'] <= 2.2 and x['identity_ok'] and x['same_iterations'] and BAND[0] <= x['drift'] <= BAND[1]
+              for x in dbl)
+    res['doubled'] = dict(ratios=[x['ratio'] for x in dbl],
+                          passed=bool(sorted((x['subject'], x['case'], x['rep']) for x in dbl) == dwant and dok))
+    stages = [s_['mem']['peak'] for s_ in pl['stages']]
+    peak = max(stages) if stages else float('nan')
+    res['pilot'] = dict(peak_bytes=peak, recomputed_within_bar=bool(np.isfinite(peak) and peak > 0 and peak * PILOT_ALLOW <= PILOT_BAR),
+                        stored_within_bar=bool(pl.get('within_bar')), stored_peak_agrees=bool(pl.get('peak_bytes') == peak),
+                        complete=bool(pl.get('complete')))
+    res['pilot_note'] = ('measurement probe (A7): it does not reproduce every allocation of the timing driver; time4096 (first '
+                         'in the defer order) is reported "not reached (memory)" if it fails on memory')
     by = {}
     for x in r['fused']:
-        if x['valid']:
+        if fused_ok(x):
             by.setdefault(x['B'], []).append(x['ratio'])
     res['fused_median_ratio'] = {k: float(np.median(v)) for k, v in by.items()}
-    import timing as TM
-    res['panel_validity_without_fault'] = TM.panel_validity([x for x in r['invocations'] if x['B'] != bad])['valid']
-    pl = json.loads((out_dir('smk2', 'hpilot', 'smk2pilot') / 'result.json').read_text())
-    res['pilot_note'] = ('measurement probe (code audit 3): it does not reproduce every allocation of the timing driver; '
-                         'time4096 (first in the defer order) is reported "not reached (memory)" if it fails on memory')
-    res['pilot'] = dict(peak_bytes=pl['peak_bytes'], within_bar=bool(pl['within_bar']), stages=[(s_['stage'], s_['mem']['peak'])
-                                                                                                 for s_ in pl['stages']])
-    res['certification_ok'] = bool(all(all(t_[:2]) for v in res['subjects'].values() for t_ in v['cert']))
-    res['all_controls_pass'] = bool(res['equivalence']['passed'] and res['identity_fault']['all_invalid']
-                                    and res['doubled']['passed'] and res['pilot']['within_bar']
-                                    and res['panel_validity_without_fault'] and res['fused_coverage']['passed']
-                                    and res['fused_valid_flag_agrees'] and res['subjects_present']
-                                    and res['certification_ok'])
+    res['all_controls_pass'] = bool(res['complete'] and res['subjects_present'] and res['equivalence']['passed']
+                                    and res['certification_ok'] and res['split_coverage'] and res['fused_coverage_ids']
+                                    and res['split_flag_agrees'] and res['fused_valid_flag_agrees']
+                                    and res['identity_fault']['all_invalid'] and res['fused_coverage']['passed']
+                                    and res['panel_validity_without_fault'] and res['doubled']['passed']
+                                    and res['pilot']['recomputed_within_bar'] and res['pilot']['stored_within_bar']
+                                    and res['pilot']['stored_peak_agrees'] and res['pilot']['complete'])
     return res
+
+
+def smk2():
+    r = json.loads((out_dir('smk2', 'htime', 'smk2time') / 'result.json').read_text())
+    cfg = json.loads((HERE / 'configs' / 'smk2time.json').read_text())
+    pl = json.loads((out_dir('smk2', 'hpilot', 'smk2pilot') / 'result.json').read_text())
+    assert (out_dir('smk2', 'htime', 'smk2time') / 'COMPLETE').exists() and (out_dir('smk2', 'hpilot', 'smk2pilot') / 'COMPLETE').exists()
+    return accept_timing(r, cfg, pl)
 
 
 if __name__ == '__main__':

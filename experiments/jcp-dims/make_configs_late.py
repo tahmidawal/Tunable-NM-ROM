@@ -64,10 +64,10 @@ def cert_blocks(keys, cases):
     out = []
     for kk, specs in sorted(by.items()):
         if kk[0] == 'ladder':
-            out.append(dict(kind='ladder', setting=kk[1], specs=sorted(specs), rungs=[kk[2]], cases=cases, tighter_cases=[cases[0]]))
+            out.append(dict(kind='ladder', setting=kk[1], specs=sorted(specs), rungs=[kk[2]], cases=cases, tighter_cases=list(cases)))
         else:
             out.append(dict(kind='adaptive', setting=kk[1], forms=[f'{kk[3]}|CN'], dt=0.01, rungs=[kk[2]], cases=cases,
-                            tighter_cases=[cases[0]]))
+                            tighter_cases=list(cases)))
     return out
 
 

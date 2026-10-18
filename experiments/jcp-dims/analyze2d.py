@@ -44,7 +44,7 @@ def tag_of(kind):
 
 
 # ------------------------------------------------------------------------------------------- per configuration
-def config_entry(att, d, res, setting, arm):
+def config_entry(att, d, res, setting, arm, score=True):
     form, scheme, fac = arm['form'], arm['scheme'], float(arm['factor'])
     p = d / f'R_{setting}_{form}_{scheme}_{fac:g}.npz'
     if not p.exists():
@@ -53,19 +53,19 @@ def config_entry(att, d, res, setting, arm):
     cp = CACHE / f'{att}__{setting}__{form}_{scheme}_{fac:g}.json'
     if cp.exists():
         c = json.loads(cp.read_text())
-        if c.get('sha256') == sh:
+        if c.get('sha256') == sh and (c.get('e0') is not None or not score):
             return c
     R = dict(np.load(p))
     rows = [r_ for r_ in res['rows'] if r_['setting'] == setting and r_['arm'] == f'{form}_{scheme}_{fac:g}']
-    q = DSC.q1(R, rows)
-    sc = DSC.scores(R)
+    q = DSC.q1(R, rows, arm['cases'])
+    sc = DSC.scores(R) if score else None
     e = dict(sha256=sh, job=att, setting=setting, form=form, scheme=scheme, factor=fac, r=int(R['Rp']), M=int(R['M']),
              policy=str(R['policy']), rule=str(R['rule']), square=bool(R['square']), case_ids=[str(x) for x in R['case_ids']],
              Q1=q['Q1'], disagreements=[str(x) for x in q['disagreements'][:5]], pooled=q['pooled_noncertified'],
              steps=q['pooled_steps'], worst_dist_tight=max(v['dist_tight'] for v in q['per_case'].values()),
              valid={c: v['valid'] for c, v in q['per_case'].items()},
-             e0={c: {k: dict(e=v[k]['e'], eps_ref=v[k]['eps_ref'], eligible=bool(v[k]['eligible'])) for k in v}
-                 for c, v in sc.items()},
+             e0=None if sc is None else {c: {k: dict(e=v[k]['e'], eps_ref=v[k]['eps_ref'], eligible=bool(v[k]['eligible']))
+                                              for k in v} for c, v in sc.items()},
              rho_job_max=float(np.nanmax(R['rho'])) if np.isfinite(R['rho']).any() else None)
     m = int(len(np.asarray(R['A'])))       # M (rows of A)
     if bool(R['rho_only']) and str(R['qp_rule']) != 'None':
@@ -94,7 +94,7 @@ def load_all():
         for s in res['config']['settings']:
             for a in s['arms']:
                 k = f"{s['name']}|{a['form']}|{a['scheme']}"
-                e = config_entry(att, d, res, s['name'], a)
+                e = config_entry(att, d, res, s['name'], a, score=(s['policy'] != 'lmf'))   # LMF scored only after A2.2 stability
                 if e is not None and res['complete'] and s['name'] not in res.get('memory_rejected', []):
                     C[k] = e
                     RAW[k] = (d, s['name'], a)
@@ -126,13 +126,11 @@ def ladder_labels(C, RAW, lad):
         for j in (i, i + 1, i + 2):
             if j < len(keys) and Rs[j] is None:
                 Rs[j] = R_of(RAW, keys[j])
-        top = i == len(keys) - 1
-        if top:
-            q2 = dict(label='unverified (ladder top)')
-        else:
-            q2 = DSC.ladder_q2(Rs[i], Rs[i + 1], Rs[i + 2] if i + 2 < len(keys) else None, second_to_top=(i == len(keys) - 2))
-        qual = bool(e['Q1']['pass'] and q2['label'] == 'pass')
-        out.append(dict(key=k, rule=lad['rungs'][i], Q1=e['Q1']['pass'], Q2=q2, qualified=qual,
+        pos = 'top' if i == len(keys) - 1 else 'second' if i == len(keys) - 2 else 'interior'
+        q2 = DSC.ladder_q2(Rs[i], Rs[i + 1], Rs[i + 2], position=pos) if pos == 'interior' else dict(label='unverified (ladder top)')
+        rho_ok = e.get('rho_offline', {}).get('agree', True)      # A6.2: a computed independent rho must agree
+        qual = bool(e['Q1']['pass'] and q2['label'] == 'pass' and rho_ok)
+        out.append(dict(key=k, rule=lad['rungs'][i], Q1=e['Q1']['pass'], Q2=q2, qualified=qual, rho_offline_ok=rho_ok,
                         label='qualified' if qual else 'not qualified'))
         if i >= 1:
             Rs[i - 1] = None
@@ -147,7 +145,7 @@ def m_of(rule):
 def mstar_of(lab, lad):
     cand = lad['candidates']
     labels = [x['label'] if x['label'] == 'missing' else ('qualified' if x.get('qualified') else 'not qualified')
-              for x in lab if x.get('rule', x['key'].split('|')[0]) is not None][:len(cand)]
+              for x in lab][:len(cand)]
     sizes = [m_of(r) for r in cand]
     return DS.mstar(labels, sizes), labels, sizes
 
@@ -164,7 +162,7 @@ def arrays(C, kX, kY, kind='ST'):
 
 
 def trans(C, Q, kX, kY):
-    if kX not in C or kY not in C:
+    if kX not in C or kY not in C or C[kX].get('e0') is None or C[kY].get('e0') is None:
         return dict(label='inconclusive (missing)')
     a, b, eps, el = arrays(C, kX, kY)
     lab, p = DS.transition(a, b, eps, el, qualified=(Q.get(kX, False), Q.get(kY, False)))
@@ -173,6 +171,23 @@ def trans(C, Q, kX, kY):
 
 def t2_label(e):
     return f"1024|R{e['r']}|M{e['M']}|{e['rule']}|{e['form']}|{e['scheme']}|1"
+
+
+def gcert_rows(d, lb, s, rows):
+    """G-cert of every timing-job certification row recomputed offline with the A6.1 bar (the in-job flag used the
+    earlier, stricter bar); LSPG non-square: the qualify gamma comparison."""
+    import dcert as DC
+    z = np.load(d / f"S_{lb.replace('|', '_')}.npz")
+    tol = float(z['tol'][1])
+    out = []
+    for j, r_ in enumerate(rows):
+        if str(z['form']) == 'GAL' or bool(z['square']):
+            g = DC.gcert(z['raw'][j], z['tolratio'][j], tol * z['scale'][j], z['scale'][j])
+        else:
+            c_, rc = np.asarray(z['cert'][j], float), np.asarray(z['rec'][j], float)
+            g = bool(np.all(np.isfinite(c_) & np.isfinite(rc) & (np.abs(c_ - rc) <= 1e-7 * np.abs(rc) + 1e-12)))
+        out.append(dict(r_, gcert_ok_A61=bool(g)))
+    return out
 
 
 def timing_costs():
@@ -192,10 +207,12 @@ def timing_costs():
             per.setdefault(x['case'], []).append(x['ratio'])
         rows = s['certification']
         steps = int(s['steps']) * len(rows)
-        q1 = bool(rows and all(r_['valid'] and r_['tight_valid'] and r_['tighter_valid'] for r_ in rows)
+        cover = [r_['case'] for r_ in rows] == DSC.DEV6
+        q1 = bool(rows and cover and all(r_['valid'] and r_['tight_valid'] and r_['tighter_valid'] and r_['gcert_ok_A61']
+                                         for r_ in gcert_rows(d, lb, s, rows))
                   and sum(r_['noncertified'] for r_ in rows) <= .01 * steps and all(r_['dist_tight'] <= 2.5e-4 for r_ in rows)
                   and all(r_['dist_tight_tighter'] <= 2.5e-5 for r_ in rows))
-        q2 = True
+        q2 = False                                         # no successor: unverified, never qualified (A1.5)
         if s['spec'].get('qp'):
             q2 = all(r_.get('qp_valid') and r_.get('dist_qp', 1) <= 2.5e-4 for r_ in rows)
             z = np.load(d / f"S_{lb.replace('|', '_')}.npz")
@@ -207,7 +224,9 @@ def timing_costs():
                 q2 = False                                 # no check rung: unverified, not qualified
         out[lb] = dict(c=float(np.median([x['ratio'] for x in ok])) if ok else None,
                        c_ev=float(np.median([x['ratio'] for x in res['invocations'] if x['B'] == lb and x['valid']] or [np.nan])),
-                       per_case={k: float(np.median(v)) for k, v in per.items()}, usable=bool(fz and len(ok) >= len(fz) * 2 / 3),
+                       per_case={k: float(np.median(v)) for k, v in per.items()},
+                       usable=bool(fz and len(ok) >= len(fz) * 2 / 3 and res.get('counts_complete') is True
+                                   and sorted(per) == sorted(DSC.DEV6)),
                        qualified=bool(q1 and q2), q1=q1, q2=q2)
     return out
 
@@ -232,6 +251,9 @@ def shapley(C, Q, out, cost, B=10000):
             continue
         ids = [c for c in C[corners[(0, 0, 0)]]['case_ids']
                if all(C[v]['e0'][c]['ST']['eligible'] and C[v]['valid'][c] for v in corners.values())]
+        if not ids:
+            res[f'{ra}->{rb}'] = dict(outcome='decomposition not reached (no common eligible case)')
+            continue
         E = {kk: np.array([C[v]['e0'][c]['ST']['e'] for c in ids]) for kk, v in corners.items()}
         eps = float(np.median([C[corners[(0, 0, 0)]]['e0'][c]['ST']['eps_ref'] for c in ids]))
         f_acc = {kk: float(np.median(v)) for kk, v in E.items()}
@@ -246,7 +268,7 @@ def shapley(C, Q, out, cost, B=10000):
                   corners={str(k): v for k, v in corners.items()})
         r_['acc_shares'] = (np.array(r_['acc']) / r_['d_acc']).tolist() if abs(r_['d_acc']) > 2 * eps else None
         lbs = {kk: t2_label(C[v]) for kk, v in corners.items()}
-        if cost and all(lbs[kk] in cost and cost[lbs[kk]]['per_case'] for kk in corners):
+        if cost and all(lbs[kk] in cost and cost[lbs[kk]]['usable'] and cost[lbs[kk]]['qualified'] for kk in corners):
             cases = sorted(set.intersection(*[set(cost[lbs[kk]]['per_case']) for kk in corners]))
             Cc = {kk: np.array([cost[lbs[kk]]['per_case'][c] for c in cases]) for kk in corners}
             f_c = {kk: float(np.median(v)) for kk, v in Cc.items()}
@@ -262,6 +284,32 @@ def shapley(C, Q, out, cost, B=10000):
         r_['wording'] = 'a selection-conditioned description of the difference between two deployed configurations, not a decomposition of the error norm'
         res[f'{ra}->{rb}'] = r_
     return res
+
+
+def fixgate_offline(r, M, rules):
+    """A2.2: component (b) recomputed with independent NumPy tables (npcheck) at the pinned fixture states (first r
+    coefficients; first M modes of the fixture's frozen list). Returns {rule: dict(rho, agree_with_job(fn))}."""
+    import rules2d
+    z = np.load(HERE / 'inputs' / 'fixture2d.npz')
+    Cs = np.asarray(z['W'])[:, :r]
+    kx, ky = np.asarray(z['kx'])[:M], np.asarray(z['ky'])[:M]
+    Xt, wt = rules2d.points('gauss384')
+    tt = NC.tables(Xt, wt, r, kx, ky, 1024)
+    Nt = [NC.N(c, tt) for c in Cs]
+    del tt
+    out = {}
+    for rl in rules:
+        X, w = rules2d.points(rl)
+        t = NC.tables(X, w, r, kx, ky, 1024)
+        rho = []
+        for c, b in zip(Cs, Nt):
+            a = NC.N(c, t)
+            nb = float(np.linalg.norm(b))
+            rho.append(float(np.linalg.norm(a - b) / nb) if (np.isfinite(a).all() and nb > 0) else float('inf'))
+        del t
+        out[rl] = dict(rho=rho, agree_with_job=(lambda rr: (lambda job: len(job) == len(rr) and all(
+            (np.isinf(x) and np.isinf(y)) or SC.agree(x, y) for x, y in zip(rr, job))))(rho))
+    return out
 
 
 def main():
@@ -285,48 +333,55 @@ def main():
         out['ladders'].append(dict(id=lid, labels=lab, mstar=ms[0]))
         if ms[0] is not None:
             out['mstar'][lid] = dict(mstar=ms[0], labels=ms[1], sizes=ms[2])
-    # ---- B3 families
+    # ---- B3 families (expected ladders from the manifest: missing draws stay missing, A1.5)
+    fixadm = json.loads((HERE / 'checks' / 'fixture-badlat.json').read_text())
     for r, M in ((128, 512), (384, 1536)):
         fam = {}
         for lad, L in zip(man['ladders'], out['ladders']):
             if lad['kind'] in ('B3', 'B3ii', 'F2') and lad['r'] == r and lad['M'] == M and lad['scheme'] == 'LSPG|CNR|1':
-                if L['mstar'] is None:
-                    continue
-                f = lad['family']
-                fam.setdefault(f, {})[lad['draw']] = out['mstar'][L['id']]
+                fam.setdefault(lad['family'], {})[lad['draw']] = (lad, L)
         res = {}
         for f, dr in fam.items():
-            if len(dr) == 1:
-                res[f] = dict(family=dr[0]['mstar'], per_draw=[dr[0]['mstar']])
+            lad0 = dr[min(dr)][0]
+            sizes = [m_of(x) for x in lad0['candidates']]
+            labs = {s_: (out['mstar'][L['id']]['labels'] if L['id'] in out['mstar'] else ['missing'] * len(sizes))
+                    for s_, (lad, L) in dr.items()}
+            if f in ('gauss', 'smolyak'):
+                res[f] = dict(family=DS.mstar(labs[0], sizes), per_draw=[DS.mstar(labs[0], sizes)])
             else:
-                labs = [dr[s]['labels'] for s in sorted(dr)]
-                res[f] = DS.family_mstar(labs, dr[0]['sizes'])
-        # cross-family gate: (b) from the fixgate block, (a) finest rung vs the gauss384 target (rollout)
+                res[f] = DS.family_mstar([labs.get(s_, ['missing'] * len(sizes)) for s_ in range(5)], sizes)
         fg = {}
         for att in ('b2f', 'b2m'):
             for blk in C.get('_fixgate', {}).get(att, []):
                 if blk['r'] == r and blk['M'] == M:
                     fg.update(blk['rules'])
+        off = fixgate_offline(r, M, sorted(fg))          # A2.2: component (b) recomputed offline (independent NumPy)
         tgt = f'R{r}M{M}gauss384|LSPG|CNR'
         gates = {}
         Rt = R_of(RAW, tgt)
         for f, dr in fam.items():
-            for s in sorted(dr):
+            for s_ in (range(5) if f not in ('gauss', 'smolyak') else (0,)):
                 finest = {'fib': 'fib121393', 'sobol': f'sobol{2 ** 17}', 'halton': f'halton{2 ** 17}', 'mc': f'mc{2 ** 17}',
                           'smolyak': 'smolyak14', 'gauss': 'gauss384'}[f]
-                fr = finest if (s == 0 and f not in ('mc',)) else f'{finest}s{s}'
+                fr = finest if (s_ == 0 and f != 'mc') else f'{finest}s{s_}'
                 kf = f'R{r}M{M}{"" if f == "gauss" else "f"}{fr}|LSPG|CNR'
                 rb = fg.get(fr, {}).get('rho_tgt', [])
+                if f == 'gauss':
+                    rb = [0.] * 6                           # the target against itself (A3.2: explicit target-self evidence)
+                agree = f == 'gauss' or (fr in off and off[fr]['agree_with_job'](rb))
                 avail = kf in C and tgt in C and C[kf]['Q1']['pass'] and C[tgt]['Q1']['pass'] and all(C[kf]['valid'].values())
                 dist = np.inf
                 if avail and Rt is not None:
                     Rf = R_of(RAW, kf)
                     dist = max(NC.fdist(NC.decode257(Rf['W'][j], r), NC.decode257(Rt['W'][j], r), SC.n0_of(Rt, j))
                                for j in range(len(Rt['W'])))
-                gates[f'{f}|s{s}'] = dict(rule=fr, gate=DS.cross_family_gate(rb, avail, dist), worst_dist_to_target=dist,
-                                          rho_tgt_max=max(rb) if rb else None)
+                g = DS.cross_family_gate(rb if agree else [], avail, dist)
+                gates[f'{f}|s{s_}'] = dict(rule=fr, gate=g if agree else 'gate unavailable (offline (b) disagrees)',
+                                           worst_dist_to_target=dist, rho_tgt_max=max(rb) if rb else None)
         bad = fg.get('badlat121393', {})
-        gates['badlat121393 (control)'] = dict(gate=DS.cross_family_gate(bad.get('rho_tgt', []), False, np.inf),
+        adm = next((p['admitted'] for p in fixadm['panels'] if p['panel'] == f'2d|R{r}|M{M}'), False)
+        ctl_fired = bool(adm and bad.get('flags') is True and off.get('badlat121393', {}).get('agree_with_job', lambda x: False)(bad.get('rho_tgt', [])))
+        gates['badlat121393 (control)'] = dict(fixture_admitted=adm, fired=ctl_fired,
                                                rho_tgt_max=max(bad['rho_tgt']) if bad.get('rho_tgt') else None)
         pe = {}
         names = sorted(res)
@@ -335,9 +390,15 @@ def main():
                 a, b = names[i], names[j]
                 ga = all(v['gate'] == 'pass' for kk, v in gates.items() if kk.startswith(a + '|'))
                 gb = all(v['gate'] == 'pass' for kk, v in gates.items() if kk.startswith(b + '|'))
-                v = DS.point_efficiency(res[a]['family']['m'], res[b]['family']['m'], names=(a, b))
-                if not (ga and gb):
+                fa, fb = res[a]['family'], res[b]['family']
+                if not ctl_fired:
+                    v = 'blocked (bad-vector control unavailable or not fired)'
+                elif fa['outcome'].startswith('not reached') or fb['outcome'].startswith('not reached'):
+                    v = 'inconclusive (not reached)'
+                elif not (ga and gb):
                     v = 'inconclusive (gate flagged or unavailable)'
+                else:
+                    v = DS.point_efficiency(fa['m'], fb['m'], names=(a, b))
                 pe[f'{a} vs {b}'] = v
         out['families'][f'R{r}M{M}'] = dict(mstar=res, point_efficiency=pe)
         out['gates'][f'R{r}M{M}'] = gates
@@ -368,32 +429,42 @@ def main():
                 if g in C and ref in C:
                     a, b, eps, el = arrays(C, g, ref)
                     lab, p = DS.two_way(a, b, eps, el, qualified=(Q.get(g, False), Q.get(ref, False)), names=('GAL', 'LSPG'))
+                    ctl = B6[f'R{r}|LSPG-CN']['control']        # A1.2 / A2.1: B6 verdicts at r need the form-matched control
+                    if ctl != 'fired':
+                        lab = f'blocked (LSPG-CN M = r control: {ctl}); raw: {lab}'
                     B6.setdefault(f'R{r}|kappa{k}|GAL-vs-LSPG', {})[nm] = dict(label=lab, stats=p)
             if k == 1 and g in C and f'R{r}M{r}k{PRIMARY}|LSPG|CN' in C:
                 Rg, Rl = R_of(RAW, g), R_of(RAW, f'R{r}M{r}k{PRIMARY}|LSPG|CN')
                 dd = [NC.fdist(NC.decode257(Rg['W'][j], r), NC.decode257(Rl['W'][j], r), SC.n0_of(Rl, j)) for j in range(len(Rl['W']))]
                 B6[f'R{r}|kappa1|GAL-vs-LSPG']['measured distance (no gate, A1.2)'] = dict(worst=max(dd), median=float(np.median(dd)))
     out['B6'] = B6
-    # ---- LMF
+    # ---- LMF (A2.2 of the design 2.2 stability checks first; scoring and verdicts only if every check passes)
     lm = {}
-    for f, rungs_def in (('gauss', 'F2'), ('smolyak', 'B3')):
-        lid_l = next((L['id'] for lad, L in zip(man['ladders'], out['ladders']) if lad['kind'] == 'LMF' and lad['family'] == f), None)
-        lid_d = next((L['id'] for lad, L in zip(man['ladders'], out['ladders']) if lad['kind'] == rungs_def and lad['r'] == 384
-                      and lad['M'] == 1536 and lad['family'] == f and lad['scheme'] == 'LSPG|CNR|1' and lad['draw'] == 0), None)
-        if lid_l in out['mstar'] and lid_d in out['mstar']:
-            lm[f] = dict(lmf=out['mstar'][lid_l]['mstar'], default=out['mstar'][lid_d]['mstar'],
-                         efficiency=DS.point_efficiency(out['mstar'][lid_l]['mstar']['m'], out['mstar'][lid_d]['mstar']['m'],
-                                                        names=('LMF', 'default')))
     sl, sd = C.get('_settings', {}).get('R384M1536lmfgauss256'), C.get('_settings', {}).get('R384M1536gauss256')
     kl, kd = 'R384M1536lmfgauss256|LSPG|CNR', 'R384M1536gauss256|LSPG|CNR'
+    lmf_keys = [k for k in C if not k.startswith('_') and C[k]['policy'] == 'lmf']
     stab = dict(rank_ok=bool(sl and sl['A_rank'] == 384), cond_ok=bool(sl and sd and sl['A_cond'] <= 10 * sd['A_cond']),
-                valid=bool(kl in C and all(C[kl]['valid'].values())), q1_gauss256=bool(kl in C and C[kl]['Q1']['pass']))
+                all_runs_valid=bool(len(lmf_keys) == 15 and all(all(C[k]['valid'].values()) for k in lmf_keys)),
+                q1_gauss256=bool(kl in C and C[kl]['Q1']['pass']))
     lm['stability'] = dict(stab, passed=all(stab.values()))
-    if lm['stability']['passed'] and kl in C and kd in C:
-        a, b, eps, el = arrays(C, kl, kd)
-        lab, p = DS.two_way(a, b, eps, el, qualified=(Q.get(kl, False), Q.get(kd, False)), names=('LMF', 'default'))
-        lm['accuracy_gauss256'] = dict(label=lab, stats=p)
-    elif not lm['stability']['passed']:
+    if lm['stability']['passed']:
+        for k in lmf_keys:                                 # LMF E0 scores only now
+            d_, s_, a_ = RAW[k]
+            C[k] = config_entry(C[k]['job'], d_, json.loads((d_ / 'result.json').read_text()), s_, a_, score=True)
+        for f, rungs_def in (('gauss', 'F2'), ('smolyak', 'B3')):
+            lid_l = next((L['id'] for lad, L in zip(man['ladders'], out['ladders']) if lad['kind'] == 'LMF' and lad['family'] == f), None)
+            lid_d = next((L['id'] for lad, L in zip(man['ladders'], out['ladders']) if lad['kind'] == rungs_def and lad['r'] == 384
+                          and lad['M'] == 1536 and lad['family'] == f and lad['scheme'] == 'LSPG|CNR|1' and lad['draw'] == 0), None)
+            if lid_l in out['mstar'] and lid_d in out['mstar']:
+                ml, md = out['mstar'][lid_l]['mstar'], out['mstar'][lid_d]['mstar']
+                eff = ('inconclusive (not reached)' if ml['outcome'].startswith('not reached') or md['outcome'].startswith('not reached')
+                       else DS.point_efficiency(ml['m'], md['m'], names=('LMF', 'default')))
+                lm[f] = dict(lmf=ml, default=md, efficiency=eff)
+        if kl in C and kd in C:
+            a, b, eps, el = arrays(C, kl, kd)
+            lab, p = DS.two_way(a, b, eps, el, qualified=(Q.get(kl, False), Q.get(kd, False)), names=('LMF', 'default'))
+            lm['accuracy_gauss256'] = dict(label=lab, stats=p)
+    else:
         lm['outcome'] = 'unstable test space (no verdict)'
     out['LMF'] = lm
     # ---- secondary B6 at each cell's own m* (LSPG-CN-R, GAL-CN, LSPG-CN)
@@ -406,16 +477,35 @@ def main():
                 ks[k] = f'R{r}M{k * r}{tag}gauss{int(round(m ** .5))}|{form}|{sch}' if m else None
             tr2 = {f'{a}->{b}': (trans(C, Q, ks[a], ks[b]) if ks[a] and ks[b] else dict(label='inconclusive (no m*)'))
                    for a, b in ((1, 2), (2, 3), (3, 4), (4, 8))}
+            ctl = B6[f'R{r}|{form}-{sch}']['control']
+            if ctl != 'fired':
+                for v in tr2.values():
+                    v['label'] = f"blocked (M = r control: {ctl}); raw: {v['label']}"
             B6.setdefault(f'R{r}|{form}-{sch}', {})['secondary_at_mstar'] = tr2
     # ---- timing (t2): per-cell cost, timing-job qualification, elasticity, deployed-path Shapley
     cost = timing_costs()
     out['costs'] = cost
     if cost:
-        cells = [(C[k]['r'], C[k]['M'], m_of(C[k]['rule']), cost[lb]['c']) for k in C if not k.startswith('_')
+        cells = [(C[k]['r'], C[k]['M'], m_of(C[k]['rule']), cost[lb]) for k in C if not k.startswith('_')
+                 and C[k]['form'] == 'LSPG' and C[k]['scheme'] == 'CNR' and C[k]['policy'] == 'frozen' and C[k]['job'] in ('f2a', 'f2b')
                  for lb in [t2_label(C[k])] if lb in cost and cost[lb]['usable'] and cost[lb]['qualified'] and Q.get(k)]
         if cells:
-            r_, M_, m_, c_ = (np.array(x, float) for x in zip(*cells))
-            out['elasticity'] = DS.elasticity(r_, M_, m_, c_)
+            r_, M_, m_ = (np.array(x, float) for x in list(zip(*cells))[:3])
+            c_ = np.array([x[3]['c'] for x in cells])
+            el = DS.elasticity(r_, M_, m_, c_)
+            if el['status'] == 'ok':                      # A1.8: joint bootstrap of the six dev6 timing cases
+                rng = np.random.default_rng(1)
+                B = []
+                for _ in range(2000):
+                    ix = rng.integers(0, 6, 6)
+                    cb = np.array([np.median([x[3]['per_case'][DSC.DEV6[i]] for i in ix]) for x in cells])
+                    eb = DS.elasticity(r_, M_, m_, cb)
+                    if eb['status'] == 'ok':
+                        B.append(eb['beta'])
+                B = np.array(B)
+                el['interval'] = [np.percentile(B, 2.5, axis=0).tolist(), np.percentile(B, 97.5, axis=0).tolist()]
+                el['label'] = 'descriptive full-query elasticities (beta_r, beta_M, beta_m), not kernel exponents'
+            out['elasticity'] = el
     out['shapley'] = shapley(C, Q, out, cost)
     # ---- m* map for the timing generator
     mst = {lid: v['mstar']['m'] for lid, v in out['mstar'].items()}

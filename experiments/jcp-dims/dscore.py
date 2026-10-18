@@ -56,26 +56,52 @@ def _rules(R):
         SC.certified, SC.gcert_ok = old_c, old_g
 
 
-def q1(R, rows):
-    """Q1 (and in-config offline agreement) of one configuration; the in-file Q2 population is ignored here (ladder Q2
-    is computed separately)."""
+DEV6 = [f'dev6|{i}' for i in range(6)]
+ALL38 = DEV6 + [f'val32|{i}' for i in range(32)]
+
+
+def expected_ids(spec):
+    """Registered populations (DESIGN 2.4, make_configs arms): all38, dev6, dev2, or an explicit list."""
+    if spec == 'all38':
+        return list(ALL38)
+    if spec == 'dev6':
+        return list(DEV6)
+    if spec == 'dev2':
+        return DEV6[:2]
+    return [f'{c}|{i}' for c, i in spec]
+
+
+def q1(R, rows, cases_spec):
+    """Q1 (and in-config offline agreement) of one configuration against its REGISTERED population (cases_spec from
+    the config arm; tighter on its dev6 members); the in-file Q2 population is ignored here (ladder Q2 separately)."""
     R2 = dict(R)
     R2['q2_case_ids'] = np.array([], dtype=str)
-    expect = dict(cases=[str(x) for x in R['case_ids']], dev=[str(x) for x in R['dev_case_ids']], q2=[], qpp=None,
-                  form=str(R['form']), steps=int(R['steps']))
+    cases = expected_ids(cases_spec)
+    expect = dict(cases=cases, dev=[c for c in cases if c in DEV6], q2=[], qpp=None, form=str(R['form']), steps=int(R['steps']))
     with _rules(R):
         return SC.qualify(R2, rows, expect)
 
 
-def ladder_q2(R, Rn, Rnn, check_ids=None, second_to_top=False):
-    """A1.5 Q2 of rung R from its successor Rn and check Rnn (None = missing / ladder top)."""
+IDENT = ('Rp', 'M', 'scheme', 'form', 'dt', 'policy', 'mode_hash', 'steps')
+
+
+def same_config(R, Rn):
+    return all(str(R[k]) == str(Rn[k]) for k in IDENT) and [str(x) for x in R['case_ids']] == [str(x) for x in Rn['case_ids']]
+
+
+def ladder_q2(R, Rn, Rnn, check_ids=None, position='interior'):
+    """A1.5 Q2 of rung R from its successor Rn and check Rnn. position: 'top' / 'second' (the top two rungs of a
+    ladder: always 'unverified (ladder top)', A1.5 precedence) or 'interior' (a missing successor / check is
+    'unverified (successor invalid)' / 'unverified (finer rule unavailable)'). Successor and check must be the same
+    numerical configuration and population except the rule (IDENT), else the label is 'blocked (successor identity)'."""
+    if position in ('top', 'second'):
+        return dict(label='unverified (ladder top)')
     if Rn is None:
-        return dict(label=DS.q2_label(True, None, np.nan, None, ladder_top=True), top=True)
+        return dict(label='unverified (successor invalid)')
     Rp = int(R['Rp'])
     ids = [str(x) for x in R['case_ids']]
-    assert [str(x) for x in Rn['case_ids']] == ids, 'successor population differs'
-    for k in ('Rp', 'M', 'scheme', 'form', 'dt', 'policy', 'mode_hash'):
-        assert str(R[k]) == str(Rn[k]), ('successor differs in', k)
+    if not same_config(R, Rn) or (Rnn is not None and not same_config(R, Rnn)):
+        return dict(label='blocked (successor identity)')
     d = [NC.fdist(NC.decode257(R['W'][j], Rp), NC.decode257(Rn['W'][j], Rp), SC.n0_of(R, j)) for j in range(len(ids))]
     sv = bool(np.all(Rn['valid']) and np.isfinite(Rn['W']).all())
     rho = np.asarray(R['rho'], float).ravel()
@@ -83,13 +109,15 @@ def ladder_q2(R, Rn, Rnn, check_ids=None, second_to_top=False):
     rho_max = float(np.max(rho_f)) if rho_f.size else float('nan')
     chk = None
     if Rnn is not None:
-        dev = [str(x) for x in R['dev_case_ids']] if check_ids is None else check_ids
+        dev = DEV6 if check_ids is None else check_ids
+        if not all(c in ids for c in dev):
+            return dict(label='unverified (finer rule unavailable)')
         jj = [ids.index(c) for c in dev]
         dc = [NC.fdist(NC.decode257(Rn['W'][j], Rp), NC.decode257(Rnn['W'][j], Rp), SC.n0_of(R, j)) for j in jj]
         chk = (bool(all(Rnn['valid'][j] for j in jj) and np.isfinite(Rnn['W'][jj]).all()), float(np.max(dc)) if dc else np.inf)
+    if len(rho) != 6 * len(ids):
+        return dict(label='unverified (successor invalid)', note='rho population incomplete')
     lab = DS.q2_label(True, (sv, float(np.max(d)) if d else np.inf), rho_max, chk)
-    if second_to_top and lab != 'fail':
-        lab = 'unverified (ladder top)'                 # A1.5: the top two rungs of a ladder are never qualified
     return dict(label=lab, worst_dist_qp=float(np.max(d)), rho_max=rho_max, rho_trivial=int(np.sum(np.isnan(rho))),
                 check=chk, successor_valid=sv)
 

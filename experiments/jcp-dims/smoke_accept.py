@@ -66,7 +66,7 @@ def smk2_acc():
         for a in s['arms']:
             R = DSC.load(d, s['name'], a['form'], a['scheme'], a['factor'])
             rr = [r_ for r_ in rows if r_['setting'] == s['name'] and r_['arm'] == f"{a['form']}_{a['scheme']}_{float(a['factor']):g}"]
-            q = DSC.q1(R, rr)
+            q = DSC.q1(R, rr, a['cases'])
             k = f"{s['name']}|{a['form']}|{a['scheme']}"
             req(f'{k}: offline recomputation agrees with the job', not q['disagreements'],
                 disagreements=[str(x) for x in q['disagreements'][:4]])
@@ -87,7 +87,7 @@ def smk2_acc():
     # Q2 ladder path on the heavy R512 M4096 cell (gauss256 -> 320 -> 384)
     for form, sch in (('LSPG', 'CNR'), ('GAL', 'CN')):
         Rs = [DSC.load(d, f'R512M4096{g}', form, sch) for g in ('gauss256', 'gauss320', 'gauss384')]
-        q2 = DSC.ladder_q2(Rs[0], Rs[1], Rs[2])
+        q2 = DSC.ladder_q2(Rs[0], Rs[1], Rs[2], check_ids=DSC.DEV6[:2])
         rep(f'ladder Q2 path R512 M4096 gauss256 ({form}-{sch})', **{k: (str(v) if k == 'check' else v) for k, v in q2.items()})
         req(f'ladder Q2 path R512 M4096 ({form}) produced a label', isinstance(q2['label'], str))
     # controls block (qualify's run_controls, unchanged)

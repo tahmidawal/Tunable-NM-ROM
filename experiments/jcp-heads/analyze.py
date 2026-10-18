@@ -99,6 +99,10 @@ def acc_records(att):
     d = out_dir(att, 'hacc')
     r = jload(d / 'result.json')
     assert r['complete'], att
+    man = jload(RUNS / 'MANIFEST-dev.json')                       # pinned E0 store / metric / model identities
+    import p1score as PS1
+    assert man['e0_store_version'] == PS1.STORE_VERSION and man['metric_id'] == PS1.METRIC_ID
+    assert r['checkpoint_sha256'] == man['checkpoint_sha256'] and r['rotation_sha256'] == man['rotation_sha256']
     recs = {}
     for name, a in r['arms'].items():
         spec = a['spec']
@@ -111,6 +115,8 @@ def acc_records(att):
             ids = [str(x) for x in R['case_ids']]
             per = {c: dict(e=sc[c]['ST']['e'], eps=sc[c]['ST']['eps_ref'], eligible=bool(sc[c]['ST']['eligible']),
                            ref_sha256=sc[c]['ST'].get('reference_sha256'), store_version=sc[c]['ST'].get('store_version'),
+                           metric_id=sc[c]['ST'].get('metric_id'),
+                           ref_sha256_S=sc[c]['S'].get('reference_sha256') if 'S' in sc[c] else None,
                            e_S=sc[c]['S']['e'] if 'S' in sc[c] else None,
                            eligible_S=bool(sc[c]['S']['eligible']) if 'S' in sc[c] else None) for c in ids}
             el = [v['e'] for v in per.values() if v['eligible']]
@@ -127,65 +133,87 @@ def acc_records(att):
 
 # ------------------------------------------------------------------ timing ----
 
-def timing(att, recs=None):
-    """Per subject: costs (valid fused / split repeats per case), timing-job qualification label on dev6 (A1.8), panel
-    controls (split = fused equivalence, doubled work, drift validity), and at 1024^2 the consistency of every timed
-    trajectory with the accuracy job (independent decode + E0 ST score, |de| <= 2.5e-4 per case). `usable` = timing
-    complete and all of these pass; only usable costs enter cost labels (A3.2: otherwise 'unknown')."""
+def timing(att, recs=None, acc_dir=None):
+    """Per subject (DESIGN 6, A1.8, A2.4, A3.2; job audits): costs from VALID fused / split repeats whose hashes equal the
+    subject's scoring trajectory (T_ident); timing-job Q1/Q2 labels recomputed from the saved arrays
+    (hscore.qualify_timing); equivalence and doubled-work controls with coverage; subject-level drift; at 1024^2 the
+    timing trajectories compared DIRECTLY with the accuracy job's (decoded scoring-lattice distance <= 2.5e-4 on every
+    case, identical configuration identity). usable = all of these; otherwise the cost is 'unknown' downstream."""
     import timing as TM
     d = out_dir(att, 'htime')
     r = jload(d / 'result.json')
     assert r['complete'], att
-    mesh = int(att[4:].rstrip('full'))
-    subj = {}
+    cfg = r['config']
+    mesh = int(''.join(ch for ch in att[4:] if ch.isdigit()))
     fused, inv = {}, {}
     for x in r['fused']:
         fused.setdefault(x['B'], {}).setdefault(x['case'], []).append(x)
     for x in r['invocations']:
         inv.setdefault(x['B'], {}).setdefault(x['case'], []).append(x)
-    eq = {e['subject']: e for e in r['equivalence']}
-    dbl_ok = all(x['identity_ok'] and x['same_iterations'] and 1.8 <= x['ratio'] <= 2.2 for x in r['doubled'] if x['drift_ok'])
+    eq = {}
+    for e in r['equivalence']:
+        eq.setdefault(e['subject'], []).append(e)
+    dsp = cfg.get('doubled', [])
+    dlab = {f"{x['mesh']}|{x['name']}|{x['rule']}|{x['scheme']}" for x in dsp}
+    dbl = [x for x in r['doubled']]
+    dbl_ok = bool(len(dbl) == 3 * len(dsp) and all(x['drift_ok'] and x['identity_ok'] and x['same_iterations']
+                                                     and 1.8 <= x['ratio'] <= 2.2 for x in dbl)
+                  and {x['subject'] for x in dbl} == dlab)
     panel = TM.panel_validity(r['invocations'])
+    acc = None
+    if mesh == 1024 and recs is not None:
+        acc = jload(out_dir('acc1024', 'hacc') / 'result.json')
     cost = {}
     for lb, v in r['subjects'].items():
-        cases = v['timed_case_ids']
-        per = {c: [x['ratio'] for x in fused.get(lb, {}).get(c, []) if x['valid']] for c in cases}
-        pev = {c: [x['ratio'] for x in inv.get(lb, {}).get(c, []) if x['valid']] for c in cases}
-        cert = v['certification']
         sp = v['spec']
-        bars = all(x['valid'] and x['gcert_ok'] and x['tight_verified'] and x['dist_tight'] <= 2.5e-4 and x['tighter_verified']
-                   and x['dist_tight_tighter'] <= 2.5e-5 and x.get('budget_exits', 0) >= 0
-                   and ((not sp.get('qp')) or (x['qp_valid'] and x['qpp_valid'] and x['dist_qp'] <= 2.5e-4
-                                               and x['dist_qp_qpp'] <= 2.5e-4)) for x in cert)
-        bars = bool(bars and cert and sum(x['noncertified'] for x in cert) <= .01 * 50 * len(cert))   # pooled (Q1 rule)
+        name, sc = lb.split('|')[1], lb.split('|')[3]
+        cases = v['timed_case_ids']
+        Z = np.load(d / f"S_{lb.replace('|', '_')}.npz", allow_pickle=True)
+        T_id = {str(c): str(h) for c, h in zip(Z['T_case_ids'], Z['T_ident'])}
+        hash_ok = lambda x, c: x['valid'] and x.get('hash_B', T_id.get(c)) == T_id.get(c) and \
+            all(a_.get('hash_B', T_id.get(c)) == T_id.get(c) for a_ in x.get('attempts', []))
+        per = {c: [x['ratio'] for x in fused.get(lb, {}).get(c, []) if hash_ok(x, c)] for c in cases}
+        pev = {c: [x['ratio'] for x in inv.get(lb, {}).get(c, []) if hash_ok(x, c)] for c in cases}
+        head = head_of(name) if sp['kind'] == 'head' else None
+        tq = HSC.qualify_timing(Z, v['certification'], head=head, qp_rule=sp.get('qp'), cert_ids=[f'dev6|{i}' for i in range(6)])
         cons = None
-        if mesh == 1024 and recs is not None and lb.split('|')[1] != 'A_R384':
-            name, sc = lb.split('|')[1], lb.split('|')[3]
+        if acc is not None and name != 'A_R384':
             rec = recs.get((name, sc))
-            if rec is not None:
-                Z = np.load(d / f"S_{lb.replace('|', '_')}.npz", allow_pickle=True)
-                head = head_of(name) if sp['kind'] == 'head' else None
-                coef, dim = HSC.coef_fn(dict(kind=sp['kind'], dim=Z['dim']), head)
-                import qscore as QS_
-                diffs = []
-                for j, cidv in enumerate([str(x) for x in Z['T_case_ids']]):
-                    f = NC.decode257(coef(Z['T_W'][j]), dim)
-                    coh, c = cidv.split('|')
-                    sc_ = QS_.score(f, dict(case_id=cidv, time_tag='t0,t1,t2,t3,t4,t5', scheme=sc, form='LSPG', dt=.005,
-                                            dt_expected=.005, requested=(coh, int(c))), 'ST')
-                    diffs.append(abs(sc_['e'] - rec['per_case'][cidv]['e']))
-                cons = dict(max_abs_error_diff=float(max(diffs)), consistent=bool(max(diffs) <= 2.5e-4))
-        complete = bool(all(per[c] for c in cases))
-        usable = bool(complete and bars and eq.get(lb, {}).get('passed') and dbl_ok and (cons is None or cons['consistent']))
+            if rec is None:
+                cons = dict(consistent=False, reason='no accuracy record')
+            else:
+                R = np.load(out_dir('acc1024', 'hacc') / f'R_{name}_{sc}.npz')
+                ida = [str(x) for x in R['case_ids']]
+                coef, dim = HSC.coef_fn(dict(kind=sp['kind'], dim=int(Z['dim'])), head)
+                same_id = bool(str(R['rule']) == str(Z['rule']) and int(R['M']) == int(Z['M']) and int(R['dim']) == int(Z['dim'])
+                               and acc['arms'][name].get('head_sha256', '') == v['describe'].get('head_sha256', ''))
+                dist, e_t = {}, {}
+                for j, c in enumerate([str(x) for x in Z['T_case_ids']]):
+                    if c not in ida:
+                        dist[c] = float('inf')
+                        continue
+                    ft, fa = NC.decode257(coef(Z['T_W'][j]), dim), NC.decode257(coef(R['W'][ida.index(c)]), dim)
+                    dist[c] = NC.fdist(ft, fa, float(Z['T_n0'][j]))
+                dv = np.array(list(dist.values()), float)
+                cons = dict(consistent=bool(same_id and sorted(dist) == sorted(ida) and np.isfinite(dv).all() and dv.max() <= 2.5e-4),
+                            max_trajectory_distance=float(dv.max()) if dv.size else None, same_configuration=same_id)
+        complete = bool(cases and all(per[c] for c in cases))
+        subj_drift = panel['subject_drift'].get(lb)
+        drift_ok = subj_drift is not None and 1 / 1.1 <= subj_drift <= 1.1
+        eq_ok = bool(eq.get(lb) and len(eq[lb]) == 1 and eq[lb][0]['passed'])
+        usable = bool(complete and tq['label'].startswith('pass') and eq_ok and dbl_ok and drift_ok
+                      and (cons is None or cons['consistent']))
         cost[lb] = dict(per_case={c: float(np.median(x)) if x else None for c, x in per.items()},
                         per_case_ev={c: float(np.median(x)) if x else None for c, x in pev.items()},
-                        complete=complete, timing_job_label='pass' if bars else 'fail', consistency=cons,
-                        equivalence=bool(eq.get(lb, {}).get('passed')), usable=usable,
-                        raw_ev={c: [(x['ratio'], x['valid']) for x in inv.get(lb, {}).get(c, [])] for c in cases},
+                        complete=complete, timing_job_label=tq['label'], timing_Q1=tq['Q1'], timing_Q2=tq['Q2'],
+                        timing_disagreements=tq['disagreements'][:5], consistency=cons, equivalence=eq_ok,
+                        subject_drift=subj_drift, usable=usable,
+                        raw_ev={c: [(x['ratio'], hash_ok(x, c)) for x in inv.get(lb, {}).get(c, [])] for c in cases},
                         abs_fused_median=float(np.median([x['t_fused'] for c in cases for x in fused.get(lb, {}).get(c, [])
-                                                          if x['valid']] or [np.nan])),
+                                                          if hash_ok(x, c)] or [np.nan])),
                         contract=CONTRACT)
-    meta = dict(job=r['job_id'], gpu=r['gpu'], doubled_ok=bool(dbl_ok), split_panel=panel)
+        print('TIME', att, lb, usable, tq['label'], cons and cons.get('max_trajectory_distance'), flush=True)
+    meta = dict(job=r['job_id'], gpu=r['gpu'], doubled_ok=dbl_ok, split_panel=panel)
     return r, meta, cost
 
 
@@ -302,7 +330,7 @@ def _slim(e):
     return {k: v for k, v in e.items() if k != 'tost'} | dict(tost_equivalent=e.get('tost', {}).get('equivalent'))
 
 
-def finish_lh(res, comps, family):
+def finish_lh(res, comps, family, min_seeds=2):
     """Family-wise Holm over (K, r) components (A3.1), at-most-cost / equal-cost / bracket per K, F5."""
     fam = {f'{K}|{r}': comps.get((K, r), 1.) for K in family for r in LIN}
     rej = HS.holm(fam)
@@ -312,12 +340,12 @@ def finish_lh(res, comps, family):
         if 'rungs' not in e:
             per_k[K] = dict(positive_components=False, lh_dim='unavailable', qualified=False, resolved_negative=False)
             continue
-        out = HS.lh_cost(dict(qualified=len(e['S_prime']) >= 2, complete=True), e['_rungs_full'],
+        out = HS.lh_cost(dict(qualified=len(e['S_prime']) >= min_seeds, complete=True), e['_rungs_full'],
                          rejected={r: rej[f'{K}|{r}'] for r in LIN if f'{K}|{r}' in rej})
         e['lh_cost'] = out
         e['holm'] = {r: dict(p=fam[f'{K}|{r}'], rejected=rej[f'{K}|{r}']) for r in LIN}
         per_k[K] = dict(positive_components=out['at_most_cost'] == 'head more accurate than every possibly-affordable rung',
-                        lh_dim=e.get('lh_dim', {}).get('dominance', 'unavailable'), qualified=len(e['S_prime']) >= 2,
+                        lh_dim=e.get('lh_dim', {}).get('dominance', 'unavailable'), qualified=len(e['S_prime']) >= min_seeds,
                         resolved_negative=str(out['at_most_cost']).startswith('linear at no more cost'))
     for K in res:
         res[K].pop('_rungs_full', None)
@@ -336,6 +364,10 @@ def h_cost_n(costs, recs_rule):
         lbs = {m: tlabel(m, name, rule, 'BE') for m in meshes}
         if not all(lb in costs[m] for m, lb in lbs.items()):
             out[str(K)] = dict(outcome='verdict not reached', reason='subject missing on a mesh')
+            continue
+        if not all(costs[m][lb]['usable'] for m, lb in lbs.items()):
+            out[str(K)] = dict(outcome='verdict not reached', reason='timing not usable on a mesh (qualification / controls)',
+                               usable={str(m): costs[m][lb]['usable'] for m, lb in lbs.items()})
             continue
         cases = sorted(set.intersection(*[set(costs[m][lbs[m]]['raw_ev']) for m in meshes]))
         cases = [c for c in cases if c.startswith('dev6')]
@@ -385,7 +417,7 @@ def main_all():
         exp['S_K'] = {sc: {K: pools(recs, K, sc) for K in KS} for sc in SCHEMES}
         exp['h_acc_k'] = {sc: h_acc_k(recs, sc) for sc in SCHEMES}
         exp['h_acc_k_m128'] = h_acc_k(recs, 'BE', m128=True)
-        exp['h_acc_k_per_seed'] = {s: h_acc_k_seed(recs, 'BE', s) for s in SEEDS}
+        exp['h_acc_k_per_seed'] = {f'{sc}|{s}': h_acc_k_seed(recs, sc, s) for sc in SCHEMES for s in SEEDS}
         if 1024 in costs:
             exp['lh'] = {}
             for sc in SCHEMES:
@@ -393,10 +425,11 @@ def main_all():
                 f5, per_k = finish_lh(res, comps, fam)          # CN-R: the same results; F5 is read from BE only
                 exp['lh'][sc] = dict(per_K=res, F5=f5 if sc == 'BE' else None, F5_inputs=per_k if sc == 'BE' else None)
             exp['lh_per_seed'] = {}
-            for s in SEEDS:
-                res, comps = lh(recs, costs[1024], 'BE', per_seed=s)
-                finish_lh(res, comps, fam)
-                exp['lh_per_seed'][s] = res
+            for sc in SCHEMES:
+                for s in SEEDS:
+                    res, comps = lh(recs, costs[1024], sc, per_seed=s)
+                    finish_lh(res, comps, fam, min_seeds=1)
+                    exp['lh_per_seed'][f'{sc}|{s}'] = res
             exp['F5_family'] = fam
         rr = {k[0]: v['rule'] for k, v in recs.items()}
         exp['h_cost_n'] = h_cost_n(costs, rr) if costs else None

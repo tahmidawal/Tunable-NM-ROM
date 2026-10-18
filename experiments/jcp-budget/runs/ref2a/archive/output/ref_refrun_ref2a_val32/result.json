@@ -1,0 +1,275 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "val32",
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5,
+   6
+  ],
+  "horizon": 0.5,
+  "fine": true,
+  "allow_refine": true
+ },
+ "job": {
+  "job_id": "5552268",
+  "commit": "9a7f8d28a1eefe6626023f10c690fe8470401011",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "manifest": [
+  {
+   "file": "2d/val32/T0.5/c000_fine.npz",
+   "sha256": "91186ba65770ad9b5aa7d5eccfa0316a3652f378421447ce0a902b4862716526"
+  },
+  {
+   "file": "2d/val32/T0.5/c000.npz",
+   "sha256": "4cd153d7acc2c73a2e6be9799636e4ee4755f93ead655ebcf7ec22d215eed740"
+  },
+  {
+   "file": "2d/val32/T0.5/c000.json",
+   "sha256": "2346164680e063c945642aab1c07533483fd3e87ef189e63d5aa4b5388c69397"
+  },
+  {
+   "file": "2d/val32/T0.5/c001_fine.npz",
+   "sha256": "15e6b5b3f9a94632c185ae607c71207781c0353677c8aed50a224ead69b1f2c7"
+  },
+  {
+   "file": "2d/val32/T0.5/c001.npz",
+   "sha256": "6751837cf2f2547976e768beca19598b66d25f0e5415a06f19d16c51dda07945"
+  },
+  {
+   "file": "2d/val32/T0.5/c001.json",
+   "sha256": "4c9e121a6a46958b7f5744a2a96360001d570e5287d685a7dccbc8bf0601d000"
+  },
+  {
+   "file": "2d/val32/T0.5/c002_fine.npz",
+   "sha256": "80d0ee646a5c39387db314db0ffa5779e3e595a2f5f3aa92d3d7dd62202b1535"
+  },
+  {
+   "file": "2d/val32/T0.5/c002.npz",
+   "sha256": "232bb9ef218b8614dff323a303f7a649125534461134d42abc078d770e9385cd"
+  },
+  {
+   "file": "2d/val32/T0.5/c002.json",
+   "sha256": "0f66d48bf895164dcedf18d893e9d931c1c4fb5a5ef2d56db729c137ad5a1d9c"
+  },
+  {
+   "file": "2d/val32/T0.5/c003_fine.npz",
+   "sha256": "d3e52f99061027f57bbb29e0259cb707d14b73a92d07e4413489a451e5cb2243"
+  },
+  {
+   "file": "2d/val32/T0.5/c003.npz",
+   "sha256": "93f955cea01139d1868b97d83822d4a643cdda08cdecb60e6e1cfa58c2de8e62"
+  },
+  {
+   "file": "2d/val32/T0.5/c003.json",
+   "sha256": "e6450def18c071935c47009179154c0c7c175b47cbd9be16e624e8146ce456a9"
+  },
+  {
+   "file": "2d/val32/T0.5/c004_fine.npz",
+   "sha256": "92d6ef9c9a6a39672cd66f4b533392332a4b34d3d8ec45c5eb15a98a1185f71d"
+  },
+  {
+   "file": "2d/val32/T0.5/c004.npz",
+   "sha256": "511b9f30bd28e651cd3b28189381ecbe84fe9e08977085c4d68cecb469617aeb"
+  },
+  {
+   "file": "2d/val32/T0.5/c004.json",
+   "sha256": "8b3e134b77fb862a8e14376e5cd1ac678154dab49ec33ae2bf20500c2d23011e"
+  },
+  {
+   "file": "2d/val32/T0.5/c005_fine.npz",
+   "sha256": "79b1d361f654cc300b45e93811d2443972f5b0d691928f9396a3fad18ed7ee92"
+  },
+  {
+   "file": "2d/val32/T0.5/c005.npz",
+   "sha256": "107e10c7b1cb68298971660bf38053aca5763b8ca053e07d8f1b3e23bf5c120c"
+  },
+  {
+   "file": "2d/val32/T0.5/c005.json",
+   "sha256": "1b2eca91f1e8406b23404a7605020238bdf62ca258a02b2a90a14f1c2085e9c2"
+  },
+  {
+   "file": "2d/val32/T0.5/c006_fine.npz",
+   "sha256": "896cabdb66bde139c63b0605260a2f6964729320985d74b84841d54be30ef4c9"
+  },
+  {
+   "file": "2d/val32/T0.5/c006.npz",
+   "sha256": "0522ab6ad6a595fbb5297ce10c91f9ae7e8557f2aaaa174dc616af9f085b79c5"
+  },
+  {
+   "file": "2d/val32/T0.5/c006.json",
+   "sha256": "fc7175988e2493abaddd32ea462c81eff8050393ca35704b1f03f0ccf5db6831"
+  }
+ ],
+ "cases": [
+  {
+   "case": 0,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.3607219371327798e-06,
+   "eps_fine": 1.3598367939335887e-06,
+   "G_R3": true,
+   "seconds": 281.8162434361875
+  },
+  {
+   "case": 1,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 4.086399910152654e-06,
+   "eps_fine": 4.08639991010419e-06,
+   "G_R3": true,
+   "seconds": 264.0612288918346
+  },
+  {
+   "case": 2,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.956326559083927e-06,
+   "eps_fine": 1.955430393457564e-06,
+   "G_R3": true,
+   "seconds": 272.41951964236796
+  },
+  {
+   "case": 3,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 4.833746007649475e-06,
+   "eps_fine": 4.833746004500151e-06,
+   "G_R3": true,
+   "seconds": 282.26540534663945
+  },
+  {
+   "case": 4,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.167723605619331e-06,
+   "eps_fine": 3.167196989898004e-06,
+   "G_R3": true,
+   "seconds": 289.4202468227595
+  },
+  {
+   "case": 5,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 9.519552439896739e-06,
+   "eps_fine": 9.513903104532831e-06,
+   "G_R3": true,
+   "seconds": 365.34522826597095
+  },
+  {
+   "case": 6,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 9.776351086857715e-07,
+   "eps_fine": 9.77527585446678e-07,
+   "G_R3": true,
+   "seconds": 273.472391362302
+  }
+ ],
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "cohort": {
+  "name": "val32",
+  "n": 32,
+  "sha256": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70"
+ },
+ "seconds": 2065.915706431493,
+ "peak_bytes": 22141048576
+}

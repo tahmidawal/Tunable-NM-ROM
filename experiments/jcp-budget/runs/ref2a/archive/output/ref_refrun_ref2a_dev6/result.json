@@ -1,0 +1,252 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "dev6",
+  "cases": [
+   0,
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "horizon": 0.5,
+  "fine": true,
+  "allow_refine": true
+ },
+ "job": {
+  "job_id": "5552268",
+  "commit": "9a7f8d28a1eefe6626023f10c690fe8470401011",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "manifest": [
+  {
+   "file": "2d/dev6/T0.5/c000_fine.npz",
+   "sha256": "44350282c86b043874d0dbdba197d8f85a31d120d73c92a3b36b739090ab5b52"
+  },
+  {
+   "file": "2d/dev6/T0.5/c000.npz",
+   "sha256": "d3813d1d4ce1a4cc47daaaa07dbf6d7934567e780907d93ddca7053a3d76dd9f"
+  },
+  {
+   "file": "2d/dev6/T0.5/c000.json",
+   "sha256": "906544672c26e5c0bd96cf5e7b06f442d51823fe6522733f7e66cea91c2177e7"
+  },
+  {
+   "file": "2d/dev6/T0.5/c001_fine.npz",
+   "sha256": "b8d609731731a806997f4c002c1196706348377d6d6b60d3e5b5df5d9f8008d7"
+  },
+  {
+   "file": "2d/dev6/T0.5/c001.npz",
+   "sha256": "0ffa4ebc587957d8e5a1ff9df064c13e38ef50f727576056be0900c650812908"
+  },
+  {
+   "file": "2d/dev6/T0.5/c001.json",
+   "sha256": "51a31e99f86fbdf9ffcde0b5dc74d9fd042703a78fcd58b7ed6263d75f3f05df"
+  },
+  {
+   "file": "2d/dev6/T0.5/c002_fine.npz",
+   "sha256": "e2bf7e2dee19e0f1bdb3eabe885d0b14f3d521fbe1117340b746e3f96dbe8102"
+  },
+  {
+   "file": "2d/dev6/T0.5/c002.npz",
+   "sha256": "769cb24c6dfd273ddb1824ae23720f4eda95762f0e06c50ef79ff1f40416a743"
+  },
+  {
+   "file": "2d/dev6/T0.5/c002.json",
+   "sha256": "fd81aa728ef58890444b28847bdb0534867aa675aff720a83196787deed940a5"
+  },
+  {
+   "file": "2d/dev6/T0.5/c003_fine.npz",
+   "sha256": "5dea9e813aaa9e9e5539b8d29d08dcc1bfc35ac38b4d32e3c3470336e5e4ad2e"
+  },
+  {
+   "file": "2d/dev6/T0.5/c003.npz",
+   "sha256": "8712997133ecc13d8be1d906397bc4b47b576dc4b732f94331dcd4265594dfb6"
+  },
+  {
+   "file": "2d/dev6/T0.5/c003.json",
+   "sha256": "518516d5bc43f74ffae586e697fa186f84cceaa3227ddc85880239793a4b19b1"
+  },
+  {
+   "file": "2d/dev6/T0.5/c004_fine.npz",
+   "sha256": "ed6e05212e91699808dbb02618c00b35a6232e6df639fb10965315c83b554bab"
+  },
+  {
+   "file": "2d/dev6/T0.5/c004.npz",
+   "sha256": "8b4eaab8709ab39d23a3688058e052c6972b6e9a80a4545df7a794767fe1e451"
+  },
+  {
+   "file": "2d/dev6/T0.5/c004.json",
+   "sha256": "0564859d02c5c4d99c6fd8a4e0e69a0d926d95c88d5fd27ff8d821b2e83fb62e"
+  },
+  {
+   "file": "2d/dev6/T0.5/c005_fine.npz",
+   "sha256": "98a167c2dbc7d1a943fd46f00311c1191dd387822cd5695e083f08b104166fdf"
+  },
+  {
+   "file": "2d/dev6/T0.5/c005.npz",
+   "sha256": "921a6e3e2220eef435dedcd26c99fa23d6752b264c04bdb44bbac2ddbb264193"
+  },
+  {
+   "file": "2d/dev6/T0.5/c005.json",
+   "sha256": "e27b5bc4c9bd6bdda4a9672d13a1cc6514696bbc82dcf25435d6561f5c63f244"
+  }
+ ],
+ "cases": [
+  {
+   "case": 0,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 1.297941396937812e-06,
+   "eps_fine": 1.297573039289284e-06,
+   "G_R3": true,
+   "seconds": 278.3167329225689
+  },
+  {
+   "case": 1,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 5.0541666912383705e-06,
+   "eps_fine": 5.054160303735771e-06,
+   "G_R3": true,
+   "seconds": 276.9261734485626
+  },
+  {
+   "case": 2,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 7.308479841697233e-06,
+   "eps_fine": 7.308479841463271e-06,
+   "G_R3": true,
+   "seconds": 346.84647995233536
+  },
+  {
+   "case": 3,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.713219538863713e-06,
+   "eps_fine": 3.709630851772815e-06,
+   "G_R3": true,
+   "seconds": 321.27305726893246
+  },
+  {
+   "case": 4,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 3.838303776132986e-06,
+   "eps_fine": 3.838047307012391e-06,
+   "G_R3": true,
+   "seconds": 281.3099956801161
+  },
+  {
+   "case": 5,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 4.947585008397493e-06,
+   "eps_fine": 4.947470845038136e-06,
+   "G_R3": true,
+   "seconds": 274.86948050837964
+  }
+ ],
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "cohort": {
+  "name": "dev6",
+  "n": 6,
+  "sha256": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a"
+ },
+ "seconds": 1812.7214590813965,
+ "peak_bytes": 21604308480
+}

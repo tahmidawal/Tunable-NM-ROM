@@ -105,21 +105,41 @@ def q1_from_evidence(prod, tight, tighter, Cs, dist, adist, cases, subset, steps
     return ok, dict(valid=valid, nonstat=ns, steps=st, anchors=a_ok, max_dist=max(dist.values()))
 
 
-def opt_ok(sm, zp=None, att=None, bn=None):
+LEGACY_NO_TERMINAL = {'smk2'}
+LEGACY = False          # A24.1: attempts that predate terminal evidence (pinned; nothing else may omit it)
+
+
+def opt_ok(sm, zp=None, att=None, bn=None, n=None, legacy=False):
     """A23/A24: the attempt satisfies the registered numerical KKT certificate: the solver's own KKT flag, both gradient
-    inequalities, and -- when the terminal solution is saved (runs after A24) -- finite positive terminal weights whose
-    count equals the reported final support and whose residual vector reproduces the reported final residual."""
+    inequalities, and the saved terminal solution: unique integer nodes inside the mesh, finite strictly positive
+    weights whose count equals the reported final support, and a residual vector reproducing the reported final
+    residual. The terminal arrays may be absent only for a pinned legacy attempt (`legacy`, LEGACY_NO_TERMINAL)."""
     k = sm.get('kkt') or {}
     ok = bool(k.get('ok') is True and fin(k.get('support_max_abs_gradient'), k.get('off_support_max_gradient'), k.get('tol'))
               and k['tol'] >= 0 and k['support_max_abs_gradient'] <= k['tol'] and k['off_support_max_gradient'] <= k['tol'])
-    if zp is not None and f'{att}~terminal~weights' in zp:
-        w = np.asarray(zp[f'{att}~terminal~weights'])
-        rv = np.asarray(zp[f'{att}~terminal~resvec'])
-        ok &= bool(w.ndim == 1 and np.all(np.isfinite(w)) and np.all(w >= 0) and int(np.sum(w > 0)) <= sm['final_support']
-                   and len(w) == sm['final_support'] and np.all(np.isfinite(rv)) and bn is not None and bn > 0
-                   and abs(float(np.linalg.norm(rv)) / bn - sm['final_relres']) <= 1e-10 * max(sm['final_relres'], 1e-300)
-                   + 1e-14)
+    have = zp is not None and f'{att}~terminal~weights' in zp
+    if not have:
+        return bool(ok and legacy)
+    w = np.asarray(zp[f'{att}~terminal~weights'])
+    nd = np.asarray(zp[f'{att}~terminal~nodes'])
+    rv = np.asarray(zp[f'{att}~terminal~resvec'])
+    ok &= bool(w.ndim == 1 and nd.ndim == 1 and len(w) == len(nd) == sm['final_support'] and np.all(np.isfinite(w))
+               and np.all(w > 0) and np.issubdtype(nd.dtype, np.integer) and n is not None
+               and np.all((nd >= 0) & (nd < n)) and len(set(nd.tolist())) == len(nd)
+               and np.all(np.isfinite(rv)) and bn is not None and bn > 0
+               and abs(float(np.linalg.norm(rv)) / bn - sm['final_relres']) <= 1e-10 * max(sm['final_relres'], 1e-300)
+               + 1e-14)
     return ok
+
+
+def optimum_bound(zp, att, kk):
+    """A24.1: an optimum checkpoint is an alias of the terminal solution (same nodes and weights)."""
+    if f'{att}~terminal~weights' not in zp:
+        return False
+    tn, tw = np.asarray(zp[f'{att}~terminal~nodes']), np.asarray(zp[f'{att}~terminal~weights'])
+    nd, w = np.asarray(zp[f'{att}~{kk}~nodes']), np.asarray(zp[f'{att}~{kk}~weights'])
+    o1, o2 = np.argsort(tn), np.argsort(nd)
+    return bool(len(tn) == len(nd) and np.array_equal(tn[o1], nd[o2]) and np.array_equal(tw[o1], w[o2]))
 
 
 def _good(t, keys=('tA1', 'tB', 'tA2')):
@@ -172,11 +192,16 @@ def main():
     lane = Path(sys.argv[3]) if len(sys.argv) > 3 else HERE
     S = json.loads((out / 'smoke.json').read_text())
     acc = {}
+    global LEGACY
+    att_name = out.resolve().parts[-3] if out.resolve().parts[-2:] == ('archive', 'output') else out.resolve().parts[-2]
+    LEGACY = att_name in LEGACY_NO_TERMINAL           # pinned by attempt name (runs/<attempt>/archive/output)
+    put_legacy = dict(attempt=att_name, legacy=LEGACY)
 
     def put(k, ok, **ev):
         acc[k] = dict(ok=bool(ok), **ev)
 
     txt = logp.read_text() if logp.exists() else ''
+    acc['provenance'] = dict(ok=True, **put_legacy)
     put('backend=gpu', 'jax_backend=gpu' in txt)
     put('disjoint', S.get('disjoint') == [True, True])
     try:
@@ -271,7 +296,8 @@ def main():
                         ok_e &= f'{a}~{kk}~weights' not in zp
                         continue
                     w, nd = np.asarray(zp[f'{a}~{kk}~weights']), np.asarray(zp[f'{a}~{kk}~nodes'])
-                    at_opt = bool(cp.get('optimum')) and sm['reason'] == 'kkt' and opt_ok(sm, zp, a, bn)     # A23
+                    at_opt = bool(cp.get('optimum')) and sm['reason'] == 'kkt' and opt_ok(sm, zp, a, bn, n, LEGACY) and \
+                        (LEGACY and f'{a}~terminal~weights' not in zp or optimum_bound(zp, a, kk))     # A23/A24.1
                     ok_e &= (w.ndim == 1 and nd.ndim == 1 and len(w) == len(nd) and np.all(np.isfinite(w)) and np.all(w > 0)
                              and np.issubdtype(nd.dtype, np.integer) and np.all((nd >= 0) & (nd < n))
                              and len(set(nd.tolist())) == len(nd)
@@ -295,7 +321,7 @@ def main():
             # A23: a target beyond a KKT-certified optimum is that optimum (stored as such, or -- in runs before A23 --
             # absent with the attempt terminated by a certified KKT stop at a support below the target)
             missing_ok = {f'k{k}' for k in (2, 4, 8, 16) if atts[sel]['checkpoints'][f'k{k}'] is None and
-                          atts[sel]['reason'] == 'kkt' and opt_ok(atts[sel], zp, sel, float(np.asarray(zp[f'{sel}~bnorm']))) and
+                          atts[sel]['reason'] == 'kkt' and opt_ok(atts[sel], zp, sel, float(np.asarray(zp[f'{sel}~bnorm'])), n, LEGACY) and
                           atts[sel]['final_support'] < k * c['rs']}
             ok_e &= all(f'k{k}' in missing_ok or e.get(f'k{k}') is not None and atts[sel]['checkpoints'][f'k{k}'] is not None and
                         e[f'k{k}']['size'] == atts[sel]['checkpoints'][f'k{k}']['size'] and
@@ -304,7 +330,8 @@ def main():
             for a, sm in atts.items():
                 dr_ = sm.get('qr_drift') or []
                 lim = any(not (fin(v) and v <= 1e-8) for v in dr_)
-                ok_e &= (sm.get('quality', 'ok') == ('limited (orthogonality)' if lim else 'ok')) if 'quality' in sm else True
+                ok_e &= (sm.get('quality') == ('limited (orthogonality)' if lim else 'ok')) if ('quality' in sm or not LEGACY) \
+                    else True                                  # A24.3: required for every post-A24 attempt
             legacy = 'terminal~weights' not in ' '.join(zp.files) if hasattr(zp, 'files') else True
             put(f'{key}|ecsw-smoke-rank', ok_e, selected=ps_['selected'], retry=need_retry, legacy_no_terminal=legacy,
                 reached={a: sm['reached'] for a, sm in atts.items()}, supports=e)

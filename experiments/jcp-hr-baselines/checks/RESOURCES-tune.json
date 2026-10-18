@@ -1,6 +1,18 @@
 {
  "source": "runs/smk2 (job 5422908, H200)",
  "model": "Resource certificate for the phase-II tuning jobs (DESIGN 12, A19.4c, A24.2/A24.4), regenerated from the smk2\nmeasurements (runs/smk2/archive/output/smoke.json, job 5422908, H200). Writes checks/RESOURCES-tune.json.\n\nModel (all inputs measured in smk2 unless marked \"model\"):\n- per-run warm seconds of the `none` arm (native) at the smoke rank r0 (N-time A-B-A triples, median of tA);\n  other ranks scale as (r/r0)^2 for r >= r0 (QR of the n x r Jacobian dominates; model) and linearly below r0 (model);\n  a certified run (prod/tight/tighter) costs CERT_FACTOR x a warm run (model, from the smk2 grid phase);\n- HR runs: the smk2 grid phase seconds per (kind, option) block divided by its 8 runs (2 cases x 2 solvers + 2 tight\n  + 2 tighter), including compilation, used per run unchanged (conservative: compilation is per block, not per run);\n- construction: smk2 basis/adequacy/adv_pod/qdeim/ecsw_states measured; the ECSW path per rank from A24.2's memory-\n  bound model (bytes / 2 TB/s effective; model) with the A16.5 retry doubling;\n- step-count factor for the 3D dt ladder: mean(steps)/steps(dt0) over the 12 options (exact);\n- contingency 1.5 on the total.\n",
+ "hard_bound": {
+  "wall_hours": {
+   "t2d256": 2,
+   "t2d1024": 5,
+   "t3d64": 12
+  },
+  "stageB_reserve": 7.5,
+  "spent": 1.512,
+  "total": 28.012,
+  "within_cap": true,
+  "note": "GPU-hours cannot exceed the wall limits; the model projections below are conditional estimates, not certified"
+ },
  "cells": {
   "t2d256": {
    "construction": {
@@ -46,7 +58,7 @@
     "ours": 600.0
    },
    "total_hours": 0.5251665642144824,
-   "certified_hours": 0.9377498463217235
+   "projected_hours": 0.9377498463217235
   },
   "t2d1024": {
    "construction": {
@@ -92,7 +104,7 @@
     "ours": 600.0
    },
    "total_hours": 2.1006662568579295,
-   "certified_hours": 3.150999385286894
+   "projected_hours": 3.150999385286894
   },
   "t3d64": {
    "construction": {
@@ -143,11 +155,11 @@
     "ours": 600.0
    },
    "total_hours": 6.537273428374478,
-   "certified_hours": 9.805910142561718
+   "projected_hours": 9.805910142561718
   }
  },
  "spent": 1.512,
- "tuning_certified": 13.894659374170335,
+ "tuning_projected": 13.894659374170335,
  "stageB_projection": 6.947329687085167,
  "projected_total": 22.353989061255504,
  "cap": 30.0,
@@ -155,7 +167,7 @@
  "walltime_request_hours": {
   "t2d256": 2,
   "t2d1024": 5,
-  "t3d64": 15
+  "t3d64": 12
  },
  "memory": {
   "smk2_device_peak_2d1024": 107181346816,

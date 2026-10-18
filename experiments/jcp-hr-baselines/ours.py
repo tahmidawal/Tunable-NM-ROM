@@ -114,3 +114,30 @@ class OursP1:
 
     def u0(self, fam, j):
         return jnp.asarray(self.P1.Q.e.initial(self.L, fam.D[j]))
+
+
+def check_assets(cfg):
+    """Pre-submission asset check (staged tree, CPU): every bank, rule, checkpoint and export the tuning job's
+    comparators load lazily is present with its pinned hash (c3common.load_bank / load_rules assert sha256)."""
+    import json
+    from pathlib import Path
+    here = Path(__file__).resolve().parent
+    out = {}
+    if cfg['d'] == 2:
+        import p1common as P1
+        assert Path(P1.T2.CKPT).exists(), P1.T2.CKPT
+        exp = json.loads((here / 'inputs' / 'p1_analysis.json').read_text())['configurations']
+        for k in cfg.get('ours', []):
+            assert all(f'dev6|{j}' in exp[k]['e0_per_case'] for j in range(6)), k
+            r = int(k.split('|')[1][1:].replace('nom', ''))
+            out[k] = P1.rule_points(P1_RULES[r])[2][:16]
+    else:
+        import c3common as C3c
+        rules = C3c.load_rules()
+        exp = json.loads((here / 'inputs' / 'speed3d_batch1_e0.json').read_text())['configs']
+        for k in cfg.get('ours', []):
+            st, rule = k.split('|')[:2]
+            bank = S3_SETTINGS[st][0]
+            out[k] = (C3c.load_bank(bank)['sha256'][:16], rule in rules, all(str(j) in exp[k]['e0'] for j in range(6)))
+            assert out[k][1] and out[k][2], (k, out[k])
+    return out

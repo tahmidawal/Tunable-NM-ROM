@@ -71,6 +71,10 @@ class Cell:
         sch_gen = ('CNR', 'central') if gen == 'central' else ('BE', 'upwind')
         with self.T(f'snapshots[{gen}]'):
             S, sinfo = BD.snapshots(self.d, self.L, fam_train, rows, scheme=sch_gen[0], adv=sch_gen[1], log=self.log)
+        return self.basis_from(S, sinfo, rmax, ranks, gen)
+
+    def basis_from(self, S, sinfo, rmax, ranks, gen):
+        """POD of a given snapshot matrix (method of snapshots, A5.2 fallback), certificate, trust radii."""
         assert rmax <= S.shape[0], f'rank {rmax} exceeds the snapshot count {S.shape[0]} (not constructible, A6.2)'
         with self.T(f'pod[{gen}]'):
             Phi, sig, dev = BD.pod(S, rmax)

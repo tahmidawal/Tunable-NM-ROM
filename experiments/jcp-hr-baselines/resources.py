@@ -65,7 +65,7 @@ def cell(c, d, ranks, r0, options_steps, n_cases=6, n_blocks_smk=None, rows_per_
     tot = (sum(v for k, v in out['construction'].items() if k != 'ecsw_paths') + sum(out['construction']['ecsw_paths'].values())
            + sum(v['none'] + v['hr'] for v in out['stageA'].values()) + sum(out['other'].values()))
     out['total_hours'] = tot / 3600
-    out['certified_hours'] = CONT * tot / 3600
+    out['projected_hours'] = CONT * tot / 3600
     return out
 
 
@@ -76,24 +76,29 @@ def main():
     c3 = cell('3d_L64', 3, R3, 256, st3, n_blocks_smk=9, rows_per_rank=102, fom_runs=768, fom_s=1.5)
     c256 = json.loads(json.dumps(c1024))                  # 2D 256^2: 1/16 of the state; 1024^2 x 0.25 is an upper bound
     c256['total_hours'] *= 0.25
-    c256['certified_hours'] = c1024['certified_hours'] * 0.25 + CONT * 0.1   # + saturation (all-step POD, 29,376 states)
+    c256['projected_hours'] = c1024['projected_hours'] * 0.25 + CONT * 0.1   # + saturation (all-step POD, 29,376 states)
     led = json.loads((HERE / 'runs/GPU-LEDGER.json').read_text())
     spent = float(led['spent_gpu_hours'])
-    tune = c256['certified_hours'] + c1024['certified_hours'] + c3['certified_hours']
+    tune = c256['projected_hours'] + c1024['projected_hours'] + c3['projected_hours']
     stageB = 0.5 * tune                                    # model: full Q1 of the Stage-B members + A-B-A pairs
-    res = dict(source='runs/smk2 (job 5422908, H200)', model=__doc__, cells=dict(t2d256=c256, t2d1024=c1024, t3d64=c3),
-               spent=spent, tuning_certified=tune, stageB_projection=stageB, projected_total=spent + tune + stageB,
+    wall = dict(t2d256=2, t2d1024=5, t3d64=12)            # A26.4 hard bound: Slurm wall limits (1 GPU each)
+    reserve_stageB = 7.5
+    bound = spent + sum(wall.values()) + reserve_stageB
+    res = dict(source='runs/smk2 (job 5422908, H200)', model=__doc__,
+               hard_bound=dict(wall_hours=wall, stageB_reserve=reserve_stageB, spent=spent, total=bound,
+                               within_cap=bool(bound <= 30.0),
+                               note='GPU-hours cannot exceed the wall limits; the model projections below are '
+                                    'conditional estimates, not certified'), cells=dict(t2d256=c256, t2d1024=c1024, t3d64=c3),
+               spent=spent, tuning_projected=tune, stageB_projection=stageB, projected_total=spent + tune + stageB,
                cap=30.0, within_cap=bool(spent + tune + stageB <= 30.0),
-               walltime_request_hours=dict(t2d256=max(2, int(np.ceil(1.5 * c256['certified_hours']))),
-                                           t2d1024=max(4, int(np.ceil(1.5 * c1024['certified_hours']))),
-                                           t3d64=max(8, int(np.ceil(1.5 * c3['certified_hours'])))),
+               walltime_request_hours=wall,
                memory=dict(smk2_device_peak_2d1024=S['2d_L1024']['phases']['qdeim_max_shape']['device_peak'],
                            note='3D peak masked by the 2D cell in smk2 (process-cumulative); measured in t3d64 (A24.4)'))
     (HERE / 'checks' / 'RESOURCES-tune.json').write_text(json.dumps(res, indent=1, default=float) + '\n')
     for k, v in res['cells'].items():
-        print(k, f"{v['certified_hours']:.2f} GPU-h certified")
+        print(k, f"{v['projected_hours']:.2f} GPU-h projected (model, not certified)")
     print(f"spent {spent:.3f} + tuning {tune:.2f} + stageB {stageB:.2f} = {spent + tune + stageB:.2f} (cap 30)")
-    print(res['walltime_request_hours'])
+    print('hard bound', res['hard_bound'])
 
 
 if __name__ == '__main__':

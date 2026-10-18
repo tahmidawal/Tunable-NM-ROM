@@ -15,6 +15,7 @@ R2, R3 = [32, 64, 128, 256, 384], [64, 128, 256, 512, 768, 1024]
 # (658 s) = 3.960 h, split evenly over the two 2D cells; 3D combined c3grid 5219449 (15,949 s) + speed3d g1-g3
 # (1.7472 + 2.4092 + 3.6294 h, whole jobs: an upper bound on their grid phase) = 12.216 h.
 A2, A3 = 3.960 / 2, 12.216
+WALL = dict(tune_2d256=2, tune_2d1024=5, tune_3d64=12)        # A26.4: Slurm wall limits (h), the hard GPU-h bound
 cfgs = dict(
     tune_2d256=dict(d=2, L=256, ranks=R2, options=OPT2, saturation=True, ours=P1_256, n_traj=None, ext_rank=512,
                     search_allocation_hours=A2),
@@ -27,5 +28,7 @@ cfgs = dict(
     tune_cpu_3d=dict(d=3, L=64, ranks=[8, 16], options=OPT3[:1] + OPT3[8:9], saturation=False, ours=S3[1:2], n_traj=12,
                      allow_cpu=True, dry=True))
 for k, v in cfgs.items():
+    if k in WALL:
+        v.update(wall_hours=WALL[k], budget_hours=WALL[k] - 0.25)
     (HERE / 'configs' / f'{k}.json').write_text(json.dumps(v, indent=1) + '\n')
     print(k, len(v['ranks']), len(v['options']), len(v['ours']))

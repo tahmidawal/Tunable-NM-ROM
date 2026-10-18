@@ -1451,3 +1451,63 @@ contingency: tuning 2D 256² 0.94, 2D 1024² 3.15, 3D 65³ 9.81 GPU-h certified;
 tuning total the lane projects 22.4 of 30 GPU-h (1.512 spent). Wall-time requests: 2 h, 5 h and 15 h. A job is
 submitted only if spent + its certified projection + the remaining projections ≤ 30; the certificate is regenerated
 from each completed tuning job before the Stage-B jobs are submitted.
+
+---
+
+## Amendment A26 (2026-10-18) — design audit 17 (WRONG) and code audit 19 (NOT READY)
+
+**A26.1 NNLS cost and memory admission (design 17 items 2, 4; code 19 items 4, 14).** A24.2's gradient traffic is
+corrected: reading $G$ ($8mN$ bytes) on each of $I$ iterations is $8mNI \approx 5.2\times10^{14}$ bytes for the
+**assumed** $I = 19{,}000$ (the bound is 40,000 per attempt), not $4.2\times10^{15}$; appends plus gradient reads total
+≈ $1.42\times10^{15}$ bytes (≈ 5 min at the H200's 4.8 TB/s peak; the projection uses an effective 2 TB/s, ≈ 12 min,
+doubled for the A16.5 retry). Refactorisations are ≈ 73 % of the listed flops; deletions, residual formation, triangular
+solves, compilation and refactor temporaries are not in the arithmetic and are measured in-job (phase timers). Nothing
+in this arithmetic is a certificate (A26.4). Memory admission (replaces A24.4's rule): after the 3D r = 1,024 path the
+**process-cumulative** device peak must be finite and ≤ 120 GB (decimal); a higher or missing value — whatever phase
+caused it — makes that rank's ECSW "not constructible (memory)"; an out-of-memory error during the path does the same
+(the phase fails, its error is recorded). The path is built after basis, advection POD and the probe basis, before any
+Q-DEIM construction.
+
+**A26.2 Evidence integrity (code 19 items 2, 3, 10, 11, 12).** (a) Offline optimum acceptance requires the saved
+terminal solution (unique in-mesh integer nodes, finite strictly positive weights, count = final support, residual
+vector reproducing the final residual) and that every optimum checkpoint equals it (alias); terminal arrays may be
+absent only for the pinned legacy attempt smk2 (`smoke_accept.LEGACY_NO_TERMINAL`, by attempt name). (b) The ECSW
+construction-quality label is stored on every ECSW configuration and is required for post-A24 attempts. (c) The tuning
+job predeclares the registered inventory (every rank × HR knob × option × solver) with statuses not_run /
+construction_failed / run_failed / complete / deferred, checkpoints each configuration and each comparator case as it
+completes, and isolates failures per solver, per comparator and per FOM case. (d) A configuration whose warm timed
+output differs from its scored output (non-finite or > 1e-12) is `timing_ok = false` and never enters an absolute-time
+or X-specific front; ours' timed output is compared with its preceding (scored) call the same way. (e) Every full-rank
+limiting-comparator solve is checked for convergence (finite residuals ≤ the Newton tolerance on every step); a failed
+solve is a failed entry, and the full E0 record is kept.
+
+**A26.3 Registered consequences implemented (code 19 items 6, 7).** Saturation (A1.3) runs before adequacy; if it fails
+at any registered rank, the all-step POD (certified on all states) replaces the 256² basis (with its trust radii and
+constructible set) before any downstream construction, and the 1024² cell is labelled "snapshot-limited". Adequacy
+(A2.2) uses the first 32 trajectories of the seeded permutation (seed 20261017) on the basis actually used. Generator
+probe runs are made only at ranks the probe basis certifies; other ranks are "construction_failed"; per-case E0 records
+and output coefficients are kept. Order of the tuning job: comparators (ours, G-ours) → construction → the HR grids
+(never deferred) → `none` at r < 256 → full-rank limiting comparator → deferrable work in the registered defer order
+(`none` at r ≥ 256, then the extension, then the probe runs), started only while elapsed < 0.85 × the job budget;
+deferred items are listed as such.
+
+**A26.4 Resource certificate restated (code 19 item 15; design 17 item 6).** The per-item projections of A25.3 are
+conditional models, not a certificate, and are relabelled "projected". The certificate is the hard bound: a 1-GPU job
+cannot spend more than its Slurm wall limit. Wall limits: tuning 2D 256² 2 h, 2D 1024² 5 h, 3D 65³ 12 h (budget for
+deferrable work = wall − 0.25 h); Stage-B reserve 7.5 h; spent 1.512 → bound 28.0 ≤ 30 GPU-h. If a tuning job is
+truncated by its limit, the unfinished configurations remain `not_run` and the cell's coverage statement says so. The
+Stage-B jobs' limits are set from the frozen Stage-B inventory and the tuning job's measured per-configuration times,
+inside the reserve (re-certified before submission).
+
+**A26.5 Stage B and picks (design 17 item 4).** A24.4 supersedes §6/A21.3's "picks frozen before the verdict job":
+Stage-B **membership** is frozen (sha256, audited) before the Stage-B job; picks are computed afterwards from that job's
+full-cohort data (A1.6) and frozen before the report. To cover every possible role candidate, the Stage-B job A–B–A
+times **every** Stage-B member that is Q1-qualified on the verdict cohort against **every** admitted X (G-ours passed in
+both jobs), not only A1.12's exploratory envelope-filtered set.
+
+**A26.6 Staging (code 19 item 8).** The M2 bank (`vendor/quad3d/inputs/model_M2/bank.pkl`) is staged; `stage.py`
+runs `ours.check_assets(cfg)` in the staged tree for the tune driver (every bank, rule, checkpoint and exported error
+the comparators load lazily, with pinned hashes).
+
+**A26.7 A19 wording.** A19.4's "design audit round 14 clean" refers to the accepted successor of round 14: the first
+later design audit returning CLEAN (or NEEDS-RESTATEMENT with no WRONG item and every restatement applied).

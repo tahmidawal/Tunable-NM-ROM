@@ -27,7 +27,7 @@ FILES = [f'{LANE}/{f}' for f in ('hrcore.py', 'rom.py', 'build.py', 'nnls.py', '
                                   'inputs/speed3d_EXPORT.json', 'inputs/speed3d_batch1_e0.json')] + \
     [f'{VQ}/qcore.py', f'{VQ}/qstudy.py', f'{VQ}/vendor/arms.py', f'{VQ}/vendor/hops.py', f'{VQ}/vendor/hfast.py',
      f'{VQ}/vendor/bkfast.py', f'{VQ}/vendor/hari_quadrature.py', f'{VQ}/inputs/rotation_R512.npz',
-     f'{VQ}/inputs/rule_q0_m1024_qrg304_reachable.npz', f'{V3}/offmesh.py', f'{V3}/qpanel.py', f'{V3}/rules/rules.npz',
+     f'{VQ}/inputs/rule_q0_m1024_qrg304_reachable.npz', f'{V3}/offmesh.py', f'{V3}/inputs/model_M2/bank.pkl', f'{V3}/qpanel.py', f'{V3}/rules/rules.npz',
      f'{V3}/vendor/burgers3d-span/common.py', f'{V3}/vendor/burgers3d-retry/tables.py',
      f'{V3}/vendor/paper-b3d/vendor/b3d_common.py', 'experiments/mr-burgers2d/engines.py',
      'experiments/mr-burgers2d/iterative_paths.py',
@@ -122,6 +122,12 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
     r_ = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env, capture_output=True, text=True)
     assert r_.returncode == 0, r_.stderr[-3000:]
     print(r_.stdout.strip())
+    if a.driver == 'tune':                         # every lazily loaded asset the configuration needs (code audit 19)
+        chk2 = (f'import json, ours; cfg = json.load(open({str(out / cfgname)!r})); print(ours.check_assets(cfg))')
+        r2 = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk2], cwd=out / LANE, env=env,
+                            capture_output=True, text=True)
+        assert r2.returncode == 0, r2.stderr[-3000:]
+        print(r2.stdout.strip()[-2000:])
     manifest = [f'{hashlib.sha256(p_.read_bytes()).hexdigest()}  {p_.relative_to(out)}'
                 for p_ in sorted(out.rglob('*')) if p_.is_file() and '__pycache__' not in str(p_)]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')

@@ -1,0 +1,24 @@
+**SUBMIT** the single staged Phase-I smoke attempt at HEAD `e1c614afc50e4a6405e810c831bf5f07c6a69052`. The round-one blocking mechanics are fixed. Full completion within the hour remains unproven and is the explicitly accepted fail-closed risk.
+
+| Item | Verdict | Evidence |
+|---|---|---|
+| Slurm resources and budget | **CORRECT** | `runs/smk1/run.sbatch:3–8`: `gpu`, one H200, 200G host memory, eight CPUs, 60 minutes. This requests at most **1 GPU-h per execution**. |
+| Environment and GPU preflight | **CORRECT** | Wrapper uses the prescribed absolute cluster venv, enables f64 and `highest`, and exits 42 unless the backend is GPU. The driver reinforces these checks. |
+| Output and cache paths | **CORRECT** | Logs, outputs, temporary files, XDG/CUDA/JAX caches and output checksums target `/cluster/tufts/paralab/tawal01/jcp-hrb/smk1`. Bytecode writes are disabled. E0’s external namespace is a read-only input. |
+| Manifest and provenance integrity | **CORRECT** | Independently hashed **49 manifest entries: zero mismatches**. All **46 provenance records** match staged sizes, hashes and HEAD commit; `COMMIT.txt` agrees. |
+| Literal equality with HEAD blobs | **NEEDS-RESTATEMENT** | **45/46 source-derived files** match byte-for-byte. The config is reserialized with an added `commit` field; removing that field gives exact semantic equality with the committed config. Generated wrapper/provenance files are manifest-bound rather than copied HEAD blobs. A13.5 acknowledges the config transformation. |
+| Frozen smoke inventory | **CORRECT** | Every staged config value checked by `smoke_accept.py:FROZEN` matches. The additional rank lists match A5.4; `pilot_support=1024` matches A11. Both dimensions retain their real-size meshes, maximal pilots, solver options and fixtures. |
+| E0 pin | **CORRECT** | Wrapper sets `JCPREF_STORE` and unsets `JCPREF_META`. Staged metadata matches HEAD and `score.py`’s pinned manifest/STATUS hashes. `check_store()` verifies the metadata location actually used by the loader. |
+| Hard driver timeout | **CORRECT** | `run.sbatch:32` sends TERM after **3,360 seconds**, then KILL after another **30 seconds**. Nonzero driver exit is recorded and does not prevent the checksum command from running. |
+| Guaranteed checksum reserve | **NEEDS-RESTATEMENT** | `wall_seconds=3300` remains a phase-admission guard, not an interrupt. The outer timeout fixes that defect, but A13.5’s “always checksummed” is too strong: after forced termination, approximately **210 seconds minus pre-driver startup time** remain before Slurm’s deadline. Checksum completion is not guaranteed. |
+| Atomic checkpoints | **CORRECT** | `smoke.py:47–54,164–169` writes JSON and array chunks to temporary files followed by `os.replace`. Interrupted writes preserve previously completed checkpoints. An interrupted phase still lacks complete acceptable evidence. |
+| Checker exit status | **CORRECT** | `smoke_accept.py:477–486` returns 0 only when `ALL.ok` is true, otherwise 1. Required missing/skipped/error phases fail acceptance. `ALL-DONE` denotes wrapper completion only; acceptance runs separately offline. |
+| Directory isolation and queue checks | **CORRECT** | `submit.sh:13–27` checks the queue before/after submission, verifies the remote manifest, serializes lane submissions and refuses an existing attempt directory. |
+| Cap enforcement scope | **NEEDS-RESTATEMENT** | Wrapper refuses at two live lane jobs or eight account jobs. Its lane-local lock cannot prevent another lane racing the account check, and it does not enforce one historical smoke total. Heartbeat reports zero expenditure and no queued jobs; this is not an independently verified scheduler ledger. |
+| Phase-I evidence coverage | **CORRECT**, with scope qualification | The checker requires real-size phases and reconstructs predicates from saved evidence. All **13 recorded CPU gates** pass and their source hashes match. “Every control at real size” retains the registered small-fixture CPU exceptions; A7.3 explicitly defers G-ours export replay to Phase II. |
+
+I would **not predict that the entire workload fits 55 minutes** from the available evidence. The substantial risks are snapshot generation, state/advection PODs and possible fallback, maximal Q-DEIM pivoting and QR, NNLS pilots, full-grid solves with anchors, derivative checks, under-sampling ladders and repeated timings. The maximal Q-DEIM QR matrices are **1,046,529 × 3,072** and **250,047 × 6,144**. All 2D work precedes 3D, leaving late 2D controls and the entire 3D cell particularly exposed.
+
+A skipped or interrupted required phase prevents Phase-I acceptance; it does not authorize another smoke or production work. Submission is justified as the one bounded attempt to demonstrate the controls, **not as evidence that they already pass**.
+
+No files changed, jobs submitted, GPU work run, or scratch created.

@@ -1867,3 +1867,18 @@ attempt's wall is 3.5 h. Staging still refuses a projection above the usable dri
 **A41.3 Order of the remaining jobs (lane cap 2, t3d64b running).** t2d256a (tuning, 2 h) next — it provides the
 saturation result the 1024² analysis requires — then the 1024² Stage-B job, then the 256² and 3D Stage-B jobs. Every
 Stage-B attempt gets a job audit.
+
+---
+
+## Amendment A42 (2026-10-18) — s2d1024a cancelled: checkpoint writes dominated the timing phase
+
+`s2d1024a` (job 5674029, H200) completed its 35 member runs on the full verdict cohort (Q1, replay ≤ 7e-16) and timed
+X 1 of 8 in 31 min per X, against ≈ 6 min of actual timed work: every A–B–A attempt rewrote the whole stageb.json
+(57 MB by then). At that rate the budget guard would have left 5 of 8 X untimed ("role incomplete"). The lane cancelled
+it at 2 h 08 min (2.13 GPU-h, collected, ledger reconciled) rather than spend its wall on an incomplete result.
+
+Fix: the full JSON is rewritten at most every 60 s and at every unit boundary (end of each phase, member group,
+member, comparator and pair); every completed case, anchor and A–B–A attempt is appended at once to an append-only
+`evidence.jsonl` (line-buffered), so a kill loses no completed unit. Nothing else changes; the Stage-B job is re-run as
+a new attempt (`s2d1024b`) on the same frozen membership with its own reservation, after a code audit of this change,
+a CPU dry run and a job audit.

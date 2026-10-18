@@ -1,17 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T20:26:57Z",
- "step": "t3d64b 5542231 RUNNING 5:43 (FOM limiting done; probe runs + extension next); s2d1024a 5674029 RUNNING 1:47 (A-B-A timing); background sacct waiter re-armed (<= 18 min)",
+ "utc": "2026-10-18T20:57:14Z",
+ "step": "s2d1024a cancelled at 2:08 (save-bound timing, A42) and collected; stageb.py throttled saves + evidence.jsonl; CPU dry Stage-B running; t3d64b 5542231 RUNNING ~6:15",
  "waiting_on": {
   "slurm_jobs": [
-   5542231,
-   5674029
+   5542231
   ],
   "codex_output": null,
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T20:45:57Z",
+ "expected_finish_utc": "2026-10-18T21:17:14Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

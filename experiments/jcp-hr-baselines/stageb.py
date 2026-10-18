@@ -99,14 +99,26 @@ def main():
                                     job=os.environ.get('SLURM_JOB_ID'), commit=cfg.get('commit')),
                phases={}, ours={}, members={}, timing={}, inventory={})
 
-    def save():
+    last_save = [0.]
+    jl = open(out / 'evidence.jsonl', 'a', buffering=1)          # A42: append-only per-unit evidence, flushed per line
+
+    def save(force=False):
+        # A42: the full JSON (tens of MB) is rewritten at most every 60 s and at every unit boundary (force=True);
+        # every completed case, anchor and timing attempt is appended to evidence.jsonl at once, so a kill loses none
+        now = time.perf_counter()
+        if not force and now - last_save[0] < 60.:
+            return
         PL.dump(out / 'stageb.json.tmp', res)
         os.replace(out / 'stageb.json.tmp', out / 'stageb.json')
+        last_save[0] = now
+
+    def ev(kind, **kw):
+        jl.write(json.dumps(dict(kind=kind, t=time.time(), **kw), default=float) + '\n')
 
     def phase(name, fn):
         t0 = time.perf_counter()
         res['active_phase'] = dict(name=name, started_unix=time.time())        # A35.4: bounds unfinished work
-        save()
+        save(force=True)
         try:
             v = fn()
             res['phases'][name] = dict(status='ok', seconds=time.perf_counter() - t0, device_peak=PL.device_peak())
@@ -116,7 +128,7 @@ def main():
             log(f'ERR  {name}: {type(e).__name__}: {e}')
             v = None
         res['active_phase'] = None
-        save()
+        save(force=True)
         return v
 
     # ---- inputs, integrity ------------------------------------------------------------------------------------------
@@ -198,6 +210,7 @@ def main():
                         np.savez(out / 'arrays' / f'X~{key.replace("|", "~")}~{t.replace("|", "~")}.npz', F=Fw)
                         XS.setdefault(key, {})[t] = Fw                             # scored output (A32.7 binding)
                         rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)   # after its array
+                        ev('ours_case', key=key, case=t, **rec['cases'][t])
                         save()
                 finally:
                     del o_, fx
@@ -211,7 +224,7 @@ def main():
             except Exception as e:  # noqa: BLE001
                 rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
                 gc.collect()
-            save()
+            save(force=True)
             log(f'   ours {key}: {rec["status"]} G-ours={rec.get("G_ours")}')
         return len(OX)
     phase('ours_pass', ours_pass)
@@ -256,10 +269,14 @@ def main():
             for k in cases:
                 tight[k] = cell.run(kind, r, dat, 'native', opt, 'tight', *ic(k))
                 ap[f'tight|{k}'] = dict(cert=tight[k]['cert'], W=tight[k]['W'])
+                ev('anchor', group=f'{kind}|{r}|{hp}|{scheme}|{dt:.8g}', level='tight', case=k, cert=tight[k]['cert'],
+                   W=np.asarray(tight[k]['W']).tolist())
                 save()                                 # A35.4: each anchor checkpointed at once
                 if k in cases[:2]:
                     tighter[k] = cell.run(kind, r, dat, 'native', opt, 'tighter', *ic(k))
                     ap[f'tighter|{k}'] = dict(cert=tighter[k]['cert'], W=tighter[k]['W'])
+                    ev('anchor', group=f'{kind}|{r}|{hp}|{scheme}|{dt:.8g}', level='tighter', case=k,
+                       cert=tighter[k]['cert'], W=np.asarray(tighter[k]['W']).tolist())
                     save()
             for m in mems:
                 solver = parse(m)[5]
@@ -269,6 +286,8 @@ def main():
                     for k in cases:                    # A32.7: per-case checkpoint
                         recs[k] = cell.run(kind, r, dat, solver, opt, 'prod', *ic(k))
                         part[k] = dict(cert=recs[k]['cert'], e0=score(k, recs[k]['fields_lat']), W=recs[k]['W'])
+                        ev('member_case', member=m, case=k, cert=part[k]['cert'], e0=part[k]['e0'],
+                           W=np.asarray(part[k]['W']).tolist())
                         save()
                     q1 = PL.q1_config(recs, tight, tighter, n0, cases[:2], cases)
                     e0 = {k: part[k]['e0'] for k in cases}
@@ -295,13 +314,13 @@ def main():
                         SCORED[m] = {t: recs[t]['fields_lat'] for t in timing}
                 except Exception as e:  # noqa: BLE001
                     res['inventory'][m] = dict(status='run_failed', reason=f'{type(e).__name__}: {e}')
-                save()
+                save(force=True)
             return True
         if phase(f'B|{kind}|{r}|{hp}|{scheme}|{dt:.8g}', grp) is None:
             for m in mems:
                 if res['inventory'][m]['status'] == 'not_run':
                     res['inventory'][m] = dict(status='run_failed', reason='anchors / construction failed')
-            save()
+            save(force=True)
 
     # ---- 3. A-B-A timing: every admitted X against every member Q1-qualified (and replayed) here --------------------
     def aba():
@@ -312,12 +331,12 @@ def main():
         for key in OX:
             for m in mem:
                 res['timing'][f'{key}||{m}'] = dict(status='not_timed')
-        save()
+        save(force=True)
         for key in OX:                                 # A35.3: one comparator object live at a time
             if time.perf_counter() - T0 > DEFER_FRAC * budget_s:
                 for m in mem:
                     res['timing'][f'{key}||{m}'] = dict(status='not_timed', reason='budget')
-                save()
+                save(force=True)
                 continue
             def time_x(key=key):                       # A37.1: comparator and every closure scoped to this call
                 o_, fx = make_x(key)
@@ -346,7 +365,10 @@ def main():
                                 chkX = lambda o, s=sX: disc_finite(o_.lattice(dict(fields=o)), s)
                                 chkB = lambda o, s=sB: disc_finite(cell.lattice(o), s)
                                 rec[t] = dict(triples=[])
-                                timed_triples(fX, fB, (ux, v), (ub, v), chkX, chkB, rec=rec[t]['triples'], save=save)
+                                def cb(pk=pk, t=t, rec=rec):          # A42: each attempt durable at once
+                                    ev('triple', pair=pk, case=t, **rec[t]['triples'][-1])
+                                    save()
+                                timed_triples(fX, fB, (ux, v), (ub, v), chkX, chkB, rec=rec[t]['triples'], save=cb)
                             ok = all(all(np.isfinite(x) and x <= TIMED_TOL for tr in rc['triples']
                                          for x in (tr['dA1'], tr['dB'], tr['dA2'])) for rc in rec.values())
                             res['timing'][pk] = dict(status='complete', cases=rec, outputs_ok=bool(ok))
@@ -362,12 +384,13 @@ def main():
                 for m in mem:
                     if res['timing'][f'{key}||{m}'].get('status') in ('not_timed', 'running'):
                         res['timing'][f'{key}||{m}'] = dict(status='run_failed', reason=f'comparator: {e}')
-                save()
+                save(force=True)
                 gc.collect()
         return len(res['timing'])
     phase('aba', aba)
     res['total_seconds'] = time.perf_counter() - T0
-    save()
+    save(force=True)
+    jl.close()
     log('done')
 
 

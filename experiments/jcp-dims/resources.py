@@ -3,8 +3,8 @@ lane's drivers). ESTIMATES, not bounds: the scheduler time limit (>= 1.5 x proje
 enforced bound; cluster/stage.py refuses a production attempt whose limit is below 1.5 x the certificate's projection or
 whose configs differ from the certified ones.
 
-Work model: the per-case cost of a 2D arm / 3D rung-spec scales with w = m * M * r (Jacobian formation, the dominant
-term of DESIGN 5), floored by the smallest measured per-case cost of the same driver. Measurements (smokes, all H200):
+Work model: dacc per case a + b w (DESIGN A7.1, w = m * M * r); dtime and d3run: linear in w from the heaviest smoke unit,
+floored by the smallest measured per-unit cost of the same driver. Measurements (smokes, all H200):
   smk2  (dacc)  rep['elapsed']['<setting>|<arm>'] / n_cases     -> per-case cost incl. tight, tighter and rho work
                 rep['elapsed']['<setting>|setup']                -> per-setting table build (max taken)
   smk2t (dtime) rep['blocks'][*]['seconds'] / (subjects x cases x (1 + reps))   -> per subject-case-rep unit
@@ -182,7 +182,7 @@ def main():
     tl = math.ceil(1.5 * total * 4) / 4
     cert = dict(attempt=a.attempt, runs=a.run, projection_hours=round(total, 4), time_limit_hours=tl, detail=det,
                 configs={r_.split(':', 1)[1]: hashlib.sha256((HERE / r_.split(':', 1)[1]).read_bytes()).hexdigest() for r_ in a.run},
-                note='estimate (linear w = m M r scaling from the heaviest smoke unit, floored); not a bound')
+                note='estimate (dacc: a + b w per case, A7.1; dtime / d3run: linear w scaling from the heaviest smoke unit, floored); not a bound')
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / f'resources-{a.attempt}.json').write_text(json.dumps(cert, indent=1) + '\n')
     print(json.dumps(cert))

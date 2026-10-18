@@ -83,9 +83,15 @@ def validate(d, new, exempt=None):
     return probs
 
 
+def base_of(att):
+    """A retry '<job>r<k>' replaces its base job's pending allowance (jcp-dims)."""
+    m = re.fullmatch(r'(.+?)r\d+', att)
+    return m.group(1) if m and m.group(1) in MANDATORY else att
+
+
 def pend(d, att):
-    """Pending core reservation excluding the attempt being submitted (A3.1)."""
-    return round(sum(v for k, v in d.get('pending_core', {}).items() if k != att), 4)
+    """Pending core reservation excluding the attempt being submitted and, for a retry, its base job (A3.1)."""
+    return round(sum(v for k, v in d.get('pending_core', {}).items() if k not in (att, base_of(att))), 4)
 
 
 def main():
@@ -108,6 +114,8 @@ def main():
                       f"{pend(d, att)} > {CAP}"); rc = 1
             else:
                 popped = d['pending_core'].pop(att, None)     # from now on a live reservation: never counted twice
+                if base_of(att) != att:                         # a retry consumes its base job's allowance
+                    popped = d['pending_core'].pop(base_of(att), popped)
                 d['jobs'].append(dict(attempt=att, job_id=None, time_limit_hours=h, state='PENDING_SUBMIT', gpu=None,
                                       elapsed_hours=None, pending_hours=popped))
         elif cmd == 'pending':             # DESIGN A3.1, A4.1, A5.1: projected time limits of not-yet-submitted

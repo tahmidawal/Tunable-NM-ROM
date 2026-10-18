@@ -139,6 +139,17 @@ def crosscheck_windows(ps_meta, ps_arr, fd_case):
     return out
 
 
+def a9_terminal(rec):
+    """A9: a case run with tight_after_refine = false whose refined triple ended 'unresolved-floor' is terminal and
+    non-rankable as a whole -- no window of it is eligible, whatever the per-window judge says."""
+    return bool(rec.get('tight_after_refine', True) is False and rec.get('refined') and rec['outcome'] == 'unresolved-floor')
+
+
+def window_eligible(rec, w_outcome, pre_ok, g3, tier, desig, xc):
+    return bool(not a9_terminal(rec) and w_outcome == 'accepted' and rec['G_R2']['passed'] and pre_ok and g3
+                and tier != 'suspended' and (not desig or xc == 'PASS'))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--run', required=True, action='append')
@@ -183,6 +194,7 @@ def main():
                     rec = dict(dim=d, cohort=m['cohort'], case=m['case'], horizon=m['horizon'], outcome=m['outcome'],
                                fine_requested=m.get('fine_lattice') is not None,
                                refined=m['refined'], tight=m['tight_used'], G_R3_flag=m.get('G_R3'), G_R3_local=g3,
+                               tight_after_refine=bool(m.get('tight_after_refine', True)),
                                judge=dict(outcome=jd['outcome'], eps_ref=jd['eps_ref'], agree=agree,
                                           windows={w: {k: v for k, v in x.items() if k != 'record'} for w, x in win.items()}),
                                fine_windows={w: (v or {}).get('outcome') for w, v in (m.get('judge_fine_windows') or {}).items()},
@@ -270,8 +282,8 @@ def main():
             g3 = (rec['G_R3_flag'] is True and rec['G_R3_local'] is not False) if rec['fine_requested'] else True
             elig[w] = dict(accepted=x['outcome'] == 'accepted', G_R2=rec['G_R2']['passed'], designated=desig, crosscheck=xc,
                            prefix=pre_ok, G_R3=g3, tier=tier,
-                           eligible=bool(x['outcome'] == 'accepted' and rec['G_R2']['passed'] and pre_ok and g3
-                                         and tier != 'suspended' and (not desig or xc == 'PASS')),
+                           a9_terminal=a9_terminal(rec),
+                           eligible=window_eligible(rec, x['outcome'], pre_ok, g3, tier, desig, xc),
                            sha256=rec['sha256'], final=rec['final'])
         rec['eligibility'] = elig
     rep['summary'] = dict(G_R1=all(x['passed'] for x in rep['G_R1']) if rep['G_R1'] else None,

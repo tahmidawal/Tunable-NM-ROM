@@ -824,3 +824,9 @@ tight tolerance; the tight re-solve of a failing **base** triple (E0's first ret
 before any case). Certificates reserve two refinement paths with a retried refined level and one tight base triple at the
 measured 20× cost per job. The non-rankable cases are listed in the report; they never enter W2/W3 verdicts (their W1
 is scored against E0 as for every case).
+
+**A9.1 (2026-10-18, audit `codex-job-a9-1`).** The eligibility rule in `anaref.py` was per window only, so an A9
+terminal case (`tight_after_refine = false`, refined, whole-case 'unresolved-floor') with an accepted W2 window would
+have been eligible. Fixed: `a9_terminal()` makes every window of such a case ineligible (recorded as `a9_terminal` per
+window); cases run before A9 keep the per-window rule. Regression: `test_anaref_a9.py` → `checks/test_anaref_a9.json`.
+`ref2r` and `ref3b` restaged on the corrected HEAD (the job code is unchanged; the fix is analysis-side).

@@ -89,6 +89,7 @@ def main():
         'non-finite time in an invalid fused repeat': lambda r, pl: next(x for x in r['fused'] if x['B'] == SA.BAD)['attempts'][0].update(t_fused=float('nan')),
         'certification lacks successor fields': lambda r, pl: [x.pop('dist_qp', None) for v in r['subjects'].values() for x in v['certification']],
         'doubled attempt identity failure hidden': lambda r, pl: r['doubled'][0]['attempts'][0].update(identity_ok=False),
+        'doubled attempt time NaN': lambda r, pl: r['doubled'][1]['attempts'][0].update(t_double=float('nan')),
         'fault not injected': lambda r, pl: [x.update(valid=True, all_hashes_ok=True, hash_ok=True, hashes_ok=True,
                                                       attempts=[dict(a, hashes_ok=True, hash_ok=True) for a in x['attempts']])
                                              for x in r['invocations'] + r['fused']],
@@ -99,7 +100,73 @@ def main():
         out = SA.accept_timing(r2, cfg, pl2)
         assert not out['all_controls_pass'], f'mutation accepted: {name}'
         print(f'ok  rejected: {name}')
+    smk1_tests()
     print('test_accept: all checks passed')
+
+
+def smk1_tests():
+    # rule trails: a selected group (rung 0 fails rollout, rung 1 passes everything) and an exhausted group
+    pop = [f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(10)]
+    chk = pop[:6]
+    ladder = ['gauss16', 'gauss24', 'gauss32']
+    g = dict(name='G', min_pass=1, arms=[dict(name='a')])
+
+    def arm(passing):
+        if not passing:
+            return dict(dist=[1e-3] * 16, valid_q=[True] * 16, valid_qp=[True] * 16, dist_check=[], valid_qpp=[], rho_max=None,
+                        rollout_pass=False, rho_pass=False, check_pass=False, passed=False, max_dist=1e-3)
+        return dict(dist=[1e-5] * 16, valid_q=[True] * 16, valid_qp=[True] * 16, dist_check=[1e-5] * 6, valid_qpp=[True] * 6,
+                    rho_max=.01, rollout_pass=True, rho_pass=True, check_pass=True, passed=True, max_dist=1e-5)
+    rung = lambda i, ok: dict(rule=ladder[i], successor=f'gauss{[24, 32, 48][i]}', check=f'gauss{[32, 48, 64][i]}',
+                              arms=dict(a=arm(ok)), n_pass=int(ok), min_pass=1, group_pass=ok)
+    sel = dict(population=pop, check_population=chk, trail=[rung(0, False), rung(1, True)], status='selected',
+               chosen=dict(main='gauss24', qp='gauss32', qpp='gauss48'))
+    exh = dict(population=pop, check_population=chk, trail=[rung(i, False) for i in range(3)],
+               status='not quadrature-qualified (ladder exhausted)', chosen=None)
+    assert SA.rule_trail_ok(g, sel, ladder, pop, chk) and SA.rule_trail_ok(g, exh, ladder, pop, chk)
+    print('ok  rule trails: selected and exhausted accepted')
+    import copy as cp
+    bad = {
+        'population differs': lambda v: v.update(population=pop[:15]),
+        'arm missing at a rung': lambda v: v['trail'][0]['arms'].clear(),
+        'rollout flag contradicts distances': lambda v: v['trail'][0]['arms']['a'].update(rollout_pass=True),
+        'check evidence missing': lambda v: v['trail'][1]['arms']['a'].update(dist_check=[]),
+        'selected rung not first passing': lambda v: v['trail'].insert(1, rung(1, True)),
+        'chosen successor wrong': lambda v: v['chosen'].update(qp='gauss48'),
+        'claimed exhaustion without full trail': lambda v: (v.update(status='not quadrature-qualified (ladder exhausted)', chosen=None),
+                                                            v['trail'].pop()),
+    }
+    for name, f in bad.items():
+        v = cp.deepcopy(sel)
+        f(v)
+        assert not SA.rule_trail_ok(g, v, ladder, pop, chk), name
+        print(f'ok  rule trail rejected: {name}')
+    # accuracy rows: configured evidence required
+    cfg = json.loads((HERE / 'configs' / 'smk1acc.json').read_text())
+    rows = []
+    exp = lambda cs: ([f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(32)]) if cs == 'all38' else \
+        ([f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(10)]) if cs == 'sub16' else [f'{a}|{b}' for a, b in cs]
+    for a in cfg['arms']:
+        for sc in a['schemes']:
+            for c in exp(a['cases']):
+                r = dict(arm=a['name'], scheme=sc, case=c, dist_tight=1e-6, seconds=1., tight_valid=True, tight_verified=False,
+                         gcert_ok=True, valid=True)
+                if c.startswith('dev6'):
+                    r.update(dist_tight_tighter=1e-8, tighter_verified=False)
+                if c in exp(a['q2_cases']):
+                    r.update(dist_qp=1e-5, rho_max=.01, qp_valid=True)
+                    if c.startswith('dev6'):
+                        r.update(dist_qp_qpp=1e-6, qpp_valid=True)
+                rows.append(r)
+    assert SA.acc_rows_ok(cfg, rows)
+    print('ok  accuracy rows accepted')
+    for name, f in {'a row missing': lambda R: R.pop(0), 'successor metric missing': lambda R: [r.pop('dist_qp', None) for r in R],
+                    'anchor distance NaN': lambda R: R[3].update(dist_tight=float('nan')),
+                    'duplicate row': lambda R: R.append(dict(R[0]))}.items():
+        R = cp.deepcopy(rows)
+        f(R)
+        assert not SA.acc_rows_ok(cfg, R), name
+        print(f'ok  accuracy rows rejected: {name}')
 
 
 if __name__ == '__main__':

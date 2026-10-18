@@ -52,6 +52,83 @@ def close(a, b, rel_=1e-9):
     return bool(np.isfinite([a, b]).all() and abs(a - b) <= rel_ * abs(b))
 
 
+def rule_trail_ok(g, v, ladder, pop, chk):
+    """A hrule group record against its config: populations, rung sequence, every configured arm at every rung with its
+    evidence, every predicate recomputed (rollout, rho, conditional check), pass counts, selection / exhaustion."""
+    try:
+        if v['population'] != pop or v['check_population'] != chk:
+            return False
+        tr_ = v['trail']
+        if not tr_ or [t_['rule'] for t_ in tr_] != ladder[:len(tr_)]:
+            return False
+        names = sorted(a['name'] for a in g['arms'])
+        for t_ in tr_:
+            if sorted(t_['arms']) != names:
+                return False
+            npass = 0
+            for a in t_['arms'].values():
+                d = np.asarray(a['dist'], float)
+                if len(d) != len(pop) or len(a['valid_q']) != len(pop) or len(a['valid_qp']) != len(pop):
+                    return False
+                roll = bool(all(a['valid_q']) and all(a['valid_qp']) and np.isfinite(d).all() and d.max() <= BAR_Q2)
+                if bool(a['rollout_pass']) != roll:
+                    return False
+                rho = roll and a['rho_max'] is not None and np.isfinite(a['rho_max']) and a['rho_max'] <= BAR_RHO
+                if bool(a['rho_pass']) != bool(rho) or (roll and a['rho_max'] is None):
+                    return False
+                dc = np.asarray(a['dist_check'], float)
+                if roll and rho:
+                    if len(dc) != len(chk) or len(a['valid_qpp']) != len(chk):
+                        return False
+                    chk_ok = bool(all(a['valid_qpp']) and np.isfinite(dc).all() and dc.max() <= BAR_Q2)
+                else:
+                    if len(dc) or len(a['valid_qpp']):
+                        return False
+                    chk_ok = False
+                if bool(a['check_pass']) != chk_ok or bool(a['passed']) != bool(roll and rho and chk_ok):
+                    return False
+                npass += int(bool(a['passed']))
+            if t_['n_pass'] != npass or t_['min_pass'] != g['min_pass'] or t_['group_pass'] != (npass >= g['min_pass']):
+                return False
+        first = next((i for i, t_ in enumerate(tr_) if t_['group_pass']), None)
+        if v['status'] == 'selected':
+            c = v['chosen']
+            return bool(first == len(tr_) - 1 and c['main'] == tr_[-1]['rule'] and c['qp'] == tr_[-1]['successor']
+                        and c['qpp'] == tr_[-1]['check'])
+        return bool(v['status'] == 'not quadrature-qualified (ladder exhausted)' and v['chosen'] is None and first is None
+                    and len(tr_) == len(ladder))
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
+def acc_rows_ok(cfg, rows):
+    """Every configured arm x scheme x case row carries its anchor and (where configured) successor evidence, finite."""
+    try:
+        dev6 = [f'dev6|{i}' for i in range(6)]
+        expand = lambda cs: ([f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(32)]) if cs == 'all38' else \
+            ([f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(10)]) if cs == 'sub16' else [f'{a}|{b}' for a, b in cs]
+        by = {(r['arm'], r['scheme'], r['case']): r for r in rows}
+        if len(by) != len(rows):
+            return False
+        for a in cfg['arms']:
+            cases, q2 = expand(a['cases']), (expand(a.get('q2_cases', 'sub16')) if a.get('qp') else [])
+            for sc in a['schemes']:
+                for c in cases:
+                    r = by[(a['name'], sc, c)]
+                    if not (np.isfinite([r['dist_tight'], r['seconds']]).all() and 'tight_valid' in r and 'tight_verified' in r
+                            and 'gcert_ok' in r and 'valid' in r):
+                        return False
+                    if c in dev6 and not (np.isfinite(r['dist_tight_tighter']) and 'tighter_verified' in r):
+                        return False
+                    if c in q2 and not (np.isfinite([r['dist_qp'], r['rho_max']]).all() and 'qp_valid' in r):
+                        return False
+                    if c in q2 and c in dev6 and a.get('qpp') and not (np.isfinite(r['dist_qp_qpp']) and 'qpp_valid' in r):
+                        return False
+        return True
+    except (KeyError, TypeError, ValueError):
+        return False
+
+
 def smk1():
     res = {}
     res['steps_complete'] = bool(all((out_dir('smk1', d_, st_) / 'COMPLETE').exists() and
@@ -105,7 +182,8 @@ def smk1():
     want_rows = sorted((a['name'], sc, f'{x[0]}|{x[1]}') for a in cfg['arms'] for sc in a['schemes']
                        for x in (([['dev6', i] for i in range(6)] + [['val32', i] for i in range(32)]) if a['cases'] == 'all38' else a['cases']))
     got_rows = sorted((r['arm'], r['scheme'], r['case']) for r in acc['rows'])
-    res['accuracy_coverage'] = dict(passed=bool(got_rows == want_rows), n=len(got_rows), expected=len(want_rows))
+    res['accuracy_coverage'] = dict(passed=bool(got_rows == want_rows and acc_rows_ok(cfg, acc['rows'])), n=len(got_rows),
+                                    expected=len(want_rows))
     # negative controls: coverage of the dev6 fixture cases and summaries recomputed from the rows
     dev6 = [f'dev6|{i}' for i in range(6)]
     b0r, urr = c['budget0']['rows'], c['under_resolved']['rows']
@@ -176,24 +254,10 @@ def smk1():
     rcfg = json.loads((HERE / 'configs' / 'smk1rule.json').read_text())
     ladder = [f'gauss{p_}' for p_ in rcfg['ladder'] if p_ <= rcfg['selectable_max']]
 
-    def trail_ok(gname, v):
-        g = [x for x in rcfg['groups'] if x['name'] == gname][0]
-        tr_ = v['trail']
-        if [t_['rule'] for t_ in tr_] != ladder[:len(tr_)]:
-            return False
-        for t_ in tr_:
-            npass = sum(bool(a['passed']) for a in t_['arms'].values())
-            if t_['n_pass'] != npass or t_['group_pass'] != (npass >= g['min_pass']):
-                return False
-            for a in t_['arms'].values():
-                full = a['rollout_pass'] and a['rho_pass'] and a['check_pass']
-                if bool(a['passed']) != bool(full) or len(a['dist']) != len(v['population']):
-                    return False
-        first = next((i for i, t_ in enumerate(tr_) if t_['group_pass']), None)
-        if v['status'] == 'selected':
-            return first == len(tr_) - 1 and v['chosen']['main'] == tr_[-1]['rule']
-        return first is None and len(tr_) == len(ladder)
-    res['rule_trails_consistent'] = bool(all(trail_ok(k, v) for k, v in ru['groups'].items()))
+    pop_ids = [f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(10)]        # rcfg population sub16, check dev6
+    assert rcfg['population'] == 'sub16' and rcfg['check'] == 'dev6'
+    res['rule_trails_consistent'] = bool(all(rule_trail_ok([g for g in rcfg['groups'] if g['name'] == k][0], v, ladder,
+                                                           pop_ids, pop_ids[:6]) for k, v in ru['groups'].items()))
     res['rule_coverage'] = bool(sorted(ru['groups']) == sorted(g['name'] for g in rcfg['groups'])
                                 and all(v['trail'] and v['status'] in ('selected', 'not quadrature-qualified (ladder exhausted)')
                                         and (v['chosen'] is None) == (v['status'] != 'selected')
@@ -323,6 +387,9 @@ def _accept_timing(r, cfg, pl):
               and close(x['drift'], x['t_single2'] / x['t_single1']) and bool(x['drift_ok']) == bool(BAND[0] <= x['drift'] <= BAND[1])
               and 1.8 <= x['ratio'] <= 2.2 and x['identity_ok'] and x['same_iterations'] and BAND[0] <= x['drift'] <= BAND[1]
               and bool(x.get('attempts')) and x['identity_ok'] == all(a['identity_ok'] for a in x['attempts'])
+              and all(np.isfinite([a_['t_single1'], a_['t_double'], a_['t_single2']]).all()
+                      and min(a_['t_single1'], a_['t_double'], a_['t_single2']) > 0
+                      and close(a_['drift'], a_['t_single2'] / a_['t_single1']) for a_ in x['attempts'])
               and x['same_iterations'] == all(a['same_iterations'] for a in x['attempts'])
               and all(x[k] == x['attempts'][-1][k] for k in ('t_single1', 't_double', 't_single2'))
               for x in dbl)

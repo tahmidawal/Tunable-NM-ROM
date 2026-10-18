@@ -84,7 +84,7 @@ def main():
         PM.suppress(out, 'r1 integrity failed')
     f = lambda x: '–' if x is None else (('yes' if x else 'no') if isinstance(x, bool) else f'{x:#.3g}'.rstrip('.'))
     md = [f"Job {out['job']} ({out['gpu']}), integrity {f(integ)}; replication only (nothing selected on this cohort).", '',
-          '| configuration | path | role | eligible | distance to ADT | scored cases | median | worst |', '|---|---|---|---|---|---|---|---|']
+          '| configuration | path | role | E-a/E-b/E-c (no anchor run) | distance to ADT | scored cases | median | worst |', '|---|---|---|---|---|---|---|---|']
     for k, v in out['roms'].items():
         md.append(f"| {k.rsplit('|', 1)[0].replace('|', ' ')} | {v['path']} | {v['role']} | {f(v['eligible'])} | {f(v['dist_worst'])} | {v['scored']} | {f(v['median'])} | {f(v['worst'])} |")
     md += ['', '| comparator | winner | winner ties-or-beats here | S replication | S validation |', '|---|---|---|---|---|']

@@ -98,7 +98,7 @@ def plots(G, PM):
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_xlabel('screening query time (s): ratio to C_old × C_old median time, H200')
-    ax.set_ylabel('median E0 error over 64 validation cases')
+    ax.set_ylabel('median E0 error, 64 validation cases\n(E0: conditional Richardson estimate)')
     ax.set_title('Route 1–2 screening: time vs accuracy (squares = comparators, stars = H2 winners)', fontsize=9)
     ax.legend(frameon=False)
     fig.tight_layout()
@@ -158,7 +158,8 @@ def plots(G, PM):
         ax.set_yscale('log')
         ax.set_xlabel('mesh L (cells per side)')
         ax.set_ylabel('warm query time (s)')
-        ax.set_title('ROM and FOM time against mesh size (m1, one H200 job)', fontsize=9)
+        ax.set_title('Prepared-input warm query time vs mesh (m1, one H200 job; mesh-free ROM, scoring-lattice outputs).\n'
+                     'Same-mesh FOM curves are NOT equal-accuracy comparisons; matched FOMs keep their own resolution.', fontsize=8)
         ax.legend(frameon=False, fontsize=6.5, ncol=2)
         fig.tight_layout()
         fig.savefig(pd / 'mesh-time.png', dpi=150)
@@ -170,6 +171,24 @@ def plots(G, PM):
 def cap_gb():
     m = re.search(r'captured during lowering \(([0-9.]+GB) total\)', next((HERE / 'runs' / 'g3' / 'archive' / 'logs').glob('*.err')).read_text())
     return m.group(1) if m else 'size not found'
+
+
+def adt_anchors():
+    """Grid ADT tight/tighter anchors (A1.4) per setting, deployed rule, (scheme, step): worst distance and validity,
+    read from the raw g1-g3 results (cached in checks/adt-anchors.json)."""
+    cp = CH / 'adt-anchors.json'
+    if cp.exists():
+        return jl(cp)
+    out = {}
+    for g in ('g1', 'g2', 'g3'):
+        res = jl(HERE / 'runs' / g / 'archive' / 'output' / 'result.json')
+        for sn, sv in res['settings'].items():
+            rule = next(iter(sv['rules']))
+            out[sn] = dict(rule=rule, job=res['job_id'], cases='0-7', bar=2.5e-5,
+                           anchors={k: dict(worst=v['worst'], tighter_valid=v['tighter_valid'])
+                                    for k, v in sv['rules'][rule].get('adt_tight_tighter', {}).items()})
+    cp.write_text(json.dumps(out, indent=1) + '\n')
+    return out
 
 
 def g2_literal():
@@ -232,7 +251,8 @@ def main():
       "`make_report.py` from the analysis JSONs. All errors are against the E0 second-order reference $R_{ST}$: "
       "*a conditional Richardson estimate (asymptotic assumption, not a rigorous bound); its cross-check rule was amended "
       "after data (E0 A10).* The study is prospectively specified conditional on Step 2's exploration (DESIGN A1). "
-      "Every timing is on one H200 type; screening ratios come from separate jobs, confirmed ratios from paired panels in one job.")
+      "Every timing is on one H200 type; screening ratios come from separate jobs, confirmed ratios from paired panels in one job. "
+      "Post-hoc labels carried forward unchanged (campaign rule): E0 A10; combined A10, A11 and the retracted A15.")
     w('')
     # ---------------- summary
     w('## Summary')
@@ -339,7 +359,7 @@ def main():
     w('')
     H14 = p1['H14'] if p1 else {k: dict(verdict=v['verdict'], ratio_screen=v['ratio_screen'], ratio_confirmed=None) for k, v in G['H1']['H14'].items()}
     rows = [[k.replace('|', ' '), f(v.get('ratio_screen')), f(v.get('ratio_confirmed')), v['verdict']] for k, v in sorted(H14.items())]
-    w('**H1.4** (cheapest eligible QN vs FS-K2, pass iff confirmed paired ratio ≤ 0.6; "rescue" = QN eligible where FS-K2 is not):')
+    w('**H1.4** (cheapest eligible QN vs FS-K2, pass iff confirmed paired ratio $\\le 0.6$; "rescue" = QN eligible where FS-K2 is not):')
     w('')
     w(table(['cell', 'screening ratio', 'confirmed ratio', 'verdict'], rows))
     w('')
@@ -401,7 +421,7 @@ def main():
             rows.append([l_, f(v.get('eligible')), f(v.get('dist_worst')), f(v.get('median')), f(v.get('median_mesh')), f(v.get('worst')),
                          f(v.get('worst_mesh')), f(v.get('b')), f(v.get('c')), v.get('status', '–'), f((v.get('K5') or {}).get('fails'))])
         w('**H3.2** mesh-free online path (qualified iff eligible against the mesh-free-initialised ADT, (b) median and worst '
-          'tie-or-beat the mesh path or exceed by ≤ 1 %, (c) no case worse by more than $\\max(2\\eta, 0.1e)$; blocked if K5 does not fire):')
+          'tie-or-beat the mesh path or exceed by $\\le 1\\,\\%$, (c) no case worse by more than $\\max(2\\eta, 0.1e)$; blocked if K5 does not fire):')
         w('')
         w(table(['label', 'eligible', 'distance to ADT', 'median mf', 'median mesh', 'worst mf', 'worst mesh', '(b)', '(c)', 'status', 'K5 (coarse rule) fails'], rows))
         w('')
@@ -453,6 +473,16 @@ def main():
         w(f"G5 (tables at n = 65 equal Step 2's) and K7 (n = 66 differs): " + '; '.join(
             f"{k}: A_rel {f(v['A_rel'])}, K7_rel {f(v['K7_rel'])}, gate {f(v['gate'])}" for k, v in m1['G5'].items()) + '.')
         w('')
+        md_ = jl(CH / 'modes-diff.json')
+        if md_:
+            rows = [[Rp, v['M_frozen']] + [f"{d['M']} / {d['symmetric_difference']}" for d in v['per_L'].values()] for Rp, v in md_['by_Rp'].items()]
+            w(f"Test-mode lists in m1 follow the **{md_['policy']}**: at every mesh the $4R'$ lowest discrete-Laplacian modes of that "
+              'mesh, completed to the end of the eigen-shell. Per $R\'$: $M$ at each mesh and the size of the symmetric difference '
+              f"against the frozen list taken at $n = {md_['frozen_reference_n']}$ (`modes_diff.py`). No fixed-mode panel was run, so the "
+              'flat-cost result (H4.1) is a statement about this deployment policy, not about a fixed test space.')
+            w('')
+            w(table(["R'", 'M frozen (n = 65)'] + [f'L={L}: M / sym. diff.' for L in next(iter(md_['by_Rp'].values()))['per_L']], rows))
+            w('')
         rows = []
         for Ls, o in m1['per_L'].items():
             for l_, r in o['rom'].items():
@@ -466,7 +496,7 @@ def main():
         Lk = sorted(int(x) for x in m1['per_L'])
         rows = [[l_, *[(f(v['seconds'][str(Lx)] * 1e3) if v['seconds'].get(str(Lx)) else '–') for Lx in Lk], f(v['max_over_min']), v['verdict']]
                 for l_, v in m1['H41'].items()]
-        w('**H4.1** flat ROM cost (pass iff max/min of the warm query time over meshes ≤ 1.25):')
+        w('**H4.1** flat ROM cost (pass iff $\\max/\\min$ of the warm query time over meshes $\\le 1.25$):')
         w('')
         w(table(['ROM'] + [f'L={x} (ms)' for x in Lk] + ['max/min', 'verdict'], rows))
         w('')
@@ -510,7 +540,7 @@ def main():
             r = f(u['speedup']) + (' ✓' if u.get('reaches_2x') else '')
             return r + (f" (upper bound; unresolved: {', '.join(u['unresolved_families'])})" if u.get('unresolved_families') else '')
         rows = [[l_] + [cell(c[x]) for x in ('UB', 'UC', 'CC', 'PS')] + [ucell(c['union'])] for l_, c in hc['cells'].items()]
-        w(f"**H-comp cells (V3-5) at the largest mesh L = {hc['L']}** (✓ = matched there and ≥ 2×; the matched FOM keeps its "
+        w(f"**H-comp cells (V3-5) at the largest mesh L = {hc['L']}** (✓ = matched there and $\\ge 2\\times$; the matched FOM keeps its "
           "own resolution, the ROM runs at this mesh, and 'matched' is re-checked against this mesh's ROM errors):")
         w('')
         w(table(['ROM', 'upwind/BE', 'upwind/CN-R', 'central/CN-R', 'spectral', 'union'], rows))
@@ -518,7 +548,7 @@ def main():
         yes = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('reaches_2x')]
         no = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('reaches_2x') is False]
         nm = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('state') == 'no ladder match']
-        w(f"Cells reaching ≥ 2× at L = {hc['L']}: {', '.join(yes) or 'none'}. Matched cells below 2×: {', '.join(no) or 'none'}. "
+        w(f"Cells reaching $\\ge 2\\times$ at L = {hc['L']}: {', '.join(yes) or 'none'}. Matched cells below 2×: {', '.join(no) or 'none'}. "
           f"No ladder member as accurate as the ROM (nothing claimed for these cells; a FOM outside the ladder would be needed): {', '.join(nm) or 'none'}. "
           "Against the union of families (the best validated FOM): " + '; '.join(
               f"{l_} {f(c['union']['speedup'])}×" for l_, c in hc['cells'].items()) + '.')
@@ -557,8 +587,8 @@ def main():
         rr = R1['roms']
         inel = [k.rsplit('|', 1)[0] + f" ({v['path']})" for k, v in rr.items() if v['eligible'] is False]
         lost = [k for k, v in R1['foms'].items() if v['still_ties_or_beats'] is False]
-        w(f"Summary: {sum(v['eligible'] is True for v in rr.values())} of {len(rr)} frozen configuration/path entries are "
-          f"eligible on this cohort; not eligible: {', '.join(inel) or 'none'}. Comparator winners still tie-or-beat their "
+        w(f"Summary: {sum(v['eligible'] is True for v in rr.values())} of {len(rr)} frozen configuration/path entries pass "
+          f"E-a/E-b/E-c on this cohort (no tight/tighter anchor run here, so this is not a fresh Q1 certificate); fail: {', '.join(inel) or 'none'}. Comparator winners still tie-or-beat their "
           f"comparator: {sum(v['winner_ties_or_beats'] is True for v in R1['comparators'].values())} of {len(R1['comparators'])}; "
           'replication speed-ups ' + '; '.join(f"{c} {f(v['S_replication'])}× (validation {f(v['S_validation'])}×)" for c, v in R1['comparators'].items())
           + f". Matched FOMs that no longer tie-or-beat their ROM here: {', '.join(lost) or 'none'}. Replication does not "
@@ -581,7 +611,7 @@ def main():
     w('- Resource certificates were estimates, not bounds: ' + '; '.join(under) + '.')
     w('- Retracted / corrected during this lane: the A9 G2 attribution (corrected in A10); the screening wording "all replay '
       'labels mixed" (actual: ' + ', '.join(f'{labs.count(x)} "{x}"' for x in sorted(set(labs))) + '); the m1 FOM calibration population '
-      'at L ≥ 256, generated as cases 0–1, corrected to cases 0–3 before submission (A9).')
+      'at $L\\ge256$, generated as cases 0–1, corrected to cases 0–3 before submission (A9).')
     w('')
     # ---------------- audits
     w('## Audits')
@@ -602,13 +632,22 @@ def main():
         ('FSP', 'FS with two extra initial-guess candidates (cubic, IMEX).'),
         ('QN-k', 'quasi-Newton with exact gradient and a Gauss–Newton matrix refreshed every k steps (∞ = only when forced).'),
         ('ADT', 'the verified adaptive tight solve of the same discrete problem; the solver-distance comparator.'),
-        ('eligible (Q1)', 'every run valid, certified non-stationary steps ≤ 1 % pooled, lattice distance to ADT ≤ 2.5e-4 on every case, ADT tight/tighter ≤ 2.5e-5.'),
+        ('eligible (Q1)', 'every run valid (E-a); certified non-stationary steps at most 1 % of pooled steps (E-b; a step is non-stationary if its fresh-Jacobian stationarity ratio exceeds 1e-3); lattice distance to the ADT solve at most 2.5e-4 on every case (E-c); and the ADT tight/tighter anchor agreement at most 2.5e-5 on cases 0–7 (grid: checked per setting at its deployed rule for each scheme and step, numbers in EXPORT `q1_anchors`). On the replication cohort only E-a/E-b/E-c are recomputed (no anchor run): not a fresh Q1 certificate.'),
+        ('M', "number of sine test functions (the 4R' lowest discrete-Laplacian modes, completed to the end of the eigen-shell)."),
+        ('LSPG', 'least-squares Petrov–Galerkin: the ROM minimises the residual tested against the M sine modes.'),
+        ('CN-R', 'Crank–Nicolson with Rannacher start-up steps (FOM time stepping).'),
+        ('ETDRK4', 'fourth-order exponential time-differencing Runge–Kutta (the pseudo-spectral FOM).'),
+        ('G2 … G8', 'consistency gates: G2 certified vs recorded stationarity ratio; G3 profile components sum to the fused query within 15 %; G4 batched equals single queries; G5 mesh-65 tables equal Step 2\'s; G6 FD port equals E0; G7 PS port; G8 lattice metric equals Step 2\'s.'),
+        ('K1 … K10', 'controls that must fail (DESIGN §7, A1.10): K1 FS-K1 CN 2.5Δt₀ ineligible; K2 predictor-only QN ineligible; K3 wrong gradient exceeds the distance bar; K4 scoring swap/shift changes the score; K5 coarse-rule projection fails H3.2; K6 wrong-viscosity batch fails G4 (K6+ a pure permutation passes); K7 mesh-66 tables differ; K9 distance classifier; K10 FOM matcher rejects synthetic entries. Not to be confused with K2 of the governing plan.'),
+        ('η (ε_ref)', 'per-case reference uncertainty of E0 (conditional Richardson estimate).'),
+        ('scored cases', 'cases with a finite E0 score; no median or worst is reported from a partial population.'),
         ('E0, ε_ref (η)', 'the second-order reference store and its per-case uncertainty estimate.'),
-        ('median / worst', 'median and maximum over the ranked validation cases of the max-over-output-times relative error.'),
-        ('ties-or-beats', 'not resolved as worse: median(e_a − η) ≤ median(e_b + η), same for the maximum.'),
+        ('median / worst', 'median and maximum, over the ranked (reference-eligible) cases of the cohort and case subset named in that table, of the max-over-output-times relative error on the scoring lattice.'),
+        ('ties-or-beats', 'not resolved as worse: $\\mathrm{median}(e_a-\\eta)\\le\\mathrm{median}(e_b+\\eta)$, and the same for the maximum.'),
         ('screening ratio', 'median paired time ratio to C_old inside each grid job.'),
-        ('confirmed', 'from a direct A–B–A panel A = comparator, B = selected configuration, in one job: 8 cases × 3 repetitions '
-                      'for H1.4/H2; 4 cases × 2 repetitions for the route-4 matched panels (A2.7(a)).'),
+        ('confirmed', 'from a direct A–B–A panel in one job. H1.4/H2: A = comparator (or FS-K2 / B*), B = selected configuration, '
+                      '8 cases × 3 repetitions, speed-up = 1 / ratio. Route 4: A = ROM, B = FOM, 4 cases × 2 repetitions (A2.7(a)), '
+                      'speed-up = ratio = FOM time / ROM time.'),
         ('prepared-input latency', 'warm query time with the inputs already on the device in each method\'s own format; preparation is reported separately.'),
         ('C_old, C_W768, C_W1024', 'comparators: the deployed BE configurations of M2_512, W768, W1024.'),
         ('W*, B*', 'H2 winner (cheapest eligible configuration that ties-or-beats C) and best BE configuration doing so.'),
@@ -651,6 +690,12 @@ def main():
                                                    for fk, fv in o['fom'].items()} for L_, o in m1['per_L'].items()},
                         rom_per_mesh={L_: {l_: {x: y for x, y in r.items() if x not in ('e', 'eta', 'ranked_ids')} for l_, r in o['rom'].items()}
                                       for L_, o in m1['per_L'].items()})
+    ex['q1_anchors'] = adt_anchors()
+    ex['q1_scope_note'] = ('grid Q1 anchors are setting-wide at the deployed rule per (scheme, step); r1 eligibility is E-a/E-b/E-c '
+                           'only (no tight/tighter run on 923901), not a fresh Q1 certificate')
+    md_ = jl(CH / 'modes-diff.json')
+    if md_:
+        ex['m1_mode_policy'] = md_
     if R1:
         ex['r1'] = {k: v for k, v in R1.items() if k != 'markdown'}
     (HERE / 'runs' / 'EXPORT.json').write_text(json.dumps(ex, indent=1, default=float) + '\n')

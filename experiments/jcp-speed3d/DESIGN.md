@@ -792,3 +792,17 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   (setting, rule, path, scheme, step), so their ADT rows would have been duplicated and the analyzer's exact-population
   check would have made 44 eligibilities unavailable. The ADT run is now cached per (setting, rule, path, ADT spec) and
   reused for each configuration's own distance. No frozen configuration is duplicated. r1 restaged after this change.
+
+---
+
+## Amendment A27 (2026-10-18; `audits/codex-report-1.md`: Part A (r1 results) READY, Part B (report) NOT READY)
+
+* Report and export: grid Q1 anchors (ADT tight/tighter worst distance per setting, deployed rule, scheme and step) are
+  exported (`q1_anchors`, scope noted); replication eligibility is labelled E-a/E-b/E-c only (no anchor run on 923901,
+  not a fresh Q1 certificate); the campaign post-hoc labels (E0 A10; combined A10, A11, retracted A15) are carried in the
+  status line; m1's mode lists are labelled "deployment policy (mode set varies with mesh)" with $M$ and the symmetric
+  difference against the frozen $n=65$ list per mesh (`modes_diff.py` → `checks/modes-diff.json`); glossary completed
+  (M, LSPG, CN-R, ETDRK4, gates, controls, η, scored cases, cohort-specific median/worst, route-4 panel roles); prose
+  inequalities in LaTeX; plot titles/labels carry the E0 and contract qualifications.
+* Part A note: the CPU regeneration of the 923901 cohort table does not reproduce the archived GPU table hash bitwise
+  (case 26 viscosity differs by 1.4e-17); the scorer's initial-field identity checks pass. Recorded, not blocking.

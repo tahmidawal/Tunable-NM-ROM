@@ -617,3 +617,22 @@ K9, K3, evidence) apply to H1 verdicts and to FOM matching exactly as to H2 sele
 * **Budget.** Spent 8.91 + central projections (7.04 + 10.20) = 26.15 ≤ 34 GPU-hours (the ledger rule); with the ×1.5
   headroom it is 34.8, above the cap, so p1/m1 are monitored with `sacct` and the r1 replication (first in the A7 defer
   order) is submitted only if spent + its certified projection ≤ 34 after p1/m1.
+
+---
+
+## Amendment A11 (2026-10-18; dispositions of `audits/codex-code-7.md`, NOT READY, on the post-processing code; before any p1/m1 output is read)
+
+Fixed (honest-failure paths): panels now check the A subject and the exact cases × repetitions population, and recompute
+every ratio and drift from the raw times; scores must cover every case and be finite, otherwise "unavailable"; E-b counts
+recomputed from the certified ratios; G3 only on a valid profile panel; H3.2 qualification blocked when K5 does not fire
+(A1.10) and needs the rank/condition evidence of both rules; batching throughput recomputed from the raw seconds, G4 from
+the distance maximum, and the 2× bar needs usable B = 1 and B = 16 records (missing = unavailable); reduced-rule ADT needs
+complete validity arrays and gates H2 for a reduced-rule finalist; H4.1 and H4.2 use valid panels only and H4.2 only
+same-mesh subjects; per-mesh matching (A6) needs that mesh's ROM eligibility and scores; family states are three-valued
+(matched / no ladder match / unavailable), the union is taken over matched cells only, and K2 is three-state
+(fires / does not fire / undetermined); an `acceptance` block per job gates every verdict (A10), the report's final status
+and the freeze; the freeze writes r1 and itself atomically, refuses unaccepted analyses, and now includes the H1.4 pair
+configurations (accuracy replication only); `project_rep` counts burn-ins and warm-ups; result-dependent literals in the
+report (warning size, spectral resolution, replay counts, configuration count) are read from the data.
+Noted, not fixed (A5: need fabricated files): in-job output hashes are not retained, so `hashes_ok` is taken from the job;
+consistency of `fom-match.json` with f1 is established by its own audits (select-1..3, results-1..3).

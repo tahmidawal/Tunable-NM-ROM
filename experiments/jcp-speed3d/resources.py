@@ -233,8 +233,10 @@ def project_rep(cfg, smoke):
             tot += 120 + nc * (t['run'] + t['cert'] + ta['run'])
     for fk in b.get('foms', []):
         tot += 60 + nc * fsec[fk]
+    burn = cfg['timing']['burn']
     for la, lb in b.get('confirm', []):
-        tot += b['confirm_cases'] * b['confirm_reps'] * 3 * max(run[la]['run'], run[lb]['run'])
+        t_ = max(run[la]['run'], run[lb]['run'])                      # smoke run time per case (one query)
+        tot += b['confirm_cases'] * b['confirm_reps'] * 3 * (t_ + burn) + 2 * b['confirm_cases'] * t_   # A-B-A + burns + warm-ups
     return 2 * tot / 3600, dict(n_roms=len(b['roms']), n_foms=len(b.get('foms', [])))
 
 

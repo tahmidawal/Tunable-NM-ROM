@@ -577,3 +577,24 @@ K9, K3, evidence) apply to H1 verdicts and to FOM matching exactly as to H2 sele
   immediately before the W1024 `REPLAY` line, i.e. by the H1.1 replay (`replay.py`, jitted lambdas closing over the
   stepper tables). The replay is untimed and diagnostic; the timed panels run after it with their own jitted calls.
   It is therefore not expected to affect any timing or selection; p1/m1 contain no replay.
+
+---
+
+## Amendment A9 (2026-10-17; dispositions of `audits/codex-results-1.md`, verdict NOT READY)
+
+* **m1 calibration population (WRONG → fixed).** `select_s3.py` had written `mesh.calib_large = [0, 1]` for the FOM
+  tolerance qualification at L = 256, 384; A1.9/A2.5 require cases 0–3 at every mesh. Fixed to `[0, 1, 2, 3]`; `configs/m1.json`
+  regenerated; certificate 10.20 h projected (15.3 h ×1.5, allocation 24 h).
+* **G2 (NEEDS-RESTATEMENT → restated, not repaired).** Recomputed from the raw rows: G2 holds on 288,929 of the 288,944
+  fixed-phase FS steps of g1–g3 and **fails literally on 15** (g2: 5, all W768 lat32768 FS-K2 BDF2 Δt = 0.01; g3: 10, W1024
+  lat65536 FS-K2 CN). On every one of them both the certified and the recorded ratio are ≤ 3.34e-12 and they differ by
+  ≤ 1.89e-12, i.e. the absolute floor $10^{-12}$ of the gate sits at the rounding level of $\gamma$ at $R'\ge768$. Both
+  values are nine orders of magnitude below the stationarity threshold $10^{-3}$, so no step's classification changes.
+  E-b uses the certified (fresh-Jacobian) $\gamma$ only, so no eligibility depends on the recorded value. Reported as
+  "G2 failed literally on 15 / 288,944 steps at $\gamma\le3.4\cdot10^{-12}$; classification unaffected", never as "passed".
+* **H1.1 wording.** The replay labels are 71 "mixed" and 1 "baseline already stationary" (W256 case 5), not "all mixed";
+  in each of the 71, K ≤ 4 extra sweeps and trust × 10 both reach stationarity and the damping reset does not. Reports
+  use these counts.
+* **Spectral observation, screening level.** Confirmed by the audit at screening level: PS N16 Δt = 0.025 (4.06 ms median
+  warm time, E0 median 4.2e-4, worst 2.6e-2) matches every selected ROM on median and worst. Timings are from separate
+  H200 jobs; the claim is restated from the paired m1 `match|<label>` panels.

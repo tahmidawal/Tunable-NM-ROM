@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:03:02Z",
- "step": "code audit 23 READY (tuning jobs); staged t3d64a (H200, 12 h) and t2d1024a (H200, 5 h), reservations in ledger (18.512 + 7.5 reserve); job audit 1 running; 2D dry chain running",
+ "utc": "2026-10-18T13:05:35Z",
+ "step": "job audit 1 DO-NOT-SUBMIT (bytecode in bundles) -> fixed; job audit 2 running; then submit t3d64a + t2d1024a",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-job-1.md",
+  "codex_output": "audits/codex-job-2.md",
   "codex_pid": [
-   2619817
+   2629417
   ],
   "local_pid": 2584678
  },
- "expected_finish_utc": "2026-10-18T13:43:02Z",
+ "expected_finish_utc": "2026-10-18T13:35:35Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

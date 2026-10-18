@@ -474,7 +474,9 @@ def main():
               if acc('CTRL#S#tight', 'ad|LSPG|BDF2|0.025|tight', j) else None for i, j in enumerate(s0i)]
         out['controls']['C_S'] = dict(dist=ds, fired=bool(sum(x is not None and x > TAU for x in ds) > len(ds) / 2),
                                       fired_any=bool(sum(x is not None and x > TAU for x in ds) >= 1))
-        out['controls']['G_Q'] = res['controls'].get('G_Q')
+        gq = [g for r_ in res['rows'] if r_['tag'] == 'CTRL#S#q0' for g in (r_.get('gam_cert') or [None])]
+        fr = (sum(not (g is not None and np.isfinite(g) and g <= 1e-3) for g in gq) / len(gq)) if gq else None
+        out['controls']['G_Q'] = dict(fraction=fr, n=len(gq), fired=bool(fr is not None and fr > .01))      # recomputed
         raised = {}                                      # C-score on the production loader (identity checks inside it)
         other = cases[-1] if len(cases) > 1 else cases[0] + 1
         for nm, kw in (('case_swap', dict(j=cases[0], expect_case=other, time_tag=A2.TIME_TAG)),

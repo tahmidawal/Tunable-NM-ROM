@@ -36,11 +36,15 @@ def main():
     out = arc / 'output'
     man = arc / 'OUTPUTS.sha256'
     logs = '\n'.join(p.read_text() for p in (arc / 'logs').glob('*.out'))
+    errs = '\n'.join(p.read_text() for p in (arc / 'logs').glob('*.err'))
+    both = logs + '\n' + errs
     rows = []
     add = lambda name, kind, ok, detail=None: rows.append(dict(name=name, kind=kind, passed=bool(ok), detail=detail))
     add('jax_backend=gpu', 'gate', 'jax_backend=gpu' in logs and 'jax_backend=cpu' not in logs)
     add('ALL-DONE', 'gate', 'ALL-DONE' in logs)
-    add('no captured-constants warning', 'gate', 'constants were captured' not in logs)
+    add('no captured-constants warning (stdout and stderr)', 'gate', 'constants were captured' not in both)
+    add('no Traceback / OOM / Killed in either stream', 'gate', not any(t in both for t in ('Traceback', 'RESOURCE_EXHAUSTED',
+                                                                                         'Out of memory', 'Killed')))
     add('every step COMPLETE', 'gate', all((d / 'COMPLETE').exists() for d in out.iterdir() if d.is_dir()))
     ra = HERE / 'checks' / f'refs-{a.attempt}.json'
     run(['anaref.py', '--run', str(out), '--out', str(ra)])
@@ -49,7 +53,8 @@ def main():
     if a.dim == 2:
         add('G-R1 (E0 reproduction, T = 0.25)', 'gate', s['G_R1'], R['G_R1'])
     add('G-R2 (final triple, first six outputs vs E0)', 'gate', s['G_R2'], [c['G_R2'] for c in R['cases']])
-    add('G-R3 (fine vs lattice shared nodes; flag and local recomputation)', 'gate', s['G_R3'])
+    add('G-R3 (fine vs lattice shared nodes; flag and LOCAL recomputation for every case)', 'gate',
+        s['G_R3'] and s['G_R3_local_all'])
     add('judge recomputed offline agrees (whole run and windows)', 'gate', s['judge_agree'])
     add('C-R1 (first-order ladder fails order, prerequisites true)', 'control', s['C_R1'], R['x1'])
     refdir = next(out.glob('ref_refrun_*_ref'))

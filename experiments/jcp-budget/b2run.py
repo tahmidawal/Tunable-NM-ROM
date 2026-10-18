@@ -505,19 +505,23 @@ def run_controls(cfg, rep, bank, st, U0, w0ls, cases, cid, out, save):
                               prod_rerun_bitwise=bool(np.array_equal(np.array(Ws['prod2']), np.array(Ws['prod']))))
     # G-Q: certifier controls (premature exit must be detected), LSPG and GAL, and the wrong-table guard
     nl = st.q('LSPG')['nl']
+    GQE = {}
     for form, scheme in (('LSPG', 'CNR'), ('GAL', 'CN')):
         S = B.steps_keep(DT0, .25)
         g_, t_ = P.tol_of(form, 'prod')
         sch = BC.sched(scheme, DT0, g_, t_)
         cert = BC.make_certifier(nl, st.Rp) if form == 'LSPG' else QC.make_gal_certifier(nl, st.Rp)
         nc, tot = 0, 0
+        CE = []
         for i in ids[:2]:
             u0, nu, n0, _ = U0[i]
             r = B.run_corner(st, dict(role='main', form=form, scheme=scheme, dt=DT0, level='prod', init='deployed'), u0, nu,
                              nrec=S + 1, budget=0)
             o = np.asarray(cert(r['stats']['states'], nu, st.data[('main', form)], sch)[0])
+            CE.append(o)
             nc += int(np.sum(~(o <= (GAMMA if form == 'LSPG' else QC.ETA_BAR))))
             tot += len(o)
+        GQE[form] = np.array(CE)                                  # the certificate evidence, recomputed offline (code audit 3)
         res[f'GQ_budget0_{form}'] = dict(noncertified=nc, steps=tot, fraction=nc / tot, fired=bool(nc / tot > .01))
     saved = st.data[('main', 'LSPG')]
     st.data[('main', 'LSPG')] = dict(saved, lam=saved['lam'] * (1 + 1e-6))
@@ -527,6 +531,8 @@ def run_controls(cfg, rep, bank, st, U0, w0ls, cases, cid, out, save):
     except ValueError as e_:
         res['GQ_wrong_table'] = dict(raised=True, msg=str(e_))
     st.data[('main', 'LSPG')] = saved
+    np.savez_compressed(out / 'CTRL_gq.npz', cert_LSPG=GQE['LSPG'], cert_GAL=GQE['GAL'], gamma_bar=GAMMA, eta_bar=QC.ETA_BAR,
+                        wrong_table_raised=bool(res['GQ_wrong_table']['raised']))
     rep['controls'] = res
     save()
 

@@ -512,9 +512,16 @@ def controls(run, res, refs):
                        prod_rerun_bitwise=ctl.get('b2_controls', {}).get('prod_rerun_bitwise'),
                        offline_bitwise=bool(np.array_equal(z['sham'], z['S_prod']) and np.array_equal(z['S_prod2'], z['S_prod'])))
     out['G_B1']['passed'] = bool(out['G_B1']['offline_bitwise'] and out['G_B1']['sham_rule_bitwise'] and out['G_B1']['prod_rerun_bitwise'])
-    out['G_Q'] = {k: v for k, v in ctl.items() if k.startswith('GQ')}
-    out['G_Q']['fired'] = bool(all(v.get('fired') for k, v in ctl.items() if k.startswith('GQ_budget0')) and
-                               ctl.get('GQ_wrong_table', {}).get('raised'))
+    gq = run / 'CTRL_gq.npz'                     # recomputed from the certificate evidence; missing evidence fails
+    if gq.exists():
+        zg = np.load(gq)
+        fl = float(np.mean(~(np.asarray(zg['cert_LSPG']) <= float(zg['gamma_bar']))))
+        fg = float(np.mean(~(np.asarray(zg['cert_GAL']) <= float(zg['eta_bar']))))
+        out['G_Q'] = dict(fraction_LSPG=fl, fraction_GAL=fg, wrong_table_raised=bool(zg['wrong_table_raised']),
+                          fired=bool(zg['cert_LSPG'].size and zg['cert_GAL'].size and fl > .01 and fg > .01 and
+                                     bool(zg['wrong_table_raised'])))
+    else:
+        out['G_Q'] = dict(fired=False, note='no certificate evidence')
     # C-score on the actual scoring path (score_e0 / load_e0): each mismatch must raise
     c0 = ids[0]
     coh, cc = c0.split('|')

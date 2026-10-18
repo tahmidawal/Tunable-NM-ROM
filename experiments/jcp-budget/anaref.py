@@ -95,8 +95,11 @@ def judges(arr, meta):
         idx = [0] + list(range(a, b + 1))
         jw = V.judge([dict(l, lat=l['lat'][idx]) for l in lv], t0, nu)
         stored = (meta.get('judge_windows') or {}).get(w, {})
-        win[w] = dict(outcome=jw['outcome'], eps=jw['eps_ref'], record=jw, stored_outcome=stored.get('outcome'),
-                      agree=bool(jw['outcome'] == stored.get('outcome')))
+        se, re_ = stored.get('eps_ref'), jw['eps_ref']
+        eps_ok = (se is None and re_ is None) or (se is not None and re_ is not None and np.isfinite(se) and
+                                                  abs(se - re_) <= 1e-12 * max(abs(re_), 1e-300))
+        win[w] = dict(outcome=jw['outcome'], eps=re_, stored_eps=se, record=jw, stored_outcome=stored.get('outcome'),
+                      agree=bool(jw['outcome'] == stored.get('outcome') and eps_ok))
     return jd, agree, win
 
 
@@ -178,6 +181,7 @@ def main():
                     jd, agree, win = judges(z, m)
                     g3 = g_r3_local(js, z, m, d)
                     rec = dict(dim=d, cohort=m['cohort'], case=m['case'], horizon=m['horizon'], outcome=m['outcome'],
+                               fine_requested=m.get('fine_lattice') is not None,
                                refined=m['refined'], tight=m['tight_used'], G_R3_flag=m.get('G_R3'), G_R3_local=g3,
                                judge=dict(outcome=jd['outcome'], eps_ref=jd['eps_ref'], agree=agree,
                                           windows={w: {k: v for k, v in x.items() if k != 'record'} for w, x in win.items()}),
@@ -191,10 +195,15 @@ def main():
                     rep['cases'].append(rec)
                     fd[(d, m['cohort'], m['case'], m['horizon'])] = dict(u3=np.asarray(z[m['final'][2]]), windows=win,
                                                                        levels=final_levels(z, m), eps_t=jd['eps_t'])
-            elif mode == 'x1':
-                for x in res.get('x1', []):
-                    ch = x['checks']
-                    rep['x1'].append(dict(dim=d, case=x['case'], outcome=x['outcome'],
+            elif mode == 'x1':                       # re-judged offline from the saved level fields
+                for js in sorted(step.rglob('X1/c*.json')):
+                    m = json.loads(js.read_text())
+                    z = np.load(str(js)[:-5] + '.npz')
+                    lv = [dict(L=x['L'], lat=np.asarray(z[f"L{x['L']}"]), tau=x['tau'], steps_ok=x['steps_ok'], umax=x['umax'])
+                          for x in m['levels']]
+                    jd = V.judge(lv, np.asarray(z['t0']), m['nu'])
+                    ch = jd['checks']
+                    rep['x1'].append(dict(dim=d, case=m['case'], outcome=jd['outcome'], p=jd['p'],
                                           fired=bool(ch['solver'] and ch['floor'] and ch['t0_shared'] and not ch['order']),
                                           evaluable=bool(ch['solver'] and ch['floor'] and ch['t0_shared'])))
             elif mode == 'ps':
@@ -258,7 +267,7 @@ def main():
                           and y['horizon'] == rec['horizon'] and y['windows']), None)
                 xc = p['windows'].get(w, {}).get('verdict') if p else 'MISSING'
             tier = rep['tiers'].get(f'{d}d', {}).get(f"T{rec['horizon']:g}", {}).get(w, {}).get('tier', 'unvalidated (no cross-check)')
-            g3 = rec['G_R3_flag'] is True and rec['G_R3_local'] is not False
+            g3 = (rec['G_R3_flag'] is True and rec['G_R3_local'] is not False) if rec['fine_requested'] else True
             elig[w] = dict(accepted=x['outcome'] == 'accepted', G_R2=rec['G_R2']['passed'], designated=desig, crosscheck=xc,
                            prefix=pre_ok, G_R3=g3, tier=tier,
                            eligible=bool(x['outcome'] == 'accepted' and rec['G_R2']['passed'] and pre_ok and g3
@@ -267,8 +276,10 @@ def main():
         rec['eligibility'] = elig
     rep['summary'] = dict(G_R1=all(x['passed'] for x in rep['G_R1']) if rep['G_R1'] else None,
                           G_R2=all(c['G_R2']['passed'] for c in rep['cases']) if rep['cases'] else None,
-                          G_R3=all(c['G_R3_flag'] is True and c['G_R3_local'] is not False for c in rep['cases']) if rep['cases'] else None,
-                          G_R3_local_all=all(c['G_R3_local'] is True for c in rep['cases']) if rep['cases'] else None,
+                          G_R3=all(c['G_R3_flag'] is True and c['G_R3_local'] is not False for c in rep['cases']
+                                   if c['fine_requested']) if rep['cases'] else None,
+                          G_R3_local_all=all(c['G_R3_local'] is True for c in rep['cases'] if c['fine_requested'])
+                          if rep['cases'] else None,
                           judge_agree=all(c['judge']['agree'] and all(w['agree'] for w in c['judge']['windows'].values())
                                           for c in rep['cases']) if rep['cases'] else None,
                           C_R1=all(x['fired'] for x in rep['x1']) if rep['x1'] else None,

@@ -308,6 +308,11 @@ def mode_x1(cfg, outdir, rep):
         jd = V.judge(lv, RC.ic_lattice(coh, j), coh.nu(j))
         rep['x1'].append(dict(case=j, outcome=jd['outcome'], p=jd['p'], checks=jd['checks'],
                               fired=bool(jd['outcome'] != 'accepted')))
+        # the evidence to re-judge offline (code audit 3): level fields, floor proxies, solver flags, maxima, t0
+        write(outdir, outdir / f'{d}d' / coh.name / f'T{T:g}' / 'X1' / f'c{j:03d}',
+              dict(t0=RC.ic_lattice(coh, j), **{f'L{x["L"]}': x['lat'] for x in lv}),
+              dict(case=j, cohort=coh.name, horizon=T, nu=coh.nu(j), levels=[{k: v for k, v in x.items() if k != 'lat'} for x in lv]),
+              rep['manifest'])
         log(f"X1 {coh.name} {j}: {jd['outcome']} p={jd['p']}")
         save(outdir, rep)
 

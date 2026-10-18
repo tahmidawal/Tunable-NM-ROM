@@ -87,7 +87,8 @@ def load_newref(refs, cid, T, dim=2):
     if meta.get('cohort_sha256') != COHORT_SHA(dim, coh):
         raise A2.IdentityError('reference cohort hash')
     rec = ANAREF_SHA.get((dim, coh, int(c), T))
-    if rec is not None and (rec['sha256']['.npz'] != MAN.get(rel + '.npz') or rec['final'] != meta['final']):
+    if rec is not None and (rec['sha256']['.npz'] != MAN.get(rel + '.npz') or rec['sha256']['.json'] != MAN.get(rel + '.json')
+                            or rec['final'] != meta['final']):
         raise A2.IdentityError('reference differs from the one the anaref eligibility was established on')
     z = np.load(str(stem) + '.npz')
     return meta, np.asarray(z[meta['final'][2]])
@@ -452,6 +453,11 @@ def fine_recompute(run, members, fine_dir, T, check_ids):
         sc = max(float(np.max(np.abs(b))), 1e-300)
         return float(np.max(np.abs(a - b) / np.maximum(np.abs(b), 1e-14 * sc)))
 
+    # expected coverage, built independently of the produced B8 records: every member x every check case that has a
+    # reference file in the local reference tree
+    expected = {(mk, cid) for mk in members for cid in check_ids
+                if (Path(ARGS.refs) / '2d' / cid.split('|')[0] / f'T{T:g}' / f"c{int(cid.split('|')[1]):03d}.json").exists()}
+    seen = set()
     for mk, m in members.items():
         p, p7 = run / f"B8_{mk.replace('|', '_')}.npz", run / f"B7_{mk.replace('|', '_')}.npz"
         if not (p.exists() and p7.exists()):
@@ -465,13 +471,20 @@ def fine_recompute(run, members, fine_dir, T, check_ids):
             zl = np.load(lsf)
             LSC = {str(c_): zl['C'][k] for k, c_ in enumerate(zl['case_ids'])}
         for i, cid in enumerate([str(c) for c in z['case_ids']]):
-            if cid not in check_ids or not z['has_ref'][i]:
+            if (mk, cid) not in expected:
+                continue
+            if not z['has_ref'][i]:
+                missing.append(f'{mk}|{cid} (no in-job record)')
                 continue
             coh, c = cid.split('|')
             ff = Path(fine_dir) / '2d' / coh / f'T{T:g}' / f'c{int(c):03d}_fine.npz'
             if not ff.exists():
-                missing.append(f'{mk}|{cid}')
+                missing.append(f'{mk}|{cid} (no local fine file)')
                 continue
+            if cid not in LSC or not np.isfinite(z['e0_ic_ls'][i]):
+                missing.append(f'{mk}|{cid} (no LS coefficients)')
+                continue
+            seen.add((mk, cid))
             meta, Rl = load_newref(ARGS.refs, cid, T)
             if meta.get('fine_sha256') != sha(ff):
                 raise A2.IdentityError(f'fine file {ff} differs from its recorded sha256')
@@ -508,9 +521,8 @@ def fine_recompute(run, members, fine_dir, T, check_ids):
             rec['band_err2'] = close(np.sum(np.where(band, E ** 2, 0.), axis=(1, 2)), z['band_err2'][i])
             rec['all_err2'] = close(np.sum(np.where(allm, E ** 2, 0.), axis=(1, 2)), z['all_err2'][i])
             rec['e0_ic'] = close([np.linalg.norm(E[0]) / n0f], [z['e0_ic'][i]])
-            if cid in LSC and 'e0_ic_ls' in z.files:
-                Fl = (LSC[cid] @ Gr.T).reshape(1025, 1025)
-                rec['e0_ic_ls'] = close([np.linalg.norm(Fl - Rf[0]) / n0f], [z['e0_ic_ls'][i]])
+            Fl = (LSC[cid] @ Gr.T).reshape(1025, 1025)
+            rec['e0_ic_ls'] = close([np.linalg.norm(Fl - Rf[0]) / n0f], [z['e0_ic_ls'][i]])
             RfI = Rf[:, 1:-1, 1:-1].reshape(nout, -1)
             rec['eP_fine'] = close(np.linalg.norm(RfI - (RfI @ Qf) @ Qf.T, axis=1) / n0f, z['eP_fine'][i])
             jw, jf = meta.get('judge_windows') or {}, meta.get('judge_fine_windows') or {}
@@ -536,8 +548,9 @@ def fine_recompute(run, members, fine_dir, T, check_ids):
                             ref_fine_walls_zero=bool(np.all(Rf[:, 0, :] == 0) and np.all(Rf[:, -1, :] == 0) and
                                                      np.all(Rf[:, :, 0] == 0) and np.all(Rf[:, :, -1] == 0)),
                             passed=bool(worst <= 1e-9)))
-    ok = bool(out and not missing and all(r_['passed'] and r_['ref_fine_walls_zero'] for r_ in out))
-    return dict(rows=out, missing=missing, passed=ok)
+    missing += [f'{mk}|{cid} (no B8 file)' for mk, cid in sorted(expected - seen) if not any(x.startswith(f'{mk}|{cid}') for x in missing)]
+    ok = bool(expected and not missing and seen == expected and all(r_['passed'] and r_['ref_fine_walls_zero'] for r_ in out))
+    return dict(rows=out, expected=sorted(f'{a}|{b}' for a, b in expected), missing=missing, passed=ok)
 
 
 def _band_frac(L=1024, width=1 / 32):

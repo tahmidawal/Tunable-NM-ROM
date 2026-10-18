@@ -641,3 +641,20 @@ rung is certified costlier.
   (the pickles' sha256 are kept in `OUTPUTS.sha256` and the training result), and the job checks the compact archive
   defines exactly the emitted head (difference 0). Accuracy and timing records keep tight and tighter internal
   trajectories, budget-exit counts and initial-fit exit records for the offline anchor audit.
+
+---
+
+## Amendment A7 (2026-10-18, before any lane job; decisions after `audits/codex-code-{2,3}.md`)
+
+- **Account cap (campaign-level residual risk, accepted and reported).** The lane checks the account job count and runs
+  `sbatch` inside one cluster-side lock (`flock` on `/cluster/tufts/paralab/tawal01/.campaign-sbatch.lock`), failing
+  closed when the queue query fails. Lanes that do not take this lock can still race it within one command's window; a
+  lane cannot enforce that, so the residual risk is accepted here and reported to the coordinator (a campaign-wide
+  submission lock would close it).
+- **4096² pilot = measurement probe.** It builds every planned 4096² table with actual-dimension stand-in heads, keeps
+  the timed inputs and several outputs resident, compiles the level variants and the split programs, and applies a 10 %
+  allowance; it does not reproduce every allocation of the timing driver and is not a proven bound. `time4096` is first
+  in the defer order; if it fails on memory it is reported "not reached (memory)", never silently dropped.
+- **Fixed-$M=128$ panel:** $K=32$ heads and linear $r=32$ already have $M=4K=128$, so their deployed configurations are
+  the panel's entries (no duplicate runs).
+- Offline rule tables are Gauss-only (the A1.4 policy has no other family); a non-Gauss rule raises.

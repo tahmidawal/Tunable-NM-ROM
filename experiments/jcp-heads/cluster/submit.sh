@@ -35,7 +35,7 @@ trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: rese
 # account cap re-checked and sbatch run under ONE cluster-side lock (NFS flock on the shared paralab space). Every
 # submitter that uses this lock is serialised; lanes that do not use it can still race (campaign-level limitation,
 # reported to the coordinator: a shared submission lock for all lanes would close it).
-OUT=$(timeout 300 ssh -o ConnectTimeout=20 tufts-login "flock -w 240 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'n=\$(squeue -u \$USER -h | wc -l); if [ \$n -ge 8 ]; then echo CAP8 \$n; exit 0; fi; cd $NS/$A && sbatch run.sbatch'")
+OUT=$(timeout 300 ssh -o ConnectTimeout=20 tufts-login "flock -w 240 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'q=\$(squeue -u \$USER -h) || { echo CAP8 query-failed; exit 0; }; n=\$(printf \"%s\" \"\$q\" | grep -c . || true); case \$n in (*[!0-9]*|\"\") echo CAP8 bad-count; exit 0;; esac; if [ \$n -ge 8 ]; then echo CAP8 \$n; exit 0; fi; cd $NS/$A && sbatch run.sbatch'")
 echo "$OUT"
 if echo "$OUT" | grep -q '^CAP8'; then          # nothing was submitted: release the reservation and the remote dir
   trap - ERR

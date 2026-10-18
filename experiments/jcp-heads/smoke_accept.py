@@ -62,16 +62,23 @@ def smk1():
     acc_dir = out_dir('smk1', 'hacc', 'smk1acc')
     acc = json.loads((acc_dir / 'result.json').read_text())
     c = acc['controls']
-    ok, w = rows_ok(c['repro_head']['rows'], 'rel', 1e-10, 4)
-    res['repro_head'] = dict(worst=w, passed=bool(ok and c['repro_head']['passed']),
-                             fixtures=sorted({(r['rule'], r['case']) for r in c['repro_head']['rows']}))
-    ok, w = rows_ok(c['repro_lin']['rows'], 'rel', 1e-10, 12)
-    sch = sorted({r['scheme'] for r in c['repro_lin']['rows']})
-    res['repro_lin'] = dict(worst=w, schemes=sch, passed=bool(ok and sch == ['BE', 'CNR'] and c['repro_lin']['passed']))
+    cfg = json.loads((HERE / 'configs' / 'smk1acc.json').read_text())          # coverage bound to the committed config
+    blk = [b for b in cfg['blocks'] if b['kind'] == 'controls'][0]
+    want_h = sorted((rl, cname) for rl, fx in blk['repro_head'].items() for cname in fx)
+    got_h = sorted((r['rule'], r['case']) for r in c['repro_head']['rows'])
+    ok, w = rows_ok(c['repro_head']['rows'], 'rel', 1e-10, len(want_h))
+    res['repro_head'] = dict(worst=w, fixtures=got_h, passed=bool(ok and got_h == want_h and c['repro_head']['passed']))
+    want_l = sorted((sc, f'dev6|{i}') for sc in blk['repro_lin']['fixtures'] for i in range(6))
+    got_l = sorted((r['scheme'], r['case']) for r in c['repro_lin']['rows'])
+    ok, w = rows_ok(c['repro_lin']['rows'], 'rel', 1e-10, len(want_l))
+    res['repro_lin'] = dict(worst=w, passed=bool(ok and got_l == want_l and c['repro_lin']['passed']))
     jac = {k: v['jacobian'] for k, v in acc['arms'].items() if 'jacobian' in v}
+    want_j = sorted(a['name'] for a in cfg['arms'] if a['kind'] == 'head')
     jok = {k: rows_ok(v['rows'], 'rel', 1e-10, 4) for k, v in jac.items()}
+    fix_ok = all(sorted((r['case'], r['step']) for r in v['rows']) == [('dev6|0', 1), ('dev6|0', 25), ('dev6|1', 1), ('dev6|1', 25)]
+                 for v in jac.values())
     res['jacobian'] = dict(per_head={k: v[1] for k, v in jok.items()},
-                           passed=bool(sorted(jac) == ['Hinc', 'Hk32', 'Hk4'] and all(v[0] for v in jok.values())
+                           passed=bool(sorted(jac) == want_j and fix_ok and all(v[0] for v in jok.values())
                                        and all(v['passed'] for v in jac.values())))
     res['wrong_mesh'] = dict(passed=bool(c['wrong_mesh']['passed']), raised=c['wrong_mesh']['raised'])
     # budget-0 Q1 negative: in-job pooled fraction > 1 %, and an independent NumPy gamma > 1e-3 on > 3 steps
@@ -151,13 +158,24 @@ def smk2():
     res['identity_fault'] = dict(n=len(inv_bad), all_invalid=bool(inv_bad and not any(x['valid'] for x in inv_bad)))
     good = [x for x in r['invocations'] + r['fused'] if x['B'] != bad]
     res['other_valid_fraction'] = float(np.mean([x['valid'] for x in good]))
-    # fused coverage, independently of split validity: every non-fault subject x timed case has >= 1 valid fused repeat
+    # fused coverage bound to the committed config, validity recomputed here: every non-fault subject x configured case
+    # needs >= 1 fused repeat with finite positive times, identity hashes reproduced and drift in band
+    cfg = json.loads((HERE / 'configs' / 'smk2time.json').read_text())
+    lab_ = lambda sp: f"{sp['mesh']}|{sp['name']}|{sp['rule']}|{sp['scheme']}"
+    want_subj = sorted({lab_(sp) for sp in cfg['subjects']} - {bad})
+    want_cases = sorted(f'{a}|{b}' for a, b in cfg['cases'])
+    BAND = (1 / 1.1, 1.1)
+
+    def fused_ok(x):
+        t = [x['tA1'], x['tA2'], x['t_fused'], x['ratio']]
+        return bool(np.isfinite(t).all() and min(t) > 0 and x['hash_ok'] and x.get('all_hashes_ok', x['hash_ok'])
+                    and BAND[0] <= x['tA2'] / x['tA1'] <= BAND[1])
+    res['fused_valid_flag_agrees'] = bool(all(fused_ok(x) == bool(x['valid']) for x in r['fused']))
     cov = {}
-    for lb, v in r['subjects'].items():
-        if lb == bad or lb.split('|')[1] == 'A_R384':
-            continue
-        for c_ in v['timed_case_ids']:
-            cov[(lb, c_)] = any(x['valid'] for x in r['fused'] if x['B'] == lb and x['case'] == c_)
+    for lb in want_subj:
+        for c_ in want_cases:
+            cov[(lb, c_)] = any(fused_ok(x) for x in r['fused'] if x['B'] == lb and x['case'] == c_)
+    res['subjects_present'] = bool(sorted(set(r['subjects']) - {lab_(cfg['A'])}) == sorted(want_subj + [bad]))
     res['fused_coverage'] = dict(missing=[list(k) for k, ok in cov.items() if not ok], n=len(cov), passed=bool(cov and all(cov.values())))
     dbl = r['doubled']
     res['doubled'] = dict(ratios=[x['ratio'] for x in dbl], passed=bool(dbl and all(1.8 <= x['ratio'] <= 2.2 and x['identity_ok']
@@ -173,12 +191,15 @@ def smk2():
     import timing as TM
     res['panel_validity_without_fault'] = TM.panel_validity([x for x in r['invocations'] if x['B'] != bad])['valid']
     pl = json.loads((out_dir('smk2', 'hpilot', 'smk2pilot') / 'result.json').read_text())
+    res['pilot_note'] = ('measurement probe (code audit 3): it does not reproduce every allocation of the timing driver; '
+                         'time4096 (first in the defer order) is reported "not reached (memory)" if it fails on memory')
     res['pilot'] = dict(peak_bytes=pl['peak_bytes'], within_bar=bool(pl['within_bar']), stages=[(s_['stage'], s_['mem']['peak'])
                                                                                                  for s_ in pl['stages']])
     res['certification_ok'] = bool(all(all(t_[:2]) for v in res['subjects'].values() for t_ in v['cert']))
     res['all_controls_pass'] = bool(res['equivalence']['passed'] and res['identity_fault']['all_invalid']
                                     and res['doubled']['passed'] and res['pilot']['within_bar']
                                     and res['panel_validity_without_fault'] and res['fused_coverage']['passed']
+                                    and res['fused_valid_flag_agrees'] and res['subjects_present']
                                     and res['certification_ok'])
     return res
 

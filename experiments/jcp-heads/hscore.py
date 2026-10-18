@@ -33,6 +33,7 @@ def modes(M):
 def tables(rule, dim, M, L):
     key = (rule, dim, M, L)
     if key not in TABLES:
+        assert rule.startswith('gauss'), f'only Gauss rules are used in this lane (A1.4): {rule}'
         X, w = NC.gauss_rule(int(rule[5:]))
         kx, ky = modes(M)
         TABLES[key] = NC.tables(X, w, dim, kx, ky, L)

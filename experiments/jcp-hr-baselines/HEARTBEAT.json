@@ -1,11 +1,14 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T12:18:15Z",
- "step": "OursS3 CPU replay matches speed3d exports to <=8e-14 rel (fs BE, fs CN 1.25dt0, qn BDF2); CPU gate suite test14 on 618a40911 running (deadline 150 min); code audit 20 + design audit 19 next",
+ "utc": "2026-10-18T12:18:50Z",
+ "step": "OursS3 CPU replay matches speed3d exports to <=8e-14 rel (fs BE, fs CN 1.25dt0, qn BDF2); CPU gate suite test14 on 618a40911 running (deadline 150 min); code audit 20 + design audit 19 next; code audit 20 + design audit 19 running",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": [],
+  "codex_output": "audits/codex-code-20.md, audits/codex-design-19.md",
+  "codex_pid": [
+   2490836,
+   2490837
+  ],
   "local_pid": 2488995
  },
  "expected_finish_utc": "2026-10-18T13:33:15Z",

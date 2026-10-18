@@ -1,16 +1,16 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T10:25:17Z",
- "step": "10: C1 matching against FRONT-2D targets running",
+ "utc": "2026-10-18T10:40:31Z",
+ "step": "11: codex job audit of the three C2 production jobs (staged)",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": null,
-  "local_pid": 2117308
+  "codex_output": "audits/codex-job-c2-1.md",
+  "codex_pid": 2218980,
+  "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T11:00:00Z",
- "last_commit": "cb94ef7e0",
+ "expected_finish_utc": "2026-10-18T11:45:00Z",
+ "last_commit": "62d01d891",
  "gpu_hours_spent": 1.7845,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D from jcp-qualify commit 2374fafe1 (sha a51ac1a2); K2 universe 33 identities at 4096, complete"
+ "notes": "FRONT-2D v1 from 2374fafe1"
 }

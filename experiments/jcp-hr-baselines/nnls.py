@@ -34,20 +34,37 @@ def _lsq(G, S, k, b):
     keep = (jnp.arange(S.shape[0]) < k).astype(A.dtype)
     A = A * keep[None, :]
     Q, R = jnp.linalg.qr(A, mode='reduced')
+    d = jnp.abs(jnp.diag(R))
     R = R + jnp.diag(1. - keep)
-    return jax.scipy.linalg.solve_triangular(R, Q.T @ b, lower=False)
+    return jax.scipy.linalg.solve_triangular(R, Q.T @ b, lower=False), d
 
 
-def _pad(idx):
-    """Pad an index list to a power of two (few compiled shapes)."""
+_lsq_svd = jax.jit(lambda G, S, b: jnp.linalg.lstsq(G[:, S], b, rcond=1e-13)[0])
+
+
+def _pad(idx, m=None):
+    """Pad an index list to a power of two (few compiled shapes), never beyond the row count m."""
     k = len(idx)
     kp = 1 << max(0, (k - 1).bit_length())
+    if m is not None:
+        kp = max(k, min(kp, m))
     return np.pad(np.asarray(idx, np.int64), (0, kp - k), mode='edge'), k
 
 
 def _ls(G, S, b):
-    Sp, k = _pad(S)
-    z = np.array(_lsq(G, jnp.asarray(Sp), k, b), dtype=np.float64, copy=True)
+    """Passive-set least squares (A17.1, A18.2): Householder QR on the original columns; if the support has more columns
+    than rows, or QR shows numerical rank deficiency (min |R_ii| <= 1e-13 max |R_ii| over the first k), the minimum-norm
+    SVD least-squares solution (A7.2) is used instead."""
+    m = G.shape[0]
+    k = len(S)
+    if k > m:
+        return np.array(_lsq_svd(G, jnp.asarray(S), b), dtype=np.float64, copy=True)
+    Sp, k = _pad(S, m)
+    zj, dj = _lsq(G, jnp.asarray(Sp), k, b)
+    d = np.asarray(dj)[:k]
+    if d.size and float(np.min(d)) <= 1e-13 * float(np.max(d)):
+        return np.array(_lsq_svd(G, jnp.asarray(S), b), dtype=np.float64, copy=True)
+    z = np.array(zj, dtype=np.float64, copy=True)
     return z[:k]
 
 
@@ -139,6 +156,8 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
     for it in range(max_iter):
         r = residual()
         rr = float(jnp.linalg.norm(r)) / max(nb, 1e-300)
+        if path:
+            path[-1] = (path[-1][0], rr)      # (support, residual) of the same iterate
         record(rr)
         if (taus or supports) and all(v is not None for v in rec.values()):
             reason = 'taus'
@@ -164,13 +183,21 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
         drops[dropped] += 1
         banned[dropped[drops[dropped] >= max_drops]] = True
         S, x = S[keep], xs[keep]
-        path.append((len(S), rr))
+        path.append((len(S), None))          # residual of this iterate is filled in at the next iteration (A18.4)
         if log and it % 50 == 0:
             log(f'   nnls it {it}: support {len(S)} relres {rr:.3e}')
     r = residual()
     rr = float(jnp.linalg.norm(r)) / max(nb, 1e-300)
+    if path and path[-1][1] is None:
+        path[-1] = (path[-1][0], rr)
     record(rr)
+    # raw evidence for offline checks (A18.1): checkpoint residual vectors, |b|, drop counts
+    for v in rec.values():
+        if v is not None and 'resvec' not in v:
+            Sv, xv = v['support'], v['weights']
+            v['resvec'] = np.asarray(bj - G[:, jnp.asarray(Sv)] @ jnp.asarray(xv)) if len(Sv) else np.asarray(b)
     kkt = kkt_check(G, bj, S, x, nb)
     if reason == 'kkt' and not kkt['ok']:
         reason = 'incomplete (KKT violated)'
-    return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()), kkt=kkt)
+    return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()), kkt=kkt,
+                drops=drops, bnorm=nb)

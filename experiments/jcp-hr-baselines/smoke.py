@@ -252,10 +252,15 @@ def run_cell(cfg, c, res, outdir, save):
     if rs in getattr(cell, 'ecsw_paths_raw', {}):           # A16: both attempts' checkpoint supports and weights
         kw = {}
         for att, cps in cell.ecsw_paths_raw[rs].items():
+            kw[f'{att}~drops'] = np.asarray(cps['_drops'])
+            kw[f'{att}~bnorm'] = np.asarray(cps['_bnorm'])
             for k, v in cps.items():
+                if k.startswith('_'):
+                    continue
                 if v is not None:
                     kw[f'{att}~{k}~nodes'] = np.asarray(v['nodes'])
                     kw[f'{att}~{k}~weights'] = np.asarray(v['weights'])
+                    kw[f'{att}~{k}~resvec'] = np.asarray(v['resvec'])
         chunk('ECSWpath', **kw)
         R['ecsw_path_summary'] = cell.info['ecsw'][rs]['paths']
         save()
@@ -269,6 +274,9 @@ def run_cell(cfg, c, res, outdir, save):
         t1 = time.perf_counter()
         o = BD.NN.greedy_nnls(G, b, taus=(), cap=c['pilot_support'])
         tn = time.perf_counter() - t1
+        rv = np.asarray(b - G[:, jnp.asarray(o['support'])] @ jnp.asarray(o['weights']))
+        chunk('ECSWpilot', support=np.asarray(o['support']), weights=np.asarray(o['weights']), resvec=rv,
+              bnorm=np.asarray(o['bnorm']), drops=np.asarray(o['drops']))
         del G, b
         return dict(shape=shape, contrib_seconds=tg, nnls_seconds=tn, support=int(len(o['support'])),
                     relres=o['relres'], reason=o['reason'], iterations=len(o['path']), device_peak=PL.device_peak(),

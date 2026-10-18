@@ -3,8 +3,8 @@
  "source_sha256": {
   "hrcore.py": "c30723ca6dc42d283e4fe74358e0e03cb6ade59e0658fea85e9f3cccc6d595ce",
   "rom.py": "9729c032b5da1e033f7be8d4246fd1e0b2750989c9ee9f78d783329554a3d694",
-  "build.py": "54719caf8e52cf50631ee531084ac4b67801c5e5483997f5644c21b64fe10df1",
-  "nnls.py": "10df9452e0a85e5fc6ba2af5f5ae9e87a6753e73c9c438e3f9d1b90c755c62ae",
+  "build.py": "15a6011afb927762e8fa0488c3dc206bd9d27a82e1b1b98cb04b1e9efce6d63b",
+  "nnls.py": "e3df300c1f31ab8dd2adec0fc714d928c9483c1c2e893a9c94fcc07969291596",
   "stats.py": "239ffc93efb4f04a2e9873a8743726d1a87a3be05104ae8660e6db123caf7483",
   "pipeline.py": "4903874fcfec3d208ca5e5bd4b48c05d3b3b0995d74d04aa94926a18fcd6f1dc",
   "tests/test_core.py": "3b37f0379c6b836263740d83c294b2474a8db818f3a8ded78a312005d98c7b72"
@@ -48,7 +48,7 @@
   ],
   "G-nnls greedy NNLS vs scipy (objective, KKT, tau stop)": [
    "PASS",
-   "['2.7e-15', '1.8e-15', '0.0e+00', {0.1: 35, 0.01: 47, 0.001: 49}, {'supports': {5: 5, 12: 12, 20: 20}, 'dup_banned': 0, 'dup_reason': 'kkt'}]"
+   "['1.8e-15', '0.0e+00', '3.6e-15', {0.1: 35, 0.01: 47, 0.001: 49}, {'supports': {5: 5, 12: 12, 20: 20}, 'dup_banned': 0, 'dup_reason': 'kkt'}]"
   ],
   "G-qdeim pivots vs scipy, exact interpolation on span(U)": [
    "PASS",

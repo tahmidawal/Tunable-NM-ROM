@@ -353,12 +353,19 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, lo
             x = o['records'].get(('s', t))
             cps[f'k{k}'] = None if x is None else dict(nodes=cand_nodes[x['support']], weights=x['weights'],
                                                        relres=x['relres'], size=x['size'])
+        cps_raw = {f'k{k}': o['records'].get(('s', t)) for k, t in zip(kappas, targets)}
+        for k_, v in cps_raw.items():
+            if v is not None and cps[k_] is not None:
+                cps[k_]['resvec'] = v['resvec']
+        cps['_drops'] = o['drops']
+        cps['_bnorm'] = o['bnorm']
         summ = dict(max_drops=max_drops, reason=o['reason'], final_relres=o['relres'], final_support=int(len(o['support'])),
                     banned=o['banned'], kkt=o['kkt'], iterations=len(o['path']),
                     taus={str(t): (None if o['records'][t] is None else dict(size=o['records'][t]['size'],
                                                                              relres=o['records'][t]['relres'])) for t in taus},
-                    reached=sum(v is not None for v in cps.values()),
-                    checkpoints={k: (None if v is None else dict(size=v['size'], relres=v['relres'])) for k, v in cps.items()})
+                    reached=sum(v is not None for k, v in cps.items() if not k.startswith('_')),
+                    checkpoints={k: (None if v is None else dict(size=v['size'], relres=v['relres']))
+                                 for k, v in cps.items() if not k.startswith('_')})
         return cps, summ
     cps0, s0 = attempt(3)
     attempts = {'initial': (cps0, s0)}
@@ -374,7 +381,7 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, lo
             l0 = sum(np.log10(max(s0['checkpoints'][k]['relres'], 1e-300)) for k in common)
             l1 = sum(np.log10(max(s1['checkpoints'][k]['relres'], 1e-300)) for k in common)
             sel = 'retry' if l1 < l0 else 'initial'
-    rec = {int(k[1:]): v for k, v in attempts[sel][0].items()}
+    rec = {int(k[1:]): v for k, v in attempts[sel][0].items() if not k.startswith('_')}
     summary = dict(selected=sel, attempts={a: v[1] for a, v in attempts.items()},
                    checkpoints_all={a: v[0] for a, v in attempts.items()},
                    targets={f'k{k}': t for k, t in zip(kappas, targets)}, ban_retry_frac=BAN_RETRY_FRAC,

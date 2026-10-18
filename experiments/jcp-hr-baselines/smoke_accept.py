@@ -245,6 +245,9 @@ def main():
             for a, sm in atts.items():
                 ok_e &= isinstance(sm.get('iterations'), int) and 0 < sm['iterations'] <= 40000 and \
                     isinstance(sm.get('banned'), int) and 0 <= sm['banned'] <= n_expect
+                dr = np.asarray(zp[f'{a}~drops'])                  # ban count recomputed from the drop counters
+                ok_e &= dr.shape == (n_expect,) and int(np.sum(dr >= sm['max_drops'])) == sm['banned']
+                bn = float(np.asarray(zp[f'{a}~bnorm']))
                 ok_e &= sorted(sm['checkpoints']) == ['k16', 'k2', 'k4', 'k8']
                 for kk, cp in sm['checkpoints'].items():
                     if cp is None:
@@ -255,6 +258,9 @@ def main():
                              and np.issubdtype(nd.dtype, np.integer) and np.all((nd >= 0) & (nd < n))
                              and len(set(nd.tolist())) == len(nd) and len(w) == cp['size'] >= int(kk[1:]) * c['rs']
                              and fin(cp['relres']) and cp['relres'] >= 0)
+                    rv = np.asarray(zp[f'{a}~{kk}~resvec'])        # checkpoint residual recomputed from its vector
+                    ok_e &= rv.ndim == 1 and np.all(np.isfinite(rv)) and bn > 0 and \
+                        abs(float(np.linalg.norm(rv)) / bn - cp['relres']) <= 1e-10 * max(cp['relres'], 1e-300) + 1e-14
                 ok_e &= sm['reached'] == sum(v is not None for v in sm['checkpoints'].values())
             sel = 'initial'
             if 'retry' in atts:
@@ -278,10 +284,21 @@ def main():
         nst = (R.get('ecsw_states') or {}).get('n_states')
         shp = list(ep.get('shape', [0, 0]))
         kk_ = ep.get('kkt') or {}
-        sup_ok = (ep.get('support') == c['pilot_support'] and ep.get('reason') == 'cap') or \
-            (ep.get('reason') == 'kkt' and isinstance(ep.get('support'), int) and ep['support'] <= c['pilot_support']
-             and kk_.get('ok') is True and fin(kk_.get('support_max_abs_gradient'), kk_.get('tol'))
-             and kk_['support_max_abs_gradient'] <= kk_['tol'])
+        try:
+            zpp = Z['ECSWpilot']
+            wv, rvp = np.asarray(zpp['weights']), np.asarray(zpp['resvec'])
+            pil_ok = (wv.ndim == 1 and len(wv) == ep.get('support') and np.all(np.isfinite(wv)) and np.all(wv > 0)
+                      and np.all(np.isfinite(rvp)) and float(np.asarray(zpp['bnorm'])) > 0 and
+                      abs(float(np.linalg.norm(rvp)) / float(np.asarray(zpp['bnorm'])) - ep['relres'])
+                      <= 1e-10 * max(ep['relres'], 1e-300) + 1e-14)
+        except Exception:  # noqa: BLE001
+            pil_ok = False
+        kkt_ok = (fin(kk_.get('support_max_abs_gradient'), kk_.get('off_support_max_gradient'), kk_.get('tol'))
+                  and kk_['tol'] >= 0 and kk_['support_max_abs_gradient'] <= kk_['tol']
+                  and kk_['off_support_max_gradient'] <= kk_['tol'])
+        sup_ok = pil_ok and ((ep.get('support') == c['pilot_support'] and ep.get('reason') == 'cap') or
+                             (ep.get('reason') == 'kkt' and isinstance(ep.get('support'), int)
+                              and ep['support'] <= c['pilot_support'] and kkt_ok))
         put(f'{key}|ecsw-max-shape', fin(ep.get('relres'), ep.get('device_peak')) and ep['device_peak'] > 0 and
             nst is not None and shp[0] > 0 and shp[0] % c['rmax'] == 0 and shp[0] <= nst * c['rmax'] and
             shp[1] == min(32768, n) and sup_ok, ev=ep, n_states=nst)

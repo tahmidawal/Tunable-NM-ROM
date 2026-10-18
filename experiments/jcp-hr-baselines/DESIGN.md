@@ -1222,3 +1222,25 @@ replacing A16.5's 20,000 for both attempts; the ban-free retry rule is otherwise
 about $m\sum_k k^2$ flops for the QR solves (3D smoke r = 256: about $10^{15}$); for production ranks this is large
 (3D r = 1,024: about $10^{17}$), so phase II will need an updating QR (append/delete columns, $O(mk)$ per step); this is
 recorded as a phase-II implementation item with its own code audit, and the smoke measures the cost at r = 256.
+
+**A18 (2026-10-18) — design audit 12 and code audit 15 on A17.**
+- **A18.1 Evidence.** Every NNLS attempt now returns, and the smoke saves, each checkpoint's residual vector, $\|b\|$
+  and the per-candidate drop counters; acceptance recomputes checkpoint residuals and ban counts from them, and checks
+  both KKT inequalities for any KKT-terminated pilot (in addition to the pilot's saved support, weights and residual).
+- **A18.2 Rank-deficient passive sets.** The passive-set least squares uses Householder QR on the original columns; if
+  the support has more columns than rows or $\min_i|R_{ii}|\le10^{-13}\max_i|R_{ii}|$, the minimum-norm SVD least
+  squares (A7.2) is used. Column padding (for compilation) never exceeds the row count.
+- **A18.3 Corrections to A17.** The iteration bound is 40,000 outer iterations (one entry attempt and its full
+  Lawson–Hanson refit per iteration) for each attempt, about 2.44 × the largest support target (16 × 1,024); the "1.15 ×"
+  statement was wrong. The dry-run comparison was at different endpoints: the old algorithm needed 6,444 iterations for
+  256 points, the repaired one 147 iterations for 128 points with no bans, the same trajectory as a numpy reference at
+  the checkpoints compared; the two mechanisms in A17 are diagnoses, consistent with but not isolated by these runs. The
+  fixture record (scripts and logs) is archived in `runs/nnls_fixture/`. All four checkpoints (2r, 4r, 8r, 16r), both
+  saved attempts, the A16.5 selection order and the coverage/banning labels stand; the batch-dependent caveat of A16.2
+  is retired (single-index entry).
+- **A18.4** Path diagnostics pair each support size with the residual of the same iterate.
+- **A18.5 Feasibility.** Repeated full QR is cubic in the attained support; the smoke measures its cost at the smoke
+  ranks only. Before phase II, an updating QR (append/delete with periodic refactorisation and gradient refresh, its
+  tolerances frozen and its checkpoints compared with the full-QR path on the smoke fixtures) or a reduced production
+  scope is registered, and the resource certificate is regenerated for the final algorithm including the 16r
+  continuation and the retry. The 30 GPU-h cap and the incomplete-coverage labels stand.

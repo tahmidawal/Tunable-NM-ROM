@@ -1,18 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T09:12:48Z",
- "step": "phase II prep: smk2 submitted (5422908); implementing NNLS updating QR (A18.5); design audit 14 next",
+ "utc": "2026-10-18T10:10:03Z",
+ "step": "phase II prep: smk2 collected (A23 ALL=true); gate suite running; next code audit 18 + design audit 16, then phase-II drivers",
  "waiting_on": {
-  "slurm_jobs": [
-   "5422908"
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T10:32:48Z",
- "last_commit": "736506551",
- "gpu_hours_spent": 0.878,
+ "expected_finish_utc": "2026-10-18T11:10:03Z",
+ "last_commit": "bde46a1c1",
+ "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,
  "notes": "smk1 (5354834) ACCEPTANCE ALL=false -> A14-A18 fixes; final CPU dry run passes all CPU-testable gates; request: release one more <=1 GPU-h smoke (smk2)"
 }

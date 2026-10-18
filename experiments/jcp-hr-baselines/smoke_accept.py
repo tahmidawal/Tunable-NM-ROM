@@ -105,6 +105,13 @@ def q1_from_evidence(prod, tight, tighter, Cs, dist, adist, cases, subset, steps
     return ok, dict(valid=valid, nonstat=ns, steps=st, anchors=a_ok, max_dist=max(dist.values()))
 
 
+def opt_ok(sm):
+    """A23: the attempt's terminal KKT diagnostics certify an NNLS optimum (both inequalities, finite)."""
+    k = sm.get('kkt') or {}
+    return bool(fin(k.get('support_max_abs_gradient'), k.get('off_support_max_gradient'), k.get('tol')) and k['tol'] >= 0
+                and k['support_max_abs_gradient'] <= k['tol'] and k['off_support_max_gradient'] <= k['tol'])
+
+
 def _good(t, keys=('tA1', 'tB', 'tA2')):
     return all(fin(t[k]) and t[k] > 0 for k in keys) and abs(t['tA1'] / t['tA2'] - 1.) <= 0.25
 
@@ -254,9 +261,11 @@ def main():
                         ok_e &= f'{a}~{kk}~weights' not in zp
                         continue
                     w, nd = np.asarray(zp[f'{a}~{kk}~weights']), np.asarray(zp[f'{a}~{kk}~nodes'])
+                    at_opt = bool(cp.get('optimum')) and sm['reason'] == 'kkt' and opt_ok(sm)     # A23
                     ok_e &= (w.ndim == 1 and nd.ndim == 1 and len(w) == len(nd) and np.all(np.isfinite(w)) and np.all(w > 0)
                              and np.issubdtype(nd.dtype, np.integer) and np.all((nd >= 0) & (nd < n))
-                             and len(set(nd.tolist())) == len(nd) and len(w) == cp['size'] >= int(kk[1:]) * c['rs']
+                             and len(set(nd.tolist())) == len(nd)
+                             and len(w) == cp['size'] and (cp['size'] >= int(kk[1:]) * c['rs'] or at_opt)
                              and fin(cp['relres']) and cp['relres'] >= 0)
                     rv = np.asarray(zp[f'{a}~{kk}~resvec'])        # checkpoint residual recomputed from its vector
                     ok_e &= rv.ndim == 1 and np.all(np.isfinite(rv)) and bn > 0 and \
@@ -273,7 +282,12 @@ def main():
                     l1 = sum(math.log10(max(s1['checkpoints'][k]['relres'], 1e-300)) for k in com)
                     sel = 'retry' if l1 < l0 else 'initial'
             ok_e &= sel == ps_['selected']
-            ok_e &= all(e.get(f'k{k}') is not None and atts[sel]['checkpoints'][f'k{k}'] is not None and
+            # A23: a target beyond a KKT-certified optimum is that optimum (stored as such, or -- in runs before A23 --
+            # absent with the attempt terminated by a certified KKT stop at a support below the target)
+            missing_ok = {f'k{k}' for k in (2, 4, 8, 16) if atts[sel]['checkpoints'][f'k{k}'] is None and
+                          atts[sel]['reason'] == 'kkt' and opt_ok(atts[sel]) and
+                          atts[sel]['final_support'] < k * c['rs']}
+            ok_e &= all(f'k{k}' in missing_ok or e.get(f'k{k}') is not None and atts[sel]['checkpoints'][f'k{k}'] is not None and
                         e[f'k{k}']['size'] == atts[sel]['checkpoints'][f'k{k}']['size'] and
                         e[f'k{k}']['relres'] == atts[sel]['checkpoints'][f'k{k}']['relres'] for k in (2, 4, 8, 16))
             put(f'{key}|ecsw-smoke-rank', ok_e, selected=ps_['selected'], retry=need_retry,

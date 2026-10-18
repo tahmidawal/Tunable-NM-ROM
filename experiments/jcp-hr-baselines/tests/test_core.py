@@ -349,6 +349,28 @@ def t_nnls():
         assert abs(a['relres'] - c['relres']) <= 1e-10 * c['relres'], (k, a['relres'], c['relres'])
     assert ou['qr_drift'] and max(ou['qr_drift']) <= 1e-10, ou['qr_drift']
     out.append(dict(update_vs_full='identical supports', drift=max(ou['qr_drift']), refactors=len(ou['qr_drift'])))
+    # A22.4: capacity clamped to the row count (rectangular small case)
+    G5 = rng.standard_normal((60, 40))
+    b5 = rng.standard_normal(60)
+    o5 = NN.greedy_nnls(G5, b5, cap=40, refactor_every=16)
+    xs5, rs5 = so.nnls(G5, b5, maxiter=2000)
+    x5 = np.zeros(40)
+    x5[o5['support']] = o5['weights']
+    assert abs(np.linalg.norm(G5 @ x5 - b5) - rs5) <= 1e-10 * max(rs5, 1.)
+    # A22.3: production refactor interval (1024) across two refactorisations with deletions equals a frequent-refactor
+    # path (every 256): identical supports at every checkpoint, residuals to 1e-10, drift <= 1e-8, deletions occurred
+    G6 = rng.standard_normal((2500, 5000))
+    b6 = G6 @ np.where(rng.uniform(size=5000) < 0.3, rng.uniform(size=5000), 0.) + 0.3 * rng.standard_normal(2500)
+    pa = NN.greedy_nnls(G6, b6, supports=(500, 1100, 2100), cap=2100, refactor_every=1024)
+    pb = NN.greedy_nnls(G6, b6, supports=(500, 1100, 2100), cap=2100, refactor_every=256)
+    for k in (500, 1100, 2100):
+        a, c = pa['records'][('s', k)], pb['records'][('s', k)]
+        assert a is not None and c is not None and np.array_equal(np.sort(a['support']), np.sort(c['support'])), k
+        assert abs(a['relres'] - c['relres']) <= 1e-10 * c['relres'], (k, a['relres'], c['relres'])
+    assert len(pa['qr_drift']) >= 2 and max(pa['qr_drift']) <= 1e-8 and pa['drift_ok'], pa['qr_drift']
+    assert int(np.sum(pa['drops'])) > 0, 'no deletion exercised'
+    out.append(dict(production_interval=dict(refactors=len(pa['qr_drift']), drift=max(pa['qr_drift']),
+                                             deletions=int(np.sum(pa['drops'])), dependent_skips=pa['dependent_skips'])))
     return out
 
 

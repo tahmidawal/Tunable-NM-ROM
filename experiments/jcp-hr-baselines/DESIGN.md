@@ -1329,3 +1329,58 @@ are measured in a new tuning-job timing pass, (ii) X's specific front is recompu
 with full Q1, (iii) its picks are frozen (sha256) before its verdict job, (iv) the added cost is certified and charged
 to the baseline's V ledger; ours' V ledger adds the qualification/mesh-free work that selected or certified the
 imported X, counting inherited evidence once.
+
+---
+
+## Amendment A22 (2026-10-18) — design audit 15 (WRONG) and code audit 17 (NOT READY)
+
+**A22.0 3D quadrature evidence (design audit 15 item 2).** A21.2's attribution of the finalists' converged-rule δ_quad
+to the five deployed-rule configurations is **withdrawn** (that evidence belongs to other configurations, and δ_quad
+alone is not the own-state Q2 of COMMON-BRIEF §3). The five 3D batch-1 configurations are **diagnostic (Q1 only)**:
+their pairs are run and reported with that label but take no H-base label. A 3D configuration enters H-base only in a
+later batch with an exact-configuration own-state Q2 certificate (jcp-qualify's 3D Q2, both ρ and rollout-distance
+bars), frozen with its rule, solver, initialisation path, certificate, population and source hash.
+
+**A22.1 NNLS refactorisation cost (design 15 item 4, code 17 item 1).** The refactorisation factors only the active
+columns at a bucket width (the next multiple of 512 ≥ k) and writes the factors back into the fixed buffers; its
+interval is **1,024 appends** (A20.1's 512 superseded). Complete cost model of one path to support s (m rows, N
+candidates, buffer capacity K): appends use the fixed-width buffers, four matrix–vector products of m × K each —
+$8mKs$ flops and $32mKs$ bytes of memory traffic in all; gradient refreshes $2mN$ flops per iteration; back
+substitutions $K^2$ per refit; deletions $O(m+K)$ per Givens rotation; refactorisations $\sum_j 2m(1024j)^2$ flops
+plus a drift product of the same order; the retry rule can double the path. For 3D r = 1,024 (m ≈ 1.04e5, N = 32,768,
+s = K = 16,384): appends ≈ 2.2e17 flops but memory-bound at ≈ 8.9e14 bytes (≈ 3 min at H200 bandwidth); gradients
+≈ 1.3e14 flops; refactorisations ≈ 4.6e14 flops. A20.4's "≈ 1e14 flops" is withdrawn. The resource certificate carries
+the smoke-measured per-append and per-gradient times scaled by $mK$ and $mN$ and by the number of iterations
+(≈ 1.2 s per path in iterations), plus refactorisations and retries.
+
+**A22.2 Memory (code 17 item 2).** Append, reset and delete donate the Q, R and $Q^\top b$ buffers (updated in place);
+a rejected append restores its slot. The refactor builds bucket-width factors while the old buffers are live (peak
+≈ G + Q + R + the bucket factors: 3D r = 1,024 ≈ 27.4 + 13.7 + 2.1 + 13.7 + 2.1 GB ≈ 59 GB plus QR workspace).
+The maximal-shape GPU peak is measured in the first phase-II job before any 3D r = 1,024 path runs; production admission
+requires it below 120 GB (decimal).
+
+**A22.3 Stability gate (design 15 item 5).** Binding CPU gate G-nnls now includes the production interval: a path with
+refactorisation every 1,024 appends, crossing two refactorisations with deletions, must reproduce a path refactored
+every 256 appends (identical supports at every checkpoint, residuals to 1e-10) with drift ≤ 1e-8. In production, a
+drift above 1e-8 at a refactorisation is a recorded **stability event**; any event makes that path's construction
+"quality limited (orthogonality)" with the A16.5 consequences. Dependent-column skips, drift values, drift events,
+interval and buffer capacity are persisted per attempt (`build.ecsw_weights`).
+
+**A22.4** The buffer capacity is clamped to the row count (rectangular small problems).
+
+
+---
+
+## Amendment A23 (2026-10-18) — smk2 result and the "optimum before target" rule
+
+smk2 (job 5422908, H200, 38:02) passed every acceptance gate under the staged checker except
+`2d_L1024|ecsw-smoke-rank`: the 2D r = 128 NNLS path terminated at a KKT-certified NNLS optimum (reason `kkt`, 1,677
+iterations, 13 bans, support below 16r = 2,048) after reaching 2r, 4r and 8r (training residuals 1.7e-4, 6.7e-5,
+2.5e-6), so the 16r checkpoint did not exist and the staged checker (which required all four) failed. This is not a
+construction defect: the training problem was solved exactly with fewer points than the target.
+**Rule (A23):** when a path ends at a KKT-certified optimum (both KKT inequalities, A5.2) before reaching a support
+target, that target's configuration **is the optimum** (actual support and residual reported, flagged `optimum`), not a
+construction failure; for runs made before this rule (smk2) the absent checkpoint is accepted under the same condition.
+Acceptance of smk2 is recomputed with the amended checker (`runs/smk2/ACCEPTANCE-A23.json`); the staged result
+(ALL = false, this gate only) is kept unchanged beside it. smk2 ran the A17 full-QR NNLS; the production algorithm is the
+A20/A22 updating QR, equal to it by the binding gate G-nnls.

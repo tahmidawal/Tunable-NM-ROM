@@ -103,8 +103,7 @@ def _lh_refit(G, b, S, x0, max_inner=None):
 # of Q are zero; the unused block of R is the identity, so triangular solves on the full K x K system leave the first k
 # unknowns exact (back substitution) and set the rest to 0 (qtb is zero there).
 
-@jax.jit
-def _qr_append(Q, R, qtb, k, g, b):
+def _qr_append_impl(Q, R, qtb, k, g, b):
     """Append column g (classical Gram-Schmidt with one reorthogonalisation, CGS2). Returns (Q, R, qtb, rho, gnorm)."""
     c1 = Q.T @ g
     v = g - Q @ c1
@@ -120,8 +119,19 @@ def _qr_append(Q, R, qtb, k, g, b):
     return Q, R, qtb, rho, jnp.linalg.norm(g)
 
 
-@jax.jit
-def _qr_delete(Q, R, qtb, k, j):
+_qr_append = jax.jit(_qr_append_impl, donate_argnums=(0, 1, 2))     # buffers updated in place (A22.2)
+
+
+def _qr_reset_impl(Q, R, qtb, k):
+    """Undo a rejected append: restore slot k to the unused state (zero Q column, identity R column, zero qtb)."""
+    K = R.shape[0]
+    return Q.at[:, k].set(0.), R.at[:, k].set(jnp.zeros(K).at[k].set(1.)), qtb.at[k].set(0.)
+
+
+_qr_reset = jax.jit(_qr_reset_impl, donate_argnums=(0, 1, 2))
+
+
+def _qr_delete_impl(Q, R, qtb, k, j):
     """Delete active column j (0 <= j < k): shift R's columns left, restore triangularity by Givens rotations on rows
     j..k-2 (applied to R, qtb and the columns of Q), then clear position k-1."""
     K = R.shape[0]
@@ -150,20 +160,33 @@ def _qr_delete(Q, R, qtb, k, j):
     return Q, R, qtb
 
 
+_qr_delete = jax.jit(_qr_delete_impl, donate_argnums=(0, 1, 2))
+
+
 @jax.jit
 def _qr_solve(R, qtb):
     return jax.scipy.linalg.solve_triangular(R, qtb, lower=False)
 
 
 @jax.jit
-def _qr_refactor(G, Sp, k, b):
-    """Full Householder refactorisation of the active columns (padded index list Sp, k active)."""
-    keep = (jnp.arange(Sp.shape[0]) < k).astype(G.dtype)
-    A = G[:, Sp] * keep[None, :]
-    Q, R = jnp.linalg.qr(A, mode='reduced')
-    Q = Q * keep[None, :]
-    R = R * keep[:, None] * keep[None, :] + jnp.diag(1. - keep)
-    return Q, R, Q.T @ b
+def _drift(Qb, k):
+    """max |Q_k^T Q_k - I| over the active columns of a bucket slice Qb (columns >= k are zero and masked out)."""
+    keep = (jnp.arange(Qb.shape[1]) < k).astype(Qb.dtype)
+    M = Qb.T @ Qb - jnp.diag(keep)
+    return jnp.max(jnp.abs(M))
+
+
+@jax.jit
+def _qr_active(G, Sb, kb_mask, b):
+    """Householder QR of the active columns gathered at a bucket width kb (A22.1); padded columns are zero."""
+    A = G[:, Sb] * kb_mask[None, :]
+    Qa, Ra = jnp.linalg.qr(A, mode='reduced')
+    Qa = Qa * kb_mask[None, :]
+    Ra = Ra * kb_mask[:, None] * kb_mask[None, :] + jnp.diag(1. - kb_mask)
+    return Qa, Ra, Qa.T @ b
+
+
+DRIFT_TOL = 1e-8                       # A22.3: accepted orthogonality drift between refactorisations
 
 
 class UpdQR:
@@ -171,8 +194,9 @@ class UpdQR:
     every `refactor_every` appends, and the orthogonality drift max|Q^T Q - I| is checked at each refactorisation
     (recorded)."""
 
-    def __init__(self, G, b, K, refactor_every=512):
+    def __init__(self, G, b, K, refactor_every=1024):
         m = G.shape[0]
+        K = min(K, m)                               # A22.4: capacity never exceeds the row count
         self.G, self.b, self.K = G, b, K
         self.Q = jnp.zeros((m, K))
         self.R = jnp.eye(K)
@@ -187,11 +211,11 @@ class UpdQR:
         """Append column `col` of G. Returns False (factorisation unchanged) if the column is numerically dependent:
         its orthogonal remainder rho <= rank_tol * ||g|| (A20.3)."""
         g = self.G[:, int(col)]
-        Q, R, qtb, rho, gn = _qr_append(self.Q, self.R, self.qtb, self.k, g, self.b)
+        self.Q, self.R, self.qtb, rho, gn = _qr_append(self.Q, self.R, self.qtb, self.k, g, self.b)
         rho, gn = float(rho), float(gn)
         if not (rho > rank_tol * gn):
+            self.Q, self.R, self.qtb = _qr_reset(self.Q, self.R, self.qtb, self.k)
             return False
-        self.Q, self.R, self.qtb = Q, R, qtb
         self.k += 1
         self.appends += 1
         return True
@@ -201,13 +225,21 @@ class UpdQR:
         self.k -= 1
 
     def refactor(self, S):
-        Sp = np.pad(np.asarray(S, np.int64), (0, self.K - len(S)), mode='edge') if len(S) else np.zeros(self.K, np.int64)
-        Qn, Rn, qn = _qr_refactor(self.G, jnp.asarray(Sp), len(S), self.b)
+        """Drift check, then Householder refactorisation of the ACTIVE columns only (bucket width = next multiple of
+        512, A22.1), written back into the fixed buffers. A drift above DRIFT_TOL is recorded as a stability event."""
         k = len(S)
+        kb = min(self.K, max(512, -(-k // 512) * 512)) if k else 0
         if k:
-            dev = float(jnp.max(jnp.abs(self.Q[:, :k].T @ self.Q[:, :k] - jnp.eye(k))))
-            self.drift.append(dev)
-        self.Q, self.R, self.qtb, self.k = Qn, Rn, qn, k
+            self.drift.append(float(_drift(self.Q[:, :kb], k)))
+        if kb:
+            Sb = np.pad(np.asarray(S, np.int64), (0, kb - k), mode='edge')
+            mask = (np.arange(kb) < k).astype(np.float64)
+            Qa, Ra, qa = _qr_active(self.G, jnp.asarray(Sb), jnp.asarray(mask), self.b)
+            self.Q = self.Q.at[:, :kb].set(Qa).at[:, kb:].set(0.)
+            self.R = jnp.eye(self.K).at[:kb, :kb].set(Ra)
+            self.qtb = jnp.zeros(self.K).at[:kb].set(qa)
+            del Qa, Ra, qa
+        self.k = k
 
     def solve(self):
         return np.array(_qr_solve(self.R, self.qtb), dtype=np.float64, copy=True)[:self.k]
@@ -259,7 +291,7 @@ def kkt_check(G, bj, S, x, nb):
 
 
 def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, supports=(), max_drops=3,
-                method='update', refactor_every=512):
+                method='update', refactor_every=1024):
     """-> dict(records={tau: ..., ('s', s): ...}, support, weights, relres, path, reason, banned, kkt).
     reason: 'taus' (every requested checkpoint reached), 'kkt' (no admissible positive gradient and the KKT check
     passed), 'incomplete (KKT violated)' (no admissible gradient but KKT fails, e.g. only banned indices remain), 'cap'
@@ -284,6 +316,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
     F = None
     dep_skip = np.zeros(N, bool)
     n_dep = 0
+    n_drift_events = 0
 
     def residual():
         if len(S) == 0:
@@ -324,7 +357,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
             break
         if method == 'update':
             if F is None:
-                F = UpdQR(G, bj, K=int(1 << max(0, (min(cap, m) - 1).bit_length())) if cap < m else m,
+                F = UpdQR(G, bj, K=min(m, int(1 << max(0, (min(cap, m) - 1).bit_length()))),
                           refactor_every=refactor_every)
             new = int(cand[np.argmax(w[cand])])
             if not F.append(new):                   # numerically dependent on the support (A20.3): skipped until the
@@ -343,6 +376,8 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
                 dep_skip[:] = False
             if F.appends and F.appends % F.refactor_every == 0:
                 F.refactor(S)
+                if F.drift and F.drift[-1] > DRIFT_TOL:      # A22.3: fail-closed stability event, recorded
+                    n_drift_events += 1
         else:
             B = max(1, int(math.ceil(frac * len(S))))
             B = min(B, len(cand), cap - len(S))
@@ -371,4 +406,6 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
     if reason == 'kkt' and not kkt['ok']:
         reason = 'incomplete (KKT violated)'
     return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()), kkt=kkt,
-                drops=drops, bnorm=nb, method=method, qr_drift=(F.drift if F is not None else []), dependent_skips=n_dep)
+                drops=drops, bnorm=nb, method=method, qr_drift=(F.drift if F is not None else []), dependent_skips=n_dep,
+                refactor_every=refactor_every, capacity=(F.K if F is not None else None), drift_events=n_drift_events,
+                drift_ok=bool(F is None or not F.drift or max(F.drift) <= DRIFT_TOL))

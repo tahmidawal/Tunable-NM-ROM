@@ -349,22 +349,35 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, lo
     def attempt(max_drops):
         o = NN.greedy_nnls(G, b, taus=taus, supports=sup, cap=cap, log=log, max_drops=max_drops, max_iter=NNLS_MAX_ITER)
         cps = {}
+        opt = o['reason'] == 'kkt' and o['kkt']['ok']          # A23: path ended at a KKT-certified NNLS optimum
         for k, t in zip(kappas, targets):
             x = o['records'].get(('s', t))
+            if x is None and opt and len(o['support']) > 0:
+                pos = o['weights'] > 0
+                x = dict(support=o['support'][pos], weights=o['weights'][pos], relres=o['relres'], size=int(pos.sum()),
+                         resvec=None, optimum=True)
             cps[f'k{k}'] = None if x is None else dict(nodes=cand_nodes[x['support']], weights=x['weights'],
-                                                       relres=x['relres'], size=x['size'])
+                                                       relres=x['relres'], size=x['size'], optimum=x.get('optimum', False))
         cps_raw = {f'k{k}': o['records'].get(('s', t)) for k, t in zip(kappas, targets)}
         for k_, v in cps_raw.items():
             if v is not None and cps[k_] is not None:
                 cps[k_]['resvec'] = v['resvec']
+        for k_, v in cps.items():
+            if v is not None and v.get('optimum'):
+                Sv = jnp.asarray(np.searchsorted(cand_nodes, v['nodes']))
+                v['resvec'] = np.asarray(jnp.asarray(b) - G[:, Sv] @ jnp.asarray(v['weights']))
         cps['_drops'] = o['drops']
         cps['_bnorm'] = o['bnorm']
         summ = dict(max_drops=max_drops, reason=o['reason'], final_relres=o['relres'], final_support=int(len(o['support'])),
+                    method=o.get('method'), qr_drift=o.get('qr_drift'), drift_ok=o.get('drift_ok'),
+                    drift_events=o.get('drift_events'), dependent_skips=o.get('dependent_skips'),
+                    refactor_every=o.get('refactor_every'), capacity=o.get('capacity'),
                     banned=o['banned'], kkt=o['kkt'], iterations=len(o['path']),
                     taus={str(t): (None if o['records'][t] is None else dict(size=o['records'][t]['size'],
                                                                              relres=o['records'][t]['relres'])) for t in taus},
                     reached=sum(v is not None for k, v in cps.items() if not k.startswith('_')),
-                    checkpoints={k: (None if v is None else dict(size=v['size'], relres=v['relres']))
+                    checkpoints={k: (None if v is None else dict(size=v['size'], relres=v['relres'],
+                                                                     optimum=v.get('optimum', False)))
                                  for k, v in cps.items() if not k.startswith('_')})
         return cps, summ
     cps0, s0 = attempt(3)

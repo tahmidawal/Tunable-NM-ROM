@@ -1,0 +1,23 @@
+**NOT READY for production use.** The targeted A20 audit found correct QR algebra on CPU, but a substantial resource-accounting defect, missing required diagnostics, and a reproducible padding failure.
+
+1. **BLOCKER — NEEDS-RESTATEMENT: A20’s production cost estimate omits capacity-sized refactorisations.**  
+   Evidence: `nnls.py:159–166,203–205,344–345`; `DESIGN.md:1297`. Every refactor factors an **m × K** matrix, even when only 512 columns are active. CPU lowering confirms that the QR library receives the full padded width. At m=104,448 and K=16,384, factorisation plus explicit Q formation has nominal dense cost approximately **1.06×10¹⁴ flops per refactor**. Roughly 32 such refactors already exceed the advertised approximately 10¹⁴-flop whole-path estimate substantially. CGS2 also performs four matrix-vector products, approximately **1.37×10¹⁰ flops per append**, rather than the quoted 3.5×10⁹.  
+   **Fix:** refactor an active-width bucket and pad its outputs back into the fixed buffers. Regenerate the production certificate including refactors, orthogonality checks, deletions, and four CGS2 products.
+
+2. **MAJOR — NEEDS-RESTATEMENT: fixed buffers do not imply single-buffer memory consumption.**  
+   Evidence: `nnls.py:106–120,174–179,190–194,203–210`. At the requested maximal shape, G occupies **27.38 GB**, Q **13.69 GB**, and R **2.15 GB**. Append retains the original buffers while constructing replacements; its small-shape CPU executable reports **zero argument/output aliasing**. G plus two Q/R generations alone represents approximately **59.1 GB**, excluding other resident arrays and workspace. Refactor additionally creates a gathered matrix and new factors while retaining the old factors for drift measurement. These observations do **not** establish an H200 OOM, but the current implementation needs a substantially more complete peak-memory account.  
+   **Fix:** separate append acceptance from factor mutation so buffers can safely be donated; measure maximal-shape GPU peak memory, including refactor and deletion workspace, before production admission.
+
+3. **MAJOR — WRONG: production callers discard A20’s required evidence.**  
+   Evidence: `nnls.py:373–374` returns `qr_drift`, `dependent_skips`, and `method`; `build.py:350–369,384–388` preserves none of them. Thus A20.1’s drift reporting and A20.3’s dependent-skip reporting disappear from ECSW construction results, including retries. The caller does correctly select updating QR through the default argument.  
+   **Fix:** persist these fields separately for every attempt, together with the refactor interval and buffer capacity. Ensure downstream summaries retain them.
+
+4. **MINOR — WRONG: power-of-two padding can exceed the row count and break refactorisation.**  
+   Evidence: `nnls.py:327` rounds up without clamping to m when `cap < m`; `nnls.py:164–165` assumes reduced QR returns K columns. Reproduced with a random **60×40** problem, `cap=40`, `refactor_every=16`: K becomes 64 and refactor raises a broadcasting `TypeError` involving `(60,60)` and `(1,64)`. The declared large production shapes avoid this particular failure.  
+   **Fix:** clamp K to m, as the full-QR path already does through `_pad`, and add this rectangular case to G-nnls.
+
+5. **MINOR — CORRECT: the tested updating algebra and checkpoint equivalence pass.**  
+   Evidence: `nnls.py:107–150,186–241,330–343`; `tests/test_core.py:339–351`. G-nnls passed: identical checkpoint support sets, residual agreement within its registered tolerance, and maximum recorded drift **2.00×10⁻¹⁵**. An independent 120-operation append/delete/refactor check preserved reconstruction, orthogonality, and transformed-right-hand-side consistency within **2.23×10⁻¹⁵**, including exact zero padding and identity trailing blocks. A rejected duplicate left the factors unchanged and became admissible after deletion. Givens signs, CGS2, reverse-order deletions, and skip-reset logic were consistent.  
+   **Fix:** no algebraic correction identified; retain explicit invariant and rejection/re-entry tests as permanent regressions.
+
+**Overall: NOT READY.** The top blockers are the unaccounted full-capacity refactor cost and unqualified maximal-shape memory peak; required production diagnostics must also survive `build.py`. These CPU results support the numerical implementation, but do not qualify its production resources. No files were changed, jobs submitted, or GPU work run.

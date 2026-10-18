@@ -113,7 +113,7 @@ def main():
                       b7=dict(horizon=0.5, q2_cases=list(range(8)), qpp_cases=[0, 1, 2, 3], tighter_cases=list(range(6))),
                       controls=dict(cases=[0, 1, 2, 3], under_resolved='lat256')))
     write('ref2t1', dict(mode='fd', dim=2, cohort='dev6', cases=list(range(6)), horizon=1.0, fine=False, allow_refine=False))
-    write('ref2t1v', dict(mode='fd', dim=2, cohort='val32', cases=list(range(10)), horizon=1.0, fine=False, allow_refine=False))
+    write('ref2t1v', dict(mode='fd', dim=2, cohort='val32', cases=list(range(10)) + [19], horizon=1.0, fine=False, allow_refine=False))
     write('ps2t1', dict(mode='ps', dim=2, cohort='val32', cases=[0, 19], horizon=1.0))
 
 

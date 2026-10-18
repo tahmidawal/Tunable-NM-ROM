@@ -44,7 +44,8 @@ def main():
     L = int(cfg['mesh'])
     bank = P.Bank(L, cfg['edges'])
     stage('bank_mesh')
-    bankA = P.Bank(1024, cfg['edges_A'])
+    LA = int(cfg.get('mesh_A', 1024))
+    bankA = P.Bank(LA, cfg['edges_A'])
     stage('bank_1024_for_A')
     S = HA.steps_of(DT0)
     heads, arms = {}, []
@@ -91,7 +92,7 @@ def main():
         rep[f'rollout_{arm.name}'] = dict(valid=HA.run_valid(v), it_sum=int(v['stats']['it_sum']))
         stage(f'rollout_{arm.name}')
         del v
-    va = A.run('main', 'CNR', 'prod', jax.numpy.asarray(Q.e.initial(1024, cases[ci][2])), nu, DT0, record=True)
+    va = A.run('main', 'CNR', 'prod', jax.numpy.asarray(Q.e.initial(LA, cases[ci][2])), nu, DT0, record=True)
     jax.block_until_ready(va)
     stage('rollout_A')
     peak = max(s_['mem']['peak'] for s_ in rep['stages'])

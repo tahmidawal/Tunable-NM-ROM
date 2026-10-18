@@ -18,6 +18,9 @@ import argparse
 import json
 from pathlib import Path
 
+import numpy as np
+import match2 as M2
+
 HERE = Path(__file__).resolve().parent
 FAMS = ('UB', 'CC', 'PS')
 CRITS = ('joint', 'median_only', 'worst_only', 'same_mesh', 'same_mesh_unmatched')
@@ -53,6 +56,24 @@ def main():
     L = ladder_scores(a.ladder)
     K2 = json.loads(Path(a.k2).read_text())
     plan = dict(match=a.match, targets=a.targets, meshes={}, identities={})
+    adm = M['admissibility']
+    src = {}
+    for d in a.ladder:
+        for k in json.loads((Path(d) / 'result.json').read_text())['configs']:
+            src[k] = Path(d)
+    cheapest = {}
+    for k, v in adm.items():
+        if v['admissible'] and (v['family'] not in cheapest or (v['cost'], k) < (adm[cheapest[v['family']]]['cost'], cheapest[v['family']])):
+            cheapest[v['family']] = k
+    ann = {}
+
+    def annotate(k):
+        """Per-candidate labels for whichever comparator C2 selects (A3.4): edge reasons, boundary, PS anchor."""
+        if k not in ann:
+            f = adm[k]['family']
+            ann[k] = dict(edge=M2.edge_reasons(k, M['edges']), boundary=cheapest.get(f) == k, upper_bound=True,
+                          anchor=M2.anchor(k, adm, src) if f == 'PS' else None)
+        return ann[k]
     for N in [int(x) for x in a.meshes.split(',')]:
         tks = [k for k, t in T.items() if t['mesh'] == N]
         roms, groups, ptargets = {}, [], {}
@@ -74,10 +95,8 @@ def main():
                         if not cands:
                             ent['empty'][f'{f}|{cr}'] = 'no match' if cr != 'same_mesh' else m[f]['same_mesh_status']
                             continue
-                        lab = {k: dict(edge=next((r for r in [m[f]['joint'], m[f]['median_only'], m[f]['worst_only']]
-                                                  if r and r['key'] == k), {}).get('edge')) for k in cands}
                         groups.append(dict(id=gid, target=idt, family=f, criterion=cr, candidates=cands))
-                        ent['groups'][gid] = dict(family=f, criterion=cr, candidate_labels=lab)
+                        ent['groups'][gid] = dict(family=f, criterion=cr, candidate_labels={k: annotate(k) for k in cands})
                         ent['group_ids'][f'{f}|{cr}'] = gid
                 for cr in ('joint', 'same_mesh'):
                     cands = sorted({k for f in FAMS for k in m[f]['candidates'][cr]})
@@ -86,7 +105,7 @@ def main():
                         ent['empty'][f'union|{cr}'] = 'no match'
                         continue
                     groups.append(dict(id=gid, target=idt, family='union', criterion=cr, candidates=cands, pool_by_family=True))
-                    ent['groups'][gid] = dict(family='union', criterion=cr)
+                    ent['groups'][gid] = dict(family='union', criterion=cr, candidate_labels={k: annotate(k) for k in cands})
                     ent['group_ids'][f'union|{cr}'] = gid
                 ent['union_joint_group'] = ent['group_ids'].get('union|joint')
             ptargets[tk] = ent

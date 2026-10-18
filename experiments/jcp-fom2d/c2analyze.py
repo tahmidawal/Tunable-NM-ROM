@@ -96,6 +96,7 @@ def main():
         veto = set(r.get('veto', []))
         ctl = r.get('controls', {})
         panel_ok = bool(A not in veto and r['gates'].get('G-RR') and r['gates'].get('G-FR') and r['gates'].get('A-valid')
+                        and r.get('pilots_ok', True) is True
                         and ctl.get('T-dbl', {}).get('fires') and ctl.get('T-fault', {}).get('fires')
                         and ctl.get('T-fault', {}).get('separation_ok')
                         and ctl.get('T-id', {}).get('fires'))
@@ -122,6 +123,13 @@ def main():
                 else:
                     cell.update(speedup(rom, per_case(st2, sel)), selected_labels=g.get('candidate_labels', {}).get(sel, {}))
                 res['cells'][f'{N}|{gid}'] = cell
+            for fc, why in t.get('empty', {}).items():         # empty / deferred / too-small groups are reported, not dropped
+                fam, crit = fc.split('|', 1)
+                gid = f'{tk}|{fam}|{crit}'
+                res['cells'][f'{N}|{gid}'] = dict(target=tk, group=gid, family=fam, criterion=crit, selected=None, status=why)
+                t.setdefault('group_ids', {})[fc] = gid
+            if t.get('status') not in (None, 'ok'):
+                res['cells'][f'{N}|{tk}|target'] = dict(target=tk, status=t.get('status'))
     # H-comp at 4096 and 1024 (H populations, joint criterion), per family and union
     for N in (4096, 1024):
         if N not in jobs:
@@ -129,12 +137,14 @@ def main():
         for tk, t in plan['meshes'][str(N)]['targets'].items():
             if not tk.endswith('|H'):
                 continue
-            for gid, g in t['groups'].items():
+            allg = dict(t['groups'], **{f'{tk}|{fc}': dict(family=fc.split('|')[0], criterion=fc.split('|', 1)[1])
+                                        for fc in t.get('empty', {})})
+            for gid, g in allg.items():
                 if g['criterion'] != 'joint':
                     continue
                 c = res['cells'][f'{N}|{gid}']
                 res['hcomp'][f'{N}|{gid}'] = dict(target=tk, family=g['family'], verdict=c.get('two_x', c.get('status')),
-                                                  cls=c.get('two_x_class'),
+                                                  cls=c.get('two_x_class'), selected_labels=c.get('selected_labels'),
                                                   S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), matched=c.get('selected'))
     # K2 at 4096: every member of the universe, union joint criterion
     if 4096 in jobs:
@@ -164,6 +174,7 @@ def main():
                 for N in sorted(jobs):
                     tk = ent.get('targets', {}).get(str(N))
                     if tk is None:
+                        seq.append((N, 'not qualified at this mesh', 'not qualified at this mesh'))
                         continue
                     gid = plan['meshes'][str(N)]['targets'][tk]['group_ids'].get(f'{fam}|{crit}')
                     c = res['cells'].get(f'{N}|{gid}') if gid else None
@@ -171,6 +182,10 @@ def main():
                         seq.append((N, c['faster'], c['two_x_class']))
                     elif c:
                         seq.append((N, c.get('status'), c.get('status')))
+                    else:
+                        tt = plan['meshes'][str(N)]['targets'][tk]
+                        why = tt.get('empty', {}).get(f'{fam}|{crit}') or tt.get('status') or 'no cell'
+                        seq.append((N, why, why))
                 ok1 = [(m, c1) for m, c1, _ in seq if c1 in ('ROM faster', 'FOM faster', 'unresolved')]
                 tr = {'ROM >= 2x': 'ROM faster', 'ROM < 2x': 'FOM faster', 'unresolved': 'unresolved'}
                 ok2 = [(m, tr[c2]) for m, _, c2 in seq if c2 in tr]

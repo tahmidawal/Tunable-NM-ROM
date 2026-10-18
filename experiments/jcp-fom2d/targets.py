@@ -137,7 +137,10 @@ def front(path, commit, out, k2_out):
         if isinstance(v, list):
             return any(qualified_anywhere(x) for x in v)
         return False
-    hidden = [k for k, v in (M4.get('unqualified') or {}).items() if qualified_anywhere(v)]
+    # producer schema (jcp-qualify analyze.front2d): an unqualified entry is the string 'no accuracy entry' (qualification
+    # unknown) or a record with acc_label / timing_label / usable / complete38; both labels true = numerically qualified
+    hidden = [k for k, v in (M4.get('unqualified') or {}).items()
+              if isinstance(v, str) or qualified_anywhere(v) or (isinstance(v, dict) and v.get('acc_label') and v.get('timing_label'))]
     complete = all(k in M4 for k in ('members', 'other_qualified', 'unqualified')) and not hidden
     if hidden:
         print('K2 universe incomplete: numerically qualified entries listed as unqualified (e.g. unusable timing):', hidden)

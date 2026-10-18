@@ -1,0 +1,25 @@
+{
+ "attempt": "fub4k",
+ "smoke": "runs/smk1/archive/output/ladder_smk1",
+ "smoke_job": "5366293",
+ "gpu": "NVIDIA H200",
+ "projection_seconds": 8795.191272107139,
+ "projection_hours": 2.4431086866964273,
+ "required_limit_hours": 3.664663030044641,
+ "configs": {
+  "configs/fub4k.json": "998375c4874afcfc163982dcdbe5b0bc8004a151a94f68e2b0a5c959ea6d1030"
+ },
+ "runs": [
+  "ladder:configs/fub4k.json"
+ ],
+ "detail": {
+  "fd|UB|L4096|0.05": 231.07034293748436,
+  "fd|UB|L4096|0.025": 375.689326184988,
+  "fd|UB|L4096|0.01": 569.842709940672,
+  "fd|UB|L4096|0.005": 569.842709940672,
+  "fd|UB|L4096|0.0025": 1055.2261693298817,
+  "fd|UB|L4096|0.00125": 2025.9930881083012,
+  "fd|UB|L4096|0.000625": 3967.52692566514
+ },
+ "note": "estimates with headroom (x1.5), not demonstrated upper bounds"
+}

@@ -126,16 +126,24 @@ def main():
         U0[cid(c)] = (jnp.asarray(u0n), float(c[2][4]))
     foms = FR.FOMs()
     fkeys = list(cfg['foms'])
-    X = {}
+    XS = {}                                   # A1.6: one prepared input per (discretisation, case), shared by candidates
+
+    def xkey(k):
+        sp = FR.parse(k[len('CTRL-ID|'):] if k.startswith('CTRL-ID|') else k)
+        return ('fd', sp[2]) if sp[0] == 'fd' else ('ps', sp[1])
+
+    def xget(k, c):
+        kk = (xkey(k), cid(c))
+        if kk not in XS:
+            sp = FR.parse(k[len('CTRL-ID|'):] if k.startswith('CTRL-ID|') else k)
+            XS[kk] = FR.prepare(sp, c[2])
+        return XS[kk][0]
     for k in fkeys:
-        sp = FR.parse(k)
-        tp = []
         for c in cases:
-            x, t = FR.prepare(sp, c[2])
-            X[(k, cid(c))] = x
-            tp.append(t)
-        rep['prep'][k] = dict(median=float(np.median(tp)), max=float(np.max(tp)))
-    rep['memory']['inputs'] = P.mem()
+            xget(k, c)
+        tp = [XS[(xkey(k), cid(c))][1] for c in cases]
+        rep['prep'][k] = dict(median=float(np.median(tp)), max=float(np.max(tp)), shared_key=list(xkey(k)))
+    rep['memory']['inputs'] = dict(P.mem(), n_inputs=len(XS))
 
     def rom_call(lb, c):
         sp = roms[lb]
@@ -158,7 +166,7 @@ def main():
 
     def fom_call(k, c):
         kk = k[len('CTRL-ID|'):] if k.startswith('CTRL-ID|') else k
-        return foms.callable(FR.parse(kk), X[(k, cid(c))], float(c[2][4]), ('mesh', N))
+        return foms.callable(FR.parse(kk), xget(k, c), float(c[2][4]), ('mesh', N))
 
     def fom_ident(F):
         return sha(np.concatenate([np.asarray(F[:, ::N // 256, ::N // 256]).ravel(), np.asarray(P._reduce(F))]))
@@ -239,9 +247,7 @@ def main():
             ta1, ha1 = timed_A(c)
             burn(bsec)
             tb, ob = sync_time(fnB)
-            hb = check(lb, c, ob) if fault != 'identity' else False
-            if fault == 'identity':
-                VETO.add(lb)
+            hb = check(lb, c, ob)
             if fault == 'drift':        # A2 interval holds two separately dispatched, synchronised A executions
                 fnA = rom_call(A, c)
                 burn(bsec)
@@ -297,7 +303,15 @@ def main():
         rep['selection'][g['id']] = dict(target=g['target'], family=g['family'], criterion=g['criterion'], shortlist=sl,
                                          stage0={k: rep['stage0'][k]['cost'] for k in sl}, stage1=cost, population=pop,
                                          selected=best, status='selected' if ok else
-                                         ('no candidate' if not sl else 'invalid timing (selection population < 5)'))
+                                         (('all candidates vetoed (identity)' if top[g['id']] else 'no candidate') if not sl
+                                          else 'invalid timing (selection population < 5)'))
+    keep = {v['selected'] for v in rep['selection'].values() if v['selected']}
+    for k_ in list(foms.ps):                                # A1.6: release PS programs no longer needed (FD solvers are shared)
+        if not any(FR.parse(x)[0] == 'ps' and (FR.parse(x)[1], FR.parse(x)[2]) == k_[:2] for x in keep):
+            del foms.ps[k_]
+    import gc
+    gc.collect()
+    rep['memory']['after_stage1_release'] = P.mem()
     frozen = dict(mesh=N, cases=[cid(c) for c in cases], store_version=RS.store_version(), selection=rep['selection'],
                   roms=sorted(roms), veto_after_stage1=sorted(VETO))
     fb = json.dumps(clean(frozen), indent=1, sort_keys=True).encode()
@@ -349,22 +363,26 @@ def main():
             roms[lb] = dict(roms[src_lb], label=lb)
         else:
             cfg['foms'][lb] = cfg['foms'][src_lb]
-            for c in cases:
-                X[(lb, cid(c))] = X[(src_lb, cid(c))]
-        for c in cases:
-            REF[(lb, cid(c))] = REF[(src_lb, cid(c))]
-        x = triplet(lb, cases[0], 0, 'control', fault='identity')
-        rep['controls']['T-id'] = dict(row=x, alias=lb, source=src_lb, source_vetoed=src_lb in VETO,
-                                       fires=bool(lb in VETO and not x['valid']),
-                                       note='control-only alias; the production subject is not vetoed by the control')
+        for c in cases:                                      # a deliberately WRONG reference: the ordinary check must catch it
+            REF[(lb, cid(c))] = 'corrupted-' + REF[(src_lb, cid(c))]
+        pre = src_lb in VETO
+        x = triplet(lb, cases[0], 0, 'control')
+        rep['controls']['T-id'] = dict(row=x, alias=lb, source=src_lb, source_vetoed_before=pre, source_vetoed_after=src_lb in VETO,
+                                       fires=bool(lb in VETO and not x['valid'] and (src_lb in VETO) == pre),
+                                       note='control-only alias with a corrupted identity reference, through the ordinary '
+                                            'check(); the production subject is unaffected')
     for k in cfg.get('pilot_foms', []):                  # A1.6 combined-workload memory pilot (untimed, bank resident)
         sp = FR.parse(k)
         x, tp = FR.prepare(sp, cases[0][2])
-        t, F = sync_time(foms.callable(sp, x, float(cases[0][2][4]), ('mesh', N)))
-        rep.setdefault('pilot_foms', {})[k] = dict(seconds_first=t, prep_seconds=tp, finite=bool(np.isfinite(np.asarray(F[:, ::64, ::64])).all()),
-                                                   mem=P.mem())
-        del F, x
-        print('PILOT', k, round(t, 2), P.mem(), flush=True)
+        F, info = foms.run(sp, x, float(cases[0][2][4]), ('mesh', N))
+        F = jax.block_until_ready(F)
+        ok, ev = FR.FOMs.converged(sp, info, F)              # full-output finiteness + convergence evidence
+        rep.setdefault('pilot_foms', {})[k] = dict(prep_seconds=tp, valid=bool(ok), evidence={kk: ev.get(kk) for kk in
+                                                   ('stages', 'complete', 'finite', 'worst_res', 'max_newton', 'umax')},
+                                                   shape=list(F.shape), mem=P.mem())
+        del F, x, info
+        print('PILOT', k, ok, P.mem(), flush=True)
+    rep['pilots_ok'] = all(rep.get('pilot_foms', {}).get(k, {}).get('valid') is True for k in cfg.get('pilot_foms', []))
     rep['compile_log'] = foms.compile_log
     rep['veto'] = sorted(VETO)
     rep['memory']['end'] = P.mem()

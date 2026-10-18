@@ -114,7 +114,19 @@ def attempt_dirs(job):
             d = c / 'archive' / 'output' / f'dacc_{stem}'
             if (d / 'result.json').exists() and d not in out:
                 out.append(d)
-    return out
+    sigs = {d: code_signature(d) for d in out}            # A9.3: merge only attempts with the same numerical code path
+    ref = sigs[out[-1]] if out else None
+    return [d for d in out if sigs[d] == ref]
+
+
+NUMERIC_FILES = ('dacc.py', 'p1common.py', 'p1core.py', 'qcert.py', 'dcert.py', 'rules2d.py', 'vendor/quad2d/qcore.py')
+
+
+def code_signature(d):
+    """sha256 of the numerical code files as staged for the attempt (archive PROVENANCE.json)."""
+    prov = json.loads((d.parents[1] / 'PROVENANCE.json').read_text())
+    by = {p['source'].split('experiments/jcp-dims/', 1)[-1]: p['sha256'] for p in prov}
+    return tuple(by.get(f) for f in NUMERIC_FILES)
 
 
 def load_all():

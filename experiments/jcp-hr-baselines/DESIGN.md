@@ -1067,3 +1067,31 @@ any mismatch of the non-finite pattern as non-finite, so an honestly invalid run
 **A12.7 (code audit 7) Timing outputs must be finite.** Every timed call's output and its scored comparison field must
 be entirely finite (else the discrepancy is non-finite and acceptance fails); the NaN-aware agreement of A12.6 applies
 only to the grid's invalid-run accounting.
+
+---
+
+## Amendment A13 (2026-10-18) — design audit 7 (`audits/codex-design-7.md`, NEEDS-RESTATEMENT, no WRONG)
+
+**A13.1 (A6.3 restated).** Rejecting ECSW ladder levels whose actual support is below r is a **registered
+control-admissibility restriction** of this lane, not a consequence of the COMMON-BRIEF Q1 predicates (which test
+stationarity, validity and distance, not uniqueness). The overdetermined ladder (A8.3) stands.
+
+**A13.2 (A8 restated).** The justification "Gauss–Newton converges quadratically, so the extra iteration is cheap" is
+withdrawn (for non-zero-residual LSPG, Gauss–Newton is in general only linearly convergent with a residual-dependent
+rate). The evidence is empirical: in the CPU dry run the native solver used 1 iteration per step at γ ≤ 1e-3 and 2 at
+γ ≤ 1e-6, with rollout distances to the anchor of 2.4–3.3e-4 and about 1e-7 respectively; the cost of the setting is
+measured in the smoke and in production (iteration counts are reported). Likewise, the failure of the square ECSW
+support is an **observed dry-run outcome** (round-off-level residuals made γ noisy), not a general property of square
+problems. These settings are frozen for production and are not relaxed after any verdict data.
+
+**A13.3 (A9 restated).** A9.1 is a **small-gradient backtracking-stall allowance**: an anchor step whose bounded line
+search (eight halvings) is exhausted with a finite step is accepted when γ ≤ 100 gtol (effective limits 1e-5 tight,
+1e-6 tighter). Round-off is the proposed explanation, not a proven one. Nominal steps (γ ≤ gtol) and allowance steps are
+counted and reported separately for every anchor (`roundoff_stalls` counts the allowance steps). The COMMON-BRIEF Q1
+bars are unchanged, including the tight/tighter agreement ≤ 2.5e-5.
+
+**A13.4 (A11 storage scope).** The field-and-trajectory retention of A11.2 is a **phase-I smoke** requirement. For
+phase II the storage contract is registered in the phase-II release amendment: evidence is verified on the cluster in
+the job (and by an offline checker on the pulled per-configuration summaries), only the selection-relevant fields
+(Stage-B candidates and picks) are pulled, every pulled artifact is checksummed, and the local footprint is bounded by a
+manifest-derived peak replacing §12's obsolete "≤ 2 GB per cell" statement. No required evidence is dropped silently.

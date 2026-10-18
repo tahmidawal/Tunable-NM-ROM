@@ -1,15 +1,15 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T03:59:18Z",
- "step": "4/5: codex code audit 7 running; binding CPU unit suite running; dry run 6 passed all CPU-testable gates",
+ "utc": "2026-10-18T04:05:18Z",
+ "step": "4/5: code audit 8 READY/GO; design audit 7 (A6-A12) running; binding CPU unit suite running; then stage + job audit + submit smoke",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-7.md",
-  "codex_pid": 1038819,
+  "codex_output": "audits/codex-design-7.md",
+  "codex_pid": 1058316,
   "local_pid": 1037811
  },
- "expected_finish_utc": "2026-10-18T04:59:18Z",
- "last_commit": "afe0bd51a",
+ "expected_finish_utc": "2026-10-18T04:50:18Z",
+ "last_commit": "969f33881",
  "gpu_hours_spent": 0,
  "gpu_hours_cap": 30,
  "notes": "A7-A9 written from code audit 2 and dry-run evidence; COMMON-BRIEF s11 disk hygiene adopted for future Codex prompts"

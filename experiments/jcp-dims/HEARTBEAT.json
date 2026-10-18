@@ -1,20 +1,19 @@
 {
  "lane": "jcp-dims",
- "utc": "2026-10-18T16:24:55Z",
- "step": "8: f2a, m3a 5550250, m3b 5586419 running; q3r6 ready to submit when a slot frees",
+ "utc": "2026-10-18T17:11:54Z",
+ "step": "8: m3b 5586419, k3a 5617664 running; k3b waiting for account cap; analyze3d (m3a + rounds) running locally (CPU)",
  "waiting_on": {
   "slurm_jobs": [
-   "5537385",
-   "5550250",
-   "5586419"
+   "5586419",
+   "5617664"
   ],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
  "expected_finish_utc": null,
- "last_commit": "5226bb6d9",
- "gpu_hours_spent": 2.4637,
+ "last_commit": "d24dec372",
+ "gpu_hours_spent": 6.6179,
  "gpu_hours_cap": 55,
  "notes": ""
 }

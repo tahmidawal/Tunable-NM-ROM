@@ -1151,3 +1151,15 @@ timed). Failures and what they show:
 6. **Phase I is not complete.** The brief allows one cluster smoke in phase I; smk1 was it. A second smoke `smk2`
    (≤ 1 GPU-h, same inventory with A14/A15) is needed to show every control firing at real size, and is requested from
    the coordinator in the phase-I hand-back.
+
+**A15.6 (code audit 9) Corrections and conventions.** Corrections to A15's evidence paragraph: the 3D state-POD
+orthonormality deviation was 1.3e-14 (2D 7.1e-15); "every step non-stationary" held for the native ECSW runs (the
+common-solver runs had 46–49 of 50 non-stationary); the 3D failing expression was `G.T @ b` (it and `G.T @ G[:, S]` are
+now transpose-free); the executed G-fd subchecks passed but the complete G-fd gates failed in both cells because arms
+were missing. Support targets are **first crossings**: the recorded state is the first on the path with at least κr
+positive weights; its actual size is reported; one path per (mesh, rank) runs to the largest registered target, and an
+extension target (16r) continues that same path without rebuilding earlier checkpoints. A14.2 restated: numerical rank
+is diagnostic; a basis prefix is admitted only through the A6.1 certificate, which may admit a saturated prefix.
+`collect.sh` now refuses non-terminal jobs, verifies the transfer against a freshly computed remote manifest of outputs
+and logs, and deletes the cluster directory only after all of that succeeds. The randomised fallback releases its
+sketch before the power iterations.

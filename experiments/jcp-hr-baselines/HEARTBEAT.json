@@ -1,15 +1,15 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T06:11:57Z",
- "step": "8: smk1 collected (0.878 GPU-h; ALL=false, A14/A15 fixes); cluster dir deleted; re-running CPU gates and code audit",
+ "utc": "2026-10-18T06:12:27Z",
+ "step": "8: codex code audit 9 (post-smk1 fixes) + local CPU gates then 2D dry run",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": null,
-  "local_pid": null
+  "codex_output": "audits/codex-code-9.md",
+  "codex_pid": 1425077,
+  "local_pid": 1425080
  },
- "expected_finish_utc": "2026-10-18T06:17:25Z",
- "last_commit": "4b6d5015f",
+ "expected_finish_utc": "2026-10-18T07:12:27Z",
+ "last_commit": "69ac90969",
  "gpu_hours_spent": 0.878,
  "gpu_hours_cap": 30,
  "notes": "A7-A9 written from code audit 2 and dry-run evidence; COMMON-BRIEF s11 disk hygiene adopted for future Codex prompts"

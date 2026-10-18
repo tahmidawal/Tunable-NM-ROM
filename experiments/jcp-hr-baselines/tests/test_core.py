@@ -319,6 +319,23 @@ def t_nnls():
         x[rr['support']] = rr['weights']
         assert abs(np.linalg.norm(G @ x - b) / np.linalg.norm(b) - rr['relres']) <= 1e-10
     out.append({t: o['records'][t]['size'] for t in o['records']})
+    # support checkpoints (A15.1, A15.6): first crossing, actual size >= target, exact residual, weights > 0;
+    # drop-count banning (A15.3) with dependent (duplicated) columns still reaches the NNLS optimum
+    o2 = NN.greedy_nnls(G, b, supports=(5, 12, 20), cap=60)
+    for k in (5, 12, 20):
+        rr = o2['records'][('s', k)]
+        assert rr is not None and rr['size'] >= k and np.all(rr['weights'] > 0), (k, rr)
+        x = np.zeros(500)
+        x[rr['support']] = rr['weights']
+        assert abs(np.linalg.norm(G @ x - b) / np.linalg.norm(b) - rr['relres']) <= 1e-10
+    Gd = np.concatenate([G[:, :50], G[:, :50]], 1)
+    o3 = NN.greedy_nnls(Gd, b, taus=(), cap=100)
+    xs, rs_ = so.nnls(Gd, b, maxiter=10000)
+    x3 = np.zeros(100)
+    x3[o3['support']] = o3['weights']
+    assert abs(np.linalg.norm(Gd @ x3 - b) - rs_) <= 1e-8 * max(rs_, 1.), (np.linalg.norm(Gd @ x3 - b), rs_)
+    out.append(dict(supports={k: o2['records'][('s', k)]['size'] for k in (5, 12, 20)}, dup_banned=o3['banned'],
+                    dup_reason=o3['reason']))
     return out
 
 

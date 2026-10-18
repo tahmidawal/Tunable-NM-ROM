@@ -1,6 +1,6 @@
 #!/bin/bash
-# jcp-hr-baselines: pull one finished attempt (logs + output), verify OUTPUTS.sha256 locally, record sacct, then (only
-# after a successful verification and when called with --delete) remove the cluster job directory.
+# jcp-hr-baselines: pull one TERMINAL attempt (logs + output), verify a freshly computed remote manifest covering outputs
+# AND logs, record sacct; only with --delete, and only after every step succeeded, remove the cluster job directory.
 set -euo pipefail
 A="$1"; [[ "$A" =~ ^[a-zA-Z0-9]+$ ]]
 ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
@@ -8,10 +8,15 @@ NS=/cluster/tufts/paralab/tawal01/jcp-hrb
 LOCAL="$ROOT/experiments/jcp-hr-baselines/runs/$A"
 SSH="ssh -o ConnectTimeout=30"
 df -h /home | tail -1
+JOB=$(timeout 60 $SSH tufts-login "ls $NS/$A/logs" | sed -n 's/\.out$//p' | head -1)
+[ -n "$JOB" ]
+if timeout 60 $SSH tufts-login "squeue -j $JOB -h -o %T" 2>/dev/null | grep -q .; then echo "job $JOB not terminal: refusing"; exit 3; fi
+timeout 300 $SSH tufts-login "cd $NS/$A && find logs output -type f -print0 | sort -z | xargs -0 sha256sum" > "$LOCAL/REMOTE.sha256.new"
 mkdir -p "$LOCAL/archive"
-timeout 3600 rsync -e "$SSH" -a "tufts-login:$NS/$A/logs" "tufts-login:$NS/$A/output" "tufts-login:$NS/$A/OUTPUTS.sha256" "$LOCAL/archive/" || true
-( cd "$LOCAL/archive" && sha256sum -c OUTPUTS.sha256 --quiet && echo "checksums OK" )
-JOB=$(ls "$LOCAL/archive/logs" | sed -n 's/\.out$//p' | head -1)
+timeout 3600 rsync -e "$SSH" -a "tufts-login:$NS/$A/logs" "tufts-login:$NS/$A/output" "$LOCAL/archive/"
+( cd "$LOCAL/archive" && sha256sum -c "../REMOTE.sha256.new" --quiet )
+mv "$LOCAL/REMOTE.sha256.new" "$LOCAL/REMOTE.sha256"
+echo "transfer verified against the fresh remote manifest ($(wc -l < "$LOCAL/REMOTE.sha256") files)"
 timeout 60 $SSH tufts-login "sacct -j $JOB --format=JobID,State,Elapsed,AllocTRES%60,ExitCode -P" > "$LOCAL/archive/sacct.txt"
 cat "$LOCAL/archive/sacct.txt"
 if [ "${2:-}" = "--delete" ]; then timeout 120 $SSH tufts-login "rm -rf $NS/$A" && echo "deleted $NS/$A"; fi

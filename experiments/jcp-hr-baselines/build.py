@@ -85,8 +85,9 @@ def pod(S, rmax, nb=1 << 16):
     lam, V = jnp.linalg.eigh(G)
     lam, V = lam[::-1], V[:, ::-1]
     sig = jnp.sqrt(jnp.maximum(lam, 0.))
-    # A14.2: beyond the numerical rank sigma ~ 0; a floored divisor keeps W finite (those columns are then arbitrary
-    # directions re-orthonormalised by the QR below and are rejected by the certificate, never used silently)
+    # A14.2: beyond the numerical rank sigma ~ 0; a floored divisor keeps W finite (those columns become completion
+    # directions re-orthonormalised by the QR below; numerical rank is diagnostic only, and a prefix is admitted only
+    # through the A6.1 certificate -- which may pass a saturated prefix)
     W = V[:, :rmax] / jnp.maximum(sig[:rmax], 1e-14 * sig[0])
     del G, V
     blocks = [jnp.asarray(S[:, a:b]).T @ W for a, b in _blocks(S.shape[1], nb)]
@@ -120,12 +121,14 @@ def pod_rsvd(S, rmax, oversample=64, power=2, nb=1 << 16, seed=0):
         return out
     Y = StX(Om)
     Qy, _ = jnp.linalg.qr(Y, mode='reduced')
+    del Y, Om                                       # code audit 9: release the sketch before the power iterations
     for _ in range(power):
         Z, _ = jnp.linalg.qr(SY(Qy), mode='reduced')
         Qy, _ = jnp.linalg.qr(StX(Z), mode='reduced')
     Bm = SY(Qy).T                       # (k, m) = Q^T S^T
     Ub, sb, _ = jnp.linalg.svd(Bm, full_matrices=False)
     Phi = Qy @ Ub[:, :rmax]
+    del Qy, Bm
     Phi, _ = jnp.linalg.qr(Phi, mode='reduced')
     dev = float(jnp.max(jnp.abs(Phi.T @ Phi - jnp.eye(rmax))))
     return jax.block_until_ready(Phi), np.asarray(sb), dev

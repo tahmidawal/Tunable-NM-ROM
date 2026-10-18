@@ -566,3 +566,12 @@ no verdict that depends on it is read.
 **A4.2 TH06 ladder.** The TH06 control uses the step factors $\{2,1,\tfrac12,\tfrac14\}$ (no $L_s$ is registered for
 TH06; the contextual large-step point is omitted). Its fitted order and interpretability use the same three steps
 $\{1,\tfrac12,\tfrac14\}$, anchors and checks as every scheme.
+
+---
+
+## Amendment A5 (2026-10-18, before any lane job; answers `audits/codex-design-5.md`, NEEDS-RESTATEMENT)
+
+**A5.1 First timing panel enlarged in the same transaction.** The A4.1 transaction also replaces the projected time limit
+of the mesh's **not-yet-submitted** timing job by its projection with every retained fallback subject added (no
+separate repeat reservation in that case, so nothing is counted twice); a repeat reservation applies only when that
+mesh's timing job has already been submitted. Audit 5 found no other open item; this amendment closes the design.

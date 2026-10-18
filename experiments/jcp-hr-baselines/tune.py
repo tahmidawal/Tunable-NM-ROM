@@ -125,6 +125,8 @@ def main():
     bb = None
     cell.set_basis(Phi, trust)
     O.res['basis'] = cell.info['basis[central]']
+    if d == 2:                                          # 3D: the lattice is every interior node (Phi itself)
+        O.npz('artifacts', 'Phi_lat', Phi_lat=np.asarray(Phi)[H.lattice_nodes(d, L)], nodes=H.lattice_nodes(d, L))
     O.npz('artifacts', 'Phi', Phi=np.asarray(Phi), trust=np.asarray([trust.get(r, np.nan) for r in allr]),
           ranks=np.asarray(allr))
 
@@ -159,19 +161,23 @@ def main():
             return out
         O.phase('saturation', saturation, store='saturation')
 
-    def probe_basis():                                 # A2.3 generator probe: the banks' generator (upwind BE)
-        cp = PL.Cell(d, L, log=log)
-        Su, Pu, su, tu = cp.build_basis(fam_tr, rows, rmax, ranks, gen='upwind')
-        del Su
-        O.npz('artifacts', 'Phi_probe', Phi=np.asarray(Pu), trust=np.asarray([tu.get(r, np.nan) for r in ranks]))
-        return dict(info=cp.info['basis[upwind]'], trust=tu)
-    probe = O.phase('generator_probe_basis', probe_basis, store='probe_basis')
 
     pmax = 4 * rmax
     p_list = sorted({m * r for r in allr for m in (1, 2, 4)})
     O.phase('adv_pod', lambda: cell.build_adv(S, pmax, p_list))
     del S
     O.res['adv'] = {k: v for k, v in cell.info.get('adv', {}).items() if k != 'sigma'}
+    # generator probe after the central snapshots are released (host memory: one snapshot matrix at a time)
+    PROBE = {}
+
+    def probe_basis():                                 # A2.3 generator probe: the banks' generator (upwind BE)
+        cp = PL.Cell(d, L, log=log)
+        Su, Pu, su, tu = cp.build_basis(fam_tr, rows, rmax, ranks, gen='upwind')
+        del Su
+        PROBE['Phi'] = np.asarray(Pu)                  # host copy for the probe runs (not an artifact: disk)
+        del Pu
+        return dict(info=cp.info['basis[upwind]'], trust=tu)
+    probe = O.phase('generator_probe_basis', probe_basis, store='probe_basis')
     O.phase('ecsw_states', lambda: cell.ecsw_states(fam_tr), store='ecsw_states')
     O.res.setdefault('construction_failures', {})
     for r in ranks:
@@ -240,11 +246,13 @@ def main():
                         recs[j]['timed_vs_scored'] = float(np.max(np.abs(warm['fields_lat'] - recs[j]['fields_lat'])))
                     q1 = PL.q1_config(recs, tight, tighter, {j: n0[j] for j in SCREEN}, SCREEN[:2], SCREEN)
                     e0 = {j: refs.score_safe(recs[j]['fields_lat'], j) for j in SCREEN}
+                    # output coefficients only: every arm's fields are W @ Phi_r^T (rom.make_query), so lattice fields
+                    # are recomputed offline from artifacts/Phi_lat (disk: 3D fields would be ~70 GB per cell)
                     O.npz('arrays', f'A~{cid}', W=np.stack([recs[j]['W'] for j in SCREEN]),
-                          F=np.stack([recs[j]['fields_lat'] for j in SCREEN]),
-                          Ftight=np.stack([tight[j]['fields_lat'] for j in SCREEN]),
-                          Ftighter=np.stack([tighter[j]['fields_lat'] for j in SCREEN[:2]]),
-                          C=np.stack([recs[j]['C'] for j in SCREEN]))
+                          Wtight=np.stack([tight[j]['W'] for j in SCREEN]),
+                          Wtighter=np.stack([tighter[j]['W'] for j in SCREEN[:2]]),
+                          C=np.stack([recs[j]['C'] for j in SCREEN]),
+                          gamma=np.stack([recs[j]['gamma'] for j in SCREEN]))
                     es = [e0[j]['e'] for j in SCREEN]
                     out[cid] = dict(q1=q1, e0=e0, hr_points=hr_points(kind, r, hp, cell), arm=ainfo, quality=quality,
                                     stage=tag, kind=kind, r=r, hrp=hp, scheme=option[0], dt=option[1], solver=solver,
@@ -344,7 +352,7 @@ def main():
     # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis -------
     if probe is not None:
         def probe_runs():
-            Pu = jnp.asarray(np.load(O.d / 'artifacts' / 'Phi_probe.npz')['Phi'])
+            Pu = jnp.asarray(PROBE.pop('Phi'))
             out = {}
             for r in ranks:
                 datp = dict(Phi=Pu[:, :r], LPhi=H.lap_cols(Pu[:, :r], d, L), DPhi=H.dsum_cols(Pu[:, :r], d, L))

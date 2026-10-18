@@ -1,14 +1,14 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T23:13:39Z",
- "step": "s2d1024b COMPLETED (35/35 members, 33 Q1, 264/264 pairs timed, 8/8 G-ours) and collected; ledger 16.163 GPU-h; running 2D 1024 analysis (fetching t2d1024a tune.json from the cluster); 3D re-freeze (projection) running locally",
+ "utc": "2026-10-18T23:16:21Z",
+ "step": "2D 1024 analysis: all 8 X dominated by registered baseline picks (snapshot-limited restriction attached; pending results audit). Staging s3d64a (3D Stage-B, 8.5 h wall, est 7.82 h) and re-freezing c2d256 for its projection; ledger 16.163 measured, no jobs running",
  "waiting_on": {
   "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T23:32:39Z",
+ "expected_finish_utc": "2026-10-18T23:35:21Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

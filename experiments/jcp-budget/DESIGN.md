@@ -581,3 +581,111 @@ verdict it protects is withheld until a dated amendment resolves it.
   references at `cc04f4b54` (`PROVENANCE.json`).
 - *New gate G-B5* (LS init orthogonality, A1.3) and *G-C1* (`test_budcore.py`: `budcore` with nout = 6 equals `p1core`
   bitwise; the nout = 11 run's first six outputs equal it bitwise) join §7.
+
+## Amendment A2 (2026-10-18, after `audits/codex-design-2.md`, NEEDS-RESTATEMENT; before any real-size run)
+
+(`codex-design-2.md` was recovered verbatim from the `codex exec` stdout log: the `-o` file was not written.)
+
+**A2.1 Component universe and interactions.**
+- The **candidate set** of the "largest component" contest is exactly: floor $e_P$, ideal dynamics $e_{\star,\rm dyn}$,
+  and the main effects of the factorial ingredients (2D: Q, T, F, S, I; 3D: Q, T, S, and F at the tight-solver end).
+  The M ablation (A1.1) is **outside** the contest: it is a test-space-size probe (owned by jcp-dims B6), reported beside
+  the budget with its own validity, and no interaction with it is claimed.
+- **Ingredient–dynamics interaction**, per ingredient $x$ and time: $\chi_x=2\langle I_x,\,u_\varnothing-\Pi u_{\rm ref}\rangle$,
+  so that $\lVert u_x-\Pi u_{\rm ref}\rVert^2=\lVert u_\varnothing-\Pi u_{\rm ref}\rVert^2+\lVert I_x\rVert^2+\chi_x$
+  exactly; $\chi_x<0$ means switching $x$ partly cancels the deployed in-span error. Reported per case (max over $t_k$ of
+  $|\chi_x|$ with its sign at that time), normalised by $n_0^2$. The floor needs none (exactly orthogonal).
+- **3D F×S is not defined:** the deployed fixed-sweep / QN solvers have no Galerkin counterpart, so the form switch exists
+  only with the adaptive solver. The 3D claim is narrowed accordingly: in 3D, "the pair of the two largest components
+  is measured" holds for every pair except one containing both F and S, which is reported as "not defined". (Lane
+  decision; recorded for the coordinator.)
+
+**A2.2 Controls: per-dimension inventory (supersedes the §7 rows and A1.6 where named).** "Fires" predicates are
+evaluated on production check populations; the smoke demonstrates each on the smoke population (≥ 1 case).
+
+| control | 2D fixture and predicate | 3D fixture and predicate |
+|---|---|---|
+| C-Q | R384 LSPG-BE $\Delta t_0$, deployed rule → Gauss $32^2$; $\lVert u(q_\infty)-u(32^2)\rVert>2.5\times10^{-4}$ on ≥ 1 dev6 case. **Changed comparator** ($q_\infty$ = Gauss $320^2$, qualify compared with Gauss $64^2$): qualify's result is supporting evidence only | W256 `fs` CN 0.01 K1, deployed rule → `lat256`; vs gl56; ≥ 1 of cases 0–3 |
+| C-T | R128 LSPG-BE $\Delta t_0$ (member): $\lVert I_T\rVert>10^{-3}$ on > half of dev6 | W256 gl24 `fs` **BE** 0.01 K1 (fixture, not a member): $\lVert u-u_T\rVert>10^{-3}$ on > half of cases 0–3 |
+| C-S | R384 LSPG-CNR $\Delta t_0$, LM budget 0 vs the tight corner: $>2.5\times10^{-4}$ on > half of dev6 (budget-0 run exempt from validity) | W256 lat8192 `qn` BDF2 0.025 with mutation `q0` (no iterations) vs `ad` tight: same predicate on cases 0–3 |
+| C-I | perturbed init $w_0\to1.01w_0$: the decoded $t_0$ difference perturbed − unperturbed equals $0.01\lVert G_{\rm lat}w_0\rVert/n_0$ to $10^{-12}$ relative (guaranteed non-zero); propagation reported | not applicable (no IC switch in 3D, A1.3) |
+| C-F | as A1.6 with $\eta_k=n_0\,(10\max_c+2\varepsilon_{\rm ref}+3U_\star)$ ($\max_c$ = largest candidate of that case at $t_k$), which exceeds every tie threshold, so the floor is labelled largest on every available case by construction; seed fallback: if $\lVert(I-\Pi)h\rVert<10^{-8}\lVert h\rVert$ or the twice-orthogonalised seed is below $10^{-8}$ of it, the next seed $\sin(254\pi x)\sin(254\pi y)$, …; if $r_k=0$ the second orthogonalisation is skipped | same on $63^3$ with seed $\sin(63\pi x)\sin(63\pi y)\sin(63\pi z)$, fallback $62\pi$, … |
+| C-E | tested on the **raw** (un-normalised) balance: (i) ROM := reference → $\beta_k=0$ exactly; (ii) scaled reference → closed form of A1.6 to $10^{-10}$ relative (absolute floor $10^{-15}E_{\rm ref}(t_0)$); normalised values then follow by the stated division | only with B8 3D (deferrable); otherwise "not applicable (deferred)" |
+| C-A | amplitude against the **actual rejection threshold**: $a_k\lVert\varphi\rVert_{\rm fine}=\lVert e_k\rVert_{\rm fine}+n_0^{\rm fine}\,(1.2\,e^{257}+2(\varepsilon^{\rm fine}+\varepsilon^{257})+10^{-6})$ with the window $\varepsilon$'s, which guarantees $e^{\rm fine}-e^{257}>0.10\,e^{257}+2(\varepsilon^{\rm fine}+\varepsilon^{257})$, i.e. "inconsistent"; and $|\Delta e^{257}|\le10^{-10}e^{257}$ | only with B8 3D, $\varphi=\sin(64\pi x)\sin(64\pi y)\sin(64\pi z)$ |
+| C-R1 | first-order ladder on dev6 case 0 at $T=0.5$, prerequisites true and `order` false | X1 3D ladder on val64 case 0 at $T=0.5$, same |
+| C-score | identity errors for case swap, time shift, ST↔S (W1 LSPG-BE $\Delta t_0$ rows) | identity errors for case swap and time shift (no S in 3D) |
+| G-Q | budget-0 LSPG and GAL runs: non-certified steps > 1 %; wrong-table guard raises | `qn` `q0` run: non-stationary steps > 1 % under `qn3.make_certify` |
+
+**A2.3 References.**
+- **Retry and refinement are driven only by the whole-horizon lattice judge** (E0 procedure, $257^2$ / $63^3$, all output
+  times). The window judges and the fine-route judges are evaluated on the resulting final triple; they never trigger
+  more runs.
+- **Reference pairing:** B8 compares the two routes on the **same FD realisation** (this lane's final triple for both
+  $e^{257}$ and $e^{\rm fine}$). B7 growth ratios use this lane's references for **both** windows (same realisation);
+  $W_1$ errors of the budget tables (B2) and of the B7 qualification tables are scored against E0 (primary, as every
+  lane). The per-case E0-vs-new $W_1$ difference is reported (G-R2).
+- **G-R2:** $t_0$ fields must be bitwise equal (shared IC); evolved times use the A1.5 bar. A case whose G-R2 is "not
+  evaluable" or fails has **non-rankable** long-horizon windows (descriptive only); G-R2 is a declared stopping criterion
+  for cross-GPU differences, not an established guarantee.
+- **3D cross-check case:** E0's smallest-$\nu$ pinned 3D case is **val64 case 43** ($\nu\approx0.010006$), outside v16; its
+  FD ladder to $T=0.5$ is added to `ref3` (it is used only for the cross-check, never in B2/B7 populations).
+- **PS escalation:** E0's one-step escalation ladder (2D $N=1536,2048,3072$; 3D $192,256,384$) runs once for a case whose
+  attempt-0 verdict is UNRESOLVED for spatial order or resolution (E0 A1.7); its cost is in the certificate reserve.
+- **Eligibility tiers** per dimension and window, from the cross-check status: **validated** → ranked comparisons and
+  verdicts; **unvalidated** → provisional comparisons, labelled, **no** verdicts; **suspended** → descriptive only. A
+  designated cross-check case is ranked only if its own cross-check PASSes. **$W_3$:** if B7 $T=1.0$ runs, PS
+  cross-checks to $T=1.0$ on 2D val32 {0, 19}; without them $W_3$ is "not cross-checked" → descriptive only.
+
+**A2.4 Decision-rule completions.**
+- *Incomplete candidate sets:* per case the largest is computed only if every candidate is available; otherwise the
+  case is "incomplete" (counted; "largest among available" reported descriptively). Dominance is evaluated over complete
+  cases and is "inconclusive (incomplete)" if fewer than 75 % of eligible cases are complete.
+- *Minimum populations:* any label computed over cases (dominance, pair label, growth, sampling adequacy, front order)
+  needs ≥ 8 cases after all exclusions (≥ 6 for sub16 at $4096^2$), otherwise "inconclusive (population)".
+- *Growth* rule applies to every adjacent window pair ($W_2/W_1$, $W_3/W_2$) with both windows resolved and eligible.
+- *Front order:* common population = cases eligible in every compared window/route for **all** members; Kendall
+  $\tau_b$ (ties allowed); "preserved" iff ≥ 1 resolved pair and no resolved reversal; "inconclusive" if no pair is
+  resolved.
+- *Zero denominators:* near-wall density with zero total error → "zero error"; IC deployed/floor ratio with zero floor →
+  "undefined (zero floor)"; mesh component ratios with a zero denominator → case excluded and counted.
+
+**A2.5 Anchors must be converged; quadrature attribution population.**
+- **Numerical anchors** (every tight, tighter, $u_\star$-family and check-rule run) must be valid **and** have every step
+  verified by the solver's own stopping test (`stats.nfail == 0`: stationarity ≤ gtol or residual ≤ tol from the
+  returned state, no budget or damping exit). Deployed-tolerance corners use `run_valid` (budget exits allowed, as
+  qualify) and record their exit counts. An anchor that fails this makes every contrast using it unavailable.
+- **Quadrature attribution:** G-B4 is evaluated on dev6 (2D) / cases 0–3 (3D) for every Q-containing corner type. The
+  Q component on other cases is labelled "extrapolated from the dev6 check" (the converged rule is a property of the rule,
+  checked on a sample); if G-B4 fails for a corner type, the Q component is **withheld on every case** and the dominance
+  labels are computed without it and marked "Q withheld".
+
+**A2.6 Switch semantics completions.**
+- **M ablation:** the deployed configuration with the frozen $F_{2048}$ list (same rule, form, scheme, step, tolerance,
+  init); labelled "test-space enlargement under the deployed quadrature and solver package"; its validity and exit
+  counts are reported; no Q1/Q2 claim is made for it.
+- **LS init by blocked TSQR** (replaces the normal equations of A1.3): per row block $G_b=Q_bR_b$ (QR of the block, once
+  per $r$); $Z=[R_1;\dots;R_n]=Q_ZR$; per case $Q^{\mathsf T}u=Q_Z^{\mathsf T}[R_b^{-\mathsf T}G_b^{\mathsf T}u_b]_b$ and
+  $c=R^{-1}Q^{\mathsf T}u$. Conditioning is that of $G$ (not squared); ${\rm cond}(R)$ recorded; G-B5 orthogonality
+  $\le10^{-8}$; ${\rm cond}(R)>10^{10}$ is flagged in the report.
+- **G-B6 compares logical ingredients** (rule role, form, (scheme, step), tolerance level, init kind); derived changes
+  (the form's stopping tolerance, the scheme's start-up steps and weights) are not asserted. Inherited operator checks
+  stay: table fingerprints per role (`BSetting.check`), the wrong-table guard, and G-B3's reproduction of qualify's runs.
+
+**A2.7 Compute.** The smoke allowance is the coordinator's launch instruction to this lane (SendMessage of 2026-10-18,
+quoted): "at most ONE cluster smoke job at a time, ≤ 2 GPU-h each; generating new long-horizon references counts as
+production unless it is a ≤ 2 GPU-h pilot". Repriced inventory (estimates; certificates decide):
+
+| job | GPU-h |
+|---|---|
+| smk1, smk2 (sequential) | 2 + 1.5 |
+| ref2a/b/c (38 cases, $T=0.5$) | 6 |
+| ps2 (4 cases + escalation reserve) | 2 |
+| ref3 (v16 + case 43, $T=0.5$; PS 2 cases) | 3 |
+| b1024 (full factorial, checks, M ablation, B7, B8) | 4 |
+| b256, b4096 | 1.5 + 2.5 |
+| b3d (B2 + form panel + B7) | 4 |
+| ref2t1 + ps $T=1$ + b1024t1 | 6.5 |
+| **total** | **≈ 33.5**, ×1.25 ≈ 42 ≤ 45 |
+
+Memory certificates include table builds, the 3D construction peaks (`Tables` and Gauss $56^3$/$64^3$ at W512), the
+reference output buffers and refinement levels, and the retained fine arrays, measured in the smokes.

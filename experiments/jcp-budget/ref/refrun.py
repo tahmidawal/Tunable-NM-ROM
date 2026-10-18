@@ -125,6 +125,23 @@ def attempt(coh, j, L, dt, scheme, purpose, T, fine, nst, adv='central'):
     return rec, lat, fin, res[:ns], nwt[:ns]
 
 
+WINDOWS = {'W1': (1, 5), 'W2': (6, 10), 'W3': (11, 20)}
+
+
+def judge_windows(levels, t0, nu, T):
+    """A1.5: the E0 judge on the fields restricted to {t0} + window (order, direction, floor per window time; solver, IC
+    and Peclet are whole-run properties and are identical in every window)."""
+    n = nout_of(T)
+    out = {}
+    for w, (a, b) in WINDOWS.items():
+        if b >= n:
+            continue
+        idx = [0] + list(range(a, b + 1))
+        lv = [dict(lvl, lat=np.asarray(lvl['lat'])[idx]) for lvl in levels]
+        out[w] = V.judge(lv, t0, nu)
+    return out
+
+
 def fine_t0(coh, j):
     d = coh.dim
     m = RC.FINE[d]
@@ -186,7 +203,8 @@ def solve_case(coh, j, T, fine, allow_refine):
             jd = judge(triple)
     final = [x[1] for x in triple]
     arrays['t0'] = t0
-    jf = None
+    jf = jfw = None
+    jw = judge_windows([x[0] for x in triple], t0, coh.nu(j), T)
     if fine:
         tf = fine_t0(coh, j)
         arrays['t0_fine'] = tf
@@ -194,8 +212,7 @@ def solve_case(coh, j, T, fine, allow_refine):
             lv = [dict(L=x[0]['L'], lat=fines[x[1]], tau=x[0]['tau'], steps_ok=x[0]['steps_ok'], umax=x[0]['umax'])
                   for x in triple]
             jf = V.judge(lv, tf, coh.nu(j))
-            for a_, b_ in ((0, 1), (1, 2)):                       # G-R3: fine and lattice agree at the shared nodes
-                pass
+            jfw = judge_windows(lv, tf, coh.nu(j), T)
         arrays['fine_' + final[2]] = fines[final[2]]
         # G-R3: the fine lattice contains the scoring lattice (2D stride 4 incl. walls; 3D: the 63^3 nodes are the
         # fine nodes with odd index 2k-1 -> k/64): bitwise equality of the shared nodes for every final level
@@ -212,7 +229,7 @@ def solve_case(coh, j, T, fine, allow_refine):
                 cohort_sha256=coh.sha256, lattice=RC.LATTICE[d], fine_lattice=RC.FINE[d] if fine else None,
                 metric_id=f'{d}|lattice={RC.LATTICE[d]}|times=0:0.05:{T:g}|norm=fixed_t0|max_k>=1',
                 t0_sha256=sha(np.ascontiguousarray(t0).tobytes()), scheme='cnr', attempts=attempts, final=final,
-                history=history, judge=jd, judge_fine=jf, outcome=jd['outcome'], refined=refined, tight_used=tight_used,
+                history=history, judge=jd, judge_fine=jf, judge_windows=jw, judge_fine_windows=jfw, outcome=jd['outcome'], refined=refined, tight_used=tight_used,
                 allow_refine=allow_refine, floor_stab=V.FLOOR_STAB, G_R3=(g_r3 if fine else None))
     return arrays, meta
 

@@ -239,11 +239,11 @@ def main():
             ncand = ps_['n_cand']
             n_expect = min(32768, n)                       # registered candidate count (A1.8)
             need_retry = atts['initial']['banned'] > 0.01 * n_expect      # frozen A16.5 threshold, not the output's
-            ok_e = ncand == n_expect and ps_.get('ban_retry_frac') == 0.01 and ps_.get('max_iter') == 20000 and \
+            ok_e = ncand == n_expect and ps_.get('ban_retry_frac') == 0.01 and ps_.get('max_iter') == 40000 and \
                 set(atts) == ({'initial', 'retry'} if need_retry else {'initial'}) and \
                 atts['initial']['max_drops'] == 3 and (('retry' not in atts) or atts['retry']['max_drops'] >= 10 ** 9)
             for a, sm in atts.items():
-                ok_e &= isinstance(sm.get('iterations'), int) and 0 < sm['iterations'] <= 20000 and \
+                ok_e &= isinstance(sm.get('iterations'), int) and 0 < sm['iterations'] <= 40000 and \
                     isinstance(sm.get('banned'), int) and 0 <= sm['banned'] <= n_expect
                 ok_e &= sorted(sm['checkpoints']) == ['k16', 'k2', 'k4', 'k8']
                 for kk, cp in sm['checkpoints'].items():

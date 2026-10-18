@@ -1205,3 +1205,20 @@ reported; acceptance recomputes the trigger and the selection and counts support
 selected path still banned more than 1 % of the candidates (only possible when the retry was not better), that rank's
 ECSW statements carry "**ECSW construction quality limited (banning)**", blocking "adequately tuned ECSW" and exhaustive
 non-domination wording for that cell.
+
+---
+
+## Amendment A17 (2026-10-18) — NNLS algorithm, from the CPU dry run (training-only fixture, no verdict data)
+
+On a training-only fixture (2D L = 256, r = 16, the ECSW contribution matrix 1,920 × 32,768) the path to 16r = 256
+needed 6,444 iterations and banned 7,563 candidates; a reference single-index Lawson–Hanson in numpy needed about 300.
+Two causes: (i) the normal-equation refit (Cholesky of $G_S^\top G_S$) loses the positivity of a newly entered index to
+round-off, and (ii) batch additions (2 % of the support) add correlated indices that the refit then drops, so they
+re-enter and cycle. **A17.1:** every passive-set least-squares problem is solved on the original columns by Householder
+QR on the device, and the gradient is recomputed exactly from the residual each iteration. **A17.2:** classic
+single-index entry (batch fraction 0): on the fixture this reaches 128 points in 147 iterations with no bans, the same
+path as the reference. The iteration bound becomes 40,000 (≈ 1.15 × the largest target at 3D r = 1,024 plus margin),
+replacing A16.5's 20,000 for both attempts; the ban-free retry rule is otherwise unchanged. The cost of one path is
+about $m\sum_k k^2$ flops for the QR solves (3D smoke r = 256: about $10^{15}$); for production ranks this is large
+(3D r = 1,024: about $10^{17}$), so phase II will need an updating QR (append/delete columns, $O(mk)$ per step); this is
+recorded as a phase-II implementation item with its own code audit, and the smoke measures the cost at r = 256.

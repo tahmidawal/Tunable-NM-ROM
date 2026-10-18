@@ -332,7 +332,7 @@ def ecsw_contrib(states, Phi_r, d, L, cand_nodes=None, seed=ECSW_SEED_CAND, n_ca
                                               block_norms=nb.tolist())
 
 
-NNLS_MAX_ITER = 20000
+NNLS_MAX_ITER = 40000                            # single-index LH needs about 1.15 x support iterations (A17)
 BAN_RETRY_FRAC = 0.01
 
 

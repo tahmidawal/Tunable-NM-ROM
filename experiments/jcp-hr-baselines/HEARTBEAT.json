@@ -1,19 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T06:26:59Z",
- "step": "8: code audit 13 + design audit 11 (A16.5) running; local CPU gates then 2D dry run",
+ "utc": "2026-10-18T07:53:32Z",
+ "step": "8: exact-LS NNLS: G-nnls gate PASS; fixture path test running (pid 1748862)",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-13.md, audits/codex-design-11.md",
-  "codex_pid": [
-   1482663,
-   1482666
-  ],
-  "local_pid": 1482662
+  "codex_output": null,
+  "codex_pid": null,
+  "local_pid": 1748862
  },
- "expected_finish_utc": "2026-10-18T07:36:59Z",
- "last_commit": "c57098e00",
+ "expected_finish_utc": "2026-10-18T08:43:32Z",
+ "last_commit": "ad6771389",
  "gpu_hours_spent": 0.878,
  "gpu_hours_cap": 30,
- "notes": "A7-A9 written from code audit 2 and dry-run evidence; COMMON-BRIEF s11 disk hygiene adopted for future Codex prompts"
+ "notes": "smk1 0.878 GPU-h spent; NNLS path to 16r cycles (6444 its for 256 support on CPU fixture) -> fixing"
 }

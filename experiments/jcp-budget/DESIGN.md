@@ -880,3 +880,17 @@ archived `R_R<r>_<form>_<scheme>_<factor>.npz` fields. `fetch_qualify.py --mesh 
 files of the configured members for one mesh (1024²: 9 files, 1.0 GB); `ana2d.archive_f257` reads the cache (env
 `QUALIFY_CACHE`) and verifies every cached file against jcp-qualify's committed `archive.sha256-listing` (mismatch
 raises). The cache is deleted after that mesh's analyses. P1-scaling archives (still local) are read as before.
+
+## Amendment A13 (2026-10-18; G-R2 on the production references, explained)
+
+`anaref` over all $T=0.5$ references (`checks/refs-all.json`): no evaluable G-R2 failure. Two findings, explained:
+- **val32 10 and 31** are "not evaluable": their final triple contains the refinement level ($12288^2$), which E0 never
+  ran. Both are A9-terminal ('unresolved-floor') and non-rankable anyway; their two matched base levels agree with E0
+  exactly ($\lVert\Delta\rVert=0$).
+- **3D val64 43** failed the top-level $t_0$-bitwise test although every matched level's initial row is bitwise equal
+  to E0's and evolved differences are $\le1.1\times10^{-16}$ (bars $10^{-8}$). Cause: in E0's own store the case's
+  saved `t0` array differs in the last bit (max $6.7\times10^{-16}$, 62 554 of 250 047 entries) from the initial rows of
+  E0's own levels — an inconsistency inside E0, not a difference of this lane's references (val64 0 has no such
+  difference). Restated: the shared-IC requirement is met when either the saved `t0` arrays agree bitwise, or E0's
+  saved `t0` is inconsistent with its own levels and every matched level's initial row agrees bitwise
+  (`G_R2.t0_ok`, with `e0_t0_self_consistent` and `levels_t0_bitwise` recorded). Case 43 is a cross-check case only.

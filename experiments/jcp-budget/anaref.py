@@ -75,8 +75,15 @@ def g_r2(arr, meta, d):
                          passed=bool(np.array_equal(x[0], y[0]) and all(dd[k] <= bars[k] for k in range(1, 6)))))
     fin = final_levels(arr, meta)[2]
     evaluable = any(r_['matched'] and r_['new'] == fin['id'] for r_ in rows)
-    passed = bool(t0_bitwise and evaluable and all(r_['passed'] for r_ in rows if r_['matched']))
-    return dict(t0_bitwise=t0_bitwise, pairs=rows, evaluable=evaluable, passed=passed, e0_store_version=RS.store_version())
+    # A13: E0's stored 't0' array can differ in the last bit from the initial rows of E0's OWN levels (3D val64 case 43);
+    # then the shared-IC requirement is the level-wise one: every matched level's t0 row bitwise equal to E0's.
+    e0_t0_self = all(np.array_equal(np.asarray(earr['t0']).ravel(), np.asarray(earr[x['e0']])[0].ravel())
+                     for x in rows if x['matched'])
+    levels_t0 = bool(rows) and all(r_['t0_bitwise'] for r_ in rows if r_['matched'])
+    t0_ok = t0_bitwise or (not e0_t0_self and levels_t0)
+    passed = bool(t0_ok and evaluable and all(r_['passed'] for r_ in rows if r_['matched']))
+    return dict(t0_bitwise=t0_bitwise, e0_t0_self_consistent=bool(e0_t0_self), levels_t0_bitwise=levels_t0, t0_ok=t0_ok,
+                pairs=rows, evaluable=evaluable, passed=passed, e0_store_version=RS.store_version())
 
 
 def judges(arr, meta):
@@ -294,6 +301,10 @@ def main():
         rec['eligibility'] = elig
     rep['summary'] = dict(G_R1=all(x['passed'] for x in rep['G_R1']) if rep['G_R1'] else None,
                           G_R2=all(c['G_R2']['passed'] for c in rep['cases']) if rep['cases'] else None,
+                          G_R2_evaluable_failures=[f"{c['dim']}d {c['cohort']} {c['case']} T{c['horizon']:g}" for c in rep['cases']
+                                                   if c['G_R2']['evaluable'] and not c['G_R2']['passed']],
+                          G_R2_not_evaluable=[f"{c['dim']}d {c['cohort']} {c['case']} T{c['horizon']:g}" for c in rep['cases']
+                                              if not c['G_R2']['evaluable']],
                           G_R3=all(c['G_R3_flag'] is True and c['G_R3_local'] is not False for c in rep['cases']
                                    if c['fine_requested']) if rep['cases'] else None,
                           G_R3_local_all=all(c['G_R3_local'] is True for c in rep['cases'] if c['fine_requested'])

@@ -2,7 +2,9 @@
 (runs/RULES.json, written by analyze.py after `rule1024`) later.
 
     python make_configs.py smoke
-    python make_configs.py production      (needs runs/RULES.json and the trained heads in heads/)
+    python make_configs.py train            (the matched training job)
+    python make_configs.py rule1024         (needs the trained compact heads committed in heads/)
+    (accuracy and timing configs follow the frozen rule selection runs/RULES.json; written and audited then)
 """
 from __future__ import annotations
 
@@ -76,5 +78,32 @@ def smoke():
                             [dict(name='Pinc', head=INC)], lin=list(LIN)))
 
 
+def head_path(K, s):
+    return f'heads/head_mid_k{K}_s{s}.npz'
+
+
+def train():
+    arms = [dict(name='identity', k=16, seed=0, identity=True)]
+    arms += [dict(name=f'mid_k{K}_s{s}', k=K, seed=s, steps=200000) for K in KS for s in SEEDS]
+    arms += [dict(name='probe_k16_s0_2000', k=16, seed=0, steps=2000)]          # A1.7 sensitivity probe
+    write('train', dict(npz=NPZ, ckpt=INC, arms=arms))
+
+
+def rule1024():
+    for K in KS:
+        for s in SEEDS:
+            assert (HERE / head_path(K, s)).exists(), head_path(K, s)
+    groups = [dict(name=f'H{K}', min_pass=2, arms=[dict(name=f'H{K}s{s}', kind='head', head=head_path(K, s)) for s in SEEDS])
+              for K in KS]
+    groups += [dict(name=f'H{K}m128', min_pass=2, M=128,
+                    arms=[dict(name=f'H{K}s{s}m128', kind='head', head=head_path(K, s)) for s in SEEDS]) for K in KS if 4 * K != 128]
+    groups += [dict(name='Hinc', min_pass=1, arms=[dict(name='Hinc', kind='head', head=INC)])]
+    groups += [dict(name=f'L{r}', min_pass=1, arms=[dict(name=f'L{r}', kind='lin', Rp=r)]) for r in LIN]
+    groups += [dict(name=f'L{r}m128', min_pass=1, M=128, arms=[dict(name=f'L{r}m128', kind='lin', Rp=r)])
+               for r in (4, 8, 16) ]
+    write('rule1024', dict(mesh=1024, edges=EDGES, ladder=LADDER, selectable_max=192, population='sub16', check='dev6',
+                           groups=groups))
+
+
 if __name__ == '__main__':
-    {'smoke': smoke}[sys.argv[1]]()
+    {'smoke': smoke, 'train': train, 'rule1024': rule1024}[sys.argv[1]]()

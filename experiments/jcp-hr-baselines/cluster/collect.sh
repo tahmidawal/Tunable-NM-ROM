@@ -14,7 +14,7 @@ JOB=$(timeout 60 $SSH tufts-login "ls $NS/$A/logs" | sed -n 's/\.out$//p' | head
 ST=$(timeout 60 $SSH tufts-login "sacct -j $JOB -X -n -P --format=State" | head -1 | awk '{print $1}')
 case "$ST" in COMPLETED|FAILED|CANCELLED|TIMEOUT|OUT_OF_MEMORY|NODE_FAIL|PREEMPTED) echo "job $JOB terminal: $ST";;
   *) echo "job $JOB state '$ST' is not terminal or unknown: refusing"; exit 3;; esac
-timeout 300 $SSH tufts-login "bash -o pipefail -euc 'cd $NS/$A && find logs output -type f -print0 | sort -z | xargs -0 sha256sum'" > "$LOCAL/REMOTE.sha256.new"
+timeout 300 $SSH tufts-login "bash -o pipefail -euc 'cd $NS/$A && mkdir -p output && find logs output -type f -print0 | sort -z | xargs -0 sha256sum'" > "$LOCAL/REMOTE.sha256.new"
 mkdir -p "$LOCAL/archive"
 timeout 3600 rsync -e "$SSH" -a "tufts-login:$NS/$A/logs" "tufts-login:$NS/$A/output" "$LOCAL/archive/"
 ( cd "$LOCAL/archive" && sha256sum -c "../REMOTE.sha256.new" --quiet )
@@ -24,7 +24,8 @@ timeout 60 $SSH tufts-login "sacct -j $JOB --format=JobID,State,Elapsed,AllocTRE
 cat "$LOCAL/archive/sacct.txt"
 # A34.2: reconcile the reservation with the measured allocation (ElapsedRaw x allocated GPUs), under the ledger lock
 read -r ER GRES <<<"$(timeout 60 $SSH tufts-login "sacct -j $JOB -X -n -P --format=ElapsedRaw,AllocTRES" | head -1 | tr '|' ' ')"
-NG=$(echo "$GRES" | sed -n 's/.*gres\/gpu=\([0-9]*\).*/\1/p'); NG=${NG:-1}
-HRS=$(python3 -c "print(round($ER*$NG/3600, 4))")
+NG=$(echo "$GRES" | sed -n 's/.*gres\/gpu=\([0-9]*\).*/\1/p')
+[[ "$ER" =~ ^[0-9]+$ && "$NG" =~ ^[0-9]+$ ]] || { echo "accounting unavailable: reservation kept"; exit 7; }
+HRS=$(/home/tahmid/Dev/.venv/bin/python -c "print(round($ER*$NG/3600, 4))")
 /home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" reconcile "$A" "$JOB" "$HRS" "$ST"
 if [ "${2:-}" = "--delete" ]; then timeout 120 $SSH tufts-login "rm -rf $NS/$A" && echo "deleted $NS/$A"; fi

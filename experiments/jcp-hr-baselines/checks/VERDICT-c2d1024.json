@@ -1,0 +1,2312 @@
+{
+ "cell": "c2d1024",
+ "flags": {
+  "adequate": true,
+  "saturation_256": false,
+  "basis_used": "12-step (central)",
+  "restrictions": [
+   "snapshot-limited check failed (A1.3)"
+  ],
+  "tune_unfinished": [],
+  "tune_construction_failed": [],
+  "tune_deferred": [],
+  "missing_members": {},
+  "ecsw_not_complete": [],
+  "ecsw_quality_limited": [],
+  "accounting": {
+   "T_hours": 0.9877785936807696,
+   "V_hours_tuning": 0.7569692337189594,
+   "V_hours_stageB": 1.2654297616847583,
+   "limiting_comparator_hours": 0.017525478633534576,
+   "tuning_finished": true,
+   "stageB_finished": true,
+   "active_phase": {
+    "tuning": null,
+    "stageB": null
+   },
+   "V_hours": 2.0223989954037176,
+   "V_is_lower_bound": false,
+   "allocation_hours": {
+    "tuning": 1.8058,
+    "stageB": 1.2822
+   },
+   "V_upper_bound_hours": 3.088
+  },
+  "allocation_hours": 1.9797222222222222,
+  "budget_note": "dimension-level V ratio and band wording are applied by make_report.py (A4.3)"
+ },
+ "eligible_cases": [
+  "dev6|0",
+  "dev6|1",
+  "dev6|2",
+  "dev6|3",
+  "dev6|4",
+  "dev6|5",
+  "val32|0",
+  "val32|1",
+  "val32|2",
+  "val32|3",
+  "val32|4",
+  "val32|5",
+  "val32|6",
+  "val32|7",
+  "val32|8",
+  "val32|9",
+  "val32|10",
+  "val32|11",
+  "val32|12",
+  "val32|13",
+  "val32|14",
+  "val32|15",
+  "val32|16",
+  "val32|17",
+  "val32|18",
+  "val32|19",
+  "val32|20",
+  "val32|21",
+  "val32|22",
+  "val32|23",
+  "val32|24",
+  "val32|25",
+  "val32|26",
+  "val32|27",
+  "val32|28",
+  "val32|29",
+  "val32|30",
+  "val32|31"
+ ],
+ "X": {
+  "1024|R128|BE": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.04843353706751573,
+   "med_X": 0.010953393961156339,
+   "roles": {
+    "B_acc": {
+     "id": "qdeim|256|512|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.9449649569038299,
+     "W": 0.030704292340342842,
+     "med": 0.002672393787324332,
+     "time": {
+      "median": 0.9449649569038299,
+      "per_case": {
+       "0": 0.9610883594546842,
+       "1": 0.9454479935596006,
+       "2": 0.9094055173255784,
+       "3": 0.9802846728583577,
+       "4": 0.944481920248059,
+       "5": 0.9373302612243669
+      },
+      "ci95": [
+       0.9233678892749726,
+       0.970686516156521
+      ],
+      "ci90_log": [
+       -0.07586242854223559,
+       -0.037840679300855266
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.048427521899830045,
+       0.04843955223520141
+      ],
+      "median": [
+       0.010949546654495941,
+       0.010957241267816737
+      ],
+      "worst_point": 0.04843353706751573,
+      "median_point": 0.010953393961156339
+     },
+     "envB": {
+      "worst": [
+       0.030695539784094936,
+       0.030713044896590748
+      ],
+      "median": [
+       0.002667562899901685,
+       0.002677224674746979
+      ],
+      "worst_point": 0.030704292340342842,
+      "median_point": 0.002672393787324332
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|256|512|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.9449649569038299,
+     "W": 0.030704292340342842,
+     "med": 0.002672393787324332,
+     "time": {
+      "median": 0.9449649569038299,
+      "per_case": {
+       "0": 0.9610883594546842,
+       "1": 0.9454479935596006,
+       "2": 0.9094055173255784,
+       "3": 0.9802846728583577,
+       "4": 0.944481920248059,
+       "5": 0.9373302612243669
+      },
+      "ci95": [
+       0.9233678892749726,
+       0.970686516156521
+      ],
+      "ci90_log": [
+       -0.07586242854223559,
+       -0.037840679300855266
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.048427521899830045,
+       0.04843955223520141
+      ],
+      "median": [
+       0.010949546654495941,
+       0.010957241267816737
+      ],
+      "worst_point": 0.04843353706751573,
+      "median_point": 0.010953393961156339
+     },
+     "envB": {
+      "worst": [
+       0.030695539784094936,
+       0.030713044896590748
+      ],
+      "median": [
+       0.002667562899901685,
+       0.002677224674746979
+      ],
+      "worst_point": 0.030704292340342842,
+      "median_point": 0.002672393787324332
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|256|k16|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.0611484682324446,
+     "W": 0.02714731703438061,
+     "med": 0.002675542479255461,
+     "quality": "ok"
+    },
+    "ecsw|256|k8|CNR|0.005|common|central": {
+     "label": "unresolved (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 1.007937874584449,
+     "W": 0.027160877071266194,
+     "med": 0.0026749934476182295,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.5775399857071386,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 17.900779263716622,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.4809729949572215,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 15.926574500148853,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.9517221964147233,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 25.756865906941204,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|256|1024|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.1905108414571868,
+     "W": 0.027034044963578842,
+     "med": 0.002678180702369879,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.8534545204749096,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 16.22839003055686,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|384|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.275575783463811,
+     "W": 0.0399234293447058,
+     "med": 0.0023331137393908558,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.495324861471595,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 11.56914620423067,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.9319866294383994,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 17.168469550128307,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    },
+    "qdeim|512|512|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.729495941987997,
+     "W": 0.027655163860278744,
+     "med": 0.002073309235812683,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k4|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "exploratory: unresolved [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 18,
+   "n_not_assessed": 17,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  },
+  "1024|R128|CNR": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.05200362438780516,
+   "med_X": 0.004504668717791399,
+   "roles": {
+    "B_acc": {
+     "id": "qdeim|256|512|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.9451582278161123,
+     "W": 0.030704292340342842,
+     "med": 0.002672393787324332,
+     "time": {
+      "median": 0.9451582278161123,
+      "per_case": {
+       "0": 0.9575227739903301,
+       "1": 0.9422260860075345,
+       "2": 0.9052164705850123,
+       "3": 0.9770292755576209,
+       "4": 0.94809036962469,
+       "5": 0.93642127345815
+      },
+      "ci95": [
+       0.9208188720215811,
+       0.9672760247739756
+      ],
+      "ci90_log": [
+       -0.07934489971052473,
+       -0.038159061410176554
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.05199760922011948,
+       0.052009639555490844
+      ],
+      "median": [
+       0.004501097230328054,
+       0.004508240205254745
+      ],
+      "worst_point": 0.05200362438780516,
+      "median_point": 0.004504668717791399
+     },
+     "envB": {
+      "worst": [
+       0.030695539784094936,
+       0.030713044896590748
+      ],
+      "median": [
+       0.002667562899901685,
+       0.002677224674746979
+      ],
+      "worst_point": 0.030704292340342842,
+      "median_point": 0.002672393787324332
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|256|512|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.9451582278161123,
+     "W": 0.030704292340342842,
+     "med": 0.002672393787324332,
+     "time": {
+      "median": 0.9451582278161123,
+      "per_case": {
+       "0": 0.9575227739903301,
+       "1": 0.9422260860075345,
+       "2": 0.9052164705850123,
+       "3": 0.9770292755576209,
+       "4": 0.94809036962469,
+       "5": 0.93642127345815
+      },
+      "ci95": [
+       0.9208188720215811,
+       0.9672760247739756
+      ],
+      "ci90_log": [
+       -0.07934489971052473,
+       -0.038159061410176554
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.05199760922011948,
+       0.052009639555490844
+      ],
+      "median": [
+       0.004501097230328054,
+       0.004508240205254745
+      ],
+      "worst_point": 0.05200362438780516,
+      "median_point": 0.004504668717791399
+     },
+     "envB": {
+      "worst": [
+       0.030695539784094936,
+       0.030713044896590748
+      ],
+      "median": [
+       0.002667562899901685,
+       0.002677224674746979
+      ],
+      "worst_point": 0.030704292340342842,
+      "median_point": 0.002672393787324332
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|256|k16|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.0706163959636512,
+     "W": 0.02714731703438061,
+     "med": 0.002675542479255461,
+     "quality": "ok"
+    },
+    "ecsw|256|k8|CNR|0.005|common|central": {
+     "label": "unresolved (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 1.0175818358976025,
+     "W": 0.027160877071266194,
+     "med": 0.0026749934476182295,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.5760115358997062,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 18.07232185487975,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.4753666499387246,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 15.861926755884113,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.9546092482813295,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 25.893846653747502,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|256|1024|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.1941520316255205,
+     "W": 0.027034044963578842,
+     "med": 0.002678180702369879,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.8548134558298732,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 16.06388526096356,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|384|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.2780289605341844,
+     "W": 0.0399234293447058,
+     "med": 0.0023331137393908558,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.4925832086286006,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 11.569394942373313,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.9527706149020863,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 17.14753350640816,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    },
+    "qdeim|512|512|CNR|0.005|common|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.743971509534588,
+     "W": 0.027655163860278744,
+     "med": 0.002073309235812683,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k4|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "exploratory: unresolved [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 18,
+   "n_not_assessed": 17,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  },
+  "1024|R256|BE": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.033195224618813274,
+   "med_X": 0.009827380383541483,
+   "roles": {
+    "B_acc": {
+     "id": "qdeim|256|512|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.3919662249938155,
+     "W": 0.030704292340342842,
+     "med": 0.002672393787324332,
+     "time": {
+      "median": 0.3919662249938155,
+      "per_case": {
+       "0": 0.3846721674700952,
+       "1": 0.39960822701398735,
+       "2": 0.38131880683846625,
+       "3": 0.40033716383054885,
+       "4": 0.39017002406799695,
+       "5": 0.393762425919634
+      },
+      "ci95": [
+       0.3829954871542807,
+       0.3999726954222681
+      ],
+      "ci90_log": [
+       -0.9553638205022253,
+       -0.9172706442965797
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.03318920945112759,
+       0.03320123978649896
+      ],
+      "median": [
+       0.009823891618753664,
+       0.0098308691483293
+      ],
+      "worst_point": 0.033195224618813274,
+      "median_point": 0.009827380383541483
+     },
+     "envB": {
+      "worst": [
+       0.030695539784094936,
+       0.030713044896590748
+      ],
+      "median": [
+       0.002667562899901685,
+       0.002677224674746979
+      ],
+      "worst_point": 0.030704292340342842,
+      "median_point": 0.002672393787324332
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|512|1024|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.7960542916788577,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "time": {
+      "median": 0.7960542916788577,
+      "per_case": {
+       "0": 0.7957230575341877,
+       "1": 0.8103953557028288,
+       "2": 0.7811567728714267,
+       "3": 0.8198143731536778,
+       "4": 0.788873404638449,
+       "5": 0.7963855258235276
+      },
+      "ci95": [
+       0.7850150887549379,
+       0.8151048644282533
+      ],
+      "ci90_log": [
+       -0.23769907687401123,
+       -0.2102330569342369
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.03318920945112759,
+       0.03320123978649896
+      ],
+      "median": [
+       0.009823891618753664,
+       0.0098308691483293
+      ],
+      "worst_point": 0.033195224618813274,
+      "median_point": 0.009827380383541483
+     },
+     "envB": {
+      "worst": [
+       0.00764473465882407,
+       0.007662239771319879
+      ],
+      "median": [
+       0.0019512861174901266,
+       0.001958934227236895
+      ],
+      "worst_point": 0.007653487215071975,
+      "median_point": 0.0019551101723635105
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|256|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.4345327689496354,
+     "W": 0.02714731703438061,
+     "med": 0.002675542479255461,
+     "quality": "ok"
+    },
+    "ecsw|256|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.4092043311896273,
+     "W": 0.027160877071266194,
+     "med": 0.0026749934476182295,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.6433803885806935,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 7.2937314406112606,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.602984354568841,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 6.4844631855639605,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.7968326590090271,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 10.52267407339804,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|256|1024|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.48647529807995327,
+     "W": 0.027034044963578842,
+     "med": 0.002678180702369879,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.7569408293226152,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 6.530283151092041,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.611197395617942,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 4.704453870531006,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 6.973241349632594,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    },
+    "qdeim|512|512|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.7136161604348669,
+     "W": 0.027655163860278744,
+     "med": 0.002073309235812683,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k4|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "B_acc: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 17,
+   "n_not_assessed": 18,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  },
+  "1024|R256|CNR": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.025175101948827664,
+   "med_X": 0.002086479978733168,
+   "roles": {
+    "B_acc": {
+     "id": "ecsw|384|k8|CNR|0.005|common|central",
+     "quality": "ok",
+     "T": 0.6041271596287054,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "time": {
+      "median": 0.6041271596287054,
+      "per_case": {
+       "0": 0.6000011310574656,
+       "1": 0.6185193641929037,
+       "2": 0.5871048376270389,
+       "3": 0.634971494885589,
+       "4": 0.5926659461727175,
+       "5": 0.6082531881999454
+      },
+      "ci95": [
+       0.5898853918998782,
+       0.6267454295392463
+      ],
+      "ci90_log": [
+       -0.5231243672587148,
+       -0.4754386256490156
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.025169086781141978,
+       0.02518111711651335
+      ],
+      "median": [
+       0.002082508624006045,
+       0.002090451333460291
+      ],
+      "worst_point": 0.025175101948827664,
+      "median_point": 0.002086479978733168
+     },
+     "envB": {
+      "worst": [
+       0.013488126501470955,
+       0.013507165606350728
+      ],
+      "median": [
+       0.0019768838135317945,
+       0.001984549929045858
+      ],
+      "worst_point": 0.013497646053910841,
+      "median_point": 0.0019807168712888262
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.6351399604479472
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|512|1024|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.802935646073814,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "time": {
+      "median": 0.802935646073814,
+      "per_case": {
+       "0": 0.8049820582996889,
+       "1": 0.8097458390674613,
+       "2": 0.7827924815058854,
+       "3": 0.8396240464780829,
+       "4": 0.790119927030314,
+       "5": 0.8008892338479389
+      },
+      "ci95": [
+       0.7864562042680997,
+       0.824684942772772
+      ],
+      "ci90_log": [
+       -0.23557053867500444,
+       -0.19564627499845197
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.025169086781141978,
+       0.02518111711651335
+      ],
+      "median": [
+       0.002082508624006045,
+       0.002090451333460291
+      ],
+      "worst_point": 0.025175101948827664,
+      "median_point": 0.002086479978733168
+     },
+     "envB": {
+      "worst": [
+       0.00764473465882407,
+       0.007662239771319879
+      ],
+      "median": [
+       0.0019512861174901266,
+       0.001958934227236895
+      ],
+      "worst_point": 0.007653487215071975,
+      "median_point": 0.0019551101723635105
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.6440483091964999,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 7.402180651793424,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 6.536601042616581,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.7994539383624885,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 10.634700675966421,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.7588916479511856,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 6.602330679585003,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.611287946788663,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 4.775105006724106,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 7.0438055431538285,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k4|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|512|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "B_acc: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 12,
+   "n_not_assessed": 23,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  },
+  "1024|R384|BE": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.030082674919371916,
+   "med_X": 0.009779585909922384,
+   "roles": {
+    "B_acc": {
+     "id": "ecsw|256|k8|CNR|0.005|common|central",
+     "quality": "ok",
+     "T": 0.2412719488380857,
+     "W": 0.027160877071266194,
+     "med": 0.0026749934476182295,
+     "time": {
+      "median": 0.2412719488380857,
+      "per_case": {
+       "0": 0.23985869900676,
+       "1": 0.2487162503472245,
+       "2": 0.23542886348554087,
+       "3": 0.2408912801311691,
+       "4": 0.2416526175450023,
+       "5": 0.24346980303603072
+      },
+      "ci95": [
+       0.23764378124615043,
+       0.2460930266916276
+      ],
+      "ci90_log": [
+       -1.4348122607615823,
+       -1.405744560026109
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.03007665975168623,
+       0.030088690087057602
+      ],
+      "median": [
+       0.009775761855049001,
+       0.00978340996479577
+      ],
+      "worst_point": 0.030082674919371916,
+      "median_point": 0.009779585909922384
+     },
+     "envB": {
+      "worst": [
+       0.027152124515018288,
+       0.0271696296275141
+      ],
+      "median": [
+       0.002670162560195582,
+       0.002679824335040876
+      ],
+      "worst_point": 0.027160877071266194,
+      "median_point": 0.0026749934476182295
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.08632848398682351
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|512|1024|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.4732549235150024,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "time": {
+      "median": 0.4732549235150024,
+      "per_case": {
+       "0": 0.47462283939658373,
+       "1": 0.48204089397808,
+       "2": 0.4613937013319817,
+       "3": 0.48368017069106645,
+       "4": 0.4563503101093214,
+       "5": 0.4718870076334211
+      },
+      "ci95": [
+       0.45887200572065157,
+       0.4828605323345732
+      ],
+      "ci90_log": [
+       -0.7735035845450648,
+       -0.7297263262522651
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.03007665975168623,
+       0.030088690087057602
+      ],
+      "median": [
+       0.009775761855049001,
+       0.00978340996479577
+      ],
+      "worst_point": 0.030082674919371916,
+      "median_point": 0.009779585909922384
+     },
+     "envB": {
+      "worst": [
+       0.00764473465882407,
+       0.007662239771319879
+      ],
+      "median": [
+       0.0019512861174901266,
+       0.001958934227236895
+      ],
+      "worst_point": 0.007653487215071975,
+      "median_point": 0.0019551101723635105
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|256|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.25501822958934645,
+     "W": 0.02714731703438061,
+     "med": 0.002675542479255461,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.3802111126129126,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 4.275213039996695,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.3510802143111772,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 3.819117839994616,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.4734656202870585,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 6.1879429739555825,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|256|1024|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.28376354047649477,
+     "W": 0.027034044963578842,
+     "med": 0.002678180702369879,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.44353997727770683,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 3.8300742363101743,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.35866762173028477,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 2.793997841298291,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 4.109001674348638,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    },
+    "qdeim|512|512|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.4189578550435853,
+     "W": 0.027655163860278744,
+     "med": 0.002073309235812683,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "B_acc: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 16,
+   "n_not_assessed": 19,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  },
+  "1024|R384|CNR": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.017752691043501703,
+   "med_X": 0.0019787273987703466,
+   "roles": {
+    "B_acc": {
+     "id": "ecsw|384|k8|CNR|0.005|common|central",
+     "quality": "ok",
+     "T": 0.3541016769761862,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "time": {
+      "median": 0.3541016769761862,
+      "per_case": {
+       "0": 0.35497137862645073,
+       "1": 0.36347660725282865,
+       "2": 0.34565688441898484,
+       "3": 0.3606840984094085,
+       "4": 0.3520409029046528,
+       "5": 0.3532319753259217
+      },
+      "ci95": [
+       0.3488488936618188,
+       0.3620803528311186
+      ],
+      "ci90_log": [
+       -1.051410728884268,
+       -1.0197527774078683
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.017746675875816017,
+       0.01775870621118739
+      ],
+      "median": [
+       0.0019748800921099473,
+       0.001982574705430746
+      ],
+      "worst_point": 0.017752691043501703,
+      "median_point": 0.0019787273987703466
+     },
+     "envB": {
+      "worst": [
+       0.013488126501470955,
+       0.013507165606350728
+      ],
+      "median": [
+       0.0019768838135317945,
+       0.001984549929045858
+      ],
+      "worst_point": 0.013497646053910841,
+      "median_point": 0.0019807168712888262
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.6351399604479472
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|512|1024|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.47364320613679667,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "time": {
+      "median": 0.47364320613679667,
+      "per_case": {
+       "0": 0.47938769059375275,
+       "1": 0.47413514831288706,
+       "2": 0.45942918055671494,
+       "3": 0.47675917750384406,
+       "4": 0.4661983155413868,
+       "5": 0.47315126396070634
+      },
+      "ci95": [
+       0.46281374804905084,
+       0.47807343404879843
+      ],
+      "ci90_log": [
+       -0.7631441655543463,
+       -0.7407437845477312
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.017746675875816017,
+       0.01775870621118739
+      ],
+      "median": [
+       0.0019748800921099473,
+       0.001982574705430746
+      ],
+      "worst_point": 0.017752691043501703,
+      "median_point": 0.0019787273987703466
+     },
+     "envB": {
+      "worst": [
+       0.00764473465882407,
+       0.007662239771319879
+      ],
+      "median": [
+       0.0019512861174901266,
+       0.001958934227236895
+      ],
+      "worst_point": 0.007653487215071975,
+      "median_point": 0.0019551101723635105
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.3765828886512705,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 4.333692750641362,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 3.8023652986639416,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.4700671375945795,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 6.17412297969009,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.43963714837385204,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 3.8240861642109625,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.35860853894588884,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 2.796889027646606,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 4.0990456568657345,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k4|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|512|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "B_acc: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 12,
+   "n_not_assessed": 23,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  },
+  "1024|R512|BE": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.030891139777164605,
+   "med_X": 0.009794509333574793,
+   "roles": {
+    "B_acc": {
+     "id": "qdeim|256|512|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.08603616125381555,
+     "W": 0.030704292340342842,
+     "med": 0.002672393787324332,
+     "time": {
+      "median": 0.08603616125381555,
+      "per_case": {
+       "0": 0.08494179151202622,
+       "1": 0.08809408713734153,
+       "2": 0.08404432733464424,
+       "3": 0.087047379759329,
+       "4": 0.08502494274830212,
+       "5": 0.08709278820410696
+      },
+      "ci95": [
+       0.08449305942333524,
+       0.08759343767072425
+      ],
+      "ci90_log": [
+       -2.470593946450138,
+       -2.435308429916843
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.03088512460947892,
+       0.03089715494485029
+      ],
+      "median": [
+       0.009791020568786977,
+       0.009797998098362612
+      ],
+      "worst_point": 0.030891139777164605,
+      "median_point": 0.009794509333574793
+     },
+     "envB": {
+      "worst": [
+       0.030695539784094936,
+       0.030713044896590748
+      ],
+      "median": [
+       0.002667562899901685,
+       0.002677224674746979
+      ],
+      "worst_point": 0.030704292340342842,
+      "median_point": 0.002672393787324332
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|512|1024|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.17883210988877007,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "time": {
+      "median": 0.17883210988877007,
+      "per_case": {
+       "0": 0.17896140418194578,
+       "1": 0.18314572467786805,
+       "2": 0.17515741710137653,
+       "3": 0.1816572261860847,
+       "4": 0.17456388158167796,
+       "5": 0.17870281559559434
+      },
+      "ci95": [
+       0.17486064934152723,
+       0.18240147543197638
+      ],
+      "ci90_log": [
+       -1.7420701830963663,
+       -1.705633740285437
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.03088512460947892,
+       0.03089715494485029
+      ],
+      "median": [
+       0.009791020568786977,
+       0.009797998098362612
+      ],
+      "worst_point": 0.030891139777164605,
+      "median_point": 0.009794509333574793
+     },
+     "envB": {
+      "worst": [
+       0.00764473465882407,
+       0.007662239771319879
+      ],
+      "median": [
+       0.0019512861174901266,
+       0.001958934227236895
+      ],
+      "worst_point": 0.007653487215071975,
+      "median_point": 0.0019551101723635105
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|256|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.09407134103827579,
+     "W": 0.02714731703438061,
+     "med": 0.002675542479255461,
+     "quality": "ok"
+    },
+    "ecsw|256|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.08940780406377663,
+     "W": 0.027160877071266194,
+     "med": 0.0026749934476182295,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.1423259593822443,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.6824147801120128,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.13286032491842936,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.4855186538325764,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.17911649841914254,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 2.4060420959583513,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|256|1024|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.10559257392333116,
+     "W": 0.027034044963578842,
+     "med": 0.002678180702369879,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.16804902807677236,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.4991221860610202,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.13576090754666995,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.0836066728514238,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.594664254331505,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    },
+    "qdeim|512|512|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.15896331367404196,
+     "W": 0.027655163860278744,
+     "med": 0.002073309235812683,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "B_acc: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 17,
+   "n_not_assessed": 18,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  },
+  "1024|R512|CNR": {
+   "batch": 1,
+   "qualification": "P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)",
+   "diagnostic_only": false,
+   "W_X": 0.02167071223331392,
+   "med_X": 0.0019925791865469753,
+   "roles": {
+    "B_acc": {
+     "id": "ecsw|384|k8|CNR|0.005|common|central",
+     "quality": "ok",
+     "T": 0.13842801803986732,
+     "W": 0.013497646053910841,
+     "med": 0.0019807168712888262,
+     "time": {
+      "median": 0.13842801803986732,
+      "per_case": {
+       "0": 0.13780227738617795,
+       "1": 0.14199488199415836,
+       "2": 0.1344774592527181,
+       "3": 0.14088507612797785,
+       "4": 0.13560955305247113,
+       "5": 0.13905375869355666
+      },
+      "ci95": [
+       0.1350435061525946,
+       0.1414399790610681
+      ],
+      "ci90_log": [
+       -1.9979754557178808,
+       -1.9598107838704952
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.021664697065628232,
+       0.021676727400999605
+      ],
+      "median": [
+       0.0019887318798865756,
+       0.001996426493207375
+      ],
+      "worst_point": 0.02167071223331392,
+      "median_point": 0.0019925791865469753
+     },
+     "envB": {
+      "worst": [
+       0.013488126501470955,
+       0.013507165606350728
+      ],
+      "median": [
+       0.0019768838135317945,
+       0.001984549929045858
+      ],
+      "worst_point": 0.013497646053910841,
+      "median_point": 0.0019807168712888262
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.6351399604479472
+     }
+    },
+    "B_cost": {
+     "id": "qdeim|512|1024|CNR|0.005|common|central",
+     "quality": null,
+     "T": 0.18296374450716973,
+     "W": 0.007653487215071975,
+     "med": 0.0019551101723635105,
+     "time": {
+      "median": 0.18296374450716973,
+      "per_case": {
+       "0": 0.18452707404459556,
+       "1": 0.18593349962391628,
+       "2": 0.17939889775664214,
+       "3": 0.18794959677265807,
+       "4": 0.17998399984234545,
+       "5": 0.18140041496974393
+      },
+      "ci95": [
+       0.17969144879949378,
+       0.18694154819828718
+      ],
+      "ci90_log": [
+       -1.7148873218076035,
+       -1.6807280523622394
+      ],
+      "n_cases": 6,
+      "n_values": 18
+     },
+     "envX": {
+      "worst": [
+       0.021664697065628232,
+       0.021676727400999605
+      ],
+      "median": [
+       0.0019887318798865756,
+       0.001996426493207375
+      ],
+      "worst_point": 0.02167071223331392,
+      "median_point": 0.0019925791865469753
+     },
+     "envB": {
+      "worst": [
+       0.00764473465882407,
+       0.007662239771319879
+      ],
+      "median": [
+       0.0019512861174901266,
+       0.001958934227236895
+      ],
+      "worst_point": 0.007653487215071975,
+      "median_point": 0.0019551101723635105
+     },
+     "qualifier": "developmental, in-sample, unadjusted",
+     "label": "baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "construction_hours": {
+      "cell_T": 0.9877785936807696,
+      "ecsw_path": 0.0
+     }
+    }
+   },
+   "exploratory": {
+    "ecsw|384|k16|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.14738157892078907,
+     "W": 0.013497150890620677,
+     "med": 0.001980829535975794,
+     "quality": "ok"
+    },
+    "ecsw|384|k16|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.677490593212674,
+     "W": 0.013496993921219742,
+     "med": 0.0019797608311265006,
+     "quality": "ok"
+    },
+    "ecsw|384|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.4868529600463445,
+     "W": 0.013497485020187857,
+     "med": 0.001979648185168374,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.18288622417749373,
+     "W": 0.007746312003948542,
+     "med": 0.001956053100747831,
+     "quality": "ok"
+    },
+    "ecsw|512|k8|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 2.40630289939564,
+     "W": 0.007735947440142676,
+     "med": 0.0019427453366079677,
+     "quality": "ok"
+    },
+    "qdeim|384|1536|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.17389516386620724,
+     "W": 0.013471588132524056,
+     "med": 0.0019806797166992563,
+     "quality": null
+    },
+    "qdeim|384|1536|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.4991323276108943,
+     "W": 0.013471395329790053,
+     "med": 0.001979610829635358,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|common|central": {
+     "label": "baseline dominates (exploratory) [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+     "T": 0.13963901509461019,
+     "W": 0.013901438709437157,
+     "med": 0.0019793611817945146,
+     "quality": null
+    },
+    "qdeim|384|768|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.0818630366585598,
+     "W": 0.013901278979904877,
+     "med": 0.001978287371007482,
+     "quality": null
+    },
+    "qdeim|512|1024|CNR|0.005|native|central": {
+     "label": "neither dominates (exploratory) (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+     "T": 1.5952666482298996,
+     "W": 0.007643069957802329,
+     "med": 0.001941817892653417,
+     "quality": null
+    }
+   },
+   "front": [
+    "ecsw|128|k16|CNR|0.005|common|central",
+    "ecsw|128|k4|CNR|0.005|common|central",
+    "ecsw|128|k8|CNR|0.005|common|central",
+    "ecsw|256|k16|CNR|0.005|common|central",
+    "ecsw|256|k8|CNR|0.005|common|central",
+    "ecsw|384|k16|CNR|0.005|common|central",
+    "ecsw|384|k8|CNR|0.005|common|central",
+    "ecsw|512|k8|CNR|0.005|common|central",
+    "ecsw|64|k16|CNR|0.005|common|central",
+    "ecsw|64|k4|CNR|0.005|common|central",
+    "ecsw|64|k8|CNR|0.005|common|central",
+    "qdeim|256|1024|CNR|0.005|common|central",
+    "qdeim|256|512|CNR|0.005|common|central",
+    "qdeim|384|1536|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|common|central",
+    "qdeim|512|1024|CNR|0.005|native|central"
+   ],
+   "pairs": {
+    "ecsw|128|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|128|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|256|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k4|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|32|k8|CNR|0.005|common|central": "excluded: not Q1-qualified on the verdict cohort [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k16|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|384|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|common|central": "B_acc: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|384|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|512|k8|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "ecsw|64|k16|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k4|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "ecsw|64|k8|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|128|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|1024|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|256|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|1536|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|384|384|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|common|central": "exploratory: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|384|768|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|common|central": "B_cost: baseline dominates [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|512|1024|CNR|0.005|native|central": "exploratory: neither dominates (withheld: snapshot-limited check failed (A1.3)) [developmental, in-sample, unadjusted]",
+    "qdeim|512|512|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|128|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|256|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]",
+    "qdeim|64|64|CNR|0.005|common|central": "not labelled: worst envelope entirely above X [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+   },
+   "n_assessed_pairs": 12,
+   "n_not_assessed": 23,
+   "cell_line": "baseline dominates X: observed domination by a registered pick [snapshot-limited check failed (A1.3)] [developmental, in-sample, unadjusted]"
+  }
+ },
+ "stageb_sha256": "92f096816c13ab70158cf73673d8fcfb88d45196531dc8b0b7accec357e5acb8",
+ "tune_sha256": "536163057eafa8f4e67d90ecbecc9718ed2332c9a3cb1cf30d549e343cfabe26",
+ "frozen_sha256": "e463836bf8d0d309295e6ed1ac099743323e914f7578a0a0a3eaaeae5637c7b9"
+}

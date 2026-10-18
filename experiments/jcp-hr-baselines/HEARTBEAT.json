@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T22:32:16Z",
- "step": "t3d64b COMPLETED (7.5 GPU-h) + collected; freezing 3D Stage-B (CPU recheck of 1056 configs); s2d1024b 5840961 RUNNING 0:35 (A-B-A)",
+ "utc": "2026-10-18T22:38:20Z",
+ "step": "3D freeze done (53 members, 9 X); projection model over-counted member runs (A43.1 fix: run-count scaling) -> re-freezing for the projection; budget plan: 3D Stage-B before 2D 256^2 Stage-B (registered defer order); s2d1024b 5840961 RUNNING",
  "waiting_on": {
   "slurm_jobs": [
    5840961
   ],
   "codex_output": null,
   "codex_pid": [],
-  "local_pid": 3925241
+  "local_pid": 3947863
  },
- "expected_finish_utc": "2026-10-18T22:51:16Z",
+ "expected_finish_utc": "2026-10-18T22:57:20Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

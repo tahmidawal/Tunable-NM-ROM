@@ -193,7 +193,9 @@ def main():
         blk = [v['seconds'] for k, v in T['phases'].items()
                if k.split('|')[1:] == [kind, r, hp, scheme, f'{float(dt):.8g}'] and k.startswith(('A|', 'EXT|'))]
         assert blk, ('no tuning block time for', g)
-        sec += max(blk) * ncase / len(TIMING)
+        # A43.1: a Stage-A block = (6 tight + 2 tighter) anchors + 2 solvers x (6 prod + 6 warm) = 32 run-equivalents;
+        # the Stage-B group = (ncase tight + 2 tighter) + ncase prod per member
+        sec += max(blk) * (ncase + 2 + ncase * len(ms)) / (len(TIMING) + 2 + 2 * 2 * len(TIMING))
     adm = [k for k, x in X.items() if 'front' in x]
     tx = {k: float(np.median([c['seconds_warm'] for c in T['ours_pass'][k]['cases'].values()])) for k in adm}
     sec += sum(len(TIMING) * 3 * 1.3 * (2 * tx[k] + elig[m]['t'] + 0.35) for k in adm for m in members)

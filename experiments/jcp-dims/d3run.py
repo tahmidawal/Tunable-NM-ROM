@@ -124,6 +124,9 @@ def run_adaptive(cx, ad, blk, out):
     rungs = blk['rungs']
     for i, rule in enumerate(rungs):
         nxt = rungs[i + 1] if i + 1 < len(rungs) else None
+        if i >= 1:                                    # A1.4: drop the previous rung before building the successor
+            st.drop(rungs[i - 1])
+            gc.collect()
         for fs_ in blk['forms']:
             form, scheme = fs_.split('|')
             d = form_data(st, rule, form)
@@ -181,6 +184,7 @@ def run_adaptive(cx, ad, blk, out):
                     R['W_tighter'][tcs.index(j)], R['valid_tighter'][tcs.index(j)] = np.asarray(ott['W']), ad_valid(ott)
                 cx.acc_sha[(f'{sname}|{rule}', f'ad|{form}|{scheme}|{dt:.8g}|prod', j)] = R['payload'][ci]
                 cx.rep.setdefault('ad_valid', {})[f'{sname}|{rule}|ad|{form}|{scheme}|{dt:.8g}|prod|{j}'] = bool(R['valid'][ci])
+                cx.rep.setdefault('ad_noncert', {})[f'{sname}|{rule}|ad|{form}|{scheme}|{dt:.8g}|prod|{j}'] = int(R['noncert'][ci])
             if nxt is not None:
                 dn = st.data(nxt)
                 for ci in range(len(cases)):
@@ -202,8 +206,6 @@ def run_adaptive(cx, ad, blk, out):
                             rule_sha256=st._d[rule][1]['sha256'])
             print('AD', key, res[key], cx.el(), flush=True)
             del d
-        if i >= 1:
-            st.drop(rungs[i - 1])
         gc.collect()
     st.drop(rungs[-1])
     gc.collect()
@@ -231,6 +233,9 @@ def run_ladder(cx, blk):
     res = {}
     for i, rule in enumerate(rungs):
         nxt = rungs[i + 1] if i + 1 < len(rungs) else None
+        if i >= 1:                                    # A1.4: the previous rung has no further use; drop before the successor
+            st.drop(rungs[i - 1])
+            gc.collect()
         tag = blk.get('tag_prefix', '') + f'{sname}|{rule}'
         r = cx.rollouts(sname, rule, specs, cases, tag=tag, keep_wall=tuple(S.spec_key(sp) for sp in specs))
         adt = {}
@@ -267,8 +272,6 @@ def run_ladder(cx, blk):
             print('LADDER', f'{tag}|{key}', 'valid', all(res[f'{tag}|{key}']['valid']),
                   'worst dist_adt', max(res[f'{tag}|{key}']['dist_adt']), 'rho', np.nanmax(rho) if dn is not None else None,
                   cx.el(), flush=True)
-        if i >= 1:
-            st.drop(rungs[i - 1])
         gc.collect()
         cx.save()
         cx.dump()
@@ -442,35 +445,49 @@ def run_panel(cx, ad, blk):
     print('PANEL', blk['label'], len(inv), 'accept', acc, cx.el(), flush=True)
 
 
-def scored_equals_certified(cx, x, ci, o, payload):
-    """A1.1 (3D): link of the panel's untimed scoring run to the run certified earlier in the same job, and that run's
-    success. fs / qn: bitwise equal six output vectors and internal states (`rollouts` archive, keep_wall) AND equal
-    per-step execution records (s3common.step_record: reason, it, rej, ... / qn records) AND the certified run valid.
-    Adaptive: equal full payload hash with the adaptive block's record AND that run valid. Returns True / False; a
-    missing certified run returns False (never None)."""
+def link_evidence(cx, x, ci, o, payload):
+    """A1.1 (3D): evidence linking the panel's untimed scoring run to the run certified earlier in the same job, kept as
+    separate items: identity (fs / qn: equal six outputs, internal states and per-step execution records; adaptive:
+    equal full payload hash), execution validity of the certified run, finite decoded fields of the scoring run, and
+    the certified run's numerical certificate count (non-certified steps). Timing acceptance needs identity, validity
+    and finite fields; numerical qualification (pooled certificate <= 1 %, distance to the anchors, Q2) is a property of
+    the configuration over its population and is decided by the analysis, never by the panel."""
+    ev = dict(identity=False, valid=False, fields_finite=bool('fields' in o and np.isfinite(np.asarray(o['fields'])).all()),
+              noncert=None)
     if x['name'].startswith('T1|'):
-        return False
+        return ev
     j = cx.cases[ci]
     tag, key = f"{x['setting']}|{x['rule']}", x['name'].split('|', 2)[2]
     if key.startswith('ad|'):
         p = cx.acc_sha.get((tag, key, j))
-        v = cx.rep.get('ad_valid', {}).get(f'{tag}|{key}|{j}')
-        return bool(p is not None and p == payload and v is True)
+        rec = cx.rep.get('ad_valid', {}).get(f'{tag}|{key}|{j}')
+        ev.update(identity=bool(p is not None and p == payload), valid=bool(rec is True),
+                  noncert=cx.rep.get('ad_noncert', {}).get(f'{tag}|{key}|{j}'))
+        return ev
     W = cx.Wstore.get(f'{tag}|{key}')
     Wall = cx.Wstore.get(f'wall|{tag}|{key}')
     if W is None or Wall is None or 'W_all' not in o:
-        return False
+        return ev
     ids = list(cx.Cstore[f'{tag}|{key}'])
     if j not in ids:
-        return False
+        return ev
     k_ = ids.index(j)
     row = next((r for r in reversed(cx.rep['rows']) if r.get('tag') == tag and r.get('spec') == key and r.get('case') == j), None)
     if row is None:
-        return False
+        return ev
     sp = S.parse_key(key)
     rec_ok = json.dumps(S.step_record(sp, o, 0), sort_keys=True) == json.dumps(row['steps'], sort_keys=True)
-    return bool(np.array_equal(np.asarray(o['W'])[:, 0], W[k_]) and np.array_equal(np.asarray(o['W_all'])[:, 0], Wall[k_])
-                and rec_ok and row.get('valid') is True)
+    ev.update(identity=bool(np.array_equal(np.asarray(o['W'])[:, 0], W[k_]) and
+                            np.array_equal(np.asarray(o['W_all'])[:, 0], Wall[k_]) and rec_ok),
+              valid=bool(row.get('valid') is True), noncert=row.get('nonstationary'))
+    return ev
+
+
+def scored_equals_certified(cx, x, ci, o, payload):
+    """Timing-acceptance link (identity AND certified-run validity AND finite decoded fields); see link_evidence."""
+    ev = link_evidence(cx, x, ci, o, payload)
+    cx.rep.setdefault('link_evidence', {})[f"{x['name']}#{cx.cases[ci]}"] = ev
+    return bool(ev['identity'] and ev['valid'] and ev['fields_finite'])
 
 
 # ----------------------------------------------------------------------------------------------- main

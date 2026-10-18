@@ -115,11 +115,15 @@ def main():
             if blk['kind'] == 'rounds':
                 for mm in blk['members'] + ([blk['control']] if blk.get('control') else []):
                     sn, rl = mm['key'].split('|')[:2]
+                    kk, _ = N3.modes(65, 4 * sets[sn]['Rp'])
                     out['entries3d'].append(dict(job=att, kind='round member', key=mm['key'], setting=sn, rule=rl,
                                                  rule_id=rule3(rl, pinned), qp=mm['qp'], qpp=mm.get('qpp'),
-                                                 bank=sets[sn]['bank'], r=sets[sn]['Rp'], a=sets[sn]['a'],
-                                                 M=len(N3.modes(65, 4 * sets[sn]['Rp'])[0]), spec='|'.join(mm['key'].split('|')[2:]),
-                                                 cases='all64', qpp_cases=list(range(8)), **OUT3, **SOLVER3))
+                                                 bank=sets[sn]['bank'], r=sets[sn]['Rp'], a=sets[sn]['a'], M=len(kk),
+                                                 mode_hash=sha_arr(np.asarray(kk, np.int64)), square=False,
+                                                 spec='|'.join(mm['key'].split('|')[2:]), cases='all64',
+                                                 qpp_cases=list(range(8)), trust_fraction=cfg['trust_fraction'],
+                                                 tol='fs/qn: gtol 1e-3 (speed3d); Q1 cited from speed3d eligibility',
+                                                 weighting='LSPG D = 1/(a0 + dt b0 nu lam)', **OUT3, **SOLVER3))
                 continue
             if blk['kind'] not in ('ladder', 'adaptive'):
                 continue

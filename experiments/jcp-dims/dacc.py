@@ -301,6 +301,8 @@ def main():
             rep['elapsed'][f"fixgate|R{blk['r']}M{blk['M']}"] = time.perf_counter() - t_blk
             save()
     rep['memory']['end'] = P.mem()
+    if rep['memory']['end']['peak'] > PEAK_BAR:                # A1.4: covers the post-settings blocks (fixgate) too
+        rep.setdefault('memory_rejected', []).append('job peak (incl. post-settings blocks)')
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()

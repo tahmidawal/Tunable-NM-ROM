@@ -57,6 +57,7 @@ def ncases(c):
 def ref_dacc():
     r = json.loads((out_dir('smk2', 'dacc', 'smk2') / 'result.json').read_text())
     assert r['complete'] and not r.get('memory_rejected'), 'smoke incomplete or memory-rejected (A1.4)'
+    assert r['memory']['end']['peak'] <= 120e9, 'smoke peak above 120 GB'
     pts, setups = [], []
     for s in r['config']['settings']:
         for a in s['arms']:
@@ -110,6 +111,7 @@ def ref_d3():
     assert r['complete'] and not r.get('memory_rejected'), 'smoke incomplete or memory-rejected (A1.4)'
     cfg = r['config']
     sets = {s['name']: s for s in cfg['settings']}
+    assert r['peak_bytes_job'] <= 120e9, 'smoke peak above 120 GB'
     lad, pan = [], []
     for b, rb in zip(cfg['blocks'], r['blocks']):
         if b['kind'] in ('ladder', 'adaptive'):

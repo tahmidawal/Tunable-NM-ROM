@@ -223,6 +223,8 @@ def t_panel():
     check('panel: incomplete counts -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 6}, req)['valid'])
     check('panel: empty certification map -> invalid', not DS.panel_accept(inv, {}, {'b': 4}, req)['valid'])
     check('panel: no required keys -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 4})['valid'])
+    check('panel: unexpected subject -> invalid', not DS.panel_accept(inv + [dict(B='rogue', ratio=.5, drift=1., hashes_ok=True)],
+                                                                       {('b', 0): True, ('A', 0): True}, {'b': 4}, req)['valid'])
     check('panel: hash fault -> invalid', not DS.panel_accept(inv[:3] + [dict(inv[0], hashes_ok=False)], {('b', 0): True},
                                                              {'b': 4}, req)['valid'])
 
@@ -237,7 +239,7 @@ def t_links():
                sat=np.zeros((St, 1), int), gn=np.full((St, 1), 1e-4), rn=np.full((St, 1), 1e-9), lam=np.full((St, 1), 1e-3))
     W = np.arange(12.).reshape(6, 1, 2)
     Wall = np.arange(12.).reshape(6, 1, 2)
-    o = dict(W=W, W_all=Wall, **rec)
+    o = dict(W=W, W_all=Wall, fields=np.zeros((1, 6, 4)), **rec)
     key = 'fs|CN|0.01|K1'
     row = dict(tag='W512|lat8192', spec=key, case=0, valid=True, steps=S3.step_record(S3.parse_key(key), o, 0))
     cx = types.SimpleNamespace(cases=[0], Wstore={f'W512|lat8192|{key}': W[:, 0][None], f'wall|W512|lat8192|{key}': Wall[:, 0][None]},
@@ -246,6 +248,11 @@ def t_links():
     check('link: identical run -> True', D.scored_equals_certified(cx, x, 0, o, 'p') is True)
     o2 = dict(o, reason=np.full((St, 1), 2))
     check('link: mutated execution record -> False', D.scored_equals_certified(cx, x, 0, o2, 'p') is False)
+    o3 = dict(o, fields=np.full((1, 6, 4), np.inf))
+    check('link: non-finite decoded fields -> False', D.scored_equals_certified(cx, x, 0, o3, 'p') is False)
+    check('link: no fields -> False', D.scored_equals_certified(cx, x, 0, {k: v for k, v in o.items() if k != 'fields'}, 'p') is False)
+    row['nonstationary'] = 25
+    check('link evidence: certificate count recorded separately', D.link_evidence(cx, x, 0, o, 'p')['noncert'] == 25)
     row['valid'] = False
     check('link: certified run invalid -> False', D.scored_equals_certified(cx, x, 0, o, 'p') is False)
     cx.rep['rows'] = []
@@ -253,8 +260,8 @@ def t_links():
     xa = dict(name='W512|lat65536|ad|GAL|CN|0.01|prod', setting='W512', rule='lat65536')
     cx.acc_sha[('W512|lat65536', 'ad|GAL|CN|0.01|prod', 0)] = 'h'
     cx.rep['ad_valid'] = {'W512|lat65536|ad|GAL|CN|0.01|prod|0': True}
-    check('link adaptive: same payload, valid -> True', D.scored_equals_certified(cx, xa, 0, {}, 'h') is True)
-    check('link adaptive: other payload -> False', D.scored_equals_certified(cx, xa, 0, {}, 'g') is False)
+    check('link adaptive: same payload, valid -> True', D.scored_equals_certified(cx, xa, 0, {'fields': np.zeros(3)}, 'h') is True)
+    check('link adaptive: other payload -> False', D.scored_equals_certified(cx, xa, 0, {'fields': np.zeros(3)}, 'g') is False)
     st = dict(steps=3, exits=np.zeros(5, int), states=np.zeros((4, 2)), step_gn=np.full(10, 1e-4))
     good = dict(W=np.zeros((6, 2)), stats=st, fields=np.zeros((1, 6, 4)), w0=np.zeros(2), scale=1.)
     check('ad_valid: finite -> True', D.ad_valid(good))

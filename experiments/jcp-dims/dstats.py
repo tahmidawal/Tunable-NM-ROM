@@ -283,6 +283,9 @@ def panel_accept(inv, certified, expected, required=None, band=(1 / 1.1, 1.1)):
     for x in inv:
         cnt[x['B']] = cnt.get(x['B'], 0) + 1
     short = sorted(k for k, n in expected.items() if cnt.get(k, 0) != n)
+    rogue = sorted(k for k in cnt if k not in expected)
+    if rogue:
+        return dict(valid=False, reason='unexpected subjects', rogue=rogue)
     hok = all(x.get('hashes_ok') for x in inv)
     fin = all(np.isfinite(x['ratio']) and x['ratio'] > 0 for x in inv)
     by = {}

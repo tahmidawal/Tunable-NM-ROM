@@ -1,0 +1,17 @@
+provenance-train-draw-2d: PASS equal
+disjoint-train-cohorts: PASS True
+G-fd-a operators vs refcore: PASS [(2, 0.0, 2.0428734600678536e-15, 0.0), (3, 0.0, 2.5827049231934036e-16, 0.0)]
+/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/ops/scatter.py:104: FutureWarning: scatter inputs have incompatible types: cannot safely cast value from dtype=int64 to dtype=int32 with jax_numpy_dtype_promotion=standard. In future JAX releases this will result in an error.
+  warnings.warn(
+G-fd-b online Jacobians (FD + jacfwd), every arm: PASS [(2, 'none', '3.9e-17', '8.5e-11'), (2, 'none', '2.2e-17', '6.1e-11'), (2, 'ecsw', '2.3e-16', '1.1e-10'), (2, 'ecsw', '2.0e-16', '7.9e-11'), (2, 'qdeim', '1.6e-18', '6.2e-11'), (2, 'qdeim', '4.6e-19', '6.5e-11'), (3, 'none', '1.4e-16', '1.2e-10'), (3, 'none', '1.7e-16', '1.3e-10'), (3, 'ecsw', '1.1e-16', '1.6e-10'), (3, 'ecsw', '1.5e-16', '1.8e-10'), (3, 'qdeim', '1.5e-18', '9.1e-11'), (3, 'qdeim', '3.8e-18', '8.4e-11')]
+N-fd mutant Jacobian fails the FD check: PASS [(2, 'none', '2.3e-03'), (2, 'ecsw', '2.4e-03'), (2, 'qdeim', '2.3e-03'), (3, 'none', '1.1e-02'), (3, 'ecsw', '1.2e-02'), (3, 'qdeim', '6.4e-03')]
+G-fd-c ECSW rows and Q-DEIM objective vs independent assembly: PASS [(2, 'cancel_ratio', '2.4e-01'), (2, '3.7e-16', '1.3e-16', '2.0e-16', '3.7e-17', '9.2e-17'), (3, 'cancel_ratio', '3.0e-01'), (3, '2.5e-15', '4.7e-16', '3.0e-16', '1.2e-16', '2.8e-16')]
+FOM (hrcore) vs refcore.make_solver, BE and CN: PASS [(2, 'BE', '1.4e-16'), (2, 'CN', '1.0e-16'), (3, 'BE', '3.0e-17'), (3, 'CN', '9.6e-17')]
+G-lmm step equations (refcore operators) and temporal order, every scheme: PASS [(2, 'BE', '1.6e-16', [0.978, 0.989], 'asymptotic'), (2, 'CN', '1.1e-16', [2.001, 2.0], 'asymptotic'), (2, 'CNR', '1.3e-16', [1.969, 1.984], 'asymptotic'), (2, 'BDF2', '2.3e-16', [2.061, 2.031], 'asymptotic'), (3, 'BE', '8.3e-17', [0.983, 0.992], 'asymptotic'), (3, 'CN', '8.2e-17', [2.001, 2.0], 'asymptotic'), (3, 'CNR', '8.7e-17', [1.953, 1.974], 'asymptotic'), (3, 'BDF2', '1.6e-16', [2.051, 2.024], 'asymptotic')]
+G-full complete basis reproduces the FOM (every arm, option, solver): PASS 84 runs, worst 2.8e-13
+G-nnls greedy NNLS vs scipy (objective, KKT, tau stop): PASS ['1.8e-15', '1.8e-15', '5.3e-15', {0.1: 35, 0.01: 47, 0.001: 49}, {'supports': {5: 5, 12: 12, 20: 20}, 'dup_banned': 0, 'dup_reason': 'kkt'}, {'update_vs_full': 'identical supports', 'drift': 1.5543122344752192e-15, 'refactors': 7}, {'production_interval': {'refactors': 2, 'drift': 6.661338147750939e-15, 'deletions': 200, 'dependent_skips': 0}}]
+G-qdeim pivots vs scipy, exact interpolation on span(U): PASS [(400, 12, '2.9e-16', '8.76e+00'), (900, 40, '1.2e-15', '2.10e+01')]
+G-pod orthonormality, snapshot reproduction and POD optimality: PASS {'dev': 1.7763568394002505e-15, 'rec': 2.442768129265744e-07, 'pe': {10: (0.148191, 0.148191), 30: (0.023151, 0.023151), 60: (0.002381, 0.002381)}}
+N-dom decision table on synthetic data (A2.11, A3.3, A4.2; hand-derived labels): PASS {'a': 'baseline dominates', 'b': 'matches', 'c': 'neither dominates', 'd1': 'unresolved', 'd2': 'matches', 'e2': 'not assessed', 'e3': 'not assessed', 'e4': 'not assessed', 'e5': 'not assessed'}
+ALL PASS
+EXIT=0

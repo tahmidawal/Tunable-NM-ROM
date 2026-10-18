@@ -3,11 +3,11 @@
  "source_sha256": {
   "hrcore.py": "c30723ca6dc42d283e4fe74358e0e03cb6ade59e0658fea85e9f3cccc6d595ce",
   "rom.py": "9729c032b5da1e033f7be8d4246fd1e0b2750989c9ee9f78d783329554a3d694",
-  "build.py": "f4eb0f47f8f430312f27b4e84263ad28020003a1c5e21b52a30aaf841e471f45",
-  "nnls.py": "306be30d235de371ef5515a266d1225b20ce609409e8d04033fdfea543228e2c",
+  "build.py": "f85fd9e8c750144a1bc3893677b53d14f96887d4b7d714c43c5a1e4e276daae5",
+  "nnls.py": "fecc39b3cc7072113f2d7b00aeb60e3fc5cfb40647de4199a2895f5bdfa05644",
   "stats.py": "239ffc93efb4f04a2e9873a8743726d1a87a3be05104ae8660e6db123caf7483",
-  "pipeline.py": "4903874fcfec3d208ca5e5bd4b48c05d3b3b0995d74d04aa94926a18fcd6f1dc",
-  "tests/test_core.py": "3b37f0379c6b836263740d83c294b2474a8db818f3a8ded78a312005d98c7b72"
+  "pipeline.py": "0100f89ae674a1121e41772aff1b266bb13809439cd0ae8dc9b55f7d59e10946",
+  "tests/test_core.py": "662ca94c2311e5624a2ec4820f20be8583589920b9e15cb87f8b54862477bfe8"
  },
  "gates": {
   "provenance-train-draw-2d": [
@@ -48,7 +48,7 @@
   ],
   "G-nnls greedy NNLS vs scipy (objective, KKT, tau stop)": [
    "PASS",
-   "['1.8e-15', '0.0e+00', '3.6e-15', {0.1: 35, 0.01: 47, 0.001: 49}, {'supports': {5: 5, 12: 12, 20: 20}, 'dup_banned': 0, 'dup_reason': 'kkt'}]"
+   "['1.8e-15', '1.8e-15', '5.3e-15', {0.1: 35, 0.01: 47, 0.001: 49}, {'supports': {5: 5, 12: 12, 20: 20}, 'dup_banned': 0, 'dup_reason': 'kkt'}, {'update_vs_full': 'identical supports', 'drift': 1.5543122344752192e-15, 'refactors': 7}, {'production_interval': {'refactors': 2, 'drift': 6.661338147750939e-15, 'deletions': 200, 'dependent_skips': 0}}]"
   ],
   "G-qdeim pivots vs scipy, exact interpolation on span(U)": [
    "PASS",

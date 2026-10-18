@@ -1900,16 +1900,37 @@
    "M2_512|lat16384|qn|BDF2|0.016666667|k4": "fail",
    "M2_512|lat16384|fs|CN|0.01|K1": "fail",
    "W512|gl24|qn|CN|0.01|k4": "fail",
-   "W512|lat16384|fs|CN|0.01|K1": "fail"
+   "W512|lat16384|fs|CN|0.01|K1": "fail",
+   "W256|gl16|fs|CN|0.016666667|K2": "fail",
+   "W256|lat8192|qn|BDF2|0.025|k4": "pass",
+   "W256|gl16|fs|BDF2|0.016666667|K2": "fail",
+   "W256|gl16|fs|BE|0.01|K1": "fail",
+   "W256|gl16|fs|CN|0.0125|K2": "fail",
+   "W256|gl24|fs|CN|0.0125|K1": "pass",
+   "W512|gl24|qn|BDF2|0.025|k4": "fail",
+   "W512|lat16384|qn|BDF2|0.025|k4": "pass",
+   "M2_512|gl24|fs|BDF2|0.025|K2": "fail",
+   "M2_512|lat16384|fs|BDF2|0.0125|K1": "fail",
+   "M2_512|gl24|fs|BE|0.01|K1": "fail",
+   "M2_512|lat16384|qn|CN|0.0125|k4": "fail",
+   "M2_512|gl24|fs|BDF2|0.016666667|K2": "fail",
+   "M2_512|gl24|qn|CN|0.01|k4": "fail",
+   "W512|lat16384|qn|CN|0.01|k4": "fail",
+   "W768|lat16384|fs|CN|0.0125|K2": "fail",
+   "W768|lat16384|fs|CN|0.01|K2": "fail",
+   "W1024|lat32768|fs|CN|0.01|K2": "fail"
   },
   "front": {
    "median": [
+    "W256|lat8192|qn|BDF2|0.025|k4",
+    "W256|gl24|fs|CN|0.0125|K1",
     "W256|gl24|fs|CN|0.01|K1"
    ],
    "worst": [
-    "W256|gl24|fs|CN|0.01|K1"
+    "W256|lat8192|qn|BDF2|0.025|k4",
+    "W512|lat16384|qn|BDF2|0.025|k4"
    ]
   },
-  "open_candidates": 365
+  "open_candidates": 146
  }
 }

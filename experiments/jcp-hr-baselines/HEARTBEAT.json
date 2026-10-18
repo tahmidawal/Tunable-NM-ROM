@@ -1,16 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T14:32:35Z",
- "step": "code audit 30 READY (NNLS); found G-qrdel/G-deadline were not in the gate list -> registered (selective PASS); full gate suite test18 running; then stage t3d64b + job audit; t2d1024a 5508660 RUNNING",
+ "utc": "2026-10-18T14:41:04Z",
+ "step": "gate suite ALL PASS (15 gates incl. G-qrdel, G-deadline); t3d64b staged (12 h reservation; ledger 19.4 + 7.5 reserve); job audit 4 running; t2d1024a 5508660 RUNNING",
  "waiting_on": {
   "slurm_jobs": [
    5508660
   ],
-  "codex_output": null,
-  "codex_pid": [],
-  "local_pid": 2896132
+  "codex_output": "audits/codex-job-4.md",
+  "codex_pid": [
+   2913950
+  ],
+  "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T16:02:35Z",
+ "expected_finish_utc": "2026-10-18T15:11:04Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

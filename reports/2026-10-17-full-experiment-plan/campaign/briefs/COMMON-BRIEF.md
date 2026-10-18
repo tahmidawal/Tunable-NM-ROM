@@ -163,3 +163,19 @@ ssh -o ConnectTimeout=20 tufts-login 'flock -w 600 /cluster/tufts/paralab/tawal0
   bash -c "n=\$(squeue -u tawal01 -h | wc -l); [ \$n -lt 8 ] || exit 75; cd <jobdir> && sbatch run.sbatch"'
 ```
 (exit 75 = account at cap; retry later). Count queued + running; check squeue again after submitting.
+
+## 15. Waiting on a Slurm job (added 2026-10-18 14:30 UTC)
+`squeue -j <id>` fails with "Invalid job id" once a job has left the queue, so a waiter that only exits on
+squeue success spins until its deadline (happened in two lanes). Break on
+`sacct -j <id> -X -n -o State` reaching a terminal state (COMPLETED, FAILED, CANCELLED, TIMEOUT,
+OUT_OF_MEMORY, NODE_FAIL), with `timeout 60` on every ssh call and an overall deadline.
+
+## 16. Raw archives live on the cluster (added 2026-10-18 18:30 UTC; supersedes "pull everything locally")
+The local disk fell to 56 GB free because every lane pulled whole job archives. The paralab share is now
+24 % used (3.5 TB free), so the old "never park data on the cluster" rule no longer applies to *archives*.
+From now on: when collecting a job, pull **only** result JSONs, logs, manifests and files < 100 MB. Move
+the job's raw arrays into `/cluster/tufts/paralab/tawal01/burgers-archive/<lane>/<job>/` (not your working
+namespace) and commit a sha256 listing of them. For archives already pulled locally, use
+`bash reports/2026-10-17-full-experiment-plan/campaign/offload.sh <lane> <job> <local_archive_dir>`
+(verified copy, then local delete + ARCHIVE-LOCATION.txt). Analysis that needs raw arrays runs on the cluster
+(CPU or GPU job) or pulls one file at a time into scratch and deletes it after.

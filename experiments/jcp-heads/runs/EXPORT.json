@@ -767,6 +767,49 @@
    }
   }
  },
+ "job_gpus": {
+  "rule1024": {
+   "job": "5581241",
+   "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "train": {
+   "job": "5533155",
+   "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "acc1024": {
+   "job": "5600165",
+   "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "time256": {
+   "job": "5618145",
+   "gpu": "NVIDIA H200"
+  },
+  "time1024": {
+   "job": "5610590",
+   "gpu": "NVIDIA H200"
+  },
+  "time4096": {
+   "job": "5636451",
+   "gpu": "NVIDIA H200"
+  },
+  "acc256": {
+   "job": "5651378",
+   "gpu": "NVIDIA A100 80GB PCIe"
+  }
+ },
+ "thresholds": {
+  "Q1_distance": 0.00025,
+  "tight_tighter": 2.5e-05,
+  "Q2_distance": 0.00025,
+  "rho": 0.116,
+  "gamma": 0.001,
+  "equal_cost_band": [
+   0.9090909090909091,
+   1.1
+  ],
+  "alpha": 0.05,
+  "tost_margin": "max(2 eps_ref, 0.1 min(e_head, e_lin))"
+ },
  "training": {
   "identity": {
    "k": 16,
@@ -898,6 +941,14 @@
     },
     "n_training_descriptors": 4608
    }
+  },
+  "recipe": {
+   "hidden": 512,
+   "layers": 2,
+   "steps": 200000,
+   "batch": 4096,
+   "lr": 0.001,
+   "npz_sha256": "4a7715659fe24b640c68e3c5f8b44e804383d4705aa62efa7dd6a3aaef73ebbb"
   }
  },
  "training_acceptance": {

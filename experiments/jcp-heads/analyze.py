@@ -542,13 +542,19 @@ def main_all():
     exp = dict(note='exploratory validation evidence only (DESIGN A4.1); E0-conditional; eps_ref is a conditional Richardson '
                     'estimate', contract=CONTRACT)
     exp['rules'] = jload(RUNS / 'RULES.json') if (RUNS / 'RULES.json').exists() else None
+    if exp['rules']:
+        exp.setdefault('job_gpus', {})['rule1024'] = dict(job=exp['rules']['source']['job'], gpu=exp['rules']['source']['gpu'])
+    exp['thresholds'] = dict(Q1_distance=2.5e-4, tight_tighter=2.5e-5, Q2_distance=2.5e-4, rho=0.116, gamma=1e-3,
+                             equal_cost_band=[1 / 1.1, 1.1], alpha=0.05, tost_margin='max(2 eps_ref, 0.1 min(e_head, e_lin))')
     if (out_dir('train', 'htrain') / 'result.json').exists():
         tr = jload(out_dir('train', 'htrain') / 'result.json')
         exp['training'] = {k: dict(k=v['k'], recon=v['recon_train']['mean'], oracle=v['oracle_test']['mean'],
                                    oracle_over_floor=v['oracle_over_span_floor'], seconds=v.get('seconds'),
                                    code_gain=v['oracle_train_from_codes']['gain_vs_recon'])
                            for k, v in tr['arms'].items()}
-        exp['training_meta'] = dict(job=tr['config']['slurm_job'], gpu=tr['config']['gpu'], gates=tr['gates'])
+        exp['training_meta'] = dict(job=tr['config']['slurm_job'], gpu=tr['config']['gpu'], gates=tr['gates'],
+                                    recipe=dict(hidden=512, layers=2, steps=200000, batch=4096, lr=1e-3, npz_sha256=tr['config']['npz_sha256']))
+        exp.setdefault('job_gpus', {})['train'] = dict(job=tr['config']['slurm_job'], gpu=tr['config']['gpu'])
         exp['training_acceptance'] = accept_train(tr)
         tp, tf = tr['arms'].get('probe_k16_s0_2000'), tr['arms'].get('mid_k16_s0')
         if tp and tf:                                   # A1.7 sensitivity probe (reported, no required outcome)
@@ -557,6 +563,7 @@ def main_all():
     recs = {}
     if have('acc1024', 'hacc'):
         acc_r, recs = acc_records('acc1024')
+        exp.setdefault('job_gpus', {})['acc1024'] = dict(job=acc_r['job_id'], gpu=acc_r['gpu'])
     exp['configs_1024'] = {f'{k[0]}|{k[1]}': {kk: vv for kk, vv in v.items() if kk not in ('per_case', 'case_qual')}
                            for k, v in recs.items()}
     exp['per_case_1024'] = {f'{k[0]}|{k[1]}': v['per_case'] for k, v in recs.items()}
@@ -565,6 +572,7 @@ def main_all():
         if have(f'time{m}', 'htime'):
             timings[m] = timing(f'time{m}', recs)
             _, exp.setdefault('timing_meta', {})[str(m)], costs[m] = timings[m]
+            exp.setdefault('job_gpus', {})[f'time{m}'] = dict(job=timings[m][1]['job'], gpu=timings[m][1]['gpu'])
     if timings:
         exp['cost_vs_K'] = cost_vs_k(timings, costs)
     exp['cost'] = {str(m): {lb: {k: v for k, v in c.items() if k != 'raw_ev'} for lb, c in cm.items()} for m, cm in costs.items()}
@@ -590,7 +598,8 @@ def main_all():
                     exp['lh_per_seed'][f'{sc}|{s}'] = res
             exp['F5_family'] = fam
         if have('acc256', 'hacc'):
-            _, recs256 = acc_records('acc256')
+            r256, recs256 = acc_records('acc256')
+            exp.setdefault('job_gpus', {})['acc256'] = dict(job=r256['job_id'], gpu=r256['gpu'])
             exp['configs_256'] = {f'{k[0]}|{k[1]}': {kk: vv for kk, vv in v.items() if kk not in ('per_case', 'case_qual')}
                                   for k, v in recs256.items()}
             exp['per_case_256'] = {f'{k[0]}|{k[1]}': v['per_case'] for k, v in recs256.items()}

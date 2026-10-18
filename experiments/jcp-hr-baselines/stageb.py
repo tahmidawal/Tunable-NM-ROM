@@ -211,7 +211,7 @@ def main():
                         XS.setdefault(key, {})[t] = Fw                             # scored output (A32.7 binding)
                         rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)   # after its array
                         ev('ours_case', key=key, case=t, **rec['cases'][t])
-                        save()
+                        save(force=True)
                 finally:
                     del o_, fx
                     gc.collect()
@@ -346,6 +346,7 @@ def main():
                         pk = f'{key}||{m}'
                         if time.perf_counter() - T0 > DEFER_FRAC * budget_s:
                             res['timing'][pk] = dict(status='not_timed', reason='budget')
+                            save(force=True)
                             continue
                         q = cell.query(kind, r, solver)
                         sch = RM.schedule(d, scheme, dt, 'prod_native' if solver == 'native' else 'prod')
@@ -374,12 +375,13 @@ def main():
                             res['timing'][pk] = dict(status='complete', cases=rec, outputs_ok=bool(ok))
                         except Exception as e:  # noqa: BLE001
                             res['timing'][pk] = dict(status='run_failed', reason=f'{type(e).__name__}: {e}', cases=rec)
-                        save()
+                        save(force=True)
                 finally:
                     del o_, fx
                     gc.collect()
             try:
                 time_x()
+                save(force=True)                       # comparator end (A42)
             except Exception as e:  # noqa: BLE001
                 for m in mem:
                     if res['timing'][f'{key}||{m}'].get('status') in ('not_timed', 'running'):
@@ -387,10 +389,12 @@ def main():
                 save(force=True)
                 gc.collect()
         return len(res['timing'])
-    phase('aba', aba)
-    res['total_seconds'] = time.perf_counter() - T0
-    save(force=True)
-    jl.close()
+    try:
+        phase('aba', aba)
+        res['total_seconds'] = time.perf_counter() - T0
+        save(force=True)
+    finally:
+        jl.close()                                     # A42: closed on every exit
     log('done')
 
 

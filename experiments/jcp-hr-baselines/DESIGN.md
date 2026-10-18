@@ -1882,3 +1882,5 @@ member, comparator and pair); every completed case, anchor and A–B–A attempt
 `evidence.jsonl` (line-buffered), so a kill loses no completed unit. Nothing else changes; the Stage-B job is re-run as
 a new attempt (`s2d1024b`) on the same frozen membership with its own reservation, after a code audit of this change,
 a CPU dry run and a job audit.
+
+**A42.1 (code audit 31).** Forced full-JSON saves added after each comparator case, each timing pair (also when skipped by the budget guard) and each timing comparator (success or failure); the evidence file is closed in a `finally` around the timing phase (line buffering already flushes every completed line before any later failure). evidence.jsonl is recovery/audit evidence; the analysis consumes only stageb.json, so a truncated job yields "role incomplete", never a filled role.

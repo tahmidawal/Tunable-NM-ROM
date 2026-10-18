@@ -1,0 +1,292 @@
+{
+ "results": {
+  "CPU decision-rule / generator tests all pass": {
+   "required": true,
+   "passed": true
+  },
+  "bad-vector fixtures admitted (independent CPU establishment)": {
+   "required": true,
+   "passed": true
+  },
+  "smk3 archive present": {
+   "required": true,
+   "passed": true
+  },
+  "smk3 complete": {
+   "required": true,
+   "passed": true
+  },
+  "smk3 memory: no rejection and job peak <= 120 GB": {
+   "required": true,
+   "passed": true,
+   "peak": 52645621248
+  },
+  "3D M override: slices, N(c), shapes and independent mode hash": {
+   "required": true,
+   "passed": true,
+   "A": 0.0,
+   "lam": 0.0,
+   "P": 0.0,
+   "N": 2.0595475622174296e-16
+  },
+  "3D fixgate: bad-vector rule flagged by component (b)": {
+   "required": true,
+   "passed": true,
+   "rho": 2.4170894588845178
+  },
+  "3D fixgate: target against itself gives rho 0": {
+   "required": true,
+   "passed": true
+  },
+  "3D under-resolved rule (W512 lat8192 -> lat16384): rollout bar fails": {
+   "required": true,
+   "passed": true,
+   "worst": 0.004302948786214563
+  },
+  "heavy round member (W1024 lat65536 + q+ + q++) completed on 64 cases": {
+   "required": true,
+   "passed": true
+  },
+  "smoke panel accepted (certified links, hashes, inventory, drift)": {
+   "required": true,
+   "passed": true,
+   "acc": {
+    "valid": true,
+    "hashes_ok": true,
+    "ratios_finite": true,
+    "drift_ok": true,
+    "uncertified": [],
+    "incomplete": []
+   }
+  },
+  "uncertified panel rejected (control)": {
+   "required": true,
+   "passed": true,
+   "acc": {
+    "valid": false,
+    "hashes_ok": true,
+    "ratios_finite": true,
+    "drift_ok": false,
+    "uncertified": [
+     "W256|gl24|fs|CN|0.01|K1"
+    ],
+    "incomplete": []
+   }
+  },
+  "T1 (C_old twice) ratio in [1.8, 2.2]": {
+   "required": true,
+   "passed": true,
+   "median": 1.978415457833518
+  },
+  "adaptive W512k1 lat65536 LSPG-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat65536 LSPG-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat65536 LSPG-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat65536: square diagnostics recorded": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat65536 LSPG-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 46,
+   "worst_tight": 10.22918878816082,
+   "worst_tight_tighter": 8.909945714892782
+  },
+  "adaptive W512k1 lat65536 GAL-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat65536 GAL-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat65536 GAL-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat65536 GAL-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 47,
+   "worst_tight": 5.776804466635377,
+   "worst_tight_tighter": 7.119665311737001
+  },
+  "adaptive W512k1 lat131072 LSPG-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat131072 LSPG-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat131072 LSPG-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat131072: square diagnostics recorded": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat131072 LSPG-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 46,
+   "worst_tight": 9.097258349188628,
+   "worst_tight_tighter": 5.812762710665189
+  },
+  "adaptive W512k1 lat131072 GAL-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat131072 GAL-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat131072 GAL-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k1 lat131072 GAL-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 47,
+   "worst_tight": 10.175597654574764,
+   "worst_tight_tighter": 15.530152293362745
+  },
+  "adaptive W512 lat65536 LSPG-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512 lat65536 LSPG-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512 lat65536 LSPG-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512 lat65536 LSPG-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 0,
+   "worst_tight": 8.223828055552108e-06,
+   "worst_tight_tighter": 8.358491249306532e-10
+  },
+  "adaptive W512 lat65536 GAL-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512 lat65536 GAL-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512 lat65536 GAL-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512 lat65536 GAL-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 0,
+   "worst_tight": 1.0438485748492174e-11,
+   "worst_tight_tighter": 1.449085953723599e-13
+  },
+  "adaptive W512k8 lat131072 LSPG-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat131072 LSPG-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat131072 LSPG-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat131072 LSPG-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 0,
+   "worst_tight": 7.439379108963493e-06,
+   "worst_tight_tighter": 8.858064318389044e-10
+  },
+  "adaptive W512k8 lat131072 GAL-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat131072 GAL-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat131072 GAL-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat131072 GAL-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 0,
+   "worst_tight": 8.25186155867653e-12,
+   "worst_tight_tighter": 1.803285724771648e-13
+  },
+  "adaptive W512k8 lat262144 LSPG-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat262144 LSPG-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat262144 LSPG-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat262144 LSPG-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 0,
+   "worst_tight": 7.4393738983279934e-06,
+   "worst_tight_tighter": 8.858128506432187e-10
+  },
+  "adaptive W512k8 lat262144 GAL-CN: evidence present": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat262144 GAL-CN: G-cert holds on every case": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat262144 GAL-CN: square flag matches M = r": {
+   "required": true,
+   "passed": true
+  },
+  "adaptive W512k8 lat262144 GAL-CN (scientific outcome, no gate)": {
+   "required": false,
+   "valid": true,
+   "noncert": 0,
+   "worst_tight": 8.252070675471809e-12,
+   "worst_tight_tighter": 1.802769585033366e-13
+  },
+  "3D reproduction W512|lat16384|fs|CN|0.01|K1 (default M) vs speed3d <= 1e-10": {
+   "required": true,
+   "passed": true,
+   "worst": 1.0026161122237486e-15
+  },
+  "3D reproduction M2_512|gl24|fs|BDF2|0.0125|K1 (default M) vs speed3d <= 1e-10": {
+   "required": true,
+   "passed": true,
+   "worst": 1.1561549783592996e-15
+  }
+ },
+ "failures": [],
+ "accepted": true
+}

@@ -563,10 +563,12 @@ def controls(run, res, refs):
         zg = np.load(gq)
         cl, cg = np.asarray(zg['cert_LSPG'], float), np.asarray(zg['cert_GAL'], float)
         S_ = int(round(.25 / .005))                       # the schedule of the fixture: dt0 to T = 0.25 (50 steps)
-        n_ = min(2, len(ids))
-        evaluable = bool(cl.shape == (n_, S_) and cg.shape == (n_, S_) and np.isfinite(cl).all() and np.isfinite(cg).all())
-        fl = float(np.mean(cl > float(zg['gamma_bar']))) if evaluable else None
-        fg = float(np.mean(cg > float(zg['eta_bar']))) if evaluable else None
+        conf = case_set(res['config']['controls'].get('cases', 'dev6'))     # configured control cases, not produced ids
+        n_ = min(2, len(conf))
+        evaluable = bool(ids == conf and cl.shape == (n_, S_) and cg.shape == (n_, S_) and np.isfinite(cl).all()
+                         and np.isfinite(cg).all())
+        fl = float(np.mean(cl > 1e-3)) if evaluable else None             # registered bars (gamma 1e-3, GAL eta 1e-8)
+        fg = float(np.mean(cg > 1e-8)) if evaluable else None
         out['G_Q'] = dict(evaluable=evaluable, fraction_LSPG=fl, fraction_GAL=fg, wrong_table_raised=bool(zg['wrong_table_raised']),
                           fired=bool(evaluable and fl > .01 and fg > .01 and bool(zg['wrong_table_raised'])))
     else:

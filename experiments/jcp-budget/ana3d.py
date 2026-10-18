@@ -74,6 +74,83 @@ def load_e0_3d(j, coh='val64', time_tag=None, expect_case=None):
     return np.asarray(R), float(meta['judge']['n0']), st['eps_ref'], st['eligible']
 
 
+def spec_str(kind, scheme, dt, tail):
+    """speed3d spec_key text, rebuilt independently (fs/qn/ad/adg)."""
+    if kind in ('fs', 'fsp'):
+        return f'{kind}|{scheme}|{dt:.8g}|K{tail}'
+    if kind == 'qn':
+        return f'qn|{scheme}|{dt:.8g}|k' + ('inf' if tail == 0 else str(tail))
+    return f"ad|{'LSPG' if kind == 'ad' else 'GAL'}|{scheme}|{dt:.8g}|{tail}"
+
+
+def expected_inventory(cfg):
+    """Every coefficient array the configuration requires: {'<tag>|<spec>': (case list, Rp)} (independent of outputs)."""
+    allc = list(cfg['case_subset'])
+    b2, b7, ct = cfg.get('b2', {}), cfg.get('b7', {}), cfg.get('controls', {})
+    chk = [j for j in b2.get('check_cases', range(4)) if j in allc]
+    rp = {s_['name']: int(s_['Rp']) for s_ in cfg['settings']}
+    inv = {}
+    for m in cfg['members']:
+        key = m['key']
+        sname, rule, kind, scheme, dts, tail = key.split('|')
+        dt = 0.05 / round(0.05 / float(dts))
+        t_ = int(tail[1:]) if tail[1:] != 'inf' else 0
+        dep = spec_str(kind, scheme, dt, t_)
+        tim = spec_str(kind, 'BDF2', .01 / 8, t_)
+        adS, adTS = spec_str('ad', scheme, dt, 'tight'), spec_str('ad', 'BDF2', .01 / 8, 'tight')
+        gS, gTS = spec_str('adg', scheme, dt, 'tight'), spec_str('adg', 'BDF2', .01 / 8, 'tight')
+        if 'b2' in cfg:
+            corn = {'0': dep, 'Q': dep, 'T': tim, 'S': adS, 'QT': tim, 'QS': adS, 'TS': adTS, 'QTS': adTS,
+                    'F|S': gS, 'F|QS': gS, 'F|TS': gTS, 'F|QTS': gTS}
+            for nm, sp in corn.items():
+                inv[f'{key}#{nm}|{sp}'] = (allc, rp[sname])
+                if 'Q' in nm:
+                    inv[f'{key}#{nm}#check|{sp}'] = (chk, rp[sname])
+            for k, (dtk, lev) in {'star': (.01 / 8, 'tight'), 'star16': (.01 / 16, 'tight'), 'starx': (.01 / 8, 'tighter'),
+                                  'star16x': (.01 / 16, 'tighter')}.items():
+                sp = spec_str('adg', 'BDF2', dtk, lev)
+                inv[f'{sname}#{k}|{sp}'] = (allc, rp[sname])
+                inv[f'{sname}#{k}#check|{sp}'] = (chk, rp[sname])
+        if 'b7' in cfg:
+            T = float(b7['horizon'])
+            pre = f'{key}#B7T{T:g}#'
+            w = lambda nm, d: [j for j in b7.get(nm, d) if j in allc]
+            inv[f'{pre}prod|{dep}'] = (allc, rp[sname])
+            inv[f'{pre}tight|{spec_str("ad", scheme, dt, "tight")}'] = (allc, rp[sname])
+            inv[f'{pre}tighter|{spec_str("ad", scheme, dt, "tighter")}'] = (w('tighter_cases', range(6)), rp[sname])
+            inv[f'{pre}qp|{dep}'] = (w('q2_cases', range(8)), rp[sname])
+            inv[f'{pre}qpp|{dep}'] = (w('qpp_cases', range(4)), rp[sname])
+    if 'controls' in cfg:
+        cc = [j for j in ct.get('cases', range(4)) if j in allc]
+        for tag, sp in (('CTRL#Q#ctrl', 'fs|CN|0.01|K1'), ('CTRL#Q#qinf', 'fs|CN|0.01|K1'), ('CTRL#T#be', 'fs|BE|0.01|K1'),
+                        ('CTRL#T#bdf2', 'fs|BDF2|0.00125|K1'), ('CTRL#S#q0', 'qn|BDF2|0.025|k4|q0'),
+                        ('CTRL#S#tight', 'ad|LSPG|BDF2|0.025|tight')):
+            inv[f'{tag}|{sp}'] = (cc, rp['W256'])
+    return inv
+
+
+def check_inventory(res, Wz, cfg):
+    """Every required array present, with exactly the configured cases (order), shape (cases, nout, Rp), finite where
+    the run is accepted, and JSON rows for exactly the same cases. Returns (ok, problems)."""
+    probs = []
+    rows = {}
+    for r in res['rows']:
+        rows.setdefault(f"{r['tag']}|{r['spec']}", []).append(r['case'])
+    for k, (cases, rp) in expected_inventory(cfg).items():
+        if k not in Wz.files or f'cases|{k}' not in Wz.files:
+            probs.append((k, 'missing array'))
+            continue
+        got = [int(c) for c in Wz[f'cases|{k}']]
+        T = .5 if '#B7T0.5#' in k else (1. if '#B7T1#' in k else .25)
+        if got != list(cases):
+            probs.append((k, f'cases {got} != {list(cases)}'))
+        if Wz[k].shape != (len(cases), int(round(T / .05)) + 1, rp):
+            probs.append((k, f'shape {Wz[k].shape}'))
+        if sorted(rows.get(k, [])) != sorted(cases):
+            probs.append((k, f'json rows {sorted(rows.get(k, []))}'))
+    return not probs, probs
+
+
 def expected_cases(k, cfg):
     """The configured case population of a run type '<tag>|<spec>' (independent of the produced records)."""
     allc = list(cfg['case_subset'])
@@ -451,12 +528,17 @@ def main():
         A7.MAN.update(A7.load_manifest(a.manifest))
     EL = A7.elig_of(json.loads(Path(a.anaref).read_text()), float(cfg['b7']['horizon']), dim=3) if (a.anaref and 'b7' in cfg) else {}
     ACC = tag_acceptance(res, Wz, cfg)
+    inv_ok, inv_probs = check_inventory(res, Wz, cfg)
+    if not inv_ok:                       # an inconsistent inventory invalidates the affected run types entirely
+        for k_bad, _ in inv_probs:
+            ACC[k_bad] = {c: False for c in ACC.get(k_bad, {})}
     out = dict(run=str(run), members={}, gates={}, controls={}, b7={})
     keys = [m['key'] for m in cfg['members']]
     out['coverage'] = dict(configured=keys,
                            b2_missing=[k for k in keys if 'b2' in cfg and k not in res.get('b2', {})],
                            b7_missing=[k for k in keys if 'b7' in cfg and k not in res.get('b7', {})])
-    out['coverage']['passed'] = not (out['coverage']['b2_missing'] or out['coverage']['b7_missing'])
+    out['coverage']['inventory_problems'] = [f'{k_}: {m_}' for k_, m_ in inv_probs]
+    out['coverage']['passed'] = not (out['coverage']['b2_missing'] or out['coverage']['b7_missing'] or not inv_ok)
     bases = {}
     S = dict(gb0=0., gb0_n=0, gb2=0., gb2_n=0, gb3=[], gb3_missing=0)
     chk = set(cfg.get('b2', {}).get('check_cases', range(4)))

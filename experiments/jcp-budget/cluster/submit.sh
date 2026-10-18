@@ -32,12 +32,17 @@ rsync -a "$LOCAL/" "tufts-login:$NS/$A/"
 timeout 120 ssh -o ConnectTimeout=20 tufts-login "cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet"
 trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: reservation KEPT; run ledger.py settle $A"' ERR
 # COMMON-BRIEF 14: every sbatch under the shared campaign lock, the account count checked inside it (exit 75 = at cap)
+trap - ERR                     # handled explicitly below (the ERR trap would fire on the expected exit 75)
 set +e
-OUT=$(timeout 700 ssh -o ConnectTimeout=20 tufts-login "flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'n=\$(squeue -u tawal01 -h | wc -l); [ \$n -lt 8 ] || exit 75; cd $NS/$A && sbatch run.sbatch'")
+OUT=$(timeout 700 ssh -o ConnectTimeout=20 tufts-login "flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'set -o pipefail; q=\$(squeue -u tawal01 -h) || exit 76; n=\$(printf %s \"\$q\" | grep -c .); [[ \$n =~ ^[0-9]+\$ ]] || exit 76; [ \$n -lt 8 ] || exit 75; cd $NS/$A && sbatch run.sbatch'")
 RC=$?
 set -e
-if [ "$RC" -eq 75 ]; then trap - ERR; "$PY" "$LANE/ledger.py" release "$A"; echo "account at the campaign cap (8): not submitted, reservation released"; exit 75; fi
-[ "$RC" -eq 0 ] || { echo "sbatch outcome unknown (rc $RC)"; false; }
+if [ "$RC" -eq 75 ] || [ "$RC" -eq 76 ]; then        # sbatch was never reached: unambiguous, release
+  "$PY" "$LANE/ledger.py" release "$A"
+  echo "not submitted (rc $RC: 75 = account at the campaign cap, 76 = scheduler query failed); reservation released"; exit "$RC"
+fi
+if [ "$RC" -ne 0 ]; then "$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown (rc $RC): reservation KEPT; run ledger.py settle $A"; exit 9; fi
+trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: reservation KEPT; run ledger.py settle $A"' ERR
 echo "$OUT"
 JID=$(echo "$OUT" | awk '/Submitted batch job/ {print $4}')
 [ -n "$JID" ]

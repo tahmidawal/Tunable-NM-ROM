@@ -99,7 +99,7 @@ def time_config(mesh, fallbacks=()):
         subs.append(dict(mesh=int(m), Rp=r, rule=q, form=form, scheme=sc, factor=float(f), qp=qp, qpp=qpp))
     return dict(attempt=f'time{mesh}', driver='qtime', meshes=meshes, cases='dev6', reps=3, burn=.1, seed=20261018,
                 A=A_SUBJECT, subjects=subs, fallback_subjects=sorted(fallbacks),
-                doubled=[dict(A_SUBJECT, cases='dev6')] if mesh == 1024 else [])
+                doubled=[dict(A_SUBJECT, cases='dev6')])        # every panel shows the doubled-work control (A on 1024^2)
 
 
 def order_config():
@@ -174,7 +174,9 @@ def main():
     cdir = HERE / 'configs'
     cdir.mkdir(exist_ok=True)
     cfgs = {f'acc{m}': acc_config(m) for m in MESHES}
-    cfgs.update({f'time{m}': time_config(m) for m in MESHES})
+    led = HERE / 'runs' / 'GPU-LEDGER.json'          # recorded fallback configurations stay in their timing panel
+    fbs = json.loads(led.read_text()).get('fallback_state', {}) if led.exists() else {}
+    cfgs.update({f'time{m}': time_config(m, fbs.get(str(m), [])) for m in MESHES})
     cfgs['order'] = order_config()
     cfgs['smkA'] = smoke_acc()
     cfgs['smkB'] = smoke_time()

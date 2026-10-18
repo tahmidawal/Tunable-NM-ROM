@@ -338,6 +338,8 @@ def timing(mesh, C):
     subs = {}
     for lb, s in res['subjects'].items():
         sp = s['spec']
+        if int(sp['mesh']) != int(mesh):            # the reference A of another mesh's panel is not a subject here
+            continue
         inv = [x for x in res['invocations'] if x['B'] == lb]
         fus = [x for x in res['fused'] if x['B'] == lb]
         ok_inv = [x for x in inv if x['valid']]
@@ -380,8 +382,10 @@ def timing(mesh, C):
     dbl = res['doubled']
     return dict(attempt=att, job=res['job_id'], gpu=res['gpu'], commit=res['commit'], subjects=subs,
                 controls=dict(split_fused=all(x['passed'] for x in eq),
-                              doubled=dict(n=len(dbl), median=float(np.median([x['ratio'] for x in dbl])) if dbl else None,
-                                           passed=bool(dbl) and 1.8 <= float(np.median([x['ratio'] for x in dbl])) <= 2.2 and
+                              doubled=dict(n=len(dbl), median=float(np.median([x['ratio'] for x in dbl if x['drift_ok']]))
+                                           if any(x['drift_ok'] for x in dbl) else None,
+                                           passed=bool(dbl) and any(x['drift_ok'] for x in dbl) and
+                                           1.8 <= float(np.median([x['ratio'] for x in dbl if x['drift_ok']])) <= 2.2 and
                                            all(x['same_iterations'] and x['identity_ok'] for x in dbl))))
 
 
@@ -406,6 +410,9 @@ def front2d(C, T):
         tm = T.get(mesh)
         if tm is None:
             out[mesh] = dict(status='timing not reached')
+            continue
+        if not (tm['controls']['split_fused'] and tm['controls']['doubled']['passed']):
+            out[mesh] = dict(status='blocked: timing controls failed or unavailable', controls=tm['controls'])
             continue
         cand, unq, unq_rec = {}, {}, {}
         for lb, s in tm['subjects'].items():

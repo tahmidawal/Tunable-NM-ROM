@@ -397,5 +397,18 @@
    "qpp": "gauss320"
   }
  ],
- "doubled": []
+ "fallback_subjects": [],
+ "doubled": [
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "cases": "dev6"
+  }
+ ]
 }

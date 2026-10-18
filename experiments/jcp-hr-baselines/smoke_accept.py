@@ -66,13 +66,17 @@ def nsteps(dt):
     return int(round(0.25 / dt))
 
 
-def run_evidence(cert, level, steps_want, C):
-    """(valid, nonstat, steps, anchor_ok) from the per-step lists and the saved trajectory (A2.7, A6.5, A9.1, A11.1)."""
+def run_evidence(cert, level, steps_want, C, r_want):
+    """(valid, nonstat, steps, anchor_ok) from the per-step lists and the saved trajectory (A2.7, A6.5, A9.1, A11.1).
+    Shapes are validated: 1-D lists of the registered step count, integer reasons, C of shape (steps + 1, r)."""
     g = np.asarray(cert['gamma_list'], float)
-    rsn = np.asarray(cert['reason_list'], int)
+    rraw = np.asarray(cert['reason_list'])
     lam = np.asarray(cert['lam_list'], float)
     C = np.asarray(C, float)
-    ok_len = len(g) == len(rsn) == len(lam) == steps_want and C.shape[0] == steps_want + 1 and steps_want > 0
+    ints = rraw.ndim == 1 and np.all(np.equal(np.mod(rraw.astype(float), 1), 0))
+    rsn = rraw.astype(int) if ints else np.full(rraw.shape, -1)
+    ok_len = (g.ndim == 1 and lam.ndim == 1 and ints and len(g) == len(rsn) == len(lam) == steps_want and steps_want > 0
+              and C.ndim == 2 and C.shape == (steps_want + 1, r_want))
     known = bool(set(rsn.tolist()) <= KNOWN_REASONS)
     cfin = bool(np.all(np.isfinite(C)))
     damp = bool(np.all(np.isfinite(lam)) and np.all(lam < 1e14))
@@ -85,17 +89,17 @@ def run_evidence(cert, level, steps_want, C):
     return valid, int(np.sum(~stationary)), len(g), anchor_ok
 
 
-def q1_from_evidence(prod, tight, tighter, Cs, dist, adist, cases, subset, steps_want):
+def q1_from_evidence(prod, tight, tighter, Cs, dist, adist, cases, subset, steps_want, r_want):
     """prod/tight/tighter: case -> cert; Cs: dict(prod=..., tight=..., tighter=...) case -> trajectory."""
     if sorted(prod) != sorted(cases) or sorted(tight) != sorted(cases) or sorted(tighter) != sorted(subset):
         return False, 'coverage'
-    if sorted(dist) != sorted(cases) or sorted(adist) != sorted(subset):
-        return False, 'distance coverage'
-    ev = [run_evidence(prod[c], 'prod', steps_want, Cs['prod'][c]) for c in cases]
+    if sorted(dist) != sorted(cases) or sorted(adist) != sorted(subset) or not all(fin(v) for v in list(dist.values()) + list(adist.values())):
+        return False, 'distance coverage or non-finite distance'
+    ev = [run_evidence(prod[c], 'prod', steps_want, Cs['prod'][c], r_want) for c in cases]
     valid = all(e[0] for e in ev)
     ns, st = sum(e[1] for e in ev), sum(e[2] for e in ev)
-    a_ok = all(run_evidence(tight[c], 'tight', steps_want, Cs['tight'][c])[3] for c in cases) and \
-        all(run_evidence(tighter[c], 'tighter', steps_want, Cs['tighter'][c])[3] for c in subset)
+    a_ok = all(run_evidence(tight[c], 'tight', steps_want, Cs['tight'][c], r_want)[3] for c in cases) and \
+        all(run_evidence(tighter[c], 'tighter', steps_want, Cs['tighter'][c], r_want)[3] for c in subset)
     ok = bool(valid and st > 0 and ns <= 0.01 * st and a_ok and all(fin(v) and v <= 2.5e-4 for v in dist.values())
               and all(fin(v) and v <= 2.5e-5 for v in adist.values()))
     return ok, dict(valid=valid, nonstat=ns, steps=st, anchors=a_ok, max_dist=max(dist.values()))
@@ -105,7 +109,7 @@ def _good(t, keys=('tA1', 'tB', 'tA2')):
     return all(fin(t[k]) and t[k] > 0 for k in keys) and abs(t['tA1'] / t['tA2'] - 1.) <= 0.25
 
 
-def timing_ok(cases_rec, reps=3, max_retry=3, tol=1e-12):
+def timing_ok(cases_rec, card=(1, 1, 1), reps=3, max_retry=3, tol=1e-12):
     """Repeat/retry inventory, drift recomputed from raw times, every per-output discrepancy finite and <= tol.
     Returns (ok, rho: case -> valid ratios, attempts)."""
     rho, ok, attempts = {}, True, 0
@@ -123,11 +127,13 @@ def timing_ok(cases_rec, reps=3, max_retry=3, tol=1e-12):
             for t in at:
                 if _good(t) != t['valid']:
                     ok = False
-                for kk in ('dA1', 'dB', 'dA2'):
+                for kk, nc in zip(('dA1', 'dB', 'dA2'), card):
                     ds = t[kk] if isinstance(t[kk], list) else [t[kk]]
-                    if not ds or not all(fin(x) and x <= tol for x in ds):
+                    if len(ds) != nc or not all(fin(x) and x <= tol for x in ds):
                         ok = False
             if any(_good(t) for t in at[:-1]):          # a valid attempt must end its repeat
+                ok = False
+            if not _good(at[-1]) and len(at) != max_retry + 1:   # an unsuccessful repeat must exhaust its retries
                 ok = False
             if _good(at[-1]):
                 valid_ratios.append(at[-1]['tB'] / (0.5 * (at[-1]['tA1'] + at[-1]['tA2'])))
@@ -229,19 +235,24 @@ def main():
         ep = R.get('ecsw_pilot') or {}
         nst = (R.get('ecsw_states') or {}).get('n_states')
         shp = list(ep.get('shape', [0, 0]))
+        kk_ = ep.get('kkt') or {}
         sup_ok = (ep.get('support') == c['pilot_support'] and ep.get('reason') == 'cap') or \
-            (ep.get('reason') == 'kkt' and isinstance(ep.get('support'), int) and ep['support'] <= c['pilot_support'])
+            (ep.get('reason') == 'kkt' and isinstance(ep.get('support'), int) and ep['support'] <= c['pilot_support']
+             and kk_.get('ok') is True and fin(kk_.get('support_max_abs_gradient'), kk_.get('tol'))
+             and kk_['support_max_abs_gradient'] <= kk_['tol'])
         put(f'{key}|ecsw-max-shape', fin(ep.get('relres'), ep.get('device_peak')) and ep['device_peak'] > 0 and
             nst is not None and shp[0] > 0 and shp[0] % c['rmax'] == 0 and shp[0] <= nst * c['rmax'] and
             shp[1] == min(32768, n) and sup_ok, ev=ep, n_states=nst)
         npil = R.get('none_pilot') or {}
         put(f'{key}|none-max-shape', fin(npil.get('seconds'), npil.get('device_peak')) and npil['device_peak'] > 0 and
-            npil.get('J_shape') == [n, c['rmax']], ev={k: npil.get(k) for k in ('seconds', 'device_peak', 'J_shape')})
+            npil.get('J_shape') == [n, c['rmax']] and npil.get('W_finite') is True and npil.get('C_finite') is True
+            and npil.get('fields_finite') is True,
+            ev={k: npil.get(k) for k in ('seconds', 'device_peak', 'J_shape', 'W_finite', 'C_finite', 'fields_finite')})
         # ---- grid: Q1 recomputed from per-step lists + saved trajectories + recomputed distances; E0 rescored
         grid = R.get('grid') or {}
         expect = sorted(f'{k}|{c["rs"]}|{h}|{o[0]}|{o[1]:.8g}|{s}|central' for k, h in (('none', '-'), ('ecsw', c['taus'][-1]),
                         ('qdeim', c['ps'])) for o in c['options'] for s in ('native', 'common'))
-        q1s, bad, worst_dec, worst_sc = {}, [], 0., 0.
+        q1s, bad, worst_dec, worst_sc, n_dec, n_invalid = {}, [], 0., 0., 0, 0
         Pl = Z['basis']['Phi_lat'] if 'basis' in Z else None
         for cid in expect:
             try:
@@ -255,7 +266,11 @@ def main():
                 anc = {kk: {int(j): vv for j, vv in v.items()} for kk, v in gg['anchors'].items()}
                 Cs = dict(prod={j: zz['C'][i] for i, j in enumerate(cases)}, tight={j: zz['Ctight'][i] for i, j in enumerate(cases)},
                           tighter={j: zz['Ctighter'][i] for i, j in enumerate(subset)})
-                ok, ev = q1_from_evidence(prod, anc['tight'], anc['tighter'], Cs, dist, adist, cases, subset, sw)
+                ok, ev = q1_from_evidence(prod, anc['tight'], anc['tighter'], Cs, dist, adist, cases, subset, sw, c['rs'])
+                keep = int(round(0.05 / float(cid.split('|')[4])))
+                for i, j in enumerate(cases):              # saved outputs W are the scheduled rows of the trajectory C
+                    if zz['W'][i].shape != (6, c['rs']) or not np.array_equal(zz['W'][i], zz['C'][i][::keep][:6]):
+                        bad.append(f'{cid}: W inconsistent with C rows (case {j})')
                 q1s[cid] = ok
                 if ok != gg['q1']['q1']:
                     bad.append(f'{cid}: in-job q1 {gg["q1"]["q1"]} != recomputed {ok}')
@@ -264,8 +279,18 @@ def main():
                     if not (fin(tv) and tv <= 1e-12):
                         bad.append(f'{cid}: timed != scored ({tv})')
                     W = zz['W'][i]
-                    if not (np.all(np.isfinite(W)) and np.all(np.isfinite(F[i])) and Pl is not None):
-                        continue                       # invalid runs carry no score; their Q1 already fails
+                    if Pl is None:
+                        bad.append(f'{cid}: lattice basis missing')
+                        continue
+                    if not (np.all(np.isfinite(W)) and np.all(np.isfinite(F[i]))):
+                        vj = run_evidence(prod[j], 'prod', sw, Cs['prod'][j], c['rs'])[0]
+                        e_rec = (gg['e0'].get(str(j)) or gg['e0'].get(j))['e']
+                        if vj or fin(e_rec):          # a non-finite run must be invalid and carry no usable score
+                            bad.append(f'{cid}: non-finite run classified valid or scored (case {j})')
+                        else:
+                            n_invalid += 1
+                        continue
+                    n_dec += 1
                     dec = H.to_lattice(W @ Pl.T, d)
                     worst_dec = max(worst_dec, float(np.max(np.abs(dec - F[i]))) / max(float(np.max(np.abs(F[i]))), 1e-300))
                     ej = refs.score(dec, j)['e']
@@ -277,8 +302,10 @@ def main():
             except Exception as ex:  # noqa: BLE001
                 bad.append(f'{cid}: {type(ex).__name__}: {ex}')
         put(f'{key}|grid-Q1-machinery', not bad and len(q1s) == len(expect), expected=len(expect), q1=q1s, problems=bad)
-        put(f'{key}|G-score', not bad and len(q1s) == len(expect) and worst_dec <= 1e-12 and worst_sc <= 1e-12,
-            decode=worst_dec, score=worst_sc)
+        put(f'{key}|G-score', not bad and len(q1s) == len(expect) and n_dec + n_invalid == len(expect) * len(cases)
+            and n_dec > 0 and worst_dec <= 1e-12 and worst_sc <= 1e-12, decode=worst_dec, score=worst_sc, n_decoded=n_dec,
+            n_invalid=n_invalid)
+        sw_main_ = nsteps(DT0[d])
         # ---- G-fd
         fd = R.get('G-fd') or {}
         ga = fd.get('G-fd-a') or {}
@@ -298,7 +325,14 @@ def main():
                 okfd &= fin(v.get('fd')) and v['fd'] > 1e-3
         put(f'{key}|G-fd+N-fd', okfd, ev=fd)
         gal = R.get('G-all') or {}
-        put(f'{key}|G-all', fin(gal.get('dist')) and gal['dist'] <= 1e-10 and gal.get('valid') == [True, True], ev=gal)
+        try:
+            za = Z['G-all']
+            dga = SC.lattice_distance(za['Fa'], za['Fb'], n0[cases[0]])
+            va = run_evidence(gal['cert_a'], 'tight', sw_main_, za['Ca'], c['rs'])[0]
+            vb = run_evidence(gal['cert_b'], 'tight', sw_main_, za['Cb'], c['rs'])[0]
+            put(f'{key}|G-all', fin(dga) and dga <= 1e-10 and va and vb, dist=dga, valid=[va, vb])
+        except Exception as ex:  # noqa: BLE001
+            put(f'{key}|G-all', False, error=f'{type(ex).__name__}: {ex}')
         # ---- N-under: exact ladder inventory; Q1 and E0 recomputed from saved fields
         nu_ = R.get('N-under') or {}
         sw_main = nsteps(DT0[d])
@@ -318,7 +352,7 @@ def main():
                 Cs = dict(prod={j: zz[f'{j}~C'] for j in fxs}, tight={j: zz[f'{j}~Ctight'] for j in fxs},
                           tighter={j: zz[f'{j}~Ctighter'] for j in fxs})
                 ok, ev = q1_from_evidence({int(j): x for j, x in v['cert'].items()}, {int(j): x for j, x in v['tight'].items()},
-                                          {int(j): x for j, x in v['tighter'].items()}, Cs, dist, adist, fxs, fxs, sw_main)
+                                          {int(j): x for j, x in v['tighter'].items()}, Cs, dist, adist, fxs, fxs, sw_main, c['rs'])
                 if tag.startswith('ecsw') and not (isinstance(v.get('support'), int) and v['support'] > c['rs']):
                     ok = False
                 es = [refs.score_safe(zz[f'{j}~F'], j)['e'] for j in fxs]
@@ -330,10 +364,11 @@ def main():
                 levels[tag] = dict(error=f'{type(ex).__name__}: {ex}')
         for f in ('ecsw', 'qdeim'):
             lv = {k: x for k, x in levels.items() if k.startswith(f)}
-            fired = inv_ok and base is not None and any(x.get('q1') and fin(x.get('median')) and x['median'] >= 2 * base
+            broken = [k for k, x in levels.items() if 'error' in x]
+            fired = inv_ok and not broken and base is not None and any(x.get('q1') and fin(x.get('median')) and x['median'] >= 2 * base
                                                         for x in lv.values())
-            put(f'{key}|N-under[{f}]', fired, status='fired' if fired else 'unfulfilled', inventory_ok=inv_ok,
-                none_median=base, levels=lv)
+            put(f'{key}|N-under[{f}]', fired, status='fired' if fired else ('evidence broken' if broken else 'unfulfilled'),
+                inventory_ok=inv_ok, broken=broken, none_median=base, levels=lv)
         # ---- N-grad: inventory, oracle agreement, shared certifier, production classification reconstructed
         ng = R.get('N-grad') or {}
         if ng.get('status') == 'run' and 'NG' in Z:
@@ -341,10 +376,14 @@ def main():
             bg = np.asarray(Z['NG']['base_gamma'], float)
             tp = [t for t in ng['tuples'] if t.get('oracle') is not None]
             tu = [t for t in ng['tuples'] if t.get('oracle') is None]
-            inv = ng.get('tested_steps') == tested and sorted(t['step'] for t in tu) == tested and \
-                len(tp) + 14 * ng.get('skipped', 0) == 14 * len(tested) and \
-                len({(t['step'], t['k'], t['sign']) for t in tp}) == len(tp) and len(bg) == sw_main
-            base_ok = run_evidence(ng['base_cert'], 'prod', sw_main, Z['NG']['base_C'])[0]
+            skipped = sorted(x['step'] for x in ng.get('skipped_steps', []))
+            prod_set = {(k, sg) for k in range(7) for sg in (1., -1.)}
+            inv = ng.get('tested_steps') == tested and sorted(t['step'] for t in tu) == tested and len(bg) == sw_main and \
+                all(x.get('sigma1') == 0. for x in ng.get('skipped_steps', [])) and set(skipped) <= set(tested) and \
+                all({(t['k'], float(t['sign'])) for t in tp if t['step'] == st} == (set() if st in skipped else prod_set)
+                    for st in tested) and len(tp) == 14 * (len(tested) - len(skipped)) and \
+                {(x['k'], float(x['sign'])) for x in (ng.get('classify') or [])} == prod_set
+            base_ok = run_evidence(ng['base_cert'], 'prod', sw_main, Z['NG']['base_C'], c['rs'])[0]
             agree = all(fin(t['cert'], t['oracle']) and abs(t['cert'] - t['oracle']) <= 1e-9 * t['oracle'] + 1e-12 and
                         ((t['cert'] > 1e-3) == (t['oracle'] > 1e-3)) for t in tp)
             same = all(fin(t['cert']) and abs(t['cert'] - bg[t['step']]) <= 1e-9 * abs(bg[t['step']]) + 1e-12 for t in tu)
@@ -361,9 +400,20 @@ def main():
                 'fixture unavailable' if (inv and base_ok and agree and same and cls_ok) else 'fail')
             put(f'{key}|N-grad(a)', status == 'pass', status=status, inventory=inv, base_valid=base_ok, agree=agree,
                 shared_vs_trajectory=same, classification=cls_ok, n_discriminating=len(disc))
-            bq = (ng.get('b') or {}).get('q1') or {}
-            put(f'{key}|N-grad(b) evidence present', isinstance(bq, dict) and 'q1' in bq and 'max_dist' in bq,
-                q1=bq.get('q1'), max_dist=bq.get('max_dist'))
+            try:                                       # part (b): complete Q1 recomputed (reported; any outcome allowed)
+                zb = Z['NGb']
+                bc = ng['b_cert']
+                distb = {j: SC.lattice_distance(zb[f'{j}~F'], zb[f'{j}~Ftight'], n0[j]) for j in fxs}
+                adistb = {j: SC.lattice_distance(zb[f'{j}~Ftight'], zb[f'{j}~Ftighter'], n0[j]) for j in fxs}
+                Csb = dict(prod={j: zb[f'{j}~C'] for j in fxs}, tight={j: zb[f'{j}~Ctight'] for j in fxs},
+                           tighter={j: zb[f'{j}~Ctighter'] for j in fxs})
+                qb, evb = q1_from_evidence({int(j): x for j, x in bc['prod'].items()}, {int(j): x for j, x in bc['tight'].items()},
+                                           {int(j): x for j, x in bc['tighter'].items()}, Csb, distb, adistb, fxs, fxs,
+                                           sw_main, c['rs'])
+                put(f'{key}|N-grad(b) evidence complete', isinstance(evb, dict) and qb == ((ng.get('b') or {}).get('q1') or {}).get('q1'),
+                    q1=qb, detail=evb)
+            except Exception as ex:  # noqa: BLE001
+                put(f'{key}|N-grad(b) evidence complete', False, error=f'{type(ex).__name__}: {ex}')
         else:
             put(f'{key}|N-grad(a)', False, status=ng.get('status', 'missing'), reason=ng.get('reason'))
         # ---- N-swap: recomputed from pinned references and saved fields
@@ -385,7 +435,7 @@ def main():
                 if gg is None or zk not in Z:
                     continue
                 cert0 = gg['runs'].get(str(j0)) or gg['runs'].get(j0)
-                if run_evidence(cert0['cert'], 'prod', sw_main, Z[zk]['C'][0])[0]:
+                if run_evidence(cert0['cert'], 'prod', sw_main, Z[zk]['C'][0], c['rs'])[0]:
                     chosen = cid
                     break
             if chosen is not None:
@@ -408,7 +458,7 @@ def main():
         for tagk, label, band in (('N-time', 'N-time', (1.8, 2.2)),
                                   ('ours', 'ours-adapter (phase-I execution check; not G-ours)', None)):
             cs_ = (tm.get(tagk) or {}).get('cases', {})
-            tok, rho, attempts = timing_ok(cs_)
+            tok, rho, attempts = timing_ok(cs_, card=(1, 2, 1) if tagk == 'N-time' else (1, 1, 1))
             full = tok and sorted(rho) == list(range(6)) and all(rho.values())
             if full:
                 ts = ST.time_stats(rho)

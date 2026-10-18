@@ -155,7 +155,7 @@ def t_fd():
                     v = v / jnp.linalg.norm(v)
                     h = 1e-6 * max(1., float(jnp.linalg.norm(c)))
                     fd = (rJ(c + h * v, const, nu, co, dt, dat)[0] - rJ(c - h * v, const, nu, co, dt, dat)[0]) / (2 * h)
-                    efd = max(efd, float(jnp.linalg.norm(fd - J @ v) / jnp.linalg.norm(J @ v)))
+                    efd = max(efd, float(jnp.linalg.norm(fd - J @ v) / jnp.linalg.norm(J @ v)), key=lambda x: (not np.isfinite(x), x))
                 assert ej <= 1e-11 and efd <= 1e-6, (d, kind, ej, efd)
                 out.append((d, kind, f'{ej:.1e}', f'{efd:.1e}'))
     return out
@@ -373,7 +373,7 @@ def t_lmm():
                 um = U[max(k - 2, 0)]
                 R = co[0] * U[k] + co[1] * U[k - 1] + co[2] * um + dt * (co[3] * np.asarray(Fr(jnp.asarray(U[k])))
                                                                          + co[4] * np.asarray(Fr(jnp.asarray(U[k - 1]))))
-                worst = max(worst, float(np.linalg.norm(R) / np.linalg.norm(U[k - 1])))
+                worst = max(worst, float(np.linalg.norm(R) / np.linalg.norm(U[k - 1])), key=lambda x: (not np.isfinite(x), x))
             assert worst <= 1e-11, (d, sc_, worst)
             fin = lambda dt_: np.asarray(fom(u0, nu, H.sched(sc_, dt_, save_steps=(int(round(.25 / dt_)),)),
                                              1e-13, 1e-15)['out'][0])

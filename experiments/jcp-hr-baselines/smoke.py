@@ -79,6 +79,12 @@ def phase(res, name, fn, need=0., cfg=None, save=None, store=None):
     return v
 
 
+def fmax(vals):
+    """max of a list of discrepancies; NaN if any is non-finite (never hidden by Python's max, code audit 4 item 25)."""
+    v = np.asarray([float(x) for x in vals], float)
+    return float(np.max(v)) if v.size and np.all(np.isfinite(v)) else float('nan')
+
+
 _BURN = jax.jit(lambda a: a @ a / 512 + .01)
 
 
@@ -228,14 +234,15 @@ def run_cell(cfg, c, res, outdir, save):
         del G, b
         return dict(shape=shape, contrib_seconds=tg, nnls_seconds=tn, support=int(len(o['support'])),
                     relres=o['relres'], reason=o['reason'], iterations=len(o['path']), device_peak=PL.device_peak(),
-                    host_maxrss=PL.host_rss())
+                    host_maxrss=PL.host_rss(), kkt=o['kkt'], banned=o['banned'])
     P('ecsw_max_shape', ecsw_pilot, 300, store='ecsw_pilot')
 
     def none_pilot():
         dat, _ = cell.arm_data('none', c['rmax'], '-')
         rec = cell.run('none', c['rmax'], dat, 'native', opt_main, 'prod', fam.ic(L, 0), fam.nu(0))
         return dict(seconds=rec['seconds'], cert=rec['cert'], device_peak=PL.device_peak(), r=c['rmax'],
-                    J_shape=[cell.n, c['rmax']])
+                    J_shape=[cell.n, c['rmax']], W_finite=bool(np.all(np.isfinite(rec['W']))),
+                    C_finite=bool(np.all(np.isfinite(rec['C']))), fields_finite=bool(np.all(np.isfinite(rec['fields_lat']))))
     P('none_max_shape', none_pilot, 240, store='none_pilot')
 
     # ---- small grid with the complete Q1 machinery (A5.4)
@@ -251,6 +258,13 @@ def run_cell(cfg, c, res, outdir, save):
     R['ecsw_info'] = {str(k): v for k, v in cell.info.get('ecsw', {}).items()}
     grid = {}
     subset = cases[:2]
+
+    def summarize(g):
+        return dict(q1={k: v for k, v in g.get('q1', {}).items()}, e0=g.get('e0'),
+                    anchors={k: v for k, v in g.get('anchors', {}).items() if not k.endswith('_F')},
+                    runs={j: dict(seconds=g['recs'][j]['seconds'], seconds_warm=g['recs'][j].get('seconds_warm'),
+                                  timed_vs_scored=g['recs'][j].get('timed_vs_scored'), cert=g['recs'][j]['cert'])
+                          for j in g['recs']})
 
     def grid_run():
         for (kind, hrp), (dat, _) in datas.items():
@@ -284,16 +298,13 @@ def run_cell(cfg, c, res, outdir, save):
                           Ftighter=np.stack([tighter[j]['fields_lat'] for j in subset]),
                           C=np.stack([g['recs'][j]['C'] for j in cases]), Ctight=np.stack([tight[j]['C'] for j in cases]),
                           Ctighter=np.stack([tighter[j]['C'] for j in subset]))
+                    R.setdefault('grid', {})[cid] = summarize(g)
+                    save()
                     log(f'   {cid}: q1={g["q1"]["q1"]} ' + ' '.join(
                         f"{j}:{g['recs'][j]['seconds_warm']:.3f}s ns{g['recs'][j]['cert']['nonstat']}" for j in cases))
         return True
     P('grid', grid_run, 600)
-    R['grid'] = {cid: dict(q1={k: v for k, v in g.get('q1', {}).items()}, e0=g.get('e0'),
-                           anchors={k: v for k, v in g.get('anchors', {}).items() if not k.endswith('_F')},
-                           runs={j: dict(seconds=g['recs'][j]['seconds'], seconds_warm=g['recs'][j].get('seconds_warm'),
-                                         timed_vs_scored=g['recs'][j].get('timed_vs_scored'),
-                                         cert=g['recs'][j]['cert'], gamma=g['recs'][j]['gamma'])
-                                 for j in g['recs']}) for cid, g in grid.items()}
+    R['grid'] = {cid: summarize(g) for cid, g in grid.items() if 'q1' in g}
     save()
 
     # ---- G-fd at real size (A1.9 G-fd-a/b/c, N-fd; A2.1 Sigma bounds)
@@ -316,7 +327,7 @@ def run_cell(cfg, c, res, outdir, save):
         Fref = Fr(u)[jnp.asarray(nodes)]
         dF, _ = H.stencil_dF(us, nu, L, d)
         _, vjp = jax.vjp(Fr, u)
-        worst_j, scale_j = 0., 0.
+        errs_j, scales_j = [], []
         for ii in range(min(64, len(nodes))):
             row = np.asarray(vjp(jnp.zeros(cell.n).at[int(nodes[ii])].set(1.))[0])
             want = np.zeros(cell.n)
@@ -324,9 +335,10 @@ def run_cell(cfg, c, res, outdir, save):
                 col = int(idx[ii, sl])
                 if col < cell.n:
                     want[col] += float(dF[ii, sl])
-            worst_j = max(worst_j, float(np.max(np.abs(row - want))))
-            scale_j = max(scale_j, float(np.max(np.abs(row))))
-        out['G-fd-a'] = dict(rows=float(jnp.max(jnp.abs(Fs - Fref)) / jnp.max(jnp.abs(Fref))), jac=worst_j / scale_j)
+            errs_j.append(float(np.max(np.abs(row - want))))
+            scales_j.append(float(np.max(np.abs(row))))
+        out['G-fd-a'] = dict(rows=float(jnp.max(jnp.abs(Fs - Fref)) / jnp.max(jnp.abs(Fref))), jac=fmax(errs_j) / fmax(scales_j),
+                             n_rows=len(errs_j))
         # G-fd-b / N-fd: directional FD and jacfwd of each arm's online residual; G-fd-c (ECSW rows, Q-DEIM Sigma)
         c0 = cell.Phi[:, :rs].T @ u0
         cn = c0 + 1e-3 * jnp.asarray(rng.standard_normal(rs)) * jnp.linalg.norm(c0) / np.sqrt(rs)
@@ -339,14 +351,14 @@ def run_cell(cfg, c, res, outdir, save):
             for mut in (None, 'drop_adv_jac'):
                 _, rJ = RM.make_arm(kind, d, L, mutation=mut)
                 r, J = rJ(c1, const, nu, co, dt, dat)
-                efd = 0.
+                efds = []
                 for _ in range(5):
                     vv = jnp.asarray(rng.standard_normal(rs))
                     vv = vv / jnp.linalg.norm(vv)
                     h = 1e-6 * max(1., float(jnp.linalg.norm(c1)))
                     fd = (rJt(c1 + h * vv, const, nu, co, dt, dat)[0] - rJt(c1 - h * vv, const, nu, co, dt, dat)[0]) / (2 * h)
-                    efd = max(efd, float(jnp.linalg.norm(fd - J @ vv) / jnp.linalg.norm(fd)))
-                rec = dict(fd=efd)
+                    efds.append(float(jnp.linalg.norm(fd - J @ vv) / jnp.linalg.norm(fd)))
+                rec = dict(fd=fmax(efds), fd_list=efds)
                 if mut is None:
                     Ja = jax.jacfwd(lambda x: rJt(x, const, nu, co, dt, dat)[0])(c1)
                     rec['jacfwd'] = float(jnp.max(jnp.abs(J - Ja)) / jnp.max(jnp.abs(Ja)))
@@ -391,8 +403,9 @@ def run_cell(cfg, c, res, outdir, save):
         de = dict(de, Phi=cell.Phi[:, :rs])
         a = cell.run('ecsw', rs, de, 'native', opt_main, 'tight', u0, nu)
         b = cell.run('none', rs, datas[('none', '-')][0], 'native', opt_main, 'tight', u0, nu)
+        chunk('G-all', Fa=a['fields_lat'], Fb=b['fields_lat'], Ca=a['C'], Cb=b['C'])
         return dict(dist=SC.lattice_distance(a['fields_lat'], b['fields_lat'], R['n0'][cases[0]]),
-                    valid=[a['cert']['valid'], b['cert']['valid']])
+                    valid=[a['cert']['valid'], b['cert']['valid']], cert_a=a['cert'], cert_b=b['cert'])
     if refs is not None and ('none', '-') in datas:
         P('G-all', g_all, 300, store='G-all')
 
@@ -417,6 +430,8 @@ def run_cell(cfg, c, res, outdir, save):
 
     def n_under():
         out = {'none': q1_level('none', datas[('none', '-')][0], 'none')}
+        R['N-under-partial'] = out
+        save()
         G, b, cand, _ = BD.ecsw_contrib(cell.states, cell.Phi[:, :rs], d, L)
         for mult in (4., 2., 1.25):                    # A8.3: overdetermined supports only (support > r)
             cap = int(np.ceil(mult * rs))
@@ -454,7 +469,7 @@ def run_cell(cfg, c, res, outdir, save):
         scf, rJ = RM.make_arm('ecsw', d, L)
         sch = RM.schedule(d, opt_main[0], opt_main[1], 'prod')
         Cs = jnp.asarray(base['C'])
-        tuples, skipped = [], 0
+        tuples, skipped, skipped_steps = [], 0, []
         for n_ in range(0, int(sch['steps']), 5):
             co = RM.step_coefficients(sch, n_)
             cn_, cm_ = Cs[n_], Cs[max(n_ - 1, 0)]
@@ -466,6 +481,7 @@ def run_cell(cfg, c, res, outdir, save):
             _, sv, vt = jnp.linalg.svd(J1, full_matrices=False)
             if float(sv[0]) == 0.:
                 skipped += 1
+                skipped_steps.append(dict(step=n_, sigma1=float(sv[0])))
                 continue
             t0_ = max(100. * float(jnp.linalg.norm(r1)) / float(sv[0]), 1e-6 * float(jnp.linalg.norm(c1)), 1e-12)
             for k in range(7):
@@ -500,7 +516,15 @@ def run_cell(cfg, c, res, outdir, save):
                for jj in fxs}
         tight = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'tight', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
         tighter = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'tighter', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
-        return dict(status='run', fixture=PL.cfg_id('ecsw', rs, tau_run, opt_main[0], opt_main[1], 'native'), case=j,
+        kwb = {}
+        for jj in fxs:
+            kwb.update({f'{jj}~F': mut[jj]['fields_lat'], f'{jj}~Ftight': tight[jj]['fields_lat'],
+                        f'{jj}~Ftighter': tighter[jj]['fields_lat'], f'{jj}~C': mut[jj]['C'], f'{jj}~Ctight': tight[jj]['C'],
+                        f'{jj}~Ctighter': tighter[jj]['C']})
+        chunk('NGb', **kwb)
+        return dict(status='run', skipped_steps=skipped_steps,
+                    b_cert=dict(prod={jj: mut[jj]['cert'] for jj in fxs}, tight={jj: tight[jj]['cert'] for jj in fxs},
+                                tighter={jj: tighter[jj]['cert'] for jj in fxs}), fixture=PL.cfg_id('ecsw', rs, tau_run, opt_main[0], opt_main[1], 'native'), case=j,
                     steps=int(sch['steps']), tested_steps=list(range(0, int(sch['steps']), 5)),
                     tuples=tuples, skipped=skipped, base_cert=base['cert'], classify=classify,
                     b=dict(q1=PL.q1_config(mut, tight, tighter, R['n0'], fxs, fxs), cert={jj: mut[jj]['cert'] for jj in fxs}))

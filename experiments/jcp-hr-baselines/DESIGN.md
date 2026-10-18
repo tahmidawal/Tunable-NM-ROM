@@ -1025,3 +1025,27 @@ timing case and every per-output discrepancy, and compares the saved $n_0$ with 
 **A11.3 ECSW pilot workload frozen.** The maximal-shape ECSW pilot runs the NNLS to a support of 1,024 (`pilot_support`,
 part of the frozen A5.4 inventory); acceptance requires that support with stop reason "cap", or an earlier certified KKT
 stop, and positive measured device peaks for every maximal-shape pilot.
+
+---
+
+## Amendment A12 (2026-10-18) — code audit 4 (`audits/codex-code-4.md`, NOT READY)
+
+**A12.1 Evidence completeness.** Acceptance additionally validates exact evidence shapes (trajectories of shape
+(steps + 1, r), 1-D integer reason lists), that each saved output row equals the corresponding scheduled trajectory row,
+the discrepancy cardinality of every timed call (N-time's B returns two outputs), that an unsuccessful timing repeat
+exhausts its retries, that a non-finite run is classified invalid and carries no score (G-score counts decoded plus
+invalid runs against the full inventory), the exact N-grad Cartesian inventory (every tested step × k ∈ 0..6 × sign ±,
+skipped steps only with a recorded zero singular value), the complete Q1 evidence of N-grad part (b) (recomputed; any
+outcome allowed), the raw KKT diagnostics of the ECSW pilot, the finiteness of the maximal `none` pilot's outputs, and
+G-all's validity and distance from saved trajectories and fields. Any errored N-under level makes both families'
+controls "evidence broken" (not fired). Every reduction of discrepancies propagates non-finite values.
+
+**A12.2 Checkpointing.** The grid's JSON summary is written after every configuration and N-under after its `none`
+level, alongside the append-only array chunks (A11.2).
+
+**A12.3 Q-DEIM pivots, stated narrowly.** The implementation is greedy modified Gram–Schmidt with Businger–Golub
+column pivoting (geqp3's pivot rule, not its Householder implementation); pivot-sequence equality with LAPACK is
+established only on the registered small fixtures.
+
+**A12.4 Forgery-only findings.** Per COMMON-BRIEF §7, findings that require deliberately malformed evidence that the
+registered code cannot produce are "noted", not blocking; they were nevertheless fixed where cheap (A12.1).

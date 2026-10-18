@@ -195,8 +195,11 @@ _PIV = {}
 
 
 def qdeim_points(U):
-    """Q-DEIM (Drmac-Gugercin): the first p column pivots of the column-pivoted QR of U^T, U (n, p) on the device.
-    Column pivoting by largest remaining column norm (Businger-Golub; LAPACK geqp3's criterion)."""
+    """Q-DEIM point selection (Drmac-Gugercin): greedy column pivoting of U^T (U (n, p) on the device) by the largest
+    remaining column norm after orthogonal projection against the already selected columns (modified Gram-Schmidt with
+    Businger-Golub pivoting). This is the pivot rule of LAPACK geqp3 but not its Householder implementation: equality of
+    the pivot sequence with scipy/LAPACK is checked on the registered small fixtures (G-qdeim) only, not claimed in
+    general (A12.3)."""
     p = U.shape[1]
     if p not in _PIV:
         _PIV[p] = _pivots(p)

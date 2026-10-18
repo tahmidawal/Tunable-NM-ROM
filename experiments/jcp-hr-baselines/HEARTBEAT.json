@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T10:10:03Z",
- "step": "phase II prep: smk2 collected (A23 ALL=true); gate suite running; next code audit 18 + design audit 16, then phase-II drivers",
+ "utc": "2026-10-18T10:16:25Z",
+ "step": "phase II prep: A24 written; CPU gate suite (test13) running; next code audit 19 + design audit 17",
  "waiting_on": {
   "slurm_jobs": [],
   "codex_output": null,
-  "codex_pid": null,
-  "local_pid": null
+  "codex_pid": [],
+  "local_pid": 2148957
  },
- "expected_finish_utc": "2026-10-18T11:10:03Z",
- "last_commit": "bde46a1c1",
+ "expected_finish_utc": "2026-10-18T11:06:25Z",
+ "last_commit": "11fe589d7",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,
- "notes": "smk1 (5354834) ACCEPTANCE ALL=false -> A14-A18 fixes; final CPU dry run passes all CPU-testable gates; request: release one more <=1 GPU-h smoke (smk2)"
+ "notes": "smk2 A23 ALL=true; phase II released by coordinator (A19) subject to precondition 4"
 }

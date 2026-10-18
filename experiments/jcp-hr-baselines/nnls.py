@@ -376,7 +376,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
                 dep_skip[:] = False
             if F.appends and F.appends % F.refactor_every == 0:
                 F.refactor(S)
-                if F.drift and F.drift[-1] > DRIFT_TOL:      # A22.3: fail-closed stability event, recorded
+                if F.drift and not (F.drift[-1] <= DRIFT_TOL):   # A22.3: non-finite or excessive drift = event
                     n_drift_events += 1
         else:
             B = max(1, int(math.ceil(frac * len(S))))
@@ -408,4 +408,5 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
     return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()), kkt=kkt,
                 drops=drops, bnorm=nb, method=method, qr_drift=(F.drift if F is not None else []), dependent_skips=n_dep,
                 refactor_every=refactor_every, capacity=(F.K if F is not None else None), drift_events=n_drift_events,
-                drift_ok=bool(F is None or not F.drift or max(F.drift) <= DRIFT_TOL))
+                drift_ok=bool(F is None or not F.drift or all(v <= DRIFT_TOL for v in F.drift)),
+                terminal=dict(support=np.asarray(S), weights=np.asarray(x), resvec=np.asarray(r)))

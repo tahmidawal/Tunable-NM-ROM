@@ -181,6 +181,13 @@ class Cell:
             rec, summ = BD.ecsw_weights(G, b, cand, r, kappas, log=nnls_log)
         del G, b
         self.ecsw_rec[r] = {f'k{k}': v for k, v in rec.items()}
+        sel = summ['attempts'][summ['selected']]
+        q = 'ok'
+        if sel.get('quality') != 'ok':
+            q = 'limited (orthogonality)'
+        if sel.get('banned', 0) > BD.BAN_RETRY_FRAC * summ['n_cand']:
+            q = 'limited (banning)' if q == 'ok' else q + '; limited (banning)'
+        summ['quality'] = q                               # A16.5 / A22.3 construction-quality label of this rank
         self.ecsw_paths_raw = getattr(self, 'ecsw_paths_raw', {})
         self.ecsw_paths_raw[r] = summ.pop('checkpoints_all')
         self.info.setdefault('ecsw', {})[r] = dict(contrib=dict(cinfo, block_norms=None), paths=summ,

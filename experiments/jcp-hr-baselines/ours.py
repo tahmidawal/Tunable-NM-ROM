@@ -66,3 +66,49 @@ class Ours3D:
 
     def u0(self, fam, j):
         return jnp.asarray(H.C3.initial_interior(self.n, fam.T, j))
+
+
+P1_RULES = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
+
+
+class OursP1:
+    """2D batch-1 comparators (A21.1): the jcp-p1-scaling configurations, built and queried with that lane's own code
+    (p1common.Bank / Setting, p1core.make_split_query fused query; byte-identical copies, INHERITED.json).
+    Keys as in its EXPORT: '<L>|R<r>[nom]|<BE|CNR>'. Query contract: full-field IC sampled at the cold quadrature
+    points, reduced projection, LSPG stepping at dt0 = 0.005 ('prod'), full-field decode (V4-4)."""
+
+    def __init__(self, L, keys, log=print):
+        import p1common as P1
+        self.P1, self.L = P1, L
+        t0 = time.perf_counter()
+        self.bank = P1.Bank(L, [0, 128, 256, 384, 512])
+        self.S, self.spec = {}, {}
+        for k in keys:
+            Lk, name, scheme = k.split('|')
+            assert int(Lk) == L, k
+            nom = name.endswith('nom')
+            r = int(name[1:].replace('nom', ''))
+            sn = f'{name}'
+            if sn not in self.S:
+                self.S[sn] = P1.Setting(self.bank, sn, r, P1_RULES[r], policy='nominal' if nom else 'frozen')
+            self.spec[k] = (sn, scheme)
+        self.setup_seconds = time.perf_counter() - t0
+        log(f'   oursP1: L={L} settings {sorted(self.S)} in {self.setup_seconds:.1f}s')
+
+    def fn(self, key):
+        sn, scheme = self.spec[key]
+        st = self.S[sn]
+        sch = st.sched('LSPG', scheme, 0.005, 'prod')
+        q, data, cold = st.q0['LSPG']['fused'], st.data[('main', 'LSPG')], st.cold
+
+        def f(u0, nu):
+            return q(u0, nu, data, cold, sch)
+        st.check('main', self.bank)
+        return f
+
+    def lattice(self, out):
+        s = self.L // H.LATTICE[2]
+        return np.asarray(out['fields'])[:, ::s, ::s]
+
+    def u0(self, fam, j):
+        return jnp.asarray(self.P1.Q.e.initial(self.L, fam.D[j]))

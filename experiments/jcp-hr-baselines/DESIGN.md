@@ -1343,15 +1343,7 @@ bars), frozen with its rule, solver, initialisation path, certificate, populatio
 
 **A22.1 NNLS refactorisation cost (design 15 item 4, code 17 item 1).** The refactorisation factors only the active
 columns at a bucket width (the next multiple of 512 ≥ k) and writes the factors back into the fixed buffers; its
-interval is **1,024 appends** (A20.1's 512 superseded). Complete cost model of one path to support s (m rows, N
-candidates, buffer capacity K): appends use the fixed-width buffers, four matrix–vector products of m × K each —
-$8mKs$ flops and $32mKs$ bytes of memory traffic in all; gradient refreshes $2mN$ flops per iteration; back
-substitutions $K^2$ per refit; deletions $O(m+K)$ per Givens rotation; refactorisations $\sum_j 2m(1024j)^2$ flops
-plus a drift product of the same order; the retry rule can double the path. For 3D r = 1,024 (m ≈ 1.04e5, N = 32,768,
-s = K = 16,384): appends ≈ 2.2e17 flops but memory-bound at ≈ 8.9e14 bytes (≈ 3 min at H200 bandwidth); gradients
-≈ 1.3e14 flops; refactorisations ≈ 4.6e14 flops. A20.4's "≈ 1e14 flops" is withdrawn. The resource certificate carries
-the smoke-measured per-append and per-gradient times scaled by $mK$ and $mN$ and by the number of iterations
-(≈ 1.2 s per path in iterations), plus refactorisations and retries.
+interval is 1,024 appends. (Cost model: see A24.2, which supersedes the figures first written here.)
 
 **A22.2 Memory (code 17 item 2).** Append, reset and delete donate the Q, R and $Q^\top b$ buffers (updated in place);
 a rejected append restores its slot. The refactor builds bucket-width factors while the old buffers are live (peak
@@ -1384,3 +1376,40 @@ construction failure; for runs made before this rule (smk2) the absent checkpoin
 Acceptance of smk2 is recomputed with the amended checker (`runs/smk2/ACCEPTANCE-A23.json`); the staged result
 (ALL = false, this gate only) is kept unchanged beside it. smk2 ran the A17 full-QR NNLS; the production algorithm is the
 A20/A22 updating QR, equal to it by the binding gate G-nnls.
+
+
+---
+
+## Amendment A24 (2026-10-18) — code audit 18 / design audit 16, cost model, phase-II job structure
+
+**A24.1 A23 wording and evidence.** "Solved exactly" is withdrawn: a path that stops early **satisfies the registered
+numerical KKT certificate** (the solver's KKT flag, both gradient inequalities with tolerance $10^{-9}\|G\|_F\|b\|$,
+and — from A24 on — finite non-negative terminal weights whose count equals the reported support and whose saved
+residual vector reproduces the reported residual). The full-QR and updating-QR paths **agree on the binding regression
+fixtures** (not universally). An optimum used as a target remains subject to Q1, support disclosure and the
+construction-quality labels. The terminal support, weights and residual vector of every attempt are saved; smk2 predates
+this and is accepted under the legacy rule with that provenance stated.
+
+**A24.2 Cost model (corrected).** One NNLS path to support s with m rows, N candidates, buffer width K: appends
+$8mK$ flops each ($8mKs$ in all; memory traffic $32mKs$ bytes), gradient refreshes $2mN$ flops per iteration,
+refactorisation at k columns ≈ $2mk^2$ (Householder) $+ 2mk^2$ (explicit Q) $+ 2mk^2$ (drift product) flops, every
+1,024 appends. For 3D r = 1,024 (m = 104,448, N = 32,768, s = K = 16,384): appends ≈ 2.2e14 flops / 9.0e14 bytes,
+gradients ≈ 1.2e14 flops (≈ 1.9e4 iterations) and 4.2e15 bytes (reading G each time), refactorisations
+$\sum_{j\le16}6m(1024j)^2$ ≈ 9.8e14 flops; total ≈ 1.3e15 flops and ≈ 5e15 bytes (memory-bound: ≈ 20 min on an H200);
+the retry rule can double it. Refactorisation still grows cubically in the attained support (A20.4's "no longer cubic"
+is withdrawn); at these sizes it is not dominant.
+
+**A24.3 Construction-quality labels (code 18 item 2).** Each rank's ECSW construction carries a quality label:
+"ok", "limited (orthogonality)" (any non-finite or > 1e-8 drift at a refactorisation), "limited (banning)" (> 1 % of the
+candidates banned on the selected path), or both; the label is recomputed offline from the saved drift values and ban
+counters and propagates to every ECSW configuration of that rank (A16.5 consequences).
+
+**A24.4 Phase-II jobs.** Per cell (2D 256², 2D 1024², 3D 65³) a **tuning job** (`tune.py`): offline construction from
+training data, saturation (256² only), adequacy, generator probe (basis + `none`/native screening runs), Stage A with
+in-job certification and anchors, ours' batch-1 replay and same-job warm timing on the 6 timing cases, and the
+full-rank limiting comparator on the verdict cohort. Its artifacts (Φ, per-configuration HR data, ECSW paths) stay in
+the job directory for the next job. After offline Stage-B freezing (A2.6, A5.3) and a regenerated certificate, a
+**Stage-B job** per cell runs the frozen Stage-B members on the full verdict cohort with Q1, and the A–B–A timing of
+every (X, B) pair admitted by A1.12 on the 6 timing cases; picks and labels are then computed offline from that job's
+data (A1.6) and frozen with sha256 before the report. Memory admission (A22.2): the 3D tuning job records the device
+peak before and after the r = 1,024 ECSW path; > 120 GB (decimal) makes that rank "not constructible (memory)".

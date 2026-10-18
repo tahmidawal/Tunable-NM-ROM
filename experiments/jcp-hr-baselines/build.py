@@ -368,10 +368,13 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, lo
                 v['resvec'] = np.asarray(jnp.asarray(b) - G[:, Sv] @ jnp.asarray(v['weights']))
         cps['_drops'] = o['drops']
         cps['_bnorm'] = o['bnorm']
+        cps['_terminal'] = dict(nodes=cand_nodes[o['terminal']['support']], weights=o['terminal']['weights'],
+                                resvec=o['terminal']['resvec'], support_idx=o['terminal']['support'])
         summ = dict(max_drops=max_drops, reason=o['reason'], final_relres=o['relres'], final_support=int(len(o['support'])),
                     method=o.get('method'), qr_drift=o.get('qr_drift'), drift_ok=o.get('drift_ok'),
                     drift_events=o.get('drift_events'), dependent_skips=o.get('dependent_skips'),
                     refactor_every=o.get('refactor_every'), capacity=o.get('capacity'),
+                    quality=('limited (orthogonality)' if not o.get('drift_ok', True) else 'ok'),
                     banned=o['banned'], kkt=o['kkt'], iterations=len(o['path']),
                     taus={str(t): (None if o['records'][t] is None else dict(size=o['records'][t]['size'],
                                                                              relres=o['records'][t]['relres'])) for t in taus},

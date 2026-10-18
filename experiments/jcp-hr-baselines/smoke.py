@@ -254,6 +254,9 @@ def run_cell(cfg, c, res, outdir, save):
         for att, cps in cell.ecsw_paths_raw[rs].items():
             kw[f'{att}~drops'] = np.asarray(cps['_drops'])
             kw[f'{att}~bnorm'] = np.asarray(cps['_bnorm'])
+            kw[f'{att}~terminal~nodes'] = np.asarray(cps['_terminal']['nodes'])
+            kw[f'{att}~terminal~weights'] = np.asarray(cps['_terminal']['weights'])
+            kw[f'{att}~terminal~resvec'] = np.asarray(cps['_terminal']['resvec'])
             for k, v in cps.items():
                 if k.startswith('_'):
                     continue

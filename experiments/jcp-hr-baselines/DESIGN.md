@@ -1421,3 +1421,33 @@ known only when it sets a new one); a new peak > 120 GB (decimal) makes that ran
 `inputs/speed3d_batch1_e0.json` (source sha256 recorded). Ours' 3D settings (bank, R', adaptive start a) are speed3d
 `configs/r1.json`'s: M2_512 = (M2, 512, 3), W256/W512/W768/W1024 = (W1024, R', 6). G-ours is evaluated in the tuning
 job (screening cases = timing cases) and again in the Stage-B job; a failure in either removes that X (reported).
+
+---
+
+## Amendment A25 (2026-10-18) — extension in the tuning job; C-search allocations pinned
+
+**A25.1 Where the A2.18 / A16.2 extension runs.** The extension is decided and screened inside the tuning job, right
+after the registered Stage-A grid, by the frozen rule: compute the screening front (Q1-qualified, finite, non-dominated
+in median warm time and worst error on the screening cases); for each front member with κ = 8 add κ = 16 at its rank;
+in 2D, for each front member at r = 384 add r = 512 with its HR kind and knob (κ, or p/r) — both options, both solvers,
+same Q1, anchors, warm timing and scoring as Stage A (phase tag `EXT`). It runs only if the job's elapsed C-search
+time (from the start of Stage A) is below the cell's allocation (A25.2); one rung per direction, no second extension.
+The basis is built to r = 512 in 2D so that the rung needs no new snapshots; the r = 512 basis is certified like every
+rank and its ECSW path is built only if triggered. Extension configurations enter the front, Stage B and picks exactly
+like registered ones and are marked `stage = EXT` in every table.
+
+**A25.2 Allocations (A2.5), pinned from `sacct` (ElapsedRaw × 1 GPU).** 2D: combined `c2grid` (job 5209526, 13,596 s)
++ `c2fbgrid` (5228777, 658 s) = 3.960 GPU-h, split evenly over the two 2D cells (1.98 h each; the rule-selection part
+of `c2grid` is not separable in its log, so the allocation is an upper bound). 3D: combined `c3grid` (5219449,
+15,949 s) + speed3d `g1`–`g3` (1.747 + 2.409 + 3.629 GPU-h, whole jobs, an upper bound on their grid phase) =
+12.216 GPU-h. Ours' C-hr jobs (`c3desc*`, `c3extW1024`) are not in the allocation (A2.5 mapping). The baseline's
+C-search time is the tuning job's Stage-A + extension phase time plus the Stage-B job's selection-relevant runs; each
+verdict line states it beside the allocation (A2.5 cases a–c).
+
+**A25.3 Resource certificate (A19.4c).** `resources.py` → `checks/RESOURCES-tune.json`, from smk2's measured phase
+times, N-time per-run times and grid-block times, with stated scaling models (`none` ∝ r² above the smoke rank, NNLS
+from A24.2 at an effective 2 TB/s with the retry doubling, mean step-count factor over the options) and a 1.5
+contingency: tuning 2D 256² 0.94, 2D 1024² 3.15, 3D 65³ 9.81 GPU-h certified; with a Stage-B projection of half the
+tuning total the lane projects 22.4 of 30 GPU-h (1.512 spent). Wall-time requests: 2 h, 5 h and 15 h. A job is
+submitted only if spent + its certified projection + the remaining projections ≤ 30; the certificate is regenerated
+from each completed tuning job before the Stage-B jobs are submitted.

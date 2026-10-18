@@ -101,7 +101,9 @@ def main():
     O.res.update(config=cfg, env=dict(backend=jax.default_backend(), devices=[str(x) for x in jax.devices()],
                                       job=os.environ.get('SLURM_JOB_ID'), commit=cfg.get('commit')))
     d, L = cfg['d'], cfg['L']
-    ranks, rmax = cfg['ranks'], max(cfg['ranks'])
+    ranks = cfg['ranks']
+    allr = ranks + ([cfg['ext_rank']] if cfg.get('ext_rank') else [])
+    rmax = max(allr)                                                       # basis to the extension rung (A2.18)
     options = [tuple(o) for o in cfg['options']]
     coh = 'dev6' if d == 2 else 'val64'
     fam_tr = H.Family(d, 'train')
@@ -116,15 +118,15 @@ def main():
 
     # ---- offline construction (training only) ----------------------------------------------------------------
     rows = list(range(fam_tr.n if cfg.get('n_traj') is None else cfg['n_traj']))
-    bb = O.phase('basis', lambda: cell.build_basis(fam_tr, rows, rmax, ranks))
+    bb = O.phase('basis', lambda: cell.build_basis(fam_tr, rows, rmax, allr))
     if bb is None:
         return
     S, Phi, sig, trust = bb
     bb = None
     cell.set_basis(Phi, trust)
     O.res['basis'] = cell.info['basis[central]']
-    O.npz('artifacts', 'Phi', Phi=np.asarray(Phi), trust=np.asarray([trust.get(r, np.nan) for r in ranks]),
-          ranks=np.asarray(ranks))
+    O.npz('artifacts', 'Phi', Phi=np.asarray(Phi), trust=np.asarray([trust.get(r, np.nan) for r in allr]),
+          ranks=np.asarray(allr))
 
     def adequacy():
         held = (3, 5, 6, 8, 12, 17, 22, 35, 45)
@@ -166,7 +168,7 @@ def main():
     probe = O.phase('generator_probe_basis', probe_basis, store='probe_basis')
 
     pmax = 4 * rmax
-    p_list = sorted({m * r for r in ranks for m in (1, 2, 4)})
+    p_list = sorted({m * r for r in allr for m in (1, 2, 4)})
     O.phase('adv_pod', lambda: cell.build_adv(S, pmax, p_list))
     del S
     O.res['adv'] = {k: v for k, v in cell.info.get('adv', {}).items() if k != 'sigma'}
@@ -203,60 +205,96 @@ def main():
 
     # ---- Stage A ------------------------------------------------------------------------------------------------
     O.res.setdefault('stageA', {})
-    O.res.setdefault('construction_failures', {})
+    search_t0 = time.perf_counter()
+
+    def screen(r, kind, hrp, tag='A'):
+        """One (rank, HR kind, knob): construction data, then every option x {native, common} on SCREEN with Q1."""
+        hp = hrp if kind != 'qdeim' else int(hrp * r)
+        try:
+            dat, ainfo = cell.arm_data(kind, r, hp)
+        except Exception as e:  # noqa: BLE001
+            O.res['construction_failures'][f'{kind}|{r}|{hp}'] = f'{type(e).__name__}: {e}'
+            O.save()
+            return
+        quality = cell.info['ecsw'][r]['paths']['quality'] if kind == 'ecsw' else None
+        if kind == 'ecsw':
+            O.npz('artifacts', f'HR~ecsw~{r}~{hp}', nodes=np.asarray(cell.ecsw_rec[r][hp]['nodes']),
+                  weights=np.asarray(cell.ecsw_rec[r][hp]['weights']))
+        elif kind == 'qdeim':
+            O.npz('artifacts', f'HR~qdeim~{r}~{hp}', P=np.asarray(cell.piv[hp]), T1=np.asarray(dat['T1']),
+                  T2=np.asarray(dat['T2']), T3E=np.asarray(dat['T3E']))
+        for option in options:
+            def cell_block(option=option):
+                tight = {j: cell.run(kind, r, dat, 'native', option, 'tight', fam.ic(L, j), fam.nu(j)) for j in SCREEN}
+                tighter = {j: cell.run(kind, r, dat, 'native', option, 'tighter', fam.ic(L, j), fam.nu(j))
+                           for j in SCREEN[:2]}
+                out = {}
+                for solver in ('native', 'common'):
+                    cid = PL.cfg_id(kind, r, hp, option[0], option[1], solver)
+                    recs = {}
+                    for j in SCREEN:
+                        recs[j] = cell.run(kind, r, dat, solver, option, 'prod', fam.ic(L, j), fam.nu(j))
+                        warm = cell.run(kind, r, dat, solver, option, 'prod', fam.ic(L, j), fam.nu(j), certify=False,
+                                        burn_s=0.1)
+                        recs[j]['seconds_warm'] = warm['seconds']
+                        recs[j]['timed_vs_scored'] = float(np.max(np.abs(warm['fields_lat'] - recs[j]['fields_lat'])))
+                    q1 = PL.q1_config(recs, tight, tighter, {j: n0[j] for j in SCREEN}, SCREEN[:2], SCREEN)
+                    e0 = {j: refs.score_safe(recs[j]['fields_lat'], j) for j in SCREEN}
+                    O.npz('arrays', f'A~{cid}', W=np.stack([recs[j]['W'] for j in SCREEN]),
+                          F=np.stack([recs[j]['fields_lat'] for j in SCREEN]),
+                          Ftight=np.stack([tight[j]['fields_lat'] for j in SCREEN]),
+                          Ftighter=np.stack([tighter[j]['fields_lat'] for j in SCREEN[:2]]),
+                          C=np.stack([recs[j]['C'] for j in SCREEN]))
+                    es = [e0[j]['e'] for j in SCREEN]
+                    out[cid] = dict(q1=q1, e0=e0, hr_points=hr_points(kind, r, hp, cell), arm=ainfo, quality=quality,
+                                    stage=tag, kind=kind, r=r, hrp=hp, scheme=option[0], dt=option[1], solver=solver,
+                                    W=float(np.max(es)) if all(np.isfinite(es)) else float('nan'),
+                                    med=float(np.median(es)) if all(np.isfinite(es)) else float('nan'),
+                                    t=float(np.median([recs[j]['seconds_warm'] for j in SCREEN])),
+                                    runs={j: dict(cert=recs[j]['cert'], seconds_warm=recs[j]['seconds_warm'],
+                                                  timed_vs_scored=recs[j]['timed_vs_scored']) for j in SCREEN},
+                                    anchors=dict(tight={j: tight[j]['cert'] for j in SCREEN},
+                                                 tighter={j: tighter[j]['cert'] for j in SCREEN[:2]}))
+                    log(f'   {cid}: q1={q1["q1"]} W={out[cid]["W"]:.4g} t={out[cid]["t"]:.4g}s')
+                return out
+            res = O.phase(f'{tag}|{kind}|{r}|{hp}|{option[0]}|{option[1]:.8g}', cell_block)
+            if res:
+                O.res['stageA'].update(res)
+                O.save()
+
     for r in ranks:
         for kind, hrp in HR_GRID:
-            hp = hrp if kind != 'qdeim' else int(hrp * r)
-            try:
-                dat, ainfo = cell.arm_data(kind, r, hp)
-            except Exception as e:  # noqa: BLE001
-                O.res['construction_failures'][f'{kind}|{r}|{hp}'] = f'{type(e).__name__}: {e}'
-                O.save()
-                continue
-            if kind == 'ecsw':
-                O.npz('artifacts', f'HR~ecsw~{r}~{hp}', nodes=np.asarray(cell.ecsw_rec[r][hp]['nodes']),
-                      weights=np.asarray(cell.ecsw_rec[r][hp]['weights']))
-            elif kind == 'qdeim':
-                O.npz('artifacts', f'HR~qdeim~{r}~{hp}', P=np.asarray(cell.piv[hp]), T1=np.asarray(dat['T1']),
-                      T2=np.asarray(dat['T2']), T3E=np.asarray(dat['T3E']))
-            for option in options:
-                def cell_block(kind=kind, hp=hp, dat=dat, option=option, r=r, ainfo=ainfo):
-                    tight = {j: cell.run(kind, r, dat, 'native', option, 'tight', fam.ic(L, j), fam.nu(j)) for j in SCREEN}
-                    tighter = {j: cell.run(kind, r, dat, 'native', option, 'tighter', fam.ic(L, j), fam.nu(j))
-                               for j in SCREEN[:2]}
-                    out = {}
-                    for solver in ('native', 'common'):
-                        cid = PL.cfg_id(kind, r, hp, option[0], option[1], solver)
-                        recs = {}
-                        for j in SCREEN:
-                            recs[j] = cell.run(kind, r, dat, solver, option, 'prod', fam.ic(L, j), fam.nu(j))
-                            warm = cell.run(kind, r, dat, solver, option, 'prod', fam.ic(L, j), fam.nu(j), certify=False,
-                                            burn_s=0.1)
-                            recs[j]['seconds_warm'] = warm['seconds']
-                            recs[j]['timed_vs_scored'] = float(np.max(np.abs(warm['fields_lat'] - recs[j]['fields_lat'])))
-                        q1 = PL.q1_config(recs, tight, tighter, {j: n0[j] for j in SCREEN}, SCREEN[:2], SCREEN)
-                        e0 = {j: refs.score_safe(recs[j]['fields_lat'], j) for j in SCREEN}
-                        O.npz('arrays', f'A~{cid}', W=np.stack([recs[j]['W'] for j in SCREEN]),
-                              F=np.stack([recs[j]['fields_lat'] for j in SCREEN]),
-                              Ftight=np.stack([tight[j]['fields_lat'] for j in SCREEN]),
-                              Ftighter=np.stack([tighter[j]['fields_lat'] for j in SCREEN[:2]]),
-                              C=np.stack([recs[j]['C'] for j in SCREEN]))
-                        es = [e0[j]['e'] for j in SCREEN]
-                        out[cid] = dict(q1=q1, e0=e0, hr_points=hr_points(kind, r, hp, cell), arm=ainfo,
-                                        W=float(np.max(es)) if all(np.isfinite(es)) else float('nan'),
-                                        med=float(np.median(es)) if all(np.isfinite(es)) else float('nan'),
-                                        t=float(np.median([recs[j]['seconds_warm'] for j in SCREEN])),
-                                        runs={j: dict(cert=recs[j]['cert'], seconds_warm=recs[j]['seconds_warm'],
-                                                      timed_vs_scored=recs[j]['timed_vs_scored']) for j in SCREEN},
-                                        anchors=dict(tight={j: tight[j]['cert'] for j in SCREEN},
-                                                     tighter={j: tighter[j]['cert'] for j in SCREEN[:2]}))
-                        log(f'   {cid}: q1={q1["q1"]} W={out[cid]["W"]:.4g} t={out[cid]["t"]:.4g}s')
-                    return out
-                res = O.phase(f'A|{kind}|{r}|{hp}|{option[0]}|{option[1]:.8g}', cell_block)
-                if res:
-                    O.res['stageA'].update(res)
-                    O.save()
-            del dat
+            screen(r, kind, hrp)
+
+    # ---- A2.18 / A16.2 bounded extension (one rung per direction, while the C-search allocation remains) -------------
+    def extension():
+        import stats as ST
+        used_h = (time.perf_counter() - search_t0) / 3600
+        alloc = cfg.get('search_allocation_hours')
+        items = [dict(id=k, t=v['t'], W=v['W']) for k, v in O.res['stageA'].items()
+                 if v['q1']['q1'] and np.isfinite(v['W']) and np.isfinite(v['t'])]
+        F = ST.front(items)
+        todo = set()
+        for f in F:
+            v = O.res['stageA'][f['id']]
+            if v['kind'] == 'ecsw' and v['hrp'] == 'k8':
+                todo.add((v['r'], 'ecsw', 'k16'))
+            if cfg.get('ext_rank') and v['r'] == max(ranks):
+                todo.add((cfg['ext_rank'], v['kind'], v['hrp'] if v['kind'] != 'qdeim' else v['hrp'] // v['r']))
+        rec = dict(front=[f['id'] for f in F], triggered=sorted(map(str, todo)), search_hours_used=used_h,
+                   allocation_hours=alloc, run=bool(todo) and (alloc is None or used_h < alloc))
+        O.res['extension'] = rec
+        O.save()
+        if not rec['run']:
+            return rec
+        for r, kind, hrp in sorted(todo, key=str):
+            if kind == 'ecsw' and r not in cell.ecsw_rec:
+                O.phase(f'ecsw_r{r}', lambda r=r: ecsw_r(r), store=f'ecsw_r{r}')
+            screen(r, kind, hrp, tag='EXT')
+        return rec
+    O.phase('extension', extension)
+    O.res['search_hours'] = (time.perf_counter() - search_t0) / 3600
+    O.save()
 
     # ---- ours: batch-1 comparators, same-job warm timing on the 6 timing cases (A4.8, A5.3) and replay (G-ours) ----
     def ours_pass():

@@ -1,0 +1,39 @@
+{
+ "meshes": {
+  "4096": {
+   "targets": {
+    "smk": {
+     "rom_label": "dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "population": "H",
+     "groups": {
+      "smk|CC|joint": {
+       "family": "CC",
+       "criterion": "joint"
+      },
+      "smk|union|joint": {
+       "family": "union",
+       "criterion": "joint"
+      }
+     },
+     "group_ids": {
+      "CC|joint": "smk|CC|joint",
+      "union|joint": "smk|union|joint"
+     },
+     "union_joint_group": "smk|union|joint"
+    }
+   },
+   "k2_universe": [
+    "smk"
+   ],
+   "k2_universe_complete": false
+  }
+ },
+ "identities": {
+  "dn256b|R128|fib4181|frozen|BE|0.005|LSPG|prod": {
+   "targets": {
+    "4096": "smk"
+   }
+  }
+ },
+ "note": "C2 smoke plan (mechanics only; no claim)"
+}

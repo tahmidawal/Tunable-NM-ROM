@@ -521,3 +521,25 @@ extension resolutions (CC $L=16$, UB $L=32$, PS $N=4$); staging checks the certi
 carry the bank tag and reject collisions; the PS anchor is normalised by the reference $n_0$; the ledger treats a live
 accounting row as the current attempt. C2 items (stage-1 veto refresh, A's own stage-2 alias, ROM validity in G-RR,
 executable release, 2× brackets — the last done in `c2analyze.py`) are addressed before the C2 code audit.
+
+---
+
+## Amendment A6 (2026-10-18; dispositions of `audits/codex-c2code-1.md`, NOT READY; before any C2 job)
+
+* **T-id** now runs through the ordinary identity check: the control-only alias gets a deliberately corrupted reference
+  and an ordinary triplet; it fires only if the alias is vetoed, its triplet is invalid, and the production subject's
+  veto state is unchanged.
+* **K2 completeness** follows the producer's schema (jcp-qualify `analyze.front2d`): an `unqualified` entry at $4096^2$
+  that is the string "no accuracy entry" or a record with both `acc_label` and `timing_label` true (e.g. unusable timing)
+  makes the K2 universe **incomplete** (K2 inconclusive).
+* **Memory (A1.6):** prepared FOM inputs are shared per (discretisation, case); PS programs not selected after stage 1
+  are released; the combined-workload pilots now record convergence evidence and full-output finiteness, and a C2 panel
+  is valid only if every requested pilot is valid (`pilots_ok`).
+* **Reporting:** empty, deferred and too-small groups are emitted as explicit cells and kept in the crossover sequences
+  ("not qualified at this mesh", "no match", "same-resolution PS not run (deferred)"); a group whose shortlisted
+  candidates were all vetoed is reported as such. Every candidate (family and union groups) carries its edge reasons,
+  boundary label and, for PS, its anchor, so the label of whichever comparator C2 selects is reported.
+* A local CPU run of the C2 job at $256^2$ (2 cases; mechanics only, no claim) exercised every stage: G-RR, G-FR and A
+  validity passed, stage-1 selection and frozen selection were written, T-fault and T-id fired, and T-dbl did **not**
+  fire on the CPU (median 1.61), which made the panel invalid as designed — a CPU timing artefact to be checked on the
+  H200 in the C2 smoke (P1 measured 1.96–2.00 there).

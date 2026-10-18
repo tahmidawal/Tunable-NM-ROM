@@ -104,12 +104,15 @@ class FOMs:
 
     def __init__(self):
         self.fd, self.ps, self.maps = {}, {}, {}
-        self.compile_log = {}          # executable -> compile seconds, recorded when the compile actually happens
+        self.compile_log = {}          # executable -> first compile seconds (certificates)
+        self.compile_events = []       # every compile event, including recompiles after a release
 
     def _log(self, name, fn):
         c = getattr(fn, 'compile_seconds', 0.0)
-        if c and name not in self.compile_log:
-            self.compile_log[name] = float(c)
+        if c:
+            self.compile_events.append([name, float(c)])
+            if name not in self.compile_log:
+                self.compile_log[name] = float(c)
 
     def solver(self, L, adv, lim):
         k = (L, adv, lim)
@@ -124,7 +127,9 @@ class FOMs:
             T = LAT if target == 'lattice' else int(target[1])
             t = time.perf_counter()
             exe = f.lower(jax.ShapeDtypeStruct((6, (L - 1) ** 2), jnp.float64)).compile()
-            self.compile_log[f'map|L{L}|{T}'] = time.perf_counter() - t
+            dtc = time.perf_counter() - t
+            self.compile_events.append([f'map|L{L}|{T}', dtc])
+            self.compile_log.setdefault(f'map|L{L}|{T}', dtc)
             self.maps[k] = exe
         return self.maps[k]
 
@@ -158,8 +163,7 @@ class FOMs:
 
             def fps():
                 o = q(x, nu)[0]               # the running maximum is computed in the same program (validity evidence)
-                if name not in self.compile_log:
-                    self._log(name, q)
+                self._log(name, q)            # logs only when this call compiled (compile_seconds is 0 otherwise)
                 return o
             return fps
         _, fam, L, dt, lev = sp
@@ -172,8 +176,7 @@ class FOMs:
 
         def ffd():
             o = m(s(x, nu, dt, scheme, ntol, ltol)['out'])
-            if name not in self.compile_log:
-                self._log(name, s)
+            self._log(name, s)
             return o
         return ffd
 

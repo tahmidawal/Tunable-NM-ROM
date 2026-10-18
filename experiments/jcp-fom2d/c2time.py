@@ -87,6 +87,7 @@ def main():
     begin = time.perf_counter()
     el = lambda: round(time.perf_counter() - begin, 1)
     N = int(cfg['mesh'])
+    ctl0 = cfg.get('controls', {})
     bsec = float(cfg.get('burn', 0.05))
     reps = int(cfg.get('reps', 3))
     rep = dict(config=cfg, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
@@ -229,6 +230,7 @@ def main():
             ok = check(k, c, o) and ok
             ts.append(t)
         rep['stage0'][k] = dict(times=ts, cost=float(np.median(ts)), identity_ok=ok)
+        del fn, o                                           # no stage-0 closure/output survives (A1.6 release)
     save()
     print('STAGE0', len(fkeys), el(), flush=True)
 
@@ -272,12 +274,15 @@ def main():
         for c in cases:
             o = jax.block_until_ready(call(lb, c)())
             check(lb, c, o)
+            del o
 
     # ---- 3. stage 1: selection block ---------------------------------------------------------------------------------
     rng = np.random.default_rng(int(cfg.get('seed', 1)))
     top = {}
+    pre_veto = {}
     for g in cfg['groups']:
         key0 = lambda k: (rep['stage0'][k]['cost'], k)
+        pre_veto[g['id']] = len(g['candidates'])
         g = dict(g, candidates=[k for k in g['candidates'] if k not in VETO])     # vetoed candidates never shortlisted
         if g.get('pool_by_family'):          # A2.1 union group: the three stage-0-cheapest of every family, pooled
             fams = sorted({FR.family(k) for k in g['candidates']})
@@ -303,12 +308,24 @@ def main():
         rep['selection'][g['id']] = dict(target=g['target'], family=g['family'], criterion=g['criterion'], shortlist=sl,
                                          stage0={k: rep['stage0'][k]['cost'] for k in sl}, stage1=cost, population=pop,
                                          selected=best, status='selected' if ok else
-                                         (('all candidates vetoed (identity)' if top[g['id']] else 'no candidate') if not sl
+                                         (('all candidates vetoed (identity)' if pre_veto[g['id']] else 'no candidate') if not sl
                                           else 'invalid timing (selection population < 5)'))
     keep = {v['selected'] for v in rep['selection'].values() if v['selected']}
-    for k_ in list(foms.ps):                                # A1.6: release PS programs no longer needed (FD solvers are shared)
-        if not any(FR.parse(x)[0] == 'ps' and (FR.parse(x)[1], FR.parse(x)[2]) == k_[:2] for x in keep):
+    keep |= {k for k in (ctl0.get('fault_subject'), ctl0.get('identity_fault_subject')) if k and k not in roms}
+    ksp = [FR.parse(x) for x in keep]
+    for k_ in list(foms.ps):                                # A1.6: release programs and inputs no longer needed
+        if not any(x[0] == 'ps' and (x[1], x[2]) == k_[:2] for x in ksp):
             del foms.ps[k_]
+    for k_ in list(foms.fd):
+        if not any(x[0] == 'fd' and x[2] == k_[0] for x in ksp):
+            del foms.fd[k_]
+    for k_ in list(foms.maps):
+        if not any(x[0] == 'fd' and x[2] == k_[0] for x in ksp):
+            del foms.maps[k_]
+    needx = {xkey(k) for k in keep}
+    for k_ in list(XS):
+        if k_[0] not in needx:
+            del XS[k_]
     import gc
     gc.collect()
     rep['memory']['after_stage1_release'] = P.mem()
@@ -384,6 +401,7 @@ def main():
         print('PILOT', k, ok, P.mem(), flush=True)
     rep['pilots_ok'] = all(rep.get('pilot_foms', {}).get(k, {}).get('valid') is True for k in cfg.get('pilot_foms', []))
     rep['compile_log'] = foms.compile_log
+    rep['compile_events'] = foms.compile_events
     rep['veto'] = sorted(VETO)
     rep['memory']['end'] = P.mem()
     rep['elapsed_seconds'] = el()

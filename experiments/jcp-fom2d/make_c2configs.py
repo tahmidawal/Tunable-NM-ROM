@@ -87,6 +87,10 @@ def main():
                                  target_e={f'{c}|{j}': h['e'][f'{c}|{j}'] for c, j in TIMING_CASES})
             m = M['matches'][tk]
             ent = dict(rom_label=idt, population=t['population'], groups={}, group_ids={}, empty={}, status=m.get('status'))
+            if m.get('status') != 'ok':               # too-small / blocked targets: every cell is reported with the reason
+                for f in FAMS + ('union',):
+                    for cr in (CRITS if f != 'union' else ('joint', 'same_mesh')):
+                        ent['empty'][f'{f}|{cr}'] = m.get('status')
             if m.get('status') == 'ok':
                 for f in FAMS:
                     for cr in CRITS:

@@ -186,13 +186,16 @@ def main():
                         tt = plan['meshes'][str(N)]['targets'][tk]
                         why = tt.get('empty', {}).get(f'{fam}|{crit}') or tt.get('status') or 'no cell'
                         seq.append((N, why, why))
+                why = sorted({c1 for _, c1, _ in seq if c1 not in ('ROM faster', 'FOM faster', 'unresolved')})
                 ok1 = [(m, c1) for m, c1, _ in seq if c1 in ('ROM faster', 'FOM faster', 'unresolved')]
                 tr = {'ROM >= 2x': 'ROM faster', 'ROM < 2x': 'FOM faster', 'unresolved': 'unresolved'}
                 ok2 = [(m, tr[c2]) for m, _, c2 in seq if c2 in tr]
-                out[f'{fam}|{crit}'] = dict(sequence=seq, bracket_1x=bracket(ok1) if len(ok1) > 1 else
-                                            (f'point only ({ok1[0][0]}^2: {ok1[0][1]})' if ok1 else 'no qualified mesh'),
+                none = 'no timed cell' + (f" ({'; '.join(why)})" if why else '')
+                out[f'{fam}|{crit}'] = dict(sequence=seq, other_statuses=why,
+                                            bracket_1x=bracket(ok1) if len(ok1) > 1 else
+                                            (f'point only ({ok1[0][0]}^2: {ok1[0][1]})' if ok1 else none),
                                             bracket_2x=(bracket(ok2).replace('ROM faster', 'ROM >= 2x').replace('FOM faster', 'ROM < 2x')
-                                                        if len(ok2) > 1 else (f'point only ({ok2[0][0]}^2)' if ok2 else 'no qualified mesh')))
+                                                        if len(ok2) > 1 else (f'point only ({ok2[0][0]}^2)' if ok2 else none)))
         res['crossover'][ident] = out
     Path(a.out).write_text(json.dumps(res, indent=1, default=float) + '\n')
     print('K2', res.get('k2', {}).get('verdict'), 'panels', {N: v['panel_ok'] for N, v in res['meshes'].items()})

@@ -1,0 +1,985 @@
+{
+ "CPU test_q.json all pass": {
+  "required": true,
+  "passed": true,
+  "n": 21
+ },
+ "CPU test_p1.json all pass": {
+  "required": true,
+  "passed": true,
+  "n": 27
+ },
+ "manufactured LMM oracle gates pass (positive B4 gate)": {
+  "required": true,
+  "passed": true
+ },
+ "smkA complete": {
+  "required": true,
+  "passed": true
+ },
+ "R128|LSPG|BE|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|LSPG|BE|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|LSPG|BE|1: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 1.617756389324647e-15,
+  "key": "LSPG|BE|0.005|prod",
+  "manifest_equal": true
+ },
+ "R128|LSPG|BE|2: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|LSPG|BE|2: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|LSPG|BE|2: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 7.981405796463538e-16,
+  "key": "LSPG|BE|0.01|prod",
+  "manifest_equal": true
+ },
+ "R128|LSPG|BE|2.5: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|LSPG|BE|2.5: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|LSPG|BE|2.5: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 9.267016623950722e-16,
+  "key": "LSPG|BE|0.0125|prod",
+  "manifest_equal": true
+ },
+ "R128|LSPG|CNR|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|LSPG|CNR|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|LSPG|CNR|1: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 1.3594195935329134e-15,
+  "key": "LSPG|CNR|0.005|prod",
+  "manifest_equal": true
+ },
+ "R128|LSPG|CNR|2: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|LSPG|CNR|2: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|LSPG|CNR|2: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 8.819745518702369e-16,
+  "key": "LSPG|CNR|0.01|prod",
+  "manifest_equal": true
+ },
+ "R128|LSPG|CNR|2.5: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|LSPG|CNR|2.5: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|LSPG|CNR|2.5: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 8.480964969489742e-16,
+  "key": "LSPG|CNR|0.0125|prod",
+  "manifest_equal": true
+ },
+ "R128|GAL|CN|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|GAL|CN|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|GAL|CN|1: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 1.0862283371081984e-15,
+  "key": "GAL|CN|0.005|prod",
+  "manifest_equal": true
+ },
+ "R128|GAL|CN|2: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|GAL|CN|2: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|GAL|CN|2: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 5.844200020983923e-16,
+  "key": "GAL|CN|0.01|prod",
+  "manifest_equal": true
+ },
+ "R128|GAL|CN|5: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R128|GAL|CN|5: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R128|GAL|CN|5: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 4.0610329274995603e-16,
+  "key": "GAL|CN|0.025|prod",
+  "manifest_equal": true
+ },
+ "R512|LSPG|BE|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|LSPG|BE|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|LSPG|BE|1: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 9.484003189699203e-16,
+  "key": "LSPG|BE|0.005|prod",
+  "manifest_equal": true
+ },
+ "R512|LSPG|BE|2: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|LSPG|BE|2: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|LSPG|BE|2: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 6.257199591831299e-16,
+  "key": "LSPG|BE|0.01|prod",
+  "manifest_equal": true
+ },
+ "R512|LSPG|BE|2.5: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|LSPG|BE|2.5: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|LSPG|BE|2.5: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 8.727043995780165e-16,
+  "key": "LSPG|BE|0.0125|prod",
+  "manifest_equal": true
+ },
+ "R512|LSPG|CNR|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|LSPG|CNR|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|LSPG|CNR|1: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 1.132047779910344e-15,
+  "key": "LSPG|CNR|0.005|prod",
+  "manifest_equal": true
+ },
+ "R512|LSPG|CNR|2: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|LSPG|CNR|2: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|LSPG|CNR|2: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 8.056359299384617e-16,
+  "key": "LSPG|CNR|0.01|prod",
+  "manifest_equal": true
+ },
+ "R512|LSPG|CNR|2.5: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|LSPG|CNR|2.5: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|LSPG|CNR|2.5: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 9.713254848416616e-16,
+  "key": "LSPG|CNR|0.0125|prod",
+  "manifest_equal": true
+ },
+ "R512|GAL|CN|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|GAL|CN|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|GAL|CN|1: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 1.0829258364562735e-15,
+  "key": "GAL|CN|0.005|prod",
+  "manifest_equal": true
+ },
+ "R512|GAL|CN|2: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|GAL|CN|2: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|GAL|CN|2: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 1.047063387859555e-15,
+  "key": "GAL|CN|0.01|prod",
+  "manifest_equal": true
+ },
+ "R512|GAL|CN|5: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R512|GAL|CN|5: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R512|GAL|CN|5: preliminary combined reproduction <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 3.743932408112544e-16,
+  "key": "GAL|CN|0.025|prod",
+  "manifest_equal": true
+ },
+ "R384|GAL|CN|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R384|GAL|CN|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "positive GAL fixture: certificate, G-cert, validity pass": {
+  "required": true,
+  "passed": true,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  }
+ },
+ "R384|GAL|CN|1: zero-update motion > 100 x 2.5e-4 (independent establishment)": {
+  "required": true,
+  "passed": true,
+  "motion": 0.5149958553874256
+ },
+ "R384|GAL|CN|1: zero-update control fires (distance > 2.5e-4)": {
+  "required": true,
+  "passed": true,
+  "dist": 0.5149958553874256
+ },
+ "R384|LSPG|BE|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R384|LSPG|BE|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R384|LSPG|BE|1: equals P1 acc1024 archive <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0,
+  "manifest_equal": true
+ },
+ "R384|LSPG|BE|1: zero-update motion > 100 x 2.5e-4 (independent establishment)": {
+  "required": true,
+  "passed": true,
+  "motion": 0.5101744855856767
+ },
+ "R384|LSPG|BE|1: zero-update control fires (distance > 2.5e-4)": {
+  "required": true,
+  "passed": true,
+  "dist": 0.5101744855856767
+ },
+ "R384|LSPG|CNR|1: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "R384|LSPG|CNR|1: labels": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "certificate": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": "pass"
+ },
+ "R384|LSPG|CNR|1: equals P1 acc1024 archive <= 1e-10 with numerical-manifest equality": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0,
+  "manifest_equal": true
+ },
+ "R384|LSPG|CNR|1: zero-update motion > 100 x 2.5e-4 (independent establishment)": {
+  "required": true,
+  "passed": true,
+  "motion": 0.514779373837666
+ },
+ "R384|LSPG|CNR|1: zero-update control fires (distance > 2.5e-4)": {
+  "required": true,
+  "passed": true,
+  "dist": 0.514779373837666
+ },
+ "under-resolved rule: Q2 classifier returns fail": {
+  "required": true,
+  "passed": true,
+  "worst": 0.033663845818853434,
+  "rho_max": 1.5816420465830987,
+  "label": "fail"
+ },
+ "Q1 negative (LSPG, LM budget 0): pooled non-certified > 1 %": {
+  "required": true,
+  "passed": true,
+  "pooled": 1.0
+ },
+ "Q1 negative (LSPG): independent NumPy certificate > threshold on > 1 % of steps": {
+  "required": true,
+  "passed": true
+ },
+ "Q1 negative (LSPG): in-job certificate agrees with NumPy per step": {
+  "required": true,
+  "passed": true
+ },
+ "Q1 negative (GAL, LM budget 0): pooled non-certified > 1 %": {
+  "required": true,
+  "passed": true,
+  "pooled": 1.0
+ },
+ "Q1 negative (GAL): independent NumPy certificate > threshold on > 1 % of steps": {
+  "required": true,
+  "passed": true
+ },
+ "Q1 negative (GAL): in-job certificate agrees with NumPy per step": {
+  "required": true,
+  "passed": true
+ },
+ "wrong-mesh table refused": {
+  "required": true,
+  "passed": true
+ },
+ "TH06 control: >= 5 interpretable dev6 cases and label order 1": {
+  "required": true,
+  "passed": true,
+  "label": {
+   "label": "order 1",
+   "interpretable": 6,
+   "p_median": 0.9984319398448243,
+   "p_range": [
+    0.9672989771005381,
+    1.0241684990491082
+   ]
+  }
+ },
+ "B4 path test R384|LSPG_BE": {
+  "required": false,
+  "cases": [
+   {
+    "case": "dev6|0",
+    "p": 1.0199944679986472,
+    "interpretable": true,
+    "checks": {
+     "defined": true,
+     "asymptotic": true,
+     "anchor": true,
+     "solver": true,
+     "quadrature": true,
+     "finer_rule": true,
+     "valid": true
+    }
+   }
+  ]
+ },
+ "B4 path test R384|LSPG_CNR": {
+  "required": false,
+  "cases": [
+   {
+    "case": "dev6|0",
+    "p": 1.9982562318083887,
+    "interpretable": true,
+    "checks": {
+     "defined": true,
+     "asymptotic": true,
+     "anchor": true,
+     "solver": true,
+     "quadrature": true,
+     "finer_rule": true,
+     "valid": true
+    }
+   }
+  ]
+ },
+ "B4 path test R384|GAL_CN": {
+  "required": false,
+  "cases": [
+   {
+    "case": "dev6|0",
+    "p": 1.999474878862884,
+    "interpretable": true,
+    "checks": {
+     "defined": true,
+     "asymptotic": true,
+     "anchor": true,
+     "solver": true,
+     "quadrature": true,
+     "finer_rule": true,
+     "valid": true
+    }
+   }
+  ]
+ },
+ "smkB complete": {
+  "required": true,
+  "passed": true
+ },
+ "split = fused (fields 1e-12, iterations equal)": {
+  "required": true,
+  "passed": true
+ },
+ "injected identity fault invalidates every triplet of its subject": {
+  "required": true,
+  "passed": true
+ },
+ "identity holds for every other subject": {
+  "required": true,
+  "passed": true
+ },
+ "fused triplets: identity holds and drift in band for the other subjects": {
+  "required": true,
+  "passed": true
+ },
+ "fused triplets of the injected subject invalid": {
+  "required": true,
+  "passed": true
+ },
+ "doubled work B/A in [1.8, 2.2] with identical iterations and identity": {
+  "required": true,
+  "passed": true,
+  "median": 2.014960782908317
+ },
+ "timing-job certification 1024|R384|gauss128|LSPG|CNR|1": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 4.5646277204550006e-07,
+    "dist_qp": 7.745205783164869e-07
+   },
+   {
+    "case": "dev6|1",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 5.115772426886911e-07,
+    "dist_qp": 3.030999346625961e-08
+   }
+  ]
+ },
+ "1024|R384|gauss128|LSPG|CNR|1: G-cert holds in the timing job": {
+  "required": true,
+  "passed": true
+ },
+ "timing-job certification 1024|R384|gauss128|LSPG|CNR|2": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 2.316726753787024e-06,
+    "dist_qp": 7.519371106774305e-07
+   },
+   {
+    "case": "dev6|1",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 6.180949928431578e-07,
+    "dist_qp": 3.003487797918052e-08
+   }
+  ]
+ },
+ "1024|R384|gauss128|LSPG|CNR|2: G-cert holds in the timing job": {
+  "required": true,
+  "passed": true
+ },
+ "timing-job certification 1024|R128|fib4181|LSPG|BE|2.5": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 1.0323418079610624e-05,
+    "dist_qp": 1.6298370941884573e-06
+   },
+   {
+    "case": "dev6|1",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 2.1255113333414336e-06,
+    "dist_qp": 4.5007156181825877e-08
+   }
+  ]
+ },
+ "1024|R128|fib4181|LSPG|BE|2.5: G-cert holds in the timing job": {
+  "required": true,
+  "passed": true
+ },
+ "timing-job certification 1024|R128|fib4181|GAL|CN|5": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 2.8862135205908072e-11,
+    "dist_qp": 1.4191550227137673e-05
+   },
+   {
+    "case": "dev6|1",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 1.9163431783401414e-11,
+    "dist_qp": 6.700571614355235e-08
+   }
+  ]
+ },
+ "1024|R128|fib4181|GAL|CN|5: G-cert holds in the timing job": {
+  "required": true,
+  "passed": true
+ },
+ "timing-job certification 1024|R512|gauss192|LSPG|BE|1": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 2.2819167471061654e-07,
+    "dist_qp": 3.3960100343458765e-07
+   },
+   {
+    "case": "dev6|1",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 3.749285507535343e-07,
+    "dist_qp": 8.330498800256301e-09
+   }
+  ]
+ },
+ "1024|R512|gauss192|LSPG|BE|1: G-cert holds in the timing job": {
+  "required": true,
+  "passed": true
+ },
+ "timing-job certification 1024|R512|gauss192|LSPG|CNR|2.5": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 2.0749234438520426e-06,
+    "dist_qp": 3.1840448065262035e-07
+   },
+   {
+    "case": "dev6|1",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 7.677315403905213e-07,
+    "dist_qp": 8.247157440319355e-09
+   }
+  ]
+ },
+ "1024|R512|gauss192|LSPG|CNR|2.5: G-cert holds in the timing job": {
+  "required": true,
+  "passed": true
+ },
+ "timing-job certification 1024|R512|gauss192|GAL|CN|1": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 2.0446807756960555e-10,
+    "dist_qp": 3.8570990743165647e-07
+   },
+   {
+    "case": "dev6|1",
+    "valid": true,
+    "noncertified": 0,
+    "gcert_ok": true,
+    "dist_tight": 5.091506395727189e-11,
+    "dist_qp": 6.361737491570239e-09
+   }
+  ]
+ },
+ "1024|R512|gauss192|GAL|CN|1: G-cert holds in the timing job": {
+  "required": true,
+  "passed": true
+ },
+ "4096^2 pilot complete": {
+  "required": true,
+  "passed": true
+ },
+ "4096^2 pilot peak bytes": {
+  "required": false,
+  "peak": 96592342016,
+  "feasible": true
+ },
+ "smk3 complete": {
+  "required": true,
+  "passed": true
+ },
+ "W512|gl24|fs|CN|0.01|K1: reproduces speed3d archive <= 1e-10": {
+  "required": true,
+  "passed": true,
+  "rep": {
+   "archive": "g2",
+   "cases": 64,
+   "worst": 1.0347151677129824e-15,
+   "passed": true
+  }
+ },
+ "W512|gl24|fs|CN|0.01|K1: offline recomputation (q3offline) agrees with the job": {
+  "required": true,
+  "passed": true,
+  "offline": {
+   "agrees": true
+  }
+ },
+ "W512|gl24|fs|CN|0.01|K1: populations and array shapes complete": {
+  "required": true,
+  "passed": true
+ },
+ "W512|gl24|fs|CN|0.01|K1: Q2-3D (smoke)": {
+  "required": false,
+  "label": "fail",
+  "worst": 0.001134346700208974,
+  "rho": 0.049186578625948475
+ },
+ "W1024|lat32768|fs|CN|0.01|K1: reproduces speed3d archive <= 1e-10": {
+  "required": true,
+  "passed": true,
+  "rep": {
+   "archive": "g3",
+   "cases": 64,
+   "worst": 1.0409655002844045e-15,
+   "passed": true
+  }
+ },
+ "W1024|lat32768|fs|CN|0.01|K1: offline recomputation (q3offline) agrees with the job": {
+  "required": true,
+  "passed": true,
+  "offline": {
+   "agrees": true
+  }
+ },
+ "W1024|lat32768|fs|CN|0.01|K1: populations and array shapes complete": {
+  "required": true,
+  "passed": true
+ },
+ "W1024|lat32768|fs|CN|0.01|K1: Q2-3D (smoke)": {
+  "required": false,
+  "label": "fail",
+  "worst": 0.0004216465906073666,
+  "rho": 0.006372284063471666
+ },
+ "3D under-resolved control fails Q2-3D": {
+  "required": true,
+  "passed": true,
+  "worst": 0.004302948786214558
+ },
+ "3D control: offline recomputation agrees": {
+  "required": true,
+  "passed": true,
+  "offline": {
+   "agrees": true
+  }
+ },
+ "3D pilot": {
+  "required": false,
+  "pilot": [
+   {
+    "setting": "W1024",
+    "rule": "lat131072",
+    "peak_bytes": 20548014336
+   },
+   {
+    "setting": "W1024",
+    "rule": "lat65536",
+    "peak_bytes": 20553403392
+   }
+  ],
+  "peak_job": 27529174528
+ }
+}

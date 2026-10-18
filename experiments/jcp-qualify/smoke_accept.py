@@ -178,7 +178,8 @@ def cpu_tests():
     for name in ('test_q.json', 'test_p1.json'):
         p = HERE / 'checks' / name
         r = json.loads(p.read_text()) if p.exists() else {}
-        req(f'CPU {name} all pass', r and all(v['passed'] for v in r.values()))
+        tests = {k: v for k, v in r.items() if isinstance(v, dict) and 'passed' in v}     # informational entries skipped
+        req(f'CPU {name} all pass', bool(tests) and all(v['passed'] for v in tests.values()), n=len(tests))
     p = HERE / 'checks' / 'test_lmm.json'
     r = json.loads(p.read_text()) if p.exists() else None
     req('manufactured LMM oracle gates pass (positive B4 gate)', r is not None and r.get('all_pass', False))

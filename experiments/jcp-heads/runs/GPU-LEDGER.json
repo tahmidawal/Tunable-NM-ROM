@@ -29,10 +29,13 @@
    "attempt": "train",
    "job_id": "5533155",
    "time_limit_hours": 3.75,
-   "state": "SUBMITTED",
-   "gpu": null,
-   "elapsed_hours": null,
-   "pending_hours": 3.75
+   "state": "COMPLETED",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 1.1672,
+   "pending_hours": 3.75,
+   "attempts": 1,
+   "node": "pax050",
+   "prior_elapsed_hours": 0.0
   }
  ],
  "pending_core": {
@@ -41,6 +44,6 @@
   "time1024": 4,
   "time256": 2
  },
- "spent_gpu_hours": 0.2406,
- "reserved_gpu_hours": 3.75
+ "spent_gpu_hours": 1.4078,
+ "reserved_gpu_hours": 0
 }

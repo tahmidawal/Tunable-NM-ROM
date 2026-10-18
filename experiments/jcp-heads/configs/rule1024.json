@@ -1,0 +1,318 @@
+{
+ "mesh": 1024,
+ "edges": [
+  0,
+  4,
+  8,
+  16,
+  32,
+  64,
+  128,
+  256,
+  384,
+  512
+ ],
+ "ladder": [
+  16,
+  24,
+  32,
+  48,
+  64,
+  96,
+  128,
+  160,
+  192,
+  256,
+  320
+ ],
+ "selectable_max": 192,
+ "population": "sub16",
+ "check": "dev6",
+ "groups": [
+  {
+   "name": "H4",
+   "min_pass": 2,
+   "arms": [
+    {
+     "name": "H4s0",
+     "kind": "head",
+     "head": "heads/head_mid_k4_s0.npz"
+    },
+    {
+     "name": "H4s1",
+     "kind": "head",
+     "head": "heads/head_mid_k4_s1.npz"
+    },
+    {
+     "name": "H4s2",
+     "kind": "head",
+     "head": "heads/head_mid_k4_s2.npz"
+    }
+   ]
+  },
+  {
+   "name": "H8",
+   "min_pass": 2,
+   "arms": [
+    {
+     "name": "H8s0",
+     "kind": "head",
+     "head": "heads/head_mid_k8_s0.npz"
+    },
+    {
+     "name": "H8s1",
+     "kind": "head",
+     "head": "heads/head_mid_k8_s1.npz"
+    },
+    {
+     "name": "H8s2",
+     "kind": "head",
+     "head": "heads/head_mid_k8_s2.npz"
+    }
+   ]
+  },
+  {
+   "name": "H16",
+   "min_pass": 2,
+   "arms": [
+    {
+     "name": "H16s0",
+     "kind": "head",
+     "head": "heads/head_mid_k16_s0.npz"
+    },
+    {
+     "name": "H16s1",
+     "kind": "head",
+     "head": "heads/head_mid_k16_s1.npz"
+    },
+    {
+     "name": "H16s2",
+     "kind": "head",
+     "head": "heads/head_mid_k16_s2.npz"
+    }
+   ]
+  },
+  {
+   "name": "H32",
+   "min_pass": 2,
+   "arms": [
+    {
+     "name": "H32s0",
+     "kind": "head",
+     "head": "heads/head_mid_k32_s0.npz"
+    },
+    {
+     "name": "H32s1",
+     "kind": "head",
+     "head": "heads/head_mid_k32_s1.npz"
+    },
+    {
+     "name": "H32s2",
+     "kind": "head",
+     "head": "heads/head_mid_k32_s2.npz"
+    }
+   ]
+  },
+  {
+   "name": "H4m128",
+   "min_pass": 2,
+   "M": 128,
+   "arms": [
+    {
+     "name": "H4s0m128",
+     "kind": "head",
+     "head": "heads/head_mid_k4_s0.npz"
+    },
+    {
+     "name": "H4s1m128",
+     "kind": "head",
+     "head": "heads/head_mid_k4_s1.npz"
+    },
+    {
+     "name": "H4s2m128",
+     "kind": "head",
+     "head": "heads/head_mid_k4_s2.npz"
+    }
+   ]
+  },
+  {
+   "name": "H8m128",
+   "min_pass": 2,
+   "M": 128,
+   "arms": [
+    {
+     "name": "H8s0m128",
+     "kind": "head",
+     "head": "heads/head_mid_k8_s0.npz"
+    },
+    {
+     "name": "H8s1m128",
+     "kind": "head",
+     "head": "heads/head_mid_k8_s1.npz"
+    },
+    {
+     "name": "H8s2m128",
+     "kind": "head",
+     "head": "heads/head_mid_k8_s2.npz"
+    }
+   ]
+  },
+  {
+   "name": "H16m128",
+   "min_pass": 2,
+   "M": 128,
+   "arms": [
+    {
+     "name": "H16s0m128",
+     "kind": "head",
+     "head": "heads/head_mid_k16_s0.npz"
+    },
+    {
+     "name": "H16s1m128",
+     "kind": "head",
+     "head": "heads/head_mid_k16_s1.npz"
+    },
+    {
+     "name": "H16s2m128",
+     "kind": "head",
+     "head": "heads/head_mid_k16_s2.npz"
+    }
+   ]
+  },
+  {
+   "name": "Hinc",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "Hinc",
+     "kind": "head",
+     "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl"
+    }
+   ]
+  },
+  {
+   "name": "L4",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L4",
+     "kind": "lin",
+     "Rp": 4
+    }
+   ]
+  },
+  {
+   "name": "L8",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L8",
+     "kind": "lin",
+     "Rp": 8
+    }
+   ]
+  },
+  {
+   "name": "L16",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L16",
+     "kind": "lin",
+     "Rp": 16
+    }
+   ]
+  },
+  {
+   "name": "L32",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L32",
+     "kind": "lin",
+     "Rp": 32
+    }
+   ]
+  },
+  {
+   "name": "L64",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L64",
+     "kind": "lin",
+     "Rp": 64
+    }
+   ]
+  },
+  {
+   "name": "L128",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L128",
+     "kind": "lin",
+     "Rp": 128
+    }
+   ]
+  },
+  {
+   "name": "L256",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L256",
+     "kind": "lin",
+     "Rp": 256
+    }
+   ]
+  },
+  {
+   "name": "L384",
+   "min_pass": 1,
+   "arms": [
+    {
+     "name": "L384",
+     "kind": "lin",
+     "Rp": 384
+    }
+   ]
+  },
+  {
+   "name": "L4m128",
+   "min_pass": 1,
+   "M": 128,
+   "arms": [
+    {
+     "name": "L4m128",
+     "kind": "lin",
+     "Rp": 4
+    }
+   ]
+  },
+  {
+   "name": "L8m128",
+   "min_pass": 1,
+   "M": 128,
+   "arms": [
+    {
+     "name": "L8m128",
+     "kind": "lin",
+     "Rp": 8
+    }
+   ]
+  },
+  {
+   "name": "L16m128",
+   "min_pass": 1,
+   "M": 128,
+   "arms": [
+    {
+     "name": "L16m128",
+     "kind": "lin",
+     "Rp": 16
+    }
+   ]
+  }
+ ]
+}

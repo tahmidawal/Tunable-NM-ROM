@@ -120,9 +120,7 @@ def smoke_acc():
 def pilot(edges4096):
     return dict(attempt='pilot', driver='pilot', meshes={'256': dict(edges=FULL), '1024': dict(edges=FULL),
                                                          '4096': dict(edges=edges4096)}, pilot_mesh=4096,
-                settings=[dict(Rp=128, rule='fib4181', roles=dict(qp='fib6765')),
-                          dict(Rp=256, rule='gauss128', roles=dict(qp='gauss160')),
-                          dict(Rp=384, rule='gauss128', roles=dict(qp='gauss160', qpp='gauss192', hist='gauss640'))])
+                timing_config='time.json')
 
 
 def main():

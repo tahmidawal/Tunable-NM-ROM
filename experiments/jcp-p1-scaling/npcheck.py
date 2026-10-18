@@ -109,4 +109,6 @@ def decode257(W, r):
 
 
 def fdist(fa, fb, n0):
-    return max(float(np.linalg.norm(fa[k] - fb[k])) / n0 for k in range(1, 6))
+    """NaN-safe: any non-finite term -> inf."""
+    d = [float(np.linalg.norm(fa[k] - fb[k])) / n0 for k in range(1, 6)]
+    return float('inf') if not np.isfinite(d).all() else max(d)

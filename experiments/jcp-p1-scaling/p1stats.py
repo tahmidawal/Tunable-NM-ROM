@@ -295,3 +295,17 @@ def conditioning(svals, tol=1e-13):
     rank = int(np.sum(s > s[0] * tol))
     cond = float(s[0] / s[-1]) if s[-1] > 0 else float('inf')
     return dict(rank=rank, n=len(s), deficient=bool(rank < len(s)), cond=cond)
+
+
+def identity_veto(invocations, fused=(), doubled=()):
+    """A4.1: any identity failure of a subject (any attempt, either flank, split or fused, or its doubled-work control)
+    blocks every timing claim of that subject. Returns {subject: blocked?}."""
+    out = {}
+    for x in invocations:
+        bad = not x.get('all_hashes_ok', x.get('hashes_ok', False)) or any(not t.get('hashes_ok', False) for t in x.get('attempts', []))
+        out[x['B']] = out.get(x['B'], False) or bad
+    for x in fused:
+        out[x['B']] = out.get(x['B'], False) or not x['hash_ok']
+    for x in doubled:
+        out[x['subject']] = out.get(x['subject'], False) or not x['identity_ok']
+    return out

@@ -119,7 +119,8 @@ def main():
                  gamma=np.full((n, NREC - 1), np.nan), gn_rec=np.full((n, NREC - 1), np.nan),
                  it=np.full((n, NREC - 1), -1), reason=np.full((n, NREC - 1), -1), n0=np.full(n, np.nan),
                  W_tight=np.full((n, 6, st.Rp), np.nan), W_tighter=np.full((n, 6, st.Rp), np.nan),
-                 W_qp=np.full((n, 6, st.Rp), np.nan), W_qpp=np.full((n, 6, st.Rp), np.nan), rho=np.full((n, 6), np.nan))
+                 W_qp=np.full((n, 6, st.Rp), np.nan), W_qpp=np.full((n, 6, st.Rp), np.nan), rho=np.full((n, 6), np.nan),
+                 f257=np.full((n, 6, 257, 257), np.nan))
         rows = []
         for j, ci in enumerate(tci):
             st.check('main', bank)
@@ -137,7 +138,9 @@ def main():
             C['W'][j], C['w0'][j], C['states'][j], C['gamma'][j], C['n0'][j] = (np.asarray(W), np.asarray(w0),
                                                                                 np.asarray(s_['states']), np.asarray(g), n0)
             C['gn_rec'][j], C['it'][j], C['reason'][j] = (np.asarray(s_[k])[:S_] for k in ('step_gn', 'step_it', 'step_reason'))
-            row = dict(case=f'{cases[ci][0]}|{cases[ci][1]}', valid=P.run_valid(dict(W=W, stats=s_)),
+            assert np.asarray(s_['states']).shape[0] == int(round(.25 / DT0)) + 1
+            C['f257'][j] = f
+            row = dict(case=f'{cases[ci][0]}|{cases[ci][1]}', valid=P.run_valid(dict(W=W, w0=w0, fields=F, stats=s_)),
                        budget_exits=int(np.asarray(s_['exits'])[0]), nonstationary=int(np.sum(~(np.asarray(g) <= 1e-3))),
                        gcert_ok=P.gcert_ok(g, C['gn_rec'][j]), ident=ref[(lb, ci)])
             if j == 0:
@@ -175,8 +178,13 @@ def main():
         rep['subjects'][lb] = dict(spec=sp, m=st.m, M=st.M, rules=st.rules, mode_hash=st.mode_hash, live_bytes=st.live_bytes,
                                    compiled=mrep, mem_after=P.mem(), case_ids=[f'{cases[ci][0]}|{cases[ci][1]}' for ci in tci],
                                    certification=rows)
-        np.savez_compressed(out / f"S_{lb.replace('|', '_')}.npz", case_ids=np.array([f'{cases[ci][0]}|{cases[ci][1]}' for ci in tci]),
-                            A=np.asarray(st.base['A']), lam=np.asarray(st.base['lam']), **C)
+        cids = np.array([f'{cases[ci][0]}|{cases[ci][1]}' for ci in tci])
+        V = {k: np.array([bool(r_.get(k, False)) for r_ in rows]) for k in ('valid', 'tight_valid', 'tighter_valid', 'qp_valid', 'qpp_valid')}
+        np.savez_compressed(out / f"S_{lb.replace('|', '_')}.npz", case_ids=cids, dev_case_ids=cids,
+                            q2_case_ids=cids if 'qp' in st.rules else np.array([], str), valid=V['valid'],
+                            valid_tight=V['tight_valid'], valid_tighter=V['tighter_valid'], valid_qp=V['qp_valid'],
+                            valid_qpp=V['qpp_valid'], time_tag='t0,t1,t2,t3,t4,t5', scheme=sp['scheme'], dt=DT0,
+                            kx=np.asarray(st.kx), ky=np.asarray(st.ky), A=np.asarray(st.base['A']), lam=np.asarray(st.base['lam']), **C)
         print('SUBJECT', lb, el(), flush=True)
         save()
 
@@ -231,6 +239,7 @@ def main():
             ta2, ha2 = timed_A(ci)
             drift = ta2 / ta1
             tries.append(dict(B=lb, case=f'{cases[ci][0]}|{cases[ci][1]}', rep=r_, attempt=attempt, tA1=ta1, tA2=ta2, t_init=ti,
+                              it=np.asarray(s_['step_it'])[:NREC - 1].tolist(),
                               t_evolve=te, t_decode=td, drift=drift, ratio=te / (.5 * (ta1 + ta2)),
                               hashes_ok=bool(ha1 == ref[(la, ci)] and ha2 == ref[(la, ci)] and ident(W, s_) == ref[(lb, ci)])))
             if BAND[0] <= drift <= BAND[1]:
@@ -246,6 +255,7 @@ def main():
         ta2, hf2 = timed_A(ci)
         hok = bool(ident(fo['W'], fo['stats']) == ref[(lb, ci)] and hf1 == ref[(la, ci)] and hf2 == ref[(la, ci)])
         rep['fused'].append(dict(B=lb, case=x['case'], rep=r_, tA1=ta1, tA2=ta2, t_fused=tf, ratio=tf / (.5 * (ta1 + ta2)),
+                                 it=np.asarray(fo['stats']['step_it'])[:NREC - 1].tolist(),
                                  drift=ta2 / ta1, hash_ok=hok, valid=bool(hok and BAND[0] <= ta2 / ta1 <= BAND[1])))
         if len(rep['invocations']) % 24 == 0:
             save()
@@ -258,19 +268,22 @@ def main():
         for ci in P.select(cases, sp.get('cases', cfg['cases'])):
             fn, args = evolve_args(sp, ci)
             for r_ in range(int(cfg['reps'])):
-                QS.burn(burn)
-                t1, o1 = sync_time(lambda: fn(*args))
-                QS.burn(burn)
-                t0 = time.perf_counter()
-                oa = fn(*args)
-                jax.block_until_ready(oa)
-                ob = fn(*args)
-                jax.block_until_ready(ob)
-                tb = time.perf_counter() - t0
-                QS.burn(burn)
-                t2, o2 = sync_time(lambda: fn(*args))
+                for attempt in range(3):                  # same drift retry rule as the triplets (<= 2 retries)
+                    QS.burn(burn)
+                    t1, o1 = sync_time(lambda: fn(*args))
+                    QS.burn(burn)
+                    t0 = time.perf_counter()
+                    oa = fn(*args)
+                    jax.block_until_ready(oa)
+                    ob = fn(*args)
+                    jax.block_until_ready(ob)
+                    tb = time.perf_counter() - t0
+                    QS.burn(burn)
+                    t2, o2 = sync_time(lambda: fn(*args))
+                    if BAND[0] <= t2 / t1 <= BAND[1]:
+                        break
                 rep['doubled'].append(dict(subject=lb, case=f'{cases[ci][0]}|{cases[ci][1]}', rep=r_, t_single1=t1, t_double=tb,
-                                           t_single2=t2, ratio=tb / (.5 * (t1 + t2)), drift=t2 / t1,
+                                           t_single2=t2, ratio=tb / (.5 * (t1 + t2)), drift=t2 / t1, attempt=attempt,
                                            drift_ok=bool(BAND[0] <= t2 / t1 <= BAND[1]),
                                            it=[np.asarray(o_[1]['step_it'])[:NREC - 1].tolist() for o_ in (o1, oa, ob, o2)],
                                            same_iterations=bool(np.array_equal(np.asarray(oa[1]['step_it']), np.asarray(ob[1]['step_it']))),

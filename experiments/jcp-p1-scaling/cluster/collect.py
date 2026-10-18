@@ -25,10 +25,16 @@ def main():
     if a.cleanup:
         assert (out / 'OUTPUTS.sha256').exists(), 'collect first'
         assert not (out / 'PARTIAL').exists(), 'a partial collection never authorises cleanup'
-        assert (out / 'output').exists() and any((out / 'output').rglob('COMPLETE')), 'no COMPLETE marker in the archive'
+        steps = [d for d in (out / 'output').iterdir() if d.is_dir()]
+        assert steps and all((d / 'COMPLETE').exists() for d in steps), 'a staged step lacks its COMPLETE marker'
+        log = '\n'.join(p.read_text() for p in (out / 'logs').glob('*.out'))
+        assert 'ALL-DONE' in log, 'job log lacks ALL-DONE'
         subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
         q = subprocess.run(SSH + [f'squeue -h -n p1s_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
         assert not q.strip(), f'job p1s_{a.attempt} still queued/running: {q}'
+        st = subprocess.run(SSH + [f'sacct -n -X -P --name p1s_{a.attempt} -S now-7days -o State'], capture_output=True,
+                            text=True, check=True).stdout.split()
+        assert st and st[-1].split()[0] == 'COMPLETED', f'accounting state {st}'
         subprocess.run(SSH + [f'rm -rf {shlex.quote(remote)}'], check=True)
         print('removed', remote)
         return

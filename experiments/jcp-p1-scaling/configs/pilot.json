@@ -31,29 +31,5 @@
   }
  },
  "pilot_mesh": 4096,
- "settings": [
-  {
-   "Rp": 128,
-   "rule": "fib4181",
-   "roles": {
-    "qp": "fib6765"
-   }
-  },
-  {
-   "Rp": 256,
-   "rule": "gauss128",
-   "roles": {
-    "qp": "gauss160"
-   }
-  },
-  {
-   "Rp": 384,
-   "rule": "gauss128",
-   "roles": {
-    "qp": "gauss160",
-    "qpp": "gauss192",
-    "hist": "gauss640"
-   }
-  }
- ]
+ "timing_config": "time.json"
 }

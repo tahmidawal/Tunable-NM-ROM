@@ -174,10 +174,26 @@ class Bank:
         return self._cold[Rp]
 
 
+@jax.jit
+def _reduce(x):
+    """Sum, sum of magnitudes and a strided 4096-entry sample checksum; no array-sized temporaries."""
+    x = jnp.ravel(x)
+    st = max(1, x.size // 4096)
+    smp = x[::st]
+    return jnp.stack([jnp.sum(x), jnp.sum(jnp.abs(x)), jnp.sum(smp * jnp.arange(1, smp.size + 1))])
+
+
 def fingerprint(d):
-    """Identity of a data dict: shapes of every array and the sha256 of the mesh/list-dependent small arrays."""
-    return sha(np.concatenate([np.asarray(d['lam']).ravel(), np.asarray(d['A'][:, 0]).ravel(),
-                               np.asarray([float(np.prod(v.shape)) for k, v in sorted(d.items()) if hasattr(v, 'shape')])]))
+    """Identity of a data dict (code audit 2): for EVERY array its shape and three on-device reductions (sum, sum of
+    magnitudes, index-weighted sum), so a same-shaped substitution of any table (A, lam, Gq, Gs, Psi, G blocks, hmask)
+    changes the fingerprint; plus the exact eigenvalues."""
+    parts = [np.asarray(d['lam']).ravel()]
+    leaves = jax.tree_util.tree_leaves_with_path(d)
+    for path, v in leaves:
+        if hasattr(v, 'shape'):
+            parts.append(np.asarray(v.shape, float))
+            parts.append(np.asarray(_reduce(v)))
+    return sha(np.concatenate(parts))
 
 
 def rule_points(rule):
@@ -268,7 +284,8 @@ def restrict(fields, L):
 
 def fdist(fa, fb, n0):
     """Scoring-lattice relative distance: max over the five evolved outputs of ||fa_k - fb_k|| / ||u0||_257."""
-    return max(float(np.linalg.norm(fa[k] - fb[k])) / n0 for k in range(1, NOUT))
+    d = [float(np.linalg.norm(fa[k] - fb[k])) / n0 for k in range(1, NOUT)]
+    return float('inf') if not np.isfinite(d).all() else max(d)          # NaN-safe (code audit 2)
 
 
 def run_valid(v):

@@ -7,6 +7,9 @@ exclusive file lock (runs/GPU-LEDGER.lock) for every read-modify-write.
     python ledger.py release <attempt>            submission failed before sbatch returned a job id
     python ledger.py reconcile                    sacct (all attempts incl. requeues, -D): terminal -> elapsed recorded
     python ledger.py show
+    python ledger.py ambiguous <attempt>          sbatch outcome unknown: keep the reservation
+    python ledger.py settle <attempt>             resolve an ambiguous / pending reservation by the job name p1s_<attempt>
+Time limits are never raised (no scontrol update); a job needing more time is resubmitted as a new attempt.
 A PENDING_SUBMIT reservation never expires by itself (a crash between reserve and bind keeps the hours reserved until
 an explicit release after checking squeue). Every attempt of a job (requeues) is summed from sacct -D.
 """
@@ -43,7 +46,8 @@ def locked():
 
 def totals(d):
     d['spent_gpu_hours'] = round(sum(j.get('elapsed_hours') or 0. for j in d['jobs'] if j['state'] in TERMINAL), 4)
-    d['reserved_gpu_hours'] = round(sum(j['time_limit_hours'] for j in d['jobs'] if j['state'] not in TERMINAL), 4)
+    d['reserved_gpu_hours'] = round(sum(j['time_limit_hours'] + (j.get('prior_elapsed_hours') or 0.)
+                                        for j in d['jobs'] if j['state'] not in TERMINAL), 4)
     return d
 
 
@@ -64,6 +68,23 @@ def main():
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')
+        elif cmd == 'ambiguous':
+            for j in d['jobs']:
+                if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':
+                    j['state'] = 'AMBIGUOUS'
+        elif cmd == 'settle':                 # find the job by its unique name; bind it, or release if it never existed
+            att = sys.argv[2]
+            o = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
+                                f"sacct -n -X -P --name p1s_{att} -S now-7days -o JobID"], capture_output=True, text=True)
+            ids = [x for x in o.stdout.split() if x.strip()]
+            for j in d['jobs']:
+                if j['attempt'] == att and j['state'] in ('AMBIGUOUS', 'PENDING_SUBMIT'):
+                    if o.returncode != 0:
+                        print('sacct failed: reservation kept'); rc = 3
+                    elif ids:
+                        j.update(job_id=ids[-1], state='SUBMITTED')
+                    else:
+                        j.update(state='RELEASED', elapsed_hours=0.)
         elif cmd == 'release':
             for j in d['jobs']:
                 if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':
@@ -83,6 +104,7 @@ def main():
                 j['state'], j['node'] = st, rows[-1][3]
                 j['gpu'] = next((x for x in rows[-1][2].split(',') if x.startswith('gres/gpu')), None)
                 j['elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows) / 3600, 4)
+                j['prior_elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows[:-1]) / 3600, 4)   # earlier requeues
                 tl = rows[-1][4]
                 if tl.isdigit() and int(tl) / 60 > j['time_limit_hours'] + 1e-9:
                     j['time_limit_hours'] = int(tl) / 60          # a raised limit is charged (A2.6)

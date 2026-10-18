@@ -154,11 +154,12 @@ def main():
                 stt = v['stats']
                 R['W'][j], R['w0'][j], R['f257'][j], R['n0'][j], R['secs'][j] = np.asarray(v['W']), np.asarray(v['w0']), f, n0, secs
                 R['states'][j] = np.asarray(stt['states'])
+                assert R['states'][j].shape[0] == int(round(.25 / DT0)) + 1
                 S = NREC - 1
                 R['gn_rec'][j], R['it'][j], R['reason'][j] = (np.asarray(stt[k])[:S] for k in ('step_gn', 'step_it', 'step_reason'))
                 g, _rn = cert(stt['states'], nu, st.data[('main', 'LSPG')], st.sched('LSPG', sc, DT0, 'prod'))
                 R['gamma'][j] = np.asarray(g)
-                R['valid'][j] = P.run_valid(v)
+                R['valid'][j] = P.run_valid(v)          # fields, w0, W, every recorded state and step ratio (A1.4)
                 row = dict(config=cc['name'], scheme=sc, cohort=coh, case=c, kind='prod', seconds=secs, valid=bool(R['valid'][j]),
                            it_sum=int(stt['it_sum']), nonstationary=int(np.sum(~(np.asarray(g) <= 1e-3))),
                            gcert_rel=float(np.max(np.abs(np.asarray(g) - R['gn_rec'][j]) / np.maximum(R['gn_rec'][j], 1e-300))),
@@ -198,7 +199,8 @@ def main():
                     del vq
                 rep['rows'].append(row)
                 print('RUN', cc['name'], sc, coh, c, el(), flush=True)
-            R.update(A=A, lam=np.asarray(st.base['lam']), kx=np.asarray(st.kx), ky=np.asarray(st.ky))
+            R.update(A=A, lam=np.asarray(st.base['lam']), kx=np.asarray(st.kx), ky=np.asarray(st.ky), time_tag='t0,t1,t2,t3,t4,t5',
+                     scheme=sc, dt=DT0, rule=st.rules['main'], Rp=st.Rp, mesh=L, policy=st.policy, mode_hash=st.mode_hash)
             np.savez_compressed(out / f"R_{cc['name']}_{sc}.npz", **R)
             crep['schemes'][sc] = dict(n=len(ids), mem=P.mem())
             save()

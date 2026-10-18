@@ -8,7 +8,14 @@
  },
  "gpu": "h200",
  "projection_hours": 1.6131845988361921,
- "memory": {},
+ "memory": {
+  "b3run:configs/b3d.json": {
+   "smoke_peak_GiB": 28.62905716896057,
+   "estimate_GiB": 35.786321461200714,
+   "note": "same settings and rule tables as the smoke (W256, W512 with gl56 / gl64); one more member (W256 lat8192, smaller tables) and 16 instead of 2 cases (arrays of a few MB)",
+   "device_GiB": 128.6171875
+  }
+ },
  "time_limit_hours": 2.5,
  "detail": {
   "b3run:configs/b3d.json": 1.6131845988361921

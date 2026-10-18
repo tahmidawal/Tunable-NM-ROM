@@ -144,6 +144,27 @@ def memory_note(runs):
                      for a in json.loads(js.read_text())['attempts'])
             out[r] = dict(measured_peak_GiB_L8192=pk / 2 ** 30, refinement_estimate_GiB=pk / 2 ** 30 * (12288 / 8192) ** 2,
                           device_GiB=138101653504 / 2 ** 30)
+        elif drv == 'ref/refrun' and cfg['mode'] == 'fd' and int(cfg['dim']) == 3:
+            pk = max((a['peak_bytes'] or 0) for js in out_dir('smk2').glob('ref_refrun_*_ref/3d/*/T*/c*.json')
+                     for a in json.loads(js.read_text())['attempts'])
+            out[r] = dict(measured_peak_GiB_L512=pk / 2 ** 30, refinement_estimate_GiB=pk / 2 ** 30 * (768 / 512) ** 3,
+                          note='cubic scaling of the measured L512 peak to the L768 refinement level (output buffer alone '
+                               '37 GiB); E0 refined 0 of 200 3D case-kinds', device_GiB=138101653504 / 2 ** 30)
+        elif drv == 'ref/refrun' and cfg['mode'] == 'ps':
+            E0 = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references')
+            d_ = int(cfg['dim'])
+            sub = {2: '2d/val32', 3: '3d/val64'}[d_]
+            pk = max(r_['peak_bytes'] for f in (E0 / 'store' / sub / 'PS').glob('*.json') for r_ in json.loads(f.read_text())['runs']
+                     if r_.get('peak_bytes'))
+            out[r] = dict(E0_measured_peak_GiB_T025=pk / 2 ** 30, horizon_note='the PS state is the coefficient array; the '
+                          'horizon adds only lattice outputs (11 x the lattice)', device_GiB=138101653504 / 2 ** 30)
+        elif drv == 'b3run':
+            res_ = json.loads((next(out_dir('smk2').glob('b3run_*')) / 'result.json').read_text())
+            pk = max(v.get('peak', -1) for v in res_.get('memory', {}).values())
+            out[r] = dict(smoke_peak_GiB=pk / 2 ** 30, estimate_GiB=1.25 * pk / 2 ** 30,
+                          note='same settings and rule tables as the smoke (W256, W512 with gl56 / gl64); one more member '
+                               '(W256 lat8192, smaller tables) and 16 instead of 2 cases (arrays of a few MB)',
+                          device_GiB=138101653504 / 2 ** 30)
         elif drv == 'b2run':
             pr = json.loads((next(out_dir('smk1').glob('b2run_*pilot4096*')) / 'result.json').read_text())
             pk = max(v.get('peak', -1) for x in pr['pilot'].values() for v in x.values() if isinstance(v, dict))

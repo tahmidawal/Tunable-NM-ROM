@@ -8,7 +8,14 @@
  },
  "gpu": "h200",
  "projection_hours": 4.345943002105802,
- "memory": {},
+ "memory": {
+  "ref/refrun:configs/ref3.json": {
+   "measured_peak_GiB_L512": 30.959400177001953,
+   "refinement_estimate_GiB": 104.48797559738159,
+   "note": "cubic scaling of the measured L512 peak to the L768 refinement level (output buffer alone 37 GiB); E0 refined 0 of 200 3D case-kinds",
+   "device_GiB": 128.6171875
+  }
+ },
  "time_limit_hours": 6.75,
  "detail": {
   "ref/refrun:configs/ref3.json": 1.4435384128739437,

@@ -8,7 +8,13 @@
  },
  "gpu": "h200",
  "projection_hours": 2.29,
- "memory": {},
+ "memory": {
+  "ref/refrun:configs/ps2a.json": {
+   "E0_measured_peak_GiB_T025": 1.4535832405090332,
+   "horizon_note": "the PS state is the coefficient array; the horizon adds only lattice outputs (11 x the lattice)",
+   "device_GiB": 128.6171875
+  }
+ },
  "time_limit_hours": 3.5,
  "detail": {
   "ref/refrun:configs/ps2a.json": 2.29

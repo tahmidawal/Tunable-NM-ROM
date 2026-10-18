@@ -173,7 +173,8 @@ def main():
     cfg_cells = {c['d']: c for c in S['config']['cells']}
     if os.environ.get('HRB_ACCEPT_DRY') == '1':      # local CPU dry run only: never a binding acceptance
         for d_ in (2, 3):
-            FROZEN[d_] = {k: cfg_cells[d_][k] for k in FROZEN[d_]}
+            if d_ in cfg_cells:
+                FROZEN[d_] = {k: cfg_cells[d_][k] for k in FROZEN[d_]}
         acc['DRY-RUN (not binding)'] = dict(ok=False)
     put('frozen-inventory', sorted(cfg_cells) == [2, 3] and all(
         all(cfg_cells[d].get(k) == v for k, v in FROZEN[d].items()) for d in (2, 3)),

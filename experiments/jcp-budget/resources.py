@@ -125,6 +125,14 @@ def pilot_seconds(att='smk1'):
     return json.loads((d / 'result.json').read_text())['elapsed_seconds']
 
 
+def fd_worst_extra(case_s, dim, refine, hf):
+    """Enumerated worst retry path of ONE case beyond its nominal triple (refrun.solve_case): every base level retried
+    (+1), a tight base triple (x 1.5), the refinement level (r = 3.4 x 0.86 of the case time in 2D, 5.1 x 0.86 in 3D)
+    retried once (+r), and a tight re-solve of the refined triple (1.5 x (0.98 + r)). Units of the nominal case time."""
+    r = ((3.4 if dim == 2 else 5.1) * .86) if refine else 0.
+    return (1. + 1.5 + (r + r + 1.5 * (.98 + r) if refine else 0.)) * case_s * hf
+
+
 def memory_note(runs):
     """Expected device peaks from the smokes (A2.7): reference levels scale with the grid size; ROM jobs with the bank."""
     out = {}
@@ -153,10 +161,7 @@ def project(drv, cfg):
             # a tight re-run of the triple (x 1.5) and the refinement level (12288^2 at dt = 0.05/240: about
             # (12288/8192)^2 x 1.5 = 3.4 x the finest-level time, the finest level being ~86 % of the case; 2D only)
             hf = 1. if cfg['horizon'] <= .5 else 2.2
-            n = len(cfg['cases'])
-            refine = (3.4 if dim == 2 else 5.1) * .86 if cfg.get('allow_refine') else 0.     # 3D: (768/512)^3 x 1.5
-            extra = (1.5 + refine) * case_s * hf
-            return n * case_s * hf + min(n, 2) * extra + 600
+            return len(cfg['cases']) * case_s * hf + 600                 # the worst-path reserve is added per JOB (main)
         if cfg['mode'] == 'ps':
             # no H200 PS measurement: E0's 0.17 A100-h per case at T = 0.25, x 2 for T = 0.5, x 3 for a stability rerun
             # (worst case), no H200 speed credit (job audit refs2d-1)
@@ -194,6 +199,7 @@ def main():
     a = ap.parse_args()
     assert a.gpu == 'h200', 'timings were measured on H200; another GPU type needs its own smoke'
     tot, det, cfgs = 0., {}, {}
+    fd_n, fd_par = 0, None
     for r in a.run:
         drv, cf = r.split(':', 1)
         p = HERE / cf
@@ -202,6 +208,15 @@ def main():
         det[r] = s / 3600
         tot += s
         cfgs[cf] = hashlib.sha256(p.read_bytes()).hexdigest()
+        if drv == 'ref/refrun' and cfg['mode'] == 'fd':
+            fd_n += len(cfg['cases'])
+            d_ = int(cfg['dim'])
+            fd_par = (ref_case_seconds('smk1' if d_ == 2 else 'smk2', d_)[0], d_, bool(cfg.get('allow_refine')),
+                      1. if cfg['horizon'] <= .5 else 2.2)
+    if fd_par is not None:                       # up to two cases of the JOB take the enumerated worst retry path
+        ex = min(fd_n, 2) * fd_worst_extra(*fd_par)
+        det['worst_path_reserve'] = ex / 3600
+        tot += ex
     proj = tot / 3600
     tl = math.ceil(1.5 * proj * 4) / 4
     mem = memory_note(a.run)

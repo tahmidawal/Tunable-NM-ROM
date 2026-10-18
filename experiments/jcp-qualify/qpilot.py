@@ -54,35 +54,28 @@ def main():
     for kk in ('qp', 'qpp'):
         st2.drop_role(kk)
     gc.collect()
-    for s in cfg['settings']:
-        r = int(s['Rp'])
-        keep[r] = P.Setting(bank, f'R{r}', r, s['rules'][0], 'frozen', forms=('LSPG', 'GAL'))
-        step(f'R{r} main {s["rules"][0]}')
-        # successor tables resident together, as qtime / qacc hold them: (q+, q++); and q+, q++, q+++ (fallback setting)
-        pairs = [s['rules'][1:3]] + ([s['rules'][1:4]] if len(s['rules']) > 3 else [])
-        for pr in pairs:
-            for k, rl in enumerate(pr):
-                keep[r].add_role(bank, f'x{k}', rl, forms=('LSPG', 'GAL'))
-            step(f'R{r} +{"+".join(pr)}')
-            if r == 512:
-                for k, rl in enumerate(pr):
-                    for form, sc, f in (('LSPG', 'BE', 1), ('LSPG', 'CNR', 2.5), ('GAL', 'CN', 5)):
-                        t1 = time.perf_counter()
-                        v = QA.run(bank, keep[r], f'x{k}', form, sc, DT0 * f, 'prod', u0, nu, record=True)
-                        jax.block_until_ready(v)
-                        rep['runs'].append(dict(rule=rl, form=form, scheme=sc, factor=f, seconds=time.perf_counter() - t1,
-                                                valid=P.run_valid(v)))
-                        del v
-                step(f'R512 rollouts {"+".join(pr)}')
-            for k in range(len(pr)):
-                keep[r].drop_role(f'x{k}')
-            gc.collect()
-        for form, sc in (('LSPG', 'CNR'), ('GAL', 'CN')):
-            v = QA.run(bank, keep[r], 'main', form, sc, DT0, 'prod', u0, nu, record=True)
-            jax.block_until_ready(v)
-            rep['runs'].append(dict(Rp=r, rule=s['rules'][0], form=form, scheme=sc, valid=P.run_valid(v)))
-            del v
-        step(f'R{r} done')
+    plan = [(f'R{int(s_["Rp"])}', int(s_['Rp']), s_['rules'][0], s_['rules'][1:3]) for s_ in cfg['settings']]
+    plan += [(f'R{int(s_["Rp"])}fb', int(s_['Rp']), s_['rules'][1], s_['rules'][2:4]) for s_ in cfg['settings'] if len(s_['rules']) > 3]
+    for name, r, main, pair in plan:              # every original AND fallback main stays resident (timing retains them);
+        keep[name] = P.Setting(bank, name, r, main, 'frozen', forms=('LSPG', 'GAL'))     # one setting's successors at a time
+        step(f'{name} main {main}')
+        for k, rl in enumerate(pair):
+            keep[name].add_role(bank, f'x{k}', rl, forms=('LSPG', 'GAL'))
+        step(f'{name} +{"+".join(pair)}')
+        if r == 512:
+            for role, rl in [('main', main)] + [(f'x{k}', rl) for k, rl in enumerate(pair)]:
+                for form, sc, f in (('LSPG', 'BE', 1), ('LSPG', 'CNR', 2.5), ('GAL', 'CN', 5)):
+                    t1 = time.perf_counter()
+                    v = QA.run(bank, keep[name], role, form, sc, DT0 * f, 'prod', u0, nu, record=True)
+                    jax.block_until_ready(v)
+                    rep['runs'].append(dict(setting=name, rule=rl, form=form, scheme=sc, factor=f,
+                                            seconds=time.perf_counter() - t1, valid=P.run_valid(v)))
+                    del v
+            step(f'{name} rollouts')
+        for k in range(len(pair)):
+            keep[name].drop_role(f'x{k}')
+        gc.collect()
+        step(f'{name} done')
         save()
     rep['peak'] = max(x['peak'] for x in rep['steps'])
     rep['feasible'] = bool(0 < rep['peak'] <= 120e9)

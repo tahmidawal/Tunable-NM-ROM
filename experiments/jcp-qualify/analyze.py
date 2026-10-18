@@ -183,6 +183,7 @@ def manifest_equal_combined(R, rp):
 def build_2d():
     p1an = json.loads((P1 / 'checks' / 'analysis.json').read_text())
     C, gates, cache = {}, {}, {}
+    superseded = []
     for mesh in MESHES:
         ext = {}
         atts = sorted(p.name for p in RUNS.glob(f'acc{mesh}*')) + sorted(p.name for p in RUNS.glob(f'fb{mesh}*'))
@@ -200,7 +201,10 @@ def build_2d():
                         ext[(s['Rp'], arm['scheme'])] = e
                         continue
                     k = ckey(mesh, s['Rp'], arm['form'], arm['scheme'], float(arm['factor']), fb)
-                    assert k not in C, ('duplicate configuration', k)
+                    if k in C:                                  # a later attempt (sorted name: acc1024 < acc1024r1)
+                        e['supersedes'] = C[k].get('attempt')   # supersedes the earlier one; recorded, never silent
+                        superseded.append(dict(config=k, old=C[k].get('attempt'), new=att))
+                    e['attempt'] = att
                     C[k] = e
                     if mesh == 1024 and s['Rp'] in (128, 384, 512) and not fb:     # registered gate (DESIGN 7): blocks
                         g = SC.combined_reproduction(e['R'], s['Rp'], arm['form'], arm['scheme'], DT0 * float(arm['factor']))
@@ -215,6 +219,7 @@ def build_2d():
                     if mesh == 4096 and r in (128, 256) and (r, sc) not in ext:
                         continue                     # the 38-case population needs the lane's ext22 arm
                     C[ckey(mesh, r, 'LSPG', sc, 1.)] = p1_config(mesh, r, sc, p1an, ext.get((r, sc)))
+    gates['superseded_attempts'] = superseded
     return C, gates
 
 
@@ -573,7 +578,7 @@ def main():
     C, gates = build_2d()
     cfgs = {}
     for k, e in C.items():
-        cfgs[k] = dict(source=e['source'], rule=e['rule'], Q1=e['q']['Q1'], Q2=e['q']['Q2'],
+        cfgs[k] = dict(source=e['source'], rule=e['rule'], attempt=e.get('attempt'), supersedes=e.get('supersedes'), Q1=e['q']['Q1'], Q2=e['q']['Q2'],
                        numerically_qualified=e['q']['numerically_qualified'], stats=stats(e), q3=e.get('q3'),
                        zero_update=e.get('zero_update'),
                        per_case={c: dict(e=v['ST']['e'], eps_ref=v['ST']['eps_ref'], eligible=v['ST']['eligible'],

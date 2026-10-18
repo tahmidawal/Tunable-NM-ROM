@@ -50,7 +50,10 @@ def smk_acc():
                     worst=g['worst'], key=g['archive_key'], manifest_equal=me)
             if s['Rp'] == 384 and arm['form'] == 'LSPG':      # Delta-t0 gate against P1's archive (dev6)
                 g = SC.p1_reproduction(e['R'], 'R384', arm['scheme'], 1024)
-                req(f'{ak}: equals P1 acc1024 archive <= 1e-10', g['passed'], worst=g['worst'])
+                z = dict(np.load(SC.P1 / 'runs' / 'acc1024' / 'archive' / 'output' / 'p1acc_acc1024' / f"R_R384_{arm['scheme']}.npz"))
+                me = AN.manifest_equal_p1(z, e['R'])
+                req(f'{ak}: equals P1 acc1024 archive <= 1e-10 with numerical-manifest equality', g['passed'] and me,
+                    worst=g['worst'], manifest_equal=me)
             if s['Rp'] == 384 and arm['form'] == 'GAL':       # designated positive GAL fixture (A2.3, A3.3)
                 q1 = e['q']['Q1']
                 req('positive GAL fixture: certificate, G-cert, validity pass', q1['certificate'] and q1['gcert'] and q1['all_valid'],

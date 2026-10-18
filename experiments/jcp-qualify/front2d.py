@@ -33,7 +33,10 @@ def manifest(mesh, key, an):
             continue
         res = json.loads((acc / 'result.json').read_text())
         st = res['settings'].get(f'R{r}' + ('fb' if fb else ''))
-        if st:
+        sc_cfg = [x for x in res['config']['settings'] if x['name'] == f'R{r}' + ('fb' if fb else '')]
+        has_arm = sc_cfg and any(a_['form'] == form and a_['scheme'] == sc and float(a_['factor']) == f and not a_.get('ext22')
+                                 for a_ in sc_cfg[0]['arms'])
+        if st and (has_arm or att == cfg.get('attempt')):          # the attempt that ran exactly this arm
             meta, trust, src = st['meta']['main'], st['trust'], att
     dev = json.loads((HERE / 'runs' / 'MANIFEST-dev.json').read_text())
     return dict(

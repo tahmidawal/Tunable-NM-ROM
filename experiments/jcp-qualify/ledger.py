@@ -28,6 +28,7 @@ LOCK = HERE / 'runs' / 'GPU-LEDGER.lock'
 CAP = 35.
 # non-deferrable jobs (DESIGN A3.1): each must be in the pending inventory until it has a live or completed reservation
 MANDATORY = ('acc1024', 'acc4096', 'acc256', 'time1024', 'time4096', 'time256', 'order', 'q3d')
+# a failed / timed-out mandatory job is not COMPLETED, so the next 'pending' call must list it again (validated)
 TERMINAL = ('COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY', 'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE',
             'RELEASED')
 
@@ -67,7 +68,9 @@ def main():
         totals(d)
         if cmd == 'reserve':
             att, h = sys.argv[2], float(sys.argv[3])
-            if 'pending_core' not in d:
+            if not (math.isfinite(h) and h > 0):
+                print('refused: reservation hours must be finite and positive'); rc = 10
+            elif 'pending_core' not in d:
                 print('refused: no pending-core inventory set (ledger.py pending; DESIGN A3.1)'); rc = 8
             elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print('attempt already has a live reservation'); rc = 2
@@ -75,15 +78,17 @@ def main():
                 print(f"refused: spent {d['spent_gpu_hours']} + reserved {d['reserved_gpu_hours']} + {h} + pending core "
                       f"{pend(d, att)} > {CAP}"); rc = 1
             else:
-                d['pending_core'].pop(att, None)          # from now on a live reservation: never counted twice
+                popped = d['pending_core'].pop(att, None)     # from now on a live reservation: never counted twice
                 d['jobs'].append(dict(attempt=att, job_id=None, time_limit_hours=h, state='PENDING_SUBMIT', gpu=None,
-                                      elapsed_hours=None))
+                                      elapsed_hours=None, pending_hours=popped))
         elif cmd == 'pending':             # DESIGN A3.1, A4.1, A5.1: projected time limits of not-yet-submitted
             new = json.loads(sys.argv[2])                  # non-deferrable jobs and fallback allowances, one transaction
             live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
             done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
             bad = [k for k, v in new.items() if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
             missing = [k for k in MANDATORY if k not in new and k not in live and k not in done]
+            missing += [f'fballow{m} (or q2known{m}: 0)' for m in (256, 1024, 4096)       # A3.1 / A4.1: an allowance per
+                        if f'fballow{m}' not in new and f'q2known{m}' not in new]         # mesh until its Q2 labels are known
             if bad or missing or (set(new) & live):
                 print('refused pending inventory: bad values', bad, 'missing mandatory', missing, 'live', set(new) & live); rc = 9
             else:
@@ -113,12 +118,16 @@ def main():
                         d.get('pending_core', {}).pop(att, None)
                     elif len(sys.argv) > 3 and sys.argv[3] == '--confirmed-absent':   # only after a manual check
                         j.update(state='RELEASED', elapsed_hours=0.)
+                        if j.get('pending_hours') is not None:        # restore the pending core reservation
+                            d['pending_core'][att] = j['pending_hours']
                     else:
                         print('no record found: reservation kept (re-run later, or pass --confirmed-absent)'); rc = 4
         elif cmd == 'release':
             for j in d['jobs']:
                 if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':
                     j.update(state='RELEASED', elapsed_hours=0.)
+                    if j.get('pending_hours') is not None:            # restore the pending core reservation
+                        d['pending_core'][sys.argv[2]] = j['pending_hours']
         elif cmd == 'reconcile':
             for j in d['jobs']:
                 if j['state'] in TERMINAL or not j['job_id']:

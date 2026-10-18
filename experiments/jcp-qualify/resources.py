@@ -89,13 +89,16 @@ def time_projection(cfg):
     mesh = [int(m) for m in cfg['meshes'] if int(m) != 1024] or [1024]
     mesh_f = MESH4096 if mesh[0] == 4096 else 1.
     per_trip = t['elapsed_seconds'] / max(1, len(t['invocations']))      # includes certification of the smoke subjects
-    n = len(cfg['subjects']) * 6 * cfg['reps']
-    cert = 0.
+    n, trip, cert = 0, 0., 0.
     for sp in cfg['subjects']:
         key = (sp['form'], sp['scheme'], float(sp['factor']))
         cand = sorted(rr for (rr, *k) in per if tuple(k) == key and rr >= sp['Rp'])
-        cert += 6 * per[(cand[0],) + key] * mesh_f
-    sec = n * per_trip * mesh_f + cert + 1800.
+        rf = max(1., max(rule_m(sp['rule']), rule_m(sp['qp']), rule_m(sp['qpp'])) /
+                 max(rule_m(x) for x in MEASURED_RULES[cand[0]]))          # fallback subjects: larger rules cost more
+        cert += 6 * per[(cand[0],) + key] * mesh_f * rf
+        trip += 6 * cfg['reps'] * per_trip * mesh_f * rf
+        n += 6 * cfg['reps']
+    sec = trip + cert + 1800.
     return sec / 3600, dict(per_triplet_seconds=per_trip, triplets=n, certification_seconds=cert)
 
 

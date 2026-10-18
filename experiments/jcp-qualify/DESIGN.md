@@ -386,3 +386,130 @@ Never quote a pre-September Burgers speed-up; never mention the heat POD-128 com
 Every GPU number from the cluster; local GB10 only for CPU analysis (`JAX_PLATFORMS=cpu`) and at most one `jaxrun`.
 Codex audits: read-only prompts, no large copies (≤ 2 GB scratch under `/tmp/jcp-qualify-audit-scratch/`, deleted after
 each round), `df -h /home` ≥ 60 GB before each audit. Waits on PIDs with an overall deadline.
+
+---
+
+## Amendment A1 (2026-10-18, before any lane job; answers `audits/codex-design-1.md`, NEEDS-RESTATEMENT)
+
+Supersedes the text above wherever they differ. Numbered by the audit's ranked blockers, then its other items.
+
+**A1.1 3D front: no uncertified member, defined candidate universe (blocker 1; audit item 10).** The exception
+admitting deployed / post-hoc-rule configurations to the qualified 3D front without their own Q2 is **withdrawn**. The
+candidate universe is speed3d's 436 eligible configurations with a valid screening panel. Qualification proceeds in
+registered rounds: round 1 = the 17 configurations of §2.4. After each round the front (§6 rule, computed against every
+remaining candidate) is recomputed with all Q2-failed or unverified configurations removed; configurations that become
+front members and have not been Q2-tested are tested in the next round (same predicate, job `q3dN`). At most three rounds
+in total. The result is reported as the **qualified 3D front** if the last round exposes no untested member, otherwise
+as the **"qualified subset of the screened candidates (round limit reached)"**, with the untested exposed members listed.
+Every 3D front member shown on the headline panel has Q1 (speed3d) and its own Q2-3D pass.
+
+**A1.2 Fallback timing inside the paired panel (blocker 2; audit item 7).** The "cross-job, A-normalised" fallback path
+is withdrawn. Sequence: all accuracy jobs (and any registered fallback accuracy jobs, §2.3) complete and their Q labels
+are computed **before** the per-mesh timing jobs are staged; every fallback configuration known by then is a subject of
+its mesh's timing job. If a fallback becomes known only after a mesh's timing job ran, that mesh's whole timing panel is
+re-run in one new job (all subjects), and the earlier panel is reported as superseded. A front is always built from one
+timing job per mesh.
+
+**A1.3 GAL Q1 restated as a governing-contract amendment (blocker 3; audit items 4, 5, 17).** For the GAL form the
+contract's stationarity predicate (common brief §3 / V4-2, $\gamma>10^{-3}$) is **replaced** by the registered residual
+predicate: step non-converged iff $\eta_n>10^{-8}$ or non-finite; ≤ 1 % pooled. $10^{-8}$ is a **registered threshold**
+(100 × the production tolerance), not a derived round-off requirement. The earlier sentence "the literal ratio cannot
+certify anything" is withdrawn and restated: for a square Galerkin system the least-squares ratio does not decrease with
+the residual magnitude (it is bounded below by about $\sigma_{\min}(J)/\lVert J\rVert_F$ for any $r\ne0$, up to the
+$10^{-300}$ regulariser, and equals 0 only at an exact zero residual), so it is not a convergence measure for a root; it
+is computed and reported for GAL without a verdict. Exceptional cases: $\lVert Ac_n\rVert=0$ → the step is certified iff
+$\lVert Q^{\mathsf T}\mathcal R_n\rVert=0$, else non-converged; G-cert for such a step compares the raw residual norms.
+**Positive fixtures:** (i) every GAL production configuration of the smoke must pass the predicate (a certificate that
+rejects everything fails here); (ii) CPU boundary test of the classifier: $\eta=0.99\times10^{-8}$ certified,
+$1.01\times10^{-8}$ not, NaN not. **GAL zero-update** gets the same independent establishment as LSPG: the verified tight
+GAL trajectory of dev6|0 (R384, $1024^2$, $\Delta t_0$) must move by $\lVert u_5^{\rm tight}-u_0\rVert/\lVert u_0\rVert>100
+\times2.5\times10^{-4}$ before the zero-update control is read.
+
+**A1.4 B4 controls non-vacuous; classifier validated; step buffers sized (blocker 4; audit items 12, 13).**
+- TH06 control: GAL-TH06 at R384 on dev6 must be interpretable on ≥ 5 of 6 cases **and** receive the "order 1" label
+  (every interpretable $\hat p\in[0.8,1.2]$); otherwise the control is "unavailable" or "failed" and **every** B4 label is
+  blocked.
+- Classifier fixtures (CPU, through the actual §5 code): synthetic per-case trajectories with $e(h)=C h^{p}(1+0.001z)$,
+  $p=1$ and $p=2$, anchors consistent → labels "order 1" / "order 2"; a pre-asymptotic sequence (pairwise orders 2.0 and
+  1.5) → not interpretable; an anchor-contaminated sequence → not interpretable.
+- Every rollout's per-step evidence buffer and recording length is sized to its schedule ($S+1$ entries; 3,200 and 6,400
+  steps at $\Delta t_0/64$ and $/128$), asserted in the driver.
+- Label wording: "order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$)" — never a statement about
+  asymptotic order (time2 A1.2 predicts asymptotic order 1 for the LSPG-CN family).
+
+**A1.5 B1 populations (blocker 5; audit item 11).** New explicit H-acc-N tests: R512 × {BE, CN-R} × $\Delta t_0$ over the
+three meshes (P1 ran R512 only at $1024^2$), plus every (r, family) of the seven new families. H-acc-r at $4096^2$ is
+computed on the **38-case** population for every transition and family (all configurations now have 38 cases there);
+P1's 16-case $4096^2$ transitions are cited beside it, labelled "P1, 16-case subset"; no range verdict splices the two
+populations. At $256^2$ and $1024^2$ P1's transitions 128→256→384 for its two families are cited (same populations), the
+new 384→512 transitions and 128–512 ranges are computed here.
+
+**A1.6 FRONT-2D replayability, memory failure policy (blocker 6; audit items 16, 18).**
+- FRONT-2D.json adds per member: the explicit ordered mode list ($k_x,k_y$ arrays, or the path of the committed
+  `inputs/modes_F2048.json` with its sha256 and the prefix length $M$), rule content hash (points+weights sha256 as
+  computed in the job, and the generator-code sha256), E0 store version, metric id, per-case eligibility and
+  $\varepsilon_{\rm ref}$, the entry point that rebuilds the configuration (`p1common.Setting` arguments and
+  `qacc.run` call), and per-case timed-output identity hashes (scoring-run identity hash per dev6 case, plus the timing
+  job's per-triplet `hashes_ok`). The freezing commit is recorded in the heartbeat notes and the hand-back.
+- Memory: if the `smkB` pilot exceeds 120 GB, `acc4096` is split into two jobs (R512 alone; the others), and roles are
+  built one at a time and dropped after use; if R512 at $4096^2$ is still infeasible, the outcome is **"core incomplete
+  (R512 at 4096², memory)"** — never a silent drop.
+
+**A1.7 Dominance computation and fixtures (audit item 15).** Dominance of each candidate is tested against **every
+original candidate** of its mesh (no incremental pruning). CPU fixtures through the actual function: (a) cost-only:
+equal error, 10 % cheaper → dominates; (b) error-only: equal cost, error lower by more than the tie margin → dominates;
+(c) tie boundary: cost within 5 % and error within the margin → both stay; (d) a non-transitive chain (three points each
+4 % costlier and > 2 % + margin more accurate than the previous) → recorded exactly as the pairwise rule says (the third
+is not dominated by the first); (e) an unqualified configuration that would dominate is excluded from the candidate set.
+
+**A1.8 Other corrections.** §2.2 table: CN-R at $f=10$ is 7.13 % (7.1348 %), not 7.14 %; the baseline worst error is
+3.008 %; the larger-step rule is "frozen before this lane's data, conditional on combined's historical exploration".
+The 3D under-resolved control also blocks B5-3D. §8 a-priori estimate is 13.5 GPU-h (an estimate, not a certificate;
+the certificate comes from the smokes, including the $/128$ anchors).
+
+---
+
+## Amendment A2 (2026-10-18, before any lane job; answers `audits/codex-design-2.md`, NEEDS-RESTATEMENT)
+
+**A2.1 3D: never a completeness claim (blocker 1).** A1.1's "qualified 3D front" label is withdrawn. The 3D result is
+always the **qualified subset of the tested candidates**: the §6 front computed only among configurations with Q1
+(speed3d) and their own Q2-3D pass. Beside it the analysis lists the **open candidates** = untested configurations of
+the 436-candidate universe that are **not dominated by any Q2-passed configuration** (each could belong to the true
+qualified front). The A1.1 rounds remain (≤ 3 rounds; a round tests the current open candidates that are front members
+of the untested-plus-passed set, ranked by screening cost, at most 20 per round), but they only shrink the open list;
+the label never changes to "complete". Candidates whose registered ladder lacks $q^+$ or $q^{++}$ (e.g.
+`W1024|lat65536|…`: $q^+$ = `lat131072`, no $q^{++}$ registered) receive Q2 "unverified (no registered check rule)" and
+are not qualified; this is reported, not repaired.
+
+**A2.2 Mesh-local sequencing and core budget reservation (blocker 2).** A1.2 is restated per mesh: the timing job of
+mesh $N$ is staged when the accuracy job(s) of mesh $N$ and any registered fallback accuracy job of mesh $N$ have reached
+a terminal state (complete, or "deferred" by the defer order — a deferred arm is a terminal state "deferred (budget)"
+and is simply not a timing subject). Other meshes never gate it. **Core reservation:** before any submission, the ledger
+check is spent + Σ time limits of queued/running jobs + this job's time limit + **the projected time limits of the
+not-yet-submitted core jobs** (acc1024, acc4096, time1024, time4096 and any core fallback) ≤ 35; optional work (GAL, larger
+steps, $256^2$, 3D rounds 2–3) is submitted only under this reservation, and dropped in the defer order otherwise.
+
+**A2.3 Positive controls separated from scientific outcomes (blocker 4).** The A1.3 requirement "every GAL production
+configuration of the smoke must pass" is withdrawn (an arm may legitimately fail qualification). The designated positive
+GAL fixture is **GAL-CN, R384 `gauss128`, $1024^2$, $\Delta t_0$, dev6**, whose convergence is independently evidenced by
+combined's budget (GAL/CN/1 at R384: every one of 38 runs verified, $\delta_{\rm solve}$ median $8.3\times10^{-11}$,
+worst $3.05\times10^{-10}$; `jcp-combined/report.md` 2D budget tables): its GAL certificate must pass (≤ 1 % pooled
+non-converged steps, G-cert, valid) in the smoke; a failure means the certifier is wrong and blocks GAL Q1. The **full**
+TH06 control (6 dev6 cases, R384) runs in the `order` job, before any B4 label is read; the smoke runs a one-case path
+test only.
+
+**A2.4 Timing memory (blocker 5).** `smkB`'s $4096^2$ pilot builds the full `time4096` footprint: the $4096^2$ bank, the
+$1024^2$ bank (for A), the four settings' main tables and, one setting at a time, their $q^+$/$q^{++}$ tables (as the job
+does them), plus the R512 fallback rule tables; peak recorded. `qtime.py` builds each subject's $q^+$/$q^{++}$ tables only
+for its certification phase and drops them before the timed phase (the timed phase needs only main tables). If the
+footprint still exceeds 120 GB the outcome is "core incomplete (time4096, memory)".
+
+**A2.5 GAL mathematics and exceptional steps (blocker 6).** A1.3's sentence is corrected: for a **nonsingular** square
+step Jacobian the least-squares ratio is bounded below by about $\sigma_{\min}(J)/\lVert J\rVert_F$ for any $r\ne0$; it
+can be 0 at a non-root only when $J$ is singular ($J^{\mathsf T}r=0$ with $r\in\ker J^{\mathsf T}$), which is why it
+cannot serve as a Galerkin convergence measure. The in-job GAL certifier returns the raw residual norm $\lVert
+Q^{\mathsf T}\mathcal R_n\rVert$ and the scale $\lVert Ac_n\rVert$ beside $\eta_n$. The recorded quantity is recovered as
+$\eta_{\rm rec}=\text{tolratio}\times{\rm tol}_f$ when the scale is positive; a zero-scale step (never expected, $c_n=0$)
+is recorded as "exceptional", certified iff its raw residual is exactly 0, and G-cert compares raw norms
+($\lvert\Delta\rvert\le10^{-6}\times$raw$+10^{-15}$). CPU boundary fixtures: $\eta=10^{-8}$ exactly → certified (the
+predicate is $\eta\le10^{-8}$); $0.99\times$ / $1.01\times$; NaN; zero scale with zero / non-zero residual.

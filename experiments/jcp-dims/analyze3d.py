@@ -131,7 +131,8 @@ def collect():
                     C[k] = dict(att=att, kind='adaptive', entry=dict(e, rho=z['rho'].tolist()),
                                 setting=k.split('|')[0], spec='ad|' + k.split('|')[3], rule=k.split('|')[1], M=int(z['M']),
                                 r=int(z['Rp']), cases=cs, e0=sc.get(k + '|prod'), W=np.asarray(z['W']), z=z,
-                                expected_cases=blk.get('cases') or ALL64, valid_cases=dict(zip(cs, [bool(x) for x in z['valid']])))
+                                expected_cases=blk.get('cases') or ALL64, valid_cases=dict(zip(cs, [bool(x) for x in z['valid']])),
+                                expected_dt=float(blk['dt']))
     return C, jobs
 
 
@@ -154,9 +155,10 @@ def q1_of(c):
     off_tt = odist(z['W_tight'][[c['cases'].index(j) for j in tids]], z['W_tighter'], c['setting'], tids) if tids else np.array([])
     agree = bool(np.allclose(off_t, z['dist_tight'], rtol=1e-9, atol=1e-13) and np.allclose(off_tt, z['dist_tight_tighter'], rtol=1e-9, atol=1e-13))
     n = len(exp)
+    steps_reg = int(round(.25 / float(c['expected_dt'])))           # from the registered block, not from the archive
     return dict(population=bool(c['cases'] == exp and tids == tcs and len(z['valid']) == n and len(z['valid_tighter']) == len(tcs)
                                 and len(z['valid_tight']) == n and len(z['gcert']) == n and len(z['noncert']) == n
-                                and z['cert'].shape[0] == n and len(z['dist_tight']) == n and len(z['dist_tight_tighter']) == len(tcs)),
+                                and z['cert'].shape == (n, steps_reg) and len(z['dist_tight']) == n and len(z['dist_tight_tighter']) == len(tcs)),
                 offline_tight_agrees=agree, valid=bool(np.all(z['valid'])),
                 certificate=bool(np.sum(z['noncert']) <= .01 * len(c['cases']) * S_), gcert=bool(np.all(z['gcert'])),
                 distance=fin_max(z['dist_tight']) <= BAR, anchors_valid=bool(np.all(z['valid_tight']) and np.all(z['valid_tighter'])),
@@ -317,6 +319,9 @@ def rounds():
                 pop = (m['cases'] == ALL64 and len(m['dist_qp']) == 64 and len(m['valid']) == 64 and len(m['valid_qp']) == 64
                        and np.shape(m['rho']) == (64, 6) and (not m.get('qpp') or (m.get('qpp_cases') == CHK and len(m['valid_qpp']) == 8
                                                                                    and len(m['dist_qp_qpp']) == 8)))
+                if not pop:                                     # A1.5: missing-first precedence
+                    out[key] = dict(label='missing (incomplete population)', round=k)
+                    continue
                 dq = np.asarray(m['dist_qp'], float)
                 rho = np.asarray(m['rho'], float).ravel()
                 rho = rho[~np.isnan(rho)]
@@ -547,7 +552,8 @@ def cert_of_job(res, d):
                 cert[k] = bool([int(x) for x in z['case_ids']] == blk['cases'] and [int(x) for x in z['tighter_ids']] == blk['tighter_cases']
                                and len(z['valid']) == n and np.all(z['valid']) and len(z['valid_tight']) == n and np.all(z['valid_tight'])
                                and len(z['valid_tighter']) == len(blk['tighter_cases']) and np.all(z['valid_tighter'])
-                               and len(z['gcert']) == n and np.all(z['gcert']) and len(z['noncert']) == n and z['cert'].shape[0] == n
+                               and len(z['gcert']) == n and np.all(z['gcert']) and len(z['noncert']) == n
+                               and z['cert'].shape == (n, int(round(.25 / float(blk['dt']))))
                                and len(z['dist_tight']) == n and len(z['dist_tight_tighter']) == len(blk['tighter_cases'])
                                and np.sum(z['noncert']) <= .01 * n * z['cert'].shape[1]
                                and fin_max(z['dist_tight']) <= BAR and fin_max(z['dist_tight_tighter']) <= BAR_TT)

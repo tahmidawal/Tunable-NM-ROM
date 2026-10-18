@@ -186,6 +186,14 @@ def trans(C, Q, kX, kY):
     return dict(label=lab, stats=p, X=kX, Y=kY)
 
 
+def stats_of(e):
+    """Median / worst E0 R_ST error over the eligible, valid cases (None before scoring, e.g. LMF before stability)."""
+    if not e.get('e0'):
+        return dict(median=None, worst=None, n_eligible=0)
+    v = [x['ST']['e'] for c, x in e['e0'].items() if x['ST']['eligible'] and e['valid'].get(c)]
+    return dict(median=float(np.median(v)) if v else None, worst=float(np.max(v)) if v else None, n_eligible=len(v))
+
+
 def t2_label(e):
     return f"1024|R{e['r']}|M{e['M']}|{e['rule']}|{e['form']}|{e['scheme']}|1"
 
@@ -339,7 +347,7 @@ def main():
     out = dict(label='E0 R_ST: conditional Richardson estimate (E0 A10; combined A10, A11, retracted A15 carried)',
                configurations={k: {kk: v[kk] for kk in ('Q1', 'pooled', 'steps', 'worst_dist_tight', 'rule', 'r', 'M', 'policy',
                                                          'form', 'scheme', 'square', 'disagreements', 'rho_offline')
-                                   if kk in v} for k, v in C.items() if not k.startswith('_')},
+                                   if kk in v} | stats_of(v) for k, v in C.items() if not k.startswith('_')},
                ladders=[], mstar={}, families={}, gates={}, A3={}, B6={}, LMF={}, shapley_acc={})
     Q = {}
     for lad in man['ladders']:

@@ -61,6 +61,28 @@
    "commit": "6f61b238a",
    "role": "grid M2_512 + W256",
    "status": "complete (sacct COMPLETED), collected 2026-10-17 by resumed lane agent; OUTPUTS.sha256 verified; jax_backend=gpu in log"
+  },
+  {
+   "attempt": "p1",
+   "slurm_id": "5352455",
+   "gpu": "h200",
+   "mem": "200G",
+   "hours": 24,
+   "commit": "b4b2cfe4b",
+   "role": "profile, mesh-free + K5, batching + G4/K6, A1.5 confirmation panels (31 pairs), conv-rule sensitivity, reduced-rule ADT",
+   "submitted": "2026-10-18 (UTC)",
+   "audit": "audits/codex-job-p1m1-1.md, -2.md (SUBMIT)"
+  },
+  {
+   "attempt": "m1",
+   "slurm_id": "5352457",
+   "gpu": "h200",
+   "mem": "240G",
+   "hours": 24,
+   "commit": "b4b2cfe4b",
+   "role": "route 4: tables n=65..385 (G5/K7), ROM mf + ADT per mesh, same-mesh FOM calibration/accuracy/timing, A6 match panels",
+   "submitted": "2026-10-18 (UTC)",
+   "audit": "audits/codex-job-p1m1-1.md, -2.md (SUBMIT)"
   }
  ]
 }

@@ -1,21 +1,21 @@
 {
  "lane": "jcp-speed3d",
- "utc": "2026-10-18T00:55:53Z",
- "step": "4/6: codex results audit 2 + job audit p1/m1 round 1 (parallel)",
+ "utc": "2026-10-18T00:59:56Z",
+ "step": "4/6: codex results-3 + job-p1m1-2",
  "waiting_on": {
   "slurm_jobs": [],
   "codex_output": [
-   "audits/codex-results-2.md",
-   "audits/codex-job-p1m1-1.md"
+   "audits/codex-results-3.md",
+   "audits/codex-job-p1m1-2.md"
   ],
   "codex_pid": [
-   92475,
-   92476
+   123533,
+   123534
   ],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T01:55:22Z",
- "last_commit": "7dc54402c",
+ "expected_finish_utc": "2026-10-18T01:59:56Z",
+ "last_commit": "aedadff06",
  "gpu_hours_spent": 8.91,
  "gpu_hours_cap": 34,
  "notes": "g1-g3 collected; status file checks/score-all.status"

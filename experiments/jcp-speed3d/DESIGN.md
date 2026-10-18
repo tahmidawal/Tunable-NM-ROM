@@ -609,7 +609,7 @@ K9, K3, evidence) apply to H1 verdicts and to FOM matching exactly as to H2 sele
   A9's attribution ("all W768 lat32768 BDF2 Δt 0.01" / "W1024 lat65536 CN") was wrong and is withdrawn; the rest of A9 stands.
 * **p1 execution order.** The claim-bearing confirmation panels (A1.5) now run directly after the mesh-path accuracy phase,
   before the mesh-free, profile and batching blocks (a host OOM or timeout in batching can no longer lose them);
-  `result.json` / `W_prof.npz` are saved after the accuracy phase and after the confirmations. No population changes.
+  `result.json` and `W_prof.npz` are saved after the accuracy phase and `result.json` after each confirmation panel (the coefficient store is unchanged by the panels; wording corrected per `codex-job-p1m1-2.md`). No population changes.
 * **Qualifications adopted from the job audit.** T1 is not re-run in p1/m1 (its evidence is the grid/smoke panels); p1/m1
   must not be described as containing T1. B = 64 batching (M2_512 only) and the A6 `match|<label>` block were not exercised
   by the smoke; failures there are recorded, not inferred around. Host memory at L = 384 is supported by the pilot's device

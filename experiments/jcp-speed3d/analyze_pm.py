@@ -220,7 +220,7 @@ def analyze_p1(rp, sel, grid, scp):
         sn, rule, spec = c['setting'], c['rule'], c['spec']
         m = P['mf'].get(l_)
         if m is None or 'invalid' in m:
-            H32[l_] = dict(qualified=False, status='unavailable', reason=(m or {}).get('invalid', 'not run'))
+            H32[l_] = dict(qualified=None, status='unavailable', reason=(m or {}).get('invalid', 'not run'))
             continue
         e_ab = rows_elig(res, f'{sn}|{rule}|mf', spec, cases)
         e_c = ec(m['dist_to_adt'], m['adt_valid'], len(cases))
@@ -321,6 +321,7 @@ def analyze_p1(rp, sel, grid, scp):
                mf_evidence_valid=all(not str(v.get('status', '')).startswith('unavailable') for v in H32.values()),
                K5_resolved_present=out['K5_fires'] is not None,
                profile_all_present=all(not v.get('missing') for v in H31.values()),
+               profile_all_valid=all(v.get('panel_valid') is True for v in H31.values()),
                batch_all_present=all(v['available'] for x in H33.values() for v in x['per_B'].values()),
                conv_all_present=all(v['available'] for v in conv.values()), reduced_adt_all_present=all(v['ok'] is not None for v in red.values()),
                mesh_reproduction=all(v is not None and v <= 1e-12 for v in rep.values()))
@@ -363,7 +364,7 @@ def suppress(out, why):
                 elif k in ('qualified', 'measured_pass', 'evidence_complete', 'bar_2x', 'reaches_2x', 'G3', 'K5_fires', 'K6_fires', 'K6plus_pass',
                            'K6_fires_all', 'K6plus_all', 'ok', 'eligible', 'fails', 'usable', 'b', 'c', 'Ec', 'Eb', 'Ea', 'adt_gate',
                            'G4', 'K2_fires', 'still_matched', 'valid'):
-                    o[k] = None if k != 'K2_fires' else False
+                    o[k] = None
                 else:
                     walk(o[k])
         elif isinstance(o, list):
@@ -504,12 +505,13 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
     # union >= 2x -> does not fire; otherwise (missing / undetermined cells) -> undetermined
     st = [c['union']['reaches_2x'] for c in cells.values()]
     out['K2'] = ('does not fire' if any(x is True for x in st) else ('fires' if st and all(x is False for x in st) else 'undetermined'))
-    out['K2_fires'] = out['K2'] == 'fires'
+    out['K2_fires'] = {'fires': True, 'does not fire': False}.get(out['K2'])       # None when undetermined
     # H4.2 same-mesh diagnostic (valid panels, same-mesh subjects only)
     out['H42'] = {str(L): {l_: {b: p['ratio'] for b, p in pl.get('same_mesh', {}).items()} for l_, pl in out['per_L'][str(L)]['panels'].items()
                            if pl.get('valid')} for L in blk['Ls']}
     acc = dict(complete_flag=bool(res.get('complete')), K4=bool(sc['controls'].get('K4_fires')), G5=bool(M_['G5_all']),
                every_rom_every_mesh=all(out['per_L'][str(L)]['rom'].get(l_, {}).get('feasible') for L in blk['Ls'] for l_ in roms),
+               every_rom_scored=all(out['per_L'][str(L)]['rom'].get(l_, {}).get('scores_ok') for L in blk['Ls'] for l_ in roms),
                every_mesh_panel_valid=all(out['per_L'][str(L)]['panels'].get(l_, {}).get('valid') for L in blk['Ls'] for l_ in roms),
                match_panels_valid=all(v['speedup'] is not None for h in out['H43'].values() for v in h['families'].values()
                                       if v['state'] == 'matched'),
@@ -517,14 +519,14 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                primary_unions_resolved=all(not h['union']['unresolved_families'] for h in out['H43'].values()),
                cohort=res['cohort']['seed'] == 923801 and sorted(cases) == list(range(64)))
     acc['integrity_ok'] = bool(acc['complete_flag'] and acc['K4'] and acc['G5'] and acc['cohort'])
-    acc['coverage_complete'] = bool(acc['every_rom_every_mesh'] and acc['every_mesh_panel_valid'] and acc['match_panels_valid']
+    acc['coverage_complete'] = bool(acc['every_rom_every_mesh'] and acc['every_rom_scored'] and acc['every_mesh_panel_valid'] and acc['match_panels_valid']
                                     and acc['no_panel_failures'] and acc['primary_unions_resolved'])
     acc['accepted_for_claims'] = acc['integrity_ok']
     out['acceptance'] = acc
     if not acc['integrity_ok']:
         suppress(out, 'm1 integrity failed')
         out['K2'] = f"undetermined (m1 integrity failed; computed {out['K2']})"
-        out['K2_fires'] = False
+        out['K2_fires'] = None
     return out
 
 

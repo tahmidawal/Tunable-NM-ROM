@@ -696,3 +696,12 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   gives False, any missing (e.g. OOM-infeasible) size prevents True.
 * The spectral confirm/retract statement needs a valid matched spectral panel for every selected ROM (and m1 integrity);
   otherwise it says "neither confirmed nor retracted" and how many were measured.
+
+---
+
+## Amendment A17 (2026-10-18; dispositions of `audits/codex-code-13.md`, NOT READY on two classes)
+
+* Verdict booleans are three-valued everywhere in `analysis-pm.json` and `EXPORT.json`: `K2_fires` is null when K2 is
+  undetermined or the job lacks integrity; an absent mesh-free block has `qualified = null`.
+* Coverage now also requires valid profile panels (p1 `profile_all_valid`) and scores for every ROM at every mesh
+  (m1 `every_rom_scored`).

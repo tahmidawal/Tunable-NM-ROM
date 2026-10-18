@@ -681,3 +681,12 @@ tighter initial-fit tolerance is changed to $10^{-9}$ (equal to the tight anchor
 isolates the step tolerance ($10^{-7}$ vs $10^{-8}$), and the production fit ($10^{-6}$) is still compared with a
 $10^{-9}$ fit. No other threshold changes. Storage: the rule-ladder job no longer archives the 257² fields of every
 solve (they are re-derived from the saved unknowns by the independent NumPy decode).
+
+---
+
+## Release record (2026-10-18)
+
+The coordinator released production for jcp-heads after smk1/smk2 were accepted (lane cap 2 concurrent jobs, 35 GPU-h).
+Every `sbatch` goes through the shared campaign lock (COMMON-BRIEF §14; `cluster/submit.sh` already uses the same lock
+file and the same count-then-submit command). Sequence: train → rule1024 → acc1024 → time1024 / time256 (→ deferrable
+time4096, acc256) → results audit → make_report.py → report audit → hand-back with runs/EXPORT.json.

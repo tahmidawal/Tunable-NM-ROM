@@ -209,6 +209,35 @@ def project_mesh(cfg, smoke):
     return 2 * tot / 3600, dict(fom_seconds_per_solve=meshes)
 
 
+def project_rep(cfg, smoke):
+    """r1 (A1.11): ROM rollouts per frozen configuration and path (+ ADT tight) on the replication cohort from the smoke grid
+    (mf path costed as the mesh path); FOM accuracy per matched configuration from the production f1 job's measured
+    per-case seconds (max over cases, which includes compilation); one confirmation panel per comparator. Every term x 2."""
+    import s3common as S
+    res = json.loads((smoke / 'smkgrid' / 'result.json').read_text())
+    tab = grid_table(res)
+    f1 = json.loads((HERE / 'runs' / 'f1' / 'archive' / 'output' / 'result.json').read_text())
+    fsec = {}
+    for v in list(f1['fom']['fd'].values()) + list(f1['fom']['ps'].values()):
+        fsec[v.get('key')] = max(c['seconds_first'] for c in v['cases'].values())
+    b = cfg['rep']
+    nc = cfg['cohort_count']
+    run = {}
+    tot = 0.
+    for r in b['roms']:
+        t, _ = lookup(tab, r['setting'], r['spec'])
+        sp = S.parse_key(r['spec'])
+        ta, _ = lookup(tab, r['setting'], S.spec_key(('ad', sp[1], sp[2], 'tight')))
+        run[r['label']] = t
+        for _ in r.get('paths', ['mesh']):
+            tot += 120 + nc * (t['run'] + t['cert'] + ta['run'])
+    for fk in b.get('foms', []):
+        tot += 60 + nc * fsec[fk]
+    for la, lb in b.get('confirm', []):
+        tot += b['confirm_cases'] * b['confirm_reps'] * 3 * max(run[la]['run'], run[lb]['run'])
+    return 2 * tot / 3600, dict(n_roms=len(b['roms']), n_foms=len(b.get('foms', [])))
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--smoke', required=True)
@@ -229,8 +258,10 @@ def main():
         h, det = project_prof(cfg, smoke)
     elif cfg['mode'] == 'mesh':
         h, det = project_mesh(cfg, smoke)
+    elif cfg['mode'] == 'rep':
+        h, det = project_rep(cfg, smoke)
     else:
-        raise SystemExit('certificates for rep are written when its config exists')
+        raise SystemExit(f"no certificate for mode {cfg['mode']}")
     setup = 0.5
     out = dict(attempt=a.config, config_sha256=hashlib.sha256(cfgp.read_bytes()).hexdigest(), gpu=a.gpu,
                hours_allocated=a.hours, projected_hours=h + setup, **{'projected_hours_x1.5': 1.5 * (h + setup)},

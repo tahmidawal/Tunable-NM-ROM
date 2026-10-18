@@ -1,18 +1,16 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T07:47:26Z",
- "step": "8: C2 smoke accepted; fub4k running; writing make_report.py",
+ "utc": "2026-10-18T08:01:46Z",
+ "step": "9: final C1 matching (P1 preview targets, all 5 ladders) running locally on CPU",
  "waiting_on": {
-  "slurm_jobs": [
-   "5380943"
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": null,
-  "local_pid": null
+  "local_pid": 1772249
  },
  "expected_finish_utc": "2026-10-18T09:00:00Z",
- "last_commit": "bdcb62d14",
- "gpu_hours_spent": 1.0717,
+ "last_commit": "29c5f6b79",
+ "gpu_hours_spent": 1.7845,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D.json not yet produced"
+ "notes": "fub4k collected (1.78 GPU-h spent total); FRONT-2D.json not yet produced"
 }

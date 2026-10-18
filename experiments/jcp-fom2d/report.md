@@ -4,8 +4,8 @@
 
 ## Summary
 
-- **C1 ladder:** 178 FOM configurations run on the 38 validation cases (dev6 + val32); 163 admissible. Acceptance: smoke_accepted yes, ladders_complete yes, ladders_accepted yes, store_versions_equal yes, offline_agrees yes, calibration_agrees yes, controls_all_fire yes.
-- **upwind + BE:** 24 configurations on its (cost, median, worst) Pareto front; most accurate front member UB $L=2048$, $\Delta t=0.000625$, t1 (median 0.173 %, worst 1.04 %, 3.02 s).
+- **C1 ladder:** 185 FOM configurations run on the 38 validation cases (dev6 + val32); 170 admissible. Acceptance: smoke_accepted yes, ladders_complete yes, ladders_accepted yes, store_versions_equal yes, offline_agrees yes, calibration_agrees yes, controls_all_fire yes.
+- **upwind + BE:** 26 configurations on its (cost, median, worst) Pareto front; most accurate front member UB $L=4096$, $\Delta t=0.000625$, t1 (median 0.150 %, worst 0.687 %, 13.0 s).
 - **central + CN-R:** 26 configurations on its (cost, median, worst) Pareto front; most accurate front member CC $L=4096$, $\Delta t=0.0025$, t1 (median 0.0232 %, worst 0.0624 %, 4.91 s).
 - **sine pseudo-spectral ETDRK4:** 22 configurations on its (cost, median, worst) Pareto front; most accurate front member PS $N=128$, $\Delta t=0.001$ (median 3.76e-4 %, worst 0.00251 %, 0.0509 s).
 - **C1 screening selections (union, H populations):** sine pseudo-spectral ETDRK4 for 24 targets.
@@ -20,9 +20,9 @@
 | fub | 5373122 | gres/gpu=1 | 0.290 | COMPLETED |
 | fps | 5373281 | gres/gpu=1 | 0.218 | COMPLETED |
 | smkc2 | 5380338 | gres/gpu=1 | 0.0461 | COMPLETED |
-| fub4k | 5380943 | gres/gpu=1 | 0.232 | RUNNING |
+| fub4k | 5380943 | gres/gpu=1 | 0.713 | COMPLETED |
 
-GPU-hours spent: **1.07** of the 30.0 cap (ledger `runs/GPU-LEDGER.json`; measured `sacct` elapsed time, one GPU per job). Recorded devices: NVIDIA H200; every job logged `jax_backend=gpu`, f64 and `JAX_DEFAULT_MATMUL_PRECISION=highest`; cluster namespace `/cluster/tufts/paralab/tawal01/jcp-fom2d/` (job directories removed after collection; archives local, SHA256 manifests `runs/*/ARCHIVE.sha256`).
+GPU-hours spent: **1.78** of the 30.0 cap (ledger `runs/GPU-LEDGER.json`; measured `sacct` elapsed time, one GPU per job). Recorded devices: NVIDIA H200; every job logged `jax_backend=gpu`, f64 and `JAX_DEFAULT_MATMUL_PRECISION=highest`; cluster namespace `/cluster/tufts/paralab/tawal01/jcp-fom2d/` (job directories removed after collection; archives local, SHA256 manifests `runs/*/ARCHIVE.sha256`).
 
 ## Gates and controls
 
@@ -55,11 +55,11 @@ Three families on the $257^2$ scoring lattice: $F_{UB}$ sign-upwind + backward E
 
 $$e=\max_{k=1..5}\frac{\lVert u(t_k)-R_{ST}(t_k)\rVert_2}{\lVert R_{ST}(t_0)\rVert_2}.$$
 
-Tolerance calibration (90 FD groups): production level counts t1: 34, t2: 56; recovered groups: 0; recomputed choice agrees with the job: yes.
+Tolerance calibration (97 FD groups): production level counts t1: 37, t2: 60; recovered groups: 0; recomputed choice agrees with the job: yes.
 
 | family | configurations | admissible | reasons (inadmissible) |
 |---|---|---|---|
-| upwind + BE | 42 | 42 | – |
+| upwind + BE | 49 | 49 | – |
 | central + CN-R | 48 | 48 | – |
 | sine pseudo-spectral ETDRK4 | 88 | 73 | non-finite score: 15; not converged / invalid on some case: 14 |
 
@@ -93,6 +93,8 @@ Tolerance calibration (90 FD groups): production level counts t1: 34, t2: 56; re
 | UB $L=1024$, $\Delta t=0.000625$, t1 | 0.829 | 0.274 % | 1.73 % |
 | UB $L=2048$, $\Delta t=0.00125$, t1 | 2.34 | 0.297 % | 1.33 % |
 | UB $L=2048$, $\Delta t=0.000625$, t1 | 3.02 | 0.173 % | 1.04 % |
+| UB $L=4096$, $\Delta t=0.00125$, t1 | 10.1 | 0.275 % | 1.01 % |
+| UB $L=4096$, $\Delta t=0.000625$, t1 | 13.0 | 0.150 % | 0.687 % |
 
 *central + CN-R*
 
@@ -162,6 +164,7 @@ Tolerance calibration (90 FD groups): production level counts t1: 34, t2: 56; re
 | upwind + BE | 512 | UB $L=512$, $\Delta t=0.05$, t2 | 0.0188 | 7.27 % | 15.5 % |
 | upwind + BE | 1024 | UB $L=1024$, $\Delta t=0.05$, t2 | 0.0417 | 7.23 % | 15.2 % |
 | upwind + BE | 2048 | UB $L=2048$, $\Delta t=0.05$, t2 | 0.150 | 7.21 % | 15.1 % |
+| upwind + BE | 4096 | UB $L=4096$, $\Delta t=0.05$, t2 | 0.636 | 7.20 % | 15.0 % |
 | central + CN-R | 32 | CC $L=32$, $\Delta t=0.05$, t2 | 0.0107 | 4.41 % | 24.9 % |
 | central + CN-R | 64 | CC $L=64$, $\Delta t=0.05$, t2 | 0.0111 | 4.22 % | 8.51 % |
 | central + CN-R | 128 | CC $L=128$, $\Delta t=0.05$, t2 | 0.0133 | 4.18 % | 8.57 % |

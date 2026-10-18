@@ -21,6 +21,16 @@
    "extension": false
   },
   {
+   "dir": "runs/fub4k/archive/output/ladder_fub4k",
+   "job_id": "5380943",
+   "gpu": "NVIDIA H200",
+   "commit": "24a01e155eeb6d4b372364fd20bce068e4bb981b",
+   "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+   "complete": true,
+   "accepted": true,
+   "extension": false
+  },
+  {
    "dir": "runs/fps/archive/output/ladder_fps",
    "job_id": "5373281",
    "gpu": "NVIDIA H200",
@@ -1117,6 +1127,90 @@
     "2": 1.0539014488467416e-05,
     "3": 1.0448587744581822e-05
    }
+  },
+  "fd|UB|L4096|0.05": {
+   "chosen": "2",
+   "injob_chosen": "2",
+   "agrees": true,
+   "production_level": "2",
+   "recovery": null,
+   "max_diff": {
+    "1": 6.326980654530348e-10,
+    "2": 3.4931170664507805e-07,
+    "3": 1.2196321318060886e-05
+   }
+  },
+  "fd|UB|L4096|0.025": {
+   "chosen": "2",
+   "injob_chosen": "2",
+   "agrees": true,
+   "production_level": "2",
+   "recovery": null,
+   "max_diff": {
+    "1": 3.570352444865608e-09,
+    "2": 3.38078969589538e-07,
+    "3": 8.436289812704642e-06
+   }
+  },
+  "fd|UB|L4096|0.01": {
+   "chosen": "2",
+   "injob_chosen": "2",
+   "agrees": true,
+   "production_level": "2",
+   "recovery": null,
+   "max_diff": {
+    "1": 8.201615958874267e-09,
+    "2": 1.484889104946805e-07,
+    "3": 0.00017616197133303097
+   }
+  },
+  "fd|UB|L4096|0.005": {
+   "chosen": "2",
+   "injob_chosen": "2",
+   "agrees": true,
+   "production_level": "2",
+   "recovery": null,
+   "max_diff": {
+    "1": 5.815382463110388e-09,
+    "2": 2.4973567140073925e-08,
+    "3": 0.0003177869226552221
+   }
+  },
+  "fd|UB|L4096|0.0025": {
+   "chosen": "1",
+   "injob_chosen": "1",
+   "agrees": true,
+   "production_level": "1",
+   "recovery": null,
+   "max_diff": {
+    "1": 1.8090203849654953e-10,
+    "2": 1.0903043496463832e-05,
+    "3": 0.00015341375864201287
+   }
+  },
+  "fd|UB|L4096|0.00125": {
+   "chosen": "1",
+   "injob_chosen": "1",
+   "agrees": true,
+   "production_level": "1",
+   "recovery": null,
+   "max_diff": {
+    "1": 1.4727650101218382e-10,
+    "2": 1.3629752835889568e-05,
+    "3": 4.104429710017264e-05
+   }
+  },
+  "fd|UB|L4096|0.000625": {
+   "chosen": "1",
+   "injob_chosen": "1",
+   "agrees": true,
+   "production_level": "1",
+   "recovery": null,
+   "max_diff": {
+    "1": 5.157511811257348e-07,
+    "2": 1.0643713202915155e-05,
+    "3": 1.0551130815234514e-05
+   }
   }
  },
  "admissibility": {
@@ -1658,6 +1752,48 @@
    "admissible": true,
    "why": [],
    "cost": 3.019331614486873,
+   "family": "UB"
+  },
+  "fd|UB|L4096|0.05|t2": {
+   "admissible": true,
+   "why": [],
+   "cost": 0.6363684167154133,
+   "family": "UB"
+  },
+  "fd|UB|L4096|0.025|t2": {
+   "admissible": true,
+   "why": [],
+   "cost": 0.9663757146336138,
+   "family": "UB"
+  },
+  "fd|UB|L4096|0.01|t2": {
+   "admissible": true,
+   "why": [],
+   "cost": 1.7346581793390214,
+   "family": "UB"
+  },
+  "fd|UB|L4096|0.005|t2": {
+   "admissible": true,
+   "why": [],
+   "cost": 2.860756137408316,
+   "family": "UB"
+  },
+  "fd|UB|L4096|0.0025|t1": {
+   "admissible": true,
+   "why": [],
+   "cost": 5.958577178418636,
+   "family": "UB"
+  },
+  "fd|UB|L4096|0.00125|t1": {
+   "admissible": true,
+   "why": [],
+   "cost": 10.142917346674949,
+   "family": "UB"
+  },
+  "fd|UB|L4096|0.000625|t1": {
+   "admissible": true,
+   "why": [],
+   "cost": 13.041309973690659,
    "family": "UB"
   },
   "ps|N8|0.05": {
@@ -2515,6 +2651,48 @@
      "cost": 3.019331614486873,
      "median": 0.0017313301290884538,
      "worst": 0.01037614797996215
+    },
+    {
+     "key": "fd|UB|L4096|0.05|t2",
+     "cost": 0.6363684167154133,
+     "median": 0.07196853500551764,
+     "worst": 0.1504735268252394
+    },
+    {
+     "key": "fd|UB|L4096|0.025|t2",
+     "cost": 0.9663757146336138,
+     "median": 0.0417155158968285,
+     "worst": 0.09863266048567289
+    },
+    {
+     "key": "fd|UB|L4096|0.01|t2",
+     "cost": 1.7346581793390214,
+     "median": 0.01883629023476141,
+     "worst": 0.051548488049250565
+    },
+    {
+     "key": "fd|UB|L4096|0.005|t2",
+     "cost": 2.860756137408316,
+     "median": 0.009941605017780655,
+     "worst": 0.02967835287977603
+    },
+    {
+     "key": "fd|UB|L4096|0.0025|t1",
+     "cost": 5.958577178418636,
+     "median": 0.005193888827813778,
+     "worst": 0.01659561960450337
+    },
+    {
+     "key": "fd|UB|L4096|0.00125|t1",
+     "cost": 10.142917346674949,
+     "median": 0.002749672561187462,
+     "worst": 0.010076506613186398
+    },
+    {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "median": 0.0014950083730448864,
+     "worst": 0.006874363737571231
     }
    ],
    "front": [
@@ -2661,6 +2839,18 @@
      "cost": 3.019331614486873,
      "median": 0.0017313301290884538,
      "worst": 0.01037614797996215
+    },
+    {
+     "key": "fd|UB|L4096|0.00125|t1",
+     "cost": 10.142917346674949,
+     "median": 0.002749672561187462,
+     "worst": 0.010076506613186398
+    },
+    {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "median": 0.0014950083730448864,
+     "worst": 0.006874363737571231
     }
    ]
   },
@@ -3698,7 +3888,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.0025|t1",
      "cost": 0.16272592032328248,
@@ -3725,7 +3915,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L256|0.0025|t1",
@@ -3741,7 +3935,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -3755,7 +3953,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -4306,7 +4508,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.005|t2",
      "cost": 0.07997952308505774,
@@ -4337,7 +4539,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.005|t2",
@@ -4354,7 +4560,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -4370,8 +4580,13 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L256|0.0025|t1",
@@ -4913,7 +5128,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.0025|t1",
      "cost": 0.16272592032328248,
@@ -4940,7 +5155,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L256|0.0025|t1",
@@ -4956,7 +5175,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -4970,7 +5193,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.005|t2",
@@ -5503,7 +5730,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.005|t2",
      "cost": 0.07997952308505774,
@@ -5534,7 +5761,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.005|t2",
@@ -5551,7 +5782,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -5567,8 +5802,13 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.005|t2",
@@ -6090,7 +6330,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.005|t2",
      "cost": 0.07997952308505774,
@@ -6121,7 +6361,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.005|t2",
@@ -6138,7 +6382,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -6154,10 +6402,20 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -6188,9 +6446,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.005|t2",
+     "cost": 2.860756137408316,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.011680012365807717,
+     "worst_e": 0.023038695611518605,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -6606,6 +6877,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -6658,7 +6930,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.005|t2",
      "cost": 0.07997952308505774,
@@ -6689,7 +6961,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.005|t2",
@@ -6706,7 +6982,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -6722,10 +7002,20 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -6756,9 +7046,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.005|t2",
+     "cost": 2.860756137408316,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.011680012365807717,
+     "worst_e": 0.023038695611518605,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -7174,6 +7477,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -7226,7 +7530,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.00125|t1",
      "cost": 0.6370174987241626,
@@ -7246,13 +7550,17 @@
       "fd|UB|L1024|0.00125|t1",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L1024|0.00125|t1",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -7265,8 +7573,13 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -7792,7 +8105,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.00125|t1",
      "cost": 0.2815980021841824,
@@ -7816,7 +8129,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.00125|t1",
@@ -7826,7 +8142,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -7843,8 +8162,13 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -8369,7 +8693,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.00125|t1",
      "cost": 0.6370174987241626,
@@ -8389,13 +8713,17 @@
       "fd|UB|L1024|0.00125|t1",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L1024|0.00125|t1",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -8408,8 +8736,13 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.00125|t1",
@@ -8915,7 +9248,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.00125|t1",
      "cost": 0.2815980021841824,
@@ -8939,7 +9272,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.00125|t1",
@@ -8949,7 +9285,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -8966,8 +9305,13 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.0025|t1",
@@ -9473,7 +9817,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.00125|t1",
      "cost": 0.2815980021841824,
@@ -9497,7 +9841,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.00125|t1",
@@ -9507,7 +9854,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -9524,10 +9874,19 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -9558,9 +9917,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.0025|t1",
+     "cost": 5.958577178418636,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.005986622016404862,
+     "worst_e": 0.01288125520045581,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -9961,6 +10333,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -10013,7 +10386,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.00125|t1",
      "cost": 0.2815980021841824,
@@ -10037,7 +10410,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.00125|t1",
@@ -10047,7 +10423,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.005|t2",
@@ -10064,10 +10443,19 @@
       "fd|UB|L2048|0.005|t2",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
+      "fd|UB|L4096|0.01|t2",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -10098,9 +10486,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.0025|t1",
+     "cost": 5.958577178418636,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.005986622016404862,
+     "worst_e": 0.01288125520045581,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -10501,6 +10902,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -10553,7 +10955,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.00125|t1",
      "cost": 0.2815980021841824,
@@ -10577,7 +10979,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -10589,7 +10994,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.00125|t1",
@@ -10600,7 +11008,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -11136,7 +11548,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.0025|t1",
      "cost": 0.16272592032328248,
@@ -11162,7 +11574,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -11177,7 +11593,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.0025|t1",
@@ -11189,7 +11609,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -11714,7 +12138,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.00125|t1",
      "cost": 0.2815980021841824,
@@ -11738,7 +12162,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -11750,7 +12177,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.00125|t1",
@@ -11761,7 +12191,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.0025|t1",
@@ -12278,7 +12712,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.0025|t1",
      "cost": 0.16272592032328248,
@@ -12304,7 +12738,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -12319,7 +12757,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.0025|t1",
@@ -12331,7 +12773,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.0025|t1",
@@ -12837,7 +13283,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.0025|t1",
      "cost": 0.16272592032328248,
@@ -12863,7 +13309,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -12878,7 +13328,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.0025|t1",
@@ -12890,9 +13344,18 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -12923,9 +13386,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.005|t2",
+     "cost": 2.860756137408316,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.011680012365807717,
+     "worst_e": 0.023038695611518605,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -13326,6 +13802,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -13378,7 +13855,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.0025|t1",
      "cost": 0.16272592032328248,
@@ -13404,7 +13881,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -13419,7 +13900,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.0025|t1",
@@ -13431,9 +13916,18 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -13464,9 +13958,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.005|t2",
+     "cost": 2.860756137408316,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.011680012365807717,
+     "worst_e": 0.023038695611518605,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -13867,6 +14374,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -13919,7 +14427,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -13936,10 +14444,12 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -13947,7 +14457,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -14429,7 +14942,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -14446,10 +14959,12 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -14457,7 +14972,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -14939,7 +15457,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -14956,17 +15474,22 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.00125|t1",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -15427,7 +15950,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -15444,10 +15967,12 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -15455,7 +15980,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -15916,7 +16444,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -15933,10 +16461,12 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -15944,9 +16474,14 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -15977,9 +16512,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.0016613045354955545,
+     "worst_e": 0.004812469394813911,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -16337,6 +16885,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -16389,7 +16938,7 @@
    "status": "ok",
    "n_eligible": 16,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -16406,10 +16955,12 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -16417,9 +16968,14 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -16450,9 +17006,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 16,
+     "med_e": 0.0016613045354955545,
+     "worst_e": 0.004812469394813911,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -16810,6 +17379,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -16862,7 +17432,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -16884,7 +17454,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -16896,7 +17469,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -16904,7 +17480,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -17428,7 +18008,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -17450,7 +18030,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -17462,7 +18045,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -17470,7 +18056,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -17994,7 +18584,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -18016,7 +18606,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -18028,7 +18621,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -18036,7 +18632,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.0025|t1",
@@ -18541,7 +19141,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -18563,7 +19163,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -18575,7 +19178,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -18583,7 +19189,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.0025|t1",
@@ -19088,7 +19698,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -19110,7 +19720,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -19122,7 +19735,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -19130,9 +19746,17 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -19163,9 +19787,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.0025|t1",
+     "cost": 5.958577178418636,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.005193888827813778,
+     "worst_e": 0.01659561960450337,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -19565,6 +20202,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -19617,7 +20255,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -19639,7 +20277,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -19651,7 +20292,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -19659,9 +20303,17 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -19692,9 +20344,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.0025|t1",
+     "cost": 5.958577178418636,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.005193888827813778,
+     "worst_e": 0.01659561960450337,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -20094,6 +20759,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -20146,7 +20812,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -20163,15 +20829,20 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -20652,7 +21323,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -20669,15 +21340,20 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -21158,7 +21834,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -21175,15 +21851,20 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -21643,7 +22324,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -21660,15 +22341,20 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -22128,7 +22814,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -22145,17 +22831,24 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -22186,9 +22879,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.0014950083730448864,
+     "worst_e": 0.006874363737571231,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -22545,6 +23251,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -22597,7 +23304,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -22614,17 +23321,24 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -22655,9 +23369,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.0014950083730448864,
+     "worst_e": 0.006874363737571231,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -23014,6 +23741,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -23066,7 +23794,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -23088,7 +23816,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -23100,7 +23831,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -23108,7 +23842,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -23632,7 +24370,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -23654,7 +24392,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -23666,7 +24407,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -23674,7 +24418,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -24198,7 +24946,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -24220,7 +24968,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -24232,7 +24983,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -24240,9 +24994,17 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -24273,9 +25035,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.0025|t1",
+     "cost": 5.958577178418636,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.005193888827813778,
+     "worst_e": 0.01659561960450337,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -24675,6 +25450,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -24727,7 +25503,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L1024|0.0025|t1",
      "cost": 0.37320273369550705,
@@ -24749,7 +25525,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -24761,7 +25540,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.0025|t1",
@@ -24769,9 +25551,17 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -24802,9 +25592,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.0025|t1",
+     "cost": 5.958577178418636,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.005193888827813778,
+     "worst_e": 0.01659561960450337,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -25204,6 +26007,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -25256,7 +26060,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -25273,15 +26077,20 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -25762,7 +26571,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -25779,15 +26588,20 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -26268,7 +27082,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -26285,17 +27099,24 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -26326,9 +27147,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.0014950083730448864,
+     "worst_e": 0.006874363737571231,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -26685,6 +27519,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -26737,7 +27572,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -26754,17 +27589,24 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
-     "same_mesh": [],
+     "same_mesh": [
+      "fd|UB|L4096|0.000625|t1"
+     ],
      "same_mesh_unmatched": []
     },
     "median_only": {
@@ -26795,9 +27637,22 @@
      "upper_bound": true,
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
-    "same_mesh": null,
+    "same_mesh": {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "joint": true,
+     "median": true,
+     "worst": true,
+     "n_common": 38,
+     "med_e": 0.0014950083730448864,
+     "worst_e": 0.006874363737571231,
+     "edge": [],
+     "boundary": false,
+     "upper_bound": true,
+     "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
+    },
     "same_mesh_unmatched": null,
-    "same_mesh_status": "not in ladder",
+    "same_mesh_status": "matched",
     "status": "matched"
    },
    "CC": {
@@ -27154,6 +28009,7 @@
      "selection_stage": "C1 lattice screening (not the A2.1 C2 selection)"
     },
     "families_run": [
+     "UB",
      "CC"
     ]
    },
@@ -27206,7 +28062,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.000625|t1",
      "cost": 0.3711937088519335,
@@ -27229,7 +28085,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -27241,7 +28100,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.000625|t1",
@@ -27251,7 +28113,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.0025|t1",
@@ -27756,7 +28622,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L512|0.000625|t1",
      "cost": 0.3711937088519335,
@@ -27779,7 +28645,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
       "fd|UB|L512|0.0025|t1",
@@ -27791,7 +28660,10 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L512|0.000625|t1",
@@ -27801,7 +28673,11 @@
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L4096|0.005|t2",
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [
       "fd|UB|L1024|0.0025|t1",
@@ -28306,7 +29182,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -28323,17 +29199,22 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.00125|t1",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -28793,7 +29674,7 @@
    "status": "ok",
    "n_eligible": 38,
    "UB": {
-    "n_admissible": 42,
+    "n_admissible": 49,
     "joint": {
      "key": "fd|UB|L2048|0.000625|t1",
      "cost": 3.019331614486873,
@@ -28810,17 +29691,22 @@
     },
     "candidates": {
      "joint": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "median_only": [
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "worst_only": [
       "fd|UB|L1024|0.00125|t1",
       "fd|UB|L1024|0.000625|t1",
       "fd|UB|L2048|0.0025|t1",
       "fd|UB|L2048|0.00125|t1",
-      "fd|UB|L2048|0.000625|t1"
+      "fd|UB|L2048|0.000625|t1",
+      "fd|UB|L4096|0.0025|t1",
+      "fd|UB|L4096|0.00125|t1",
+      "fd|UB|L4096|0.000625|t1"
      ],
      "same_mesh": [],
      "same_mesh_unmatched": [
@@ -29299,7 +30185,8 @@
     256,
     512,
     1024,
-    2048
+    2048,
+    4096
    ],
    "required": [],
    "completed": null

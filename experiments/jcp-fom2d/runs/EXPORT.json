@@ -3,12 +3,12 @@
  "status": "C1 final; C2 not yet run",
  "references": "E0 R_ST, conditional Richardson eps_ref (E0 A10; combined A10, A11, retracted A15 carried)",
  "gpu_hours": {
-  "spent": 1.0717,
+  "spent": 1.7845,
   "cap": 30.0
  },
  "c1": {
-  "admissible": 163,
-  "configurations": 178,
+  "admissible": 170,
+  "configurations": 185,
   "pareto": {
    "UB": [
     {
@@ -154,6 +154,18 @@
      "cost": 3.019331614486873,
      "median": 0.0017313301290884538,
      "worst": 0.01037614797996215
+    },
+    {
+     "key": "fd|UB|L4096|0.00125|t1",
+     "cost": 10.142917346674949,
+     "median": 0.002749672561187462,
+     "worst": 0.010076506613186398
+    },
+    {
+     "key": "fd|UB|L4096|0.000625|t1",
+     "cost": 13.041309973690659,
+     "median": 0.0014950083730448864,
+     "worst": 0.006874363737571231
     }
    ],
    "CC": [

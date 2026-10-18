@@ -1,0 +1,21 @@
+{
+ "attempt": "rule1024",
+ "runs": [
+  "hrule:configs/rule1024.json"
+ ],
+ "configs": {
+  "configs/rule1024.json": "04f0b149c280c2059066ffd1a517f0cf3dafcc863e486567d153f3c072b0ce50"
+ },
+ "projection_hours": 2.2029028652122324,
+ "time_limit_hours": 3.5,
+ "detail": {
+  "hrule:configs/rule1024.json": {
+   "seconds": 7930.450314764037,
+   "seconds_per_arm_rung": 15.885739725393554,
+   "m_ref": 9216,
+   "worst_case_rung_units": 14.555555555555555,
+   "setup": 300.0
+  }
+ },
+ "note": "estimate from smoke archives (resources.py docstring); the scheduler limit is the enforced bound"
+}

@@ -40,6 +40,10 @@ def pct(x):
     return 'n/a' if x is None else f'{100 * float(x):.3g} %'
 
 
+def lab(k):
+    return str(k).replace('|', ' / ')
+
+
 def style(ax, title, xl, yl):
     ax.set_title(title, loc='left', fontsize=11, color=INK)
     ax.set_xlabel(xl, color=INK2)
@@ -165,7 +169,7 @@ def main():
     w('## Verdicts\n')
     w('| hypothesis | configuration | outcome | key numbers |\n|---|---|---|---|')
     for k, v in (AN['timing']['h_cost_n'].items() if isinstance(AN['timing'], dict) else []):
-        w(f"| H-cost-N | {k} | {v['outcome']} | R = {g(v.get('R'))}, 95 % interval {g((v.get('ci') or [None])[0])}–{g((v.get('ci') or [None, None])[1])} |")
+        w(f"| H-cost-N | {lab(k)} | {v['outcome']} | R = {g(v.get('R'))}, 95 % interval {g((v.get('ci') or [None])[0])}–{g((v.get('ci') or [None, None])[1])} |")
     for tag in ('kernels_2d', 'kernels_3d'):
         k = AN.get(tag)
         if isinstance(k, dict):
@@ -177,16 +181,16 @@ def main():
             w(f'| H-cost-r ({tag[-2:]}) | all | {k} | |')
     for k, v in AN['h_acc_n'].items():
         pr = v.get('pairs', {})
-        w(f"| H-acc-N | {k} | {v['outcome']} | " + '; '.join(
+        w(f"| H-acc-N | {lab(k)} | {v['outcome']} | " + '; '.join(
             f"{p}: n = {x.get('n')}, within margin {pct(x.get('within'))}, TOST p = {g(x.get('p_lower'))}/{g(x.get('p_upper'))}" for p, x in pr.items())
           + (f"; trend p = {g(v['trend'].get('p'))}" if v.get('trend') and v['trend'].get('testable') else '') + ' |')
     for k, v in AN['h_acc_r'].items():
         for t, x in v.items():
             if isinstance(x, dict):
-                w(f"| H-acc-r | {k} {t} | {x['outcome']} | improve/worsen/tie/unqualified {x.get('improve')}/{x.get('worsen')}/{x.get('tie')}/{x.get('unqualified')}, "
+                w(f"| H-acc-r | {lab(k)}, {t} | {x['outcome']} | improve/worsen/tie/unqualified {x.get('improve')}/{x.get('worsen')}/{x.get('tie')}/{x.get('unqualified')}, "
                   f"median change {pct(x.get('median_change_resolved'))}, worst change {pct(x.get('worst_change'))} |")
             else:
-                w(f'| H-acc-r | {k} {t} | {x} | range verdict |')
+                w(f'| H-acc-r | {lab(k)}, {t} | {x} | range verdict |')
     w('')
     w('## Configurations: qualification and error\n')
     w('| mesh | config | scheme | Q1 | Q2 | numerically qualified | cases | median $e$ | worst $e$ | BE vs $R_S$ median (BE only) |\n|---|---|---|---|---|---|---|---|---|---|')
@@ -198,37 +202,71 @@ def main():
       'not ranked here (the coordinator combines P1 with the competition work).\n')
     w('## Reproduction gate (AM-1)\n')
     for k, v in AN.get('reproduction', {}).items():
-        w(f"- {k}: worst relative coefficient difference vs the combined archive {g(v['worst'])}; numerical manifest equal {g(v['manifest']['equal'])}; gate {'passed' if v['passed'] else 'FAILED'}.")
+        w(f"- {lab(k)}: worst relative coefficient difference vs the combined archive {g(v['worst'])}; numerical manifest equal {g(v['manifest']['equal'])}; gate {'passed' if v['passed'] else 'FAILED'}.")
     w('\n## P1g: what the frozen mode list changes in earlier cross-mesh claims\n')
     w('The test set differs from the frozen list only at $256^2$ (two modes swapped at $M=1536$); at $4096^2$ the nominal list '
       'is a permutation of the frozen one. Distances are scoring-lattice relative, max over outputs and cases.\n')
-    w('| arm | 256²: frozen vs nominal distance | 256²: max |Δe| (E0 / first-order) | 4096²: distance | spread (3 meshes, first-order) frozen / nominal | spread (256² vs 1024², first-order) frozen / nominal |\n|---|---|---|---|---|---|')
+    w('| arm | 256²: frozen vs nominal distance | 256²: largest error change, E0 / first-order | 4096²: distance | spread (3 meshes, first-order) frozen / nominal | spread (256² vs 1024², first-order) frozen / nominal | nominal vs historical job, largest first-order error difference (256² / 1024² / 4096²) |\n|---|---|---|---|---|---|---|')
     for k, v in AN['p1g'].items():
         a = v['meshes'].get('256', v['meshes'].get(256))
         b = v['meshes'].get('4096', v['meshes'].get(4096))
         s3f, s3n = v.get('spread3_frozen', {}), v.get('spread3_nominal', {})
         s2f, s2n = v.get('spread2_frozen', {}), v.get('spread2_nominal', {})
-        w(f"| {k} | {g(a['dist_max']) if isinstance(a, dict) else a} | "
+        w(f"| {lab(k)} | {g(a['dist_max']) if isinstance(a, dict) else a} | "
           f"{(g(a['de0_max_abs_pp']) + ' / ' + g(a['dfo_max_abs_pp']) + ' pp') if isinstance(a, dict) else ''} | "
           f"{g(b['dist_max']) if isinstance(b, dict) else b} | {g(s3f.get('first_order_max_pp'))} / {g(s3n.get('first_order_max_pp'))} pp | "
-          f"{g(s2f.get('first_order_max_pp'))} / {g(s2n.get('first_order_max_pp'))} pp |")
+          f"{g(s2f.get('first_order_max_pp'))} / {g(s2n.get('first_order_max_pp'))} pp | " +
+          (' / '.join(g((v.get('historical_reproduction') or {}).get(m, (v.get('historical_reproduction') or {}).get(str(m), {})).get('max_abs'))
+                      for m in MESHES) if v.get('historical_reproduction') else '—') + ' |')
     w('\nHistorical claims re-checked (their numbers as published): ' + '; '.join(
         f"{h} ({c['source']}): " + ', '.join(f'{a} {b} pp' for a, b in c['values_pp'].items())
         for h, c in json.loads(json.dumps(__import__('analyze').HIST_CLAIMS)).items()) + '. H2 (test64) and H3 are not re-run.\n')
-    w('## Quadrature slice (P1e)\n')
-    e2 = AN['p1e'].get('2d')
-    if e2:
-        for cfg, v in e2.items():
-            rows = v['rows']
-            for pair in rows[0]['dist']:
-                w(f"- 2D {cfg}, {pair}: worst distance {g(max(r_['dist'][pair] for r_ in rows))}, worst ρ {g(max(max(r_['rho'][pair]) for r_ in rows))}.")
-    e3 = AN['p1e'].get('3d')
-    if isinstance(e3, dict):
-        for pair in e3['rows'][0]['dist']:
-            rh = max(max(x) for x in e3['rho'].get(pair, {'0': [float('nan')]}).values())
-            w(f"- 3D W512, {pair}: worst distance {g(max(r_['dist'][pair] for r_ in e3['rows']))}, worst ρ on own states {g(rh)}.")
-    else:
-        w(f'- 3D: {e3}')
+    w('## Quadrature slice (P1e, descriptive)\n')
+    w('| slice | rule pair (coarser vs finer) | worst rollout distance | rollout bar 2.5e-4 | worst own-state ρ | ρ bar 0.116 | all runs valid |\n|---|---|---|---|---|---|---|')
+    e2 = AN['p1e'].get('2d') or {}
+    for cfg, v in (AN['p1e'].get('2d_judged') or {}).items():
+        names = e2[cfg]['rules']
+        nm = lambda role: f"{names.get(role)} ({role.replace('fail_succ', 'failing successor').replace('main', 'deployed').replace('qpp', 'check').replace('qp', 'finer').replace('fail', 'failing')})"
+        for pr, x in v.items():
+            a_, b_ = pr.split('|')
+            w(f"| 2D {cfg}, 1024², BE, dev6 | {nm(a_)} vs {nm(b_)} | {g(x['worst_distance'])} | {g(x['rollout_bar'])} | {g(x['worst_rho'])} | {g(x['rho_bar'])} | {g(x['all_valid'])} |")
+    for pr, x in (AN['p1e'].get('3d_judged') or {}).items():
+        if pr == 'solver':
+            continue
+        w(f"| 3D W512, 65³, FS-BE, 923801 cases 0–5 | {pr.replace('|', ' vs ')} | {g(x['worst_distance'])} | {g(x['rollout_bar'])} | {g(x['worst_rho'])} | {g(x['rho_bar'])} | {g(x['all_valid'])} |")
+    sv = (AN['p1e'].get('3d_judged') or {}).get('solver')
+    if sv:
+        w(f"\n3D solver evidence: {sv['nonstationary']} of {sv['steps']} steps non-stationary, {sv['saturated']} saturated, {sv['reason3']} non-finite; "
+          f"fixed-sweep vs vendored deployed solver, worst relative coefficient difference {g(sv['vendor_bridge_worst'])}.")
+    w('\n## Conditioning (Q3)\n')
+    w('| mesh | config | scheme | cond(A) | rank(A) | median cond(J) | max cond(J) | max cond(JᵀJ) |\n|---|---|---|---|---|---|---|---|')
+    for k, v in AN['configurations'].items():
+        if v.get('q3') and not k.split('|')[1].startswith('H'):
+            m, n, sc = k.split('|')
+            q = v['q3']
+            w(f"| {m}² | {n} | {sc} | {g(q['A_cond'])} | {q['A_rank']} | {g(q['J_cond_median'])} | {g(q['J_cond_max'])} | {g(q['JTJ_cond_max'])} |")
+    if isinstance(AN['timing'], dict):
+        w('\n## Timing diagnostics (not part of the H-cost-N verdict)\n')
+        w('Seconds per call, median over dev6 × 3 repeats on one H200 (full-field contract: input sampled at quadrature points, full-field decode). '
+          'Initialisation and decode are expected to grow with N.\n')
+        w('| configuration | init 256² / 1024² / 4096² | evolve 256² / 1024² / 4096² | decode 256² / 1024² / 4096² | fused query / A, 256² / 1024² / 4096² |\n|---|---|---|---|---|')
+        for k, v in AN['timing']['h_cost_n'].items():
+            ds = v.get('descriptive_seconds')
+            if not ds:
+                continue
+            f3 = lambda d: ' / '.join(g(d[str(m)]) for m in MESHES)
+            w(f"| {lab(k)} | {f3(ds['t_init'])} | {f3(ds['t_evolve'])} | {f3(ds['t_decode'])} | {f3(v['fused_ratio_median'])} |")
+        comp = AN['timing'].get('components') or []
+        if comp:
+            w('\nComponent-sum diagnostic (A2.2, no gate): ' + '; '.join(f"{lab(c['subject'])}: model / evolution = {g(c['ratio'])}" for c in comp) + '.')
+        tq = AN['timing'].get('timing_qualification') or {}
+        w(f"\nTiming-job qualification (A2.3, dev6 trajectories of the timed program): {sum(bool(x['timing_job']) for x in tq.values())} of {len(tq)} subjects "
+          f"numerically qualified; both labels (timing job and accuracy job) pass for {sum(bool(x['both']) for x in tq.values())} of {len(tq)}.")
+    tr = [k for k, v in AN['h_acc_n'].items() if v.get('trend') and v['trend'].get('rejects')]
+    if tr:
+        w('\nNote on H-acc-N: the three-mesh trend test rejects "no trend" for ' + ', '.join(lab(k) for k in tr) +
+          ' while both equivalence tests pass with every case within its margin; by the registered precedence the outcome is pass. '
+          'Median per-case slopes: ' + ', '.join(f"{lab(k)} {g(AN['h_acc_n'][k]['trend']['median_slope'])} per doubling of N" for k in tr) + '.')
     w('\n## Memory, offline cost, pilot\n')
     pil = AN.get('pilot') or {}
     w(f"- $4096^2$ pilot (H200, upper-bound footprint): peak {g((pil.get('peak_bytes') or 0) / 1e9)} GB; prefix-retaining bank required: {g(pil.get('prefix_retaining_required'))}.")
@@ -247,6 +285,12 @@ def main():
     if o:
         w(f"\nCN-R temporal order (dev6|0, R384): GAL-CN-R observed order {g(o['GAL']['slope'])} (gate [1.8, 2.2], interpretable {g(o['GAL']['interpretable'])}); "
           f"LSPG-CN-R {g(o['LSPG']['slope'])} (reported).\n")
+    w('\n## Not done here (by design) and provenance\n')
+    w('- 3D cost against mesh (H-cost-N in 3D) and 3D Q1 for the speed3d arms come from `jcp-speed3d` (m1, g1–g3) under its mesh-free / '
+      'scoring-lattice contract; the coordinator combines them. This lane ran none of them (AM-6).')
+    w('- Deferred items: none (the defer order was not needed; spending stayed far below the cap).')
+    w('- References: E0 store version ' + str(AN['configurations'] and json.loads((HERE / 'runs' / 'MANIFEST-dev.json').read_text())['e0_store_version'][:16]) + '.')
+    w('')
     w('## Plots\n')
     for p in P:
         w(f'![{p}]({p})')

@@ -1907,3 +1907,10 @@ the screening cases; 9/9 comparators pass G-ours; in-cell adequacy fails at r = 
 7.82 h, wall 8.5 h) runs before the 2D 256² Stage-B job, per the registered defer order (A30.1: the 2D 256² cell is
 dropped before any 3D item); the 256² Stage-B job is submitted only if its wall fits the remaining ledger allowance
 after the 3D job is reconciled, otherwise that cell is reported as deferred (its tuning results are still reported).
+
+**A43.4 (job audit 10; restates A43.3's timing condition).** A43.3 asked that the 2D 256² Stage-B job wait until the
+3D Stage-B job is reconciled. Its purpose is that the 256² job can never take budget the 3D job needs. The ledger
+already guarantees this without waiting: the 3D job's full wall (8.5 h) is reserved, and with the 256² job's full wall
+(4 h) also reserved the total is 16.163 + 8.5 + 4 = 28.663 ≤ 30 GPU-h, so the 3D job cannot be starved whatever
+either job actually uses. The 256² job may therefore run concurrently (lane cap 2). The defer order still governs:
+if a later need (a retry of the 3D job) does not fit, the 256² cell is the item dropped.

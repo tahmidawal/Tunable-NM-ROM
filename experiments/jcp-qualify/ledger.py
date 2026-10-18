@@ -148,7 +148,10 @@ def validate(d, new, exempt=None):
         for a_ in live | done | ({exempt} if exempt else set()):
             if a_.startswith(f'fb{m}') and not a_.startswith('fballow'):
                 covered |= staged_fallback_of(a_)
-        pend_fb = any(k.startswith(f'fb{m}') and not k.startswith('fballow') and new[k] >= 2 for k in new)   # >= allowance
+        def fb_floor(k):                               # a certified fallback job: its certificate; else the allowance
+            c_ = HERE / 'checks' / f'resources-{k}.json'
+            return json.loads(c_.read_text())['time_limit_hours'] if c_.exists() else 2.
+        pend_fb = any(k.startswith(f'fb{m}') and not k.startswith('fballow') and new[k] >= fb_floor(k) - 1e-9 for k in new)
         if not (set(keys) <= covered or pend_fb):
             probs.append(f'fallback configurations of mesh {m} not covered by a live/completed or pending fallback job')
         fbkeys = {k + '|fb' for k in keys}                 # the fallback configuration's identity in a timing panel

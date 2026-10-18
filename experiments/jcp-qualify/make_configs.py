@@ -86,11 +86,19 @@ def subjects(mesh):
     return out
 
 
-def time_config(mesh):
+def time_config(mesh, fallbacks=()):
+    """Per-mesh timing panel; registered fallback configurations (keys '<mesh>|R<r>|<form>|<scheme>|<factor>') join it as
+    subjects with their fallback rules (DESIGN A1.2, A5.1)."""
     meshes = {str(mesh): dict(edges=EDGES)}
     meshes['1024'] = dict(edges=EDGES)
+    subs = subjects(mesh)
+    for k in fallbacks:
+        m, r, form, sc, f = k.split('|')
+        r = int(r[1:])
+        q, qp, qpp = FALLBACK[r]
+        subs.append(dict(mesh=int(m), Rp=r, rule=q, form=form, scheme=sc, factor=float(f), qp=qp, qpp=qpp))
     return dict(attempt=f'time{mesh}', driver='qtime', meshes=meshes, cases='dev6', reps=3, burn=.1, seed=20261018,
-                A=A_SUBJECT, subjects=subjects(mesh),
+                A=A_SUBJECT, subjects=subs, fallback_subjects=sorted(fallbacks),
                 doubled=[dict(A_SUBJECT, cases='dev6')] if mesh == 1024 else [])
 
 
@@ -149,7 +157,8 @@ def main():
         mesh, keys = int(sys.argv[2]), json.loads(sys.argv[3])
         att = f'fb{mesh}'
         (HERE / 'configs' / f'{att}.json').write_text(json.dumps(fallback_config(mesh, keys, att), indent=1) + '\n')
-        print('wrote', att)
+        (HERE / 'configs' / f'time{mesh}.json').write_text(json.dumps(time_config(mesh, keys), indent=1) + '\n')
+        print('wrote', att, f'time{mesh}')
         return
     got, bar = larger_step_check()
     want = dict(LARGE)

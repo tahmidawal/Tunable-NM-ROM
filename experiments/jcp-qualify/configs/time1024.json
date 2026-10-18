@@ -386,7 +386,20 @@
    "factor": 5.0,
    "qp": "gauss256",
    "qpp": "gauss320"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "rule": "fib6765",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "fib10946",
+   "qpp": "fib17711"
   }
+ ],
+ "fallback_subjects": [
+  "1024|R128|LSPG|CNR|2.5"
  ],
  "doubled": [
   {

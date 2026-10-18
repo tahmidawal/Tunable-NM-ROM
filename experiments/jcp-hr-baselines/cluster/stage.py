@@ -137,6 +137,21 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
     r_ = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env, capture_output=True, text=True)
     assert r_.returncode == 0, r_.stderr[-3000:]
     print(r_.stdout.strip())
+    if a.driver == 'stageb':                       # A33.3 preflight: remote tuning dependencies + resource admission
+        c0 = json.loads(git_show(commit, cfgname))
+        fz = json.loads(git_show(commit, f"{LANE}/{c0['frozen']}"))
+        assert hashlib.sha256(git_show(commit, f"{LANE}/{c0['frozen']}")).hexdigest() == c0['frozen_sha256']
+        need = dict(fz['artifacts'], **{'tune.json': fz['tune_json_sha256']})
+        lst = ' '.join(need)
+        r3 = subprocess.run(['ssh', '-o', 'ConnectTimeout=30', 'tufts-login', f"cd {c0['tune_dir']} && sha256sum {lst}"],
+                            capture_output=True, text=True, timeout=600)
+        assert r3.returncode == 0, r3.stderr[-2000:]
+        got = {ln.split()[1]: ln.split()[0] for ln in r3.stdout.splitlines()}
+        bad = [k for k, h in need.items() if got.get(k) != h]
+        assert not bad, ('remote tuning dependencies differ from the frozen hashes', bad[:5])
+        proj = fz['verify']['projection']['hours_certified']
+        assert proj <= c0['wall_hours'], ('Stage-B projection exceeds the wall limit', proj, c0['wall_hours'])
+        print(f'stageb preflight: {len(need)} remote dependencies verified; projection {proj:.2f} h <= {c0["wall_hours"]} h')
     if a.driver == 'tune':                         # every lazily loaded asset the configuration needs (code audit 19)
         chk2 = (f'import json, ours; cfg = json.load(open({str(out / cfgname)!r})); print(ours.check_assets(cfg))')
         r2 = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk2], cwd=out / LANE, env=env,

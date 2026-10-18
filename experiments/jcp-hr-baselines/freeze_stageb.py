@@ -60,6 +60,42 @@ def recheck(tdir, T, cid, P, n0):
     return q1, timing_ok, mism
 
 
+def ecsw_validate(tdir, T, members):
+    """A33.3 offline ECSW artifact validator (before freezing): per ECSW member, the online sample (unique in-mesh
+    integer nodes, finite strictly positive weights, count = the reported size) and the selected path's terminal
+    evidence; the rank's quality label recomputed from the selected attempt's drift values and ban count."""
+    d, L = T['config']['d'], T['config']['L']
+    n = (L - 1) ** d
+    out = {}
+    for m in members:
+        kind, r, hp = m.split('|')[:3]
+        if kind != 'ecsw':
+            continue
+        z = np.load(tdir / 'artifacts' / f'HR~ecsw~{r}~{hp}.npz')
+        nd, w = z['nodes'], z['weights']
+        ok = bool(nd.ndim == 1 and np.issubdtype(nd.dtype, np.integer) and np.all((nd >= 0) & (nd < n))
+                  and len(set(nd.tolist())) == len(nd) and np.all(np.isfinite(w)) and np.all(w > 0)
+                  and len(w) == len(nd) == int(T['stageA'][m]['hr_points']))
+        P_ = T[f'ecsw_r{r}']
+        sel = P_['attempts'][P_['selected']]
+        dr = sel.get('qr_drift') or []
+        lim = []
+        if any(not (np.isfinite(v) and v <= 1e-8) for v in dr):
+            lim.append('limited (orthogonality)')
+        if sel.get('banned', 0) > 0.01 * P_['n_cand']:
+            lim.append('limited (banning)')
+        q = '; '.join(lim) if lim else 'ok'
+        zt = np.load(tdir / 'artifacts' / f'ECSW_r{r}.npz')
+        a = P_['selected']
+        tw, tn = zt[f'{a}~terminal~weights'], zt[f'{a}~terminal~nodes']
+        term_ok = bool(len(tw) == len(tn) == sel['final_support'] and np.all(np.isfinite(tw)) and np.all(tw > 0)
+                       and len(set(tn.tolist())) == len(tn))
+        ok &= term_ok and q == P_['quality'] == T['stageA'][m]['quality']
+        out[m] = dict(ok=ok, quality_recomputed=q, terminal_ok=term_ok)
+    assert all(v['ok'] for v in out.values()), {k: v for k, v in out.items() if not v['ok']}
+    return out
+
+
 def main():
     cell, tdir = sys.argv[1], Path(sys.argv[2])
     T = json.loads((tdir / 'tune.json').read_text())
@@ -117,7 +153,24 @@ def main():
         if kind != 'none':
             needed.add(f'artifacts/HR~{kind}~{r}~{hp}.npz')
     assert needed <= set(arts), sorted(needed - set(arts))
-    ver = dict(configs_rechecked=sum(1 for c in A if T['inventory'].get(c, {}).get('status') == 'complete'),
+    ecsw_ok = ecsw_validate(tdir, T, members)
+    # A33.3 membership-derived resource projection (model, from the tuning job's own warm times; certified factor 2)
+    d_ = T['config']['d']
+    ncase = 38 if d_ == 2 else 64
+    grp = {}
+    for m in members:
+        grp.setdefault(tuple(m.split('|')[:5]), []).append(m)
+    sec = 0.
+    for g, ms in grp.items():
+        tg = max(elig[m]['t'] for m in ms)
+        sec += 1.6 * tg * (ncase + 2)                                        # tight on all cases + tighter on two
+        sec += sum(1.6 * elig[m]['t'] * ncase for m in ms)                   # prod runs
+    adm = [k for k, x in X.items() if 'front' in x]
+    tx = {k: float(np.median([c['seconds_warm'] for c in T['ours_pass'][k]['cases'].values()])) for k in adm}
+    sec += sum(len(TIMING) * 3 * 1.5 * (2 * tx[k] + elig[m]['t'] + 0.3) for k in adm for m in members)
+    projection = dict(seconds_model=sec, hours_certified=2 * sec / 3600, note='2x the model (compilation, retries)')
+    ecsw_ok = dict(ecsw_ok)
+    ver = dict(projection=projection, ecsw_members_validated=len(ecsw_ok), configs_rechecked=sum(1 for c in A if T['inventory'].get(c, {}).get('status') == 'complete'),
                worst_abs_distance_mismatch=mism_all, ok=True)
     out = dict(cell=cell, verify=ver, inventory=T['inventory'], eligible_screen_cases=EL, tune_json_sha256=sha(tdir / 'tune.json'), job=T['env'].get('job'), commit=T['env'].get('commit'),
                n_eligible=len(elig), front=[f['id'] for f in F], near_front=[c['id'] for c in near],

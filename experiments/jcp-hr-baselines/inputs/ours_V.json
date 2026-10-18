@@ -1,0 +1,39 @@
+{
+ "note": "ours V (validation-informed) GPU-hours per dimension, A3.1/A30.2; whole jobs where phases are not separable (stated); sacct ElapsedRaw x 1 GPU or the owning lane ledger",
+ "V2": {
+  "items": {
+   "combined c2grid 5209526 (sacct 13596 s)": 3.776666666666667,
+   "combined c2fbgrid 5228777 (sacct 658 s)": 0.1827777777777778,
+   "P1 acc256 5352982 (ledger 0.4389 h)": 0.4389,
+   "P1 acc1024 5352981 (ledger 0.3694 h)": 0.3694
+  },
+  "total": 4.767744444444444
+ },
+ "V3_batch1": {
+  "items": {
+   "combined c3descW1024 5209530 (5718 s)": 1.5883333333333334,
+   "combined c3descW768 5209535 (3477 s)": 0.9658333333333333,
+   "combined c3descB 5210959 (3996 s)": 1.11,
+   "combined c3extW1024 5217010 (3350 s)": 0.9305555555555556,
+   "combined c3grid 5219449 (15949 s)": 4.4302777777777775,
+   "speed3d g1 (1.7472 h)": 1.7472,
+   "speed3d g2 (2.4092 h)": 2.4092,
+   "speed3d g3 (3.6294 h)": 3.6294
+  },
+  "total": 16.8108
+ },
+ "V3_batch2": {
+  "items": {
+   "combined c3descW1024 5209530 (5718 s)": 1.5883333333333334,
+   "combined c3descW768 5209535 (3477 s)": 0.9658333333333333,
+   "combined c3descB 5210959 (3996 s)": 1.11,
+   "combined c3extW1024 5217010 (3350 s)": 0.9305555555555556,
+   "combined c3grid 5219449 (15949 s)": 4.4302777777777775,
+   "speed3d g1 (1.7472 h)": 1.7472,
+   "speed3d g2 (2.4092 h)": 2.4092,
+   "speed3d g3 (3.6294 h)": 3.6294,
+   "jcp-qualify 3D smk3+q3d+q3d2+q3d3 (0.4875 h, batch 2 only)": 0.4875
+  },
+  "total": 17.2983
+ }
+}

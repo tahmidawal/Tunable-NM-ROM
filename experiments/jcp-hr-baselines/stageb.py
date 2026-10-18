@@ -58,9 +58,10 @@ def disc_finite(a, b):
     return float(np.max(np.abs(a - b)))
 
 
-def timed_triples(fA, fB, argsA, argsB, checkA, checkB, reps=3, burn_s=0.1, max_retry=3):
-    """A-B-A triples (A3.9, A6.6), as smoke.timed_triples: every attempt kept; drift |tA1/tA2 - 1| > 0.25 retried."""
-    rec = []
+def timed_triples(fA, fB, argsA, argsB, checkA, checkB, reps=3, burn_s=0.1, max_retry=3, rec=None, save=None):
+    """A-B-A triples (A3.9, A6.6), as smoke.timed_triples: every attempt kept (appended to `rec` and checkpointed
+    through `save` as it completes, A33.3); drift |tA1/tA2 - 1| > 0.25 retried."""
+    rec = [] if rec is None else rec
     for rep in range(reps):
         for attempt in range(max_retry + 1):
             ts, ds = [], []
@@ -73,6 +74,8 @@ def timed_triples(fA, fB, argsA, argsB, checkA, checkB, reps=3, burn_s=0.1, max_
             ok = abs(ts[0] / ts[2] - 1.) <= 0.25
             rec.append(dict(rep=rep, attempt=attempt, tA1=ts[0], tB=ts[1], tA2=ts[2], valid=bool(ok),
                             dA1=ds[0], dB=ds[1], dA2=ds[2]))
+            if save is not None:
+                save()
             if ok:
                 break
     return rec
@@ -168,7 +171,8 @@ def main():
             ref_e = {k: {t: exp[k]['e0'][t.split('|')[1]] for t in timing} for k in admitted}
         oxs = {}
         for key in admitted:
-            rec = dict(status='construction_failed', cases={})
+            rec = dict(status='construction_failed', cases={}, batch=FZ['X'][key].get('batch'),
+                       qualification=FZ['X'][key].get('qualification'))
             res['ours'][key] = rec
             try:
                 if d == 2:
@@ -186,6 +190,7 @@ def main():
                     e = score(t, Fw)['e']
                     rel = abs(e - ref_e[key][t]) / abs(ref_e[key][t]) if np.isfinite(e) else float('inf')
                     rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)
+                    save()
                     XS.setdefault(key, {})[t] = Fw                                 # scored output (A32.7 binding)
                     np.savez(out / 'arrays' / f'X~{key.replace("|", "~")}~{t.replace("|", "~")}.npz', F=Fw)
                 worst = max(c_['replay_rel'] for c_ in rec['cases'].values())
@@ -239,10 +244,14 @@ def main():
             dat = arm(kind, r, hp)
             opt = (scheme, dt)
             tight, tighter = {}, {}
+            ap = res.setdefault('anchors_partial', {}).setdefault(f'{kind}|{r}|{hp}|{scheme}|{dt:.8g}', {})
             for k in cases:
                 tight[k] = cell.run(kind, r, dat, 'native', opt, 'tight', *ic(k))
+                ap[f'tight|{k}'] = dict(cert=tight[k]['cert'], W=tight[k]['W'])
                 if k in cases[:2]:
                     tighter[k] = cell.run(kind, r, dat, 'native', opt, 'tighter', *ic(k))
+                    ap[f'tighter|{k}'] = dict(cert=tighter[k]['cert'], W=tighter[k]['W'])
+                save()
             for m in mems:
                 solver = parse(m)[5]
                 part = res.setdefault('partial', {}).setdefault(m, {})
@@ -287,9 +296,10 @@ def main():
 
     # ---- 3. A-B-A timing: every admitted X against every member Q1-qualified (and replayed) here --------------------
     def aba():
-        mem = sorted(QUAL, key=lambda m: (parse(m)[0], parse(m)[1], parse(m)[2]) + tuple(ST.total_order_key(dict(
-            W=res['members'][m]['W'], med=res['members'][m]['med'], t=0., r=parse(m)[1], kind=parse(m)[0],
-            hr_points=0, scheme=parse(m)[3], dt=parse(m)[4], solver=parse(m)[5], id=m))))
+        mi = FZ['member_info']                         # A33.3: the registered A1.12 total order, actual statistics
+        mem = sorted(QUAL, key=lambda m: ST.total_order_key(dict(
+            W=res['members'][m]['W'], med=res['members'][m]['med'], t=mi[m]['t'], r=parse(m)[1], kind=parse(m)[0],
+            hr_points=mi[m]['hr_points'], scheme=parse(m)[3], dt=parse(m)[4], solver=parse(m)[5], id=m)))
         for key in OX:
             for m in mem:
                 res['timing'][f'{key}||{m}'] = dict(status='not_timed')
@@ -318,8 +328,8 @@ def main():
                         sX, sB = XS[key][t], SCORED[m][t]                # bound to the scored / certified outputs
                         chkX = lambda o, s=sX: disc_finite(o_.lattice(dict(fields=o)), s)
                         chkB = lambda o, s=sB: disc_finite(cell.lattice(o), s)
-                        rec[t] = dict(triples=timed_triples(fX, fB, (ux, v), (ub, v), chkX, chkB))
-                        save()
+                        rec[t] = dict(triples=[])
+                        timed_triples(fX, fB, (ux, v), (ub, v), chkX, chkB, rec=rec[t]['triples'], save=save)
                     ok = all(all(np.isfinite(x) and x <= TIMED_TOL for tr in rc['triples']
                                  for x in (tr['dA1'], tr['dB'], tr['dA2'])) for rc in rec.values())
                     res['timing'][pk] = dict(status='complete', cases=rec, outputs_ok=bool(ok))

@@ -196,7 +196,9 @@ def main():
     ap.add_argument('--targets', default='checks/targets-final.json')
     ap.add_argument('--c2', default='checks/c2-analysis.json')
     ap.add_argument('--plan', default='checks/c2plan.json')
+    ap.add_argument('--ladder', action='append', default=[])
     a = ap.parse_args()
+    ladders = a.ladder or [HERE / 'runs' / x / 'archive' / 'output' / f'ladder_{x}' for x in ('fcc', 'fub', 'fub4k', 'fps')]
     PL.mkdir(exist_ok=True)
     led = jl(HERE / 'runs' / 'GPU-LEDGER.json')
     smk = jl(CH / 'smk1-result.json')
@@ -210,8 +212,12 @@ def main():
     L = []
     w = L.append
     final_c2 = C2 is not None
-    status = ('final' if final_c2 and 'FRONT' in str((T or {}).get('source', '')) else
-              'C1 final; C2 ' + ('on P1 targets (partial evidence, FRONT-2D unavailable)' if final_c2 else 'not yet run'))
+    front = str((T or {}).get('source', '')).startswith('FRONT-2D (')
+    status = ('final' if final_c2 and front else
+              'C1 base ladder complete; matching against ' + ('FRONT-2D targets' if front else
+                                                             'the P1 preview targets (provisional; superseded by FRONT-2D)')
+              + '; C2 ' + ('on P1 targets (partial evidence, FRONT-2D unavailable)' if final_c2 and not front else
+                           ('complete' if final_c2 else 'not yet run')))
     exp['status'] = status
     w('# 2D full-order comparator ladder and ROM–FOM crossover (viscous Burgers)')
     w('')
@@ -234,14 +240,15 @@ def main():
         for fam in ('UB', 'CC', 'PS'):
             fr = M['pareto'][fam]['front']
             best = min(fr, key=lambda p: p['median']) if fr else None
-            w(f'- **{FAM_NAME[fam]}:** {len(fr)} configurations on its (cost, median, worst) Pareto front; most accurate '
+            w(f'- **{FAM_NAME[fam]}:** {len(fr)} configurations on its (cost, median, worst) Pareto front; lowest-median-error '
               f'front member {pk(best["key"]) if best else "–"} (median {pct(best["median"]) if best else "–"}, worst '
               f'{pct(best["worst"]) if best else "–"}, {f(best["cost"]) if best else "–"} s).')
         unions = {}
         for lab, m in M['matches'].items():
             if m.get('status') == 'ok' and lab.endswith('|H') and m['union']:
                 unions.setdefault(m['union']['family'], []).append(lab)
-        w(f'- **C1 screening selections (union, H populations):** ' + '; '.join(f'{FAM_NAME[k]} for {len(v)} targets'
+        w(f'- **C1 screening selections (union, joint median-and-worst match, H populations):** the cheapest by lattice '
+          'screening cost among the calibrated admissible tested ladder is ' + '; '.join(f'{FAM_NAME[k]} for {len(v)} targets'
                                                                                for k, v in unions.items()) + '.')
     if C2:
         w(f'- **K2 (governing plan) at $4096^2$:** {C2.get("k2", {}).get("verdict", "–")}.')
@@ -387,9 +394,50 @@ def main():
         w(table(['target', 'target median', 'target worst', 'UB joint', 'CC joint', 'PS joint', 'union'], rows))
         w('')
         ext = M.get('extension_trigger', {})
-        w('Extension round (A3.2): ' + '; '.join(f'{k}: {"fires" if v["fires"] else "not triggered"}' for k, v in ext.items())
-          + f'; complete: {f(M.get("extension_complete"))}.')
+        w('Extension round (A3.2), for ' + ('the FRONT-2D targets' if front else 'the P1 preview targets only (to be '
+                                            'recomputed for FRONT-2D or the authorised fallback)') + ': '
+          + '; '.join(f'{k}: {"fires" if v["fires"] else "not triggered"} (base minimum resolution {v["base_min_resolution"]})'
+                      for k, v in ext.items()) + f'; complete: {f(M.get("extension_complete"))}.')
         w('')
+        # PS selections: E0 stability label and anchor (A1.1, A3.3, A3.4 disclosure)
+        stab = {}
+        for d in ladders:
+            r = jl(Path(d) / 'result.json')
+            for k, v in (r or {}).get('configs', {}).items():
+                if 'stability' in v:
+                    stab[k] = v['stability']
+        sel = {}
+        for lab, m in M['matches'].items():
+            if m.get('status') == 'ok' and m['PS']['joint']:
+                sel.setdefault(m['PS']['joint']['key'], []).append(m['PS'].get('anchor'))
+        rows = []
+        for k, an in sorted(sel.items()):
+            st = stab.get(k, {})
+            nb = sum(1 for u, b in zip(st.get('umax_padded_running', []), st.get('dt_bound', [])) if b is not None and
+                     float(k.split('|')[2]) <= b)
+            a0 = an[0] or {}
+            rows.append([pk(k), len(an), f'{nb} of {len(st.get("dt_bound", []))}',
+                         f'{a0.get("status")}' + (f', steps {a0["steps"][0]} vs {a0["steps"][1]}, both valid {f(a0.get("both_valid"))}, '
+                                                  f'distance {f(a0.get("distance"))}' if a0.get('status') == 'ok' else '')])
+        if rows:
+            w('**Selected PS comparators — diagnostics** (E0 stability label from the padded-grid running maximum; a failing '
+              'label does not affect admissibility, A3.3; the anchor is the lattice distance to the adjacent ladder step '
+              'and certifies nothing, A3.4):')
+            w('')
+            w(table(['PS comparator', 'target variants selecting it (H+X)', 'cases passing the E0 stability label',
+                     'anchor'], rows))
+            w('')
+        blow = [p['key'] for p in M['pareto']['PS']['points'] if p['worst'] > 1]
+        mo = {}
+        for lab, m in M['matches'].items():
+            if m.get('status') == 'ok' and m['PS']['median_only'] and m['PS']['median_only']['key'] in blow:
+                mo.setdefault(m['PS']['median_only']['key'], []).append(lab)
+        for k, labs in mo.items():
+            wv = next(p['worst'] for p in M['pareto']['PS']['points'] if p['key'] == k)
+            w(f'Note: {pk(k)} is admissible (finite outputs) but blows up on one case (worst error {f(wv)}); it never matches '
+              f'jointly, yet it is the **median-only** selection for {len(labs)} target variants — the median-only criterion '
+              'ignores the worst case by construction, so median-only selections are reported, never used as accuracy matches.')
+            w('')
 
     # ---------------------------------------------------------------- C2
     w('## C2 — paired ROM–FOM timing, crossover, H-comp and K2')
@@ -443,8 +491,10 @@ def main():
     w('- Every matched speed-up is an upper bound on the claimed ROM speed-up: the FOM ladder is finite, the comparator is '
       'chosen by a screening procedure, and the timing interval describes the six dev6 timing cases only.')
     w('- The earlier 2D matched speed-up (combined H5: 13.6× for LSPG-CN-R, 17.7× best arm) was measured against a '
-      '**same-mesh sign-upwind** FOM matched on the worst error only; this lane adds the central and spectral families, '
-      'coarser FOM meshes and joint median-and-worst matching, and supersedes that comparison where they differ.')
+      '**same-mesh sign-upwind** FOM matched on the worst error only. This lane\'s ladder adds the central and spectral '
+      'families, coarser FOM meshes and joint median-and-worst matching; ' + ('the C2 panels below supersede that '
+      'comparison where they differ.' if final_c2 else 'whether it changes that comparison is decided by the C2 panels '
+      '(not yet run).'))
     w('')
     w('## Audits')
     w('')

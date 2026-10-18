@@ -1,16 +1,16 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T08:01:46Z",
- "step": "9: final C1 matching (P1 preview targets, all 5 ladders) running locally on CPU",
+ "utc": "2026-10-18T08:17:12Z",
+ "step": "9: codex C1 results audit running",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": null,
-  "local_pid": 1772249
+  "codex_output": "audits/codex-c1results-1.md",
+  "codex_pid": 1811690,
+  "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T09:00:00Z",
- "last_commit": "29c5f6b79",
+ "expected_finish_utc": "2026-10-18T09:30:00Z",
+ "last_commit": "88311b4fc",
  "gpu_hours_spent": 1.7845,
  "gpu_hours_cap": 30,
- "notes": "fub4k collected (1.78 GPU-h spent total); FRONT-2D.json not yet produced"
+ "notes": "FRONT-2D.json not yet produced"
 }

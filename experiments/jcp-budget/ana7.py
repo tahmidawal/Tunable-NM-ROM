@@ -81,8 +81,28 @@ def load_newref(refs, cid, T, dim=2):
         raise A2.IdentityError(f'reference identity {[meta.get(k) for k in want]} != {want}')
     if not np.allclose(meta['times'], np.arange(int(round(T / .05)) + 1) * .05, rtol=0, atol=1e-12):
         raise A2.IdentityError('reference time list')
+    lat = {2: 256, 3: 64}[dim]
+    if meta.get('lattice') != lat or meta.get('metric_id') != f'{dim}|lattice={lat}|times=0:0.05:{T:g}|norm=fixed_t0|max_k>=1':
+        raise A2.IdentityError('reference lattice / metric')
+    if meta.get('cohort_sha256') != COHORT_SHA(dim, coh):
+        raise A2.IdentityError('reference cohort hash')
+    rec = ANAREF_SHA.get((dim, coh, int(c), T))
+    if rec is not None and (rec['sha256']['.npz'] != MAN.get(rel + '.npz') or rec['final'] != meta['final']):
+        raise A2.IdentityError('reference differs from the one the anaref eligibility was established on')
     z = np.load(str(stem) + '.npz')
     return meta, np.asarray(z[meta['final'][2]])
+
+
+_CSHA = {}
+ANAREF_SHA = {}
+
+
+def COHORT_SHA(dim, coh):
+    if (dim, coh) not in _CSHA:
+        sys.path.insert(0, str(HERE / 'ref'))
+        import cohorts as CH
+        _CSHA[(dim, coh)] = CH.Cohort(dim, coh).sha256
+    return _CSHA[(dim, coh)]
 
 
 def dmax(Fa, Fb, n0, k0=1):
@@ -91,11 +111,17 @@ def dmax(Fa, Fb, n0, k0=1):
 
 
 def tiered(label, tier):
+    """A2.3: validated -> verdict; unvalidated -> no verdict, provisional value only; suspended -> descriptive only."""
     if tier == 'validated':
         return label
     if tier == 'suspended':
         return 'descriptive only (cross-check suspended)'
-    return f'provisional: {label}'
+    return f'no verdict (cross-check unvalidated); provisional: {label}'
+
+
+def tier_of(tiers):
+    tiers = set(tiers)
+    return 'suspended' if 'suspended' in tiers else ('validated' if tiers == {'validated'} else 'unvalidated')
 
 
 def elig_of(anaref, T, dim=2):
@@ -103,6 +129,7 @@ def elig_of(anaref, T, dim=2):
     out = {}
     for c in anaref.get('cases', []):
         if c['dim'] == dim and abs(c['horizon'] - T) < 1e-12:
+            ANAREF_SHA[(dim, c['cohort'], int(c['case']), T)] = dict(sha256=c['sha256'], final=c['final'])
             for w, e in c.get('eligibility', {}).items():
                 out[(f"{c['cohort']}|{c['case']}", w)] = e
     return out
@@ -133,7 +160,7 @@ def growth_of(rows, nout, minpop):
             lab = 'accumulating'
         else:
             lab = 'between labels'
-        tier = 'suspended' if 'suspended' in tiers else ('validated' if tiers == {'validated'} else 'unvalidated')
+        tier = tier_of(tiers)
         growth[f'{wb}/{wa}'] = dict(n=len(g), excluded=excl, median=float(np.median(g)) if g else None, ci=[lo, hi],
                                     label=tiered(lab, tier), tier=tier, values=g)
     return growth
@@ -303,8 +330,7 @@ def b8_member(run, mk, EL, T, minpop):
     for w in ('W1', 'W2'):
         st_ = [r_[w] for r_ in rows if w in r_ and 'status' in r_[w]]
         used = [x for x in st_ if x['status'] != 'reference-limited']
-        tiers = {x['tier'] for x in used}
-        tier = 'suspended' if 'suspended' in tiers else ('validated' if tiers == {'validated'} else 'unvalidated')
+        tier = tier_of({x['tier'] for x in used})
         if len(used) < minpop:
             lab = 'inconclusive (population)'
         else:
@@ -340,7 +366,9 @@ def ranking_adequacy(b8, members, w, minpop):
             res_ += 1
             rev += int(np.sign(med[a]['e257'] - med[b]['e257']) != np.sign(med[a]['efine'] - med[b]['efine']))
     lab = 'inconclusive' if res_ == 0 else ('adequate' if rev == 0 else 'inadequate')
-    return dict(label=lab, n=len(common), resolved_pairs=res_, reversed_pairs=rev, medians=med)
+    tier = tier_of({r_[w]['tier'] for mk in members for r_ in b8[mk]['rows'] if r_['case'] in common})
+    return dict(label=tiered(lab, tier), raw_label=lab, tier=tier, n=len(common), resolved_pairs=res_, reversed_pairs=rev,
+                medians=med)
 
 
 def kendall_tau_b(x, y):
@@ -383,19 +411,47 @@ def front_order(b7, mks, minpop):
             resolved += 1
             reversed_ += int(np.sign(med[a]['W1'] - med[b]['W1']) != np.sign(med[a]['W2'] - med[b]['W2']))
     lab = 'inconclusive' if resolved == 0 else ('preserved' if reversed_ == 0 else 'not preserved')
-    return dict(label=lab, n=len(common), resolved_pairs=resolved, reversed_pairs=reversed_, medians=med,
+    tier = tier_of({x[f'tier_{w}'] for mk in mks for x in b7[mk]['rows'] if x['case'] in common for w in ('W1', 'W2')})
+    return dict(label=tiered(lab, tier), raw_label=lab, tier=tier, n=len(common), resolved_pairs=resolved,
+                reversed_pairs=reversed_, medians=med,
                 kendall_tau_b=kendall_tau_b([med[m]['W1'] for m in mks], [med[m]['W2'] for m in mks]))
 
 
-def fine_recompute(run, members, fine_dir, T):
-    """A1.8: recompute the in-job fine-route errors of the check cases from the pulled fine reference files and an
-    independent NumPy decode at the 1025^2 nodes; bar 1e-9 relative; also the reference's fine walls."""
+def fine_recompute(run, members, fine_dir, T, check_ids):
+    """A1.8: recompute EVERY in-job fine-route number of the check cases (with a reference) from the pulled fine
+    reference files, the pulled lattice reference and an independent NumPy decode at the 1025^2 nodes: route errors and
+    normalisers, energy / dissipation (ROM and reference), extrema, ROM wall maximum, near-wall and total error, IC
+    errors (deployed and LS, from the job's LS coefficients), the fine floor per time, the injected alias errors and the
+    C-E arrays. Bar 1e-9 relative (absolute floor 1e-14 of the compared scale). Coverage: every check case with a
+    reference must have its fine file locally, else fail."""
     P, Tm = NC.bank()
     x = np.arange(1025) / 1024.
     X = np.stack(np.meshgrid(x, x, indexing='ij'), -1).reshape(-1, 2)
     wall = (X[:, 0] == 0) | (X[:, 0] == 1) | (X[:, 1] == 0) | (X[:, 1] == 1)
-    feats = None
-    out = []
+    band = np.zeros((1025, 1025), bool)
+    m1 = np.minimum(x, 1 - x) <= 1 / 32 + 1e-15
+    inter = np.zeros(1025, bool)
+    inter[1:-1] = True
+    band = (m1[:, None] | m1[None, :]) & inter[:, None] & inter[None, :]
+    allm = inter[:, None] & inter[None, :]
+    h = 1 / 1024
+    feats, GQ = None, {}
+    phi = np.outer(np.sin(256 * np.pi * x), np.sin(256 * np.pi * x))
+    out, missing = [], []
+
+    def ED(F, nu):
+        I = F[:, 1:-1, 1:-1]
+        gx = (F[:, 2:, 1:-1] - F[:, :-2, 1:-1]) / (2 * h)
+        gy = (F[:, 1:-1, 2:] - F[:, 1:-1, :-2]) / (2 * h)
+        return .5 * h * h * np.sum(I ** 2, axis=(1, 2)), nu * h * h * np.sum(gx ** 2 + gy ** 2, axis=(1, 2))
+
+    def close(a, b):
+        a, b = np.asarray(a, float), np.asarray(b, float)
+        if a.shape != b.shape or not (np.isfinite(a).all() and np.isfinite(b).all()):
+            return float('inf')
+        sc = max(float(np.max(np.abs(b))), 1e-300)
+        return float(np.max(np.abs(a - b) / np.maximum(np.abs(b), 1e-14 * sc)))
+
     for mk, m in members.items():
         p, p7 = run / f"B8_{mk.replace('|', '_')}.npz", run / f"B7_{mk.replace('|', '_')}.npz"
         if not (p.exists() and p7.exists()):
@@ -403,26 +459,85 @@ def fine_recompute(run, members, fine_dir, T):
         z, z7 = np.load(p), np.load(p7)
         ck7 = [str(c) for c in z7['case_ids']]
         r = int(m['Rp'])
+        lsf = run / f'LS_R{r}.npz'
+        LSC = {}
+        if lsf.exists():
+            zl = np.load(lsf)
+            LSC = {str(c_): zl['C'][k] for k, c_ in enumerate(zl['case_ids'])}
         for i, cid in enumerate([str(c) for c in z['case_ids']]):
+            if cid not in check_ids or not z['has_ref'][i]:
+                continue
             coh, c = cid.split('|')
             ff = Path(fine_dir) / '2d' / coh / f'T{T:g}' / f'c{int(c):03d}_fine.npz'
-            if not (ff.exists() and z['has_ref'][i]):
+            if not ff.exists():
+                missing.append(f'{mk}|{cid}')
                 continue
-            meta = json.loads((Path(ARGS.refs) / '2d' / coh / f'T{T:g}' / f'c{int(c):03d}.json').read_text())
+            meta, Rl = load_newref(ARGS.refs, cid, T)
             if meta.get('fine_sha256') != sha(ff):
                 raise A2.IdentityError(f'fine file {ff} differs from its recorded sha256')
             Rf = np.asarray(np.load(ff)['fine_' + meta['final'][2]])
             if feats is None:
                 feats = np.concatenate([NC.NB.features_grad(P, X[s:s + 8192])[0] for s in range(0, len(X), 8192)])
                 feats[wall] = 0.
+            if r not in GQ:
+                Gr = feats @ Tm[:, :r]
+                Gi = Gr.reshape(1025, 1025, r)[1:-1, 1:-1].reshape(-1, r)
+                GQ[r] = (Gr, np.linalg.qr(Gi)[0])
+            Gr, Qf = GQ[r]
             W = z7['W'][ck7.index(cid)]
-            F = (W @ (feats @ Tm[:, :r]).T).reshape(len(W), 1025, 1025)
-            n0f = float(np.linalg.norm(Rf[0]))
-            ef = np.array([np.linalg.norm(F[k] - Rf[k]) / n0f for k in range(len(W))])
-            rel = float(np.max(np.abs(ef - z['e_fine'][i]) / np.maximum(np.abs(z['e_fine'][i]), 1e-300)))
-            walls = bool(np.all(Rf[:, 0, :] == 0) and np.all(Rf[:, -1, :] == 0) and np.all(Rf[:, :, 0] == 0) and np.all(Rf[:, :, -1] == 0))
-            out.append(dict(member=mk, case=cid, e_fine_rel=rel, ref_fine_walls_zero=walls, passed=bool(rel <= 1e-9 and walls)))
-    return dict(rows=out, passed=bool(out and all(r_['passed'] for r_ in out)))
+            nout = len(W)
+            F = (W @ Gr.T).reshape(nout, 1025, 1025)
+            nu = float(meta['desc']['nu'])
+            E = F - Rf
+            n0f, n0l = float(np.linalg.norm(Rf[0])), float(np.linalg.norm(Rl[0]))
+            rec = {}
+            rec['n0_fine'] = close([n0f], [z['n0_fine'][i]])
+            rec['n0_257'] = close([n0l], [z['n0_257'][i]])
+            rec['e_fine'] = close(np.linalg.norm(E.reshape(nout, -1), axis=1) / n0f, z['e_fine'][i])
+            e257 = np.linalg.norm((F[:, ::4, ::4] - Rl).reshape(nout, -1), axis=1) / n0l
+            rec['e_257'] = close(e257, z['e_257'][i])
+            Er, Dr = ED(F, nu)
+            Ef, Df = ED(Rf, nu)
+            for k_, v_ in (('E_rom', Er), ('D_rom', Dr), ('E_ref', Ef), ('D_ref', Df)):
+                rec[k_] = close(v_, z[k_][i])
+            for k_, v_ in (('umax_rom', F.max(axis=(1, 2))), ('umin_rom', F.min(axis=(1, 2))), ('umax_ref', Rf.max(axis=(1, 2))),
+                           ('umin_ref', Rf.min(axis=(1, 2)))):
+                rec[k_] = close(v_, z[k_][i])
+            rec['wall_max_rom'] = 0. if float(np.max(np.abs(np.concatenate([F[:, 0, :], F[:, -1, :], F[:, :, 0], F[:, :, -1]], 1)))) \
+                == float(z['wall_max_rom'][i]) else float('inf')
+            rec['band_err2'] = close(np.sum(np.where(band, E ** 2, 0.), axis=(1, 2)), z['band_err2'][i])
+            rec['all_err2'] = close(np.sum(np.where(allm, E ** 2, 0.), axis=(1, 2)), z['all_err2'][i])
+            rec['e0_ic'] = close([np.linalg.norm(E[0]) / n0f], [z['e0_ic'][i]])
+            if cid in LSC and 'e0_ic_ls' in z.files:
+                Fl = (LSC[cid] @ Gr.T).reshape(1025, 1025)
+                rec['e0_ic_ls'] = close([np.linalg.norm(Fl - Rf[0]) / n0f], [z['e0_ic_ls'][i]])
+            RfI = Rf[:, 1:-1, 1:-1].reshape(nout, -1)
+            rec['eP_fine'] = close(np.linalg.norm(RfI - (RfI @ Qf) @ Qf.T, axis=1) / n0f, z['eP_fine'][i])
+            jw, jf = meta.get('judge_windows') or {}, meta.get('judge_fine_windows') or {}
+            ae2, aef = np.full(nout, np.nan), np.full(nout, np.nan)
+            ef = np.linalg.norm(E.reshape(nout, -1), axis=1)
+            nphi = float(np.linalg.norm(phi))
+            for k in range(1, nout):
+                w_ = 'W1' if k <= 5 else ('W2' if k <= 10 else 'W3')
+                el = (jw.get(w_) or {}).get('eps_ref') or 0.
+                efp = (jf.get(w_) or {}).get('eps_ref') or 0.
+                ak = (ef[k] + n0f * (1.2 * e257[k] + 2 * (efp + el) + 1e-6)) / nphi
+                Fa = F[k] + ak * phi
+                aef[k] = np.linalg.norm(Fa - Rf[k]) / n0f
+                ae2[k] = np.linalg.norm(Fa[::4, ::4] - Rl[k]) / n0l
+            rec['alias_efine'] = close(aef[1:], z['alias_efine'][i][1:])
+            rec['alias_e257'] = close(ae2[1:], z['alias_e257'][i][1:])
+            Bref = Ef[1:] - Ef[:-1] + .025 * (Df[1:] + Df[:-1])
+            fac = 1 + .01 * np.arange(nout)
+            Es, Ds = ED(Rf * fac[:, None, None], nu)
+            rec['CE_meas'] = close(Es[1:] - Es[:-1] + .025 * (Ds[1:] + Ds[:-1]) - Bref, z['CE_meas'][i])
+            worst = max(rec.values())
+            out.append(dict(member=mk, case=cid, worst_rel=worst, per_array=rec,
+                            ref_fine_walls_zero=bool(np.all(Rf[:, 0, :] == 0) and np.all(Rf[:, -1, :] == 0) and
+                                                     np.all(Rf[:, :, 0] == 0) and np.all(Rf[:, :, -1] == 0)),
+                            passed=bool(worst <= 1e-9)))
+    ok = bool(out and not missing and all(r_['passed'] and r_['ref_fine_walls_zero'] for r_ in out))
+    return dict(rows=out, missing=missing, passed=ok)
 
 
 def _band_frac(L=1024, width=1 / 32):
@@ -469,14 +584,17 @@ def main():
         out['ranking_adequacy'] = {w: dict(all=ranking_adequacy(out['b8'], list(out['b8']), w, minpop),
                                            lspg=ranking_adequacy(out['b8'], [m for m in lspg if m in out['b8']], w, minpop))
                                    for w in ('W1', 'W2')}
-        lab = [out['b8'][m]['adequacy_W1']['raw_label'] for m in lspg if m in out['b8']]
+        lab = [out['b8'][m]['adequacy_W1']['label'] for m in lspg if m in out['b8']]          # tiered labels only
         rk = out['ranking_adequacy']['W1']['lspg']['label']
         out['lane_statement_W1'] = dict(
             lspg_members=len(lab), all_adequate=bool(lab and all(x == 'adequate' for x in lab)), ranking=rk,
             statement=('the 257^2 lattice is adequate for the qualified 2D front (relative to the 1025^2 route)'
                        if lab and all(x == 'adequate' for x in lab) and rk == 'adequate' else 'not established'))
     if a.fine:
-        out['fine_recompute'] = fine_recompute(run, members, a.fine, T)
+        cc = res['config']['b8'].get('check_cases', 'dev6')
+        check_ids = ({f'dev6|{k}' for k in range(6)} if cc == 'dev6' else {f'dev6|{k}' for k in range(2)} if cc == 'dev2'
+                     else {f'{x[0]}|{x[1]}' for x in cc})
+        out['fine_recompute'] = fine_recompute(run, members, a.fine, T, check_ids)
     dest = Path(a.out or HERE / 'checks' / f"b7b8-{run.parents[1].name}-{mesh}.json")
     dest.write_text(json.dumps(out, indent=1, default=float) + '\n')
     print(dest, json.dumps({mk: (v['qualified_at_T'], v['stability']['pass'], {k: g['label'] for k, g in v['growth'].items()})

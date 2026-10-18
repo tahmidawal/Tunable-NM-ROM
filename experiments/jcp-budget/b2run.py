@@ -348,6 +348,9 @@ def load_ref(cfg, coh, c):
     assert got == want, ('reference identity differs from the request', got, want)
     assert np.allclose(meta['times'], np.arange(int(round(T / .05)) + 1) * .05, rtol=0, atol=1e-12), 'reference time list'
     assert meta.get('fine_file') == pf.name and meta.get('fine_sha256') == B.file_sha(pf), 'fine file identity'
+    assert meta.get('lattice') == 256 and meta.get('metric_id') == f'2|lattice=256|times=0:0.05:{T:g}|norm=fixed_t0|max_k>=1', \
+        'reference lattice / metric'
+    assert meta.get('cohort_sha256') == P.sha(Q.cohort(coh)), 'reference cohort hash'
     z, zf = np.load(pz), np.load(pf)
     fin = meta['final'][2]
     return meta, np.asarray(z[fin]), np.asarray(zf['fine_' + fin]), np.asarray(zf['t0_fine'])

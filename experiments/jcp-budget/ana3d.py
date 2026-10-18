@@ -59,10 +59,15 @@ class Basis:
         return (F @ self.Q) @ self.Q.T
 
 
-def load_e0_3d(j, coh='val64', time_tag=None):
+def load_e0_3d(j, coh='val64', time_tag=None, expect_case=None):
+    """E0 3D reference with identity checks: the loaded record must be (3, coh, expect_case or j, ST), the metric the 3D
+    E0 metric, six output times; time_tag (if given) must be the six-output tag."""
     R, meta = RS.load(3, coh, int(j))
-    if (meta['dim'], meta['cohort'], meta['case'], meta['kind']) != (3, coh, int(j), 'ST'):
+    want = int(j if expect_case is None else expect_case)
+    if (meta['dim'], meta['cohort'], meta['case'], meta['kind']) != (3, coh, want, 'ST'):
         raise A2.IdentityError('3D reference identity')
+    if meta.get('metric_id', METRIC3) != METRIC3 or len(meta['times']) != 6:
+        raise A2.IdentityError('3D metric / time list')
     if time_tag is not None and time_tag != A2.TIME_TAG:
         raise A2.IdentityError('time shift')
     st = RS.reference_status(3, coh, int(j))
@@ -70,19 +75,22 @@ def load_e0_3d(j, coh='val64', time_tag=None):
 
 
 def tag_acceptance(res):
-    """{tag: {case: accepted}} with the A3.5 solver-specific rule (pooled non-stationary fraction per tag)."""
+    """{'<tag>|<spec>': {case: accepted}} with the A3.5 solver-specific rule: adaptive specs -> the run's validity
+    (nfail == 0); fixed-sweep / QN specs -> validity AND a per-step certificate present for every case, non-stationary
+    steps <= 1 % pooled over that run type's steps, every certificate finite."""
     by = {}
     for r in res['rows']:
-        by.setdefault(r['tag'], []).append(r)
+        by.setdefault(f"{r['tag']}|{r['spec']}", []).append(r)
     out = {}
-    for tag, rows in by.items():
-        cert = [r for r in rows if 'nonstationary' in r]
-        pooled_ok = True
-        if cert:
-            pooled_ok = sum(r['nonstationary'] for r in cert) <= .01 * max(1, sum(r['steps_n'] for r in cert))
-            if any(not np.isfinite(g) for r in cert for g in (r.get('gam_cert') or [])):
-                pooled_ok = False
-        out[tag] = {r['case']: bool(r['valid'] and pooled_ok) for r in rows}
+    for k, rows in by.items():
+        kind = rows[0]['spec'].split('|')[0]
+        if kind in ('fs', 'fsp', 'qn'):
+            have = all('nonstationary' in r for r in rows)
+            pooled = have and sum(r['nonstationary'] for r in rows) <= .01 * max(1, sum(r['steps_n'] for r in rows))
+            finite = have and all(g is not None and np.isfinite(g) for r in rows for g in r['gam_cert'])
+            out[k] = {r['case']: bool(r['valid'] and pooled and finite) for r in rows}
+        else:
+            out[k] = {r['case']: bool(r['valid']) for r in rows}
     return out
 
 
@@ -99,7 +107,7 @@ def gb4(res, Wz, B, key, names, b, refs, ACC, corners_spec):
         ids_c, ids_0 = list(Wz[f'cases|{kk}']), list(Wz[f'cases|{k0}'])
         vals = []
         for i, j in enumerate(ids_c):
-            ok = ACC.get(f'{key}#{nm}#check', {}).get(j) and ACC.get(f'{key}#{nm}', {}).get(j)
+            ok = ACC.get(kk, {}).get(j) and ACC.get(k0, {}).get(j)
             vals.append(float(np.max(nt(B.dec(Wz[kk][i]) - B.dec(Wz[k0][ids_0.index(j)]), refs[j][1])[1:])) if ok else None)
         out[nm] = dict(worst=max([v for v in vals if v is not None], default=None),
                        passed=bool(vals and all(v is not None and v <= CONV for v in vals)))
@@ -114,7 +122,7 @@ def star_check(res, Wz, B, sname, refs, ACC):
         kk, kc = f'{sname}#{k}|{spec}', f'{sname}#{k}#check|{spec}'
         ids0, idc = list(Wz[f'cases|{kk}']), list(Wz[f'cases|{kc}'])
         for i, j in enumerate(idc):
-            ok = ACC.get(f'{sname}#{k}', {}).get(j) and ACC.get(f'{sname}#{k}#check', {}).get(j)
+            ok = ACC.get(kk, {}).get(j) and ACC.get(kc, {}).get(j)
             vals.append(float(np.max(nt(B.dec(Wz[kc][i]) - B.dec(Wz[kk][ids0.index(j)]), refs[j][1])[1:])) if ok else None)
     return dict(worst=max([v for v in vals if v is not None], default=None),
                 passed=bool(vals and all(v is not None and v <= CONV for v in vals)))
@@ -147,7 +155,7 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
     S = dict(gb0=0., gb0_n=0, gb2=0., gb2_n=0, gb3=[], gb3_missing=0)
     for j in cases:
         R, n0, eps, elig = refs[j]
-        raw = {nm: bool(ACC.get(f'{key}#{nm}', {}).get(j)) for nm in names}
+        raw = {nm: bool(ACC.get(f'{key}#{nm}|{spec_of[nm]}', {}).get(j)) for nm in names}
         val = {nm: raw[nm] and nm not in failed for nm in names}
         F = {nm: B.dec(W[nm][ids_of[nm].index(j)]) for nm in names}
         PR = B.proj(R)
@@ -179,7 +187,7 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
             d['pairs']['QF'] = d['pairs']['TF'] = None
         d['pairs']['SF'] = 'undefined (A3.1)'
         d['e_tot'] = mx(F['0'] - R) if val['0'] else None
-        sv = {k: ACC.get(f'{sname}#{k}', {}).get(j) for k in STARS}
+        sv = {k: ACC.get(f'{sname}#{k}|' + sres[k]['spec'], {}).get(j) for k in STARS}
         if star_ok and all(sv.values()):
             Fs = {k: B.dec(st[k][0][st[k][1].index(j)]) for k in STARS}
             Us = nt(Fs['star'] - Fs['star16'], n0) + nt(Fs['star'] - Fs['starx'], n0) + nt(Fs['star16'] - Fs['star16x'], n0)
@@ -190,6 +198,9 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
             S['gb0_n'] += 5
             if val['0']:
                 d['D_a'] = mx(F['0'] - Fs['star'])
+                ms = [d['main'][x] for x in ('Q', 'T', 'S', 'F') if d['main'].get(x) is not None]
+                d['D_a_over_sum'] = d['D_a'] / sum(ms) if ms and sum(ms) > 0 else None
+                d['D_a_over_rss'] = d['D_a'] / float(np.sqrt(sum(m_ * m_ for m_ in ms))) if ms and sum(ms) > 0 else None
                 if val.get('QTS'):
                     d['closure_to_star'] = dict(QTS_minus_0=mx(F['QTS'] - F['0']), star_minus_QTS=mx(Fs['star'] - F['QTS']))
             if val.get('F|QTS'):
@@ -199,8 +210,9 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
             if Ff is not None:
                 effs['F'] = Ff
             for x in ING3:
-                if x in effs and val['0']:
-                    ca = 2 * np.sum(effs[x] * (F['0'] - PR), axis=1) / n0 ** 2
+                base = 'S' if x == 'F' else '0'            # A3.1: the form effect's background is the tight-end row
+                if x in effs and val[base]:
+                    ca = 2 * np.sum(effs[x] * (F[base] - PR), axis=1) / n0 ** 2
                     cs = 2 * np.sum(effs[x] * (Fs['star'] - PR), axis=1) / n0 ** 2
                     k = 1 + int(np.argmax(np.abs(ca[1:])))
                     d['chi'][x] = float(ca[k])
@@ -339,7 +351,7 @@ def b7_3d(res, Wz, B, mk, v, refs, ACC, refdir, EL, minpop):
     TT, TTi = g('tighter')
     QP, QPi = g('qp')
     QQ, QQi = g('qpp')
-    acc = lambda nm, j: bool(ACC.get(tg(nm), {}).get(j))
+    acc = lambda nm, j: bool(ACC.get(f'{tg(nm)}|{sk[nm]}', {}).get(j))
     arch, srcs = archive_q3d(mk)
     rows = []
     for i, j in enumerate(Pi):
@@ -350,10 +362,14 @@ def b7_3d(res, Wz, B, mk, v, refs, ACC, refdir, EL, minpop):
         if j in arch:
             row['G_L1'] = float(np.max(nt(F[:6] - B.dec(arch[j]), n0)[1:]))
         row['E_rom'] = [.5 * float(np.sum(F[k] ** 2)) for k in range(len(F))]
+        R0 = refs[j][0]                                     # W1 against E0 (primary), as in 2D
+        row.update(e_W1_E0=float(max(np.linalg.norm(F[k] - R0[k]) for k in range(1, 6)) / n0), eligible_W1_E0=refs[j][3],
+                   eps_W1_E0=refs[j][2])
         nr = A7.load_newref(refdir, (COHORT[923801], j), T, dim=3) if refdir else None
         if nr is not None:
             meta, Rn = nr
-            A7.window_rows(row, F, Rn, meta, len(F), EL, f'{COHORT[923801]}|{j}')
+            n0n = A7.window_rows(row, F, Rn, meta, len(F), EL, f'{COHORT[923801]}|{j}')
+            row['e_P_t'] = (np.linalg.norm(Rn - B.proj(Rn), axis=1) / n0n).tolist()       # long-horizon floor
         rows.append(row)
     dtt = [float(np.max(nt(B.dec(Tt[Ti.index(j)]) - B.dec(TT[i]), refs[j][1])[1:])) if (acc('tight', j) and acc('tighter', j))
            else float('inf') for i, j in enumerate(TTi)]
@@ -361,7 +377,8 @@ def b7_3d(res, Wz, B, mk, v, refs, ACC, refdir, EL, minpop):
            for i, j in enumerate(QPi)]
     dqq = [float(np.max(nt(B.dec(QP[QPi.index(j)]) - B.dec(QQ[i]), refs[j][1])[1:])) if (acc('qp', j) and acc('qpp', j))
            else float('inf') for i, j in enumerate(QQi)]
-    rho = np.asarray([x for rr in v['rho'] for x in rr], float)
+    stat = [x for rr in v['rho_status'] for x in rr]                # explicit status (JSON turns inf into null)
+    rho = np.asarray([x for rr, ss in zip(v['rho'], v['rho_status']) for x, st_ in zip(rr, ss) if st_ == 'ok'], float)
     q1 = dict(all_valid=all(r_['valid'] for r_ in rows),
               nonstationary_fraction=v['nonstationary'] / max(1, v['steps']),
               worst_dist_tight=max(r_['dist_tight'] for r_ in rows), worst_tt=max(dtt) if dtt else None)
@@ -369,7 +386,8 @@ def b7_3d(res, Wz, B, mk, v, refs, ACC, refdir, EL, minpop):
                       q1['worst_tt'] is not None and q1['worst_tt'] <= CONV)
     fin = rho[np.isfinite(rho)]
     q2 = dict(population=len(QPi), worst_dist_qp=max(dqp) if dqp else None, rho_max=float(fin.max()) if fin.size else None,
-              rho_nonfinite=int(np.isinf(rho).sum()), rho_trivial=int(np.isnan(rho).sum()), worst_qp_qpp=max(dqq) if dqq else None)
+              rho_nonfinite=sum(x == 'invalid' for x in stat), rho_trivial=sum(x == 'trivial' for x in stat),
+              worst_qp_qpp=max(dqq) if dqq else None)
     ok = (q2['worst_dist_qp'] is not None and q2['worst_dist_qp'] <= TAU and q2['rho_nonfinite'] == 0 and
           q2['rho_max'] is not None and q2['rho_max'] <= .116)
     q2['label'] = 'pass' if (ok and q2['worst_qp_qpp'] is not None and q2['worst_qp_qpp'] <= TAU) else \
@@ -437,32 +455,32 @@ def main():
         def W_(tag, spec):
             k = f'{tag}|{spec}'
             return Wz[k], list(Wz[f'cases|{k}'])
-        acc = lambda tag, j: bool(ACC.get(tag, {}).get(j))
+        acc = lambda tag, spec, j: bool(ACC.get(f'{tag}|{spec}', {}).get(j))
         cq, cqi = W_('CTRL#Q#ctrl', 'fs|CN|0.01|K1')
         qi, qii = W_('CTRL#Q#qinf', 'fs|CN|0.01|K1')
-        dq = [float(np.max(nt(B.dec(cq[i]) - B.dec(qi[qii.index(j)]), refs[j][1])[1:])) if acc('CTRL#Q#qinf', j) else None
-              for i, j in enumerate(cqi)]
+        dq = [float(np.max(nt(B.dec(cq[i]) - B.dec(qi[qii.index(j)]), refs[j][1])[1:])) if acc('CTRL#Q#qinf', 'fs|CN|0.01|K1', j)
+              else None for i, j in enumerate(cqi)]
         out['controls']['C_Q'] = dict(dist=dq, fired=bool(sum(x is not None and x > TAU for x in dq) >= 1))
-        tb, tbi = W_('CTRL#T', 'fs|BE|0.01|K1')
-        tt, tti = W_('CTRL#T', 'fs|BDF2|0.00125|K1')
-        ok_t = acc('CTRL#T', tbi[0]) if tbi else False
-        dt_ = [float(np.max(nt(B.dec(tb[i]) - B.dec(tt[tti.index(j)]), refs[j][1])[1:])) for i, j in enumerate(tbi)]
-        out['controls']['C_T'] = dict(dist=dt_, comparator_accepted=ok_t, fired=bool(ok_t and sum(x > 1e-3 for x in dt_) > len(dt_) / 2),
-                                      fired_any=bool(ok_t and any(x > 1e-3 for x in dt_)))
+        tb, tbi = W_('CTRL#T#be', 'fs|BE|0.01|K1')
+        tt, tti = W_('CTRL#T#bdf2', 'fs|BDF2|0.00125|K1')
+        dt_ = [float(np.max(nt(B.dec(tb[i]) - B.dec(tt[tti.index(j)]), refs[j][1])[1:]))
+               if (acc('CTRL#T#be', 'fs|BE|0.01|K1', j) and acc('CTRL#T#bdf2', 'fs|BDF2|0.00125|K1', j)) else None
+               for i, j in enumerate(tbi)]
+        out['controls']['C_T'] = dict(dist=dt_, fired=bool(sum(x is not None and x > 1e-3 for x in dt_) > len(dt_) / 2),
+                                      fired_any=bool(any(x is not None and x > 1e-3 for x in dt_)))
         s0, s0i = W_('CTRL#S#q0', 'qn|BDF2|0.025|k4|q0')
         stt, sti = W_('CTRL#S#tight', 'ad|LSPG|BDF2|0.025|tight')
-        ds = [float(np.max(nt(B.dec(s0[i]) - B.dec(stt[sti.index(j)]), refs[j][1])[1:])) if acc('CTRL#S#tight', j) else None
-              for i, j in enumerate(s0i)]
+        ds = [float(np.max(nt(B.dec(s0[i]) - B.dec(stt[sti.index(j)]), refs[j][1])[1:]))
+              if acc('CTRL#S#tight', 'ad|LSPG|BDF2|0.025|tight', j) else None for i, j in enumerate(s0i)]
         out['controls']['C_S'] = dict(dist=ds, fired=bool(sum(x is not None and x > TAU for x in ds) > len(ds) / 2),
                                       fired_any=bool(sum(x is not None and x > TAU for x in ds) >= 1))
         out['controls']['G_Q'] = res['controls'].get('G_Q')
-        raised = {}
-        for nm, kw in (('case_swap', dict(j=cases[0], coh='val64', time_tag=A2.TIME_TAG, want=cases[-1] if len(cases) > 1 else 1)),
-                       ('time_shift', dict(j=cases[0], coh='val64', time_tag='t1,t2,t3,t4,t5,t6', want=cases[0]))):
+        raised = {}                                      # C-score on the production loader (identity checks inside it)
+        other = cases[-1] if len(cases) > 1 else cases[0] + 1
+        for nm, kw in (('case_swap', dict(j=cases[0], expect_case=other, time_tag=A2.TIME_TAG)),
+                       ('time_shift', dict(j=cases[0], expect_case=cases[0], time_tag='t1,t2,t3,t4,t5,t6'))):
             try:
-                R_, *_ = load_e0_3d(kw['j'], kw['coh'], kw['time_tag'])
-                if kw['want'] != kw['j']:
-                    raise A2.IdentityError('case swap')
+                load_e0_3d(kw['j'], 'val64', kw['time_tag'], expect_case=kw['expect_case'])
                 raised[nm] = False
             except A2.IdentityError:
                 raised[nm] = True

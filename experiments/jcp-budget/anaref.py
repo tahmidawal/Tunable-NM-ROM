@@ -33,7 +33,7 @@ import verdict as V  # noqa: E402  (this lane's copy, output count generalised)
 E0 = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references')
 WINDOWS = {'W1': (1, 5), 'W2': (6, 10), 'W3': (11, 20)}
 FINEST = {2: 8192, 3: 512}
-DESIGNATED = {2: ('val32', (0, 1, 5, 19)), 3: ('val64', (0, 43))}          # A1.5 / A2.3 cross-check cases
+DESIGNATED = {(2, .5): ('val32', (0, 1, 5, 19)), (3, .5): ('val64', (0, 43)), (2, 1.): ('val32', (0, 19))}   # A1.5, A2.3
 FINE = {2: 1024, 3: 128}
 LAT = {2: 256, 3: 64}
 
@@ -185,6 +185,9 @@ def main():
                                fine_eps={w: (v or {}).get('eps_ref') for w, v in (m.get('judge_fine_windows') or {}).items()},
                                seconds=m.get('seconds'), gpu=gpu)
                     rec['G_R2'] = g_r2(z, m, d)
+                    rec['final'] = m['final']
+                    rec['sha256'] = {suf: __import__('hashlib').sha256(Path(str(js)[:-5] + suf).read_bytes()).hexdigest()
+                                     for suf in ('.json', '.npz')}
                     rep['cases'].append(rec)
                     fd[(d, m['cohort'], m['case'], m['horizon'])] = dict(u3=np.asarray(z[m['final'][2]]), windows=win,
                                                                        levels=final_levels(z, m), eps_t=jd['eps_t'])
@@ -211,7 +214,8 @@ def main():
                 dd = (tnorm(lv['lat'][:11] - m['lat']) / n0).tolist()
                 bars = [0.] + [min(1e-8, .01 * e) if e is not None else 0. for e in h['eps_t']]
                 rows.append(dict(L=lv['L'], passed=bool(all(dd[k] <= bars[k] for k in range(1, 11)) and dd[0] == 0.)))
-            rep['prefix_T1'].append(dict(dim=d, cohort=coh, case=c, rows=rows, passed=bool(rows and all(r_['passed'] for r_ in rows))))
+            rep['prefix_T1'].append(dict(dim=d, cohort=coh, case=c, rows=rows,
+                                         passed=bool(len(rows) == 3 and all(r_['passed'] for r_ in rows))))
     # PS cross-checks: the highest attempt per case decides
     best = {}
     for d, js in psl:
@@ -228,8 +232,8 @@ def main():
         rep['ps'].append(dict(dim=d, cohort=coh, case=c, horizon=T, attempt=m['ladder_attempt'],
                               windows=crosscheck_windows(m, z, fdc)))
     for d in (2, 3):
-        dc, cs = DESIGNATED[d]
         for T in sorted({x['horizon'] for x in rep['ps'] if x['dim'] == d}):
+            dc, cs = DESIGNATED[(d, T)]
             for w in WINDOWS:
                 vs = [next((x['windows'][w]['verdict'] for x in rep['ps'] if x['dim'] == d and x['horizon'] == T and
                             x['cohort'] == dc and x['case'] == c and x['windows'] and w in x['windows']), 'MISSING') for c in cs]
@@ -240,8 +244,12 @@ def main():
     # per case and window eligibility (the tier is reported beside it; it decides verdict vs provisional vs descriptive)
     for rec in rep['cases']:
         d = rec['dim']
-        dc, cs = DESIGNATED[d]
+        dc, cs = DESIGNATED.get((d, rec['horizon']), ('', ()))
         desig = rec['cohort'] == dc and rec['case'] in cs
+        pre_ok = True
+        if rec['horizon'] > .5:                           # A1.5: a T = 1.0 reference must reproduce the T = 0.5 one
+            pr = next((x for x in rep['prefix_T1'] if (x['dim'], x['cohort'], x['case']) == (d, rec['cohort'], rec['case'])), None)
+            pre_ok = bool(pr and pr['passed'])
         elig = {}
         for w, x in rec['judge']['windows'].items():
             xc = None
@@ -250,12 +258,17 @@ def main():
                           and y['horizon'] == rec['horizon'] and y['windows']), None)
                 xc = p['windows'].get(w, {}).get('verdict') if p else 'MISSING'
             tier = rep['tiers'].get(f'{d}d', {}).get(f"T{rec['horizon']:g}", {}).get(w, {}).get('tier', 'unvalidated (no cross-check)')
+            g3 = rec['G_R3_flag'] is True and rec['G_R3_local'] is not False
             elig[w] = dict(accepted=x['outcome'] == 'accepted', G_R2=rec['G_R2']['passed'], designated=desig, crosscheck=xc,
-                           tier=tier, eligible=bool(x['outcome'] == 'accepted' and rec['G_R2']['passed'] and (not desig or xc == 'PASS')))
+                           prefix=pre_ok, G_R3=g3, tier=tier,
+                           eligible=bool(x['outcome'] == 'accepted' and rec['G_R2']['passed'] and pre_ok and g3
+                                         and tier != 'suspended' and (not desig or xc == 'PASS')),
+                           sha256=rec['sha256'], final=rec['final'])
         rec['eligibility'] = elig
     rep['summary'] = dict(G_R1=all(x['passed'] for x in rep['G_R1']) if rep['G_R1'] else None,
                           G_R2=all(c['G_R2']['passed'] for c in rep['cases']) if rep['cases'] else None,
                           G_R3=all(c['G_R3_flag'] is True and c['G_R3_local'] is not False for c in rep['cases']) if rep['cases'] else None,
+                          G_R3_local_all=all(c['G_R3_local'] is True for c in rep['cases']) if rep['cases'] else None,
                           judge_agree=all(c['judge']['agree'] and all(w['agree'] for w in c['judge']['windows'].values())
                                           for c in rep['cases']) if rep['cases'] else None,
                           C_R1=all(x['fired'] for x in rep['x1']) if rep['x1'] else None,

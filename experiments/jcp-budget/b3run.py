@@ -101,20 +101,27 @@ def run_member_b7(cx, m, b, ids, rep):
     rq = cx.rollouts(sname, m['qp'], [sp], q2, tag=tag('qp'), certify=cert(sp))[key]          # A3.5: solver-specific
     rqq = cx.rollouts(sname, m['qpp'], [sp], qpp, tag=tag('qpp'), certify=cert(sp))[key]
     d, dq = st.data(rule), st.data(m['qp'])
-    rho = []
+    rho, rho_status = [], []           # explicit status survives JSON serialisation (non-finite floats become null)
     for ci, j in enumerate(q2):
         W = r['W'][ids.index(j)]
-        row = []
+        row, stt = [], []
         for k in range(W.shape[0]):
             a_ = np.asarray(C3.nl3(jnp.asarray(W[k]), d))
             b_ = np.asarray(C3.nl3(jnp.asarray(W[k]), dq))
-            nb = float(np.linalg.norm(b_))
-            row.append(float(np.linalg.norm(a_ - b_) / nb) if nb > 0 else (float('nan') if np.linalg.norm(a_) == 0 else float('inf')))
+            nb, na = float(np.linalg.norm(b_)), float(np.linalg.norm(a_))
+            if not (np.isfinite(a_).all() and np.isfinite(b_).all()):
+                row.append(None), stt.append('invalid')
+            elif nb == 0.:
+                row.append(None), stt.append('trivial' if na == 0. else 'invalid')
+            else:
+                v = float(np.linalg.norm(a_ - b_) / nb)
+                row.append(v), stt.append('ok' if np.isfinite(v) else 'invalid')
         rho.append(row)
+        rho_status.append(stt)
     rep['b7'][m['key']] = dict(horizon=S.HORIZON[0], valid=[bool(v) for v in r['valid']], nonstationary=int(sum(r['nonst'])),
                                steps=int(sum(r['steps'])), tight_valid=[bool(v) for v in rt['valid']],
                                tighter_valid=[bool(v) for v in rtt['valid']], qp_valid=[bool(v) for v in rq['valid']],
-                               qpp_valid=[bool(v) for v in rqq['valid']], rho=rho, q2_cases=q2, qpp_cases=qpp,
+                               qpp_valid=[bool(v) for v in rqq['valid']], rho=rho, rho_status=rho_status, q2_cases=q2, qpp_cases=qpp,
                                tighter_cases=dev, cases=list(ids))
     cx.save()
 
@@ -124,12 +131,13 @@ def run_controls(cx, c, rep):
     res = {}
     # C-Q: W256 fs CN 0.01 K1 with the deployed rule replaced by lat256, vs the converged rule
     spq = ('fs', 'CN', 0.01, 1)
-    a = cx.rollouts('W256', c['under_resolved'], [spq], ids, tag='CTRL#Q#ctrl', certify=False)
-    b = cx.rollouts('W256', c['qinf'], [spq], ids, tag='CTRL#Q#qinf', certify=False)
+    a = cx.rollouts('W256', c['under_resolved'], [spq], ids, tag='CTRL#Q#ctrl', certify=True)
+    b = cx.rollouts('W256', c['qinf'], [spq], ids, tag='CTRL#Q#qinf', certify=True)     # certified comparator
     res['C_Q'] = dict(valid=[bool(x) for x in a[S.spec_key(spq)]['valid']])
     # C-T: W256 gl24 fs BE 0.01 K1 vs fs BDF2 dt0/8 K1
     spb, spt = ('fs', 'BE', 0.01, 1), ('fs', 'BDF2', DT0 / 8, 1)
-    cx.rollouts('W256', 'gl24', [spb, spt], ids, tag='CTRL#T', certify=False)
+    cx.rollouts('W256', 'gl24', [spb], ids, tag='CTRL#T#be', certify=True)
+    cx.rollouts('W256', 'gl24', [spt], ids, tag='CTRL#T#bdf2', certify=True)
     # C-S / G-Q: W256 lat8192 qn BDF2 0.025 k4 with mutation q0 (no iterations), certified, vs ad tight
     sp0 = ('qn', 'BDF2', 0.025, 4, 'q0')
     r0 = cx.rollouts('W256', 'lat8192', [sp0], ids, tag='CTRL#S#q0', certify=True)[S.spec_key(sp0)]

@@ -2,6 +2,276 @@
  "lane": "jcp-qualify",
  "label": "E0 R_ST: conditional Richardson estimate (E0 A10; combined A10, A11, retracted A15 carried)",
  "configurations": {
+  "256|R128|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.019419500162366394,
+   "worst": 0.060302112448309915,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R128|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.02363017501813785,
+   "worst": 0.06732703606419921,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R128|LSPG|CNR|2": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "pass",
+   "median": 0.007892502976105328,
+   "worst": 0.04954998161062678,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R128|LSPG|CNR|2.5": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "fail",
+   "median": 0.012074992313800634,
+   "worst": 0.04885980315721945,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R128|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0042018977937906795,
+   "worst": 0.0566042649349049,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R128|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.004332489628758985,
+   "worst": 0.05689578624814148,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R128|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.012164565831041748,
+   "worst": 0.059226408806180304,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R256|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.01871874580396996,
+   "worst": 0.05202716203306085,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R256|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.022909453144433583,
+   "worst": 0.06108048672983799,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R256|LSPG|CNR|2": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "pass",
+   "median": 0.00737347382136652,
+   "worst": 0.024772776085311414,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R256|LSPG|CNR|2.5": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "pass",
+   "median": 0.011137380790897822,
+   "worst": 0.02725540682205925,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R256|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0009686694333577845,
+   "worst": 0.027314705834889225,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R256|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.001718784069794478,
+   "worst": 0.02756502151715188,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R256|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.016310700899883703,
+   "worst": 0.07320958298940426,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R384|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.01870193612084911,
+   "worst": 0.05118633789315424,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R384|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.022891599493296236,
+   "worst": 0.060488882625717576,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R384|LSPG|CNR|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.007298004303354947,
+   "worst": 0.019146738389456935,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R384|LSPG|CNR|2.5": {
+   "numerically_qualified": false,
+   "Q1_pass": true,
+   "Q2": "fail",
+   "median": 0.011070261689234584,
+   "worst": 0.027034210936644373,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R384|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0005041685116179175,
+   "worst": 0.018735591169040534,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R384|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.001977556186661528,
+   "worst": 0.01965221806282074,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R384|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.01789492311653567,
+   "worst": 0.0744772809586831,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|LSPG|BE|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.009812751797263024,
+   "worst": 0.031005079032469702,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.018702961817127835,
+   "worst": 0.0513086983230558,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.02289483477443345,
+   "worst": 0.060546289930329754,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|LSPG|CNR|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.002024662093908607,
+   "worst": 0.02228802458372102,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|LSPG|CNR|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.007297410667616883,
+   "worst": 0.02355479214499377,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|LSPG|CNR|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.011073172217598931,
+   "worst": 0.02718776159270274,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0007223248523272234,
+   "worst": 0.024296602349849258,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0032109403733738447,
+   "worst": 0.033527879287121504,
+   "n": 38,
+   "source": "lane acc256"
+  },
+  "256|R512|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.019372837616532218,
+   "worst": 0.07515647374903285,
+   "n": 38,
+   "source": "lane acc256"
+  },
   "256|R128|LSPG|BE|1": {
    "numerically_qualified": true,
    "Q1_pass": true,
@@ -380,6 +650,312 @@
    "n": 38,
    "source": "P1 (cited)"
   },
+  "4096|R128|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.01942344840388539,
+   "worst": 0.0602908210234378,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R128|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.023630015685230564,
+   "worst": 0.06731736000788834,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R128|LSPG|CNR|2": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "pass",
+   "median": 0.007920966778732766,
+   "worst": 0.04948108397858259,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R128|LSPG|CNR|2.5": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "fail",
+   "median": 0.012106765709811639,
+   "worst": 0.048794465110421105,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R128|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.004167951684423417,
+   "worst": 0.056506219052249104,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R128|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.004337245195499797,
+   "worst": 0.05679819531907598,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R128|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.012189556965055557,
+   "worst": 0.05913992945984957,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R256|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.018713193899273065,
+   "worst": 0.05202031277057654,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R256|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.022913598357446142,
+   "worst": 0.061072933542048985,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R256|LSPG|CNR|2": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "pass",
+   "median": 0.007337242963791849,
+   "worst": 0.02471384551435564,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R256|LSPG|CNR|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.011113702546810308,
+   "worst": 0.027137917096646782,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R256|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0009837168056262139,
+   "worst": 0.027224382516127497,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R256|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.001827359813699084,
+   "worst": 0.0274751790758622,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R256|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.016737568862207383,
+   "worst": 0.08114572332765278,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R384|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.018689936190006185,
+   "worst": 0.05118200783002495,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R384|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0228944548597216,
+   "worst": 0.06048425217797748,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R384|LSPG|CNR|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.007259637255157799,
+   "worst": 0.018995117719533276,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R384|LSPG|CNR|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.011027244381790481,
+   "worst": 0.026911659354024786,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R384|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0004966739955533043,
+   "worst": 0.018503196263867146,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R384|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0020084552279859146,
+   "worst": 0.019403825784740363,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R384|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.01967413857827785,
+   "worst": 0.08298933730686897,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|LSPG|BE|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.009792117350700855,
+   "worst": 0.030893891618081308,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|LSPG|BE|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.018692099321674063,
+   "worst": 0.05128805558599197,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|LSPG|BE|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.022895685966489093,
+   "worst": 0.06053583679089529,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|LSPG|CNR|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0019916130760528478,
+   "worst": 0.021664279941539518,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|LSPG|CNR|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.007249920737731708,
+   "worst": 0.0229533348959293,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|LSPG|CNR|2.5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.011020206719259289,
+   "worst": 0.027107598803575227,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|GAL|CN|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0007628509899443071,
+   "worst": 0.023535418797774585,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|GAL|CN|2": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.00347416946170481,
+   "worst": 0.03824240195082624,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R512|GAL|CN|5": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.021168026057390446,
+   "worst": 0.08454214906659084,
+   "n": 38,
+   "source": "lane acc4096"
+  },
+  "4096|R128|LSPG|BE|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.010953522988265373,
+   "worst": 0.04843270590779525,
+   "n": 38,
+   "source": "P1 (cited, 16 cases) + lane ext22 (pooled Q1)"
+  },
+  "4096|R128|LSPG|CNR|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.004503185707547616,
+   "worst": 0.05199978438177796,
+   "n": 38,
+   "source": "P1 (cited, 16 cases) + lane ext22 (pooled Q1)"
+  },
+  "4096|R256|LSPG|BE|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.009827587433953868,
+   "worst": 0.033195486795956755,
+   "n": 38,
+   "source": "P1 (cited, 16 cases) + lane ext22 (pooled Q1)"
+  },
+  "4096|R256|LSPG|CNR|1": {
+   "numerically_qualified": true,
+   "Q1_pass": true,
+   "Q2": "pass",
+   "median": 0.0020872975884576764,
+   "worst": 0.025171564868237187,
+   "n": 38,
+   "source": "P1 (cited, 16 cases) + lane ext22 (pooled Q1)"
+  },
   "4096|R384|LSPG|BE|1": {
    "numerically_qualified": true,
    "Q1_pass": true,
@@ -400,42 +976,42 @@
   }
  },
  "h_acc_n": {
-  "R512|LSPG|BE|1": "verdict not reached",
-  "R128|LSPG|BE|2": "verdict not reached",
-  "R256|LSPG|BE|2": "verdict not reached",
-  "R384|LSPG|BE|2": "verdict not reached",
-  "R512|LSPG|BE|2": "verdict not reached",
-  "R128|LSPG|BE|2.5": "verdict not reached",
-  "R256|LSPG|BE|2.5": "verdict not reached",
-  "R384|LSPG|BE|2.5": "verdict not reached",
-  "R512|LSPG|BE|2.5": "verdict not reached",
-  "R512|LSPG|CNR|1": "verdict not reached",
-  "R128|LSPG|CNR|2": "verdict not reached",
-  "R256|LSPG|CNR|2": "verdict not reached",
-  "R384|LSPG|CNR|2": "verdict not reached",
-  "R512|LSPG|CNR|2": "verdict not reached",
-  "R128|LSPG|CNR|2.5": "verdict not reached",
-  "R256|LSPG|CNR|2.5": "verdict not reached",
-  "R384|LSPG|CNR|2.5": "verdict not reached",
-  "R512|LSPG|CNR|2.5": "verdict not reached",
-  "R128|GAL|CN|1": "verdict not reached",
-  "R256|GAL|CN|1": "verdict not reached",
-  "R384|GAL|CN|1": "verdict not reached",
-  "R512|GAL|CN|1": "verdict not reached",
-  "R128|GAL|CN|2": "verdict not reached",
-  "R256|GAL|CN|2": "verdict not reached",
-  "R384|GAL|CN|2": "verdict not reached",
-  "R512|GAL|CN|2": "verdict not reached",
-  "R128|GAL|CN|5": "verdict not reached",
-  "R256|GAL|CN|5": "verdict not reached",
-  "R384|GAL|CN|5": "verdict not reached",
-  "R512|GAL|CN|5": "verdict not reached"
+  "R512|LSPG|BE|1": "pass",
+  "R128|LSPG|BE|2": "pass",
+  "R256|LSPG|BE|2": "pass",
+  "R384|LSPG|BE|2": "pass",
+  "R512|LSPG|BE|2": "pass",
+  "R128|LSPG|BE|2.5": "pass",
+  "R256|LSPG|BE|2.5": "pass",
+  "R384|LSPG|BE|2.5": "pass",
+  "R512|LSPG|BE|2.5": "pass",
+  "R512|LSPG|CNR|1": "pass",
+  "R128|LSPG|CNR|2": "inconclusive (unqualified configuration)",
+  "R256|LSPG|CNR|2": "inconclusive (unqualified configuration)",
+  "R384|LSPG|CNR|2": "pass",
+  "R512|LSPG|CNR|2": "pass",
+  "R128|LSPG|CNR|2.5": "inconclusive (unqualified configuration)",
+  "R256|LSPG|CNR|2.5": "inconclusive (unqualified configuration)",
+  "R384|LSPG|CNR|2.5": "inconclusive (unqualified configuration)",
+  "R512|LSPG|CNR|2.5": "pass",
+  "R128|GAL|CN|1": "pass",
+  "R256|GAL|CN|1": "pass",
+  "R384|GAL|CN|1": "pass",
+  "R512|GAL|CN|1": "inconclusive",
+  "R128|GAL|CN|2": "pass",
+  "R256|GAL|CN|2": "pass",
+  "R384|GAL|CN|2": "inconclusive",
+  "R512|GAL|CN|2": "inconclusive",
+  "R128|GAL|CN|5": "pass",
+  "R256|GAL|CN|5": "pass",
+  "R384|GAL|CN|5": "pass",
+  "R512|GAL|CN|5": "inconclusive"
  },
  "h_acc_r": {
   "256|LSPG|BE|1": {
    "128->256": "improves",
    "256->384": "improves",
-   "384->512": "not reached",
+   "384->512": "inconclusive",
    "range_128_384": "monotone",
    "range_128_512": "inconclusive"
   },
@@ -447,16 +1023,16 @@
    "range_128_512": "not monotone"
   },
   "4096|LSPG|BE|1": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "256|LSPG|BE|2": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
+   "128->256": "improves",
+   "256->384": "inconclusive",
+   "384->512": "inconclusive",
    "range_128_384": "inconclusive",
    "range_128_512": "inconclusive"
   },
@@ -468,16 +1044,16 @@
    "range_128_512": "inconclusive"
   },
   "4096|LSPG|BE|2": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "256|LSPG|BE|2.5": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
+   "128->256": "improves",
+   "256->384": "inconclusive",
+   "384->512": "inconclusive",
    "range_128_384": "inconclusive",
    "range_128_512": "inconclusive"
   },
@@ -489,18 +1065,18 @@
    "range_128_512": "inconclusive"
   },
   "4096|LSPG|BE|2.5": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "256|LSPG|CNR|1": {
    "128->256": "improves",
    "256->384": "improves",
-   "384->512": "not reached",
+   "384->512": "does not improve",
    "range_128_384": "monotone",
-   "range_128_512": "inconclusive"
+   "range_128_512": "not monotone"
   },
   "1024|LSPG|CNR|1": {
    "128->256": "improves",
@@ -510,18 +1086,18 @@
    "range_128_512": "not monotone"
   },
   "4096|LSPG|CNR|1": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "256|LSPG|CNR|2": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
+   "128->256": "inconclusive",
+   "256->384": "inconclusive",
+   "384->512": "does not improve",
    "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "range_128_512": "not monotone"
   },
   "1024|LSPG|CNR|2": {
    "128->256": "inconclusive",
@@ -531,16 +1107,16 @@
    "range_128_512": "not monotone"
   },
   "4096|LSPG|CNR|2": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
+   "128->256": "inconclusive",
+   "256->384": "inconclusive",
+   "384->512": "does not improve",
    "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "range_128_512": "not monotone"
   },
   "256|LSPG|CNR|2.5": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
+   "128->256": "inconclusive",
+   "256->384": "inconclusive",
+   "384->512": "inconclusive",
    "range_128_384": "inconclusive",
    "range_128_512": "inconclusive"
   },
@@ -552,18 +1128,18 @@
    "range_128_512": "not monotone"
   },
   "4096|LSPG|CNR|2.5": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
+   "128->256": "inconclusive",
+   "256->384": "improves",
+   "384->512": "improves",
    "range_128_384": "inconclusive",
    "range_128_512": "inconclusive"
   },
   "256|GAL|CN|1": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "1024|GAL|CN|1": {
    "128->256": "improves",
@@ -573,18 +1149,18 @@
    "range_128_512": "not monotone"
   },
   "4096|GAL|CN|1": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "256|GAL|CN|2": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "1024|GAL|CN|2": {
    "128->256": "improves",
@@ -594,18 +1170,18 @@
    "range_128_512": "not monotone"
   },
   "4096|GAL|CN|2": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "improves",
+   "256->384": "improves",
+   "384->512": "does not improve",
+   "range_128_384": "monotone",
+   "range_128_512": "not monotone"
   },
   "256|GAL|CN|5": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "does not improve",
+   "256->384": "does not improve",
+   "384->512": "does not improve",
+   "range_128_384": "not monotone",
+   "range_128_512": "not monotone"
   },
   "1024|GAL|CN|5": {
    "128->256": "does not improve",
@@ -615,11 +1191,11 @@
    "range_128_512": "not monotone"
   },
   "4096|GAL|CN|5": {
-   "128->256": "not reached",
-   "256->384": "not reached",
-   "384->512": "not reached",
-   "range_128_384": "inconclusive",
-   "range_128_512": "inconclusive"
+   "128->256": "does not improve",
+   "256->384": "does not improve",
+   "384->512": "does not improve",
+   "range_128_384": "not monotone",
+   "range_128_512": "not monotone"
   }
  },
  "B4": {

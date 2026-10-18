@@ -1,0 +1,33 @@
+{
+ "attempt": "fb4096",
+ "driver": "qacc",
+ "mesh": 4096,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128fb",
+   "Rp": 128,
+   "rule": "fib6765",
+   "qp": "fib10946",
+   "qpp": "fib17711",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 2.5,
+     "cases": "all38",
+     "q2_cases": "sub16"
+    }
+   ]
+  }
+ ],
+ "fallback_of": [
+  "4096|R128|LSPG|CNR|2.5"
+ ]
+}

@@ -395,9 +395,32 @@
    "factor": 5.0,
    "qp": "gauss256",
    "qpp": "gauss320"
+  },
+  {
+   "mesh": 256,
+   "Rp": 128,
+   "rule": "fib6765",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "fib10946",
+   "qpp": "fib17711"
+  },
+  {
+   "mesh": 256,
+   "Rp": 384,
+   "rule": "gauss160",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 2.5,
+   "qp": "gauss192",
+   "qpp": "gauss256"
   }
  ],
- "fallback_subjects": [],
+ "fallback_subjects": [
+  "256|R128|LSPG|CNR|2.5",
+  "256|R384|LSPG|CNR|2.5"
+ ],
  "doubled": [
   {
    "mesh": 1024,

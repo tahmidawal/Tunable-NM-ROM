@@ -18,7 +18,7 @@ below it is append-only, oldest first.
 - **Priority 1 (`exp/2026-10-17-jcp-p1-scaling`): done, 1.9 of 20 GPU-h.** In 2D, solve cost and accuracy are both mesh-independent (H-cost-N and H-acc-N pass, 8/8, 256²–4096²). Accuracy improves with r over 128→384 but not 384→512. Kernel cost grows more slowly in r than operation counts predict (7/8 exponent fits fail).
 - **3D speed (`exp/2026-10-14-jcp-speed3d`): done.** 2.0–17× faster than our earlier 3D configurations; cost flat 64³→384³. **K2 fires**: a pseudo-spectral FOM beats every selected 3D ROM at equal accuracy (0.008–0.16×). Per the plan, the paper leads with mesh-independence and reports speed honestly.
 - **Priority 2:** qualification/fronts done (98/112 2D configurations qualified; **speed3d's 3D winners fail the quadrature check** — speed-ups measured but not of qualified configurations). 2D FOM ladder done: **K2 fires in 2D too** — a spectral FOM at N=24–48 matches ROM accuracy faster at every mesh; the earlier 13.6× H5 holds only vs a same-mesh upwind FOM. C3 POD baselines still running.
-- **Priority 3** lanes (dims, budget, heads) in design/code phase; production after C3 reports.
+- **Priority 3** lanes (dims, budget, heads): production released 10-18 ~14:45 UTC (C3 feeds only the final freeze).
 - **Still open (user):** merges (now 9 finished lanes); custody of the sealed-cohort key; the 2D floor check before opening; authorship with Hari.
 
 ## Earlier state — 2026-10-17
@@ -19223,3 +19223,8 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 ### 2026-10-18 — jcp-heads ready for production (held); campaign-wide sbatch lock (coordinator)
 - `exp/2026-10-18-jcp-heads` (last commit 1e1964892, mirror 7db5f3e19): design READY (5 rounds, A1–A9), code READY (9 rounds), smk1 5517490 (A100, 0.155 GPU-h) and smk2 5525309 (H200, 0.085 GPU-h) accepted with every control firing; train job (K ∈ {4, 8, 16, 32} × seeds {0, 1, 2}, the incumbent's own recipe on the same 4,608-trajectory file) job-audited SUBMIT. All head-vs-linear results will be labelled exploratory validation evidence (no family-wise claim). Incidental: the incumbent K=16 head needs Gauss 96² to pass Q2 at 1024²; the 4096² memory probe peaked at 98.3 GB. 0.24 of 35 GPU-h. Production held until C3 reports.
 - Interventions: killed two heads waiters polling a finished job (squeue-only exit); added brief §13 (shared local jaxrun slot guard, after 4 concurrent local jobs) and §14 (shared cluster flock for every sbatch).
+
+### 2026-10-18 ~14:45 UTC — priority-3 production released (coordinator decision)
+- **Decision.** Priority-3 production is released before C3 (jcp-hr-baselines) reports. **Why:** the priority-2 core that priority 3 consumes (Q1–Q3, B1/B4/B5 fronts, 2D C1/C2) is verified; C3 feeds only the final freeze (plan critical path P1 → Q → C3 → B5/C2 → F1), not any priority-3 input; and C3's 3D tuning job had to be cancelled and re-staged after an NNLS performance bug (rank-256 ECSW fit 1,447 s; column removal copied the factor matrix per rotation; fixed by a block downdate, A38), delaying it by ≥ 12 h. This revises my earlier, stricter gate (production after C3). Priority 4 waits for priority 3 **and** C3.
+- C3 status: t3d64a cancelled after 0.89 GPU-h (collected); t2d1024a running on the old (exact) code; ledger 2.40 GPU-h spent.
+- Account-wide cap of 8 enforced by the shared sbatch flock (§14); lane caps hrb 2, dims 3, budget 3, heads 2.

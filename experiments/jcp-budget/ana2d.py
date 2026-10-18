@@ -120,7 +120,7 @@ def archive_f257(mesh, member):
     return out
 
 
-def analyse_member(run, mk, member, mesh, span, star, refs, ids_keep):
+def analyse_member(run, mk, member, mesh, span, star, refs, ids_keep, chk_ids=()):
     z = np.load(run / f"B2_{mk.replace('|', '_')}.npz")
     ck = [str(x) for x in z['case_ids']]
     corners = [str(x) for x in z['corners']]
@@ -198,6 +198,9 @@ def analyse_member(run, mk, member, mesh, span, star, refs, ids_keep):
                     d['chi'][x] = float(ch[k])
         if valid.get('S') and valid.get('FS'):
             d['delta_form_tight'] = mx(Fi['FS'] - Fi['S'])
+        # C-F (A1.6, A2.2): manufactured floor on the check cases; needs the ideal end and every candidate per time
+        if cid in chk_ids and d.get('U_star') is not None and valid['0'] and all(x in eff for x in ING):
+            d['C_F'] = control_floor(R, RI, PR, eP, n0, eps or 0., d['U_star'], span, Fs['star'], eff, d)
         # G-B3: deployed corner vs the archived run
         if cid in arch and valid['0']:
             d['G_B3'] = float(max(np.linalg.norm(F['0'][k] - arch[cid][k]) for k in range(1, 6)) / n0)
@@ -213,6 +216,46 @@ def analyse_member(run, mk, member, mesh, span, star, refs, ids_keep):
             d['G_B4'] = g4
         per.append(d)
     return per, gb0, gb2
+
+
+def control_floor(R, RI, PR, eP, n0, eps, U, span, Fstar, eff, d):
+    """C-F: inject eta_k v_k, v_k orthogonal to the span AND to the floor residual r_k (unit lattice norm), eta_k =
+    n0 (10 max_c + 2 eps + 3 U); e_P must become sqrt(e_P^2 + (eta/n0)^2) per time, e_dyn* and the trajectory
+    components unchanged, and the decision code must label the floor largest."""
+    n = RI.shape[1]
+    x = np.arange(257) / 256.
+    edyn = nt(Fstar - PR, n0)
+    mains = {k: nt(v, n0) for k, v in eff.items() if len(k) == 1}
+    ident, seeds_used = [], []
+    RI2 = RI.copy()
+    for k in range(1, 6):
+        maxc = max([eP[k], edyn[k]] + [m[k] for m in mains.values()])
+        eta = n0 * (10 * maxc + 2 * eps + 3 * U)
+        rk = RI[k] - PR[k]
+        for q in (255, 254, 253, 252):
+            h = np.outer(np.sin(q * np.pi * x), np.sin(q * np.pi * x))[1:-1, 1:-1].reshape(-1)
+            hp = h - span.Q @ (span.Q.T @ h)
+            if np.linalg.norm(hp) < 1e-8 * np.linalg.norm(h):
+                continue
+            nr = np.linalg.norm(rk)
+            v = hp - (hp @ rk) / nr ** 2 * rk if nr > 0 else hp
+            if np.linalg.norm(v) < 1e-8 * np.linalg.norm(hp):
+                continue
+            v /= np.linalg.norm(v)
+            seeds_used.append(q)
+            break
+        else:
+            return dict(available=False)
+        RI2[k] = RI[k] + eta * v
+        eP2 = np.linalg.norm(RI2[k] - (span.Q @ (span.Q.T @ RI2[k]))) / n0
+        want = np.sqrt(eP[k] ** 2 + (eta / n0) ** 2)
+        ident.append(abs(eP2 - want) / want)
+    PR2 = (RI2 @ span.Q) @ span.Q.T
+    d2 = dict(d, e_P=float(nt(RI2 - PR2, n0)[1:].max()), e_dyn_star=float(nt(Fstar - PR2, n0)[1:].max()))
+    lab = largest(d2)['label']
+    dyn_same = bool(abs(d2['e_dyn_star'] - float(edyn[1:].max())) <= 1e-12 * max(float(edyn[1:].max()), 1e-300))
+    return dict(available=True, identity_worst=float(max(ident)), seeds=seeds_used, dyn_unchanged=dyn_same, label=lab,
+                fired=bool(max(ident) <= 1e-10 and dyn_same and lab == 'e_P'))
 
 
 def resolved_thresholds(d):
@@ -351,7 +394,8 @@ def main():
         for c in zs['case_ids']:
             ref(str(c))
         for mk, mm in rr['members'].items():
-            per, g0, g2 = analyse_member(run, mk, mm['member'], mesh, span, star, refs, keep)
+            chk_ids = {str(c) for c in zsc['case_ids']}
+            per, g0, g2 = analyse_member(run, mk, mm['member'], mesh, span, star, refs, keep, chk_ids)
             gb0, gb2 = max(gb0, g0), max(gb2, g2)
             gb3 += [d['G_B3'] for d in per if 'G_B3' in d]
             g4 = {}
@@ -371,6 +415,14 @@ def main():
                         G_B3=dict(worst=max(gb3) if gb3 else None, n=len(gb3), passed=bool(gb3 and max(gb3) <= 1e-8)),
                         G_B4=gb4, G_B5=res['setup'], B0_fixtures=out['B0_fixtures']['passed'])
     out['controls'] = controls(run, res, ref)
+    ct = out['members'].get('R128|LSPG|BE|1')
+    if ct is not None:
+        chk = [d for d in ct['per_case'] if 'G_B4' in d or d['case'].startswith('dev6')]
+        v = [d['main']['T'] for d in chk if d['main'].get('T') is not None]
+        out['controls']['C_T'] = dict(values=v, fired=bool(v and sum(x > 1e-3 for x in v) > len(v) / 2))
+    cf = [d['C_F'] for m in out['members'].values() for d in m['per_case'] if d.get('C_F', {}).get('available')]
+    out['controls']['C_F'] = dict(n=len(cf), worst_identity=max([x['identity_worst'] for x in cf], default=None),
+                                  labels=sorted({x['label'] for x in cf}), fired=bool(cf and all(x['fired'] for x in cf)))
     dest = Path(a.out or HERE / 'checks' / f"budget2d-{run.parents[1].name}-{mesh}.json")
     dest.parent.mkdir(exist_ok=True)
     dest.write_text(json.dumps(out, indent=1, default=float) + '\n')

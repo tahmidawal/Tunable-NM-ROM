@@ -9,7 +9,7 @@ Corner -> (rule role, spec) for a member 'setting|rule|kind|scheme|dt|K-or-k':
   T    (q,    same kind at BDF2, dt0/8)          S   (q, ('ad', scheme, dt, 'tight'))
   and their unions; the form panel adds ('adg', ., ., 'tight') at {q, q_inf} x {(scheme, dt), (BDF2, dt0/8)}.
 Outputs: result.json (rows with per-run validity / certification), W_b3.npz (every coefficient array, keyed
-'<tag>|<spec>'), COMPLETE.
+'<tag>|<spec>'), GLAT_<setting>.npy (the lattice basis (R', 63^3) used in-job, for the offline analysis), COMPLETE.
 """
 from __future__ import annotations
 
@@ -166,6 +166,8 @@ def main():
         for m in cfg['members']:
             run_member_b7(cx, m, cfg['b7'], ids, cx.rep)
     cx.dump()
+    for sname in sorted({m['key'].split('|')[0] for m in cfg['members']}):      # lattice basis for the offline analysis
+        np.save(Path(a.out) / f'GLAT_{sname}.npy', np.asarray(cx.Gl[sname]))
     cx.rep['complete'] = True
     cx.rep['elapsed_seconds'] = cx.el()
     cx.save()

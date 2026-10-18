@@ -519,3 +519,149 @@ diagnostic), the ECSW and Q-DEIM grids with the native solver, Stage B, picks, t
   cancellation.
 - Spectral FOM projection is deferred for scope and cost (a fixed-basis spectral derivative can be precomputed, so it is
   not impossible); it joins the C3-full appendix.
+
+---
+
+## Amendment A2 (2026-10-18) — answers to Codex design audit 2 (`audits/codex-design-2.md`, verdict WRONG)
+
+A2 governs where it differs from A1 and the sections above. Item numbers are audit 2's.
+
+**A2.1 (item 3) Q-DEIM checks with cancellation-safe tolerances.** $\|R_Bz\|=\|Bz\|$ holds algebraically (up to
+roundoff). G-fd-c compares with a mixed tolerance: $|\,\|R_Bz\|-\|Bz_{\rm ass}\|\,|\le10^{-10}\,\Sigma$ and
+$\|J^\top\hat r-g_{\rm ass}\|\le10^{-10}\,\Sigma\,\|J\|_F$, where $\Sigma = \|\Phi_r(\cdot)\|+\|\Delta t\nu\Delta_h\Phi_r(\cdot)\|+\|U_p(\cdot)\|$
+is the sum of the assembled terms' norms (never divided by a vanishing residual or gradient). The cancellation fixture
+is frozen: the state reached by 8 Gauss–Newton iterations on the assembled DEIM residual from the random start of the
+generic fixture.
+
+**A2.2 (item 4) Snapshot adequacy, both meshes, fail-closed.** In addition to A1.3's $256^2$ saturation check, an
+**in-cell adequacy check** runs in every cell on the actual basis: 32 training trajectories (the first 32 of the
+seeded permutation) are re-run saving the held-out steps $\{3,5,6,8,12,17,22,35,45\}$ (2D) / $\{3,5,6,8,12,17,22,35,45\}$
+(3D, same indices at Δt = 0.005); adequate iff, at every registered rank, the RMS relative projection error of these
+held-out states ≤ 1.10 × that of the in-set snapshot states of the same trajectories. If either check fails, the cell is
+labelled "**basis possibly under-sampled**" and, fail-closed, any statement that ours is **not** dominated by the
+baseline in that cell is withheld (observed dominations by the baseline are still reported).
+
+**A2.3 (item 5) Trajectory generator: a recorded deviation, with a registered probe.** Decision (lane agent,
+2026-10-18, autonomous per the campaign prompt; **to be ratified by the coordinator at phase-II release**): the primary
+snapshots are operator-matched (§3.3, central FOM), because the bank's generator (sign-upwind BE) adds a numerical
+viscosity of order $|u|h/2$ that, at $65^3$ ($h=1/64$, $|u|\lesssim2$), is comparable to ν itself, so a POD of those
+fields would describe smoother dynamics than the operator being projected and would handicap the baseline. This departs
+from the literal wording of the brief ("reuse the training-trajectory generator ... or its stored data"); only the
+parameter draws are reused. **Generator probe (registered, cheap):** in each cell, the same 12-step snapshots are also
+generated with the bank's own generator (sign-upwind BE, Δt = 0.005, `refcore.adv_upwind` arithmetic), a second POD is
+built, and the `none` arm with the native solver runs on the screening subset at every rank and every option with each
+basis; reported as projection errors and E0 errors side by side. If the coordinator rejects the deviation, the probe's
+basis becomes the primary and the HR construction is rerun on it (cost in the inventory).
+
+**A2.4 (item 6) Deferred options restrict the comparator set.** If any baseline option is deferred, every X using that
+option is "not assessed (baseline option deferred)". t2core `CNR` (two full BE steps) and refcore `cnr` (four half BE
+steps) are different schemes; this lane uses the t2core convention everywhere and never compares against refcore `cnr`.
+
+**A2.5 (item 7) Task-level budget ledger.** Categories are assigned per **task** by in-job phase timers (device-synchronised
+wall time per phase, written to the result JSON), not per job; `sacct` totals are reported beside the sum of phases
+(the difference is overhead, reported). Ours' mapping, frozen: C-model = bank training jobs; C-hr = mesh table builds and
+quadrature-rule selection/escalation (combined `c3desc*`, the rule-selection part of `c2grid` where its log separates
+it, P1e); C-search = scheme/step/solver grids (combined `c2grid` remainder, `c2fbgrid`, `c3grid`; speed3d `g1–g3` grid
+phase); C-cert = anchors and certification passes (where logged separately; otherwise inside C-search and stated). The
+rule is **equal allocation**, not equal expenditure: the baseline's C-search allocation equals ours' C-search total per
+dimension. Cases: (a) registered grid ≤ allocation → run it, then the bounded extension (A2.18) while allocation remains;
+(b) registered grid > allocation → the grid still runs in full (it is registered) and every verdict line of that cell
+says "**baseline search exceeded ours' allocation**"; (c) allocation cannot be met inside the 30 GPU-h cap → every pair
+label in that cell is prefixed "**unequal-budget, descriptive**" and no H-base wording is used for it.
+
+**A2.6 (item 8) Stage B membership, algebraic.** Screening front $F$ = configurations not dominated in (median time on
+the 6 timing cases, worst error on the 6 screening cases) among Q1-qualified ones. A configuration $q$ is **near-front**
+iff $\exists f\in F$: $W_q\le1.5W_f$ **and** $t_q\le1.5t_f$. Stage B = all of $F$ (never capped) ∪ up to 24 near-front
+configurations, chosen alternately from the fastest and the most accurate remaining ones (deterministic, ties by the
+unique ID of A2.17). Coverage of $F$ is therefore complete.
+
+**A2.7 (item 9) Q1 predicate exactly as COMMON-BRIEF §3.** A step is non-stationary iff $\gamma>10^{-3}$ or $\gamma$ is
+non-finite — **no residual-tolerance exception** (A1.7's exception is withdrawn). Solver termination (which may stop on
+the residual tolerance) is separate from certification. Certification runs in the same job as the runs it certifies.
+Anchor validity: every step of the anchor has $\gamma\le g_{\rm tol}$ of its level (1e-7 tight, 1e-8 tighter), finite,
+no damping saturation; otherwise "anchor invalid" and the configuration is unqualified.
+
+**A2.8 (item 10) ECSW training states and scaling, restated.**
+- Per trajectory of option (scheme, Δt) with $N$ steps the state steps are the deduplicated set
+  BE, CN: $\{1,\lceil0.15N\rceil,\lceil0.4N\rceil,N\}$; CN-R: $\{1,2,3,\lceil0.15N\rceil,\lceil0.4N\rceil,N\}$;
+  BDF2: $\{1,2,\lceil0.15N\rceil,\lceil0.4N\rceil,N\}$. Each state carries its own coefficients (start-up BE or main),
+  $u_{k-1}$ and $u_{k-2}$ (BDF2). The state count is whatever the deduplicated schedule gives; it is generated from the
+  schedule and reported per option with each state's training FOM residual.
+- Scaling floor $\phi=\max(10^{-8}\,\mathrm{median}_s\|b(s)\|,\ 10^{-14}\max_s\|b(s)\|,\ 10^{-300})$; blocks with
+  $\|b(s)\|<\phi$ are dropped and recorded; if every block is dropped, ECSW construction fails for that rank (recorded).
+
+**A2.9 (item 12) N-grad, two parts.** (a) **Binding certifier control:** take a certified-valid trajectory from the
+smoke, replace $c_{n+1}$ at every 5th step by $c_{n+1}+\delta$, $\delta$ a fixed random direction of norm
+$10^{-2}\|c_{n+1}\|$; the certifier must flag every perturbed step (γ > 1e-3, checked independently with a `jacfwd`
+Jacobian) and none of the unperturbed ones that were stationary before. (b) **Wrong-gradient solver (reported):** the
+fixture of A1.9 with the solver's Jacobian lacking its advection part, native solver, budget 30; its Q1 outcome is
+reported; if it passes Q1 that is recorded as "mutation harmless on this fixture", not as a certifier failure.
+
+**A2.10 (item 13) N-under is binding per HR family.** If no ladder level degrades a family (A1.9 predicate), that
+family's control is **unfulfilled** and every comparison using that family is withheld from acceptance (reported as
+"control unfulfilled") unless the coordinator amends the requirement.
+
+**A2.11 (item 14) Control acceptance tests, corrected.**
+- G-full uses a dedicated recovery level (gtol 1e-12, tolf 1e-14; LM budget 600, GN 30) and passes iff the lattice
+  distance to the FOM (ntol 1e-13) ≤ 1e-8; it is a recovery test, not Q1.
+- G-nnls KKT: $|g_i|\le10^{-9}\|G\|_F\|b\|$ on the support (two-sided) and $g_i\ge-10^{-9}\|G\|_F\|b\|$ off it.
+- G-pod: numerical rank $\rho=\#\{\sigma_i>10^{-10}\sigma_1\}$; the reproduction test uses the POD at rank $\rho$
+  (small-mesh test only); real-size G-pod = orthonormality plus the optimality check: Frobenius projection error of the
+  snapshot set equals the POD tail $\sqrt{\sum_{i>r}\sigma_i^2/\sum_i\sigma_i^2}$ within 1 % at every rank.
+- N-swap fixture, frozen: case swap = screening cases 0 ↔ 1; time shift = output index $k\to k+1$ (k = 1..4); fires iff
+  the score changes by > 10 max ε_ref; kind control: S requested for 3D, or for a non-BE / Δt ≠ 0.005 arm, raises.
+- N-dom synthetic data are seeded (seed 0) and their expected labels are computed by the frozen decision table
+  (A2.17), for (a) dominance, (b) equivalence — $e_B=e_X(1+0.005\,\sigma_i)$, $\sigma_i=\pm1$ alternating, ρ values
+  $1+0.01\,\sigma_{ij}$ alternating so the median is exactly 1 → "matches", (c) one bad case → not dominance.
+
+**A2.12 (item 16) Worst-error equivalence with both envelopes.** With envelopes $[L_B,U_B]$, $[L_X,U_X]$:
+equivalence iff $[L_B-U_X,\ U_B-L_X]\subset(-\delta_W,\delta_W)$, $\delta_W=\max(2\max_i\varepsilon_i,\ 0.1\,L_X)$; if
+$\delta_W=0$ equivalence fails. Worst-case ties are irrelevant (envelopes use all cases).
+
+**A2.13 (item 18) Bounded branches only.** The budget extension (A1.5) is bounded to one rung per direction with these
+memory rules: 2D rank 512 (B at p ≤ 2048: 25.7 GB), Q-DEIM p/r = 8 only where $p\le2048$ (2D) / 4096 (3D); ECSW cap
+retry 16,384 ($G^\top G_S$ buffer 32,768 × 32,832 f64 = 8.6 GB host). The live-memory and disk inventory is **generated
+by `manifest.py` from the executable configuration list, for every allowed branch** (base, extension, retry, probe,
+saturation), and printed into each job's certificate; the smoke measures the largest phases at full size (A2.19).
+
+**A2.14 (item 19) Feasibility from the manifest.** The ≈ 13 GPU-h estimate of §12 is **withdrawn**. The projection is
+generated from `manifest.py` (every run, anchor, certification pass, FOM run, NNLS path, pivoting, QR, compilation
+shape) times the smoke's measured unit costs (`resources.py`). Q-DEIM pivoting runs = number of distinct $p$ in the
+manifest (each $U_p^\top$ pivoted independently). Ours' comparator compilations (fs3's static schemes) are counted in the
+verdict job's projection. If the registered core does not fit the cap, the cell is reported **incomplete**.
+
+**A2.15 (item 20) The common-solver ablation is complete.** Every configuration runs with both solvers; the common-solver
+runs are removed from the defer list (A1.14). Defer order now: exploratory A–B–A pairs → the generator probe at
+$256^2$ → the 2D $256^2$ cell → the 3D Δt/Δt₀ = 2.5 options (A2.4 applies) → the 3D r = 512 rank.
+
+**A2.16 (item 21) Central LMM FOM, registered and independently checked.** The FOM is `hrcore.make_fom` (central
+operator, generic LMM with t2core coefficients and start-up). **G-lmm** (small mesh, CPU): for every scheme (BE, CN,
+CNR, BDF2) the saved consecutive states satisfy the scheme's step equation evaluated with `refcore`'s operators
+(independent arithmetic) to ≤ 1e-11 relative at every step, start-up steps with BE coefficients (CNR: steps 1–2; BDF2:
+step 1); and a temporal self-convergence check gives observed order in [0.9, 1.1] (BE) and [1.8, 2.2] (CN, CNR, BDF2)
+on Δt ∈ {0.01, 0.005, 0.0025} against Δt = 0.000625. BE and CN additionally equal `refcore.make_solver` (G-fom).
+
+**A2.17 (item 17) Executable decision table (`stats.py`), fail-closed.**
+- Unique configuration ID (string): `kind|r|hr-param|scheme|dt|solver|generator` (hr-param = τ or p or `-`); final
+  tie-breaker everywhere.
+- Pair outcome, evaluated in this order: invalid inputs (non-finite statistics, fewer than 3 cases with valid A–B–A
+  triples after the drift policy, missing eligible cases, $\delta_i=0$ for any case) → "**not assessed**"; both objectives
+  resolved in one direction → "baseline dominates" / "ours dominates" (annotated if A1.11 also holds); resolved in
+  opposite directions → "neither dominates"; A1.11 (with A2.12) holds → "matches"; else "unresolved".
+- A pick that fails replay or certification in the verdict job → role "none (pick failed)" — never support.
+- **Wording.** Every pair label is "developmental, in-sample, unadjusted". A cell line reads "observed domination of X by
+  a registered pick" or "by a non-registered Stage-B configuration" (both reported with equal prominence), or "no
+  observed domination among the N configurations compared" — never "H-base holds" and never "falsified" as a formal
+  test result.
+
+**A2.18 Extension rule, precise.** After Stage A, if a front configuration has the largest registered rank, or the
+smallest τ, or the largest p/r for its rank, and allocation remains (A2.5), the corresponding single rung (A2.13) is
+added for that configuration's (HR kind, options), screened, and the front recomputed; no second extension.
+
+**A2.19 (item 22) Timing population and drift.** The time objective for both role selection (B_cost) and the verdict is
+measured on the same 6 timing cases (2D dev6, 3D 923801 cases 0–5). Drift policy: a triple with
+$|t_{A,1}/t_{A,2}-1|>0.25$ is re-measured once; if it fails again it is discarded; a pair with fewer than 3 cases
+retaining ≥ 1 valid triple is "not assessed (timing drift)". N-time's B makes **two distinct calls** (case $j$ then case
+$j'$, each `block_until_ready`), so no computation can be elided. The smoke runs the largest phases at full size: the
+2D $1024^2$ $B$-QR at (r, p) = (384, 1536), the ECSW contribution matrix at r = 384, and the 3D NNLS at r = 512, and
+records peak device and host bytes.

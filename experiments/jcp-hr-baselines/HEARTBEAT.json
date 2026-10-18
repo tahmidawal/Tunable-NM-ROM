@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T23:32:04Z",
- "step": "job audit 11: A43.4 withdrawn (a 3D retry would be unprotected) -> s2d256a held until s3d64a is reconciled (A43.3/A43.5); s3d64a 5917329 RUNNING; next: results audit of the 2D 1024^2 verdict",
+ "utc": "2026-10-18T23:43:06Z",
+ "step": "results audit 1 (2D 1024): numbers reproduce exactly; RESULTS-WRONG only on cumulative V (fixed A44.2) + headline wording (A44.3). s3d64a cancelled (dt parsing, A44.1) and fixed; code audit 33 running; then restage 3D Stage-B; s2d256a held (A43.5)",
  "waiting_on": {
-  "slurm_jobs": [
-   5917329
+  "slurm_jobs": [],
+  "codex_output": "audits/codex-code-33.md",
+  "codex_pid": [
+   4186236
   ],
-  "codex_output": null,
-  "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T23:51:04Z",
+ "expected_finish_utc": "2026-10-19T00:02:06Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

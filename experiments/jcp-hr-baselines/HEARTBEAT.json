@@ -1,18 +1,17 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T15:05:11Z",
- "step": "t2d1024a COMPLETED + collected (172/172; 1.81 GPU-h); t3d64b 5542231 RUNNING; staged t2d256a (tuning 2D 256) and s2d1024a (first Stage-B job; freeze c2d1024: 35 members, 8 X); job audit 5 running; ledger 21.705 GPU-h incl. reservations",
+ "utc": "2026-10-18T15:08:19Z",
+ "step": "job audit 5 SUBMIT both; t2d256a submitted (5551475); t3d64b 5542231 RUNNING (ECSW r256 80 s after the A38 fix); s2d1024a staged, submits when a lane slot frees (cap 2)",
  "waiting_on": {
   "slurm_jobs": [
-   5542231
+   5542231,
+   5551475
   ],
-  "codex_output": "audits/codex-job-5.md",
-  "codex_pid": [
-   2997020
-  ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T15:50:11Z",
+ "expected_finish_utc": "2026-10-18T17:08:19Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

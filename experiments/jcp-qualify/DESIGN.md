@@ -550,3 +550,19 @@ smoke. The `order` job repeats TH06 (reported beside, must agree in label).
 **A3.5 B4 undefined cases.** A case is "not interpretable" if any $e(h)$ on the fitted ladder is $\le0$ or non-finite,
 if $e(\tfrac12)-e(\tfrac14)\le0$ (checks (iii)/(iv) have no positive denominator), or if the fit is undefined. CPU
 fixture: a zero-error sequence → not interpretable.
+
+---
+
+## Amendment A4 (2026-10-18, before any lane job; answers `audits/codex-design-4.md`, NEEDS-RESTATEMENT)
+
+**A4.1 Fallback reservation lifecycle.** When a mesh's Q2 labels become known, its 2 GPU-h fallback allowance is
+**atomically replaced** (one ledger transaction) by the projected time limits of the fallback accuracy job(s) actually
+required and, if A1.2 applies, of the repeated timing panel of that mesh. A fallback configuration inherits the defer
+priority of its parent arm (a fallback of a deferrable arm is deferrable at the same position; of a non-deferrable arm,
+non-deferrable). If a **non-deferrable** submission fails the reservation check after every permitted deferral has been
+applied, it is not submitted and the outcome is **"core incomplete (budget)"** with the shortfall in GPU-h reported;
+no verdict that depends on it is read.
+
+**A4.2 TH06 ladder.** The TH06 control uses the step factors $\{2,1,\tfrac12,\tfrac14\}$ (no $L_s$ is registered for
+TH06; the contextual large-step point is omitted). Its fitted order and interpretability use the same three steps
+$\{1,\tfrac12,\tfrac14\}$, anchors and checks as every scheme.

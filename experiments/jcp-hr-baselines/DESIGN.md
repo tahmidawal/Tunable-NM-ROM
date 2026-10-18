@@ -827,3 +827,51 @@ $\max_{k\ge1}\|F_k-F_k^{\rm FOM}\|/\|u_0\|$ (no lattice). Pass ≤ 1e-8.
 **A4.10 (items 17, 22) Small fixes.** Assessed pairs = valid inputs receiving a substantive label (unresolved is a
 reported subset); a configuration that is both picks is counted once. "Up to 3 re-measurements" is per original triple;
 every rejected measurement and retry count is kept in the output.
+
+---
+
+## Amendment A5 (2026-10-18) — answers to Codex design audit 5 (`audits/codex-design-5.md`, NEEDS-RESTATEMENT, no WRONG)
+
+**A5.1 (item 14) N-swap fallback semantics.** The ROM fixture (A4.4) and its fallback count only if their run is
+**certified-valid** (A2.7 validity); if neither is, the ROM fixture is "fixture unavailable". Scoring acceptance then
+rests on the reference fixture (A3.3 (i)) plus G-score; an unavailable ROM fixture is reported, and the scoring gate is
+not called complete without the note.
+
+**A5.2 (item 27) POD certification and NNLS sign convention.**
+- **Certificate** for a basis $\Phi_r$: $e_r=\|S-S\Phi_r\Phi_r^\top\|_F/\|S\|_F$ against the Gram tail
+  $\tau_r=\sqrt{(\|S\|_F^2-\sum_{i\le r}\lambda_i)/\|S\|_F^2}$ ($\lambda_i$ Gram eigenvalues): pass iff
+  $|e_r-\tau_r|\le0.01\,\tau_r+10^{-6}$. The Gram eigenvalue sums are accurate to about $r\,\epsilon\,\lambda_1$, so the
+  certificate is informative whenever $\tau_r\gg10^{-6}$; below that the rank is **saturated** (further modes change
+  the relative projection error by less than $10^{-6}$, far below any E0 error) and is constructible if $e_r\le10^{-6}$.
+- The blocked randomised SVD fallback (sketch $r_{\max}+64$, seed 0, two power iterations, QR re-orthonormalisation
+  after every product) is triggered when the method-of-snapshots basis fails the certificate at any registered rank;
+  a rank is "not constructible" only if **both** bases fail it. The numerical rank from Gram eigenvalues is reported
+  only and never used to reject a rank (A3.13's cut-off rule is withdrawn).
+- NNLS sign convention: $w=G^\top(b-G\xi)$ (the negative least-squares gradient). KKT at an optimum: $\xi\ge0$,
+  $|w_i|\le10^{-9}\|G\|_F\|b\|$ on the support, $w_i\le10^{-9}\|G\|_F\|b\|$ off it (A2.11 written with
+  $g=-w$ is the same condition).
+
+**A5.3 (item 28) X-specific fronts join Stage B.** Stage B = $F$ (absolute-time front, A2.6) ∪ near-front additions ∪,
+for every X, the front of Q1-qualified configurations in (median paired ratio to X over the 6 timing cases, worst
+error) computed from the tuning job's single warm runs of X and of every configuration on the same GPU. Roles (A4.8) are
+selected from the X-specific front. The absolute-time front is a screening convenience only.
+
+**A5.4 (item 30) Smoke fixtures, frozen, and unavailable controls.**
+
+| | 2D | 3D |
+|---|---|---|
+| mesh | L = 1024 | L = 64 |
+| training subset (snapshots) | rows 0–191 of `sample_params(0, 576)` (2,304 snapshots) | rows 0–341 of `table(923701, 1536)` (4,104 snapshots) |
+| maximal-shape pilots | POD r = 512; Q-DEIM (r, p) = (512, 2048); ECSW G at r = 512 (NNLS to support 1,024) | POD r = 1024; Q-DEIM (1024, 4096); ECSW G at r = 1024 (NNLS to support 1,024) |
+| smoke rank / HR | r_s = 128; ECSW τ ∈ {1e-2, 1e-3} (runs at 1e-3); Q-DEIM p = 256; `none` | r_s = 256; τ as 2D; p = 512; `none` |
+| generator / solvers | central; native and common | central; native and common |
+| options | BE 0.005, CN-R 0.005 | BE 0.01, CN 0.01, BDF2 0.025 |
+| grid cases | dev6 {0, 1} | 923801 {0, 1} |
+| N-under / N-grad fixtures | dev6 {2, 3} (smallest ν first: N-grad uses 2) | 923801 {5, 0} (N-grad uses 5) |
+| ECSW training | 24 trajectories (seeded permutation, A2.8) | same |
+| adequacy / probe | 8 / 4 trajectories | 8 / 4 trajectories |
+| ours' adapter | combined R384 gauss128 LSPG-CN-R Δt₀ | combined W256 gl24 FS-K1 BE Δt₀ |
+
+A required control whose fixture is unavailable leaves its acceptance gate **unfulfilled**: it is neither a pass nor
+evidence of an implementation defect, and phase I is not declared complete while a required gate is unfulfilled
+(it is reported to the coordinator with the reason).

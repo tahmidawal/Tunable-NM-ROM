@@ -15,8 +15,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[3]
 NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-fom2d'
 LANE = 'experiments/jcp-fom2d'
-EXTRA = ['experiments/mr-burgers2d/engines.py']
-EXTRA_ROM = ['experiments/mr-burgers2d/iterative_paths.py', 'experiments/separable-decoder/sep_common.py',
+EXTRA = ['experiments/mr-burgers2d/engines.py', 'experiments/separable-decoder/sep_common.py']   # engines imports sep_common
+EXTRA_ROM = ['experiments/mr-burgers2d/iterative_paths.py',
              'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']   # C2 (ROM) jobs only
 DRIVERS = ('ladder', 'c2time')
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
@@ -33,14 +33,15 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--run', action='append', required=True)
-    p.add_argument('--gpu', default='h200', choices=sorted(GRES))
+    p.add_argument('--gpu', default='h200', choices=['h200'])          # DESIGN §7: H200 throughout
     p.add_argument('--mem', default='200G')
     p.add_argument('--hours', type=float, required=True)
     p.add_argument('--mem-fraction', default='0.92')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     cert = ROOT / LANE / 'checks' / f'resources-{a.attempt}.json'
-    if not a.attempt.startswith('smk'):
+    smoke = a.attempt.startswith('smk') and all(r.split(':', 1)[1].startswith('configs/smk') for r in a.run)
+    if not smoke:
         # production attempts need a smoke-derived certificate; the time limit must cover projection x 1.5 (A1.11)
         c_ = json.loads(cert.read_text())
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
@@ -85,6 +86,7 @@ def main():
 #SBATCH --gres={gres}
 {('#SBATCH ' + constraint) if constraint else ''}
 #SBATCH --exclude=pax007
+#SBATCH --no-requeue
 #SBATCH --cpus-per-task=8
 #SBATCH --mem={a.mem}
 #SBATCH --time={tl}

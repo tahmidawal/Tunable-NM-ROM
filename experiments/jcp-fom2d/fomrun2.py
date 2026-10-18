@@ -151,7 +151,8 @@ class FOMs:
         """FD (speed3d A2.5/A4.2): finite output; complete per-stage evidence (stage count = schedule, time units reach
         0.25); every recorded relative residual finite and <= ntol; Newton counts in [0, limit]; a stage stopped at the
         Newton limit with its residual met counts as converged and is flagged. PS: finite output and finite running
-        maximum of |u| (A2.6)."""
+        maximum of |u| (A2.6). The evidence dict persists the per-stage residuals and Newton counts and the stage/unit
+        counts, so `match2.evidence_ok` recomputes the predicate offline."""
         fin = bool(np.isfinite(np.asarray(F)).all())
         if sp[0] == 'ps':
             um = float(np.asarray(info['umax']))
@@ -168,6 +169,8 @@ class FOMs:
         res, nwt = resall[:k], nwtall[:k]
         fin = fin and bool(np.isfinite(np.asarray(info['out'])).all())
         ok = bool(fin and complete and np.all(np.isfinite(res)) and np.all(res <= ntol) and np.all((nwt >= 0) & (nwt <= lim)))
-        return ok, dict(stages=k, complete=complete, finite=fin, worst_res=float(np.max(res)) if len(res) else None,
+        return ok, dict(stages=k, want_stages=want, units=int(np.asarray(info['units'])), want_units=2 * int(round(0.25 / dt)),
+                        ntol=ntol, newton_limit=lim, res=[float(x) for x in res], nwt=[int(x) for x in nwt],
+                        complete=complete, finite=fin, worst_res=float(np.max(res)) if len(res) else None,
                         max_newton=int(nwt.max()) if len(nwt) else None, newton_total=int(nwt.sum()) if len(nwt) else None,
                         at_newton_limit=int(np.sum(nwt >= lim)) if len(nwt) else None, umax=float(np.asarray(info['umax'])))

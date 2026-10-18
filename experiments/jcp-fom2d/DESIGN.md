@@ -413,3 +413,76 @@ after the extension round. The unmatched same-mesh comparator is called the "low
 * **Interpolation factor:** from mesh $L$ to mesh $N$ ($L\mid N$) the orthonormal DST-I coefficients are scaled by $N/L$.
 * **Resources:** certificates include input preparation, recovery reruns, the extension round and both population
   selections.
+
+---
+
+## Amendment A3 (2026-10-18, before any job; answers `audits/codex-design-3.md`, verdict NOT READY on three items)
+
+**A3.1 What a selected-comparator verdict can and cannot say (blocking 1).** The comparator is the one selected by the
+registered screening procedure, so its cost is at least the ladder's (unknown) minimum matching cost:
+$S_{\rm best}\le S_{\rm selected}$ on the same workload. This is an **optimisation/scope bound**, separate from the
+bootstrap interval (which describes case-to-case variation within the dev6 workload, not a guaranteed numerical bound).
+Consequences, replacing the H-comp and K2 rules of §5:
+* **H-comp cell:** "**fail**" iff the upper bound of $S_{\rm selected}<2$ — a conservative witness that the ROM is not
+  ≥ 2× faster than the best validated FOM of that family/union (subject to the workload scope). "**Pass against the
+  selected comparator**" iff the lower bound $\ge2$: it establishes superiority over that comparator only, and is
+  reported as "≥ 2× faster than the screening-selected comparator; not established against the best validated FOM".
+  Otherwise "inconclusive".
+* **K2:** **fires** iff every member of the complete K2 universe has a failing union cell at $4096^2$. If some member
+  passes against its selected comparator, the outcome is "**not shown to fire**" (a faster validated FOM outside the
+  screened set could still make it fire) — never "does not fire". Otherwise inconclusive; an incomplete universe is
+  inconclusive (A2.2).
+
+**A3.2 Extension trigger and ordering (blocking 2).** The extension round is triggered by the **C1 matcher** (`match2.py`),
+before any C2 job: for every target population at every mesh, the family's **screening-cheapest joint match by
+lattice-contract screening cost** on the **base ladder**; the trigger fires for a family if any of these lies at that
+family's minimum admissible resolution on the base ladder ($L_{\min}$ / $N_{\min}$ over all admissible base-ladder
+members). After the extension job, `match2.py` is re-run on base + extension, and only then are the C2 configurations
+built; C2 stage 0 → stage 1 → frozen selection proceed on that final ladder. No further extension follows.
+
+**A3.3 PS stability label (blocking 3).** The lattice-proxy sentence of A1.1 is **withdrawn**. The E0-style label uses the
+**padded-grid running maximum** recorded by `psjax2d` (A2.6), exactly E0's quantity: label pass iff
+$\Delta t\le0.66\cdot2.8/(4\pi N u_{\max})$ on every case. It remains a reported diagnostic, not an admissibility condition.
+
+**A3.4 Non-blocking clarifications adopted.** Family shortlist = at most the three stage-0-cheapest matches; union
+shortlist = at most nine (three per family). A group with no candidate is "no match" (not "invalid timing"). The
+same-mesh-unmatched group has exactly one candidate (the lowest-worst-error unmatched comparator at $L=N$); it is timed,
+not cost-selected. PS anchors report both steps, whether both runs are valid, and are "unavailable" if the adjacent
+member is invalid; they certify nothing and trigger no reselection. A crossover identity qualified at one mesh gives a
+point, not a bracket. Deferred same-resolution PS cells stay outstanding in the hand-back. The FD two-dispatch timer
+includes both dispatches and completion of the output map; no claim of an optimal FD implementation is made.
+
+---
+
+## Amendment A4 (2026-10-18, before any job; dispositions of `audits/codex-code-1.md`, NOT READY)
+
+Code changes (no design change except where stated):
+* **Staging:** `sep_common.py` is staged for every job (`engines.py` imports it); the smoke exemption from the resource
+  certificate applies only to `smk*` attempts whose every config is `configs/smk*.json`; H200 only; `--no-requeue`.
+* **Fail closed:** `ladder.py` writes `acceptance` (every listed gate passed — G-PS1 also needs its control to fire —,
+  K-loose and K-swap fired, every requested group/configuration/pilot recorded) and `accepted`; `match2.py` marks every
+  match **blocked** unless the smoke and every ladder are accepted, every job and the targets use the active E0 store
+  version, the offline rescoring agrees to $10^{-12}$, the recomputed calibration agrees, and the K-syn/K-false controls
+  fire on every evaluated target.
+* **Evidence:** FD records persist per-stage residuals and Newton counts and the stage/unit counts; `match2.py`
+  recomputes convergence from them (not from summary booleans), and checks the warm screening rows (coverage, identity).
+* **Identity of screening runs:** bitwise only. The $10^{-12}$ fallback applies to a family only if a dated amendment
+  after the smoke names it (`nonbitwise_ok_families`), as §5 pre-declared.
+* **Resume:** a result is resumed only under an identical (config hash, commit, store version, GPU type); checkpoints are
+  written atomically; a configuration counts as done only if its field file's sha256 matches its record.
+* **Population:** production matching requires the registered 38 cases (`--population all38`); smoke analysis is
+  labelled separately. Candidates need ≥ 3 common eligible cases.
+* **K-false:** the pre-assertion is the analytic outcome itself (worst endpoint exceeds $U_T$; adjusted median within
+  the target's), not "raw median unchanged" (Codex counterexample $e=(1,2,3)$, $\eta=(0,0,2)$).
+* **Ledger/caps:** reservations must be finite and positive; live jobs are reconciled (fail closed) before a new
+  reservation; a requeued job blocks new reservations. The account-wide cap of 8 cannot be locked across lanes from
+  this lane; mitigation: the account count is checked before and **after** sbatch and the new job is cancelled if the
+  account exceeds 8.
+* **Collect:** resumable (an unverified archive is discarded and re-collected); cleanup checks the reservation's
+  registered step list.
+* **Smoke pilots** cover every tolerance level for every FD family and resolution, with a burn-in before the warm call
+  and persisted compile and per-stage seconds; the burn-in is 0.1 s (P1's value) in every config.
+* **c2time.py** (not yet run; its own code audit precedes the C2 smoke): G-RR requires every non-A ROM subject to carry
+  target errors; selection uses the group-wide common-valid population with the A2.1 ties; union groups pool per-family
+  shortlists; the T-id control uses a control-only alias so no production subject is vetoed by construction; A is also a
+  stage-2 subject under its own label when it is a target.

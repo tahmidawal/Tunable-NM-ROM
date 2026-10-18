@@ -31,8 +31,37 @@ def target_from_fields(f257, case_ids, mesh, config, source):
         e[cid], eta[cid], el[cid] = s['e'], s['eps_ref'], s['eligible']
     ids = [c for c in case_ids if el[c]]
     return dict(mesh=int(mesh), case_ids=list(case_ids), e=e, eta=eta, eligible=el,
-                median=float(np.median([e[c] for c in ids])), worst=float(np.max([e[c] for c in ids])),
-                n_eligible=len(ids), config=config, source=source)
+                median=float(np.median([e[c] for c in ids])) if ids else None,
+                worst=float(np.max([e[c] for c in ids])) if ids else None,
+                n_eligible=len(ids), config=config, source=source,
+                status='ok' if len(ids) >= 3 else 'population too small')
+
+
+def identity(cfg):
+    return f"R{cfg['Rp']}|{cfg['rule']}|{cfg['policy']}|{cfg['scheme']}|{cfg['dt']:.8g}|{cfg.get('form', 'LSPG')}|{cfg.get('level', 'prod')}"
+
+
+def with_populations(T):
+    """A2.3: every target in two variants, <identity>@<mesh>|H (its published population) and |X (the intersection of the
+    identity's eligible cases over every mesh where it is present)."""
+    by = {}
+    for t in T.values():
+        by.setdefault(identity(t['config']), []).append(t)
+    out = {}
+    for idt, ts in by.items():
+        inter = set.intersection(*[{c for c in t['case_ids'] if t['eligible'][c]} for t in ts])
+        for t in ts:
+            out[f"{idt}@{t['mesh']}|H"] = dict(t, identity=idt, population='H')
+            ids = [c for c in t['case_ids'] if c in inter]
+            x = dict(t, identity=idt, population='X', case_ids=ids, e={c: t['e'][c] for c in ids},
+                     eta={c: t['eta'][c] for c in ids}, eligible={c: t['eligible'][c] for c in ids},
+                     meshes_present=sorted(u['mesh'] for u in ts))
+            el = [c for c in ids if x['eligible'][c]]
+            x.update(median=float(np.median([x['e'][c] for c in el])) if el else None,
+                     worst=float(np.max([x['e'][c] for c in el])) if el else None, n_eligible=len(el),
+                     status='ok' if len(el) >= 3 else 'population too small')
+            out[f"{idt}@{t['mesh']}|X"] = x
+    return out
 
 
 def p1(out):
@@ -49,13 +78,14 @@ def p1(out):
         t = target_from_fields(z['f257'], ids, mesh, dict(mesh=int(mesh), Rp=int(z['Rp']), rule=str(z['rule']),
                                                           policy=str(z['policy']), scheme=scheme, dt=float(z['dt'])),
                                dict(file=str(f), sha256=hashlib.sha256(f.read_bytes()).hexdigest()))
-        # consistency with P1's own analysis (same store): medians/worst over its population
+        # consistency with P1's own analysis (same store): medians/worst over its population must agree
         t['p1_median'], t['p1_worst'] = v['e0_median'], v['e0_worst']
+        assert abs(t['median'] - v['e0_median']) <= 1e-12 and abs(t['worst'] - v['e0_worst']) <= 1e-12, (lab, t['median'], v)
         T[lab] = t
     Path(out).write_text(json.dumps(dict(source='preview against P1 configurations; superseded by FRONT-2D',
-                                         store_version=RS.store_version(), targets=T), indent=1) + '\n')
+                                         store_version=RS.store_version(), targets=with_populations(T)), indent=1) + '\n')
     for lab, t in T.items():
-        print(lab, t['n_eligible'], round(t['median'], 6), round(t['p1_median'], 6), round(t['worst'], 6), round(t['p1_worst'], 6))
+        print(lab, t['n_eligible'], round(t['median'], 6), round(t['worst'], 6))
 
 
 def main():

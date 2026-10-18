@@ -77,6 +77,7 @@ def ic(desc, N, panels=256):
 
 def gate(descs, nus, N=32, dt=0.01):
     """G-PS1: equal to pscore.make_ps(N, 2).run lattice output (1e-12 relative); half-step control (> 1e-9)."""
+    assert len(descs) == 2 and len(nus) == 2, 'G-PS1 fixture: exactly the two registered cases (A1.5)'
     out = {}
     q, q2 = make_ps_query(N, dt), make_ps_query(N, dt / 2)
     ref = PS.make_ps(N, 2)

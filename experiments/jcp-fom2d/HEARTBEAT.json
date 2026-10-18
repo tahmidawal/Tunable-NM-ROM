@@ -1,16 +1,16 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T06:02:56Z",
- "step": "2: codex design audit 2 running; updating C1 code to A1",
+ "utc": "2026-10-18T06:11:54Z",
+ "step": "2/4: codex design audit 3 + code audit 1 running; C2 code drafted (c2time, c2analyze)",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-design-2.md",
-  "codex_pid": 1391472,
+  "codex_output": "audits/codex-design-3.md,audits/codex-code-1.md",
+  "codex_pid": 1414188,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T07:45:00Z",
- "last_commit": "7ce648c81",
+ "expected_finish_utc": "2026-10-18T08:30:00Z",
+ "last_commit": "7081bc844",
  "gpu_hours_spent": 0.0,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D.json not yet produced by jcp-qualify"
+ "notes": "code audit pid 1414189; FRONT-2D.json not yet produced (qualify at design stage)"
 }

@@ -47,10 +47,10 @@ def g_fd1():
 def g_fd2(desc, L=256, dt=0.005, ntol=1e-8, ltol=1e-9):
     """F-UB (refcore upwind, BE) vs the vendor engines.make_fom at equal tolerances: same scheme arithmetic, same Newton
     rule and BiCGStab limit (200), same preconditioner; outputs on mesh L (walls zero)."""
-    foms = FR.FOMs()
-    sp = ('fd', 'UB', L, dt, '1')
+    sp = ('fd', 'UB', L, dt, None)
     x, _ = FR.prepare(sp, desc)
-    F, o = foms.run(sp, x, float(desc[4]), ('mesh', L))
+    o = FR.FC.make_solver(2, L, adv='upwind')(x, float(desc[4]), dt, 'be', ntol, ltol)   # the lane solver at these tolerances
+    F = FR.fd_map(L, ('mesh', L))(o['out'])
     q, _ = FR.E2.make_fom(L, dt)
     G, it, rn = q(jnp.asarray(FR.E2.initial(L, desc)), float(desc[4]), ntol, ltol)
     r = rel(F, G)
@@ -120,6 +120,7 @@ def g_int(seed=0):
 
 def g_ct(foms, specs, desc, M=1024):
     """lattice restriction of the full-field (mesh M) output == lattice-contract output."""
+    assert specs, 'G-CT needs its registered coverage (A1.5)'
     out = {}
     for sp in specs:
         x, _ = FR.prepare(sp, desc)

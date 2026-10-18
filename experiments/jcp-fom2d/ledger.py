@@ -58,7 +58,27 @@ def main():
         totals(d)
         if cmd == 'reserve':
             att, h = sys.argv[2], float(sys.argv[3])
-            if any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
+            pend = [j for j in d['jobs'] if j['state'] not in TERMINAL and j['job_id']]
+            for j in pend:                    # reconcile live jobs first (requeues / raised limits); fail closed
+                o = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
+                                    f"sacct -j {j['job_id']} -X -D -n -P -o State,ElapsedRaw,TimelimitRaw"],
+                                   capture_output=True, text=True)
+                if o.returncode != 0:
+                    print('sacct failed: refusing to reserve'); rc = 8
+                    break
+                rows = [(x.split('|') + [''] * 3)[:3] for x in o.stdout.strip().splitlines() if x.strip()]
+                if len(rows) > 1:
+                    print(f"job {j['job_id']} has {len(rows)} accounting attempts (requeue): refusing until reconciled"); rc = 8
+                    break
+                tl = rows[-1][2] if rows else ''
+                if tl.isdigit() and int(tl) / 60 > j['time_limit_hours'] + 1e-9:
+                    j['time_limit_hours'] = int(tl) / 60
+            totals(d)
+            if rc:
+                pass
+            elif not (h == h and 0 < h < 1e3):
+                print('refused: reservation hours must be finite and positive'); rc = 1
+            elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print('attempt already has a live reservation'); rc = 2
             elif d['spent_gpu_hours'] + d['reserved_gpu_hours'] + h > CAP:
                 print(f"refused: spent {d['spent_gpu_hours']} + reserved {d['reserved_gpu_hours']} + {h} > {CAP}"); rc = 1
@@ -98,9 +118,13 @@ def main():
             for j in d['jobs']:
                 if j['state'] in TERMINAL or not j['job_id']:
                     continue
-                o = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
+                q = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
                                     f"sacct -j {j['job_id']} -X -D -n -P -o State,ElapsedRaw,AllocTRES,NodeList,TimelimitRaw"],
-                                   capture_output=True, text=True).stdout.strip().splitlines()
+                                   capture_output=True, text=True)
+                if q.returncode != 0:
+                    print(f"sacct failed for {j['job_id']}: left unreconciled"); rc = 3
+                    continue
+                o = q.stdout.strip().splitlines()
                 if not o:
                     continue
                 rows = [(x.split('|') + [''] * 5)[:5] for x in o]

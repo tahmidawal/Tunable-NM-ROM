@@ -105,10 +105,15 @@ def main():
     print('BANK', N, el(), P.mem(), flush=True)
     settings = {}
 
+    forms_needed = {}
+    for r_ in [cfg['A']] + cfg['roms']:
+        forms_needed.setdefault((int(r_['Rp']), r_['rule'], r_.get('policy', 'frozen')), set()).add(r_.get('form', 'LSPG'))
+
     def setting(sp):
         k = (int(sp['Rp']), sp['rule'], sp.get('policy', 'frozen'))
         if k not in settings:
-            settings[k] = P.Setting(bank, f'{k}', k[0], k[1], k[2], nrec=0)
+            fs = tuple(['LSPG'] + sorted(f for f in forms_needed[k] if f != 'LSPG'))
+            settings[k] = P.Setting(bank, f'{k}', k[0], k[1], k[2], forms=fs, nrec=0)
         return settings[k]
 
     roms = {cfg['A']['label']: cfg['A']}
@@ -137,9 +142,11 @@ def main():
         st = setting(sp)
         st.check('main', bank)
         u0, nu = U0[cid(c)]
-        q = st.q0['LSPG']
-        d = st.data[('main', 'LSPG')]
-        sch = st.sched('LSPG', sp['scheme'], float(sp['dt']), sp.get('level', 'prod'))
+        form = sp.get('form', 'LSPG')
+        assert int(round(.25 / float(sp['dt']))) <= st.nstep, ('per-step evidence buffer too short', sp['dt'])
+        q = st.q0[form]
+        d = st.data[('main', form)]
+        sch = st.sched(form, sp['scheme'], float(sp['dt']), sp.get('level', 'prod'))
         cold = st.cold
         return lambda: q['fused'](u0, nu, d, cold, sch)
 
@@ -150,7 +157,8 @@ def main():
                                    np.asarray(P._reduce(o['fields']))]))
 
     def fom_call(k, c):
-        return foms.callable(FR.parse(k), X[(k, cid(c))], float(c[2][4]), ('mesh', N))
+        kk = k[len('CTRL-ID|'):] if k.startswith('CTRL-ID|') else k
+        return foms.callable(FR.parse(kk), X[(k, cid(c))], float(c[2][4]), ('mesh', N))
 
     def fom_ident(F):
         return sha(np.concatenate([np.asarray(F[:, ::N // 256, ::N // 256]).ravel(), np.asarray(P._reduce(F))]))
@@ -186,7 +194,7 @@ def main():
                                    repro_checked=sum(r['repro'] is not None for r in rows))
         print('SCORED', lb, rep['subjects'][lb]['repro_ok'], el(), flush=True)
     rep['gates']['G-RR'] = all(rep['subjects'][lb]['repro_ok'] and rep['subjects'][lb]['repro_checked'] == len(cases)
-                               for lb in roms if lb != cfg['A']['label'] and roms[lb].get('target_e'))
+                               for lb in roms if lb != cfg['A']['label'])           # every target ROM carries target_e
     rep['gates']['G-FR'] = all(rep['subjects'][k]['repro_ok'] and rep['subjects'][k]['repro_checked'] == len(cases)
                                for k in fkeys)
     rep['memory']['scoring'] = P.mem()
@@ -261,23 +269,33 @@ def main():
     rng = np.random.default_rng(int(cfg.get('seed', 1)))
     top = {}
     for g in cfg['groups']:
-        cands = sorted(g['candidates'], key=lambda k: rep['stage0'][k]['cost'])
-        top[g['id']] = cands[:3]
+        key0 = lambda k: (rep['stage0'][k]['cost'], k)
+        g = dict(g, candidates=[k for k in g['candidates'] if k not in VETO])     # vetoed candidates never shortlisted
+        if g.get('pool_by_family'):          # A2.1 union group: the three stage-0-cheapest of every family, pooled
+            fams = sorted({FR.family(k) for k in g['candidates']})
+            top[g['id']] = sorted({k for f in fams for k in sorted([c for c in g['candidates'] if FR.family(c) == f], key=key0)[:3]},
+                                  key=key0)
+        else:
+            top[g['id']] = sorted(g['candidates'], key=key0)[:3]
     s1keys = sorted({k for v in top.values() for k in v})
     order = [(k, ci) for k in s1keys for ci in range(len(cases))]
     rng.shuffle(order)
     for k, ci in order:
         rep['stage1'].append(triplet(k, cases[ci], 0, 1))
-    cost1 = {}
-    for k in s1keys:
-        per = [x['ratio'] for x in rep['stage1'] if x['B'] == k and x['valid']]
-        cost1[k] = float(np.median(per)) if len(per) >= max(1, len(cases) - 1) else np.inf
+    s1 = {}
+    for x in rep['stage1']:
+        s1.setdefault(x['B'], {})[x['case']] = x
     for g in cfg['groups']:
-        best = min(top[g['id']], key=lambda k: (cost1[k], k))
-        rep['selection'][g['id']] = dict(target=g['target'], family=g['family'], criterion=g['criterion'], top3=top[g['id']],
-                                         stage0={k: rep['stage0'][k]['cost'] for k in top[g['id']]},
-                                         stage1={k: cost1[k] for k in top[g['id']]},
-                                         selected=best if np.isfinite(cost1[best]) else None)
+        sl = top[g['id']]
+        # A2.1: selection population = cases valid for EVERY shortlisted candidate; >= 5 of the cases or no selection
+        pop = [cid(c) for c in cases if all(s1.get(k, {}).get(cid(c), {}).get('valid') for k in sl)]
+        cost = {k: float(np.median([s1[k][c]['ratio'] for c in pop])) for k in sl} if pop else {}
+        ok = len(sl) > 0 and len(pop) >= len(cases) - 1
+        best = min(sl, key=lambda k: (cost[k], rep['stage0'][k]['cost'], k)) if ok else None
+        rep['selection'][g['id']] = dict(target=g['target'], family=g['family'], criterion=g['criterion'], shortlist=sl,
+                                         stage0={k: rep['stage0'][k]['cost'] for k in sl}, stage1=cost, population=pop,
+                                         selected=best, status='selected' if ok else
+                                         ('no candidate' if not sl else 'invalid timing (selection population < 5)'))
     frozen = dict(mesh=N, cases=[cid(c) for c in cases], store_version=RS.store_version(), selection=rep['selection'],
                   roms=sorted(roms), veto_after_stage1=sorted(VETO))
     fb = json.dumps(clean(frozen), indent=1, sort_keys=True).encode()
@@ -323,11 +341,20 @@ def main():
         x = triplet(lb, cases[0], 0, 'control', fault='drift')
         rep['controls']['T-fault'] = dict(row=x, separation_ok=bool(x['drift'] > BAND[1]), fires=bool(not x['valid']))
     if ctl.get('identity_fault_subject'):
-        lb = ctl['identity_fault_subject']
-        pre = lb in VETO
+        src_lb = ctl['identity_fault_subject']               # control-only alias: same program, its own label and veto
+        lb = 'CTRL-ID|' + src_lb
+        if src_lb in roms:
+            roms[lb] = dict(roms[src_lb], label=lb)
+        else:
+            cfg['foms'][lb] = cfg['foms'][src_lb]
+            for c in cases:
+                X[(lb, cid(c))] = X[(src_lb, cid(c))]
+        for c in cases:
+            REF[(lb, cid(c))] = REF[(src_lb, cid(c))]
         x = triplet(lb, cases[0], 0, 'control', fault='identity')
-        rep['controls']['T-id'] = dict(row=x, vetoed_before=pre, fires=bool(lb in VETO and not x['valid']),
-                                       note='control-only: the subject is vetoed for every claim (subject-level veto)')
+        rep['controls']['T-id'] = dict(row=x, alias=lb, source=src_lb, source_vetoed=src_lb in VETO,
+                                       fires=bool(lb in VETO and not x['valid']),
+                                       note='control-only alias; the production subject is not vetoed by the control')
     rep['veto'] = sorted(VETO)
     rep['memory']['end'] = P.mem()
     rep['elapsed_seconds'] = el()

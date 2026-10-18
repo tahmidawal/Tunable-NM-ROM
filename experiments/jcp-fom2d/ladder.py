@@ -110,20 +110,29 @@ def main():
     begin = time.perf_counter()
     el = lambda: round(time.perf_counter() - begin, 1)
     rp = out / 'result.json'
-    rep = json.loads(rp.read_text()) if rp.exists() else {}
     gpu = jax.devices()[0].device_kind
-    rep.update(config=cfg, commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'),
-               backend=jax.default_backend(), gpu=gpu, jax_version=jax.__version__, store_version=RS.store_version(),
+    ident = dict(config_sha256=hashlib.sha256(json.dumps(cfg, sort_keys=True).encode()).hexdigest(),
+                 commit=os.environ.get('SOURCE_COMMIT'), store_version=RS.store_version(), gpu=gpu)
+    rep = json.loads(rp.read_text()) if rp.exists() else {}
+    if rep:                                  # resume only an identical run (config, code, store, GPU type)
+        assert rep.get('identity') == ident, ('refusing to resume a different run', rep.get('identity'), ident)
+    rep.update(config=cfg, identity=ident, commit=ident['commit'], job_id=os.environ.get('SLURM_JOB_ID'),
+               backend=jax.default_backend(), gpu=gpu, jax_version=jax.__version__, store_version=ident['store_version'],
                complete=False)
     rep.setdefault('configs', {})
     rep.setdefault('gates', {})
     rep.setdefault('restarts', 0)
     rep['restarts'] += 1 if rp.exists() else 0
-    save = lambda: rp.write_text(json.dumps(clean(rep), indent=1) + '\n')
+    rep.setdefault('job_ids', []).append(os.environ.get('SLURM_JOB_ID'))
+
+    def save():                              # atomic checkpoint
+        tmp = rp.with_suffix('.tmp')
+        tmp.write_text(json.dumps(clean(rep), indent=1) + '\n')
+        tmp.replace(rp)
     cases = case_list(cfg.get('cases', 'all38'))
     cal = case_list(cfg.get('calibration_cases', [['dev6', 0], ['dev6', 1], ['dev6', 2], ['dev6', 3]]))
     warm = case_list(cfg.get('warm_cases', [['dev6', 0], ['dev6', 1]]))
-    reps, bsec = int(cfg.get('warm_reps', 3)), float(cfg.get('burn', 0.05))
+    reps, bsec = int(cfg.get('warm_reps', 3)), float(cfg.get('burn', 0.1))
     levels = [str(x) for x in cfg.get('levels', ['0', '1', '2', '3'])]
     assert levels[0] == '0'
     cid = lambda c: f'{c[0]}|{c[1]}'
@@ -178,12 +187,16 @@ def main():
             Fs.append(Fn if keep_fields else None)
         return recs, Fs
 
+    nonbit = set(cfg.get('nonbitwise_ok_families', []))     # only by a dated DESIGN amendment after the smoke
+
     def warm_times(sp, Fprod):
-        rows = []
+        rows, warmup = [], []
+        fam = FR.family(FR.key(sp))
         for c in warm:
             x, _ = FR.prepare(sp, c[2])
             fn = foms.callable(sp, x, float(c[2][4]), 'lattice')
-            jax.block_until_ready(fn())                         # warm (compiled already; first-call effects)
+            Fw = np.asarray(jax.block_until_ready(fn()))     # warm-up call (first-call effects), identity checked too
+            warmup.append(dict(case=cid(c), bitwise=sha(Fw) == sha(Fprod[cid(c)]), rel=G.rel(Fw, Fprod[cid(c)])))
             for r_ in range(reps):
                 burn(bsec)
                 t = time.perf_counter()
@@ -192,8 +205,12 @@ def main():
                 Fn = np.asarray(F)
                 ref = Fprod[cid(c)]
                 rows.append(dict(case=cid(c), rep=r_, seconds=ts, bitwise=sha(Fn) == sha(ref), rel=G.rel(Fn, ref)))
-        hok = all(r['bitwise'] or r['rel'] <= 1e-12 for r in rows)
-        return dict(times=rows, hashes_ok=hok, all_bitwise=all(r['bitwise'] for r in rows),
+        allrows = rows + warmup
+        ok_row = lambda r: r['bitwise'] or (fam in nonbit and r['rel'] <= 1e-12)
+        hok = bool(len(rows) == len(warm) * reps and all(ok_row(r) for r in allrows))
+        return dict(times=rows, warmup=warmup, hashes_ok=hok, all_bitwise=all(r['bitwise'] for r in allrows),
+                    expected_rows=len(warm) * reps,
+                    policy='bitwise' if fam not in nonbit else 'rel<=1e-12 (amended family)',
                     median=float(np.median([r['seconds'] for r in rows])))
 
     def finish(k, sp, prod, Fs, extra):
@@ -201,26 +218,34 @@ def main():
         for r, c, F in zip(prod, cases, Fs):
             assert r['case'] == cid(c)
             r['scores'] = score(F, c[0], c[1], kinds)
-        np.savez(out / f"F_{k.replace('|', '_')}.npz", case_ids=np.array([cid(c) for c in cases]),
-                 fields=np.stack(Fs))
+        fpath = out / f"F_{k.replace('|', '_')}.npz"
+        np.savez(fpath, case_ids=np.array([cid(c) for c in cases]), fields=np.stack(Fs))
         Fprod = {cid(c): F for c, F in zip(cases, Fs)}
-        rec = dict(key=k, spec=list(sp), production=prod, warm=warm_times(sp, Fprod), mem=mem(), **extra)
-        if sp[0] == 'ps':                                  # A1.1 E0 stability label (lattice proxy for u_max)
-            um = [float(np.max(np.abs(F))) for F in Fs]
-            bound = [0.66 * 2.8 / (2 * 2 * np.pi * sp[1] * u) if u > 0 else np.inf for u in um]
-            rec['stability'] = dict(umax_lattice=um, dt_bound=bound, label_pass=bool(all(sp[2] <= b for b in bound)),
-                                    note='E0 stability label (lattice proxy); not an admissibility condition')
+        rec = dict(key=k, spec=list(sp), production=prod, warm=warm_times(sp, Fprod), mem=mem(),
+                   fields_sha256=hashlib.sha256(fpath.read_bytes()).hexdigest(), **extra)
+        if sp[0] == 'ps':                                  # A3.3 E0 stability label from the padded-grid running max
+            um = [p['evidence'].get('umax') for p in prod]
+            bound = [0.66 * 2.8 / (2 * 2 * np.pi * sp[1] * u) if (u is not None and np.isfinite(u) and u > 0) else None
+                     for u in um]
+            rec['stability'] = dict(umax_padded_running=um, dt_bound=bound,
+                                    label_pass=bool(all(b is not None and sp[2] <= b for b in bound)),
+                                    note='E0 stability label (refjob.py:448-452 quantity); diagnostic, not admissibility')
         rec['admissible_injob'] = bool(all(r['converged'] for r in prod) and rec['warm']['hashes_ok'])
         rep['configs'][k] = rec
         save()
         print('CONFIG', k, 'adm', rec['admissible_injob'], 'warm', round(rec['warm']['median'], 4), el(), mem(), flush=True)
+
+    def done(k):                             # a configuration counts as finished only if its field file is intact
+        r = rep['configs'].get(k)
+        f = out / f"F_{k.replace('|', '_')}.npz"
+        return bool(r and f.exists() and hashlib.sha256(f.read_bytes()).hexdigest() == r.get('fields_sha256'))
 
     for fam, L, dt in [tuple(g) for g in cfg.get('fd', [])]:
         dt = FR.canon_dt(dt)
         gkey = f'fd|{fam}|L{L}|{dt:.8g}'
         gold = rep.get('groups', {}).get(gkey)
         glev = None if gold is None else (gold.get('recovery') or {}).get('level', gold['chosen'])
-        if gold is not None and (gold['chosen'] is None or FR.key(('fd', fam, int(L), dt, glev)) in rep['configs']):
+        if gold is not None and (gold['chosen'] is None or done(FR.key(('fd', fam, int(L), dt, glev)))):
             continue                                       # resumable: finished group (calibration is simply redone otherwise)
         t0 = time.perf_counter()
         calib = {}
@@ -278,7 +303,7 @@ def main():
     for N, dt in [tuple(g) for g in cfg.get('ps', [])]:
         sp = ('ps', int(N), FR.canon_dt(dt))
         k = FR.key(sp)
-        if k in rep['configs']:
+        if done(k):
             continue
         recs, Fs = run_cases(sp, cases)
         finish(k, sp, recs, Fs, dict())
@@ -297,19 +322,40 @@ def main():
         print('K_LOOSE', rep['k_loose']['fires'], dx, flush=True)
     if cfg.get('k_swap') and 'k_swap' not in rep:
         k = next(iter(rep['configs']))
-        F = np.load(out / f"F_{k.replace('|', '_')}.npz")['fields'][0]
-        c = cases[0]
-        rep['k_swap'] = dict(config=k, **G.k_swap(F, c[0], c[1], 1 if c[1] != 1 else 2))
+        z = np.load(out / f"F_{k.replace('|', '_')}.npz")
+        F = z['fields'][[str(x) for x in z['case_ids']].index('dev6|0')]
+        rep['k_swap'] = dict(config=k, fixture='dev6|0 field vs dev6|1 reference; times (t0,t0,t1,t2,t3,t4)',
+                             **G.k_swap(F, 'dev6', 0, 1))
         save()
     for pk in cfg.get('pilots', []):                       # memory / cost pilot: one case each, peak memory recorded
         if pk in rep.setdefault('pilots', {}):
             continue
         sp = FR.parse(pk)
         recs, _ = run_cases(sp, cases[:1], keep_fields=False)
+        burn(bsec)
         recs2, _ = run_cases(sp, cases[:1], keep_fields=False)       # warm second call (compile excluded)
-        rep['pilots'][pk] = dict(record=recs[0], warm=recs2[0], mem=mem())
+        nunit = (recs2[0]['evidence'].get('stages') if sp[0] == 'fd' else int(round(.25 / sp[2])))
+        rep['pilots'][pk] = dict(record=recs[0], warm=recs2[0], mem=mem(),
+                                 compile_seconds=max(recs[0]['seconds_first'] - recs2[0]['seconds_first'], 0.),
+                                 units=nunit, seconds_per_unit=recs2[0]['seconds_first'] / max(nunit or 1, 1),
+                                 newton_total=recs2[0]['evidence'].get('newton_total'))
         save()
         print('PILOT', pk, round(recs[0]['seconds_first'], 2), round(recs2[0]['seconds_first'], 3), mem(), flush=True)
+    # ---- acceptance (fail closed): every gate passed, every control fired, every requested config recorded ------------
+    acc = {}
+    for gname in cfg.get('gates', []):
+        g = rep['gates'].get(gname, {})
+        acc[f'gate:{gname}'] = bool(g.get('passed')) and (gname != 'ps1' or bool(g.get('control_fires')))
+    if cfg.get('k_loose'):
+        acc['control:k_loose'] = bool(rep.get('k_loose', {}).get('fires'))
+    if cfg.get('k_swap'):
+        acc['control:k_swap'] = bool(rep.get('k_swap', {}).get('fires'))
+    want = [f'fd|{f}|L{L}|{FR.canon_dt(d):.8g}' for f, L, d in cfg.get('fd', [])]
+    acc['all_groups_recorded'] = all(g in rep.get('groups', {}) for g in want)
+    acc['all_ps_recorded'] = all(FR.key(('ps', int(N), FR.canon_dt(d))) in rep['configs'] for N, d in cfg.get('ps', []))
+    acc['all_pilots_recorded'] = all(pk in rep.get('pilots', {}) for pk in cfg.get('pilots', []))
+    rep['acceptance'] = acc
+    rep['accepted'] = bool(all(acc.values()))
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()

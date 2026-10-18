@@ -38,4 +38,11 @@ JID=$(echo "$OUT" | awk '/Submitted batch job/ {print $4}')
 [ -n "$JID" ]
 trap - ERR
 "$PY" "$LANE/ledger.py" bind "$A" "$JID"
+# campaign cap (8) is account-wide but the lock above is lane-local: re-check after submitting; if the account is now
+# above 8 (a concurrent submit by another lane), cancel this job (the reservation is settled by reconcile as CANCELLED)
+ACC2=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h | wc -l")
+if [ "$ACC2" -gt 8 ]; then
+  echo "account at $ACC2 > 8 after submit: cancelling $JID"
+  timeout 60 ssh -o ConnectTimeout=20 tufts-login "scancel $JID"
+fi
 echo "--- squeue after"; timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -o "%.10i %.24j %.8T %.10M %R"'

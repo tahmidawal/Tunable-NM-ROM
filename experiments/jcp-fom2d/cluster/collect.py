@@ -25,8 +25,11 @@ def main():
     if a.cleanup:
         assert (out / 'OUTPUTS.sha256').exists(), 'collect first'
         assert not (out / 'PARTIAL').exists(), 'a partial collection never authorises cleanup'
-        steps = [d for d in (out / 'output').iterdir() if d.is_dir()]
-        assert steps and all((d / 'COMPLETE').exists() for d in steps), 'a staged step lacks its COMPLETE marker'
+        import json
+        runs = json.loads((HERE / 'runs' / a.attempt / 'RESERVATION.json').read_text())['runs']
+        want = {f'{drv}_{Path(cf).stem}' for drv, cf in runs}
+        steps = {d.name for d in (out / 'output').iterdir() if d.is_dir()}
+        assert want <= steps and all((out / 'output' / d / 'COMPLETE').exists() for d in want), (want, steps)
         log = '\n'.join(p.read_text() for p in (out / 'logs').glob('*.out'))
         assert 'ALL-DONE' in log, 'job log lacks ALL-DONE'
         subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
@@ -38,6 +41,10 @@ def main():
         subprocess.run(SSH + [f'rm -rf {shlex.quote(remote)}'], check=True)
         print('removed', remote)
         return
+    if out.exists():                       # resumable: a previous (interrupted or partial) collection is discarded
+        assert not (out / 'VERIFIED').exists(), 'archive already verified; nothing to do'
+        import shutil
+        shutil.rmtree(out)
     out.mkdir(parents=True, exist_ok=False)
     pre = (f'cd {shlex.quote(remote)} && ' + ('find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 && '
                                               if a.partial else '') +
@@ -52,6 +59,8 @@ def main():
     (out / 'collection.tar').unlink()
     if a.partial:
         (out / 'PARTIAL').write_text('partial collection\n')
+    else:
+        (out / 'VERIFIED').write_text('verified\n')
     print(out)
 
 

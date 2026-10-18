@@ -687,3 +687,12 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   unavailable: one measured firing control establishes "fires"; "does not fire" needs all expected controls resolved.
 * The report's confirm/retract statement on the early spectral observation is printed only from an m1 job with
   integrity; otherwise it says "neither confirmed nor retracted".
+
+---
+
+## Amendment A16 (2026-10-18; dispositions of `audits/codex-code-12.md`, NOT READY on two items; p1 collected, not yet analysed)
+
+* Batching control aggregates (`K6_fires_all`, `K6plus_all`) are all-of over every expected batch size: a measured failure
+  gives False, any missing (e.g. OOM-infeasible) size prevents True.
+* The spectral confirm/retract statement needs a valid matched spectral panel for every selected ROM (and m1 integrity);
+  otherwise it says "neither confirmed nor retracted" and how many were measured.

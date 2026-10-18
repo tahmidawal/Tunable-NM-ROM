@@ -486,14 +486,16 @@ def main():
         ps = [v['families'].get('PS', {}) for v in m1['H43'].values()]
         ps_sp = [x.get('speedup') for x in ps if x.get('speedup') is not None]
         ps_keys = sorted({x['matched'] for x in ps if x.get('matched')})
-        if ps_sp and m1['acceptance']['integrity_ok']:
+        ps_complete = all(x.get('state') == 'matched' and x.get('speedup') is not None for x in ps)   # every selected ROM measured
+        if ps and ps_complete and m1['acceptance']['integrity_ok']:
             w(f"The early unaudited f1 observation \"spectral FOM clearly beats the ROM at 64³\" is "
               f"{'**confirmed**' if max(ps_sp) < 1 else '**not confirmed**'} by the paired panels: the matched spectral FOM "
               f"({', '.join(ps_keys)}; cross-resolution) gives ROM speed-ups {f(min(ps_sp))}–{f(max(ps_sp))}× (below 1 = the FOM is faster at "
               "equal-or-better accuracy).")
         else:
             w('The early unaudited f1 observation "spectral FOM clearly beats the ROM at 64³" is **neither confirmed nor retracted** '
-              'here: no valid paired spectral panel from an m1 job with integrity.')
+              'here: it needs a valid paired spectral panel for every selected ROM from an m1 job with integrity '
+              f"({len(ps_sp)} of {len(ps)} measured).")
         w('')
         w('![mesh](plots/mesh-time.png)')
     else:

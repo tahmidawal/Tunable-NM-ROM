@@ -118,6 +118,13 @@ def tob_or_within(a, m, rel=0.01):
                 median=float(np.median(ea)), worst=float(np.max(ea)), median_mesh=float(np.median(em)), worst_mesh=float(np.max(em)))
 
 
+def tri(xs):
+    """All-of over every expected item: False if any measured False, True only if every item is measured True, else None."""
+    if any(x is False for x in xs):
+        return False
+    return True if xs and all(x is True for x in xs) else None
+
+
 def cond_ok(c, Rp):
     return bool(c and np.isfinite(c.get('cond', np.nan)) and c['cond'] < 1e10 and c.get('m', 0) >= Rp)
 
@@ -291,8 +298,8 @@ def analyze_p1(rp, sel, grid, scp):
         bar = (None if not (b1.get('usable') and b16.get('usable')) else bool(b16['throughput'] >= 2 * b1['throughput']))
         H33[l_] = dict(per_B=per, throughput_16_over_1=(b16['throughput'] / b1['throughput']) if bar is not None else None,
                        bar_2x=bar,
-                       K6_fires_all=(lambda xs: all(xs) if xs else None)([v.get('K6_fires') for B, v in per.items() if v.get('available') and B != '1']),
-                       K6plus_all=(lambda xs: all(xs) if xs else None)([v.get('K6plus_pass') for v in per.values() if v.get('available')]),
+                       K6_fires_all=tri([v.get('K6_fires') if v.get('available') else None for B, v in per.items() if B != '1']),
+                       K6plus_all=tri([v.get('K6plus_pass') if v.get('available') else None for v in per.values()]),
                        latency_B1=b1.get('median_seconds'))
     out['H33'] = H33
     # ---- mesh-path reproduction of the grid accuracy (equal by construction)

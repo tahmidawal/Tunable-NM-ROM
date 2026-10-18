@@ -144,9 +144,12 @@ def t_fd():
             for seed in (4, 5):
                 c, cn, cm, co, dt = resid_args(d, L, Phi, nu, seed)
                 sc, rJ = RM.make_arm(kind, d, L)
+                resf = RM.make_res(kind, d, L)
                 const = sc(cn, cm, nu, co, dt, dat)
                 r, J = rJ(c, const, nu, co, dt, dat)
-                Ja = jax.jacfwd(lambda x: rJ(x, const, nu, co, dt, dat)[0])(c)
+                er = float(jnp.max(jnp.abs(resf(c, const, nu, co, dt, dat) - r)) / jnp.max(jnp.abs(r)))
+                assert er <= 1e-14, (d, kind, 'make_res differs from rJ', er)
+                Ja = jax.jacfwd(lambda x: resf(x, const, nu, co, dt, dat))(c)
                 ej = float(jnp.max(jnp.abs(J - Ja)) / jnp.max(jnp.abs(Ja)))
                 rng = np.random.default_rng(seed)
                 efd = 0.

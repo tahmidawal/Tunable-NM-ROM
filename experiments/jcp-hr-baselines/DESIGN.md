@@ -1049,3 +1049,9 @@ established only on the registered small fixtures.
 
 **A12.4 Forgery-only findings.** Per COMMON-BRIEF §7, findings that require deliberately malformed evidence that the
 registered code cannot produce are "noted", not blocking; they were nevertheless fixed where cheap (A12.1).
+
+**A12.5 (code audit 5) Residual-only autodiff.** Wherever a residual is differentiated or only evaluated (FD and
+`jacfwd` checks, the N-grad oracle, the Gauss–Newton line search, the LM predictor), the arm's residual-only function
+(`rom.make_res`) is used, so the analytic Jacobian is never formed under autodifferentiation (its tangent would be an
+(r, n, r) array: 137 GB at 2D $1024^2$, r = 128). Invalid runs' saved outputs are compared with their trajectory rows
+NaN-aware.

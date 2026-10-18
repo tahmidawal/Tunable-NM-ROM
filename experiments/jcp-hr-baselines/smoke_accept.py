@@ -270,7 +270,9 @@ def main():
                 ok, ev = q1_from_evidence(prod, anc['tight'], anc['tighter'], Cs, dist, adist, cases, subset, sw, c['rs'])
                 keep = int(round(0.05 / float(cid.split('|')[4])))
                 for i, j in enumerate(cases):              # saved outputs W are the scheduled rows of the trajectory C
-                    if zz['W'][i].shape != (6, c['rs']) or not np.array_equal(zz['W'][i], zz['C'][i][::keep][:6]):
+                    vj = run_evidence(prod[j], 'prod', sw, Cs['prod'][j], c['rs'])[0]
+                    if zz['W'][i].shape != (6, c['rs']) or not np.array_equal(zz['W'][i], zz['C'][i][::keep][:6],
+                                                                              equal_nan=not vj):
                         bad.append(f'{cid}: W inconsistent with C rows (case {j})')
                 q1s[cid] = ok
                 if ok != gg['q1']['q1']:
@@ -316,7 +318,8 @@ def main():
         for k in want_arms & set(fd):
             v = fd[k]
             if k.endswith('|None'):
-                okfd &= fin(v.get('fd'), v.get('jacfwd')) and v['fd'] <= 1e-6 and v['jacfwd'] <= 1e-11
+                okfd &= fin(v.get('fd'), v.get('jacfwd'), v.get('res_vs_rJ')) and v['fd'] <= 1e-6 and v['jacfwd'] <= 1e-11 \
+                    and v['res_vs_rJ'] <= 1e-14
                 if k.startswith('ecsw'):
                     okfd &= fin(v.get('rows')) and v['rows'] <= 1e-10
                 if k.startswith('qdeim'):

@@ -346,6 +346,7 @@ def run_cell(cfg, c, res, outdir, save):
         dt = H.DT0[d]
         for (kind, hrp), (dat, _) in datas.items():
             scf, rJt = RM.make_arm(kind, d, L)
+            resf = RM.make_res(kind, d, L)              # residual only: no Jacobian tangent under autodiff (audit 5)
             const = scf(cn, c0, nu, co, dt, dat)
             c1 = cn + 1e-3 * jnp.asarray(rng.standard_normal(rs)) * jnp.linalg.norm(c0) / np.sqrt(rs)
             for mut in (None, 'drop_adv_jac'):
@@ -356,12 +357,13 @@ def run_cell(cfg, c, res, outdir, save):
                     vv = jnp.asarray(rng.standard_normal(rs))
                     vv = vv / jnp.linalg.norm(vv)
                     h = 1e-6 * max(1., float(jnp.linalg.norm(c1)))
-                    fd = (rJt(c1 + h * vv, const, nu, co, dt, dat)[0] - rJt(c1 - h * vv, const, nu, co, dt, dat)[0]) / (2 * h)
+                    fd = (resf(c1 + h * vv, const, nu, co, dt, dat) - resf(c1 - h * vv, const, nu, co, dt, dat)) / (2 * h)
                     efds.append(float(jnp.linalg.norm(fd - J @ vv) / jnp.linalg.norm(fd)))
                 rec = dict(fd=fmax(efds), fd_list=efds)
                 if mut is None:
-                    Ja = jax.jacfwd(lambda x: rJt(x, const, nu, co, dt, dat)[0])(c1)
+                    Ja = jax.jit(jax.jacfwd(resf))(c1, const, nu, co, dt, dat)
                     rec['jacfwd'] = float(jnp.max(jnp.abs(J - Ja)) / jnp.max(jnp.abs(Ja)))
+                    rec['res_vs_rJ'] = float(jnp.max(jnp.abs(resf(c1, const, nu, co, dt, dat) - r)) / jnp.max(jnp.abs(r)))
                     P_ = cell.Phi[:, :rs]
                     u1, un = P_ @ c1, P_ @ cn
                     if kind == 'ecsw':
@@ -388,7 +390,7 @@ def run_cell(cfg, c, res, outdir, save):
                             t1, t2, t3 = parts(cc)
                             Bz = t1 + t2 + t3
                             Sig = float(jnp.linalg.norm(t1) + jnp.linalg.norm(t2) + jnp.linalg.norm(t3))
-                            rq, Jq = rJt(cc, const, nu, co, dt, dat)
+                            rq, Jq = rJt(cc, const, nu, co, dt, dat)       # analytic J is the object under test
                             g_ass = jax.grad(lambda x: 0.5 * jnp.sum(Rd(x) ** 2))(cc)
                             rec[f'norm_{tag}'] = abs(float(jnp.linalg.norm(rq)) - float(jnp.linalg.norm(Bz))) / Sig
                             rec[f'grad_{tag}'] = float(jnp.linalg.norm(Jq.T @ rq - g_ass)) / (Sig * float(jnp.linalg.norm(Jq)))
@@ -467,6 +469,8 @@ def run_cell(cfg, c, res, outdir, save):
             return dict(status='fixture unavailable', reason='base run not certified-valid', base_cert=base['cert'])
         tg = jax.jit(RM.make_tuple_gamma('ecsw', d, L))
         scf, rJ = RM.make_arm('ecsw', d, L)
+        resf = RM.make_res('ecsw', d, L)
+        jac_or = jax.jit(jax.jacfwd(resf))
         sch = RM.schedule(d, opt_main[0], opt_main[1], 'prod')
         Cs = jnp.asarray(base['C'])
         tuples, skipped, skipped_steps = [], 0, []
@@ -488,8 +492,8 @@ def run_cell(cfg, c, res, outdir, save):
                 for sgn in (1., -1.):
                     cp = c1 + sgn * t0_ * 2 ** k * vt[0]
                     g_cert = float(tg(cn_, cm_, cp, jnp.float64(nuj), co, sch['dt'], dat))
-                    r, _ = rJ(cp, const, nuj, co, sch['dt'], dat)
-                    Ja = jax.jacfwd(lambda x: rJ(x, const, nuj, co, sch['dt'], dat)[0])(cp)
+                    r = resf(cp, const, nuj, co, sch['dt'], dat)
+                    Ja = jac_or(cp, const, jnp.float64(nuj), co, sch['dt'], dat)
                     g_or = float(jnp.linalg.norm(Ja.T @ r) / (jnp.linalg.norm(Ja) * jnp.linalg.norm(r) + 1e-300))
                     tuples.append(dict(step=n_, k=k, sign=sgn, t0=t0_, cert=g_cert, oracle=g_or))
         # production classification (RM.certify) on per-variant gamma arrays: every tested step replaced by its perturbed

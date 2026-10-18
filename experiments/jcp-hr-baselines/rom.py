@@ -112,6 +112,31 @@ def make_arm(kind, d, L, mutation=None):
     return step_const, rJ
 
 
+def make_res(kind, d, L):
+    """Residual-only evaluation res(c, const, nu, co, dt, data) of the arm (no Jacobian is formed). Used wherever only
+    the residual is needed, in particular under autodifferentiation, so that no (r, n, r) tangent of the analytic
+    Jacobian is ever materialised (code audit 5, item 27)."""
+    sh = H.shape_of(d, L)
+    assert kind in ARMS
+    if kind == 'none':
+        def res(c, const, nu, co, dt, data):
+            u = data['Phi'] @ c
+            g = u.reshape(sh)
+            s = H.dsum(g, L).reshape(-1)
+            return co[0] * u + const + dt * co[3] * (u * s - nu * H.lap(g, L).reshape(-1))
+    elif kind == 'ecsw':
+        def res(c, const, nu, co, dt, data):
+            us = jnp.einsum('esr,r->es', data['Pst'], c)
+            F, _ = H.stencil_F(us, nu, L, d)
+            return data['sw'] * (co[0] * us[:, 0] + const + dt * co[3] * F)
+    else:
+        def res(c, const, nu, co, dt, data):
+            us = jnp.einsum('psr,r->ps', data['Pst'], c)
+            _, N = H.stencil_F(us, 0., L, d)
+            return co[0] * (data['T1'] @ c) - dt * nu * co[3] * (data['T2'] @ c) + dt * co[3] * (data['T3E'] @ N) + const
+    return res
+
+
 # ---------------------------------------------------------------------------------------------- solvers ----
 
 def ls_step(J, r):
@@ -127,8 +152,11 @@ def ls_step(J, r):
     return -Q @ y
 
 
-def make_gn(rJ, budget=GN_BUDGET, halvings=GN_HALVINGS):
-    """Native damped Gauss-Newton (A1.15): QR least-squares step, backtracking by halving until ||r|| decreases."""
+def make_gn(rJ, budget=GN_BUDGET, halvings=GN_HALVINGS, res=None):
+    """Native damped Gauss-Newton (A1.15): QR least-squares step, backtracking by halving until ||r|| decreases.
+    res: residual-only function (same arguments as rJ) for the line search."""
+    res_f = res if res is not None else (lambda cc, *a: rJ(cc, *a)[0])
+
     def gn(c0, args, tol, gtol):
         r, J = rJ(c0, *args)
         rn = jnp.linalg.norm(r)
@@ -141,7 +169,7 @@ def make_gn(rJ, budget=GN_BUDGET, halvings=GN_HALVINGS):
             ok = jnp.all(jnp.isfinite(step))
             step = jnp.where(ok, step, 0.)
 
-            res_ = lambda cc: rJ(cc, *args)[0]
+            res_ = lambda cc: res_f(cc, *args)
 
             def ls_body(t):
                 h, _, _, k = t
@@ -193,9 +221,9 @@ def make_evolve(kind, d, L, solver, nmax, trust=None, mutation=None):
     lacks its advection part (N-grad); certification (certify()) always uses the correct arm."""
     step_const, rJ_true = make_arm(kind, d, L)
     _, rJ_solve = make_arm(kind, d, L, mutation=mutation)
-    res = lambda c, *a: rJ_true(c, *a)[0]
+    res = make_res(kind, d, L)
     if solver == 'native':
-        solve = make_gn(rJ_solve)
+        solve = make_gn(rJ_solve, res=res)
     else:
         assert trust is not None
         solve = make_common(rJ_solve, trust)

@@ -104,6 +104,8 @@ def main():
 
     def phase(name, fn):
         t0 = time.perf_counter()
+        res['active_phase'] = dict(name=name, started_unix=time.time())        # A35.4: bounds unfinished work
+        save()
         try:
             v = fn()
             res['phases'][name] = dict(status='ok', seconds=time.perf_counter() - t0, device_peak=PL.device_peak())
@@ -112,6 +114,7 @@ def main():
                                        trace=traceback.format_exc()[-3000:], seconds=time.perf_counter() - t0)
             log(f'ERR  {name}: {type(e).__name__}: {e}')
             v = None
+        res['active_phase'] = None
         save()
         return v
 
@@ -159,6 +162,15 @@ def main():
     OX, XS = {}, {}
     res['eligible_cases'] = [f'{c}|{j}' for c, f in cohorts for j in (range(f.n) if not cfg.get('dry') else range(3))
                              if bool(refs[c].st[j]['eligible'])]          # A32.1: fixed mask from the store
+    res['eps_ref'] = {k: float(refs[k.split('|')[0]].st[int(k.split('|')[1])]['eps_ref']) for k in cases}   # A35.1
+
+    def make_x(key, ox_p1=None):
+        import ours as OU
+        if d == 2:
+            ox = ox_p1 if ox_p1 is not None else OU.OursP1(L, [key], log=log)
+            return ox, ox.fn(key)
+        o_ = OU.OursS3(*key.split('|')[:2], log=log)
+        return o_, o_.fn(key)
 
     def ours_pass():
         import ours as OU
@@ -189,14 +201,14 @@ def main():
                     Fw = o_.lattice(jax.block_until_ready(fx(u, v)))
                     e = score(t, Fw)['e']
                     rel = abs(e - ref_e[key][t]) / abs(ref_e[key][t]) if np.isfinite(e) else float('inf')
-                    rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)
-                    save()
-                    XS.setdefault(key, {})[t] = Fw                                 # scored output (A32.7 binding)
                     np.savez(out / 'arrays' / f'X~{key.replace("|", "~")}~{t.replace("|", "~")}.npz', F=Fw)
+                    XS.setdefault(key, {})[t] = Fw                                 # scored output (A32.7 binding)
+                    rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)   # after its array
+                    save()
                 worst = max(c_['replay_rel'] for c_ in rec['cases'].values())
                 rec.update(status='complete', G_ours=bool(worst <= 1e-10), replay_worst_rel=worst)
                 if rec['G_ours']:
-                    OX[key] = (o_, fx)
+                    OX[key] = True                     # A35.3: objects released; rebuilt per X for timing
             except Exception as e:  # noqa: BLE001
                 rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
             save()
@@ -205,12 +217,8 @@ def main():
     phase('ours_pass', ours_pass)
 
     # ---- 2. Stage-B members on the full verdict cohort ---------------------------------------------------------------
-    PH = {}
-
-    def phi(r):                                        # A32.7: one basis prefix per rank (shared)
-        if r not in PH:
-            PH[r] = jax.block_until_ready(cell.Phi[:, :r])
-        return PH[r]
+    def phi(r):                                        # A35.3: no cached prefixes; one live via the ARM cache
+        return cell.Phi[:, :r]
 
     ARM = {}
 
@@ -248,10 +256,11 @@ def main():
             for k in cases:
                 tight[k] = cell.run(kind, r, dat, 'native', opt, 'tight', *ic(k))
                 ap[f'tight|{k}'] = dict(cert=tight[k]['cert'], W=tight[k]['W'])
+                save()                                 # A35.4: each anchor checkpointed at once
                 if k in cases[:2]:
                     tighter[k] = cell.run(kind, r, dat, 'native', opt, 'tighter', *ic(k))
                     ap[f'tighter|{k}'] = dict(cert=tighter[k]['cert'], W=tighter[k]['W'])
-                save()
+                    save()
             for m in mems:
                 solver = parse(m)[5]
                 part = res.setdefault('partial', {}).setdefault(m, {})
@@ -304,9 +313,21 @@ def main():
             for m in mem:
                 res['timing'][f'{key}||{m}'] = dict(status='not_timed')
         save()
-        for m in mem:                                  # grouped by (kind, r, hp): one online data set live
-            kind, r, hp, scheme, dt, solver = parse(m)
-            for key, (o_, fx) in OX.items():
+        for key in OX:                                 # A35.3: one comparator object live at a time
+            if time.perf_counter() - T0 > DEFER_FRAC * budget_s:
+                for m in mem:
+                    res['timing'][f'{key}||{m}'] = dict(status='not_timed', reason='budget')
+                save()
+                continue
+            try:
+                o_, fx = make_x(key)
+            except Exception as e:  # noqa: BLE001
+                for m in mem:
+                    res['timing'][f'{key}||{m}'] = dict(status='run_failed', reason=f'comparator rebuild: {e}')
+                save()
+                continue
+            for m in mem:                              # registered A1.12 total order
+                kind, r, hp, scheme, dt, solver = parse(m)
                 pk = f'{key}||{m}'
                 if time.perf_counter() - T0 > DEFER_FRAC * budget_s:
                     res['timing'][pk] = dict(status='not_timed', reason='budget')
@@ -336,6 +357,7 @@ def main():
                 except Exception as e:  # noqa: BLE001
                     res['timing'][pk] = dict(status='run_failed', reason=f'{type(e).__name__}: {e}', cases=rec)
                 save()
+            del o_, fx
         return len(res['timing'])
     phase('aba', aba)
     res['total_seconds'] = time.perf_counter() - T0

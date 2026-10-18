@@ -64,6 +64,30 @@ def rho_of(cases_rec, reps=3, max_retry=3):
     return out, bad
 
 
+T_PHASES = ('basis', 'saturation', 'adequacy', 'adv_pod', 'generator_probe_basis', 'ecsw_states', 'ecsw_r')
+V_TUNE = ('A|', 'EXT|', 'generator_probe_runs', 'ours_pass')
+V_STB = ('B|', 'aba', 'ours_pass')
+
+
+def phase_sum(phases, prefixes):
+    return sum(v['seconds'] for k, v in phases.items() if k.startswith(prefixes)) / 3600
+
+
+def accounting(T, B):
+    """A3.1/A35.2: non-overlapping T (training-only construction) and V (validation-informed) GPU-hours from the
+    checkpointed phase timers of both jobs; comparator qualification (G-ours replays, warm timings) is V; the
+    full-rank limiting comparator is reported apart. A job that did not finish has an unfinished active phase: its
+    expenditure is bounded below by the recorded phases and above by the job's measured allocation (ledger)."""
+    out = dict(T_hours=phase_sum(T['phases'], T_PHASES),
+               V_hours_tuning=phase_sum(T['phases'], V_TUNE), V_hours_stageB=phase_sum(B['phases'], V_STB),
+               limiting_comparator_hours=phase_sum(T['phases'], ('fom_limiting',)),
+               tuning_finished='total_seconds' in T, stageB_finished='total_seconds' in B,
+               active_phase=dict(tuning=T.get('active_phase'), stageB=B.get('active_phase')))
+    out['V_hours'] = out['V_hours_tuning'] + out['V_hours_stageB']
+    out['V_is_lower_bound'] = not (out['tuning_finished'] and out['stageB_finished'])
+    return out
+
+
 def main():
     cell, tdir, bdir = sys.argv[1], Path(sys.argv[2]), Path(sys.argv[3])
     T = json.loads((tdir / 'tune.json').read_text())
@@ -71,25 +95,26 @@ def main():
     fz = HERE / B['config']['frozen']
     assert sha(fz) == B['config']['frozen_sha256']
     FZ = json.loads(fz.read_text())
-    d = T['config']['d']
+    assert sha(tdir / 'tune.json') == FZ['tune_json_sha256'], 'tuning JSON differs from the frozen one'   # A32.9
+    d, L_ = T['config']['d'], T['config']['L']
     if d == 2:
         exp = json.loads((HERE / 'inputs' / 'p1_analysis.json').read_text())['configurations']
-        eX_all = {k: exp[k]['e0_per_case'] for k in B['ours']}
+        eX_all = {k: exp[k]['e0_per_case'] for k in FZ['X']}
     else:
         exp = json.loads((HERE / 'inputs' / 'speed3d_batch1_e0.json').read_text())['configs']
-        eX_all = {k: {f'val64|{j}': v for j, v in exp[k]['e0'].items()} for k in B['ours']}
-    assert sha(tdir / 'tune.json') == FZ['tune_json_sha256'], 'tuning JSON differs from the frozen one'   # A32.9
+        eX_all = {k: {f'val64|{j}': v for j, v in exp[k]['e0'].items()} for k in FZ['X']}
     members = B['members']
-    elig = list(B['eligible_cases'])                                           # A32.1: the store's fixed mask
-    any_m = next(iter(members.values()), None)
-    eps = np.array([any_m['e0'][c]['eps_ref'] for c in elig]) if any_m else np.zeros(0)
-    # A33.3 reconciliation: frozen members and comparators vs what the Stage-B job recorded
+    elig = list(B['eligible_cases'])                                     # A32.1: the store's fixed mask
+    eps = np.array([B['eps_ref'][c] for c in elig])                      # A35.1: from the store, not from any run
+    # ---- coverage: registered tuning inventory, frozen members, comparators (A28.5, A35.1) ----------------------------
+    inv = T.get('inventory') or {}
+    tune_unfinished = sorted(c for c, v in inv.items() if v['status'] in ('not_run', 'run_failed'))
+    tune_constr = sorted(c for c, v in inv.items() if v['status'] == 'construction_failed')
+    tune_deferred = sorted(c for c, v in inv.items() if v['status'] == 'deferred')
     missing_members = {m: (B['inventory'].get(m) or {}).get('status', 'absent') for m in FZ['members']
-                       if m not in members}
+                       if (B['inventory'].get(m) or {}).get('status') not in ('complete', 'replay_failed')}
     expected_X = [k for k, x in FZ['X'].items() if 'front' in x]
-    missing_X = [k for k in expected_X if k not in B['ours']]
-    # A33.3: saturation of the 256^2 cell is required (hashed, identity-checked) for the 1024^2 analysis
-    L_ = T['config']['L']
+    # ---- saturation / adequacy (A1.3, A2.2): unavailable = unassessed = withheld ---------------------------------------
     sat256 = None
     if d == 2 and L_ == 1024:
         sp = [a.split('=', 1)[1] for a in sys.argv if a.startswith('--sat256=')]
@@ -97,74 +122,97 @@ def main():
         path, h = sp[0].rsplit(':', 1)
         assert sha(path) == h, 'saturation source differs from its pinned hash'
         T256 = json.loads(Path(path).read_text())
-        assert T256['config']['d'] == 2 and T256['config']['L'] == 256 and T256['config'].get('saturation'), 'not the 256^2 cell'
+        assert T256['config']['d'] == 2 and T256['config']['L'] == 256 and T256['config'].get('saturation'), 'not 256^2'
         sat256 = (T256.get('saturation') or {}).get('adequate')
-    elif d == 2 and L_ == 256:
+    elif d == 2:
         sat256 = (T.get('saturation') or {}).get('adequate')
-    def tri(x):                                        # True / False / None (unassessed) -- never a silent pass
-        return None if x is None else bool(x)
-    adequate, saturation = tri((T.get('adequacy') or {}).get('adequate')), tri(sat256)
+    adequate = (T.get('adequacy') or {}).get('adequate')
+    adequate, sat256 = (None if adequate is None else bool(adequate)), (None if sat256 is None else bool(sat256))
     cf = T.get('construction_failures') or {}
-    inv = T.get('inventory') or {}
-    ecsw_exp = [c for c in inv if c.startswith('ecsw|')]
-    ecsw_bad = [c for c in ecsw_exp if inv[c]['status'] != 'complete']
+    ecsw_bad = [c for c in inv if c.startswith('ecsw|') and inv[c]['status'] != 'complete']
     limited = sorted({str(v.get('quality')) for v in T['stageA'].values() if v.get('kind') == 'ecsw'} - {'ok', 'None'})
-    # search (V) accounting from checkpointed classified phases (A3.1, A25.2, A28.3): tuning A|/EXT| phases, the probe
-    # E0 runs, and every Stage-B selection-relevant phase (B| member runs and the A-B-A timing that decides the picks)
-    tune_v = sum(v['seconds'] for k, v in T['phases'].items() if k.startswith(('A|', 'EXT|', 'generator_probe_runs')))
-    stb_v = sum(v['seconds'] for k, v in B['phases'].items() if k.startswith(('B|', 'aba')))
-    complete_run = 'total_seconds' in T and 'total_seconds' in B
-    flags = dict(adequate=adequate, saturation_256=saturation, basis_used=T.get('basis_used'),
-                 snapshot_limited=(None if (d == 2 and L_ == 1024 and saturation is None) else
-                                   bool(d == 2 and L_ == 1024 and saturation is False)),
-                 ecsw_coverage=('ECSW coverage incomplete' if ecsw_bad or any(k.startswith('ecsw|') for k in cf)
-                                else 'complete'),
-                 ecsw_not_complete=ecsw_bad, ecsw_quality_limited=limited,
-                 V_hours=(tune_v + stb_v) / 3600, V_hours_tuning=tune_v / 3600, V_hours_stageB=stb_v / 3600,
-                 V_complete=complete_run, allocation_hours=T['config'].get('search_allocation_hours'),
-                 inventory=T.get('inventory_counts'), deferred=T.get('deferred'),
-                 stageB_inventory={s_: sum(1 for v in B['inventory'].values() if v['status'] == s_)
-                                   for s_ in ('complete', 'replay_failed', 'run_failed', 'not_run')},
-                 missing_members=missing_members, missing_comparators=missing_X,
+    acct = accounting(T, B)
+    restrictions = []
+    if adequate is not True:
+        restrictions.append('basis adequacy ' + ('failed' if adequate is False else 'unassessed') + ' (A2.2)')
+    if d == 2 and sat256 is not True:
+        restrictions.append(('snapshot-limited' if L_ == 1024 else 'saturation') + ' check ' +
+                            ('failed' if sat256 is False else 'unassessed') + ' (A1.3)')
+    if tune_unfinished:
+        restrictions.append(f'tuning coverage incomplete ({len(tune_unfinished)} registered configurations unfinished)')
+    if missing_members:
+        restrictions.append(f'Stage B incomplete ({len(missing_members)} frozen members without results)')
+    if ecsw_bad or any(k.startswith('ecsw|') for k in cf):
+        restrictions.append('ECSW coverage incomplete (A3.11)')
+    if limited:
+        restrictions.append(f'ECSW construction quality-limited: {limited} (A16.5/A24.3)')
+    flags = dict(adequate=adequate, saturation_256=sat256, basis_used=T.get('basis_used'),
+                 restrictions=restrictions, tune_unfinished=tune_unfinished, tune_construction_failed=tune_constr,
+                 tune_deferred=tune_deferred, missing_members=missing_members, ecsw_not_complete=ecsw_bad,
+                 ecsw_quality_limited=limited, accounting=acct, allocation_hours=T['config'].get('search_allocation_hours'),
                  budget_note='dimension-level V ratio and band wording are applied by make_report.py (A4.3)')
-    withhold = (adequate is not True) or (d == 2 and saturation is not True)    # unavailable = unassessed = withheld
-    out = dict(cell=cell, flags=flags, eligible_cases=elig, withhold=withhold, X={}, stageb_sha256=sha(bdir / 'stageb.json'),
+    blocks_favourable = bool(restrictions and any(not r.startswith('ECSW construction quality') for r in restrictions))
+    out = dict(cell=cell, flags=flags, eligible_cases=elig, X={}, stageb_sha256=sha(bdir / 'stageb.json'),
                tune_sha256=sha(tdir / 'tune.json'), frozen_sha256=B['config']['frozen_sha256'])
 
-    def qualify(tag, text):                            # one formatter for every emitted conclusion (A32.3, A33.3)
+    def tag_of(key):
+        fx = FZ['X'].get(key, {})
+        return dict(batch=fx.get('batch'), qualification=fx.get('qualification'),
+                    diagnostic_only=bool(d == 3 and fx.get('batch') == 1))
+
+    def qualify(tag, text):                            # one formatter for every emitted conclusion (A32.3, A35.1)
         pre = ('DIAGNOSTIC ONLY (3D batch 1, A22.0): ' if tag['diagnostic_only'] else
                'qualified subset, not a completeness claim (3D batch 2, A29): ' if tag['batch'] == 2 and d == 3 else '')
+        if restrictions:
+            fav = not text.startswith('baseline dominates')
+            if fav and blocks_favourable and any(w in text for w in ('ours dominates', 'matches', 'neither', 'no observed')):
+                text += ' (withheld: ' + '; '.join(restrictions) + ')'
+            else:
+                text += ' [' + '; '.join(restrictions) + ']'
         return pre + text + ' [developmental, in-sample, unadjusted]'
-    for key in missing_X:
-        fx = FZ['X'][key]
-        tag = dict(batch=fx.get('batch'), qualification=fx.get('qualification'),
-                   diagnostic_only=bool(d == 3 and fx.get('batch') == 1))
-        out['X'][key] = dict(tag, label=qualify(tag, 'not assessed (comparator missing from the Stage-B job)'))
-    for key, xr in B['ours'].items():
-        fx = FZ['X'].get(key, {})
-        tag = dict(batch=fx.get('batch'), qualification=fx.get('qualification'),
-                   diagnostic_only=bool(d == 3 and fx.get('batch') == 1))
-        if not (xr.get('G_ours') and fx.get('front') is not None):
-            out['X'][key] = dict(tag, label=qualify(tag, 'not assessed'), reason='G-ours failed or X not admitted')
+
+    def pairs_inventory(key, outcome):                 # A35.1: every (X, frozen member) pair has an outcome
+        return {m: outcome.get(m, 'not assessed') for m in FZ['members']}
+
+    for key in FZ['X']:
+        tag = tag_of(key)
+        if key not in expected_X:
+            out['X'][key] = dict(tag, label=qualify(tag, 'not assessed (X not admitted in the tuning job)'),
+                                 pairs=pairs_inventory(key, {}), n_assessed_pairs=0)
+            continue
+        xr = B['ours'].get(key)
+        if not (xr and xr.get('G_ours')):
+            out['X'][key] = dict(tag, label=qualify(tag, 'not assessed (G-ours failed or comparator missing in Stage B)'),
+                                 pairs=pairs_inventory(key, {}), n_assessed_pairs=0)
             continue
         if not elig or any(c not in eX_all[key] for c in elig):
-            out['X'][key] = dict(tag, label=qualify(tag, 'not assessed'), reason='no eligible case-kind or missing exported errors')
+            out['X'][key] = dict(tag, label=qualify(tag, 'not assessed (no eligible case-kind or missing exported errors)'),
+                                 pairs=pairs_inventory(key, {}), n_assessed_pairs=0)
             continue
         eX = np.array([eX_all[key][c] for c in elig])
         envX = ST.envelope(eX, eps)
-        cand, excluded, incomplete = [], {}, []
-        for m, mv in members.items():
-            if not (mv['q1']['q1'] and mv.get('replay_ok')):
-                excluded[m] = 'not Q1-qualified on the verdict cohort' if not mv['q1']['q1'] else 'replay failed'
+        cand, outcome, incomplete = [], {}, []
+        for m in FZ['members']:
+            mv = members.get(m)
+            if mv is None:
+                outcome[m] = f'missing ({missing_members.get(m, "absent")})'
+                incomplete.append(m)
+                continue
+            if not mv['q1']['q1']:
+                outcome[m] = 'excluded: not Q1-qualified on the verdict cohort'
+                continue
+            if not mv.get('replay_ok'):
+                outcome[m] = 'excluded: replay failed'
                 continue
             tm = B['timing'].get(f'{key}||{m}') or {}
             if tm.get('status') != 'complete' or not tm.get('outputs_ok'):
+                outcome[m] = f'timing {tm.get("status", "absent")}'
                 incomplete.append(m)
                 continue
             rho, bad = rho_of(tm['cases'])
             if bad or sorted(rho) != list(ST.TIMING_CASES) or not all(rho.values()):
+                outcome[m] = f'timing contract failed: {bad[:3]}'
                 incomplete.append(m)
-                excluded[m] = f'timing contract: {bad[:3]}'
                 continue
             eB = np.array([mv['e0'][c]['e'] for c in elig])
             ts = ST.time_stats(rho)
@@ -172,54 +220,60 @@ def main():
             cand.append(dict(id=m, ratio=ts['median'], W=float(np.max(eB)), med=float(np.median(eB)), r=int(r),
                              kind=kind, hr_points=int(FZ['member_info'][m]['hr_points']), scheme=scheme, dt=float(dt),
                              solver=solver, eB=eB, rho=rho, quality=FZ['member_info'][m].get('quality')))
-        if incomplete or missing_members:              # A30.1 (2), A33.3: never fill a role from an incomplete set
-            out['X'][key] = dict(tag, label=qualify(tag, 'role incomplete (' + ('timing' if incomplete else 'members')
-                                                    + ')'), incomplete=incomplete, missing_members=missing_members,
-                                 excluded=excluded,
-                                 W_X=float(np.max(eX)))
+        rec = dict(tag, W_X=float(np.max(eX)), med_X=float(np.median(eX)), roles={}, exploratory={})
+        if incomplete:                                 # A30.1 (2), A35.1: never fill a role from an incomplete set
+            rec.update(label=qualify(tag, 'role incomplete (' + ', '.join(sorted({outcome[m].split(':')[0].split(' (')[0]
+                                                                              for m in incomplete})) + ')'),
+                       pairs=pairs_inventory(key, outcome), n_assessed_pairs=0, incomplete=incomplete)
+            out['X'][key] = rec
             continue
         if not cand:
-            out['X'][key] = dict(tag, label=qualify(tag, 'baseline incomplete at this mesh'), W_X=float(np.max(eX)),
-                                 excluded=excluded)
+            rec.update(label=qualify(tag, 'baseline incomplete at this mesh'), pairs=pairs_inventory(key, outcome),
+                       n_assessed_pairs=0)
+            out['X'][key] = rec
             continue
         b_acc, b_cost, F = ST.picks([{k: v for k, v in c.items() if k not in ('eB', 'rho')} for c in cand],
                                     float(np.max(eX)))
         byid = {c['id']: c for c in cand}
-        rec = dict(tag, W_X=float(np.max(eX)), med_X=float(np.median(eX)), front=[f['id'] for f in F], roles={},
-                   exploratory={}, excluded=excluded, n_candidates=len(cand))
+        rec['front'] = [f['id'] for f in F]
+        substantive = set()
         for role, p_ in (('B_acc', b_acc), ('B_cost', b_cost)):
             if p_ is None:
                 rec['roles'][role] = dict(label=qualify(tag, 'no baseline in role'))
                 continue
             c = byid[p_['id']]
             lab = ST.pair_label(eX, c['eB'], eps, c['rho'])
+            rr = int(c['r'])
             rec['roles'][role] = dict(id=c['id'], quality=c['quality'], T=c['ratio'], W=c['W'], med=c['med'], **{
                 k: v for k, v in lab.items() if k in ('time', 'envX', 'envB', 'qualifier', 'reason')})
             rec['roles'][role]['label'] = qualify(tag, lab['label'])
-        role_ids = {v['id'] for v in rec['roles'].values() if 'id' in v}
+            rec['roles'][role]['construction_hours'] = dict(           # A3.1: T beside the pick
+                cell_T=acct['T_hours'], ecsw_path=(T['phases'].get(f'ecsw_r{rr}', {}).get('seconds', 0.) / 3600
+                                                   if c['kind'] == 'ecsw' else 0.))
+            if lab['label'] != 'not assessed':
+                substantive.add(c['id'])
+                outcome[c['id']] = f'{role}: {lab["label"]}'
         for c in cand:
-            if c['id'] in role_ids:
-                continue                                  # a registered pick is not re-labelled as exploratory
+            if c['id'] in substantive or c['id'] in [v.get('id') for v in rec['roles'].values()]:
+                continue
             envB = ST.envelope(c['eB'], eps)
             if envB['worst'][0] > envX['worst'][1]:
-                continue                                  # worst envelope entirely above X's: not labelled
+                outcome[c['id']] = 'not labelled: worst envelope entirely above X'
+                continue
             lab = ST.pair_label(eX, c['eB'], eps, c['rho'])
             rec['exploratory'][c['id']] = dict(label=qualify(tag, lab['label'] + ' (exploratory)'), T=c['ratio'],
                                                W=c['W'], med=c['med'], quality=c['quality'])
-        assessed = len(role_ids) + len(rec['exploratory'])                      # unique (X, B) pairs
-        rec['n_assessed_pairs'] = assessed
-        rec['n_not_assessed'] = len(FZ['members']) - assessed
-        rec['not_assessed_reasons'] = dict(excluded, **{c['id']: 'worst envelope entirely above X' for c in cand
-                                                        if c['id'] not in role_ids and c['id'] not in rec['exploratory']})
-        dom_reg = [r_ for r_, v in rec['roles'].items() if 'baseline dominates' in v.get('label', '')]
+            if lab['label'] != 'not assessed':
+                substantive.add(c['id'])
+                outcome[c['id']] = f'exploratory: {lab["label"]}'
+        rec['pairs'] = pairs_inventory(key, outcome)
+        rec['n_assessed_pairs'] = len(substantive)                          # unique (X, B) with a substantive label
+        rec['n_not_assessed'] = len(FZ['members']) - len(substantive)
         dom_exp = [i for i, v in rec['exploratory'].items() if 'baseline dominates' in v['label']]
-        line = ('observed domination of X by a registered pick' if dom_reg else
-                'observed domination of X by a non-registered Stage-B configuration' if dom_exp else
-                f'no observed domination among the {assessed} pairs assessed')
-        if withhold and not dom_reg and not dom_exp:
-            line += ' (withheld: basis possibly under-sampled / snapshot-limited / check unassessed, A1.3/A2.2)'
-        if flags['ecsw_coverage'] != 'complete' or limited:
-            line += f' [ECSW: {flags["ecsw_coverage"]}; quality-limited: {limited}; no "adequately tuned ECSW" wording]'
+        dom_reg = [r_ for r_, v in rec['roles'].items() if 'baseline dominates' in v.get('label', '')]
+        line = ('baseline dominates X: observed domination by a registered pick' if dom_reg else
+                'baseline dominates X: observed domination by a non-registered Stage-B configuration' if dom_exp else
+                f'no observed domination among the {len(substantive)} pairs assessed')
         rec['cell_line'] = qualify(tag, line)
         out['X'][key] = rec
     p = HERE / 'checks' / f'VERDICT-{cell}.json'

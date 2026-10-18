@@ -87,9 +87,25 @@ def ecsw_validate(tdir, T, members):
         q = '; '.join(lim) if lim else 'ok'
         zt = np.load(tdir / 'artifacts' / f'ECSW_r{r}.npz')
         a = P_['selected']
-        tw, tn = zt[f'{a}~terminal~weights'], zt[f'{a}~terminal~nodes']
+        tw, tn, tr = zt[f'{a}~terminal~weights'], zt[f'{a}~terminal~nodes'], zt[f'{a}~terminal~resvec']
+        bn = float(np.asarray(zt[f'{a}~bnorm']))
         term_ok = bool(len(tw) == len(tn) == sel['final_support'] and np.all(np.isfinite(tw)) and np.all(tw > 0)
-                       and len(set(tn.tolist())) == len(tn))
+                       and np.issubdtype(tn.dtype, np.integer) and np.all((tn >= 0) & (tn < n))
+                       and len(set(tn.tolist())) == len(tn) and np.all(np.isfinite(tr)) and bn > 0
+                       and abs(float(np.linalg.norm(tr)) / bn - sel['final_relres'])
+                       <= 1e-10 * max(sel['final_relres'], 1e-300) + 1e-14)
+        if sel['reason'] == 'kkt':                     # A23/A24.1: a KKT stop must carry the solver's certificate
+            k_ = sel.get('kkt') or {}
+            term_ok &= bool(k_.get('ok') is True and k_['support_max_abs_gradient'] <= k_['tol']
+                            and k_['off_support_max_gradient'] <= k_['tol'])
+        # the online sample is exactly the selected path's checkpoint (or, for an optimum alias, its terminal solution)
+        cn, cw = zt[f'{a}~{hp}~nodes'], zt[f'{a}~{hp}~weights']
+        o1, o2 = np.argsort(nd), np.argsort(cn)
+        term_ok &= bool(len(cn) == len(nd) and np.array_equal(nd[o1], cn[o2]) and np.array_equal(w[o1], cw[o2]))
+        cp = sel['checkpoints'].get(hp) or {}
+        if cp.get('optimum'):
+            ot1, ot2 = np.argsort(tn), np.argsort(nd)
+            term_ok &= bool(len(tn) == len(nd) and np.array_equal(tn[ot1], nd[ot2]) and np.array_equal(tw[ot1], w[ot2]))
         ok &= term_ok and q == P_['quality'] == T['stageA'][m]['quality']
         out[m] = dict(ok=ok, quality_recomputed=q, terminal_ok=term_ok)
     assert all(v['ok'] for v in out.values()), {k: v for k, v in out.items() if not v['ok']}
@@ -150,6 +166,8 @@ def main():
     for m in members:
         kind, r, hp = m.split('|')[:3]
         needed.add(f"arrays/{A[m]['stage']}~{m.replace('|', '~')}.npz")            # replay dependency (A32.8)
+        if kind == 'ecsw':
+            needed.add(f'artifacts/ECSW_r{r}.npz')                                 # validator input (A35.1)
         if kind != 'none':
             needed.add(f'artifacts/HR~{kind}~{r}~{hp}.npz')
     assert needed <= set(arts), sorted(needed - set(arts))
@@ -168,7 +186,18 @@ def main():
     adm = [k for k, x in X.items() if 'front' in x]
     tx = {k: float(np.median([c['seconds_warm'] for c in T['ours_pass'][k]['cases'].values()])) for k in adm}
     sec += sum(len(TIMING) * 3 * 1.5 * (2 * tx[k] + elig[m]['t'] + 0.3) for k in adm for m in members)
-    projection = dict(seconds_model=sec, hours_certified=2 * sec / 3600, note='2x the model (compilation, retries)')
+    sec += len(adm) * 2 * 300.                                              # comparator setup twice (G-ours, timing)
+    sec += len(members) * 60. + len(grp) * 60.                              # compilation, checkpoint writes
+    # A35.3 memory: one basis (Phi, all ranks), one live HR data set, one comparator, timing-case fields on the host
+    nn = (T['config']['L'] - 1) ** d_
+    rmax = max(int(m.split('|')[1]) for m in members) if members else 0
+    dev = 8 * nn * (int(np.load(tdir / 'artifacts' / 'Phi.npz', mmap_mode='r')['Phi'].shape[1]) + 3 * rmax)
+    peak_tune = max((v.get('device_peak') or 0) for k, v in T['phases'].items() if k.startswith(('A|', 'ours_pass')))
+    host = 8 * len(members) * len(TIMING) * 6 * (257 ** 2 if d_ == 2 else 63 ** 3) + 8 * nn * rmax * 2
+    projection = dict(seconds_model=sec, hours_certified=2 * sec / 3600, note='2x the model (compilation, retries)',
+                      device_bytes_model=dev, tuning_peak_device_bytes=peak_tune, host_bytes_model=host,
+                      memory_ok=bool(dev <= 120e9 and host <= 150e9))
+    assert projection['memory_ok'], projection
     ecsw_ok = dict(ecsw_ok)
     ver = dict(projection=projection, ecsw_members_validated=len(ecsw_ok), configs_rechecked=sum(1 for c in A if T['inventory'].get(c, {}).get('status') == 'complete'),
                worst_abs_distance_mismatch=mism_all, ok=True)

@@ -141,7 +141,8 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
         bad = [k for k, h in need.items() if got.get(k) != h]
         assert not bad, ('remote tuning dependencies differ from the frozen hashes', bad[:5])
         proj = fz['verify']['projection']['hours_certified']
-        assert proj <= c0['wall_hours'], ('Stage-B projection exceeds the wall limit', proj, c0['wall_hours'])
+        usable = c0['wall_hours'] - 4 / 60                 # driver deadline = wall - 4 min (OUTPUTS checksums)
+        assert proj <= usable and fz['verify']['projection']['memory_ok'], ('Stage-B admission', proj, usable)
         print(f'stageb preflight: {len(need)} remote dependencies verified; projection {proj:.2f} h <= {c0["wall_hours"]} h')
     if a.driver == 'tune':                         # every lazily loaded asset the configuration needs (code audit 19)
         chk2 = (f'import json, ours; cfg = json.load(open({str(out / cfgname)!r})); print(ours.check_assets(cfg))')

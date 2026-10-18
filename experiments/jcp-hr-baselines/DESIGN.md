@@ -1706,3 +1706,37 @@ included for tuning attempts), `submit-check` (exactly one unbound reservation; 
 the Slurm job id from sbatch's output; a reservation is consumed once — a retry is a new attempt with a new
 reservation), `reconcile` (at collection: measured GPU-hours = ElapsedRaw × allocated GPUs). Jobs are submitted with
 `--no-requeue`.
+
+---
+
+## Amendment A35 (2026-10-18) — code audit 24 (Stage-B chain, NOT READY)
+
+**A35.1 Coverage and failure paths.** ε_ref comes from the reference store (Stage-B `eps_ref`), never from a run. The
+analysis reconciles the full registered tuning inventory (unfinished = `not_run`/`run_failed`; `construction_failed`
+and `deferred` reported separately), the frozen members and the comparators before any statistic; every (X, frozen
+member) pair carries an outcome (substantive label, exclusion reason, or missing/incomplete). Unfinished tuning work,
+missing Stage-B members, failed or unassessed adequacy/saturation and incomplete ECSW coverage are **restrictions**
+attached to every emitted conclusion of the cell (roles, exploratory pairs, cell lines); favourable or neutral
+conclusions (ours dominates, matches, neither, no observed domination) are **withheld** under any restriction other than
+quality-limited ECSW, while observed baseline domination is still reported (A2.2). Counts are unique (X, B) pairs with a
+substantive label.
+
+**A35.2 Accounting.** T (training-only construction: basis, saturation, adequacy, advection POD, probe basis, ECSW
+states and paths) and V (validation-informed: Stage-A/EXT screening, probe E0 runs, comparator qualification in both
+jobs, Stage-B member runs and A–B–A timing) come from the checkpointed phase timers; the limiting comparator is
+reported apart; a job that did not finish yields V as a lower bound, with its active phase and the ledger's measured
+allocation as the upper bound. Construction hours are attached to each pick.
+
+**A35.3 Stage-B memory.** One comparator object is live at a time (built for G-ours, released, rebuilt per X for its
+timing pairs; the rebuilt output must equal the scored one to 1e-12); no cached basis prefixes; one HR data set live;
+the freeze computes device/host models (basis + 3 r_max columns on the device; timing-case fields + two prefixes on the
+host) and refuses membership above 120 GB device / 150 GB host; staging compares the projection with the usable driver
+time (wall − 4 min). Timing runs X-outer in the registered total order.
+
+**A35.4 Checkpoints.** Each Stage-B anchor is checkpointed when it completes; comparator arrays are written before the
+metadata that references them; the active phase is recorded.
+
+**A35.5 ECSW validator.** Before freezing, each ECSW member's online sample must equal its selected-path checkpoint
+(or, for an optimum alias, the terminal solution), and the selected path's terminal evidence must pass the A24.1 checks
+(in-mesh unique integer nodes, positive finite weights, residual reproduction, solver KKT certificate for KKT stops);
+the ECSW path artifacts are hashed into the frozen dependencies.

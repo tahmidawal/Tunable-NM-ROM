@@ -438,9 +438,13 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                        calibration_status=(fv.get('calibration') or {}).get('status'), infeasible=fv.get('infeasible'))
             cs = fv.get('cases') or {}
             if cs:
-                e = [c['e'] for c in cs.values() if c.get('eligible')]
-                ent.update(n_cases=len(cs), converged=all(c.get('converged') for c in cs.values()),
-                           median=float(np.median(e)) if e else None, worst=float(np.max(e)) if e else None)
+                scored = [c for c in cs.values() if np.isfinite(c.get('e', np.nan))]
+                conv = all(c.get('converged') for c in cs.values())
+                full = conv and len(scored) == len(cs)
+                e = [c['e'] for c in scored if c.get('eligible')]
+                ent.update(n_cases=len(cs), scored=len(scored), converged=conv, statistics_complete=full,
+                           median=float(np.median(e)) if (e and full) else None,      # no statistic from a partial / failed run
+                           worst=float(np.max(e)) if (e and full) else None)
             # absolute FOM warm time at this mesh: median t_B over every valid panel of this mesh that timed it
             tbs = [pl[grp][fv.get('key')]['t_B'] for pl in o['panels'].values() if pl.get('valid')
                    for grp in ('same_mesh', 'cross') if fv.get('key') in pl.get(grp, {})]

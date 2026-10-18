@@ -754,3 +754,11 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 
 * No median / worst is computed from a partial score population (null instead); tables show the scored-case count.
 * `rows_elig` works on ADT rows, which carry no certified-step counter (`analyze_r1.py` checks ADT validity with it).
+
+---
+
+## Amendment A23 (2026-10-18; disposition of `audits/codex-code-19.md`, NOT READY on one item)
+
+* m1 FOM statistics (H4.2 diagnostic) are computed only when every case converged and was scored; the table and the
+  export show convergence and the scored/total count. Codex prompts now follow COMMON-BRIEF §11 (no large copies; at most
+  2 GB scratch in one reused `/tmp/speed3d-audit-scratch/`, deleted after each round; ≥ 60 GB free before each audit).

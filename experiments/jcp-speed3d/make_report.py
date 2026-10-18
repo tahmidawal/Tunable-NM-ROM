@@ -451,12 +451,13 @@ def main():
                 if fv.get('matched_for'):
                     continue
                 sps = [m1['H42'].get(Ls, {}).get(l_, {}).get(fv.get('key')) for l_ in m1['H41']]
-                rows.append([Ls, fk, fv.get('key') or '–', fv.get('calibration_status') or fv.get('infeasible') or '–', f(fv.get('median')),
-                             f(fv.get('worst')), f(fv.get('n_cases')), f(fv.get('seconds_warm')), ', '.join(f(x) for x in sps)])
+                rows.append([Ls, fk, fv.get('key') or '–', fv.get('calibration_status') or fv.get('infeasible') or '–', f(fv.get('converged')),
+                             f"{fv.get('scored', '–')}/{fv.get('n_cases', '–')}", f(fv.get('median')), f(fv.get('worst')), f(fv.get('seconds_warm')),
+                             ', '.join(f(x) for x in sps)])
         w('**H4.2** same-mesh diagnostic (not an equal-accuracy claim; FOM errors on the first cases listed; '
           'speed-up = FOM time / ROM time per ROM in the order ' + ', '.join(m1['H41']) + '; valid panels only):')
         w('')
-        w(table(['L', 'family|Δt', 'calibrated configuration', 'status', 'median', 'worst', 'cases', 'FOM time (s)', 'speed-ups'], rows))
+        w(table(['L', 'family|Δt', 'calibrated configuration', 'calibration', 'converged', 'scored/cases', 'median', 'worst', 'FOM time (s)', 'speed-ups'], rows))
         w('')
         rows = []
         for l_, v in m1['H43'].items():
@@ -592,6 +593,7 @@ def main():
                         Hcomp_largest_mesh=m1['Hcomp_largest_mesh'], K2=m1['K2'], K2_fires=m1['K2_fires'], acceptance=m1['acceptance'],
                         fom_seconds_per_mesh={L_: {fk: dict(key=fv.get('key'), seconds_warm=fv.get('seconds_warm'), matched_for=fv.get('matched_for'),
                                                             median=fv.get('median'), worst=fv.get('worst'), n_cases=fv.get('n_cases'),
+                                                            scored=fv.get('scored'), statistics_complete=fv.get('statistics_complete'),
                                                             converged=fv.get('converged'), calibration=fv.get('calibration'),
                                                             calibration_status=fv.get('calibration_status'), infeasible=fv.get('infeasible'))
                                                    for fk, fv in o['fom'].items()} for L_, o in m1['per_L'].items()},

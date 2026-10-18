@@ -224,6 +224,138 @@ def main():
     out['coverage'] = {w: sorted({k for k in qual_keys if k.startswith(w + '|') or re.match(rf'^{w}(k\d|M\d+)\|', k)})
                        for w in ('M2_512', 'W256', 'W512', 'W768', 'W1024')}
     out['qualified_3d'] = sorted(set(qual_keys))
+    # ---- E0 per case for any key (lane scores first, then speed3d's grid scores)
+    def e0_of(k):
+        if k in C and C[k]['e0']:
+            return {int(j): v for j, v in C[k]['e0'].items()}
+        for g in ('g1', 'g2', 'g3'):
+            p = SPEED3D / 'checks' / f'scores-{g}.json'
+            sc = json.loads(p.read_text())['scores'] if p.exists() else {}
+            if k in sc:
+                return {int(j): v for j, v in sc[k].items()}
+        return None
+
+    def arr(kX, kY):
+        a_, b_ = e0_of(kX), e0_of(kY)
+        ids = sorted(set(a_) & set(b_))
+        return (np.array([a_[j]['e'] for j in ids]), np.array([b_[j]['e'] for j in ids]),
+                np.array([a_[j]['eps_ref'] for j in ids]),
+                np.array([a_[j]['eligible'] and all(C[kX]['entry'].get('valid', [True])) and all(C[kY]['entry'].get('valid', [True]))
+                          if kX in C and kY in C else a_[j]['eligible'] for j in ids]))
+
+    def tr(kX, kY):
+        if kX not in C or kY not in C or not C[kX]['e0'] or not C[kY]['e0']:
+            return dict(label='inconclusive (missing)', X=kX, Y=kY)
+        a_, b_, e_, el = arr(kX, kY)
+        lab_, p = DS.transition(a_, b_, e_, el, qualified=(lab.get(kX, False), lab.get(kY, False)))
+        return dict(label=lab_, stats=p, X=kX, Y=kY)
+    # ---- B6-3D (W512, primary rung lat65536)
+    ad = lambda k, f: f'W512k{k}|lat65536|ad|{f}|CN|0.01'
+    fsk = lambda k: 'W512|lat65536|fs|CN|0.01|K1' if k == 4 else f'W512k{k}|lat65536|fs|CN|0.01|K1'
+    for f in ('LSPG', 'GAL'):
+        t_ = {f'{a_}->{b_}': tr(ad(a_, f), ad(b_, f)) for a_, b_ in ((1, 2), (2, 3), (3, 4), (4, 8))}
+        c_ = tr(ad(1, f), ad(4, f))
+        ctl = DS.control_mr(c_['label'], (lab.get(ad(1, f), False), lab.get(ad(4, f), False)))
+        out['B6'][f'W512|{f}-CN adaptive'] = dict(transitions=t_, control_1_to_4=c_, control=ctl,
+                                                  range_2_4=DS.range_verdict([t_['2->3']['label'], t_['3->4']['label']]) if ctl == 'fired'
+                                                  else ('test-space sensitivity not demonstrated' if ctl == 'did not fire' else 'blocked (control unavailable)'))
+    ctl_ad = out['B6']['W512|LSPG-CN adaptive']['control']
+    t_ = {f'{a_}->{b_}': tr(fsk(a_), fsk(b_)) for a_, b_ in ((2, 3), (3, 4), (4, 8))}
+    out['B6']['W512|fs-CN (control from the adaptive LSPG form)'] = dict(transitions=t_, control=ctl_ad,
+        range_2_4=DS.range_verdict([t_['2->3']['label'], t_['3->4']['label']]) if ctl_ad == 'fired' else 'blocked or not demonstrated')
+    for k in (1, 2, 3, 4, 8):
+        g, l_ = ad(k, 'GAL'), ad(k, 'LSPG')
+        if g in C and l_ in C and C[g]['e0'] and C[l_]['e0']:
+            a_, b_, e_, el = arr(g, l_)
+            out['B6'].setdefault('GAL vs LSPG (adaptive CN)', {})[f'kappa{k}'] = dict(zip(('label', 'stats'), DS.two_way(
+                a_, b_, e_, el, qualified=(lab.get(g, False), lab.get(l_, False)), names=('GAL', 'LSPG'))))
+    # ---- A3-3D
+    fx = lambda w: 'W512|lat65536|fs|CN|0.01|K1' if w == 'W512' else f'{w}M2052|lat65536|fs|CN|0.01|K1'
+    ws = ('W256', 'W512', 'W768', 'W1024')
+    t1 = [tr(fx(ws[i]), fx(ws[i + 1])) for i in range(3)]
+    t2_ = [tr(f'{ws[i]}|lat65536|fs|CN|0.01|K1', f'{ws[i + 1]}|lat65536|fs|CN|0.01|K1') for i in range(3)]
+    out['A3'] = {'fixed (M=2052 frozen list, lat65536)': dict(transitions=t1, range=DS.range_verdict([x['label'] for x in t1])),
+                 'fixed m lat65536, nominal M': dict(transitions=t2_, range=DS.range_verdict([x['label'] for x in t2_]))}
+    # ---- B3-3D families at W512 kappa 4, fs|CN
+    fam = {}
+    for v in out['mstar'].values():
+        if v['setting'] == 'W512' and v['spec'] == 'fs|CN|0.01|K1' and v['att'] in ('m3a', 'b3f', 'b3m'):
+            fam.setdefault(v['family'], {})[v['draw']] = v
+    fres = {}
+    for f, dr in fam.items():
+        cand = next(iter(dr.values()))['rungs'][:-2]
+        sizes = [m3(r) for r in cand]
+        if len(dr) == 1:
+            fres[f] = dict(family=next(iter(dr.values()))['mstar'])
+        else:
+            fres[f] = DS.family_mstar([dr[s_]['labels'][:len(cand)] for s_ in sorted(dr)], sizes)
+    gates = {}
+    tgt = 'W512|gl64|fs|CN|0.01|K1'
+    fg = {}
+    for att in ('b3f', 'b3m'):
+        d = out_dir(att)
+        if d is not None:
+            for b in json.loads((d / 'result.json').read_text())['blocks']:
+                if b['kind'] == 'fixgate':
+                    fg.update(b['result']['rules'])
+    for f, dr in fam.items():
+        for s_, v in dr.items():
+            fin = v['rungs'][-1]
+            kf = f'W512|{fin}|fs|CN|0.01|K1'
+            avail = kf in C and tgt in C and all(C[kf]['Q1'].values()) and all(C[tgt]['Q1'].values())
+            dist = np.inf
+            if avail:
+                dist = float(offline_dist(C[kf]['W'], C[tgt]['W'], 'W512', n0s(C[kf]['cases'])).max())
+            rb = fg.get(fin, {}).get('rho_tgt', [])
+            gates[f'{f}|s{s_}'] = dict(rule=fin, gate=DS.cross_family_gate(rb, avail, dist), worst_dist_to_target=dist)
+    gates['badlat262144 (control)'] = dict(gate=DS.cross_family_gate(fg.get('badlat262144', {}).get('rho_tgt', []), False, np.inf))
+    pe = {}
+    nm = sorted(fres)
+    for i in range(len(nm)):
+        for j in range(i + 1, len(nm)):
+            ok = all(v['gate'] == 'pass' for kk, v in gates.items() if kk.split('|')[0] in (nm[i], nm[j]))
+            pe[f'{nm[i]} vs {nm[j]}'] = DS.point_efficiency(fres[nm[i]]['family']['m'], fres[nm[j]]['family']['m'], names=(nm[i], nm[j])) \
+                if ok else 'inconclusive (gate flagged or unavailable)'
+    out['families'] = dict(mstar=fres, gates=gates, point_efficiency=pe)
+    # ---- H2q (after the t3s screening panel)
+    if a.after_screen:
+        d = out_dir('t3s')
+        res = json.loads((d / 'result.json').read_text())
+        pan = res['timing']['screen']
+        ratios = {}
+        for x in pan['invocations']:
+            ratios.setdefault(x['B'], []).append(x['ratio'])
+        CC = {}
+        for k in set(out['qualified_3d']) | set(COMPARATORS.values()):
+            name = k if k.split('|')[2] != 'ad' else k + '|prod'
+            e = e0_of(k)
+            if e is None:
+                continue
+            el = {j: v for j, v in e.items() if v['eligible']}
+            q1 = all(C[k]['Q1'].values()) if k in C else True    # rounds / qualify passes: speed3d Q1 (cited)
+            cost = float(np.median(ratios[name])) if name in ratios else (1.0 if k == COMPARATORS['C_old'] else None)
+            CC[k] = dict(cost=cost, median=float(np.median([v['e'] for v in el.values()])),
+                         worst=float(np.max([v['e'] for v in el.values()])), e={j: v['e'] for j, v in el.items()},
+                         eta={j: v['eps_ref'] for j, v in el.items()}, q1=q1, screen_valid=bool(pan['valid'] and cost is not None))
+        qset = {k for k in out['qualified_3d'] if k in CC}
+        conf = {}
+        dc = out_dir('t3c')
+        if dc is not None:
+            rc = json.loads((dc / 'result.json').read_text())
+            for lb, t in rc['timing'].items():
+                conf[lb.split('|', 1)[1]] = dict(valid=t['valid'], median_ratio=float(np.median([x['ratio'] for x in t['invocations']])))
+        for cn, ck in COMPARATORS.items():
+            r_ = DS.h2q(CC, ck, qset, conf.get(cn))
+            r_.update(comparator=ck, comparator_q2=out['configurations'].get(ck, {}).get('Q2', {}).get('label'))
+            out['h2q'][cn] = r_
+        out['screen'] = {k: dict(cost=v['cost'], median=v['median'], worst=v['worst']) for k, v in CC.items()}
+        pts = {k: dict(c=v['cost'], e=v['median'], eps=float(np.median(list(v['eta'].values())))) for k, v in CC.items()
+               if k in qset and v['cost'] is not None}
+        ptw = {k: dict(c=v['cost'], e=v['worst'], eps=float(np.median(list(v['eta'].values())))) for k, v in CC.items()
+               if k in qset and v['cost'] is not None}
+        import qstats as QS
+        out['front'] = dict(median=QS.front(pts)[0] if pts else [], worst=QS.front(ptw)[0] if ptw else [],
+                            label='qualified subset of the tested candidates (bounded search; never complete)')
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / 'rounds3d.json').write_text(json.dumps(dict(labels={k: v['label'] for k, v in out['rounds'].items()
                                                                             if v.get('label') != 'control'}), indent=1) + '\n')

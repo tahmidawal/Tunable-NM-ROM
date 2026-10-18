@@ -171,6 +171,99 @@ def trans(C, Q, kX, kY):
     return dict(label=lab, stats=p, X=kX, Y=kY)
 
 
+def t2_label(e):
+    return f"1024|R{e['r']}|M{e['M']}|{e['rule']}|{e['form']}|{e['scheme']}|1"
+
+
+def timing_costs():
+    """DESIGN 4 / A1.1: per subject of t2: cost c = median over valid fused triplets of t_fused / mean(t_A); per-case
+    medians (for the case bootstrap); usable iff <= 1/3 of its triplets invalid; timing-job qualification on dev6
+    (validity, pooled certificate, G-cert, tight / tighter, q+ rollout and rho, q++ convergence)."""
+    d = DSC.out_dir('t2', 'dtime', 't2')
+    if d is None:
+        return {}
+    res = json.loads((d / 'result.json').read_text())
+    out = {}
+    for lb, s in res['subjects'].items():
+        fz = [x for x in res['fused'] if x['B'] == lb]
+        ok = [x for x in fz if x['valid']]
+        per = {}
+        for x in ok:
+            per.setdefault(x['case'], []).append(x['ratio'])
+        rows = s['certification']
+        steps = int(s['steps']) * len(rows)
+        q1 = bool(rows and all(r_['valid'] and r_['tight_valid'] and r_['tighter_valid'] for r_ in rows)
+                  and sum(r_['noncertified'] for r_ in rows) <= .01 * steps and all(r_['dist_tight'] <= 2.5e-4 for r_ in rows)
+                  and all(r_['dist_tight_tighter'] <= 2.5e-5 for r_ in rows))
+        q2 = True
+        if s['spec'].get('qp'):
+            q2 = all(r_.get('qp_valid') and r_.get('dist_qp', 1) <= 2.5e-4 for r_ in rows)
+            z = np.load(d / f"S_{lb.replace('|', '_')}.npz")
+            rh = np.asarray(z['rho'], float)
+            q2 = q2 and bool(np.nanmax(rh) <= .116)
+            if s['spec'].get('qpp'):
+                q2 = q2 and all(r_.get('qpp_valid') and r_.get('dist_qp_qpp', 1) <= 2.5e-4 for r_ in rows)
+            else:
+                q2 = False                                 # no check rung: unverified, not qualified
+        out[lb] = dict(c=float(np.median([x['ratio'] for x in ok])) if ok else None,
+                       c_ev=float(np.median([x['ratio'] for x in res['invocations'] if x['B'] == lb and x['valid']] or [np.nan])),
+                       per_case={k: float(np.median(v)) for k, v in per.items()}, usable=bool(fz and len(ok) >= len(fz) * 2 / 3),
+                       qualified=bool(q1 and q2), q1=q1, q2=q2)
+    return out
+
+
+def shapley(C, Q, out, cost, B=10000):
+    """6.1c + A1.5 + A2.5: deployed-path decomposition between consecutive r over the corners (r, M, m) of F2."""
+    res = {}
+    rng = np.random.default_rng(0)
+    for ra, rb in zip(R_LIST[:-1], R_LIST[1:]):
+        ms = {}
+        for r in (ra, rb):
+            lid = f"F2|R{r}|M{4 * r}|LSPG|CNR|1|gauss|s0|frozen"
+            ms[r] = out['mstar'].get(lid, {}).get('mstar', {}).get('m')
+        if not all(ms.values()):
+            res[f'{ra}->{rb}'] = dict(outcome='decomposition not reached (no m*)')
+            continue
+        key = lambda i, j, k: f"R{(ra, rb)[i]}M{4 * (ra, rb)[j]}gauss{int(round(ms[(ra, rb)[k]] ** .5))}|LSPG|CNR"
+        corners = {(i, j, k): key(i, j, k) for i in (0, 1) for j in (0, 1) for k in (0, 1)}
+        if not all(c in C and Q.get(c) for c in corners.values()):
+            res[f'{ra}->{rb}'] = dict(outcome='decomposition not reached (unqualified corner)',
+                                      corners={str(k): v for k, v in corners.items()})
+            continue
+        ids = [c for c in C[corners[(0, 0, 0)]]['case_ids']
+               if all(C[v]['e0'][c]['ST']['eligible'] and C[v]['valid'][c] for v in corners.values())]
+        E = {kk: np.array([C[v]['e0'][c]['ST']['e'] for c in ids]) for kk, v in corners.items()}
+        eps = float(np.median([C[corners[(0, 0, 0)]]['e0'][c]['ST']['eps_ref'] for c in ids]))
+        f_acc = {kk: float(np.median(v)) for kk, v in E.items()}
+        boot = []
+        for _ in range(B):
+            ix = rng.integers(0, len(ids), len(ids))
+            boot.append(DS.shapley3({kk: float(np.median(v[ix])) for kk, v in E.items()}))
+        boot = np.array(boot)
+        lo, hi = np.percentile(boot, [2.5, 97.5], axis=0)
+        r_ = dict(population=len(ids), acc=DS.shapley3(f_acc).tolist(), acc_interval=[lo.tolist(), hi.tolist()],
+                  acc_labels=[DS.sign_label(l, h) for l, h in zip(lo, hi)], d_acc=f_acc[(1, 1, 1)] - f_acc[(0, 0, 0)],
+                  corners={str(k): v for k, v in corners.items()})
+        r_['acc_shares'] = (np.array(r_['acc']) / r_['d_acc']).tolist() if abs(r_['d_acc']) > 2 * eps else None
+        lbs = {kk: t2_label(C[v]) for kk, v in corners.items()}
+        if cost and all(lbs[kk] in cost and cost[lbs[kk]]['per_case'] for kk in corners):
+            cases = sorted(set.intersection(*[set(cost[lbs[kk]]['per_case']) for kk in corners]))
+            Cc = {kk: np.array([cost[lbs[kk]]['per_case'][c] for c in cases]) for kk in corners}
+            f_c = {kk: float(np.median(v)) for kk, v in Cc.items()}
+            bc = np.array([DS.shapley3({kk: float(np.median(v[ix])) for kk, v in Cc.items()})
+                           for ix in (rng.integers(0, len(cases), len(cases)) for _ in range(B))])
+            clo, chi = np.percentile(bc, [2.5, 97.5], axis=0)
+            dtot = np.array([f_c[(1, 1, 1)] - f_c[(0, 0, 0)]])
+            dbo = np.array([b.sum() for b in bc])
+            r_.update(cost=DS.shapley3(f_c).tolist(), cost_interval=[clo.tolist(), chi.tolist()],
+                      cost_labels=[DS.sign_label(l, h, 'cost') for l, h in zip(clo, chi)], d_cost=float(dtot[0]))
+            dlo, dhi = np.percentile(dbo, [2.5, 97.5])
+            r_['cost_shares'] = (np.array(r_['cost']) / dtot[0]).tolist() if (abs(dtot[0]) / f_c[(0, 0, 0)] > .05 and (dlo > 0 or dhi < 0)) else None
+        r_['wording'] = 'a selection-conditioned description of the difference between two deployed configurations, not a decomposition of the error norm'
+        res[f'{ra}->{rb}'] = r_
+    return res
+
+
 def main():
     C, RAW = load_all()
     man = json.loads((CFG / 'MANIFEST-cells.json').read_text())
@@ -303,6 +396,27 @@ def main():
     elif not lm['stability']['passed']:
         lm['outcome'] = 'unstable test space (no verdict)'
     out['LMF'] = lm
+    # ---- secondary B6 at each cell's own m* (LSPG-CN-R, GAL-CN, LSPG-CN)
+    for r in R_LIST:
+        for form, sch, tag, kind in (('LSPG', 'CNR', '', 'F2'), ('LSPG', 'CN', 'k', 'K2'), ('GAL', 'CN', 'k', 'K2')):
+            ks = {}
+            for k in KAPPAS:
+                lid = f"{kind}|R{r}|M{k * r}|{form}|{sch}|1|gauss|s0|frozen"
+                m = out['mstar'].get(lid, {}).get('mstar', {}).get('m')
+                ks[k] = f'R{r}M{k * r}{tag}gauss{int(round(m ** .5))}|{form}|{sch}' if m else None
+            tr2 = {f'{a}->{b}': (trans(C, Q, ks[a], ks[b]) if ks[a] and ks[b] else dict(label='inconclusive (no m*)'))
+                   for a, b in ((1, 2), (2, 3), (3, 4), (4, 8))}
+            B6.setdefault(f'R{r}|{form}-{sch}', {})['secondary_at_mstar'] = tr2
+    # ---- timing (t2): per-cell cost, timing-job qualification, elasticity, deployed-path Shapley
+    cost = timing_costs()
+    out['costs'] = cost
+    if cost:
+        cells = [(C[k]['r'], C[k]['M'], m_of(C[k]['rule']), cost[lb]['c']) for k in C if not k.startswith('_')
+                 for lb in [t2_label(C[k])] if lb in cost and cost[lb]['usable'] and cost[lb]['qualified'] and Q.get(k)]
+        if cells:
+            r_, M_, m_, c_ = (np.array(x, float) for x in zip(*cells))
+            out['elasticity'] = DS.elasticity(r_, M_, m_, c_)
+    out['shapley'] = shapley(C, Q, out, cost)
     # ---- m* map for the timing generator
     mst = {lid: v['mstar']['m'] for lid, v in out['mstar'].items()}
     (HERE / 'checks').mkdir(exist_ok=True)

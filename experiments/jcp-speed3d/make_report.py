@@ -378,7 +378,7 @@ def main():
         w('')
         w(table(['label', 'eligible', 'distance to ADT', 'median mf', 'median mesh', 'worst mf', 'worst mesh', '(b)', '(c)', 'status', 'K5 (coarse rule) fails'], rows))
         w('')
-        w(f"K5 control (coarse-rule projection must fail for at least one setting): {'fires' if p1['K5_fires'] else 'DOES NOT fire'}.")
+        w(f"K5 control (coarse-rule projection must fail for at least one setting): {'fires' if p1['K5_fires'] else ('unavailable' if p1['K5_fires'] is None else 'DOES NOT fire')}.")
         w('')
         rows = []
         for l_, v in p1['H33'].items():
@@ -456,8 +456,9 @@ def main():
                 x = v['families'].get(fam, {})
                 rows.append([l_, fam, x.get('matched') or x.get('state'), f(x.get('speedup')), f(x.get('reaches_2x')), x.get('label', '')])
             u = v['union']
-            rows.append([l_, '**union**', (u or {}).get('matched', '–'), f((u or {}).get('speedup')), f((u or {}).get('reaches_2x')),
-                         'cheapest matched FOM over families'])
+            rows.append([l_, '**union**', (u or {}).get('matched') or '–', f((u or {}).get('speedup')), f((u or {}).get('reaches_2x')),
+                         'cheapest matched FOM over families' + (f" (upper bound; unresolved: {', '.join(u['unresolved_families'])})"
+                                                                 if u and u.get('unresolved_families') else '')])
         w('**H4.3** matched-accuracy speed-up at n = 65, mesh path (A6; paired `match|<label>` panel; ROM speed-up = '
           '$t_{\\rm FOM}/t_{\\rm ROM}$; below 1 is a loss):')
         w('')

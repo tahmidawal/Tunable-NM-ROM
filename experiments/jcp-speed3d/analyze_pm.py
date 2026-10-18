@@ -321,6 +321,25 @@ def analyze_p1(rp, sel, grid, scp):
     return out
 
 
+def union_of(fam):
+    """Union over families (A12, asymmetric): minimum over timed matched families; '< 2x' is established by any timed match
+    below 2x, '>= 2x' only when every family is resolved (timed match or exhausted ladder)."""
+    timed = [(f_, v) for f_, v in fam.items() if v.get('state') == 'matched' and v.get('speedup') is not None]
+    best = min(timed, key=lambda z: z[1]['speedup']) if timed else None
+    unresolved = [f_ for f_, v in fam.items() if not ((v.get('state') == 'matched' and v.get('speedup') is not None)
+                                                       or v.get('state') == 'no ladder match')]
+    if best is not None and best[1]['speedup'] < 2:
+        r2 = False
+    elif best is not None and not unresolved:
+        r2 = True
+    else:
+        r2 = None
+    return dict(family=None if best is None else best[0], matched=None if best is None else best[1].get('matched'),
+                speedup=None if best is None else best[1]['speedup'],
+                speedup_label=None if best is None else ('union' if not unresolved else 'upper bound on the union (families unresolved)'),
+                reaches_2x=r2, unresolved_families=unresolved)
+
+
 def suppress(out, why):
     """Replace every verdict-bearing field of one job's analysis by 'unavailable' (keeps the numbers for diagnosis)."""
     def walk(o):
@@ -328,7 +347,9 @@ def suppress(out, why):
             for k in list(o):
                 if k in ('verdict', 'status') and isinstance(o[k], str) and not o[k].startswith('unavailable'):
                     o[k] = f'unavailable ({why}; computed {o[k]})'
-                elif k in ('qualified', 'bar_2x', 'reaches_2x', 'G3', 'K5_fires', 'K2_fires'):
+                elif k in ('qualified', 'qualified_before_K5', 'bar_2x', 'reaches_2x', 'G3', 'K5_fires', 'K6_fires', 'K6plus_pass',
+                           'K6_fires_all', 'K6plus_all', 'ok', 'eligible', 'fails', 'usable', 'b', 'c', 'Ec', 'Eb', 'Ea', 'adt_gate',
+                           'G4', 'K2_fires', 'still_matched', 'valid'):
                     o[k] = None if k != 'K2_fires' else False
                 else:
                     walk(o[k])
@@ -454,8 +475,7 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                                speedup=sp_, reaches_2x=None if sp_ is None or not (med and wst) else bool(sp_ >= 2))
             per_mesh[str(L)] = row
         out['H43'][l_] = dict(rom_key=f"{r['setting']}|{r['rule']}|{r['spec']}", families=fam,
-                              union=None if uni is None else dict(family=uni[0], matched=uni[1]['matched'], speedup=uni[1]['speedup'],
-                                                                  reaches_2x=uni[1]['reaches_2x']),
+                              union=union_of(fam),
                               per_mesh=per_mesh,
                               wording='a finite FOM ladder gives an upper bound on optimal FOM cost, hence an upper bound on the claimed ROM speed-up')
     # H-comp cells (V3-5) at the largest mesh; K2 three-state
@@ -464,22 +484,7 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
     for l_ in roms:
         pm = out['H43'][l_]['per_mesh'][Lmax]
         c = {f_: pm[f_] for f_ in FAMS}
-        m_ = [(f_, x) for f_, x in c.items() if x.get('state') == 'matched' and x.get('speedup') is not None]
-        best = min(m_, key=lambda z: z[1]['speedup']) if m_ else None
-        # unresolved: not a timed match and not an exhausted ladder (unavailable, untimed, ROM ineligible, no longer matched)
-        unresolved = [f_ for f_, x in c.items() if not ((x.get('state') == 'matched' and x.get('speedup') is not None)
-                                                         or x.get('state') == 'no ladder match')]
-        # asymmetric: an observed matched speed-up < 2x establishes failure against the union (an unresolved family can
-        # only lower the minimum); >= 2x is established only when every family is resolved
-        if best is not None and best[1]['speedup'] < 2:
-            r2 = False
-        elif best is not None and not unresolved:
-            r2 = True
-        else:
-            r2 = None
-        c['union'] = dict(family=None if best is None else best[0], speedup=None if best is None else best[1]['speedup'],
-                          speedup_label=None if best is None else ('union' if not unresolved else 'upper bound on the union (families unresolved)'),
-                          reaches_2x=r2, unresolved_families=unresolved)
+        c['union'] = union_of(c)
         cells[l_] = c
     out['Hcomp_largest_mesh'] = dict(L=int(Lmax), cells=cells)
     # K2: fires iff every selected ROM has a matched union speed-up below 2x at the largest mesh; any ROM with a matched
@@ -496,10 +501,11 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                match_panels_valid=all(v['speedup'] is not None for h in out['H43'].values() for v in h['families'].values()
                                       if v['state'] == 'matched'),
                no_panel_failures=not out['panel_failures'],
+               primary_unions_resolved=all(not h['union']['unresolved_families'] for h in out['H43'].values()),
                cohort=res['cohort']['seed'] == 923801 and sorted(cases) == list(range(64)))
     acc['integrity_ok'] = bool(acc['complete_flag'] and acc['K4'] and acc['G5'] and acc['cohort'])
     acc['coverage_complete'] = bool(acc['every_rom_every_mesh'] and acc['every_mesh_panel_valid'] and acc['match_panels_valid']
-                                    and acc['no_panel_failures'])
+                                    and acc['no_panel_failures'] and acc['primary_unions_resolved'])
     acc['accepted_for_claims'] = acc['integrity_ok']
     out['acceptance'] = acc
     if not acc['integrity_ok']:

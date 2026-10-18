@@ -659,3 +659,12 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   transaction; a failure between the renames leaves r1 without a freeze, which the 923901 guard rejects. The guard checks
   digest and membership, not complete replication; completeness of r1 is checked by its own job audit.
 * `project_rep` counts the burn before every warm-up call; the FOM export keeps convergence and calibration status.
+
+---
+
+## Amendment A13 (2026-10-18; dispositions of `audits/codex-code-9.md`, NOT READY on two items)
+
+* The primary H4.3 union (n = 65) now uses the same asymmetric rule as the largest-mesh cells (one function, `union_of`):
+  "≥ 2×" only when every family is resolved; unresolved primary unions are listed in the m1 coverage block.
+* Integrity suppression now nulls every verdict-bearing boolean and gate (G4, K6, K6+, reduced-ADT ok, eligibility flags,
+  panel validity, …), and the report prints a null K5 as "unavailable", never as "does not fire".

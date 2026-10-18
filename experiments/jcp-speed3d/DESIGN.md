@@ -715,3 +715,14 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   `measured_pass` is false only on a measured failure, null when evidence is missing.
 * The H2 identity shortcut (ratio 1) applies only to non-null winner / B* labels.
 * Plots are deleted and regenerated on every run, drawn only from jobs with integrity, and embedded only when generated.
+
+---
+
+## Amendment A19 (2026-10-18; dispositions of `audits/codex-code-15.md`, NOT READY on three items)
+
+* A family with no ladder match at the primary n = 65 mesh-path ROM is re-checked at every route-4 mesh against that
+  mesh's ROM errors over the family's admissible ladder members (f1 errors): "no ladder match" only if none ties-or-beats;
+  otherwise "ladder member matches at this mesh (untimed)", which is unresolved for the union and K2.
+* A missing or resource-infeasible ROM at a mesh has `eligible = null` (feasibility recorded separately).
+* Integrity suppression nulls every boolean of the job's analysis (all verdicts and component predicates), keeping only
+  the numbers and the acceptance record.

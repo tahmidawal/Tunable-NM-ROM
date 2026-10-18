@@ -362,9 +362,9 @@ def suppress(out, why):
             for k in list(o):
                 if k in ('verdict', 'status') and isinstance(o[k], str) and not o[k].startswith('unavailable'):
                     o[k] = f'unavailable ({why}; computed {o[k]})'
-                elif k in ('qualified', 'measured_pass', 'evidence_complete', 'bar_2x', 'reaches_2x', 'G3', 'K5_fires', 'K6_fires', 'K6plus_pass',
-                           'K6_fires_all', 'K6plus_all', 'ok', 'eligible', 'fails', 'usable', 'b', 'c', 'Ec', 'Eb', 'Ea', 'adt_gate',
-                           'G4', 'K2_fires', 'still_matched', 'valid'):
+                elif k == 'acceptance':
+                    continue                                   # the acceptance record itself stays as computed
+                elif isinstance(o[k], bool) or k == 'G4':      # every verdict / predicate boolean of the job
                     o[k] = None
                 else:
                     walk(o[k])
@@ -404,7 +404,8 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
         for l_, r in roms.items():
             er = E['rom'].get(l_)
             if er is None or 'infeasible' in er:
-                o['rom'][l_] = dict(feasible=False, eligible=False, detail=(er or {}).get('infeasible', 'not run'))
+                o['rom'][l_] = dict(feasible=False if er is not None else None, eligible=None, scores_ok=None,
+                                    detail=(er or {}).get('infeasible', 'not run'))
                 continue
             tag = f"{r['setting']}|{r['rule']}|mf|n{n}"
             e_ab = rows_elig(res, tag, r['spec'], cases)
@@ -478,6 +479,21 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
             pl = out['per_L'][str(L)]['panels'].get(l_, {})
             row = {}
             for f_, v in fam.items():
+                if v['state'] == 'no ladder match':
+                    # re-check the exhaustion against THIS mesh's ROM errors over the family's admissible ladder members
+                    if not (rr.get('eligible') is True and rr.get('scores_ok')):
+                        row[f_] = dict(state='ROM not eligible / not scored at this mesh')
+                        continue
+                    hit = []
+                    for k_, why in fm['admissibility'].get(f_, {}).items():
+                        if why or k_ not in f1recs:
+                            continue
+                        ef, er_, eta, ids = AN.common(fom_scores(k_), rr)
+                        if ids and all(AN.ties_or_beats(ef, er_, eta)):
+                            hit.append(k_)
+                    row[f_] = (dict(state='no ladder match') if not hit else
+                               dict(state='ladder member matches at this mesh (untimed)', candidates=sorted(hit)))
+                    continue
                 if v['state'] != 'matched':
                     row[f_] = dict(state=v['state'])
                     continue

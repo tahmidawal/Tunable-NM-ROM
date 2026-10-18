@@ -378,6 +378,7 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, lo
                     refactor_every=o.get('refactor_every'), capacity=o.get('capacity'),
                     quality=('limited (orthogonality)' if not o.get('drift_ok', True) else 'ok'),
                     banned=o['banned'], kkt=o['kkt'], iterations=len(o['path']),
+                    budget_seconds=o.get('budget_seconds'), elapsed_seconds=o.get('elapsed_seconds'),
                     taus={str(t): (None if o['records'][t] is None else dict(size=o['records'][t]['size'],
                                                                              relres=o['records'][t]['relres'])) for t in taus},
                     reached=sum(v is not None for k, v in cps.items() if not k.startswith('_')),

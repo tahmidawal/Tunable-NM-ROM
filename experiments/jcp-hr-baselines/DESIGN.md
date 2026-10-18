@@ -1806,3 +1806,26 @@ construction phase so the registered Stage-A grid cannot be starved by one path.
 
 **A38.3 Re-submission.** The 3D tuning job is re-staged as a new attempt with a new reservation (A34.2), after the
 gate suite, a code audit of the NNLS change and a job audit.
+
+---
+
+## Amendment A39 (2026-10-18) — code audit 28 (NNLS change, NOT READY)
+
+**A39.1 Deadline placement.** The per-path budget is checked before every outer iteration, inside the Lawson–Hanson
+loop before each solve, and before each refactorisation; a deletion batch already started is completed so that S, x and
+the factorisation stay consistent and x stays feasible (≥ 0). The overshoot is at most one append, one solve and one
+deletion batch (or one refactorisation started before the deadline), plus the terminal evidence (residual, KKT
+diagnostics) computed after the stop; each attempt records `budget_seconds` and `elapsed_seconds`. A timed-out attempt
+has reason `time`, is never an optimum (A23 requires `kkt`), and its unreached targets are construction failures.
+
+**A39.2 Sign invariant.** The refactorisation sign-normalises its Householder factors (non-negative diagonal of R,
+with Q and Qᵀb transformed consistently), so the blocked deletion's normalisation never flips an already-triangular
+column; deletion results equal the Givens reference's (not merely sign-equivalent).
+
+**A39.3 Gate coverage.** G-qrdel adds deterministic boundary deletions on a non-power-of-two capacity (k = K, j = 0,
+j = k − 1, spans > K/2, an exactly zero column) and a refactor-then-delete sequence through `UpdQR` compared with a
+least-squares solution (6.1e-16).
+
+**A39.4 Memory.** The blocked deletion adds window temporaries (at 3D r = 1,024: Q 13.7 GB, each 16,384² window array
+2.1 GB, the product Q_window·Q_s a further window-width slice of Q). This is within the A22.2 inventory's margin but
+is not certified a priori; the retrospective process-peak acceptance (A28.2) remains the admission test.

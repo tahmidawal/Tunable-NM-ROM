@@ -399,7 +399,43 @@ def t_qrdel():
                 np.abs(Rw[k - 1:, k - 1:] - np.eye(K - k + 1)).max(), np.abs(Qw[:, k - 1:]).max())
         worst = max(worst, e)
     assert worst <= 1e-12, worst
-    return f'60 random deletions, worst {worst:.1e}'
+    # A39.3 deterministic boundary cases on a non-power-of-two capacity, full capacity (k = K), zero diagonals,
+    # j = 0 / k-1 / spans > K/2, and refactor-then-delete through UpdQR (compared by reconstruction and LS solution)
+    K = 96
+    m = 250
+    A = rng.standard_normal((m, K))
+    A[:, 7] = 0.                                                     # an exactly zero column -> zero diagonal
+    b = rng.standard_normal(m)
+    Qa, Ra = np.linalg.qr(A)
+    sg = np.where(np.diag(Ra) < 0, -1., 1.)
+    Qa, Ra = Qa * sg, Ra * sg[:, None]
+    for k, j in ((K, 0), (K, K - 1), (K, 5), (K, 40), (60, 59), (60, 0), (50, 7)):
+        Q = jnp.zeros((m, K)).at[:, :k].set(Qa[:, :k])
+        R = jnp.eye(K).at[:k, :k].set(Ra[:k, :k])
+        t = jnp.zeros(K).at[:k].set(Qa[:, :k].T @ b)
+        Qw, Rw, tw = (np.asarray(x) for x in NN._qr_delete(Q, R, t, k, j))
+        Ad = np.delete(A[:, :k], j, axis=1)
+        e = max(np.abs(Qw[:, :k - 1] @ Rw[:k - 1, :k - 1] - Ad).max(), np.abs(np.tril(Rw, -1)).max(),
+                np.abs(Rw[k - 1:, k - 1:] - np.eye(K - k + 1)).max(), np.abs(Qw[:, k - 1:]).max())
+        assert e <= 1e-12 and np.all(np.diag(Rw) >= 0), (k, j, e)
+    G = jnp.asarray(rng.standard_normal((m, 200)))
+    bb = jnp.asarray(rng.standard_normal(m))
+    F = NN.UpdQR(G, bb, K=128, refactor_every=1024)
+    S = []
+    for c in range(70):
+        if F.append(c):
+            S.append(c)
+    F.refactor(S)
+    assert np.all(np.diag(np.asarray(F.R))[:F.k] >= 0)
+    for pos in (0, 30, -1):
+        pos = pos % len(S)
+        F.delete(pos)
+        S.pop(pos)
+    xs = F.solve()
+    xr = np.linalg.lstsq(np.asarray(G)[:, S], np.asarray(bb), rcond=None)[0]
+    e2 = float(np.abs(xs - xr).max())
+    assert e2 <= 1e-10, e2
+    return f'60 random + 7 boundary deletions, worst {worst:.1e}; refactor-then-delete LS error {e2:.1e}'
 
 
 @gate('G-qdeim pivots vs scipy, exact interpolation on span(U)')

@@ -74,7 +74,16 @@ def accept_train(tr):
 def rules():
     r = jload(out_dir('rule1024', 'hrule') / 'result.json')
     assert r['complete']
-    out = dict(source=dict(job=r['job_id'], commit=r['commit'], gpu=r['gpu']), groups={})
+    import smoke_accept as SA
+    cfg = jload(HERE / 'configs' / 'rule1024.json')
+    ladder = [f'gauss{p}' for p in cfg['ladder'] if p <= cfg['selectable_max']]
+    pop = [f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(10)]
+    struct = {g['name']: SA.rule_trail_ok(g, r['groups'][g['name']], ladder, pop, pop[:6]) for g in cfg['groups']}
+    ver = HSC.rule_verify(r, out_dir('rule1024', 'hrule'), cfg)
+    bad = {k: v['problems'][:5] for k, v in ver.items() if not v['ok']}
+    assert sorted(r['groups']) == sorted(g['name'] for g in cfg['groups']) and all(struct.values()) and not bad, (struct, bad)
+    out = dict(source=dict(job=r['job_id'], commit=r['commit'], gpu=r['gpu']), groups={},
+               verification=dict(structure=struct, recomputed={k: v['chosen_recomputed'] for k, v in ver.items()}))
     for g, v in r['groups'].items():
         out['groups'][g] = dict(status=v['status'], chosen=v['chosen'], trail=[dict(rule=t['rule'], n_pass=t['n_pass'],
                                                                                     min_pass=t['min_pass']) for t in v['trail']])

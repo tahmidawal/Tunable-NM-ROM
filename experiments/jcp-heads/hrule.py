@@ -91,7 +91,14 @@ def main():
                 v = arm.run(role, 'BE', 'prod', u0, nu, DT0, record=False)
                 jax.block_until_ready(v)
                 W = np.asarray(v['W'])
-                sol[key] = (W, P.restrict(v['fields'], L), HA.run_valid(v), arm.coef(W))
+                st_ = v['stats']
+                S_ = HA.steps_of(DT0)
+                diag = dict(exits=np.asarray(st_['exits']), step_gn=np.asarray(st_['step_gn'])[:S_],
+                            step_reason=np.asarray(st_['step_reason'])[:S_], w0=np.asarray(v['w0']),
+                            ic_reason=int(st_['ic_reason']) if 'ic_reason' in st_ else -1,
+                            ic_gn=float(st_['ic_gn']) if 'ic_gn' in st_ else np.nan,
+                            fields_finite=bool(np.isfinite(np.asarray(v['fields'])).all()))
+                sol[key] = (W, P.restrict(v['fields'], L), HA.run_valid(v), arm.coef(W), diag)
             return sol[key]
 
         def rho_rows(k, rule, rule_p):
@@ -106,6 +113,24 @@ def main():
                     R[j, kk] = P.rho(arm.nl(C[kk], f'r_{rule}'), arm.nl(C[kk], f'r_{rule_p}'))
             return R
 
+        def save_sol():
+            """Archive every solve of the group so far (offline recomputation of every bar and of validity); called
+            after every rung, so a timeout keeps the evidence of the finished rungs."""
+            keys = sorted(sol)
+            if not keys:
+                return
+            D = lambda f: np.array([sol[x][4][f] for x in keys])
+            np.savez_compressed(out / f"SOL_{grp['name']}.npz",
+                                keys=np.array([f'{arms[k].name}|{rl}|{cid(ci)}' for k, rl, ci in keys]),
+                                W=np.array([sol[x][0] for x in keys]),      # fields are re-derivable (nphead / decode257)
+                                valid=np.array([sol[x][2] for x in keys]), n0=np.array([U0[x[2]][2] for x in keys]),
+                                exits=D('exits'), step_gn=D('step_gn'), step_reason=D('step_reason'), ic_reason=D('ic_reason'),
+                                ic_gn=D('ic_gn'), fields_finite=D('fields_finite'),
+                                w0=np.array([sol[x][4]['w0'] for x in keys], dtype=object) if len({sol[x][4]['w0'].shape for x in keys}) > 1
+                                else D('w0'))
+            rep['groups'][grp['name']] = dict(partial=True, trail=trail, population=[cid(c) for c in pop])
+            save()
+
         trail = []
         chosen = None
         for i, p in enumerate(ladder):
@@ -117,8 +142,8 @@ def main():
             for k, arm in enumerate(arms):
                 r_ = dict(dist=[], valid_q=[], valid_qp=[], dist_check=[], valid_qpp=[])
                 for ci in pop:
-                    Wq, fq, vq, _ = solve(k, q, ci)
-                    Wp, fp, vp, _ = solve(k, qp, ci)
+                    Wq, fq, vq = solve(k, q, ci)[:3]
+                    Wp, fp, vp = solve(k, qp, ci)[:3]
                     r_['dist'].append(P.fdist(fq, fp, U0[ci][2]))
                     r_['valid_q'].append(vq)
                     r_['valid_qp'].append(vp)
@@ -128,8 +153,8 @@ def main():
                 rho_ok = rho is not None and r_['rho_max'] <= BAR_RHO
                 if roll and rho_ok:
                     for ci in chk:
-                        _, fp, _, _ = solve(k, qp, ci)
-                        _, fpp, vpp, _ = solve(k, qpp, ci)
+                        fp = solve(k, qp, ci)[1]
+                        _, fpp, vpp = solve(k, qpp, ci)[:3]
                         r_['dist_check'].append(P.fdist(fp, fpp, U0[ci][2]))
                         r_['valid_qpp'].append(vpp)
                 check_ok = bool(r_['dist_check']) and all(r_['valid_qpp']) and max(r_['dist_check']) <= BAR_Q2
@@ -144,6 +169,7 @@ def main():
             step.update(group_pass=bool(ok_all), n_pass=npass, min_pass=need)
             trail.append(step)
             print('RUNG', grp['name'], q, 'pass' if ok_all else 'fail', el(), flush=True)
+            save_sol()
             if ok_all:
                 chosen = dict(main=q, qp=qp, qpp=qpp, passing_arms=[n_ for n_, r_ in step['arms'].items() if r_['passed']],
                               failing_arms=[n_ for n_, r_ in step['arms'].items() if not r_['passed']])
@@ -151,13 +177,8 @@ def main():
             for k, arm in enumerate(arms):        # tables of rule q are no longer needed
                 arm.drop_role(f'r_{q}')
             gc.collect()
-        # archive every solve of the group (offline recomputation of every bar)
-        keys = sorted(sol)
-        np.savez_compressed(out / f"SOL_{grp['name']}.npz",
-                            keys=np.array([f'{arms[k].name}|{rl}|{cid(ci)}' for k, rl, ci in keys]),
-                            W=np.array([sol[x][0] for x in keys]),          # fields are re-derivable (nphead / decode257)
-                            valid=np.array([sol[x][2] for x in keys]), n0=np.array([U0[x[2]][2] for x in keys]))
-        rep['groups'][grp['name']] = dict(arms=[a_.describe() for a_ in arms], trail=trail, chosen=chosen,
+        save_sol()
+        rep['groups'][grp['name']] = dict(arms=[a_.describe() for a_ in arms], trail=trail, chosen=chosen, partial=False,
                                           status='selected' if chosen else 'not quadrature-qualified (ladder exhausted)',
                                           population=[cid(c) for c in pop], check_population=[cid(c) for c in chk],
                                           seconds=time.perf_counter() - t_g, mem=P.mem())

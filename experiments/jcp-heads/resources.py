@@ -63,9 +63,13 @@ def rule_proj(cfg):
     ru = jl(out('smk1', 'hrule', 'smk1rule') / 'result.json')
     per = max(v['seconds'] / (len(v['arms']) * len(v['trail'])) for v in ru['groups'].values())
     m_ref = max(m_of(t['rule']) for v in ru['groups'].values() for t in v['trail'])
-    rung_cost = sum(max(1., m_of(f'gauss{p}') / m_ref) for p in LADDER)        # worst case: whole selectable ladder
-    tot = 300. + sum(len(g['arms']) * per * rung_cost for g in cfg['groups'])
-    return tot, dict(seconds_per_arm_rung=per, m_ref=m_ref, worst_case_rung_units=rung_cost, setup=300.)
+    # worst case: whole selectable ladder; each rung's cost scaled by its SUCCESSOR's point count (the q+ / q++ solves
+    # are the largest of the rung), times ALLOW for dimension (r = 384, M = 1536) and trained-head iteration counts
+    ALLOW = 1.5
+    succ = LADDER[1:] + [256]
+    rung_cost = sum(max(1., m_of(f'gauss{q}') / m_ref) for q in succ)
+    tot = 300. + ALLOW * sum(len(g['arms']) * per * rung_cost for g in cfg['groups'])
+    return tot, dict(seconds_per_arm_rung=per, m_ref=m_ref, worst_case_rung_units=rung_cost, allowance=ALLOW, setup=300.)
 
 
 def acc_proj(cfg):

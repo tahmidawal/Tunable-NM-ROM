@@ -181,3 +181,89 @@ def qualify(R, rows, head=None, qp_rule=None, qpp=True):
 def score(R, kinds=('ST', 'S')):
     """E0 per case (qualify's qscore.score_config: identity assertions; S only for LSPG-BE at dt0)."""
     return QS_.score_config(R, float(R['dt']), kinds)
+
+
+# ------------------------------------------------------------------ rule selection (independent) ----
+
+def rule_verify(res, sol_dir, cfg, S=50):
+    """Independent recomputation of hrule's selection (DESIGN A1.4 / A2.5) from the archived solves (SOL_<group>.npz) and
+    rho records: validity from the saved per-solve diagnostics, every distance by the NumPy decode (nphead for heads),
+    rho by NumPy rule tables, the pass predicates, pass counts and the chosen rung. Returns {group: report}."""
+    from pathlib import Path
+    out = {}
+    gcfg = {g['name']: g for g in cfg['groups']}
+    for gname, v in res['groups'].items():
+        g = gcfg[gname]
+        rep = dict(ok=True, problems=[])
+        z = np.load(Path(sol_dir) / f'SOL_{gname}.npz', allow_pickle=True)
+        keys = [str(k) for k in z['keys']]
+        ix = {k: i for i, k in enumerate(keys)}
+        arms = {}
+        for a in g['arms']:
+            M = int(a.get('M') or g.get('M') or 4 * (a['Rp'] if a['kind'] == 'lin' else NH.Head(a['head']).K))
+            if a['kind'] == 'head':
+                h = NH.Head(a['head'])
+                arms[a['name']] = (lambda W, h=h: np.array([h.c(w) for w in np.asarray(W)]), 512, M, True)
+            else:
+                arms[a['name']] = (lambda W: np.asarray(W), int(a['Rp']), M, False)
+
+        def get(arm, rule, case):
+            i = ix[f'{arm}|{rule}|{case}']
+            coef, dim, M, is_head = arms[arm]
+            C = coef(z['W'][i])
+            valid = bool(np.isfinite(z['W'][i]).all() and bool(z['fields_finite'][i]) and int(z['exits'][i][3]) == 0
+                         and np.isfinite(z['step_gn'][i][:S]).all() and ((not is_head) or int(z['ic_reason'][i]) in (1, 4)))
+            if valid != bool(z['valid'][i]):
+                rep['problems'].append(('validity', arm, rule, case, valid, bool(z['valid'][i])))
+            return C, valid, float(z['n0'][i]), dim, M
+
+        pop, chk = v['population'], v['check_population']
+        npass_first = None
+        for t_ in v['trail']:
+            npass = 0
+            for an, a in t_['arms'].items():
+                coef, dim, M, _ = arms[an]
+                d, vq, vqp = [], [], []
+                for c in pop:
+                    Cq, okq, n0, _, _ = get(an, t_['rule'], c)
+                    Cp, okp, _, _, _ = get(an, t_['successor'], c)
+                    d.append(NC.fdist(NC.decode257(Cq, dim), NC.decode257(Cp, dim), n0))
+                    vq.append(okq)
+                    vqp.append(okp)
+                if not np.allclose(d, a['dist'], rtol=1e-9, atol=1e-13):
+                    rep['problems'].append(('dist', an, t_['rule'], float(np.max(np.abs(np.asarray(d) - a['dist'])))))
+                roll = bool(all(vq) and all(vqp) and np.isfinite(d).all() and max(d) <= BAR_Q2)
+                rho_ok = False
+                if roll:
+                    tq, tp = tables(t_['rule'], dim, M, int(res['mesh'])), tables(t_['successor'], dim, M, int(res['mesh']))
+                    rr = [NC.rho(Ck, tq, tp) for c in pop for Ck in get(an, t_['rule'], c)[0]]
+                    rr = np.asarray(rr, float)
+                    rmax = float(np.nanmax(rr)) if np.isfinite(rr[~np.isnan(rr)]).all() else float('inf')
+                    if a['rho_max'] is None or not np.isclose(rmax, a['rho_max'], rtol=1e-6, atol=1e-12):
+                        rep['problems'].append(('rho_max', an, t_['rule'], rmax, a['rho_max']))
+                    rho_ok = rmax <= BAR_RHO
+                chk_ok = False
+                if roll and rho_ok:
+                    dc, vpp = [], []
+                    for c in chk:
+                        Cp, _, n0, _, _ = get(an, t_['successor'], c)
+                        Cpp, okpp, _, _, _ = get(an, t_['check'], c)
+                        dc.append(NC.fdist(NC.decode257(Cp, dim), NC.decode257(Cpp, dim), n0))
+                        vpp.append(okpp)
+                    chk_ok = bool(all(vpp) and np.isfinite(dc).all() and max(dc) <= BAR_Q2)
+                passed = bool(roll and rho_ok and chk_ok)
+                if passed != bool(a['passed']):
+                    rep['problems'].append(('passed', an, t_['rule'], passed, a['passed']))
+                npass += int(passed)
+            gp = npass >= int(g['min_pass'])
+            if gp != bool(t_['group_pass']):
+                rep['problems'].append(('group_pass', t_['rule'], gp))
+            if gp and npass_first is None:
+                npass_first = t_['rule']
+        chosen = (v.get('chosen') or {}).get('main')
+        if chosen != npass_first:
+            rep['problems'].append(('chosen', chosen, npass_first))
+        rep['ok'] = not rep['problems']
+        rep['chosen_recomputed'] = npass_first
+        out[gname] = rep
+    return out

@@ -1,14 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T12:31:25Z",
- "step": "code audit 20 WRONG -> A32 + fixes (tune + Stage-B chain) committed; design audit 21 CLEAN; gate suite test14 still running (G-nnls); next: dry reruns, code audit 21",
+ "utc": "2026-10-18T12:50:17Z",
+ "step": "gate suite ALL PASS (A19.4b gates); 2D dry chain (tune->freeze->stageB->analyze) rerun on new code; code audit 21 running",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": [],
-  "local_pid": 2488995
+  "codex_output": "audits/codex-code-21.md",
+  "codex_pid": [
+   2585343
+  ],
+  "local_pid": 2583940
  },
- "expected_finish_utc": "2026-10-18T13:01:25Z",
+ "expected_finish_utc": "2026-10-18T13:35:17Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

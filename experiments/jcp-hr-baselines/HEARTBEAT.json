@@ -1,19 +1,17 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:22:41Z",
- "step": "t3d64a/t2d1024a RUNNING; code audit 26 NOT READY (comparator lifetimes, lattice views) -> A37; code audit 27 (Stage-B) running; 2D dry chain via jaxslot",
+ "utc": "2026-10-18T13:24:36Z",
+ "step": "t3d64a/t2d1024a RUNNING (~17 min, no ERR); Stage-B chain READY (code audit 27); 2D dry chain via jaxslot; next: collect t2d1024a, stage t2d256 + job audit, write make_report.py",
  "waiting_on": {
   "slurm_jobs": [
    5508653,
    5508660
   ],
-  "codex_output": "audits/codex-code-27.md",
-  "codex_pid": [
-   2680172
-  ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": 2658125
  },
- "expected_finish_utc": "2026-10-18T14:07:41Z",
+ "expected_finish_utc": "2026-10-18T17:24:36Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

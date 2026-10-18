@@ -1,18 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T14:20:04Z",
- "step": "code audit 28 NOT READY -> A39 (deadline inside LH loop, sign-normalised refactor, wider G-qrdel); gate suite test16 + code audit 29 running; t2d1024a 5508660 RUNNING (Stage A)",
+ "utc": "2026-10-18T14:24:07Z",
+ "step": "code audit 29 NOT READY (kkt after deadline) -> A40 + G-deadline; gate suite test17 + code audit 30 running; t2d1024a 5508660 RUNNING (Stage A)",
  "waiting_on": {
   "slurm_jobs": [
    5508660
   ],
-  "codex_output": "audits/codex-code-29.md",
+  "codex_output": "audits/codex-code-30.md",
   "codex_pid": [
-   2857535
+   2870255
   ],
-  "local_pid": 2856789
+  "local_pid": 2869776
  },
- "expected_finish_utc": "2026-10-18T15:20:04Z",
+ "expected_finish_utc": "2026-10-18T15:24:07Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

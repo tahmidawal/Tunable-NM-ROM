@@ -575,3 +575,21 @@ $\{1,\tfrac12,\tfrac14\}$, anchors and checks as every scheme.
 of the mesh's **not-yet-submitted** timing job by its projection with every retained fallback subject added (no
 separate repeat reservation in that case, so nothing is counted twice); a repeat reservation applies only when that
 mesh's timing job has already been submitted. Audit 5 found no other open item; this amendment closes the design.
+
+---
+
+## Amendment A6 (2026-10-18, before any production job; implementation notes from the code and job audits)
+
+**A6.1 Cost certificates are estimates** (as P1 A5.3): `resources.py` scales the smokes' measured wall times with stated
+upper-envelope choices (order: the whole smoke B4 block charged to its six TH06 cases; Q2-3D: the most expensive smoke
+member; accuracy: the next larger measured r, rule-size ratio for fallbacks, ×2 at $4096^2$). They are not established
+bounds; the scheduler time limit (1.5 × projection) is the enforced bound. A job that times out or fails is resubmitted
+once as a new attempt with twice the limit (P1 A5.2), the failed attempt's hours staying spent and its reservation
+re-pended.
+**A6.2 Ledger.** `ledger.py` enforces A3.1/A4.1/A5.1 mechanically: a numeric pending inventory (whitelisted keys,
+certificate floors), fallback allowances until a mesh's Q2 state is recorded by `ledger.py fbstate <m> '<inventory>'`,
+which derives the failing configurations from `checks/analysis.json` (complete for the mesh, labels from completed
+accuracy attempts only) and requires the re-certified timing config to contain the fallback subjects; `cluster/stage.py`
+and the reservation refuse a timing panel lacking them.
+**A6.3 Smoke outcome.** `checks/smoke-accept.json`: 85 of 85 required controls behave as registered (smkA 5366480,
+smkB 5366483, smk3 5366486); the $4096^2$ footprint pilot peaked at 96.6 GB (< 120 GB): the full bank is used.

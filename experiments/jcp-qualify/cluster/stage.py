@@ -50,7 +50,7 @@ def main():
     if a.attempt.startswith('time'):            # A5.1: a timing panel must contain every recorded fallback configuration
         m = a.attempt[4:].split('r')[0]
         led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
-        fb = set(led.get('fallback_state', {}).get(m, []))
+        fb = {k + '|fb' for k in led.get('fallback_state', {}).get(m, [])}      # fallback identity in a timing panel
         frozen = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
         have = set()
         for r in a.run:

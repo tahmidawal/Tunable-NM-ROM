@@ -86,7 +86,7 @@ def staged_fallback_of(att):
     return out
 
 
-def failing_from_analysis(m):
+def failing_from_analysis(m, d=None):
     """The mesh's configurations whose Q2 is not 'pass' (non-fallback), from checks/analysis.json (A4.1 evidence). The
     analysis must contain every configuration of the mesh's accuracy config (completeness), else None (refused)."""
     an = json.loads((HERE / 'checks' / 'analysis.json').read_text())['configurations']
@@ -95,6 +95,9 @@ def failing_from_analysis(m):
             if not a_.get('ext22')}
     if not want <= set(an):
         return None
+    ok_att = {j['attempt'] for j in (d or {}).get('jobs', []) if j['state'] == 'COMPLETED' and j['attempt'].startswith(f'acc{m}')}
+    if any(not (str(an[k].get('attempt') or '') in ok_att and 'lane' in str(an[k].get('source'))) for k in want):
+        return None                                  # provenance: every label from a completed accuracy job of this lane
     return sorted(k for k in want if an[k]['Q2'].get('label') != 'pass')
 
 
@@ -115,6 +118,10 @@ def validate(d, new, exempt=None):
     probs += [f'{k}: a job projection below 0.25 GPU-h' for k, v in new.items()
               if not k.startswith('fballow') and isinstance(v, (int, float)) and not isinstance(v, bool) and v < .25]
     for k, v in new.items():                       # a certified job is never pending below its certificate
+        base_ = re.match(r'^(time(256|1024|4096))r[0-9]+$', k)
+        if base_ and (HERE / 'checks' / f'resources-{base_.group(1)}.json').exists() and isinstance(v, (int, float)) and \
+                v < json.loads((HERE / 'checks' / f'resources-{base_.group(1)}.json').read_text())['time_limit_hours'] - 1e-9:
+            probs.append(f'{k} (repeat panel) pending below the original panel certificate')
         cert = HERE / 'checks' / f'resources-{k}.json'
         if cert.exists() and isinstance(v, (int, float)) and v < json.loads(cert.read_text())['time_limit_hours'] - 1e-9:
             probs.append(f'{k} pending below its certificate')
@@ -184,10 +191,11 @@ def main():
                 d['pending_core'] = new
         elif cmd == 'fbstate':             # one transaction (A4.1): record a mesh's Q2 outcome AND the new pending inventory
             m, newp = sys.argv[2], json.loads(sys.argv[3])
-            keys = failing_from_analysis(m)            # derived from the analysed accuracy job, never typed
+            keys = failing_from_analysis(m, d)         # derived from the analysed accuracy job, never typed
             old = d.setdefault('fallback_state', {}).get(m)
             tl = HERE / 'checks' / f'resources-time{m}.json'
-            t_live = any(j['attempt'] == f'time{m}' and j['state'] not in ('RELEASED',) for j in d['jobs'])
+            t_live = any(j['attempt'] == f'time{m}' and (j['state'] not in TERMINAL or j['state'] == 'COMPLETED')
+                         for j in d['jobs'])                # a failed panel does not count: it is re-priced like a new one
             fbsub = {k + '|fb' for k in keys or []}
             cfg_t = HERE / 'configs' / f'time{m}.json'
             covered_cfg = cfg_t.exists() and fbsub <= {

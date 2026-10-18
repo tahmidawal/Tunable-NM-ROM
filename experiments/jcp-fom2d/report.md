@@ -454,7 +454,8 @@ Diagnostic GAL-CN analogue (post hoc, not a K2 verdict): fires under the registe
 | `audits/codex-job-ladder-1.md` | Part A: ACCEPTED. | current |
 | `audits/codex-report-1.md` | NOT READY — reporting fixes required. | superseded by a later round |
 | `audits/codex-report-2.md` | NOT READY — reporting/provenance fixes remain. | superseded by a later round |
-| `audits/codex-report-3.md` | REPORT NOT READY — one narrow glossary correction remains. | current |
+| `audits/codex-report-3.md` | REPORT NOT READY — one narrow glossary correction remains. | superseded by a later round |
+| `audits/codex-report-4.md` | REPORT READY | current |
 
 ## Glossary
 

@@ -230,7 +230,7 @@ def analyze_p1(rp, sel, grid, scp):
                        measured_pass=bool(evid and elig and q.get('b') and q.get('c')),
                        K5=dict(rule=k5.get('rule'), cond=k5.get('cond'), rank_ok=k5_rank, fails=k5f, detail=k5r))
     # K5 three-state: fires if any measured control fails; does not fire only if every control is resolved and none fails
-    k5s = [v['K5']['fails'] for v in H32.values() if 'K5' in v]
+    k5s = [H32[l_].get('K5', {}).get('fails') for l_ in blk['mf']]       # every expected control; missing ones stay None
     out['K5_fires'] = True if any(x is True for x in k5s) else (False if k5s and all(x is False for x in k5s) else None)
     for v in H32.values():
         if 'K5' not in v:

@@ -678,3 +678,12 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 * H3.2 status: "unavailable" when mesh-free rows, distances or scores are incomplete; "not qualified" only for a measured
   failure; "qualified" / "blocked (K5 did not fire)" / "unavailable (K5 evidence incomplete)" by K5's state. Both cases
   enter the p1 coverage block (`mf_evidence_valid`, `K5_resolved_present`).
+
+---
+
+## Amendment A15 (2026-10-18; dispositions of `audits/codex-code-11.md`, NOT READY on two items)
+
+* K5 aggregates over every expected control (every mesh-free label of p1), a missing or invalid one counting as
+  unavailable: one measured firing control establishes "fires"; "does not fire" needs all expected controls resolved.
+* The report's confirm/retract statement on the early spectral observation is printed only from an m1 job with
+  integrity; otherwise it says "neither confirmed nor retracted".

@@ -533,3 +533,43 @@ submitted) → `acc256` and the 256² linear-ladder subjects $r\ge64$. The pendi
 submitted; a failed or timed-out mandatory job returns to the pending list. A-priori repricing (the smoke certificate
 replaces it): smokes 3, train 2.5, rule1024 2.5, acc1024 5, time1024 3, time256 1.5, time4096 2.5, acc256 2.5 ≈ 22.5
 GPU-h; time limits 1.5 × projection; cap 35.
+
+---
+
+## Amendment A3 (2026-10-18, before any lane job; answers `audits/codex-design-3.md`, NEEDS-RESTATEMENT)
+
+**A3.1 Simultaneous inference over a predeclared component family (blocker 1; amends A2.1(2) and A2.2).** The
+confirmatory family is fixed now, before any data: all component hypotheses
+$H_{0,K,r}$: "head $K$ is not more accurate than linear rung $r$" for $K\in\mathcal F$ and every ladder rung
+$r\in\{4,8,16,32,64,128,256,384\}$, LSPG-BE, 1024², on the A2.1 population. Component p-value $p_{K,r}$ = one-sided
+signed-rank (p1stats.wilcoxon) of $d_i=e_{H,i}-e_{L,i}$; $p_{K,r}:=1$ whenever it is unavailable (either side
+unqualified or without complete timing, empty population, not computable). **Holm across the whole family**
+($|\mathcal F|\times8$ hypotheses, family-wise α = 0.05). Because Holm controls the family-wise error strongly over
+every component, any conclusion that is a conjunction of rejected components stays controlled however the conjunction's
+members were chosen (affordability, qualification). Re-stated at-most-cost result: "**head more accurate than every
+possibly-affordable rung**" iff the set $\mathcal P_K$ of possibly-affordable rungs (A3.2) is non-empty, every
+$r\in\mathcal P_K$ is Holm-rejected and meets the superiority predicates (resolved coverage ≥ 50 %, median $d<0$).
+The interpretation is limited to the **numerically qualified ladder rungs** under this lane's rule policy, not to every
+conceivable linear deployment. A2.2's per-$K$ Holm is replaced by this family-wise Holm; the positive F5 reading at $K$
+requires the result above plus A2.2's Q-LH-dim gate; precedence and outcomes of A2.2 are otherwise unchanged.
+
+**A3.2 Cost classes, timing completeness and propagation (blocker 2; amends A2.1, A2.4).**
+- Timed measurements: only **valid** fused triplets (identity hash reproduced, drift in band) count. The fused triplet
+  gets the same in-job retry rule as the split triplet (≤ 2 retries on drift). No rerun job is registered.
+- A subject's 1024² timing is **complete** iff every case of the A2.1 population has ≥ 1 valid fused repeat.
+- Cost classes of a linear rung against head $K$: "cheaper", "equal cost", "costlier", "unresolved" (interval straddles
+  a band edge), "unknown" (either side's timing incomplete). **Certified affordable** = cheaper or equal cost;
+  **possibly affordable** $\mathcal P_K$ = every numerically qualified rung that is **not** certified costlier
+  (certified affordable ∪ unresolved ∪ unknown). Wording "no rung certified affordable" replaces "no affordable rung".
+- Seeds: $\mathcal S_K'$ = numerically qualified seeds of $K$ with complete 1024² timing; pooled error **and** cost use
+  $\mathcal S_K'$; $|\mathcal S_K'|<2$ → $K$'s cost comparisons "unavailable (timing incomplete)", every
+  $p_{K,r}:=1$, F5 at $K$ non-rejecting. The fixed population is never shrunk; no rung is dropped for missing cost (it
+  stays possibly affordable).
+- The "linear at no more cost is at least as accurate" result requires a **certified affordable** rung with error label
+  "linear more accurate" or "matches".
+
+**A3.3 Family lifecycle and bracket ordering (minor).** Once `runs/F5-FAMILY.json` is frozen at `acc1024` submission, a
+size that later cannot be completed stays in $\mathcal F$ with $p_{K,r}=1$ (it can never be removed to ease
+multiplicity or the negative reading). The bracket's scalar ordering statistic is the cost label's own statistic, the
+median over the population of the per-case ratio $c_{L_r}/c_{H_K}$ (ties → smaller $r$); $r_{\rm lo}$ = the
+largest-ratio certified-affordable rung, $r_{\rm hi}$ = the smallest-ratio certified-costlier rung.

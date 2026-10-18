@@ -2,7 +2,8 @@
 arm group (a head size K = its seeds; a linear rung r = one arm).
 
 For each group, rungs p = ladder[i] (selectable while p <= selectable_max) are tried in ascending order; the group's main
-rule is the first q = Gauss p^2 at which EVERY arm of the group has, on the population (sub16): valid q and q+ solves,
+rule is the first q = Gauss p^2 at which at least `min_pass` arms of the group (heads: 2 of the 3 seeds, DESIGN A2.5;
+a linear rung: its one arm) have, on the population (sub16): valid q and q+ solves,
 rollout distance d(q, q+) <= 2.5e-4 on every case, rho_max(q -> q+) <= 0.116 on its own reached states (six outputs);
 and on dev6: valid q++ solves and d(q+, q++) <= 2.5e-4 ("pass", never "unverified"). Solutions are cached per
 (arm, rule) so q+ of one rung is reused as q of the next. Exhausted ladder -> "not quadrature-qualified".
@@ -10,7 +11,7 @@ Every saved array allows the offline recomputation (hscore.rule_check). One JSON
 
     python hrule.py --config configs/<attempt>.json --out <dir>
 config: {"mesh", "edges", "ladder": [16, 24, ...], "selectable_max": 192, "population": "sub16", "check": "dev6",
-         "groups": [{"name", "M"?, "arms": [{"name", "kind", "head" | "Rp", "M"?}]}], "allow_cpu_smoke"?}
+         "groups": [{"name", "M"?, "min_pass"?, "arms": [{"name", "kind", "head" | "Rp", "M"?}]}], "allow_cpu_smoke"?}
 """
 from __future__ import annotations
 
@@ -106,7 +107,7 @@ def main():
                 break
             q, qp, qpp = (f'gauss{x}' for x in ladder[i:i + 3])
             step = dict(rule=q, successor=qp, check=qpp, arms={})
-            ok_all = True
+            npass = 0
             for k, arm in enumerate(arms):
                 r_ = dict(dist=[], valid_q=[], valid_qp=[], dist_check=[], valid_qpp=[])
                 for ci in pop:
@@ -129,14 +130,17 @@ def main():
                 r_.update(rollout_pass=bool(roll), rho_pass=bool(rho_ok), check_pass=bool(check_ok),
                           passed=bool(roll and rho_ok and check_ok), max_dist=max(r_['dist']))
                 step['arms'][arm.name] = r_
-                ok_all = ok_all and r_['passed']
+                npass += int(r_['passed'])
                 if rho is not None:
                     np.savez_compressed(out / f"RHO_{grp['name']}_{arm.name}_{q}.npz", rho=rho, case_ids=np.array([cid(c) for c in pop]))
-            step['group_pass'] = bool(ok_all)
+            need = int(grp.get('min_pass', len(arms)))
+            ok_all = npass >= need
+            step.update(group_pass=bool(ok_all), n_pass=npass, min_pass=need)
             trail.append(step)
             print('RUNG', grp['name'], q, 'pass' if ok_all else 'fail', el(), flush=True)
             if ok_all:
-                chosen = dict(main=q, qp=qp, qpp=qpp)
+                chosen = dict(main=q, qp=qp, qpp=qpp, passing_arms=[n_ for n_, r_ in step['arms'].items() if r_['passed']],
+                              failing_arms=[n_ for n_, r_ in step['arms'].items() if not r_['passed']])
                 break
             for k, arm in enumerate(arms):        # tables of rule q are no longer needed
                 arm.drop_role(f'r_{q}')

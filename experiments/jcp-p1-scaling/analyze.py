@@ -316,12 +316,15 @@ def p1e_judge(rows, rho, pairs, steps=None):
     out = {}
     for pr in pairs:
         d = [r_['dist'][pr] for r_ in rows if pr in r_['dist']]
-        rh = [x for v in (rho.get(pr) or {}).values() for x in (v if isinstance(v, list) else [v])]
+        raw = [x for v in (rho.get(pr) or {}).values() for x in (v if isinstance(v, list) else [v])]
+        trivial = sum(1 for x in raw if x == 'nan')                       # both vectors zero: excluded, counted
+        failed = sum(1 for x in raw if x == 'inf' or x is None)           # non-finite / unknown: fails the bar
+        rh = [float(x) for x in raw if isinstance(x, (int, float)) and x is not None]
         a_, b_ = pr.split('|')
         ok = all(r_['valid'].get(a_, False) and r_['valid'].get(b_, False) for r_ in rows)
         out[pr] = dict(worst_distance=SC.dmax(d), rollout_bar=bool(d) and SC.dmax(d) <= SC.BAR_Q2,
-                       worst_rho=SC.dmax([x for x in rh if not np.isnan(x)]) if rh else None,
-                       rho_bar=bool(rh) and SC.dmax([x for x in rh if not np.isnan(x)]) <= SC.BAR_RHO, all_valid=ok)
+                       worst_rho=(float('inf') if failed else (max(rh) if rh else None)), rho_trivial=trivial, rho_failed=failed,
+                       rho_bar=bool(rh) and not failed and max(rh) <= SC.BAR_RHO, all_valid=ok)
     if steps:
         out['solver'] = dict(saturated=sum(v['saturated'] for v in steps.values()), reason3=sum(v['reason3'] for v in steps.values()),
                              nonstationary=sum(v['nonstationary'] for v in steps.values()), steps=sum(v['steps'] for v in steps.values()),

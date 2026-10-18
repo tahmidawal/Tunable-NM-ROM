@@ -256,7 +256,8 @@ def p1e(cfg, rep, save, bank, tb, kx, M_of, n, el):
                 for k in range(6):
                     a_ = np.asarray(nl3(jnp.asarray(W[k]), data))
                     b_ = np.asarray(nl3(jnp.asarray(W[k]), nxt))
-                    rh.append(rho_a24(a_, b_))
+                    x_ = rho_a24(a_, b_)            # JSON-safe: 'nan' = trivial (excluded), 'inf' = failed (A2.4)
+                    rh.append(x_ if np.isfinite(x_) else ('nan' if np.isnan(x_) else 'inf'))
                 rep['p1e'].setdefault('rho', {}).setdefault(f'{rule}|{chain[i + 1]}', {})[str(j)] = rh
             print('P1E', rule, j, el(), flush=True)
         del om, nxt, data

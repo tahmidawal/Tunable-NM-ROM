@@ -1,0 +1,255 @@
+{
+ "attempt": "b3m",
+ "driver": "d3run",
+ "mode": "b3m",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  }
+ ],
+ "extra_rules": [
+  "gl64",
+  "hal131072s0",
+  "hal131072s1",
+  "hal131072s2",
+  "hal131072s3",
+  "hal131072s4",
+  "hal16384s0",
+  "hal16384s1",
+  "hal16384s2",
+  "hal16384s3",
+  "hal16384s4",
+  "hal262144s0",
+  "hal262144s1",
+  "hal262144s2",
+  "hal262144s3",
+  "hal262144s4",
+  "hal32768s0",
+  "hal32768s1",
+  "hal32768s2",
+  "hal32768s3",
+  "hal32768s4",
+  "hal65536s0",
+  "hal65536s1",
+  "hal65536s2",
+  "hal65536s3",
+  "hal65536s4",
+  "hal8192s0",
+  "hal8192s1",
+  "hal8192s2",
+  "hal8192s3",
+  "hal8192s4",
+  "mc131072s0",
+  "mc131072s1",
+  "mc131072s2",
+  "mc131072s3",
+  "mc131072s4",
+  "mc16384s0",
+  "mc16384s1",
+  "mc16384s2",
+  "mc16384s3",
+  "mc16384s4",
+  "mc262144s0",
+  "mc262144s1",
+  "mc262144s2",
+  "mc262144s3",
+  "mc262144s4",
+  "mc32768s0",
+  "mc32768s1",
+  "mc32768s2",
+  "mc32768s3",
+  "mc32768s4",
+  "mc65536s0",
+  "mc65536s1",
+  "mc65536s2",
+  "mc65536s3",
+  "mc65536s4",
+  "mc8192s0",
+  "mc8192s1",
+  "mc8192s2",
+  "mc8192s3",
+  "mc8192s4"
+ ],
+ "blocks": [
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "mc8192s0",
+    "mc16384s0",
+    "mc32768s0",
+    "mc65536s0",
+    "mc131072s0",
+    "mc262144s0"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "mc8192s1",
+    "mc16384s1",
+    "mc32768s1",
+    "mc65536s1",
+    "mc131072s1",
+    "mc262144s1"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "mc8192s2",
+    "mc16384s2",
+    "mc32768s2",
+    "mc65536s2",
+    "mc131072s2",
+    "mc262144s2"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "mc8192s3",
+    "mc16384s3",
+    "mc32768s3",
+    "mc65536s3",
+    "mc131072s3",
+    "mc262144s3"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "mc8192s4",
+    "mc16384s4",
+    "mc32768s4",
+    "mc65536s4",
+    "mc131072s4",
+    "mc262144s4"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "hal8192s0",
+    "hal16384s0",
+    "hal32768s0",
+    "hal65536s0",
+    "hal131072s0",
+    "hal262144s0"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "hal8192s1",
+    "hal16384s1",
+    "hal32768s1",
+    "hal65536s1",
+    "hal131072s1",
+    "hal262144s1"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "hal8192s2",
+    "hal16384s2",
+    "hal32768s2",
+    "hal65536s2",
+    "hal131072s2",
+    "hal262144s2"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "hal8192s3",
+    "hal16384s3",
+    "hal32768s3",
+    "hal65536s3",
+    "hal131072s3",
+    "hal262144s3"
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W512",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "hal8192s4",
+    "hal16384s4",
+    "hal32768s4",
+    "hal65536s4",
+    "hal131072s4",
+    "hal262144s4"
+   ]
+  },
+  {
+   "kind": "fixgate",
+   "setting": "W512",
+   "target": "gl64",
+   "rules": [
+    "mc262144s0",
+    "mc262144s1",
+    "mc262144s2",
+    "mc262144s3",
+    "mc262144s4",
+    "hal262144s0",
+    "hal262144s1",
+    "hal262144s2",
+    "hal262144s3",
+    "hal262144s4"
+   ],
+   "fixture": "inputs/fixture3d.npz"
+  }
+ ]
+}

@@ -23,7 +23,7 @@ from offmesh import TB
 
 C = C3.C
 DIMS_RULES = (__import__("pathlib").Path(__file__).resolve().parent / 'rules3d' / 'rules_dims.npz')
-DIMS_RULES_SHA = None        # set when rules_dims.npz is committed (see rules3d/rules_dims.json)
+DIMS_RULES_SHA = '7b6ca36c1a521e3aeee77dd2002c6df9c1f56bba309a78bdc775ba860ed94fa1'   # rules3d/rules_dims.npz (lat262144)
 
 _MMAX = {}                   # bank name -> largest M asked by the config (install)
 
@@ -76,13 +76,15 @@ class SettingM(S.Setting):
             d = self.tb.rule_data(self.Rp, X, w, self.M)
             d = dict(d, **self.qr)
             d['hmask'] = (d['lam'] > jnp.median(d['lam'])).astype(jnp.float64)
-            Bw = d['B'] * jnp.asarray(w)[:, None]
-            Gq = d['B'].T @ Bw
-            ev = np.linalg.eigvalsh(np.asarray(Gq))
-            d['Bw'], d['Lq'] = Bw, jnp.linalg.cholesky(Gq)
+            cond = None
+            if np.all(np.asarray(w) > 0):              # A1.4: the mesh-free Gram only for positive weights (never used
+                Bw = d['B'] * jnp.asarray(w)[:, None]  # on the mesh path; signed Smolyak weights would make it indefinite)
+                Gq = d['B'].T @ Bw
+                ev = np.linalg.eigvalsh(np.asarray(Gq))
+                d['Bw'], d['Lq'] = Bw, jnp.linalg.cholesky(Gq)
+                cond = float(ev[-1] / ev[0]) if ev[0] > 0 else float('inf')
             self._d[rule] = (jax.tree_util.tree_map(jax.block_until_ready, d),
-                             dict(cond=float(ev[-1] / ev[0]) if ev[0] > 0 else float('inf'), m=int(len(w)),
-                                  sha256=RN.sha_rule(X, w)))
+                             dict(cond=cond, m=int(len(w)), sha256=RN.sha_rule(X, w)))
         return self._d[rule][0]
 
 

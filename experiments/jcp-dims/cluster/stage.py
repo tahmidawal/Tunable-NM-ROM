@@ -1,4 +1,5 @@
-"""Stage one jcp-qualify attempt into its own directory (vendored quadrature-lane pattern). Every staged file is taken
+"""jcp-dims (copied from jcp-qualify cluster/stage.py; edited: namespace, lane, drivers, job prefix jd_, no fallback-panel check).
+Stage one attempt into its own directory (vendored quadrature-lane pattern). Every staged file is taken
 from the Git blob at HEAD (`git show`), so the job runs a committed tree; files present in the checkout must equal their
 blob byte for byte. One attempt may run several (driver, config) steps sequentially in one job.
 
@@ -13,12 +14,12 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-qualify'
-LANE = 'experiments/jcp-qualify'
+NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-dims'
+LANE = 'experiments/jcp-dims'
 EXTRA = ['experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
          'experiments/separable-decoder/sep_common.py',
          'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
-DRIVERS = ('qacc', 'qtime', 'qpilot', 'q3run')
+DRIVERS = ('dacc', 'dtime', 'd3run')
 GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
         'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
 SKIP = ('runs/', 'audits/', 'checks/', 'plots/', 'report', 'HEARTBEAT.json')
@@ -33,7 +34,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--run', action='append', required=True)
-    p.add_argument('--gpu', default='a100-80G', choices=sorted(GRES))
+    p.add_argument('--gpu', default='h200', choices=sorted(GRES))
     p.add_argument('--mem', default='200G')
     p.add_argument('--hours', type=float, required=True)
     p.add_argument('--mem-fraction', default='0.92')
@@ -47,17 +48,6 @@ def main():
         for drv, cf in [r.split(':', 1) for r in a.run]:     # the certificate is bound to the exact configs and runs
             assert c_['configs'].get(cf) == hashlib.sha256((ROOT / LANE / cf).read_bytes()).hexdigest(), cf
         assert sorted(c_['runs']) == sorted(a.run), (c_['runs'], a.run)
-    if a.attempt.startswith('time'):            # A5.1: a timing panel must contain every recorded fallback configuration
-        m = a.attempt[4:].split('r')[0]
-        led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
-        fb = {k + '|fb' for k in led.get('fallback_state', {}).get(m, [])}      # fallback identity in a timing panel
-        frozen = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
-        have = set()
-        for r in a.run:
-            for sp in json.loads((ROOT / LANE / r.split(':', 1)[1]).read_text()).get('subjects', []):
-                rr = int(sp['Rp'])
-                have.add(f"{sp['mesh']}|R{rr}|{sp['form']}|{sp['scheme']}|{float(sp['factor']):g}" + ('|fb' if sp['rule'] != frozen[rr] else ''))
-        assert fb <= have, ('timing panel lacks fallback subjects', sorted(fb - have))
     runs = []
     for r in a.run:
         drv, cfg = r.split(':', 1)
@@ -91,7 +81,7 @@ def main():
     steps = '\n'.join(f'echo "STEP {drv} {cfg} $(date -u +%FT%TZ)"\n"$PY" {drv}.py --config {cfg} --out "$TASK_ROOT/output/{drv}_{Path(cfg).stem}"'
                       for drv, cfg in runs)
     script = f'''#!/bin/bash
-#SBATCH --job-name=jq_{a.attempt}
+#SBATCH --job-name=jd_{a.attempt}
 #SBATCH --partition=gpu
 #SBATCH --gres={gres}
 {('#SBATCH ' + constraint) if constraint else ''}

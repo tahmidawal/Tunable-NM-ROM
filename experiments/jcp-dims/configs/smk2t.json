@@ -1,0 +1,106 @@
+{
+ "attempt": "smk2t",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "dev2",
+ "reps": 1,
+ "burn": 0.1,
+ "seed": 20261018,
+ "A": {
+  "mesh": 1024,
+  "Rp": 384,
+  "M": 1536,
+  "policy": "frozen",
+  "rule": "gauss128",
+  "form": "LSPG",
+  "scheme": "CNR",
+  "factor": 1,
+  "qp": "gauss160",
+  "qpp": "gauss192"
+ },
+ "subjects": [
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss128",
+   "qpp": "gauss160"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 1,
+   "qp": "gauss128",
+   "qpp": "gauss160"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "M": 128,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss128",
+   "qpp": "gauss160"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss320",
+   "qpp": "gauss384"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  }
+ ],
+ "doubled": [
+  {
+   "mesh": 1024,
+   "Rp": 384,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  }
+ ],
+ "inject_identity_fault": [
+  "1024|R128|M128|gauss96|LSPG|CNR|1"
+ ]
+}

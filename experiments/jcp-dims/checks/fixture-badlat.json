@@ -1,0 +1,152 @@
+{
+ "rule": "admitted iff finite inputs and evaluations, ||N_tgt|| > 0 and finite rho_tgt >= 1 at every state (DESIGN A2.2, A4.1)",
+ "panels": [
+  {
+   "states": [
+    {
+     "finite": true,
+     "target_norm": 1059.2781219926624,
+     "rho_tgt": 3.137358557487281,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 926.9291812176591,
+     "rho_tgt": 4.053874095122558,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 809.8268952360846,
+     "rho_tgt": 4.156232499161235,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 710.4709149134513,
+     "rho_tgt": 4.1588273738786965,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 621.7091071565483,
+     "rho_tgt": 4.071406121975127,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 541.6181505879365,
+     "rho_tgt": 3.91005466217549,
+     "ok": true
+    }
+   ],
+   "admitted": true,
+   "panel": "2d|R384|M1536",
+   "bad": "badlat121393",
+   "target": "gauss384",
+   "fixture": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/smkA/archive/output/qacc_smkA/R_R384_LSPG_CNR_1.npz",
+   "fixture_sha256": "3b00ba0f24261e4792fa05468313f7a6e1ab349ce883b53ce18fdd65a3c93dee",
+   "case": "dev6|0",
+   "seconds": 113.68375039100647,
+   "note": ""
+  },
+  {
+   "states": [
+    {
+     "finite": true,
+     "target_norm": 1061.8672211910782,
+     "rho_tgt": 2.4596099878268953,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 926.8980656763372,
+     "rho_tgt": 3.087385260561782,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 809.8323934172141,
+     "rho_tgt": 3.1642811384165417,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 710.4855424057153,
+     "rho_tgt": 3.154405587939387,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 621.7654844501211,
+     "rho_tgt": 3.081528212848581,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 541.628829667292,
+     "rho_tgt": 2.9594480690180323,
+     "ok": true
+    }
+   ],
+   "admitted": true,
+   "panel": "2d|R128|M512",
+   "bad": "badlat121393",
+   "target": "gauss384",
+   "fixture": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/smkA/archive/output/qacc_smkA/R_R384_LSPG_CNR_1.npz",
+   "fixture_sha256": "3b00ba0f24261e4792fa05468313f7a6e1ab349ce883b53ce18fdd65a3c93dee",
+   "case": "dev6|0",
+   "seconds": 63.87345027923584,
+   "note": "R128 panel: first 128 coefficients of R384 states (kernel fixture, not reached states of R128)"
+  },
+  {
+   "states": [
+    {
+     "finite": true,
+     "target_norm": 470.4467762532803,
+     "rho_tgt": 1.7462572077612117,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 419.5486992572932,
+     "rho_tgt": 1.9248359130278845,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 379.7898584730393,
+     "rho_tgt": 2.0572250643763614,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 335.4287129207954,
+     "rho_tgt": 2.1950571255756923,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 289.024469401067,
+     "rho_tgt": 2.316013124764586,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 245.71753744871722,
+     "rho_tgt": 2.417089458884519,
+     "ok": true
+    }
+   ],
+   "admitted": true,
+   "panel": "3d|W512|M2052",
+   "bad": "badlat262144",
+   "target": "gl64",
+   "fixture": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d/archive/output/q3run_q3d/W_q2.npz",
+   "fixture_sha256": "0ca5015571184c2feba922cf014d18bdcbc7feba99fc009e60fa863989583f5b",
+   "key": "W512|gl24|fs|CN|0.01|K1#q|fs|CN|0.01|K1",
+   "case": 0,
+   "seconds": 260.09052324295044
+  }
+ ]
+}

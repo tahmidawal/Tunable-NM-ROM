@@ -1,0 +1,295 @@
+{
+ "attempt": "f2l",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R384M1536lmfgauss64",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M1536lmfgauss96",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M1536lmfgauss128",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M1536lmfgauss160",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M1536lmfgauss192",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M1536lmfgauss256",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M1536lmfgauss320",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M1536lmfgauss384",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M1536lmfsmolyak8",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak8",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak9"
+  },
+  {
+   "name": "R384M1536lmfsmolyak9",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak9",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak10"
+  },
+  {
+   "name": "R384M1536lmfsmolyak10",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak10",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak11"
+  },
+  {
+   "name": "R384M1536lmfsmolyak11",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak11",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak12"
+  },
+  {
+   "name": "R384M1536lmfsmolyak12",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak12",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak13"
+  },
+  {
+   "name": "R384M1536lmfsmolyak13",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak13",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "smolyak14"
+  },
+  {
+   "name": "R384M1536lmfsmolyak14",
+   "Rp": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "rule": "smolyak14",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  }
+ ],
+ "blocks": []
+}

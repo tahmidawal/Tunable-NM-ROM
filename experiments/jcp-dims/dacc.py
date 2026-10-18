@@ -33,6 +33,7 @@ import numpy as np
 import p1common as P
 from p1common import Q, QS, T2, DT0, sha
 import qcert as QC
+import dcert as DC                                          # jcp-dims EDIT
 import jax
 import jax.numpy as jnp
 
@@ -76,7 +77,7 @@ def run(bank, st, role, form, scheme, dt, level, u0, nu, record=False, budget=60
     S = steps_of(dt)
     nstep = max(T2.NSTEP, S + 1)
     q = QQ.get(st, form, S + 1 if record else 0, budget, mutation, nstep)
-    g, t_ = P.tol_of(form, level)
+    g, t_ = DC.tol_of(form, level, square=(st.M == st.Rp))           # jcp-dims EDIT: square-system levels (A2.1)
     return q['fused'](u0, nu, st.data[(role, form)], st.cold, T2.sched(scheme, dt, g, t_))
 
 
@@ -161,7 +162,8 @@ def main():
                 q2 = list(ids)
             dev = [i for i in P.select(cases, 'dev6') if i in ids] if arm.get('tighter', True) else []
             n = len(ids)
-            g_prod, t_prod = P.tol_of(form, 'prod')
+            square = st.M == st.Rp                                                          # jcp-dims EDIT (A2.1)
+            g_prod, t_prod = DC.tol_of(form, 'prod', square=square)
             sch = T2.sched(scheme, dt, g_prod, t_prod)
             R = dict(case_ids=np.array([f'{cases[i][0]}|{cases[i][1]}' for i in ids]),
                      W=np.full((n, 6, st.Rp), np.nan), w0=np.full((n, st.Rp), np.nan),
@@ -187,7 +189,16 @@ def main():
                 R['W'][j], R['w0'][j], R['f257'][j], R['n0'][j], R['secs'][j] = np.asarray(v['W']), np.asarray(v['w0']), f, n0, secs
                 R['states'][j] = np.asarray(stt['states'])
                 R['it'][j], R['reason'][j] = (np.asarray(stt[k])[:S] for k in ('step_it', 'step_reason'))
-                if form == 'LSPG':
+                if form == 'LSPG' and square:                                          # jcp-dims EDIT (A2.1, A3.3)
+                    g, rn_ = certs['LSPG'](stt['states'], nu, st.data[('main', 'LSPG')], sch)
+                    scl = float(QQ.get(st, form, 0)['init'](u0, st.cold)[1])
+                    R['gamma_lit'][j], R['raw'][j], R['scale'][j] = np.asarray(g), np.asarray(rn_), scl
+                    R['cert'][j] = DC.eta_w(R['raw'][j], scl)
+                    R['tolratio'][j] = np.asarray(stt['step_tolratio'])[:S]
+                    R['rec'][j] = DC.recovered(R['tolratio'][j], t_prod * scl)
+                    gok = DC.gcert(R['raw'][j], R['tolratio'][j], t_prod * scl)
+                    nonst = int(np.sum(~DC.certified_square(R['raw'][j], scl)))
+                elif form == 'LSPG':
                     g, _rn = certs['LSPG'](stt['states'], nu, st.data[('main', 'LSPG')], sch)
                     R['cert'][j] = R['gamma_lit'][j] = np.asarray(g)
                     R['rec'][j] = np.asarray(stt['step_gn'])[:S]
@@ -199,7 +210,8 @@ def main():
                     R['raw'][j], R['scale'][j] = np.asarray(rn_), np.asarray(scl)
                     R['tolratio'][j] = np.asarray(stt['step_tolratio'])[:S]
                     R['rec'][j] = QC.recorded_eta(R['tolratio'][j], R['scale'][j], t_prod)
-                    gok = QC.gcert_gal(R['cert'][j], R['raw'][j], R['scale'][j], R['tolratio'][j], t_prod)
+                    gok = (QC.gcert_gal(R['cert'][j], R['raw'][j], R['scale'][j], R['tolratio'][j], t_prod)
+                           and DC.gcert(R['raw'][j], R['tolratio'][j], t_prod * R['scale'][j]))    # jcp-dims EDIT (A3.3)
                     nonst = int(np.sum(~QC.certified_gal(R['cert'][j])))
                 R['valid'][j] = P.run_valid(v)
                 row = dict(setting=sc_['name'], arm=ak, form=form, scheme=scheme, factor=fac, dt=dt, cohort=coh, case=c,
@@ -251,7 +263,9 @@ def main():
                      rho_only=rho_only,
                      policy=st.policy, mode_hash=st.mode_hash, level='prod', tol=np.array(P.tol_of(form, 'prod')), budget=600,
                      weighting='LSPG D = 1/(a0 + dt b0 nu lam)' if form == 'LSPG' else 'GAL Q^T R = 0, A = Q Rm',
-                     cert_kind='gamma (LSPG, autodiff)' if form == 'LSPG' else 'eta = ||Q^T R|| / ||A c_n|| (GAL, autodiff)',
+                     cert_kind=('eta_w = ||D R|| / scale (square LSPG, A2.1)' if (form == 'LSPG' and square) else
+                                'gamma (LSPG, autodiff)' if form == 'LSPG' else 'eta = ||Q^T R|| / ||A c_n|| (GAL, autodiff)'),
+                     square=square, tol_prod=np.array([g_prod, t_prod]),
                      metric_id_target='2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1')
             np.savez_compressed(out / f"R_{sc_['name']}_{ak}.npz", **R)
             srep['arms'][ak] = dict(n=n, mem=P.mem(), steps=S, dt=dt)
@@ -272,12 +286,43 @@ def main():
         del st
         gc.collect()
         save()
+    for blk in cfg.get('blocks', []):                                                    # jcp-dims EDIT (A2.2, A3.2)
+        if blk['kind'] == 'fixgate':
+            t_blk = time.perf_counter()
+            rep.setdefault('fixgate', []).append(run_fixgate(blk, bank))
+            rep['elapsed'][f"fixgate|R{blk['r']}M{blk['M']}"] = time.perf_counter() - t_blk
+            save()
     rep['memory']['end'] = P.mem()
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()
     (out / 'COMPLETE').write_text('complete\n')
     print('QACC COMPLETE', el(), flush=True)
+
+
+def run_fixgate(blk, bank):
+    """jcp-dims EDIT (DESIGN A2.2, A3.2): component (b) of the cross-family gate. At the frozen fixture states (first r
+    coefficients of the pinned dev6|0 states), rho_tgt = ||N_rule(c) - N_target(c)|| / ||N_target(c)|| for every listed
+    rule at the cell (r, M); p1common.rho conventions (non-finite -> inf). One rule's tables live at a time."""
+    z = np.load(Path(__file__).resolve().parent / blk['fixture'])
+    C = np.asarray(z['W'])[:, :blk['r']]
+    tg = P.Setting(bank, 'fixtgt', blk['r'], blk['target'], blk.get('policy', 'frozen'), M=blk['M'])
+    nl = tg.q['LSPG']['nl']
+    Nt = [np.asarray(nl(jnp.asarray(c), tg.data[('main', 'LSPG')])) for c in C]
+    meta_t = tg.meta['main']
+    del tg
+    out = dict(r=blk['r'], M=blk['M'], target=blk['target'], target_meta=meta_t, fixture=blk['fixture'],
+               fixture_source=str(z['source']), rules={})
+    for rl in blk['rules']:
+        st = P.Setting(bank, 'fixrule', blk['r'], rl, blk.get('policy', 'frozen'), M=blk['M'])
+        Nr = [np.asarray(st.q['LSPG']['nl'](jnp.asarray(c), st.data[('main', 'LSPG')])) for c in C]
+        rh = [P.rho(a, b) for a, b in zip(Nr, Nt)]
+        out['rules'][rl] = dict(rho_tgt=rh, rho_max=float(np.nanmax(np.where(np.isnan(rh), np.inf, rh))),
+                                flags=bool(any((not np.isfinite(x)) or x > 0.116 for x in rh)), meta=st.meta['main'])
+        print('FIXGATE', blk['r'], blk['M'], rl, out['rules'][rl]['rho_max'], flush=True)
+        del st
+        gc.collect()
+    return out
 
 
 def run_order(blk, st, cases, go, U0, out):

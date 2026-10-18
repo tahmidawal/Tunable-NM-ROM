@@ -41,7 +41,19 @@ def _code_version():
     blob = inspect.getsource(config_entry).encode() + b''.join(
         (here / f).read_bytes() for f in ('dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py', 'dcert.py', 'p1score.py',
                                           'rules2d.py', 'vendor/quad2d/npbank.py'))
-    return hashlib.sha256(blob + DEP_PINS.encode()).hexdigest()
+    # acode-11: the quadrature generators used by the cached independent rho and the numerical globals are bound too.
+    # They are compared against the values in force when the existing cache was built (unchanged since the setup
+    # commit 2045e5908) and enter the version only if they differ, so any change to them invalidates the cache while
+    # the cache built before this binding stays valid (its raw archives are offloaded, brief 16).
+    extra = dict({f: hashlib.sha256((here / f).read_bytes()).hexdigest() for f in EXTRA_PINS},
+                 RHO_SUBSET_MAX=RHO_SUBSET_MAX, PRIMARY=PRIMARY, KAPPAS=list(KAPPAS), R_LIST=list(R_LIST))
+    tail = b'' if extra == dict(EXTRA_PINS, **EXTRA_GLOBALS) else json.dumps(extra, sort_keys=True).encode()
+    return hashlib.sha256(blob + DEP_PINS.encode() + tail).hexdigest()
+
+
+EXTRA_PINS = {'vendor/quad2d/qcore.py': '36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b',
+              'vendor/quad2d/vendor/hari_quadrature.py': 'c6403d05e25a4ea5e4f4cc8879e94ac23f582d81b018571cf1abdb8da5d99fb6'}
+EXTRA_GLOBALS = dict(RHO_SUBSET_MAX=4e7, PRIMARY='gauss256', KAPPAS=[1, 2, 3, 4, 8], R_LIST=[128, 256, 384, 512])
 
 
 def sha_file(p):
@@ -132,15 +144,38 @@ def gpu_of(d):
 
 
 NUMERIC_FILES = ('dacc.py', 'p1common.py', 'p1core.py', 'qcert.py', 'dcert.py', 'rules2d.py', 'vendor/quad2d/qcore.py',
-                 'vendor/quad2d/inputs/rotation_R512.npz', 'inputs/fixture2d.npz', 'vendor/quad2d/vendor/hari_quadrature.py',
+                 'vendor/quad2d/qstudy.py', 'vendor/quad2d/vendor/arms.py', 'vendor/quad2d/vendor/bkfast.py',
+                 'vendor/quad2d/vendor/hari_quadrature.py', 'vendor/quad2d/vendor/hfast.py', 'vendor/quad2d/vendor/hops.py',
+                 'experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
+                 'experiments/separable-decoder/sep_common.py',              # the transitive import closure of dacc (acode-11)
+                 'vendor/quad2d/inputs/rotation_R512.npz', 'vendor/quad2d/inputs/rule_q0_m1024_qrg304_reachable.npz',
+                 'inputs/fixture2d.npz', 'inputs/modes_F2048.json',
                  'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl')   # the decoder checkpoint
+JOB_FIELDS_EXEMPT = ('attempt', 'settings', 'blocks', 'retry_of', 'note')    # retry packaging only (A9.3)
 
 
 def code_signature(d):
     """sha256 of the numerical code files as staged for the attempt (archive PROVENANCE.json)."""
     prov = json.loads((d.parents[1] / 'PROVENANCE.json').read_text())
     by = {p['source'].split('experiments/jcp-dims/', 1)[-1]: p['sha256'] for p in prov}
-    return tuple(by.get(f) for f in NUMERIC_FILES)
+    by.update({'experiments/' + x['source'].split('experiments/', 1)[-1]: x['sha256'] for x in prov
+               if 'experiments/jcp-dims/' not in x['source']})
+    sig = tuple(by.get(f) for f in NUMERIC_FILES)
+    miss = [f for f, h in zip(NUMERIC_FILES, sig) if h is None]
+    if miss:
+        raise SystemExit(f'A9.3: attempt {d} provenance lacks numerical files {miss}')
+    return sig
+
+
+def check_job_fields(d, res, att):
+    """A9.3: every job-level numerical field of an attempt equals configs/<job>.json (retry packaging exempt)."""
+    cfg = json.loads((HERE / 'configs' / f'{att}.json').read_text())
+    got = res['config']
+    for k in sorted(set(cfg) | set(got)):
+        if k in JOB_FIELDS_EXEMPT:
+            continue
+        if json.dumps(cfg.get(k), sort_keys=True) != json.dumps(got.get(k), sort_keys=True):
+            raise SystemExit(f'A9.3: job field {k!r} of attempt {d} differs from configs/{att}.json')
 
 
 ARM_CONFLICT = []
@@ -156,6 +191,7 @@ def load_all():
         orig = {x['name']: x for x in json.loads(cp_.read_text())['settings']} if cp_.exists() else {}
         for d in attempt_dirs(att):
             res = json.loads((d / 'result.json').read_text())
+            check_job_fields(d, res, att)
             for s in res['config']['settings']:
                 if s['name'] in res.get('memory_rejected', []):
                     continue

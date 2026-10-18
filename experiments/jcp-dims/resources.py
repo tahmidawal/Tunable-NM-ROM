@@ -29,8 +29,11 @@ NC = {'all38': 38, 'sub16': 16, 'dev6': 6, 'dev2': 2}
 
 
 def out_dir(att, drv, stem):
-    d = HERE / 'runs' / att / 'archive' / 'output' / f'{drv}_{stem}'
-    assert (d / 'result.json').exists(), f'missing smoke output {d}'
+    for base in ('archive', 'slim'):                  # slim: the raw archive was offloaded (brief 16); metadata kept
+        d = HERE / 'runs' / att / base / 'output' / f'{drv}_{stem}'
+        if (d / 'result.json').exists():
+            break
+    assert (d / 'result.json').exists(), f'missing output {d}'
     return d
 
 
@@ -78,7 +81,7 @@ def proj_dacc_prod(cfg):
     """A8.2: per-case cost calibrated on the production f2br1 / f2a archives (H200, same driver): non-square cells
     a + b w (least squares on f2br1's 32 non-square R512 arms, a >= 0), square cells the per-r production maximum
     (PROD_SQUARE), times a form factor from the smoke ratios; per-setting setup 5 s."""
-    r = json.loads((HERE / 'runs' / 'f2br1' / 'archive' / 'output' / 'dacc_f2b' / 'result.json').read_text())
+    r = json.loads((out_dir('f2br1', 'dacc', 'f2b') / 'result.json').read_text())
     W, T = [], []
     for s in r['config']['settings']:
         if s['M'] == s['Rp']:
@@ -122,7 +125,7 @@ def proj_dacc(cfg):
 
 # ------------------------------------------------------------------------------------------------ 2D timing
 def proj_dtime(cfg):
-    r = json.loads((out_dir('smk2t', 'dtime', 'smk2t') / 'result.json').read_text())
+    r = json.loads((out_dir('smk2', 'dtime', 'smk2t') / 'result.json').read_text())
     assert r['complete'] and not r.get('memory_rejected'), 'smoke incomplete or memory-rejected (A1.4)'
     nc_s, reps_s = ncases(r['config']['cases']), int(r['config']['reps'])
     units = []
@@ -223,7 +226,7 @@ def main():
     for r_ in a.run:
         drv, cf = r_.split(':', 1)
         cfg = json.loads((HERE / cf).read_text())
-        sec = {'dacc': proj_dacc_prod if (HERE / 'runs' / 'f2br1' / 'archive').exists() else proj_dacc,
+        sec = {'dacc': proj_dacc_prod if (HERE / 'runs' / 'f2br1').exists() else proj_dacc,
                'dtime': proj_dtime, 'd3run': proj_d3}[drv](cfg)
         det[cf] = sec / 3600.
         total += sec / 3600.

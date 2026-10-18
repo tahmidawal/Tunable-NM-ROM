@@ -700,7 +700,7 @@ a control"); the smoke therefore carries no `smol8` predicate. Smolyak runs as a
 **A5.2 Smoke allowance.** The lane brief bounds each pre-production cluster smoke at ≤ 2 GPU-h and one at a time; each
 smoke is reserved at its 2 h limit in the ledger and charged its measured hours. **A5.3** The submission's account-count
 check inside the campaign lock fails closed (a failed `squeue` aborts with exit 76; COMMON-BRIEF §14).
-**A5.4 Production release (coordinator, 2026-10-18 ~14:15 UTC).** Production is released once this lane's design, code
+**A5.4 Production release (coordinator, 2026-10-18 ~14:45 UTC; time corrected by A11.3).** Production is released once this lane's design, code
 and smoke gates are clean; submission through the shared campaign sbatch lock (§14), lane cap 3, 55 GPU-h. In-lane
 priority: A4 3D front completion + qualified 3D re-timing and A4 2D first (the never-dropped items).
 
@@ -778,3 +778,24 @@ cap at time limits while fitting it at projections.
 everything else of `k3`; union = the registered `k3` inventory (`configs/k3.json` kept). Both are never-dropped. The 3D
 certificate prices square adaptive units from the smoke's W512k1 block (scaled up by point count), after the `k3` job
 audit found the $w$ scaling underpriced them.
+
+## Amendment A11 (2026-10-18, production; answers `audits/codex-design-7.md` and `audits/codex-acode-11.md` — no registered cell, rule or verdict changes)
+
+**A11.1 The non-deferrable items are now funded by the ledger, not only in prose.** Design audit 7 found that A9.2's
+non-deferrable `f2kB` (it carries the κ = 3 cells), `b3f` and `t2` were absent from `ledger.py`'s `MANDATORY` list, so the
+reservation check did not protect them. They are added, and the pending inventory now holds them at projection (A10.1):
+`f2kB` 1.7404 and `b3f` 2.4419 GPU-h (their certificates), `t2` 2.0 GPU-h (the §8 a-priori figure, until its config
+exists after `f2kA`; then replaced by its certificate projection if that is larger). Ledger at this amendment: spent
+11.359 + live limits 32.75 (`k3a`, `f2kA`, `b2f`) + pending 9.21 = 53.32 ≤ 55. `f2kB` is protected whole; its κ = 8 cells
+stay deferrable in reporting terms only (they are run because they ride in the same job).
+**A11.2 Analysis-code fixes (acode-11).** (a) The A9.3 attempt signature now covers the whole import closure of `dacc`
+(adds `qstudy`, `arms`, `bkfast`, `hfast`, `hops`, `engines`, `iterative_paths`, `sep_common`) and the rule, fixture and
+mode inputs; a missing hash aborts. (b) Every job-level field of an attempt's archived configuration must equal
+`configs/<job>.json` except retry packaging (`attempt`, `settings`, `blocks`, `retry_of`, `note`), else the analysis aborts.
+(c) The cache version binds `qcore.py`, `hari_quadrature.py` and the numerical globals (`RHO_SUBSET_MAX`, `PRIMARY`,
+`KAPPAS`, `R_LIST`) against the values in force when the existing cache was built (unchanged since the setup commit), so
+any later change invalidates it while the existing cache — whose raw archives are offloaded — stays valid. (d)
+`resources.py` reads offloaded jobs' retained metadata (`runs/<job>/slim`); the smoke `result.json` files were fetched
+from the burgers-archive and checked against the committed sha256 listings; recomputed certificates equal the recorded
+ones (`f2kA` 11.2667, `b2f` 1.9548, `f2kB` 1.7404, `k3a` 8.3966, `b3f` 2.4419 h).
+**A11.3** A5.4's release time corrected to ~14:45 UTC (the coordinator's record).

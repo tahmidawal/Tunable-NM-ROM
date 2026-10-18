@@ -113,11 +113,11 @@
  "spent_gpu_hours": 2.5722,
  "reserved_gpu_hours": 0,
  "pending_core": {
-  "time256": 3.25,
+  "time256": 3.5,
   "time1024": 3.25,
-  "time4096": 5.5,
-  "fballow256": 2,
-  "fballow4096": 2
+  "time4096": 5.75,
+  "fb256": 0.75,
+  "fb4096": 0.75
  },
  "baseline": {
   "time256": 1.5,
@@ -127,6 +127,13 @@
  "fallback_state": {
   "1024": [
    "1024|R128|LSPG|CNR|2.5"
+  ],
+  "256": [
+   "256|R128|LSPG|CNR|2.5",
+   "256|R384|LSPG|CNR|2.5"
+  ],
+  "4096": [
+   "4096|R128|LSPG|CNR|2.5"
   ]
  }
 }

@@ -107,7 +107,13 @@ def main():
                    b8=dict(horizon=0.5, refs_dir=f'{NS}/refs', manifest_file='REFS-MANIFEST.sha256', check_cases='dev6'),
                    controls=dict(Rp=384, cases='dev6', under_resolved='gauss32'))
         cfg['b7'] = dict(horizon=0.5, q2_cases='sub16', tighter_cases='dev6')    # at 256^2 a diagnostic (feeds B8)
-        write(f'b{mesh}', cfg)
+        if mesh == 1024:        # A8: split by bank prefix into two concurrent jobs (R128 + R256; R384 + controls)
+            lo = dict(cfg, attempt='b1024a', members=[m for m in M2[mesh] if m['Rp'] in (128, 256)])
+            lo.pop('controls')
+            write('b1024a', lo)
+            write('b1024b', dict(cfg, attempt='b1024b', members=[m for m in M2[mesh] if m['Rp'] == 384]))
+        else:
+            write(f'b{mesh}', cfg)
     write('b3d', dict(attempt='b3d', mode='b3', cohort_seed=923801, cohort_count=64, case_subset=list(range(16)),
                       trust_fraction=0.05, settings=settings_3d(), members=members_3d(),
                       b2=dict(qinf='gl56', qcheck='gl64', check_cases=[0, 1, 2, 3]),

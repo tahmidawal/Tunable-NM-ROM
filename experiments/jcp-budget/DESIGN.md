@@ -798,3 +798,11 @@ classified "inconsistent").
 - **Collection procedure:** promotions run **serially**; `ref2a` (contains dev6) is collected **in full** (its dev6
   fine fields are needed for the offline fine recomputation, A1.8); `ref2b`, `ref2c` with `--no-fine` after promotion;
   `anaref.py` runs on all collected `archive/output` trees together (FD and PS).
+
+## Amendment A8 (2026-10-18): b-job split and cost model (no estimand change)
+
+- `b1024` is split by bank prefix into `b1024a` (R128 + R256 members) and `b1024b` (R384 members + the 2D controls) to
+  run concurrently (each its own job directory); the two analyses are merged member-wise for the mesh comparison.
+- `resources.py` prices b-jobs from the smoke's phase times (star/setup, corners per member-case, the check phase per
+  member-check-case, B7 and B8 per member-case; an unmeasured $r$ takes the slowest measured $r$), not from one
+  aggregate overhead.

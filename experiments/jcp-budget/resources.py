@@ -66,6 +66,58 @@ def b2_rates(att='smk1'):
                 ncase=ncase, members=len(per_member))
 
 
+def smoke_phases(att='smk1'):
+    """Per bank prefix r: phase times from the smoke log's progress lines ('STAR r case t', 'B2 member case t',
+    'B7 member case t'; t = seconds since the step began): star+setup, corners per member-case, the check / M / control
+    phase (between the last B2 line and the first B7 line) per member-check-case, and B7 per member-case."""
+    log = '\n'.join(p_.read_text() for p_ in (HERE / 'runs' / att / 'archive' / 'logs').glob('*.out'))
+    blk = log.split('STEP b2run configs/smk1_b1024.json')[1].split('STEP b2run')[0]
+    import re
+    ev = [(m.group(1), m.group(2), m.group(3), float(m.group(4))) for m in
+          re.finditer(r'^(STAR|B2|B7) (\S+) (\S+) ([0-9.]+)$', blk, re.M)]
+    d = json.loads((next(out_dir(att).glob('b2run_*b1024*')) / 'result.json').read_text())
+    ncase, nchk = ncases(d['config']['cases']), len(d['config']['b2'].get('check_cases', 'dev2') == 'dev2' and [0, 1] or [])
+    out = {}
+    t_prev = 0.
+    for r in sorted({int(m['Rp']) for m in d['config']['members']}):
+        mks = [mk for mk in d['b2'][f'R{r}']['members']]
+        st = [t for k, a, b, t in ev if k == 'STAR' and a == str(r)]
+        b2 = [t for k, a, b, t in ev if k == 'B2' and a in mks]
+        b7 = [t for k, a, b, t in ev if k == 'B7' and a in mks]
+        out[r] = dict(star_setup=st[-1] - t_prev, corner_member_case=(b2[-1] - st[-1]) / (len(mks) * ncase),
+                      check_member_case=(b7[0] - b2[-1]) / (len(mks) * max(1, nchk)),
+                      b7_member_case=max(d['b7'][mk]['seconds'] / d['b7'][mk]['n'] for mk in mks), members=len(mks))
+        t_prev = b7[-1]
+    nref = len(d['b8'].get('refs_found', [])) or 1                 # B8 runs only on cases with a reference
+    out['b8_member_case'] = max(0., d['elapsed_seconds'] - t_prev) / (max(1, len(d['config']['members'])) * nref)
+    return out
+
+
+def b2_model(cfg):
+    """Production b2run projection from the smoke phases: an unmeasured r takes the slowest measured r; the full factorial
+    has 38 corners, pairwise 22 (corner time scaled linearly); checks scale with the Q-corner count (17 full / 6
+    pairwise) and the check cases; stars and setup scale with the cases; 4096^2 x MESH4096 plus the pilot."""
+    ph = smoke_phases()
+    meas = {r: v for r, v in ph.items() if isinstance(r, int)}
+    slow = max(meas.values(), key=lambda v: v['corner_member_case'])
+    n = ncases(cfg['cases'])
+    nchk = ncases(cfg['b2'].get('check_cases', 'dev6'))
+    full = cfg['b2'].get('design') == 'full'
+    cf, qf = (1. if full else 22 / 38), (1. if full else 6 / 17)
+    t = 0.
+    for r in sorted({int(m['Rp']) for m in cfg['members']}):
+        v = meas.get(r, slow)
+        k = sum(int(m['Rp']) == r for m in cfg['members'])
+        t += v['star_setup'] * n / 2 + k * n * v['corner_member_case'] * cf + k * nchk * v['check_member_case'] * qf
+        if 'b7' in cfg:
+            t += k * n * v['b7_member_case'] * float(cfg['b7']['horizon']) / .5
+    if 'b8' in cfg:
+        t += len(cfg['members']) * n * ph['b8_member_case']
+    if cfg['mesh'] == 4096:
+        t = t * MESH4096 + pilot_seconds()
+    return t + 600
+
+
 def pilot_seconds(att='smk1'):
     d = next(out_dir(att).glob('b2run_*pilot4096*'), None)
     if d is None:
@@ -110,6 +162,8 @@ def project(drv, cfg):
             # (worst case), no H200 speed credit (job audit refs2d-1)
             return len(cfg['cases']) * .17 * 3600 * 2 * 3 * (2. if cfg['horizon'] > .5 else 1.) + 900
         return 1800.
+    if drv == 'b2run' and 'b2' in cfg:
+        return b2_model(cfg)
     if drv == 'b2run':
         r = b2_rates()
         n = ncases(cfg['cases'])

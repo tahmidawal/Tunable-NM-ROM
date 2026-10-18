@@ -1,0 +1,298 @@
+[
+ {
+  "file": "p1core.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/p1core.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "eb4712f2e6db5573f7cae735041d892d98b55098bda9905e101ace6d1041ba0d",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "p1common.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/p1common.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "0fc4e8e182daba2a15abe37e504141161325c6242a2fc339c0a8ef16d1e8982d",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "qcert.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/qcert.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "f6692cef38b457c8adfc36c87a57e5c3968a637f2559941f4d9a34b801cce74f",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "npcheck.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/npcheck.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "ab123dc10f1b015e052800cb1c9b3f61971b088cc2320f6313572a09314b4bb6",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "ledger.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/ledger.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "c0e72adbedf6a3f69d78d35e3e3d50896b2e25594e63185b927d20a3a136d6bd",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "189102a46ebe19ee671539ffd78a6ba11942aea22562ffa19577fa9eeb7182d5",
+    "description": "cap 45; qualify-specific pending/fallback/mandatory logic removed; reserve = spent + reserved + hours <= cap; job name prefix jb_"
+   }
+  ]
+ },
+ {
+  "file": "resources.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/resources.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "56fa9f3103f1f3cad032f70b8cde03b7bba1c9cfbccae8b30f44ec6f012eda54",
+  "status": "REPLACED: rewritten for this lane (the qualify version is only the pattern); not an inherited copy"
+ },
+ {
+  "file": "timing.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/timing.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "64361e6377257ba3b9b3cc8c7d00405a58577aa60543d4c1e42dbd36f70ede52",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "c3common.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/c3common.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "5e3cfbf0ec4fe3148cc3b946e9105a6fc9ce3e68e6ef29b26bbaaa469525cd3f",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "s3common.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/s3common.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "ab9f9623c0d8751577a28124d10d97a278bbf0b724fd5408a5284c13b9bdc5d7",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "b9528ffaeec14b17bf9cbe2045a5fc38be11eac30c2534c49769ceefc8b68198",
+    "description": "horizon-aware (HORIZON, nout()); 'ad' via budcore (identical to t2core at nout 6) and new 'adg' (adaptive GAL) spec; Setting.data_gal; drop clears GAL data"
+   }
+  ]
+ },
+ {
+  "file": "s3ctx.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/s3ctx.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "c4f8e5a0a3a9c0c33c096536fc55c3c8b6c73a0543a39929755bae382d5d3ac2",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "9c8dac4ef0ee22bd04bb022167c75c8207c26d4cdbc038805622f359307e4d89",
+    "description": "rollout array sized by S.nout() (horizon-aware)"
+   }
+  ]
+ },
+ {
+  "file": "fs3.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/fs3.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "8c7dd03b5619b873b7549ab29c66e2039bda8d9e3a1bea4c8ce349de373701ce",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "fs3p.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/fs3p.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "a05557bbe77de49f5dadbefb8d6130d17d610188d72e073375f2685eb6290336",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "qn3.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/qn3.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "bec525ef29cdd27c586ea64cfd3538e8310d80d30218f063be0596749dc40001",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "t2core.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/t2core.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "cluster/stage.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/cluster/stage.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "44d1574ea67383691abb322152afb4c4d1d96e02954cf63252da91124d61055c",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "fc1621fc5907713f9f928834ada02b355cdd49e65567e0d98d8bb40e079c0ffa",
+    "description": "namespace jcp-budget, drivers b2run/b3run/ref/refrun, job name jb_, qualify timing-fallback check removed"
+   },
+   {
+    "sha256_after": "fbe088e3c4b3cc0ce2e0d9decebe0dcce3d8a178d424e1f5e34854d15a4c5946",
+    "description": "code audit 1/2 revisions (smoke limits, GPU-bound certificates, fail-fast promotion, fine-file verification)"
+   }
+  ]
+ },
+ {
+  "file": "cluster/submit.sh",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/cluster/submit.sh",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "ae4d8de1d7ca3aad4ea5014a32e93e72d77a7aec3b31f43a03b613543ba8f327",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "c4568c9cf6ed2924b111d3cfc8c2969e7b328f91ba861bf9c3694820b0f6d3a2",
+    "description": "namespace jcp-budget, job name jb_"
+   },
+   {
+    "sha256_after": "fbebf4707664499d8a58b82394c22ad365467acd0ca0c0c741eb66b663053759",
+    "description": "code audit 1/2 revisions (smoke limits, GPU-bound certificates, fail-fast promotion, fine-file verification)"
+   },
+   {
+    "sha256_after": "9e745001c4679e8cf4af5d3392482b2f7845c013073f3f2cdd6ec1da576c570d",
+    "description": "COMMON-BRIEF 14: sbatch under the shared campaign flock with the account count checked inside (exit 75 releases the reservation)"
+   },
+   {
+    "sha256_after": "b79bba87312d6672f61c015b8a7a6b29c1c32e91545b90bb59961f7e36c0afb2",
+    "description": "scheduler-query failure inside the flock fails closed (76); exit 75/76 release without the ERR trap"
+   }
+  ]
+ },
+ {
+  "file": "cluster/collect.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/cluster/collect.py",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "4277c8c0ead484b524bf44c0eb980470126c8ca58b99b51cbae9225e8e1060a0",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "c53f8e8c3cee6d7fe96dc448350e2de9d6e56b71a4daee1988f4a641bd10f882",
+    "description": "namespace jcp-budget, jb_; --promote (references into refs/), --no-fine (fine fields stay on the cluster)"
+   },
+   {
+    "sha256_after": "ed3949e4e4fc79f5d28855bcc67df12422170ecb48bbbaccc3f412004f25a85a",
+    "description": "code audit 1/2 revisions (smoke limits, GPU-bound certificates, fail-fast promotion, fine-file verification)"
+   }
+  ]
+ },
+ {
+  "file": "inputs/modes_F2048.json",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/inputs/modes_F2048.json",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "880a7f833d317dc28b44f2b8573b75a67c2e4e4fbf94fefd27d2a6a00634ffb0",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "inputs/model_W1024/bank.pkl",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/inputs/model_W1024/bank.pkl",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "86094f6884e55643240197e560f7dc1924bac3885aed79b20faf2e54446aa036",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "inputs/model_W1024/training.json",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/inputs/model_W1024/training.json",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "4dad674850e4e5d545f798521d2bcd2c5e63b57c0da02d996563642f1df5d9eb",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "rules3d/rules_extra.npz",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/rules3d/rules_extra.npz",
+  "source_branch": "exp/2026-10-18-jcp-qualify",
+  "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
+  "sha256": "8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "ref/refcore.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/refcore.py",
+  "source_branch": "exp/2026-10-06-jcp-references",
+  "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+  "sha256": "dc42b15cb86782b23202b74be68768acc89996107f65747c0345f7d700014fdc",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "d7fd8d2787dc77edb7130f5b4c118823b8206c0fafef9944fb9aa8fe77bf48a6",
+    "description": "horizon generalisation: make_solver(nout, nst), schedule/n_stages(horizon), run(horizon), to_lattice output count from the array; ADDITIONS times(), nst_for(), FINE, to_fine(). Defaults (horizon 0.25, nout 6, nst NST) give E0's arithmetic unchanged"
+   }
+  ]
+ },
+ {
+  "file": "ref/verdict.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/verdict.py",
+  "source_branch": "exp/2026-10-06-jcp-references",
+  "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+  "sha256": "f004845931ddeb253a8ad5ea35c30a82cd8a7b3d24a18aa24b82fbd99ce9c0ba",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "f8a7ecdefbe9e2c0ed476ac6f6149617d97e71b8c020ff74127e5b1804532b19",
+    "description": "output count generalised: every loop over k = 1..5 and every 'all five times' test now uses the array's own number of output times (NT); with six outputs the arithmetic is E0's"
+   }
+  ]
+ },
+ {
+  "file": "ref/cohorts.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/cohorts.py",
+  "source_branch": "exp/2026-10-06-jcp-references",
+  "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+  "sha256": "59ee1afb7caf290e3209f366e7566f7b244e967c3fc391e446bcfc8d73eda767",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "030d3972b50b31729cbb8e81f8fffc3e13574f42243dfb94012daf241ff4b252",
+    "description": "path setup only: ROOT = parents[2] and vendor = HERE.parent/vendor (the copy lives one directory deeper); no numerical change"
+   }
+  ]
+ },
+ {
+  "file": "ref/pscore.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/pscore.py",
+  "source_branch": "exp/2026-10-06-jcp-references",
+  "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+  "sha256": "83d8a004c4914de456c02fef31a74050ebe90bfb74cc9e6ed2fa693730449548",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "cb6504c2b85e11c8331242501dfdecd1664d754e37b6a85b8bc02c2a68038ef4",
+    "description": "run(horizon): number of 0.05 output blocks from the horizon (5 at 0.25, E0's)"
+   }
+  ]
+ },
+ {
+  "file": "ref/gates.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/gates.py",
+  "source_branch": "exp/2026-10-06-jcp-references",
+  "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+  "sha256": "7d0196d043636ed8ada74baef7d91c7df74bea8d3a2406e97d66aa4bcd7c3395",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "ref/sealio.py",
+  "source": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/sealio.py",
+  "source_branch": "exp/2026-10-06-jcp-references",
+  "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+  "sha256": "a99c237250026a6d27c5626e5114e714242ec179a1a2e2324249a0765cdf98b8",
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ }
+]

@@ -1,0 +1,77 @@
+{
+ "attempt": "local3",
+ "mode": "b3",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "case_subset": [
+  0
+ ],
+ "trust_fraction": 0.05,
+ "settings": [
+  {
+   "name": "W256",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "rule": "gl24",
+   "reduced": [],
+   "extra": [
+    "gl32",
+    "gl40",
+    "gl56",
+    "gl64",
+    "lat16384",
+    "lat256",
+    "lat32768",
+    "lat8192"
+   ]
+  },
+  {
+   "name": "W512",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [
+    "gl56",
+    "gl64",
+    "lat32768",
+    "lat65536"
+   ]
+  }
+ ],
+ "members": [
+  {
+   "key": "W256|gl24|fs|CN|0.0125|K1",
+   "qp": "gl32",
+   "qpp": "gl40"
+  }
+ ],
+ "b2": {
+  "qinf": "gl32",
+  "qcheck": "gl40",
+  "check_cases": [
+   0
+  ]
+ },
+ "b7": {
+  "horizon": 0.5,
+  "q2_cases": [
+   0
+  ],
+  "qpp_cases": [
+   0
+  ],
+  "tighter_cases": [
+   0
+  ]
+ },
+ "controls": {
+  "cases": [
+   0
+  ],
+  "under_resolved": "lat256"
+ },
+ "allow_cpu_smoke": true
+}

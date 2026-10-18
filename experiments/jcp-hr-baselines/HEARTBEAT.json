@@ -1,19 +1,19 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:14:51Z",
- "step": "t3d64a 5508653 + t2d1024a 5508660 RUNNING; code audit 24 NOT READY -> A35; code audit 25 (Stage-B) running; 2D dry chain rerunning via campaign jaxslot (COMMON-BRIEF 13)",
+ "utc": "2026-10-18T13:18:45Z",
+ "step": "t3d64a/t2d1024a RUNNING (~11 min): G-ours PASS for all 17 comparators (worst 5.7e-14 rel; 3D batch 1+2, 2D P1); now in construction. Code audit 25 NOT READY -> A36; code audit 26 (Stage-B) running; 2D dry chain via jaxslot",
  "waiting_on": {
   "slurm_jobs": [
    5508653,
    5508660
   ],
-  "codex_output": "audits/codex-code-25.md",
+  "codex_output": "audits/codex-code-26.md",
   "codex_pid": [
-   2659060
+   2669600
   ],
   "local_pid": 2658125
  },
- "expected_finish_utc": "2026-10-18T13:59:51Z",
+ "expected_finish_utc": "2026-10-18T14:03:45Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

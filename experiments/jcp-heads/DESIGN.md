@@ -658,3 +658,14 @@ rung is certified costlier.
 - **Fixed-$M=128$ panel:** $K=32$ heads and linear $r=32$ already have $M=4K=128$, so their deployed configurations are
   the panel's entries (no duplicate runs).
 - Offline rule tables are Gauss-only (the A1.4 policy has no other family); a non-Gauss rule raises.
+
+---
+
+## Amendment A8 (2026-10-18; decision after `audits/codex-code-5.md`)
+
+Code audits 4 and 5 found **no blocker in the smoke drivers** (htrain, hacc, hrule, htime, hpilot, harm, hcore, hcommon,
+cluster tooling); their remaining findings concern `smoke_accept.py`, a local CPU post-processor that reads the smoke
+archives after the jobs finish. Decision: `smk1` is submitted now; the acceptance checker is completed (round-5 items:
+identity vs drift failures and retry attempts, smk1 coverage of configured identities and rule trails, pilot stage
+coverage and per-stage peak validation, duplicate equivalence records, doubled-work drift recomputation) and re-audited
+**before any smoke result is accepted or any production job is staged**. No smoke number is used for a verdict.

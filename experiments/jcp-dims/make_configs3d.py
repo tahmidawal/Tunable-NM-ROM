@@ -75,7 +75,8 @@ def main():
              cases=[0, 1], tighter_cases=[0]),
         dict(kind='adaptive', setting='W512', forms=['LSPG|CN', 'GAL|CN'], dt=0.01, rungs=['lat65536'], cases=[0, 1],
              tighter_cases=[0]),
-        dict(kind='rounds', members=[], control=CONTROL),
+        dict(kind='rounds', members=[dict(key='W1024|lat65536|fs|CN|0.01|K1', qp='lat131072', qpp='lat262144')],
+             control=CONTROL),                       # heaviest production round member (q, q+, q++ live together)
         dict(kind='fixgate', setting='W512', target='gl64', rules=['badlat262144', 'lat262144', 'sob262144s0', 'smolyak13', 'gl64'],
              fixture='inputs/fixture3d.npz'),
         dict(kind='panel', label='smoke', A=dict(setting='M2_512', rule='gl32', spec='fs|BE|0.01|K1'),

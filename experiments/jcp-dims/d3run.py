@@ -525,7 +525,12 @@ def main():
                 cx.save()
                 cx.dump()
             if blk.get('control'):
-                r['control|' + blk['control']['key']] = q3run.member(cx, blk['control'], list(cx.cases), [], 'control')
+                m = blk['control']
+                r['control|' + m['key']] = q3run.member(cx, m, list(cx.cases), [], 'control')
+                for rl in (m['key'].split('|')[1], m['qp'], m.get('qpp')):      # release after use (A1.4)
+                    if rl:
+                        cx.ST[m['key'].split('|')[0]].drop(rl)
+                gc.collect()
         elif kind == 'override':
             r = run_override(cx, blk)
         elif kind == 'fixgate':

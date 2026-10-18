@@ -1,3 +1,16 @@
-{"lane": "jcp-budget", "utc": "2026-10-18T12:16:00Z", "step": "1: reading briefs and predecessor lanes; drafting DESIGN.md",
- "waiting_on": {"slurm_jobs": [], "codex_output": null, "codex_pid": null, "local_pid": null},
- "expected_finish_utc": null, "last_commit": "a218a56dc", "gpu_hours_spent": 0.0, "gpu_hours_cap": 45, "notes": "pre-release: design/code/smoke only"}
+{
+ "lane": "jcp-budget",
+ "utc": "2026-10-18T12:24:46Z",
+ "step": "2: codex design audit 1",
+ "waiting_on": {
+  "slurm_jobs": [],
+  "codex_output": "audits/codex-design-1.md",
+  "codex_pid": 2512328,
+  "local_pid": null
+ },
+ "expected_finish_utc": "2026-10-18T13:24:46Z",
+ "last_commit": "6bbde76fa",
+ "gpu_hours_spent": 0.0,
+ "gpu_hours_cap": 45,
+ "notes": "pre-release: design/code/smoke only"
+}

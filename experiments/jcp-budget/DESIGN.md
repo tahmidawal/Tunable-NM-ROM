@@ -405,3 +405,179 @@ for the new references.
 - **fine route**: scoring on the $1025^2$ (2D) / $127^3$ (3D) lattice instead of $257^2$ / $63^3$.
 - **sub16, v16, dev6, val32**: the case subsets named in §2.
 - **must-fail control**: a deliberately broken input that a check must reject; if it does not, the check is a bug.
+
+---
+
+## Amendment A1 (2026-10-18, after `audits/codex-design-1.md`, NEEDS-RESTATEMENT; before any code ran at real size)
+
+Every numbered fix of the audit is answered here. Where this amendment and the text above differ, this amendment wins.
+
+**A1.1 Coverage.**
+- *Candidate components and "two largest".* Trajectory ingredients (2D: Q, T, F, S, I; 3D: Q, T, S plus the form panel of
+  A1.2) are the only switchable ingredients; every pair of them is run (2D: all 10 pairs; 3D: all pairs of Q, T, S, and
+  F×Q, F×T in the form panel). The floor is **exactly non-interacting** with every in-span trajectory in squared norm
+  ($e_v^2=e_P^2+\lVert v-\Pi u_{\rm ref}\rVert^2$, G-B0). The ideal dynamics interacts with the numerics through the cross
+  term $\chi_v(t)=2\langle v-u_\star,\,u_\star-\Pi u_{\rm ref}\rangle$ in
+  $\lVert v-\Pi u_{\rm ref}\rVert^2=\lVert v-u_\star\rVert^2+e_{\star,\rm dyn}^2+\chi_v$; $\chi_{u_a}$ is reported per case
+  (negative = cancellation between numerical and dynamics error). So whichever two components are largest, their
+  interaction is measured.
+- *Form vs test space.* F is a **form sensitivity** (same test functions). The test-space *size* is jcp-dims' B6; this
+  lane adds one single-ingredient ablation **M** (2D only, not in the factorial): $M=4r\to M'=2048$ (the full frozen list
+  $F_{2048}$; $M'/r=16,8,5.33$ for $r=128,256,384$), deployed everything else, every case at every mesh; labelled
+  "test-space enlargement sensitivity", not an ideal value.
+- *Deferral.* Never deferred: $u_\star$ and its $U_\star$ replays, every corner with $|S|\le2$, and every run a gate or
+  control needs. Only corners with $|S|\ge3$ (and the 3D $|S|=3$ corner other than the closure path of A1.2) follow
+  defer item 3.
+
+**A1.2 Endpoints.** The factorial far corner $u_{\rm all}$ switches the form; the common ideal is $u_\star$ = (GAL,
+$q_\infty$, BDF2 $\Delta t_0/8$, tight, LS init). For LSPG members $u_{\rm all}=u_\star$. For GAL members $u_\star$ is the
+corner $\{Q,T,S,I\}$ (form unchanged), and $D_a=\lVert u_a-u_\star\rVert$ closes on the Möbius sum over subsets of
+$\{Q,T,S,I\}$ (vector identity); the full five-ingredient closure is reported separately as closure to $u_{\rm all}$.
+3D: the factorial over $\{Q,T,S\}$ ends at `ad`-tight LSPG ($u_{QTS}$); $u_\star=u_{QTS}$ with the form switched to GAL,
+and $u_\star-u_a=(u_{QTS}-u_a)+(u_\star-u_{QTS})$ exactly. **3D form panel:** at the `ad`-tight end, corners
+{LSPG, GAL} × {$q$, $q_\infty$} × {$(s,h)$, (BDF2, $\Delta t_0/8$)} (8 runs, 4 new), giving the form effect at fixed tight
+solver and its pairs with Q and T (labelled "at the tight-solver end", a context-specific sensitivity).
+$U_\star$ is an **uncertainty indicator, not a bound**; its time aggregation is $\max_{k\ge1}U_\star(t_k)$, as for the
+components.
+
+**A1.3 Switch semantics.**
+- *Form.* Two estimands, both reported: (i) the factorial switch F = form **plus its own production stopping rule**
+  ("form-plus-stopping-policy sensitivity"); (ii) the **controlled form comparison** at tight tolerance,
+  $\delta_{\rm form}^{\rm tight}=\lVert u_{\{S,F\}}-u_{\{S\}}\rVert$ (both corners are in the pairwise design) — combined's
+  $\delta_{\rm form}$.
+- *Time* is a "temporal-discretisation package sensitivity" (scheme, step, start-up steps, LSPG weights; in 3D also the
+  adaptive-start length $a_{\rm eff}$ of `fs3.a_effective` at the new step).
+- *IC (2D).* Full-grid LS by **blocked accumulation** over the row blocks of the rotated bank (`Bank.Grot`, column prefix
+  $r$): $H=\sum_bG_b^{\mathsf T}G_b$, $g=\sum_bG_b^{\mathsf T}u_{0,b}$ in f64, Cholesky solve plus one step of iterative
+  refinement; recorded: ${\rm cond}(H)$, the orthogonality residual $\lVert G^{\mathsf T}(Gc-u_0)\rVert/(\lVert G\rVert_F
+  \lVert Gc-u_0\rVert)$ accumulated blockwise (gate G-B5: $\le10^{-8}$), and the peak memory (one block temporary; $H$ is
+  $r\times r$). **The LSPG stopping scale is preserved:** every corner runs init → (optional $w_0$ replacement) → evolve,
+  with the scale returned by the deployed init; only $w_0$ changes. All corners, including $u_\varnothing$, use this split
+  path (so the IC sham is bitwise by construction); $u_\varnothing$ is tied to qualify's fused run by G-B3.
+- *3D IC.* The deployed mesh path already solves the mesh normal equations (`TB.project`), so the **initialisation switch**
+  is zero; the IC-projection **error** $e(t_0)$ is still reported against the floor $e_P(t_0)$.
+
+**A1.4 Decision-rule completions.**
+- *Validity.* A corner is valid iff `run_valid` (finite, no non-finite step, no damping saturation; `ad`: no failed step).
+  An effect vector, pair label or component is **available** only if every constituent corner is valid; otherwise it is
+  "unavailable", counted, and never enters "largest", "resolved" or "unresolved". Non-finite values are unavailable.
+- *Ties in "largest".* Two candidates $a,b$ tie if $|a-b|\le\tau_{ab}$ with $\tau_{ab}=3U_\star$ (both trajectory-side),
+  $2\varepsilon_{\rm ref}$ (both reference-side) or $2\varepsilon_{\rm ref}+3U_\star$ (mixed), all per case. A tie at the
+  top makes the case "tied" (it counts for no component). $e_{\star,\rm dyn}$ is resolved only if it exceeds
+  $2\varepsilon_{\rm ref}$ **and** $3U_\star$.
+- *Mesh invariance.* "same" only if one identified component is dominant at all three meshes; if any mesh is
+  "no single dominant", the comparison is **inconclusive**; otherwise "differs".
+- *Growth.* Population = cases eligible for both windows with $e_{W_1}>2\varepsilon_{W_1}$ and $e_{W_2}>2\varepsilon_{W_2}$
+  (resolved numerator and denominator); excluded cases are counted. Fewer than 8 cases → "inconclusive (population)".
+- *Sampling adequacy.* Per case "consistent" iff $|e^{\rm fine}-e^{257}|\le0.10\,e^{257}+2(\varepsilon^{\rm fine}+
+  \varepsilon^{257})$; cases with $e^{257}\le2\varepsilon^{257}$ are "reference-limited" and excluded (counted). Per
+  configuration: **adequate** iff $\ge90\,\%$ of the remaining cases are consistent; **inadequate** iff $<50\,\%$; else
+  **mixed**. Separately per mesh, **front-ranking adequacy**: no resolved reversal of the members' median order between
+  the two routes (resolved = medians differ by more than twice the larger median $\varepsilon$ on **both** routes). The
+  lane-level statement requires every LSPG member at $1024^2$ adequate and front-ranking adequacy at $1024^2$; it is
+  stated **relative to the $1025^2$ route** (a finer feature could still be missed).
+- *Stability* is "at the recorded output times" (transient growth between outputs is not excluded).
+
+**A1.5 References.**
+- *Fine route judged independently:* the fine-lattice fields of all three final levels are judged in-job with the full
+  E0 judge (order, direction consistency from the difference vectors, floor, Péclet, IC); only the finest level's fine
+  field is stored, with the fine judge record. A case's fine-route score is eligible iff its fine judge accepts **and**
+  its lattice judge accepts.
+- *Window eligibility:* the judge is applied per window to the fields restricted to $\{t_0\}\cup W$ (order, direction,
+  floor per window time; solver, IC and Péclet over the whole run). $W_2$ eligibility comes from the $T=0.5$ references;
+  $W_3$ from the $T=1.0$ references, whose $W_1\cup W_2$ outputs must agree with the $T=0.5$ ones within the G-R2 bar.
+- *G-R1/G-R2 matching and bars:* comparisons are level-by-level at equal $(L,\Delta t)$ **and** equal final purpose
+  (prod/retry/tight); purpose-mismatched levels are reported, not compared; at least the finest base level must be
+  matched or G-R2 is "not evaluable" for that case (investigated, case-level). Bars: G-R1 runs on E0's GPU type for that
+  case and must reach $\le10^{-12}$; on another GPU type the bar is G-R2's. G-R2: per time
+  $\lVert\Delta\rVert/n_0\le\min(10^{-8},\,0.01\,\varepsilon_{\rm ref}(t_k))$ — agreement far below the reference
+  uncertainty; a failure stops the reference production until explained in a dated amendment.
+- *Refinement only at $T=0.5$* is a disclosed **resource restriction**; failed $T=1$ references stay non-rankable.
+- *Pseudo-spectral cross-check, full E0 procedure:* per case three spatial runs at $\Delta t$ ($N=1024,1536,2048$ /
+  $128,192,256$), a half-step run at $N_3$, one stability rerun at $\Delta t/2$ if needed, E0's PS gates (G3/G4) in the same
+  job; E0's `crosscheck` (spatial-order indicator, $s_x+s_t\le\varepsilon/2$, $x_{\rm PS}\le2\varepsilon$) and the
+  pre-A10 rule, per window. Cases (pre-declared, a subset of E0's pinned roster): **2D val32 {0, 1, 5, 19}** (two lowest
+  indices, two smallest $\nu$); **3D val64 {0} and the smallest-$\nu$ case of E0's pinned 3D list**. Dimension status per
+  window as E0 (A2.5) scaled to the subset: **validated** iff all PASS; **suspended** if any FAIL; else **unvalidated**.
+  Suspended → that dimension's errors in that window are non-rankable (descriptive only, no B7 verdict); unvalidated →
+  every number of that window carries "provisional (cross-check not validated)".
+
+**A1.6 Controls (replacing the table rows of §7 where named).** Controls are demonstrated in the smoke on the smoke
+population with the predicate "fires on at least one smoke case" and re-run in production on the stated check population
+with the stated predicate. A control that does not fire means the **fixture or the check is unsuitable or wrong**; the
+verdict it protects is withheld until a dated amendment resolves it.
+- **C-F (exact).** Per time $k\ge1$: $r_k=(I-\Pi)u_{\rm ref}(t_k)$; $h$ = the lattice field $\sin(255\pi x)\sin(255\pi y)$
+  (2D) / $\sin(63\pi x)\sin(63\pi y)\sin(63\pi z)$ (3D); $v_k=(I-\Pi)h-\langle(I-\Pi)h,\hat r_k\rangle\hat r_k$,
+  normalised ($v_k\perp$ span **and** $\perp r_k$). Inject $u_{\rm ref}+\eta_kv_k$ with physical amplitude
+  $\eta_k=10\,n_0\max(\text{all candidate components of that case at }t_k)$; $n_0$ and $t_0$ unchanged. Predicates: $e_P$
+  equals $\sqrt{e_{P,k}^2+(\eta_k/n_0)^2}$ to $10^{-10}$ relative, $e_{\star,\rm dyn}$ and every trajectory component
+  unchanged to $10^{-12}$, and the decision code labels the floor largest on **every** available case (guaranteed by the
+  construction; the control tests the labelling code and the identity, not the physics).
+- **C-E (closed form).** (i) ROM field := reference field → balance defect $\beta_k=0$ exactly; (ii) ROM field := reference
+  field scaled by $(1+0.01k)$ at output $k$ → the diagnostic must reproduce the closed-form prediction
+  $\beta_k=[(1+0.01k)^2-1]E_k-[(1+0.01(k-1))^2-1]E_{k-1}+\tfrac{\Delta t_{\rm out}}2([(1+0.01k)^2-1]\mathcal D_k+
+  [(1+0.01(k-1))^2-1]\mathcal D_{k-1})$ (reference $E,\mathcal D$) to $10^{-10}$ relative, and the prediction is non-zero.
+- **C-A (guaranteed).** At each $k\ge1$ add $a_k\varphi$, $\varphi=\sin(256\pi x)\sin(256\pi y)$ (2D; 3D
+  $\sin(64\pi x)\sin(64\pi y)\sin(64\pi z)$), with $a_k\lVert\varphi\rVert_{\rm fine}=\lVert e_k\rVert_{\rm fine}+
+  1.2\,e^{257}n_0^{\rm fine}$, so $\lVert e_k+a_k\varphi\rVert_{\rm fine}\ge1.2\,e^{257}n_0^{\rm fine}$ by the triangle
+  inequality (sign-independent). Predicates: $|\Delta e^{257}|\le10^{-10}e^{257}$ (the alias is zero at the lattice nodes up
+  to rounding) and $s\ge1.2>1.10$ on every check case; the case must then be "inconsistent" under A1.4.
+- **C-I (plumbing).** $w_0\to1.01\,w_0$: the IC effect at $t_0$ must equal the independently computed
+  $\lVert G_{\rm lat}(w_0^{\rm LS}-1.01w_0)\rVert/n_0$ to $10^{-12}$ relative and differ from the unperturbed value; its
+  propagation to $t_1..t_5$ is reported only.
+- **C-S.** Fixture: R384 LSPG-CNR $\Delta t_0$ (front member) with LM budget 0, cases dev6 0–5; comparator: the valid tight
+  corner. Predicate: distance $>2.5\times10^{-4}$ on more than half of the cases. The budget-0 run is exempt from validity.
+- **C-T.** Fixture: R128 LSPG-BE $\Delta t_0$ (front member), dev6: $\lVert I_T\rVert>10^{-3}$ on more than half (prior
+  evidence: combined's BE time sensitivities ≈ 1 %).
+- **C-Q.** Fixture: R384 LSPG-BE $\Delta t_0$ with deployed rule Gauss $32^2$ (qualify's under-resolved fixture), dev6:
+  predicate **at least one case** $>2.5\times10^{-4}$ (qualify's established criterion), count reported. 3D: `lat256` as the
+  deployed rule of W256 CN 0.01, cases 0–3, same predicate.
+- **C-R1.** The first-order ladder must have `solver`, `floor`, `t0_shared` true and `order` **false** (checked
+  explicitly); if a prerequisite fails the control is "not evaluable" and investigated.
+- **C-R2 / C-score (identity-based).** The offline scorer carries identity tags (cohort, case, horizon, output-time list,
+  reference kind and sha256, metric id, route); a case swap, a one-step time shift and (W1, LSPG-BE $\Delta t_0$ rows
+  only, where E0 S exists) an ST↔S swap must each **raise an identity error**; additionally the numerical time-shifted
+  score must differ from the aligned one (reported).
+- **G-B6 (factorial truth).** Every corner records its configuration tuple (rule name and table fingerprint, scheme,
+  $\Delta t$, form, tolerance level, init id, $M$); an in-job assertion checks that exactly the elements of $S$ differ
+  from $u_\varnothing$'s tuple; G-B2 (algebraic closure) stays as a bookkeeping check.
+
+**A1.7 Scoring and qualification completions.**
+- Long-horizon Q2 adds the finer-rule convergence: $q^+$ vs $q^{++}$ on the $q^{++}$ cases meets the rollout bar to $T$,
+  successor and check runs valid; otherwise "unverified (finer rule not converged)". Q2 labels name their population
+  ("Q2 on sub16" in 2D, "on cases 0–7" in 3D) — not individual evidence for other cases.
+- GAL certification is qualify's residual criterion ($\eta\le10^{-8}$, qualify A1.3/A2.5), a named deviation from the
+  LSPG stationarity ratio.
+- Front-order ties: a pair of members is ranked only if their medians differ by more than twice the larger of the two
+  medians' $\varepsilon_{W}$.
+- G-B4 extended: **every** converged-rule-dependent corner type (every corner containing Q, $u_\star$ and its $U_\star$
+  replays) is replayed with the check rule on dev6 (2D) / cases 0–3 (3D); quadrature attribution is claimed only for
+  corner types that pass, on the checked population.
+
+**A1.8 Compute.**
+- Smokes: the coordinator's rule is **one smoke job at a time, each ≤ 2 GPU-h** (not an aggregate); `smk1` (2D) then
+  `smk2` (3D), sequentially. Smoke populations: 2D dev6 cases 0–1, 3D v16 cases 0–1. Production waits for the
+  coordinator's release (which follows the C3 report).
+- Memory: `smk1` includes a **combined-path memory pilot** at $4096^2$ on an H200: bank edges $[0,128,256,384]$, Gauss
+  $320^2$ and $640^2$ tables at $r=384$, the $M'=2048$ test tables, the LS Gram accumulation, a fine-route decode and one
+  B2 corner; peak device bytes recorded. If the peak exceeds 120 GiB, the $640^2$ check tables are built and dropped one
+  role at a time (A16-style lifetime) and the pilot repeats. Reference certificates include the output buffers
+  ($L=8192$, $T=1$: about 10.5 GiB; $512^3$, $T=0.5$: about 10.9 GiB).
+- Ledger: qualify's `ledger.py` reserves each job's **time limit** at submission and keeps it reserved until `sacct`
+  settles it, so spent + all outstanding reservations + the new projection must be ≤ 45.
+- Retention: the new references live in `/cluster/tufts/paralab/tawal01/jcp-budget/refs/` (a data directory, not a job
+  directory), with `REFS-MANIFEST.sha256` committed; the $257^2$/$63^3$ lattice fields and all judge records are pulled
+  into the lane (small); dev6's fine fields are pulled for the offline recomputation; the remaining fine fields stay on the
+  cluster until the coordinator decides (listed in the hand-back). Job directories are deleted after collection.
+
+**A1.9 Other.**
+- *Discrete diagnostics.* 2D: $E=\tfrac12h^2\sum u^2$ over the $1023^2$ interior fine nodes, $h=1/1024$; $\nabla_h$ by
+  central differences at interior nodes using the zero wall values. 3D: $E=\tfrac12h^3\sum u^2$ over the $127^3$
+  interior nodes, $h=1/128$, three central-difference components with zero values outside the interior. The balance
+  quantity is a **difference of discrete balance defects** $\beta_k$; no cancellation claim is made.
+- *Pins (complete):* FRONT-2D.json sha256 `a51ac1a250f00d4b0006a84f2434ab3c96407b1f575f4ffff7a3eb25b7a8b77d` (its own
+  producing-commit field `ef1a73134981…`); qualify EXPORT.json sha256
+  `6cb394d149be8852260b75a585db8102791ef52e9963ab6934f67d536c374431`; code copied from qualify at `4399491eb` and from
+  references at `cc04f4b54` (`PROVENANCE.json`).
+- *New gate G-B5* (LS init orthogonality, A1.3) and *G-C1* (`test_budcore.py`: `budcore` with nout = 6 equals `p1core`
+  bitwise; the nout = 11 run's first six outputs equal it bitwise) join §7.

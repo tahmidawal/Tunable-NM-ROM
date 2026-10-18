@@ -93,3 +93,17 @@ def smoke_config():
     mem = [m for m in round1() if m['key'] in ('W512|gl24|fs|CN|0.01|K1', 'W1024|lat32768|fs|CN|0.01|K1')]
     return q3d_config(mem, 'smk3', control=True,
                       pilot=[dict(setting='W1024', rule='lat131072'), dict(setting='W1024', rule='lat65536')])
+
+
+def round_next(tested, limit=20):
+    """A1.1 / A2.1: the next Q2-3D round = front members (median or worst) of the set {untested} U {Q2-passed}, that are
+    untested, ranked by screening cost, at most `limit`. tested: {key: label}."""
+    C = candidates()
+    pool = {k: v for k, v in C.items() if k not in tested or tested[k] == 'pass'}
+    fm, fw = fronts(pool)
+    keys = sorted({k for k in fm + fw if k not in tested}, key=lambda k: C[k]['ratio'] * C[k]['t_A'])[:limit]
+    out = []
+    for k in keys:
+        qp, qpp = successors(k.split('|')[1])
+        out.append(dict(key=k, qp=qp, qpp=qpp, front=[x for x, f in (('median', fm), ('worst', fw)) if k in f], winner=False))
+    return out

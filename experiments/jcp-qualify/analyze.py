@@ -381,7 +381,7 @@ def timing(mesh, C):
     eq = res['equivalence']
     dbl = res['doubled']
     return dict(attempt=att, job=res['job_id'], gpu=res['gpu'], commit=res['commit'], subjects=subs,
-                controls=dict(split_fused=all(x['passed'] for x in eq),
+                controls=dict(split_fused=bool(eq) and all(x['passed'] for x in eq),
                               doubled=dict(n=len(dbl), median=float(np.median([x['ratio'] for x in dbl if x['drift_ok']]))
                                            if any(x['drift_ok'] for x in dbl) else None,
                                            passed=bool(dbl) and any(x['drift_ok'] for x in dbl) and

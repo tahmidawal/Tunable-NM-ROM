@@ -438,6 +438,37 @@ def t_qrdel():
     return f'60 random + 7 boundary deletions, worst {worst:.1e}; refactor-then-delete LS error {e2:.1e}'
 
 
+@gate('G-deadline NNLS per-path budget: deadline crossings never yield kkt/optimum (A39-A40)')
+def t_deadline():
+    import nnls as NN
+    import build as BD
+    real = NN.time.perf_counter
+    out = []
+    try:
+        for step in (0.3, 0.45, 0.6, 1.1):
+            clock = [0.]
+
+            def fake(step=step):
+                clock[0] += step
+                return clock[0]
+            NN.time.perf_counter = fake
+            G = np.eye(3)
+            bb = np.array([1., 0., 0.])
+            o = NN.greedy_nnls(G, bb, supports=(2,), cap=3, max_seconds=1.0)
+            assert o['reason'] in ('time', 'taus'), (step, o['reason'])
+            assert o['records'][('s', 2)] is None, step                       # the target is not reached
+            out.append(o['reason'])
+            # through the construction wrapper: a timed-out attempt never fills a target with an optimum alias
+            clock[0] = 0.
+            rec, summ = BD.ecsw_weights(G, bb, np.arange(3), 1, kappas=(1, 2), max_seconds=1.0)
+            sel = summ['attempts'][summ['selected']]
+            assert not any((v or {}).get('optimum') for v in sel['checkpoints'].values()) or sel['reason'] == 'kkt', sel
+            assert sel['reason'] == 'kkt' or rec.get(2) is None, (sel['reason'], rec.get(2))
+    finally:
+        NN.time.perf_counter = real
+    return f'deadline crossings -> {out}'
+
+
 @gate('G-qdeim pivots vs scipy, exact interpolation on span(U)')
 def t_qdeim():
     rng = np.random.default_rng(1)

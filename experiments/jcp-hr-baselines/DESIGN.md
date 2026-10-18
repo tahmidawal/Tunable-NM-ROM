@@ -1829,3 +1829,14 @@ least-squares solution (6.1e-16).
 **A39.4 Memory.** The blocked deletion adds window temporaries (at 3D r = 1,024: Q 13.7 GB, each 16,384² window array
 2.1 GB, the product Q_window·Q_s a further window-width slice of Q). This is within the A22.2 inventory's margin but
 is not certified a priori; the retrospective process-peak acceptance (A28.2) remains the admission test.
+
+---
+
+## Amendment A40 (2026-10-18) — code audit 29 (NNLS budget, NOT READY on item 1)
+
+**A40.1** The deadline is checked again after each outer iteration's residual and gradient work, before a completion
+reason (`kkt`, `cap`, targets) is accepted and before an append; an inner Lawson–Hanson stop is propagated as reason
+`time`. A path whose budget expired can therefore never end as `kkt`, so no optimum alias (A23) can arise from it.
+Gate **G-deadline** drives a controlled clock across every crossing position and checks the reason and that no
+unreached target is filled. **A40.2** The budget is measured from entry (initialisation included); the guarantee covers
+`method='update'` (production) only.

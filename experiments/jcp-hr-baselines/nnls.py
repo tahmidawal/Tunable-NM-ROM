@@ -305,12 +305,12 @@ def _lh_refit_upd(F, S, x0, max_inner=None, deadline=None):
         if not S:
             break
         if deadline is not None and time.perf_counter() > deadline:
-            break                               # A39.1: x stays feasible (>= 0) and consistent with F and S
+            return np.maximum(x, 0.), S, dropped, True      # A39.1: x feasible, consistent with F and S
         z = F.solve()
         if not np.all(np.isfinite(z)):
             z = np.where(np.isfinite(z), z, -1.)
         if np.all(z > 0):
-            return z, S, dropped
+            return z, S, dropped, False
         neg = z <= 0
         with np.errstate(divide='ignore', invalid='ignore'):
             al = np.where(neg, x / (x - z), np.inf)
@@ -322,7 +322,7 @@ def _lh_refit_upd(F, S, x0, max_inner=None, deadline=None):
             F.delete(pos)
             dropped.append(S.pop(pos))
             x = np.delete(x, pos)
-    return np.maximum(x, 0.), S, dropped
+    return np.maximum(x, 0.), S, dropped, False
 
 
 def kkt_check(G, bj, S, x, nb):
@@ -345,12 +345,16 @@ def kkt_check(G, bj, S, x, nb):
 def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, supports=(), max_drops=3,
                 method='update', refactor_every=1024, max_seconds=None):
     """-> dict(records={tau: ..., ('s', s): ...}, support, weights, relres, path, reason, banned, kkt).
-    reason: 'time' (the per-path wall budget max_seconds was exceeded, A38.2/A39.1: checked before every outer iteration,
-    inside the Lawson-Hanson loop and before refactorisation; overshoot <= one append / solve / deletion batch),
+    reason: 'time' (the per-path wall budget max_seconds was exceeded, A38.2/A39.1/A40: measured from entry; checked
+    before and after each outer iteration's residual/gradient work, inside the Lawson-Hanson loop and before
+    refactorisation; overshoot <= one residual/gradient pass, append, solve and deletion batch; method='update' only --
+    the 'full' reference method is not budgeted),
     'taus' (every requested checkpoint reached), 'kkt' (no admissible positive gradient and the KKT check
     passed), 'incomplete (KKT violated)' (no admissible gradient but KKT fails, e.g. only banned indices remain), 'cap'
     (support cap), 'max_iter'. method 'update' (A20, default: updating QR, single-index entry) or 'full' (A17: full QR
     of the passive set at every refit; the reference the updating path is checked against)."""
+    t_start = time.perf_counter()               # A40.2: the budget covers initialisation too
+    deadline = (t_start + max_seconds) if max_seconds is not None else None
     G = jnp.asarray(G)
     b = np.asarray(b, np.float64)
     bj = jnp.asarray(b)
@@ -388,8 +392,6 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
                 rec[t] = dict(support=S[x > 0].copy(), weights=x[x > 0].copy(), relres=rr, size=npos)
 
     rr = 1.0
-    t_start = time.perf_counter()
-    deadline = (t_start + max_seconds) if max_seconds is not None else None
     for it in range(max_iter):
         if deadline is not None and time.perf_counter() > deadline:
             reason = 'time'                 # A38.2: per-path wall budget; unreached targets = construction failures
@@ -408,6 +410,9 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
         w[banned] = -np.inf
         w[dep_skip] = -np.inf
         cand = np.nonzero(w > 1e-14 * max(wmax0, 1e-300))[0]
+        if deadline is not None and time.perf_counter() > deadline:
+            reason = 'time'                 # A40.1: checked after the residual/gradient work, before any completion
+            break                           # reason is accepted and before an append
         if len(cand) == 0:
             reason = 'kkt'
             break
@@ -425,7 +430,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
                 continue
             S = np.concatenate([S, [new]]).astype(np.int64)
             x = np.concatenate([x, [0.]])
-            xs, Sl, dropped = _lh_refit_upd(F, S, x, deadline=deadline)
+            xs, Sl, dropped, cut = _lh_refit_upd(F, S, x, deadline=deadline)
             S, x = np.asarray(Sl, np.int64), xs
             for dd in dropped:
                 drops[dd] += 1
@@ -437,6 +442,10 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
                 F.refactor(S)
                 if F.drift and not (F.drift[-1] <= DRIFT_TOL):   # A22.3: non-finite or excessive drift = event
                     n_drift_events += 1
+            if cut:                                     # A40.1: inner loop stopped by the deadline
+                path.append((len(S), None))
+                reason = 'time'
+                break
         else:
             B = max(1, int(math.ceil(frac * len(S))))
             B = min(B, len(cand), cap - len(S))

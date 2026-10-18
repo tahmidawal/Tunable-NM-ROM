@@ -513,3 +513,40 @@ $\eta_{\rm rec}=\text{tolratio}\times{\rm tol}_f$ when the scale is positive; a 
 is recorded as "exceptional", certified iff its raw residual is exactly 0, and G-cert compares raw norms
 ($\lvert\Delta\rvert\le10^{-6}\times$raw$+10^{-15}$). CPU boundary fixtures: $\eta=10^{-8}$ exactly → certified (the
 predicate is $\eta\le10^{-8}$); $0.99\times$ / $1.01\times$; NaN; zero scale with zero / non-zero residual.
+
+---
+
+## Amendment A3 (2026-10-18, before any lane job; answers `audits/codex-design-3.md`, NEEDS-RESTATEMENT)
+
+**A3.1 Defer list exact; reservation accounting (blocker 1).** A2.2's "optional work" is restated to be exactly the
+brief's defer list, in its order: (1) $4096^2$ larger-step arms; (2) GAL-CN (all meshes); (3) 3D Q2 rounds and members
+other than the two H2 winners; (4) $256^2$ larger-step arms. Everything else (all $\Delta t_0$/$2\Delta t_0$ LSPG-BE and
+LSPG-CN-R configurations at every mesh, their timing panels, the order job, 3D Q2 of the two winners) is non-deferrable;
+the brief's never-dropped core (front at $1024^2$ and $4096^2$ for $\Delta t_0$/$2\Delta t_0$ CN-R and BE) is its subset.
+Reservation check at a submission: spent + Σ time limits of queued/running jobs + this job's time limit + Σ projected
+time limits of the **other** not-yet-submitted non-deferrable jobs + a fallback allowance of 2 GPU-h per mesh whose Q2
+labels are not yet known (released when they are) ≤ 35. When the check fails for a deferrable job, that job (or the
+deferrable arms inside a job) is dropped in the defer order and recorded "deferred (budget)". Limitation stated: the
+timing job of a mesh waits for that mesh's deferrable accuracy arms (one final panel per mesh), so the deferrable work of
+a mesh can delay that mesh's core panel; it never delays another mesh's.
+
+**A3.2 Zero-scale G-cert comparator (blocker 2).** The solver records `tolratio` $=r_n/({\rm tol}+10^{-300})$; at zero
+scale ${\rm tol}=0$, so the solver's raw residual is recovered as `tolratio`$\times10^{-300}$ when `tolratio` is finite;
+an infinite `tolratio` (overflow, $r_n\gtrsim1.8\times10^{8}$) makes the step "exceptional, unrecoverable": G-cert fails
+for that step and the configuration is flagged. The comparison is solver-recovered raw vs certifier raw
+(`qcert.gcert_gal`; offline in `qscore.gcert_ok`, reimplemented without the in-job code).
+
+**A3.3 Positive GAL fixture evidence (blocker 3).** The evidence is combined's `c2grid` run of the same numerical
+configuration (R384 `gauss128`, $1024^2$, GAL-CN, $\Delta t_0$, prod): `checks/analysis-c2grid-2d_e0.json`,
+arm `R384|GAL|CN|0.005|prod`, `verified` = 38 of 38 cases, where `verified` means the solver's own per-step convergence
+test passed on every step (`stats.nfail == 0`, residual ≤ tolerance with a non-budget, non-damping exit; `c2grid.py:130`)
+and the coefficients are finite. A failure of the positive fixture blocks GAL Q1 and opens a diagnosis (certifier,
+driver, solver, provenance); no attribution is claimed in advance.
+
+**A3.4 Full TH06 control in the smoke (blocker 4).** `smkA`'s B4 block runs GAL-TH06 at R384 on all six dev6 cases (the
+full A1.4 control), so the control is shown before any production job; the other B4 arms stay one-case path tests in the
+smoke. The `order` job repeats TH06 (reported beside, must agree in label).
+
+**A3.5 B4 undefined cases.** A case is "not interpretable" if any $e(h)$ on the fitted ladder is $\le0$ or non-finite,
+if $e(\tfrac12)-e(\tfrac14)\le0$ (checks (iii)/(iv) have no positive denominator), or if the fit is undefined. CPU
+fixture: a zero-error sequence → not interpretable.

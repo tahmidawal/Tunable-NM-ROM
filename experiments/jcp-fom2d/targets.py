@@ -130,7 +130,17 @@ def front(path, commit, out, k2_out):
                 k2.append(identity(cfg))
     assert sv == RS.store_version(), ('FRONT store version differs from the active E0 store', sv)
     M4 = F['meshes'].get('4096', F['meshes'].get(4096, {}))
-    complete = all(k in M4 for k in ('members', 'other_qualified', 'unqualified'))
+
+    def qualified_anywhere(v):            # an 'unqualified' entry that still carries a true numerical-qualification label
+        if isinstance(v, dict):
+            return any((('numerically_qualified' in str(k)) and x is True) or qualified_anywhere(x) for k, x in v.items())
+        if isinstance(v, list):
+            return any(qualified_anywhere(x) for x in v)
+        return False
+    hidden = [k for k, v in (M4.get('unqualified') or {}).items() if qualified_anywhere(v)]
+    complete = all(k in M4 for k in ('members', 'other_qualified', 'unqualified')) and not hidden
+    if hidden:
+        print('K2 universe incomplete: numerically qualified entries listed as unqualified (e.g. unusable timing):', hidden)
     Path(out).write_text(json.dumps(dict(source=f'FRONT-2D ({path}, sha256 {sha_file}, commit {commit})',
                                          store_version=RS.store_version(), targets=with_populations(T)), indent=1) + '\n')
     Path(k2_out).write_text(json.dumps(dict(identities=sorted(set(k2)), complete=bool(complete),

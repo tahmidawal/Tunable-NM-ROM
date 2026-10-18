@@ -1,16 +1,16 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T06:27:36Z",
- "step": "2/4: codex design audit 5 + code audit 3 running (smoke re-staged, not submitted)",
+ "utc": "2026-10-18T06:34:20Z",
+ "step": "4: codex code audit 4 (focused) running; smoke runs/smk1 staged",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-design-5.md,audits/codex-code-3.md",
-  "codex_pid": 1487885,
+  "codex_output": "audits/codex-code-4.md",
+  "codex_pid": 1514653,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T09:00:00Z",
- "last_commit": "dc3e4a1a1",
+ "expected_finish_utc": "2026-10-18T07:30:00Z",
+ "last_commit": "7e824e8ce",
  "gpu_hours_spent": 0.0,
  "gpu_hours_cap": 30,
- "notes": "code audit pid 1487886; FRONT-2D.json not yet produced"
+ "notes": "FRONT-2D.json not yet produced; qualify at code-audit stage"
 }

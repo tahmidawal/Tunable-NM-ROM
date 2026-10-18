@@ -62,10 +62,28 @@ def _lh_refit(A, g, x0, act_tol=0.0, max_inner=None, ls_cols=None):
     return x, P
 
 
+def kkt_check(G, bj, S, x, nb):
+    """KKT diagnostics (A5.2), w = G^T (b - G xi): xi >= 0 and finite; |w_i| <= tol on the support; w_i <= tol off it
+    (banned indices included). tol = 1e-9 ||G||_F ||b||."""
+    G = jnp.asarray(G)
+    S = np.asarray(S, np.int64)
+    x = np.asarray(x, np.float64)
+    res_ = bj - (G[:, jnp.asarray(S)] @ jnp.asarray(x) if len(S) else 0.)
+    w = np.array(G.T @ res_, dtype=np.float64, copy=True)          # writable copy
+    tol = 1e-9 * float(jnp.linalg.norm(G)) * nb
+    on = np.zeros(len(w), bool)
+    on[S] = True
+    sup = float(np.max(np.abs(w[on]))) if on.any() else 0.
+    off = float(np.max(w[~on])) if (~on).any() else -np.inf
+    ok = bool(np.all(np.isfinite(w)) and np.all(np.isfinite(x)) and np.all(x >= 0) and sup <= tol and off <= tol)
+    return dict(ok=ok, support_max_abs_gradient=sup, off_support_max_gradient=off, tol=tol)
+
+
 def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
     """-> dict(records={tau: dict(support, weights, relres) or None}, support, weights, relres, path, reason).
-    reason: 'taus' (all tolerances reached), 'kkt' (no admissible positive gradient: the NNLS optimum, or every remaining
-    positive-gradient index was banned as numerically dependent -- `banned` reports how many), 'cap' (support cap)."""
+    reason: 'taus' (all tolerances reached), 'kkt' (no admissible positive gradient and the KKT check passed),
+    'incomplete (KKT violated)' (no admissible gradient but KKT fails, e.g. only banned indices remain), 'cap' (support
+    cap), 'max_iter'. `kkt` holds the final KKT diagnostics in every case; `banned` counts banned indices."""
     G = jnp.asarray(G)
     b = np.asarray(b, np.float64)
     m, N = G.shape
@@ -81,7 +99,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
     used = 0
     x = np.zeros(0)
     path = []
-    reason = 'kkt'
+    reason = 'max_iter'
     bj = jnp.asarray(b)
     banned = np.zeros(N, bool)          # indices added and immediately dropped (numerically dependent): never re-added
 
@@ -150,15 +168,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
     rr = relres()
     record(rr)
     rr = exact_relres()
-    kkt = None
-    if reason == 'kkt':        # A4.7: the optimum is checked against ALL candidates (banned ones included)
-        res_ = (bj - (G[:, jnp.asarray(S)] @ jnp.asarray(x) if len(S) else 0.))
-        wfull = np.asarray(G.T @ res_)
-        if len(S):
-            wfull[S] = -np.inf
-        gmax = float(np.max(wfull)) if N > len(S) else 0.
-        kkt = dict(max_positive_gradient=gmax, bound=1e-9 * float(jnp.linalg.norm(G)) * nb,
-                   ok=bool(gmax <= 1e-9 * float(jnp.linalg.norm(G)) * nb))
-        if not kkt['ok']:
-            reason = 'incomplete (KKT violated)'
+    kkt = kkt_check(G, bj, S, x, nb)
+    if reason == 'kkt' and not kkt['ok']:      # A4.7 / A5.2: a claimed optimum must satisfy KKT over ALL candidates
+        reason = 'incomplete (KKT violated)'
     return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()), kkt=kkt)

@@ -102,7 +102,8 @@ def pod_rsvd(S, rmax, oversample=64, power=2, nb=1 << 16, seed=0):
     """A4.7 fallback: blocked randomised SVD of S^T (n, n_s) with power iterations and re-orthonormalisation.
     Returns (Phi (n, rmax), singular values (rmax + oversample,), orthonormality deviation)."""
     m, n = S.shape
-    k = min(rmax + oversample, m)
+    k = min(rmax + oversample, m, n)                  # A6.2: l = min(q_max + 64, n_snapshots, n_spatial)
+    assert k >= rmax, f'requested rank {rmax} exceeds the snapshot span ({m} snapshots): not constructible'
     Om = jnp.asarray(np.random.default_rng(seed).standard_normal((m, k)))
 
     def StX(X):                         # S^T X  -> (n, k), assembled in row blocks of S^T
@@ -148,7 +149,8 @@ def projection_errors(S, Phi, ranks, sig, nb=1 << 16):
         e2 = np.maximum(n2 - np.sum(C[:, :r] ** 2, 1), 0.)
         out[r] = dict(rms_rel=float(np.sqrt(np.mean(e2 / np.maximum(n2, 1e-300)))),
                       frob_rel=float(np.sqrt(np.sum(e2) / np.sum(n2))),
-                      pod_tail=float(np.sqrt(max(tot - float(np.sum(sig[:r] ** 2)), 0.) / tot)))
+                      pod_tail=float(np.sqrt(max(tot - float(np.sum(sig[:r] ** 2)), 0.) / tot)),
+                      pod_tail_sq=float((tot - float(np.sum(sig[:r] ** 2))) / tot))      # unclipped radicand (A6.1)
     return out, C
 
 
@@ -324,8 +326,8 @@ def ecsw_weights(G, b, cand_nodes, taus=ECSW_TAUS, log=None):
         x = out['records'][t]
         rec[t] = None if x is None else dict(nodes=cand_nodes[x['support']], weights=x['weights'], relres=x['relres'],
                                              size=x['size'], retry_cap=x.get('retry_cap'))
-    summary = {cap: dict(reason=o['reason'], final_relres=o['relres'], final_support=int(len(o['support'])))
-               for cap, o in tried.items()}
+    summary = {cap: dict(reason=o['reason'], final_relres=o['relres'], final_support=int(len(o['support'])),
+                         banned=o['banned'], kkt=o['kkt'], iterations=len(o['path'])) for cap, o in tried.items()}
     return rec, summary
 
 

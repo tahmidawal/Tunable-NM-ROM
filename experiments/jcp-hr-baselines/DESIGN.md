@@ -875,3 +875,56 @@ selected from the X-specific front. The absolute-time front is a screening conve
 A required control whose fixture is unavailable leaves its acceptance gate **unfulfilled**: it is neither a pass nor
 evidence of an implementation defect, and phase I is not declared complete while a required gate is unfulfilled
 (it is reported to the coordinator with the reason).
+
+---
+
+## Amendment A6 (2026-10-18) — design audit 6 (`audits/codex-design-6.md`, NEEDS-RESTATEMENT, no WRONG) and the design-level consequences of code audit 1 (`audits/codex-code-1.md`, NOT READY)
+
+**A6.1 POD certificate, final form (audit 6 item 2; code audit item 13).** With the Gram eigenvalues $\lambda_i$ and the
+exact $\|S\|_F^2$: $\tau_r^2=(\|S\|_F^2-\sum_{i\le r}\lambda_i)/\|S\|_F^2$. A negative radicand within $-10^{-12}$
+(roundoff) is clipped to 0; a more negative one fails the certificate. If $\tau_r<10^{-6}$ (saturated) the rank passes
+iff $e_r\le10^{-6}$; otherwise iff $|e_r-\tau_r|\le0.01\tau_r+10^{-6}$. Orthonormality ≤ 1e-10 and finiteness are
+required. The wording "far below any E0 error" is withdrawn: saturation means "below the registered
+training-projection certification tolerance", nothing more. **One basis per cell:** the method-of-snapshots basis
+unless the randomised fallback certifies strictly more registered ranks; ranks that fail under the chosen basis are not
+constructible (this replaces A5.2's "both bases fail" rule, which would mix two bases' prefixes). Construction is
+enforced in code: a non-constructible rank, an uncertified p, or a DEIM solve with backward error > 1e-12 raises a
+recorded construction failure; nothing is used silently.
+
+**A6.2 Randomised fallback dimensions (audit 6 item 3).** Sketch $\ell=\min(q_{\max}+64,\,n_{\rm snapshots},\,
+n_{\rm spatial})$ with $q_{\max}=r_{\max}$ (state POD) or $p_{\max}$ (advection POD); a requested rank or p larger than
+the snapshot count is not constructible (no completion of the basis). A non-finite method-of-snapshots factor triggers
+the fallback before use.
+
+**A6.3 N-under ladder, restated (code audit item 9).** An under-sampled ECSW support below $r$ makes the LSPG problem
+underdetermined, so its solution is not unique and it cannot be Q1-qualified; such levels show solver/qualification
+failure, not "sampling-induced accuracy degradation". The ECSW ladder is therefore support caps
+$\{r,\lceil r/2\rceil,\lceil r/4\rceil,\lceil r/8\rceil\}$ (r points is already far below the registered τ supports),
+the Q-DEIM ladder $p\in\{\lfloor r/8\rfloor,\lfloor r/16\rfloor,\dots,1\}$ (each p certified by A6.1 on the advection
+POD). Every level is run on both fixtures with its own tight and tighter anchors (complete Q1). A family's control
+**fires** iff some level is Q1-qualified **and** its median E0 error on the fixtures ≥ 2 × the `none` arm's; Q1-failing
+levels are reported as solver failures. If no level fires the control is unfulfilled (A2.10 applies).
+
+**A6.4 Native solver for underdetermined Jacobians (code audit item 2).** The native Gauss–Newton step is the
+minimum-norm least-squares solution when the reduced residual has fewer rows than unknowns (QR of $J^\top$), and the
+Householder-QR solution otherwise; a non-finite step (rank deficiency) is exit reason 3.
+
+**A6.5 Validity includes damping saturation (code audit item 5).** A run is invalid if, at any live step, the LM damping
+is non-finite or at its limit $10^{14}$, independently of the exit reason.
+
+**A6.6 Timing estimands, exact (code audit items 6, 7, 8).** For a pair: per timing case, $v_c$ = median of that case's
+valid ratios; the statistic is $T=\mathrm{median}_c\,v_c$ over the six registered timing cases (numpy median: the
+mean of the two middle values); its 95 % interval and the 90 % interval of $\log T$ come from resampling cases (10,000,
+seed 0). A pair is assessed only if all six registered timing cases have ≥ 1 valid triple. Role selection uses the same
+$T$ with single warm runs (A4.8, A5.3). N-time runs on all six timing cases and passes iff $T\in[1.8,2.2]$ and the
+lower 95 % bound exceeds 1 ("X faster"). Every timed output is compared with its separately scored output (≤ 1e-12);
+every attempt (including rejected triples) is kept; screening runs are preceded by a 0.1 s burn.
+
+**A6.7 Acceptance is schema-driven (code audit item 3).** `smoke_accept.py` requires an explicit list of phases and
+gates per cell and recomputes each predicate from numbers (certificates from projection errors, Q1 from per-run
+evidence and from distances recomputed out of the saved fields, timing statistics from raw triples, G-score from saved
+coefficients); a missing, skipped, errored or non-finite required item fails; an unavailable fixture is "unfulfilled".
+The CPU gate file `checks/test_core.json` (all 13 gates) is a required input.
+
+**A6.8 Metadata pin (code audit item 17).** Jobs run with `JCPREF_META` unset; `score.check_store` asserts the loader's
+metadata directory is the lane's pinned `e0/store` and hashes the exact STATUS file the loader reads.

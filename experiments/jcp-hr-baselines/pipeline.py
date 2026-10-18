@@ -20,6 +20,17 @@ import build as BD
 Q1_DIST, Q1_ANCHOR, Q1_NONSTAT = 2.5e-4, 2.5e-5, 0.01
 
 
+_BURN = jax.jit(lambda a: a @ a / 512 + .01)
+
+
+def burn(seconds):
+    """Keep the GPU busy for `seconds` before a timed call (combined lane's burn)."""
+    a = jax.block_until_ready(_BURN(jnp.ones((512, 512), jnp.float64) * .01))
+    t = time.perf_counter()
+    while time.perf_counter() - t < seconds:
+        a = jax.block_until_ready(_BURN(a))
+
+
 def cfg_id(kind, r, hrp, scheme, dt, solver, gen='central'):
     return f'{kind}|{r}|{hrp}|{scheme}|{dt:.8g}|{solver}|{gen}'
 
@@ -60,9 +71,12 @@ class Cell:
         sch_gen = ('CNR', 'central') if gen == 'central' else ('BE', 'upwind')
         with self.T(f'snapshots[{gen}]'):
             S, sinfo = BD.snapshots(self.d, self.L, fam_train, rows, scheme=sch_gen[0], adv=sch_gen[1], log=self.log)
+        assert rmax <= S.shape[0], f'rank {rmax} exceeds the snapshot count {S.shape[0]} (not constructible, A6.2)'
         with self.T(f'pod[{gen}]'):
             Phi, sig, dev = BD.pod(S, rmax)
         rl = [r for r in ranks if r <= rmax]
+        if not (np.all(np.isfinite(np.asarray(Phi[:1]))) and np.isfinite(dev)):   # A6.2: non-finite factor -> fallback
+            dev = np.inf
         with self.T(f'pod_check[{gen}]'):
             pe, C = BD.projection_errors(S, Phi, rl, sig)
         passed = {r: certificate_ok(pe[r]) for r in rl}
@@ -73,7 +87,7 @@ class Cell:
                 pe2, C2 = BD.projection_errors(S, Phi2, rl, sig)
             passed2 = {r: certificate_ok(pe2[r]) for r in rl}
             fallback = dict(passed=passed2, proj=pe2)
-            if all(passed2[r] or not passed[r] for r in rl) and sum(passed2.values()) >= sum(passed.values()):
+            if sum(passed2.values()) > sum(passed.values()):          # A6.1: one basis per cell, the one certifying more
                 Phi, pe, C, dev, passed = Phi2, pe2, C2, dev2, passed2
                 fallback['used'] = True
         rho = int(np.sum(sig > 1e-10 * sig[0]))          # reported only (A5.2)
@@ -81,6 +95,7 @@ class Cell:
         gate = dict(orthonormality=dev, orth_ok=dev <= 1e-10, numerical_rank_reported=rho, fallback=fallback,
                     certificate=passed, optimality_ok=all(passed.values()),
                     constructible=[r for r in rl if passed[r]])
+        self.constructible_r = set(gate['constructible']) if dev <= 1e-10 and np.isfinite(dev) else set()
         self.info[f'basis[{gen}]'] = dict(snapshots=sinfo, sigma=sig[:max(ranks) + 1].tolist(), proj=pe, trust=trust,
                                           gate=gate, n_snap=int(S.shape[0]))
         self.log(f'   basis[{gen}]: n_snap {S.shape[0]} rank {rho} orth {dev:.1e} optimal {gate["optimality_ok"]}')
@@ -97,6 +112,7 @@ class Cell:
         the A4.7 fallback."""
         with self.T('adv_snapshots'):
             BD.advection_in_place(S, self.d, self.L)
+        assert pmax <= S.shape[0], f'p {pmax} exceeds the snapshot count {S.shape[0]} (not constructible, A6.2)'
         with self.T('adv_pod'):
             U, sigN, devN = BD.pod(S, pmax)
         pl = sorted({p for p in p_list if p <= pmax})
@@ -110,24 +126,32 @@ class Cell:
                 pe2, _ = BD.projection_errors(S, U2, pl, sigN)
             passed2 = {p: certificate_ok(pe2[p]) for p in pl}
             fallback = dict(passed=passed2)
-            if all(passed2[p] or not passed[p] for p in pl) and sum(passed2.values()) >= sum(passed.values()):
+            if sum(passed2.values()) > sum(passed.values()):
                 U, pe, devN, passed = U2, pe2, devN2, passed2
                 fallback['used'] = True
         ok = all(passed.values())
         rhoN = int(np.sum(sigN > 1e-10 * sigN[0]))
         self.U, self.sigN = U, sigN
+        self.constructible_p = {p for p in pl if passed[p]} if (devN <= 1e-10 and np.isfinite(devN)) else set()
         self.info['adv'] = dict(pmax=pmax, numerical_rank=rhoN, orthonormality=devN, sigma=sigN[:pmax + 1].tolist(),
                                 proj=pe, optimality_ok=ok, fallback=fallback, certificate=passed,
                                 constructible=[p for p in pl if passed[p]])
         self.log(f'   advection POD: p_max {pmax} numerical rank {rhoN} orth {devN:.1e}')
         return rhoN
 
-    def qdeim(self, r, p):
+    def qdeim(self, r, p, allow_uncertified_p=False):
+        """allow_uncertified_p: only for the N-under ladder's small p (outside the registered p list)."""
+        if r not in self.constructible_r:
+            raise ConstructionError(f'rank {r} not constructible')
+        if p not in getattr(self, 'constructible_p', set()) and not allow_uncertified_p:
+            raise ConstructionError(f'advection rank p={p} not certified')
         if p not in self.piv:
             with self.T('qdeim_pivots'):
                 self.piv[p] = BD.qdeim_points(self.U[:, :p])
         with self.T('qdeim_qr'):
             data, info = BD.qdeim_data(self.Phi[:, :r], self.LPhi[:, :r], self.U[:, :p], self.piv[p], self.d, self.L)
+        if not info['solve_ok']:
+            raise ConstructionError(f'DEIM solve backward error {info["solve_backward_error"]:.2e} > 1e-12 (r={r}, p={p})')
         return dict(data, Phi=self.Phi[:, :r]), info
 
     def ecsw_states(self, fam_train):
@@ -149,14 +173,16 @@ class Cell:
                                                         relres=v['relres'], retry_cap=v['retry_cap'])) for t, v in rec.items()})
         return rec
 
-    def arm_data(self, kind, r, hrp):
+    def arm_data(self, kind, r, hrp, allow_uncertified_p=False):
+        if r not in self.constructible_r:
+            raise ConstructionError(f'rank {r} not constructible')
         if kind == 'none':
             return dict(Phi=self.Phi[:, :r], LPhi=self.LPhi[:, :r], DPhi=self.DPhi[:, :r]), {}
         if kind == 'ecsw':
             rec = self.ecsw_rec[r][hrp] if not isinstance(hrp, tuple) else hrp[1]
             dat, info = BD.ecsw_data(self.Phi[:, :r], rec['nodes'], rec['weights'], self.d, self.L)
             return dict(dat, Phi=self.Phi[:, :r]), info
-        return self.qdeim(r, hrp)
+        return self.qdeim(r, hrp, allow_uncertified_p=allow_uncertified_p)
 
     # ------------------------------------------------------------------------------------------ online -----
     def query(self, kind, r, solver, mutation=None):
@@ -170,11 +196,14 @@ class Cell:
             self.ccache[kind] = RM.make_certifier(kind, self.d, self.L, H.NMAX[self.d])
         return self.ccache[kind]
 
-    def run(self, kind, r, data, solver, option, level, u0, nu, mutation=None, certify=True):
-        """One timed query + (untimed) certification. Returns a record with lattice fields and Q1 evidence."""
+    def run(self, kind, r, data, solver, option, level, u0, nu, mutation=None, certify=True, burn_s=0.):
+        """One timed query + (untimed) certification. Returns a record with lattice fields and Q1 evidence.
+        burn_s > 0: GPU burn before the timed call (screening timings, code audit 1 item 8)."""
         q = self.query(kind, r, solver, mutation)
         sch = RM.schedule(self.d, option[0], option[1], level)
         u0 = jnp.asarray(u0)
+        if burn_s > 0:
+            burn(burn_s)
         t0 = time.perf_counter()
         out = q(u0, jnp.float64(nu), data, sch)
         sync(out['fields'])
@@ -188,29 +217,49 @@ class Cell:
         return rec
 
     def lattice(self, fields):
-        idx = H.lattice_nodes(self.d, self.L)
-        v = np.asarray(fields)[:, idx]
+        if not hasattr(self, '_lat_idx'):
+            self._lat_idx = jnp.asarray(H.lattice_nodes(self.d, self.L))
+        v = np.asarray(jnp.asarray(fields)[:, self._lat_idx])          # rows selected on the device (code audit 1, 18)
         return H.to_lattice(v, self.d)
 
 
+class ConstructionError(RuntimeError):
+    """A registered configuration cannot be constructed (POD rank not certified, DEIM solve inaccurate, ...)."""
+
+
 def certificate_ok(v):
-    """A5.2 POD certificate: relative Frobenius projection error vs the Gram tail, |e - tau| <= 0.01 tau + 1e-6."""
-    return bool(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6)
+    """A5.2 / A6.1 POD certificate. tau^2 = (||S||^2 - sum_{i<=r} lambda_i) / ||S||^2 from the Gram eigenvalues:
+    a negative radicand within -1e-12 is clipped to 0, a larger negative one fails (stable recomputation needed).
+    Saturated regime tau < 1e-6: pass iff e <= 1e-6. Otherwise pass iff |e - tau| <= 0.01 tau + 1e-6."""
+    t2, e = v['pod_tail_sq'], v['frob_rel']
+    if not (np.isfinite(t2) and np.isfinite(e)) or t2 < -1e-12:
+        return False
+    tau = float(np.sqrt(max(t2, 0.)))
+    if tau < 1e-6:
+        return bool(e <= 1e-6)
+    return bool(abs(e - tau) <= 0.01 * tau + 1e-6)
 
 
-def q1_config(records, tight, tighter, n0):
-    """Per-configuration Q1 (A2.7) on a cohort: records/tight dicts case -> run record; tighter on the subset."""
+def q1_config(records, tight, tighter, n0, subset):
+    """Per-configuration Q1 (A1.7, A2.7) on a cohort. records / tight: case -> run record for EVERY cohort case;
+    tighter: case -> run record for exactly the prescribed subset (the cohort's first two cases). Fail-closed."""
+    import score as SC
+    cases = sorted(records)
+    complete = (sorted(tight) == cases and sorted(tighter) == sorted(subset) and set(subset) <= set(cases)
+                and len(subset) == 2)
+    if not complete:
+        return dict(q1=False, reason='incomplete anchors', cases=cases, tight=sorted(tight), tighter=sorted(tighter))
     allv = all(r['cert']['valid'] for r in records.values())
     ns = sum(r['cert']['nonstat'] for r in records.values())
     st = sum(r['cert']['steps'] for r in records.values())
-    anchors_ok = all(tight[c]['cert']['anchor_ok'] for c in records) and all(v['cert']['anchor_ok'] for v in tighter.values())
-    import score as SC
-    dist = {c: SC.lattice_distance(records[c]['fields_lat'], tight[c]['fields_lat'], n0[c]) for c in records}
-    dtt = {c: SC.lattice_distance(tight[c]['fields_lat'], tighter[c]['fields_lat'], n0[c]) for c in tighter}
-    ok = bool(allv and st > 0 and ns <= Q1_NONSTAT * st and anchors_ok and all(v <= Q1_DIST for v in dist.values())
-              and all(v <= Q1_ANCHOR for v in dtt.values()))
+    anchors_ok = all(tight[c]['cert']['anchor_ok'] for c in cases) and all(tighter[c]['cert']['anchor_ok'] for c in subset)
+    dist = {c: SC.lattice_distance(records[c]['fields_lat'], tight[c]['fields_lat'], n0[c]) for c in cases}
+    dtt = {c: SC.lattice_distance(tight[c]['fields_lat'], tighter[c]['fields_lat'], n0[c]) for c in subset}
+    finite = all(np.isfinite(v) for v in list(dist.values()) + list(dtt.values()))
+    ok = bool(finite and allv and st > 0 and ns <= Q1_NONSTAT * st and anchors_ok
+              and all(v <= Q1_DIST for v in dist.values()) and all(v <= Q1_ANCHOR for v in dtt.values()))
     return dict(q1=ok, all_valid=allv, nonstat=ns, steps=st, anchors_ok=anchors_ok, max_dist=max(dist.values()),
-                max_anchor=max(dtt.values()) if dtt else None, dist=dist, anchor=dtt)
+                max_anchor=max(dtt.values()), dist=dist, anchor=dtt, subset=list(subset))
 
 
 def dump(path, obj):

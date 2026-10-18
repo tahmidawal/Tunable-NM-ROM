@@ -211,20 +211,27 @@ def t_fdc():
         Rd = lambda cc: (Phi @ (a0 * cc + a1 * cn + a2 * cm) - dt * nu * (LPhi @ (b0 * cc + b1 * cn))
                          + U @ (Minv @ (dt * (b0 * NPf(cc) + b1 * NPf(cn)))))
         constq = scq(cn, cm, nu, co, dt, datq)
-        rq, Jq = rJq(c, constq, nu, co, dt, datq)
-        e2 = abs(float(jnp.linalg.norm(rq)) - float(jnp.linalg.norm(Rd(c)))) / float(jnp.linalg.norm(Rd(c)))
-        g_ass = jax.grad(lambda cc: 0.5 * jnp.sum(Rd(cc) ** 2))(c)
-        e3 = float(jnp.linalg.norm(Jq.T @ rq - g_ass) / jnp.linalg.norm(g_ass))
-        # near-cancellation state: minimise the assembled DEIM residual first (tight GN), then compare again
+
+        def parts(cc):
+            return (Phi @ (a0 * cc + a1 * cn + a2 * cm), -dt * nu * (LPhi @ (b0 * cc + b1 * cn)),
+                    U @ (Minv @ (dt * (b0 * NPf(cc) + b1 * NPf(cn)))))
+
+        def sig_err(cc):                     # A2.1 cancellation-safe bounds, Sigma = sum of the assembled terms' norms
+            t1, t2, t3 = parts(cc)
+            Sig = float(jnp.linalg.norm(t1) + jnp.linalg.norm(t2) + jnp.linalg.norm(t3))
+            rq, Jq = rJq(cc, constq, nu, co, dt, datq)
+            g_ass = jax.grad(lambda x: 0.5 * jnp.sum(Rd(x) ** 2))(cc)
+            return (abs(float(jnp.linalg.norm(rq)) - float(jnp.linalg.norm(Rd(cc)))) / Sig,
+                    float(jnp.linalg.norm(Jq.T @ rq - g_ass)) / (Sig * float(jnp.linalg.norm(Jq))),
+                    float(jnp.linalg.norm(Rd(cc))) / Sig)
+        e2, e3, _ = sig_err(c)
         cs = c
-        for _ in range(8):
+        for _ in range(8):                   # the frozen cancellation candidate (A2.1)
             Ja = jax.jacfwd(Rd)(cs)
             cs = cs - jnp.linalg.lstsq(Ja, Rd(cs))[0]
-        rq2, Jq2 = rJq(cs, constq, nu, co, dt, datq)
-        e4 = abs(float(jnp.linalg.norm(rq2)) - float(jnp.linalg.norm(Rd(cs)))) / float(jnp.linalg.norm(Rd(cs)))
-        g2 = jax.grad(lambda cc: 0.5 * jnp.sum(Rd(cc) ** 2))(cs)
-        e5 = float(jnp.linalg.norm(Jq2.T @ rq2 - g2)) / (float(jnp.linalg.norm(Jq2)) * float(jnp.linalg.norm(rq2)))
+        e4, e5, ratio_c = sig_err(cs)
         assert e1 <= 1e-10 and e2 <= 1e-10 and e3 <= 1e-10 and e4 <= 1e-10 and e5 <= 1e-10, (d, e1, e2, e3, e4, e5)
+        out.append((d, 'cancel_ratio', f'{ratio_c:.1e}'))
         out.append((d, f'{e1:.1e}', f'{e2:.1e}', f'{e3:.1e}', f'{e4:.1e}', f'{e5:.1e}'))
     return out
 
@@ -266,7 +273,7 @@ def t_full():
         dq, _ = BD.qdeim_data(Phi, H.lap_cols(Phi, d, L), U, np.arange(n), d, L)
         datas['qdeim'] = dict(dq, Phi=Phi)
         fom = H.make_fom(d, L)
-        opts = H.OPTIONS[d] if d == 2 else [('BE', 0.01), ('CN', 0.01), ('BDF2', 0.01), ('BDF2', 0.025)]
+        opts = H.OPTIONS[d]                                    # every registered option (code audit 1, item 16)
         refs = {o: fom(u0, nu, H.sched(*o), 1e-13, 1e-15)['out'] for o in opts}
         for kind in RM.ARMS:
             for solver in ('native', 'common'):
@@ -370,39 +377,53 @@ def t_lmm():
             assert worst <= 1e-11, (d, sc_, worst)
             fin = lambda dt_: np.asarray(fom(u0, nu, H.sched(sc_, dt_, save_steps=(int(round(.25 / dt_)),)),
                                              1e-13, 1e-15)['out'][0])
-            # self-convergence (A3.12): p = log2(|u(dt) - u(dt/2)| / |u(dt/2) - u(dt/4)|), final state, discrete L2
-            us = [fin(x) for x in (0.01, 0.005, 0.0025, 0.00125)]
-            dif = [np.linalg.norm(us[i] - us[i + 1]) for i in range(3)]
-            orders = [float(np.log2(dif[i] / dif[i + 1])) for i in range(2)]
+            # self-convergence (A3.8, A4.6): p = log2(|u(dt) - u(dt/2)| / |u(dt/2) - u(dt/4)|) on the final state; the
+            # finest estimator decides; if it fails, one more level (dt = 0.000625) and the next estimator decides
             lo, hi = (0.9, 1.1) if sc_ == 'BE' else (1.8, 2.2)
-            assert all(lo <= o <= hi for o in orders), (d, sc_, orders)
+            dts = [0.01, 0.005, 0.0025, 0.00125]
+            us = [fin(x) for x in dts]
+            orders = [float(np.log2(np.linalg.norm(us[i] - us[i + 1]) / np.linalg.norm(us[i + 1] - us[i + 2]))) for i in range(2)]
+            if not (lo <= orders[-1] <= hi):
+                us.append(fin(0.000625))
+                orders.append(float(np.log2(np.linalg.norm(us[2] - us[3]) / np.linalg.norm(us[3] - us[4]))))
+            assert lo <= orders[-1] <= hi, (d, sc_, orders)
             out.append((d, sc_, f'{worst:.1e}', [round(o, 3) for o in orders]))
     return out
 
 
-@gate('N-dom decision table on synthetic data (A2.11)')
+@gate('N-dom decision table on synthetic data (A2.11, A3.3, A4.2; hand-derived labels)')
 def t_ndom():
     import stats as ST
     rng = np.random.default_rng(0)
     n = 38
+    tc = list(range(6))
     eX = np.exp(rng.uniform(np.log(1e-3), np.log(1e-2), n))
     eps = np.full(n, 1e-6)
     sig = np.where(np.arange(n) % 2 == 0, 1., -1.)
-    def rho_of(v):
-        return {c: [v * (1 + 0.01 * s) for s in (1., -1., 1.)] if c % 2 == 0 else [v * (1 + 0.01 * s) for s in (-1., 1., -1.)]
-                for c in range(6)}
-    a = ST.pair_label(eX, 0.5 * eX, eps, rho_of(0.5))
-    b = ST.pair_label(eX, eX * (1 + 0.005 * sig), eps, rho_of(1.0))
+
+    def rho_of(v, cases=tc):
+        return {c: ([v * 1.01, v * 0.99, v * 1.01] if c % 2 == 0 else [v * 0.99, v * 1.01, v * 0.99]) for c in cases}
+    out = {}
+    out['a'] = ST.pair_label(eX, 0.5 * eX, eps, rho_of(0.5), tc)['label']
+    out['b'] = ST.pair_label(eX, eX * (1 + 0.005 * sig), eps, rho_of(1.0), tc)['label']
     eB = 0.5 * eX.copy()
     eB[3] = 2 * eX.max()
-    c = ST.pair_label(eX, eB, eps, rho_of(0.5))
-    z = ST.pair_label(eX, 0.5 * eX, eps, {0: [0.5], 1: [0.5]})
-    assert a['label'].startswith('baseline dominates'), a['label']
-    assert b['label'] == 'matches', (b['label'], b.get('time'))
-    assert not c['label'].startswith('baseline dominates'), c['label']
-    assert z['label'] == 'not assessed', z['label']
-    return [a['label'], b['label'], c['label'], z['label']]
-
+    out['c'] = ST.pair_label(eX, eB, eps, rho_of(0.5), tc)['label']
+    e5 = np.full(n, 5e-5)
+    out['d1'] = ST.pair_label(e5, e5, np.full(n, 5e-5), {c: [1., 1., 1.] for c in tc}, tc)['label']
+    e2 = np.full(n, 1e-2)
+    out['d2'] = ST.pair_label(e2, e2, np.full(n, 1e-6), {c: [1., 1., 1.] for c in tc}, tc)['label']
+    for k in (2, 3, 4, 5):
+        out[f'e{k}'] = ST.pair_label(eX, 0.5 * eX, eps, rho_of(0.5, list(range(k))), tc)['label']
+    # timing estimand (A3.9): per-case medians, then the median over cases
+    t = ST.time_stats({0: [.5, .5, .5], 1: [.5, .5, .5], 2: [.5], 3: [2.], 4: [2.], 5: [2.]})
+    want = dict(a='baseline dominates', b='matches', d1='unresolved', d2='matches',
+                e2='not assessed', e3='not assessed', e4='not assessed', e5='not assessed')
+    for k, v in want.items():
+        assert out[k] == v, (k, out[k], v)
+    assert not out['c'].startswith('baseline dominates'), out['c']
+    assert abs(t['median'] - 1.25) < 1e-12, t['median']
+    return out
 
 if __name__ == '__main__':
     allf = (t_draw, t_disjoint, t_ops, t_fd, t_nfd, t_fdc, t_fom, t_lmm, t_full, t_nnls, t_qdeim, t_pod, t_ndom)
@@ -412,4 +433,12 @@ if __name__ == '__main__':
             f()
     bad = [k for k, v in RES.items() if v[0] != 'PASS']
     print('ALL PASS' if not bad else f'FAILED: {bad}')
+    if not sel:
+        import hashlib
+        import json
+        srcs = {f: hashlib.sha256((HERE / f).read_bytes()).hexdigest() for f in
+                ('hrcore.py', 'rom.py', 'build.py', 'nnls.py', 'stats.py', 'pipeline.py', 'tests/test_core.py')}
+        (HERE / 'checks').mkdir(exist_ok=True)
+        (HERE / 'checks' / 'test_core.json').write_text(json.dumps(dict(all_pass=not bad, source_sha256=srcs,
+            gates={k: [v[0], str(v[1])[:2000]] for k, v in RES.items()}), indent=1))
     sys.exit(1 if bad else 0)

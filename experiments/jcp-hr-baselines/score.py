@@ -8,6 +8,7 @@ Cohort names: 2D 'dev6', 'val32'; 3D 'val64' (= seed 923801). Only these are rea
 from __future__ import annotations
 
 import hashlib
+import os
 import sys
 from pathlib import Path
 
@@ -25,8 +26,13 @@ ALLOWED = {2: ('dev6', 'val32'), 3: ('val64',)}
 
 
 def check_store():
+    """Pins the exact metadata the loader reads (code audit 1, item 17): JCPREF_META must be unset or point at this
+    lane's e0/store; the manifest version and the STATUS.json the loader uses (RS._meta_dir()) are hashed."""
+    meta = os.environ.get('JCPREF_META')
+    assert meta is None or Path(meta).resolve() == (HERE / 'e0' / 'store').resolve(), f'JCPREF_META={meta} not pinned'
+    assert RS._meta_dir().resolve() == (HERE / 'e0' / 'store').resolve()
     assert RS.store_version() == STORE_VERSION, 'E0 store version differs from the pin'
-    st = hashlib.sha256((HERE / 'e0' / 'store' / 'STATUS.json').read_bytes()).hexdigest()
+    st = hashlib.sha256((RS._meta_dir() / 'STATUS.json').read_bytes()).hexdigest()
     assert st == STATUS_SHA, 'E0 STATUS.json differs from the pin'
     return STORE_VERSION
 
@@ -71,13 +77,13 @@ class Refs:
         return float(self.meta[j]['judge']['n0'])
 
     def score(self, fields, j, ref_case=None, shift=0):
-        """e = max_{k>=1} ||F_k - R_k|| / n0 (refstore metric). ref_case / shift implement the N-swap controls."""
+        """e = max_{k>=1} ||F_k - R_k|| / n0 (refstore metric). ref_case / shift implement the N-swap controls:
+        shift = 1 compares F_k with R_{k+1} for k = 1..4 (four comparisons, A4.4)."""
         rc = j if ref_case is None else ref_case
         R = self.f[rc]
         F = np.asarray(fields, float)
-        if shift:
-            F = np.concatenate([F[:1], F[1 + shift:], np.repeat(F[-1:], shift, 0)])[:6]
-        e_t = [float(np.linalg.norm((F[k] - R[k]).ravel())) / self.n0(rc) for k in range(1, 6)]
+        ks = range(1, 6 - shift)
+        e_t = [float(np.linalg.norm((F[k] - R[k + shift]).ravel())) / self.n0(rc) for k in ks]
         return dict(e=max(e_t), e_t=e_t, eps_ref=float(self.st[rc]['eps_ref']), eligible=bool(self.st[rc]['eligible']))
 
     def score_refstore(self, fields, j):

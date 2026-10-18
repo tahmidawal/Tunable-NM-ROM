@@ -25,18 +25,24 @@ def _boot_idx(n, nboot=NBOOT, seed=SEED):
     return np.random.default_rng(seed).integers(0, n, size=(nboot, n))
 
 
+def case_values(rho):
+    """A3.9: per timing case, the median of that case's valid ratios."""
+    return {c: float(np.median(np.asarray(v, float))) for c, v in rho.items()}
+
+
 def time_stats(rho, nboot=NBOOT, seed=SEED):
-    """rho: dict case -> list of ratios (cases are the resampling unit, with all their repeats).
-    -> median ratio, 95 % and 90 % percentile intervals of the median ratio, and of median log ratio."""
+    """rho: dict case -> list of valid ratios. Estimand T = median over cases of the per-case medians (A3.9); the
+    bootstrap resamples cases (10,000, seed 0). Returns T, the 95 % percentile interval of T, and the 90 % interval of
+    log T (time equivalence, A1.11 iii)."""
     cases = sorted(rho)
-    vals = [np.asarray(rho[c], float) for c in cases]
-    allv = np.concatenate(vals)
+    v = np.array([case_values(rho)[c] for c in cases])
     idx = _boot_idx(len(cases), nboot, seed)
-    meds = np.array([np.median(np.concatenate([vals[i] for i in row])) for row in idx])
-    lmeds = np.log(meds)
-    return dict(median=float(np.median(allv)), ci95=(float(np.percentile(meds, 2.5)), float(np.percentile(meds, 97.5))),
-                ci90_log=(float(np.percentile(lmeds, 5)), float(np.percentile(lmeds, 95))), n_cases=len(cases),
-                n_values=int(len(allv)))
+    T = np.median(v[idx], axis=1)
+    lT = np.log(T)
+    return dict(median=float(np.median(v)), per_case=dict(zip(map(str, cases), v.tolist())),
+                ci95=(float(np.percentile(T, 2.5)), float(np.percentile(T, 97.5))),
+                ci90_log=(float(np.percentile(lT, 5)), float(np.percentile(lT, 95))), n_cases=len(cases),
+                n_values=int(sum(len(rho[c]) for c in cases)))
 
 
 def mean_std_equiv(eX, eB, eps, nboot=NBOOT, seed=SEED):
@@ -62,15 +68,19 @@ def worst_equiv(envX, envB, eps):
     return dict(dW=dW, diff=(LB - UX, UB - LX), equivalent=bool(LB - UX > -dW and UB - LX < dW))
 
 
-def pair_label(eX, eB, eps, rho, min_cases=3):
-    """The frozen decision table (A2.17). Returns dict(label, ...). Fail-closed on invalid inputs."""
+def pair_label(eX, eB, eps, rho, timing_cases):
+    """The frozen decision table (A2.17). rho must hold valid ratios for EXACTLY the registered timing cases (A3.9:
+    all six); anything else -> 'not assessed'. Fail-closed on invalid inputs."""
     eX, eB, eps = map(lambda a: np.asarray(a, float), (eX, eB, eps))
     ok = (len(eX) > 0 and len(eX) == len(eB) == len(eps) and np.all(np.isfinite(eX)) and np.all(np.isfinite(eB))
           and np.all(np.isfinite(eps)) and np.all(eps >= 0))
     rho = {c: [v for v in vs if np.isfinite(v) and v > 0] for c, vs in (rho or {}).items()}
     rho = {c: vs for c, vs in rho.items() if vs}
-    if not ok or len(rho) < min_cases:
-        return dict(label='not assessed', reason='invalid inputs or fewer than %d timing cases' % min_cases)
+    if not ok:
+        return dict(label='not assessed', reason='invalid error inputs')
+    if sorted(rho) != sorted(timing_cases):
+        return dict(label='not assessed', reason='timing coverage incomplete (every registered timing case needs >= 1 '
+                                                 'valid triple)', have=sorted(rho), want=sorted(timing_cases))
     if np.any(np.maximum(2 * eps, 0.1 * eX) <= 0):
         return dict(label='not assessed', reason='zero equivalence margin')
     envX, envB = envelope(eX, eps), envelope(eB, eps)
@@ -148,12 +158,26 @@ def total_order_key(c):
             sorder[c['solver']], c['id'])
 
 
-def picks(front_items, X):
-    """Section 6 picks on the full-cohort Stage-B data. front_items: dict(id, t, W, med, r, kind, ...).
-    X: dict(t, W). B_acc: fastest with W <= W_X (ties: smaller median, then total order). B_cost: smallest W with
-    t <= t_X (ties: faster, then total order). Either may be None."""
-    acc = [c for c in front_items if c['W'] <= X['W']]
-    cost = [c for c in front_items if c['t'] <= X['t']]
-    b_acc = min(acc, key=lambda c: (c['t'], c['med']) + total_order_key(c)) if acc else None
-    b_cost = min(cost, key=lambda c: (c['W'], c['t']) + total_order_key(c)) if cost else None
-    return b_acc, b_cost
+def picks(items, W_X):
+    """A4.8 / A5.3 roles from the X-specific front. items: dict(id, ratio (median paired ratio to X over the 6 timing
+    cases), W (worst error), med, r, kind, ...) for Q1-qualified configurations on the full cohort.
+    Front = non-dominated in (ratio, W). B_acc: smallest ratio with W <= W_X (ties: smaller median, total order).
+    B_cost: smallest W with ratio <= 1 (ties: smaller ratio, total order). Either may be None."""
+    F = front([dict(c, t=c['ratio']) for c in items])
+    acc = [c for c in F if c['W'] <= W_X]
+    cost = [c for c in F if c['ratio'] <= 1.]
+    key = lambda c: total_order_key(dict(c, t=c['ratio']))
+    b_acc = min(acc, key=lambda c: (c['ratio'], c['med']) + key(c)) if acc else None
+    b_cost = min(cost, key=lambda c: (c['W'], c['ratio']) + key(c)) if cost else None
+    return b_acc, b_cost, F
+
+
+def stage_b(items_abs, x_fronts, factor=1.5, cap=24):
+    """A2.6 + A5.3 Stage-B membership: absolute-time front F, every X-specific front member (never capped), and up to
+    `cap` near-front additions of F. items_abs: dict(id, t, W) on the screening subset. Returns sorted ids."""
+    F = front(items_abs)
+    near = near_front(items_abs, F, factor, cap)
+    ids = {c['id'] for c in F} | {c['id'] for c in near}
+    for fx in x_fronts:
+        ids |= {c['id'] for c in fx}
+    return sorted(ids)

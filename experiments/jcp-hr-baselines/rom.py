@@ -113,6 +113,19 @@ def make_arm(kind, d, L, mutation=None):
 
 # ---------------------------------------------------------------------------------------------- solvers ----
 
+def ls_step(J, r):
+    """Least-squares Gauss-Newton step: argmin ||J d + r||. Overdetermined (k >= r): Householder QR of J.
+    Underdetermined (k < r, e.g. an ECSW support smaller than the rank): the minimum-norm solution via QR of J^T.
+    Rank deficiency shows up as a non-finite step (exit reason 3)."""
+    k, n = J.shape
+    if k >= n:
+        Q, Rm = jnp.linalg.qr(J, mode='reduced')
+        return -jax.scipy.linalg.solve_triangular(Rm, Q.T @ r, lower=False)
+    Q, Rm = jnp.linalg.qr(J.T, mode='reduced')                   # J = Rm^T Q^T
+    y = jax.scipy.linalg.solve_triangular(Rm.T, r, lower=True)
+    return -Q @ y
+
+
 def make_gn(rJ, budget=GN_BUDGET, halvings=GN_HALVINGS):
     """Native damped Gauss-Newton (A1.15): QR least-squares step, backtracking by halving until ||r|| decreases."""
     def gn(c0, args, tol, gtol):
@@ -123,8 +136,7 @@ def make_gn(rJ, budget=GN_BUDGET, halvings=GN_HALVINGS):
 
         def body(s):
             c, r, J, rn, it, reason = s
-            Q, Rm = jnp.linalg.qr(J, mode='reduced')
-            step = -jax.scipy.linalg.solve_triangular(Rm, Q.T @ r, lower=False)
+            step = ls_step(J, r)
             ok = jnp.all(jnp.isfinite(step))
             step = jnp.where(ok, step, 0.)
 
@@ -224,9 +236,21 @@ def make_evolve(kind, d, L, solver, nmax, trust=None, mutation=None):
     return evolve
 
 
-def make_certifier(kind, d, L, nmax):
-    """Untimed Q1 pass (A1.7): for every step n, gamma_n and ||r_n|| at c_{n+1} with step n's history, fresh J."""
+def make_tuple_gamma(kind, d, L):
+    """gamma of ONE isolated step tuple (history c_n, c_{n-1}; returned state c_{n+1}; the step's coefficients) with a
+    fresh Jacobian. Shared by the trajectory certifier and the N-grad control (A4.1)."""
     step_const, rJ = make_arm(kind, d, L)
+
+    def tg(cn, cm, c1, nu, co, dt, data):
+        const = step_const(cn, cm, nu, co, dt, data)
+        r, J = rJ(c1, const, nu, co, dt, data)
+        return ratio(J, r)
+    return tg
+
+
+def make_certifier(kind, d, L, nmax):
+    """Untimed Q1 pass (A2.7): for every step n, gamma_n at c_{n+1} with step n's history and coefficients, fresh J."""
+    tg = make_tuple_gamma(kind, d, L)
     be = jnp.asarray(H.BE_CO, jnp.float64)
 
     def cert(C, nu, data, sch):
@@ -235,14 +259,16 @@ def make_certifier(kind, d, L, nmax):
         def one(k):
             kc = jnp.minimum(k, nmax - 1)
             co = jnp.where(kc < sch['nstart'], be, sch['co'])
-            cv, cp = C[kc], C[jnp.maximum(kc - 1, 0)]
-            const = step_const(cv, cp, nu, co, dt, data)
-            r, J = rJ(C[kc + 1], const, nu, co, dt, data)
-            return ratio(J, r), jnp.linalg.norm(r)
-        g, rn = jax.lax.map(one, jnp.arange(nmax))
+            return tg(C[kc], C[jnp.maximum(kc - 1, 0)], C[kc + 1], nu, co, dt, data)
+        g = jax.lax.map(one, jnp.arange(nmax))
         live = jnp.arange(nmax) < sch['steps']
         return jnp.where(live, g, jnp.nan)
     return jax.jit(cert)
+
+
+def step_coefficients(sch, n):
+    """The coefficients step n (0-based) uses: BE during start-up, else the scheme's (as the stepper)."""
+    return jnp.asarray(H.BE_CO, jnp.float64) if n < int(sch['nstart']) else sch['co']
 
 
 def make_query(kind, d, L, solver, trust=None, mutation=None):
@@ -268,16 +294,19 @@ def schedule(d, scheme, dt, level):
 
 def certify(out, gam, sch, level='prod'):
     """Per-run Q1 evidence (A2.7, COMMON-BRIEF 3): a step is non-stationary iff gamma > 1e-3 or non-finite (no
-    residual-tolerance exception). valid = finite trajectory, every step exited (reason >= 0), no reason-3 step.
+    residual-tolerance exception). valid = finite trajectory, every step exited (reason >= 0), no reason-3 step, no
+    damping saturation (LM lambda finite and below 1e14 at every step).
     For anchors (level tight / tighter) `anchor_ok` additionally needs gamma <= that level's gtol at every step."""
     steps = int(sch['steps'])
     g = np.asarray(gam)[:steps]
     rs = np.asarray(out['stats']['reason'])[:steps]
+    lam = np.asarray(out['stats']['lam'])[:steps]
     stationary = np.isfinite(g) & (g <= STAT_TOL)
     C = np.asarray(out['C'])[:steps + 1]
-    valid = bool(np.isfinite(C).all() and np.all(rs >= 0) and not np.any(rs == 3))
+    saturated = int(np.sum(~np.isfinite(lam) | (lam >= 1e14)))          # LM damping at its limit (V4-2 validity)
+    valid = bool(np.isfinite(C).all() and np.all(rs >= 0) and not np.any(rs == 3) and saturated == 0)
     gl = LEVELS[level][0]
-    return dict(valid=valid, nonstat=int(np.sum(~stationary)), steps=steps,
+    return dict(valid=valid, nonstat=int(np.sum(~stationary)), steps=steps, damping_saturated=saturated,
                 worst_gamma=float(np.max(np.where(np.isfinite(g), g, np.inf))) if steps else float('nan'),
                 anchor_ok=bool(valid and np.all(np.isfinite(g) & (g <= gl))),
                 it_sum=int(np.sum(np.asarray(out['stats']['it'])[:steps])),

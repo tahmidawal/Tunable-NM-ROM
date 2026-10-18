@@ -90,6 +90,7 @@ source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_MEM_FRACTION=0.92
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
+unset JCPREF_META
 export JCPREF_STORE={E0_STORE}
 export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
 mkdir -p "$TMPDIR" "$XDG_CACHE_HOME"

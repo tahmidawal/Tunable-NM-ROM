@@ -145,7 +145,8 @@ def q1_of(c):
                and len(e['adt_valid']) == len(exp) and len(e['adt_tighter_valid']) == len(tcs) and len(e['adt_tight_tighter']) == len(tcs))
         off = odist(c['W'], c['W_adt'], c['setting'], c['cases']) if c['W_adt'] is not None else None
         agree = off is not None and bool(np.allclose(off, e['dist_adt'], rtol=1e-9, atol=1e-13))
-        return dict(population=bool(pop), valid=all(e['valid']), certificate=bool(e['steps'] > 0 and e['nonstationary'] <= .01 * e['steps']),
+        return dict(population=bool(pop), valid=all(e['valid']),
+                    certificate=bool(e['steps'] == len(exp) * spec_steps(e['spec']) and e['nonstationary'] <= .01 * e['steps']),
                     distance=fin_max(e['dist_adt']) <= BAR, anchors_valid=all(e['adt_valid']) and all(e['adt_tighter_valid']),
                     tight_tighter=bool(e['adt_tight_tighter']) and fin_max(e['adt_tight_tighter']) <= BAR_TT, offline_adt_agrees=agree)
     z = c['z']
@@ -286,6 +287,11 @@ def ladder_q2(C, keys, i):
     if ro is not None and not ro['agree'] and lab == 'pass':
         lab = 'blocked (independent rho disagrees)'
     return dict(label=lab, worst_dist_qp=fin_max(e['dist_next']), rho_max=rmax, check=chk, offline_agrees=agree, rho_offline=ro)
+
+
+def spec_steps(spec):
+    """Registered steps per case of a fs / qn spec ('fs|CN|0.01|K1'): 0.25 / dt (from the spec, not the archive)."""
+    return int(round(.25 / float(spec.split('|')[2])))
 
 
 def mode_hash(c):
@@ -542,6 +548,7 @@ def cert_of_job(res, d):
                 cert[k] = bool(e['cases'] == blk['cases'] and len(e['valid']) == len(blk['cases']) and all(e['valid'])
                                and len(e['adt_valid']) == len(blk['cases']) and e['tighter_cases'] == blk['tighter_cases']
                                and len(e['adt_tighter_valid']) == len(blk['tighter_cases'])
+                               and e['steps'] == len(blk['cases']) * spec_steps(e['spec'])
                                and e['nonstationary'] <= .01 * e['steps'] and len(e['dist_adt']) == len(blk['cases'])
                                and fin_max(e['dist_adt']) <= BAR and all(e['adt_valid']) and all(e['adt_tighter_valid'])
                                and len(e['adt_tight_tighter']) == len(blk['tighter_cases']) and fin_max(e['adt_tight_tighter']) <= BAR_TT)

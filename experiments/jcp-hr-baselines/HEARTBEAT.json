@@ -1,19 +1,19 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:18:45Z",
- "step": "t3d64a/t2d1024a RUNNING (~11 min): G-ours PASS for all 17 comparators (worst 5.7e-14 rel; 3D batch 1+2, 2D P1); now in construction. Code audit 25 NOT READY -> A36; code audit 26 (Stage-B) running; 2D dry chain via jaxslot",
+ "utc": "2026-10-18T13:22:41Z",
+ "step": "t3d64a/t2d1024a RUNNING; code audit 26 NOT READY (comparator lifetimes, lattice views) -> A37; code audit 27 (Stage-B) running; 2D dry chain via jaxslot",
  "waiting_on": {
   "slurm_jobs": [
    5508653,
    5508660
   ],
-  "codex_output": "audits/codex-code-26.md",
+  "codex_output": "audits/codex-code-27.md",
   "codex_pid": [
-   2669600
+   2680172
   ],
   "local_pid": 2658125
  },
- "expected_finish_utc": "2026-10-18T14:03:45Z",
+ "expected_finish_utc": "2026-10-18T14:07:41Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

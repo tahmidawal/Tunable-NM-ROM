@@ -1840,3 +1840,12 @@ reason (`kkt`, `cap`, targets) is accepted and before an append; an inner Lawson
 Gate **G-deadline** drives a controlled clock across every crossing position and checks the reason and that no
 unreached target is filled. **A40.2** The budget is measured from entry (initialisation included); the guarantee covers
 `method='update'` (production) only.
+
+**A40.3 (code audit 30 READY; restatements).** The deadline checks are cooperative: they sit before each outer
+iteration, after its residual/gradient work, inside the Lawson–Hanson loop and before refactorisation. Two exits can
+still carry a non-`time` reason after the budget has passed: a target completion detected in the residual work that
+crossed the deadline (`taus`, all targets reached; legitimate) and expiry during the final permitted solve or
+refactorisation (`max_iter`). Neither can create an optimum alias (A23 requires `kkt`). Overshoot inventory: one
+residual/gradient pass, one append, one solve, one deletion batch or refactorisation, plus the terminal evidence.
+G-deadline exercises the first outer, first post-gradient, first inner and second outer checks; the second
+post-gradient case was verified by code audit 30's probes. Code audit 30: READY for this change.

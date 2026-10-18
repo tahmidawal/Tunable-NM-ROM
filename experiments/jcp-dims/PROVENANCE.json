@@ -13,7 +13,8 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491eb",
   "sha256": "0fc4e8e182daba2a15abe37e504141161325c6242a2fc339c0a8ef16d1e8982d",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied, then EDITED in the lane (jcp-dims edits marked in the file; diff against source_commit)",
+  "edited_sha256": "6300f9c522d855880a7809183f00af1981c97bc6d2f34c9660855b6a1e85c9d8"
  },
  {
   "file": "p1stats.py",
@@ -77,7 +78,8 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491eb",
   "sha256": "c0e72adbedf6a3f69d78d35e3e3d50896b2e25594e63185b927d20a3a136d6bd",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied, then EDITED in the lane (jcp-dims edits marked in the file; diff against source_commit)",
+  "edited_sha256": "812dab7ec97438c6972c1289fb29cd042429e2e17cdacb95b002f2a8a595527a"
  },
  {
   "file": "resources.py",
@@ -245,7 +247,8 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491eb",
   "sha256": "44d1574ea67383691abb322152afb4c4d1d96e02954cf63252da91124d61055c",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied, then EDITED in the lane (jcp-dims edits marked in the file; diff against source_commit)",
+  "edited_sha256": "de6c8b6c611a48a8fa6f35b82a8cb8af907692afa964f1d2ebb698e664377ab0"
  },
  {
   "file": "cluster/submit.sh",
@@ -253,7 +256,8 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491eb",
   "sha256": "ae4d8de1d7ca3aad4ea5014a32e93e72d77a7aec3b31f43a03b613543ba8f327",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied, then EDITED in the lane (jcp-dims edits marked in the file; diff against source_commit)",
+  "edited_sha256": "5794c10f5d383853beded5d2a15147b9f01b5b0aa56ab3f1d1080982ddafbae8"
  },
  {
   "file": "cluster/collect.py",
@@ -261,7 +265,8 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491eb",
   "sha256": "4277c8c0ead484b524bf44c0eb980470126c8ca58b99b51cbae9225e8e1060a0",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied, then EDITED in the lane (jcp-dims edits marked in the file; diff against source_commit)",
+  "edited_sha256": "4bba7a727fb85c62a9341a411205f99a76c813f0be2dfcbd07b2d74ab7f1db0a"
  },
  {
   "file": "inputs/model_W1024/bank.pkl",
@@ -294,5 +299,29 @@
   "source_commit": "4399491eb",
   "sha256": "8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf",
   "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+ },
+ {
+  "file": "dacc.py",
+  "derived_from": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/qacc.py",
+  "source_commit": "4399491eb",
+  "source_sha256": "bb6ced4bdf574555fe08406543508fae65527ae52a5148ed2b3b14ab000f5386",
+  "sha256": "36b52f92df884ae4c8c75b1e08a1ff07db3faea85a2058d728e84b2ca2dfaa96",
+  "status": "derived (new lane file; jcp-dims edits marked / rewritten)"
+ },
+ {
+  "file": "dtime.py",
+  "derived_from": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/qtime.py",
+  "source_commit": "4399491eb",
+  "source_sha256": "5096e253a9eab5a46c025a460d3a8e124bb7e071e6ce55cb99eb6fd9a947ea0a",
+  "sha256": "b00ca3914505eb2ffc40a82733c8a398847c78316cdda94c7dc54faa02c391d9",
+  "status": "derived (new lane file; jcp-dims edits marked / rewritten)"
+ },
+ {
+  "file": "d3run.py",
+  "derived_from": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/q3run.py",
+  "source_commit": "4399491eb",
+  "source_sha256": "c2aec66e98585f814428ab5cacdfb4937aaf5c994e3389490423cd2a46247671",
+  "sha256": "6f065332b34dbbca3ce0878d09066e04b7d468cb6b327c3c4277133fe401aeb2",
+  "status": "derived (new lane file; jcp-dims edits marked / rewritten)"
  }
 ]

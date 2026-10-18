@@ -75,6 +75,30 @@
   },
   {
    "mesh": 1024,
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "form": "GAL",
+   "scheme": "CN",
+   "factor": 1,
+   "qp": "gauss320",
+   "qpp": "gauss384"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "form": "LSPG",
+   "scheme": "CN",
+   "factor": 1,
+   "qp": "gauss320",
+   "qpp": "gauss384"
+  },
+  {
+   "mesh": 1024,
    "Rp": 384,
    "M": 1536,
    "policy": "frozen",

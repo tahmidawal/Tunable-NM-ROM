@@ -45,6 +45,8 @@ from offmesh import TB
 
 GAMMA = 1e-3
 BAND = (1 / 1.1, 1.1)
+PEAK_BAR = 120e9                      # A1.4 (decimal bytes)
+FIXTURE_SHA = {'inputs/fixture3d.npz': 'ab6ed78e42cc0c7b553fcfc319d9cdc63bd3dd1fa8a20a7b2ccd8fd251825130'}
 
 
 # ----------------------------------------------------------------------------------------------- identity payload
@@ -80,10 +82,10 @@ class Adaptive:
             g, t_ = DC.tol_of(form, level, square=square)
             sch = P1C.sched(scheme, dt, g, t_)
 
-            def run(u0, nu, d):
+            def run(u0, nu, d):                          # full-field mesh-path contract: projection, steps, decode
                 w0, s0 = S.project_mesh(u0, d)
                 W, stt = ev(w0[0], nu[0], s0[0], d, sch)
-                return dict(W=W, w0=w0[0], scale=s0[0], stats=stt)
+                return dict(W=W, w0=w0[0], scale=s0[0], stats=stt, fields=S.decode_lattice(W[:, None], d))
             self.q[k] = (jax.jit(run), sch, t_, square)
         return self.q[k]
 
@@ -131,7 +133,9 @@ def run_adaptive(cx, ad, blk, out):
                      reason=np.full((n, S_), -1), valid=np.zeros(n, bool), gcert=np.zeros(n, bool),
                      noncert=np.zeros(n, int), W_tight=np.full((n, 6, st.Rp), np.nan), valid_tight=np.zeros(n, bool),
                      W_tighter=np.full((len(tcs), 6, st.Rp), np.nan), valid_tighter=np.zeros(len(tcs), bool),
-                     rho=np.full((n, 6), np.nan), secs=np.full(n, np.nan), payload=np.array([''] * n, dtype=object))
+                     rho=np.full((n, 6), np.nan), secs=np.full(n, np.nan), payload=np.array([''] * n, dtype=object),
+                     jcond=np.full((n, S_), np.nan), unweighted=np.full((n, S_), np.nan))
+            sqdiag = DC.make_square_diag(C3.nl3)
             for ci, j in enumerate(cases):
                 t1 = time.perf_counter()
                 o = jax.block_until_ready(fq(cx.U0[j], cx.NU[j], d))
@@ -150,6 +154,8 @@ def run_adaptive(cx, ad, blk, out):
                     R['cert'][ci] = DC.eta_w(rn, scl)
                     R['gcert'][ci] = DC.gcert(rn, tr, tolf * scl)
                     R['noncert'][ci] = int(np.sum(~DC.certified_square(rn, scl)))
+                    jc_, ur_ = sqdiag(stt['states'], nu, d, sch)
+                    R['jcond'][ci], R['unweighted'][ci] = np.asarray(jc_), np.asarray(ur_)
                 elif form == 'LSPG':
                     g = np.asarray(c[0])
                     rec = np.asarray(stt['step_gn'])[:S_]
@@ -221,8 +227,8 @@ def run_ladder(cx, blk):
     res = {}
     for i, rule in enumerate(rungs):
         nxt = rungs[i + 1] if i + 1 < len(rungs) else None
-        tag = f'{sname}|{rule}'
-        r = cx.rollouts(sname, rule, specs, cases, tag=tag)
+        tag = blk.get('tag_prefix', '') + f'{sname}|{rule}'
+        r = cx.rollouts(sname, rule, specs, cases, tag=tag, keep_wall=tuple(S.spec_key(sp) for sp in specs))
         adt = {}
         for sp in specs:
             k_ad = (sp[1], round(sp[2], 12))
@@ -274,7 +280,9 @@ def run_override(cx, blk):
     sd, so, rule = cx.ST[blk['setting_default']], cx.ST[blk['setting_override']], blk['rule']
     dd, do = sd.data(rule), so.data(rule)
     M = so.M
-    z = np.load(Path(__file__).resolve().parent / blk['fixture'])
+    fx = Path(__file__).resolve().parent / blk['fixture']
+    assert C3.sha_file(fx) == FIXTURE_SHA[blk['fixture']], 'fixture differs from its pin'
+    z = np.load(fx)
     C = np.asarray(z['W'])[:, :so.Rp]
     rel = lambda a, b: float(np.max(np.abs(np.asarray(a) - np.asarray(b))) / (np.max(np.abs(np.asarray(b))) + 1e-300))
     out = dict(M_default=sd.M, M_override=M, shapes=dict(A=list(np.asarray(do['A']).shape), P=list(np.asarray(do['P']).shape)),
@@ -298,7 +306,9 @@ def run_override(cx, blk):
 # ----------------------------------------------------------------------------------------------- fixgate (b)
 def run_fixgate(cx, blk):
     st = cx.ST[blk['setting']]
-    z = np.load(Path(__file__).resolve().parent / blk['fixture'])
+    fx = Path(__file__).resolve().parent / blk['fixture']
+    assert C3.sha_file(fx) == FIXTURE_SHA[blk['fixture']], 'fixture differs from its pin (A2.2)'
+    z = np.load(fx)
     C = np.asarray(z['W'])[:, :st.Rp]
     Nt = [np.asarray(C3.nl3(jnp.asarray(c), st.data(blk['target']))) for c in C]
     out = dict(setting=blk['setting'], M=st.M, target=blk['target'], fixture=blk['fixture'], fixture_source=str(z['source']),
@@ -340,13 +350,21 @@ def subject(cx, ad, sp_):
 
 def run_panel(cx, ad, blk):
     """A-B-A in blocks (A2.4): A persistent; per (setting, rule) block the subjects are built, scored untimed (payload
-    hash = expected), warmed, timed in randomised order, then released. Invocation counts validated."""
+    hash = expected; linked to the in-job certified run, A1.1), warmed, timed in randomised order, then released (the
+    block runs inside a function so no reference survives it; compiled queries of the block are cleared). Acceptance:
+    dstats.panel_accept (hashes, certification links of A and every subject, counts, drift)."""
+    import dstats as DS
     burn = cx.cfg['timing']['burn']
     cases = list(range(int(blk['cases'])))
     reps = int(blk['reps'])
     rng = np.random.default_rng(int(blk['seed']))
     A = subject(cx, ad, blk['A'])
-    expA = {ci: payload_hash(jax.block_until_ready(A['run'](cx.cases[ci])))[0] for ci in cases}
+    certified, names_of, expA = {}, {}, {}
+    for ci in cases:
+        o = jax.block_until_ready(A['run'](cx.cases[ci]))
+        expA[ci], names_of[A['name']] = payload_hash(o)
+        certified[(A['name'], ci)] = scored_equals_certified(cx, A, ci, o, expA[ci])
+        del o
 
     def one(x, ci, expect):
         C3.burn(burn)
@@ -363,20 +381,22 @@ def run_panel(cx, ad, blk):
         blocks.setdefault((sp_['setting'], sp_['rule']), []).append(sp_)
     border = list(blocks)
     rng.shuffle(border)
-    inv, base = [], C3.peak_bytes()
+    inv, blog = [], []
     mem0 = jax.devices()[0].memory_stats().get('bytes_in_use', -1)
-    blog = []
-    for bk in border:
-        Bs = [subject(cx, ad, sp_) for sp_ in blocks[bk]]
-        exp, scored = {}, {}
+
+    def time_block(sps):
+        Bs = [subject(cx, ad, sp_) for sp_ in sps]
+        exp = {}
         for x in Bs:
             for ci in cases:
                 o = jax.block_until_ready(x['run'](cx.cases[ci]))
-                exp[(x['name'], ci)], names = payload_hash(o)
-                scored[(x['name'], ci)] = scored_equals_certified(cx, x, ci, o, exp[(x['name'], ci)])
+                exp[(x['name'], ci)], names_of[x['name']] = payload_hash(o)
+                if x['name'].startswith('T1|'):           # T1 = A twice: linked through A's certification
+                    certified[(x['name'], ci)] = certified[(A['name'], ci)]
+                else:
+                    certified[(x['name'], ci)] = scored_equals_certified(cx, x, ci, o, exp[(x['name'], ci)])
                 del o
-        cx.rep.setdefault('scored_equals_certified', {}).update({f'{k[0]}#{cx.cases[k[1]]}': v for k, v in scored.items()})
-        for x in Bs:                                  # warm
+        for x in Bs:                                      # warm
             for ci in cases:
                 one(x, ci, exp[(x['name'], ci)])
         order_ = [(b, ci, rr) for b in range(len(Bs)) for ci in cases for rr in range(reps)]
@@ -387,33 +407,31 @@ def run_panel(cx, ad, blk):
             ta2, h2 = one(A, ci, expA[ci])
             inv.append(dict(B=Bs[b]['name'], case=cx.cases[ci], rep=rr, tA1=ta1, tB=tb, tA2=ta2,
                             ratio=tb / (.5 * (ta1 + ta2)), drift=ta2 / ta1, hashes_ok=bool(h1 and hb and h2)))
-        cx.rep.setdefault('payload_keys', {})[bk[0] + '|' + bk[1]] = names
-        for x in Bs:
-            cx.ST[x['setting']].drop(x['rule'])
-        del Bs
-        for k_ in [k_ for k_ in list(ad.q) if k_[0] == bk[0]]:
-            pass                                       # compiled adaptive queries hold no data (data are arguments)
+        return [(x['setting'], x['rule']) for x in Bs]
+    for bk in border:
+        used = time_block(blocks[bk])
+        for sname, rule in used:
+            if not (sname == blk['A']['setting'] and rule == blk['A']['rule']):
+                cx.ST[sname].drop(rule)
+        for k_ in [k_ for k_ in list(cx.queries) if k_[0] == bk[0] and k_ != (blk['A']['setting'], 'mesh', 65,
+                                                                                  S.parse_key(blk['A']['spec']))]:
+            del cx.queries[k_]
         gc.collect()
         m_ = jax.devices()[0].memory_stats().get('bytes_in_use', -1)
-        blog.append(dict(block=list(bk), in_use=m_, over_start=m_ - mem0))
+        blog.append(dict(block=list(bk), in_use=m_, over_start=m_ - mem0, peak=C3.peak_bytes()))
         if m_ - mem0 > 1e9:
             cx.rep['timing'][blk['label']] = dict(invocations=inv, blocks=blog, valid=False, error='memory not released')
             cx.save()
             raise SystemExit('memory not released after block %s' % (bk,))
-    import timing as TM
-    cnt = {}
-    for x in inv:
-        cnt[x['B']] = cnt.get(x['B'], 0) + 1
-    want = len(cases) * reps
-    complete = all(cnt.get(('T1|' if s.get('double') else '') + f"{s['setting']}|{s['rule']}|{s['spec']}", 0) == want
-                   for s in blk['subjects'])
-    v = TM.panel_validity(inv)
-    cx.rep['timing'][blk['label']] = dict(A=A['name'], subjects=sorted(cnt), invocations=inv, cases=[cx.cases[c] for c in cases],
-                                          reps=reps, burn=burn, seed=blk['seed'], blocks=blog, counts=cnt,
-                                          counts_complete=complete, peak_before=base, **v,
-                                          valid_all=bool(v['valid'] and complete))
+    expected = {(('T1|' if s_.get('double') else '') + f"{s_['setting']}|{s_['rule']}|{s_['spec']}"): len(cases) * reps
+                for s_ in blk['subjects']}
+    acc = DS.panel_accept(inv, {k: v for k, v in certified.items()}, expected)
+    cx.rep['timing'][blk['label']] = dict(A=A['name'], invocations=inv, cases=[cx.cases[c] for c in cases], reps=reps,
+                                          burn=burn, seed=blk['seed'], blocks=blog, payload_keys=names_of,
+                                          certified={f'{k[0]}#{cx.cases[k[1]]}': v for k, v in certified.items()},
+                                          acceptance=acc, valid=acc['valid'])
     cx.save()
-    print('PANEL', blk['label'], len(inv), 'valid', v['valid'], 'complete', complete, cx.el(), flush=True)
+    print('PANEL', blk['label'], len(inv), 'accept', acc, cx.el(), flush=True)
 
 
 def scored_equals_certified(cx, x, ci, o, payload):
@@ -433,7 +451,11 @@ def scored_equals_certified(cx, x, ci, o, payload):
     ids = list(cx.Cstore[f'{tag}|{key}'])
     if j not in ids:
         return None
-    return bool(np.array_equal(np.asarray(o['W'])[:, 0], W[ids.index(j)]))
+    Wall = cx.Wstore.get(f'wall|{tag}|{key}')
+    if Wall is None or 'W_all' not in o:
+        return False
+    k_ = ids.index(j)
+    return bool(np.array_equal(np.asarray(o['W'])[:, 0], W[k_]) and np.array_equal(np.asarray(o['W_all'])[:, 0], Wall[k_]))
 
 
 # ----------------------------------------------------------------------------------------------- main
@@ -492,8 +514,9 @@ def main():
             r = dict(label=blk['label'])
         else:
             raise KeyError(kind)
+        pk = C3.peak_bytes()
         cx.rep['blocks'].append(dict(kind=kind, label=blk.get('label', blk.get('setting')), seconds=time.perf_counter() - t0,
-                                     peak_bytes=C3.peak_bytes(), result=r))
+                                     peak_bytes=pk, over_120GB=bool(pk > PEAK_BAR), result=r))
         cx.save()
         cx.dump()
     cx.rep['peak_bytes_job'] = C3.peak_bytes()

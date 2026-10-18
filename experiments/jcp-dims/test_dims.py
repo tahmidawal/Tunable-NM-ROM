@@ -83,6 +83,11 @@ def t_q2_mstar():
     f = DS.family_mstar(draws, sz)
     check('family m*: smallest all-draw candidate', f['family']['m'] == 3 and f['median_draw'] == 2.0)
     check('width m*: intersection', DS.width_mstar({'a': [N, Q, N, Q], 'b': [N, N, Q, Q]}, sz)['m'] == 4)
+    check('width m*: missing lower on one spec -> not reached', DS.width_mstar({'BE': [X, Q], 'CN': [Q, Q]}, [1, 2])['outcome']
+          .startswith('not reached'))
+    draws = [[Q, Q, Q, Q], [N, X, Q, Q], [Q, Q, Q, Q], [Q, Q, Q, Q], [Q, Q, Q, Q]]
+    check('family m*: missing lower in one draw -> not reached', DS.family_mstar(draws, sz)['family']['outcome']
+          .startswith('not reached'))
 
 
 def t_families():
@@ -94,6 +99,8 @@ def t_families():
     check('gate: (a) unavailable', DS.cross_family_gate([.01], False, 0.) == 'gate unavailable (rollout part)')
     check('gate: (a) flags', DS.cross_family_gate([.01], True, 3e-4) == 'flagged')
     check('gate: pass', DS.cross_family_gate([.01], True, 1e-4) == 'pass')
+    check('gate: no state evidence -> unavailable', DS.cross_family_gate([], True, 0.) == 'gate unavailable (state part)')
+    check('fixture: empty not admitted', not DS.fixture_admitted([]))
     ok = dict(finite=True, target_norm=1., rho_tgt=2.)
     check('fixture admitted', DS.fixture_admitted([ok] * 6))
     check('fixture: inf not admitted', not DS.fixture_admitted([ok] * 5 + [dict(finite=False, target_norm=float('nan'),
@@ -135,6 +142,8 @@ def t_h2q():
     check('h2q: fail wording', DS.h2q(C, 'C', {'a', 'c'}, dict(valid=True, median_ratio=.7))['verdict'].startswith('fail (the selected'))
     check('h2q: panel invalid', DS.h2q(C, 'C', {'a'}, dict(valid=False, median_ratio=.5))['verdict'] == 'inconclusive (panel invalid)')
     check('h2q: none', DS.h2q(C, 'C', {'b'})['verdict'].startswith('no qualified'))
+    C2 = dict(C, d=dict(base(.3, .005), eta={j: 2e-5 for j in ids}))
+    check('h2q: differing eta refused', _raises(lambda: DS.h2q(C2, 'C', {'d'})))
     C['C']['q1'] = False
     check('h2q: comparator unavailable', DS.h2q(C, 'C', {'a'})['verdict'] == 'inconclusive (comparator unavailable)')
 
@@ -169,7 +178,11 @@ def t_rules():
     pin.update({k[:-2]: (e[k], e[k[:-2] + '_w']) for k in e.files if k.endswith('_X')})
     check('3D lattice draw 0 regenerates the pinned rule', np.array_equal(RN.make('lat32768s0', pin)[0], pin['lat32768'][0]))
     check('3D draws differ', not np.array_equal(RN.make('lat8192s1', pin)[0], pin['lat8192'][0]))
-    check('3D smol8 file = smolyak3(8)', np.allclose(np.sort(RN.make('smolyak8', pin)[0], 0), np.sort(pin['smol8'][0], 0)))
+    Xa, wa = RN.make('smolyak8', pin)
+    Xb, wb = pin['smol8']
+    ia, ib = np.lexsort(Xa.T[::-1]), np.lexsort(Xb.T[::-1])
+    check('3D smol8 file = smolyak3(8) (points and weights)', Xa.shape == Xb.shape and np.allclose(Xa[ia], Xb[ib], atol=1e-14)
+          and np.allclose(wa[ia], wb[ib], atol=1e-15))
     # stage (ii) generator tests (DESIGN 7)
     f = lambda X: np.prod(np.sin(np.pi * X), axis=1)
     exact = (2 / np.pi) ** 3
@@ -181,7 +194,34 @@ def t_rules():
     check('MC error within 4 standard errors (32 seeds)', np.all(np.abs(errs) < 4 * se))
     X, w = RN.make('hal65536s0', pin)
     check('Halton3 error < MC error', abs(w @ f(X) - exact) < np.median(np.abs(errs)))
+    g = lambda X: np.exp(-20 * np.sum((X - .5) ** 2, axis=1))          # smooth Gaussian bump
+    from scipy.special import erf
+    gx = np.sqrt(np.pi / 20) * erf(np.sqrt(20) * .5)
+    eg = [RN.make(f'mc65536s{s}', pin) for s in range(32)]
+    errg = [w_ @ g(X_) - gx ** 3 for X_, w_ in eg]
+    seg = g(eg[0][0]).std() / np.sqrt(65536)
+    check('MC bump error within 4 standard errors (32 seeds)', np.all(np.abs(errg) < 4 * seg))
+    Xh, wh = RN.make('hal65536s0', pin)
+    check('Halton3 bump error < MC median error', abs(wh @ g(Xh) - gx ** 3) < np.median(np.abs(errg)))
+    e2 = []
+    for s in range(32):
+        X2, w2 = R2.points(f'mc65536s{s}')
+        e2.append(w2 @ g(X2) - gx ** 2)
+    se2 = g(R2.points('mc65536s0')[0]).std() / np.sqrt(65536)
+    check('2D MC bump error within 4 standard errors (32 seeds)', np.all(np.abs(e2) < 4 * se2))
+    check('2D MC seeds distinct', not np.array_equal(R2.points('mc2048s0')[0], R2.points('mc2048s1')[0]))
     check('Halton3/MC in (0,1)^3, weights sum 1', np.all((X > 0) & (X < 1)) and abs(w.sum() - 1) < 1e-12)
+
+
+def t_panel():
+    inv = [dict(B='b', ratio=.5, drift=1., hashes_ok=True)] * 4
+    ok = DS.panel_accept(inv, {('b', 0): True, ('A', 0): True}, {'b': 4})
+    check('panel: certified complete -> valid', ok['valid'])
+    check('panel: uncertified subject -> invalid', not DS.panel_accept(inv, {('b', 0): None, ('A', 0): True}, {'b': 4})['valid'])
+    check('panel: uncertified A -> invalid', not DS.panel_accept(inv, {('b', 0): True, ('A', 0): False}, {'b': 4})['valid'])
+    check('panel: incomplete counts -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 6})['valid'])
+    check('panel: hash fault -> invalid', not DS.panel_accept(inv[:3] + [dict(inv[0], hashes_ok=False)], {('b', 0): True},
+                                                             {'b': 4})['valid'])
 
 
 def _raises(fn):
@@ -193,7 +233,7 @@ def _raises(fn):
 
 
 def main():
-    for t in (t_transition, t_two_way, t_q2_mstar, t_families, t_shapley, t_elasticity, t_h2q, t_certs, t_rules):
+    for t in (t_transition, t_two_way, t_q2_mstar, t_families, t_shapley, t_elasticity, t_h2q, t_certs, t_rules, t_panel):
         t()
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / 'test_dims.json').write_text(json.dumps(dict(results=RES, all_pass=all(RES.values())), indent=1) + '\n')

@@ -180,14 +180,19 @@ def smoke():
                    arms=[arm('LSPG', 'CNR', cases=dev2, q3=True), arm('GAL', 'CN', cases=dev2)]))
     S_.append(dict(name='R512M4096gauss320', Rp=512, M=4096, policy='frozen', rule='gauss320', qp='gauss384',
                    arms=[arm('LSPG', 'CNR', cases=dev2), arm('GAL', 'CN', cases=dev2), arm('LSPG', 'CN', cases=dev2)]))
+    S_.append(dict(name='R512M4096gauss384', Rp=512, M=4096, policy='frozen', rule='gauss384',
+                   arms=[arm('LSPG', 'CNR', rho=False, cases=dev2), arm('GAL', 'CN', rho=False, cases=dev2)]))
     S_.append(dict(name='R128M128gauss64', Rp=128, M=128, policy='frozen', rule='gauss64', qp='gauss96',
                    arms=[arm('LSPG', 'CNR', cases=dev2, q3=True), arm('LSPG', 'CN', cases=dev2), arm('GAL', 'CN', cases=dev2)]))
     S_.append(dict(name='R384M384gauss256', Rp=384, M=384, policy='frozen', rule='gauss256', qp='gauss320',
                    arms=[arm('LSPG', 'CNR', cases=dev2), arm('GAL', 'CN', cases=dev2)]))
-    for fam in ('fib2584s1', 'sobol2048s2', 'halton2048s3', 'smolyak8', 'mc2048s1', 'badlat2584'):
-        nxt = {'fib2584s1': 'fib4181s1', 'sobol2048s2': 'sobol4096s2', 'halton2048s3': 'halton4096s3',
-               'smolyak8': 'smolyak9', 'mc2048s1': 'mc4096s1', 'badlat2584': None}[fam]
-        S_.append(setting(128, 512, fam, nxt, [arm('LSPG', 'CNR', cases=dev2)], tag='f'))
+    fam_ladders = [[draw('fib', n, s) for n in FIB[:3]] for s in (1, 2)] + [[draw('sobol', n, s) for n in POW[:3]] for s in (1, 2)]
+    fam_ladders += [[draw('halton', n, s) for n in POW[:3]] for s in (1, 2)] + [[f'mc{n}s{s}' for n in POW[:3]] for s in (0, 1)]
+    fam_ladders += [[f'smolyak{l}' for l in SMOL[:3]]]
+    for rungs in fam_ladders:                 # two draws x two production rungs (+ the successor for rho) per family
+        for rule, qp, _ in ladder(rungs)[:2]:
+            S_.append(setting(128, 512, rule, qp, [arm('LSPG', 'CNR', cases=dev2)], tag='f'))
+    S_.append(setting(128, 512, 'badlat2584', None, [arm('LSPG', 'CNR', cases=dev2)], tag='f'))
     S_.append(dict(name='R384M1536lmfgauss256', Rp=384, M=1536, policy='lmf', rule='gauss256', qp='gauss320',
                    arms=[arm('LSPG', 'CNR', cases=dev2, q3=True)]))
     S_.append(dict(name='R384M1536gauss256', Rp=384, M=1536, policy='frozen', rule='gauss256', qp='gauss320',
@@ -205,6 +210,8 @@ def smoke():
                 sub(128, 512, 'gauss96', 'GAL', 'CN', 'gauss128', 'gauss160'),
                 sub(128, 128, 'gauss96', 'LSPG', 'CNR', 'gauss128', 'gauss160'),
                 sub(512, 4096, 'gauss256', 'LSPG', 'CNR', 'gauss320', 'gauss384'),
+                sub(512, 4096, 'gauss256', 'GAL', 'CN', 'gauss320', 'gauss384'),
+                sub(512, 4096, 'gauss256', 'LSPG', 'CN', 'gauss320', 'gauss384'),
                 sub(384, 1536, 'gauss128', 'LSPG', 'CNR', 'gauss160', 'gauss192')]
     d = dict(attempt='smk2t', mesh=1024, edges=[0, 128, 256, 384, 512], cases=dev2, reps=1, burn=0.1, seed=20261018, A=A,
              subjects=subjects, doubled=[subjects[-1]], inject_identity_fault=['1024|R128|M128|gauss96|LSPG|CNR|1'])

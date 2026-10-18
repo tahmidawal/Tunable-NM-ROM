@@ -38,6 +38,8 @@ import jax
 import jax.numpy as jnp
 
 GAMMA = 1e-3
+FIXTURE_SHA = {'inputs/fixture2d.npz': 'd13c1f86e12da45ce5e2579e4f9bd2fff9ae98ca656a9dfbb1b324995ff6fb52'}   # jcp-dims (A2.2)
+PEAK_BAR = 120e9                                                                          # jcp-dims (A1.4), decimal bytes
 
 
 def steps_of(dt):
@@ -146,6 +148,7 @@ def main():
                                                    arms={})
         nl = st.q['LSPG']['nl']
         certs = dict(LSPG=T2.make_certifier(nl, st.Rp), GAL=QC.make_gal_certifier(nl, st.Rp))
+        sqdiag = DC.make_square_diag(nl)                                                    # jcp-dims EDIT (A2.1)
         jacs = dict(LSPG=T2.make_jac(nl), GAL=QC.make_gal_jac(nl))
         rep['elapsed'][f"{sc_['name']}|setup"] = time.perf_counter() - t_set
         for arm in sc_['arms']:
@@ -168,7 +171,7 @@ def main():
             R = dict(case_ids=np.array([f'{cases[i][0]}|{cases[i][1]}' for i in ids]),
                      W=np.full((n, 6, st.Rp), np.nan), w0=np.full((n, st.Rp), np.nan),
                      states=np.full((n, S + 1, st.Rp), np.nan), cert=np.full((n, S), np.nan), gamma_lit=np.full((n, S), np.nan),
-                     jcond=np.full((n, S), np.nan), rec=np.full((n, S), np.nan), raw=np.full((n, S), np.nan),
+                     jcond=np.full((n, S), np.nan), unweighted=np.full((n, S), np.nan), rec=np.full((n, S), np.nan), raw=np.full((n, S), np.nan),
                      scale=np.full((n, S), np.nan), tolratio=np.full((n, S), np.nan), it=np.full((n, S), -1),
                      reason=np.full((n, S), -1), f257=np.full((n, 6, 257, 257), np.nan), n0=np.full(n, np.nan),
                      W_tight=np.full((n, 6, st.Rp), np.nan), valid=np.zeros(n, bool), valid_tight=np.zeros(n, bool),
@@ -198,6 +201,8 @@ def main():
                     R['rec'][j] = DC.recovered(R['tolratio'][j], t_prod * scl)
                     gok = DC.gcert(R['raw'][j], R['tolratio'][j], t_prod * scl)
                     nonst = int(np.sum(~DC.certified_square(R['raw'][j], scl)))
+                    jc_, ur_ = sqdiag(stt['states'], nu, st.data[('main', 'LSPG')], sch)
+                    R['jcond'][j], R['unweighted'][j] = np.asarray(jc_), np.asarray(ur_)
                 elif form == 'LSPG':
                     g, _rn = certs['LSPG'](stt['states'], nu, st.data[('main', 'LSPG')], sch)
                     R['cert'][j] = R['gamma_lit'][j] = np.asarray(g)
@@ -272,7 +277,7 @@ def main():
             rep['elapsed'][f"{sc_['name']}|{ak}"] = time.perf_counter() - t_arm
             save()
         for blk in cfg.get('blocks', []):
-            if blk['setting'] != sc_['name']:
+            if blk.get('setting') != sc_['name']:                                             # jcp-dims EDIT
                 continue
             t_blk = time.perf_counter()
             if blk['kind'] == 'controls':
@@ -282,6 +287,7 @@ def main():
             rep['elapsed'][f"{sc_['name']}|block|{blk['kind']}"] = time.perf_counter() - t_blk
             save()
         rep['memory'][sc_['name']] = P.mem()
+        rep['memory'][sc_['name']]['over_120GB'] = bool(rep['memory'][sc_['name']]['peak'] > PEAK_BAR)   # jcp-dims EDIT
         QQ.c.clear()
         del st
         gc.collect()
@@ -304,7 +310,9 @@ def run_fixgate(blk, bank):
     """jcp-dims EDIT (DESIGN A2.2, A3.2): component (b) of the cross-family gate. At the frozen fixture states (first r
     coefficients of the pinned dev6|0 states), rho_tgt = ||N_rule(c) - N_target(c)|| / ||N_target(c)|| for every listed
     rule at the cell (r, M); p1common.rho conventions (non-finite -> inf). One rule's tables live at a time."""
-    z = np.load(Path(__file__).resolve().parent / blk['fixture'])
+    fx = Path(__file__).resolve().parent / blk['fixture']
+    assert QS.sha_file(fx) == FIXTURE_SHA[blk['fixture']], 'fixture differs from its pin (A2.2)'
+    z = np.load(fx)
     C = np.asarray(z['W'])[:, :blk['r']]
     tg = P.Setting(bank, 'fixtgt', blk['r'], blk['target'], blk.get('policy', 'frozen'), M=blk['M'])
     nl = tg.q['LSPG']['nl']

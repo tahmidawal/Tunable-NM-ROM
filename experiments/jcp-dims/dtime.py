@@ -33,7 +33,7 @@ from pathlib import Path
 import numpy as np
 import p1common as P
 from p1common import Q, QS, T2, DT0, sha
-import qacc as QA
+import dacc as QA                    # jcp-dims EDIT: square-aware run() (A2.1 anchors)
 import qcert as QC
 import dcert as DC                                           # jcp-dims EDIT
 import jax
@@ -122,6 +122,7 @@ def main():
         C = dict(W=np.full((n, 6, st.Rp), np.nan), w0=np.full((n, st.Rp), np.nan), states=np.full((n, S + 1, st.Rp), np.nan),
                  cert=np.full((n, S), np.nan), rec=np.full((n, S), np.nan), raw=np.full((n, S), np.nan),
                  scale=np.full((n, S), np.nan), tolratio=np.full((n, S), np.nan), gamma_lit=np.full((n, S), np.nan),
+                 jcond=np.full((n, S), np.nan), unweighted=np.full((n, S), np.nan),
                  it=np.full((n, S), -1), reason=np.full((n, S), -1), n0=np.full(n, np.nan),
                  W_tight=np.full((n, 6, st.Rp), np.nan), W_tighter=np.full((n, 6, st.Rp), np.nan),
                  W_qp=np.full((n, 6, st.Rp), np.nan), W_qpp=np.full((n, 6, st.Rp), np.nan), rho=np.full((n, 6), np.nan),
@@ -149,6 +150,8 @@ def main():
                 rec = DC.recovered(tr, tolf * scl)
                 gok = DC.gcert(np.asarray(o[1]), tr, tolf * scl)
                 nonst = int(np.sum(~DC.certified_square(np.asarray(o[1]), scl)))
+                jc_, ur_ = DC.make_square_diag(nl)(s_['states'], nu, d, sch)
+                C['jcond'][j], C['unweighted'][j] = np.asarray(jc_), np.asarray(ur_)
             elif form == 'LSPG':
                 rec = np.asarray(s_['step_gn'])[:S]
                 gok = bool(P.gcert_ok(c_, rec) and np.isfinite(c_).all() and np.isfinite(rec).all())
@@ -224,25 +227,9 @@ def main():
         t, o = sync_time(lambda: q['evolve'](w0, U0[ci][1], scale, d, sch))
         return t, ident(*o)
 
-    rep['memory']['after_A'] = base_mem = P.mem()
-    # ------------------------------------------------------------------ blocks
-    blocks = {}
-    for j, sp in enumerate(cfg['subjects']):
-        blocks.setdefault(bkey(sp), []).append(j)
-    border = list(blocks)
-    rng.shuffle(border)
-    for bk in border:
-        js = blocks[bk]
-        t_blk = time.perf_counter()
-        st = build(cfg['subjects'][js[0]])
-        for j in js:
-            sp = cfg['subjects'][j]
-            assert sp.get('qp') == st.rules.get('qp') and sp.get('qpp') == st.rules.get('qpp'), ('block roles differ', sp)
-            certify(st, sp)
-        for kk in ('qp', 'qpp'):                    # A1.4: q+ / q++ tables only during certification
-            st.drop_role(kk)
-            st.rules.pop(kk, None)
-        gc.collect()
+    def time_block(st, js):
+        """A-B-A triplets of one block; a function so that every per-invocation reference (tables via d, outputs)
+        is released on return (A1.4; code audit 1 item 7)."""
         order = [(j, ci, r_) for j in js for ci in tci for r_ in range(int(cfg['reps']))]
         rng.shuffle(order)
         for j, ci, r_ in order:
@@ -283,6 +270,27 @@ def main():
                                      valid=bool(hok and BAND[0] <= ta2 / ta1 <= BAND[1])))
         for sp in [cfg['subjects'][j] for j in js if cfg['subjects'][j] in cfg.get('doubled', [])]:
             doubled(rep, sp, st, parts, W0, U0, ref, tci, cases, cfg, burn)
+
+    rep['memory']['after_A'] = base_mem = P.mem()
+    # ------------------------------------------------------------------ blocks
+    blocks = {}
+    for j, sp in enumerate(cfg['subjects']):
+        blocks.setdefault(bkey(sp), []).append(j)
+    border = list(blocks)
+    rng.shuffle(border)
+    for bk in border:
+        js = blocks[bk]
+        t_blk = time.perf_counter()
+        st = build(cfg['subjects'][js[0]])
+        for j in js:
+            sp = cfg['subjects'][j]
+            assert sp.get('qp') == st.rules.get('qp') and sp.get('qpp') == st.rules.get('qpp'), ('block roles differ', sp)
+            certify(st, sp)
+        for kk in ('qp', 'qpp'):                    # A1.4: q+ / q++ tables only during certification
+            st.drop_role(kk)
+            st.rules.pop(kk, None)
+        gc.collect()
+        time_block(st, js)
         # release the block (A1.4): setting, compiled queries, arrays
         for k_ in [k_ for k_ in QA.QQ.c if k_[0] == id(st)]:
             del QA.QQ.c[k_]

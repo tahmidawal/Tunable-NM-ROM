@@ -75,9 +75,9 @@
    "M": 512
   },
   {
-   "name": "W1024k8",
+   "name": "W512k8",
    "bank": "W1024",
-   "Rp": 1024,
+   "Rp": 512,
    "a": 6,
    "rule": "lat16384",
    "reduced": [],
@@ -107,30 +107,63 @@
  ],
  "blocks": [
   {
-   "kind": "pilot",
-   "items": [
-    {
-     "setting": "W1024k8",
-     "rules": [
-      "gl56",
-      "gl64"
-     ],
-     "forms": [
-      "LSPG",
-      "GAL"
-     ]
-    },
-    {
-     "setting": "W1024k8",
-     "rules": [
-      "lat131072",
-      "lat262144"
-     ],
-     "forms": [
-      "LSPG",
-      "GAL"
-     ]
-    }
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "gl48",
+    "gl56",
+    "gl64"
+   ],
+   "cases": [
+    0
+   ],
+   "tighter_cases": [
+    0
+   ],
+   "tag_prefix": "pilot|"
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "fs|CN|0.01|K1",
+    "qn|BDF2|0.025|k4"
+   ],
+   "rungs": [
+    "lat131072",
+    "lat262144"
+   ],
+   "cases": [
+    0
+   ],
+   "tighter_cases": [
+    0
+   ],
+   "tag_prefix": "pilot|"
+  },
+  {
+   "kind": "adaptive",
+   "setting": "W512k8",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat131072",
+    "lat262144"
+   ],
+   "cases": [
+    0
+   ],
+   "tighter_cases": [
+    0
    ]
   },
   {
@@ -189,6 +222,41 @@
    "rungs": [
     "lat8192",
     "lat16384"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ],
+   "tag_prefix": "lad|"
+  },
+  {
+   "kind": "ladder",
+   "setting": "M2_512",
+   "specs": [
+    "fs|BE|0.01|K1"
+   ],
+   "rungs": [
+    "gl32"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "lat262144"
    ],
    "cases": [
     0,
@@ -279,6 +347,11 @@
      "spec": "ad|GAL|CN|0.01|prod"
     },
     {
+     "setting": "W1024",
+     "rule": "lat262144",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
      "setting": "M2_512",
      "rule": "gl32",
      "spec": "fs|BE|0.01|K1",
@@ -288,6 +361,25 @@
    "cases": 2,
    "reps": 1,
    "seed": 7
+  },
+  {
+   "kind": "panel",
+   "label": "smoke-uncertified",
+   "A": {
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "W256",
+     "rule": "gl24",
+     "spec": "fs|CN|0.01|K1"
+    }
+   ],
+   "cases": 1,
+   "reps": 1,
+   "seed": 8
   }
  ]
 }

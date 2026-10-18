@@ -34,7 +34,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--run', action='append', required=True)
-    p.add_argument('--gpu', default='h200', choices=sorted(GRES))
+    p.add_argument('--gpu', default='h200', choices=['h200'])          # jcp-dims: H200 throughout (DESIGN 4, 11)
     p.add_argument('--mem', default='200G')
     p.add_argument('--hours', type=float, required=True)
     p.add_argument('--mem-fraction', default='0.92')

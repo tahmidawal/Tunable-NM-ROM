@@ -1,6 +1,6 @@
 #!/bin/bash
 # jcp-dims (copied from jcp-qualify; namespace, prefix jd_): submit ONE staged attempt. Refuses if jd_<attempt> is queued or its remote dir exists, if the lane has
-# >= 4 jobs or the account >= 8 jobs (campaign cap), or if the atomic GPU-hour reservation (DESIGN A1.11, A2.6) fails.
+# >= 3 jobs or the account >= 8 jobs (campaign cap), or if the atomic GPU-hour reservation (DESIGN A1.11, A2.6) fails.
 # The reserved hours are the sbatch --time limit read from run.sbatch (checked against RESERVATION.json).
 # squeue before and after (duplicate-submit rule).
 set -euo pipefail

@@ -52,15 +52,24 @@ def main():
     man = dict(ladders=[])
     std = [setting(k, k) for k in BASE]
     # ------------------------------------------------------------------ smoke
-    smk_settings = std + [setting('W512M1027', 'W512', 1027), setting('W512k1', 'W512', 512), setting('W1024k8', 'W1024', 4097)]
+    smk_settings = std + [setting('W512M1027', 'W512', 1027), setting('W512k1', 'W512', 512), setting('W512k8', 'W512', 4097)]
     smk_blocks = [
-        dict(kind='pilot', items=[dict(setting='W1024k8', rules=['gl56', 'gl64'], forms=['LSPG', 'GAL']),
-                                  dict(setting='W1024k8', rules=['lat131072', 'lat262144'], forms=['LSPG', 'GAL'])]),
+        # heaviest 3D blocks actually compiled and executed (A1.4): W1024 (M = 4097) Gauss tail and lattice tail, all specs,
+        # ADT anchors; the adaptive forms at W512 kappa = 8 (M = 4097) on the lattice tail
+        dict(kind='ladder', setting='W1024', specs=SPECS, rungs=['gl48', 'gl56', 'gl64'], cases=[0], tighter_cases=[0],
+             tag_prefix='pilot|'),
+        dict(kind='ladder', setting='W1024', specs=SPECS, rungs=['lat131072', 'lat262144'], cases=[0], tighter_cases=[0],
+             tag_prefix='pilot|'),
+        dict(kind='adaptive', setting='W512k8', forms=['LSPG|CN', 'GAL|CN'], dt=0.01, rungs=['lat131072', 'lat262144'],
+             cases=[0], tighter_cases=[0]),
         dict(kind='override', setting_default='W512', setting_override='W512M1027', rule='lat16384',
              fixture='inputs/fixture3d.npz'),
         dict(kind='ladder', setting='W512', specs=['fs|CN|0.01|K1'], rungs=['lat16384'], cases=[0, 1, 2, 3], tighter_cases=[0]),
         dict(kind='ladder', setting='M2_512', specs=['fs|BDF2|0.0125|K1'], rungs=['gl24'], cases=[0, 1, 2, 3], tighter_cases=[0]),
-        dict(kind='ladder', setting='W512', specs=SPECS, rungs=['lat8192', 'lat16384'], cases=[0, 1], tighter_cases=[0]),
+        dict(kind='ladder', setting='W512', specs=SPECS, rungs=['lat8192', 'lat16384'], cases=[0, 1], tighter_cases=[0],
+             tag_prefix='lad|'),
+        dict(kind='ladder', setting='M2_512', specs=['fs|BE|0.01|K1'], rungs=['gl32'], cases=[0, 1], tighter_cases=[0]),
+        dict(kind='ladder', setting='W1024', specs=['fs|CN|0.01|K1'], rungs=['lat262144'], cases=[0, 1], tighter_cases=[0]),
         dict(kind='adaptive', setting='W512k1', forms=['LSPG|CN', 'GAL|CN'], dt=0.01, rungs=['lat65536', 'lat131072'],
              cases=[0, 1], tighter_cases=[0]),
         dict(kind='adaptive', setting='W512', forms=['LSPG|CN', 'GAL|CN'], dt=0.01, rungs=['lat65536'], cases=[0, 1],
@@ -71,8 +80,11 @@ def main():
         dict(kind='panel', label='smoke', A=dict(setting='M2_512', rule='gl32', spec='fs|BE|0.01|K1'),
              subjects=[dict(setting='W512', rule='lat16384', spec='fs|CN|0.01|K1'),
                        dict(setting='W512', rule='lat65536', spec='ad|GAL|CN|0.01|prod'),
+                       dict(setting='W1024', rule='lat262144', spec='fs|CN|0.01|K1'),
                        dict(setting='M2_512', rule='gl32', spec='fs|BE|0.01|K1', double=True)],
-             cases=2, reps=1, seed=7)]
+             cases=2, reps=1, seed=7),
+        dict(kind='panel', label='smoke-uncertified', A=dict(setting='M2_512', rule='gl32', spec='fs|BE|0.01|K1'),
+             subjects=[dict(setting='W256', rule='gl24', spec='fs|CN|0.01|K1')], cases=1, reps=1, seed=8)]
     rules = GL + ['gl80'] + LAT + ['badlat262144', 'sob262144s0', 'smolyak13']
     job('smk3', smk_settings, smk_blocks, rules)
     # ------------------------------------------------------------------ round 4: qualify's 16 exposed (A1.1 / 3R)
@@ -112,9 +124,9 @@ def main():
                                        family='lattice', draw=0, rungs=LAT[1:], candidates=LAT[1:-2],
                                        deferrable_kappa8=(k == 8)))
     for s in fix_settings:
-        blocks.append(dict(kind='ladder', setting=s['name'], specs=['fs|CN|0.01|K1'], rungs=LAT))
+        blocks.append(dict(kind='ladder', setting=s['name'], specs=['fs|CN|0.01|K1'], rungs=LAT[1:]))
         man['ladders'].append(dict(kind='3A-fixMm', setting=s['name'], M=2052, spec='fs|CN|0.01|K1', family='lattice',
-                                   draw=0, rungs=LAT, candidates=LAT[:-2]))
+                                   draw=0, rungs=LAT[1:], candidates=LAT[1:-2]))
     job('k3', k_settings + fix_settings, blocks, LAT)
     # ------------------------------------------------------------------ families (3F) stage (i)
     blocks, rules = [], list(LAT) + ['gl64', 'badlat262144'] + SMOL3

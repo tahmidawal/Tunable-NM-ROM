@@ -45,3 +45,29 @@ def gcert(raw_cert, tolratio, tol):
     if not rc.size:
         return False
     return bool(np.all(np.isfinite(rc) & np.isfinite(rr) & (np.abs(rc - rr) <= 1e-6 * np.abs(rr) + 1e-15)))
+
+
+def make_square_diag(nl):
+    """A2.1 diagnostics for square LSPG (M = r), per step from the saved states: cond of the weighted step Jacobian
+    (autodiff) and the unweighted relative residual ||R_n(c_{n+1})|| / ||A c_n|| (reported, no verdict)."""
+    import jax
+    import jax.numpy as jnp
+    import p1core as T2
+    be = jnp.asarray(T2.BE_CO, jnp.float64)
+
+    def one(k, states, nu, data, sch):
+        dt = sch['dt']
+        co = jnp.where(k < sch['nstart'], be, sch['co'])
+        ck, cm, cn = states[k], states[jnp.maximum(k - 1, 0)], states[k + 1]
+        A, lam = data['A'], data['lam']
+        Fn = jnp.where(co[4] != 0., nl(ck, data) + nu * lam * (A @ ck), 0.)
+        r = T2.lspg_residual(nl, co, dt, nu, data, (A @ ck, A @ cm, Fn))
+        J = jax.jacfwd(r)(cn)
+        s = jnp.linalg.svd(J, compute_uv=False)
+        D = co[0] + dt * co[3] * nu * lam
+        return s[0] / s[-1], jnp.linalg.norm(r(cn) * D) / (jnp.linalg.norm(A @ ck) + 1e-300)
+
+    def diag(states, nu, data, sch):
+        S = states.shape[0] - 1
+        return jax.lax.map(lambda k: one(k, states, nu, data, sch), jnp.arange(S))
+    return jax.jit(diag)

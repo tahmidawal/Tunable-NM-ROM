@@ -29,7 +29,9 @@ LED = HERE / 'runs' / 'GPU-LEDGER.json'
 LOCK = HERE / 'runs' / 'GPU-LEDGER.lock'
 CAP = 55.
 # non-deferrable jobs (DESIGN A3.1): each must be in the pending inventory until it has a live or completed reservation
-MANDATORY = ('f2a', 'f2b', 'f2k', 'b2f', 'q3r4', 'm3a', 'm3b', 'k3', 't3s', 't3c')   # jcp-dims never-dropped (A1.6)
+MANDATORY = ('f2a', 'f2b', 'f2k', 'b2f', 'q3r4', 'q3r5', 'q3r6', 'q3r7', 'q3r8', 'm3a', 'm3b', 'k3', 't3s', 't3c')
+# jcp-dims never-dropped (A1.6); rounds 5-8 are mandatory until waived ('ledger.py waive q3r<k> <reason>', e.g. no exposed
+# untested candidate after the previous round), which is recorded in the ledger
 # a failed / timed-out mandatory job is not COMPLETED, so the next 'pending' call must list it again (validated)
 TERMINAL = ('COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY', 'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE',
             'RELEASED')
@@ -61,14 +63,15 @@ def totals(d):
 def validate(d, new, exempt=None):
     """jcp-dims (DESIGN 8, A1.6): every never-dropped job that has neither a live nor a COMPLETED reservation must be in
     the pending inventory with a positive projection (certificate floor: checks/resources-<job>.json if it exists)."""
-    probs = []
+    probs = [f'pending entry {k} not a finite non-negative number' for k, v in new.items()
+             if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
     live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
     done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
 
     def covered(k):                                 # a mandatory job or any of its retries k r<n>
         return any(a == k or re.fullmatch(re.escape(k) + r'r\d+', a) for a in live | done)
     for k in MANDATORY:
-        if covered(k) or k == exempt:
+        if covered(k) or k == exempt or k in d.get('waived', {}):
             continue
         if not (k in new and isinstance(new[k], (int, float)) and math.isfinite(new[k]) and new[k] > 0):
             probs.append(f'never-dropped job {k} missing from the pending inventory')
@@ -114,6 +117,13 @@ def main():
                 print('refused pending inventory:', probs); rc = 9
             else:
                 d['pending_core'] = new
+        elif cmd == 'waive':                 # a mandatory job shown unnecessary (recorded with its reason, never silent)
+            att, why = sys.argv[2], ' '.join(sys.argv[3:])
+            if att not in MANDATORY or not why:
+                print('refused: waive needs a mandatory attempt and a reason'); rc = 15
+            else:
+                d.setdefault('waived', {})[att] = why
+                d.get('pending_core', {}).pop(att, None)
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')

@@ -140,6 +140,31 @@
    ]
   },
   {
+   "name": "R512M4096gauss384",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
    "name": "R128M128gauss64",
    "Rp": 128,
    "M": 128,
@@ -224,6 +249,101 @@
    "qp": "fib4181s1"
   },
   {
+   "name": "R128M512ffib4181s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib4181s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "fib6765s1"
+  },
+  {
+   "name": "R128M512ffib2584s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib2584s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "fib4181s2"
+  },
+  {
+   "name": "R128M512ffib4181s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "fib4181s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "fib6765s2"
+  },
+  {
+   "name": "R128M512fsobol2048s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "sobol2048s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "sobol4096s1"
+  },
+  {
+   "name": "R128M512fsobol4096s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "sobol4096s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "sobol8192s1"
+  },
+  {
    "name": "R128M512fsobol2048s2",
    "Rp": 128,
    "M": 512,
@@ -243,11 +363,11 @@
    "qp": "sobol4096s2"
   },
   {
-   "name": "R128M512fhalton2048s3",
+   "name": "R128M512fsobol4096s2",
    "Rp": 128,
    "M": 512,
    "policy": "frozen",
-   "rule": "halton2048s3",
+   "rule": "sobol4096s2",
    "arms": [
     {
      "form": "LSPG",
@@ -259,7 +379,159 @@
      "rho_only": true
     }
    ],
-   "qp": "halton4096s3"
+   "qp": "sobol8192s2"
+  },
+  {
+   "name": "R128M512fhalton2048s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton2048s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton4096s1"
+  },
+  {
+   "name": "R128M512fhalton4096s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton4096s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton8192s1"
+  },
+  {
+   "name": "R128M512fhalton2048s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton2048s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton4096s2"
+  },
+  {
+   "name": "R128M512fhalton4096s2",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "halton4096s2",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "halton8192s2"
+  },
+  {
+   "name": "R128M512fmc2048s0",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc2048s0",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc4096s0"
+  },
+  {
+   "name": "R128M512fmc4096s0",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc4096s0",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc8192s0"
+  },
+  {
+   "name": "R128M512fmc2048s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc2048s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc4096s1"
+  },
+  {
+   "name": "R128M512fmc4096s1",
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "mc4096s1",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1,
+     "cases": "dev2",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "mc8192s1"
   },
   {
    "name": "R128M512fsmolyak8",
@@ -281,11 +553,11 @@
    "qp": "smolyak9"
   },
   {
-   "name": "R128M512fmc2048s1",
+   "name": "R128M512fsmolyak9",
    "Rp": 128,
    "M": 512,
    "policy": "frozen",
-   "rule": "mc2048s1",
+   "rule": "smolyak9",
    "arms": [
     {
      "form": "LSPG",
@@ -297,7 +569,7 @@
      "rho_only": true
     }
    ],
-   "qp": "mc4096s1"
+   "qp": "smolyak10"
   },
   {
    "name": "R128M512fbadlat2584",

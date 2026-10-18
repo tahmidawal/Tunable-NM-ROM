@@ -113,18 +113,22 @@ def mstar(labels, sizes):
     return dict(outcome='none (within the candidate list)', m=None)
 
 
+def intersect(label_lists):
+    """Per candidate: 'qualified' iff qualified in every list; 'missing' iff missing in any; else 'not qualified'."""
+    out = []
+    for xs in zip(*label_lists):
+        out.append('missing' if any(x == 'missing' for x in xs) else
+                   'qualified' if all(x == 'qualified' for x in xs) else 'not qualified')
+    return out
+
+
 def family_mstar(per_draw_labels, sizes):
-    """A1.5 random families: smallest candidate qualified in ALL draws; median-draw m* with censoring."""
+    """A1.5 random families: m* of the intersection over ALL draws (missing-lower precedence applies to the
+    intersection); median-draw m* with censoring."""
     D = len(per_draw_labels)
     per = [mstar(l, sizes) for l in per_draw_labels]
-    if any(p['outcome'].startswith('not reached') for p in per):
-        fam = dict(outcome='not reached (incomplete ladder)', m=None)
-    else:
-        fam = dict(outcome='none (within the candidate list)', m=None)
-        for i, m in enumerate(sizes):
-            if all(l[i] == 'qualified' for l in per_draw_labels):
-                fam = dict(outcome=f'm* = {m} (all {D} draws)', m=m)
-                break
+    fam = mstar(intersect(per_draw_labels), sizes)
+    fam = dict(fam, outcome=fam['outcome'] + (f' (all {D} draws)' if fam['m'] is not None else ''))
     vals = [p['m'] if p['m'] is not None else np.inf for p in per]
     med = float(np.median(vals))
     fin = [v for v in vals if np.isfinite(v)]
@@ -133,13 +137,8 @@ def family_mstar(per_draw_labels, sizes):
 
 
 def width_mstar(labels_by_spec, sizes):
-    """A1.5: smallest candidate qualified for every spec (intersection)."""
-    for i, m in enumerate(sizes):
-        if all(l[i] == 'qualified' for l in labels_by_spec.values()):
-            return dict(outcome=f'm* = {m}', m=m)
-    if any(l[i] == 'missing' for l in labels_by_spec.values() for i in range(len(sizes))):
-        return dict(outcome='not reached (incomplete ladder)', m=None)
-    return dict(outcome='none (within the candidate list)', m=None)
+    """A1.5: m* of the intersection over every registered spec (missing-lower precedence on the intersection)."""
+    return mstar(intersect(list(labels_by_spec.values())), sizes)
 
 
 def point_efficiency(mX, mY, names=('X', 'Y')):
@@ -160,7 +159,9 @@ def point_efficiency(mX, mY, names=('X', 'Y')):
 def cross_family_gate(rho_tgt, rollout_available, worst_dist_to_target):
     """A3.2 precedence: (b) state-frozen advection flags first; then the rollout part (a) if available."""
     r = np.asarray(rho_tgt, float)
-    if r.size and (np.any(~np.isfinite(r)) or np.any(r > RHO_BAR)):
+    if r.size == 0:
+        return 'gate unavailable (state part)'
+    if np.any(~np.isfinite(r)) or np.any(r > RHO_BAR):
         return 'flagged'
     if not rollout_available:
         return 'gate unavailable (rollout part)'
@@ -252,6 +253,7 @@ def h2q(C, comp, qualified, panel=None):
         ids = [j for j in v['e'] if j in c['e']]
         if not ids:
             continue
+        assert all(abs(v['eta'][j] - c['eta'][j]) <= 1e-15 for j in ids), 'reference uncertainty differs (speed3d common)'
         med, wst = ties_or_beats([v['e'][j] for j in ids], [c['e'][j] for j in ids], [c['eta'][j] for j in ids])
         if med and wst:
             match.append(k)
@@ -265,3 +267,24 @@ def h2q(C, comp, qualified, panel=None):
     S = 1. / panel['median_ratio']
     return dict(verdict='pass' if S >= 1 / .6 else 'fail (the selected candidate failed confirmation)', winner=w, S=S,
                 n_matching=len(match))
+
+
+def panel_accept(inv, certified, expected, band=(1 / 1.1, 1.1)):
+    """A1.1 / A2.4 (3D panels): a panel is accepted iff every invocation's hashes match, every timed subject (and A) is
+    linked to an in-job certified run on every panel case (certified[(name, case)] is True), every subject has its
+    expected invocation count, ratios are finite and positive, and every subject's median drift is in the band."""
+    if not inv:
+        return dict(valid=False, reason='no invocations')
+    bad_cert = sorted({k[0] for k, v in certified.items() if v is not True})
+    cnt = {}
+    for x in inv:
+        cnt[x['B']] = cnt.get(x['B'], 0) + 1
+    short = sorted(k for k, n in expected.items() if cnt.get(k, 0) != n)
+    hok = all(x.get('hashes_ok') for x in inv)
+    fin = all(np.isfinite(x['ratio']) and x['ratio'] > 0 for x in inv)
+    by = {}
+    for x in inv:
+        by.setdefault(x['B'], []).append(x['drift'])
+    dok = all(band[0] <= float(np.median(v)) <= band[1] for v in by.values())
+    return dict(valid=bool(hok and fin and dok and not bad_cert and not short), hashes_ok=hok, ratios_finite=fin,
+                drift_ok=dok, uncertified=bad_cert, incomplete=short)

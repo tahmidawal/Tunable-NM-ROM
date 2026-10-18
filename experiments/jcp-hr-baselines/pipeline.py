@@ -181,6 +181,8 @@ class Cell:
             rec, summ = BD.ecsw_weights(G, b, cand, r, kappas, log=nnls_log)
         del G, b
         self.ecsw_rec[r] = {f'k{k}': v for k, v in rec.items()}
+        self.ecsw_paths_raw = getattr(self, 'ecsw_paths_raw', {})
+        self.ecsw_paths_raw[r] = summ.pop('checkpoints_all')
         self.info.setdefault('ecsw', {})[r] = dict(contrib=dict(cinfo, block_norms=None), paths=summ,
                                                   supports={f'k{k}': (None if v is None else dict(size=v['size'],
                                                             relres=v['relres'])) for k, v in rec.items()})

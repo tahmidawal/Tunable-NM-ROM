@@ -1195,3 +1195,13 @@ in smk1; if the retry is not triggered or does not help, that is reported.
 **A16.4 Accounting.** The development-case evidence used to choose the knob and the fixtures (smk1 and the CPU dry runs)
 is validation-informed and counts in the baseline's V budget (A3.1). The discarded τ-knob evidence is retained in
 `runs/smk1`. The amended grid (κ ∈ {2, 4, 8}; extension 16) is frozen before production.
+
+**A16.5 (design audit 10, code audit 12) Retry rule frozen.** The ban-free retry runs **whenever more than 1 % of the
+candidates were banned** on the initial path (regardless of target attainment). Both paths use the same iteration bound
+(20,000 NNLS iterations). One whole path is selected by a training-only order: more reached targets; then the smaller sum
+of $\log_{10}$ training residuals over the targets both paths reached; then the initial path. Selection happens at
+construction, before any validation run, and both attempts (diagnostics, checkpoint supports and weights) are kept and
+reported; acceptance recomputes the trigger and the selection and counts supports from the saved weights. If the
+selected path still banned more than 1 % of the candidates (only possible when the retry was not better), that rank's
+ECSW statements carry "**ECSW construction quality limited (banning)**", blocking "adequately tuned ECSW" and exhaustive
+non-domination wording for that cell.

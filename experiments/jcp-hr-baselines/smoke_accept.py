@@ -231,8 +231,41 @@ def main():
             q['solve_backward_error'] <= 1e-12 and q.get('B_shape') == [n, 2 * c['rmax'] + c['pmax']] and q['device_peak'] > 0,
             ev={k: q.get(k) for k in ('B_shape', 'interp_const', 'solve_backward_error', 'seconds', 'device_peak')})
         e = R.get('ecsw_rs') or {}
-        put(f'{key}|ecsw-smoke-rank', all(e.get(f'k{k}') is not None and fin(e[f'k{k}']['relres']) and
-                                          e[f'k{k}']['size'] >= k * c['rs'] for k in (2, 4, 8, 16)), supports=e)
+        # A16: retry trigger and path selection recomputed; supports counted from the saved weights
+        try:
+            ps_ = R['ecsw_path_summary']
+            zp = Z['ECSWpath']
+            atts = ps_['attempts']
+            ncand = ps_['n_cand']
+            need_retry = atts['initial']['banned'] > ps_['ban_retry_frac'] * ncand
+            ok_e = ('retry' in atts) == need_retry and atts['initial']['max_drops'] == 3 and \
+                (('retry' not in atts) or atts['retry']['max_drops'] >= 10 ** 9)
+            for a, sm in atts.items():
+                for kk, cp in sm['checkpoints'].items():
+                    if cp is None:
+                        ok_e &= f'{a}~{kk}~weights' not in zp
+                        continue
+                    w = zp[f'{a}~{kk}~weights']
+                    ok_e &= int(np.sum(w > 0)) == cp['size'] >= int(kk[1:]) * c['rs'] and np.all(np.isfinite(w)) \
+                        and len(set(zp[f'{a}~{kk}~nodes'].tolist())) == len(w)
+                ok_e &= sm['reached'] == sum(v is not None for v in sm['checkpoints'].values())
+            sel = 'initial'
+            if 'retry' in atts:
+                s0, s1 = atts['initial'], atts['retry']
+                if s1['reached'] > s0['reached']:
+                    sel = 'retry'
+                elif s1['reached'] == s0['reached']:
+                    com = [k for k in s0['checkpoints'] if s0['checkpoints'][k] and s1['checkpoints'][k]]
+                    l0 = sum(math.log10(max(s0['checkpoints'][k]['relres'], 1e-300)) for k in com)
+                    l1 = sum(math.log10(max(s1['checkpoints'][k]['relres'], 1e-300)) for k in com)
+                    sel = 'retry' if l1 < l0 else 'initial'
+            ok_e &= sel == ps_['selected']
+            ok_e &= all(e.get(f'k{k}') is not None and e[f'k{k}']['size'] == atts[sel]['checkpoints'][f'k{k}']['size']
+                        for k in (2, 4, 8, 16))
+            put(f'{key}|ecsw-smoke-rank', ok_e, selected=ps_['selected'], retry=need_retry,
+                reached={a: sm['reached'] for a, sm in atts.items()}, supports=e)
+        except Exception as ex:  # noqa: BLE001
+            put(f'{key}|ecsw-smoke-rank', False, error=f'{type(ex).__name__}: {ex}')
         ep = R.get('ecsw_pilot') or {}
         nst = (R.get('ecsw_states') or {}).get('n_states')
         shp = list(ep.get('shape', [0, 0]))

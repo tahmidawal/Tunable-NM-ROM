@@ -249,6 +249,16 @@ def run_cell(cfg, c, res, outdir, save):
     P('ecsw_states', lambda: cell.ecsw_states(fam_tr), 120, store='ecsw_states')
     P('ecsw_smoke_rank', lambda: {str(t): (None if v is None else dict(size=v['size'], relres=v['relres']))
                                   for t, v in cell.ecsw(rs).items()}, 240, store='ecsw_rs')
+    if rs in getattr(cell, 'ecsw_paths_raw', {}):           # A16: both attempts' checkpoint supports and weights
+        kw = {}
+        for att, cps in cell.ecsw_paths_raw[rs].items():
+            for k, v in cps.items():
+                if v is not None:
+                    kw[f'{att}~{k}~nodes'] = np.asarray(v['nodes'])
+                    kw[f'{att}~{k}~weights'] = np.asarray(v['weights'])
+        chunk('ECSWpath', **kw)
+        R['ecsw_path_summary'] = cell.info['ecsw'][rs]['paths']
+        save()
 
     def ecsw_pilot():
         t0 = time.perf_counter()

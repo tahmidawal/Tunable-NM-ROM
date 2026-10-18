@@ -332,37 +332,53 @@ def ecsw_contrib(states, Phi_r, d, L, cand_nodes=None, seed=ECSW_SEED_CAND, n_ca
                                               block_norms=nb.tolist())
 
 
-def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, log=None, ban_retry_frac=0.01):
+NNLS_MAX_ITER = 20000
+BAN_RETRY_FRAC = 0.01
+
+
+def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, log=None):
     """A15.1/A16: "ECSW with support-targeted greedy NNLS". One greedy path per (mesh, rank) is built through the largest
-    target (16 r, A16.2), recorded at first crossings of s = kappa r (actual sizes and training residuals reported) and
-    at the tau crossings (reported). A16.3: if any target is unreached and more than `ban_retry_frac` of the candidates
-    were banned, the path is rebuilt once with banning disabled (bounded by max_iter); the better-covering path is
-    used and both are reported. A target still unreached is a construction failure."""
+    target (16 r), recorded at first crossings of s = kappa r (actual sizes and training residuals reported) and at the
+    tau crossings (reported). A16.3/A16.5: whenever more than 1 % of the candidates were banned, the path is rebuilt once
+    with banning disabled (same NNLS_MAX_ITER); one whole path is selected by the A16.5 order; both attempts are returned.
+    A target unreached on the selected path is a construction failure."""
     targets = [int(k * r) for k in kappas]
     cap = min(max(targets), len(cand_nodes))
     sup = [t for t in targets if t <= cap]
 
-    def run(max_drops):
-        return NN.greedy_nnls(G, b, taus=taus, supports=sup, cap=cap, log=log, max_drops=max_drops, max_iter=20000)
-    out = run(3)
-    reached = lambda o: sum(o['records'].get(('s', t)) is not None for t in sup)
-    retry = None
-    if reached(out) < len(sup) and out['banned'] > ban_retry_frac * len(cand_nodes):
-        out2 = run(10 ** 9)
-        retry = dict(reached=reached(out2), banned=out2['banned'], reason=out2['reason'], final_relres=out2['relres'],
-                     used=reached(out2) > reached(out))
-        if retry['used']:
-            out = out2
-    rec = {}
-    for k, t in zip(kappas, targets):
-        x = out['records'].get(('s', t))
-        rec[k] = None if x is None else dict(nodes=cand_nodes[x['support']], weights=x['weights'], relres=x['relres'],
-                                             size=x['size'])
-    taus_rec = {str(t): (None if out['records'][t] is None else dict(size=out['records'][t]['size'],
-                                                                    relres=out['records'][t]['relres'])) for t in taus}
-    summary = dict(reason=out['reason'], final_relres=out['relres'], final_support=int(len(out['support'])),
-                   banned=out['banned'], kkt=out['kkt'], iterations=len(out['path']), taus=taus_rec, ban_retry=retry,
-                   targets={f'k{k}': t for k, t in zip(kappas, targets)})
+    def attempt(max_drops):
+        o = NN.greedy_nnls(G, b, taus=taus, supports=sup, cap=cap, log=log, max_drops=max_drops, max_iter=NNLS_MAX_ITER)
+        cps = {}
+        for k, t in zip(kappas, targets):
+            x = o['records'].get(('s', t))
+            cps[f'k{k}'] = None if x is None else dict(nodes=cand_nodes[x['support']], weights=x['weights'],
+                                                       relres=x['relres'], size=x['size'])
+        summ = dict(max_drops=max_drops, reason=o['reason'], final_relres=o['relres'], final_support=int(len(o['support'])),
+                    banned=o['banned'], kkt=o['kkt'], iterations=len(o['path']),
+                    taus={str(t): (None if o['records'][t] is None else dict(size=o['records'][t]['size'],
+                                                                             relres=o['records'][t]['relres'])) for t in taus},
+                    reached=sum(v is not None for v in cps.values()),
+                    checkpoints={k: (None if v is None else dict(size=v['size'], relres=v['relres'])) for k, v in cps.items()})
+        return cps, summ
+    cps0, s0 = attempt(3)
+    attempts = {'initial': (cps0, s0)}
+    if s0['banned'] > BAN_RETRY_FRAC * len(cand_nodes):
+        attempts['retry'] = attempt(10 ** 9)
+    sel = 'initial'
+    if 'retry' in attempts:
+        s1 = attempts['retry'][1]
+        if s1['reached'] > s0['reached']:
+            sel = 'retry'
+        elif s1['reached'] == s0['reached']:
+            common = [k for k in s0['checkpoints'] if s0['checkpoints'][k] and s1['checkpoints'][k]]
+            l0 = sum(np.log10(max(s0['checkpoints'][k]['relres'], 1e-300)) for k in common)
+            l1 = sum(np.log10(max(s1['checkpoints'][k]['relres'], 1e-300)) for k in common)
+            sel = 'retry' if l1 < l0 else 'initial'
+    rec = {int(k[1:]): v for k, v in attempts[sel][0].items()}
+    summary = dict(selected=sel, attempts={a: v[1] for a, v in attempts.items()},
+                   checkpoints_all={a: v[0] for a, v in attempts.items()},
+                   targets={f'k{k}': t for k, t in zip(kappas, targets)}, ban_retry_frac=BAN_RETRY_FRAC,
+                   max_iter=NNLS_MAX_ITER, n_cand=int(len(cand_nodes)))
     return rec, summary
 
 

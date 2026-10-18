@@ -214,6 +214,8 @@ def main():
     R1 = jl(CH / 'analysis-r1.json')
     gl = jl(HERE / 'runs' / 'GPU-LEDGER.json')
     jlg = jl(HERE / 'runs' / 'JOB-LEDGER.json')
+    for stale in (HERE / 'report.md', HERE / 'runs' / 'EXPORT.json'):   # never leave an earlier publication behind
+        stale.unlink(missing_ok=True)
     C = G['configs']
     p1, m1 = PM.get('p1'), PM.get('m1')
     final = bool(p1 and m1 and p1['acceptance']['integrity_ok'] and m1['acceptance']['integrity_ok'])
@@ -363,7 +365,7 @@ def main():
                 rows.append([l_, 'missing'] + ['–'] * 7)
                 continue
             sh = v.get('share') or {}
-            rows.append([l_, f(v['fused_seconds'] * 1e3), f(sh.get('project')), f(sh.get('evolve')), f(sh.get('decode')),
+            rows.append([l_, f(v['fused_seconds'] * 1e3 if v.get('fused_seconds') is not None else None), f(sh.get('project')), f(sh.get('evolve')), f(sh.get('decode')),
                          f(v.get('share_adaptive_start')), f(v.get('G3_sum_over_fused')), f(v.get('G3')), f(v.get('panel_valid'))])
         w('**H3.1** profile (indicative; components separately jitted). Shares of the fused warm query (G3 only on a valid panel):')
         w('')

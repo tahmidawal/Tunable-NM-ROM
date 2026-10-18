@@ -726,3 +726,12 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 * A missing or resource-infeasible ROM at a mesh has `eligible = null` (feasibility recorded separately).
 * Integrity suppression nulls every boolean of the job's analysis (all verdicts and component predicates), keeping only
   the numbers and the acceptance record.
+
+---
+
+## Amendment A20 (2026-10-18; dispositions of `audits/codex-code-16.md`, NOT READY on two items)
+
+* m1 coverage also requires every per-mesh family union to be resolved (`mesh_unions_resolved`).
+* Integrity suppression keeps structural presence flags (`missing`, `available`, `feasible`); the report tolerates
+  suppressed or missing records, and `make_report.py` deletes `report.md` and `EXPORT.json` before writing, so a failed run
+  never leaves an earlier publication in place.

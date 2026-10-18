@@ -362,8 +362,8 @@ def suppress(out, why):
             for k in list(o):
                 if k in ('verdict', 'status') and isinstance(o[k], str) and not o[k].startswith('unavailable'):
                     o[k] = f'unavailable ({why}; computed {o[k]})'
-                elif k == 'acceptance':
-                    continue                                   # the acceptance record itself stays as computed
+                elif k in ('acceptance', 'missing', 'available', 'feasible'):
+                    continue                                   # acceptance record and structural presence flags stay                                   # the acceptance record itself stays as computed
                 elif isinstance(o[k], bool) or k == 'G4':      # every verdict / predicate boolean of the job
                     o[k] = None
                 else:
@@ -536,10 +536,13 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                                       if v['state'] == 'matched'),
                no_panel_failures=not out['panel_failures'],
                primary_unions_resolved=all(not h['union']['unresolved_families'] for h in out['H43'].values()),
+               mesh_unions_resolved=all(not union_of(row)['unresolved_families'] for h in out['H43'].values()
+                                        for row in h['per_mesh'].values()),
                cohort=res['cohort']['seed'] == 923801 and sorted(cases) == list(range(64)))
     acc['integrity_ok'] = bool(acc['complete_flag'] and acc['K4'] and acc['G5'] and acc['cohort'])
     acc['coverage_complete'] = bool(acc['every_rom_every_mesh'] and acc['every_rom_scored'] and acc['every_mesh_panel_valid'] and acc['match_panels_valid']
-                                    and acc['no_panel_failures'] and acc['primary_unions_resolved'])
+                                    and acc['no_panel_failures'] and acc['primary_unions_resolved']
+                                    and acc['mesh_unions_resolved'])
     acc['accepted_for_claims'] = acc['integrity_ok']
     out['acceptance'] = acc
     if not acc['integrity_ok']:

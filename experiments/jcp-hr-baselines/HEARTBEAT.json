@@ -1,14 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T09:11:23Z",
- "step": "phase I done up to the second smoke; awaiting coordinator release (smk2 staged and job-audited SUBMIT; phase II not started)",
+ "utc": "2026-10-18T09:12:48Z",
+ "step": "phase II prep: smk2 submitted (5422908); implementing NNLS updating QR (A18.5); design audit 14 next",
  "waiting_on": {
-  "slurm_jobs": [],
+  "slurm_jobs": [
+   "5422908"
+  ],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": null,
+ "expected_finish_utc": "2026-10-18T10:32:48Z",
  "last_commit": "736506551",
  "gpu_hours_spent": 0.878,
  "gpu_hours_cap": 30,

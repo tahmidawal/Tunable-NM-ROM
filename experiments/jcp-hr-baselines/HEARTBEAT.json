@@ -1,18 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T14:14:33Z",
- "step": "A38: blocked QR deletion + per-path NNLS budget (t3d64a cancelled for Givens cost); gate suite test15 (with G-qrdel) running; code audit 28 (NNLS change) running; t2d1024a 5508660 RUNNING (Stage A r=256)",
+ "utc": "2026-10-18T14:20:04Z",
+ "step": "code audit 28 NOT READY -> A39 (deadline inside LH loop, sign-normalised refactor, wider G-qrdel); gate suite test16 + code audit 29 running; t2d1024a 5508660 RUNNING (Stage A)",
  "waiting_on": {
   "slurm_jobs": [
    5508660
   ],
-  "codex_output": "audits/codex-code-28.md",
+  "codex_output": "audits/codex-code-29.md",
   "codex_pid": [
-   2836376
+   2857535
   ],
-  "local_pid": 2835577
+  "local_pid": 2856789
  },
- "expected_finish_utc": "2026-10-18T15:14:33Z",
+ "expected_finish_utc": "2026-10-18T15:20:04Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

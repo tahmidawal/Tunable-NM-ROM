@@ -441,8 +441,10 @@ def main():
         h_acc_n={k: dict(outcome=v['outcome'], pairs={p: {kk: vv for kk, vv in x.items() if kk != 'd'} for p, x in v.get('pairs', {}).items()},
                          trend=v.get('trend'), abs_error_medians=v.get('abs_error_medians')) for k, v in res['h_acc_n'].items()},
         h_acc_r=res['h_acc_r'],
+        accuracy_common_population_definition=dict(sub16='dev6 cases 0-5 + val32 cases 0-9 (16 cases)', own='the configuration\'s own case set',
+                                                   S='BE only, median over S-eligible cases; not S-eligible: dev6|1, val32|21, val32|24'),
         accuracy_common_population={k: dict(e0_median_sub16=v['e0_median_sub16'], e0_median_own=v['e0_median'], cases_own=v['cases'],
-                                            e0_S_median_eligible=v.get('e0_S_median_eligible'))
+                                            e0_S_median_eligible=v.get('e0_S_median_eligible'), S_not_eligible=v.get('S_not_eligible'))
                                     for k, v in res['configurations'].items()},
         p1e=dict(two_d=res['p1e'].get('2d_judged'), three_d=res['p1e'].get('3d_judged'),
                  note='2D registered failing rule gauss64 passed both bars against gauss96 (pre-data expectation wrong)'),

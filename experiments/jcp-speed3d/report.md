@@ -7,7 +7,7 @@
 - **H2 vs C_old:** winner M2_512 gl24, FS-K1 BDF2, $\Delta t = 0.0125$; speed-up screened 2.00×, confirmed 2.01× → **pass** (bar $1/0.6\approx1.67$).
 - **H2 vs C_W768:** winner M2_512 gl24, QN-4 CN, $\Delta t = 0.01667$; speed-up screened 5.22×, confirmed 5.37× → **pass** (bar $1/0.6\approx1.67$).
 - **H2 vs C_W1024:** winner M2_512 gl24, FS-K1 BDF2, $\Delta t = 0.0125$; speed-up screened 16.8×, confirmed 17.2× → **pass** (bar $1/0.6\approx1.67$).
-- **Against the full simulation (route 4, L = 384):** K2 of the governing plan **FIRES** — no selected ROM reaches 2× against the best matched FOM (the union of families). Matched speed-ups use a finite FOM ladder: an upper bound on optimal FOM cost, hence an **upper bound on the claimed ROM speed-up**.
+- **Against the full simulation (route 4, $L=384$):** K2 of the governing plan **FIRES** — no selected ROM reaches 2× against the best matched FOM (the union of families). Matched speed-ups use a finite FOM ladder: an upper bound on optimal FOM cost, hence an **upper bound on the claimed ROM speed-up**.
 
 | hypothesis / criterion | outcome (counts over cells) |
 |---|---|
@@ -209,7 +209,7 @@ K5 control (coarse-rule projection must fail for at least one setting): fires.
 | W_C_old | 16 | 0.359 | 44.5 | exact (1.21e-14) | yes | yes | yes | yes |
 | W_C_old | 64 | 1.45 | 44.1 | exact (1.24e-14) | yes | yes | yes | yes |
 
-Throughput at B = 16 over B = 1: C_old 0.971× (misses the 2× bar); W_C_W768 3.94× (meets the 2× bar); W_C_old 1.29× (misses the 2× bar).
+Throughput at $B=16$ over $B=1$: C_old 0.971× (misses the 2× bar); W_C_W768 3.94× (meets the 2× bar); W_C_old 1.29× (misses the 2× bar).
 
 ![batching](plots/batching.png)
 
@@ -232,7 +232,7 @@ Screening FOM matches from the f1 ladder (cheapest calibrated FOM whose median *
 
 m1 acceptance: complete_flag yes, K4 yes, G5 yes, every_rom_every_mesh yes, every_rom_scored yes, every_mesh_panel_valid yes, match_panels_valid yes, no_panel_failures yes, primary_unions_resolved yes, mesh_unions_resolved yes, same_mesh_foms_complete yes, cohort yes, integrity_ok yes, coverage_complete yes, accepted_for_claims yes.
 
-G5 (tables at n = 65 equal Step 2's) and K7 (n = 66 differs): M2|512: A_rel 1.33e-15, K7_rel 0.0235, gate yes; W1024|256: A_rel 1.06e-15, K7_rel 0.0235, gate yes; W1024|1024: A_rel 1.75e-15, K7_rel 0.0235, gate yes.
+G5 (tables at $n=65$ equal Step 2's) and K7 (tables at $n=66$ differ): M2|512: A_rel 1.33e-15, K7_rel 0.0235, gate yes; W1024|256: A_rel 1.06e-15, K7_rel 0.0235, gate yes; W1024|1024: A_rel 1.75e-15, K7_rel 0.0235, gate yes.
 
 Test-mode lists in m1 follow the **deployment policy (mode set varies with mesh)**: at every mesh the $4R'$ lowest discrete-Laplacian modes of that mesh, completed to the end of the eigen-shell. Per $R'$: $M$ at each mesh and the size of the symmetric difference against the frozen list taken at $n = 65$ (`modes_diff.py`). No fixed-mode panel was run, so the flat-cost result (H4.1) is a statement about this deployment policy, not about a fixed test space.
 
@@ -271,7 +271,7 @@ ROM (mesh-free path) per mesh: eligibility at that mesh (E-a, E-b, E-c against t
 | W_C_W768 | 28.4 | 28.9 | 28.7 | 28.6 | 1.02 | pass |
 | W_C_old | 29.2 | 31.9 | 30.3 | 29.7 | 1.09 | pass |
 
-**H4.2** same-mesh diagnostic (not an equal-accuracy claim; FOM errors on the first cases listed; speed-up = FOM time / ROM time per ROM in the order C_W1024, C_old, W_C_W768, W_C_old; valid panels only):
+**H4.2** same-mesh diagnostic (not an equal-accuracy claim; FOM errors on the first cases listed; speed-up $=t_{\rm FOM}/t_{\rm ROM}$ per ROM in the order C_W1024, C_old, W_C_W768, W_C_old; valid panels only):
 
 | L | family\|Δt | calibrated configuration | calibration | converged | scored/cases | median | worst | FOM time (s) | speed-ups |
 |---|---|---|---|---|---|---|---|---|---|
@@ -284,7 +284,7 @@ ROM (mesh-free path) per mesh: eligibility at that mesh (E-a, E-b, E-c against t
 | 384 | UB\|0.01 | fd\|UB\|L384\|0.01\|t1 | qualified | yes | 8/8 | 0.0255 | 0.0484 | 9.34 | 17.8, 151, 335, 318 |
 | 384 | CC\|0.01 | fd\|CC\|L384\|0.01\|t1 | qualified | yes | 8/8 | 0.00403 | 0.00583 | 7.46 | 14.3, 123, 268, 252 |
 
-**H4.3** matched-accuracy speed-up at n = 65, mesh path (A6; paired `match|<label>` panel; ROM speed-up = $t_{\rm FOM}/t_{\rm ROM}$; below 1 is a loss):
+**H4.3** matched-accuracy speed-up at $n=65$, mesh path (A6; paired `match|<label>` panel; ROM speed-up = $t_{\rm FOM}/t_{\rm ROM}$; below 1 is a loss):
 
 | ROM | family | matched FOM | speed-up | ≥ 2× | label |
 |---|---|---|---|---|---|
@@ -309,7 +309,7 @@ ROM (mesh-free path) per mesh: eligibility at that mesh (E-a, E-b, E-c against t
 | W_C_old | PS | ps\|N16\|0.025 | 0.133 | no | upper bound (finite FOM ladder); boundary (cheapest admissible member) |
 | W_C_old | **union** | ps\|N16\|0.025 | 0.133 | no | cheapest matched FOM over families |
 
-**H-comp cells (V3-5) at the largest mesh L = 384** (✓ = matched there and $\ge 2\times$; the matched FOM keeps its own resolution, the ROM runs at this mesh, and 'matched' is re-checked against this mesh's ROM errors):
+**H-comp cells (V3-5) at the largest mesh $L=384$** (✓ = matched there and $\ge 2\times$; the matched FOM keeps its own resolution, the ROM runs at this mesh, and 'matched' is re-checked against this mesh's ROM errors):
 
 | ROM | upwind/BE | upwind/CN-R | central/CN-R | spectral | union |
 |---|---|---|---|---|---|
@@ -318,7 +318,7 @@ ROM (mesh-free path) per mesh: eligibility at that mesh (E-a, E-b, E-c against t
 | W_C_W768 | no ladder match | no ladder match | 2.03 ✓ | 0.158 | 0.158 |
 | W_C_old | no ladder match | no ladder match | 1.68 | 0.135 | 0.135 |
 
-Cells reaching $\ge 2\times$ at L = 384: W_C_W768 vs CC. Matched cells below 2×: C_W1024 vs CC, C_W1024 vs PS, C_old vs CC, C_old vs PS, W_C_W768 vs PS, W_C_old vs CC, W_C_old vs PS. No ladder member as accurate as the ROM (nothing claimed for these cells; a FOM outside the ladder would be needed): C_W1024 vs UB, C_W1024 vs UC, C_old vs UB, C_old vs UC, W_C_W768 vs UB, W_C_W768 vs UC, W_C_old vs UB, W_C_old vs UC. Against the union of families (the best validated FOM): C_W1024 0.00786×; C_old 0.0701×; W_C_W768 0.158×; W_C_old 0.135×.
+Cells reaching $\ge 2\times$ at $L=384$: W_C_W768 vs CC. Matched cells below 2×: C_W1024 vs CC, C_W1024 vs PS, C_old vs CC, C_old vs PS, W_C_W768 vs PS, W_C_old vs CC, W_C_old vs PS. No ladder member as accurate as the ROM (nothing claimed for these cells; a FOM outside the ladder would be needed): C_W1024 vs UB, C_W1024 vs UC, C_old vs UB, C_old vs UC, W_C_W768 vs UB, W_C_W768 vs UC, W_C_old vs UB, W_C_old vs UC. Against the union of families (the best validated FOM): C_W1024 0.00786×; C_old 0.0701×; W_C_W768 0.158×; W_C_old 0.135×.
 
 **K2 (governing plan): FIRES** — scoped to this lane's selected 3D configurations and its finite FOM ladder.
 
@@ -480,6 +480,7 @@ Job 5353792 (NVIDIA H200), integrity yes; replication only (nothing selected on 
 | codex-job-smoke1.md | see file |
 | codex-report-1.md | NOT READY |
 | codex-report-2.md | NOT READY |
+| codex-report-3.md | NOT READY |
 | codex-results-1.md | NOT READY |
 | codex-results-2.md | NOT READY |
 | codex-results-3.md | READY |
@@ -495,7 +496,7 @@ Job 5353792 (NVIDIA H200), integrity yes; replication only (nothing selected on 
 - **gl32, lat65536** — quadrature rules: Gauss–Legendre with 32 points per axis; lattice rule with 65,536 points.
 - **BE, CN, BDF2** — time-stepping schemes: backward Euler (first order), Crank–Nicolson (second order, trapezoidal) and BDF2 (second-order backward differentiation formula, which uses the two previous states; started with one BE step).
 - **IMEX** — implicit–explicit: an initial guess that treats advection explicitly (extrapolated) and the linear terms implicitly.
-- **IC** — initial condition (the field at t = 0).
+- **IC** — initial condition (the field at time $t=0$).
 - **A_rel, K7_rel** — G5/K7 numbers: relative Frobenius difference of the ROM test-matrix A built at mesh 65 against Step 2's (must be at rounding level), and of the mesh-66 matrix against mesh 65 (must be large).
 - **calibration (FOM)** — tolerance qualification: the loosest of three Newton/linear-solver tolerance levels whose outputs agree with the tightest within 1e-6 on cases 0–3; "qualified" if one exists.
 - **converged (FOM)** — every time stage of every case met its Newton residual tolerance.
@@ -517,11 +518,11 @@ Job 5353792 (NVIDIA H200), integrity yes; replication only (nothing selected on 
 - **median / worst** — median and maximum, over the ranked (reference-eligible) cases of the cohort and case subset named in that table, of the max-over-output-times relative error on the scoring lattice.
 - **ties-or-beats** — not resolved as worse: $\mathrm{median}(e_a-\eta)\le\mathrm{median}(e_b+\eta)$, and the same for the maximum.
 - **screening ratio** — median paired time ratio to C_old inside each grid job.
-- **confirmed** — from a direct A–B–A panel in one job. H1.4/H2: A = comparator (or FS-K2 / B*), B = selected configuration, 8 cases × 3 repetitions, speed-up = 1 / ratio. Route 4: A = ROM, B = FOM, 4 cases × 2 repetitions (A2.7(a)), speed-up = ratio = FOM time / ROM time.
+- **confirmed** — from a direct A–B–A panel in one job. H1.4/H2: A = comparator (or FS-K2 / B*), B = selected configuration, 8 cases × 3 repetitions, speed-up $S=1/\text{ratio}$. Route 4: A = ROM, B = FOM, 4 cases × 2 repetitions (A2.7(a)), speed-up $=\text{ratio}=t_{\rm FOM}/t_{\rm ROM}$.
 - **prepared-input latency** — warm query time with the inputs already on the device in each method's own format; preparation is reported separately.
 - **C_old, C_W768, C_W1024** — comparators: the deployed BE configurations of M2_512, W768, W1024.
 - **W*, B*** — H2 winner (cheapest eligible configuration that ties-or-beats C) and best BE configuration doing so.
-- **S** — speed-up = cost(comparator) / cost(selected).
+- **S** — speed-up $S=\mathrm{cost}(\text{comparator})/\mathrm{cost}(\text{selected})$.
 - **mesh-free path** — projection by quadrature at the rule points and decoding only at the scoring lattice.
 - **G-gates, K-controls, T1** — consistency gates and controls that must fail (DESIGN §7); T1 = C_old run twice must cost 1.8–2.2×.
 - **F-UB, F-UC, F-CC, F-PS** — full-order families: upwind+BE, upwind+CN-R, central+CN-R finite differences, sine pseudo-spectral ETDRK4.

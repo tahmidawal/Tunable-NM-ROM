@@ -266,7 +266,7 @@ def main():
             w(f"- H2 vs {c} (screening only): winner {pretty(v['winner'])}, $S$ = {f(v['S_screen'])}×.")
     if m1:
         cells = m1['Hcomp_largest_mesh']
-        w(f"- **Against the full simulation (route 4, L = {cells['L']}):** K2 of the governing plan "
+        w(f"- **Against the full simulation (route 4, $L={cells['L']}$):** K2 of the governing plan "
           f"**{m1['K2'].upper() if m1['K2'] == 'fires' else m1['K2']}** — "
           + ('no selected ROM reaches 2× against the best matched FOM (the union of families). ' if m1['K2_fires'] else '')
           + 'Matched speed-ups use a finite FOM ladder: an upper bound on optimal FOM cost, hence an **upper bound on the '
@@ -440,7 +440,7 @@ def main():
         w('')
         w(table(['label', 'B', 'median s', 'cases/s', 'G4 (max distance)', 'K6 fires', 'K6+ passes', 'hashes', 'usable'], rows))
         w('')
-        w('Throughput at B = 16 over B = 1: ' + '; '.join(
+        w('Throughput at $B=16$ over $B=1$: ' + '; '.join(
             f"{l_} {f(v['throughput_16_over_1'])}× (" + ('2× bar unavailable' if v['bar_2x'] is None else ('meets the 2× bar' if v['bar_2x'] else 'misses the 2× bar')) + ')'
             for l_, v in p1['H33'].items()) + '.')
         w('')
@@ -470,7 +470,7 @@ def main():
     if m1:
         w(f"m1 acceptance: {', '.join(f'{k} {f(v)}' for k, v in m1['acceptance'].items())}.")
         w('')
-        w(f"G5 (tables at n = 65 equal Step 2's) and K7 (n = 66 differs): " + '; '.join(
+        w(f"G5 (tables at $n=65$ equal Step 2's) and K7 (tables at $n=66$ differ): " + '; '.join(
             f"{k}: A_rel {f(v['A_rel'])}, K7_rel {f(v['K7_rel'])}, gate {f(v['gate'])}" for k, v in m1['G5'].items()) + '.')
         w('')
         md_ = jl(CH / 'modes-diff.json')
@@ -510,7 +510,7 @@ def main():
                              f"{fv.get('scored', '–')}/{fv.get('n_cases', '–')}", f(fv.get('median')), f(fv.get('worst')), f(fv.get('seconds_warm')),
                              ', '.join(f(x) for x in sps)])
         w('**H4.2** same-mesh diagnostic (not an equal-accuracy claim; FOM errors on the first cases listed; '
-          'speed-up = FOM time / ROM time per ROM in the order ' + ', '.join(m1['H41']) + '; valid panels only):')
+          'speed-up $=t_{\\rm FOM}/t_{\\rm ROM}$ per ROM in the order ' + ', '.join(m1['H41']) + '; valid panels only):')
         w('')
         w(table(['L', 'family|Δt', 'calibrated configuration', 'calibration', 'converged', 'scored/cases', 'median', 'worst', 'FOM time (s)', 'speed-ups'], rows))
         w('')
@@ -523,7 +523,7 @@ def main():
             rows.append([l_, '**union**', (u or {}).get('matched') or '–', f((u or {}).get('speedup')), f((u or {}).get('reaches_2x')),
                          'cheapest matched FOM over families' + (f" (upper bound; unresolved: {', '.join(u['unresolved_families'])})"
                                                                  if u and u.get('unresolved_families') else '')])
-        w('**H4.3** matched-accuracy speed-up at n = 65, mesh path (A6; paired `match|<label>` panel; ROM speed-up = '
+        w('**H4.3** matched-accuracy speed-up at $n=65$, mesh path (A6; paired `match|<label>` panel; ROM speed-up = '
           '$t_{\\rm FOM}/t_{\\rm ROM}$; below 1 is a loss):')
         w('')
         w(table(['ROM', 'family', 'matched FOM', 'speed-up', '≥ 2×', 'label'], rows))
@@ -540,7 +540,7 @@ def main():
             r = f(u['speedup']) + (' ✓' if u.get('reaches_2x') else '')
             return r + (f" (upper bound; unresolved: {', '.join(u['unresolved_families'])})" if u.get('unresolved_families') else '')
         rows = [[l_] + [cell(c[x]) for x in ('UB', 'UC', 'CC', 'PS')] + [ucell(c['union'])] for l_, c in hc['cells'].items()]
-        w(f"**H-comp cells (V3-5) at the largest mesh L = {hc['L']}** (✓ = matched there and $\\ge 2\\times$; the matched FOM keeps its "
+        w(f"**H-comp cells (V3-5) at the largest mesh $L={hc['L']}$** (✓ = matched there and $\\ge 2\\times$; the matched FOM keeps its "
           "own resolution, the ROM runs at this mesh, and 'matched' is re-checked against this mesh's ROM errors):")
         w('')
         w(table(['ROM', 'upwind/BE', 'upwind/CN-R', 'central/CN-R', 'spectral', 'union'], rows))
@@ -548,7 +548,7 @@ def main():
         yes = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('reaches_2x')]
         no = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('reaches_2x') is False]
         nm = [f"{l_} vs {x}" for l_, c in hc['cells'].items() for x in ('UB', 'UC', 'CC', 'PS') if c[x].get('state') == 'no ladder match']
-        w(f"Cells reaching $\\ge 2\\times$ at L = {hc['L']}: {', '.join(yes) or 'none'}. Matched cells below 2×: {', '.join(no) or 'none'}. "
+        w(f"Cells reaching $\\ge 2\\times$ at $L={hc['L']}$: {', '.join(yes) or 'none'}. Matched cells below 2×: {', '.join(no) or 'none'}. "
           f"No ladder member as accurate as the ROM (nothing claimed for these cells; a FOM outside the ladder would be needed): {', '.join(nm) or 'none'}. "
           "Against the union of families (the best validated FOM): " + '; '.join(
               f"{l_} {f(c['union']['speedup'])}×" for l_, c in hc['cells'].items()) + '.')
@@ -628,7 +628,7 @@ def main():
         ('gl32, lat65536', 'quadrature rules: Gauss–Legendre with 32 points per axis; lattice rule with 65,536 points.'),
         ('BE, CN, BDF2', 'time-stepping schemes: backward Euler (first order), Crank–Nicolson (second order, trapezoidal) and BDF2 (second-order backward differentiation formula, which uses the two previous states; started with one BE step).'),
         ('IMEX', 'implicit–explicit: an initial guess that treats advection explicitly (extrapolated) and the linear terms implicitly.'),
-        ('IC', 'initial condition (the field at t = 0).'),
+        ('IC', 'initial condition (the field at time $t=0$).'),
         ('A_rel, K7_rel', 'G5/K7 numbers: relative Frobenius difference of the ROM test-matrix A built at mesh 65 against Step 2\'s (must be at rounding level), and of the mesh-66 matrix against mesh 65 (must be large).'),
         ('calibration (FOM)', 'tolerance qualification: the loosest of three Newton/linear-solver tolerance levels whose outputs agree with the tightest within 1e-6 on cases 0–3; "qualified" if one exists.'),
         ('converged (FOM)', 'every time stage of every case met its Newton residual tolerance.'),
@@ -651,12 +651,12 @@ def main():
         ('ties-or-beats', 'not resolved as worse: $\\mathrm{median}(e_a-\\eta)\\le\\mathrm{median}(e_b+\\eta)$, and the same for the maximum.'),
         ('screening ratio', 'median paired time ratio to C_old inside each grid job.'),
         ('confirmed', 'from a direct A–B–A panel in one job. H1.4/H2: A = comparator (or FS-K2 / B*), B = selected configuration, '
-                      '8 cases × 3 repetitions, speed-up = 1 / ratio. Route 4: A = ROM, B = FOM, 4 cases × 2 repetitions (A2.7(a)), '
-                      'speed-up = ratio = FOM time / ROM time.'),
+                      '8 cases × 3 repetitions, speed-up $S=1/\\text{ratio}$. Route 4: A = ROM, B = FOM, 4 cases × 2 repetitions '
+                      '(A2.7(a)), speed-up $=\\text{ratio}=t_{\\rm FOM}/t_{\\rm ROM}$.'),
         ('prepared-input latency', 'warm query time with the inputs already on the device in each method\'s own format; preparation is reported separately.'),
         ('C_old, C_W768, C_W1024', 'comparators: the deployed BE configurations of M2_512, W768, W1024.'),
         ('W*, B*', 'H2 winner (cheapest eligible configuration that ties-or-beats C) and best BE configuration doing so.'),
-        ('S', 'speed-up = cost(comparator) / cost(selected).'),
+        ('S', 'speed-up $S=\\mathrm{cost}(\\text{comparator})/\\mathrm{cost}(\\text{selected})$.'),
         ('mesh-free path', 'projection by quadrature at the rule points and decoding only at the scoring lattice.'),
         ('G-gates, K-controls, T1', 'consistency gates and controls that must fail (DESIGN §7); T1 = C_old run twice must cost 1.8–2.2×.'),
         ('F-UB, F-UC, F-CC, F-PS', 'full-order families: upwind+BE, upwind+CN-R, central+CN-R finite differences, sine pseudo-spectral ETDRK4.'),

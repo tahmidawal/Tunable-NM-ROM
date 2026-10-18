@@ -813,3 +813,4 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 
 * Glossary adds IMEX, IC, A_rel/K7_rel, FOM calibration and convergence, and explains BDF2; math in prose (time steps,
   $\varepsilon_{\rm ref}$, $R'$, $4R'$, $n=L+1$) is in LaTeX; table identifiers stay literal.
+* (A28, round 3) remaining prose expressions ($n=65$, $n=66$, $t=0$, $L$, speed-up definitions) converted to LaTeX.

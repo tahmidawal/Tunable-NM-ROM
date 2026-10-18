@@ -1,14 +1,15 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T11:07:41Z",
- "step": "phase II prep: 2D tune + Stage-B + analyze dry runs PASSED; design audit 18 NEEDS-RESTATEMENT (no WRONG) -> A28 applied; 3D tune dry run running; next: gate suite, code audit 20, design audit 19",
+ "utc": "2026-10-18T12:15:34Z",
+ "step": "3D tune dry run PASSED (44 complete; 12 construction_failed = CPU memory-telemetry fail-closed, now dry-exempt; G-ours 9.6e-14). Adding 3D batch 2 (jcp-qualify Q2) via speed3d s3common adapter; CPU replay test running; next: gate suite, code audit 20, design audit 19",
  "waiting_on": {
   "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": [],
-  "local_pid": 2294643
+  "local_pid": 2483571,
+  "note": "CPU replay test (background shell b2mnwxssv)"
  },
- "expected_finish_utc": "2026-10-18T11:57:41Z",
+ "expected_finish_utc": "2026-10-18T12:35:34Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

@@ -1564,3 +1564,23 @@ commit that contains the file. Both are recorded.
 **A28.7 Scope of design acceptance.** Design acceptance (A26.7) satisfies A19.4(a) only. Production release also needs,
 recorded against exact revisions: the updating-QR code audit and the source-pinned CPU gate suite (A19.4b), the
 regenerated resource artifact (`checks/RESOURCES-tune.json`, A26.4) and the amended smk2 acceptance (A24.1 rules).
+
+---
+
+## Amendment A29 (2026-10-18) — 3D batch 2 (jcp-qualify Q2) and speed3d's own query code
+
+**A29.1 Batch 2 (coordinator, 2026-10-18: "use these for any 3D qualified comparison").** jcp-qualify `runs/EXPORT.json`
+(`threeD`, round limit reached, commit 4399491eb; tested-pass entries) qualifies exactly four 3D configurations under
+Q1 + Q2: `W256|gl24|fs|CN|0.01|K1`, `W256|gl24|fs|CN|0.0125|K1`, `W256|lat8192|qn|BDF2|0.025|k4`,
+`W512|lat16384|qn|BDF2|0.025|k4`. Each uses a registered baseline option (CN at Δt₀ and 1.25 Δt₀; BDF2 at 2.5 Δt₀), so all
+four are admitted as **batch 2**, the only **qualified** 3D comparison ("qualified subset of the tested candidates,
+never a completeness claim", as jcp-qualify labels it). Batch 1 (A21.2) stays diagnostic-only. Per-case E0 on
+923801 (all 64 cases) come from speed3d `checks/scores-g1/g2.json` at 691465d88 (the jobs that produced them),
+added to `inputs/speed3d_batch1_e0.json` with `batch = 2`; source hashes unchanged. Batch 2 is screened in the same
+tuning job (no separate pass is needed, A21.3 (i)–(iv) are satisfied by construction, as it is registered before
+any production data).
+
+**A29.2 Query code.** Every 3D comparator now runs through speed3d's own query, `s3common.make_query(spec, Setting,
+'mesh')` with `Setting.data(rule)`, using byte-identical copies of `s3common.py`, `qn3.py`, `fs3p.py` (speed3d
+691465d88; INHERITED.json), replacing the c3common-based adapter (which cannot run the quasi-Newton `qn` arms). Timed
+input: the 63³ interior IC; output: the six lattice fields. G-ours (1e-10 relative, timing cases) is the gate.

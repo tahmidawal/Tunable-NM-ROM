@@ -116,6 +116,38 @@ class OursP1:
         return jnp.asarray(self.P1.Q.e.initial(self.L, fam.D[j]))
 
 
+
+class OursS3:
+    """3D comparators through speed3d's own query (s3common.make_query, mesh path; byte-identical s3common / qn3 /
+    fs3p, INHERITED.json): Setting(bank, R', a, trust 0.05 x spread) built as speed3d test_s3.py does, the rule's data
+    from Setting.data, single-member batch (u0 (1, 63^3), nu (1,)). Keys '<setting>|<rule>|<spec>' as speed3d's
+    (fs|scheme|dt|K<k> or qn|scheme|dt|k<k>)."""
+
+    def __init__(self, setting, rule, log=print):
+        import c3common as C3c
+        import s3common as S
+        self.S, self.C3c = S, C3c
+        t0 = time.perf_counter()
+        bank, Rp, a = S3_SETTINGS[setting]
+        b = C3c.load_bank(bank)
+        tb = C3c.Tables(65, b, [Rp], log=lambda *a_: None)
+        self.st = S.Setting(dict(name=setting, bank=bank, Rp=Rp, a=a), {bank: b}, {bank: tb}, S.load_rules([rule]))
+        self.data = self.st.data(rule)
+        self.setup_seconds = time.perf_counter() - t0
+        log(f'   oursS3: {setting} {rule} in {self.setup_seconds:.1f}s')
+
+    def fn(self, key):
+        sp = self.S.parse_key('|'.join(key.split('|')[2:]))
+        q = self.S.make_query(sp, self.st, path='mesh')
+        return lambda u0, nu: q(u0, jnp.reshape(jnp.asarray(nu, jnp.float64), (1,)), self.data)
+
+    def lattice(self, out):
+        return np.asarray(out['fields'])[0].reshape(6, -1)
+
+    def u0(self, fam, j):
+        return jnp.asarray(H.C3.initial_interior(65, fam.T, j))[None]
+
+
 def check_assets(cfg):
     """Pre-submission asset check (staged tree, CPU): every bank, rule, checkpoint and export the tuning job's
     comparators load lazily is present with its pinned hash (c3common.load_bank / load_rules assert sha256)."""
@@ -138,6 +170,9 @@ def check_assets(cfg):
         for k in cfg.get('ours', []):
             st, rule = k.split('|')[:2]
             bank = S3_SETTINGS[st][0]
-            out[k] = (C3c.load_bank(bank)['sha256'][:16], rule in rules, all(str(j) in exp[k]['e0'] for j in range(6)))
+            import s3common as S
+            S.parse_key('|'.join(k.split('|')[2:]))
+            out[k] = (C3c.load_bank(bank)['sha256'][:16], rule in rules and rule in S.load_rules([rule]),
+                      all(str(j) in exp[k]['e0'] for j in range(64)))
             assert out[k][1] and out[k][2], (k, out[k])
     return out

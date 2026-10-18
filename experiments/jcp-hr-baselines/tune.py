@@ -166,13 +166,11 @@ def main():
                     ox_ = oxs['p1']
                     fx = ox_.fn(key)
                 else:
-                    st, rule, kind, scheme, dt, K = key.split('|')
-                    assert kind == 'fs', key
+                    st, rule = key.split('|')[:2]
                     if (st, rule) not in oxs:
-                        bank, Rp, a = OU.S3_SETTINGS[st]
-                        oxs[(st, rule)] = OU.Ours3D(bank, Rp, rule, a=a, log=log)
+                        oxs[(st, rule)] = OU.OursS3(st, rule, log=log)
                     ox_ = oxs[(st, rule)]
-                    fx = ox_.fn(('fs', scheme, float(dt), int(K[1:])))
+                    fx = ox_.fn(key)
             except Exception as e:  # noqa: BLE001
                 rec['error'] = f'{type(e).__name__}: {e}'
                 O.save()
@@ -299,7 +297,7 @@ def main():
         cell.ecsw(r)
         if big:                                        # A26.1: process-cumulative peak after the maximal path
             pk = PL.device_peak()
-            ok = bool(np.isfinite(pk) and 0 <= pk <= 120e9)
+            ok = bool(np.isfinite(pk) and 0 <= pk <= 120e9) or bool(cfg.get('dry') and pk == -1)   # CPU dry run: no telemetry
             O.res['memory_admission'] = dict(peak_after=pk, limit=120e9, admitted=ok)
             if not ok:
                 cell.ecsw_rec.pop(r, None)

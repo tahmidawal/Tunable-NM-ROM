@@ -171,12 +171,11 @@ def main():
                 if d == 2:
                     o_, fx = ox, ox.fn(key)
                 else:
-                    st_, rule, kind, scheme, dt, K = key.split('|')
+                    st_, rule = key.split('|')[:2]
                     if (st_, rule) not in oxs:
-                        bank, Rp, a = OU.S3_SETTINGS[st_]
-                        oxs[(st_, rule)] = OU.Ours3D(bank, Rp, rule, a=a, log=log)
+                        oxs[(st_, rule)] = OU.OursS3(st_, rule, log=log)
                     o_ = oxs[(st_, rule)]
-                    fx = o_.fn(('fs', scheme, float(dt), int(K[1:])))
+                    fx = o_.fn(key)
                 for t in timing:
                     c, j = t.split('|')
                     u, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))

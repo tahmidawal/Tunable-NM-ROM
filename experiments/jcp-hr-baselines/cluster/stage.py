@@ -18,7 +18,7 @@ NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-hrb'
 E0_STORE = '/cluster/tufts/paralab/tawal01/jcp-ref/store'
 VQ, V3 = f'{LANE}/vendor/quad2d', f'{LANE}/vendor/quad3d'
 FILES = [f'{LANE}/{f}' for f in ('hrcore.py', 'rom.py', 'build.py', 'nnls.py', 'pipeline.py', 'score.py', 'stats.py',
-                                  'smoke.py', 'ours.py', 't2core.py', 'c2common.py', 'c3common.py', 'fs3.py',
+                                  'smoke.py', 'ours.py', 't2core.py', 's3common.py', 'qn3.py', 'fs3p.py', 'c2common.py', 'c3common.py', 'fs3.py',
                                   'e0/refcore.py', 'e0/refstore.py', 'e0/verdict.py', 'e0/cohorts.py',
                                   'e0/store/MANIFEST.sha256', 'e0/store/STATUS.json', 'inputs/model_W1024/bank.pkl',
                                   'rules3d/rules_extra.npz', 'rules3d/rules_gl96.npz', 'rules3d/rules_gl112.npz',
@@ -116,7 +116,7 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
 '''
     (out / 'run.sbatch').write_text(script)
     env = dict(os.environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='')
-    chk = (f'import sys, {a.driver}, ours, c2common, c3common, p1common; staged = {str(out)!r}; '
+    chk = (f'import sys, {a.driver}, ours, c2common, c3common, p1common, s3common; staged = {str(out)!r}; '
            'mods = [m.__file__ for m in list(sys.modules.values()) if getattr(m, "__file__", None) and "/experiments/" in m.__file__]; '
            'bad = [f for f in mods if not f.startswith(staged)]; assert not bad, bad; print(len(mods), "lane modules from the staged tree")')
     r_ = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env, capture_output=True, text=True)

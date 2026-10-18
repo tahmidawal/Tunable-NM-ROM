@@ -1,7 +1,7 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:24:36Z",
- "step": "t3d64a/t2d1024a RUNNING (~17 min, no ERR); Stage-B chain READY (code audit 27); 2D dry chain via jaxslot; next: collect t2d1024a, stage t2d256 + job audit, write make_report.py",
+ "utc": "2026-10-18T13:42:38Z",
+ "step": "t3d64a (ecsw_r128 done) + t2d1024a (ecsw_r256 done) RUNNING ~35 min, no ERR; Stage-B chain READY; dry chain CHAIN-OK",
  "waiting_on": {
   "slurm_jobs": [
    5508653,
@@ -9,9 +9,9 @@
   ],
   "codex_output": null,
   "codex_pid": [],
-  "local_pid": 2658125
+  "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T17:24:36Z",
+ "expected_finish_utc": "2026-10-18T17:42:38Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

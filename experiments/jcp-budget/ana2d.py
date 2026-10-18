@@ -501,6 +501,22 @@ def main():
     out['coverage'] = dict(configured=conf, missing=[k for k in conf if k not in prod], extra=[k for k in prod if k not in conf],
                            star_missing=[r_ for r_ in sorted({int(m['Rp']) for m in cfg['members']}) if f'R{r_}' not in res['b2']])
     out['coverage']['case_or_corner_inventory_differs'] = case_cov_bad
+    # G-B6 offline: the saved logical tuple of every corner of every member against the configuration
+    g6 = []
+    for m in cfg['members']:
+        mk_ = f"R{m['Rp']}|{m['form']}|{m['scheme']}|{float(m['factor']):g}"
+        saved = next((rr['members'][mk_]['tuples'] for rr in res['b2'].values() if mk_ in rr['members']), None)
+        exp = []
+        for S in subsets_of(cfg['b2'].get('design', 'pairwise')):
+            form = {'LSPG': 'GAL', 'GAL': 'LSPG'}[m['form']] if 'F' in S else m['form']
+            sc, dt = ('BDF2', .005 / 8) if 'T' in S else (m['scheme'], .005 * float(m['factor']))
+            exp.append(dict(S=skey(S), role='qinf' if 'Q' in S else 'main', form=form, scheme=sc, dt=dt,
+                            level='tight' if 'S' in S else 'prod', init='ls' if 'I' in S else 'deployed',
+                            M=2048 if 'M' in S else 4 * int(m['Rp']), rule=cfg['b2']['qinf'] if 'Q' in S else m['rule']))
+        ok = saved is not None and len(saved) == len(exp) and all(
+            all((abs(a_[k] - e_[k]) <= 1e-15) if k == 'dt' else a_[k] == e_[k] for k in e_) for a_, e_ in zip(saved, exp))
+        g6.append(dict(member=mk_, n=len(exp), passed=bool(ok)))
+    G_B6 = dict(members=g6, passed=bool(g6 and all(x['passed'] for x in g6)))
     out['coverage']['passed'] = not (out['coverage']['missing'] or out['coverage']['extra'] or out['coverage']['star_missing']
                                      or case_cov_bad)
     out['gates'] = dict(
@@ -511,7 +527,7 @@ def main():
                   cfg['b2'].get('design') == 'full' else 'not applicable (pairwise design)'),
         G_B3=dict(worst=max(tot['gb3']) if tot['gb3'] else None, n=len(tot['gb3']), missing=tot['gb3_missing'],
                   passed=bool(tot['gb3'] and tot['gb3_missing'] == 0 and max(tot['gb3']) <= 1e-8)),
-        G_B4=gb4, G_B5={k: v.get('G_B5') for k, v in res['setup'].items() if k.startswith('LS')},
+        G_B4=gb4, G_B5={k: v.get('G_B5') for k, v in res['setup'].items() if k.startswith('LS')}, G_B6=G_B6,
         B0_fixtures=out['B0_fixtures']['passed'])
     out['controls'] = controls(run, res, refs)
     ct = out['members'].get('R128|LSPG|BE|1')

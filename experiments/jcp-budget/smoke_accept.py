@@ -76,6 +76,7 @@ def main():
             all(not v['failed'] and v['star_family']['passed'] for v in g['G_B4'].values()),
             {k: dict(failed=v['failed'], star=v['star_family']) for k, v in g['G_B4'].items()})
         add('G-B5 (LS init accepted)', 'gate', bool(g['G_B5']) and all(g['G_B5'].values()), g['G_B5'])
+        add('G-B6 (saved logical tuples of every corner match the configuration)', 'gate', g['G_B6']['passed'], g['G_B6'])
         c = B['controls']
         add('G-B1 (sham switches bitwise)', 'gate', c.get('G_B1', {}).get('passed'), c.get('G_B1'))
         add('C-Q (>= 1 smoke case, valid comparator)', 'control', c['C_Q']['fired'], c['C_Q'])
@@ -94,9 +95,9 @@ def main():
             bool(S7['b7']) and all(v['G_L1']['passed'] for v in S7['b7'].values()), {k: v['G_L1'] for k, v in S7['b7'].items()})
         b8 = S7['b8']
         add('B7 and B8 produced for every CONFIGURED member', 'gate', S7['coverage']['passed'], S7['coverage'])
-        add('C-A (alias: raw detection and classifier, >= 1 case)', 'control',
-            bool(b8) and any(v['C_A']['raw'] for v in b8.values()) and all(all(v['C_A']['raw']) and all(v['C_A']['classifier'])
-                                                                         for v in b8.values() if v['C_A']['raw']),
+        add('C-A (alias: raw detection everywhere; production classifier says inconsistent on >= 1 resolved case)', 'control',
+            bool(b8) and any(v['C_A']['resolved'] for v in b8.values()) and
+            all(all(v['C_A']['raw']) and (v['C_A']['fired'] or not v['C_A']['resolved']) for v in b8.values() if v['C_A']['raw']),
             {k: v['C_A'] for k, v in b8.items()})
         add('C-E (balance closed form)', 'control', bool(b8) and all(v['C_E']['fired'] for v in b8.values()),
             {k: v['C_E'] for k, v in b8.items()})

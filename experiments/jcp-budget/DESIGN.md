@@ -759,3 +759,14 @@ Clarifications and decisions made while fixing the code (none changes a register
   every `sbatch` under the shared cluster flock `/cluster/tufts/paralab/tawal01/.campaign-sbatch.lock` with the account
   count (< 8) checked inside the lock; exit 75 (at cap) releases the reservation. The residual race recorded above is
   closed. Local `jaxrun` jobs go through `campaign/jaxslot.sh` (§13).
+
+## Amendment A5 (2026-10-18): production release recorded
+
+The coordinator released production for jcp-budget (SendMessage, 2026-10-18, quoted): "production is released for
+jcp-budget (including the long-horizon reference generation) as soon as your design/code/smoke gates are clean. Submit
+through the shared campaign sbatch lock (§14; exit 75 = account at cap 8 → retry later). Lane cap 3 concurrent jobs,
+45 GPU-h." Production jobs are staged only after the smoke acceptance passes (`checks/smoke-smk1.json`,
+`checks/smoke-smk2.json` all PASS) and each job's Codex audit says SUBMIT; certificates come from the measured smokes.
+Job-audit 1 of `smk1` (FIX-FIRST) added two acceptance rows before submission: an offline G-B6 check of every saved
+corner tuple against the configuration, and C-A evaluated through the production classifier (≥ 1 resolved case
+classified "inconsistent").

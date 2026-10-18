@@ -271,6 +271,13 @@ def b7_member(run, mk, member, mesh, refs, EL, T, minpop):
                 stability=stability_of(rows, q1['all_valid']), growth=growth_of(rows, nout, minpop))
 
 
+def classify(e2, ef, el, efp):
+    """A1.4 sampling classification of one case-window (the production classifier, also used by C-A)."""
+    if e2 <= 2 * el:
+        return 'reference-limited'
+    return 'consistent' if abs(ef - e2) <= .10 * e2 + 2 * (el + efp) else 'inconsistent'
+
+
 def b8_member(run, mk, EL, T, minpop):
     p = run / f"B8_{mk.replace('|', '_')}.npz"
     if not p.exists():
@@ -295,16 +302,13 @@ def b8_member(run, mk, EL, T, minpop):
             row[w] = dict(e257=e2, efine=ef, s=ef / e2 if e2 > 0 else None, eps257=el, epsfine=efp,
                           eligible=bool(e.get('eligible') and fine_ok), tier=e.get('tier', 'unvalidated (no cross-check)'))
             if row[w]['eligible'] and el is not None and efp is not None:
-                if e2 <= 2 * el:
-                    row[w]['status'] = 'reference-limited'
-                else:
-                    row[w]['status'] = 'consistent' if abs(ef - e2) <= .10 * e2 + 2 * (el + efp) else 'inconsistent'
+                row[w]['status'] = classify(e2, ef, el, efp)
             if np.isfinite(z['alias_efine'][i][a:b + 1]).all() and el is not None and efp is not None:   # C-A (A3.6)
                 ae2 = float(np.max(z['alias_e257'][i][a:b + 1]))
                 aef = float(np.max(z['alias_efine'][i][a:b + 1]))
                 ca_raw.append(bool(abs(ae2 - e2) <= 1e-10 * e2 and aef - e2 > .10 * e2 + 2 * (el + efp)))
-                if e2 > 2 * el:
-                    ca_cls.append(bool(abs(aef - ae2) > .10 * ae2 + 2 * (el + efp)))
+                lab_ = classify(ae2, aef, el, efp)                      # the production classifier on the injected case
+                ca_cls.append(lab_)
         if np.isfinite(z['CE_meas'][i]).all():                                                    # C-E (A2.2)
             meas, pred, zero = z['CE_meas'][i], z['CE_pred'][i], z['CE_zero'][i]
             E0r = float(z['E_ref'][i][0])
@@ -345,7 +349,9 @@ def b8_member(run, mk, EL, T, minpop):
         res[f'adequacy_{w}'] = dict(label=tiered(lab, tier), raw_label=lab, tier=tier,
                                     consistent=sum(x['status'] == 'consistent' for x in used), used=len(used),
                                     reference_limited=sum(x['status'] == 'reference-limited' for x in st_))
-    res['C_A'] = dict(raw=ca_raw, classifier=ca_cls, fired=bool(ca_raw and all(ca_raw) and all(ca_cls)))
+    resolved = [l for l in ca_cls if l != 'reference-limited']
+    res['C_A'] = dict(raw=ca_raw, classifier=ca_cls, resolved=len(resolved), unresolved=len(ca_cls) - len(resolved),
+                      fired=bool(ca_raw and all(ca_raw) and resolved and all(l == 'inconsistent' for l in resolved)))
     res['C_E'] = dict(n=len(ce), fired=bool(ce and all(ce)))
     res['G_D1'] = bool(rows and all(r_['wall_max'] == 0. for r_ in rows))
     return res

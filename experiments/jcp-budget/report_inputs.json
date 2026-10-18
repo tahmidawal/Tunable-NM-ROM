@@ -1,19 +1,39 @@
 {
  "refs": "checks/refs-all.json",
- "budget2d": {"256": ["checks/budget2d-b256-256.json"], "1024": ["checks/budget2d-b1024a-1024.json", "checks/budget2d-b1024b-1024.json"],
-              "4096": ["checks/budget2d-b4096-4096.json"]},
+ "budget2d": {
+  "256": [
+   "checks/budget2d-b256-256.json"
+  ],
+  "1024": [
+   "checks/budget2d-b1024a-1024.json",
+   "checks/budget2d-b1024b-1024.json"
+  ],
+  "4096": [
+   "checks/budget2d-b4096-4096.json"
+  ]
+ },
  "meshcmp": "checks/meshcmp.json",
- "b7b8": {"256": "checks/b7b8-256.json", "1024": "checks/b7b8-1024.json", "4096": "checks/b7b8-4096.json"},
+ "b7b8": {
+  "256": "checks/b7b8-256.json",
+  "1024": "checks/b7b8-1024.json",
+  "4096": "checks/b7b8-4096.json"
+ },
  "b7b8_t1": null,
  "b3": "checks/b3-b3d.json",
  "ledger": "runs/GPU-LEDGER.json",
  "deferred": [
-  {"item": "B8 3D (fine route at 127^3, C-A / C-E in 3D)", "reason": "defer item 2, recorded in A4 (implementation scope)"}
+  {
+   "item": "B8 3D (fine route at 127^3, C-A / C-E in 3D)",
+   "reason": "defer item 2, recorded in A4 (implementation scope)"
+  }
  ],
  "corrections": [
   "G-B2's registered bar (relative to ||u_all - u_0||) was too tight for a 32-term sum; restated relative to the largest corner norm (A6), found on the smoke.",
   "Offline reference identity compares case descriptors, not the cohort hash, because np.exp's last bit differs across numpy versions (A6).",
-  "The first resource certificates under-priced the reference retry path and the pseudo-spectral cross-check; repriced before submission (A7, job audits refs2d-1..3)."
+  "The first resource certificates under-priced the reference retry path and the pseudo-spectral cross-check; repriced before submission (A7, job audits refs2d-1..3).",
+  "The E0 tight re-solve of a refined triple at the round-off floor costs about 27x a production solve at T = 0.5; two reference jobs (ref2b, ref2c) were cancelled, their completed cases kept, and the rerun (ref2r, ref3b) skips that re-solve: such cases are terminal 'unresolved-floor' and non-rankable (A9).",
+  "The first A9 eligibility rule was per window only, so an A9-terminal case with an accepted W2 window would have been rankable; fixed so every window of such a case is ineligible (A9.1, audit codex-job-a9-1).",
+  "The b-job reservations were priced at the time limits; measured run times were 3-7x shorter than the certificates (b3d 0.56 h vs 1.61 h projected; ps jobs 0.3-0.55 h vs 2.29 h)."
  ],
  "audits": []
 }

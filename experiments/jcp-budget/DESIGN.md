@@ -830,3 +830,16 @@ terminal case (`tight_after_refine = false`, refined, whole-case 'unresolved-flo
 have been eligible. Fixed: `a9_terminal()` makes every window of such a case ineligible (recorded as `a9_terminal` per
 window); cases run before A9 keep the per-window rule. Regression: `test_anaref_a9.py` → `checks/test_anaref_a9.json`.
 `ref2r` and `ref3b` restaged on the corrected HEAD (the job code is unchanged; the fix is analysis-side).
+
+## Amendment A10 (2026-10-18 18:45 UTC; COMMON-BRIEF §16, raw archives on the cluster)
+
+- Local staged source trees (`runs/<job>/experiments/`, git-ignored copies of committed code and inputs, verified by the
+  committed `MANIFEST.sha256` / `PROVENANCE.json`) are deleted once a job is collected.
+- The smoke outputs (`smk1`, `smk2`; analysis complete, `checks/smoke-*.json` committed) were offloaded with
+  `campaign/offload.sh` to `/cluster/tufts/paralab/tawal01/burgers-archive/jcp-budget/<job>/`; the per-file listing
+  (`output.sha256-listing`) and `ARCHIVE-LOCATION.txt` are committed in place of the files.
+- Production collections: every production file except the 3D fine fields and the 3D lattice bases (`GLAT_*.npy`) is
+  below 100 MB. `ref3b` is collected with `--no-fine` (its fine fields are promoted to `refs/` on the cluster and kept in
+  the burgers-archive). The arrays the offline analyses need (the 2D dev6 fine fields for the fine-route recomputation,
+  `GLAT_*.npy` for `ana3d`) stay local only until the final analyses have run, then every production output directory is
+  offloaded the same way and its listing committed.

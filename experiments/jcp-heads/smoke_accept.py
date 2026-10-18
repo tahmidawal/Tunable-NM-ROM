@@ -118,7 +118,7 @@ def acc_rows_ok(cfg, rows):
                     if not (np.isfinite([r['dist_tight'], r['seconds']]).all() and 'tight_valid' in r and 'tight_verified' in r
                             and 'gcert_ok' in r and 'valid' in r):
                         return False
-                    if c in dev6 and not (np.isfinite(r['dist_tight_tighter']) and 'tighter_verified' in r):
+                    if c in dev6 and not (np.isfinite(r['dist_tight_tighter']) and 'tighter_verified' in r and 'tighter_valid' in r):
                         return False
                     if c in q2 and not (np.isfinite([r['dist_qp'], r['rho_max']]).all() and 'qp_valid' in r):
                         return False

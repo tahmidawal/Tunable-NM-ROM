@@ -152,7 +152,7 @@ def smk1_tests():
                 r = dict(arm=a['name'], scheme=sc, case=c, dist_tight=1e-6, seconds=1., tight_valid=True, tight_verified=False,
                          gcert_ok=True, valid=True)
                 if c.startswith('dev6'):
-                    r.update(dist_tight_tighter=1e-8, tighter_verified=False)
+                    r.update(dist_tight_tighter=1e-8, tighter_verified=False, tighter_valid=True)
                 if c in exp(a['q2_cases']):
                     r.update(dist_qp=1e-5, rho_max=.01, qp_valid=True)
                     if c.startswith('dev6'):
@@ -162,7 +162,8 @@ def smk1_tests():
     print('ok  accuracy rows accepted')
     for name, f in {'a row missing': lambda R: R.pop(0), 'successor metric missing': lambda R: [r.pop('dist_qp', None) for r in R],
                     'anchor distance NaN': lambda R: R[3].update(dist_tight=float('nan')),
-                    'duplicate row': lambda R: R.append(dict(R[0]))}.items():
+                    'duplicate row': lambda R: R.append(dict(R[0])),
+                    'tighter_valid missing': lambda R: [r.pop('tighter_valid', None) for r in R]}.items():
         R = cp.deepcopy(rows)
         f(R)
         assert not SA.acc_rows_ok(cfg, R), name

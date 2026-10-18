@@ -690,3 +690,10 @@ The coordinator released production for jcp-heads after smk1/smk2 were accepted 
 Every `sbatch` goes through the shared campaign lock (COMMON-BRIEF §14; `cluster/submit.sh` already uses the same lock
 file and the same count-then-submit command). Sequence: train → rule1024 → acc1024 → time1024 / time256 (→ deferrable
 time4096, acc256) → results audit → make_report.py → report audit → hand-back with runs/EXPORT.json.
+
+## Close-out record (2026-10-18)
+
+All production jobs ran and were collected (train, rule1024, acc1024, time1024, time256, time4096, acc256; 3.68 of 35
+GPU-h); nothing deferred. Raw archives offloaded to `/cluster/tufts/paralab/tawal01/burgers-archive/jcp-heads/` (COMMON-
+BRIEF §16; listings in `runs/<job>/archive.sha256-listing`); the working namespace is removed. Results audit 3
+RESULTS-CONFIRMED; report audit 6 READY.

@@ -582,3 +582,69 @@ Decision-rule edge cases (frozen):
   is "the selected candidate failed confirmation".
 - K2 and the retraction of the speed3d winners' qualification are carried unchanged; nothing in H2q is a comparison with
   the best FOM.
+
+---
+
+## Amendment A2 (2026-10-18, before any lane job; answers `audits/codex-design-2.md`, NEEDS-RESTATEMENT)
+
+**A2.1 Square-system LSPG: stopping and certificate together (blocker 1).** A1.2's unweighted certificate is
+**withdrawn** and replaced. For LSPG at $\kappa=1$ only ($M=r$; adaptive solver, 2D and 3D):
+- *Stopping.* The solver records the weighted residual $r_n=\lVert D\mathcal R_n\rVert$ and stops at $\gamma\le g_{\rm tol}$
+  or $r_n\le{\rm tol}_f\times$scale. For $\kappa=1$ the tolerance levels are prod $(10^{-3},10^{-9})$ (unchanged), **tight
+  $(10^{-7},10^{-13})$, tighter $(10^{-8},10^{-15})$** — the inherited tight/tighter pairs with $t_f=0$ could stop only at an
+  exactly zero residual on a nonsingular square system, so the residual alternative is given the GAL anchor values
+  ($10^{-13}$, $10^{-15}$, relative to the same scale). Stated deviation for the square case.
+- *Certificate.* Step $n$ is certified iff $\eta^w_n=\lVert D\mathcal R_n(c_{n+1})\rVert/{\rm scale}\le100\,t_f^{\rm prod}=10^{-7}$
+  (the solver's own weighted quantity, recomputed from the saved states with the autodiff-free residual; 100× margin as for
+  GAL), or ${\rm scale}=0$ and the raw weighted residual is exactly 0. G-cert compares the recomputed weighted norm with the
+  solver's recorded `tolratio` × tol (same weighted norm; $|\Delta|\le10^{-6}\times$raw $+10^{-15}$). The literal $\gamma_n$
+  and the unweighted $\lVert\mathcal R_n\rVert/\lVert Ac_n\rVert$ are reported without a verdict. "Square" does not imply a
+  nonsingular step Jacobian: $\mathrm{cond}(J)$ is recorded per certified step (Q3) and a step with $\mathrm{cond}(J)>10^{12}$
+  is reported as ill-posed (the certificate stands; a near-singular step is flagged in the report).
+- The 3D fixed-sweep solver (`fs`) does not run at $\kappa=1$ (its stationarity certificate has the same pathology and it
+  has no residual tolerance); the 3D $\kappa=1$ cells are the adaptive LSPG-CN and GAL-CN forms only.
+- **Control mapping.** Each (dimension, scheme/form) has its own $M=r$ control, its own 1→4 transition at the B6 primary
+  rung: 2D LSPG-CN-R, LSPG-CN, GAL-CN and LSPG-BE at every $r$; 3D adaptive LSPG-CN and GAL-CN at W512. The 3D `fs` κ-panel
+  (κ ∈ {2, 3, 4, 8}) is governed by the 3D adaptive LSPG-CN control (labelled "control from the adaptive LSPG form").
+
+**A2.2 Bad generating vector: fixtures pinned, predicate matched (blocker 2).** The cross-family gate (§6.3, A1.5) gets
+a second, state-frozen component, and the control targets exactly that component:
+- *Gate.* A family is **flagged** iff (a) its finest rung's rollout is farther than 2.5e-4 from the target's on ≥ 1 case
+  (as before), **or** (b) $\rho_{\rm tgt}=\lVert N_{\rm fin}(c)-N_{\rm tgt}(c)\rVert/\lVert N_{\rm tgt}(c)\rVert>0.116$ at
+  any state $c$ of the frozen fixture set $\mathcal S_{\rm fix}$ (the ρ bar of AM-2 applied to an independent family at
+  rule-independent states). Both parts are computed in-job and recomputed offline.
+- *Fixtures (pinned by sha256).* 2D: the six output states of dev6|0 in qualify `runs/smkA/archive/output/qacc_smkA/
+  R_R384_LSPG_CNR_1.npz` (sha256 `3b00ba0f24261e4792fa05468313f7a6e1ab349ce883b53ce18fdd65a3c93dee`; R384 gauss128,
+  $M=1536$, LSPG-CN-R $\Delta t_0$) — used for the $(384,1536)$ family panel; the $(128,512)$ panel uses the first 128
+  coefficients of the same states (prefix bank; labelled "kernel fixture, not reached states of R128", as P1's fixtures).
+  3D: the six output states of case 0 of member `W512|gl24|fs|CN|0.01|K1#q|fs|CN|0.01|K1` in qualify
+  `runs/q3d/archive/output/q3run_q3d/W_q2.npz` (sha256 `0ca5015571184c2feba922cf014d18bdcbc7feba99fc009e60fa863989583f5b`;
+  W512, $M=2052$).
+- *Establishment (CPU, before any GPU use; independent NumPy code, `npcheck`-style decode of the bank at the rule points,
+  not the job code):* $\rho_{\rm tgt}$ of `badlat<n>` ($n$ = the family's finest size: 2D fib121393 → `badlat121393`; 3D
+  lat262144 → `badlat262144`) at every state of $\mathcal S_{\rm fix}$. The fixture is **admitted** iff $\rho_{\rm tgt}\ge1$
+  at every state (ten times the bar). If not admitted, the control is "**unavailable (fixture not established)**", recorded,
+  and the point-efficiency verdicts are labelled "bad-vector control unavailable" — the fixture is **not** re-chosen after
+  seeing the result. An admitted fixture requires the in-job gate component (b) to flag `badlat`; otherwise every
+  point-efficiency verdict is blocked. Component (a) for `badlat` is reported, with no required outcome.
+
+**A2.3 3D timed/scored identity (blocker 3).** Every timed 3D execution (screening, confirmation, κ-panel cost) is
+compared with its untimed scoring run by the sha256 of **all internal states and stopping records**: `fs`/`qn`: `W_all`
+(every step's state) + per-step `reason`, `it`, `rej`; adaptive forms: `states` + `step_reason` + `step_it`; plus the six
+output coefficient vectors. The timed query returns these arrays (hashed after the timer stops). A mismatch invalidates
+that invocation (speed3d `timing.py` rule otherwise unchanged).
+
+**A2.4 3D timing lifetimes (blocker 4).** 3D panels are run in blocks: the reference A's tables and compiled query are
+persistent; per block (one setting × rule, all its subjects) the rule data are built, subjects created and warmed, A–B–A
+triplets timed (randomised order within the block, block order randomised), then the subject closures, compiled queries
+of that block (`Ctx.queries` entries) and rule data are deleted and `gc.collect()` + a device-memory check (in-use bytes
+back within 1 GB of the pre-block value, else the job stops with "memory not released"). Expected invocation counts are
+validated per subject across blocks (a subject with fewer valid invocations than registered is "panel incomplete").
+The `smk3` pilot runs the actual block sequence on the heaviest blocks (W1024 gl64/lat262144 with A = C_old).
+
+**A2.5 Shapley thresholds separated (blocker 5).** Accuracy shares are normalised only if $|\Delta e|>2\times$ the median
+$\varepsilon_{\rm ref}$ of the common population; **cost** shares only if $|\Delta c|/c_a>0.05$ **and** the cost-bootstrap
+95 % interval of $\Delta c$ excludes 0; otherwise absolute contributions only.
+
+**A2.6 Re-pricing.** The resource certificate (`resources.py`) is computed from the smokes including the added 3D GAL,
+the BE spec ladders and all certification, anchor and timing-certification work; no production job is staged without it.

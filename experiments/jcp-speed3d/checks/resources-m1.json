@@ -1,0 +1,20 @@
+{
+ "attempt": "m1",
+ "config_sha256": "7959ead6777cbed5bf631ddd1df83a2cae5b4b6f193e2a6043ac55cd5a969440",
+ "gpu": "h200",
+ "hours_allocated": 24,
+ "projected_hours": 10.03341286681903,
+ "projected_hours_x1.5": 15.050119300228545,
+ "detail": {
+  "fom_seconds_per_solve": {
+   "64": 4.929519176017493,
+   "128": 4.474551395047456,
+   "384": 12.678041378967464,
+   "256": 12.678041378967464
+  }
+ },
+ "smoke": "runs/smoke1/archive/output",
+ "smoke_acceptance": "PASS",
+ "smoke_job": "5299842",
+ "note": "estimates with headroom from measured smoke costs (not demonstrated upper bounds); prof / mesh terms x 2"
+}

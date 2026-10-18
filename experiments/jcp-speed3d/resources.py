@@ -185,7 +185,10 @@ def project_mesh(cfg, smoke):
             if ts:
                 meshes[int(L)] = max(ts)
     if 256 not in meshes:
-        meshes[256] = meshes[128] * 16 if 384 not in meshes else max(meshes[128] * 16, meshes[384] * (256 / 384) ** 4)
+        # A8 (2026-10-17): the smoke's L64/L128 'seconds_first' are compile-dominated (4.9 s / 4.5 s), so L^4 scaling from
+        # L128 gave 72 s per L256 solve, above the measured L384 solve (12.7 s). FOM cost grows with L, so the measured
+        # L384 solve is the upper proxy for L256; L^4 from L128 is used only when no L384 pilot exists.
+        meshes[256] = meshes[128] * 16 if 384 not in meshes else meshes[384]
     b, tc = cfg['mesh'], cfg['timing']
     nc = cfg['cohort_count']
     tot = 0.

@@ -562,3 +562,18 @@ K9, K3, evidence) apply to H1 verdicts and to FOM matching exactly as to H2 sele
   checked for the same warning in their smoke/pilot logs before submission.
 * **Account-wide cap.** `cluster/submit.sh` checks the lane cap (3); the campaign-wide cap of 8 concurrent jobs on the
   account is checked by hand (`squeue -u tawal01 -h | wc -l`) before every submit and added to `submit.sh`.
+
+---
+
+## Amendment A8 (2026-10-17, after the g1–g3 screening analysis, before p1/m1 are staged)
+
+* **m1 resource certificate.** `resources.project_mesh` filled the missing L = 256 FOM solve time by $L^4$ scaling from
+  the smoke's L = 128 `seconds_first` (4.5 s, compile-dominated), i.e. 72 s per solve, above the measured L = 384 pilot
+  solve (12.7 s). FOM cost grows with L, so the measured L = 384 solve is now the upper proxy for L = 256 (L^4 from L = 128
+  is kept only when no L = 384 pilot exists). Projection: m1 21.4 h → 10.0 h; p1 7.0 h (unchanged). Ledger check:
+  8.91 spent + 7.04 + 10.03 = 25.98 ≤ 34 GPU-hours. The certificates remain estimates, not upper bounds: against
+  measured elapsed time they were 2.0 vs 1.75 h (g1), 5.7 vs 2.4 h (g2), **2.7 vs 3.6 h (g3, under)**, 0.61 vs 0.23 h (f1).
+* **Captured-constants warning located.** In the smoke (`smkgrid.log`, line 196) and in g3 the warning is printed
+  immediately before the W1024 `REPLAY` line, i.e. by the H1.1 replay (`replay.py`, jitted lambdas closing over the
+  stepper tables). The replay is untimed and diagnostic; the timed panels run after it with their own jitted calls.
+  It is therefore not expected to affect any timing or selection; p1/m1 contain no replay.

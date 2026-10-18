@@ -1275,3 +1275,26 @@ committed, the repaired-path versus reference comparison of A18.3 is "incomplete
    3D Q2). If FRONT-2D.json is not ready when needed, the P1-certified configurations are used first and the front
    members added later. This supersedes §8's "full-field contract only" for 3D: 3D pairs are labelled "ours under the
    mesh-free query contract".
+
+---
+
+## Amendment A20 (2026-10-18) — NNLS updating QR (A18.5, coordinator precondition A19.4b)
+
+- **A20.1 Algorithm.** The greedy single-index Lawson–Hanson NNLS (A17) keeps a thin QR factorisation of the passive
+  columns $G_S=QR$ in fixed-shape device buffers ($Q$: m × K, $R$: K × K, $Q^\top b$; K = the next power of two ≥ the
+  path's cap). Entering column: classical Gram–Schmidt with one reorthogonalisation (CGS2). Removing column j: shift
+  R's columns, restore triangularity with Givens rotations (applied to R, $Q^\top b$ and Q). Passive-set solve: back
+  substitution. The gradient $w=G^\top(b-G_Sx)$ is recomputed exactly from the residual every iteration (it never uses
+  the factorisation). Full Householder refactorisation every 512 appends; the orthogonality drift
+  $\max|Q^\top Q-I|$ before each refactorisation is recorded and reported.
+- **A20.2 Equivalence check (binding, CPU gate G-nnls).** On random problems with frequent refactorisation (every 16)
+  the updating path reproduces the full-QR (A17) path: identical supports at every checkpoint and residuals equal to
+  1e-10 relative; drift ≤ 1e-10. On the A17 training-only fixture (`runs/nnls_fixture`): identical 32/64/128-point
+  checkpoints, 147 iterations both, 3.3 s versus 64.9 s on CPU.
+- **A20.3 Rank policy.** An entering column whose orthogonal remainder is ≤ 1e-12 of its norm is numerically dependent
+  on the support: it is skipped (not banned) until the support next loses a column; the count is reported. A18.2's SVD
+  fallback remains in the full-QR reference path only.
+- **A20.4 Cost.** Per iteration $O(mK)$ for the append and $O(mN)$ for the gradient (3D r = 1,024: about $3.5\times10^{9}$
+  flops each), i.e. about $10^{14}$ flops for a full 16r path — no longer cubic in the support. The phase-II resource
+  certificate uses GPU timings of this path measured in the first phase-II job's NNLS stage (the certificate for that
+  job uses a conservative projection, stated in its job audit).

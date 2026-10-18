@@ -336,6 +336,19 @@ def t_nnls():
     assert abs(np.linalg.norm(Gd @ x3 - b) - rs_) <= 1e-8 * max(rs_, 1.), (np.linalg.norm(Gd @ x3 - b), rs_)
     out.append(dict(supports={k: o2['records'][('s', k)]['size'] for k in (5, 12, 20)}, dup_banned=o3['banned'],
                     dup_reason=o3['reason']))
+    # A20: the updating-QR path (default) equals the full-QR path (same supports at every checkpoint, residuals to
+    # 1e-10 relative), including with frequent refactorisation and deletions
+    G4 = rng.standard_normal((400, 900))
+    b4 = G4 @ np.where(rng.uniform(size=900) < 0.05, rng.uniform(size=900), 0.) + 0.05 * rng.standard_normal(400)
+    ou = NN.greedy_nnls(G4, b4, supports=(10, 40, 120), cap=150, method='update', refactor_every=16)
+    of = NN.greedy_nnls(G4, b4, supports=(10, 40, 120), cap=150, method='full')
+    for k in (10, 40, 120):
+        a, c = ou['records'][('s', k)], of['records'][('s', k)]
+        assert a is not None and c is not None
+        assert np.array_equal(np.sort(a['support']), np.sort(c['support'])), k
+        assert abs(a['relres'] - c['relres']) <= 1e-10 * c['relres'], (k, a['relres'], c['relres'])
+    assert ou['qr_drift'] and max(ou['qr_drift']) <= 1e-10, ou['qr_drift']
+    out.append(dict(update_vs_full='identical supports', drift=max(ou['qr_drift']), refactors=len(ou['qr_drift'])))
     return out
 
 

@@ -98,6 +98,149 @@ def _lh_refit(G, b, S, x0, max_inner=None):
     return x, keep
 
 
+# ------------------------------------------------------------------------------------- updating QR (A18.5, A20) ---
+# Thin QR of G_S held in fixed-shape device buffers: Q (m, K), R (K, K), qtb (K,), with k active columns. Unused columns
+# of Q are zero; the unused block of R is the identity, so triangular solves on the full K x K system leave the first k
+# unknowns exact (back substitution) and set the rest to 0 (qtb is zero there).
+
+@jax.jit
+def _qr_append(Q, R, qtb, k, g, b):
+    """Append column g (classical Gram-Schmidt with one reorthogonalisation, CGS2). Returns (Q, R, qtb, rho, gnorm)."""
+    c1 = Q.T @ g
+    v = g - Q @ c1
+    c2 = Q.T @ v
+    v = v - Q @ c2
+    c = c1 + c2
+    rho = jnp.linalg.norm(v)
+    q = v / jnp.where(rho > 0, rho, 1.)
+    Q = Q.at[:, k].set(q)
+    col = jnp.where(jnp.arange(R.shape[0]) < k, c, 0.).at[k].set(rho)
+    R = R.at[:, k].set(col)
+    qtb = qtb.at[k].set(q @ b)
+    return Q, R, qtb, rho, jnp.linalg.norm(g)
+
+
+@jax.jit
+def _qr_delete(Q, R, qtb, k, j):
+    """Delete active column j (0 <= j < k): shift R's columns left, restore triangularity by Givens rotations on rows
+    j..k-2 (applied to R, qtb and the columns of Q), then clear position k-1."""
+    K = R.shape[0]
+    ar = jnp.arange(K)
+    src = jnp.where((ar >= j) & (ar < k - 1), ar + 1, ar)
+    R = R[:, src]
+
+    def rot(i, c):
+        Q, R, qtb = c
+        a, bb = R[i, i], R[i + 1, i]
+        h = jnp.hypot(a, bb)
+        cs = jnp.where(h > 0, a / jnp.where(h > 0, h, 1.), 1.)
+        sn = jnp.where(h > 0, bb / jnp.where(h > 0, h, 1.), 0.)
+        ri, ri1 = R[i], R[i + 1]
+        R = R.at[i].set(cs * ri + sn * ri1).at[i + 1].set(-sn * ri + cs * ri1)
+        ti, ti1 = qtb[i], qtb[i + 1]
+        qtb = qtb.at[i].set(cs * ti + sn * ti1).at[i + 1].set(-sn * ti + cs * ti1)
+        qi, qi1 = Q[:, i], Q[:, i + 1]
+        Q = Q.at[:, i].set(cs * qi + sn * qi1).at[:, i + 1].set(-sn * qi + cs * qi1)
+        return Q, R, qtb
+    Q, R, qtb = jax.lax.fori_loop(j, k - 1, rot, (Q, R, qtb))
+    last = k - 1
+    Q = Q.at[:, last].set(0.)
+    R = R.at[last, :].set(0.).at[:, last].set(0.).at[last, last].set(1.)
+    qtb = qtb.at[last].set(0.)
+    return Q, R, qtb
+
+
+@jax.jit
+def _qr_solve(R, qtb):
+    return jax.scipy.linalg.solve_triangular(R, qtb, lower=False)
+
+
+@jax.jit
+def _qr_refactor(G, Sp, k, b):
+    """Full Householder refactorisation of the active columns (padded index list Sp, k active)."""
+    keep = (jnp.arange(Sp.shape[0]) < k).astype(G.dtype)
+    A = G[:, Sp] * keep[None, :]
+    Q, R = jnp.linalg.qr(A, mode='reduced')
+    Q = Q * keep[None, :]
+    R = R * keep[:, None] * keep[None, :] + jnp.diag(1. - keep)
+    return Q, R, Q.T @ b
+
+
+class UpdQR:
+    """Updating thin QR of G_S (A20). Columns are appended at the end and deleted anywhere; a full refactorisation runs
+    every `refactor_every` appends, and the orthogonality drift max|Q^T Q - I| is checked at each refactorisation
+    (recorded)."""
+
+    def __init__(self, G, b, K, refactor_every=512):
+        m = G.shape[0]
+        self.G, self.b, self.K = G, b, K
+        self.Q = jnp.zeros((m, K))
+        self.R = jnp.eye(K)
+        self.qtb = jnp.zeros(K)
+        self.k = 0
+        self.appends = 0
+        self.refactor_every = refactor_every
+        self.drift = []
+        self.rmax = 0.
+
+    def append(self, col, rank_tol=1e-12):
+        """Append column `col` of G. Returns False (factorisation unchanged) if the column is numerically dependent:
+        its orthogonal remainder rho <= rank_tol * ||g|| (A20.3)."""
+        g = self.G[:, int(col)]
+        Q, R, qtb, rho, gn = _qr_append(self.Q, self.R, self.qtb, self.k, g, self.b)
+        rho, gn = float(rho), float(gn)
+        if not (rho > rank_tol * gn):
+            return False
+        self.Q, self.R, self.qtb = Q, R, qtb
+        self.k += 1
+        self.appends += 1
+        return True
+
+    def delete(self, pos):
+        self.Q, self.R, self.qtb = _qr_delete(self.Q, self.R, self.qtb, self.k, int(pos))
+        self.k -= 1
+
+    def refactor(self, S):
+        Sp = np.pad(np.asarray(S, np.int64), (0, self.K - len(S)), mode='edge') if len(S) else np.zeros(self.K, np.int64)
+        Qn, Rn, qn = _qr_refactor(self.G, jnp.asarray(Sp), len(S), self.b)
+        k = len(S)
+        if k:
+            dev = float(jnp.max(jnp.abs(self.Q[:, :k].T @ self.Q[:, :k] - jnp.eye(k))))
+            self.drift.append(dev)
+        self.Q, self.R, self.qtb, self.k = Qn, Rn, qn, k
+
+    def solve(self):
+        return np.array(_qr_solve(self.R, self.qtb), dtype=np.float64, copy=True)[:self.k]
+
+
+def _lh_refit_upd(F, S, x0, max_inner=None):
+    """Lawson-Hanson inner loop using the updating factorisation F of G_S (columns in the order of S). Returns
+    (x, S) after removing the dropped columns from both."""
+    S = list(S)
+    x = x0.copy()
+    max_inner = max_inner or 3 * len(S) + 10
+    dropped = []
+    for _ in range(max_inner):
+        if not S:
+            break
+        z = F.solve()
+        if not np.all(np.isfinite(z)):
+            z = np.where(np.isfinite(z), z, -1.)
+        if np.all(z > 0):
+            return z, S, dropped
+        neg = z <= 0
+        with np.errstate(divide='ignore', invalid='ignore'):
+            al = np.where(neg, x / (x - z), np.inf)
+        alpha = max(0.0, min(1.0, float(np.min(al))))
+        x = x + alpha * (z - x)
+        dmask = (x <= 1e-300) | (neg & (al <= alpha + 1e-15))
+        for pos in sorted(np.nonzero(dmask)[0].tolist(), reverse=True):
+            F.delete(pos)
+            dropped.append(S.pop(pos))
+            x = np.delete(x, pos)
+    return np.maximum(x, 0.), S, dropped
+
+
 def kkt_check(G, bj, S, x, nb):
     """KKT diagnostics (A5.2), w = G^T (b - G xi): xi >= 0 and finite; |w_i| <= tol on the support; w_i <= tol off it
     (banned indices included). tol = 1e-9 ||G||_F ||b||."""
@@ -115,11 +258,13 @@ def kkt_check(G, bj, S, x, nb):
     return dict(ok=ok, support_max_abs_gradient=sup, off_support_max_gradient=off, tol=tol)
 
 
-def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, supports=(), max_drops=3):
+def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, supports=(), max_drops=3,
+                method='update', refactor_every=512):
     """-> dict(records={tau: ..., ('s', s): ...}, support, weights, relres, path, reason, banned, kkt).
     reason: 'taus' (every requested checkpoint reached), 'kkt' (no admissible positive gradient and the KKT check
     passed), 'incomplete (KKT violated)' (no admissible gradient but KKT fails, e.g. only banned indices remain), 'cap'
-    (support cap), 'max_iter'."""
+    (support cap), 'max_iter'. method 'update' (A20, default: updating QR, single-index entry) or 'full' (A17: full QR
+    of the passive set at every refit; the reference the updating path is checked against)."""
     G = jnp.asarray(G)
     b = np.asarray(b, np.float64)
     bj = jnp.asarray(b)
@@ -136,6 +281,9 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
     banned = np.zeros(N, bool)
     drops = np.zeros(N, np.int32)
     wmax0 = float(np.max(np.abs(np.asarray(_bG(bj, G)))))
+    F = None
+    dep_skip = np.zeros(N, bool)
+    n_dep = 0
 
     def residual():
         if len(S) == 0:
@@ -166,6 +314,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
         if len(S):
             w[S] = -np.inf
         w[banned] = -np.inf
+        w[dep_skip] = -np.inf
         cand = np.nonzero(w > 1e-14 * max(wmax0, 1e-300))[0]
         if len(cand) == 0:
             reason = 'kkt'
@@ -173,16 +322,38 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
         if len(S) >= cap:
             reason = 'cap'
             break
-        B = max(1, int(math.ceil(frac * len(S))))
-        B = min(B, len(cand), cap - len(S))
-        new = cand[np.argsort(-w[cand], kind='stable')[:B]]
-        S = np.concatenate([S, new])
-        x = np.concatenate([x, np.zeros(B)])
-        xs, keep = _lh_refit(G, bj, S, x)
-        dropped = S[~keep]
-        drops[dropped] += 1
-        banned[dropped[drops[dropped] >= max_drops]] = True
-        S, x = S[keep], xs[keep]
+        if method == 'update':
+            if F is None:
+                F = UpdQR(G, bj, K=int(1 << max(0, (min(cap, m) - 1).bit_length())) if cap < m else m,
+                          refactor_every=refactor_every)
+            new = int(cand[np.argmax(w[cand])])
+            if not F.append(new):                   # numerically dependent on the support (A20.3): skipped until the
+                dep_skip[new] = True                # support loses a column (it cannot enter before), never banned
+                n_dep += 1
+                continue
+            S = np.concatenate([S, [new]]).astype(np.int64)
+            x = np.concatenate([x, [0.]])
+            xs, Sl, dropped = _lh_refit_upd(F, S, x)
+            S, x = np.asarray(Sl, np.int64), xs
+            for dd in dropped:
+                drops[dd] += 1
+                if drops[dd] >= max_drops:
+                    banned[dd] = True
+            if dropped:
+                dep_skip[:] = False
+            if F.appends and F.appends % F.refactor_every == 0:
+                F.refactor(S)
+        else:
+            B = max(1, int(math.ceil(frac * len(S))))
+            B = min(B, len(cand), cap - len(S))
+            new = cand[np.argsort(-w[cand], kind='stable')[:B]]
+            S = np.concatenate([S, new])
+            x = np.concatenate([x, np.zeros(B)])
+            xs, keep = _lh_refit(G, bj, S, x)
+            dropped = S[~keep]
+            drops[dropped] += 1
+            banned[dropped[drops[dropped] >= max_drops]] = True
+            S, x = S[keep], xs[keep]
         path.append((len(S), None))          # residual of this iterate is filled in at the next iteration (A18.4)
         if log and it % 50 == 0:
             log(f'   nnls it {it}: support {len(S)} relres {rr:.3e}')
@@ -200,4 +371,4 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
     if reason == 'kkt' and not kkt['ok']:
         reason = 'incomplete (KKT violated)'
     return dict(records=rec, support=S, weights=x, relres=rr, path=path, reason=reason, banned=int(banned.sum()), kkt=kkt,
-                drops=drops, bnorm=nb)
+                drops=drops, bnorm=nb, method=method, qr_drift=(F.drift if F is not None else []), dependent_skips=n_dep)

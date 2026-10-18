@@ -70,7 +70,7 @@ def ref_dacc():
     return pts, max(setups)
 
 
-PROD_SQUARE = {128: 1.5, 256: 10., 384: 15., 512: 20.}      # A8.2: production per-case cost of square (M = r) cells (s)
+PROD_SQUARE = {128: 1.5, 256: 10., 384: 17., 512: 20.}      # A8.2: >= observed production maxima per r (1.18, 9.30, 16.07, 17.90 s)
 FORM_F = {('GAL', 'CN'): 1.2, ('LSPG', 'CN'): 1.0, ('LSPG', 'CNR'): 1.0, ('LSPG', 'BE'): .6}
 
 
@@ -95,6 +95,7 @@ def proj_dacc_prod(cfg):
         for a in s['arms']:
             per = PROD_SQUARE[s['Rp']] if s['M'] == s['Rp'] else a0 + b * w
             tot += ncases(a['cases']) * per * FORM_F[(a['form'], a['scheme'])]
+    tot += 120. * len(cfg.get('blocks', []))           # fixgate / control blocks (smk2: <= 26 s each; 120 s allowance)
     return tot
 
 
@@ -229,7 +230,7 @@ def main():
     tl = math.ceil(1.5 * total * 4) / 4
     cert = dict(attempt=a.attempt, runs=a.run, projection_hours=round(total, 4), time_limit_hours=tl, detail=det,
                 configs={r_.split(':', 1)[1]: hashlib.sha256((HERE / r_.split(':', 1)[1]).read_bytes()).hexdigest() for r_ in a.run},
-                note='estimate (dacc: a + b w per case, A7.1; dtime / d3run: linear w scaling from the heaviest smoke unit, floored); not a bound')
+                note='estimate (dacc: production-calibrated A8.2 when f2br1 exists, else smoke a + b w (A7.1); d3run: w scaling with square adaptive units priced from smk3 (A10.2); dtime: smoke w scaling); not a bound')
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / f'resources-{a.attempt}.json').write_text(json.dumps(cert, indent=1) + '\n')
     print(json.dumps(cert))

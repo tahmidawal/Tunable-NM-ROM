@@ -114,12 +114,17 @@ def attempt_dirs(job):
             d = c / 'archive' / 'output' / f'dacc_{stem}'
             if (d / 'result.json').exists() and d not in out:
                 out.append(d)
-    sigs = {d: code_signature(d) for d in out}            # A9.3: merge only attempts with the same numerical code path
+    sigs = {d: code_signature(d) + (gpu_of(d),) for d in out}      # A9.3: same numerical code, inputs and GPU type
     ref = sigs[out[-1]] if out else None
     return [d for d in out if sigs[d] == ref]
 
 
-NUMERIC_FILES = ('dacc.py', 'p1common.py', 'p1core.py', 'qcert.py', 'dcert.py', 'rules2d.py', 'vendor/quad2d/qcore.py')
+def gpu_of(d):
+    return json.loads((d / 'result.json').read_text()).get('gpu')
+
+
+NUMERIC_FILES = ('dacc.py', 'p1common.py', 'p1core.py', 'qcert.py', 'dcert.py', 'rules2d.py', 'vendor/quad2d/qcore.py',
+                 'vendor/quad2d/inputs/rotation_R512.npz', 'inputs/fixture2d.npz', 'vendor/quad2d/vendor/hari_quadrature.py')
 
 
 def code_signature(d):
@@ -127,6 +132,9 @@ def code_signature(d):
     prov = json.loads((d.parents[1] / 'PROVENANCE.json').read_text())
     by = {p['source'].split('experiments/jcp-dims/', 1)[-1]: p['sha256'] for p in prov}
     return tuple(by.get(f) for f in NUMERIC_FILES)
+
+
+ARM_CONFLICT = []
 
 
 def load_all():
@@ -143,10 +151,12 @@ def load_all():
                 for a in s['arms']:
                     k = f"{s['name']}|{a['form']}|{a['scheme']}"
                     if k in C:
+                        if C[k].get('arm_cfg') != json.dumps([s, a], sort_keys=True) and k not in ARM_CONFLICT:
+                            ARM_CONFLICT.append(k)              # A9.3: the same arm configured differently in two attempts
                         continue
                     e = config_entry(att, d, res, s['name'], a, score=(s['policy'] != 'lmf'))   # LMF scored after A2.2 stability
                     if e is not None:
-                        C[k] = dict(e, attempt=d.parents[2].name)
+                        C[k] = dict(e, attempt=d.parents[2].name, arm_cfg=json.dumps([s, a], sort_keys=True))
                         RAW[k] = (d, s['name'], a)
             if res.get('fixgate') and res.get('complete') and att not in C.get('_fixgate', {}):
                 C.setdefault('_fixgate', {})[att] = res['fixgate']
@@ -391,7 +401,8 @@ def main():
     C, RAW = load_all()
     man = json.loads((CFG / 'MANIFEST-cells.json').read_text())
     out = dict(label='E0 R_ST: conditional Richardson estimate (E0 A10; combined A10, A11, retracted A15 carried)',
-               configurations={k: {kk: v[kk] for kk in ('Q1', 'pooled', 'steps', 'worst_dist_tight', 'rule', 'r', 'M', 'policy',
+               arm_conflicts=ARM_CONFLICT,
+               configurations={k: {kk: v[kk] for kk in ('attempt', 'Q1', 'pooled', 'steps', 'worst_dist_tight', 'rule', 'r', 'M', 'policy',
                                                          'form', 'scheme', 'square', 'disagreements', 'rho_offline')
                                    if kk in v} | stats_of(v) for k, v in C.items() if not k.startswith('_')},
                ladders=[], mstar={}, families={}, gates={}, A3={}, B6={}, LMF={}, shapley_acc={})

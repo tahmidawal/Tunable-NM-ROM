@@ -3,13 +3,13 @@
  "runs": [
   "dacc:configs/f2kA.json"
  ],
- "projection_hours": 10.8571,
- "time_limit_hours": 16.5,
+ "projection_hours": 11.2667,
+ "time_limit_hours": 17.0,
  "detail": {
-  "configs/f2kA.json": 10.857144022652292
+  "configs/f2kA.json": 11.266699578207849
  },
  "configs": {
   "configs/f2kA.json": "04ff80a65ee52ff7ef8bf0f8d58756dfda93446bef5f4b6c59a23b9b82bd1511"
  },
- "note": "estimate (dacc: a + b w per case, A7.1; dtime / d3run: linear w scaling from the heaviest smoke unit, floored); not a bound"
+ "note": "estimate (dacc: production-calibrated A8.2 when f2br1 exists, else smoke a + b w (A7.1); d3run: w scaling with square adaptive units priced from smk3 (A10.2); dtime: smoke w scaling); not a bound"
 }

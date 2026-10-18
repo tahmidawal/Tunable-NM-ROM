@@ -429,11 +429,12 @@ def cost_vs_k(timings, costs):
                               ev_cost_per_iteration=float(np.median([x['ratio'] / max(1., np.sum(x['it'])) for x in xs])) if xs else None,
                               usable=c['usable'])
         fit = None
-        ks = [K for K in KS if all(f'H{K}s{s}' in rows for s in SEEDS)]
+        seeds = [s for s in SEEDS if all(f'H{K}s{s}' in rows for K in KS)]          # 4096^2 panel: seed 0 only
+        ks = list(KS) if seeds else []
         if len(ks) >= 3:
             dev = sorted({c_ for lb, c in cost.items() for c_ in c['per_case'] if c_.startswith('dev6')})
-            lbs = {(K, s): next(lb for lb in cost if lb.split('|')[1] == f'H{K}s{s}' and lb.endswith('|BE')) for K in ks for s in SEEDS}
-            T = np.array([[np.median([cost[lbs[(K, s)]]['per_case'][c_] for s in SEEDS]) for K in ks] for c_ in dev])
+            lbs = {(K, s): next(lb for lb in cost if lb.split('|')[1] == f'H{K}s{s}' and lb.endswith('|BE')) for K in ks for s in seeds}
+            T = np.array([[np.median([cost[lbs[(K, s)]]['per_case'][c_] for s in seeds]) for K in ks] for c_ in dev])
             pt = PS.fit_power(ks, T.mean(0))
             rng = np.random.default_rng(PS.SEED)
             ps = []
@@ -444,7 +445,8 @@ def cost_vs_k(timings, costs):
             fit = dict(point=pt, K=ks, n_ok_boot=len(ps),
                        ci=[float(np.percentile(ps, 2.5)), float(np.percentile(ps, 97.5))] if (pt.get('ok') and len(ps) > 100) else None,
                        identified=bool(pt.get('ok') and not pt.get('flat') and not pt.get('boundary')),
-                       note='descriptive; all trained seeds; flat or boundary fits mean the exponent is not identified')
+                       seeds=seeds, note='descriptive; seeds timed at this mesh; a fit failing the inherited acceptance (relative rms <= 0.2, '
+                                         'interior exponent) leaves the exponent unidentified')
         out[str(m)] = dict(rows=rows, fit=fit, contract=CONTRACT + '; dev6')
     return out
 
@@ -461,16 +463,21 @@ def seed_spread(recs, scheme='BE'):
     return out
 
 
-def ic_summary(recs):
-    """A1.3 descriptive: production initial-fit exit reasons and iteration totals per head configuration."""
+def ic_summary(r):
+    """A1.3 descriptive, from the accuracy job's production rows: initial-fit exit reasons, initial-fit LM iterations and
+    stationarity ratio per head configuration (per-case values kept), and the rollout LM iterations."""
     out = {}
-    for (name, sc), v in recs.items():
-        if v['kind'] != 'head':
+    for row in r['rows']:
+        if row.get('ic_reason', -1) == -1:
             continue
-        rs = [int(x) for x in v['ic'] if x is not None]
-        out[f'{name}|{sc}'] = dict(stationary=sum(r_ == 4 for r_ in rs), residual=sum(r_ == 1 for r_ in rs),
-                                   other=sum(r_ not in (1, 4) for r_ in rs), n=len(rs),
-                                   lm_iterations_median=float(np.median(v['it_sum'])))
+        e = out.setdefault(f"{row['arm']}|{row['scheme']}", dict(per_case={}))
+        e['per_case'][row['case']] = dict(reason=row['ic_reason'], it=row['ic_it'], gn=row['ic_gn'], rollout_it=row['it_sum'])
+    for k, e in out.items():
+        pc = e['per_case'].values()
+        e.update(n=len(pc), stationary=sum(x['reason'] == 4 for x in pc), residual=sum(x['reason'] == 1 for x in pc),
+                 other=sum(x['reason'] not in (1, 4) for x in pc), ic_it_median=float(np.median([x['it'] for x in pc])),
+                 ic_gn_median=float(np.median([x['gn'] for x in pc])), ic_gn_max=float(np.max([x['gn'] for x in pc])),
+                 rollout_it_median=float(np.median([x['rollout_it'] for x in pc])))
     return out
 
 
@@ -549,7 +556,7 @@ def main_all():
                                          ratio=tp['oracle_test']['mean'] / tf['oracle_test']['mean'])
     recs = {}
     if have('acc1024', 'hacc'):
-        _, recs = acc_records('acc1024')
+        acc_r, recs = acc_records('acc1024')
     exp['configs_1024'] = {f'{k[0]}|{k[1]}': {kk: vv for kk, vv in v.items() if kk not in ('per_case', 'case_qual')}
                            for k, v in recs.items()}
     exp['per_case_1024'] = {f'{k[0]}|{k[1]}': v['per_case'] for k, v in recs.items()}
@@ -565,7 +572,7 @@ def main_all():
         fam = jload(RUNS / 'F5-FAMILY.json')['family'] if (RUNS / 'F5-FAMILY.json').exists() else list(KS)
         exp['S_K'] = {sc: {K: pools(recs, K, sc) for K in KS} for sc in SCHEMES}
         exp['seed_spread'] = {sc: seed_spread(recs, sc) for sc in SCHEMES}
-        exp['initial_fit'] = ic_summary(recs)
+        exp['initial_fit'] = ic_summary(acc_r)
         exp['h_acc_k'] = {sc: h_acc_k(recs, sc) for sc in SCHEMES}
         exp['h_acc_k_m128'] = h_acc_k(recs, 'BE', m128=True)
         exp['h_acc_k_per_seed'] = {f'{sc}|{s}': h_acc_k_seed(recs, sc, s) for sc in SCHEMES for s in SEEDS}

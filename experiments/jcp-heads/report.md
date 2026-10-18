@@ -209,45 +209,45 @@ Fixed-$M=128$ sensitivity panel (BE): range `inconclusive`; 4->8: `unqualified s
 
 ![seed spread](plots/seed_spread.png)
 
-**Head initial fit (production, 38 cases):** exit reasons (stationary / residual / other) and median total LM iterations per rollout.
+**Head initial fit (production, 38 cases):** exit reasons, initial-fit LM iterations and stationarity ratio $\gamma_{\rm ic}$ (gtol $10^{-6}$), and the rollout's total LM iterations; per-case values in `runs/EXPORT.json`.
 
-| configuration | stationary | residual | other (invalid) | median LM iterations |
-|---|---|---|---|---|
-| H16s0m128\|BE | 38/38 | 0 | 0 | 76 |
-| H16s0\|BE | 38/38 | 0 | 0 | 82 |
-| H16s0\|CNR | 38/38 | 0 | 0 | 84.5 |
-| H16s1m128\|BE | 38/38 | 0 | 0 | 78 |
-| H16s1\|BE | 38/38 | 0 | 0 | 84.5 |
-| H16s1\|CNR | 38/38 | 0 | 0 | 89 |
-| H16s2m128\|BE | 38/38 | 0 | 0 | 73 |
-| H16s2\|BE | 38/38 | 0 | 0 | 79.5 |
-| H16s2\|CNR | 38/38 | 0 | 0 | 83 |
-| H32s0\|BE | 38/38 | 0 | 0 | 66 |
-| H32s0\|CNR | 38/38 | 0 | 0 | 67 |
-| H32s1\|BE | 38/38 | 0 | 0 | 65 |
-| H32s1\|CNR | 38/38 | 0 | 0 | 68 |
-| H32s2\|BE | 38/38 | 0 | 0 | 68.5 |
-| H32s2\|CNR | 38/38 | 0 | 0 | 70.5 |
-| H4s0m128\|BE | 38/38 | 0 | 0 | 51 |
-| H4s0\|BE | 38/38 | 0 | 0 | 51 |
-| H4s0\|CNR | 38/38 | 0 | 0 | 51 |
-| H4s1m128\|BE | 38/38 | 0 | 0 | 51 |
-| H4s1\|BE | 38/38 | 0 | 0 | 51 |
-| H4s1\|CNR | 38/38 | 0 | 0 | 51 |
-| H4s2m128\|BE | 38/38 | 0 | 0 | 50 |
-| H4s2\|BE | 38/38 | 0 | 0 | 51 |
-| H4s2\|CNR | 38/38 | 0 | 0 | 51 |
-| H8s0m128\|BE | 38/38 | 0 | 0 | 71 |
-| H8s0\|BE | 38/38 | 0 | 0 | 79.5 |
-| H8s0\|CNR | 38/38 | 0 | 0 | 86 |
-| H8s1m128\|BE | 38/38 | 0 | 0 | 76 |
-| H8s1\|BE | 38/38 | 0 | 0 | 99.5 |
-| H8s1\|CNR | 38/38 | 0 | 0 | 102 |
-| H8s2m128\|BE | 38/38 | 0 | 0 | 78 |
-| H8s2\|BE | 38/38 | 0 | 0 | 90.5 |
-| H8s2\|CNR | 38/38 | 0 | 0 | 95.5 |
-| Hinc\|BE | 38/38 | 0 | 0 | 82 |
-| Hinc\|CNR | 38/38 | 0 | 0 | 84.5 |
+| configuration | stationary | residual | other (invalid) | initial-fit iterations (median) | gamma_ic (median) | gamma_ic (max) | rollout LM iterations (median) |
+|---|---|---|---|---|---|---|---|
+| H16s0m128\|BE | 38/38 | 0 | 0 | 17 | 6.18e-07 | 9.81e-07 | 76 |
+| H16s0\|BE | 38/38 | 0 | 0 | 17 | 6.18e-07 | 9.81e-07 | 82 |
+| H16s0\|CNR | 38/38 | 0 | 0 | 17 | 6.18e-07 | 9.81e-07 | 84.5 |
+| H16s1m128\|BE | 38/38 | 0 | 0 | 15 | 4.23e-07 | 9.79e-07 | 78 |
+| H16s1\|BE | 38/38 | 0 | 0 | 15 | 4.23e-07 | 9.79e-07 | 84.5 |
+| H16s1\|CNR | 38/38 | 0 | 0 | 15 | 4.23e-07 | 9.79e-07 | 89 |
+| H16s2m128\|BE | 38/38 | 0 | 0 | 14 | 6.38e-07 | 9.8e-07 | 73 |
+| H16s2\|BE | 38/38 | 0 | 0 | 14 | 6.38e-07 | 9.8e-07 | 79.5 |
+| H16s2\|CNR | 38/38 | 0 | 0 | 14 | 6.38e-07 | 9.8e-07 | 83 |
+| H32s0\|BE | 38/38 | 0 | 0 | 10 | 5.1e-07 | 9.96e-07 | 66 |
+| H32s0\|CNR | 38/38 | 0 | 0 | 10 | 5.1e-07 | 9.96e-07 | 67 |
+| H32s1\|BE | 38/38 | 0 | 0 | 11 | 5.2e-07 | 9.58e-07 | 65 |
+| H32s1\|CNR | 38/38 | 0 | 0 | 11 | 5.2e-07 | 9.58e-07 | 68 |
+| H32s2\|BE | 38/38 | 0 | 0 | 11 | 5.87e-07 | 9.77e-07 | 68.5 |
+| H32s2\|CNR | 38/38 | 0 | 0 | 11 | 5.87e-07 | 9.77e-07 | 70.5 |
+| H4s0m128\|BE | 38/38 | 0 | 0 | 7 | 3.11e-07 | 9.76e-07 | 51 |
+| H4s0\|BE | 38/38 | 0 | 0 | 7 | 3.11e-07 | 9.76e-07 | 51 |
+| H4s0\|CNR | 38/38 | 0 | 0 | 7 | 3.11e-07 | 9.76e-07 | 51 |
+| H4s1m128\|BE | 38/38 | 0 | 0 | 7 | 3.84e-07 | 8.39e-07 | 51 |
+| H4s1\|BE | 38/38 | 0 | 0 | 7 | 3.84e-07 | 8.39e-07 | 51 |
+| H4s1\|CNR | 38/38 | 0 | 0 | 7 | 3.84e-07 | 8.39e-07 | 51 |
+| H4s2m128\|BE | 38/38 | 0 | 0 | 7 | 3.85e-07 | 9.31e-07 | 50 |
+| H4s2\|BE | 38/38 | 0 | 0 | 7 | 3.85e-07 | 9.31e-07 | 51 |
+| H4s2\|CNR | 38/38 | 0 | 0 | 7 | 3.85e-07 | 9.31e-07 | 51 |
+| H8s0m128\|BE | 38/38 | 0 | 0 | 17 | 4.71e-07 | 9.87e-07 | 71 |
+| H8s0\|BE | 38/38 | 0 | 0 | 17 | 4.71e-07 | 9.87e-07 | 79.5 |
+| H8s0\|CNR | 38/38 | 0 | 0 | 17 | 4.71e-07 | 9.87e-07 | 86 |
+| H8s1m128\|BE | 38/38 | 0 | 0 | 32.5 | 5.69e-07 | 9.97e-07 | 76 |
+| H8s1\|BE | 38/38 | 0 | 0 | 32.5 | 5.69e-07 | 9.97e-07 | 99.5 |
+| H8s1\|CNR | 38/38 | 0 | 0 | 32.5 | 5.69e-07 | 9.97e-07 | 102 |
+| H8s2m128\|BE | 38/38 | 0 | 0 | 34 | 6.37e-07 | 9.98e-07 | 78 |
+| H8s2\|BE | 38/38 | 0 | 0 | 34 | 6.37e-07 | 9.98e-07 | 90.5 |
+| H8s2\|CNR | 38/38 | 0 | 0 | 34 | 6.37e-07 | 9.98e-07 | 95.5 |
+| Hinc\|BE | 38/38 | 0 | 0 | 17 | 6.18e-07 | 9.81e-07 | 82 |
+| Hinc\|CNR | 38/38 | 0 | 0 | 17 | 6.18e-07 | 9.81e-07 | 84.5 |
 
 ## 5. Online cost against K
 
@@ -367,7 +367,7 @@ Cost = median over cases (and repeats) of the A-normalised fused online query ti
 | L64 | 0.148 | 0.148 | 1.02 | 0.00295 | yes |
 | L8 | 0.0956 | 0.105 | 0.46 | 0.00452 | yes |
 
-Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = [4, 8, 16, 32]: **not identified** (relative rms 0.236; cost is not a power law in K here — it is driven by LM iteration counts, see the table).
+Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = [4, 8, 16, 32] (seeds [0, 1, 2]): exponent **not identified**: the constrained fit fails the inherited acceptance threshold (relative rms 0.236 > 0.2). No functional form is claimed.
 
 1024²
 
@@ -395,7 +395,7 @@ Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = [4, 8, 16, 32]
 | L64 | 0.138 | 0.145 | 1.02 | 0.00284 | yes |
 | L8 | 0.0904 | 0.0996 | 0.46 | 0.00432 | yes |
 
-Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = [4, 8, 16, 32]: **not identified** (relative rms 0.329; cost is not a power law in K here — it is driven by LM iteration counts, see the table).
+Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = [4, 8, 16, 32] (seeds [0, 1, 2]): exponent **not identified**: the constrained fit fails the inherited acceptance threshold (relative rms 0.329 > 0.2). No functional form is claimed.
 
 4096²
 
@@ -406,6 +406,8 @@ Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = [4, 8, 16, 32]
 | H4s0 | 0.5 | 0.256 | 1.03 | 0.00496 | no |
 | H8s0 | 0.744 | 0.479 | 1.62 | 0.00599 | no |
 | Hinc | 0.659 | 0.385 | 1.72 | 0.00447 | yes |
+
+Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = [4, 8, 16, 32] (seeds [0]): p = 0.119 (95 % case-bootstrap interval [0.0797817396372318, 0.16521097073031996]).
 
 ![cost vs K](plots/cost_vs_K.png)
 

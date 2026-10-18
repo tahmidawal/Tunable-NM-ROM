@@ -194,8 +194,14 @@ if hk:
         for K, y in zip(xs, ys):
             q = cfg(f'H{K}s{s}')['qualified']
             ax.plot([K], [y], 'o', color=C_H, mfc=C_H if q else 'white', label='head seed (filled = qualified)' if (s, K) == (0, 4) else None)
-    pool = [(K, np.median([cfg(f'H{K}s{s}')['median'] for s in SEEDS if cfg(f'H{K}s{s}')['qualified']]))
-            for K in KS if sum(cfg(f'H{K}s{s}')['qualified'] for s in SEEDS) >= 2]
+    def pooled(K):                       # A1.6: per case the median over qualified seeds, then the median over cases
+        sq = [s for s in SEEDS if cfg(f'H{K}s{s}')['qualified']]
+        if len(sq) < 2:
+            return None
+        pc = E['per_case_1024']
+        cases = [c for c, v in pc[f'H{K}s{sq[0]}|BE'].items() if v['eligible']]
+        return float(np.median([np.median([pc[f'H{K}s{s}|BE'][c]['e'] for s in sq]) for c in cases]))
+    pool = [(K, pooled(K)) for K in KS if pooled(K) is not None]
     if pool:
         ax.plot([k for k, _ in pool], [v for _, v in pool], '*', ms=12, color=C_H, label='pooled (>= 2 qualified seeds)')
     xs = [r for r in LIN if cfg(f'L{r}')]
@@ -232,11 +238,13 @@ if hk:
         w('')
     ic = E.get('initial_fit')
     if ic:
-        rows = [[k, f"{v['stationary']}/{v['n']}", v['residual'], v['other'], g3(v['lm_iterations_median'])] for k, v in sorted(ic.items())]
-        w('**Head initial fit (production, 38 cases):** exit reasons (stationary / residual / other) and median total LM '
-          'iterations per rollout.')
+        rows = [[k, f"{v['stationary']}/{v['n']}", v['residual'], v['other'], g3(v['ic_it_median']), g3(v['ic_gn_median']),
+                 g3(v['ic_gn_max']), g3(v['rollout_it_median'])] for k, v in sorted(ic.items())]
+        w('**Head initial fit (production, 38 cases):** exit reasons, initial-fit LM iterations and stationarity ratio '
+          '$\\gamma_{\\rm ic}$ (gtol $10^{-6}$), and the rollout\'s total LM iterations; per-case values in `runs/EXPORT.json`.')
         w('')
-        w(table(['configuration', 'stationary', 'residual', 'other (invalid)', 'median LM iterations'], rows))
+        w(table(['configuration', 'stationary', 'residual', 'other (invalid)', 'initial-fit iterations (median)',
+                 'gamma_ic (median)', 'gamma_ic (max)', 'rollout LM iterations (median)'], rows))
         w('')
 
 # ------------------------------------------------------------------ cost ----
@@ -272,19 +280,24 @@ if E.get('cost'):
             f = v.get('fit')
             if f:
                 pt = f['point']
-                w(f"Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = {f['K']}: "
+                w(f"Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = {f['K']} (seeds {f.get('seeds')}): "
                   + (f"p = {g3(pt['p'])} (95 % case-bootstrap interval {f['ci']})." if f.get('identified') else
-                     f"**not identified** (relative rms {g3(pt.get('rel_rms'))}; cost is not a power law in K here — it is "
-                     'driven by LM iteration counts, see the table).'))
+                     f"exponent **not identified**: the constrained fit fails the inherited acceptance threshold (relative "
+                     f"rms {g3(pt.get('rel_rms'))} > 0.2{', or boundary/flat' if pt.get('boundary') or pt.get('flat') else ''}). "
+                     'No functional form is claimed.'))
                 w('')
         fig, ax = plt.subplots(figsize=(5.4, 3.6))
         for m, v in sorted(cvk.items(), key=lambda kv: int(kv[0])):
             for s_ in SEEDS:
                 xs = [K for K in KS if f'H{K}s{s_}' in v['rows'] and v['rows'][f'H{K}s{s_}']['fused']]
                 if xs:
-                    ax.plot(xs, [v['rows'][f'H{K}s{s_}']['fused'] for K in xs], 'o-', alpha=.35 + .2 * s_,
-                            color={'256': '#7fb3d5', '1024': C_H, '4096': '#0b3c5d'}[m], label=f'{m}², seed {s_}')
+                    col = {'256': '#7fb3d5', '1024': C_H, '4096': '#0b3c5d'}[m]
+                    ys = [v['rows'][f'H{K}s{s_}']['fused'] for K in xs]
+                    ax.plot(xs, ys, '-', alpha=.35, color=col, label=f'{m}², seed {s_}')
+                    for K, y in zip(xs, ys):
+                        ax.plot([K], [y], 'o', color=col, mfc=col if v['rows'][f'H{K}s{s_}']['usable'] else 'white')
         ax.set_xscale('log', base=2); ax.set_xlabel('K'); ax.set_ylabel('fused online cost / A (BE)')
+        ax.set_title('descriptive; filled = timing usable (gates pass), open = not', fontsize=8)
         ax.legend(frameon=False, fontsize=6, ncol=2); fig.tight_layout(); fig.savefig(PLOTS / 'cost_vs_K.png', dpi=150); plt.close(fig)
         w('![cost vs K](plots/cost_vs_K.png)')
         w('')

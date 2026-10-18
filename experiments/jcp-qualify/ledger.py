@@ -56,6 +56,27 @@ def totals(d):
     return d
 
 
+def validate(d, new, exempt=None):
+    """A3.1 / A4.1 / A5.1 inventory rules: finite non-negative hours; every mandatory job not yet live or completed is
+    listed (the attempt being reserved is exempt); per mesh either an allowance fballow<m> >= 2 GPU-h, or q2known<m> with
+    either a listed fallback job fb<m> or an explicit nofb<m> marker (Q2 labels known, no fallback needed)."""
+    live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
+    done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
+    probs = [f'bad value {k}' for k, v in new.items() if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
+    probs += [f'missing mandatory {k}' for k in MANDATORY if k != exempt and k not in new and k not in live and k not in done]
+    for m in (256, 1024, 4096):
+        if f'fballow{m}' in new:
+            if new[f'fballow{m}'] < 2:
+                probs.append(f'fballow{m} < 2 GPU-h')
+        elif f'q2known{m}' in new:
+            if not (f'nofb{m}' in new or any(k.startswith(f'fb{m}') for k in list(new) + list(live) + list(done))):
+                probs.append(f'q2known{m} without a fallback job or nofb{m} marker')
+        else:
+            probs.append(f'no fallback allowance or q2known marker for mesh {m}')
+    probs += [f'pending entry already live: {k}' for k in set(new) & live]
+    return probs
+
+
 def pend(d, att):
     """Pending core reservation excluding the attempt being submitted (A3.1)."""
     return round(sum(v for k, v in d.get('pending_core', {}).items() if k != att), 4)
@@ -72,6 +93,8 @@ def main():
                 print('refused: reservation hours must be finite and positive'); rc = 10
             elif 'pending_core' not in d:
                 print('refused: no pending-core inventory set (ledger.py pending; DESIGN A3.1)'); rc = 8
+            elif validate(d, {k: v for k, v in d['pending_core'].items()}, exempt=att):
+                print('refused: pending inventory no longer valid:', validate(d, d['pending_core'], exempt=att)); rc = 8
             elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print('attempt already has a live reservation'); rc = 2
             elif d['spent_gpu_hours'] + d['reserved_gpu_hours'] + h + pend(d, att) > CAP:
@@ -83,14 +106,9 @@ def main():
                                       elapsed_hours=None, pending_hours=popped))
         elif cmd == 'pending':             # DESIGN A3.1, A4.1, A5.1: projected time limits of not-yet-submitted
             new = json.loads(sys.argv[2])                  # non-deferrable jobs and fallback allowances, one transaction
-            live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
-            done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
-            bad = [k for k, v in new.items() if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
-            missing = [k for k in MANDATORY if k not in new and k not in live and k not in done]
-            missing += [f'fballow{m} (or q2known{m}: 0)' for m in (256, 1024, 4096)       # A3.1 / A4.1: an allowance per
-                        if f'fballow{m}' not in new and f'q2known{m}' not in new]         # mesh until its Q2 labels are known
-            if bad or missing or (set(new) & live):
-                print('refused pending inventory: bad values', bad, 'missing mandatory', missing, 'live', set(new) & live); rc = 9
+            probs = validate(d, new)
+            if probs:
+                print('refused pending inventory:', probs); rc = 9
             else:
                 d['pending_core'] = new
         elif cmd == 'bind':
@@ -141,6 +159,8 @@ def main():
                 st = rows[-1][0].split()[0]
                 j['attempts'] = len(rows)
                 j['state'], j['node'] = st, rows[-1][3]
+                if st in TERMINAL and st != 'COMPLETED' and j.get('pending_hours') is not None:
+                    d.setdefault('pending_core', {})[j['attempt']] = j['pending_hours']   # failed core job: re-pend
                 j['gpu'] = next((x for x in rows[-1][2].split(',') if x.startswith('gres/gpu')), None)
                 j['elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows) / 3600, 4)
                 j['prior_elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows[:-1]) / 3600, 4)   # earlier requeues

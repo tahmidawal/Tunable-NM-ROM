@@ -1,16 +1,17 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:06:42Z",
- "step": "job audit 2 DO-NOT-SUBMIT (submit guard gap) -> fixed; job audit 3 running; then submit t3d64a + t2d1024a",
+ "utc": "2026-10-18T13:08:08Z",
+ "step": "job audit 3 SUBMIT both; t3d64a (5508653, H200, 12 h wall) and t2d1024a (5508660, H200, 5 h wall) RUNNING, jax_backend=gpu; next: Stage-B chain audit while they run; t2d256 after t2d1024a ends",
  "waiting_on": {
-  "slurm_jobs": [],
-  "codex_output": "audits/codex-job-3.md",
-  "codex_pid": [
-   2635340
+  "slurm_jobs": [
+   5508653,
+   5508660
   ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": 2584678
  },
- "expected_finish_utc": "2026-10-18T13:36:42Z",
+ "expected_finish_utc": "2026-10-18T18:08:08Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

@@ -747,3 +747,10 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 * New `analyze_r1.py` (A1.11 replication analysis on 923901: per frozen ROM and path E-a/E-b/E-c and E0 median/worst;
   per comparator whether the winner still ties-or-beats and the replication panel's S; per matched FOM whether it still
   ties-or-beats its ROM), three-state throughout, integrity-gated; its generated markdown is embedded by the report.
+
+---
+
+## Amendment A22 (2026-10-18; dispositions of `audits/codex-code-18.md`, NOT READY on two items)
+
+* No median / worst is computed from a partial score population (null instead); tables show the scored-case count.
+* `rows_elig` works on ADT rows, which carry no certified-step counter (`analyze_r1.py` checks ADT validity with it).

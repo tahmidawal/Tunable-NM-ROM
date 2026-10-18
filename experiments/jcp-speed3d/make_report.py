@@ -432,11 +432,11 @@ def main():
         for Ls, o in m1['per_L'].items():
             for l_, r in o['rom'].items():
                 pl = o['panels'].get(l_, {})
-                rows.append([Ls, l_, f(r.get('feasible')), f(r.get('M')), f(r.get('eligible')), f(r.get('dist_worst')), f(r.get('median')),
+                rows.append([Ls, l_, f(r.get('feasible')), f(r.get('M')), f(r.get('eligible')), f(r.get('dist_worst')), f(r.get('scored')), f(r.get('median')),
                              f(r.get('worst')), f(pl['rom_seconds'] * 1e3) if pl.get('rom_seconds') else '–'])
         w('ROM (mesh-free path) per mesh: eligibility at that mesh (E-a, E-b, E-c against the ADT of the same mesh, tight/tighter), E0 errors, warm time (valid panels only):')
         w('')
-        w(table(['L', 'ROM', 'feasible', 'M', 'eligible', 'dist. to ADT', 'median', 'worst', 'time (ms)'], rows))
+        w(table(['L', 'ROM', 'feasible', 'M', 'eligible', 'dist. to ADT', 'scored cases', 'median', 'worst', 'time (ms)'], rows))
         w('')
         Lk = sorted(int(x) for x in m1['per_L'])
         rows = [[l_, *[(f(v['seconds'][str(Lx)] * 1e3) if v['seconds'].get(str(Lx)) else '–') for Lx in Lk], f(v['max_over_min']), v['verdict']]

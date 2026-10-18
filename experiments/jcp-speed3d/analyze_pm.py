@@ -75,8 +75,10 @@ def scores_of(sc, key, cases):
     e = [s[str(j)]['e'] for j in rk]
     ok = len(have) == len(cases) and fin and len(rk) > 0
     return dict(ok=ok, reason=None if ok else f'scored {len(have)}/{len(cases)}, finite {fin}, ranked {len(rk)}',
-                e=e, eta=[s[str(j)]['eps_ref'] for j in rk], ranked_ids=rk, median=float(np.median(e)) if e else None,
-                worst=float(np.max(e)) if e else None)
+                scored=len(have), expected=len(cases),
+                e=e, eta=[s[str(j)]['eps_ref'] for j in rk], ranked_ids=rk,
+                median=float(np.median(e)) if (e and ok) else None,          # no statistic from a partial population
+                worst=float(np.max(e)) if (e and ok) else None)
 
 
 def rows_elig(res, tag, spec, cases):
@@ -88,8 +90,8 @@ def rows_elig(res, tag, spec, cases):
     for r in rs:
         g = np.asarray(r.get('gam_cert', []), float)
         nst += int((~np.isfinite(g) | (g > 1e-3)).sum()) if len(g) else 0
-    nstep = sum(r['steps_n'] for r in rs)
-    cert_ok = all(len(r.get('gam_cert', [])) == r['steps_n'] for r in rs) if rs and spec.split('|')[0] != 'ad' else True
+    nstep = sum(r.get('steps_n', 0) for r in rs)      # ADT rows carry no certified-step counter
+    cert_ok = all(len(r.get('gam_cert', [])) == r.get('steps_n', -1) for r in rs) if rs and spec.split('|')[0] != 'ad' else True
     return dict(rows_complete=got == sorted(cases) and cert_ok, Ea=bool(rs) and all(r['valid'] for r in rs),
                 Eb=bool(rs) and nst <= POOL * nstep, Eb_frac=nst / max(nstep, 1), nonstationary=nst, steps=nstep)
 
@@ -418,7 +420,7 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
             el = (None if not (e_ab['rows_complete'] and e_c.get('dist_worst') is not None)
                   else bool(e_ab['Ea'] and e_ab['Eb'] and e_c['Ec'] and tt))
             o['rom'][l_] = dict(feasible=True, M=er['tables'].get('M'), **e_ab, **e_c, adt_tight_tighter=er['adt_tight_tighter'], adt_gate=tt,
-                                eligible=el, scores_ok=s['ok'], median=s['median'], worst=s['worst'], ranked=len(s['ranked_ids']),
+                                eligible=el, scores_ok=s['ok'], scored=s.get('scored', 0), median=s['median'], worst=s['worst'], ranked=len(s['ranked_ids']),
                                 e=s['e'], eta=s['eta'], ranked_ids=s['ranked_ids'])
             t = T.get(f'mesh|L{L}|{l_}')
             if t and t.get('invocations'):

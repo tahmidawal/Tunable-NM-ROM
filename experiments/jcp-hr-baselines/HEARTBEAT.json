@@ -1,7 +1,7 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T21:40:23Z",
- "step": "job audit 7 SUBMIT; s2d1024b submitted and RUNNING (5840961, H200); t3d64b 5542231 RUNNING 6:58; background sacct waiter (<= 18 min)",
+ "utc": "2026-10-18T21:59:02Z",
+ "step": "s2d1024b 5840961 RUNNING 17 min: member runs done in ~11 min (were 1.5 h when save-bound); A-B-A ~6.4 min per X; t3d64b 5542231 RUNNING 7:15 (extension ECSW k16); sacct waiter re-armed",
  "waiting_on": {
   "slurm_jobs": [
    5542231,
@@ -11,7 +11,7 @@
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T21:59:23Z",
+ "expected_finish_utc": "2026-10-18T22:18:02Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

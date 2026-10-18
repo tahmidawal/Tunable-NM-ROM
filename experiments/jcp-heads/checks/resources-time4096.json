@@ -1,0 +1,22 @@
+{
+ "attempt": "time4096",
+ "runs": [
+  "htime:configs/time4096.json"
+ ],
+ "configs": {
+  "configs/time4096.json": "7f268e861010dfaf86c951c8fc346a2b0e7db942f86590d907094b344212cf6c"
+ },
+ "projection_hours": 0.3584427963483251,
+ "time_limit_hours": 0.75,
+ "detail": {
+  "htime:configs/time4096.json": {
+   "seconds": 1290.3940668539703,
+   "per_triplet_pair": 1.3243638549000025,
+   "cert_per_subject": 26.614796181097624,
+   "n_triplets": 90,
+   "setup": 613.4382718577981,
+   "mesh_factor": 2.0
+  }
+ },
+ "note": "estimate from smoke archives (resources.py docstring); the scheduler limit is the enforced bound"
+}

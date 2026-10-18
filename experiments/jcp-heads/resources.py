@@ -89,6 +89,8 @@ def acc_proj(cfg):
             else:                                          # two-case arms: compile-dominated -> compile allowance
                 comp = max(comp, x['seconds'])
     tot = 300. + a['elapsed'].get('controls', 0.)
+    if cfg['mesh'] == 4096:
+        per_case *= 2.
     det = {}
     for arm in cfg['arms']:
         nc = 38 if arm.get('cases', 'all38') == 'all38' else len(arm['cases'])
@@ -113,8 +115,14 @@ def time_proj(cfg):
     cl = case_list({})
     idx = select(cl, cases)
     n_trip = sum(int(reps[cl[i][0]]) for i in idx) * len(cfg['subjects'])
-    tot = 600. + (len(cfg['subjects']) + 1) * cert_per_subject + n_trip * per_trip * 1.5      # 1.5: drift retries
-    return tot, dict(per_triplet_pair=per_trip, cert_per_subject=cert_per_subject, n_triplets=n_trip, setup=600.)
+    big = max(int(m) for m in cfg['meshes'])
+    mf, setup = 1., 600.
+    if big == 4096:                                  # smk2 pilot: measured 4096^2 bank build; MESH4096 = 2 on per-run work
+        pl = jl(out('smk2', 'hpilot', 'smk2pilot') / 'result.json')
+        setup += [x for x in pl['stages'] if x['stage'] == 'bank_mesh'][0]['seconds']
+        mf = 2.
+    tot = setup + mf * ((len(cfg['subjects']) + 1) * cert_per_subject + n_trip * per_trip * 1.5)   # 1.5: drift retries
+    return tot, dict(per_triplet_pair=per_trip, cert_per_subject=cert_per_subject, n_triplets=n_trip, setup=setup, mesh_factor=mf)
 
 
 PROJ = dict(htrain=train_proj, hrule=rule_proj, hacc=acc_proj, htime=time_proj)

@@ -1,0 +1,1990 @@
+{
+ "attempt": "f2kB",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "settings": [
+  {
+   "name": "R128M384kgauss64",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M384kgauss96",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M384kgauss128",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M384kgauss160",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M384kgauss192",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M384kgauss256",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M384kgauss320",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M384kgauss384",
+   "Rp": 128,
+   "M": 384,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R128M1024kgauss64",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R128M1024kgauss96",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R128M1024kgauss128",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R128M1024kgauss160",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R128M1024kgauss192",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R128M1024kgauss256",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R128M1024kgauss320",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R128M1024kgauss384",
+   "Rp": 128,
+   "M": 1024,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M768kgauss64",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M768kgauss96",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M768kgauss128",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M768kgauss160",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M768kgauss192",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M768kgauss256",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M768kgauss320",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M768kgauss384",
+   "Rp": 256,
+   "M": 768,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R256M2048kgauss64",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R256M2048kgauss96",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R256M2048kgauss128",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R256M2048kgauss160",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R256M2048kgauss192",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R256M2048kgauss256",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R256M2048kgauss320",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R256M2048kgauss384",
+   "Rp": 256,
+   "M": 2048,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M1152kgauss64",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M1152kgauss96",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M1152kgauss128",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M1152kgauss160",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M1152kgauss192",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M1152kgauss256",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M1152kgauss320",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M1152kgauss384",
+   "Rp": 384,
+   "M": 1152,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R384M3072kgauss64",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R384M3072kgauss96",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R384M3072kgauss128",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R384M3072kgauss160",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R384M3072kgauss192",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R384M3072kgauss256",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R384M3072kgauss320",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R384M3072kgauss384",
+   "Rp": 384,
+   "M": 3072,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R512M1536kgauss64",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R512M1536kgauss96",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R512M1536kgauss128",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R512M1536kgauss160",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R512M1536kgauss192",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R512M1536kgauss256",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R512M1536kgauss320",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R512M1536kgauss384",
+   "Rp": 512,
+   "M": 1536,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  },
+  {
+   "name": "R512M4096kgauss64",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss64",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss96"
+  },
+  {
+   "name": "R512M4096kgauss96",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss96",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss128"
+  },
+  {
+   "name": "R512M4096kgauss128",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss128",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss160"
+  },
+  {
+   "name": "R512M4096kgauss160",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss160",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss192"
+  },
+  {
+   "name": "R512M4096kgauss192",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss192",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss256"
+  },
+  {
+   "name": "R512M4096kgauss256",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss256",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": true,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss320"
+  },
+  {
+   "name": "R512M4096kgauss320",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss320",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false,
+     "rho_only": true
+    }
+   ],
+   "qp": "gauss384"
+  },
+  {
+   "name": "R512M4096kgauss384",
+   "Rp": 512,
+   "M": 4096,
+   "policy": "frozen",
+   "rule": "gauss384",
+   "arms": [
+    {
+     "form": "GAL",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CN",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    },
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1,
+     "cases": "all38",
+     "tighter": true,
+     "q3": false
+    }
+   ]
+  }
+ ],
+ "blocks": []
+}

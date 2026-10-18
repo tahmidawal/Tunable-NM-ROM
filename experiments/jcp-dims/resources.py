@@ -70,6 +70,34 @@ def ref_dacc():
     return pts, max(setups)
 
 
+PROD_SQUARE = {128: 1.5, 256: 10., 384: 15., 512: 20.}      # A8.2: production per-case cost of square (M = r) cells (s)
+FORM_F = {('GAL', 'CN'): 1.2, ('LSPG', 'CN'): 1.0, ('LSPG', 'CNR'): 1.0, ('LSPG', 'BE'): .6}
+
+
+def proj_dacc_prod(cfg):
+    """A8.2: per-case cost calibrated on the production f2br1 / f2a archives (H200, same driver): non-square cells
+    a + b w (least squares on f2br1's 32 non-square R512 arms, a >= 0), square cells the per-r production maximum
+    (PROD_SQUARE), times a form factor from the smoke ratios; per-setting setup 5 s."""
+    r = json.loads((HERE / 'runs' / 'f2br1' / 'archive' / 'output' / 'dacc_f2b' / 'result.json').read_text())
+    W, T = [], []
+    for s in r['config']['settings']:
+        if s['M'] == s['Rp']:
+            continue
+        for a in s['arms']:
+            W.append(m_of(s['rule']) * s['M'] * s['Rp'])
+            T.append(r['elapsed'][f"{s['name']}|{a['form']}_{a['scheme']}_{float(a['factor']):g}"] / 38)
+    b, a0 = np.polyfit(np.array(W, float), np.array(T), 1)
+    a0 = max(a0, 0.)
+    tot = 0.
+    for s in cfg['settings']:
+        tot += 5.
+        w = m_of(s['rule']) * s['M'] * s['Rp']
+        for a in s['arms']:
+            per = PROD_SQUARE[s['Rp']] if s['M'] == s['Rp'] else a0 + b * w
+            tot += ncases(a['cases']) * per * FORM_F[(a['form'], a['scheme'])]
+    return tot
+
+
 def proj_dacc(cfg):
     """Per-case cost a + b w (DESIGN A7.1): the intercept a = 75th percentile of the smoke per-case costs of the arms with
     w below a tenth of the heaviest (fixed per-case work: tight / tighter solves, 1024^2 decode, rho, compilation share),
@@ -176,7 +204,8 @@ def main():
     for r_ in a.run:
         drv, cf = r_.split(':', 1)
         cfg = json.loads((HERE / cf).read_text())
-        sec = {'dacc': proj_dacc, 'dtime': proj_dtime, 'd3run': proj_d3}[drv](cfg)
+        sec = {'dacc': proj_dacc_prod if (HERE / 'runs' / 'f2br1' / 'archive').exists() else proj_dacc,
+               'dtime': proj_dtime, 'd3run': proj_d3}[drv](cfg)
         det[cf] = sec / 3600.
         total += sec / 3600.
     tl = math.ceil(1.5 * total * 4) / 4

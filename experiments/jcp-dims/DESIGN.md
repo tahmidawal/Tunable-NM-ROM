@@ -730,3 +730,20 @@ per-case costs of the arms with $w<w_{\rm ref}/10$; $b$ from the heaviest smoke 
 as `f2br1` with that certificate. Further 2D certificates may be calibrated on the completed `f2a` production job's
 per-arm elapsed times (same driver, same GPU type, 168 cells; GAL forms scaled by the smoke GAL/LSPG ratio), stated in the
 certificate. Certificates remain estimates; the scheduler limit is the bound; ledger hours are charged as measured.
+
+## Amendment A8 (2026-10-18, production; packaging and certificates — no registered cell, rule or verdict changes)
+
+**A8.1 `f2k` split.** The κ-cell job is packaged as `f2kA` (κ ∈ {1, 2, 4}: the never-dropped B6 core) and `f2kB`
+(κ ∈ {3, 8}); the union is the registered `f2k` inventory (`configs/f2k.json` kept as the manifest reference). The
+ledger's never-dropped list names `f2kA`.
+**A8.2 Production-calibrated 2D certificates.** Production showed square cells ($M=r$) cost 1–18 s per case (tight /
+tighter anchors of the square residual solve), about ten times the non-square cells of the same $r$. Certificates for
+the remaining 2D accuracy jobs use the completed `f2br1` archive: non-square $a+b\,w$ by least squares on its 32
+non-square R512 arms; square cells the per-$r$ production maximum (1.5, 10, 15, 20 s for $r$ = 128 … 512); smoke form
+factors (GAL-CN 1.2, LSPG-CN 1.0, LSPG-BE 0.6).
+**A8.3 Timed-out jobs.** A timed-out 2D accuracy job is collected partially and continued by a retry containing only
+the settings without archived evidence (`make_retry.py`); `analyze2d` merges per arm, newest attempt first, and records
+the attempt of every configuration. Job-level blocks run in the retry only if no attempt completed.
+**A8.4 Sequencing under the cap.** Jobs are submitted in the brief's priority (A4 3D front and qualified re-timing, A4
+2D, then the rest); non-core jobs are submitted only when spent + reserved + pending-core + their limit ≤ 55, otherwise
+deferred in the brief's defer order and reported.

@@ -151,7 +151,9 @@ def main():
     # ---------------------------------------------------------------- write
     job('f2a', f2a)
     job('f2b', f2b)
-    job('f2k', f2k)
+    job('f2k', f2k)                                       # full kappa set (manifest reference; DESIGN A8.1 splits it)
+    job('f2kA', [x for x in f2k if x['M'] // x['Rp'] in (1, 2, 4)])
+    job('f2kB', [x for x in f2k if x['M'] // x['Rp'] in (3, 8)])
     job('f2l', lmf)
     job('b2f', b2f, blocks=fixgate)
     job('b2m', b2m, blocks=[dict(fb, rules=[f'mc{POW[-1]}s{s}' for s in DRAWS] + ['gauss384']) for fb in fixgate])

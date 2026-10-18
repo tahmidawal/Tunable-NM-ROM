@@ -29,7 +29,7 @@ LED = HERE / 'runs' / 'GPU-LEDGER.json'
 LOCK = HERE / 'runs' / 'GPU-LEDGER.lock'
 CAP = 55.
 # non-deferrable jobs (DESIGN A3.1): each must be in the pending inventory until it has a live or completed reservation
-MANDATORY = ('f2a', 'f2b', 'f2k', 'b2f', 'q3r4', 'q3r5', 'q3r6', 'q3r7', 'q3r8', 'm3a', 'm3b', 'k3', 't3s', 't3c')
+MANDATORY = ('f2a', 'f2b', 'f2kA', 'b2f', 'q3r4', 'q3r5', 'q3r6', 'q3r7', 'q3r8', 'm3a', 'm3b', 'k3', 't3s', 't3c')
 # jcp-dims never-dropped (A1.6); rounds 5-8 are mandatory until waived ('ledger.py waive q3r<k> <reason>', e.g. no exposed
 # untested candidate after the previous round), which is recorded in the ledger
 # a failed / timed-out mandatory job is not COMPLETED, so the next 'pending' call must list it again (validated)

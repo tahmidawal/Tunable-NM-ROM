@@ -636,3 +636,26 @@ configurations (accuracy replication only); `project_rep` counts burn-ins and wa
 report (warning size, spectral resolution, replay counts, configuration count) are read from the data.
 Noted, not fixed (A5: need fabricated files): in-job output hashes are not retained, so `hashes_ok` is taken from the job;
 consistency of `fom-match.json` with f1 is established by its own audits (select-1..3, results-1..3).
+
+---
+
+## Amendment A12 (2026-10-18; dispositions of `audits/codex-code-8.md`, NOT READY; before any p1/m1 output is read)
+
+* **Acceptance (restated).** Each job has `integrity_ok` (complete flag, production cohort 923801 cases 0–63, K4, and for
+  p1 the mesh-path reproduction of the grid scores; for m1 also G5/K7). Without integrity, every verdict-bearing field of
+  that job is replaced by "unavailable (… integrity failed; computed …)" and the freeze refuses. `coverage_complete`
+  lists missing or invalid items; a coverage gap makes only the verdicts that need that item unavailable (each verdict
+  already carries its own evidence checks), and the report's status line says so.
+* **K2 / union (asymmetric).** At the largest mesh the union speed-up is the minimum over timed matched families. An
+  observed matched speed-up below 2× establishes "below 2× against the union" (an unresolved family can only lower the
+  minimum); "≥ 2×" needs every family resolved (a timed match, or an exhausted ladder). Unresolved = unavailable, matched
+  but untimed, ROM ineligible at that mesh, or no longer matched there. K2 fires iff every selected ROM is established
+  below 2×; does not fire iff some ROM is established ≥ 2×; otherwise undetermined.
+* **Batching.** A batch record is usable only with hashes, G4 not failed, K6+ passing and (B > 1) K6 firing; empty control
+  lists are reported as unavailable, not as passing.
+* **Converged-rule δ_quad** needs complete, valid, finite converged-rule rollouts (rows recomputed); otherwise unavailable.
+* **H3.2** with incomplete scores is "unavailable", not "not qualified". Missing m1 score keys give unavailable, not a crash.
+* **Freeze publication** is safe ordering (r1 renamed into place first, then the freeze), not a two-file atomic
+  transaction; a failure between the renames leaves r1 without a freeze, which the 923901 guard rejects. The guard checks
+  digest and membership, not complete replication; completeness of r1 is checked by its own job audit.
+* `project_rep` counts the burn before every warm-up call; the FOM export keeps convergence and calibration status.

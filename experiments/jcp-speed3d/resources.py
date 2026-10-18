@@ -236,7 +236,7 @@ def project_rep(cfg, smoke):
     burn = cfg['timing']['burn']
     for la, lb in b.get('confirm', []):
         t_ = max(run[la]['run'], run[lb]['run'])                      # smoke run time per case (one query)
-        tot += b['confirm_cases'] * b['confirm_reps'] * 3 * (t_ + burn) + 2 * b['confirm_cases'] * t_   # A-B-A + burns + warm-ups
+        tot += b['confirm_cases'] * b['confirm_reps'] * 3 * (t_ + burn) + 2 * b['confirm_cases'] * (t_ + burn)   # A-B-A + warm-ups, each burned
     return 2 * tot / 3600, dict(n_roms=len(b['roms']), n_foms=len(b.get('foms', [])))
 
 

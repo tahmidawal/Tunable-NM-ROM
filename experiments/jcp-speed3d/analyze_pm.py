@@ -68,7 +68,7 @@ def scores_of(sc, key, cases):
     """E0 errors of one saved trajectory key on the given cases; ok only if every case is scored and finite."""
     s = sc['scores'].get(key)
     if s is None:
-        return dict(ok=False, reason=f'no scores for {key}')
+        return dict(ok=False, reason=f'no scores for {key}', e=[], eta=[], ranked_ids=[], median=None, worst=None)
     have = [j for j in cases if str(j) in s]
     fin = all(np.isfinite(s[str(j)]['e']) for j in have)
     rk = [j for j in have if s[str(j)]['eligible']]
@@ -160,8 +160,14 @@ def analyze_p1(rp, sel, grid, scp):
         if v is None or v.get('rule') != crule or np.asarray(v['delta_quad']).shape[0] != len(cases):
             conv[l_] = dict(rule=crule, available=False)
             continue
+        c_ = lab[l_]
+        rv = rows_elig(res, f"{c_['setting']}|{crule}", c_['spec'], cases)
         d = np.asarray(v['delta_quad'], float)[:, 1:].max(1)
-        conv[l_] = dict(rule=crule, available=True, delta_quad_max=float(d.max()), delta_quad_median=float(np.median(d)))
+        if not (rv['rows_complete'] and rv['Ea'] and np.isfinite(d).all()):
+            conv[l_] = dict(rule=crule, available=False, reason='converged-rule rollout incomplete, invalid or non-finite', rows=rv)
+            continue
+        conv[l_] = dict(rule=crule, available=True, delta_quad_max=float(d.max()), delta_quad_median=float(np.median(d)),
+                        converged_rule_Eb=rv['Eb'])
     out['conv'] = conv
 
     def red_gate(l_):
@@ -226,7 +232,15 @@ def analyze_p1(rp, sel, grid, scp):
     for v in H32.values():
         if 'qualified_before_K5' in v:
             v['qualified'] = bool(v['qualified_before_K5'] and out['K5_fires'])
-            v['status'] = 'qualified' if v['qualified'] else ('blocked (K5 did not fire)' if v['qualified_before_K5'] else 'not qualified')
+            if v['qualified']:
+                v['status'] = 'qualified'
+            elif v['qualified_before_K5']:
+                v['status'] = 'blocked (K5 did not fire)'
+            elif v.get('b') is None and v['eligible']:
+                v['status'] = 'unavailable (score populations incomplete)'
+                v['qualified'] = None
+            else:
+                v['status'] = 'not qualified'
     out['H32'] = H32
     # ---- H3.1 profile (indicative) and G3 (only on a valid, complete panel)
     H31 = {}
@@ -267,12 +281,14 @@ def analyze_p1(rp, sel, grid, scp):
             per[str(B)] = dict(available=True, median_seconds=med, throughput=B / med, hashes_ok=r['hashes_ok'], G4=g4, G4_max=r['G4_max'],
                                K6_max=r.get('K6_max'), K6_fires=None if r.get('K6_max') is None else bool(r['K6_max'] > 2.5e-5),
                                K6plus_max=r['K6plus_max'], K6plus_pass=bool(r['K6plus_max'] <= 2.5e-5),
-                               usable=bool(r['hashes_ok'] and g4 != 'fail'))
+                               usable=bool(r['hashes_ok'] and g4 != 'fail' and r['K6plus_max'] <= 2.5e-5
+                                           and (B == 1 or (r.get('K6_max') is not None and r['K6_max'] > 2.5e-5))))
         b1, b16 = per.get('1', {}), per.get('16', {})
         bar = (None if not (b1.get('usable') and b16.get('usable')) else bool(b16['throughput'] >= 2 * b1['throughput']))
         H33[l_] = dict(per_B=per, throughput_16_over_1=(b16['throughput'] / b1['throughput']) if bar is not None else None,
-                       bar_2x=bar, K6_fires_all=all(v.get('K6_fires') for B, v in per.items() if v.get('available') and B != '1'),
-                       K6plus_all=all(v.get('K6plus_pass') for v in per.values() if v.get('available')),
+                       bar_2x=bar,
+                       K6_fires_all=(lambda xs: all(xs) if xs else None)([v.get('K6_fires') for B, v in per.items() if v.get('available') and B != '1']),
+                       K6plus_all=(lambda xs: all(xs) if xs else None)([v.get('K6plus_pass') for v in per.values() if v.get('available')]),
                        latency_B1=b1.get('median_seconds'))
     out['H33'] = H33
     # ---- mesh-path reproduction of the grid accuracy (equal by construction)
@@ -295,13 +311,31 @@ def analyze_p1(rp, sel, grid, scp):
                batch_all_present=all(v['available'] for x in H33.values() for v in x['per_B'].values()),
                conv_all_present=all(v['available'] for v in conv.values()), reduced_adt_all_present=all(v['ok'] is not None for v in red.values()),
                mesh_reproduction=all(v is not None and v <= 1e-12 for v in rep.values()))
-    acc['accepted_for_claims'] = bool(acc['complete_flag'] and acc['cohort'] and acc['K4'] and acc['mesh_reproduction'])
+    # integrity gates every verdict of the job; coverage items make only their own verdicts unavailable (handled above)
+    acc['integrity_ok'] = bool(acc['complete_flag'] and acc['cohort'] and acc['K4'] and acc['mesh_reproduction'])
+    acc['coverage_complete'] = bool(all(v for k, v in acc.items() if k.endswith(('_valid', '_present'))))
+    acc['accepted_for_claims'] = acc['integrity_ok']
     out['acceptance'] = acc
-    if not acc['accepted_for_claims']:                    # A10: no verdict from a job that is not accepted
-        for v in list(out['H2'].values()) + list(out['H14'].values()):
-            if v['verdict'] in ('pass', 'fail'):
-                v['verdict'] = f"unavailable (p1 not accepted; would be {v['verdict']})"
+    if not acc['integrity_ok']:                            # A10: no verdict at all from a job without integrity
+        suppress(out, 'p1 integrity failed')
     return out
+
+
+def suppress(out, why):
+    """Replace every verdict-bearing field of one job's analysis by 'unavailable' (keeps the numbers for diagnosis)."""
+    def walk(o):
+        if isinstance(o, dict):
+            for k in list(o):
+                if k in ('verdict', 'status') and isinstance(o[k], str) and not o[k].startswith('unavailable'):
+                    o[k] = f'unavailable ({why}; computed {o[k]})'
+                elif k in ('qualified', 'bar_2x', 'reaches_2x', 'G3', 'K5_fires', 'K2_fires'):
+                    o[k] = None if k != 'K2_fires' else False
+                else:
+                    walk(o[k])
+        elif isinstance(o, list):
+            for x in o:
+                walk(x)
+    walk(out)
 
 
 # ------------------------------------------------------------------------------------------------------------- m1
@@ -432,9 +466,20 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
         c = {f_: pm[f_] for f_ in FAMS}
         m_ = [(f_, x) for f_, x in c.items() if x.get('state') == 'matched' and x.get('speedup') is not None]
         best = min(m_, key=lambda z: z[1]['speedup']) if m_ else None
-        undetermined = [f_ for f_, x in c.items() if x['state'] not in ('matched', 'no ladder match')]
+        # unresolved: not a timed match and not an exhausted ladder (unavailable, untimed, ROM ineligible, no longer matched)
+        unresolved = [f_ for f_, x in c.items() if not ((x.get('state') == 'matched' and x.get('speedup') is not None)
+                                                         or x.get('state') == 'no ladder match')]
+        # asymmetric: an observed matched speed-up < 2x establishes failure against the union (an unresolved family can
+        # only lower the minimum); >= 2x is established only when every family is resolved
+        if best is not None and best[1]['speedup'] < 2:
+            r2 = False
+        elif best is not None and not unresolved:
+            r2 = True
+        else:
+            r2 = None
         c['union'] = dict(family=None if best is None else best[0], speedup=None if best is None else best[1]['speedup'],
-                          reaches_2x=None if best is None else best[1]['reaches_2x'], undetermined_families=undetermined)
+                          speedup_label=None if best is None else ('union' if not unresolved else 'upper bound on the union (families unresolved)'),
+                          reaches_2x=r2, unresolved_families=unresolved)
         cells[l_] = c
     out['Hcomp_largest_mesh'] = dict(L=int(Lmax), cells=cells)
     # K2: fires iff every selected ROM has a matched union speed-up below 2x at the largest mesh; any ROM with a matched
@@ -450,11 +495,16 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                every_mesh_panel_valid=all(out['per_L'][str(L)]['panels'].get(l_, {}).get('valid') for L in blk['Ls'] for l_ in roms),
                match_panels_valid=all(v['speedup'] is not None for h in out['H43'].values() for v in h['families'].values()
                                       if v['state'] == 'matched'),
-               no_panel_failures=not out['panel_failures'])
-    acc['accepted_for_claims'] = bool(acc['complete_flag'] and acc['K4'] and acc['G5'])
+               no_panel_failures=not out['panel_failures'],
+               cohort=res['cohort']['seed'] == 923801 and sorted(cases) == list(range(64)))
+    acc['integrity_ok'] = bool(acc['complete_flag'] and acc['K4'] and acc['G5'] and acc['cohort'])
+    acc['coverage_complete'] = bool(acc['every_rom_every_mesh'] and acc['every_mesh_panel_valid'] and acc['match_panels_valid']
+                                    and acc['no_panel_failures'])
+    acc['accepted_for_claims'] = acc['integrity_ok']
     out['acceptance'] = acc
-    if not acc['accepted_for_claims']:
-        out['K2'] = f"undetermined (m1 not accepted; computed {out['K2']})"
+    if not acc['integrity_ok']:
+        suppress(out, 'm1 integrity failed')
+        out['K2'] = f"undetermined (m1 integrity failed; computed {out['K2']})"
         out['K2_fires'] = False
     return out
 

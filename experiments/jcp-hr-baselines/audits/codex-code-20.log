@@ -15725,3 +15725,236 @@ analyze accepts incorrect drift flag= {0: [0.018181818181818184]}
 memory qdeim per-option all ranks GB 1.7481728
 ecsw Pst per-option all ranks GB target k2/k4/k8 1.55746304
 
+exec
+/bin/bash -lc "rg -n 'eligible|ineligible|withheld|snapshot-limited|quality limited|cell line|observed domination|search|pair.*line' experiments/jcp-hr-baselines/DESIGN.md; nl -ba experiments/jcp-hr-baselines/rom.py | sed -n '40,95p;210,260p'; nl -ba experiments/jcp-hr-baselines/build.py | sed -n '20,70p'; nl -ba experiments/jcp-hr-baselines/p1common.py | sed -n '35,72p'; git status --short" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+39:  Eligibility is read **per case-kind** from the store (`reference_status`); ineligible case-kinds are scored and shown,
+187:- Screening statistics per configuration: Q1 pass/fail, median and worst E0 ST error over eligible cases, median
+229:(lower). For each tested pair (X, B) with B ∈ {B_acc(X), B_cost(X)} on the verdict cohort's eligible ST case-kinds:
+365:  POD and the $1024^2$ cell is labelled "snapshot-limited (12-step set; saturation check failed)"; nothing else changes.
+375:NNLS; (C-search) validation search — runs whose purpose is choosing a configuration; (C-cert) numerical certification
+376:(anchors, Q1 passes). **Equal tuning budget applies to C-search**: the baseline may spend on C-search up to ours' C-search
+381:p/r = 8) and screened again. If ours' C-search budget cannot be matched inside the cap, H-base for that cell is
+464:- X with no eligible case-kind or missing exported errors → "not assessed".
+542:baseline in that cell is withheld (observed dominations by the baseline are still reported).
+564:it, P1e); C-search = scheme/step/solver grids (combined `c2grid` remainder, `c2fbgrid`, `c3grid`; speed3d `g1–g3` grid
+565:phase); C-cert = anchors and certification passes (where logged separately; otherwise inside C-search and stated). The
+566:rule is **equal allocation**, not equal expenditure: the baseline's C-search allocation equals ours' C-search total per
+569:says "**baseline search exceeded ours' allocation**"; (c) allocation cannot be met inside the 30 GPU-h cap → every pair
+601:family's control is **unfulfilled** and every comparison using that family is withheld from acceptance (reported as
+648:  triples after the drift policy, missing eligible cases, $\delta_i=0$ for any case) → "**not assessed**"; both objectives
+652:- **Wording.** Every pair label is "developmental, in-sample, unadjusted". A cell line reads "observed domination of X by
+654:  observed domination among the N configurations compared" — never "H-base holds" and never "falsified" as a formal
+709:**A3.5 (item 17) Cell accounting.** Exported per cell and X: counts of pairs attempted, assessed, baseline-dominates,
+711:failed. The statement "no observed domination among the N configurations compared" is allowed only with N = assessed
+1054:`jacfwd` checks, the N-grad oracle, the Gauss–Newton line search, the LM predictor), the arm's residual-only function
+1088:search (eight halvings) is exhausted with a finite step is accepted when γ ≤ 100 gtol (effective limits 1e-5 tight,
+1206:ECSW statements carry "**ECSW construction quality limited (banning)**", blocking "adequately tuned ECSW" and exhaustive
+1320:all "eligible" (Q1, jobs 5301580/5301264/5301270), with the finalists' converged-rule δ_quad as their quadrature
+1327:commits and file hashes. For a new batch: (i) X's same-job paired ratios against every screened baseline configuration
+1358:"quality limited (orthogonality)" with the A16.5 consequences. Dependent-column skips, drift values, drift events,
+1413:every (X, B) pair admitted by A1.12 on the 6 timing cases; picks and labels are then computed offline from that job's
+1427:## Amendment A25 (2026-10-18) — extension in the tuning job; C-search allocations pinned
+1433:same Q1, anchors, warm timing and scoring as Stage A (phase tag `EXT`). It runs only if the job's elapsed C-search
+1444:C-search time is the tuning job's Stage-A + extension phase time plus the Stage-B job's selection-relevant runs; each
+1486:constructible set) before any downstream construction, and the 1024² cell is labelled "snapshot-limited". Adequacy
+1542:**A28.3 Extension accounting.** The extension trigger uses **accumulated, classified C-search time**: the sum of the
+1544:the FOM comparator and other non-search work). The allocation is a **start threshold** for the extension only:
+1545:selection-relevant Stage-B work is not reserved before it; the cell's total baseline C-search (tuning `A|` + `EXT|`
+    40	
+    41	
+    42	# ------------------------------------------------------------------------------------------------- arms -----
+    43	
+    44	def make_arm(kind, d, L, mutation=None):
+    45	    """-> (step_const, rJ). mutation 'drop_adv_jac' removes the advection part of J (controls N-fd, N-grad)."""
+    46	    sh = H.shape_of(d, L)
+    47	    assert kind in ARMS and mutation in (None, 'drop_adv_jac')
+    48	
+    49	    if kind == 'none':
+    50	        def Ffull(u, nu):
+    51	            g = u.reshape(sh)
+    52	            return (H.adv_central(g, L) - nu * H.lap(g, L)).reshape(-1)
+    53	
+    54	        def step_const(cn, cm, nu, co, dt, data):
+    55	            un, um = data['Phi'] @ cn, data['Phi'] @ cm
+    56	            return co[1] * un + co[2] * um + dt * co[4] * Ffull(un, nu)
+    57	
+    58	        def rJ(c, const, nu, co, dt, data):
+    59	            Phi = data['Phi']
+    60	            u = Phi @ c
+    61	            g = u.reshape(sh)
+    62	            s = H.dsum(g, L).reshape(-1)
+    63	            r = co[0] * u + const + dt * co[3] * (u * s - nu * H.lap(g, L).reshape(-1))
+    64	            adv = s[:, None] * Phi + u[:, None] * data['DPhi']
+    65	            if mutation == 'drop_adv_jac':
+    66	                adv = 0. * adv
+    67	            J = co[0] * Phi + dt * co[3] * (adv - nu * data['LPhi'])
+    68	            return r, J
+    69	
+    70	    elif kind == 'ecsw':
+    71	        def node_F(c, nu, data):
+    72	            us = jnp.einsum('esr,r->es', data['Pst'], c)
+    73	            F, _ = H.stencil_F(us, nu, L, d)
+    74	            return us, F
+    75	
+    76	        def step_const(cn, cm, nu, co, dt, data):
+    77	            usn, Fn = node_F(cn, nu, data)
+    78	            um = data['Pst'][:, 0, :] @ cm
+    79	            return co[1] * usn[:, 0] + co[2] * um + dt * co[4] * Fn
+    80	
+    81	        def rJ(c, const, nu, co, dt, data):
+    82	            us, F = node_F(c, nu, data)
+    83	            sw = data['sw']
+    84	            r = sw * (co[0] * us[:, 0] + const + dt * co[3] * F)
+    85	            dF, dN = H.stencil_dF(us, nu, L, d)
+    86	            if mutation == 'drop_adv_jac':
+    87	                dF = dF - dN
+    88	            J = sw[:, None] * (co[0] * data['Pst'][:, 0, :] + dt * co[3] * jnp.einsum('es,esr->er', dF, data['Pst']))
+    89	            return r, J
+    90	
+    91	    else:
+    92	        def NP(c, data):
+    93	            us = jnp.einsum('psr,r->ps', data['Pst'], c)
+    94	            _, N = H.stencil_F(us, 0., L, d)
+    95	            return us, N
+   210	    def solve(c0, args, tol, gtol, lam0):
+   211	        w, rn, it, reason, gn, rej, lam = lm(c0, args, tol, gtol, lam0)
+   212	        return w, it, reason, lam
+   213	    return solve
+   214	
+   215	
+   216	# ----------------------------------------------------------------------------------------------- stepper ---
+   217	
+   218	def make_evolve(kind, d, L, solver, nmax, trust=None, mutation=None):
+   219	    """evolve(c0, nu, scale, data, sch) -> (W (6, r), C (nmax+1, r) the whole trajectory, stats).
+   220	    sch: hrcore.sched(..., nmax=nmax) plus gtol, tolf (traced). mutation 'drop_adv_jac' -> the SOLVER's Jacobian
+   221	    lacks its advection part (N-grad); certification (certify()) always uses the correct arm."""
+   222	    step_const, rJ_true = make_arm(kind, d, L)
+   223	    _, rJ_solve = make_arm(kind, d, L, mutation=mutation)
+   224	    res = make_res(kind, d, L)
+   225	    if solver == 'native':
+   226	        solve = make_gn(rJ_solve, res=res)
+   227	    else:
+   228	        assert trust is not None
+   229	        solve = make_common(rJ_solve, trust)
+   230	    be = jnp.asarray(H.BE_CO, jnp.float64)
+   231	
+   232	    def evolve(c0, nu, scale, data, sch):
+   233	        dt = sch['dt']
+   234	        r_ = c0.shape[0]
+   235	        out0 = jnp.zeros((6, r_), jnp.float64).at[0].set(c0)
+   236	        C0 = jnp.zeros((nmax + 1, r_), jnp.float64).at[0].set(c0)
+   237	        st0 = dict(it=jnp.full(nmax, -1, jnp.int32), reason=jnp.full(nmax, -1, jnp.int32),
+   238	                   lam=jnp.full(nmax, jnp.nan))
+   239	
+   240	        def body(cr):
+   241	            k, cv, cp, cpp, lam0, out, C, st = cr
+   242	            co = jnp.where(k < sch['nstart'], be, sch['co'])
+   243	            const = step_const(cv, cp, nu, co, dt, data)
+   244	            args = (const, nu, co, dt, data)
+   245	            tol = sch['tolf'] * scale
+   246	            if solver == 'native':
+   247	                c1, it, reason, _ = solve(cv, args, tol, sch['gtol'])
+   248	                lamn = lam0
+   249	            else:
+   250	                ce = cv + (cv - cp)
+   251	                cq = jnp.where(k >= 2, 3. * cv - 3. * cp + cpp, ce)
+   252	                cand = jnp.stack((cv, ce, cq))
+   253	                rs = jax.vmap(lambda w: jnp.linalg.norm(res(w, *args)))(cand)
+   254	                rs = jnp.where(jnp.isfinite(rs), rs, jnp.inf)
+   255	                c1, it, reason, lamn = solve(cand[jnp.argmin(rs)], args, tol, sch['gtol'], lam0)
+   256	            st = dict(it=st['it'].at[k].set(it), reason=st['reason'].at[k].set(reason), lam=st['lam'].at[k].set(lamn))
+   257	            kk = k + 1
+   258	            sl = sch['slot'][kk]
+   259	            out = jax.lax.cond(sl >= 0, lambda o: o.at[sl].set(c1), lambda o: o, out)
+   260	            return kk, c1, cv, cp, lamn, out, C.at[kk].set(c1), st
+    20	import nnls as NN
+    21	
+    22	CAND = 32768
+    23	ECSW_CAP, ECSW_CAP_RETRY = 8192, 16384
+    24	ECSW_TAUS = (1e-2, 1e-3, 1e-4)                 # recorded along the path (reported), not the knob (A15.1)
+    25	ECSW_KAPPA = (2, 4, 8)                          # the ECSW knob: support targets s = kappa * r (A15.1)
+    26	ECSW_KAPPA_PATH = (2, 4, 8, 16)                 # every path is built through the extension target 16r (A16.2)
+    27	ECSW_SEED_TRAJ, ECSW_SEED_CAND = 20261017, 20261018
+    28	N_ECSW_TRAJ = 24
+    29	
+    30	
+    31	class Timer:
+    32	    def __init__(self):
+    33	        self.t = {}
+    34	
+    35	    def __call__(self, name):
+    36	        tm = self
+    37	
+    38	        class _C:
+    39	            def __enter__(self):
+    40	                self.t0 = time.perf_counter()
+    41	
+    42	            def __exit__(self, *a):
+    43	                tm.t[name] = tm.t.get(name, 0.) + time.perf_counter() - self.t0
+    44	        return _C()
+    45	
+    46	
+    47	# ---------------------------------------------------------------------------------------------- snapshots ---
+    48	
+    49	def snapshots(d, L, fam, rows, save_steps=H.SNAP_STEPS, scheme=H.SNAP_SCHEME, dt=H.SNAP_DT, ntol=1e-10, ltol=1e-12,
+    50	              log=print, adv='central'):
+    51	    """Host array (len(rows) * len(save_steps), n) of FOM states (central operator; 'upwind' = the banks' generator,
+    52	    used with scheme 'BE' by the generator probe, A2.3); asserts every step converged."""
+    53	    n = (L - 1) ** d
+    54	    fom = H.make_fom(d, L, adv=adv)
+    55	    sch = H.sched(scheme, dt, save_steps=save_steps)
+    56	    S = np.empty((len(rows) * len(save_steps), n))
+    57	    worst, t0 = 0.0, time.perf_counter()
+    58	    for i, j in enumerate(rows):
+    59	        o = fom(fam.ic(L, j), fam.nu(j), sch, ntol, ltol)
+    60	        res = np.asarray(o['res'])
+    61	        assert np.all(np.isfinite(res)) and float(np.max(res)) <= ntol * (1 + 1e-9), (j, float(np.nanmax(res)))
+    62	        worst = max(worst, float(np.max(res)))
+    63	        S[i * len(save_steps):(i + 1) * len(save_steps)] = np.asarray(o['out'])
+    64	        if log and (i % 64 == 0 or i == len(rows) - 1):
+    65	            log(f'   snapshots {i + 1}/{len(rows)} worst rel residual {worst:.2e} [{time.perf_counter() - t0:.0f}s]')
+    66	    return S, dict(worst_rel_residual=worst, rows=len(rows), steps=list(save_steps), scheme=scheme, dt=dt, adv=adv)
+    67	
+    68	
+    69	def _blocks(n, nb):
+    70	    return [(i, min(i + nb, n)) for i in range(0, n, nb)]
+    35	
+    36	def sha(a):
+    37	    return hashlib.sha256(np.ascontiguousarray(np.asarray(a)).tobytes()).hexdigest()
+    38	
+    39	
+    40	def tol_of(form, level):
+    41	    """(gtol, tolf) per form and level (combined c2common.tol_of, unchanged)."""
+    42	    if form == 'LSPG':
+    43	        return {'prod': (1e-3, 1e-9), 'tight': (1e-7, 0.), 'tighter': (1e-8, 0.)}[level]
+    44	    return {'prod': (0., 1e-10), 'tight': (0., 1e-13), 'tighter': (0., 1e-15)}[level]
+    45	
+    46	
+    47	def gpu_info():
+    48	    try:
+    49	        return subprocess.check_output(['nvidia-smi', '--query-gpu=name,uuid,memory.total', '--format=csv,noheader'],
+    50	                                       text=True).strip().splitlines()
+    51	    except Exception:  # noqa: BLE001
+    52	        return []
+    53	
+    54	
+    55	def check_env(cfg):
+    56	    if not cfg.get('allow_cpu_smoke'):
+    57	        assert jax.default_backend() == 'gpu', jax.default_backend()
+    58	    assert os.environ['JAX_DEFAULT_MATMUL_PRECISION'] == 'highest'
+    59	    assert jax.config.jax_enable_x64
+    60	    print(f'jax_backend={jax.default_backend()} x64=True precision=highest', flush=True)
+    61	
+    62	
+    63	def mem():
+    64	    try:
+    65	        s = jax.devices()[0].memory_stats() or {}
+    66	        return dict(in_use=int(s.get('bytes_in_use', -1)), peak=int(s.get('peak_bytes_in_use', -1)),
+    67	                    limit=int(s.get('bytes_limit', -1)))
+    68	    except Exception:  # noqa: BLE001
+    69	        return dict(in_use=-1, peak=-1, limit=-1)
+    70	
+    71	
+    72	# ------------------------------------------------------------------ cohorts ----
+

@@ -1063,3 +1063,7 @@ $10^{-10}$/1e-8 reproduction is not attainable by the registered algorithm; the 
 certificate (A6.1), unchanged. Output discrepancies (timed vs scored) treat matching non-finite entries as agreement and
 any mismatch of the non-finite pattern as non-finite, so an honestly invalid run reaches the invalid-run accounting
 (A12.1) instead of an evidence error.
+
+**A12.7 (code audit 7) Timing outputs must be finite.** Every timed call's output and its scored comparison field must
+be entirely finite (else the discrepancy is non-finite and acceptance fails); the NaN-aware agreement of A12.6 applies
+only to the grid's invalid-run accounting.

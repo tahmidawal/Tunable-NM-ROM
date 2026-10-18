@@ -65,9 +65,14 @@ def rule_proj(cfg):
     m_ref = max(m_of(t['rule']) for v in ru['groups'].values() for t in v['trail'])
     # worst case: whole selectable ladder; each rung's cost scaled by its SUCCESSOR's point count (the q+ / q++ solves
     # are the largest of the rung), times ALLOW for dimension (r = 384, M = 1536) and trained-head iteration counts
-    ALLOW = 1.5
-    succ = LADDER[1:] + [256]
-    rung_cost = sum(max(1., m_of(f'gauss{q}') / m_ref) for q in succ)
+    # ALLOW measured: in smk1's accuracy job the costliest two-case arm-scheme (any K or r, incl. r = 384 / M = 1536)
+    # over the head arm the rule probe timed (Hk4)
+    a = jl(out('smk1', 'hacc', 'smk1acc') / 'result.json')
+    two = {n: v['arms']['BE']['seconds'] for n, v in a['arms'].items() if v['spec']['cases'] != 'all38'}
+    ALLOW = max(1., max(two.values()) / two['Hk4'])
+    full = LADDER + [256, 320]
+    succ = [max(m_of(f'gauss{full[i + 1]}'), m_of(f'gauss{full[i + 2]}')) for i in range(len(LADDER))]   # q+ and q++
+    rung_cost = sum(max(1., m / m_ref) for m in succ)
     tot = 300. + ALLOW * sum(len(g['arms']) * per * rung_cost for g in cfg['groups'])
     return tot, dict(seconds_per_arm_rung=per, m_ref=m_ref, worst_case_rung_units=rung_cost, allowance=ALLOW, setup=300.)
 

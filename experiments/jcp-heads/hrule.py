@@ -7,7 +7,7 @@ a linear rung: its one arm) have, on the population (sub16): valid q and q+ solv
 rollout distance d(q, q+) <= 2.5e-4 on every case, rho_max(q -> q+) <= 0.116 on its own reached states (six outputs);
 and on dev6: valid q++ solves and d(q+, q++) <= 2.5e-4 ("pass", never "unverified"). Solutions are cached per
 (arm, rule) so q+ of one rung is reused as q of the next. Exhausted ladder -> "not quadrature-qualified".
-Every saved array allows the offline recomputation (hscore.rule_check). One JSON + one npz per group.
+Every saved array allows the offline recomputation (hscore.rule_verify, required by analyze.py rules). One JSON + one npz per group.
 
     python hrule.py --config configs/<attempt>.json --out <dir>
 config: {"mesh", "edges", "ladder": [16, 24, ...], "selectable_max": 192, "population": "sub16", "check": "dev6",
@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import gc
 import json
+import os
 import time
 from pathlib import Path
 
@@ -55,7 +56,9 @@ def main():
                backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=P.gpu_info(),
                jax_version=jax.__version__, mesh=L, checkpoint_sha256=QS.sha_file(T2.CKPT), cohorts=P.cohort_hashes(),
                groups={}, memory={}, elapsed={}, complete=False)
-    save = lambda: json.dump(QS.clean(rep), open(out / 'result.json', 'w'), indent=1)
+    def save():                                                           # atomic replacement of the result index
+        json.dump(QS.clean(rep), open(out / 'result.tmp.json', 'w'), indent=1)
+        os.replace(out / 'result.tmp.json', out / 'result.json')
     QS.burn(.05)
     bank = P.Bank(L, cfg['edges'], nrb=cfg.get('bank_blocks'))
     rep['bank'] = dict(edges=bank.edges, seconds=bank.build_seconds, bytes=bank.bytes, mem=P.mem())
@@ -120,7 +123,8 @@ def main():
             if not keys:
                 return
             D = lambda f: np.array([sol[x][4][f] for x in keys])
-            np.savez_compressed(out / f"SOL_{grp['name']}.npz",
+            tmp = out / f"SOL_{grp['name']}.tmp.npz"
+            np.savez_compressed(tmp,
                                 keys=np.array([f'{arms[k].name}|{rl}|{cid(ci)}' for k, rl, ci in keys]),
                                 W=np.array([sol[x][0] for x in keys]),      # fields are re-derivable (nphead / decode257)
                                 valid=np.array([sol[x][2] for x in keys]), n0=np.array([U0[x[2]][2] for x in keys]),
@@ -128,6 +132,7 @@ def main():
                                 ic_gn=D('ic_gn'), fields_finite=D('fields_finite'),
                                 w0=np.array([sol[x][4]['w0'] for x in keys], dtype=object) if len({sol[x][4]['w0'].shape for x in keys}) > 1
                                 else D('w0'))
+            os.replace(tmp, out / f"SOL_{grp['name']}.npz")                    # atomic replacement
             rep['groups'][grp['name']] = dict(partial=True, trail=trail, population=[cid(c) for c in pop])
             save()
 

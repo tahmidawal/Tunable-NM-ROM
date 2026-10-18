@@ -211,7 +211,8 @@ def rule_verify(res, sol_dir, cfg, S=50):
             i = ix[f'{arm}|{rule}|{case}']
             coef, dim, M, is_head = arms[arm]
             C = coef(z['W'][i])
-            valid = bool(np.isfinite(z['W'][i]).all() and bool(z['fields_finite'][i]) and int(z['exits'][i][3]) == 0
+            valid = bool(np.isfinite(z['W'][i]).all() and np.isfinite(np.asarray(z['w0'][i], float)).all()
+                         and bool(z['fields_finite'][i]) and int(z['exits'][i][3]) == 0
                          and np.isfinite(z['step_gn'][i][:S]).all() and ((not is_head) or int(z['ic_reason'][i]) in (1, 4)))
             if valid != bool(z['valid'][i]):
                 rep['problems'].append(('validity', arm, rule, case, valid, bool(z['valid'][i])))
@@ -230,16 +231,21 @@ def rule_verify(res, sol_dir, cfg, S=50):
                     d.append(NC.fdist(NC.decode257(Cq, dim), NC.decode257(Cp, dim), n0))
                     vq.append(okq)
                     vqp.append(okp)
-                if not np.allclose(d, a['dist'], rtol=1e-9, atol=1e-13):
-                    rep['problems'].append(('dist', an, t_['rule'], float(np.max(np.abs(np.asarray(d) - a['dist'])))))
-                roll = bool(all(vq) and all(vqp) and np.isfinite(d).all() and max(d) <= BAR_Q2)
+                dj = np.array([np.inf if x is None else float(x) for x in a['dist']])     # JSON null = non-finite
+                d = np.where(np.isfinite(d), d, np.inf)
+                same = (np.isinf(d) & np.isinf(dj)) | (np.isfinite(d) & np.isfinite(dj) & np.isclose(d, dj, rtol=1e-9, atol=1e-13))
+                if len(dj) != len(d) or not same.all():
+                    rep['problems'].append(('dist', an, t_['rule']))
+                roll = bool(all(vq) and all(vqp) and np.isfinite(d).all() and np.max(d) <= BAR_Q2)
                 rho_ok = False
                 if roll:
                     tq, tp = tables(t_['rule'], dim, M, int(res['mesh'])), tables(t_['successor'], dim, M, int(res['mesh']))
                     rr = [NC.rho(Ck, tq, tp) for c in pop for Ck in get(an, t_['rule'], c)[0]]
                     rr = np.asarray(rr, float)
-                    rmax = float(np.nanmax(rr)) if np.isfinite(rr[~np.isnan(rr)]).all() else float('inf')
-                    if a['rho_max'] is None or not np.isclose(rmax, a['rho_max'], rtol=1e-6, atol=1e-12):
+                    rmax = float(np.max(rr)) if np.isfinite(rr).all() else float('inf')     # the driver's rule
+                    rj = float('inf') if a['rho_max'] is None else float(a['rho_max'])
+                    if not ((np.isinf(rmax) and np.isinf(rj)) or (np.isfinite(rmax) and np.isfinite(rj)
+                                                                   and np.isclose(rmax, rj, rtol=1e-6, atol=1e-12))):
                         rep['problems'].append(('rho_max', an, t_['rule'], rmax, a['rho_max']))
                     rho_ok = rmax <= BAR_RHO
                 chk_ok = False
@@ -250,7 +256,8 @@ def rule_verify(res, sol_dir, cfg, S=50):
                         Cpp, okpp, _, _, _ = get(an, t_['check'], c)
                         dc.append(NC.fdist(NC.decode257(Cp, dim), NC.decode257(Cpp, dim), n0))
                         vpp.append(okpp)
-                    chk_ok = bool(all(vpp) and np.isfinite(dc).all() and max(dc) <= BAR_Q2)
+                    dc = np.asarray(dc, float)
+                    chk_ok = bool(all(vpp) and np.isfinite(dc).all() and dc.max() <= BAR_Q2)
                 passed = bool(roll and rho_ok and chk_ok)
                 if passed != bool(a['passed']):
                     rep['problems'].append(('passed', an, t_['rule'], passed, a['passed']))

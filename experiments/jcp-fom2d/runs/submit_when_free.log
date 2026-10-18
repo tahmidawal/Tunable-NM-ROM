@@ -1,0 +1,25 @@
+--- squeue before (lane=2 account=2)
+5373281 f2d_fps RUNNING
+5373119 f2d_fcc RUNNING
+{"cap_gpu_hours": 30.0, "spent_gpu_hours": 0.0889, "reserved_gpu_hours": 7.5}
+Submitted batch job 5380338
+{"cap_gpu_hours": 30.0, "spent_gpu_hours": 0.0889, "reserved_gpu_hours": 7.5}
+--- squeue after
+     JOBID                     NAME    STATE       TIME NODELIST(REASON)
+   5380338                f2d_smkc2  RUNNING       0:00 pax011
+   5373281                  f2d_fps  RUNNING      12:21 pax010
+   5373119                  f2d_fcc  RUNNING      18:44 pax009
+SUBMITTED smkc2 2026-10-18T07:15:47Z
+--- squeue before (lane=2 account=2)
+5380338 f2d_smkc2 RUNNING
+5373119 f2d_fcc RUNNING
+{"cap_gpu_hours": 30.0, "spent_gpu_hours": 0.0889, "reserved_gpu_hours": 11.25}
+Submitted batch job 5380943
+{"cap_gpu_hours": 30.0, "spent_gpu_hours": 0.0889, "reserved_gpu_hours": 11.25}
+--- squeue after
+     JOBID                     NAME    STATE       TIME NODELIST(REASON)
+   5380943                f2d_fub4k  RUNNING       0:01 pax010
+   5380338                f2d_smkc2  RUNNING       2:08 pax011
+   5373119                  f2d_fcc  RUNNING      20:52 pax009
+SUBMITTED fub4k 2026-10-18T07:17:55Z
+ALL-SUBMITTED

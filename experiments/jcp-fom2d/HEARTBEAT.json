@@ -1,20 +1,18 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T07:10:44Z",
- "step": "7: ladder jobs running; codex C2 code audit 3 running; smkc2 staged",
+ "utc": "2026-10-18T07:41:20Z",
+ "step": "8: fcc/fub/fps/smkc2 collected and accepted; fub4k running; C1 preview matching done (P1 targets); next: C2 smoke results audit, then final C1 matching after fub4k",
  "waiting_on": {
   "slurm_jobs": [
-   "5373119",
-   "5373122",
-   "5373281"
+   "5380943"
   ],
-  "codex_output": "audits/codex-c2code-3.md",
-  "codex_pid": 1623757,
+  "codex_output": null,
+  "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T09:30:00Z",
- "last_commit": "a7be0c8f7",
- "gpu_hours_spent": 0.0889,
+ "expected_finish_utc": "2026-10-18T08:30:00Z",
+ "last_commit": "538f444ec",
+ "gpu_hours_spent": 1.0717,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D.json not yet produced"
+ "notes": "FRONT-2D.json not yet produced (qualify running acc jobs); waiter finished"
 }

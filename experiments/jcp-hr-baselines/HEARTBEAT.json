@@ -1,16 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T20:57:14Z",
- "step": "s2d1024a cancelled at 2:08 (save-bound timing, A42) and collected; stageb.py throttled saves + evidence.jsonl; CPU dry Stage-B running; t3d64b 5542231 RUNNING ~6:15",
+ "utc": "2026-10-18T21:16:57Z",
+ "step": "code audit 31 NOT READY (missing forced saves) -> A42.1; CPU dry Stage-B passed (33/33 pairs, evidence.jsonl 569 lines); code audit 32 running; t3d64b 5542231 RUNNING 6:33 (extension phase)",
  "waiting_on": {
   "slurm_jobs": [
    5542231
   ],
-  "codex_output": null,
-  "codex_pid": [],
+  "codex_output": "audits/codex-code-32.md",
+  "codex_pid": [
+   3805212
+  ],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T21:17:14Z",
+ "expected_finish_utc": "2026-10-18T21:35:57Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

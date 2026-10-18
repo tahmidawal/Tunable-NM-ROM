@@ -133,3 +133,15 @@ earlier report, say so plainly.
 - paths of report, plots (PNG), DESIGN, ledger;
 - the last lane commit and its mirror commit;
 - deferred items and open questions.
+
+## 11. Disk hygiene for Codex audits (added 2026-10-18 02:50 UTC by the coordinator)
+Codex audits have been copying ~10 GB of lane data into `/tmp/<lane>-roundN-audit/` per round (speed3d:
+89 GB in rounds 5–12, local disk fell to 95 GB free). From now on: every Codex prompt must say "do not copy
+large arrays; if you need scratch, use at most 2 GB under `/tmp/<lane>-audit-scratch/` and reuse it";
+after each audit round the lane agent deletes that round's scratch dir once the audit file is read
+(check `pgrep -af <dir>` first). Check `df -h /home` before each audit; do not start one below 60 GB free.
+
+## 12. Waiting on a process (added 2026-10-18 03:10 UTC)
+Never wait with `pgrep -f <pattern>` where the pattern also appears in your own waiter's command line — it
+matches itself and never ends (happened in jcp-p1-scaling). Wait on the **PID** (`while kill -0 $PID`)
+captured when you launched the process, or run the Codex call in the foreground with `timeout`.

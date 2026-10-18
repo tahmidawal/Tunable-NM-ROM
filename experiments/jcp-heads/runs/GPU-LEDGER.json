@@ -36,14 +36,25 @@
    "attempts": 1,
    "node": "pax050",
    "prior_elapsed_hours": 0.0
+  },
+  {
+   "attempt": "rule1024",
+   "job_id": "5581241",
+   "time_limit_hours": 11.25,
+   "state": "COMPLETED",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.2975,
+   "pending_hours": 11.25,
+   "attempts": 1,
+   "node": "pax050",
+   "prior_elapsed_hours": 0.0
   }
  ],
  "pending_core": {
-  "rule1024": 11.25,
-  "acc1024": 6,
-  "time1024": 4,
+  "acc1024": 4.5,
+  "time1024": 2.5,
   "time256": 2
  },
- "spent_gpu_hours": 1.4078,
+ "spent_gpu_hours": 1.7053,
  "reserved_gpu_hours": 0
 }

@@ -1,0 +1,21 @@
+{
+ "attempt": "time1024",
+ "runs": [
+  "htime:configs/time1024.json"
+ ],
+ "configs": {
+  "configs/time1024.json": "50dabdae4bbe95b79799e776488046e81c9553da740667c0cdd0daf781e06bbe"
+ },
+ "projection_hours": 1.5558839940895017,
+ "time_limit_hours": 2.5,
+ "detail": {
+  "htime:configs/time1024.json": {
+   "seconds": 5601.1823787222065,
+   "per_triplet_pair": 1.2243638549000027,
+   "cert_per_subject": 26.614796181097624,
+   "n_triplets": 2100,
+   "setup": 600.0
+  }
+ },
+ "note": "estimate from smoke archives (resources.py docstring); the scheduler limit is the enforced bound"
+}

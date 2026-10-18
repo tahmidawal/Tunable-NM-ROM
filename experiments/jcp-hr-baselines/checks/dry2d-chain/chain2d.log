@@ -1,0 +1,198 @@
+jaxslot: holding slot 1 (pid 2658196)
+[     0.2s] jax_backend=cpu devices=[CpuDevice(id=0)]
+[     0.3s] OK   refs (0.1s)
+[    12.2s]    oursP1: L=256 settings ['R128'] in 11.6s
+[    23.4s]    ours 256|R128|BE: G-ours=True (1.77e-13) 0:1.5798s 1:1.7619s 2:1.6580s
+[    23.4s] OK   ours_pass (23.2s)
+[    29.8s]    snapshots 1/12 worst rel residual 3.32e-11 [6s]
+[    96.2s]    snapshots 12/12 worst rel residual 9.18e-11 [72s]
+[    97.9s]    basis[central]: n_snap 144 rank 144 orth 1.7e-14 optimal True
+[    97.9s] OK   basis (74.5s)
+[   175.7s]    basis[allstep]: n_snap 612 rank 411 orth 1.7e-14 optimal True
+[   176.8s] OK   saturation (78.5s)
+[   249.7s] OK   adequacy (72.9s)
+[   253.8s]    advection POD: p_max 96 numerical rank 144 orth 1.9e-14
+[   253.8s] OK   adv_pod (4.1s)
+[   261.0s]    snapshots 1/12 worst rel residual 4.07e-11 [7s]
+[   342.0s]    snapshots 12/12 worst rel residual 9.22e-11 [88s]
+[   342.6s]    basis[upwind]: n_snap 144 rank 143 orth 1.4e-14 optimal True
+[   342.6s] OK   generator_probe_basis (88.8s)
+[   515.9s] OK   ecsw_states (173.2s)
+[   521.6s] OK   ecsw_r8 (5.8s)
+[   531.1s] OK   ecsw_r16 (9.5s)
+[   532.8s]    ecsw|8|k2|BE|0.005|native|central: q1=False W=97.96 t=0.003603s timing_ok=True
+[   533.9s]    ecsw|8|k2|BE|0.005|common|central: q1=False W=69.1 t=0.01578s timing_ok=True
+[   534.0s] OK   A|ecsw|8|k2|BE|0.005 (2.6s)
+[   534.8s]    ecsw|8|k2|CNR|0.005|native|central: q1=False W=144.9 t=0.002486s timing_ok=True
+[   535.5s]    ecsw|8|k2|CNR|0.005|common|central: q1=False W=138.1 t=0.002467s timing_ok=True
+[   535.5s] OK   A|ecsw|8|k2|CNR|0.005 (1.6s)
+[   537.1s]    ecsw|8|k4|BE|0.005|native|central: q1=True W=0.4842 t=0.002063s timing_ok=True
+[   538.1s]    ecsw|8|k4|BE|0.005|common|central: q1=True W=0.4842 t=0.002078s timing_ok=True
+[   538.1s] OK   A|ecsw|8|k4|BE|0.005 (2.3s)
+[   539.2s]    ecsw|8|k4|CNR|0.005|native|central: q1=True W=0.4846 t=0.00239s timing_ok=True
+[   539.9s]    ecsw|8|k4|CNR|0.005|common|central: q1=True W=0.4846 t=0.001464s timing_ok=True
+[   540.0s] OK   A|ecsw|8|k4|CNR|0.005 (1.8s)
+[   541.5s]    ecsw|8|k8|BE|0.005|native|central: q1=True W=0.4827 t=0.002394s timing_ok=True
+[   542.9s]    ecsw|8|k8|BE|0.005|common|central: q1=True W=0.4827 t=0.001886s timing_ok=True
+[   542.9s] OK   A|ecsw|8|k8|BE|0.005 (2.6s)
+[   543.8s]    ecsw|8|k8|CNR|0.005|native|central: q1=True W=0.4831 t=0.002615s timing_ok=True
+[   544.8s]    ecsw|8|k8|CNR|0.005|common|central: q1=True W=0.4831 t=0.002453s timing_ok=True
+[   544.8s] OK   A|ecsw|8|k8|CNR|0.005 (1.9s)
+/home/tahmid/Dev/.venv/lib/python3.12/site-packages/jax/_src/ops/scatter.py:104: FutureWarning: scatter inputs have incompatible types: cannot safely cast value from dtype=int64 to dtype=int32 with jax_numpy_dtype_promotion=standard. In future JAX releases this will result in an error.
+  warnings.warn(
+[   547.6s]    qdeim|8|8|BE|0.005|native|central: q1=True W=0.4925 t=0.001984s timing_ok=True
+[   548.9s]    qdeim|8|8|BE|0.005|common|central: q1=True W=0.4925 t=0.002024s timing_ok=True
+[   548.9s] OK   A|qdeim|8|8|BE|0.005 (2.7s)
+[   549.8s]    qdeim|8|8|CNR|0.005|native|central: q1=True W=0.4924 t=0.002708s timing_ok=True
+[   550.6s]    qdeim|8|8|CNR|0.005|common|central: q1=True W=0.4924 t=0.001576s timing_ok=True
+[   550.7s] OK   A|qdeim|8|8|CNR|0.005 (1.7s)
+[   553.4s]    qdeim|8|16|BE|0.005|native|central: q1=True W=0.4848 t=0.003087s timing_ok=True
+[   554.5s]    qdeim|8|16|BE|0.005|common|central: q1=True W=0.4848 t=0.002156s timing_ok=True
+[   554.5s] OK   A|qdeim|8|16|BE|0.005 (2.6s)
+[   555.5s]    qdeim|8|16|CNR|0.005|native|central: q1=True W=0.485 t=0.002055s timing_ok=True
+[   556.5s]    qdeim|8|16|CNR|0.005|common|central: q1=True W=0.485 t=0.001819s timing_ok=True
+[   556.5s] OK   A|qdeim|8|16|CNR|0.005 (1.9s)
+[   558.6s]    qdeim|8|32|BE|0.005|native|central: q1=True W=0.4838 t=0.00348s timing_ok=True
+[   559.4s]    qdeim|8|32|BE|0.005|common|central: q1=True W=0.4838 t=0.002266s timing_ok=True
+[   559.5s] OK   A|qdeim|8|32|BE|0.005 (1.7s)
+[   560.2s]    qdeim|8|32|CNR|0.005|native|central: q1=True W=0.4843 t=0.00387s timing_ok=True
+[   560.7s]    qdeim|8|32|CNR|0.005|common|central: q1=True W=0.4843 t=0.002597s timing_ok=True
+[   560.7s] OK   A|qdeim|8|32|CNR|0.005 (1.2s)
+[   561.8s]    ecsw|16|k2|BE|0.005|native|central: q1=True W=1.185 t=0.003124s timing_ok=True
+[   562.5s]    ecsw|16|k2|BE|0.005|common|central: q1=False W=1.185 t=0.002391s timing_ok=True
+[   562.5s] OK   A|ecsw|16|k2|BE|0.005 (1.7s)
+[   563.2s]    ecsw|16|k2|CNR|0.005|native|central: q1=True W=1.381 t=0.003005s timing_ok=True
+[   563.7s]    ecsw|16|k2|CNR|0.005|common|central: q1=False W=1.38 t=0.002626s timing_ok=True
+[   563.8s] OK   A|ecsw|16|k2|CNR|0.005 (1.2s)
+[   564.9s]    ecsw|16|k4|BE|0.005|native|central: q1=True W=0.364 t=0.004454s timing_ok=True
+[   565.8s]    ecsw|16|k4|BE|0.005|common|central: q1=True W=0.364 t=0.002613s timing_ok=True
+[   565.9s] OK   A|ecsw|16|k4|BE|0.005 (2.0s)
+[   566.6s]    ecsw|16|k4|CNR|0.005|native|central: q1=True W=0.363 t=0.004271s timing_ok=True
+[   567.1s]    ecsw|16|k4|CNR|0.005|common|central: q1=True W=0.363 t=0.002727s timing_ok=True
+[   567.2s] OK   A|ecsw|16|k4|CNR|0.005 (1.3s)
+[   568.6s]    ecsw|16|k8|BE|0.005|native|central: q1=True W=0.3534 t=0.006197s timing_ok=True
+[   569.4s]    ecsw|16|k8|BE|0.005|common|central: q1=True W=0.3534 t=0.003947s timing_ok=True
+[   569.4s] OK   A|ecsw|16|k8|BE|0.005 (2.0s)
+[   570.2s]    ecsw|16|k8|CNR|0.005|native|central: q1=True W=0.3521 t=0.00599s timing_ok=True
+[   570.8s]    ecsw|16|k8|CNR|0.005|common|central: q1=True W=0.3521 t=0.003706s timing_ok=True
+[   570.8s] OK   A|ecsw|16|k8|CNR|0.005 (1.3s)
+[   572.4s]    qdeim|16|16|BE|0.005|native|central: q1=True W=0.3629 t=0.005178s timing_ok=True
+[   573.3s]    qdeim|16|16|BE|0.005|common|central: q1=True W=0.3629 t=0.003149s timing_ok=True
+[   573.3s] OK   A|qdeim|16|16|BE|0.005 (2.1s)
+[   574.1s]    qdeim|16|16|CNR|0.005|native|central: q1=True W=0.3622 t=0.004068s timing_ok=True
+[   574.8s]    qdeim|16|16|CNR|0.005|common|central: q1=True W=0.3622 t=0.003046s timing_ok=True
+[   574.8s] OK   A|qdeim|16|16|CNR|0.005 (1.5s)
+[   576.8s]    qdeim|16|32|BE|0.005|native|central: q1=True W=0.3632 t=0.005932s timing_ok=True
+[   577.7s]    qdeim|16|32|BE|0.005|common|central: q1=True W=0.3632 t=0.003466s timing_ok=True
+[   577.7s] OK   A|qdeim|16|32|BE|0.005 (2.3s)
+[   578.7s]    qdeim|16|32|CNR|0.005|native|central: q1=True W=0.3621 t=0.005847s timing_ok=True
+[   579.3s]    qdeim|16|32|CNR|0.005|common|central: q1=True W=0.3621 t=0.003366s timing_ok=True
+[   579.3s] OK   A|qdeim|16|32|CNR|0.005 (1.6s)
+[   582.5s]    qdeim|16|64|BE|0.005|native|central: q1=True W=0.3539 t=0.008517s timing_ok=True
+[   583.3s]    qdeim|16|64|BE|0.005|common|central: q1=True W=0.3539 t=0.004919s timing_ok=True
+[   583.4s] OK   A|qdeim|16|64|BE|0.005 (2.3s)
+[   584.3s]    qdeim|16|64|CNR|0.005|native|central: q1=True W=0.3526 t=0.00786s timing_ok=True
+[   585.0s]    qdeim|16|64|CNR|0.005|common|central: q1=True W=0.3526 t=0.005262s timing_ok=True
+[   585.1s] OK   A|qdeim|16|64|CNR|0.005 (1.7s)
+[   592.9s]    none|8|-|BE|0.005|native|central: q1=True W=0.4826 t=0.4969s timing_ok=True
+[   594.6s]    none|8|-|BE|0.005|common|central: q1=True W=0.4826 t=0.1051s timing_ok=True
+[   594.7s] OK   A|none|8|-|BE|0.005 (9.6s)
+[   602.0s]    none|8|-|CNR|0.005|native|central: q1=True W=0.483 t=0.5092s timing_ok=True
+[   603.7s]    none|8|-|CNR|0.005|common|central: q1=True W=0.483 t=0.1072s timing_ok=True
+[   603.7s] OK   A|none|8|-|CNR|0.005 (9.0s)
+[   619.7s]    none|16|-|BE|0.005|native|central: q1=True W=0.3534 t=1.069s timing_ok=True
+[   622.2s]    none|16|-|BE|0.005|common|central: q1=True W=0.3534 t=0.1736s timing_ok=True
+[   622.3s] OK   A|none|16|-|BE|0.005 (18.5s)
+[   637.3s]    none|16|-|CNR|0.005|native|central: q1=True W=0.3521 t=1.073s timing_ok=True
+[   639.7s]    none|16|-|CNR|0.005|common|central: q1=True W=0.3521 t=0.1769s timing_ok=True
+[   639.7s] OK   A|none|16|-|CNR|0.005 (17.4s)
+[   672.7s] OK   fom_limiting (32.9s)
+[   684.7s] OK   generator_probe_runs (12.0s)
+[   686.4s]    ecsw|16|k16|BE|0.005|native|central: q1=True W=0.3534 t=0.0106s timing_ok=True
+[   687.2s]    ecsw|16|k16|BE|0.005|common|central: q1=True W=0.3534 t=0.005324s timing_ok=True
+[   687.3s] OK   EXT|ecsw|16|k16|BE|0.005 (2.2s)
+[   688.3s]    ecsw|16|k16|CNR|0.005|native|central: q1=True W=0.3521 t=0.01063s timing_ok=True
+[   689.0s]    ecsw|16|k16|CNR|0.005|common|central: q1=True W=0.3521 t=0.005446s timing_ok=True
+[   689.0s] OK   EXT|ecsw|16|k16|CNR|0.005 (1.7s)
+[   716.2s] OK   ecsw_r24 (27.1s)
+[   719.7s]    ecsw|24|k4|BE|0.005|native|central: q1=True W=0.1809 t=0.009269s timing_ok=True
+[   721.8s]    ecsw|24|k4|BE|0.005|common|central: q1=False W=0.1809 t=0.004364s timing_ok=True
+[   721.9s] OK   EXT|ecsw|24|k4|BE|0.005 (5.1s)
+[   724.1s]    ecsw|24|k4|CNR|0.005|native|central: q1=True W=0.1802 t=0.01026s timing_ok=True
+[   725.8s]    ecsw|24|k4|CNR|0.005|common|central: q1=True W=0.1802 t=0.004994s timing_ok=True
+[   726.0s] OK   EXT|ecsw|24|k4|CNR|0.005 (4.0s)
+[   729.5s]    ecsw|24|k8|BE|0.005|native|central: q1=True W=0.1821 t=0.00826s timing_ok=True
+[   731.3s]    ecsw|24|k8|BE|0.005|common|central: q1=False W=0.1821 t=0.008799s timing_ok=True
+[   731.4s] OK   EXT|ecsw|24|k8|BE|0.005 (4.9s)
+[   732.5s]    ecsw|24|k8|CNR|0.005|native|central: q1=True W=0.1809 t=0.0128s timing_ok=True
+[   733.3s]    ecsw|24|k8|CNR|0.005|common|central: q1=True W=0.1809 t=0.006327s timing_ok=True
+[   733.3s] OK   EXT|ecsw|24|k8|CNR|0.005 (1.9s)
+[   756.3s]    none|24|-|BE|0.005|native|central: q1=True W=0.1821 t=1.665s timing_ok=True
+[   759.5s]    none|24|-|BE|0.005|common|central: q1=False W=0.1821 t=0.2481s timing_ok=True
+[   759.6s] OK   EXT|none|24|-|BE|0.005 (26.2s)
+[   781.6s]    none|24|-|CNR|0.005|native|central: q1=True W=0.1809 t=1.631s timing_ok=True
+[   784.6s]    none|24|-|CNR|0.005|common|central: q1=True W=0.1809 t=0.2666s timing_ok=True
+[   784.7s] OK   EXT|none|24|-|CNR|0.005 (25.1s)
+[   787.9s]    qdeim|24|24|BE|0.005|native|central: q1=True W=0.2158 t=0.008444s timing_ok=True
+[   788.8s]    qdeim|24|24|BE|0.005|common|central: q1=False W=0.2158 t=0.004516s timing_ok=True
+[   788.8s] OK   EXT|qdeim|24|24|BE|0.005 (2.6s)
+[   790.0s]    qdeim|24|24|CNR|0.005|native|central: q1=True W=0.2137 t=0.008088s timing_ok=True
+[   790.7s]    qdeim|24|24|CNR|0.005|common|central: q1=True W=0.2137 t=0.004407s timing_ok=True
+[   790.8s] OK   EXT|qdeim|24|24|CNR|0.005 (1.9s)
+[   793.9s]    qdeim|24|48|BE|0.005|native|central: q1=True W=0.1888 t=0.01104s timing_ok=True
+[   794.8s]    qdeim|24|48|BE|0.005|common|central: q1=False W=0.1888 t=0.00562s timing_ok=True
+[   794.9s] OK   EXT|qdeim|24|48|BE|0.005 (2.7s)
+[   796.1s]    qdeim|24|48|CNR|0.005|native|central: q1=True W=0.1876 t=0.01081s timing_ok=True
+[   796.9s]    qdeim|24|48|CNR|0.005|common|central: q1=True W=0.1876 t=0.006257s timing_ok=True
+[   796.9s] OK   EXT|qdeim|24|48|CNR|0.005 (2.0s)
+[   798.6s]    ecsw|8|k16|BE|0.005|native|central: q1=True W=0.4826 t=0.003372s timing_ok=True
+[   799.5s]    ecsw|8|k16|BE|0.005|common|central: q1=True W=0.4827 t=0.00153s timing_ok=True
+[   799.6s] OK   EXT|ecsw|8|k16|BE|0.005 (2.5s)
+[   800.9s]    ecsw|8|k16|CNR|0.005|native|central: q1=True W=0.483 t=0.003259s timing_ok=True
+[   801.6s]    ecsw|8|k16|CNR|0.005|common|central: q1=True W=0.483 t=0.002341s timing_ok=True
+[   801.7s] OK   EXT|ecsw|8|k16|CNR|0.005 (2.1s)
+[   801.8s] OK   extension (117.0s)
+[   801.9s] done {'not_run': 0, 'construction_failed': 0, 'run_failed': 0, 'complete': 84, 'deferred': 0}
+dry2d eligible 73 front 9 near 24 members 33 X admitted 1
+jaxslot: holding slot 1 (pid 2698757)
+[     0.1s] jax_backend=cpu devices=[CpuDevice(id=0)]
+[     7.9s]    oursP1: L=256 settings ['R128'] in 7.2s
+[     9.9s]    ours 256|R128|BE: complete G-ours=True
+[    11.4s]    ecsw|16|k16|BE|0.005|common|central: q1=True W=0.3534 replay=0.0e+00
+[    11.6s]    ecsw|16|k16|CNR|0.005|common|central: q1=True W=0.3521 replay=0.0e+00
+[    12.5s]    ecsw|16|k4|BE|0.005|common|central: q1=True W=0.364 replay=0.0e+00
+[    12.7s]    ecsw|16|k4|CNR|0.005|common|central: q1=True W=0.363 replay=0.0e+00
+[    12.8s]    ecsw|16|k4|CNR|0.005|native|central: q1=True W=0.363 replay=0.0e+00
+[    14.0s]    ecsw|16|k8|BE|0.005|common|central: q1=True W=0.3534 replay=0.0e+00
+[    14.5s]    ecsw|16|k8|CNR|0.005|common|central: q1=True W=0.3521 replay=0.0e+00
+[    15.7s]    ecsw|24|k4|CNR|0.005|common|central: q1=True W=0.1802 replay=0.0e+00
+[    16.7s]    ecsw|24|k8|CNR|0.005|common|central: q1=True W=0.1809 replay=0.0e+00
+[    17.6s]    ecsw|8|k16|BE|0.005|common|central: q1=True W=0.4827 replay=0.0e+00
+[    17.9s]    ecsw|8|k16|CNR|0.005|common|central: q1=True W=0.483 replay=0.0e+00
+[    19.1s]    ecsw|8|k4|BE|0.005|common|central: q1=True W=0.4842 replay=0.0e+00
+[    19.3s]    ecsw|8|k4|BE|0.005|native|central: q1=True W=0.4842 replay=0.0e+00
+[    19.6s]    ecsw|8|k4|CNR|0.005|common|central: q1=True W=0.4846 replay=0.0e+00
+[    19.8s]    ecsw|8|k4|CNR|0.005|native|central: q1=True W=0.4846 replay=0.0e+00
+[    20.6s]    ecsw|8|k8|BE|0.005|common|central: q1=True W=0.4827 replay=0.0e+00
+[    21.6s]    qdeim|16|16|BE|0.005|common|central: q1=True W=0.3629 replay=0.0e+00
+[    21.8s]    qdeim|16|16|BE|0.005|native|central: q1=True W=0.3629 replay=0.0e+00
+[    22.2s]    qdeim|16|16|CNR|0.005|common|central: q1=True W=0.3622 replay=0.0e+00
+[    22.3s]    qdeim|16|16|CNR|0.005|native|central: q1=True W=0.3622 replay=0.0e+00
+[    23.4s]    qdeim|16|32|BE|0.005|common|central: q1=True W=0.3632 replay=0.0e+00
+[    23.8s]    qdeim|16|32|CNR|0.005|common|central: q1=True W=0.3621 replay=0.0e+00
+[    25.0s]    qdeim|16|64|BE|0.005|common|central: q1=True W=0.3539 replay=0.0e+00
+[    25.4s]    qdeim|16|64|CNR|0.005|common|central: q1=True W=0.3526 replay=0.0e+00
+[    26.9s]    qdeim|24|24|CNR|0.005|common|central: q1=True W=0.2137 replay=0.0e+00
+[    28.3s]    qdeim|24|48|CNR|0.005|common|central: q1=True W=0.1876 replay=0.0e+00
+[    29.3s]    qdeim|8|16|BE|0.005|common|central: q1=True W=0.4848 replay=0.0e+00
+[    29.7s]    qdeim|8|16|CNR|0.005|common|central: q1=True W=0.485 replay=0.0e+00
+[    29.9s]    qdeim|8|16|CNR|0.005|native|central: q1=True W=0.485 replay=0.0e+00
+[    31.1s]    qdeim|8|32|BE|0.005|common|central: q1=True W=0.4838 replay=0.0e+00
+[    32.4s]    qdeim|8|8|BE|0.005|common|central: q1=True W=0.4925 replay=0.0e+00
+[    32.7s]    qdeim|8|8|BE|0.005|native|central: q1=True W=0.4925 replay=0.0e+00
+[    33.1s]    qdeim|8|8|CNR|0.005|common|central: q1=True W=0.4924 replay=0.0e+00
+[    38.5s]    oursP1: L=256 settings ['R128'] in 5.2s
+[   514.7s] done
+256|R128|BE no observed domination among the 1 pairs assessed (withheld: saturation check failed (A1.3)) [developmental, in-sample, unadjusted] {'B_acc': 'no baseline in role [saturation check failed (A1.3)] [developmental, in-sample, unadjusted]', 'B_cost': 'neither dominates (withheld: saturation check failed (A1.3)) [developmental, in-sample, unadjusted]'}
+CHAIN-OK
+EXIT=0

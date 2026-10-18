@@ -447,7 +447,8 @@ def main():
 
     def extension():                                   # A2.18 / A16.2 / A25.1
         import stats as ST
-        used_h = (time.perf_counter() - search_t0) / 3600
+        # A28.3: accumulated C-search = the classified Stage-A screening phases (not wall time since Stage A)
+        used_h = sum(v['seconds'] for k, v in O.res['phases'].items() if k.startswith('A|')) / 3600
         alloc = cfg.get('search_allocation_hours')
         items = [dict(id=k, t=v['t'], W=v['W']) for k, v in O.res['stageA'].items()
                  if v['q1']['q1'] and v['timing_ok'] and np.isfinite(v['W']) and np.isfinite(v['t'])]
@@ -479,7 +480,8 @@ def main():
             screen(r, kind, hrp, tag='EXT')
         return rec
     O.phase('extension', extension)
-    O.res['search_hours'] = (time.perf_counter() - search_t0) / 3600
+    O.res['search_hours'] = sum(v['seconds'] for k, v in O.res['phases'].items()
+                                if k.startswith('A|') or k.startswith('EXT|')) / 3600
 
     # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis ---------
     O.res['probe_runs'] = {}

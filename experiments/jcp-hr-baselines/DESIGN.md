@@ -1525,3 +1525,42 @@ fib4181 / gauss128) — exactly the batch-1 identities `256|R128|BE`, `256|R384|
 as "FRONT-2D members" and lists the other front members (GAL, other steps, 4096²) as "not assessed (no registered
 baseline option / mesh outside C3-minimal)". jcp-qualify also reports that speed3d's H2 winners fail its 3D Q2; the 3D
 batch-1 comparison stays diagnostic-only (A22.0) and its report wording carries that.
+
+---
+
+## Amendment A28 (2026-10-18) — design audit 18 (NEEDS-RESTATEMENT, no WRONG): restatements applied
+
+**A28.1** A24.2's gradient-flop figure "1.2e14" is superseded by $2mNI = 1.30\times10^{14}$ (for the assumed
+$I = 19{,}000$). All runtime figures in A24.2/A26.1 are partial-workload projections; the exclusions listed in A26.1
+apply to each of them.
+
+**A28.2 Post-path memory acceptance.** A26.1's rule is a **post-path acceptance**, superseding A22.2's pre-path pilot
+requirement: it certifies the executed path only, retrospectively. A rejection is reported as "admission failed: the
+process-cumulative device peak exceeded 120 GB (or telemetry missing / OOM)", which is not evidence that the ECSW path by
+itself needs more than 120 GB.
+
+**A28.3 Extension accounting.** The extension trigger uses **accumulated, classified C-search time**: the sum of the
+in-job phase timers of the Stage-A screening blocks (phases `A|…`), not wall time since Stage A (which would include
+the FOM comparator and other non-search work). The allocation is a **start threshold** for the extension only:
+selection-relevant Stage-B work is not reserved before it; the cell's total baseline C-search (tuning `A|` + `EXT|`
+phases + the Stage-B job's selection-relevant runs) is reported beside the allocation, and an overrun is disclosed per
+A2.5 case (b). Extension requests are computed once, from the registered Stage-A front, deduplicated, and screened once;
+EXT members never trigger further extension.
+
+**A28.4 Allocation figures, exact.** 2D: (13,596 + 658) s / 3600 = 3.959444 GPU-h, 1.979722 per 2D cell; 3D:
+15,949 s / 3600 + 7.7858 = 12.216078 GPU-h. Both are upper-bound allocations (whole-job totals) and never stated as
+measured equal expenditure; the V ledger and the factor-1.25 band wording govern budget-comparability claims.
+
+**A28.5 Truncation, retries, order.** If a tuning or Stage-B job ends (wall limit, failure) before a never-dropped item
+completes, that item stays `not_run` / `not_timed` and the cell is reported **incomplete** under the existing coverage
+rules (A2.13, A3.11, A16.2; the baseline is never credited with missing evidence, and missing evidence never supports a
+favourable conclusion for ours). Any retry, requeue or added batch is charged to the remaining ledger allowance before
+submission (A26.4's bound includes it). A26.3 fixes the **execution order** of the tuning job; the **defer order** (which
+items are dropped first under budget pressure) remains §12's.
+
+**A28.6 Provenance.** FRONT-2D v1's embedded generation commit is `ef1a731…`; `2374fafe1` is jcp-qualify's freeze
+commit that contains the file. Both are recorded.
+
+**A28.7 Scope of design acceptance.** Design acceptance (A26.7) satisfies A19.4(a) only. Production release also needs,
+recorded against exact revisions: the updating-QR code audit and the source-pinned CPU gate suite (A19.4b), the
+regenerated resource artifact (`checks/RESOURCES-tune.json`, A26.4) and the amended smk2 acceptance (A24.1 rules).

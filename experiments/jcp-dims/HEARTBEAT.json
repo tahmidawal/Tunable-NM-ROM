@@ -1,16 +1,18 @@
 {
  "lane": "jcp-dims",
- "utc": "2026-10-18T13:55:49Z",
- "step": "4: codex code audit round 5",
+ "utc": "2026-10-18T14:01:45Z",
+ "step": "5: real-size smoke smk2 (dacc+dtime) on H200",
  "waiting_on": {
-  "slurm_jobs": [],
+  "slurm_jobs": [
+   "5528125"
+  ],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": null,
- "last_commit": "f1d1bca3a",
- "gpu_hours_spent": 0.0,
+ "expected_finish_utc": "2026-10-18T16:01:45Z",
+ "last_commit": "18fbd55ac",
+ "gpu_hours_spent": 0,
  "gpu_hours_cap": 55,
- "notes": ""
+ "notes": "code audit 6 READY-FOR-SMOKE; smk3 next (one smoke at a time)"
 }

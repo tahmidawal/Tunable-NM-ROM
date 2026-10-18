@@ -705,3 +705,13 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   undetermined or the job lacks integrity; an absent mesh-free block has `qualified = null`.
 * Coverage now also requires valid profile panels (p1 `profile_all_valid`) and scores for every ROM at every mesh
   (m1 `every_rom_scored`).
+
+---
+
+## Amendment A18 (2026-10-18; dispositions of `audits/codex-code-14.md`, NOT READY on three items)
+
+* Eligibility (m1 per mesh, p1 mesh-free) is null when its row or distance evidence is incomplete and is computed from
+  the solver gates only; score coverage is a separate predicate (`scores_ok`), and per-mesh matching needs both.
+  `measured_pass` is false only on a measured failure, null when evidence is missing.
+* The H2 identity shortcut (ratio 1) applies only to non-null winner / B* labels.
+* Plots are deleted and regenerated on every run, drawn only from jobs with integrity, and embedded only when generated.

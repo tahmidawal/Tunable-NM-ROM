@@ -76,6 +76,8 @@ def plots(G, PM):
     import matplotlib.pyplot as plt
     pd = HERE / 'plots'
     pd.mkdir(exist_ok=True)
+    for old in pd.glob('*.png'):                       # never publish a plot from an earlier run
+        old.unlink()
     made = []
     plt.rcParams.update({'font.size': 9, 'axes.spines.top': False, 'axes.spines.right': False, 'axes.grid': True,
                          'grid.color': '#e5e4df', 'grid.linewidth': .6})
@@ -103,7 +105,7 @@ def plots(G, PM):
     fig.savefig(pd / 'pareto-screening.png', dpi=150)
     plt.close(fig)
     made.append('plots/pareto-screening.png')
-    if PM and 'p1' in PM:
+    if PM and 'p1' in PM and PM['p1']['acceptance']['integrity_ok']:
         H31 = PM['p1']['H31']
         labs = [l_ for l_ in H31 if not H31[l_].get('missing') and H31[l_].get('panel_valid')]
         if labs:
@@ -137,7 +139,7 @@ def plots(G, PM):
             fig.savefig(pd / 'batching.png', dpi=150)
             plt.close(fig)
             made.append('plots/batching.png')
-    if PM and 'm1' in PM:
+    if PM and 'm1' in PM and PM['m1']['acceptance']['integrity_ok']:
         m1 = PM['m1']
         Ls = sorted(int(L) for L in m1['per_L'])
         fig, ax = plt.subplots(figsize=(6.5, 4))
@@ -367,7 +369,8 @@ def main():
         w('')
         w(table(['label', 'fused (ms)', 'projection', 'step loop', 'decode', 'adaptive start', 'G3 sum/fused', 'G3 within 15 %', 'panel valid'], rows))
         w('')
-        w('![profile](plots/profile.png)')
+        if 'plots/profile.png' in made:
+            w('![profile](plots/profile.png)')
         w('')
         rows = []
         for l_, v in p1['H32'].items():
@@ -395,7 +398,8 @@ def main():
             f"{l_} {f(v['throughput_16_over_1'])}× (" + ('2× bar unavailable' if v['bar_2x'] is None else ('meets the 2× bar' if v['bar_2x'] else 'misses the 2× bar')) + ')'
             for l_, v in p1['H33'].items()) + '.')
         w('')
-        w('![batching](plots/batching.png)')
+        if 'plots/batching.png' in made:
+            w('![batching](plots/batching.png)')
     else:
         w('p1 not yet analysed.')
     w('')
@@ -497,7 +501,8 @@ def main():
               'here: it needs a valid paired spectral panel for every selected ROM from an m1 job with integrity '
               f"({len(ps_sp)} of {len(ps)} measured).")
         w('')
-        w('![mesh](plots/mesh-time.png)')
+        if 'plots/mesh-time.png' in made:
+            w('![mesh](plots/mesh-time.png)')
     else:
         w('m1 not yet analysed.')
     w('')

@@ -188,7 +188,7 @@ def analyze_p1(rp, sel, grid, scp):
         pw = conf.get(f'{c}|{w}') if w and w != c else None
         pb = conf.get(f'{c}|{bs}') if bs and bs != c else None
         pbw = conf.get(f'{bs}|{w}') if (w and bs and w != bs) else None
-        S = 1. if w == c else (pw['S'] if pw and pw['valid'] else None)
+        S = 1. if (w is not None and w == c) else (pw['S'] if pw and pw['valid'] else None)
         gw, why = red_gate(w) if w else (False, 'no winner')
         if not gw:
             verdict = f'unavailable ({why})'
@@ -198,8 +198,8 @@ def analyze_p1(rp, sel, grid, scp):
             verdict = 'pass' if S >= 1 / .6 else 'fail'
         H2[c] = dict(winner=v['winner'], winner_label=w, B_star=v['B_star'], B_star_label=bs, S_screen=v['S_screen'],
                      S_confirmed=S, verdict=verdict,
-                     S_BE_confirmed=1. if bs == c else (pb['S'] if pb and pb['valid'] and red_gate(bs)[0] else None),
-                     S_scheme_confirmed=1. if w == bs else (pbw['S'] if pbw and pbw['valid'] else None),
+                     S_BE_confirmed=1. if (bs is not None and bs == c) else (pb['S'] if pb and pb['valid'] and red_gate(bs)[0] else None),
+                     S_scheme_confirmed=1. if (w is not None and w == bs) else (pbw['S'] if pbw and pbw['valid'] else None),
                      S_BE_screen=v['S_BE_screen'])
     out['H2'] = H2
     H14 = {}
@@ -227,14 +227,15 @@ def analyze_p1(rp, sel, grid, scp):
         a = scores_of(sc, f'{sn}|{rule}|mf|{spec}', cases)
         mm = scores_of(sc, f'{sn}|{rule}|{spec}', cases)
         q = tob_or_within(a, mm)
-        elig = bool(e_ab['rows_complete'] and e_ab['Ea'] and e_ab['Eb'] and e_c['Ec'] and cond_ok(m.get('cond'), Rp[sn]))
+        elig = (None if not (e_ab['rows_complete'] and e_c.get('dist_worst') is not None)
+                else bool(e_ab['Ea'] and e_ab['Eb'] and e_c['Ec'] and cond_ok(m.get('cond'), Rp[sn])))
         k5 = P['k5'].get(l_, {})
         k5_rank = bool(k5.get('rule') == blk.get('k5_rule', 'gl12') and cond_ok(k5.get('cond'), Rp[sn]))
         k5r = tob_or_within(scores_of(sc, f"{sn}|{rule}|mfproj_{k5.get('rule')}|{spec}", cases), mm) if k5_rank else None
         k5f = None if (k5r is None or k5r['b'] is None) else bool(not (k5r['b'] and k5r['c']))
         evid = bool(e_ab['rows_complete'] and e_c.get('dist_worst') is not None and q.get('b') is not None)
         H32[l_] = dict(key=f'{sn}|{rule}|{spec}', eligible=elig, evidence_complete=evid, **e_ab, **e_c, cond=m.get('cond'), **q,
-                       measured_pass=bool(evid and elig and q.get('b') and q.get('c')),
+                       measured_pass=(False if elig is False else (None if not evid else bool(q.get('b') and q.get('c')))),
                        K5=dict(rule=k5.get('rule'), cond=k5.get('cond'), rank_ok=k5_rank, fails=k5f, detail=k5r))
     # K5 three-state: fires if any measured control fails; does not fire only if every control is resolved and none fails
     k5s = [H32[l_].get('K5', {}).get('fails') for l_ in blk['mf']]       # every expected control; missing ones stay None
@@ -242,9 +243,9 @@ def analyze_p1(rp, sel, grid, scp):
     for v in H32.values():
         if 'K5' not in v:
             continue
-        if not v['evidence_complete']:
+        if v['measured_pass'] is None:
             v['qualified'], v['status'] = None, 'unavailable (mesh-free rows, distances or scores incomplete)'
-        elif not v['measured_pass']:
+        elif v['measured_pass'] is False:
             v['qualified'], v['status'] = False, 'not qualified'
         elif out['K5_fires'] is True:
             v['qualified'], v['status'] = True, 'qualified'
@@ -411,7 +412,9 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
             tt = bool(np.isfinite(er['adt_tight_tighter']) and er['adt_tight_tighter'] <= BAR_ADT and len(er['adt_tighter_valid']) == min(8, len(cases))
                       and all(er['adt_tighter_valid']))
             s = scores_of(sc, f"{tag}|{r['spec']}", cases)
-            el = bool(e_ab['rows_complete'] and e_ab['Ea'] and e_ab['Eb'] and e_c['Ec'] and tt and s['ok'])
+            # eligibility from the solver gates only (null when its evidence is incomplete); scores are a separate predicate
+            el = (None if not (e_ab['rows_complete'] and e_c.get('dist_worst') is not None)
+                  else bool(e_ab['Ea'] and e_ab['Eb'] and e_c['Ec'] and tt))
             o['rom'][l_] = dict(feasible=True, M=er['tables'].get('M'), **e_ab, **e_c, adt_tight_tighter=er['adt_tight_tighter'], adt_gate=tt,
                                 eligible=el, scores_ok=s['ok'], median=s['median'], worst=s['worst'], ranked=len(s['ranked_ids']),
                                 e=s['e'], eta=s['eta'], ranked_ids=s['ranked_ids'])
@@ -478,7 +481,7 @@ def analyze_m1(rp, sel, grid, fm, f1, scp):
                 if v['state'] != 'matched':
                     row[f_] = dict(state=v['state'])
                     continue
-                if not rr.get('eligible'):
+                if not (rr.get('eligible') is True and rr.get('scores_ok')):
                     row[f_] = dict(state='ROM not eligible / not scored at this mesh')
                     continue
                 ef, er_, eta, ids = AN.common(fom_scores(v['matched']), rr)

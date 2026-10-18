@@ -985,3 +985,19 @@ is not squared. A1.7's "common LM solver at the tight level" is replaced. Distan
 and γ is round-off noise (every step non-stationary in the dry run); such a level can never be Q1-qualified. The ECSW
 ladder is therefore overdetermined: support caps $\{4r,\ 2r,\ \lceil1.25r\rceil\}$ (still far below the registered τ
 supports at real size). The Q-DEIM ladder is unchanged. The firing rule (A6.3) is unchanged.
+
+---
+
+## Amendment A9 (2026-10-18) — anchor round-off floor (CPU dry run evidence, no verdict data)
+
+Evidence: after A8, on ECSW problems the QR-based native Gauss–Newton at the **tighter** level (γ ≤ 1e-8) stalled at
+γ ≈ 2–5e-8 on 2–11 of 50 steps (no residual decrease possible at working precision: exit reason 3), while its tight vs
+tighter distance was ≤ 1e-7. The ratio γ has a round-off floor near $\epsilon\,\|c\|/\|\hat r\|$, which is large when the
+sampled residual is small (ECSW supports close to r).
+
+**A9.1 Anchor validity.** An anchor step passes if γ ≤ gtol(level), **or** it is a round-off stall — the native solver
+exhausted its backtracking (exit reason 3) — with γ ≤ 100 × gtol(level). Round-off stalls are counted and reported per
+configuration. Everything else in A2.7 stands (finite trajectory, no damping saturation, every step accounted for), and
+the binding converged-anchor check remains the tight/tighter agreement ≤ 2.5e-5 on the prescribed subset. This
+changes only the lane's own anchor-validity rule (A1.7/A2.7), not the COMMON-BRIEF Q1 predicates for the arm's runs
+(where exit reason 3 still makes a run invalid).

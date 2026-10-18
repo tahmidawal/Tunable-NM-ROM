@@ -297,7 +297,8 @@ def certify(out, gam, sch, level='prod'):
     """Per-run Q1 evidence (A2.7, COMMON-BRIEF 3): a step is non-stationary iff gamma > 1e-3 or non-finite (no
     residual-tolerance exception). valid = finite trajectory, every step exited (reason >= 0), no reason-3 step, no
     damping saturation (LM lambda finite and below 1e14 at every step).
-    For anchors (level tight / tighter) `anchor_ok` additionally needs gamma <= that level's gtol at every step."""
+    For anchors (level tight / tighter) `anchor_ok` needs, at every step, gamma <= that level's gtol, or a round-off
+    stall (exit reason 3) with gamma <= 100 gtol (A9.1); round-off stalls are counted."""
     steps = int(sch['steps'])
     g = np.asarray(gam)[:steps]
     rs = np.asarray(out['stats']['reason'])[:steps]
@@ -307,10 +308,15 @@ def certify(out, gam, sch, level='prod'):
     saturated = int(np.sum(~np.isfinite(lam) | (lam >= 1e14)))          # LM damping at its limit (V4-2 validity)
     valid = bool(np.isfinite(C).all() and np.all(rs >= 0) and not np.any(rs == 3) and saturated == 0)
     gl = LEVELS[level][0]
+    # A9.1 anchors: a step passes if gamma <= gtol(level), or if it is a round-off stall (the native GN could not
+    # decrease the residual at working precision: exit reason 3) with gamma <= 100 gtol(level)
+    stall = (rs == 3) & np.isfinite(g) & (g <= 100. * gl)
+    anchor_ok = bool(np.isfinite(C).all() and np.all(rs >= 0) and saturated == 0 and steps > 0
+                     and np.all((np.isfinite(g) & (g <= gl)) | stall) and np.all((rs != 3) | stall))
     return dict(valid=valid, nonstat=int(np.sum(~stationary)), steps=steps, damping_saturated=saturated,
                 level=level, gamma_list=g.tolist(), reason_list=rs.tolist(), lam_list=lam.tolist(),
                 C_finite=bool(np.isfinite(C).all()), C_maxabs=float(np.max(np.abs(C))) if np.isfinite(C).all() else None,
                 worst_gamma=float(np.max(np.where(np.isfinite(g), g, np.inf))) if steps else float('nan'),
-                anchor_ok=bool(valid and np.all(np.isfinite(g) & (g <= gl))),
+                anchor_ok=anchor_ok, roundoff_stalls=int(np.sum(stall)),
                 it_sum=int(np.sum(np.asarray(out['stats']['it'])[:steps])),
                 reasons=np.bincount(rs[rs >= 0], minlength=5).tolist())

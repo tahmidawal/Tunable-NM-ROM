@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T01:28:48Z",
- "step": "4: codex code audit 2 running; CPU unit tests re-running (detached)",
+ "utc": "2026-10-18T02:56:20Z",
+ "step": "5: local CPU dry-run smoke, 3D cell (2D cell done); then final CPU unit suite, codex code audit 3, cluster smoke",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-2.md",
-  "codex_pid": 201044,
-  "local_pid": 278085
+  "codex_output": null,
+  "codex_pid": null,
+  "local_pid": 528427
  },
- "expected_finish_utc": "2026-10-18T02:13:48Z",
- "last_commit": "3e5a18cd7",
+ "expected_finish_utc": "2026-10-18T03:26:20Z",
+ "last_commit": "d19d0026a",
  "gpu_hours_spent": 0,
  "gpu_hours_cap": 30,
- "notes": "design audit 6 NEEDS-RESTATEMENT (no WRONG) -> A6; code audit 1 NOT READY -> fixes in progress"
+ "notes": "A7-A9 written from code audit 2 and dry-run evidence; COMMON-BRIEF s11 disk hygiene adopted for future Codex prompts"
 }

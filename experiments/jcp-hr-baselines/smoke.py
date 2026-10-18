@@ -555,6 +555,10 @@ def run_cell(cfg, c, res, outdir, save):
         out['N-time'] = dict(config=PL.cfg_id(kind, rs, hrp, opt_main[0], opt_main[1], 'native'), cases=nt)
         R['timing-partial'] = out
         save()
+        if cfg.get('dry_skip_ours'):                    # local CPU dry run only (never set in configs/smoke.json)
+            out['ours'] = dict(skipped='dry run')
+            R.pop('timing-partial', None)
+            return out
         import ours as OU
         if d == 2:
             ox = OU.Ours2D(L, [dict(name='acc', Rp=384, rule='gauss128')], log=log)

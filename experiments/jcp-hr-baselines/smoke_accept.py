@@ -67,7 +67,10 @@ def run_evidence(cert, level):
     valid = bool(ok_len and cert['C_finite'] and np.all(rsn >= 0) and not np.any(rsn == 3)
                  and np.all(np.isfinite(lam)) and np.all(lam < 1e14))
     stationary = np.isfinite(g) & (g <= 1e-3)
-    anchor_ok = bool(valid and np.all(np.isfinite(g) & (g <= LEVEL_GTOL[level])))
+    gl = LEVEL_GTOL[level]
+    stall = (rsn == 3) & np.isfinite(g) & (g <= 100. * gl)                 # A9.1 round-off stall
+    anchor_ok = bool(ok_len and cert['C_finite'] and np.all(rsn >= 0) and np.all(np.isfinite(lam)) and np.all(lam < 1e14)
+                     and np.all((np.isfinite(g) & (g <= gl)) | stall) and np.all((rsn != 3) | stall))
     return valid, int(np.sum(~stationary)), steps, anchor_ok
 
 

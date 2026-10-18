@@ -32,7 +32,7 @@ def cell(d, L, n_traj, rmax, ranks, pmax, rs, ps, n_adeq, n_probe, opts, pilot):
 real = dict(wall_seconds=3300, cells=[
     cell(2, 1024, 192, 512, [128, 512], 2048, 128, 256, 8, 4, [['BE', 0.005], ['CNR', 0.005]], 1024),
     cell(3, 64, 342, 1024, [256, 1024], 4096, 256, 512, 8, 4, [['BE', 0.01], ['CN', 0.01], ['BDF2', 0.025]], 1024)])
-cpu = dict(wall_seconds=3300, allow_cpu=True, cells=[
+cpu = dict(wall_seconds=5000, allow_cpu=True, dry_skip_ours=True, cells=[
     cell(2, 256, 24, 48, [16, 48], 96, 16, 32, 4, 2, [["BE", 0.005], ["CNR", 0.005]], 64),
     cell(3, 64, 24, 48, [16, 48], 96, 16, 32, 4, 2, [["BE", 0.01], ["CN", 0.01], ["BDF2", 0.025]], 64)])
 (HERE / 'configs').mkdir(exist_ok=True)

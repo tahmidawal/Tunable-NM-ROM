@@ -555,3 +555,18 @@ polling every 10 minutes (`cluster/wait_front.sh`), heartbeat at every poll, **d
 At the deadline C2 runs on the P1 targets as partial evidence (A1.7). When FRONT-2D arrives: `targets.py front` → match2
 (base ladder; the A3.2 extension is recomputed for the FRONT targets) → `make_c2configs.py` → Codex job audit → three
 C2 jobs (256², 1024², 4096²) → `c2analyze.py` → results audit → report.
+
+---
+
+## Amendment A8 (2026-10-18; coordinator decision, recorded before any C2 production output is read)
+
+The coordinator (message of 2026-10-18, after jcp-qualify finished; FRONT-2D v1 sha256 a51ac1a2… frozen at qualify commit
+2374fafe1) decided: **the primary H-comp, C2 and K2 verdicts use the registered deployment schemes only — LSPG-BE and
+LSPG-CN-R, numerically qualified members.** GAL-CN was registered in jcp-qualify as a diagnostic scheme but holds 6 of 7
+median-front places; its configurations are reported in separate, clearly labelled rows "diagnostic scheme, post-hoc
+comparison (not a registered deployment arm)", with the same matching and timing procedure, and are never mixed into the
+primary verdicts. Consequences here: the C2 jobs already time every FRONT-qualified configuration (GAL-CN included);
+`c2analyze.py` splits every verdict table by form: the **primary K2 universe** is the numerically qualified LSPG
+(BE, CN-R) configurations at $4096^2$; the GAL-CN configurations get a separate diagnostic K2-style summary. Also from
+jcp-qualify: LSPG-CN-R at $2\Delta t_0$ is not Q1-qualified for R128/R256 at any mesh — it is absent from FRONT's
+qualified set and hence from every target here.

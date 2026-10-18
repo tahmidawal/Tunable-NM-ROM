@@ -467,6 +467,32 @@ def main():
         w('')
         w(table(['mesh', 'ROM', 'FOM family', 'selected comparator', '$S$', '95 % interval', 'verdict'], rows))
         w('')
+        rows = []
+        for k, c in sorted(C2['cells'].items()):
+            N = k.split('|')[0]
+            if c.get('criterion') in ('median_only', 'worst_only', 'same_mesh', 'same_mesh_unmatched') and \
+                    str(c.get('target', '')).endswith('|H') and N in ('1024', '4096'):
+                rows.append([N + '²', pt(c['target']), FAM_NAME.get(c['family'], c['family']), c['criterion'].replace('_', '-'),
+                             pk(c.get('selected')), f(c.get('S')),
+                             f'[{f(c.get("lo"))}, {f(c.get("hi"))}]' if c.get('S') is not None else c.get('status', '–')])
+        if rows:
+            w('**Median-only, worst-only and same-mesh comparisons** (H populations, $1024^2$ and $4096^2$; median-only and '
+              'worst-only are recorded comparisons, not accuracy matches; same-mesh = FD on the ROM mesh, or PS with $N$ equal '
+              'to the mesh where run):')
+            w('')
+            w(table(['mesh', 'ROM', 'family', 'criterion', 'comparator', '$S$', '95 % interval / status'], rows))
+            w('')
+        rows = []
+        for k, c in sorted(C2['cells'].items()):
+            N = k.split('|')[0]
+            if c.get('criterion') == 'joint' and c.get('family') == 'union' and str(c.get('target', '')).endswith('|H') \
+                    and c.get('seconds_fom') is not None:
+                rows.append([N + '²', pt(c['target']), pk(c['selected']), f(c['seconds_rom']), f(c['seconds_fom'])])
+        if rows:
+            w('**Absolute prepared-input latencies** (median stage-2 seconds per query on the H200; union joint comparator):')
+            w('')
+            w(table(['mesh', 'ROM', 'comparator', 'ROM (s)', 'FOM (s)'], rows))
+            w('')
         k2 = C2.get('k2', {})
         w(f'**K2 (governing plan): {k2.get("verdict", "–")}.** Universe complete: {f(k2.get("universe_complete"))}.')
         w('')

@@ -122,6 +122,9 @@ def main():
                     cell.update(status='vetoed (identity)')
                 else:
                     cell.update(speedup(rom, per_case(st2, sel)), selected_labels=g.get('candidate_labels', {}).get(sel, {}))
+                    ab = lambda lb: float(np.median([x['tB'] for x in st2 if x['B'] == lb and x['valid']])) \
+                        if any(x['B'] == lb and x['valid'] for x in st2) else None
+                    cell.update(seconds_rom=ab(t['rom_label']), seconds_fom=ab(sel))
                 res['cells'][f'{N}|{gid}'] = cell
             for fc, why in t.get('empty', {}).items():         # empty / deferred / too-small groups are reported, not dropped
                 fam, crit = fc.split('|', 1)
@@ -144,27 +147,35 @@ def main():
                     continue
                 c = res['cells'][f'{N}|{gid}']
                 res['hcomp'][f'{N}|{gid}'] = dict(target=tk, family=g['family'], verdict=c.get('two_x', c.get('status')),
+                                                  scope='primary (LSPG)' if '|LSPG|' in tk else 'diagnostic GAL-CN (post hoc, A8)',
                                                   cls=c.get('two_x_class'), selected_labels=c.get('selected_labels'),
                                                   S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), matched=c.get('selected'))
     # K2 at 4096: every member of the universe, union joint criterion
-    if 4096 in jobs:
-        uni = plan['meshes']['4096'].get('k2_universe')
+    def k2_eval(uni, complete):
         rows = {}
-        for tk in uni or []:
+        for tk in uni:
             gid = plan['meshes']['4096']['targets'][tk].get('union_joint_group')
             c = res['cells'].get(f'4096|{gid}', {})
             rows[tk] = dict(S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), status=c.get('status', 'ok' if c else 'missing cell'),
                             two_x_class=c.get('two_x_class'), two_x=c.get('two_x'))
         cls = [v['two_x_class'] for v in rows.values()]
-        if not plan['meshes']['4096'].get('k2_universe_complete'):
-            verdict = 'inconclusive (no complete qualification manifest; front members only)'
+        if not complete:
+            v = 'inconclusive (no complete qualification manifest; front members only)'
         elif rows and all(c_ == 'ROM < 2x' for c_ in cls):
-            verdict = 'fires under the registered dev6 workload rule (A3.1)'
+            v = 'fires under the registered dev6 workload rule (A3.1)'
         elif any(c_ == 'ROM >= 2x' for c_ in cls):
-            verdict = 'not shown to fire (a member is >= 2x faster than its screening-selected comparator; A3.1)'
+            v = 'not shown to fire (a member is >= 2x faster than its screening-selected comparator; A3.1)'
         else:
-            verdict = 'inconclusive'
-        res['k2'] = dict(verdict=verdict, members=rows, universe_complete=plan['meshes']['4096'].get('k2_universe_complete'))
+            v = 'inconclusive'
+        return dict(verdict=v, members=rows, universe_complete=complete)
+    if 4096 in jobs:                         # A8: primary = registered deployment schemes (LSPG); GAL-CN diagnostic
+        uni = plan['meshes']['4096'].get('k2_universe') or []
+        comp = bool(plan['meshes']['4096'].get('k2_universe_complete'))
+        lspg = [u for u in uni if '|LSPG|' in u]
+        gal = [u for u in uni if '|GAL|' in u]
+        res['k2'] = dict(k2_eval(lspg, comp), scope='primary: registered deployment schemes LSPG-BE / LSPG-CN-R (A8)')
+        res['k2_diagnostic_gal'] = dict(k2_eval(gal, comp), scope='diagnostic scheme GAL-CN, post-hoc comparison (not a '
+                                                                  'registered deployment arm; A8)')
     # crossover brackets per identity (X population), per family (joint = (b); same-mesh = (a)) and union
     for ident, ent in plan.get('identities', {}).items():
         out = {}

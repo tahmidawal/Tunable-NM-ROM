@@ -1,16 +1,20 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T10:40:31Z",
- "step": "11: codex job audit of the three C2 production jobs (staged)",
+ "utc": "2026-10-18T11:45:02Z",
+ "step": "waiting for C2 jobs (5456288 RUNNING 1:00:34 )",
  "waiting_on": {
-  "slurm_jobs": [],
-  "codex_output": "audits/codex-job-c2-1.md",
-  "codex_pid": 2218980,
-  "local_pid": null
+  "slurm_jobs": [
+   "5456288",
+   "5456289",
+   "5456290"
+  ],
+  "codex_output": null,
+  "codex_pid": null,
+  "local_pid": 2236296
  },
- "expected_finish_utc": "2026-10-18T11:45:00Z",
- "last_commit": "62d01d891",
+ "expected_finish_utc": "2026-10-18T15:44:58Z",
+ "last_commit": "4922dc87b",
  "gpu_hours_spent": 1.7845,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D v1 from 2374fafe1"
+ "notes": "FRONT-2D v1 2374fafe1"
 }

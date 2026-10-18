@@ -195,6 +195,8 @@ def run_adaptive(cx, ad, blk, out):
             idx = [cases.index(j) for j in tcs]
             R['dist_tight_tighter'] = cx.dist_cases(sname, R['W_tight'][idx], R['W_tighter'], tcs)[:, 1:].max(1)
             key = f'{sname}|{rule}|ad|{form}|{scheme}|{dt:.8g}'
+            cx.Wstore[f'{key}|prod'] = R['W'].copy()           # scored offline by score3 like every other trajectory
+            cx.Cstore[f'{key}|prod'] = np.array(cases)
             if fs_ in prevW:                          # DESIGN 3: q vs q+ distance of the previous rung, in-job
                 pk, pW = prevW[fs_]
                 res[pk]['dist_next'] = cx.dist_cases(sname, pW, R['W'], cases)[:, 1:].max(1).tolist()

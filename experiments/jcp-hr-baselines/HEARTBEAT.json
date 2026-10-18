@@ -1,18 +1,15 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T10:21:11Z",
- "step": "phase II prep: code audit 19 + design audit 17 running; CPU gate suite test13 running; next CPU dry run of tune.py, resource certificate",
+ "utc": "2026-10-18T10:34:37Z",
+ "step": "phase II prep: A26 fixes committed (audits 19/17 answered); CPU gate suite test13 running; next: CPU dry run of tune.py, then code audit 20 + design audit 18",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-19.md, audits/codex-design-17.md",
-  "codex_pid": [
-   2162694,
-   2162695
-  ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": 2148957
  },
- "expected_finish_utc": "2026-10-18T11:21:11Z",
- "last_commit": "1193c68af",
+ "expected_finish_utc": "2026-10-18T11:14:37Z",
+ "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,
  "notes": "smk2 A23 ALL=true; phase II released by coordinator (A19) subject to precondition 4"

@@ -105,5 +105,80 @@ def rule1024():
                            groups=groups))
 
 
+def rules():
+    """Frozen rule per arm group (runs/RULES.json from analyze.py rules): {group: (main, qp, qpp)}; exhausted -> None."""
+    r = json.loads((HERE / 'runs' / 'RULES.json').read_text())['groups']
+    return {g: (v['chosen']['main'], v['chosen']['qp'], v['chosen']['qpp']) if v['chosen'] else None for g, v in r.items()}
+
+
+def arm_specs(R, m128=True):
+    """Every accuracy arm (DESIGN 1, 3, A1.5): name, kind, head/Rp, M, rule roles, from the frozen rules. Groups whose
+    ladder was exhausted are run at the last selectable rung (gauss192) and are labelled not quadrature-qualified."""
+    fallback = ('gauss192', 'gauss256', 'gauss320')
+    arms = []
+
+    def roles(g):
+        m, qp, qpp = R.get(g) or fallback
+        return dict(rule=m, qp=qp, qpp=qpp, rule_group=g, rule_status='selected' if R.get(g) else 'ladder exhausted')
+    for K in KS:
+        for s in SEEDS:
+            arms.append(dict(name=f'H{K}s{s}', kind='head', head=head_path(K, s), **roles(f'H{K}')))
+    arms.append(dict(name='Hinc', kind='head', head=INC, **roles('Hinc')))
+    for r in LIN:
+        arms.append(dict(name=f'L{r}', kind='lin', Rp=r, **roles(f'L{r}')))
+    if m128:
+        for K in KS:
+            if 4 * K != 128:
+                for s in SEEDS:
+                    arms.append(dict(name=f'H{K}s{s}m128', kind='head', head=head_path(K, s), M=128, **roles(f'H{K}m128')))
+        for r in (4, 8, 16):
+            arms.append(dict(name=f'L{r}m128', kind='lin', Rp=r, M=128, **roles(f'L{r}m128')))
+    return arms
+
+
+def acc(mesh, m128=True, K_out=()):
+    R = rules()
+    arms = []
+    for a in arm_specs(R, m128=m128):
+        if any(a['name'].startswith(f'H{K}s') for K in K_out):
+            continue
+        sch = ['BE'] if a['name'].endswith('m128') else ['BE', 'CNR']
+        arms.append(dict(a, schemes=sch, cases='all38', q2_cases='sub16'))
+    write(f'acc{mesh}', dict(mesh=mesh, edges=EDGES, arms=arms))
+
+
+def time(mesh, subjects_filter, schemes, cases, reps, K_out=()):
+    R = rules()
+    subj = []
+    for a in arm_specs(R, m128=False):
+        if not subjects_filter(a) or any(a['name'].startswith(f'H{K}s') for K in K_out):
+            continue
+        for sc in schemes:
+            subj.append(dict({k: v for k, v in a.items() if k not in ('rule_group', 'rule_status')}, mesh=mesh, scheme=sc))
+    meshes = {str(mesh): dict(edges=EDGES)}
+    if mesh != 1024:
+        meshes['1024'] = dict(edges=[0, 128, 256, 384])
+    write(f'time{mesh}', dict(meshes=meshes, A=A_SPEC, subjects=subj, cases=cases, cert_cases='dev6', reps=reps, burn=0.1,
+                             seed=20261018 + mesh, doubled=[dict(subj[0], cases=[['dev6', 0]])]))
+
+
+def production(which):
+    if which == 'acc1024':
+        acc(1024)
+    elif which == 'acc256':
+        acc(256, m128=False)
+    elif which == 'time1024':
+        time(1024, lambda a: True, ['BE', 'CNR'], 'all38', {'dev6': 3, 'val32': 1})
+    elif which == 'time256':
+        time(256, lambda a: a['kind'] == 'head' or a['Rp'] <= 32, ['BE'], 'dev6', {'dev6': 3})
+    elif which == 'time256full':
+        time(256, lambda a: True, ['BE'], 'dev6', {'dev6': 3})
+    elif which == 'time4096':
+        time(4096, lambda a: a['name'] in ('Hinc', 'H4s0', 'H8s0', 'H16s0', 'H32s0'), ['BE'], 'dev6', {'dev6': 3})
+
+
 if __name__ == '__main__':
-    {'smoke': smoke, 'train': train, 'rule1024': rule1024}[sys.argv[1]]()
+    if sys.argv[1] in ('smoke', 'train', 'rule1024'):
+        {'smoke': smoke, 'train': train, 'rule1024': rule1024}[sys.argv[1]]()
+    else:
+        production(sys.argv[1])

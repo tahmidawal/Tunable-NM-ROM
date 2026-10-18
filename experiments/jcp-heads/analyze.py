@@ -148,10 +148,14 @@ def tlabel(mesh, name, rule, scheme):
 
 # ------------------------------------------------------------------ verdicts ----
 
+def hname(K, s, m128=False):
+    """Arm name of head (K, seed); in the fixed-M = 128 panel K = 32 IS the deployed configuration (A7)."""
+    return f'H{K}s{s}' + ('m128' if m128 and 4 * K != 128 else '')
+
+
 def pools(recs, K, scheme, m128=False):
     """S_K: numerically qualified seeds of size K (A2.3)."""
-    sfx = 'm128' if m128 else ''
-    return [s for s in SEEDS if recs.get((f'H{K}s{s}{sfx}', scheme), {}).get('qualified')]
+    return [s for s in SEEDS if recs.get((hname(K, s, m128), scheme), {}).get('qualified')]
 
 
 def seed_median(recs, names, scheme, cases):
@@ -166,13 +170,12 @@ def population(recs, keys):
 
 def h_acc_k(recs, scheme, m128=False):
     out = {}
-    sfx = 'm128' if m128 else ''
     for lo, hi in zip(KS[:-1], KS[1:]):
         Sl, Sh = pools(recs, lo, scheme, m128), pools(recs, hi, scheme, m128)
         if len(Sl) < 2 or len(Sh) < 2:
             out[f'{lo}->{hi}'] = dict(outcome='unqualified size', S_lo=Sl, S_hi=Sh)
             continue
-        nl, nh = [f'H{lo}s{s}{sfx}' for s in Sl], [f'H{hi}s{s}{sfx}' for s in Sh]
+        nl, nh = [hname(lo, s, m128) for s in Sl], [hname(hi, s, m128) for s in Sh]
         cases = population(recs, [(nl[0], scheme)])
         el, eh = seed_median(recs, nl, scheme, cases), seed_median(recs, nh, scheme, cases)
         eps = np.array([recs[(nl[0], scheme)]['per_case'][c]['eps'] for c in cases])

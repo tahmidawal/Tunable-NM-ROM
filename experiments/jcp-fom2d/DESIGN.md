@@ -543,3 +543,15 @@ executable release, 2× brackets — the last done in `c2analyze.py`) are addres
   validity passed, stage-1 selection and frozen selection were written, T-fault and T-id fired, and T-dbl did **not**
   fire on the CPU (median 1.61), which made the panel invalid as designed — a CPU timing artefact to be checked on the
   H200 in the C2 smoke (P1 measured 1.96–2.00 there).
+
+---
+
+## Amendment A7 (2026-10-18 08:24 UTC; record, no design change)
+
+C1 is complete: the four ladder jobs (185 configurations, 170 admissible) are accepted (`audits/codex-c1results-2.md`), the
+C2 smoke is accepted (`audits/codex-c2smoke-1.md`), and matching against the P1 preview targets triggers no extension.
+C2 production needs `FRONT-2D.json`, which jcp-qualify has not yet committed. Per §7/A1.7 the lane now **waits**:
+polling every 10 minutes (`cluster/wait_front.sh`), heartbeat at every poll, **deadline 2026-10-18T20:24:26Z** (12 h).
+At the deadline C2 runs on the P1 targets as partial evidence (A1.7). When FRONT-2D arrives: `targets.py front` → match2
+(base ladder; the A3.2 extension is recomputed for the FRONT targets) → `make_c2configs.py` → Codex job audit → three
+C2 jobs (256², 1024², 4096²) → `c2analyze.py` → results audit → report.

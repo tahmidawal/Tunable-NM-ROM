@@ -578,6 +578,15 @@
    "n": 38,
    "source": "lane acc1024"
   },
+  "1024|R128|LSPG|CNR|2.5|fb": {
+   "numerically_qualified": false,
+   "Q1_pass": false,
+   "Q2": "pass",
+   "median": 0.012105539097902445,
+   "worst": 0.048798157754506306,
+   "n": 38,
+   "source": "lane fb1024"
+  },
   "1024|R128|LSPG|BE|1": {
    "numerically_qualified": true,
    "Q1_pass": true,
@@ -1199,9 +1208,99 @@
   }
  },
  "B4": {
-  "status": "not reached"
+  "R128|LSPG_BE": {
+   "label": "order 1",
+   "interpretable": 6,
+   "p_median": 1.0040580105937749,
+   "p_range": [
+    0.9479054410667437,
+    1.0197610744396823
+   ]
+  },
+  "R128|LSPG_CNR": {
+   "label": "observed order, no integer label",
+   "interpretable": 5,
+   "p_median": 1.7350697500035281,
+   "p_range": [
+    1.720824791604468,
+    1.940394701610178
+   ]
+  },
+  "R128|GAL_CN": {
+   "label": "order 2 (finite-range observed order over dt0..dt0/4)",
+   "interpretable": 6,
+   "p_median": 2.003460766347058,
+   "p_range": [
+    2.0011473174297367,
+    2.0050212302343513
+   ]
+  },
+  "R384|LSPG_BE": {
+   "label": "order 1",
+   "interpretable": 6,
+   "p_median": 1.0060934179387648,
+   "p_range": [
+    0.9774949660067374,
+    1.0199944679986472
+   ]
+  },
+  "R384|LSPG_CNR": {
+   "label": "order 2 (finite-range observed order over dt0..dt0/4)",
+   "interpretable": 6,
+   "p_median": 1.9572771561352598,
+   "p_range": [
+    1.8839614422841187,
+    1.9982562318083887
+   ]
+  },
+  "R384|GAL_CN": {
+   "label": "order 2 (finite-range observed order over dt0..dt0/4)",
+   "interpretable": 6,
+   "p_median": 2.003882685913271,
+   "p_range": [
+    1.9970369637641006,
+    2.005727335164256
+   ]
+  },
+  "R384|GAL_TH06": {
+   "label": "order 1",
+   "interpretable": 6,
+   "p_median": 0.9984319398448243,
+   "p_range": [
+    0.9672989771005381,
+    1.0241684990491082
+   ]
+  },
+  "TH06_control": "order 1"
  },
  "fronts": {},
  "roles": {},
- "threeD": null
+ "threeD": {
+  "label": "qualified subset of the tested candidates (never a completeness claim, A2.1)",
+  "contract": "speed3d screening contract: full-field 65^3 mesh-path rollout; ratios from separate jobs against C_old",
+  "tested": {
+   "W256|gl16|fs|BE|0.016666667|K1": "fail",
+   "W256|gl16|fs|BDF2|0.025|K2": "fail",
+   "W256|gl16|fs|CN|0.0125|K1": "fail",
+   "W256|gl20|fs|CN|0.0125|K1": "fail",
+   "W256|gl20|fs|CN|0.01|K1": "fail",
+   "W256|lat8192|fs|CN|0.01|K1": "fail",
+   "W512|gl24|qn|CN|0.025|k4": "fail",
+   "M2_512|gl24|qn|BDF2|0.025|k4": "fail",
+   "W512|lat16384|qn|CN|0.025|k4": "fail",
+   "W512|gl24|qn|CN|0.016666667|k4": "fail",
+   "M2_512|gl24|fs|BDF2|0.0125|K1": "fail",
+   "M2_512|gl24|qn|BDF2|0.016666667|k4": "fail",
+   "M2_512|gl24|fs|CN|0.01|K1": "fail",
+   "W512|gl24|fs|CN|0.01|K1": "fail",
+   "W768|lat16384|fs|CN|0.01|K1": "fail",
+   "W1024|lat32768|fs|CN|0.01|K1": "fail",
+   "M2_512|gl24|qn|CN|0.016666667|k4": "fail"
+  },
+  "front": {
+   "median": [],
+   "worst": []
+  },
+  "open_candidates": 419
+ }
 }

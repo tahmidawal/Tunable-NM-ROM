@@ -100,7 +100,9 @@ def lane_config(mesh, d, res, cache, name, arm):
     ak = f'{form}_{sc}_{f:g}'
     fp = d / f'R_{name}_{ak}.npz'
     st_ = fp.stat()
-    code = hashlib.sha256(b''.join((HERE / x).read_bytes() for x in ('qscore.py', 'analyze.py', 'npcheck.py', 'p1score.py'))).hexdigest()
+    src = (HERE / 'analyze.py').read_text()                      # the scoring code plus lane_config_compute's own text
+    body = src[src.index('def lane_config_compute'):src.index('def p1_config')]
+    code = hashlib.sha256(b''.join((HERE / x).read_bytes() for x in ('qscore.py', 'npcheck.py', 'p1score.py')) + body.encode()).hexdigest()
     ckey_ = (str(fp), st_.st_size, st_.st_mtime_ns, code, json.dumps(arm, sort_keys=True))
     C_ = qcache()
     if C_['dir'] and ckey_ in C_['data']:
@@ -633,6 +635,9 @@ def main():
         cfgs[k] = dict(source=e['source'], rule=e['rule'], attempt=e.get('attempt'), supersedes=e.get('supersedes'), Q1=e['q']['Q1'], Q2=e['q']['Q2'],
                        numerically_qualified=e['q']['numerically_qualified'], stats=stats(e), q3=e.get('q3'),
                        zero_update=e.get('zero_update'),
+                       worst_dist_tight=max((pc['dist_tight'] for pc in (e['q'].get('per_case') or {}).values()), default=None),
+                       worst_dist_tight_case=max((e['q'].get('per_case') or {}).items(), key=lambda kv: kv[1]['dist_tight'])[0]
+                       if e['q'].get('per_case') else None,
                        per_case={c: dict(e=v['ST']['e'], eps_ref=v['ST']['eps_ref'], eligible=v['ST']['eligible'],
                                          reference_sha256=v['ST'].get('reference_sha256'),
                                          S=v['S']['e'] if 'S' in v else None) for c, v in e['e0'].items()},

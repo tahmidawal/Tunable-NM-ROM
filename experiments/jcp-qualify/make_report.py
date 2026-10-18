@@ -200,6 +200,21 @@ def main():
         f = AN.get('fronts', {}).get(m, {})
         if 'members' in f:
             w(f"- **Front at {m}²:** {len(f['fronts']['median|c'])} median-front and {len(f['fronts']['worst|c'])} worst-front members among {len(f['candidates'])} qualified candidates; {len(f['unqualified'])} configurations unqualified or without usable timing.")
+            cnt = lambda st: ', '.join(f"{SCH[x]} {sum(1 for k in f['fronts'][st] if parse(k)['form'] + '|' + parse(k)['scheme'] == x)}" for x in SCH)
+            lo = min(f['fronts']['median|c'], key=lambda k: f['candidates'][k]['median'])
+            w(f"  Median front by scheme: {cnt('median|c')}; worst front: {cnt('worst|c')}. Most accurate median-front member: {name(lo)} at {pct(f['candidates'][lo]['median'])} median, cost {g(f['candidates'][lo]['c'])}× A.")
+    for k, v in AN.get('B4', {}).items():
+        if k != 'TH06_control' and isinstance(v, dict) and isinstance(v.get('label'), dict):
+            w(f"- **B4 {k.replace('|', ' ').replace('_', ' ').replace('CNR', 'CN-R').replace('LSPG ', 'LSPG-').replace('GAL ', 'GAL-')}:** {v['label']['label']} (median p̂ {g(v['label'].get('p_median'))}, {v['label']['interpretable']} interpretable cases).")
+    from collections import Counter
+    hn = Counter(v.get('outcome') for v in AN['B1']['h_acc_n'].values())
+    w(f"- **B1 H-acc-N** over {len(AN['B1']['h_acc_n'])} (r, family) tests: " + ', '.join(f'{k} {n}' for k, n in sorted(hn.items(), key=lambda x: str(x[0]))) + '.')
+    r1 = Counter(v.get('range_128_384') for v in AN['B1']['h_acc_r'].values())
+    r2 = Counter(v.get('range_128_512') for v in AN['B1']['h_acc_r'].values())
+    w(f"- **B1 H-acc-r** over {len(AN['B1']['h_acc_r'])} (mesh, family) cells: range 128–384 " + ', '.join(f'{k} {n}' for k, n in sorted(r1.items(), key=lambda x: str(x[0]))) +
+      '; range 128–512 ' + ', '.join(f'{k} {n}' for k, n in sorted(r2.items(), key=lambda x: str(x[0]))) + '.')
+    rl = AN.get('roles', {})
+    w(f"- **Roles (descriptive):** {sum('fast' in v['role'] for v in rl.values())} fast-equal-accuracy and {sum('accurate' in v['role'] for v in rl.values())} accurate-equal-cost labels among {len(rl)} qualified configurations with usable timing.")
     th = AN.get('B4', {}).get('TH06_control', {})
     w(f"- **B4 TH06 control:** label {th.get('label')}, interpretable {th.get('interpretable')}, agrees with smoke {th.get('agrees_with_smoke')} → {'passed' if th.get('passed') else 'FAILED (B4 labels blocked)'}.")
     if AN.get('threeD'):
@@ -209,9 +224,12 @@ def main():
     if FR:
         w(f"- **Deliverable:** `runs/FRONT-2D.json` (sha256 `{FRSHA[:16]}…`), frozen after the results audit.")
     w('')
+    nd = len(list((HERE / 'audits').glob('codex-design-*.md')))
+    nc = len(list((HERE / 'audits').glob('codex-code-*.md'))) + len(list((HERE / 'audits').glob('codex-job-*.md')))
+    nr = len(list((HERE / 'audits').glob('codex-results-*.md')))
     w('```mermaid')
     w('flowchart LR')
-    w('  D[DESIGN + A1-A5, 5 Codex design audits]:::doc --> K[code + 7 Codex code/job audits]:::doc --> S[real-size smokes smkA smkB smk3]:::job')
+    w(f'  D[DESIGN + A1-A6, {nd} Codex design audits]:::doc --> K[code + {nc} Codex code/job audits]:::doc --> S[real-size smokes smkA smkB smk3]:::job')
     w('  S --> A[accuracy jobs acc256 acc1024 acc4096: Q1 Q2 Q3 per configuration]:::job --> T[per-mesh timing jobs time256 time1024 time4096]:::job')
     w('  S --> O[order job: B4]:::job')
     w('  S --> Q[q3d: Q2-3D of speed3d front members]:::job')
@@ -316,6 +334,21 @@ def main():
     w('')
     req = {k: v for k, v in SMK.items() if v.get('required')}
     w(f"Real-size smoke acceptance (`checks/smoke-accept.json`): {sum(v['passed'] for v in req.values())} of {len(req)} required controls behave as registered.")
+    w('')
+    w('## Corrections to earlier reports (stated plainly)')
+    w('')
+    for m in MESHES:
+        for r in (128, 256):
+            k = f'{m}|R{r}|LSPG|CNR|2'
+            v = C.get(k)
+            if v and not v['Q1'].get('pass'):
+                w(f"- **{m}², R{r} LSPG-CN-R at 2Δt₀** fails Q1 here: worst distance to the tight solve {g(v.get('worst_dist_tight'))} on {v.get('worst_dist_tight_case')} (bar 2.5·10⁻⁴), although its Q2 label is {v['Q2'].get('label')}. jcp-combined's finalist table (`worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/report.md`, finalist and fallback tables) calls the R128 and R256-fallback \"fast equal accuracy\" arms of this scheme and step qualified under its own finalist criterion; under the every-case Q1 contract of V4-2 they are **not** numerically qualified. Combined's measured errors and timings are not retracted; its qualification label for these arms is.")
+    T3 = AN.get('threeD') or {}
+    for k in ('M2_512|gl24|fs|BDF2|0.0125|K1', 'M2_512|gl24|qn|CN|0.016666667|k4'):
+        v = (T3.get('tested') or {}).get(k)
+        if v:
+            w(f"- **speed3d H2 winner `{k}`**: Q2-3D {v['label']} (successor-rule distance {g(v['worst_dist_qp'])} > 2.5·10⁻⁴, ρ {g(v['rho_max'])}). speed3d already labels reduced rules \"empirically validated surrogates, not quadrature-equivalent\" (`worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/report.md`); its speed-ups stand as measured, but the winners must not be described as quadrature-qualified.")
+    w('- **P1:** no numerical retraction; its $4096^2$ R128/R256 results are on its 16-case subset (extended here to 38 cases for the front).')
     w('')
     w('## Deviations and retractions')
     w('')

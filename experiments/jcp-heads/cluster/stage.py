@@ -43,6 +43,8 @@ def main():
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
     cert = ROOT / LANE / 'checks' / f'resources-{a.attempt}.json'
+    if a.attempt.startswith('smk'):
+        assert a.hours <= 2., 'a smoke is limited to 2 GPU-h (brief)'
     if not (a.attempt.startswith('smk') or a.attempt.startswith('pilot')):
         # production attempts need a smoke-derived certificate; the time limit must cover projection x 1.5 (A1.11)
         c_ = json.loads(cert.read_text())

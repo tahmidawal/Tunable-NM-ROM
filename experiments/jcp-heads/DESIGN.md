@@ -617,3 +617,27 @@ rung is certified costlier.
   MLP and skip weights, the initial-fit candidate codes $Z[::16]$, the trust radius and code statistics computed from all
   codes, and the training cfg), which with the incumbent checkpoint's bank parameters defines the decoder exactly; the
   full emitted pkl stays on the cluster only while the lane runs and its sha256 is recorded.
+
+---
+
+## Amendment A6 (2026-10-18, before any lane job; implementation notes from `audits/codex-code-1.md`)
+
+- **Linear reproduction fixture corrected.** §7 named qualify's `acc1024` archive, which holds no $\Delta t_0$ LSPG runs.
+  The fixture is jcp-combined's `c2grid` archive (A100 80GB; the source qualify itself used for this gate): R384
+  `gauss128`, runs `LSPG|BE|0.005|prod` and `LSPG|CNR|0.005|prod`, dev6 (`inputs/repro/lin_R384_gauss128_{BE,CNR}_dev6.npz`,
+  sha256 in `inputs/repro/PROVENANCE.json`); both schemes ≤ $10^{-10}$.
+- **Head Jacobian control on every head arm** (analytic vs autodiff at 4 fixtures), not only the incumbent.
+- **Smoke coverage.** `smk1` = training pipeline (identity + $K=4$, $K=32$ short heads), accuracy controls on the
+  incumbent (all 38 cases, both schemes: the real-size cost probe of one head configuration), short-head arms, linear arms,
+  and the rule-ladder probe on the incumbent, a newly trained head group (min_pass 2) and a linear rung. `smk2` = timing
+  controls at 1024² and the 4096² pilot. The pilot uses **stand-in heads with the actual latent sizes** (random 512×2
+  MLPs of latent size $K$, separate archives and initial-fit tables per subject) because the trained heads do not exist
+  yet; their arithmetic and storage per iteration equal a trained head's, their solver iteration counts do not, which is
+  why the pilot certifies memory, not time.
+- **Ledger.** Every reservation (smokes included) requires a pending inventory; a retry replaces its job's pending entry;
+  one lane smoke at a time and ≤ 2 GPU-h per smoke are enforced by `submit.sh` / `stage.py`; the account cap is re-checked
+  on the login node in the same command that runs `sbatch`.
+- **Archives.** Training jobs emit compact head archives (A5) and full pickles; only the compact archives are collected
+  (the pickles' sha256 are kept in `OUTPUTS.sha256` and the training result), and the job checks the compact archive
+  defines exactly the emitted head (difference 0). Accuracy and timing records keep tight and tighter internal
+  trajectories, budget-exit counts and initial-fit exit records for the offline anchor audit.

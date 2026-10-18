@@ -23,7 +23,7 @@ import hcore as HC
 
 HERE = Path(__file__).resolve().parent
 INCUMBENT = T2.CKPT
-IC_TOL = dict(tight=1e-10, tighter=1e-11)
+IC_TOL = dict(tight=1e-9, tighter=1e-10)          # DESIGN A1.3
 
 
 def sha_file(p):
@@ -43,6 +43,8 @@ class Head:
         self.sha256 = sha_file(self.path)
         if self.path.suffix == '.npz':          # compact archive (DESIGN A5): head weights on the incumbent bank
             z = np.load(self.path)
+            assert str(z['source_ckpt_sha256']) == sha_file(INCUMBENT), \
+                f'{self.path.name}: compact head was trained on another bank checkpoint'
             nl_ = int(z['n_layers'])
             ck = dict(params=dict(Q.LD_host(bank_model.params), h=[(z[f'h{i}_w'], z[f'h{i}_b']) for i in range(nl_)],
                                   h_lin=z['h_lin']),

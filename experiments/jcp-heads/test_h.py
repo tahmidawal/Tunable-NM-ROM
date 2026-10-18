@@ -88,25 +88,31 @@ def main():
     out_s = PS.h_cost_n(slow, valid, (256, 1024, 4096), nboot=2000)
     check('H-cost-N flat', out_f['outcome'], 'pass')
     check('H-cost-N 1.5x fault', out_s['outcome'], 'fail')
-    # degeneracy fixture: duplicated latent -> rank-deficient head Jacobian (A1.3)
+    # degeneracy fixture (A1.3): the incumbent with latent 15's first-layer row and skip row copied onto latent 14;
+    # J_z = J_c dh~/dz (autodiff, CPU) has two identical columns, and the production classifier must flag it
     import pickle
     from pathlib import Path
-    import nphead as NH
-    hd = NH.Head(Path(__file__).resolve().parents[1] / 'separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl')
-    W0, b0 = hd.layers[0]
-    W0 = W0.copy()
-    W0[14] = W0[15]
-    hd.layers[0] = (W0, b0)
-    hd.h_lin = hd.h_lin.copy()
-    hd.h_lin[14] = hd.h_lin[15]
-    z = np.random.default_rng(1).normal(size=16) * .1
-    J = np.empty((512, 16))
-    for i in range(16):
-        e = np.zeros(16)
-        e[i] = 1e-6
-        J[:, i] = (hd.c(z + e) - hd.c(z - e)) / 2e-6
-    s = np.linalg.svd(J, compute_uv=False)
-    check('duplicated latent flagged (sigma_min / sigma_max < 1e-10 within FD noise 1e-8)', bool(s[-1] / s[0] < 1e-8), True)
+    import jax
+    jax.config.update('jax_enable_x64', True)
+    import jax.numpy as jnp
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'separable-decoder'))
+    import sep_common as SC
+    import hscore as HSC
+    ck = pickle.load(open(Path(__file__).resolve().parents[1] / 'separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl', 'rb'))
+    p = jax.tree_util.tree_map(jnp.asarray, {k: ck['params'][k] for k in ('h', 'h_lin')})
+    W0, b0 = p['h'][0]
+    p['h'] = [(W0.at[14].set(W0[15]), b0)] + list(p['h'][1:])
+    p['h_lin'] = p['h_lin'].at[14].set(p['h_lin'][15])
+    z = jnp.asarray(np.random.default_rng(1).normal(size=16) * .1)
+    Jh = jax.jacfwd(lambda zz: SC.head(p, zz))(z)                       # (512, 16)
+    Jc = jnp.asarray(np.random.default_rng(2).normal(size=(64, 512)))     # a generic step Jacobian in c (M = 64)
+    s_dup = np.linalg.svd(np.asarray(Jc @ Jh), compute_uv=False)
+    check('duplicated latent: classifier flags rank deficiency', HSC.q3_flag(s_dup), 'rank-deficient step Jacobian')
+    p0 = jax.tree_util.tree_map(jnp.asarray, {k: ck['params'][k] for k in ('h', 'h_lin')})
+    s_ok = np.linalg.svd(np.asarray(Jc @ jax.jacfwd(lambda zz: SC.head(p0, zz))(z)), compute_uv=False)
+    check('incumbent: not flagged', HSC.q3_flag(s_ok), None)
+    check('zero Jacobian: degenerate', HSC.q3_flag(np.zeros(16)), 'degenerate')
     TM._selftest()
     print('test_h: all checks passed')
 

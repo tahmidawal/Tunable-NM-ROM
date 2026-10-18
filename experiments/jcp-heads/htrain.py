@@ -89,6 +89,7 @@ def main():
         assert dmin > 1e-9, f'{coh} descriptor present in the training data'
         disjoint[coh] = dict(min_maxabs_distance=dmin, n=len(ph))
     disjoint['n_training_descriptors'] = int(len(mu))
+    assert len(mu) == 4608 and len(np.unique(np.asarray(d['traj_tr']))) == 4608, 'expected 4,608 training trajectories'
     pick_all = np.asarray(d['pick'])
     assert np.array_equal(np.asarray(ck['cfg']['hfit_pick']), pick_all), 'incumbent codes not aligned with the data pick'
     p_ck = jax.tree_util.tree_map(jnp.asarray, ck['params'])
@@ -237,6 +238,14 @@ def main():
                      npz_sha256=sha_npz, pkl_sha256=ent['emitted_sha256'], **hw)
             ent['compact'] = cpath.name
             ent['compact_sha256'] = sha_file(cpath)
+            # the compact archive defines the same decoder head as the emitted checkpoint (reloaded, 8 random codes)
+            zc = np.load(cpath)
+            hc = dict(h=[(jnp.asarray(zc[f'h{i}_w']), jnp.asarray(zc[f'h{i}_b'])) for i in range(int(zc['n_layers']))],
+                      h_lin=jnp.asarray(zc['h_lin']))
+            zt_ = jax.random.normal(jax.random.PRNGKey(5), (8, int(k))) * .1
+            a_, b_ = hf.head_apply(hc, zt_), hf.head_apply(dict(h=hp['h'], h_lin=hp['h_lin']), zt_)
+            ent['compact_vs_emitted'] = float(jnp.max(jnp.abs(a_ - b_)) / jnp.max(jnp.abs(b_)))
+            assert ent['compact_vs_emitted'] == 0., ent['compact_vs_emitted']
             # bank parameters untouched (identity of every non-head leaf)
             for kk in ck['params']:
                 if kk not in ('h', 'h_lin', 'hB'):
@@ -247,6 +256,7 @@ def main():
     report['total_seconds'] = time.time() - t_all
     report['complete'] = True
     save()
+    (out / 'COMPLETE').write_text('complete\n')
     log(f"HTRAIN done in {report['total_seconds']:.0f}s")
 
 

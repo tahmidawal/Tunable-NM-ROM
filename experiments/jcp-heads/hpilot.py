@@ -1,11 +1,13 @@
 """jcp-heads 4096^2 memory pilot (DESIGN 8, A1.9): build the mesh bank (all 512 rotated columns) and the 1024^2 bank of the
 timing reference A, then the arms of every planned 4096^2 subject at an upper-bound rule (main rule `rule`, plus the
-largest concurrently live successor / check tables on one arm), run one head and one linear rollout, and report device
-memory (peak bytes in use) against the 120 GB decimal bar. Heads not yet trained are stood in for by the incumbent (an
-arm's tables do not depend on the head's weights, only on K, M and the rule).
+largest concurrently live successor / check tables on one arm), run one recorded rollout per head size K, one linear and
+one A rollout, and report device memory (peak bytes in use) against the 120 GB decimal bar. Heads not yet trained are
+stand-ins with the ACTUAL dimensions (code audit 1): for every planned (K, seed) a separate compact head archive with a
+randomly initialised 512 x 2 MLP of latent size K (sep_hfit.init_head), 8192 random candidate codes and its own initial-
+fit tables, so storage is independent per subject exactly as in the timing job; the incumbent is loaded as itself.
 
     python hpilot.py --config configs/<attempt>.json --out <dir>
-config: {"mesh", "edges", "edges_A", "rule", "qp", "qpp", "heads": [{"name", "head", "M"?}], "lin": [r, ...], "A": {...}}
+config: {"mesh", "edges", "edges_A", "rule", "qp", "qpp", "heads": [{"name", "K" | "head"}], "lin": [r, ...], "A": {...}}
 """
 from __future__ import annotations
 
@@ -48,8 +50,29 @@ def main():
     heads, arms = {}, []
     A = HA.make_arm(bankA, dict(cfg['A']), heads, S)
     stage('A')
-    for h in cfg['heads']:
-        arms.append(HA.make_arm(bank, dict(name=h['name'], kind='head', head=h['head'], rule=cfg['rule'], M=h.get('M')), heads, S))
+    import hcommon as HM
+    import sep_hfit as hf
+    syn = out / 'synthetic'
+    syn.mkdir(exist_ok=True)
+    inc_sha = HM.sha_file(HM.INCUMBENT)
+    first_of_k = {}
+    for i, h in enumerate(cfg['heads']):
+        if 'head' in h:
+            path = h['head']
+        else:
+            K = int(h['K'])
+            hp = hf.init_head(jax.random.PRNGKey(1000 + i), K, 512, hidden=512, layers=2)
+            Zs = np.asarray(jax.random.normal(jax.random.PRNGKey(2000 + i), (8192, K))) * .1
+            zd = np.linalg.norm(Zs - Zs.mean(0), axis=1)
+            hw = {f'h{j}_w': np.asarray(w) for j, (w, b) in enumerate(hp['h'])}
+            hw.update({f'h{j}_b': np.asarray(b) for j, (w, b) in enumerate(hp['h'])})
+            path = syn / f"{h['name']}.npz"
+            np.savez(path, h_lin=np.asarray(hp['h_lin']), n_layers=len(hp['h']), Zsub=Zs, trust=.01 * float(zd.max()),
+                     code_std=float(Zs.std()), code_max_dev=float(zd.max()), n_codes=len(Zs), k=K, seed0=-1, steps=0,
+                     name=h['name'], source_ckpt_sha256=inc_sha, npz_sha256='synthetic', pkl_sha256='synthetic', **hw)
+        a_ = HA.make_arm(bank, dict(name=h['name'], kind='head', head=str(path), rule=cfg['rule']), heads, S)
+        arms.append(a_)
+        first_of_k.setdefault(a_.K, a_)
     stage('heads')
     for r in cfg['lin']:
         arms.append(HA.make_arm(bank, dict(name=f'L{r}', kind='lin', Rp=int(r), rule=cfg['rule']), heads, S))
@@ -62,7 +85,7 @@ def main():
     ci = P.select(cases, 'dev6')[0]
     u0 = jax.numpy.asarray(Q.e.initial(L, cases[ci][2]))
     nu = float(cases[ci][2][4])
-    for arm in (arms[0], arms[-1]):
+    for arm in list(first_of_k.values()) + [arms[-1]]:
         v = arm.run('main', 'BE', 'prod', u0, nu, DT0, record=True)
         jax.block_until_ready(v)
         rep[f'rollout_{arm.name}'] = dict(valid=HA.run_valid(v), it_sum=int(v['stats']['it_sum']))

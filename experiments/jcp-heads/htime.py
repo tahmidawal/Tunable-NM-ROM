@@ -116,6 +116,11 @@ def main():
                  reason=np.full((n, S), -1), n0=np.full(n, np.nan), ic=np.full((n, 5), np.nan),
                  W_tight=np.full((n, 6, dim), np.nan), cert_tight=np.full((n, S), np.nan),
                  W_tighter=np.full((n, 6, dim), np.nan), cert_tighter=np.full((n, S), np.nan),
+                 states_tight=np.full((n, S + 1, dim), np.nan), states_tighter=np.full((n, S + 1, dim), np.nan),
+                 budget_exits_tight=np.full(n, -1), budget_exits_tighter=np.full(n, -1),
+                 ic_tight=np.full((n, 5), np.nan), ic_tighter=np.full((n, 5), np.nan),
+                 valid_tight=np.zeros(n, bool), valid_tighter=np.zeros(n, bool), valid=np.zeros(n, bool),
+                 verified_tight=np.zeros(n, bool), verified_tighter=np.zeros(n, bool),
                  W_qp=np.full((n, 6, dim), np.nan), W_qpp=np.full((n, 6, dim), np.nan), rho=np.full((n, 6), np.nan),
                  f257=np.full((n, 6, 257, 257), np.nan), C=np.full((n, 6, 512 if arm.kind == 'head' else dim), np.nan))
         rows = []
@@ -141,6 +146,7 @@ def main():
             C['it'][j], C['reason'][j] = (np.asarray(s_[k])[:S] for k in ('step_it', 'step_reason'))
             C['f257'][j], C['C'][j] = f, arm.coef(W)
             C['ic'][j] = [HAC.ic_info(v)[k] for k in ('ic_reason', 'ic_it', 'ic_gn', 'ic_rel', 'ic_idx')]
+            C['valid'][j] = HA.run_valid(v)
             row = dict(case=cid(ci), valid=HA.run_valid(v), budget_exits=int(np.asarray(s_['exits'])[0]), noncertified=nonst,
                        gcert_ok=gok, ident=ref[(lb, ci)], **HAC.ic_info(v))
             if j == 0:
@@ -154,8 +160,11 @@ def main():
                 w = jax.block_until_ready(arm.run('main', scheme, lev, u0, nu, DT0, record=True))
                 ct, _, _, _ = HAC.certify(arm, w, nu, 'main', sc_, S)
                 C[f'W_{key}'][j], C[f'cert_{key}'][j] = np.asarray(w['W']), ct
-                row[f'{lev}_valid'] = HA.run_valid(w)
-                row[f'{lev}_verified'] = HAC.anchor_verified(w, ct, bar)
+                C[f'states_{key}'][j] = np.asarray(w['stats']['states'])
+                C[f'budget_exits_{key}'][j] = P.budget_exits(w)
+                C[f'ic_{key}'][j] = [HAC.ic_info(w)[k_] for k_ in ('ic_reason', 'ic_it', 'ic_gn', 'ic_rel', 'ic_idx')]
+                row[f'{lev}_valid'] = C[f'valid_{key}'][j] = HA.run_valid(w)
+                row[f'{lev}_verified'] = C[f'verified_{key}'][j] = HAC.anchor_verified(w, ct, bar)
                 ft[lev] = P.restrict(w['fields'], L)
             row['dist_tight'] = P.fdist(f, ft['tight'], n0)
             row['dist_tight_tighter'] = P.fdist(ft['tight'], ft['tighter'], n0)

@@ -1,4 +1,7 @@
-"""[jcp-heads copy of jcp-qualify @4399491eb cluster/collect.py; edited: namespace, job-name prefix jh_.]
+"""[jcp-heads copy of jcp-qualify @4399491eb cluster/collect.py; edited: namespace, job-name prefix jh_; full head pickles
+(*.pkl) are not collected (DESIGN A5: the compact head archives define the decoders; the pickles' sha256 stay in the
+job outputs and in OUTPUTS.sha256), so the collected files are verified against OUTPUTS.collected.sha256 = OUTPUTS.sha256
+without the *.pkl lines.]
 
 Checksum-collect one completed attempt into runs/<attempt>/archive; then (separately) clean the remote dir.
 
@@ -25,13 +28,13 @@ def main():
     remote = f'{NAMESPACE}/{a.attempt}'
     out = HERE / 'runs' / a.attempt / 'archive'
     if a.cleanup:
-        assert (out / 'OUTPUTS.sha256').exists(), 'collect first'
+        assert (out / 'OUTPUTS.collected.sha256').exists(), 'collect first'
         assert not (out / 'PARTIAL').exists(), 'a partial collection never authorises cleanup'
         steps = [d for d in (out / 'output').iterdir() if d.is_dir()]
         assert steps and all((d / 'COMPLETE').exists() for d in steps), 'a staged step lacks its COMPLETE marker'
         log = '\n'.join(p.read_text() for p in (out / 'logs').glob('*.out'))
         assert 'ALL-DONE' in log, 'job log lacks ALL-DONE'
-        subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
+        subprocess.run(['sha256sum', '-c', 'OUTPUTS.collected.sha256', '--quiet'], cwd=out, check=True)
         q = subprocess.run(SSH + [f'squeue -h -n jh_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
         assert not q.strip(), f'job jh_{a.attempt} still queued/running: {q}'
         st = subprocess.run(SSH + [f'sacct -n -X -P --name jh_{a.attempt} -S now-7days -o State'], capture_output=True,
@@ -43,14 +46,15 @@ def main():
     out.mkdir(parents=True, exist_ok=False)
     pre = (f'cd {shlex.quote(remote)} && ' + ('find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 && '
                                               if a.partial else '') +
-           'sha256sum -c OUTPUTS.sha256 --quiet && tar -cf collection.tar COMMIT.txt PROVENANCE.json MANIFEST.sha256 '
-           'run.sbatch logs OUTPUTS.sha256 output && sha256sum collection.tar > collection.tar.sha256')
+           'sha256sum -c OUTPUTS.sha256 --quiet && (grep -v "\\.pkl$" OUTPUTS.sha256 > OUTPUTS.collected.sha256 || true) && '
+           "tar --exclude='*.pkl' -cf collection.tar COMMIT.txt PROVENANCE.json MANIFEST.sha256 "
+           'run.sbatch logs OUTPUTS.sha256 OUTPUTS.collected.sha256 output && sha256sum collection.tar > collection.tar.sha256')
     subprocess.run(SSH + [pre], check=True)
     for name in ['collection.tar', 'collection.tar.sha256']:
         subprocess.run(['timeout', '3600', 'scp', '-q', f'tufts-login:{remote}/{name}', str(out / name)], check=True)
     subprocess.run(['sha256sum', '-c', 'collection.tar.sha256'], cwd=out, check=True)
     subprocess.run(['tar', '-xf', 'collection.tar'], cwd=out, check=True)
-    subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
+    subprocess.run(['sha256sum', '-c', 'OUTPUTS.collected.sha256', '--quiet'], cwd=out, check=True)
     (out / 'collection.tar').unlink()
     if a.partial:
         (out / 'PARTIAL').write_text('partial collection\n')

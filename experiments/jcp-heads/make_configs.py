@@ -56,10 +56,14 @@ def smoke():
         dict(name='L384', kind='lin', Rp=384, rule='gauss128', qp='gauss160', qpp='gauss192', schemes=['BE'], cases=DEV2,
              q2_cases=DEV2)],
         blocks=[dict(kind='controls', arm='Hinc', repro_head=rep_head, under_resolved=['gauss8', 'gauss16', 'gauss24'],
-                     repro_lin=dict(Rp=384, rule='gauss128', fixture='inputs/repro/lin_R384_gauss128_BE_dev6.npz'))]))
+                     repro_lin=dict(Rp=384, rule='gauss128', fixtures={
+                         'BE': 'inputs/repro/lin_R384_gauss128_BE_dev6.npz',
+                         'CNR': 'inputs/repro/lin_R384_gauss128_CNR_dev6.npz'}))]))
     write('smk1rule', dict(mesh=1024, edges=EDGES, ladder=LADDER, selectable_max=192, population='sub16', check='dev6',
                            groups=[dict(name='Hinc', min_pass=1, arms=[dict(name='Hinc', kind='head', head=INC)]),
-                                   dict(name='L8', arms=[dict(name='L8', kind='lin', Rp=8)])]))
+                                   dict(name='Hk4', min_pass=2, arms=[dict(name='Hk4', kind='head', head=smk_head(4)),
+                                                                      dict(name='Hk4b', kind='head', head=smk_head(4))]),
+                                   dict(name='L8', min_pass=1, arms=[dict(name='L8', kind='lin', Rp=8)])]))
     subj = [dict(mesh=1024, name='Hinc', kind='head', head=INC, rule='gauss32', qp='gauss48', qpp='gauss64', scheme='BE'),
             dict(mesh=1024, name='Hinc', kind='head', head=INC, rule='gauss32', qp='gauss48', qpp='gauss64', scheme='CNR'),
             dict(mesh=1024, name='L16', kind='lin', Rp=16, rule='gauss24', qp='gauss32', qpp='gauss48', scheme='BE'),
@@ -68,7 +72,7 @@ def smoke():
                            cases=DEV2 + [['val32', 0]], cert_cases=DEV2, reps={'dev6': 2, 'val32': 1}, burn=0.1, seed=20261018,
                            doubled=[dict(subj[0], cases=[['dev6', 0]])], inject_identity_fault=['1024|L16|gauss24|BE']))
     write('smk2pilot', dict(mesh=4096, edges=EDGES, edges_A=[0, 128, 256, 384], rule='gauss192', qp='gauss256', qpp='gauss320',
-                            A=A_SPEC, heads=[dict(name=f'P{k}s{s}', head=INC, M=4 * k) for k in KS for s in SEEDS] +
+                            A=A_SPEC, heads=[dict(name=f'P{k}s{s}', K=k) for k in KS for s in SEEDS] +
                             [dict(name='Pinc', head=INC)], lin=list(LIN)))
 
 

@@ -41,18 +41,14 @@ def smk1():
         identity_oracle_rel=rel(ident['oracle_test']['mean'], INC_ORACLE),
         complete=bool(tr['complete']), npz_sha256=tr['config']['npz_sha256'])
     res['train']['identity_pass'] = bool(res['train']['identity_recon_rel'] <= 1e-9 and res['train']['identity_oracle_rel'] <= 1e-3)
-    # compact npz defines the same head as the emitted pkl (if the pkl was collected)
+    # compact archive defines the same head as the emitted checkpoint (checked in-job, A5); loadable here by NumPy
     comp = {}
     for name in ('smk_k4_s0', 'smk_k32_s0'):
         cz = out_dir('smk1', 'htrain', 'smk1train') / f'head_{name}.npz'
-        pk = out_dir('smk1', 'htrain', 'smk1train') / f'head_{name}.pkl'
         hc = NH.Head(cz)
-        e = dict(k=hc.K, recon=tr['arms'][name]['recon_train']['mean'], oracle=tr['arms'][name]['oracle_test']['mean'])
-        if pk.exists():
-            hp = NH.Head(pk)
-            z = np.random.default_rng(0).normal(size=(8, hc.K)) * .1
-            e['compact_vs_pkl'] = float(np.max(np.abs(hc.c(z) - hp.c(z))) / np.max(np.abs(hp.c(z))))
-        comp[name] = e
+        comp[name] = dict(k=hc.K, recon=tr['arms'][name]['recon_train']['mean'], oracle=tr['arms'][name]['oracle_test']['mean'],
+                          compact_vs_emitted=tr['arms'][name]['compact_vs_emitted'],
+                          ok=bool(hc.K == int(name.split('_k')[1].split('_')[0]) and tr['arms'][name]['compact_vs_emitted'] == 0.))
     res['train']['short_heads'] = comp
     # ---- accuracy job: in-job controls, recomputed where possible
     acc_dir = out_dir('smk1', 'hacc', 'smk1acc')
@@ -61,8 +57,12 @@ def smk1():
     res['repro_head'] = dict(worst=max(r['rel'] for r in c['repro_head']['rows']), n=len(c['repro_head']['rows']))
     res['repro_head']['passed'] = bool(res['repro_head']['worst'] <= 1e-10 and res['repro_head']['n'] == 4)
     res['repro_lin'] = dict(worst=max(r['rel'] for r in c['repro_lin']['rows']), n=len(c['repro_lin']['rows']))
-    res['repro_lin']['passed'] = bool(res['repro_lin']['worst'] <= 1e-10 and res['repro_lin']['n'] == 6)
-    res['jacobian'] = dict(worst=c['jacobian']['worst'], passed=bool(c['jacobian']['worst'] <= 1e-10))
+    res['repro_lin']['schemes'] = sorted({r['scheme'] for r in c['repro_lin']['rows']})
+    res['repro_lin']['passed'] = bool(res['repro_lin']['worst'] <= 1e-10 and res['repro_lin']['n'] == 12
+                                      and res['repro_lin']['schemes'] == ['BE', 'CNR'])
+    jac = {k: v['jacobian'] for k, v in acc['arms'].items() if 'jacobian' in v}
+    res['jacobian'] = dict(per_head={k: v['worst'] for k, v in jac.items()},
+                           passed=bool(len(jac) == 3 and all(v['worst'] <= 1e-10 for v in jac.values())))
     res['wrong_mesh'] = dict(passed=bool(c['wrong_mesh']['passed']), raised=c['wrong_mesh']['raised'])
     # budget-0 Q1 negative: in-job pooled fraction > 1 %, and an independent NumPy gamma > 1e-3 on > 3 steps
     b0 = np.load(acc_dir / 'CTRL_budget0.npz')
@@ -110,7 +110,11 @@ def smk1():
     # ---- rule ladder probe
     ru = json.loads((out_dir('smk1', 'hrule', 'smk1rule') / 'result.json').read_text())
     res['rule_probe'] = {g: dict(chosen=v['chosen'], status=v['status'], seconds=v['seconds']) for g, v in ru['groups'].items()}
+    res['gcert'] = dict(passed=bool(all(v['gcert_all'] for v in res['hinc_real_size'].values())
+                                    and all(r['gcert_ok'] for r in acc['rows'])))
+    res['train']['short_heads_ok'] = bool(all(v['ok'] for v in comp.values()))
     res['all_controls_pass'] = bool(res['train']['identity_pass'] and res['train']['whitening'] and res['train']['disjointness']
+                                    and res['train']['short_heads_ok'] and res['gcert']['passed']
                                     and res['repro_head']['passed'] and res['repro_lin']['passed'] and res['jacobian']['passed']
                                     and res['wrong_mesh']['passed'] and res['budget0']['passed'] and res['zero_update']['passed']
                                     and res['under_resolved']['passed'] and res['independent_decode']['passed'])
@@ -137,7 +141,8 @@ def smk2():
     res['other_valid_fraction'] = float(np.mean([x['valid'] for x in good]))
     dbl = r['doubled']
     res['doubled'] = dict(ratios=[x['ratio'] for x in dbl], passed=bool(dbl and all(1.8 <= x['ratio'] <= 2.2 and x['identity_ok']
-                                                                                     and x['same_iterations'] for x in dbl)))
+                                                                                     and x['same_iterations'] and x['drift_ok']
+                                                                                     for x in dbl)))
     res['subjects'] = {k: dict(cert=[(c_['valid'], c_['gcert_ok'], c_['tight_verified'], c_['tighter_verified']) for c_ in v['certification']])
                        for k, v in r['subjects'].items()}
     by = {}
@@ -150,8 +155,11 @@ def smk2():
     pl = json.loads((out_dir('smk2', 'hpilot', 'smk2pilot') / 'result.json').read_text())
     res['pilot'] = dict(peak_bytes=pl['peak_bytes'], within_bar=bool(pl['within_bar']), stages=[(s_['stage'], s_['mem']['peak'])
                                                                                                  for s_ in pl['stages']])
+    res['certification_ok'] = bool(all(all(t_[:2]) for v in res['subjects'].values() for t_ in v['cert']))
     res['all_controls_pass'] = bool(res['equivalence']['passed'] and res['identity_fault']['all_invalid']
-                                    and res['doubled']['passed'] and res['pilot']['within_bar'])
+                                    and res['doubled']['passed'] and res['pilot']['within_bar']
+                                    and res['panel_validity_without_fault'] and res['other_valid_fraction'] >= 2 / 3
+                                    and res['certification_ok'])
     return res
 
 

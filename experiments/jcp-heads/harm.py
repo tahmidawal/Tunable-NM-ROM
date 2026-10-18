@@ -24,7 +24,7 @@ from p1common import Q, T2
 import hcommon as HM
 import hcore as HC
 
-HM.IC_TOL.update(tight=1e-9, tighter=1e-10)          # DESIGN A1.3 (replaces 1e-10 / 1e-11 of section 3.1)
+assert HM.IC_TOL == dict(tight=1e-9, tighter=1e-10)      # DESIGN A1.3 (replaces 1e-10 / 1e-11 of section 3.1)
 TIGHT_BUDGET = 2000
 
 
@@ -51,7 +51,7 @@ class HeadArm:
         self.head = hd
         self.st = HM.HeadSetting(bank, spec['name'], hd, spec['rule'], nrec=S + 1, nstep=nstep, M=spec.get('M'))
         self.K = self.dim = hd.K
-        self.M, self.L = self.st.M, bank.L
+        self.M, self.L, self.S = self.st.M, bank.L, S
         q = self.st.query('prod', True)
         self.hz = q['hz']
         self._nl = q['nl']
@@ -85,6 +85,7 @@ class HeadArm:
 
     def run(self, role, scheme, level, u0, nu, dt, record=True):
         self.check(role)
+        assert steps_of(dt) == self.S, ('schedule length differs from the recording buffer', dt, self.S)
         q = self.parts(level, record)
         return q['fused'](u0, nu, self.data(role), self.cold, sched(scheme, dt, level))
 
@@ -157,6 +158,7 @@ class LinArm:
 
     def run(self, role, scheme, level, u0, nu, dt, record=True):
         self.check(role)
+        assert steps_of(dt) == self.S, ('schedule length differs from the recording buffer', dt, self.S)
         q = self.parts(level, record)
         return q['fused'](u0, nu, self.data(role), self.cold, sched(scheme, dt, level))
 

@@ -80,7 +80,11 @@ def validate(d, new, exempt=None):
 
 
 def pend(d, att):
-    return round(sum(v for k, v in d.get('pending_core', {}).items() if k != att), 4)
+    """Pending reservation excluding the attempt being submitted AND every pending entry of the same job (its base name
+    and its retries <base>r<n>): a retry replaces, never adds to, its job's pending reservation (code audit 1)."""
+    base = re.sub(r'r\d+$', '', att)
+    same = lambda k: re.sub(r'r\d+$', '', k) == base
+    return round(sum(v for k, v in d.get('pending_core', {}).items() if not same(k)), 4)
 
 
 def main():
@@ -94,7 +98,7 @@ def main():
             exempt = base if base in MANDATORY else None
             if not (math.isfinite(h) and h > 0):
                 print('refused: reservation hours must be finite and positive'); rc = 10
-            elif not att.startswith('smk') and validate(d, d.get('pending_core', {}), exempt=exempt):
+            elif 'pending_core' not in d or validate(d, d['pending_core'], exempt=exempt):
                 print('refused: pending inventory invalid:', validate(d, d.get('pending_core', {}), exempt=exempt)); rc = 8
             elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print('attempt already has a live reservation'); rc = 2
@@ -102,7 +106,9 @@ def main():
                 print(f"refused: spent {d['spent_gpu_hours']} + reserved {d['reserved_gpu_hours']} + {h} + pending "
                       f"{pend(d, att)} > {CAP}"); rc = 1
             else:
-                popped = d.setdefault('pending_core', {}).pop(att, None)
+                base = re.sub(r'r\d+$', '', att)
+                same = [k for k in d['pending_core'] if re.sub(r'r\d+$', '', k) == base]
+                popped = sum(d['pending_core'].pop(k) for k in same) if same else None
                 d['jobs'].append(dict(attempt=att, job_id=None, time_limit_hours=h, state='PENDING_SUBMIT', gpu=None,
                                       elapsed_hours=None, pending_hours=popped))
         elif cmd == 'pending':

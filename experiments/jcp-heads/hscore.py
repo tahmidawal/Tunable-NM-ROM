@@ -37,6 +37,17 @@ def tables(rule, dim, M, L):
     return TABLES[key]
 
 
+def q3_flag(s):
+    """A1.3 / A2.6 classifier of one step Jacobian's singular values: 'degenerate' (all-zero or non-finite),
+    'rank-deficient step Jacobian' (sigma_min / sigma_max < 1e-10), else None."""
+    s = np.asarray(s, float)
+    if not np.isfinite(s).all() or s.max() <= 0:
+        return 'degenerate'
+    if s.min() / s.max() < 1e-10:
+        return 'rank-deficient step Jacobian'
+    return None
+
+
 def coef_fn(R, head=None):
     if str(R['kind']) == 'head':
         assert head is not None, 'a head record needs its head (nphead.Head) for the independent decode'
@@ -155,14 +166,8 @@ def qualify(R, rows, head=None, qp_rule=None, qpp=True):
     out['numerically_qualified'] = bool(q1['pass'] and out['Q2'].get('label') == 'pass')
     # Q3 flags
     sv = np.asarray(R['q3_svals'], float)
-    flags = []
-    for k in range(sv.shape[0]):
-        for t_ in range(sv.shape[1]):
-            s = sv[k, t_]
-            if not np.isfinite(s).all() or s.max() <= 0:
-                flags.append('degenerate')
-            elif s.min() / s.max() < 1e-10:
-                flags.append('rank-deficient step Jacobian')
+    flags = [q3_flag(sv[k, t_]) for k in range(sv.shape[0]) for t_ in range(sv.shape[1])]
+    flags = [f_ for f_ in flags if f_]
     finite_sv = sv[np.isfinite(sv).all(axis=2) & (sv.max(axis=2) > 0)]
     out['Q3'] = dict(cond_median=float(np.median(finite_sv[:, 0] / finite_sv[:, -1])) if finite_sv.size else None,
                      cond_max=float(np.max(finite_sv[:, 0] / finite_sv[:, -1])) if finite_sv.size else None,

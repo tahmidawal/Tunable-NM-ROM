@@ -67,6 +67,7 @@ def main():
     sch = HA.sched('BE', DT0, 'prod')
     save()
     for grp in cfg['groups']:
+        assert 'min_pass' in grp and 1 <= int(grp['min_pass']) <= len(grp['arms']), grp['name']
         t_g = time.perf_counter()
         arms = []
         for spec in grp['arms']:
@@ -133,7 +134,7 @@ def main():
                 npass += int(r_['passed'])
                 if rho is not None:
                     np.savez_compressed(out / f"RHO_{grp['name']}_{arm.name}_{q}.npz", rho=rho, case_ids=np.array([cid(c) for c in pop]))
-            need = int(grp.get('min_pass', len(arms)))
+            need = int(grp['min_pass'])                 # required (A2.5: heads 2 of 3 seeds; a linear rung 1)
             ok_all = npass >= need
             step.update(group_pass=bool(ok_all), n_pass=npass, min_pass=need)
             trail.append(step)

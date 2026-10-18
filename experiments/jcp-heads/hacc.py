@@ -108,6 +108,8 @@ def main():
             rep['symdiff'][str(M)] = P.symdiff(L, M)
         d_ = arm.describe()
         d_.update(setting_bytes=P.mem()['in_use'] - b0, spec=spec, arms={})
+        if arm.kind == 'head':
+            d_['jacobian'] = jacobian_check(arm, cases, U0)
         rep['arms'][spec['name']] = d_
         ids = P.select(cases, spec.get('cases', 'all38'))
         q2 = [i for i in P.select(cases, spec.get('q2_cases', 'sub16')) if i in ids] if spec.get('qp') else []
@@ -130,7 +132,8 @@ def main():
                      W_tight=np.full((n, 6, dim), np.nan), states_tight=np.full((n, S + 1, dim), np.nan),
                      cert_tight=np.full((n, S), np.nan), valid_tight=np.zeros(n, bool), verified_tight=np.zeros(n, bool),
                      ic_tight=np.full((n, 5), np.nan), budget_exits_tight=np.full(n, -1),
-                     W_tighter=np.full((nd, 6, dim), np.nan), cert_tighter=np.full((nd, S), np.nan),
+                     W_tighter=np.full((nd, 6, dim), np.nan), states_tighter=np.full((nd, S + 1, dim), np.nan),
+                     cert_tighter=np.full((nd, S), np.nan),
                      valid_tighter=np.zeros(nd, bool), verified_tighter=np.zeros(nd, bool), ic_tighter=np.full((nd, 5), np.nan),
                      budget_exits_tighter=np.full(nd, -1),
                      W_qp=np.full((len(q2), 6, dim), np.nan), valid_qp=np.zeros(len(q2), bool),
@@ -174,6 +177,7 @@ def main():
                     jax.block_until_ready(vtt)
                     ctt, _, _, _ = certify(arm, vtt, nu, 'main', sch_tt, S)
                     R['W_tighter'][k], R['cert_tighter'][k] = np.asarray(vtt['W']), ctt
+                    R['states_tighter'][k] = np.asarray(vtt['stats']['states'])
                     R['valid_tighter'][k], R['verified_tighter'][k] = HA.run_valid(vtt), anchor_verified(vtt, ctt, ANCHOR_TT)
                     R['ic_tighter'][k], R['budget_exits_tighter'][k] = icv(vtt), P.budget_exits(vtt)
                     row.update(dist_tight_tighter=P.fdist(ft, P.restrict(vtt['fields'], L), n0),
@@ -230,6 +234,28 @@ def main():
     print('HACC COMPLETE', el(), flush=True)
 
 
+def jacobian_check(arm, cases, U0):
+    """DESIGN 7 'head Jacobian': the solver's analytic J_z vs forward-mode autodiff of the same residual, at 4 fixtures
+    (states 1 -> 2 and 25 -> 26 of dev6 cases 0-1, BE), for EVERY head arm."""
+    q = arm.parts('prod', True)
+    rows = []
+    for ci in P.select(cases, 'dev6')[:2]:
+        u0, nu, n0 = U0[ci]
+        v = arm.run('main', 'BE', 'prod', u0, nu, DT0, record=True)
+        Zs = np.asarray(v['stats']['states'])
+        d = arm.data('main')
+        A = d['A']
+        be = jnp.asarray(T2.BE_CO)
+        for k in (1, 25):
+            ck = arm.hz(jnp.asarray(Zs[k]))
+            args = ((A @ ck, A @ ck, jnp.zeros(A.shape[0])), nu, d, be, DT0)
+            r_an, J_an = q['evalJ'](jnp.asarray(Zs[k + 1]), args)
+            J_ad = jax.jacfwd(lambda z: q['res'](z, args))(jnp.asarray(Zs[k + 1]))
+            rows.append(dict(case=f'{cases[ci][0]}|{cases[ci][1]}', step=k,
+                             rel=float(jnp.linalg.norm(J_an - J_ad) / jnp.linalg.norm(J_ad))))
+    return dict(rows=rows, worst=max(r_['rel'] for r_ in rows), passed=all(r_['rel'] <= 1e-10 for r_ in rows))
+
+
 def run_controls(blk, bank, arm, spec, cases, U0, out, heads, S):
     """Smoke controls (DESIGN 7, A1.3, A1.7). Predicates are recomputed offline (smoke_accept.py) from the saved arrays."""
     L = bank.L
@@ -258,36 +284,19 @@ def run_controls(blk, bank, arm, spec, cases, U0, out, heads, S):
     if blk.get('repro_lin'):
         rl = blk['repro_lin']
         ar = HA.make_arm(bank, dict(name='repro_lin', kind='lin', Rp=rl['Rp'], rule=rl['rule']), heads, S)
-        fx = np.load(HERE / rl['fixture'])
-        fc = [str(x) for x in fx['cases']]
         rows = []
-        for ci in dev:
-            u0, nu, n0 = U0[ci]
-            v = ar.run('main', 'BE', 'prod', u0, nu, DT0, record=False)
-            Wa = fx['W'][fc.index(cid(ci))]
-            rows.append(dict(case=cid(ci), rel=float(np.max(np.linalg.norm(np.asarray(v['W']) - Wa, axis=1)) / np.linalg.norm(Wa[0]))))
-        res['repro_lin'] = dict(rows=rows, worst=max(r_['rel'] for r_ in rows), passed=all(r_['rel'] <= 1e-10 for r_ in rows),
-                                fixture=rl['fixture'])
+        for scheme, fixture in rl['fixtures'].items():
+            fx = np.load(HERE / fixture)
+            fc = [str(x) for x in fx['cases']]
+            for ci in dev:
+                u0, nu, n0 = U0[ci]
+                v = ar.run('main', scheme, 'prod', u0, nu, DT0, record=False)
+                Wa = fx['W'][fc.index(cid(ci))]
+                rows.append(dict(scheme=scheme, case=cid(ci), fixture=fixture,
+                                 rel=float(np.max(np.linalg.norm(np.asarray(v['W']) - Wa, axis=1)) / np.linalg.norm(Wa[0]))))
+        res['repro_lin'] = dict(rows=rows, worst=max(r_['rel'] for r_ in rows), passed=all(r_['rel'] <= 1e-10 for r_ in rows))
         del ar
         gc.collect()
-    # (3) head Jacobian: analytic (solver) vs forward-mode autodiff at 4 fixtures (output states of dev6 cases 0-1)
-    if arm.kind == 'head':
-        q = arm.parts('prod', True)
-        rows = []
-        for ci in dev[:2]:
-            u0, nu, n0 = U0[ci]
-            v = arm.run('main', 'BE', 'prod', u0, nu, DT0, record=True)
-            Zs = np.asarray(v['stats']['states'])
-            for k in (1, 25):
-                d = arm.data('main')
-                A = d['A']
-                ck = arm.hz(jnp.asarray(Zs[k]))
-                be = jnp.asarray(T2.BE_CO)
-                args = ((A @ ck, A @ ck, jnp.zeros(A.shape[0])), nu, d, be, DT0)
-                r_an, J_an = q['evalJ'](jnp.asarray(Zs[k + 1]), args)
-                J_ad = jax.jacfwd(lambda z: q['res'](z, args))(jnp.asarray(Zs[k + 1]))
-                rows.append(dict(case=cid(ci), step=k, rel=float(jnp.linalg.norm(J_an - J_ad) / jnp.linalg.norm(J_ad))))
-        res['jacobian'] = dict(rows=rows, worst=max(r_['rel'] for r_ in rows), passed=all(r_['rel'] <= 1e-10 for r_ in rows))
     # (4) Q1 negative: step budget 0 (returns the predictor), BE, dev6
     sp0 = dict(spec, name='budget0')
     if arm.kind == 'head':

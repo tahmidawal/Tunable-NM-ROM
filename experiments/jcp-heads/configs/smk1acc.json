@@ -174,7 +174,10 @@
    "repro_lin": {
     "Rp": 384,
     "rule": "gauss128",
-    "fixture": "inputs/repro/lin_R384_gauss128_BE_dev6.npz"
+    "fixtures": {
+     "BE": "inputs/repro/lin_R384_gauss128_BE_dev6.npz",
+     "CNR": "inputs/repro/lin_R384_gauss128_CNR_dev6.npz"
+    }
    }
   }
  ]

@@ -755,3 +755,7 @@ Clarifications and decisions made while fixing the code (none changes a register
   of eligible cases complete (A2.4); pair labels use the eligible-case denominator of A1.4 with ≥ `minpop` available.
 - **Identities vs effects:** G-B0 and G-B2 are evaluated on every run-valid corner (they are identities); effects,
   pair labels and dominance use corners that are also quadrature-verified (G-B4, A3.2).
+- (A4 addendum, 2026-10-18 14:30 UTC) **Campaign-wide submission lock:** following COMMON-BRIEF §14, `submit.sh` now runs
+  every `sbatch` under the shared cluster flock `/cluster/tufts/paralab/tawal01/.campaign-sbatch.lock` with the account
+  count (< 8) checked inside the lock; exit 75 (at cap) releases the reservation. The residual race recorded above is
+  closed. Local `jaxrun` jobs go through `campaign/jaxslot.sh` (§13).

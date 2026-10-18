@@ -124,6 +124,10 @@ def validate(d, new, exempt=None):
         if base_ and (HERE / 'checks' / f'resources-{base_.group(1)}.json').exists() and isinstance(v, (int, float)) and \
                 v < json.loads((HERE / 'checks' / f'resources-{base_.group(1)}.json').read_text())['time_limit_hours'] - 1e-9:
             probs.append(f'{k} (repeat panel) pending below the original panel certificate')
+        retry = re.match(r'^((acc(256|1024|4096))|order|q3d)r[0-9]+$', k)       # A6.1: a retry runs at twice the limit
+        if retry and (HERE / 'checks' / f'resources-{retry.group(1)}.json').exists() and isinstance(v, (int, float)) and \
+                v < 2 * json.loads((HERE / 'checks' / f'resources-{retry.group(1)}.json').read_text())['time_limit_hours'] - 1e-9:
+            probs.append(f'{k} (retry) pending below twice the original certificate')
         cert = HERE / 'checks' / f'resources-{k}.json'
         if cert.exists() and isinstance(v, (int, float)) and v < json.loads(cert.read_text())['time_limit_hours'] - 1e-9:
             probs.append(f'{k} pending below its certificate')

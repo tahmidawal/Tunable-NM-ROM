@@ -457,3 +457,79 @@ successor/check tables, and runs one head and one linear rollout; it reports pea
 qualify B4: 1.74–1.96)", never "second order" by name. A positive F5 reading is validation evidence only; the governing
 plan's scope decision needs confirmed accuracy **and mesh invariance** on the sealed cohort, which this lane does not
 test; nothing here bears on K2 (the FOM comparison).
+
+---
+
+## Amendment A2 (2026-10-18, before any lane job; answers `audits/codex-design-2.md`, NEEDS-RESTATEMENT)
+
+**A2.1 Q-LH-cost restated (blockers 1, 3; replaces A1.6's "Q-LH-cost" bullet).** Population: the E0-eligible (ST)
+cases among the 38 — one fixed population for every comparison of a size $K$ (numerically qualified configurations are
+qualified on every case, so qualification does not shrink it). Costs at 1024² are measured on the same 38 cases (A2.4).
+Rung classes by the cost label of linear rung $r$ against head $K$ (A1.6 bands): **affordable** $\mathcal A_K$ =
+"cheaper" or "equal cost"; **equal-cost** $\mathcal E_K$ = "equal cost"; **costlier** = "costlier". Only numerically
+qualified rungs enter; unqualified rungs are listed with their labels. Three separately named results:
+1. **Equal-cost comparison (the brief's "r giving equal online cost").** For every $r\in\mathcal E_K$ the full §5.4
+   dominance label; outcome "**no equal-cost rung on the ladder**" if $\mathcal E_K=\emptyset$.
+2. **At-most-cost test (confirmatory, used by F5).** "Head more accurate than every affordable rung" iff
+   $\mathcal A_K\ne\emptyset$ and, for **every** $r\in\mathcal A_K$, the superiority predicates hold (resolved coverage
+   ≥ 50 %, median $d<0$) and the intersection–union p-value $p_K=\max_{r\in\mathcal A_K}p_{K,r}$ (one-sided signed-rank,
+   p1stats.wilcoxon) is < α. "**Linear at no more cost is at least as accurate**" iff some $r\in\mathcal A_K$ has error
+   label "linear more accurate" or "matches" (the rung is named). Otherwise "unresolved"; "**no affordable rung**" if
+   $\mathcal A_K=\emptyset$. The lowest-median affordable rung is reported descriptively only (no inference attached).
+3. **Bracket (descriptive).** $r_{\rm lo}$ = the costliest affordable rung, $r_{\rm hi}$ = the cheapest costlier rung,
+   each with the full dominance label; "no rung below" / "no rung above" when absent. Cost-order ties are broken by the
+   smaller $r$; no monotonicity of linear error in $r$ is assumed.
+
+**A2.2 F5 made executable (blocker 2; replaces A1.6's F5 bullet).** Family $\mathcal F$ = $\{4,8,16,32\}$ minus sizes
+deferred by the budget rule (A1.9; deferral is decided from the ledger before any accuracy result is read), frozen in
+`runs/F5-FAMILY.json` when `acc1024` is submitted. Per $K\in\mathcal F$: $p_K$ of A2.1(2) under BE; $p_K:=1$ (a
+non-rejection) when $K$ is unqualified ($|\mathcal S_K|<2$), $\mathcal A_K=\emptyset$, the population is empty, or any
+component p-value is not computable. Holm across $\mathcal F$ at family-wise α = 0.05. **Positive at $K$** iff Holm
+rejects at $K$, every component predicate of A2.1(2) holds, and Q-LH-dim at $K$ is a **resolved label other than
+"linear dominates"** (i.e. "head dominates", "equivalent" or "neither"; "unresolved", "unqualified" or "no population"
+block a positive). Lane outcome, in precedence order:
+1. "**validation evidence of an accuracy–cost benefit of the head at $K\in\{\dots\}$**" if some $K$ is positive (other
+   sizes listed with their labels; one mesh, $M=4K$ policy, error on eligible all38 and cost on the same cases at 1024²;
+   repair and sealed confirmation open);
+2. "**no benefit shown on validation evidence for $K\in\mathcal F$**" if every $K\in\mathcal F$ is qualified and has
+   the resolved outcome "linear at no more cost is at least as accurate" (deferred sizes named as deferred);
+3. "**inconclusive**" otherwise (not evidence of absence).
+
+**A2.3 Seed summaries (item 4).** Seed-median errors and costs are a **summary over the numerically qualified
+retrains** of a size $K$, not the error and cost of one deployable model (the median seed may differ between case,
+error and cost). Qualification counts $|\mathcal S_K|$ are reported with every pooled number, and every pooled
+comparison is repeated per seed (joint error–cost of each individual head) as a reported sensitivity.
+
+**A2.4 Populations (blocker 4).** `time1024` times **all 38 cases** (dev6 × 3 repeats, val32 × 1 repeat; per-case cost =
+median over its repeats) so 1024² cost labels and errors share one population; the per-case cost ratio of $X$ to $Y$ is
+the ratio of their A-normalised fused costs on that case, and the cost label's interval is the case bootstrap (10,000) of
+the median over the population. Timing-job certification (§6) stays on dev6; val32 timing runs reproduce the identity
+hash of an untimed prod run in the same job and are covered by `acc1024`'s 38-case qualification. `time256` and
+`time4096` stay dev6 (H-cost-N, as P1); any 256² comparison is scoped "error on eligible all38 (acc256), cost on dev6".
+
+**A2.5 Rule policy for heads (item 7, minor).** A head size's rule is the smallest selectable rung at which **at least
+two** of its three seeds pass every A1.4 predicate (one bad seed no longer exhausts the ladder); seeds that fail at the
+chosen rung are labelled "not quadrature-qualified at the size's rule" and leave $\mathcal S_K$. Wording: "smallest
+passing rule", never "cheapest" or "cost-optimal"; selection under BE, transferred to CN-R with fresh Q2.
+
+**A2.6 Controls and classification details (items 8, 9).**
+- The "> 25 % unqualified cases" branch of H-acc-K cannot arise from qualified sizes (configuration-level Q1 covers every
+  case); it is a **unit test** of `h_acc_r_transition` only, not an integrated outcome.
+- Propagation: an empty population gives error label "no population", and the dominance label is then "no population"
+  (precedence: unqualified > no population > the A1.6 labels).
+- Degeneracy: an all-zero or non-finite $J_z$ spectrum is flagged "degenerate" (in addition to the
+  $\sigma_{\min}/\sigma_{\max}<10^{-10}$ flag).
+- Wilcoxon wording: exact null when $n\le50$ and no ties among $|d_i|$, otherwise the inherited normal approximation.
+- CPU synthetics are fixed: $n=38$, $\varepsilon_{{\rm ref},i}=10^{-6}$, base errors $e_{Y,i}=0.01(1+i/38)$, all runs
+  valid and timed with A-normalised costs drawn as exact constants; the A1.7 expected labels follow deterministically.
+  Added: Codex's counterexample (head $H_i=i$; rung A $=H+1$ except cases 20–25 $=H-10$; rung B $=H$; both affordable)
+  must give "linear at no more cost is at least as accurate (rung B: matches)" and **not** "head more accurate than
+  every affordable rung".
+
+**A2.7 Budget inventory and repricing (blocker 5; amends A1.9).** Non-deferrable (reserved while pending): `train`,
+`rule1024`, `acc1024`, `time1024`, and `time256` restricted to the head subjects and the matched-dimension linear rungs
+$r\in\{4,8,16,32\}$. Deferrable, dropped in order: `time4096` → $K=32$ (its subjects removed from every job not yet
+submitted) → `acc256` and the 256² linear-ladder subjects $r\ge64$. The pending total excludes the attempt being
+submitted; a failed or timed-out mandatory job returns to the pending list. A-priori repricing (the smoke certificate
+replaces it): smokes 3, train 2.5, rule1024 2.5, acc1024 5, time1024 3, time256 1.5, time4096 2.5, acc256 2.5 ≈ 22.5
+GPU-h; time limits 1.5 × projection; cap 35.

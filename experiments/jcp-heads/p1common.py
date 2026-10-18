@@ -1,4 +1,7 @@
-"""jcp-p1-scaling 2D shared setup, adapted from jcp-combined `c2common.py` (copied as c2common_orig.py for provenance).
+"""[jcp-heads copy of jcp-qualify @4399491eb; EDITED IN THE LANE: Setting accepts an explicit M (fixed-M sensitivity,
+DESIGN A1.5); default M = 4 r unchanged.]
+
+jcp-p1-scaling 2D shared setup, adapted from jcp-combined `c2common.py` (copied as c2common_orig.py for provenance).
 
 Changes against c2common (DESIGN 2):
   * explicit ordered mode lists: 'frozen' = modes_lean(1024, M) reused at every mesh (eigenvalues and sine tables
@@ -207,9 +210,9 @@ class Setting:
 
     data[(role, form)] are jit arguments; meta[role] is the identity the query wrapper checks."""
 
-    def __init__(self, bank, name, Rp, rule, policy='frozen', roles=None, forms=('LSPG',), nrec=0, budget=600, mutation=None, nstep=T2.NSTEP):
+    def __init__(self, bank, name, Rp, rule, policy='frozen', roles=None, forms=('LSPG',), nrec=0, budget=600, mutation=None, nstep=T2.NSTEP, M=None):
         self.name, self.Rp, self.policy = name, int(Rp), policy
-        self.M = 4 * self.Rp
+        self.M = int(M) if M else 4 * self.Rp
         self.L = bank.L
         assert self.Rp in bank.edges, (self.Rp, bank.edges)
         ops = bank.ops(policy)

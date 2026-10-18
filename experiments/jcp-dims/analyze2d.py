@@ -24,7 +24,7 @@ import qscore as SC
 HERE = Path(__file__).resolve().parent
 CFG = HERE / 'configs'
 CACHE = HERE / 'checks' / 'cache2d'
-JOBS = ('f2a', 'f2b', 'f2k', 'f2l', 'b2f', 'b2m')
+JOBS = ('f2a', 'f2b', 'f2kA', 'f2kB', 'f2k', 'f2l', 'b2f', 'b2m')     # f2kA / f2kB = the split f2k inventory (A8.1)
 R_LIST = (128, 256, 384, 512)
 KAPPAS = (1, 2, 3, 4, 8)
 PRIMARY = 'gauss256'

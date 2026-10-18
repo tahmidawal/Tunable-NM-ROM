@@ -747,3 +747,21 @@ the attempt of every configuration. Job-level blocks run in the retry only if no
 **A8.4 Sequencing under the cap.** Jobs are submitted in the brief's priority (A4 3D front and qualified re-timing, A4
 2D, then the rest); non-core jobs are submitted only when spent + reserved + pending-core + their limit ≤ 55, otherwise
 deferred in the brief's defer order and reported.
+
+## Amendment A9 (2026-10-18; answers `audits/codex-design-6.md`, NEEDS-RESTATEMENT on A6 and A8)
+
+**A9.1 A6.1 restated with recomputed numbers.** Recomputed from the archived smk2 arrays with their stored
+tolerances: maximum absolute discrepancy $1.26\times10^{-13}$, maximum scale-normalised $5.19\times10^{-15}$; 413 of 1,100
+GAL and square-LSPG steps failed the A3.3 bar and none fail the amended bar; margin about 19× (not 7e-14, 4.3e-15, 23×).
+The cause is *consistent with* round-off between two evaluation orders; it is not independently proved. A6.1 **relaxes
+a registered G-cert predicate after smoke data** (stated plainly); it changes neither the residual certificate nor any
+Q2 threshold. A6.2 likewise reduces the independent ρ coverage (reported as such).
+**A9.2 Deferral set unchanged.** A8.4 does not widen the defer list: the only deferrable items remain A1.6's (B3 stage
+(ii), the LMF set, the void 3D fixed-$m$ item, κ = 8-only configurations). κ = 3 cells, `b3f`, the fixed-$(M,m)$ panel and
+`t2` stay non-deferrable; if the cap prevents them, the outcome is "core incomplete (budget)"-style reporting
+("not reached (budget)") with the shortfall, never a silent drop. Splitting `f2k` into `f2kA`/`f2kB` does not allow
+dropping κ = 3.
+**A9.3 Retry merging conditions.** Only whole-arm accuracy archives are merged, only across attempts with the same
+`dacc` code path, configuration, inputs and GPU type (checked from each attempt's staged provenance against the original);
+duplicates are resolved by attempt order (newest first), never by accuracy; timing measurements are never merged across
+jobs. `analyze2d` discovers `f2kA` and `f2kB`.

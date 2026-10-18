@@ -665,3 +665,101 @@ retaining ≥ 1 valid triple is "not assessed (timing drift)". N-time's B makes 
 $j'$, each `block_until_ready`), so no computation can be elided. The smoke runs the largest phases at full size: the
 2D $1024^2$ $B$-QR at (r, p) = (384, 1536), the ECSW contribution matrix at r = 384, and the 3D NNLS at r = 512, and
 records peak device and host bytes.
+
+---
+
+## Amendment A3 (2026-10-18) — answers to Codex design audit 3 (`audits/codex-design-3.md`, verdict WRONG)
+
+A3 governs where it differs from A1, A2 and the sections above. Item numbers are audit 3's.
+
+**A3.1 (item 7) Validation-informed budget, both methods, symmetric.** Two categories only:
+(T) **training-only construction** — work that uses no development/validation case (ours: bank training, per-mesh
+tables; baseline: snapshots, POD, advection POD, Q-DEIM pivoting, ECSW training runs and NNLS); and (V) **all
+validation-informed work** — every run on a development/validation case whose outcome selected or qualified a
+configuration, certification included, on both sides (ours: combined `c2grid`, `c2fbgrid`, `c3desc*` rule selection
+and escalation, `c3grid`, and speed3d `g1–g3`, plus P1d/P1e where they qualify an imported X; baseline: Stage A,
+Stage B, anchors and certification, the generator probe's E0 runs, the extension). Whole-job GPU-hours are split by the
+in-job phase timers; where ours' logs do not separate phases the whole job counts as V (stated). **Equal budget** is
+declared iff baseline V ∈ [0.8, 1.25] × ours' V for that dimension; otherwise every pair label of that dimension carries
+"**unequal-budget, descriptive**" (overrun or shortfall alike). T is reported for both, never omitted. Equal allocation is
+never reported as equal expenditure.
+
+**A3.2 (item 12) N-grad (a) on isolated tuples with an independent oracle.** For a certified-valid smoke trajectory and
+every 5th step $n$: keep the history $(c_n, c_{n-1})$, replace the returned state by $c_{n+1}+\delta_n$ with
+$\delta_n = t_n v_1$, $v_1$ the top right singular vector of $J(c_{n+1})$ and $t_n$ such that
+$\|J\delta_n\| = 100\,\|\hat r(c_{n+1})\|$ (then $\gamma\approx\sigma_1/\|J\|_F\ge r^{-1/2}\gg10^{-3}$). The certifier
+evaluates each tuple **in isolation** (no history propagation). Expected labels come from an independent oracle
+(γ recomputed with a `jax.jacfwd` Jacobian): every perturbed tuple non-stationary, every unperturbed tuple unchanged.
+Part (b) (wrong-gradient solver) stays reported-only.
+
+**A3.3 (item 14) Control specifications.**
+- G-pod: $\|S-S\Phi_r\Phi_r^\top\|_F/\|S\|_F$ equals $\sqrt{\sum_{i>r}\sigma_i^2/\sum_i\sigma_i^2}$ within 1 % at
+  every constructible rank.
+- N-swap: (i) reference fixture — case 0's E0 field scored against case 1's reference and with the time shift (Codex
+  measured 1.12/0.13 in 2D and 0.68/0.17 in 3D, far above 10 max ε); (ii) ROM fixture — the smoke's first certified
+  ECSW native BE run at the smoke rank on screening case 0; both must exceed 10 max ε_ref.
+- N-dom: labels are hand-derived (not produced by the table): (a) halved errors and times → "baseline dominates"; (b)
+  symmetric ±0.5 % errors, ρ with median exactly 1 → "matches"; (c) one bad case → not "baseline dominates";
+  (d) identical arms with equal ε → "unresolved" (A3.4); (e) fewer than 6 timing cases → "not assessed".
+
+**A3.4 (item 16) Identical-arm degeneracy is intended.** With equal worst errors and envelope width ε the difference
+envelope is $[-2\varepsilon, 2\varepsilon]$, not strictly inside a margin $2\varepsilon$: the outcome is "unresolved"
+by design (strict inclusion is frozen; tested by N-dom (d)).
+
+**A3.5 (item 17) Cell accounting.** Exported per cell and X: counts of pairs attempted, assessed, baseline-dominates,
+ours-dominates, neither, matches, unresolved, not assessed (each reason), deferred, control-blocked (A2.10), and picks
+failed. The statement "no observed domination among the N configurations compared" is allowed only with N = assessed
+pairs, printed beside the other counts and the incompleteness labels (budget, basis adequacy, ECSW coverage, rank
+coverage, option deferral).
+
+**A3.6 (items 18, 24) Rank grids, maximal shapes, smoke.**
+- 3D ranks are now $\{64,128,256,512,768,1024\}$ (covering every rank of ours, W1024 included); the 3D rank extension
+  is withdrawn. 2D ranks stay $\{32,64,128,256,384\}$ with the one-rung extension to 512.
+- Q-DEIM $p/r\in\{1,2,4\}$; the $p/r=8$ extension is withdrawn. Maximal shapes: 2D $1024^2$ extension
+  $(r,p)=(512,2048)$, $B$ 25.7 GB; 3D $(1024,4096)$, $B$ 12.3 GB; ECSW contribution matrices 2D 120 states × 512 ×
+  32,768 = 16.1 GB, 3D 102 × 1024 × 32,768 = 27.4 GB; $G^\top G_S$ host buffer $32{,}768\times(2\cdot\mathrm{cap}+64)$
+  (cap 16,384 on retry → 8.6 GB; the factor 2 is slack for columns of dropped nodes before compaction).
+- `manifest.py` generates every run, factorisation and array of every allowed branch; the phase-I smoke runs the
+  **maximal** shapes of each phase type (2D: $B$-QR at (512, 2048), ECSW $G$ at r = 512, the `none` arm at r = 512;
+  3D: $B$-QR at (1024, 4096), ECSW $G$ and NNLS at r = 1024) on reduced snapshot sets and records peak device/host
+  bytes. These are shape and memory pilots; their accuracy is not interpreted.
+
+**A3.7 (item 19) Feasibility.** Stage-B budget bound before screening: $|F|\le40$ plus 24 near-front per cell; if the
+measured $|F|$ exceeds 40 the certificate is regenerated after Stage A and the cell runs only if it fits, else it is
+**incomplete**. The certificate includes both generators, the ratification fallback (a second HR construction),
+saturation and adequacy checks, every control, warm-ups, certification, compilation and NNLS retries.
+
+**A3.8 (item 21) Order fixture, frozen.** Case 0 of the screening cohort (2D dev6[0] at L = 16; 3D 923801[0] at L = 8)
+with ν overridden to 0.1, T = 0.25, final state, discrete L2 norm, self-convergence estimator
+$p=\log_2(\|u_{\Delta t}-u_{\Delta t/2}\|/\|u_{\Delta t/2}-u_{\Delta t/4}\|)$ for Δt ∈ {0.01, 0.005} (states at
+Δt ∈ {0.01, 0.005, 0.0025, 0.00125}); pass ranges as A2.16. The step-equation residual check is separate.
+
+**A3.9 (item 22) Timing: N-time and complete coverage.** N-time's B is the **same case twice** (two host calls, each
+synchronised): expected ratio ∈ [1.8, 2.2]. Per pair and case, up to 3 re-measurements of a drifting triple; the pair is
+assessed only if **all 6** timing cases keep ≥ 1 valid triple, else "not assessed (timing drift)". Case weighting: the
+per-case statistic is the median of that case's valid ratios; the pair statistic is the median of the 6 per-case
+medians; the bootstrap resamples cases. The same estimator (per-case median, then median over the 6 cases) is used for
+the single-run screening times of Stage A/B and for role selection.
+
+**A3.10 (item 23) Imported X need Q1 and Q2.** An X enters only with both its Q1 certificate and its own-state Q2
+(quadrature) certificate from the owning lane's audited export; Q1-only X are diagnostic and not compared.
+
+**A3.11 (item 25) ECSW coverage.** Attempted versus constructed (r, τ) are reported separately. If a registered
+boundary construction (smallest τ at a rank, or the largest rank) fails after the cap retry, the cell's ECSW statements
+carry "**ECSW coverage incomplete**" and no "adequately tuned ECSW" or exhaustive non-domination wording is used.
+
+**A3.12 (item 26) Terminology and costs.** "$L$" always counts intervals: the lane's $L=256$ has $255^2$ unknowns;
+the historical 2D bank's `N=256` counts **nodes** ($254^2$ unknowns), so the parameter draws are reused but not the
+bank's mesh. Bank costs per bank from their provenance: 2D R512 bank fit 10,684.65 s (its training JSON); 3D W1024 job
+total 1.85 H200-h, bank fit 1.14 h.
+
+**A3.13 (item 27) Offline numerical failures, fail-closed.**
+- Both PODs: numerical rank $\rho=\#\{\sigma_i>10^{-10}\sigma_1\}$ (state) / $\#\{\sigma_i>10^{-10}\sigma_1^{N}\}$
+  (advection); a registered rank $r>\rho$ or $p>\rho_N$ is "**not constructible**" (reported; never padded or regularised).
+- NNLS: when the passive-set Cholesky fails or its solve residual exceeds $10^{-8}\|g\|$, a minimum-norm least-squares
+  solve is used; an index added and immediately dropped is banned from re-entry; the number of banned indices and the
+  stop reason are reported per path (`nnls.py`).
+- DEIM: the solve $T_{3E}=R_3(P^\top U_p)^{-1}$ must have backward error
+  $\|T_{3E}(P^\top U_p)-R_3\|_F/(\|T_{3E}\|_F\|P^\top U_p\|_F)\le10^{-12}$, else that (r, p) is a construction failure
+  (reported); the interpolation constant $\|(P^\top U_p)^{-1}\|_2$ is reported for every p.
+- The Q-DEIM cancellation fixture of A2.1 is a cancellation **candidate**; its ratio $\|Bz\|/\Sigma$ is recorded.

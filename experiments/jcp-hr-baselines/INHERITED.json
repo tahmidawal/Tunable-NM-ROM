@@ -1,0 +1,52 @@
+{
+ "note": "byte-identical copies (except the named shim); do not edit",
+ "files": [
+  {
+   "path": "e0/refcore.py",
+   "source_branch": "exp/2026-10-06-jcp-references",
+   "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+   "source_path": "experiments/jcp-references/refcore.py",
+   "sha256": "dc42b15cb86782b23202b74be68768acc89996107f65747c0345f7d700014fdc"
+  },
+  {
+   "path": "e0/refstore.py",
+   "source_branch": "exp/2026-10-06-jcp-references",
+   "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+   "source_path": "experiments/jcp-references/refstore.py",
+   "sha256": "91d905eb7a21d381d5990ba75e358d39a330e2ec7006064a9b6825a547361ef4"
+  },
+  {
+   "path": "e0/verdict.py",
+   "source_branch": "exp/2026-10-06-jcp-references",
+   "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+   "source_path": "experiments/jcp-references/verdict.py",
+   "sha256": "f004845931ddeb253a8ad5ea35c30a82cd8a7b3d24a18aa24b82fbd99ce9c0ba"
+  },
+  {
+   "path": "e0/store/MANIFEST.sha256",
+   "source_branch": "exp/2026-10-06-jcp-references",
+   "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+   "source_path": "experiments/jcp-references/store/MANIFEST.sha256",
+   "sha256": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0"
+  },
+  {
+   "path": "e0/store/STATUS.json",
+   "source_branch": "exp/2026-10-06-jcp-references",
+   "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
+   "source_path": "experiments/jcp-references/store/STATUS.json",
+   "sha256": "af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005"
+  },
+  {
+   "path": "t2core.py",
+   "source_branch": "exp/2026-10-13-jcp-combined",
+   "source_commit": "a3c9e170d8f47a53f34e8cb3672e546148383151",
+   "source_path": "experiments/jcp-combined/t2core.py",
+   "sha256": "fb699deedbf571f982e226f71d0d5ccf6b3e55986d9a680c6b476168491d0dd9"
+  },
+  {
+   "path": "e0/cohorts.py",
+   "note": "SHIM written in this lane: exposes E2 (engines) and C3 (common) for refcore.py only",
+   "sha256": "5e3bd2865835953c561cc4c6e3813fd009277d3d318922cfdc310efee5bb18b6"
+  }
+ ]
+}

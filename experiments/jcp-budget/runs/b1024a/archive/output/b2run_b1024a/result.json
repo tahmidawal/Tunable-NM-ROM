@@ -1,0 +1,4887 @@
+{
+ "config": {
+  "attempt": "b1024a",
+  "mesh": 1024,
+  "edges": [
+   0,
+   128,
+   256,
+   384
+  ],
+  "cases": "all38",
+  "members": [
+   {
+    "name": "1024|R128|LSPG|BE|2.5",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 2.5,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R128|GAL|CN|5",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 5.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R128|GAL|CN|2",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R128|LSPG|BE|1",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R256|LSPG|CNR|2.5",
+    "Rp": 256,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 2.5,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   {
+    "name": "1024|R128|GAL|CN|1",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R256|GAL|CN|2",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   {
+    "name": "1024|R256|GAL|CN|1",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   }
+  ],
+  "b2": {
+   "qinf": "gauss320",
+   "qcheck": "gauss640",
+   "check_cases": "dev6",
+   "m_ablation": true,
+   "design": "full"
+  },
+  "b8": {
+   "horizon": 0.5,
+   "refs_dir": "/cluster/tufts/paralab/tawal01/jcp-budget/refs",
+   "manifest_file": "REFS-MANIFEST.sha256",
+   "check_cases": "dev6"
+  },
+  "b7": {
+   "horizon": 0.5,
+   "q2_cases": "sub16",
+   "tighter_cases": "dev6"
+  }
+ },
+ "commit": "1e1324f7f5612c0c5320746f3ee50e2214c58c8d",
+ "job_id": "5712471",
+ "backend": "gpu",
+ "gpu": "NVIDIA H200",
+ "nvidia_smi": [
+  "NVIDIA H200, GPU-9fe6d31e-a7b8-0037-da75-63ba6cc6b86f, 143771 MiB"
+ ],
+ "jax_version": "0.10.2",
+ "mesh": 1024,
+ "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+ "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
+ "cohorts": {
+  "dev6": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "val32": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70"
+ },
+ "setup": {
+  "bank": {
+   "edges": [
+    0,
+    128,
+    256,
+    384
+   ],
+   "seconds": 6.908294247929007,
+   "bytes": 3214937088,
+   "mem": {
+    "in_use": 3233977600,
+    "peak": 15134769920,
+    "limit": 138101653504
+   }
+  },
+  "LS_R128": {
+   "cond": 1.0181737547726026,
+   "seconds": 3.6029313718900084,
+   "worst_orth": 3.2047124604607913e-14,
+   "records": {
+    "dev6|0": {
+     "orth": 2.047908826628616e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.017826384892743727
+    },
+    "dev6|1": {
+     "orth": 1.8465792668804186e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.002400143301356587
+    },
+    "dev6|2": {
+     "orth": 2.8964112942977185e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.001421592517484253
+    },
+    "dev6|3": {
+     "orth": 1.0470483176857572e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.053527272538324254
+    },
+    "dev6|4": {
+     "orth": 9.192377059778227e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.013954324886479423
+    },
+    "dev6|5": {
+     "orth": 3.2633062511499565e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.03961287560724034
+    },
+    "val32|0": {
+     "orth": 1.954982591634468e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.02806914866910765
+    },
+    "val32|1": {
+     "orth": 1.1341519622855711e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.008201821224306675
+    },
+    "val32|2": {
+     "orth": 1.3872712549520127e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.032909503130083576
+    },
+    "val32|3": {
+     "orth": 1.0953307312120385e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.057361565354757844
+    },
+    "val32|4": {
+     "orth": 1.6860150247900928e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.032578281251557165
+    },
+    "val32|5": {
+     "orth": 1.957836200360884e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.04129510548730677
+    },
+    "val32|6": {
+     "orth": 4.6804694284830175e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.012723257243431584
+    },
+    "val32|7": {
+     "orth": 1.5507405675673706e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.02301888298724521
+    },
+    "val32|8": {
+     "orth": 1.3620797103650452e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.003986946619427898
+    },
+    "val32|9": {
+     "orth": 6.695857463278126e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.008258004028624035
+    },
+    "val32|10": {
+     "orth": 1.0374455287401567e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.03625878077945057
+    },
+    "val32|11": {
+     "orth": 1.6348538729250988e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.03333029116442731
+    },
+    "val32|12": {
+     "orth": 3.2047124604607913e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0016354502159329908
+    },
+    "val32|13": {
+     "orth": 1.0971849947823108e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.004437951555680301
+    },
+    "val32|14": {
+     "orth": 2.1516696567241054e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.022556563574862614
+    },
+    "val32|15": {
+     "orth": 2.34275809460043e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.036683601726091204
+    },
+    "val32|16": {
+     "orth": 1.07370960061242e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.003835808763000612
+    },
+    "val32|17": {
+     "orth": 1.145620472851853e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.037290235848099734
+    },
+    "val32|18": {
+     "orth": 4.660689666861087e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.016957823562357727
+    },
+    "val32|19": {
+     "orth": 3.3230641226992474e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.013078578999556147
+    },
+    "val32|20": {
+     "orth": 1.6996345897659283e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.03228574518517964
+    },
+    "val32|21": {
+     "orth": 3.4659760476680845e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.01433311086079249
+    },
+    "val32|22": {
+     "orth": 8.452837092028527e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0063585489328006955
+    },
+    "val32|23": {
+     "orth": 1.5911446862398793e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.026977022010147147
+    },
+    "val32|24": {
+     "orth": 4.4429854832168644e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.016566104114865678
+    },
+    "val32|25": {
+     "orth": 2.2334403542571087e-14,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0018366951392221032
+    },
+    "val32|26": {
+     "orth": 2.3323790563504025e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.037399999091308214
+    },
+    "val32|27": {
+     "orth": 7.790645918759507e-16,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.12743954345741965
+    },
+    "val32|28": {
+     "orth": 3.481899476391318e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.01768317597432008
+    },
+    "val32|29": {
+     "orth": 9.517543558616596e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.004320150004426381
+    },
+    "val32|30": {
+     "orth": 6.12338180088288e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.007745296214894005
+    },
+    "val32|31": {
+     "orth": 1.7196231839880908e-15,
+     "cond": 1.0181737547726026,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.03355488308778262
+    }
+   },
+   "G_B5": true
+  },
+  "LS_R256": {
+   "cond": 1.1097754363983354,
+   "seconds": 3.466353523079306,
+   "worst_orth": 7.425677892394866e-14,
+   "records": {
+    "dev6|0": {
+     "orth": 2.4418384777442133e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.013489576663330822
+    },
+    "dev6|1": {
+     "orth": 3.7838376783646006e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0009806332591274678
+    },
+    "dev6|2": {
+     "orth": 7.425677892394866e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0003984561486309199
+    },
+    "dev6|3": {
+     "orth": 1.6793629439485729e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.028179991295979256
+    },
+    "dev6|4": {
+     "orth": 1.253961780392346e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.008267641529442031
+    },
+    "dev6|5": {
+     "orth": 1.015616416340982e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.009491988734387086
+    },
+    "val32|0": {
+     "orth": 2.0975364410539063e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.02103066607692053
+    },
+    "val32|1": {
+     "orth": 2.7127501395522424e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.002720319269193519
+    },
+    "val32|2": {
+     "orth": 2.044161028345383e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.018556595804364345
+    },
+    "val32|3": {
+     "orth": 4.730363068213871e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.010236238696483864
+    },
+    "val32|4": {
+     "orth": 2.9610014936035453e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.013930311339405052
+    },
+    "val32|5": {
+     "orth": 2.9361198503267853e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.022351086561366366
+    },
+    "val32|6": {
+     "orth": 5.1918033002824626e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.008576824593198801
+    },
+    "val32|7": {
+     "orth": 1.8880104376791815e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.016503496106847527
+    },
+    "val32|8": {
+     "orth": 1.7821167837388938e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0022594172312526526
+    },
+    "val32|9": {
+     "orth": 7.141126368635985e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.00511943369250163
+    },
+    "val32|10": {
+     "orth": 1.3320888567946439e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.023767030944279472
+    },
+    "val32|11": {
+     "orth": 1.9488433346875564e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.021058727792547784
+    },
+    "val32|12": {
+     "orth": 4.093135974113555e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0009355806442000179
+    },
+    "val32|13": {
+     "orth": 1.43478844003348e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.003004943437262961
+    },
+    "val32|14": {
+     "orth": 2.7024537889081937e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.01622031425790228
+    },
+    "val32|15": {
+     "orth": 5.465800108075737e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.01288013075487453
+    },
+    "val32|16": {
+     "orth": 1.5305654750465458e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0021125521054210067
+    },
+    "val32|17": {
+     "orth": 1.896894638979394e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.02098052463505172
+    },
+    "val32|18": {
+     "orth": 4.26217318130804e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.009925972133980894
+    },
+    "val32|19": {
+     "orth": 4.835111313285553e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.009362448383963393
+    },
+    "val32|20": {
+     "orth": 2.265322461415676e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.01813893117761536
+    },
+    "val32|21": {
+     "orth": 3.8492001019631185e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.010895413628774574
+    },
+    "val32|22": {
+     "orth": 2.926860201720281e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.001261935346285339
+    },
+    "val32|23": {
+     "orth": 1.7220080936732063e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.019886592190573607
+    },
+    "val32|24": {
+     "orth": 3.754029214195208e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.009612603058660327
+    },
+    "val32|25": {
+     "orth": 3.2319467237306926e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0010238127022683433
+    },
+    "val32|26": {
+     "orth": 5.853281465227628e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.010233410177683826
+    },
+    "val32|27": {
+     "orth": 3.173855719236224e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.023426359375352257
+    },
+    "val32|28": {
+     "orth": 3.2560368157150966e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.013191995983775741
+    },
+    "val32|29": {
+     "orth": 1.0761991706894248e-14,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.0028535048841536663
+    },
+    "val32|30": {
+     "orth": 7.126379525231571e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.005253632229212786
+    },
+    "val32|31": {
+     "orth": 1.6996369520784902e-15,
+     "cond": 1.1097754363983354,
+     "accepted": true,
+     "method": "streamed block Householder QR",
+     "rel_residual": 0.025038686303496115
+    }
+   },
+   "G_B5": true
+  }
+ },
+ "b2": {
+  "R128": {
+   "members": {
+    "R128|LSPG|BE|2.5": {
+     "member": {
+      "name": "1024|R128|LSPG|BE|2.5",
+      "Rp": 128,
+      "form": "LSPG",
+      "scheme": "BE",
+      "factor": 2.5,
+      "rule": "fib4181",
+      "qp": "fib6765",
+      "qpp": "fib10946",
+      "diagnostic": false
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 267.74179097637534,
+     "mem": {
+      "in_use": 6307866880,
+      "peak": 15134769920,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    },
+    "R128|GAL|CN|5": {
+     "member": {
+      "name": "1024|R128|GAL|CN|5",
+      "Rp": 128,
+      "form": "GAL",
+      "scheme": "CN",
+      "factor": 5.0,
+      "rule": "fib4181",
+      "qp": "fib6765",
+      "qpp": "fib10946",
+      "diagnostic": true
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.025,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 260.2455279971473,
+     "mem": {
+      "in_use": 6307866880,
+      "peak": 15134769920,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    },
+    "R128|GAL|CN|2": {
+     "member": {
+      "name": "1024|R128|GAL|CN|2",
+      "Rp": 128,
+      "form": "GAL",
+      "scheme": "CN",
+      "factor": 2.0,
+      "rule": "fib4181",
+      "qp": "fib6765",
+      "qpp": "fib10946",
+      "diagnostic": true
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 266.06035063322634,
+     "mem": {
+      "in_use": 6307866880,
+      "peak": 15134769920,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    },
+    "R128|LSPG|BE|1": {
+     "member": {
+      "name": "1024|R128|LSPG|BE|1",
+      "Rp": 128,
+      "form": "LSPG",
+      "scheme": "BE",
+      "factor": 1.0,
+      "rule": "fib4181",
+      "qp": "fib6765",
+      "qpp": "fib10946",
+      "diagnostic": false
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BE",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 283.3156221471727,
+     "mem": {
+      "in_use": 6307866880,
+      "peak": 15134769920,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    },
+    "R128|GAL|CN|1": {
+     "member": {
+      "name": "1024|R128|GAL|CN|1",
+      "Rp": 128,
+      "form": "GAL",
+      "scheme": "CN",
+      "factor": 1.0,
+      "rule": "fib4181",
+      "qp": "fib6765",
+      "qpp": "fib10946",
+      "diagnostic": true
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "fib4181"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 512,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 288.0596533953212,
+     "mem": {
+      "in_use": 6307866880,
+      "peak": 15134769920,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    }
+   },
+   "star": {
+    "specs": {
+     "star": [
+      "tight",
+      0.000625
+     ],
+     "star16": [
+      "tight",
+      0.0003125
+     ],
+     "starx": [
+      "tighter",
+      0.000625
+     ],
+     "star16x": [
+      "tighter",
+      0.0003125
+     ]
+    },
+    "valid": {
+     "star": 38,
+     "star16": 38,
+     "starx": 38,
+     "star16x": 38
+    }
+   }
+  },
+  "R256": {
+   "members": {
+    "R256|LSPG|CNR|2.5": {
+     "member": {
+      "name": "1024|R256|LSPG|CNR|2.5",
+      "Rp": 256,
+      "form": "LSPG",
+      "scheme": "CNR",
+      "factor": 2.5,
+      "rule": "gauss128",
+      "qp": "gauss160",
+      "qpp": "gauss192",
+      "diagnostic": false
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CNR",
+       "dt": 0.0125,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 649.5792784132063,
+     "mem": {
+      "in_use": 7771646208,
+      "peak": 21313003776,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    },
+    "R256|GAL|CN|2": {
+     "member": {
+      "name": "1024|R256|GAL|CN|2",
+      "Rp": 256,
+      "form": "GAL",
+      "scheme": "CN",
+      "factor": 2.0,
+      "rule": "gauss128",
+      "qp": "gauss160",
+      "qpp": "gauss192",
+      "diagnostic": true
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.01,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 661.6531863599084,
+     "mem": {
+      "in_use": 7771646208,
+      "peak": 21313003776,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    },
+    "R256|GAL|CN|1": {
+     "member": {
+      "name": "1024|R256|GAL|CN|1",
+      "Rp": 256,
+      "form": "GAL",
+      "scheme": "CN",
+      "factor": 1.0,
+      "rule": "gauss128",
+      "qp": "gauss160",
+      "qpp": "gauss192",
+      "diagnostic": true
+     },
+     "design": "full",
+     "corners": [
+      "0",
+      "Q",
+      "T",
+      "F",
+      "S",
+      "I",
+      "M",
+      "QT",
+      "QF",
+      "QS",
+      "QI",
+      "QM",
+      "TF",
+      "TS",
+      "TI",
+      "TM",
+      "FS",
+      "FI",
+      "FM",
+      "SI",
+      "SM",
+      "IM",
+      "QTF",
+      "QTS",
+      "QTI",
+      "QFS",
+      "QFI",
+      "QSI",
+      "TFS",
+      "TFI",
+      "TSI",
+      "FSI",
+      "QTFS",
+      "QTFI",
+      "QTSI",
+      "QFSI",
+      "TFSI",
+      "QTFSI"
+     ],
+     "tuples": [
+      {
+       "S": "0",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "Q",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "T",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "F",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "S",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "I",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "M",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QT",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QM",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TF",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TS",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FM",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "SI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "SM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "IM",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 2048,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTF",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTS",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFS",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TFI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "TSI",
+       "role": "main",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "FSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTFS",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "deployed",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTFI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "prod",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QTSI",
+       "role": "qinf",
+       "form": "GAL",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "QFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "CN",
+       "dt": 0.005,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      },
+      {
+       "S": "TFSI",
+       "role": "main",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss128"
+      },
+      {
+       "S": "QTFSI",
+       "role": "qinf",
+       "form": "LSPG",
+       "scheme": "BDF2",
+       "dt": 0.000625,
+       "level": "tight",
+       "init": "ls",
+       "M": 1024,
+       "rule": "gauss320"
+      }
+     ],
+     "valid": 1444,
+     "total": 1444,
+     "seconds": 709.6625639400445,
+     "mem": {
+      "in_use": 7771646208,
+      "peak": 21313003776,
+      "limit": 138101653504
+     },
+     "check_valid": 102,
+     "check_total": 102
+    }
+   },
+   "star": {
+    "specs": {
+     "star": [
+      "tight",
+      0.000625
+     ],
+     "star16": [
+      "tight",
+      0.0003125
+     ],
+     "starx": [
+      "tighter",
+      0.000625
+     ],
+     "star16x": [
+      "tighter",
+      0.0003125
+     ]
+    },
+    "valid": {
+     "star": 38,
+     "star16": 38,
+     "starx": 38,
+     "star16x": 38
+    }
+   }
+  }
+ },
+ "b7": {
+  "R128|LSPG|BE|2.5": {
+   "member": {
+    "name": "1024|R128|LSPG|BE|2.5",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 2.5,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 1520,
+   "seconds": 12.32032281300053
+  },
+  "R128|GAL|CN|5": {
+   "member": {
+    "name": "1024|R128|GAL|CN|5",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 5.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 760,
+   "seconds": 9.981391630135477
+  },
+  "R128|GAL|CN|2": {
+   "member": {
+    "name": "1024|R128|GAL|CN|2",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 1900,
+   "seconds": 11.515875039622188
+  },
+  "R128|LSPG|BE|1": {
+   "member": {
+    "name": "1024|R128|LSPG|BE|1",
+    "Rp": 128,
+    "form": "LSPG",
+    "scheme": "BE",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": false
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 3800,
+   "seconds": 6.995056107174605
+  },
+  "R128|GAL|CN|1": {
+   "member": {
+    "name": "1024|R128|GAL|CN|1",
+    "Rp": 128,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "fib4181",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "diagnostic": true
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 3800,
+   "seconds": 19.86423725215718
+  },
+  "R256|LSPG|CNR|2.5": {
+   "member": {
+    "name": "1024|R256|LSPG|CNR|2.5",
+    "Rp": 256,
+    "form": "LSPG",
+    "scheme": "CNR",
+    "factor": 2.5,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": false
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 1520,
+   "seconds": 17.802133190911263
+  },
+  "R256|GAL|CN|2": {
+   "member": {
+    "name": "1024|R256|GAL|CN|2",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 2.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 1900,
+   "seconds": 32.403786265756935
+  },
+  "R256|GAL|CN|1": {
+   "member": {
+    "name": "1024|R256|GAL|CN|1",
+    "Rp": 256,
+    "form": "GAL",
+    "scheme": "CN",
+    "factor": 1.0,
+    "rule": "gauss128",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "diagnostic": true
+   },
+   "horizon": 0.5,
+   "n": 38,
+   "valid": 38,
+   "noncert": 0,
+   "steps": 3800,
+   "seconds": 52.91628750599921
+  }
+ },
+ "b8": {
+  "refs_found": [
+   "dev6|0",
+   "dev6|1",
+   "dev6|2",
+   "dev6|3",
+   "dev6|4",
+   "dev6|5",
+   "val32|0",
+   "val32|1",
+   "val32|2",
+   "val32|3",
+   "val32|4",
+   "val32|5",
+   "val32|6",
+   "val32|7",
+   "val32|8",
+   "val32|9",
+   "val32|10",
+   "val32|11",
+   "val32|12",
+   "val32|13",
+   "val32|14",
+   "val32|15",
+   "val32|16",
+   "val32|17",
+   "val32|18",
+   "val32|19",
+   "val32|20",
+   "val32|21",
+   "val32|22",
+   "val32|23",
+   "val32|24",
+   "val32|25",
+   "val32|26",
+   "val32|27",
+   "val32|28",
+   "val32|29",
+   "val32|30",
+   "val32|31"
+  ],
+  "R128|LSPG|BE|2.5": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  },
+  "R128|GAL|CN|5": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  },
+  "R128|GAL|CN|2": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  },
+  "R128|LSPG|BE|1": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  },
+  "R256|LSPG|CNR|2.5": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  },
+  "R128|GAL|CN|1": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  },
+  "R256|GAL|CN|2": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  },
+  "R256|GAL|CN|1": {
+   "n_scored": 38,
+   "fine_route": "decode at the 1025^2 nodes (Bank(1024))"
+  }
+ },
+ "controls": {},
+ "memory": {
+  "R128": {
+   "in_use": 3613831424,
+   "peak": 21313003776,
+   "limit": 138101653504
+  },
+  "R256": {
+   "in_use": 3897070336,
+   "peak": 26058394368,
+   "limit": 138101653504
+  },
+  "end": {
+   "in_use": 3622939392,
+   "peak": 26058394368,
+   "limit": 138101653504
+  }
+ },
+ "elapsed": {
+  "R128": 2270.4467938020825,
+  "R256": 3691.567459548358
+ },
+ "complete": true,
+ "elapsed_seconds": 6021.3
+}

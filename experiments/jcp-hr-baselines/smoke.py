@@ -49,7 +49,9 @@ class Saver:
         self.path, self.res = path, res
 
     def __call__(self):
-        PL.dump(self.path, self.res)
+        tmp = self.path.with_suffix('.json.tmp')          # atomic: a deadline kill never leaves a truncated JSON
+        PL.dump(tmp, self.res)
+        os.replace(tmp, self.path)
 
 
 def phase(res, name, fn, need=0., cfg=None, save=None, store=None):
@@ -160,8 +162,11 @@ def run_cell(cfg, c, res, outdir, save):
     arrdir.mkdir(parents=True, exist_ok=True)
 
     def chunk(name, **kw):
-        """Append-only array evidence: one .npz per completed block (code audit 3, item 15)."""
-        np.savez(arrdir / f"{name.replace('|', '~')}.npz", **kw)
+        """Append-only array evidence: one .npz per completed block (code audit 3, item 15); written atomically."""
+        fn = arrdir / f"{name.replace('|', '~')}.npz"
+        tmp = arrdir / (fn.stem + '.tmp.npz')
+        np.savez(tmp, **kw)
+        os.replace(tmp, fn)
 
     # ---- references and IC checks
     refs = P('refs', lambda: SC.Refs(d, coh, fam, sorted(set(cases + fx + TIMING_CASES[:1]))), 60)

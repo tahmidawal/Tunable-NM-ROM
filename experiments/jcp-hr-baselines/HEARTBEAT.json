@@ -1,16 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T23:45:57Z",
- "step": "code audit 33 READY; s3d64b staged (77 deps verified, 8.5 h; ledger 28.887 incl. held s2d256a 4 h); job audit 12 running",
+ "utc": "2026-10-18T23:47:58Z",
+ "step": "job audit 12 SUBMIT; s3d64b RUNNING (5932490, H200, 8.5 h wall); s2d256a held until 3D reconciled; next: watch for member-group errors in the first 15 min, then draft report while it runs",
  "waiting_on": {
-  "slurm_jobs": [],
-  "codex_output": "audits/codex-job-12.md",
-  "codex_pid": [
-   9980
+  "slurm_jobs": [
+   5932490
   ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T00:04:57Z",
+ "expected_finish_utc": "2026-10-19T00:06:58Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

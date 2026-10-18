@@ -22,7 +22,10 @@ def passing():
     allb = [SA.lab_(cfg['A'])] + labels
     r = dict(complete=True, subjects={}, equivalence=[], invocations=[], fused=[], doubled=[])
     for lb in allb:
-        r['subjects'][lb] = dict(certification=[dict(case=c, valid=True, gcert_ok=True, dist_tight=1e-6, dist_tight_tighter=1e-8)
+        qp = any(SA.lab_(sp) == lb and sp.get('qp') for sp in cfg['subjects'])
+        r['subjects'][lb] = dict(certification=[dict(case=c, valid=True, gcert_ok=True, dist_tight=1e-6, dist_tight_tighter=1e-8,
+                                                     tight_valid=True, tighter_valid=True, tight_verified=True, tighter_verified=False,
+                                                     **(dict(dist_qp=1e-5, dist_qp_qpp=1e-6, qp_valid=True, qpp_valid=True) if qp else {}))
                                                 for c in cert])
         r['equivalence'].append(dict(subject=lb, fields_rel=0., same_iterations=True, passed=True))
     for lb in labels:
@@ -39,8 +42,9 @@ def passing():
     for sp in cfg['doubled']:
         for a, b in sp['cases']:
             for k in range(3):
+                at = dict(t_single1=1., t_double=2., t_single2=1., drift=1., identity_ok=True, same_iterations=True)
                 r['doubled'].append(dict(subject=SA.lab_(sp), case=f'{a}|{b}', rep=k, t_single1=1., t_double=2., t_single2=1.,
-                                         ratio=2., drift=1., drift_ok=True, same_iterations=True, identity_ok=True))
+                                         ratio=2., drift=1., drift_ok=True, same_iterations=True, identity_ok=True, attempts=[at]))
     pc = json.loads((HERE / 'configs' / 'smk2pilot.json').read_text())
     kf = {}
     for h in pc['heads']:
@@ -81,6 +85,10 @@ def main():
         'fused ratios NaN': lambda r, pl: [x.update(ratio=float('nan')) for x in r['fused']],
         'a fused case missing for one subject': lambda r, pl: r.update(fused=[x for x in r['fused']
                                                                              if not (x['B'] == '1024|L384|gauss128|BE' and x['case'] == 'val32|0')]),
+        'split record differs from its final attempt': lambda r, pl: r['invocations'][0].update(t_evolve=.6, ratio=.6),
+        'non-finite time in an invalid fused repeat': lambda r, pl: next(x for x in r['fused'] if x['B'] == SA.BAD)['attempts'][0].update(t_fused=float('nan')),
+        'certification lacks successor fields': lambda r, pl: [x.pop('dist_qp', None) for v in r['subjects'].values() for x in v['certification']],
+        'doubled attempt identity failure hidden': lambda r, pl: r['doubled'][0]['attempts'][0].update(identity_ok=False),
         'fault not injected': lambda r, pl: [x.update(valid=True, all_hashes_ok=True, hash_ok=True, hashes_ok=True,
                                                       attempts=[dict(a, hashes_ok=True, hash_ok=True) for a in x['attempts']])
                                              for x in r['invocations'] + r['fused']],

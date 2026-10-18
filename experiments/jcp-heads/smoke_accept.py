@@ -1,4 +1,6 @@
-"""jcp-heads smoke acceptance (DESIGN 7, A1.3, A1.7, A2.6; CPU only). Acceptance requires BOTH the job's own per-row
+"""jcp-heads smoke acceptance (DESIGN 7, A1.3, A1.7, A2.6, A8; CPU only). Per COMMON-BRIEF 7, findings that need a
+forged record (internally inconsistent fields no driver writes) are noted, not blocking; the checks below cover missing,
+non-finite and inconsistent evidence a buggy or incomplete run can produce. Acceptance requires BOTH the job's own per-row
 pass flags and this script's checks; where the raw arrays allow it (budget-0 gamma, zero-update, decode, coefficients)
 the predicate is recomputed independently here, otherwise the job's per-row values are checked for finiteness, coverage
 and bars. Written to checks/smoke-accept-<attempt>.json.
@@ -108,7 +110,12 @@ def smk1():
     dev6 = [f'dev6|{i}' for i in range(6)]
     b0r, urr = c['budget0']['rows'], c['under_resolved']['rows']
     pooled = sum(x['noncertified'] for x in b0r) / max(1, sum(x['steps'] for x in b0r))
-    res['control_coverage'] = dict(budget0=bool(sorted(x['case'] for x in b0r) == dev6 and close(pooled, c['budget0']['pooled_fraction'])),
+    fin = lambda *xs: bool(np.isfinite(np.asarray([v for x in xs for v in np.ravel(x)], float)).all())
+    succ = all(x['succ_valid'] and x['check_valid'] for x in urr)
+    res['control_coverage'] = dict(budget0=bool(sorted(x['case'] for x in b0r) == dev6 and close(pooled, c['budget0']['pooled_fraction'])
+                                                and all(x['steps'] > 0 for x in b0r)),
+                                   arrays_finite=bool(fin(*[x['dist'] for x in urr], *[x['rho'] for x in urr], *[x['dist_check'] for x in urr])),
+                                   successors_recomputed=bool(succ == bool(c['under_resolved']['successors_valid'])),
                                    under_resolved=bool(sorted(x['case'] for x in urr) == dev6
                                                        and bool(c['under_resolved']['fails_rollout_bar']) == any(x['dist'] > 2.5e-4 for x in urr)
                                                        and close(max(max(x['rho']) for x in urr), c['under_resolved']['rho_max'])))
@@ -155,10 +162,38 @@ def smk1():
                                       seconds=sum(r['seconds'] for r in rows if r['scheme'] == sc))
                              for sc in ('BE', 'CNR')}
     res['elapsed'] = acc['elapsed']
+    # configured Q2 evidence present on the real-size arm (sub16 successor replays, dev6 check replays)
+    sub16 = dev6 + [f'val32|{i}' for i in range(10)]
+    q2ok = True
+    for sc in ('BE', 'CNR'):
+        rr = {r['case']: r for r in rows if r['scheme'] == sc}
+        q2ok &= all('dist_qp' in rr[c_] and np.isfinite(rr[c_]['dist_qp']) and 'rho_max' in rr[c_] for c_ in sub16)
+        q2ok &= all('dist_qp_qpp' in rr[c_] and np.isfinite(rr[c_]['dist_qp_qpp']) for c_ in dev6)
+    res['q2_evidence'] = bool(q2ok)
     # ---- rule ladder probe
     ru = json.loads((out_dir('smk1', 'hrule', 'smk1rule') / 'result.json').read_text())
     res['rule_probe'] = {g: dict(chosen=v['chosen'], status=v['status'], seconds=v['seconds']) for g, v in ru['groups'].items()}
     rcfg = json.loads((HERE / 'configs' / 'smk1rule.json').read_text())
+    ladder = [f'gauss{p_}' for p_ in rcfg['ladder'] if p_ <= rcfg['selectable_max']]
+
+    def trail_ok(gname, v):
+        g = [x for x in rcfg['groups'] if x['name'] == gname][0]
+        tr_ = v['trail']
+        if [t_['rule'] for t_ in tr_] != ladder[:len(tr_)]:
+            return False
+        for t_ in tr_:
+            npass = sum(bool(a['passed']) for a in t_['arms'].values())
+            if t_['n_pass'] != npass or t_['group_pass'] != (npass >= g['min_pass']):
+                return False
+            for a in t_['arms'].values():
+                full = a['rollout_pass'] and a['rho_pass'] and a['check_pass']
+                if bool(a['passed']) != bool(full) or len(a['dist']) != len(v['population']):
+                    return False
+        first = next((i for i, t_ in enumerate(tr_) if t_['group_pass']), None)
+        if v['status'] == 'selected':
+            return first == len(tr_) - 1 and v['chosen']['main'] == tr_[-1]['rule']
+        return first is None and len(tr_) == len(ladder)
+    res['rule_trails_consistent'] = bool(all(trail_ok(k, v) for k, v in ru['groups'].items()))
     res['rule_coverage'] = bool(sorted(ru['groups']) == sorted(g['name'] for g in rcfg['groups'])
                                 and all(v['trail'] and v['status'] in ('selected', 'not quadrature-qualified (ladder exhausted)')
                                         and (v['chosen'] is None) == (v['status'] != 'selected')
@@ -176,7 +211,9 @@ def smk1():
                                     and res['wrong_mesh']['passed'] and res['budget0']['passed'] and res['zero_update']['passed']
                                     and res['under_resolved']['passed'] and res['independent_decode']['passed']
                                     and res['accuracy_coverage']['passed'] and res['control_coverage']['budget0']
-                                    and res['control_coverage']['under_resolved'] and res['rule_coverage'])
+                                    and res['control_coverage']['under_resolved'] and res['rule_coverage']
+                                    and res['control_coverage']['arrays_finite'] and res['control_coverage']['successors_recomputed']
+                                    and res['rule_trails_consistent'] and res['q2_evidence'])
     return res
 
 
@@ -189,6 +226,13 @@ def _modes(R):
 
 
 def accept_timing(r, cfg, pl):
+    try:
+        return _accept_timing(r, cfg, pl)
+    except (KeyError, TypeError, IndexError, StopIteration) as e_:      # a missing field fails closed
+        return dict(all_controls_pass=False, error=f'{type(e_).__name__}: {e_}')
+
+
+def _accept_timing(r, cfg, pl):
     """Pure acceptance of a timing smoke (result r, its committed config cfg, pilot result pl). Coverage of every
     configured identity is required (a missing record fails); stored ratios and flags are recomputed from the raw times."""
     res = {}
@@ -205,10 +249,16 @@ def accept_timing(r, cfg, pl):
                                                                          and e['fields_rel'] <= 1e-12 and e['same_iterations']
                                                                          for e in eq.values())), n=len(eq))
     cert_ok = True
+    qp_subj = {lab_(sp) for sp in cfg['subjects'] if sp.get('qp')}
     for lb in all_lab:
         rows = r['subjects'].get(lb, {}).get('certification', [])
         cert_ok &= sorted(x['case'] for x in rows) == cert_cases
-        cert_ok &= all(x['valid'] and x['gcert_ok'] and np.isfinite([x['dist_tight'], x['dist_tight_tighter']]).all() for x in rows)
+        need = ['tight_valid', 'tighter_valid', 'tight_verified', 'tighter_verified']     # recorded, not required True
+        cert_ok &= all(x['valid'] and x['gcert_ok'] and np.isfinite([x['dist_tight'], x['dist_tight_tighter']]).all()
+                       and all(k in x for k in need) for x in rows)
+        if lb in qp_subj:
+            cert_ok &= all(all(k in x for k in ('qp_valid', 'qpp_valid')) and np.isfinite([x.get('dist_qp', np.nan), x.get('dist_qp_qpp', np.nan)]).all()
+                           for x in rows)
     res['certification_ok'] = bool(cert_ok)
     want = sorted((lb, c, k) for lb in labels for c in cases for k in range(int(reps[c.split('|')[0]])))
 
@@ -239,6 +289,23 @@ def accept_timing(r, cfg, pl):
         return bool(np.isfinite(t).all() and min(t) > 0 and close(x['ratio'], x['t_fused'] / (.5 * (x['tA1'] + x['tA2'])))
                     and close(x['drift'], x['tA2'] / x['tA1'])
                     and x['hash_ok'] and x.get('all_hashes_ok', x['hash_ok']) and BAND[0] <= x['tA2'] / x['tA1'] <= BAND[1])
+    def split_integrity(x):
+        atts = x.get('attempts') or []
+        last = atts[-1] if atts else {}
+        return bool(atts and all(att_ok(a) for a in atts) and x['retries'] == len(atts) - 1
+                    and [a['attempt'] for a in atts] == list(range(len(atts)))
+                    and all(x[k] == last[k] for k in ('tA1', 'tA2', 't_evolve', 't_init', 't_decode', 'drift', 'ratio'))
+                    and x['all_hashes_ok'] == all(a['hashes_ok'] for a in atts))
+
+    def fused_integrity(x):
+        atts = x.get('attempts') or []
+        last = atts[-1] if atts else {}
+        t = [v for a in atts for v in (a['tA1'], a['tA2'], a['t_fused'])]
+        return bool(atts and np.isfinite(t).all() and min(t) > 0 and x['retries'] == len(atts) - 1
+                    and all(x[k] == last[k] for k in ('tA1', 'tA2', 't_fused', 'drift', 'hash_ok'))
+                    and all(close(a['drift'], a['tA2'] / a['tA1']) for a in atts)
+                    and x['all_hashes_ok'] == all(a['hash_ok'] for a in atts))
+    res['record_integrity'] = bool(all(split_integrity(x) for x in r['invocations']) and all(fused_integrity(x) for x in r['fused']))
     res['split_flag_agrees'] = bool(all(split_ok(x) == bool(x['valid']) for x in r['invocations']))
     res['fused_valid_flag_agrees'] = bool(all(fused_ok(x) == bool(x['valid']) for x in r['fused']))
     bad_x = [x for x in r['invocations'] + r['fused'] if x['B'] == BAD]
@@ -255,6 +322,9 @@ def accept_timing(r, cfg, pl):
               and close(x['ratio'], x['t_double'] / (.5 * (x['t_single1'] + x['t_single2'])))
               and close(x['drift'], x['t_single2'] / x['t_single1']) and bool(x['drift_ok']) == bool(BAND[0] <= x['drift'] <= BAND[1])
               and 1.8 <= x['ratio'] <= 2.2 and x['identity_ok'] and x['same_iterations'] and BAND[0] <= x['drift'] <= BAND[1]
+              and bool(x.get('attempts')) and x['identity_ok'] == all(a['identity_ok'] for a in x['attempts'])
+              and x['same_iterations'] == all(a['same_iterations'] for a in x['attempts'])
+              and all(x[k] == x['attempts'][-1][k] for k in ('t_single1', 't_double', 't_single2'))
               for x in dbl)
     res['doubled'] = dict(ratios=[x['ratio'] for x in dbl],
                           passed=bool(sorted((x['subject'], x['case'], x['rep']) for x in dbl) == dwant and dok))
@@ -282,7 +352,7 @@ def accept_timing(r, cfg, pl):
             by.setdefault(x['B'], []).append(x['ratio'])
     res['fused_median_ratio'] = {k: float(np.median(v)) for k, v in by.items()}
     res['all_controls_pass'] = bool(res['complete'] and res['subjects_present'] and res['equivalence']['passed']
-                                    and res['identity_clean'] and res['identity_fault']['failed_on_identity']
+                                    and res['record_integrity'] and res['identity_clean'] and res['identity_fault']['failed_on_identity']
                                     and res['pilot_stages']['passed']
                                     and res['certification_ok'] and res['split_coverage'] and res['fused_coverage_ids']
                                     and res['split_flag_agrees'] and res['fused_valid_flag_agrees']

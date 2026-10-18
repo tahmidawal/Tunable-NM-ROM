@@ -53,24 +53,40 @@
    "attempt": "acc1024",
    "job_id": "5600165",
    "time_limit_hours": 4.5,
-   "state": "SUBMITTED",
-   "gpu": null,
-   "elapsed_hours": null,
-   "pending_hours": 4.5
+   "state": "COMPLETED",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.4,
+   "pending_hours": 4.5,
+   "attempts": 1,
+   "node": "pax050",
+   "prior_elapsed_hours": 0.0
   },
   {
    "attempt": "time1024",
    "job_id": "5610590",
    "time_limit_hours": 2.5,
-   "state": "SUBMITTED",
+   "state": "RUNNING",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.1975,
+   "pending_hours": 2.5,
+   "attempts": 1,
+   "node": "pax011",
+   "prior_elapsed_hours": 0.0
+  },
+  {
+   "attempt": "time256",
+   "job_id": "5618145",
+   "time_limit_hours": 1.0,
+   "state": "PENDING",
    "gpu": null,
-   "elapsed_hours": null,
-   "pending_hours": 2.5
+   "elapsed_hours": 0.0,
+   "pending_hours": 1.0,
+   "attempts": 1,
+   "node": "None assigned",
+   "prior_elapsed_hours": 0.0
   }
  ],
- "pending_core": {
-  "time256": 1.0
- },
- "spent_gpu_hours": 1.7053,
- "reserved_gpu_hours": 7.0
+ "pending_core": {},
+ "spent_gpu_hours": 2.1053,
+ "reserved_gpu_hours": 3.5
 }

@@ -336,9 +336,9 @@ def main():
         recs2, _ = run_cases(sp, cases[:1], keep_fields=False)       # warm second call (compile excluded)
         nunit = (recs2[0]['evidence'].get('stages') if sp[0] == 'fd' else int(round(.25 / sp[2])))
         rep['pilots'][pk] = dict(record=recs[0], warm=recs2[0], mem=mem(),
-                                 compile_seconds=max(recs[0]['seconds_first'] - recs2[0]['seconds_first'], 0.),
                                  units=nunit, seconds_per_unit=recs2[0]['seconds_first'] / max(nunit or 1, 1),
                                  newton_total=recs2[0]['evidence'].get('newton_total'))
+        rep['compile_log'] = foms.compile_log
         save()
         print('PILOT', pk, round(recs[0]['seconds_first'], 2), round(recs2[0]['seconds_first'], 3), mem(), flush=True)
     # ---- acceptance (fail closed): every gate passed, every control fired, every requested config recorded ------------
@@ -354,6 +354,7 @@ def main():
     acc['all_groups_recorded'] = all(g in rep.get('groups', {}) for g in want)
     acc['all_ps_recorded'] = all(FR.key(('ps', int(N), FR.canon_dt(d))) in rep['configs'] for N, d in cfg.get('ps', []))
     acc['all_pilots_recorded'] = all(pk in rep.get('pilots', {}) for pk in cfg.get('pilots', []))
+    rep['compile_log'] = foms.compile_log
     rep['acceptance'] = acc
     rep['accepted'] = bool(all(acc.values()))
     rep['elapsed_seconds'] = el()

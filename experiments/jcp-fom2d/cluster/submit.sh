@@ -15,15 +15,17 @@ TL=$(grep -oP '(?<=#SBATCH --time=)\S+' "$LOCAL/run.sbatch")
 HOURS=$("$PY" -c "h,m,s='$TL'.split(':');print(int(h)+int(m)/60+int(s)/3600)")
 RH=$("$PY" -c "import json;print(json.load(open('$LOCAL/RESERVATION.json'))['time_limit_hours'])")
 "$PY" -c "import sys; sys.exit(0 if abs($HOURS-$RH)<1e-9 else 1)" || { echo "time limit $HOURS != reservation $RH"; exit 7; }
-Q=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -h -o "%i %j %T"')
+Q=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -h -o "%i %j %T"') || { echo "squeue failed"; exit 9; }
 NLANE=$(echo "$Q" | awk '$2 ~ /^f2d_/' | grep -c . || true)
 NALL=$(echo "$Q" | grep -c . || true)
 echo "--- squeue before (lane=$NLANE account=$NALL)"; echo "$Q"
 if echo "$Q" | awk '{print $2}' | grep -qx "f2d_$A"; then echo "f2d_$A already queued: refusing"; exit 3; fi
 [ "$NLANE" -lt 3 ] || { echo "lane cap 3 reached"; exit 4; }
 [ "$NALL" -lt 8 ] || { echo "campaign cap 8 reached"; exit 5; }
-ACC=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h | wc -l")
-[ "$ACC" -lt 8 ] || { echo "account at $ACC jobs: campaign cap 8"; exit 5; }
+QA=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h -o %i") || { echo "squeue failed"; exit 9; }
+ACC=$(echo "$QA" | grep -c . || true)
+# A5: lane-side margin against the cross-lane race (no shared lock exists): submit only with >= 2 free campaign slots
+[ "$ACC" -le 6 ] || { echo "account at $ACC jobs: margin rule (<= 6 before submit, campaign cap 8)"; exit 5; }
 "$PY" "$LANE/ledger.py" reserve "$A" "$HOURS" || { echo "GPU-hour reservation refused"; exit 6; }
 # before sbatch is attempted a failure is unambiguous: release; after, keep the reservation (AMBIGUOUS) until squeue/sacct
 # by the unique job name f2d_<attempt> settles it (ledger.py settle)
@@ -40,7 +42,8 @@ trap - ERR
 "$PY" "$LANE/ledger.py" bind "$A" "$JID"
 # campaign cap (8) is account-wide but the lock above is lane-local: re-check after submitting; if the account is now
 # above 8 (a concurrent submit by another lane), cancel this job (the reservation is settled by reconcile as CANCELLED)
-ACC2=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h | wc -l")
+QB=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login "squeue -u tawal01 -h -o %i") || { echo "post-submit squeue failed: CHECK THE ACCOUNT NOW"; exit 10; }
+ACC2=$(echo "$QB" | grep -c . || true)
 if [ "$ACC2" -gt 8 ]; then
   echo "account at $ACC2 > 8 after submit: cancelling $JID"
   timeout 60 ssh -o ConnectTimeout=20 tufts-login "scancel $JID"

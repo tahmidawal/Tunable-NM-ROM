@@ -50,7 +50,10 @@ def speedup(rom, fom, seed=0):
     lo, hi = (float(x) for x in np.percentile(bs, [2.5, 97.5]))
     return dict(status='ok', n=len(I), cases=I, S=S, lo=lo, hi=hi, cost_rom=float(np.median(r)), cost_fom=float(np.median(f)),
                 faster=('ROM faster' if lo >= 1 else ('FOM faster' if hi < 1 else 'unresolved')),
-                two_x=('pass' if lo >= 2 else ('fail' if hi < 2 else 'inconclusive')))
+                two_x_class=('ROM >= 2x' if lo >= 2 else ('ROM < 2x' if hi < 2 else 'unresolved')),
+                two_x=('pass against the screening-selected comparator (not established against the best validated FOM)'
+                       if lo >= 2 else ('fail under the registered dev6 descriptive-bootstrap rule' if hi < 2
+                                        else 'inconclusive')))
 
 
 def bracket(seq):
@@ -94,6 +97,7 @@ def main():
         ctl = r.get('controls', {})
         panel_ok = bool(A not in veto and r['gates'].get('G-RR') and r['gates'].get('G-FR')
                         and ctl.get('T-dbl', {}).get('fires') and ctl.get('T-fault', {}).get('fires')
+                        and ctl.get('T-fault', {}).get('separation_ok')
                         and ctl.get('T-id', {}).get('fires'))
         idf = ctl.get('T-id', {}).get('row', {}).get('B')
         veto_claims = veto - ({idf} if idf else set())          # the T-id control subject is vetoed by construction
@@ -130,6 +134,7 @@ def main():
                     continue
                 c = res['cells'][f'{N}|{gid}']
                 res['hcomp'][f'{N}|{gid}'] = dict(target=tk, family=g['family'], verdict=c.get('two_x', c.get('status')),
+                                                  cls=c.get('two_x_class'),
                                                   S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), matched=c.get('selected'))
     # K2 at 4096: every member of the universe, union joint criterion
     if 4096 in jobs:
@@ -138,13 +143,15 @@ def main():
         for tk in uni or []:
             gid = plan['meshes']['4096']['targets'][tk]['union_joint_group']
             c = res['cells'].get(f'4096|{gid}', {})
-            rows[tk] = dict(S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), status=c.get('status', 'ok'), two_x=c.get('two_x'))
+            rows[tk] = dict(S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), status=c.get('status', 'ok'),
+                            two_x_class=c.get('two_x_class'), two_x=c.get('two_x'))
+        cls = [v['two_x_class'] for v in rows.values()]
         if not plan['meshes']['4096'].get('k2_universe_complete'):
             verdict = 'inconclusive (no complete qualification manifest; front members only)'
-        elif any(v['two_x'] == 'pass' for v in rows.values()):
-            verdict = 'does not fire'
-        elif rows and all(v['two_x'] == 'fail' for v in rows.values()):
-            verdict = 'fires'
+        elif rows and all(c_ == 'ROM < 2x' for c_ in cls):
+            verdict = 'fires under the registered dev6 workload rule (A3.1)'
+        elif any(c_ == 'ROM >= 2x' for c_ in cls):
+            verdict = 'not shown to fire (a member is >= 2x faster than its screening-selected comparator; A3.1)'
         else:
             verdict = 'inconclusive'
         res['k2'] = dict(verdict=verdict, members=rows, universe_complete=plan['meshes']['4096'].get('k2_universe_complete'))
@@ -161,11 +168,16 @@ def main():
                     gid = plan['meshes'][str(N)]['targets'][tk]['group_ids'].get(f'{fam}|{crit}')
                     c = res['cells'].get(f'{N}|{gid}') if gid else None
                     if c and c.get('status') == 'ok':
-                        seq.append((N, c['faster']))
+                        seq.append((N, c['faster'], c['two_x_class']))
                     elif c:
-                        seq.append((N, c.get('status')))
-                ok = [(m, c) for m, c in seq if c in ('ROM faster', 'FOM faster', 'unresolved')]
-                out[f'{fam}|{crit}'] = dict(sequence=seq, bracket=bracket(ok))
+                        seq.append((N, c.get('status'), c.get('status')))
+                ok1 = [(m, c1) for m, c1, _ in seq if c1 in ('ROM faster', 'FOM faster', 'unresolved')]
+                tr = {'ROM >= 2x': 'ROM faster', 'ROM < 2x': 'FOM faster', 'unresolved': 'unresolved'}
+                ok2 = [(m, tr[c2]) for m, _, c2 in seq if c2 in tr]
+                out[f'{fam}|{crit}'] = dict(sequence=seq, bracket_1x=bracket(ok1) if len(ok1) > 1 else
+                                            (f'point only ({ok1[0][0]}^2: {ok1[0][1]})' if ok1 else 'no qualified mesh'),
+                                            bracket_2x=(bracket(ok2).replace('ROM faster', 'ROM >= 2x').replace('FOM faster', 'ROM < 2x')
+                                                        if len(ok2) > 1 else (f'point only ({ok2[0][0]}^2)' if ok2 else 'no qualified mesh')))
         res['crossover'][ident] = out
     Path(a.out).write_text(json.dumps(res, indent=1, default=float) + '\n')
     print('K2', res.get('k2', {}).get('verdict'), 'panels', {N: v['panel_ok'] for N, v in res['meshes'].items()})

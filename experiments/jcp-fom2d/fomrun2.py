@@ -104,6 +104,12 @@ class FOMs:
 
     def __init__(self):
         self.fd, self.ps, self.maps = {}, {}, {}
+        self.compile_log = {}          # executable -> compile seconds, recorded when the compile actually happens
+
+    def _log(self, name, fn):
+        c = getattr(fn, 'compile_seconds', 0.0)
+        if c and name not in self.compile_log:
+            self.compile_log[name] = float(c)
 
     def solver(self, L, adv, lim):
         k = (L, adv, lim)
@@ -114,30 +120,40 @@ class FOMs:
     def fmap(self, L, target):
         k = (L, target)
         if k not in self.maps:
-            self.maps[k] = fd_map(L, target)
+            f = fd_map(L, target)
+            T = LAT if target == 'lattice' else int(target[1])
+            t = time.perf_counter()
+            exe = f.lower(jax.ShapeDtypeStruct((6, (L - 1) ** 2), jnp.float64)).compile()
+            self.compile_log[f'map|L{L}|{T}'] = time.perf_counter() - t
+            self.maps[k] = exe
         return self.maps[k]
+
+    def psq(self, N, dt, target):
+        k = (N, dt, target)
+        if k not in self.ps:
+            self.ps[k] = psjax2d.make_ps_query(N, dt, target)
+        return self.ps[k]
 
     def run(self, sp, x, nu, target='lattice'):
         """-> (fields (6, T+1, T+1) device array, info). Untimed callers block on the result themselves."""
         if sp[0] == 'ps':
-            k = (sp[1], sp[2], target)
-            if k not in self.ps:
-                self.ps[k] = psjax2d.make_ps_query(sp[1], sp[2], target)
-            F, um = self.ps[k](x, nu)
+            q = self.psq(sp[1], sp[2], target)
+            F, um = q(x, nu)
+            self._log(f"ps|N{sp[1]}|{sp[2]:.8g}|{target if target == 'lattice' else target[1]}", q)
             return F, dict(kind='ps', umax=um)
         _, fam, L, dt, lev = sp
         adv, scheme = FAM[fam]
         ntol, ltol = TOLS[lev]
-        o = self.solver(L, adv, NEWTON_LIMIT.get(lev, MAX_NEWTON))(x, nu, dt, scheme, ntol, ltol)
+        lim = NEWTON_LIMIT.get(lev, MAX_NEWTON)
+        s_ = self.solver(L, adv, lim)
+        o = s_(x, nu, dt, scheme, ntol, ltol)
+        self._log(f'fd|{adv}|L{L}|lim{lim}', s_)
         return self.fmap(L, target)(o['out']), o
 
     def callable(self, sp, x, nu, target):
         """A zero-argument function doing exactly the timed work of one query (solve + output map)."""
         if sp[0] == 'ps':
-            k = (sp[1], sp[2], target)
-            if k not in self.ps:
-                self.ps[k] = psjax2d.make_ps_query(sp[1], sp[2], target)
-            q = self.ps[k]
+            q = self.psq(sp[1], sp[2], target)
             return lambda: q(x, nu)[0]        # the running maximum is computed in the same program (validity evidence)
         _, fam, L, dt, lev = sp
         adv, scheme = FAM[fam]

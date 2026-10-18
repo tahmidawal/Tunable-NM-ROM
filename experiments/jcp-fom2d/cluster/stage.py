@@ -44,6 +44,7 @@ def main():
     if not smoke:
         # production attempts need a smoke-derived certificate; the time limit must cover projection x 1.5 (A1.11)
         c_ = json.loads(cert.read_text())
+        assert 'H200' in str(c_.get('gpu')), ('certificate measured on another GPU type', c_.get('gpu'))
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
         for drv, cf in [r.split(':', 1) for r in a.run]:     # the certificate is bound to the exact configs and runs
             assert c_['configs'].get(cf) == hashlib.sha256((ROOT / LANE / cf).read_bytes()).hexdigest(), cf

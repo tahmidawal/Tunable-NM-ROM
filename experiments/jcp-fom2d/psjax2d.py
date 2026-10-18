@@ -67,7 +67,20 @@ def make_ps_query(N, dt, out='lattice', Mc=32):
         (v, um), outs = jax.lax.scan(interval, (b0, jnp.float64(0.0)), None, length=5)
         return jnp.concatenate((synth(b0, S)[None], outs)), um
     q = jax.jit(query)
-    return lambda b0, nu: q(b0, nu, S_lat)
+    cache = {}
+
+    def run(b0, nu):
+        """Ahead-of-time compiled on first use (compile seconds in run.compile_seconds, 0 afterwards)."""
+        args = (jnp.asarray(b0, jnp.float64), jnp.float64(nu), S_lat)
+        run.compile_seconds = 0.0
+        if 'exe' not in cache:
+            import time as _t
+            t = _t.perf_counter()
+            cache['exe'] = q.lower(*args).compile()
+            run.compile_seconds = _t.perf_counter() - t
+        return cache['exe'](*args)
+    run.compile_seconds = 0.0
+    return run
 
 
 def ic(desc, N, panels=256):

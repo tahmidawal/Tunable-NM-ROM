@@ -75,8 +75,9 @@ def rescore(cfgs, src):
             rec[cid] = {}
             for kind, sj in pj['scores'].items():
                 s = RS.score(F[i], 2, coh, int(c), kind)
-                d = abs(s['e'] - sj['e']) if sj['e'] is not None else np.inf
-                worst = max(worst, d)
+                both_bad = sj['e'] is None and not np.isfinite(s['e'])      # an invalid run: rejected config, not a disagreement
+                d = 0. if both_bad else (abs(s['e'] - sj['e']) if sj['e'] is not None else np.inf)
+                worst = max(worst, d if np.isfinite(d) else np.inf)
                 rec[cid][kind] = dict(e=s['e'], eps_ref=s['eps_ref'], eligible=s['eligible'])
         out[k] = rec
     return out, worst
@@ -244,7 +245,10 @@ def anchor(k, adm, src):
     za = np.load(src[k] / f"F_{k.replace('|', '_')}.npz")
     zb = np.load(src[k2] / f"F_{k2.replace('|', '_')}.npz")
     A, B = za['fields'], zb['fields']
-    dist = max(float(np.linalg.norm(A[i][t] - B[i][t])) / float(np.linalg.norm(B[i][0])) for i in range(len(A)) for t in range(1, 6))
+    ids = [str(x) for x in za['case_ids']]
+    assert ids == [str(x) for x in zb['case_ids']]
+    n0 = [float(RS.load(2, c.split('|')[0], int(c.split('|')[1]))[1]['judge']['n0']) for c in ids]   # reference n0
+    dist = max(float(np.linalg.norm(A[i][t] - B[i][t])) / n0[i] for i in range(len(A)) for t in range(1, 6))
     return dict(status='ok', steps=[sp[2], d2], other=k2, both_valid=True, distance=dist)
 
 
@@ -349,19 +353,39 @@ def main():
                pareto=pareto(adm, scores, population), targets_source=T.get('source'),
                label='every matched speed-up is an upper bound on the claimed ROM speed-up (finite ladder); C1 selections '
                      'use lattice-contract screening costs and are not the C2 (A2.1) selections', matches={})
-    for lab, t in T['targets'].items():
+    targets = T['targets']
+    if a.population == 'smoke':              # labelled smoke-population variants (never used for production claims)
+        targets = {f'{lab} [smoke population]': dict(t, case_ids=[c for c in t['case_ids'] if c in population])
+                   for lab, t in targets.items()}
+    for lab, t in targets.items():
         res['matches'][lab] = match_target(t, adm, scores, ed_all, population, recal, src)
     evald = [m for m in res['matches'].values() if m.get('status') == 'ok']
     acceptance['controls_all_fire'] = bool(evald) and all(m['controls']['fires'] for m in evald)
     res['acceptance'] = acceptance
     res['blocked'] = not all(acceptance.values())
     # A3.2 extension trigger: a family's screening-cheapest joint match (any target) at its base-ladder minimum resolution
+    adm_base = {k: v for k, v in adm.items() if k in base}
     trig = {}
     for f in FAMILIES:
-        hits = [lab for lab, m in res['matches'].items() if m.get('status') == 'ok' and m[f]['joint']
-                and m[f]['joint']['key'] in base and f in ed_base and resolution(m[f]['joint']['key'])[0] == ed_base[f]['min_res']]
-        trig[f] = dict(fires=bool(hits), targets=hits, base_min_resolution=ed_base.get(f, {}).get('min_res'))
+        hits = []
+        for lab, t in targets.items():
+            mb = match_target(t, adm_base, scores, ed_base, population, recal, src)     # base ladder only (A3.2)
+            if mb.get('status') == 'ok' and mb[f]['joint'] and f in ed_base and \
+                    resolution(mb[f]['joint']['key'])[0] == ed_base[f]['min_res']:
+                hits.append(dict(target=lab, comparator=mb[f]['joint']['key'], population=t.get('population')))
+        mn = ed_base.get(f, {}).get('min_res')
+        new_res = None if mn is None else (mn // 2 if f in ('UB', 'CC') else mn - 4)
+        ok_new = new_res is not None and (new_res >= 16 if f in ('UB', 'CC') else new_res >= 4)
+        dts = sorted({resolution(k)[1] for k in base if FR.family(k) == f}) if f != 'PS' else \
+            sorted({resolution(k)[1] for k in base if FR.family(k) == 'PS'})
+        req = [] if not (hits and ok_new) else [f'fd|{f}|L{new_res}|{d:.8g}' if f != 'PS' else f'ps|N{new_res}|{d:.8g}' for d in dts]
+        have = {k for k in adm if k not in base} | {g for g in groups if Path(groups[g]['_dir']).as_posix() in
+                                                    [str(Path(x).as_posix()) for x in a.extension_ladder]}
+        done = all(any(h.startswith(r) for h in have) for r in req)
+        trig[f] = dict(fires=bool(hits), hits=hits, base_min_resolution=mn, added_resolution=new_res if ok_new else None,
+                       required=req, completed=bool(done) if req else None)
     res['extension_trigger'] = trig
+    res['extension_complete'] = all(v['completed'] is not False for v in trig.values())
     Path(a.out).write_text(json.dumps(res, indent=1, default=float) + '\n')
     print('acceptance', acceptance, 'BLOCKED' if res['blocked'] else 'ok')
     for lab, m in res['matches'].items():

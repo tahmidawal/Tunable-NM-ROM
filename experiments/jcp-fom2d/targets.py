@@ -38,7 +38,9 @@ def target_from_fields(f257, case_ids, mesh, config, source):
 
 
 def identity(cfg):
-    return f"R{cfg['Rp']}|{cfg['rule']}|{cfg['policy']}|{cfg['scheme']}|{cfg['dt']:.8g}|{cfg.get('form', 'LSPG')}|{cfg.get('level', 'prod')}"
+    """Configuration identity, mesh excluded (A1.4): bank, r, rule, mode policy, scheme, dt, form, tolerance level."""
+    return (f"{cfg.get('bank', 'dn256b')}|R{cfg['Rp']}|{cfg['rule']}|{cfg['policy']}|{cfg['scheme']}|{cfg['dt']:.8g}|"
+            f"{cfg.get('form', 'LSPG')}|{cfg.get('level', 'prod')}")
 
 
 def with_populations(T):
@@ -50,6 +52,7 @@ def with_populations(T):
     out = {}
     for idt, ts in by.items():
         inter = set.intersection(*[{c for c in t['case_ids'] if t['eligible'][c]} for t in ts])
+        assert len({t['mesh'] for t in ts}) == len(ts), f'identity collision at one mesh: {idt}'
         for t in ts:
             out[f"{idt}@{t['mesh']}|H"] = dict(t, identity=idt, population='H')
             ids = [c for c in t['case_ids'] if c in inter]
@@ -80,12 +83,13 @@ def p1(out):
                                dict(file=str(f), sha256=hashlib.sha256(f.read_bytes()).hexdigest()))
         # consistency with P1's own analysis (same store): medians/worst over its population must agree
         t['p1_median'], t['p1_worst'] = v['e0_median'], v['e0_worst']
-        assert abs(t['median'] - v['e0_median']) <= 1e-12 and abs(t['worst'] - v['e0_worst']) <= 1e-12, (lab, t['median'], v)
+        assert t['median'] is not None and abs(t['median'] - v['e0_median']) <= 1e-12 and \
+            abs(t['worst'] - v['e0_worst']) <= 1e-12, (lab, t['median'], v)
         T[lab] = t
     Path(out).write_text(json.dumps(dict(source='preview against P1 configurations; superseded by FRONT-2D',
                                          store_version=RS.store_version(), targets=with_populations(T)), indent=1) + '\n')
     for lab, t in T.items():
-        print(lab, t['n_eligible'], round(t['median'], 6), round(t['worst'], 6))
+        print(lab, t['n_eligible'], t['median'], t['worst'])
 
 
 def main():

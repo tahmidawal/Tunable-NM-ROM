@@ -128,6 +128,10 @@ def main():
                 if not o:
                     continue
                 rows = [(x.split('|') + [''] * 5)[:5] for x in o]
+                # current attempt: any non-terminal row (a live attempt) wins; with --no-requeue there is one row
+                live = [r for r in rows if r[0].split()[0] not in TERMINAL]
+                if live:
+                    rows = [r for r in rows if r is not live[-1]] + [live[-1]]
                 st = rows[-1][0].split()[0]
                 j['attempts'] = len(rows)
                 j['state'], j['node'] = st, rows[-1][3]

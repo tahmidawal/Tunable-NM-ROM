@@ -486,3 +486,38 @@ Code changes (no design change except where stated):
   target errors; selection uses the group-wide common-valid population with the A2.1 ties; union groups pool per-family
   shortlists; the T-id control uses a control-only alias so no production subject is vetoed by construction; A is also a
   stage-2 subject under its own label when it is a target.
+
+---
+
+## Amendment A5 (2026-10-18, before any job; answers `audits/codex-design-4.md` and `audits/codex-code-2.md`, both NOT READY)
+
+**A5.1 Wording of the one-sided outcomes (design-4 blocking 1).** The bootstrap is descriptive of the dev6 workload, not a
+confidence procedure. The registered outcomes are therefore labelled: H-comp "**fail under the registered dev6
+descriptive-bootstrap rule**" (upper end of the case-bootstrap interval of $S_{\rm selected}$ below 2), and K2 "**fires
+under the registered dev6 workload rule**". Neither is presented as a confidence-certified statement about the best FOM;
+the optimisation inequality $S_{\rm best}\le S_{\rm selected}$ is what makes them conservative with respect to the
+comparator choice. A selected-comparator pass stays "not shown to fire" for K2 (A3.1).
+
+**A5.2 Account-wide cap (design-4 blocking 2) — decision.** A cross-lane lock cannot be built from this lane without
+writing outside its worktree (forbidden, COMMON-BRIEF §9). The governing rule (COMMON-BRIEF §5: run
+`squeue -u tawal01 -h | wc -l` before each submit and do not submit if it would push the account above 8) is met, and
+this lane adds: (i) a **margin** — it submits only when the account has **≤ 6** jobs (two free slots), so a single
+simultaneous submit by another lane cannot exceed 8; (ii) every squeue query fails closed; (iii) the post-submit check and
+cancellation of A4. The residual risk (two other lanes submitting in the same seconds) is a campaign-level coordination
+issue and is recorded, not hidden.
+
+**A5.3 Identity policy scope; extension record (design-4 non-blocking).** A `nonbitwise_ok_families` amendment, if ever
+made, governs both the C1 screening identity and the C2 identity checks, is bound to the configs/results it names, and
+is reported as numerical agreement, never as bitwise identity. The extension decision records, per family, the triggering
+targets, populations and comparators, the base-ladder minimum, the added resolution, the required configurations and
+their completion; the C1 tie-break is screening cost, then the configuration key.
+
+**A5.4 Code dispositions (code-2).** Smoke matching uses labelled smoke-population target variants (production keeps the
+38-case requirement); compile seconds are logged per executable when they actually occur (FD solver, FD output map,
+PS program — PS is now ahead-of-time compiled like E0's FD solver) and feed the certificates; a configuration whose
+in-job and offline scores are both non-finite is rejected as invalid instead of blocking the matcher; certificates
+require an accepted smoke and include input preparation and burn-in time, and the smoke pilots cover the possible
+extension resolutions (CC $L=16$, UB $L=32$, PS $N=4$); staging checks the certificate's GPU type; target identities
+carry the bank tag and reject collisions; the PS anchor is normalised by the reference $n_0$; the ledger treats a live
+accounting row as the current attempt. C2 items (stage-1 veto refresh, A's own stage-2 alias, ROM validity in G-RR,
+executable release, 2× brackets — the last done in `c2analyze.py`) are addressed before the C2 code audit.

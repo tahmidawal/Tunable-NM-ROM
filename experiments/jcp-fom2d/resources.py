@@ -26,33 +26,39 @@ HERE = Path(__file__).resolve().parent
 CPU_PER_RUN = 0.5
 
 
-def fd_rate(pil, fam, L):
-    """Seconds per stage: the slowest of the four tolerance levels' warm dt = 0.005 pilots; compile allowance: the largest."""
+def fd_rate(res, fam, L):
+    """Seconds per stage: the slowest of the four tolerance levels' warm dt = 0.005 pilots; compile: the solver and the
+    lattice map as logged when they compiled; prep: the pilots' measured input preparation."""
+    pil, log = res['pilots'], res['compile_log']
     ks = [f'fd|{fam}|L{L}|0.005|t{lev}' for lev in '0123']
-    return max(pil[k]['seconds_per_unit'] for k in ks), max(pil[k]['compile_seconds'] for k in ks)
+    adv = FR.FAM[fam][0]
+    comp = log[f'fd|{adv}|L{L}|lim20'] + log.get(f'map|L{L}|256', 0.)
+    return (max(pil[k]['seconds_per_unit'] for k in ks), comp, max(pil[k]['warm']['prep_seconds'] for k in ks))
 
 
-def ps_rate(pil, N):
+def ps_rate(res, N):
+    pil, log = res['pilots'], res['compile_log']
     k = f'ps|N{N}|0.005'
-    return pil[k]['seconds_per_unit'], pil[k]['compile_seconds']
+    return pil[k]['seconds_per_unit'], log[f'ps|N{N}|0.005|lattice'], pil[k]['warm']['prep_seconds']
 
 
-def project(cfg, pil):
+def project(cfg, res):
     tot, detail = 0., {}
     seen = set()
+    burn = float(cfg.get('burn', 0.1)) * (len(cfg.get('warm_cases', [])) * int(cfg.get('warm_reps', 3)) + 1)
     for fam, L, dt in cfg.get('fd', []):
-        s, comp = fd_rate(pil, fam, L)
+        s, comp, prep = fd_rate(res, fam, L)
         st = RC.n_stages(FR.canon_dt(dt), FR.FAM[fam][1])
         runs = 4 * 4 + 34 + 38 + 2 * 4
         nf = max(1., min(3., FR.canon_dt(dt) / 0.005))          # more Newton iterations per stage at larger steps
-        sec = runs * (st * s * nf + CPU_PER_RUN) + (comp if (fam, L) not in seen else 0.)
+        sec = runs * (st * s * nf + CPU_PER_RUN + prep) + burn + (comp if (fam, L) not in seen else 0.)
         seen.add((fam, L))
         detail[f'fd|{fam}|L{L}|{dt}'] = sec
         tot += sec
     for N, dt in cfg.get('ps', []):
-        s, comp = ps_rate(pil, N)
+        s, comp, prep = ps_rate(res, N)
         steps = int(round(.25 / FR.canon_dt(dt)))
-        sec = (38 + 8) * (steps * s + CPU_PER_RUN) + comp
+        sec = (38 + 8) * (steps * s + CPU_PER_RUN + prep) + burn + comp
         detail[f'ps|N{N}|{dt}'] = sec
         tot += sec
     return tot, detail
@@ -64,10 +70,10 @@ def main():
     ap.add_argument('--config', required=True)
     a = ap.parse_args()
     res = json.loads((Path(a.smoke) / 'result.json').read_text())
-    assert res.get('complete') is True
+    assert res.get('complete') is True and res.get('accepted') is True, 'certificates need an accepted smoke'
     cfgp = HERE / a.config
     cfg = json.loads(cfgp.read_text())
-    tot, detail = project(cfg, res['pilots'])
+    tot, detail = project(cfg, res)
     out = dict(attempt=cfg['attempt'], smoke=str(a.smoke), smoke_job=res.get('job_id'), gpu=res.get('gpu'),
                projection_seconds=tot, projection_hours=tot / 3600, required_limit_hours=1.5 * tot / 3600,
                configs={a.config: hashlib.sha256(cfgp.read_bytes()).hexdigest()}, runs=[f'ladder:{a.config}'],

@@ -95,6 +95,19 @@ for K in KS:
     dim = (e.get('lh_dim') or {}).get('dominance', e.get('status'))
     amc = (e.get('lh_cost') or {}).get('at_most_cost', e.get('status'))
     w(f'- **K = {K}:** against linear r = K: `{dim}`; at no more online cost: `{amc}`.')
+e16 = lh.get('per_K', {}).get('16') or {}
+if 'rungs' in e16:
+    r16, r128 = e16['rungs'].get('16', {}), e16['rungs'].get('128', {})
+    w(f"- **In numbers (BE, 1024², exploratory):** the K = 16 head (qualified seeds {e16['S_prime']}) has median E0 ST error "
+      f"{pct(e16['median_H'])}; the linear span at r = 16 has {pct(r16.get('median_L'))} and costs "
+      f"{g3(r16.get('cost', {}).get('median'))}× the head's online query (cheaper, much less accurate); the linear span at r = 128 has "
+      f"{pct(r128.get('median_L'))} at {g3(r128.get('cost', {}).get('median'))}× the head's cost.")
+qual = E.get('S_K', {}).get('BE', {})
+if qual:
+    w('- **Qualification decides the scope:** numerically qualified seeds per K (BE, 1024²): '
+      + ', '.join(f"K = {K}: {qual.get(str(K), qual.get(K)) or 'none'}" for K in KS)
+      + '. Sizes with fewer than two qualified seeds get no pooled verdict, so the error-against-K and F5 readings are '
+        'inconclusive, not negative.')
 if 'repro' in E:
     w(f"- **Retrain of the incumbent (K = 16, seed 0):** `{E['repro']['label']}` (pipeline oracle ratio "
       f"{g3(E['repro']['oracle_ratio'])}, ROM median-error ratio {g3(E['repro']['rom_median_ratio'])}).")
@@ -438,6 +451,24 @@ if E.get('cost'):
     w(table(['subject', 'timing-job Q1/Q2 (dev6)', 'max distance to accuracy-job trajectory', 'split = fused',
              'subject drift', 'usable for cost labels'], rows))
     w('')
+
+# ------------------------------------------------------------------ context ----
+w('## 6d. Relation to earlier results, and what is provisional')
+w('')
+w('- **Earlier "the head is necessary at matched latent dimension" (2026-09-14 head ablation, LAB-LOG):** at matched '
+  'dimension this lane also finds the head more accurate than the linear span (K = 16 vs r = 16), but that comparison '
+  'ignores cost. At no more online cost, the qualified linear rung r = 128 is more accurate than the K = 16 head (section 6). '
+  'The earlier statement therefore does **not** carry over to an accuracy-per-cost claim for this bank, rule policy and '
+  'solver; it is qualified here, not contradicted.')
+inc_rule = (E.get('rules') or {}).get('groups', {}).get('Hinc', {}).get('chosen', {}) or {}
+w(f"- **Quadrature for the head:** the quadrature-study lane's post-hoc head rule was Gauss 32² (not confirmed on test64). "
+  f"Under this lane's successor-agreement policy the incumbent head needs {inc_rule.get('main', '—')} at 1024².")
+w('- **Provisional:** every error is E0-conditional ($\\varepsilon_{\\rm ref}$ is a conditional Richardson estimate); '
+  'everything is validation-only (dev6 + val32) and exploratory (A4.1); costs are H200-specific A-normalised ratios; '
+  'nothing here bears on K2 (the full-order comparison), and the sealed-cohort K5 test was not run.')
+w('- **Open (governing plan E3c):** the head-repair hypotheses (initial-fit basin, LM branch, mesh-dependent linear terms) '
+  'were not tested; section 6b gives the descriptive cross-mesh spread only.')
+w('')
 
 # ------------------------------------------------------------------ provenance ----
 w('## 7. Jobs, budget, deferrals')

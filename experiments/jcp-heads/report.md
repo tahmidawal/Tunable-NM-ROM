@@ -26,6 +26,8 @@ flowchart LR
 - **K = 8:** against linear r = K: `unavailable (timing incomplete or unqualified)`; at no more online cost: `unavailable (timing incomplete or unqualified)`.
 - **K = 16:** against linear r = K: `neither (trade-off)`; at no more online cost: `linear at no more cost is at least as accurate (rung 128: Y more accurate)`.
 - **K = 32:** against linear r = K: `unavailable (timing incomplete or unqualified)`; at no more online cost: `unavailable (timing incomplete or unqualified)`.
+- **In numbers (BE, 1024², exploratory):** the K = 16 head (qualified seeds [0, 1]) has median E0 ST error 1.44 %; the linear span at r = 16 has 10.2 % and costs 0.265× the head's online query (cheaper, much less accurate); the linear span at r = 128 has 1.1 % at 0.591× the head's cost.
+- **Qualification decides the scope:** numerically qualified seeds per K (BE, 1024²): K = 4: none, K = 8: none, K = 16: [0, 1], K = 32: [1]. Sizes with fewer than two qualified seeds get no pooled verdict, so the error-against-K and F5 readings are inconclusive, not negative.
 - **Retrain of the incumbent (K = 16, seed 0):** `reproduces` (pipeline oracle ratio 1, ROM median-error ratio 1).
 
 ## 1. Matched heads (training)
@@ -634,6 +636,13 @@ Per-seed sensitivity (each individual head; single-seed pools):
 | 4096\|H4s0\|gauss48\|BE | fail | — | yes | 0.999 | no |
 | 4096\|H8s0\|gauss96\|BE | fail | — | yes | 1 | no |
 | 4096\|Hinc\|gauss96\|BE | pass | — | yes | 0.999 | yes |
+
+## 6d. Relation to earlier results, and what is provisional
+
+- **Earlier "the head is necessary at matched latent dimension" (2026-09-14 head ablation, LAB-LOG):** at matched dimension this lane also finds the head more accurate than the linear span (K = 16 vs r = 16), but that comparison ignores cost. At no more online cost, the qualified linear rung r = 128 is more accurate than the K = 16 head (section 6). The earlier statement therefore does **not** carry over to an accuracy-per-cost claim for this bank, rule policy and solver; it is qualified here, not contradicted.
+- **Quadrature for the head:** the quadrature-study lane's post-hoc head rule was Gauss 32² (not confirmed on test64). Under this lane's successor-agreement policy the incumbent head needs gauss96 at 1024².
+- **Provisional:** every error is E0-conditional ($\varepsilon_{\rm ref}$ is a conditional Richardson estimate); everything is validation-only (dev6 + val32) and exploratory (A4.1); costs are H200-specific A-normalised ratios; nothing here bears on K2 (the full-order comparison), and the sealed-cohort K5 test was not run.
+- **Open (governing plan E3c):** the head-repair hypotheses (initial-fit basin, LM branch, mesh-dependent linear terms) were not tested; section 6b gives the descriptive cross-mesh spread only.
 
 ## 7. Jobs, budget, deferrals
 

@@ -20,13 +20,14 @@ echo "--- squeue before"; timeout 60 $SSH tufts-login 'squeue -u $USER -h -o "%i
 TAG="$A.$(hostname).$$.$(date +%s%N)"
 timeout 60 $SSH tufts-login "mkdir -p $NS/.staging && mkdir $NS/.staging/$TAG"
 timeout 1800 rsync -e "$SSH" -a "$LOCAL/" "tufts-login:$NS/.staging/$TAG/"
-timeout 120 $SSH tufts-login "cd $NS && flock -x -w 60 .submit.lock bash -c '
+# COMMON-BRIEF 14: every sbatch under the shared campaign lock; account count (queued + running) < 8 inside it
+timeout 900 $SSH tufts-login "cd $NS && flock -x -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c '
   set -euo pipefail
   q=\$(squeue -u \$USER -h -o \"%j\") || { echo \"squeue failed: refusing\"; exit 5; }
   n=\$(printf \"%s\\n\" \"\$q\" | grep -c \"^hrb_\" || true)
   t=\$(printf \"%s\\n\" \"\$q\" | grep -c . || true)
   if [ \"\$n\" -ge 2 ]; then echo \"2 hrb_ jobs live: refusing (lane cap 2)\"; exit 4; fi
-  if [ \"\$t\" -ge 8 ]; then echo \"8 jobs live on the account: refusing (campaign cap 8)\"; exit 6; fi
+  if [ \"\$t\" -ge 8 ]; then echo \"8 jobs live on the account: refusing (campaign cap 8)\"; exit 75; fi
   test ! -e $NS/$A || { echo \"$NS/$A exists: refusing\"; exit 3; }
   mv $NS/.staging/$TAG $NS/$A
   cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch --no-requeue run.sbatch'" | tee "$LOCAL.SUBMIT.out"

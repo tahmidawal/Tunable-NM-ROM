@@ -1775,3 +1775,5 @@ analyze.py, ours.py lattice methods, stageb staging paths). Its one nonblocking 
 the comparator lattice methods return explicit C-order copies (`.copy(order="C")`), independent lattice-sized storage.
 Tuning code: READY at b08690fdb (code audit 23), submitted as t3d64a (5508653) and t2d1024a (5508660) after job
 audits 1–3. The 2D 256² tuning attempt and every Stage-B attempt get their own job audits before submission.
+
+**Operational note (2026-10-18, COMMON-BRIEF §13–14).** Local jaxrun jobs go through `campaign/jaxslot.sh`; every sbatch is issued under the shared cluster lock `/cluster/tufts/paralab/tawal01/.campaign-sbatch.lock` with the account count (queued + running) < 8 and the lane count < 2 checked inside it (`cluster/submit.sh`; exit 75 at the account cap).

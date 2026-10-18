@@ -17,6 +17,7 @@ an explicit release after checking squeue). Every attempt of a job (requeues) is
 import fcntl
 import json
 import math
+import re
 import subprocess
 import sys
 from contextlib import contextmanager
@@ -74,6 +75,24 @@ def staged_subjects(att):
     return out
 
 
+def staged_fallback_of(att):
+    """Configuration keys a staged fallback attempt runs (its config's 'fallback_of')."""
+    out = set()
+    rf = HERE / 'runs' / att / 'RESERVATION.json'
+    if rf.exists():
+        for drv, cf in json.loads(rf.read_text())['runs']:
+            c = json.loads(next((HERE / 'runs' / att).rglob(Path(cf).name)).read_text())
+            out |= set(c.get('fallback_of', []))
+    return out
+
+
+def failing_from_analysis(m):
+    """The mesh's configurations whose Q2 is not 'pass' (non-fallback), from checks/analysis.json (A4.1 evidence)."""
+    an = json.loads((HERE / 'checks' / 'analysis.json').read_text())['configurations']
+    return sorted(k for k, v in an.items() if k.startswith(f'{m}|') and not k.endswith('|fb') and v['Q2'].get('label') != 'pass'
+                  and 'P1' not in v['source'])
+
+
 def validate(d, new, exempt=None):
     """A3.1 / A4.1 / A5.1 inventory rules. pending entries are numeric GPU-h only (finite, >= 0, not bool); every
     mandatory job not yet live or completed is listed (the attempt being reserved is exempt). Per mesh: while its Q2
@@ -86,6 +105,14 @@ def validate(d, new, exempt=None):
     done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
     probs = [f'bad value {k}' for k, v in new.items()
              if isinstance(v, bool) or not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
+    pat = re.compile(r'^(fballow(256|1024|4096)|fb(256|1024|4096)[a-z0-9]*|time(256|1024|4096)r[0-9]+)$')
+    probs += [f'unknown pending key {k}' for k in new if k not in MANDATORY and not pat.match(k)]
+    probs += [f'{k}: a job projection below 0.25 GPU-h' for k, v in new.items()
+              if not k.startswith('fballow') and isinstance(v, (int, float)) and not isinstance(v, bool) and v < .25]
+    for k, v in new.items():                       # a certified job is never pending below its certificate
+        cert = HERE / 'checks' / f'resources-{k}.json'
+        if cert.exists() and isinstance(v, (int, float)) and v < json.loads(cert.read_text())['time_limit_hours'] - 1e-9:
+            probs.append(f'{k} pending below its certificate')
     probs += [f'missing mandatory {k}' for k in MANDATORY if k != exempt and k not in new and k not in live and k not in done]
     fs = d.get('fallback_state', {})
     for m in (256, 1024, 4096):
@@ -96,10 +123,13 @@ def validate(d, new, exempt=None):
         keys = fs[str(m)]
         if not keys:
             continue
-        has_fb = any(k.startswith(f'fb{m}') and not k.startswith('fballow') and new[k] > 0 for k in new) or \
-            any(k.startswith(f'fb{m}') for k in live | done) or exempt and exempt.startswith(f'fb{m}')
-        if not has_fb:
-            probs.append(f'fallback configurations of mesh {m} without a fallback job')
+        covered = set()
+        for a_ in live | done | ({exempt} if exempt else set()):
+            if a_.startswith(f'fb{m}') and not a_.startswith('fballow'):
+                covered |= staged_fallback_of(a_)
+        pend_fb = any(k.startswith(f'fb{m}') and not k.startswith('fballow') and new[k] > 0 for k in new)
+        if not (set(keys) <= covered or pend_fb):
+            probs.append(f'fallback configurations of mesh {m} not covered by a live/completed or pending fallback job')
         panels = [a for a in live | done if a == f'time{m}' or a.startswith(f'time{m}r')]
         if panels and not any(set(keys) <= staged_subjects(a) for a in panels):
             rep = [k for k, v in new.items() if k.startswith(f'time{m}r') and v > 0] + \
@@ -128,6 +158,8 @@ def main():
                 print('refused: no pending-core inventory set (ledger.py pending; DESIGN A3.1)'); rc = 8
             elif validate(d, {k: v for k, v in d['pending_core'].items()}, exempt=att):
                 print('refused: pending inventory no longer valid:', validate(d, d['pending_core'], exempt=att)); rc = 8
+            elif att.startswith('time') and not set(d.get('fallback_state', {}).get(att[4:].split('r')[0], [])) <= staged_subjects(att):
+                print('refused: the staged timing panel lacks recorded fallback subjects (restage it)'); rc = 12
             elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print('attempt already has a live reservation'); rc = 2
             elif d['spent_gpu_hours'] + d['reserved_gpu_hours'] + h + pend(d, att) > CAP:
@@ -144,13 +176,20 @@ def main():
                 print('refused pending inventory:', probs); rc = 9
             else:
                 d['pending_core'] = new
-        elif cmd == 'fbstate':             # record a mesh's Q2 outcome: the fallback configuration keys (append-only)
-            m, keys = sys.argv[2], json.loads(sys.argv[3])
+        elif cmd == 'fbstate':             # one transaction (A4.1): record a mesh's Q2 outcome AND the new pending inventory
+            m, newp = sys.argv[2], json.loads(sys.argv[3])
+            keys = failing_from_analysis(m)            # derived from the analysed accuracy job, never typed
             old = d.setdefault('fallback_state', {}).get(m)
+            trial = dict(d, fallback_state=dict(d['fallback_state'], **{m: keys}))
+            probs = validate(trial, newp)
             if old is not None and not set(old) <= set(keys):
                 print('refused: fallback state is append-only'); rc = 11
+            elif probs:
+                print('refused:', probs); rc = 9
             else:
-                d['fallback_state'][m] = sorted(set(keys))
+                d['fallback_state'][m] = keys
+                d['pending_core'] = newp
+                print('fallback state', m, keys)
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')

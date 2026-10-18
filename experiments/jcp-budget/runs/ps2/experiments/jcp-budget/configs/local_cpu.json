@@ -1,6 +1,0 @@
-{"attempt": "localcpu", "allow_cpu_smoke": true, "mesh": 256, "edges": [0, 128], "cases": "dev2",
- "members": [{"Rp": 128, "form": "LSPG", "scheme": "BE", "factor": 1, "rule": "gauss16", "qp": "gauss20", "qpp": "gauss24"},
-             {"Rp": 128, "form": "GAL", "scheme": "CN", "factor": 2, "rule": "gauss16", "qp": "gauss20", "qpp": "gauss24"}],
- "b2": {"design": "full", "qinf": "gauss24", "qcheck": "gauss32", "check_cases": "dev2", "m_ablation": true},
- "b7": {"horizon": 0.5, "q2_cases": "dev2", "tighter_cases": "dev2"},
- "controls": {"Rp": 128, "cases": "dev2", "under_resolved": "gauss8"}}

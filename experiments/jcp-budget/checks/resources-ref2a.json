@@ -9,11 +9,23 @@
   "configs/ref2a_val32.json": "5741cdc2929444a095ded3e334b8dd88e41a643674429ccecd6dacb8dd441942"
  },
  "gpu": "h200",
- "projection_hours": 1.6389114825858526,
- "time_limit_hours": 2.5,
+ "projection_hours": 2.7046958699874954,
+ "memory": {
+  "ref/refrun:configs/ref2a_dev6.json": {
+   "measured_peak_GiB_L8192": 17.62118935585022,
+   "refinement_estimate_GiB": 39.647676050662994,
+   "device_GiB": 128.6171875
+  },
+  "ref/refrun:configs/ref2a_val32.json": {
+   "measured_peak_GiB_L8192": 17.62118935585022,
+   "refinement_estimate_GiB": 39.647676050662994,
+   "device_GiB": 128.6171875
+  }
+ },
+ "time_limit_hours": 4.25,
  "detail": {
-  "ref/refrun:configs/ref2a_dev6.json": 0.7692411970909064,
-  "ref/refrun:configs/ref2a_val32.json": 0.8696702854949463
+  "ref/refrun:configs/ref2a_dev6.json": 1.3137213625306554,
+  "ref/refrun:configs/ref2a_val32.json": 1.39097450745684
  },
  "label": "estimate from the smokes (not a bound)"
 }

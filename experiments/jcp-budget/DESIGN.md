@@ -784,3 +784,17 @@ classified "inconsistent").
   versions (the shared IC differs by $2.2\times10^{-16}$ for the same reason). The offline identity check therefore
   compares the recorded case descriptor with the local cohort descriptor to $10^{-13}$ relative instead of the hash;
   the in-job check (same numpy as the generator) keeps the hash.
+
+## Amendment A7 (2026-10-18, after `audits/codex-job-refs2d-1.md` and `codex-job-smk2-1.md`, before production submission)
+
+- **Gating of production by dimension:** 2D production (references, PS, b-jobs) is gated on `smk1` (2D smoke, ALL PASS,
+  `checks/smoke-smk1.json`) only; 3D production on `smk2`. A5's "both smoke files" wording is restated accordingly (the
+  2D jobs never execute 3D code).
+- **Reference certificates repriced:** per job, nominal smoke case time × cases, plus a reserve for up to two cases taking
+  the full retry path (tight re-run ×1.5 and the refinement level ≈ 3.4 × the finest-level time in 2D, 5.1× in 3D),
+  plus 10 min; memory notes record the smoke's measured peaks and the refinement estimate. **PS** is priced from E0's
+  0.17 A100-h per case at $T=0.25$ × 2 (horizon) × 3 (worst-case stability rerun), no H200 credit, and split into two
+  jobs (`ps2a` cases 0, 1; `ps2b` cases 5, 19). An escalation attempt, if needed, is a separate certified job.
+- **Collection procedure:** promotions run **serially**; `ref2a` (contains dev6) is collected **in full** (its dev6
+  fine fields are needed for the offline fine recomputation, A1.8); `ref2b`, `ref2c` with `--no-fine` after promotion;
+  `anaref.py` runs on all collected `archive/output` trees together (FD and PS).

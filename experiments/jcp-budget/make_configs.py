@@ -95,7 +95,8 @@ def main():
             write(f'{nm}_val32', dict(mode='fd', dim=2, cohort='val32', cases=cs[3], horizon=0.5, fine=True, allow_refine=True))
         else:
             write(f'{nm}_val32', dict(mode='fd', dim=2, cohort=cs[0], cases=cs[1], horizon=0.5, fine=True, allow_refine=True))
-    write('ps2', dict(mode='ps', dim=2, cohort='val32', cases=[0, 1, 5, 19], horizon=0.5))
+    write('ps2a', dict(mode='ps', dim=2, cohort='val32', cases=[0, 1], horizon=0.5))       # split in two jobs (A7)
+    write('ps2b', dict(mode='ps', dim=2, cohort='val32', cases=[5, 19], horizon=0.5))
     write('ref3', dict(mode='fd', dim=3, cohort='val64', cases=list(range(16)) + [43], horizon=0.5, fine=True,
                        allow_refine=True))
     write('ps3', dict(mode='ps', dim=3, cohort='val64', cases=[0, 43], horizon=0.5))

@@ -73,16 +73,42 @@ def pilot_seconds(att='smk1'):
     return json.loads((d / 'result.json').read_text())['elapsed_seconds']
 
 
+def memory_note(runs):
+    """Expected device peaks from the smokes (A2.7): reference levels scale with the grid size; ROM jobs with the bank."""
+    out = {}
+    for r in runs:
+        drv, cf = r.split(':', 1)
+        cfg = json.loads((HERE / cf).read_text())
+        if drv == 'ref/refrun' and cfg['mode'] == 'fd' and int(cfg['dim']) == 2:
+            pk = max((a['peak_bytes'] or 0) for js in out_dir('smk1').glob('ref_refrun_*_ref/2d/*/T*/c*.json')
+                     for a in json.loads(js.read_text())['attempts'])
+            out[r] = dict(measured_peak_GiB_L8192=pk / 2 ** 30, refinement_estimate_GiB=pk / 2 ** 30 * (12288 / 8192) ** 2,
+                          device_GiB=138101653504 / 2 ** 30)
+        elif drv == 'b2run':
+            pr = json.loads((next(out_dir('smk1').glob('b2run_*pilot4096*')) / 'result.json').read_text())
+            pk = max(v.get('peak', -1) for x in pr['pilot'].values() for v in x.values() if isinstance(v, dict))
+            out[r] = dict(pilot4096_peak_GiB=pk / 2 ** 30, device_GiB=138101653504 / 2 ** 30)
+    return out
+
+
 def project(drv, cfg):
     if drv == 'ref/refrun':
         dim = int(cfg['dim'])
         smk = 'smk1' if dim == 2 else 'smk2'
         case_s, _ = ref_case_seconds(smk, dim)
         if cfg['mode'] == 'fd':
-            f = 1.3 if cfg['horizon'] <= .5 else 2.2
-            return len(cfg['cases']) * case_s * f + 600
+            # nominal case time (smoke) x horizon factor, plus a reserve for up to two cases taking the full retry path:
+            # a tight re-run of the triple (x 1.5) and the refinement level (12288^2 at dt = 0.05/240: about
+            # (12288/8192)^2 x 1.5 = 3.4 x the finest-level time, the finest level being ~86 % of the case; 2D only)
+            hf = 1. if cfg['horizon'] <= .5 else 2.2
+            n = len(cfg['cases'])
+            refine = (3.4 if dim == 2 else 5.1) * .86 if cfg.get('allow_refine') else 0.     # 3D: (768/512)^3 x 1.5
+            extra = (1.5 + refine) * case_s * hf
+            return n * case_s * hf + min(n, 2) * extra + 600
         if cfg['mode'] == 'ps':
-            return len(cfg['cases']) * PS_CASE_H * 3600 * (2.2 if cfg['horizon'] > .5 else 1.) + 900
+            # no H200 PS measurement: E0's 0.17 A100-h per case at T = 0.25, x 2 for T = 0.5, x 3 for a stability rerun
+            # (worst case), no H200 speed credit (job audit refs2d-1)
+            return len(cfg['cases']) * .17 * 3600 * 2 * 3 * (2. if cfg['horizon'] > .5 else 1.) + 900
         return 1800.
     if drv == 'b2run':
         r = b2_rates()
@@ -124,7 +150,8 @@ def main():
         cfgs[cf] = hashlib.sha256(p.read_bytes()).hexdigest()
     proj = tot / 3600
     tl = math.ceil(1.5 * proj * 4) / 4
-    out = dict(attempt=a.attempt, runs=a.run, configs=cfgs, gpu=a.gpu, projection_hours=proj, time_limit_hours=max(tl, .5), detail=det,
+    mem = memory_note(a.run)
+    out = dict(attempt=a.attempt, runs=a.run, configs=cfgs, gpu=a.gpu, projection_hours=proj, memory=mem, time_limit_hours=max(tl, .5), detail=det,
                label='estimate from the smokes (not a bound)')
     dest = HERE / 'checks' / f'resources-{a.attempt}.json'
     dest.write_text(json.dumps(out, indent=1) + '\n')

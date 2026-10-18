@@ -1919,3 +1919,26 @@ if a later need (a retry of the 3D job) does not fit, the 256² cell is the item
 that a failure of it would need; a concurrently running 256² job could consume that allowance. A43.3 stands: the 2D
 256² Stage-B job (staged as s2d256a, audited on everything else by job audit 10) is submitted only after s3d64a is
 reconciled and only if its wall then fits, with any 3D retry taking precedence.
+
+---
+
+## Amendment A44 (2026-10-18) — s3d64a cancelled (step parsing); results audit 1 (cumulative V)
+
+**A44.1** `s3d64a` (job 5917329) failed every Stage-B member group with Δt = Δt₀·5/3: the member id prints Δt with 8
+significant digits (0.016666667), and the exact-step assertion of the schedule rejects it (the tuning job carried the
+exact float). The lane cancelled it at 13 min (0.224 GPU-h, collected, ledger reconciled). `stageb.py` now recovers the
+exact step as 0.05/k (fail-closed if the printed value is not such a step), as speed3d's `canon_dt`; a check over all
+three frozen memberships builds every member's schedule without error. The 3D Stage-B job is re-run as a new attempt.
+
+**A44.2 (results audit 1, item 7)** V accounting is cumulative over every attempt of a cell: cancelled or superseded
+attempts' completed validation-informed phases join the lower bound and their measured allocations the upper bound
+(`--extra-tune` / `--extra-stageb`); a cell with an unfinished attempt reports V as a lower bound. For 2D 1024²:
+V ≥ 3.057 h (selected attempts 2.022 h + s2d1024a's completed phases 1.035 h), upper bound 5.217 h. The report's
+budget comparison uses the cumulative figures.
+
+**A44.3 (results audit 1, item 8) Headline wording.** "For each of the eight X configurations, a baseline selected by
+the registered role rule exhibits lower full-query time and lower worst-case error on this developmental cohort; the
+comparisons are in-sample, unadjusted, conditional on ε_ref, and snapshot-limited." The picks are chosen on the
+Stage-B data (A26.5); "registered pick" means selected by the registered rule, not an independently frozen winner or
+a held-out confirmation. The Q1 lattice distances of the Stage-B members were checked against recorded values but not
+reconstructed by the auditor (the basis is in the cluster archive); this is stated in the report.

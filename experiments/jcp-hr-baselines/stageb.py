@@ -82,9 +82,17 @@ def timed_triples(fA, fB, argsA, argsB, checkA, checkB, reps=3, burn_s=0.1, max_
     return rec
 
 
+def canon_dt(x):
+    """A44.1: configuration ids print dt with 8 significant digits; every registered step is 0.05/k (k integer), so
+    the exact value is recovered as 0.05/k (as speed3d's canon_dt). Fail-closed if the printed value is not such a step."""
+    k = round(0.05 / float(x))
+    assert k >= 1 and abs(0.05 / k - float(x)) <= 1e-7 * float(x), x
+    return 0.05 / k
+
+
 def parse(cid):
     kind, r, hp, scheme, dt, solver, gen = cid.split('|')
-    return kind, int(r), hp, scheme, float(dt), solver
+    return kind, int(r), hp, scheme, canon_dt(dt), solver
 
 
 def main():

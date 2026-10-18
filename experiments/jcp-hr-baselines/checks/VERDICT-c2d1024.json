@@ -30,7 +30,19 @@
     "tuning": 1.8058,
     "stageB": 1.2822
    },
-   "V_upper_bound_hours": 3.088
+   "V_upper_bound_hours": 3.088,
+   "extra_attempts": [
+    {
+     "kind": "stageb",
+     "attempt": "s2d1024a",
+     "V_completed_hours": 1.034590999125503,
+     "allocation_hours": 2.1294,
+     "finished": false
+    }
+   ],
+   "V_hours_cumulative": 3.0569899945292205,
+   "V_cumulative_is_lower_bound": true,
+   "V_upper_bound_cumulative": 5.2174
   },
   "allocation_hours": 1.9797222222222222,
   "budget_note": "dimension-level V ratio and band wording are applied by make_report.py (A4.3)"

@@ -94,7 +94,26 @@ def accounting(T, B):
                        else None)
     out['allocation_hours'] = alloc
     out['V_upper_bound_hours'] = (None if None in alloc.values() else alloc['tuning'] + alloc['stageB'])
+    # A44.2: cumulative V over every attempt of the cell (cancelled / superseded attempts included, A3.1 "all
+    # validation-informed work"): their completed V phases join the lower bound, their allocations the upper bound
+    extra = []
+    for kind, path, att in EXTRA:
+        J = json.loads((Path(path) / ('tune.json' if kind == 'tune' else 'stageb.json')).read_text())
+        v = phase_sum(J['phases'], V_TUNE if kind == 'tune' else V_STB)
+        rec = [j for j in led['jobs'] if j['attempt'] == att]
+        a = float(rec[0]['measured_gpu_hours']) if rec and rec[0].get('measured_gpu_hours') is not None else None
+        extra.append(dict(kind=kind, attempt=att, V_completed_hours=v, allocation_hours=a,
+                          finished='total_seconds' in J))
+    out['extra_attempts'] = extra
+    out['V_hours_cumulative'] = out['V_hours'] + sum(e['V_completed_hours'] for e in extra)
+    out['V_cumulative_is_lower_bound'] = out['V_is_lower_bound'] or any(not e['finished'] for e in extra)
+    out['V_upper_bound_cumulative'] = (None if out['V_upper_bound_hours'] is None or
+                                       any(e['allocation_hours'] is None for e in extra)
+                                       else out['V_upper_bound_hours'] + sum(e['allocation_hours'] for e in extra))
     return out
+
+
+EXTRA = []
 
 
 ATTEMPTS = {}
@@ -107,6 +126,10 @@ def main():
             ATTEMPTS['tune'] = a.split('=', 1)[1]
         if a.startswith('--stageb-attempt='):
             ATTEMPTS['stageb'] = a.split('=', 1)[1]
+        if a.startswith(('--extra-tune=', '--extra-stageb=')):          # <output dir>:<attempt>
+            k = 'tune' if a.startswith('--extra-tune=') else 'stageb'
+            path, att = a.split('=', 1)[1].rsplit(':', 1)
+            EXTRA.append((k, path, att))
     T = json.loads((tdir / 'tune.json').read_text())
     B = json.loads((bdir / 'stageb.json').read_text())
     fz = HERE / B['config']['frozen']

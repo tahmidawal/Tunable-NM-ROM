@@ -111,9 +111,10 @@ def main():
         if not cs:
             continue
         acc = [V['flags']['accounting'] for c, V in cs]
-        bv = sum(a['V_hours'] for a in acc)
-        lb = any(a['V_is_lower_bound'] for a in acc)
-        ub = None if any(a['V_upper_bound_hours'] is None for a in acc) else sum(a['V_upper_bound_hours'] for a in acc)
+        bv = sum(a['V_hours_cumulative'] for a in acc)                     # A44.2: every attempt of every cell
+        lb = any(a['V_cumulative_is_lower_bound'] for a in acc)
+        ub = (None if any(a['V_upper_bound_cumulative'] is None for a in acc)
+              else sum(a['V_upper_bound_cumulative'] for a in acc))
         ours = ov[ovk]['total']
         ratio = bv / ours if ours else None
         w(f'| {dim}D | {fmt(bv)} | {lb} | {fmt(ub)} | {fmt(ours)} | {band(ratio, lb)} |')

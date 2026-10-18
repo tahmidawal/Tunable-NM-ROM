@@ -1,17 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T21:59:02Z",
- "step": "s2d1024b 5840961 RUNNING 17 min: member runs done in ~11 min (were 1.5 h when save-bound); A-B-A ~6.4 min per X; t3d64b 5542231 RUNNING 7:15 (extension ECSW k16); sacct waiter re-armed",
+ "utc": "2026-10-18T22:32:16Z",
+ "step": "t3d64b COMPLETED (7.5 GPU-h) + collected; freezing 3D Stage-B (CPU recheck of 1056 configs); s2d1024b 5840961 RUNNING 0:35 (A-B-A)",
  "waiting_on": {
   "slurm_jobs": [
-   5542231,
    5840961
   ],
   "codex_output": null,
   "codex_pid": [],
-  "local_pid": null
+  "local_pid": 3925241
  },
- "expected_finish_utc": "2026-10-18T22:18:02Z",
+ "expected_finish_utc": "2026-10-18T22:51:16Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

@@ -41,37 +41,54 @@
    "attempt": "acc1024",
    "job_id": "5382749",
    "time_limit_hours": 2.5,
-   "state": "SUBMITTED",
-   "gpu": null,
-   "elapsed_hours": null,
-   "pending_hours": 2.5
+   "state": "COMPLETED",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.4022,
+   "pending_hours": 2.5,
+   "attempts": 1,
+   "node": "pax050",
+   "prior_elapsed_hours": 0.0
   },
   {
    "attempt": "acc4096",
    "job_id": "5382751",
    "time_limit_hours": 5.0,
-   "state": "SUBMITTED",
-   "gpu": null,
-   "elapsed_hours": null,
-   "pending_hours": 5.0
+   "state": "RUNNING",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.4325,
+   "pending_hours": 5.0,
+   "attempts": 1,
+   "node": "pax009",
+   "prior_elapsed_hours": 0.0
   },
   {
    "attempt": "acc256",
    "job_id": "5382752",
    "time_limit_hours": 2.75,
+   "state": "RUNNING",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.4306,
+   "pending_hours": 2.75,
+   "attempts": 1,
+   "node": "pax050",
+   "prior_elapsed_hours": 0.0
+  },
+  {
+   "attempt": "order",
+   "job_id": "5392586",
+   "time_limit_hours": 2.25,
    "state": "SUBMITTED",
    "gpu": null,
    "elapsed_hours": null,
-   "pending_hours": 2.75
+   "pending_hours": 2.25
   }
  ],
- "spent_gpu_hours": 0.5039,
- "reserved_gpu_hours": 10.25,
+ "spent_gpu_hours": 0.9061,
+ "reserved_gpu_hours": 10.0,
  "pending_core": {
   "time256": 3.25,
   "time1024": 3.25,
   "time4096": 5.5,
-  "order": 2.25,
   "q3d": 1.75,
   "fballow256": 2,
   "fballow1024": 2,

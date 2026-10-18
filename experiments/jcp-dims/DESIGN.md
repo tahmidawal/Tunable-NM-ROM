@@ -648,3 +648,31 @@ $\varepsilon_{\rm ref}$ of the common population; **cost** shares only if $|\Del
 
 **A2.6 Re-pricing.** The resource certificate (`resources.py`) is computed from the smokes including the added 3D GAL,
 the BE spec ladders and all certification, anchor and timing-certification work; no production job is staged without it.
+
+---
+
+## Amendment A3 (2026-10-18, before any lane job; answers `audits/codex-design-3.md`, NEEDS-RESTATEMENT)
+
+**A3.1 3D identity payload per solver (blocker 1).** A2.3's field list is replaced by a solver-agnostic rule: the
+identity of an execution is the sha256 of a deterministic serialisation of **every per-step array the query returns**
+(keys sorted; for each key the key name, dtype, shape and bytes) plus the six output coefficient vectors and `W_all` /
+`states`. Concretely, from the current code: `fs` — `W_all`, `reason`, `it`, `rej`, `pred`, `sat`, `gn`, `rn`, `lam`;
+`qn` — `W_all`, `reason` and every per-step record of `qn3` (`q`, `n_exec`, `n_ref`, `n_bt`, `n_clip`, `n_mu`,
+`refresh`, and any other per-step key present); adaptive (`p1core` recording evolve) — `states`, `step_reason`,
+`step_it`, `step_gn`, `step_tolratio`. The list actually hashed is recorded per subject; the code audit checks it covers
+every per-step key. The timed wrapper returns the whole payload, synchronises it before the timer stops, and hashes after.
+
+**A3.2 Cross-family gate precedence (blocker 2).** Component (b) depends only on the rule tables at the frozen states, not
+on any rollout: it is **available** whenever the finest rung's and the target's tables are built; a non-finite
+$N_{\rm fin}$, a zero $\lVert N_{\rm tgt}\rVert$ with non-zero difference, or a non-finite ratio counts as
+$\rho_{\rm tgt}=+\infty$ (flags); $0/0$ is impossible for a non-zero target state and is treated as flags if it occurs.
+Precedence: (1) (b) flags → **flagged** (whatever the rollouts' Q1); (2) else, if the rollout part is available (finest
+rung and target valid and Q1-qualified on every case) and (a) flags → **flagged**; (3) else if the rollout part is
+unavailable → "**gate unavailable (rollout part)**" (point-efficiency verdicts for that family inconclusive); (4) else
+**pass**. A1.5's Q1 prerequisite applies to part (a) only. The bad-vector control requires (b) to flag.
+
+**A3.3 Zero-scale G-cert (blocker 3).** The solver's recorded weighted norm is recovered as
+$r^{\rm rec}={\rm tolratio}\times({\rm tol}+10^{-300})$ (exactly inverting `p1core`'s record), at every scale; it must be
+finite (an overflowed ratio fails G-cert for that step); G-cert: $|r^{\rm cert}-r^{\rm rec}|\le10^{-6}r^{\rm rec}+10^{-15}$.
+The zero-scale certificate (certified iff the recomputed raw weighted residual is exactly 0) is unchanged. Raw norms and
+scales are stored. The same recovery is used for GAL (qualify A3.2 is the special case).

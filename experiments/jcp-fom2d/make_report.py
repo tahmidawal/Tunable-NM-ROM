@@ -158,10 +158,15 @@ def plot_cost(cbr, path):
 
 
 def plot_speedup(C2, plan, path):
+    """Union speed-up per configuration against the ROM mesh: colour = rank r (4 slots), marker = scheme; small x offsets."""
+    RCOL = {128: '#2a78d6', 256: '#eb6834', 384: '#1baf7a', 512: '#4a3aa7'}
+    MK = {'BE': 'o', 'CNR': 's', 'CN': '^'}
     fig, ax = plt.subplots(figsize=(6.8, 4.4))
-    ids = sorted(plan.get('identities', {}))
+    ids = sorted(i for i in plan.get('identities', {}) if '|LSPG|' in i)
     xs_all = sorted(int(n) for n in plan['meshes'])
     for i, ident in enumerate(ids):
+        p = ident.split('|')
+        r, sch = int(p[1][1:]), p[4]
         pts = []
         for N in xs_all:
             tk = plan['identities'][ident]['targets'].get(str(N))
@@ -170,21 +175,27 @@ def plot_speedup(C2, plan, path):
             gid = plan['meshes'][str(N)]['targets'][tk].get('group_ids', {}).get('union|joint')
             c = C2['cells'].get(f'{N}|{gid}') if gid else None
             if c and c.get('status') == 'ok':
-                pts.append((N * (1 + .04 * (i - len(ids) / 2)), c['S'], c['lo'], c['hi']))
+                pts.append((N * (1 + .015 * (i - len(ids) / 2)), c['S'], c['lo'], c['hi']))
         if pts:
-            x, s, lo, hi = zip(*pts)
-            ax.errorbar(x, s, yerr=[np.array(s) - np.array(lo), np.array(hi) - np.array(s)], fmt='-o', ms=4, lw=1.5,
-                        capsize=2, label=pt(ident + '@0|H').split(' @')[0].replace('$', ''))
+            x, sv, lo, hi = zip(*pts)
+            ax.errorbar(x, sv, yerr=[np.array(sv) - np.array(lo), np.array(hi) - np.array(sv)], fmt='-', marker=MK.get(sch, 'o'),
+                        ms=4, lw=1, capsize=2, color=RCOL.get(r, INK2), alpha=.85)
+    for r, c in RCOL.items():
+        ax.plot([], [], '-', color=c, lw=2, label=f'$r={r}$')
+    for sch, m in (('BE', 'o'), ('CNR', 's')):
+        ax.plot([], [], m, color=INK2, ls='none', label=f'LSPG-{sch}')
     ax.axhline(1, color=INK2, lw=1)
     ax.axhline(2, color=INK2, lw=1, ls='--')
+    ax.text(xs_all[-1] * 1.1, 2.05, '2×', color=INK2, fontsize=8)
     ax.set_xscale('log', base=2)
     ax.set_yscale('log')
     ax.set_xticks(xs_all)
     ax.set_xticklabels([f'{n}²' for n in xs_all])
     ax.set_xlabel('ROM mesh')
-    ax.set_ylabel('speed-up $S$ vs best selected FOM (union)')
+    ax.set_ylabel('union speed-up $S$ (FOM cost / ROM cost)')
+    ax.set_title('Every qualified LSPG configuration against its best matched FOM', fontsize=10, color=INK)
     ax.grid(color=GRID, lw=.6)
-    ax.legend(frameon=False, fontsize=6, ncol=1)
+    ax.legend(frameon=False, fontsize=7, ncol=3, loc='lower right')
     fig.tight_layout()
     fig.savefig(path, dpi=150)
     plt.close(fig)
@@ -251,13 +262,24 @@ def main():
           'screening cost among the calibrated admissible tested ladder is ' + '; '.join(f'{FAM_NAME[k]} for {len(v)} targets'
                                                                                for k, v in unions.items()) + '.')
     if C2:
-        w(f'- **K2 (governing plan) at $4096^2$:** {C2.get("k2", {}).get("verdict", "–")}.')
-        hc = C2.get('hcomp', {})
-        cls = {}
-        for v in hc.values():
-            cls[str(v.get('verdict'))] = cls.get(str(v.get('verdict')), 0) + 1
-        w('- **H-comp cells (joint matches, H populations, $1024^2$ and $4096^2$):** ' +
-          '; '.join(f'{k}: {v}' for k, v in sorted(cls.items())) + '.')
+        k2 = C2.get('k2', {})
+        Sv = [v['S'] for v in k2.get('members', {}).values() if v['S'] is not None]
+        w(f'- **K2 (governing plan), primary scope LSPG-BE / LSPG-CN-R at $4096^2$:** {k2.get("verdict", "–")} — '
+          f'{len(Sv)} qualified configurations, union speed-up $S$ between {f(min(Sv)) if Sv else "–"} and '
+          f'{f(max(Sv)) if Sv else "–"} (below 1: the matched FOM is faster).')
+        for N in ('4096', '1024'):
+            for scope, sel in (('primary', '|LSPG|'), ('GAL-CN diagnostic (post hoc)', '|GAL|')):
+                cc = {}
+                for k, v in C2.get('hcomp', {}).items():
+                    if k.startswith(N + '|') and sel in v['target']:
+                        key = f"{v['family']}: {v.get('cls') or v.get('verdict')}"
+                        cc[key] = cc.get(key, 0) + 1
+                w(f'- **H-comp at ${N}^2$, {scope}:** ' + '; '.join(f'{k} ×{v}' for k, v in sorted(cc.items())) + '.')
+        sm = [c['S'] for k, c in C2['cells'].items() if k.startswith('4096|') and k.endswith('|H|CC|same_mesh') and
+              '|LSPG|' in k and c.get('S') is not None]
+        if sm:
+            w(f'- **Same mesh at $4096^2$ (central CN-R on the ROM mesh, joint matched):** $S$ between {f(min(sm))} and '
+              f'{f(max(sm))} (compare the union range above: the same-mesh comparator is not the best FOM on any mesh).')
     else:
         w('- **C2 (paired ROM–FOM timing):** not yet run in production (see C2 section).')
     w('')
@@ -373,12 +395,12 @@ def main():
         w('')
         w('![Cheapest FOM cost by resolution](plots/fom_cost_by_resolution.png)')
         w('')
-        w('**C1 screening selections against the targets** (source: ' + str(M.get('targets_source')) + '; H populations; '
+        w('**C1 screening selections against the targets at $1024^2$** (other meshes in `checks/match-final.json`; source: ' + str(M.get('targets_source')) + '; H populations; '
           'joint = median **and** worst tie-or-beat the target; selection by lattice screening cost, the C2 selection may differ):')
         w('')
         rows = []
         for lab, m in M['matches'].items():
-            if not lab.endswith('|H'):
+            if not lab.endswith('|H') or ('@1024|' not in lab and '@1024' not in lab.split('|H')[0][-6:]):
                 continue
             t = T['targets'][lab] if T and lab in T['targets'] else {}
             if m.get('status') != 'ok':
@@ -447,68 +469,96 @@ def main():
           '`FRONT-2D.json` from jcp-qualify (DESIGN A1.7).')
         w('')
     else:
-        w('One H200 job per ROM mesh. $A$ = the P1 reference ROM (R384, gauss128, frozen modes, LSPG-CN-R, $\\Delta t_0$, '
-          'fused full-field query). Cost of a subject $B$: median over dev6 cases of the per-case median of '
-          '$t_B/\\tfrac12(t_{A1}+t_{A2})$ (stage 2, fresh triplets); speed-up $S=\\mathrm{cost}(\\mathrm{FOM})/\\mathrm{cost}(\\mathrm{ROM})$ '
-          'with a paired case-bootstrap 95 % interval (descriptive of the dev6 workload). Full-field contract: both '
-          'deliver the six fields on the ROM mesh.')
+        w('One H200 job per ROM mesh, every FRONT-2D numerically qualified configuration as a subject. $A$ = the P1 reference '
+          'ROM (R384, gauss128, frozen modes, LSPG-CN-R, $\\Delta t_0$, fused full-field query). Cost of a subject $B$: median '
+          'over the six dev6 cases of the per-case median of $t_B/\\tfrac12(t_{A1}+t_{A2})$ (stage 2, fresh triplets); '
+          '$S=\\mathrm{cost}(\\mathrm{FOM})/\\mathrm{cost}(\\mathrm{ROM})$ with a paired case-bootstrap 95 % interval '
+          '(descriptive of the dev6 workload). Full-field contract: both deliver the six fields on the ROM mesh; latencies '
+          'are prepared-input latencies. **Primary verdicts use the registered deployment schemes LSPG-BE and LSPG-CN-R; '
+          'GAL-CN rows are a diagnostic scheme, post-hoc comparison, not a registered deployment arm (A8).**')
         w('')
-        rows = [[N, v['job'], f(v['panel_ok']), ', '.join(f'{k} {f(x)}' for k, x in v['controls'].items()),
-                 ', '.join(v['veto']) or '–'] for N, v in sorted(C2['meshes'].items(), key=lambda x: int(x[0]))]
-        w(table(['mesh', 'job', 'panel valid', 'controls fired', 'vetoed subjects'], rows))
+        rows = [[N + '²', v['job'], f(v['panel_ok']), ', '.join(f'{k} {f(x)}' for k, x in v['controls'].items()),
+                 len(v['stage0'])] for N, v in sorted(C2['meshes'].items(), key=lambda x: int(x[0]))]
+        w(table(['mesh', 'job', 'panel valid (gates, controls, pilots)', 'controls fired', 'FOM candidates timed'], rows))
         w('')
-        rows = []
-        for k, v in sorted(C2.get('hcomp', {}).items()):
-            c = C2['cells'].get(k, {})
-            rows.append([k.split('|')[0] + '²', pt(v['target']), FAM_NAME.get(v['family'], v['family']), pk(v.get('matched')),
-                         f(v.get('S')), f'[{f(v.get("lo"))}, {f(v.get("hi"))}]' if v.get('S') is not None else '–',
-                         v.get('verdict')])
-        w('**H-comp cells** (joint matches, H populations):')
-        w('')
-        w(table(['mesh', 'ROM', 'FOM family', 'selected comparator', '$S$', '95 % interval', 'verdict'], rows))
-        w('')
-        rows = []
-        for k, c in sorted(C2['cells'].items()):
-            N = k.split('|')[0]
-            if c.get('criterion') in ('median_only', 'worst_only', 'same_mesh', 'same_mesh_unmatched') and \
-                    str(c.get('target', '')).endswith('|H') and N in ('1024', '4096'):
-                rows.append([N + '²', pt(c['target']), FAM_NAME.get(c['family'], c['family']), c['criterion'].replace('_', '-'),
-                             pk(c.get('selected')), f(c.get('S')),
-                             f'[{f(c.get("lo"))}, {f(c.get("hi"))}]' if c.get('S') is not None else c.get('status', '–')])
-        if rows:
-            w('**Median-only, worst-only and same-mesh comparisons** (H populations, $1024^2$ and $4096^2$; median-only and '
-              'worst-only are recorded comparisons, not accuracy matches; same-mesh = FD on the ROM mesh, or PS with $N$ equal '
-              'to the mesh where run):')
+        cells = C2['cells']
+
+        def cell(N, tk, fc):
+            return cells.get(f'{N}|{tk}|{fc}', {})
+
+        def sx(c):
+            if not c:
+                return '–'
+            if c.get('status') != 'ok':
+                return str(c.get('status'))
+            return f'{f(c["S"])} [{f(c["lo"])}, {f(c["hi"])}]'
+        tks = sorted({c['target'] for c in cells.values() if str(c.get('target', '')).endswith('|H') and '@' in str(c.get('target'))})
+        for scope, sel in (('Primary (LSPG-BE, LSPG-CN-R)', '|LSPG|'), ('Diagnostic GAL-CN (post hoc, A8)', '|GAL|')):
+            rows = []
+            for N in ('4096', '1024'):
+                for tk in [t for t in tks if sel in t and t.split('@')[1].startswith(N + '|')]:
+                    u = cell(N, tk, 'union|joint')
+                    rows.append([N + '²', pt(tk), sx(cell(N, tk, 'UB|joint')), sx(cell(N, tk, 'CC|joint')),
+                                 sx(cell(N, tk, 'PS|joint')), sx(u), pk(u.get('selected')),
+                                 'fail (dev6 rule)' if u.get('two_x_class') == 'ROM < 2x' else
+                                 ('pass vs selected' if u.get('two_x_class') == 'ROM >= 2x' else (u.get('status') or 'inconclusive'))])
+            w(f'**H-comp cells — {scope}** (joint median-and-worst matches, H populations; entries $S$ [95 % interval]; '
+              '"fail (dev6 rule)" = upper end below 2, a conservative witness under the registered dev6 descriptive-bootstrap '
+              'rule; "pass vs selected" = lower end at least 2 against the screening-selected comparator only):')
             w('')
-            w(table(['mesh', 'ROM', 'family', 'criterion', 'comparator', '$S$', '95 % interval / status'], rows))
-            w('')
-        rows = []
-        for k, c in sorted(C2['cells'].items()):
-            N = k.split('|')[0]
-            if c.get('criterion') == 'joint' and c.get('family') == 'union' and str(c.get('target', '')).endswith('|H') \
-                    and c.get('seconds_fom') is not None:
-                rows.append([N + '²', pt(c['target']), pk(c['selected']), f(c['seconds_rom']), f(c['seconds_fom'])])
-        if rows:
-            w('**Absolute prepared-input latencies** (median stage-2 seconds per query on the H200; union joint comparator):')
-            w('')
-            w(table(['mesh', 'ROM', 'comparator', 'ROM (s)', 'FOM (s)'], rows))
+            w(table(['mesh', 'ROM', 'UB', 'CC', 'PS', 'union', 'union comparator', 'H-comp (union)'], rows))
             w('')
         k2 = C2.get('k2', {})
-        w(f'**K2 (governing plan): {k2.get("verdict", "–")}.** Universe complete: {f(k2.get("universe_complete"))}.')
+        w(f'**K2 (governing plan), primary scope ({k2.get("scope", "")}): {k2.get("verdict", "–")}.** Universe: '
+          f'{len(k2.get("members", {}))} numerically qualified LSPG configurations at $4096^2$, complete: '
+          f'{f(k2.get("universe_complete"))}; union $S$ ranges over '
+          f'{f(min(v["S"] for v in k2["members"].values() if v["S"] is not None))}–'
+          f'{f(max(v["S"] for v in k2["members"].values() if v["S"] is not None))}.' if k2.get('members') else '')
+        kg = C2.get('k2_diagnostic_gal', {})
+        if kg.get('members'):
+            w('')
+            w(f'Diagnostic GAL-CN analogue (post hoc, not a K2 verdict): {kg.get("verdict")}; union $S$ '
+              f'{f(min(v["S"] for v in kg["members"].values() if v["S"] is not None))}–'
+              f'{f(max(v["S"] for v in kg["members"].values() if v["S"] is not None))} over {len(kg["members"])} configurations.')
         w('')
         rows = []
-        for ident, ent in C2.get('crossover', {}).items():
-            for fc in ('union|joint', 'CC|joint', 'UB|joint', 'PS|joint', 'union|same_mesh', 'CC|same_mesh', 'UB|same_mesh'):
-                e = ent.get(fc)
-                if e:
-                    rows.append([pt(ident + '@0|X').split(' @')[0], fc.replace('|', ' / '), e['bracket_1x'], e['bracket_2x']])
-        w('**Crossover brackets** (crossover populations; between actually run meshes, never interpolated):')
+        for tk in [t for t in tks if '|LSPG|' in t and t.split('@')[1].startswith('4096|')]:
+            N = '4096'
+            rows.append([pt(tk), sx(cell(N, tk, 'UB|same_mesh')) if cell(N, tk, 'UB|same_mesh') else sx(cell(N, tk, 'UB|same_mesh_unmatched')),
+                         sx(cell(N, tk, 'CC|same_mesh')) if cell(N, tk, 'CC|same_mesh') else sx(cell(N, tk, 'CC|same_mesh_unmatched')),
+                         sx(cell(N, tk, 'union|median_only')) if cell(N, tk, 'union|median_only') else sx(cell(N, tk, 'PS|median_only')),
+                         sx(cell(N, tk, 'PS|worst_only'))])
+        w('**Same-mesh and median-/worst-only comparisons at $4096^2$** (primary scope; same-mesh = FD at $L=4096$, matched '
+          'jointly where possible, else the lowest-worst-error unmatched comparator; median-/worst-only are recorded '
+          'comparisons, not accuracy matches; same-resolution PS at $4096^2$ deferred, A2.4):')
         w('')
-        w(table(['ROM', 'family / criterion', '1×', '2×'], rows))
+        w(table(['ROM', 'UB same-mesh', 'CC same-mesh', 'PS median-only', 'PS worst-only'], rows))
+        w('')
+        rows = []
+        for tk in [t for t in tks if '|LSPG|' in t and t.split('@')[1].startswith('4096|')]:
+            u = cell('4096', tk, 'union|joint')
+            if u.get('seconds_fom') is not None:
+                rows.append([pt(tk), f(u['seconds_rom']), pk(u['selected']), f(u['seconds_fom'])])
+        w('**Absolute prepared-input latencies at $4096^2$** (median stage-2 seconds per query, H200):')
+        w('')
+        w(table(['ROM', 'ROM (s)', 'union comparator', 'FOM (s)'], rows))
+        w('')
+        rows = []
+        for ident, ent in sorted(C2.get('crossover', {}).items()):
+            if '|LSPG|' not in ident:
+                continue
+            rows.append([pt(ident + '@0|X').split(' @')[0], ent['union|joint']['bracket_1x'], ent['union|joint']['bracket_2x'],
+                         ent['CC|same_mesh']['bracket_1x'], ent['CC|same_mesh']['bracket_2x']])
+        w('**Crossover brackets** (primary scope; crossover populations; classes from the interval rule at each actually run '
+          'mesh, never interpolated). (b) union = best joint-matched FOM on any mesh; (a) CC same-mesh = central CN-R on the '
+          'ROM mesh. Per-family and UB same-mesh brackets are in `runs/EXPORT.json`; the same-mesh union mixes PS only at '
+          '$256^2$ (same-resolution PS deferred above), so it is not tabled:')
+        w('')
+        w(table(['ROM', '(b) union 1×', '(b) union 2×', '(a) CC same-mesh 1×', '(a) CC same-mesh 2×'], rows))
         w('')
         if plan:
             plot_speedup(C2, plan, PL / 'speedup_vs_mesh.png')
-            w('![Union speed-up against the ROM mesh](plots/speedup_vs_mesh.png)')
+            w('![Union speed-up against the ROM mesh (primary scope)](plots/speedup_vs_mesh.png)')
             w('')
     # ---------------------------------------------------------------- provisional, retractions
     w('## What is provisional, and what changes earlier claims')

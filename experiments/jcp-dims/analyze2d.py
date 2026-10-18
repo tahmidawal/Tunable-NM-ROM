@@ -101,23 +101,44 @@ def config_entry(att, d, res, setting, arm, score=True):
     return e
 
 
+def attempt_dirs(job):
+    """Every collected archive of a logical job (DESIGN A7.1): numbered retries '<job>r<k>' newest first, then the
+    original; partial (timed-out) collections included. Output stem = the logical job name."""
+    import re as _re
+    runs = HERE / 'runs'
+    cands = sorted((p for p in runs.glob(f'{job}r*') if _re.fullmatch(rf'{job}r\d+', p.name)),
+                   key=lambda p: int(p.name[len(job) + 1:]), reverse=True) + [runs / job]
+    out = []
+    for c in cands:
+        d = c / 'archive' / 'output' / f'dacc_{job}'
+        if (d / 'result.json').exists():
+            out.append(d)
+    return out
+
+
 def load_all():
+    """Per (setting, arm) the newest attempt holding its archive; an arm counts only if its archive exists, its setting
+    is not memory-rejected and its registered population is complete (population_ok, checked downstream); job-level
+    blocks (fixgate) only from a complete attempt."""
     C, RAW = {}, {}
     for att in JOBS:
-        d = DSC.out_dir(att, 'dacc', att)
-        if d is None:
-            continue
-        res = json.loads((d / 'result.json').read_text())
-        for s in res['config']['settings']:
-            for a in s['arms']:
-                k = f"{s['name']}|{a['form']}|{a['scheme']}"
-                e = config_entry(att, d, res, s['name'], a, score=(s['policy'] != 'lmf'))   # LMF scored only after A2.2 stability
-                if e is not None and res['complete'] and s['name'] not in res.get('memory_rejected', []):
-                    C[k] = e
-                    RAW[k] = (d, s['name'], a)
-        if res.get('fixgate'):
-            C.setdefault('_fixgate', {})[att] = res['fixgate']
-        C.setdefault('_settings', {}).update({k: dict(A_rank=v['A_rank'], A_cond=v['A_cond'], M=v['M']) for k, v in res['settings'].items()})
+        for d in attempt_dirs(att):
+            res = json.loads((d / 'result.json').read_text())
+            for s in res['config']['settings']:
+                if s['name'] in res.get('memory_rejected', []):
+                    continue
+                for a in s['arms']:
+                    k = f"{s['name']}|{a['form']}|{a['scheme']}"
+                    if k in C:
+                        continue
+                    e = config_entry(att, d, res, s['name'], a, score=(s['policy'] != 'lmf'))   # LMF scored after A2.2 stability
+                    if e is not None:
+                        C[k] = dict(e, attempt=d.parents[2].name)
+                        RAW[k] = (d, s['name'], a)
+            if res.get('fixgate') and res.get('complete') and att not in C.get('_fixgate', {}):
+                C.setdefault('_fixgate', {})[att] = res['fixgate']
+            for k, v in res['settings'].items():
+                C.setdefault('_settings', {}).setdefault(k, dict(A_rank=v['A_rank'], A_cond=v['A_cond'], M=v['M']))
     return C, RAW
 
 

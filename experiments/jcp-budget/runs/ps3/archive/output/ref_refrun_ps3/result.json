@@ -1,0 +1,223 @@
+{
+ "config": {
+  "mode": "ps",
+  "dim": 3,
+  "cohort": "val64",
+  "cases": [
+   0,
+   43
+  ],
+  "horizon": 0.5
+ },
+ "job": {
+  "job_id": "5625089",
+  "commit": "538cee4cf386e18ca13306582c8793bb5d98ea87",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "manifest": [
+  {
+   "file": "3d/val64/T0.5/PS/c000_a0.npz",
+   "sha256": "844e7e7528426720938eeb82761d98fe95e7e3244e40535ec2e474efa63c9e38"
+  },
+  {
+   "file": "3d/val64/T0.5/PS/c000_a0.json",
+   "sha256": "f02061c2e1c952e283afc26da100c63dccaf937aa32986ea50efbe5460d82200"
+  },
+  {
+   "file": "3d/val64/T0.5/PS/c043_a0.npz",
+   "sha256": "b5ff104b948898d0b5d78b131def9b80a343b6520b6423e60b7f814c7d49ffa2"
+  },
+  {
+   "file": "3d/val64/T0.5/PS/c043_a0.json",
+   "sha256": "a77f0b627604a14df5e08514d831be10fb5a0867cecda9f1a8b62bd2d653649a"
+  }
+ ],
+ "cases": [
+  {
+   "case": 0,
+   "stability_ok": true,
+   "finite": true,
+   "gates_ok": true
+  },
+  {
+   "case": 43,
+   "stability_ok": true,
+   "finite": true,
+   "gates_ok": true
+  }
+ ],
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G4proj",
+   "errors": [
+    5.066916832285884e-05,
+    3.1279405324768916e-06,
+    1.9489763380953207e-07
+   ],
+   "orders": [
+    4.017823158938515,
+    4.004424604283786
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G3a",
+   "d": 3,
+   "worst_rel": 1.0187177004321026e-15,
+   "pass": true
+  },
+  {
+   "gate": "G4",
+   "d": 3,
+   "spatial_err": [
+    [
+     1.0963995173328277e-06,
+     1.6496406906137013e-06,
+     1.8825631338504734e-06,
+     1.7156615810891225e-06,
+     1.3069117862419623e-06
+    ],
+    [
+     2.2245919956741978e-07,
+     3.317250720945435e-07,
+     3.7627331465227373e-07,
+     3.410639173690884e-07,
+     2.5863393122519186e-07
+    ],
+    [
+     7.114253990207552e-08,
+     1.0571949355035179e-07,
+     1.1963119037860075e-07,
+     1.0820587272987903e-07,
+     8.190771933302943e-08
+    ]
+   ],
+   "spatial_order": [
+    3.962910283539574,
+    3.97493392885217,
+    3.983224166854793,
+    3.990635389073233,
+    3.996844223198269
+   ],
+   "spatial_order_coarse": [
+    3.93386059673766,
+    3.955966168447004,
+    3.9709303813230745,
+    3.9842741429343875,
+    3.995432693651731
+   ],
+   "half_step_ratio": 2.320674961984341e-06,
+   "temporal_order": [
+    3.983918123021247,
+    3.9972747282726764,
+    4.003697520804814,
+    4.009519850981879,
+    4.017812838614214
+   ],
+   "pass": true
+  },
+  {
+   "gate": "G3b",
+   "d": 3,
+   "N": 256,
+   "rel_l2": 6.020879476399381e-15,
+   "max_abs": 1.2212453270876722e-15,
+   "pass": true
+  },
+  {
+   "gate": "G3c",
+   "d": 3,
+   "N": 256,
+   "dt": 0.00015625,
+   "nu": 0.01,
+   "worst_rel": 9.061371445821451e-12,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "seconds": 1986.678439634852,
+ "peak_bytes": 7794251520
+}

@@ -1,0 +1,17 @@
+host=pax011 source_commit=538cee4cf386e18ca13306582c8793bb5d98ea87
+NVIDIA H200, GPU-93ddaabe-6cf7-2cd6-01f5-29b33cce5e5d, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T  1.1T  3.5T  24% /cluster/tufts/paralab
+jax_backend=gpu
+STEP ref/refrun configs/ps3.json 2026-10-18T17:11:51Z
+jax_backend=gpu x64=True precision=highest
+[     46.8s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G13=True, G4proj=True, G3a3=True, G43=True, G3b3=True, G3c3=True
+[     84.9s]   PS val64 c0 N128_dt0_a0 umax=1.346 finite=True checks=True 34s
+[    198.9s]   PS val64 c0 N192_dt0_a0 umax=1.346 finite=True checks=True 114s
+[    474.9s]   PS val64 c0 N256_dt0_a0 umax=1.346 finite=True checks=True 276s
+[   1020.1s]   PS val64 c0 N256_dt1_a0 umax=1.346 finite=True checks=True 545s
+[   1055.9s]   PS val64 c43 N128_dt0_a0 umax=1.799 finite=True checks=True 33s
+[   1166.1s]   PS val64 c43 N192_dt0_a0 umax=1.799 finite=True checks=True 110s
+[   1439.4s]   PS val64 c43 N256_dt0_a0 umax=1.799 finite=True checks=True 273s
+[   1984.0s]   PS val64 c43 N256_dt1_a0 umax=1.799 finite=True checks=True 545s
+JOB COMPLETE
+ALL-DONE

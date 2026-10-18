@@ -350,7 +350,10 @@ def main():
                                                             numerically_qualified=v['q']['numerically_qualified'],
                                                             e0_median=float(np.median(list(per_case_e(v).values()))),
                                                             e0_worst=float(np.max(list(per_case_e(v).values()))),
-                                                            e0_S_median=float(np.median([x['S']['e'] for x in v['e0'].values()])) if sc == 'BE' else None,
+                                                            e0_S_median_eligible=float(np.median([x['S']['e'] for x in v['e0'].values() if x['S']['eligible']])) if sc == 'BE' else None,
+                                                            S_not_eligible=sorted(c for c, x in v['e0'].items() if sc == 'BE' and not x['S']['eligible']),
+                                                            e0_per_case=per_case_e(v),
+                                                            e0_median_sub16=float(np.median([e_ for c, e_ in per_case_e(v).items() if c in SC.case_set('sub16')])),
                                                             cases=len(v['e0']), role='role not assessed (P1)', q3=v['q3'],
                                                             budget_exit_steps=v['q']['budget_exit_steps'],
                                                             pooled_nonstationary=v['q']['pooled_nonstationary'])

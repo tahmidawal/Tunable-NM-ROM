@@ -96,18 +96,18 @@ def plots():
     cf = AN['configurations']
     for sc in ('BE', 'CNR'):
         fig, axs = plt.subplots(1, 2, figsize=(9.5, 3.8))
-        for i, m in enumerate(MESHES):
+        for i, m in enumerate(MESHES):              # common population per mesh: the 16-case subset at every mesh
             rs = [r for r in (128, 256, 384, 512) if f'{m}|R{r}|{sc}' in cf]
-            axs[0].plot(rs, [100 * cf[f'{m}|R{r}|{sc}']['e0_median'] for r in rs], '-o', color=SER[i], lw=2, ms=8, label=f'{m}²')
+            axs[0].plot(rs, [100 * cf[f'{m}|R{r}|{sc}']['e0_median_sub16'] for r in rs], '-o', color=SER[i], lw=2, ms=8, label=f'{m}²')
         axs[0].set_xscale('log', base=2)
-        style(axs[0], 'median error vs r', 'bank width r', 'median E0 R_ST error (%)')
+        style(axs[0], 'median error vs r (16-case subset, all meshes)', 'bank width r', 'median E0 R_ST error (%)')
         axs[0].legend(frameon=False)
         for i, r in enumerate((128, 256, 384)):
             ms_ = [m for m in MESHES if f'{m}|R{r}|{sc}' in cf]
-            axs[1].plot(ms_, [100 * cf[f'{m}|R{r}|{sc}']['e0_median'] for m in ms_], '-o', color=SER[i], lw=2, ms=8, label=f'r = {r}')
+            axs[1].plot(ms_, [100 * cf[f'{m}|R{r}|{sc}']['e0_median_sub16'] for m in ms_], '-o', color=SER[i], lw=2, ms=8, label=f'r = {r}')
         axs[1].set_xscale('log', base=2)
         axs[1].set_xticks(MESHES, [f'{m}²' for m in MESHES])
-        style(axs[1], 'median error vs mesh (4096² = 16-case subset)', 'mesh N', 'median E0 R_ST error (%)')
+        style(axs[1], 'median error vs mesh (16-case subset, all meshes)', 'mesh N', 'median E0 R_ST error (%)')
         axs[1].legend(frameon=False)
         out.append(save(fig, f'error_vs_r_and_mesh_{sc}.png'))
     # 4. P1g frozen vs nominal
@@ -193,11 +193,14 @@ def main():
                 w(f'| H-acc-r | {lab(k)}, {t} | {x} | range verdict |')
     w('')
     w('## Configurations: qualification and error\n')
-    w('| mesh | config | scheme | Q1 | Q2 | numerically qualified | cases | median $e$ | worst $e$ | BE vs $R_S$ median (BE only) |\n|---|---|---|---|---|---|---|---|---|---|')
+    w('Errors are over each configuration\'s own case set (38, or the 16-case subset at 4096² for R128/R256); the column "median, 16-case subset" '
+      'is on the common population and is the one to compare across meshes. $R_S$ (BE only, unmatched for CN-R) is summarised over the '
+      'S-eligible cases only (dev6|1, val32|21, val32|24 are not S-eligible).\n')
+    w('| mesh | config | scheme | Q1 | Q2 | numerically qualified | cases | median $e$ | median $e$, 16-case subset | worst $e$ | BE vs $R_S$ median, S-eligible |\n|---|---|---|---|---|---|---|---|---|---|---|')
     for k, v in AN['configurations'].items():
         m, n, sc = k.split('|')
         w(f"| {m}² | {n} | {sc} | {g(v['Q1']['pass'])} | {v['Q2'].get('label')} | {g(v['numerically_qualified'])} | {v['cases']} | "
-          f"{pct(v['e0_median'])} | {pct(v['e0_worst'])} | {pct(v.get('e0_S_median')) if v.get('e0_S_median') is not None else '—'} |")
+          f"{pct(v['e0_median'])} | {pct(v['e0_median_sub16'])} | {pct(v['e0_worst'])} | {pct(v.get('e0_S_median_eligible')) if v.get('e0_S_median_eligible') is not None else '—'} |")
     w('\nRole qualification: none is pre-declared in P1; every configuration is "role not assessed". Frontier usefulness is '
       'not ranked here (the coordinator combines P1 with the competition work).\n')
     w('## Reproduction gate (AM-1)\n')
@@ -218,6 +221,10 @@ def main():
           f"{g(s2f.get('first_order_max_pp'))} / {g(s2n.get('first_order_max_pp'))} pp | " +
           (' / '.join(g((v.get('historical_reproduction') or {}).get(m, (v.get('historical_reproduction') or {}).get(str(m), {})).get('max_abs'))
                       for m in MESHES) if v.get('historical_reproduction') else '—') + ' |')
+    w('\nReading: the nominal-list runs reproduce the historical job rows to round-off (last column), so the published numbers stand '
+      'as computed; but they compared slightly different test spaces at 256². Frozen vs nominal is the total effect of the list change '
+      'under each rule (quadrature and test space change together), not a list-only effect; it moves trajectories by up to the 256² '
+      'distances above (above the 2.5e-4 Q1 bar) and errors by at most the listed hundredths of a percentage point.\n')
     w('\nHistorical claims re-checked (their numbers as published): ' + '; '.join(
         f"{h} ({c['source']}): " + ', '.join(f'{a} {b} pp' for a, b in c['values_pp'].items())
         for h, c in json.loads(json.dumps(__import__('analyze').HIST_CLAIMS)).items()) + '. H2 (test64) and H3 are not re-run.\n')
@@ -226,7 +233,9 @@ def main():
     e2 = AN['p1e'].get('2d') or {}
     for cfg, v in (AN['p1e'].get('2d_judged') or {}).items():
         names = e2[cfg]['rules']
-        nm = lambda role: f"{names.get(role)} ({role.replace('fail_succ', 'failing successor').replace('main', 'deployed').replace('qpp', 'check').replace('qp', 'finer').replace('fail', 'failing')})"
+        alias = dict(fail='fail', fail_succ='fail_succ', main='deployed', qp='finer', qpp='check')
+        word = dict(fail='registered failing', fail_succ='its successor', main='deployed', qp='finer', qpp='check')
+        nm = lambda role: f"{names.get(alias[role])} ({word[role]})"
         for pr, x in v.items():
             a_, b_ = pr.split('|')
             w(f"| 2D {cfg}, 1024², BE, dev6 | {nm(a_)} vs {nm(b_)} | {g(x['worst_distance'])} | {g(x['rollout_bar'])} | {g(x['worst_rho'])} | {g(x['rho_bar'])} | {g(x['all_valid'])} |")
@@ -234,6 +243,11 @@ def main():
         if pr == 'solver':
             continue
         w(f"| 3D W512, 65³, FS-BE, 923801 cases 0–5 | {pr.replace('|', ' vs ')} | {g(x['worst_distance'])} | {g(x['rollout_bar'])} | {g(x['worst_rho'])} | {g(x['rho_bar'])} | {g(x['all_valid'])} |")
+    for cfg, v in (AN['p1e'].get('2d_judged') or {}).items():
+        x = v.get('fail|fail_succ', {})
+        if x.get('rollout_bar') and x.get('rho_bar'):
+            w(f"\nThe 2D rule registered as failing ({e2[cfg]['rules']['fail']}) **passes** both bars against its successor "
+              f"(distance {g(x['worst_distance'])}, ρ {g(x['worst_rho'])}): the pre-data expectation that it fails was wrong; it is reported, not re-labelled.")
     sv = (AN['p1e'].get('3d_judged') or {}).get('solver')
     if sv:
         w(f"\n3D solver evidence: {sv['nonstationary']} of {sv['steps']} steps non-stationary, {sv['saturated']} saturated, {sv['reason3']} non-finite; "
@@ -248,7 +262,10 @@ def main():
     if isinstance(AN['timing'], dict):
         w('\n## Timing diagnostics (not part of the H-cost-N verdict)\n')
         w('Seconds per call, median over dev6 × 3 repeats on one H200 (full-field contract: input sampled at quadrature points, full-field decode). '
-          'Initialisation and decode are expected to grow with N.\n')
+          'Initialisation and decode are expected to grow with N. Scope of H-cost-N (A3.2): the timed program is the solver **with internal-state '
+          'recording** (one row write per step; the smoke measured non-recording / recording ≈ 1), and the verdict is about **evolution** time, '
+          'not the full query. Identity audit limitation: every timed execution was compared in-job with its scoring run (W, every internal '
+          'state, exit reasons, iterations) and all comparisons passed, but the archive keeps the comparison outcomes, not each execution\'s own hash.\n')
         w('| configuration | init 256² / 1024² / 4096² | evolve 256² / 1024² / 4096² | decode 256² / 1024² / 4096² | fused query / A, 256² / 1024² / 4096² |\n|---|---|---|---|---|')
         for k, v in AN['timing']['h_cost_n'].items():
             ds = v.get('descriptive_seconds')
@@ -266,6 +283,7 @@ def main():
     if tr:
         w('\nNote on H-acc-N: the three-mesh trend test rejects "no trend" for ' + ', '.join(lab(k) for k in tr) +
           ' while both equivalence tests pass with every case within its margin; by the registered precedence the outcome is pass. '
+          'This is practical equivalence within the registered margin, not evidence of zero mesh dependence: a small systematic trend is detectable. '
           'Median per-case slopes: ' + ', '.join(f"{lab(k)} {g(AN['h_acc_n'][k]['trend']['median_slope'])} per doubling of N" for k in tr) + '.')
     w('\n## Memory, offline cost, pilot\n')
     pil = AN.get('pilot') or {}

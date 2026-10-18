@@ -57,52 +57,54 @@ GPU-hours spent: 1.91 of the 20 cap (11 jobs, ledger `runs/GPU-LEDGER.json`).
 
 ## Configurations: qualification and error
 
-| mesh | config | scheme | Q1 | Q2 | numerically qualified | cases | median $e$ | worst $e$ | BE vs $R_S$ median (BE only) |
-|---|---|---|---|---|---|---|---|---|---|
-| 256² | R128 | BE | yes | pass | yes | 38 | 1.1 % | 4.85 % | 0.414 % |
-| 256² | R128 | CNR | yes | pass | yes | 38 | 0.452 % | 5.21 % | — |
-| 256² | R256 | BE | yes | pass | yes | 38 | 0.984 % | 3.32 % | 0.0911 % |
-| 256² | R256 | CNR | yes | pass | yes | 38 | 0.206 % | 2.52 % | — |
-| 256² | R384 | BE | yes | pass | yes | 38 | 0.981 % | 3.01 % | 0.0365 % |
-| 256² | R384 | CNR | yes | pass | yes | 38 | 0.201 % | 1.81 % | — |
-| 256² | R384nom | BE | yes | pass | yes | 38 | 0.981 % | 3.01 % | 0.0365 % |
-| 256² | R384nom | CNR | yes | pass | yes | 38 | 0.201 % | 1.76 % | — |
-| 256² | H96 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0365 % |
-| 256² | H96nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0365 % |
-| 256² | H64 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0366 % |
-| 256² | H64nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0366 % |
-| 256² | HF6765 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0366 % |
-| 256² | HF6765nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0365 % |
-| 256² | H640 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0365 % |
-| 256² | H640nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 3.01 % | 0.0365 % |
-| 1024² | R128 | BE | yes | pass | yes | 38 | 1.1 % | 4.84 % | 0.412 % |
-| 1024² | R128 | CNR | yes | pass | yes | 38 | 0.45 % | 5.2 % | — |
-| 1024² | R256 | BE | yes | pass | yes | 38 | 0.983 % | 3.32 % | 0.0915 % |
-| 1024² | R256 | CNR | yes | pass | yes | 38 | 0.209 % | 2.52 % | — |
-| 1024² | R384 | BE | yes | pass | yes | 38 | 0.978 % | 3.01 % | 0.0337 % |
-| 1024² | R384 | CNR | yes | pass | yes | 38 | 0.198 % | 1.78 % | — |
-| 1024² | R512 | BE | yes | pass | yes | 38 | 0.979 % | 3.09 % | 0.0541 % |
-| 1024² | R512 | CNR | yes | pass | yes | 38 | 0.199 % | 2.17 % | — |
-| 1024² | H96 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0337 % |
-| 1024² | H64 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 1024² | HF6765 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 1024² | H640 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0337 % |
-| 4096² | R128 | BE | yes | pass | yes | 16 | 1.37 % | 4.07 % | 0.627 % |
-| 4096² | R128 | CNR | yes | pass | yes | 16 | 0.694 % | 4.22 % | — |
-| 4096² | R256 | BE | yes | pass | yes | 16 | 1.25 % | 2.58 % | 0.123 % |
-| 4096² | R256 | CNR | yes | pass | yes | 16 | 0.267 % | 1.81 % | — |
-| 4096² | R384 | BE | yes | pass | yes | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | R384 | CNR | yes | pass | yes | 38 | 0.198 % | 1.77 % | — |
-| 4096² | R384nom | BE | yes | pass | yes | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | R384nom | CNR | yes | pass | yes | 38 | 0.198 % | 1.77 % | — |
-| 4096² | H96 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | H96nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | H64 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | H64nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | HF6765 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | HF6765nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | H640 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
-| 4096² | H640nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 3.01 % | 0.0338 % |
+Errors are over each configuration's own case set (38, or the 16-case subset at 4096² for R128/R256); the column "median, 16-case subset" is on the common population and is the one to compare across meshes. $R_S$ (BE only, unmatched for CN-R) is summarised over the S-eligible cases only (dev6|1, val32|21, val32|24 are not S-eligible).
+
+| mesh | config | scheme | Q1 | Q2 | numerically qualified | cases | median $e$ | median $e$, 16-case subset | worst $e$ | BE vs $R_S$ median, S-eligible |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 256² | R128 | BE | yes | pass | yes | 38 | 1.1 % | 1.37 % | 4.85 % | 0.454 % |
+| 256² | R128 | CNR | yes | pass | yes | 38 | 0.452 % | 0.694 % | 5.21 % | — |
+| 256² | R256 | BE | yes | pass | yes | 38 | 0.984 % | 1.24 % | 3.32 % | 0.0973 % |
+| 256² | R256 | CNR | yes | pass | yes | 38 | 0.206 % | 0.265 % | 2.52 % | — |
+| 256² | R384 | BE | yes | pass | yes | 38 | 0.981 % | 1.21 % | 3.01 % | 0.0509 % |
+| 256² | R384 | CNR | yes | pass | yes | 38 | 0.201 % | 0.243 % | 1.81 % | — |
+| 256² | R384nom | BE | yes | pass | yes | 38 | 0.981 % | 1.21 % | 3.01 % | 0.05 % |
+| 256² | R384nom | CNR | yes | pass | yes | 38 | 0.201 % | 0.243 % | 1.76 % | — |
+| 256² | H96 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.0509 % |
+| 256² | H96nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.05 % |
+| 256² | H64 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.0509 % |
+| 256² | H64nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.05 % |
+| 256² | HF6765 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.0509 % |
+| 256² | HF6765nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.05 % |
+| 256² | H640 | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.0509 % |
+| 256² | H640nom | BE | yes | not run (descriptive arm) | no | 38 | 0.981 % | 1.21 % | 3.01 % | 0.05 % |
+| 1024² | R128 | BE | yes | pass | yes | 38 | 1.1 % | 1.37 % | 4.84 % | 0.441 % |
+| 1024² | R128 | CNR | yes | pass | yes | 38 | 0.45 % | 0.694 % | 5.2 % | — |
+| 1024² | R256 | BE | yes | pass | yes | 38 | 0.983 % | 1.25 % | 3.32 % | 0.0963 % |
+| 1024² | R256 | CNR | yes | pass | yes | 38 | 0.209 % | 0.267 % | 2.52 % | — |
+| 1024² | R384 | BE | yes | pass | yes | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0513 % |
+| 1024² | R384 | CNR | yes | pass | yes | 38 | 0.198 % | 0.246 % | 1.78 % | — |
+| 1024² | R512 | BE | yes | pass | yes | 38 | 0.979 % | 1.25 % | 3.09 % | 0.0583 % |
+| 1024² | R512 | CNR | yes | pass | yes | 38 | 0.199 % | 0.244 % | 2.17 % | — |
+| 1024² | H96 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0513 % |
+| 1024² | H64 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0513 % |
+| 1024² | HF6765 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0513 % |
+| 1024² | H640 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0513 % |
+| 4096² | R128 | BE | yes | pass | yes | 16 | 1.37 % | 1.37 % | 4.07 % | 0.651 % |
+| 4096² | R128 | CNR | yes | pass | yes | 16 | 0.694 % | 0.694 % | 4.22 % | — |
+| 4096² | R256 | BE | yes | pass | yes | 16 | 1.25 % | 1.25 % | 2.58 % | 0.125 % |
+| 4096² | R256 | CNR | yes | pass | yes | 16 | 0.267 % | 0.267 % | 1.81 % | — |
+| 4096² | R384 | BE | yes | pass | yes | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0519 % |
+| 4096² | R384 | CNR | yes | pass | yes | 38 | 0.198 % | 0.248 % | 1.77 % | — |
+| 4096² | R384nom | BE | yes | pass | yes | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0519 % |
+| 4096² | R384nom | CNR | yes | pass | yes | 38 | 0.198 % | 0.248 % | 1.77 % | — |
+| 4096² | H96 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.052 % |
+| 4096² | H96nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.052 % |
+| 4096² | H64 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.052 % |
+| 4096² | H64nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.052 % |
+| 4096² | HF6765 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.052 % |
+| 4096² | HF6765nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.052 % |
+| 4096² | H640 | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0519 % |
+| 4096² | H640nom | BE | yes | not run (descriptive arm) | no | 38 | 0.978 % | 1.21 % | 3.01 % | 0.0519 % |
 
 Role qualification: none is pre-declared in P1; every configuration is "role not assessed". Frontier usefulness is not ranked here (the coordinator combines P1 with the competition work).
 
@@ -126,19 +128,24 @@ The test set differs from the frozen list only at $256^2$ (two modes swapped at 
 | HF6765 / BE | 5.09e-04 | 0.00907 / 0.00992 pp | 2.09e-15 | 0.0132 / 0.0124 pp | 0.0126 / 0.00847 pp | 1.47e-16 / 2.62e-16 / 1.90e-16 |
 | H96 / BE | 5.29e-04 | 0.0108 / 0.0118 pp | 1.83e-15 | 0.0151 / 0.0121 pp | 0.0145 / 0.00822 pp | 1.34e-16 / 3.54e-16 / 3.43e-16 |
 
+Reading: the nominal-list runs reproduce the historical job rows to round-off (last column), so the published numbers stand as computed; but they compared slightly different test spaces at 256². Frozen vs nominal is the total effect of the list change under each rule (quadrature and test space change together), not a list-only effect; it moves trajectories by up to the 256² distances above (above the 2.5e-4 Q1 bar) and errors by at most the listed hundredths of a percentage point.
+
+
 Historical claims re-checked (their numbers as published): H1 (reports/2026-10-01-burgers2d-offmesh-quadrature.md:102-129): H64 0.014 pp, H640 0.012 pp, HF6765 0.012 pp; H4 (worktrees/2026-10-06-jcp-mechanism/experiments/jcp-mechanism/report.md:94): H96 0.008 pp, H640 0.008 pp. H2 (test64) and H3 are not re-run.
 
 ## Quadrature slice (P1e, descriptive)
 
 | slice | rule pair (coarser vs finer) | worst rollout distance | rollout bar 2.5e-4 | worst own-state ρ | ρ bar 0.116 | all runs valid |
 |---|---|---|---|---|---|---|
-| 2D R256, 1024², BE, dev6 | gauss64 (failing) vs gauss96 (failinging successor) | 4.86e-05 | yes | 0.0553 | yes | yes |
-| 2D R256, 1024², BE, dev6 | gauss64 (failing) vs None (deployed) | 4.86e-05 | yes | 0.057 | yes | yes |
-| 2D R256, 1024², BE, dev6 | None (deployed) vs None (finer) | 1.00e-05 | yes | 0.00825 | yes | yes |
-| 2D R256, 1024², BE, dev6 | None (finer) vs None (check) | 2.52e-06 | yes | 0.00304 | yes | yes |
+| 2D R256, 1024², BE, dev6 | gauss64 (registered failing) vs gauss96 (its successor) | 4.86e-05 | yes | 0.0553 | yes | yes |
+| 2D R256, 1024², BE, dev6 | gauss64 (registered failing) vs gauss128 (deployed) | 4.86e-05 | yes | 0.057 | yes | yes |
+| 2D R256, 1024², BE, dev6 | gauss128 (deployed) vs gauss160 (finer) | 1.00e-05 | yes | 0.00825 | yes | yes |
+| 2D R256, 1024², BE, dev6 | gauss160 (finer) vs gauss192 (check) | 2.52e-06 | yes | 0.00304 | yes | yes |
 | 3D W512, 65³, FS-BE, 923801 cases 0–5 | lat8192 vs lat32768 | 0.00421 | no | 0.0564 | yes | yes |
 | 3D W512, 65³, FS-BE, 923801 cases 0–5 | lat32768 vs gl56 | 1.55e-05 | yes | 3.09e-04 | yes | yes |
 | 3D W512, 65³, FS-BE, 923801 cases 0–5 | gl56 vs gl64 | 4.40e-06 | yes | 1.20e-04 | yes | yes |
+
+The 2D rule registered as failing (gauss64) **passes** both bars against its successor (distance 4.86e-05, ρ 0.0553): the pre-data expectation that it fails was wrong; it is reported, not re-labelled.
 
 3D solver evidence: 0 of 600 steps non-stationary, 0 saturated, 0 non-finite; fixed-sweep vs vendored deployed solver, worst relative coefficient difference 0.
 
@@ -173,7 +180,7 @@ Historical claims re-checked (their numbers as published): H1 (reports/2026-10-0
 
 ## Timing diagnostics (not part of the H-cost-N verdict)
 
-Seconds per call, median over dev6 × 3 repeats on one H200 (full-field contract: input sampled at quadrature points, full-field decode). Initialisation and decode are expected to grow with N.
+Seconds per call, median over dev6 × 3 repeats on one H200 (full-field contract: input sampled at quadrature points, full-field decode). Initialisation and decode are expected to grow with N. Scope of H-cost-N (A3.2): the timed program is the solver **with internal-state recording** (one row write per step; the smoke measured non-recording / recording ≈ 1), and the verdict is about **evolution** time, not the full query. Identity audit limitation: every timed execution was compared in-job with its scoring run (W, every internal state, exit reasons, iterations) and all comparisons passed, but the archive keeps the comparison outcomes, not each execution's own hash.
 
 | configuration | init 256² / 1024² / 4096² | evolve 256² / 1024² / 4096² | decode 256² / 1024² / 4096² | fused query / A, 256² / 1024² / 4096² |
 |---|---|---|---|---|
@@ -190,7 +197,7 @@ Component-sum diagnostic (A2.2, no gate): 1024 / R384 / gauss128 / frozen / CNR:
 
 Timing-job qualification (A2.3, dev6 trajectories of the timed program): 24 of 24 subjects numerically qualified; both labels (timing job and accuracy job) pass for 24 of 24.
 
-Note on H-acc-N: the three-mesh trend test rejects "no trend" for R128 / CNR / frozen while both equivalence tests pass with every case within its margin; by the registered precedence the outcome is pass. Median per-case slopes: R128 / CNR / frozen -4.78e-06 per doubling of N.
+Note on H-acc-N: the three-mesh trend test rejects "no trend" for R128 / CNR / frozen while both equivalence tests pass with every case within its margin; by the registered precedence the outcome is pass. This is practical equivalence within the registered margin, not evidence of zero mesh dependence: a small systematic trend is detectable. Median per-case slopes: R128 / CNR / frozen -4.78e-06 per doubling of N.
 
 ## Memory, offline cost, pilot
 

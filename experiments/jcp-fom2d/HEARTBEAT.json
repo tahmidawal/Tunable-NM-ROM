@@ -1,18 +1,16 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T06:53:44Z",
- "step": "5: smoke smk1 queued; local CPU test of c2time running; C2 code audit 1 fixes applied",
+ "utc": "2026-10-18T06:54:46Z",
+ "step": "6: codex job audit (smoke results + 4 ladder jobs staged)",
  "waiting_on": {
-  "slurm_jobs": [
-   "5366293"
-  ],
-  "codex_output": null,
-  "codex_pid": null,
+  "slurm_jobs": [],
+  "codex_output": "audits/codex-job-ladder-1.md",
+  "codex_pid": 1580020,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T08:30:00Z",
- "last_commit": "cc058e9da",
- "gpu_hours_spent": 0,
+ "expected_finish_utc": "2026-10-18T08:00:00Z",
+ "last_commit": "24a01e155",
+ "gpu_hours_spent": 0.0889,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D.json not yet produced"
+ "notes": "smk1 accepted in-job (0.09 GPU-h); local CPU c2time test running; FRONT-2D.json not yet produced"
 }

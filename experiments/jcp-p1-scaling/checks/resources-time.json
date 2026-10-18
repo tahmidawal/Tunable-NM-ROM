@@ -1,0 +1,27 @@
+{
+ "attempt": "time",
+ "projection_hours": 1.781,
+ "time_limit_hours": 2.75,
+ "detail": {
+  "per_triplet_seconds": 8.428571428571429,
+  "triplets": 432
+ },
+ "pilot": {
+  "run_ratio_4096_over_1024": 1.266576077243615,
+  "fused_seconds": {
+   "1024": 0.09179430361837149,
+   "256": 0.09458922874182463,
+   "4096": 0.11626446899026632
+  }
+ },
+ "smoke": [
+  "runs/smkA/archive/output",
+  "runs/smkB/archive/output"
+ ],
+ "runs": [
+  "p1time:configs/time.json"
+ ],
+ "configs": {
+  "configs/time.json": "8c97c1f8b223273659e8ac805ccf829ba7daccb709c2706e603bd375bf06e8bf"
+ }
+}

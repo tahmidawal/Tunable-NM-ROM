@@ -1,6 +1,7 @@
 {
- "written_before_any_lane_job": true,
- "commit": "62646320948cc7e729ce9c1ac5d4eaf632b3bd35",
+ "revision": 2,
+ "revision_note": "rev 1 committed before any lane job at 32e8c5816; rev 2 (A6.2, after the smoke) adds the rule-generator identity fields only",
+ "commit": "786b8e5e7b1cf78fc4b3d56250d9ce34dcf6f01d",
  "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
  "rotation_sha256": "51149166b53dad386c93fa0682079aec96b61276801d9a6d4f622453d6426772",
  "mode_lists": {
@@ -384,8 +385,8 @@
     2
    ]
   },
-  "p1core_sha256": "ad589b2d32e96b3507f2904390a45f90c68186610ab41a09bedd40c16c477c37",
-  "p1common_sha256": "f8fe1b851024d151b19b8cdedd955200971c5909b391c5f25048228c3b8330a8",
+  "p1core_sha256": "eb4712f2e6db5573f7cae735041d892d98b55098bda9905e101ace6d1041ba0d",
+  "p1common_sha256": "0fc4e8e182daba2a15abe37e504141161325c6242a2fc339c0a8ef16d1e8982d",
   "init_contract": "full-field input sampled at the cold quadrature points; reduced projection solve; full-field decode",
   "weighting": "LSPG D = 1/(a0 + dt b0 nu lam)",
   "output_times": [
@@ -395,8 +396,14 @@
    0.15,
    0.2,
    0.25
-  ]
+  ],
+  "rule_generator_sha256": {
+   "qcore.py": "36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b",
+   "vendor/hari_quadrature.py": "c6403d05e25a4ea5e4f4cc8879e94ac23f582d81b018571cf1abdb8da5d99fb6"
+  },
+  "rule_generator_identical_to_archive": true
  },
+ "rules_hash_platform_note": "point sha256 computed on the local CPU; cluster jobs record their own (platform round-off)",
  "e0_store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
  "e0_metric_id": "2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1",
  "eligibility": {

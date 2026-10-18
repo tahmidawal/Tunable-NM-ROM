@@ -1,0 +1,148 @@
+{
+ "attempt": "acc1024",
+ "projection_hours": 2.67,
+ "time_limit_hours": 4.25,
+ "detail": {
+  "R128|BE": {
+   "proxy": [
+    128,
+    "fib4181",
+    "BE"
+   ],
+   "factor": 1.6180339631667064,
+   "mesh_factor": 1.0,
+   "seconds": 445.8365472208735
+  },
+  "R128|CNR": {
+   "proxy": [
+    128,
+    "fib4181",
+    "CNR"
+   ],
+   "factor": 1.6180339631667064,
+   "mesh_factor": 1.0,
+   "seconds": 59.801327642673726
+  },
+  "R256|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "R256|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.0,
+   "seconds": 139.07183619303396
+  },
+  "R384|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "R384|CNR": {
+   "proxy": [
+    384,
+    "gauss128",
+    "CNR"
+   ],
+   "factor": 1.5625,
+   "mesh_factor": 1.0,
+   "seconds": 139.07183619303396
+  },
+  "R512|BE": {
+   "proxy": [
+    512,
+    "gauss192",
+    "BE"
+   ],
+   "factor": 1.7777777777777777,
+   "mesh_factor": 1.0,
+   "seconds": 1130.8772152811287
+  },
+  "R512|CNR": {
+   "proxy": [
+    512,
+    "gauss192",
+    "BE"
+   ],
+   "factor": 1.7777777777777777,
+   "mesh_factor": 1.0,
+   "seconds": 1130.8772152811287
+  },
+  "H96|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "H64|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "HF6765|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "H640|BE": {
+   "proxy": [
+    384,
+    "gauss640",
+    "BE"
+   ],
+   "factor": 1.0,
+   "mesh_factor": 1.0,
+   "seconds": 941.1312012607232
+  },
+  "block|p1e": 161.29580777138472,
+  "block|order": 54.72811770718545,
+  "block|vendor": 90.86887969449162
+ },
+ "pilot": {
+  "run_ratio_4096_over_1024": 1.266576077243615,
+  "fused_seconds": {
+   "1024": 0.09179430361837149,
+   "256": 0.09458922874182463,
+   "4096": 0.11626446899026632
+  }
+ },
+ "smoke": [
+  "runs/smkA/archive/output",
+  "runs/smkB/archive/output"
+ ],
+ "runs": [
+  "p1acc:configs/acc1024.json"
+ ],
+ "configs": {
+  "configs/acc1024.json": "6e395b95725ded0a7283abd11e66139ffa593423227c4a1b3840a6bbfb951100"
+ }
+}

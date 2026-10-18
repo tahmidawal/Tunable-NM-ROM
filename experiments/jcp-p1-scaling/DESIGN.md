@@ -686,3 +686,29 @@ reached and the outcome is "P1 incomplete" (§9.3). An incomplete pilot or smoke
 scheme) — compilation included — and per extra block, by case counts, quadrature-point ratios and the pilot's own
 $4096^2/1024^2$ fused-query ratio. These are estimates with headroom (time limit = 1.5 × projection), not bounds; the
 scheduler's time limit is the enforced bound and the reservation (A1.11).
+
+---
+
+## Amendment A6 (2026-10-18, after the real-size smoke `smkA` 5352740 / `smkB` 5352742 and the pilot 5352744; before any production job)
+
+The smoke acceptance (`checks/smoke-accept-1.json`) passed every control except five checks. All five traced to
+**implementation defects of the checks themselves**, shown by the smoke's raw data; no decision rule or threshold changes.
+
+**A6.1 Kernel dispatch-sync control re-implemented to mirror the protocol it governs.** The control timed each
+single and double interval immediately after a 0.1 s burn, without the 3 warm calls that A1.10 places before every
+timed kernel. The raw data show a ≈ 400 µs post-burn penalty on the first dispatch (2D `N` at $r=512$: single
+≈ 600 µs, double ≈ 800 µs, ratio 1.31; 2D `J` 1.74; 3D `N` 1.48), while `JTJ`/`chol` gave 1.95–2.00. The control now
+uses burn → 3 warm calls → timed interval for every single and double interval (`p1comp.dispatch_sync`), i.e. exactly
+the kernel measurement protocol. Its predicate ([1.8, 2.2]) is unchanged. It is re-shown on the cluster (`smkC`, the
+two kernel smokes) before any kernel production job; H-cost-r stays blocked until it passes.
+
+**A6.2 Rule identity in the reproduction gate.** The numerical-manifest check compared a rule-point sha256 computed
+on the local ARM CPU with the one computed on the x86 cluster node; Gauss–Legendre points differ there at round-off, so
+the check failed for R384 `gauss128` although the coefficients reproduced the archive **exactly** (relative 0.0).
+Rule identity is now (rule name, $m$) plus byte-identity of the rule-generating code with the archive's
+(`qcore.py`, `hari_quadrature.py`; recorded in `runs/MANIFEST-dev.json` revision 2, which adds only these fields;
+revision 1 was committed before any job). The preliminary reproduction gate then passes for R128 and R384, BE and CN-R
+($\le 7.5\times10^{-16}$).
+
+**A6.3 Pilot outcome.** Upper-bound footprint (timing job's full resident state plus the $4096^2$ accuracy extras):
+peak 113.5 GB < 120 GB on the H200 → the **full** R512 bank is used at $4096^2$ (no prefix-retaining label).

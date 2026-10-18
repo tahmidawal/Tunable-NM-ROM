@@ -1,0 +1,1822 @@
+{
+ "acc job complete": {
+  "required": true,
+  "passed": true
+ },
+ "acc: every configured configuration and scheme present": {
+  "required": true,
+  "passed": true
+ },
+ "acc R128 BE: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "acc R128 BE: NumPy decode equals job decode": {
+  "required": true,
+  "passed": true,
+  "worst": 3.491183730736082e-15
+ },
+ "acc R128 BE: G-cert": {
+  "required": true,
+  "passed": true
+ },
+ "acc R128 BE: Q1/Q2 labels (smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 1.9569182402688656e-06,
+   "rho_max": 0.012718684083852804,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "PRELIMINARY reproduction gate R128 BE (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)": {
+  "required": true,
+  "passed": true,
+  "worst": 5.032801550737517e-16,
+  "manifest": {
+   "checks": {
+    "mesh": true,
+    "Rp": true,
+    "M": true,
+    "modes": true,
+    "rule": true,
+    "m": true,
+    "rule_points": true,
+    "trust": true,
+    "A_cond": true,
+    "policy": true,
+    "checkpoint": true,
+    "rotation": true,
+    "cohorts": true,
+    "edges": true,
+    "scheme_dt": true,
+    "archive_grid": true,
+    "solver_text": true,
+    "run_form": true,
+    "run_level": true,
+    "run_tol": true,
+    "run_budget": true,
+    "run_weighting": true,
+    "run_time_tag": true,
+    "run_metric": true
+   },
+   "equal": true,
+   "provenance": {
+    "old": {
+     "commit": "43d00da630149f8660b5af8045e4b0d4730eb072",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    },
+    "new": {
+     "commit": "0f086d280320e395e02eb5e995dfed5680724a39",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    }
+   }
+  }
+ },
+ "acc R128 CNR: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "acc R128 CNR: NumPy decode equals job decode": {
+  "required": true,
+  "passed": true,
+  "worst": 3.491183730736082e-15
+ },
+ "acc R128 CNR: G-cert": {
+  "required": true,
+  "passed": true
+ },
+ "acc R128 CNR: Q1/Q2 labels (smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 2.0433722049492768e-06,
+   "rho_max": 0.012718684083852804,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "PRELIMINARY reproduction gate R128 CNR (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)": {
+  "required": true,
+  "passed": true,
+  "worst": 7.465656969829743e-16,
+  "manifest": {
+   "checks": {
+    "mesh": true,
+    "Rp": true,
+    "M": true,
+    "modes": true,
+    "rule": true,
+    "m": true,
+    "rule_points": true,
+    "trust": true,
+    "A_cond": true,
+    "policy": true,
+    "checkpoint": true,
+    "rotation": true,
+    "cohorts": true,
+    "edges": true,
+    "scheme_dt": true,
+    "archive_grid": true,
+    "solver_text": true,
+    "run_form": true,
+    "run_level": true,
+    "run_tol": true,
+    "run_budget": true,
+    "run_weighting": true,
+    "run_time_tag": true,
+    "run_metric": true
+   },
+   "equal": true,
+   "provenance": {
+    "old": {
+     "commit": "43d00da630149f8660b5af8045e4b0d4730eb072",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    },
+    "new": {
+     "commit": "0f086d280320e395e02eb5e995dfed5680724a39",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    }
+   }
+  }
+ },
+ "acc R384 BE: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "acc R384 BE: NumPy decode equals job decode": {
+  "required": true,
+  "passed": true,
+  "worst": 8.51099736331311e-15
+ },
+ "acc R384 BE: G-cert": {
+  "required": true,
+  "passed": true
+ },
+ "acc R384 BE: Q1/Q2 labels (smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 7.523730577466084e-07,
+   "rho_max": 0.003086178740226095,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "PRELIMINARY reproduction gate R384 BE (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0,
+  "manifest": {
+   "checks": {
+    "mesh": true,
+    "Rp": true,
+    "M": true,
+    "modes": true,
+    "rule": true,
+    "m": true,
+    "rule_points": true,
+    "trust": true,
+    "A_cond": true,
+    "policy": true,
+    "checkpoint": true,
+    "rotation": true,
+    "cohorts": true,
+    "edges": true,
+    "scheme_dt": true,
+    "archive_grid": true,
+    "solver_text": true,
+    "run_form": true,
+    "run_level": true,
+    "run_tol": true,
+    "run_budget": true,
+    "run_weighting": true,
+    "run_time_tag": true,
+    "run_metric": true
+   },
+   "equal": true,
+   "provenance": {
+    "old": {
+     "commit": "43d00da630149f8660b5af8045e4b0d4730eb072",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    },
+    "new": {
+     "commit": "0f086d280320e395e02eb5e995dfed5680724a39",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    }
+   }
+  }
+ },
+ "acc R384 CNR: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "acc R384 CNR: NumPy decode equals job decode": {
+  "required": true,
+  "passed": true,
+  "worst": 8.51099736331311e-15
+ },
+ "acc R384 CNR: G-cert": {
+  "required": true,
+  "passed": true
+ },
+ "acc R384 CNR: Q1/Q2 labels (smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 7.745205783702151e-07,
+   "rho_max": 0.003086178740226095,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "PRELIMINARY reproduction gate R384 CNR (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0,
+  "manifest": {
+   "checks": {
+    "mesh": true,
+    "Rp": true,
+    "M": true,
+    "modes": true,
+    "rule": true,
+    "m": true,
+    "rule_points": true,
+    "trust": true,
+    "A_cond": true,
+    "policy": true,
+    "checkpoint": true,
+    "rotation": true,
+    "cohorts": true,
+    "edges": true,
+    "scheme_dt": true,
+    "archive_grid": true,
+    "solver_text": true,
+    "run_form": true,
+    "run_level": true,
+    "run_tol": true,
+    "run_budget": true,
+    "run_weighting": true,
+    "run_time_tag": true,
+    "run_metric": true
+   },
+   "equal": true,
+   "provenance": {
+    "old": {
+     "commit": "43d00da630149f8660b5af8045e4b0d4730eb072",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    },
+    "new": {
+     "commit": "0f086d280320e395e02eb5e995dfed5680724a39",
+     "gpu": "NVIDIA A100 80GB PCIe",
+     "jax": "0.10.2"
+    }
+   }
+  }
+ },
+ "E0 scoring path": {
+  "required": false,
+  "e": 0.0007967109253090086,
+  "eps_ref": 1.2979413974249933e-06,
+  "eligible": true
+ },
+ "scorer rejects case swap": {
+  "required": true,
+  "passed": true
+ },
+ "scorer rejects time swap": {
+  "required": true,
+  "passed": true
+ },
+ "scorer rejects reference-kind swap": {
+  "required": true,
+  "passed": true
+ },
+ "NumPy gamma equals the in-job certifier (R384 CN-R dev6|0, 50 steps)": {
+  "required": true,
+  "passed": true,
+  "worst": 6.547743164029129e-14
+ },
+ "zero-update: the verified tight trajectory is valid": {
+  "required": true,
+  "passed": true
+ },
+ "zero-update fixture moves (> 100 x 2.5e-4)": {
+  "required": true,
+  "passed": true,
+  "motion": 0.514779373837666
+ },
+ "zero-update solver fails Q1 distance": {
+  "required": true,
+  "passed": true,
+  "distance": 0.514779373837666
+ },
+ "acc R512 BE: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "acc R512 BE: NumPy decode equals job decode": {
+  "required": true,
+  "passed": true,
+  "worst": 1.923017696035081e-14
+ },
+ "acc R512 BE: G-cert": {
+  "required": true,
+  "passed": true
+ },
+ "acc R512 BE: Q1/Q2 labels (smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 3.396010034696574e-07,
+   "rho_max": 0.0001664036343959151,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "acc H640 BE: offline recomputation agrees with job": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "acc H640 BE: NumPy decode equals job decode": {
+  "required": true,
+  "passed": true,
+  "worst": 8.51099736331311e-15
+ },
+ "acc H640 BE: G-cert": {
+  "required": true,
+  "passed": true
+ },
+ "acc H640 BE: Q1/Q2 labels (smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "label": "not run (descriptive arm)"
+  }
+ },
+ "under-resolved: population is dev6 (6 cases)": {
+  "required": true,
+  "passed": true
+ },
+ "under-resolved: in-job Q2 rollout bar fails on >= 1 case": {
+  "required": true,
+  "passed": true,
+  "dists": [
+   0.004078944285495972,
+   0.0010530150341142939,
+   0.033663845818853365,
+   0.010360702640518247,
+   0.007070822829222477,
+   0.002046917187163458
+  ]
+ },
+ "under-resolved: in-job rho_max > 0.116": {
+  "required": true,
+  "passed": true,
+  "rho_max": 1.5816420465830987
+ },
+ "under-resolved: offline decoded rollout distance > 2.5e-4 on >= 1 case and equal to the job": {
+  "required": true,
+  "passed": true,
+  "offline": [
+   0.004078944285495981,
+   0.001053015034114296,
+   0.03366384581885342,
+   0.010360702640518268,
+   0.007070822829222487,
+   0.0020469171871634563
+  ]
+ },
+ "under-resolved: NumPy rho on own states agrees with job and > 0.116": {
+  "required": true,
+  "passed": true,
+  "rho_max_offline": 1.5816420465831023
+ },
+ "budget-0: population 6 cases x 50 steps": {
+  "required": true,
+  "passed": true
+ },
+ "budget-0: independent NumPy gamma > 3 of 300 pooled steps non-stationary": {
+  "required": true,
+  "passed": true,
+  "nonstationary": 300,
+  "steps": 300
+ },
+ "budget-0: in-job pooled non-stationary > 1 %": {
+  "required": true,
+  "passed": true,
+  "fraction": 1.0
+ },
+ "budget-0: NumPy and in-job gamma agree": {
+  "required": true,
+  "passed": true
+ },
+ "sign-flipped Jacobian probe": {
+  "required": false,
+  "rows": [
+   {
+    "case": "dev6|0",
+    "nonstationary": 50,
+    "steps": 50,
+    "valid": true,
+    "it_sum": 107
+   },
+   {
+    "case": "dev6|1",
+    "nonstationary": 15,
+    "steps": 50,
+    "valid": true,
+    "it_sum": 122
+   },
+   {
+    "case": "dev6|2",
+    "nonstationary": 50,
+    "steps": 50,
+    "valid": true,
+    "it_sum": 935
+   },
+   {
+    "case": "dev6|3",
+    "nonstationary": 50,
+    "steps": 50,
+    "valid": true,
+    "it_sum": 553
+   },
+   {
+    "case": "dev6|4",
+    "nonstationary": 41,
+    "steps": 50,
+    "valid": true,
+    "it_sum": 113
+   },
+   {
+    "case": "dev6|5",
+    "nonstationary": 10,
+    "steps": 50,
+    "valid": true,
+    "it_sum": 83
+   }
+  ]
+ },
+ "wrong-mesh table refused": {
+  "required": true,
+  "passed": true,
+  "raised": [
+   "table built for L=256 fed to a bank on L=1024",
+   "table built for L=256 fed to a bank on L=1024",
+   "table arrays differ from the ones built for this setting (substituted data)"
+  ]
+ },
+ "vendor bridge covers every historical rule on dev6": {
+  "required": true,
+  "passed": true
+ },
+ "vendor vs generic LSPG-BE bridge: gauss128": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0
+ },
+ "vendor vs generic LSPG-BE bridge: gauss32": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0
+ },
+ "vendor vs generic LSPG-BE bridge: gauss64": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0
+ },
+ "vendor vs generic LSPG-BE bridge: gauss96": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0
+ },
+ "vendor vs generic LSPG-BE bridge: fib6765": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0
+ },
+ "vendor vs generic LSPG-BE bridge: gauss640": {
+  "required": true,
+  "passed": true,
+  "worst": 0.0
+ },
+ "CN-R order check: GAL-CN-R interpretable and order in [1.8, 2.2]": {
+  "required": true,
+  "passed": true,
+  "GAL": {
+   "e": {
+    "1": 0.0007481337662445154,
+    "0.5": 0.00018375670735104938,
+    "0.25": 4.2926751277461617e-05
+   },
+   "e_qp": {
+    "1": 0.0007480714868814494,
+    "0.5": 0.00018370035091906867,
+    "0.25": 4.289628353133894e-05
+   },
+   "slope": 2.061673674457153,
+   "pairwise": [
+    2.0254993358149433,
+    2.097848013099366
+   ],
+   "checks": {
+    "asymptotic": true,
+    "anchor": true,
+    "solver": true,
+    "quadrature": true,
+    "finer_rule": true
+   },
+   "quad_contamination": 9.983393585322286e-08,
+   "finer_rule_dist": 4.456412333882992e-07,
+   "anchor_dist": 2.06273007402405e-06,
+   "solver_dist": 2.4176648234137064e-13,
+   "valid": {
+    "main|1": true,
+    "qp|1": true,
+    "main|0.5": true,
+    "qp|0.5": true,
+    "main|0.25": true,
+    "qp|0.25": true,
+    "main|0.0625": true,
+    "qp|0.0625": true,
+    "main|0.03125": true,
+    "tighter|0.25": true,
+    "qpp|0.25": true
+   },
+   "all_valid": true,
+   "interpretable": true,
+   "passed": true
+  },
+  "LSPG": {
+   "e": {
+    "1": 0.0007501298436418949,
+    "0.5": 0.0001853497083903806,
+    "0.25": 4.4104082382192095e-05
+   },
+   "e_qp": {
+    "1": 0.0007500688412000632,
+    "0.5": 0.0001852958761537676,
+    "0.25": 4.40759874991947e-05
+   },
+   "slope": 2.0440781169444855,
+   "pairwise": [
+    2.016890494986506,
+    2.0712657389024676
+   ],
+   "checks": {
+    "asymptotic": true,
+    "anchor": true,
+    "solver": true,
+    "quadrature": true,
+    "finer_rule": true
+   },
+   "quad_contamination": 9.331338498872596e-08,
+   "finer_rule_dist": 4.408041633728531e-07,
+   "anchor_dist": 2.625422370652772e-06,
+   "solver_dist": 5.516907220842193e-11,
+   "valid": {
+    "main|1": true,
+    "qp|1": true,
+    "main|0.5": true,
+    "qp|0.5": true,
+    "main|0.25": true,
+    "qp|0.25": true,
+    "main|0.0625": true,
+    "qp|0.0625": true,
+    "main|0.03125": true,
+    "tighter|0.25": true,
+    "qpp|0.25": true
+   },
+   "all_valid": true,
+   "interpretable": true,
+   "passed": null
+  }
+ },
+ "P1e block (smoke)": {
+  "required": false,
+  "p1e": {
+   "R128": {
+    "rules": {
+     "fail": "gauss32",
+     "fail_succ": "gauss64",
+     "deployed": "fib4181",
+     "finer": "fib6765",
+     "check": "fib10946"
+    },
+    "m": {
+     "main": 4181,
+     "qp": 6765,
+     "qpp": 10946,
+     "fail": 1024,
+     "fail_succ": 4096
+    },
+    "rows": [
+     {
+      "cohort": "dev6",
+      "case": 0,
+      "dist": {
+       "fail|fail_succ": 0.00010635556114563111,
+       "fail|main": 0.00010997226997680282,
+       "main|qp": 1.9569182402655816e-06,
+       "qp|qpp": 4.0038633938124223e-07
+      },
+      "valid": {
+       "fail": true,
+       "fail_succ": true,
+       "main": true,
+       "qp": true,
+       "qpp": true
+      },
+      "rho": {
+       "fail|fail_succ": [
+        0.05821438068239046,
+        0.0019843430111198663,
+        0.0026085680965447938,
+        0.0024726569775175527,
+        0.0028108982935548072,
+        0.0030166037537624887
+       ],
+       "fail|main": [
+        0.06837398686108076,
+        0.0019343160900236105,
+        0.0025649736612040146,
+        0.0024277932282727806,
+        0.002759335626523618,
+        0.0029518599700647657
+       ],
+       "main|qp": [
+        0.012718684083852804,
+        0.0001057740720009995,
+        7.706046000231522e-05,
+        0.00012243310932802387,
+        0.0001585854999722723,
+        0.0001727077729881003
+       ],
+       "qp|qpp": [
+        0.00550143395412655,
+        4.14144636803038e-05,
+        2.662063332879457e-05,
+        4.876661603711984e-05,
+        7.035744114333394e-05,
+        8.255690510643369e-05
+       ]
+      }
+     },
+     {
+      "cohort": "dev6",
+      "case": 1,
+      "dist": {
+       "fail|fail_succ": 4.8641713175943516e-05,
+       "fail|main": 4.5394233553161185e-05,
+       "main|qp": 4.7451038291365726e-08,
+       "qp|qpp": 1.7522492092298736e-08
+      },
+      "valid": {
+       "fail": true,
+       "fail_succ": true,
+       "main": true,
+       "qp": true,
+       "qpp": true
+      },
+      "rho": {
+       "fail|fail_succ": [
+        0.004020855344041668,
+        0.0024877435931410087,
+        0.0017614244788425428,
+        0.0019380048251860231,
+        0.0021799685941631675,
+        0.0023614627770331934
+       ],
+       "fail|main": [
+        0.004009838406577083,
+        0.0024067216429711643,
+        0.0016965830078741002,
+        0.0018595854441565876,
+        0.0020892917422188034,
+        0.0022644152179670815
+       ],
+       "main|qp": [
+        1.358499944722484e-05,
+        1.957794191638315e-05,
+        3.693888794614565e-05,
+        4.2954389733456156e-05,
+        4.44200677084992e-05,
+        4.3853772033093943e-05
+       ],
+       "qp|qpp": [
+        8.170322018622528e-06,
+        7.192099849699976e-06,
+        1.3942340253835001e-05,
+        1.627510244663972e-05,
+        1.677415892231037e-05,
+        1.6536604915625727e-05
+       ]
+      }
+     }
+    ]
+   }
+  }
+ },
+ "time job complete": {
+  "required": true,
+  "passed": true
+ },
+ "split vs fused equivalence (every subject)": {
+  "required": true,
+  "passed": true,
+  "rows": [
+   {
+    "subject": "1024|R384|gauss128|frozen|CNR",
+    "fields_rel": 0.0,
+    "same_iterations": true,
+    "passed": true
+   },
+   {
+    "subject": "256|R128|fib4181|frozen|CNR",
+    "fields_rel": 0.0,
+    "same_iterations": true,
+    "passed": true
+   },
+   {
+    "subject": "1024|R128|fib4181|frozen|CNR",
+    "fields_rel": 0.0,
+    "same_iterations": true,
+    "passed": true
+   },
+   {
+    "subject": "256|R384|gauss128|frozen|CNR",
+    "fields_rel": 0.0,
+    "same_iterations": true,
+    "passed": true
+   },
+   {
+    "subject": "1024|R512|gauss192|frozen|CNR",
+    "fields_rel": 0.0,
+    "same_iterations": true,
+    "passed": true
+   },
+   {
+    "subject": "256|R128|fib4181|frozen|BE",
+    "fields_rel": 0.0,
+    "same_iterations": true,
+    "passed": true
+   },
+   {
+    "subject": "256|R128|fib4181|nominal|BE",
+    "fields_rel": 0.0,
+    "same_iterations": true,
+    "passed": true
+   }
+  ]
+ },
+ "triplet inventory complete": {
+  "required": true,
+  "passed": true
+ },
+ "timed = scored identity on every non-injected split triplet (all attempts)": {
+  "required": true,
+  "passed": true
+ },
+ "timed = scored identity on every non-injected fused triplet": {
+  "required": true,
+  "passed": true
+ },
+ "injected identity fault: every triplet invalid": {
+  "required": true,
+  "passed": true
+ },
+ "A4.1 subject-wide veto: injected subject blocked, every other subject not blocked": {
+  "required": true,
+  "passed": true,
+  "veto": {
+   "256|R128|fib4181|frozen|BE": false,
+   "256|R128|fib4181|frozen|CNR": false,
+   "1024|R128|fib4181|frozen|CNR": false,
+   "256|R128|fib4181|nominal|BE": true,
+   "1024|R512|gauss192|frozen|CNR": false,
+   "256|R384|gauss128|frozen|CNR": false,
+   "1024|R384|gauss128|frozen|CNR": false
+  }
+ },
+ "injected identity fault -> H-cost-N verdict not reached": {
+  "required": true,
+  "passed": true,
+  "outcome": "verdict not reached"
+ },
+ "doubled work: both registered fixtures present": {
+  "required": true,
+  "passed": true
+ },
+ "doubled work 1024|R384|gauss128|frozen|CNR: B/A in [1.8, 2.2] over drift-valid rows, identical iterations, identity": {
+  "required": true,
+  "passed": true,
+  "median": 2.0156795998044705,
+  "valid_rows": 4
+ },
+ "doubled work 256|R128|fib4181|frozen|BE: B/A in [1.8, 2.2] over drift-valid rows, identical iterations, identity": {
+  "required": true,
+  "passed": true,
+  "median": 1.9844530460527212,
+  "valid_rows": 4
+ },
+ "time subject 1024|R384|gauss128|frozen|CNR: timing-job certification computed and agrees offline": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "time subject 1024|R384|gauss128|frozen|CNR: timing-job Q1/Q2 (dev2 smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 7.745205783702151e-07,
+   "rho_max": 0.003086178740226093,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "time subject 256|R128|fib4181|frozen|CNR: timing-job certification computed and agrees offline": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "time subject 256|R128|fib4181|frozen|CNR: timing-job Q1/Q2 (dev2 smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 1.6409489147152937e-06,
+   "rho_max": 0.011145164761114094,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "time subject 1024|R128|fib4181|frozen|CNR: timing-job certification computed and agrees offline": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "time subject 1024|R128|fib4181|frozen|CNR: timing-job Q1/Q2 (dev2 smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 2.0433722049186718e-06,
+   "rho_max": 0.012718684083852804,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "time subject 256|R384|gauss128|frozen|CNR: timing-job certification computed and agrees offline": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "time subject 256|R384|gauss128|frozen|CNR: timing-job Q1/Q2 (dev2 smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 3.9626911366821916e-07,
+   "rho_max": 0.003634495643261053,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "time subject 1024|R512|gauss192|frozen|CNR: timing-job certification computed and agrees offline": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "time subject 1024|R512|gauss192|frozen|CNR: timing-job Q1/Q2 (dev2 smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 3.391565503070675e-07,
+   "rho_max": 0.00016640363439590904,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "time subject 256|R128|fib4181|frozen|BE: timing-job certification computed and agrees offline": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "time subject 256|R128|fib4181|frozen|BE: timing-job Q1/Q2 (dev2 smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 1.5591975560450355e-06,
+   "rho_max": 0.011145164761114094,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "time subject 256|R128|fib4181|nominal|BE: timing-job certification computed and agrees offline": {
+  "required": true,
+  "passed": true,
+  "disagreements": []
+ },
+ "time subject 256|R128|fib4181|nominal|BE: timing-job Q1/Q2 (dev2 smoke population)": {
+  "required": false,
+  "Q1": {
+   "all_valid": true,
+   "stationarity": true,
+   "gcert": true,
+   "distance": true,
+   "tight_tighter": true,
+   "offline_agrees": true,
+   "pass": true
+  },
+  "Q2": {
+   "population": 2,
+   "rollout": true,
+   "worst_dist_qp": 1.5591975560256825e-06,
+   "rho_max": 0.011145164761114094,
+   "rho_trivial": 0,
+   "rho_infinite": 0,
+   "rho": true,
+   "successor_valid": true,
+   "check_valid": true,
+   "convergence": true,
+   "label": "pass"
+  }
+ },
+ "production timing fault probe (x3 on 1024^2; no requirement)": {
+  "required": false,
+  "base": {
+   "R": 1.0140938674538615,
+   "medians": {
+    "256": 0.1530893293341013,
+    "1024": 0.15096169521118463
+   },
+   "undefined_fraction": 0.0,
+   "invalid_fraction": [
+    0.0,
+    0.0
+   ],
+   "ci": [
+    1.0034793021107502,
+    1.0304516030627515
+   ],
+   "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+   "procedure_outcome": "pass"
+  },
+  "faulted": {
+   "R": 2.958306026967954,
+   "medians": {
+    "256": 0.1530893293341013,
+    "1024": 0.4528850856335539
+   },
+   "undefined_fraction": 0.0,
+   "invalid_fraction": [
+    0.0,
+    0.0
+   ],
+   "ci": [
+    2.9113448812960008,
+    3.010437906332251
+   ],
+   "outcome": "two-mesh evidence, registered three-mesh verdict not reached",
+   "procedure_outcome": "fail"
+  }
+ },
+ "component-sum diagnostic": {
+  "required": false,
+  "rows": [
+   {
+    "subject": "1024|R384|gauss128|frozen|CNR",
+    "case": "dev6|0",
+    "components": {
+     "hist_be": 5.23286871612072e-05,
+     "hist_cn": 0.00027387402951717377,
+     "pred": 0.00027523934841156006,
+     "init": 0.0015684999525547028,
+     "iter": 0.0019832774996757507,
+     "raw": {
+      "hist_be": [
+       5.85801899433136e-05,
+       5.6546181440353394e-05,
+       5.403812974691391e-05,
+       6.135832518339157e-05,
+       5.6486576795578e-05,
+       5.077943205833435e-05,
+       5.047302693128586e-05,
+       5.037151277065277e-05,
+       5.199667066335678e-05,
+       5.357898771762848e-05,
+       4.9940310418605804e-05,
+       5.0576403737068176e-05,
+       5.630031228065491e-05,
+       5.3295865654945374e-05,
+       5.0584785640239716e-05,
+       5.6033022701740265e-05,
+       5.886796861886978e-05,
+       5.268305540084839e-05,
+       5.266070365905762e-05,
+       4.931539297103882e-05,
+       4.999060183763504e-05,
+       5.0535425543785095e-05,
+       5.090050399303436e-05,
+       4.996359348297119e-05,
+       5.001388490200043e-05,
+       5.7990662753582e-05,
+       5.418248474597931e-05,
+       5.0620175898075104e-05,
+       4.943832755088806e-05,
+       5.597621202468872e-05
+      ],
+      "hist_cn": [
+       0.00027653202414512634,
+       0.0002776375040411949,
+       0.00027492642402648926,
+       0.00027368683367967606,
+       0.0002762041985988617,
+       0.00027401093393564224,
+       0.0002727741375565529,
+       0.0002817893400788307,
+       0.0002736477181315422,
+       0.00027289893478155136,
+       0.00027342047542333603,
+       0.000273803249001503,
+       0.0002733049914240837,
+       0.0002725878730416298,
+       0.0002749757841229439,
+       0.00027386005967855453,
+       0.00027428753674030304,
+       0.0002725152298808098,
+       0.0002818377688527107,
+       0.00027227308601140976,
+       0.00027435552328824997,
+       0.00027087703347206116,
+       0.00028135254979133606,
+       0.00027508102357387543,
+       0.0002724993973970413,
+       0.000273887999355793,
+       0.0002757962793111801,
+       0.00027351081371307373,
+       0.0002728719264268875,
+       0.0002831947058439255
+      ],
+      "pred": [
+       0.0002819858491420746,
+       0.00027674809098243713,
+       0.00027589593082666397,
+       0.00027647148817777634,
+       0.00027598999440670013,
+       0.0002738749608397484,
+       0.0002759164199233055,
+       0.00027708616107702255,
+       0.00027413759380578995,
+       0.00027505867183208466,
+       0.0002821842208504677,
+       0.00027345772832632065,
+       0.0002733953297138214,
+       0.00027577951550483704,
+       0.000275416299700737,
+       0.0002715969458222389,
+       0.00027398858219385147,
+       0.00028727855533361435,
+       0.00027628522366285324,
+       0.0002762358635663986,
+       0.0002755792811512947,
+       0.0002741478383541107,
+       0.0002750623971223831,
+       0.00027398671954870224,
+       0.00027478020638227463,
+       0.00027157925069332123,
+       0.0002720830962061882,
+       0.00027448870241642,
+       0.00027541909366846085,
+       0.0002746526151895523
+      ],
+      "init": [
+       0.001546093262732029,
+       0.0015408135950565338,
+       0.0015459926798939705,
+       0.0015410538762807846,
+       0.0015413900837302208,
+       0.001537625677883625,
+       0.0015431102365255356,
+       0.0015321765094995499,
+       0.0015425579622387886,
+       0.0015389155596494675,
+       0.001534862443804741,
+       0.0015489691868424416,
+       0.0015345960855484009,
+       0.0015433896332979202,
+       0.0015365201979875565,
+       0.0016035018488764763,
+       0.001606188714504242,
+       0.001603148877620697,
+       0.0016033872961997986,
+       0.0016029216349124908,
+       0.0016005812212824821,
+       0.0015989243984222412,
+       0.001590035855770111,
+       0.0016010040417313576,
+       0.001599825918674469,
+       0.001588030718266964,
+       0.0015991190448403358,
+       0.0015901513397693634,
+       0.0016448386013507843,
+       0.0016464721411466599
+      ],
+      "iter": [
+       0.001975148916244507,
+       0.0019745919853448868,
+       0.001965644769370556,
+       0.0019703563302755356,
+       0.001953423023223877,
+       0.00196822639554739,
+       0.0019709616899490356,
+       0.0019598565995693207,
+       0.0019624708220362663,
+       0.001959247514605522,
+       0.0019667362794280052,
+       0.001965245231986046,
+       0.0019561732187867165,
+       0.001968362368643284,
+       0.001959073357284069,
+       0.0019914060831069946,
+       0.002002263441681862,
+       0.0020082350820302963,
+       0.0020160460844635963,
+       0.0020055221393704414,
+       0.0020154323428869247,
+       0.0020133722573518753,
+       0.002015708014369011,
+       0.002018200233578682,
+       0.002000081352889538,
+       0.002011326141655445,
+       0.0020425207912921906,
+       0.002047572284936905,
+       0.0020374124869704247,
+       0.0020471718162298203
+      ]
+     }
+    },
+    "iterations": [
+     4,
+     3,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "model_seconds": 0.21650111582130194,
+    "evolve_seconds": 0.21324255596846342,
+    "ratio": 1.0152810016651668,
+    "note": "diagnostic only (A2.2); loop bookkeeping not accounted"
+   },
+   {
+    "subject": "1024|R512|gauss192|frozen|CNR",
+    "case": "dev6|0",
+    "components": {
+     "hist_be": 5.062902346253395e-05,
+     "hist_cn": 0.0006145881488919258,
+     "pred": 0.0006248755380511284,
+     "init": 0.006285079289227724,
+     "iter": 0.006775686051696539,
+     "raw": {
+      "hist_be": [
+       5.729496479034424e-05,
+       5.367305129766464e-05,
+       6.14318996667862e-05,
+       5.99101185798645e-05,
+       5.273055285215378e-05,
+       5.257502198219299e-05,
+       4.9913302063941956e-05,
+       5.016103386878967e-05,
+       4.998408257961273e-05,
+       5.065556615591049e-05,
+       5.206931382417679e-05,
+       4.9052760004997253e-05,
+       4.99039888381958e-05,
+       5.231611430644989e-05,
+       5.599949508905411e-05,
+       5.455128848552704e-05,
+       5.009397864341736e-05,
+       5.360133945941925e-05,
+       5.3513795137405396e-05,
+       5.039293318986893e-05,
+       5.220714956521988e-05,
+       4.960410296916962e-05,
+       5.046091973781586e-05,
+       5.1670707762241364e-05,
+       4.919152706861496e-05,
+       4.9851834774017334e-05,
+       5.0263479351997375e-05,
+       4.9658119678497314e-05,
+       5.060248076915741e-05,
+       4.926323890686035e-05
+      ],
+      "hist_cn": [
+       0.0006295843049883842,
+       0.0006251698359847069,
+       0.0006113434210419655,
+       0.0006255526095628738,
+       0.0006152074784040451,
+       0.000611497089266777,
+       0.0006234124302864075,
+       0.0006149113178253174,
+       0.0006125355139374733,
+       0.0006120158359408379,
+       0.0006142649799585342,
+       0.000615198165178299,
+       0.0006114263087511063,
+       0.0006232121959328651,
+       0.0006223563104867935,
+       0.0006088176742196083,
+       0.0006113164126873016,
+       0.0006114253774285316,
+       0.0006246278062462807,
+       0.0006214780732989311,
+       0.0006120409816503525,
+       0.0006224093958735466,
+       0.0006110509857535362,
+       0.0006167106330394745,
+       0.0006114011630415916,
+       0.0006125569343566895,
+       0.0006298553198575974,
+       0.0006129667162895203,
+       0.0006132824346423149,
+       0.0006186505779623985
+      ],
+      "pred": [
+       0.0006305817514657974,
+       0.000622263178229332,
+       0.0006245523691177368,
+       0.0006293086335062981,
+       0.0006203409284353256,
+       0.0006295265629887581,
+       0.0006233910098671913,
+       0.0006166351959109306,
+       0.0006233928725123405,
+       0.0006232224404811859,
+       0.0006278892979025841,
+       0.0006311368197202682,
+       0.0006199581548571587,
+       0.0006382502615451813,
+       0.0006266273558139801,
+       0.0006224056705832481,
+       0.0006217872723937035,
+       0.00062519870698452,
+       0.0006306236609816551,
+       0.0006327768787741661,
+       0.0006201239302754402,
+       0.0006273388862609863,
+       0.0006311601027846336,
+       0.0006170934066176414,
+       0.0006292611360549927,
+       0.0006188871338963509,
+       0.0006183525547385216,
+       0.0006343275308609009,
+       0.000617404468357563,
+       0.000629751943051815
+      ],
+      "init": [
+       0.005418941378593445,
+       0.005417774431407452,
+       0.0054226648062467575,
+       0.0055368440225720406,
+       0.0054101767018437386,
+       0.006122412160038948,
+       0.00610745046287775,
+       0.006195533089339733,
+       0.006233383901417255,
+       0.006239069625735283,
+       0.0062735071405768394,
+       0.0063888756558299065,
+       0.006394281983375549,
+       0.006365679204463959,
+       0.006303122267127037,
+       0.006297021172940731,
+       0.006290319375693798,
+       0.006306445226073265,
+       0.006305007264018059,
+       0.006291490979492664,
+       0.006307677365839481,
+       0.006185697391629219,
+       0.0062894057482481,
+       0.006284043192863464,
+       0.006289413198828697,
+       0.006292285397648811,
+       0.006285468116402626,
+       0.006284690462052822,
+       0.00629139319062233,
+       0.006252633407711983
+      ],
+      "iter": [
+       0.00598923210054636,
+       0.00609563197940588,
+       0.006128130480647087,
+       0.0063219256699085236,
+       0.006580057553946972,
+       0.006609927862882614,
+       0.006636795587837696,
+       0.006758339703083038,
+       0.00675944983959198,
+       0.006789207458496094,
+       0.006821873597800732,
+       0.00685832928866148,
+       0.006823997013270855,
+       0.006827078759670258,
+       0.006874123588204384,
+       0.006824590265750885,
+       0.006831282749772072,
+       0.006817004643380642,
+       0.006830357946455479,
+       0.00682714581489563,
+       0.0068486519157886505,
+       0.006793192587792873,
+       0.006749180145561695,
+       0.006759055890142918,
+       0.00675512570887804,
+       0.0067714182659983635,
+       0.006755277514457703,
+       0.006798755377531052,
+       0.006773456931114197,
+       0.006777915172278881
+      ]
+     }
+    },
+    "iterations": [
+     4,
+     3,
+     2,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ],
+    "model_seconds": 0.7545376494526863,
+    "evolve_seconds": 0.7241335376165807,
+    "ratio": 1.041986885369483,
+    "note": "diagnostic only (A2.2); loop bookkeeping not accounted"
+   }
+  ]
+ },
+ "recording overhead": {
+  "required": false,
+  "rows": [
+   {
+    "subject": "1024|R128|fib4181|frozen|CNR",
+    "case": "dev6|0",
+    "rep": 0,
+    "t_rec1": 0.031724669970571995,
+    "t_norec": 0.030253726989030838,
+    "t_rec2": 0.030629471875727177,
+    "ratio_norec_over_rec": 0.9703838780623504,
+    "W_rel": 0.0
+   },
+   {
+    "subject": "1024|R128|fib4181|frozen|CNR",
+    "case": "dev6|0",
+    "rep": 1,
+    "t_rec1": 0.030543528497219086,
+    "t_norec": 0.0303101297467947,
+    "t_rec2": 0.03072540834546089,
+    "ratio_norec_over_rec": 0.9894126227331774,
+    "W_rel": 0.0
+   },
+   {
+    "subject": "1024|R128|fib4181|frozen|CNR",
+    "case": "dev6|1",
+    "rep": 0,
+    "t_rec1": 0.0318155474960804,
+    "t_norec": 0.03141242451965809,
+    "t_rec2": 0.031602065078914165,
+    "ratio_norec_over_rec": 0.9906530140191352,
+    "W_rel": 0.0
+   },
+   {
+    "subject": "1024|R128|fib4181|frozen|CNR",
+    "case": "dev6|1",
+    "rep": 1,
+    "t_rec1": 0.0318134305998683,
+    "t_norec": 0.03130785562098026,
+    "t_rec2": 0.0325046144425869,
+    "ratio_norec_over_rec": 0.973532563071981,
+    "W_rel": 0.0
+   },
+   {
+    "subject": "1024|R384|gauss128|frozen|CNR",
+    "case": "dev6|0",
+    "rep": 0,
+    "t_rec1": 0.2117562172934413,
+    "t_norec": 0.21150100603699684,
+    "t_rec2": 0.21250410377979279,
+    "ratio_norec_over_rec": 0.9970341110475349,
+    "W_rel": 0.0
+   },
+   {
+    "subject": "1024|R384|gauss128|frozen|CNR",
+    "case": "dev6|0",
+    "rep": 1,
+    "t_rec1": 0.21304564364254475,
+    "t_norec": 0.2110832678154111,
+    "t_rec2": 0.21428223606199026,
+    "ratio_norec_over_rec": 0.9879218176045955,
+    "W_rel": 0.0
+   },
+   {
+    "subject": "1024|R384|gauss128|frozen|CNR",
+    "case": "dev6|1",
+    "rep": 0,
+    "t_rec1": 0.21181597094982862,
+    "t_norec": 0.2105149496346712,
+    "t_rec2": 0.21032392606139183,
+    "ratio_norec_over_rec": 0.9973705452866766,
+    "W_rel": 0.0
+   },
+   {
+    "subject": "1024|R384|gauss128|frozen|CNR",
+    "case": "dev6|1",
+    "rep": 1,
+    "t_rec1": 0.21033440995961428,
+    "t_norec": 0.21111986134201288,
+    "t_rec2": 0.21056640893220901,
+    "ratio_norec_over_rec": 1.0031810434480208,
+    "W_rel": 0.0
+   }
+  ]
+ },
+ "A100 smoke ratios (hardware probe)": {
+  "required": false,
+  "medians": {
+   "1024|R128|fib4181|frozen|CNR": 0.15096169521118463,
+   "1024|R384|gauss128|frozen|CNR": 1.00195507669329,
+   "1024|R512|gauss192|frozen|CNR": 3.4187571838483564,
+   "256|R128|fib4181|frozen|BE": 0.15111176041983926,
+   "256|R128|fib4181|frozen|CNR": 0.1530893293341013,
+   "256|R384|gauss128|frozen|CNR": 1.0082552323981382
+  }
+ },
+ "2D dispatch-sync N at r=512": {
+  "required": true,
+  "passed": false,
+  "ratio": 1.3129395012320266
+ },
+ "2D dispatch-sync J at r=512": {
+  "required": true,
+  "passed": false,
+  "ratio": 1.7370003948960475
+ },
+ "2D dispatch-sync JTJ at r=512": {
+  "required": true,
+  "passed": true,
+  "ratio": 1.9541494298609887
+ },
+ "2D dispatch-sync chol at r=512": {
+  "required": true,
+  "passed": true,
+  "ratio": 1.9841928081875826
+ },
+ "2D drift fixed": {
+  "required": false,
+  "rows": [
+   {
+    "start": 0.0004690936766564846,
+    "end": 0.0004698703996837139,
+    "ratio": 1.0016557951340668,
+    "ok": true
+   }
+  ]
+ },
+ "2D drift fixed within band (after <= 1 re-run)": {
+  "required": true,
+  "passed": true
+ },
+ "2D kernel inventory: every panel and the four sync components": {
+  "required": true,
+  "passed": true
+ },
+ "2D kernel components equal the solver advection / Jacobian on every fixture (<= 1e-12)": {
+  "required": true,
+  "passed": true,
+  "worst": 2.7825957102241776e-16
+ },
+ "3D dispatch-sync N at r=1024": {
+  "required": true,
+  "passed": false,
+  "ratio": 1.478337466692031
+ },
+ "3D dispatch-sync J at r=1024": {
+  "required": true,
+  "passed": true,
+  "ratio": 1.9169730398133695
+ },
+ "3D dispatch-sync JTJ at r=1024": {
+  "required": true,
+  "passed": true,
+  "ratio": 1.9989777672604028
+ },
+ "3D dispatch-sync chol at r=1024": {
+  "required": true,
+  "passed": true,
+  "ratio": 1.996924172032224
+ },
+ "3D drift fixed": {
+  "required": false,
+  "rows": [
+   {
+    "start": 0.0008770022541284561,
+    "end": 0.0008761882781982422,
+    "ratio": 0.9990718656350287,
+    "ok": true
+   }
+  ]
+ },
+ "3D drift fixed within band (after <= 1 re-run)": {
+  "required": true,
+  "passed": true
+ },
+ "3D kernel inventory: every panel and the four sync components": {
+  "required": true,
+  "passed": true
+ },
+ "3D kernel components equal the solver advection / Jacobian on every fixture (<= 1e-12)": {
+  "required": true,
+  "passed": true,
+  "worst": 2.1932661717424652e-16
+ },
+ "CPU synthetic controls (test_p1.py): every registered control present and passing": {
+  "required": true,
+  "passed": true,
+  "missing": []
+ }
+}

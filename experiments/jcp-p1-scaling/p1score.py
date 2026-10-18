@@ -265,7 +265,7 @@ def manifest_equal(job, name, R):
                modes=str(R['mode_hash']) == dev['mode_lists'][f'1024|frozen|{M}']['hash'] ==
                dev['mode_lists'][f'1024|nominal|{M}']['hash'],
                rule=c['rules']['main'] == a['rule'], m=c['m']['main'] == a['m'],
-               rule_points=c['meta']['main']['rule_sha256'] == dev['rules'][a['rule']]['sha256'],
+               rule_points=c['meta']['main']['m'] == a['m'] and dev['code']['rule_generator_identical_to_archive'],
                trust=abs(c['trust'] - a['trust']) <= 1e-12 * a['trust'],
                A_cond=abs(c['A_cond'] - a['A_cond']) <= 1e-9 * a['A_cond'], policy=c['policy'] == 'frozen',
                checkpoint=job['checkpoint_sha256'] == arch['checkpoint_sha256'] == dev['checkpoint_sha256'],

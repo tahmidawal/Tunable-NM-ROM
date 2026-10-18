@@ -27,7 +27,7 @@ RULES = ['fib4181', 'fib6765', 'fib10946', 'gauss32', 'gauss64', 'gauss96', 'gau
 
 
 def main():
-    m = dict(written_before_any_lane_job=True,
+    m = dict(revision=2, revision_note='rev 1 committed before any lane job at 32e8c5816; rev 2 (A6.2, after the smoke) adds the rule-generator identity fields only',
              commit=subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=HERE, text=True).strip(),
              checkpoint_sha256=P.QS.sha_file(P.T2.CKPT), rotation_sha256=P.QS.sha_file(P.Q.ROTATION))
     ml = {}
@@ -51,6 +51,13 @@ def main():
                      p1core_sha256=P.QS.sha_file(HERE / 'p1core.py'), p1common_sha256=P.QS.sha_file(HERE / 'p1common.py'),
                      init_contract='full-field input sampled at the cold quadrature points; reduced projection solve; full-field decode',
                      weighting='LSPG D = 1/(a0 + dt b0 nu lam)', output_times=[0, .05, .1, .15, .2, .25])
+    # A6.2: rule identity = identity of the rule-generating code (point hashes differ across CPU platforms at round-off)
+    C = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-13-jcp-combined/experiments/jcp-combined/vendor/quad2d')
+    gen = [('qcore.py', 'qcore.py'), ('vendor/hari_quadrature.py', 'vendor/hari_quadrature.py')]
+    m['code']['rule_generator_sha256'] = {a: P.QS.sha_file(HERE / 'vendor' / 'quad2d' / a) for a, _ in gen}
+    m['code']['rule_generator_identical_to_archive'] = all(P.QS.sha_file(HERE / 'vendor' / 'quad2d' / a) == P.QS.sha_file(C / b)
+                                                           for a, b in gen)
+    m['rules_hash_platform_note'] = 'point sha256 computed on the local CPU; cluster jobs record their own (platform round-off)'
     m['e0_store_version'] = RS.store_version()
     m['e0_metric_id'] = RS.V.METRIC_ID[2]
     m['eligibility'] = {f'{coh}|{c}|{k}': RS.reference_status(2, coh, c, k)['eligible']

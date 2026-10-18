@@ -213,21 +213,29 @@ def kernel_panel(A, lam_, tabs, fixtures, ranks, nu, dt, reps=30, burn=.1, seed=
     return out
 
 
+def _settle(fn, args, burn, warm=3):
+    """The kernel measurement protocol (A1.10): burn, then warm calls, then the timed interval (A6.1)."""
+    QS.burn(burn)
+    for _ in range(warm):
+        jax.block_until_ready(fn(*args))
+
+
 def dispatch_sync(fn, args, reps=10, burn=.1):
-    """Kernel dispatch-sync control (DESIGN 6): two separately synchronised dispatches vs one, single-double-single."""
+    """Kernel dispatch-sync control (DESIGN 6, A6.1): two separately synchronised dispatches vs one, single-double-single,
+    each interval preceded by the same burn + 3 warm calls as the timed kernels it governs."""
     jax.block_until_ready(fn(*args))
     res = []
     for _ in range(reps):
-        QS.burn(burn)
+        _settle(fn, args, burn)
         t = time.perf_counter()
         jax.block_until_ready(fn(*args))
         t1 = time.perf_counter() - t
-        QS.burn(burn)
+        _settle(fn, args, burn)
         t = time.perf_counter()
         jax.block_until_ready(fn(*args))
         jax.block_until_ready(fn(*args))
         tb = time.perf_counter() - t
-        QS.burn(burn)
+        _settle(fn, args, burn)
         t = time.perf_counter()
         jax.block_until_ready(fn(*args))
         t2 = time.perf_counter() - t

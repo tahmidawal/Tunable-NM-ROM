@@ -403,6 +403,77 @@ def finish_lh(res, comps, family, min_seeds=2):
     return HS.f5(list(family), per_k), per_k
 
 
+def cost_vs_k(timings, costs):
+    """DESIGN 5.3 (descriptive): per mesh, per head (BE), median fused cost / A and evolution cost / A over dev6, LM
+    iterations per step and evolution cost per LM iteration (A-normalised), from the hash-linked valid repeats; and per
+    mesh the fit t(K) = a + b K^p of the per-case seed-median fused cost (p1stats.fit_power, case bootstrap 10,000) —
+    over ALL trained seeds (labelled: qualification not required for a cost description)."""
+    out = {}
+    for m, (r, meta, cost) in timings.items():
+        inv = {}
+        for x in r['invocations']:
+            inv.setdefault(x['B'], []).append(x)
+        rows = {}
+        for lb, c in cost.items():
+            name = lb.split('|')[1]
+            if not lb.endswith('|BE') or name == 'A_R384':
+                continue
+            xs = [x for x in inv.get(lb, []) if x['valid'] and x['case'].startswith('dev6')]
+            its = [float(np.sum(x['it'])) for x in xs]
+            steps = [len(x['it']) for x in xs]
+            rows[name] = dict(fused=float(np.median([v for k_, v in c['per_case'].items() if k_.startswith('dev6') and v is not None]))
+                              if any(v is not None for v in c['per_case'].values()) else None,
+                              evolution=float(np.median([v for k_, v in c['per_case_ev'].items() if k_.startswith('dev6') and v is not None]))
+                              if any(v is not None for v in c['per_case_ev'].values()) else None,
+                              its_per_step=float(np.median([a / b for a, b in zip(its, steps)])) if xs else None,
+                              ev_cost_per_iteration=float(np.median([x['ratio'] / max(1., np.sum(x['it'])) for x in xs])) if xs else None,
+                              usable=c['usable'])
+        fit = None
+        ks = [K for K in KS if all(f'H{K}s{s}' in rows for s in SEEDS)]
+        if len(ks) >= 3:
+            dev = sorted({c_ for lb, c in cost.items() for c_ in c['per_case'] if c_.startswith('dev6')})
+            lbs = {(K, s): next(lb for lb in cost if lb.split('|')[1] == f'H{K}s{s}' and lb.endswith('|BE')) for K in ks for s in SEEDS}
+            T = np.array([[np.median([cost[lbs[(K, s)]]['per_case'][c_] for s in SEEDS]) for K in ks] for c_ in dev])
+            pt = PS.fit_power(ks, T.mean(0))
+            rng = np.random.default_rng(PS.SEED)
+            ps = []
+            for _ in range(PS.NBOOT):
+                ft = PS.fit_power(ks, T[rng.integers(0, len(dev), len(dev))].mean(0))
+                if ft.get('ok') and not ft.get('flat') and not ft.get('boundary'):
+                    ps.append(ft['p'])
+            fit = dict(point=pt, K=ks, n_ok_boot=len(ps),
+                       ci=[float(np.percentile(ps, 2.5)), float(np.percentile(ps, 97.5))] if (pt.get('ok') and len(ps) > 100) else None,
+                       identified=bool(pt.get('ok') and not pt.get('flat') and not pt.get('boundary')),
+                       note='descriptive; all trained seeds; flat or boundary fits mean the exponent is not identified')
+        out[str(m)] = dict(rows=rows, fit=fit, contract=CONTRACT + '; dev6')
+    return out
+
+
+def seed_spread(recs, scheme='BE'):
+    """DESIGN 2.4: per K, the seeds' median E0 errors, their max/min, and qualification."""
+    out = {}
+    for K in KS:
+        v = {s: recs.get((f'H{K}s{s}', scheme)) for s in SEEDS}
+        med = {str(s): (x['median'] if x else None) for s, x in v.items()}
+        vals = [x for x in med.values() if x]
+        out[str(K)] = dict(medians=med, qualified={str(s): bool(x and x['qualified']) for s, x in v.items()},
+                           max_over_min=max(vals) / min(vals) if vals else None)
+    return out
+
+
+def ic_summary(recs):
+    """A1.3 descriptive: production initial-fit exit reasons and iteration totals per head configuration."""
+    out = {}
+    for (name, sc), v in recs.items():
+        if v['kind'] != 'head':
+            continue
+        rs = [int(x) for x in v['ic'] if x is not None]
+        out[f'{name}|{sc}'] = dict(stationary=sum(r_ == 4 for r_ in rs), residual=sum(r_ == 1 for r_ in rs),
+                                   other=sum(r_ not in (1, 4) for r_ in rs), n=len(rs),
+                                   lm_iterations_median=float(np.median(v['it_sum'])))
+    return out
+
+
 def h_cost_n_descriptive(costs):
     """Sensitivity (descriptive, no verdict): the same max/min statistic for EVERY head (all seeds, BE) from the hash-linked
     evolution timings, ignoring the qualification / control gates; labelled unqualified where a gate fails."""
@@ -482,14 +553,19 @@ def main_all():
     exp['configs_1024'] = {f'{k[0]}|{k[1]}': {kk: vv for kk, vv in v.items() if kk not in ('per_case', 'case_qual')}
                            for k, v in recs.items()}
     exp['per_case_1024'] = {f'{k[0]}|{k[1]}': v['per_case'] for k, v in recs.items()}
-    costs = {}
+    costs, timings = {}, {}
     for m in (256, 1024, 4096):
         if have(f'time{m}', 'htime'):
-            _, exp.setdefault('timing_meta', {})[str(m)], costs[m] = timing(f'time{m}', recs)
+            timings[m] = timing(f'time{m}', recs)
+            _, exp.setdefault('timing_meta', {})[str(m)], costs[m] = timings[m]
+    if timings:
+        exp['cost_vs_K'] = cost_vs_k(timings, costs)
     exp['cost'] = {str(m): {lb: {k: v for k, v in c.items() if k != 'raw_ev'} for lb, c in cm.items()} for m, cm in costs.items()}
     if recs:
         fam = jload(RUNS / 'F5-FAMILY.json')['family'] if (RUNS / 'F5-FAMILY.json').exists() else list(KS)
         exp['S_K'] = {sc: {K: pools(recs, K, sc) for K in KS} for sc in SCHEMES}
+        exp['seed_spread'] = {sc: seed_spread(recs, sc) for sc in SCHEMES}
+        exp['initial_fit'] = ic_summary(recs)
         exp['h_acc_k'] = {sc: h_acc_k(recs, sc) for sc in SCHEMES}
         exp['h_acc_k_m128'] = h_acc_k(recs, 'BE', m128=True)
         exp['h_acc_k_per_seed'] = {f'{sc}|{s}': h_acc_k_seed(recs, sc, s) for sc in SCHEMES for s in SEEDS}

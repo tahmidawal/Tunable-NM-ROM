@@ -41,8 +41,8 @@ def qlabel(c):
 
 
 def table(head, rows):
-    out = ['| ' + ' | '.join(head) + ' |', '|' + '---|' * len(head)]
-    out += ['| ' + ' | '.join(str(x) for x in r) + ' |' for r in rows]
+    out = ['| ' + ' | '.join(h.replace('|', '\\|') for h in head) + ' |', '|' + '---|' * len(head)]
+    out += ['| ' + ' | '.join(str(x).replace('|', '\\|') for x in r) + ' |' for r in rows]
     return '\n'.join(out)
 
 
@@ -110,8 +110,12 @@ if 'training' in E:
     w('')
     rows = []
     for k, v in sorted(E['training'].items(), key=lambda kv: (kv[1]['k'], kv[0])):
-        rows.append([k, v['k'], pct(v['recon']), pct(v['oracle']), g3(v['oracle_over_floor']), g3(v.get('seconds'))])
-    w(table(['arm', 'K', 'recon (train)', 'oracle (fresh)', 'oracle / span floor', 'seconds'], rows))
+        rows.append([k, v['k'], pct(v['recon']), pct(v['oracle']), g3(v['oracle_over_floor']), g3(v.get('code_gain')), g3(v.get('seconds'))])
+    w(table(['arm', 'K', 'recon (train)', 'oracle (fresh)', 'oracle / span floor', 'code-refit gain', 'seconds'], rows))
+    w('')
+    w('The seed-0, K = 16 retrain uses the incumbent\'s exact recipe, data and seed, and the copied driver reproduces the '
+      'incumbent essentially bit for bit (same-seed replay of the recipe, not an independent replication). '
+      '"Code-refit gain" > 1 would mean the training codes had not converged.')
     w('')
     ta = E.get('training_acceptance', {})
     w(f"Training gates (recomputed): accepted = `{ta.get('accepted')}` (identity of the copied driver on the incumbent: "
@@ -182,13 +186,23 @@ if hk:
         w(f"Fixed-$M=128$ sensitivity panel (BE): range `{hm.get('range')}`; "
           + ', '.join(f"{k}: `{v.get('outcome')}`" for k, v in hm.items() if k != 'range') + '.')
         w('')
-    fig, ax = plt.subplots(figsize=(5.4, 3.6))
+    fig, ax = plt.subplots(figsize=(5.6, 3.8))
     for s in SEEDS:
         xs = [K for K in KS if cfg(f'H{K}s{s}')]
-        ax.plot(xs, [cfg(f'H{K}s{s}')['median'] for K in xs], 'o-', color=C_H, alpha=.35 + .2 * s,
-                label=f'head seed {s} (median)')
+        ys = [cfg(f'H{K}s{s}')['median'] for K in xs]
+        ax.plot(xs, ys, '-', color=C_H, alpha=.25)
+        for K, y in zip(xs, ys):
+            q = cfg(f'H{K}s{s}')['qualified']
+            ax.plot([K], [y], 'o', color=C_H, mfc=C_H if q else 'white', label='head seed (filled = qualified)' if (s, K) == (0, 4) else None)
+    pool = [(K, np.median([cfg(f'H{K}s{s}')['median'] for s in SEEDS if cfg(f'H{K}s{s}')['qualified']]))
+            for K in KS if sum(cfg(f'H{K}s{s}')['qualified'] for s in SEEDS) >= 2]
+    if pool:
+        ax.plot([k for k, _ in pool], [v for _, v in pool], '*', ms=12, color=C_H, label='pooled (>= 2 qualified seeds)')
     xs = [r for r in LIN if cfg(f'L{r}')]
-    ax.plot(xs, [cfg(f'L{r}')['median'] for r in xs], 's--', color=C_L, label='linear span, r (median)')
+    ax.plot(xs, [cfg(f'L{r}')['median'] for r in xs], '--', color=C_L, alpha=.4)
+    for r in xs:
+        ax.plot([r], [cfg(f'L{r}')['median']], 's', color=C_L, mfc=C_L if cfg(f'L{r}')['qualified'] else 'white',
+                label='linear span r (filled = qualified)' if r == 4 else None)
     if cfg('Hinc'):
         ax.plot([16], [cfg('Hinc')['median']], 'D', color=C_I, label='incumbent head')
     ax.set_xscale('log', base=2); ax.set_yscale('log'); ax.set_xlabel('K (head) or r (linear)')
@@ -196,6 +210,34 @@ if hk:
     fig.tight_layout(); fig.savefig(PLOTS / 'error_vs_K.png', dpi=150); plt.close(fig)
     w('![error vs K](plots/error_vs_K.png)')
     w('')
+    ss = E.get('seed_spread', {}).get('BE', {})
+    if ss:
+        w('**Seed spread (BE, 1024²):** median E0 ST error of each retrain; pooled numbers in this report are summaries over '
+          'the numerically qualified retrains and need not describe any single deployable model (A2.3).')
+        w('')
+        rows = [[K, *[f"{pct(v['medians'][str(s)])}{'' if v['qualified'][str(s)] else ' (unq.)'}" for s in SEEDS], g3(v['max_over_min'])]
+                for K, v in ss.items()]
+        w(table(['K', 'seed 0', 'seed 1', 'seed 2', 'max / min'], rows))
+        w('')
+        fig, ax = plt.subplots(figsize=(5, 3.3))
+        for K, v in ss.items():
+            for s in SEEDS:
+                y = v['medians'][str(s)]
+                if y:
+                    ax.plot([int(K)], [y], 'o', color=C_H, mfc=C_H if v['qualified'][str(s)] else 'white')
+        ax.set_xscale('log', base=2); ax.set_yscale('log'); ax.set_xlabel('K'); ax.set_ylabel('median E0 ST error per seed')
+        ax.set_title('filled = numerically qualified', fontsize=8)
+        fig.tight_layout(); fig.savefig(PLOTS / 'seed_spread.png', dpi=150); plt.close(fig)
+        w('![seed spread](plots/seed_spread.png)')
+        w('')
+    ic = E.get('initial_fit')
+    if ic:
+        rows = [[k, f"{v['stationary']}/{v['n']}", v['residual'], v['other'], g3(v['lm_iterations_median'])] for k, v in sorted(ic.items())]
+        w('**Head initial fit (production, 38 cases):** exit reasons (stationary / residual / other) and median total LM '
+          'iterations per rollout.')
+        w('')
+        w(table(['configuration', 'stationary', 'residual', 'other (invalid)', 'median LM iterations'], rows))
+        w('')
 
 # ------------------------------------------------------------------ cost ----
 if E.get('cost'):
@@ -210,10 +252,41 @@ if E.get('cost'):
             v = [x for x in c['per_case'].values() if x is not None]
             ve = [x for x in c['per_case_ev'].values() if x is not None]
             rows.append([lb, g3(float(np.median(v)) if v else None), g3(float(np.median(ve)) if ve else None),
-                         'yes' if c['complete'] else 'no', g3(c['abs_fused_median'] * 1e3)])
+                         'yes' if c['complete'] else 'no', 'yes' if c.get('usable') else 'no', g3(c['abs_fused_median'] * 1e3)])
         w(f'**{m}²**')
         w('')
-        w(table(['subject', 'fused cost / A', 'evolution cost / A', 'timing complete', 'fused median (ms)'], rows))
+        w(table(['subject', 'fused cost / A', 'evolution cost / A', 'timing complete', 'usable (gates pass)', 'fused median (ms)'], rows))
+        w('')
+    cvk = E.get('cost_vs_K') or {}
+    if cvk:
+        w('**Cost against K (BE, dev6; descriptive, all trained seeds):** median fused and evolution cost / A, LM iterations '
+          'per time step, evolution cost per LM iteration (/ A).')
+        w('')
+        for m, v in sorted(cvk.items(), key=lambda kv: int(kv[0])):
+            rows = [[n, g3(x['fused']), g3(x['evolution']), g3(x['its_per_step']), g3(x['ev_cost_per_iteration']),
+                     'yes' if x['usable'] else 'no'] for n, x in sorted(v['rows'].items())]
+            w(f'{m}²')
+            w('')
+            w(table(['subject', 'fused / A', 'evolution / A', 'LM iterations per step', 'evolution / A per iteration', 'usable'], rows))
+            w('')
+            f = v.get('fit')
+            if f:
+                pt = f['point']
+                w(f"Fit $t(K)=a+bK^p$ to the per-case seed-median fused cost over K = {f['K']}: "
+                  + (f"p = {g3(pt['p'])} (95 % case-bootstrap interval {f['ci']})." if f.get('identified') else
+                     f"**not identified** (relative rms {g3(pt.get('rel_rms'))}; cost is not a power law in K here — it is "
+                     'driven by LM iteration counts, see the table).'))
+                w('')
+        fig, ax = plt.subplots(figsize=(5.4, 3.6))
+        for m, v in sorted(cvk.items(), key=lambda kv: int(kv[0])):
+            for s_ in SEEDS:
+                xs = [K for K in KS if f'H{K}s{s_}' in v['rows'] and v['rows'][f'H{K}s{s_}']['fused']]
+                if xs:
+                    ax.plot(xs, [v['rows'][f'H{K}s{s_}']['fused'] for K in xs], 'o-', alpha=.35 + .2 * s_,
+                            color={'256': '#7fb3d5', '1024': C_H, '4096': '#0b3c5d'}[m], label=f'{m}², seed {s_}')
+        ax.set_xscale('log', base=2); ax.set_xlabel('K'); ax.set_ylabel('fused online cost / A (BE)')
+        ax.legend(frameon=False, fontsize=6, ncol=2); fig.tight_layout(); fig.savefig(PLOTS / 'cost_vs_K.png', dpi=150); plt.close(fig)
+        w('![cost vs K](plots/cost_vs_K.png)')
         w('')
     hc = E.get('h_cost_n') or {}
     if hc:
@@ -226,8 +299,8 @@ if E.get('cost'):
     if hd:
         rows = [[k, g3(v['medians'].get('256')), g3(v['medians'].get('1024')), g3(v['medians'].get('4096')), g3(v['ratio']),
                  'yes' if v['usable_all'] else 'no'] for k, v in hd.items()]
-        w('Descriptive sensitivity (no verdict): median evolution cost / A per head over dev6 at each timed mesh, all heads, '
-          'whether or not the timing-job gates pass:')
+        w('Descriptive sensitivity (no verdict): median evolution cost / A over dev6 for every head timed at all three meshes '
+          '(the seed-0 heads and the incumbent), whether or not the timing-job gates pass:')
         w('')
         w(table(['head', '256²', '1024²', '4096²', 'max / min', 'all gates pass'], rows))
         w('')
@@ -273,8 +346,21 @@ if E.get('lh'):
                          '; '.join(f"r={x['r']}: {x['dominance']}" for x in c.get('equal_cost', []))])
         w(f'**{sc}** (X = head; error labels of head against linear r = K)')
         w('')
-        w(table(['K', 'qualified seeds', 'timing-complete seeds', 'Q-LH-dim', 'error (r = K)', 'cost (head / linear)',
+        w(table(['K', 'qualified seeds', 'timing-usable seeds', 'Q-LH-dim', 'error (r = K)', 'cost (head / linear)',
                  'at most equal cost', 'equal-cost rungs'], rows))
+        w('')
+        rows = []
+        for K in KS:
+            e = P.get(str(K)) or P.get(K)
+            c = (e or {}).get('lh_cost') or {}
+            if c.get('bracket'):
+                b = c['bracket']
+                rows.append([K, ', '.join(map(str, c.get('certified_affordable', []))) or '—',
+                             ', '.join(map(str, c.get('possibly_affordable', []))) or '—', b['r_lo'], b.get('lo_dominance'),
+                             b['r_hi'], b.get('hi_dominance'), c.get('coverage_status') or '—'])
+        if rows:
+            w(table(['K', 'certified-affordable rungs', 'possibly-affordable rungs', 'bracket r below', 'dominance (below)',
+                     'bracket r above', 'dominance (above)', 'cost coverage'], rows))
         w('')
     rows = []
     for K in KS:
@@ -360,17 +446,18 @@ G = [
     ('bank', 'the frozen coordinate-network basis (512 functions of space) shared by every reduced model here'),
     ('linear span (r)', 'reduced model whose state is a combination of the first r ordered bank functions; r unknowns'),
     ('nonlinear head (K)', 'a small neural network mapping K latent numbers to the 512 bank coefficients; the reduced state has K unknowns'),
-    ('seed', 'one of three independent retrainings of the same head recipe; retrains are not bitwise reproducible'),
+    ('seed', 'one of three retrainings of the same head recipe with different random seeds (retrains are not guaranteed to be bitwise reproducible across runs or hardware)'),
     ('incumbent', 'the K = 16 head used in earlier campaign work (checkpoint dn256b)'),
     ('M', 'number of sine test functions the residual is tested against (M = 4K or 4r here; 128 in the sensitivity panel)'),
     ('LSPG-BE / LSPG-CN-R', 'least-squares Petrov–Galerkin time stepping with backward Euler / Crank–Nicolson with two BE start-up steps'),
     ('E0 ST', 'second-order reference solution (space and time refined); the error is the worst relative L2 error over five output times'),
     ('eps_ref', 'estimated uncertainty of the reference; two errors closer than 2 eps_ref are treated as tied'),
-    ('Q1', 'solver qualification: every step stationary, valid runs, distance to a tightly converged solve below 2.5e-4'),
-    ('Q2', 'quadrature qualification: the next finer rule changes the trajectory by less than 2.5e-4'),
+    ('Q1', 'solver qualification: valid runs, at most 1 % non-stationary steps, verified tight anchors, distance to the tight solve below 2.5e-4 on every case, tight/tighter agreement below 2.5e-5'),
+    ('Q2', 'quadrature qualification: the next finer rule changes the trajectory by less than 2.5e-4 (16 cases), the tested advection by a relative rho below 0.116, and the next pair of rules agrees too'),
     ('numerically qualified', 'Q1 and Q2 both pass; says nothing about accuracy'),
     ('Q-LH-dim', 'head K against linear r = K: who is more accurate (paired signed-rank test or TOST) and who is cheaper'),
-    ('Q-LH-cost', 'head K against every linear rung at no more online cost (affordable rungs)'),
+    ('Q-LH-cost', 'head K against the linear rungs at no more online cost: certified-affordable rungs (cost interval within or below the equal-cost band) and possibly-affordable rungs (not certified costlier)'),
+    ('usable (timing)', 'the timing of a subject passed its own Q1/Q2 check on dev6, its controls, and (at 1024²) matched the accuracy-job trajectory'),
     ('dominates', 'at least as accurate and at least as cheap, strictly better in one'),
     ('TOST', 'two one-sided tests: declares "matches" when paired differences lie within a margin of max(2 eps_ref, 10 % of the error)'),
     ('Holm', 'step-down multiplicity adjustment over all (K, r) comparisons, used here as a fixed decision rule'),

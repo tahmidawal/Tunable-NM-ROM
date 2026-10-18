@@ -30,7 +30,8 @@ KAPPAS = (1, 2, 3, 4, 8)
 PRIMARY = 'gauss256'
 RHO_SUBSET_MAX = 4e7
 CODE_VERSION = hashlib.sha256(b''.join((Path(__file__).resolve().parent / f).read_bytes()
-                                       for f in ('analyze2d.py', 'dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py'))).hexdigest()                  # A6.1: independent rho recomputed when m * M <= 4e7 (dev6|0, six outputs)
+                                       for f in ('analyze2d.py', 'dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py', 'dcert.py', 'p1score.py',
+                                                 'rules2d.py'))).hexdigest()                  # A6.1: independent rho recomputed when m * M <= 4e7 (dev6|0, six outputs)
 
 
 def sha_file(p):
@@ -52,7 +53,8 @@ def config_entry(att, d, res, setting, arm, score=True):
     if not p.exists():
         return None
     sh = sha_file(p)
-    ver = CODE_VERSION + '|' + json.dumps(arm['cases'])
+    rows_ = [r_ for r_ in res['rows'] if r_['setting'] == setting and r_['arm'] == f'{form}_{scheme}_{fac:g}']
+    ver = CODE_VERSION + '|' + json.dumps(arm['cases']) + '|' + hashlib.sha256(json.dumps(rows_, sort_keys=True, default=str).encode()).hexdigest()
     cp = CACHE / f'{att}__{setting}__{form}_{scheme}_{fac:g}.json'
     if cp.exists():
         c = json.loads(cp.read_text())
@@ -64,7 +66,11 @@ def config_entry(att, d, res, setting, arm, score=True):
     rows = [r_ for r_ in res['rows'] if r_['setting'] == setting and r_['arm'] == f'{form}_{scheme}_{fac:g}']
     q = DSC.q1(R, rows, arm['cases'])
     sc = DSC.scores(R) if score else None
-    e = dict(sha256=sh, version=ver, population_ok=[str(x) for x in R['case_ids']] == DSC.expected_ids(arm['cases']),
+    exp_ = DSC.expected_ids(arm['cases'])
+    pop_ok = bool([str(x) for x in R['case_ids']] == exp_ and [str(x) for x in R['dev_case_ids']] == [c for c in exp_ if c in DSC.DEV6]
+                  and np.shape(R['W_tighter'])[0] == len([c for c in exp_ if c in DSC.DEV6]) and np.shape(R['W_tight'])[0] == len(exp_)
+                  and len(rows_) == len(exp_))
+    e = dict(sha256=sh, version=ver, population_ok=pop_ok,
              job=att, setting=setting, form=form, scheme=scheme, factor=fac, r=int(R['Rp']), M=int(R['M']),
              policy=str(R['policy']), rule=str(R['rule']), square=bool(R['square']), case_ids=[str(x) for x in R['case_ids']],
              Q1=q['Q1'], disagreements=[str(x) for x in q['disagreements'][:5]], pooled=q['pooled_noncertified'],

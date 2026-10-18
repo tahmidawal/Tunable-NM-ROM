@@ -43,8 +43,8 @@ ALL64, CHK = list(range(64)), list(range(8))
 
 
 def out_dir(att):
-    d = RUNS / att / 'archive' / 'output' / f'd3run_{att}'
-    return d if (d / 'result.json').exists() else None
+    import dscore as DSC
+    return DSC.out_dir(att, 'd3run', att)
 
 
 def m3(rule):
@@ -138,7 +138,10 @@ def q1_of(c):
     off_t = odist(z['W'], z['W_tight'], c['setting'], c['cases'])
     off_tt = odist(z['W_tight'][[c['cases'].index(j) for j in tids]], z['W_tighter'], c['setting'], tids) if tids else np.array([])
     agree = bool(np.allclose(off_t, z['dist_tight'], rtol=1e-9, atol=1e-13) and np.allclose(off_tt, z['dist_tight_tighter'], rtol=1e-9, atol=1e-13))
-    return dict(population=bool(c['cases'] == exp and tids == tcs and len(z['valid']) == len(exp) and len(z['valid_tighter']) == len(tcs)),
+    n = len(exp)
+    return dict(population=bool(c['cases'] == exp and tids == tcs and len(z['valid']) == n and len(z['valid_tighter']) == len(tcs)
+                                and len(z['valid_tight']) == n and len(z['gcert']) == n and len(z['noncert']) == n
+                                and z['cert'].shape[0] == n and len(z['dist_tight']) == n and len(z['dist_tight_tighter']) == len(tcs)),
                 offline_tight_agrees=agree, valid=bool(np.all(z['valid'])),
                 certificate=bool(np.sum(z['noncert']) <= .01 * len(c['cases']) * S_), gcert=bool(np.all(z['gcert'])),
                 distance=fin_max(z['dist_tight']) <= BAR, anchors_valid=bool(np.all(z['valid_tight']) and np.all(z['valid_tighter'])),
@@ -154,7 +157,11 @@ def rho_offline(c, qp):
         return None
     cp = HERE / 'checks' / 'rho3d-offline.json'
     cache = json.loads(cp.read_text()) if cp.exists() else {}
-    ck = f"{c['setting']}|{c['rule']}|{qp}|{c['spec']}|{c['att']}"
+    import hashlib
+    bind = hashlib.sha256(np.ascontiguousarray(np.asarray(c['W'])[[c['cases'].index(0), c['cases'].index(1)]]).tobytes()
+                          + json.dumps(np.asarray(c['entry']['rho'], float)[[c['cases'].index(0), c['cases'].index(1)]].tolist()).encode()
+                          + (HERE / 'analyze3d.py').read_bytes() + (HERE / 'rules3d_names.py').read_bytes()).hexdigest()
+    ck = f"{c['setting']}|{c['rule']}|{qp}|{c['spec']}|{c['att']}|{bind}"
     if ck in cache:
         return cache[ck]
     sys.path.insert(0, str(HERE / 'vendor' / 'quad3d'))
@@ -224,14 +231,19 @@ def fixgate_offline3d(rules):
 
 def ladder_q2(C, keys, i):
     if i >= len(keys) - 2:
-        return dict(label='unverified (ladder top)')
+        ro = rho_offline(C[keys[i]], keys[i + 1].split('|')[1]) if (i == len(keys) - 2 and keys[i + 1] in C) else None
+        return dict(label='unverified (ladder top)', rho_offline=ro,
+                    audit_flag=(ro is not None and not ro['agree']))
     k, kn, knn = keys[i], keys[i + 1], keys[i + 2]
     if kn not in C or C[k]['entry'].get('dist_next') is None:
         return dict(label='unverified (successor invalid)')
     c, cn = C[k], C[kn]
     e, en = c['entry'], cn['entry']
-    if cn['cases'] != c['cases'] or cn['M'] != c['M'] or cn['spec'] != c['spec'] or cn['setting'] != c['setting']:
+    if cn['cases'] != c['cases'] or cn['M'] != c['M'] or cn['spec'] != c['spec'] or cn['setting'] != c['setting'] \
+            or mode_hash(cn) != mode_hash(c):
         return dict(label='blocked (successor identity)')
+    if len(cn['valid_cases']) != len(c['cases']) or bool(all(cn['valid_cases'].values())) != bool(all(e['next_valid'])):
+        return dict(label='blocked (successor validity inconsistent)')
     off = odist(c['W'], cn['W'], c['setting'], c['cases'])
     agree = bool(np.allclose(off, e['dist_next'], rtol=1e-9, atol=1e-13))
     rho = np.asarray(e['rho'], float).ravel()
@@ -241,13 +253,14 @@ def ladder_q2(C, keys, i):
     chk = None
     if knn in C and en.get('dist_next') is not None:
         cnn = C[knn]
-        if cnn['cases'] != c['cases'] or cnn['M'] != c['M'] or cnn['spec'] != c['spec'] or cnn['setting'] != c['setting']:
+        if cnn['cases'] != c['cases'] or cnn['M'] != c['M'] or cnn['spec'] != c['spec'] or cnn['setting'] != c['setting'] \
+                or mode_hash(cnn) != mode_hash(c):
             return dict(label='blocked (successor identity)')
         idx = [c['cases'].index(j) for j in CHK if j in c['cases']]
         dchk = odist(cn['W'][idx], cnn['W'][idx], c['setting'], [c['cases'][j] for j in idx])
         if not np.allclose(dchk, [en['dist_next'][j] for j in idx], rtol=1e-9, atol=1e-13):
             return dict(label='blocked (offline recomputation disagrees)')
-        chk = (bool(all(en['next_valid'][j] for j in idx)), fin_max(dchk))
+        chk = (bool(all(cnn['valid_cases'].get(c['cases'][j], False) for j in idx)), fin_max(dchk))
     rmax = float(rho_f.max()) if rho_f.size else np.nan
     lab = DS.q2_label(True, (bool(all(e['next_valid'])), fin_max(e['dist_next'])), rmax, chk)
     if not agree:
@@ -256,6 +269,10 @@ def ladder_q2(C, keys, i):
     if ro is not None and not ro['agree'] and lab == 'pass':
         lab = 'blocked (independent rho disagrees)'
     return dict(label=lab, worst_dist_qp=fin_max(e['dist_next']), rho_max=rmax, check=chk, offline_agrees=agree, rho_offline=ro)
+
+
+def mode_hash(c):
+    return c['entry'].get('mode_hash') if c['kind'] == 'ladder' else str(c['z']['mode_hash'])
 
 
 def key_of(setting, rule, spec, dt=0.01):
@@ -282,7 +299,9 @@ def rounds():
                 if key.startswith('control|'):
                     out[f'round{k}|{key}'] = dict(label='control', worst=fin_max(m['dist_qp']), fired=bool(fin_max(m['dist_qp']) > BAR))
                     continue
-                pop = m['cases'] == ALL64 and len(m['dist_qp']) == 64 and (not m.get('qpp') or m.get('qpp_cases') == CHK)
+                pop = (m['cases'] == ALL64 and len(m['dist_qp']) == 64 and len(m['valid']) == 64 and len(m['valid_qp']) == 64
+                       and np.shape(m['rho']) == (64, 6) and (not m.get('qpp') or (m.get('qpp_cases') == CHK and len(m['valid_qpp']) == 8
+                                                                                   and len(m['dist_qp_qpp']) == 8)))
                 dq = np.asarray(m['dist_qp'], float)
                 rho = np.asarray(m['rho'], float).ravel()
                 rho = rho[~np.isnan(rho)]
@@ -492,7 +511,7 @@ def main():
     print('3D configs', len(out['configurations']), 'qualified', len(qual))
 
 
-def cert_of_job(res):
+def cert_of_job(res, d):
     """Timing-job qualification (A1.1, A2.3) from the single-rung certification blocks of a timing job (t3s / t3c):
     every registered case valid, pooled certificate <= 1 %, distance to ADT / tight <= 2.5e-4, anchors valid, tight /
     tighter <= 2.5e-5 on every tighter case (complete inventories)."""
@@ -501,13 +520,20 @@ def cert_of_job(res):
         if blk['kind'] == 'ladder':
             for k, e in rb['result'].items():
                 cert[k] = bool(e['cases'] == blk['cases'] and len(e['valid']) == len(blk['cases']) and all(e['valid'])
+                               and len(e['adt_valid']) == len(blk['cases']) and e['tighter_cases'] == blk['tighter_cases']
+                               and len(e['adt_tighter_valid']) == len(blk['tighter_cases'])
                                and e['nonstationary'] <= .01 * e['steps'] and len(e['dist_adt']) == len(blk['cases'])
                                and fin_max(e['dist_adt']) <= BAR and all(e['adt_valid']) and all(e['adt_tighter_valid'])
                                and len(e['adt_tight_tighter']) == len(blk['tighter_cases']) and fin_max(e['adt_tight_tighter']) <= BAR_TT)
         elif blk['kind'] == 'adaptive':
             for k, e in rb['result'].items():
-                cert[k] = bool(e['valid'] and e['noncert'] <= .01 * e['steps'] and e['gcert'] and e['worst_dist_tight'] <= BAR
-                               and e['worst_tight_tighter'] is not None and e['worst_tight_tighter'] <= BAR_TT)
+                z = np.load(d / f"AD_{k.replace('|', '_')}.npz")
+                n = len(blk['cases'])
+                cert[k] = bool([int(x) for x in z['case_ids']] == blk['cases'] and [int(x) for x in z['tighter_ids']] == blk['tighter_cases']
+                               and len(z['valid']) == n and np.all(z['valid']) and len(z['valid_tight']) == n and np.all(z['valid_tight'])
+                               and len(z['valid_tighter']) == len(blk['tighter_cases']) and np.all(z['valid_tighter'])
+                               and len(z['gcert']) == n and np.all(z['gcert']) and np.sum(z['noncert']) <= .01 * n * z['cert'].shape[1]
+                               and fin_max(z['dist_tight']) <= BAR and fin_max(z['dist_tight_tighter']) <= BAR_TT)
     return cert
 
 
@@ -517,7 +543,7 @@ def after_screen(out, C, lab, e0_of, qual):
     d = out_dir('t3s')
     res = json.loads((d / 'result.json').read_text())
     pan = res['timing']['screen']
-    cert = cert_of_job(res)
+    cert = cert_of_job(res, d)
     ratios = {}
     for x in pan['invocations']:
         ratios.setdefault(x['B'], []).append(x['ratio'])
@@ -538,7 +564,7 @@ def after_screen(out, C, lab, e0_of, qual):
     dc = out_dir('t3c')
     if dc is not None:
         rc = json.loads((dc / 'result.json').read_text())
-        ccert = cert_of_job(rc)                         # confirmation-job Q1 of both subjects on cases 0-7 (A1.1)
+        ccert = cert_of_job(rc, dc)                         # confirmation-job Q1 of both subjects on cases 0-7 (A1.1)
         for lb, t in rc['timing'].items():
             pair = [t['A']] + sorted({x['B'] for x in t['invocations']})
             nm = lambda x: x[:-5] if x.endswith('|prod') else x

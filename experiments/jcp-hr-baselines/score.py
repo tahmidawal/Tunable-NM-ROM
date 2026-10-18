@@ -82,9 +82,19 @@ class Refs:
         rc = j if ref_case is None else ref_case
         R = self.f[rc]
         F = np.asarray(fields, float)
+        n0 = self.n0(rc)
+        if F.shape != R.shape or not np.all(np.isfinite(F)) or not (np.isfinite(n0) and n0 > 0):
+            raise ValueError(f'invalid field for scoring: shape {F.shape} vs {R.shape}, finite={np.all(np.isfinite(F))}')
         ks = range(1, 6 - shift)
         e_t = [float(np.linalg.norm((F[k] - R[k + shift]).ravel())) / self.n0(rc) for k in ks]
         return dict(e=max(e_t), e_t=e_t, eps_ref=float(self.st[rc]['eps_ref']), eligible=bool(self.st[rc]['eligible']))
+
+    def score_safe(self, fields, j, **kw):
+        """score() that records an invalid (non-finite / wrong-shape) field as e = nan instead of raising."""
+        try:
+            return self.score(fields, j, **kw)
+        except ValueError as ex:
+            return dict(e=float('nan'), error=str(ex), eps_ref=float(self.st[j]['eps_ref']), eligible=False)
 
     def score_refstore(self, fields, j):
         """The loader's own scorer (cross-check of self.score)."""
@@ -92,5 +102,8 @@ class Refs:
 
 
 def lattice_distance(Fa, Fb, n0):
-    """Q1 distance (A1.7): max_{k>=1} ||Fa_k - Fb_k|| / n0 on the scoring lattice."""
+    """Q1 distance (A1.7): max_{k>=1} ||Fa_k - Fb_k|| / n0 on the scoring lattice (non-finite inputs -> inf)."""
+    Fa, Fb = np.asarray(Fa, float), np.asarray(Fb, float)
+    if Fa.shape != Fb.shape or not (np.all(np.isfinite(Fa)) and np.all(np.isfinite(Fb))) or not (np.isfinite(n0) and n0 > 0):
+        return float('inf')
     return max(float(np.linalg.norm((np.asarray(Fa[k]) - np.asarray(Fb[k])).ravel())) for k in range(1, 6)) / n0

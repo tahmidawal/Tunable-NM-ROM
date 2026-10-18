@@ -79,13 +79,13 @@ class Cell:
             dev = np.inf
         with self.T(f'pod_check[{gen}]'):
             pe, C = BD.projection_errors(S, Phi, rl, sig)
-        passed = {r: certificate_ok(pe[r]) for r in rl}
+        passed = basis_certified(pe, dev, rl)
         fallback = None
         if not all(passed.values()):          # A5.2: blocked randomised SVD; the tail always comes from the Gram
             with self.T(f'pod_fallback[{gen}]'):
                 Phi2, sr, dev2 = BD.pod_rsvd(S, rmax)
                 pe2, C2 = BD.projection_errors(S, Phi2, rl, sig)
-            passed2 = {r: certificate_ok(pe2[r]) for r in rl}
+            passed2 = basis_certified(pe2, dev2, rl)
             fallback = dict(passed=passed2, proj=pe2)
             if sum(passed2.values()) > sum(passed.values()):          # A6.1: one basis per cell, the one certifying more
                 Phi, pe, C, dev, passed = Phi2, pe2, C2, dev2, passed2
@@ -118,13 +118,13 @@ class Cell:
         pl = sorted({p for p in p_list if p <= pmax})
         with self.T('adv_pod_check'):
             pe, _ = BD.projection_errors(S, U, pl, sigN)
-        passed = {p: certificate_ok(pe[p]) for p in pl}
+        passed = basis_certified(pe, devN, pl)
         fallback = None
         if not all(passed.values()):
             with self.T('adv_pod_fallback'):
                 U2, sr, devN2 = BD.pod_rsvd(S, pmax)
                 pe2, _ = BD.projection_errors(S, U2, pl, sigN)
-            passed2 = {p: certificate_ok(pe2[p]) for p in pl}
+            passed2 = basis_certified(pe2, devN2, pl)
             fallback = dict(passed=passed2)
             if sum(passed2.values()) > sum(passed.values()):
                 U, pe, devN, passed = U2, pe2, devN2, passed2
@@ -214,6 +214,10 @@ class Cell:
             rec['cert'] = RM.certify(out, gam, sch, level)
             rec['gamma'] = np.asarray(gam)[:int(sch['steps'])]
         rec['C'] = np.asarray(out['C'])[:int(sch['steps']) + 1]
+        rec['reason'] = np.asarray(out['stats']['reason'])
+        rec['lam'] = np.asarray(out['stats']['lam'])
+        rec['it'] = np.asarray(out['stats']['it'])
+        rec['scale'] = float(out['scale'])
         return rec
 
     def lattice(self, fields):
@@ -225,6 +229,12 @@ class Cell:
 
 class ConstructionError(RuntimeError):
     """A registered configuration cannot be constructed (POD rank not certified, DEIM solve inaccurate, ...)."""
+
+
+def basis_certified(pe, dev, ranks):
+    """Per-rank certificate of one candidate basis, including orthonormality and finiteness (code audit 2, item 13)."""
+    ok_basis = bool(np.isfinite(dev) and dev <= 1e-10)
+    return {r: bool(ok_basis and certificate_ok(pe[r])) for r in ranks}
 
 
 def certificate_ok(v):
@@ -240,13 +250,14 @@ def certificate_ok(v):
     return bool(abs(e - tau) <= 0.01 * tau + 1e-6)
 
 
-def q1_config(records, tight, tighter, n0, subset):
-    """Per-configuration Q1 (A1.7, A2.7) on a cohort. records / tight: case -> run record for EVERY cohort case;
-    tighter: case -> run record for exactly the prescribed subset (the cohort's first two cases). Fail-closed."""
+def q1_config(records, tight, tighter, n0, subset, expected):
+    """Per-configuration Q1 (A1.7, A2.7) on a cohort. `expected` = the cohort's registered case identities; records /
+    tight must cover exactly them; tighter exactly the prescribed `subset` (the cohort's first two cases); n0 positive
+    and finite for each. Fail-closed."""
     import score as SC
-    cases = sorted(records)
-    complete = (sorted(tight) == cases and sorted(tighter) == sorted(subset) and set(subset) <= set(cases)
-                and len(subset) == 2)
+    cases = sorted(expected)
+    complete = (sorted(records) == cases and sorted(tight) == cases and sorted(tighter) == sorted(subset)
+                and list(subset) == cases[:2] and all(c in n0 and np.isfinite(n0[c]) and n0[c] > 0 for c in cases))
     if not complete:
         return dict(q1=False, reason='incomplete anchors', cases=cases, tight=sorted(tight), tighter=sorted(tighter))
     allv = all(r['cert']['valid'] for r in records.values())

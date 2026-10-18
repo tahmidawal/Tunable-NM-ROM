@@ -357,8 +357,8 @@ def t_pod():
 def t_lmm():
     out = []
     for d, L in ((2, 16), (3, 8)):
-        u0, _ = smooth_state(d, L)
-        nu = 0.1                       # frozen order fixture (A3.12): case 0 IC, nu = 0.1, T = 0.25
+        u0, _ = smooth_state(d, L, seed=0)
+        nu = 0.1                       # frozen order fixture (A3.8): case 0 IC, nu = 0.1, T = 0.25
         sh = H.shape_of(d, L)
         Fr = lambda u: (RC.adv_central(u.reshape(sh), L) - nu * RC.lap(u.reshape(sh), L)).reshape(-1)
         fom = H.make_fom(d, L)

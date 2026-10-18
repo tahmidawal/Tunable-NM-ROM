@@ -928,3 +928,35 @@ The CPU gate file `checks/test_core.json` (all 13 gates) is a required input.
 
 **A6.8 Metadata pin (code audit item 17).** Jobs run with `JCPREF_META` unset; `score.check_store` asserts the loader's
 metadata directory is the lane's pinned `e0/store` and hashes the exact STATUS file the loader reads.
+
+---
+
+## Amendment A7 (2026-10-18) — design-level consequences of code audit 2 (`audits/codex-code-2.md`, NOT READY)
+
+**A7.1 GN backtracking.** A1.15 stands: when no halving decreases $\|\hat r\|$ (or the step is non-finite) the native
+solver exits with reason 3 and the run is invalid. (The interim implementation returned reason 2; corrected.)
+
+**A7.2 NNLS fallback numerics.** The passive-set fallback (A4.7) solves the least-squares problem on the original
+contribution columns with an SVD-based least-squares routine (`jnp.linalg.lstsq`, rcond 1e-13) rather than a QR; this
+is at least as stable as the QR named in A4.7 and is the registered method.
+
+**A7.3 Phase-I adapter check is not G-ours.** The smoke executes ours' adapters at real size (A5.4) and times them
+A–B–A; it does not replay exported errors. G-ours (§8, A3.10) is a phase-II gate on the pinned exports and is not
+claimed by phase I.
+
+**A7.4 N-under evidence.** Every ladder level persists its per-step certification lists and its production, tight and
+tighter lattice fields; acceptance recomputes Q1 from them. ECSW levels whose actual support is below r are forced to
+"not qualified (underdetermined)" in-job and in acceptance.
+
+**A7.5 G-fd-a fixture.** At real size: a random state $u=u_0+0.1\max|u_0|\,\xi$ ($\xi$ standard normal, seed 0);
+stencil values at 4,096 sampled nodes and **all stencil-Jacobian entries of 64 sampled rows** (rows of refcore's
+Jacobian by vector–Jacobian products) against the lane's stencil algebra; bars as A1.9.
+
+**A7.6 N-grad classification.** In addition to γ agreement (A4.1), the production classifier (`rom.certify`) is run on
+each perturbation variant's γ array (tested steps replaced by the perturbed tuples' γ); its non-stationary count must
+equal the count from the oracle's γ. Part (b) reports complete Q1 on both fixtures.
+
+**A7.7 Timing evidence.** Each timed call's output is compared with its separately scored output immediately after
+the timer stops (every call of every attempt, both calls inside N-time's B); acceptance recomputes drift validity from
+the raw times and requires all six registered cases (the six are hard-coded in `stats.TIMING_CASES`; a caller cannot
+shorten them).

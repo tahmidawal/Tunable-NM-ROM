@@ -12,7 +12,7 @@ Arm interface (all f64, shapes static per configuration):
          B = [Phi, Lap_h Phi, U_p] = Q_B R_B (Householder, A1.2),  Nt(c) = (P^T U_p)^{-1} N_h(Phi c)|_P.
          Stored: T1 = R_B[:, :r], T2 = R_B[:, r:2r], T3E = R_B[:, 2r:] (P^T U_p)^{-1}.
 
-Exit reasons (as t2core): 0 budget, 1 residual tolerance, 2 tiny step, 3 non-finite / damping limit (GN: a stalled backtracking exits with 2),
+Exit reasons (as t2core): 0 budget, 1 residual tolerance, 2 tiny step, 3 non-finite / damping limit / GN backtracking exhausted,
 4 stationary.
 """
 from __future__ import annotations
@@ -161,9 +161,9 @@ def make_gn(rJ, budget=GN_BUDGET, halvings=GN_HALVINGS):
             J3 = jnp.where(accept, J2, J)
             rn3 = jnp.where(accept, rn2, rn)
             tiny = accept & (jnp.linalg.norm(cn - c) <= 1e-14 * (1 + jnp.linalg.norm(c)))
-            # no decrease after every halving: stalled (2) if the step was finite, non-finite (3) otherwise
-            reason = jnp.where(~ok | ~jnp.isfinite(rn2), 3, jnp.where(~accept, 2, jnp.where(ratio(J3, r3) <= gtol, 4,
-                                                     jnp.where(rn3 <= tol, 1, jnp.where(tiny, 2, 0)))))
+            # no decrease after every halving, or a non-finite step: exit reason 3 (A1.15; code audit 2, item 19)
+            reason = jnp.where(~accept, 3, jnp.where(ratio(J3, r3) <= gtol, 4,
+                                                     jnp.where(rn3 <= tol, 1, jnp.where(tiny, 2, 0))))
             return c3, r3, J3, rn3, it + 1, reason.astype(jnp.int32)
 
         c, r, J, rn, it, reason = jax.lax.while_loop(lambda s: (s[4] < budget) & (s[5] == 0), body,
@@ -307,6 +307,8 @@ def certify(out, gam, sch, level='prod'):
     valid = bool(np.isfinite(C).all() and np.all(rs >= 0) and not np.any(rs == 3) and saturated == 0)
     gl = LEVELS[level][0]
     return dict(valid=valid, nonstat=int(np.sum(~stationary)), steps=steps, damping_saturated=saturated,
+                level=level, gamma_list=g.tolist(), reason_list=rs.tolist(), lam_list=lam.tolist(),
+                C_finite=bool(np.isfinite(C).all()), C_maxabs=float(np.max(np.abs(C))) if np.isfinite(C).all() else None,
                 worst_gamma=float(np.max(np.where(np.isfinite(g), g, np.inf))) if steps else float('nan'),
                 anchor_ok=bool(valid and np.all(np.isfinite(g) & (g <= gl))),
                 it_sum=int(np.sum(np.asarray(out['stats']['it'])[:steps])),

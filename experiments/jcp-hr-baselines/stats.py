@@ -10,6 +10,7 @@ import numpy as np
 
 NBOOT = 10000
 SEED = 0
+TIMING_CASES = (0, 1, 2, 3, 4, 5)        # registered timing cases (A2.19): 2D dev6 0-5, 3D 923801 0-5
 TIME_EQ = np.log(1.10)
 
 
@@ -68,9 +69,11 @@ def worst_equiv(envX, envB, eps):
     return dict(dW=dW, diff=(LB - UX, UB - LX), equivalent=bool(LB - UX > -dW and UB - LX < dW))
 
 
-def pair_label(eX, eB, eps, rho, timing_cases):
-    """The frozen decision table (A2.17). rho must hold valid ratios for EXACTLY the registered timing cases (A3.9:
-    all six); anything else -> 'not assessed'. Fail-closed on invalid inputs."""
+def pair_label(eX, eB, eps, rho, timing_cases=TIMING_CASES):
+    """The frozen decision table (A2.17). rho must hold valid ratios for EXACTLY the six registered timing cases
+    (A3.9, A6.6) -- a caller-supplied shorter list is rejected; anything else -> 'not assessed'. Fail-closed."""
+    if tuple(sorted(timing_cases)) != TIMING_CASES:
+        return dict(label='not assessed', reason='timing cases are not the six registered ones')
     eX, eB, eps = map(lambda a: np.asarray(a, float), (eX, eB, eps))
     ok = (len(eX) > 0 and len(eX) == len(eB) == len(eps) and np.all(np.isfinite(eX)) and np.all(np.isfinite(eB))
           and np.all(np.isfinite(eps)) and np.all(eps >= 0))

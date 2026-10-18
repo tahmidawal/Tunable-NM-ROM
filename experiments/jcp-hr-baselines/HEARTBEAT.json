@@ -1,19 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T00:52:19Z",
- "step": "4: codex code audit 1 + design audit 6 running; local CPU dry-run smoke running",
+ "utc": "2026-10-18T01:28:48Z",
+ "step": "4: codex code audit 2 running; CPU unit tests re-running (detached)",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-1.md, audits/codex-design-6.md",
-  "codex_pid": [
-   74982,
-   74985
-  ],
-  "local_pid": 69130
+  "codex_output": "audits/codex-code-2.md",
+  "codex_pid": 201044,
+  "local_pid": 278085
  },
- "expected_finish_utc": "2026-10-18T01:52:19Z",
- "last_commit": "f20a3989d",
+ "expected_finish_utc": "2026-10-18T02:13:48Z",
+ "last_commit": "3e5a18cd7",
  "gpu_hours_spent": 0,
  "gpu_hours_cap": 30,
- "notes": "design audits 1-4 WRONG, 5 NEEDS-RESTATEMENT (A5 written); unit tests pass"
+ "notes": "design audit 6 NEEDS-RESTATEMENT (no WRONG) -> A6; code audit 1 NOT READY -> fixes in progress"
 }

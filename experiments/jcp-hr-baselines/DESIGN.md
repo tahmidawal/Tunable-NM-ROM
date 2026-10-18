@@ -1055,3 +1055,11 @@ registered code cannot produce are "noted", not blocking; they were nevertheless
 (`rom.make_res`) is used, so the analytic Jacobian is never formed under autodifferentiation (its tangent would be an
 (r, n, r) array: 137 GB at 2D $1024^2$, r = 128). Invalid runs' saved outputs are compared with their trajectory rows
 NaN-aware.
+
+**A12.6 (code audit 6) Small-mesh G-pod and non-finite discrepancies.** The small-mesh G-pod reproduction test uses
+the lane's `pod()` at rank $\rho_8=\#\{\sigma_i>10^{-8}\sigma_1\}$ (no cap) with tolerance 1e-6 relative: the
+method of snapshots resolves singular values only above about $\sqrt{\epsilon}\,\sigma_1$, so A2.11's
+$10^{-10}$/1e-8 reproduction is not attainable by the registered algorithm; the binding POD check is the production
+certificate (A6.1), unchanged. Output discrepancies (timed vs scored) treat matching non-finite entries as agreement and
+any mismatch of the non-finite pattern as non-finite, so an honestly invalid run reaches the invalid-run accounting
+(A12.1) instead of an evidence error.

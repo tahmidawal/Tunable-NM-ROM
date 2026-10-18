@@ -347,8 +347,8 @@ def t_pod():
     Phi, sig, dev = BD.pod(S, 60, nb=64)
     pe, C = BD.projection_errors(S, Phi, [10, 30, 60], sig, nb=64)
     assert dev <= 1e-10, dev
-    rank = int(np.sum(sig > 1e-8 * sig[0]))
-    Pf, sf, _ = BD.pod(S, min(rank, 200), nb=64)
+    rank = int(np.sum(sig > 1e-8 * sig[0]))          # A12.6: the Gram method resolves sigma only above ~sqrt(eps) sigma_1
+    Pf, sf, _ = BD.pod(S, rank, nb=64)
     rec = float(np.max(np.linalg.norm(S - (S @ np.asarray(Pf)) @ np.asarray(Pf).T, axis=1) / np.linalg.norm(S, axis=1)))
     assert rec <= 1e-6, rec
     for r, v in pe.items():

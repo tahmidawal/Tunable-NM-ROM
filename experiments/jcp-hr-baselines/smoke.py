@@ -79,6 +79,19 @@ def phase(res, name, fn, need=0., cfg=None, save=None, store=None):
     return v
 
 
+def disc(a, b):
+    """Discrepancy of two outputs: max |a - b| over finite entries; matching non-finite entries (same positions, same
+    nan/inf pattern) count as agreement; any mismatch of the non-finite pattern -> nan (code audit 6, item 2)."""
+    a, b = np.asarray(a, float), np.asarray(b, float)
+    if a.shape != b.shape:
+        return float('nan')
+    fa, fb = np.isfinite(a), np.isfinite(b)
+    if not np.array_equal(fa, fb) or not np.array_equal(np.isnan(a), np.isnan(b)) or \
+            not np.array_equal(np.where(np.isinf(a), np.sign(a), 0.), np.where(np.isinf(b), np.sign(b), 0.)):
+        return float('nan')
+    return float(np.max(np.abs(a[fa] - b[fa]))) if fa.any() else 0.
+
+
 def fmax(vals):
     """max of a list of discrepancies; NaN if any is non-finite (never hidden by Python's max, code audit 4 item 25)."""
     v = np.asarray([float(x) for x in vals], float)
@@ -278,7 +291,7 @@ def run_cell(cfg, c, res, outdir, save):
                         warm = cell.run(kind, rs, dat, solver, option, 'prod', fam.ic(L, j), fam.nu(j), certify=False,
                                         burn_s=0.1)
                         recs[j]['seconds_warm'] = warm['seconds']
-                        recs[j]['timed_vs_scored'] = float(np.max(np.abs(warm['fields_lat'] - recs[j]['fields_lat'])))
+                        recs[j]['timed_vs_scored'] = disc(warm['fields_lat'], recs[j]['fields_lat'])
                     grid[cid] = dict(recs=recs)
                 tight = {j: cell.run(kind, rs, dat, 'native', option, 'tight', fam.ic(L, j), fam.nu(j)) for j in cases}
                 tighter = {j: cell.run(kind, rs, dat, 'native', option, 'tighter', fam.ic(L, j), fam.nu(j)) for j in subset}
@@ -587,8 +600,8 @@ def run_cell(cfg, c, res, outdir, save):
             uj, vj = jnp.asarray(fam.ic(L, j)), jnp.float64(fam.nu(j))
             jax.block_until_ready(fA(uj, vj))           # warm
             scored = cell.run(kind, rs, dat, 'native', opt_main, 'prod', uj, fam.nu(j))['fields_lat']
-            chkA = lambda o, sc=scored: np.max(np.abs(cell.lattice(o) - sc))
-            chkB = lambda o, sc=scored: [np.max(np.abs(cell.lattice(o[0]) - sc)), np.max(np.abs(cell.lattice(o[1]) - sc))]
+            chkA = lambda o, sc=scored: disc(cell.lattice(o), sc)
+            chkB = lambda o, sc=scored: [disc(cell.lattice(o[0]), sc), disc(cell.lattice(o[1]), sc)]
             nt[j] = dict(triples=timed_triples(fA, fB, (uj, vj), (uj, vj), chkA, chkB))
         out['N-time'] = dict(config=PL.cfg_id(kind, rs, hrp, opt_main[0], opt_main[1], 'native'), cases=nt)
         R['timing-partial'] = out
@@ -619,8 +632,8 @@ def run_cell(cfg, c, res, outdir, save):
             jax.block_until_ready(fX(ux, vj))
             scoredX = ox.lattice(fX0(ux, vj))
             scoredB = cell.run(kind, rs, dat, 'native', opt_main, 'prod', ub, fam.nu(j))['fields_lat']
-            chkX = lambda o, sc=scoredX: np.max(np.abs(ox.lattice(dict(fields=o)) - sc))
-            chkB = lambda o, sc=scoredB: np.max(np.abs(cell.lattice(o) - sc))
+            chkX = lambda o, sc=scoredX: disc(ox.lattice(dict(fields=o)), sc)
+            chkB = lambda o, sc=scoredB: disc(cell.lattice(o), sc)
             ab[j] = dict(triples=timed_triples(fX, fA, (ux, vj), (ub, vj), chkX, chkB))
             if j == 0:
                 chunk('ours', F=scoredX)

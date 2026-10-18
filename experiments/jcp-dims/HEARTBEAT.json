@@ -1,7 +1,7 @@
 {
  "lane": "jcp-dims",
- "utc": "2026-10-18T14:01:45Z",
- "step": "5: real-size smoke smk2 (dacc+dtime) on H200",
+ "utc": "2026-10-18T14:07:01Z",
+ "step": "5: smoke smk2 running; smk3 staged + job-audit fixes done (submit after smk2)",
  "waiting_on": {
   "slurm_jobs": [
    "5528125"
@@ -10,9 +10,9 @@
   "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T16:01:45Z",
- "last_commit": "18fbd55ac",
+ "expected_finish_utc": null,
+ "last_commit": "7d964189f",
  "gpu_hours_spent": 0,
  "gpu_hours_cap": 55,
- "notes": "code audit 6 READY-FOR-SMOKE; smk3 next (one smoke at a time)"
+ "notes": "writing 2D analysis meanwhile"
 }

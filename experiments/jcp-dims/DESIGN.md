@@ -700,3 +700,6 @@ a control"); the smoke therefore carries no `smol8` predicate. Smolyak runs as a
 **A5.2 Smoke allowance.** The lane brief bounds each pre-production cluster smoke at ≤ 2 GPU-h and one at a time; each
 smoke is reserved at its 2 h limit in the ledger and charged its measured hours. **A5.3** The submission's account-count
 check inside the campaign lock fails closed (a failed `squeue` aborts with exit 76; COMMON-BRIEF §14).
+**A5.4 Production release (coordinator, 2026-10-18 ~14:15 UTC).** Production is released once this lane's design, code
+and smoke gates are clean; submission through the shared campaign sbatch lock (§14), lane cap 3, 55 GPU-h. In-lane
+priority: A4 3D front completion + qualified 3D re-timing and A4 2D first (the never-dropped items).

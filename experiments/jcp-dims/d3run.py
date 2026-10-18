@@ -120,7 +120,7 @@ def run_adaptive(cx, ad, blk, out):
     tcs = [j for j in blk.get('tighter_cases', list(range(8))) if j in cases]
     dt = float(blk['dt'])
     S_, _ = S.nsteps(dt)
-    res = {}
+    res, prevW = {}, {}
     rungs = blk['rungs']
     for i, rule in enumerate(rungs):
         nxt = rungs[i + 1] if i + 1 < len(rungs) else None
@@ -195,6 +195,11 @@ def run_adaptive(cx, ad, blk, out):
             idx = [cases.index(j) for j in tcs]
             R['dist_tight_tighter'] = cx.dist_cases(sname, R['W_tight'][idx], R['W_tighter'], tcs)[:, 1:].max(1)
             key = f'{sname}|{rule}|ad|{form}|{scheme}|{dt:.8g}'
+            if fs_ in prevW:                          # DESIGN 3: q vs q+ distance of the previous rung, in-job
+                pk, pW = prevW[fs_]
+                res[pk]['dist_next'] = cx.dist_cases(sname, pW, R['W'], cases)[:, 1:].max(1).tolist()
+                res[pk]['next_valid'] = [bool(x) for x in R['valid']]
+            prevW[fs_] = (key, R['W'].copy())
             np.savez_compressed(out / f"AD_{key.replace('|', '_')}.npz", case_ids=np.array(cases), tighter_ids=np.array(tcs),
                                 rule=rule, next_rule=str(nxt), M=st.M, Rp=st.Rp, square=square, form=form, scheme=scheme,
                                 dt=dt, mode_hash=st.mode_hash, tol_prod=np.array(DC.tol_of(form, 'prod', square)),
@@ -230,7 +235,7 @@ def run_ladder(cx, blk):
     tcs = [j for j in blk.get('tighter_cases', list(range(8))) if j in cases]
     specs = [S.parse_key(k) for k in blk['specs']]
     rungs = blk['rungs']
-    res = {}
+    res, prevW = {}, {}
     for i, rule in enumerate(rungs):
         nxt = rungs[i + 1] if i + 1 < len(rungs) else None
         if i >= 1:                                    # A1.4: the previous rung has no further use; drop before the successor
@@ -261,6 +266,11 @@ def run_ladder(cx, blk):
                     for kk in range(6):
                         c_ = jnp.asarray(W[ci, kk])
                         rho[ci, kk] = P1rho(C3.nl3(c_, st.data(rule)), C3.nl3(c_, dn))
+            if key in prevW:                          # DESIGN 3: q vs q+ lattice distance of the previous rung, in-job
+                pk, pW = prevW[key]
+                res[pk]['dist_next'] = cx.dist_cases(sname, pW, W, cases)[:, 1:].max(1).tolist()
+                res[pk]['next_valid'] = [bool(x) for x in r[key]['valid']]
+            prevW[key] = (f'{tag}|{key}', W)
             res[f'{tag}|{key}'] = dict(setting=sname, rule=rule, next_rule=nxt, spec=key, M=st.M, Rp=st.Rp,
                                        valid=[bool(x) for x in r[key]['valid']], nonstationary=int(sum(r[key]['nonst'])),
                                        steps=int(sum(r[key]['steps'])),

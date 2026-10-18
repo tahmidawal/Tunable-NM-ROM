@@ -563,6 +563,11 @@ def run_pilot(cfg, rep, bank, st, mem_, U0, w0ls, cases, out):
     F = B.decode(Q.BK.prefix(fb.Grot, fb.edges, st.Rp), r['W'], B.FINE_L)
     jax.block_until_ready(F)
     rec['after_runs'] = P.mem()
+    # the B8 fine-floor QR (cached per r in production; code audit 8, non-blocking memory coverage)
+    Gf = jnp.concatenate([B.prefix_blocks(rb, fb.edges, st.Rp) for rb in fb.Grot], axis=0)
+    Qf = jax.block_until_ready(jnp.linalg.qr(Gf, mode='reduced')[0])
+    rec['after_fine_qr'] = P.mem()
+    del Gf, Qf
     rec['valid'] = [r['valid'], r2['valid'], r3['valid']]
     rep.setdefault('pilot', {})[f'R{st.Rp}'] = rec
     del sM, fb, F

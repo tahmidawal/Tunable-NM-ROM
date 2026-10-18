@@ -288,6 +288,8 @@ def main():
             save()
         rep['memory'][sc_['name']] = P.mem()
         rep['memory'][sc_['name']]['over_120GB'] = bool(rep['memory'][sc_['name']]['peak'] > PEAK_BAR)   # jcp-dims EDIT
+        if rep['memory'][sc_['name']]['over_120GB']:          # A1.4: the setting's cells are "not reached (memory)"
+            rep.setdefault('memory_rejected', []).append(sc_['name'])
         QQ.c.clear()
         del st
         gc.collect()

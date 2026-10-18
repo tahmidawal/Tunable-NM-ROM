@@ -215,13 +215,50 @@ def t_rules():
 
 def t_panel():
     inv = [dict(B='b', ratio=.5, drift=1., hashes_ok=True)] * 4
-    ok = DS.panel_accept(inv, {('b', 0): True, ('A', 0): True}, {'b': 4})
+    req = [('A', 0), ('b', 0)]
+    ok = DS.panel_accept(inv, {('b', 0): True, ('A', 0): True}, {'b': 4}, req)
     check('panel: certified complete -> valid', ok['valid'])
-    check('panel: uncertified subject -> invalid', not DS.panel_accept(inv, {('b', 0): None, ('A', 0): True}, {'b': 4})['valid'])
-    check('panel: uncertified A -> invalid', not DS.panel_accept(inv, {('b', 0): True, ('A', 0): False}, {'b': 4})['valid'])
-    check('panel: incomplete counts -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 6})['valid'])
+    check('panel: uncertified subject -> invalid', not DS.panel_accept(inv, {('b', 0): None, ('A', 0): True}, {'b': 4}, req)['valid'])
+    check('panel: uncertified A -> invalid', not DS.panel_accept(inv, {('b', 0): True, ('A', 0): False}, {'b': 4}, req)['valid'])
+    check('panel: incomplete counts -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 6}, req)['valid'])
+    check('panel: empty certification map -> invalid', not DS.panel_accept(inv, {}, {'b': 4}, req)['valid'])
+    check('panel: no required keys -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 4})['valid'])
     check('panel: hash fault -> invalid', not DS.panel_accept(inv[:3] + [dict(inv[0], hashes_ok=False)], {('b', 0): True},
-                                                             {'b': 4})['valid'])
+                                                             {'b': 4}, req)['valid'])
+
+
+def t_links():
+    """d3run certification links (code audit 2): mutated execution records, missing runs, invalid runs, non-finite fields."""
+    import types
+    import d3run as D
+    import s3common as S3
+    St = 5
+    rec = dict(reason=np.ones((St, 1), int), it=np.ones((St, 1), int), rej=np.zeros((St, 1), int), pred=np.zeros((St, 1), int),
+               sat=np.zeros((St, 1), int), gn=np.full((St, 1), 1e-4), rn=np.full((St, 1), 1e-9), lam=np.full((St, 1), 1e-3))
+    W = np.arange(12.).reshape(6, 1, 2)
+    Wall = np.arange(12.).reshape(6, 1, 2)
+    o = dict(W=W, W_all=Wall, **rec)
+    key = 'fs|CN|0.01|K1'
+    row = dict(tag='W512|lat8192', spec=key, case=0, valid=True, steps=S3.step_record(S3.parse_key(key), o, 0))
+    cx = types.SimpleNamespace(cases=[0], Wstore={f'W512|lat8192|{key}': W[:, 0][None], f'wall|W512|lat8192|{key}': Wall[:, 0][None]},
+                               Cstore={f'W512|lat8192|{key}': np.array([0])}, rep=dict(rows=[row]), acc_sha={})
+    x = dict(name=f'W512|lat8192|{key}', setting='W512', rule='lat8192')
+    check('link: identical run -> True', D.scored_equals_certified(cx, x, 0, o, 'p') is True)
+    o2 = dict(o, reason=np.full((St, 1), 2))
+    check('link: mutated execution record -> False', D.scored_equals_certified(cx, x, 0, o2, 'p') is False)
+    row['valid'] = False
+    check('link: certified run invalid -> False', D.scored_equals_certified(cx, x, 0, o, 'p') is False)
+    cx.rep['rows'] = []
+    check('link: missing certified run -> False', D.scored_equals_certified(cx, x, 0, o, 'p') is False)
+    xa = dict(name='W512|lat65536|ad|GAL|CN|0.01|prod', setting='W512', rule='lat65536')
+    cx.acc_sha[('W512|lat65536', 'ad|GAL|CN|0.01|prod', 0)] = 'h'
+    cx.rep['ad_valid'] = {'W512|lat65536|ad|GAL|CN|0.01|prod|0': True}
+    check('link adaptive: same payload, valid -> True', D.scored_equals_certified(cx, xa, 0, {}, 'h') is True)
+    check('link adaptive: other payload -> False', D.scored_equals_certified(cx, xa, 0, {}, 'g') is False)
+    st = dict(steps=3, exits=np.zeros(5, int), states=np.zeros((4, 2)), step_gn=np.full(10, 1e-4))
+    good = dict(W=np.zeros((6, 2)), stats=st, fields=np.zeros((1, 6, 4)), w0=np.zeros(2), scale=1.)
+    check('ad_valid: finite -> True', D.ad_valid(good))
+    check('ad_valid: non-finite fields -> False', not D.ad_valid(dict(good, fields=np.full((1, 6, 4), np.inf))))
 
 
 def _raises(fn):
@@ -233,7 +270,7 @@ def _raises(fn):
 
 
 def main():
-    for t in (t_transition, t_two_way, t_q2_mstar, t_families, t_shapley, t_elasticity, t_h2q, t_certs, t_rules, t_panel):
+    for t in (t_transition, t_two_way, t_q2_mstar, t_families, t_shapley, t_elasticity, t_h2q, t_certs, t_rules, t_panel, t_links):
         t()
     (HERE / 'checks').mkdir(exist_ok=True)
     (HERE / 'checks' / 'test_dims.json').write_text(json.dumps(dict(results=RES, all_pass=all(RES.values())), indent=1) + '\n')

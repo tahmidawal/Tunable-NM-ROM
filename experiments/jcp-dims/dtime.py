@@ -299,6 +299,8 @@ def main():
         m_ = P.mem()
         rep['blocks'].append(dict(key=list(bk), subjects=[label(cfg['subjects'][j]) for j in js], seconds=time.perf_counter() - t_blk,
                                   mem_after=m_, in_use_over_base=m_['in_use'] - base_mem['in_use']))
+        if m_['peak'] > 120e9:                                  # A1.4: block "not reached (memory)"
+            rep.setdefault('memory_rejected', []).append(list(bk))
         if m_['in_use'] - base_mem['in_use'] > 1e9:
             rep['memory']['not_released'] = rep['blocks'][-1]
             save()

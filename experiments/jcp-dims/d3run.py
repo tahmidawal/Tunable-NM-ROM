@@ -106,6 +106,9 @@ def ad_valid(o):
     k = int(st['steps'])
     ex = np.asarray(st['exits'])
     ok = bool(np.isfinite(np.asarray(o['W'])).all() and np.isfinite(np.asarray(st['states'])).all() and ex[3] == 0)
+    for key in ('fields', 'w0', 'scale'):          # the whole output contract (p1common.run_valid checks decoded fields)
+        if key in o:
+            ok = ok and bool(np.isfinite(np.asarray(o[key])).all())
     return ok and bool(np.isfinite(np.asarray(st['step_gn'])[:k]).all())
 
 
@@ -177,6 +180,7 @@ def run_adaptive(cx, ad, blk, out):
                     ott = jax.block_until_ready(ftt(cx.U0[j], cx.NU[j], d))
                     R['W_tighter'][tcs.index(j)], R['valid_tighter'][tcs.index(j)] = np.asarray(ott['W']), ad_valid(ott)
                 cx.acc_sha[(f'{sname}|{rule}', f'ad|{form}|{scheme}|{dt:.8g}|prod', j)] = R['payload'][ci]
+                cx.rep.setdefault('ad_valid', {})[f'{sname}|{rule}|ad|{form}|{scheme}|{dt:.8g}|prod|{j}'] = bool(R['valid'][ci])
             if nxt is not None:
                 dn = st.data(nxt)
                 for ci in range(len(cases)):
@@ -344,7 +348,8 @@ def subject(cx, ad, sp_):
     if sp_.get('double'):                 # speed3d T1 control: the same query twice, each synchronised (ratio in [1.8, 2.2])
         one_ = run
         run = lambda j: (jax.block_until_ready(one_(j)), jax.block_until_ready(one_(j)))
-        name = 'T1|' + name
+        base, name = name, 'T1|' + name
+        return dict(name=name, run=run, setting=sname, rule=rule, base=base)
     return dict(name=name, run=run, setting=sname, rule=rule)
 
 
@@ -392,7 +397,7 @@ def run_panel(cx, ad, blk):
                 o = jax.block_until_ready(x['run'](cx.cases[ci]))
                 exp[(x['name'], ci)], names_of[x['name']] = payload_hash(o)
                 if x['name'].startswith('T1|'):           # T1 = A twice: linked through A's certification
-                    certified[(x['name'], ci)] = certified[(A['name'], ci)]
+                    certified[(x['name'], ci)] = bool(certified[(A['name'], ci)] and x['base'] == A['name'])
                 else:
                     certified[(x['name'], ci)] = scored_equals_certified(cx, x, ci, o, exp[(x['name'], ci)])
                 del o
@@ -416,6 +421,8 @@ def run_panel(cx, ad, blk):
         for k_ in [k_ for k_ in list(cx.queries) if k_[0] == bk[0] and k_ != (blk['A']['setting'], 'mesh', 65,
                                                                                   S.parse_key(blk['A']['spec']))]:
             del cx.queries[k_]
+        for k_ in [k_ for k_ in list(ad.q) if k_[0] == bk[0] and not blk['A']['spec'].startswith('ad|')]:
+            del ad.q[k_]                              # compiled adaptive queries of the block (A2.4)
         gc.collect()
         m_ = jax.devices()[0].memory_stats().get('bytes_in_use', -1)
         blog.append(dict(block=list(bk), in_use=m_, over_start=m_ - mem0, peak=C3.peak_bytes()))
@@ -425,7 +432,8 @@ def run_panel(cx, ad, blk):
             raise SystemExit('memory not released after block %s' % (bk,))
     expected = {(('T1|' if s_.get('double') else '') + f"{s_['setting']}|{s_['rule']}|{s_['spec']}"): len(cases) * reps
                 for s_ in blk['subjects']}
-    acc = DS.panel_accept(inv, {k: v for k, v in certified.items()}, expected)
+    required = [(A['name'], ci) for ci in cases] + [(n_, ci) for n_ in expected for ci in cases]
+    acc = DS.panel_accept(inv, {k: v for k, v in certified.items()}, expected, required)
     cx.rep['timing'][blk['label']] = dict(A=A['name'], invocations=inv, cases=[cx.cases[c] for c in cases], reps=reps,
                                           burn=burn, seed=blk['seed'], blocks=blog, payload_keys=names_of,
                                           certified={f'{k[0]}#{cx.cases[k[1]]}': v for k, v in certified.items()},
@@ -435,27 +443,34 @@ def run_panel(cx, ad, blk):
 
 
 def scored_equals_certified(cx, x, ci, o, payload):
-    """A1.1 (3D): the panel's untimed scoring run must equal the run certified earlier in the same job: fs / qn -
-    bitwise equal six output vectors with the `rollouts` archive (Wstore '<setting>|<rule>|<spec>'); adaptive - equal
-    payload hash with the adaptive block's record. None if the subject was not certified in this job."""
+    """A1.1 (3D): link of the panel's untimed scoring run to the run certified earlier in the same job, and that run's
+    success. fs / qn: bitwise equal six output vectors and internal states (`rollouts` archive, keep_wall) AND equal
+    per-step execution records (s3common.step_record: reason, it, rej, ... / qn records) AND the certified run valid.
+    Adaptive: equal full payload hash with the adaptive block's record AND that run valid. Returns True / False; a
+    missing certified run returns False (never None)."""
     if x['name'].startswith('T1|'):
-        return None
+        return False
     j = cx.cases[ci]
-    tag, key = f"{x['setting']}|{x['rule']}", x['name'].replace('T1|', '', 1).split('|', 2)[2]
+    tag, key = f"{x['setting']}|{x['rule']}", x['name'].split('|', 2)[2]
     if key.startswith('ad|'):
         p = cx.acc_sha.get((tag, key, j))
-        return None if p is None else bool(p == payload)
+        v = cx.rep.get('ad_valid', {}).get(f'{tag}|{key}|{j}')
+        return bool(p is not None and p == payload and v is True)
     W = cx.Wstore.get(f'{tag}|{key}')
-    if W is None:
-        return None
+    Wall = cx.Wstore.get(f'wall|{tag}|{key}')
+    if W is None or Wall is None or 'W_all' not in o:
+        return False
     ids = list(cx.Cstore[f'{tag}|{key}'])
     if j not in ids:
-        return None
-    Wall = cx.Wstore.get(f'wall|{tag}|{key}')
-    if Wall is None or 'W_all' not in o:
         return False
     k_ = ids.index(j)
-    return bool(np.array_equal(np.asarray(o['W'])[:, 0], W[k_]) and np.array_equal(np.asarray(o['W_all'])[:, 0], Wall[k_]))
+    row = next((r for r in reversed(cx.rep['rows']) if r.get('tag') == tag and r.get('spec') == key and r.get('case') == j), None)
+    if row is None:
+        return False
+    sp = S.parse_key(key)
+    rec_ok = json.dumps(S.step_record(sp, o, 0), sort_keys=True) == json.dumps(row['steps'], sort_keys=True)
+    return bool(np.array_equal(np.asarray(o['W'])[:, 0], W[k_]) and np.array_equal(np.asarray(o['W_all'])[:, 0], Wall[k_])
+                and rec_ok and row.get('valid') is True)
 
 
 # ----------------------------------------------------------------------------------------------- main
@@ -516,7 +531,10 @@ def main():
             raise KeyError(kind)
         pk = C3.peak_bytes()
         cx.rep['blocks'].append(dict(kind=kind, label=blk.get('label', blk.get('setting')), seconds=time.perf_counter() - t0,
-                                     peak_bytes=pk, over_120GB=bool(pk > PEAK_BAR), result=r))
+                                     peak_bytes=pk, over_120GB=bool(pk > PEAK_BAR), result=r,
+                                     memory=('not reached (memory)' if pk > PEAK_BAR else 'ok')))
+        if pk > PEAK_BAR:                             # A1.4: everything of this block is "not reached (memory)"
+            cx.rep.setdefault('memory_rejected', []).append(blk.get('label', blk.get('setting')))
         cx.save()
         cx.dump()
     cx.rep['peak_bytes_job'] = C3.peak_bytes()

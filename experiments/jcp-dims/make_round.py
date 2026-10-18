@@ -21,6 +21,7 @@ QUALIFY = MC.QUALIFY
 def tested_labels():
     t = dict(json.loads((QUALIFY / 'runs' / 'EXPORT.json').read_text())['threeD']['tested'])
     p = HERE / 'checks' / 'rounds3d.json'
+    assert p.exists(), 'predecessor round labels missing (run the analysis of the previous round first)'
     if p.exists():
         for k, v in json.loads(p.read_text())['labels'].items():
             t[k] = 'pass' if v == 'pass' else 'fail' if v == 'fail' else v      # unverified stays non-passing
@@ -30,6 +31,10 @@ def tested_labels():
 def main():
     k = int(sys.argv[1])
     assert 5 <= k <= 8
+    prev = json.loads((HERE / 'configs' / f'q3r{k - 1}.json').read_text())
+    lab = json.loads((HERE / 'checks' / 'rounds3d.json').read_text())['labels']
+    missing = [m['key'] for b in prev['blocks'] if b['kind'] == 'rounds' for m in b['members'] if m['key'] not in lab]
+    assert not missing, ('previous round not analysed', missing)
     F3.LATTICE[:] = ['lat2048', 'lat4096'] + MC.LAT                 # successors include lat262144
     mem = F3.round_next(tested_labels(), limit=20)
     if not mem:

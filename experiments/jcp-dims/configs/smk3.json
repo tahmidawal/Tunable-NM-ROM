@@ -225,12 +225,31 @@
    ],
    "cases": [
     0,
-    1
+    1,
+    2,
+    3
    ],
    "tighter_cases": [
     0
    ],
    "tag_prefix": "lad|"
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "gl64"
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "tighter_cases": [
+    0
+   ]
   },
   {
    "kind": "ladder",
@@ -349,6 +368,11 @@
     {
      "setting": "W1024",
      "rule": "lat262144",
+     "spec": "fs|CN|0.01|K1"
+    },
+    {
+     "setting": "W1024",
+     "rule": "gl64",
      "spec": "fs|CN|0.01|K1"
     },
     {

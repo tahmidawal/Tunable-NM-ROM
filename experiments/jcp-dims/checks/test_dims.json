@@ -85,7 +85,17 @@
   "panel: uncertified subject -> invalid": true,
   "panel: uncertified A -> invalid": true,
   "panel: incomplete counts -> invalid": true,
-  "panel: hash fault -> invalid": true
+  "panel: empty certification map -> invalid": true,
+  "panel: no required keys -> invalid": true,
+  "panel: hash fault -> invalid": true,
+  "link: identical run -> True": true,
+  "link: mutated execution record -> False": true,
+  "link: certified run invalid -> False": true,
+  "link: missing certified run -> False": true,
+  "link adaptive: same payload, valid -> True": true,
+  "link adaptive: other payload -> False": true,
+  "ad_valid: finite -> True": true,
+  "ad_valid: non-finite fields -> False": true
  },
  "all_pass": true
 }

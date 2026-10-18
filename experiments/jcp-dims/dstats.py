@@ -269,13 +269,16 @@ def h2q(C, comp, qualified, panel=None):
                 n_matching=len(match))
 
 
-def panel_accept(inv, certified, expected, band=(1 / 1.1, 1.1)):
+def panel_accept(inv, certified, expected, required=None, band=(1 / 1.1, 1.1)):
     """A1.1 / A2.4 (3D panels): a panel is accepted iff every invocation's hashes match, every timed subject (and A) is
     linked to an in-job certified run on every panel case (certified[(name, case)] is True), every subject has its
     expected invocation count, ratios are finite and positive, and every subject's median drift is in the band."""
     if not inv:
         return dict(valid=False, reason='no invocations')
-    bad_cert = sorted({k[0] for k, v in certified.items() if v is not True})
+    keys = set(certified) | set(required or [])
+    bad_cert = sorted({k[0] for k in keys if certified.get(k) is not True})
+    if not required:
+        return dict(valid=False, reason='no required certification keys', uncertified=bad_cert)
     cnt = {}
     for x in inv:
         cnt[x['B']] = cnt.get(x['B'], 0) + 1

@@ -56,7 +56,7 @@ def ncases(c):
 # ------------------------------------------------------------------------------------------------ 2D accuracy
 def ref_dacc():
     r = json.loads((out_dir('smk2', 'dacc', 'smk2') / 'result.json').read_text())
-    assert r['complete'], 'smoke incomplete'
+    assert r['complete'] and not r.get('memory_rejected'), 'smoke incomplete or memory-rejected (A1.4)'
     pts, setups = [], []
     for s in r['config']['settings']:
         for a in s['arms']:
@@ -86,7 +86,7 @@ def proj_dacc(cfg):
 # ------------------------------------------------------------------------------------------------ 2D timing
 def proj_dtime(cfg):
     r = json.loads((out_dir('smk2t', 'dtime', 'smk2t') / 'result.json').read_text())
-    assert r['complete'], 'smoke incomplete'
+    assert r['complete'] and not r.get('memory_rejected'), 'smoke incomplete or memory-rejected (A1.4)'
     nc_s, reps_s = ncases(r['config']['cases']), int(r['config']['reps'])
     units = []
     for b in r['blocks']:
@@ -107,7 +107,7 @@ def proj_dtime(cfg):
 # ------------------------------------------------------------------------------------------------ 3D
 def ref_d3():
     r = json.loads((out_dir('smk3', 'd3run', 'smk3') / 'result.json').read_text())
-    assert r['complete'], 'smoke incomplete'
+    assert r['complete'] and not r.get('memory_rejected'), 'smoke incomplete or memory-rejected (A1.4)'
     cfg = r['config']
     sets = {s['name']: s for s in cfg['settings']}
     lad, pan = [], []

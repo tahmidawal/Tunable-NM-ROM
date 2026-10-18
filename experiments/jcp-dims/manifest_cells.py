@@ -31,6 +31,8 @@ ROT2 = HERE / 'vendor' / 'quad2d' / 'inputs' / 'rotation_R512.npz'
 BANK3 = {'W1024': HERE / 'inputs' / 'model_W1024' / 'bank.pkl', 'M2': HERE / 'vendor' / 'quad3d' / 'inputs' / 'model_M2' / 'bank.pkl'}
 OUT2 = dict(init='full-field input sampled at quadrature points; full-field decode (V4-4)', outputs='t=0:0.05:0.25',
             metric='2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1', budget=600)
+SOLVER3 = dict(budget='adaptive: 600 LM iterations; fs: K sweeps after a adaptive start steps; qn: q_max 12',
+               trust='0.05 x bank coefficient spread at r (speed3d)')
 OUT3 = dict(init='mesh least-squares projection of the 65^3 field; lattice decode (speed3d mesh path)', outputs='t=0:0.05:0.25',
             metric='3|lattice=63^3|times=0:0.05:0.25|norm=fixed_t0|max_k>=1')
 
@@ -110,6 +112,15 @@ def main():
         cfg = json.loads((CFG / f'{att}.json').read_text())
         sets = {s['name']: s for s in cfg['settings']}
         for blk in cfg['blocks']:
+            if blk['kind'] == 'rounds':
+                for mm in blk['members'] + ([blk['control']] if blk.get('control') else []):
+                    sn, rl = mm['key'].split('|')[:2]
+                    out['entries3d'].append(dict(job=att, kind='round member', key=mm['key'], setting=sn, rule=rl,
+                                                 rule_id=rule3(rl, pinned), qp=mm['qp'], qpp=mm.get('qpp'),
+                                                 bank=sets[sn]['bank'], r=sets[sn]['Rp'], a=sets[sn]['a'],
+                                                 M=len(N3.modes(65, 4 * sets[sn]['Rp'])[0]), spec='|'.join(mm['key'].split('|')[2:]),
+                                                 cases='all64', qpp_cases=list(range(8)), **OUT3, **SOLVER3))
+                continue
             if blk['kind'] not in ('ladder', 'adaptive'):
                 continue
             s = sets[blk['setting']]
@@ -128,7 +139,11 @@ def main():
                         rule=rl, rule_id=rule3(rl, pinned), qp=blk['rungs'][i + 1] if i + 1 < len(blk['rungs']) else None,
                         qpp=blk['rungs'][i + 2] if i + 2 < len(blk['rungs']) else None, spec=sp, square=(M == s['Rp']),
                         cases=blk.get('cases', 'all64'), tighter_cases=blk.get('tighter_cases', list(range(8))),
-                        tag_prefix=blk.get('tag_prefix', ''), **OUT3))
+                        tag_prefix=blk.get('tag_prefix', ''), trust_fraction=cfg['trust_fraction'],
+                        tol=(DC.tol_of(sp.split('|')[1], 'prod', square=(M == s['Rp'])) if sp.startswith('ad|')
+                             else 'fs/qn: gtol 1e-3 (speed3d); ADT anchors tight (1e-7, 0) / tighter (1e-8, 0)'),
+                        weighting=('GAL Q^T R = 0' if sp.startswith('ad|GAL') else 'LSPG D = 1/(a0 + dt b0 nu lam)'),
+                        **OUT3, **SOLVER3))
     (CFG / 'MANIFEST-identity.json').write_text(json.dumps(out, indent=1) + '\n')
     print('2D entries', len(out['entries2d']), '3D entries', len(out['entries3d']))
 

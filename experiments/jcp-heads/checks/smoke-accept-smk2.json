@@ -1,0 +1,52 @@
+{
+ "complete": true,
+ "subjects_present": true,
+ "equivalence_unique": true,
+ "equivalence": {
+  "passed": true,
+  "n": 5
+ },
+ "certification_ok": true,
+ "split_coverage": true,
+ "fused_coverage_ids": true,
+ "identity_clean": true,
+ "record_integrity": true,
+ "split_flag_agrees": true,
+ "fused_valid_flag_agrees": true,
+ "identity_fault": {
+  "n": 10,
+  "all_invalid": true,
+  "failed_on_identity": true
+ },
+ "fused_coverage": {
+  "missing": [],
+  "passed": true
+ },
+ "panel_validity_without_fault": true,
+ "doubled": {
+  "ratios": [
+   1.9365929858762905,
+   1.9874716444012503,
+   1.9598013421775482
+  ],
+  "passed": true
+ },
+ "pilot_stages": {
+  "missing": [],
+  "passed": true
+ },
+ "pilot": {
+  "peak_bytes": 98314877440,
+  "recomputed_within_bar": true,
+  "stored_within_bar": true,
+  "stored_peak_agrees": true,
+  "complete": true
+ },
+ "pilot_note": "measurement probe (A7): it does not reproduce every allocation of the timing driver; time4096 (first in the defer order) is reported \"not reached (memory)\" if it fails on memory",
+ "fused_median_ratio": {
+  "1024|Hinc|gauss32|BE": 0.3302924226593274,
+  "1024|Hinc|gauss32|CNR": 0.33216678768719793,
+  "1024|L384|gauss128|BE": 1.0168737686858338
+ },
+ "all_controls_pass": true
+}

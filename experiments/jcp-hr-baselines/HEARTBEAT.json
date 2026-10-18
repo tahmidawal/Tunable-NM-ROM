@@ -1,17 +1,19 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:08:08Z",
- "step": "job audit 3 SUBMIT both; t3d64a (5508653, H200, 12 h wall) and t2d1024a (5508660, H200, 5 h wall) RUNNING, jax_backend=gpu; next: Stage-B chain audit while they run; t2d256 after t2d1024a ends",
+ "utc": "2026-10-18T13:08:36Z",
+ "step": "t3d64a (5508653) + t2d1024a (5508660) RUNNING on H200, no ERR; code audit 24 (Stage-B chain) running; 2D dry chain in Stage-B phase",
  "waiting_on": {
   "slurm_jobs": [
    5508653,
    5508660
   ],
-  "codex_output": null,
-  "codex_pid": [],
+  "codex_output": "audits/codex-code-24.md",
+  "codex_pid": [
+   2642799
+  ],
   "local_pid": 2584678
  },
- "expected_finish_utc": "2026-10-18T18:08:08Z",
+ "expected_finish_utc": "2026-10-18T13:48:36Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

@@ -153,7 +153,7 @@ def main():
         for tk in uni or []:
             gid = plan['meshes']['4096']['targets'][tk].get('union_joint_group')
             c = res['cells'].get(f'4096|{gid}', {})
-            rows[tk] = dict(S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), status=c.get('status', 'ok'),
+            rows[tk] = dict(S=c.get('S'), lo=c.get('lo'), hi=c.get('hi'), status=c.get('status', 'ok' if c else 'missing cell'),
                             two_x_class=c.get('two_x_class'), two_x=c.get('two_x'))
         cls = [v['two_x_class'] for v in rows.values()]
         if not plan['meshes']['4096'].get('k2_universe_complete'):

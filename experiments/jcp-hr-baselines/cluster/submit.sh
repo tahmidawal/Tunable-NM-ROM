@@ -10,16 +10,8 @@ ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 NS=/cluster/tufts/paralab/tawal01/jcp-hrb
 LOCAL="$ROOT/experiments/jcp-hr-baselines/runs/$A"
 [ -f "$LOCAL/run.sbatch" ]
-# A33.2: the attempt must hold a ledger reservation and the ledger total (measured or reserved) must be <= 30 GPU-h
-/home/tahmid/Dev/.venv/bin/python - "$ROOT/experiments/jcp-hr-baselines/runs/GPU-LEDGER.json" "$A" <<'PY'
-import json, sys
-L = json.load(open(sys.argv[1]))
-assert any(j['attempt'] == sys.argv[2] for j in L['jobs']), 'no ledger reservation for this attempt'
-tot = sum(float(j['measured_gpu_hours']) if j.get('measured_gpu_hours') is not None else float(j['requested_hours'])
-          for j in L['jobs'])
-assert tot <= 30.0 + 1e-9, ('ledger total exceeds 30 GPU-h', tot)
-print(f'ledger total (measured or reserved) {tot:.3f} GPU-h <= 30')
-PY
+# A34.2: the attempt must hold exactly one unbound reservation (marked 'submitting' under the ledger lock)
+/home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" submit-check "$A"
 echo "--- squeue before"; timeout 60 $SSH tufts-login 'squeue -u $USER -h -o "%i %j %T"'
 TAG="$A.$(hostname).$$.$(date +%s%N)"
 timeout 60 $SSH tufts-login "mkdir -p $NS/.staging && mkdir $NS/.staging/$TAG"
@@ -33,5 +25,7 @@ timeout 120 $SSH tufts-login "cd $NS && flock -x -w 60 .submit.lock bash -c '
   if [ \"\$t\" -ge 8 ]; then echo \"8 jobs live on the account: refusing (campaign cap 8)\"; exit 6; fi
   test ! -e $NS/$A || { echo \"$NS/$A exists: refusing\"; exit 3; }
   mv $NS/.staging/$TAG $NS/$A
-  cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch run.sbatch'"
+  cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch --no-requeue run.sbatch'" | tee "$LOCAL/SUBMIT.out"
+JID=$(sed -n 's/^Submitted batch job \([0-9]*\)$/\1/p' "$LOCAL/SUBMIT.out")
+[ -n "$JID" ] && /home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" bind "$A" "$JID"
 echo "--- squeue after"; timeout 60 $SSH tufts-login 'squeue -u $USER -o "%.10i %.24j %.8T %.10M %R"'

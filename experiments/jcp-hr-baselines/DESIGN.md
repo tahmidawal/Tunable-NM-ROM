@@ -1689,3 +1689,20 @@ checkpoints of Stage-B anchors, comparator cases and timing attempts; an offline
 Stage-B preflight and membership-derived resource admission at staging; unique-pair counting; Stage-B timing in the
 registered total order. "Recomputed from evidence" in A32.6 for the freeze means: summary certificates aggregated plus
 Q1 distances recomputed from saved coefficients, until the certificate recomputation from per-step evidence is added.
+
+---
+
+## Amendment A34 (2026-10-18) — code audit 22 (tuning scope, NOT READY)
+
+**A34.1 Evidence.** `search_hours` is recomputed by the phase wrapper after each phase's time is recorded (never one
+block behind); the running phase is recorded (`active_phase`, start time) so a truncated job's unfinished expenditure is
+bounded by the job's measured elapsed time. Anchors are written durably (`arrays/ANCH~<block>.npz` + `anchors` in
+tune.json) as soon as they complete, independent of the production runs. Probe configurations are predeclared at setup
+(`not_run`), run as `running`, and become `complete` only after every case and the coefficient file are saved.
+
+**A34.2 Ledger.** All ledger mutations go through `cluster/ledger.py` under one exclusive lock with atomic replacement:
+`reserve` (at the end of staging; refuses a duplicate attempt name and any total over the cap, the 7.5 h Stage-B reserve
+included for tuning attempts), `submit-check` (exactly one unbound reservation; marks it `submitting`), `bind` (records
+the Slurm job id from sbatch's output; a reservation is consumed once — a retry is a new attempt with a new
+reservation), `reconcile` (at collection: measured GPU-hours = ElapsedRaw × allocated GPUs). Jobs are submitted with
+`--no-requeue`.

@@ -22,4 +22,9 @@ mv "$LOCAL/REMOTE.sha256.new" "$LOCAL/REMOTE.sha256"
 echo "transfer verified against the fresh remote manifest ($(wc -l < "$LOCAL/REMOTE.sha256") files)"
 timeout 60 $SSH tufts-login "sacct -j $JOB --format=JobID,State,Elapsed,AllocTRES%60,ExitCode -P" > "$LOCAL/archive/sacct.txt"
 cat "$LOCAL/archive/sacct.txt"
+# A34.2: reconcile the reservation with the measured allocation (ElapsedRaw x allocated GPUs), under the ledger lock
+read -r ER GRES <<<"$(timeout 60 $SSH tufts-login "sacct -j $JOB -X -n -P --format=ElapsedRaw,AllocTRES" | head -1 | tr '|' ' ')"
+NG=$(echo "$GRES" | sed -n 's/.*gres\/gpu=\([0-9]*\).*/\1/p'); NG=${NG:-1}
+HRS=$(python3 -c "print(round($ER*$NG/3600, 4))")
+/home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" reconcile "$A" "$JOB" "$HRS" "$ST"
 if [ "${2:-}" = "--delete" ]; then timeout 120 $SSH tufts-login "rm -rf $NS/$A" && echo "deleted $NS/$A"; fi

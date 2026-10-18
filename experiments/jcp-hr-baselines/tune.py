@@ -79,6 +79,8 @@ class Out:
 
     def phase(self, name, fn, store=None):
         t0 = time.perf_counter()
+        self.res['active_phase'] = dict(name=name, started_unix=time.time())    # A34.1: unfinished expenditure bound
+        self.save()
         try:
             v = fn()
             self.res['phases'][name] = dict(status='ok', seconds=time.perf_counter() - t0, device_peak=PL.device_peak(),
@@ -92,6 +94,9 @@ class Out:
             v = None
         if store is not None:
             self.res[store] = v
+        self.res['active_phase'] = None
+        self.res['search_hours'] = sum(p_['seconds'] for k_, p_ in self.res['phases'].items()
+                                       if k_.startswith('A|') or k_.startswith('EXT|')) / 3600     # A34.1
         self.save()
         return v
 
@@ -144,6 +149,8 @@ def main():
         for option in options:
             for j in (range(nn) if not cfg.get('dry') else [0, 1]):
                 O.res['fom_limiting'][f'{cname_}|{j}|{option[0]}|{option[1]:.8g}'] = dict(status='not_run')
+    O.res['probe_runs'] = {PL.cfg_id('none', r, '-', o[0], o[1], 'native', gen='upwind'): dict(status='not_run')
+                           for r in ranks for o in options}             # A34.1: predeclared at setup
     refs = O.phase('refs', lambda: SC.Refs(d, coh, fam, SCREEN))
     if refs is None:
         return
@@ -372,6 +379,12 @@ def main():
                     tighter[j] = cell.run(kind, r, dat, 'native', option, 'tighter', fam.ic(L, j), fam.nu(j))
                     apart[f'tighter|{j}'] = dict(cert=tighter[j]['cert'], W=tighter[j]['W'])
                     O.save()
+                O.npz('arrays', f'ANCH~{pname}', Wtight=np.stack([tight[j]['W'] for j in SCREEN]),  # A34.1: durable
+                      Wtighter=np.stack([tighter[j]['W'] for j in SCREEN[:2]]))
+                O.res.setdefault('anchors', {})[pname] = dict(tight={j: tight[j]['cert'] for j in SCREEN},
+                                                              tighter={j: tighter[j]['cert'] for j in SCREEN[:2]})
+                O.res['anchors_partial'].pop(pname, None)
+                O.save()
                 for solver in ('native', 'common'):
                     cid = cids[(option, solver)]
                     try:
@@ -415,9 +428,6 @@ def main():
                     except Exception as e:  # noqa: BLE001
                         set_status(cid, 'run_failed', reason=f'{type(e).__name__}: {e}', stage=tag)
                     O.save()
-                O.res['anchors_partial'].pop(pname, None)
-                O.res['search_hours'] = sum(v['seconds'] for k_, v in O.res['phases'].items()
-                                            if k_.startswith('A|') or k_.startswith('EXT|')) / 3600
                 return True
             if O.phase(pname, block) is None:                       # anchors failed: both solvers of this option
                 for s in ('native', 'common'):
@@ -466,12 +476,12 @@ def main():
     O.res['deferred'] = []
 
     # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis ---------
-    O.res['probe_runs'] = {}
     if probe is not None and 'Phi' in PROBE and not deferrable():
         O.res['deferred'].append('generator probe runs (budget)')
     if probe is not None and 'Phi' in PROBE:
         def probe_runs():
             Pu = jnp.asarray(PROBE.pop('Phi'))
+
             for r in ranks:
                 for option in options:
                     cid = PL.cfg_id('none', r, '-', option[0], option[1], 'native', gen='upwind')
@@ -481,7 +491,7 @@ def main():
                         O.res['probe_runs'][cid] = dict(status='deferred', reason='budget')
                     else:
                         datp = dict(Phi=Pu[:, :r], LPhi=H.lap_cols(Pu[:, :r], d, L), DPhi=H.dsum_cols(Pu[:, :r], d, L))
-                        rec = dict(status='complete', cases={})
+                        rec = dict(status='running', cases={})
                         try:
                             Ws = []
                             for j in SCREEN:
@@ -492,6 +502,7 @@ def main():
                                 O.res['probe_runs'][cid] = rec
                                 O.save()
                             O.npz('arrays', f'PROBE~{cid}', W=np.stack(Ws))
+                            rec['status'] = 'complete'
                         except Exception as e:  # noqa: BLE001
                             rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
                         O.res['probe_runs'][cid] = rec

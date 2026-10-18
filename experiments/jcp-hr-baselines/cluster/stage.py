@@ -62,18 +62,8 @@ def main():
     if a.driver in ('tune', 'stageb'):                 # A26.4 / A32.5: the wall limit is the GPU-hour bound
         c0 = json.loads(git_show(commit, cfgname))
         assert a.minutes == int(round(60 * c0['wall_hours'])), ('--minutes must equal the config wall_hours', a.minutes)
-        led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
-        committed = sum(float(j['measured_gpu_hours']) if j.get('measured_gpu_hours') is not None
-                        else float(j['requested_hours']) for j in led['jobs'])
         reserve = 7.5 if a.driver == 'tune' else 0.0
-        assert committed + c0['wall_hours'] + reserve <= 30.0 + 1e-9, \
-            ('ledger: spent/committed + this wall + Stage-B reserve exceeds 30 GPU-h', committed, c0['wall_hours'])
-        # A33.2: reserve this attempt's maximum (its wall limit) in the ledger at staging, so every later staging or
-        # retry is checked against it; collect replaces requested_hours by the measured value
-        led['jobs'].append(dict(attempt=a.attempt, slurm=None, gpu=a.gpu, commit=commit, role=f'{a.driver} {a.config}',
-                                requested_hours=float(c0['wall_hours']), measured_gpu_hours=None,
-                                status='reserved at staging'))
-        (ROOT / LANE / 'runs' / 'GPU-LEDGER.json').write_text(json.dumps(led, indent=1) + '\n')
+        RES_ARGS = [a.attempt, a.driver, a.config, a.gpu, commit, str(c0['wall_hours']), str(reserve)]
     out.mkdir(parents=True)
     proof = []
     for name in files:
@@ -161,6 +151,11 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
     manifest = [f'{hashlib.sha256(p_.read_bytes()).hexdigest()}  {p_.relative_to(out)}'
                 for p_ in sorted(out.rglob('*')) if p_.is_file() and '__pycache__' not in str(p_)]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')
+    if a.driver in ('tune', 'stageb'):            # A34.2: atomic reservation under the ledger lock (fails if over cap)
+        r4 = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', str(ROOT / LANE / 'cluster' / 'ledger.py'), 'reserve']
+                            + RES_ARGS, capture_output=True, text=True)
+        assert r4.returncode == 0, r4.stderr[-2000:]
+        print(r4.stdout.strip())
     print(out)
     print(remote)
 

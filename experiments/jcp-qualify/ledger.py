@@ -76,11 +76,20 @@ def validate(d, new, exempt=None):
                 probs.append(f'q2known{m} without a fallback job or nofb{m} marker')
             else:
                 probs += [f'fallback {k} needs a positive projection' for k in new if k.startswith(f'fb{m}') and new[k] <= 0]
-                t_live = any(k.startswith(f'time{m}') for k in live | done)
-                if not t_live and f'time{m}enlarged' not in new:          # A5.1: the unsubmitted panel was re-priced
-                    probs.append(f'time{m} not marked re-priced with its fallback subjects (time{m}enlarged)')
-                if t_live and not any(k.startswith(f'time{m}r') and v > 0 for k, v in new.items()):
-                    probs.append(f'time{m} already submitted: a repeat panel time{m}r<k> must be reserved')
+                t_live = any(k == f'time{m}' for k in live | done)
+                nfb = new.get(f'fbsubjects{m}', 0)
+                if not (isinstance(nfb, (int, float)) and nfb >= 1):
+                    probs.append(f'fbsubjects{m} (number of fallback timing subjects) missing')
+                elif not t_live:                                       # A5.1: the unsubmitted panel is re-priced
+                    base = d.get('baseline', {}).get(f'time{m}')
+                    if base is None or new.get(f'time{m}', 0) < base * (1 + nfb / 36) - 1e-9:
+                        probs.append(f'time{m} projection not enlarged for {nfb} fallback subjects (baseline {base})')
+                else:                                                  # panel already run: covered, or a repeat
+                    covered = f'time{m}coversfb' in new
+                    rep_ok = any(k.startswith(f'time{m}r') and v > 0 for k, v in new.items()) or \
+                        any(k.startswith(f'time{m}r') for k in live | done)
+                    if not (covered or rep_ok):
+                        probs.append(f'time{m} already submitted without the fallback subjects: reserve a repeat time{m}r<k>')
         else:
             probs.append(f'no fallback allowance or q2known marker for mesh {m}')
     probs += [f'pending entry already live: {k}' for k in set(new) & live]
@@ -121,6 +130,10 @@ def main():
                 print('refused pending inventory:', probs); rc = 9
             else:
                 d['pending_core'] = new
+                base = d.setdefault('baseline', {})                  # first projection of each panel (A5.1 reference)
+                for k, v in new.items():
+                    if k.startswith('time') and k[4:].isdigit() and f'q2known{k[4:]}' not in new:
+                        base[k] = v                                 # tracks the certificate until the mesh's Q2 is known
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')

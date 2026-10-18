@@ -960,3 +960,28 @@ equal the count from the oracle's γ. Part (b) reports complete Q1 on both fixtu
 the timer stops (every call of every attempt, both calls inside N-time's B); acceptance recomputes drift validity from
 the raw times and requires all six registered cases (the six are hard-coded in `stats.TIMING_CASES`; a caller cannot
 shorten them).
+
+---
+
+## Amendment A8 (2026-10-18) — solver tolerances and anchors, from the local CPU dry run (no verdict data)
+
+Evidence (local CPU dry run of `smoke.py` at reduced size: 2D L = 256, r = 16, 24 training trajectories; a code-path
+test, not a result): with ours' production stopping rule γ ≤ 1e-3, the native Gauss–Newton stopped after one iteration
+per step and its rollouts were 2.4–3.3e-4 from the tight solve (Q1 bar 2.5e-4); the common LM stopped at the
+extrapolated predictor on 40 % of steps (1.3–1.7e-4); and an LM (Cholesky normal equations) **tighter** anchor on an
+ECSW problem stalled at γ ≈ 2e-8 > 1e-8 (round-off of the squared normal equations), making the anchor invalid.
+
+**A8.1 Native production tolerance.** The native Gauss–Newton (QR, backtracking) stops at γ ≤ **1e-6** (residual
+criterion unchanged). Ours' γ ≤ 1e-3 is a setting tuned for ours' LM with a quadratic-extrapolation predictor; the
+native solver is entitled to its own convergence rule, and Gauss–Newton's quadratic convergence makes the extra
+iteration cheap. The common solver keeps ours' settings exactly (γ ≤ 1e-3), as an ablation. Q1's non-stationarity
+threshold (1e-3) is unchanged for both.
+
+**A8.2 Anchors.** The tight and tighter anchors of every baseline configuration (both solvers) are the **native**
+QR-based Gauss–Newton at the tight (1e-7) and tighter (1e-8) levels: an adaptive solve to tolerance whose round-off floor
+is not squared. A1.7's "common LM solver at the tight level" is replaced. Distances and validity rules are unchanged.
+
+**A8.3 N-under ECSW ladder.** A support equal to r makes the weighted residual square, so its minimiser is an exact root
+and γ is round-off noise (every step non-stationary in the dry run); such a level can never be Q1-qualified. The ECSW
+ladder is therefore overdetermined: support caps $\{4r,\ 2r,\ \lceil1.25r\rceil\}$ (still far below the registered τ
+supports at real size). The Q-DEIM ladder is unchanged. The firing rule (A6.3) is unchanged.

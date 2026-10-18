@@ -30,7 +30,8 @@ GN_HALVINGS = 8
 LM_BUDGET = 600
 STAT_TOL = 1e-3              # Q1 stationarity bar (V4-2)
 LEVELS = {'prod': (1e-3, 1e-9), 'tight': (1e-7, 0.), 'tighter': (1e-8, 0.),    # c2common.tol_of('LSPG', .)
-          'recover': (1e-12, 1e-14)}                                             # G-full only (A2.11)
+          'recover': (1e-12, 1e-14),                                             # G-full only (A2.11)
+          'prod_native': (1e-6, 1e-9)}                                           # native GN production (A8.1)
 ARMS = ('none', 'ecsw', 'qdeim')
 
 

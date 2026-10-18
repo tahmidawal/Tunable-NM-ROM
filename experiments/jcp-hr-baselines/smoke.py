@@ -263,8 +263,8 @@ def run_cell(cfg, c, res, outdir, save):
                         recs[j]['seconds_warm'] = warm['seconds']
                         recs[j]['timed_vs_scored'] = float(np.max(np.abs(warm['fields_lat'] - recs[j]['fields_lat'])))
                     grid[cid] = dict(recs=recs)
-                tight = {j: cell.run(kind, rs, dat, 'common', option, 'tight', fam.ic(L, j), fam.nu(j)) for j in cases}
-                tighter = {j: cell.run(kind, rs, dat, 'common', option, 'tighter', fam.ic(L, j), fam.nu(j)) for j in subset}
+                tight = {j: cell.run(kind, rs, dat, 'native', option, 'tight', fam.ic(L, j), fam.nu(j)) for j in cases}
+                tighter = {j: cell.run(kind, rs, dat, 'native', option, 'tighter', fam.ic(L, j), fam.nu(j)) for j in subset}
                 for solver in ('native', 'common'):
                     cid = PL.cfg_id(kind, rs, hrp, option[0], option[1], solver)
                     g = grid[cid]
@@ -396,8 +396,8 @@ def run_cell(cfg, c, res, outdir, save):
     def q1_level(kind, dat, tag, support=None):
         fxs = sorted(fx)
         prod = {j: cell.run(kind, rs, dat, 'native', opt_main, 'prod', fam.ic(L, j), fam.nu(j)) for j in fxs}
-        tight = {j: cell.run(kind, rs, dat, 'common', opt_main, 'tight', fam.ic(L, j), fam.nu(j)) for j in fxs}
-        tighter = {j: cell.run(kind, rs, dat, 'common', opt_main, 'tighter', fam.ic(L, j), fam.nu(j)) for j in fxs}
+        tight = {j: cell.run(kind, rs, dat, 'native', opt_main, 'tight', fam.ic(L, j), fam.nu(j)) for j in fxs}
+        tighter = {j: cell.run(kind, rs, dat, 'native', opt_main, 'tighter', fam.ic(L, j), fam.nu(j)) for j in fxs}
         q = PL.q1_config(prod, tight, tighter, R['n0'], fxs, fxs)
         if support is not None and support < rs:        # A6.3: underdetermined LSPG is never Q1-qualified
             q = dict(q, q1=False, reason=f'underdetermined: support {support} < r {rs}')
@@ -412,8 +412,8 @@ def run_cell(cfg, c, res, outdir, save):
     def n_under():
         out = {'none': q1_level('none', datas[('none', '-')][0], 'none')}
         G, b, cand, _ = BD.ecsw_contrib(cell.states, cell.Phi[:, :rs], d, L)
-        for div in (1, 2, 4, 8):
-            cap = int(np.ceil(rs / div))
+        for mult in (4., 2., 1.25):                    # A8.3: overdetermined supports only (support > r)
+            cap = int(np.ceil(mult * rs))
             o = BD.NN.greedy_nnls(G, b, taus=(), cap=cap)
             de, _ = BD.ecsw_data(cell.Phi[:, :rs], cand[o['support']], o['weights'], d, L)
             out[f'ecsw_cap{cap}'] = q1_level('ecsw', dict(de, Phi=cell.Phi[:, :rs]), f'ecsw_cap{cap}',
@@ -493,8 +493,8 @@ def run_cell(cfg, c, res, outdir, save):
         fxs = sorted(fx)
         mut = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'prod', fam.ic(L, jj), fam.nu(jj), mutation='drop_adv_jac')
                for jj in fxs}
-        tight = {jj: cell.run('ecsw', rs, dat, 'common', opt_main, 'tight', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
-        tighter = {jj: cell.run('ecsw', rs, dat, 'common', opt_main, 'tighter', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
+        tight = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'tight', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
+        tighter = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'tighter', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
         return dict(status='run', fixture=PL.cfg_id('ecsw', rs, tau_run, opt_main[0], opt_main[1], 'native'), case=j,
                     tuples=tuples, skipped=skipped, base_cert=base['cert'], classify=classify,
                     b=dict(q1=PL.q1_config(mut, tight, tighter, R['n0'], fxs, fxs), cert={jj: mut[jj]['cert'] for jj in fxs}))
@@ -538,7 +538,7 @@ def run_cell(cfg, c, res, outdir, save):
         kind, hrp = ('ecsw', tau_run) if ('ecsw', tau_run) in datas else ('none', '-')
         dat = datas[(kind, hrp)][0]
         q = cell.query(kind, rs, 'native')
-        sch = RM.schedule(d, opt_main[0], opt_main[1], 'prod')
+        sch = RM.schedule(d, opt_main[0], opt_main[1], 'prod_native')     # the native solver's production level (A8.1)
         fA = lambda u, v: q(u, v, dat, sch)['fields']
 
         def fB(u, v):                                   # the same case twice, two synchronised host calls

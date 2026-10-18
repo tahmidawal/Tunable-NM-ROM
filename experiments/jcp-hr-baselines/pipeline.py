@@ -200,7 +200,8 @@ class Cell:
         """One timed query + (untimed) certification. Returns a record with lattice fields and Q1 evidence.
         burn_s > 0: GPU burn before the timed call (screening timings, code audit 1 item 8)."""
         q = self.query(kind, r, solver, mutation)
-        sch = RM.schedule(self.d, option[0], option[1], level)
+        # A8.1: the native GN's production stopping tolerance is gamma <= 1e-6 ('prod' requests map to it)
+        sch = RM.schedule(self.d, option[0], option[1], 'prod_native' if (solver == 'native' and level == 'prod') else level)
         u0 = jnp.asarray(u0)
         if burn_s > 0:
             burn(burn_s)
@@ -211,7 +212,7 @@ class Cell:
         rec = dict(seconds=t, W=np.asarray(out['W']), fields_lat=self.lattice(out['fields']))
         if certify:
             gam = self.certifier(kind)(out['C'], jnp.float64(nu), data, sch)
-            rec['cert'] = RM.certify(out, gam, sch, level)
+            rec['cert'] = RM.certify(out, gam, sch, level if level in ('tight', 'tighter') else 'prod')
             rec['gamma'] = np.asarray(gam)[:int(sch['steps'])]
         rec['C'] = np.asarray(out['C'])[:int(sch['steps']) + 1]
         rec['reason'] = np.asarray(out['stats']['reason'])

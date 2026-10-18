@@ -66,7 +66,7 @@ def acc_checks(d):
             rep(f'acc {name} {sc}: Q1/Q2 labels (smoke population)', Q1=q['Q1'], Q2=q['Q2'])
             if name in ('R128', 'R384'):
                 g = SC.reproduction(R, name, sc, f'LSPG|{sc}|0.005|prod', r)
-                req(f'reproduction gate {name} {sc} (dev2, <= 1e-10, numerical manifest equal)', g['passed'],
+                req(f'PRELIMINARY reproduction gate {name} {sc} (dev2 only; the registered 38-case gate is acc1024, <= 1e-10, numerical manifest equal)', g['passed'],
                     worst=g['worst'], manifest=g['manifest'])
             if name == 'R384' and sc == 'CNR':
                 # E0 scoring path and identity swaps (real records)
@@ -248,11 +248,12 @@ def kern_checks(d, tag, rmax):
 
 
 def main():
-    root = Path(sys.argv[1])
-    acc_checks(root / 'p1acc_smkacc')
-    time_checks(root / 'p1time_smktime')
-    kern_checks(root / 'p1kern_smkkern', '2D', 512)
-    kern_checks(root / 'p1three_smkkern3d', '3D', 1024)
+    roots = [Path(x) for x in sys.argv[1:]]            # smkA (accuracy) and smkB (timing, kernels) archive outputs
+    find = lambda sub: next(d / sub for d in roots if (d / sub / 'result.json').exists())
+    acc_checks(find('p1acc_smkacc'))
+    time_checks(find('p1time_smktime'))
+    kern_checks(find('p1kern_smkkern'), '2D', 512)
+    kern_checks(find('p1three_smkkern3d'), '3D', 1024)
     t = json.loads((HERE / 'checks' / 'test_p1.json').read_text())
     need = ['synthetic timing fault -> fail', 'synthetic timing unmodified -> pass', 'synthetic accuracy trend -> fail',
             'synthetic accuracy equal -> pass', 'H-acc-r 10/38 unqualified -> inconclusive', 'H-cost-r synthetic r^2 declared 3 -> fail',

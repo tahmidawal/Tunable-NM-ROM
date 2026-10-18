@@ -102,7 +102,9 @@ def main():
         return v, f, secs
 
     # ------------------------------------------------------------ configurations ----
+    rep['elapsed'] = {}                    # wall seconds per (config, scheme) incl. compilation, per block (cost certificate)
     for cc in cfg['configs']:
+        t_cfg = time.perf_counter()
         roles = {}
         if cc.get('qp'):
             roles['qp'] = cc['qp']
@@ -126,7 +128,9 @@ def main():
         ids = P.select(cases, cc['cases'])
         q2 = [i for i in P.select(cases, cc.get('q2_cases', 'sub16')) if i in ids]
         dev = [i for i in P.select(cases, 'dev6') if i in ids]
+        rep['elapsed'][f"{cc['name']}|setup"] = time.perf_counter() - t_cfg
         for sc in cc['schemes']:
+            t_sc = time.perf_counter()
             n = len(ids)
             R = dict(case_ids=np.array([f'{cases[i][0]}|{cases[i][1]}' for i in ids]),
                      W=np.full((n, 6, st.Rp), np.nan), w0=np.full((n, st.Rp), np.nan),
@@ -205,12 +209,14 @@ def main():
                      weighting='LSPG D = 1/(a0 + dt b0 nu lam)', metric_id_target='2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1')
             np.savez_compressed(out / f"R_{cc['name']}_{sc}.npz", **R)
             crep['schemes'][sc] = dict(n=len(ids), mem=P.mem())
+            rep['elapsed'][f"{cc['name']}|{sc}"] = time.perf_counter() - t_sc
             save()
         # reproduction gate (AM-1): offline, p1score.reproduction (numerical manifest + W vs the combined archive)
         # extra blocks bound to this configuration
         for blk in cfg.get('blocks', []):
             if blk['config'] != cc['name']:
                 continue
+            t_blk = time.perf_counter()
             if blk['kind'] == 'p1e':
                 rep.setdefault('p1e', {})[cc['name']] = run_p1e(blk, bank, st, cases, go, U0, out)
             elif blk['kind'] == 'order':
@@ -219,6 +225,7 @@ def main():
                 rep['controls'] = run_controls(blk, bank, st, cc, cases, go, U0, out, cert)
             elif blk['kind'] == 'vendor':
                 rep.setdefault('vendor_bridge', {})[cc['name']] = run_vendor(blk, bank, st, cases, go, U0)
+            rep['elapsed'][f"{cc['name']}|block|{blk['kind']}"] = time.perf_counter() - t_blk
             save()
         rep['memory'][cc['name']] = P.mem()
         del st

@@ -663,3 +663,26 @@ identity failure makes that control "invalid" (blocking H-cost-N and H-cost-r li
 independent of the drift-based invalid fraction. Smoke demonstration: one smoke subject is run with an injected wrong
 reference hash (`inject_identity_fault`); all its triplets must come out invalid and its H-cost-N statistic "verdict not
 reached".
+
+---
+
+## Amendment A5 (2026-10-18, before any lane job; answers `audits/codex-job-1.md`, FIX-FIRST)
+
+**A5.1 Smoke split, scope stated.** The real-size smoke runs as two concurrent a100-80G jobs: `smkA` (p1acc
+`smkacc`: accuracy path, Q1/Q2 pipeline, reproduction, every numerical control, order check, vendor bridge, P1e path)
+and `smkB` (p1time `smktime`, p1kern `smkkern`, p1three `smkkern3d`), so a timeout in one cannot suppress the other's
+controls. The smoke reproduction gate is **preliminary** (dev2); the registered gate is the 38-case gate on the
+`acc1024` production outputs. The production timing-fault probe has two meshes in the smoke and is reported only; the
+registered H-cost-N negative control is the synthetic three-mesh fixture (CPU).
+
+**A5.2 Failure dispositions.** A smoke or pilot job that times out or fails is resubmitted at most once as a new
+attempt with twice the time limit (the failed attempt's elapsed hours stay spent). Pilot: an OOM or timeout means
+"full-bank feasibility at $4096^2$ unestablished" — the pilot is re-run with the prefix-retaining bank
+(`make_configs.py --prefix-4096`); if that also fails, the $4096^2$ items (P1c, P1d subset, P1g at $4096^2$) are not
+reached and the outcome is "P1 incomplete" (§9.3). An incomplete pilot or smoke never yields a cost certificate
+(`resources.py` refuses).
+
+**A5.3 Cost certificates are estimates.** `resources.py` scales the smoke's **measured** wall time per (configuration,
+scheme) — compilation included — and per extra block, by case counts, quadrature-point ratios and the pilot's own
+$4096^2/1024^2$ fused-query ratio. These are estimates with headroom (time limit = 1.5 × projection), not bounds; the
+scheduler's time limit is the enforced bound and the reservation (A1.11).

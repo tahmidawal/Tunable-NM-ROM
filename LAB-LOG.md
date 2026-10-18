@@ -17,7 +17,8 @@ below it is append-only, oldest first.
 **2026-10-18 — Burgers 2D/3D campaign running (coordinator session; `reports/2026-10-17-full-experiment-plan/campaign/`).**
 - **Priority 1 (`exp/2026-10-17-jcp-p1-scaling`): done, 1.9 of 20 GPU-h.** In 2D, solve cost and accuracy are both mesh-independent (H-cost-N and H-acc-N pass, 8/8, 256²–4096²). Accuracy improves with r over 128→384 but not 384→512. Kernel cost grows more slowly in r than operation counts predict (7/8 exponent fits fail).
 - **3D speed (`exp/2026-10-14-jcp-speed3d`): done.** 2.0–17× faster than our earlier 3D configurations; cost flat 64³→384³. **K2 fires**: a pseudo-spectral FOM beats every selected 3D ROM at equal accuracy (0.008–0.16×). Per the plan, the paper leads with mesh-independence and reports speed honestly.
-- **Running:** C3 POD baselines (`exp/2026-10-06-jcp-hr-baselines`, phase I code). Priority 2 lanes (qualification + accuracy front, 2D FOM ladder) are being launched.
+- **Priority 2:** qualification/fronts done (98/112 2D configurations qualified; **speed3d's 3D winners fail the quadrature check** — speed-ups measured but not of qualified configurations). 2D FOM ladder done: **K2 fires in 2D too** — a spectral FOM at N=24–48 matches ROM accuracy faster at every mesh; the earlier 13.6× H5 holds only vs a same-mesh upwind FOM. C3 POD baselines still running.
+- **Priority 3** lanes (dims, budget, heads) in design/code phase; production after C3 reports.
 - **Still open (user):** merges (now 9 finished lanes); custody of the sealed-cohort key; the 2D floor check before opening; authorship with Hari.
 
 ## Earlier state — 2026-10-17
@@ -19202,3 +19203,19 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - The combined lane's finalist label "qualified" for the R128 and R256-fallback fast-equal-accuracy arms (LSPG-CN-R 2Δt₀) does not survive the every-case Q1 contract.
   - Design deviation: for GAL, the stationarity ratio was replaced by a residual criterion η ≤ 1e-8 (A1.3, A2.5).
 - **Coordinator decisions.** GAL-CN stays a diagnostic: primary C2/H-comp/K2 in jcp-fom2d use the registered LSPG schemes; GAL-CN front members are reported in a separately labelled post-hoc row. No 4th 3D Q2 round now; 3D quadrature selection (A4 m*(r, M)) is routed to priority 3 (jcp-dims).
+
+### 2026-10-18 — jcp-fom2d complete: **K2 fires in 2D** (lane `exp/2026-10-18-jcp-fom2d`, last commit 602b1de51, mirror e10358562)
+- **What ran.** H200, namespace `jcp-fom2d` (emptied): smk1 5366293, fcc 5373119, fub 5373122, fub4k 5380943, fps 5373281, smkc2 5380338, c2256 5456290, c21024 5456289, c24096 5456288. **4.59 of 30 GPU-h.** Audits: design 1–5 READY; C1 code 1–4 READY; C2 code 1–3 READY; jobs SUBMIT; C1 results 1–2, C2 smoke, C2 results ACCEPTED; report 1–4 READY. FRONT-2D v1 (qualify 2374fafe1) used.
+- **Found (generated report; E0 conditional; speed-ups are upper bounds).**
+  - C1: 185 FOM configurations (upwind+BE, central+CN-R, sine spectral ETDRK4) × mesh (L 32–4096; N 8–256) × Δt × tolerance on 38 cases; 170 admissible (15 spectral large-Δt blow-ups rejected). Positive gates: E0 `a0_L2048` reproduced to 9e-15, stored spectral to 5e-15; negative controls fired.
+  - For all 98 front targets the cheapest joint (median and worst) match is spectral N=48 Δt 0.0125 (most) or N=24 Δt 0.025.
+  - **H-comp 2D:** union cell fails for all 21 qualified LSPG configurations at 1024² and 4096²; union speed-up at 4096² 0.049–0.706 (max interval end 0.74); central+CN-R fails 19, unresolved 2. No crossover at any mesh. **K2 fires.** Coordinator recheck from raw stage-2 timings at 4096²: R128 LSPG-BE Δt₀ 0.0249 s vs spectral N48 0.0117 s (N24 0.0102 s).
+  - Narrow comparators: 16/21 ≥ 2× vs selected upwind+BE; same-mesh 4096² vs central+CN-R 5.8–84×; same-mesh crossover vs central+CN-R between 256² and 1024² (R128 BE) or 1024² and 4096² (R512 BE).
+  - GAL-CN (post-hoc diagnostic rows, coordinator decision A8): also fails 2× vs the best FOM on all 12.
+- **Retracted.** The combined lane's H5 (13.6× selected, 17.7× best arm vs a second-order FOM) holds only for a same-mesh upwind comparator matched on worst error; it does not hold against the full ladder. The paper must not quote it as a speed-up over the best FOM.
+- **Framing consequence (plan K2 rule, both dimensions):** no "faster than the best full solver" claim for Burgers on the box; lead with mesh-independent cost and memory; quote speed-ups only against named comparators with scope. Recorded prominently; campaign continues.
+- **Open.** Spectral at the ROM's own resolution (1024², 4096²) and the other solver families (upwind+CN-R, Newton–GMRES, IMEX-CG) not run. Account-wide cap enforced per lane by squeue checks only.
+
+### 2026-10-18 — priority 3 lanes started in design mode (coordinator)
+- Worktrees from `21c175a1b`: `exp/2026-10-18-jcp-dims` (@2045e5908, mirror 13f09ebd7; A3, A4 incl. 3D Q2 front completion and qualified 3D re-timing, B3, B6; cap 3 jobs / 55 GPU-h), `exp/2026-10-18-jcp-budget` (@a218a56dc, mirror d8190cc42; B2, B7 with new long-horizon references in its own namespace, B8; cap 3 / 45), `exp/2026-10-18-jcp-heads` (@1fd69c70f, mirror b4acc3736; C5 K ∈ {4, 8, 16, 32} matched head retrains, linear span vs head; cap 2 / 35). Priority-3 total 135 GPU-h (plan 80–160).
+- **Gating decision:** priority 2 is verified except C3 (jcp-hr-baselines, still running). Following the plan's own precedent for C3 during priority 1, priority-3 lanes do design, code, audits and ≤ 2 GPU-h smokes now; production jobs wait until C3 reports. Briefs in `campaign/briefs/`.

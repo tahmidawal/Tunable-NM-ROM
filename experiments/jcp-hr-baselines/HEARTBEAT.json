@@ -1,17 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T12:24:13Z",
- "step": "design audit 20 NEEDS-RESTATEMENT (item 1 only) -> A31 + tune.py reorder; design audit 21 running; code audit 20 running; gate suite test14 running",
+ "utc": "2026-10-18T12:25:28Z",
+ "step": "design audit 21 CLEAN (A19.4a met at 47bc19088); waiting: code audit 20, gate suite test14",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-20.md, audits/codex-design-21.md",
+  "codex_output": "audits/codex-code-20.md",
   "codex_pid": [
-   2490835,
-   2508126
+   2490835
   ],
   "local_pid": 2488995
  },
- "expected_finish_utc": "2026-10-18T13:09:13Z",
+ "expected_finish_utc": "2026-10-18T12:55:28Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

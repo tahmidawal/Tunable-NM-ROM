@@ -15958,3 +15958,514 @@ exec
     71	
     72	# ------------------------------------------------------------------ cohorts ----
 
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import sys,pathlib,json,io,contextlib
+from unittest.mock import patch
+p=pathlib.Path('experiments/jcp-hr-baselines').resolve();sys.path.insert(0,str(p));import analyze as A
+x='W256|gl24|fs|CN|0.01|K1';m='ecsw|64|k2|CN|0.01|native|central';cases=[f'val64|{i}' for i in range(6)]
+T={'config':{'d':3,'search_allocation_hours':1},'adequacy':{'adequate':True},'search_hours':.1,'inventory_counts':{'complete':1,'not_run':1007}}
+F={'X':{x:{'front':[m]}},'member_info':{m:{'hr_points':128,'quality':'limited (banning)'}}}
+tr={'rep':0,'attempt':0,'valid':True,'tA1':1.,'tA2':1.,'tB':2.,'dA1':0.,'dA2':0.,'dB':0.}
+bad=dict(tr,rep=1,dB=1.)
+B={'config':{'frozen':'fake','frozen_sha256':'h'},'ours':{x:{'G_ours':True}},'members':{m:{'q1':{'q1':True},'cases':cases,'replay_vs_tune_W':1.,'e0':{c:{'e':.1,'eps_ref':1e-6,'eligible':True} for c in cases}}},'inventory':{m:{'status':'complete'},'another':{'status':'not_run'}},'timing':{x+'||'+m:{'status':'complete','outputs_ok':False,'cases':{c:{'triples':[tr,bad]} for c in cases}}}}
+exp={'configs':{x:{'e0':{str(i):.01 for i in range(6)},'batch':2}}}
+def read(self,*args,**kw):
+ if self.name=='tune.json':return json.dumps(T)
+ if self.name=='stageb.json':return json.dumps(B)
+ if self.name=='fake':return json.dumps(F)
+ if self.name=='speed3d_batch1_e0.json':return json.dumps(exp)
+ raise RuntimeError(str(self))
+outputs={}
+def write(self,data,*args,**kw):outputs[self.name]=data;return len(data)
+with patch.object(pathlib.Path,'read_text',read),patch.object(pathlib.Path,'write_text',write),patch.object(A,'sha',lambda _: 'h'),patch.object(sys,'argv',['analyze','c','/virtual/tune','/virtual/stageb']),contextlib.redirect_stdout(io.StringIO()): A.main()
+v=json.loads(outputs['VERDICT-c.json']);print('Synthetic malformed/incomplete input accepted:',v['flags'],v['X'][x]['cell_line'],v['X'][x]['roles']['B_acc']['label'])
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+Synthetic malformed/incomplete input accepted: {'adequate': True, 'saturation': None, 'basis_used': None, 'diagnostic_only': True, 'search_hours': 0.1, 'allocation_hours': 1, 'inventory': {'complete': 1, 'not_run': 1007}, 'deferred': None, 'budget': "baseline search within ours' allocation"} no observed domination among the 1 configurations compared no baseline in role
+
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import jax,jax.numpy as j
+x=j.ones((64,32)); a=x[:,:16];b=x[:,:16];jax.block_until_ready((a,b));print('independent sliced buffers',a.unsafe_buffer_pointer()"'!=b.unsafe_buffer_pointer(),a.unsafe_buffer_pointer()!=x.unsafe_buffer_pointer())
+n=63**3
+print('"'StageB all HR/options retained Phi prefixes excluding full-rank identity GB',8*n*sum([64,128,256,512,768])*6*12/1e9)
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 621ms:
+independent sliced buffers True True
+StageB all HR/options retained Phi prefixes excluding full-rank identity GB 248.878780416
+
+exec
+/bin/bash -lc "rg -n 'def reference_status|def meta|def load_meta|eligible' experiments/jcp-hr-baselines/e0/refstore.py; nl -ba experiments/jcp-hr-baselines/e0/refstore.py | sed -n '100,180p'; nl -ba experiments/jcp-hr-baselines/DESIGN.md | sed -n '640,658p;704,715p'; rg -n 'phases|quality|inventory|replay|outputs_ok|batch|satur|median|offline' experiments/jcp-hr-baselines/analyze.py" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+7:    s = RS.score(my_fields, 2, 'val32', 7)                 # {'e', 'e_t', 'eps_ref', 'eligible', ...}
+8:    RS.resolved(s_arm_a, s_arm_b)                          # True iff |e_a - e_b| > 2 eps_ref (both eligible)
+132:def reference_status(dim, cohort, case, kind='ST'):
+139:    eligible = bool(meta['outcome'] == 'accepted' and dstat == 'validated' and (not is_xc or xc == 'PASS'))
+141:                dimension_status=dstat, crosscheck=xc, eligible=eligible)
+154:                store_version=store_version(), e=e, e_t=e_t, eps_ref=st['eps_ref'], eligible=st['eligible'],
+159:    """Pairwise ranking rule (A2.10/A3.7): True iff |e_a - e_b| > 2 eps_ref. Raises unless both scores are eligible and
+167:    if not (st['eligible'] and sa['eligible'] and sb['eligible']):
+168:        raise ValueError(f"case not eligible for ranking (outcome {st['outcome']}, dimension {st['dimension_status']}, "
+192:    DIAGNOSTIC ONLY: eligible is always False (A3.3)."""
+202:               eligible=False, fields=lv[2]['lat'], crosscheck=None)
+   100	    return b
+   101	
+   102	
+   103	def _load_raw(dim, cohort, case, kind):
+   104	    _check(dim, cohort, kind)
+   105	    rel = f'{dim}d/{cohort}/{kind}/c{case:03d}'
+   106	    meta = json.loads(_read(rel + '.json'))
+   107	    import io
+   108	    arr = np.load(io.BytesIO(_read(rel + '.npz')))
+   109	    if (meta['dim'], meta['cohort'], meta['case'], meta['kind']) != (dim, cohort, case, kind):
+   110	        raise ReferenceIntegrityError(f'{rel}: metadata identity mismatch')
+   111	    return arr, meta
+   112	
+   113	
+   114	def load(dim, cohort, case, kind='ST', field='finest'):
+   115	    """-> (fields, meta). field 'finest' (the primary reference, uncertainty eps_ref) or 'richardson' (diagnostic
+   116	    extrapolation, NO uncertainty attached) or 'levels' (the three final level fields, coarse -> fine)."""
+   117	    arr, meta = _load_raw(dim, cohort, case, kind)
+   118	    ids = meta['final']
+   119	    if field == 'finest':
+   120	        return np.asarray(arr[ids[2]]), meta
+   121	    if field == 'levels':
+   122	        return [np.asarray(arr[i]) for i in ids], meta
+   123	    if field == 'richardson':
+   124	        jd = meta['judge']
+   125	        m2 = dict(meta, field='richardson', uncertainty=None,
+   126	                  note='diagnostic extrapolation; eps_ref does NOT apply to this field')
+   127	        m2['judge'] = dict(jd, eps_ref=None, eps_t=None)
+   128	        return V.richardson_field(arr[ids[1]], arr[ids[2]], jd['p'], jd['h'][1], jd['h'][2]), m2
+   129	    raise KeyError(field)
+   130	
+   131	
+   132	def reference_status(dim, cohort, case, kind='ST'):
+   133	    _check(dim, cohort, kind)
+   134	    meta = json.loads(_read(f'{dim}d/{cohort}/{kind}/c{case:03d}.json'))
+   135	    st = _status()
+   136	    dstat = st['dimension_status'][str(dim)]
+   137	    is_xc = cohort == CROSSCHECK[dim][0] and case in CROSSCHECK[dim][1]
+   138	    xc = st['crosscheck'].get(str(dim), {}).get(f'{cohort}/{case}') if is_xc else None
+   139	    eligible = bool(meta['outcome'] == 'accepted' and dstat == 'validated' and (not is_xc or xc == 'PASS'))
+   140	    return dict(accepted=meta['outcome'] == 'accepted', outcome=meta['outcome'], eps_ref=meta['judge']['eps_ref'],
+   141	                dimension_status=dstat, crosscheck=xc, eligible=eligible)
+   142	
+   143	
+   144	def score(field, dim, cohort, case, kind='ST'):
+   145	    """One arm's error against the reference (no ranking claim). `field` in the conventions above."""
+   146	    ref, meta = load(dim, cohort, case, kind)
+   147	    f = np.asarray(field, np.float64)
+   148	    if f.shape != ref.shape:
+   149	        raise ValueError(f'field shape {f.shape} != reference shape {ref.shape}')
+   150	    n0 = meta['judge']['n0']
+   151	    e, e_t = V.rel_err(f, ref, n0)
+   152	    st = reference_status(dim, cohort, case, kind)
+   153	    return dict(dim=dim, cohort=cohort, case=case, kind=kind, metric_id=V.METRIC_ID[dim],
+   154	                store_version=store_version(), e=e, e_t=e_t, eps_ref=st['eps_ref'], eligible=st['eligible'],
+   155	                outcome=st['outcome'])
+   156	
+   157	
+   158	def resolved(sa, sb):
+   159	    """Pairwise ranking rule (A2.10/A3.7): True iff |e_a - e_b| > 2 eps_ref. Raises unless both scores are eligible and
+   160	    refer to the same (dim, cohort, case, kind, metric_id, store_version); eps_ref is re-read from the store."""
+   161	    keys = ('dim', 'cohort', 'case', 'kind', 'metric_id', 'store_version')
+   162	    if any(sa[k] != sb[k] for k in keys):
+   163	        raise ValueError('scores refer to different cases, kinds, metrics or store versions')
+   164	    if sa['store_version'] != store_version():
+   165	        raise ValueError('scores were computed against another store version')
+   166	    st = reference_status(sa['dim'], sa['cohort'], sa['case'], sa['kind'])
+   167	    if not (st['eligible'] and sa['eligible'] and sb['eligible']):
+   168	        raise ValueError(f"case not eligible for ranking (outcome {st['outcome']}, dimension {st['dimension_status']}, "
+   169	                         f"cross-check {st['crosscheck']})")
+   170	    eps = st['eps_ref']
+   171	    if eps is None or not np.isfinite(eps) or eps < 0:
+   172	        raise ValueError('invalid eps_ref')
+   173	    return bool(abs(sa['e'] - sb['e']) > 2 * eps)
+   174	
+   175	
+   176	def restrict_field(fields, dim, factor):
+   177	    """Restrict lattice fields to the sub-lattice x = k*factor/lattice (coordinate-wise)."""
+   178	    if factor not in STRIDES[dim]:
+   179	        raise ValueError(f'factor must be one of {STRIDES[dim]}')
+   180	    f = np.asarray(fields)
+   640	(independent arithmetic) to ≤ 1e-11 relative at every step, start-up steps with BE coefficients (CNR: steps 1–2; BDF2:
+   641	step 1); and a temporal self-convergence check gives observed order in [0.9, 1.1] (BE) and [1.8, 2.2] (CN, CNR, BDF2)
+   642	on Δt ∈ {0.01, 0.005, 0.0025} against Δt = 0.000625. BE and CN additionally equal `refcore.make_solver` (G-fom).
+   643	
+   644	**A2.17 (item 17) Executable decision table (`stats.py`), fail-closed.**
+   645	- Unique configuration ID (string): `kind|r|hr-param|scheme|dt|solver|generator` (hr-param = τ or p or `-`); final
+   646	  tie-breaker everywhere.
+   647	- Pair outcome, evaluated in this order: invalid inputs (non-finite statistics, fewer than 3 cases with valid A–B–A
+   648	  triples after the drift policy, missing eligible cases, $\delta_i=0$ for any case) → "**not assessed**"; both objectives
+   649	  resolved in one direction → "baseline dominates" / "ours dominates" (annotated if A1.11 also holds); resolved in
+   650	  opposite directions → "neither dominates"; A1.11 (with A2.12) holds → "matches"; else "unresolved".
+   651	- A pick that fails replay or certification in the verdict job → role "none (pick failed)" — never support.
+   652	- **Wording.** Every pair label is "developmental, in-sample, unadjusted". A cell line reads "observed domination of X by
+   653	  a registered pick" or "by a non-registered Stage-B configuration" (both reported with equal prominence), or "no
+   654	  observed domination among the N configurations compared" — never "H-base holds" and never "falsified" as a formal
+   655	  test result.
+   656	
+   657	**A2.18 Extension rule, precise.** After Stage A, if a front configuration has the largest registered rank, or the
+   658	smallest τ, or the largest p/r for its rank, and allocation remains (A2.5), the corresponding single rung (A2.13) is
+   704	
+   705	**A3.4 (item 16) Identical-arm degeneracy is intended.** With equal worst errors and envelope width ε the difference
+   706	envelope is $[-2\varepsilon, 2\varepsilon]$, not strictly inside a margin $2\varepsilon$: the outcome is "unresolved"
+   707	by design (strict inclusion is frozen; tested by N-dom (d)).
+   708	
+   709	**A3.5 (item 17) Cell accounting.** Exported per cell and X: counts of pairs attempted, assessed, baseline-dominates,
+   710	ours-dominates, neither, matches, unresolved, not assessed (each reason), deferred, control-blocked (A2.10), and picks
+   711	failed. The statement "no observed domination among the N configurations compared" is allowed only with N = assessed
+   712	pairs, printed beside the other counts and the incompleteness labels (budget, basis adequacy, ECSW coverage, rank
+   713	coverage, option deferral).
+   714	
+   715	**A3.6 (items 18, 24) Rank grids, maximal shapes, smoke.**
+8:    median; time = T (median over the 6 timing cases of the per-case median valid ratio t_B / mean(t_A1, t_A2));
+11:  - cell flags carried into every line: adequacy / saturation, ECSW quality, budget relation (A2.5 / A25.2), 3D
+12:    batch-1 diagnostic-only (A22.0).
+61:        exp = json.loads((HERE / 'inputs' / 'speed3d_batch1_e0.json').read_text())['configs']
+68:    flags = dict(adequate=(T.get('adequacy') or {}).get('adequate'), saturation=(T.get('saturation') or {}).get('adequate'),
+71:                 inventory=T.get('inventory_counts'), deferred=T.get('deferred'))
+94:            cand.append(dict(id=m, ratio=ts['median'], W=float(np.max(eB)), med=float(np.median(eB)), r=int(r),
+96:                             solver=solver, eB=eB, rho=rho, quality=FZ['member_info'][m].get('quality')))
+108:        rec = dict(W_X=float(np.max(eX)), med_X=float(np.median(eX)), front=[f['id'] for f in F], roles={},
+116:            rec['roles'][role] = dict(id=c['id'], quality=c['quality'], T=c['ratio'], W=c['W'], **{
+124:                                               quality=c['quality'])
+
+exec
+/bin/bash -lc 'git rev-parse HEAD; git diff 07f46488f HEAD --stat; git diff 07f46488f HEAD -- experiments/jcp-hr-baselines/analyze.py experiments/jcp-hr-baselines/tune.py experiments/jcp-hr-baselines/stageb.py experiments/jcp-hr-baselines/DESIGN.md' in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+47bc19088ea4713121ff32646c32f9b5b83a2ebf
+ experiments/jcp-hr-baselines/DESIGN.md             |    37 +
+ experiments/jcp-hr-baselines/HEARTBEAT.json        |    13 +-
+ experiments/jcp-hr-baselines/analyze.py            |     5 +
+ .../jcp-hr-baselines/audits/codex-code-20.log      | 15960 +++++++++++++++++++
+ .../jcp-hr-baselines/audits/codex-design-19.log    | 13171 +++++++++++++++
+ .../jcp-hr-baselines/audits/codex-design-19.md     |    66 +
+ .../jcp-hr-baselines/audits/codex-design-20.log    | 14561 +++++++++++++++++
+ .../jcp-hr-baselines/audits/codex-design-20.md     |    48 +
+ experiments/jcp-hr-baselines/tune.py               |    77 +-
+ 9 files changed, 43891 insertions(+), 47 deletions(-)
+diff --git a/experiments/jcp-hr-baselines/DESIGN.md b/experiments/jcp-hr-baselines/DESIGN.md
+index 1623d4b10..4d4ca962d 100644
+--- a/experiments/jcp-hr-baselines/DESIGN.md
++++ b/experiments/jcp-hr-baselines/DESIGN.md
+@@ -1584,3 +1584,40 @@ any production data).
+ 'mesh')` with `Setting.data(rule)`, using byte-identical copies of `s3common.py`, `qn3.py`, `fs3p.py` (speed3d
+ 691465d88; INHERITED.json), replacing the c3common-based adapter (which cannot run the quasi-Newton `qn` arms). Timed
+ input: the 63³ interior IC; output: the six lattice fields. G-ours (1e-10 relative, timing cases) is the gate.
++
++---
++
++## Amendment A30 (2026-10-18) — design audit 19 (NEEDS-RESTATEMENT, no WRONG)
++
++**A30.1 One consolidated defer list (replaces §12's list, A1.14, A2.15 and A28.5's cross-reference).** First dropped
++first: (1) the A2.18/A16.2 extension rungs (also allocation-limited, A28.3); (2) exploratory A–B–A pairs — in the
++Stage-B job every Q1-qualified member is timed against every admitted X in A1.12 total order; a member left untimed at
++the wall limit is "not timed", and a role whose candidate set is incomplete because of it is reported "role incomplete
++(timing)", never filled; (3) the generator-probe runs; (4) the 2D 256² cell; (5) the 3D Δt/Δt₀ = 2.5 options (A2.4
++applies to comparators on them); (6) the 3D r = 512 rank. **Never dropped:** `none` with both solvers at every rank,
++the ECSW and Q-DEIM grids with both solvers (A2.15), the full-rank limiting comparator, Stage B, picks and the Stage-B
++jobs. Items (1)–(3) are deferred inside a running job by its budget guard; items (4)–(6) only by a pre-submission
++decision recorded as an amendment (none is taken now: the A26.4 bound fits). The tuning job's execution order (A26.3)
++is: comparators → construction → HR grids → `none` at every rank → limiting comparator → extension → probe runs.
++Incomplete-cell and retry rules of A28.5 are kept.
++
++**A30.2 Batch-2 accounting and provenance (restates A29.1's "satisfied by construction").** Shared execution in the
++tuning job replaces A21.3 (i)'s separate timing pass, and (ii) is met by forming the Stage-B membership with batch 1
++and batch 2 together; (iii) pick freezing is superseded by A26.5 (membership frozen before Stage B, picks after);
++(iv) still applies: batch 2's runs (its G-ours replays, warm timings and Stage-B A–B–A pairs) are inside the tuning and
++Stage-B jobs' wall-limit bounds (A26.4) and are charged to the baseline's V ledger as part of those jobs; ours' V
++ledger adds jcp-qualify's 3D qualification jobs counted once: smk3 (5366486, 0.0622 h), q3d (5396416, 0.1456 h), q3d2
++(5422698, 0.1036 h), q3d3 (5440837, 0.1761 h) = 0.4875 GPU-h (elapsed, 1 GPU each, from its GPU-LEDGER). Pinned
++export: jcp-qualify `runs/EXPORT.json` sha256 6cb394d149be8852260b75a585db8102791ef52e9963ab6934f67d536c374431
++(lane commit 4399491eb). Batch-1 outcomes are never promoted into qualified H-base conclusions.
++
++---
++
++## Amendment A31 (2026-10-18) — design audit 20 (NEEDS-RESTATEMENT, item 1): in-job order = reverse drop order
++
++The tuning job runs its deferrable items in **reverse** drop order, so a budget stop removes the first-dropped item
++first: after the limiting comparator it runs the generator-probe runs (A30.1 item 3), then the extension (item 1), each
++started only while elapsed < 0.85 × the job budget. A26.3/A30.1's execution order is amended accordingly: comparators →
++construction → HR grids → `none` at every rank → limiting comparator → probe runs → extension. An extension already
++started may run to the wall limit; its unfinished configurations stay `not_run` (stage EXT) and the extension is reported
++incomplete. Nothing else changes.
+diff --git a/experiments/jcp-hr-baselines/analyze.py b/experiments/jcp-hr-baselines/analyze.py
+index a759bbf22..c38156757 100644
+--- a/experiments/jcp-hr-baselines/analyze.py
++++ b/experiments/jcp-hr-baselines/analyze.py
+@@ -94,6 +94,11 @@ def main():
+             cand.append(dict(id=m, ratio=ts['median'], W=float(np.max(eB)), med=float(np.median(eB)), r=int(r),
+                              kind=kind, hr_points=int(FZ['member_info'][m]['hr_points']), scheme=scheme, dt=float(dt),
+                              solver=solver, eB=eB, rho=rho, quality=FZ['member_info'][m].get('quality')))
++        untimed = [m for m, mv in members.items() if mv['q1']['q1'] and
++                   (B['timing'].get(f'{key}||{m}') or {}).get('status') != 'complete']
++        if untimed:                                     # A30.1 (2): a role is never filled from an incomplete set
++            out['X'][key] = dict(label='role incomplete (timing)', untimed=untimed, W_X=float(np.max(eX)) if len(eX) else None)
++            continue
+         if not cand:
+             out['X'][key] = dict(label='baseline incomplete at this mesh', W_X=float(np.max(eX)) if len(eX) else None)
+             continue
+diff --git a/experiments/jcp-hr-baselines/tune.py b/experiments/jcp-hr-baselines/tune.py
+index e86549b38..e1e29ee0e 100644
+--- a/experiments/jcp-hr-baselines/tune.py
++++ b/experiments/jcp-hr-baselines/tune.py
+@@ -5,12 +5,12 @@ Order (A26.3: required work first, the registered defer order last):
+   2. offline construction from TRAINING draws: snapshots, POD (certified), trust radii; (2D 256^2) the A1.3 saturation
+      check with the all-step basis installed on failure; in-cell adequacy on the basis actually used (A2.2); advection
+      POD; generator-probe basis (A2.3); ECSW training states and one support-targeted NNLS path per rank (A16/A20/A24);
+-  3. Stage A on the screening cases: HR arms (ECSW k2/k4/k8, Q-DEIM p/r 1/2/4) at every rank, then `none` at r < 256,
++  3. Stage A on the screening cases: HR arms (ECSW k2/k4/k8, Q-DEIM p/r 1/2/4) at every rank, then `none` at every rank,
+      each x option x {native, common}, with in-job Q1 (tight native anchor on every case, tighter on the first two),
+      a burned warm timing run checked against the scored run (<= 1e-12, A6.6) and E0 scores;
+   4. the full-rank limiting comparator (central FOM) on the verdict cohort, convergence checked;
+-  5. deferrable (DESIGN 12 defer order, run while the job's budget allows): `none` at r >= 256, the A2.18/A16.2
+-     extension (A25.1), the generator-probe runs.
++  5. deferrable in-job (A30.1/A31, run while the job's budget allows, in reverse drop order): the generator-probe
++     runs, then the A2.18/A16.2 extension (A25.1), which is dropped first.
+ Every configuration is in a predeclared inventory with status not_run / construction_failed / run_failed / complete /
+ deferred; every completed configuration and case is checkpointed to <out>/tune.json at once. Arrays: <out>/arrays/
+ (output coefficients W, anchors, trajectories, gamma: lattice fields are W @ Phi_lat^T) and <out>/artifacts/ (basis,
+@@ -401,7 +401,7 @@ def main():
+     for r in ranks:                                    # never deferred: the HR grids (DESIGN 12)
+         for kind, hrp in HR_GRID:
+             screen(r, kind, hrp)
+-    for r in [r for r in ranks if r < 256]:
++    for r in ranks:                                    # never deferred: `none`, both solvers, every rank (A1.14, A2.15)
+         screen(r, 'none', '-')
+     O.res['search_hours_registered'] = (time.perf_counter() - search_t0) / 3600
+ 
+@@ -431,18 +431,39 @@ def main():
+         return len(O.res['fom_limiting'])
+     O.phase('fom_limiting', fom_runs, store='fom_count')
+ 
+-    # ---- 5. deferrable work, in the registered defer order (first dropped first: none at r >= 256) ---------------
++    # ---- 5. deferrable work (A30.1: in-job deferrable items are the extension and the generator-probe runs) --------
+     O.res['deferred'] = []
+-    for r in [r for r in ranks if r >= 256]:
+-        if deferrable():
+-            screen(r, 'none', '-')
+-        else:
+-            for option in options:
+-                for s in ('native', 'common'):
+-                    set_status(PL.cfg_id('none', r, '-', option[0], option[1], s), 'deferred', reason='budget')
+-            O.res['deferred'].append(f'none|{r}')
+-    O.save()
+ 
++    # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis ---------
++    O.res['probe_runs'] = {}
++    if probe is not None and 'Phi' in PROBE and not deferrable():
++        O.res['deferred'].append('generator probe runs (budget)')
++    if probe is not None and 'Phi' in PROBE:
++        def probe_runs():
++            Pu = jnp.asarray(PROBE.pop('Phi'))
++            for r in ranks:
++                for option in options:
++                    cid = PL.cfg_id('none', r, '-', option[0], option[1], 'native', gen='upwind')
++                    if r not in PROBE['constructible']:
++                        O.res['probe_runs'][cid] = dict(status='construction_failed', reason='probe rank not certified')
++                    elif not deferrable():
++                        O.res['probe_runs'][cid] = dict(status='deferred', reason='budget')
++                    else:
++                        datp = dict(Phi=Pu[:, :r], LPhi=H.lap_cols(Pu[:, :r], d, L), DPhi=H.dsum_cols(Pu[:, :r], d, L))
++                        rec = dict(status='complete', cases={})
++                        try:
++                            Ws = []
++                            for j in SCREEN:
++                                o = cell.run('none', r, datp, 'native', option, 'prod', fam.ic(L, j), fam.nu(j))
++                                rec['cases'][j] = dict(e0=refs.score_safe(o['fields_lat'], j), cert=o['cert'])
++                                Ws.append(o['W'])
++                            O.npz('arrays', f'PROBE~{cid}', W=np.stack(Ws))
++                        except Exception as e:  # noqa: BLE001
++                            rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
++                        O.res['probe_runs'][cid] = rec
++                    O.save()
++            return len(O.res['probe_runs'])
++        O.phase('generator_probe_runs', probe_runs, store='probe_count')
+     def extension():                                   # A2.18 / A16.2 / A25.1
+         import stats as ST
+         # A28.3: accumulated C-search = the classified Stage-A screening phases (not wall time since Stage A)
+@@ -481,34 +502,6 @@ def main():
+     O.res['search_hours'] = sum(v['seconds'] for k, v in O.res['phases'].items()
+                                 if k.startswith('A|') or k.startswith('EXT|')) / 3600
+ 
+-    # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis ---------
+-    O.res['probe_runs'] = {}
+-    if probe is not None and 'Phi' in PROBE:
+-        def probe_runs():
+-            Pu = jnp.asarray(PROBE.pop('Phi'))
+-            for r in ranks:
+-                for option in options:
+-                    cid = PL.cfg_id('none', r, '-', option[0], option[1], 'native', gen='upwind')
+-                    if r not in PROBE['constructible']:
+-                        O.res['probe_runs'][cid] = dict(status='construction_failed', reason='probe rank not certified')
+-                    elif not deferrable():
+-                        O.res['probe_runs'][cid] = dict(status='deferred', reason='budget')
+-                    else:
+-                        datp = dict(Phi=Pu[:, :r], LPhi=H.lap_cols(Pu[:, :r], d, L), DPhi=H.dsum_cols(Pu[:, :r], d, L))
+-                        rec = dict(status='complete', cases={})
+-                        try:
+-                            Ws = []
+-                            for j in SCREEN:
+-                                o = cell.run('none', r, datp, 'native', option, 'prod', fam.ic(L, j), fam.nu(j))
+-                                rec['cases'][j] = dict(e0=refs.score_safe(o['fields_lat'], j), cert=o['cert'])
+-                                Ws.append(o['W'])
+-                            O.npz('arrays', f'PROBE~{cid}', W=np.stack(Ws))
+-                        except Exception as e:  # noqa: BLE001
+-                            rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
+-                        O.res['probe_runs'][cid] = rec
+-                    O.save()
+-            return len(O.res['probe_runs'])
+-        O.phase('generator_probe_runs', probe_runs, store='probe_count')
+     O.res['inventory_counts'] = {s: sum(1 for v in INV.values() if v['status'] == s)
+                                  for s in ('not_run', 'construction_failed', 'run_failed', 'complete', 'deferred')}
+     O.res['timers'] = cell.T.t
+
+exec
+/bin/bash -lc "git show 07f46488f:experiments/jcp-hr-baselines/DESIGN.md | nl -ba | sed -n '495,519p;624,638p'; git show 07f46488f:experiments/jcp-hr-baselines/INHERITED.json | nl -ba | tail -44; git show 07f46488f:experiments/jcp-hr-baselines/resources.py | nl -ba | tail -28; cat experiments/jcp-hr-baselines/runs/GPU-LEDGER.json | head -30" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+   495	| Stage A prod runs (6 cases) | 840 | 840 | 4,032 |
+   496	| Stage A tight anchors / tighter (2 cases) | 420 / 140 | 420 / 140 | 2,016 / 672 |
+   497	| Stage B (≤ 24 configs × cohort) prod + tight + tighter | ≤ 912 + 912 + 48 | same | ≤ 1,536 + 1,536 + 48 |
+   498	| compiled query shapes (kind × r × HR size × solver) + cert passes | 70 + 35 | 70 + 35 | 56 + 28 |
+   499	| Q-DEIM pivoting runs / $B$ QRs / NNLS paths | 9 / 15 / 5 | 9 / 15 / 5 | 9 / 12 / 4 |
+   500	| verdict job: A–B–A triples | (picks + exploratory) × X × 6 × 3 | same | same |
+   501	
+   502	The GPU-hour projection is computed from the smoke's measured per-item times by `resources.py` (speed3d pattern) and
+   503	must fit: spent + projection ≤ 30. If the registered core (A1.14) does not fit, the cell is declared **incomplete**.
+   504	
+   505	**A1.14 Defer order, restated** (first dropped first; each dependency-safe): exploratory A–B–A pairs → the 2D $256^2$
+   506	cell → the 3D options with Δt/Δt₀ = 2.5 → the 3D r = 512 rank → common-solver runs of configurations that are not on
+   507	the native-solver screening front (the front is decided from native runs plus the common runs already made; a dropped
+   508	common run is reported as "not run"). Never dropped: `none` with the native solver at every rank (the HR-error
+   509	diagnostic), the ECSW and Q-DEIM grids with the native solver, Stage B, picks, the verdict jobs.
+   510	
+   511	**A1.15 (item 20) Solvers, comparator naming, spectral.**
+   512	- **Native solver = damped Gauss–Newton**: the QR least-squares step with backtracking (step halved up to 8 times
+   513	  until $\|\hat r\|$ decreases; if no halving decreases it, exit reason 3), budget 30, previous-state predictor. Its
+   514	  convergence sensitivity is reported through the native-vs-common ablation.
+   515	- **Common solver trust per dimension, as ours:** 2D $0.01\max_s\|c_s-\bar c\|$ (`qcore.trust_linear`); 3D
+   516	  $0.05\sqrt{\mathrm{mean}_s\|c_s-\bar c\|^2}$ (speed3d trust = 0.05 × the bank's `coefficient_rms_spread`,
+   517	  `train2w.py:439–441`), over the training projected coefficients at rank r.
+   518	- The un-reduced FOM is named the **full-rank limiting comparator**, not a floor: a reduced model can beat it by error
+   519	  cancellation.
+   624	by `manifest.py` from the executable configuration list, for every allowed branch** (base, extension, retry, probe,
+   625	saturation), and printed into each job's certificate; the smoke measures the largest phases at full size (A2.19).
+   626	
+   627	**A2.14 (item 19) Feasibility from the manifest.** The ≈ 13 GPU-h estimate of §12 is **withdrawn**. The projection is
+   628	generated from `manifest.py` (every run, anchor, certification pass, FOM run, NNLS path, pivoting, QR, compilation
+   629	shape) times the smoke's measured unit costs (`resources.py`). Q-DEIM pivoting runs = number of distinct $p$ in the
+   630	manifest (each $U_p^\top$ pivoted independently). Ours' comparator compilations (fs3's static schemes) are counted in the
+   631	verdict job's projection. If the registered core does not fit the cap, the cell is reported **incomplete**.
+   632	
+   633	**A2.15 (item 20) The common-solver ablation is complete.** Every configuration runs with both solvers; the common-solver
+   634	runs are removed from the defer list (A1.14). Defer order now: exploratory A–B–A pairs → the generator probe at
+   635	$256^2$ → the 2D $256^2$ cell → the 3D Δt/Δt₀ = 2.5 options (A2.4 applies) → the 3D r = 512 rank.
+   636	
+   637	**A2.16 (item 21) Central LMM FOM, registered and independently checked.** The FOM is `hrcore.make_fom` (central
+   638	operator, generic LMM with t2core coefficients and start-up). **G-lmm** (small mesh, CPU): for every scheme (BE, CN,
+   150	   "source_commit": "5b782026b",
+   151	   "source_path": "experiments/jcp-p1-scaling/checks/analysis.json",
+   152	   "sha256": "82030ce5cae52b806d5482f4391e5c34ae39c256d0f03f741441a33708a355dd",
+   153	   "role": "comparator batch 1 (A21)"
+   154	  },
+   155	  {
+   156	   "path": "inputs/p1_EXPORT.json",
+   157	   "source_branch": "exp/2026-10-17-jcp-p1-scaling",
+   158	   "source_commit": "5b782026b",
+   159	   "source_path": "experiments/jcp-p1-scaling/runs/EXPORT.json",
+   160	   "sha256": "8e3b120855c702f2dd2e64f7ac78661be136e0a0f5e102065b9ac8e23c6b998a",
+   161	   "role": "comparator batch 1 (A21)"
+   162	  },
+   163	  {
+   164	   "path": "inputs/speed3d_EXPORT.json",
+   165	   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   166	   "source_commit": "691465d88",
+   167	   "source_path": "experiments/jcp-speed3d/runs/EXPORT.json",
+   168	   "sha256": "209f3f49924161e220ce4c73399e3802da5187d2c9453d1e36dc08a55c48cfc1",
+   169	   "role": "comparator batch 1 (A21)"
+   170	  },
+   171	  {
+   172	   "path": "s3common.py",
+   173	   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   174	   "source_commit": "691465d887e5b66dd07da574306d887239c77e68",
+   175	   "source_path": "experiments/jcp-speed3d/s3common.py",
+   176	   "sha256": "ab9f9623c0d8751577a28124d10d97a278bbf0b724fd5408a5284c13b9bdc5d7"
+   177	  },
+   178	  {
+   179	   "path": "qn3.py",
+   180	   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   181	   "source_commit": "691465d887e5b66dd07da574306d887239c77e68",
+   182	   "source_path": "experiments/jcp-speed3d/qn3.py",
+   183	   "sha256": "bec525ef29cdd27c586ea64cfd3538e8310d80d30218f063be0596749dc40001"
+   184	  },
+   185	  {
+   186	   "path": "fs3p.py",
+   187	   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   188	   "source_commit": "691465d887e5b66dd07da574306d887239c77e68",
+   189	   "source_path": "experiments/jcp-speed3d/fs3p.py",
+   190	   "sha256": "a05557bbe77de49f5dadbefb8d6130d17d610188d72e073375f2685eb6290336"
+   191	  }
+   192	 ]
+   193	}
+    78	    c256['total_hours'] *= 0.25
+    79	    c256['projected_hours'] = c1024['projected_hours'] * 0.25 + CONT * 0.1   # + saturation (all-step POD, 29,376 states)
+    80	    led = json.loads((HERE / 'runs/GPU-LEDGER.json').read_text())
+    81	    spent = float(led['spent_gpu_hours'])
+    82	    tune = c256['projected_hours'] + c1024['projected_hours'] + c3['projected_hours']
+    83	    stageB = 0.5 * tune                                    # model: full Q1 of the Stage-B members + A-B-A pairs
+    84	    wall = dict(t2d256=2, t2d1024=5, t3d64=12)            # A26.4 hard bound: Slurm wall limits (1 GPU each)
+    85	    reserve_stageB = 7.5
+    86	    bound = spent + sum(wall.values()) + reserve_stageB
+    87	    res = dict(source='runs/smk2 (job 5422908, H200)', model=__doc__,
+    88	               hard_bound=dict(wall_hours=wall, stageB_reserve=reserve_stageB, spent=spent, total=bound,
+    89	                               within_cap=bool(bound <= 30.0),
+    90	                               note='GPU-hours cannot exceed the wall limits; the model projections below are '
+    91	                                    'conditional estimates, not certified'), cells=dict(t2d256=c256, t2d1024=c1024, t3d64=c3),
+    92	               spent=spent, tuning_projected=tune, stageB_projection=stageB, projected_total=spent + tune + stageB,
+    93	               cap=30.0, within_cap=bool(spent + tune + stageB <= 30.0),
+    94	               walltime_request_hours=wall,
+    95	               memory=dict(smk2_device_peak_2d1024=S['2d_L1024']['phases']['qdeim_max_shape']['device_peak'],
+    96	                           note='3D peak masked by the 2D cell in smk2 (process-cumulative); measured in t3d64 (A24.4)'))
+    97	    (HERE / 'checks' / 'RESOURCES-tune.json').write_text(json.dumps(res, indent=1, default=float) + '\n')
+    98	    for k, v in res['cells'].items():
+    99	        print(k, f"{v['projected_hours']:.2f} GPU-h projected (model, not certified)")
+   100	    print(f"spent {spent:.3f} + tuning {tune:.2f} + stageB {stageB:.2f} = {spent + tune + stageB:.2f} (cap 30)")
+   101	    print('hard bound', res['hard_bound'])
+   102	
+   103	
+   104	if __name__ == '__main__':
+   105	    main()
+{
+ "namespace": "/cluster/tufts/paralab/tawal01/jcp-hrb",
+ "cap_gpu_hours": 30,
+ "jobs": [
+  {
+   "attempt": "smk1",
+   "slurm": 5354834,
+   "gpu": "h200",
+   "commit": "e1c614afc50e4a6405e810c831bf5f07c6a69052",
+   "role": "phase-I real-size smoke (A5.4)",
+   "submitted": "2026-10-18T05:15:34.347766+00:00",
+   "requested_hours": 1.0,
+   "measured_gpu_hours": 0.878,
+   "status": "COMPLETED 00:52:42; collected, checksums OK; ACCEPTANCE ALL=false (A14/A15)",
+   "collected": true
+  },
+  {
+   "attempt": "smk2",
+   "slurm": 5422908,
+   "gpu": "h200",
+   "commit": "b4371eda55c97ae9be8ea3f1cd1787eeea17877c",
+   "role": "second phase-I smoke (released by coordinator 2026-10-18, A19)",
+   "submitted": "2026-10-18T09:12:48.857807+00:00",
+   "requested_hours": 1.0,
+   "measured_gpu_hours": 0.634,
+   "status": "COMPLETED 00:38:02; collected, verified; staged ALL=false (ecsw-smoke-rank only), A23 ALL=true",
+   "collected": true
+  }
+ ],
+ "spent_gpu_hours": 1.512
+

@@ -1621,3 +1621,11 @@ started only while elapsed < 0.85 × the job budget. A26.3/A30.1's execution ord
 construction → HR grids → `none` at every rank → limiting comparator → probe runs → extension. An extension already
 started may run to the wall limit; its unfinished configurations stay `not_run` (stage EXT) and the extension is reported
 incomplete. Nothing else changes.
+
+---
+
+## Acceptance record (2026-10-18) — design
+
+Design audit 21 (`audits/codex-design-21.md`) returned **CLEAN** at revision 47bc19088 (DESIGN.md through A31). Per
+A26.7/A28.7 this discharges A19.4(a) (design acceptance only); A19.4(b)–(c) and the amended smk2 acceptance are
+recorded separately against their own revisions.

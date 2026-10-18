@@ -45,6 +45,13 @@
   "W512|lat32768|qn|CN|0.01|k4": "pass",
   "W768|lat32768|fsp|CN|0.0125|K1": "unverified (finer rule not converged)",
   "W768|lat32768|fs|CN|0.01|K2": "unverified (finer rule not converged)",
-  "W1024|lat65536|fs|CN|0.01|K2": "fail"
+  "W1024|lat65536|fs|CN|0.01|K2": "fail",
+  "M2_512|gl32|qn|BDF2|0.025|kinf": "pass",
+  "M2_512|gl24|qn|BDF2|0.01|k4": "fail",
+  "M2_512|gl24|qn|BE|0.01|k4": "fail",
+  "W512|lat32768|qn|CN|0.016666667|k4": "pass",
+  "M2_512|lat16384|fs|CN|0.0125|K2": "fail",
+  "W768|lat32768|fs|CN|0.0125|K2": "unverified (finer rule not converged)",
+  "W1024|lat32768|fs|CN|0.0125|K2": "fail"
  }
 }

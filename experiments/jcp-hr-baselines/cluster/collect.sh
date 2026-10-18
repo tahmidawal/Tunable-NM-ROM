@@ -10,7 +10,10 @@ SSH="ssh -o ConnectTimeout=30"
 df -h /home | tail -1
 JOB=$(timeout 60 $SSH tufts-login "ls $NS/$A/logs" | sed -n 's/\.out$//p' | head -1)
 [ -n "$JOB" ]
-if timeout 60 $SSH tufts-login "squeue -j $JOB -h -o %T" 2>/dev/null | grep -q .; then echo "job $JOB not terminal: refusing"; exit 3; fi
+# terminal only if sacct (queried successfully) reports a terminal state for the job allocation (fail-closed)
+ST=$(timeout 60 $SSH tufts-login "sacct -j $JOB -X -n -P --format=State" | head -1 | awk '{print $1}')
+case "$ST" in COMPLETED|FAILED|CANCELLED|TIMEOUT|OUT_OF_MEMORY|NODE_FAIL|PREEMPTED) echo "job $JOB terminal: $ST";;
+  *) echo "job $JOB state '$ST' is not terminal or unknown: refusing"; exit 3;; esac
 timeout 300 $SSH tufts-login "cd $NS/$A && find logs output -type f -print0 | sort -z | xargs -0 sha256sum" > "$LOCAL/REMOTE.sha256.new"
 mkdir -p "$LOCAL/archive"
 timeout 3600 rsync -e "$SSH" -a "tufts-login:$NS/$A/logs" "tufts-login:$NS/$A/output" "$LOCAL/archive/"

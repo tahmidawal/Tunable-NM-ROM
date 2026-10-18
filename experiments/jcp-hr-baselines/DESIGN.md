@@ -1163,3 +1163,8 @@ is diagnostic; a basis prefix is admitted only through the A6.1 certificate, whi
 `collect.sh` now refuses non-terminal jobs, verifies the transfer against a freshly computed remote manifest of outputs
 and logs, and deletes the cluster directory only after all of that succeeds. The randomised fallback releases its
 sketch before the power iterations.
+
+**A15.7 (code audit 10).** `collect.sh` decides terminality from a successful `sacct` query of the job allocation
+(terminal states only); any failed or ambiguous query refuses collection. The drop-count ban is a cycle guard: the
+regression test shows that dependent (duplicated) columns reach the NNLS optimum with no ban; a test that forces a ban is
+not provided (noted), and every path reports its ban count.

@@ -182,9 +182,11 @@ def qdeim_data(Phi_r, LPhi_r, U_p, P, d, L):
     M = U_p[jnp.asarray(P)]                                   # P^T U_p (p, p)
     sv = jnp.linalg.svd(M, compute_uv=False)
     T3E = jnp.linalg.solve(M.T, Rb[:, 2 * r:].T).T            # R3 M^{-1}
+    bwd = float(jnp.linalg.norm(T3E @ M - Rb[:, 2 * r:]) / (jnp.linalg.norm(T3E) * jnp.linalg.norm(M) + 1e-300))
     idx = H.stencil_index(P, d, L)
     data = dict(Pst=H.stencil_rows(Phi_r, idx), T1=Rb[:, :r], T2=Rb[:, r:2 * r], T3E=T3E)
-    info = dict(p=int(p), interp_const=float(1. / sv[-1]), cond_PtU=float(sv[0] / sv[-1]),
+    info = dict(p=int(p), interp_const=float(1. / sv[-1]), cond_PtU=float(sv[0] / sv[-1]), solve_backward_error=bwd,
+                solve_ok=bool(bwd <= 1e-12),
                 rank_B_proxy=int(jnp.sum(jnp.abs(jnp.diag(Rb)) > 1e-13 * jnp.max(jnp.abs(jnp.diag(Rb))))),
                 stencil_nodes=int(len(np.unique(idx[idx < (L - 1) ** d]))))
     return jax.block_until_ready(data), info

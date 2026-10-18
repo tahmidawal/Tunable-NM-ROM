@@ -763,3 +763,67 @@ total 1.85 H200-h, bank fit 1.14 h.
   $\|T_{3E}(P^\top U_p)-R_3\|_F/(\|T_{3E}\|_F\|P^\top U_p\|_F)\le10^{-12}$, else that (r, p) is a construction failure
   (reported); the interpolation constant $\|(P^\top U_p)^{-1}\|_2$ is reported for every p.
 - The Q-DEIM cancellation fixture of A2.1 is a cancellation **candidate**; its ratio $\|Bz\|/\Sigma$ is recorded.
+
+---
+
+## Amendment A4 (2026-10-18) — answers to Codex design audit 4 (`audits/codex-design-4.md`, verdict WRONG)
+
+A4 governs where it differs from earlier text. Item numbers are audit 4's.
+
+**A4.1 (item 12) N-grad (a): ladder plus independent oracle; binding test is agreement.** For each tested step $n$
+(every 5th) of the frozen fixture run: perturbations $\delta = \pm t_k v_1$, $t_k = t_0 2^k$, $k=0..6$,
+$t_0=\max(100\|\hat r(c_{n+1})\|/\sigma_1,\ 10^{-6}\|c_{n+1}\|,\ 10^{-12})$ ($v_1,\sigma_1$ the top right singular
+pair of $J(c_{n+1})$; a step with $\sigma_1=0$ is skipped and counted). For every tuple the certifier's γ and the
+oracle's γ (`jax.jacfwd` Jacobian, same isolated history) are recorded. **Binding:** on every tested tuple
+$|\gamma_{\rm cert}-\gamma_{\rm or}|\le10^{-9}\gamma_{\rm or}+10^{-12}$ and both fall on the same side of $10^{-3}$, **and**
+at least one tuple is oracle-discriminating ($\gamma_{\rm or}>10^{-3}$) and is flagged. If no tuple is
+oracle-discriminating the result is "**fixture unavailable**" (reported; not a certifier defect).
+
+**A4.2 (item 16) N-dom identical-arm fixtures, both regimes.** (d1) reference-limited: 38 cases, $e_X=e_B=5\times10^{-5}$,
+$\varepsilon_i=5\times10^{-5}$, identical ρ = 1 → $L_X=0$, $\delta_W=10^{-4}$, difference envelope
+$[-10^{-4},10^{-4}]$ not strictly inside → **"unresolved"**. (d2) relative-margin-limited: $e_X=e_B=10^{-2}$,
+$\varepsilon_i=10^{-6}$, identical ρ = 1 → **"matches"**. A3.4's general statement is narrowed to (d1)'s regime. The
+decision table is unchanged.
+
+**A4.3 (item 7) Budget band wording.** A baseline/ours V ratio in [0.8, 1.25] is reported as "**within the registered
+factor-1.25 band (ratio = x)**", not as "equal budget", unless the coordinator ratifies the band as meeting the brief's
+equal-budget requirement (recorded at phase-II release with A2.3). Outside the band: "unequal-budget, descriptive". The
+actual ratio is printed in every case.
+
+**A4.4 (item 14) N-swap ROM fixture, frozen.** ID `ecsw|r_s|0.001|BE|Δt₀|native|central` with $r_s$ = 128 (2D) /
+256 (3D), screening case 0 against case 1's reference and with time shift +1. Expected:
+$|e_{\rm swap}-e_{\rm true}|>10\max\varepsilon$ and $|e_{\rm shift}-e_{\rm true}|>10\max\varepsilon$ ($\varepsilon$ over
+the two cases). If that configuration does not exist or does not certify, the fixture is `none|r_s|-|BE|Δt₀|native|central`;
+if neither exists: "fixture unavailable" (the reference fixture, A3.3 (i), remains binding).
+
+**A4.5 (item 19) Projection is conditional.** Every pre-run projection is labelled conditional. Stage-B membership is
+frozen after Stage A and certified by `resources.py` before any Stage-B run; the full 3D base grid is
+6 × 7 × 12 × 2 = 1,008 configurations (6,048 Stage-A production runs plus anchors and certification). If a certificate
+does not fit, the scope is reported incomplete; nothing is shrunk silently.
+
+**A4.6 (item 21) Order check with a bounded refinement ladder.** The estimators of A3.8 are computed for the pairs
+(0.01, 0.005) and (0.005, 0.0025); the check passes if the finest estimator lies in the band; if only the coarser one
+fails it is recorded "pre-asymptotic at 0.01"; if the finest fails, a fifth level Δt = 0.000625 is added and the next
+estimator decides; if that also fails the scheme is "order not confirmed" and the scheme's use is blocked until
+investigated (the step-equation residual check is separate and always binding).
+
+**A4.7 (item 27) Offline robustness, explicit.**
+- POD fallback (both state and advection PODs): if the optimality check (A3.3 G-pod) fails at any registered rank, the
+  basis is recomputed by a blocked randomised SVD of $S^\top$ (oversampling 64, two power iterations with
+  re-orthonormalisation, column blocks streamed from the host) and the check rerun; still failing → that rank
+  "not constructible". The numerical-rank cut-off uses the fallback's singular values when it was used.
+- NNLS passive-set fallback solves the least-squares problem on the **original contribution columns** $G_S$ (device QR),
+  not on the normal matrix. Paths that stop by reason `kkt` are checked against **all** candidates: the largest positive
+  gradient over the whole pool (banned indices included) must be ≤ $10^{-9}\|G\|_F\|b\|$, else the path is
+  "incomplete construction (KKT violated)". τ-stopped records need only $\xi\ge0$ and exact relative residual ≤ τ.
+
+**A4.8 (item 28) One timing estimand.** Role selection uses the same estimand as the verdict: per case the paired ratio
+$t_B/t_X$ (single warm runs in the tuning job, both timed on the same GPU in the same job), median over the 6 timing
+cases. B_cost(X) requires that median ratio ≤ 1. The verdict re-measures it with A–B–A triples.
+
+**A4.9 (item 29) G-full metric.** G-full compares on the small mesh's own nodes:
+$\max_{k\ge1}\|F_k-F_k^{\rm FOM}\|/\|u_0\|$ (no lattice). Pass ≤ 1e-8.
+
+**A4.10 (items 17, 22) Small fixes.** Assessed pairs = valid inputs receiving a substantive label (unresolved is a
+reported subset); a configuration that is both picks is counted once. "Up to 3 re-measurements" is per original triple;
+every rejected measurement and retry count is kept in the output.

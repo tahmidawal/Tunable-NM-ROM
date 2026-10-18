@@ -1,17 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T13:42:38Z",
- "step": "t3d64a (ecsw_r128 done) + t2d1024a (ecsw_r256 done) RUNNING ~35 min, no ERR; Stage-B chain READY; dry chain CHAIN-OK",
+ "utc": "2026-10-18T14:07:40Z",
+ "step": "t3d64a CANCELLED at 53 min (0.8875 GPU-h, collected): 3D ECSW r=256 path took 1447 s (1044 Givens deletes ~1.35 s each; r=128 was 37 s) -> r=512..1024 would exceed the 12 h wall. Profiling the NNLS delete locally (jaxslot) to fix; t2d1024a 5508660 still RUNNING",
  "waiting_on": {
   "slurm_jobs": [
-   5508653,
    5508660
   ],
   "codex_output": null,
   "codex_pid": [],
-  "local_pid": null
+  "local_pid": 2817900
  },
- "expected_finish_utc": "2026-10-18T17:42:38Z",
+ "expected_finish_utc": "2026-10-18T14:37:40Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

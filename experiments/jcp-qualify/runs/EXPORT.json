@@ -1300,8 +1300,206 @@
   },
   "TH06_control": "order 1"
  },
- "fronts": {},
- "roles": {},
+ "fronts": {
+  "256": {
+   "members": null,
+   "fronts": null,
+   "cost_contract": "full-field 2D query; median fused / reference A, one H200 job per mesh"
+  },
+  "1024": {
+   "members": [
+    "1024|R128|LSPG|BE|2.5",
+    "1024|R128|GAL|CN|5",
+    "1024|R128|GAL|CN|2",
+    "1024|R128|LSPG|BE|1",
+    "1024|R256|LSPG|CNR|2.5",
+    "1024|R128|GAL|CN|1",
+    "1024|R256|GAL|CN|2",
+    "1024|R384|LSPG|CNR|2",
+    "1024|R256|GAL|CN|1",
+    "1024|R384|LSPG|CNR|1",
+    "1024|R384|GAL|CN|1"
+   ],
+   "fronts": {
+    "median|c": [
+     "1024|R128|LSPG|BE|2.5",
+     "1024|R128|GAL|CN|5",
+     "1024|R128|GAL|CN|2",
+     "1024|R128|GAL|CN|1",
+     "1024|R256|GAL|CN|2",
+     "1024|R256|GAL|CN|1",
+     "1024|R384|GAL|CN|1"
+    ],
+    "median|c_ev": [
+     "1024|R128|LSPG|BE|2.5",
+     "1024|R128|GAL|CN|5",
+     "1024|R128|GAL|CN|2",
+     "1024|R128|GAL|CN|1",
+     "1024|R256|GAL|CN|2",
+     "1024|R256|GAL|CN|1",
+     "1024|R384|GAL|CN|1"
+    ],
+    "worst|c": [
+     "1024|R128|LSPG|BE|2.5",
+     "1024|R128|GAL|CN|5",
+     "1024|R128|GAL|CN|2",
+     "1024|R128|LSPG|BE|1",
+     "1024|R256|LSPG|CNR|2.5",
+     "1024|R384|LSPG|CNR|2",
+     "1024|R384|LSPG|CNR|1"
+    ],
+    "worst|c_ev": [
+     "1024|R128|LSPG|BE|2.5",
+     "1024|R128|GAL|CN|5",
+     "1024|R128|GAL|CN|2",
+     "1024|R128|LSPG|BE|1",
+     "1024|R256|LSPG|CNR|2.5",
+     "1024|R384|LSPG|CNR|2",
+     "1024|R384|LSPG|CNR|1"
+    ]
+   },
+   "cost_contract": "full-field 2D query; median fused / reference A, one H200 job per mesh"
+  },
+  "4096": {
+   "members": null,
+   "fronts": null,
+   "cost_contract": "full-field 2D query; median fused / reference A, one H200 job per mesh"
+  }
+ },
+ "roles": {
+  "1024|R384|LSPG|CNR|1": {
+   "cost_vs_BE": 0.9791478108252908,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R384|LSPG|BE|1": {
+   "cost_vs_BE": 1.0,
+   "role": "no role"
+  },
+  "1024|R384|LSPG|BE|2": {
+   "cost_vs_BE": 0.5556496308536714,
+   "role": "no role"
+  },
+  "1024|R384|LSPG|BE|2.5": {
+   "cost_vs_BE": 0.47510374650086873,
+   "role": "no role"
+  },
+  "1024|R384|LSPG|CNR|2": {
+   "cost_vs_BE": 0.5599360313764359,
+   "role": "fast-equal-accuracy accurate-equal-cost"
+  },
+  "1024|R384|LSPG|CNR|2.5": {
+   "cost_vs_BE": 0.4748858167567873,
+   "role": "no role"
+  },
+  "1024|R384|GAL|CN|1": {
+   "cost_vs_BE": 1.2825130962401623,
+   "role": "no role"
+  },
+  "1024|R384|GAL|CN|2": {
+   "cost_vs_BE": 0.8223151383568101,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R384|GAL|CN|5": {
+   "cost_vs_BE": 0.6241311503901225,
+   "role": "no role"
+  },
+  "1024|R128|LSPG|BE|1": {
+   "cost_vs_BE": 1.0,
+   "role": "no role"
+  },
+  "1024|R128|LSPG|BE|2": {
+   "cost_vs_BE": 0.5696729444277808,
+   "role": "no role"
+  },
+  "1024|R128|LSPG|BE|2.5": {
+   "cost_vs_BE": 0.487998589644637,
+   "role": "no role"
+  },
+  "1024|R128|LSPG|CNR|1": {
+   "cost_vs_BE": 0.9907310285717775,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R128|GAL|CN|1": {
+   "cost_vs_BE": 1.3177366675948796,
+   "role": "no role"
+  },
+  "1024|R128|GAL|CN|2": {
+   "cost_vs_BE": 0.8322488749713203,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R128|GAL|CN|5": {
+   "cost_vs_BE": 0.523792931033639,
+   "role": "no role"
+  },
+  "1024|R256|LSPG|BE|1": {
+   "cost_vs_BE": 1.0,
+   "role": "no role"
+  },
+  "1024|R256|LSPG|BE|2": {
+   "cost_vs_BE": 0.5632497281322009,
+   "role": "no role"
+  },
+  "1024|R256|LSPG|BE|2.5": {
+   "cost_vs_BE": 0.479083233904785,
+   "role": "no role"
+  },
+  "1024|R256|LSPG|CNR|1": {
+   "cost_vs_BE": 0.9864602220976806,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R256|LSPG|CNR|2.5": {
+   "cost_vs_BE": 0.4778856043140997,
+   "role": "no role"
+  },
+  "1024|R256|GAL|CN|1": {
+   "cost_vs_BE": 1.3121454443557994,
+   "role": "no role"
+  },
+  "1024|R256|GAL|CN|2": {
+   "cost_vs_BE": 0.8000662934116577,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R256|GAL|CN|5": {
+   "cost_vs_BE": 0.5966462972083488,
+   "role": "no role"
+  },
+  "1024|R512|LSPG|BE|1": {
+   "cost_vs_BE": 1.0,
+   "role": "no role"
+  },
+  "1024|R512|LSPG|BE|2": {
+   "cost_vs_BE": 0.5418594145471942,
+   "role": "no role"
+  },
+  "1024|R512|LSPG|BE|2.5": {
+   "cost_vs_BE": 0.46741039914067195,
+   "role": "no role"
+  },
+  "1024|R512|LSPG|CNR|1": {
+   "cost_vs_BE": 0.9892066191065157,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R512|LSPG|CNR|2": {
+   "cost_vs_BE": 0.5345981994608677,
+   "role": "fast-equal-accuracy accurate-equal-cost"
+  },
+  "1024|R512|LSPG|CNR|2.5": {
+   "cost_vs_BE": 0.4715166467165805,
+   "role": "no role"
+  },
+  "1024|R512|GAL|CN|1": {
+   "cost_vs_BE": 1.2648199809795133,
+   "role": "no role"
+  },
+  "1024|R512|GAL|CN|2": {
+   "cost_vs_BE": 0.804113423435019,
+   "role": " accurate-equal-cost"
+  },
+  "1024|R512|GAL|CN|5": {
+   "cost_vs_BE": 0.6361928273726841,
+   "role": "no role"
+  }
+ },
  "threeD": {
   "label": "qualified subset of the tested candidates (never a completeness claim, A2.1)",
   "contract": "speed3d screening contract: full-field 65^3 mesh-path rollout; ratios from separate jobs against C_old",

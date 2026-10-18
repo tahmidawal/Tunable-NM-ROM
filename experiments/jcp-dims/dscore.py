@@ -35,12 +35,15 @@ def out_dir(att, drv, stem=None):
     cands = sorted((p for p in RUNS.glob(f'{att}r*') if re.fullmatch(rf'{re.escape(att)}r\d+', p.name)),
                    key=lambda p: int(p.name[len(att) + 1:]), reverse=True) + [RUNS / att]
     for c in cands:
-        for st_ in (stem, c.name):
-            d = c / 'archive' / 'output' / f'{drv}_{st_}'
+        for st_, base_ in [(x, y) for y in ('archive', 'slim') for x in (stem, c.name)]:     # slim = offloaded raw (brief 16)
+            d = c / base_ / 'output' / f'{drv}_{st_}'
             if (d / 'result.json').exists() and json.loads((d / 'result.json').read_text()).get('complete'):
                 return d
-    d = RUNS / att / 'archive' / 'output' / f'{drv}_{stem}'
-    return d if (d / 'result.json').exists() else None
+    for base_ in ('archive', 'slim'):
+        d = RUNS / att / base_ / 'output' / f'{drv}_{stem}'
+        if (d / 'result.json').exists():
+            return d
+    return None
 
 
 def load(d, setting, form, scheme, factor=1):

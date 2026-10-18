@@ -33,10 +33,15 @@ DEP_PINS = '|'.join(['dn256b ckpt ' + 'sep_hfit_dense_mid_N256_dense.pkl',
                      hashlib.sha256((Path(__file__).resolve().parent / 'vendor' / 'quad2d' / 'inputs' / 'rotation_R512.npz').read_bytes()).hexdigest(),
                      hashlib.sha256((Path(__file__).resolve().parents[1] / 'separable-decoder' / 'runs' / 'dn256b' / 'out' /
                                      'sep_hfit_dense_mid_N256_dense.pkl').read_bytes()).hexdigest()])
-CODE_VERSION = hashlib.sha256(b''.join((Path(__file__).resolve().parent / f).read_bytes()
-                                       for f in ('analyze2d.py', 'dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py', 'dcert.py', 'p1score.py',
-                                                 'rules2d.py', 'vendor/quad2d/npbank.py'))
-                              + DEP_PINS.encode()).hexdigest()                  # A6.1: independent rho recomputed when m * M <= 4e7 (dev6|0, six outputs)
+def _code_version():
+    """A1.5 cache binding: the numerical dependencies of the cached per-configuration evidence: the source of
+    config_entry itself, the scoring / certificate / decode modules and the bank, rotation and checkpoint pins."""
+    import inspect
+    here = Path(__file__).resolve().parent
+    blob = inspect.getsource(config_entry).encode() + b''.join(
+        (here / f).read_bytes() for f in ('dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py', 'dcert.py', 'p1score.py',
+                                          'rules2d.py', 'vendor/quad2d/npbank.py'))
+    return hashlib.sha256(blob + DEP_PINS.encode()).hexdigest()
 
 
 def sha_file(p):
@@ -57,9 +62,10 @@ def config_entry(att, d, res, setting, arm, score=True):
     p = d / f'R_{setting}_{form}_{scheme}_{fac:g}.npz'
     if not p.exists():
         return None
-    sh = sha_file(p)
+    slim = d.parents[1].name == 'slim'
+    sh = str(np.load(p)['raw_sha256']) if slim else sha_file(p)        # slim copies record their raw file's sha256
     rows_ = [r_ for r_ in res['rows'] if r_['setting'] == setting and r_['arm'] == f'{form}_{scheme}_{fac:g}']
-    ver = CODE_VERSION + '|' + json.dumps(arm['cases']) + '|' + hashlib.sha256(json.dumps(rows_, sort_keys=True, default=str).encode()).hexdigest()
+    ver = _code_version() + '|' + json.dumps(arm['cases']) + '|' + hashlib.sha256(json.dumps(rows_, sort_keys=True, default=str).encode()).hexdigest()
     cp = CACHE / f'{att}__{setting}__{form}_{scheme}_{fac:g}.json'
     if cp.exists():
         c = json.loads(cp.read_text())
@@ -67,6 +73,8 @@ def config_entry(att, d, res, setting, arm, score=True):
             if not score:
                 c['e0'] = None                             # LMF: never expose scores before the stability gate
             return c
+    if slim:
+        raise SystemExit(f'{p}: raw archive offloaded and no valid cache entry; recompute on the cluster copy (brief 16)')
     R = dict(np.load(p))
     rows = [r_ for r_ in res['rows'] if r_['setting'] == setting and r_['arm'] == f'{form}_{scheme}_{fac:g}']
     q = DSC.q1(R, rows, arm['cases'])
@@ -110,8 +118,8 @@ def attempt_dirs(job):
                    key=lambda p: int(p.name[len(job) + 1:]), reverse=True) + [runs / job]
     out = []
     for c in cands:
-        for stem in (job, c.name):                         # a retry config is named after its attempt (make_retry.py)
-            d = c / 'archive' / 'output' / f'dacc_{stem}'
+        for stem, base_ in [(x, y) for y in ('archive', 'slim') for x in (job, c.name)]:   # slim: offloaded raw (brief 16)
+            d = c / base_ / 'output' / f'dacc_{stem}'
             if (d / 'result.json').exists() and d not in out:
                 out.append(d)
     sigs = {d: code_signature(d) + (gpu_of(d),) for d in out}      # A9.3: same numerical code, inputs and GPU type

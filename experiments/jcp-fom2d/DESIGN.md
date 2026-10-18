@@ -339,3 +339,77 @@ upwind cells are labelled "deferred", never "no match".
 
 **A1.7 FRONT fallback (audit item 1).** If the 12-hour wait expires, C2 on P1 targets is reported as **partial P1-target
 evidence**: FRONT-2D C2, the FRONT H-comp cells and the FRONT K2 stay outstanding and are listed as open in the hand-back.
+
+---
+
+## Amendment A2 (2026-10-18, before any job; answers `audits/codex-design-2.md`, verdict NOT READY)
+
+**A2.1 C2 selection and inference (blocking 1).** Supersedes the remaining parts of A1.3.
+* **Groups.** For each target $T$ (a ROM identity at mesh $N$ with a named population, A2.3) and each criterion
+  (joint, median-only, worst-only, same-mesh, same-mesh-unmatched): one **family group** per family (its candidates =
+  the family's matches under that criterion, A1.3 stage 0 order) and one **union group** for the joint and same-mesh
+  criteria (candidates = the three stage-0-cheapest of every family group of that criterion, pooled).
+* **Stage-1 validity.** Each candidate gets one A–B–A triplet per dev6 case (≤ 2 drift retries, identity veto). A group's
+  selection population = the cases valid for **every** candidate of its stage-1 shortlist; if it has fewer than 5 of the
+  6 cases, the group's selection is "invalid timing" (no selected comparator, no verdict). Stage-1 cost = median over the
+  selection population of the per-case ratio. Ties: smaller stage-0 cost, then the key's lexical order.
+* **Frozen before stage 2:** `FROZEN-SELECTION-<mesh>.json` holds every group's shortlist, stage-0 and stage-1 costs and
+  the **selected comparator ID** (family groups and union groups); its sha256 is in the result. Stage 2 then measures
+  every target ROM and every selected comparator afresh; speed-ups use only stage-2 data (A1.3 estimand and bootstrap).
+  The union winner is never re-chosen from stage-2 data.
+* **Scope of the inference.** Stages 1 and 2 use the same six dev6 cases: fresh repetitions remove selection on timing
+  noise, not on case-specific workload. Every C2 speed-up and interval is therefore stated **conditional on the dev6
+  timing workload**; the case bootstrap describes case-to-case variation within that workload and is not a
+  selection-adjusted population inference. All C2 latencies are **prepared-input latencies** (A1 §2 input contract).
+* **"Cheapest" wording.** The comparator is "the comparator selected by the registered screening procedure (stage 0 →
+  stage 1)". If the procedure misses the ladder's true cheapest member, the reported FOM cost is too high and the ROM
+  speed-up too favourable to the ROM — the same direction as the finite-ladder label, so every speed-up remains an
+  **upper bound on the claimed ROM speed-up**. No claim of having found the ladder minimum is made.
+* **PS anchors** are accuracy differences computed offline from ladder fields, not C2 runs: for a selected PS
+  comparator $(N,\Delta t)$, the lattice distance (max over outputs and cases, relative to $n_0$) to $(N,\Delta t')$ with
+  $\Delta t'$ the next smaller ladder step (for the smallest ladder step, the next larger one), reported beside it.
+
+**A2.2 K2 (blocking 2).** The dominance shortcut of A1.4 is **withdrawn**. K2 is evaluated **directly**: the K2 universe
+is the complete list of numerically qualified linear-span configurations at $4096^2$ in the jcp-qualify qualification
+manifest (FRONT-2D or its companion manifest); every one of them is a subject of the $4096^2$ C2 job with its own
+groups. If no complete manifest is available, K2 is reported as **inconclusive** with the front-member-only evaluation
+beside it, labelled "front members only".
+
+**A2.3 Populations in execution (blocking 3).** A target's key includes its population: `<identity>@<mesh>|H`
+(H-comp population: the target's published population at that mesh) and `<identity>@<mesh>|X` (crossover population:
+the intersection of the identity's eligible cases over every mesh where it is numerically qualified). Both get their own
+matching, groups and selected comparators (deduplicated when the populations coincide). Matching on a population with
+fewer than **3 eligible cases** is refused ("population too small"); K-false is evaluated only on populations with
+$n\ge3$ eligible cases, with $j$ the first case (in population order) attaining the largest raw error.
+
+**A2.4 Same-resolution PS at $1024^2$ and $4096^2$ (blocking 4).** A1.2's projected-cost argument is **withdrawn**. These
+cells are **deferred by scope** (not run, no comparative claim), labelled "same-resolution PS not run (deferred)"; the
+same-mesh union there is over the families run. As information only, the ladder smoke times one case of PS at
+$N=1024$, $\Delta t=0.05/800$ (no claim attaches to it).
+
+**A2.5 Extension rule made deterministic (blocking 5).** One global round, after every required target population at
+every mesh (FRONT, or the A1.7 P1 fallback, same rule) has been matched on the base ladder. Trigger per family: some
+selected **joint** comparator (any target, population or mesh) has that family's smallest admissible resolution. Added:
+CC/UB $L_{\min}/2$ (only if $\ge16$ and not already in the ladder), PS $N_{\min}-4$ (only if $\ge4$ and not already
+tested), at **every** ladder $\Delta t$ of that family, through the same calibration, admissibility and matching. A
+step-edge-only trigger adds nothing: $\Delta t=0.05$ (the output spacing) is in every family's ladder, so no larger step
+exists; such matches are labelled "edge (step = output spacing)". Coordinate-edge labels and the **boundary** label
+(matched at the cheapest admissible member by screening cost) are reported separately. The C2 configurations are built
+after the extension round. The unmatched same-mesh comparator is called the "lowest-worst-error unmatched comparator".
+
+**A2.6 Code contract alignments.**
+* **FD timed program:** the E0 solver's compiled call followed by the compiled output map, dispatched back-to-back
+  inside one timed interval with no host synchronisation between them (E0 `refcore` is used byte-identically, so the two
+  are not fused into one XLA program; the map is a few FFT/stride operations). Replaces "one jitted call" for FD.
+* **PS validity:** `psjax2d` carries the running maximum of $|u|$ on the padded grid over every stage evaluation (as
+  `pscore.make_ps`); a configuration is valid only if every case has finite outputs **and** a finite running maximum.
+* **G-FD1** is the sha256 identity of the copied E0 modules (`refcore.py`, `pscore.py`, `cohorts.py`, `verdict.py`,
+  `refstore.py`) with their sources: there is no lane modification, so execution equality follows; G-FD2 and G-E0 are the
+  executed equalities.
+* **Recovery (A1.1):** the recovery level is the next tighter level that **itself passed** the calibration predicate
+  (convergence and $10^{-6}n_0$ agreement on the calibration cases; $t_0$ passes by definition); the offline validator
+  accepts exactly that level for a recorded recovery; otherwise the configuration is inadmissible.
+* **K-loose** fires only if the agreement predicate rejects (convergence recorded separately).
+* **Interpolation factor:** from mesh $L$ to mesh $N$ ($L\mid N$) the orthonormal DST-I coefficients are scaled by $N/L$.
+* **Resources:** certificates include input preparation, recovery reruns, the extension round and both population
+  selections.

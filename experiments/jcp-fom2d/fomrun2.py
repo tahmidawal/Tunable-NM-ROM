@@ -1,6 +1,6 @@
 """jcp-fom2d full-order models (DESIGN §2–§3): F-UB upwind + BE and F-CC central + CN-R (E0 `refcore.make_solver`, d = 2,
-byte-identical copy), F-PS (psjax2d). Every query maps (prepared input, nu) to the six output fields; the output mapping
-runs on the device right after the solve and both are inside one timed interval.
+byte-identical copy), F-PS (psjax2d). Every query maps (prepared input, nu) to the six output fields. FD: E0's compiled solve
+followed by the compiled output map, dispatched back-to-back in one timed interval (A2.6); PS: one jitted program.
 
 Spec keys: 'fd|<UB|CC>|L<L>|<dt>|t<level>' with level in 0..3 or X (control), 'ps|N<N>|<dt>'.
 Output contracts: 'lattice' (257^2 with zero walls) or ('mesh', M) ((M+1)^2 with zero walls). FD at L >= target: nodes
@@ -123,7 +123,8 @@ class FOMs:
             k = (sp[1], sp[2], target)
             if k not in self.ps:
                 self.ps[k] = psjax2d.make_ps_query(sp[1], sp[2], target)
-            return self.ps[k](x, nu), dict(kind='ps')
+            F, um = self.ps[k](x, nu)
+            return F, dict(kind='ps', umax=um)
         _, fam, L, dt, lev = sp
         adv, scheme = FAM[fam]
         ntol, ltol = TOLS[lev]
@@ -137,7 +138,7 @@ class FOMs:
             if k not in self.ps:
                 self.ps[k] = psjax2d.make_ps_query(sp[1], sp[2], target)
             q = self.ps[k]
-            return lambda: q(x, nu)
+            return lambda: q(x, nu)[0]        # the running maximum is computed in the same program (validity evidence)
         _, fam, L, dt, lev = sp
         adv, scheme = FAM[fam]
         ntol, ltol = TOLS[lev]
@@ -149,10 +150,12 @@ class FOMs:
     def converged(sp, info, F):
         """FD (speed3d A2.5/A4.2): finite output; complete per-stage evidence (stage count = schedule, time units reach
         0.25); every recorded relative residual finite and <= ntol; Newton counts in [0, limit]; a stage stopped at the
-        Newton limit with its residual met counts as converged and is flagged. PS: finite output."""
+        Newton limit with its residual met counts as converged and is flagged. PS: finite output and finite running
+        maximum of |u| (A2.6)."""
         fin = bool(np.isfinite(np.asarray(F)).all())
         if sp[0] == 'ps':
-            return fin, dict(finite=fin)
+            um = float(np.asarray(info['umax']))
+            return bool(fin and np.isfinite(um)), dict(finite=fin, umax=um)
         _, fam, L, dt, lev = sp
         ntol = TOLS[lev][0]
         lim = NEWTON_LIMIT.get(lev, MAX_NEWTON)

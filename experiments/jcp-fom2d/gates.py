@@ -88,7 +88,7 @@ def g_ps2(desc, cohort='val32', case=0, run_id='N1024_dt0_a0'):
     run = next(r for r in meta['runs'] if r['id'] == run_id)
     N, dt = int(run['N']), float(run['dt'])
     q = psjax2d.make_ps_query(N, dt)
-    F = q(psjax2d.ic(desc, N), float(desc[4]))
+    F, _ = q(psjax2d.ic(desc, N), float(desc[4]))
     r = rel(F, arr[run_id])
     return dict(stem=stem, run=run_id, N=N, dt=dt, rel=r, passed=bool(r <= 1e-10))
 
@@ -96,8 +96,8 @@ def g_ps2(desc, cohort='val32', case=0, run_id='N1024_dt0_a0'):
 def g_int(seed=0):
     rng = np.random.default_rng(seed)
     out = {}
-    for L, M in ((64, 256), (128, 256), (128, 1024)):
-        U = jnp.asarray(rng.standard_normal((2, L - 1, L - 1)))
+    for L, M in ((32, 256), (64, 256), (128, 256), (64, 1024), (256, 1024), (64, 4096), (256, 4096)):
+        U = jnp.asarray(rng.standard_normal((2, L - 1, L - 1)))      # two batch members: both axes, batch dimension
         V = np.asarray(FR.sine_interp(U, L, M))
         s = M // L
         out[f'coincident_{L}_{M}'] = rel(V[:, s - 1::s, s - 1::s], U)
@@ -105,6 +105,7 @@ def g_int(seed=0):
         k = np.arange(1, L)
         a = rng.standard_normal((L - 1, L - 1)) / (1 + k[:, None] ** 2 + k[None, :] ** 2)
         xs = lambda n: np.sin(np.pi * np.outer(np.arange(1, n) / n, k))
+        a = a * np.exp(rng.standard_normal((L - 1, 1)))                # anisotropic: x and y axes differ
         uL = xs(L) @ a @ xs(L).T
         uM = xs(M) @ a @ xs(M).T
         out[f'bandlimited_{L}_{M}'] = rel(np.asarray(FR.sine_interp(jnp.asarray(uL), L, M)), uM)

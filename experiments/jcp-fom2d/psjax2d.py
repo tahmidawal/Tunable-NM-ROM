@@ -7,8 +7,9 @@ synthesis of the six output fields:
   out=('mesh', M) the (M+1)^2 nodes of mesh M with zero walls, by pscore.sine_synth_last on the coefficients zero-padded
                   to (M-1)^2 (FFT synthesis; equal to the matrix synthesis at M = 256, gate G-INT).
 
-Gate G-PS1 (`gate`): lattice output equal to pscore.make_ps(N, 2).run to 1e-12 relative; control: half the step must
-differ by > 1e-9.
+The query returns (fields, running max |u| on the padded grid over every stage evaluation, as pscore.make_ps).
+Gate G-PS1 (`gate`): lattice output equal to pscore.make_ps(N, 2).run to 1e-12 relative and the same running maximum;
+control: half the step must differ by > 1e-9.
 """
 from __future__ import annotations
 
@@ -45,24 +46,26 @@ def make_ps_query(N, dt, out='lattice', Mc=32):
         S_lat = jnp.zeros((1,))
         synth = lambda v, S: synth_mesh(v, M)
 
-    def step(v, co):
-        Nv, _ = PS.nonlinear(v, N, 2)
+    def step(carry, co):
+        v, um = carry
+        Nv, m1 = PS.nonlinear(v, N, 2)
         a = co['E2'] * v + co['Q'] * Nv
-        Na, _ = PS.nonlinear(a, N, 2)
+        Na, m2 = PS.nonlinear(a, N, 2)
         b = co['E2'] * v + co['Q'] * Na
-        Nb, _ = PS.nonlinear(b, N, 2)
+        Nb, m3 = PS.nonlinear(b, N, 2)
         c = co['E2'] * a + co['Q'] * (2 * Nb - Nv)
-        Nc, _ = PS.nonlinear(c, N, 2)
-        return co['E'] * v + Nv * co['f1'] + 2 * (Na + Nb) * co['f2'] + Nc * co['f3']
+        Nc, m4 = PS.nonlinear(c, N, 2)
+        um = jnp.maximum(um, jnp.maximum(jnp.maximum(m1, m2), jnp.maximum(m3, m4)))     # pscore.make_ps running max
+        return co['E'] * v + Nv * co['f1'] + 2 * (Na + Nb) * co['f2'] + Nc * co['f3'], um
 
     def query(b0, nu, S):
         co = PS.etdrk4_coefs(lin_eig_j(N, nu), dt, Mc)
 
-        def interval(v, _):
-            v = jax.lax.fori_loop(0, keep, lambda i, x: step(x, co), v)
-            return v, synth(v, S)
-        v, outs = jax.lax.scan(interval, b0, None, length=5)
-        return jnp.concatenate((synth(b0, S)[None], outs))
+        def interval(carry, _):
+            carry = jax.lax.fori_loop(0, keep, lambda i, x: step(x, co), carry)
+            return carry, synth(carry[0], S)
+        (v, um), outs = jax.lax.scan(interval, (b0, jnp.float64(0.0)), None, length=5)
+        return jnp.concatenate((synth(b0, S)[None], outs)), um
     q = jax.jit(query)
     return lambda b0, nu: q(b0, nu, S_lat)
 
@@ -79,9 +82,13 @@ def gate(descs, nus, N=32, dt=0.01):
     ref = PS.make_ps(N, 2)
     for j, (desc, nu) in enumerate(zip(descs, nus)):
         b0 = ic(desc, N)
-        a = np.asarray(q(b0, nu))
-        r = ref(np.asarray(b0), nu, dt, PS.lattice_S(N, 256))['lat']
-        h = np.asarray(q2(b0, nu))
-        out[j] = dict(rel=float(np.abs(a - r).max() / np.abs(r).max()), half_dt_diff=float(np.abs(h - a).max() / np.abs(r).max()))
+        a, um = q(b0, nu)
+        a = np.asarray(a)
+        rr = ref(np.asarray(b0), nu, dt, PS.lattice_S(N, 256))
+        r = rr['lat']
+        h = np.asarray(q2(b0, nu)[0])
+        out[j] = dict(rel=float(np.abs(a - r).max() / np.abs(r).max()), half_dt_diff=float(np.abs(h - a).max() / np.abs(r).max()),
+                      umax=float(um), umax_ref=rr['umax'], umax_equal=bool(abs(float(um) - rr['umax']) <= 1e-12 * rr['umax']))
     vals = list(out.values())
-    return dict(cases=out, passed=all(v['rel'] <= 1e-12 for v in vals), control_fires=all(v['half_dt_diff'] > 1e-9 for v in vals))
+    return dict(cases=out, passed=all(v['rel'] <= 1e-12 and v['umax_equal'] for v in vals),
+                control_fires=all(v['half_dt_diff'] > 1e-9 for v in vals))

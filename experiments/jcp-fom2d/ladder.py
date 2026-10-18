@@ -150,7 +150,11 @@ def main():
         elif gname == 'int':
             r = G.g_int()
         elif gname == 'ct':
-            r = G.g_ct(foms, [('fd', 'CC', 128, 0.01, '2'), ('fd', 'UB', 2048, 0.005, '2'), ('ps', 32, 0.01)], d6[0], M=1024)
+            r = G.g_ct(foms, [('fd', 'CC', 128, 0.01, '2'), ('fd', 'CC', 1024, 0.01, '2'), ('fd', 'UB', 2048, 0.005, '2'),
+                              ('ps', 32, 0.01)], d6[0], M=1024)
+            r4 = G.g_ct(foms, [('fd', 'CC', 256, 0.01, '2')], d6[0], M=4096)
+            r = dict(values=dict(r['values'], **{k_ + '@4096': v for k_, v in r4['values'].items()}),
+                     passed=bool(r['passed'] and r4['passed']))
         else:
             raise KeyError(gname)
         r['seconds'] = time.perf_counter() - t
@@ -201,6 +205,11 @@ def main():
                  fields=np.stack(Fs))
         Fprod = {cid(c): F for c, F in zip(cases, Fs)}
         rec = dict(key=k, spec=list(sp), production=prod, warm=warm_times(sp, Fprod), mem=mem(), **extra)
+        if sp[0] == 'ps':                                  # A1.1 E0 stability label (lattice proxy for u_max)
+            um = [float(np.max(np.abs(F))) for F in Fs]
+            bound = [0.66 * 2.8 / (2 * 2 * np.pi * sp[1] * u) if u > 0 else np.inf for u in um]
+            rec['stability'] = dict(umax_lattice=um, dt_bound=bound, label_pass=bool(all(sp[2] <= b for b in bound)),
+                                    note='E0 stability label (lattice proxy); not an admissibility condition')
         rec['admissible_injob'] = bool(all(r['converged'] for r in prod) and rec['warm']['hashes_ok'])
         rep['configs'][k] = rec
         save()
@@ -210,7 +219,8 @@ def main():
         dt = FR.canon_dt(dt)
         gkey = f'fd|{fam}|L{L}|{dt:.8g}'
         gold = rep.get('groups', {}).get(gkey)
-        if gold is not None and (gold['chosen'] is None or FR.key(('fd', fam, int(L), dt, gold['chosen'])) in rep['configs']):
+        glev = None if gold is None else (gold.get('recovery') or {}).get('level', gold['chosen'])
+        if gold is not None and (gold['chosen'] is None or FR.key(('fd', fam, int(L), dt, glev)) in rep['configs']):
             continue                                       # resumable: finished group (calibration is simply redone otherwise)
         t0 = time.perf_counter()
         calib = {}
@@ -251,7 +261,19 @@ def main():
         bykey.update({kk: (dict(v[0], reused_from_calibration=True), v[1]) for kk, v in calset.items()})
         prod = [bykey[cid(c)][0] for c in cases]
         Fp = [bykey[cid(c)][1] for c in cases]
-        finish(k, sp, prod, Fp, dict(group=gkey))
+        extra = dict(group=gkey)
+        if not all(r['converged'] for r in prod) and chosen != '0':
+            # A1.1/A2.6 production recovery: rerun once, all cases, at the next tighter level that itself passed the
+            # calibration predicate (t0 passes by definition)
+            bad = [r['case'] for r in prod if not r['converged']]
+            passing = ['0'] + [lv for lv in levels[1:] if all(r['converged'] for r in calib[lv]) and max(diffs[lv]) <= TOL_CAL]
+            lev2 = max((lv for lv in passing if int(lv) < int(chosen)), key=int)
+            sp = ('fd', fam, int(L), dt, lev2)
+            k = FR.key(sp)
+            prod, Fp = run_cases(sp, cases)
+            extra.update(recovered_from=chosen, recovery_level=lev2, unconverged_at_chosen=bad)
+            group['recovery'] = dict(level=lev2, unconverged_at_chosen=bad)
+        finish(k, sp, prod, Fp, extra)
 
     for N, dt in [tuple(g) for g in cfg.get('ps', [])]:
         sp = ('ps', int(N), FR.canon_dt(dt))
@@ -268,10 +290,9 @@ def main():
         r0, F0 = run_cases(sp0, cal)
         rx, Fx = run_cases(spx, cal)
         dx = [max(float(np.linalg.norm(Fx[i][k] - F0[i][k])) / N0[cid(c)] for k in range(1, 6)) for i, c in enumerate(cal)]
-        rejected = not (all(r['converged'] for r in rx) and max(dx) <= TOL_CAL)
         rep['k_loose'] = dict(spec=list(spx), converged=[r['converged'] for r in rx], diffs=dx, evidence=[r['evidence'] for r in rx],
-                              fires=bool(rejected), converged_alone_would_reject=not all(r['converged'] for r in rx),
-                              distance_alone_would_reject=bool(max(dx) > TOL_CAL))
+                              fires=bool(max(dx) > TOL_CAL), rejecting_predicate='agreement (1e-6 n0)',
+                              convergence_would_also_reject=not all(r['converged'] for r in rx))
         save()
         print('K_LOOSE', rep['k_loose']['fires'], dx, flush=True)
     if cfg.get('k_swap') and 'k_swap' not in rep:
@@ -285,9 +306,10 @@ def main():
             continue
         sp = FR.parse(pk)
         recs, _ = run_cases(sp, cases[:1], keep_fields=False)
-        rep['pilots'][pk] = dict(record=recs[0], mem=mem())
+        recs2, _ = run_cases(sp, cases[:1], keep_fields=False)       # warm second call (compile excluded)
+        rep['pilots'][pk] = dict(record=recs[0], warm=recs2[0], mem=mem())
         save()
-        print('PILOT', pk, round(recs[0]['seconds_first'], 2), mem(), flush=True)
+        print('PILOT', pk, round(recs[0]['seconds_first'], 2), round(recs2[0]['seconds_first'], 3), mem(), flush=True)
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()

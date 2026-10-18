@@ -101,8 +101,16 @@ def recalibrate(groups):
                 if all(conv[lev]) and max(diffs[lev]) <= TOL_CAL:
                     chosen = lev
                     break
-        res[gk] = dict(chosen=chosen, injob_chosen=g['chosen'], agrees=chosen == g['chosen'],
-                       max_diff={k: max(v) for k, v in diffs.items()})
+        passing = (['0'] if t0ok else []) + [lv for lv in levels[1:] if all(conv[lv]) and max(diffs[lv]) <= TOL_CAL]
+        rec = g.get('recovery')
+        prod_level = chosen
+        rec_ok = True
+        if rec is not None:          # A2.6: the recovery level must be the next tighter level that passed calibration
+            tighter = [lv for lv in passing if chosen is not None and int(lv) < int(chosen)]
+            rec_ok = bool(tighter) and rec['level'] == max(tighter, key=int)
+            prod_level = rec['level'] if rec_ok else None
+        res[gk] = dict(chosen=chosen, injob_chosen=g['chosen'], agrees=bool(chosen == g['chosen'] and rec_ok),
+                       production_level=prod_level, recovery=rec, max_diff={k: max(v) for k, v in diffs.items()})
     return res
 
 
@@ -112,7 +120,8 @@ def validate(k, v, sc, recal, population):
     why = []
     if sp is not None and sp[0] == 'fd':
         gk = v.get('group')
-        if gk not in recal or recal[gk]['chosen'] != sp[4] or not recal[gk]['agrees']:
+        want = None if gk not in recal else recal[gk]['production_level']
+        if gk not in recal or want != sp[4] or not recal[gk]['agrees']:
             why.append('not calibrated at this level')
     ids = [p['case'] for p in v['production']]
     if sorted(ids) != sorted(population):
@@ -183,6 +192,9 @@ def synthetic(target, population, recal):
 
 def match_target(target, adm, scores, ed, population, recal):
     out = {}
+    n_el = sum(bool(target['eligible'][c]) for c in target['case_ids'])
+    if n_el < 3:                                         # A2.3
+        return dict(status='population too small', n_eligible=n_el, controls=dict(fires=False))
     for f in FAMILIES:
         cands = [k for k, a in adm.items() if a['family'] == f and a['admissible']]
         rows = []
@@ -195,16 +207,21 @@ def match_target(target, adm, scores, ed, population, recal):
         cheapest = rows[0]['key'] if rows else None
         pick = lambda pred: next((r for r in rows if pred(r)), None)
         joint = [r for r in rows if r['joint']]
-        sm = [r for r in rows if FR.parse(r['key'])[0] == 'fd' and FR.parse(r['key'])[2] == target['mesh']]
+        res_of = lambda k: FR.parse(k)[2] if FR.parse(k)[0] == 'fd' else FR.parse(k)[1]
+        sm = [r for r in rows if res_of(r['key']) == target['mesh']]      # FD L = N; PS same resolution N_PS = N (A1.2)
         sm_joint = next((r for r in sm if r['joint']), None)
         sm_unm = min(sm, key=lambda r: (r['worst_e'], r['cost'])) if (sm and sm_joint is None) else None
         lab = lambda r: None if r is None else dict(r, boundary=r['key'] == cheapest, upper_bound=True)
         out[f] = dict(n_admissible=len(rows), joint=lab(joint[0] if joint else None), top3_joint=[r['key'] for r in joint[:3]],
                       median_only=lab(pick(lambda r: r['median'])), worst_only=lab(pick(lambda r: r['worst'])),
-                      same_mesh=lab(sm_joint) if f != 'PS' else None,
-                      same_mesh_unmatched=lab(sm_unm) if f != 'PS' else None,
+                      same_mesh=lab(sm_joint), same_mesh_unmatched=lab(sm_unm),
+                      same_mesh_status=('matched' if sm_joint else ('unmatched' if sm else
+                                        ('same-resolution PS not run (projected cost)' if f == 'PS' else 'not in ladder'))),
                       status=('matched' if joint else ('no ladder match' if rows else 'unavailable')))
     js = [(f, out[f]['joint']) for f in FAMILIES if out[f]['joint']]
+    sj = [(f, out[f]['same_mesh']) for f in FAMILIES if out[f]['same_mesh']]
+    out['same_mesh_union'] = dict(family=min(sj, key=lambda x: x[1]['cost'])[0], joint=min(sj, key=lambda x: x[1]['cost'])[1],
+                                  families_available=[f for f in FAMILIES if out[f]['same_mesh_status'] in ('matched', 'unmatched')]) if sj else None
     out['union'] = dict(family=min(js, key=lambda x: x[1]['cost'])[0], joint=min(js, key=lambda x: x[1]['cost'])[1]) if js else None
     # ---- controls ----
     ctl = {}
@@ -212,24 +229,33 @@ def match_target(target, adm, scores, ed, population, recal):
     ctl['ksyn'] = ks
     ctl['ksyn_unconverged_rejected'] = ks['K|unconverged']['rejected']
     ctl['ksyn_inaccurate_rejected'] = ks['K|inaccurate']['rejected']
-    # K-false on the selected real joint match of each family (worst raised; median raised)
-    kf = {}
-    for f in FAMILIES:
-        r = out[f]['joint']
-        if r is None:
-            continue
-        ef, et2, eta2, ids = common(target, scores[r['key']])
-        e1 = ef.copy()
-        i = int(np.argmax(ef))
-        e1[i] = np.max(et2) + 3 * eta2[i] + max(np.max(eta2), 1e-12)
-        m1, w1 = ties_or_beats(e1, et2, eta2)
-        e2 = np.maximum(ef, np.median(et2) + 3 * eta2 + 1e-12)
-        m2, _ = ties_or_beats(e2, et2, eta2)
-        kf[f] = dict(worst_raised_joint_rejected=not (m1 and w1), worst_raised_median_still_matches=m1,
-                     all_raised_median_rejected=not m2)
-    ctl['kfalse'] = kf
-    ctl['fires'] = bool(ctl['ksyn_unconverged_rejected'] and ctl['ksyn_inaccurate_rejected']
-                        and all(v['worst_raised_joint_rejected'] and v['all_raised_median_rejected'] for v in kf.values()))
+    # K-false (A1.5): constructed from the target's own errors on its eligible cases; expected outcomes asserted first
+    ids_t = [c for c in target['case_ids'] if target['eligible'][c]]
+    if len(ids_t) < 3:
+        ctl['kfalse'] = dict(n=len(ids_t), fires=False, note='population too small (n < 3): not evaluated')
+        ctl['fires'] = False
+        out['controls'] = ctl
+        return out
+    et = np.array([target['e'][c] for c in ids_t])
+    eta = np.array([target['eta'][c] for c in ids_t])
+    d = 1e-9
+    clone_ok = all(ties_or_beats(et, et, eta))
+    j = int(np.argmax(et))
+    U = float(np.max(et + eta))
+    e1 = et.copy()
+    e1[j] = U + eta[j] + d
+    pre1 = dict(median_unchanged=bool(np.median(e1 - eta) == np.median(et - eta)) if len(et) >= 3 else False,
+                worst_exceeds=bool(np.max(e1 - eta) > U))
+    m1, w1 = ties_or_beats(e1, et, eta)
+    e2 = et + 2 * eta + d
+    pre2 = dict(median_exceeds=bool(np.median(e2 - eta) > np.median(et + eta)), worst_exceeds=bool(np.max(e2 - eta) > U))
+    m2, w2 = ties_or_beats(e2, et, eta)
+    ctl['kfalse'] = dict(n=len(et), clone_matches=clone_ok, worst_case=ids_t[j], pre_worst=pre1, pre_median=pre2,
+                         worst_raised=dict(median=m1, worst=w1), all_raised=dict(median=m2, worst=w2),
+                         fires=bool(clone_ok and all(pre1.values()) and all(pre2.values()) and m1 and not w1 and not m2 and not w2))
+    ctl['fires'] = bool(ctl['ksyn_unconverged_rejected'] and ctl['ksyn_inaccurate_rejected'] and ctl['kfalse']['fires']
+                        and 'not converged / invalid on some case' in ks['K|unconverged']['why']
+                        and ks['K|inaccurate']['admissible'] and not ks['K|inaccurate']['joint'])
     out['controls'] = ctl
     return out
 
@@ -272,7 +298,7 @@ def main():
                matches={})
     for lab, t in T['targets'].items():
         res['matches'][lab] = match_target(t, adm, scores, ed, population, recal)
-    res['controls_all_fire'] = all(m['controls']['fires'] for m in res['matches'].values())
+    res['controls_all_fire'] = all(m['controls']['fires'] for m in res['matches'].values() if m.get('status') != 'population too small')
     Path(a.out).write_text(json.dumps(res, indent=1, default=float) + '\n')
     print('offline agrees', res['offline_agrees'], 'calibration agrees', res['calibration_agrees'], 'controls', res['controls_all_fire'])
     for lab, m in res['matches'].items():

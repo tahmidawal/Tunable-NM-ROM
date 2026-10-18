@@ -193,7 +193,7 @@ def plot_speedup(C2, plan, path):
     ax.set_xticklabels([f'{n}²' for n in xs_all])
     ax.set_xlabel('ROM mesh')
     ax.set_ylabel('union speed-up $S$ (FOM cost / ROM cost)')
-    ax.set_title('Every qualified LSPG configuration against its best matched FOM', fontsize=10, color=INK)
+    ax.set_title('Every qualified LSPG configuration vs its screening-selected matched FOM (union)', fontsize=10, color=INK)
     ax.grid(color=GRID, lw=.6)
     ax.legend(frameon=False, fontsize=7, ncol=3, loc='lower right')
     fig.tight_layout()
@@ -279,7 +279,7 @@ def main():
               '|LSPG|' in k and c.get('S') is not None]
         if sm:
             w(f'- **Same mesh at $4096^2$ (central CN-R on the ROM mesh, joint matched):** $S$ between {f(min(sm))} and '
-              f'{f(max(sm))} (compare the union range above: the same-mesh comparator is not the best FOM on any mesh).')
+              f'{f(max(sm))} (compare the union range above: the same-mesh comparator is not the screening-selected comparator across families and meshes).')
     else:
         w('- **C2 (paired ROM–FOM timing):** not yet run in production (see C2 section).')
     w('')
@@ -550,7 +550,7 @@ def main():
             rows.append([pt(ident + '@0|X').split(' @')[0], ent['union|joint']['bracket_1x'], ent['union|joint']['bracket_2x'],
                          ent['CC|same_mesh']['bracket_1x'], ent['CC|same_mesh']['bracket_2x']])
         w('**Crossover brackets** (primary scope; crossover populations; classes from the interval rule at each actually run '
-          'mesh, never interpolated). (b) union = best joint-matched FOM on any mesh; (a) CC same-mesh = central CN-R on the '
+          'mesh, never interpolated). (b) union = screening-selected joint-matched comparator across families and meshes; (a) CC same-mesh = central CN-R on the '
           'ROM mesh. Per-family and UB same-mesh brackets are in `runs/EXPORT.json`; the same-mesh union mixes PS only at '
           '$256^2$ (same-resolution PS deferred above), so it is not tabled:')
         w('')

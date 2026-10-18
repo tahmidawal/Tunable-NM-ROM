@@ -1,20 +1,16 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T11:45:02Z",
- "step": "waiting for C2 jobs (5456288 RUNNING 1:00:34 )",
+ "utc": "2026-10-18T11:57:30Z",
+ "step": "13: codex C2 results audit running",
  "waiting_on": {
-  "slurm_jobs": [
-   "5456288",
-   "5456289",
-   "5456290"
-  ],
-  "codex_output": null,
-  "codex_pid": null,
-  "local_pid": 2236296
+  "slurm_jobs": [],
+  "codex_output": "audits/codex-c2results-1.md",
+  "codex_pid": 2429379,
+  "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T15:44:58Z",
- "last_commit": "4922dc87b",
- "gpu_hours_spent": 1.7845,
+ "expected_finish_utc": "2026-10-18T12:45:00Z",
+ "last_commit": "aafcf3e6e",
+ "gpu_hours_spent": 4.594,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D v1 2374fafe1"
+ "notes": "GPU-h spent 4.59 of 30"
 }

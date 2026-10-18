@@ -14,7 +14,7 @@
 - **H-comp at $4096^2$, GAL-CN diagnostic (post hoc):** CC: ROM < 2x ×11; CC: unresolved ×1; PS: ROM < 2x ×12; UB: ROM < 2x ×3; UB: ROM >= 2x ×6; UB: no match ×3; union: ROM < 2x ×12.
 - **H-comp at $1024^2$, primary:** CC: ROM < 2x ×19; CC: unresolved ×2; PS: ROM < 2x ×21; UB: ROM < 2x ×2; UB: ROM >= 2x ×16; UB: unresolved ×3; union: ROM < 2x ×21.
 - **H-comp at $1024^2$, GAL-CN diagnostic (post hoc):** CC: ROM < 2x ×11; CC: unresolved ×1; PS: ROM < 2x ×12; UB: ROM < 2x ×2; UB: ROM >= 2x ×6; UB: no match ×3; UB: unresolved ×1; union: ROM < 2x ×12.
-- **Same mesh at $4096^2$ (central CN-R on the ROM mesh, joint matched):** $S$ between 5.84 and 83.6 (compare the union range above: the same-mesh comparator is not the best FOM on any mesh).
+- **Same mesh at $4096^2$ (central CN-R on the ROM mesh, joint matched):** $S$ between 5.84 and 83.6 (compare the union range above: the same-mesh comparator is not the screening-selected comparator across families and meshes).
 
 ## Jobs, budget and integrity
 
@@ -388,7 +388,7 @@ Diagnostic GAL-CN analogue (post hoc, not a K2 verdict): fires under the registe
 | R512 gauss192 LSPG-CNR $\Delta t=0.0125$ @ $4096^2$ | 0.121 | PS $N=48$, $\Delta t=0.0125$ | 0.0117 |
 | R512 gauss192 LSPG-CNR $\Delta t=0.01$ @ $4096^2$ | 0.137 | PS $N=48$, $\Delta t=0.0125$ | 0.0117 |
 
-**Crossover brackets** (primary scope; crossover populations; classes from the interval rule at each actually run mesh, never interpolated). (b) union = best joint-matched FOM on any mesh; (a) CC same-mesh = central CN-R on the ROM mesh. Per-family and UB same-mesh brackets are in `runs/EXPORT.json`; the same-mesh union mixes PS only at $256^2$ (same-resolution PS deferred above), so it is not tabled:
+**Crossover brackets** (primary scope; crossover populations; classes from the interval rule at each actually run mesh, never interpolated). (b) union = screening-selected joint-matched comparator across families and meshes; (a) CC same-mesh = central CN-R on the ROM mesh. Per-family and UB same-mesh brackets are in `runs/EXPORT.json`; the same-mesh union mixes PS only at $256^2$ (same-resolution PS deferred above), so it is not tabled:
 
 | ROM | (b) union 1× | (b) union 2× | (a) CC same-mesh 1× | (a) CC same-mesh 2× |
 |---|---|---|---|---|
@@ -432,6 +432,7 @@ Diagnostic GAL-CN analogue (post hoc, not a K2 verdict): fires under the registe
 | `audits/codex-c2code-1.md` | **NOT READY to stage the C2 smoke.** Audited HEAD `cc058e9da |
 | `audits/codex-c2code-2.md` | **NOT READY to submit `runs/smkc2` as staged.** The job appe |
 | `audits/codex-c2code-3.md` | **READY to submit `runs/smkc2`.** Audited HEAD `a7be0c8f77a0 |
+| `audits/codex-c2results-1.md` | **C2 RESULTS ACCEPTED.** The numerical results and primary K |
 | `audits/codex-c2smoke-1.md` | SMOKE ACCEPTED |
 | `audits/codex-code-1.md` | **NOT READY to run `configs/smk1.json`.** The staged ladder  |
 | `audits/codex-code-2.md` | **NOT READY to submit `runs/smk1` as the C1 acceptance/resou |

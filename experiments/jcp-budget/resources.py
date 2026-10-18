@@ -1,15 +1,20 @@
-"""jcp-qualify smoke-derived cost certificates (DESIGN 8; P1 resources.py pattern). Writes checks/resources-<attempt>.json
-with projection_hours and time_limit_hours = ceil_0.25(1.5 x projection); cluster/stage.py requires the time limit to
-cover 1.5 x projection, the configs and runs to match. ESTIMATES, not bounds: the scheduler limit is the enforced bound.
+"""Smoke-derived cost certificates (DESIGN 9, A2.7; speed3d / qualify resources.py pattern). ESTIMATES, not bounds: the
+scheduler time limit is the enforced bound. Writes checks/resources-<attempt>.json with projection_hours and
+time_limit_hours = ceil_0.25(1.5 x projection); cluster/stage.py refuses a production attempt whose time limit does not
+cover 1.5 x the projection or whose configs / runs differ from the certificate.
 
-Measurements: smkA (qacc) rep['elapsed'] per setting|arm (wall seconds incl. compilation, over its cases) and per
-block; smkB (qtime) elapsed and triplet count; smk3 (q3run) elapsed per member (log 'MEMBER' lines) and setup; the
-4096^2 pilot run seconds. Proxies (conservative): an arm not measured takes the measured arm of the same
-(form, scheme, factor) at the next larger measured r (R256, R384 -> R512); 256^2 takes the 1024^2 time; 4096^2
-multiplies by MESH4096 = 2.0 (P1 ledger: its acc4096 per-rollout time did not exceed acc1024's); case counts scale
-linearly (compilation scaled too: conservative). Q2 / tighter / Q3 extras are inside the measured per-case blocks.
+Measurements (smk1 2D, smk2 3D; GPU type recorded, H200):
+  references   seconds per (dim, horizon) case from the fd step metas (all attempts of a case, incl. retries);
+               T = 1.0 projected as 2.2 x the T = 0.5 case time (twice the stages, no refinement, 10 % margin);
+               refinement risk: every T = 0.5 case charged x 1.3; PS from the smoke's PS step if present, else
+               PS_CASE_H per case (E0: 0.17 h per case at T = 0.25 -> 0.4 h at T = 0.5 incl. escalation reserve)
+  b2run        seconds per (member, case) of every phase from the B2 / B7 npz 'seconds' fields and result.json
+               elapsed; an unmeasured member takes the slowest measured member (conservative); the full factorial's
+               38 corners vs the pairwise 22 scale the corner time linearly; 256^2 = 1024^2 time; 4096^2 x MESH4096
+               plus the pilot's measured bank build; + per-r setup (bank, LS, tables) measured
+  b3run        seconds per (member, case) from the rollout rows (seconds_first, incl. compile) x cases
 
-    python resources.py --attempt acc1024 --run qacc:configs/acc1024.json
+    python resources.py --attempt b1024 --run b2run:configs/b1024.json
 """
 from __future__ import annotations
 
@@ -17,104 +22,87 @@ import argparse
 import hashlib
 import json
 import math
-import re
 from pathlib import Path
 
-import analyze as AN
+import numpy as np
 
 HERE = Path(__file__).resolve().parent
 MESH4096 = 2.0
+PS_CASE_H = 0.4
 NC = {'all38': 38, 'sub16': 16, 'dev6': 6, 'dev2': 2}
 
 
-MEASURED_RULES = {128: ('fib4181', 'fib6765', 'fib10946'), 384: ('gauss128', 'gauss160', 'gauss192'),
-                  512: ('gauss192', 'gauss256', 'gauss320')}
-
-
-def rule_m(rule):
-    return int(rule[5:]) ** 2 if rule.startswith('gauss') else int(rule[3:])
+def out_dir(att):
+    return HERE / 'runs' / att / 'archive' / 'output'
 
 
 def ncases(c):
     return NC[c] if isinstance(c, str) else len(c)
 
 
-def smoke_acc():
-    d = AN.out_dir('smkA', 'qacc')
-    r = json.loads((d / 'result.json').read_text())
-    assert r['complete'], 'smoke incomplete: no certificate'
-    per = {}
-    for s in r['config']['settings']:
-        for arm in s['arms']:
-            k = f"{s['name']}|{arm['form']}_{arm['scheme']}_{float(arm['factor']):g}"
-            per[(s['Rp'], arm['form'], arm['scheme'], float(arm['factor']))] = r['elapsed'][k] / ncases(arm['cases'])
-    return r, per
+def ref_case_seconds(att='smk1', dim=2):
+    secs = []
+    for js in out_dir(att).glob(f'ref_refrun_*/{dim}d/*/T*/c*.json'):
+        m = json.loads(js.read_text())
+        secs.append((m['horizon'], m['seconds']))
+    assert secs, f'no reference timing in {att}'
+    return max(s for _, s in secs), secs
 
 
-def acc_projection(cfg):
-    r, per = smoke_acc()
-    mesh_f = MESH4096 if cfg['mesh'] == 4096 else 1.
-    total, det = 0., {}
-    for s in cfg['settings']:
-        for arm in s['arms']:
-            key = (arm['form'], arm['scheme'], float(arm['factor']))
-            cand = sorted(rr for (rr, *k) in per if tuple(k) == key and rr >= s['Rp'])
-            assert cand, ('no measured proxy', s['Rp'], key)
-            t_case = per[(cand[0],) + key]
-            # a fallback setting (rules q+, q++, q+++) costs more per rollout than the measured rule: scale by the point
-            # ratio of its largest rule to the measured setting's largest rule (>= 1, conservative)
-            rf = max(1., max(rule_m(s['rule']), rule_m(s['qp']), rule_m(s['qpp'])) /
-                     max(rule_m(x) for x in MEASURED_RULES[cand[0]]))
-            sec = ncases(arm['cases']) * t_case * mesh_f * rf
-            det[f"{s['name']}|{key}"] = dict(proxy_r=cand[0], seconds=sec)
-            total += sec
-        total += 120. * mesh_f                     # setting setup (tables, compile of certifiers)
-    for b in cfg.get('blocks', []):
-        if b['kind'] == 'order':
-            sm = r['elapsed'].get('R384|block|order')
-            # ESTIMATE (A6.1, not a bound): the whole smoke block (TH06 on six cases + three one-case arms, all at R384) is
-            # charged to the six TH06 cases, i.e. 1.5 x the block's mean cost per case-arm
-            n_prod = sum(ncases(a.get('cases', b['cases'])) for a in b['arms'])
-            sec = sm / 6 * n_prod
-            det[f"order|{b['setting']}"] = sec
-            total += sec
-    setup = r['phases']['setup'] * mesh_f + 900.
-    return (total + setup) / 3600, det
+def b2_rates(att='smk1'):
+    d = next(out_dir(att).glob('b2run_*b1024*'))
+    res = json.loads((d / 'result.json').read_text())
+    ncase = ncases(res['config']['cases'])
+    per_member, corners = {}, None
+    for f in d.glob('B2_*.npz'):
+        z = np.load(f)
+        corners = len(z['corners'])
+        per_member[f.stem[3:]] = float(np.nansum(z['seconds'])) / len(z['case_ids'])          # s per case (all corners)
+    b7 = {mk: v['seconds'] / v['n'] for mk, v in res['b7'].items()}
+    total = res['elapsed_seconds']
+    accounted = sum(per_member.values()) * ncase + sum(v * ncase for v in b7.values())
+    overhead = max(0., total - accounted)                       # setup, stars, checks, controls, B8, compile
+    return dict(corner_case=max(per_member.values()), corners=corners, b7_case=max(b7.values()), overhead=overhead,
+                ncase=ncase, members=len(per_member))
 
 
-def time_projection(cfg):
-    d = AN.out_dir('smkB', 'qtime')
-    t = json.loads((d / 'result.json').read_text())
-    assert t['complete']
-    _, per = smoke_acc()
-    mesh = [int(m) for m in cfg['meshes'] if int(m) != 1024] or [1024]
-    mesh_f = MESH4096 if mesh[0] == 4096 else 1.
-    per_trip = t['elapsed_seconds'] / max(1, len(t['invocations']))      # includes certification of the smoke subjects
-    n, trip, cert = 0, 0., 0.
-    for sp in cfg['subjects']:
-        key = (sp['form'], sp['scheme'], float(sp['factor']))
-        cand = sorted(rr for (rr, *k) in per if tuple(k) == key and rr >= sp['Rp'])
-        rf = max(1., max(rule_m(sp['rule']), rule_m(sp['qp']), rule_m(sp['qpp'])) /
-                 max(rule_m(x) for x in MEASURED_RULES[cand[0]]))          # fallback subjects: larger rules cost more
-        cert += 6 * per[(cand[0],) + key] * mesh_f * rf
-        trip += 6 * cfg['reps'] * per_trip * mesh_f * rf
-        n += 6 * cfg['reps']
-    sec = trip + cert + 1800.
-    return sec / 3600, dict(per_triplet_seconds=per_trip, triplets=n, certification_seconds=cert)
+def pilot_seconds(att='smk1'):
+    d = next(out_dir(att).glob('b2run_*pilot4096*'), None)
+    if d is None:
+        return 3600.
+    return json.loads((d / 'result.json').read_text())['elapsed_seconds']
 
 
-def q3_projection(cfg):
-    d = AN.out_dir('smk3', 'q3run')
-    r = json.loads((d / 'result.json').read_text())
-    assert r['complete']
-    import re
-    log = '\n'.join(p_.read_text() for p_ in (d.parents[1] / 'logs').glob('*.out'))
-    t = [float(x) for x in re.findall(r'^MEMBER .* ([0-9.]+)$', log, re.M)]
-    t0 = float(re.findall(r'^SETUP ([0-9.]+)', log, re.M)[0]) if re.findall(r'^SETUP ([0-9.]+)', log, re.M) else 0.
-    per = [b_ - a_ for a_, b_ in zip([t0] + t[:-1], t)]          # wall seconds of each smoke member (incl. setup of its rules)
-    upper = max(per)                                              # upper envelope: the most expensive member (W1024)
-    n = len(cfg['members']) + (1 if cfg.get('control') else 0)
-    return (n * upper * 1.2 + 1200.) / 3600, dict(per_member_seconds=per, upper_envelope=upper, members=n)
+def project(drv, cfg):
+    if drv == 'ref/refrun':
+        dim = int(cfg['dim'])
+        smk = 'smk1' if dim == 2 else 'smk2'
+        case_s, _ = ref_case_seconds(smk, dim)
+        if cfg['mode'] == 'fd':
+            f = 1.3 if cfg['horizon'] <= .5 else 2.2
+            return len(cfg['cases']) * case_s * f + 600
+        if cfg['mode'] == 'ps':
+            return len(cfg['cases']) * PS_CASE_H * 3600 * (2.2 if cfg['horizon'] > .5 else 1.) + 900
+        return 1800.
+    if drv == 'b2run':
+        r = b2_rates()
+        n = ncases(cfg['cases'])
+        corners = 38 if cfg['b2'].get('design') == 'full' else 22
+        per_corner = r['corner_case'] / r['corners']
+        t = len(cfg['members']) * n * per_corner * corners
+        if 'b7' in cfg:
+            t += len(cfg['members']) * n * r['b7_case']
+        t += r['overhead'] * (n / r['ncase']) * (len(cfg['members']) / r['members'])
+        if cfg['mesh'] == 4096:
+            t = t * MESH4096 + pilot_seconds()
+        return t
+    if drv == 'b3run':
+        d = next(out_dir('smk2').glob('b3run_*'))
+        res = json.loads((d / 'result.json').read_text())
+        per = sum(r_['seconds_first'] for r_ in res['rows']) / max(1, len(res['config']['case_subset']))
+        per *= len(cfg['members']) / len(res['config']['members'])
+        return per * len(cfg['case_subset']) + res['elapsed_seconds'] * .2
+    raise KeyError(drv)
 
 
 def main():
@@ -122,19 +110,22 @@ def main():
     ap.add_argument('--attempt', required=True)
     ap.add_argument('--run', action='append', required=True)
     a = ap.parse_args()
-    h, det = 0., {}
-    for run in a.run:
-        drv, cf = run.split(':', 1)
-        cfg = json.loads((HERE / cf).read_text())
-        fn = dict(qacc=acc_projection, qtime=time_projection, q3run=q3_projection)[drv]
-        hh, dd = fn(cfg)
-        h += hh
-        det[run] = dict(hours=hh, detail=dd)
-    out = dict(attempt=a.attempt, projection_hours=round(h, 3), time_limit_hours=math.ceil(1.5 * h * 4) / 4, detail=det,
-               runs=a.run, configs={r.split(':', 1)[1]: hashlib.sha256((HERE / r.split(':', 1)[1]).read_bytes()).hexdigest()
-                                    for r in a.run})
-    (HERE / 'checks' / f'resources-{a.attempt}.json').write_text(json.dumps(out, indent=1) + '\n')
-    print(json.dumps({k: v for k, v in out.items() if k != 'detail'}))
+    tot, det, cfgs = 0., {}, {}
+    for r in a.run:
+        drv, cf = r.split(':', 1)
+        p = HERE / cf
+        cfg = json.loads(p.read_text())
+        s = project(drv, cfg)
+        det[r] = s / 3600
+        tot += s
+        cfgs[cf] = hashlib.sha256(p.read_bytes()).hexdigest()
+    proj = tot / 3600
+    tl = math.ceil(1.5 * proj * 4) / 4
+    out = dict(attempt=a.attempt, runs=a.run, configs=cfgs, projection_hours=proj, time_limit_hours=max(tl, .5), detail=det,
+               label='estimate from the smokes (not a bound)')
+    dest = HERE / 'checks' / f'resources-{a.attempt}.json'
+    dest.write_text(json.dumps(out, indent=1) + '\n')
+    print(dest, json.dumps(out))
 
 
 if __name__ == '__main__':

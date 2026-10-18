@@ -318,3 +318,142 @@ speed-ups are always against named comparators with scope (K2 fired in 2D and 3D
 local GB10 only for CPU work (`JAX_PLATFORMS=cpu`) and at most one `jaxrun`. Codex audits: read-only prompts, no large
 copies (≤ 2 GB scratch under `/tmp/jcp-heads-audit-scratch/`, deleted after each round), `df -h /home` ≥ 60 GB before
 each audit. Waits on PIDs with an overall deadline.
+
+---
+
+## Amendment A1 (2026-10-18, before any lane job; answers `audits/codex-design-1.md`, NEEDS-RESTATEMENT)
+
+Pre-audit evidence (CPU, local, no lane job; not a result): the lane's head stepper (`hcore.py`) on the incumbent, BE,
+256², Gauss 32², dev6|0 and dev6|2 reproduces quadrature-study's archived internal $z$ trajectories
+(`dv256/archive/output/audit_head_gauss32_dev6{0,2}.npz`, A100) to $1.7\times10^{-12}$ and $1.1\times10^{-13}$ relative;
+certified γ agrees with the recorded γ within 0.17 of the G-cert bar on every step.
+
+**A1.1 Estimand (item 2).** What varies between heads is the **recipe at latent size $K$** under the deployed
+deployment policy, not $K$ in isolation: with $K$ change the first-layer width, the skip-path output scale (skip weights
+$0.3\,\mathcal N$, codes $0.1\,\mathcal N$), the parameter count, the learned code scale, the trust radius, the candidate
+codes and the difficulty of the nonlinear initial fit. All are recorded per head (parameter count, code std and max norm,
+trust radius, IC iterations / exit reasons / initial-fit residual per case). Claims are worded "the head recipe at $K$
+under the $M=4K$ policy". The whitened ($q$-space) initialisation and optimisation of `sep_hfit.fit` are run unchanged
+(the copied code), not an equivalent physical-coefficient fit. Equal optimiser steps are not equal convergence or equal
+GPU-hours; wall time per head is reported.
+
+**A1.2 Data provenance (item 3).** Source of the coefficient file:
+`worktrees/2026-08-25-sepdec-consolidated/experiments/separable-decoder/runs/dn256b/out/sep_coeff_N256_K16_R512.npz`
+(sha256 `4a7715659fe24b640c68e3c5f8b44e804383d4705aa62efa7dd6a3aaef73ebbb`), produced by dn256b stage B (job 2837431);
+its extraction record `sep_coeff_N256_K16_R512.json` is the copy in this branch. "All $t\le5$ states" means **time
+indices 0–5** (physical $t\le0.025$). The driver asserts the file and checkpoint sha256, and that the incumbent's emitted
+`hfit_pick` equals the file's `pick` (so its codes `Z_tr` are aligned with the targets). The result is conditional on
+this one frozen dataset; it is not a replication over data-generation seeds.
+
+**A1.3 Q1 anchors and the initial fit (item 4).**
+- A tight anchor is **verified** iff the run is valid, has no budget exit (reason 0), its certified γ is ≤ $10^{-6}$
+  ($10\times$ its gtol $10^{-7}$) at every step, and (head) its initial fit exits stationary (reason 4) at its tightened
+  gtol. Tighter: certified γ ≤ $10^{-7}$ at every step and initial-fit reason 4. An unverified anchor makes its case
+  "anchor unverified", which counts as **not qualified** for Q1 predicate 3/4; a configuration with any such case is not
+  numerically qualified (reported with the count). Tightened initial-fit gtol is $10^{-9}$ (tight) and $10^{-10}$
+  (tighter), replacing $10^{-10}/10^{-11}$ of §3.1 (headroom for the unpivoted GJ solve); the smoke reports whether the
+  anchors reach them, and a change after the smoke is a dated amendment before any production job.
+- **Initial-fit veto (production):** a head case whose production initial fit does not exit stationary (reason 4) or by
+  residual (reason 1) is an **invalid run** for Q1 predicate 1.
+- **Degeneracy:** at output indices 1, 3, 5 of every dev6 trajectory the singular values of $J_z$ are recorded (Q3);
+  a head configuration with $\sigma_{\min}/\sigma_{\max}<10^{-10}$ at any recorded state is flagged "rank-deficient step
+  Jacobian" (reported beside its Q1 label). Control: a duplicated-latent fixture (the incumbent with latent 15's
+  first-layer row and skip row copied onto latent 14) must be flagged (CPU).
+- **"Qualified" means numerically qualified only** (local stationarity, solver and quadrature convergence); it says
+  nothing about accuracy or global optimality (a head can be qualified in a bad basin). Accuracy is E0's job.
+
+**A1.4 Q2 ladder and rule selection (item 5), replacing §3.2's selection paragraph.**
+- Ladder $\mathcal L$ = Gauss $p^2$, $p\in\{16,24,32,48,64,96,128,160,192,256,320\}$. Selectable main rules: $p\le192$
+  (each has a successor and a check rule in $\mathcal L$).
+- **Common policy for every arm** (heads and every linear rung $r\in\{4,\dots,384\}$; qualify's frozen R128–R384 rules
+  are no longer used, so both arms are selected by one policy): the main rule is the smallest selectable $q$ such that,
+  on sub16 at 1024² with LSPG-BE $\Delta t_0$: every $q$, $q^+$ solve is valid; the rollout bar and ρ bar of $q\to q^+$
+  pass on all 16 cases; and on dev6 the $q^+\to q^{++}$ rollout bar passes with valid $q^{++}$ solves ("pass", not
+  "unverified"). Heads: all three seeds of a $K$ must meet it. If no selectable rung meets it, the arm is "not
+  quadrature-qualified (ladder exhausted)" and is reported, not ranked.
+- This is a registered **deployment-policy** comparison (each arm at its cheapest rule passing the same numerical test);
+  it is not a best-achievable comparison of either arm. Seeds sharing a rule do not share a cost (iterations and initial
+  fits differ); costs are per seed.
+
+**A1.5 Fixed-$M$ sensitivity (item 6).** Registered: at 1024², LSPG-BE $\Delta t_0$, all 12 heads and linear
+$r\in\{4,8,16,32\}$ also run with **$M=128$** (one explicit list: the first 128 frozen modes), each with its own rule
+from the A1.4 policy (run in `rule1024`) and full Q1/Q2, 38 cases; accuracy only (no timing). It is a separate panel
+("fixed-$M$ sensitivity"); the headline K claims stay "under the $M=4K$ policy". The §1 sentence predicting a non-empty
+symmetric difference is withdrawn: the lane computes and reports the frozen-vs-nominal symmetric difference for every
+$(M,\text{mesh})$, predicting nothing.
+
+**A1.6 Statistics (item 7), replacing §5.1, §5.4 (error/cost/dominance labels), §5.5 and §5.6 where they differ.**
+- **Seed population.** For a head size $K$: $\mathcal S_K$ = its numerically qualified seeds (at the mesh and scheme);
+  pooled analyses need $|\mathcal S_K|\ge2$, else "$K$ unqualified". Per case, error $e_{K,i}$ = median over
+  $\mathcal S_K$; cost $c_{K,i}$ = median over $\mathcal S_K$ of the seed's paired fused ratio on case $i$ (dev6). Error
+  and cost therefore use the same seeds. Per-seed analyses are reported as sensitivity.
+- **Error labels (paired, §5.4 population).** Superiority: one-sided exact Wilcoxon of $d_i$ (p1stats.wilcoxon), with
+  resolved coverage ≥ 50 % and median $d<0$ → "$X$ more accurate"; symmetric. Equivalence: the inherited normalised TOST
+  (p1stats.tost on $d_i/\delta_i$ against ±1, α = 0.05 each), $\delta_i=\max(2\varepsilon_{{\rm ref},i},0.1\min(e_{X,i},
+  e_{Y,i}),10^{-12})$. **Precedence:** superiority first; else equivalence → "matches"; else "unresolved". The
+  equivalence flag is reported beside a superiority label ("more accurate, within the 10 % margin"). Empty population
+  (no case eligible and qualified for both) → "no population".
+- **Cost labels** unchanged (bands $[1/1.1,1.1]$ on the case-bootstrap interval of the median per-case ratio $c_X/c_Y$
+  over dev6); exactly 1.1 counts as inside the equal-cost band.
+- **Dominance labels:** "$X$ dominates" iff error ∈ {more accurate, matches} and cost ∈ {cheaper, equal cost} and not
+  (matches and equal cost); "**equivalent**" iff matches and equal cost; "neither (trade-off)" iff one is more accurate
+  and the other cheaper; "unresolved" otherwise; "unqualified" if either side is not numerically qualified (numbers
+  shown, labelled). Dominance uses the paired error test only (it is "paired-error dominance", not median-and-worst
+  dominance); worst errors are displayed beside it.
+- **Q-LH-cost (replaces §5.5's equal-cost rung).** Affordable rungs $\mathcal A_K$ = numerically qualified linear rungs
+  whose cost label against the head is "cheaper" or "equal cost" (upper interval end ≤ 1.1). Primary comparator $r^\*$ =
+  the rung of $\mathcal A_K$ with the lowest median error over the shared cases ("the most accurate linear rung at no
+  more than the head's cost"; a validation-selected comparator, which can only favour the linear arm). Verdict = §5.4
+  error label of head vs $r^\*$, read as: "linear at most equal cost is more accurate / matches / head more accurate than
+  every affordable rung / unresolved"; "no affordable rung" if $\mathcal A_K=\emptyset$. Secondary: head vs $r_{\rm hi}$,
+  the cheapest qualified rung whose cost label is "costlier" or "equal cost", with the full dominance label; all rungs'
+  labels are tabulated (no monotonicity of linear error in $r$ is assumed).
+- **H-acc-K** (replaces §5.2's labels) uses p1stats.h_acc_r_transition / h_acc_r_range **exactly**: per transition the
+  outcome is "improves" (resolved ≥ 50 % of the population, > 50 % of resolved cases improve, median resolved change
+  < 0), "does not improve", or "inconclusive" (reasons: empty population; > 25 % of cases lack qualification; resolved
+  < 50 %); range "monotone" iff every transition improves, "not monotone" iff any does not improve, else inconclusive.
+  Inputs: per-case seed-median errors of the two sizes on cases eligible in E0; a case is **qualified at size $K$** iff
+  at least two seeds of $\mathcal S_K$ pass the per-case Q1 predicates on it (valid run, verified anchor, distance
+  ≤ bar) — $\mathcal S_K$ already requires configuration-level Q1 and Q2.
+- **F5 reading (replaces §5.6).** Positive: "**validation evidence of an accuracy–cost benefit of the head at $K$**
+  (one mesh, $M=4K$ policy; repair and sealed confirmation open)" iff under BE: $|\mathcal S_K|\ge2$, Q-LH-cost =
+  "head more accurate than every affordable rung" with the superiority p-value significant after **Holm correction
+  across the tested $K$** (family-wise α = 0.05), and Q-LH-dim is not "linear dominates". Negative: "**no benefit shown on
+  validation evidence**" only if every tested $K$ is qualified and resolved (Q-LH-cost = "linear … more accurate" or
+  "matches"). Otherwise "**inconclusive**" (unqualified, unresolved or deferred $K$), which is not evidence of absence.
+  Per-$K$ unadjusted labels are reported as exploratory. K5 (sealed) is untouched.
+
+**A1.7 Controls (item 8).**
+- Driver identity: the `identity` arm evaluates the incumbent's **own emitted codes** `Z_tr` (aligned via `hfit_pick`),
+  not the file's `Z_ck` (which `base` would use). Bars: recon (train) mean equal to the record to $10^{-9}$ relative
+  (deterministic arithmetic); oracle mean within $10^{-3}$ relative (it trains a 12k-step encoder).
+- The under-trained head is a **sensitivity probe**, not a must-fail control: run in `train` beside its full-budget
+  comparator ($K=16$, SEED0 = 0), ratio reported.
+- Dominance synthetics corrected: $X$ 10 % more accurate on every case and **25 %** costlier → "neither"; $X$ 10 % more
+  accurate and 25 % cheaper → "$X$ dominates"; $X=Y$ → "equivalent"; $X$ 10 % more accurate, cost ratio 1.0 →
+  "$X$ dominates"; resolved 5 % better on every case with margin 10 % → "more accurate" with equivalence flag set; an
+  unqualified side → "unqualified"; empty population → "no population"; Q-LH-cost with every rung costlier → "no
+  affordable rung"; H-acc-K with a size of fewer than two qualified seeds → "$K$ unqualified" (no transition computed) and with > 25 % unqualified cases → "inconclusive"; a ladder with a missing successor → selection
+  refuses. All CPU (`test_h.py`).
+- H-cost-N must-fail: CPU synthetic (P1 `h_cost_n`): a 1.5× slower mesh in an otherwise flat three-mesh panel → "fail";
+  equal → "pass". Q3 rank-deficient fixture: inherited duplicated column (CPU) + the head fixture of A1.3.
+- Q2 under-resolved control: Gauss 8² → 16² on the incumbent, with the 16² and 24² solves required valid (else the
+  control is "not demonstrable" and Q2 is blocked).
+
+**A1.8 Coverage (item 1).** CN-R: `time1024` times every head and every linear rung under CN-R too, so Q-LH-dim and
+Q-LH-cost are computed for both schemes at 1024² (BE primary). Population labels: accuracy-job labels (38 cases Q1, sub16
+Q2) at 1024² and 256²; timing-job labels (dev6 Q1, dev6 Q2 replays) at every timed mesh; a configuration's 4096²
+statements carry "dev6 timing-job label" only.
+
+**A1.9 Budget reservation and 4096² pilot (item 9).** Ledger rule (qualify A3.1 pattern): a submission needs spent +
+Σ time limits of live jobs + this job's limit + Σ projected limits of the **pending non-deferrable** jobs ≤ 35. Non-
+deferrable: `train`, `rule1024`, `acc1024`, `time1024`. Deferrable in order: `time4096` → (K = 32 subjects, removed from
+every job not yet submitted) → `acc256` + 256² linear-ladder subjects of `time256`. If the core cannot complete, the
+outcome is "core incomplete; dependent verdicts unavailable". The 4096² pilot (`smk2`) builds the full 512-column bank,
+the 1024² bank for A, **all** main-rule tables of the planned 4096² subjects and the largest concurrently live
+successor/check tables, and runs one head and one linear rollout; it reports peak device bytes against 120 GB decimal.
+
+**A1.10 Wording (item 10).** LSPG-CN-R is "the campaign's other LSPG scheme (observed order configuration-dependent,
+qualify B4: 1.74–1.96)", never "second order" by name. A positive F5 reading is validation evidence only; the governing
+plan's scope decision needs confirmed accuracy **and mesh invariance** on the sealed cohort, which this lane does not
+test; nothing here bears on K2 (the FOM comparison).

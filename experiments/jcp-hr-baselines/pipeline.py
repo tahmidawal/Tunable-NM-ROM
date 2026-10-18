@@ -62,22 +62,25 @@ class Cell:
             S, sinfo = BD.snapshots(self.d, self.L, fam_train, rows, scheme=sch_gen[0], adv=sch_gen[1], log=self.log)
         with self.T(f'pod[{gen}]'):
             Phi, sig, dev = BD.pod(S, rmax)
+        rl = [r for r in ranks if r <= rmax]
         with self.T(f'pod_check[{gen}]'):
-            pe, C = BD.projection_errors(S, Phi, [r for r in ranks if r <= rmax], sig)
-        fallback = False
-        if not all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6 for v in pe.values()):
-            with self.T(f'pod_fallback[{gen}]'):            # A4.7: blocked randomised SVD, then the check again
-                Phi, sr, dev = BD.pod_rsvd(S, rmax)
-                sig = np.concatenate([sr, np.zeros(max(0, len(sig) - len(sr)))])
-                sig = np.sqrt(np.maximum(sig ** 2, 0.))
-                pe, C = BD.projection_errors(S, Phi, [r for r in ranks if r <= rmax], sig)
-                fallback = True
-        rho = int(np.sum(sig > 1e-10 * sig[0]))
-        trust = BD.trust_radii(C, [r for r in ranks if r <= rmax], self.d)
-        gate = dict(orthonormality=dev, orth_ok=dev <= 1e-10, numerical_rank=rho, fallback=fallback,
-                    optimality_ok=all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6
-                                      for v in pe.values()),
-                    constructible=[r for r in ranks if r <= min(rho, rmax)])
+            pe, C = BD.projection_errors(S, Phi, rl, sig)
+        passed = {r: certificate_ok(pe[r]) for r in rl}
+        fallback = None
+        if not all(passed.values()):          # A5.2: blocked randomised SVD; the tail always comes from the Gram
+            with self.T(f'pod_fallback[{gen}]'):
+                Phi2, sr, dev2 = BD.pod_rsvd(S, rmax)
+                pe2, C2 = BD.projection_errors(S, Phi2, rl, sig)
+            passed2 = {r: certificate_ok(pe2[r]) for r in rl}
+            fallback = dict(passed=passed2, proj=pe2)
+            if all(passed2[r] or not passed[r] for r in rl) and sum(passed2.values()) >= sum(passed.values()):
+                Phi, pe, C, dev, passed = Phi2, pe2, C2, dev2, passed2
+                fallback['used'] = True
+        rho = int(np.sum(sig > 1e-10 * sig[0]))          # reported only (A5.2)
+        trust = BD.trust_radii(C, rl, self.d)
+        gate = dict(orthonormality=dev, orth_ok=dev <= 1e-10, numerical_rank_reported=rho, fallback=fallback,
+                    certificate=passed, optimality_ok=all(passed.values()),
+                    constructible=[r for r in rl if passed[r]])
         self.info[f'basis[{gen}]'] = dict(snapshots=sinfo, sigma=sig[:max(ranks) + 1].tolist(), proj=pe, trust=trust,
                                           gate=gate, n_snap=int(S.shape[0]))
         self.log(f'   basis[{gen}]: n_snap {S.shape[0]} rank {rho} orth {dev:.1e} optimal {gate["optimality_ok"]}')
@@ -99,20 +102,23 @@ class Cell:
         pl = sorted({p for p in p_list if p <= pmax})
         with self.T('adv_pod_check'):
             pe, _ = BD.projection_errors(S, U, pl, sigN)
-        ok = all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6 for v in pe.values())
-        fallback = False
-        if not ok:
+        passed = {p: certificate_ok(pe[p]) for p in pl}
+        fallback = None
+        if not all(passed.values()):
             with self.T('adv_pod_fallback'):
-                U, sr, devN = BD.pod_rsvd(S, pmax)
-                sigN = np.concatenate([sr, np.zeros(max(0, len(sigN) - len(sr)))])
-                pe, _ = BD.projection_errors(S, U, pl, sigN)
-                ok = all(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6 for v in pe.values())
-                fallback = True
+                U2, sr, devN2 = BD.pod_rsvd(S, pmax)
+                pe2, _ = BD.projection_errors(S, U2, pl, sigN)
+            passed2 = {p: certificate_ok(pe2[p]) for p in pl}
+            fallback = dict(passed=passed2)
+            if all(passed2[p] or not passed[p] for p in pl) and sum(passed2.values()) >= sum(passed.values()):
+                U, pe, devN, passed = U2, pe2, devN2, passed2
+                fallback['used'] = True
+        ok = all(passed.values())
         rhoN = int(np.sum(sigN > 1e-10 * sigN[0]))
         self.U, self.sigN = U, sigN
         self.info['adv'] = dict(pmax=pmax, numerical_rank=rhoN, orthonormality=devN, sigma=sigN[:pmax + 1].tolist(),
-                                proj=pe, optimality_ok=ok, fallback=fallback,
-                                constructible=[p for p in pl if p <= rhoN and ok])
+                                proj=pe, optimality_ok=ok, fallback=fallback, certificate=passed,
+                                constructible=[p for p in pl if passed[p]])
         self.log(f'   advection POD: p_max {pmax} numerical rank {rhoN} orth {devN:.1e}')
         return rhoN
 
@@ -185,6 +191,11 @@ class Cell:
         idx = H.lattice_nodes(self.d, self.L)
         v = np.asarray(fields)[:, idx]
         return H.to_lattice(v, self.d)
+
+
+def certificate_ok(v):
+    """A5.2 POD certificate: relative Frobenius projection error vs the Gram tail, |e - tau| <= 0.01 tau + 1e-6."""
+    return bool(abs(v['frob_rel'] - v['pod_tail']) <= 0.01 * v['pod_tail'] + 1e-6)
 
 
 def q1_config(records, tight, tighter, n0):

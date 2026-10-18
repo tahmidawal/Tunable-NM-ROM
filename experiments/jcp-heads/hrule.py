@@ -31,6 +31,11 @@ import jax.numpy as jnp
 BAR_Q2, BAR_RHO = 2.5e-4, .116
 
 
+def group_pass(passed, min_pass):
+    """A2.5: a rung is the group's rule iff at least min_pass arms pass every predicate there."""
+    return sum(bool(x) for x in passed) >= int(min_pass)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--config', required=True)
@@ -135,7 +140,7 @@ def main():
                 if rho is not None:
                     np.savez_compressed(out / f"RHO_{grp['name']}_{arm.name}_{q}.npz", rho=rho, case_ids=np.array([cid(c) for c in pop]))
             need = int(grp['min_pass'])                 # required (A2.5: heads 2 of 3 seeds; a linear rung 1)
-            ok_all = npass >= need
+            ok_all = group_pass([r_['passed'] for r_ in step['arms'].values()], need)
             step.update(group_pass=bool(ok_all), n_pass=npass, min_pass=need)
             trail.append(step)
             print('RUNG', grp['name'], q, 'pass' if ok_all else 'fail', el(), flush=True)

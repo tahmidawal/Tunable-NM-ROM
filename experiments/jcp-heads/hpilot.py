@@ -24,6 +24,7 @@ import harm as HA
 import jax
 
 BAR = 120e9
+ALLOW = 1.10       # code audit 2: 10 % allowance for working set the pilot does not reproduce (more compiled variants)
 
 
 def main():
@@ -83,20 +84,36 @@ def main():
     big.add_role('qpp', cfg['qpp'])
     stage('successor_check_tables_on_largest_M')
     cases = P.case_list(cfg)
-    ci = P.select(cases, 'dev6')[0]
-    u0 = jax.numpy.asarray(Q.e.initial(L, cases[ci][2]))
+    dev = P.select(cases, 'dev6')
+    U = [jax.numpy.asarray(Q.e.initial(L, cases[c][2])) for c in dev]     # htime keeps every timed input resident
+    UA = [jax.numpy.asarray(Q.e.initial(LA, cases[c][2])) for c in dev]
+    stage('inputs_resident')
+    ci = dev[0]
+    u0 = U[0]
     nu = float(cases[ci][2][4])
+    keep = []                                                              # outputs kept alive (the driver's references)
     for arm in list(first_of_k.values()) + [arms[-1]]:
         v = arm.run('main', 'BE', 'prod', u0, nu, DT0, record=True)
         jax.block_until_ready(v)
         rep[f'rollout_{arm.name}'] = dict(valid=HA.run_valid(v), it_sum=int(v['stats']['it_sum']))
+        keep.append(v)
         stage(f'rollout_{arm.name}')
-        del v
-    va = A.run('main', 'CNR', 'prod', jax.numpy.asarray(Q.e.initial(LA, cases[ci][2])), nu, DT0, record=True)
+    for lev in ('tight', 'tighter'):                                       # compiled level variants (certification phase)
+        arm = first_of_k[max(first_of_k)]
+        v = arm.run('main', 'BE', lev, u0, nu, DT0, record=True)
+        jax.block_until_ready(v)
+        keep.append(v)
+        stage(f'rollout_{arm.name}_{lev}')
+    q = arms[0].parts('prod', True)                                        # split programs (timing phase)
+    o = q['init'](u0, arms[0].cold)
+    W, s_ = q['evolve'](o[0], nu, o[1], arms[0].data('main'), HA.sched('BE', DT0, 'prod'))
+    keep.append(jax.block_until_ready(q['decode'](W, arms[0].data('main'))))
+    stage('split_programs')
+    va = A.run('main', 'CNR', 'prod', UA[0], nu, DT0, record=True)
     jax.block_until_ready(va)
     stage('rollout_A')
     peak = max(s_['mem']['peak'] for s_ in rep['stages'])
-    rep.update(peak_bytes=peak, bar_bytes=BAR, within_bar=bool(0 < peak <= BAR), complete=True,
+    rep.update(peak_bytes=peak, bar_bytes=BAR, allowance=ALLOW, within_bar=bool(0 < peak * ALLOW <= BAR), complete=True,
                elapsed_seconds=time.perf_counter() - t0)
     save()
     (out / 'COMPLETE').write_text('complete\n')

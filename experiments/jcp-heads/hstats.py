@@ -111,11 +111,12 @@ def holm(pvals, alpha=ALPHA):
     return rej
 
 
-def lh_cost(head, rungs, rejected=None):
+def lh_cost(head, rungs, rejected):
     """Q-LH-cost for one head size (A2.1 as amended by A3.1-A3.3, A4.3, A5).
     head: dict(qualified (bool, |S'_K| >= 2), complete (timing)).
     rungs: {r: dict(qualified, cost=cost_label(c_L / c_H), err=error_label(e_H, e_L, eps))} for every ladder rung
-    (err with X = head, Y = linear). rejected: {r: Holm decision of H0_{K,r}} (family-wise, A3.1) or None.
+    (err with X = head, Y = linear). rejected: {r: Holm decision of H0_{K,r}} (family-wise, A3.1); REQUIRED (a missing
+    rung counts as not rejected), so the positive label can never bypass the registered adjustment.
     Returns the equal-cost, at-most-cost and bracket results and cost-coverage status."""
     if not head.get('qualified') or not head.get('complete', True):
         return dict(status='unavailable (head unqualified or timing incomplete)', at_most_cost='unavailable', equal_cost=[],
@@ -135,7 +136,7 @@ def lh_cost(head, rungs, rejected=None):
     else:
         reason = None
         beats_all = all(q[r]['err']['label'] == 'X more accurate' and q[r]['err']['superiority_predicates_x']
-                        and (rejected is None or rejected.get(r, False)) for r in possibly)
+                        and bool(rejected.get(r, False)) for r in possibly)
         lin_ok = [r for r in cert_aff if q[r]['err']['label'] in ('Y more accurate', 'matches')]
         if beats_all:
             amc = 'head more accurate than every possibly-affordable rung'

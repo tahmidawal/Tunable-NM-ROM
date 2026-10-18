@@ -1,11 +1,13 @@
 """jcp-heads offline scoring and qualification (DESIGN 3, 4, A1.3, A1.4; CPU only, no JAX).
 
   * E0 scoring through qualify's qscore.score_config (identity assertions incl. dt; S only for LSPG-BE at dt0);
-  * configuration-level Q1 / Q2 from the saved arrays of an accuracy (R_*.npz) or timing (S_*.npz) record, every
+  * configuration-level Q1 / Q2 from the saved arrays of an ACCURACY record (hacc R_*.npz; timing records S_*.npz carry
+    the dev6 certification arrays in a different layout and are labelled by analyze.timing_labels), every
     distance recomputed with an independent NumPy decode (nphead for heads: h~(z) by hand; npcheck.decode257),
     every rho recomputed with independent NumPy rule tables (npcheck.tables, numpy Gauss-Legendre);
   * anchor verification and the head initial-fit veto (A1.3) recomputed from the saved per-step certificates, budget
-    exits and initial-fit exit reasons;
+    exits and initial-fit exit reasons (the certificates themselves are the in-job autodiff values; the saved internal
+    trajectories allow their recomputation, which analyze.py spot-checks with nphead.gammas);
   * Q3 flags (rank-deficient / degenerate step Jacobian, A1.3, A2.6).
 """
 from __future__ import annotations

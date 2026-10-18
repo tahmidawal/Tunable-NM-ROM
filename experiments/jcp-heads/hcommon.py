@@ -111,7 +111,7 @@ class HeadSetting:
     def query(self, level='prod', record=True):
         """Compiled split query per (level, recording). Levels (DESIGN 3.1): prod = deployed (step budget
         `budget`, initial fit budget 400 / gtol 1e-6); tight / tighter = step budget 2000 and the initial fit tightened
-        from the same start (budget 2000, gtol 1e-10 / 1e-11). The step tolerances come from the schedule (P.tol_of)."""
+        from the same start (budget 2000, gtol 1e-9 / 1e-10, DESIGN A1.3). The step tolerances come from the schedule (P.tol_of)."""
         key = (level, bool(record))
         if key not in self._q:
             if level == 'prod':

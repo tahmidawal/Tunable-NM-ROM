@@ -32,8 +32,10 @@ timeout 120 ssh -o ConnectTimeout=20 tufts-login "test ! -e $NS/$A && mkdir -p $
 rsync -a "$LOCAL/" "tufts-login:$NS/$A/"
 timeout 120 ssh -o ConnectTimeout=20 tufts-login "cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet"
 trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: reservation KEPT; run ledger.py settle $A"' ERR
-# account cap re-checked on the login node immediately before sbatch (narrows the cross-lane race to one ssh command)
-OUT=$(timeout 120 ssh -o ConnectTimeout=20 tufts-login "n=\$(squeue -u \$USER -h | wc -l); if [ \$n -ge 8 ]; then echo CAP8 \$n; exit 0; fi; cd $NS/$A && sbatch run.sbatch")
+# account cap re-checked and sbatch run under ONE cluster-side lock (NFS flock on the shared paralab space). Every
+# submitter that uses this lock is serialised; lanes that do not use it can still race (campaign-level limitation,
+# reported to the coordinator: a shared submission lock for all lanes would close it).
+OUT=$(timeout 300 ssh -o ConnectTimeout=20 tufts-login "flock -w 240 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'n=\$(squeue -u \$USER -h | wc -l); if [ \$n -ge 8 ]; then echo CAP8 \$n; exit 0; fi; cd $NS/$A && sbatch run.sbatch'")
 echo "$OUT"
 if echo "$OUT" | grep -q '^CAP8'; then          # nothing was submitted: release the reservation and the remote dir
   trap - ERR

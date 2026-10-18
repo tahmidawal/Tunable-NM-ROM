@@ -1,5 +1,7 @@
-"""jcp-heads smoke acceptance (DESIGN 7, A1.3, A1.7, A2.6; CPU only). Every predicate is recomputed from the archived
-raw outputs (never from the job's own pass flags alone) and written to checks/smoke-accept-<attempt>.json.
+"""jcp-heads smoke acceptance (DESIGN 7, A1.3, A1.7, A2.6; CPU only). Acceptance requires BOTH the job's own per-row
+pass flags and this script's checks; where the raw arrays allow it (budget-0 gamma, zero-update, decode, coefficients)
+the predicate is recomputed independently here, otherwise the job's per-row values are checked for finiteness, coverage
+and bars. Written to checks/smoke-accept-<attempt>.json.
 
     python smoke_accept.py smk1        (training, accuracy controls, rule-ladder probe; 1024^2)
     python smoke_accept.py smk2        (timing controls at 1024^2, 4096^2 memory pilot)
@@ -29,6 +31,12 @@ def rel(a, b):
     return abs(a - b) / abs(b)
 
 
+def rows_ok(rows, key, bar, n):
+    """Every row present (n), finite and within bar; NaN can never hide behind max()."""
+    v = np.array([r[key] for r in rows], float)
+    return bool(len(v) == n and np.isfinite(v).all() and np.all(v <= bar)), (float(np.max(v)) if len(v) else None)
+
+
 def smk1():
     res = {}
     # ---- training pipeline (DESIGN 2.3, A1.7, A2.2)
@@ -54,15 +62,17 @@ def smk1():
     acc_dir = out_dir('smk1', 'hacc', 'smk1acc')
     acc = json.loads((acc_dir / 'result.json').read_text())
     c = acc['controls']
-    res['repro_head'] = dict(worst=max(r['rel'] for r in c['repro_head']['rows']), n=len(c['repro_head']['rows']))
-    res['repro_head']['passed'] = bool(res['repro_head']['worst'] <= 1e-10 and res['repro_head']['n'] == 4)
-    res['repro_lin'] = dict(worst=max(r['rel'] for r in c['repro_lin']['rows']), n=len(c['repro_lin']['rows']))
-    res['repro_lin']['schemes'] = sorted({r['scheme'] for r in c['repro_lin']['rows']})
-    res['repro_lin']['passed'] = bool(res['repro_lin']['worst'] <= 1e-10 and res['repro_lin']['n'] == 12
-                                      and res['repro_lin']['schemes'] == ['BE', 'CNR'])
+    ok, w = rows_ok(c['repro_head']['rows'], 'rel', 1e-10, 4)
+    res['repro_head'] = dict(worst=w, passed=bool(ok and c['repro_head']['passed']),
+                             fixtures=sorted({(r['rule'], r['case']) for r in c['repro_head']['rows']}))
+    ok, w = rows_ok(c['repro_lin']['rows'], 'rel', 1e-10, 12)
+    sch = sorted({r['scheme'] for r in c['repro_lin']['rows']})
+    res['repro_lin'] = dict(worst=w, schemes=sch, passed=bool(ok and sch == ['BE', 'CNR'] and c['repro_lin']['passed']))
     jac = {k: v['jacobian'] for k, v in acc['arms'].items() if 'jacobian' in v}
-    res['jacobian'] = dict(per_head={k: v['worst'] for k, v in jac.items()},
-                           passed=bool(len(jac) == 3 and all(v['worst'] <= 1e-10 for v in jac.values())))
+    jok = {k: rows_ok(v['rows'], 'rel', 1e-10, 4) for k, v in jac.items()}
+    res['jacobian'] = dict(per_head={k: v[1] for k, v in jok.items()},
+                           passed=bool(sorted(jac) == ['Hinc', 'Hk32', 'Hk4'] and all(v[0] for v in jok.values())
+                                       and all(v['passed'] for v in jac.values())))
     res['wrong_mesh'] = dict(passed=bool(c['wrong_mesh']['passed']), raised=c['wrong_mesh']['raised'])
     # budget-0 Q1 negative: in-job pooled fraction > 1 %, and an independent NumPy gamma > 1e-3 on > 3 steps
     b0 = np.load(acc_dir / 'CTRL_budget0.npz')
@@ -110,6 +120,8 @@ def smk1():
     # ---- rule ladder probe
     ru = json.loads((out_dir('smk1', 'hrule', 'smk1rule') / 'result.json').read_text())
     res['rule_probe'] = {g: dict(chosen=v['chosen'], status=v['status'], seconds=v['seconds']) for g, v in ru['groups'].items()}
+    res['rule_probe_note'] = ('plumbing probe: group Hk4 holds the SAME short head twice (min_pass 2), so it exercises the '
+                              'counting path, not independent-seed behaviour; the 2-of-3 threshold is unit-tested in test_h')
     res['gcert'] = dict(passed=bool(all(v['gcert_all'] for v in res['hinc_real_size'].values())
                                     and all(r['gcert_ok'] for r in acc['rows'])))
     res['train']['short_heads_ok'] = bool(all(v['ok'] for v in comp.values()))
@@ -139,6 +151,14 @@ def smk2():
     res['identity_fault'] = dict(n=len(inv_bad), all_invalid=bool(inv_bad and not any(x['valid'] for x in inv_bad)))
     good = [x for x in r['invocations'] + r['fused'] if x['B'] != bad]
     res['other_valid_fraction'] = float(np.mean([x['valid'] for x in good]))
+    # fused coverage, independently of split validity: every non-fault subject x timed case has >= 1 valid fused repeat
+    cov = {}
+    for lb, v in r['subjects'].items():
+        if lb == bad or lb.split('|')[1] == 'A_R384':
+            continue
+        for c_ in v['timed_case_ids']:
+            cov[(lb, c_)] = any(x['valid'] for x in r['fused'] if x['B'] == lb and x['case'] == c_)
+    res['fused_coverage'] = dict(missing=[list(k) for k, ok in cov.items() if not ok], n=len(cov), passed=bool(cov and all(cov.values())))
     dbl = r['doubled']
     res['doubled'] = dict(ratios=[x['ratio'] for x in dbl], passed=bool(dbl and all(1.8 <= x['ratio'] <= 2.2 and x['identity_ok']
                                                                                      and x['same_iterations'] and x['drift_ok']
@@ -158,7 +178,7 @@ def smk2():
     res['certification_ok'] = bool(all(all(t_[:2]) for v in res['subjects'].values() for t_ in v['cert']))
     res['all_controls_pass'] = bool(res['equivalence']['passed'] and res['identity_fault']['all_invalid']
                                     and res['doubled']['passed'] and res['pilot']['within_bar']
-                                    and res['panel_validity_without_fault'] and res['other_valid_fraction'] >= 2 / 3
+                                    and res['panel_validity_without_fault'] and res['fused_coverage']['passed']
                                     and res['certification_ok'])
     return res
 

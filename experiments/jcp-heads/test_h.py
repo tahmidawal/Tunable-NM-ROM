@@ -45,19 +45,28 @@ def main():
     # Q-LH-cost
     head = dict(qualified=True, complete=True)
     costlier = {r: dict(qualified=True, cost=cost(1.5), err=lab(.9 * EY)) for r in (4, 8)}
-    check('every rung costlier', HS.lh_cost(head, costlier)['at_most_cost'], 'no possibly-affordable rung')
-    check('every rung costlier: reason', HS.lh_cost(head, costlier)['at_most_cost_reason'], 'every qualified rung certified costlier')
+    check('every rung costlier', HS.lh_cost(head, costlier, {})['at_most_cost'], 'no possibly-affordable rung')
+    check('every rung costlier: reason', HS.lh_cost(head, costlier, {})['at_most_cost_reason'], 'every qualified rung certified costlier')
     unq = {r: dict(qualified=False, cost=cost(.5), err=lab(.9 * EY)) for r in (4, 8)}
-    check('no qualified rung: reason', HS.lh_cost(head, unq)['at_most_cost_reason'], 'no numerically qualified linear rung')
+    check('no qualified rung: reason', HS.lh_cost(head, unq, {})['at_most_cost_reason'], 'no numerically qualified linear rung')
     # Codex round-2 counterexample: H_i = i; rung A = H + 1 except cases 20-25 = H - 10; rung B = H; both affordable
     H = np.arange(1, N + 1, dtype=float)
     Ar = H + 1
     Ar[19:25] = H[19:25] - 10
     rungs = {16: dict(qualified=True, cost=cost(.8), err=HS.error_label(H, Ar, EPS)),
              32: dict(qualified=True, cost=cost(.9), err=HS.error_label(H, H.copy(), EPS))}
-    out = HS.lh_cost(head, rungs)
+    out = HS.lh_cost(head, rungs, {16: True, 32: False})
     check('counterexample: not "beats every affordable rung"', out['at_most_cost'],
           'linear at no more cost is at least as accurate (rung 32: matches)')
+    # A2.5 two-of-three seed rule (hrule.group_pass)
+    import hrule as HR
+    check('2 of 3 seeds pass', HR.group_pass([True, False, True], 2), True)
+    check('1 of 3 seeds pass', HR.group_pass([True, False, False], 2), False)
+    # Holm decisions are mandatory: a head better than every rung is NOT positive unless every rung is Holm-rejected
+    better = {r: dict(qualified=True, cost=cost(.8), err=lab(.5 * EY)) for r in (4, 8)}
+    check('positive needs Holm rejections', HS.lh_cost(head, better, {4: True})['at_most_cost'], 'unresolved')
+    check('positive with Holm rejections', HS.lh_cost(head, better, {4: True, 8: True})['at_most_cost'],
+          'head more accurate than every possibly-affordable rung')
     # Holm
     rj = HS.holm({'a': .001, 'b': .02, 'c': .04})
     check('holm', (rj['a'], rj['b'], rj['c']), (True, True, True))

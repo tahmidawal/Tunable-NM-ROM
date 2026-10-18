@@ -94,6 +94,11 @@ def main():
             cand.append(dict(id=m, ratio=ts['median'], W=float(np.max(eB)), med=float(np.median(eB)), r=int(r),
                              kind=kind, hr_points=int(FZ['member_info'][m]['hr_points']), scheme=scheme, dt=float(dt),
                              solver=solver, eB=eB, rho=rho, quality=FZ['member_info'][m].get('quality')))
+        untimed = [m for m, mv in members.items() if mv['q1']['q1'] and
+                   (B['timing'].get(f'{key}||{m}') or {}).get('status') != 'complete']
+        if untimed:                                     # A30.1 (2): a role is never filled from an incomplete set
+            out['X'][key] = dict(label='role incomplete (timing)', untimed=untimed, W_X=float(np.max(eX)) if len(eX) else None)
+            continue
         if not cand:
             out['X'][key] = dict(label='baseline incomplete at this mesh', W_X=float(np.max(eX)) if len(eX) else None)
             continue

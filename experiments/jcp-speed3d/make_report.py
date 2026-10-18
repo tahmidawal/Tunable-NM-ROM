@@ -57,7 +57,7 @@ def pretty(key):
     sol = {'fs': 'FS', 'fsp': 'FSP', 'qn': 'QN'}[kind] + '-' + p[5].replace('k', '').replace('inf', '∞').replace('K', 'K')
     if kind == 'qn':
         sol = 'QN-' + p[5][1:].replace('inf', '∞')
-    return f'{s} {r}, {sol} {p[3]}, Δt = {float(p[4]):.4g}'
+    return f'{s} {r}, {sol} {p[3]}, $\\Delta t = {float(p[4]):.4g}$'
 
 
 def verdict_of(path):
@@ -601,7 +601,7 @@ def main():
     w('')
     w('- Screening ratios (H1.4, H2) are from separate grid jobs; only the confirmed paired ratios carry verdicts.')
     w('- Every matched speed-up is an upper bound (finite FOM ladder); a match at the cheapest admissible ladder member is "boundary".')
-    w('- E0 errors are conditional Richardson estimates. ε_ref ties are interval-overlap ties, not proven equality.')
+    w('- E0 errors are conditional Richardson estimates. Ties within $\\varepsilon_{\\rm ref}$ are interval-overlap ties, not proven equality.')
     under = []
     for a in ('g1', 'g2', 'g3', 'f1', 'p1', 'm1', 'r1'):
         rc = jl(CH / f'resources-{a}.json')
@@ -624,24 +624,29 @@ def main():
     w('')
     for k, v in [
         ('ROM', 'reduced-order model: the frozen coordinate-network bank, LSPG on sine tests, off-mesh quadrature for advection.'),
-        ('M2_512, W256 … W1024', 'settings: bank (M2 or W1024) truncated to R′ = 512 or 256…1024 columns.'),
+        ('M2_512, W256 … W1024', 'settings: bank (M2 or W1024) truncated to its first $R\'$ columns ($R\'=512$ for M2_512; 256 to 1024 for W256 … W1024).'),
         ('gl32, lat65536', 'quadrature rules: Gauss–Legendre with 32 points per axis; lattice rule with 65,536 points.'),
-        ('BE, CN, BDF2', 'backward Euler (first order), Crank–Nicolson and BDF2 (second order) time stepping.'),
-        ('Δt₀', 'the deployed step 0.01.'),
+        ('BE, CN, BDF2', 'time-stepping schemes: backward Euler (first order), Crank–Nicolson (second order, trapezoidal) and BDF2 (second-order backward differentiation formula, which uses the two previous states; started with one BE step).'),
+        ('IMEX', 'implicit–explicit: an initial guess that treats advection explicitly (extrapolated) and the linear terms implicitly.'),
+        ('IC', 'initial condition (the field at t = 0).'),
+        ('A_rel, K7_rel', 'G5/K7 numbers: relative Frobenius difference of the ROM test-matrix A built at mesh 65 against Step 2\'s (must be at rounding level), and of the mesh-66 matrix against mesh 65 (must be large).'),
+        ('calibration (FOM)', 'tolerance qualification: the loosest of three Newton/linear-solver tolerance levels whose outputs agree with the tightest within 1e-6 on cases 0–3; "qualified" if one exists.'),
+        ('converged (FOM)', 'every time stage of every case met its Newton residual tolerance.'),
+        ('$\\Delta t_0$', 'the deployed time step, 0.01.'),
         ('FS-K1 / FS-K2', 'the deployed fixed-sweep Levenberg–Marquardt solver with 1 or 2 full-Jacobian sweeps per step.'),
         ('FSP', 'FS with two extra initial-guess candidates (cubic, IMEX).'),
         ('QN-k', 'quasi-Newton with exact gradient and a Gauss–Newton matrix refreshed every k steps (∞ = only when forced).'),
         ('ADT', 'the verified adaptive tight solve of the same discrete problem; the solver-distance comparator.'),
         ('eligible (Q1)', 'every run valid (E-a); certified non-stationary steps at most 1 % of pooled steps (E-b; a step is non-stationary if its fresh-Jacobian stationarity ratio exceeds 1e-3); lattice distance to the ADT solve at most 2.5e-4 on every case (E-c); and the ADT tight/tighter anchor agreement at most 2.5e-5 on cases 0–7 (grid: checked per setting at its deployed rule for each scheme and step, numbers in EXPORT `q1_anchors`). On the replication cohort only E-a/E-b/E-c are recomputed (no anchor run): not a fresh Q1 certificate.'),
-        ('M', "number of sine test functions (the 4R' lowest discrete-Laplacian modes, completed to the end of the eigen-shell)."),
+        ('M', "number of sine test functions (the $4R'$ lowest discrete-Laplacian modes, completed to the end of the eigen-shell)."),
         ('LSPG', 'least-squares Petrov–Galerkin: the ROM minimises the residual tested against the M sine modes.'),
         ('CN-R', 'Crank–Nicolson with Rannacher start-up steps (FOM time stepping).'),
         ('ETDRK4', 'fourth-order exponential time-differencing Runge–Kutta (the pseudo-spectral FOM).'),
         ('G2 … G8', 'consistency gates: G2 certified vs recorded stationarity ratio; G3 profile components sum to the fused query within 15 %; G4 batched equals single queries; G5 mesh-65 tables equal Step 2\'s; G6 FD port equals E0; G7 PS port; G8 lattice metric equals Step 2\'s.'),
-        ('K1 … K10', 'controls that must fail (DESIGN §7, A1.10): K1 FS-K1 CN 2.5Δt₀ ineligible; K2 predictor-only QN ineligible; K3 wrong gradient exceeds the distance bar; K4 scoring swap/shift changes the score; K5 coarse-rule projection fails H3.2; K6 wrong-viscosity batch fails G4 (K6+ a pure permutation passes); K7 mesh-66 tables differ; K9 distance classifier; K10 FOM matcher rejects synthetic entries. Not to be confused with K2 of the governing plan.'),
-        ('η (ε_ref)', 'per-case reference uncertainty of E0 (conditional Richardson estimate).'),
+        ('K1 … K10', 'controls that must fail (DESIGN §7, A1.10): K1 FS-K1 CN at $2.5\\Delta t_0$ ineligible; K2 predictor-only QN ineligible; K3 wrong gradient exceeds the distance bar; K4 scoring swap/shift changes the score; K5 coarse-rule projection fails H3.2; K6 wrong-viscosity batch fails G4 (K6+ a pure permutation passes); K7 mesh-66 tables differ; K9 distance classifier; K10 FOM matcher rejects synthetic entries. Not to be confused with K2 of the governing plan.'),
+        ('$\\eta$ ($\\varepsilon_{\\rm ref}$)', 'per-case reference uncertainty of E0 (conditional Richardson estimate).'),
         ('scored cases', 'cases with a finite E0 score; no median or worst is reported from a partial population.'),
-        ('E0, ε_ref (η)', 'the second-order reference store and its per-case uncertainty estimate.'),
+        ('E0', 'the second-order reference store (its per-case uncertainty is $\\eta$).'),
         ('median / worst', 'median and maximum, over the ranked (reference-eligible) cases of the cohort and case subset named in that table, of the max-over-output-times relative error on the scoring lattice.'),
         ('ties-or-beats', 'not resolved as worse: $\\mathrm{median}(e_a-\\eta)\\le\\mathrm{median}(e_b+\\eta)$, and the same for the maximum.'),
         ('screening ratio', 'median paired time ratio to C_old inside each grid job.'),
@@ -659,7 +664,7 @@ def main():
         ('boundary', 'the match is the family\'s cheapest admissible ladder member: a coarser FOM might also match.'),
         ('union', 'the best (cheapest) matched FOM across all families.'),
         ('K2 (governing plan)', 'kill criterion: speed-up over the best validated FOM below 2× at the largest mesh for every setting.'),
-        ('L, n', 'FOM cells per side; ROM mesh n = L + 1 nodes per side.'),
+        ('L, n', 'FOM cells per side; the ROM at mesh $n=L+1$ nodes per side.'),
         ('GPU-h', 'elapsed GPU-hours measured by sacct.')]:
         w(f'- **{k}** — {v}')
     w('')

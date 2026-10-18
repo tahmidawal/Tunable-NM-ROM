@@ -806,3 +806,10 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   inequalities in LaTeX; plot titles/labels carry the E0 and contract qualifications.
 * Part A note: the CPU regeneration of the 923901 cohort table does not reproduce the archived GPU table hash bitwise
   (case 26 viscosity differs by 1.4e-17); the scorer's initial-field identity checks pass. Recorded, not blocking.
+
+---
+
+## Amendment A28 (2026-10-18; `audits/codex-report-2.md`, Part B NOT READY on glossary and LaTeX)
+
+* Glossary adds IMEX, IC, A_rel/K7_rel, FOM calibration and convergence, and explains BDF2; math in prose (time steps,
+  $\varepsilon_{\rm ref}$, $R'$, $4R'$, $n=L+1$) is in LaTeX; table identifiers stay literal.

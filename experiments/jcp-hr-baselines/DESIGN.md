@@ -1765,3 +1765,13 @@ predicate (finite values, non-negative tolerance).
 `time_x` for its timing pairs), released in a `finally` block with garbage collection before the next comparator is
 built, on success and on failure. **A37.2** Comparator lattice outputs are independent contiguous copies (no view
 retaining the full-grid array), so the host model's lattice-sized comparator fields are what is held.
+
+---
+
+## Acceptance record (2026-10-18) — Stage-B chain
+
+Code audit 27 (`audits/codex-code-27.md`) returned **READY for (B)** at f59050a68 (freeze_stageb.py, stageb.py,
+analyze.py, ours.py lattice methods, stageb staging paths). Its one nonblocking restatement (A37.2 wording) is applied:
+the comparator lattice methods return explicit C-order copies (`.copy(order="C")`), independent lattice-sized storage.
+Tuning code: READY at b08690fdb (code audit 23), submitted as t3d64a (5508653) and t2d1024a (5508660) after job
+audits 1–3. The 2D 256² tuning attempt and every Stage-B attempt get their own job audits before submission.

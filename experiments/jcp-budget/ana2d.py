@@ -154,15 +154,40 @@ def skey(S):
 
 # ------------------------------------------------------------------------------------------------- archives --
 
+QRUNS = WT / '2026-10-18-jcp-qualify' / 'experiments' / 'jcp-qualify' / 'runs'
+QCACHE = __import__('os').environ.get('QUALIFY_CACHE')
+
+
+def verify_cached(f):
+    """A12: a cached copy of an offloaded jcp-qualify file must match that lane's committed per-file listing
+    (runs/<run>/archive.sha256-listing, './output/...' paths); anything else raises."""
+    import hashlib
+    rel = Path(f).relative_to(QCACHE)
+    run, sub = rel.parts[0], Path(*rel.parts[1:])
+    want = {}
+    for line in (QRUNS / run / 'archive.sha256-listing').read_text().splitlines():
+        if line.strip():
+            h, n = line.split(None, 1)
+            want[n.strip().lstrip('./')] = h
+    got = hashlib.sha256(Path(f).read_bytes()).hexdigest()
+    if want.get(str(sub)) != got:
+        raise SystemExit(f'cached qualify file {f} does not match {run}/archive.sha256-listing')
+
+
 def archive_f257(mesh, member):
     """G-B3: jcp-qualify / P1 archived fields of the SAME configuration, verified by the archive's own metadata."""
     r, form, scheme, fac = int(member['Rp']), member['form'], member['scheme'], float(member['factor'])
-    pats = [f'{WT}/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/*{mesh}/archive/output/*/R_R{r}_{form}_{scheme}_{fac:g}.npz']
+    name = f'R_R{r}_{form}_{scheme}_{fac:g}.npz'
+    pats = [f'{QRUNS}/*{mesh}/archive/output/*/{name}']
+    if QCACHE:                                        # A12: offloaded qualify archives, fetched into a scratch cache
+        pats.append(f'{QCACHE}/*{mesh}/output/*/{name}')
     if form == 'LSPG' and fac == 1.:
         pats.append(f'{WT}/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/acc{mesh}/archive/output/*/R_R{r}_{scheme}.npz')
     out, srcs = {}, []
     for pat in pats:
         for f in sorted(glob.glob(pat)):
+            if QCACHE and f.startswith(str(QCACHE)):
+                verify_cached(f)
             z = np.load(f)
             meta = dict(rule=str(z['rule']), Rp=int(z['Rp']), mesh=int(z['mesh']), scheme=str(z['scheme']),
                         form=str(z['form']) if 'form' in z.files else 'LSPG', policy=str(z['policy']),

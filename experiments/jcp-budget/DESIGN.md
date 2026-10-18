@@ -857,3 +857,26 @@ at the time limits; a job that cannot be reserved waits for a settlement. If the
 B7 $T=1.0$ is deferred (last on the defer list) and recorded.
 The smoke JSON / B2 / B7 tables (< 5 MB) were restored from git after the A10 offload, because `resources.py` prices
 jobs from them.
+
+**A11.1 (2026-10-18, audit `codex-job-t1-1`).** Three analysis-side fixes before the $T=1.0$ jobs:
+(1) `anaref.terminal()`: at $T=1.0$ any case whose whole-run judge did not accept is terminal and ineligible in every
+window (A1.5: no refinement at $T=1.0$; failed references stay non-rankable), in addition to the A9 rule;
+(2) `ana7.elig_for()`: in a $T=1.0$ B7 run, $W_1$/$W_2$ eligibility and tier come from the $T=0.5$ references AND the
+$T=1.0$ case's prefix check and non-terminal status (the errors are scored against the $T=1.0$ realisation, the same
+realisation for both windows of a growth ratio); $W_3$ from the $T=1.0$ references (prefix and non-terminal re-asserted);
+(3) `ana7` handles a B7-only run (`b1024t1` has no B8): B8 coverage and the fine-route recomputation apply only where B8
+is configured. Regression: `test_anaref_a9.py` (now also the $T=1$ rules) → `checks/test_anaref_a9.json`; `ana7` on the
+smoke data reproduces the committed `checks/b7b8-smk1.json` except the G-L1 source path (A12).
+The audit's item 4 (a run-time reference gate for `b1024t1`) rests on a premise that does not hold: B7 runs never read
+references in-job (only B8 does); every reference the B7 analysis uses is verified offline against the cluster
+`REFS-MANIFEST.sha256` by `ana7` (identity and sha256). So `b1024t1` does not need to wait for `ref2t1`; it is submitted
+when a lane slot is free.
+
+## Amendment A12 (2026-10-18; jcp-qualify archives offloaded under COMMON-BRIEF §16)
+
+The coordinator moved jcp-qualify's raw archives (`runs/acc*/archive`, `time*`) to
+`/cluster/tufts/paralab/tawal01/burgers-archive/jcp-qualify/`. G-B3 (`ana2d`) and G-L1 (`ana7`) compare against those
+archived `R_R<r>_<form>_<scheme>_<factor>.npz` fields. `fetch_qualify.py --mesh <m> --cache <scratch>` pulls only the
+files of the configured members for one mesh (1024²: 9 files, 1.0 GB); `ana2d.archive_f257` reads the cache (env
+`QUALIFY_CACHE`) and verifies every cached file against jcp-qualify's committed `archive.sha256-listing` (mismatch
+raises). The cache is deleted after that mesh's analyses. P1-scaling archives (still local) are read as before.

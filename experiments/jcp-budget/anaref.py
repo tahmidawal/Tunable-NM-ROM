@@ -145,8 +145,14 @@ def a9_terminal(rec):
     return bool(rec.get('tight_after_refine', True) is False and rec.get('refined') and rec['outcome'] == 'unresolved-floor')
 
 
+def terminal(rec):
+    """Whole-case terminal failures (non-rankable in every window): A9 (above), and at T = 1.0 any case whose whole-run
+    judge did not accept -- no refinement is run at T = 1.0 (A1.5: 'failed T = 1 references stay non-rankable')."""
+    return bool(a9_terminal(rec) or (rec['horizon'] > .5 and rec['outcome'] != 'accepted'))
+
+
 def window_eligible(rec, w_outcome, pre_ok, g3, tier, desig, xc):
-    return bool(not a9_terminal(rec) and w_outcome == 'accepted' and rec['G_R2']['passed'] and pre_ok and g3
+    return bool(not terminal(rec) and w_outcome == 'accepted' and rec['G_R2']['passed'] and pre_ok and g3
                 and tier != 'suspended' and (not desig or xc == 'PASS'))
 
 
@@ -282,7 +288,7 @@ def main():
             g3 = (rec['G_R3_flag'] is True and rec['G_R3_local'] is not False) if rec['fine_requested'] else True
             elig[w] = dict(accepted=x['outcome'] == 'accepted', G_R2=rec['G_R2']['passed'], designated=desig, crosscheck=xc,
                            prefix=pre_ok, G_R3=g3, tier=tier,
-                           a9_terminal=a9_terminal(rec),
+                           a9_terminal=a9_terminal(rec), terminal=terminal(rec),
                            eligible=window_eligible(rec, x['outcome'], pre_ok, g3, tier, desig, xc),
                            sha256=rec['sha256'], final=rec['final'])
         rec['eligibility'] = elig

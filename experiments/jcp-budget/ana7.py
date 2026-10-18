@@ -156,6 +156,29 @@ def elig_of(anaref, T, dim=2):
     return out
 
 
+def elig_for(anaref, T, dim=2):
+    """Window eligibility for a B7 run at horizon T (A1.5). At T = 0.5 it is the T = 0.5 references' own. At T = 1.0:
+    W1 and W2 eligibility (and tier) come from the T = 0.5 references, AND-ed with the T = 1.0 case's prefix check (its
+    W1 u W2 outputs reproduce the T = 0.5 ones within the G-R2 bar) and its non-terminal status, because the errors are
+    scored against the T = 1.0 realisation (same realisation for both windows of a growth ratio); W3 comes from the
+    T = 1.0 references (which already require the prefix and exclude terminal cases)."""
+    EL = elig_of(anaref, T, dim)
+    if T <= .5:
+        return EL
+    E05 = elig_of(anaref, .5, dim)
+    out = {}
+    for (cid, w), e in EL.items():
+        if w in ('W1', 'W2'):
+            b = E05.get((cid, w), {})
+            out[(cid, w)] = dict(b, eligible=bool(b.get('eligible') and e.get('prefix') and not e.get('terminal')),
+                                 prefix=e.get('prefix'), terminal_T1=e.get('terminal'),
+                                 source='T=0.5 window eligibility AND T=1.0 prefix / non-terminal (A1.5)')
+        else:
+            out[(cid, w)] = dict(e, eligible=bool(e.get('eligible') and e.get('prefix') and not e.get('terminal')),
+                                 source='T=1.0 window eligibility (prefix and non-terminal re-asserted)')
+    return out
+
+
 def growth_of(rows, nout, minpop):
     growth = {}
     for wa, wb in (('W1', 'W2'), ('W2', 'W3')):
@@ -618,7 +641,7 @@ def main():
     assert len(Ts) == 1 and len(meshes) == 1, ('runs differ in horizon or mesh', Ts, meshes)
     T, mesh = Ts.pop(), meshes.pop()
     minpop = a.minpop if a.minpop is not None else (6 if mesh == 4096 else 8)
-    EL = elig_of(json.loads(Path(a.anaref).read_text()), T)
+    EL = elig_for(json.loads(Path(a.anaref).read_text()), T)
     out = dict(runs=[str(r) for r in runs], mesh=mesh, horizon=T, b7={}, b8={}, coverage=dict(per_run={}),
                label='W1 against E0 R_ST (primary); windows against this lane\'s R_ST realisation; eps conditional')
     members, owner = {}, {}
@@ -627,7 +650,9 @@ def main():
         mine = {f"R{m['Rp']}|{m['form']}|{m['scheme']}|{float(m['factor']):g}": m for m in res['config']['members']}
         dup = sorted(set(mine) & set(members))
         cov = dict(configured=sorted(mine), duplicates=dup, b7_missing=sorted(set(mine) - set(res['b7'])),
-                   b8_missing=sorted(mk for mk in mine if not (run / f"B8_{mk.replace('|', '_')}.npz").exists()),
+                   b8_configured='b8' in res['config'],
+                   b8_missing=sorted(mk for mk in mine if 'b8' in res['config'] and
+                                     not (run / f"B8_{mk.replace('|', '_')}.npz").exists()),
                    b7_extra=sorted(set(res['b7']) - set(mine)))
         cov['passed'] = not (dup or cov['b7_missing'] or cov['b8_missing'] or cov['b7_extra'])
         out['coverage']['per_run'][str(run)] = cov
@@ -639,7 +664,7 @@ def main():
             b8 = b8_member(run, mk, EL, T, minpop)
             if b8 is not None:
                 out['b8'][mk] = b8
-        if a.fine:
+        if a.fine and 'b8' in res['config']:                  # the fine route exists only where B8 ran
             cc = res['config']['b8'].get('check_cases', 'dev6')
             check_ids = set(A2.case_set(cc)) if isinstance(cc, str) else {f'{x[0]}|{x[1]}' for x in cc}
             fr = fine_recompute(run, mine, a.fine, T, check_ids)
@@ -658,7 +683,7 @@ def main():
             lspg_members=len(lab), all_adequate=bool(lab and all(x == 'adequate' for x in lab)), ranking=rk,
             statement=('the 257^2 lattice is adequate for the qualified 2D front (relative to the 1025^2 route)'
                        if lab and all(x == 'adequate' for x in lab) and rk == 'adequate' else 'not established'))
-    if a.fine:
+    if a.fine and out.get('fine_recompute_runs'):
         frs = list(out['fine_recompute_runs'].values())
         out['fine_recompute'] = dict(rows=[r_ for f in frs for r_ in f['rows']], missing=[m_ for f in frs for m_ in f['missing']],
                                      passed=bool(frs and all(f['passed'] for f in frs)))

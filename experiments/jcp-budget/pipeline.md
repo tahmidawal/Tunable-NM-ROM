@@ -12,4 +12,8 @@
 5. `ana2d.py --run <b-job output>` per job; `ana2d.py --compare` over all four; `ana7.py --run <one or two b-job outputs>
    --refs runs/refs-local --manifest runs/REFS-MANIFEST.sha256 --anaref checks/refs-all.json --fine runs/refs-local`;
    `ana3d.py --run <b3d output> --refs runs/refs-local --manifest runs/REFS-MANIFEST.sha256 --anaref checks/refs-all.json`.
+5b. Before `ana2d` / `ana7` of a mesh: `fetch_qualify.py --mesh <m> --cache <scratch>/qcache<m>` and run both with
+   `QUALIFY_CACHE=<scratch>/qcache<m>` (A12); delete the cache afterwards. B7 at T = 1.0: `ana7.py --run <b1024t1 output>
+   --refs runs/refs-local --manifest runs/REFS-MANIFEST.sha256 --anaref checks/refs-all.json` (no `--fine`: B7-only run,
+   A11.1); `anaref` must have read both the T = 0.5 and the T = 1.0 reference outputs (prefix check, A1.5).
 6. Codex results audit; `make_report.py`; Codex report audit; hand-back.

@@ -74,23 +74,31 @@ def load_e0_3d(j, coh='val64', time_tag=None, expect_case=None):
     return np.asarray(R), float(meta['judge']['n0']), st['eps_ref'], st['eligible']
 
 
-def tag_acceptance(res):
-    """{'<tag>|<spec>': {case: accepted}} with the A3.5 solver-specific rule: adaptive specs -> the run's validity
-    (nfail == 0); fixed-sweep / QN specs -> validity AND a per-step certificate present for every case, non-stationary
-    steps <= 1 % pooled over that run type's steps, every certificate finite."""
+def tag_acceptance(res, Wz):
+    """{'<tag>|<spec>': {case: accepted}} with the A3.5 solver-specific rule. Adaptive specs -> the run's validity
+    (nfail == 0). Fixed-sweep / QN specs -> validity AND, for every case stored for that run type, a per-step certificate
+    whose length equals the schedule's step count (round(T / dt), T = 0.5 for B7 tags, else 0.25), every entry finite;
+    the non-stationary count is RECOMPUTED from the certificates (gamma > 1e-3) and pooled over the run type <= 1 %."""
     by = {}
     for r in res['rows']:
         by.setdefault(f"{r['tag']}|{r['spec']}", []).append(r)
     out = {}
     for k, rows in by.items():
-        kind = rows[0]['spec'].split('|')[0]
-        if kind in ('fs', 'fsp', 'qn'):
-            have = all('nonstationary' in r for r in rows)
-            pooled = have and sum(r['nonstationary'] for r in rows) <= .01 * max(1, sum(r['steps_n'] for r in rows))
-            finite = have and all(g is not None and np.isfinite(g) for r in rows for g in r['gam_cert'])
-            out[k] = {r['case']: bool(r['valid'] and pooled and finite) for r in rows}
-        else:
+        spec = rows[0]['spec']
+        kind = spec.split('|')[0]
+        if kind not in ('fs', 'fsp', 'qn'):
             out[k] = {r['case']: bool(r['valid']) for r in rows}
+            continue
+        T = .5 if '#B7T0.5#' in k else (1. if '#B7T1#' in k else .25)
+        dt = float(spec.split('|')[2])
+        steps = int(round(T / (.05 / round(.05 / dt))))
+        cases_expected = set(int(c) for c in Wz[f'cases|{k}']) if f'cases|{k}' in Wz.files else None
+        cert = [r.get('gam_cert') for r in rows]
+        complete = (cases_expected is not None and {r['case'] for r in rows} == cases_expected and
+                    all(isinstance(g, list) and len(g) == steps and all(x is not None and np.isfinite(x) for x in g) for g in cert))
+        nonst = sum(sum(x > 1e-3 for x in g) for g in cert) if complete else None
+        pooled = complete and nonst <= .01 * steps * len(rows)
+        out[k] = {r['case']: bool(r['valid'] and pooled) for r in rows}
     return out
 
 
@@ -418,8 +426,13 @@ def main():
     if a.manifest:
         A7.MAN.update(A7.load_manifest(a.manifest))
     EL = A7.elig_of(json.loads(Path(a.anaref).read_text()), float(cfg['b7']['horizon']), dim=3) if (a.anaref and 'b7' in cfg) else {}
-    ACC = tag_acceptance(res)
+    ACC = tag_acceptance(res, Wz)
     out = dict(run=str(run), members={}, gates={}, controls={}, b7={})
+    keys = [m['key'] for m in cfg['members']]
+    out['coverage'] = dict(configured=keys,
+                           b2_missing=[k for k in keys if 'b2' in cfg and k not in res.get('b2', {})],
+                           b7_missing=[k for k in keys if 'b7' in cfg and k not in res.get('b7', {})])
+    out['coverage']['passed'] = not (out['coverage']['b2_missing'] or out['coverage']['b7_missing'])
     bases = {}
     S = dict(gb0=0., gb0_n=0, gb2=0., gb2_n=0, gb3=[], gb3_missing=0)
     chk = set(cfg.get('b2', {}).get('check_cases', range(4)))
@@ -477,7 +490,7 @@ def main():
         q0 = [r_ for r_ in res['rows'] if r_['tag'] == 'CTRL#S#q0' and r_['spec'] == 'qn|BDF2|0.025|k4|q0']
         want = set(cfg['controls'].get('cases', range(4)))
         evaluable = (bool(q0) and {r_['case'] for r_ in q0} == want and
-                     all(isinstance(r_.get('gam_cert'), list) and len(r_['gam_cert']) == r_.get('steps_n', -1) > 0 and
+                     all(isinstance(r_.get('gam_cert'), list) and len(r_['gam_cert']) == int(round(.25 / .025)) and
                          all(g is not None and np.isfinite(g) for g in r_['gam_cert']) for r_ in q0))
         gq = [g for r_ in q0 for g in r_['gam_cert']] if evaluable else []
         fr = (sum(g > 1e-3 for g in gq) / len(gq)) if gq else None

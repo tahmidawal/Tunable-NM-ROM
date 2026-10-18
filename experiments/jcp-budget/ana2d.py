@@ -456,6 +456,11 @@ def main():
                                       quadrature=('every Q corner type verified on the check cases; extrapolated to the rest'
                                                   if not failed else f'withheld for corner types {sorted(failed)}'),
                                       ideal_end='verified' if sg['passed'] else 'quadrature-unverified')
+    conf = [f"R{m['Rp']}|{m['form']}|{m['scheme']}|{float(m['factor']):g}" for m in cfg['members']]
+    prod = [mk for rr in res['b2'].values() for mk in rr['members']]
+    out['coverage'] = dict(configured=conf, missing=[k for k in conf if k not in prod], extra=[k for k in prod if k not in conf],
+                           star_missing=[r_ for r_ in sorted({int(m['Rp']) for m in cfg['members']}) if f'R{r_}' not in res['b2']])
+    out['coverage']['passed'] = not (out['coverage']['missing'] or out['coverage']['extra'] or out['coverage']['star_missing'])
     out['gates'] = dict(
         G_B0=dict(worst=tot['gb0'], n=tot['gb0_n'], passed=bool(tot['gb0_n'] > 0 and tot['gb0'] <= 1e-10)),
         B0_real_mismatch=dict(min_defect=min(tot['mism']) if tot['mism'] else None,

@@ -66,6 +66,7 @@ def main():
         run(['ana2d.py', '--run', str(b2), '--minpop', '1', '--out', str(bj)])
         B = json.loads(bj.read_text())
         g = B['gates']
+        add('B2 produced for every CONFIGURED member', 'gate', B['coverage']['passed'], B['coverage'])
         add('G-B0 (floor identity, every corner; n > 0)', 'gate', g['G_B0']['passed'], g['G_B0'])
         add('G-B0 analytic fixtures break', 'gate', g['B0_fixtures'])
         add('G-B0 real-data mismatched normaliser breaks', 'gate', g['B0_real_mismatch']['passed'], g['B0_real_mismatch'])
@@ -117,6 +118,7 @@ def main():
         run(['ana3d.py', '--run', str(b3), '--refs', str(refdir), '--manifest', str(man), '--anaref', str(ra), '--minpop', '1',
              '--out', str(bj)])
         B = json.loads(bj.read_text())
+        add('3D B2 and B7 produced for every CONFIGURED member', 'gate', B['coverage']['passed'], B['coverage'])
         for k in ('G_B0', 'G_B2', 'G_B3'):
             add(f'{k.replace("_", "-")} (3D)', 'gate', B['gates'][k]['passed'], B['gates'][k])
         add('G-B4 (3D, every Q corner type and the u_star family)', 'gate',

@@ -1,0 +1,10 @@
+1. **CORRECT — both bundles now match their manifests exactly.** Each has 61 listed files, 61 actual files excluding the root manifest, all hashes matching, zero missing/extra files, and no `.pyc` files or symlinks. The nested `e0/store/MANIFEST.sha256` is correctly included.
+
+2. **CORRECT — staged content unchanged.** Both bundles’ `PROVENANCE.json`, `run.sbatch`, and root manifests are byte-identical to `HEAD~1` **and the pre-fix commit `f493e3250^`**. All 58 provenance hashes per bundle validate. The unchanged manifests and matching contents establish that the listed payload was preserved.
+
+3. **WRONG — the submission guard does not enforce exact coverage.** Both current bundles pass the isolated guard, and its root-specific manifest exclusion correctly preserves the nested manifest. However, `cluster/submit.sh:15` explicitly excludes `./SUBMIT.out`: an unmanifested file at that path passes, then unrestricted `rsync -a` at line 22 transfers it. Also, `find -type f` ignores extra symlinks that rsync preserves. The remote check at line 32 verifies only listed hashes, so neither omission is caught. Remove the receipt exemption or keep receipts outside the transferred bundle, and reject unlisted symlinks.
+
+4. **CORRECT — job audit 1 items 2–8 still hold, with their original limitations.** Payloads remain unchanged. Ledger spot-check confirms exactly one unbound reservation each: 12 h and 5 h; smoke expenditure remains 1.512 GPU-h, totaling 26.012 GPU-h including the 7.5 h Stage-B reserve. Both batch scripts retain H200/GPU requests, 200G memory, distinct paralab directories, prescribed Python, x64/highest precision, GPU preflight, and 716/296-minute driver deadlines. External E0 availability, cross-lane submission races, and higher-rank production memory remain the previously disclosed limitations.
+
+**DO-NOT-SUBMIT-t3d64a**  
+**DO-NOT-SUBMIT-t2d1024a**

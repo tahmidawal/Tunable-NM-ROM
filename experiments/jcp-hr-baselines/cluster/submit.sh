@@ -12,7 +12,7 @@ LOCAL="$ROOT/experiments/jcp-hr-baselines/runs/$A"
 [ -f "$LOCAL/run.sbatch" ]
 # job audit 1: the bundle is exactly its manifest (every file listed and matching; nothing else)
 ( cd "$LOCAL" && sha256sum -c MANIFEST.sha256 --quiet && \
-  [ -z "$(comm -3 <(find . -type f ! -path ./MANIFEST.sha256 ! -path ./SUBMIT.out | sed 's|^\./||' | sort) <(awk '{print $2}' MANIFEST.sha256 | sort))" ] ) \
+  [ -z "$(comm -3 <(find . ! -type d ! -path ./MANIFEST.sha256 | sed 's|^\./||' | sort) <(awk '{print $2}' MANIFEST.sha256 | sort))" ] ) \
   || { echo "bundle differs from its manifest: refusing"; exit 8; }
 # A34.2: the attempt must hold exactly one unbound reservation (marked 'submitting' under the ledger lock)
 /home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" submit-check "$A"
@@ -29,7 +29,7 @@ timeout 120 $SSH tufts-login "cd $NS && flock -x -w 60 .submit.lock bash -c '
   if [ \"\$t\" -ge 8 ]; then echo \"8 jobs live on the account: refusing (campaign cap 8)\"; exit 6; fi
   test ! -e $NS/$A || { echo \"$NS/$A exists: refusing\"; exit 3; }
   mv $NS/.staging/$TAG $NS/$A
-  cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch --no-requeue run.sbatch'" | tee "$LOCAL/SUBMIT.out"
-JID=$(sed -n 's/^Submitted batch job \([0-9]*\)$/\1/p' "$LOCAL/SUBMIT.out")
+  cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch --no-requeue run.sbatch'" | tee "$LOCAL.SUBMIT.out"
+JID=$(sed -n 's/^Submitted batch job \([0-9]*\)$/\1/p' "$LOCAL.SUBMIT.out")
 [ -n "$JID" ] && /home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" bind "$A" "$JID"
 echo "--- squeue after"; timeout 60 $SSH tufts-login 'squeue -u $USER -o "%.10i %.24j %.8T %.10M %R"'

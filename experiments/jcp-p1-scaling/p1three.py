@@ -218,6 +218,8 @@ def p1e(cfg, rep, save, bank, tb, kx, M_of, n, el):
     Rp = int(cfg['Rp'])
     M = M_of[Rp]
     trust = float(cfg['trust_fraction'] * bank['spread'][str(Rp)])
+    import p1fs3 as FS                       # A7.1: fixed-sweep BE, K = 1 (= the deployed solver, combined gate G-FS1)
+    fq = (FS.make_fs_query(n, Rp, OM.contract_offmesh, 'BE', DT3, 1, float(cfg['gtol']), trust, int(cfg['a']), dt0=DT3))
     vq = OM.make_fsc_rule(n, Rp, None, OM.contract_offmesh, dt=DT3, gtol=float(cfg['gtol']), trust=trust,
                           adaptive_first=int(cfg['a']))
     lean = dict(GTb=TB.rows_prefix(tb['GTb'], Rp), L=tb['L'][:Rp, :Rp], A=tb['A'][:M, :Rp], lam=tb['lam'][:M])
@@ -238,12 +240,17 @@ def p1e(cfg, rep, save, bank, tb, kx, M_of, n, el):
             X2, w2 = rules[chain[i + 1]]
             nxt = OM.offmesh_tables(n, bank['params'], bank['T'][:, :Rp], X2, w2, kx[:M])
         for j in cases:
-            o = jax.block_until_ready(vq(U0[j], NU[j], data, {}))
-            W = np.asarray(o[1])[::keep]
-            Wst[(rule, j)], Fst[(rule, j)] = W, np.asarray(o[0])
-            rs = np.asarray(o[3])
-            valid[(rule, j)] = bool(np.isfinite(np.asarray(o[1])).all() and np.isfinite(np.asarray(o[0])).all()
-                                    and np.isfinite(np.asarray(o[4])).all() and int((rs == 3).sum()) == 0)
+            o = jax.block_until_ready(fq(U0[j], NU[j], data))
+            W = np.asarray(o['W'])
+            Wst[(rule, j)], Fst[(rule, j)] = W, np.asarray(o['fields'])
+            rs, sat, gn = np.asarray(o['reason']), np.asarray(o['sat']), np.asarray(o['gn'])
+            valid[(rule, j)] = bool(np.isfinite(np.asarray(o['W_all'])).all() and np.isfinite(np.asarray(o['fields'])).all()
+                                    and np.isfinite(gn).all() and int((rs == 3).sum()) == 0 and int(sat.sum()) == 0)
+            ov = jax.block_until_ready(vq(U0[j], NU[j], data, {}))           # bridge to the vendored deployed solver
+            Wv = np.asarray(ov[1])[::keep]
+            rep['p1e'].setdefault('steps', {})[f'{rule}|{j}'] = dict(
+                nonstationary=int(np.sum(~(gn <= float(cfg['gtol'])))), steps=int(gn.size), saturated=int(sat.sum()),
+                reason3=int((rs == 3).sum()), vendor_bridge_rel=float(np.max(np.linalg.norm(W - Wv, axis=1)) / np.linalg.norm(Wv[0])))
             if nxt is not None:
                 rh = []
                 for k in range(6):

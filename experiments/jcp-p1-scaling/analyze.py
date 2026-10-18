@@ -310,6 +310,25 @@ def p1g(A):
     return out
 
 
+def p1e_judge(rows, rho, pairs, steps=None):
+    """A1.12 / A7.2: per adjacent rule pair, the rollout bar (worst distance <= 2.5e-4 over cases) and the rho bar (worst
+    own-state rho of the coarser rule vs the finer <= 0.116), with validity; descriptive (no qualification label)."""
+    out = {}
+    for pr in pairs:
+        d = [r_['dist'][pr] for r_ in rows if pr in r_['dist']]
+        rh = [x for v in (rho.get(pr) or {}).values() for x in (v if isinstance(v, list) else [v])]
+        a_, b_ = pr.split('|')
+        ok = all(r_['valid'].get(a_, False) and r_['valid'].get(b_, False) for r_ in rows)
+        out[pr] = dict(worst_distance=SC.dmax(d), rollout_bar=bool(d) and SC.dmax(d) <= SC.BAR_Q2,
+                       worst_rho=SC.dmax([x for x in rh if not np.isnan(x)]) if rh else None,
+                       rho_bar=bool(rh) and SC.dmax([x for x in rh if not np.isnan(x)]) <= SC.BAR_RHO, all_valid=ok)
+    if steps:
+        out['solver'] = dict(saturated=sum(v['saturated'] for v in steps.values()), reason3=sum(v['reason3'] for v in steps.values()),
+                             nonstationary=sum(v['nonstationary'] for v in steps.values()), steps=sum(v['steps'] for v in steps.values()),
+                             vendor_bridge_worst=max(v['vendor_bridge_rel'] for v in steps.values()))
+    return out
+
+
 def main():
     cache = {}
     A, accinfo = {}, {}
@@ -360,6 +379,15 @@ def main():
     res['kernels_3d'] = kernels(k3, [64, 128, 256, 512, 768, 1024], '3D', tok) if k3 else 'not reached (deferred or failed)'
     e3 = out_dir('p1e3d', 'p1three_p1e3d')
     res['p1e']['3d'] = json.loads((e3 / 'result.json').read_text())['p1e'] if e3 else 'not reached (deferred or failed)'
+    if isinstance(res['p1e']['3d'], dict):
+        e = res['p1e']['3d']
+        res['p1e']['3d_judged'] = p1e_judge(e['rows'], e.get('rho', {}), list(e['rows'][0]['dist']), e.get('steps'))
+    if res['p1e'].get('2d'):
+        res['p1e']['2d_judged'] = {}
+        for cfg_, v in res['p1e']['2d'].items():
+            rows = [dict(r_, valid={k_.replace('main', 'deployed'): x for k_, x in r_['valid'].items()}) for r_ in v['rows']]
+            res['p1e']['2d_judged'][cfg_] = p1e_judge(v['rows'], {pr: {str(i): r_['rho'][pr] for i, r_ in enumerate(v['rows'])}
+                                                                   for pr in v['rows'][0]['rho']}, list(v['rows'][0]['dist']))
     res['memory'] = {m: dict(setup=accinfo[m]['setup'], memory=accinfo[m]['memory'],
                              configs={k: dict(table_bytes=v['table_bytes'], setting_bytes=v['setting_bytes'], setup_seconds=v['setup_seconds'])
                                       for k, v in accinfo[m]['configs'].items()}, elapsed=accinfo[m].get('elapsed')) for m in accinfo}

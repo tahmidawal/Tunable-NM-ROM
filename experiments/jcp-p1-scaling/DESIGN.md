@@ -723,3 +723,17 @@ the smoke). (iii) The A6.2 rule-identity check is now bound to the evaluated job
 hashes of `qcore.py` and `hari_quadrature.py` must equal the combined archive's. (iv) `smkC` (5352968) re-showed the
 kernel dispatch-sync control with the A6.1 protocol: 2D 1.97–1.99, 3D 1.99–2.00, all in [1.8, 2.2]; the final
 acceptance (`checks/smoke-accept.json`, archives smkA + smkC + smkB) passes every required control.
+
+---
+
+## Amendment A7 (2026-10-18, before the `p1e3d` job; answers `audits/codex-job-4.md`, FIX-FIRST for p1e3d)
+
+**A7.1 P1e-3D solver with observable damping saturation.** The vendored `offmesh.make_fsc_rule` does not expose its
+damping state, so damping saturation could not be checked (A1.4/A1.12). P1e-3D now runs the jcp-combined fixed-sweep
+solver `fs3.make_fs_query` (lane copy `p1fs3.py`; only its `t2core` import is redirected to `p1core`) with BE,
+$K=1$, $a=6$, $\Delta t=0.01$ — the deployed solver (combined gate G-FS1) — which reports per-step saturation; validity =
+finite trajectory, fields and step ratios, no reason-3 step, no saturated step. The vendored solver is run alongside on
+every case as a bridge (relative coefficient difference reported; 0.0 on the CPU test).
+**A7.2 Judgments.** For each adjacent pair of the chain (and the 2D slice) `analyze.py` reports the rollout bar
+(worst distance ≤ $2.5\times10^{-4}$), the ρ bar (worst own-state ρ ≤ 0.116) and validity, plus pooled non-stationary,
+saturated and reason-3 step counts. P1e stays descriptive (no qualification label).

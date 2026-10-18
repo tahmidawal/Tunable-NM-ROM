@@ -1914,3 +1914,8 @@ already guarantees this without waiting: the 3D job's full wall (8.5 h) is reser
 (4 h) also reserved the total is 16.163 + 8.5 + 4 = 28.663 ≤ 30 GPU-h, so the 3D job cannot be starved whatever
 either job actually uses. The 256² job may therefore run concurrently (lane cap 2). The defer order still governs:
 if a later need (a retry of the 3D job) does not fit, the 256² cell is the item dropped.
+
+**A43.5 (job audit 11): A43.4 is withdrawn.** The reservations protect only the 3D job's current attempt, not a retry
+that a failure of it would need; a concurrently running 256² job could consume that allowance. A43.3 stands: the 2D
+256² Stage-B job (staged as s2d256a, audited on everything else by job audit 10) is submitted only after s3d64a is
+reconciled and only if its wall then fits, with any 3D retry taking precedence.

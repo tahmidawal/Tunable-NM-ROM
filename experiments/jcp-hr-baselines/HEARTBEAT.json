@@ -1,18 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T23:30:34Z",
- "step": "s3d64a 5917329 RUNNING (GPU confirmed); job audit 10 blocked s2d256a only on A43.3's wait wording -> A43.4 restatement; job audit 11 running",
+ "utc": "2026-10-18T23:32:04Z",
+ "step": "job audit 11: A43.4 withdrawn (a 3D retry would be unprotected) -> s2d256a held until s3d64a is reconciled (A43.3/A43.5); s3d64a 5917329 RUNNING; next: results audit of the 2D 1024^2 verdict",
  "waiting_on": {
   "slurm_jobs": [
    5917329
   ],
-  "codex_output": "audits/codex-job-11.md",
-  "codex_pid": [
-   4137201
-  ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T23:49:34Z",
+ "expected_finish_utc": "2026-10-18T23:51:04Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

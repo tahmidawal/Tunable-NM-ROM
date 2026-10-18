@@ -5,12 +5,12 @@ Order (A26.3: required work first, the registered defer order last):
   2. offline construction from TRAINING draws: snapshots, POD (certified), trust radii; (2D 256^2) the A1.3 saturation
      check with the all-step basis installed on failure; in-cell adequacy on the basis actually used (A2.2); advection
      POD; generator-probe basis (A2.3); ECSW training states and one support-targeted NNLS path per rank (A16/A20/A24);
-  3. Stage A on the screening cases: HR arms (ECSW k2/k4/k8, Q-DEIM p/r 1/2/4) at every rank, then `none` at r < 256,
+  3. Stage A on the screening cases: HR arms (ECSW k2/k4/k8, Q-DEIM p/r 1/2/4) at every rank, then `none` at every rank,
      each x option x {native, common}, with in-job Q1 (tight native anchor on every case, tighter on the first two),
      a burned warm timing run checked against the scored run (<= 1e-12, A6.6) and E0 scores;
   4. the full-rank limiting comparator (central FOM) on the verdict cohort, convergence checked;
-  5. deferrable (DESIGN 12 defer order, run while the job's budget allows): `none` at r >= 256, the A2.18/A16.2
-     extension (A25.1), the generator-probe runs.
+  5. deferrable in-job (A30.1, run while the job's budget allows): the A2.18/A16.2 extension (A25.1), then the
+     generator-probe runs.
 Every configuration is in a predeclared inventory with status not_run / construction_failed / run_failed / complete /
 deferred; every completed configuration and case is checkpointed to <out>/tune.json at once. Arrays: <out>/arrays/
 (output coefficients W, anchors, trajectories, gamma: lattice fields are W @ Phi_lat^T) and <out>/artifacts/ (basis,
@@ -401,7 +401,7 @@ def main():
     for r in ranks:                                    # never deferred: the HR grids (DESIGN 12)
         for kind, hrp in HR_GRID:
             screen(r, kind, hrp)
-    for r in [r for r in ranks if r < 256]:
+    for r in ranks:                                    # never deferred: `none`, both solvers, every rank (A1.14, A2.15)
         screen(r, 'none', '-')
     O.res['search_hours_registered'] = (time.perf_counter() - search_t0) / 3600
 
@@ -431,17 +431,8 @@ def main():
         return len(O.res['fom_limiting'])
     O.phase('fom_limiting', fom_runs, store='fom_count')
 
-    # ---- 5. deferrable work, in the registered defer order (first dropped first: none at r >= 256) ---------------
+    # ---- 5. deferrable work (A30.1: in-job deferrable items are the extension and the generator-probe runs) --------
     O.res['deferred'] = []
-    for r in [r for r in ranks if r >= 256]:
-        if deferrable():
-            screen(r, 'none', '-')
-        else:
-            for option in options:
-                for s in ('native', 'common'):
-                    set_status(PL.cfg_id('none', r, '-', option[0], option[1], s), 'deferred', reason='budget')
-            O.res['deferred'].append(f'none|{r}')
-    O.save()
 
     def extension():                                   # A2.18 / A16.2 / A25.1
         import stats as ST
@@ -483,6 +474,8 @@ def main():
 
     # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis ---------
     O.res['probe_runs'] = {}
+    if probe is not None and 'Phi' in PROBE and not deferrable():
+        O.res['deferred'].append('generator probe runs (budget)')
     if probe is not None and 'Phi' in PROBE:
         def probe_runs():
             Pu = jnp.asarray(PROBE.pop('Phi'))

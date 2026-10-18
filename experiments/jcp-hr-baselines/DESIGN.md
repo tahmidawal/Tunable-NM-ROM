@@ -1584,3 +1584,29 @@ any production data).
 'mesh')` with `Setting.data(rule)`, using byte-identical copies of `s3common.py`, `qn3.py`, `fs3p.py` (speed3d
 691465d88; INHERITED.json), replacing the c3common-based adapter (which cannot run the quasi-Newton `qn` arms). Timed
 input: the 63³ interior IC; output: the six lattice fields. G-ours (1e-10 relative, timing cases) is the gate.
+
+---
+
+## Amendment A30 (2026-10-18) — design audit 19 (NEEDS-RESTATEMENT, no WRONG)
+
+**A30.1 One consolidated defer list (replaces §12's list, A1.14, A2.15 and A28.5's cross-reference).** First dropped
+first: (1) the A2.18/A16.2 extension rungs (also allocation-limited, A28.3); (2) exploratory A–B–A pairs — in the
+Stage-B job every Q1-qualified member is timed against every admitted X in A1.12 total order; a member left untimed at
+the wall limit is "not timed", and a role whose candidate set is incomplete because of it is reported "role incomplete
+(timing)", never filled; (3) the generator-probe runs; (4) the 2D 256² cell; (5) the 3D Δt/Δt₀ = 2.5 options (A2.4
+applies to comparators on them); (6) the 3D r = 512 rank. **Never dropped:** `none` with both solvers at every rank,
+the ECSW and Q-DEIM grids with both solvers (A2.15), the full-rank limiting comparator, Stage B, picks and the Stage-B
+jobs. Items (1)–(3) are deferred inside a running job by its budget guard; items (4)–(6) only by a pre-submission
+decision recorded as an amendment (none is taken now: the A26.4 bound fits). The tuning job's execution order (A26.3)
+is: comparators → construction → HR grids → `none` at every rank → limiting comparator → extension → probe runs.
+Incomplete-cell and retry rules of A28.5 are kept.
+
+**A30.2 Batch-2 accounting and provenance (restates A29.1's "satisfied by construction").** Shared execution in the
+tuning job replaces A21.3 (i)'s separate timing pass, and (ii) is met by forming the Stage-B membership with batch 1
+and batch 2 together; (iii) pick freezing is superseded by A26.5 (membership frozen before Stage B, picks after);
+(iv) still applies: batch 2's runs (its G-ours replays, warm timings and Stage-B A–B–A pairs) are inside the tuning and
+Stage-B jobs' wall-limit bounds (A26.4) and are charged to the baseline's V ledger as part of those jobs; ours' V
+ledger adds jcp-qualify's 3D qualification jobs counted once: smk3 (5366486, 0.0622 h), q3d (5396416, 0.1456 h), q3d2
+(5422698, 0.1036 h), q3d3 (5440837, 0.1761 h) = 0.4875 GPU-h (elapsed, 1 GPU each, from its GPU-LEDGER). Pinned
+export: jcp-qualify `runs/EXPORT.json` sha256 6cb394d149be8852260b75a585db8102791ef52e9963ab6934f67d536c374431
+(lane commit 4399491eb). Batch-1 outcomes are never promoted into qualified H-base conclusions.

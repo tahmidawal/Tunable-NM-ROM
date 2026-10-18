@@ -676,3 +676,16 @@ $r^{\rm rec}={\rm tolratio}\times({\rm tol}+10^{-300})$ (exactly inverting `p1co
 finite (an overflowed ratio fails G-cert for that step); G-cert: $|r^{\rm cert}-r^{\rm rec}|\le10^{-6}r^{\rm rec}+10^{-15}$.
 The zero-scale certificate (certified iff the recomputed raw weighted residual is exactly 0) is unchanged. Raw norms and
 scales are stored. The same recovery is used for GAL (qualify A3.2 is the special case).
+
+---
+
+## Amendment A4 (2026-10-18, before any lane job; answers `audits/codex-design-4.md`, NEEDS-RESTATEMENT on one item)
+
+**A4.1 Fixture admission requires finite evidence.** The bad-vector fixture (A2.2) is **admitted** only if, at every
+state of $\mathcal S_{\rm fix}$, the input coefficients, $N_{\rm bad}(c)$ and $N_{\rm tgt}(c)$ are finite, $\lVert
+N_{\rm tgt}(c)\rVert>0$, and the finite ratio $\rho_{\rm tgt}\ge1$. Any non-finite value or zero target norm in the
+establishment makes the fixture "**unavailable (fixture not established)**" — a computational failure is never an
+established discrepancy. The conservative non-finite → flag convention of A3.2 applies only to the production gate. A3.2's
+sentence "0/0 is impossible for a non-zero target state" is withdrawn (a non-zero coefficient vector need not give a
+non-zero tested advection); the conservative flag stays. G-cert recovery (A3.3) is algebraically exact; floating-point
+rounding is covered by its tolerance; for GAL the tolerance is the per-step $t_f\lVert Ac_n\rVert$ (`p1core.py:192`).

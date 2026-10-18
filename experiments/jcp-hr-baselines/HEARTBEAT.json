@@ -1,16 +1,17 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T18:17:53Z",
- "step": "resumed (coordinator #3): collecting t2d256a (COMPLETED), then submitting s2d1024a; offloading raw archives per COMMON-BRIEF 16",
+ "utc": "2026-10-18T18:23:08Z",
+ "step": "s2d1024a submitted (5674029); t2d256a collected (light; saturation failed -> 1024 snapshot-limited); freeze c2d256 done (46 members, est 4.59 h); offloading raw archives per COMMON-BRIEF 16 (offload.sh sort-locale mismatch on smk1/smk2: identical file sets, retry with LC_ALL=C); t3d64b 5542231 RUNNING",
  "waiting_on": {
   "slurm_jobs": [
-   5542231
+   5542231,
+   5674029
   ],
   "codex_output": null,
   "codex_pid": [],
-  "local_pid": null
+  "local_pid": 3436874
  },
- "expected_finish_utc": "2026-10-18T18:37:53Z",
+ "expected_finish_utc": "2026-10-18T18:53:08Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

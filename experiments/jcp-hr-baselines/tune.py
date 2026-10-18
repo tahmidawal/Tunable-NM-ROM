@@ -89,7 +89,10 @@ def hr_points(kind, r, hrp, cell):
 
 
 def main():
+    global SCREEN
     cfg = json.loads(Path(sys.argv[1]).read_text())
+    if cfg.get('dry'):                                  # local CPU dry run only (never in a cluster config)
+        SCREEN = [0, 1, 2]
     O = Out(sys.argv[2])
     if not cfg.get('allow_cpu'):
         assert jax.default_backend() == 'gpu', jax.default_backend()
@@ -168,9 +171,20 @@ def main():
     del S
     O.res['adv'] = {k: v for k, v in cell.info.get('adv', {}).items() if k != 'sigma'}
     O.phase('ecsw_states', lambda: cell.ecsw_states(fam_tr), store='ecsw_states')
+    O.res.setdefault('construction_failures', {})
     for r in ranks:
         def ecsw_r(r=r):
+            if d == 3 and r == max(ranks):                 # A22.2 / A24.4: device peak before the maximal path
+                O.res.setdefault('memory_admission', {})['before'] = PL.device_peak()
             rec = cell.ecsw(r)
+            if d == 3 and r == max(ranks):
+                pk = PL.device_peak()
+                bf = O.res['memory_admission']['before']   # process-cumulative peaks: the path set a new peak iff after > before
+                O.res['memory_admission'].update(after=pk, limit=120e9, path_set_peak=bool(pk > bf),
+                                                 admitted=bool(0 <= pk and (pk <= bf or pk <= 120e9)))
+                if not O.res['memory_admission']['admitted']:
+                    cell.ecsw_rec.pop(r, None)             # rank r: "not constructible (memory)"
+                    O.res['construction_failures'][f'ecsw|{r}|*'] = f'not constructible (memory): peak {pk} B > 120 GB'
             kw = {}
             for att, cps in cell.ecsw_paths_raw[r].items():
                 kw[f'{att}~drops'] = np.asarray(cps['_drops'])
@@ -249,26 +263,26 @@ def main():
         import ours as OU
         out = {}
         if d == 2:
+            exp = json.loads((HERE / 'inputs' / 'p1_analysis.json').read_text())['configurations']
+            ref_e = {k: {j: exp[k]['e0_per_case'][f'dev6|{j}'] for j in SCREEN} for k in cfg['ours']}
             ox = OU.OursP1(L, cfg['ours'], log=log)
-            items = [(k, ox.fn(k)) for k in cfg['ours']]
+            items = [(k, ox, ox.fn(k)) for k in cfg['ours']]
         else:
-            items = []
-            oxs = {}
-            for spec in cfg['ours']:
-                bank, Rp, rule, a = spec['bank'], spec['Rp'], spec['rule'], spec['a']
-                kk = f'{bank}|{Rp}|{rule}'
-                if kk not in oxs:
-                    oxs[kk] = OU.Ours3D(bank, Rp, rule, a=a, log=log)
-                items.append((spec['id'], (oxs[kk], oxs[kk].fn(tuple(spec['spec'])))))
-        for key, f in items:
-            if d == 2:
-                fx, lat, u0f = f, ox.lattice, (lambda j: ox.u0(fam, j))
-            else:
-                o3, fx = f
-                lat, u0f = o3.lattice, (lambda j, o3=o3: o3.u0(fam, j))
+            exp = json.loads((HERE / 'inputs' / 'speed3d_batch1_e0.json').read_text())['configs']
+            ref_e = {k: {j: exp[k]['e0'][str(j)] for j in SCREEN} for k in cfg['ours']}
+            items, oxs = [], {}
+            for k in cfg['ours']:                          # '<setting>|<rule>|fs|<scheme>|<dt>|K<k>' (speed3d keys)
+                st, rule, kind, scheme, dt, K = k.split('|')
+                assert kind == 'fs', k
+                bank, Rp, a = OU.S3_SETTINGS[st]
+                if (st, rule) not in oxs:
+                    oxs[(st, rule)] = OU.Ours3D(bank, Rp, rule, a=a, log=log)
+                o3 = oxs[(st, rule)]
+                items.append((k, o3, o3.fn(('fs', scheme, float(dt), int(K[1:])))))
+        for key, ox_, fx in items:
             rec = {}
             for j in SCREEN:
-                u, v = u0f(j), jnp.float64(fam.nu(j))
+                u, v = ox_.u0(fam, j), jnp.float64(fam.nu(j))
                 o = fx(u, v)
                 jax.block_until_ready(o['fields'])               # warm
                 PL.burn(0.1)
@@ -276,11 +290,15 @@ def main():
                 o = fx(u, v)
                 jax.block_until_ready(o['fields'])
                 ts = time.perf_counter() - t0
-                Fl = lat(o)
-                rec[j] = dict(seconds_warm=ts, e0=refs.score_safe(Fl, j)['e'])
+                Fl = ox_.lattice(o)
+                e = refs.score_safe(Fl, j)['e']
+                rel = abs(e - ref_e[key][j]) / abs(ref_e[key][j]) if np.isfinite(e) else float('inf')
+                rec[j] = dict(seconds_warm=ts, e0=e, e0_exported=ref_e[key][j], replay_rel=rel)
                 O.npz('arrays', f'X~{key}~{j}', F=Fl)
-            out[key] = rec
-            log(f'   ours {key}: ' + ' '.join(f"{j}:{rec[j]['seconds_warm']:.4f}s" for j in SCREEN))
+            worst = max(rec[j]['replay_rel'] for j in SCREEN)
+            out[key] = dict(cases=rec, replay_worst_rel=worst, G_ours=bool(worst <= 1e-10))   # DESIGN 8: G-ours
+            log(f'   ours {key}: G-ours={worst <= 1e-10} ({worst:.2e}) ' +
+                ' '.join(f"{j}:{rec[j]['seconds_warm']:.4f}s" for j in SCREEN))
         return out
     if cfg.get('ours'):
         O.phase('ours_pass', ours_pass, store='ours_pass')
@@ -307,9 +325,10 @@ def main():
         out = {}
         cohorts = [('dev6', H.Family(2, 'dev6')), ('val32', H.Family(2, 'val32'))] if d == 2 else [('val64', fam)]
         for cname, f_ in cohorts:
-            rf = SC.Refs(d, cname, f_, list(range(f_.n)))
+            jj = list(range(f_.n)) if not cfg.get('dry') else [0, 1]
+            rf = SC.Refs(d, cname, f_, jj)
             for option in options:
-                for j in range(f_.n):
+                for j in jj:
                     o = fom(f_.ic(L, j), f_.nu(j), H.sched(*option), 1e-10, 1e-12)
                     Fl = cell.lattice(o['out'])
                     out[f'{cname}|{j}|{option[0]}|{option[1]:.8g}'] = rf.score_safe(Fl, j)['e']

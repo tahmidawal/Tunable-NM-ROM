@@ -1412,4 +1412,12 @@ the job directory for the next job. After offline Stage-B freezing (A2.6, A5.3) 
 **Stage-B job** per cell runs the frozen Stage-B members on the full verdict cohort with Q1, and the A–B–A timing of
 every (X, B) pair admitted by A1.12 on the 6 timing cases; picks and labels are then computed offline from that job's
 data (A1.6) and frozen with sha256 before the report. Memory admission (A22.2): the 3D tuning job records the device
-peak before and after the r = 1,024 ECSW path; > 120 GB (decimal) makes that rank "not constructible (memory)".
+peak before and after the r = 1,024 ECSW path (JAX reports the process-cumulative peak, so the path's own peak is
+known only when it sets a new one); a new peak > 120 GB (decimal) makes that rank "not constructible (memory)".
+
+**A24.5 G-ours inputs.** 2D: the per-case E0 of each batch-1 key from jcp-p1-scaling `checks/analysis.json`
+(`inputs/p1_analysis.json`, keys `dev6|0..5`). 3D: the per-case E0 of each batch-1 key on the selection cohort
+(seed 923801, cases 0–5) extracted from speed3d `checks/scores-g{1,2,3}.json` at commit 691465d88 into
+`inputs/speed3d_batch1_e0.json` (source sha256 recorded). Ours' 3D settings (bank, R', adaptive start a) are speed3d
+`configs/r1.json`'s: M2_512 = (M2, 512, 3), W256/W512/W768/W1024 = (W1024, R', 6). G-ours is evaluated in the tuning
+job (screening cases = timing cases) and again in the Stage-B job; a failure in either removes that X (reported).

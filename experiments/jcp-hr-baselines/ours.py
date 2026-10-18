@@ -68,6 +68,8 @@ class Ours3D:
         return jnp.asarray(H.C3.initial_interior(self.n, fam.T, j))
 
 
+S3_SETTINGS = {'M2_512': ('M2', 512, 3), 'W256': ('W1024', 256, 6), 'W512': ('W1024', 512, 6),   # speed3d r1.json
+               'W768': ('W1024', 768, 6), 'W1024': ('W1024', 1024, 6)}
 P1_RULES = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
 
 

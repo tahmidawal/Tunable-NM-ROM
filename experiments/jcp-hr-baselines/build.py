@@ -341,7 +341,8 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, lo
     target (16 r), recorded at first crossings of s = kappa r (actual sizes and training residuals reported) and at the
     tau crossings (reported). A16.3/A16.5: whenever more than 1 % of the candidates were banned, the path is rebuilt once
     with banning disabled (same NNLS_MAX_ITER); one whole path is selected by the A16.5 order; both attempts are returned.
-    A target unreached on the selected path is a construction failure."""
+    A23: a target unreached because the path stopped at a certified KKT optimum is filled by that optimum ("optimum");
+    any other unreached target is a construction failure."""
     targets = [int(k * r) for k in kappas]
     cap = min(max(targets), len(cand_nodes))
     sup = [t for t in targets if t <= cap]

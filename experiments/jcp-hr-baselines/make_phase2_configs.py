@@ -1,0 +1,24 @@
+"""Writes the phase-II tuning-job configurations (DESIGN 3.3, 6, A1.3, A1.4, A21 batch 1, A24.4):
+configs/tune_2d256.json, configs/tune_2d1024.json, configs/tune_3d64.json, and configs/tune_cpu_{2d,3d}.json (local CPU
+dry run at tiny size; never submitted)."""
+import json
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+OPT2 = [['BE', 0.005], ['CNR', 0.005]]
+OPT3 = [[s, 0.05 / k] for s in ('BE', 'CN', 'BDF2') for k in (5, 4, 3, 2)]     # dt0 x {1, 1.25, 5/3, 2.5}, dt0 = 0.01
+P1_256 = [f'256|{r}|{s}' for r in ('R128', 'R256', 'R384', 'R384nom') for s in ('BE', 'CNR')]
+P1_1024 = [f'1024|{r}|{s}' for r in ('R128', 'R256', 'R384', 'R512') for s in ('BE', 'CNR')]
+S3 = [f'{c}|fs|BE|0.01|K1' for c in ('M2_512|gl32', 'W256|gl24', 'W512|lat32768', 'W768|lat32768', 'W1024|lat65536')]
+R2, R3 = [32, 64, 128, 256, 384], [64, 128, 256, 512, 768, 1024]
+cfgs = dict(
+    tune_2d256=dict(d=2, L=256, ranks=R2, options=OPT2, saturation=True, ours=P1_256, n_traj=None),
+    tune_2d1024=dict(d=2, L=1024, ranks=R2, options=OPT2, saturation=False, ours=P1_1024, n_traj=None),
+    tune_3d64=dict(d=3, L=64, ranks=R3, options=OPT3, saturation=False, ours=S3, n_traj=None),
+    tune_cpu_2d=dict(d=2, L=256, ranks=[8, 16], options=OPT2, saturation=True, ours=['256|R128|BE'], n_traj=12,
+                     allow_cpu=True, dry=True),
+    tune_cpu_3d=dict(d=3, L=64, ranks=[8, 16], options=OPT3[:1] + OPT3[8:9], saturation=False, ours=S3[1:2], n_traj=12,
+                     allow_cpu=True, dry=True))
+for k, v in cfgs.items():
+    (HERE / 'configs' / f'{k}.json').write_text(json.dumps(v, indent=1) + '\n')
+    print(k, len(v['ranks']), len(v['options']), len(v['ours']))

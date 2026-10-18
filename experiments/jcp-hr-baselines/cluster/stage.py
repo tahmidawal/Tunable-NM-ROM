@@ -22,7 +22,9 @@ FILES = [f'{LANE}/{f}' for f in ('hrcore.py', 'rom.py', 'build.py', 'nnls.py', '
                                   'e0/refcore.py', 'e0/refstore.py', 'e0/verdict.py', 'e0/cohorts.py',
                                   'e0/store/MANIFEST.sha256', 'e0/store/STATUS.json', 'inputs/model_W1024/bank.pkl',
                                   'rules3d/rules_extra.npz', 'rules3d/rules_gl96.npz', 'rules3d/rules_gl112.npz',
-                                  'smoke_accept.py', 'tests/test_core.py', 'checks/test_core.json')] + \
+                                  'smoke_accept.py', 'tests/test_core.py', 'checks/test_core.json', 'tune.py',
+                                  'p1core.py', 'p1common.py', 'inputs/p1_analysis.json', 'inputs/p1_EXPORT.json',
+                                  'inputs/speed3d_EXPORT.json', 'inputs/speed3d_batch1_e0.json')] + \
     [f'{VQ}/qcore.py', f'{VQ}/qstudy.py', f'{VQ}/vendor/arms.py', f'{VQ}/vendor/hops.py', f'{VQ}/vendor/hfast.py',
      f'{VQ}/vendor/bkfast.py', f'{VQ}/vendor/hari_quadrature.py', f'{VQ}/inputs/rotation_R512.npz',
      f'{VQ}/inputs/rule_q0_m1024_qrg304_reachable.npz', f'{V3}/offmesh.py', f'{V3}/qpanel.py', f'{V3}/rules/rules.npz',
@@ -42,7 +44,7 @@ def git_show(commit, name):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
-    p.add_argument('--driver', required=True, choices=['smoke'])
+    p.add_argument('--driver', required=True, choices=['smoke', 'tune'])
     p.add_argument('--config', required=True)
     p.add_argument('--gpu', default='h200', choices=sorted(GRES))
     p.add_argument('--mem', default='200G')
@@ -114,7 +116,7 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
 '''
     (out / 'run.sbatch').write_text(script)
     env = dict(os.environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='')
-    chk = (f'import sys, {a.driver}, ours, c2common, c3common; staged = {str(out)!r}; '
+    chk = (f'import sys, {a.driver}, ours, c2common, c3common, p1common; staged = {str(out)!r}; '
            'mods = [m.__file__ for m in list(sys.modules.values()) if getattr(m, "__file__", None) and "/experiments/" in m.__file__]; '
            'bad = [f for f in mods if not f.startswith(staged)]; assert not bad, bad; print(len(mods), "lane modules from the staged tree")')
     r_ = subprocess.run(['/home/tahmid/Dev/.venv/bin/python', '-c', chk], cwd=out / LANE, env=env, capture_output=True, text=True)

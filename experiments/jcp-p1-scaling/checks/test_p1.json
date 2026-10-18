@@ -1,0 +1,110 @@
+{
+ "wilcoxon matches scipy": {
+  "passed": true,
+  "worst_abs_diff": 0.0,
+  "comparisons": 69,
+  "scipy": "1.17.1"
+ },
+ "tost n=5 zeros rejects both sides (all |d+1| tied -> normal approximation)": {
+  "passed": true,
+  "p": 0.012673659338734128
+ },
+ "tost n=5 untied small d rejects both sides (exact 2^-5)": {
+  "passed": true,
+  "p": 0.03125
+ },
+ "tost all d=1 upper side does not reject": {
+  "passed": true,
+  "p_upper": 1.0
+ },
+ "synthetic timing fault -> fail": {
+  "passed": true,
+  "ci": [
+   1.9928504319147022,
+   2.0156003309737995
+  ]
+ },
+ "synthetic timing unmodified -> pass": {
+  "passed": true,
+  "ci": [
+   1.0009781789057746,
+   1.0096656382003373
+  ]
+ },
+ "H-cost-N undefined resamples handled": {
+  "passed": true,
+  "outcome": "pass",
+  "undefined": 0.0021
+ },
+ "H-cost-N > 1/3 invalid -> verdict not reached": {
+  "passed": true
+ },
+ "synthetic accuracy trend -> fail": {
+  "passed": true,
+  "outcome": "fail"
+ },
+ "synthetic accuracy equal -> pass": {
+  "passed": true,
+  "outcome": "pass"
+ },
+ "H-acc-N empty pair -> inconclusive": {
+  "passed": true
+ },
+ "H-acc-N zero margin floor finite": {
+  "passed": true
+ },
+ "H-acc-r 10/38 unqualified -> inconclusive": {
+  "passed": true
+ },
+ "H-acc-r all improve -> improves": {
+  "passed": true
+ },
+ "H-acc-r all worsen -> does not improve": {
+  "passed": true
+ },
+ "H-acc-r empty -> inconclusive": {
+  "passed": true
+ },
+ "H-acc-r ties -> inconclusive": {
+  "passed": true
+ },
+ "range aggregation": {
+  "passed": true
+ },
+ "H-cost-r synthetic r^2 declared 3 -> fail": {
+  "passed": true,
+  "ci": [
+   1.996274225035458,
+   2.002278150861434
+  ]
+ },
+ "H-cost-r synthetic r^2 declared 2 -> pass": {
+  "passed": true,
+  "ci": [
+   1.996274225035458,
+   2.002278150861434
+  ]
+ },
+ "H-cost-r flat cost -> inconclusive": {
+  "passed": true
+ },
+ "operation_model_exponents_fixed_panel": {
+  "flops": {
+   "N": 0.9999999999999727,
+   "J": 1.0000013372039274,
+   "JTJ": 2.000023277165562,
+   "chol": 2.9682186602116793
+  },
+  "bytes": {
+   "N": 0.9999999999999738,
+   "J": 0.9999999923751125,
+   "JTJ": 1.1639677513913909,
+   "chol": 2.0000116413881286
+  }
+ },
+ "Q3 duplicated column -> rank deficit and cond > 1e12": {
+  "passed": true,
+  "condition": 763385569221386.4,
+  "rank": 383
+ }
+}

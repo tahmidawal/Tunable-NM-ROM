@@ -618,3 +618,33 @@ rule, not as a list-only effect.
 **A2.6 Reservations (A1.11, completed).** A reservation is held from submission until `sacct` reports a terminal state
 and the elapsed time is entered in the ledger; every attempt counts (requeues, failed starts, resubmissions on another
 GPU type); raising a job's time limit requires a new reservation check before `scontrol update`.
+
+---
+
+## Amendment A3 (2026-10-18, before any lane job; answers `audits/codex-design-3.md`, NEEDS-RESTATEMENT)
+
+**A3.1 H-cost-r fit and its synthetic control, frozen as code (blocker 1).** The fit minimises **relative residuals**
+$(a+e^{\beta}r^p-t)/t$ (each rank weighted equally on a relative scale; times span three decades) — this weighting was
+unstated before and is the cause of the round-3 discrepancy (an absolute-residual fit of the same fixture gives
+$\hat p\approx2.017$). Data per rank: mean over the (resampled) fixtures of the fixture medians. The executable
+specification is `p1stats.fit_power` / `p1stats.h_cost_r` (bootstrap: `default_rng(20261017)`, cases drawn with
+replacement, each case carrying its 2 fixtures × all ranks) and the synthetic control is `test_p1.py::t_h_cost_r`
+(`default_rng(0)`, one draw of shape (case 6, fixture 2, rank 6), $t=(a+br^2)(1+0.01z)$), committed with this amendment.
+Verified before any lane job with 10,000 resamples: point $\hat p=1.9992$, interval [1.9963, 2.0023] → declared 3
+**fail**, declared 2 **pass**; the rank-major draw order gives [1.9976, 2.0068], same outcomes (the control does not
+depend on the axis order under the frozen weighting). No statistical rule was changed to obtain these outcomes.
+
+**A3.2 P1c times the recording executable, so the certified trajectory is the timed one (blocker 2).** A2.3's separate
+recording run is withdrawn. Every P1c evolution (A and B, scoring and timed) is the internal-state-recording program
+(`nrec` = 51, the same program as the P1d production runs). The untimed scoring run of each (subject, case) is certified
+in-job (autodiff γ every step, G-cert, validity per A1.4); every timed run must reproduce the scoring run's W **and its
+full internal-state array and per-step exit reasons and iteration counts** (sha256 equality), so the certificate is a
+certificate of the timed execution. Tight, tighter, successor and check replays and the own-state ρ use the scoring run's
+own outputs. Both labels (timing-job dev6, accuracy-job population) must pass, as in A2.3. Cost of recording: the smoke
+times the recording vs non-recording evolution (paired A–B–A, R128 and R384 at $1024^2$, dev6 cases 0–1) and reports
+the overhead; all P1c timings are labelled "solver with internal-state recording (one row write per step)".
+
+**A3.3 Scope carried to the coordinator.** H-cost-r is a statement about **component-kernel scaling** at fixed
+$(M,m)$; it does not establish total solver-time scaling in $r$ (A2.2). Component arithmetic is tied to the solver by
+numerical equivalence (the kernel `J`/`N` of `p1comp` equal the solver's `nlJ`/`nl` on the fixtures to $10^{-12}$
+relative, checked in the smoke), not by a wall-time band.

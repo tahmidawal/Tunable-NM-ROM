@@ -15153,3 +15153,575 @@ exec
    219	                FROZEN[d_] = {k: cfg_cells[d_][k] for k in FROZEN[d_]}
    220	        acc['DRY-RUN (not binding)'] = dict(ok=False)
 
+exec
+/bin/bash -lc "nl -ba experiments/jcp-hr-baselines/build.py | sed -n '455,565p'; nl -ba experiments/jcp-hr-baselines/DESIGN.md | sed -n '457,494p;535,592p;1150,1195p'; cat experiments/jcp-hr-baselines/inputs/speed3d_batch1_e0.json | head -35; cat experiments/jcp-hr-baselines/INHERITED.json | tail -65; rg -n 'memory|delete|del |cache|Tables|class Setting' experiments/jcp-hr-baselines/{s3common.py,c3common.py}" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+   457	  opposite directions); (3) **matches** (A1.11); (4) **unresolved**.
+   458	- Cell at X: qualified baseline front empty → "**baseline incomplete** at this mesh" (not assessed; never support). A
+   459	  pick "none" → "no baseline in role". **"H-base falsified at X"** iff a registered pick dominates X. Otherwise
+   460	  "not falsified by the registered picks" — a narrow statement: it is not proof that no baseline dominates.
+   461	- **Exploratory:** every Stage-B Q1-qualified configuration whose worst envelope is not entirely above X's is A–B–A
+   462	  timed against X and labelled with the same table, marked **exploratory, unadjusted**. Intervals are unadjusted for the
+   463	  number of X and of pairs; dimension-level statements list every X and are labelled exploratory.
+   464	- X with no eligible case-kind or missing exported errors → "not assessed".
+   465	
+   466	**A1.13 (items 18, 19) Memory, disk and workload inventory.** Peak live arrays (f64), with the phase they live in:
+   467	
+   468	| phase | 2D $1024^2$ | 3D $65^3$ |
+   469	|---|---|---|
+   470	| snapshots (host) | 6,912 × 1,046,529: 57.9 GB | 18,432 × 250,047: 36.9 GB |
+   471	| POD Gram / eigen (device) | 0.38 GB | 2.7 GB |
+   472	| advection snapshots (host, overwrite the state snapshots after POD and the trust spread are done) | 57.9 GB (same buffer) | 36.9 GB |
+   473	| $\Phi$ (r_max) + $\Delta_h\Phi$ + $D_h\Phi$ (device) | 3 × 3.2 GB | 3 × 1.0 GB |
+   474	| $U_{p_{\max}}$ (p ≤ 4 r_max) | 12.9 GB | 4.1 GB |
+   475	| Q-DEIM pivoting residual matrix ($p\times n$) | ≤ 12.9 GB | ≤ 4.1 GB |
+   476	| $B$ for one (r, p) + QR workspace | ≤ 2 × 19.3 GB | ≤ 2 × 6.1 GB |
+   477	| ECSW contribution matrix ($96r\times32768$) + $G^\top G_S$ ($32768\times$ support) | 9.7 + 2.1 GB | 12.9 + 2.1 GB |
+   478	| `none` arm $J$ + QR copy | 2 × 3.2 GB | 2 × 1.0 GB |
+   479	
+   480	Phases run sequentially and free their arrays (`del` + the device's own accounting); the device peak is the largest
+   481	phase (2D $1024^2$: $B$ QR ≈ 39 GB + resident $\Phi$ blocks ≈ 10 GB), host peak ≈ 60 GB (2D) / 40 GB (3D). **H200**
+   482	(143,771 MiB) for the 2D $1024^2$ and 3D cells; A100-80 GB for $256^2$. Measured peaks from the smoke replace these.
+   483	Disk (cluster, per cell): $\Phi_{r_{\max}}$ (3.2 / 1.0 GB) and the compact online HR data (per configuration: stencil
+   484	rows ≤ 8,192 × 7 × r, $R_B$, $(P^\top U)^{-1}$; ≤ 1.5 GB in all) are kept for the verdict job; full $U$, $B$ and
+   485	snapshots are never written. Local: coefficients and lattice-row bases only (≤ 2 GB per cell).
+   486	
+   487	Workload inventory per cell (prod runs on cases; anchors per discrete problem; certification passes = prod runs):
+   488	
+   489	| item | 2D $256^2$ | 2D $1024^2$ | 3D $65^3$ |
+   490	|---|---|---|---|
+   491	| FOM snapshot trajectories | 576 | 576 | 1,536 |
+   492	| ECSW training FOM runs | 24 | 24 | 24 |
+   493	| full-rank limiting comparator (FOM) runs | 38 × 2 | 38 × 2 | 64 × 12 |
+   494	| configurations (ranks × HR × options × solvers) | 5×7×2×2 = 140 | 140 | 4×7×12×2 = 672 |
+   535	
+   536	**A2.2 (item 4) Snapshot adequacy, both meshes, fail-closed.** In addition to A1.3's $256^2$ saturation check, an
+   537	**in-cell adequacy check** runs in every cell on the actual basis: 32 training trajectories (the first 32 of the
+   538	seeded permutation) are re-run saving the held-out steps $\{3,5,6,8,12,17,22,35,45\}$ (2D) / $\{3,5,6,8,12,17,22,35,45\}$
+   539	(3D, same indices at Δt = 0.005); adequate iff, at every registered rank, the RMS relative projection error of these
+   540	held-out states ≤ 1.10 × that of the in-set snapshot states of the same trajectories. If either check fails, the cell is
+   541	labelled "**basis possibly under-sampled**" and, fail-closed, any statement that ours is **not** dominated by the
+   542	baseline in that cell is withheld (observed dominations by the baseline are still reported).
+   543	
+   544	**A2.3 (item 5) Trajectory generator: a recorded deviation, with a registered probe.** Decision (lane agent,
+   545	2026-10-18, autonomous per the campaign prompt; **to be ratified by the coordinator at phase-II release**): the primary
+   546	snapshots are operator-matched (§3.3, central FOM), because the bank's generator (sign-upwind BE) adds a numerical
+   547	viscosity of order $|u|h/2$ that, at $65^3$ ($h=1/64$, $|u|\lesssim2$), is comparable to ν itself, so a POD of those
+   548	fields would describe smoother dynamics than the operator being projected and would handicap the baseline. This departs
+   549	from the literal wording of the brief ("reuse the training-trajectory generator ... or its stored data"); only the
+   550	parameter draws are reused. **Generator probe (registered, cheap):** in each cell, the same 12-step snapshots are also
+   551	generated with the bank's own generator (sign-upwind BE, Δt = 0.005, `refcore.adv_upwind` arithmetic), a second POD is
+   552	built, and the `none` arm with the native solver runs on the screening subset at every rank and every option with each
+   553	basis; reported as projection errors and E0 errors side by side. If the coordinator rejects the deviation, the probe's
+   554	basis becomes the primary and the HR construction is rerun on it (cost in the inventory).
+   555	
+   556	**A2.4 (item 6) Deferred options restrict the comparator set.** If any baseline option is deferred, every X using that
+   557	option is "not assessed (baseline option deferred)". t2core `CNR` (two full BE steps) and refcore `cnr` (four half BE
+   558	steps) are different schemes; this lane uses the t2core convention everywhere and never compares against refcore `cnr`.
+   559	
+   560	**A2.5 (item 7) Task-level budget ledger.** Categories are assigned per **task** by in-job phase timers (device-synchronised
+   561	wall time per phase, written to the result JSON), not per job; `sacct` totals are reported beside the sum of phases
+   562	(the difference is overhead, reported). Ours' mapping, frozen: C-model = bank training jobs; C-hr = mesh table builds and
+   563	quadrature-rule selection/escalation (combined `c3desc*`, the rule-selection part of `c2grid` where its log separates
+   564	it, P1e); C-search = scheme/step/solver grids (combined `c2grid` remainder, `c2fbgrid`, `c3grid`; speed3d `g1–g3` grid
+   565	phase); C-cert = anchors and certification passes (where logged separately; otherwise inside C-search and stated). The
+   566	rule is **equal allocation**, not equal expenditure: the baseline's C-search allocation equals ours' C-search total per
+   567	dimension. Cases: (a) registered grid ≤ allocation → run it, then the bounded extension (A2.18) while allocation remains;
+   568	(b) registered grid > allocation → the grid still runs in full (it is registered) and every verdict line of that cell
+   569	says "**baseline search exceeded ours' allocation**"; (c) allocation cannot be met inside the 30 GPU-h cap → every pair
+   570	label in that cell is prefixed "**unequal-budget, descriptive**" and no H-base wording is used for it.
+   571	
+   572	**A2.6 (item 8) Stage B membership, algebraic.** Screening front $F$ = configurations not dominated in (median time on
+   573	the 6 timing cases, worst error on the 6 screening cases) among Q1-qualified ones. A configuration $q$ is **near-front**
+   574	iff $\exists f\in F$: $W_q\le1.5W_f$ **and** $t_q\le1.5t_f$. Stage B = all of $F$ (never capped) ∪ up to 24 near-front
+   575	configurations, chosen alternately from the fastest and the most accurate remaining ones (deterministic, ties by the
+   576	unique ID of A2.17). Coverage of $F$ is therefore complete.
+   577	
+   578	**A2.7 (item 9) Q1 predicate exactly as COMMON-BRIEF §3.** A step is non-stationary iff $\gamma>10^{-3}$ or $\gamma$ is
+   579	non-finite — **no residual-tolerance exception** (A1.7's exception is withdrawn). Solver termination (which may stop on
+   580	the residual tolerance) is separate from certification. Certification runs in the same job as the runs it certifies.
+   581	Anchor validity: every step of the anchor has $\gamma\le g_{\rm tol}$ of its level (1e-7 tight, 1e-8 tighter), finite,
+   582	no damping saturation; otherwise "anchor invalid" and the configuration is unqualified.
+   583	
+   584	**A2.8 (item 10) ECSW training states and scaling, restated.**
+   585	- Per trajectory of option (scheme, Δt) with $N$ steps the state steps are the deduplicated set
+   586	  BE, CN: $\{1,\lceil0.15N\rceil,\lceil0.4N\rceil,N\}$; CN-R: $\{1,2,3,\lceil0.15N\rceil,\lceil0.4N\rceil,N\}$;
+   587	  BDF2: $\{1,2,\lceil0.15N\rceil,\lceil0.4N\rceil,N\}$. Each state carries its own coefficients (start-up BE or main),
+   588	  $u_{k-1}$ and $u_{k-2}$ (BDF2). The state count is whatever the deduplicated schedule gives; it is generated from the
+   589	  schedule and reported per option with each state's training FOM residual.
+   590	- Scaling floor $\phi=\max(10^{-8}\,\mathrm{median}_s\|b(s)\|,\ 10^{-14}\max_s\|b(s)\|,\ 10^{-300})$; blocks with
+   591	  $\|b(s)\|<\phi$ are dropped and recorded; if every block is dropped, ECSW construction fails for that rank (recorded).
+   592	
+  1150	   recomputed); the `none` fallback is unchanged.
+  1151	6. **Phase I is not complete.** The brief allows one cluster smoke in phase I; smk1 was it. A second smoke `smk2`
+  1152	   (≤ 1 GPU-h, same inventory with A14/A15) is needed to show every control firing at real size, and is requested from
+  1153	   the coordinator in the phase-I hand-back.
+  1154	
+  1155	**A15.6 (code audit 9) Corrections and conventions.** Corrections to A15's evidence paragraph: the 3D state-POD
+  1156	orthonormality deviation was 1.3e-14 (2D 7.1e-15); "every step non-stationary" held for the native ECSW runs (the
+  1157	common-solver runs had 46–49 of 50 non-stationary); the 3D failing expression was `G.T @ b` (it and `G.T @ G[:, S]` are
+  1158	now transpose-free); the executed G-fd subchecks passed but the complete G-fd gates failed in both cells because arms
+  1159	were missing. Support targets are **first crossings**: the recorded state is the first on the path with at least κr
+  1160	positive weights; its actual size is reported; one path per (mesh, rank) runs to the largest registered target, and an
+  1161	extension target (16r) continues that same path without rebuilding earlier checkpoints. A14.2 restated: numerical rank
+  1162	is diagnostic; a basis prefix is admitted only through the A6.1 certificate, which may admit a saturated prefix.
+  1163	`collect.sh` now refuses non-terminal jobs, verifies the transfer against a freshly computed remote manifest of outputs
+  1164	and logs, and deletes the cluster directory only after all of that succeeds. The randomised fallback releases its
+  1165	sketch before the power iterations.
+  1166	
+  1167	**A15.7 (code audit 10).** `collect.sh` decides terminality from a successful `sacct` query of the job allocation
+  1168	(terminal states only); any failed or ambiguous query refuses collection. The drop-count ban is a cycle guard: the
+  1169	regression test shows that dependent (duplicated) columns reach the NNLS optimum with no ban; a test that forces a ban is
+  1170	not provided (noted), and every path reports its ban count.
+  1171	
+  1172	---
+  1173	
+  1174	## Amendment A16 (2026-10-18) — design audit 9 (`audits/codex-design-9.md`, NEEDS-RESTATEMENT, no WRONG)
+  1175	
+  1176	**A16.1 Name and claims.** The ECSW arm is "**ECSW with support-targeted greedy NNLS**": the Petrov–Galerkin ECSW
+  1177	gradient-matching NNLS of Grimberg et al., sampled at support targets $\kappa r$ instead of stopped at a training-residual
+  1178	tolerance (the published stopping rule). For every configuration the actual support, the training relative residual at
+  1179	the checkpoint, construction failures and Q1 are reported. No claim that this grid guarantees a strong or unbiased
+  1180	baseline is made.
+  1181	
+  1182	**A16.2 Migration of the extension and coverage rules.** A2.18: the ECSW boundary is κ = 8 and its single extension is
+  1183	κ = 16 (replacing "smallest τ"). A3.11: ECSW coverage is reported per attempted/constructed (r, κ); a failed κ = 8 or
+  1184	κ = 16 construction makes the cell's ECSW statements carry "ECSW coverage incomplete". The cap-retry rule of A1.8/A3.11
+  1185	is withdrawn. **Continuation:** every greedy path is built through 16r from the start (checkpoints 2r, 4r, 8r, 16r; the
+  1186	batch size depends only on the current support, so earlier checkpoints are identical to those of a shorter path except
+  1187	for the final batch at the cap); the 16r checkpoint is used only when the extension rule triggers. Its construction
+  1188	cost is in the resource certificate.
+  1189	
+  1190	**A16.3 Banning consequence.** If a target is unreached and more than 1 % of the candidates were banned, the path is
+  1191	rebuilt once with banning disabled (iteration-bounded); the path reaching more targets is used, both are reported, and a
+  1192	target still unreached is a construction failure (A16.2 coverage label). smk2 exercises this on the 3D case that failed
+  1193	in smk1; if the retry is not triggered or does not help, that is reported.
+  1194	
+  1195	**A16.4 Accounting.** The development-case evidence used to choose the knob and the fixtures (smk1 and the CPU dry runs)
+{
+ "source_lane": "jcp-speed3d",
+ "source_commit": "691465d88",
+ "note": "per-case E0 records (val64 = seed 923801, all 64 cases) of the 3D comparators: batch 1 (A21.2, deployed rules, diagnostic) and batch 2 (A29, jcp-qualify Q2-qualified), extracted for G-ours (cases 0-5) and the verdict",
+ "configs": {
+  "M2_512|gl32|fs|BE|0.01|K1": {
+   "source": "checks/scores-g1.json",
+   "job": "5301580",
+   "e0": {
+    "0": 0.019739870441578728,
+    "1": 0.0197676008298526,
+    "2": 0.01802755696066619,
+    "3": 0.011578948088805309,
+    "4": 0.01932571284661097,
+    "5": 0.04460530965009744,
+    "6": 0.033371067334750044,
+    "7": 0.03350753760491478,
+    "8": 0.006597065316471495,
+    "9": 0.01521837919906732,
+    "10": 0.011316156991430164,
+    "11": 0.0323801821145349,
+    "12": 0.021462580482659737,
+    "13": 0.015516047985972023,
+    "14": 0.008838257863396533,
+    "15": 0.008134023808941624,
+    "16": 0.012237523807315619,
+    "17": 0.012526441745826167,
+    "18": 0.013971933041240924,
+    "19": 0.013139928298211898,
+    "20": 0.02545241878928973,
+    "21": 0.01673483908116402,
+    "22": 0.023904448534961868,
+    "23": 0.0059013813264816445,
+    "24": 0.011742981754837897,
+    "25": 0.012274563028898452,
+   "role": "ours' query (A-side of A-B-A timing)"
+  },
+  {
+   "path": "p1core.py",
+   "source_branch": "exp/2026-10-17-jcp-p1-scaling",
+   "source_commit": "5b782026b",
+   "source_path": "experiments/jcp-p1-scaling/p1core.py",
+   "sha256": "eb4712f2e6db5573f7cae735041d892d98b55098bda9905e101ace6d1041ba0d",
+   "role": "comparator batch 1 (A21)"
+  },
+  {
+   "path": "p1common.py",
+   "source_branch": "exp/2026-10-17-jcp-p1-scaling",
+   "source_commit": "5b782026b",
+   "source_path": "experiments/jcp-p1-scaling/p1common.py",
+   "sha256": "0fc4e8e182daba2a15abe37e504141161325c6242a2fc339c0a8ef16d1e8982d",
+   "role": "comparator batch 1 (A21)"
+  },
+  {
+   "path": "inputs/p1_analysis.json",
+   "source_branch": "exp/2026-10-17-jcp-p1-scaling",
+   "source_commit": "5b782026b",
+   "source_path": "experiments/jcp-p1-scaling/checks/analysis.json",
+   "sha256": "82030ce5cae52b806d5482f4391e5c34ae39c256d0f03f741441a33708a355dd",
+   "role": "comparator batch 1 (A21)"
+  },
+  {
+   "path": "inputs/p1_EXPORT.json",
+   "source_branch": "exp/2026-10-17-jcp-p1-scaling",
+   "source_commit": "5b782026b",
+   "source_path": "experiments/jcp-p1-scaling/runs/EXPORT.json",
+   "sha256": "8e3b120855c702f2dd2e64f7ac78661be136e0a0f5e102065b9ac8e23c6b998a",
+   "role": "comparator batch 1 (A21)"
+  },
+  {
+   "path": "inputs/speed3d_EXPORT.json",
+   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   "source_commit": "691465d88",
+   "source_path": "experiments/jcp-speed3d/runs/EXPORT.json",
+   "sha256": "209f3f49924161e220ce4c73399e3802da5187d2c9453d1e36dc08a55c48cfc1",
+   "role": "comparator batch 1 (A21)"
+  },
+  {
+   "path": "s3common.py",
+   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   "source_commit": "691465d887e5b66dd07da574306d887239c77e68",
+   "source_path": "experiments/jcp-speed3d/s3common.py",
+   "sha256": "ab9f9623c0d8751577a28124d10d97a278bbf0b724fd5408a5284c13b9bdc5d7"
+  },
+  {
+   "path": "qn3.py",
+   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   "source_commit": "691465d887e5b66dd07da574306d887239c77e68",
+   "source_path": "experiments/jcp-speed3d/qn3.py",
+   "sha256": "bec525ef29cdd27c586ea64cfd3538e8310d80d30218f063be0596749dc40001"
+  },
+  {
+   "path": "fs3p.py",
+   "source_branch": "exp/2026-10-14-jcp-speed3d",
+   "source_commit": "691465d887e5b66dd07da574306d887239c77e68",
+   "source_path": "experiments/jcp-speed3d/fs3p.py",
+   "sha256": "a05557bbe77de49f5dadbefb8d6130d17d610188d72e073375f2685eb6290336"
+  }
+ ]
+}experiments/jcp-hr-baselines/c3common.py:118:class Tables:
+experiments/jcp-hr-baselines/c3common.py:158:    """Compiled queries of one setting (cached per static signature)."""
+experiments/jcp-hr-baselines/c3common.py:162:        self.cache = {}
+experiments/jcp-hr-baselines/c3common.py:167:        if k not in self.cache:
+experiments/jcp-hr-baselines/c3common.py:169:            self.cache[k] = fs3.make_fs_query(self.n, self.Rp, OM.contract_offmesh, scheme, dt, K, self.gtol, self.trust,
+experiments/jcp-hr-baselines/c3common.py:171:        return self.cache[k]
+experiments/jcp-hr-baselines/c3common.py:175:        if k not in self.cache:
+experiments/jcp-hr-baselines/c3common.py:176:            self.cache[k] = OM.make_fsc_rule(self.n, self.Rp, None, OM.contract_offmesh, dt=DT0, gtol=self.gtol,
+experiments/jcp-hr-baselines/c3common.py:178:        return self.cache[k]
+experiments/jcp-hr-baselines/c3common.py:182:        if k not in self.cache:
+experiments/jcp-hr-baselines/c3common.py:189:            self.cache[k] = jax.jit(query)
+experiments/jcp-hr-baselines/c3common.py:190:        return self.cache[k]
+experiments/jcp-hr-baselines/c3common.py:270:        return int(jax.devices()[0].memory_stats().get('peak_bytes_in_use', -1))
+experiments/jcp-hr-baselines/s3common.py:97:class Setting:
+experiments/jcp-hr-baselines/s3common.py:98:    """One (bank, R') at mesh 65 with its trust, adaptive start a and lean tables; rule data cached on demand."""
+
+exec
+/bin/bash -lc "rg -n 'def qdeim|T3E|def ecsw_data' experiments/jcp-hr-baselines/build.py; nl -ba experiments/jcp-hr-baselines/build.py | sed -n '160,243p;389,452p'; nl -ba experiments/jcp-hr-baselines/s3common.py | sed -n '95,155p'; rg -n 'case|scores|sha|batch' experiments/jcp-hr-baselines/inputs/speed3d_batch1_e0.json | tail -30; nl -ba experiments/jcp-hr-baselines/cluster/collect.sh | head -130; nl -ba experiments/jcp-hr-baselines/DESIGN.md | sed -n '1195,1208p'" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+205:def qdeim_points(U):
+217:def qdeim_data(Phi_r, LPhi_r, U_p, P, d, L):
+218:    """Online Q-DEIM data (A1.2): Pst (p, 2d+1, r), T1, T2, T3E; plus diagnostics."""
+225:    T3E = jnp.linalg.solve(M.T, Rb[:, 2 * r:].T).T            # R3 M^{-1}
+226:    bwd = float(jnp.linalg.norm(T3E @ M - Rb[:, 2 * r:]) / (jnp.linalg.norm(T3E) * jnp.linalg.norm(M) + 1e-300))
+228:    data = dict(Pst=H.stencil_rows(Phi_r, idx), T1=Rb[:, :r], T2=Rb[:, r:2 * r], T3E=T3E)
+409:def ecsw_data(Phi_r, nodes, weights, d, L):
+   160	                      pod_tail=float(np.sqrt(max(tot - float(np.sum(sig[:r] ** 2)), 0.) / tot)),
+   161	                      pod_tail_sq=float((tot - float(np.sum(sig[:r] ** 2))) / tot))      # unclipped radicand (A6.1)
+   162	    return out, C
+   163	
+   164	
+   165	def trust_radii(C, ranks, d):
+   166	    kind, frac = H.TRUST[d]
+   167	    out = {}
+   168	    for r in ranks:
+   169	        X = C[:, :r] - C[:, :r].mean(0)
+   170	        nrm = np.linalg.norm(X, axis=1)
+   171	        out[r] = float(frac * (np.max(nrm) if kind == 'max' else np.sqrt(np.mean(nrm ** 2))))
+   172	    return out
+   173	
+   174	
+   175	def advection_in_place(S, d, L, nb_rows=64):
+   176	    """Overwrite each snapshot row u by N_h(u) (central advection), on the device in row batches."""
+   177	    sh = H.shape_of(d, L)
+   178	    f = jax.jit(jax.vmap(lambda u: H.adv_central(u.reshape(sh), L).reshape(-1)))
+   179	    for a in range(0, S.shape[0], nb_rows):
+   180	        S[a:a + nb_rows] = np.asarray(f(jnp.asarray(S[a:a + nb_rows])))
+   181	    return S
+   182	
+   183	
+   184	# ------------------------------------------------------------------------------------------------ Q-DEIM ----
+   185	
+   186	def _pivots(p):
+   187	    def run(R):
+   188	        n = R.shape[1]
+   189	
+   190	        def body(j, c):
+   191	            R, piv, taken = c
+   192	            nrm = jnp.where(taken, -1., jnp.sum(R * R, 0))
+   193	            i = jnp.argmax(nrm)
+   194	            q = R[:, i] / jnp.sqrt(nrm[i])
+   195	            R = R - q[:, None] * (q @ R)[None, :]
+   196	            return R, piv.at[j].set(i), taken.at[i].set(True)
+   197	        _, piv, _ = jax.lax.fori_loop(0, p, body, (R, jnp.zeros(p, jnp.int32), jnp.zeros(n, bool)))
+   198	        return piv
+   199	    return jax.jit(run)
+   200	
+   201	
+   202	_PIV = {}
+   203	
+   204	
+   205	def qdeim_points(U):
+   206	    """Q-DEIM point selection (Drmac-Gugercin): greedy column pivoting of U^T (U (n, p) on the device) by the largest
+   207	    remaining column norm after orthogonal projection against the already selected columns (modified Gram-Schmidt with
+   208	    Businger-Golub pivoting). This is the pivot rule of LAPACK geqp3 but not its Householder implementation: equality of
+   209	    the pivot sequence with scipy/LAPACK is checked on the registered small fixtures (G-qdeim) only, not claimed in
+   210	    general (A12.3)."""
+   211	    p = U.shape[1]
+   212	    if p not in _PIV:
+   213	        _PIV[p] = _pivots(p)
+   214	    return np.asarray(_PIV[p](U.T))
+   215	
+   216	
+   217	def qdeim_data(Phi_r, LPhi_r, U_p, P, d, L):
+   218	    """Online Q-DEIM data (A1.2): Pst (p, 2d+1, r), T1, T2, T3E; plus diagnostics."""
+   219	    r, p = Phi_r.shape[1], U_p.shape[1]
+   220	    B = jnp.concatenate([Phi_r, LPhi_r, U_p], 1)
+   221	    Rb = jnp.linalg.qr(B, mode='r')
+   222	    del B
+   223	    M = U_p[jnp.asarray(P)]                                   # P^T U_p (p, p)
+   224	    sv = jnp.linalg.svd(M, compute_uv=False)
+   225	    T3E = jnp.linalg.solve(M.T, Rb[:, 2 * r:].T).T            # R3 M^{-1}
+   226	    bwd = float(jnp.linalg.norm(T3E @ M - Rb[:, 2 * r:]) / (jnp.linalg.norm(T3E) * jnp.linalg.norm(M) + 1e-300))
+   227	    idx = H.stencil_index(P, d, L)
+   228	    data = dict(Pst=H.stencil_rows(Phi_r, idx), T1=Rb[:, :r], T2=Rb[:, r:2 * r], T3E=T3E)
+   229	    info = dict(p=int(p), interp_const=float(1. / sv[-1]), cond_PtU=float(sv[0] / sv[-1]), solve_backward_error=bwd,
+   230	                solve_ok=bool(bwd <= 1e-12),
+   231	                rank_B_proxy=int(jnp.sum(jnp.abs(jnp.diag(Rb)) > 1e-13 * jnp.max(jnp.abs(jnp.diag(Rb))))),
+   232	                stencil_nodes=int(len(np.unique(idx[idx < (L - 1) ** d]))))
+   233	    return jax.block_until_ready(data), info
+   234	
+   235	
+   236	# -------------------------------------------------------------------------------------------------- ECSW ----
+   237	
+   238	def ecsw_states(d, L, fam_train, Phi_max, log=print, ntol=1e-10, ltol=1e-12):
+   239	    """Training states for ECSW (A1.8): list of dict(option, k, u_k, u_{k-1}, u_{k-2}) on the host."""
+   240	    rng = np.random.default_rng(ECSW_SEED_TRAJ)
+   241	    traj = rng.permutation(fam_train.n)[:N_ECSW_TRAJ]
+   242	    opts = H.OPTIONS[d]
+   243	    fom = H.make_fom(d, L)
+   389	    if s0['banned'] > BAN_RETRY_FRAC * len(cand_nodes):
+   390	        attempts['retry'] = attempt(10 ** 9)
+   391	    sel = 'initial'
+   392	    if 'retry' in attempts:
+   393	        s1 = attempts['retry'][1]
+   394	        if s1['reached'] > s0['reached']:
+   395	            sel = 'retry'
+   396	        elif s1['reached'] == s0['reached']:
+   397	            common = [k for k in s0['checkpoints'] if s0['checkpoints'][k] and s1['checkpoints'][k]]
+   398	            l0 = sum(np.log10(max(s0['checkpoints'][k]['relres'], 1e-300)) for k in common)
+   399	            l1 = sum(np.log10(max(s1['checkpoints'][k]['relres'], 1e-300)) for k in common)
+   400	            sel = 'retry' if l1 < l0 else 'initial'
+   401	    rec = {int(k[1:]): v for k, v in attempts[sel][0].items() if not k.startswith('_')}
+   402	    summary = dict(selected=sel, attempts={a: v[1] for a, v in attempts.items()},
+   403	                   checkpoints_all={a: v[0] for a, v in attempts.items()},
+   404	                   targets={f'k{k}': t for k, t in zip(kappas, targets)}, ban_retry_frac=BAN_RETRY_FRAC,
+   405	                   max_iter=NNLS_MAX_ITER, n_cand=int(len(cand_nodes)))
+   406	    return rec, summary
+   407	
+   408	
+   409	def ecsw_data(Phi_r, nodes, weights, d, L):
+   410	    idx = H.stencil_index(nodes, d, L)
+   411	    return jax.block_until_ready(dict(Pst=H.stencil_rows(Phi_r, idx), sw=jnp.sqrt(jnp.asarray(weights)))), \
+   412	        dict(sample=int(len(nodes)), stencil_nodes=int(len(np.unique(idx[idx < (L - 1) ** d]))))
+   413	
+   414	
+   415	def none_data(Phi_r, d, L):
+   416	    return jax.block_until_ready(dict(Phi=Phi_r, LPhi=H.lap_cols(Phi_r, d, L), DPhi=H.dsum_cols(Phi_r, d, L)))
+    95	
+    96	# ------------------------------------------------------------------------------------------ data per setting/rule
+    97	class Setting:
+    98	    """One (bank, R') at mesh 65 with its trust, adaptive start a and lean tables; rule data cached on demand."""
+    99	
+   100	    def __init__(self, cfg_s, banks, tables, rules, trust_fraction=0.05):
+   101	        self.name, self.bank, self.Rp, self.a = cfg_s['name'], cfg_s['bank'], int(cfg_s['Rp']), int(cfg_s['a'])
+   102	        bk = banks[self.bank]
+   103	        self.bk, self.tb = bk, tables[self.bank]
+   104	        self.trust = float(trust_fraction * bk['spread'][str(self.Rp)])
+   105	        self.lean = self.tb.lean(self.Rp)                              # GTb (mesh = lattice rows), L, A, lam
+   106	        self.rules = rules
+   107	        self.M = self.tb.M_of[self.Rp]
+   108	        self._d = {}
+   109	        qa = qn3.qr_data(self.lean['A'])
+   110	        self.qr = jax.tree_util.tree_map(jax.block_until_ready, qa)
+   111	
+   112	    def data(self, rule):
+   113	        if rule not in self._d:
+   114	            X, w = self.rules[rule]
+   115	            d = self.tb.rule_data(self.Rp, X, w)                        # lean + B, D, P
+   116	            d = dict(d, **self.qr)
+   117	            d['hmask'] = (d['lam'] > jnp.median(d['lam'])).astype(jnp.float64)       # t2core LSPG form data
+   118	            Bw = d['B'] * jnp.asarray(w)[:, None]
+   119	            Gq = d['B'].T @ Bw
+   120	            ev = np.linalg.eigvalsh(np.asarray(Gq))
+   121	            d['Bw'], d['Lq'] = Bw, jnp.linalg.cholesky(Gq)
+   122	            self._d[rule] = (jax.tree_util.tree_map(jax.block_until_ready, d),
+   123	                             dict(cond=float(ev[-1] / ev[0]) if ev[0] > 0 else float('inf'), m=int(len(w))))
+   124	        return self._d[rule][0]
+   125	
+   126	    def mf_cond(self, rule):
+   127	        self.data(rule)
+   128	        return self._d[rule][1]
+   129	
+   130	    def drop(self, rule):
+   131	        self._d.pop(rule, None)
+   132	
+   133	
+   134	# ------------------------------------------------------------------------------------------------- queries
+   135	def project_mesh(u0, d):
+   136	    """Step 2 least-squares projection on the mesh, per member: (w0 (Bt, R'), ||s0|| (Bt,))."""
+   137	    def one(u):
+   138	        w0, s0 = TB.project(u, d)
+   139	        return w0, jnp.linalg.norm(s0)
+   140	    if u0.shape[0] == 1:                       # single query: no vmap, so Step 2's arithmetic is reproduced bitwise
+   141	        w0, s = one(u0[0])
+   142	        return w0[None], s[None]
+   143	    return jax.vmap(one)(u0)
+   144	
+   145	
+   146	def project_mf(u0X, d, n=65):
+   147	    """Quadrature projection on the rule: w0 = (B^T W B)^{-1} B^T W u0(X). The adaptive-start residual tolerance uses the
+   148	    mesh-equivalent energy scale (n-1)^{3/2} ||Lq^{-1} B^T W u0(X)|| (never active in practice: 1e-12)."""
+   149	    t = u0X @ d['Bw']                                                      # (Bt, R')
+   150	    s = jax.scipy.linalg.solve_triangular(d['Lq'], t.T, lower=True)
+   151	    w0 = jax.scipy.linalg.solve_triangular(d['Lq'].T, s, lower=False).T
+   152	    return w0, (n - 1) ** 1.5 * jnp.linalg.norm(s, axis=0)
+   153	
+   154	
+   155	def decode_lattice(W, d):
+4: "note": "per-case E0 records (val64 = seed 923801, all 64 cases) of the 3D comparators: batch 1 (A21.2, deployed rules, diagnostic) and batch 2 (A29, jcp-qualify Q2-qualified), extracted for G-ours (cases 0-5) and the verdict",
+7:   "source": "checks/scores-g1.json",
+207:   "batch": 1
+210:   "source": "checks/scores-g1.json",
+410:   "batch": 1
+413:   "source": "checks/scores-g2.json",
+613:   "batch": 1
+616:   "source": "checks/scores-g2.json",
+816:   "batch": 1
+819:   "source": "checks/scores-g3.json",
+1019:   "batch": 1
+1022:   "source": "checks/scores-g1.json",
+1024:   "batch": 2,
+1225:   "source": "checks/scores-g1.json",
+1227:   "batch": 2,
+1428:   "source": "checks/scores-g1.json",
+1430:   "batch": 2,
+1631:   "source": "checks/scores-g2.json",
+1633:   "batch": 2,
+1834: "source_sha256": {
+1835:  "checks/scores-g1.json": "b5ab9579a156216b9c0dc40d71ca5f9353802f9f89154a124d432262c0946d92",
+1836:  "checks/scores-g2.json": "e31cbef9f512a74bc4bafcb3cb344d21246bfadf6419a7d809613f6ce65c474d",
+1837:  "checks/scores-g3.json": "3e4b62242aa9c5115fcb8819d19c329c857d44a5463118c97fb67e52c30ba093"
+     1	#!/bin/bash
+     2	# jcp-hr-baselines: pull one TERMINAL attempt (logs + output), verify a freshly computed remote manifest covering outputs
+     3	# AND logs, record sacct; only with --delete, and only after every step succeeded, remove the cluster job directory.
+     4	set -euo pipefail
+     5	A="$1"; [[ "$A" =~ ^[a-zA-Z0-9]+$ ]]
+     6	ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
+     7	NS=/cluster/tufts/paralab/tawal01/jcp-hrb
+     8	LOCAL="$ROOT/experiments/jcp-hr-baselines/runs/$A"
+     9	SSH="ssh -o ConnectTimeout=30"
+    10	df -h /home | tail -1
+    11	JOB=$(timeout 60 $SSH tufts-login "ls $NS/$A/logs" | sed -n 's/\.out$//p' | head -1)
+    12	[ -n "$JOB" ]
+    13	# terminal only if sacct (queried successfully) reports a terminal state for the job allocation (fail-closed)
+    14	ST=$(timeout 60 $SSH tufts-login "sacct -j $JOB -X -n -P --format=State" | head -1 | awk '{print $1}')
+    15	case "$ST" in COMPLETED|FAILED|CANCELLED|TIMEOUT|OUT_OF_MEMORY|NODE_FAIL|PREEMPTED) echo "job $JOB terminal: $ST";;
+    16	  *) echo "job $JOB state '$ST' is not terminal or unknown: refusing"; exit 3;; esac
+    17	timeout 300 $SSH tufts-login "bash -o pipefail -euc 'cd $NS/$A && find logs output -type f -print0 | sort -z | xargs -0 sha256sum'" > "$LOCAL/REMOTE.sha256.new"
+    18	mkdir -p "$LOCAL/archive"
+    19	timeout 3600 rsync -e "$SSH" -a "tufts-login:$NS/$A/logs" "tufts-login:$NS/$A/output" "$LOCAL/archive/"
+    20	( cd "$LOCAL/archive" && sha256sum -c "../REMOTE.sha256.new" --quiet )
+    21	mv "$LOCAL/REMOTE.sha256.new" "$LOCAL/REMOTE.sha256"
+    22	echo "transfer verified against the fresh remote manifest ($(wc -l < "$LOCAL/REMOTE.sha256") files)"
+    23	timeout 60 $SSH tufts-login "sacct -j $JOB --format=JobID,State,Elapsed,AllocTRES%60,ExitCode -P" > "$LOCAL/archive/sacct.txt"
+    24	cat "$LOCAL/archive/sacct.txt"
+    25	if [ "${2:-}" = "--delete" ]; then timeout 120 $SSH tufts-login "rm -rf $NS/$A" && echo "deleted $NS/$A"; fi
+  1195	**A16.4 Accounting.** The development-case evidence used to choose the knob and the fixtures (smk1 and the CPU dry runs)
+  1196	is validation-informed and counts in the baseline's V budget (A3.1). The discarded τ-knob evidence is retained in
+  1197	`runs/smk1`. The amended grid (κ ∈ {2, 4, 8}; extension 16) is frozen before production.
+  1198	
+  1199	**A16.5 (design audit 10, code audit 12) Retry rule frozen.** The ban-free retry runs **whenever more than 1 % of the
+  1200	candidates were banned** on the initial path (regardless of target attainment). Both paths use the same iteration bound
+  1201	(20,000 NNLS iterations). One whole path is selected by a training-only order: more reached targets; then the smaller sum
+  1202	of $\log_{10}$ training residuals over the targets both paths reached; then the initial path. Selection happens at
+  1203	construction, before any validation run, and both attempts (diagnostics, checkpoint supports and weights) are kept and
+  1204	reported; acceptance recomputes the trigger and the selection and counts supports from the saved weights. If the
+  1205	selected path still banned more than 1 % of the candidates (only possible when the retry was not better), that rank's
+  1206	ECSW statements carry "**ECSW construction quality limited (banning)**", blocking "adequately tuned ECSW" and exhaustive
+  1207	non-domination wording for that cell.
+  1208	
+
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import subprocess,json,hashlib,pathlib,ast
+p=pathlib.Path('experiments/jcp-hr-baselines'); other='/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d'
+def blob(c,f,repo='.'):
+ return subprocess.check_output(['git','-C',repo,'show',f'{c}:{f}'])
+inh=json.loads((p/'INHERITED.json').read_text())
+print(type(inh),inh.keys())
+for v in inh.get('files',[]):
+ if v['path'] in ['s3common.py','qn3.py','fs3p.py','p1core.py','p1common.py','inputs/p1_analysis.json','inputs/p1_EXPORT.json']:
+  b=blob(v['source_commit'],v['source_path'],other if 'speed3d' in v['source_path'] else '.')
+  print('identity',v['path'], b==(p/v['path']).read_bytes(),hashlib.sha256(b).hexdigest()==v['sha256'])
+x=json.loads((p/'inputs/speed3d_batch1_e0.json').read_text()); scores={}
+for f,h in x['source_sha256'].items():
+ b=blob('691465d88','experiments/jcp-speed3d/'+f,other); scores[f]=json.loads(b);print('score hash',f,hashlib.sha256(b).hexdigest()==h,'keys',list(scores[f])[:10])
+k=next(iter(x['configs'])); print('entry',k,x['configs'][k].keys()); print('score structure',str(scores[x['configs'][k]['source']])[:1800])
+t=ast.parse((p/'make_phase2_configs.py').read_text()); t.body=[n for n in t.body if not isinstance(n,ast.For)]; ns={'__file__':str(p/'make_phase2_configs.py')};exec(compile(t,'config-audit','exec'),ns)
+for k,v in ns['cfgs'].items():
+ if k in ns['WALL']:v.update(wall_hours=ns['WALL'][k],budget_hours=ns['WALL'][k]-.25)
+ print('config',k,v==json.loads((p/'configs'/f'{k}.json').read_text()))
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 427ms:
+score hash checks/scores-g1.json True keys ['run', 'job_id', 'seed', 'cohort', 'store_version', 'status_sha', 'label', 'scores', 'controls', 'gates']
+score hash checks/scores-g2.json True keys ['run', 'job_id', 'seed', 'cohort', 'store_version', 'status_sha', 'label', 'scores', 'controls', 'gates']
+score hash checks/scores-g3.json True keys ['run', 'job_id', 'seed', 'cohort', 'store_version', 'status_sha', 'label', 'scores', 'controls', 'gates']
+entry M2_512|gl32|fs|BE|0.01|K1 dict_keys(['source', 'job', 'e0', 'eps_ref', 'eligible', 'batch'])
+score structure {'run': 'runs/g1/archive/output', 'job_id': '5301580', 'seed': 923801, 'cohort': 'val64', 'store_version': '3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0', 'status_sha': 'af7d824e94b42afb83753d6b11a0c4d71407cff0923ebee9c245eb8d51f81005', 'label': 'E0 second-order reference R_ST (conditional Richardson estimate, not a rigorous bound; its cross-check rule was amended after data, E0 A10); first-order scores PROVISIONAL', 'scores': {'M2_512|gl32|ad|LSPG|BDF2|0.0125|tight': {'0': {'e_t': [0.003990860562345688, 0.006643227505335361, 0.0068319131621567405, 0.007513251103527053, 0.006954570930818089, 0.00716144014531527], 'e': 0.007513251103527053, 'eps_ref': 4.181332047166529e-05, 'eligible': True, 'first_order': {'e_t': [0.003990860562345688, 0.004265916837662118, 0.007824469522423261, 0.011343094652238567, 0.013493612093576938, 0.015188574566084611], 'e': 0.015188574566084611}}, '1': {'e_t': [0.002140691368875846, 0.008852151265701923, 0.004459731503636641, 0.0026120268091552345, 0.0016620518044597344, 0.0011296344609582711], 'e': 0.008852151265701923, 'eps_ref': 2.868923036440962e-05, 'eligible': True, 'first_order': {'e_t': [0.002140691368875846, 0.005702001433114045, 0.0059157341998283975, 0.005753089589528017, 0.005345695529387557, 0.004863486689184618], 'e': 0.0059157341998283975}}, '2': {'e_t': [0.0003832237811064318, 0.0070506234574200825, 0.00507743706176073, 0.003739027865751979, 0.0027502178096447936, 0.0020312351838871825], 'e': 0.0070506234574200825, 'eps_ref': 2.0764758696737908e-05, 'eligible': True, 'first_order': {'e_t': [0.0003832237811064318, 0.003911354939607336, 0.0065126690797988876, 0.00804402522655582, 0.008482747250051343, 0.00841517904895241], 'e': 0.008482747250051343}}, '3': {'e_t': [0.0015515425631932647, 0.0037955322691098844, 
+config tune_2d256 True
+config tune_2d1024 True
+config tune_3d64 True
+config tune_cpu_2d True
+config tune_cpu_3d True
+
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu PYTHONDONTWRITEBYTECODE=1 /home/tahmid/Dev/.venv/bin/python -B - <<'PY'
+import pathlib,json,subprocess,sys,importlib.util
+p=pathlib.Path('experiments/jcp-hr-baselines'); x=json.loads((p/'inputs/speed3d_batch1_e0.json').read_text()); ss={f:json.loads(subprocess.check_output(['git','-C','/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d','show','691465d88:experiments/jcp-speed3d/'+f])) for f in x['source_sha256']}
+for k,v in x['configs'].items():
+ s=ss[v['source']]; print('score',k,'batch',v['batch'],'job',v['job']==s['job_id'],'all64',all(v[a]=={j:q[b] for j,q in s['scores'][k].items()} for a,b in [('e0','e'),('eps_ref','eps_ref'),('eligible','eligible')]))
+s=json.loads((p/'e0/store/STATUS.json').read_text());print('status structure',str(s)[:2400])
+sys.path.insert(0,str(p));import smoke_accept as SA, analyze as AN
+sm={'kkt':{'ok':True,'support_max_abs_gradient':0,'off_support_max_gradient':0,'tol':1e-9},'final_support':1,'final_relres':0}
+import numpy as np
+z={'initial~terminal~weights':np.array([1.]),'initial~terminal~nodes':np.array([-42]),'initial~terminal~resvec':np.array([0.])}
+print('opt no terminal=',SA.opt_ok(sm),'bad node=',SA.opt_ok(sm,z,'initial',1,100))
+tr={'rep':0,'attempt':0,'valid':True,'tA1':1.,'tA2':10.,'tB':.1,'dA1':0.,'dA2':0.,'dB':0.}
+print('analyze accepts incorrect drift flag=',AN.rho_of({'dev6|0':{'triples':[tr]}}))
+print('memory qdeim per-option all ranks GB',sum(8*((2*r+p0)**2+7*p0*r) for r in [64,128,256,512,768,1024] for p0 in [r,2*r,4*r])/1e9)
+print('ecsw Pst per-option all ranks GB target k2/k4/k8',sum(8*7*k*r*r for r in [64,128,256,512,768,1024] for k in [2,4,8])/1e9)
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 356ms:
+score M2_512|gl32|fs|BE|0.01|K1 batch 1 job True all64 True
+score W256|gl24|fs|BE|0.01|K1 batch 1 job True all64 True
+score W512|lat32768|fs|BE|0.01|K1 batch 1 job True all64 True
+score W768|lat32768|fs|BE|0.01|K1 batch 1 job True all64 True
+score W1024|lat65536|fs|BE|0.01|K1 batch 1 job True all64 True
+score W256|gl24|fs|CN|0.01|K1 batch 2 job True all64 True
+score W256|gl24|fs|CN|0.0125|K1 batch 2 job True all64 True
+score W256|lat8192|qn|BDF2|0.025|k4 batch 2 job True all64 True
+score W512|lat16384|qn|BDF2|0.025|k4 batch 2 job True all64 True
+status structure {'store_version': '3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0', 'dimension_status': {'2': 'validated', '3': 'validated'}, 'crosscheck': {'2': {'val32/0': 'PASS', 'val32/1': 'PASS', 'val32/2': 'PASS', 'val32/3': 'PASS', 'val32/4': 'PASS', 'val32/5': 'PASS', 'val32/19': 'PASS', 'val32/26': 'PASS'}, '3': {'val64/0': 'PASS', 'val64/1': 'PASS', 'val64/2': 'PASS', 'val64/3': 'PASS', 'val64/5': 'PASS', 'val64/33': 'PASS', 'val64/43': 'PASS', 'val64/47': 'PASS'}}, 'crosscheck_cases': {'2': ['val32/0', 'val32/1', 'val32/19', 'val32/2', 'val32/26', 'val32/3', 'val32/4', 'val32/5'], '3': ['val64/0', 'val64/1', 'val64/2', 'val64/3', 'val64/33', 'val64/43', 'val64/47', 'val64/5']}}
+opt no terminal= False bad node= False
+analyze accepts incorrect drift flag= {0: [0.018181818181818184]}
+memory qdeim per-option all ranks GB 1.7481728
+ecsw Pst per-option all ranks GB target k2/k4/k8 1.55746304
+

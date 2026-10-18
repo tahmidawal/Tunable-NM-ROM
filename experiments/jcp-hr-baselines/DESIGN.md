@@ -1610,3 +1610,14 @@ ledger adds jcp-qualify's 3D qualification jobs counted once: smk3 (5366486, 0.0
 (5422698, 0.1036 h), q3d3 (5440837, 0.1761 h) = 0.4875 GPU-h (elapsed, 1 GPU each, from its GPU-LEDGER). Pinned
 export: jcp-qualify `runs/EXPORT.json` sha256 6cb394d149be8852260b75a585db8102791ef52e9963ab6934f67d536c374431
 (lane commit 4399491eb). Batch-1 outcomes are never promoted into qualified H-base conclusions.
+
+---
+
+## Amendment A31 (2026-10-18) — design audit 20 (NEEDS-RESTATEMENT, item 1): in-job order = reverse drop order
+
+The tuning job runs its deferrable items in **reverse** drop order, so a budget stop removes the first-dropped item
+first: after the limiting comparator it runs the generator-probe runs (A30.1 item 3), then the extension (item 1), each
+started only while elapsed < 0.85 × the job budget. A26.3/A30.1's execution order is amended accordingly: comparators →
+construction → HR grids → `none` at every rank → limiting comparator → probe runs → extension. An extension already
+started may run to the wall limit; its unfinished configurations stay `not_run` (stage EXT) and the extension is reported
+incomplete. Nothing else changes.

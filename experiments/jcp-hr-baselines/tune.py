@@ -9,8 +9,8 @@ Order (A26.3: required work first, the registered defer order last):
      each x option x {native, common}, with in-job Q1 (tight native anchor on every case, tighter on the first two),
      a burned warm timing run checked against the scored run (<= 1e-12, A6.6) and E0 scores;
   4. the full-rank limiting comparator (central FOM) on the verdict cohort, convergence checked;
-  5. deferrable in-job (A30.1, run while the job's budget allows): the A2.18/A16.2 extension (A25.1), then the
-     generator-probe runs.
+  5. deferrable in-job (A30.1/A31, run while the job's budget allows, in reverse drop order): the generator-probe
+     runs, then the A2.18/A16.2 extension (A25.1), which is dropped first.
 Every configuration is in a predeclared inventory with status not_run / construction_failed / run_failed / complete /
 deferred; every completed configuration and case is checkpointed to <out>/tune.json at once. Arrays: <out>/arrays/
 (output coefficients W, anchors, trajectories, gamma: lattice fields are W @ Phi_lat^T) and <out>/artifacts/ (basis,
@@ -434,6 +434,36 @@ def main():
     # ---- 5. deferrable work (A30.1: in-job deferrable items are the extension and the generator-probe runs) --------
     O.res['deferred'] = []
 
+    # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis ---------
+    O.res['probe_runs'] = {}
+    if probe is not None and 'Phi' in PROBE and not deferrable():
+        O.res['deferred'].append('generator probe runs (budget)')
+    if probe is not None and 'Phi' in PROBE:
+        def probe_runs():
+            Pu = jnp.asarray(PROBE.pop('Phi'))
+            for r in ranks:
+                for option in options:
+                    cid = PL.cfg_id('none', r, '-', option[0], option[1], 'native', gen='upwind')
+                    if r not in PROBE['constructible']:
+                        O.res['probe_runs'][cid] = dict(status='construction_failed', reason='probe rank not certified')
+                    elif not deferrable():
+                        O.res['probe_runs'][cid] = dict(status='deferred', reason='budget')
+                    else:
+                        datp = dict(Phi=Pu[:, :r], LPhi=H.lap_cols(Pu[:, :r], d, L), DPhi=H.dsum_cols(Pu[:, :r], d, L))
+                        rec = dict(status='complete', cases={})
+                        try:
+                            Ws = []
+                            for j in SCREEN:
+                                o = cell.run('none', r, datp, 'native', option, 'prod', fam.ic(L, j), fam.nu(j))
+                                rec['cases'][j] = dict(e0=refs.score_safe(o['fields_lat'], j), cert=o['cert'])
+                                Ws.append(o['W'])
+                            O.npz('arrays', f'PROBE~{cid}', W=np.stack(Ws))
+                        except Exception as e:  # noqa: BLE001
+                            rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
+                        O.res['probe_runs'][cid] = rec
+                    O.save()
+            return len(O.res['probe_runs'])
+        O.phase('generator_probe_runs', probe_runs, store='probe_count')
     def extension():                                   # A2.18 / A16.2 / A25.1
         import stats as ST
         # A28.3: accumulated C-search = the classified Stage-A screening phases (not wall time since Stage A)
@@ -472,36 +502,6 @@ def main():
     O.res['search_hours'] = sum(v['seconds'] for k, v in O.res['phases'].items()
                                 if k.startswith('A|') or k.startswith('EXT|')) / 3600
 
-    # ---- generator probe runs (A2.3): `none` native on the screening cases with the upwind-generated basis ---------
-    O.res['probe_runs'] = {}
-    if probe is not None and 'Phi' in PROBE and not deferrable():
-        O.res['deferred'].append('generator probe runs (budget)')
-    if probe is not None and 'Phi' in PROBE:
-        def probe_runs():
-            Pu = jnp.asarray(PROBE.pop('Phi'))
-            for r in ranks:
-                for option in options:
-                    cid = PL.cfg_id('none', r, '-', option[0], option[1], 'native', gen='upwind')
-                    if r not in PROBE['constructible']:
-                        O.res['probe_runs'][cid] = dict(status='construction_failed', reason='probe rank not certified')
-                    elif not deferrable():
-                        O.res['probe_runs'][cid] = dict(status='deferred', reason='budget')
-                    else:
-                        datp = dict(Phi=Pu[:, :r], LPhi=H.lap_cols(Pu[:, :r], d, L), DPhi=H.dsum_cols(Pu[:, :r], d, L))
-                        rec = dict(status='complete', cases={})
-                        try:
-                            Ws = []
-                            for j in SCREEN:
-                                o = cell.run('none', r, datp, 'native', option, 'prod', fam.ic(L, j), fam.nu(j))
-                                rec['cases'][j] = dict(e0=refs.score_safe(o['fields_lat'], j), cert=o['cert'])
-                                Ws.append(o['W'])
-                            O.npz('arrays', f'PROBE~{cid}', W=np.stack(Ws))
-                        except Exception as e:  # noqa: BLE001
-                            rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
-                        O.res['probe_runs'][cid] = rec
-                    O.save()
-            return len(O.res['probe_runs'])
-        O.phase('generator_probe_runs', probe_runs, store='probe_count')
     O.res['inventory_counts'] = {s: sum(1 for v in INV.values() if v['status'] == s)
                                  for s in ('not_run', 'construction_failed', 'run_failed', 'complete', 'deferred')}
     O.res['timers'] = cell.T.t

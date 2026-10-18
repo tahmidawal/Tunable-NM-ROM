@@ -24,7 +24,9 @@ from p1common import Q, DT0, sha
 import budcore as BC
 import qcert as QC
 
-ING = ('Q', 'T', 'F', 'S', 'I')            # quadrature, time package, form, solver, initial condition
+ING = ('Q', 'T', 'F', 'S', 'I', 'M')       # quadrature, time package, form, solver, initial condition, test-space size (A3.1)
+FULL = ('Q', 'T', 'F', 'S', 'I')             # the full-factorial ingredients (M: main effect and pairs only)
+M_SWITCH = 2048
 OTHER = {'LSPG': 'GAL', 'GAL': 'LSPG'}
 
 
@@ -107,45 +109,52 @@ def prefix_blocks(rb, edges, Rp):
 
 
 class LSInit:
-    """A1.3: full-grid LS init on the prefix r. H = sum_b G_b^T G_b once per r; per case g = sum_b G_b^T u_b, Cholesky
-    solve + one refinement step; G-B5 orthogonality residual ||G^T(Gc - u)|| / (||G||_F ||Gc - u||), blockwise."""
+    """A3.4: full-grid LS init on the prefix r for ALL cases of the job in one streamed pass over the row blocks:
+    reduced QR G_b = Q_b R_b per block (Householder; no local inverse), apply Q_b^T to the stacked right-hand sides
+    U_b, keep R_b and Q_b^T U_b, discard Q_b; then [R_1; ...; R_n] = Q_Z R and C = R^{-1} Q_Z^T [Q_b^T U_b]_b.
+    Acceptance per r: cond(R) <= 1e10; per case G-B5 orthogonality ||G^T(Gc - u)|| / (||G||_F ||Gc - u||) <= 1e-8."""
 
-    def __init__(self, bank, Rp):
+    COND_MAX, ORTH_MAX = 1e10, 1e-8
+
+    def __init__(self, bank, Rp, U0_list):
+        """U0_list: (L+1, L+1) nodal ICs incl. walls, one per case."""
         self.bank, self.Rp = bank, int(Rp)
         self.rows = row_blocks(bank)
         t0 = time.perf_counter()
-        H = None
-        for rb in bank.Grot:
+        U = jnp.asarray(np.stack([np.asarray(u)[1:-1, 1:-1].reshape(-1) for u in U0_list], axis=1))   # (n, cases)
+        Rs, QtU, gf2 = [], [], 0.
+        for (a, b), rb in zip(self.rows, bank.Grot):
             g = prefix_blocks(rb, bank.edges, self.Rp)
-            h = g.T @ g
-            H = h if H is None else H + h
-        self.H = jax.block_until_ready(H)
-        self.GF = float(jnp.sqrt(jnp.trace(H)))                     # ||G||_F
-        ev = np.linalg.eigvalsh(np.asarray(H))
-        self.cond = float(ev[-1] / ev[0]) if ev[0] > 0 else float('inf')
-        self.cho = jax.scipy.linalg.cho_factor(self.H, lower=True)
+            Qb, Rb = jnp.linalg.qr(g, mode='reduced')
+            Rs.append(Rb)
+            QtU.append(Qb.T @ U[a:b])
+            gf2 += float(jnp.sum(g * g))
+            del Qb
+        QZ, R = jnp.linalg.qr(jnp.concatenate(Rs, axis=0), mode='reduced')
+        sv = np.linalg.svd(np.asarray(R), compute_uv=False)
+        self.cond = float(sv[0] / sv[-1]) if sv[-1] > 0 else float('inf')
+        C = jax.scipy.linalg.solve_triangular(R, QZ.T @ jnp.concatenate(QtU, axis=0), lower=False)     # (r, cases)
+        self.GF = float(np.sqrt(gf2))
+        self.C, self.recs = [], []
+        for k in range(U.shape[1]):
+            c = C[:, k]
+            res = self._G(c) - U[:, k]
+            orth = float(jnp.linalg.norm(self._GT(res)) / (self.GF * jnp.linalg.norm(res) + 1e-300))
+            ok = bool(self.cond <= self.COND_MAX and orth <= self.ORTH_MAX)
+            self.C.append(np.asarray(c))
+            self.recs.append(dict(orth=orth, cond=self.cond, accepted=ok, method='streamed block Householder QR',
+                                  rel_residual=float(jnp.linalg.norm(res) / jnp.linalg.norm(U[:, k]))))
         self.seconds = time.perf_counter() - t0
 
     def _GT(self, u):
         acc = None
         for (a, b), rb in zip(self.rows, self.bank.Grot):
-            g = prefix_blocks(rb, self.bank.edges, self.Rp)
-            v = g.T @ u[a:b]
+            v = prefix_blocks(rb, self.bank.edges, self.Rp).T @ u[a:b]
             acc = v if acc is None else acc + v
         return acc
 
     def _G(self, c):
         return jnp.concatenate([prefix_blocks(rb, self.bank.edges, self.Rp) @ c for rb in self.bank.Grot])
-
-    def __call__(self, u0_full):
-        """u0_full: (L+1, L+1) nodal IC incl. walls -> (c, record)."""
-        L = self.bank.L
-        u = jnp.asarray(np.asarray(u0_full)[1:-1, 1:-1].reshape(-1))
-        c = jax.scipy.linalg.cho_solve(self.cho, self._GT(u))
-        c = c + jax.scipy.linalg.cho_solve(self.cho, self._GT(u - self._G(c)))        # one refinement step
-        res = self._G(c) - u
-        orth = float(jnp.linalg.norm(self._GT(res)) / (self.GF * jnp.linalg.norm(res) + 1e-300))
-        return c, dict(orth=orth, cond=self.cond, rel_residual=float(jnp.linalg.norm(res) / jnp.linalg.norm(u)), L=L)
 
 
 # ------------------------------------------------------------------------------------------------- corners --
@@ -155,7 +164,8 @@ def corner_spec(member, S):
     form = OTHER[member['form']] if 'F' in S else member['form']
     scheme, dt = ('BDF2', DT0 / 8) if 'T' in S else (member['scheme'], DT0 * float(member['factor']))
     return dict(role='qinf' if 'Q' in S else 'main', form=form, scheme=scheme, dt=dt,
-                level='tight' if 'S' in S else 'prod', init='ls' if 'I' in S else 'deployed')
+                level='tight' if 'S' in S else 'prod', init='ls' if 'I' in S else 'deployed',
+                M=M_SWITCH if 'M' in S else 4 * int(member['Rp']))
 
 
 def assert_tuple(spec0, spec, S):
@@ -163,14 +173,18 @@ def assert_tuple(spec0, spec, S):
     diff = {k for k in spec0 if spec0[k] != spec[k]}
     want = set()
     for x in S:
-        want |= {'Q': {'role'}, 'F': {'form'}, 'T': {'scheme', 'dt'}, 'S': {'level'}, 'I': {'init'}}[x]
+        want |= {'Q': {'role'}, 'F': {'form'}, 'T': {'scheme', 'dt'}, 'S': {'level'}, 'I': {'init'}, 'M': {'M'}}[x]
     # the time package may leave the scheme unchanged only if the deployed scheme is already BDF2 (never in FRONT-2D)
     if diff != want:
         raise AssertionError(f'corner {sorted(S)}: changed {sorted(diff)}, expected {sorted(want)}')
 
 
-def run_corner(st, spec, u0, nu, w0_ls=None, nout=6, nrec=0, budget=600, w0_scale=1.0, horizon=.25):
-    """init -> (w0 replacement) -> evolve. Returns dict(W, w0, stats, valid, scale, seconds)."""
+def run_corner(st, spec, u0, nu, w0_ls=None, nout=6, nrec=0, budget=600, w0_scale=1.0, horizon=.25, anchor=None):
+    """init -> (w0 replacement) -> evolve. Returns dict(W, w0, stats, valid, scale, seconds). st may be a dict
+    {M: BSetting} (A3.1: the M ingredient selects the setting with that test-space size)."""
+    if isinstance(st, dict):
+        st = st[spec.get('M', min(st))]
+    assert spec.get('M', st.M) == st.M, (spec.get('M'), st.M)
     st.check(spec['role'])
     q = st.q(spec['form'], nout=nout, nrec=nrec, budget=budget,
              nstep=max(BC.NSTEP, steps_keep(spec['dt'], horizon) + 1))
@@ -184,8 +198,13 @@ def run_corner(st, spec, u0, nu, w0_ls=None, nout=6, nrec=0, budget=600, w0_scal
     W, stt = q['evolve'](w0, nu, scale, st.data[(spec['role'], spec['form'])], sch)
     jax.block_until_ready(W)
     v = dict(W=W, w0=w0, stats=stt)
-    return dict(W=np.asarray(W), w0=np.asarray(w0), stats=stt, valid=P.run_valid(v), scale=float(scale),
-                seconds=time.perf_counter() - t0, budget_exits=P.budget_exits(v))
+    nfail = int(np.asarray(stt['nfail']))
+    valid = P.run_valid(v)
+    anchor = spec['level'] in ('tight', 'tighter') if anchor is None else bool(anchor)
+    # A2.5: numerical anchors must also have every step verified by the solver's own stopping test
+    return dict(W=np.asarray(W), w0=np.asarray(w0), stats=stt, valid=valid and (nfail == 0 if anchor else True),
+                run_valid=valid, nfail=nfail, anchor=anchor, scale=float(scale), seconds=time.perf_counter() - t0,
+                budget_exits=P.budget_exits(v))
 
 
 # ------------------------------------------------------------------------------------------ fine lattice (B8) --

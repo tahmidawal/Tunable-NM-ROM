@@ -28,6 +28,7 @@ import fs3
 import fs3p
 import qn3
 import t2core as T2
+import budcore as BC          # jcp-budget: horizon-aware adaptive solver (nout); identical to t2core at nout = 6
 
 HERE = Path(__file__).resolve().parent
 DT0 = 0.01
@@ -35,6 +36,13 @@ RULE_FILES = [(HERE / 'vendor' / 'quad3d' / 'rules' / 'rules.npz',
                '099a79976d03e993dc3fbdcc153a57dae0a2dbc5f917d7ca3674bef28daf859b'),
               (HERE / 'rules3d' / 'rules_extra.npz', '8deacf019839b8cf42993d5d8926126541db8152b811f411eceeb69940bb38cf')]
 DTS = (0.01, 0.0125, 0.05 / 3, 0.025)
+HORIZON = [0.25]              # jcp-budget: set once per job (B7); 0.25 reproduces the original
+
+
+def nout():
+    n = int(round(HORIZON[0] / .05))
+    assert abs(n * .05 - HORIZON[0]) < 1e-12
+    return n + 1
 
 
 def load_rules(names=None):
@@ -65,6 +73,8 @@ def spec_key(sp):
         return f'qn|{sp[1]}|{sp[2]:.8g}|k{k}' + (f'|{sp[4]}' if len(sp) > 4 else '')
     if t == 'ad':
         return f'ad|LSPG|{sp[1]}|{sp[2]:.8g}|{sp[3]}'
+    if t == 'adg':
+        return f'ad|GAL|{sp[1]}|{sp[2]:.8g}|{sp[3]}'
     raise KeyError(sp)
 
 
@@ -83,13 +93,13 @@ def parse_key(k):
         kr = 0 if p[3] == 'kinf' else int(p[3][1:])
         return ('qn', p[1], canon_dt(p[2]), kr) + ((p[4],) if len(p) > 4 else ())
     if p[0] == 'ad':
-        return ('ad', p[2], canon_dt(p[3]), p[4])
+        return ('ad' if p[1] == 'LSPG' else 'adg', p[2], canon_dt(p[3]), p[4])
     raise KeyError(k)
 
 
 def nsteps(dt):
-    s, kp = int(round(.25 / dt)), int(round(.05 / dt))
-    assert abs(s * dt - .25) < 1e-12 and abs(kp * dt - .05) < 1e-12, dt
+    s, kp = int(round(HORIZON[0] / dt)), int(round(.05 / dt))
+    assert abs(s * dt - HORIZON[0]) < 1e-12 and abs(kp * dt - .05) < 1e-12, dt
     return s, kp
 
 
@@ -123,12 +133,20 @@ class Setting:
                              dict(cond=float(ev[-1] / ev[0]) if ev[0] > 0 else float('inf'), m=int(len(w))))
         return self._d[rule][0]
 
+    def data_gal(self, rule):
+        """jcp-budget: the rule data plus the GAL form data (thin QR of A, Qm^T Lambda A) for the 'adg' spec."""
+        k = ('GAL', rule)
+        if k not in self._d:
+            self._d[k] = (BC.form_data(dict(self.data(rule)), {}, 'GAL'), None)
+        return self._d[k][0]
+
     def mf_cond(self, rule):
         self.data(rule)
         return self._d[rule][1]
 
     def drop(self, rule):
         self._d.pop(rule, None)
+        self._d.pop(('GAL', rule), None)
 
 
 # ------------------------------------------------------------------------------------------------- queries
@@ -187,10 +205,11 @@ def make_query(sp, st, path='mesh', decode=True, n=65):
 
         def evolve(w0, nu, tol, d):
             return ev(w0, nu, d)
-    elif kind == 'ad':
-        g, t_ = C3.tol_of('LSPG', sp[3])
-        ev = T2.make_evolve(C3.nl3, C3.nlJ3, 'LSPG', st.Rp, st.trust)
-        sch = T2.sched(scheme, dt, g, t_)
+    elif kind in ('ad', 'adg'):
+        form = 'LSPG' if kind == 'ad' else 'GAL'          # adg: data must carry the GAL form data (Setting.data_gal)
+        g, t_ = C3.tol_of(form, sp[3])
+        ev = BC.make_evolve(C3.nl3, C3.nlJ3, form, st.Rp, st.trust, nout=nout(), nstep=max(BC.NSTEP, steps + 1))
+        sch = BC.sched(scheme, dt, g, t_, horizon=HORIZON[0])
 
         def evolve(w0, nu, tol, d):
             if w0.shape[0] == 1:
@@ -204,7 +223,7 @@ def make_query(sp, st, path='mesh', decode=True, n=65):
     def query(u0, nu, d):
         w0, scale = proj(u0, d)
         o = evolve(w0, nu, scale, d)
-        if kind != 'ad':
+        if kind not in ('ad', 'adg'):
             o['W'] = o['W_all'][::keep]
         o['w0'] = w0
         if decode:
@@ -226,7 +245,7 @@ def run_valid(sp, o, b):
     W = np.asarray(o['W'][:, b])
     if not np.isfinite(W).all():
         return False
-    if sp[0] == 'ad':
+    if sp[0] in ('ad', 'adg'):
         return int(np.asarray(o['stats']['nfail'])[b]) == 0
     rs = np.asarray(o['reason'][:, b])
     if (rs == 3).any():
@@ -237,7 +256,7 @@ def run_valid(sp, o, b):
 
 
 def step_record(sp, o, b):
-    if sp[0] == 'ad':
+    if sp[0] in ('ad', 'adg'):
         stt = o['stats']
         k = int(np.asarray(stt['steps'])[b])
         return dict(nfail=int(np.asarray(stt['nfail'])[b]), it_sum=int(np.asarray(stt['it_sum'])[b]), steps=k,

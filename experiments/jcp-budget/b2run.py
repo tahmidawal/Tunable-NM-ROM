@@ -3,7 +3,7 @@
 Blocks, each optional in the config:
   b2        B2 corners per member (pairwise or full factorial), the shared ideal end u_star and its U_star replays per r,
             the converged-rule check replays (every Q-containing corner type and the u_star family, check cases),
-            the M-ablation (M' = 2048), the LS-init records (G-B5)
+            M is the sixth ingredient (A3.1); the LS-init records (G-B5)
   b7        long-horizon rollouts per member: prod (recorded + certified in-job), tight (all), tighter (check cases),
             q+ (q2 cases), q++ (check cases), rho on own states
   b8        fine-route scoring and physical diagnostics of the b7 prod runs against this lane's references (in-job;
@@ -12,7 +12,7 @@ Blocks, each optional in the config:
   pilot     memory pilot: the combined path at this mesh (A1.8)
 
     python b2run.py --config configs/<attempt>.json --out <dir>
-Outputs: result.json, B2_<member>.npz, STAR_R<r>.npz, MABL_<member>.npz, B7_<member>.npz, B8_<member>.npz,
+Outputs: result.json, B2_<member>.npz, B2CHK_<member>.npz, STAR_R<r>.npz, STARCHK_R<r>.npz, B7_<member>.npz, B8_<member>.npz,
 CTRL_*.npz, COMPLETE.
 """
 from __future__ import annotations
@@ -42,12 +42,14 @@ def mkey(m):
 
 
 def subsets(design):
+    """A3.1: pairwise over {Q, T, F, S, I, M} (22 corners); full = the 2^5 factorial over {Q, T, F, S, I} plus the M
+    main effect and its five pairs (38 corners)."""
     S1 = [frozenset()] + [frozenset([x]) for x in B.ING]
     S2 = [frozenset(c) for c in itertools.combinations(B.ING, 2)]
     if design == 'pairwise':
         return S1 + S2
     assert design == 'full'
-    return S1 + S2 + [frozenset(c) for n in (3, 4, 5) for c in itertools.combinations(B.ING, n)]
+    return S1 + S2 + [frozenset(c) for n in (3, 4, 5) for c in itertools.combinations(B.FULL, n)]
 
 
 def skey(S):
@@ -94,14 +96,17 @@ def main():
         rules = {m['rule'] for m in mem_}
         assert len(rules) == 1, ('one deployed rule per r in FRONT-2D', rules)
         st.add_role('main', rules.pop())
-        LS = B.LSInit(bank, Rp) if ('b2' in cfg or 'controls' in cfg or 'pilot' in cfg) else None
         w0ls, lsrec = {}, {}
-        if LS is not None:
-            for i in P.select(cases, cfg.get('ls_cases', cfg['cases'])):
-                c_, r_ = LS(U0[i][3])
-                w0ls[i], lsrec[cid(i)] = np.asarray(c_), r_
+        LS = None
+        if 'b2' in cfg or 'controls' in cfg or 'pilot' in cfg:
+            lsi = P.select(cases, cfg.get('ls_cases', cfg['cases']))
+            LS = B.LSInit(bank, Rp, [U0[i][3] for i in lsi])
+            for k, i in enumerate(lsi):
+                lsrec[cid(i)] = LS.recs[k]
+                if LS.recs[k]['accepted']:          # A3.4: a rejected LS init makes the I ingredient unavailable
+                    w0ls[i] = LS.C[k]
             rep['setup'][f'LS_R{Rp}'] = dict(cond=LS.cond, seconds=LS.seconds, worst_orth=max(r['orth'] for r in lsrec.values()),
-                                             records=lsrec, G_B5=bool(max(r['orth'] for r in lsrec.values()) <= 1e-8))
+                                             records=lsrec, G_B5=bool(all(r['accepted'] for r in lsrec.values())))
         if 'pilot' in cfg:
             run_pilot(cfg, rep, bank, st, mem_, U0, w0ls, cases, out)
             save()
@@ -132,21 +137,34 @@ def main():
 # ------------------------------------------------------------------------------------------------------- B2 ---
 
 def run_b2(cfg, rep, bank, st, Rp, mem_, U0, w0ls, cases, cid, out, save, el):
+    """B2 (DESIGN 4, A1, A2, A3): corners on the settings {4r: st, 2048: sM} (the M ingredient selects the setting)."""
     b = cfg['b2']
     ids = P.select(cases, cfg['cases'])
     chk = [i for i in P.select(cases, b.get('check_cases', 'dev6')) if i in ids]
-    st.add_role('qinf', b['qinf'])
+    sM = B.BSetting(bank, Rp, M=B.M_SWITCH)
+    sM.add_role('main', st.rules['main'])
+    SET = {st.M: st, sM.M: sM}
+    for s_ in SET.values():
+        s_.add_role('qinf', b['qinf'])
     R = rep['b2'].setdefault(f'R{Rp}', dict(members={}, star=None))
+    NaW = np.full((6, Rp), np.nan)
+
+    def go(sp, i, anchor=None):
+        """One corner run; a corner needing the LS init of a case whose LS init was rejected is unavailable (A3.4)."""
+        if sp['init'] == 'ls' and i not in w0ls:
+            return dict(W=NaW, valid=False, seconds=np.nan, nfail=-1, budget_exits=-1)
+        u0, nu, n0, _ = U0[i]
+        return B.run_corner(SET, sp, u0, nu, w0_ls=w0ls.get(i), anchor=anchor)
+
     # ---- the shared ideal end and its U_star replays (never deferred, A1.1)
     star_specs = {'star': ('tight', DT0 / 8), 'star16': ('tight', DT0 / 16), 'starx': ('tighter', DT0 / 8),
                   'star16x': ('tighter', DT0 / 16)}
+    sspec = lambda role, lev, dt: dict(role=role, form='GAL', scheme='BDF2', dt=dt, level=lev, init='ls', M=4 * Rp)
     Ws = {k: np.full((len(ids), 6, Rp), np.nan) for k in star_specs}
     Vs = {k: np.zeros(len(ids), bool) for k in star_specs}
     for j, i in enumerate(ids):
-        u0, nu, n0, _ = U0[i]
         for k, (lev, dt) in star_specs.items():
-            sp = dict(role='qinf', form='GAL', scheme='BDF2', dt=dt, level=lev, init='ls')
-            r = B.run_corner(st, sp, u0, nu, w0_ls=w0ls[i])
+            r = go(sspec('qinf', lev, dt), i)
             Ws[k][j], Vs[k][j] = r['W'], r['valid']
         print('STAR', Rp, cid(i), el(), flush=True)
     np.savez_compressed(out / f'STAR_R{Rp}.npz', case_ids=np.array([cid(i) for i in ids]),
@@ -156,6 +174,7 @@ def run_b2(cfg, rep, bank, st, Rp, mem_, U0, w0ls, cases, cid, out, save, el):
     # ---- corners per member
     design = b.get('design', 'pairwise')
     Sl = subsets(design)
+    qS = [s_ for s_, S in enumerate(Sl) if 'Q' in S]
     for m in mem_:
         t_m = time.perf_counter()
         mk = mkey(m)
@@ -163,71 +182,54 @@ def run_b2(cfg, rep, bank, st, Rp, mem_, U0, w0ls, cases, cid, out, save, el):
         W = np.full((len(ids), len(Sl), 6, Rp), np.nan)
         V = np.zeros((len(ids), len(Sl)), bool)
         secs = np.full((len(ids), len(Sl)), np.nan)
+        NF = np.full((len(ids), len(Sl)), -1)
+        BX = np.full((len(ids), len(Sl)), -1)
         tuples = []
         for s_, S in enumerate(Sl):
             sp = B.corner_spec(m, S)
-            B.assert_tuple(spec0, sp, S)                               # G-B6
-            tuples.append(dict(S=skey(S), **sp, rule=st.rules[sp['role']] if sp['role'] in st.rules else None))
+            B.assert_tuple(spec0, sp, S)                               # G-B6 (logical ingredients)
+            tuples.append(dict(S=skey(S), **sp, rule=b['qinf'] if 'Q' in S else st.rules['main']))
         for j, i in enumerate(ids):
-            u0, nu, n0, _ = U0[i]
             for s_, S in enumerate(Sl):
-                sp = B.corner_spec(m, S)
-                r = B.run_corner(st, sp, u0, nu, w0_ls=w0ls[i])
+                r = go(B.corner_spec(m, S), i)
                 W[j, s_], V[j, s_], secs[j, s_] = r['W'], r['valid'], r['seconds']
+                NF[j, s_], BX[j, s_] = r['nfail'], r['budget_exits']
             print('B2', mk, cid(i), el(), flush=True)
-        # ---- converged-rule check (A1.7): every Q-containing corner type, on the check cases, with the check rule
-        st.add_role('qcheck', b['qcheck'])
-        qS = [s_ for s_, S in enumerate(Sl) if 'Q' in S]
+        np.savez_compressed(out / f"B2_{mk.replace('|', '_')}.npz", case_ids=np.array([cid(i) for i in ids]),
+                            corners=np.array([skey(S) for S in Sl]), W=W, valid=V, seconds=secs, nfail=NF, budget_exits=BX)
+        R['members'][mk] = dict(member=m, design=design, corners=[skey(S) for S in Sl], tuples=tuples,
+                                valid=int(V.sum()), total=int(V.size), seconds=time.perf_counter() - t_m, mem=P.mem())
+        save()
+    # ---- converged-rule check (G-B4, A1.7, A3.5): every Q-containing corner type of every member and the u_star family,
+    # on the check cases, with the check rule (built once per setting, then dropped: memory lifetime)
+    for M_, s_ in SET.items():
+        s_.drop_role('qinf')
+    gc.collect()
+    for M_, s_ in SET.items():
+        s_.add_role('qcheck', b['qcheck'])
+    for m in mem_:
+        mk = mkey(m)
         Wc = np.full((len(chk), len(qS), 6, Rp), np.nan)
         Vc = np.zeros((len(chk), len(qS)), bool)
         for jj, i in enumerate(chk):
-            u0, nu, n0, _ = U0[i]
             for kk, s_ in enumerate(qS):
-                sp = dict(B.corner_spec(m, Sl[s_]), role='qcheck')
-                r = B.run_corner(st, sp, u0, nu, w0_ls=w0ls[i])
+                r = go(dict(B.corner_spec(m, Sl[s_]), role='qcheck'), i, anchor=True)
                 Wc[jj, kk], Vc[jj, kk] = r['W'], r['valid']
-        st.drop_role('qcheck')
-        gc.collect()
-        np.savez_compressed(out / f"B2_{mk.replace('|', '_')}.npz", case_ids=np.array([cid(i) for i in ids]),
-                            corners=np.array([skey(S) for S in Sl]), W=W, valid=V, seconds=secs,
-                            check_case_ids=np.array([cid(i) for i in chk]), check_corners=np.array([skey(Sl[s_]) for s_ in qS]),
-                            W_check=Wc, valid_check=Vc)
-        R['members'][mk] = dict(member=m, design=design, corners=[skey(S) for S in Sl], tuples=tuples,
-                                valid=int(V.sum()), total=int(V.size), check_valid=int(Vc.sum()), check_total=int(Vc.size),
-                                seconds=time.perf_counter() - t_m, mem=P.mem())
-        save()
-    # ---- u_star check-rule replays (G-B4)
-    st.add_role('qcheck', b['qcheck'])
+        np.savez_compressed(out / f"B2CHK_{mk.replace('|', '_')}.npz", case_ids=np.array([cid(i) for i in chk]),
+                            corners=np.array([skey(Sl[s_]) for s_ in qS]), W=Wc, valid=Vc)
+        R['members'][mk].update(check_valid=int(Vc.sum()), check_total=int(Vc.size))
     Wsc = {k: np.full((len(chk), 6, Rp), np.nan) for k in star_specs}
     Vsc = {k: np.zeros(len(chk), bool) for k in star_specs}
     for jj, i in enumerate(chk):
-        u0, nu, n0, _ = U0[i]
         for k, (lev, dt) in star_specs.items():
-            r = B.run_corner(st, dict(role='qcheck', form='GAL', scheme='BDF2', dt=dt, level=lev, init='ls'), u0, nu,
-                             w0_ls=w0ls[i])
+            r = go(sspec('qcheck', lev, dt), i, anchor=True)
             Wsc[k][jj], Vsc[k][jj] = r['W'], r['valid']
-    st.drop_role('qcheck')
     np.savez_compressed(out / f'STARCHK_R{Rp}.npz', case_ids=np.array([cid(i) for i in chk]),
                         **{f'W_{k}': v for k, v in Wsc.items()}, **{f'valid_{k}': v for k, v in Vsc.items()})
-    st.drop_role('qinf')
+    for M_, s_ in SET.items():
+        s_.drop_role('qcheck')
+    del sM, SET
     gc.collect()
-    # ---- M-ablation (A1.1): M' = 2048, deployed everything else
-    if b.get('m_ablation', True):
-        sM = B.BSetting(bank, Rp, M=P.MMAX)
-        sM.add_role('main', st.rules['main'])
-        for m in mem_:
-            mk = mkey(m)
-            Wm = np.full((len(ids), 6, Rp), np.nan)
-            Vm = np.zeros(len(ids), bool)
-            for j, i in enumerate(ids):
-                u0, nu, n0, _ = U0[i]
-                r = B.run_corner(sM, B.corner_spec(m, frozenset()), u0, nu)
-                Wm[j], Vm[j] = r['W'], r['valid']
-            np.savez_compressed(out / f"MABL_{mk.replace('|', '_')}.npz", case_ids=np.array([cid(i) for i in ids]),
-                                W=Wm, valid=Vm, M=sM.M, mode_hash=sM.mode_hash)
-            R['members'][mk]['M_ablation'] = dict(M=sM.M, valid=int(Vm.sum()))
-        del sM
-        gc.collect()
     save()
 
 
@@ -317,17 +319,26 @@ def load_ref(cfg, coh, c):
     Every file is checked against the manifest in the config."""
     b = cfg['b8']
     stem = Path(b['refs_dir']) / '2d' / coh / f"T{float(b['horizon']):g}" / f'c{int(c):03d}'
-    pj, pz = Path(str(stem) + '.json'), Path(str(stem) + '.npz')
-    if not (pj.exists() and pz.exists()):
+    pj, pz, pf = Path(str(stem) + '.json'), Path(str(stem) + '.npz'), Path(str(stem) + '_fine.npz')
+    if not (pj.exists() and pz.exists() and pf.exists()):
         return None
-    man = b['manifest']
-    for p in (pj, pz):
+    if 'manifest' in b:
+        man = b['manifest']
+    elif 'manifest_file' in b:              # REFS-MANIFEST.sha256 of the refs/ data directory ('<sha>  ./2d/...')
+        man = {}
+        for line in (Path(b['refs_dir']) / b['manifest_file']).read_text().splitlines():
+            if line.strip():
+                h, f = line.split(None, 1)
+                man[f.strip().lstrip('./')] = h
+    else:                                   # smoke: the producing refrun job's own manifest (same job, earlier step)
+        man = {m_['file']: m_['sha256'] for m_ in json.loads(Path(b['manifest_from']).read_text())['manifest']}
+    for p in (pj, pz, pf):
         rel = str(p.relative_to(Path(b['refs_dir'])))
         assert man.get(rel) == B.file_sha(p), ('reference file not in the manifest or changed', rel)
     meta = json.loads(pj.read_text())
-    z = np.load(pz)
+    z, zf = np.load(pz), np.load(pf)
     fin = meta['final'][2]
-    return meta, np.asarray(z[fin]), np.asarray(z['fine_' + fin]), np.asarray(z['t0_fine'])
+    return meta, np.asarray(z[fin]), np.asarray(zf['fine_' + fin]), np.asarray(zf['t0_fine'])
 
 
 def run_b8(cfg, rep, bank, members, cases, cid, out, save):
@@ -391,7 +402,11 @@ def run_b8(cfg, rep, bank, members, cases, cid, out, save):
             if i in chk:                                         # C-A (A1.6): guaranteed alias, e_257 unchanged
                 ef = np.asarray(jnp.linalg.norm(E.reshape(nout, -1), axis=1))
                 for k in range(1, nout):
-                    ak = (ef[k] + 1.2 * D['e_257'][j][k] * n0f) / nphi
+                    w_ = 'W1' if k <= 5 else ('W2' if k <= 10 else 'W3')
+                    eps_l = (meta['judge_windows'] or {}).get(w_, {}).get('eps_ref') or 0.
+                    eps_f = (meta['judge_fine_windows'] or {}).get(w_, {}).get('eps_ref') or 0.
+                    # A2.2 C-A: amplitude against the actual rejection threshold (guaranteed 'inconsistent')
+                    ak = (ef[k] + n0f * (1.2 * D['e_257'][j][k] + 2 * (eps_f + eps_l) + 1e-6)) / nphi
                     Fa = F[k] + ak * phi
                     D['alias_efine'][j, k] = float(jnp.linalg.norm(Fa - Rf[k])) / n0f
                     D['alias_e257'][j, k] = float(np.linalg.norm(np.asarray(Fa[::s4, ::s4]) - lat[k])) / n0l

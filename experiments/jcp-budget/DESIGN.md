@@ -689,3 +689,50 @@ production unless it is a ≤ 2 GPU-h pilot". Repriced inventory (estimates; cer
 
 Memory certificates include table builds, the 3D construction peaks (`Tables` and Gauss $56^3$/$64^3$ at W512), the
 reference output buffers and refinement levels, and the retained fine arrays, measured in the smokes.
+
+## Amendment A3 (2026-10-18, after `audits/codex-design-3.md`, NEEDS-RESTATEMENT; before any real-size run)
+
+**A3.1 Interaction coverage (audit-3 fix 1).**
+- **M joins the 2D contest and the pairwise design.** The 2D ingredient set becomes {Q, T, F, S, I, M} with M: $4r\to2048$
+  test modes (A2.6 semantics). Pairwise corners now include the five pairs with M (2D pairwise design: $1+6+15=22$
+  corners per case; the $1024^2$ full factorial stays over {Q, T, F, S, I} (32 corners) plus the M main effect and its
+  five pairs). So in 2D the interaction of **any** two candidate ingredients is measured.
+- **Ideal-dynamics interaction, exactly:** $\chi^\star_x=2\langle I_x,\,u_\star-\Pi u_{\rm ref}\rangle$ per ingredient and
+  time (the ingredient's effect against the ideal-dynamics vector), reported separately from A2.1's
+  $\chi_x=\chi^\star_x+2\langle I_x,u_\varnothing-u_\star\rangle$, whose second term is labelled "numerical background".
+  The 3D form effect's background is the tight end (its own row).
+- **3D F×S.** An interaction needs all four corners; "GAL with the deployed fixed-sweep / QN solver" does not exist in the
+  code or the method (those solvers minimise the LSPG residual), so F×S is **undefined**, not unmeasured. The 3D
+  coverage statement reads: "every pair of defined ingredients is measured; F is defined only at the adaptive-solver end
+  and its pairs with Q and T are measured there". This is the brief's contract restricted to defined estimands; it is
+  flagged in the hand-back for the coordinator. No other narrowing remains.
+
+**A3.2 Missing or unverified quadrature (fix 2).** If any candidate is unavailable on a case — including Q withheld by
+G-B4 — the case is "incomplete" and dominance follows A2.4 (inconclusive below 75 % complete); "largest among available"
+is descriptive only. A G-B4 failure for the $u_\star$ family marks $u_\star$ **quadrature-unverified**: then
+$e_{\star,\rm dyn}$, $\chi^\star_x$, $D_a$ closure and every $U_\star$-based resolution are labelled unverified and
+excluded from verdicts (dominance → inconclusive). This supersedes A2.5's "computed without it".
+
+**A3.3 $T=1$ cross-check FD case (fix 3).** The $T=1.0$ FD references cover sub16 **plus val32 case 19** (17 cases);
+case 19 is used only for the $W_3$ cross-check (never in B7 populations). Cost +0.4 GPU-h (inventory: `ref2t1` 6.9).
+
+**A3.4 Stable LS (fix 4).** The LS initialisation applies $Q_b^{\mathsf T}$ directly: one streamed pass over the row
+blocks computes the reduced QR $G_b=Q_bR_b$ of each block, applies $Q_b^{\mathsf T}$ to the stacked right-hand sides of
+**all** cases of the job ($u_b$ columns), keeps $R_b$ and $Q_b^{\mathsf T}U_b$, and discards $Q_b$; then
+$[R_1;\dots;R_n]=Q_ZR$ and $C=R^{-1}Q_Z^{\mathsf T}[Q_b^{\mathsf T}U_b]_b$. Householder QR is stable for rank-deficient
+blocks (no local inverse is formed). Acceptance: ${\rm cond}(R)\le10^{10}$ and G-B5 orthogonality $\le10^{-8}$ per case;
+otherwise the I ingredient (and every corner containing it, and $u_\star$) is **unavailable** for that $r$ and mesh.
+
+**A3.5 Check-rule acceptance is solver-specific (fix 5).** Check-rule replays keep the corner's own solver. Adaptive LM
+runs (all 2D runs; 3D `ad`/`adg`): valid and `stats.nfail == 0`. 3D fixed-sweep / QN runs: `S.run_valid` (finite, no
+reason-3 step, no damping saturation) **and** the speed3d per-step certificate (fresh contraction,
+$\gamma\le10^{-3}$), non-stationary steps ≤ 1 % pooled over the check run's steps — the same acceptance as the deployed
+runs of that solver. Deployed-tolerance 3D corners are certified the same way.
+
+**A3.6 C-A (fix 6).** Two predicates: (i) **raw alias detection** on every check case: $|\Delta e^{257}|\le10^{-10}e^{257}$
+and $e^{\rm fine}_{\rm injected}-e^{257}>0.10\,e^{257}+2(\varepsilon^{\rm fine}+\varepsilon^{257})$ (guaranteed by the
+A2.2 amplitude); (ii) the **production classifier** labels the injected case "inconsistent" on every check case that is
+resolved ($e^{257}>2\varepsilon^{257}$); unresolved check cases are counted, not classified.
+
+**Inventory change:** 2D pairwise corners 16 → 22 per case (+6 short runs; b1024/b256/b4096 +15 %), `ref2t1` +0.4:
+total ≈ 34.5 GPU-h, ×1.25 ≈ 43 ≤ 45. If a certificate exceeds the cap, the defer order of §9 applies.

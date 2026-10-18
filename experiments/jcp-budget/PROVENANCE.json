@@ -37,7 +37,13 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
   "sha256": "c0e72adbedf6a3f69d78d35e3e3d50896b2e25594e63185b927d20a3a136d6bd",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "189102a46ebe19ee671539ffd78a6ba11942aea22562ffa19577fa9eeb7182d5",
+    "description": "cap 45; qualify-specific pending/fallback/mandatory logic removed; reserve = spent + reserved + hours <= cap; job name prefix jb_"
+   }
+  ]
  },
  {
   "file": "resources.py",
@@ -69,7 +75,13 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
   "sha256": "ab9f9623c0d8751577a28124d10d97a278bbf0b724fd5408a5284c13b9bdc5d7",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "b9528ffaeec14b17bf9cbe2045a5fc38be11eac30c2534c49769ceefc8b68198",
+    "description": "horizon-aware (HORIZON, nout()); 'ad' via budcore (identical to t2core at nout 6) and new 'adg' (adaptive GAL) spec; Setting.data_gal; drop clears GAL data"
+   }
+  ]
  },
  {
   "file": "s3ctx.py",
@@ -77,7 +89,13 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
   "sha256": "c4f8e5a0a3a9c0c33c096536fc55c3c8b6c73a0543a39929755bae382d5d3ac2",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "9c8dac4ef0ee22bd04bb022167c75c8207c26d4cdbc038805622f359307e4d89",
+    "description": "rollout array sized by S.nout() (horizon-aware)"
+   }
+  ]
  },
  {
   "file": "fs3.py",
@@ -117,7 +135,13 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
   "sha256": "44d1574ea67383691abb322152afb4c4d1d96e02954cf63252da91124d61055c",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "fc1621fc5907713f9f928834ada02b355cdd49e65567e0d98d8bb40e079c0ffa",
+    "description": "namespace jcp-budget, drivers b2run/b3run/ref/refrun, job name jb_, qualify timing-fallback check removed"
+   }
+  ]
  },
  {
   "file": "cluster/submit.sh",
@@ -125,7 +149,13 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
   "sha256": "ae4d8de1d7ca3aad4ea5014a32e93e72d77a7aec3b31f43a03b613543ba8f327",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "c4568c9cf6ed2924b111d3cfc8c2969e7b328f91ba861bf9c3694820b0f6d3a2",
+    "description": "namespace jcp-budget, job name jb_"
+   }
+  ]
  },
  {
   "file": "cluster/collect.py",
@@ -133,7 +163,13 @@
   "source_branch": "exp/2026-10-18-jcp-qualify",
   "source_commit": "4399491ebf3a0211c3ffe8ded9ac37b4af59e482",
   "sha256": "4277c8c0ead484b524bf44c0eb980470126c8ca58b99b51cbae9225e8e1060a0",
-  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)"
+  "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
+  "edits": [
+   {
+    "sha256_after": "c53f8e8c3cee6d7fe96dc448350e2de9d6e56b71a4daee1988f4a641bd10f882",
+    "description": "namespace jcp-budget, jb_; --promote (references into refs/), --no-fine (fine fields stay on the cluster)"
+   }
+  ]
  },
  {
   "file": "inputs/modes_F2048.json",

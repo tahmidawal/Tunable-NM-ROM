@@ -204,6 +204,7 @@ def solve_case(coh, j, T, fine, allow_refine):
     final = [x[1] for x in triple]
     arrays['t0'] = t0
     jf = jfw = None
+    fine_arrays = None
     jw = judge_windows([x[0] for x in triple], t0, coh.nu(j), T)
     if fine:
         tf = fine_t0(coh, j)
@@ -213,16 +214,18 @@ def solve_case(coh, j, T, fine, allow_refine):
                   for x in triple]
             jf = V.judge(lv, tf, coh.nu(j))
             jfw = judge_windows(lv, tf, coh.nu(j), T)
-        arrays['fine_' + final[2]] = fines[final[2]]
+        fine_arrays = {'fine_' + final[2]: fines[final[2]], 't0_fine': arrays.pop('t0_fine')}
         # G-R3: the fine lattice contains the scoring lattice (2D stride 4 incl. walls; 3D: the 63^3 nodes are the
         # fine nodes with odd index 2k-1 -> k/64): bitwise equality of the shared nodes for every final level
         g3 = []
         for i in final:
             F, Lt = fines[i], arrays[i]
+            sf = RC.FINE[d] // RC.LATTICE[d]
             if d == 2:
-                g3.append(bool(np.array_equal(F[:, ::4, ::4], Lt)))
+                g3.append(bool(np.array_equal(F[:, ::sf, ::sf], Lt)))
             else:
-                Fc = F.reshape((F.shape[0],) + (127,) * 3)[:, 1::2, 1::2, 1::2]
+                mf = RC.FINE[d] - 1
+                Fc = F.reshape((F.shape[0],) + (mf,) * 3)[:, sf - 1::sf, sf - 1::sf, sf - 1::sf]
                 g3.append(bool(np.array_equal(Fc.reshape(F.shape[0], -1), Lt)))
         g_r3 = all(g3)
     meta = dict(dim=d, cohort=coh.name, case=j, kind='ST', horizon=T, times=RC.times(T).tolist(), desc=coh.desc(j),
@@ -231,7 +234,8 @@ def solve_case(coh, j, T, fine, allow_refine):
                 t0_sha256=sha(np.ascontiguousarray(t0).tobytes()), scheme='cnr', attempts=attempts, final=final,
                 history=history, judge=jd, judge_fine=jf, judge_windows=jw, judge_fine_windows=jfw, outcome=jd['outcome'], refined=refined, tight_used=tight_used,
                 allow_refine=allow_refine, floor_stab=V.FLOOR_STAB, G_R3=(g_r3 if fine else None))
-    return arrays, meta
+    meta['fine_file'] = None if fine_arrays is None else f'c{j:03d}_fine.npz'
+    return arrays, fine_arrays, meta
 
 
 def write(outdir, stem, arrays, meta, manifest):
@@ -254,8 +258,15 @@ def mode_fd(cfg, outdir, rep):
             log(f'exists, skipped (no resume trust): {stem}')
             continue
         t = time.perf_counter()
-        arrays, meta = solve_case(coh, j, T, bool(cfg.get('fine', True)), bool(cfg.get('allow_refine', False)))
+        arrays, fine_arrays, meta = solve_case(coh, j, T, bool(cfg.get('fine', True)), bool(cfg.get('allow_refine', False)))
         meta['job'], meta['seconds'] = job_info(), time.perf_counter() - t
+        if fine_arrays is not None:            # the fine field in its own file (it stays on the cluster; A1.8)
+            data = npz_bytes(**fine_arrays)
+            pf = Path(str(stem) + '_fine.npz')
+            pf.parent.mkdir(parents=True, exist_ok=True)
+            pf.write_bytes(data)
+            rep['manifest'].append(dict(file=str(pf.relative_to(outdir)), sha256=sha(data)))
+            meta['fine_sha256'] = sha(data)
         write(outdir, stem, arrays, meta, rep['manifest'])
         jd = meta['judge']
         rep['cases'].append(dict(case=j, outcome=meta['outcome'], refined=meta['refined'], tight=meta['tight_used'],

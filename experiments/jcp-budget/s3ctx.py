@@ -139,7 +139,7 @@ class Ctx:
         for sp in specs:
             key = S.spec_key(sp)
             f = self.q_of(sname, sp, path, n)
-            arr = np.full((len(ids), 6, st.Rp), np.nan)
+            arr = np.full((len(ids), S.nout(), st.Rp), np.nan)          # jcp-budget: horizon-aware
             walls, vals, nst, nsteps_ = [], [], [], []
             t_s = time.perf_counter()
             for ci, j in enumerate(ids):

@@ -1,18 +1,15 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T08:24:33Z",
- "step": "8: code audit 16 + design audit 13 (A18) running; NNLS fixture archive regenerating locally (then CPU gates + dry run)",
+ "utc": "2026-10-18T08:48:44Z",
+ "step": "8: binding CPU gates then 2D dry run of final code (pid chain), then stage smk2 + job audit",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-16.md, audits/codex-design-13.md",
-  "codex_pid": [
-   1840711,
-   1840715
-  ],
-  "local_pid": 1838799
+  "codex_output": null,
+  "codex_pid": null,
+  "local_pid": 1881136
  },
- "expected_finish_utc": "2026-10-18T09:24:33Z",
- "last_commit": "8b2beabed",
+ "expected_finish_utc": "2026-10-18T09:58:40Z",
+ "last_commit": "6bd9b807e",
  "gpu_hours_spent": 0.878,
  "gpu_hours_cap": 30,
  "notes": "smk1 0.878 GPU-h spent; NNLS path to 16r cycles (6444 its for 256 support on CPU fixture) -> fixing"

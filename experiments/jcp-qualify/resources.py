@@ -72,9 +72,10 @@ def acc_projection(cfg):
     for b in cfg.get('blocks', []):
         if b['kind'] == 'order':
             sm = r['elapsed'].get('R384|block|order')
-            ncase_smoke = 6 + 3                    # smoke: TH06 on dev6 + three one-case arms
+            # upper envelope: the whole smoke block (TH06 on six cases + three one-case arms, all at R384) is charged to
+            # the six TH06 cases only, i.e. per case-arm >= any arm's true cost in the smoke
             n_prod = sum(ncases(a.get('cases', b['cases'])) for a in b['arms'])
-            sec = sm / ncase_smoke * n_prod
+            sec = sm / 6 * n_prod
             det[f"order|{b['setting']}"] = sec
             total += sec
     setup = r['phases']['setup'] * mesh_f + 900.
@@ -106,10 +107,14 @@ def q3_projection(cfg):
     d = AN.out_dir('smk3', 'q3run')
     r = json.loads((d / 'result.json').read_text())
     assert r['complete']
-    n_smoke = len(r['members']) + (1 if r.get('control') else 0)
-    per_member = r['elapsed_seconds'] / max(1, n_smoke)
+    import re
+    log = '\n'.join(p_.read_text() for p_ in (d.parents[1] / 'logs').glob('*.out'))
+    t = [float(x) for x in re.findall(r'^MEMBER .* ([0-9.]+)$', log, re.M)]
+    t0 = float(re.findall(r'^SETUP ([0-9.]+)', log, re.M)[0]) if re.findall(r'^SETUP ([0-9.]+)', log, re.M) else 0.
+    per = [b_ - a_ for a_, b_ in zip([t0] + t[:-1], t)]          # wall seconds of each smoke member (incl. setup of its rules)
+    upper = max(per)                                              # upper envelope: the most expensive member (W1024)
     n = len(cfg['members']) + (1 if cfg.get('control') else 0)
-    return (n * per_member * 1.5 + 1200.) / 3600, dict(per_member_seconds=per_member, members=n)
+    return (n * upper * 1.2 + 1200.) / 3600, dict(per_member_seconds=per, upper_envelope=upper, members=n)
 
 
 def main():

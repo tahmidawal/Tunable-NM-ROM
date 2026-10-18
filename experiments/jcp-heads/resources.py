@@ -103,7 +103,7 @@ def time_proj(cfg):
     t = jl(out('smk2', 'htime', 'smk2time') / 'result.json')
     trip = sorted(x['tA1'] + x['tA2'] + x['t_init'] + x['t_evolve'] + x['t_decode'] for x in t['invocations'])
     fus = sorted(x['tA1'] + x['tA2'] + x['t_fused'] for x in t['fused'])
-    burn = 7 * float(t['config']['burn'])
+    burn = 8 * float(t['config']['burn'])                     # 5 burns per split triplet + 3 per fused
     per_trip = trip[-1] + fus[-1] + burn                       # the slowest smoke triplet pair (retries included below)
     nsub = len(t['subjects'])
     cert_per_subject = (t['elapsed_seconds'] - sum(trip) - sum(fus)) / nsub   # certification + compile per subject (upper)

@@ -124,6 +124,9 @@ def main():
                  W_qp=np.full((n, 6, dim), np.nan), W_qpp=np.full((n, 6, dim), np.nan), rho=np.full((n, 6), np.nan),
                  f257=np.full((n, 6, 257, 257), np.nan), C=np.full((n, 6, 512 if arm.kind == 'head' else dim), np.nan))
         rows = []
+        nt = len(tci)                       # every TIMED case: scoring trajectory, identity hash, 257^2 fields (job audit)
+        T = dict(T_case_ids=np.array([cid(ci) for ci in tci]), T_W=np.full((nt, 6, dim), np.nan), T_w0=np.full((nt, dim), np.nan),
+                 T_n0=np.full(nt, np.nan), T_ident=np.array([''] * nt, dtype=object))      # fields re-derived from T_W (NumPy decode)
         for ci in tci:
             arm.check('main')
             u0, nu, n0 = U0[(L, ci)]
@@ -135,6 +138,9 @@ def main():
             ref[(lb, ci)] = ident(W, s_)
             if lb in cfg.get('inject_identity_fault', []):
                 ref[(lb, ci)] = 'injected-' + ref[(lb, ci)]
+            jt = tci.index(ci)
+            T['T_W'][jt], T['T_w0'][jt], T['T_n0'][jt] = np.asarray(W), np.asarray(w0), U0[(L, ci)][2]
+            T['T_ident'][jt] = ident(W, s_)
             if ci not in cci:
                 continue
             j = cci.index(ci)
@@ -186,7 +192,8 @@ def main():
         np.savez_compressed(out / f"S_{lb.replace('|', '_')}.npz", case_ids=np.array([cid(ci) for ci in cci]),
                             time_tag='t0,t1,t2,t3,t4,t5', scheme=scheme, form='LSPG', dt=DT0, steps=S, rule=sp['rule'],
                             kind=arm.kind, dim=dim, M=arm.M, mesh=L, tol=np.array(P.tol_of('LSPG', 'prod')),
-                            A=np.asarray(d['A']), lam=np.asarray(d['lam']), **C)
+                            A=np.asarray(d['A']), lam=np.asarray(d['lam']), **C, **{k: (v.astype(str) if k == 'T_ident' else v)
+                                                                                     for k, v in T.items()})
         for role in ('qp', 'qpp'):                            # Q2 tables only during certification
             if role in arm.rules:
                 arm.drop_role(role)
@@ -244,6 +251,7 @@ def main():
             tries.append(dict(B=lb, case=cid(ci), rep=r_, attempt=attempt, tA1=ta1, tA2=ta2, t_init=ti,
                               it=np.asarray(s_['step_it'])[:S].tolist(), t_evolve=te, t_decode=td, drift=drift,
                               ratio=te / (.5 * (ta1 + ta2)),
+                              hash_B=ident(W, s_), hash_A1=ha1, hash_A2=ha2,
                               hashes_ok=bool(ha1 == ref[(la, ci)] and ha2 == ref[(la, ci)] and ident(W, s_) == ref[(lb, ci)])))
             if BAND[0] <= drift <= BAND[1]:
                 break
@@ -258,8 +266,9 @@ def main():
             QS.burn(burn)
             tf, fo = sync_time(lambda: q['fused'](u0, nu, d, cold, sch))
             ta2, hf2 = timed_A(ci)
-            hok = bool(ident(fo['W'], fo['stats']) == ref[(lb, ci)] and hf1 == ref[(la, ci)] and hf2 == ref[(la, ci)])
-            ftries.append(dict(tA1=ta1, tA2=ta2, t_fused=tf, drift=ta2 / ta1, hash_ok=hok))
+            hb = ident(fo['W'], fo['stats'])
+            hok = bool(hb == ref[(lb, ci)] and hf1 == ref[(la, ci)] and hf2 == ref[(la, ci)])
+            ftries.append(dict(tA1=ta1, tA2=ta2, t_fused=tf, drift=ta2 / ta1, hash_ok=hok, hash_B=hb))
             if BAND[0] <= ta2 / ta1 <= BAND[1]:
                 break
         fall = all(t_['hash_ok'] for t_ in ftries)

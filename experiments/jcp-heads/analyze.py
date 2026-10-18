@@ -16,6 +16,7 @@ from pathlib import Path
 import numpy as np
 
 import hscore as HSC
+import npcheck as NC
 import hstats as HS
 import nphead as NH
 import p1stats as PS
@@ -109,11 +110,13 @@ def acc_records(att):
             sc = HSC.score(R)
             ids = [str(x) for x in R['case_ids']]
             per = {c: dict(e=sc[c]['ST']['e'], eps=sc[c]['ST']['eps_ref'], eligible=bool(sc[c]['ST']['eligible']),
+                           ref_sha256=sc[c]['ST'].get('reference_sha256'), store_version=sc[c]['ST'].get('store_version'),
                            e_S=sc[c]['S']['e'] if 'S' in sc[c] else None,
                            eligible_S=bool(sc[c]['S']['eligible']) if 'S' in sc[c] else None) for c in ids}
             el = [v['e'] for v in per.values() if v['eligible']]
             recs[(name, scheme)] = dict(name=name, scheme=scheme, kind=spec['kind'], rule=spec['rule'], M=int(R['M']),
-                                        Q1=q['Q1'], Q2=q['Q2'], Q3=q['Q3'], qualified=q['numerically_qualified'],
+                                        Q1=q['Q1'], Q2=q['Q2'], Q3=q['Q3'],
+                                        qualified=bool(q['numerically_qualified'] and (spec['kind'] != 'head' or (a.get('jacobian') or {}).get('passed'))),
                                         disagreements=q['disagreements'][:20], per_case=per, case_qual=q['per_case'],
                                         median=float(np.median(el)) if el else None, worst=float(np.max(el)) if el else None,
                                         it_sum=[x['it_sum'] for x in rows], ic=[x.get('ic_reason') for x in rows],
@@ -124,31 +127,66 @@ def acc_records(att):
 
 # ------------------------------------------------------------------ timing ----
 
-def timing(att):
+def timing(att, recs=None):
+    """Per subject: costs (valid fused / split repeats per case), timing-job qualification label on dev6 (A1.8), panel
+    controls (split = fused equivalence, doubled work, drift validity), and at 1024^2 the consistency of every timed
+    trajectory with the accuracy job (independent decode + E0 ST score, |de| <= 2.5e-4 per case). `usable` = timing
+    complete and all of these pass; only usable costs enter cost labels (A3.2: otherwise 'unknown')."""
+    import timing as TM
     d = out_dir(att, 'htime')
     r = jload(d / 'result.json')
     assert r['complete'], att
+    mesh = int(att[4:].rstrip('full'))
     subj = {}
-    for lb, v in r['subjects'].items():
-        subj[lb] = dict(spec=v['spec'], certification=v['certification'])
     fused, inv = {}, {}
     for x in r['fused']:
         fused.setdefault(x['B'], {}).setdefault(x['case'], []).append(x)
     for x in r['invocations']:
         inv.setdefault(x['B'], {}).setdefault(x['case'], []).append(x)
+    eq = {e['subject']: e for e in r['equivalence']}
+    dbl_ok = all(x['identity_ok'] and x['same_iterations'] and 1.8 <= x['ratio'] <= 2.2 for x in r['doubled'] if x['drift_ok'])
+    panel = TM.panel_validity(r['invocations'])
     cost = {}
-    for lb in subj:
-        cases = r['subjects'][lb]['timed_case_ids']
+    for lb, v in r['subjects'].items():
+        cases = v['timed_case_ids']
         per = {c: [x['ratio'] for x in fused.get(lb, {}).get(c, []) if x['valid']] for c in cases}
         pev = {c: [x['ratio'] for x in inv.get(lb, {}).get(c, []) if x['valid']] for c in cases}
-        cost[lb] = dict(per_case={c: float(np.median(v)) if v else None for c, v in per.items()},
-                        per_case_ev={c: float(np.median(v)) if v else None for c, v in pev.items()},
-                        complete=bool(all(per[c] for c in cases)),
+        cert = v['certification']
+        sp = v['spec']
+        bars = all(x['valid'] and x['gcert_ok'] and x['tight_verified'] and x['dist_tight'] <= 2.5e-4 and x['tighter_verified']
+                   and x['dist_tight_tighter'] <= 2.5e-5 and x.get('budget_exits', 0) >= 0
+                   and ((not sp.get('qp')) or (x['qp_valid'] and x['qpp_valid'] and x['dist_qp'] <= 2.5e-4
+                                               and x['dist_qp_qpp'] <= 2.5e-4)) for x in cert)
+        bars = bool(bars and cert and sum(x['noncertified'] for x in cert) <= .01 * 50 * len(cert))   # pooled (Q1 rule)
+        cons = None
+        if mesh == 1024 and recs is not None and lb.split('|')[1] != 'A_R384':
+            name, sc = lb.split('|')[1], lb.split('|')[3]
+            rec = recs.get((name, sc))
+            if rec is not None:
+                Z = np.load(d / f"S_{lb.replace('|', '_')}.npz", allow_pickle=True)
+                head = head_of(name) if sp['kind'] == 'head' else None
+                coef, dim = HSC.coef_fn(dict(kind=sp['kind'], dim=Z['dim']), head)
+                import qscore as QS_
+                diffs = []
+                for j, cidv in enumerate([str(x) for x in Z['T_case_ids']]):
+                    f = NC.decode257(coef(Z['T_W'][j]), dim)
+                    coh, c = cidv.split('|')
+                    sc_ = QS_.score(f, dict(case_id=cidv, time_tag='t0,t1,t2,t3,t4,t5', scheme=sc, form='LSPG', dt=.005,
+                                            dt_expected=.005, requested=(coh, int(c))), 'ST')
+                    diffs.append(abs(sc_['e'] - rec['per_case'][cidv]['e']))
+                cons = dict(max_abs_error_diff=float(max(diffs)), consistent=bool(max(diffs) <= 2.5e-4))
+        complete = bool(all(per[c] for c in cases))
+        usable = bool(complete and bars and eq.get(lb, {}).get('passed') and dbl_ok and (cons is None or cons['consistent']))
+        cost[lb] = dict(per_case={c: float(np.median(x)) if x else None for c, x in per.items()},
+                        per_case_ev={c: float(np.median(x)) if x else None for c, x in pev.items()},
+                        complete=complete, timing_job_label='pass' if bars else 'fail', consistency=cons,
+                        equivalence=bool(eq.get(lb, {}).get('passed')), usable=usable,
                         raw_ev={c: [(x['ratio'], x['valid']) for x in inv.get(lb, {}).get(c, [])] for c in cases},
                         abs_fused_median=float(np.median([x['t_fused'] for c in cases for x in fused.get(lb, {}).get(c, [])
                                                           if x['valid']] or [np.nan])),
                         contract=CONTRACT)
-    return r, subj, cost
+    meta = dict(job=r['job_id'], gpu=r['gpu'], doubled_ok=bool(dbl_ok), split_panel=panel)
+    return r, meta, cost
 
 
 def tlabel(mesh, name, rule, scheme):
@@ -195,6 +233,23 @@ def h_acc_k(recs, scheme, m128=False):
     return out
 
 
+def h_acc_k_seed(recs, scheme, s):
+    """Sensitivity: H-acc-K transitions of one seed's heads (unpooled)."""
+    out = {}
+    for lo, hi in zip(KS[:-1], KS[1:]):
+        a, b = recs.get((f'H{lo}s{s}', scheme)), recs.get((f'H{hi}s{s}', scheme))
+        if not (a and b and a['qualified'] and b['qualified']):
+            out[f'{lo}->{hi}'] = dict(outcome='unqualified size')
+            continue
+        cases = [c for c, v in a['per_case'].items() if v['eligible']]
+        el, eh = np.array([a['per_case'][c]['e'] for c in cases]), np.array([b['per_case'][c]['e'] for c in cases])
+        eps = np.array([a['per_case'][c]['eps'] for c in cases])
+        q = np.ones(len(cases), bool)
+        out[f'{lo}->{hi}'] = PS.h_acc_r_transition(eh - el, eps, q, q)
+    out['range'] = PS.h_acc_r_range([v['outcome'] for v in out.values() if 'outcome' in v])
+    return out
+
+
 def lh(recs, cost, scheme, mesh=1024, holm=None, per_seed=None):
     """Q-LH-dim and Q-LH-cost at 1024^2 for every K (A2.1-A2.4, A3.1-A3.3, A4.2). per_seed: restrict the head to one seed."""
     res = {}
@@ -203,7 +258,7 @@ def lh(recs, cost, scheme, mesh=1024, holm=None, per_seed=None):
         S = [per_seed] if per_seed is not None else pools(recs, K, scheme)
         S = [s for s in S if recs.get((f'H{K}s{s}', scheme), {}).get('qualified')]
         hl = {s: tlabel(mesh, f'H{K}s{s}', recs[(f'H{K}s{s}', scheme)]['rule'], scheme) for s in S if (f'H{K}s{s}', scheme) in recs}
-        Sp = [s for s in S if hl.get(s) in cost and cost[hl[s]]['complete']]                       # S'_K (A3.2)
+        Sp = [s for s in S if hl.get(s) in cost and cost[hl[s]]['usable']]                         # S'_K (A3.2)
         entry = dict(S=S, S_prime=Sp)
         if len(Sp) < (1 if per_seed is not None else 2):
             entry.update(status='unavailable (timing incomplete or unqualified)')
@@ -224,7 +279,7 @@ def lh(recs, cost, scheme, mesh=1024, holm=None, per_seed=None):
             lq = recs[key]['qualified']
             ll = tlabel(mesh, f'L{r}', recs[key]['rule'], scheme)
             eL = np.array([recs[key]['per_case'][c]['e'] for c in cases])
-            complete = ll in cost and cost[ll]['complete']
+            complete = ll in cost and cost[ll]['usable']
             cL = np.array([cost[ll]['per_case'][c] for c in cases]) if complete else None
             err = HS.error_label(eH, eL, eps)
             cl = HS.cost_label(cL / cH, complete=complete) if complete else HS.cost_label(None, complete=False)
@@ -323,22 +378,24 @@ def main_all():
     costs = {}
     for m in (256, 1024, 4096):
         if (out_dir(f'time{m}', 'htime') / 'result.json').exists():
-            _, _, costs[m] = timing(f'time{m}')
+            _, exp.setdefault('timing_meta', {})[str(m)], costs[m] = timing(f'time{m}', recs)
     exp['cost'] = {str(m): {lb: {k: v for k, v in c.items() if k != 'raw_ev'} for lb, c in cm.items()} for m, cm in costs.items()}
     if recs:
         fam = jload(RUNS / 'F5-FAMILY.json')['family'] if (RUNS / 'F5-FAMILY.json').exists() else list(KS)
         exp['S_K'] = {sc: {K: pools(recs, K, sc) for K in KS} for sc in SCHEMES}
         exp['h_acc_k'] = {sc: h_acc_k(recs, sc) for sc in SCHEMES}
         exp['h_acc_k_m128'] = h_acc_k(recs, 'BE', m128=True)
+        exp['h_acc_k_per_seed'] = {s: h_acc_k_seed(recs, 'BE', s) for s in SEEDS}
         if 1024 in costs:
             exp['lh'] = {}
             for sc in SCHEMES:
                 res, comps = lh(recs, costs[1024], sc)
-                f5, per_k = finish_lh(res, comps, fam) if sc == 'BE' else (None, None)
-                exp['lh'][sc] = dict(per_K=res, F5=f5, F5_inputs=per_k)
+                f5, per_k = finish_lh(res, comps, fam)          # CN-R: the same results; F5 is read from BE only
+                exp['lh'][sc] = dict(per_K=res, F5=f5 if sc == 'BE' else None, F5_inputs=per_k if sc == 'BE' else None)
             exp['lh_per_seed'] = {}
             for s in SEEDS:
                 res, comps = lh(recs, costs[1024], 'BE', per_seed=s)
+                finish_lh(res, comps, fam)
                 exp['lh_per_seed'][s] = res
             exp['F5_family'] = fam
         rr = {k[0]: v['rule'] for k, v in recs.items()}

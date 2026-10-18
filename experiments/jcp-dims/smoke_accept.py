@@ -187,12 +187,20 @@ def smk3():
         acc=pan['smoke-uncertified']['acceptance'])
     t1 = [x['ratio'] for x in pan['smoke']['invocations'] if x['B'].startswith('T1|')]
     req('T1 (C_old twice) ratio in [1.8, 2.2]', bool(t1) and 1.8 <= float(np.median(t1)) <= 2.2, median=float(np.median(t1)) if t1 else None)
-    ad = [k for k in d.glob('AD_*.npz')]
-    req('adaptive blocks wrote evidence (square kappa = 1 and default)', any('W512k1' in p.name for p in ad) and any('W512_lat65536' in p.name for p in ad))
-    for p in ad:
+    want = [(st, rl, f) for st, rls in (('W512k1', ('lat65536', 'lat131072')), ('W512', ('lat65536',)),
+                                        ('W512k8', ('lat131072', 'lat262144'))) for rl in rls for f in ('LSPG', 'GAL')]
+    for st, rl, f in want:                         # exact adaptive inventory; G-cert is an implementation check
+        p = d / f'AD_{st}_{rl}_ad_{f}_CN_0.01.npz'
+        req(f'adaptive {st} {rl} {f}-CN: evidence present', p.exists())
+        if not p.exists():
+            continue
         z = np.load(p)
-        rep(f'adaptive {p.name}', valid=bool(z['valid'].all()), noncert=int(z['noncert'].sum()), gcert=bool(z['gcert'].all()),
-            worst_tight=float(np.max(z['dist_tight'])), square=bool(z['square']))
+        req(f'adaptive {st} {rl} {f}-CN: G-cert holds on every case', bool(z['gcert'].all()))
+        req(f'adaptive {st} {rl} {f}-CN: square flag matches M = r', bool(z['square']) == (st == 'W512k1'))
+        if st == 'W512k1' and f == 'LSPG':
+            req(f'adaptive {st} {rl}: square diagnostics recorded', np.isfinite(z['jcond']).any() and np.isfinite(z['unweighted']).any())
+        rep(f'adaptive {st} {rl} {f}-CN (scientific outcome, no gate)', valid=bool(z['valid'].all()), noncert=int(z['noncert'].sum()),
+            worst_tight=float(np.max(z['dist_tight'])), worst_tight_tighter=float(np.max(z['dist_tight_tighter'])))
     # reproduction (default M) vs speed3d archives, offline
     W = np.load(d / 'W_smk3.npz')
     S3 = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-14-jcp-speed3d/experiments/jcp-speed3d/runs')

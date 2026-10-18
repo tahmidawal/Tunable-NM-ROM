@@ -32,7 +32,7 @@ timeout 120 ssh -o ConnectTimeout=20 tufts-login "cd $NS/$A && sha256sum -c MANI
 trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: reservation KEPT; run ledger.py settle $A"' ERR
 # COMMON-BRIEF 14: every sbatch under the shared campaign lock, account count < 8 checked inside the lock (exit 75 = cap)
 set +e
-OUT=$(timeout 700 ssh -o ConnectTimeout=20 tufts-login "flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'n=\$(squeue -u tawal01 -h | wc -l); [ \$n -lt 8 ] || exit 75; cd $NS/$A && sbatch run.sbatch'")
+OUT=$(timeout 700 ssh -o ConnectTimeout=20 tufts-login "flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'q=\$(squeue -u tawal01 -h) || exit 76; n=\$(printf \"%s\" \"\$q\" | grep -c .); [ \$n -lt 8 ] || exit 75; cd $NS/$A && sbatch run.sbatch'")
 RC=$?
 set -e
 if [ "$RC" = 75 ]; then trap - ERR; "$PY" "$LANE/ledger.py" release "$A"; echo "account at cap (8): not submitted, reservation released"; exit 5; fi

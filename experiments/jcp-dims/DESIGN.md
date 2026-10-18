@@ -689,3 +689,14 @@ established discrepancy. The conservative non-finite → flag convention of A3.2
 sentence "0/0 is impossible for a non-zero target state" is withdrawn (a non-zero coefficient vector need not give a
 non-zero tested advection); the conservative flag stays. G-cert recovery (A3.3) is algebraically exact; floating-point
 rounding is covered by its tolerance; for GAL the tolerance is the per-step $t_f\lVert Ac_n\rVert$ (`p1core.py:192`).
+
+---
+
+## Amendment A5 (2026-10-18, before any production job; dispositions of the smoke job audits)
+
+**A5.1 Smolyak 3D is not a gate** (`audits/codex-job-smk3-1.md` item 1): §7's "Smolyak must-fail (3D)" row was withdrawn
+by A1.2 ("Smolyak (2D and 3D) is a scientific family with a registered prediction, not a must-fail gate; `smol8` is not
+a control"); the smoke therefore carries no `smol8` predicate. Smolyak runs as a family in `b3f` (smolyak8 … 13).
+**A5.2 Smoke allowance.** The lane brief bounds each pre-production cluster smoke at ≤ 2 GPU-h and one at a time; each
+smoke is reserved at its 2 h limit in the ledger and charged its measured hours. **A5.3** The submission's account-count
+check inside the campaign lock fails closed (a failed `squeue` aborts with exit 76; COMMON-BRIEF §14).

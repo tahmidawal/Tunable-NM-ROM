@@ -132,6 +132,7 @@ def main():
                      ic_tight=np.full((n, 5), np.nan), budget_exits_tight=np.full(n, -1),
                      W_tighter=np.full((nd, 6, dim), np.nan), cert_tighter=np.full((nd, S), np.nan),
                      valid_tighter=np.zeros(nd, bool), verified_tighter=np.zeros(nd, bool), ic_tighter=np.full((nd, 5), np.nan),
+                     budget_exits_tighter=np.full(nd, -1),
                      W_qp=np.full((len(q2), 6, dim), np.nan), valid_qp=np.zeros(len(q2), bool),
                      rho=np.full((len(q2), 6), np.nan),
                      W_qpp=np.full((nd, 6, dim), np.nan), valid_qpp=np.zeros(nd, bool),
@@ -174,7 +175,7 @@ def main():
                     ctt, _, _, _ = certify(arm, vtt, nu, 'main', sch_tt, S)
                     R['W_tighter'][k], R['cert_tighter'][k] = np.asarray(vtt['W']), ctt
                     R['valid_tighter'][k], R['verified_tighter'][k] = HA.run_valid(vtt), anchor_verified(vtt, ctt, ANCHOR_TT)
-                    R['ic_tighter'][k] = icv(vtt)
+                    R['ic_tighter'][k], R['budget_exits_tighter'][k] = icv(vtt), P.budget_exits(vtt)
                     row.update(dist_tight_tighter=P.fdist(ft, P.restrict(vtt['fields'], L), n0),
                                tighter_valid=bool(R['valid_tighter'][k]), tighter_verified=bool(R['verified_tighter'][k]))
                     del vtt

@@ -253,7 +253,8 @@ def timing_costs():
             q2 = all(r_.get('qp_valid') and r_.get('dist_qp', 1) <= 2.5e-4 for r_ in rows)
             z = np.load(d / f"S_{lb.replace('|', '_')}.npz")
             rh = np.asarray(z['rho'], float)
-            q2 = q2 and bool(np.nanmax(rh) <= .116)
+            rf = rh[~np.isnan(rh)]                        # 0/0 trivial states excluded (p1common.rho convention)
+            q2 = q2 and rh.shape == (6, 6) and bool(rf.size) and bool(np.all(np.isfinite(rf)) and rf.max() <= .116)
             if s['spec'].get('qpp'):
                 q2 = q2 and all(r_.get('qpp_valid') and r_.get('dist_qp_qpp', 1) <= 2.5e-4 for r_ in rows)
             else:

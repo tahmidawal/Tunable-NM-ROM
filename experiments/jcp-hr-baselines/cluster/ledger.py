@@ -4,6 +4,7 @@ fcntl lock (runs/GPU-LEDGER.lock) and is written by atomic replacement.
     ledger.py reserve <attempt> <driver> <config> <gpu> <commit> <wall_hours> <stageb_reserve_hours>
     ledger.py submit-check <attempt>          # the attempt holds exactly one unbound reservation; total <= cap
     ledger.py bind <attempt> <slurm_job_id>   # binds the reservation to its one submission (no reuse)
+    ledger.py revert <attempt>                # after a submission that failed before sbatch (checked by submit.sh)
     ledger.py reconcile <attempt> <slurm_job_id> <gpu_hours> <state>
 """
 import fcntl
@@ -53,6 +54,9 @@ def main():
                 f'attempt {a}: no unbound reservation ({[m.get("status") for m in mine]})'
             assert total(L) <= CAP + 1e-9, ('cap', total(L))
             mine[0]['status'] = 'submitting'
+        elif op == 'revert':                    # a submission that failed before sbatch (no job id, no remote dir)
+            assert len(mine) == 1 and mine[0]['status'] == 'submitting' and mine[0]['slurm'] is None, mine
+            mine[0]['status'] = 'reserved at staging'
         elif op == 'bind':
             assert len(mine) == 1 and mine[0]['status'] == 'submitting' and mine[0]['slurm'] is None, mine
             mine[0].update(slurm=int(sys.argv[3]), status='submitted')

@@ -16,6 +16,9 @@ LOCAL="$ROOT/experiments/jcp-hr-baselines/runs/$A"
   || { echo "bundle differs from its manifest: refusing"; exit 8; }
 # A34.2: the attempt must hold exactly one unbound reservation (marked 'submitting' under the ledger lock)
 /home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" submit-check "$A"
+# a failure before sbatch returns the reservation (only if no job id was obtained and the attempt dir does not exist)
+trap 'if [ -z "${JID:-}" ] && timeout 60 $SSH tufts-login "test ! -e $NS/$A" 2>/dev/null; then
+        /home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" revert "$A"; fi' EXIT
 echo "--- squeue before"; timeout 60 $SSH tufts-login 'squeue -u $USER -h -o "%i %j %T"'
 TAG="$A.$(hostname).$$.$(date +%s%N)"
 timeout 60 $SSH tufts-login "mkdir -p $NS/.staging && mkdir $NS/.staging/$TAG"

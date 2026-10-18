@@ -1,0 +1,861 @@
+{
+ "backend=gpu": {
+  "ok": true
+ },
+ "disjoint": {
+  "ok": true
+ },
+ "cpu-gates": {
+  "ok": true,
+  "names_ok": true,
+  "sources_match": true
+ },
+ "frozen-inventory": {
+  "ok": true,
+  "diffs": {
+   "2": {},
+   "3": {}
+  }
+ },
+ "2d_L1024|n0": {
+  "ok": true
+ },
+ "2d_L1024|phases": {
+  "ok": false,
+  "missing_or_failed": {
+   "adv_pod": {
+    "status": "error",
+    "error": "JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.47GiB. [executable_name='jit__reduce_max'] [tf-allocator-allocation-error='']",
+    "trace": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/smoke.py\", line 68, in phase\n    v = fn()\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/smoke.py\", line 232, in <lambda>\n    P('adv_pod', lambda: cell.build_adv(S, c['pmax'], p_list), 240)\n                         ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/pipeline.py\", line 125, in build_adv\n    U2, sr, devN2 = BD.pod_rsvd(S, pmax)\n                    ~~~~~~~~~~~^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/build.py\", line 126, in pod_rsvd\n    dev = float(jnp.max(jnp.abs(Phi.T @ Phi - jnp.eye(rmax))))\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py\", line 300, in __float__\n    return self._value.__float__()\n           ^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/profiler.py\", line 420, in wrapper\n    return func(*args, **kwargs)\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/array.py\", line 623, in _value\n    npy_value, did_copy = self._single_device_array_to_np_array_did_copy()\n                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\njax.errors.JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 16.47GiB. [executable_name='jit__reduce_max'] [tf-allocator-allocation-error='']\n",
+    "seconds": 158.9971313625574
+   },
+   "qdeim_max_shape": {
+    "status": "error",
+    "error": "ConstructionError: advection rank p=2048 not certified",
+    "trace": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/smoke.py\", line 68, in phase\n    v = fn()\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/smoke.py\", line 238, in qdeim_pilot\n    dat, info = cell.qdeim(c['rmax'], c['pmax'])               # maximal B-QR shape (memory pilot)\n                ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/pipeline.py\", line 147, in qdeim\n    raise ConstructionError(f'advection rank p={p} not certified')\npipeline.ConstructionError: advection rank p=2048 not certified\n",
+    "seconds": 0.0009217793121933937
+   }
+  },
+  "peaks": {
+   "refs": [
+    0,
+    744697856,
+    0.21145362593233585
+   ],
+   "G-fom": [
+    242889984,
+    5587447808,
+    5.809846312738955
+   ],
+   "basis": [
+    17301309952,
+    30820356096,
+    93.45709309540689
+   ],
+   "adequacy": [
+    47169187840,
+    37249339392,
+    8.506900678388774
+   ],
+   "generator_probe_cost": [
+    47169187840,
+    37249339392,
+    2.235439380630851
+   ],
+   "adv_pod": [
+    null,
+    null,
+    158.9971313625574
+   ],
+   "qdeim_max_shape": [
+    null,
+    null,
+    0.0009217793121933937
+   ],
+   "ecsw_states": [
+    103551651840,
+    37249339392,
+    11.624834755435586
+   ],
+   "ecsw_smoke_rank": [
+    103551651840,
+    37249339392,
+    10.310863999649882
+   ],
+   "ecsw_max_shape": [
+    103551651840,
+    37249339392,
+    294.47646986786276
+   ],
+   "none_max_shape": [
+    103551651840,
+    37249339392,
+    18.03671575896442
+   ],
+   "grid": [
+    103551651840,
+    37249339392,
+    64.0836251731962
+   ],
+   "G-fd": [
+    103551651840,
+    37249339392,
+    9.703969407826662
+   ],
+   "G-all": [
+    103551651840,
+    37249339392,
+    9.931375741958618
+   ],
+   "N-under": [
+    103551651840,
+    37249339392,
+    290.29147176165134
+   ],
+   "N-grad": [
+    103551651840,
+    37249339392,
+    3.4968530824407935
+   ],
+   "N-swap": [
+    103551651840,
+    37249339392,
+    0.023395298048853874
+   ],
+   "N-time+ours": [
+    103551651840,
+    37249339392,
+    307.1792683843523
+   ]
+  }
+ },
+ "2d_L1024|G-fom": {
+  "ok": true,
+  "ev": {
+   "BE": {
+    "max_diff": 0.0,
+    "norm0": 363.4700139484449,
+    "fom_seconds": 1.7172972410917282
+   },
+   "CN": {
+    "max_diff": 7.785488476345287e-13,
+    "norm0": 363.4700139484449,
+    "fom_seconds": 0.31499348022043705
+   }
+  }
+ },
+ "2d_L1024|G-pod": {
+  "ok": true,
+  "orthonormality": 7.105427357601002e-15,
+  "ranks": {
+   "128": {
+    "rms_rel": 0.010099610347980379,
+    "frob_rel": 0.00615091430702078,
+    "pod_tail": 0.00615091430729095,
+    "pod_tail_sq": 3.783374681563651e-05
+   },
+   "512": {
+    "rms_rel": 4.151538281836758e-05,
+    "frob_rel": 2.183574349204579e-05,
+    "pod_tail": 2.1835822669775987e-05,
+    "pod_tail_sq": 4.76803151665903e-10
+   }
+  }
+ },
+ "2d_L1024|G-pod(adv)": {
+  "ok": false,
+  "p": [
+   "1",
+   "2",
+   "4",
+   "8",
+   "16",
+   "256",
+   "2048"
+  ]
+ },
+ "2d_L1024|qdeim-max-shape": {
+  "ok": false,
+  "ev": {
+   "B_shape": null,
+   "interp_const": null,
+   "solve_backward_error": null,
+   "seconds": null,
+   "device_peak": null
+  }
+ },
+ "2d_L1024|ecsw-smoke-rank": {
+  "ok": true,
+  "taus": {
+   "0.01": {
+    "size": 32,
+    "relres": 0.008767969379558725
+   },
+   "0.001": {
+    "size": 64,
+    "relres": 0.0009399242075137519
+   }
+  }
+ },
+ "2d_L1024|ecsw-max-shape": {
+  "ok": true,
+  "ev": {
+   "shape": [
+    61440,
+    32768
+   ],
+   "contrib_seconds": 4.495169309899211,
+   "nnls_seconds": 289.98064786661416,
+   "support": 1024,
+   "relres": 0.0008609245276097675,
+   "reason": "cap",
+   "iterations": 2359,
+   "device_peak": 103551651840,
+   "host_maxrss": 37249339392,
+   "kkt": {
+    "ok": false,
+    "support_max_abs_gradient": 2.5530234774734655e-16,
+    "off_support_max_gradient": 2.61590166913549e-06,
+    "tol": 1.1989106906010797e-08
+   },
+   "banned": 11214
+  },
+  "n_states": 120
+ },
+ "2d_L1024|none-max-shape": {
+  "ok": true,
+  "ev": {
+   "seconds": 17.209158715792,
+   "device_peak": 103551651840,
+   "J_shape": [
+    1046529,
+    512
+   ],
+   "W_finite": true,
+   "C_finite": true,
+   "fields_finite": true
+  }
+ },
+ "2d_L1024|grid-Q1-machinery": {
+  "ok": false,
+  "expected": 12,
+  "q1": {
+   "ecsw|128|0.001|BE|0.005|common|central": false,
+   "ecsw|128|0.001|BE|0.005|native|central": false,
+   "ecsw|128|0.001|CNR|0.005|common|central": false,
+   "ecsw|128|0.001|CNR|0.005|native|central": false,
+   "none|128|-|BE|0.005|common|central": false,
+   "none|128|-|BE|0.005|native|central": true,
+   "none|128|-|CNR|0.005|common|central": true,
+   "none|128|-|CNR|0.005|native|central": true
+  },
+  "problems": [
+   "qdeim|128|256|BE|0.005|common|central: KeyError: 'grid~qdeim~128~256~BE~0.005~common~central'",
+   "qdeim|128|256|BE|0.005|native|central: KeyError: 'grid~qdeim~128~256~BE~0.005~native~central'",
+   "qdeim|128|256|CNR|0.005|common|central: KeyError: 'grid~qdeim~128~256~CNR~0.005~common~central'",
+   "qdeim|128|256|CNR|0.005|native|central: KeyError: 'grid~qdeim~128~256~CNR~0.005~native~central'"
+  ]
+ },
+ "2d_L1024|G-score": {
+  "ok": false,
+  "decode": 0.0,
+  "score": 3.61291356643211e-16,
+  "n_decoded": 16,
+  "n_invalid": 0
+ },
+ "2d_L1024|G-fd+N-fd": {
+  "ok": false,
+  "ev": {
+   "G-fd-a": {
+    "rows": 5.363456373711841e-16,
+    "jac": 0.0,
+    "n_rows": 64
+   },
+   "none|None": {
+    "fd": 5.504201104169453e-09,
+    "fd_list": [
+     3.8379739501359034e-09,
+     3.831301651705652e-09,
+     3.905311051059885e-09,
+     5.504201104169453e-09,
+     4.693257539519954e-09
+    ],
+    "jacfwd": 0.0,
+    "res_vs_rJ": 0.0
+   },
+   "none|drop_adv_jac": {
+    "fd": 0.005751253888715026,
+    "fd_list": [
+     0.002541567873125715,
+     0.0037772263922004573,
+     0.005751253888715026,
+     0.0044447188008461015,
+     0.002626038271550724
+    ]
+   },
+   "ecsw|None": {
+    "fd": 1.802850046228136e-10,
+    "fd_list": [
+     8.162447708402898e-11,
+     9.258455119091747e-11,
+     1.802850046228136e-10,
+     9.663297243122068e-11,
+     1.4141992124189945e-10
+    ],
+    "jacfwd": 2.2512853286829872e-15,
+    "res_vs_rJ": 0.0,
+    "rows": 3.6868358771169845e-15
+   },
+   "ecsw|drop_adv_jac": {
+    "fd": 0.003495094618842894,
+    "fd_list": [
+     0.0031118896268780365,
+     0.003331061326401207,
+     0.003495094618842894,
+     0.0027537080815984586,
+     0.0017026138711105753
+    ]
+   }
+  }
+ },
+ "2d_L1024|G-all": {
+  "ok": true,
+  "dist": 2.0233011840327987e-15,
+  "valid": [
+   true,
+   true
+  ]
+ },
+ "2d_L1024|N-under[ecsw]": {
+  "ok": false,
+  "status": "unfulfilled",
+  "inventory_ok": true,
+  "broken": [],
+  "none_median": 0.031148443841535603,
+  "levels": {
+   "ecsw_cap512": {
+    "q1": true,
+    "median": 0.036967763042400764,
+    "support": 512
+   },
+   "ecsw_cap256": {
+    "q1": false,
+    "median": 66.48883604343968,
+    "support": 256
+   },
+   "ecsw_cap160": {
+    "q1": false,
+    "median": 472.2351259022806,
+    "support": 160
+   }
+  }
+ },
+ "2d_L1024|N-under[qdeim]": {
+  "ok": false,
+  "status": "unfulfilled",
+  "inventory_ok": true,
+  "broken": [],
+  "none_median": 0.031148443841535603,
+  "levels": {
+   "qdeim_p16": {
+    "construction_failure": "advection rank p=16 not certified"
+   },
+   "qdeim_p8": {
+    "construction_failure": "advection rank p=8 not certified"
+   },
+   "qdeim_p4": {
+    "construction_failure": "advection rank p=4 not certified"
+   },
+   "qdeim_p2": {
+    "construction_failure": "advection rank p=2 not certified"
+   },
+   "qdeim_p1": {
+    "construction_failure": "advection rank p=1 not certified"
+   }
+  }
+ },
+ "2d_L1024|N-grad(a)": {
+  "ok": true,
+  "status": "pass",
+  "inventory": true,
+  "base_valid": true,
+  "agree": true,
+  "shared_vs_trajectory": true,
+  "classification": true,
+  "n_discriminating": 140
+ },
+ "2d_L1024|N-grad(b) evidence complete": {
+  "ok": true,
+  "q1": false,
+  "detail": {
+   "valid": true,
+   "nonstat": 100,
+   "steps": 100,
+   "anchors": false,
+   "max_dist": 0.01914581509186185
+  }
+ },
+ "2d_L1024|N-swap": {
+  "ok": false,
+  "ref": {
+   "true": 0.0,
+   "case_swap": 1.1231728317100482,
+   "time_shift": 0.12935133861601722
+  },
+  "rom": {
+   "true": 0.5083129444731482,
+   "case_swap": 1.1794052812057467,
+   "time_shift": 0.5083129444731482,
+   "refstore": 0.5083129444731483
+  },
+  "rom_status": "fail",
+  "chosen": "ecsw|128|0.001|BE|0.005|native|central",
+  "kinds": {
+   "3|S|BE|0.005": "raised",
+   "3|S|BE|0.01": "raised",
+   "2|S|CNR|0.005": "raised",
+   "2|S|BE|0.01": "raised",
+   "2|S|BE|0.005": "allowed",
+   "2|ST|CNR|0.005": "allowed"
+  }
+ },
+ "2d_L1024|N-time": {
+  "ok": true,
+  "T": 1.9998418381873129,
+  "ci95": [
+   1.9997978573087356,
+   1.9999116690490437
+  ],
+  "attempts": 18
+ },
+ "2d_L1024|ours-adapter (phase-I execution check; not G-ours)": {
+  "ok": true,
+  "T": 0.17537405658047991,
+  "ci95": [
+   0.13908113838845998,
+   0.24487236060080492
+  ],
+  "attempts": 18
+ },
+ "3d_L64|n0": {
+  "ok": true
+ },
+ "3d_L64|phases": {
+  "ok": false,
+  "missing_or_failed": {
+   "ecsw_max_shape": {
+    "status": "error",
+    "error": "JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %wrapped_transpose = f64[32768,104448]{1,0} fusion(%args_0_.1), kind=kInput, calls=%wrapped_transpose_computation, metadata={op_name=\"args[0]\"}. Failed to pick best config: All configs failed during profiling.\nFailures (3):\nEXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 25.50GiB. [tf-allocator-allocation-error='']\nEXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 25.50GiB. [tf-allocator-allocation-error='']\nEXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 25.50GiB. [tf-allocator-allocation-error='']",
+    "trace": "Traceback (most recent call last):\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/smoke.py\", line 68, in phase\n    v = fn()\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/smoke.py\", line 258, in ecsw_pilot\n    o = BD.NN.greedy_nnls(G, b, taus=(), cap=c['pilot_support'])\n  File \"/cluster/tufts/paralab/tawal01/jcp-hrb/smk1/experiments/jcp-hr-baselines/nnls.py\", line 90, in greedy_nnls\n    Gb = np.asarray(G.T @ jnp.asarray(b))\n                    ^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/array_methods.py\", line 500, in _transpose_property\n    return lax_numpy.transpose(self)\n           ~~~~~~~~~~~~~~~~~~~^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/numpy/lax_numpy.py\", line 1164, in transpose\n    return lax.transpose(a, axes_)\n           ~~~~~~~~~~~~~^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/lax/lax.py\", line 3165, in transpose\n    return transpose_p.bind(operand, permutation=permutation)\n           ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py\", line 705, in bind\n    return self.bind_with_trace(prev_trace, args, avals, params)\n           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py\", line 713, in bind_with_trace\n    return trace.process_primitive(self, args, params)\n           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/core.py\", line 1294, in process_primitive\n    return primitive.impl(*args, **params)\n           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/cluster/tufts/paralab/tawal01/ae-research/venv/lib/python3.13/site-packages/jax/_src/dispatch.py\", line 88, in apply_primitive\n    outs = fun(*args)\njax.errors.JaxRuntimeError: INTERNAL: Autotuning failed for HLO: %wrapped_transpose = f64[32768,104448]{1,0} fusion(%args_0_.1), kind=kInput, calls=%wrapped_transpose_computation, metadata={op_name=\"args[0]\"}. Failed to pick best config: All configs failed during profiling.\nFailures (3):\nEXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 25.50GiB. [tf-allocator-allocation-error='']\nEXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 25.50GiB. [tf-allocator-allocation-error='']\nEXECUTION FAILED: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 25.50GiB. [tf-allocator-allocation-error='']\n--------------------\nFor simplicity, JAX has removed its internal frames from the traceback of the following exception. Set JAX_TRACEBACK_FILTERING=off to include these.\n",
+    "seconds": 33.01027795486152
+   },
+   "grid": {
+    "status": "skipped",
+    "reason": "time left 489s < 600s"
+   }
+  },
+  "peaks": {
+   "refs": [
+    103551651840,
+    37249339392,
+    1.299815428443253
+   ],
+   "G-fom": [
+    103551651840,
+    37249339392,
+    3.335017528384924
+   ],
+   "basis": [
+    103551651840,
+    37523206144,
+    77.66822966374457
+   ],
+   "adequacy": [
+    103551651840,
+    38459678720,
+    3.906487955711782
+   ],
+   "generator_probe_cost": [
+    103551651840,
+    38459678720,
+    1.963230931200087
+   ],
+   "adv_pod": [
+    103551651840,
+    39867346944,
+    66.34076456166804
+   ],
+   "qdeim_max_shape": [
+    103551651840,
+    39867346944,
+    44.49198298994452
+   ],
+   "ecsw_states": [
+    103551651840,
+    39867346944,
+    6.197648258879781
+   ],
+   "ecsw_smoke_rank": [
+    103551651840,
+    39867346944,
+    1173.9688969580457
+   ],
+   "ecsw_max_shape": [
+    null,
+    null,
+    33.01027795486152
+   ],
+   "none_max_shape": [
+    120623396608,
+    39867346944,
+    10.645173504017293
+   ],
+   "grid": [
+    null,
+    null,
+    null
+   ],
+   "G-fd": [
+    120623396608,
+    39867346944,
+    16.968384301289916
+   ],
+   "G-all": [
+    120623396608,
+    39867346944,
+    7.528974026441574
+   ],
+   "N-under": [
+    120623396608,
+    39867346944,
+    127.49367387779057
+   ],
+   "N-grad": [
+    120623396608,
+    39867346944,
+    4.13600355386734e-06
+   ],
+   "N-swap": [
+    120623396608,
+    39867346944,
+    0.011506229639053345
+   ],
+   "N-time+ours": [
+    120623396608,
+    39867346944,
+    175.67264020442963
+   ]
+  }
+ },
+ "3d_L64|G-fom": {
+  "ok": true,
+  "ev": {
+   "BE": {
+    "max_diff": 0.0,
+    "norm0": 113.1278262898315,
+    "fom_seconds": 1.5841221194714308
+   },
+   "CN": {
+    "max_diff": 1.0502056665538105e-14,
+    "norm0": 113.1278262898315,
+    "fom_seconds": 0.17089882772415876
+   }
+  }
+ },
+ "3d_L64|G-pod": {
+  "ok": true,
+  "orthonormality": 1.2989609388114332e-14,
+  "ranks": {
+   "256": {
+    "rms_rel": 0.008320312432484482,
+    "frob_rel": 0.006759785597191477,
+    "pod_tail": 0.006759785597320837,
+    "pod_tail_sq": 4.569470132174623e-05
+   },
+   "1024": {
+    "rms_rel": 0.00015930988178187088,
+    "frob_rel": 0.00011276608872583074,
+    "pod_tail": 0.00011276609732873142,
+    "pod_tail_sq": 1.2716192706752925e-08
+   }
+  }
+ },
+ "3d_L64|G-pod(adv)": {
+  "ok": true,
+  "p": [
+   "1",
+   "2",
+   "4",
+   "8",
+   "16",
+   "32",
+   "512",
+   "4096"
+  ]
+ },
+ "3d_L64|qdeim-max-shape": {
+  "ok": true,
+  "ev": {
+   "B_shape": [
+    250047,
+    6144
+   ],
+   "interp_const": 855.5547105705688,
+   "solve_backward_error": 1.776928910110867e-15,
+   "seconds": 44.49193984270096,
+   "device_peak": 103551651840
+  }
+ },
+ "3d_L64|ecsw-smoke-rank": {
+  "ok": false,
+  "taus": {
+   "0.01": null,
+   "0.001": null
+  }
+ },
+ "3d_L64|ecsw-max-shape": {
+  "ok": false,
+  "ev": {},
+  "n_states": 102
+ },
+ "3d_L64|none-max-shape": {
+  "ok": true,
+  "ev": {
+   "seconds": 10.048436217010021,
+   "device_peak": 120623396608,
+   "J_shape": [
+    250047,
+    1024
+   ],
+   "W_finite": true,
+   "C_finite": true,
+   "fields_finite": true
+  }
+ },
+ "3d_L64|grid-Q1-machinery": {
+  "ok": false,
+  "expected": 18,
+  "q1": {},
+  "problems": [
+   "ecsw|256|0.001|BDF2|0.025|common|central: KeyError: 'grid~ecsw~256~0.001~BDF2~0.025~common~central'",
+   "ecsw|256|0.001|BDF2|0.025|native|central: KeyError: 'grid~ecsw~256~0.001~BDF2~0.025~native~central'",
+   "ecsw|256|0.001|BE|0.01|common|central: KeyError: 'grid~ecsw~256~0.001~BE~0.01~common~central'",
+   "ecsw|256|0.001|BE|0.01|native|central: KeyError: 'grid~ecsw~256~0.001~BE~0.01~native~central'",
+   "ecsw|256|0.001|CN|0.01|common|central: KeyError: 'grid~ecsw~256~0.001~CN~0.01~common~central'",
+   "ecsw|256|0.001|CN|0.01|native|central: KeyError: 'grid~ecsw~256~0.001~CN~0.01~native~central'",
+   "none|256|-|BDF2|0.025|common|central: KeyError: 'grid~none~256~-~BDF2~0.025~common~central'",
+   "none|256|-|BDF2|0.025|native|central: KeyError: 'grid~none~256~-~BDF2~0.025~native~central'",
+   "none|256|-|BE|0.01|common|central: KeyError: 'grid~none~256~-~BE~0.01~common~central'",
+   "none|256|-|BE|0.01|native|central: KeyError: 'grid~none~256~-~BE~0.01~native~central'",
+   "none|256|-|CN|0.01|common|central: KeyError: 'grid~none~256~-~CN~0.01~common~central'",
+   "none|256|-|CN|0.01|native|central: KeyError: 'grid~none~256~-~CN~0.01~native~central'",
+   "qdeim|256|512|BDF2|0.025|common|central: KeyError: 'grid~qdeim~256~512~BDF2~0.025~common~central'",
+   "qdeim|256|512|BDF2|0.025|native|central: KeyError: 'grid~qdeim~256~512~BDF2~0.025~native~central'",
+   "qdeim|256|512|BE|0.01|common|central: KeyError: 'grid~qdeim~256~512~BE~0.01~common~central'",
+   "qdeim|256|512|BE|0.01|native|central: KeyError: 'grid~qdeim~256~512~BE~0.01~native~central'",
+   "qdeim|256|512|CN|0.01|common|central: KeyError: 'grid~qdeim~256~512~CN~0.01~common~central'",
+   "qdeim|256|512|CN|0.01|native|central: KeyError: 'grid~qdeim~256~512~CN~0.01~native~central'"
+  ]
+ },
+ "3d_L64|G-score": {
+  "ok": false,
+  "decode": 0.0,
+  "score": 0.0,
+  "n_decoded": 0,
+  "n_invalid": 0
+ },
+ "3d_L64|G-fd+N-fd": {
+  "ok": false,
+  "ev": {
+   "G-fd-a": {
+    "rows": 4.309996223675577e-16,
+    "jac": 0.0,
+    "n_rows": 64
+   },
+   "none|None": {
+    "fd": 3.630618627810573e-10,
+    "fd_list": [
+     3.630618627810573e-10,
+     3.626402699583629e-10,
+     3.617705118799763e-10,
+     3.616429737088666e-10,
+     3.5928301045722537e-10
+    ],
+    "jacfwd": 0.0,
+    "res_vs_rJ": 0.0
+   },
+   "none|drop_adv_jac": {
+    "fd": 0.08061324847006085,
+    "fd_list": [
+     0.05933055757508102,
+     0.06472735023075582,
+     0.06942887408386737,
+     0.08061324847006085,
+     0.06746116735121054
+    ]
+   },
+   "qdeim|None": {
+    "fd": 1.0066217031984176e-10,
+    "fd_list": [
+     9.928726221537272e-11,
+     1.0066217031984176e-10,
+     5.770914280720405e-11,
+     9.106612428992882e-11,
+     6.940410063280944e-11
+    ],
+    "jacfwd": 1.9402764437631518e-16,
+    "res_vs_rJ": 0.0,
+    "norm_generic": 1.118604452169075e-15,
+    "grad_generic": 8.842232229427602e-16,
+    "cancel_ratio_generic": 0.764496367732946,
+    "norm_cancel": 8.643213141328359e-16,
+    "grad_cancel": 5.03218350854044e-16,
+    "cancel_ratio_cancel": 0.04262961242930087
+   },
+   "qdeim|drop_adv_jac": {
+    "fd": 0.0781144677454264,
+    "fd_list": [
+     0.07472578771365272,
+     0.0781144677454264,
+     0.06606813705810834,
+     0.06930315896172572,
+     0.055059210607997934
+    ]
+   }
+  }
+ },
+ "3d_L64|G-all": {
+  "ok": true,
+  "dist": 2.3699245590584235e-16,
+  "valid": [
+   true,
+   true
+  ]
+ },
+ "3d_L64|N-under[ecsw]": {
+  "ok": true,
+  "status": "fired",
+  "inventory_ok": true,
+  "broken": [],
+  "none_median": 0.050397023563755694,
+  "levels": {
+   "ecsw_cap1024": {
+    "q1": true,
+    "median": 0.19827254181164172,
+    "support": 1024
+   },
+   "ecsw_cap512": {
+    "q1": false,
+    "median": 4.839264569774462,
+    "support": 512
+   },
+   "ecsw_cap320": {
+    "q1": false,
+    "median": 222.78181397780267,
+    "support": 320
+   }
+  }
+ },
+ "3d_L64|N-under[qdeim]": {
+  "ok": true,
+  "status": "fired",
+  "inventory_ok": true,
+  "broken": [],
+  "none_median": 0.050397023563755694,
+  "levels": {
+   "qdeim_p32": {
+    "q1": true,
+    "median": 0.27654522435669193,
+    "support": null
+   },
+   "qdeim_p16": {
+    "q1": true,
+    "median": 0.441658797074231,
+    "support": null
+   },
+   "qdeim_p8": {
+    "q1": true,
+    "median": 0.42130041004123464,
+    "support": null
+   },
+   "qdeim_p4": {
+    "q1": true,
+    "median": 0.4451569196548944,
+    "support": null
+   },
+   "qdeim_p2": {
+    "q1": true,
+    "median": 0.48443216697151337,
+    "support": null
+   },
+   "qdeim_p1": {
+    "q1": true,
+    "median": 0.6001478393281334,
+    "support": null
+   }
+  }
+ },
+ "3d_L64|N-grad(a)": {
+  "ok": false,
+  "status": "fixture unavailable",
+  "reason": "ECSW fixture not constructed"
+ },
+ "3d_L64|N-swap": {
+  "ok": true,
+  "ref": {
+   "true": 0.0,
+   "case_swap": 0.6841350708034382,
+   "time_shift": 0.16813635885386366
+  },
+  "rom": null,
+  "rom_status": "fixture unavailable",
+  "chosen": null,
+  "kinds": {
+   "3|S|BE|0.005": "raised",
+   "3|S|BE|0.01": "raised",
+   "2|S|CNR|0.005": "raised",
+   "2|S|BE|0.01": "raised",
+   "2|S|BE|0.005": "allowed",
+   "2|ST|CNR|0.005": "allowed"
+  }
+ },
+ "3d_L64|N-time": {
+  "ok": true,
+  "T": 1.9997582572070631,
+  "ci95": [
+   1.9993548169767514,
+   2.000312783919636
+  ],
+  "attempts": 18
+ },
+ "3d_L64|ours-adapter (phase-I execution check; not G-ours)": {
+  "ok": true,
+  "T": 63.410081314538466,
+  "ci95": [
+   58.22496343173062,
+   83.25315266178784
+  ],
+  "attempts": 18
+ },
+ "ALL": {
+  "ok": false,
+  "failed": [
+   "2d_L1024|phases",
+   "2d_L1024|G-pod(adv)",
+   "2d_L1024|qdeim-max-shape",
+   "2d_L1024|grid-Q1-machinery",
+   "2d_L1024|G-score",
+   "2d_L1024|G-fd+N-fd",
+   "2d_L1024|N-under[ecsw]",
+   "2d_L1024|N-under[qdeim]",
+   "2d_L1024|N-swap",
+   "3d_L64|phases",
+   "3d_L64|ecsw-smoke-rank",
+   "3d_L64|ecsw-max-shape",
+   "3d_L64|grid-Q1-machinery",
+   "3d_L64|G-score",
+   "3d_L64|G-fd+N-fd",
+   "3d_L64|N-grad(a)"
+  ]
+ }
+}

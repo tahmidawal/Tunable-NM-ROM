@@ -154,7 +154,7 @@ def run_cell(cfg, c, res, outdir, save):
     fx = c['under_fixtures']
     opt_main = H.OPTIONS[d][0]                  # BE at dt0
     rs = c['rs']
-    tau_run = c['taus'][-1]
+    tau_run = f"k{c['kappa_run']}"                # the ECSW fixture's knob value (A15.1); name kept for brevity
     arrays = {}
     P = lambda name, fn, need, store=None: phase(R, name, fn, need, cfg, save, store)
 
@@ -248,7 +248,7 @@ def run_cell(cfg, c, res, outdir, save):
     # ---- ECSW: states, smoke-rank path, maximal-shape pilot
     P('ecsw_states', lambda: cell.ecsw_states(fam_tr), 120, store='ecsw_states')
     P('ecsw_smoke_rank', lambda: {str(t): (None if v is None else dict(size=v['size'], relres=v['relres']))
-                                  for t, v in cell.ecsw(rs, taus=c['taus']).items()}, 240, store='ecsw_rs')
+                                  for t, v in cell.ecsw(rs, kappas=c['kappas']).items()}, 240, store='ecsw_rs')
 
     def ecsw_pilot():
         t0 = time.perf_counter()
@@ -278,7 +278,7 @@ def run_cell(cfg, c, res, outdir, save):
     for kind, hrp in (('none', '-'), ('ecsw', tau_run), ('qdeim', c['ps'])):
         try:
             if kind == 'ecsw' and cell.ecsw_rec.get(rs, {}).get(hrp) is None:
-                raise PL.ConstructionError(f'ECSW tau={hrp} not reached at r={rs}')
+                raise PL.ConstructionError(f'ECSW support target {hrp} not reached at r={rs}')
             datas[(kind, hrp)] = cell.arm_data(kind, rs, hrp)
         except Exception as e:  # noqa: BLE001
             R.setdefault('construction_failures', {})[f'{kind}|{hrp}'] = f'{type(e).__name__}: {e}'
@@ -463,7 +463,7 @@ def run_cell(cfg, c, res, outdir, save):
         R['N-under-partial'] = out
         save()
         G, b, cand, _ = BD.ecsw_contrib(cell.states, cell.Phi[:, :rs], d, L)
-        for mult in (4., 2., 1.25):                    # A8.3: overdetermined supports only (support > r)
+        for mult in (3., 2.5, 2., 1.5, 1.25):          # A15.2: under-sampled relative to the 4r fixture, all > r
             cap = int(np.ceil(mult * rs))
             o = BD.NN.greedy_nnls(G, b, taus=(), cap=cap)
             de, _ = BD.ecsw_data(cell.Phi[:, :rs], cand[o['support']], o['weights'], d, L)
@@ -576,8 +576,8 @@ def run_cell(cfg, c, res, outdir, save):
         for cid in (PL.cfg_id('ecsw', rs, tau_run, opt_main[0], opt_main[1], 'native'),
                     PL.cfg_id('none', rs, '-', opt_main[0], opt_main[1], 'native')):
             g = grid.get(cid)
-            cands[cid] = 'absent' if g is None else ('valid' if g['recs'][j0]['cert']['valid'] else 'invalid')
-            if g is not None and g['recs'][j0]['cert']['valid']:
+            cands[cid] = 'absent' if g is None else ('Q1-qualified' if g.get('q1', {}).get('q1') else 'not Q1-qualified')
+            if g is not None and g.get('q1', {}).get('q1'):                # A15.5: the ROM fixture must be Q1-qualified
                 F = g['recs'][j0]['fields_lat']
                 rom = dict(cid=cid, true=refs.score(F, j0)['e'], case_swap=refs.score(F, j0, ref_case=j1)['e'],
                            time_shift=refs.score(F, j0, shift=1)['e'], refstore=SC.RS.score(F, d, coh, j0, 'ST')['e'])

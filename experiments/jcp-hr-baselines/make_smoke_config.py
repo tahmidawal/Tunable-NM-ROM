@@ -24,7 +24,7 @@ def fixtures(d):
 
 
 def cell(d, L, n_traj, rmax, ranks, pmax, rs, ps, n_adeq, n_probe, opts, pilot):
-    return dict(d=d, L=L, n_traj=n_traj, rmax=rmax, ranks=ranks, pmax=pmax, rs=rs, ps=ps, taus=[1e-2, 1e-3],
+    return dict(d=d, L=L, n_traj=n_traj, rmax=rmax, ranks=ranks, pmax=pmax, rs=rs, ps=ps, kappas=[2, 4], kappa_run=4,
                 cases=[0, 1], under_fixtures=fixtures(d), n_adequacy=n_adeq, n_probe=n_probe, options=opts,
                 pilot_support=pilot)
 

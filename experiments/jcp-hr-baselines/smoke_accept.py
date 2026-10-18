@@ -38,9 +38,9 @@ CPU_GATES = ('provenance-train-draw-2d', 'disjoint-train-cohorts', 'G-fd-a opera
              'N-dom decision table on synthetic data (A2.11, A3.3, A4.2; hand-derived labels)')
 CPU_SOURCES = ('hrcore.py', 'rom.py', 'build.py', 'nnls.py', 'stats.py', 'pipeline.py', 'tests/test_core.py')
 # A5.4 frozen smoke inventory (+ pilot_support, A11)
-FROZEN = {2: dict(L=1024, n_traj=192, rmax=512, pmax=2048, rs=128, ps=256, taus=[1e-2, 1e-3], cases=[0, 1],
+FROZEN = {2: dict(L=1024, n_traj=192, rmax=512, pmax=2048, rs=128, ps=256, kappas=[2, 4], kappa_run=4, cases=[0, 1],
                   under_fixtures=[2, 3], n_adequacy=8, n_probe=4, options=[['BE', 0.005], ['CNR', 0.005]], pilot_support=1024),
-          3: dict(L=64, n_traj=342, rmax=1024, pmax=4096, rs=256, ps=512, taus=[1e-2, 1e-3], cases=[0, 1],
+          3: dict(L=64, n_traj=342, rmax=1024, pmax=4096, rs=256, ps=512, kappas=[2, 4], kappa_run=4, cases=[0, 1],
                   under_fixtures=[5, 0], n_adequacy=8, n_probe=4, options=[['BE', 0.01], ['CN', 0.01], ['BDF2', 0.025]],
                   pilot_support=1024)}
 DT0 = {2: 0.005, 3: 0.01}
@@ -231,8 +231,8 @@ def main():
             q['solve_backward_error'] <= 1e-12 and q.get('B_shape') == [n, 2 * c['rmax'] + c['pmax']] and q['device_peak'] > 0,
             ev={k: q.get(k) for k in ('B_shape', 'interp_const', 'solve_backward_error', 'seconds', 'device_peak')})
         e = R.get('ecsw_rs') or {}
-        put(f'{key}|ecsw-smoke-rank', all(e.get(str(t)) is not None and fin(e[str(t)]['relres']) and e[str(t)]['relres'] <= t
-                                          for t in c['taus']), taus=e)
+        put(f'{key}|ecsw-smoke-rank', all(e.get(f'k{k}') is not None and fin(e[f'k{k}']['relres']) and
+                                          e[f'k{k}']['size'] >= k * c['rs'] for k in c['kappas']), supports=e)
         ep = R.get('ecsw_pilot') or {}
         nst = (R.get('ecsw_states') or {}).get('n_states')
         shp = list(ep.get('shape', [0, 0]))
@@ -251,7 +251,7 @@ def main():
             ev={k: npil.get(k) for k in ('seconds', 'device_peak', 'J_shape', 'W_finite', 'C_finite', 'fields_finite')})
         # ---- grid: Q1 recomputed from per-step lists + saved trajectories + recomputed distances; E0 rescored
         grid = R.get('grid') or {}
-        expect = sorted(f'{k}|{c["rs"]}|{h}|{o[0]}|{o[1]:.8g}|{s}|central' for k, h in (('none', '-'), ('ecsw', c['taus'][-1]),
+        expect = sorted(f'{k}|{c["rs"]}|{h}|{o[0]}|{o[1]:.8g}|{s}|central' for k, h in (('none', '-'), ('ecsw', f"k{c['kappa_run']}"),
                         ('qdeim', c['ps'])) for o in c['options'] for s in ('native', 'common'))
         q1s, bad, worst_dec, worst_sc, n_dec, n_invalid = {}, [], 0., 0., 0, 0
         Pl = Z['basis']['Phi_lat'] if 'basis' in Z else None
@@ -340,7 +340,8 @@ def main():
         # ---- N-under: exact ladder inventory; Q1 and E0 recomputed from saved fields
         nu_ = R.get('N-under') or {}
         sw_main = nsteps(DT0[d])
-        want_tags = ['none'] + [f'ecsw_cap{int(math.ceil(m * c["rs"]))}' for m in (4., 2., 1.25)] + [f'qdeim_p{p}' for p in ladder]
+        want_tags = ['none'] + [f'ecsw_cap{int(math.ceil(m * c["rs"]))}' for m in (3., 2.5, 2., 1.5, 1.25)] + \
+            [f'qdeim_p{p}' for p in ladder]
         levels, base, inv_ok = {}, None, sorted(nu_) == sorted(want_tags)
         for tag in want_tags:
             v = nu_.get(tag)
@@ -430,7 +431,7 @@ def main():
                       time_shift=refs.score(Rf, j0, shift=1)['e'])
             ok_ref = abs(rf['case_swap'] - rf['true']) > 10 * eps and abs(rf['time_shift'] - rf['true']) > 10 * eps
             o0 = c['options'][0]
-            cand_ids = [f'ecsw|{c["rs"]}|{c["taus"][-1]}|{o0[0]}|{o0[1]:.8g}|native|central',
+            cand_ids = [f'ecsw|{c["rs"]}|k{c["kappa_run"]}|{o0[0]}|{o0[1]:.8g}|native|central',
                         f'none|{c["rs"]}|-|{o0[0]}|{o0[1]:.8g}|native|central']
             chosen, rs_ = None, 'fixture unavailable'
             for cid in cand_ids:
@@ -438,8 +439,7 @@ def main():
                 zk = 'grid~' + cid.replace('|', '~')
                 if gg is None or zk not in Z:
                     continue
-                cert0 = gg['runs'].get(str(j0)) or gg['runs'].get(j0)
-                if run_evidence(cert0['cert'], 'prod', sw_main, Z[zk]['C'][0], c['rs'])[0]:
+                if q1s.get(cid):                                  # A15.5: recomputed Q1 of the candidate
                     chosen = cid
                     break
             if chosen is not None:

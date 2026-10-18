@@ -1118,3 +1118,36 @@ randomised fallback then ran out of device memory (16.5 GiB allocation) with bot
 candidate basis is on the device at a time (the other is parked on the host), the sign normalisation works on column
 chunks, and the method-of-snapshots divisor is floored at $10^{-14}\sigma_1$ so columns beyond the numerical rank stay
 finite (and are rejected by the certificate, never used).
+
+---
+
+## Amendment A15 (2026-10-18) — smoke `smk1` results (job 5354834, H200, 0.88 GPU-h) and the changes they force
+
+Evidence (`runs/smk1/archive/output/ACCEPTANCE.json`, recomputed offline): every real-size implementation check that
+ran passed (G-fom ≤ 1e-16; G-pod orthonormality 7e-15; G-fd-a rows 5e-16 and Jacobian entries exact; G-fd-b FD
+≤ 6e-9 and `jacfwd` ≤ 3e-15; ECSW rows 4e-15; Q-DEIM Σ-scaled norm/gradient ≤ 1.2e-15 including the cancellation
+candidate; N-fd fired, 2e-3–8e-2; G-all; N-grad (a) in 2D; N-time T = 2.000 in both cells; ours' adapters executed and
+timed). Failures and what they show:
+
+1. **ECSW construction at the registered τ is ill-posed (design defect).** In 2D at r = 128 the greedy NNLS reached
+   τ = 1e-2 with 32 points and τ = 1e-3 with 64 points — fewer than r — so the weighted LSPG problem was
+   underdetermined: E0 errors 0.51–0.77 against 0.008–0.018 for `none` at the same rank, every step non-stationary.
+   The N-under ladder on the fixtures shows support 4r near the `none` accuracy (median 0.037 vs 0.031) and 2r
+   already failing Q1. **A15.1:** the ECSW knob becomes the support target $s=\kappa r$, κ ∈ {2, 4, 8} (extension 16),
+   read off one greedy path per (mesh, rank); the τ reached at each target and the τ crossings are reported, not used as
+   the knob. ECSW configuration IDs carry `k<κ>`. The smoke fixture is κ = 4.
+2. **N-under ladder (A15.2).** ECSW caps {3r, 2.5r, 2r, 1.5r, 1.25r} (all overdetermined, all below the 4r fixture); the
+   firing rule (a Q1-qualified level with median E0 error ≥ 2× `none`) is unchanged. In 3D both families fired in smk1
+   (ECSW 4r: 0.198 vs 0.050; Q-DEIM p = 32: 0.277).
+3. **NNLS banning (A15.3).** The 3D r = 256 path banned 20,989 of 32,768 candidates (every index dropped once by a
+   Lawson–Hanson refit was banned), stopped at relative residual 0.078 with KKT violated and took 1,174 s, so no ECSW
+   fixture existed in 3D and the 3D grid was skipped by the deadline. An index is now banned only after its third drop.
+4. **Memory (A15.4).** The 3D maximal ECSW pilot failed because `G.T @ G[:, S]` materialised the transpose of the
+   27 GB contribution matrix; the 2D advection-POD fallback ran out of memory (A14.2). Products are now formed as
+   $(G_S^\top G)^\top$ and $b^\top G$, and $G$ is assembled on the host and transferred once.
+5. **N-swap ROM fixture (A15.5).** The registered ECSW fixture was certified-valid but its error (0.51) swamped the
+   time shift, so the shift control did not discriminate. The ROM fixture must now be **Q1-qualified** (in-job and
+   recomputed); the `none` fallback is unchanged.
+6. **Phase I is not complete.** The brief allows one cluster smoke in phase I; smk1 was it. A second smoke `smk2`
+   (≤ 1 GPU-h, same inventory with A14/A15) is needed to show every control firing at real size, and is requested from
+   the coordinator in the phase-I hand-back.

@@ -18,7 +18,8 @@ import jax
 jax.config.update('jax_enable_x64', True)
 import jax.numpy as jnp
 
-_GtG = jax.jit(lambda G, cols: G.T @ G[:, cols])
+_GtG = jax.jit(lambda G, cols: (G[:, cols].T @ G).T)      # no transpose of the full G (smk1: 27 GB copy, A15.4)
+_bG = jax.jit(lambda b, G: b @ G)
 
 
 def _lh_refit(A, g, x0, act_tol=0.0, max_inner=None, ls_cols=None):
@@ -69,7 +70,7 @@ def kkt_check(G, bj, S, x, nb):
     S = np.asarray(S, np.int64)
     x = np.asarray(x, np.float64)
     res_ = bj - (G[:, jnp.asarray(S)] @ jnp.asarray(x) if len(S) else 0.)
-    w = np.array(G.T @ res_, dtype=np.float64, copy=True)          # writable copy
+    w = np.array(_bG(res_, G), dtype=np.float64, copy=True)        # writable copy; no transpose of G
     tol = 1e-9 * float(jnp.linalg.norm(G)) * nb
     on = np.zeros(len(w), bool)
     on[S] = True
@@ -79,19 +80,23 @@ def kkt_check(G, bj, S, x, nb):
     return dict(ok=ok, support_max_abs_gradient=sup, off_support_max_gradient=off, tol=tol)
 
 
-def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
+def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000, supports=(), max_drops=3):
     """-> dict(records={tau: dict(support, weights, relres) or None}, support, weights, relres, path, reason).
     reason: 'taus' (all tolerances reached), 'kkt' (no admissible positive gradient and the KKT check passed),
     'incomplete (KKT violated)' (no admissible gradient but KKT fails, e.g. only banned indices remain), 'cap' (support
-    cap), 'max_iter'. `kkt` holds the final KKT diagnostics in every case; `banned` counts banned indices."""
+    cap), 'max_iter'. `kkt` holds the final KKT diagnostics in every case; `banned` counts banned indices.
+    supports: support-size checkpoints (A15.1): the first state with >= s positive weights is recorded under ('s', s).
+    An index is banned from re-entry only after it has been dropped `max_drops` times (A15.3; LH drops are normal)."""
     G = jnp.asarray(G)
     b = np.asarray(b, np.float64)
     m, N = G.shape
-    Gb = np.asarray(G.T @ jnp.asarray(b))
+    Gb = np.asarray(_bG(jnp.asarray(b), G))
     bb = float(b @ b)
     nb = math.sqrt(bb)
     taus = sorted(taus, reverse=True)
     rec = {t: None for t in taus}
+    supports = sorted(supports)
+    rec.update({('s', k): None for k in supports})
     S = np.zeros(0, np.int64)            # support (node indices)
     slots = np.zeros(0, np.int64)        # their columns in the preallocated G^T G_S buffer
     width = 2 * cap + 64
@@ -101,7 +106,8 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
     path = []
     reason = 'max_iter'
     bj = jnp.asarray(b)
-    banned = np.zeros(N, bool)          # indices added and immediately dropped (numerically dependent): never re-added
+    banned = np.zeros(N, bool)          # indices dropped max_drops times: never re-added (cycle guard)
+    drops = np.zeros(N, np.int32)
 
     def relres():
         if len(S) == 0:
@@ -117,6 +123,10 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
         return float(jnp.linalg.norm(G[:, jnp.asarray(S)] @ jnp.asarray(x) - bj)) / max(nb, 1e-300)
 
     def record(rr):
+        npos = int(np.sum(x > 0)) if len(S) else 0
+        for k in supports:
+            if rec[('s', k)] is None and npos >= k:
+                rec[('s', k)] = dict(support=S[x > 0].copy(), weights=x[x > 0].copy(), relres=exact_relres(), size=npos)
         for t in taus:
             if rec[t] is None and rr <= t:
                 ex = exact_relres()
@@ -126,7 +136,7 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
     for it in range(max_iter):
         rr = relres()
         record(rr)
-        if taus and all(rec[t] is not None for t in taus):
+        if (taus or supports) and all(v is not None for v in rec.values()):
             reason = 'taus'
             break
         w = Gb - (buf[:, slots] @ x if len(S) else 0.)
@@ -159,8 +169,9 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.02, log=None, max_iter=100000):
         Scur = S.copy()
         ls = lambda idx, Sc=Scur: np.asarray(jnp.linalg.lstsq(G[:, jnp.asarray(Sc[idx])], bj, rcond=1e-13)[0])
         xs, keep = _lh_refit(A, Gb[S], x, ls_cols=ls)
-        newpos = np.arange(len(S) - B, len(S))
-        banned[S[newpos[~keep[newpos]]]] = True
+        dropped = S[~keep]
+        drops[dropped] += 1
+        banned[dropped[drops[dropped] >= max_drops]] = True
         S, x, slots = S[keep], xs[keep], slots[keep]
         path.append((len(S), relres()))
         if log and it % 50 == 0:

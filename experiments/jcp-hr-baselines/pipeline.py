@@ -172,18 +172,19 @@ class Cell:
         self.info['ecsw_states'] = info
         return info
 
-    def ecsw(self, r, taus=BD.ECSW_TAUS, nnls_log=None):
+    def ecsw(self, r, kappas=BD.ECSW_KAPPA, nnls_log=None):
+        """A15.1: weights at support targets kappa * r (keys 'k<kappa>'), tau crossings reported."""
         with self.T('ecsw_contrib'):
             G, b, cand, cinfo = BD.ecsw_contrib(self.states, self.Phi[:, :r], self.d, self.L)
             sync(G)
         with self.T('ecsw_nnls'):
-            rec, summ = BD.ecsw_weights(G, b, cand, taus, log=nnls_log)
+            rec, summ = BD.ecsw_weights(G, b, cand, r, kappas, log=nnls_log)
         del G, b
-        self.ecsw_rec[r] = rec
+        self.ecsw_rec[r] = {f'k{k}': v for k, v in rec.items()}
         self.info.setdefault('ecsw', {})[r] = dict(contrib=dict(cinfo, block_norms=None), paths=summ,
-                                                  taus={str(t): (None if v is None else dict(size=v['size'],
-                                                        relres=v['relres'], retry_cap=v['retry_cap'])) for t, v in rec.items()})
-        return rec
+                                                  supports={f'k{k}': (None if v is None else dict(size=v['size'],
+                                                            relres=v['relres'])) for k, v in rec.items()})
+        return self.ecsw_rec[r]
 
     def arm_data(self, kind, r, hrp, allow_uncertified_p=False):
         if r not in self.constructible_r:
@@ -192,6 +193,8 @@ class Cell:
             return dict(Phi=self.Phi[:, :r], LPhi=self.LPhi[:, :r], DPhi=self.DPhi[:, :r]), {}
         if kind == 'ecsw':
             rec = self.ecsw_rec[r][hrp] if not isinstance(hrp, tuple) else hrp[1]
+            if rec is None:
+                raise ConstructionError(f'ECSW support target {hrp} not reached at r={r}')
             dat, info = BD.ecsw_data(self.Phi[:, :r], rec['nodes'], rec['weights'], self.d, self.L)
             return dict(dat, Phi=self.Phi[:, :r]), info
         return self.qdeim(r, hrp, allow_uncertified_p=allow_uncertified_p)

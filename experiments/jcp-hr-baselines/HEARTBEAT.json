@@ -1,18 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T05:52:25Z",
- "step": "7: waiting on smoke smk1 (job 5354834, 3D cell); CPU gate suite rerun after A14: ALL PASS (13/13)",
+ "utc": "2026-10-18T06:11:57Z",
+ "step": "8: smk1 collected (0.878 GPU-h; ALL=false, A14/A15 fixes); cluster dir deleted; re-running CPU gates and code audit",
  "waiting_on": {
-  "slurm_jobs": [
-   "5354834"
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
  "expected_finish_utc": "2026-10-18T06:17:25Z",
  "last_commit": "4b6d5015f",
- "gpu_hours_spent": 0.0,
+ "gpu_hours_spent": 0.878,
  "gpu_hours_cap": 30,
  "notes": "A7-A9 written from code audit 2 and dry-run evidence; COMMON-BRIEF s11 disk hygiene adopted for future Codex prompts"
 }

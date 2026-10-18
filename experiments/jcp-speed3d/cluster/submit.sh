@@ -19,6 +19,8 @@ $SSH tufts-login "cd $NS && flock -x -w 60 .submit.lock bash -c '
   q=\$(squeue -u \$USER -h -o \"%j\") || { echo \"squeue failed: refusing\"; exit 5; }
   n=\$(printf \"%s\\n\" \"\$q\" | grep -c \"^sp_\" || true)
   if [ \"\$n\" -ge 3 ]; then echo \"3 sp_ jobs live: refusing (lane cap 3)\"; exit 4; fi
+  t=\$(printf \"%s\\n\" \"\$q\" | grep -c . || true)
+  if [ \"\$t\" -ge 8 ]; then echo \"\$t jobs live on the account: refusing (campaign cap 8)\"; exit 6; fi
   test ! -e $NS/$A || { echo \"$NS/$A exists: refusing\"; exit 3; }
   mv $NS/.staging/$TAG $NS/$A
   cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet && sbatch run.sbatch'"

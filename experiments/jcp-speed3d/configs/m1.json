@@ -1,0 +1,153 @@
+{
+ "driver": "s3run",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "dts": [
+  0.01,
+  0.0125,
+  0.016666666666666666,
+  0.025
+ ],
+ "attempt": "m1",
+ "mode": "mesh",
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "gl32",
+   "reduced": [
+    "gl24",
+    "lat16384"
+   ],
+   "extra": [
+    "gl24",
+    "gl32"
+   ]
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat65536",
+   "reduced": [
+    "lat32768"
+   ],
+   "extra": [
+    "lat65536"
+   ]
+  },
+  {
+   "name": "W256",
+   "bank": "W1024",
+   "Rp": 256,
+   "a": 6,
+   "rule": "gl24",
+   "reduced": [
+    "gl20",
+    "gl16",
+    "lat8192"
+   ]
+  }
+ ],
+ "timing": {
+  "cases": 4,
+  "reps": 2,
+  "burn": 0.1,
+  "seed": 20261014
+ },
+ "mesh": {
+  "Ls": [
+   64,
+   128,
+   256,
+   384
+  ],
+  "roms": [
+   {
+    "label": "C_W1024",
+    "setting": "W1024",
+    "rule": "lat65536",
+    "spec": "fs|BE|0.01|K1"
+   },
+   {
+    "label": "C_old",
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "fs|BE|0.01|K1"
+   },
+   {
+    "label": "W_C_W768",
+    "setting": "M2_512",
+    "rule": "gl24",
+    "spec": "qn|CN|0.016666667|k4"
+   },
+   {
+    "label": "W_C_old",
+    "setting": "M2_512",
+    "rule": "gl24",
+    "spec": "fs|BDF2|0.0125|K1"
+   }
+  ],
+  "same": [
+   [
+    "UB",
+    0.01
+   ],
+   [
+    "CC",
+    0.01
+   ]
+  ],
+  "matched": [
+   [
+    "C_W1024",
+    "fd|CC|L64|0.0125|t1"
+   ],
+   [
+    "C_W1024",
+    "ps|N16|0.025"
+   ],
+   [
+    "C_old",
+    "fd|CC|L64|0.0125|t1"
+   ],
+   [
+    "C_old",
+    "ps|N16|0.025"
+   ],
+   [
+    "W_C_W768",
+    "fd|CC|L64|0.01|t1"
+   ],
+   [
+    "W_C_W768",
+    "ps|N16|0.025"
+   ],
+   [
+    "W_C_old",
+    "fd|CC|L64|0.0125|t1"
+   ],
+   [
+    "W_C_old",
+    "ps|N16|0.025"
+   ]
+  ],
+  "calib_small": [
+   0,
+   1,
+   2,
+   3
+  ],
+  "calib_large": [
+   0,
+   1
+  ],
+  "acc_cases": 8
+ },
+ "selection_sha256": "338286efbb7ed518174f22ea1a5a51bf4a72e243e924975ab357a5c63f7f5419",
+ "fom_match_sha256": "8f2dadff60ef6fede80ef372688c1e79f4ce3cf53e54cec43e4129d1e19ea3ca"
+}

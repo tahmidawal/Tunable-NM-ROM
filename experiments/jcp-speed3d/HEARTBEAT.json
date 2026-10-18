@@ -1,1 +1,16 @@
-{"lane":"jcp-speed3d","utc":"2026-10-17T23:29:38Z","step":"resume: reading DESIGN/ledger before collecting g1-g3","waiting_on":{"slurm_jobs":[],"codex_output":null,"codex_pid":null,"local_pid":null},"expected_finish_utc":null,"last_commit":"f98843cb1","gpu_hours_spent":null,"gpu_hours_cap":null,"notes":"resumed lane agent"}
+{
+ "lane": "jcp-speed3d",
+ "utc": "2026-10-18T00:29:15Z",
+ "step": "2: offline CPU scoring of g1-g3 (score3.py via jaxrun, sequential)",
+ "waiting_on": {
+  "slurm_jobs": [],
+  "codex_output": null,
+  "codex_pid": null,
+  "local_pid": 4095173
+ },
+ "expected_finish_utc": "2026-10-18T01:31:18Z",
+ "last_commit": "3424d0c4f",
+ "gpu_hours_spent": 8.91,
+ "gpu_hours_cap": 34,
+ "notes": "g1-g3 collected; status file checks/score-all.status"
+}

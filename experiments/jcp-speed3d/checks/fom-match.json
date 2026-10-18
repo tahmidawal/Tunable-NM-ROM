@@ -1,0 +1,450 @@
+{
+ "f1_job": "5301274",
+ "gpu": "NVIDIA H200",
+ "label": "every speed-up against a matched FOM is an upper bound (finite FOM ladder); boundary = matched at the family's cheapest admissible configuration",
+ "matches": {
+  "C_old": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.0125|t1",
+    "cost_screen": 0.0502187991514802,
+    "median": 0.004672888770861671,
+    "worst": 0.011603015772346384,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 5
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  },
+  "W_C_old": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.0125|t1",
+    "cost_screen": 0.0502187991514802,
+    "median": 0.004672888770861671,
+    "worst": 0.011603015772346384,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 5
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  },
+  "B_C_old": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.0125|t1",
+    "cost_screen": 0.0502187991514802,
+    "median": 0.004672888770861671,
+    "worst": 0.011603015772346384,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 5
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  },
+  "C_W768": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.0125|t1",
+    "cost_screen": 0.0502187991514802,
+    "median": 0.004672888770861671,
+    "worst": 0.011603015772346384,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 5
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  },
+  "W_C_W768": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.01|t1",
+    "cost_screen": 0.05596604011952877,
+    "median": 0.0031680279207178304,
+    "worst": 0.009980644850975972,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 3
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  },
+  "B_C_W768": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.0125|t1",
+    "cost_screen": 0.0502187991514802,
+    "median": 0.004672888770861671,
+    "worst": 0.011603015772346384,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 5
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  },
+  "C_W1024": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.0125|t1",
+    "cost_screen": 0.0502187991514802,
+    "median": 0.004672888770861671,
+    "worst": 0.011603015772346384,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 5
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  },
+  "B_C_W1024": {
+   "UB": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UB|L64|0.01|t1",
+     "fd|UB|L64|0.005|t1",
+     "fd|UB|L64|0.0025|t0",
+     "fd|UB|L128|0.01|t1",
+     "fd|UB|L128|0.005|t1"
+    ]
+   },
+   "UC": {
+    "status": "no joint median-and-worst match in the ladder",
+    "matched": null,
+    "admissible": [
+     "fd|UC|L64|0.025|t1",
+     "fd|UC|L64|0.0125|t1",
+     "fd|UC|L64|0.01|t1",
+     "fd|UC|L64|0.005|t0",
+     "fd|UC|L128|0.0125|t1",
+     "fd|UC|L128|0.01|t1"
+    ]
+   },
+   "CC": {
+    "status": "matched",
+    "matched": "fd|CC|L64|0.0125|t1",
+    "cost_screen": 0.0502187991514802,
+    "median": 0.004672888770861671,
+    "worst": 0.011603015772346384,
+    "ranked_cases": 64,
+    "boundary": false,
+    "upper_bound": true,
+    "n_admissible": 6,
+    "n_matching": 5
+   },
+   "PS": {
+    "status": "matched",
+    "matched": "ps|N16|0.025",
+    "cost_screen": 0.00405923230573535,
+    "median": 0.00041622091645059697,
+    "worst": 0.02553356644407349,
+    "ranked_cases": 64,
+    "boundary": true,
+    "upper_bound": true,
+    "n_admissible": 11,
+    "n_matching": 11
+   }
+  }
+ },
+ "admissibility": {
+  "UB": {
+   "fd|UB|L64|0.01|t1": [],
+   "fd|UB|L64|0.005|t1": [],
+   "fd|UB|L64|0.0025|t0": [],
+   "fd|UB|L128|0.01|t1": [],
+   "fd|UB|L128|0.005|t1": []
+  },
+  "UC": {
+   "fd|UC|L64|0.025|t1": [],
+   "fd|UC|L64|0.0125|t1": [],
+   "fd|UC|L64|0.01|t1": [],
+   "fd|UC|L64|0.005|t0": [],
+   "fd|UC|L128|0.0125|t1": [],
+   "fd|UC|L128|0.01|t1": []
+  },
+  "CC": {
+   "fd|CC|L64|0.025|t1": [],
+   "fd|CC|L64|0.0125|t1": [],
+   "fd|CC|L64|0.01|t1": [],
+   "fd|CC|L64|0.005|t0": [],
+   "fd|CC|L128|0.0125|t1": [],
+   "fd|CC|L128|0.01|t1": []
+  },
+  "PS": {
+   "ps|N16|0.025": [],
+   "ps|N16|0.01": [],
+   "ps|N16|0.005": [],
+   "ps|N24|0.025": [
+    "not converged / non-finite"
+   ],
+   "ps|N24|0.01": [],
+   "ps|N24|0.005": [],
+   "ps|N32|0.025": [
+    "not converged / non-finite"
+   ],
+   "ps|N32|0.01": [],
+   "ps|N32|0.005": [],
+   "ps|N48|0.025": [
+    "not converged / non-finite"
+   ],
+   "ps|N48|0.01": [],
+   "ps|N48|0.005": [],
+   "ps|N64|0.025": [
+    "not converged / non-finite"
+   ],
+   "ps|N64|0.01": [],
+   "ps|N64|0.005": []
+  }
+ },
+ "K10_all_rejected": true
+}

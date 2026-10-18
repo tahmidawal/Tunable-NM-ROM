@@ -541,3 +541,24 @@ it in one panel of the m1 job (`match|<label>`). The A4.4 timings of the same FO
 that mesh-specific ROM's own E0 median and worst still tie-or-beat-match the FOM configuration (recomputed in the final
 analysis); otherwise it is reported as an unmatched same-job timing with both errors beside it. Claim gates (population,
 K9, K3, evidence) apply to H1 verdicts and to FOM matching exactly as to H2 selection.
+
+---
+
+## Amendment A7 (2026-10-17, lane resumed by a new agent; before any g1–g3 result was read)
+
+* **Resume.** The previous lane agent stopped after submitting g1. g1 5301580, g2 5301264 and g3 5301270 had all
+  COMPLETED (sacct) and were collected on 2026-10-17 with `cluster/collect.sh` (OUTPUTS.sha256 verified, `jax_backend=gpu`
+  in every log, cluster directories removed). Nothing in the design changes; the audited pipeline is run as is:
+  `score3.py` (CPU) → `analyze.py` → `select_s3.py --stage screen` → `fom_match.py` → `select_s3.py --stage mesh` → p1, m1.
+* **GPU-hour cap.** The lane brief names no hour cap; the §9 estimate (about 34 GPU-hours including 20 % reruns) is adopted
+  as the hard cap. Ledger `runs/GPU-LEDGER.json`, measured from `sacct` ElapsedRaw (8.91 GPU-hours spent before p1/m1).
+  Defer order if the cap binds: (1) r1 replication on 923901 (A1.11), (2) the A1.13 converged-rule sensitivity runs,
+  (3) L = 384 in m1, (4) batching at B = 64. The p1 confirmation panels and the m1 n = 65 match panels are never deferred.
+* **Large files.** From g1 on, job outputs over 50 MB stay out of git (`.gitignore`) and are tracked only by SHA256 in
+  `LARGE_FILES.sha256` (local disk 94 % full). f1's `W_fom.npz` had already been committed by the previous agent.
+* **g3 stderr.** g3's log carries one JAX warning, "a large amount of constants were captured during lowering (3.26 GB)".
+  The job completed; JIT compilation is excluded from every timed call (warm calls), so timings are unaffected in
+  principle; the results audit is asked to check whether any W1024 output or timing is anomalous. The p1/m1 configs are
+  checked for the same warning in their smoke/pilot logs before submission.
+* **Account-wide cap.** `cluster/submit.sh` checks the lane cap (3); the campaign-wide cap of 8 concurrent jobs on the
+  account is checked by hand (`squeue -u tawal01 -h | wc -l`) before every submit and added to `submit.sh`.

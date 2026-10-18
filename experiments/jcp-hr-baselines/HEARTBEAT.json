@@ -1,7 +1,7 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T15:08:19Z",
- "step": "job audit 5 SUBMIT both; t2d256a submitted (5551475); t3d64b 5542231 RUNNING (ECSW r256 80 s after the A38 fix); s2d1024a staged, submits when a lane slot frees (cap 2)",
+ "utc": "2026-10-18T15:26:42Z",
+ "step": "t3d64b 5542231 RUNNING 44 min (ECSW r512 in 492 s); t2d256a 5551475 RUNNING 18 min (ECSW r256 done); s2d1024a staged, submits when a slot frees",
  "waiting_on": {
   "slurm_jobs": [
    5542231,
@@ -11,7 +11,7 @@
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T17:08:19Z",
+ "expected_finish_utc": "2026-10-18T17:26:42Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

@@ -10,6 +10,10 @@ ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 NS=/cluster/tufts/paralab/tawal01/jcp-hrb
 LOCAL="$ROOT/experiments/jcp-hr-baselines/runs/$A"
 [ -f "$LOCAL/run.sbatch" ]
+# job audit 1: the bundle is exactly its manifest (every file listed and matching; nothing else)
+( cd "$LOCAL" && sha256sum -c MANIFEST.sha256 --quiet && \
+  [ -z "$(comm -3 <(find . -type f ! -path ./MANIFEST.sha256 ! -path ./SUBMIT.out | sed 's|^\./||' | sort) <(awk '{print $2}' MANIFEST.sha256 | sort))" ] ) \
+  || { echo "bundle differs from its manifest: refusing"; exit 8; }
 # A34.2: the attempt must hold exactly one unbound reservation (marked 'submitting' under the ledger lock)
 /home/tahmid/Dev/.venv/bin/python "$ROOT/experiments/jcp-hr-baselines/cluster/ledger.py" submit-check "$A"
 echo "--- squeue before"; timeout 60 $SSH tufts-login 'squeue -u $USER -h -o "%i %j %T"'

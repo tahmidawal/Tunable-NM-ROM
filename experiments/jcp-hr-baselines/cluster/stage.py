@@ -120,7 +120,8 @@ find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offline)
 '''
     (out / 'run.sbatch').write_text(script)
-    env = dict(os.environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='')
+    env = dict(os.environ, JAX_PLATFORMS='cpu', JAX_DEFAULT_MATMUL_PRECISION='highest', PYTHONPATH='',
+               PYTHONDONTWRITEBYTECODE='1')
     chk = (f'import sys, {a.driver}, ours, c2common, c3common, p1common, s3common; staged = {str(out)!r}; '
            'mods = [m.__file__ for m in list(sys.modules.values()) if getattr(m, "__file__", None) and "/experiments/" in m.__file__]; '
            'bad = [f for f in mods if not f.startswith(staged)]; assert not bad, bad; print(len(mods), "lane modules from the staged tree")')
@@ -148,6 +149,9 @@ echo ALL-DONE   # job completion only; acceptance is smoke_accept.py's ALL (offl
                             capture_output=True, text=True)
         assert r2.returncode == 0, r2.stderr[-3000:]
         print(r2.stdout.strip()[-2000:])
+    import shutil
+    for pc in list(out.rglob('__pycache__')):                    # job audit 1: no unmanifested bytecode in a bundle
+        shutil.rmtree(pc)
     manifest = [f'{hashlib.sha256(p_.read_bytes()).hexdigest()}  {p_.relative_to(out)}'
                 for p_ in sorted(out.rglob('*')) if p_.is_file() and '__pycache__' not in str(p_)]
     (out / 'MANIFEST.sha256').write_text('\n'.join(manifest) + '\n')

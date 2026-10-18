@@ -577,7 +577,8 @@ def t_ndom():
     return out
 
 if __name__ == '__main__':
-    allf = (t_draw, t_disjoint, t_ops, t_fd, t_nfd, t_fdc, t_fom, t_lmm, t_full, t_nnls, t_qdeim, t_pod, t_ndom)
+    allf = (t_draw, t_disjoint, t_ops, t_fd, t_nfd, t_fdc, t_fom, t_lmm, t_full, t_nnls, t_qrdel, t_deadline, t_qdeim,
+            t_pod, t_ndom)
     sel = sys.argv[1:]
     for f in allf:
         if not sel or any(k in f.__name__ for k in sel):

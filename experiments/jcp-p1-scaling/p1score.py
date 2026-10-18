@@ -278,7 +278,7 @@ def manifest_equal(job, name, R):
                run_form=str(R['form']) == 'LSPG', run_level=str(R['level']) == 'prod',
                run_tol=[float(x) for x in R['tol']] == [1e-3, 1e-9], run_budget=int(R['budget']) == 600,
                run_weighting=str(R['weighting']) == 'LSPG D = 1/(a0 + dt b0 nu lam)',
-               run_time_tag=str(R['time_tag']) == TIME_TAG)
+               run_time_tag=str(R['time_tag']) == TIME_TAG, run_metric=str(R['metric_id_target']) == METRIC_ID)
     return dict(checks=chk, equal=all(chk.values()), provenance=dict(old=dict(commit=arch['commit'], gpu=arch['gpu'],
                 jax=arch['jax_version']), new=dict(commit=job['commit'], gpu=job['gpu'], jax=job['jax_version'])))
 

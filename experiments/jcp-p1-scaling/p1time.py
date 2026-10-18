@@ -282,6 +282,7 @@ def main():
                     QS.burn(burn)
                     t2, o2 = sync_time(lambda: fn(*args))
                     atts.append(dict(t_single1=t1, t_double=tb, t_single2=t2, drift=t2 / t1,
+                                     it=[np.asarray(o_[1]['step_it'])[:NREC - 1].tolist() for o_ in (o1, oa, ob, o2)],
                                      identity_ok=bool(all(ident(*o_) == ref[(lb, ci)] for o_ in (o1, oa, ob, o2))),
                                      same_iterations=bool(np.array_equal(np.asarray(oa[1]['step_it']), np.asarray(ob[1]['step_it'])))))
                     if BAND[0] <= t2 / t1 <= BAND[1]:

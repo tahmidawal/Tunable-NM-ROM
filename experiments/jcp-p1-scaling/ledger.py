@@ -86,8 +86,10 @@ def main():
                         print('sacct/squeue failed: reservation kept'); rc = 3
                     elif ids:
                         j.update(job_id=ids[-1], state='SUBMITTED')
-                    else:
+                    elif len(sys.argv) > 3 and sys.argv[3] == '--confirmed-absent':   # only after a manual check
                         j.update(state='RELEASED', elapsed_hours=0.)
+                    else:
+                        print('no record found: reservation kept (re-run later, or pass --confirmed-absent)'); rc = 4
         elif cmd == 'release':
             for j in d['jobs']:
                 if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':

@@ -69,7 +69,51 @@ def inherited(r, form, sc, f, mesh):
 
 
 # ------------------------------------------------------------------------------------------- 2D configurations
+_QC = None
+
+
+def qcache():
+    """Optional result cache (env QCACHE=<dir>, an optimisation for repeated runs; the audit runs without it): keyed by
+    the archive file (path, size, mtime) and the sha256 of the scoring code, so any change recomputes."""
+    global _QC
+    import os
+    import pickle
+    if _QC is None:
+        dd = os.environ.get('QCACHE')
+        _QC = dict(dir=Path(dd) if dd else None, data={})
+        if _QC['dir'] and (_QC['dir'] / 'analyze-cache.pkl').exists():
+            _QC['data'] = pickle.loads((_QC['dir'] / 'analyze-cache.pkl').read_bytes())
+    return _QC
+
+
+def qcache_save():
+    import pickle
+    c = qcache()
+    if c['dir']:
+        c['dir'].mkdir(parents=True, exist_ok=True)
+        (c['dir'] / 'analyze-cache.pkl').write_bytes(pickle.dumps(c['data']))
+
+
 def lane_config(mesh, d, res, cache, name, arm):
+    import hashlib
+    form, sc, f = arm['form'], arm['scheme'], float(arm['factor'])
+    ak = f'{form}_{sc}_{f:g}'
+    fp = d / f'R_{name}_{ak}.npz'
+    st_ = fp.stat()
+    code = hashlib.sha256(b''.join((HERE / x).read_bytes() for x in ('qscore.py', 'analyze.py', 'npcheck.py', 'p1score.py'))).hexdigest()
+    ckey_ = (str(fp), st_.st_size, st_.st_mtime_ns, code, json.dumps(arm, sort_keys=True))
+    C_ = qcache()
+    if C_['dir'] and ckey_ in C_['data']:
+        out = dict(C_['data'][ckey_])
+        out['R'] = dict(np.load(fp))
+        return out
+    out = lane_config_compute(mesh, d, res, cache, name, arm)
+    if C_['dir']:
+        C_['data'][ckey_] = {k: v for k, v in out.items() if k != 'R'}
+    return out
+
+
+def lane_config_compute(mesh, d, res, cache, name, arm):
     form, sc, f = arm['form'], arm['scheme'], float(arm['factor'])
     ak = f'{form}_{sc}_{f:g}'
     R = dict(np.load(d / f'R_{name}_{ak}.npz'))
@@ -583,6 +627,7 @@ def main():
     ap.add_argument('--skip-time', action='store_true')
     a = ap.parse_args()
     C, gates = build_2d()
+    qcache_save()
     cfgs = {}
     for k, e in C.items():
         cfgs[k] = dict(source=e['source'], rule=e['rule'], attempt=e.get('attempt'), supersedes=e.get('supersedes'), Q1=e['q']['Q1'], Q2=e['q']['Q2'],

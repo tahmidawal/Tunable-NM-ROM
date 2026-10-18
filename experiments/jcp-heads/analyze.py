@@ -95,7 +95,42 @@ def rules():
 
 # ------------------------------------------------------------------ accuracy ----
 
+DERIVED = RUNS / 'derived'
+
+
+def cached(name, fn):
+    """Derived per-job records (COMMON-BRIEF 16: raw arrays are offloaded to the cluster). Computed from the raw archive
+    when it is present locally and saved to runs/derived/<name>.pkl together with the archive's listing hash; reused
+    when the raw arrays have been offloaded (the ARCHIVE-LOCATION listing hash must equal the cached one)."""
+    import pickle
+    import hashlib
+    att = name.split('_')[0]
+    arch = RUNS / att / 'archive'
+    loc = arch / 'ARCHIVE-LOCATION.txt'
+    DERIVED.mkdir(exist_ok=True)
+    cp = DERIVED / f'{name}.pkl'
+    if loc.exists():
+        lh = [l_.split(': ')[1] for l_ in loc.read_text().splitlines() if l_.startswith('listing sha256')][0]
+        c = pickle.load(open(cp, 'rb'))
+        assert c['listing_sha256'] == lh, f'derived cache of {att} does not match the offloaded archive'
+        return c['value']
+    v = fn()
+    lst = sorted(str(q.relative_to(arch)) for q in arch.rglob('*') if q.is_file())
+    h = hashlib.sha256(''.join(hashlib.sha256((arch / f).read_bytes()).hexdigest() + '  ./' + f + '\n' for f in lst).encode()).hexdigest()
+    pickle.dump(dict(listing_sha256=h, value=v), open(cp, 'wb'))
+    return v
+
+
+def have(att, drv):
+    """A job's results are available: raw archive present, or offloaded with its derived cache."""
+    return (out_dir(att, drv) / 'result.json').exists() or (RUNS / att / 'archive' / 'ARCHIVE-LOCATION.txt').exists()
+
+
 def acc_records(att):
+    return cached(f'{att}_acc', lambda: _acc_records(att))
+
+
+def _acc_records(att):
     d = out_dir(att, 'hacc')
     r = jload(d / 'result.json')
     assert r['complete'], att
@@ -134,6 +169,10 @@ def acc_records(att):
 # ------------------------------------------------------------------ timing ----
 
 def timing(att, recs=None, acc_dir=None):
+    return cached(f'{att}_time', lambda: _timing(att, recs, acc_dir))
+
+
+def _timing(att, recs=None, acc_dir=None):
     """Per subject (DESIGN 6, A1.8, A2.4, A3.2; job audits): costs from VALID fused / split repeats whose hashes equal the
     subject's scoring trajectory (T_ident); timing-job Q1/Q2 labels recomputed from the saved arrays
     (hscore.qualify_timing); equivalence and doubled-work controls with coverage; subject-level drift; at 1024^2 the
@@ -172,8 +211,9 @@ def timing(att, recs=None, acc_dir=None):
         T_id = {str(c): str(h) for c, h in zip(Z['T_case_ids'], Z['T_ident'])}
         def hash_ok(x, c):        # explicit matching hashes, finite positive ratio (fail closed on anything missing)
             t = T_id.get(c)
-            return bool(t and x['valid'] and x.get('hash_B') == t and x.get('attempts')
-                        and all(a_.get('hash_B') == t for a_ in x['attempts'])
+            atts = x.get('attempts') or []
+            hb = x.get('hash_B', atts[-1].get('hash_B') if atts else None)   # fused records keep the hash per attempt
+            return bool(t and x['valid'] and hb == t and atts and all(a_.get('hash_B') == t for a_ in atts)
                         and np.isfinite(x['ratio']) and x['ratio'] > 0)
         per = {c: [x['ratio'] for x in fused.get(lb, {}).get(c, []) if hash_ok(x, c)] for c in cases}
         pev = {c: [x['ratio'] for x in inv.get(lb, {}).get(c, []) if hash_ok(x, c)] for c in cases}
@@ -363,6 +403,30 @@ def finish_lh(res, comps, family, min_seeds=2):
     return HS.f5(list(family), per_k), per_k
 
 
+def h_cost_n_descriptive(costs):
+    """Sensitivity (descriptive, no verdict): the same max/min statistic for EVERY head (all seeds, BE) from the hash-linked
+    evolution timings, ignoring the qualification / control gates; labelled unqualified where a gate fails."""
+    out = {}
+    meshes = [m for m in (256, 1024, 4096) if m in costs]
+    for m0 in meshes:
+        for lb in costs[m0]:
+            pass
+    names = sorted({lb.split('|')[1] for m in meshes for lb in costs[m] if lb.endswith('|BE') and lb.split('|')[1].startswith('H')})
+    for name in names:
+        lbs = {m: next((lb for lb in costs[m] if lb.split('|')[1] == name and lb.endswith('|BE')), None) for m in meshes}
+        if any(v is None for v in lbs.values()):
+            continue
+        med = {}
+        for m, lb in lbs.items():
+            v = [r_ for c, xs in costs[m][lb]['raw_ev'].items() if c.startswith('dev6') for r_, ok in xs if ok]
+            med[str(m)] = float(np.median(v)) if v else None
+        vals = [v for v in med.values() if v]
+        out[name] = dict(medians=med, ratio=max(vals) / min(vals) if len(vals) == len(med) else None,
+                         usable_all=all(costs[m][lb]['usable'] for m, lb in lbs.items()),
+                         label='descriptive (gated verdict in h_cost_n)')
+    return out
+
+
 def h_cost_n(costs, recs_rule):
     """Per K, seed-0 head, BE: evolution-only cost across the timed meshes (P1 h_cost_n)."""
     out = {}
@@ -413,14 +477,14 @@ def main_all():
             exp['training_probe'] = dict(oracle_probe=tp['oracle_test']['mean'], oracle_full=tf['oracle_test']['mean'],
                                          ratio=tp['oracle_test']['mean'] / tf['oracle_test']['mean'])
     recs = {}
-    if (out_dir('acc1024', 'hacc') / 'result.json').exists():
+    if have('acc1024', 'hacc'):
         _, recs = acc_records('acc1024')
     exp['configs_1024'] = {f'{k[0]}|{k[1]}': {kk: vv for kk, vv in v.items() if kk not in ('per_case', 'case_qual')}
                            for k, v in recs.items()}
     exp['per_case_1024'] = {f'{k[0]}|{k[1]}': v['per_case'] for k, v in recs.items()}
     costs = {}
     for m in (256, 1024, 4096):
-        if (out_dir(f'time{m}', 'htime') / 'result.json').exists():
+        if have(f'time{m}', 'htime'):
             _, exp.setdefault('timing_meta', {})[str(m)], costs[m] = timing(f'time{m}', recs)
     exp['cost'] = {str(m): {lb: {k: v for k, v in c.items() if k != 'raw_ev'} for lb, c in cm.items()} for m, cm in costs.items()}
     if recs:
@@ -442,7 +506,7 @@ def main_all():
                     finish_lh(res, comps, fam, min_seeds=1)
                     exp['lh_per_seed'][f'{sc}|{s}'] = res
             exp['F5_family'] = fam
-        if (out_dir('acc256', 'hacc') / 'result.json').exists():
+        if have('acc256', 'hacc'):
             _, recs256 = acc_records('acc256')
             exp['configs_256'] = {f'{k[0]}|{k[1]}': {kk: vv for kk, vv in v.items() if kk not in ('per_case', 'case_qual')}
                                   for k, v in recs256.items()}
@@ -466,6 +530,7 @@ def main_all():
             exp['cross_mesh_256_1024'] = cross
         rr = {k[0]: v['rule'] for k, v in recs.items()}
         exp['h_cost_n'] = h_cost_n(costs, rr) if costs else None
+        exp['h_cost_n_descriptive'] = h_cost_n_descriptive(costs) if costs else None
         inc, k16 = recs.get(('Hinc', 'BE')), recs.get(('H16s0', 'BE'))
         if inc and k16 and 'training' in exp:
             cs = [c for c, v in inc['per_case'].items() if v['eligible']]

@@ -20,8 +20,12 @@ flowchart LR
 
 ## Headline
 
-- **F5 reading (BE, 1024²):** not computed.
+- **F5 reading (BE, 1024²):** inconclusive.
 - **Error against K (BE):** range verdict `inconclusive`; transitions 4->8: `unqualified size`, 8->16: `unqualified size`, 16->32: `unqualified size`.
+- **K = 4:** against linear r = K: `unavailable (timing incomplete or unqualified)`; at no more online cost: `unavailable (timing incomplete or unqualified)`.
+- **K = 8:** against linear r = K: `unavailable (timing incomplete or unqualified)`; at no more online cost: `unavailable (timing incomplete or unqualified)`.
+- **K = 16:** against linear r = K: `neither (trade-off)`; at no more online cost: `linear at no more cost is at least as accurate (rung 128: Y more accurate)`.
+- **K = 32:** against linear r = K: `unavailable (timing incomplete or unqualified)`; at no more online cost: `unavailable (timing incomplete or unqualified)`.
 - **Retrain of the incumbent (K = 16, seed 0):** `reproduces` (pipeline oracle ratio 1, ROM median-error ratio 1).
 
 ## 1. Matched heads (training)
@@ -192,6 +196,312 @@ Fixed-$M=128$ sensitivity panel (BE): range `inconclusive`; 4->8: `unqualified s
 
 ![error vs K](plots/error_vs_K.png)
 
+## 5. Online cost against K
+
+Cost = median over cases (and repeats) of the A-normalised fused online query time (contract: online query, full-field contract: supplied field sampled at the initial-fit points, initial fit, evolution, full-field decode of the six outputs; A-normalised (A = linear r = 384, 1024^2, LSPG-CN-R, dt0, gauss128)).
+
+**256²**
+
+| subject | fused cost / A | evolution cost / A | timing complete | fused median (ms) |
+|---|---|---|---|---|
+| 1024|A_R384|gauss128|CNR | — | — | no | nan |
+| 256|H16s0|gauss96|BE | 0.462 | 0.398 | yes | 40.8 |
+| 256|H16s1|gauss96|BE | 0.446 | 0.411 | yes | 38.7 |
+| 256|H16s2|gauss96|BE | 0.404 | 0.37 | yes | 34.5 |
+| 256|H32s0|gauss96|BE | 0.428 | 0.401 | yes | 37.5 |
+| 256|H32s1|gauss96|BE | 0.43 | 0.405 | yes | 36.7 |
+| 256|H32s2|gauss96|BE | 0.443 | 0.421 | yes | 38.7 |
+| 256|H4s0|gauss48|BE | 0.278 | 0.264 | yes | 24 |
+| 256|H4s1|gauss48|BE | 0.282 | 0.265 | yes | 23.7 |
+| 256|H4s2|gauss48|BE | 0.282 | 0.263 | yes | 24.1 |
+| 256|H8s0|gauss96|BE | 0.512 | 0.49 | yes | 43.4 |
+| 256|H8s1|gauss96|BE | 0.58 | 0.544 | yes | 49.4 |
+| 256|H8s2|gauss96|BE | 0.833 | 0.73 | yes | 71.1 |
+| 256|Hinc|gauss96|BE | 0.449 | 0.396 | yes | 39.1 |
+| 256|L128|gauss96|BE | 0.276 | 0.278 | yes | 23.6 |
+| 256|L16|gauss48|BE | 0.116 | 0.125 | yes | 10.4 |
+| 256|L256|gauss96|BE | 0.462 | 0.463 | yes | 39.7 |
+| 256|L32|gauss48|BE | 0.136 | 0.147 | yes | 11.7 |
+| 256|L384|gauss96|BE | 0.715 | 0.721 | yes | 61.5 |
+| 256|L4|gauss24|BE | 0.0944 | 0.106 | yes | 8 |
+| 256|L64|gauss48|BE | 0.148 | 0.148 | yes | 13.1 |
+| 256|L8|gauss24|BE | 0.0956 | 0.105 | yes | 8.26 |
+
+**1024²**
+
+| subject | fused cost / A | evolution cost / A | timing complete | fused median (ms) |
+|---|---|---|---|---|
+| 1024|A_R384|gauss128|CNR | — | — | no | nan |
+| 1024|H16s0|gauss96|BE | 0.431 | 0.368 | yes | 36.9 |
+| 1024|H16s0|gauss96|CNR | 0.444 | 0.377 | yes | 37.7 |
+| 1024|H16s1|gauss96|BE | 0.43 | 0.376 | yes | 37.3 |
+| 1024|H16s1|gauss96|CNR | 0.438 | 0.381 | yes | 38.1 |
+| 1024|H16s2|gauss96|BE | 0.409 | 0.358 | yes | 34.9 |
+| 1024|H16s2|gauss96|CNR | 0.407 | 0.366 | yes | 34.9 |
+| 1024|H32s0|gauss96|BE | 0.421 | 0.385 | yes | 36.5 |
+| 1024|H32s0|gauss96|CNR | 0.435 | 0.386 | yes | 37.1 |
+| 1024|H32s1|gauss96|BE | 0.425 | 0.39 | yes | 36.5 |
+| 1024|H32s1|gauss96|CNR | 0.43 | 0.39 | yes | 37 |
+| 1024|H32s2|gauss96|BE | 0.417 | 0.383 | yes | 35.9 |
+| 1024|H32s2|gauss96|CNR | 0.424 | 0.394 | yes | 36.9 |
+| 1024|H4s0|gauss48|BE | 0.267 | 0.244 | yes | 22.4 |
+| 1024|H4s0|gauss48|CNR | 0.268 | 0.242 | yes | 23.1 |
+| 1024|H4s1|gauss48|BE | 0.26 | 0.245 | yes | 22.1 |
+| 1024|H4s1|gauss48|CNR | 0.261 | 0.244 | yes | 22.1 |
+| 1024|H4s2|gauss48|BE | 0.26 | 0.241 | yes | 22.2 |
+| 1024|H4s2|gauss48|CNR | 0.265 | 0.242 | yes | 22.3 |
+| 1024|H8s0|gauss96|BE | 0.52 | 0.463 | yes | 45.1 |
+| 1024|H8s0|gauss96|CNR | 0.53 | 0.478 | yes | 45.9 |
+| 1024|H8s1|gauss96|BE | 0.566 | 0.524 | yes | 48.7 |
+| 1024|H8s1|gauss96|CNR | 0.616 | 0.527 | yes | 53.7 |
+| 1024|H8s2|gauss96|BE | 0.587 | 0.495 | yes | 51.4 |
+| 1024|H8s2|gauss96|CNR | 0.579 | 0.518 | yes | 51.7 |
+| 1024|Hinc|gauss96|BE | 0.43 | 0.365 | yes | 37.4 |
+| 1024|Hinc|gauss96|CNR | 0.437 | 0.37 | yes | 37.6 |
+| 1024|L128|gauss96|BE | 0.262 | 0.264 | yes | 22.2 |
+| 1024|L128|gauss96|CNR | 0.265 | 0.269 | yes | 22.5 |
+| 1024|L16|gauss48|BE | 0.12 | 0.126 | yes | 10.5 |
+| 1024|L16|gauss48|CNR | 0.123 | 0.129 | yes | 10.5 |
+| 1024|L256|gauss96|BE | 0.459 | 0.453 | yes | 38.9 |
+| 1024|L256|gauss96|CNR | 0.455 | 0.45 | yes | 38.5 |
+| 1024|L32|gauss48|BE | 0.133 | 0.139 | yes | 11.4 |
+| 1024|L32|gauss48|CNR | 0.132 | 0.137 | yes | 11.3 |
+| 1024|L384|gauss96|BE | 0.71 | 0.707 | yes | 60.7 |
+| 1024|L384|gauss96|CNR | 0.71 | 0.708 | yes | 60.4 |
+| 1024|L4|gauss24|BE | 0.0872 | 0.0953 | yes | 7.45 |
+| 1024|L4|gauss24|CNR | 0.0879 | 0.0955 | yes | 7.44 |
+| 1024|L64|gauss48|BE | 0.14 | 0.143 | yes | 11.8 |
+| 1024|L64|gauss48|CNR | 0.14 | 0.146 | yes | 11.9 |
+| 1024|L8|gauss24|BE | 0.0926 | 0.1 | yes | 7.8 |
+| 1024|L8|gauss24|CNR | 0.0929 | 0.0991 | yes | 7.85 |
+
+**4096²**
+
+| subject | fused cost / A | evolution cost / A | timing complete | fused median (ms) |
+|---|---|---|---|---|
+| 1024|A_R384|gauss128|CNR | — | — | no | nan |
+| 4096|H16s0|gauss96|BE | 0.661 | 0.385 | yes | 57.1 |
+| 4096|H32s0|gauss96|BE | 0.639 | 0.389 | yes | 55.2 |
+| 4096|H4s0|gauss48|BE | 0.5 | 0.256 | yes | 42.4 |
+| 4096|H8s0|gauss96|BE | 0.744 | 0.479 | yes | 62.2 |
+| 4096|Hinc|gauss96|BE | 0.659 | 0.385 | yes | 56.8 |
+
+**H-cost-N for the head (seed 0, BE, evolution only, dev6):**
+
+| K | outcome | max/min ratio | 95 % interval | meshes |
+|---|---|---|---|---|
+| 4 | verdict not reached | — | None | None |
+| 8 | verdict not reached | — | None | None |
+| 16 | pass | 1.06 | [1.0451016734543945, 1.1310142732168889] | [256, 1024, 4096] |
+| 32 | verdict not reached | — | None | None |
+| inc | pass | 1.03 | [1.0216264589342823, 1.0937653553069986] | [256, 1024, 4096] |
+
+Descriptive sensitivity (no verdict): median evolution cost / A per head over dev6 at each timed mesh, all heads, whether or not the timing-job gates pass:
+
+| head | 256² | 1024² | 4096² | max / min | all gates pass |
+|---|---|---|---|---|---|
+| H16s0 | 0.398 | 0.374 | 0.385 | 1.06 | yes |
+| H32s0 | 0.403 | 0.381 | 0.391 | 1.06 | no |
+| H4s0 | 0.267 | 0.241 | 0.256 | 1.11 | no |
+| H8s0 | 0.489 | 0.478 | 0.492 | 1.03 | no |
+| Hinc | 0.396 | 0.393 | 0.385 | 1.03 | yes |
+
+![error-cost plane](plots/error_cost_1024.png)
+
+## 6. Linear span against the head at 1024² (Q-LH-dim, Q-LH-cost)
+
+**BE** (X = head; error labels of head against linear r = K)
+
+| K | qualified seeds | timing-complete seeds | Q-LH-dim | error (r = K) | cost (head / linear) | at most equal cost | equal-cost rungs |
+|---|---|---|---|---|---|---|---|
+| 4 | [] | [] | unavailable (timing incomplete or unqualified) | — | — | — | — |
+| 8 | [] | [] | unavailable (timing incomplete or unqualified) | — | — | — | — |
+| 16 | [0, 1] | [0, 1] | neither (trade-off) | X more accurate | X costlier | linear at no more cost is at least as accurate (rung 128: Y more accurate) | no equal-cost rung on the ladder |
+| 32 | [1] | [1] | unavailable (timing incomplete or unqualified) | — | — | — | — |
+
+**CNR** (X = head; error labels of head against linear r = K)
+
+| K | qualified seeds | timing-complete seeds | Q-LH-dim | error (r = K) | cost (head / linear) | at most equal cost | equal-cost rungs |
+|---|---|---|---|---|---|---|---|
+| 4 | [] | [] | unavailable (timing incomplete or unqualified) | — | — | — | — |
+| 8 | [] | [] | unavailable (timing incomplete or unqualified) | — | — | — | — |
+| 16 | [0, 1] | [0, 1] | unqualified | X more accurate | X costlier | linear at no more cost is at least as accurate (rung 128: Y more accurate) | no equal-cost rung on the ladder |
+| 32 | [1] | [1] | unavailable (timing incomplete or unqualified) | — | — | — | — |
+
+Every linear rung against every head size (BE; cost label and ratio are linear / head; p = one-sided superiority p-value of the head, adjusted decisions in `runs/EXPORT.json`):
+
+| K | r | r qualified | cost label | cost ratio (median) | error label | head median | linear median | p |
+|---|---|---|---|---|---|---|---|---|
+| 16 | 4 | yes | X cheaper | 0.205 | X more accurate | 1.44 % | 42.6 % | 3.64e-12 |
+| 16 | 8 | yes | X cheaper | 0.222 | X more accurate | 1.44 % | 26.8 % | 3.64e-12 |
+| 16 | 16 | yes | X cheaper | 0.265 | X more accurate | 1.44 % | 10.2 % | 3.64e-12 |
+| 16 | 32 | yes | X cheaper | 0.295 | X more accurate | 1.44 % | 4.4 % | 3.64e-12 |
+| 16 | 64 | yes | X cheaper | 0.314 | X more accurate | 1.44 % | 1.8 % | 2.7e-05 |
+| 16 | 128 | yes | X cheaper | 0.591 | Y more accurate | 1.44 % | 1.1 % | 1 |
+| 16 | 256 | yes | unresolved | 1.05 | Y more accurate | 1.44 % | 0.983 % | 1 |
+| 16 | 384 | yes | X costlier | 1.61 | Y more accurate | 1.44 % | 0.978 % | 1 |
+
+Per-seed sensitivity (each individual head; single-seed pools):
+
+| scheme | seed | K | Q-LH-dim | at most equal cost | head median |
+|---|---|---|---|---|---|
+| BE | 0 | 4 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 0 | 8 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 0 | 16 | neither (trade-off) | linear at no more cost is at least as accurate (rung 128: Y more accurate) | 1.41 % |
+| BE | 0 | 32 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 1 | 4 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 1 | 8 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 1 | 16 | neither (trade-off) | linear at no more cost is at least as accurate (rung 128: Y more accurate) | 1.45 % |
+| BE | 1 | 32 | neither (trade-off) | linear at no more cost is at least as accurate (rung 128: matches) | 1.2 % |
+| BE | 2 | 4 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 2 | 8 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 2 | 16 | unavailable (timing incomplete or unqualified) | — | — |
+| BE | 2 | 32 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 0 | 4 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 0 | 8 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 0 | 16 | unqualified | linear at no more cost is at least as accurate (rung 128: Y more accurate) | 1.04 % |
+| CNR | 0 | 32 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 1 | 4 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 1 | 8 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 1 | 16 | unqualified | linear at no more cost is at least as accurate (rung 128: Y more accurate) | 0.984 % |
+| CNR | 1 | 32 | unqualified | unresolved | 0.472 % |
+| CNR | 2 | 4 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 2 | 8 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 2 | 16 | unavailable (timing incomplete or unqualified) | — | — |
+| CNR | 2 | 32 | unavailable (timing incomplete or unqualified) | — | — |
+
+**256² (deferrable panel; error on eligible all38 (acc256), cost on dev6 (time256)):**
+
+| K | qualified seeds (256²) | timing-usable seeds | Q-LH-dim | at most equal cost |
+|---|---|---|---|---|
+| 4 | [] | [] | unavailable (timing incomplete or unqualified) | unavailable (timing incomplete or unqualified) |
+| 8 | [] | [] | unavailable (timing incomplete or unqualified) | unavailable (timing incomplete or unqualified) |
+| 16 | [0, 2] | [0, 2] | neither (trade-off) | linear at no more cost is at least as accurate (rung 128: Y more accurate) |
+| 32 | [1, 2] | [1, 2] | neither (trade-off) | linear at no more cost is at least as accurate (rung 128: matches) |
+
+## 6b. Head and linear errors across meshes (256² vs 1024², descriptive; governing-plan E3c context)
+
+| configuration | median |change| (pp of u0) | max |change| | case of max | qualified at both |
+|---|---|---|---|---|
+| H16s0|BE | 0.0122 % | 1.01 % | val32|20 | yes |
+| H16s0|CNR | 0.0181 % | 0.975 % | val32|20 | yes |
+| H16s1|BE | 0.0124 % | 1.05 % | val32|14 | no |
+| H16s1|CNR | 0.013 % | 1.06 % | val32|14 | no |
+| H16s2|BE | 0.00843 % | 0.54 % | val32|0 | no |
+| H16s2|CNR | 0.00987 % | 0.476 % | val32|0 | no |
+| H32s0|BE | 0.00441 % | 1.57 % | dev6|3 | no |
+| H32s0|CNR | 0.00468 % | 1.35 % | dev6|3 | no |
+| H32s1|BE | 0.00316 % | 0.455 % | val32|11 | yes |
+| H32s1|CNR | 0.0037 % | 0.442 % | val32|11 | yes |
+| H32s2|BE | 0.00372 % | 0.716 % | val32|11 | no |
+| H32s2|CNR | 0.0041 % | 0.688 % | val32|11 | no |
+| H4s0|BE | 0.00246 % | 0.0665 % | val32|26 | no |
+| H4s0|CNR | 0.00212 % | 0.0677 % | val32|26 | no |
+| H4s1|BE | 0.00332 % | 0.0827 % | val32|27 | no |
+| H4s1|CNR | 0.00265 % | 0.0754 % | val32|27 | no |
+| H4s2|BE | 0.00203 % | 0.0466 % | val32|5 | no |
+| H4s2|CNR | 0.00204 % | 0.0524 % | val32|10 | no |
+| H8s0|BE | 0.0112 % | 0.852 % | val32|23 | no |
+| H8s0|CNR | 0.0106 % | 0.872 % | val32|23 | no |
+| H8s1|BE | 0.0196 % | 3.65 % | val32|11 | no |
+| H8s1|CNR | 0.0149 % | 3.73 % | val32|11 | no |
+| H8s2|BE | 0.0134 % | 2.3 % | val32|14 | no |
+| H8s2|CNR | 0.0152 % | 2.25 % | val32|14 | no |
+| Hinc|BE | 0.0122 % | 1.01 % | val32|20 | yes |
+| Hinc|CNR | 0.0181 % | 0.975 % | val32|20 | yes |
+| L128|BE | 0.00131 % | 0.0178 % | val32|11 | yes |
+| L128|CNR | 0.00163 % | 0.0144 % | val32|5 | yes |
+| L16|BE | 0.000877 % | 0.00622 % | val32|5 | yes |
+| L16|CNR | 0.000864 % | 0.0081 % | val32|5 | no |
+| L256|BE | 0.00164 % | 0.00872 % | val32|5 | yes |
+| L256|CNR | 0.00237 % | 0.025 % | val32|5 | no |
+| L32|BE | 0.00106 % | 0.00901 % | val32|11 | yes |
+| L32|CNR | 0.000984 % | 0.00887 % | val32|11 | no |
+| L384|BE | 0.00159 % | 0.0123 % | val32|5 | no |
+| L384|CNR | 0.00292 % | 0.0491 % | val32|5 | no |
+| L4|BE | 0.00026 % | 0.00233 % | val32|7 | yes |
+| L4|CNR | 0.00026 % | 0.00248 % | val32|7 | yes |
+| L64|BE | 0.00233 % | 0.0388 % | val32|11 | yes |
+| L64|CNR | 0.000982 % | 0.0344 % | val32|11 | no |
+| L8|BE | 0.00037 % | 0.00551 % | val32|5 | yes |
+| L8|CNR | 0.000424 % | 0.00586 % | val32|5 | no |
+
+## 6c. Timing-job qualification and usability
+
+| subject | timing-job Q1/Q2 (dev6) | max distance to accuracy-job trajectory | split = fused | subject drift | usable for cost labels |
+|---|---|---|---|---|---|
+| 1024|A_R384|gauss128|CNR | pass (Q1 only; reference subject) | — | yes | — | no |
+| 256|H16s0|gauss96|BE | pass | — | yes | 0.998 | yes |
+| 256|H16s1|gauss96|BE | pass | — | yes | 0.999 | yes |
+| 256|H16s2|gauss96|BE | pass | — | yes | 1 | yes |
+| 256|H32s0|gauss96|BE | fail | — | yes | 0.999 | no |
+| 256|H32s1|gauss96|BE | pass | — | yes | 1 | yes |
+| 256|H32s2|gauss96|BE | pass | — | yes | 1 | yes |
+| 256|H4s0|gauss48|BE | fail | — | yes | 0.998 | no |
+| 256|H4s1|gauss48|BE | pass | — | yes | 1 | yes |
+| 256|H4s2|gauss48|BE | fail | — | yes | 1 | no |
+| 256|H8s0|gauss96|BE | fail | — | yes | 0.998 | no |
+| 256|H8s1|gauss96|BE | fail | — | yes | 0.999 | no |
+| 256|H8s2|gauss96|BE | pass | — | yes | 0.998 | yes |
+| 256|Hinc|gauss96|BE | pass | — | yes | 1 | yes |
+| 256|L128|gauss96|BE | pass | — | yes | 0.998 | yes |
+| 256|L16|gauss48|BE | pass | — | yes | 1.01 | yes |
+| 256|L256|gauss96|BE | pass | — | yes | 0.999 | yes |
+| 256|L32|gauss48|BE | pass | — | yes | 1 | yes |
+| 256|L384|gauss96|BE | pass | — | yes | 0.999 | yes |
+| 256|L4|gauss24|BE | pass | — | yes | 1.01 | yes |
+| 256|L64|gauss48|BE | pass | — | yes | 1 | yes |
+| 256|L8|gauss24|BE | pass | — | yes | 1 | yes |
+| 1024|A_R384|gauss128|CNR | pass (Q1 only; reference subject) | — | yes | — | no |
+| 1024|H16s0|gauss96|BE | pass | 5.756429792574705e-14 | yes | 1 | yes |
+| 1024|H16s0|gauss96|CNR | pass | 5.315963975309548e-14 | yes | 1 | yes |
+| 1024|H16s1|gauss96|BE | pass | 4.9121785122967805e-14 | yes | 0.994 | yes |
+| 1024|H16s1|gauss96|CNR | pass | 3.31568308577674e-14 | yes | 1 | yes |
+| 1024|H16s2|gauss96|BE | fail | 4.938019660766059e-14 | yes | 1 | no |
+| 1024|H16s2|gauss96|CNR | fail | 7.232754260418002e-14 | yes | 1 | no |
+| 1024|H32s0|gauss96|BE | fail | 3.131782422621826e-14 | yes | 1 | no |
+| 1024|H32s0|gauss96|CNR | fail | 2.95063856013773e-14 | yes | 1 | no |
+| 1024|H32s1|gauss96|BE | pass | 3.1431889705599715e-14 | yes | 0.999 | yes |
+| 1024|H32s1|gauss96|CNR | pass | 3.456782944223625e-14 | yes | 1 | yes |
+| 1024|H32s2|gauss96|BE | fail | 3.278362563071143e-14 | yes | 0.998 | no |
+| 1024|H32s2|gauss96|CNR | fail | 3.320057612811957e-14 | yes | 0.997 | no |
+| 1024|H4s0|gauss48|BE | fail | 1.0189288232438268e-13 | yes | 0.996 | no |
+| 1024|H4s0|gauss48|CNR | fail | 1.0428867549003229e-13 | yes | 0.999 | no |
+| 1024|H4s1|gauss48|BE | fail | 8.92426769886698e-14 | yes | 0.999 | no |
+| 1024|H4s1|gauss48|CNR | fail | 1.5211993364006237e-13 | yes | 0.997 | no |
+| 1024|H4s2|gauss48|BE | fail | 9.248985864550637e-14 | yes | 1 | no |
+| 1024|H4s2|gauss48|CNR | fail | 9.337830001684477e-14 | yes | 1 | no |
+| 1024|H8s0|gauss96|BE | fail | 2.0158568203588387e-13 | yes | 1 | no |
+| 1024|H8s0|gauss96|CNR | fail | 1.0102816888227609e-13 | yes | 1 | no |
+| 1024|H8s1|gauss96|BE | pass | 2.6040492377534355e-13 | yes | 0.999 | yes |
+| 1024|H8s1|gauss96|CNR | fail | 1.170523424664805e-13 | yes | 1 | no |
+| 1024|H8s2|gauss96|BE | fail | 8.75527042790759e-14 | yes | 0.998 | no |
+| 1024|H8s2|gauss96|CNR | fail | 1.0896048155553563e-13 | yes | 1 | no |
+| 1024|Hinc|gauss96|BE | pass | 6.339791981447527e-14 | yes | 0.997 | yes |
+| 1024|Hinc|gauss96|CNR | pass | 7.635308129529157e-14 | yes | 0.998 | yes |
+| 1024|L128|gauss96|BE | pass | 3.0571226216117684e-15 | yes | 1 | yes |
+| 1024|L128|gauss96|CNR | pass | 1.906968703390848e-15 | yes | 1 | yes |
+| 1024|L16|gauss48|BE | pass | 1.8743246399160308e-14 | yes | 1.01 | yes |
+| 1024|L16|gauss48|CNR | pass | 2.289010102734334e-14 | yes | 1.01 | yes |
+| 1024|L256|gauss96|BE | pass | 1.701192206337943e-15 | yes | 1 | yes |
+| 1024|L256|gauss96|CNR | pass | 1.670308089654988e-15 | yes | 1.01 | yes |
+| 1024|L32|gauss48|BE | pass | 5.628783682755476e-15 | yes | 1 | yes |
+| 1024|L32|gauss48|CNR | pass | 3.890864409594503e-15 | yes | 0.999 | yes |
+| 1024|L384|gauss96|BE | pass | 1.599221173979978e-15 | yes | 1 | yes |
+| 1024|L384|gauss96|CNR | pass | 1.892220572506043e-15 | yes | 1 | yes |
+| 1024|L4|gauss24|BE | pass | 7.069203152289516e-15 | yes | 1.01 | yes |
+| 1024|L4|gauss24|CNR | pass | 1.1148169038621732e-14 | yes | 1.01 | yes |
+| 1024|L64|gauss48|BE | pass | 2.5828307922244123e-15 | yes | 1 | yes |
+| 1024|L64|gauss48|CNR | pass | 3.169888477499334e-15 | yes | 0.996 | yes |
+| 1024|L8|gauss24|BE | pass | 2.2387733704169326e-14 | yes | 1.02 | yes |
+| 1024|L8|gauss24|CNR | pass | 1.796156857051147e-14 | yes | 1.01 | yes |
+| 1024|A_R384|gauss128|CNR | pass (Q1 only; reference subject) | — | yes | — | no |
+| 4096|H16s0|gauss96|BE | pass | — | yes | 1 | yes |
+| 4096|H32s0|gauss96|BE | fail | — | yes | 0.999 | no |
+| 4096|H4s0|gauss48|BE | fail | — | yes | 0.999 | no |
+| 4096|H8s0|gauss96|BE | fail | — | yes | 1 | no |
+| 4096|Hinc|gauss96|BE | pass | — | yes | 0.999 | yes |
+
 ## 7. Jobs, budget, deferrals
 
 | attempt | job | state | GPU | GPU-hours |
@@ -201,10 +511,12 @@ Fixed-$M=128$ sensitivity panel (BE): range `inconclusive`; 4->8: `unqualified s
 | train | 5533155 | COMPLETED | gres/gpu=1 | 1.17 |
 | rule1024 | 5581241 | COMPLETED | gres/gpu=1 | 0.297 |
 | acc1024 | 5600165 | COMPLETED | gres/gpu=1 | 0.4 |
-| time1024 | 5610590 | RUNNING | gres/gpu=1 | 0.198 |
-| time256 | 5618145 | PENDING | None | 0 |
+| time1024 | 5610590 | COMPLETED | gres/gpu=1 | 0.901 |
+| time256 | 5618145 | COMPLETED | gres/gpu=1 | 0.276 |
+| time4096 | 5636451 | COMPLETED | gres/gpu=1 | 0.111 |
+| acc256 | 5651378 | COMPLETED | gres/gpu=1 | 0.291 |
 
-GPU-hours spent: 2.11 of 35. Deferred items: none.
+GPU-hours spent: 3.68 of 35. Deferred items: none.
 
 
 ## Glossary

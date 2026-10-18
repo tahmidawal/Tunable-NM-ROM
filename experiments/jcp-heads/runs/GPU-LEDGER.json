@@ -65,9 +65,9 @@
    "attempt": "time1024",
    "job_id": "5610590",
    "time_limit_hours": 2.5,
-   "state": "RUNNING",
+   "state": "COMPLETED",
    "gpu": "gres/gpu=1",
-   "elapsed_hours": 0.7689,
+   "elapsed_hours": 0.9008,
    "pending_hours": 2.5,
    "attempts": 1,
    "node": "pax011",
@@ -96,9 +96,21 @@
    "attempts": 1,
    "node": "pax011",
    "prior_elapsed_hours": 0.0
+  },
+  {
+   "attempt": "acc256",
+   "job_id": "5651378",
+   "time_limit_hours": 3.75,
+   "state": "COMPLETED",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.2911,
+   "pending_hours": null,
+   "attempts": 1,
+   "node": "pax050",
+   "prior_elapsed_hours": 0.0
   }
  ],
  "pending_core": {},
- "spent_gpu_hours": 2.492,
- "reserved_gpu_hours": 2.5
+ "spent_gpu_hours": 3.6839,
+ "reserved_gpu_hours": 0
 }

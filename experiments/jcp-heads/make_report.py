@@ -222,6 +222,15 @@ if E.get('cost'):
         w('')
         w(table(['K', 'outcome', 'max/min ratio', '95 % interval', 'meshes'], rows))
         w('')
+    hd = E.get('h_cost_n_descriptive') or {}
+    if hd:
+        rows = [[k, g3(v['medians'].get('256')), g3(v['medians'].get('1024')), g3(v['medians'].get('4096')), g3(v['ratio']),
+                 'yes' if v['usable_all'] else 'no'] for k, v in hd.items()]
+        w('Descriptive sensitivity (no verdict): median evolution cost / A per head over dev6 at each timed mesh, all heads, '
+          'whether or not the timing-job gates pass:')
+        w('')
+        w(table(['head', '256²', '1024²', '4096²', 'max / min', 'all gates pass'], rows))
+        w('')
     c1024 = E['cost'].get('1024', {})
     if c1024:
         fig, ax = plt.subplots(figsize=(5.4, 3.6))

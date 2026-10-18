@@ -387,7 +387,8 @@ def t_lmm():
                 us.append(fin(0.000625))
                 orders.append(float(np.log2(np.linalg.norm(us[2] - us[3]) / np.linalg.norm(us[3] - us[4]))))
             assert lo <= orders[-1] <= hi, (d, sc_, orders)
-            out.append((d, sc_, f'{worst:.1e}', [round(o, 3) for o in orders]))
+            status = 'pre-asymptotic at 0.01' if not (lo <= orders[0] <= hi) else 'asymptotic'
+            out.append((d, sc_, f'{worst:.1e}', [round(o, 3) for o in orders], status))
     return out
 
 

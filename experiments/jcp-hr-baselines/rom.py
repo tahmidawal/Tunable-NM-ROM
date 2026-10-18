@@ -12,8 +12,8 @@ Arm interface (all f64, shapes static per configuration):
          B = [Phi, Lap_h Phi, U_p] = Q_B R_B (Householder, A1.2),  Nt(c) = (P^T U_p)^{-1} N_h(Phi c)|_P.
          Stored: T1 = R_B[:, :r], T2 = R_B[:, r:2r], T3E = R_B[:, 2r:] (P^T U_p)^{-1}.
 
-Exit reasons (as t2core): 0 budget, 1 residual tolerance, 2 tiny step, 3 non-finite / damping limit / GN backtracking exhausted,
-4 stationary.
+Exit reasons (as t2core): 0 budget, 1 residual tolerance, 2 tiny step, 3 non-finite / damping limit (LM) or GN
+backtracking exhausted with a finite step, 4 stationary, 5 GN non-finite least-squares step (A11.1).
 """
 from __future__ import annotations
 
@@ -162,9 +162,9 @@ def make_gn(rJ, budget=GN_BUDGET, halvings=GN_HALVINGS):
             J3 = jnp.where(accept, J2, J)
             rn3 = jnp.where(accept, rn2, rn)
             tiny = accept & (jnp.linalg.norm(cn - c) <= 1e-14 * (1 + jnp.linalg.norm(c)))
-            # no decrease after every halving, or a non-finite step: exit reason 3 (A1.15; code audit 2, item 19)
-            reason = jnp.where(~accept, 3, jnp.where(ratio(J3, r3) <= gtol, 4,
-                                                     jnp.where(rn3 <= tol, 1, jnp.where(tiny, 2, 0))))
+            # A11.1: a non-finite least-squares step -> 5; finite step but no decrease after every halving -> 3
+            reason = jnp.where(~ok, 5, jnp.where(~accept, 3, jnp.where(ratio(J3, r3) <= gtol, 4,
+                                                     jnp.where(rn3 <= tol, 1, jnp.where(tiny, 2, 0)))))
             return c3, r3, J3, rn3, it + 1, reason.astype(jnp.int32)
 
         c, r, J, rn, it, reason = jax.lax.while_loop(lambda s: (s[4] < budget) & (s[5] == 0), body,
@@ -306,12 +306,13 @@ def certify(out, gam, sch, level='prod'):
     stationary = np.isfinite(g) & (g <= STAT_TOL)
     C = np.asarray(out['C'])[:steps + 1]
     saturated = int(np.sum(~np.isfinite(lam) | (lam >= 1e14)))          # LM damping at its limit (V4-2 validity)
-    valid = bool(np.isfinite(C).all() and np.all(rs >= 0) and not np.any(rs == 3) and saturated == 0)
+    known = np.all(np.isin(rs, (0, 1, 2, 3, 4, 5)))
+    valid = bool(np.isfinite(C).all() and known and not np.any(rs == 3) and not np.any(rs == 5) and saturated == 0)
     gl = LEVELS[level][0]
     # A9.1 anchors: a step passes if gamma <= gtol(level), or if it is a round-off stall (the native GN could not
     # decrease the residual at working precision: exit reason 3) with gamma <= 100 gtol(level)
     stall = (rs == 3) & np.isfinite(g) & (g <= 100. * gl)
-    anchor_ok = bool(np.isfinite(C).all() and np.all(rs >= 0) and saturated == 0 and steps > 0
+    anchor_ok = bool(np.isfinite(C).all() and known and not np.any(rs == 5) and saturated == 0 and steps > 0
                      and np.all((np.isfinite(g) & (g <= gl)) | stall) and np.all((rs != 3) | stall))
     return dict(valid=valid, nonstat=int(np.sum(~stationary)), steps=steps, damping_saturated=saturated,
                 level=level, gamma_list=g.tolist(), reason_list=rs.tolist(), lam_list=lam.tolist(),
@@ -319,4 +320,4 @@ def certify(out, gam, sch, level='prod'):
                 worst_gamma=float(np.max(np.where(np.isfinite(g), g, np.inf))) if steps else float('nan'),
                 anchor_ok=anchor_ok, roundoff_stalls=int(np.sum(stall)),
                 it_sum=int(np.sum(np.asarray(out['stats']['it'])[:steps])),
-                reasons=np.bincount(rs[rs >= 0], minlength=5).tolist())
+                reasons=np.bincount(rs[rs >= 0], minlength=6).tolist())

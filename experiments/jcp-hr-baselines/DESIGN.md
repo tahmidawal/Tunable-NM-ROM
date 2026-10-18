@@ -1005,3 +1005,23 @@ changes only the lane's own anchor-validity rule (A1.7/A2.7), not the COMMON-BRI
 **A10.1 (2026-10-18, dry-run evidence) N-time fixture.** N-time times the `none` arm at the smoke rank (BE, native):
 its calls are long enough for stable timing, whereas the ECSW calls in the dry run lasted a few milliseconds and gave
 T = 1.79 on one CPU cell. Ours' A–B–A pairs with the ECSW fixture as before. The band [1.8, 2.2] is unchanged.
+
+---
+
+## Amendment A11 (2026-10-18) — code audit 3 (`audits/codex-code-3.md`, NOT READY) design-level items
+
+**A11.1 Exit reason 5.** The native solver reports a **non-finite least-squares step** as exit reason 5 (always
+invalid, never an anchor round-off stall); exit reason 3 is reserved for a finite step whose backtracking is exhausted
+(invalid for production runs; an anchor round-off stall under A9.1 when γ ≤ 100 gtol). Unknown codes are invalid.
+
+**A11.2 Evidence persistence.** Every grid configuration, every N-under level, the N-grad fixture and ours' case-0
+field are written as separate array files when each block completes (append-only), together with the coefficient
+trajectories of every production and anchor run. Acceptance validates per-step lists against the registered step
+count of the option, checks trajectory finiteness from the saved trajectories, rescores every E0 number from saved
+fields against freshly loaded pinned references (including N-under and the N-swap ROM fixture, whose selection is
+re-derived), re-derives the N-grad oracle counts from the tuples, checks the exact repeat/retry inventory of every
+timing case and every per-output discrepancy, and compares the saved $n_0$ with the reference's.
+
+**A11.3 ECSW pilot workload frozen.** The maximal-shape ECSW pilot runs the NNLS to a support of 1,024 (`pilot_support`,
+part of the frozen A5.4 inventory); acceptance requires that support with stop reason "cap", or an earlier certified KKT
+stop, and positive measured device peaks for every maximal-shape pilot.

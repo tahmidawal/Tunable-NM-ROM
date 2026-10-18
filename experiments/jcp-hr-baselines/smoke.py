@@ -104,7 +104,7 @@ def timed_triples(fA, fB, argsA, argsB, checkA, checkB, reps=3, burn_s=0.1, max_
                 t0 = time.perf_counter()
                 o = jax.block_until_ready(f(*a))
                 ts.append(time.perf_counter() - t0)
-                ds.append(float(chk(o)))
+                ds.append([float(x) for x in np.atleast_1d(chk(o))])      # one discrepancy per output of the call
             ok = abs(ts[0] / ts[2] - 1.) <= 0.25
             rec.append(dict(rep=rep, attempt=attempt, tA1=ts[0], tB=ts[1], tA2=ts[2], valid=bool(ok),
                             dA1=ds[0], dB=ds[1], dA2=ds[2]))
@@ -129,8 +129,12 @@ def run_cell(cfg, c, res, outdir, save):
     arrays = {}
     P = lambda name, fn, need, store=None: phase(R, name, fn, need, cfg, save, store)
 
-    def save_arrays():
-        np.savez(outdir / f'arrays_{key}.npz', **{k.replace('|', '~'): v for k, v in arrays.items()})
+    arrdir = outdir / f'arrays_{key}'
+    arrdir.mkdir(parents=True, exist_ok=True)
+
+    def chunk(name, **kw):
+        """Append-only array evidence: one .npz per completed block (code audit 3, item 15)."""
+        np.savez(arrdir / f"{name.replace('|', '~')}.npz", **kw)
 
     # ---- references and IC checks
     refs = P('refs', lambda: SC.Refs(d, coh, fam, sorted(set(cases + fx + TIMING_CASES[:1]))), 60)
@@ -164,8 +168,7 @@ def run_cell(cfg, c, res, outdir, save):
     bb = None
     cell.set_basis(Phi, trust)
     R['basis'] = cell.info['basis[central]']
-    arrays['Phi_lat'] = np.asarray(cell.Phi[jnp.asarray(H.lattice_nodes(d, L)), :rs])
-    arrays['cases'] = np.asarray(cases)
+    chunk('basis', Phi_lat=np.asarray(cell.Phi[jnp.asarray(H.lattice_nodes(d, L)), :rs]), cases=np.asarray(cases))
 
     def adequacy():
         held = (3, 5, 6, 8, 12, 17, 22, 35, 45)
@@ -275,15 +278,16 @@ def run_cell(cfg, c, res, outdir, save):
                                         tighter_F={j: tighter[j]['fields_lat'] for j in tighter})
                     if refs is not None:
                         g['e0'] = {j: refs.score_safe(g['recs'][j]['fields_lat'], j) for j in cases}
-                    arrays[f'{cid}|W'] = np.stack([g['recs'][j]['W'] for j in cases])
-                    arrays[f'{cid}|F'] = np.stack([g['recs'][j]['fields_lat'] for j in cases])
-                    arrays[f'{cid}|Ftight'] = np.stack([tight[j]['fields_lat'] for j in cases])
-                    arrays[f'{cid}|Ftighter'] = np.stack([tighter[j]['fields_lat'] for j in subset])
+                    chunk(f'grid|{cid}', W=np.stack([g['recs'][j]['W'] for j in cases]),
+                          F=np.stack([g['recs'][j]['fields_lat'] for j in cases]),
+                          Ftight=np.stack([tight[j]['fields_lat'] for j in cases]),
+                          Ftighter=np.stack([tighter[j]['fields_lat'] for j in subset]),
+                          C=np.stack([g['recs'][j]['C'] for j in cases]), Ctight=np.stack([tight[j]['C'] for j in cases]),
+                          Ctighter=np.stack([tighter[j]['C'] for j in subset]))
                     log(f'   {cid}: q1={g["q1"]["q1"]} ' + ' '.join(
                         f"{j}:{g['recs'][j]['seconds_warm']:.3f}s ns{g['recs'][j]['cert']['nonstat']}" for j in cases))
         return True
     P('grid', grid_run, 600)
-    save_arrays()
     R['grid'] = {cid: dict(q1={k: v for k, v in g.get('q1', {}).items()}, e0=g.get('e0'),
                            anchors={k: v for k, v in g.get('anchors', {}).items() if not k.endswith('_F')},
                            runs={j: dict(seconds=g['recs'][j]['seconds'], seconds_warm=g['recs'][j].get('seconds_warm'),
@@ -401,10 +405,12 @@ def run_cell(cfg, c, res, outdir, save):
         q = PL.q1_config(prod, tight, tighter, R['n0'], fxs, fxs)
         if support is not None and support < rs:        # A6.3: underdetermined LSPG is never Q1-qualified
             q = dict(q, q1=False, reason=f'underdetermined: support {support} < r {rs}')
+        kw = {}
         for j in fxs:
-            arrays[f'NU|{tag}|{j}|F'] = prod[j]['fields_lat']
-            arrays[f'NU|{tag}|{j}|Ftight'] = tight[j]['fields_lat']
-            arrays[f'NU|{tag}|{j}|Ftighter'] = tighter[j]['fields_lat']
+            kw.update({f'{j}~F': prod[j]['fields_lat'], f'{j}~Ftight': tight[j]['fields_lat'],
+                       f'{j}~Ftighter': tighter[j]['fields_lat'], f'{j}~C': prod[j]['C'], f'{j}~Ctight': tight[j]['C'],
+                       f'{j}~Ctighter': tighter[j]['C']})
+        chunk(f'NU|{tag}', **kw)
         return dict(e={j: refs.score_safe(prod[j]['fields_lat'], j)['e'] for j in fxs}, q1=q, support=support,
                     cert={j: prod[j]['cert'] for j in fxs}, tight={j: tight[j]['cert'] for j in fxs},
                     tighter={j: tighter[j]['cert'] for j in fxs})
@@ -430,7 +436,6 @@ def run_cell(cfg, c, res, outdir, save):
             R['N-under-partial'] = out
             save()
         R.pop('N-under-partial', None)
-        save_arrays()
         return out
     if refs is not None and ('none', '-') in datas:
         P('N-under', n_under, 420, store='N-under')
@@ -488,7 +493,7 @@ def run_cell(cfg, c, res, outdir, save):
                     o_var[t['step']] = t['oracle']
                 classify.append(dict(k=k, sign=sgn, nonstat_production=cert_v['nonstat'],
                                      nonstat_oracle=int(np.sum(~(np.isfinite(o_var) & (o_var <= 1e-3))))))
-        arrays['NG|base_C'] = np.asarray(base['C'])
+        chunk('NG', base_C=np.asarray(base['C']), base_gamma=np.asarray(base['gamma'], float))
         # part (b): the wrong-gradient solver on both fixtures, with complete Q1 (reported, A2.9 (b))
         fxs = sorted(fx)
         mut = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'prod', fam.ic(L, jj), fam.nu(jj), mutation='drop_adv_jac')
@@ -496,6 +501,7 @@ def run_cell(cfg, c, res, outdir, save):
         tight = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'tight', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
         tighter = {jj: cell.run('ecsw', rs, dat, 'native', opt_main, 'tighter', fam.ic(L, jj), fam.nu(jj)) for jj in fxs}
         return dict(status='run', fixture=PL.cfg_id('ecsw', rs, tau_run, opt_main[0], opt_main[1], 'native'), case=j,
+                    steps=int(sch['steps']), tested_steps=list(range(0, int(sch['steps']), 5)),
                     tuples=tuples, skipped=skipped, base_cert=base['cert'], classify=classify,
                     b=dict(q1=PL.q1_config(mut, tight, tighter, R['n0'], fxs, fxs), cert={jj: mut[jj]['cert'] for jj in fxs}))
     if refs is not None:
@@ -510,15 +516,18 @@ def run_cell(cfg, c, res, outdir, save):
         out['ref_fixture'] = dict(true=refs.score(Rf, j0)['e'], case_swap=refs.score(Rf, j0, ref_case=j1)['e'],
                                   time_shift=refs.score(Rf, j0, shift=1)['e'])
         rom = None
+        cands = {}
         for cid in (PL.cfg_id('ecsw', rs, tau_run, opt_main[0], opt_main[1], 'native'),
                     PL.cfg_id('none', rs, '-', opt_main[0], opt_main[1], 'native')):
             g = grid.get(cid)
+            cands[cid] = 'absent' if g is None else ('valid' if g['recs'][j0]['cert']['valid'] else 'invalid')
             if g is not None and g['recs'][j0]['cert']['valid']:
                 F = g['recs'][j0]['fields_lat']
                 rom = dict(cid=cid, true=refs.score(F, j0)['e'], case_swap=refs.score(F, j0, ref_case=j1)['e'],
                            time_shift=refs.score(F, j0, shift=1)['e'], refstore=SC.RS.score(F, d, coh, j0, 'ST')['e'])
                 break
         out['rom_fixture'] = rom if rom is not None else 'fixture unavailable'
+        out['rom_candidates'] = cands
         kinds = {}
         for dd, kd, op in ((3, 'S', ('BE', 0.005)), (3, 'S', ('BE', 0.01)), (2, 'S', ('CNR', 0.005)),
                            (2, 'S', ('BE', 0.01)), (2, 'S', ('BE', 0.005)), (2, 'ST', ('CNR', 0.005))):
@@ -551,7 +560,7 @@ def run_cell(cfg, c, res, outdir, save):
             jax.block_until_ready(fA(uj, vj))           # warm
             scored = cell.run(kind, rs, dat, 'native', opt_main, 'prod', uj, fam.nu(j))['fields_lat']
             chkA = lambda o, sc=scored: np.max(np.abs(cell.lattice(o) - sc))
-            chkB = lambda o, sc=scored: max(np.max(np.abs(cell.lattice(o[0]) - sc)), np.max(np.abs(cell.lattice(o[1]) - sc)))
+            chkB = lambda o, sc=scored: [np.max(np.abs(cell.lattice(o[0]) - sc)), np.max(np.abs(cell.lattice(o[1]) - sc))]
             nt[j] = dict(triples=timed_triples(fA, fB, (uj, vj), (uj, vj), chkA, chkB))
         out['N-time'] = dict(config=PL.cfg_id(kind, rs, hrp, opt_main[0], opt_main[1], 'native'), cases=nt)
         R['timing-partial'] = out
@@ -586,14 +595,14 @@ def run_cell(cfg, c, res, outdir, save):
             chkB = lambda o, sc=scoredB: np.max(np.abs(cell.lattice(o) - sc))
             ab[j] = dict(triples=timed_triples(fX, fA, (ux, vj), (ub, vj), chkX, chkB))
             if j == 0:
-                arrays['ours|F'] = scoredX
-        out['ours'] = dict(id=xid, e0=refs.score_safe(arrays['ours|F'], 0) if refs is not None and 0 in refs.f else None,
+                chunk('ours', F=scoredX)
+                F_ours0 = scoredX
+        out['ours'] = dict(id=xid, e0=refs.score_safe(F_ours0, 0) if refs is not None and 0 in refs.f else None,
                            note='phase-I adapter execution check; NOT G-ours (exported-error replay is phase II)',
                            cases=ab, setup_seconds=ox.setup_seconds)
         R.pop('timing-partial', None)
         return out
     P('N-time+ours', n_time_and_ours, 300, store='timing')
-    save_arrays()
 
     R['timers'] = cell.T.t
     return arrays
@@ -619,8 +628,6 @@ def main():
         except Exception as e:  # noqa: BLE001
             res[f"{c['d']}d_L{c['L']}_fatal"] = f'{type(e).__name__}: {e}\n{traceback.format_exc()[-3000:]}'
             log('FATAL in cell', c['d'], c['L'], e)
-        if arrays:
-            np.savez(outdir / f"arrays_{c['d']}d_L{c['L']}.npz", **{k.replace('|', '~'): v for k, v in arrays.items()})
         save()
     res['total_seconds'] = time.perf_counter() - T_START
     save()

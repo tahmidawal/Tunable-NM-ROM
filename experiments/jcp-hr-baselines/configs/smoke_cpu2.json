@@ -1,0 +1,45 @@
+{
+ "wall_seconds": 5000,
+ "allow_cpu": true,
+ "dry_skip_ours": true,
+ "cells": [
+  {
+   "d": 2,
+   "L": 256,
+   "n_traj": 24,
+   "rmax": 48,
+   "ranks": [
+    16,
+    48
+   ],
+   "pmax": 96,
+   "rs": 16,
+   "ps": 32,
+   "taus": [
+    0.01,
+    0.001
+   ],
+   "cases": [
+    0,
+    1
+   ],
+   "under_fixtures": [
+    2,
+    3
+   ],
+   "n_adequacy": 4,
+   "n_probe": 2,
+   "options": [
+    [
+     "BE",
+     0.005
+    ],
+    [
+     "CNR",
+     0.005
+    ]
+   ],
+   "pilot_support": 64
+  }
+ ]
+}

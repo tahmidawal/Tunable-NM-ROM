@@ -101,6 +101,7 @@ def main():
         assert not out['all_controls_pass'], f'mutation accepted: {name}'
         print(f'ok  rejected: {name}')
     smk1_tests()
+    combined_gate_tests()
     print('test_accept: all checks passed')
 
 
@@ -168,6 +169,73 @@ def smk1_tests():
         f(R)
         assert not SA.acc_rows_ok(cfg, R), name
         print(f'ok  accuracy rows rejected: {name}')
+
+
+
+def combined_gate_tests():
+    """Structural (smoke_accept.rule_trail_ok) + numerical (hscore.rule_verify) gates together on synthetic archives built
+    from a real bank-free linear arm: passing, failed-then-passing (incl. null rho / null distances / non-finite w0) and
+    exhausted trails."""
+    import tempfile
+    import numpy as np
+    import hscore as HSC
+    import npcheck as NC
+    pop, chk = ['dev6|0', 'dev6|1'], ['dev6|0']
+    ladder = ['gauss16', 'gauss24', 'gauss32']
+    dim, M = 4, 16
+    rng = np.random.default_rng(3)
+    base = rng.normal(size=(6, dim)) * .3
+
+    def arch(tmp, gname, rows):
+        keys, W, valid, n0, ex, sg, sr, icr, icg, ff, w0 = [], [], [], [], [], [], [], [], [], [], []
+        for (rule, case), (Wv, ok, w0v) in rows.items():
+            keys.append(f'a|{rule}|{case}'); W.append(Wv); valid.append(ok); n0.append(1.)
+            ex.append(np.zeros(5, int)); sg.append(np.zeros(50)); sr.append(np.full(50, 4)); icr.append(-1); icg.append(np.nan)
+            ff.append(True); w0.append(w0v)
+        np.savez(Path(tmp) / f'SOL_{gname}.npz', keys=np.array(keys), W=np.array(W), valid=np.array(valid), n0=np.array(n0),
+                 exits=np.array(ex), step_gn=np.array(sg), step_reason=np.array(sr), ic_reason=np.array(icr), ic_gn=np.array(icg),
+                 fields_finite=np.array(ff), w0=np.array(w0))
+
+    def arm_entry(Wq, Wp, Wpp, okq, rho_val):
+        d = [NC.fdist(NC.decode257(Wq[c], dim), NC.decode257(Wp[c], dim), 1.) for c in pop]
+        roll = bool(okq and np.isfinite(d).all() and max(d) <= 2.5e-4)
+        rho = roll and rho_val is not None and rho_val <= .116
+        dc = [NC.fdist(NC.decode257(Wp[c], dim), NC.decode257(Wpp[c], dim), 1.) for c in chk] if rho else []
+        ck = bool(rho and max(dc) <= 2.5e-4)
+        return dict(dist=[None if not np.isfinite(x) else x for x in d], valid_q=[okq] * 2, valid_qp=[True] * 2,
+                    dist_check=dc, valid_qpp=[True] * len(dc), rho_max=rho_val if roll else None, rollout_pass=roll,
+                    rho_pass=bool(rho), check_pass=ck, passed=bool(roll and rho and ck), max_dist=None)
+    # identical solutions at every rule -> distances 0 -> rollout passes; rho is recomputed from tables by rule_verify, so
+    # we let the job value be the recomputed one (computed below)
+    g = dict(name='G', min_pass=1, arms=[dict(name='a', kind='lin', Rp=dim, M=M)])
+    with tempfile.TemporaryDirectory() as tmp:
+        same = {c: base for c in pop}
+        bad = {c: base * np.nan for c in pop}
+        rows = {}
+        for rl in ladder + ['gauss48', 'gauss64']:
+            for c in pop:
+                rows[(rl, c)] = (bad[c] if rl == 'gauss16' else base, rl != 'gauss16', np.zeros(dim) if rl != 'gauss16' else np.full(dim, np.nan))
+        arch(tmp, 'G', rows)
+        tq, tp = HSC.tables('gauss24', dim, M, 1024), HSC.tables('gauss32', dim, M, 1024)
+        rr = max(NC.rho(ck, tq, tp) for ck in base)
+        t0 = dict(rule='gauss16', successor='gauss24', check='gauss32', arms=dict(a=arm_entry(bad, same, same, False, None)),
+                  n_pass=0, min_pass=1, group_pass=False)
+        e1 = arm_entry(same, same, same, True, rr)
+        t1 = dict(rule='gauss24', successor='gauss32', check='gauss48', arms=dict(a=e1), n_pass=int(e1['passed']), min_pass=1,
+                  group_pass=e1['passed'])
+        v = dict(population=pop, check_population=chk, trail=[t0, t1], status='selected' if e1['passed'] else 'x',
+                 chosen=dict(main='gauss24', qp='gauss32', qpp='gauss48'))
+        res = dict(mesh=1024, groups=dict(G=v))
+        st = SA.rule_trail_ok(g, v, ladder, pop, chk)
+        nv = HSC.rule_verify(res, tmp, dict(groups=[g]))['G']
+        assert e1['passed'] and st and nv['ok'], (st, nv)
+        print('ok  combined gate: failed (null distances, non-finite w0) then passing trail accepted by both checkers')
+        # null rho on a rollout-passing rung recorded as a failure is accepted structurally
+        e_nr = dict(e1, rho_max=None, rho_pass=False, check_pass=False, passed=False, dist_check=[], valid_qpp=[])
+        v2 = dict(v, trail=[t0, dict(t1, arms=dict(a=e_nr), n_pass=0, group_pass=False)], status='not quadrature-qualified (ladder exhausted)',
+                  chosen=None)
+        assert SA.rule_trail_ok(g, v2, ladder[:2], pop, chk)
+        print('ok  structural gate accepts a recorded null-rho failure and an exhausted trail')
 
 
 if __name__ == '__main__':

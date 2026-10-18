@@ -67,16 +67,17 @@ def rule_trail_ok(g, v, ladder, pop, chk):
                 return False
             npass = 0
             for a in t_['arms'].values():
-                d = np.asarray(a['dist'], float)
+                d = np.array([np.inf if x is None else float(x) for x in a['dist']])     # JSON null = non-finite
                 if len(d) != len(pop) or len(a['valid_q']) != len(pop) or len(a['valid_qp']) != len(pop):
                     return False
                 roll = bool(all(a['valid_q']) and all(a['valid_qp']) and np.isfinite(d).all() and d.max() <= BAR_Q2)
                 if bool(a['rollout_pass']) != roll:
                     return False
-                rho = roll and a['rho_max'] is not None and np.isfinite(a['rho_max']) and a['rho_max'] <= BAR_RHO
-                if bool(a['rho_pass']) != bool(rho) or (roll and a['rho_max'] is None):
+                rmax = np.inf if a['rho_max'] is None else float(a['rho_max'])     # null = non-finite (driver: fail)
+                rho = roll and np.isfinite(rmax) and rmax <= BAR_RHO
+                if bool(a['rho_pass']) != bool(rho):
                     return False
-                dc = np.asarray(a['dist_check'], float)
+                dc = np.array([np.inf if x is None else float(x) for x in a['dist_check']])
                 if roll and rho:
                     if len(dc) != len(chk) or len(a['valid_qpp']) != len(chk):
                         return False

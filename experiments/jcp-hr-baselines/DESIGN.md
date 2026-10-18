@@ -327,3 +327,195 @@ report is generated. Glossary at the end.
   training data.
 - **Larger meshes:** 2D $4096^2$ and 3D $L\in\{128,256\}$ via a streaming randomised range finder (two passes,
   regenerating trajectories) instead of the in-memory method of snapshots.
+
+---
+
+## Amendment A1 (2026-10-18) — answers to Codex design audit 1 (`audits/codex-design-1.md`, verdict WRONG)
+
+Each item below replaces the text it names; where A1 and the sections above differ, A1 governs. Item numbers are the
+audit's.
+
+**A1.1 (items 1, 2) Residual and Jacobian, explicit.** The baselines solve weighted strong-residual LSPG ("ECSW" names
+the sampling-and-weighting construction; no energy-conservation property is claimed for this Burgers discretisation).
+With $u=\Phi_r c$ and $s(u)_i=\tfrac L2\sum_a(u_{i+e_a}-u_{i-e_a})$,
+$$J(c)=\partial_c\mathcal R_n(\Phi_rc)=\Big[a_0 I+\Delta t\,b_0\big(\operatorname{diag}(s(u))+\operatorname{diag}(u)\,D_h-\nu\Delta_h\big)\Big]\Phi_r,$$
+$D_h$ the central derivative-sum operator ($s(u)=D_hu$). The same expression (restricted to rows, times $\sqrt{\xi}$) is
+used for ECSW online rows and for ECSW training contributions; G-fd checks it.
+
+**A1.2 (item 3) Q-DEIM objective without truncation.** The SVD with a singular-value cut-off is withdrawn. Offline, the
+Householder QR $B=[\Phi_r,\ \Delta_h\Phi_r,\ U_p]=Q_BR_B$ is formed in f64 (Householder QR is column-wise backward
+stable, so the very different column scales of $\Phi_r$ and $\Delta_h\Phi_r$ are harmless); online
+$\hat r_n(c)=R_Bz(c)$, so $\|\hat r_n(c)\|=\|Bz(c)\|$ exactly for every $c$ and no linear term is approximated. $R_B$ is
+never inverted, so rank deficiency of $B$ does not matter. The DEIM approximation is the only approximation; G-fd
+compares $\|R_Bz\|$ and $J^\top\hat r$ with the independently assembled full-field DEIM residual
+$\Phi_r(\cdot)-\Delta t\nu\Delta_h\Phi_r(\cdot)+U_p(P^\top U_p)^{-1}(\cdot)$ and its gradient on random states,
+including a near-cancellation state (the residual at a converged step).
+
+**A1.3 (items 4, 5) Snapshot provenance, restated.**
+- Reused: the **parameter draws** of the banks' training (2D `sample_params(0, 576)`, 3D `table(923701, 1536)`). Not
+  reused: the banks' **trajectory generator** (sign-upwind BE, fields never stored) and, in 2D, the bank's **state
+  selection** (all 51 states of 576 trajectories, of which all states with step ≤ 5 plus a random sample, 16,384 in total;
+  `sep_burgers_r3.py:321–332`). The baselines' snapshots are the §3.1 central FOM's own trajectories; this is stated as
+  "same parameter distribution and draws, different trajectory generator", with its offline cost reported.
+- 3D: the 3D banks' 12 snapshot steps (`model_W1024/training.json`) are reused: 18,432 snapshots.
+- 2D: the same 12 steps are a **lane choice** (memory: all 51 steps at $1024^2$ would be 246 GB), giving 6,912 snapshots.
+  **Training-only saturation check** at $256^2$ (where all 51 steps fit, 15 GB): POD from the 12-step set versus POD from
+  all 29,376 states; statistic = RMS relative projection error of all 29,376 training states at each rank. Adequate iff the
+  12-step value ≤ 1.10 × the all-step value at every registered rank. If not adequate, the $256^2$ cell uses the all-step
+  POD and the $1024^2$ cell is labelled "snapshot-limited (12-step set; saturation check failed)"; nothing else changes.
+
+**A1.4 (item 6) Same time-stepping options as ours.** 2D: LSPG-BE and LSPG-CN-R at Δt₀ = 0.005 (P1's registered
+options). 3D: **speed3d's full registered ladder**: schemes BE, CN (no start-up), BDF2 (one BE start-up step,
+t2core `BDF2`) × Δt/Δt₀ ∈ {1, 1.25, 5/3, 2.5} (Δt₀ = 0.01), 12 options. Scheme coefficients, step and step count are
+traced, so options add runs, not compilations.
+
+**A1.5 (item 7) Tuning budget, frozen accounting.** Four categories, measured from `sacct` and in-job timers, for both
+methods: (C-model) model construction — ours: bank training; baseline: snapshots + POD; (C-hr) hyper-reduction
+construction — ours: rule tables and rule selection; baseline: advection POD, Q-DEIM pivoting, ECSW training runs and
+NNLS; (C-search) validation search — runs whose purpose is choosing a configuration; (C-cert) numerical certification
+(anchors, Q1 passes). **Equal tuning budget applies to C-search**: the baseline may spend on C-search up to ours' C-search
+GPU-hours for that dimension (2D: combined `c2grid` + `c2fbgrid`; 3D: combined `c3desc*` + `c3grid` and speed3d
+`g1–g3`, from their ledgers; read and pinned at phase-II release), within this lane's cap. The registered grid is run
+first. **Budget-driven extension (pre-registered):** while budget remains and a screening-front configuration sits on a
+grid boundary, the grid is extended one step in that direction (rank +1 rung: 2D 512, 3D 768; ECSW τ = 3e-5; Q-DEIM
+p/r = 8) and screened again. If ours' C-search budget cannot be matched inside the cap, H-base for that cell is
+restated as an **unequal-budget descriptive comparison** (named in every verdict line). C-model, C-hr and C-cert are
+reported for both methods; ours' C-model is sunk (shared bank) and reported as such, never omitted.
+
+**A1.6 (items 8, 17 in part) Cohorts, restated: one in-sample developmental comparison.** Ours was selected in-sample
+on the verdict cohorts (2D dev6+val32; 3D all 64 of 923801), with post-hoc steps (combined A10/A11) and against earlier
+references. The baseline is now selected on the **same full cohort**:
+- Stage A (screening, cheap): the whole grid on the selection subset (2D dev6; 3D 923801 cases 0–5).
+- Stage B: the screening front plus every configuration within a factor 1.5 of the front in worst error or in median
+  time (at most 24, ranked by the total order of A1.12) is run on the **full verdict cohort** with Q1 certification.
+- Picks (§6 rules) are made on the full cohort's Stage-B data. The verdict is read on the same data.
+The result is labelled "**developmental comparison, both methods selected in-sample on the same cases, with unequal
+selection histories**". The "out-of-selection view" of §2 is withdrawn. No generalisation claim is made; that needs a
+jointly frozen cohort later (F1/F2).
+
+**A1.7 (item 9) Q1 restated exactly.** Distance = $\max_{k\ge1}\|F_k-F_k^{\rm tight}\|/n_0$ on the scoring lattice,
+$n_0$ = the canonical physical IC norm on the lattice (the E0 metric's $n_0$; checked equal to the store's
+`judge.n0` to 1e-12), not the POD-projected IC. Tight and tighter anchors must themselves be **valid** (every step
+stationary at their level or at residual tolerance, finite, no damping saturation); an invalid anchor makes the
+configuration unqualified ("anchor invalid"), never qualified. The tolerance table is `c2common.tol_of('LSPG', ·)`
+(the earlier citation `t2core.tol_of` was wrong). Certification is a separate untimed pass over the saved trajectory
+$c_0..c_N$ (speed3d's pattern): for every step it recomputes $\hat r$ and $J$ at $c_{n+1}$ with the history of that
+step and records $\gamma_n$; a step counts as stationary iff $\gamma_n\le10^{-3}$, or its residual is at the solve's
+residual tolerance ($\|\hat r\|\le$ tol, an exact root; t2core A1.5). Timed queries do not certify (no extra work in
+the timing); the certified trajectory equals the timed one (asserted, ≤ 1e-12).
+
+**A1.8 (item 10) ECSW training, restated.**
+- Training trajectories: 24 (seeded permutation of the training draw, seed 20261017), each assigned round-robin to one
+  time-stepping option (2D: 12 per option; 3D: 2 per option), run with the central FOM; 4 states per trajectory at steps
+  $\{k_0, \lceil0.15N\rceil, \lceil0.4N\rceil, N\}$ of that option ($N$ its step count; $k_0$ = 1 for BE and CN, 3 for
+  CN-R, 2 for BDF2, i.e. the first step with the option's main coefficients; duplicates removed). 96 states in all,
+  pooled over options, so one weight set per (rank, τ) serves every option.
+- Block scaling $1/\max(\|b(s)\|,\ 10^{-8}\,\mathrm{median}_s\|b(s)\|)$; a block with $\|b(s)\|<10^{-8}$ median is dropped
+  and recorded.
+- Every attempted (rank, τ) is reported with the achieved relative residual and support. A τ not reached under the
+  8,192 cap is retried once with cap 16,384 (training-only fallback); if still not reached it is a recorded **ECSW
+  construction failure** at that τ (reported in the results; the other τ values still run).
+- Candidates as in §3.4 (32,768; all nodes when $n\le$ 32,768).
+
+**A1.9 (items 11–14) Controls, restated.** Replaces the table of §10 where they differ.
+
+| id | kind | fixture | must |
+|---|---|---|---|
+| G-fd-a | positive | raw stencil residual and Jacobian (hrcore) vs `refcore` F (byte-identical copy) and `jax.jacfwd` of it, random state, real mesh | rows ≤ 1e-12 rel.; Jacobian ≤ 1e-11 |
+| G-fd-b | positive | each arm's online $\hat r$, $J$: directional FD (5 random unit directions $v$, step $h=10^{-6}\max(1,\|c\|)$, central) and `jacfwd` | FD ≤ 1e-6 rel.; jacfwd ≤ 1e-11 |
+| G-fd-c | positive | ECSW rows = $\sqrt\xi$ × independently computed full residual rows at E; Q-DEIM $\|R_Bz\|$ and $J^\top\hat r$ = assembled full-field DEIM residual norm and gradient (A1.2), incl. a near-cancellation state | ≤ 1e-10 rel. |
+| N-fd | negative | G-fd-b on the mutant with the advection Jacobian dropped | fails (> 1e-3 rel.) |
+| G-full | positive | 2D L = 16 and 3D L = 8: completed orthonormal basis $\Phi=Q$ of $[\Phi_{\rm POD}, I]$ ($r=n$), `none`, `ecsw` with ξ = 1 on all nodes, `qdeim` with $U=I_n$ (p = n, P = all nodes); every scheme option; both solvers at **tight** level; FOM at ntol 1e-13 | lattice distance to the FOM ≤ 1e-8 |
+| G-all | positive | real mesh: `ecsw` with ξ = 1 on all nodes vs `none`, same rank, one case, BE | ≤ 1e-10 |
+| G-nnls | positive | greedy NNLS run without τ-stop vs `scipy.optimize.nnls` on random problems: objective equal to 1e-10 rel. and KKT (ξ ≥ 0, gradient ≤ 1e-9 on the active set and ≥ −1e-9 off it); at a τ-stop: ξ ≥ 0 and residual ≤ τ | as stated |
+| G-qdeim | positive | Q-DEIM interpolation exact on span($U_p$) (random combination, ≤ 1e-10); GPU pivoting equals `scipy.linalg.qr(pivoting=True)` pivots on a small problem; $\|(P^\top U_p)^{-1}\|$ finite, reported | as stated |
+| G-pod | positive | $\|\Phi^\top\Phi-I\|_{\max}\le10^{-10}$; a training snapshot projected onto the full computed rank reproduces itself to ≤ 1e-8 relative | as stated |
+| N-under | negative | fixtures fixed now, without outcomes: in each smoke cell the two selection-subset cases with the smallest ν (ties → larger amplitude). Ladder ECSW support cap ⌈r/4⌉, ⌈r/8⌉; Q-DEIM p = ⌈r/8⌉, ⌈r/16⌉, …, 1, at the smoke rank; for each level report Q1 (complete predicate incl. distance to its own tight solve) and E0 error | fires iff, at some ladder level, the median E0 error on the fixtures ≥ 2 × the `none` arm's at the same rank (degraded accuracy, the brief's requirement); Q1 failure is reported separately as solver failure, not counted as degradation. If no level degrades, that is recorded as an insensitivity finding and the HR arms' "sampling matters" claim is blocked |
+| N-grad | negative | fixture: the N-under fixture case with the smallest ν, ECSW at the smoke rank, BE; the solver uses the Jacobian **without its advection part** while certification recomputes the correct $J$ | Q1 fails (non-stationary > 1 % or distance > 2.5e-4) |
+| N-swap | negative | scoring: case swap, time shift (both > 10 ε_ref change), and kind control: requesting S for a 3D case or for a non-BE / non-0.005 arm raises | as stated |
+| G-score | positive | offline CPU re-decode of saved coefficients reproduces every in-job score | ≤ 1e-12 |
+| N-time | negative | A–B–A with B = A run twice per call | median ρ ∈ [1.8, 2.2] and label "X faster" |
+| N-dom | negative | decision rule, synthetic: 38 cases, $e_X\sim$ LogU[1e-3, 1e-2], ε_i = 1e-6; (a) $e_B=0.5e_X$, ρ = 0.5 ± 1 % → "baseline dominates"; (b) $e_B=e_X(1\pm0.5\%)$, ρ = 1 ± 1 % → "matches"; (c) $e_B=0.5e_X$ except one case at 2 $e_X^{\max}$, ρ = 0.5 → not "baseline dominates" (worst error) | as stated |
+| G-ours | positive | ours re-timed reproduces its exported errors | ≤ 1e-10 rel. |
+
+**A1.10 (item 15) Envelopes.** Lower endpoints are clipped at 0. The intervals of §9 are **conditional
+reference-error envelopes** (conditional on ε_ref, a Richardson estimate), not statistical confidence intervals for a
+population worst case.
+
+**A1.11 (item 16) "Matches", restated.** "Matches" requires all three: (i) **mean standardized error equivalence** —
+$x_i=(e_{B,i}-e_{X,i})/\delta_i$ with $\delta_i=\max(2\varepsilon_i,0.1e_{X,i})$ fixed per case (not recomputed in
+resampling), 90 % case-bootstrap interval of mean $x$ inside $(-1,1)$; (ii) **worst-error equivalence** — B's worst
+envelope lies inside $[W_X-\delta_W, W_X+\delta_W]$, $\delta_W=\max(2\varepsilon_{i^*},0.1W_X)$, $i^*$ = X's
+worst case; (iii) **time equivalence** — 90 % case-bootstrap interval of the median $\log\rho$ inside $\pm\log1.10$,
+cases resampled with all their repeats. Bootstraps: 10,000 resamples, seed 0, percentile intervals.
+
+**A1.12 (item 17) Exhaustive decision table and total order.**
+- Total order on baseline configurations (ties anywhere in §6 and A1.6): worst error, median error, median time, r,
+  HR kind (none < ecsw < qdeim), HR size (fewer points first), scheme name, Δt, solver (native < common).
+- Pair label precedence: (1) **baseline dominates** / **ours dominates** (both objectives resolved in the same
+  direction; annotated "within equivalence margins" if A1.11 also holds); (2) **neither dominates** (both resolved, in
+  opposite directions); (3) **matches** (A1.11); (4) **unresolved**.
+- Cell at X: qualified baseline front empty → "**baseline incomplete** at this mesh" (not assessed; never support). A
+  pick "none" → "no baseline in role". **"H-base falsified at X"** iff a registered pick dominates X. Otherwise
+  "not falsified by the registered picks" — a narrow statement: it is not proof that no baseline dominates.
+- **Exploratory:** every Stage-B Q1-qualified configuration whose worst envelope is not entirely above X's is A–B–A
+  timed against X and labelled with the same table, marked **exploratory, unadjusted**. Intervals are unadjusted for the
+  number of X and of pairs; dimension-level statements list every X and are labelled exploratory.
+- X with no eligible case-kind or missing exported errors → "not assessed".
+
+**A1.13 (items 18, 19) Memory, disk and workload inventory.** Peak live arrays (f64), with the phase they live in:
+
+| phase | 2D $1024^2$ | 3D $65^3$ |
+|---|---|---|
+| snapshots (host) | 6,912 × 1,046,529: 57.9 GB | 18,432 × 250,047: 36.9 GB |
+| POD Gram / eigen (device) | 0.38 GB | 2.7 GB |
+| advection snapshots (host, overwrite the state snapshots after POD and the trust spread are done) | 57.9 GB (same buffer) | 36.9 GB |
+| $\Phi$ (r_max) + $\Delta_h\Phi$ + $D_h\Phi$ (device) | 3 × 3.2 GB | 3 × 1.0 GB |
+| $U_{p_{\max}}$ (p ≤ 4 r_max) | 12.9 GB | 4.1 GB |
+| Q-DEIM pivoting residual matrix ($p\times n$) | ≤ 12.9 GB | ≤ 4.1 GB |
+| $B$ for one (r, p) + QR workspace | ≤ 2 × 19.3 GB | ≤ 2 × 6.1 GB |
+| ECSW contribution matrix ($96r\times32768$) + $G^\top G_S$ ($32768\times$ support) | 9.7 + 2.1 GB | 12.9 + 2.1 GB |
+| `none` arm $J$ + QR copy | 2 × 3.2 GB | 2 × 1.0 GB |
+
+Phases run sequentially and free their arrays (`del` + the device's own accounting); the device peak is the largest
+phase (2D $1024^2$: $B$ QR ≈ 39 GB + resident $\Phi$ blocks ≈ 10 GB), host peak ≈ 60 GB (2D) / 40 GB (3D). **H200**
+(143,771 MiB) for the 2D $1024^2$ and 3D cells; A100-80 GB for $256^2$. Measured peaks from the smoke replace these.
+Disk (cluster, per cell): $\Phi_{r_{\max}}$ (3.2 / 1.0 GB) and the compact online HR data (per configuration: stencil
+rows ≤ 8,192 × 7 × r, $R_B$, $(P^\top U)^{-1}$; ≤ 1.5 GB in all) are kept for the verdict job; full $U$, $B$ and
+snapshots are never written. Local: coefficients and lattice-row bases only (≤ 2 GB per cell).
+
+Workload inventory per cell (prod runs on cases; anchors per discrete problem; certification passes = prod runs):
+
+| item | 2D $256^2$ | 2D $1024^2$ | 3D $65^3$ |
+|---|---|---|---|
+| FOM snapshot trajectories | 576 | 576 | 1,536 |
+| ECSW training FOM runs | 24 | 24 | 24 |
+| full-rank limiting comparator (FOM) runs | 38 × 2 | 38 × 2 | 64 × 12 |
+| configurations (ranks × HR × options × solvers) | 5×7×2×2 = 140 | 140 | 4×7×12×2 = 672 |
+| Stage A prod runs (6 cases) | 840 | 840 | 4,032 |
+| Stage A tight anchors / tighter (2 cases) | 420 / 140 | 420 / 140 | 2,016 / 672 |
+| Stage B (≤ 24 configs × cohort) prod + tight + tighter | ≤ 912 + 912 + 48 | same | ≤ 1,536 + 1,536 + 48 |
+| compiled query shapes (kind × r × HR size × solver) + cert passes | 70 + 35 | 70 + 35 | 56 + 28 |
+| Q-DEIM pivoting runs / $B$ QRs / NNLS paths | 9 / 15 / 5 | 9 / 15 / 5 | 9 / 12 / 4 |
+| verdict job: A–B–A triples | (picks + exploratory) × X × 6 × 3 | same | same |
+
+The GPU-hour projection is computed from the smoke's measured per-item times by `resources.py` (speed3d pattern) and
+must fit: spent + projection ≤ 30. If the registered core (A1.14) does not fit, the cell is declared **incomplete**.
+
+**A1.14 Defer order, restated** (first dropped first; each dependency-safe): exploratory A–B–A pairs → the 2D $256^2$
+cell → the 3D options with Δt/Δt₀ = 2.5 → the 3D r = 512 rank → common-solver runs of configurations that are not on
+the native-solver screening front (the front is decided from native runs plus the common runs already made; a dropped
+common run is reported as "not run"). Never dropped: `none` with the native solver at every rank (the HR-error
+diagnostic), the ECSW and Q-DEIM grids with the native solver, Stage B, picks, the verdict jobs.
+
+**A1.15 (item 20) Solvers, comparator naming, spectral.**
+- **Native solver = damped Gauss–Newton**: the QR least-squares step with backtracking (step halved up to 8 times
+  until $\|\hat r\|$ decreases; if no halving decreases it, exit reason 3), budget 30, previous-state predictor. Its
+  convergence sensitivity is reported through the native-vs-common ablation.
+- **Common solver trust per dimension, as ours:** 2D $0.01\max_s\|c_s-\bar c\|$ (`qcore.trust_linear`); 3D
+  $0.05\sqrt{\mathrm{mean}_s\|c_s-\bar c\|^2}$ (speed3d trust = 0.05 × the bank's `coefficient_rms_spread`,
+  `train2w.py:439–441`), over the training projected coefficients at rank r.
+- The un-reduced FOM is named the **full-rank limiting comparator**, not a floor: a reduced model can beat it by error
+  cancellation.
+- Spectral FOM projection is deferred for scope and cost (a fixed-basis spectral derivative can be precomputed, so it is
+  not impossible); it joins the C3-full appendix.

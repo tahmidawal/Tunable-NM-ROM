@@ -1,0 +1,119 @@
+{
+ "meshes": {
+  "1024": {
+   "edges": [
+    0,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
+    384,
+    512
+   ]
+  }
+ },
+ "A": {
+  "mesh": 1024,
+  "name": "A_R384",
+  "kind": "lin",
+  "Rp": 384,
+  "rule": "gauss128",
+  "scheme": "CNR"
+ },
+ "subjects": [
+  {
+   "mesh": 1024,
+   "name": "Hinc",
+   "kind": "head",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "rule": "gauss32",
+   "qp": "gauss48",
+   "qpp": "gauss64",
+   "scheme": "BE"
+  },
+  {
+   "mesh": 1024,
+   "name": "Hinc",
+   "kind": "head",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "rule": "gauss32",
+   "qp": "gauss48",
+   "qpp": "gauss64",
+   "scheme": "CNR"
+  },
+  {
+   "mesh": 1024,
+   "name": "L16",
+   "kind": "lin",
+   "Rp": 16,
+   "rule": "gauss24",
+   "qp": "gauss32",
+   "qpp": "gauss48",
+   "scheme": "BE"
+  },
+  {
+   "mesh": 1024,
+   "name": "L384",
+   "kind": "lin",
+   "Rp": 384,
+   "rule": "gauss128",
+   "qp": "gauss160",
+   "qpp": "gauss192",
+   "scheme": "BE"
+  }
+ ],
+ "cases": [
+  [
+   "dev6",
+   0
+  ],
+  [
+   "dev6",
+   1
+  ],
+  [
+   "val32",
+   0
+  ]
+ ],
+ "cert_cases": [
+  [
+   "dev6",
+   0
+  ],
+  [
+   "dev6",
+   1
+  ]
+ ],
+ "reps": {
+  "dev6": 2,
+  "val32": 1
+ },
+ "burn": 0.1,
+ "seed": 20261018,
+ "doubled": [
+  {
+   "mesh": 1024,
+   "name": "Hinc",
+   "kind": "head",
+   "head": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+   "rule": "gauss32",
+   "qp": "gauss48",
+   "qpp": "gauss64",
+   "scheme": "BE",
+   "cases": [
+    [
+     "dev6",
+     0
+    ]
+   ]
+  }
+ ],
+ "inject_identity_fault": [
+  "1024|L16|gauss24|BE"
+ ]
+}

@@ -1,0 +1,90 @@
+{
+ "npz": "/cluster/tufts/paralab/tawal01/jcp-heads/data/sep_coeff_N256_K16_R512.npz",
+ "ckpt": "../separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl",
+ "arms": [
+  {
+   "name": "identity",
+   "k": 16,
+   "seed": 0,
+   "identity": true
+  },
+  {
+   "name": "mid_k4_s0",
+   "k": 4,
+   "seed": 0,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k4_s1",
+   "k": 4,
+   "seed": 1,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k4_s2",
+   "k": 4,
+   "seed": 2,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k8_s0",
+   "k": 8,
+   "seed": 0,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k8_s1",
+   "k": 8,
+   "seed": 1,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k8_s2",
+   "k": 8,
+   "seed": 2,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k16_s0",
+   "k": 16,
+   "seed": 0,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k16_s1",
+   "k": 16,
+   "seed": 1,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k16_s2",
+   "k": 16,
+   "seed": 2,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k32_s0",
+   "k": 32,
+   "seed": 0,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k32_s1",
+   "k": 32,
+   "seed": 1,
+   "steps": 200000
+  },
+  {
+   "name": "mid_k32_s2",
+   "k": 32,
+   "seed": 2,
+   "steps": 200000
+  },
+  {
+   "name": "probe_k16_s0_2000",
+   "k": 16,
+   "seed": 0,
+   "steps": 2000
+  }
+ ]
+}

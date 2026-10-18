@@ -532,6 +532,7 @@ def run_controls(cfg, rep, bank, st, U0, w0ls, cases, cid, out, save):
         res['GQ_wrong_table'] = dict(raised=True, msg=str(e_))
     st.data[('main', 'LSPG')] = saved
     np.savez_compressed(out / 'CTRL_gq.npz', cert_LSPG=GQE['LSPG'], cert_GAL=GQE['GAL'], gamma_bar=GAMMA, eta_bar=QC.ETA_BAR,
+                        case_ids=np.array([cid(i) for i in ids[:2]]),
                         wrong_table_raised=bool(res['GQ_wrong_table']['raised']))
     rep['controls'] = res
     save()

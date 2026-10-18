@@ -317,9 +317,10 @@ def b2_member(res, Wz, B, m, cases, refs, ACC, failed, star_ok, chk):
                     ca = 2 * np.sum(effs[x] * (F[base] - PR), axis=1) / n0 ** 2
                     cs = 2 * np.sum(effs[x] * (Fs['star'] - PR), axis=1) / n0 ** 2
                     k = 1 + int(np.argmax(np.abs(ca[1:])))
-                    d['chi'][x] = float(ca[k])
-                    d['chi_star'][x] = float(cs[1 + int(np.argmax(np.abs(cs[1:])))])
+                    d['chi'][x] = float(ca[k])                             # chi = chi* + background at the SAME time k
+                    d['chi_star'][x] = float(cs[k])
                     d['chi_background'][x] = float((ca - cs)[k])
+                    d.setdefault('chi_star_peak', {})[x] = float(cs[1 + int(np.argmax(np.abs(cs[1:])))])
             if j in chk and val['0'] and all(x in eff for x in ('Q', 'T', 'S')) and d['main']['F'] is not None:
                 d['C_F'] = control_floor3(R, PR, eP, n0, eps or 0., d['U_star'], B, Fs['star'], eff, d)
         else:

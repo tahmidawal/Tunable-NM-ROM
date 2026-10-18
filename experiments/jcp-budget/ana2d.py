@@ -295,9 +295,10 @@ def analyse_member(run, mk, member, mesh, span, star, refs, failed, star_ok, chk
                     cs = 2 * np.sum(eff[x] * (Fs['star'] - PR), axis=1) / n0 ** 2
                     ca = 2 * np.sum(eff[x] * (Fi['0'] - PR), axis=1) / n0 ** 2
                     k = 1 + int(np.argmax(np.abs(ca[1:])))
-                    d['chi'][x] = float(ca[k])
-                    d['chi_star'][x] = float(cs[1 + int(np.argmax(np.abs(cs[1:])))])
-                    d['chi_background'][x] = float((ca - cs)[k])          # 2<I_x, u_0 - u_star> at chi's time
+                    d['chi'][x] = float(ca[k])                             # chi = chi* + background at the SAME time k
+                    d['chi_star'][x] = float(cs[k])
+                    d['chi_background'][x] = float((ca - cs)[k])
+                    d.setdefault('chi_star_peak', {})[x] = float(cs[1 + int(np.argmax(np.abs(cs[1:])))])
             if cid in chk_ids and valid['0'] and all(x in eff for x in ING):
                 d['C_F'] = control_floor(RI, PR, eP, n0, eps or 0., d['U_star'], span, Fs['star'], eff, d)
         else:
@@ -565,8 +566,9 @@ def controls(run, res, refs):
         S_ = int(round(.25 / .005))                       # the schedule of the fixture: dt0 to T = 0.25 (50 steps)
         conf = case_set(res['config']['controls'].get('cases', 'dev6'))     # configured control cases, not produced ids
         n_ = min(2, len(conf))
-        evaluable = bool(ids == conf and cl.shape == (n_, S_) and cg.shape == (n_, S_) and np.isfinite(cl).all()
-                         and np.isfinite(cg).all())
+        gids = [str(x) for x in zg['case_ids']] if 'case_ids' in zg.files else None     # the certificates' own case ids
+        evaluable = bool(ids == conf and gids == conf[:n_] and len(set(gids)) == n_ and cl.shape == (n_, S_) and
+                         cg.shape == (n_, S_) and np.isfinite(cl).all() and np.isfinite(cg).all())
         fl = float(np.mean(cl > 1e-3)) if evaluable else None             # registered bars (gamma 1e-3, GAL eta 1e-8)
         fg = float(np.mean(cg > 1e-8)) if evaluable else None
         out['G_Q'] = dict(evaluable=evaluable, fraction_LSPG=fl, fraction_GAL=fg, wrong_table_raised=bool(zg['wrong_table_raised']),

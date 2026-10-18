@@ -43,16 +43,9 @@ def main():
                jax_version=jax.__version__, panels={}, sync={}, drift={}, complete=False)
     save = lambda: json.dump(QS.clean(rep), open(out / 'result.json', 'w'), indent=1)
     fx = cfg['fixtures']
-    assert QS.sha_file(fx['archive']) == fx['sha256'], 'fixture archive hash mismatch'
-    z = np.load(fx['archive'])
-    runs, cids = list(z['runs']), list(z['cases'])
-    ri = runs.index(fx['run'])
-    fixtures, flabels = [], []
-    for cid in fx['cases']:
-        for k in fx['outputs']:
-            fixtures.append(np.asarray(z['W'][cids.index(cid), ri, k]))
-            flabels.append(f'{cid}|t{k}')
-    fixtures = np.array(fixtures)
+    assert QS.sha_file(fx['file']) == fx['sha256'], 'fixture file hash mismatch'
+    z = np.load(fx['file'])
+    fixtures, flabels = np.asarray(z['W']), [str(x) for x in z['labels']]
     rep['fixtures'] = dict(labels=flabels, case_of=[l_.rsplit('|', 1)[0] for l_ in flabels], R=int(fixtures.shape[1]))
     L = int(cfg['mesh'])
     bank = P.Bank(L, cfg['edges'])

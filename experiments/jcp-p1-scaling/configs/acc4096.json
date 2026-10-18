@@ -1,0 +1,151 @@
+{
+ "attempt": "acc4096",
+ "driver": "p1acc",
+ "mesh": 4096,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "configs": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "rule": "fib4181",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "sub16",
+   "q2_cases": "sub16",
+   "qp": "fib6765",
+   "qpp": "fib10946"
+  },
+  {
+   "name": "R256",
+   "Rp": 256,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "sub16",
+   "q2_cases": "sub16",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "name": "R384",
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "all38",
+   "q2_cases": "sub16",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "name": "R384nom",
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "nominal",
+   "schemes": [
+    "BE",
+    "CNR"
+   ],
+   "cases": "all38",
+   "q2_cases": "sub16",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  {
+   "name": "H96",
+   "Rp": 384,
+   "rule": "gauss96",
+   "policy": "frozen",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  },
+  {
+   "name": "H96nom",
+   "Rp": 384,
+   "rule": "gauss96",
+   "policy": "nominal",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  },
+  {
+   "name": "H64",
+   "Rp": 384,
+   "rule": "gauss64",
+   "policy": "frozen",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  },
+  {
+   "name": "H64nom",
+   "Rp": 384,
+   "rule": "gauss64",
+   "policy": "nominal",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  },
+  {
+   "name": "HF6765",
+   "Rp": 384,
+   "rule": "fib6765",
+   "policy": "frozen",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  },
+  {
+   "name": "HF6765nom",
+   "Rp": 384,
+   "rule": "fib6765",
+   "policy": "nominal",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  },
+  {
+   "name": "H640",
+   "Rp": 384,
+   "rule": "gauss640",
+   "policy": "frozen",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  },
+  {
+   "name": "H640nom",
+   "Rp": 384,
+   "rule": "gauss640",
+   "policy": "nominal",
+   "schemes": [
+    "BE"
+   ],
+   "cases": "all38"
+  }
+ ],
+ "blocks": []
+}

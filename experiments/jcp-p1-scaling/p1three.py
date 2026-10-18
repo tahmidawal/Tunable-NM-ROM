@@ -119,15 +119,9 @@ def main():
 
 def kern(cfg, rep, save, bank, tb, kx, M_of, Mfix, ranks, n, el):
     fx = cfg['fixtures']
-    assert sha_file(fx['archive']) == fx['sha256'], 'fixture archive hash mismatch'
-    z = np.load(fx['archive'])
-    Wf = np.asarray(z[fx['key']])
-    fixtures, labels = [], []
-    for c in fx['cases']:
-        for k in fx['outputs']:
-            fixtures.append(Wf[c, k])
-            labels.append(f'923801|{c}|t{k}')
-    fixtures = np.array(fixtures)
+    assert sha_file(fx['file']) == fx['sha256'], 'fixture file hash mismatch'
+    z = np.load(fx['file'])
+    fixtures, labels = np.asarray(z['W']), [str(x) for x in z['labels']]
     rep['fixtures'] = dict(labels=labels, case_of=[l_.rsplit('|', 1)[0] for l_ in labels], R=int(fixtures.shape[1]))
     rules = load_rules(sorted({cfg['fixed_rule']} | set(cfg['nominal_rules'].values())))
     Rmax = max(ranks)

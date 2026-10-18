@@ -44,10 +44,12 @@ def _rules(R):
     old_c, old_g = SC.certified, SC.gcert_ok
     if form == 'LSPG' and square:
         SC.certified = lambda c, f: np.isfinite(np.asarray(c, float)) & (np.asarray(c, float) <= DC.ETA_W_BAR)
-        SC.gcert_ok = lambda R_, f, tolf: DC.gcert(R_['raw'], R_['tolratio'], t_prod * np.asarray(R_['scale'], float))
+        SC.gcert_ok = lambda R_, f, tolf: DC.gcert(R_['raw'], R_['tolratio'], t_prod * np.asarray(R_['scale'], float),
+                                                    np.asarray(R_['scale'], float))
     elif form == 'GAL':
         SC.gcert_ok = lambda R_, f, tolf: bool(old_g(R_, f, tolf) and DC.gcert(R_['raw'], R_['tolratio'],
-                                                                                t_prod * np.asarray(R_['scale'], float)))
+                                                                                t_prod * np.asarray(R_['scale'], float),
+                                                                                np.asarray(R_['scale'], float)))
     try:
         yield
     finally:

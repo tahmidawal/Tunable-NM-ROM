@@ -38,13 +38,17 @@ def recovered(tolratio, tol):
     return np.asarray(tolratio, float) * (np.asarray(tol, float) + 1e-300)
 
 
-def gcert(raw_cert, tolratio, tol):
-    """Per-step G-cert (A3.3); tol may be a scalar (square LSPG: tolf * scale) or per-step (GAL: tolf * ||A c_n||)."""
+def gcert(raw_cert, tolratio, tol, scale=0.):
+    """Per-step G-cert (A3.3 as amended by A6.1); tol may be a scalar (square LSPG: tolf * scale) or per-step (GAL:
+    tolf * ||A c_n||); scale the same normalisation (scalar or per step). Bar: |r_cert - r_rec| <= 1e-6 r_rec +
+    1e-13 scale + 1e-15 (the 1e-13 floor in eta units is qualify's GAL G-cert floor; residuals at machine precision
+    differ by round-off between the solver and the recomputation)."""
     rc = np.asarray(raw_cert, float)
     rr = recovered(tolratio, tol)
     if not rc.size:
         return False
-    return bool(np.all(np.isfinite(rc) & np.isfinite(rr) & (np.abs(rc - rr) <= 1e-6 * np.abs(rr) + 1e-15)))
+    sc = np.asarray(scale, float)
+    return bool(np.all(np.isfinite(rc) & np.isfinite(rr) & (np.abs(rc - rr) <= 1e-6 * np.abs(rr) + 1e-13 * np.abs(sc) + 1e-15)))
 
 
 def make_square_diag(nl):

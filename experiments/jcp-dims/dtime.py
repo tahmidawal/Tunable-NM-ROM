@@ -182,7 +182,7 @@ def main():
                 C['gamma_lit'][j], C['raw'][j], C['scale'][j] = c_, np.asarray(o[1]), scl
                 C['cert'][j] = c_ = DC.eta_w(np.asarray(o[1]), scl)
                 rec = DC.recovered(tr, tolf * scl)
-                gok = DC.gcert(np.asarray(o[1]), tr, tolf * scl)
+                gok = DC.gcert(np.asarray(o[1]), tr, tolf * scl, scl)
                 nonst = int(np.sum(~DC.certified_square(np.asarray(o[1]), scl)))
                 jc_, ur_ = DC.make_square_diag(nl)(s_['states'], nu, d, sch)
                 C['jcond'][j], C['unweighted'][j] = np.asarray(jc_), np.asarray(ur_)
@@ -194,7 +194,7 @@ def main():
                 rec = QC.recorded_eta(tr, np.asarray(o[4]), tolf)
                 C['raw'][j], C['scale'][j] = np.asarray(o[3]), np.asarray(o[4])
                 gok = (QC.gcert_gal(c_, np.asarray(o[3]), np.asarray(o[4]), tr, tolf)
-                       and DC.gcert(np.asarray(o[3]), tr, tolf * np.asarray(o[4])))
+                       and DC.gcert(np.asarray(o[3]), tr, tolf * np.asarray(o[4]), np.asarray(o[4])))
                 nonst = int(np.sum(~QC.certified_gal(c_)))
             assert np.asarray(s_['states']).shape[0] == S + 1
             C['W'][j], C['w0'][j], C['states'][j], C['cert'][j], C['rec'][j], C['n0'][j] = (

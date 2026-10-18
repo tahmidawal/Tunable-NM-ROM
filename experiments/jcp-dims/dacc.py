@@ -199,7 +199,7 @@ def main():
                     R['cert'][j] = DC.eta_w(R['raw'][j], scl)
                     R['tolratio'][j] = np.asarray(stt['step_tolratio'])[:S]
                     R['rec'][j] = DC.recovered(R['tolratio'][j], t_prod * scl)
-                    gok = DC.gcert(R['raw'][j], R['tolratio'][j], t_prod * scl)
+                    gok = DC.gcert(R['raw'][j], R['tolratio'][j], t_prod * scl, scl)
                     nonst = int(np.sum(~DC.certified_square(R['raw'][j], scl)))
                     jc_, ur_ = sqdiag(stt['states'], nu, st.data[('main', 'LSPG')], sch)
                     R['jcond'][j], R['unweighted'][j] = np.asarray(jc_), np.asarray(ur_)
@@ -216,7 +216,7 @@ def main():
                     R['tolratio'][j] = np.asarray(stt['step_tolratio'])[:S]
                     R['rec'][j] = QC.recorded_eta(R['tolratio'][j], R['scale'][j], t_prod)
                     gok = (QC.gcert_gal(R['cert'][j], R['raw'][j], R['scale'][j], R['tolratio'][j], t_prod)
-                           and DC.gcert(R['raw'][j], R['tolratio'][j], t_prod * R['scale'][j]))    # jcp-dims EDIT (A3.3)
+                           and DC.gcert(R['raw'][j], R['tolratio'][j], t_prod * R['scale'][j], R['scale'][j]))    # jcp-dims EDIT (A3.3)
                     nonst = int(np.sum(~QC.certified_gal(R['cert'][j])))
                 R['valid'][j] = P.run_valid(v)
                 row = dict(setting=sc_['name'], arm=ak, form=form, scheme=scheme, factor=fac, dt=dt, cohort=coh, case=c,

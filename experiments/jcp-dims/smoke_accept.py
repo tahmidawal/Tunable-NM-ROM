@@ -16,6 +16,7 @@ import numpy as np
 import dscore as DSC
 import qscore as SC
 import npcheck as NC
+import dcert as DC
 
 HERE = Path(__file__).resolve().parent
 QARCH = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/smkA/archive/output/qacc_smkA')
@@ -109,7 +110,6 @@ def smk2_acc():
         if 'gauss384' in f['rules']:
             req(f"fixgate R{f['r']}: target against itself gives rho 0", max(f['rules']['gauss384']['rho_tgt']) == 0.)
     # draws: tables differ by draw, same family size
-    meta = {s['name']: s for s in res['settings'].values()} if isinstance(res['settings'], dict) else {}
     shas = {k: v['meta']['main']['rule_sha256'] for k, v in res['settings'].items()}
     for fam in ('fib2584', 'sobol2048', 'halton2048', 'mc2048'):
         k1 = [k for k in shas if k.startswith('R128M512f' + fam)]
@@ -119,7 +119,6 @@ def smk2_acc():
     req('LMF list: rank(A) = r', lm is not None and lm['A_rank'] == 384, rank=lm and lm['A_rank'])
     rep('LMF stability: cond(A) ratio LMF / default (bar 10)', ratio=lm['A_cond'] / df['A_cond'] if lm and df else None,
         lmf=lm and lm['A_cond'], default=df and df['A_cond'])
-    del meta
 
 
 def smk2_time():
@@ -144,7 +143,16 @@ def smk2_time():
     req('invocation counts complete', res.get('counts_complete') is True)
     for lb, s in res['subjects'].items():
         rows = s['certification']
-        req(f'{lb}: G-cert holds in the timing job', all(r_['gcert_ok'] for r_ in rows))
+        z = np.load(d / f"S_{lb.replace('|', '_')}.npz")         # G-cert recomputed offline with the A6.1 bar
+        tol = float(z['tol'][1])
+        if str(z['form']) == 'LSPG' and bool(z['square']):
+            g = all(DC.gcert(z['raw'][j], z['tolratio'][j], tol * z['scale'][j], z['scale'][j]) for j in range(len(z['raw'])))
+        elif str(z['form']) == 'GAL':
+            g = all(DC.gcert(z['raw'][j], z['tolratio'][j], tol * z['scale'][j], z['scale'][j]) for j in range(len(z['raw'])))
+        else:
+            c_, r_ = np.asarray(z['cert'], float), np.asarray(z['rec'], float)
+            g = bool(np.all(np.isfinite(c_) & np.isfinite(r_) & (np.abs(c_ - r_) <= 1e-7 * np.abs(r_) + 1e-12)))
+        req(f'{lb}: G-cert holds in the timing job (offline, A6.1 bar)', g, in_job_flags=[r_['gcert_ok'] for r_ in rows])
         if s['spec'].get('qpp'):
             p = d / f"S_{lb.replace('|', '_')}_qpp.npz"
             req(f'{lb}: second certification phase (q++) present', p.exists() and all('dist_qp_qpp' in r_ for r_ in rows))

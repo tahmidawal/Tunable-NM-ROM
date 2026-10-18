@@ -158,7 +158,7 @@ def run_adaptive(cx, ad, blk, out):
                     g, rn = np.asarray(c[0]), np.asarray(c[1])
                     R['gamma_lit'][ci], R['raw'][ci], R['scale'][ci] = g, rn, scl
                     R['cert'][ci] = DC.eta_w(rn, scl)
-                    R['gcert'][ci] = DC.gcert(rn, tr, tolf * scl)
+                    R['gcert'][ci] = DC.gcert(rn, tr, tolf * scl, scl)
                     R['noncert'][ci] = int(np.sum(~DC.certified_square(rn, scl)))
                     jc_, ur_ = sqdiag(stt['states'], nu, d, sch)
                     R['jcond'][ci], R['unweighted'][ci] = np.asarray(jc_), np.asarray(ur_)
@@ -171,7 +171,7 @@ def run_adaptive(cx, ad, blk, out):
                 else:
                     eta, gam, _, rn, sc_ = (np.asarray(x) for x in c)
                     R['cert'][ci], R['gamma_lit'][ci], R['raw'][ci], R['scale'][ci] = eta, gam, rn, sc_
-                    R['gcert'][ci] = DC.gcert(rn, tr, tolf * sc_)
+                    R['gcert'][ci] = DC.gcert(rn, tr, tolf * sc_, sc_)
                     R['noncert'][ci] = int(np.sum(~QC.certified_gal(eta)))
                 R['valid'][ci] = ad_valid(o)
                 R['payload'][ci] = payload_hash(o)[0]

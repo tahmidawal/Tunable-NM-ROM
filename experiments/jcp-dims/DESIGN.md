@@ -703,3 +703,19 @@ check inside the campaign lock fails closed (a failed `squeue` aborts with exit 
 **A5.4 Production release (coordinator, 2026-10-18 ~14:15 UTC).** Production is released once this lane's design, code
 and smoke gates are clean; submission through the shared campaign sbatch lock (§14), lane cap 3, 55 GPU-h. In-lane
 priority: A4 3D front completion + qualified 3D re-timing and A4 2D first (the never-dropped items).
+
+## Amendment A6 (2026-10-18, after the 2D smoke smk2 5528125, before any production job)
+
+**A6.1 G-cert floor (smoke finding).** The A3.3 G-cert bar $|r^{\rm cert}-r^{\rm rec}|\le10^{-6}r^{\rm rec}+10^{-15}$ was
+too tight at machine-precision residuals: in `smk2` the recomputed and recorded raw residuals of GAL-CN steps and of
+square-LSPG steps differed by up to $7\times10^{-14}$ absolute ($\le4.3\times10^{-15}$ relative to the step's scale) where
+the residual itself was $\sim10^{-14}$ — round-off between the solver's and the certifier's evaluation order, while
+qualify's GAL G-cert ($10^{-13}$ floor in $\eta$ units) passed the same steps. The bar becomes
+$|r^{\rm cert}-r^{\rm rec}|\le10^{-6}r^{\rm rec}+10^{-13}\,{\rm scale}+10^{-15}$ (scale = $\lVert Ac_n\rVert$ for GAL, the LSPG
+scale for square LSPG; i.e. qualify's floor transformed to raw units; a 23× margin over the observed round-off). Smoke
+G-cert verdicts are recomputed offline with this bar; nothing else of the smoke is re-read. No production data exist.
+**A6.2 Independent ρ subset.** The offline recomputation of ρ with independent NumPy tables (qualify recomputed it on the
+dev cases of every configuration) is done on dev6|0 (six outputs) for every rho-carrying 2D configuration with
+$m\cdot M\le4\times10^{7}$ (the NumPy tables of larger cells are too large for the local CPU), and the in-job ρ is used for the
+rest; agreement on the subset is a required analysis check. 3D ρ is in-job only (as qualify's Q2-3D, recomputed offline on
+two cases per job by `q3offline`-style CPU code where it fits).

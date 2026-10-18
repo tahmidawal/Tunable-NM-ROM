@@ -160,6 +160,8 @@ def t_certs():
     check('gcert zero tol', DC.gcert(np.array([1e-10]), np.array([1e-10]) / 1e-300, 0.))
     check('gcert overflow fails', not DC.gcert(np.array([1e-10]), np.array([np.inf]), 0.))
     check('gcert mismatch fails', not DC.gcert(rn * 1.01, tr, tol))
+    check('gcert round-off floor 1e-13 scale (A6.1)', DC.gcert(np.array([1e-13 * 2]), np.array([1e-13 * 2 + 1e-13]) / (tol + 1e-300), tol, 2.)
+          and not DC.gcert(np.array([1e-11]), np.array([2e-11]) / (tol + 1e-300), tol, 2.))
     check('square tolerances', DC.tol_of('LSPG', 'tight', square=True) == (1e-7, 1e-13) and DC.tol_of('LSPG', 'tight') == (1e-7, 0.))
 
 

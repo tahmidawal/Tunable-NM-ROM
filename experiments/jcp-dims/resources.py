@@ -20,6 +20,8 @@ import argparse
 import hashlib
 import json
 import math
+
+import numpy as np
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -69,8 +71,11 @@ def ref_dacc():
 
 
 def proj_dacc(cfg):
+    """Per-case cost a + b w (DESIGN A7.1): the intercept a = 75th percentile of the smoke per-case costs of the arms with
+    w below a tenth of the heaviest (fixed per-case work: tight / tighter solves, 1024^2 decode, rho, compilation share),
+    the slope from the heaviest smoke point of the same form. The pure linear-in-w model under-estimated small cells
+    (f2b, 5537386, cancelled after 14 min)."""
     pts, setup = ref_dacc()
-    floor = min(t for _, t, _ in pts)
     tot = 0.
     for s in cfg['settings']:
         tot += setup
@@ -78,7 +83,9 @@ def proj_dacc(cfg):
         for a in s['arms']:
             same = [p for p in pts if p[2] == a['form']] or pts
             wr, tr, _ = max(same)
-            tot += ncases(a['cases']) * max(floor, tr * w / wr)
+            small = [t for w_, t, _ in same if w_ < wr / 10] or [t for _, t, _ in same]
+            a0 = float(np.percentile(small, 75))
+            tot += ncases(a['cases']) * (a0 + max(tr - a0, 0.) * w / wr)
     for blk in cfg.get('blocks', []):
         tot += 120. if blk['kind'] == 'fixgate' else 600.
     return tot

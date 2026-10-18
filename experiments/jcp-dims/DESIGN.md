@@ -719,3 +719,14 @@ dev cases of every configuration) is done on dev6|0 (six outputs) for every rho-
 $m\cdot M\le4\times10^{7}$ (the NumPy tables of larger cells are too large for the local CPU), and the in-job ρ is used for the
 rest; agreement on the subset is a required analysis check. 3D ρ is in-job only (as qualify's Q2-3D, recomputed offline on
 two cases per job by `q3offline`-style CPU code where it fits).
+
+## Amendment A7 (2026-10-18, production; resource certificates)
+
+**A7.1 Cost model of the 2D accuracy certificate.** The first `f2b` attempt (5537386, H200) was cancelled after 14 min
+(0.24 GPU-h charged): its certificate (linear-in-$w=mMr$ scaling from the heaviest smoke point, floored at the smallest
+smoke per-case cost) under-estimated the small cells, whose per-case cost is dominated by fixed work (tight / tighter
+solves, the $1024^2$ decode, ρ). `resources.py` now uses $t_{\rm case}=a+b\,w$ ($a$ = 75th percentile of the smoke
+per-case costs of the arms with $w<w_{\rm ref}/10$; $b$ from the heaviest smoke point of the same form); `f2b` is resubmitted
+as `f2br1` with that certificate. Further 2D certificates may be calibrated on the completed `f2a` production job's
+per-arm elapsed times (same driver, same GPU type, 168 cells; GAL forms scaled by the smoke GAL/LSPG ratio), stated in the
+certificate. Certificates remain estimates; the scheduler limit is the bound; ledger hours are charged as measured.

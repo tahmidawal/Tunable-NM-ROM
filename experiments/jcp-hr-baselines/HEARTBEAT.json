@@ -1,14 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T23:16:21Z",
- "step": "2D 1024 analysis: all 8 X dominated by registered baseline picks (snapshot-limited restriction attached; pending results audit). Staging s3d64a (3D Stage-B, 8.5 h wall, est 7.82 h) and re-freezing c2d256 for its projection; ledger 16.163 measured, no jobs running",
+ "utc": "2026-10-18T23:22:11Z",
+ "step": "job audit 8 DO-NOT-SUBMIT only because A43.1 was cited but not written -> A43 written; job audit 9 running; c2d256 re-freeze running; no jobs on the cluster; ledger 16.163 measured + 8.5 reserved",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": [],
+  "codex_output": "audits/codex-job-9.md",
+  "codex_pid": [
+   4085476
+  ],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T23:35:21Z",
+ "expected_finish_utc": "2026-10-18T23:41:11Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

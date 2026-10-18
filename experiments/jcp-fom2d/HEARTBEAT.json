@@ -1,18 +1,18 @@
 {
  "lane": "jcp-fom2d",
- "utc": "2026-10-18T07:41:20Z",
- "step": "8: fcc/fub/fps/smkc2 collected and accepted; fub4k running; C1 preview matching done (P1 targets); next: C2 smoke results audit, then final C1 matching after fub4k",
+ "utc": "2026-10-18T07:44:23Z",
+ "step": "8: codex C2-smoke results audit running; fub4k running",
  "waiting_on": {
   "slurm_jobs": [
    "5380943"
   ],
-  "codex_output": null,
-  "codex_pid": null,
+  "codex_output": "audits/codex-c2smoke-1.md",
+  "codex_pid": 1724616,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T08:30:00Z",
- "last_commit": "538f444ec",
+ "expected_finish_utc": "2026-10-18T08:45:00Z",
+ "last_commit": "b3524e667",
  "gpu_hours_spent": 1.0717,
  "gpu_hours_cap": 30,
- "notes": "FRONT-2D.json not yet produced (qualify running acc jobs); waiter finished"
+ "notes": "FRONT-2D.json not yet produced"
 }

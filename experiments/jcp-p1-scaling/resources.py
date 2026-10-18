@@ -77,6 +77,8 @@ def main():
     a = ap.parse_args()
     smokes = [Path(x) for x in a.smoke]
     find = lambda sub: next(d for d in smokes if (d / sub / 'result.json').exists())
+    for sub in ('p1acc_smkacc', 'p1time_smktime', 'p1kern_smkkern', 'p1three_smkkern3d'):   # A5.2: all four complete
+        assert json.loads((find(sub) / sub / 'result.json').read_text())['complete'], f'smoke {sub} incomplete'
     smoke = find('p1acc_smkacc')
     pil = json.loads((Path(a.pilot) / 'pilot_pilot' / 'result.json').read_text())
     assert pil['complete'], 'pilot incomplete: no certificate (DESIGN A5.2)'

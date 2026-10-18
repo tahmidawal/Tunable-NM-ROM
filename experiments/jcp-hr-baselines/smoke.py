@@ -248,7 +248,7 @@ def run_cell(cfg, c, res, outdir, save):
     # ---- ECSW: states, smoke-rank path, maximal-shape pilot
     P('ecsw_states', lambda: cell.ecsw_states(fam_tr), 120, store='ecsw_states')
     P('ecsw_smoke_rank', lambda: {str(t): (None if v is None else dict(size=v['size'], relres=v['relres']))
-                                  for t, v in cell.ecsw(rs, kappas=c['kappas']).items()}, 240, store='ecsw_rs')
+                                  for t, v in cell.ecsw(rs).items()}, 240, store='ecsw_rs')
 
     def ecsw_pilot():
         t0 = time.perf_counter()

@@ -172,7 +172,7 @@ class Cell:
         self.info['ecsw_states'] = info
         return info
 
-    def ecsw(self, r, kappas=BD.ECSW_KAPPA, nnls_log=None):
+    def ecsw(self, r, kappas=BD.ECSW_KAPPA_PATH, nnls_log=None):
         """A15.1: weights at support targets kappa * r (keys 'k<kappa>'), tau crossings reported."""
         with self.T('ecsw_contrib'):
             G, b, cand, cinfo = BD.ecsw_contrib(self.states, self.Phi[:, :r], self.d, self.L)

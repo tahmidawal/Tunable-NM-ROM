@@ -1168,3 +1168,30 @@ sketch before the power iterations.
 (terminal states only); any failed or ambiguous query refuses collection. The drop-count ban is a cycle guard: the
 regression test shows that dependent (duplicated) columns reach the NNLS optimum with no ban; a test that forces a ban is
 not provided (noted), and every path reports its ban count.
+
+---
+
+## Amendment A16 (2026-10-18) — design audit 9 (`audits/codex-design-9.md`, NEEDS-RESTATEMENT, no WRONG)
+
+**A16.1 Name and claims.** The ECSW arm is "**ECSW with support-targeted greedy NNLS**": the Petrov–Galerkin ECSW
+gradient-matching NNLS of Grimberg et al., sampled at support targets $\kappa r$ instead of stopped at a training-residual
+tolerance (the published stopping rule). For every configuration the actual support, the training relative residual at
+the checkpoint, construction failures and Q1 are reported. No claim that this grid guarantees a strong or unbiased
+baseline is made.
+
+**A16.2 Migration of the extension and coverage rules.** A2.18: the ECSW boundary is κ = 8 and its single extension is
+κ = 16 (replacing "smallest τ"). A3.11: ECSW coverage is reported per attempted/constructed (r, κ); a failed κ = 8 or
+κ = 16 construction makes the cell's ECSW statements carry "ECSW coverage incomplete". The cap-retry rule of A1.8/A3.11
+is withdrawn. **Continuation:** every greedy path is built through 16r from the start (checkpoints 2r, 4r, 8r, 16r; the
+batch size depends only on the current support, so earlier checkpoints are identical to those of a shorter path except
+for the final batch at the cap); the 16r checkpoint is used only when the extension rule triggers. Its construction
+cost is in the resource certificate.
+
+**A16.3 Banning consequence.** If a target is unreached and more than 1 % of the candidates were banned, the path is
+rebuilt once with banning disabled (iteration-bounded); the path reaching more targets is used, both are reported, and a
+target still unreached is a construction failure (A16.2 coverage label). smk2 exercises this on the 3D case that failed
+in smk1; if the retry is not triggered or does not help, that is reported.
+
+**A16.4 Accounting.** The development-case evidence used to choose the knob and the fixtures (smk1 and the CPU dry runs)
+is validation-informed and counts in the baseline's V budget (A3.1). The discarded τ-knob evidence is retained in
+`runs/smk1`. The amended grid (κ ∈ {2, 4, 8}; extension 16) is frozen before production.

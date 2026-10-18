@@ -23,6 +23,7 @@ CAND = 32768
 ECSW_CAP, ECSW_CAP_RETRY = 8192, 16384
 ECSW_TAUS = (1e-2, 1e-3, 1e-4)                 # recorded along the path (reported), not the knob (A15.1)
 ECSW_KAPPA = (2, 4, 8)                          # the ECSW knob: support targets s = kappa * r (A15.1)
+ECSW_KAPPA_PATH = (2, 4, 8, 16)                 # every path is built through the extension target 16r (A16.2)
 ECSW_SEED_TRAJ, ECSW_SEED_CAND = 20261017, 20261018
 N_ECSW_TRAJ = 24
 
@@ -331,12 +332,27 @@ def ecsw_contrib(states, Phi_r, d, L, cand_nodes=None, seed=ECSW_SEED_CAND, n_ca
                                               block_norms=nb.tolist())
 
 
-def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA, taus=ECSW_TAUS, log=None):
-    """A15.1: one greedy NNLS path per (mesh, rank), recorded at support targets s = kappa r (the knob) and at the tau
-    crossings (reported). cap = max target; a target the path cannot reach (KKT stop first) is a construction failure."""
+def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, log=None, ban_retry_frac=0.01):
+    """A15.1/A16: "ECSW with support-targeted greedy NNLS". One greedy path per (mesh, rank) is built through the largest
+    target (16 r, A16.2), recorded at first crossings of s = kappa r (actual sizes and training residuals reported) and
+    at the tau crossings (reported). A16.3: if any target is unreached and more than `ban_retry_frac` of the candidates
+    were banned, the path is rebuilt once with banning disabled (bounded by max_iter); the better-covering path is
+    used and both are reported. A target still unreached is a construction failure."""
     targets = [int(k * r) for k in kappas]
     cap = min(max(targets), len(cand_nodes))
-    out = NN.greedy_nnls(G, b, taus=taus, supports=[t for t in targets if t <= cap], cap=cap, log=log)
+    sup = [t for t in targets if t <= cap]
+
+    def run(max_drops):
+        return NN.greedy_nnls(G, b, taus=taus, supports=sup, cap=cap, log=log, max_drops=max_drops, max_iter=20000)
+    out = run(3)
+    reached = lambda o: sum(o['records'].get(('s', t)) is not None for t in sup)
+    retry = None
+    if reached(out) < len(sup) and out['banned'] > ban_retry_frac * len(cand_nodes):
+        out2 = run(10 ** 9)
+        retry = dict(reached=reached(out2), banned=out2['banned'], reason=out2['reason'], final_relres=out2['relres'],
+                     used=reached(out2) > reached(out))
+        if retry['used']:
+            out = out2
     rec = {}
     for k, t in zip(kappas, targets):
         x = out['records'].get(('s', t))
@@ -345,7 +361,8 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA, taus=ECSW_TAUS, log=Non
     taus_rec = {str(t): (None if out['records'][t] is None else dict(size=out['records'][t]['size'],
                                                                     relres=out['records'][t]['relres'])) for t in taus}
     summary = dict(reason=out['reason'], final_relres=out['relres'], final_support=int(len(out['support'])),
-                   banned=out['banned'], kkt=out['kkt'], iterations=len(out['path']), taus=taus_rec)
+                   banned=out['banned'], kkt=out['kkt'], iterations=len(out['path']), taus=taus_rec, ban_retry=retry,
+                   targets={f'k{k}': t for k, t in zip(kappas, targets)})
     return rec, summary
 
 

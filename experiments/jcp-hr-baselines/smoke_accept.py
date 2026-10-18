@@ -232,7 +232,7 @@ def main():
             ev={k: q.get(k) for k in ('B_shape', 'interp_const', 'solve_backward_error', 'seconds', 'device_peak')})
         e = R.get('ecsw_rs') or {}
         put(f'{key}|ecsw-smoke-rank', all(e.get(f'k{k}') is not None and fin(e[f'k{k}']['relres']) and
-                                          e[f'k{k}']['size'] >= k * c['rs'] for k in c['kappas']), supports=e)
+                                          e[f'k{k}']['size'] >= k * c['rs'] for k in (2, 4, 8, 16)), supports=e)
         ep = R.get('ecsw_pilot') or {}
         nst = (R.get('ecsw_states') or {}).get('n_states')
         shp = list(ep.get('shape', [0, 0]))

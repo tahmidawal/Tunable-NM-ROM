@@ -82,10 +82,12 @@ def main():
     a = ap.parse_args()
     smoke = Path(a.smoke)
     pil = json.loads((Path(a.pilot) / 'pilot_pilot' / 'result.json').read_text())
-    sm = json.loads((smoke / 'p1acc_smkacc' / 'result.json').read_text())
-    s1024 = [x['seconds'] for x in sm['rows'] if x['config'] == 'R384' and x['scheme'] == 'CNR']
-    p4096 = [x['seconds'] for x in pil['runs'] if x['Rp'] == 384 and x['scheme'] == 'CNR' and x['level'] == 'prod' and x['call'] == 1]
-    pilot = dict(run_ratio_4096_over_1024=float(np.median(p4096) / np.median(s1024)) if p4096 and s1024 else 3.)
+    # comparable measurement (code audit 3): the pilot's own warm recording fused query, R384-gauss128-frozen-CN-R,
+    # 4096^2 vs 1024^2 on the same H200, times the H200/A100 ratio is NOT applied (A100 projections stay A100)
+    f = {x['mesh']: x['fused_seconds'] for x in pil['runs'] if x.get('Rp') == 384 and x.get('rule') == 'gauss128'
+         and x.get('policy') == 'frozen' and x.get('scheme') == 'CNR' and 'fused_seconds' in x}
+    pilot = dict(run_ratio_4096_over_1024=max(1., float(f[4096] / f[1024])) if 4096 in f and 1024 in f else 3.,
+                 fused_seconds=f)
     cfg = json.loads((HERE / 'configs' / f'{a.attempt}.json').read_text())
     if cfg['driver'] == 'p1acc':
         h, detail = acc_projection(cfg, smoke, pilot)

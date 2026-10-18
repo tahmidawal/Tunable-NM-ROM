@@ -268,6 +268,7 @@ def main():
         for ci in P.select(cases, sp.get('cases', cfg['cases'])):
             fn, args = evolve_args(sp, ci)
             for r_ in range(int(cfg['reps'])):
+                atts = []
                 for attempt in range(3):                  # same drift retry rule as the triplets (<= 2 retries)
                     QS.burn(burn)
                     t1, o1 = sync_time(lambda: fn(*args))
@@ -280,14 +281,17 @@ def main():
                     tb = time.perf_counter() - t0
                     QS.burn(burn)
                     t2, o2 = sync_time(lambda: fn(*args))
+                    atts.append(dict(t_single1=t1, t_double=tb, t_single2=t2, drift=t2 / t1,
+                                     identity_ok=bool(all(ident(*o_) == ref[(lb, ci)] for o_ in (o1, oa, ob, o2))),
+                                     same_iterations=bool(np.array_equal(np.asarray(oa[1]['step_it']), np.asarray(ob[1]['step_it'])))))
                     if BAND[0] <= t2 / t1 <= BAND[1]:
                         break
                 rep['doubled'].append(dict(subject=lb, case=f'{cases[ci][0]}|{cases[ci][1]}', rep=r_, t_single1=t1, t_double=tb,
                                            t_single2=t2, ratio=tb / (.5 * (t1 + t2)), drift=t2 / t1, attempt=attempt,
                                            drift_ok=bool(BAND[0] <= t2 / t1 <= BAND[1]),
                                            it=[np.asarray(o_[1]['step_it'])[:NREC - 1].tolist() for o_ in (o1, oa, ob, o2)],
-                                           same_iterations=bool(np.array_equal(np.asarray(oa[1]['step_it']), np.asarray(ob[1]['step_it']))),
-                                           identity_ok=bool(all(ident(*o_) == ref[(lb, ci)] for o_ in (o1, oa, ob, o2)))))
+                                           same_iterations=all(x_['same_iterations'] for x_ in atts),
+                                           identity_ok=all(x_['identity_ok'] for x_ in atts), attempts=atts))
     save()
 
     for sp in cfg.get('components', []):                 # A1.2 / A2.2 diagnostic

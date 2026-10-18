@@ -209,8 +209,9 @@ def time_checks(d):
         rows = [dict(x, cohort=x['case'].split('|')[0], case=int(x['case'].split('|')[1])) for x in s_['certification']]
         sp = s_['spec']
         expect = dict(cases=cases, dev=cases, q2=cases if sp.get('qp') else [], qpp=bool(sp.get('qpp')))
-        R['valid_tight'] = R['valid_tight']
-        q = SC.qualify(R, rows, int(sp['Rp']), expect)
+        tabs = (SC.rule_tables(sp['rule'], int(sp['Rp']), R['kx'], R['ky'], int(sp['mesh'])),
+                SC.rule_tables(sp['qp'], int(sp['Rp']), R['kx'], R['ky'], int(sp['mesh']))) if sp.get('qp') else None
+        q = SC.qualify(R, rows, int(sp['Rp']), expect, rho_tables=tabs, rho_cases=cases)
         req(f'time subject {lb}: timing-job certification computed and agrees offline', not q['disagreements'],
             disagreements=q['disagreements'][:5])
         rep(f'time subject {lb}: timing-job Q1/Q2 (dev2 smoke population)', Q1=q['Q1'], Q2=q['Q2'])

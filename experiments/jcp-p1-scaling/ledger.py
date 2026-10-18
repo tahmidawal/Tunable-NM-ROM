@@ -77,10 +77,13 @@ def main():
             o = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
                                 f"sacct -n -X -P --name p1s_{att} -S now-7days -o JobID"], capture_output=True, text=True)
             ids = [x for x in o.stdout.split() if x.strip()]
+            qq = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
+                                 f'squeue -h -u tawal01 -n p1s_{att} -o %i'], capture_output=True, text=True)
+            ids += [x for x in qq.stdout.split() if x.strip()]
             for j in d['jobs']:
                 if j['attempt'] == att and j['state'] in ('AMBIGUOUS', 'PENDING_SUBMIT'):
-                    if o.returncode != 0:
-                        print('sacct failed: reservation kept'); rc = 3
+                    if o.returncode != 0 or qq.returncode != 0:
+                        print('sacct/squeue failed: reservation kept'); rc = 3
                     elif ids:
                         j.update(job_id=ids[-1], state='SUBMITTED')
                     else:

@@ -55,10 +55,13 @@ def main():
     mark('ops')
     cases = P.case_list(cfg)
     ci = P.select(cases, [['dev6', 0]])[0]
-    U1 = {}
-    for L in banks:
+    U1, U6 = {}, []
+    for L in banks:                                       # the timing job keeps the six dev6 inputs per mesh resident
+        for cj in P.select(cases, 'dev6'):
+            U6.append(jnp.asarray(Q.e.initial(L, cases[cj][2])))
         u0n = Q.e.initial(L, cases[ci][2])
         U1[L] = (jnp.asarray(u0n), float(cases[ci][2][4]))
+    mark('inputs_dev6_all_meshes')
     settings = {}
 
     def timed(fn):
@@ -84,9 +87,24 @@ def main():
         cert = T2.make_certifier(q['nl'], st.Rp)
         tc, _ = timed(lambda: cert(s_['states'], nu, d, sch))
         tt, _ = timed(lambda: P.run_query(banks[L], st, 'main', 'LSPG', sp['scheme'], DT0, 'tight', u0, nu, record=False))
-        rep['runs'].append(dict(subject=list(k) + [sp['scheme']], mesh=L, Rp=k[1], scheme=sp['scheme'], evolve_seconds=te,
-                                cert_seconds=tc, tight_seconds=tt, valid=P.run_valid(dict(W=W, stats=s_))))
+        td, _ = timed(lambda: q['decode'](W, d))
+        tf, _ = timed(lambda: P.run_query(banks[L], st, 'main', 'LSPG', sp['scheme'], DT0, 'prod', u0, nu, record=True))
+        roles = {}
+        for role in ('qp', 'qpp'):                       # the successor / check executables of the timing job
+            if role in st.rules:
+                roles[role], _ = timed(lambda: P.run_query(banks[L], st, role, 'LSPG', sp['scheme'], DT0, 'prod', u0, nu,
+                                                           record=False))
+        rep['runs'].append(dict(subject=list(k) + [sp['scheme']], mesh=L, Rp=k[1], rule=k[2], policy=k[3], scheme=sp['scheme'],
+                                evolve_seconds=te, cert_seconds=tc, tight_seconds=tt, decode_seconds=td, fused_seconds=tf,
+                                role_seconds=roles, valid=P.run_valid(dict(W=W, stats=s_))))
         mark(f'subject_{k}_{sp["scheme"]}')
+    import p1comp as PC                                   # component diagnostic executables of the timing job
+    for sp in tcfg.get('components', []):
+        k = (int(sp['mesh']), int(sp['Rp']), sp['rule'], sp.get('policy', 'frozen'))
+        st = settings[k]
+        w0, scale = jax.block_until_ready(st.q['LSPG']['init'](U1[k[0]][0], st.cold))
+        PC.component_times(st, sp['scheme'], U1[k[0]][1], w0, scale, reps=3, burn=.1)
+        mark(f'components_{k}')
     # 4096^2 accuracy-job extras on top: all 38 initial fields, gauss640 at r = 384, Q3 Jacobian
     L = int(cfg['pilot_mesh'])
     s = L // 256
@@ -103,7 +121,8 @@ def main():
     jac = T2.make_jac(st.q['LSPG']['nl'])
     tq, J = timed(lambda: jac(v['W'][3], jnp.asarray(T2.SCHEMES['BE'][:5]), DT0, nu, st.data[('main', 'LSPG')]))
     np.linalg.svd(np.asarray(J), compute_uv=False)
-    rep['runs'].append(dict(subject='4096|R384|gauss640|BE', seconds=th, q3_seconds=tq, valid=P.run_valid(v)))
+    rep['runs'].append(dict(subject='4096|R384|gauss640|BE', mesh=L, Rp=384, rule='gauss640', scheme='BE', fused_seconds=th,
+                            q3_seconds=tq, valid=P.run_valid(v)))
     mark('extras_run')
     pk = P.mem()['peak']
     rep['peak_bytes'] = pk

@@ -137,6 +137,8 @@ def qualify(R, rows, Rp, expect, rho_tables=None, rho_cases=()):
                      and not np.any(np.asarray(R['reason'][j]) == 3) and bool(R['valid'][j]))
         out['per_case'][cid] = dict(valid=valid, tight_valid=bool(R['valid_tight'][j] and finite(R['W_tight'][j])),
                                     dist_tight=d_t, decode_rel=rec_err)
+        if not rec_err <= 1e-12:                    # the scored fields must be the decode of the saved coefficients
+            out['disagreements'].append((cid, 'decode', rec_err))
         cmp(cid, 'dist_tight', d_t)
     devc = [str(x) for x in R['dev_case_ids']]
     if devc != list(expect['dev']):
@@ -153,6 +155,13 @@ def qualify(R, rows, Rp, expect, rho_tables=None, rho_cases=()):
         out['disagreements'].append(('q2 population', q2case, list(expect['q2'])))
     q2 = None
     if expect['q2']:
+        if rho_tables is None or set(rho_cases) != set(expect['dev']):
+            raise ValueError('Q2 needs the independent rho recomputation on the dev cases (code audit 3)')
+        nq = len(expect['q2'])
+        for k, shp in (('W_qp', (nq, 6, Rp)), ('rho', (nq, 6)), ('valid_qp', (nq,))) + \
+                ((('W_qpp', (len(expect['dev']), 6, Rp)), ('valid_qpp', (len(expect['dev']),))) if expect.get('qpp') else ()):
+            if tuple(np.shape(R[k])) != shp:
+                out['disagreements'].append(('shape', k, np.shape(R[k]), shp))
         dq, valid_qp, conv, valid_qpp = [], [], [], []
         rho_job = np.asarray(R['rho'], float)
         for k, cid in enumerate(q2case):
@@ -265,7 +274,11 @@ def manifest_equal(job, name, R):
                edges=job['setup']['bank']['edges'] == arch['bank']['edges'],
                scheme_dt=float(R['dt']) == .005 and str(R['scheme']) in ('BE', 'CNR'),
                archive_grid=['LSPG', str(R['scheme'])] in arch['config']['grid']['forms_schemes'] and 1 in arch['config']['grid']['dt_factors'],
-               solver_text=dev['code']['tol_of_prod_LSPG'] == [1e-3, 1e-9] and dev['code']['budget'] == 600)
+               solver_text=dev['code']['tol_of_prod_LSPG'] == [1e-3, 1e-9] and dev['code']['budget'] == 600,
+               run_form=str(R['form']) == 'LSPG', run_level=str(R['level']) == 'prod',
+               run_tol=[float(x) for x in R['tol']] == [1e-3, 1e-9], run_budget=int(R['budget']) == 600,
+               run_weighting=str(R['weighting']) == 'LSPG D = 1/(a0 + dt b0 nu lam)',
+               run_time_tag=str(R['time_tag']) == TIME_TAG)
     return dict(checks=chk, equal=all(chk.values()), provenance=dict(old=dict(commit=arch['commit'], gpu=arch['gpu'],
                 jax=arch['jax_version']), new=dict(commit=job['commit'], gpu=job['gpu'], jax=job['jax_version'])))
 

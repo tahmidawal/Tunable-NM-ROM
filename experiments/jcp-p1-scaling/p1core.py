@@ -111,7 +111,8 @@ def make_lm(evalJ, budget, trust, ridge, solver='chol', clip=True):
     return lm
 
 
-def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol', clip=True, mutation=None, nrec=0):
+def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol', clip=True, mutation=None, nrec=0,
+                nstep=NSTEP):   # P1 ADDITION: nstep = per-step evidence buffer length (NSTEP = original)
     """evolve(w0, nu, scale, data, sch) -> (W (6, R'), stats). data: A (M, R'), lam (M,), hmask (M,), and for GAL
     Qm (M, R'), Rm (R', R'), QtLA = Qm^T (lam A); plus the rule blocks nl/nlJ read. nl(c, data) -> (M,);
     nlJ(c, data, None) -> (N(c), dN/dc (M, R'))."""
@@ -164,8 +165,8 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
         stats0 = dict(it_sum=jnp.int32(0), it_max=jnp.int32(0), rej=jnp.int32(0), exits=z5, nfail=jnp.int32(0),
                       first_fail=jnp.int32(-1), worst_ratio=jnp.float64(0.), worst_tolratio=jnp.float64(0.),
                       alt_num=jnp.float64(0.), alt_den=jnp.float64(0.), amp=jnp.float64(0.),
-                      step_gn=jnp.full(NSTEP, jnp.nan), step_tolratio=jnp.full(NSTEP, jnp.nan),
-                      step_reason=jnp.full(NSTEP, -1, jnp.int32), step_it=jnp.full(NSTEP, -1, jnp.int32))
+                      step_gn=jnp.full(nstep, jnp.nan), step_tolratio=jnp.full(nstep, jnp.nan),
+                      step_reason=jnp.full(nstep, -1, jnp.int32), step_it=jnp.full(nstep, -1, jnp.int32))
         if nrec:   # P1 ADDITION: internal trajectory c_0..c_S (row k+1 = state after step k)
             stats0['states'] = jnp.full((nrec, Rp), jnp.nan).at[0].set(w0)
         nA0 = jnp.linalg.norm(A @ w0) + 1e-300
@@ -213,10 +214,10 @@ def make_evolve(nl, nlJ, form, Rp, trust, budget=600, ridge=1e-10, solver='chol'
                       alt_num=st['alt_num'] + jnp.sum(jnp.where(event & (runs >= 3), jnp.abs(pr), 0.)),
                       alt_den=st['alt_den'] + jnp.sum(jnp.where(qual, jnp.abs(pr), 0.)),
                       amp=jnp.maximum(st['amp'], jnp.linalg.norm(dcur) / nA0),
-                      step_gn=st['step_gn'].at[jnp.minimum(k, NSTEP - 1)].set(gn),
-                      step_tolratio=st['step_tolratio'].at[jnp.minimum(k, NSTEP - 1)].set(rn / (tol + 1e-300)),
-                      step_reason=st['step_reason'].at[jnp.minimum(k, NSTEP - 1)].set(reason),
-                      step_it=st['step_it'].at[jnp.minimum(k, NSTEP - 1)].set(it),
+                      step_gn=st['step_gn'].at[jnp.minimum(k, nstep - 1)].set(gn),
+                      step_tolratio=st['step_tolratio'].at[jnp.minimum(k, nstep - 1)].set(rn / (tol + 1e-300)),
+                      step_reason=st['step_reason'].at[jnp.minimum(k, nstep - 1)].set(reason),
+                      step_it=st['step_it'].at[jnp.minimum(k, nstep - 1)].set(it),
                       **({'states': st['states'].at[jnp.minimum(k + 1, nrec - 1)].set(w2)} if nrec else {}))
             kk = k + 1
             store = (kk % sch['keep']) == 0
@@ -334,13 +335,13 @@ def make_jac(nl):
     return jax.jit(jac)
 
 
-def make_split_query(Q, kind, form, Rp, L, trust, mutation=None, budget=600, nrec=0):
+def make_split_query(Q, kind, form, Rp, L, trust, mutation=None, budget=600, nrec=0, nstep=NSTEP):
     """The query of make_query split into separately jitted init, evolve and decode, plus the fused query (the text of
     make_query, with nrec). Equivalence of split vs fused is a positive control (DESIGN 6)."""
     import engines as e
     import hops as H
     nl, nlJ = Q.tested_value(kind, L), Q.tested_jac(kind, L)
-    evolve = make_evolve(nl, nlJ, form, Rp, trust, budget=budget, mutation=mutation, nrec=nrec)
+    evolve = make_evolve(nl, nlJ, form, Rp, trust, budget=budget, mutation=mutation, nrec=nrec, nstep=nstep)
 
     def initialize(u0, cold):
         xy, wq, Qc, Rc, _, _, _ = cold

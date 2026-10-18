@@ -200,7 +200,9 @@ def main():
                 rep['rows'].append(row)
                 print('RUN', cc['name'], sc, coh, c, el(), flush=True)
             R.update(A=A, lam=np.asarray(st.base['lam']), kx=np.asarray(st.kx), ky=np.asarray(st.ky), time_tag='t0,t1,t2,t3,t4,t5',
-                     scheme=sc, dt=DT0, rule=st.rules['main'], Rp=st.Rp, mesh=L, policy=st.policy, mode_hash=st.mode_hash)
+                     scheme=sc, dt=DT0, rule=st.rules['main'], Rp=st.Rp, mesh=L, policy=st.policy, mode_hash=st.mode_hash,
+                     form='LSPG', level='prod', tol=np.array(P.tol_of('LSPG', 'prod')), budget=cc.get('budget', 600),
+                     weighting='LSPG D = 1/(a0 + dt b0 nu lam)', metric_id_target='2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1')
             np.savez_compressed(out / f"R_{cc['name']}_{sc}.npz", **R)
             crep['schemes'][sc] = dict(n=len(ids), mem=P.mem())
             save()
@@ -269,7 +271,8 @@ def run_p1e(blk, bank, st, cases, go, U0, out):
 def run_order(blk, bank, cc, cases, go, U0, out):
     """CN-R temporal-order check (DESIGN 6): GAL-CN-R (gate) and LSPG-CN-R (reported) at tight tolerance."""
     st = P.Setting(bank, cc['name'] + '_order', cc['Rp'], cc['rule'], cc.get('policy', 'frozen'),
-                   roles={'qp': blk['qplus'], 'qpp': blk['qplusplus']}, forms=('LSPG', 'GAL'), nrec=0)
+                   roles={'qp': blk['qplus'], 'qpp': blk['qplusplus']}, forms=('LSPG', 'GAL'), nrec=0,
+                   nstep=int(round(.25 / (DT0 * blk['anchor2']))) + 1)
     ci = P.select(cases, [blk['case']])[0]
     n0 = U0[ci][2]
     res = {}

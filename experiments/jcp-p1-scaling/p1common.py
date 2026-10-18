@@ -185,8 +185,9 @@ def _reduce(x):
 
 def fingerprint(d):
     """Identity of a data dict (code audit 2): for EVERY array its shape and three on-device reductions (sum, sum of
-    magnitudes, index-weighted sum), so a same-shaped substitution of any table (A, lam, Gq, Gs, Psi, G blocks, hmask)
-    changes the fingerprint; plus the exact eigenvalues."""
+    magnitudes, sampled checksum), so an ordinary same-shaped substitution of any table (A, lam, Gq, Gs, Psi, G blocks,
+    hmask) changes the fingerprint; plus the exact eigenvalues. It is a guard against accidental mixing of tables, not
+    against an adversarial substitution engineered to preserve these reductions (code audit 3)."""
     parts = [np.asarray(d['lam']).ravel()]
     leaves = jax.tree_util.tree_leaves_with_path(d)
     for path, v in leaves:
@@ -206,7 +207,7 @@ class Setting:
 
     data[(role, form)] are jit arguments; meta[role] is the identity the query wrapper checks."""
 
-    def __init__(self, bank, name, Rp, rule, policy='frozen', roles=None, forms=('LSPG',), nrec=0, budget=600, mutation=None):
+    def __init__(self, bank, name, Rp, rule, policy='frozen', roles=None, forms=('LSPG',), nrec=0, budget=600, mutation=None, nstep=T2.NSTEP):
         self.name, self.Rp, self.policy = name, int(Rp), policy
         self.M = 4 * self.Rp
         self.L = bank.L
@@ -223,11 +224,12 @@ class Setting:
         for role, rl in self.rules.items():
             self.add_role(bank, role, rl, forms)
         self.forms = forms
+        self.nstep = nstep
         self.q = {f: T2.make_split_query(Q, 'point', f, self.Rp, self.L, self.trust, nrec=nrec, budget=budget,
-                                         mutation=mutation)
+                                         mutation=mutation, nstep=nstep)
                   for f in forms}
         self.q0 = {f: T2.make_split_query(Q, 'point', f, self.Rp, self.L, self.trust, nrec=0, budget=budget,
-                                          mutation=mutation)
+                                          mutation=mutation, nstep=nstep)
                    for f in forms}
         self.nrec = nrec
 
@@ -270,6 +272,7 @@ class Setting:
 def run_query(bank, st, role, form, scheme, dt, level, u0, nu, record=True):
     """End-to-end fused query, guarded by the table metadata check."""
     st.check(role, bank)
+    assert int(round(.25 / dt)) <= st.nstep, ('per-step evidence buffer too short', dt, st.nstep)   # code audit 3
     if record:     # the recording buffer must hold exactly the schedule (code audit 1: no silent overwrite)
         assert int(round(.25 / dt)) + 1 == st.nrec, (dt, st.nrec)
     q = (st.q if record else st.q0)[form]

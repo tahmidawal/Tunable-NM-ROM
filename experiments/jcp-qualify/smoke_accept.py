@@ -45,7 +45,9 @@ def smk_acc():
             rep(f'{ak}: labels', Q1=e['q']['Q1'], Q2=e['q']['Q2'].get('label'))
             if s['Rp'] in (128, 512):                          # preliminary combined-archive gates (dev cases)
                 g = SC.combined_reproduction(e['R'], s['Rp'], arm['form'], arm['scheme'], .005 * float(arm['factor']))
-                req(f'{ak}: preliminary combined reproduction <= 1e-10', g['passed'], worst=g['worst'], key=g['archive_key'])
+                me = AN.manifest_equal_combined(e['R'], s['Rp'])
+                req(f'{ak}: preliminary combined reproduction <= 1e-10 with numerical-manifest equality', g['passed'] and me,
+                    worst=g['worst'], key=g['archive_key'], manifest_equal=me)
             if s['Rp'] == 384 and arm['form'] == 'LSPG':      # Delta-t0 gate against P1's archive (dev6)
                 g = SC.p1_reproduction(e['R'], 'R384', arm['scheme'], 1024)
                 req(f'{ak}: equals P1 acc1024 archive <= 1e-10', g['passed'], worst=g['worst'])
@@ -160,9 +162,12 @@ def smk_3d():
     for k, m in res['members'].items():
         lab = AN.label3d(m, 'smk3')
         req(f'{k}: reproduces speed3d archive <= 1e-10', lab['reproduction'] and lab['reproduction']['passed'], rep=lab['reproduction'])
+        req(f'{k}: offline recomputation (q3offline) agrees with the job', lab['offline']['agrees'], offline=lab['offline'])
+        req(f'{k}: populations and array shapes complete', lab['population_ok'])
         rep(f'{k}: Q2-3D (smoke)', label=lab['label'], worst=lab['worst_dist_qp'], rho=lab['rho_max'])
     c = AN.label3d(res['control'], 'smk3')
     req('3D under-resolved control fails Q2-3D', c['label'] == 'fail' and not c['rollout'], worst=c['worst_dist_qp'])
+    req('3D control: offline recomputation agrees', c['offline']['agrees'], offline=c['offline'])
     rep('3D pilot', pilot=res.get('pilot'), peak_job=res.get('peak_bytes_job'))
 
 

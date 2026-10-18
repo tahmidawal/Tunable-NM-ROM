@@ -27,6 +27,14 @@ MESH4096 = 2.0
 NC = {'all38': 38, 'sub16': 16, 'dev6': 6, 'dev2': 2}
 
 
+MEASURED_RULES = {128: ('fib4181', 'fib6765', 'fib10946'), 384: ('gauss128', 'gauss160', 'gauss192'),
+                  512: ('gauss192', 'gauss256', 'gauss320')}
+
+
+def rule_m(rule):
+    return int(rule[5:]) ** 2 if rule.startswith('gauss') else int(rule[3:])
+
+
 def ncases(c):
     return NC[c] if isinstance(c, str) else len(c)
 
@@ -53,7 +61,11 @@ def acc_projection(cfg):
             cand = sorted(rr for (rr, *k) in per if tuple(k) == key and rr >= s['Rp'])
             assert cand, ('no measured proxy', s['Rp'], key)
             t_case = per[(cand[0],) + key]
-            sec = ncases(arm['cases']) * t_case * mesh_f
+            # a fallback setting (rules q+, q++, q+++) costs more per rollout than the measured rule: scale by the point
+            # ratio of its largest rule to the measured setting's largest rule (>= 1, conservative)
+            rf = max(1., max(rule_m(s['rule']), rule_m(s['qp']), rule_m(s['qpp'])) /
+                     max(rule_m(x) for x in MEASURED_RULES[cand[0]]))
+            sec = ncases(arm['cases']) * t_case * mesh_f * rf
             det[f"{s['name']}|{key}"] = dict(proxy_r=cand[0], seconds=sec)
             total += sec
         total += 120. * mesh_f                     # setting setup (tables, compile of certifiers)

@@ -107,7 +107,9 @@ def main():
         g, t_ = P.tol_of(sp['form'], 'prod')
         return st, dt, S, q, st.data[('main', sp['form'])], T2.sched(sp['scheme'], dt, g, t_), t_
 
-    subs = [cfg['A']] + cfg['subjects']
+    skey = lambda x: (int(x['mesh']), int(x['Rp']), x['rule'])
+    subs = [cfg['A']] + [x for x in cfg['subjects'] if skey(x) == skey(cfg['A'])] + \
+        [x for x in cfg['subjects'] if skey(x) != skey(cfg['A'])]          # A2.4: one setting's Q2 tables live at a time
     W0, ref = {}, {}
     for sp in subs:
         lb = label(sp)
@@ -143,7 +145,7 @@ def main():
             c_ = np.asarray(o[0])
             if form == 'LSPG':
                 rec = np.asarray(s_['step_gn'])[:S]
-                gok = P.gcert_ok(c_, rec)
+                gok = bool(P.gcert_ok(c_, rec) and np.isfinite(c_).all() and np.isfinite(rec).all())
                 nonst = int(np.sum(~(c_ <= QA.GAMMA)))
             else:
                 tr = np.asarray(s_['step_tolratio'])[:S]

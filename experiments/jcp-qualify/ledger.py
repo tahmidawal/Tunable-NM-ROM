@@ -16,6 +16,7 @@ an explicit release after checking squeue). Every attempt of a job (requeues) is
 """
 import fcntl
 import json
+import math
 import subprocess
 import sys
 from contextlib import contextmanager
@@ -25,6 +26,8 @@ HERE = Path(__file__).resolve().parent
 LED = HERE / 'runs' / 'GPU-LEDGER.json'
 LOCK = HERE / 'runs' / 'GPU-LEDGER.lock'
 CAP = 35.
+# non-deferrable jobs (DESIGN A3.1): each must be in the pending inventory until it has a live or completed reservation
+MANDATORY = ('acc1024', 'acc4096', 'acc256', 'time1024', 'time4096', 'time256', 'order', 'q3d')
 TERMINAL = ('COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY', 'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE',
             'RELEASED')
 
@@ -72,13 +75,19 @@ def main():
                 print(f"refused: spent {d['spent_gpu_hours']} + reserved {d['reserved_gpu_hours']} + {h} + pending core "
                       f"{pend(d, att)} > {CAP}"); rc = 1
             else:
+                d['pending_core'].pop(att, None)          # from now on a live reservation: never counted twice
                 d['jobs'].append(dict(attempt=att, job_id=None, time_limit_hours=h, state='PENDING_SUBMIT', gpu=None,
                                       elapsed_hours=None))
         elif cmd == 'pending':             # DESIGN A3.1, A4.1, A5.1: projected time limits of not-yet-submitted
             new = json.loads(sys.argv[2])                  # non-deferrable jobs and fallback allowances, one transaction
             live = {j['attempt'] for j in d['jobs'] if j['state'] not in TERMINAL}
-            assert not (set(new) & live), ('pending entries that are already live reservations', set(new) & live)
-            d['pending_core'] = new
+            done = {j['attempt'] for j in d['jobs'] if j['state'] == 'COMPLETED'}
+            bad = [k for k, v in new.items() if not (isinstance(v, (int, float)) and math.isfinite(v) and v >= 0)]
+            missing = [k for k in MANDATORY if k not in new and k not in live and k not in done]
+            if bad or missing or (set(new) & live):
+                print('refused pending inventory: bad values', bad, 'missing mandatory', missing, 'live', set(new) & live); rc = 9
+            else:
+                d['pending_core'] = new
         elif cmd == 'bind':
             j = [x for x in d['jobs'] if x['attempt'] == sys.argv[2] and x['state'] == 'PENDING_SUBMIT'][-1]
             j.update(job_id=sys.argv[3], state='SUBMITTED')

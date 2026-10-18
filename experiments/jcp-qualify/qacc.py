@@ -181,7 +181,7 @@ def main():
                     g, _rn = certs['LSPG'](stt['states'], nu, st.data[('main', 'LSPG')], sch)
                     R['cert'][j] = R['gamma_lit'][j] = np.asarray(g)
                     R['rec'][j] = np.asarray(stt['step_gn'])[:S]
-                    gok = P.gcert_ok(R['cert'][j], R['rec'][j])
+                    gok = bool(P.gcert_ok(R['cert'][j], R['rec'][j]) and np.isfinite(R['cert'][j]).all() and np.isfinite(R['rec'][j]).all())
                     nonst = int(np.sum(~(R['cert'][j] <= GAMMA)))
                 else:
                     eta, gam, jc, rn_, scl = certs['GAL'](stt['states'], nu, st.data[('main', 'GAL')], sch)

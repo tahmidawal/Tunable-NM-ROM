@@ -41,8 +41,10 @@ def member(cx, m, cases, qpp_cases, label):
     sp = S.parse_key('|'.join(spec))
     key = S.spec_key(sp)
     res = dict(key=m['key'], setting=sname, rule=rule, spec=key, qp=m['qp'], qpp=m.get('qpp'), label=label)
-    ra = cx.rollouts(sname, rule, [sp], cases)[key]
-    rq = cx.rollouts(sname, m['qp'], [sp], cases)[key]
+    tag = lambda role: f"{m['key']}#{role}"          # unique storage per member and role (no overwrite across members)
+    ra = cx.rollouts(sname, rule, [sp], cases, tag=tag('q'))[key]
+    rq = cx.rollouts(sname, m['qp'], [sp], cases, tag=tag('qp'))[key]
+    res['wkeys'] = dict(q=f"{tag('q')}|{key}", qp=f"{tag('qp')}|{key}")
     res['valid'] = [bool(x) for x in ra['valid']]
     res['nonstationary'], res['steps'] = int(sum(ra['nonst'])), int(sum(ra['steps']))
     res['valid_qp'] = [bool(x) for x in rq['valid']]
@@ -57,7 +59,8 @@ def member(cx, m, cases, qpp_cases, label):
     res['rho'] = rho.tolist()
     if m.get('qpp'):
         idx = [cases.index(j) for j in qpp_cases]
-        rqq = cx.rollouts(sname, m['qpp'], [sp], qpp_cases)[key]
+        rqq = cx.rollouts(sname, m['qpp'], [sp], qpp_cases, tag=tag('qpp'))[key]
+        res['wkeys']['qpp'] = f"{tag('qpp')}|{key}"
         res['valid_qpp'] = [bool(x) for x in rqq['valid']]
         res['dist_qp_qpp'] = cx.dist_cases(sname, rq['W'][idx], rqq['W'], qpp_cases)[:, 1:].max(1).tolist()
         res['qpp_cases'] = list(qpp_cases)

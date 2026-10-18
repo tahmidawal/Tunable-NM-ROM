@@ -15,8 +15,13 @@ from pathlib import Path
 
 import numpy as np
 
+import sys
 import npcheck as NC
 import p1score as PS
+_E0 = str(PS.E0)                       # p1score puts the references lane first on sys.path; move it last so that its
+if _E0 in sys.path:                    # make_configs / make_report / collect never shadow this lane's modules
+    sys.path.remove(_E0)
+    sys.path.append(_E0)
 from p1score import RS, IdentityError, agree, case_set, dmax, finite, rule_tables  # noqa: F401
 
 HERE = Path(__file__).resolve().parent

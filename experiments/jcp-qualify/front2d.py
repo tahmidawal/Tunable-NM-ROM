@@ -19,17 +19,22 @@ HERE = Path(__file__).resolve().parent
 
 def manifest(mesh, key, an):
     """Full configuration manifest of one configuration (A1.6): rebuildable with p1common.Setting + qacc.run."""
-    _, r, form, sc, f = key.split('|')
+    parts = key.split('|')
+    _, r, form, sc, f = parts[:5]
+    fb = len(parts) > 5 and parts[5] == 'fb'
     r, f = int(r[1:]), float(f)
     cfg = an['configurations'][key]
     dt = .005 * f
-    acc = AN.out_dir(f'acc{mesh}', 'qacc')
-    meta, trust = None, None
-    if acc is not None:
+    meta, trust, src = None, None, None
+    pat = f'fb{mesh}*' if fb else f'acc{mesh}*'
+    for att in sorted(p_.name for p_ in AN.RUNS.glob(pat)):                # the attempt that ran this configuration
+        acc = AN.out_dir(att, 'qacc')
+        if acc is None:
+            continue
         res = json.loads((acc / 'result.json').read_text())
-        st = res['settings'].get(f'R{r}')
+        st = res['settings'].get(f'R{r}' + ('fb' if fb else ''))
         if st:
-            meta, trust = st['meta']['main'], st['trust']
+            meta, trust, src = st['meta']['main'], st['trust'], att
     dev = json.loads((HERE / 'runs' / 'MANIFEST-dev.json').read_text())
     return dict(
         mesh=mesh, Rp=r, M=4 * r, mode_list=dict(policy='frozen F_2048 prefix', prefix_M=4 * r, path=dev['modes_F2048']['path'],
@@ -46,7 +51,7 @@ def manifest(mesh, key, an):
                   qacc_sha256=dev['code']['qacc_sha256']),
         entry_point=f"P.Setting(P.Bank({mesh}, [0,128,256,384,512]), 'R{r}', {r}, '{cfg['rule']}', 'frozen', forms=('LSPG','GAL')); "
                     f"qacc.run(bank, st, 'main', '{form}', '{sc}', {dt!r}, 'prod', u0, nu)",
-        source=cfg['source'])
+        source=cfg['source'], accuracy_attempt=src, fallback=fb)
 
 
 def main():
@@ -65,10 +70,7 @@ def main():
             out['meshes'][mesh] = dict(status=F.get('status'))
             continue
         T = an['timing'][str(mesh)] if str(mesh) in an['timing'] else an['timing'][mesh]
-        sub_by_key = {}
-        for lb, s in T['subjects'].items():
-            sp = s['spec']
-            sub_by_key[AN.ckey(int(sp['mesh']), int(sp['Rp']), sp['form'], sp['scheme'], float(sp['factor']))] = s
+        sub_by_key = {AN.skey(s['spec']): s for s in T['subjects'].values()}
         def entry(k):
             c = an['configurations'][k]
             s = sub_by_key.get(k, {})
@@ -82,6 +84,7 @@ def main():
                         timing=dict(c_fused_over_A=s.get('c'), c_evolve_over_A=s.get('c_ev'), t_fused_s=s.get('t_fused'),
                                     t_evolve_s=s.get('t_evolve'), t_A_s=s.get('t_A'), usable=s.get('usable'),
                                     valid_fused=s.get('valid_fused'), fused=s.get('fused'), identity_hashes=s.get('identity_hashes'),
+                                    triplet_evidence=s.get('triplet_evidence'), timing_attempt=T.get('attempt'),
                                     job=T['job'], gpu=T['gpu'], contract=s.get('contract')))
         out['meshes'][mesh] = dict(members=[entry(k) for k in F['members']],
                                    other_qualified=[entry(k) for k in F['candidates'] if k not in F['members']],

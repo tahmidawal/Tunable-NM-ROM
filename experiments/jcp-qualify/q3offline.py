@@ -48,8 +48,9 @@ def run(att):
                 continue
             Rp = int(st['Rp'])
             G = np.concatenate([np.asarray(g) for g in tb.lean(Rp)['GTb']], 0)            # (R', 63^3)
-            k_q, k_p = f"{m['setting']}|{m['rule']}|{m['spec']}", f"{m['setting']}|{m['qp']}|{m['spec']}"
+            k_q, k_p = m['wkeys']['q'], m['wkeys']['qp']
             Wq, Wp = z[k_q], z[k_p]
+            assert Wq.shape[0] == Wp.shape[0] == len(m['cases']) == 64, ('array population', key, Wq.shape, Wp.shape)
             cq, cp = [int(x) for x in z[f'cases|{k_q}']], [int(x) for x in z[f'cases|{k_p}']]
             assert cq == m['cases'] == cp, ('population', key)
             n0 = {j: float(np.linalg.norm(C3.C.initial_interior(65, tab, j))) for j in cq}
@@ -57,8 +58,9 @@ def run(att):
             dq = [dist(Wq[i], Wp[i], j) for i, j in enumerate(cq)]
             rec = dict(dist_qp=dq, population=cq)
             if m.get('qpp'):
-                k_pp = f"{m['setting']}|{m['qpp']}|{m['spec']}"
+                k_pp = m['wkeys']['qpp']
                 cpp = [int(x) for x in z[f'cases|{k_pp}']]
+                assert z[k_pp].shape[0] == len(cpp) == 8, ('qpp array population', key)
                 assert cpp == m['qpp_cases'], ('qpp population', key)
                 rec['dist_qp_qpp'] = [dist(Wp[cp.index(j)], z[k_pp][i], j) for i, j in enumerate(cpp)]
             dq_ = tb.rule_data(Rp, *rules[m['rule']])
@@ -69,7 +71,8 @@ def run(att):
                 for k in range(6):
                     c = jnp.asarray(Wq[i, k])
                     a, b = np.asarray(C3.nl3(c, dq_)), np.asarray(C3.nl3(c, dp_))
-                    rho.append(float(np.linalg.norm(a - b) / np.linalg.norm(b)) if np.linalg.norm(b) > 0 else float('nan'))
+                    nb = float(np.linalg.norm(b))
+                    rho.append(float(np.linalg.norm(a - b) / nb) if nb > 0 else (float('nan') if np.linalg.norm(a) == 0 else float('inf')))
             rec['rho_cases01'] = rho
             out[key] = rec
             del dq_, dp_

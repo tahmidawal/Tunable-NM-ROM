@@ -46,6 +46,19 @@ def factors(form, sc):
     return (1., 2., LARGE[(form, sc)])
 
 
+def skey(sp):
+    """Configuration key of a timing subject; a subject whose rule is not the frozen rule of its r is a fallback ('|fb')."""
+    r = int(sp['Rp'])
+    return ckey(int(sp['mesh']), r, sp['form'], sp['scheme'], float(sp['factor']), fb=sp['rule'] != RULES[r][0])
+
+
+def timing_attempt(mesh):
+    """The mesh's final timing panel: time<mesh>, or its latest repeat time<mesh>r<k> (A1.2, A5.1)."""
+    cands = sorted((p.name for p in RUNS.glob(f'time{mesh}*') if out_dir(p.name, 'qtime') is not None),
+                   key=lambda n: (len(n), n))
+    return cands[-1] if cands else None
+
+
 def out_dir(att, drv, stem=None):
     d = RUNS / att / 'archive' / 'output' / f'{drv}_{stem or att}'
     return d if (d / 'result.json').exists() else None
@@ -138,7 +151,7 @@ def stats(entry):
 
 def case_qualified(entry):
     q = entry['q']
-    base = q['Q1']['pass'] and q['Q2'].get('label') == 'pass'
+    base = bool(q['numerically_qualified'])            # includes the reproduction gate where one applies
     pc = q.get('per_case') or {}
     return {c: bool(base and (c not in pc or (pc[c]['valid'] and pc[c]['tight_valid'] and pc[c]['dist_tight'] <= SC.BAR_Q1)))
             for c in entry['e0']}
@@ -162,6 +175,8 @@ def manifest_equal_combined(R, rp):
     return bool(int(R['mesh']) == comb['mesh'] == 1024 and rule.get(rp) == str(R['rule']) and str(R['policy']) == 'frozen'
                 and str(R['mode_hash']) == dev['mode_lists'][f'1024|frozen|{M}']['hash'] == dev['mode_lists'][f'1024|nominal|{M}']['hash']
                 and str(R['level']) == 'prod' and int(R['budget']) == 600 and str(R['time_tag']) == SC.TIME_TAG
+                and [float(x) for x in R['tol']] == (dev['code']['tol_of_prod_LSPG'] if str(R['form']) == 'LSPG'
+                                                      else dev['code']['tol_of_prod_GAL'])
                 and [str(R['form']), str(R['scheme'])] in comb['grid']['forms_schemes'])
 
 
@@ -170,7 +185,7 @@ def build_2d():
     C, gates, cache = {}, {}, {}
     for mesh in MESHES:
         ext = {}
-        atts = [f'acc{mesh}'] + sorted(p.name for p in RUNS.glob(f'fb{mesh}*'))
+        atts = sorted(p.name for p in RUNS.glob(f'acc{mesh}*')) + sorted(p.name for p in RUNS.glob(f'fb{mesh}*'))
         for att in atts:
             d = out_dir(att, 'qacc')
             if d is None:
@@ -309,7 +324,8 @@ def b4_from(d, res):
 
 # ------------------------------------------------------------------------------------------------- timing / B5
 def timing(mesh, C):
-    d = out_dir(f'time{mesh}', 'qtime')
+    att = timing_attempt(mesh)
+    d = out_dir(att, 'qtime') if att else None
     if d is None:
         return None
     res = json.loads((d / 'result.json').read_text())
@@ -317,8 +333,6 @@ def timing(mesh, C):
     subs = {}
     for lb, s in res['subjects'].items():
         sp = s['spec']
-        if lb.startswith('1024|R384|gauss128|LSPG|CNR|1') and int(sp['mesh']) == 1024 and sp == res['config']['A']:
-            pass
         inv = [x for x in res['invocations'] if x['B'] == lb]
         fus = [x for x in res['fused'] if x['B'] == lb]
         ok_inv = [x for x in inv if x['valid']]
@@ -351,11 +365,15 @@ def timing(mesh, C):
                         t_A=float(np.median([.5 * (x['tA1'] + x['tA2']) for x in ok_fus])) if ok_fus else None,
                         timing_label=dict(Q1=q['Q1'], Q2=q['Q2'], numerically_qualified=q['numerically_qualified']),
                         identity_hashes={r_['case']: r_['ident'] for r_ in s['certification']},
+                        triplet_evidence=dict(split=[dict(case=x['case'], rep=x['rep'], valid=x['valid'], hashes_ok=x['all_hashes_ok'],
+                                                          drift=x['drift']) for x in inv],
+                                              fused=[dict(case=x['case'], rep=x['rep'], valid=x['valid'], hashes_ok=x['hash_ok'],
+                                                          drift=x['drift'], ratio=x['ratio']) for x in fus]),
                         contract='full-field 2D query (input sampled at quadrature points; full-field decode), H200, '
                                  'ratio to P1 reference A in the same job')
     eq = res['equivalence']
     dbl = res['doubled']
-    return dict(job=res['job_id'], gpu=res['gpu'], commit=res['commit'], subjects=subs,
+    return dict(attempt=att, job=res['job_id'], gpu=res['gpu'], commit=res['commit'], subjects=subs,
                 controls=dict(split_fused=all(x['passed'] for x in eq),
                               doubled=dict(n=len(dbl), median=float(np.median([x['ratio'] for x in dbl])) if dbl else None,
                                            passed=bool(dbl) and 1.8 <= float(np.median([x['ratio'] for x in dbl])) <= 2.2 and
@@ -387,7 +405,7 @@ def front2d(C, T):
         cand, unq, unq_rec = {}, {}, {}
         for lb, s in tm['subjects'].items():
             sp = s['spec']
-            k = ckey(mesh, int(sp['Rp']), sp['form'], sp['scheme'], float(sp['factor']))
+            k = skey(sp)
             e = C.get(k)
             if e is None:
                 unq[k] = 'no accuracy entry'
@@ -413,8 +431,7 @@ def roles(C, T):
         tm = T.get(mesh)
         if tm is None:
             continue
-        cost = {ckey(mesh, int(s['spec']['Rp']), s['spec']['form'], s['spec']['scheme'], float(s['spec']['factor'])): s['c']
-                for s in tm['subjects'].values() if s['usable'] and s['timing_label']['numerically_qualified']}
+        cost = {skey(s['spec']): s['c'] for s in tm['subjects'].values() if s['usable'] and s['timing_label']['numerically_qualified']}
         for k, c in cost.items():
             e = C.get(k)
             if e is None or not e['q']['numerically_qualified'] or c is None:
@@ -492,7 +509,10 @@ def label3d(m, att):
         lab = 'unverified (finer rule not converged)'
     else:
         lab = 'pass'
-    pop_ok = m['cases'] == list(range(64)) and (not m.get('qpp') or m.get('qpp_cases') == list(range(8)))
+    pop_ok = bool(m['cases'] == list(range(64)) and len(m['dist_qp']) == 64 and len(m['valid']) == 64
+                  and len(m['valid_qp']) == 64 and np.shape(m['rho']) == (64, 6)
+                  and (not m.get('qpp') or (m.get('qpp_cases') == list(range(8)) and len(m['dist_qp_qpp']) == 8
+                                            and len(m['valid_qpp']) == 8)))
     off = offline3d(m, att)
     rep = repro3d(m, att)
     if not all(m['valid']):
@@ -520,7 +540,7 @@ def offline3d(m, att):
         return dict(agrees=False, reason='member missing')
     ag = lambda a_, b_: all(abs(x - y) <= 1e-9 * abs(y) + 1e-13 for x, y in zip(a_, b_)) and len(a_) == len(b_)
     rj = np.asarray(m['rho'], float)[:2].ravel().tolist()
-    ok = ag(o['dist_qp'], m['dist_qp']) and (not m.get('qpp') or ag(o['dist_qp_qpp'], m['dist_qp_qpp'])) and \
+    ok = len(o['rho_cases01']) == len(rj) == 12 and ag(o['dist_qp'], m['dist_qp']) and (not m.get('qpp') or ag(o['dist_qp_qpp'], m['dist_qp_qpp'])) and \
         all((np.isnan(x) and np.isnan(y)) or abs(x - y) <= 1e-9 * abs(y) + 1e-13 for x, y in zip(o['rho_cases01'], rj))
     return dict(agrees=bool(ok))
 
@@ -530,9 +550,9 @@ def repro3d(m, att):
     key = f"{m['setting']}|{m['rule']}|{m['spec']}"
     d = out_dir(att, 'q3run')
     z = np.load(d / 'W_q2.npz')
-    if f"{m['setting']}|{m['rule']}|{m['spec']}" not in z.files:
+    if m['wkeys']['q'] not in z.files:
         return None
-    W = z[key]
+    W = z[m['wkeys']['q']]
     for g in ('g1', 'g2', 'g3'):
         a = np.load(S3 / g / 'archive' / 'output' / 'W_grid.npz')
         if key in a.files:

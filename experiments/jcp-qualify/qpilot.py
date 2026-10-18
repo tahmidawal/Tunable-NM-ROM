@@ -48,23 +48,34 @@ def main():
     u0 = jnp.asarray(Q.e.initial(L, ph))
     nu = float(ph[4])
     keep = {}
+    st2.add_role(bank2, 'qp', 'gauss160', forms=('LSPG', 'GAL'))          # A's own Q2 tables, as qtime certifies them
+    st2.add_role(bank2, 'qpp', 'gauss192', forms=('LSPG', 'GAL'))
+    step('A Q2 tables')
+    for kk in ('qp', 'qpp'):
+        st2.drop_role(kk)
+    gc.collect()
     for s in cfg['settings']:
         r = int(s['Rp'])
         keep[r] = P.Setting(bank, f'R{r}', r, s['rules'][0], 'frozen', forms=('LSPG', 'GAL'))
         step(f'R{r} main {s["rules"][0]}')
-        for k, rl in enumerate(s['rules'][1:]):
-            keep[r].add_role(bank, f'x{k}', rl, forms=('LSPG', 'GAL'))
-            step(f'R{r} +{rl}')
+        # successor tables resident together, as qtime / qacc hold them: (q+, q++); and q+, q++, q+++ (fallback setting)
+        pairs = [s['rules'][1:3]] + ([s['rules'][1:4]] if len(s['rules']) > 3 else [])
+        for pr in pairs:
+            for k, rl in enumerate(pr):
+                keep[r].add_role(bank, f'x{k}', rl, forms=('LSPG', 'GAL'))
+            step(f'R{r} +{"+".join(pr)}')
             if r == 512:
-                for form, sc, f in (('LSPG', 'BE', 1), ('LSPG', 'CNR', 2.5), ('GAL', 'CN', 5)):
-                    t1 = time.perf_counter()
-                    v = QA.run(bank, keep[r], f'x{k}', form, sc, DT0 * f, 'prod', u0, nu, record=True)
-                    jax.block_until_ready(v)
-                    rep['runs'].append(dict(rule=rl, form=form, scheme=sc, factor=f, seconds=time.perf_counter() - t1,
-                                            valid=P.run_valid(v)))
-                    del v
-                step(f'R512 rollouts {rl}')
-            keep[r].drop_role(f'x{k}')
+                for k, rl in enumerate(pr):
+                    for form, sc, f in (('LSPG', 'BE', 1), ('LSPG', 'CNR', 2.5), ('GAL', 'CN', 5)):
+                        t1 = time.perf_counter()
+                        v = QA.run(bank, keep[r], f'x{k}', form, sc, DT0 * f, 'prod', u0, nu, record=True)
+                        jax.block_until_ready(v)
+                        rep['runs'].append(dict(rule=rl, form=form, scheme=sc, factor=f, seconds=time.perf_counter() - t1,
+                                                valid=P.run_valid(v)))
+                        del v
+                step(f'R512 rollouts {"+".join(pr)}')
+            for k in range(len(pr)):
+                keep[r].drop_role(f'x{k}')
             gc.collect()
         for form, sc in (('LSPG', 'CNR'), ('GAL', 'CN')):
             v = QA.run(bank, keep[r], 'main', form, sc, DT0, 'prod', u0, nu, record=True)

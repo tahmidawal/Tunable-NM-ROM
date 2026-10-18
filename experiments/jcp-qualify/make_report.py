@@ -78,13 +78,15 @@ def plots():
                            edgecolor='#0b0b0b' if on else 'none', linewidth=.8, zorder=3 if on else 2)
                 if on:
                     i_ = sorted(front, key=lambda kk: cand[kk]['c']).index(k)
-                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(5, 6 if i_ % 2 == 0 else -10),
-                                textcoords='offset points', fontsize=6.5)
+                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(8, 7 if i_ % 2 == 0 else -12) if i_ % 3 != 2 else (-34, 4),
+                                textcoords='offset points', fontsize=6.5,
+                                bbox=dict(boxstyle='round,pad=0.1', fc='white', ec='none', alpha=.8))
             pts = sorted((cand[k]['c'], cand[k][stat]) for k in front)
             if pts:
                 ax.plot(*zip(*pts), color='#0b0b0b', lw=.8, zorder=1)
             ax.set_xscale('log')
             ax.set_yscale('log')
+            ax.margins(.12)
             ax.set_title(f'{m}² — {len(front)} front members of {len(cand)} qualified', fontsize=9)
             ax.set_xlabel('online cost: fused query / reference A (same H200 job)')
         axs[0].set_ylabel(f'{stat} error over 38 cases\n{LBL}')
@@ -320,7 +322,7 @@ def main():
     w('')
     w('H-acc-N (AM-4 + P1 A1.9; P256 on 38 cases, P4096 on the registered 16-case subset, trend on that subset):')
     w('')
-    w('| configuration family | outcome | P4096 on 38 (sensitivity) |')
+    w('| configuration family | outcome | P4096 on 38 (exploratory sensitivity, not a verdict) |')
     w('|---|---|---|')
     for k, v in sorted(AN['B1']['h_acc_n'].items()):
         sen = (v.get('sensitivity_P4096_38') or {}).get('outcome')
@@ -422,35 +424,35 @@ def main():
     w('## Glossary')
     w('')
     for t, d in [
-        ('r (bank width)', 'number of ordered bank coefficients solved for (R′); 128, 256, 384, 512 here.'),
-        ('N, mesh', 'points per axis of the full-order grid on which the input is sampled and the output decoded (256², 1024², 4096²).'),
-        ('Δt₀, factor', 'Δt₀ = 0.005; a configuration runs at factor × Δt₀ (1, 2, and the registered larger step: 2.5 for LSPG-BE and LSPG-CN-R, 5 for GAL-CN).'),
-        ('LSPG-BE, LSPG-CN-R, GAL-CN, TH06', 'least-squares Petrov–Galerkin backward Euler; LSPG Crank–Nicolson with two backward-Euler start-up steps; Galerkin Crank–Nicolson; θ-method θ = 0.6 (a first-order control).'),
-        ('E0 R_ST, ε_ref', 'second-order space–time reference (primary); its per-case uncertainty, a conditional Richardson estimate, not a bound.'),
-        ('e, median e, worst e', '$e=\\max_{k=1..5}\\lVert u(t_k)-R(t_k)\\rVert/\\lVert R(t_0)\\rVert$ on the 257² scoring lattice (2D); median / worst over the 38 cases.'),
-        ('Q1', 'solver qualification: every run valid, ≤ 1 % of steps not certified (LSPG stationarity ratio ≤ 10⁻³; GAL relative Galerkin residual ≤ 10⁻⁸), distance to a tight solve ≤ 2.5·10⁻⁴ on every case, tight/tighter ≤ 2.5·10⁻⁵ on dev6.'),
-        ('Q2 (2D)', 'quadrature qualification on 16 cases: replay with the next finer rule within $2.5\\times10^{-4}$, own-state $\\rho\\le0.116$, and the finer rule converged against the next one.'),
-        ('Q3, cond(J)', 'conditioning: condition number of the scheme\'s step Jacobian at outputs 1, 3, 5 of the dev6 trajectories.'),
-        ('ρ', 'relative change of the tested advection vector between a rule and its successor at the configuration\'s own output states.'),
+        ('$r$ (bank width)', "number of ordered bank coefficients solved for ($R'$); 128, 256, 384, 512 here."),
+        ('$N$, mesh', 'points per axis of the full-order grid on which the input is sampled and the output decoded ($256^2$, $1024^2$, $4096^2$).'),
+        (r'$\Delta t_0$, factor', r'$\Delta t_0=0.005$; a configuration runs at factor $\times\,\Delta t_0$ (1, 2, and the registered larger step: 2.5 for LSPG-BE and LSPG-CN-R, 5 for GAL-CN).'),
+        ('LSPG-BE, LSPG-CN-R, GAL-CN, TH06, BDF2', r'least-squares Petrov–Galerkin backward Euler; LSPG Crank–Nicolson with two backward-Euler start-up steps; Galerkin Crank–Nicolson; $\theta$-method with $\theta=0.6$ (a first-order control); second-order backward differentiation (3D only).'),
+        (r'E0 $R_{ST}$, $\varepsilon_{\rm ref}$, $\bar\varepsilon_X$', r'second-order space–time reference (primary); its per-case uncertainty, a conditional Richardson estimate, not a bound; $\bar\varepsilon_X$ = median over cases of $\varepsilon_{\rm ref}$ for configuration $X$.'),
+        ('$e$, median $e$, worst $e$', r'$e=\max_{k=1..5}\lVert u(t_k)-R(t_k)\rVert/\lVert R(t_0)\rVert$ on the $257^2$ scoring lattice (2D); median / worst over the 38 cases.'),
+        ('Q1', r'solver qualification: every run valid, at most 1 % of steps not certified (LSPG stationarity ratio $\gamma\le10^{-3}$; GAL relative Galerkin residual $\eta\le10^{-8}$), distance to a tight solve $\le2.5\times10^{-4}$ on every case, tight/tighter $\le2.5\times10^{-5}$ on dev6.'),
+        ('Q2 (2D)', r'quadrature qualification on 16 cases: replay with the next finer rule within $2.5\times10^{-4}$, own-state $\rho\le0.116$, and the finer rule converged against the next one.'),
+        (r'Q3, $\mathrm{cond}(J)$', "conditioning: condition number of the scheme's step Jacobian at outputs 1, 3, 5 of the dev6 trajectories."),
+        (r'$\rho$', "relative change of the tested advection vector between a rule and its successor at the configuration's own output states."),
         ('numerically qualified', 'Q1 and Q2 pass (and the reproduction gate where one applies).'),
-        ('repro', 'registered gates: 2D, the lane\'s run equals combined\'s archived coefficients to $\\le10^{-10}$ after numerical-manifest equality; 3D, the rerun with the configuration\'s own rule equals speed3d\'s archive to $\\le10^{-10}$.'),
+        ('repro', r"registered gates: 2D, the lane's run equals combined's archived coefficients to $\le10^{-10}$ after numerical-manifest equality; 3D, the rerun with the configuration's own rule equals speed3d's archive to $\le10^{-10}$."),
         ('cost / A, evolution / A', 'paired timing ratios against the reference configuration A in the same job and GPU (full query; evolution only).'),
         ('front (median, worst)', 'qualified candidates not dominated by any other at the same mesh under the DESIGN §6 rule, for the median or the worst error.'),
-        ('role', 'pre-declared descriptive label against the same-r LSPG-BE at Δt₀: fast-equal-accuracy (cost ≤ 0.6, ties or beats both errors) or accurate-equal-cost (cost ≤ 1.1, lower median).'),
+        ('role', r'pre-declared descriptive label against the same-$r$ LSPG-BE at $\Delta t_0$: fast-equal-accuracy (cost ratio $\le0.6$, ties or beats both errors) or accurate-equal-cost (cost ratio $\le1.1$, lower median).'),
         ('H-acc-N, H-acc-r', 'mesh-independence (equivalence test of per-case differences) and rank-improvement (majority of resolved cases) hypotheses of P1, applied to each configuration family.'),
-        ('improve / worsen / tie / unqualified', 'per case in an r transition: lower / higher error beyond 2ε_ref, within 2ε_ref, or not qualified on both rungs.'),
-        ('p̂, interpretable', 'least-squares slope of log error against log step over Δt₀, Δt₀/2, Δt₀/4 versus a same-form anchor at Δt₀/64; a case is interpretable if the asymptotic, anchor, solver and quadrature checks pass.'),
-        ('q, q⁺, q⁺⁺', 'a configuration\'s quadrature rule, its successor and the check rule (next entries of the rule ladder).'),
-        ('open candidates (3D)', 'untested 3D configurations not dominated (median and worst) by any Q2-passed configuration.'),
+        ('improve / worsen / tie / unqualified', r'per case in an $r$ transition: lower / higher error beyond $2\varepsilon_{\rm ref}$, within $2\varepsilon_{\rm ref}$, or not qualified on both rungs.'),
+        (r'$\hat p$, interpretable', r'least-squares slope of $\log e$ against $\log\Delta t$ over $\Delta t_0,\Delta t_0/2,\Delta t_0/4$ versus a same-form anchor at $\Delta t_0/64$; a case is interpretable if the asymptotic, anchor, solver and quadrature checks pass.'),
+        (r'$q$, $q^+$, $q^{++}$', "a configuration's quadrature rule, its successor and the check rule (next entries of the rule ladder)."),
+        ('open candidates (3D)', 'untested 3D configurations not dominated (on both the median and the worst panel) by any Q2-passed configuration.'),
         ('fallback rule', 'the registered one-level replacement of a rule that failed Q2 by its successor.'),
         ('n', 'number of E0-eligible cases in a statistic (38 here for every configuration).'),
         ('dev6, val32, 16-case subset', 'the 6 development and 32 validation cases of the 2D cohorts; the subset is dev6 plus val32 cases 0–9.'),
-        ('P256, P4096, sensitivity (P4096 on 38)', 'H-acc-N case pairs: 256² vs 1024² on 38 cases; 4096² vs 1024² on the registered 16-case subset; the same on all 38 cases, reported without a verdict.'),
-        ('3D settings (M2_512, W256 … W1024)', 'speed3d bank / width settings: the M2 bank at r = 512, and prefixes of width 256–1024 of the W1024 bank, at 65³.'),
-        ('3D rules (glN, latN)', 'Gauss tensor rules with N³ points; rank-1 lattice rules with N points.'),
+        ('P256, P4096, sensitivity (P4096 on 38)', r'H-acc-N case pairs: $256^2$ vs $1024^2$ on 38 cases; $4096^2$ vs $1024^2$ on the registered 16-case subset. The sensitivity column re-runs the same procedure with P4096 on all 38 cases: its outcomes are exploratory, not registered verdicts.'),
+        ('3D settings (M2_512, W256 … W1024), $C_{\\rm old}$', r'speed3d bank / width settings: the M2 bank at $r=512$, and prefixes of width 256–1024 of the W1024 bank, at $65^3$; $C_{\rm old}$ = speed3d\'s reference configuration (M2_512, gl32, fixed-sweep BE, $\Delta t=0.01$) against which its screening times are ratios.'),
+        ('3D rules (glN, latN)', r'Gauss tensor rules with $N^3$ points; rank-1 lattice rules with $N$ points.'),
         ('3D solver specs (fs, qn, K, k)', 'fixed-sweep Gauss–Newton (fs) with K full sweeps per step; quasi-Newton (qn) with Jacobian refresh every k iterations; followed by scheme (BE, CN, BDF2) and step.'),
-        ('3D error and distance', 'max over the five evolved outputs of the relative ℓ² difference on the 63³ scoring lattice, normalised by the initial field; errors against E0 $R_{ST}$ over the 64 cases of cohort 923801.'),
-        ('Q2-3D', 'successor-rule replay within 2.5·10⁻⁴ on all 64 cases, own-state ρ ≤ 0.116, and the successor converged against the next rule on cases 0–7.'),
+        ('3D error and distance', r'max over the five evolved outputs of the relative $\ell^2$ difference on the $63^3$ scoring lattice, normalised by the initial field; errors against E0 $R_{ST}$ over the 64 cases of cohort 923801.'),
+        ('Q2-3D', r'successor-rule replay within $2.5\times10^{-4}$ on all 64 cases, own-state $\rho\le0.116$, and the successor converged against the next rule on cases 0–7.'),
         ('round limit, exposed', 'Q2-3D ran in at most three rounds; "exposed" candidates are untested configurations on the front of the untested-plus-passed set after the last round.'),
     ]:
         w(f'- **{t}**: {d}')

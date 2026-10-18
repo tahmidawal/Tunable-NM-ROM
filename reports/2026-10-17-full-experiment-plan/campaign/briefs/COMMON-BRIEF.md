@@ -145,3 +145,13 @@ after each audit round the lane agent deletes that round's scratch dir once the 
 Never wait with `pgrep -f <pattern>` where the pattern also appears in your own waiter's command line — it
 matches itself and never ends (happened in jcp-p1-scaling). Wait on the **PID** (`while kill -0 $PID`)
 captured when you launched the process, or run the Codex call in the foreground with `timeout`.
+
+## 13. Local GB10 slots are shared (added 2026-10-18 13:20 UTC)
+Several lanes run at once, so "one jaxrun per lane" can exceed the box's hard cap of 3. Launch every
+local jaxrun through the campaign slot guard, which holds one of three flock slots for the job's lifetime:
+```
+bash /home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-17-full-experiment-plan/campaign/jaxslot.sh 3600 \
+  jaxrun /home/tahmid/Dev/.venv/bin/python <script> ...
+```
+Exit code 75 = no slot freed within the wait; retry later or use the cluster. Prefer the cluster for
+anything longer than a few minutes.

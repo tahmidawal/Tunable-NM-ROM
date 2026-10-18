@@ -155,7 +155,7 @@ def main():
         keys = sorted(sol)
         np.savez_compressed(out / f"SOL_{grp['name']}.npz",
                             keys=np.array([f'{arms[k].name}|{rl}|{cid(ci)}' for k, rl, ci in keys]),
-                            W=np.array([sol[x][0] for x in keys]), f257=np.array([sol[x][1] for x in keys]),
+                            W=np.array([sol[x][0] for x in keys]),          # fields are re-derivable (nphead / decode257)
                             valid=np.array([sol[x][2] for x in keys]), n0=np.array([U0[x[2]][2] for x in keys]))
         rep['groups'][grp['name']] = dict(arms=[a_.describe() for a_ in arms], trail=trail, chosen=chosen,
                                           status='selected' if chosen else 'not quadrature-qualified (ladder exhausted)',

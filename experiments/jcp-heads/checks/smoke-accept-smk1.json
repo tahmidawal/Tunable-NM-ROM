@@ -1,0 +1,201 @@
+{
+ "steps_complete": true,
+ "train": {
+  "whitening": true,
+  "disjointness": true,
+  "identity_recon_rel": 2.426277453821338e-15,
+  "identity_oracle_rel": 1.0006922105578338e-15,
+  "complete": true,
+  "npz_sha256": "4a7715659fe24b640c68e3c5f8b44e804383d4705aa62efa7dd6a3aaef73ebbb",
+  "identity_pass": true,
+  "short_heads": {
+   "smk_k4_s0": {
+    "k": 4,
+    "recon": 0.39516534341260384,
+    "oracle": 0.23382325208860827,
+    "compact_vs_emitted": 0.0,
+    "ok": true
+   },
+   "smk_k32_s0": {
+    "k": 32,
+    "recon": 0.16294755314250875,
+    "oracle": 0.07195261745768543,
+    "compact_vs_emitted": 0.0,
+    "ok": true
+   }
+  },
+  "short_heads_ok": true
+ },
+ "repro_head": {
+  "worst": 1.4185014434459105e-13,
+  "fixtures": [
+   [
+    "gauss32",
+    "dev6|0"
+   ],
+   [
+    "gauss32",
+    "dev6|2"
+   ],
+   [
+    "gauss64",
+    "dev6|0"
+   ],
+   [
+    "gauss64",
+    "dev6|2"
+   ]
+  ],
+  "passed": true
+ },
+ "repro_lin": {
+  "worst": 1.3270090347982354e-15,
+  "passed": true
+ },
+ "jacobian": {
+  "per_head": {
+   "Hinc": 9.659828847614093e-16,
+   "Hk4": 1.1634312405263003e-16,
+   "Hk32": 9.688504223217524e-16
+  },
+  "passed": true
+ },
+ "wrong_mesh": {
+  "raised": [
+   "table built for L=256 fed to a bank on L=1024",
+   "table built for L=1024 fed to a bank on L=256",
+   "table arrays differ from the ones built for this setting (substituted data)"
+  ],
+  "passed": true
+ },
+ "accuracy_coverage": {
+  "passed": true,
+  "n": 84,
+  "expected": 84
+ },
+ "control_coverage": {
+  "budget0": true,
+  "arrays_finite": true,
+  "successors_recomputed": true,
+  "under_resolved": true
+ },
+ "budget0": {
+  "pooled_fraction": 1.0,
+  "numpy_gamma_first5": [
+   0.4858220786867902,
+   0.4858220786867902,
+   0.4858220786867902,
+   0.4858220786867902,
+   0.4858220786867902
+  ],
+  "numpy_over_bar": 5,
+  "passed": true
+ },
+ "zero_update": {
+  "lower_bound": 0.5103599914104172,
+  "passed": true
+ },
+ "under_resolved": {
+  "fails_rollout": true,
+  "rho_max": 1.5386009288024334,
+  "successors_valid": true,
+  "passed": true
+ },
+ "independent_decode": {
+  "rows": [
+   {
+    "coef_rel": 1.1370137655616005e-14,
+    "field_rel": 1.2756483085237148e-14
+   },
+   {
+    "coef_rel": 1.6326880374802143e-14,
+    "field_rel": 1.2020546325125295e-14
+   }
+  ],
+  "passed": true
+ },
+ "hinc_real_size": {
+  "BE": {
+   "gcert_all": true,
+   "valid": 38,
+   "n": 38,
+   "noncert": 0,
+   "max_dist_tight": 0.00010125703930521548,
+   "tight_verified": 38,
+   "tighter_verified": 5,
+   "max_dist_qp": 0.002324843725258596,
+   "rho_max": 0.04094818878522029,
+   "seconds": 1.9372760178521276
+  },
+  "CNR": {
+   "gcert_all": true,
+   "valid": 38,
+   "n": 38,
+   "noncert": 0,
+   "max_dist_tight": 0.0003480005605847626,
+   "tight_verified": 38,
+   "tighter_verified": 5,
+   "max_dist_qp": 0.0024757212437136176,
+   "rho_max": 0.04094818878522029,
+   "seconds": 1.9443599563091993
+  }
+ },
+ "elapsed": {
+  "controls": 55.13998951204121,
+  "Hinc": 129.87008404824883,
+  "Hk4": 22.34570216666907,
+  "Hk32": 33.749131553806365,
+  "L4": 11.597624627873302,
+  "L384": 23.904804535210133
+ },
+ "q2_evidence": true,
+ "rule_probe": {
+  "Hinc": {
+   "chosen": {
+    "main": "gauss96",
+    "qp": "gauss128",
+    "qpp": "gauss160",
+    "passing_arms": [
+     "Hinc"
+    ],
+    "failing_arms": []
+   },
+   "status": "selected",
+   "seconds": 95.31443835236132
+  },
+  "Hk4": {
+   "chosen": {
+    "main": "gauss64",
+    "qp": "gauss96",
+    "qpp": "gauss128",
+    "passing_arms": [
+     "Hk4",
+     "Hk4b"
+    ],
+    "failing_arms": []
+   },
+   "status": "selected",
+   "seconds": 79.22697444073856
+  },
+  "L8": {
+   "chosen": {
+    "main": "gauss24",
+    "qp": "gauss32",
+    "qpp": "gauss48",
+    "passing_arms": [
+     "L8"
+    ],
+    "failing_arms": []
+   },
+   "status": "selected",
+   "seconds": 20.176737024448812
+  }
+ },
+ "rule_trails_consistent": true,
+ "rule_coverage": true,
+ "rule_probe_note": "plumbing probe: group Hk4 holds the SAME short head twice (min_pass 2), so it exercises the counting path, not independent-seed behaviour; the 2-of-3 threshold is unit-tested in test_h",
+ "gcert": {
+  "passed": true
+ },
+ "all_controls_pass": true
+}

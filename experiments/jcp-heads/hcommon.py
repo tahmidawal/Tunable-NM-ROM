@@ -23,7 +23,7 @@ import hcore as HC
 
 HERE = Path(__file__).resolve().parent
 INCUMBENT = T2.CKPT
-IC_TOL = dict(tight=1e-9, tighter=1e-10)          # DESIGN A1.3
+IC_TOL = dict(tight=1e-9, tighter=1e-9)           # DESIGN A1.3 as amended by A9 (smk1: 1e-10 hit the GJ floor)
 
 
 def sha_file(p):
@@ -111,7 +111,7 @@ class HeadSetting:
     def query(self, level='prod', record=True):
         """Compiled split query per (level, recording). Levels (DESIGN 3.1): prod = deployed (step budget
         `budget`, initial fit budget 400 / gtol 1e-6); tight / tighter = step budget 2000 and the initial fit tightened
-        from the same start (budget 2000, gtol 1e-9 / 1e-10, DESIGN A1.3). The step tolerances come from the schedule (P.tol_of)."""
+        from the same start (budget 2000, gtol 1e-9 for both, DESIGN A1.3 / A9). The step tolerances come from the schedule (P.tol_of)."""
         key = (level, bool(record))
         if key not in self._q:
             if level == 'prod':

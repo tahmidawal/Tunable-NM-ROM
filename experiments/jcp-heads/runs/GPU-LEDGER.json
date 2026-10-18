@@ -5,10 +5,13 @@
    "attempt": "smk1",
    "job_id": "5517490",
    "time_limit_hours": 2.0,
-   "state": "SUBMITTED",
-   "gpu": null,
-   "elapsed_hours": null,
-   "pending_hours": null
+   "state": "COMPLETED",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.1553,
+   "pending_hours": null,
+   "attempts": 1,
+   "node": "pax050",
+   "prior_elapsed_hours": 0.0
   }
  ],
  "pending_core": {
@@ -18,6 +21,6 @@
   "time1024": 4,
   "time256": 2
  },
- "spent_gpu_hours": 0,
- "reserved_gpu_hours": 2.0
+ "spent_gpu_hours": 0.1553,
+ "reserved_gpu_hours": 0
 }

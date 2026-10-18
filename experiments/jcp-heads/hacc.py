@@ -8,7 +8,7 @@ Per arm and scheme, per case:
   tight     same configuration at the tight level (gtol 1e-7, step budget 2000, head initial fit 2000 / 1e-9), recorded
             and certified: anchor verified iff valid, no budget exit, certified gamma <= 1e-6 at every step and (head)
             initial fit stationary (A1.3); distance to prod on every case
-  tighter   dev6 (gtol 1e-8, initial fit 1e-10): verified iff certified gamma <= 1e-7 at every step, initial fit
+  tighter   dev6 (gtol 1e-8, initial fit 1e-9 per A9): verified iff certified gamma <= 1e-7 at every step, initial fit
             stationary; tight/tighter distance
   qp        successor-rule replay on sub16; rho of the arm's own six output coefficient states (main vs qp rule)
   qpp       check-rule replay on dev6; q+/q++ distance

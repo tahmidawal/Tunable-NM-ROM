@@ -669,3 +669,15 @@ archives after the jobs finish. Decision: `smk1` is submitted now; the acceptanc
 identity vs drift failures and retry attempts, smk1 coverage of configured identities and rule trails, pilot stage
 coverage and per-stage peak validation, duplicate equivalence records, doubled-work drift recomputation) and re-audited
 **before any smoke result is accepted or any production job is staged**. No smoke number is used for a verdict.
+
+---
+
+## Amendment A9 (2026-10-18, after smoke `smk1`, before any production job)
+
+`smk1` (job 5517490, A100-80G, 0.155 GPU-h; all registered smoke controls passed, `checks/smoke-accept-smk1.json`)
+showed that the tighter anchor's initial fit at gtol $10^{-10}$ can stop on a tiny step at $\gamma_{\rm ic}\approx
+2.8\times10^{-10}$ (dev6|2): the unpivoted GJ solve's precision floor, not a solver failure. As A1.3 provided, the
+tighter initial-fit tolerance is changed to $10^{-9}$ (equal to the tight anchor's); the tight/tighter comparison then
+isolates the step tolerance ($10^{-7}$ vs $10^{-8}$), and the production fit ($10^{-6}$) is still compared with a
+$10^{-9}$ fit. No other threshold changes. Storage: the rule-ladder job no longer archives the 257² fields of every
+solve (they are re-derived from the saved unknowns by the independent NumPy decode).

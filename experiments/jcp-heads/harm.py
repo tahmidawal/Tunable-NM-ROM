@@ -10,7 +10,7 @@ p1common.Setting), so the rule-ladder, accuracy and timing drivers treat both id
     arm.jac(w, co, dt, nu)           history-free step Jacobian (Q3)
 
 Levels (DESIGN 3.1, A1.3): prod (deployed: step budget 600, head initial fit 400 / 1e-6), tight (gtol 1e-7, step budget
-2000, head initial fit 2000 / 1e-9), tighter (gtol 1e-8, step budget 2000, head initial fit 2000 / 1e-10). Step
+2000, head initial fit 2000 / 1e-9), tighter (gtol 1e-8, step budget 2000, head initial fit 2000 / 1e-9, A9). Step
 tolerances come from p1common.tol_of('LSPG', level). Only LSPG is used in this lane.
 """
 from __future__ import annotations
@@ -24,7 +24,7 @@ from p1common import Q, T2
 import hcommon as HM
 import hcore as HC
 
-assert HM.IC_TOL == dict(tight=1e-9, tighter=1e-10)      # DESIGN A1.3 (replaces 1e-10 / 1e-11 of section 3.1)
+assert HM.IC_TOL == dict(tight=1e-9, tighter=1e-9)       # DESIGN A1.3 as amended by A9
 TIGHT_BUDGET = 2000
 
 

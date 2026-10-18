@@ -165,12 +165,30 @@ def ref_d3():
     return lad, max(pan) if pan else 1., r['peak_bytes_job']
 
 
+def square_unit():
+    """Per (form, rung, case) cost of the square (M = r) adaptive smoke block (W512k1), incl. anchors and diagnostics,
+    and the mean point count of its rungs (job audit k3-1: square solves are far slower than the w scaling)."""
+    r = json.loads((out_dir('smk3', 'd3run', 'smk3') / 'result.json').read_text())
+    for b, rb in zip(r['config']['blocks'], r['blocks']):
+        if b['kind'] == 'adaptive' and b['setting'] == 'W512k1':
+            units = len(b['forms']) * len(b['rungs']) * len(b['cases'])
+            return rb['seconds'] / units, float(np.mean([m_of(x, 3) for x in b['rungs']]))
+    raise RuntimeError('no square adaptive smoke block')
+
+
 def proj_d3(cfg):
     lad, t_inv, _ = ref_d3()
     floor = min(t for _, t, _ in lad)
+    sq_unit, sq_m = square_unit()
     sets = {s['name']: s for s in cfg['settings']}
     tot = 600.
     for b in cfg['blocks']:
+        s0 = sets.get(b.get('setting'), {})
+        if b['kind'] == 'adaptive' and int(s0.get('M') or -1) == int(s0.get('Rp', 0)):     # square kappa = 1 (A8.2-style)
+            nc = len(b.get('cases') or range(cfg['cohort_count']))
+            for rl in b['rungs']:
+                tot += len(b['forms']) * nc * sq_unit * max(1., m_of(rl, 3) / sq_m)
+            continue
         if b['kind'] in ('ladder', 'adaptive'):
             s = sets[b['setting']]
             M = int(s.get('M') or 4 * s['Rp'])

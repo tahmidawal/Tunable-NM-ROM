@@ -1,0 +1,47 @@
+{
+ "attempt": "k3a",
+ "driver": "d3run",
+ "mode": "k3a",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "W512k1",
+   "bank": "W1024",
+   "Rp": 512,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": [],
+   "M": 512
+  }
+ ],
+ "extra_rules": [
+  "lat131072",
+  "lat16384",
+  "lat262144",
+  "lat32768",
+  "lat65536",
+  "lat8192"
+ ],
+ "blocks": [
+  {
+   "kind": "adaptive",
+   "setting": "W512k1",
+   "forms": [
+    "LSPG|CN",
+    "GAL|CN"
+   ],
+   "dt": 0.01,
+   "rungs": [
+    "lat65536",
+    "lat131072",
+    "lat262144"
+   ]
+  }
+ ]
+}

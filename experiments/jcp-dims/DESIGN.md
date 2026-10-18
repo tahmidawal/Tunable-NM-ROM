@@ -765,3 +765,16 @@ dropping κ = 3.
 `dacc` code path, configuration, inputs and GPU type (checked from each attempt's staged provenance against the original);
 duplicates are resolved by attempt order (newest first), never by accuracy; timing measurements are never merged across
 jobs. `analyze2d` discovers `f2kA` and `f2kB`.
+
+## Amendment A10 (2026-10-18, production; budget accounting and packaging — no registered cell or verdict changes)
+
+**A10.1 Pending core counted at projection.** The cap is on measured GPU-hours (charged from `sacct`); scheduler time
+limits (≥ 1.5 × projection) are safety bounds. The reservation check stays: spent + Σ time limits of live jobs + this
+job's time limit + the not-yet-submitted never-dropped jobs, but the latter now enter at their certificate
+**projection** (not 1.5 × it); a pending entry may not be below its certificate's projection. Without this the
+never-dropped set alone (κ = 1 square cells in 2D and 3D are ~10× costlier than modelled before production) exceeded the
+cap at time limits while fitting it at projections.
+**A10.2 `k3` split.** `k3a` = the square κ = 1 adaptive block (W512k1; ~46 s per form–rung–case in the smoke), `k3b` =
+everything else of `k3`; union = the registered `k3` inventory (`configs/k3.json` kept). Both are never-dropped. The 3D
+certificate prices square adaptive units from the smoke's W512k1 block (scaled up by point count), after the `k3` job
+audit found the $w$ scaling underpriced them.

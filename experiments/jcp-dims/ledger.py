@@ -29,7 +29,7 @@ LED = HERE / 'runs' / 'GPU-LEDGER.json'
 LOCK = HERE / 'runs' / 'GPU-LEDGER.lock'
 CAP = 55.
 # non-deferrable jobs (DESIGN A3.1): each must be in the pending inventory until it has a live or completed reservation
-MANDATORY = ('f2a', 'f2b', 'f2kA', 'b2f', 'q3r4', 'q3r5', 'q3r6', 'q3r7', 'q3r8', 'm3a', 'm3b', 'k3', 't3s', 't3c')
+MANDATORY = ('f2a', 'f2b', 'f2kA', 'b2f', 'q3r4', 'q3r5', 'q3r6', 'q3r7', 'q3r8', 'm3a', 'm3b', 'k3a', 'k3b', 't3s', 't3c')
 # jcp-dims never-dropped (A1.6); rounds 5-8 are mandatory until waived ('ledger.py waive q3r<k> <reason>', e.g. no exposed
 # untested candidate after the previous round), which is recorded in the ledger
 # a failed / timed-out mandatory job is not COMPLETED, so the next 'pending' call must list it again (validated)
@@ -77,7 +77,7 @@ def validate(d, new, exempt=None):
             probs.append(f'never-dropped job {k} missing from the pending inventory')
             continue
         c = HERE / 'checks' / f'resources-{k}.json'
-        if c.exists() and new[k] + 1e-9 < json.loads(c.read_text())['time_limit_hours']:
+        if c.exists() and new[k] + 1e-9 < json.loads(c.read_text())['projection_hours']:      # A10.1: pending at projection
             probs.append(f'{k}: pending {new[k]} below its certificate')
     probs += [f'pending entry already live: {k}' for k in set(new) & live]
     return probs

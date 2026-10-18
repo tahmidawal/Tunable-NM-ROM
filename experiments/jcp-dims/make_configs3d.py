@@ -130,7 +130,10 @@ def main():
         blocks.append(dict(kind='ladder', setting=s['name'], specs=['fs|CN|0.01|K1'], rungs=LAT[1:]))
         man['ladders'].append(dict(kind='3A-fixMm', setting=s['name'], M=2052, spec='fs|CN|0.01|K1', family='lattice',
                                    draw=0, rungs=LAT[1:], candidates=LAT[1:-2]))
-    job('k3', k_settings + fix_settings, blocks, LAT)
+    job('k3', k_settings + fix_settings, blocks, LAT)        # manifest reference; DESIGN A10.2 splits it
+    sq = [b for b in blocks if b['kind'] == 'adaptive' and b['setting'] == 'W512k1']
+    job('k3a', [s for s in k_settings if s['name'] == 'W512k1'], sq, LAT)
+    job('k3b', [s for s in k_settings if s['name'] != 'W512k1'] + fix_settings, [b for b in blocks if b not in sq], LAT)
     # ------------------------------------------------------------------ families (3F) stage (i)
     blocks, rules = [], list(LAT) + ['gl64', 'badlat262144'] + SMOL3
     for s in range(1, 5):

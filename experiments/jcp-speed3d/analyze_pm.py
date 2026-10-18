@@ -324,6 +324,7 @@ def analyze_p1(rp, sel, grid, scp):
                profile_all_present=all(not v.get('missing') for v in H31.values()),
                profile_all_valid=all(v.get('panel_valid') is True for v in H31.values()),
                batch_all_present=all(v['available'] for x in H33.values() for v in x['per_B'].values()),
+               batch_all_valid=all(v.get('usable') is True for x in H33.values() for v in x['per_B'].values()),
                conv_all_present=all(v['available'] for v in conv.values()), reduced_adt_all_present=all(v['ok'] is not None for v in red.values()),
                mesh_reproduction=all(v is not None and v <= 1e-12 for v in rep.values()))
     # integrity gates every verdict of the job; coverage items make only their own verdicts unavailable (handled above)
@@ -560,6 +561,7 @@ def main():
     ap.add_argument('--scores-m1', default=str(HERE / 'checks' / 'scores-m1.json'))
     ap.add_argument('--out', default=str(HERE / 'checks' / 'analysis-pm.json'))
     a = ap.parse_args()
+    Path(a.out).unlink(missing_ok=True)                 # a failed run must not leave an earlier analysis behind
     grid = jl(HERE / 'checks' / 'analysis-grid.json')
     sel = jl(HERE / 'checks' / 'SELECTION-SCREEN.json')
     fm = jl(HERE / 'checks' / 'fom-match.json')
@@ -569,7 +571,9 @@ def main():
         out['p1'] = analyze_p1(Path(a.p1).resolve(), sel, grid, a.scores_p1)
     if (Path(a.m1) / 'result.json').exists():
         out['m1'] = analyze_m1(Path(a.m1).resolve(), sel, grid, fm, f1, a.scores_m1)
-    Path(a.out).write_text(json.dumps(out, indent=1, default=float) + '\n')
+    tmp = Path(a.out).with_suffix('.tmp')
+    tmp.write_text(json.dumps(out, indent=1, default=float) + '\n')
+    tmp.replace(a.out)
     if 'p1' in out:
         print('p1 acceptance', out['p1']['acceptance'])
         for c, v in out['p1']['H2'].items():

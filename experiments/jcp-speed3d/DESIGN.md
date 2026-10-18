@@ -735,3 +735,15 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
 * Integrity suppression keeps structural presence flags (`missing`, `available`, `feasible`); the report tolerates
   suppressed or missing records, and `make_report.py` deletes `report.md` and `EXPORT.json` before writing, so a failed run
   never leaves an earlier publication in place.
+
+---
+
+## Amendment A21 (2026-10-18; dispositions of `audits/codex-code-17.md`, NOT READY on two items; adds `analyze_r1.py`)
+
+* p1 coverage requires every batch record usable (`batch_all_valid`); the report shows hashes and usability per record.
+* Publication hygiene: `analyze_pm.py` and `analyze_r1.py` delete their output first and write atomically (temporary file
+  + rename); `make_report.py` deletes `report.md` and `EXPORT.json` before reading any input. A failed or interrupted run
+  therefore leaves no earlier analysis or publication behind.
+* New `analyze_r1.py` (A1.11 replication analysis on 923901: per frozen ROM and path E-a/E-b/E-c and E0 median/worst;
+  per comparator whether the winner still ties-or-beats and the replication panel's S; per matched FOM whether it still
+  ties-or-beats its ROM), three-state throughout, integrity-gated; its generated markdown is embedded by the report.

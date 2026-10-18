@@ -207,6 +207,8 @@ def g2_literal():
 # ------------------------------------------------------------------------------------------------------------ report
 def main():
     import sys
+    for stale in (HERE / 'report.md', HERE / 'runs' / 'EXPORT.json'):   # first: never leave an earlier publication behind
+        stale.unlink(missing_ok=True)
     G = jl(CH / 'analysis-grid.json')
     sel = jl(CH / 'SELECTION-SCREEN.json')
     fm = jl(CH / 'fom-match.json')
@@ -214,8 +216,6 @@ def main():
     R1 = jl(CH / 'analysis-r1.json')
     gl = jl(HERE / 'runs' / 'GPU-LEDGER.json')
     jlg = jl(HERE / 'runs' / 'JOB-LEDGER.json')
-    for stale in (HERE / 'report.md', HERE / 'runs' / 'EXPORT.json'):   # never leave an earlier publication behind
-        stale.unlink(missing_ok=True)
     C = G['configs']
     p1, m1 = PM.get('p1'), PM.get('m1')
     final = bool(p1 and m1 and p1['acceptance']['integrity_ok'] and m1['acceptance']['integrity_ok'])
@@ -389,12 +389,14 @@ def main():
         for l_, v in p1['H33'].items():
             for B, r in sorted(v['per_B'].items(), key=lambda x: int(x[0])):
                 if not r.get('available'):
-                    rows.append([l_, B, 'unavailable', '–', r.get('reason', '–')[:60], '–', '–'])
+                    rows.append([l_, B, 'unavailable', '–', str(r.get('reason', '–'))[:60], '–', '–', '–', '–'])
                     continue
-                rows.append([l_, B, f(r['median_seconds']), f(r['throughput']), f"{r['G4']} ({f(r['G4_max'])})", f(r.get('K6_fires')), f(r.get('K6plus_pass'))])
-        w('**H3.3** batching (primary speed claim stays single-query latency; throughput reported separately):')
+                rows.append([l_, B, f(r['median_seconds']), f(r['throughput']), f"{r['G4']} ({f(r['G4_max'])})", f(r.get('K6_fires')),
+                             f(r.get('K6plus_pass')), f(r.get('hashes_ok')), f(r.get('usable'))])
+        w('**H3.3** batching (primary speed claim stays single-query latency; throughput reported separately; a record is usable '
+          'only with matching hashes, G4 not failed, K6+ passing and K6 firing):')
         w('')
-        w(table(['label', 'B', 'median s', 'cases/s', 'G4 (max distance)', 'K6 fires', 'K6+ passes'], rows))
+        w(table(['label', 'B', 'median s', 'cases/s', 'G4 (max distance)', 'K6 fires', 'K6+ passes', 'hashes', 'usable'], rows))
         w('')
         w('Throughput at B = 16 over B = 1: ' + '; '.join(
             f"{l_} {f(v['throughput_16_over_1'])}× (" + ('2× bar unavailable' if v['bar_2x'] is None else ('meets the 2× bar' if v['bar_2x'] else 'misses the 2× bar')) + ')'

@@ -843,3 +843,17 @@ window); cases run before A9 keep the per-window rule. Regression: `test_anaref_
   the burgers-archive). The arrays the offline analyses need (the 2D dev6 fine fields for the fine-route recomputation,
   `GLAT_*.npy` for `ana3d`) stay local only until the final analyses have run, then every production output directory is
   offloaded the same way and its listing committed.
+
+## Amendment A11 (2026-10-18 19:00 UTC; B7 at T = 1.0 is run, budget check)
+
+Ledger after `ref3b`: 8.1 GPU-h spent. Measured costs are 3–7× below the certificates (b3d 0.56 h of 1.61 h; ps 0.31–0.55 h
+of 2.29 h; ref3b 1.18 h of 4.26 h; production FD cases 260–380 s at $T=0.5$ against the smoke's ~700 s). Projected total
+with the four 2D b-jobs and the $T=1.0$ bundle (`ref2t1` = sub16 + val32 19, `ps2t1` = PS val32 {0, 19}, `b1024t1`), at
+the certificates: 8.1 + 1.5 (`ref2r`) + 17.0 (b-jobs) + 16.7 ($T=1$) = 43.3 GPU-h (projections, not time limits), inside the 45 GPU-h cap even at the
+over-priced projections; at measured rates it is about 25 GPU-h. So nothing on the defer list is deferred for budget:
+**B7 at $T=1.0$ runs** (B8 3D stays deferred for implementation scope, A4). Submission order under the lane cap of 3:
+`b1024a`, `b1024b`, `b256`, then `ref2t1`, `b4096`, `ps2t1`, then `b1024t1` once `ref2t1` is promoted. The ledger reserves
+at the time limits; a job that cannot be reserved waits for a settlement. If the ledger ever cannot hold `b1024t1`,
+B7 $T=1.0$ is deferred (last on the defer list) and recorded.
+The smoke JSON / B2 / B7 tables (< 5 MB) were restored from git after the A10 offload, because `resources.py` prices
+jobs from them.

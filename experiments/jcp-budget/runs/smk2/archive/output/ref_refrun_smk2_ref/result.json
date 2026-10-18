@@ -1,0 +1,137 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 3,
+  "cohort": "val64",
+  "cases": [
+   0
+  ],
+  "horizon": 0.5,
+  "fine": true,
+  "allow_refine": true
+ },
+ "job": {
+  "job_id": "5550659",
+  "commit": "0f7fb2d10778985ba2d5a2cfb8f4255d9ee60ec4",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "manifest": [
+  {
+   "file": "3d/val64/T0.5/c000_fine.npz",
+   "sha256": "1955a6084705f819190c0f779e41b7f01075fc7e6509dc0fec0d9994c1ccec19"
+  },
+  {
+   "file": "3d/val64/T0.5/c000.npz",
+   "sha256": "1062c75aadd92e92a3507a0e0b670295353172db6dfaad8460954a04d8c236fe"
+  },
+  {
+   "file": "3d/val64/T0.5/c000.json",
+   "sha256": "fd979419349af4114ff34e4d68deef2d16f8ee9e21852a01ac7b7262c0570be0"
+  }
+ ],
+ "cases": [
+  {
+   "case": 0,
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 5.538264626118644e-05,
+   "eps_fine": 5.5382626214673946e-05,
+   "G_R3": true,
+   "seconds": 270.3963697850704
+  }
+ ],
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "cohort": {
+  "name": "val64",
+  "n": 64,
+  "sha256": "de2d05a4d20b0c835dd3284bf73dd9087b6c8a82c489564096915e32224dac35"
+ },
+ "seconds": 295.4830060293898,
+ "peak_bytes": 33242402816
+}

@@ -170,8 +170,11 @@ def timing(att, recs=None, acc_dir=None):
         cases = v['timed_case_ids']
         Z = np.load(d / f"S_{lb.replace('|', '_')}.npz", allow_pickle=True)
         T_id = {str(c): str(h) for c, h in zip(Z['T_case_ids'], Z['T_ident'])}
-        hash_ok = lambda x, c: x['valid'] and x.get('hash_B', T_id.get(c)) == T_id.get(c) and \
-            all(a_.get('hash_B', T_id.get(c)) == T_id.get(c) for a_ in x.get('attempts', []))
+        def hash_ok(x, c):        # explicit matching hashes, finite positive ratio (fail closed on anything missing)
+            t = T_id.get(c)
+            return bool(t and x['valid'] and x.get('hash_B') == t and x.get('attempts')
+                        and all(a_.get('hash_B') == t for a_ in x['attempts'])
+                        and np.isfinite(x['ratio']) and x['ratio'] > 0)
         per = {c: [x['ratio'] for x in fused.get(lb, {}).get(c, []) if hash_ok(x, c)] for c in cases}
         pev = {c: [x['ratio'] for x in inv.get(lb, {}).get(c, []) if hash_ok(x, c)] for c in cases}
         head = head_of(name) if sp['kind'] == 'head' else None
@@ -197,7 +200,11 @@ def timing(att, recs=None, acc_dir=None):
                 dv = np.array(list(dist.values()), float)
                 cons = dict(consistent=bool(same_id and sorted(dist) == sorted(ida) and np.isfinite(dv).all() and dv.max() <= 2.5e-4),
                             max_trajectory_distance=float(dv.max()) if dv.size else None, same_configuration=same_id)
-        complete = bool(cases and all(per[c] for c in cases))
+        reps = cfg['reps']
+        cover = all(sorted(x['rep'] for x in fused.get(lb, {}).get(c, [])) == list(range(int(reps[c.split('|')[0]])))
+                    and sorted(x['rep'] for x in inv.get(lb, {}).get(c, [])) == list(range(int(reps[c.split('|')[0]])))
+                    for c in cases) if name != 'A_R384' else True
+        complete = bool(cases and cover and all(per[c] for c in cases))
         subj_drift = panel['subject_drift'].get(lb)
         drift_ok = subj_drift is not None and 1 / 1.1 <= subj_drift <= 1.1
         eq_ok = bool(eq.get(lb) and len(eq[lb]) == 1 and eq[lb][0]['passed'])
@@ -296,8 +303,9 @@ def lh(recs, cost, scheme, mesh=1024, holm=None, per_seed=None):
             continue
         names = [f'H{K}s{s}' for s in Sp]
         cases = population(recs, [(names[0], scheme)])
+        ccases = [c for c in cases if all(cost[hl[s]]['per_case'].get(c) is not None for s in Sp)]   # cost population
         eH = seed_median(recs, names, scheme, cases)
-        cH = np.array([np.median([cost[hl[s]]['per_case'][c] for s in Sp]) for c in cases])
+        cH = np.array([np.median([cost[hl[s]]['per_case'][c] for s in Sp]) for c in ccases])
         eps = np.array([recs[(names[0], scheme)]['per_case'][c]['eps'] for c in cases])
         rungs = {}
         for r in LIN:
@@ -308,7 +316,8 @@ def lh(recs, cost, scheme, mesh=1024, holm=None, per_seed=None):
             ll = tlabel(mesh, f'L{r}', recs[key]['rule'], scheme)
             eL = np.array([recs[key]['per_case'][c]['e'] for c in cases])
             complete = ll in cost and cost[ll]['usable']
-            cL = np.array([cost[ll]['per_case'][c] for c in cases]) if complete else None
+            cL = np.array([cost[ll]['per_case'].get(c, np.nan) for c in ccases]) if complete else None
+            complete = bool(complete and cL is not None and np.isfinite(cL).all())
             err = HS.error_label(eH, eL, eps)
             cl = HS.cost_label(cL / cH, complete=complete) if complete else HS.cost_label(None, complete=False)
             rungs[r] = dict(qualified=lq, cost=cl, err=err, median_L=float(np.median(eL)), worst_L=float(np.max(eL)))
@@ -317,9 +326,11 @@ def lh(recs, cost, scheme, mesh=1024, holm=None, per_seed=None):
         dim = rungs.get(K)
         if dim is not None:
             cd = HS.cost_label(1. / (np.array([cost[tlabel(mesh, f'L{K}', recs[(f'L{K}', scheme)]['rule'], scheme)]['per_case'][c]
-                                               for c in cases]) / cH)) if dim['cost']['label'] != 'unknown' else HS.cost_label(None, False)
+                                               for c in ccases]) / cH)) if dim['cost']['label'] != 'unknown' else HS.cost_label(None, False)
             entry['lh_dim'] = dict(err=_slim(dim['err']), cost=cd, dominance=HS.dominance(dim['err'], cd, qualified=dim['qualified']))
-        entry.update(population=len(cases), median_H=float(np.median(eH)), worst_H=float(np.max(eH)),
+        entry.update(population=len(cases), cost_population=len(ccases),
+                     scope='error on eligible all38, cost on ' + ('all38' if len(ccases) == len(cases) else f'{len(ccases)} timed cases'),
+                     median_H=float(np.median(eH)), worst_H=float(np.max(eH)),
                      cost_H_median=float(np.median(cH)), rungs={r: dict(v, err=_slim(v['err'])) for r, v in rungs.items()},
                      _rungs_full=rungs)
         res[K] = entry
@@ -431,6 +442,28 @@ def main_all():
                     finish_lh(res, comps, fam, min_seeds=1)
                     exp['lh_per_seed'][f'{sc}|{s}'] = res
             exp['F5_family'] = fam
+        if (out_dir('acc256', 'hacc') / 'result.json').exists():
+            _, recs256 = acc_records('acc256')
+            exp['configs_256'] = {f'{k[0]}|{k[1]}': {kk: vv for kk, vv in v.items() if kk not in ('per_case', 'case_qual')}
+                                  for k, v in recs256.items()}
+            exp['per_case_256'] = {f'{k[0]}|{k[1]}': v['per_case'] for k, v in recs256.items()}
+            exp['S_K_256'] = {sc: {K: pools(recs256, K, sc) for K in KS} for sc in SCHEMES}
+            if 256 in costs:
+                exp['lh_256'] = {}
+                for sc in ('BE',):
+                    res, comps = lh(recs256, costs[256], sc, mesh=256)
+                    finish_lh(res, comps, fam)
+                    exp['lh_256'][sc] = dict(per_K=res, scope='error on eligible all38 (acc256), cost on dev6 (time256)')
+            cross = {}                                   # E3c descriptive: per-case error spread 256^2 vs 1024^2
+            for key, v in recs256.items():
+                w_ = recs.get(key)
+                if w_ is None:
+                    continue
+                cs = [c for c in v['per_case'] if v['per_case'][c]['eligible']]
+                dd = [abs(v['per_case'][c]['e'] - w_['per_case'][c]['e']) for c in cs]
+                cross[f'{key[0]}|{key[1]}'] = dict(max_abs_change=float(max(dd)), median_abs_change=float(np.median(dd)),
+                                                   worst_case=cs[int(np.argmax(dd))], both_qualified=bool(v['qualified'] and w_['qualified']))
+            exp['cross_mesh_256_1024'] = cross
         rr = {k[0]: v['rule'] for k, v in recs.items()}
         exp['h_cost_n'] = h_cost_n(costs, rr) if costs else None
         inc, k16 = recs.get(('Hinc', 'BE')), recs.get(('H16s0', 'BE'))

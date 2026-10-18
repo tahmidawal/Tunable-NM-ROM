@@ -573,3 +573,34 @@ size that later cannot be completed stays in $\mathcal F$ with $p_{K,r}=1$ (it c
 multiplicity or the negative reading). The bracket's scalar ordering statistic is the cost label's own statistic, the
 median over the population of the per-case ratio $c_{L_r}/c_{H_K}$ (ties → smaller $r$); $r_{\rm lo}$ = the
 largest-ratio certified-affordable rung, $r_{\rm hi}$ = the smallest-ratio certified-costlier rung.
+
+---
+
+## Amendment A4 (2026-10-18, before any lane job; answers `audits/codex-design-4.md`, NEEDS-RESTATEMENT)
+
+**A4.1 The confirmatory/FWER claim is withdrawn (blocker 1).** The rule (A1.4/A2.5), the seed pool (numerical
+qualification, A2.3) and the timing-complete pool (A3.2) are selected on the same validation trajectories that the
+component tests use, and this lane has no independent evaluation cohort (sealed cohorts are out of scope). The lane
+therefore makes **no family-wise error-rate claim**. A3.1's family-wise Holm adjustment is kept as a fixed,
+pre-registered **decision rule and a descriptive multiplicity adjustment**, and every label it feeds — the at-most-cost
+result, the F5 reading and Q-LH-dim — is reported as **exploratory validation evidence, conditional on the listed
+selections** (rule policy, qualified and timing-complete seed pool, numerical qualification of each rung). The F5 positive
+reading is re-worded "**exploratory validation evidence of an accuracy–cost benefit of the head at $K$**"; nothing in the
+lane is called confirmatory. Assumptions of the signed-rank tests, stated: cases are independent units; under the null the
+per-case paired difference is symmetric about 0; the exact null is used for $n\le50$ without ties among $|d_i|$, the
+normal approximation otherwise (p1stats.wilcoxon). The selection steps and the excluded seeds (with identities and
+reasons: Q2 at the size's rule, Q1, timing completeness) are reported beside every pooled number.
+
+**A4.2 Scope of the seed pools (minor 2).**
+- $\mathcal S_K'$ (qualified **and** timing-complete at 1024²) is used only for the 1024² joint error–cost results:
+  Q-LH-dim, Q-LH-cost (equal-cost, at-most-cost, bracket) and the F5 reading, for both schemes.
+- Q-K-err and the 1024² error tables use $\mathcal S_K$ (numerically qualified at 1024², no timing requirement).
+- The fixed-$M=128$ panel uses its own $\mathcal S_K^{(128)}$ (numerically qualified in that panel; no timing).
+- 256² (optional): $\mathcal S_K^{(256)}$ = numerically qualified in `acc256`; costs on dev6 from `time256`, labelled
+  "error on eligible all38, cost on dev6", never a joint all38 accuracy–cost result.
+- H-cost-N uses seed 0's timing-job subjects as registered in §5.3 (dev6, every timed mesh).
+
+**A4.3 Cost-coverage status (minor 3).** "No rung certified affordable" is a **cost-coverage status** displayed beside
+the at-most-cost accuracy result, not a verdict that overrides it; the at-most-cost result is computed on the
+possibly-affordable set $\mathcal P_K$ regardless (A3.2), and is "no possibly-affordable rung" only when every qualified
+rung is certified costlier.

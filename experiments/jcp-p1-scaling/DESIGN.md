@@ -566,3 +566,55 @@ that is invalid (A1.4) makes Q2 "unverified (successor invalid)" for that config
 
 **A1.14 Wording.** §2.3 table: "out" = in the frozen list, not in the nominal $256^2$ list; "in" = in the nominal list,
 not in the frozen list. §12's claim of completeness is replaced by this amendment's items.
+
+---
+
+## Amendment A2 (2026-10-18, before any lane job; answers `audits/codex-design-2.md`, NEEDS-RESTATEMENT)
+
+**A2.1 H-cost-r fit, executable (blocker 1).** Data per $r$: mean over the resampled fixtures of the fixture medians.
+*Flat-cost rule first:* if $\max_r t/\min_r t<1.10$ over the panel's ranks (cost changes by < 10 % over a 16× range of $r$)
+the exponent is **unidentified** → inconclusive ("cost flat in r"). Otherwise fit $t=a+e^{\beta}r^p$ with
+`least_squares`, bounds $a\ge0$, $p\in[0,4]$, $\beta$ free, `x_scale='jac'`, from the **interior** start
+$a_0=\tfrac12\min_rt$, and $(p_0,\beta_0)$ = slope and intercept of the least-squares line of $\log(t-a_0)$ on
+$\log r$ (all $t-a_0\ge\tfrac12\min t>0$), with $p_0$ clipped to $[0.05,3.95]$. Failure = status ≤ 0, non-finite
+parameters, or relative RMS residual > 0.2. Boundary (measured fits only): $p\le10^{-6}$, $p\ge4-10^{-6}$, or
+$e^{\beta}(r_{\max}^p-r_{\min}^p)<0.01\,a$. Operation-count fits: same start and form, no boundary rule. Everything else
+in A1.9 unchanged (bootstrap, pass/fail/inconclusive, literal AM-4 secondary label).
+
+**A2.2 Component sum vs evolution: a reported diagnostic, not a gate (blocker 2).** No independently validated
+acceptance interval exists for "separately dispatched components vs one fused loop" (launch overheads, the loop's
+bookkeeping — post-solve projections, alternation diagnostics, statistics and output updates — and cross-block compiler
+fusion all separate the two), so a mandatory band could reject a correct implementation. The A1.2 measurement is kept
+and reported (model, evolution time, ratio, with the bookkeeping named as unaccounted), and **blocks nothing**. Deviation
+from AM-5 (which listed it as a positive control blocking H-cost-r), recorded for the coordinator. Consequence for the
+claim: the H-cost-r verdict is about **component-kernel scaling** at fixed $(M,m)$ and is labelled so; it is not a
+statement about the solver loop's total time (which P1c measures directly).
+
+**A2.3 P1c qualification is certified on the timing job's own trajectories (blocker 3).** The transfer gate of A1.5 is
+replaced. In the timing job, per subject and dev6 case: the untimed scoring run (split query, no recording) gives the
+hash every timed run must match; a **certified run** of the same configuration with internal-state recording
+(`nrec` = 51) must reproduce it ($\max_k\lVert\Delta W_k\rVert/\lVert W_0\rVert\le10^{-12}$, else "certification not
+transferable" for that subject) and is certified in-job (autodiff γ every step, G-cert); a tight and (all six dev6
+cases) a tighter run, and a successor-rule replay plus own-state ρ, are run in the same job. The subject's **timing-job
+numerical label** = Q1 (§5.1 as amended, on its six dev6 trajectories) and Q2 (rollout and ρ bars on the same six;
+finer-rule convergence via $q^{++}$ on the same six). A P1c subject is called numerically qualified only if **both** its
+timing-job label and the accuracy-job label of the identical configuration (population 38/16 cases) pass; the two are
+reported separately. The H200-vs-accuracy-job distance is reported as a reproducibility number only.
+
+**A2.4 Q2 indicator edge cases (blocker 4).** Per state: both $N_q(c)=0$ and $N_{q^+}(c)=0$ → excluded as trivial
+(counted); $N_{q^+}(c)=0\ne N_q(c)$ → $\rho=+\infty$ (fails the bar); non-finite → fails. If no ρ indicator remains
+after exclusions, the ρ bar is "not evaluable" and Q2 = "unverified (no ρ indicators)".
+
+**A2.5 P1g statistics mapped exactly to the historical claims (blocker 5).** H1 (quadrature study): the per-case
+three-mesh spread $\max_N e-\min_N e$ over $256^2/1024^2/4096^2$ of the worst first-order-ST error, per rule (gauss64,
+gref = gauss640, fib6765), on dev6∪val32 — the historical statistic. H4 (jcp-mechanism): the per-case **two-mesh**
+spread $|e(256^2)-e(1024^2)|$ for gauss96 (and gref), the historical pair; any three-mesh extension is reported
+separately. Both under frozen and nominal lists, against the first-order reference (to set beside the historical
+numbers) and E0. The historical-rule P1g arms are **descriptive**: they never receive a numerical-qualification,
+role or frontier label. The claim "rule error is common to both arms" is withdrawn: changing the test space can change
+the quadrature error, so the frozen–nominal difference is reported as the total effect of the list change under that
+rule, not as a list-only effect.
+
+**A2.6 Reservations (A1.11, completed).** A reservation is held from submission until `sacct` reports a terminal state
+and the elapsed time is entered in the ledger; every attempt counts (requeues, failed starts, resubmissions on another
+GPU type); raising a job's time limit requires a new reservation check before `scontrol update`.

@@ -158,7 +158,7 @@ def main():
                     elif len(sys.argv) > 3 and sys.argv[3] == '--confirmed-absent':   # only after a manual check
                         j.update(state='RELEASED', elapsed_hours=0.)
                         if j.get('pending_hours') is not None:        # restore the pending core reservation
-                            d['pending_core'][att] = j['pending_hours']
+                            d['pending_core'][base_of(att)] = j['pending_hours']
                     else:
                         print('no record found: reservation kept (re-run later, or pass --confirmed-absent)'); rc = 4
         elif cmd == 'release':
@@ -166,7 +166,7 @@ def main():
                 if j['attempt'] == sys.argv[2] and j['state'] == 'PENDING_SUBMIT':
                     j.update(state='RELEASED', elapsed_hours=0.)
                     if j.get('pending_hours') is not None:            # restore the pending core reservation
-                        d['pending_core'][sys.argv[2]] = j['pending_hours']
+                        d['pending_core'][base_of(sys.argv[2])] = j['pending_hours']
         elif cmd == 'reconcile':
             for j in d['jobs']:
                 if j['state'] in TERMINAL or not j['job_id']:
@@ -181,7 +181,7 @@ def main():
                 j['attempts'] = len(rows)
                 j['state'], j['node'] = st, rows[-1][3]
                 if st in TERMINAL and st != 'COMPLETED' and j.get('pending_hours') is not None:
-                    d.setdefault('pending_core', {})[j['attempt']] = j['pending_hours']   # failed core job: re-pend
+                    d.setdefault('pending_core', {})[base_of(j['attempt'])] = j['pending_hours']   # failed core job: re-pend
                 j['gpu'] = next((x for x in rows[-1][2].split(',') if x.startswith('gres/gpu')), None)
                 j['elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows) / 3600, 4)
                 j['prior_elapsed_hours'] = round(sum(int(r[1] or 0) for r in rows[:-1]) / 3600, 4)   # earlier requeues

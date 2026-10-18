@@ -17,6 +17,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+
+import numpy as np
 from pathlib import Path
 
 import fomrun2 as FR
@@ -82,5 +84,58 @@ def main():
     print(cfg['attempt'], 'projection h', round(tot / 3600, 3), 'required limit h', round(1.5 * tot / 3600, 3))
 
 
-if __name__ == '__main__':
+if __name__ == '__main__' and '--c2' not in __import__('sys').argv:
     main()
+
+
+# ------------------------------------------------------------------------------------------------- C2 jobs -----
+
+def project_c2(cfg, smkc2, match, ladder_res):
+    """C2 job projection (DESIGN A1.6): per FOM candidate a full-field call costs max(2 x its lattice screening cost,
+    screening cost + 0.02 s) (the C2 smoke measured full-field / lattice ratios of 1.03-2.0 at 4096^2); calls per candidate:
+    6 scoring + 6 warm + 4 stage-0 (+ 6 stage-1 triplets if shortlisted, + 18 stage-2 triplets if selected; assumed for
+    every candidate, an upper bound); ROM calls: A's measured smoke time x max(1, (r/384)^2); per triplet two A calls and
+    three 0.1 s burns; compile 3 s per PS program and the smoke's logged FD/map compile per mesh; bank build and table set-up
+    from the smoke's elapsed time (x number of ROM settings / 2). x 1.5 headroom applied by stage.py."""
+    tA = float(np.median([x['tA1'] for x in smkc2['stage2']]))
+    burn = 3 * float(cfg.get('burn', 0.1))
+    tot, det = 0., {}
+    for k in cfg['foms']:
+        c = match['admissibility'][k]['cost']
+        t = max(2 * c, c + 0.02)
+        sec = 16 * t + 24 * (t + 2 * tA + burn) + (3. if k.startswith('ps') else 2.)
+        det[k] = sec
+        tot += sec
+    for r in cfg['roms'] + [cfg['A']]:
+        t = tA * max(1., (int(r['Rp']) / 384) ** 2)
+        sec = 12 * t + 18 * (t + 2 * tA + burn) + 10.
+        det[r['label']] = sec
+        tot += sec
+    tot += float(smkc2['elapsed_seconds']) * max(1., len(cfg['roms']) / 2)
+    tot += 6 * 3 * (3 * tA + burn) + 20 * len(cfg.get('pilot_foms', []))     # controls and pilots
+    return tot, det
+
+
+def main_c2():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('--c2', action='store_true')
+    ap.add_argument('--smkc2', required=True)
+    ap.add_argument('--match', required=True)
+    ap.add_argument('--config', required=True)
+    a = ap.parse_args()
+    sm = json.loads((Path(a.smkc2) / 'result.json').read_text())
+    assert sm.get('complete') is True and sm['gates']['G-RR'] and sm['gates']['G-FR'] and sm.get('pilots_ok'), 'C2 smoke not usable'
+    M = json.loads((HERE / a.match).read_text())
+    cfgp = HERE / a.config
+    cfg = json.loads(cfgp.read_text())
+    tot, det = project_c2(cfg, sm, M, None)
+    out = dict(attempt=cfg['attempt'], smoke=str(a.smkc2), smoke_job=sm.get('job_id'), gpu=sm.get('gpu'),
+               projection_seconds=tot, projection_hours=tot / 3600, required_limit_hours=1.5 * tot / 3600,
+               configs={a.config: hashlib.sha256(cfgp.read_bytes()).hexdigest()}, runs=[f'c2time:{a.config}'], detail=det,
+               note='estimates with headroom (x1.5), not demonstrated upper bounds')
+    (HERE / 'checks' / f"resources-{cfg['attempt']}.json").write_text(json.dumps(out, indent=1) + '\n')
+    print(cfg['attempt'], 'projection h', round(tot / 3600, 3), 'required limit h', round(1.5 * tot / 3600, 3))
+
+
+if __name__ == '__main__' and '--c2' in __import__('sys').argv:
+    main_c2()

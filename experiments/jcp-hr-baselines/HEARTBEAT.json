@@ -1,7 +1,7 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T20:08:00Z",
- "step": "resumed (#4): checking offloads, t3d64b and s2d1024a; switching to background sacct waiters (<= 20 min)",
+ "utc": "2026-10-18T20:08:39Z",
+ "step": "offloads done (smk1, smk2, t3d64a, t2d1024a -> burgers-archive; disk 145 GB free). t3d64b 5542231 RUNNING 5:26 (3D ECSW r=1024 path OOM at the first append -> rank not constructible, registered; r=768 path 2,377 s); s2d1024a 5674029 RUNNING 1:30. Waiting with a background sacct waiter (<= 18 min)",
  "waiting_on": {
   "slurm_jobs": [
    5542231,
@@ -9,9 +9,9 @@
   ],
   "codex_output": null,
   "codex_pid": [],
-  "local_pid": null
+  "local_pid": 3677602
  },
- "expected_finish_utc": "2026-10-18T20:28:00Z",
+ "expected_finish_utc": "2026-10-18T20:27:39Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

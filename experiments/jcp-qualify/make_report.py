@@ -30,6 +30,10 @@ def g(x, d=3):
     return '—' if x is None else (f'{x:.{d}g}' if isinstance(x, (int, float)) else str(x))
 
 
+def olab(x):
+    return str(x).replace('dt0..dt0/4', '$\\Delta t_0\\dots\\Delta t_0/4$')
+
+
 def esc(x):
     return str(x).replace('|', ' \\| ')
 
@@ -73,7 +77,9 @@ def plots():
                 ax.scatter(v['c'], v[stat], s=26 + 8 * (c['r'] // 128), color=COL[key], alpha=1 if on else .35,
                            edgecolor='#0b0b0b' if on else 'none', linewidth=.8, zorder=3 if on else 2)
                 if on:
-                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(4, 3), textcoords='offset points', fontsize=7)
+                    i_ = sorted(front, key=lambda kk: cand[kk]['c']).index(k)
+                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(5, 6 if i_ % 2 == 0 else -10),
+                                textcoords='offset points', fontsize=6.5)
             pts = sorted((cand[k]['c'], cand[k][stat]) for k in front)
             if pts:
                 ax.plot(*zip(*pts), color='#0b0b0b', lw=.8, zorder=1)
@@ -95,13 +101,17 @@ def plots():
     for m, k, v in rows:
         c = parse(k)
         if v.get('c') and v.get('median'):
-            ax.scatter(v['c'], v['median'], color=COL[c['form'] + '|' + c['scheme']], marker='x')
-            ax.annotate(f"{m}² R{c['r']}·{g(c['factor'])}", (v['c'], v['median']), xytext=(3, 3), textcoords='offset points', fontsize=7)
+            ax.scatter(v['c'], v['median'], color=COL[c['form'] + '|' + c['scheme']], marker={'256': 'x', '1024': '+', '4096': '1'}[m], s=40)
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.set_title(f'Unqualified or unusable configurations ({len(rows)}), never on a headline front', fontsize=9)
     ax.set_xlabel('online cost / reference A')
-    ax.set_ylabel('median error (E0)')
+    ax.set_ylabel(f'median error, 38 cases\n{LBL}')
+    for m, mk in (('256', 'x'), ('1024', '+'), ('4096', '1')):
+        ax.scatter([], [], marker=mk, color='#555555', label=f'{m}²')
+    for key, col in COL.items():
+        ax.scatter([], [], marker='s', color=col, label=SCH[key])
+    ax.legend(frameon=False, fontsize=7, ncol=2)
     fig.tight_layout()
     fig.savefig(pd / 'unqualified.png', dpi=150)
     plt.close(fig)
@@ -128,6 +138,53 @@ def plots():
     fig.savefig(pd / 'error_vs_r.png', dpi=150)
     plt.close(fig)
     made.append('plots/error_vs_r.png')
+    # error vs N per r (LSPG-CN-R and GAL-CN at dt0, BE at dt0), qualified only
+    fig, axs = plt.subplots(1, 3, figsize=(13, 4), sharey=True)
+    for ax, (form, sc) in zip(axs, (('LSPG', 'BE'), ('LSPG', 'CNR'), ('GAL', 'CN'))):
+        for r, col in zip((128, 256, 384, 512), ('#4269d0', '#efb118', '#3ca951', '#ff725c')):
+            for f, ls in ((1., '-'), (2., '--')):
+                xs, ys = [], []
+                for m in MESHES:
+                    v = C.get(f'{m}|R{r}|{form}|{sc}|{f:g}')
+                    if v and v['numerically_qualified']:
+                        xs.append(int(m))
+                        ys.append(v['stats']['median'])
+                if xs:
+                    ax.plot(xs, ys, marker='o', ls=ls, color=col, label=f'R{r} {g(f)}Δt₀')
+        ax.set_xscale('log', base=2)
+        ax.set_yscale('log')
+        ax.set_xticks([256, 1024, 4096])
+        ax.set_xticklabels(['256²', '1024²', '4096²'])
+        ax.set_title(SCH[form + '|' + sc], fontsize=9)
+        ax.set_xlabel('mesh N')
+    axs[0].set_ylabel(f'median error, 38 cases\n{LBL}')
+    axs[-1].legend(frameon=False, fontsize=7, ncol=2)
+    fig.tight_layout()
+    fig.savefig(pd / 'error_vs_N.png', dpi=150)
+    plt.close(fig)
+    made.append('plots/error_vs_N.png')
+    # conditioning vs r (Q3, 1024^2)
+    fig, ax = plt.subplots(figsize=(7, 4))
+    for (form, sc), mk in ((('LSPG', 'BE'), 'o'), (('LSPG', 'CNR'), 's'), (('GAL', 'CN'), '^')):
+        for f, ls in ((1., '-'), (2., '--')):
+            xs, ys = [], []
+            for r in (128, 256, 384, 512):
+                v = C.get(f'1024|R{r}|{form}|{sc}|{f:g}')
+                if v and v.get('q3'):
+                    xs.append(r)
+                    ys.append(v['q3']['J_cond_median'])
+            if xs:
+                ax.plot(xs, ys, marker=mk, ls=ls, color=COL[form + '|' + sc], label=f"{SCH[form + '|' + sc]} {g(f)}Δt₀")
+    ax.set_yscale('log')
+    ax.set_xticks([128, 256, 384, 512])
+    ax.set_xlabel('bank width r')
+    ax.set_ylabel('median cond(step Jacobian), dev6, outputs 1, 3, 5')
+    ax.set_title('Q3 conditioning at 1024² (lane configurations; P1 Δt₀ LSPG values in P1 report)', fontsize=9)
+    ax.legend(frameon=False, fontsize=7)
+    fig.tight_layout()
+    fig.savefig(pd / 'conditioning_vs_r.png', dpi=150)
+    plt.close(fig)
+    made.append('plots/conditioning_vs_r.png')
     # B4
     B4 = AN.get('B4', {})
     keys = [k for k in B4 if k != 'TH06_control' and isinstance(B4[k], dict) and 'cases' in B4[k]]
@@ -202,10 +259,10 @@ def main():
             w(f"- **Front at {m}²:** {len(f['fronts']['median|c'])} median-front and {len(f['fronts']['worst|c'])} worst-front members among {len(f['candidates'])} qualified candidates; {len(f['unqualified'])} configurations unqualified or without usable timing.")
             cnt = lambda st: ', '.join(f"{SCH[x]} {sum(1 for k in f['fronts'][st] if parse(k)['form'] + '|' + parse(k)['scheme'] == x)}" for x in SCH)
             lo = min(f['fronts']['median|c'], key=lambda k: f['candidates'][k]['median'])
-            w(f"  Median front by scheme: {cnt('median|c')}; worst front: {cnt('worst|c')}. Most accurate median-front member: {name(lo)} at {pct(f['candidates'][lo]['median'])} median, cost {g(f['candidates'][lo]['c'])}× A.")
+            w(f"  (Errors: conditional E0 estimates.) Median front by scheme: {cnt('median|c')}; worst front: {cnt('worst|c')}. Most accurate median-front member: {name(lo)} at {pct(f['candidates'][lo]['median'])} median, cost {g(f['candidates'][lo]['c'])}× A.")
     for k, v in AN.get('B4', {}).items():
         if k != 'TH06_control' and isinstance(v, dict) and isinstance(v.get('label'), dict):
-            w(f"- **B4 {k.replace('|', ' ').replace('_', ' ').replace('CNR', 'CN-R').replace('LSPG ', 'LSPG-').replace('GAL ', 'GAL-')}:** {v['label']['label']} (median p̂ {g(v['label'].get('p_median'))}, {v['label']['interpretable']} interpretable cases).")
+            w(f"- **B4 {k.replace('|', ' ').replace('_', ' ').replace('CNR', 'CN-R').replace('LSPG ', 'LSPG-').replace('GAL ', 'GAL-')}:** {olab(v['label']['label'])} (median p̂ {g(v['label'].get('p_median'))}, {v['label']['interpretable']} interpretable cases).")
     from collections import Counter
     hn = Counter(v.get('outcome') for v in AN['B1']['h_acc_n'].values())
     w(f"- **B1 H-acc-N** over {len(AN['B1']['h_acc_n'])} (r, family) tests: " + ', '.join(f'{k} {n}' for k, n in sorted(hn.items(), key=lambda x: str(x[0]))) + '.')
@@ -220,7 +277,7 @@ def main():
     if AN.get('threeD'):
         T3 = AN['threeD']
         npass = sum(v['label'] == 'pass' for v in T3['tested'].values())
-        w(f"- **3D Q2:** {npass} of {len(T3['tested'])} tested speed3d configurations pass their own successor-rule check; control fired: {T3.get('control_fired')}; {len(T3['open_candidates'])} untested candidates remain open (result label: {T3['label']}).")
+        w(f"- **3D Q2:** {npass} of {len(T3['tested'])} tested speed3d configurations pass their own successor-rule check over {len(T3['rounds'])} rounds; control fired: {T3.get('control_fired')}; round limit reached: {T3.get('round_limit_reached')} ({len(T3.get('exposed_untested_after_last_round') or [])} untested candidates still exposed on the next front); {len(T3['open_candidates'])} untested candidates remain open (result label: {T3['label']}).")
     if FR:
         w(f"- **Deliverable:** `runs/FRONT-2D.json` (sha256 `{FRSHA[:16]}…`), frozen after the results audit.")
     w('')
@@ -286,20 +343,20 @@ def main():
     for k, v in AN.get('B4', {}).items():
         if isinstance(v, dict) and 'label' in v and isinstance(v['label'], dict):
             lab = v['label']
-            w(f"| {esc(k.replace('_', ' '))} | {lab['label']} | {lab['interpretable']} | {g(lab.get('p_median'))} | {rng(lab.get('p_range'))} |")
+            w(f"| {esc(k.replace('_', ' '))} | {olab(lab['label'])} | {lab['interpretable']} | {g(lab.get('p_median'))} | {rng(lab.get('p_range'))} |")
     w('')
     w('An "order 2" label is a **finite-range observed order** over $\\Delta t_0\\dots\\Delta t_0/4$ against a same-form anchor at $\\Delta t_0/64$; for the LSPG CN family the jcp-time2 analysis predicts asymptotic order 1, which this measurement does not contradict or confirm.')
     w('')
     w('## B5: the qualified error–cost front per mesh')
     w('')
-    w('Cost = median over valid fused triplets of (full online query: input sampling, evolution, full-field decode) / mean of the two flanking runs of the reference A (r = 384, $1024^2$, LSPG-CN-R, $\\Delta t_0$), one H200 job per mesh. A candidate needs both numerical labels (accuracy job and timing job), usable timing and all 38 cases. Dominance as DESIGN §6 (5 % cost band, error margin $\\max(2\\varepsilon, 2\\%)$).')
+    w('Cost = median over valid fused triplets of (full online query: input sampling, evolution, full-field decode) / mean of the two flanking runs of the reference A (r = 384, $1024^2$, LSPG-CN-R, $\\Delta t_0$), one H200 job per mesh. A candidate needs both numerical labels (accuracy job and timing job), usable timing and all 38 cases. Dominance as DESIGN §6: $X\\succ Y$ iff $c_X\\le1.05\\,c_Y$, $e_X\\le e_Y+\\tau_{XY}$ and ($c_X<c_Y/1.05$ or $e_X<e_Y-\\tau_{XY}$), with $\\tau_{XY}=\\max\\big(2\\max(\\bar\\varepsilon_X,\\bar\\varepsilon_Y),\\,0.02\\max(e_X,e_Y)\\big)$. Errors are conditional E0 estimates.')
     w('')
     for m in MESHES:
         f = AN.get('fronts', {}).get(m, {})
         if 'members' not in f:
             w(f'- {m}²: {f.get("status")}')
             continue
-        w(f'**{m}²**')
+        w(f'**{m}²** (errors: conditional E0 $R_{{ST}}$ estimates)')
         w('')
         w('| configuration | front | cost / A | evolution / A | median e | worst e | role |')
         w('|---|---|---|---|---|---|---|')
@@ -327,6 +384,8 @@ def main():
         w('')
         c = T3.get('control', {})
         w(f"Under-resolved control (W512 lat8192 → lat16384): label {c.get('label')}, worst distance {g(c.get('worst_dist_qp'))}, fired {c.get('passed')}.")
+        w('')
+        w(f"Round limit reached: {T3.get('round_limit_reached')}; untested candidates exposed on the next front after the last round: {len(T3.get('exposed_untested_after_last_round') or [])} (listed in `checks/analysis.json`, `threeD.exposed_untested_after_last_round`).")
         w('')
         w(f"Qualified subset front (median): {', '.join('`' + x + '`' for x in T3['qualified_subset_front']['median']) or 'none'}; (worst): {', '.join('`' + x + '`' for x in T3['qualified_subset_front']['worst']) or 'none'}. Open candidates: {len(T3['open_candidates'])}.")
         w('')
@@ -368,13 +427,13 @@ def main():
         ('Δt₀, factor', 'Δt₀ = 0.005; a configuration runs at factor × Δt₀ (1, 2, and the registered larger step: 2.5 for LSPG-BE and LSPG-CN-R, 5 for GAL-CN).'),
         ('LSPG-BE, LSPG-CN-R, GAL-CN, TH06', 'least-squares Petrov–Galerkin backward Euler; LSPG Crank–Nicolson with two backward-Euler start-up steps; Galerkin Crank–Nicolson; θ-method θ = 0.6 (a first-order control).'),
         ('E0 R_ST, ε_ref', 'second-order space–time reference (primary); its per-case uncertainty, a conditional Richardson estimate, not a bound.'),
-        ('e, median e, worst e', 'e = max over the five evolved outputs of ‖u − R‖ / ‖R(t₀)‖ on the 257² scoring lattice; median / worst over the 38 cases.'),
+        ('e, median e, worst e', '$e=\\max_{k=1..5}\\lVert u(t_k)-R(t_k)\\rVert/\\lVert R(t_0)\\rVert$ on the 257² scoring lattice (2D); median / worst over the 38 cases.'),
         ('Q1', 'solver qualification: every run valid, ≤ 1 % of steps not certified (LSPG stationarity ratio ≤ 10⁻³; GAL relative Galerkin residual ≤ 10⁻⁸), distance to a tight solve ≤ 2.5·10⁻⁴ on every case, tight/tighter ≤ 2.5·10⁻⁵ on dev6.'),
-        ('Q2', 'quadrature qualification on 16 cases: replay with the next finer rule within 2.5·10⁻⁴, own-state ρ ≤ 0.116, and the finer rule converged against the next one.'),
+        ('Q2 (2D)', 'quadrature qualification on 16 cases: replay with the next finer rule within $2.5\\times10^{-4}$, own-state $\\rho\\le0.116$, and the finer rule converged against the next one.'),
         ('Q3, cond(J)', 'conditioning: condition number of the scheme\'s step Jacobian at outputs 1, 3, 5 of the dev6 trajectories.'),
         ('ρ', 'relative change of the tested advection vector between a rule and its successor at the configuration\'s own output states.'),
         ('numerically qualified', 'Q1 and Q2 pass (and the reproduction gate where one applies).'),
-        ('repro', 'registered gate: the lane\'s run equals combined\'s archived coefficients to ≤ 10⁻¹⁰ after numerical-manifest equality.'),
+        ('repro', 'registered gates: 2D, the lane\'s run equals combined\'s archived coefficients to $\\le10^{-10}$ after numerical-manifest equality; 3D, the rerun with the configuration\'s own rule equals speed3d\'s archive to $\\le10^{-10}$.'),
         ('cost / A, evolution / A', 'paired timing ratios against the reference configuration A in the same job and GPU (full query; evolution only).'),
         ('front (median, worst)', 'qualified candidates not dominated by any other at the same mesh under the DESIGN §6 rule, for the median or the worst error.'),
         ('role', 'pre-declared descriptive label against the same-r LSPG-BE at Δt₀: fast-equal-accuracy (cost ≤ 0.6, ties or beats both errors) or accurate-equal-cost (cost ≤ 1.1, lower median).'),
@@ -384,6 +443,15 @@ def main():
         ('q, q⁺, q⁺⁺', 'a configuration\'s quadrature rule, its successor and the check rule (next entries of the rule ladder).'),
         ('open candidates (3D)', 'untested 3D configurations not dominated (median and worst) by any Q2-passed configuration.'),
         ('fallback rule', 'the registered one-level replacement of a rule that failed Q2 by its successor.'),
+        ('n', 'number of E0-eligible cases in a statistic (38 here for every configuration).'),
+        ('dev6, val32, 16-case subset', 'the 6 development and 32 validation cases of the 2D cohorts; the subset is dev6 plus val32 cases 0–9.'),
+        ('P256, P4096, sensitivity (P4096 on 38)', 'H-acc-N case pairs: 256² vs 1024² on 38 cases; 4096² vs 1024² on the registered 16-case subset; the same on all 38 cases, reported without a verdict.'),
+        ('3D settings (M2_512, W256 … W1024)', 'speed3d bank / width settings: the M2 bank at r = 512, and prefixes of width 256–1024 of the W1024 bank, at 65³.'),
+        ('3D rules (glN, latN)', 'Gauss tensor rules with N³ points; rank-1 lattice rules with N points.'),
+        ('3D solver specs (fs, qn, K, k)', 'fixed-sweep Gauss–Newton (fs) with K full sweeps per step; quasi-Newton (qn) with Jacobian refresh every k iterations; followed by scheme (BE, CN, BDF2) and step.'),
+        ('3D error and distance', 'max over the five evolved outputs of the relative ℓ² difference on the 63³ scoring lattice, normalised by the initial field; errors against E0 $R_{ST}$ over the 64 cases of cohort 923801.'),
+        ('Q2-3D', 'successor-rule replay within 2.5·10⁻⁴ on all 64 cases, own-state ρ ≤ 0.116, and the successor converged against the next rule on cases 0–7.'),
+        ('round limit, exposed', 'Q2-3D ran in at most three rounds; "exposed" candidates are untested configurations on the front of the untested-plus-passed set after the last round.'),
     ]:
         w(f'- **{t}**: {d}')
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')

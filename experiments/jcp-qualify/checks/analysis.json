@@ -88287,6 +88287,25 @@
    "expected": "fail",
    "passed": true
   },
+  "round_limit_reached": true,
+  "exposed_untested_after_last_round": [
+   "W256|gl16|fs|BDF2|0.01|K1",
+   "W256|gl20|qn|CN|0.016666667|k4",
+   "W256|lat8192|qn|CN|0.016666667|k4",
+   "M2_512|lat16384|fs|BDF2|0.025|K2",
+   "M2_512|gl24|fs|BDF2|0.01|K1",
+   "M2_512|gl24|qn|BDF2|0.0125|k4",
+   "M2_512|gl24|fs|CN|0.016666667|K2",
+   "M2_512|lat16384|fs|BE|0.01|K1",
+   "W512|gl24|fs|CN|0.016666667|K2",
+   "M2_512|lat16384|fs|BDF2|0.016666667|K2",
+   "M2_512|lat16384|qn|CN|0.01|k4",
+   "W512|gl24|fs|CN|0.01|K2",
+   "W768|lat32768|qn|CN|0.0125|k1",
+   "W768|lat32768|fs|CN|0.01|K1",
+   "W1024|lat65536|qn|CN|0.01|k1",
+   "W1024|lat65536|fs|CN|0.01|K1"
+  ],
   "tested": {
    "W256|gl16|fs|BE|0.016666667|K1": {
     "label": "fail",
@@ -89714,7 +89733,7 @@
    "W1024|lat32768|fs|BDF2|0.025|K2"
   ],
   "control_fired": true,
-  "label": "qualified subset of the tested candidates (never a completeness claim, A2.1)",
+  "label": "qualified subset of the tested candidates (never a completeness claim, A2.1); round limit reached (A1.1: three rounds)",
   "contract": "speed3d screening contract: full-field 65^3 mesh-path rollout; ratios from separate jobs against C_old"
  }
 }

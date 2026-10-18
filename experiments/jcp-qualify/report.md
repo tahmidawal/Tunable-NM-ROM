@@ -8,23 +8,23 @@ GPU-hours spent: 4.13 of the 35 cap (16 jobs; `runs/GPU-LEDGER.json`).
 
 - **Q1/Q2 (2D):** 98 of 112 configurations numerically qualified (Q1 solver + Q2 quadrature; P1's certified configurations are cited).
 - **Front at 256²:** 7 median-front and 7 worst-front members among 32 qualified candidates; 6 configurations unqualified or without usable timing.
-  Median front by scheme: LSPG-BE 1, LSPG-CN-R 0, GAL-CN 6; worst front: LSPG-BE 2, LSPG-CN-R 2, GAL-CN 3. Most accurate median-front member: R384 GAL-CN 1Δt₀ at 0.0504 % median, cost 1.31× A.
+  (Errors: conditional E0 estimates.) Median front by scheme: LSPG-BE 1, LSPG-CN-R 0, GAL-CN 6; worst front: LSPG-BE 2, LSPG-CN-R 2, GAL-CN 3. Most accurate median-front member: R384 GAL-CN 1Δt₀ at 0.0504 % median, cost 1.31× A.
 - **Front at 1024²:** 7 median-front and 7 worst-front members among 33 qualified candidates; 4 configurations unqualified or without usable timing.
-  Median front by scheme: LSPG-BE 1, LSPG-CN-R 0, GAL-CN 6; worst front: LSPG-BE 2, LSPG-CN-R 3, GAL-CN 2. Most accurate median-front member: R384 GAL-CN 1Δt₀ at 0.0495 % median, cost 1.31× A.
+  (Errors: conditional E0 estimates.) Median front by scheme: LSPG-BE 1, LSPG-CN-R 0, GAL-CN 6; worst front: LSPG-BE 2, LSPG-CN-R 3, GAL-CN 2. Most accurate median-front member: R384 GAL-CN 1Δt₀ at 0.0495 % median, cost 1.31× A.
 - **Front at 4096²:** 7 median-front and 8 worst-front members among 33 qualified candidates; 4 configurations unqualified or without usable timing.
-  Median front by scheme: LSPG-BE 1, LSPG-CN-R 0, GAL-CN 6; worst front: LSPG-BE 3, LSPG-CN-R 3, GAL-CN 2. Most accurate median-front member: R384 GAL-CN 1Δt₀ at 0.0497 % median, cost 1.5× A.
+  (Errors: conditional E0 estimates.) Median front by scheme: LSPG-BE 1, LSPG-CN-R 0, GAL-CN 6; worst front: LSPG-BE 3, LSPG-CN-R 3, GAL-CN 2. Most accurate median-front member: R384 GAL-CN 1Δt₀ at 0.0497 % median, cost 1.5× A.
 - **B4 R128 LSPG-BE:** order 1 (median p̂ 1, 6 interpretable cases).
 - **B4 R128 LSPG-CN-R:** observed order, no integer label (median p̂ 1.74, 5 interpretable cases).
-- **B4 R128 GAL-CN:** order 2 (finite-range observed order over dt0..dt0/4) (median p̂ 2, 6 interpretable cases).
+- **B4 R128 GAL-CN:** order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$) (median p̂ 2, 6 interpretable cases).
 - **B4 R384 LSPG-BE:** order 1 (median p̂ 1.01, 6 interpretable cases).
-- **B4 R384 LSPG-CN-R:** order 2 (finite-range observed order over dt0..dt0/4) (median p̂ 1.96, 6 interpretable cases).
-- **B4 R384 GAL-CN:** order 2 (finite-range observed order over dt0..dt0/4) (median p̂ 2, 6 interpretable cases).
+- **B4 R384 LSPG-CN-R:** order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$) (median p̂ 1.96, 6 interpretable cases).
+- **B4 R384 GAL-CN:** order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$) (median p̂ 2, 6 interpretable cases).
 - **B4 R384 GAL-TH06:** order 1 (median p̂ 0.998, 6 interpretable cases).
 - **B1 H-acc-N** over 30 (r, family) tests: inconclusive 4, inconclusive (unqualified configuration) 5, pass 21.
 - **B1 H-acc-r** over 27 (mesh, family) cells: range 128–384 inconclusive 10, monotone 14, not monotone 3; range 128–512 inconclusive 7, not monotone 20.
 - **Roles (descriptive):** 5 fast-equal-accuracy and 30 accurate-equal-cost labels among 98 qualified configurations with usable timing.
 - **B4 TH06 control:** label order 1, interpretable 6, agrees with smoke True → passed.
-- **3D Q2:** 4 of 55 tested speed3d configurations pass their own successor-rule check; control fired: True; 146 untested candidates remain open (result label: qualified subset of the tested candidates (never a completeness claim, A2.1)).
+- **3D Q2:** 4 of 55 tested speed3d configurations pass their own successor-rule check over 3 rounds; control fired: True; round limit reached: True (16 untested candidates still exposed on the next front); 146 untested candidates remain open (result label: qualified subset of the tested candidates (never a completeness claim, A2.1); round limit reached (A1.1: three rounds)).
 - **Deliverable:** `runs/FRONT-2D.json` (sha256 `a51ac1a250f00d4b…`), frozen after the results audit.
 
 ```mermaid
@@ -256,19 +256,19 @@ Counts in brackets: improve / worsen / tie / unqualified cases. P1's own verdict
 |---|---|---|---|---|
 | R128 \| LSPG BE | order 1 | 6 | 1 | 0.948–1.02 |
 | R128 \| LSPG CNR | observed order, no integer label | 5 | 1.74 | 1.72–1.94 |
-| R128 \| GAL CN | order 2 (finite-range observed order over dt0..dt0/4) | 6 | 2 | 2–2.01 |
+| R128 \| GAL CN | order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$) | 6 | 2 | 2–2.01 |
 | R384 \| LSPG BE | order 1 | 6 | 1.01 | 0.977–1.02 |
-| R384 \| LSPG CNR | order 2 (finite-range observed order over dt0..dt0/4) | 6 | 1.96 | 1.88–2 |
-| R384 \| GAL CN | order 2 (finite-range observed order over dt0..dt0/4) | 6 | 2 | 2–2.01 |
+| R384 \| LSPG CNR | order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$) | 6 | 1.96 | 1.88–2 |
+| R384 \| GAL CN | order 2 (finite-range observed order over $\Delta t_0\dots\Delta t_0/4$) | 6 | 2 | 2–2.01 |
 | R384 \| GAL TH06 | order 1 | 6 | 0.998 | 0.967–1.02 |
 
 An "order 2" label is a **finite-range observed order** over $\Delta t_0\dots\Delta t_0/4$ against a same-form anchor at $\Delta t_0/64$; for the LSPG CN family the jcp-time2 analysis predicts asymptotic order 1, which this measurement does not contradict or confirm.
 
 ## B5: the qualified error–cost front per mesh
 
-Cost = median over valid fused triplets of (full online query: input sampling, evolution, full-field decode) / mean of the two flanking runs of the reference A (r = 384, $1024^2$, LSPG-CN-R, $\Delta t_0$), one H200 job per mesh. A candidate needs both numerical labels (accuracy job and timing job), usable timing and all 38 cases. Dominance as DESIGN §6 (5 % cost band, error margin $\max(2\varepsilon, 2\%)$).
+Cost = median over valid fused triplets of (full online query: input sampling, evolution, full-field decode) / mean of the two flanking runs of the reference A (r = 384, $1024^2$, LSPG-CN-R, $\Delta t_0$), one H200 job per mesh. A candidate needs both numerical labels (accuracy job and timing job), usable timing and all 38 cases. Dominance as DESIGN §6: $X\succ Y$ iff $c_X\le1.05\,c_Y$, $e_X\le e_Y+\tau_{XY}$ and ($c_X<c_Y/1.05$ or $e_X<e_Y-\tau_{XY}$), with $\tau_{XY}=\max\big(2\max(\bar\varepsilon_X,\bar\varepsilon_Y),\,0.02\max(e_X,e_Y)\big)$. Errors are conditional E0 estimates.
 
-**256²**
+**256²** (errors: conditional E0 $R_{ST}$ estimates)
 
 | configuration | front | cost / A | evolution / A | median e | worst e | role |
 |---|---|---|---|---|---|---|
@@ -307,7 +307,7 @@ Cost = median over valid fused triplets of (full online query: input sampling, e
 
 Not on any headline front (separate panel): R128 LSPG-CN-R 2Δt₀ (accuracy label); R128 LSPG-CN-R 2.5Δt₀ (accuracy label); R256 LSPG-CN-R 2Δt₀ (accuracy label); R256 LSPG-CN-R 2.5Δt₀ (accuracy label); R384 LSPG-CN-R 2.5Δt₀ (accuracy label); R128 LSPG-CN-R 2.5Δt₀ (fallback rule) (accuracy label)
 
-**1024²**
+**1024²** (errors: conditional E0 $R_{ST}$ estimates)
 
 | configuration | front | cost / A | evolution / A | median e | worst e | role |
 |---|---|---|---|---|---|---|
@@ -347,7 +347,7 @@ Not on any headline front (separate panel): R128 LSPG-CN-R 2Δt₀ (accuracy lab
 
 Not on any headline front (separate panel): R128 LSPG-CN-R 2Δt₀ (accuracy label); R128 LSPG-CN-R 2.5Δt₀ (accuracy label); R256 LSPG-CN-R 2Δt₀ (accuracy label); R128 LSPG-CN-R 2.5Δt₀ (fallback rule) (accuracy label)
 
-**4096²**
+**4096²** (errors: conditional E0 $R_{ST}$ estimates)
 
 | configuration | front | cost / A | evolution / A | median e | worst e | role |
 |---|---|---|---|---|---|---|
@@ -389,7 +389,7 @@ Not on any headline front (separate panel): R128 LSPG-CN-R 2Δt₀ (accuracy lab
 
 ## 3D: Q2 of speed3d's front members and winners
 
-Contract: speed3d screening contract: full-field 65^3 mesh-path rollout; ratios from separate jobs against C_old. Label: **qualified subset of the tested candidates (never a completeness claim, A2.1)**. Q1 is speed3d's eligibility (cited).
+Contract: speed3d screening contract: full-field 65^3 mesh-path rollout; ratios from separate jobs against C_old. Label: **qualified subset of the tested candidates (never a completeness claim, A2.1); round limit reached (A1.1: three rounds)**. Q1 is speed3d's eligibility (cited).
 
 | configuration | Q2-3D | worst q vs q⁺ distance | ρ max | q⁺ vs q⁺⁺ | reproduction |
 |---|---|---|---|---|---|
@@ -451,6 +451,8 @@ Contract: speed3d screening contract: full-field 65^3 mesh-path rollout; ratios 
 
 Under-resolved control (W512 lat8192 → lat16384): label fail, worst distance 0.0043, fired True.
 
+Round limit reached: True; untested candidates exposed on the next front after the last round: 16 (listed in `checks/analysis.json`, `threeD.exposed_untested_after_last_round`).
+
 Qualified subset front (median): `W256|lat8192|qn|BDF2|0.025|k4`, `W256|gl24|fs|CN|0.0125|K1`, `W256|gl24|fs|CN|0.01|K1`; (worst): `W256|lat8192|qn|BDF2|0.025|k4`, `W512|lat16384|qn|BDF2|0.025|k4`. Open candidates: 146.
 
 ## Controls
@@ -480,6 +482,8 @@ Real-size smoke acceptance (`checks/smoke-accept.json`): 85 of 85 required contr
 ![plots/front2d_worst.png](plots/front2d_worst.png)
 ![plots/unqualified.png](plots/unqualified.png)
 ![plots/error_vs_r.png](plots/error_vs_r.png)
+![plots/error_vs_N.png](plots/error_vs_N.png)
+![plots/conditioning_vs_r.png](plots/conditioning_vs_r.png)
 ![plots/order_b4.png](plots/order_b4.png)
 ![plots/front3d.png](plots/front3d.png)
 
@@ -490,13 +494,13 @@ Real-size smoke acceptance (`checks/smoke-accept.json`): 85 of 85 required contr
 - **Δt₀, factor**: Δt₀ = 0.005; a configuration runs at factor × Δt₀ (1, 2, and the registered larger step: 2.5 for LSPG-BE and LSPG-CN-R, 5 for GAL-CN).
 - **LSPG-BE, LSPG-CN-R, GAL-CN, TH06**: least-squares Petrov–Galerkin backward Euler; LSPG Crank–Nicolson with two backward-Euler start-up steps; Galerkin Crank–Nicolson; θ-method θ = 0.6 (a first-order control).
 - **E0 R_ST, ε_ref**: second-order space–time reference (primary); its per-case uncertainty, a conditional Richardson estimate, not a bound.
-- **e, median e, worst e**: e = max over the five evolved outputs of ‖u − R‖ / ‖R(t₀)‖ on the 257² scoring lattice; median / worst over the 38 cases.
+- **e, median e, worst e**: $e=\max_{k=1..5}\lVert u(t_k)-R(t_k)\rVert/\lVert R(t_0)\rVert$ on the 257² scoring lattice (2D); median / worst over the 38 cases.
 - **Q1**: solver qualification: every run valid, ≤ 1 % of steps not certified (LSPG stationarity ratio ≤ 10⁻³; GAL relative Galerkin residual ≤ 10⁻⁸), distance to a tight solve ≤ 2.5·10⁻⁴ on every case, tight/tighter ≤ 2.5·10⁻⁵ on dev6.
-- **Q2**: quadrature qualification on 16 cases: replay with the next finer rule within 2.5·10⁻⁴, own-state ρ ≤ 0.116, and the finer rule converged against the next one.
+- **Q2 (2D)**: quadrature qualification on 16 cases: replay with the next finer rule within $2.5\times10^{-4}$, own-state $\rho\le0.116$, and the finer rule converged against the next one.
 - **Q3, cond(J)**: conditioning: condition number of the scheme's step Jacobian at outputs 1, 3, 5 of the dev6 trajectories.
 - **ρ**: relative change of the tested advection vector between a rule and its successor at the configuration's own output states.
 - **numerically qualified**: Q1 and Q2 pass (and the reproduction gate where one applies).
-- **repro**: registered gate: the lane's run equals combined's archived coefficients to ≤ 10⁻¹⁰ after numerical-manifest equality.
+- **repro**: registered gates: 2D, the lane's run equals combined's archived coefficients to $\le10^{-10}$ after numerical-manifest equality; 3D, the rerun with the configuration's own rule equals speed3d's archive to $\le10^{-10}$.
 - **cost / A, evolution / A**: paired timing ratios against the reference configuration A in the same job and GPU (full query; evolution only).
 - **front (median, worst)**: qualified candidates not dominated by any other at the same mesh under the DESIGN §6 rule, for the median or the worst error.
 - **role**: pre-declared descriptive label against the same-r LSPG-BE at Δt₀: fast-equal-accuracy (cost ≤ 0.6, ties or beats both errors) or accurate-equal-cost (cost ≤ 1.1, lower median).
@@ -506,3 +510,12 @@ Real-size smoke acceptance (`checks/smoke-accept.json`): 85 of 85 required contr
 - **q, q⁺, q⁺⁺**: a configuration's quadrature rule, its successor and the check rule (next entries of the rule ladder).
 - **open candidates (3D)**: untested 3D configurations not dominated (median and worst) by any Q2-passed configuration.
 - **fallback rule**: the registered one-level replacement of a rule that failed Q2 by its successor.
+- **n**: number of E0-eligible cases in a statistic (38 here for every configuration).
+- **dev6, val32, 16-case subset**: the 6 development and 32 validation cases of the 2D cohorts; the subset is dev6 plus val32 cases 0–9.
+- **P256, P4096, sensitivity (P4096 on 38)**: H-acc-N case pairs: 256² vs 1024² on 38 cases; 4096² vs 1024² on the registered 16-case subset; the same on all 38 cases, reported without a verdict.
+- **3D settings (M2_512, W256 … W1024)**: speed3d bank / width settings: the M2 bank at r = 512, and prefixes of width 256–1024 of the W1024 bank, at 65³.
+- **3D rules (glN, latN)**: Gauss tensor rules with N³ points; rank-1 lattice rules with N points.
+- **3D solver specs (fs, qn, K, k)**: fixed-sweep Gauss–Newton (fs) with K full sweeps per step; quasi-Newton (qn) with Jacobian refresh every k iterations; followed by scheme (BE, CN, BDF2) and step.
+- **3D error and distance**: max over the five evolved outputs of the relative ℓ² difference on the 63³ scoring lattice, normalised by the initial field; errors against E0 $R_{ST}$ over the 64 cases of cohort 923801.
+- **Q2-3D**: successor-rule replay within 2.5·10⁻⁴ on all 64 cases, own-state ρ ≤ 0.116, and the successor converged against the next rule on cases 0–7.
+- **round limit, exposed**: Q2-3D ran in at most three rounds; "exposed" candidates are untested configurations on the front of the untested-plus-passed set after the last round.

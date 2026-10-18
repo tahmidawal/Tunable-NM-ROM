@@ -536,8 +536,12 @@ def q3d():
     ctrl_ok = bool(out.get('control', {}).get('passed'))
     if not ctrl_ok:                                        # the 3D under-resolved control blocks Q2-3D and B5-3D (A1.8)
         fm, fw = [], []
+    exposed = [m['key'] for m in F3.round_next({k: v['label'] for k, v in tested.items()})]
+    out['round_limit_reached'] = bool(len(out['rounds']) >= 3 and exposed)
+    out['exposed_untested_after_last_round'] = exposed
     out.update(tested=tested, qualified_subset_front=dict(median=fm, worst=fw), open_candidates=open_, control_fired=ctrl_ok,
-               label='qualified subset of the tested candidates (never a completeness claim, A2.1)',
+               label='qualified subset of the tested candidates (never a completeness claim, A2.1)' +
+                     ('; round limit reached (A1.1: three rounds)' if out['round_limit_reached'] else ''),
                contract='speed3d screening contract: full-field 65^3 mesh-path rollout; ratios from separate jobs against C_old')
     return out
 
@@ -675,7 +679,9 @@ def main():
                threeD=None if out['threeD'] is None else dict(label=out['threeD']['label'], contract=out['threeD']['contract'],
                                                              tested={k: v['label'] for k, v in out['threeD']['tested'].items()},
                                                              front=out['threeD']['qualified_subset_front'],
-                                                             open_candidates=len(out['threeD']['open_candidates'])))
+                                                             open_candidates=len(out['threeD']['open_candidates']),
+                                                             round_limit_reached=out['threeD'].get('round_limit_reached'),
+                                                             exposed_untested=out['threeD'].get('exposed_untested_after_last_round')))
     (RUNS / 'EXPORT.json').write_text(json.dumps(exp, indent=1, default=str) + '\n')
     print('configurations', len(cfgs), 'qualified', sum(v['numerically_qualified'] for v in cfgs.values()))
 

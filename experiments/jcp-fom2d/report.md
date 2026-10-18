@@ -453,7 +453,8 @@ Diagnostic GAL-CN analogue (post hoc, not a K2 verdict): fires under the registe
 | `audits/codex-job-c2-1.md` | Verdict: SUBMIT all three staged jobs through the guarded submission script. | current |
 | `audits/codex-job-ladder-1.md` | Part A: ACCEPTED. | current |
 | `audits/codex-report-1.md` | NOT READY — reporting fixes required. | superseded by a later round |
-| `audits/codex-report-2.md` | NOT READY — reporting/provenance fixes remain. | current |
+| `audits/codex-report-2.md` | NOT READY — reporting/provenance fixes remain. | superseded by a later round |
+| `audits/codex-report-3.md` | REPORT NOT READY — one narrow glossary correction remains. | current |
 
 ## Glossary
 
@@ -491,7 +492,7 @@ Diagnostic GAL-CN analogue (post hoc, not a K2 verdict): fires under the registe
 - **crossover bracket, 1× / 2×** — the classification of each actually run mesh (ROM faster / FOM faster / unresolved, or ≥ 2× / < 2×) and the pair of meshes between which it changes; "point only" = one qualified mesh; never interpolated.
 - **K2** — the governing plan's kill criterion: the speed-up over the best validated FOM is below 2× at the largest mesh for every linear setting; here evaluated against screening-selected comparators under the dev6 rule.
 - **dev6, val32** — the six development and 32 validation cases (selection population).
-- **smoke, pilot** — smoke = a small real-size cluster job run before production to show that every gate passes and every control fires; pilot = a single untimed run of a heavy configuration to measure its memory and time.
+- **smoke, pilot** — smoke = a small real-size cluster job run before production to show that every gate passes and every control fires; resource pilot (ladder smoke) = one first (compiling) and one warm execution of a configuration on one case, recording time per stage, compile time and memory, used for the resource certificates; memory pilot (C2 smoke) = one untimed solve of a heavy FOM with the $4096^2$ ROM bank resident, checking convergence, finite output and peak memory (its solve time is not used).
 - **peak memory / limit** — the largest GPU memory in use during the job against the memory the job may use on the H200.
 - **cheapest configuration at a resolution** — the admissible tested configuration with the smallest screening cost at that $L$ or $N$, whatever its accuracy (no accuracy match).
 - **anchor distance** — max over output times and cases of $\lVert u_a(t_k)-u_b(t_k)\rVert_2/\lVert R_{ST}(t_0)\rVert_2$ on the scoring lattice between the two runs.

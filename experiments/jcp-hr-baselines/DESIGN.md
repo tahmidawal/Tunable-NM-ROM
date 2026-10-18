@@ -1001,3 +1001,7 @@ configuration. Everything else in A2.7 stands (finite trajectory, no damping sat
 the binding converged-anchor check remains the tight/tighter agreement ≤ 2.5e-5 on the prescribed subset. This
 changes only the lane's own anchor-validity rule (A1.7/A2.7), not the COMMON-BRIEF Q1 predicates for the arm's runs
 (where exit reason 3 still makes a run invalid).
+
+**A10.1 (2026-10-18, dry-run evidence) N-time fixture.** N-time times the `none` arm at the smoke rank (BE, native):
+its calls are long enough for stable timing, whereas the ECSW calls in the dry run lasted a few milliseconds and gave
+T = 1.79 on one CPU cell. Ours' A–B–A pairs with the ECSW fixture as before. The band [1.8, 2.2] is unchanged.

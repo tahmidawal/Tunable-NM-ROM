@@ -535,7 +535,8 @@ def run_cell(cfg, c, res, outdir, save):
     # ---- N-time (A3.9) on the 6 timing cases, and ours' adapter (A-side) against the ECSW fixture
     def n_time_and_ours():
         out = {}
-        kind, hrp = ('ecsw', tau_run) if ('ecsw', tau_run) in datas else ('none', '-')
+        # N-time uses the heavier `none` arm (stable call times); ours' A-B-A pairs with the ECSW fixture (A10.1)
+        kind, hrp = ('none', '-')
         dat = datas[(kind, hrp)][0]
         q = cell.query(kind, rs, 'native')
         sch = RM.schedule(d, opt_main[0], opt_main[1], 'prod_native')     # the native solver's production level (A8.1)
@@ -569,6 +570,11 @@ def run_cell(cfg, c, res, outdir, save):
             fX0 = ox.fn(('fs', 'BE', 0.01, 1))
             xid = 'combined W256 gl24 FS-K1 BE 0.01'
         fX = lambda u, v: fX0(u, v)['fields']
+        kind, hrp = ('ecsw', tau_run) if ('ecsw', tau_run) in datas else ('none', '-')
+        dat = datas[(kind, hrp)][0]
+        q = cell.query(kind, rs, 'native')
+        fA = lambda u, v: q(u, v, dat, sch)['fields']
+        out['ours_B'] = PL.cfg_id(kind, rs, hrp, opt_main[0], opt_main[1], 'native')
         ab = {}
         for j in TIMING_CASES:
             ux, vj = ox.u0(fam, j), jnp.float64(fam.nu(j))

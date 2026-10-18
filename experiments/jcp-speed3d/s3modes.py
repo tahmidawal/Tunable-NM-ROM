@@ -206,6 +206,16 @@ def mode_prof(cx):
     for c in blk['configs']:
         sn, rule, sp = _cfg_of(blk, c['label'])
         cx.rollouts(sn, rule, [sp], cases)
+    cx.save()
+    cx.dump()
+    # (e) confirmation panels (A1.5): A = comparator, B = winner (one panel per pair; cases 0-7, 3 repetitions). Run right
+    # after the accuracy phase (A10, audit job-p1m1-1): the claim-bearing panels must not wait behind profiling and batching
+    for i, (la, lb) in enumerate(blk.get('confirm', [])):
+        A = cx.rom_subject(*_cfg_of(blk, la), name=la)
+        B = cx.rom_subject(*_cfg_of(blk, lb), name=lb)
+        cx.time_panel(f'confirm|{la}|{lb}', A, [B], int(tc['seed']) + 100 + i, blk.get('confirm_cases', 8),
+                      blk.get('confirm_reps', 3))
+    cx.save()
     # (b) mesh-free path + ADT initialised by the same projection; K5 (gl12 projection, rank / condition checked)
     for lab in blk.get('mf', []):
         sn, rule, sp = _cfg_of(blk, lab)
@@ -354,12 +364,6 @@ def mode_prof(cx):
             gc.collect()
         P['batch'][lab] = rec
         cx.save()
-    # (e) confirmation panels (A1.5): A = comparator, B = winner (one panel per pair; cases 0-7, 3 repetitions)
-    for i, (la, lb) in enumerate(blk.get('confirm', [])):
-        A = cx.rom_subject(*_cfg_of(blk, la), name=la)
-        B = cx.rom_subject(*_cfg_of(blk, lb), name=lb)
-        cx.time_panel(f'confirm|{la}|{lb}', A, [B], int(tc['seed']) + 100 + i, blk.get('confirm_cases', 8),
-                      blk.get('confirm_reps', 3))
     # (f) A1.13 converged-rule sensitivity of finalists
     for lab, crule in blk.get('conv', {}).items():
         sn, rule, sp = _cfg_of(blk, lab)

@@ -598,3 +598,22 @@ K9, K3, evidence) apply to H1 verdicts and to FOM matching exactly as to H2 sele
 * **Spectral observation, screening level.** Confirmed by the audit at screening level: PS N16 Δt = 0.025 (4.06 ms median
   warm time, E0 median 4.2e-4, worst 2.6e-2) matches every selected ROM on median and worst. Timings are from separate
   H200 jobs; the claim is restated from the paired m1 `match|<label>` panels.
+
+---
+
+## Amendment A10 (2026-10-17; `audits/codex-results-2.md` NOT READY on one restatement; `audits/codex-job-p1m1-1.md` SUBMIT for both with qualifications)
+
+* **A9 G2 attribution corrected.** The 15 literal G2 failures (all with $\gamma\le3.34\cdot10^{-12}$, differences $\le1.89\cdot10^{-12}$) are:
+  g2 W768 lat32768 FS-K2 BDF2 Δt 0.01 (3), W768 lat32768 FS-K2 BDF2 Δt 0.0125 (1), W768 lat16384 FS-K2 BDF2 Δt 0.01 (1);
+  g3 W1024 lat32768 FS-K2 CN Δt 0.01 (5), W1024 lat65536 FS-K2 CN Δt 0.01 (3), W1024 lat65536 FS-K2 CN Δt 0.0125 (2).
+  A9's attribution ("all W768 lat32768 BDF2 Δt 0.01" / "W1024 lat65536 CN") was wrong and is withdrawn; the rest of A9 stands.
+* **p1 execution order.** The claim-bearing confirmation panels (A1.5) now run directly after the mesh-path accuracy phase,
+  before the mesh-free, profile and batching blocks (a host OOM or timeout in batching can no longer lose them);
+  `result.json` / `W_prof.npz` are saved after the accuracy phase and after the confirmations. No population changes.
+* **Qualifications adopted from the job audit.** T1 is not re-run in p1/m1 (its evidence is the grid/smoke panels); p1/m1
+  must not be described as containing T1. B = 64 batching (M2_512 only) and the A6 `match|<label>` block were not exercised
+  by the smoke; failures there are recorded, not inferred around. Host memory at L = 384 is supported by the pilot's device
+  peak (24.6 GB) only. `complete = true` is not acceptance: the analysis checks every required block's presence.
+* **Budget.** Spent 8.91 + central projections (7.04 + 10.20) = 26.15 ≤ 34 GPU-hours (the ledger rule); with the ×1.5
+  headroom it is 34.8, above the cap, so p1/m1 are monitored with `sacct` and the r1 replication (first in the A7 defer
+  order) is submitted only if spent + its certified projection ≤ 34 after p1/m1.

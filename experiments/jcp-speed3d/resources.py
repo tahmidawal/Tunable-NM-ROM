@@ -172,8 +172,8 @@ def project_prof(cfg, smoke):
 
 
 def project_mesh(cfg, smoke):
-    """m1: FOM solve time per mesh from the smoke (L64 / L128 smkmesh, L384 smkmesh384 pilot; L256 interpolated as L^4
-    between 128 and 384), ROM costs from the smoke grid; every term x 2."""
+    """m1: FOM solve time per mesh from the smoke (L64 / L128 smkmesh, L384 smkmesh384 pilot; L256 = the measured L384
+    solve as upper proxy, A8; L^4 from L128 only without a L384 pilot), ROM costs from the smoke grid; every term x 2."""
     import s3common as S
     res = json.loads((smoke / 'smkgrid' / 'result.json').read_text())
     tab = grid_table(res)

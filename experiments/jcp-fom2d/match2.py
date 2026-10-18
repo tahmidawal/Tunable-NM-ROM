@@ -229,7 +229,24 @@ def kfalse(target):
                 fires=bool(m0 and w0 and all(pre1.values()) and all(pre2.values()) and m1 and not w1 and not m2 and not w2))
 
 
+_N0 = {}
+_ANC = {}
+
+
+def ref_n0(c):
+    if c not in _N0:
+        _N0[c] = float(RS.load(2, c.split('|')[0], int(c.split('|')[1]))[1]['judge']['n0'])
+    return _N0[c]
+
+
 def anchor(k, adm, src):
+    key = (k, id(adm))
+    if key not in _ANC:
+        _ANC[key] = _anchor(k, adm, src)
+    return _ANC[key]
+
+
+def _anchor(k, adm, src):
     """PS anchor (A2.1/A3.4): lattice distance to the same N at the next smaller ladder step (the next larger for the
     smallest), max over outputs and cases, relative to ||u(t0)||."""
     sp = FR.parse(k)
@@ -247,7 +264,7 @@ def anchor(k, adm, src):
     A, B = za['fields'], zb['fields']
     ids = [str(x) for x in za['case_ids']]
     assert ids == [str(x) for x in zb['case_ids']]
-    n0 = [float(RS.load(2, c.split('|')[0], int(c.split('|')[1]))[1]['judge']['n0']) for c in ids]   # reference n0
+    n0 = [ref_n0(c) for c in ids]                                       # reference n0
     dist = max(float(np.linalg.norm(A[i][t] - B[i][t])) / n0[i] for i in range(len(A)) for t in range(1, 6))
     return dict(status='ok', steps=[sp[2], d2], other=k2, both_valid=True, distance=dist)
 

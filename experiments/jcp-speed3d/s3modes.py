@@ -522,12 +522,16 @@ def mode_rep(cx):
     blk, tc = cx.cfg['rep'], cx.cfg['timing']
     cases = cx.cases
     Rr = cx.rep['replication'] = dict(roms={}, foms={})
+    adt = {}                                   # one ADT tight run per (setting, rule, path, scheme, step) (audit job-r1-1)
     for r in blk['roms']:
         sn, rule, sp = r['setting'], r['rule'], S.parse_key(r['spec'])
         for path in r.get('paths', ['mesh']):
             rr = cx.rollouts(sn, rule, [sp], cases, path=path)
             ad = ('ad', sp[1], sp[2], 'tight')
-            ra = cx.rollouts(sn, rule, [ad], cases, path=path)
+            ka = (sn, rule, path, S.spec_key(ad))
+            if ka not in adt:
+                adt[ka] = cx.rollouts(sn, rule, [ad], cases, path=path)
+            ra = adt[ka]
             Rr.setdefault('dist_to_adt', {})[f"{r['label']}|{path}"] = cx.dist_cases(
                 sn, rr[S.spec_key(sp)]['W'], ra[S.spec_key(ad)]['W'], cases).tolist()
         Rr['roms'][r['label']] = dict(setting=sn, rule=rule, spec=r['spec'], paths=r.get('paths', ['mesh']))

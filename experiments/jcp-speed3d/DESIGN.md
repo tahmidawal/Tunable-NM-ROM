@@ -783,3 +783,12 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   frozen ROM configurations (8 H2 comparators/winners/B*, 44 H1.4 pair members; mesh-free paths for the 4 H3.2-qualified
   ones), the 3 matched FOM configurations, and one replication timing panel per comparator. Certificate: 5.47 h projected
   (8.2 h ×1.5, allocation 12 h); ledger 10.58 + 5.47 = 16.05 ≤ 34 GPU-hours.
+
+---
+
+## Amendment A26 (2026-10-18; `audits/codex-job-r1-1.md` DO NOT SUBMIT on one item)
+
+* `s3modes.mode_rep` ran the ADT tight comparator once per configuration; the 22 H1.4 FS-K2/QN pairs share
+  (setting, rule, path, scheme, step), so their ADT rows would have been duplicated and the analyzer's exact-population
+  check would have made 44 eligibilities unavailable. The ADT run is now cached per (setting, rule, path, ADT spec) and
+  reused for each configuration's own distance. No frozen configuration is duplicated. r1 restaged after this change.

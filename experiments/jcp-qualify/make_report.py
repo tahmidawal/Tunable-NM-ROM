@@ -70,6 +70,7 @@ def plots():
             f = F.get(m, {})
             cand = f.get('candidates', {})
             front = set(f.get('fronts', {}).get(f'{stat}|c', []))
+            labels = []
             for k, v in cand.items():
                 c = parse(k)
                 key = c['form'] + '|' + c['scheme']
@@ -77,10 +78,21 @@ def plots():
                 ax.scatter(v['c'], v[stat], s=26 + 8 * (c['r'] // 128), color=COL[key], alpha=1 if on else .35,
                            edgecolor='#0b0b0b' if on else 'none', linewidth=.8, zorder=3 if on else 2)
                 if on:
-                    i_ = sorted(front, key=lambda kk: cand[kk]['c']).index(k)
-                    ax.annotate(f"R{c['r']}·{g(c['factor'])}", (v['c'], v[stat]), xytext=(9, 6) if i_ % 2 == 0 else (9, -13),
-                                textcoords='offset points', fontsize=6.5,
-                                bbox=dict(boxstyle='round,pad=0.1', fc='white', ec='none', alpha=.8))
+                    labels.append((v['c'], v[stat], f"{dict(BE='BE', CNR='CNR', CN='GAL')[c['scheme']]} R{c['r']}·{g(c['factor'])}"))
+            ax.set_xscale('log')
+            ax.set_yscale('log')
+            ax.margins(.12)
+            fig.canvas.draw()
+            placed = []                                   # greedy collision-free label placement (display pixels)
+            for x_, y_, t_ in sorted(labels):
+                px, py = ax.transData.transform((x_, y_))
+                for dx, dy in ((10, 4), (10, -14), (-78, 4), (-78, -14), (10, 20), (10, -30), (-78, 20), (-78, -30), (10, 36), (10, -46)):
+                    box = (px + dx, py + dy, px + dx + 66, py + dy + 12)
+                    if all(box[2] < b_[0] or box[0] > b_[2] or box[3] < b_[1] or box[1] > b_[3] for b_ in placed):
+                        break
+                placed.append(box)
+                ax.annotate(t_, (x_, y_), xytext=(dx * 0.75, dy * 0.75), textcoords='offset points', fontsize=6.5,
+                            bbox=dict(boxstyle='round,pad=0.1', fc='white', ec='none', alpha=.8))
             pts = sorted((cand[k]['c'], cand[k][stat]) for k in front)
             if pts:
                 ax.plot(*zip(*pts), color='#0b0b0b', lw=.8, zorder=1)

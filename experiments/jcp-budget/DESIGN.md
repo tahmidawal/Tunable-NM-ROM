@@ -806,3 +806,21 @@ classified "inconsistent").
 - `resources.py` prices b-jobs from the smoke's phase times (star/setup, corners per member-case, the check phase per
   member-check-case, B7 and B8 per member-case; an unmeasured $r$ takes the slowest measured $r$), not from one
   aggregate overhead.
+
+## Amendment A9 (2026-10-18, during production; measured cost of the E0 tight path at long horizon)
+
+**What happened.** In `ref2b` (val32 case 10) and `ref2c` (val32 case 31) the base triple failed the order or Péclet
+check, the refinement level ($12288^2$) was run, and the refined triple then failed the floor check, which triggers E0's
+tight re-solve of the refined triple. At the round-off floor the tight solve runs every stage to the 40-Newton limit:
+the $4096^2$ tight level took 765–769 s against 28 s at production tolerance (about 27×); the $8192^2$ and $12288^2$
+tight levels would have cost about 1.3 h and 5 h per case, beyond the job time limits. Both jobs were **cancelled**
+(1.75 h and 1.71 h elapsed); their completed cases (val32 7–9 and 20–30) were collected (`--partial`), promoted and are
+used; nothing from the unfinished cases is used.
+
+**Rule change (cost, not estimand).** From now on the reference jobs run with `tight_after_refine = false`: a case whose
+**refined** triple fails the floor check is terminal **'unresolved-floor' (non-rankable)** instead of being re-solved at
+tight tolerance; the tight re-solve of a failing **base** triple (E0's first retry) is kept. Affected: the rerun
+`ref2r` (val32 10–19 and 31) and the 3D references `ref3b` (the first `ref3` submission was cancelled after 30 s,
+before any case). Certificates reserve two refinement paths with a retried refined level and one tight base triple at the
+measured 20× cost per job. The non-rankable cases are listed in the report; they never enter W2/W3 verdicts (their W1
+is scored against E0 as for every case).

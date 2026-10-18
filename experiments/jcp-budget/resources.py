@@ -125,6 +125,15 @@ def pilot_seconds(att='smk1'):
     return json.loads((d / 'result.json').read_text())['elapsed_seconds']
 
 
+def fd_reserve_A9(case_s, dim, refine, hf):
+    """A9 reserve per JOB (measured: a tight solve at the round-off floor costs ~20 x its production solve because every
+    stage runs to the 40-Newton limit; refinement occurred on 2 of 26 cases at T = 0.5): two cases taking the refinement
+    path with a retry of the refined level (2 x 2 r) plus one case taking the tight base triple (20); no tight re-solve
+    of a refined triple (A9). Units of the nominal case time."""
+    r = ((3.4 if dim == 2 else 5.1) * .86) if refine else 0.
+    return (2 * (2 * r) + 20.) * case_s * hf
+
+
 def fd_worst_extra(case_s, dim, refine, hf):
     """Enumerated worst retry path of ONE case beyond its nominal triple (refrun.solve_case): every base level retried
     (+1), a tight base triple (x 1.5), the refinement level (r = 3.4 x 0.86 of the case time in 2D, 5.1 x 0.86 in 3D)
@@ -220,7 +229,7 @@ def main():
     a = ap.parse_args()
     assert a.gpu == 'h200', 'timings were measured on H200; another GPU type needs its own smoke'
     tot, det, cfgs = 0., {}, {}
-    fd_n, fd_par = 0, None
+    fd_n, fd_par, fd_a9 = 0, None, False
     for r in a.run:
         drv, cf = r.split(':', 1)
         p = HERE / cf
@@ -231,10 +240,15 @@ def main():
         cfgs[cf] = hashlib.sha256(p.read_bytes()).hexdigest()
         if drv == 'ref/refrun' and cfg['mode'] == 'fd':
             fd_n += len(cfg['cases'])
+            fd_a9 = fd_a9 or cfg.get('tight_after_refine') is False
             d_ = int(cfg['dim'])
             fd_par = (ref_case_seconds('smk1' if d_ == 2 else 'smk2', d_)[0], d_, bool(cfg.get('allow_refine')),
                       1. if cfg['horizon'] <= .5 else 2.2)
-    if fd_par is not None:                       # up to two cases of the JOB take the enumerated worst retry path
+    if fd_par is not None and fd_a9:            # A9 configurations (no tight re-solve after refinement)
+        ex = fd_reserve_A9(*fd_par)
+        det['worst_path_reserve'] = ex / 3600
+        tot += ex
+    elif fd_par is not None:                     # up to two cases of the JOB take the enumerated worst retry path
         ex = min(fd_n, 2) * fd_worst_extra(*fd_par)
         det['worst_path_reserve'] = ex / 3600
         tot += ex

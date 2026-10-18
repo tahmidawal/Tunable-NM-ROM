@@ -1,0 +1,24 @@
+host=pax011 source_commit=9a7f8d28a1eefe6626023f10c690fe8470401011
+NVIDIA H200, GPU-93cde72e-530a-28e4-b459-8d7c676b7427, 143771 MiB
+10.235.106.35:/projects/paralab  4.6T  1.1T  3.6T  23% /cluster/tufts/paralab
+jax_backend=gpu
+STEP ref/refrun configs/ref2b_val32.json 2026-10-18T15:25:15Z
+jax_backend=gpu x64=True precision=highest
+[     11.5s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True
+[     18.9s]   val32 c7 L=2048 dt=1.250e-03 prod adv=central stages=402/402 ok=True maxres=2.76e-12 newton=810 7s peak=1233464064
+[     60.2s]   val32 c7 L=4096 dt=6.250e-04 prod adv=central stages=802/802 ok=True maxres=6.52e-12 newton=1608 41s peak=4695887616
+[    390.4s]   val32 c7 L=8192 dt=3.125e-04 prod adv=central stages=1602/1602 ok=True maxres=8.64e-12 newton=3207 330s peak=18920608000
+[    394.3s] CASE val32 7 T=0.5: accepted eps=3.836043592354563e-06 p=[1.9906575708966139, 2.003724303941545, 2.0011542450313677, 1.999551179672653, 1.9984996124586354, 1.997722936828553, 1.9970911748215299, 1.9966362132661446, 1.9964664032551374, 1.9964080001187547] G_R3=True
+[    400.0s]   val32 c8 L=2048 dt=1.250e-03 prod adv=central stages=402/402 ok=True maxres=5.21e-12 newton=804 6s peak=18920608000
+[    433.4s]   val32 c8 L=4096 dt=6.250e-04 prod adv=central stages=802/802 ok=True maxres=1.91e-12 newton=1604 33s peak=18920608000
+[    708.2s]   val32 c8 L=8192 dt=3.125e-04 prod adv=central stages=1602/1602 ok=True maxres=6.68e-13 newton=3204 275s peak=19457348096
+[    712.2s] CASE val32 8 T=0.5: accepted eps=6.811831031449402e-06 p=[1.9938922501058323, 1.9911141998700834, 1.989075536322866, 1.9875562738159593, 1.9870500848043355, 1.9869189297976877, 1.986714023542399, 1.9863923812424689, 1.9860057959851356, 1.9855953754118898] G_R3=True
+[    717.5s]   val32 c9 L=2048 dt=1.250e-03 prod adv=central stages=402/402 ok=True maxres=1.24e-12 newton=805 5s peak=19457348096
+[    748.5s]   val32 c9 L=4096 dt=6.250e-04 prod adv=central stages=802/802 ok=True maxres=3.95e-13 newton=1605 31s peak=19457348096
+[   1003.0s]   val32 c9 L=8192 dt=3.125e-04 prod adv=central stages=1602/1602 ok=True maxres=2.99e-13 newton=3205 254s peak=19994088192
+[   1006.9s] CASE val32 9 T=0.5: accepted eps=3.809805969990621e-06 p=[1.9968992174664322, 1.9960146994909835, 1.9950421531175617, 1.9940300851983042, 1.9929908052725411, 1.9919637310462734, 1.9910057635839282, 1.9901740998290496, 1.9895233530739607, 1.9891247319560754] G_R3=True
+[   1011.4s]   val32 c10 L=2048 dt=1.250e-03 prod adv=central stages=402/402 ok=True maxres=5.92e-12 newton=808 4s peak=19994088192
+[   1039.4s]   val32 c10 L=4096 dt=6.250e-04 prod adv=central stages=802/802 ok=True maxres=9.68e-12 newton=1606 28s peak=19994088192
+[   1281.4s]   val32 c10 L=8192 dt=3.125e-04 prod adv=central stages=1602/1602 ok=True maxres=2.92e-12 newton=3206 242s peak=20530828288
+[   2260.4s]   val32 c10 L=12288 dt=2.083e-04 refine adv=central stages=2402/2402 ok=True maxres=8.48e-12 newton=4805 979s peak=49384821760
+[   3025.3s]   val32 c10 L=4096 dt=6.250e-04 tight adv=central stages=802/802 ok=True maxres=1.51e-13 newton=32080 765s peak=49384821760

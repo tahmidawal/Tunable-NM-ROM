@@ -41,8 +41,8 @@
    "attempt": "ref2b",
    "job_id": "5557492",
    "time_limit_hours": 5.25,
-   "state": "RUNNING",
-   "elapsed_hours": 1.5342,
+   "state": "CANCELLED",
+   "elapsed_hours": 1.7519,
    "pending_hours": null,
    "attempts": 1,
    "node": "pax011",
@@ -53,8 +53,8 @@
    "attempt": "ref2c",
    "job_id": "5558492",
    "time_limit_hours": 5.0,
-   "state": "RUNNING",
-   "elapsed_hours": 1.4819,
+   "state": "CANCELLED",
+   "elapsed_hours": 1.7119,
    "pending_hours": null,
    "attempts": 1,
    "node": "pax011",
@@ -84,9 +84,45 @@
    "node": "pax010",
    "prior_elapsed_hours": 0.0,
    "gpu": "gres/gpu=1"
+  },
+  {
+   "attempt": "b3d",
+   "job_id": "5615930",
+   "time_limit_hours": 2.5,
+   "state": "RUNNING",
+   "elapsed_hours": 0.2122,
+   "pending_hours": null,
+   "attempts": 1,
+   "node": "pax010",
+   "prior_elapsed_hours": 0.0,
+   "gpu": "gres/gpu=1"
+  },
+  {
+   "attempt": "ref3",
+   "job_id": "5625028",
+   "time_limit_hours": 6.75,
+   "state": "CANCELLED",
+   "elapsed_hours": 0.0083,
+   "pending_hours": null,
+   "attempts": 1,
+   "node": "pax011",
+   "prior_elapsed_hours": 0.0,
+   "gpu": "gres/gpu=1"
+  },
+  {
+   "attempt": "ps3",
+   "job_id": "5625089",
+   "time_limit_hours": 3.5,
+   "state": "RUNNING",
+   "elapsed_hours": 0.0003,
+   "pending_hours": null,
+   "attempts": 1,
+   "node": "pax011",
+   "prior_elapsed_hours": 0.0,
+   "gpu": "gres/gpu=1"
   }
  ],
  "pending_core": {},
- "spent_gpu_hours": 2.348,
- "reserved_gpu_hours": 10.25
+ "spent_gpu_hours": 5.8201,
+ "reserved_gpu_hours": 6.0
 }

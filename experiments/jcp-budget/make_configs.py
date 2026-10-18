@@ -100,6 +100,12 @@ def main():
     write('ref3', dict(mode='fd', dim=3, cohort='val64', cases=list(range(16)) + [43], horizon=0.5, fine=True,
                        allow_refine=True))
     write('ps3', dict(mode='ps', dim=3, cohort='val64', cases=[0, 43], horizon=0.5))
+    # A9 reruns: the cases not completed by the cancelled ref2b / ref2c, and the 3D references, without the tight re-solve
+    # of a refined triple
+    write('ref2r_val32', dict(mode='fd', dim=2, cohort='val32', cases=list(range(10, 20)) + [31], horizon=0.5, fine=True,
+                              allow_refine=True, tight_after_refine=False))
+    write('ref3b', dict(mode='fd', dim=3, cohort='val64', cases=list(range(16)) + [43], horizon=0.5, fine=True,
+                        allow_refine=True, tight_after_refine=False))
     for mesh, cases, design, b7 in ((1024, 'all38', 'full', True), (256, 'all38', 'pairwise', True),
                                     (4096, 'sub16', 'pairwise', True)):
         cfg = dict(attempt=f'b{mesh}', mesh=mesh, edges=EDGES, cases=cases, members=M2[mesh],
@@ -119,8 +125,10 @@ def main():
                       b2=dict(qinf='gl56', qcheck='gl64', check_cases=[0, 1, 2, 3]),
                       b7=dict(horizon=0.5, q2_cases=list(range(8)), qpp_cases=[0, 1, 2, 3], tighter_cases=list(range(6))),
                       controls=dict(cases=[0, 1, 2, 3], under_resolved='lat256')))
-    write('ref2t1', dict(mode='fd', dim=2, cohort='dev6', cases=list(range(6)), horizon=1.0, fine=False, allow_refine=False))
-    write('ref2t1v', dict(mode='fd', dim=2, cohort='val32', cases=list(range(10)) + [19], horizon=1.0, fine=False, allow_refine=False))
+    write('ref2t1', dict(mode='fd', dim=2, cohort='dev6', cases=list(range(6)), horizon=1.0, fine=False, allow_refine=False,
+                         tight_after_refine=False))
+    write('ref2t1v', dict(mode='fd', dim=2, cohort='val32', cases=list(range(10)) + [19], horizon=1.0, fine=False,
+                          allow_refine=False, tight_after_refine=False))
     write('ps2t1', dict(mode='ps', dim=2, cohort='val32', cases=[0, 19], horizon=1.0))
     write('b1024t1', dict(attempt='b1024t1', mesh=1024, edges=EDGES, cases='sub16', members=M2[1024],
                           b7=dict(horizon=1.0, q2_cases='sub16', tighter_cases='dev6')))      # B7 T = 1.0 (last deferred)

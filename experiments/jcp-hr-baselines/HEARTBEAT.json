@@ -1,18 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T06:23:35Z",
- "step": "8: code audit 12 + design audit 10 (A16) running; local CPU gates then 2D dry run",
+ "utc": "2026-10-18T06:26:59Z",
+ "step": "8: code audit 13 + design audit 11 (A16.5) running; local CPU gates then 2D dry run",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": "audits/codex-code-12.md, audits/codex-design-10.md",
+  "codex_output": "audits/codex-code-13.md, audits/codex-design-11.md",
   "codex_pid": [
-   1469172,
-   1469177
+   1482663,
+   1482666
   ],
-  "local_pid": 1469176
+  "local_pid": 1482662
  },
- "expected_finish_utc": "2026-10-18T07:33:35Z",
- "last_commit": "66a0d96e7",
+ "expected_finish_utc": "2026-10-18T07:36:59Z",
+ "last_commit": "c57098e00",
  "gpu_hours_spent": 0.878,
  "gpu_hours_cap": 30,
  "notes": "A7-A9 written from code audit 2 and dry-run evidence; COMMON-BRIEF s11 disk hygiene adopted for future Codex prompts"

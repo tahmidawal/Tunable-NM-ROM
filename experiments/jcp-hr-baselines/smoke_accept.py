@@ -237,17 +237,24 @@ def main():
             zp = Z['ECSWpath']
             atts = ps_['attempts']
             ncand = ps_['n_cand']
-            need_retry = atts['initial']['banned'] > ps_['ban_retry_frac'] * ncand
-            ok_e = ('retry' in atts) == need_retry and atts['initial']['max_drops'] == 3 and \
-                (('retry' not in atts) or atts['retry']['max_drops'] >= 10 ** 9)
+            n_expect = min(32768, n)                       # registered candidate count (A1.8)
+            need_retry = atts['initial']['banned'] > 0.01 * n_expect      # frozen A16.5 threshold, not the output's
+            ok_e = ncand == n_expect and ps_.get('ban_retry_frac') == 0.01 and ps_.get('max_iter') == 20000 and \
+                set(atts) == ({'initial', 'retry'} if need_retry else {'initial'}) and \
+                atts['initial']['max_drops'] == 3 and (('retry' not in atts) or atts['retry']['max_drops'] >= 10 ** 9)
             for a, sm in atts.items():
+                ok_e &= isinstance(sm.get('iterations'), int) and 0 < sm['iterations'] <= 20000 and \
+                    isinstance(sm.get('banned'), int) and 0 <= sm['banned'] <= n_expect
+                ok_e &= sorted(sm['checkpoints']) == ['k16', 'k2', 'k4', 'k8']
                 for kk, cp in sm['checkpoints'].items():
                     if cp is None:
                         ok_e &= f'{a}~{kk}~weights' not in zp
                         continue
-                    w = zp[f'{a}~{kk}~weights']
-                    ok_e &= int(np.sum(w > 0)) == cp['size'] >= int(kk[1:]) * c['rs'] and np.all(np.isfinite(w)) \
-                        and len(set(zp[f'{a}~{kk}~nodes'].tolist())) == len(w)
+                    w, nd = np.asarray(zp[f'{a}~{kk}~weights']), np.asarray(zp[f'{a}~{kk}~nodes'])
+                    ok_e &= (w.ndim == 1 and nd.ndim == 1 and len(w) == len(nd) and np.all(np.isfinite(w)) and np.all(w > 0)
+                             and np.issubdtype(nd.dtype, np.integer) and np.all((nd >= 0) & (nd < n))
+                             and len(set(nd.tolist())) == len(nd) and len(w) == cp['size'] >= int(kk[1:]) * c['rs']
+                             and fin(cp['relres']) and cp['relres'] >= 0)
                 ok_e &= sm['reached'] == sum(v is not None for v in sm['checkpoints'].values())
             sel = 'initial'
             if 'retry' in atts:
@@ -260,8 +267,9 @@ def main():
                     l1 = sum(math.log10(max(s1['checkpoints'][k]['relres'], 1e-300)) for k in com)
                     sel = 'retry' if l1 < l0 else 'initial'
             ok_e &= sel == ps_['selected']
-            ok_e &= all(e.get(f'k{k}') is not None and e[f'k{k}']['size'] == atts[sel]['checkpoints'][f'k{k}']['size']
-                        for k in (2, 4, 8, 16))
+            ok_e &= all(e.get(f'k{k}') is not None and atts[sel]['checkpoints'][f'k{k}'] is not None and
+                        e[f'k{k}']['size'] == atts[sel]['checkpoints'][f'k{k}']['size'] and
+                        e[f'k{k}']['relres'] == atts[sel]['checkpoints'][f'k{k}']['relres'] for k in (2, 4, 8, 16))
             put(f'{key}|ecsw-smoke-rank', ok_e, selected=ps_['selected'], retry=need_retry,
                 reached={a: sm['reached'] for a, sm in atts.items()}, supports=e)
         except Exception as ex:  # noqa: BLE001

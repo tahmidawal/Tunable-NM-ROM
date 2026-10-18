@@ -14,6 +14,7 @@ Usage: python stageb.py <config.json> <out_dir>
 """
 from __future__ import annotations
 
+import gc
 import hashlib
 import json
 import os
@@ -185,25 +186,31 @@ def main():
             rec = dict(status='construction_failed', cases={}, batch=FZ['X'][key].get('batch'),
                        qualification=FZ['X'][key].get('qualification'))
             res['ours'][key] = rec
-            try:
+            def replay(key=key, rec=rec):              # A37.1: the comparator lives only inside this call
                 o_, fx = make_x(key)
-                for t in timing:
-                    c, j = t.split('|')
-                    u, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))
-                    Fw = o_.lattice(jax.block_until_ready(fx(u, v)))
-                    e = score(t, Fw)['e']
-                    rel = abs(e - ref_e[key][t]) / abs(ref_e[key][t]) if np.isfinite(e) else float('inf')
-                    np.savez(out / 'arrays' / f'X~{key.replace("|", "~")}~{t.replace("|", "~")}.npz', F=Fw)
-                    XS.setdefault(key, {})[t] = Fw                                 # scored output (A32.7 binding)
-                    rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)   # after its array
-                    save()
+                try:
+                    for t in timing:
+                        c, j = t.split('|')
+                        u, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))
+                        Fw = o_.lattice(jax.block_until_ready(fx(u, v)))
+                        e = score(t, Fw)['e']
+                        rel = abs(e - ref_e[key][t]) / abs(ref_e[key][t]) if np.isfinite(e) else float('inf')
+                        np.savez(out / 'arrays' / f'X~{key.replace("|", "~")}~{t.replace("|", "~")}.npz', F=Fw)
+                        XS.setdefault(key, {})[t] = Fw                             # scored output (A32.7 binding)
+                        rec['cases'][t] = dict(e0=e, e0_exported=ref_e[key][t], replay_rel=rel)   # after its array
+                        save()
+                finally:
+                    del o_, fx
+                    gc.collect()
+            try:
+                replay()
                 worst = max(c_['replay_rel'] for c_ in rec['cases'].values())
                 rec.update(status='complete', G_ours=bool(worst <= 1e-10), replay_worst_rel=worst)
                 if rec['G_ours']:
                     OX[key] = True                     # A35.3: objects released; rebuilt per X for timing
-                del o_, fx
             except Exception as e:  # noqa: BLE001
                 rec.update(status='run_failed', error=f'{type(e).__name__}: {e}')
+                gc.collect()
             save()
             log(f'   ours {key}: {rec["status"]} G-ours={rec.get("G_ours")}')
         return len(OX)
@@ -312,45 +319,51 @@ def main():
                     res['timing'][f'{key}||{m}'] = dict(status='not_timed', reason='budget')
                 save()
                 continue
-            try:
+            def time_x(key=key):                       # A37.1: comparator and every closure scoped to this call
                 o_, fx = make_x(key)
+                try:
+                    for m in mem:                              # registered A1.12 total order
+                        kind, r, hp, scheme, dt, solver = parse(m)
+                        pk = f'{key}||{m}'
+                        if time.perf_counter() - T0 > DEFER_FRAC * budget_s:
+                            res['timing'][pk] = dict(status='not_timed', reason='budget')
+                            continue
+                        q = cell.query(kind, r, solver)
+                        sch = RM.schedule(d, scheme, dt, 'prod_native' if solver == 'native' else 'prod')
+                        dat = arm(kind, r, hp)
+                        fB = lambda u, v, q=q, dat=dat, sch=sch: q(u, v, dat, sch)['fields']
+                        fX = lambda u, v, fx=fx: fx(u, v)['fields']
+                        rec = {}
+                        res['timing'][pk] = dict(status='running', cases=rec)
+                        try:
+                            for t in timing:
+                                c, j = t.split('|')
+                                ux, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))
+                                ub = jnp.asarray(fam[c].ic(L, int(j)))
+                                jax.block_until_ready(fx(ux, v))
+                                jax.block_until_ready(fB(ub, v))                 # warm both
+                                sX, sB = XS[key][t], SCORED[m][t]                # bound to the scored / certified outputs
+                                chkX = lambda o, s=sX: disc_finite(o_.lattice(dict(fields=o)), s)
+                                chkB = lambda o, s=sB: disc_finite(cell.lattice(o), s)
+                                rec[t] = dict(triples=[])
+                                timed_triples(fX, fB, (ux, v), (ub, v), chkX, chkB, rec=rec[t]['triples'], save=save)
+                            ok = all(all(np.isfinite(x) and x <= TIMED_TOL for tr in rc['triples']
+                                         for x in (tr['dA1'], tr['dB'], tr['dA2'])) for rc in rec.values())
+                            res['timing'][pk] = dict(status='complete', cases=rec, outputs_ok=bool(ok))
+                        except Exception as e:  # noqa: BLE001
+                            res['timing'][pk] = dict(status='run_failed', reason=f'{type(e).__name__}: {e}', cases=rec)
+                        save()
+                finally:
+                    del o_, fx
+                    gc.collect()
+            try:
+                time_x()
             except Exception as e:  # noqa: BLE001
                 for m in mem:
-                    res['timing'][f'{key}||{m}'] = dict(status='run_failed', reason=f'comparator rebuild: {e}')
+                    if res['timing'][f'{key}||{m}'].get('status') in ('not_timed', 'running'):
+                        res['timing'][f'{key}||{m}'] = dict(status='run_failed', reason=f'comparator: {e}')
                 save()
-                continue
-            for m in mem:                              # registered A1.12 total order
-                kind, r, hp, scheme, dt, solver = parse(m)
-                pk = f'{key}||{m}'
-                if time.perf_counter() - T0 > DEFER_FRAC * budget_s:
-                    res['timing'][pk] = dict(status='not_timed', reason='budget')
-                    continue
-                q = cell.query(kind, r, solver)
-                sch = RM.schedule(d, scheme, dt, 'prod_native' if solver == 'native' else 'prod')
-                dat = arm(kind, r, hp)
-                fB = lambda u, v, q=q, dat=dat, sch=sch: q(u, v, dat, sch)['fields']
-                fX = lambda u, v, fx=fx: fx(u, v)['fields']
-                rec = {}
-                res['timing'][pk] = dict(status='running', cases=rec)
-                try:
-                    for t in timing:
-                        c, j = t.split('|')
-                        ux, v = o_.u0(fam[c], int(j)), jnp.float64(fam[c].nu(int(j)))
-                        ub = jnp.asarray(fam[c].ic(L, int(j)))
-                        jax.block_until_ready(fx(ux, v))
-                        jax.block_until_ready(fB(ub, v))                 # warm both
-                        sX, sB = XS[key][t], SCORED[m][t]                # bound to the scored / certified outputs
-                        chkX = lambda o, s=sX: disc_finite(o_.lattice(dict(fields=o)), s)
-                        chkB = lambda o, s=sB: disc_finite(cell.lattice(o), s)
-                        rec[t] = dict(triples=[])
-                        timed_triples(fX, fB, (ux, v), (ub, v), chkX, chkB, rec=rec[t]['triples'], save=save)
-                    ok = all(all(np.isfinite(x) and x <= TIMED_TOL for tr in rc['triples']
-                                 for x in (tr['dA1'], tr['dB'], tr['dA2'])) for rc in rec.values())
-                    res['timing'][pk] = dict(status='complete', cases=rec, outputs_ok=bool(ok))
-                except Exception as e:  # noqa: BLE001
-                    res['timing'][pk] = dict(status='run_failed', reason=f'{type(e).__name__}: {e}', cases=rec)
-                save()
-            del o_, fx
+                gc.collect()
         return len(res['timing'])
     phase('aba', aba)
     res['total_seconds'] = time.perf_counter() - T0

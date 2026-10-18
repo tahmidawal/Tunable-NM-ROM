@@ -38,7 +38,7 @@ class Ours2D:
 
     def lattice(self, out):
         s = self.L // H.LATTICE[2]
-        return np.asarray(out['fields'])[:, ::s, ::s]
+        return np.ascontiguousarray(np.asarray(out['fields'])[:, ::s, ::s])     # independent lattice copy
 
     def u0(self, fam, j):
         return jnp.asarray(H.E2.initial(self.L, fam.D[j]))
@@ -110,7 +110,7 @@ class OursP1:
 
     def lattice(self, out):
         s = self.L // H.LATTICE[2]
-        return np.asarray(out['fields'])[:, ::s, ::s]
+        return np.ascontiguousarray(np.asarray(out['fields'])[:, ::s, ::s])     # independent lattice copy
 
     def u0(self, fam, j):
         return jnp.asarray(self.P1.Q.e.initial(self.L, fam.D[j]))
@@ -142,7 +142,7 @@ class OursS3:
         return lambda u0, nu: q(u0, jnp.reshape(jnp.asarray(nu, jnp.float64), (1,)), self.data)
 
     def lattice(self, out):
-        return np.asarray(out['fields'])[0].reshape(6, -1)
+        return np.ascontiguousarray(np.asarray(out['fields'])[0].reshape(6, -1))
 
     def u0(self, fam, j):
         return jnp.asarray(H.C3.initial_interior(65, fam.T, j))[None]

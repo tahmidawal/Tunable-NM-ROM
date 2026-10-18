@@ -173,7 +173,7 @@ def main():
             needed.add(f'artifacts/HR~{kind}~{r}~{hp}.npz')
     assert needed <= set(arts), sorted(needed - set(arts))
     ecsw_ok = ecsw_validate(tdir, T, members)
-    # A33.3 membership-derived resource projection (model, from the tuning job's own warm times; certified factor 2)
+    # A33.3 membership-derived resource projection (an estimate from the tuning job's own warm times)
     d_ = T['config']['d']
     ncase = 38 if d_ == 2 else 64
     grp = {}

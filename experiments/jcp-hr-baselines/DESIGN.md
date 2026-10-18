@@ -1756,3 +1756,12 @@ time projection is labelled an estimate; the hard GPU-hour controls remain the w
 replay failure, or an eligible-case score that is missing or non-finite, makes the candidate set incomplete (role
 incomplete; favourable/neutral conclusions withheld; reason kept). **A36.5** The freeze's KKT check is smoke_accept's
 predicate (finite values, non-negative tolerance).
+
+---
+
+## Amendment A37 (2026-10-18) — code audit 26 (Stage-B chain, NOT READY)
+
+**A37.1** Each comparator object and every closure over it live only inside one helper call (`replay` for G-ours,
+`time_x` for its timing pairs), released in a `finally` block with garbage collection before the next comparator is
+built, on success and on failure. **A37.2** Comparator lattice outputs are independent contiguous copies (no view
+retaining the full-grid array), so the host model's lattice-sized comparator fields are what is held.

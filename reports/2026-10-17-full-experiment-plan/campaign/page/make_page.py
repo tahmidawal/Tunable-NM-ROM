@@ -9,6 +9,14 @@ STATUS = json.load(open(os.path.dirname(os.path.abspath(__file__)) + '/status.js
 
 p1 = json.load(open(P1 + '/runs/EXPORT.json'))
 s3 = json.load(open(S3 + '/runs/EXPORT.json'))
+QL = W + '/2026-10-18-jcp-qualify/experiments/jcp-qualify'
+F2 = W + '/2026-10-18-jcp-fom2d/experiments/jcp-fom2d'
+ql = json.load(open(QL + '/runs/EXPORT.json'))
+f2 = json.load(open(F2 + '/runs/EXPORT.json'))
+k2m = f2['c2']['k2']['members']
+S2 = [v['S'] for v in k2m.values() if v.get('status') == 'ok']
+q3 = ql['threeD']['tested']
+q3pass = sum(v == 'pass' for v in q3.values())
 
 def img(path, alt):
     b = base64.b64encode(open(path, 'rb').read()).decode()
@@ -84,9 +92,15 @@ td,th{{padding:4px 10px;border-bottom:1px solid var(--line);text-align:right}} t
 <div class="v"><b>Cost vs bank width</b>{pill('fail' if nfail_cr else 'pass')}<small>Cost does grow with r, but {nfail_cr} of {len(hcr)} kernel timings grow more slowly than their operation counts predict.</small></div>
 </div></section>
 
+<section><h2>Against the full simulation (2D)</h2>
+<p>K2 fires in 2D as well. For every reduced-model setting, the cheapest full solver that is at least as accurate is a spectral solver on a coarse grid (N = 24 or 48). At 4096² the reduced models run at {min(S2):.2f}–{max(S2):.2f}× its speed ({len(S2)} qualified settings). Against a conventional upwind solver, or a central solver on the same 4096² grid, the reduced model is still several times faster, but those are weaker opponents.</p>
+<p class="mute">This retracts the earlier 13.6× figure as a claim against the best full solver; it only held against a same-mesh upwind solver.</p>
+<div class="figs">{img(F2+'/plots/speedup_vs_mesh.png','2D: reduced-model speed-up over each full-solver family (below 1 = full solver faster)')}{img(QL+'/plots/front2d_median.png','2D accuracy–cost front of the reduced model')}</div>
+</section>
+
 <section><h2>Against the full simulation (3D)</h2>
 <p>{'The kill criterion K2 fires: ' if k2 else ''}at 384³ a spectral full-order solver reaches the reduced model's accuracy faster. The reduced models run at {min(union):.3f}–{max(union):.2f}× its speed. Against our own earlier 3D setups the new configurations are {h2['C_old']['S_confirmed']:.1f}×, {h2['C_W768']['S_confirmed']:.1f}× and {h2['C_W1024']['S_confirmed']:.1f}× faster.</p>
-<p class="mute">Per the plan, the paper reports this plainly and leads with mesh-independence. 2D comparison against full solvers is next (priority 2).</p>
+<p class="mute">Correction: the configurations behind those 2.0–17× speed-ups fail the quadrature check (only {q3pass} of {len(q3)} tested 3D settings pass), so they are not yet speed-ups of fully qualified settings. Priority 3 re-times the qualified ones. Per the plan, the paper reports speed plainly and leads with mesh-independence.</p>
 <div class="figs">{img(S3+'/plots/mesh-time.png','3D: time per query against mesh size (flat lines = mesh-independent)')}</div>
 </section>
 

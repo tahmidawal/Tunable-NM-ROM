@@ -1,8 +1,53 @@
-{"headline": "Priority 1 is done and the 3D speed study is done. In 2D, cost and accuracy do not depend on the mesh, and accuracy improves with bank width up to r = 384. In 3D, cost is also flat in the mesh, but a spectral full-order solver is faster at equal accuracy. Priority 2 (baselines, 2D full-solver comparison) is starting.",
+{
+ "headline": "Priorities 1 and 2 are nearly done. Cost and accuracy do not depend on the mesh in 2D, and cost does not in 3D; accuracy improves with bank width up to r = 384. But in both 2D and 3D a spectral full-order solver on a coarse grid is faster at equal accuracy (kill criterion K2 fires), so the paper leads with mesh-independence. The POD baseline comparison is still running; priority 3 is being designed.",
  "lanes": [
-  {"name": "Priority 1 scaling", "state": "done", "cls": "pass", "what": "2D cost/accuracy vs r and mesh; 3D kernels. 1.9 GPU-h."},
-  {"name": "3D speed", "state": "done", "cls": "pass", "what": "3D speed-ups, mesh panel, full-solver comparison. 10.9 GPU-h."},
-  {"name": "POD baselines", "state": "building", "cls": "inc", "what": "Standard POD reduced models with hyper-reduction; code and smoke test."},
-  {"name": "Qualification + 2D front", "state": "next", "cls": "inc", "what": "Priority 2."},
-  {"name": "2D full-solver ladder", "state": "next", "cls": "inc", "what": "Priority 2."}
- ]}
+  {
+   "name": "Priority 1 scaling",
+   "state": "done",
+   "cls": "pass",
+   "what": "2D cost/accuracy vs r and mesh; 3D kernels. 1.9 GPU-h."
+  },
+  {
+   "name": "3D speed",
+   "state": "done",
+   "cls": "pass",
+   "what": "3D speed-ups, mesh panel, full-solver comparison. 10.9 GPU-h."
+  },
+  {
+   "name": "Qualification + fronts",
+   "state": "done",
+   "cls": "pass",
+   "what": "98/112 2D settings qualified; accuracy\u2013cost fronts; time order. 4.1 GPU-h."
+  },
+  {
+   "name": "2D full-solver ladder",
+   "state": "done",
+   "cls": "pass",
+   "what": "185 full-solver settings; K2 fires in 2D. 4.6 GPU-h."
+  },
+  {
+   "name": "POD baselines",
+   "state": "running",
+   "cls": "inc",
+   "what": "Standard POD reduced models with ECSW / Q-DEIM."
+  },
+  {
+   "name": "Dimensions (A3, A4, B3, B6)",
+   "state": "design",
+   "cls": "inc",
+   "what": "r \u00d7 M \u00d7 m factorial, rule families, test space, 3D qualified re-timing."
+  },
+  {
+   "name": "Error budget + long horizons",
+   "state": "design",
+   "cls": "inc",
+   "what": "B2, B7, B8."
+  },
+  {
+   "name": "Head size K",
+   "state": "design",
+   "cls": "inc",
+   "what": "K = 4, 8, 16, 32 heads (the other reading of k)."
+  }
+ ]
+}

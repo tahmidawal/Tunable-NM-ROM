@@ -1629,3 +1629,37 @@ incomplete. Nothing else changes.
 Design audit 21 (`audits/codex-design-21.md`) returned **CLEAN** at revision 47bc19088 (DESIGN.md through A31). Per
 A26.7/A28.7 this discharges A19.4(a) (design acceptance only); A19.4(b)–(c) and the amended smk2 acceptance are
 recorded separately against their own revisions.
+
+---
+
+## Amendment A32 (2026-10-18) — code audit 20 (NOT READY): tuning-job items fixed; Stage-B chain gated separately
+
+**A32.1 Eligibility mask (item 1).** One fixed per-case eligibility mask comes from the reference store
+(`reference_status`, `Refs.st[j]['eligible']`), never from an output's score. Screening W / median (and hence the
+fronts, the extension trigger, Stage-B membership) use the eligible screening cases only; an invalid output makes its
+configuration's W non-finite (excluded), never shrinks the mask. The same rule binds Stage B and the analysis (A32.6).
+
+**A32.2 Evidence custody in the tuning job (item 10).** Each screening case is checkpointed as it completes
+(`stageA_partial`), the FOM-comparator inventory is predeclared (`not_run`), the probe's lattice basis is saved
+(`artifacts/Phi_probe_lat`) so its E0 records are reconstructible (item 13).
+
+**A32.3 Batch identity (item 6).** Every comparator record carries `batch` and `qualification` from the pinned exports
+(2D: P1, A21.1/A27; 3D batch 1: "diagnostic only (A22.0)"; 3D batch 2: "qualified subset (jcp-qualify Q2, A29)"),
+through the freeze, Stage-B and verdict files; verdict lines are generated per batch and never pooled.
+
+**A32.4 Order (item 11)** is already governed by A30.1/A31 (design audit 21 CLEAN): `none` is never deferred at any
+rank; the probe runs precede the extension.
+
+**A32.5 Spending bound enforced at staging (item 19).** `cluster/stage.py` refuses a tune/stageb attempt unless
+`--minutes` equals the configuration's `wall_hours` and (measured or requested hours of every ledger job) + this wall
+(+ the 7.5 h Stage-B reserve for tuning jobs) ≤ 30 GPU-h.
+
+**A32.6 The Stage-B chain (items 2–5, 7–9, the Stage-B part of 10, 12, 18) is gated separately.** The tuning jobs do not
+read `freeze_stageb.py`, `stageb.py` or `analyze.py`. Before any Stage-B job: the timing contract is enforced fail-closed
+(recomputed drift, positive finite times, repetition inventory, timed outputs bound to the certified outputs); replay of
+the reconstructed online data is a blocking gate (tolerance fixed before data); freeze verification is mandatory and
+blocking and hashes every replay dependency; analysis re-checks the frozen tuning hash, validates coverage against the
+frozen inventory, counts assessed pairs, propagates saturation (256² → 1024²), ECSW coverage/quality and batch labels,
+and adds Stage-B selection costs to C-search; Stage B shares basis prefixes per rank and HR data per (kind, r, hp) with
+bounded device memory; Stage-B preflight checks its tuning directory and frozen files. These are implemented and
+code-audited clean before the first Stage-B submission.

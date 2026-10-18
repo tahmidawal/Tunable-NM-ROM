@@ -143,6 +143,8 @@ def main():
         return
     O.res['n0'] = {j: refs.n0(j) for j in refs.f}
     n0 = O.res['n0']
+    ELIG = [j for j in SCREEN if bool(refs.st[j]['eligible'])]       # A32.1: fixed mask from the reference store
+    O.res['eligible_screen_cases'] = ELIG
 
     # ---- 1. ours: batch-1 comparators, G-ours replay and same-job warm timing on the 6 timing cases --------------
     O.res['ours_pass'] = {}
@@ -157,7 +159,11 @@ def main():
             ref_e = {k: {j: exp[k]['e0'][str(j)] for j in SCREEN} for k in cfg['ours']}
         oxs = {}
         for key in cfg['ours']:
-            rec = dict(status='construction_failed', cases={})
+            rec = dict(status='construction_failed', cases={},
+                       batch=(1 if d == 2 else exp[key].get('batch', 1)),
+                       qualification=('P1 Q1+Q2 (A21.1; FRONT-2D v1 member if listed in A27)' if d == 2 else
+                                      'qualified subset (jcp-qualify Q2, A29)' if exp[key].get('batch') == 2 else
+                                      'diagnostic only (A22.0; Q1 + deployed-rule evidence)'))
             O.res['ours_pass'][key] = rec
             try:
                 if d == 2:
@@ -287,6 +293,7 @@ def main():
         Su, Pu, su, tu = cp.build_basis(fam_tr, rows, rmax, ranks, gen='upwind')
         del Su
         PROBE.update(Phi=np.asarray(Pu), constructible=sorted(cp.constructible_r))
+        O.npz('artifacts', 'Phi_probe_lat', Phi_lat=PROBE['Phi'][H.lattice_nodes(d, L)] if d == 2 else PROBE['Phi'])
         del Pu
         return dict(info=cp.info['basis[upwind]'], trust=tu, constructible=sorted(cp.constructible_r))
     probe = O.phase('generator_probe_basis', probe_basis, store='probe_basis')
@@ -356,12 +363,17 @@ def main():
                     cid = cids[(option, solver)]
                     try:
                         recs = {}
+                        part = O.res.setdefault('stageA_partial', {}).setdefault(cid, {})
                         for j in SCREEN:
                             recs[j] = cell.run(kind, r, dat, solver, option, 'prod', fam.ic(L, j), fam.nu(j))
                             warm = cell.run(kind, r, dat, solver, option, 'prod', fam.ic(L, j), fam.nu(j),
                                             certify=False, burn_s=0.1)
                             recs[j]['seconds_warm'] = warm['seconds']
                             recs[j]['timed_vs_scored'] = disc_finite(warm['fields_lat'], recs[j]['fields_lat'])
+                            part[j] = dict(cert=recs[j]['cert'], seconds_warm=warm['seconds'],   # A32.2: per-case
+                                           timed_vs_scored=recs[j]['timed_vs_scored'],
+                                           e0=refs.score_safe(recs[j]['fields_lat'], j), W=recs[j]['W'])
+                            O.save()
                         q1 = PL.q1_config(recs, tight, tighter, {j: n0[j] for j in SCREEN}, SCREEN[:2], SCREEN)
                         e0 = {j: refs.score_safe(recs[j]['fields_lat'], j) for j in SCREEN}
                         O.npz('arrays', f'{tag}~{cid}', W=np.stack([recs[j]['W'] for j in SCREEN]),
@@ -369,20 +381,22 @@ def main():
                               Wtighter=np.stack([tighter[j]['W'] for j in SCREEN[:2]]),
                               C=np.stack([recs[j]['C'] for j in SCREEN]),
                               gamma=np.stack([recs[j]['gamma'] for j in SCREEN]))
-                        es = [e0[j]['e'] for j in SCREEN]
+                        es = [e0[j]['e'] for j in ELIG]                  # A32.1: reference-eligible case-kinds only
                         tv = [recs[j]['timed_vs_scored'] for j in SCREEN]
                         timing_ok = bool(all(np.isfinite(x) and x <= TIMED_TOL for x in tv))
                         O.res['stageA'][cid] = dict(
                             q1=q1, e0=e0, hr_points=hr_points(kind, r, hp, cell), arm=ainfo, quality=quality,
                             stage=tag, kind=kind, r=r, hrp=hp, scheme=option[0], dt=option[1], solver=solver,
-                            W=float(np.max(es)) if all(np.isfinite(es)) else float('nan'),
-                            med=float(np.median(es)) if all(np.isfinite(es)) else float('nan'),
+                            W=float(np.max(es)) if es and all(np.isfinite(es)) else float('nan'),
+                            med=float(np.median(es)) if es and all(np.isfinite(es)) else float('nan'),
+                            eligible_cases=ELIG,
                             t=float(np.median([recs[j]['seconds_warm'] for j in SCREEN])), timing_ok=timing_ok,
                             runs={j: dict(cert=recs[j]['cert'], seconds_warm=recs[j]['seconds_warm'],
                                           timed_vs_scored=recs[j]['timed_vs_scored']) for j in SCREEN},
                             anchors=dict(tight={j: tight[j]['cert'] for j in SCREEN},
                                          tighter={j: tighter[j]['cert'] for j in SCREEN[:2]}))
                         set_status(cid, 'complete', stage=tag)
+                        O.res['stageA_partial'].pop(cid, None)
                         v = O.res['stageA'][cid]
                         log(f'   {cid}: q1={q1["q1"]} W={v["W"]:.4g} t={v["t"]:.4g}s timing_ok={timing_ok}')
                     except Exception as e:  # noqa: BLE001
@@ -412,6 +426,11 @@ def main():
         fom = H.make_fom(d, L)
         cohorts = [('dev6', H.Family(2, 'dev6')), ('val32', H.Family(2, 'val32'))] if d == 2 else [('val64', fam)]
         ntol = 1e-10
+        for cname, f_ in cohorts:                      # A32.4: predeclared inventory
+            for option in options:
+                for j in (range(f_.n) if not cfg.get('dry') else [0, 1]):
+                    O.res['fom_limiting'][f'{cname}|{j}|{option[0]}|{option[1]:.8g}'] = dict(status='not_run')
+        O.save()
         for cname, f_ in cohorts:
             jj = list(range(f_.n)) if not cfg.get('dry') else [0, 1]
             rf = SC.Refs(d, cname, f_, jj)

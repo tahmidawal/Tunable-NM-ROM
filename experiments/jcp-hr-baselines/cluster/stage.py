@@ -59,6 +59,15 @@ def main():
     files = FILES + [cfgname] + [f'{LANE}/{x}' for x in json.loads(git_show(commit, cfgname)).get('stage_files', [])]
     for name in files:
         assert (ROOT / name).read_bytes() == git_show(commit, name), f'{name} differs from HEAD'
+    if a.driver in ('tune', 'stageb'):                 # A26.4 / A32.5: the wall limit is the GPU-hour bound
+        c0 = json.loads(git_show(commit, cfgname))
+        assert a.minutes == int(round(60 * c0['wall_hours'])), ('--minutes must equal the config wall_hours', a.minutes)
+        led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
+        committed = sum(float(j['measured_gpu_hours']) if j.get('measured_gpu_hours') is not None
+                        else float(j['requested_hours']) for j in led['jobs'])
+        reserve = 7.5 if a.driver == 'tune' else 0.0
+        assert committed + c0['wall_hours'] + reserve <= 30.0 + 1e-9, \
+            ('ledger: spent/committed + this wall + Stage-B reserve exceeds 30 GPU-h', committed, c0['wall_hours'])
     out.mkdir(parents=True)
     proof = []
     for name in files:

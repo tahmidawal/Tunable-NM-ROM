@@ -225,22 +225,26 @@ def analyze_p1(rp, sel, grid, scp):
         k5_rank = bool(k5.get('rule') == blk.get('k5_rule', 'gl12') and cond_ok(k5.get('cond'), Rp[sn]))
         k5r = tob_or_within(scores_of(sc, f"{sn}|{rule}|mfproj_{k5.get('rule')}|{spec}", cases), mm) if k5_rank else None
         k5f = None if (k5r is None or k5r['b'] is None) else bool(not (k5r['b'] and k5r['c']))
-        H32[l_] = dict(key=f'{sn}|{rule}|{spec}', eligible=elig, **e_ab, **e_c, cond=m.get('cond'), **q,
-                       qualified_before_K5=bool(elig and q.get('b') and q.get('c')),
+        evid = bool(e_ab['rows_complete'] and e_c.get('dist_worst') is not None and q.get('b') is not None)
+        H32[l_] = dict(key=f'{sn}|{rule}|{spec}', eligible=elig, evidence_complete=evid, **e_ab, **e_c, cond=m.get('cond'), **q,
+                       measured_pass=bool(evid and elig and q.get('b') and q.get('c')),
                        K5=dict(rule=k5.get('rule'), cond=k5.get('cond'), rank_ok=k5_rank, fails=k5f, detail=k5r))
-    out['K5_fires'] = any(v.get('K5', {}).get('fails') for v in H32.values())
+    # K5 three-state: fires if any measured control fails; does not fire only if every control is resolved and none fails
+    k5s = [v['K5']['fails'] for v in H32.values() if 'K5' in v]
+    out['K5_fires'] = True if any(x is True for x in k5s) else (False if k5s and all(x is False for x in k5s) else None)
     for v in H32.values():
-        if 'qualified_before_K5' in v:
-            v['qualified'] = bool(v['qualified_before_K5'] and out['K5_fires'])
-            if v['qualified']:
-                v['status'] = 'qualified'
-            elif v['qualified_before_K5']:
-                v['status'] = 'blocked (K5 did not fire)'
-            elif v.get('b') is None and v['eligible']:
-                v['status'] = 'unavailable (score populations incomplete)'
-                v['qualified'] = None
-            else:
-                v['status'] = 'not qualified'
+        if 'K5' not in v:
+            continue
+        if not v['evidence_complete']:
+            v['qualified'], v['status'] = None, 'unavailable (mesh-free rows, distances or scores incomplete)'
+        elif not v['measured_pass']:
+            v['qualified'], v['status'] = False, 'not qualified'
+        elif out['K5_fires'] is True:
+            v['qualified'], v['status'] = True, 'qualified'
+        elif out['K5_fires'] is False:
+            v['qualified'], v['status'] = False, 'blocked (K5 did not fire)'
+        else:
+            v['qualified'], v['status'] = None, 'unavailable (K5 evidence incomplete)'
     out['H32'] = H32
     # ---- H3.1 profile (indicative) and G3 (only on a valid, complete panel)
     H31 = {}
@@ -307,6 +311,8 @@ def analyze_p1(rp, sel, grid, scp):
     acc = dict(complete_flag=bool(res.get('complete')), cohort=res['cohort']['seed'] == 923801 and sorted(cases) == list(range(64)),
                K4=bool(sc['controls'].get('K4_fires')),
                confirm_all_valid=all(p['valid'] for p in conf.values()), mf_all_present=all(l_ in P['mf'] for l_ in blk['mf']),
+               mf_evidence_valid=all(not str(v.get('status', '')).startswith('unavailable') for v in H32.values()),
+               K5_resolved_present=out['K5_fires'] is not None,
                profile_all_present=all(not v.get('missing') for v in H31.values()),
                batch_all_present=all(v['available'] for x in H33.values() for v in x['per_B'].values()),
                conv_all_present=all(v['available'] for v in conv.values()), reduced_adt_all_present=all(v['ok'] is not None for v in red.values()),
@@ -347,7 +353,7 @@ def suppress(out, why):
             for k in list(o):
                 if k in ('verdict', 'status') and isinstance(o[k], str) and not o[k].startswith('unavailable'):
                     o[k] = f'unavailable ({why}; computed {o[k]})'
-                elif k in ('qualified', 'qualified_before_K5', 'bar_2x', 'reaches_2x', 'G3', 'K5_fires', 'K6_fires', 'K6plus_pass',
+                elif k in ('qualified', 'measured_pass', 'evidence_complete', 'bar_2x', 'reaches_2x', 'G3', 'K5_fires', 'K6_fires', 'K6plus_pass',
                            'K6_fires_all', 'K6plus_all', 'ok', 'eligible', 'fails', 'usable', 'b', 'c', 'Ec', 'Eb', 'Ea', 'adt_gate',
                            'G4', 'K2_fires', 'still_matched', 'valid'):
                     o[k] = None if k != 'K2_fires' else False

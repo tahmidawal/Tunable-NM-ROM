@@ -668,3 +668,13 @@ consistency of `fom-match.json` with f1 is established by its own audits (select
   "≥ 2×" only when every family is resolved; unresolved primary unions are listed in the m1 coverage block.
 * Integrity suppression now nulls every verdict-bearing boolean and gate (G4, K6, K6+, reduced-ADT ok, eligibility flags,
   panel validity, …), and the report prints a null K5 as "unavailable", never as "does not fire".
+
+---
+
+## Amendment A14 (2026-10-18; dispositions of `audits/codex-code-10.md`, NOT READY on two missing-evidence paths)
+
+* K5 is three-state: fires if any measured coarse-rule control fails (b) or (c); "does not fire" only if every control is
+  resolved and none fails; otherwise unavailable.
+* H3.2 status: "unavailable" when mesh-free rows, distances or scores are incomplete; "not qualified" only for a measured
+  failure; "qualified" / "blocked (K5 did not fire)" / "unavailable (K5 evidence incomplete)" by K5's state. Both cases
+  enter the p1 coverage block (`mf_evidence_valid`, `K5_resolved_present`).

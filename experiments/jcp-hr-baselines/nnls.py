@@ -15,6 +15,7 @@ made the path cycle (A17, smk1 and the CPU dry run), which is why it was replace
 from __future__ import annotations
 
 import math
+import time
 
 import numpy as np
 import jax
@@ -131,9 +132,9 @@ def _qr_reset_impl(Q, R, qtb, k):
 _qr_reset = jax.jit(_qr_reset_impl, donate_argnums=(0, 1, 2))
 
 
-def _qr_delete_impl(Q, R, qtb, k, j):
-    """Delete active column j (0 <= j < k): shift R's columns left, restore triangularity by Givens rotations on rows
-    j..k-2 (applied to R, qtb and the columns of Q), then clear position k-1."""
+def _qr_delete_givens_impl(Q, R, qtb, k, j):
+    """Reference (A20 original): delete active column j by sequential Givens rotations. Kept for the regression
+    fixture only: its loop-carried column updates are not done in place by XLA at production widths (A38.1)."""
     K = R.shape[0]
     ar = jnp.arange(K)
     src = jnp.where((ar >= j) & (ar < k - 1), ar + 1, ar)
@@ -160,7 +161,53 @@ def _qr_delete_impl(Q, R, qtb, k, j):
     return Q, R, qtb
 
 
-_qr_delete = jax.jit(_qr_delete_impl, donate_argnums=(0, 1, 2))
+_qr_delete_givens = jax.jit(_qr_delete_givens_impl)
+
+
+def _qr_delete_window_impl(Q, R, qtb, k, j, w):
+    """A38.1: delete active column j (0 <= j < k) by one blocked re-triangularisation. After shifting R's columns
+    j+1..k-1 left, rows j..k-1 form an upper-Hessenberg block; a static window of width w (a power of two >= k - j)
+    starting at j0 = min(j, K - w) contains it. Householder QR of the w x w window (sign-normalised to a non-negative
+    diagonal, so the already-triangular part and the inactive identity part are left unchanged) gives Qs; then
+    R_window <- Rs, qtb_window <- Qs^T qtb_window, Q[:, window] <- Q[:, window] Qs. Columns right of the window are
+    inactive (>= k) with zero entries in these rows; columns left of it are zero in these rows. Finally slot k-1 is
+    cleared. Cost O(m w^2 + w^3), no sequential loop."""
+    K = R.shape[0]
+    ar = jnp.arange(K)
+    src = jnp.where((ar >= j) & (ar < k - 1), ar + 1, ar)
+    R = R[:, src]
+    j0 = jnp.minimum(j, K - w)
+    B = jax.lax.dynamic_slice(R, (j0, j0), (w, w))
+    Qs, Rs = jnp.linalg.qr(B)
+    dg = jnp.diag(Rs)
+    sg = jnp.where(dg < 0, -1., 1.)
+    Qs = Qs * sg[None, :]
+    Rs = Rs * sg[:, None]
+    R = jax.lax.dynamic_update_slice(R, Rs, (j0, j0))
+    qw = jax.lax.dynamic_slice(qtb, (j0,), (w,))
+    qtb = jax.lax.dynamic_update_slice(qtb, Qs.T @ qw, (j0,))
+    Qw = jax.lax.dynamic_slice(Q, (0, j0), (Q.shape[0], w))
+    Q = jax.lax.dynamic_update_slice(Q, Qw @ Qs, (0, j0))
+    last = k - 1
+    Q = Q.at[:, last].set(0.)
+    R = R.at[last, :].set(0.).at[:, last].set(0.).at[last, last].set(1.)
+    qtb = qtb.at[last].set(0.)
+    return Q, R, qtb
+
+
+_qr_delete_window = jax.jit(_qr_delete_window_impl, static_argnums=(5,), donate_argnums=(0, 1, 2))
+
+
+def _qr_delete(Q, R, qtb, k, j):
+    """Delete active column j of the updating factorisation (A38.1: blocked window re-triangularisation)."""
+    K = R.shape[0]
+    span = max(int(k) - int(j), 2)
+    w = min(K, 1 << (span - 1).bit_length())
+    w = max(w, min(K, 64))
+    return _qr_delete_window(Q, R, qtb, k, j, w)
+
+
+
 
 
 @jax.jit
@@ -291,7 +338,7 @@ def kkt_check(G, bj, S, x, nb):
 
 
 def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, supports=(), max_drops=3,
-                method='update', refactor_every=1024):
+                method='update', refactor_every=1024, max_seconds=None):
     """-> dict(records={tau: ..., ('s', s): ...}, support, weights, relres, path, reason, banned, kkt).
     reason: 'taus' (every requested checkpoint reached), 'kkt' (no admissible positive gradient and the KKT check
     passed), 'incomplete (KKT violated)' (no admissible gradient but KKT fails, e.g. only banned indices remain), 'cap'
@@ -334,7 +381,11 @@ def greedy_nnls(G, b, taus=(), cap=8192, frac=0.0, log=None, max_iter=100000, su
                 rec[t] = dict(support=S[x > 0].copy(), weights=x[x > 0].copy(), relres=rr, size=npos)
 
     rr = 1.0
+    t_start = time.perf_counter()
     for it in range(max_iter):
+        if max_seconds is not None and time.perf_counter() - t_start > max_seconds:
+            reason = 'time'                 # A38.2: per-path wall budget; unreached targets = construction failures
+            break
         r = residual()
         rr = float(jnp.linalg.norm(r)) / max(nb, 1e-300)
         if path:

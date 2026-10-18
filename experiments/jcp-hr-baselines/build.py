@@ -336,7 +336,7 @@ NNLS_MAX_ITER = 40000                            # single-index LH needs about 1
 BAN_RETRY_FRAC = 0.01
 
 
-def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, log=None):
+def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, log=None, max_seconds=None):
     """A15.1/A16: "ECSW with support-targeted greedy NNLS". One greedy path per (mesh, rank) is built through the largest
     target (16 r), recorded at first crossings of s = kappa r (actual sizes and training residuals reported) and at the
     tau crossings (reported). A16.3/A16.5: whenever more than 1 % of the candidates were banned, the path is rebuilt once
@@ -348,7 +348,8 @@ def ecsw_weights(G, b, cand_nodes, r, kappas=ECSW_KAPPA_PATH, taus=ECSW_TAUS, lo
     sup = [t for t in targets if t <= cap]
 
     def attempt(max_drops):
-        o = NN.greedy_nnls(G, b, taus=taus, supports=sup, cap=cap, log=log, max_drops=max_drops, max_iter=NNLS_MAX_ITER)
+        o = NN.greedy_nnls(G, b, taus=taus, supports=sup, cap=cap, log=log, max_drops=max_drops, max_iter=NNLS_MAX_ITER,
+                           max_seconds=max_seconds)
         cps = {}
         opt = o['reason'] == 'kkt' and o['kkt']['ok']          # A23: path ended at a KKT-certified NNLS optimum
         for k, t in zip(kappas, targets):

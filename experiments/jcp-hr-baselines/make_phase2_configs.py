@@ -31,6 +31,7 @@ cfgs = dict(
                      allow_cpu=True, dry=True))
 for k, v in cfgs.items():
     if k in WALL:
-        v.update(wall_hours=WALL[k], budget_hours=WALL[k] - 0.25)
+        v.update(wall_hours=WALL[k], budget_hours=WALL[k] - 0.25,
+                 ecsw_path_seconds=(2400 if v['d'] == 3 else 2700))      # A38.2: per-attempt NNLS wall budget
     (HERE / 'configs' / f'{k}.json').write_text(json.dumps(v, indent=1) + '\n')
     print(k, len(v['ranks']), len(v['options']), len(v['ours']))

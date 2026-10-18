@@ -1777,3 +1777,32 @@ Tuning code: READY at b08690fdb (code audit 23), submitted as t3d64a (5508653) a
 audits 1–3. The 2D 256² tuning attempt and every Stage-B attempt get their own job audits before submission.
 
 **Operational note (2026-10-18, COMMON-BRIEF §13–14).** Local jaxrun jobs go through `campaign/jaxslot.sh`; every sbatch is issued under the shared cluster lock `/cluster/tufts/paralab/tawal01/.campaign-sbatch.lock` with the account count (queued + running) < 8 and the lane count < 2 checked inside it (`cluster/submit.sh`; exit 75 at the account cap).
+
+---
+
+## Amendment A38 (2026-10-18) — t3d64a cancelled: NNLS column deletion cost; blocked delete; per-path budget
+
+**What happened.** `t3d64a` (job 5508653, H200) was cancelled by the lane at 53 min (0.8875 GPU-h, collected, ledger
+reconciled). Its ECSW paths took 19 s (r = 64), 37 s (r = 128) and 1,447 s (r = 256: 5,140 iterations, 1,044
+Lawson–Hanson column deletions, ≈ 1.35 s per deletion). The sequential Givens deletion (`fori_loop` updating two
+columns of Q per rotation) is not updated in place by XLA at production widths: on the local GB10 a deletion with
+≈ 3,000 rotations took 0.1 s at (m, K) = (26,112, 4,096) but 27–55 s at (52,224, 8,192), i.e. a copy of the buffer
+per rotation. Extrapolated, the 3D r = 512 … 1,024 paths would have exceeded the 12 h wall before Stage A started.
+`t2d1024a` (same code) built its r = 384 path in 2,286 s and continues; its results are unaffected in value (the
+deletion is exact either way), only in cost.
+
+**A38.1 Blocked deletion.** Deleting active column j now re-triangularises the upper-Hessenberg block in one step:
+a static window of width w (a power of two ≥ k − j, ≥ 64) containing rows/columns j..k−1 is QR-factorised
+(Householder, sign-normalised to a non-negative diagonal), and R, Qᵀb and the corresponding columns of Q are updated
+by dense products (cost O(m w² + w³), no sequential loop). Checked against the Givens reference on 40 random cases:
+max difference 1.1e-14 in Q, R and Qᵀb, exact reconstruction of the reduced matrix, structure preserved. The Givens
+version is kept as `_qr_delete_givens` for the regression fixture only. The CPU gate suite (G-nnls: update vs full,
+production-interval stability) is rerun on this code before any submission.
+
+**A38.2 Per-path wall budget.** Each NNLS attempt carries a wall budget (`ecsw_path_seconds`: 2,400 s in 3D,
+2,700 s in 2D); when it is exceeded the path stops with reason `time`, the unreached support targets are construction
+failures (A16.2 coverage label "ECSW coverage incomplete"), and the job proceeds to Stage A. This bounds the
+construction phase so the registered Stage-A grid cannot be starved by one path.
+
+**A38.3 Re-submission.** The 3D tuning job is re-staged as a new attempt with a new reservation (A34.2), after the
+gate suite, a code audit of the NNLS change and a job audit.

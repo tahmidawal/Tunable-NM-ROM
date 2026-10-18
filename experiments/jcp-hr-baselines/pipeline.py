@@ -176,13 +176,13 @@ class Cell:
         self.info['ecsw_states'] = info
         return info
 
-    def ecsw(self, r, kappas=BD.ECSW_KAPPA_PATH, nnls_log=None):
+    def ecsw(self, r, kappas=BD.ECSW_KAPPA_PATH, nnls_log=None, max_seconds=None):
         """A15.1: weights at support targets kappa * r (keys 'k<kappa>'), tau crossings reported."""
         with self.T('ecsw_contrib'):
             G, b, cand, cinfo = BD.ecsw_contrib(self.states, self.Phi[:, :r], self.d, self.L)
             sync(G)
         with self.T('ecsw_nnls'):
-            rec, summ = BD.ecsw_weights(G, b, cand, r, kappas, log=nnls_log)
+            rec, summ = BD.ecsw_weights(G, b, cand, r, kappas, log=nnls_log, max_seconds=max_seconds)
         del G, b
         self.ecsw_rec[r] = {f'k{k}': v for k, v in rec.items()}
         sel = summ['attempts'][summ['selected']]

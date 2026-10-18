@@ -314,7 +314,7 @@ def main():
 
     def ecsw_r(r):
         big = d == 3 and r == max(ranks)
-        cell.ecsw(r)
+        cell.ecsw(r, max_seconds=cfg.get('ecsw_path_seconds'))     # A38.2: per-attempt wall budget
         if big:                                        # A26.1: process-cumulative peak after the maximal path
             pk = PL.device_peak()
             ok = bool(np.isfinite(pk) and 0 <= pk <= 120e9) or bool(cfg.get('dry') and pk == -1)   # CPU dry run: no telemetry

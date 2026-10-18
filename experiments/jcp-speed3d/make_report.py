@@ -554,6 +554,16 @@ def main():
     if R1:
         w('## Replication on the historical test cohort 923901 (E0 test32)')
         w('')
+        rr = R1['roms']
+        inel = [k.rsplit('|', 1)[0] + f" ({v['path']})" for k, v in rr.items() if v['eligible'] is False]
+        lost = [k for k, v in R1['foms'].items() if v['still_ties_or_beats'] is False]
+        w(f"Summary: {sum(v['eligible'] is True for v in rr.values())} of {len(rr)} frozen configuration/path entries are "
+          f"eligible on this cohort; not eligible: {', '.join(inel) or 'none'}. Comparator winners still tie-or-beat their "
+          f"comparator: {sum(v['winner_ties_or_beats'] is True for v in R1['comparators'].values())} of {len(R1['comparators'])}; "
+          'replication speed-ups ' + '; '.join(f"{c} {f(v['S_replication'])}× (validation {f(v['S_validation'])}×)" for c, v in R1['comparators'].items())
+          + f". Matched FOMs that no longer tie-or-beat their ROM here: {', '.join(lost) or 'none'}. Replication does not "
+          'change any validation-selected decision (A1.11); differences are reported, not acted on.')
+        w('')
         w(R1.get('markdown', ''))
         w('')
     # ---------------- provisional / retractions
@@ -641,6 +651,8 @@ def main():
                                                    for fk, fv in o['fom'].items()} for L_, o in m1['per_L'].items()},
                         rom_per_mesh={L_: {l_: {x: y for x, y in r.items() if x not in ('e', 'eta', 'ranked_ids')} for l_, r in o['rom'].items()}
                                       for L_, o in m1['per_L'].items()})
+    if R1:
+        ex['r1'] = {k: v for k, v in R1.items() if k != 'markdown'}
     (HERE / 'runs' / 'EXPORT.json').write_text(json.dumps(ex, indent=1, default=float) + '\n')
     print('report.md', len(L), 'lines; plots', made)
 

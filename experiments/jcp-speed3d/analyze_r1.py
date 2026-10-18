@@ -86,7 +86,7 @@ def main():
     md = [f"Job {out['job']} ({out['gpu']}), integrity {f(integ)}; replication only (nothing selected on this cohort).", '',
           '| configuration | path | role | eligible | distance to ADT | scored cases | median | worst |', '|---|---|---|---|---|---|---|---|']
     for k, v in out['roms'].items():
-        md.append(f"| {k.split('|')[0]} | {v['path']} | {v['role']} | {f(v['eligible'])} | {f(v['dist_worst'])} | {v['scored']} | {f(v['median'])} | {f(v['worst'])} |")
+        md.append(f"| {k.rsplit('|', 1)[0].replace('|', ' ')} | {v['path']} | {v['role']} | {f(v['eligible'])} | {f(v['dist_worst'])} | {v['scored']} | {f(v['median'])} | {f(v['worst'])} |")
     md += ['', '| comparator | winner | winner ties-or-beats here | S replication | S validation |', '|---|---|---|---|---|']
     for c, v in out['comparators'].items():
         md.append(f"| {c} | {v['winner']} | {f(v['winner_ties_or_beats'])} | {f(v['S_replication'])} | {f(v['S_validation'])} |")

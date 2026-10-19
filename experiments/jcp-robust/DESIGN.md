@@ -612,3 +612,102 @@ Sobol diagnostic 38 × 16 × 2 ≈ 1,200; controls ≈ 300 → **≈ 42,600 roll
 E2 3D selection now covers three specs: 3.5 GPU-h per bank × 4 = 14.0. Revised total ≈ **61.2 GPU-h** (body/A1 lines
 otherwise unchanged); with the 75 cap, E2 seeds 4–5 are expected to be deferred and E2 3D seed 3 is the next item at risk.
 Every figure is a projection until the smoke certificates exist.
+
+---
+
+## Amendment A3 (2026-10-19, after Codex design audit 3; no data exists)
+
+Audit `audits/codex-design-3.md`: NEEDS-RESTATEMENT (item 32 WRONG; 19–21, 29, 33–41 NEEDS-RESTATEMENT; 1–18, 22–28,
+30, 31 resolved). A3 governs over A2, A1 and the body.
+
+**A3.1 (item 41) Historical population wording.** Corrected: qualify scored all 38 cases at every mesh, and qualified
+these arms under its registered Q2 subset (`q2_cases: sub16`). E1's every-case successor check is a **stronger test**; a
+draw-0 successor failure on a case outside sub16 is a finding of E1, not an archive-reproduction failure (G-E1.2 compares
+only the saved production `W`).
+
+**A3.2 (items 23, 36) Failure states at case level.** For each (configuration, draw, case) the record carries one of:
+`ok`, `failed-prod` (production run invalid), `failed-tight`, `failed-tighter`, `failed-succ`, `failed-target` (the
+respective run completed and was flagged invalid), or `missing`. Rules: any `failed-*` except `failed-target` makes the
+draw not draw-qualified; `failed-target` makes the cross-family criterion of that case "target failed" (A3.3). H-E1c: a
+case whose draw-$s$ production run is `failed-prod` counts as **outside the margin** for that case (never dropped); the
+case-median and case-worst error of a draw with any `failed-prod` eligible case are "failed" (ranked worst, +∞ in A2.2);
+descriptive summaries (median, IQR, min–max over draws) are computed only over draws with no failed case and are printed
+with the count of failed draws; no arithmetic is done on a failed value. `missing` → "unavailable" for every statistic
+that needs that case.
+
+**A3.3 (item 37) Target certification keyed per configuration.** The independent target is certified per (bank, r or
+width, form, scheme, $\Delta t$, mesh): 2D — target gauss384 vs check gauss320, every case of dev6, all six outputs,
+distance $\le2.5\times10^{-5}$, both runs valid; 3D — gl64 vs gl56 on cases 0–7. This is run for **every** E1 configuration
+(7 per mesh in 2D, 2 in 3D) and every E2 selection cell. If a configuration's target is not certified, its cross-family
+criterion (A1.2 iii) and the target-dependent quantities ($d$, $\rho$ vs target, $D_s$, H-E1b's $D_s$ statistic) are
+"unavailable (target not certified)"; H-E1a is then evaluated on Q1 + own-family Q2 only and labelled so; H-E1c (E0 error,
+target-free) is unaffected except its margin's $e_{\rm conv}$ term, which falls back to $2\epsilon_{\rm ref}$ alone (labelled).
+
+**A3.4 (item 40) Rank-interval tolerance for error statistics.** Conservative bound: for the case-median and case-worst
+error, $\delta=2\max_i\epsilon_{{\rm ref},i}$ over the eligible cases (a uniform bound on every case's reference error
+propagates through any order statistic, since $|\mathrm{med}(a)-\mathrm{med}(b)|\le\max|a-b|$ and likewise for the maximum).
+The A2.2 median-based $\delta$ is withdrawn.
+
+**A3.5 (item 38) Slot and fixed-configuration states.** Every 2D/3D front slot and fixed configuration per bank has one
+state: `member`, `dominated` (dominance computed among Q1+Q2-qualified candidates only), `unqualified` (selected or fixed
+but failing Q1/Q2 in that cell), `absent` (no rule selected), `missing`, `blocked`. Qualification agreement is compared
+across banks separately from membership; an unqualified candidate is never called dominated. For E2 labels (A2.7), the
+definitive labels are member/dominated/unqualified/absent; missing/blocked are non-definitive.
+
+**A3.6 (item 35) G-E2.3 scope.** G-E2.3 is the incumbent replay check, enumerated:
+- 2D: incumbent bank, R128 fib4181 LSPG BE 1 and CN-R 1 at 256²/1024² (P1 `acc256`/`acc1024` `R_R128_BE.npz`,
+  `R_R128_CNR.npz`), R384 gauss128 BE 1 / CN-R 1 at 1024² (P1 `acc1024` `R_R384_BE.npz`, `R_R384_CNR.npz`), R256 gauss128
+  BE 1 / CN-R 1 at 1024² (P1 `acc1024` `R_R256_BE.npz`, `R_R256_CNR.npz`), all 38 cases, key `W`; file sha256 recorded in the
+  config at staging (from the P1 lane's archive listing).
+- 3D: incumbent W1024 bank, qualify `q3d3` archive for `W256|lat8192|qn|BDF2|0.025|k4` and `W512|lat16384|qn|BDF2|0.025|k4`
+  and qualify `q3d2` for `W256|gl24|fs|CN|0.01|K1`, 64 cases.
+- Norm and failure handling as A2.1. Scope: a failure blocks every E2 verdict of that dimension (the code path is suspect).
+  Never applied to newly trained banks. **Smoke coverage:** smk2 runs the 2D incumbent replay of R128 BE 1 on dev6 at 1024²;
+  smk3 the 3D incumbent replay of `W256|lat8192|qn|BDF2|0.025|k4` on cases 0–7.
+
+**A3.7 (items 32, 29) Estimator-level fixtures with provable outcomes.** All fixtures are built from one real, positive
+A100 array (job 1; at least 5 cases × 2 valid reps), pair a baseline copy with an injected copy, and run through the same
+estimator and bootstrap code:
+- q1: baseline = the entries of R128-BE 1024²; injected = the same entries × 1.5 → every resample gives $\phi_1=1.5$ exactly →
+  must be *hardware-dependent*.
+- q2: baseline = the R128-BE 1024² entries **copied to both mesh columns** (so baseline $q_2\equiv1$ in every resample);
+  injected = the same with the 1024² column × 1.5 (so $q_2\equiv1.5$) → $\phi_2\equiv1.5$ → must be *hardware-dependent*.
+- q3: baseline = the real (FOM, ROM) arrays; injected = FOM entries × 1.5 → $\phi_3\equiv1.5$ → *hardware-dependent*.
+- null: baseline vs itself → $\phi\equiv1$ → *consistent*.
+Each fixture is required (coverage cannot be empty, since it is built from one fixed subject); a fixture that does not
+return its required label blocks the corresponding $\phi_k$ verdicts and the dependent q4 agreement.
+
+**A3.8 (item 33) Panel-specific case sets.** $C_{\rm cost}$ = P-cost cases (dev6) valid (≥ 2 valid reps) for both subjects at
+256² and 1024² in every job of both types; $C_{\rm cross}$ = P-cross cases (dev6|0–5, val32|0–9) valid for both ROM subjects and
+all timed comparators in every job of both types. H200-only 4096² cells never enter a cross-type intersection. Requested and
+retained case ids are reported for each statistic; $|C|<5$ → "unavailable".
+
+**A3.9 (items 18, 34) q4 constructors.** Per job, P1's `h_cost_n` on {256², 1024²} returns `procedure_outcome`
+(pass/fail/inconclusive on the two-mesh data) and a non-definitive registered `outcome`; **H-cost-N(2) uses
+`procedure_outcome`**. Per-type label: from the pooled type statistic $q_2(T,b)$ with its own case bootstrap (pass iff upper
+95 % bound $\le1.25$, fail iff lower $>1.25$, else inconclusive); likewise S2-subset from pooled $q_3(T,b,f)$ (pass iff lower
+bound $\ge2$, fail iff upper $<2$). Per-job labels are reported beside them; if the two jobs of a type give opposite
+definitive per-job labels, the type's label is "inconclusive (jobs disagree)" regardless of the pooled interval; a missing
+or blocked job makes the type label rest on the remaining job and is labelled "single job".
+
+**A3.10 (items 21, 39) Workload inventory and cap.** Unique executions per job (projection; compile signatures in brackets;
+each job's certificate comes from the smoke measurements):
+
+| job | executions | compile signatures |
+|---|---|---|
+| e1-256, e1-1024, e1-4096 (2D, one per mesh) | 7 configs × 38 × 16 draws × 3 (prod, tight, succ) = 12,768; tighter 7 × 6 × 16 = 672; targets 7 × 38 = 266; target checks 7 × 6 = 42; bad vector 7 × 38 = 266; Sobol diag 38 × 16 = 608; permuted gate 38 → ≈ 14,660 per mesh | per (form, scheme, factor, m): 7 forms/steps × {4181, 6765, 147456, 102400, 8192} |
+| e1-3d | 2 × 64 × 16 × 3 = 6,144; tighter 2 × 8 × 16 = 256; targets 128; checks 16; bad 128; Sobol 1,024; permuted 64 → ≈ 7,760 | 2 specs × 6 rule sizes |
+| e2sel-2d-b (b = 0..3) | 3 r × 7 candidates × 2 schemes × 38 × 3 = 4,788; tighter 3 × 7 × 2 × 6 × 1 = 252; terminal successor gauss256 3 × 2 × 38 = 228; target + check 3 × 2 × (38 + 6) = 264 → ≈ 5,530 | 3 r × 8 sizes × 2 |
+| e2ver-2d-b | 256² and 4096²: 3 r × 2 schemes × 38 × 3 × 2 meshes = 1,368; 1024² factors 2/2.5 BE+CN-R: 3 × 4 × 38 × 3 = 1,368; fixed deployed rows when the rule differs (≤ 2,736); timing 3 r × 6 arms × 6 cases × 3 reps × 2 (A–B–A) = 648 → ≤ 6,120 | |
+| e2sel-3d-b | 4 widths × 3 specs × 10 rungs × 64 × (prod + ADT tight) = 15,360; tighter 4 × 3 × 10 × 8 = 960; successors gl56/lat131072 top rungs 4 × 3 × 2 × 64 = 1,536; target + check 4 × 3 × (64 + 8) = 864 → ≈ 18,720 | 4 widths × 13 sizes × 3 specs |
+| e2ver-3d-b | gl64 panel + gl80 Q2: 4 × 2 specs (accurate, fast) × (64 + 8) = 576 (gl64 reused from selection); fixed configs 4 × 64 × 3 = 768; front timing ≤ 24 slots × 8 cases × 3 reps × 2 = 1,152 → ≈ 2,500 | |
+| e5 (×4) | P-cost 2 subjects × 2 meshes × 6 × 3 triplets (+ 4096² on H200) + doubled; P-cross (2 ROM + 3 FOM) × 16 × 3 triplets | inherited |
+
+Per-bank 3D cost is therefore projected at ≈ 3.5–4.5 GPU-h (selection) + 0.7 (verdicts), refining A2.11's 3.5. Revised
+projection: E1 2D 9.5, E1 3D 0.7, E2 2D (training 14.0 + 4 × 2.5) 24.0, E2 3D (training 6.0 + 4 × 4.5) 24.0, E5 2.4, smokes
+4.5 → **≈ 65.1 GPU-h**, leaving ≈ 9.9 GPU-h (15 %) of the 75 cap as contingency — less than the 25 % used in earlier
+planning. The cap is hard: the ledger reservation check (§7) and the registered defer order govern. Consequences fixed now:
+E2 seeds 4–5 deferred; if the smoke certificates push the projection above 75, **E2 3D seed 3** is dropped next (both its
+training and evaluation), then E1 3D draws are kept at 16 (already the minimum). If even that does not fit, the E2 3D
+incumbent evaluation runs on the four existing fixed configurations only (labelled), before any never-dropped item is
+touched.

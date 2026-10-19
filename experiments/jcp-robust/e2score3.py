@@ -46,7 +46,16 @@ def install(cfg):
 
 
 if __name__ == '__main__':
+    import hashlib
     run = Path(sys.argv[sys.argv.index('--run') + 1])
-    cfg = json.loads((run / 'result.json').read_text())['config']
+    outp = Path(sys.argv[sys.argv.index('--out') + 1])
+    res = json.loads((run / 'result.json').read_text())
+    cfg = res['config']
     install(cfg)
     SC.main()
+    # provenance (code audit 10 #2): the coefficient archive and every decoder bank used, by sha256
+    o = json.loads(outp.read_text())
+    o['scorer'] = 'e2score3 (bank-aware)'
+    o['W_sha256'] = hashlib.sha256((run / f"W_{res['mode']}.npz").read_bytes()).hexdigest()
+    o['decoder_banks'] = {s_['name']: [s_['bank'], C3.BANKS[s_['bank']][1]] for s_ in cfg['settings']}
+    outp.write_text(json.dumps(o, indent=1) + '\n')

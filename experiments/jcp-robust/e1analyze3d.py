@@ -45,16 +45,31 @@ def agree(off, job):
     return bool(abs(off - job) <= 1e-9 * abs(job) + 1e-13)
 
 
-def check_scores(sc, res, Wz):
-    """code audit 9 #5: the E0 scores come from THIS job (job id, cohort seed) and, for every saved coefficient key, cover
-    exactly the cases of that key's saved mapping."""
+def check_scores(sc, res, Wz, wpath):
+    """code audits 9 #5, 10 #2: the E0 scores come from THIS job (job id, cohort seed, coefficient archive sha256), were
+    computed by the bank-aware scorer on the job's own decoder banks, against the pinned E0 store (version, STATUS sha,
+    cohort), and hold exactly the job's saved coefficient keys, each covering exactly its saved cases."""
+    import hashlib
+    import c3common as C3_
+    import score3 as SC_
     if str(sc.get('job_id')) != str(res.get('job_id')) or int(sc.get('seed', -1)) != int(res['config']['cohort_seed']):
         raise ValueError(f"scores from job {sc.get('job_id')} / seed {sc.get('seed')} do not belong to job {res.get('job_id')}")
-    for k in Wz.files:
-        if k.startswith(('cases|', 'wall|', 'fomfield|')):
-            continue
+    if sc.get('W_sha256') != hashlib.sha256(Path(wpath).read_bytes()).hexdigest() or sc.get('scorer') != 'e2score3 (bank-aware)':
+        raise ValueError('scores not computed by the bank-aware scorer on this coefficient archive')
+    if (sc.get('store_version'), sc.get('status_sha'), sc.get('cohort')) != \
+            (SC_.STORE_VERSION, SC_.STATUS_SHA, SC_.COHORT[int(res['config']['cohort_seed'])]):
+        raise ValueError('scores against another E0 store / status / cohort')
+    reg = res['config'].get('bank_registry') or {}
+    for s_ in res['config']['settings']:
+        want = reg[s_['bank']]['sha256'] if s_['bank'] in reg else C3_.BANKS[s_['bank']][1]
+        if want != 'SMOKE-RUNTIME' and sc.get('decoder_banks', {}).get(s_['name']) != [s_['bank'], want]:
+            raise ValueError(f"scores of {s_['name']} decoded on another bank")
+    keys = [k for k in Wz.files if not k.startswith(('cases|', 'wall|', 'fomfield|'))]
+    if sorted(sc['scores']) != sorted(keys):
+        raise ValueError('score keys differ from the saved coefficient keys')
+    for k in keys:
         want = sorted(int(c) for c in Wz['cases|' + k])
-        if sorted(int(c) for c in sc['scores'].get(k, {})) != want:
+        if sorted(int(c) for c in sc['scores'][k]) != want:
             raise ValueError(f'scores of {k} do not cover its {len(want)} saved cases')
 
 
@@ -71,7 +86,7 @@ def main():
     assert res.get('complete'), 'job output incomplete'
     sc = json.loads(Path(a.scores).read_text())
     Wz0 = np.load(out / 'W_e1.npz')
-    check_scores(sc, res, Wz0)
+    check_scores(sc, res, Wz0, out / 'W_e1.npz')
     Wz = np.load(out / 'W_e1.npz')
     cfg = res['config']
     tab = C3.C.table(int(cfg['cohort_seed']), int(cfg['cohort_count']))

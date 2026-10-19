@@ -102,7 +102,7 @@ def smk1(out, fetched):
                 b and (b.get('prod_failed') or (b.get('D') is not None and b['D'] > 2.5e-4)), dict(D=b.get('D'), failed=b.get('prod_failed')))
     d3 = out / 'e1run3d_smk13d'
     sc = HERE / 'checks' / 'smoke-smk1-3d-scores.json'
-    rc, log = run(['score3.py', '--run', str(d3), '--out', str(sc)])
+    rc, log = run(['e2score3.py', '--run', str(d3), '--out', str(sc)])
     chk(C, '3d E0 scoring runs', rc == 0, log[-800:])
     if rc == 0:
         rc, log = run(['e1analyze3d.py', str(d3), str(sc), '--tag', 'smoke-smk1-3d'])

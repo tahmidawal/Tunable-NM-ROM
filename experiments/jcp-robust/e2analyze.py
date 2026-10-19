@@ -214,8 +214,12 @@ def main():
             raise SystemExit(f'job of mesh {m} ran on another bank than bank {b}: {bid(rec_["bank"])} != {wid}')
     if str(sel.get('job_id')) != str(C[1024]['job_id']):                         # selection artefact from THIS job
         raise SystemExit(f"selection file {sel.get('job_id')} is not from the selection job {C[1024]['job_id']}")
-    rep = dict(bank=b, selection=sel['selected'], jobs={m: dict(job_id=C[m]['job_id'], complete=C[m]['complete'],
-                                                              backend=C[m]['backend']) for m in C},
+    jobs = {m: dict(job_id=C[m]['job_id'], complete=C[m]['complete'], backend=C[m]['backend']) for m in C}
+    if a.v1024:                                      # every contributing job kept separately (code audit 10 #3)
+        jobs['1024-factors'] = dict(job_id=extra['job_id'], complete=extra['complete'], backend=extra['backend'])
+    if not all(j_['complete'] and j_['backend'] == 'gpu' for j_ in jobs.values()):
+        raise SystemExit(f'a contributing job is incomplete or not on the GPU: {jobs}')
+    rep = dict(bank=b, selection=sel['selected'], jobs=jobs,
                integrity=all(x['integrity'] for m in C for x in C[m]['cfg'].values()),
                configurations={f'{m}|R{k[0]}|{k[1]}|{k[2]}': dict(rule=v['rule'], qualified=v['qualified'], status=v['status'],
                                                                    median_e=float(np.median(list(v['e'].values()))),

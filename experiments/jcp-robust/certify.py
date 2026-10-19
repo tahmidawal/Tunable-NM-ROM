@@ -161,6 +161,7 @@ def klass(driver, k):
 def certify(att, timings_path):
     spec = json.loads((HERE / 'jobs' / f'{att}.json').read_text())
     T = json.loads((HERE / timings_path).read_text())
+    T = T.get('timings', T)
     inv, group_hours, cfgs, missing = {}, [], {}, set()
     for gi, g in enumerate(spec['groups']):
         h = 0.
@@ -172,7 +173,7 @@ def certify(att, timings_path):
                 uniq = sorted(set(map(tuple, keys)), key=str)
                 inv[st['config']] = dict(n=len(keys), unique=len(uniq), duplicates=len(keys) - len(uniq),
                                          keys=[list(map(str, k)) for k in uniq])
-                setup = T.get(f"{st['driver']}|setup|{c.get('mesh', c.get('mode'))}")
+                setup = T.get(f"{st['driver']}|setup|{c.get('mesh', c.get('mode'))}", T.get(f"{st['driver']}|setup"))
                 if setup is None:
                     missing.add(f"{st['driver']}|setup|{c.get('mesh', c.get('mode'))}")
                     setup = 0.

@@ -742,3 +742,20 @@ therefore always built over the full set of four (or six, with L40S) jobs.
   fixed-configuration quantities and incumbent agreement for selected-rule fronts is "unavailable";
 - bad-vector admission requires finite values and a strictly positive target norm at every state (dims `dstats.py:173–176`);
   no predicate may pass through an empty reduction.
+
+---
+
+## Amendment A5 (2026-10-19, during the code audits; before any smoke output exists)
+
+**A5.1 Smokes run while the acceptance code is still being audited.** Code audits 1–3 (`audits/codex-code-{1,2,3}.md`)
+found no remaining blocking defect in the code that runs on the cluster (drivers `r2acc.py`, `e1run3d.py`, `e2run3d.py`
+over the copied `d3run.py`, `e5time.py`, `train2d/` and `train3d/` scripts, `cluster/stage.py` / `submit.sh`); audit 3
+confirmed staging of all four smoke specs and the E5 timing mechanics. The open blocking items concern the offline
+analysis / acceptance code (`e1analyze*.py`, `select*.py`, `e2analyze*.py`, `e2verdicts.py`, `e5analyze.py`,
+`smoke_accept.py`, `certify.py`). Because the smokes only produce raw outputs, they are submitted now (one at a time,
+≤ 2 GPU-h each, brief), and **no smoke output is read for acceptance until the acceptance code passes its own code
+audit**. Production stays gated on that audit, on smoke acceptance (ALL = true, every control fired), and on the
+coordinator's release. A job-side defect found later in a smoke is fixed and the smoke re-run (a new attempt).
+
+**A5.2 smk1 includes the H200 E5 panel** (`configs/e5smk1.json`, same panels as `e5smk4`, H200), as §6 registered, in
+addition to the A100 `smk4` of A2.9.

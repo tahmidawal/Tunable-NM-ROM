@@ -1,3 +1,3 @@
-{"lane": "jcp-regimes", "utc": "2026-10-19T17:25:53Z", "step": "4: codex code audit 6",
- "waiting_on": {"slurm_jobs": [], "codex_output": "audits/codex-code-6.md", "codex_pid": 2089064, "local_pid": null},
- "expected_finish_utc": "2026-10-19T18:25:53Z", "last_commit": "0597bed5d", "gpu_hours_spent": 0.0, "gpu_hours_cap": 60, "notes": "smoke staged after READY-FOR-SMOKE"}
+{"lane": "jcp-regimes", "utc": "2026-10-19T17:31:09Z", "step": "5: real-size smoke smk1 queued/running",
+ "waiting_on": {"slurm_jobs": ["6068450"], "codex_output": null, "codex_pid": null, "local_pid": null},
+ "expected_finish_utc": "2026-10-19T21:31:09Z", "last_commit": "8d6b2006c", "gpu_hours_spent": 0.0, "gpu_hours_cap": 60, "notes": "H200 queue contended"}

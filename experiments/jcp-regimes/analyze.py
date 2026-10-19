@@ -41,14 +41,22 @@ def clean(x):
     return x
 
 
-def references(cohorts):
-    """{(cohort, case): reference dict} for every case of the listed cohorts (E0 store for dev6/val32)."""
+def references(cfg):
+    """{(cohort, case): reference dict} for every case the ROM config runs (union over arms; A3.3 reduced C2 included)."""
+    ids = []
+    for st in cfg['settings']:
+        for a in st['arms']:
+            ids += RS.expected_populations(cfg, a)['cases']
     out = {}
-    for coh in cohorts:
-        n = 6 if coh == 'dev6' else 32 if coh == 'val32' else len(RG.descriptors_2d(coh))
-        for c in range(n):
-            out[(coh, c)] = RS.reference(coh, c)
+    for cid in dict.fromkeys(ids):
+        coh, c = cid.split('|')
+        out[(coh, int(c))] = RS.reference(coh, int(c))
     return out
+
+
+SEP_RELABEL = dict(Ap='viscosity extrapolation confounded with steepness', Am='viscosity extrapolation confounded with steepness',
+                   B1='family change confounded with steepness', B2='family change confounded with steepness',
+                   C1='nominal steepness only', C2='nominal steepness only')
 
 
 def coverage_counts(refs, coh):
@@ -152,7 +160,18 @@ def main():
     qd = next(Path(a.rom).glob('output/qacc_*'))
     rep = json.loads((qd / 'result.json').read_text())
     cohorts = rep['config']['cohorts']
-    refs = references(cohorts)
+    refs = references(rep['config'])
+    # inventory and full-field verification are required (A6 production gate)
+    want = sorted(f"R_{s_['name']}_{a_['form']}_{a_['scheme']}_{a_['factor']:g}.npz" for s_ in rep['config']['settings']
+                  for a_ in s_['arms'])
+    have = sorted(p.name for p in qd.glob('R_*.npz'))
+    if have != want or not rep.get('complete'):
+        raise SystemExit(f'ROM job incomplete: missing {sorted(set(want) - set(have))}, complete={rep.get("complete")}')
+    import hashlib
+    fv = json.loads(next(Path(a.rom).glob('output/fverify_*/fverify.json')).read_text())
+    if not (fv['all_pass'] and sorted(fv['arms']) == sorted(w[2:-4] for w in want) and all(
+            fv['arms'][k]['R_file_sha256'] == hashlib.sha256((qd / f'R_{k}.npz').read_bytes()).hexdigest() for k in fv['arms'])):
+        raise SystemExit('full-field verification missing, failed or not bound to these R files')
     out = dict(rom_attempt=str(a.rom), job=dict(job_id=rep.get('job_id'), gpu=rep.get('gpu'), backend=rep.get('backend'),
                                                  commit=rep.get('commit')),
                coverage={coh: coverage_counts(refs, coh) for coh in cohorts}, configs={})
@@ -166,6 +185,17 @@ def main():
     sep_in = dict(sig) if n0s_ok else {k: v for k, v in sig.items() if k != 'N0s'}
     out['separation'] = RS.separation(sep_in, PRIMARY_REGIMES)
     out['separation_note'] = None if n0s_ok else 'stiff-part comparison unavailable (N0s < 4 eligible): N0 alone'
+    out['regime_labels'] = {g: (SEP_RELABEL[g] if isinstance(out['separation'].get(g), dict)
+                                and out['separation'][g].get('passed') is False else None) for g in PRIMARY_REGIMES}
+    # calibration label (A2.2, A3.1): smoke probes, plus production probes if they were added
+    sm = json.loads((HERE / 'checks' / 'smoke-accept.json').read_text())
+    prod_probes = []
+    for g in RG.REGIMES_2D:
+        for rj in Path(a.store).parent.glob(f'runs/ref{g}/output/refjob_ref-{g}/result.json'):
+            prod_probes += [p_['tight_coarse'] for p_ in json.loads(rj.read_text()).get('probes', []) if p_.get('tight_coarse')]
+    agree = sm.get('calib_agree') and all(p_['verdict'] == 'agree' for p_ in prod_probes)
+    out['calibration'] = dict(smoke_agree=sm.get('calib_agree'), production_probes=len(prod_probes),
+                              label=None if agree else 'floor proxy not supported on these regimes')
     for p in sorted(qd.glob('R_*.npz')):
         R = np.load(p)
         name, arm = p.stem[2:].split('_', 1)
@@ -182,10 +212,13 @@ def main():
             per_case.update(q['per_case'])
         errs = errors_of(R, per_case, refs)
         base = np.array([x for coh in ('N0', 'dev6', 'val32') for _, x in usable(errs, coh)[0]])
+        if len(base) < RS.MIN_ELIG:
+            raise SystemExit(f'{name}|{arm}: in-range baseline has {len(base)} usable cases (< {RS.MIN_ELIG})')
         base_n0 = np.array([x for _, x in usable(errs, 'N0')[0]])
         dv = np.array([x for coh in ('dev6', 'val32') for _, x in usable(errs, coh)[0]])
         cfg = dict(setting=name, arm=arm, Rp=int(R['Rp']), rule=setting['rule'], diagnostic=(name, arm) in DIAGNOSTIC_ARMS,
-                   baseline=dict(n=len(base), median=float(np.median(base)), worst=float(np.max(base))),
+                   baseline=dict(n=len(base), median=float(np.median(base)) if len(base) else None,
+                                 worst=float(np.max(base)) if len(base) else None),
                    in_range_consistency=dict(zip(('ratio', 'lo', 'hi', 'dropped'), RS.boot_ratio(base_n0, dv))),
                    cells={}, cells_vs_N0={}, per_case=errs, qualification={coh: dict(Q1=quals[coh]['Q1'], Q2=quals[coh]['Q2'],
                                                                                      qualified=quals[coh]['numerically_qualified'],
@@ -196,6 +229,8 @@ def main():
         for coh in PRIMARY_REGIMES + DESCRIPTIVE:
             if coh in cohorts:
                 cfg['cells'][coh] = label_cell(errs, quals[coh], coh, base)
+                cfg['cells'][coh]['unresolved_under_allowance'] = out['coverage'][coh].get('unresolved_under_allowance')
+                cfg['cells'][coh]['regime_label'] = out['regime_labels'].get(coh)
                 cfg['cells_vs_N0'][coh] = label_cell(errs, quals[coh], coh, base_n0)
         cfg['paired_Am_C1'] = paired(errs)
         cfg['trends'] = trends(errs, refs)

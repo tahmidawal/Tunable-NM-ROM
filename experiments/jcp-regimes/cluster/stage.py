@@ -45,7 +45,10 @@ def main():
         plan = json.loads((ROOT / LANE / 'checks' / 'resources-plan.json').read_text())
         assert a.attempt in plan['attempts'], f'{a.attempt} is not in the certified plan'
         led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
-        assert led['spent_gpu_hours'] + plan['remaining_reservation_hours'] <= 60 + 1e-9, 'plan exceeds the cap'
+        seen = {j['attempt'] for j in led['jobs']}
+        remaining = sum(v['time_limit_hours'] for k, v in plan['attempts'].items() if k not in seen)
+        assert led['spent_gpu_hours'] + led['reserved_gpu_hours'] + remaining <= 60 + 1e-9, 'plan exceeds the cap'
+        assert abs(plan['attempts'][a.attempt]['time_limit_hours'] - a.hours) < 1e-9, 'time limit differs from the plan'
     if not a.attempt.startswith('smk'):
         c_ = json.loads((ROOT / LANE / 'checks' / f'resources-{a.attempt}.json').read_text())
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
@@ -121,6 +124,7 @@ df -h /cluster/tufts/paralab | tail -1
 cd {LANE}
 JAX_PLATFORMS=cpu "$PY" test_regimes.py "$TASK_ROOT/output/unit_gates.json"
 {steps}
+echo "STEP end - $(date -u +%FT%TZ)"
 cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256
 echo ALL-DONE

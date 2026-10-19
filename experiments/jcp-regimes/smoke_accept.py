@@ -259,7 +259,18 @@ def main(run):
     secs = {}
     for r_ in rows:
         secs.setdefault(r_['cohort'], []).append(r_['seconds'] + (r_.get('seconds_tight') or 0.))
-    acc = dict(run=str(run), all_blocking_pass=all(c['passed'] for c in CHECKS if c['blocking']), checks=CHECKS,
+    # resource inputs (resources.py): per-step seconds from the STEP timestamps, probe seconds, calibration verdict
+    import datetime as _dt
+    stamps = [(ln.split()[1], ln.split()[2], _dt.datetime.fromisoformat(ln.split()[3].replace('Z', '+00:00')))
+              for ln in logs.splitlines() if ln.startswith('STEP ')]
+    step_s = {}
+    for i, (drv, cf, t) in enumerate(stamps):
+        if i + 1 < len(stamps):
+            step_s[f'{drv}:{cf}'] = (stamps[i + 1][2] - t).total_seconds()
+    probe_s = {f'{g}|{p_["case"]}': p_['tight_coarse']['seconds'] for g in ('C2', 'B2', 'Ap')
+               for p_ in res[g].get('probes', []) if p_.get('tight_coarse')}
+    acc = dict(run=str(run), step_seconds=step_s, probe_seconds=probe_s,
+               calib_agree=all(v['verdict'] == 'agree' for v in verdicts.values()), all_blocking_pass=all(c['passed'] for c in CHECKS if c['blocking']), checks=CHECKS,
                qualify_smoke=qsum, rom_seconds_per_case_arm={k: float(np.median(v)) for k, v in secs.items()},
                qacc_elapsed=rep.get('elapsed_seconds'), pilots=pil)
     (HERE / 'checks').mkdir(exist_ok=True)

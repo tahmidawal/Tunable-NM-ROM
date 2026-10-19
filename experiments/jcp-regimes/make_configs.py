@@ -85,23 +85,32 @@ def smk1():
     write('smk1-rom', rom_config('smk1', ['dev6'] + REGIMES, cases, blocks, tighter='all'))   # smoke: every case (no regime has c0-3 complete)
 
 
-def prod():
+def prod(reduce_c2=False, calib_probes=False):
+    """Production configs (A3.3, A2.2): reduce_c2 -> C2 c0-c7 for references, ROM, Q1/Q2 together; calib_probes -> a
+    coarsest-level tight probe on case 0 of every regime (A1.4, if the smoke's R-calib did not agree)."""
     import numpy as np
     import rcohorts as RG
+    rom_cases = []
     for g in REGIMES:
         n = len(RG.descriptors_2d(g))
-        write(f'ref-{g}', dict(mode='fd', dim=2, cohort=g, cases=list(range(n)), kinds=['ST'],
-                               tight_allowance=TIGHT_ALLOWANCE.get(g, 0)))
+        cases = list(range(8)) if (g == 'C2' and reduce_c2) else list(range(n))
+        cfg = dict(mode='fd', dim=2, cohort=g, cases=cases, kinds=['ST'],
+                   tight_allowance=TIGHT_ALLOWANCE.get(g, 0) if cases == list(range(n)) else 0)
+        if calib_probes:
+            cfg['probes'] = dict(tight_coarse=[0])
+        write(f'ref-{g}', cfg)
         write(f'slim-{g}', dict(sources=[f'refjob_ref-{g}']))
+        rom_cases += [[g, c] for c in cases]
         if g != 'N0s':
-            D = RG.descriptors_2d(g)
-            PS_CASE[g] = int(np.argmax([RG.desc_2d(g, r_)['s'] for r_ in D]))     # largest s, every cohort (A3 minor)
-    write('rom1024', rom_config('rom1024', ['dev6', 'val32'] + REGIMES, 'all'))
+            D = RG.descriptors_2d(g)[cases]
+            PS_CASE[g] = int(np.array(cases)[np.argmax([RG.desc_2d(g, r_)['s'] for r_ in D])])   # largest s (A3 minor)
+    base = [['dev6', c] for c in range(6)] + [['val32', c] for c in range(32)]
+    write('rom1024', rom_config('rom1024', ['dev6', 'val32'] + REGIMES, 'all' if not reduce_c2 else base + rom_cases))
     write('fverify-rom1024', dict(source='qacc_rom1024', arms=arm_names()))
-    write('ps', dict(cases=PS_CASE))       # one PS job step per cohort is generated at staging (A3 minor)
     for g, c in PS_CASE.items():
         write(f'ps-{g}', dict(mode='ps', dim=2, cohort=g, cases=[c], attempt=0))
+    return dict(reduce_c2=reduce_c2, calib_probes=calib_probes, ps_cases=dict(PS_CASE))
 
 
 if __name__ == '__main__':
-    {'smk1': smk1, 'prod': prod}[sys.argv[1]]()
+    {'smk1': smk1, 'prod': lambda: prod('--reduce-c2' in sys.argv, '--calib-probes' in sys.argv)}[sys.argv[1]]()

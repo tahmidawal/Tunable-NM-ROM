@@ -99,8 +99,42 @@ def main():
                 cells.append('—'); continue
             extra = f" [{x['accuracy_label_unqualified']}]" if x.get('accuracy_label_unqualified') else ''
             cells.append(f"{x['label']}{extra}; ×{num(x['ratio_median'])} [{num(x['ci'][0])}, {num(x['ci'][1])}]; "
-                         f"{x['n_used']}/{x['n']}" + ('; not usable' if x['not_usable'] else ''))
+                         f"{x['n_used']}/{x['n']} used, {x.get('unresolved_under_allowance') or 0} unresolved under the allowance"
+                         + ('; not usable' if x['not_usable'] else '') + (f"; **{x['regime_label']}**" if x.get('regime_label') else ''))
         w(f"| {k}{' (diagnostic)' if c['diagnostic'] else ''} | " + ' | '.join(cells) + ' |')
+    w('')
+    cal = AN['calibration']
+    w('## Reference qualifications\n')
+    w(f"- Calibration probe (A2.2, A3.1): smoke agreement = {cal['smoke_agree']}; production probes = {cal['production_probes']}"
+      + (f"; **{cal['label']}** (applies to every $\\epsilon_{{ref}}$ of this lane)" if cal['label'] else '; no extra label') + '.')
+    for g, lab in AN['regime_labels'].items():
+        sp = AN['separation'].get(g)
+        w(f"- Separation check {NAMES[g]}: {json.dumps(sp) if not isinstance(sp, dict) else sp.get('passed', sp.get('verdict'))}"
+          + (f" → relabelled **{lab}**" if lab else '') + '.')
+    w('')
+    w('## Sensitivity: ratios against N0 alone, and N0s (descriptive)\n')
+    w('| configuration | ' + ' | '.join(NAMES[g] for g in REG + ('N0s',)) + ' |')
+    w('|---|' + '---|' * (len(REG) + 1))
+    for k, c in AN['configs'].items():
+        w(f"| {k} | " + ' | '.join((f"{x['accuracy_label']}; ×{num(x['ratio_median'])} [{num(x['ci'][0])}, {num(x['ci'][1])}]"
+                                    if (x := c['cells_vs_N0'].get(g)) else '—') for g in REG + ('N0s',)) + ' |')
+    w('')
+    w('## Paired A−/C1 contrast (amplitude at matched geometry and viscosity) and distance trends\n')
+    w('| configuration | pairs | median $q=e_{C1}/e_{A-}$ [95 %] | Wilcoxon $p$ | label | A+ Spearman ($d_\\nu$) | A− Spearman ($d_\\nu$) | A−∪C1∪C2 Spearman ($\\log_{10}s$) |')
+    w('|---|---|---|---|---|---|---|---|')
+    for k, c in AN['configs'].items():
+        pq, tr = c['paired_Am_C1'], c['trends']
+        fmt = lambda t: '—' if t.get('rho') is None else f"{num(t['rho'])} (p {num(t['p'])}, n {t['n']})"
+        w(f"| {k} | {pq['n_pairs']} | {num(pq.get('median_q'))} [{num((pq.get('ci') or [None, None])[0])}, {num((pq.get('ci') or [None, None])[1])}] | "
+          f"{num(pq.get('wilcoxon_p'))} | {pq['label']} | {fmt(tr['Ap|d_nu'])} | {fmt(tr['Am|d_nu'])} | {fmt(tr['Am+C1+C2|log10_s'])} |")
+    w('')
+    w('## Q1 / Q2 per configuration and regime\n')
+    w('| configuration | ' + ' | '.join(NAMES[g] for g in REG) + ' |')
+    w('|---|' + '---|' * len(REG))
+    for k, c in AN['configs'].items():
+        q = c['qualification']
+        w(f"| {k} | " + ' | '.join((f"Q1 {'pass' if q[g]['Q1']['pass'] else 'fail'} (non-stationary {q[g]['pooled_noncertified']}/{q[g]['pooled_steps']}); "
+                                    f"Q2 {q[g]['Q2'].get('label')}" if g in q else '—') for g in REG) + ' |')
     w('')
     w('## Coverage of the references\n')
     w('| cohort | sampled | eligible | refined | tight path used | unresolved under the tight allowance | outcomes |')
@@ -120,12 +154,17 @@ def main():
         w(f'- **{t}**: {d}.')
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')
     exp = dict(lane='jcp-regimes', label=COND, gpu_hours=dict(spent=spent, cap=LED['cap_gpu_hours']),
-               coverage=AN['coverage'], separation=AN['separation'],
+               coverage=AN['coverage'], separation=AN['separation'], regime_labels=AN['regime_labels'],
+               calibration=AN['calibration'], projection_floor=AN['projection_floor'],
                configs={k: dict(diagnostic=c['diagnostic'], baseline=c['baseline'],
                                 cells={g: {kk: c['cells'][g][kk] for kk in ('label', 'accuracy_label', 'ratio_median', 'ci',
                                                                              'ratio_worst', 'median', 'worst', 'n', 'n_used',
-                                                                             'qualified', 'not_usable')}
-                                       for g in c['cells']}, paired_Am_C1={kk: v for kk, v in c['paired_Am_C1'].items() if kk != 'pairs'})
+                                                                             'qualified', 'not_usable', 'unresolved_under_allowance',
+                                                                             'regime_label')}
+                                       for g in c['cells']},
+                                sensitivity_vs_N0={g: {kk: c['cells_vs_N0'][g][kk] for kk in ('accuracy_label', 'ratio_median', 'ci')}
+                                                   for g in c['cells_vs_N0']},
+                                trends=c['trends'], paired_Am_C1={kk: v for kk, v in c['paired_Am_C1'].items() if kk != 'pairs'})
                         for k, c in AN['configs'].items()})
     (HERE / 'runs' / 'EXPORT.json').write_text(json.dumps(exp, indent=1) + '\n')
     print('wrote report.md, plots/, runs/EXPORT.json')

@@ -430,14 +430,14 @@ Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the
 - **main effect $I_x$, pair $I_{xy}$**: the change caused by switching one ingredient; the part of a two-switch change not explained by the two single switches. Table values are medians over eligible cases of the maximum over output times of the norm divided by $n_0$.
 - **$n_0$**: norm of the reference at the initial time on the scoring lattice; errors are divided by it unless "current t" is stated.
 - **$e_P$ (floor)**: distance from the reference to the bank span on the scoring lattice; no reduced solution can beat it.
-- **$e_{\star,m dyn}$ (e_dyn*)**: distance of the ideal-end trajectory (all numerics converged, Galerkin) from the projected reference: the error of the reduced dynamics itself.
-- **$U_\star$ (U*)**: the ideal end's own numerical uncertainty (half-step and tighter-tolerance replays). A trajectory effect is resolved only if it is at least $3U_\star$; $e_P$ must exceed $2arepsilon_{m ref}$; $e_{\star,m dyn}$ must satisfy both.
+- **$e_{\star,\rm dyn}$ (e_dyn*)**: distance of the ideal-end trajectory (all numerics converged, Galerkin) from the projected reference: the error of the reduced dynamics itself.
+- **$U_\star$ (U*)**: the ideal end's own numerical uncertainty (half-step and tighter-tolerance replays). A trajectory effect is resolved only if it is at least $3U_\star$; $e_P$ must exceed $2\varepsilon_{\rm ref}$; $e_{\star,\rm dyn}$ must satisfy both.
 - **e_tot**: the deployed configuration's error against the E0 reference (maximum over the five output times, divided by $n_0$).
 - **complete/eligible**: cases with every candidate available / cases whose reference is eligible; the dominance rule counts complete cases only.
-- **dominant**: per case, the largest resolved candidate, or "tied" if it exceeds another resolved candidate by no more than the pair threshold ($3U_\star$ between effects, $2arepsilon_{m ref}$ between reference quantities, their sum when mixed). A component is dominant if it is the per-case winner on more than half of the complete cases, otherwise "no single dominant"; at least 8 complete cases (6 at $4096^2$).
+- **dominant**: per case, the largest resolved candidate, or "tied" if it exceeds another resolved candidate by no more than the pair threshold ($3U_\star$ between effects, $2\varepsilon_{\rm ref}$ between reference quantities, their sum when mixed). A component is dominant if it is the per-case winner on more than half of the complete cases, otherwise "no single dominant"; at least 8 complete cases (6 at $4096^2$).
 - **pair labels**: per case: interacting if $|I_{xy}|>0.25\max(|I_x|,|I_y|)$ and $\ge3U_\star$; additive if $\le0.25\max$ with the larger main effect resolved. Over cases: interacting if more than 25 % of eligible cases interact, additive if at least 75 % are additive, otherwise mixed; undefined if the corner does not exist (3D F×S).
 - **mesh label**: same / differs: the dominant component agrees / disagrees at $256^2$, $1024^2$, $4096^2$ on the shared sub16 cases; inconclusive if any mesh has no single dominant.
-- **$arepsilon_{m ref}$ (eps_ref)**: Richardson estimate of the reference's own error; conditional, not a bound.
+- **$\varepsilon_{\rm ref}$ (eps_ref)**: Richardson estimate of the reference's own error; conditional, not a bound.
 - **W1, W2, W3**: output-time windows $(0,0.25]$, $(0.25,0.5]$, $(0.5,1]$.
 - **Q1 / Q2 at T**: solver qualification (stationarity, distance to a tight solve) and quadrature qualification (agreement with a finer rule), certified over every step to the horizon $T$; "qualified at T" needs both.
 - **growth g, n**: per case $g=e_{W_2}/e_{W_1}$ (or $e_{W_3}/e_{W_2}$), using cases whose errors exceed twice their reference uncertainty in both windows. Label from the bootstrap 95 % interval of the median: no growth (upper ≤ 1), bounded growth (lower > 1, upper ≤ 2), accumulating (lower > 2), otherwise between labels. n: cases used.
@@ -447,7 +447,7 @@ Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the
 - **non-rankable**: a reference case that its judge did not accept, whose G-R2 is not evaluable, or that is A9 / A14 terminal; it enters no verdict or table population.
 - **$s$**: ratio of the error measured on the $1025^2$ lattice to the error on the $257^2$ scoring lattice.
 - **sampling label**: per case-window the two routes are consistent if they agree within 10 % plus twice their reference uncertainties (reference-limited windows are dropped); adequate if at least 90 % are consistent, inadequate below 50 %, otherwise mixed.
-- **E_rom/E_ref**: kinetic energy $	frac12\lVert uVert^2$ of the reduced solution over that of the reference at the same output time; the table gives the largest deviation from 1 over cases and times.
+- **E_rom/E_ref**: kinetic energy $\tfrac12\lVert u\rVert^2$ of the reduced solution over that of the reference at the same output time; the table gives the largest deviation from 1 over cases and times.
 - **undershoot / overshoot > 1e-3**: cases whose reduced solution goes below zero (undershoot) or above the initial maximum (overshoot) by more than $10^{-3}$ of the initial maximum.
 - **near-wall density**: error energy per node in the band within 1/32 of the walls, relative to the whole-interior error energy per node; the median pools cases and output times.
 - **IC error / floor at t0**: initial-condition error of the deployed run over the bank floor at $t_0$.

@@ -101,8 +101,11 @@ def time_(b):
             if pick != DEPLOYED[r]:
                 subj.append(dict(sp(r, DEPLOYED[r], arm), slot=f'R{r}|{arm["scheme"]}|{arm["factor"]:g}', role='deployed'))
     A = sp(384, 'gauss128', SEL_ARMS[1])
+    key = lambda d: {k: v for k, v in d.items() if k not in ('slot', 'role')}
+    subj_t = [x for x in subj if key(x) != A]          # A is timed against itself by definition (B/A = 1; audit e2e5-2 #3)
+    dbl = [x for x in subj_t if x['Rp'] == 128 and x['scheme'] == 'BE' and x['factor'] == 1][:1]
     c = dict(attempt=f'e2t{b}', driver='dtime', mesh=1024, edges=EDGES, cases='dev6', reps=3, burn=.1, seed=20261019, A=A,
-             subjects=subj, doubled=[A],
+             subjects=subj_t, doubled=dbl, A_is_subject_slots=[x['slot'] + '|' + x['role'] for x in subj if key(x) == A],
              selection=dict(file=f'checks/select2d-{b}.json', sha256=sha(HERE / 'checks' / f'select2d-{b}.json')))
     if bc:
         c['bank'] = bc

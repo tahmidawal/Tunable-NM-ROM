@@ -62,9 +62,11 @@ def keys_2d(r):
             out[f'H-acc-r|{k}|{tr}'] = x.get('outcome') if isinstance(x, dict) else x
     for k, v in r['configurations'].items():
         out[f'Q1Q2|{k}'] = v['qualified']
-    for k, v in (r.get('front_1024') or {}).items():
-        if isinstance(v, dict):
-            out[f'front1024|{k}'] = v.get('state')
+    fr = r.get('front_1024') or {}
+    for k, v in (fr.get('slots') or {}).items():
+        out[f'front1024|slot|{k}'] = v.get('state')
+    for k, v in (fr.get('fixed') or {}).items():
+        out[f'front1024|fixed|{k}'] = v.get('state')
     return out
 
 

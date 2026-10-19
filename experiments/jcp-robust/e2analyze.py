@@ -94,6 +94,10 @@ def front(C1024, timing):
     if timing is None:
         return dict(state='missing (no timing job)')
     tres = json.loads((timing / 'result.json').read_text())
+    import hashlib as _h
+    if tres['config'].get('attempt') != f"e2t{C1024['attempt'][3:]}" or (tres['config'].get('selection') or {}).get('sha256') != \
+            _h.sha256((HERE / 'checks' / f"select2d-{C1024['attempt'][3:]}.json").read_bytes()).hexdigest():
+        return dict(state='missing (timing job is not the registered e2t job of this selection)')
     if not (tres.get('complete') and (timing / 'COMPLETE').exists() and tres.get('backend') == 'gpu'):
         return dict(state='missing (timing job incomplete or not on GPU)')
     bk = lambda b: ((b or {}).get('ckpt_sha256'), (b or {}).get('rotation_sha256'))
@@ -128,13 +132,17 @@ def front(C1024, timing):
     for lb, per in reps_ok.items():
         if all(len(per.get(c, [])) >= 2 for c in want_cases) and set(per) == set(want_cases):
             ba[lb] = [float(np.median(per[c])) for c in want_cases]
-    slots = {}
+    A_ = tres['config']['A']
+    labA = f"1024|R{A_['Rp']}|M{4 * A_['Rp']}|{A_['rule']}|LSPG|{A_['scheme']}|{float(A_['factor']):g}"
+    slots, fixed = {}, {}
     for (r, kind, ak), x in C1024['cfg'].items():
-        if kind != 'sel':
-            continue
         form, sc, fac = ak.split('_')
         lab = f"1024|R{r}|M{4 * r}|{x['rule']}|LSPG|{sc}|{float(fac):g}"
-        cost = float(np.median(ba[lab])) if lab in ba else None              # median over cases of per-case medians
+        cost = 1.0 if lab == labA else (float(np.median(ba[lab])) if lab in ba else None)     # A against itself: B/A = 1
+        if kind == 'dep':                                  # A2.6 / A3.5: fixed deployed configurations, separate table
+            fixed[f'R{r}|{sc}|{fac}'] = dict(rule=x['rule'], qualified=x['qualified'], cost=cost,
+                                             median_e=float(np.median(list(x['e'].values()))), worst_e=float(np.max(list(x['e'].values()))))
+            continue              # median over cases of per-case medians
         slots[f'R{r}|{sc}|{fac}'] = dict(rule=x['rule'], qualified=x['qualified'], cost=cost,
                                          median_e=float(np.median(list(x['e'].values()))), worst_e=float(np.max(list(x['e'].values()))))
     q = {k: v for k, v in slots.items() if v['qualified'] is True and v['cost'] is not None}
@@ -152,7 +160,16 @@ def front(C1024, timing):
         for sc in ('BE', 'CNR'):
             for fac in ('1', '2', '2.5'):
                 slots.setdefault(f'R{r}|{sc}|{fac}', dict(state='absent'))
-    return slots
+    for k, v in fixed.items():                            # fixed configuration vs the qualified selected-rule candidates
+        if v['qualified'] is None or v['cost'] is None:
+            v['state'] = 'missing'
+        elif v['qualified'] is False:
+            v['state'] = 'unqualified'
+        else:
+            v['state'] = 'dominated' if any(o['cost'] <= v['cost'] and o['median_e'] <= v['median_e'] and o['worst_e'] <= v['worst_e']
+                                            and (o['cost'] < v['cost'] or o['median_e'] < v['median_e'] or o['worst_e'] < v['worst_e'])
+                                            for o in q.values()) else 'member'
+    return dict(slots=slots, fixed=fixed)
 
 
 def g_e23(sel_out, v256_out, pins):

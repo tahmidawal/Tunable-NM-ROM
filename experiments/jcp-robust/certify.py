@@ -117,7 +117,8 @@ def inv_dtime(c):
             keys += [(bank, lab, 'triplet', i, r) for r in range(int(c['reps']))]
             keys += [(bank, lab, 'fused-triplet', i, r) for r in range(int(c['reps']))]
     for sp in c.get('doubled', []):
-        keys += [(bank, f"{sp['Rp']}|{sp['rule']}|doubled", 'doubled', i) for i in range(n)]
+        keys += [(bank, f"{sp['Rp']}|{sp['rule']}|{sp['scheme']}|{sp['factor']}|doubled", 'doubled', i, r) for i in range(n)
+                 for r in range(int(c['reps']))]
     return keys
 
 
@@ -174,6 +175,8 @@ def certify(att, timings_path):
                 inv[st['config']] = dict(n=len(keys), unique=len(uniq), duplicates=len(keys) - len(uniq),
                                          keys=[list(map(str, k)) for k in uniq])
                 setup = T.get(f"{st['driver']}|setup|{c.get('mesh', c.get('mode'))}", T.get(f"{st['driver']}|setup"))
+                if st['driver'] == 'e5time':
+                    setup = 0.                           # A10.1: the smoke's elapsed already contains setup
                 if setup is None:
                     missing.add(f"{st['driver']}|setup|{c.get('mesh', c.get('mode'))}")
                     setup = 0.
@@ -211,6 +214,9 @@ def certify(att, timings_path):
                 time_limit_hours=math.ceil(float(spec['hours']) * 4) / 4, projection_hours=round(proj, 4), group_hours=[round(x, 4) for x in group_hours],
                 gpus=int(spec.get('gpus', 1)), projection_gpu_hours=round(proj * int(spec.get('gpus', 1)), 4),
                 configs=cfgs, inventory_sha256=hashlib.sha256(ip.read_bytes()).hexdigest(), margin=MARGIN,
+                estimates=sorted({'A10.1 E5 per-execution rate from the smoke' for g in spec['groups'] for st in g if st.get('driver') == 'e5time'}
+                                 | {'A10.2 dtime classes derived from measured rollout classes' for g in spec['groups'] for st in g
+                                    if st.get('driver') == 'dtime'}),
                 timings=timings_path, timings_sha256=hashlib.sha256((HERE / timings_path).read_bytes()).hexdigest())
     (HERE / 'checks' / f'resources-{att}.json').write_text(json.dumps(cert, indent=1) + '\n')
     print(json.dumps({k: v for k, v in cert.items() if k != 'configs'}))

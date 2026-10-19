@@ -136,7 +136,8 @@ def main():
     blocks = []
     for i, g in enumerate(groups):
         body = '\n'.join(step_cmd(s) for s in g)
-        blocks.append(f'( export CUDA_VISIBLE_DEVICES={i}\nset -euo pipefail\n{body}\n) > "$TASK_ROOT/logs/group{i}.log" 2>&1 &\n'
+        blocks.append(f'( export CUDA_VISIBLE_DEVICES=$(echo "$ALLOC" | cut -d, -f{i + 1})   # the scheduler\'s device for group {i}\n'
+                      f'set -euo pipefail\n{body}\n) > "$TASK_ROOT/logs/group{i}.log" 2>&1 &\n'
                       f'PIDS+=($!)')
     script = f'''#!/bin/bash
 #SBATCH --job-name=jr_{att}
@@ -166,8 +167,10 @@ export SOURCE_COMMIT=$(cat COMMIT.txt)
 echo "host=$(hostname) source_commit=$SOURCE_COMMIT"
 nvidia-smi --query-gpu=index,name,uuid,driver_version,memory.total,clocks.sm,clocks.mem,power.limit --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
+ALLOC="${{CUDA_VISIBLE_DEVICES:?scheduler did not set CUDA_VISIBLE_DEVICES}}"
+echo "allocated CUDA_VISIBLE_DEVICES=$ALLOC"
 for i in $(seq 0 $(({gpus} - 1))); do
-  CUDA_VISIBLE_DEVICES=$i "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}} gpu_index=$i',flush=True); sys.exit(0 if b=='gpu' else 42)"
+  CUDA_VISIBLE_DEVICES=$(echo "$ALLOC" | cut -d, -f$((i + 1))) "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}} gpu_index=$i',flush=True); sys.exit(0 if b=='gpu' else 42)"
 done
 cd {LANE}
 PIDS=()

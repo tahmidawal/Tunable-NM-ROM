@@ -299,20 +299,6 @@
    "policy": "frozen",
    "rule": "gauss128",
    "form": "LSPG",
-   "scheme": "CNR",
-   "factor": 1,
-   "qp": "gauss160",
-   "qpp": "gauss192",
-   "slot": "R384|CNR|1",
-   "role": "selected"
-  },
-  {
-   "mesh": 1024,
-   "Rp": 384,
-   "M": 1536,
-   "policy": "frozen",
-   "rule": "gauss128",
-   "form": "LSPG",
    "scheme": "BE",
    "factor": 2,
    "qp": "gauss160",
@@ -366,16 +352,21 @@
  "doubled": [
   {
    "mesh": 1024,
-   "Rp": 384,
-   "M": 1536,
+   "Rp": 128,
+   "M": 512,
    "policy": "frozen",
-   "rule": "gauss128",
+   "rule": "fib4181",
    "form": "LSPG",
-   "scheme": "CNR",
+   "scheme": "BE",
    "factor": 1,
-   "qp": "gauss160",
-   "qpp": "gauss192"
+   "qp": "fib6765",
+   "qpp": "fib10946",
+   "slot": "R128|BE|1",
+   "role": "selected"
   }
+ ],
+ "A_is_subject_slots": [
+  "R384|CNR|1|selected"
  ],
  "selection": {
   "file": "checks/select2d-0.json",

@@ -18,6 +18,7 @@ import numpy as np
 
 HERE = Path(__file__).resolve().parent
 PY = '/home/tahmid/Dev/.venv/bin/python'
+PILOT_BANK = None          # smk3: the pilot bank.pkl fetched from the cluster archive into scratch (--pilot-bank)
 ENV = dict(JAX_PLATFORMS='cpu', JAX_ENABLE_X64='true', JAX_DEFAULT_MATMUL_PRECISION='highest')
 
 
@@ -49,6 +50,11 @@ def resource_contract(C, out, att):
         R = json.loads((root / 'RESERVATION.json').read_text())
         lim = math.ceil(float(reg['hours']) * 4) / 4 * int(reg.get('gpus', 1))
         ok &= bool(I.get('smoke')) and abs(R['time_limit_hours'] - lim) < 1e-9 and lim <= 2.0 + 1e-9
+        ident = dict(attempt=R.get('attempt') == att, commit=R.get('commit') == commit, gpu=R.get('gpu') == reg['gpu'],
+                     gpus=R.get('gpus') == int(reg.get('gpus', 1)), groups=R.get('groups') == reg['groups'],
+                     time_limit=abs(float(R.get('time_limit', -1)) - math.ceil(float(reg['hours']) * 4) / 4) < 1e-9)
+        ev['reservation_identity'] = ident                       # code audit 6 #1
+        ok &= all(ident.values())
         for g in reg['groups']:
             for st in g:
                 if 'driver' in st:
@@ -230,14 +236,47 @@ def smk3(out):
                   and len(x['adt_tighter_valid']) == 8 and len(x['adt_tight_tighter']) == 8 and len(x['dist_next']) == 8
                   and list(xn['cases']) == list(range(8)))
     chk(C, 'pilot rung pair carries the registered populations (cases 0-7, tighter 0-7)', pop_ok)
-    if x is not None and pop_ok:
+    z = np.load(d / f"W_{res['mode']}.npz")
+    pb = PILOT_BANK                                          # code audit 6 #6: pilot arrays decoded on the pilot bank
+    rec_ok, d_rec = False, None
+    if x is not None and pop_ok and pb:
+        import hashlib
+        import offline  # noqa: F401
+        import c3common as C3
+        import score3 as SC
+        large = {l.split()[1]: l.split()[0] for l in (out.parent / 'LARGE.sha256').read_text().splitlines()} \
+            if (out.parent / 'LARGE.sha256').exists() else {}
+        want = large.get('output/train3d_pilot/bank.pkl')
+        if want and hashlib.sha256(Path(pb).read_bytes()).hexdigest() == want:
+            C3.BANKS['W1024pilot'] = (Path(pb), want)
+            SC.BANKS = {'W256p': ('W1024pilot', 256)}
+            SC._G.clear()
+            G = np.asarray(SC.glat('W256p'))
+            tab = C3.C.table(923801, 64)
+            n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j)))) for j in range(8)}
+            sp = 'fs|CN|0.01|K1'
+            keys = dict(p=f'W256p|gl24|{sp}', s=f'W256p|gl32|{sp}', t=f'W256p|gl24|ad|LSPG|CN|0.01|tight',
+                        tt=f'W256p|gl24|ad|LSPG|CN|0.01|tighter')
+            arr = {k: z[v] for k, v in keys.items() if v in z.files}
+            maps_ok = len(arr) == 4 and all([int(c) for c in z['cases|' + keys[k]]] == list(range(8)) for k in keys) and \
+                all(arr[k].shape == (8, 6, 256) for k in arr)
+            if maps_ok:
+                dd = lambda A_, B_: [max(float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[i] for k in range(1, 6)) for i in range(8)]
+                d_rec = dict(tight=dd(arr['p'], arr['t']), succ=dd(arr['p'], arr['s']), tt=dd(arr['t'], arr['tt']))
+                cr = [r_ for r_ in res['rows'] if r_.get('tag') == 'W256p|gl24' and r_.get('spec') == sp and 'gam_cert' in r_]
+                rec_ok = sorted(int(r_['case']) for r_ in cr) == list(range(8)) and all(len(r_['gam_cert']) == 25 for r_ in cr)
+                gam = [E_num(v) for r_ in cr for v in r_['gam_cert']]
+                d_rec['nonst'] = (sum(1 for v in gam if not (math.isfinite(v) and v <= 1e-3)) / len(gam)) if (rec_ok and gam) else None
+    chk(C, 'pilot rung evidence recomputed from its saved arrays on the pilot bank (mappings, shapes, certificate rows)',
+        bool(rec_ok and d_rec), None if d_rec is None else {k: (max(v) if isinstance(v, list) else v) for k, v in d_rec.items()})
+    if x is not None and pop_ok and rec_ok and d_rec:
         import e1stats as E
         qual, own, status = E.draw_qualified(
             dict(valid=x['valid'], valid_tight=x['adt_valid'], valid_tighter=x['adt_tighter_valid'],
                  valid_succ=lad.get('W256p|gl32|fs|CN|0.01|K1', {}).get('valid')),
-            dict(tight=x['dist_adt'], tt=x['adt_tight_tighter'], succ=x.get('dist_next'),
+            dict(tight=d_rec['tight'], tt=d_rec['tt'], succ=d_rec['succ'],
                  rho_succ=[max(E.num(v) for v in rr) for rr in x['rho']], target=None, rho_tgt=None,
-                 nonst_frac=(x['nonstationary'] / x['steps']) if x['steps'] else None), None, 8, 8)
+                 nonst_frac=d_rec['nonst']), None, 8, 8)
         chk(C, 'pilot-bank rung-selection predicate evaluates (own-family label defined)', own is not None, dict(own=own, status=status))
     resource_contract(C, out, 'smk3')
     z = np.load(d / f"W_{res['mode']}.npz")
@@ -284,6 +323,8 @@ def smk4(out):
 def main():
     which, out = sys.argv[1], Path(sys.argv[2])
     fetched = sys.argv[sys.argv.index('--fetched') + 1] if '--fetched' in sys.argv else None
+    global PILOT_BANK
+    PILOT_BANK = sys.argv[sys.argv.index('--pilot-bank') + 1] if '--pilot-bank' in sys.argv else None
     C = {'smk1b': lambda: smk1(out, fetched), 'smk1': lambda: smk1(out, fetched), 'smk2': lambda: smk2(out), 'smk3': lambda: smk3(out), 'smk4': lambda: smk4(out), 'smk5': lambda: smk5(out)}[which]()
     rep = dict(smoke=which, source=str(out), checks=C, ALL=all(v['ok'] for v in C.values()),
                label='smoke acceptance (plumbing and controls at real size); never a verdict')

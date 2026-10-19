@@ -64,6 +64,10 @@ def main():
         def dist(sname, A_, B_, ids=None):
             G = SC.glat(sname)
             ids = cases if ids is None else ids
+            A_, B_ = np.asarray(A_), np.asarray(B_)
+            if not (A_.ndim == 3 and A_.shape == B_.shape and A_.shape[0] == len(ids) and A_.shape[1] == 6
+                    and A_.shape[2] == np.asarray(G).shape[0]):
+                return [math.inf] * len(ids)                      # malformed evidence: never broadcast (code audit 6 #3)
             return [_safe_max([float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)]) for i, j in enumerate(ids)]
 
         for st in cfg['settings']:

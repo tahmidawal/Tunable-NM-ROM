@@ -67,6 +67,10 @@ def main():
 
     def dist(sname, A_, B_, ids):
         G = SC.glat(sname)
+        A_, B_ = np.asarray(A_), np.asarray(B_)
+        if not (A_.ndim == 3 and A_.shape == B_.shape and A_.shape[0] == len(ids) and A_.shape[1] == 6
+                and A_.shape[2] == np.asarray(G).shape[0]):
+            return [math.inf] * len(ids)                      # malformed evidence: never broadcast (code audit 6 #3)
         return [_safe_max([float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)]) for i, j in enumerate(ids)]
 
     for cf in cfg['configs']:
@@ -90,7 +94,8 @@ def main():
                 mism.append(('TARGET-CHECK', None, 'length'))
             mism += [('TARGET-CHECK', j, 'dist') for j, (x, y) in zip(idc, zip(dchk, r['target_run']['dist_check'])) if not agree(x, y)]
             tc_ok = bool(idc and idc == [j for j in range(8) if j in cases] and len(r['target_run']['check_valid']) == len(idc)
-                         and len(r['target_run']['dist_check']) == len(idc) and all(r['target_run']['check_valid']) and all(np.isfinite(dchk)) and max(dchk) <= E.BAR_TC
+                         and len(r['target_run']['dist_check']) == len(idc) and all(r['target_run']['check_valid'])
+                             and len(r['target_run']['valid']) == len(cases) and all(r['target_run']['valid'][cases.index(j)] for j in idc) and all(np.isfinite(dchk)) and max(dchk) <= E.BAR_TC
                          and all(agree(x, y) for x, y in zip(dchk, r['target_run']['dist_check'])))
             tvalid = r['target_run']['valid']
             tgt_ok = (None if not tc_ok else bool(all(tvalid)))

@@ -105,6 +105,7 @@ def analyse_arm(out, res, g, arm, rp):
         want_chk = [c for c in expected_ids('dev6') if c in want_ids] if g.get('check') else []
         integ['mismatches'] += [('TARGET-CHECK', r['case'], 'dist') for r in tc_rows if r['check_valid'] and not r['agree']]
         tgt_cert = bool(g.get('check') and [r['case'] for r in tc_rows] == want_chk and
+                        all(tvalid[tcases.index(c)] for c in want_chk) and              # target runs valid on the subset
                         all(r['check_valid'] and r['agree'] and np.isfinite(r['dist']) and r['dist'] <= E.BAR_TC for r in tc_rows))
         # per case (A4.2): the converged-rule error exists where the certified target ran validly on that case
         econv = [e0(FT[j], cid, scheme, form, dt)['e'] if (tvalid[j] and tgt_cert) else None for j, cid in enumerate(tcases)]

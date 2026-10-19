@@ -37,6 +37,9 @@ def install(cfg):
         if want == 'SMOKE-RUNTIME':
             assert str(cfg.get('attempt', '')).startswith('smk')
             want = hashlib.sha256((HERE / b['path']).read_bytes()).hexdigest()
+        prev = C3.BANKS.get(name)
+        assert prev is None or (Path(prev[0]).resolve() == (HERE / b['path']).resolve() and prev[1] == want), \
+            ('bank alias bound to two different checkpoints', name)                 # code audit 4 #35
         C3.BANKS[name] = (HERE / b['path'], want)
     SC.BANKS = {s['name']: (s['bank'], int(s['Rp'])) for s in cfg['settings']}
     SC._G.clear()

@@ -22,6 +22,8 @@ HERE = Path(__file__).resolve().parent
 
 def main():
     out, b = Path(sys.argv[1]), sys.argv[2]
+    if '--output-root' in sys.argv:                  # smoke: banks trained in the job resolve under the collected output
+        e2bank.OUTPUT_ROOT = sys.argv[sys.argv.index('--output-root') + 1]
     res = json.loads((out / 'result.json').read_text())
     assert res.get('complete'), 'selection job incomplete'
     e2bank.use(res['config'].get('bank'), (res.get('checkpoint_sha256'), res.get('rotation_sha256')))

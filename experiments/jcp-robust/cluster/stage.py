@@ -119,7 +119,11 @@ def main():
             for st_ in g:
                 if 'driver' in st_ and st_['driver'] in CF.INV:
                     keys = CF.INV[st_['driver']](json.loads((ROOT / LANE / st_['config']).read_text()))
-                    inv[st_['config']] = dict(n=len(keys), unique=len(set(map(tuple, keys))))
+                    inv[st_['config']] = dict(n=len(keys), unique=len(set(map(tuple, keys))),
+                                              keys=[list(map(str, k)) for k in sorted(set(map(tuple, keys)), key=str)])
+                elif 'sh' in st_:                        # shell (training) steps: listed with their declared projection
+                    inv[st_['sh']] = dict(args=st_.get('args'), env=st_.get('env'), projection_hours=st_.get('projection_hours'),
+                                          basis=st_.get('projection_basis'))
         (out / f'inventory-{att}.json').write_text(json.dumps(dict(smoke=True, reserved_gpu_hours=float(spec['hours']) * gpus,
                                                                     inventory=inv), indent=1) + '\n')
     (out / 'logs').mkdir()

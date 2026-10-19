@@ -27,6 +27,11 @@ from make_configs_e2_3d import GAUSS, GAUSS_CAND, LAT, LAT_CAND, SPECS
 HERE = Path(__file__).resolve().parent
 
 
+def _safe_max(xs):
+    """max with any non-finite term -> +inf (code audit 4 #32)."""
+    return math.inf if (not xs or not all(math.isfinite(x) for x in xs)) else max(xs)
+
+
 def num(x):
     return E.num(x)
 
@@ -59,7 +64,7 @@ def main():
         def dist(sname, A_, B_, ids=None):
             G = SC.glat(sname)
             ids = cases if ids is None else ids
-            return [max(float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)) for i, j in enumerate(ids)]
+            return [_safe_max([float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)]) for i, j in enumerate(ids)]
 
         for st in cfg['settings']:
             sname, wd = st['name'], int(st['Rp'])
@@ -81,6 +86,9 @@ def main():
                             cells[rl] = dict(qualified=None, own=None, status='missing')
                             continue
                         rows = [r_ for r_ in res['rows'] if r_.get('tag') == f'{sname}|{rl}' and r_.get('spec') == spec and 'gam_cert' in r_]
+                        S_exp = int(round(.25 / float(spec.split('|')[2])))
+                        if sorted(int(r_['case']) for r_ in rows) != sorted(cases) or any(len(r_['gam_cert']) != S_exp for r_ in rows):
+                            rows = []                                # certificate evidence incomplete -> unavailable
                         gam = [num(v) for r_ in rows for v in r_['gam_cert']]
                         nonst = (sum(1 for v in gam if not (np.isfinite(v) and v <= E.GAMMA)) / len(gam)) if (gam and len(rows) == len(cases)) else None
                         sp = spec.split('|')

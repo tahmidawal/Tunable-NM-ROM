@@ -95,17 +95,28 @@ def front(C1024, timing):
     tres = json.loads((timing / 'result.json').read_text())
     if not (tres.get('complete') and (timing / 'COMPLETE').exists() and tres.get('backend') == 'gpu'):
         return dict(state='missing (timing job incomplete or not on GPU)')
-    if (tres['config'].get('bank') or {}).get('ckpt_sha256') != (C1024.get('bank') or {}).get('ckpt_sha256'):
+    bk = lambda b: ((b or {}).get('ckpt_sha256'), (b or {}).get('rotation_sha256'))
+    if bk(tres['config'].get('bank')) != bk(C1024.get('bank')):                       # checkpoint AND rotation
         return dict(state='missing (timing job ran on another bank)')
     # code audit 2 #23: a subject's cost exists only if EVERY registered case has >= 2 valid triplets (valid = drift band
     # and every identity hash, dtime's own predicate); otherwise that subject's cost is missing
     if tres.get('memory_rejected') or not tres.get('counts_complete'):
         return dict(state='missing (timing job: memory rejection or incomplete invocation counts)')
-    eq_fail = {e['subject'] for e in tres.get('equivalence', []) if not e.get('passed')}
+    eq_ok = {}
+    for e in tres.get('equivalence', []):
+        eq_ok.setdefault(e['subject'], []).append(bool(e.get('passed')))
     id_fail = {inv['B'] for inv in tres.get('invocations', []) if not inv.get('all_hashes_ok')}
+    id_fail |= {f['B'] for f in tres.get('fused', []) if not f.get('hash_ok')}          # fused-path identity too
+    seen, dup = set(), set()
+    for inv in tres.get('invocations', []):
+        k_ = (inv['B'], inv['case'], inv['rep'])
+        (dup if k_ in seen else seen).add(k_)
     reps_ok = {}
     for inv in tres.get('invocations', []):
-        if inv['B'] in eq_fail or inv['B'] in id_fail:          # subject-wide vetoes (identity, split/fused equivalence)
+        lbv = inv['B']
+        if lbv in id_fail or lbv in {d_[0] for d_ in dup} or eq_ok.get(lbv) != [True]:   # complete equivalence evidence
+            continue
+        if not (np.isfinite(float(inv['ratio'])) and float(inv['ratio']) > 0):
             continue
         if inv.get('valid'):
             reps_ok.setdefault(inv['B'], {}).setdefault(inv['case'], []).append(float(inv['ratio']))

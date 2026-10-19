@@ -31,6 +31,23 @@ def chk(C, name, ok, ev=None):
     C[name] = dict(ok=bool(ok), evidence=ev)
 
 
+def resource_contract(C, out, att):
+    """A6.1: the smoke's staged inventory exists, lists every step (driver steps with execution counts, shell steps by
+    name) and the reservation is <= 2 GPU-h."""
+    root = out.parent
+    inv = root / f'inventory-{att}.json'
+    rs = root / 'RESERVATION.json'
+    ok = inv.exists() and rs.exists()
+    ev = None
+    if ok:
+        I, R = json.loads(inv.read_text()), json.loads(rs.read_text())
+        spec = json.loads((root / 'JOBSPEC.json').read_text())
+        steps = [st.get('config') or st.get('sh') for g in spec['groups'] for st in g]
+        ok = bool(I.get('smoke') and R['time_limit_hours'] <= 2.0 + 1e-9 and all(k in I['inventory'] for k in steps))
+        ev = dict(reserved=R['time_limit_hours'], steps=steps, listed=list(I['inventory']))
+    chk(C, 'smoke resource contract (inventory of every step, reservation <= 2 GPU-h)', ok, ev)
+
+
 def smk1(out, fetched):
     C = {}
     d2 = out / 'r2acc_smk1m1024'
@@ -78,6 +95,11 @@ def smk1(out, fetched):
             {s: (x['status'], x['own_family_qualified']) for s, x in cv['draws'].items()})
         bs = ct.get('bad_rollout_summary', {})
         chk(C, '3d bad vector far from the target (evidence)', bs.get('any_invalid') or E_num(bs.get('D')) > 2.5e-4, bs)
+    P1T = '/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/time/archive/output/p1time_time'
+    rc, log = run(['e5analyze.py', '--smoke', '--job', f"H200={out / 'e5time_e5smk1'}", '--p1ref', P1T,
+                   '--out', str(HERE / 'checks' / 'smoke-smk1-e5.json')])
+    chk(C, 'H200 E5 single-job smoke: ALL (job ok, C-E5.1, fixtures, G-E5.1, P-cross gates)', rc == 0, log[-1200:])
+    resource_contract(C, out, 'smk1')
     return C
 
 
@@ -122,18 +144,27 @@ def smk2(out):
             chk(C, f'{tag} {ak} own-family labels computed', bool(av['rules']) and
                 all(x['own_family_qualified'] is not None for x in av['rules'].values()),
                 {l: (x['status'], x['own_family_qualified']) for l, x in av['rules'].items()})
-    rc, log = run(['select2d.py', str(out / 'r2acc_smk2t'), 'smk'])         # the selection procedure on the trained bank
+    rc, log = run(['select2d.py', str(out / 'r2acc_smk2t'), 'smk', '--output-root', str(out)])
     sp_ = HERE / 'checks' / 'select2d-smk-smoke.json'
-    oc = json.loads(sp_.read_text())['selected']['128']['outcome'] if (rc == 0 and sp_.exists()) else None
+    sel = json.loads(sp_.read_text())['selected']['128'] if (rc == 0 and sp_.exists()) else None
+    oc = None if sel is None else sel['outcome']
     chk(C, 'select2d (smoke contract) runs on the trained bank and returns a defined outcome',
         oc is not None and (oc in ('selected', 'none within ladder', 'diagnostic pick (target unverified)') or oc.startswith('unavailable')),
-        dict(outcome=oc, log=log[-400:]))
+        dict(outcome=oc, rule=None if sel is None else sel['rule'], log=log[-400:]))
+    # selection -> evaluation chain (code audit 4 #8): the 1024^2 'sel' row is the candidate the selection returned;
+    # the 256^2 row exists only if smk2u evaluated that same rule; otherwise H-acc-N must report 'verdict not reached'
     import e2analyze as E2A
-    C2 = {1024: E2A.records(out / 'r2acc_smk2t', lambda r, labels: [('fib4181', 'sel')]),
-          256: E2A.records(out / 'r2acc_smk2u', lambda r, labels: [('sel', 'sel')])}
+    pick = None if sel is None else sel['rule']
+    r2u = json.loads((out / 'r2acc_smk2u' / 'result.json').read_text())
+    u_rule = r2u['config']['groups'][0]['rules'][0]['rule']
+    C2 = {1024: E2A.records(out / 'r2acc_smk2t', lambda r, labels: [(pick, 'sel')] if pick in labels else [])}
+    C2[256] = E2A.records(out / 'r2acc_smk2u', lambda r, labels: [('sel', 'sel')] if u_rule == pick else [])
     h = E2A.h_acc_n(C2, 128, 'sel', 'BE')
-    chk(C, 'H-acc-N calculation runs on trained-bank smoke cells (two meshes -> registered verdict not reached)',
-        h.get('procedure_outcome') == 'two-mesh evidence, registered three-mesh verdict not reached', h.get('procedure_outcome'))
+    want = ('two-mesh evidence, registered three-mesh verdict not reached' if (pick and u_rule == pick)
+            else 'verdict not reached')
+    chk(C, 'selection result drives the H-acc-N rows (selected rule evaluated -> two-mesh outcome; else verdict not reached)',
+        h.get('procedure_outcome', h.get('outcome')) == want, dict(pick=pick, evaluated=u_rule, outcome=h.get('procedure_outcome', h.get('outcome'))))
+    resource_contract(C, out, 'smk2')
     return C
 
 
@@ -165,11 +196,23 @@ def smk3(out):
     for blk in res['blocks']:
         if blk['kind'] == 'ladder':
             lad.update(blk['result'])
-    for k, n in (('W1024|gl64|fs|CN|0.01|K1', 4), ('W256|lat8192|qn|BDF2|0.025|k4', 8), ('W256p|gl24|fs|CN|0.01|K1', 8)):
+    for k, n in (('W1024|gl64|fs|CN|0.01|K1', 4), ('W1024|gl80|fs|CN|0.01|K1', 4), ('W256|lat8192|qn|BDF2|0.025|k4', 8),
+                 ('W256|lat16384|qn|BDF2|0.025|k4', 8), ('W256p|gl24|fs|CN|0.01|K1', 8), ('W256p|gl32|fs|CN|0.01|K1', 8)):
         x = lad.get(k)
         chk(C, f'ladder rung {k} ran valid with ADT anchors on its {n} cases', x is not None and len(x['valid']) == n and
             all(x['valid']) and len(x['adt_valid']) == n and all(x['adt_valid']),
             None if x is None else dict(valid=x['valid'], dist_adt=x['dist_adt']))
+    x = lad.get('W256p|gl24|fs|CN|0.01|K1')                  # the rung-selection predicate on the pilot bank (own-family)
+    if x is not None:
+        import e1stats as E
+        qual, own, status = E.draw_qualified(
+            dict(valid=x['valid'], valid_tight=x['adt_valid'], valid_tighter=x['adt_tighter_valid'],
+                 valid_succ=lad.get('W256p|gl32|fs|CN|0.01|K1', {}).get('valid')),
+            dict(tight=x['dist_adt'], tt=x['adt_tight_tighter'], succ=x.get('dist_next'),
+                 rho_succ=[max(E.num(v) for v in rr) for rr in x['rho']], target=None, rho_tgt=None,
+                 nonst_frac=(x['nonstationary'] / x['steps']) if x['steps'] else None), None, len(x['valid']), len(x['adt_tight_tighter']))
+        chk(C, 'pilot-bank rung-selection predicate evaluates (own-family label defined)', own is not None, dict(own=own, status=status))
+    resource_contract(C, out, 'smk3')
     z = np.load(d / f"W_{res['mode']}.npz")
     QD = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d3/archive')
     QA = QD / 'output' / 'q3run_q3d3' / 'W_q2.npz'
@@ -196,6 +239,7 @@ def smk4(out):
     rc, log = run(['e5analyze.py', '--smoke', '--job', f"A100-80G={out / 'e5time_e5smk4'}", '--p1ref', P1T,
                    '--out', str(HERE / 'checks' / 'smoke-smk4-e5.json')])
     chk(C, 'E5 single-job smoke analysis: ALL (job ok, C-E5.1, q1/q2/q3/null fixtures, G-E5.1, P-cross gates)', rc == 0, log[-1200:])
+    resource_contract(C, out, 'smk4')
     return C
 
 

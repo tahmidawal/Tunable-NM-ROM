@@ -32,6 +32,8 @@ DRAWS = [f'd{s}' for s in range(E.NDRAW)]
 # selection all 38; E2 verdict jobs: e2v<b>a / c all 38, e2v<b>b the P1 16-case subset
 REGISTERED = {'e1m': dict(cases='all38'), 'e2s': dict(cases='all38')}
 SUB16 = [['dev6', c] for c in range(6)] + [['val32', c] for c in range(10)]
+# smoke contracts (code audit 4 #2): independent of the job's metadata
+SMOKE = {'smk1': dict(cases='dev6'), 'smk2': dict(cases='dev6'), 'smk2t': dict(cases='dev6'), 'smk2u': dict(cases='dev6')}
 
 
 def registered(attempt):
@@ -71,10 +73,12 @@ def analyse_arm(out, res, g, arm, rp):
     smoke = str(res['config'].get('attempt', '')).startswith('smk')
     # registered populations (code audit 2 #2): production E1 / E2 runs are checked against the registered sets, never
     # against the job's own metadata; smokes carry their own explicit contract (their config) and are labelled smoke
-    reg = registered(str(res['config'].get('attempt', ''))) if not smoke else None
-    want_ids = expected_ids(reg['cases'] if reg else res['config'].get('cases', 'all38'))
-    want_t = [c for c in expected_ids(g.get('tighter_cases', 'dev6') if not reg else 'dev6') if c in want_ids]
-    if reg and expected_ids(res['config'].get('cases', 'all38')) != want_ids:
+    reg = registered(str(res['config'].get('attempt', ''))) if not smoke else SMOKE.get(str(res['config'].get('attempt', '')))
+    if reg is None:
+        reg = dict(cases=res['config'].get('cases', 'all38'), unregistered=True)    # local CPU checks only (never a verdict)
+    want_ids = expected_ids(reg['cases'])
+    want_t = [c for c in expected_ids('dev6') if c in want_ids]
+    if expected_ids(res['config'].get('cases', 'all38')) != want_ids:
         raise ValueError('job population differs from the registered one')
     rows = [r for r in res['rows'] if r['group'] == gname and r['arm'] == arm]
     integ = dict(ids_ok=True, mismatches=[], gcert_fail=0, missing=[])
@@ -98,7 +102,7 @@ def analyse_arm(out, res, g, arm, rp):
             dc = fd(FT[j], NC.decode257(np.asarray(tz['W_check'][k]), rp), n0_of[cid])
             tc_rows.append(dict(case=cid, check_valid=bool(trow[cid].get('check_valid')), dist=dc, dist_job=trow[cid].get('dist_check'),
                                 agree=agree(dc, trow[cid].get('dist_check'))))
-        want_chk = [c for c in expected_ids('dev6' if reg else g.get('check_cases', 'dev6')) if c in want_ids] if g.get('check') else []
+        want_chk = [c for c in expected_ids('dev6') if c in want_ids] if g.get('check') else []
         integ['mismatches'] += [('TARGET-CHECK', r['case'], 'dist') for r in tc_rows if r['check_valid'] and not r['agree']]
         tgt_cert = bool(g.get('check') and [r['case'] for r in tc_rows] == want_chk and
                         all(r['check_valid'] and r['agree'] and np.isfinite(r['dist']) and r['dist'] <= E.BAR_TC for r in tc_rows))

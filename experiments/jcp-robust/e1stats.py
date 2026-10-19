@@ -37,8 +37,11 @@ def h_e1a(qualified, expected=NDRAW):
 
 
 def num(x):
-    """JSON evidence -> float: None (serialised non-finite) -> +inf; never arithmetic on a missing record."""
-    return math.inf if x is None else float(x)
+    """JSON evidence -> float: None (serialised non-finite) and NaN / -inf -> +inf (a failed bar; code audit 4 #32)."""
+    if x is None:
+        return math.inf
+    x = float(x)
+    return x if math.isfinite(x) else math.inf
 
 
 def rank_interval(v, delta):

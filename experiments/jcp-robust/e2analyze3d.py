@@ -28,6 +28,11 @@ import p1stats as S
 from make_configs_e2_3d import FIXED
 
 HERE = Path(__file__).resolve().parent
+
+
+def _safe_max(xs):
+    """max with any non-finite term -> +inf (code audit 4 #32)."""
+    return math.inf if (not xs or not all(math.isfinite(x) for x in xs)) else max(xs)
 QR = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs')
 REPLAY = [('q3d3', 'W256|lat8192|qn|BDF2|0.025|k4'), ('q3d3', 'W512|lat16384|qn|BDF2|0.025|k4'), ('q3d2', 'W256|gl24|fs|CN|0.01|K1')]
 
@@ -86,7 +91,7 @@ def main():
 
     def dist3(sname, A_, B_, ids):
         G = SC.glat(sname)
-        return [max(float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)) for i, j in enumerate(ids)]
+        return [_safe_max([float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)]) for i, j in enumerate(ids)]
     E_ = lambda key: {int(c): v['e'] for c, v in scores[key].items()}
     EL = lambda key: {int(c): bool(v['eligible']) for c, v in scores[key].items()}
     EP = lambda key: {int(c): E.num(v['eps_ref']) for c, v in scores[key].items()}
@@ -103,9 +108,17 @@ def main():
                 x = lad[k_]
                 sp_ = spec.split('|')
                 kad = f"W{w_}|gl64|ad|LSPG|{sp_[1]}|{float(sp_[2]):.8g}|tight"
-                d_adt = dist3(f'W{w_}', Wz[k_], Wz[kad], x['cases'])
-                d_nx = dist3(f'W{w_}', Wz[k_], Wz[f'W{w_}|gl80|{spec}'], x['cases'])
-                if any(not (np.isfinite(E.num(j)) and abs(o - E.num(j)) <= 1e-9 * abs(E.num(j)) + 1e-13) for o, j in zip(d_adt, x['dist_adt']) if np.isfinite(o)):
+                knx = f'W{w_}|gl80|{spec}'
+                cs_ = list(range(64)) if not str(J[0][0]['config'].get('attempt', '')).startswith('smk') else x['cases']
+                if any([int(v) for v in Wz['cases|' + kk_]] != cs_ for kk_ in (k_, kad, knx)) or list(x['cases']) != cs_ \
+                        or len(x['dist_adt']) != len(cs_) or len(x['valid']) != len(cs_):
+                    rep['integrity'] = False                                    # mappings / lengths (code audit 4 #7)
+                    qs.append([False] * len(x['cases']))
+                    continue
+                d_adt = dist3(f'W{w_}', Wz[k_], Wz[kad], cs_)
+                d_nx = dist3(f'W{w_}', Wz[k_], Wz[knx], cs_)
+                if any(not (np.isfinite(E.num(j)) and abs(o - E.num(j)) <= 1e-9 * abs(E.num(j)) + 1e-13)
+                       for o, j in zip(d_adt, x['dist_adt'])):
                     rep['integrity'] = False
                 qs.append(case_q(x, lad[f'W{w_}|gl80|{spec}'], d_adt, d_nx))
             qa, qb = qs
@@ -149,8 +162,13 @@ def main():
         ba = {}
         if tm.get('valid') is True and fres.get('complete') and fres['backend'] == 'gpu':     # code audit 2 #23: d3run's
             per = {}                                                                          # panel acceptance governs
+            seen = set()
             for inv in tm['invocations']:
-                if inv.get('hashes_ok') and 1 / 1.1 <= inv['drift'] <= 1.1:
+                k_ = (inv['B'], inv['case'], inv['rep'])
+                if k_ in seen:                                          # duplicated repetitions never count twice
+                    continue
+                seen.add(k_)
+                if inv.get('hashes_ok') and 1 / 1.1 <= inv['drift'] <= 1.1 and np.isfinite(inv['ratio']) and inv['ratio'] > 0:
                     per.setdefault(inv['B'], {}).setdefault(inv['case'], []).append(inv['ratio'])
             for nm_, pc in per.items():
                 if all(len(pc.get(c, [])) >= 2 for c in range(8)):

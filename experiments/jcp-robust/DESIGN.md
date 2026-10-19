@@ -759,3 +759,24 @@ coordinator's release. A job-side defect found later in a smoke is fixed and the
 
 **A5.2 smk1 includes the H200 E5 panel** (`configs/e5smk1.json`, same panels as `e5smk4`, H200), as §6 registered, in
 addition to the A100 `smk4` of A2.9.
+
+## Amendment A6 (2026-10-19, after code audit 4; no smoke output read yet)
+
+**A6.1 Smoke resource contract (bootstrap).** The smokes are the measurement source of every production certificate
+(§6, A4.2), so a smoke cannot itself carry a smoke-derived certificate. Its contract instead: attempt name `smk*`,
+reserved time ≤ 2 GPU-h (stage.py refuses more), a staged execution inventory listing every step (driver steps with
+their unique execution keys from `certify.INV`, shell steps with their arguments and declared projection), collected
+with the job and validated by `smoke_accept.py`. Production jobs keep the full certificate (code-tree, job-spec, time
+limit and GPU count bound).
+
+**A6.2 Smoke populations** are fixed contracts in the analysis code, not read from job metadata: 2D smokes dev6
+(tighter and check on dev6); 3D E1 smoke cases 0–7, check 0–7, draws 0–2; E5 smokes dev6|0–4 × 2 reps. Smoke
+results are labelled "smoke" and never enter a verdict.
+
+**A6.3 What the smokes demonstrate for the selection → verdict chain.** smk2 runs the registered selection code
+(`select2d.py`, smoke contract: R128, candidates fib4181 and gauss96) on the smoke-trained bank, and acceptance feeds its
+result into the H-acc-N row construction (the 256² row exists only if smk2u evaluated the selected rule, otherwise the
+registered "verdict not reached" path must result). The full chain (selection → generated verdict configs → verdict
+jobs) first runs in production on the incumbent (`e2s0`, `e2v0*`), where the non-blocking anchor G-E2.1 and the blocking
+replay gate G-E2.3 check it before any seed's verdict is read. smk3 evaluates the 3D rung-selection predicate on the
+pilot bank (own-family label of gl24 against gl32).

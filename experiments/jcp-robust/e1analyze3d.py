@@ -23,6 +23,11 @@ import e1stats as E
 import score3 as SC
 
 HERE = Path(__file__).resolve().parent
+
+
+def _safe_max(xs):
+    """max with any non-finite term -> +inf (code audit 4 #32)."""
+    return math.inf if (not xs or not all(math.isfinite(x) for x in xs)) else max(xs)
 QARCH = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d3/'
              'archive/output/q3run_q3d3/W_q2.npz')
 QKEY = {'E1-3D-a': 'W256|lat8192|qn|BDF2|0.025|k4#q|qn|BDF2|0.025|k4',
@@ -62,7 +67,7 @@ def main():
 
     def dist(sname, A_, B_, ids):
         G = SC.glat(sname)
-        return [max(float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)) for i, j in enumerate(ids)]
+        return [_safe_max([float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)]) for i, j in enumerate(ids)]
 
     for cf in cfg['configs']:
         try:
@@ -76,10 +81,16 @@ def main():
             Wc, idc = Wz[kc], [int(x) for x in Wz['cases|' + kc]]
             dchk = dist(sname, [Wt[cases.index(j)] for j in idc], Wc, idc)
             smoke = str(cfg.get('attempt', '')).startswith('smk')
-            if not smoke and (cases != list(range(64)) or idc != list(range(8))):
-                mism.append(('population', 'cases / check cases differ from the registered 64 / 0-7', None))
+            # independent contracts (code audit 4 #2): production 64 cases / check 0-7 / draws 0-15; smoke (smk1) 8 / 0-7 / 0-2
+            want_cases, want_draws = (list(range(8)), [0, 1, 2]) if smoke else (list(range(64)), list(range(E.NDRAW)))
+            if cases != want_cases or idc != list(range(8)) or [int(x) for x in cf['draws']] != want_draws:
+                mism.append(('population', 'cases / check cases / draws differ from the registered contract', None))
+            if len(r['target_run']['dist_check']) != len(idc) or len(r['target_run']['check_valid']) != len(idc) \
+                    or len(r['target_run']['valid']) != len(cases):
+                mism.append(('TARGET-CHECK', None, 'length'))
             mism += [('TARGET-CHECK', j, 'dist') for j, (x, y) in zip(idc, zip(dchk, r['target_run']['dist_check'])) if not agree(x, y)]
-            tc_ok = bool(idc and idc == [j for j in range(8) if j in cases] and all(r['target_run']['check_valid']) and all(np.isfinite(dchk)) and max(dchk) <= E.BAR_TC
+            tc_ok = bool(idc and idc == [j for j in range(8) if j in cases] and len(r['target_run']['check_valid']) == len(idc)
+                         and len(r['target_run']['dist_check']) == len(idc) and all(r['target_run']['check_valid']) and all(np.isfinite(dchk)) and max(dchk) <= E.BAR_TC
                          and all(agree(x, y) for x, y in zip(dchk, r['target_run']['dist_check'])))
             tvalid = r['target_run']['valid']
             tgt_ok = (None if not tc_ok else bool(all(tvalid)))
@@ -87,7 +98,7 @@ def main():
             draws = {}
             sp_ = spec.split('|')
             adk = lambda lev: f"ad|LSPG|{sp_[1]}|{float(sp_[2]):.8g}|{lev}"
-            tcs = [j for j in (list(range(8)) if not smoke else cf.get('tighter_cases', list(range(8)))) if j in cases]
+            tcs = [j for j in range(8) if j in cases]                                  # registered tighter cases 0-7
             if not smoke and [str(x) for x in cf['draws']] != [str(x) for x in range(E.NDRAW)]:
                 mism.append(('population', 'draws', cf['draws']))
             for s in [str(x) for x in cf['draws']]:
@@ -104,6 +115,9 @@ def main():
                 ka, kb = f"{tag}|{adk('tight')}", f"{tag}|{adk('tighter')}"          # Q1 recomputed (code audit 1 #5)
                 Wa, Wb = Wz[ka], Wz[kb]
                 ib = [int(x) for x in Wz['cases|' + kb]]
+                for kk_, want_ in ((ks, cases), (ka, cases), (kb, tcs)):            # saved case mappings (code audit 4 #2)
+                    if [int(x) for x in Wz['cases|' + kk_]] != want_:
+                        mism.append((s, f'case mapping {kk_}', None))
                 d_a = dist(sname, W, Wa, ids)
                 d_tt = dist(sname, [Wa[cases.index(j)] for j in ib], Wb, ib)
                 for nmx, off, job in (('target', d_t, dr['dist_target']), ('succ', d_s, dr['dist_succ']), ('adt', d_a, dr['dist_adt']),

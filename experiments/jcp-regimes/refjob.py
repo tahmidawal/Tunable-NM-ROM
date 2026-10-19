@@ -264,6 +264,7 @@ def atomic_write(path, data: bytes):
 
 def write_case(outdir, arrays, meta, sealed, key, manifest):
     stem = outdir / f"{meta['dim']}d" / meta['cohort'] / meta['kind'] / f"c{meta['case']:03d}"
+    G_.check_dir(stem.parent)
     stem.parent.mkdir(parents=True, exist_ok=True)
     npz = SI.npz_bytes(**arrays)
     js = json.dumps(V_clean(meta), indent=1).encode()
@@ -364,6 +365,13 @@ def mode_fd(cfg, outdir, rep):
     rep['tight_allowance_after_resume'] = TIGHT_LEFT[0]
     manifest, metas = [], []
     rep['cases'] = []
+
+    def merged():                                   # code audit 3: never drop previously verified entries
+        dm = dict(prev)
+        dm.update({m_['file']: m_['sha256'] for m_ in manifest})
+        return [dict(file=k, sha256=v) for k, v in sorted(dm.items())]
+    rep['manifest'] = merged()
+    save(outdir, rep)
     done = 0
     for j in cases:
         for kind in cfg['kinds']:
@@ -380,17 +388,21 @@ def mode_fd(cfg, outdir, rep):
                 manifest.append(dict(file=str(stem.relative_to(outdir)) + '.npz', sha256=SI.sha(npz)))
                 manifest.append(dict(file=str(stem.relative_to(outdir)) + '.json',
                                      sha256=SI.sha(Path(str(stem) + '.json').read_bytes())))
+                rep['cases'].append(dict(case=j, kind=kind, outcome=meta['outcome'], eps_ref=meta['judge']['eps_ref'],
+                                         p=meta['judge']['p'], seconds=meta.get('seconds'), resumed=True))
+                rep['manifest'] = merged()
+                save(outdir, rep)                          # checkpoint before any expensive probe work
                 what = [w for w, cs in cfg.get('probes', {}).items() if j in cs]
                 if what:                                   # E5: probes are (re)run for resumed cases too
                     pr = probe_case(coh, j, kind, {k: arr[k] for k in arr.files}, meta, what, outdir)
                     rep.setdefault('probes', []).append(dict(case=j, kind=kind, **V_clean(pr)))
-                rep['cases'].append(dict(case=j, kind=kind, outcome=meta['outcome'], eps_ref=meta['judge']['eps_ref'],
-                                         p=meta['judge']['p'], seconds=meta.get('seconds'), resumed=True))
+                    save(outdir, rep)
                 log(f'resumed (verified) {stem}')
                 continue
             for s in ('.npz', '.json'):                    # unverifiable leftovers are recomputed, never trusted
                 if Path(str(stem) + s).exists():
                     G_.check_write(str(stem) + s)
+                    prev.pop(str(Path(str(stem) + s).relative_to(outdir)), None)
                     os.chmod(str(stem) + s, 0o644)
                     os.remove(str(stem) + s)
             t = time.perf_counter()
@@ -414,7 +426,7 @@ def mode_fd(cfg, outdir, rep):
                                          tight=meta['tight_used'], eps_ref=jd['eps_ref'], p=jd['p'],
                                          seconds=meta['seconds']))
                 log(f"CASE {coh.name} {j} {kind}: {meta['outcome']} eps={jd['eps_ref']} p={jd['p']} {meta['seconds']:.0f}s")
-                rep['manifest'] = manifest
+                rep['manifest'] = merged()
                 save(outdir, rep)
     if sealed:
         del rep['cases']
@@ -425,7 +437,7 @@ def mode_fd(cfg, outdir, rep):
                                       ciphertexts=[dict(file=m['file'], cipher=m['cipher']) for m in manifest])
         rep['qc'] = qc_aggregate(metas, time.perf_counter() - T_BEGIN)
     else:
-        rep['manifest'] = manifest
+        rep['manifest'] = merged()
 
 
 def mode_calib(cfg, outdir, rep):
@@ -594,6 +606,7 @@ def mode_ps(cfg, outdir, rep):
                     runs=[{k: v for k, v in r.items() if k != 'lat'} for r in runs], selected_spatial=spatial,
                     selected_half=half, stability_ok=stab, gates_ok=bool(all(r['checks_ok'] for r in sel)),
                     finite=bool(all(r['finite'] for r in sel)), job=job_info())
+        G_.check_dir(stem.parent)
         stem.parent.mkdir(parents=True, exist_ok=True)
         atomic_write(str(stem) + '.npz', SI.npz_bytes(**arrays))
         atomic_write(str(stem) + '.json', json.dumps(V_clean(meta), indent=1).encode())
@@ -652,6 +665,8 @@ def main():
         PREV_MANIFEST.update({m['file']: m['sha256'] for m in
                               json.loads((outdir / 'result.json').read_text()).get('manifest', []) if 'sha256' in m})
     rep = dict(config={k: v for k, v in cfg.items() if k not in ('seeds_file', 'key')}, job=job_info(), complete=False)
+    if PREV_MANIFEST:                               # code audit 3: the first save keeps the verified manifest
+        rep['manifest'] = [dict(file=k, sha256=v) for k, v in sorted(PREV_MANIFEST.items())]
     if cfg.get('smoke_override'):            # LOCAL FUNCTIONAL SMOKE ONLY (A4.4 v): reduced levels; never a reference
         assert not os.environ.get('SLURM_JOB_ID'), 'smoke_override is refused inside a cluster job'
         so = cfg['smoke_override']

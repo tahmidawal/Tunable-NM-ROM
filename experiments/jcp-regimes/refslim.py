@@ -43,11 +43,17 @@ def main():
     for src, js in pairs:                              # sources: plain relative paths, regime / dev6 cohorts only
         if js.parent.parent.name not in allowed:
             raise SystemExit(f'cohort {js.parent.parent.name} not admissible')
+        for f_ in (js, js.with_suffix('.npz')):        # resolved source inside the allowed root (no symlink redirect)
+            G.check_read_source(f_)
+        meta_ = json.loads(js.read_text())
+        if meta_['cohort'] != js.parent.parent.name or js.name != f"c{meta_['case']:03d}.json":
+            raise SystemExit(f'reference identity does not match its path: {js}')
     for src, js in pairs:
         meta = json.loads(js.read_text())
         z = np.load(js.with_suffix('.npz'))
         keep = {meta['final'][2]: z[meta['final'][2]], 't0': z['t0']}
         d = out / js.relative_to(src).parent
+        G.check_dir(d)
         d.mkdir(parents=True, exist_ok=True)
         np.savez_compressed(G.check_write(d / js.with_suffix('.npz').name), **keep)
         G.check_write(d / js.name).write_bytes(js.read_bytes())

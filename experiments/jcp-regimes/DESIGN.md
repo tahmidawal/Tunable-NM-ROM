@@ -628,3 +628,13 @@ required passing `fverify` result for the production ROM job, and the reduced-C2
 (iii) `make_report.py`: the calibration label (A2.2), separation-failure relabelling (§4.4), allowance-unresolved counts
 next to every coverage entry (A3.2), N0s descriptive labels, the N0-only sensitivity ratios, the paired A−/C1 contrast, the
 trends, and Q1/Q2 detail per configuration × regime.
+
+**A6 addendum (after code audit 3, 2026-10-19).** Smoke-path fixes: directories are boundary-checked before creation;
+slimming sources are checked by resolved path and their records must match their path; auxiliary local writers
+(`test_regimes`, `ctrl_wrongmesh`, `smoke_accept`) write only to the lane's `checks/` or `/tmp/` (or the namespace in a job);
+a resumed reference job keeps the previously verified manifest from its very first save and checkpoints before any probe;
+budget-zero evidence must have its full registered dimensions and the NumPy γ is recomputed for all six cases; probe
+acceptance checks the case record identity, the canonical generator $t_0$ and the $t_0$ slice of every probe member;
+`fverify.json` carries per-arm R-file and field hashes and its config hash, and acceptance binds it to the pulled files.
+The production-gate list of A6 additionally requires evidence-bound production `fverify` acceptance, a measured
+verification cost, and propagation of the calibration / separation qualifications into analysis and `EXPORT.json`.

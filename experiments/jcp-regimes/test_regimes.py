@@ -8,6 +8,8 @@ from __future__ import annotations
 import json
 import sys
 
+from pathlib import Path
+
 import numpy as np
 
 import rcohorts as RG
@@ -156,6 +158,8 @@ def main():
     gate('R-peclet rejected', j3['outcome'] == 'peclet-fail', (j3['outcome'], j3['peclet']))
     ok = all(r['pass_'] for r in RESULTS)
     if len(sys.argv) > 1:
+        import guard
+        guard.check_local(sys.argv[1], Path(__file__).resolve().parent)
         open(sys.argv[1], 'w').write(json.dumps(dict(all_pass=ok, gates=RESULTS), indent=1) + '\n')
     print('ALL-PASS' if ok else 'SOME-FAIL')
     sys.exit(0 if ok else 1)

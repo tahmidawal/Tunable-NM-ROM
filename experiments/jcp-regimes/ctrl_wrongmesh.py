@@ -34,6 +34,9 @@ def main():
     except ValueError as e:
         res['perturbed_table_refused'] = str(e)
     res['passed'] = bool(res['own_table_accepted'] is True and res['wrong_mesh_refused'] and res['perturbed_table_refused'])
+    import guard
+    from pathlib import Path
+    guard.check_local(sys.argv[1], Path(__file__).resolve().parent)
     open(sys.argv[1], 'w').write(json.dumps(res, indent=1) + '\n')
     print('WRONGMESH', res)
 

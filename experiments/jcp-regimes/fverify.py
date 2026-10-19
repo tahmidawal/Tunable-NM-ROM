@@ -54,12 +54,13 @@ def main():
                 bad.append(j)
             rel.append(r_)
         ok = bool(sha_ok and ids_ok and shape_ok and not bad and rel and np.all(np.isfinite(rel)) and max(rel) <= 1e-12)
-        rows[rp.stem[2:]] = dict(sha_ok=sha_ok, ids_ok=ids_ok, shape_ok=shape_ok, n=len(R['W']), n_compared=len(rel),
+        rows[rp.stem[2:]] = dict(R_file_sha256=hashlib.sha256(rp.read_bytes()).hexdigest(), f257_sha256=str(R['f257_sha256']),
+                                 sha_ok=sha_ok, ids_ok=ids_ok, shape_ok=shape_ok, n=len(R['W']), n_compared=len(rel),
                                  invalid_runs=invalid_runs, nonfinite_valid=bad,
                                  max_rel=(max(rel) if rel and np.all(np.isfinite(rel)) else None), passed=ok)
         print('FVERIFY', rp.stem, rows[rp.stem[2:]], flush=True)
     inv_ok = want is None or sorted(rows) == want
-    res = dict(source=cfg['source'], arms=rows, inventory_ok=inv_ok,
+    res = dict(source=cfg['source'], config_sha256=hashlib.sha256(Path(a.config).read_bytes()).hexdigest(), arms=rows, inventory_ok=inv_ok,
                all_pass=bool(rows) and inv_ok and all(v['passed'] for v in rows.values()))
     G.check_write(out / 'fverify.json').write_text(json.dumps(res, indent=1) + '\n')
     print('FVERIFY ALL', res['all_pass'], flush=True)

@@ -28,6 +28,36 @@ def check_write(path):
     return Path(path)
 
 
+def check_dir(path):
+    """A directory about to be created: every existing ancestor resolves inside the allowed root (no symlink escape)."""
+    p = Path(path)
+    for q in [p] + list(p.parents):
+        if q.exists() or q.is_symlink():
+            check_write(Path(os.path.realpath(str(q))) / '.probe')
+            break
+    check_write(p / '.probe')
+    return p
+
+
+def check_local(path, lane_dir):
+    """Local (non-Slurm) acceptance / control outputs: only the lane's checks/ directory or /tmp/."""
+    r = os.path.realpath(str(path))
+    ok = r.startswith(os.path.realpath(str(Path(lane_dir) / 'checks')) + '/') or r.startswith('/tmp/')
+    if os.environ.get('SLURM_JOB_ID'):
+        ok = (r + '/').startswith(LANE_NS)
+    if not ok or any(f in r + '/' for f in FORBIDDEN):
+        raise BoundaryError(f'refusing local output {r}')
+    return Path(path)
+
+
+def check_read_source(path):
+    """A source file read by a slimming / verification step: resolved inside the allowed root."""
+    r = os.path.realpath(str(path))
+    if any(f in r + '/' for f in FORBIDDEN) or not (r + '/').startswith(allowed_root()):
+        raise BoundaryError(f'refusing to read {r}')
+    return Path(path)
+
+
 def check_relative(src):
     """A configured relative source path: no absolute path, no '..' component."""
     p = Path(src)

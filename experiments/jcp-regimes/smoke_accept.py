@@ -27,6 +27,15 @@ def n_stages_cnr(dt):
     return 4 + steps - 2
 
 
+def canon_t0(g, c):
+    return RG.initial_2d(256, g, RG.descriptors_2d(g)[c])
+
+
+def record_ok(cm, g, c):
+    return bool(cm['cohort'] == g and cm['case'] == c and cm['kind'] == 'ST'
+                and cm['desc'] == RG.desc_2d(g, RG.descriptors_2d(g)[c]))
+
+
 def lat_ok(a):
     a = np.asarray(a)
     return a.shape == (6, 257, 257) and bool(np.isfinite(a).all())
@@ -84,8 +93,12 @@ def main(run):
         lv.append(dict(L=L_, lat=lat_, tau=V.floor_proxy(rs_, nexp),
                        steps_ok=bool(len(rs_) == nexp and V.steps_ok(rs_, nexp) and lat_ok(lat_)), umax=ulv[L_]['umax_running']))
     nu9 = RG.nu_2d('C2', RG.descriptors_2d('C2')[9])
-    jd = V.judge(lv, ev['t0'], nu9)
-    ok_up = bool(jd['outcome'] == 'order-fail' and jd['checks']['solver'] and jd['checks']['t0_shared'] and jd['checks']['floor'])
+    t0c = canon_t0('C2', 9)
+    cm9 = json.loads((out / 'refjob_smk1-ref-C2' / '2d' / 'C2' / 'ST' / 'c009.json').read_text())
+    ident_up = bool(record_ok(cm9, 'C2', 9) and np.array_equal(ev['t0'], t0c)
+                    and all(np.array_equal(x['lat'][0], t0c) for x in lv))
+    jd = V.judge(lv, t0c, nu9)
+    ok_up = bool(ident_up and jd['outcome'] == 'order-fail' and jd['checks']['solver'] and jd['checks']['t0_shared'] and jd['checks']['floor'])
     check('R-upwind C2 c9 rejected on order (recomputed)', ok_up, outcome=jd['outcome'], p=jd['p'],
           in_job=pr[9]['upwind']['outcome'])
     # R-calib (A2.2, A3.1): all three probes must 'agree' for the pass; otherwise a label (not blocking)
@@ -97,8 +110,11 @@ def main(run):
         cz = np.load(base / f'c{c:03d}.npz')
         # the production member: the last prod / retry attempt at L = 2048 of the case record (A3.1), identical arrays
         a0 = [x for x in cm['attempts'] if x['L'] == 2048 and x['purpose'] in ('prod', 'retry')][-1]
-        ident = bool(np.array_equal(ev['prod_lat'], cz[a0['id']]) and np.array_equal(ev['prod_res'], cz['res_' + a0['id']])
-                     and np.array_equal(ev['t0'], cz['t0']))
+        t0c = canon_t0(g, c)
+        ident = bool(record_ok(cm, g, c) and np.array_equal(ev['prod_lat'], cz[a0['id']])
+                     and np.array_equal(ev['prod_res'], cz['res_' + a0['id']]) and np.array_equal(ev['t0'], t0c)
+                     and np.array_equal(cz['t0'], t0c) and np.array_equal(ev['prod_lat'][0], t0c)
+                     and np.array_equal(ev['tight_lat'][0], t0c))
         nexp = n_stages_cnr(1.25e-3)
         n0 = float(np.linalg.norm(ev['t0'].ravel()))
         dev = max(float(np.linalg.norm((ev['tight_lat'][k] - ev['prod_lat'][k]).ravel())) / n0 for k in range(1, 6))
@@ -168,14 +184,19 @@ def main(run):
     for form in ('LSPG', 'GAL'):
         cb = np.load(qd / f'CTRL_budget0_{form}.npz')
         cert = np.asarray(cb['cert'], float)
+        dims_ok = (cert.shape == (6, 50) and np.shape(cb['states']) == (6, 51, 384) and len(cb['nu']) == 6
+                   and str(cb['rule']) == 'gauss128' and int(cb['L']) == 1024 and np.shape(cb['A']) == (1536, 384))
+        check(f'Q-budget0 {form} evidence complete (6 cases x 50 steps, R384, gauss128, 1024^2)', dims_ok,
+              cert=cert.shape, states=np.shape(cb['states']))
         frac = float(np.mean(~RS.certified(cert, form)))
         detail = dict(in_job_fraction=frac)
         if form == 'LSPG':          # independent NumPy gamma for the first case
             t = RS.rule_tables(str(cb['rule']), cb['A'].shape[1], cb['kx'], cb['ky'], int(cb['L']))
-            g_np = NC.gammas(cb['states'][0], cb['A'], cb['lam'], t, str(cb['scheme']), .005, float(cb['nu'][0]))
-            detail['numpy_gamma_case0_max_rel_diff'] = float(np.max(np.abs(g_np - cert[0]) / np.maximum(np.abs(cert[0]), 1e-300)))
-            detail['numpy_fraction_case0'] = float(np.mean(~(g_np <= RS.GAMMA)))
-        ok_b = frac > .01
+            g_all = np.array([NC.gammas(cb['states'][i], cb['A'], cb['lam'], t, str(cb['scheme']), .005, float(cb['nu'][i]))
+                              for i in range(len(cb['nu']))])
+            detail['numpy_gamma_case0_max_rel_diff'] = float(np.max(np.abs(g_all - cert) / np.maximum(np.abs(cert), 1e-300)))
+            detail['numpy_fraction_case0'] = float(np.mean(~(g_all <= RS.GAMMA)))     # pooled over all six cases
+        ok_b = frac > .01 and dims_ok
         if form == 'LSPG':          # the independent NumPy gamma must agree with the in-job certificate (gated)
             ok_b = ok_b and detail['numpy_gamma_case0_max_rel_diff'] <= 1e-6 and detail['numpy_fraction_case0'] > .01
         if form == 'LSPG':
@@ -186,6 +207,8 @@ def main(run):
     import os
     import subprocess
     wm = HERE / 'checks' / 'wrongmesh-local.json'
+    if wm.exists():
+        wm.unlink()                                 # never accept a stale result
     rr = subprocess.run(['bash', '/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-17-full-experiment-plan/campaign/jaxslot.sh',
                          '1800', 'jaxrun', sys.executable, str(HERE / 'ctrl_wrongmesh.py'), str(wm)], cwd=HERE,
                         capture_output=True, text=True, env=dict(os.environ, JAX_PLATFORMS='cpu', JAX_ENABLE_X64='true',
@@ -194,7 +217,14 @@ def main(run):
     check('Q-wrong-mesh refused when re-executed locally (CPU, same code path)', rr.returncode == 0 and wmr.get('passed'),
           result=wmr, rc=rr.returncode)
     fv = json.loads((out / 'fverify_smk1-fverify' / 'fverify.json').read_text())
-    check('full-field independent decode (on-cluster fverify)', fv['all_pass'] and len(fv['arms']) == 9, arms=fv['arms'])
+    import hashlib
+    want_fv = json.loads((HERE / 'configs' / 'smk1-fverify.json').read_text())['arms']
+    bound = sorted(fv['arms']) == sorted(want_fv) and all(
+        fv['arms'][k]['R_file_sha256'] == hashlib.sha256((qd / f'R_{k}.npz').read_bytes()).hexdigest()
+        and fv['arms'][k]['f257_sha256'] == str(np.load(qd / f'R_{k}.npz')['f257_sha256']) for k in want_fv)
+    check('full-field independent decode (on-cluster fverify), bound to the pulled R files and config',
+          fv['all_pass'] and bound and fv['config_sha256'] == hashlib.sha256((HERE / 'configs' / 'smk1-fverify.json').read_bytes()).hexdigest(),
+          arms={k: dict(passed=v['passed'], max_rel=v['max_rel']) for k, v in fv['arms'].items()})
     # offline Q1/Q2 machinery per regime (smoke populations), no in-job/offline disagreement
     rows = rep['rows']
     qsum = {}
@@ -224,6 +254,8 @@ def main(run):
                qualify_smoke=qsum, rom_seconds_per_case_arm={k: float(np.median(v)) for k, v in secs.items()},
                qacc_elapsed=rep.get('elapsed_seconds'), pilots=pil)
     (HERE / 'checks').mkdir(exist_ok=True)
+    import guard
+    guard.check_local(HERE / 'checks' / 'smoke-accept.json', HERE)
     (HERE / 'checks' / 'smoke-accept.json').write_text(json.dumps(RS_clean(acc), indent=1) + '\n')
     print('ALL-BLOCKING-PASS' if acc['all_blocking_pass'] else 'BLOCKING-FAIL')
     sys.exit(0 if acc['all_blocking_pass'] else 1)

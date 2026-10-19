@@ -31,6 +31,7 @@ import jax.numpy as jnp
 
 import cohorts as CH
 import rcohorts as RG          # jcp-regimes edit E2: regime cohorts (DESIGN 3)
+import guard as G_             # jcp-regimes: write boundary (code audit 2)
 import gates as G
 import pscore as PS
 import refcore as RC
@@ -253,7 +254,9 @@ def V_clean(x):
 
 
 def atomic_write(path, data: bytes):
+    G_.check_write(path)                              # jcp-regimes: resolved-path boundary (code audit 2)
     tmp = Path(str(path) + '.tmp')
+    G_.check_write(tmp)
     tmp.write_bytes(data)
     os.replace(tmp, path)
     os.chmod(path, 0o444)
@@ -387,6 +390,7 @@ def mode_fd(cfg, outdir, rep):
                 continue
             for s in ('.npz', '.json'):                    # unverifiable leftovers are recomputed, never trusted
                 if Path(str(stem) + s).exists():
+                    G_.check_write(str(stem) + s)
                     os.chmod(str(stem) + s, 0o644)
                     os.remove(str(stem) + s)
             t = time.perf_counter()
@@ -599,7 +603,8 @@ def mode_ps(cfg, outdir, rep):
 
 
 def save(outdir, rep):
-    tmp = outdir / 'result.json.tmp'
+    tmp = G_.check_write(outdir / 'result.json.tmp')
+    G_.check_write(outdir / 'result.json')
     tmp.write_text(json.dumps(V_clean(rep), indent=1))
     tmp.replace(outdir / 'result.json')
 
@@ -634,6 +639,9 @@ def main():
     outdir.mkdir(parents=True, exist_ok=True)
     if (outdir / 'result.json').exists():
         PREV_CONFIG.update(json.loads((outdir / 'result.json').read_text()).get('config', {}))
+        # code audit 2: the configuration check happens before ANY write (a refused restart leaves result.json intact)
+        if any(PREV_CONFIG.get(k) != cfg.get(k) for k in ('mode', 'dim', 'cohort', 'cases', 'kinds', 'tight_allowance', 'probes')):
+            raise SystemExit('E6: refusing to resume a job directory written with a different configuration')
     if not cfg.get('allow_cpu'):
         assert jax.default_backend() == 'gpu', jax.default_backend()
     assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'

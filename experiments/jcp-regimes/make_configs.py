@@ -57,6 +57,10 @@ def rom_config(attempt, cohorts, cases, blocks=(), tighter='sub'):
                 blocks=list(blocks))
 
 
+def arm_names():
+    return sorted(f"{n}_{a['form']}_{a['scheme']}_{a['factor']:g}" for n, *_ in SETTINGS for a in arms(n, 'all'))
+
+
 def write(name, d):
     CFG.mkdir(exist_ok=True)
     (CFG / f'{name}.json').write_text(json.dumps(d, indent=1) + '\n')
@@ -77,7 +81,7 @@ def smk1():
     ctrl = [['dev6', 0], ['dev6', 1], ['C2', 9], ['C2', 11], ['B2', 15], ['B2', 0]]
     blocks = [dict(setting='R384', kind='controls', cases=ctrl, under_resolved='gauss32',
                    under_resolved_successor='gauss64', b0_cases=ctrl)]
-    write('smk1-fverify', dict(source='qacc_smk1-rom'))
+    write('smk1-fverify', dict(source='qacc_smk1-rom', arms=arm_names()))
     write('smk1-rom', rom_config('smk1', ['dev6'] + REGIMES, cases, blocks, tighter='all'))   # smoke: every case (no regime has c0-3 complete)
 
 
@@ -93,7 +97,7 @@ def prod():
             D = RG.descriptors_2d(g)
             PS_CASE[g] = int(np.argmax([RG.desc_2d(g, r_)['s'] for r_ in D]))     # largest s, every cohort (A3 minor)
     write('rom1024', rom_config('rom1024', ['dev6', 'val32'] + REGIMES, 'all'))
-    write('fverify-rom1024', dict(source='qacc_rom1024'))
+    write('fverify-rom1024', dict(source='qacc_rom1024', arms=arm_names()))
     write('ps', dict(cases=PS_CASE))       # one PS job step per cohort is generated at staging (A3 minor)
     for g, c in PS_CASE.items():
         write(f'ps-{g}', dict(mode='ps', dim=2, cohort=g, cases=[c], attempt=0))

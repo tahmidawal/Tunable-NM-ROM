@@ -32,6 +32,13 @@ import jax
 import jax.numpy as jnp
 
 GAMMA = 1e-3
+import guard as G                                        # jcp-regimes edit R4 (code audit 2): write boundary
+
+
+def np_save(path, **arrays):
+    G.check_write(path)
+    np.savez_compressed(path, **arrays)
+
 PROBE = np.sort(np.random.default_rng(20261019).choice(257 * 257, 4096, replace=False))   # jcp-regimes edit R2
 
 
@@ -93,7 +100,9 @@ def main():
         print(json.dumps(dict(arms=inv, rollouts_prod=sum(x[2] for x in inv)), indent=0))
         return
     out = Path(a.out)
+    G.check_write(out / 'result.json')
     out.mkdir(parents=True, exist_ok=True)
+    G.check_write(out / 'result.json')
     P.check_env(cfg)
     begin = time.perf_counter()
     el = lambda: round(time.perf_counter() - begin, 1)
@@ -103,7 +112,7 @@ def main():
                jax_version=jax.__version__, mesh=L, checkpoint_sha256=QS.sha_file(T2.CKPT),
                rotation_sha256=QS.sha_file(Q.ROTATION), cohorts=P.cohort_hashes(cfg), setup={}, rows=[], settings={},
                memory={}, phases={}, elapsed={}, complete=False)
-    save = lambda: json.dump(QS.clean(rep), open(out / 'result.json', 'w'), indent=1)
+    save = lambda: json.dump(QS.clean(rep), open(G.check_write(out / 'result.json'), 'w'), indent=1)
     fz = cfg['frozen']                                   # jcp-regimes edit R3 (code audit 1): frozen identities enforced
     assert rep['checkpoint_sha256'] == fz['checkpoint_sha256'], rep['checkpoint_sha256']
     assert rep['rotation_sha256'] == fz['rotation_sha256'], rep['rotation_sha256']
@@ -255,9 +264,9 @@ def main():
             R['f257_probe_idx'] = PROBE
             R['f257_probe'] = F.reshape(F.shape[0], 6, -1)[:, :, PROBE]
             R['f257_sha256'] = np.array(sha(F))
-            np.savez_compressed(out / f"F_{sc_['name']}_{ak}.npz", f257=F, case_ids=R['case_ids'])
+            np_save(out / f"F_{sc_['name']}_{ak}.npz", f257=F, case_ids=R['case_ids'])
             del F
-            np.savez_compressed(out / f"R_{sc_['name']}_{ak}.npz", **R)
+            np_save(out / f"R_{sc_['name']}_{ak}.npz", **R)
             srep['arms'][ak] = dict(n=n, mem=P.mem(), steps=S, dt=dt)
             rep['elapsed'][f"{sc_['name']}|{ak}"] = time.perf_counter() - t_arm
             save()
@@ -280,7 +289,7 @@ def main():
     rep['elapsed_seconds'] = el()
     rep['complete'] = True
     save()
-    (out / 'COMPLETE').write_text('complete\n')
+    G.check_write(out / 'COMPLETE').write_text('complete\n')
     print('QACC COMPLETE', el(), flush=True)
 
 
@@ -307,7 +316,7 @@ def run_order(blk, st, cases, go, U0, out):
                 valid[k] = P.run_valid(v)
                 del v
             print('ORDER', st.name, ak, cid, flush=True)
-        np.savez_compressed(out / f'ORDER_{st.name}_{ak}.npz', keys=np.array(list(Wd)), W=np.array(list(Wd.values())))
+        np_save(out / f'ORDER_{st.name}_{ak}.npz', keys=np.array(list(Wd)), W=np.array(list(Wd.values())))
         res[ak] = dict(cases=[f'{cases[i][0]}|{cases[i][1]}' for i in ids], factors=facs, finest=fin, anchor=an, anchor2=an2,
                        valid=valid, n0={f'{cases[i][0]}|{cases[i][1]}': U0[i][2] for i in ids})
     return res
@@ -335,7 +344,7 @@ def run_controls(blk, bank, st, sc_, cases, go, U0, out, certs):
     res['under_resolved'] = dict(rule=blk['under_resolved'], successor=blk['under_resolved_successor'], rows=rows,
                                  fails_rollout_bar=any(r_['dist'] > 2.5e-4 for r_ in rows),
                                  rho_max=max(max(r_['rho']) for r_ in rows))
-    np.savez_compressed(out / 'CTRL_under_resolved.npz', W=np.array(Wu), W_succ=np.array(Ws), Rp=st.Rp,
+    np_save(out / 'CTRL_under_resolved.npz', W=np.array(Wu), W_succ=np.array(Ws), Rp=st.Rp,
                         rho=np.array([r_['rho'] for r_ in rows]), n0=np.array([r_['n0'] for r_ in rows]),
                         succ_valid=np.array([r_['succ_valid'] for r_ in rows]), case_ids=np.array([r_['case'] for r_ in rows]))
     st.drop_role('ur')
@@ -355,7 +364,7 @@ def run_controls(blk, bank, st, sc_, cases, go, U0, out, certs):
                              cert=c_.tolist(), valid=P.run_valid(v)))
         res[f'budget0_{form}'] = dict(rows=rows, scheme=scheme,
                                       pooled_fraction=sum(r_['noncertified'] for r_ in rows) / sum(r_['steps'] for r_ in rows))
-        np.savez_compressed(out / f'CTRL_budget0_{form}.npz', states=np.array(Sb), case_ids=np.array([r_['case'] for r_ in rows]),
+        np_save(out / f'CTRL_budget0_{form}.npz', states=np.array(Sb), case_ids=np.array([r_['case'] for r_ in rows]),
                             cert=np.array([r_['cert'] for r_ in rows]),
                             nu=np.array([U0[ci][1] for ci in P.select(cases, blk['b0_cases'])]),
                             A=np.asarray(st.base['A']), lam=np.asarray(st.base['lam']), kx=np.asarray(st.kx), ky=np.asarray(st.ky),

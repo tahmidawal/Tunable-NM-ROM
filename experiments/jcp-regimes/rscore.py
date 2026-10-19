@@ -126,7 +126,9 @@ def reference(cohort, case):
 def sigma_of(meta):
     """DESIGN A1.5: max_{k=1..5} g_k / max|u(t0)| at the finest level of the final triple; plus the middle-level ratio."""
     att = {a['id']: a for a in meta['attempts']}
-    fin, mid = att[meta['final'][2]], att[meta['final'][1]]
+    if meta['final'][2] not in att:
+        return dict(sigma=None, reason='finest final attempt missing from the record')
+    fin, mid = att[meta['final'][2]], att.get(meta['final'][1], {})
     ok = lambda a: bool(a.get('steps_ok') and a.get('grad_max') and len(a['grad_max']) == 6
                         and all(isinstance(g, (int, float)) and np.isfinite(g) for g in a['grad_max']))
     if not ok(fin):                             # A2.3: unavailable, with the reason
@@ -475,3 +477,12 @@ def expected_populations(cfg, arm):
     dev = [x for x in sel(arm.get('tighter_cases', 'sub')) if x in cases] if arm.get('tighter', True) else []
     q2 = [x for x in sel(arm.get('q2_cases', 'all')) if x in cases]
     return dict(cases=cases, dev=dev, q2=q2)
+
+
+def arm_expect(cfg, arm_cfg, setting):
+    """Expected qualification inputs from the frozen config (code audit 2, fix 5): populations, form, step count."""
+    from fractions import Fraction
+    dt = 0.005 * float(arm_cfg['factor'])
+    steps = int(round(0.25 / dt))
+    assert abs(steps * dt - 0.25) < 1e-12
+    return dict(expected_populations(cfg, arm_cfg), form=arm_cfg['form'], steps=steps, qpp=bool(setting.get('qpp')))

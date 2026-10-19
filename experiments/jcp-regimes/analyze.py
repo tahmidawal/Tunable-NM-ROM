@@ -174,8 +174,7 @@ def main():
         rt = (RS.rule_tables(setting['rule'], int(R['Rp']), R['kx'], R['ky'], 1024),
               RS.rule_tables(setting['qp'], int(R['Rp']), R['kx'], R['ky'], 1024))
         arm_cfg = next(a_ for a_ in setting['arms'] if f"{a_['form']}_{a_['scheme']}_{a_['factor']:g}" == arm)
-        expect = dict(RS.expected_populations(rep['config'], arm_cfg), form=str(R['form']), steps=int(R['steps']),
-                      qpp=bool(setting.get('qpp')))
+        expect = RS.arm_expect(rep['config'], arm_cfg, setting)
         quals, per_case = {}, {}
         for coh in cohorts:
             q = RS.qualify(R, rows, expect, rt, subset=[coh])

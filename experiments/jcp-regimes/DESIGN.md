@@ -602,3 +602,29 @@ Code audit `audits/codex-code-1.md` found implementation gaps; the fixes add the
   positive; a production attempt must be listed in the certified plan `checks/resources-plan.json`, whose remaining
   reservation plus spent hours is $\le 60$; the account-cap check under the campaign flock fails closed if `squeue` fails.
 - **A+ PS case** is its largest-$s$ case (c7), as A3 states; c13 (largest ν) is only the calibration pilot.
+
+---
+
+## Amendment A6 (2026-10-19, after Codex code audit 2 = NEEDS-FIX)
+
+Fixes for the smoke path (implementation only): a single resolved-path write boundary (`guard.py`) used by every writer
+(`refjob`, `refslim`, `qacc`, `fverify`), checked per file just before writing, including descendant symlinks; `refslim`
+sources must be plain relative paths and only regime / dev6 cohorts are read; the resume-configuration check runs before
+any write; probe validation recomputes expected stage counts (`n_stages`), requires finite $(6,257,257)$ lattices, and
+binds the production member to the case record's last prod/retry attempt at $L=2048$ (identical arrays); `fverify`
+compares only valid runs, rejects any non-finite comparison or non-finite valid run, checks shapes and the arm inventory,
+and exits non-zero on failure; qualification expectations (populations, form, step count) come from the frozen config,
+never from the checked record; control populations must equal the registered six cases; the wrong-mesh control is also
+re-executed locally on CPU by `ctrl_wrongmesh.py` (same `Setting.check` path, 256 bank vs 128 table); GAL budget-zero stays
+an in-job record (no independent NumPy $\eta$ exists; GAL is the registered diagnostic row) and is non-blocking; σ for a
+missing attempt record is unavailable with a reason.
+
+**Production gate (frozen here; nothing in production may run before it).** The following are not needed to run the smoke
+and are implemented and Codex-audited in a **pre-production code audit** after the smoke: (i) `resources.py` generating the
+complete plan `checks/resources-plan.json` (every production job, its workload accounting, the conditional calibration
+probes of A1.4 if R-calib fails, the A3.3 reduction order, and the plan total), and `stage.py` deriving the remaining
+reservation from that plan; (ii) `analyze.py`: explicit handling of empty baselines, the expected arm inventory, a
+required passing `fverify` result for the production ROM job, and the reduced-C2 population if A3.3 step 3 applies;
+(iii) `make_report.py`: the calibration label (A2.2), separation-failure relabelling (§4.4), allowance-unresolved counts
+next to every coverage entry (A3.2), N0s descriptive labels, the N0-only sensitivity ratios, the paired A−/C1 contrast, the
+trends, and Q1/Q2 detail per configuration × regime.

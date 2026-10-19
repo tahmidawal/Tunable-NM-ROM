@@ -52,8 +52,8 @@ def main():
             n_cases = len(select(case_list(cfg), cfg['settings'][0]['arms'][0]['cases']))
             s = n_arms * n_cases * rom_rate * 1.3 + 300
             parts.append(dict(run=r, arms=n_arms, cases=n_cases, rate_s=rom_rate, seconds=s))
-        elif drv == 'refslim':
-            s = 120.
+        elif drv in ('refslim', 'fverify'):
+            s = 120. if drv == 'refslim' else 900.     # fverify: CPU NumPy decode of every production field
             parts.append(dict(run=r, seconds=s))
         else:
             raise SystemExit(f'no rate for {r}')

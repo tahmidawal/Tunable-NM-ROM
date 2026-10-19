@@ -425,6 +425,12 @@ def main():
                       for m, c in B7.items()},
                   lane_statement={m: c.get('lane_statement_W1', {}).get('statement') for m, c in B7.items()},
                   b3=B3 and {mk: v['summary']['dominant'] for mk, v in B3['members'].items()},
+                  b7_T1=B7T1 and dict(members={mk: dict(Q1=v['Q1']['pass'], Q2=v['Q2']['label'], stable=v['stability']['pass'],
+                                                         growth={k: x['label'] for k, x in v['growth'].items()})
+                                               for mk, v in B7T1['b7'].items()},
+                                      front_order_W1W2={k: v['label'] for k, v in B7T1.get('front_order', {}).items()},
+                                      front_order_W2W3={k: v['label'] for k, v in B7T1.get('front_order_W2W3', {}).items()}),
+                  front_order_T05={m: {k: v['label'] for k, v in c.get('front_order', {}).items()} for m, c in B7.items()},
                   plots=made, deferred=I.get('deferred', []))
     (HERE / 'runs' / 'EXPORT.json').write_text(json.dumps(export, indent=1, default=float) + '\n')
     print('report.md', len(L_), 'lines;', made)

@@ -844,6 +844,131 @@
   "W256|lat8192|qn|BDF2|0.025|k4": "T",
   "W512|lat16384|qn|BDF2|0.025|k4": "T"
  },
+ "b7_T1": {
+  "members": {
+   "R128|LSPG|BE|2.5": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R128|GAL|CN|5": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R128|GAL|CN|2": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R128|LSPG|BE|1": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R256|LSPG|CNR|2.5": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R128|GAL|CN|1": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R256|GAL|CN|2": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R384|LSPG|CNR|2": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R256|GAL|CN|1": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R384|LSPG|CNR|1": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   },
+   "R384|GAL|CN|1": {
+    "Q1": true,
+    "Q2": "pass",
+    "stable": true,
+    "growth": {
+     "W2/W1": "no growth",
+     "W3/W2": "no verdict (cross-check unvalidated); provisional: no growth"
+    }
+   }
+  },
+  "front_order_W1W2": {
+   "all": "not preserved",
+   "lspg": "preserved"
+  },
+  "front_order_W2W3": {
+   "all": "no verdict (cross-check unvalidated); provisional: not preserved",
+   "lspg": "no verdict (cross-check unvalidated); provisional: preserved"
+  }
+ },
+ "front_order_T05": {
+  "256": {
+   "all": "not preserved",
+   "lspg": "preserved"
+  },
+  "1024": {
+   "all": "not preserved",
+   "lspg": "preserved"
+  },
+  "4096": {
+   "all": "not preserved",
+   "lspg": "preserved"
+  }
+ },
  "plots": [
   "plots/b2_main_1024.png",
   "plots/b7_error_time_1024.png",

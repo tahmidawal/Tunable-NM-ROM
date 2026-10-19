@@ -36,6 +36,29 @@ def record_ok(cm, g, c):
                 and cm['desc'] == RG.desc_2d(g, RG.descriptors_2d(g)[c]))
 
 
+def gen_equal(a, gen):
+    """A saved array vs the generator's regeneration on this machine: equal to round-off (cross-platform exp/libm,
+    observed <= 4.4e-16 absolute); saved-vs-saved comparisons stay exact."""
+    a, gen = np.asarray(a), np.asarray(gen)
+    return a.shape == gen.shape and bool(np.max(np.abs(a - gen)) <= 1e-14 * max(1., float(np.max(np.abs(gen)))))
+
+
+def known_smk1_traceback(e1):
+    """A7: the smk1 traceback must be exactly the R3 frozen-identity assertion with the two dicts differing only in
+    'fingerprint'. Returns (ok, remaining stderr with that traceback removed)."""
+    import ast
+    import re
+    i = e1.find('Traceback')
+    if i < 0 or e1.count('Traceback') != 1:
+        return False, e1
+    m = re.search(r"AssertionError: (\('R\d+', \{.*?\}, \{.*?\}\))", e1[i:], re.S)
+    if not m or 'assert got == want' not in e1[i:i + m.end()]:
+        return False, e1
+    name, got, want = ast.literal_eval(m.group(1))
+    diff = {k for k in set(got) | set(want) if got.get(k) != want.get(k)}
+    return diff == {'fingerprint'}, e1[:i] + e1[i + m.end():]
+
+
 def lat_ok(a):
     a = np.asarray(a)
     return a.shape == (6, 257, 257) and bool(np.isfinite(a).all())
@@ -58,9 +81,9 @@ def main(run, rom_run=None):
     errs = ''.join(p.read_text() for r_ in dict.fromkeys((run, rom_run)) for p in sorted((r_ / 'logs').glob('*.err')))
     if rom_run != run:                                 # A7: smk1's only traceback must be the frozen-identity assert
         e1 = ''.join(p.read_text() for p in sorted((run / 'logs').glob('*.err')))
-        known = e1.count('Traceback') == 1 and 'assert got == want' in e1 and "'fingerprint'" in e1
-        check('smk1 stderr: only the known fingerprint assertion (A7)', known)
-        errs = ''.join(p.read_text() for p in sorted((rom_run / 'logs').glob('*.err')))
+        known, rest = known_smk1_traceback(e1)
+        check('smk1 stderr: the only traceback is the fingerprint-only assertion (A7)', known)
+        errs = rest + ''.join(p.read_text() for p in sorted((rom_run / 'logs').glob('*.err')))   # the rest is still scanned
     check('jax_backend=gpu in log', 'jax_backend=gpu' in logs)
     check('ROM job finished', 'ALL-DONE' in ''.join(p.read_text() for p in sorted((rom_run / 'logs').glob('*.out'))))
     check('reference steps finished', all(f'STEP refjob configs/smk1-ref-{g}.json' in logs for g in ('C2', 'dev6', 'B2', 'Ap'))
@@ -105,9 +128,9 @@ def main(run, rom_run=None):
     nu9 = RG.nu_2d('C2', RG.descriptors_2d('C2')[9])
     t0c = canon_t0('C2', 9)
     cm9 = json.loads((out / 'refjob_smk1-ref-C2' / '2d' / 'C2' / 'ST' / 'c009.json').read_text())
-    ident_up = bool(record_ok(cm9, 'C2', 9) and np.array_equal(ev['t0'], t0c)
-                    and all(np.array_equal(x['lat'][0], t0c) for x in lv))
-    jd = V.judge(lv, t0c, nu9)
+    ident_up = bool(record_ok(cm9, 'C2', 9) and gen_equal(ev['t0'], t0c)
+                    and all(np.array_equal(x['lat'][0], ev['t0']) for x in lv))
+    jd = V.judge(lv, ev['t0'], nu9)
     ok_up = bool(ident_up and jd['outcome'] == 'order-fail' and jd['checks']['solver'] and jd['checks']['t0_shared'] and jd['checks']['floor'])
     check('R-upwind C2 c9 rejected on order (recomputed)', ok_up, outcome=jd['outcome'], p=jd['p'],
           in_job=pr[9]['upwind']['outcome'])
@@ -122,9 +145,9 @@ def main(run, rom_run=None):
         a0 = [x for x in cm['attempts'] if x['L'] == 2048 and x['purpose'] in ('prod', 'retry')][-1]
         t0c = canon_t0(g, c)
         ident = bool(record_ok(cm, g, c) and np.array_equal(ev['prod_lat'], cz[a0['id']])
-                     and np.array_equal(ev['prod_res'], cz['res_' + a0['id']]) and np.array_equal(ev['t0'], t0c)
-                     and np.array_equal(cz['t0'], t0c) and np.array_equal(ev['prod_lat'][0], t0c)
-                     and np.array_equal(ev['tight_lat'][0], t0c))
+                     and np.array_equal(ev['prod_res'], cz['res_' + a0['id']]) and gen_equal(ev['t0'], t0c)
+                     and np.array_equal(cz['t0'], ev['t0']) and np.array_equal(ev['prod_lat'][0], ev['t0'])
+                     and np.array_equal(ev['tight_lat'][0], ev['t0']))
         nexp = n_stages_cnr(1.25e-3)
         n0 = float(np.linalg.norm(ev['t0'].ravel()))
         dev = max(float(np.linalg.norm((ev['tight_lat'][k] - ev['prod_lat'][k]).ravel())) / n0 for k in range(1, 6))
@@ -271,15 +294,19 @@ def main(run, rom_run=None):
         secs.setdefault(r_['cohort'], []).append(r_['seconds'] + (r_.get('seconds_tight') or 0.))
     # resource inputs (resources.py): per-step seconds from the STEP timestamps, probe seconds, calibration verdict
     import datetime as _dt
-    stamps = [(ln.split()[1], ln.split()[2], _dt.datetime.fromisoformat(ln.split()[3].replace('Z', '+00:00')))
-              for ln in logs.splitlines() if ln.startswith('STEP ')]
-    sacct = rom_run / 'SACCT.json'                         # written at collection: the job's sacct End closes the last step
-    if sacct.exists() and not any(d_ == 'end' for d_, _, _ in stamps):
-        stamps.append(('end', '-', _dt.datetime.fromisoformat(json.loads(sacct.read_text())['End']).replace(tzinfo=_dt.timezone.utc)))
     step_s = {}
-    for i, (drv, cf, t) in enumerate(stamps):
-        if i + 1 < len(stamps):
-            step_s[f'{drv}:{cf}'] = (stamps[i + 1][2] - t).total_seconds()
+    for r_ in dict.fromkeys((run, rom_run)):           # per job: never an interval spanning two jobs
+        lg = ''.join(p.read_text() for p in sorted((r_ / 'logs').glob('*.out')))
+        stamps = [(ln.split()[1], ln.split()[2], _dt.datetime.fromisoformat(ln.split()[3].replace('Z', '+00:00')))
+                  for ln in lg.splitlines() if ln.startswith('STEP ')]
+        sacct = r_ / 'SACCT.json'                     # timezone-aware End; closes the last step if no 'STEP end' marker
+        if sacct.exists() and not any(d_ == 'end' for d_, _, _ in stamps):
+            end = _dt.datetime.fromisoformat(json.loads(sacct.read_text())['End'])
+            assert end.tzinfo is not None, 'SACCT End must carry its UTC offset'
+            stamps.append(('end', '-', end.astimezone(_dt.timezone.utc)))
+        for i, (drv, cf, t) in enumerate(stamps):
+            if i + 1 < len(stamps) and drv != 'end':
+                step_s[f'{drv}:{cf}'] = (stamps[i + 1][2] - t).total_seconds()
     probe_s = {f'{g}|{p_["case"]}': p_['tight_coarse']['seconds'] for g in ('C2', 'B2', 'Ap')
                for p_ in res[g].get('probes', []) if p_.get('tight_coarse')}
     acc = dict(run=str(run), step_seconds=step_s, probe_seconds=probe_s,

@@ -1972,3 +1972,26 @@ The report states that results audits 2 and 3 reconstructed the Stage-B Q1 dista
 recorded orthonormality certificate) while results audit 1 checked them against recorded values, and that the 2D 256²
 "saturation check failed" restriction refers to the failed 12-step check whose registered remedy (the all-step basis)
 was installed for that cell; the snapshot limitation applies to 2D 1024². Final ledger: 21.178 GPU-h measured of 30.
+
+---
+
+## Amendment A47 (2026-10-19) — report audit 1 (`audits/codex-report-1.md`, NOT-READY): report restatements
+
+No number changed (item 1: every transcribed value and the export reproduce). The generator now (item 2) escapes `|`
+in configuration ids inside tables; (4) separates qualified from diagnostic-only X in the opening and in every
+headline/by-batch line, which also carry the cell restrictions and the budget qualification; (5) attaches the
+dimension's budget qualification (A3.1) to every pair label in the report and the export — 2D "budget band unresolved"
+(ratio interval crosses 1.25), 3D "unequal-budget, descriptive" with `V3_batch2` (batch 2) or `V3_batch1` (batch 1) as
+the denominator — and states that inseparable comparator jobs count wholly as V; (6) prints "≥" only where the
+accounting flag marks a lower bound, renames the time ratio ρ (T is construction hours only), adds ours' training-only
+construction cost from `inputs/ours_T.json` (A3.12 provenance; M2 bank and per-mesh setup marked not available) and the
+ledger total against the cap with the phase/overhead split; (7) lists each cancelled attempt's reason (A38, A42, A44.1)
+and the 72 memory-failed 3D r = 1,024 ECSW constructions separately from the 1,056 completed configurations and from
+the deferred meshes; (8) names the most frequent dominating pick with its scheme and step, compares them with every X,
+reports the adequacy status of each dominating rank and counts the dominated X with an adequacy-passing witness;
+(9) tabulates every median-error reversal of a dominated pair; (10) adds projection errors of both bases, the A19.2
+ratification and the 256² all-step versus 12-step confound to the generator probe; (11) documents both comparator query
+paths, marks the four FRONT-2D members and lists the excluded front categories; (12) relabels the fronts as screening
+plots with Q1 failures drawn separately and batches distinguished, and adds POD spectra / projection floors, HR sample
+count vs error, native vs common, the limiting-FOM table, the HR-versus-`none` error-level discrepancy (the field
+distance was not computed in-job: stated as unavailable) and offline-cost bars; (13) extends the glossary.

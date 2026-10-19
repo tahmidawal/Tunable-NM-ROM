@@ -1,0 +1,41 @@
+**Overall: NOT-READY.** The numerical comparisons reproduce, but the report has broken tables, missing disclosures, and incomplete design-required reporting.
+
+1. **CORRECT — numerical transcription and export.** Read-only comparisons verified all **50 role rows**, **92 generator-probe rows**, ledger rows, and the exported cell blocks against their source JSONs. Reported values match at the displayed precision; export values match exactly. Verdict/tuning hashes and `EXPORT.json`’s report hash agree. No hand-entered experimental result was found in the generator.
+
+2. **WRONG — Markdown tables do not render correctly.** Configuration IDs contain unescaped `|` characters inside backticks; backticks do not protect table delimiters in GitHub-flavored Markdown. This affects every role and probe table, misaligning numbers and potentially hiding qualification labels. **Fix:** escape all ID delimiters in `make_report.py` and verify the rendered tables. Example: [report.md:35](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/report.md:35).
+
+3. **CORRECT — core wording and A46 interpretation.** The report states developmental/in-sample/unadjusted selection, explains that role winners were selected on Stage-B data, defines domination using time and worst error, prints medians, and retains withheld neutral conclusions. Detailed 3D rows carry the required batch labels. The opening correctly distinguishes the remedied all-step 256² basis from the snapshot-limited 1024² basis, and correctly updates the three results audits’ Q1 reconstruction limitations.
+
+4. **NEEDS-RESTATEMENT — opening and summary qualifications.** “Against our qualified configurations” incorrectly includes diagnostic-only 3D batch 1. “All production jobs complete” also obscures cancelled attempts and construction failures. The “By batch” summaries omit cell restrictions; the 3D headline does not repeat the qualified-subset limitation. **Fix:** describe completed final attempts, distinguish qualified comparisons from diagnostics immediately, and carry restrictions and batch scope into every standalone summary.
+
+5. **CORRECT — budget arithmetic; NEEDS-RESTATEMENT — budget disclosure.** The source-derived bounds are:
+
+   | Dimension | Baseline V, hours | Ours V, hours | Ratio bounds |
+   |---|---:|---:|---:|
+   | 2D | 5.530714–8.226800 | 4.767744 | 1.160027–1.725512 |
+   | 3D | 8.835878–11.439500 | 17.298300 | 0.510795–0.661308 |
+
+   Thus 2D is correctly **unresolved** against the factor-1.25 band, and 3D correctly **unequal-budget, descriptive**. However, A3.1 requires the latter qualification on every affected pair label; it appears only in the budget table. **Fix:** propagate it into 3D report/export conclusions, explicitly say the baseline spent less validation-informed budget, identify the denominator as `V3_batch2`, and disclose that inseparable comparator jobs count wholly as V. Explain that the 2D interval crosses the band boundary.
+
+6. **CORRECT — cumulative baseline accounting; NEEDEDS-RESTATEMENT — presentation and missing costs.** Cancelled attempts are included correctly: 1024² V ≥ **3.056990 h**; 3D V ≥ **8.835878 h**, T ≥ **1.704147 h**. However, the generator prints `>=` even where the JSON lower-bound flag is false, including both cumulative quantities for 256². **Fix:** honor the flags, distinguish construction hours from the dimensionless time ratio currently also named `T`, and report **our training-only construction cost**, required by A3.1 but absent. The ledger sums correctly to **21.1783 GPU-h**; print that total beside the **30 GPU-h** cap and explain phase-accounting versus allocation overhead.
+
+7. **NEEDS-RESTATEMENT — cancelled attempts and incomplete coverage.** Names and allocation hours are present; reasons are missing. Add the recorded explanations:
+   - `t3d64a`: excessive NNLS column-deletion cost threatened completion, prompting the blocked-deletion change (A38).
+   - `s2d1024a`: repeated whole-JSON checkpoint writes dominated timing work (A42).
+   - `s3d64a`: rounded step identifiers failed exact schedule validation (A44.1).
+   
+   Also state that **72 r1024 ECSW configurations were not constructible because of memory exhaustion**, rather than leaving “ECSW coverage incomplete” unexplained. Separate those failures from the **1,056 completed** 3D tuning configurations and from deferred larger meshes (A43.2; §2).
+
+8. **NEEDS-RESTATEMENT — A45.2’s specific interpretation is missing.** “Picks may use a different scheme or time step” is weaker than the required disclosure. **Fix:** identify the recurrent ECSW r512/κ8 pick explicitly: BDF2, $\Delta t=1/60$, a different scheme/step combination from every X. State that FS/QN versus POD-LSPG comparisons do not isolate basis, hyper-reduction, or solver effects. Explain that adequacy fails at r768/r1024, while the r512 witness behind all seven dominations passes its rank’s adequacy check. [DESIGN.md:1958](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/DESIGN.md:1958)
+
+9. **CORRECT — median reversals are numerically visible.** For qualified `W256|gl24|fs|CN|0.01|K1`, the pick improves worst error **0.0636983 → 0.0323361** while worsening median error **0.00569816 → 0.0110984**. The 256² R128/CNR B_acc comparison likewise worsens median error **0.00451648 → 0.0102216**. The domination definition accommodates these reversals. Retain these values and call out the substantial reversals explicitly; avoid an unrestricted “more accurate” summary.
+
+10. **NEEDS-RESTATEMENT — generator probe is only partially reported.** All probe E0 values match their JSONs, but A2.3 also requires side-by-side projection errors. The report omits the coordinator’s ratification and rationale for using central-generated snapshots with reused parameter draws. **Fix:** add those disclosures and projection results. For 256², explicitly identify the additional confound: the primary central basis uses **29,376 all-step snapshots**, while the upwind probe uses the **12-step set**. This is not solely a generator change.
+
+11. **NEEDS-RESTATEMENT — comparator implementation and scope.** The glossary names P1/speed3d but does not explain the executed paths. **Fix:** identify P1’s fused `p1core.make_split_query` path and speed3d’s `s3common.make_query(..., path='mesh')`, including initialization/output contracts and excluded setup. These are documented in [ours.py:76](/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines/ours.py:76). Also mark the four admitted **FRONT-2D members** and explicitly identify excluded front categories as required by A27; “0 X not assessed” currently refers only to imported X configurations.
+
+12. **NEEDS-RESTATEMENT — plots and registered deliverables.** All three PNGs are screening scatterplots, not Stage-B verdict fronts. Their shortened labels collapse distinct schemes/steps; the 3D figure visually mixes diagnostic and qualified configurations without distinguishing them. **Fix:** use identifiable labels, distinguish batches, and add restrictions and screening-only captions. Section 13’s additional deliverables are absent: Q1 failures shown separately, POD spectra/projection floors, sample-count/error comparisons, native/common comparisons, and offline-cost plots. The report also omits the limiting-FOM error results and HR-versus-`none` discrepancy reporting required by §§3.1/5. Generate these from saved evidence or explicitly identify unavailable items; do not imply the promised reporting is complete.
+
+13. **NEEDS-RESTATEMENT — cold-reader definitions.** The glossary does not define every column or term. Add POD, LSPG, ECSW, Q-DEIM, native/common, BE/CN/CNR/BDF2, FS/QN, rank/support parameters, configuration-ID fields, mesh conventions, screening/verdict cohorts, adequacy/saturation, full-query timing, bootstrap intervals, and ledger fields. Define the error metric and explain that **reference uncertainty** is the conditional Richardson estimate. Clarify 3D’s **64 intervals / 65 nodes / 63 interior nodes**. Use LaTeX for mathematical definitions and accounting inequalities. No ASCII diagram violation was found.
+
+No files were changed and no experiments were rerun.

@@ -1,0 +1,9 @@
+{
+ "note": "ours' training-only construction (T, A3.1), from the owning lanes' provenance as recorded in DESIGN A3.12 / section 11; per-mesh table/rule setup is not separately recorded by the owning lanes and is not available here",
+ "2D": {"items": {"R512 bank fit (its training JSON, 10684.65 s)": 2.967958333333333},
+        "covers": "every 2D X (P1 settings R128..R384 use prefixes of the ordered R512 bank)",
+        "not_available": ["per-mesh table and rule setup (P1f)"]},
+ "3D": {"items": {"W1024 bank job total (1.85 H200-h; bank fit 1.14 h of it)": 1.85},
+        "covers": "the W256 / W512 / W768 / W1024 X (prefixes of the ordered W1024 bank)",
+        "not_available": ["M2 bank training cost (used by the batch-1 X M2_512|gl32)", "per-mesh table and rule setup (speed3d)"]}
+}

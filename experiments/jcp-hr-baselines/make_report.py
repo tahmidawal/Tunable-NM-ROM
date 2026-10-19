@@ -319,7 +319,7 @@ def main():
       'cases, with unequal selection histories. The baseline roles (B_acc, B_cost) are chosen **by the registered role '
       'rule on the Stage-B data** (A26.5); "registered pick" means "selected by the registered rule", not an '
       'independently frozen winner or a held-out confirmation (A44.3). Errors are E0 R_ST errors against references '
-      'whose uncertainty ε_ref is a conditional Richardson estimate. Q1 distances of the Stage-B members: results '
+      'whose uncertainty $\\varepsilon_{\\rm ref}$ is a conditional Richardson estimate. Q1 distances of the Stage-B members: results '
       'audits 2 (3D) and 3 (2D $256^2$) reconstructed them from the saved coefficients through the recorded '
       'basis-orthonormality certificate (the bases themselves are in the cluster archive); results audit 1 (2D '
       '$1024^2$) checked them against the recorded values. The 2D $256^2$ restriction "saturation check failed" means '
@@ -416,7 +416,7 @@ def main():
         reasons = sorted({str(v).split(':')[0] for k, v in (T.get('construction_failures') or {}).items()
                            if k.endswith('|*')})
         w(f"- **{c['cell']}** tuning inventory: {fmt(ic.get('complete'))} configurations completed, "
-          f"{fmt(len(cf))} not constructible" + (f" ({', '.join(sorted({k.split('|')[0] + ' r=' + k.split('|')[1] for k in cf}))}; "
+          f"{fmt(len(cf))} not constructible" + (f" ({', '.join(sorted({k.split('|')[0] + ' $r=' + k.split('|')[1] + '$' for k in cf}))}; "
                                                 f"first failure: {'; '.join(reasons)}, i.e. device memory exhausted at the first NNLS append)"
                                                 if cf else '') +
           f", {fmt(ic.get('run_failed'))} run failures, {fmt(ic.get('deferred'))} deferred.")
@@ -426,11 +426,11 @@ def main():
     for c, V, T in cells:
         F = V['flags']
         d = c['d']
-        w(f"## {c['cell']} ({d}D, L = {c['L']} intervals)")
+        w(f"## {c['cell']} ({d}D, $L = {c['L']}$ intervals)")
         w('')
         w(f"Tuning attempt `{c['tune_attempt']}`, Stage-B attempt `{c['stageb_attempt']}`. Basis used: "
-          f"{F.get('basis_used')} ({fmt(T['basis'].get('n_snap'))} snapshots). In-cell adequacy: "
-          + ', '.join(f"r={r}: {'pass' if v['adequate'] else 'FAIL'} (ratio {v['ratio']:.3g})"
+          f"{str(F.get('basis_used')).replace('1024^2', '$1024^2$')} ({fmt(T['basis'].get('n_snap'))} snapshots). In-cell adequacy: "
+          + ', '.join(f"$r={r}$: {'pass' if v['adequate'] else 'FAIL'} (ratio {v['ratio']:.3g})"
                       for r, v in T['adequacy'].items() if isinstance(v, dict) and 'ratio' in v)
           + (f"; saturation ($256^2$): {'pass' if F.get('saturation_256') else 'FAIL'}" if d == 2 and c['L'] == 256 else '')
           + '.')
@@ -440,11 +440,11 @@ def main():
           + (' (batch 2) / ' + blabel(3, dict(diagnostic_only=True)) + ' (batch 1)' if d == 3 else '') + '.')
         w('')
         a = F['accounting']
-        w(f"Construction and validation hours. Selected attempts: T = {fmt(a['T_hours'])} h; V = {fmt(a['V_hours'])} h "
+        w(f"Construction and validation hours. Selected attempts: $T$ = {fmt(a['T_hours'])} h; $V$ = {fmt(a['V_hours'])} h "
           f"(tuning {fmt(a['V_hours_tuning'])}, Stage B {fmt(a['V_hours_stageB'])}); limiting comparator "
           f"{fmt(a['limiting_comparator_hours'])} h. Cumulative over every attempt (A44.2, A45.1): "
-          f"T {ge(a['T_cumulative_is_lower_bound'])}{fmt(a['T_hours_cumulative'])} h, "
-          f"V {ge(a['V_cumulative_is_lower_bound'])}{fmt(a['V_hours_cumulative'])} h (allocation upper bound "
+          f"$T$ {ge(a['T_cumulative_is_lower_bound'])}{fmt(a['T_hours_cumulative'])} h, "
+          f"$V$ {ge(a['V_cumulative_is_lower_bound'])}{fmt(a['V_hours_cumulative'])} h (allocation upper bound "
           f"{fmt(a['V_upper_bound_cumulative'])} h); extra attempts: "
           f"{', '.join(e['attempt'] for e in a['extra_attempts']) or 'none'}.")
         w('')
@@ -464,13 +464,13 @@ def main():
                 q += '; FRONT-2D member' if key in front2d else '; not a FRONT-2D member'
             w(f"| X{i + 1} | {cid(key)} | {xr.get('batch')}: {q} |")
         w('')
-        w('Per X: worst and median E0 error of X and of each role pick on the eligible verdict cases; ρ = '
+        w('Per X: worst and median E0 error of X and of each role pick on the eligible verdict cases; $\\rho$ = '
           'baseline/X full-query time ratio (median over the six timing cases of the per-case median A–B–A ratio) with '
-          'its 95 % case-bootstrap interval; ρ < 1 means the baseline is faster. "Dominates" refers to query time and '
+          'its 95 % case-bootstrap interval; $\\rho < 1$ means the baseline is faster. "Dominates" refers to query time and '
           'worst-case error only; the median error is printed beside it (A44.3, A45.2). Picks may use a different '
           'scheme or time step from X: the comparison is between tuned configurations, not at a fixed scheme or step.')
         w('')
-        w('| X (ours) | batch | X worst / median | role | pick | pick worst / median | ρ [95 %] | label |')
+        w('| X (ours) | batch | X worst / median | role | pick | pick worst / median | $\\rho$ [95 %] | label |')
         w('|---|---|---|---|---|---|---|---|')
         reversals, picks_dom, domX = [], Counter(), {}
         for key, xr in V['X'].items():
@@ -531,8 +531,8 @@ def main():
                 adq = T['adequacy'].get(str(pb['r']), {})
                 fails = [r for r, v in T['adequacy'].items() if isinstance(v, dict) and 'adequate' in v and not v['adequate']]
                 dom_ranks = sorted({parse_b(p)['r'] for p in picks_dom})
-                hp = (f"support target κ = {pb['hrp'][1:]}" if pb['kind'] == 'ecsw' else
-                      f"p = {pb['hrp']} interpolation points" if pb['kind'] == 'qdeim' else 'no hyper-reduction')
+                hp = (f"support target $\\kappa = {pb['hrp'][1:]}$" if pb['kind'] == 'ecsw' else
+                      f"$p = {pb['hrp']}$ interpolation points" if pb['kind'] == 'qdeim' else 'no hyper-reduction')
                 adr = {r: v for r, v in T['adequacy'].items() if isinstance(v, dict) and 'adequate' in v}
                 def adtxt(r):
                     return ('not checked (rank outside the registered adequacy ranks)' if str(r) not in adr else
@@ -656,11 +656,10 @@ def main():
         w('Offline construction, in-job GPU-seconds (selected tuning attempt): ' +
           ', '.join(f'{k} {v:.4g}' for k, v in T['timers'].items()) + '. Compilation time is not separately recorded (it falls inside these phase timers and the per-run '
           'warm-up, and is excluded from every query time). Break-even query counts (§11) are not computed: in the '
-          'dominated pairs the baseline is both Q1-qualified and faster per query, so no break-even point exists in '
-          'favour of ours for those X; in every other assessed pair of this lane the cell restriction withholds any '
-          'favourable or neutral conclusion, so no accuracy-qualified per-query saving of ours is established; the reverse quantity (offline cost the baseline must recover) is not needed because the '
-          'baseline is the faster method, and a complete offline comparison would also need ours\' per-mesh setup '
-          'cost, which is not available (see the T table).')
+          'dominated pairs the baseline is both Q1-qualified and faster per query, and in every other assessed pair the cell '
+          'restriction withholds any favourable or neutral conclusion. A break-even count needs comparable offline '
+          'costs of both methods; ours\' per-mesh setup cost (and, in 3D, the M2 bank cost) is not available (see the T '
+          'table), so break-even counts are reported as unavailable.')
         w('')
         export['cells'][c['cell']] = dict(
             flags=F, budget_qualification={'batch2' if d == 3 else 'all': blabel(d, {}),
@@ -729,7 +728,7 @@ def main():
             ('E0 error', '$e=\\max_{k\\ge1}\\|F_k-R_k\\|/\\|R_0\\|$ over the outputs $t_k=0.05k$, $F$ the method\'s '
                          'field and $R$ the E0 reference on the scoring lattice; "worst" = maximum over the eligible '
                          'cases, "median" = median over them'),
-            ('ε_ref', 'reference uncertainty: the conditional Richardson estimate of the E0 reference error; pair labels '
+            ('$\\varepsilon_{\\rm ref}$', 'reference uncertainty: the conditional Richardson estimate of the E0 reference error; pair labels '
                       'treat error differences within it as unresolved'),
             ('eligible', 'a case whose reference passes the store\'s status for its case-kind; ineligible cases are '
                          'scored and shown, never ranked'),
@@ -746,12 +745,12 @@ def main():
             ('X', 'one of our configurations'),
             ('B_acc', 'fastest baseline on the X-specific front whose worst error is at most X\'s'),
             ('B_cost', 'most accurate baseline on the X-specific front whose median time ratio to X is at most 1'),
-            ('ρ (time ratio)', 'full-query time of the baseline divided by X\'s, measured A–B–A (X, baseline, X) on six '
+            ('$\\rho$ (time ratio)', 'full-query time of the baseline divided by X\'s, measured A–B–A (X, baseline, X) on six '
                                'timing cases × three repeats; per case the median ratio, then the median over cases; '
                                '95 % interval from 10,000 case-level bootstrap resamples'),
             ('full query', 'initialisation from the full-field initial condition + time stepping to $t=0.25$ + decode '
                            'of the six outputs, timed warm with `block_until_ready`'),
-            ('dominates', 'the 95 % interval of ρ lies below 1 and the ε_ref-envelope of the baseline\'s worst error lies '
+            ('dominates', 'the 95 % interval of $\\rho$ lies below 1 and the $\\varepsilon_{\\rm ref}$-envelope of the baseline\'s worst error lies '
                           'below that of X'),
             ('withheld', 'a favourable or neutral conclusion suppressed because a coverage or adequacy restriction applies'),
             ('batch 1 / batch 2', '3D: speed3d deployed rules (DIAGNOSTIC ONLY) / jcp-qualify Q2-qualified subset; '

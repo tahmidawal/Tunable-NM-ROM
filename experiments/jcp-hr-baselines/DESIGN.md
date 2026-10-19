@@ -2006,3 +2006,10 @@ follows §11 (in the dominated pairs the baseline is qualified and faster, and e
 favourable conclusion; ours' per-mesh setup cost is unavailable) and compilation is stated as not separately recorded;
 the ECSW glossary entry adds the A23 KKT-optimum exception and distinguishes target from actual support; step sizes and
 tolerances in prose are written in LaTeX.
+
+## Amendment A49 (2026-10-19) — report audit 3 (`audits/codex-report-3.md`, NOT-READY): restatements
+
+No number changed. The break-even statement no longer asserts that no break-even point exists or that the baseline's
+recovery count is unnecessary: break-even counts are reported as unavailable because ours' per-mesh setup cost (and,
+in 3D, the M2 bank cost) is not available, so offline costs are not comparable. Remaining prose symbols ($\rho$,
+$\kappa$, $p$, $r$, $L$, $T$, $V$, $\varepsilon_{\rm ref}$) are written in LaTeX.

@@ -33,7 +33,12 @@
   "The first resource certificates under-priced the reference retry path and the pseudo-spectral cross-check; repriced before submission (A7, job audits refs2d-1..3).",
   "The E0 tight re-solve of a refined triple at the round-off floor costs about 27x a production solve at T = 0.5; two reference jobs (ref2b, ref2c) were cancelled, their completed cases kept, and the rerun (ref2r, ref3b) skips that re-solve: such cases are terminal 'unresolved-floor' and non-rankable (A9).",
   "The first A9 eligibility rule was per window only, so an A9-terminal case with an accepted W2 window would have been rankable; fixed so every window of such a case is ineligible (A9.1, audit codex-job-a9-1).",
-  "The b-job reservations were priced at the time limits; measured run times were 3-7x shorter than the certificates (b3d 0.56 h vs 1.61 h projected; ps jobs 0.3-0.55 h vs 2.29 h)."
+  "The b-job reservations were priced at the time limits; measured run times were 3-7x shorter than the certificates (b3d 0.56 h vs 1.61 h projected; ps jobs 0.3-0.55 h vs 2.29 h).",
+  "At T = 1.0 the first eligibility code let a failed whole-case reference keep an accepted window and took W2 eligibility from the wrong horizon; fixed before submission (A11.1, audit codex-job-t1-1).",
+  "G-R2 on 3D val64 case 43 failed only because E0's own saved IC array differs in the last bit from the initial rows of E0's own levels; the shared-IC requirement was restated level-wise (A13).",
+  "E0's tight re-solve of a failing base triple costs about 22x a production solve at T = 1.0 and did not certify dev6 case 1; ref2t1 was cancelled after dev6 case 5 and the val32 cases rerun without that retry (ref2t1w): such cases are terminal and non-rankable (A14).",
+  "Two analysis caches were defeated by eager dict.setdefault arguments (a QR per case); the first local B7/B8 analyses were also terminated under memory pressure on the shared box and rerun one at a time (A12.2); performance only, identical values.",
+  "jcp-qualify's raw archives were moved to the cluster during the analysis (COMMON-BRIEF 16); G-B3 / G-L1 read hash-verified cached copies (A12)."
  ],
  "audits": [
   {

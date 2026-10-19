@@ -28,6 +28,11 @@ ING_NAME = dict(Q='quadrature', T='time package', F='form (+ stopping rule)', S=
                 M='test-space size', e_P='bank floor', e_dyn_star='ideal dynamics')
 
 
+def last_amendment():
+    import re
+    return max(int(x) for x in re.findall(r'^## Amendment A(\d+)', (HERE / 'DESIGN.md').read_text(), re.M))
+
+
 def J(p):
     return json.loads((HERE / p).read_text()) if p else None
 
@@ -195,7 +200,7 @@ def main():
       'Accuracy numbers are scored against order-verified second-order references (E0 for $t\\le0.25$, this lane\'s own '
       'references beyond); every $\\varepsilon_{\\rm ref}$ is a **conditional Richardson estimate**, not a bound. Post-hoc '
       'labels carried unchanged: E0 A10; combined A10, A11, retracted A15. GAL-CN rows are a registered diagnostic scheme. '
-      'Pre-registration `DESIGN.md` with amendments A1–A8.')
+      f'Pre-registration `DESIGN.md` with amendments A1–A{last_amendment()}.')
     w('')
     # ------------------------------------------------------------------ what ran
     w('## What ran')
@@ -218,6 +223,12 @@ def main():
           f"tight retries {sum(bool(c['tight']) for c in sel)}; G-R2 (agreement with E0 on $t\\le0.25$) passed on "
           f"{sum(c['G_R2']['passed'] for c in sel)}; G-R3 (fine route = lattice at shared nodes) "
           f"{sum(bool(c['G_R3_flag']) for c in sel if c['fine_requested'])} of {sum(c['fine_requested'] for c in sel)}.")
+        bad = {}
+        for c in sel:
+            if c['outcome'] != 'accepted':
+                bad.setdefault(c['outcome'], []).append(f"{c['cohort']} {c['case']}")
+        if bad:
+            w('  - not accepted (non-rankable): ' + '; '.join(f"{k}: {', '.join(v)}" for k, v in sorted(bad.items())))
         for wdw in ('W1', 'W2', 'W3'):
             e = [c['judge']['windows'][wdw]['eps'] for c in sel if wdw in c['judge']['windows'] and c['judge']['windows'][wdw]['eps']]
             if e:
@@ -235,7 +246,8 @@ def main():
         w(table(['dim', 'horizon', 'window', 'tier', 'per-case verdicts'], rows))
         w('')
     s = R['summary']
-    w(f"Reference gates: G-R1 {g(s.get('G_R1'))}; G-R2 {g(s.get('G_R2'))}; G-R3 {g(s.get('G_R3'))}; offline judge agreement "
+    w(f"Reference gates: G-R1 {g(s.get('G_R1'))}; G-R2 evaluable failures: {', '.join(s.get('G_R2_evaluable_failures') or []) or 'none'}"
+      f" (not evaluable: {', '.join(s.get('G_R2_not_evaluable') or []) or 'none'}; A13); G-R3 {g(s.get('G_R3'))}; offline judge agreement "
       f"{g(s.get('judge_agree'))}; C-R1 (first-order ladder rejected) {g(s.get('C_R1'))}; $T=1$ prefix {g(s.get('prefix_T1'))}.")
     w('')
     # ------------------------------------------------------------------ B2
@@ -334,8 +346,13 @@ def main():
         w('### 1024^2, $T=1.0$ (sub16)')
         w('')
         rows = [(mk, g(v['Q1']['pass']), v['Q2']['label'], g(v['stability']['pass']),
-                 v['growth'].get('W3/W2', {}).get('label', '—')) for mk, v in sorted(B7T1['b7'].items())]
-        w(table(['member', 'Q1 at T', 'Q2 at T', 'stable', 'growth W3/W2'], rows))
+                 v['growth'].get('W2/W1', {}).get('label', '—'), v['growth'].get('W3/W2', {}).get('label', '—'),
+                 g(v['growth'].get('W3/W2', {}).get('median')), v['growth'].get('W3/W2', {}).get('n', 0))
+                for mk, v in sorted(B7T1['b7'].items())]
+        w(table(['member', 'Q1 at T', 'Q2 at T', 'stable', 'growth W2/W1', 'growth W3/W2', 'median g W3/W2', 'n (W3/W2)'], rows))
+        fo = B7T1.get('front_order', {})
+        w('')
+        w(f"Front order W2 → W3 (all / LSPG): {fo.get('all', {}).get('label', '—')} / {fo.get('lspg', {}).get('label', '—')}.")
         w('')
     # ------------------------------------------------------------------ B8
     w('## B8: physical diagnostics and output-sampling adequacy')

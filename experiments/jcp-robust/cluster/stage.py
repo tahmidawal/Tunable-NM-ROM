@@ -46,7 +46,9 @@ def step_cmd(s):
         return (f'echo "STEP {s["driver"]} {s["config"]} $(date -u +%FT%TZ)"\n'
                 f'"$PY" {s["driver"]}.py --config {s["config"]} --out "$TASK_ROOT/output/{s["driver"]}_{stem}"')
     args = ' '.join(x.replace('OUT', '$TASK_ROOT/output') for x in s.get('args', []))
-    return f'echo "STEP sh {s["sh"]} {args} $(date -u +%FT%TZ)"\nbash {s["sh"]} {args}'
+    env = ' '.join(f'{k}={v}' for k, v in sorted((s.get('env') or {}).items()))
+    assert all(k.isidentifier() and str(v).replace('.', '').replace(',', '').isalnum() for k, v in (s.get('env') or {}).items()), s
+    return f'echo "STEP sh {s["sh"]} {env} {args} $(date -u +%FT%TZ)"\n{("env " + env + " ") if env else ""}bash {s["sh"]} {args}'
 
 
 def main():

@@ -28,7 +28,7 @@ MESHES = (256, 1024, 4096)
 def records(out, want_label_of):
     """{(r, label_kind, arm): configuration record} from one r2acc output; label_kind 'sel' / 'dep'."""
     res = json.loads((out / 'result.json').read_text())
-    e2bank.use(res['config'].get('bank'))
+    e2bank.use(res['config'].get('bank'), (res.get('checkpoint_sha256'), res.get('rotation_sha256')))
     rec = dict(complete=bool(res.get('complete')) and (out / 'COMPLETE').exists(), backend=res['backend'], job_id=res['job_id'],
                bank=res['config'].get('bank'), mesh=int(res['mesh']), cfg={})
     for g in res['config']['groups']:
@@ -99,14 +99,20 @@ def front(C1024, timing):
         return dict(state='missing (timing job ran on another bank)')
     # code audit 2 #23: a subject's cost exists only if EVERY registered case has >= 2 valid triplets (valid = drift band
     # and every identity hash, dtime's own predicate); otherwise that subject's cost is missing
+    if tres.get('memory_rejected') or not tres.get('counts_complete'):
+        return dict(state='missing (timing job: memory rejection or incomplete invocation counts)')
+    eq_fail = {e['subject'] for e in tres.get('equivalence', []) if not e.get('passed')}
+    id_fail = {inv['B'] for inv in tres.get('invocations', []) if not inv.get('all_hashes_ok')}
     reps_ok = {}
     for inv in tres.get('invocations', []):
+        if inv['B'] in eq_fail or inv['B'] in id_fail:          # subject-wide vetoes (identity, split/fused equivalence)
+            continue
         if inv.get('valid'):
             reps_ok.setdefault(inv['B'], {}).setdefault(inv['case'], []).append(float(inv['ratio']))
     want_cases = [f'dev6|{c}' for c in range(6)]
     ba = {}
     for lb, per in reps_ok.items():
-        if all(len(per.get(c, [])) >= 2 for c in want_cases):
+        if all(len(per.get(c, [])) >= 2 for c in want_cases) and set(per) == set(want_cases):
             ba[lb] = [float(np.median(per[c])) for c in want_cases]
     slots = {}
     for (r, kind, ak), x in C1024['cfg'].items():

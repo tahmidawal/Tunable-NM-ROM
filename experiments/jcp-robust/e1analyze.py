@@ -98,7 +98,7 @@ def analyse_arm(out, res, g, arm, rp):
             dc = fd(FT[j], NC.decode257(np.asarray(tz['W_check'][k]), rp), n0_of[cid])
             tc_rows.append(dict(case=cid, check_valid=bool(trow[cid].get('check_valid')), dist=dc, dist_job=trow[cid].get('dist_check'),
                                 agree=agree(dc, trow[cid].get('dist_check'))))
-        want_chk = [c for c in expected_ids(g.get('check_cases', 'dev6')) if c in want_ids] if g.get('check') else []
+        want_chk = [c for c in expected_ids('dev6' if reg else g.get('check_cases', 'dev6')) if c in want_ids] if g.get('check') else []
         integ['mismatches'] += [('TARGET-CHECK', r['case'], 'dist') for r in tc_rows if r['check_valid'] and not r['agree']]
         tgt_cert = bool(g.get('check') and [r['case'] for r in tc_rows] == want_chk and
                         all(r['check_valid'] and r['agree'] and np.isfinite(r['dist']) and r['dist'] <= E.BAR_TC for r in tc_rows))
@@ -119,7 +119,7 @@ def analyse_arm(out, res, g, arm, rp):
         rr = {x['case']: x for x in lrows}
         if sorted(rr) != sorted(ids) or len(lrows) != len(rr):
             integ['missing'].append((lab, 'rows (missing or duplicated)'))
-        if tuple(np.asarray(z['cert']).shape) != (len(ids), int(z['steps'])):
+        if tuple(np.asarray(z['cert']).shape) != (len(ids), int(round(.25 / dt))):     # expected steps from dt, not the file
             integ['missing'].append((lab, 'certificate shape'))
         F = NC.decode257(np.asarray(z['W']).reshape(-1, rp), rp).reshape(len(ids), 6, 257, 257)
         full = str(z['level']) == 'full'
@@ -350,7 +350,7 @@ def main():
     out = Path(a.out)
     res = json.loads((out / 'result.json').read_text())
     import e2bank
-    e2bank.use(res['config'].get('bank'))
+    e2bank.use(res['config'].get('bank'), (res.get('checkpoint_sha256'), res.get('rotation_sha256')))
     mesh = int(res['mesh'])
     rep = dict(source=str(out), mesh=mesh, commit=res['commit'], job_id=res['job_id'], gpu=res['gpu'], backend=res['backend'],
                complete=bool(res.get('complete')) and (out / 'COMPLETE').exists(), groups={})

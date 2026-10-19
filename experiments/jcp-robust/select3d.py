@@ -65,7 +65,8 @@ def main():
             sname, wd = st['name'], int(st['Rp'])
             for spec in SPECS:
                 g = {rl: lad.get(f'{sname}|{rl}|{spec}') for rl in GAUSS + LAT}
-                W = {rl: Wz[f'{sname}|{rl}|{spec}'] for rl in GAUSS + LAT if f'{sname}|{rl}|{spec}' in Wz.files}
+                W = {rl: Wz[f'{sname}|{rl}|{spec}'] for rl in GAUSS + LAT if f'{sname}|{rl}|{spec}' in Wz.files
+                     and [int(v) for v in Wz[f'cases|{sname}|{rl}|{spec}']] == cases}          # exact case mapping only
                 tgt_ok = None
                 if g.get('gl56') and g.get('gl64') and 'gl56' in W and 'gl64' in W:
                     dchk = dist(sname, W['gl56'][:8], W['gl64'][:8], cases[:8])
@@ -85,7 +86,8 @@ def main():
                         sp = spec.split('|')
                         ka = f"{sname}|{rl}|ad|LSPG|{sp[1]}|{float(sp[2]):.8g}|tight"
                         kb = f"{sname}|{rl}|ad|LSPG|{sp[1]}|{float(sp[2]):.8g}|tighter"
-                        d_adt = dist(sname, W[rl], Wz[ka]) if ka in Wz.files else None
+                        d_adt = (dist(sname, W[rl], Wz[ka]) if ka in Wz.files and
+                                 [int(v) for v in Wz['cases|' + ka]] == cases else None)
                         # code audit 2 #24: tight/tighter recomputed and compared; registered tighter cases 0-7
                         tcs = [j for j in range(8) if j in cases]
                         ib = [int(v) for v in Wz['cases|' + kb]] if kb in Wz.files else None
@@ -97,7 +99,7 @@ def main():
                                 bad_agree.append((nm_, 'missing'))
                             else:
                                 bad_agree += [(nm_, i) for i, (o_, j_) in enumerate(zip(off, job))
-                                              if np.isfinite(o_) and abs(o_ - num(j_)) > 1e-9 * abs(num(j_)) + 1e-13]
+                                              if np.isfinite(o_) and not (np.isfinite(num(j_)) and abs(o_ - num(j_)) <= 1e-9 * abs(num(j_)) + 1e-13)]
                         d_next = dist(sname, W[rl], W[nxt])
                         d_tgt = dist(sname, W[rl], W['gl64']) if 'gl64' in W else None
                         tt = d_tt

@@ -105,21 +105,35 @@ def smk2(out):
     if rr.exists():
         rec = json.loads(rr.read_text())
         chk(C, 'train2d smoke record (steps, rotation inverse check, device)', True, rec)
+    import e2bank
+    e2bank.OUTPUT_ROOT = str(out)                      # code audit 3 #11: trained-bank files from the collected output
     for tag in ('smk2t', 'smk2u'):
         dd = out / f'r2acc_{tag}'
         r_ = json.loads((dd / 'result.json').read_text())
         chk(C, f'{tag} complete on gpu, bank runtime-hashed', r_.get('complete') and r_['backend'] == 'gpu'
-            and (r_['bank'] or {}).get('runtime_hashed') is not False, dict(bank=r_.get('bank'), ck=r_['checkpoint_sha256']))
+            and (r_.get('bank') or {}).get('runtime_hashed') is True, dict(bank=r_.get('bank'), ck=r_['checkpoint_sha256']))
         chk(C, f'{tag} ran on the trained (not the incumbent) bank', not r_['checkpoint_sha256'].startswith('18f0266a'))
         g = r_['config']['groups'][0]
+        e2bank.use(r_['config']['bank'], (r_['checkpoint_sha256'], r_['rotation_sha256']))
         for arm in g['arms']:
             ak = f"{arm['form']}_{arm['scheme']}_{float(arm['factor']):g}"
-            import e2bank
-            e2bank.use(dict(r_['config']['bank'], ckpt_sha256=r_['checkpoint_sha256'], rotation_sha256=r_['rotation_sha256']))
             av = EA.analyse_arm(dd, r_, g, ak, int(g['Rp']))
             chk(C, f'{tag} {ak} analysis integrity', av['integrity']['ok'], av['integrity'])
-            chk(C, f'{tag} {ak} own-family labels computed', all(x['own_family_qualified'] is not None for x in av['rules'].values()),
+            chk(C, f'{tag} {ak} own-family labels computed', bool(av['rules']) and
+                all(x['own_family_qualified'] is not None for x in av['rules'].values()),
                 {l: (x['status'], x['own_family_qualified']) for l, x in av['rules'].items()})
+    rc, log = run(['select2d.py', str(out / 'r2acc_smk2t'), 'smk'])         # the selection procedure on the trained bank
+    sp_ = HERE / 'checks' / 'select2d-smk-smoke.json'
+    oc = json.loads(sp_.read_text())['selected']['128']['outcome'] if (rc == 0 and sp_.exists()) else None
+    chk(C, 'select2d (smoke contract) runs on the trained bank and returns a defined outcome',
+        oc is not None and (oc in ('selected', 'none within ladder', 'diagnostic pick (target unverified)') or oc.startswith('unavailable')),
+        dict(outcome=oc, log=log[-400:]))
+    import e2analyze as E2A
+    C2 = {1024: E2A.records(out / 'r2acc_smk2t', lambda r, labels: [('fib4181', 'sel')]),
+          256: E2A.records(out / 'r2acc_smk2u', lambda r, labels: [('sel', 'sel')])}
+    h = E2A.h_acc_n(C2, 128, 'sel', 'BE')
+    chk(C, 'H-acc-N calculation runs on trained-bank smoke cells (two meshes -> registered verdict not reached)',
+        h.get('procedure_outcome') == 'two-mesh evidence, registered three-mesh verdict not reached', h.get('procedure_outcome'))
     return C
 
 
@@ -127,31 +141,50 @@ def smk3(out):
     C = {}
     p = out / 'train3d_pilot'
     chk(C, 'train3d pilot SEED-COMPLETE', (p / 'SEED-COMPLETE').exists())
-    if (p / 'run_record.json').exists():
-        rec = json.loads((p / 'run_record.json').read_text())
-        chk(C, 'train3d pilot device peak <= 120 GB (memory gate)', E_num(rec.get('device_peak_GiB')) * 2 ** 30 <= 120e9, rec)
+    rec = json.loads((p / 'run_record.json').read_text()) if (p / 'run_record.json').exists() else None
+    chk(C, 'train3d pilot run record present', rec is not None)
+    jid = sorted(x.stem for x in (out.parent / 'logs').glob('*.out'))
+    rss = None
+    if jid:
+        r = subprocess.run(['timeout', '60', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login',
+                            f'sacct -j {jid[-1]} -n -P -o MaxRSS'], capture_output=True, text=True)
+        vals = [x for x in r.stdout.split() if x.strip()]
+        conv = lambda v: float(v[:-1]) * {'K': 2 ** 10, 'M': 2 ** 20, 'G': 2 ** 30}[v[-1]] if v[-1] in 'KMG' else float(v)
+        rss = max((conv(v) for v in vals), default=None)
+    req = 420 * 2 ** 30
+    chk(C, 'memory gate: device peak <= 120 GB (pilot)', rec is not None and math.isfinite(E_num(rec.get('device_peak_GiB')))
+        and E_num(rec.get('device_peak_GiB')) * 2 ** 30 <= 120e9, None if rec is None else rec.get('device_peak_GiB'))
+    chk(C, 'memory gate: host MaxRSS x 1.25 <= requested 420G (sacct)', rss is not None and rss * 1.25 <= req,
+        dict(max_rss_bytes=rss, requested=req))
     d = out / 'e2run3d_smk3q'
     res = json.loads((d / 'result.json').read_text())
     chk(C, 'e2run3d smoke complete on gpu', res.get('complete') and res['backend'] == 'gpu')
     chk(C, 'heaviest cell (W1024 gl64 + gl80) under the 120 GB device bar', not res.get('memory_rejected') and
-        res.get('peak_bytes_job', math.inf) <= 120e9, dict(peak=res.get('peak_bytes_job'), rejected=res.get('memory_rejected')))
+        E_num(res.get('peak_bytes_job')) <= 120e9, dict(peak=res.get('peak_bytes_job'), rejected=res.get('memory_rejected')))
     lad = {}
     for blk in res['blocks']:
         if blk['kind'] == 'ladder':
             lad.update(blk['result'])
-    for k in ('W1024|gl64|fs|CN|0.01|K1', 'W256|lat8192|qn|BDF2|0.025|k4', 'W256p|gl24|fs|CN|0.01|K1'):
+    for k, n in (('W1024|gl64|fs|CN|0.01|K1', 4), ('W256|lat8192|qn|BDF2|0.025|k4', 8), ('W256p|gl24|fs|CN|0.01|K1', 8)):
         x = lad.get(k)
-        chk(C, f'ladder rung {k} ran valid with ADT anchors', x is not None and all(x['valid']) and all(x['adt_valid']),
+        chk(C, f'ladder rung {k} ran valid with ADT anchors on its {n} cases', x is not None and len(x['valid']) == n and
+            all(x['valid']) and len(x['adt_valid']) == n and all(x['adt_valid']),
             None if x is None else dict(valid=x['valid'], dist_adt=x['dist_adt']))
     z = np.load(d / f"W_{res['mode']}.npz")
-    QA = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d3/archive/output/q3run_q3d3/W_q2.npz')
+    QD = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d3/archive')
+    QA = QD / 'output' / 'q3run_q3d3' / 'W_q2.npz'
+    import hashlib
+    pin = next((l.split()[0] for l in (QD / 'OUTPUTS.sha256').read_text().splitlines() if l.split()[1] == 'output/q3run_q3d3/W_q2.npz'), None)
+    ok_pin = hashlib.sha256(QA.read_bytes()).hexdigest() == pin
     a = np.load(QA)
     ak = 'W256|lat8192|qn|BDF2|0.025|k4#q|qn|BDF2|0.025|k4'
     Wa, ida = a[ak], [int(x) for x in a['cases|' + ak]]
     nk = 'W256|lat8192|qn|BDF2|0.025|k4'
     Wn, idn = z[nk], [int(x) for x in z['cases|' + nk]]
-    rel = [float(np.max(np.abs(Wn[i] - Wa[ida.index(j)])) / float(np.max(np.abs(Wa[ida.index(j)])))) for i, j in enumerate(idn)]
-    chk(C, 'G-E2.3 smoke replay W256 lat8192 qn BDF2 (cases 0-7) <= 1e-10', idn == list(range(8)) and max(rel) <= 1e-10, max(rel))
+    fin = bool(np.isfinite(Wn).all() and np.isfinite(Wa).all())
+    rel = [float(np.max(np.abs(Wn[i] - Wa[ida.index(j)])) / float(np.max(np.abs(Wa[ida.index(j)])))) for i, j in enumerate(idn)] if fin else [math.inf]
+    chk(C, 'G-E2.3 smoke replay W256 lat8192 qn BDF2 (cases 0-7) <= 1e-10, archive hash pinned, finite',
+        ok_pin and fin and idn == list(range(8)) and max(rel) <= 1e-10, dict(worst=max(rel), pin_ok=ok_pin))
     return C
 
 
@@ -179,6 +212,7 @@ def main():
     for k, v in C.items():
         print('OK ' if v['ok'] else 'FAIL', k)
     print('ALL', rep['ALL'])
+    sys.exit(0 if rep['ALL'] else 1)
 
 
 if __name__ == '__main__':

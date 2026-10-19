@@ -80,7 +80,7 @@ def main():
     import c3common as C3
     import e2score3 as ES
     import score3 as SC
-    ES.install(J[0][0]['config'])
+    ES.install_union([J[0][0]['config'], J[1][0]['config']])
     tab = C3.C.table(923801, 64)
     n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j)))) for j in range(64)}
 
@@ -105,7 +105,7 @@ def main():
                 kad = f"W{w_}|gl64|ad|LSPG|{sp_[1]}|{float(sp_[2]):.8g}|tight"
                 d_adt = dist3(f'W{w_}', Wz[k_], Wz[kad], x['cases'])
                 d_nx = dist3(f'W{w_}', Wz[k_], Wz[f'W{w_}|gl80|{spec}'], x['cases'])
-                if any(abs(o - E.num(j)) > 1e-9 * abs(E.num(j)) + 1e-13 for o, j in zip(d_adt, x['dist_adt']) if np.isfinite(o)):
+                if any(not (np.isfinite(E.num(j)) and abs(o - E.num(j)) <= 1e-9 * abs(E.num(j)) + 1e-13) for o, j in zip(d_adt, x['dist_adt']) if np.isfinite(o)):
                     rep['integrity'] = False
                 qs.append(case_q(x, lad[f'W{w_}|gl80|{spec}'], d_adt, d_nx))
             qa, qb = qs
@@ -142,6 +142,9 @@ def main():
     # front
     if a.front:
         fres = json.loads((Path(a.front) / 'result.json').read_text())
+        bank_of = lambda c: (sorted({s_['bank'] for s_ in c['settings']}), sorted((c.get('bank_registry') or {}).items()))
+        if bank_of(fres['config']) != bank_of(J[0][0]['config']):          # code audit 3 #23: same bank identity
+            fres = dict(fres, complete=False)
         tm = next(iter(fres['timing'].values()))
         ba = {}
         if tm.get('valid') is True and fres.get('complete') and fres['backend'] == 'gpu':     # code audit 2 #23: d3run's

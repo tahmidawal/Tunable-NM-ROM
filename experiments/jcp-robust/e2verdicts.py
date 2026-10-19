@@ -48,7 +48,8 @@ def keys_2d(r):
     if r is None:
         return out
     for k, v in r['selection'].items():
-        out[f'selected-rule|R{k}'] = ('rule:' + v['rule']) if v['rule'] else ('absent' if v['outcome'] == 'none within ladder' else None)
+        out[f'selected-rule|R{k}'] = (('rule:' + v['rule']) if v['outcome'] == 'selected' else
+                                      'absent' if v['outcome'] == 'none within ladder' else None)       # A2.5
     for k, v in r['h_acc_n'].items():
         out[f'H-acc-N|{k}'] = v.get('outcome')
     for k, v in r['h_acc_r'].items():
@@ -68,7 +69,8 @@ def keys_3d(r):
         return out
     for sl in r['selection']:
         k = f"selected-rule|W{sl['width']}|{sl['spec']}|{sl['family']}"
-        out[k] = ('rule:' + sl['rule']) if sl['rule'] else ('absent' if sl['outcome'] == 'none within ladder' else None)
+        out[k] = (('rule:' + sl['rule']) if sl['outcome'] == 'selected' else
+                  'absent' if sl['outcome'] == 'none within ladder' else None)                          # A2.5
     for k, v in r['h_acc_r'].items():
         for tr, x in v.items():
             out[f'H-acc-r|{k}|{tr}'] = x.get('outcome') if isinstance(x, dict) else x

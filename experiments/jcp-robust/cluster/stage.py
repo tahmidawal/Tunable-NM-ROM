@@ -66,6 +66,11 @@ def main():
         cert = json.loads((ROOT / LANE / 'checks' / f'resources-{att}.json').read_text())
         assert cert['jobspec_sha256'] == hashlib.sha256(spec_p.read_bytes()).hexdigest(), 'job spec changed after certification'
         assert abs(cert['time_limit_hours'] - math.ceil(float(spec['hours']) * 4) / 4) < 1e-9, 'time limit differs from the certificate'
+        import sys as _s
+        _s.path.insert(0, str(ROOT / LANE))
+        import certify as CF
+        head = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
+        assert CF.code_tree_sha(head, ROOT / LANE) == cert['code_tree_sha256'], 'code changed since the certificate'
         assert spec['hours'] >= 1.5 * cert['projection_hours'] - 1e-9, (spec['hours'], cert['projection_hours'])
         assert cert['gpus'] == gpus, 'certificate GPU count differs from the job spec'
         inv_p = ROOT / LANE / 'checks' / f'inventory-{att}.json'
@@ -105,6 +110,18 @@ def main():
     if spec.get('production'):                      # A4.2: the certificate and its inventory travel with the job
         for nm in (f'resources-{att}.json', f'inventory-{att}.json'):
             (out / nm).write_bytes((ROOT / LANE / 'checks' / nm).read_bytes())
+    else:                                           # smoke contract: its execution inventory (no certificate; <= 2 GPU-h)
+        import sys as _s
+        _s.path.insert(0, str(ROOT / LANE))
+        import certify as CF
+        inv = {}
+        for g in groups:
+            for st_ in g:
+                if 'driver' in st_ and st_['driver'] in CF.INV:
+                    keys = CF.INV[st_['driver']](json.loads((ROOT / LANE / st_['config']).read_text()))
+                    inv[st_['config']] = dict(n=len(keys), unique=len(set(map(tuple, keys))))
+        (out / f'inventory-{att}.json').write_text(json.dumps(dict(smoke=True, reserved_gpu_hours=float(spec['hours']) * gpus,
+                                                                    inventory=inv), indent=1) + '\n')
     (out / 'logs').mkdir()
     gname, constraint = GRES[spec['gpu']]
     h = math.ceil(float(spec['hours']) * 4) / 4

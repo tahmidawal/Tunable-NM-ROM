@@ -24,12 +24,18 @@ def main():
     out, b = Path(sys.argv[1]), sys.argv[2]
     res = json.loads((out / 'result.json').read_text())
     assert res.get('complete'), 'selection job incomplete'
-    e2bank.use(res['config'].get('bank'))
+    e2bank.use(res['config'].get('bank'), (res.get('checkpoint_sha256'), res.get('rotation_sha256')))
+    smoke = str(res['config'].get('attempt', '')).startswith('smk')
     rep = dict(source=str(out), bank=b, job_id=res['job_id'], commit=res['commit'], selected={}, cells={})
-    for r in RANKS:
+    ranks = RANKS if not smoke else tuple(int(x['Rp']) for x in res['config']['groups'])
+    cand_all = [c for c, _ in CANDIDATES]
+    for r in ranks:
         g = [x for x in res['config']['groups'] if x['Rp'] == r][0]
         labels = [x['label'] for x in g['rules']]
-        assert labels == [c for c, _ in CANDIDATES], 'candidate list differs from the registered one'
+        if smoke:      # smoke contract: an ordered subset of the registered candidates (labelled smoke, never a selection)
+            assert labels == [c for c in cand_all if c in labels], 'smoke candidates out of the registered order'
+        else:
+            assert labels == cand_all, 'candidate list differs from the registered one'
         cells, tcert, integ = {}, True, True
         for arm in ('LSPG_BE_1', 'LSPG_CNR_1'):
             av = EA.analyse_arm(out, res, g, arm, r)
@@ -45,7 +51,7 @@ def main():
         if not integ:
             outcome = 'unavailable (integrity: distance / G-cert / population check failed)'
         else:
-            for c, _ in CANDIDATES:                    # three-state (code audit 1 #10): undetermined evidence stops the search
+            for c in labels:                           # three-state (code audit 1 #10): undetermined evidence stops the search
                 v = [cells[a][c][key] for a in ('LSPG_BE_1', 'LSPG_CNR_1')]
                 if all(x is True for x in v):
                     pick = c
@@ -54,12 +60,12 @@ def main():
                 if any(x is None for x in v):
                     outcome = f'unavailable (evidence for {c} undetermined)'
                     break
-        rep['selected'][str(r)] = dict(rule=pick, outcome=outcome, target_certified=tcert, deployed=DEPLOYED[r],
+        rep['selected'][str(r)] = dict(rule=pick, outcome=outcome, smoke=smoke, target_certified=tcert, deployed=DEPLOYED[r],
                                        equals_deployed=pick == DEPLOYED[r])
         rep['cells'][str(r)] = cells
         print(r, rep['selected'][str(r)], flush=True)
     (HERE / 'checks').mkdir(exist_ok=True)
-    (HERE / 'checks' / f'select2d-{b}.json').write_text(json.dumps(rep, indent=1, default=float) + '\n')
+    (HERE / 'checks' / f"select2d-{b}{'-smoke' if smoke else ''}.json").write_text(json.dumps(rep, indent=1, default=float) + '\n')
 
 
 if __name__ == '__main__':

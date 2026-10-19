@@ -121,7 +121,23 @@ def inv_dtime(c):
     return keys
 
 
-INV = {'r2acc': inv_r2acc, 'e1run3d': inv_e13d, 'd3run': inv_d3, 'e2run3d': inv_d3, 'dtime': inv_dtime}
+def code_tree_sha(commit, root=None):
+    """sha256 over the (path, blob id) list of every staged lane file at `commit` (runs/, audits/, checks/, plots/,
+    report* and HEARTBEAT excluded) -- binds a certificate to the code it was computed for (code audit 3 #12)."""
+    import subprocess
+    root = root or HERE
+    out = subprocess.check_output(['git', 'ls-tree', '-r', commit, '--', '.'], cwd=root, text=True)
+    skip = ('runs/', 'audits/', 'checks/', 'plots/', 'report', 'HEARTBEAT.json')
+    rows = sorted(l.split(None, 3)[3] + ' ' + l.split()[2] for l in out.splitlines() if not l.split(None, 3)[3].startswith(skip))
+    return hashlib.sha256('\n'.join(rows).encode()).hexdigest()
+
+
+def _inv_e5(c):
+    import e5common as EC
+    return EC.inv_e5time(c)
+
+
+INV = {'e5time': _inv_e5, 'r2acc': inv_r2acc, 'e1run3d': inv_e13d, 'd3run': inv_d3, 'e2run3d': inv_d3, 'dtime': inv_dtime}
 
 
 def klass(driver, k):
@@ -130,6 +146,9 @@ def klass(driver, k):
         bank, m, g, rule, arm, lev, kind, _ = k
         big = rule.startswith('gauss') and int(rule[5:]) >= 256
         return f"r2acc|{m}|{g}|{lev}|{'big' if big else 'std'}"
+    if driver == 'e5time':
+        import e5common as EC
+        return EC.klass(k)
     if driver == 'dtime':
         return f'dtime|{k[2]}'
     if driver == 'e1run3d':
@@ -179,7 +198,7 @@ def certify(att, timings_path):
     import math
     import subprocess
     commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=HERE, text=True).strip()
-    cert = dict(attempt=att, commit=commit, jobspec_sha256=hashlib.sha256((HERE / 'jobs' / f'{att}.json').read_bytes()).hexdigest(),
+    cert = dict(attempt=att, commit=commit, code_tree_sha256=code_tree_sha(commit), jobspec_sha256=hashlib.sha256((HERE / 'jobs' / f'{att}.json').read_bytes()).hexdigest(),
                 time_limit_hours=math.ceil(float(spec['hours']) * 4) / 4, projection_hours=round(proj, 4), group_hours=[round(x, 4) for x in group_hours],
                 gpus=int(spec.get('gpus', 1)), projection_gpu_hours=round(proj * int(spec.get('gpus', 1)), 4),
                 configs=cfgs, inventory_sha256=hashlib.sha256(ip.read_bytes()).hexdigest(), margin=MARGIN,

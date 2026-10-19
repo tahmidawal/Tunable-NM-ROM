@@ -17,6 +17,19 @@ import score3 as SC
 HERE = Path(__file__).resolve().parent
 
 
+def install_union(cfgs):
+    """Settings of several jobs of ONE bank (e.g. e2q<b>a and e2q<b>b): the union map, every name bound to one
+    (bank, width); a conflicting name raises (code audit 3 #28)."""
+    m = {}
+    for c in cfgs:
+        install(c)
+        for s_ in c['settings']:
+            v = (s_['bank'], int(s_['Rp']))
+            assert m.setdefault(s_['name'], v) == v, ('setting bound to two banks', s_['name'])
+    SC.BANKS = m
+    SC._G.clear()
+
+
 def install(cfg):
     import hashlib
     for name, b in (cfg.get('bank_registry') or {}).items():

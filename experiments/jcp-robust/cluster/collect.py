@@ -60,7 +60,8 @@ def main():
            f'(while read f; do mkdir -p "{ARCHIVE}/{a.attempt}/$(dirname "$f")" && cp "$f" "{ARCHIVE}/{a.attempt}/$f"; done < LARGE.txt) && '
            f'(cd {ARCHIVE}/{a.attempt} && (cat {shlex.quote(remote)}/LARGE.txt | xargs -r sha256sum)) > LARGE.sha256 && '
            f'(xargs -r sha256sum < LARGE.txt | cmp - LARGE.sha256) && '
-           'tar -cf collection.tar --exclude-from=LARGE.txt COMMIT.txt PROVENANCE.json MANIFEST.sha256 JOBSPEC.json '
+           'tar -cf collection.tar --exclude-from=LARGE.txt COMMIT.txt PROVENANCE.json MANIFEST.sha256 JOBSPEC.json RESERVATION.json '
+           f'$(ls resources-{a.attempt}.json inventory-{a.attempt}.json 2>/dev/null) '
            'run.sbatch logs OUTPUTS.sha256 LARGE.txt LARGE.sha256 output && sha256sum collection.tar > collection.tar.sha256')
     subprocess.run(SSH + [pre], check=True)
     for name in ['collection.tar', 'collection.tar.sha256']:

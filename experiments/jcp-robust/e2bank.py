@@ -17,10 +17,20 @@ def _sha(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
-def use(bank):
+OUTPUT_ROOT = None          # smoke acceptance: where '../../output/...' (a job's own output dir) was collected locally
+
+
+def use(bank, recorded=None):
+    """recorded = (checkpoint sha256, rotation sha256) as recorded by the job (result.json); required for smoke banks whose
+    config hashes are 'SMOKE-RUNTIME' (hashed in the job), whose files are then resolved under OUTPUT_ROOT."""
     if bank:
-        ck, rot = HERE / bank['ckpt'], HERE / bank['rotation']
-        assert _sha(ck) == bank['ckpt_sha256'] and _sha(rot) == bank['rotation_sha256'], 'bank files differ from their hashes'
+        res_ = lambda p_: (Path(OUTPUT_ROOT) / p_[len('../../output/'):]) if (OUTPUT_ROOT and p_.startswith('../../output/')) else HERE / p_
+        ck, rot = res_(bank['ckpt']), res_(bank['rotation'])
+        want = (bank['ckpt_sha256'], bank['rotation_sha256'])
+        if want[0] == 'SMOKE-RUNTIME':
+            assert OUTPUT_ROOT and recorded, 'runtime-hashed smoke bank needs the collected output and the recorded hashes'
+            want = recorded
+        assert _sha(ck) == want[0] and _sha(rot) == want[1], 'bank files differ from their hashes'
     else:
         ck, rot = _INC
     NC.CKPT, NC.ROT = ck, rot

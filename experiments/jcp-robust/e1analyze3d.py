@@ -78,6 +78,7 @@ def main():
             smoke = str(cfg.get('attempt', '')).startswith('smk')
             if not smoke and (cases != list(range(64)) or idc != list(range(8))):
                 mism.append(('population', 'cases / check cases differ from the registered 64 / 0-7', None))
+            mism += [('TARGET-CHECK', j, 'dist') for j, (x, y) in zip(idc, zip(dchk, r['target_run']['dist_check'])) if not agree(x, y)]
             tc_ok = bool(idc and idc == [j for j in range(8) if j in cases] and all(r['target_run']['check_valid']) and all(np.isfinite(dchk)) and max(dchk) <= E.BAR_TC
                          and all(agree(x, y) for x, y in zip(dchk, r['target_run']['dist_check'])))
             tvalid = r['target_run']['valid']
@@ -86,8 +87,8 @@ def main():
             draws = {}
             sp_ = spec.split('|')
             adk = lambda lev: f"ad|LSPG|{sp_[1]}|{float(sp_[2]):.8g}|{lev}"
-            tcs = [j for j in cf.get('tighter_cases', list(range(8))) if j in cases]
-            if [str(x) for x in cf['draws']] != [str(x) for x in range(E.NDRAW)]:
+            tcs = [j for j in (list(range(8)) if not smoke else cf.get('tighter_cases', list(range(8)))) if j in cases]
+            if not smoke and [str(x) for x in cf['draws']] != [str(x) for x in range(E.NDRAW)]:
                 mism.append(('population', 'draws', cf['draws']))
             for s in [str(x) for x in cf['draws']]:
                 dr = r['draws'][s]
@@ -115,6 +116,9 @@ def main():
                     mism.append((s, 'tighter cases', ib))
                 # stationarity recomputed from the saved fresh certificates (rows gam_cert of the production runs)
                 cr = [x for x in res['rows'] if x.get('tag') == tag and x.get('spec') == spec and 'gam_cert' in x]
+                S_exp = int(round(.25 / float(sp_[2])))
+                if sorted(int(x['case']) for x in cr) != sorted(cases) or any(len(x['gam_cert']) != S_exp for x in cr):
+                    mism.append((s, 'certificate rows (cases or lengths)', None))
                 g_all = [E.num(v) for x in cr for v in x['gam_cert']]
                 nonst = (sum(1 for v in g_all if not (np.isfinite(v) and v <= E.GAMMA)) / len(g_all)) if g_all and len(cr) == len(cases) else None
                 sc_ = sc['scores'][k]
@@ -195,7 +199,9 @@ def main():
                     A_ = Wa[ida.index(j)]
                     den = float(np.max(np.abs(A_)))
                     rows.append(float(np.max(np.abs(W0[i] - A_)) / den) if den > 0 and np.isfinite(A_).all() else math.inf)
-                ctl['G-E1.2'] = (dict(passed=False, reason='case missing') if rows is None else
+                if rows is not None and not np.isfinite(W0).all():
+                    rows = None
+                ctl['G-E1.2'] = (dict(passed=False, reason='case missing or non-finite new output') if rows is None else
                                  dict(passed=bool(max(rows) <= 1e-10), worst=max(rows), n=len(rows),
                                       archive_sha256=hashlib.sha256(arch.read_bytes()).hexdigest()))
             else:
@@ -215,7 +221,7 @@ def main():
                                       target_valid=tvalid, draws=draws, verdicts=verd, controls=ctl, extra=extra,
                                       mismatches=mism, econv=econv)
             print(nm, {k_: (v['label'] if isinstance(v, dict) and 'label' in v else v) for k_, v in verd.items()}, flush=True)
-        except (KeyError, ValueError, IndexError) as e_:          # absent evidence -> unavailable, never a crash or a pass
+        except (KeyError, ValueError, IndexError, OSError) as e_:          # absent evidence -> unavailable, never a crash or a pass
             rep['configs'][cf['name']] = dict(setting=cf['setting'], spec=cf['spec'], integrity=dict(ok=False, reason=f'missing evidence: {e_!r}'),
                                               verdicts={}, controls={})
     (HERE / 'checks').mkdir(exist_ok=True)

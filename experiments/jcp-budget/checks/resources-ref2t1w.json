@@ -1,0 +1,24 @@
+{
+ "attempt": "ref2t1w",
+ "runs": [
+  "ref/refrun:configs/ref2t1w.json"
+ ],
+ "configs": {
+  "configs/ref2t1w.json": "6cc0298cbb33af3a3a6829691b0c1af5bb1d3ff1dc503ad2538bd080ee739a08"
+ },
+ "gpu": "h200",
+ "projection_hours": 5.435331150632456,
+ "memory": {
+  "ref/refrun:configs/ref2t1w.json": {
+   "measured_peak_GiB_L8192": 17.62118935585022,
+   "refinement_estimate_GiB": 39.647676050662994,
+   "device_GiB": 128.6171875
+  }
+ },
+ "time_limit_hours": 8.25,
+ "detail": {
+  "ref/refrun:configs/ref2t1w.json": 2.036192773880334,
+  "worst_path_reserve": 3.399138376752122
+ },
+ "label": "estimate from the smokes (not a bound)"
+}

@@ -904,3 +904,21 @@ every call (the $r$-prefix span QR, 14 s per case, and the cohort table); now bu
 same values. The first local `ana7` runs at 256² and 1024² were killed without output at 23:39 UTC (no OOM record; the
 box load was ~70); the analyses now run inside `jaxrun` cgroups through `campaign/jaxslot.sh` (CPU backend, as on the
 smoke).
+
+## Amendment A14 (2026-10-19 01:55 UTC; measured cost of the tight base retry at $T=1.0$)
+
+**What happened.** In `ref2t1` (dev6 then val32 0–9, 19 at $T=1.0$), dev6 case 1's base triple failed the floor check,
+so E0's tight re-solve of the base triple ran: the $4096^2$ tight level took 1251 s against 57 s at production
+tolerance, the $8192^2$ tight level about 3 h, and the case still ended **'unresolved-floor'** (13 502 s for one case).
+dev6 case 5 took the same path. At that rate the job cannot reach the val32 cases inside its 10 h limit, and the val32
+cases are most of the B7 $T=1.0$ population.
+
+**Rule change (cost, not estimand).** `ref2t1` is cancelled as soon as dev6 case 5 completes (watcher script; its
+completed dev6 cases 0–5 are collected with `--partial`, promoted and used). The val32 cases run in a new job
+`ref2t1w` with `tight_base = false`: a base triple failing the floor check at $T=1.0$ is terminal
+**'unresolved-floor' (non-rankable)**, as every other failed $T=1.0$ case already is (A1.5, A11.1). The tight retry is
+otherwise E0's procedure and is kept at $T=0.5$ (where no production case needed it). `ref/refrun.py` gains the
+`tight_base` flag (default true; recorded in each case's metadata); `anaref` records it. The disclosed consequence: a
+$T=1.0$ case that the tight retry could have certified is non-rankable instead; the one measured tight retry at
+$T=1.0$ (dev6 1) did not certify its case. Certificate `checks/resources-ref2t1w.json` (projection 5.4 h; the
+worst-path reserve is kept although the tight path is now off).

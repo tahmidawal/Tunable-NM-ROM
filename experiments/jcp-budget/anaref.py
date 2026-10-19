@@ -207,7 +207,7 @@ def main():
                     rec = dict(dim=d, cohort=m['cohort'], case=m['case'], horizon=m['horizon'], outcome=m['outcome'],
                                fine_requested=m.get('fine_lattice') is not None,
                                refined=m['refined'], tight=m['tight_used'], G_R3_flag=m.get('G_R3'), G_R3_local=g3,
-                               tight_after_refine=bool(m.get('tight_after_refine', True)),
+                               tight_after_refine=bool(m.get('tight_after_refine', True)), tight_base=bool(m.get('tight_base', True)),
                                judge=dict(outcome=jd['outcome'], eps_ref=jd['eps_ref'], agree=agree,
                                           windows={w: {k: v for k, v in x.items() if k != 'record'} for w, x in win.items()}),
                                fine_windows={w: (v or {}).get('outcome') for w, v in (m.get('judge_fine_windows') or {}).items()},

@@ -151,7 +151,7 @@ def fine_t0(coh, j):
     return np.asarray(CH.ic_3d(m, coh.T, j)).reshape(-1)
 
 
-def solve_case(coh, j, T, fine, allow_refine, tight_after_refine=True):
+def solve_case(coh, j, T, fine, allow_refine, tight_after_refine=True, tight_base=True):
     """E0 refjob.solve_case (DESIGN §4 procedure) at horizon T; refinement only if allow_refine."""
     d = coh.dim
     cfg = LEVELS[d]
@@ -189,7 +189,8 @@ def solve_case(coh, j, T, fine, allow_refine, tight_after_refine=True):
     jd = judge(triple)
     tight_used = refined = False
     ok = lambda c: c['solver'] and c['t0_shared']
-    if ok(jd['checks']) and not jd['checks']['floor']:
+    if ok(jd['checks']) and not jd['checks']['floor'] and tight_base:
+        # A14: skipped when tight_base is False (T = 1.0 rerun) -- the case stays 'unresolved-floor' (non-rankable)
         triple = [get(x[0]['L'], dts[x[0]['L']], 'tight') for x in triple]
         tight_used = True
         jd = judge(triple)
@@ -235,7 +236,7 @@ def solve_case(coh, j, T, fine, allow_refine, tight_after_refine=True):
                 metric_id=f'{d}|lattice={RC.LATTICE[d]}|times=0:0.05:{T:g}|norm=fixed_t0|max_k>=1',
                 t0_sha256=sha(np.ascontiguousarray(t0).tobytes()), scheme='cnr', attempts=attempts, final=final,
                 history=history, judge=jd, judge_fine=jf, judge_windows=jw, judge_fine_windows=jfw, outcome=jd['outcome'], refined=refined, tight_used=tight_used,
-                allow_refine=allow_refine, tight_after_refine=tight_after_refine, floor_stab=V.FLOOR_STAB,
+                allow_refine=allow_refine, tight_after_refine=tight_after_refine, tight_base=tight_base, floor_stab=V.FLOOR_STAB,
                 G_R3=(g_r3 if fine else None))
     meta['fine_file'] = None if fine_arrays is None else f'c{j:03d}_fine.npz'
     return arrays, fine_arrays, meta
@@ -262,7 +263,7 @@ def mode_fd(cfg, outdir, rep):
             continue
         t = time.perf_counter()
         arrays, fine_arrays, meta = solve_case(coh, j, T, bool(cfg.get('fine', True)), bool(cfg.get('allow_refine', False)),
-                                               bool(cfg.get('tight_after_refine', True)))
+                                               bool(cfg.get('tight_after_refine', True)), bool(cfg.get('tight_base', True)))
         meta['job'], meta['seconds'] = job_info(), time.perf_counter() - t
         if fine_arrays is not None:            # the fine field in its own file (it stays on the cluster; A1.8)
             data = npz_bytes(**fine_arrays)

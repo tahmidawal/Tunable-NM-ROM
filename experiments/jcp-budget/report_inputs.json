@@ -18,7 +18,7 @@
   "1024": "checks/b7b8-1024.json",
   "4096": "checks/b7b8-4096.json"
  },
- "b7b8_t1": null,
+ "b7b8_t1": "checks/b7b8-1024-T1.json",
  "b3": "checks/b3-b3d.json",
  "ledger": "runs/GPU-LEDGER.json",
  "deferred": [
@@ -35,5 +35,118 @@
   "The first A9 eligibility rule was per window only, so an A9-terminal case with an accepted W2 window would have been rankable; fixed so every window of such a case is ineligible (A9.1, audit codex-job-a9-1).",
   "The b-job reservations were priced at the time limits; measured run times were 3-7x shorter than the certificates (b3d 0.56 h vs 1.61 h projected; ps jobs 0.3-0.55 h vs 2.29 h)."
  ],
- "audits": []
+ "audits": [
+  {
+   "file": "audits/codex-design-1.md",
+   "verdict": "NEEDS-FIX (fixed in A1-A3)"
+  },
+  {
+   "file": "audits/codex-design-2.md",
+   "verdict": "NEEDS-FIX (fixed in A1-A3)"
+  },
+  {
+   "file": "audits/codex-design-3.md",
+   "verdict": "NEEDS-FIX (fixed in A1-A3)"
+  },
+  {
+   "file": "audits/codex-design-4.md",
+   "verdict": "READY"
+  },
+  {
+   "file": "audits/codex-code-1.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-2.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-3.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-4.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-5.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-6.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-7.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-8.md",
+   "verdict": "NEEDS-FIX (fixed before the next round)"
+  },
+  {
+   "file": "audits/codex-code-9.md",
+   "verdict": "READY-FOR-SMOKE"
+  },
+  {
+   "file": "audits/codex-job-smk1-1.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-smk1-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-smk2-1.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-smk2-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-refs2d-1.md",
+   "verdict": "FIX-FIRST (A7 repricing)"
+  },
+  {
+   "file": "audits/codex-job-refs2d-2.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-refs2d-3.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-b2d-1.md",
+   "verdict": "FIX-FIRST (b1024 only)"
+  },
+  {
+   "file": "audits/codex-job-b2d-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-3d-1.md",
+   "verdict": "FIX-FIRST"
+  },
+  {
+   "file": "audits/codex-job-3d-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-a9-1.md",
+   "verdict": "FIX-FIRST (A9.1)"
+  },
+  {
+   "file": "audits/codex-job-a9-2.md",
+   "verdict": "SUBMIT"
+  },
+  {
+   "file": "audits/codex-job-t1-1.md",
+   "verdict": "FIX-FIRST (A11.1)"
+  },
+  {
+   "file": "audits/codex-job-t1-2.md",
+   "verdict": "SUBMIT"
+  }
+ ]
 }

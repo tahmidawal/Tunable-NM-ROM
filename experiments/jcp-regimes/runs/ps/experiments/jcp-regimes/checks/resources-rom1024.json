@@ -1,7 +1,8 @@
 {
  "attempt": "rom1024",
- "projection_hours": 0.988,
- "time_limit_hours": 1.5,
+ "projection_hours": 1.9914,
+ "time_limit_hours": 3.0,
+ "gpu": "a100-80G",
  "configs": {
   "configs/rom1024.json": "ef7f087f2397f8fd9dc64a7421e00e70018913b0c9f0f8c98fd043202ec3700b",
   "configs/fverify-rom1024.json": "5cc854712e17bdb5c1bcc4890c0102f439a9dfa087f2fb56a1b29605fb758f90"
@@ -13,7 +14,7 @@
  "parts": [
   {
    "run": "qacc:configs/rom1024.json",
-   "seconds": 3212.0
+   "seconds": 6824.481099656358
   },
   {
    "run": "fverify:configs/fverify-rom1024.json",

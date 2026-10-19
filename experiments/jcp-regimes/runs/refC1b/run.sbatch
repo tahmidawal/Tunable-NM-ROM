@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=jg_refC1
+#SBATCH --job-name=jg_refC1b
 #SBATCH --partition=gpu
 #SBATCH --gres=gpu:h200:1
 
@@ -7,10 +7,10 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=200G
 #SBATCH --time=07:00:00
-#SBATCH --output=/cluster/tufts/paralab/tawal01/jcp-regimes/refC1/logs/%j.out
-#SBATCH --error=/cluster/tufts/paralab/tawal01/jcp-regimes/refC1/logs/%j.err
+#SBATCH --output=/cluster/tufts/paralab/tawal01/jcp-regimes/refC1b/logs/%j.out
+#SBATCH --error=/cluster/tufts/paralab/tawal01/jcp-regimes/refC1b/logs/%j.err
 set -euo pipefail
-TASK_ROOT=/cluster/tufts/paralab/tawal01/jcp-regimes/refC1
+TASK_ROOT=/cluster/tufts/paralab/tawal01/jcp-regimes/refC1b
 PY=/cluster/tufts/paralab/tawal01/ae-research/venv/bin/python
 source /cluster/tufts/paralab/tawal01/ae-research/venv/bin/activate
 export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest

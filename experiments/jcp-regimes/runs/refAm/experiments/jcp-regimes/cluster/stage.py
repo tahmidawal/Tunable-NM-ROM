@@ -21,7 +21,8 @@ EXTRA = ['experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterat
          'experiments/separable-decoder/sep_common.py',
          'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
 DRIVERS = ('qacc', 'refjob', 'refslim', 'fverify')
-GRES = {'h200': ('gpu:h200:1', None)}                     # DESIGN A2.6: every job on H200
+GRES = {'h200': ('gpu:h200:1', None),                     # DESIGN A2.6 / A9: H200, or A100-80G where the plan says so
+        'a100-80G': ('gpu:a100:1', '--constraint=a100-80G')}
 SKIP = ('runs/', 'audits/', 'plots/', 'report', 'HEARTBEAT.json', 'store/')
 
 
@@ -52,6 +53,7 @@ def main():
         remaining = sum(v['time_limit_hours'] for k, v in plan['attempts'].items() if k not in seen)
         assert led['spent_gpu_hours'] + led['reserved_gpu_hours'] + remaining <= 60 + 1e-9, 'plan exceeds the cap'
         assert abs(plan['attempts'][a.attempt]['time_limit_hours'] - a.hours) < 1e-9, 'time limit differs from the plan'
+        assert plan['attempts'][a.attempt].get('gpu', 'h200') == a.gpu, 'GPU type differs from the plan (A9)'
     if not a.attempt.startswith('smk'):
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
         for drv, cf in [r.split(':', 1) for r in a.run]:

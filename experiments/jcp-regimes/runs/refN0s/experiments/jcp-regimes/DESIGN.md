@@ -668,3 +668,19 @@ smk2 6074276, `codex-smoke-results-1`) and pre-production audit 7 (READY-FOR-PRO
 configurations) are final. Each planned job is staged with `cluster/stage.py`, Codex job-audited, and submitted through the
 campaign sbatch lock (account cap 8), at most 3 lane jobs at a time. The 3D regimes stay deferred (A1.12) and are recorded as
 deferred in the report; the FOM accuracy comparison stays deferred (A3.3 step 1).
+
+---
+
+## Amendment A9 (2026-10-19, during production; before any affected job ran)
+
+**Why.** The H200 partition is saturated by multi-GPU requests from other users: refC2 and refC1 sat PENDING for over an
+hour while A100-80G nodes were idle. A2.6 fixed H200 for every job only for resource planning (E0's H200 rates); no lane
+result depends on timing (this lane makes no speed claim), and E0 itself produced 2D references on both GPU types.
+
+**Change.** The ordinary-cost jobs run on **A100-80G**: refN0, refN0s, refB1, refB2, rom1024, ps. The low-viscosity
+reference jobs (refAm, refC1, refC2) and refAp stay on H200. A100 projections scale the smoke's H200 rates by
+$326/145.5 = 2.24$ (E0's median 2D ST case time, A100 / H200), except PS (its 600 s/case rate is already an A100 rate) and
+`fverify` (CPU). refC1 (job 6074948) was cancelled while PENDING (elapsed 0) to free a lane slot and is replanned as
+**refC1b** (same runs, H200). The replanned remainder (`resources.py replan`): projection 32.7 GPU-h in total, new
+reservations 34.5 h; committed 16.3 + 34.5 = 50.8 ≤ 60. Peak device memory of a refined case (E0: 40.6 GB at
+$L=12288$) and of the ROM job (smoke: 17.3 GB) fit an 80 GB A100. `stage.py` refuses a GPU type that differs from the plan.

@@ -63,19 +63,23 @@ def basis():
                 fverify_per_field=st_[need[1]] / n_fields(smk_rom), calib_agree=bool(sm['calib_agree']), smoke=sm['run'])
 
 
-def cost(runs, b):
+A100_FACTOR = 326. / 145.5     # A9: E0 2D ST median seconds, A100 / H200 (22 A100 and 80 H200 cases)
+
+
+def cost(runs, b, gpu='h200'):
     total, parts = 0., []
     for r in runs:
         drv, cf = r.split(':', 1)
         cfg = json.loads((HERE / cf).read_text())
+        f_ = A100_FACTOR if gpu == 'a100-80G' else 1.
         if drv == 'refjob' and cfg['mode'] == 'fd':
-            rate = b['lownu'] if cfg['cohort'] in LOWNU else b['ordinary']
+            rate = f_ * (b['lownu'] if cfg['cohort'] in LOWNU else b['ordinary'])
             s = len(cfg['cases']) * rate * 1.2 + 180 + TIGHT_RESERVE_H * 3600 * cfg.get('tight_allowance', 0)
-            s += b['probe'] * len(cfg.get('probes', {}).get('tight_coarse', []))
+            s += f_ * b['probe'] * len(cfg.get('probes', {}).get('tight_coarse', []))
         elif drv == 'refjob' and cfg['mode'] == 'ps':
             s = len(cfg['cases']) * 600. + 180
         elif drv == 'qacc':
-            s = rom_runs(cfg) * b['rom_per_run'] * 1.3 + 300
+            s = rom_runs(cfg) * f_ * b['rom_per_run'] * 1.3 + 300
         elif drv == 'fverify':
             rom = json.loads((HERE / 'configs' / 'rom1024.json').read_text())
             s = max(300., n_fields(rom) * b['fverify_per_field'] * 2)
@@ -131,5 +135,43 @@ def plan():
     print(json.dumps({k: v for k, v in pl.items() if k != 'basis'}, indent=1))
 
 
+def replan(gpu_map, rename):
+    """A9: re-certify the not-yet-submitted part of the plan with per-attempt GPU types. Attempts already in the ledger
+    keep their plan entries; `rename` maps a cancelled-before-start attempt to its new name (same runs)."""
+    b = basis()
+    old = json.loads((HERE / 'checks' / 'resources-plan.json').read_text())
+    led = json.loads((HERE / 'runs' / 'GPU-LEDGER.json').read_text())
+    live = {j['attempt'] for j in led['jobs'] if j['state'] not in ('CANCELLED',)}
+    committed = led['spent_gpu_hours'] + led['reserved_gpu_hours']
+    out, newh, proj = {}, 0., 0.
+    for a, v in old['attempts'].items():
+        if a in live:
+            out[a] = dict(v, gpu=v.get('gpu', 'h200'))
+            proj += v['projection_hours']
+            continue
+        na = rename.get(a, a)
+        assert na not in {j['attempt'] for j in led['jobs']}, f'{na} already used'
+        g = gpu_map.get(na, 'h200')
+        p_, parts = cost(v['runs'], b, g)
+        h = math.ceil(1.5 * p_ * 4) / 4
+        cfgs = {r.split(':', 1)[1]: hashlib.sha256((HERE / r.split(':', 1)[1]).read_bytes()).hexdigest() for r in v['runs']}
+        (HERE / 'checks' / f'resources-{na}.json').write_text(json.dumps(dict(attempt=na, projection_hours=round(p_, 4),
+            time_limit_hours=h, gpu=g, configs=cfgs, runs=v['runs'], parts=parts, basis=b), indent=1) + '\n')
+        out[na] = dict(projection_hours=round(p_, 4), time_limit_hours=h, runs=v['runs'], gpu=g)
+        newh += h
+        proj += p_
+    if proj > LIMIT or committed + newh > 60.:
+        raise SystemExit(f'replan does not fit: projection {proj:.1f}, committed {committed:.1f} + new {newh:.1f}')
+    pl = dict(old, attempts=out, projection_hours=round(proj, 3),
+              total_time_limit_hours=sum(v['time_limit_hours'] for v in out.values()),
+              remaining_reservation_hours=newh, replanned='A9', a100_factor=A100_FACTOR)
+    (HERE / 'checks' / 'resources-plan.json').write_text(json.dumps(pl, indent=1) + '\n')
+    print(json.dumps({k: (v if k != 'basis' else '...') for k, v in pl.items()}, indent=1))
+
+
 if __name__ == '__main__':
-    {'plan': plan}[sys.argv[1]]()
+    if sys.argv[1] == 'replan':
+        A100 = ['refN0', 'refN0s', 'refB1', 'refB2', 'rom1024', 'ps']
+        replan({a: 'a100-80G' for a in A100}, {'refC1': 'refC1b'})
+    else:
+        {'plan': plan}[sys.argv[1]]()

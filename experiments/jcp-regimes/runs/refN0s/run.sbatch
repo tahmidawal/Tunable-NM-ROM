@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=jg_refN0s
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:h200:1
-
+#SBATCH --gres=gpu:a100:1
+#SBATCH --constraint=a100-80G
 #SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=200G
-#SBATCH --time=01:15:00
+#SBATCH --time=02:15:00
 #SBATCH --output=/cluster/tufts/paralab/tawal01/jcp-regimes/refN0s/logs/%j.out
 #SBATCH --error=/cluster/tufts/paralab/tawal01/jcp-regimes/refN0s/logs/%j.err
 set -euo pipefail

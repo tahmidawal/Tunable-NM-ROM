@@ -1,7 +1,8 @@
 {
  "attempt": "refN0s",
- "projection_hours": 0.6745,
- "time_limit_hours": 1.25,
+ "projection_hours": 1.408,
+ "time_limit_hours": 2.25,
+ "gpu": "a100-80G",
  "configs": {
   "configs/ref-N0s.json": "ba6055f12159de20140f7d43aed04c4038584710074ed77f8bebb41a28f88c70",
   "configs/slim-N0s.json": "2b7352ae747ec2672bba51622f6099adf6c4cdd0c6b137265a7eadd55208ed42"
@@ -13,7 +14,7 @@
  "parts": [
   {
    "run": "refjob:configs/ref-N0s.json",
-   "seconds": 2308.3307458430527
+   "seconds": 4948.631086906084
   },
   {
    "run": "refslim:configs/slim-N0s.json",

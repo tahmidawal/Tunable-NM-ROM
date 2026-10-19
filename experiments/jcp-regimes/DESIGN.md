@@ -684,3 +684,6 @@ $326/145.5 = 2.24$ (E0's median 2D ST case time, A100 / H200), except PS (its 60
 **refC1b** (same runs, H200). The replanned remainder (`resources.py replan`): projection 32.7 GPU-h in total, new
 reservations 34.5 h; committed 16.3 + 34.5 = 50.8 ≤ 60. Peak device memory of a refined case (E0: 40.6 GB at
 $L=12288$) and of the ROM job (smoke: 17.3 GB) fit an 80 GB A100. `stage.py` refuses a GPU type that differs from the plan.
+*A9 wording correction (job audit `codex-job-prod-3`):* the decision rules do not depend on hardware, but floating-point
+differences between GPU types could flip a borderline reference-acceptance or qualification decision; identical outcomes
+across hardware are not claimed. Each job's GPU type is recorded with its results.

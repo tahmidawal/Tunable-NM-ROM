@@ -1,12 +1,12 @@
 #!/bin/bash
 #SBATCH --job-name=jg_rom1024
 #SBATCH --partition=gpu
-#SBATCH --gres=gpu:h200:1
-
+#SBATCH --gres=gpu:a100:1
+#SBATCH --constraint=a100-80G
 #SBATCH --exclude=pax007
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=200G
-#SBATCH --time=01:30:00
+#SBATCH --time=03:00:00
 #SBATCH --output=/cluster/tufts/paralab/tawal01/jcp-regimes/rom1024/logs/%j.out
 #SBATCH --error=/cluster/tufts/paralab/tawal01/jcp-regimes/rom1024/logs/%j.err
 set -euo pipefail

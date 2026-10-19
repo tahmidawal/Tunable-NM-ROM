@@ -1,9 +1,11 @@
-"""Stage one jcp-qualify attempt into its own directory (vendored quadrature-lane pattern). Every staged file is taken
-from the Git blob at HEAD (`git show`), so the job runs a committed tree; files present in the checkout must equal their
-blob byte for byte. One attempt may run several (driver, config) steps sequentially in one job.
+"""Stage one jcp-regimes attempt into its own directory (pattern of jcp-qualify's cluster/stage.py). Every staged file is
+taken from the Git blob at HEAD (`git show`), so the job runs a committed tree; files present in the checkout must equal
+their blob byte for byte. One attempt runs the unit gates, then its (driver, config) steps sequentially in one job.
 
-    python cluster/stage.py <attempt> --run p1acc:configs/x.json [--run p1time:configs/y.json ...]
-                            [--gpu a100-80G|h200|h100|a100] [--mem 200G] [--hours 2.5] [--mem-fraction 0.92]
+    python cluster/stage.py <attempt> --run refjob:configs/x.json [--run qacc:configs/y.json ...] --hours 2
+                            [--gpu h200|a100-80G] [--mem 200G] [--mem-fraction 0.92]
+Production attempts (not smk*) need checks/resources-<attempt>.json bound to the exact configs and runs, and a time
+limit >= 1.5 x its projection (DESIGN A2.6).
 """
 import argparse
 import hashlib
@@ -13,15 +15,14 @@ import subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
-NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-qualify'
-LANE = 'experiments/jcp-qualify'
+NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-regimes'
+LANE = 'experiments/jcp-regimes'
 EXTRA = ['experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
          'experiments/separable-decoder/sep_common.py',
          'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
-DRIVERS = ('qacc', 'qtime', 'qpilot', 'q3run')
-GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'a100': ('gpu:a100:1', None),
-        'h100': ('gpu:h100:1', None), 'h200': ('gpu:h200:1', None)}
-SKIP = ('runs/', 'audits/', 'checks/', 'plots/', 'report', 'HEARTBEAT.json')
+DRIVERS = ('qacc', 'refjob', 'refslim')
+GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'h200': ('gpu:h200:1', None)}
+SKIP = ('runs/', 'audits/', 'plots/', 'report', 'HEARTBEAT.json', 'store/')
 
 
 def lane_files(commit):
@@ -33,31 +34,20 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('attempt')
     p.add_argument('--run', action='append', required=True)
-    p.add_argument('--gpu', default='a100-80G', choices=sorted(GRES))
+    p.add_argument('--gpu', default='h200', choices=sorted(GRES))
     p.add_argument('--mem', default='200G')
     p.add_argument('--hours', type=float, required=True)
     p.add_argument('--mem-fraction', default='0.92')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
-    cert = ROOT / LANE / 'checks' / f'resources-{a.attempt}.json'
-    if not (a.attempt.startswith('smk') or a.attempt.startswith('pilot')):
-        # production attempts need a smoke-derived certificate; the time limit must cover projection x 1.5 (A1.11)
-        c_ = json.loads(cert.read_text())
+    if not a.attempt.startswith('smk'):
+        c_ = json.loads((ROOT / LANE / 'checks' / f'resources-{a.attempt}.json').read_text())
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
-        for drv, cf in [r.split(':', 1) for r in a.run]:     # the certificate is bound to the exact configs and runs
+        for drv, cf in [r.split(':', 1) for r in a.run]:
             assert c_['configs'].get(cf) == hashlib.sha256((ROOT / LANE / cf).read_bytes()).hexdigest(), cf
         assert sorted(c_['runs']) == sorted(a.run), (c_['runs'], a.run)
-    if a.attempt.startswith('time'):            # A5.1: a timing panel must contain every recorded fallback configuration
-        m = a.attempt[4:].split('r')[0]
-        led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
-        fb = {k + '|fb' for k in led.get('fallback_state', {}).get(m, [])}      # fallback identity in a timing panel
-        frozen = {128: 'fib4181', 256: 'gauss128', 384: 'gauss128', 512: 'gauss192'}
-        have = set()
-        for r in a.run:
-            for sp in json.loads((ROOT / LANE / r.split(':', 1)[1]).read_text()).get('subjects', []):
-                rr = int(sp['Rp'])
-                have.add(f"{sp['mesh']}|R{rr}|{sp['form']}|{sp['scheme']}|{float(sp['factor']):g}" + ('|fb' if sp['rule'] != frozen[rr] else ''))
-        assert fb <= have, ('timing panel lacks fallback subjects', sorted(fb - have))
+    else:
+        assert a.hours <= 2.0, 'a smoke is capped at 2 GPU-h (COMMON-BRIEF gating)'
     runs = []
     for r in a.run:
         drv, cfg = r.split(':', 1)
@@ -91,7 +81,7 @@ def main():
     steps = '\n'.join(f'echo "STEP {drv} {cfg} $(date -u +%FT%TZ)"\n"$PY" {drv}.py --config {cfg} --out "$TASK_ROOT/output/{drv}_{Path(cfg).stem}"'
                       for drv, cfg in runs)
     script = f'''#!/bin/bash
-#SBATCH --job-name=jq_{a.attempt}
+#SBATCH --job-name=jg_{a.attempt}
 #SBATCH --partition=gpu
 #SBATCH --gres={gres}
 {('#SBATCH ' + constraint) if constraint else ''}
@@ -118,6 +108,7 @@ nvidia-smi --query-gpu=name,uuid,memory.total --format=csv,noheader
 df -h /cluster/tufts/paralab | tail -1
 "$PY" -c "import jax,sys; b=jax.default_backend(); print(f'jax_backend={{b}}',flush=True); sys.exit(0 if b=='gpu' else 42)"
 cd {LANE}
+JAX_PLATFORMS=cpu "$PY" test_regimes.py "$TASK_ROOT/output/unit_gates.json"
 {steps}
 cd "$TASK_ROOT"
 find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256

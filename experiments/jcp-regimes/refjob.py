@@ -168,19 +168,24 @@ def solve_case(coh, j, kind):
             jd = judge(triple)
         else:
             tight_skipped = True
+    refine_skipped = False
     if ok(jd['checks']) and jd['checks']['floor'] and not (jd['checks']['order'] and jd['checks']['peclet']):
-        L, dt = cfg['refine']
-        triple = triple[1:] + [get(L, dt, 'tight' if tight_used else 'refine')]
-        refined = True
-        jd = judge(triple)
-        if ok(jd['checks']) and not jd['checks']['floor'] and not tight_used:
-            tight_skipped = True                       # E6: a refined tight triple is never run (A2.6)
+        if tight_used:
+            refine_skipped = True                      # E6 (A2.6, A3.2): no refinement after a tight triple; recorded
+        else:
+            L, dt = cfg['refine']
+            triple = triple[1:] + [get(L, dt, 'refine')]
+            refined = True
+            jd = judge(triple)
+            if ok(jd['checks']) and not jd['checks']['floor']:
+                tight_skipped = True                   # E6: a refined tight triple is never run (A2.6)
     arrays['t0'] = t0
     meta = dict(dim=d, cohort=coh.name, case=j, kind=kind, desc=coh.desc(j), cohort_sha256=coh.sha256,
                 metric_id=V.METRIC_ID[d], lattice=RC.LATTICE[d], times=RC.TIMES.tolist(),
                 t0_sha256=SI.sha(np.ascontiguousarray(t0).tobytes()), scheme=cfg['scheme'], attempts=attempts,
                 final=[x[1] for x in triple], history=history, judge=jd, outcome=jd['outcome'], refined=refined,
-                tight_used=tight_used, tight_skipped=tight_skipped, floor_stab=V.FLOOR_STAB)
+                tight_used=tight_used, tight_skipped=tight_skipped, refine_skipped=refine_skipped,
+                tight_allowance_left=TIGHT_LEFT[0], floor_stab=V.FLOOR_STAB)
     return arrays, meta
 
 
@@ -196,12 +201,15 @@ def probe_case(coh, j, kind, arrays, meta, what):
     out = {}
     if 'tight_coarse' in what:
         L, dt = cfg['base'][0]
-        a0 = next(a for a in meta['attempts'] if a['L'] == L and a['purpose'] in ('prod', 'retry'))
+        # A3.1: the production member is the last prod/retry attempt at L (a successful retry replaces a failed prod)
+        a0 = [a for a in meta['attempts'] if a['L'] == L and a['purpose'] in ('prod', 'retry')][-1]
         rec, lat, res, nwt = attempt(coh, j, L, dt, cfg['scheme'], 'tight')
         dev = float(max(np.linalg.norm((lat[k] - arrays[a0['id']][k]).ravel()) / n0 for k in range(1, 6)))
-        out['tight_coarse'] = dict(L=L, prod_id=a0['id'], tau_prod=a0['tau'], tau_tight=rec['tau'], dev=dev,
-                                   tight_steps_ok=rec['steps_ok'], passed=bool(rec['steps_ok'] and dev <= a0['tau']),
-                                   seconds=rec['seconds'])
+        valid = bool(rec['steps_ok'] and a0['steps_ok'] and np.isfinite(dev))
+        out['tight_coarse'] = dict(L=L, prod_id=a0['id'], prod_steps_ok=a0['steps_ok'], tau_prod=a0['tau'],
+                                   tau_tight=rec['tau'], dev=dev, tight_steps_ok=rec['steps_ok'], valid=valid,
+                                   verdict=('probe invalid' if not valid else ('agree' if dev <= a0['tau'] else 'disagree')),
+                                   passed=bool(valid and dev <= a0['tau']), seconds=rec['seconds'])
         log(f"  PROBE {coh.name} c{j} tight_coarse dev={dev:.3e} tau_prod={a0['tau']:.3e} passed={out['tight_coarse']['passed']}")
     if 'upwind' in what:
         lv = []
@@ -318,6 +326,7 @@ def mode_fd(cfg, outdir, rep):
     else:
         raise SystemExit(f"cohort {cfg['cohort']} not admissible in jcp-regimes")
     cases = cfg.get('cases') or list(range(coh.n))
+    assert cases == sorted(cases), 'cases run in ascending index (A3.2: the allowance goes to the first floor failure)'
     TIGHT_LEFT[0] = int(cfg.get('tight_allowance', 0))
     rep['tight_allowance'] = TIGHT_LEFT[0]
     rep['cohort'] = dict(name=coh.name, n=coh.n, sha256=None if sealed else coh.sha256, cases=cases,
@@ -344,6 +353,8 @@ def mode_fd(cfg, outdir, rep):
                 manifest.append(dict(file=str(stem.relative_to(outdir)) + '.npz', sha256=SI.sha(npz)))
                 manifest.append(dict(file=str(stem.relative_to(outdir)) + '.json',
                                      sha256=SI.sha(Path(str(stem) + '.json').read_bytes())))
+                if meta.get('tight_used'):              # E6 (A3.2): allowance consumption survives restarts
+                    TIGHT_LEFT[0] = max(0, TIGHT_LEFT[0] - 1)
                 rep['cases'].append(dict(case=j, kind=kind, outcome=meta['outcome'], eps_ref=meta['judge']['eps_ref'],
                                          p=meta['judge']['p'], seconds=meta.get('seconds'), resumed=True))
                 log(f'resumed (verified) {stem}')

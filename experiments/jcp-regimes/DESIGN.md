@@ -517,3 +517,46 @@ regime the report lists the **non-dominated matching set**: ladder members whose
 configuration's, minimal under the partial order ($N$ smaller or equal and $\Delta t$ larger or equal). If no member matches,
 the entry reads "no ladder member matches (up to N = 128, Δt = 0.00625)". Accuracy only (A1.11). 3D stays deferred until its
 own amendment; `rcohorts.draw_table_3d` raises until then.
+
+---
+
+## Amendment A3 (2026-10-19, after Codex design audit 3, before any cluster run or data)
+
+Audit `audits/codex-design-3.md`: NEEDS-RESTATEMENT, three fixes; fixes 1, 3, 4, 5, 7 of audit 2 CORRECT.
+
+**A3.1 Probe validity (fix 1).** The production member of the calibration probe is the **last** production or retry
+attempt at $L=2048$ of the case's procedure (a successful retry replaces a failed production attempt). The probe is
+**valid** only if both members pass `steps_ok` and the deviation is finite; otherwise its verdict is "probe invalid",
+whatever the numbers. Verdicts: agree / disagree / probe invalid; only "agree" on all three pilots counts as the A2.2 pass.
+
+**A3.2 Tight allowance as a cohort-level policy (fix 2).** Each regime's references run in one job, cases in ascending
+index (asserted). The allowance is per **cohort**: A+ has 1, every other cohort 0; it is consumed by the first floor failure
+in ascending case index; a restarted job counts every verified-resumed case that used the tight path against it (so
+restarts and ordering cannot change which case gets it). Terminal branches, superseding A1.4's "escalation unchanged":
+(i) floor failure with no allowance left → outcome `unresolved-floor`, `tight_skipped=true`; (ii) a tight base triple that
+then fails order or Péclet → **no refinement**, outcome as judged, `refine_skipped=true`; (iii) a refined triple that fails
+the floor → no tight refined triple, `tight_skipped=true`. **Selection effect disclosed:** eligibility now depends on a
+resource policy that differs between cohorts, and the direction of the resulting bias on ROM errors is unknown (floor
+failures may mark either hard cases or cases with very small discretisation differences). Every accuracy table prints,
+next to the coverage, the count of cases "unresolved under this allowance" (i–iii) separately from cases that failed the
+full E0 procedure.
+
+**A3.3 Reduction branch and populations (fix 3).** Smoke pilot references (dev6 c0, C2 c9, B2 c15, A+ c13) and every
+smoke control are **diagnostic only**: production regenerates every reference and ROM run in its own job, so the primary
+populations are exactly the production populations. Order of reductions if the certified total exceeds 50 GPU-h, each
+step only if the previous is insufficient: (1) the FOM accuracy item; (2) the PS cross-check; (3) C2 reduced to c0–c7 for
+references, ROM runs, Q1/Q2 and labels together (the dropped C2 cases are marked "deferred", never silently omitted);
+if the mandatory remainder (N0, N0s, A+, A−, C1, B1, B2 references; the ROM job; C2 at 8 cases) still does not fit,
+**stop and amend**. 3D is outside this pre-registration (A1.12). The production certificate lists every workload with
+its reservation: each reference job (cases × class rate, retries/compilation ×1.2, the A+ tight reserve), the ROM job (all
+arms × all cases × prod/tight/tighter/qp/qpp runs from the smoke's measured seconds), PS, and any conditional extra
+probe of A1.4 (one per regime, coarsest-level tight run, from the smoke's probe seconds).
+
+**Minor corrections.** E0's timing record is 102 ST cases of which 80 ran on H200 (median 145.5 s) and 22 on A100 (median
+326 s); the 693 s refined case is the whole case (its 12288-level solve took 526 s), so 850 s per low-ν case is a
+conservative planning allowance, not an observed increment. Wilcoxon "ties" means ties among absolute non-zero
+$\log q_j$. Ratio coverage is counted after the zero / non-finite exclusions. The PS cross-check cases are one per cohort
+N0, A+, A−, C1, C2, B1, B2 (seven; N0s excluded). σ's normalisation $\max_{\text{nodes}}|u(t_0)|$ is computed as the
+descriptor amplitude $a$ (the exact peak of the continuous IC; for single bumps it exceeds the nodal maximum by less than
+$(h/w)^2\le10^{-6}$ at the finest levels; for B1/B2 $a$ is the peak over the $1024^2$ nodes, which are nodes of every
+reference level).

@@ -53,6 +53,11 @@ def sel(b):
         groups.append(dict(name=f'R{r}', Rp=r, target='gauss384', check='gauss320', check_cases='dev6', tighter_cases='dev6',
                            arms=SEL_ARMS, rules=[dict(label=c, rule=c, succ=s, level='full') for c, s in CANDIDATES]))
     c = dict(attempt=f'e2s{b}', driver='r2acc', mesh=1024, edges=EDGES, cases='all38', groups=groups)
+    if int(b) == 0:                                  # A3.6: G-E2.3 replay references pinned in the staged config
+        import e1analyze as EA
+        c['replay'] = {f'{job}/{nm}': EA.pinned_sha(('p1', job, nm)) for job in ('acc1024', 'acc256')
+                       for nm in ('R_R128_BE.npz', 'R_R128_CNR.npz') + (('R_R256_BE.npz', 'R_R256_CNR.npz', 'R_R384_BE.npz',
+                                                                         'R_R384_CNR.npz') if job == 'acc1024' else ())}
     bc = bank_cfg(b)
     if bc:
         c['bank'] = bc

@@ -155,7 +155,7 @@ def front(C1024, timing):
     return slots
 
 
-def g_e23(sel_out, v256_out):
+def g_e23(sel_out, v256_out, pins):
     """A3.6: incumbent replay. 1024^2 from the selection job (candidates fib4181 / gauss128), 256^2 R128 from verdict job a."""
     import numpy as _np
     want = EA.expected_ids('all38')
@@ -165,11 +165,15 @@ def g_e23(sel_out, v256_out):
                             (384, 'gauss128', 'LSPG_BE_1', 'R_R384_BE.npz'), (384, 'gauss128', 'LSPG_CNR_1', 'R_R384_CNR.npz')):
         z = _np.load(sel_out / f'R_R{r}_{lab}_{arm}.npz')
         rows[f'1024|R{r}|{arm}'] = EA.reproduce(z['W'], [str(x) for x in z['case_ids']], [('p1', 'acc1024', nm)], None, want)
+        rows[f'1024|R{r}|{arm}']['pinned'] = pins.get(f'acc1024/{nm}') == EA.pinned_sha(('p1', 'acc1024', nm))
+        rows[f'1024|R{r}|{arm}']['passed'] &= rows[f'1024|R{r}|{arm}']['pinned']
     for arm, nm in (('LSPG_BE_1', 'R_R128_BE.npz'), ('LSPG_CNR_1', 'R_R128_CNR.npz')):
         lab = 'sel' if (v256_out / f'R_R128_sel_{arm}.npz').exists() and \
             str(_np.load(v256_out / f'R_R128_sel_{arm}.npz')['rule']) == 'fib4181' else 'dep'
         z = _np.load(v256_out / f'R_R128_{lab}_{arm}.npz')
         rows[f'256|R128|{arm}'] = EA.reproduce(z['W'], [str(x) for x in z['case_ids']], [('p1', 'acc256', nm)], None, want)
+        rows[f'256|R128|{arm}']['pinned'] = pins.get(f'acc256/{nm}') == EA.pinned_sha(('p1', 'acc256', nm))
+        rows[f'256|R128|{arm}']['passed'] &= rows[f'256|R128|{arm}']['pinned']
     return dict(rows=rows, passed=all(v['passed'] for v in rows.values()))
 
 
@@ -252,7 +256,8 @@ def main():
                 rep['h_acc_r'][f'{kind}|{m}|{sc}'] = h_acc_r(C, m, kind, sc)
     rep['front_1024'] = front(C[1024], Path(a.time) if a.time else None)
     if b == 0:
-        rep['G-E2.3'] = g_e23(Path(a.sel), Path(a.v256)) if a.v256 else dict(passed=False, reason='256^2 verdict job missing')
+        rep['G-E2.3'] = g_e23(Path(a.sel), Path(a.v256),
+                              json.loads((Path(a.sel) / 'result.json').read_text())['config'].get('replay', {})) if a.v256 else dict(passed=False, reason='256^2 verdict job missing')
     (HERE / 'checks' / f'e2-2d-{b}.json').write_text(json.dumps(rep, indent=1, default=float) + '\n')
     print(json.dumps({k: v['outcome'] if isinstance(v, dict) and 'outcome' in v else v.get('range_128_384')
                       for k, v in {**rep['h_acc_n'], **rep['h_acc_r']}.items()}, default=str))

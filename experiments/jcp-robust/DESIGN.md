@@ -813,3 +813,10 @@ raised to 4 h (data generation was ~1.4× slower than the incumbent's). The pilo
 bank (e2q runs). The 3D evaluation part of smk3 (incumbent W1024 gl64/gl80 heavy cell, W256 lattice replay G-E2.3) runs
 as its own smoke **smk3c** (≤ 1 GPU-h). For the 2D release (A8) "smk3 accepted" is read as "smk3c accepted"; this is
 recorded here and reported to the coordinator.
+
+**A9.2 (coordinator-approved, 2026-10-19).** The coordinator agreed that "smk3c accepted" satisfies the 2D release
+condition of A8, and that `e2t3d1` acts as the 3D memory pilot when 3D is released, with this pre-declared abort rule:
+if `e2t3d1`'s host MaxRSS (sacct) × 1.25 exceeds its `--mem` request (420G), or its device peak (memwrap) exceeds 120 GB, or
+it does not complete within its time limit, then **E2 3D seeds 2–3 are deferred** (reported as deferred; never retried at
+a larger size or limit). smk3 already showed 176.8 GB host RSS before the bank fit, so the job audit of `e2t3d1` must cover
+the `--mem` headroom explicitly. 3D production stays held until jcp-dims hands back its 3D quadrature front.

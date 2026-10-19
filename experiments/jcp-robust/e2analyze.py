@@ -30,6 +30,7 @@ def records(out, want_label_of):
     res = json.loads((out / 'result.json').read_text())
     e2bank.use(res['config'].get('bank'), (res.get('checkpoint_sha256'), res.get('rotation_sha256')))
     rec = dict(complete=bool(res.get('complete')) and (out / 'COMPLETE').exists(), backend=res['backend'], job_id=res['job_id'],
+               attempt=res['config'].get('attempt'), selection_cfg=res['config'].get('selection'),
                bank=res['config'].get('bank'), mesh=int(res['mesh']), cfg={})
     for g in res['config']['groups']:
         r = int(g['Rp'])
@@ -212,6 +213,22 @@ def main():
     for m, rec_ in list(C.items()) + ([('v1024', extra)] if a.v1024 else []):
         if bid(rec_['bank']) != wid:
             raise SystemExit(f'job of mesh {m} ran on another bank than bank {b}: {bid(rec_["bank"])} != {wid}')
+    # code audit 11 #3: every input occupies its registered role (attempt, mesh), verdict jobs were generated from THIS
+    # selection file, and every 'sel' / 'dep' row runs the rule its role requires
+    import hashlib as _h
+    sel_sha = _h.sha256((HERE / 'checks' / f'select2d-{b}.json').read_bytes()).hexdigest()
+    roles = [(C[1024], f'e2s{b}', 1024, False)] + ([(C[256], f'e2v{b}a', 256, True)] if a.v256 else []) + \
+        ([(C[4096], f'e2v{b}b', 4096, True)] if a.v4096 else []) + ([(extra, f'e2v{b}c', 1024, True)] if a.v1024 else [])
+    for rec_, att_, mesh_, is_ver in roles:
+        if rec_['attempt'] != att_ or rec_['mesh'] != mesh_:
+            raise SystemExit(f"input in role {att_}/{mesh_} is job {rec_['attempt']}/{rec_['mesh']}")
+        if is_ver and (rec_['selection_cfg'] or {}).get('sha256') != sel_sha:
+            raise SystemExit(f'verdict job {att_} was generated from another selection file')
+    for m_, rec_ in list(C.items()):
+        for (r_, kind_, ak_), x_ in rec_['cfg'].items():
+            want_rule = sel['selected'][str(r_)]['rule'] if kind_ == 'sel' else DEPLOYED[r_]
+            if x_['rule'] != want_rule:
+                raise SystemExit(f'{m_}|R{r_}|{kind_}|{ak_} runs {x_["rule"]}, its role requires {want_rule}')
     if str(sel.get('job_id')) != str(C[1024]['job_id']):                         # selection artefact from THIS job
         raise SystemExit(f"selection file {sel.get('job_id')} is not from the selection job {C[1024]['job_id']}")
     jobs = {m: dict(job_id=C[m]['job_id'], complete=C[m]['complete'], backend=C[m]['backend']) for m in C}

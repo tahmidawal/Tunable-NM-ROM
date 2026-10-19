@@ -124,8 +124,10 @@ def main():
     b = int(a.bank)
     sel = json.loads((HERE / 'checks' / f'select3d-{b}.json').read_text())
     J = [load_job(a.qa, a.sa), load_job(a.qb, a.sb)]
-    for res_, *_ in J:
+    for (res_, *_), att_ in zip(J, (f'e2q{b}a', f'e2q{b}b')):     # registered roles (code audit 11 #3, applied to 3D)
         check_bank3d(res_['config'], b)
+        if res_['config'].get('attempt') != att_:
+            raise SystemExit(f"input in role {att_} is job {res_['config'].get('attempt')}")
     if sorted(sel['jobs']) != sorted(r_['config']['attempt'] for r_, *_ in J) or \
             any(str(sel['jobs'][r_['config']['attempt']]['job_id']) != str(r_['job_id']) for r_, *_ in J):
         raise SystemExit('selection file does not come from these two jobs')
@@ -247,6 +249,9 @@ def main():
         if bank_of(fres['config']) != bank_of(J[0][0]['config']):          # code audit 3 #23: same bank identity
             fres = dict(fres, complete=False)
         check_bank3d(fres['config'], b)
+        import hashlib as _h
+        if fres['config'].get('attempt') != f'e2f{b}' or (fres['config'].get('selection') or {}).get('file') != f'checks/select3d-{b}.json':
+            raise SystemExit('front job is not the registered e2f job of this selection')
         tm = next(iter(fres['timing'].values()))
         ba = {}
         if tm.get('valid') is True and fres.get('complete') and fres['backend'] == 'gpu':     # code audit 2 #23: d3run's

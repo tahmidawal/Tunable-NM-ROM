@@ -38,9 +38,12 @@ def _code_version():
     config_entry itself, the scoring / certificate / decode modules and the bank, rotation and checkpoint pins."""
     import inspect
     here = Path(__file__).resolve().parent
+    # A13.1: dstats enters through the one function the cached path can reach (dscore -> DS.q2_label), not as a whole
+    # file; the cache built under the whole-file binding (dstats.py at f1d1bca3a, version c6e315cf...) is aliased
+    # below because dstats.py has changed since then only in panel_accept (3D timing panels; unreachable from here).
     blob = inspect.getsource(config_entry).encode() + b''.join(
-        (here / f).read_bytes() for f in ('dscore.py', 'qscore.py', 'npcheck.py', 'dstats.py', 'dcert.py', 'p1score.py',
-                                          'rules2d.py', 'vendor/quad2d/npbank.py'))
+        (here / f).read_bytes() for f in ('dscore.py', 'qscore.py', 'npcheck.py', 'dcert.py', 'p1score.py',
+                                          'rules2d.py', 'vendor/quad2d/npbank.py')) + inspect.getsource(DS.q2_label).encode()
     # acode-11: the quadrature generators used by the cached independent rho and the numerical globals are bound too.
     # They are compared against the values in force when the existing cache was built (unchanged since the setup
     # commit 2045e5908) and enter the version only if they differ, so any change to them invalidates the cache while
@@ -48,7 +51,12 @@ def _code_version():
     extra = dict({f: hashlib.sha256((here / f).read_bytes()).hexdigest() for f in EXTRA_PINS},
                  RHO_SUBSET_MAX=RHO_SUBSET_MAX, PRIMARY=PRIMARY, KAPPAS=list(KAPPAS), R_LIST=list(R_LIST))
     tail = b'' if extra == dict(EXTRA_PINS, **EXTRA_GLOBALS) else json.dumps(extra, sort_keys=True).encode()
-    return hashlib.sha256(blob + DEP_PINS.encode() + tail).hexdigest()
+    v = hashlib.sha256(blob + DEP_PINS.encode() + tail).hexdigest()
+    return VERSION_ALIAS.get(v, v)
+
+
+VERSION_ALIAS = {'eeb4d545aaa66d3015968ce7c3f657cd0dfc3de26db352bb30dbb2d07cca6bf8':
+                 'c6e315cfac1b448853846b63185b7dd8968880136d33792466bbd8f9cb22a223'}   # A13.1: {binding-by-function version of the tree at f1d1bca3a..HEAD: the whole-file version c6e315cf...}
 
 
 EXTRA_PINS = {'vendor/quad2d/qcore.py': '36d6551ad0f12746e96d409bb11878a78ef1c05c6cdbc9d5f58b3c666c7c0e0b',

@@ -821,3 +821,15 @@ instead of "offline (b) disagrees" (the stage (ii) MC draws are not run before `
 banner repeatedly. Submissions are fail-closed: three `f2kB`/`q3r8` attempts reserved nothing or were released after a
 manual `squeue`+`sacct` check (`ledger.py settle --confirmed-absent`), and the partially staged remote directory was
 removed before resubmission; exactly one job per attempt ran.
+
+## Amendment A13 (2026-10-19, production; analysis-cache binding — no registered cell, rule or verdict changes)
+
+**A13.1 dstats bound by function.** The 2D per-configuration cache bound the whole of `dstats.py`, so A12.2's T1 change
+(in `panel_accept`, a 3D timing-panel function the cached path never calls) invalidated every 2D cache entry whose raw
+archive is already offloaded. The cached path (`config_entry` → `dscore` → `qscore`/`npcheck`/`dcert`) reaches `dstats`
+only through `DS.q2_label` (`dscore.py:135`); the binding now includes that function's source instead of the file. The
+cache built under the whole-file binding (version `c6e315cf…`, `dstats.py` at `f1d1bca3a`) is aliased to the new
+binding's value for the current tree, which is valid because `git diff f1d1bca3a HEAD -- dstats.py` contains a single
+hunk inside `panel_accept`. Any later change to a bound source yields a different value, which has no alias, so it
+invalidates the cache as before. The 228 `f2kA` entries prefilled under the intermediate binding are recomputed from the
+local raw archive.

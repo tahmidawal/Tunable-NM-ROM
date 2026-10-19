@@ -1,7 +1,7 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-18T23:47:58Z",
- "step": "job audit 12 SUBMIT; s3d64b RUNNING (5932490, H200, 8.5 h wall); s2d256a held until 3D reconciled; next: watch for member-group errors in the first 15 min, then draft report while it runs",
+ "utc": "2026-10-19T00:07:19Z",
+ "step": "s3d64b 5932490 RUNNING 19 min, no ERR (member groups incl. dt=dt0*5/3 now run); drafting report; sacct waiter (<= 18 min)",
  "waiting_on": {
   "slurm_jobs": [
    5932490
@@ -10,7 +10,7 @@
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T00:06:58Z",
+ "expected_finish_utc": "2026-10-19T00:26:19Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

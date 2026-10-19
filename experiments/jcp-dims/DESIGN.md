@@ -827,9 +827,12 @@ removed before resubmission; exactly one job per attempt ran.
 **A13.1 dstats bound by function.** The 2D per-configuration cache bound the whole of `dstats.py`, so A12.2's T1 change
 (in `panel_accept`, a 3D timing-panel function the cached path never calls) invalidated every 2D cache entry whose raw
 archive is already offloaded. The cached path (`config_entry` → `dscore` → `qscore`/`npcheck`/`dcert`) reaches `dstats`
-only through `DS.q2_label` (`dscore.py:135`); the binding now includes that function's source instead of the file. The
+only through `DS.q2_label` (`dscore.py:135`); the binding now includes that function's source and the module thresholds it reads (`BAR`, `RHO_BAR`) instead of the file (t3s job audit 2). The
 cache built under the whole-file binding (version `c6e315cf…`, `dstats.py` at `f1d1bca3a`) is aliased to the new
 binding's value for the current tree, which is valid because `git diff f1d1bca3a HEAD -- dstats.py` contains a single
 hunk inside `panel_accept`. Any later change to a bound source yields a different value, which has no alias, so it
 invalidates the cache as before. The 228 `f2kA` entries prefilled under the intermediate binding are recomputed from the
 local raw archive.
+**A13.2** (t3s job audit 2) `t2`'s pending allowance is the projection of the provisional config from the complete
+interim 2D analysis: 284 subjects, 5.0489 GPU-h (supersedes A12.3's 268 / 4.80). Ledger: 28.6212 + `t3s` 12 + `t3c` 2.0
++ `t2` 5.0489 = 47.67 ≤ 55.

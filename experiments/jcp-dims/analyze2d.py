@@ -43,7 +43,8 @@ def _code_version():
     # below because dstats.py has changed since then only in panel_accept (3D timing panels; unreachable from here).
     blob = inspect.getsource(config_entry).encode() + b''.join(
         (here / f).read_bytes() for f in ('dscore.py', 'qscore.py', 'npcheck.py', 'dcert.py', 'p1score.py',
-                                          'rules2d.py', 'vendor/quad2d/npbank.py')) + inspect.getsource(DS.q2_label).encode()
+                                          'rules2d.py', 'vendor/quad2d/npbank.py')) + inspect.getsource(DS.q2_label).encode() \
+        + json.dumps(dict(BAR=DS.BAR, RHO_BAR=DS.RHO_BAR)).encode()     # q2_label's module globals (t3s audit 2)
     # acode-11: the quadrature generators used by the cached independent rho and the numerical globals are bound too.
     # They are compared against the values in force when the existing cache was built (unchanged since the setup
     # commit 2045e5908) and enter the version only if they differ, so any change to them invalidates the cache while
@@ -55,7 +56,7 @@ def _code_version():
     return VERSION_ALIAS.get(v, v)
 
 
-VERSION_ALIAS = {'eeb4d545aaa66d3015968ce7c3f657cd0dfc3de26db352bb30dbb2d07cca6bf8':
+VERSION_ALIAS = {'bca3bc9e95009f739ec46ebb7328279c83de752965a201875250061a22720322':
                  'c6e315cfac1b448853846b63185b7dd8968880136d33792466bbd8f9cb22a223'}   # A13.1: {binding-by-function version of the tree at f1d1bca3a..HEAD: the whole-file version c6e315cf...}
 
 

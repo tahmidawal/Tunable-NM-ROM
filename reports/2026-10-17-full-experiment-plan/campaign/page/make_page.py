@@ -29,6 +29,10 @@ d3, n3 = sum('baseline dominates X' in v['cell_line'] for v in q3x), len(q3x)
 dg = [v for v in X3.values() if 'batch 1' in v.get('cell_line','')]
 d3g, n3g = sum('baseline dominates X' in v['cell_line'] for v in dg), len(dg)
 hd = json.load(open(HD + '/runs/EXPORT.json'))
+DM = W + '/2026-10-18-jcp-dims/experiments/jcp-dims'
+BG = W + '/2026-10-18-jcp-budget/experiments/jcp-budget'
+dm = json.load(open(DM + '/runs/EXPORT.json'))
+h2q = dm['h2q']
 
 def img(path, alt):
     b = base64.b64encode(open(path, 'rb').read()).decode()
@@ -108,6 +112,16 @@ td,th{{padding:4px 10px;border-bottom:1px solid var(--line);text-align:right}} t
 <p>H-base fails. A standard POD reduced model with ECSW or Q-DEIM hyper-reduction, tuned on the same validation cases, is both faster and better in the worst case than our model for {d1k} of {n1k} settings at 1024², {d256} of {n256} at 256², and, in 3D, {d3} of the {n3} fully qualified settings (plus {d3g} of {n3g} diagnostic ones). For the other {n3-d3} qualified 3D settings neither model dominated, but that result is held back because the 3D POD basis failed its adequacy check.</p>
 <p class="mute">These are development-cohort, in-sample comparisons, and in some pairs our median error is lower. The 2D tuning budgets are close enough that it is unresolved whether they count as equal; in 3D the POD model got less tuning than ours.</p>
 <div class="figs">{img(HB+'/plots/front-c2d1024.png','2D 1024²: accuracy against cost, POD baselines and ours')}{img(HB+'/plots/front-c3d64.png','3D 65³: accuracy against cost, POD baselines and ours')}</div>
+</section>
+
+<section><h2>A fair 3D speed-up, ROM against ROM</h2>
+<p>After the quadrature search, a fully checked 3D setting is {h2q['C_W768']['S']:.2f}× faster than the earlier wide-bank setup and {h2q['C_old']['S']:.2f}× faster than the original deployment. The second figure misses the registered 1.67× bar. These are comparisons between our own reduced models, not against the full simulation.</p>
+<div class="figs">{img(DM+'/plots/h2q_3d.png','3D: speed-up of the cheapest fully checked setting over earlier setups')}</div>
+</section>
+
+<section><h2>Where the error comes from</h2>
+<p>For the standard schemes, the time-stepping error dominates at every mesh, and the bank's own floor matters only for the smallest banks. Errors stay stable with no growth when runs are extended to twice and four times the original time horizon. The 257² scoring grid is fine enough for these schemes.</p>
+<div class="figs">{img(BG+'/plots/b2_main_1024.png','Error budget at 1024²: which ingredient dominates')}{img(BG+'/plots/b7_error_time_1024.png','Error against time out to T = 1')}</div>
 </section>
 
 <section><h2>The other "k": head size K</h2>

@@ -37,6 +37,9 @@ def locked():
             yield d
             totals(d)
             tmp = LED.with_suffix('.tmp')
+            guard.check_admin(tmp, HERE)                   # code audit 5: the temporary file too
+            if tmp.is_symlink():
+                raise SystemExit(f'{tmp} is a symlink')
             tmp.write_text(json.dumps(d, indent=1) + '\n')
             tmp.replace(LED)
         finally:

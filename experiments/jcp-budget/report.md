@@ -416,6 +416,13 @@ Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the
 | audits/codex-job-a9-2.md | SUBMIT |
 | audits/codex-job-t1-1.md | FIX-FIRST (A11.1) |
 | audits/codex-job-t1-2.md | SUBMIT |
+| audits/codex-job-t1w-1.md | SUBMIT |
+| audits/codex-results-1.md | NOT-READY (tie rule, T=1 caption, wording; fixed) |
+| audits/codex-results-2.md | READY-FOR-REPORT |
+| audits/codex-report-1.md | NOT-READY (fixed) |
+| audits/codex-report-2.md | NOT-READY (fixed) |
+| audits/codex-report-3.md | NOT-READY (fixed) |
+| audits/codex-report-4.md | READY |
 
 ![plots/b2_main_1024.png](plots/b2_main_1024.png)
 

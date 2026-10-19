@@ -28,18 +28,19 @@
   }
  ],
  "corrections": [
-  "G-B2's registered bar (relative to ||u_all - u_0||) was too tight for a 32-term sum; restated relative to the largest corner norm (A6), found on the smoke.",
-  "Offline reference identity compares case descriptors, not the cohort hash, because np.exp's last bit differs across numpy versions (A6).",
-  "The first resource certificates under-priced the reference retry path and the pseudo-spectral cross-check; repriced before submission (A7, job audits refs2d-1..3).",
-  "The E0 tight re-solve of a refined triple at the round-off floor costs about 27x a production solve at T = 0.5; two reference jobs (ref2b, ref2c) were cancelled, their completed cases kept, and the rerun (ref2r, ref3b) skips that re-solve: such cases are terminal 'unresolved-floor' and non-rankable (A9).",
+  "The registered G-B2 bar (relative to $\\lVert u_{\\rm all}-u_\\varnothing\\rVert$) was too tight for a 32-term M\u00f6bius sum; it was restated relative to the largest corner norm (A6), found on the smoke.",
+  "Offline reference identity compares case descriptors, not the cohort hash, because the last bit of `np.exp` differs across NumPy versions (A6).",
+  "The first resource certificates under-priced the reference retry path and the pseudo-spectral cross-check; they were repriced before submission (A7, job audits refs2d-1..3).",
+  "E0's tight re-solve of a refined triple at the round-off floor was far more expensive per level than the production solve (per-level timings in DESIGN A9); `ref2b` and `ref2c` were cancelled, their completed cases kept, and the reruns (`ref2r`, `ref3b`) skip that re-solve: such cases are terminal 'unresolved-floor' and non-rankable (A9).",
   "The first A9 eligibility rule was per window only, so an A9-terminal case with an accepted W2 window would have been rankable; fixed so every window of such a case is ineligible (A9.1, audit codex-job-a9-1).",
-  "The b-job reservations were priced at the time limits; measured run times were 3-7x shorter than the certificates (b3d 0.56 h vs 1.61 h projected; ps jobs 0.3-0.55 h vs 2.29 h).",
-  "At T = 1.0 the first eligibility code let a failed whole-case reference keep an accepted window and took W2 eligibility from the wrong horizon; fixed before submission (A11.1, audit codex-job-t1-1).",
+  "Job reservations were priced at the certificate time limits, which proved conservative; the table 'Certificates against elapsed time' compares each certificate's projection with the Slurm elapsed time.",
+  "At $T=1.0$ the first eligibility code let a failed whole-case reference keep an accepted window and took W2 eligibility from the wrong horizon; fixed before submission (A11.1, audit codex-job-t1-1).",
   "G-R2 on 3D val64 case 43 failed only because E0's own saved IC array differs in the last bit from the initial rows of E0's own levels; the shared-IC requirement was restated level-wise (A13).",
-  "E0's tight re-solve of a failing base triple costs about 22x a production solve at T = 1.0 and did not certify dev6 case 1; ref2t1 was cancelled after dev6 case 5 and the val32 cases rerun without that retry (ref2t1w): such cases are terminal and non-rankable (A14).",
-  "Two analysis caches were defeated by eager dict.setdefault arguments (a QR per case); the first local B7/B8 analyses were also terminated under memory pressure on the shared box and rerun one at a time (A12.2); performance only, identical values.",
+  "At $T=1.0$, E0's tight re-solve of a failing base triple was far more expensive per level than the production solve (per-level timings in DESIGN A14); `ref2t1` was cancelled after dev6 case 5 and the val32 cases rerun without that retry (`ref2t1w`): such cases are terminal and non-rankable (A14). Of the two measured retries, dev6 1 stayed unresolved and dev6 5 was certified (A14.1).",
+  "A14.1 suggested the A14 rule might have cost rankable cases; it did not: a case certified by the tight retry has no production-tolerance level to match E0 or the $T=0.5$ reference, so it is non-rankable under the registered G-R2 / prefix rules anyway (A14.2). The A14 / A14.1 times quoted as case durations were cumulative log timestamps (A14.3).",
+  "Two analysis caches were defeated by eager `dict.setdefault` arguments (a QR per case; performance only, identical values). The first local B7/B8 analyses were terminated without output on the shared machine (no OOM record; high load) and rerun one at a time (A12.2).",
   "jcp-qualify's raw archives were moved to the cluster during the analysis (COMMON-BRIEF 16); G-B3 / G-L1 read hash-verified cached copies (A12).",
-  "A14.1 suggested the A14 rule might have cost rankable cases; it did not: a case certified by the tight retry has no production-tolerance level to match E0 or the T = 0.5 reference, so it is non-rankable under the registered G-R2 / prefix rules anyway (A14.2)."
+  "The results audit found that the dominance rule compared the largest candidate only with the second largest; it now compares with every resolved candidate (two counts changed, no label; A14.3, audit codex-results-1)."
  ],
  "audits": [
   {

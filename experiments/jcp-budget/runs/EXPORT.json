@@ -834,9 +834,21 @@
   }
  },
  "lane_statement": {
-  "256": "the 257^2 lattice is adequate for the qualified 2D front (relative to the 1025^2 route)",
-  "1024": "the 257^2 lattice is adequate for the qualified 2D front (relative to the 1025^2 route)",
-  "4096": "the 257^2 lattice is adequate for the qualified 2D front (relative to the 1025^2 route)"
+  "256": {
+   "scope": "W1, LSPG members only, relative to the 1025^2 route",
+   "lspg_all_adequate": true,
+   "ranking": "adequate"
+  },
+  "1024": {
+   "scope": "W1, LSPG members only, relative to the 1025^2 route",
+   "lspg_all_adequate": true,
+   "ranking": "adequate"
+  },
+  "4096": {
+   "scope": "W1, LSPG members only, relative to the 1025^2 route",
+   "lspg_all_adequate": true,
+   "ranking": "adequate"
+  }
  },
  "b3": {
   "W256|gl24|fs|CN|0.0125|K1": "e_P",

@@ -41,7 +41,7 @@ def e2train():
                          projection_hours=4.0, projection_basis='incumbent dn256b: Stage A 10,685 s (A100), Stage B 2,676 s hfit '
                          '+ extraction (job 2837431); smk2 measured extraction ~900 s on A100-80G')] for s in (1, 2, 3)]))
     for s in (1, 2, 3):
-        w(dict(attempt=f'e2t3d{s}', gpu='h200', gpus=1, hours=4.0, mem='420G', cpus=8, production=True,
+        w(dict(attempt=f'e2t3d{s}', gpu='h200', gpus=1, hours=4.0, mem='420G', cpus=8, production=True, mem_fraction='0.90',  # = j3b (audit 3D-1 #8)
                groups=[[dict(sh='train3d/run_seed.sh', args=[str(s), f'OUT/train3d_s{s}'], complete=f'OUT/train3d_s{s}/SEED-COMPLETE',
                              projection_hours=2.6, projection_basis='incumbent W1024 job j3b 5012847: 6,660 s on H200 x 1.4 (smk3: data generation 1.4x slower) '
                              '(bank fit 4,104 s); smk3 pilot data generation measured')]]))
@@ -60,8 +60,20 @@ def e2ver(b):
            groups=[[dict(driver='dtime', config=f'configs/e2t{b}.json')]]))
 
 
+def e2run3d(name):
+    """E2 3D evaluation job (e2q<b>a/b, e2f<b>) from configs/<name>.json. A retrained bank (> 100 MB) stays in the cluster
+    archive: the config's cluster_inputs (archive path + sha256 from inputs/banks3d/s<b>/BANK.json) are propagated into the
+    JOB SPEC, which is what stage.py copies and verifies (job audit 3D-1 #10). Hours are set by certify.py afterwards."""
+    c = json.loads((HERE / 'configs' / f'{name}.json').read_text())
+    spec = dict(attempt=name, gpu='a100-80G', gpus=1, hours=1.0, mem='200G', cpus=8, production=True, mem_fraction='0.95',
+                groups=[[dict(driver='e2run3d', config=f'configs/{name}.json')]])
+    if c.get('cluster_inputs'):
+        spec['cluster_inputs'] = c['cluster_inputs']
+    w(spec)
+
+
 if __name__ == '__main__':
-    if sys.argv[1] in ('e2sel', 'e2ver'):
-        {'e2sel': e2sel, 'e2ver': e2ver}[sys.argv[1]](sys.argv[2])
+    if sys.argv[1] in ('e2sel', 'e2ver', 'e2run3d'):
+        {'e2sel': e2sel, 'e2ver': e2ver, 'e2run3d': e2run3d}[sys.argv[1]](sys.argv[2])
     else:
         {'e1': e1, 'e5': e5, 'e2train': e2train}[sys.argv[1]]()

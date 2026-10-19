@@ -1,16 +1,20 @@
 {
  "lane": "jcp-robust",
- "utc": "2026-10-19T16:02:41Z",
- "step": "2: codex design audit 1",
+ "utc": "2026-10-19T23:37:52Z",
+ "step": "7: e2t2d, e1m4096b, e5h1 running; queued e5a2, e5h2; per-seed E2 after e2t2d",
  "waiting_on": {
-  "slurm_jobs": [],
-  "codex_output": "audits/codex-design-1.md",
-  "codex_pid": 1874978,
+  "slurm_jobs": [
+   "6076975",
+   "6078813",
+   "6080051"
+  ],
+  "codex_output": null,
+  "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T17:02:41Z",
- "last_commit": "e47e7d05e",
- "gpu_hours_spent": 0.0,
+ "expected_finish_utc": null,
+ "last_commit": "a9e22dc43",
+ "gpu_hours_spent": 5.3606,
  "gpu_hours_cap": 75,
  "notes": ""
 }

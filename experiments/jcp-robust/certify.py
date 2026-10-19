@@ -61,22 +61,24 @@ def inv_r2acc(c):
 def inv_e13d(c):
     keys = []
     ids = c.get('case_subset') or list(range(c['cohort_count']))
+    bank_of = {st['name']: st['bank'] for st in c['settings']}     # bank from the settings (job audit 3D-1 #5)
     for cf in c['configs']:
         sp = cf['spec']
+        B = bank_of[cf['setting']]
         tcs = [j for j in cf.get('tighter_cases', list(range(8))) if j in ids]
         chk = [j for j in cf.get('check_cases', list(range(8))) if j in ids]
-        keys += [('W1024', cf['setting'], cf['target'], sp, 'prod', 'target', j) for j in ids]
-        keys += [('W1024', cf['setting'], cf['check'], sp, 'prod', 'check', j) for j in chk]
+        keys += [(B, cf['setting'], cf['target'], sp, 'prod', 'target', j) for j in ids]
+        keys += [(B, cf['setting'], cf['check'], sp, 'prod', 'check', j) for j in chk]
         for s in cf['draws']:
             rl, su = f"lat{cf['n']}s{s}", f"lat{cf['succ_n']}s{s}"
-            keys += [('W1024', cf['setting'], rl, sp, 'prod', 'draw', j) for j in ids]
-            keys += [('W1024', cf['setting'], rl, sp, 'adt-tight', 'draw', j) for j in ids]
-            keys += [('W1024', cf['setting'], rl, sp, 'adt-tighter', 'draw', j) for j in tcs]
-            keys += [('W1024', cf['setting'], su, sp, 'prod', f'succ-of-{rl}', j) for j in ids]
+            keys += [(B, cf['setting'], rl, sp, 'prod', 'draw', j) for j in ids]
+            keys += [(B, cf['setting'], rl, sp, 'adt-tight', 'draw', j) for j in ids]
+            keys += [(B, cf['setting'], rl, sp, 'adt-tighter', 'draw', j) for j in tcs]
+            keys += [(B, cf['setting'], su, sp, 'prod', f'succ-of-{rl}', j) for j in ids]
         for rl in cf.get('extra', []) + ([cf['bad']] if cf.get('bad') else []):
-            keys += [('W1024', cf['setting'], rl, sp, 'prod', 'diag', j) for j in ids]
+            keys += [(B, cf['setting'], rl, sp, 'prod', 'diag', j) for j in ids]
         if cf.get('permute'):
-            keys += [('W1024', cf['setting'], f"lat{cf['n']}s0", sp, 'prod', 'permuted-replay', j) for j in ids]
+            keys += [(B, cf['setting'], f"lat{cf['n']}s0", sp, 'prod', 'permuted-replay', j) for j in ids]
     return keys
 
 
@@ -218,7 +220,9 @@ def certify(att, timings_path):
                 configs=cfgs, inventory_sha256=hashlib.sha256(ip.read_bytes()).hexdigest(), margin=MARGIN,
                 estimates=sorted({'A10.1 E5 per-execution rate from the smoke' for g in spec['groups'] for st in g if st.get('driver') == 'e5time'}
                                  | {'A10.2 dtime classes derived from measured rollout classes' for g in spec['groups'] for st in g
-                                    if st.get('driver') == 'dtime'}),
+                                    if st.get('driver') == 'dtime'}
+                                 | {'A11.3 E1 3D W512 / M2_512 classes = 2 x the measured W256 class (unmeasured widths)'
+                                    for g in spec['groups'] for st in g if st.get('driver') == 'e1run3d'}),
                 timings=timings_path, timings_sha256=hashlib.sha256((HERE / timings_path).read_bytes()).hexdigest())
     (HERE / 'checks' / f'resources-{att}.json').write_text(json.dumps(cert, indent=1) + '\n')
     print(json.dumps({k: v for k, v in cert.items() if k != 'configs'}))

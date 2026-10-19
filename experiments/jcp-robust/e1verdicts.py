@@ -89,6 +89,8 @@ def main():
                 row.update(label='invalid job', integrity=cv['integrity'])
             elif blk:
                 row.update(label=blk)
+            elif not (ctl.get('C-E1.2') or {}).get('fired'):              # per-configuration identity control (job audit 3D-1 #4)
+                row.update(label='blocked (control C-E1.2 did not fire for this configuration)')
             elif not (ctl.get('G-E1.1') or {}).get('passed'):
                 row.update(label='blocked (gate G-E1.1)')
             elif not (ctl.get('G-E1.2') or {}).get('passed') and nm not in supp_names:

@@ -860,3 +860,25 @@ outside E2 3D (W1024 recipe); it is noted, not run. E2 3D keeps its registered v
 **A11.3** The E1 3D certificate charges the W512 and M2_512 rollout classes (not measured by smk1b, which ran W256 only)
 at twice the measured W256 class; 3D rollouts take 0.02–0.25 s each, so this estimate is immaterial against the 1 h
 limit. Labelled an estimate in the certificate.
+
+## A12 (2026-10-19): job audit 3D-1 (e13d, e2t3d1) fixes
+
+Codex job audit `audits/codex-job-3d-1.md` returned FIX-FIRST for both jobs. Its workload findings (#1-3, #6, #7) were
+CORRECT. Fixes:
+
+- **A12.1 (#4)** `e1verdicts.py` now blocks each 3D configuration whose own identity control C-E1.2 did not fire, in
+  addition to the dimension-level block from E1-3D-a. Precedence: invalid job, dimension block, per-configuration C-E1.2,
+  then G-E1.1, then G-E1.2 (registered configurations only).
+- **A12.2 (#5)** `certify.inv_e13d` takes each configuration's bank from `settings`, so E1-3D-d is keyed M2. The
+  certificate's `estimates` field now discloses the A11.3 scaling (W512 / M2_512 classes = 2 x the measured W256 class).
+- **A12.3 (#8)** E2 3D training jobs set `mem_fraction: 0.90`, the incumbent j3b's value. Before this fix, stage.py's default
+  of 0.92 would have overridden run_seed.sh's fallback.
+- **A12.4 (#9), memory-gate units.** The A9.2 host threshold is MaxRSS x 1.25 > 420G, so a host MaxRSS above
+  **336 GiB** breaches it. The device threshold is a peak above 120e9 bytes. smk3's host RSS of 176,766,044 KiB is
+  168.6 GiB, or 40.1 % of the request. A9's "176.8 GB / 42 %" mixed GB and GiB, and this note corrects it. A
+  SEED-COMPLETE file records successful execution only. The gate is evaluated at collection from Slurm's `sacct` MaxRSS
+  and memory.json's device peak, and is recorded in `checks/memgate-e2t3d<s>.json` before seeds 2-3 are staged.
+- **A12.5 (#10), bank handoff.** `register_banks3d.py <seed> [--fetch]` writes `inputs/banks3d/s<seed>/BANK.json`. That
+  file holds the bank sha256 from OUTPUTS.sha256, cross-checked against the archive's LARGE.sha256, together with the
+  archive path. `make_jobs.py e2run3d <name>` copies the config's `cluster_inputs` into the job spec, which is what
+  stage.py reads. `--fetch` makes an untracked, sha256-verified local copy for e2score3.

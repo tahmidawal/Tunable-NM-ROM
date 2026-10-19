@@ -260,9 +260,9 @@
    "attempt": "t2",
    "job_id": "6056624",
    "time_limit_hours": 8.0,
-   "state": "RUNNING",
+   "state": "COMPLETED",
    "gpu": "gres/gpu=1",
-   "elapsed_hours": 2.34,
+   "elapsed_hours": 3.8925,
    "pending_hours": 5.286,
    "attempts": 1,
    "node": "pax009",
@@ -332,13 +332,16 @@
    "attempt": "b2m",
    "job_id": "6075594",
    "time_limit_hours": 1.0,
-   "state": "SUBMITTED",
-   "gpu": null,
-   "elapsed_hours": null,
-   "pending_hours": null
+   "state": "COMPLETED",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 0.5811,
+   "pending_hours": null,
+   "attempts": 1,
+   "node": "pax008",
+   "prior_elapsed_hours": 0.0
   }
  ],
- "spent_gpu_hours": 30.7501,
- "reserved_gpu_hours": 9.0,
+ "spent_gpu_hours": 35.2237,
+ "reserved_gpu_hours": 0,
  "pending_core": {}
 }

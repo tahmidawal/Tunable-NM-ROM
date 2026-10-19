@@ -41,8 +41,8 @@ Spent **35.2** of 55 GPU-h.
 ## Key outcomes (every verdict below is generated from the analysis files)
 
 - **A4 (2D)**: 22 of 26 F2 cells reach a Gauss m*; m* ranges over 9216 … 36864 points; the 4 square (M = r) cells reach none.
-- **A3 (2D) fixed (M=2048, gauss256)** (E0-provisional): range **not monotone** (improves; improves; does not improve).
-- **A3 (2D) fixed m gauss256, M=4r** (E0-provisional): range **not monotone** (improves; improves; does not improve).
+- **A3 (2D) `fixed (M=2048, gauss256)`** (E0-provisional): range **not monotone** (improves; improves; does not improve).
+- **A3 (2D) `fixed m gauss256, M=4r`** (E0-provisional): range **not monotone** (improves; improves; does not improve).
 - **B6 (2D)**: M = r control status across cells: unavailable (unqualified cell) — test-space verdicts blocked.
 - **B3 (2D) R128M512**: fib: m* = 4181 (stable) (all 5 draws); gauss: m* = 9216 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: m* = 24577 (stable); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
 - **B3 (2D) R384M1536**: fib: m* = 28657 (stable) (all 5 draws); gauss: m* = 16384 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: none (within the candidate list); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
@@ -591,9 +591,9 @@ Identity failures (excluding the injected control): 23, of which 23 are square (
 
 ## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$ (E0-provisional errors)
 
-- **fixed (M=2048, gauss256)**: R128M2048gauss256 → R256M2048gauss256: improves; R256M2048gauss256 → R384M2048gauss256: improves; R384M2048gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
+- **`fixed (M=2048, gauss256)`**: R128M2048gauss256 → R256M2048gauss256: improves; R256M2048gauss256 → R384M2048gauss256: improves; R384M2048gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
 
-- **fixed m gauss256, M=4r**: R128M512gauss256 → R256M1024gauss256: improves; R256M1024gauss256 → R384M1536gauss256: improves; R384M1536gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
+- **`fixed m gauss256, M=4r`**: R128M512gauss256 → R256M1024gauss256: improves; R256M1024gauss256 → R384M1536gauss256: improves; R384M1536gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
 
 
 Elasticities of the full-query cost (descriptive full-query elasticities (beta_r, beta_M, beta_m), not kernel exponents): $\beta_r$ = 0.654 [0.642, 0.671], $\beta_M$ = 0.528 [0.522, 0.532], $\beta_m$ = 0.653 [0.652, 0.655] (case-bootstrap percentile intervals; fit $\log c=\beta_0+\beta_r\log r+\beta_M\log M+\beta_m\log m$).
@@ -608,7 +608,7 @@ Elasticities of the full-query cost (descriptive full-query elasticities (beta_r
 | 384->512 | — | decomposition not reached (unqualified corner) |  |  |  |
 
 
-## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at 
+## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at (r, M) = (384, 1536)
 
 Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1_gauss256': True, 'passed': True}. 
 
@@ -944,7 +944,7 @@ The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is
 
 - **reference A / cost c** — 2D: every timed subject is bracketed by two runs of a fixed reference configuration A (r = 384, M = 1536, gauss128, LSPG-CNR); c is the subject time divided by the mean A time (1 = as expensive as A). 3D screening: the same with A = C_old.
 
-- **screening / confirmation** — 3D timing in two stages: `t3s` screens every qualified configuration against C_old on four cases × two repetitions; `t3c` re-times each selected (comparator, winner) pair on eight cases × three repetitions; H2q uses the confirmation.
+- **screening / confirmation** — 3D timing in two stages: `t3s` screens every qualified configuration against C_old on 4 cases × 2 repetitions; `t3c` re-times each selected (comparator, winner) pair on 8 cases × 3 repetitions; H2q uses the confirmation.
 
 - **median / worst front** — configurations not beaten in both cost and median (or worst-case) error by another qualified configuration.
 
@@ -952,7 +952,7 @@ The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is
 
 - **resolution** — the fraction of cases whose paired difference exceeds the tie band; a transition with too few resolved cases is "inconclusive (resolution)".
 
-- **rule names** — 2D: `gauss<n>` = n×n Gauss tensor rule, `fib<F>` = Fibonacci lattice with F points, `sobol<m>`, `halton<m>`, `mc<m>` = m points, `smolyak<l>` = sparse grid of level l. 3D: `gl<n>` = n³ Gauss, `lat<m>` = rank-1 lattice, `sob<m>`, `hal<m>`, `mc<m>`, `smolyak3`. A suffix `s<k>` is the random draw (seed) k; none = draw 0.
+- **rule names** — 2D: `gauss<n>` = $n\times n$ Gauss tensor rule, `fib<F>` = Fibonacci lattice with F points, `sobol<m>`, `halton<m>`, `mc<m>` = m points, `smolyak<l>` = sparse grid of level l. 3D: `gl<n>` = $n^3$ Gauss, `lat<m>` = rank-1 lattice, `sob<m>`, `hal<m>`, `mc<m>`, `smolyak3`. A suffix `s<k>` is the random draw (seed) k; none = draw 0.
 
 - **fs / fsp** — `fs` = fixed-sweep Newton solver (K sweeps per step); `fsp` = the same with two extra predictor candidates (cubic extrapolation and an IMEX predictor), from speed3d `fs3p`.
 

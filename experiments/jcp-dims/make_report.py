@@ -17,6 +17,12 @@ HERE = Path(__file__).resolve().parent
 CONTRACT_2D = 't2: online cost c = median over valid fused triplets of t_fused / mean(t_A), full-field query, 1024^2, H200'
 REF_A = (lambda c: (f"r = {c['A']['Rp']}, M = {c['A']['M']}, {c['A']['rule']}, {c['A']['form']}-{c['A']['scheme']}") if c else 'see configs/t2.json')(
     (lambda p: json.loads(p.read_text()) if p.exists() else None)(HERE / 'configs' / 't2.json'))
+SCREEN_DESC = (lambda c: (lambda pn: f"{len(pn.get('cases', [])) if isinstance(pn.get('cases'), list) else pn.get('cases')} cases × {pn.get('reps')} repetitions")(
+    next((b for b in c['blocks'] if b.get('kind') == 'panel'), {})) if c else 'the registered panel')(
+    (lambda p: json.loads(p.read_text()) if p.exists() else None)(HERE / 'configs' / 't3s.json'))
+CONFIRM_DESC = (lambda c: (lambda pn: f"{len(pn['cases']) if isinstance(pn.get('cases'), list) else pn.get('cases')} cases × {pn.get('reps')} repetitions")(
+    next((b for b in c['blocks'] if b.get('kind') == 'panel'), {})) if c else 'the registered panel')(
+    (lambda p: json.loads(p.read_text()) if p.exists() else None)(HERE / 'configs' / 't3c.json'))
 CONTRACT_3D = 'full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired)'
 PLOTS = HERE / 'plots'
 SERIES = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7']   # categorical, fixed order
@@ -121,7 +127,7 @@ def sec_2d(a2, L, plots):
         exp['costs_2d'] = {k: (dict(v, contract=CONTRACT_2D) if not k.startswith('_') else v) for k, v in co.items()}
     L.append('\n## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$ (E0-provisional errors)\n')
     for nm, v in a2['A3'].items():
-        L.append(f"- **{nm}**: " + '; '.join(f"{t['X'].split('|')[0]} → {t['Y'].split('|')[0]}: {t['label']}" for t in v['transitions'])
+        L.append(f"- **`{nm}`**: " + '; '.join(f"{t['X'].split('|')[0]} → {t['Y'].split('|')[0]}: {t['label']}" for t in v['transitions'])
                  + f" — range: **{v['range']}**\n")
     if a2.get('elasticity'):
         e = a2['elasticity']
@@ -144,7 +150,7 @@ def sec_2d(a2, L, plots):
                 rows.append([k, '—', v.get('outcome'), '', '', ''])
         L.append(table(['r_a → r_b', 'cases', 'Δ median error (r, M, m)', 'labels', 'Δ cost (r, M, m)', 'labels'], rows) + '\n')
     lm = a2.get('LMF', {})
-    lc = sorted({re.match(r'R(\\d+)M(\\d+)lmf', k).groups() for k in cfg if re.match(r'R\\d+M\\d+lmf', k)})
+    lc = sorted({re.match(r'R(\d+)M(\d+)lmf', k).groups() for k in cfg if re.match(r'R\d+M\d+lmf', k)})
     L.append(f"\n## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at {', '.join(f'(r, M) = ({a}, {b})' for a, b in lc)}\n")
     L.append(f"Stability checks: {lm.get('stability')}. " + (f"Outcome: {lm['outcome']}." if lm.get('outcome') else '') + '\n')
     for f in ('gauss', 'smolyak'):
@@ -389,7 +395,7 @@ def more_plots(a2, a3, plt):
             for i, v in enumerate(S):
                 ax.text(v, i, f' {v:.3g}', va='center', fontsize=8, color=INK)
             ax.set_xlabel('confirmed speed-up S of the qualified winner'); ax.grid(axis='y', visible=False)
-            ax.set_title('H2q (t3c; full-field $65^3$ mesh-path query, H200; not a FOM comparison)', color=INK, loc='left', fontsize=9)
+            ax.set_title('H2q (t3c; full-field $65^3$ mesh-path query, H200; not a FOM comparison;\nwinners chosen by tie-or-beat on E0-provisional errors)', color=INK, loc='left', fontsize=9)
             fig.tight_layout(); fig.savefig(PLOTS / 'h2q_3d.png', dpi=160); plt.close(fig)
             out.append(('h2q_3d.png', 'H2q confirmation speed-ups against the three comparators; dashed = pass bar; winners selected by tie-or-beat on E0-provisional errors; C_W1024 is an unqualified comparator; ' + CONTRACT_3D + '.'))
         wm = a3.get('width_mstar') or {}
@@ -486,7 +492,7 @@ def key_outcomes(a2, a3):
         L.append(f"- **A4 (2D)**: {sum(1 for v in F2.values() if v['mstar'].get('m'))} of {len(F2)} F2 cells reach a Gauss m*; "
                  f"m* ranges over {ms[0] if ms else '—'} … {ms[-1] if ms else '—'} points; the {len(sq)} square (M = r) cells reach none.")
         for nm, v in a2['A3'].items():
-            L.append(f"- **A3 (2D) {nm}** (E0-provisional): range **{v['range']}** (" + '; '.join(t['label'] for t in v['transitions']) + ').')
+            L.append(f"- **A3 (2D) `{nm}`** (E0-provisional): range **{v['range']}** (" + '; '.join(t['label'] for t in v['transitions']) + ').')
         ctl = {v.get('control') for k, v in a2['B6'].items() if 'transitions' in v}
         L.append(f"- **B6 (2D)**: M = r control status across cells: {', '.join(sorted(map(str, ctl)))} — test-space verdicts "
                  'blocked.')
@@ -538,11 +544,11 @@ GLOSSARY = [
     ('bad-vector control', 'a deliberately degenerate lattice that the gate must flag.'),
     ('LMF', 'low mixed-frequency (hyperbolic-cross) test set: modes ordered by the product $k_x k_y$.'),
     ('reference A / cost c', '2D: every timed subject is bracketed by two runs of a fixed reference configuration A (' + REF_A + '); c is the subject time divided by the mean A time (1 = as expensive as A). 3D screening: the same with A = C_old.'),
-    ('screening / confirmation', '3D timing in two stages: `t3s` screens every qualified configuration against C_old on four cases × two repetitions; `t3c` re-times each selected (comparator, winner) pair on eight cases × three repetitions; H2q uses the confirmation.'),
+    ('screening / confirmation', '3D timing in two stages: `t3s` screens every qualified configuration against C_old on ' + SCREEN_DESC + '; `t3c` re-times each selected (comparator, winner) pair on ' + CONFIRM_DESC + '; H2q uses the confirmation.'),
     ('median / worst front', 'configurations not beaten in both cost and median (or worst-case) error by another qualified configuration.'),
     ('open candidates', 'untested configurations that a qualified configuration does not dominate; their existence means the front may be incomplete.'),
     ('resolution', 'the fraction of cases whose paired difference exceeds the tie band; a transition with too few resolved cases is "inconclusive (resolution)".'),
-    ('rule names', '2D: `gauss<n>` = n×n Gauss tensor rule, `fib<F>` = Fibonacci lattice with F points, `sobol<m>`, `halton<m>`, `mc<m>` = m points, `smolyak<l>` = sparse grid of level l. 3D: `gl<n>` = n³ Gauss, `lat<m>` = rank-1 lattice, `sob<m>`, `hal<m>`, `mc<m>`, `smolyak3`. A suffix `s<k>` is the random draw (seed) k; none = draw 0.'),
+    ('rule names', '2D: `gauss<n>` = $n\\times n$ Gauss tensor rule, `fib<F>` = Fibonacci lattice with F points, `sobol<m>`, `halton<m>`, `mc<m>` = m points, `smolyak<l>` = sparse grid of level l. 3D: `gl<n>` = $n^3$ Gauss, `lat<m>` = rank-1 lattice, `sob<m>`, `hal<m>`, `mc<m>`, `smolyak3`. A suffix `s<k>` is the random draw (seed) k; none = draw 0.'),
     ('fs / fsp', '`fs` = fixed-sweep Newton solver (K sweeps per step); `fsp` = the same with two extra predictor candidates (cubic extrapolation and an IMEX predictor), from speed3d `fs3p`.'),
     ('identity', 'the timed run must reproduce, bit for bit (hashes) and within the registered tolerance (DESIGN §4) against the accuracy job, the run that was scored; otherwise its timing is unusable.'),
     ('usable', 'a timing subject whose identity checks, inventory and valid-triplet fraction pass.'),

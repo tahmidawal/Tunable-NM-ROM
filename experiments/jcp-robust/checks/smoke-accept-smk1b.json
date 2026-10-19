@@ -1,0 +1,459 @@
+{
+ "smoke": "smk1b",
+ "source": "runs/smk1b/archive/output",
+ "checks": {
+  "2d analysis runs": {
+   "ok": true,
+   "evidence": "R128 LSPG_BE_1 null integrity True\nR128 LSPG_CNR_1 null integrity True\n"
+  },
+  "2d job complete on gpu": {
+   "ok": true,
+   "evidence": null
+  },
+  "2d G-E1.1 passes": {
+   "ok": true,
+   "evidence": {
+    "s0_equals_deployed": true,
+    "job_sha_equals_deployed": true,
+    "s1_pure_shift": true,
+    "s1_differs": true,
+    "passed": true
+   }
+  },
+  "2d G-E1.3 passes": {
+   "ok": true,
+   "evidence": {
+    "label": "d0",
+    "arm": "LSPG_BE_1",
+    "order": [
+     "dev6|5",
+     "dev6|4",
+     "dev6|3",
+     "dev6|2",
+     "dev6|1",
+     "dev6|0"
+    ],
+    "max_rel_dev": 0.0,
+    "per_case": [
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "passed": true
+   }
+  },
+  "2d C-E1.2 fires": {
+   "ok": true,
+   "evidence": {
+    "raised": true,
+    "message": "rule identity mismatch: role d holds fib4181s1, claimed fib4181",
+    "fired": true,
+    "holder": "fib4181s1",
+    "claimed": "fib4181"
+   }
+  },
+  "2d C-E1.1 fires (admitted CPU fixture, in-job agreement 1 %, flagged)": {
+   "ok": true,
+   "evidence": {
+    "admitted": true,
+    "fired": true,
+    "agree": true,
+    "flagged": true,
+    "cpu": [
+     2.457788687301929,
+     3.086373658305292,
+     3.1697668849976415,
+     3.167792846529176,
+     3.0994433269877555,
+     2.9815371933876373
+    ],
+    "job": [
+     2.457788687301939,
+     3.0863736583053125,
+     3.1697668849976774,
+     3.1677928465291862,
+     3.0994433269877657,
+     2.9815371933876658
+    ],
+    "deployed_draw_rho_tgt": [
+     0.012936192536141247,
+     9.867383954673843e-05,
+     7.999815413470821e-05,
+     0.0001395732575767675,
+     0.0001872913204228302,
+     0.00020886913342706202
+    ]
+   }
+  },
+  "2d registered arm inventory (LSPG_BE_1, LSPG_CNR_1)": {
+   "ok": true,
+   "evidence": [
+    "LSPG_BE_1",
+    "LSPG_CNR_1"
+   ]
+  },
+  "2d LSPG_BE_1 integrity (distances recomputed = in-job, G-cert, population)": {
+   "ok": true,
+   "evidence": {
+    "ids_ok": true,
+    "mismatches": [],
+    "gcert_fail": 0,
+    "missing": [],
+    "ok": true
+   }
+  },
+  "2d LSPG_BE_1 G-E1.2 reproduction on dev6": {
+   "ok": true,
+   "evidence": {
+    "passed": true,
+    "worst": 1.562665736831506e-15,
+    "n": 6,
+    "files": [
+     {
+      "src": [
+       "p1",
+       "acc1024",
+       "R_R128_BE.npz"
+      ],
+      "sha256": "42d5c60021f7a44550c8f0076df989c55fee97e53e0e34b0beffb74685cd9d4d"
+     }
+    ]
+   }
+  },
+  "2d LSPG_BE_1 target certified on dev6": {
+   "ok": true,
+   "evidence": [
+    {
+     "case": "dev6|0",
+     "check_valid": true,
+     "dist": 3.5292990082662106e-09,
+     "dist_job": 3.5292990098204453e-09,
+     "agree": true
+    },
+    {
+     "case": "dev6|1",
+     "check_valid": true,
+     "dist": 7.211852567605977e-10,
+     "dist_job": 7.211852566473781e-10,
+     "agree": true
+    },
+    {
+     "case": "dev6|2",
+     "check_valid": true,
+     "dist": 2.1948801579119993e-09,
+     "dist_job": 2.1948801575350382e-09,
+     "agree": true
+    },
+    {
+     "case": "dev6|3",
+     "check_valid": true,
+     "dist": 1.760249653114567e-07,
+     "dist_job": 1.7602496530660393e-07,
+     "agree": true
+    },
+    {
+     "case": "dev6|4",
+     "check_valid": true,
+     "dist": 1.985144689885146e-09,
+     "dist_job": 1.985144682707036e-09,
+     "agree": true
+    },
+    {
+     "case": "dev6|5",
+     "check_valid": true,
+     "dist": 1.0867718405163756e-08,
+     "dist_job": 1.086771840272849e-08,
+     "agree": true
+    }
+   ]
+  },
+  "2d LSPG_BE_1 own-family labels computed for draws 0-2": {
+   "ok": true,
+   "evidence": {
+    "d0": [
+     "ok",
+     true,
+     true
+    ],
+    "d1": [
+     "ok",
+     true,
+     true
+    ],
+    "d2": [
+     "ok",
+     true,
+     true
+    ],
+    "bad": [
+     "diagnostic (production only)",
+     null,
+     null
+    ]
+   }
+  },
+  "2d LSPG_BE_1 bad vector far from the target (evidence; D or invalid)": {
+   "ok": true,
+   "evidence": {
+    "D": 0.49635613017854413,
+    "failed": false
+   }
+  },
+  "2d LSPG_CNR_1 integrity (distances recomputed = in-job, G-cert, population)": {
+   "ok": true,
+   "evidence": {
+    "ids_ok": true,
+    "mismatches": [],
+    "gcert_fail": 0,
+    "missing": [],
+    "ok": true
+   }
+  },
+  "2d LSPG_CNR_1 G-E1.2 reproduction on dev6": {
+   "ok": true,
+   "evidence": {
+    "passed": true,
+    "worst": 1.3916304640861944e-15,
+    "n": 6,
+    "files": [
+     {
+      "src": [
+       "p1",
+       "acc1024",
+       "R_R128_CNR.npz"
+      ],
+      "sha256": "842fd683c3579b9801d6efa6fe206ee56d4d3f74483d447a9c9e39b6180fd179"
+     }
+    ]
+   }
+  },
+  "2d LSPG_CNR_1 target certified on dev6": {
+   "ok": true,
+   "evidence": [
+    {
+     "case": "dev6|0",
+     "check_valid": true,
+     "dist": 3.727874600136603e-09,
+     "dist_job": 3.727874599129374e-09,
+     "agree": true
+    },
+    {
+     "case": "dev6|1",
+     "check_valid": true,
+     "dist": 7.408646124801882e-10,
+     "dist_job": 7.408646134125981e-10,
+     "agree": true
+    },
+    {
+     "case": "dev6|2",
+     "check_valid": true,
+     "dist": 3.2866422950883108e-09,
+     "dist_job": 3.286642294234381e-09,
+     "agree": true
+    },
+    {
+     "case": "dev6|3",
+     "check_valid": true,
+     "dist": 1.8276508216607753e-07,
+     "dist_job": 1.827650821692633e-07,
+     "agree": true
+    },
+    {
+     "case": "dev6|4",
+     "check_valid": true,
+     "dist": 2.035387680948492e-09,
+     "dist_job": 2.035387680347811e-09,
+     "agree": true
+    },
+    {
+     "case": "dev6|5",
+     "check_valid": true,
+     "dist": 1.1172893981915689e-08,
+     "dist_job": 1.1172893981432865e-08,
+     "agree": true
+    }
+   ]
+  },
+  "2d LSPG_CNR_1 own-family labels computed for draws 0-2": {
+   "ok": true,
+   "evidence": {
+    "d0": [
+     "ok",
+     true,
+     true
+    ],
+    "d1": [
+     "ok",
+     true,
+     true
+    ],
+    "d2": [
+     "ok",
+     true,
+     true
+    ],
+    "bad": [
+     "diagnostic (production only)",
+     null,
+     null
+    ]
+   }
+  },
+  "2d LSPG_CNR_1 bad vector far from the target (evidence; D or invalid)": {
+   "ok": true,
+   "evidence": {
+    "D": 0.5041787208034684,
+    "failed": false
+   }
+  },
+  "3d E0 scoring runs": {
+   "ok": true,
+   "evidence": "55816283\nW256|E1-3D-a|lat8192s1|ad|LSPG|BDF2|0.025|tighter median e 0.029456974566599833\nW256|E1-3D-a|lat8192s1|succ|lat16384s1|qn|BDF2|0.025|k4 median e 0.029467031316543248\nW256|E1-3D-a|lat8192s2|qn|BDF2|0.025|k4 median e 0.029465829040934068\nW256|E1-3D-a|lat8192s2|ad|LSPG|BDF2|0.025|tight median e 0.029456340957564324\nW256|E1-3D-a|lat8192s2|ad|LSPG|BDF2|0.025|tighter median e 0.02945634096605544\nW256|E1-3D-a|lat8192s2|succ|lat16384s2|qn|BDF2|0.025|k4 median e 0.029467056046316872\nW256|E1-3D-a|badlat8192|qn|BDF2|0.025|k4 median e 0.37042794987891114\n/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-19-jcp-robust/experiments/jcp-robust/checks/smoke-smk1-3d-scores.json {'K4_cases': [0, 1], 'K4_case_swap': 0.657405236099588, 'K4_time_shift': 0.16944439369713704, 'K4_fires': True} {}\n"
+  },
+  "3d analysis runs": {
+   "ok": true,
+   "evidence": "E1-3D-a {'H_E1a': 'unavailable (population)', 'H_E1b': 'atypically favourable', 'H_E1c': 'insensitive', 'indicator': {'tp': 3, 'fp': 0, 'fn': 0, 'tn': 0, 'draw0': {'rho_ok': True, 'rollout_ok': True}}, 'eligible_cases': 8}\n"
+  },
+  "3d job complete on gpu": {
+   "ok": true,
+   "evidence": "gpu"
+  },
+  "3d registered configuration inventory (E1-3D-a)": {
+   "ok": true,
+   "evidence": [
+    "E1-3D-a"
+   ]
+  },
+  "3d integrity (recomputed target / successor / ADT / tighter distances = in-job)": {
+   "ok": true,
+   "evidence": {
+    "ok": true,
+    "mismatches": [],
+    "smoke": true
+   }
+  },
+  "3d C-E1.1 fires (and job M = CPU M)": {
+   "ok": true,
+   "evidence": {
+    "admitted": true,
+    "fired": true,
+    "agree": true,
+    "flagged": true,
+    "M_job": 1027,
+    "M_cpu": 1027
+   }
+  },
+  "3d C-E1.2 fires": {
+   "ok": true,
+   "evidence": {
+    "raised": true,
+    "fired": true,
+    "message": "rule identity mismatch: table lat8192s1 claimed as lat8192",
+    "true_claim_passes": true
+   }
+  },
+  "3d G-E1.1 passes": {
+   "ok": true,
+   "evidence": {
+    "s0_equals_deployed": true,
+    "s1_pure_shift": true,
+    "s1_differs": true,
+    "passed": true
+   }
+  },
+  "3d G-E1.3 passes": {
+   "ok": true,
+   "evidence": {
+    "rule": "lat8192s0",
+    "max_rel_dev": 0.0,
+    "passed": true
+   }
+  },
+  "3d G-E1.2 reproduction on cases 0-7": {
+   "ok": true,
+   "evidence": {
+    "passed": true,
+    "worst": 1.7130974146945813e-14,
+    "n": 8,
+    "archive_sha256": "1b91a129833dd0632a3119eb0c49fa67f17d5e10968660db394031d85a52c3fd"
+   }
+  },
+  "3d target certified on cases 0-7": {
+   "ok": true,
+   "evidence": {
+    "certified": true,
+    "dist": [
+     9.104696578229592e-10,
+     1.37382958709034e-10,
+     1.1862028481608885e-10,
+     4.658584515846953e-10,
+     4.5995048361776035e-10,
+     1.3816984524526798e-06,
+     8.738053046060258e-10,
+     7.894695795645602e-09
+    ],
+    "cases": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ],
+    "label": "checked on the registered subset (cases 0-7)"
+   }
+  },
+  "3d own-family labels computed for draws 0-2": {
+   "ok": true,
+   "evidence": {
+    "0": [
+     "ok",
+     true
+    ],
+    "1": [
+     "ok",
+     true
+    ],
+    "2": [
+     "ok",
+     true
+    ]
+   }
+  },
+  "3d bad vector far from the target (evidence)": {
+   "ok": true,
+   "evidence": {
+    "D": 0.5427555022272081,
+    "any_invalid": false
+   }
+  },
+  "smoke resource contract (registered spec, regenerated inventories, reservation <= 2 GPU-h)": {
+   "ok": true,
+   "evidence": {
+    "reservation_identity": {
+     "attempt": true,
+     "commit": true,
+     "gpu": true,
+     "gpus": true,
+     "groups": true,
+     "time_limit": true
+    },
+    "configs/smk1m1024.json": {
+     "n": 186,
+     "same": true
+    },
+    "configs/smk13d.json": {
+     "n": 128,
+     "same": true
+    }
+   }
+  }
+ },
+ "ALL": true,
+ "label": "smoke acceptance (plumbing and controls at real size); never a verdict"
+}

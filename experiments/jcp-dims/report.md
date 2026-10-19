@@ -19,7 +19,7 @@
 | k3a | 5617664 | COMPLETED | 4.61 |
 | k3b | 5625575 | COMPLETED | 1.77 |
 | q3r7 | 5728185 | COMPLETED | 0.116 |
-| f2kA | 5728354 | RUNNING | 6.35 |
+| f2kA | 5728354 | COMPLETED | 6.96 |
 | b2f | 5746092 | COMPLETED | 2.1 |
 | b3f | 5855516 | COMPLETED | 1.23 |
 | f2kB | None | RELEASED | 0 |
@@ -27,8 +27,24 @@
 | q3r8 | None | RELEASED | 0 |
 | q3r8 | None | RELEASED | 0 |
 | q3r8 | 5920129 | COMPLETED | 0.0928 |
+| t3s | 6056422 | SUBMITTED | — |
+| t2 | 6056624 | SUBMITTED | — |
+| f2l | 6057843 | SUBMITTED | — |
 
-Spent **21.7** of 55 GPU-h.
+Spent **28.6** of 55 GPU-h.
+
+## Key outcomes (every verdict below is generated from the analysis files)
+
+- **A4 (2D)**: 22 of 26 F2 cells reach a Gauss m*; m* ranges over 9216 … 36864 points; the 4 square (M = r) cells reach none.
+- **A3 (2D) fixed (M=2048, gauss256)**: range **not monotone** (improves; improves; does not improve).
+- **A3 (2D) fixed m gauss256, M=4r**: range **not monotone** (improves; improves; does not improve).
+- **B6 (2D)**: M = r control status across cells: unavailable (unqualified cell) — test-space verdicts blocked.
+- **B3 (2D) R128M512**: fib: m* = 4181 (stable) (all 5 draws); gauss: m* = 9216 (stable); halton: none (within the candidate list); mc: not reached (incomplete ladder); smolyak: m* = 24577 (stable); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
+- **B3 (2D) R384M1536**: fib: m* = 28657 (stable) (all 5 draws); gauss: m* = 16384 (stable); halton: none (within the candidate list); mc: not reached (incomplete ladder); smolyak: none (within the candidate list); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
+- **B6-LMF**: unstable test space (no verdict).
+- **A4 (3D) coverage**: M2_512: 18 qualified, W256: 25 qualified, W512: 32 qualified, W768: 6 qualified, W1024: 2 qualified.
+- **H2q**: not yet available (timing jobs pending).
+
 
 ## A4 (2D): smallest qualifying Gauss rule $m^\*(r,M)$, LSPG-CN-R $\Delta t_0$, $1024^2$
 
@@ -93,31 +109,31 @@ Spent **21.7** of 55 GPU-h.
 | mc vs sobol | inconclusive (not reached) |
 | smolyak vs sobol | smolyak qualifies, sobol does not (within its list) |
 
-| family | draw | cross-family gate | worst distance to gauss384 |
+| family, draw | cross-family gate | worst distance to gauss384 |
 |---|---|---|
-| badlat121393 (control) | True | — |
-| fib|s0 | pass | 9.5e-07 |
-| fib|s1 | pass | 4.67e-06 |
-| fib|s2 | pass | 3.63e-06 |
-| fib|s3 | pass | 4.25e-06 |
-| fib|s4 | pass | 5.35e-07 |
-| gauss|s0 | pass | 0 |
-| halton|s0 | flagged | 0.000422 |
-| halton|s1 | flagged | 0.000302 |
-| halton|s2 | flagged | 0.000499 |
-| halton|s3 | flagged | 0.000298 |
-| halton|s4 | flagged | 0.000379 |
-| mc|s0 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s1 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s2 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s3 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s4 | gate unavailable (offline (b) disagrees) | inf |
-| smolyak|s0 | pass | 1.19e-06 |
-| sobol|s0 | pass | 1.55e-05 |
-| sobol|s1 | pass | 4.53e-05 |
-| sobol|s2 | pass | 2.62e-05 |
-| sobol|s3 | pass | 6.02e-05 |
-| sobol|s4 | pass | 9.55e-05 |
+| badlat121393 (control) | control fired: True (fixture admitted: True) | — |
+| fib\|s0 | pass | 9.5e-07 |
+| fib\|s1 | pass | 4.67e-06 |
+| fib\|s2 | pass | 3.63e-06 |
+| fib\|s3 | pass | 4.25e-06 |
+| fib\|s4 | pass | 5.35e-07 |
+| gauss\|s0 | pass | 0 |
+| halton\|s0 | flagged | 0.000422 |
+| halton\|s1 | flagged | 0.000302 |
+| halton\|s2 | flagged | 0.000499 |
+| halton\|s3 | flagged | 0.000298 |
+| halton\|s4 | flagged | 0.000379 |
+| mc\|s0 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s1 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s2 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s3 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s4 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| smolyak\|s0 | pass | 1.19e-06 |
+| sobol\|s0 | pass | 1.55e-05 |
+| sobol\|s1 | pass | 4.53e-05 |
+| sobol\|s2 | pass | 2.62e-05 |
+| sobol\|s3 | pass | 6.02e-05 |
+| sobol\|s4 | pass | 9.55e-05 |
 
 ### R384M1536
 
@@ -148,56 +164,112 @@ Spent **21.7** of 55 GPU-h.
 | mc vs sobol | inconclusive (not reached) |
 | smolyak vs sobol | neither qualifies |
 
-| family | draw | cross-family gate | worst distance to gauss384 |
+| family, draw | cross-family gate | worst distance to gauss384 |
 |---|---|---|
-| badlat121393 (control) | True | — |
-| fib|s0 | pass | 2.99e-06 |
-| fib|s1 | pass | 2.46e-05 |
-| fib|s2 | pass | 1.71e-05 |
-| fib|s3 | pass | 3.09e-05 |
-| fib|s4 | pass | 4.07e-06 |
-| gauss|s0 | pass | 0 |
-| halton|s0 | flagged | 0.0006 |
-| halton|s1 | flagged | 0.000906 |
-| halton|s2 | flagged | 0.000652 |
-| halton|s3 | flagged | 0.000528 |
-| halton|s4 | flagged | 0.000682 |
-| mc|s0 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s1 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s2 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s3 | gate unavailable (offline (b) disagrees) | inf |
-| mc|s4 | gate unavailable (offline (b) disagrees) | inf |
-| smolyak|s0 | pass | 1.23e-05 |
-| sobol|s0 | pass | 6.39e-05 |
-| sobol|s1 | pass | 0.000114 |
-| sobol|s2 | pass | 0.000116 |
-| sobol|s3 | pass | 0.000232 |
-| sobol|s4 | pass | 0.000229 |
+| badlat121393 (control) | control fired: True (fixture admitted: True) | — |
+| fib\|s0 | pass | 2.99e-06 |
+| fib\|s1 | pass | 2.46e-05 |
+| fib\|s2 | pass | 1.71e-05 |
+| fib\|s3 | pass | 3.09e-05 |
+| fib\|s4 | pass | 4.07e-06 |
+| gauss\|s0 | pass | 0 |
+| halton\|s0 | flagged | 0.0006 |
+| halton\|s1 | flagged | 0.000906 |
+| halton\|s2 | flagged | 0.000652 |
+| halton\|s3 | flagged | 0.000528 |
+| halton\|s4 | flagged | 0.000682 |
+| mc\|s0 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s1 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s2 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s3 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| mc\|s4 | gate unavailable (missing: no in-job fixgate evidence) | inf |
+| smolyak\|s0 | pass | 1.23e-05 |
+| sobol\|s0 | pass | 6.39e-05 |
+| sobol\|s1 | pass | 0.000114 |
+| sobol\|s2 | pass | 0.000116 |
+| sobol\|s3 | pass | 0.000232 |
+| sobol\|s4 | pass | 0.000229 |
 
 
 ## B6 (2D): test space $M/r$, M = r control, Galerkin vs LSPG (primary rung gauss256)
 
-| r | scheme | M = r control | transitions | range 2–4 |
+| r, scheme | M = r control | transitions | range 2–4 |
 |---|---|---|---|
-| R128|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R128|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R128|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R128|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R256|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R256|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R256|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R256|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R384|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R384|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R384|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R384|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R512|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R512|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R512|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
-| R512|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R128\|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R128\|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R128\|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R128\|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R256\|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R256\|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R256\|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R256\|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R384\|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R384\|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R384\|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R384\|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R512\|GAL-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R512\|LSPG-BE | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R512\|LSPG-CN | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
+| R512\|LSPG-CNR | unavailable (unqualified cell) | 1->2: blocked (M = r control: unavailable (unqualified cell)), 2->3: blocked (M = r control: unavailable (unqualified cell)), 3->4: blocked (M = r control: unavailable (unqualified cell)), 4->8: blocked (M = r control: unavailable (unqualified cell)) | blocked (control unavailable) |
 
-| r | kappa | comparison | verdict |
+| r, kappa | comparison | verdict |
 |---|---|---|
+| R128\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R128\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R128\|kappa1\|GAL-vs-LSPG | measured distance (no gate, A1.2) | None |
+| R128\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: LSPG more accurate |
+| R128\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R128\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: LSPG more accurate |
+| R128\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R128\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: LSPG more accurate |
+| R128\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R128\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: LSPG more accurate |
+| R128\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R256\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R256\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R256\|kappa1\|GAL-vs-LSPG | measured distance (no gate, A1.2) | None |
+| R256\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R256\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R256\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R256\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R256\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R256\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R256\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: LSPG more accurate |
+| R256\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R384\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R384\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R384\|kappa1\|GAL-vs-LSPG | measured distance (no gate, A1.2) | None |
+| R384\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R384\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R384\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R384\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R384\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: neither |
+| R384\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R384\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: LSPG more accurate |
+| R384\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R512\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R512\|kappa1\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell) |
+| R512\|kappa1\|GAL-vs-LSPG | measured distance (no gate, A1.2) | None |
+| R512\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R512\|kappa2\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R512\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R512\|kappa3\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R512\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R512\|kappa4\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+| R512\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN (primary) | blocked (M = r controls GAL / LSPG-CN: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: LSPG more accurate |
+| R512\|kappa8\|GAL-vs-LSPG | GAL vs LSPG-CN-R | blocked (M = r controls GAL / LSPG-CNR: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate |
+
+
+Why the M = r control is unavailable: 0 of 108 square (M = r) configurations pass Q1. Failing Q1 components:
+
+| failing Q1 components | square configurations |
+|---|---|
+| certificate, distance, tight_tighter | 57 |
+| certificate, distance | 45 |
+| distance | 5 |
+| certificate | 1 |
+
+Every B6 transition is therefore *blocked* by the registered rule; the raw paired labels are shown for description only and carry no verdict.
 
 
 ## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$
@@ -226,90 +298,95 @@ Stability checks: {'rank_ok': False, 'cond_ok': False, 'all_runs_valid': False, 
 
 | configuration | Q2-3D | worst q vs q+ | ρ max | round |
 |---|---|---|---|---|
-| M2_512|gl24|fs|BDF2|0.01|K1 | fail | 0.000842 | 0.0417 | 4 |
-| M2_512|gl24|fs|CN|0.0125|K2 | fail | 0.00092 | 0.0446 | 6 |
-| M2_512|gl24|fs|CN|0.016666667|K2 | fail | 0.000952 | 0.0447 | 4 |
-| M2_512|gl24|fs|CN|0.01|K2 | fail | 0.000921 | 0.0446 | 5 |
-| M2_512|gl24|qn|BDF2|0.0125|k4 | fail | 0.000812 | 0.0397 | 4 |
-| M2_512|gl24|qn|BDF2|0.01|k4 | fail | 0.000841 | 0.0417 | 7 |
-| M2_512|gl24|qn|BE|0.01|k4 | fail | 0.000501 | 0.0272 | 7 |
-| M2_512|gl32|fs|CN|0.01|K1 | pass | 3.28e-05 | 0.00113 | 6 |
-| M2_512|gl32|qn|BDF2|0.016666667|k4 | pass | 2.6e-05 | 0.000894 | 5 |
-| M2_512|gl32|qn|BDF2|0.025|k4 | pass | 2.15e-05 | 0.000703 | 6 |
-| M2_512|gl32|qn|BDF2|0.025|kinf | pass | 2.15e-05 | 0.000703 | 7 |
-| M2_512|lat16384|fs|BDF2|0.016666667|K2 | fail | 0.000307 | 0.0054 | 4 |
-| M2_512|lat16384|fs|BDF2|0.01|K1 | fail | 0.000344 | 0.00579 | 6 |
-| M2_512|lat16384|fs|BDF2|0.025|K2 | fail | 0.000264 | 0.0049 | 4 |
-| M2_512|lat16384|fs|BE|0.01|K1 | fail | 0.000281 | 0.00522 | 4 |
-| M2_512|lat16384|fs|CN|0.0125|K2 | fail | 0.000361 | 0.00598 | 7 |
-| M2_512|lat16384|fs|CN|0.016666667|K2 | fail | 0.000352 | 0.00589 | 5 |
-| M2_512|lat16384|fs|CN|0.01|K2 | fail | 0.000366 | 0.00604 | 6 |
-| M2_512|lat16384|qn|BDF2|0.0125|k4 | fail | 0.00033 | 0.00565 | 5 |
-| M2_512|lat16384|qn|BE|0.01|k4 | fail | 0.000281 | 0.00522 | 6 |
-| M2_512|lat16384|qn|CN|0.01|k4 | fail | 0.000356 | 0.00604 | 4 |
-| W1024|lat32768|fs|CN|0.0125|K2 | fail | 0.000415 | 0.00627 | 7 |
-| W1024|lat65536|fsp|CN|0.01|K1 | fail | 0.00085 | 0.0119 | 5 |
-| W1024|lat65536|fs|CN|0.01|K1 | fail | 0.000856 | 0.0119 | 4 |
-| W1024|lat65536|fs|CN|0.01|K2 | fail | 0.000847 | 0.0119 | 6 |
-| W1024|lat65536|qn|CN|0.01|k1 | fail | 0.00085 | 0.0119 | 4 |
-| W256|gl16|fs|BDF2|0.01|K1 | fail | 0.00949 | 0.263 | 4 |
-| W256|gl20|fs|BDF2|0.0125|K1 | fail | 0.000945 | 0.0387 | 5 |
-| W256|gl20|fs|BDF2|0.01|K1 | fail | 0.000972 | 0.0398 | 6 |
-| W256|gl20|fs|BE|0.0125|K1 | fail | 0.00064 | 0.0275 | 6 |
-| W256|gl20|fs|CN|0.016666667|K2 | fail | 0.00105 | 0.0414 | 5 |
-| W256|gl20|qn|CN|0.016666667|k4 | fail | 0.00105 | 0.0414 | 4 |
-| W256|gl24|qn|CN|0.025|k4 | pass | 0.00015 | 0.00434 | 6 |
-| W256|lat8192|qn|CN|0.016666667|k4 | fail | 0.000296 | 0.00537 | 4 |
-| W512|gl24|fs|BDF2|0.01|K1 | fail | 0.000989 | 0.0452 | 5 |
-| W512|gl24|fs|CN|0.0125|K2 | fail | 0.00111 | 0.0482 | 5 |
-| W512|gl24|fs|CN|0.016666667|K2 | fail | 0.00112 | 0.0476 | 4 |
-| W512|gl24|fs|CN|0.01|K2 | fail | 0.00113 | 0.0492 | 4 |
-| W512|gl24|qn|BDF2|0.01|k4 | fail | 0.000988 | 0.0452 | 6 |
-| W512|lat16384|fs|BDF2|0.01|K1 | fail | 0.000338 | 0.00346 | 6 |
-| W512|lat16384|fs|CN|0.0125|K2 | fail | 0.000366 | 0.00354 | 6 |
-| W512|lat16384|fs|CN|0.016666667|K2 | fail | 0.000353 | 0.00354 | 5 |
-| W512|lat16384|fs|CN|0.01|K2 | fail | 0.000373 | 0.00353 | 5 |
-| W512|lat32768|fs|CN|0.01|K1 | pass | 3.48e-05 | 0.000324 | 6 |
-| W512|lat32768|qn|CN|0.016666667|k4 | pass | 3.33e-05 | 0.000333 | 7 |
-| W512|lat32768|qn|CN|0.01|k4 | pass | 3.47e-05 | 0.000323 | 6 |
-| W768|lat32768|fsp|CN|0.0125|K1 | unverified (finer rule not converged) | 0.000168 | 0.00174 | 6 |
-| W768|lat32768|fsp|CN|0.01|K1 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 5 |
-| W768|lat32768|fs|CN|0.0125|K2 | unverified (finer rule not converged) | 0.00017 | 0.00174 | 7 |
-| W768|lat32768|fs|CN|0.01|K1 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 4 |
-| W768|lat32768|fs|CN|0.01|K2 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 6 |
-| W768|lat32768|qn|CN|0.0125|k1 | unverified (finer rule not converged) | 0.000168 | 0.00174 | 4 |
-| W768|lat32768|qn|CN|0.01|k1 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 5 |
-| round4|control|W512|lat8192|fs|BE|0.01|K1 | control | — | — | None |
-| round5|control|W512|lat8192|fs|BE|0.01|K1 | control | — | — | None |
-| round6|control|W512|lat8192|fs|BE|0.01|K1 | control | — | — | None |
-| round7|control|W512|lat8192|fs|BE|0.01|K1 | control | — | — | None |
+| M2_512\|gl24\|fs\|BDF2\|0.0125\|K2 | fail | 0.000812 | 0.0397 | 8 |
+| M2_512\|gl24\|fs\|BDF2\|0.01\|K1 | fail | 0.000842 | 0.0417 | 4 |
+| M2_512\|gl24\|fs\|CN\|0.0125\|K2 | fail | 0.00092 | 0.0446 | 6 |
+| M2_512\|gl24\|fs\|CN\|0.016666667\|K2 | fail | 0.000952 | 0.0447 | 4 |
+| M2_512\|gl24\|fs\|CN\|0.01\|K2 | fail | 0.000921 | 0.0446 | 5 |
+| M2_512\|gl24\|qn\|BDF2\|0.0125\|k4 | fail | 0.000812 | 0.0397 | 4 |
+| M2_512\|gl24\|qn\|BDF2\|0.01\|k4 | fail | 0.000841 | 0.0417 | 7 |
+| M2_512\|gl24\|qn\|BE\|0.01\|k4 | fail | 0.000501 | 0.0272 | 7 |
+| M2_512\|gl32\|fs\|CN\|0.01\|K1 | pass | 3.28e-05 | 0.00113 | 6 |
+| M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | pass | 2.6e-05 | 0.000894 | 5 |
+| M2_512\|gl32\|qn\|BDF2\|0.025\|k4 | pass | 2.15e-05 | 0.000703 | 6 |
+| M2_512\|gl32\|qn\|BDF2\|0.025\|kinf | pass | 2.15e-05 | 0.000703 | 7 |
+| M2_512\|gl32\|qn\|CN\|0.0125\|k4 | pass | 3.2e-05 | 0.00111 | 8 |
+| M2_512\|lat16384\|fs\|BDF2\|0.016666667\|K2 | fail | 0.000307 | 0.0054 | 4 |
+| M2_512\|lat16384\|fs\|BDF2\|0.01\|K1 | fail | 0.000344 | 0.00579 | 6 |
+| M2_512\|lat16384\|fs\|BDF2\|0.025\|K2 | fail | 0.000264 | 0.0049 | 4 |
+| M2_512\|lat16384\|fs\|BE\|0.01\|K1 | fail | 0.000281 | 0.00522 | 4 |
+| M2_512\|lat16384\|fs\|CN\|0.0125\|K2 | fail | 0.000361 | 0.00598 | 7 |
+| M2_512\|lat16384\|fs\|CN\|0.016666667\|K2 | fail | 0.000352 | 0.00589 | 5 |
+| M2_512\|lat16384\|fs\|CN\|0.01\|K2 | fail | 0.000366 | 0.00604 | 6 |
+| M2_512\|lat16384\|qn\|BDF2\|0.0125\|k4 | fail | 0.00033 | 0.00565 | 5 |
+| M2_512\|lat16384\|qn\|BE\|0.01\|k4 | fail | 0.000281 | 0.00522 | 6 |
+| M2_512\|lat16384\|qn\|CN\|0.01\|k4 | fail | 0.000356 | 0.00604 | 4 |
+| W1024\|lat32768\|fs\|CN\|0.0125\|K2 | fail | 0.000415 | 0.00627 | 7 |
+| W1024\|lat65536\|fsp\|CN\|0.01\|K1 | fail | 0.00085 | 0.0119 | 5 |
+| W1024\|lat65536\|fs\|CN\|0.01\|K1 | fail | 0.000856 | 0.0119 | 4 |
+| W1024\|lat65536\|fs\|CN\|0.01\|K2 | fail | 0.000847 | 0.0119 | 6 |
+| W1024\|lat65536\|qn\|CN\|0.0125\|k1 | fail | 0.00087 | 0.0117 | 8 |
+| W1024\|lat65536\|qn\|CN\|0.01\|k1 | fail | 0.00085 | 0.0119 | 4 |
+| W256\|gl16\|fs\|BDF2\|0.01\|K1 | fail | 0.00949 | 0.263 | 4 |
+| W256\|gl20\|fs\|BDF2\|0.0125\|K1 | fail | 0.000945 | 0.0387 | 5 |
+| W256\|gl20\|fs\|BDF2\|0.01\|K1 | fail | 0.000972 | 0.0398 | 6 |
+| W256\|gl20\|fs\|BE\|0.0125\|K1 | fail | 0.00064 | 0.0275 | 6 |
+| W256\|gl20\|fs\|CN\|0.016666667\|K2 | fail | 0.00105 | 0.0414 | 5 |
+| W256\|gl20\|qn\|CN\|0.016666667\|k4 | fail | 0.00105 | 0.0414 | 4 |
+| W256\|gl24\|qn\|CN\|0.025\|k4 | pass | 0.00015 | 0.00434 | 6 |
+| W256\|lat8192\|qn\|CN\|0.016666667\|k4 | fail | 0.000296 | 0.00537 | 4 |
+| W512\|gl24\|fs\|BDF2\|0.01\|K1 | fail | 0.000989 | 0.0452 | 5 |
+| W512\|gl24\|fs\|CN\|0.0125\|K2 | fail | 0.00111 | 0.0482 | 5 |
+| W512\|gl24\|fs\|CN\|0.016666667\|K2 | fail | 0.00112 | 0.0476 | 4 |
+| W512\|gl24\|fs\|CN\|0.01\|K2 | fail | 0.00113 | 0.0492 | 4 |
+| W512\|gl24\|qn\|BDF2\|0.01\|k4 | fail | 0.000988 | 0.0452 | 6 |
+| W512\|lat16384\|fs\|BDF2\|0.01\|K1 | fail | 0.000338 | 0.00346 | 6 |
+| W512\|lat16384\|fs\|CN\|0.0125\|K2 | fail | 0.000366 | 0.00354 | 6 |
+| W512\|lat16384\|fs\|CN\|0.016666667\|K2 | fail | 0.000353 | 0.00354 | 5 |
+| W512\|lat16384\|fs\|CN\|0.01\|K2 | fail | 0.000373 | 0.00353 | 5 |
+| W512\|lat32768\|fs\|CN\|0.01\|K1 | pass | 3.48e-05 | 0.000324 | 6 |
+| W512\|lat32768\|qn\|CN\|0.016666667\|k4 | pass | 3.33e-05 | 0.000333 | 7 |
+| W512\|lat32768\|qn\|CN\|0.01\|k4 | pass | 3.47e-05 | 0.000323 | 6 |
+| W512\|lat32768\|qn\|CN\|0.025\|k4 | pass | 3.17e-05 | 0.000371 | 8 |
+| W768\|lat32768\|fsp\|CN\|0.0125\|K1 | unverified (finer rule not converged) | 0.000168 | 0.00174 | 6 |
+| W768\|lat32768\|fsp\|CN\|0.01\|K1 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 5 |
+| W768\|lat32768\|fs\|CN\|0.0125\|K2 | unverified (finer rule not converged) | 0.00017 | 0.00174 | 7 |
+| W768\|lat32768\|fs\|CN\|0.01\|K1 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 4 |
+| W768\|lat32768\|fs\|CN\|0.01\|K2 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 6 |
+| W768\|lat32768\|qn\|CN\|0.0125\|k1 | unverified (finer rule not converged) | 0.000168 | 0.00174 | 4 |
+| W768\|lat32768\|qn\|CN\|0.01\|k1 | unverified (finer rule not converged) | 0.000173 | 0.00175 | 5 |
+| round4\|control\|W512\|lat8192\|fs\|BE\|0.01\|K1 | control | — | — | None |
+| round5\|control\|W512\|lat8192\|fs\|BE\|0.01\|K1 | control | — | — | None |
+| round6\|control\|W512\|lat8192\|fs\|BE\|0.01\|K1 | control | — | — | None |
+| round7\|control\|W512\|lat8192\|fs\|BE\|0.01\|K1 | control | — | — | None |
+| round8\|control\|W512\|lat8192\|fs\|BE\|0.01\|K1 | control | — | — | None |
 
 
 ### Width $m^\*$ (intersection over fs-BE, fs-CN, qn-BDF2)
 
-| width | family | width m* | fs-BE | fs-CN | qn-BDF2 |
+| width \| family | width m* | fs-BE | fs-CN | qn-BDF2 |
 |---|---|---|---|---|
-| M2_512|gauss | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) |
-| M2_512|lattice | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) |
-| W1024|gauss | none (within the candidate list) | m* = 64000 (stable) | none (within the candidate list) | none (within the candidate list) |
-| W1024|lattice | none (within the candidate list) | none (within the candidate list) | none (within the candidate list) | none (within the candidate list) |
-| W256|gauss | m* = 13824 (stable) | m* = 13824 (stable) | m* = 13824 (stable) | m* = 13824 (stable) |
-| W256|lattice | m* = 16384 (stable) | m* = 8192 (stable) | m* = 16384 (stable) | m* = 8192 (stable) |
-| W512|gauss | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) |
-| W512|lattice | m* = 32768 (stable) | m* = 16384 (stable) | m* = 32768 (stable) | m* = 16384 (stable) |
-| W768|gauss | none (within the candidate list) | m* = 64000 (stable) | m* = 64000 (stable) | none (within the candidate list) |
-| W768|lattice | none (within the candidate list) | m* = 32768 (stable) | none (within the candidate list) | none (within the candidate list) |
+| M2_512\|gauss | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) |
+| M2_512\|lattice | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) |
+| W1024\|gauss | none (within the candidate list) | m* = 64000 (stable) | none (within the candidate list) | none (within the candidate list) |
+| W1024\|lattice | none (within the candidate list) | none (within the candidate list) | none (within the candidate list) | none (within the candidate list) |
+| W256\|gauss | m* = 13824 (stable) | m* = 13824 (stable) | m* = 13824 (stable) | m* = 13824 (stable) |
+| W256\|lattice | m* = 16384 (stable) | m* = 8192 (stable) | m* = 16384 (stable) | m* = 8192 (stable) |
+| W512\|gauss | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) | m* = 32768 (stable) |
+| W512\|lattice | m* = 32768 (stable) | m* = 16384 (stable) | m* = 32768 (stable) | m* = 16384 (stable) |
+| W768\|gauss | none (within the candidate list) | m* = 64000 (stable) | m* = 64000 (stable) | none (within the candidate list) |
+| W768\|lattice | none (within the candidate list) | m* = 32768 (stable) | none (within the candidate list) | none (within the candidate list) |
 
 
 ### Coverage: numerically qualified configurations per width
 
 | width | n qualified | examples |
 |---|---|---|
-| M2_512 | 17 | M2_512|gl32|fs|BE|0.01|K1, M2_512|gl32|fs|CN|0.01|K1, M2_512|gl32|qn|BDF2|0.016666667|k4 |
-| W256 | 25 | W256|gl24|fs|BE|0.01|K1, W256|gl24|fs|CN|0.0125|K1, W256|gl24|fs|CN|0.01|K1 |
-| W512 | 19 | W512|gl32|fs|BE|0.01|K1, W512|gl32|fs|CN|0.01|K1, W512|gl32|qn|BDF2|0.025|k4 |
-| W768 | 6 | W768|gl40|fs|BE|0.01|K1, W768|gl40|fs|CN|0.01|K1, W768|gl48|fs|BE|0.01|K1 |
-| W1024 | 2 | W1024|gl40|fs|BE|0.01|K1, W1024|gl48|fs|BE|0.01|K1 |
+| M2_512 | 18 | M2_512\|gl32\|fs\|BE\|0.01\|K1, M2_512\|gl32\|fs\|CN\|0.01\|K1, M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 |
+| W256 | 25 | W256\|gl24\|fs\|BE\|0.01\|K1, W256\|gl24\|fs\|CN\|0.0125\|K1, W256\|gl24\|fs\|CN\|0.01\|K1 |
+| W512 | 32 | W512\|gl32\|fs\|BE\|0.01\|K1, W512\|gl32\|fs\|CN\|0.01\|K1, W512\|gl32\|qn\|BDF2\|0.025\|k4 |
+| W768 | 6 | W768\|gl40\|fs\|BE\|0.01\|K1, W768\|gl40\|fs\|CN\|0.01\|K1, W768\|gl48\|fs\|BE\|0.01\|K1 |
+| W1024 | 2 | W1024\|gl40\|fs\|BE\|0.01\|K1, W1024\|gl48\|fs\|BE\|0.01\|K1 |
 
 
 ## B6 (3D, W512) and A3 (3D)
@@ -318,11 +395,13 @@ Stability checks: {'rank_ok': False, 'cond_ok': False, 'all_runs_valid': False, 
 
 - **W512|GAL-CN adaptive**: control unavailable (unqualified cell); 1->2: blocked (M = r control: unavailable (unqualified cell)); 2->3: blocked (M = r control: unavailable (unqualified cell)); 3->4: blocked (M = r control: unavailable (unqualified cell)); 4->8: blocked (M = r control: unavailable (unqualified cell)); range 2–4: blocked (control unavailable)
 
-- **W512|fs-CN (control from the adaptive LSPG form)**: control unavailable (unqualified cell); 2->3: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: inconclusive (missing); 3->4: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: inconclusive (missing); 4->8: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: inconclusive (missing); range 2–4: blocked or not demonstrated
+- **W512|fs-CN (control from the adaptive LSPG form)**: control unavailable (unqualified cell); 2->3: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: improves; 3->4: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: improves; 4->8: blocked (adaptive LSPG control: unavailable (unqualified cell)); raw: inconclusive (resolution); range 2–4: blocked or not demonstrated
 
-- **fixed (M=2052 frozen list, lat65536)**: inconclusive (missing); inconclusive (missing); inconclusive (missing) — range **inconclusive**
+- **GAL vs LSPG (adaptive CN)**: kappa1: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell); kappa2: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate; kappa3: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (resolution); kappa4: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (resolution); kappa8: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (resolution)
 
-- **fixed m lat65536, nominal M**: improves; inconclusive (missing); inconclusive (missing) — range **inconclusive**
+- **fixed (M=2052 frozen list, lat65536)**: improves; inconclusive (unqualified cell); inconclusive (unqualified cell) — range **inconclusive**
+
+- **fixed m lat65536, nominal M**: improves; inconclusive (unqualified cell); inconclusive (unqualified cell) — range **inconclusive**
 
 
 ## B3 (3D, W512 κ = 4, fs-CN)
@@ -331,28 +410,50 @@ Stability checks: {'rank_ok': False, 'cond_ok': False, 'all_runs_valid': False, 
 |---|---|
 | gauss | m* = 32768 (stable) |
 | hal | not reached (incomplete ladder) |
-| lattice | not reached (incomplete ladder) |
+| lattice | m* = 32768 (stable) (all 5 draws) |
 | mc | not reached (incomplete ladder) |
-| smolyak | not reached (incomplete ladder) |
-| sobol | not reached (incomplete ladder) |
+| smolyak | none (within the candidate list) |
+| sobol | none (within the candidate list) |
 
 | comparison | verdict |
 |---|---|
-| gauss vs hal | blocked (bad-vector control unavailable or not fired) |
-| gauss vs lattice | blocked (bad-vector control unavailable or not fired) |
-| gauss vs mc | blocked (bad-vector control unavailable or not fired) |
-| gauss vs smolyak | blocked (bad-vector control unavailable or not fired) |
-| gauss vs sobol | blocked (bad-vector control unavailable or not fired) |
-| hal vs lattice | blocked (bad-vector control unavailable or not fired) |
-| hal vs mc | blocked (bad-vector control unavailable or not fired) |
-| hal vs smolyak | blocked (bad-vector control unavailable or not fired) |
-| hal vs sobol | blocked (bad-vector control unavailable or not fired) |
-| lattice vs mc | blocked (bad-vector control unavailable or not fired) |
-| lattice vs smolyak | blocked (bad-vector control unavailable or not fired) |
-| lattice vs sobol | blocked (bad-vector control unavailable or not fired) |
-| mc vs smolyak | blocked (bad-vector control unavailable or not fired) |
-| mc vs sobol | blocked (bad-vector control unavailable or not fired) |
-| smolyak vs sobol | blocked (bad-vector control unavailable or not fired) |
+| gauss vs hal | inconclusive (not reached) |
+| gauss vs lattice | comparable |
+| gauss vs mc | inconclusive (not reached) |
+| gauss vs smolyak | inconclusive (gate flagged or unavailable) |
+| gauss vs sobol | inconclusive (gate flagged or unavailable) |
+| hal vs lattice | inconclusive (not reached) |
+| hal vs mc | inconclusive (not reached) |
+| hal vs smolyak | inconclusive (not reached) |
+| hal vs sobol | inconclusive (not reached) |
+| lattice vs mc | inconclusive (not reached) |
+| lattice vs smolyak | inconclusive (gate flagged or unavailable) |
+| lattice vs sobol | inconclusive (gate flagged or unavailable) |
+| mc vs smolyak | inconclusive (not reached) |
+| mc vs sobol | inconclusive (not reached) |
+| smolyak vs sobol | inconclusive (gate flagged or unavailable) |
+
+
+## Deferred and not reached
+
+- `b3m` (3D B3 stage (ii): Monte Carlo and Halton3 families) — **deferred (budget)** (DESIGN A15); the 3D mc/hal family rows read "not reached".
+
+- 3D square (κ = 1) adaptive cells did not pass Q1, so every 3D B6 transition is blocked (registered rule), as in 2D.
+
+
+## Retractions and corrections during the lane (details in DESIGN.md amendments)
+
+- A6.1 / A9.1: the G-certificate bar was relaxed after the 2D smoke (round-off between two evaluation orders); A9.1 replaced the first stated discrepancy numbers, which were wrong, and labels the change a post-smoke relaxation.
+
+- A7: the first `f2b` certificate underpriced small and square cells; the job was cancelled and rerun as `f2br1`.
+
+- A10.2: the `k3` certificate underpriced square adaptive solves; the job was split into `k3a`/`k3b`.
+
+- A12.1: the first `t3s` inventory omitted 18 numerically qualified κ-panel and fixed-(M, m) configurations; fixed before submission.
+
+- A12.4: 2D family draws without in-job gate evidence were labelled "offline (b) disagrees"; relabelled "missing".
+
+- A14.1–A14.4: the registered timing-identity check, subject vetoes and panel controls were not implemented in the first `t2` analysis code; added before submission. A14.5: the first memory-coverage argument for `t2` was wrong (it cited a rung pair the smoke never held live); replaced by production evidence.
 
 
 ## Controls

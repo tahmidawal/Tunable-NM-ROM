@@ -86,7 +86,29 @@ def sec_2d(a2, L, plots):
     L.append(table(['r, scheme', 'M = r control', 'transitions', 'range 2–4'], rows) + '\n')
     rows = [[k, nm, lab(x)] for k, v in sorted(a2['B6'].items()) if 'GAL-vs-LSPG' in k for nm, x in v.items()]
     L.append(table(['r, kappa', 'comparison', 'verdict'], rows) + '\n')
+    sq = [v for v in cfg.values() if v.get('square')]
+    if sq:
+        from collections import Counter
+        why = Counter(', '.join(k for k in ('certificate', 'distance', 'tight_tighter', 'gcert', 'all_valid') if v['Q1'].get(k) is False)
+                      or 'none' for v in sq)
+        L.append(f"\nWhy the M = r control is unavailable: {sum(1 for v in sq if v['Q1'].get('pass'))} of {len(sq)} square "
+                 "(M = r) configurations pass Q1. Failing Q1 components:\n")
+        L.append(table(['failing Q1 components', 'square configurations'], sorted(why.items(), key=lambda x: -x[1])) + '\n')
+        L.append('Every B6 transition is therefore *blocked* by the registered rule; the raw paired labels are shown for '
+                 'description only and carry no verdict.\n')
     exp['B6_2d'] = a2['B6']
+    co = a2.get('costs') or {}
+    if co:
+        ctl = co.get('_controls', {})
+        subj = {k: v for k, v in co.items() if not k.startswith('_')}
+        L.append('\n## 2D timing panel `t2` (H200, full-field contract, cost relative to the reference A)\n')
+        L.append(f"Controls: injected identity fault caught: **{ctl.get('injected_fault_caught')}**; doubled-work median ratio "
+                 f"{sci(ctl.get('doubled_median'))} (ok: **{ctl.get('doubled_ok')}**). Subjects: {len(subj)}; usable: "
+                 f"{sum(1 for v in subj.values() if v['usable'])}; timing-job qualified: {sum(1 for v in subj.values() if v['qualified'])}; "
+                 f"worst identity vs accuracy run: {sci(max([v['identity_rel'] for v in subj.values() if v.get('identity_rel') is not None] or [None]) if any(v.get('identity_rel') is not None for v in subj.values()) else None)}.\n")
+        rows = sorted([[k, sci(v['c']), v['usable'], v['qualified'], v.get('identity_label') or 'ok'] for k, v in subj.items()])
+        L.append(table(['subject', 'cost c', 'usable', 'qualified', 'identity'], rows) + '\n')
+        exp['costs_2d'] = co
     L.append('\n## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$\n')
     for nm, v in a2['A3'].items():
         L.append(f"- **{nm}**: " + '; '.join(f"{t['X'].split('|')[0]} → {t['Y'].split('|')[0]}: {t['label']}" for t in v['transitions'])
@@ -203,8 +225,17 @@ def main():
                                                                 for j in led['jobs']]) + '\n')
         L.append(f"Spent **{led['spent_gpu_hours']:.3g}** of {led['cap_gpu_hours']:.3g} GPU-h.\n")
     exp = dict(lane='jcp-dims', label='E0 R_ST: conditional Richardson estimate (E0 A10; combined A10, A11, retracted A15 carried)')
+    L.append(key_outcomes(a2, a3) + '\n')
     exp.update(sec_2d(a2, L, plt))
     exp.update(sec_3d(a3, L))
+    L.append('\n## Deferred and not reached\n')
+    L.append('- `b3m` (3D B3 stage (ii): Monte Carlo and Halton3 families) — **deferred (budget)** (DESIGN A15); the 3D mc/hal '
+             'family rows read "not reached".\n')
+    L.append('- 3D square (κ = 1) adaptive cells did not pass Q1, so every 3D B6 transition is blocked (registered rule), '
+             'as in 2D.\n')
+    L.append('\n## Retractions and corrections during the lane (details in DESIGN.md amendments)\n')
+    for t in RETRACTIONS:
+        L.append(f'- {t}\n')
     sm = {p: load(f'checks/smoke-accept-{p}.json') for p in ('smk2', 'smk3')}
     L.append('\n## Controls\n')
     for p, v in sm.items():
@@ -217,6 +248,49 @@ def main():
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')
     (HERE / 'runs' / 'EXPORT.json').write_text(json.dumps(exp, indent=1, default=str) + '\n')
     print('report written')
+
+
+RETRACTIONS = [
+    'A6.1 / A9.1: the G-certificate bar was relaxed after the 2D smoke (round-off between two evaluation orders); A9.1 '
+    'replaced the first stated discrepancy numbers, which were wrong, and labels the change a post-smoke relaxation.',
+    'A7: the first `f2b` certificate underpriced small and square cells; the job was cancelled and rerun as `f2br1`.',
+    'A10.2: the `k3` certificate underpriced square adaptive solves; the job was split into `k3a`/`k3b`.',
+    'A12.1: the first `t3s` inventory omitted 18 numerically qualified κ-panel and fixed-(M, m) configurations; fixed '
+    'before submission.',
+    'A12.4: 2D family draws without in-job gate evidence were labelled "offline (b) disagrees"; relabelled "missing".',
+    'A14.1–A14.4: the registered timing-identity check, subject vetoes and panel controls were not implemented in the '
+    'first `t2` analysis code; added before submission. A14.5: the first memory-coverage argument for `t2` was wrong '
+    '(it cited a rung pair the smoke never held live); replaced by production evidence.',
+]
+
+
+def key_outcomes(a2, a3):
+    L = ['## Key outcomes (every verdict below is generated from the analysis files)\n']
+    if a2:
+        F2 = {lid: v for lid, v in a2['mstar'].items() if lid.startswith('F2|')}
+        sq = [lid for lid, v in F2.items() if lid.split('|')[1][1:] == lid.split('|')[2][1:]]
+        ms = sorted({v['mstar']['m'] for v in F2.values() if v['mstar'].get('m')})
+        L.append(f"- **A4 (2D)**: {sum(1 for v in F2.values() if v['mstar'].get('m'))} of {len(F2)} F2 cells reach a Gauss m*; "
+                 f"m* ranges over {ms[0] if ms else '—'} … {ms[-1] if ms else '—'} points; the {len(sq)} square (M = r) cells reach none.")
+        for nm, v in a2['A3'].items():
+            L.append(f"- **A3 (2D) {nm}**: range **{v['range']}** (" + '; '.join(t['label'] for t in v['transitions']) + ').')
+        ctl = {v.get('control') for k, v in a2['B6'].items() if 'transitions' in v}
+        L.append(f"- **B6 (2D)**: M = r control status across cells: {', '.join(sorted(map(str, ctl)))} — test-space verdicts "
+                 'blocked.')
+        for cell, f in a2['families'].items():
+            pe = f['point_efficiency']
+            dec = {k: v for k, v in pe.items() if not str(v).startswith(('inconclusive', 'blocked'))}
+            L.append(f"- **B3 (2D) {cell}**: " + '; '.join(f"{k}: {v['family']['outcome']}" for k, v in sorted(f['mstar'].items()))
+                     + f" — {len(dec)} of {len(pe)} pairwise comparisons decided.")
+        lm = a2.get('LMF', {})
+        L.append(f"- **B6-LMF**: {lm.get('outcome') or 'see section'}.")
+    if a3:
+        L.append('- **A4 (3D) coverage**: ' + ', '.join(f'{w}: {len(v)} qualified' for w, v in a3['coverage'].items()) + '.')
+        for c, v in (a3.get('h2q') or {}).items():
+            L.append(f"- **H2q vs {c}**: {v.get('verdict')}" + (f" (S = {v['S']:.3g})" if v.get('S') else '') + '.')
+        if not a3.get('h2q'):
+            L.append('- **H2q**: not yet available (timing jobs pending).')
+    return '\n'.join(L) + '\n'
 
 
 GLOSSARY = [

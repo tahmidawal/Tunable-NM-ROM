@@ -66,6 +66,24 @@ def case_q(x, nxt, d_adt, d_next, d_tt, nonst):
     return out
 
 
+def expected_bank3d(b):
+    """(bank name, registry entry) the jobs of bank b must carry (code audit 8 #5)."""
+    import json as _j
+    if int(b) == 0:
+        return 'W1024', None
+    meta = _j.loads((HERE / 'inputs' / 'banks3d' / f's{b}' / 'BANK.json').read_text())
+    return f'W1024s{b}', dict(path=f'inputs/banks3d/s{b}/bank.pkl', sha256=meta['bank_sha256'])
+
+
+def check_bank3d(cfg, b):
+    name, reg = expected_bank3d(b)
+    banks = {s_['bank'] for s_ in cfg['settings']}
+    regs = cfg.get('bank_registry') or {}
+    ok = banks == {name} and int(cfg.get('bank_seed', -1)) == int(b) and (regs.get(name) == reg if reg else not regs)
+    if not ok:
+        raise SystemExit(f"job {cfg.get('attempt')} is not on bank {b}: banks {banks}, seed {cfg.get('bank_seed')}, registry {regs}")
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('bank')
@@ -75,6 +93,11 @@ def main():
     b = int(a.bank)
     sel = json.loads((HERE / 'checks' / f'select3d-{b}.json').read_text())
     J = [load_job(a.qa, a.sa), load_job(a.qb, a.sb)]
+    for res_, *_ in J:
+        check_bank3d(res_['config'], b)
+    if sorted(sel['jobs']) != sorted(r_['config']['attempt'] for r_, *_ in J) or \
+            any(str(sel['jobs'][r_['config']['attempt']]['job_id']) != str(r_['job_id']) for r_, *_ in J):
+        raise SystemExit('selection file does not come from these two jobs')
     lad, scores, Wz_of = {}, {}, {}
     for res, l_, s_, W_ in J:
         lad.update(l_)
@@ -189,6 +212,7 @@ def main():
         bank_of = lambda c: (sorted({s_['bank'] for s_ in c['settings']}), sorted((c.get('bank_registry') or {}).items()))
         if bank_of(fres['config']) != bank_of(J[0][0]['config']):          # code audit 3 #23: same bank identity
             fres = dict(fres, complete=False)
+        check_bank3d(fres['config'], b)
         tm = next(iter(fres['timing'].values()))
         ba = {}
         if tm.get('valid') is True and fres.get('complete') and fres['backend'] == 'gpu':     # code audit 2 #23: d3run's

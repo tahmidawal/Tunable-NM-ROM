@@ -266,7 +266,9 @@ def smk3(out):
                     return [max(r_) if all(math.isfinite(x_) for x_ in r_) else math.inf for r_ in v]
                 d_rec = dict(tight=dd(arr['p'], arr['t']), succ=dd(arr['p'], arr['s']), tt=dd(arr['t'], arr['tt']))
                 cr = [r_ for r_ in res['rows'] if r_.get('tag') == 'W256p|gl24' and r_.get('spec') == sp and 'gam_cert' in r_]
-                rec_ok = sorted(int(r_['case']) for r_ in cr) == list(range(8)) and all(len(r_['gam_cert']) == 25 for r_ in cr)
+                rec_ok = sorted(int(r_['case']) for r_ in cr) == list(range(8)) and all(len(r_['gam_cert']) == 25 for r_ in cr) \
+                    and all(math.isfinite(n0[i]) and n0[i] > 0 for i in range(8)) and np.isfinite(G).all() \
+                    and all(math.isfinite(v_) for k_ in ('tight', 'succ', 'tt') for v_ in d_rec[k_])      # audit 8 #2
                 gam = [E_num(v) for r_ in cr for v in r_['gam_cert']]
                 d_rec['nonst'] = (sum(1 for v in gam if not (math.isfinite(v) and v <= 1e-3)) / len(gam)) if (rec_ok and gam) else None
     chk(C, 'pilot rung evidence recomputed from its saved arrays on the pilot bank (mappings, shapes, certificate rows)',

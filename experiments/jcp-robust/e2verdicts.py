@@ -25,12 +25,17 @@ DEFINITIVE = {'pass', 'fail', 'improves', 'does not improve', 'monotone', 'not m
               'absent', True, False}
 
 
+REGISTERED_SEEDS = (1, 2, 3)
+
+
 def lab3(labels):
-    """labels of the new seeds (None = missing)."""
+    """labels of the three registered new seeds in order (None = missing / deferred). Robustness needs all three
+    definitive and equal (A2.7); two distinct definitive labels give seed-dependence (code audit 8 #6)."""
+    assert len(labels) == len(REGISTERED_SEEDS), 'the three registered seeds are always passed (missing ones as None)'
     d = [x for x in labels if x in DEFINITIVE or (isinstance(x, str) and x.startswith('rule:'))]
     if len(d) >= 2 and len(set(map(str, d))) > 1:
         return 'seed-dependent'
-    if len(d) == len(labels) and len(set(map(str, d))) == 1:
+    if len(d) == 3 and len(set(map(str, d))) == 1:
         return 'seed-robust'
     return 'inconclusive'
 
@@ -92,7 +97,7 @@ def tint(xs):
 
 def main():
     dim = sys.argv[1]
-    seeds = [int(x) for x in (sys.argv[sys.argv.index('--seeds') + 1] if '--seeds' in sys.argv else '1,2,3').split(',')]
+    seeds = list(REGISTERED_SEEDS)                 # never reduced: a deferred / missing seed is None (code audit 8 #6)
     load = lambda b: json.loads((HERE / 'checks' / f'e2-{dim}-{b}.json').read_text()) if (HERE / 'checks' / f'e2-{dim}-{b}.json').exists() else None
     inc = load(0)
     new = {s: load(s) for s in seeds}

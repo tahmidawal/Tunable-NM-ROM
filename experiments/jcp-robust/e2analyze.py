@@ -212,6 +212,8 @@ def main():
     for m, rec_ in list(C.items()) + ([('v1024', extra)] if a.v1024 else []):
         if bid(rec_['bank']) != wid:
             raise SystemExit(f'job of mesh {m} ran on another bank than bank {b}: {bid(rec_["bank"])} != {wid}')
+    if str(sel.get('job_id')) != str(C[1024]['job_id']):                         # selection artefact from THIS job
+        raise SystemExit(f"selection file {sel.get('job_id')} is not from the selection job {C[1024]['job_id']}")
     rep = dict(bank=b, selection=sel['selected'], jobs={m: dict(job_id=C[m]['job_id'], complete=C[m]['complete'],
                                                               backend=C[m]['backend']) for m in C},
                integrity=all(x['integrity'] for m in C for x in C[m]['cfg'].values()),

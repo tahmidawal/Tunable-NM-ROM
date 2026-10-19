@@ -40,6 +40,24 @@ def num(x):
     return E.num(x)
 
 
+def expected_bank3d(b):
+    """(bank name, registry entry) the jobs of bank b must carry (code audit 8 #5)."""
+    import json as _j
+    if int(b) == 0:
+        return 'W1024', None
+    meta = _j.loads((HERE / 'inputs' / 'banks3d' / f's{b}' / 'BANK.json').read_text())
+    return f'W1024s{b}', dict(path=f'inputs/banks3d/s{b}/bank.pkl', sha256=meta['bank_sha256'])
+
+
+def check_bank3d(cfg, b):
+    name, reg = expected_bank3d(b)
+    banks = {s_['bank'] for s_ in cfg['settings']}
+    regs = cfg.get('bank_registry') or {}
+    ok = banks == {name} and int(cfg.get('bank_seed', -1)) == int(b) and (regs.get(name) == reg if reg else not regs)
+    if not ok:
+        raise SystemExit(f"job {cfg.get('attempt')} is not on bank {b}: banks {banks}, seed {cfg.get('bank_seed')}, registry {regs}")
+
+
 def main():
     b = int(sys.argv[1])
     dirs = [Path(x) for x in sys.argv[2:4]]
@@ -49,6 +67,7 @@ def main():
     for d in dirs:
         res = json.loads((d / 'result.json').read_text())
         cfg = res['config']
+        check_bank3d(cfg, b)
         ES.install(cfg)
         rep['jobs'][res['config']['attempt']] = dict(job_id=res['job_id'], complete=bool(res.get('complete')),
                                                      backend=res['backend'], memory_rejected=res.get('memory_rejected', []))

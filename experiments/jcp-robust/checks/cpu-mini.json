@@ -20,11 +20,11 @@
        "succ": "fib6765s0",
        "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
        "level": "full",
-       "qualified": true,
-       "own_family_qualified": true,
-       "status": "ok",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "missing",
        "nonst_frac": 0.0,
-       "D": 2.9771975775905527e-06,
+       "D": null,
        "prod_failed": false,
        "rho_tgt_max": 0.012226804293140494,
        "rho_succ_max": 0.011145164761114115,
@@ -46,10 +46,7 @@
         true,
         true
        ],
-       "case_q": [
-        true,
-        true
-       ],
+       "case_q": null,
        "dist_target": [
         2.9771975775905527e-06,
         8.83849474509294e-08
@@ -60,11 +57,11 @@
        "succ": "fib6765s1",
        "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
        "level": "full",
-       "qualified": true,
-       "own_family_qualified": true,
-       "status": "ok",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "missing",
        "nonst_frac": 0.0,
-       "D": 2.4646496176260607e-06,
+       "D": null,
        "prod_failed": false,
        "rho_tgt_max": 0.012587746979469978,
        "rho_succ_max": 0.01543057974720315,
@@ -86,10 +83,7 @@
         true,
         true
        ],
-       "case_q": [
-        true,
-        true
-       ],
+       "case_q": null,
        "dist_target": [
         2.4646496176260607e-06,
         1.053627370037004e-07
@@ -104,7 +98,7 @@
        "own_family_qualified": null,
        "status": "diagnostic (production only)",
        "nonst_frac": 0.0,
-       "D": 0.28523877765830113,
+       "D": null,
        "prod_failed": false,
        "rho_tgt_max": 9.218156576067164,
        "rho_succ_max": null,
@@ -136,7 +130,7 @@
      "diagnostic": false,
      "target": {
       "present": true,
-      "certified": true,
+      "certified": false,
       "all_valid": true,
       "check_rows": [
        {
@@ -149,17 +143,17 @@
       ],
       "label": "checked on the registered subset (dev6)",
       "econv": [
-       0.006005453749053971,
-       0.013345415707983562
+       null,
+       null
       ]
      },
      "smoke": false,
      "integrity": {
-      "ids_ok": true,
+      "ids_ok": false,
       "mismatches": [],
       "gcert_fail": 0,
       "missing": [],
-      "ok": true
+      "ok": false
      },
      "G-E1.2": {
       "passed": true,
@@ -188,11 +182,11 @@
        "succ": "fib6765s0",
        "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
        "level": "full",
-       "qualified": true,
-       "own_family_qualified": true,
-       "status": "ok",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "missing",
        "nonst_frac": 0.0,
-       "D": 5.442539747720582e-06,
+       "D": null,
        "prod_failed": false,
        "rho_tgt_max": 0.012226804293140494,
        "rho_succ_max": 0.011145164761114115,
@@ -214,10 +208,7 @@
         true,
         true
        ],
-       "case_q": [
-        true,
-        true
-       ],
+       "case_q": null,
        "dist_target": [
         5.442539747720582e-06,
         9.176099968896536e-08
@@ -228,11 +219,11 @@
        "succ": "fib6765s1",
        "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
        "level": "full",
-       "qualified": true,
-       "own_family_qualified": true,
-       "status": "ok",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "missing",
        "nonst_frac": 0.0,
-       "D": 4.0031797551148725e-06,
+       "D": null,
        "prod_failed": false,
        "rho_tgt_max": 0.012587746979469978,
        "rho_succ_max": 0.01543057974720315,
@@ -254,10 +245,7 @@
         true,
         true
        ],
-       "case_q": [
-        true,
-        true
-       ],
+       "case_q": null,
        "dist_target": [
         4.0031797551148725e-06,
         1.0858955046435e-07
@@ -272,7 +260,7 @@
        "own_family_qualified": null,
        "status": "diagnostic (production only)",
        "nonst_frac": 0.0,
-       "D": 0.2872437492681661,
+       "D": null,
        "prod_failed": false,
        "rho_tgt_max": 9.218156576067164,
        "rho_succ_max": null,
@@ -304,7 +292,7 @@
      "diagnostic": true,
      "target": {
       "present": true,
-      "certified": true,
+      "certified": false,
       "all_valid": true,
       "check_rows": [
        {
@@ -317,17 +305,17 @@
       ],
       "label": "checked on the registered subset (dev6)",
       "econv": [
-       0.0026319683292453993,
-       0.0008522262262469636
+       null,
+       null
       ]
      },
      "smoke": false,
      "integrity": {
-      "ids_ok": true,
+      "ids_ok": false,
       "mismatches": [],
       "gcert_fail": 0,
       "missing": [],
-      "ok": true
+      "ok": false
      },
      "verdicts": "diagnostic (GAL-CN): no verdict",
      "G-E1.2": {

@@ -33,6 +33,9 @@ def use(bank, recorded=None):
         assert _sha(ck) == want[0] and _sha(rot) == want[1], 'bank files differ from their hashes'
     else:
         ck, rot = _INC
+        want = (_sha(ck), _sha(rot))
+    if recorded is not None:                          # code audit 8 #4: the job's recorded identity must agree too
+        assert tuple(recorded) == tuple(want), ('job recorded another bank', recorded, want)
     NC.CKPT, NC.ROT = ck, rot
     NC._P, NC._T = None, None
     NC._G257.clear()

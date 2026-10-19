@@ -24,21 +24,23 @@
   },
   {
    "attempt": "refAp",
-   "state": "SUBMITTED",
+   "state": "COMPLETED",
    "time_limit_hours": 8.75,
    "job_id": "6074945",
-   "sacct_state": "RUNNING",
+   "sacct_state": "COMPLETED",
    "node": "pax008",
-   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1"
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1",
+   "elapsed_hours": 1.8936
   },
   {
    "attempt": "refC2",
-   "state": "SUBMITTED",
+   "state": "COMPLETED",
    "time_limit_hours": 7.0,
    "job_id": "6074946",
-   "sacct_state": "PENDING",
-   "node": "None assigned",
-   "alloc": ""
+   "sacct_state": "COMPLETED",
+   "node": "pax010",
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1",
+   "elapsed_hours": 1.4331
   },
   {
    "attempt": "refC1",
@@ -54,16 +56,31 @@
    "attempt": "refN0",
    "state": "SUBMITTED",
    "time_limit_hours": 4.25,
-   "job_id": "6076378"
+   "job_id": "6076378",
+   "sacct_state": "RUNNING",
+   "node": "pax105",
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1"
   },
   {
    "attempt": "rom1024",
    "state": "SUBMITTED",
    "time_limit_hours": 3.0,
-   "job_id": "6077264"
+   "job_id": "6077264",
+   "sacct_state": "RUNNING",
+   "node": "pax049",
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1"
+  },
+  {
+   "attempt": "refAm",
+   "state": "SUBMITTED",
+   "time_limit_hours": 7.0,
+   "job_id": "6078310",
+   "sacct_state": "PENDING",
+   "node": "None assigned",
+   "alloc": ""
   }
  ],
- "spent_gpu_hours": 0.5494,
- "reserved_gpu_hours": 23.0,
- "committed_gpu_hours": 23.5494
+ "spent_gpu_hours": 3.8761,
+ "reserved_gpu_hours": 14.25,
+ "committed_gpu_hours": 18.1261
 }

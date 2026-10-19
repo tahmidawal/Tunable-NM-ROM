@@ -94,7 +94,7 @@ def main():
                 f = (T.get(f'r2acc|{m}|{g}|prod|std') or base) / base
                 for lev in ('prod', 'tight', 'tighter'):
                     T.setdefault(f'r2acc|{m}|{g}|{lev}|big', big_ref * f * (1.4 if lev != 'prod' else 1.))
-        for k in [k for k in T if k.startswith('r2acc|') and '|R128sob|' not in k and k.endswith('|std') and '|R128|' in k]:
+        for k in [k for k in list(T) if k.startswith('r2acc|') and '|R128|' in k]:       # the Sobol group: same r, same solver
             T.setdefault(k.replace('|R128|', '|R128sob|'), T[k])
     # ---- 3D from the smokes
     for tag in ('smk1b', 'smk3'):

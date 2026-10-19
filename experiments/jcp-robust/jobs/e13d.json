@@ -1,0 +1,17 @@
+{
+ "attempt": "e13d",
+ "gpu": "a100-80G",
+ "gpus": 1,
+ "hours": 1.0,
+ "mem": "200G",
+ "cpus": 8,
+ "production": true,
+ "groups": [
+  [
+   {
+    "driver": "e1run3d",
+    "config": "configs/e13d.json"
+   }
+  ]
+ ]
+}

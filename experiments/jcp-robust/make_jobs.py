@@ -47,5 +47,21 @@ def e2train():
                              '(bank fit 4,104 s); smk3 pilot data generation measured')]]))
 
 
+def e2sel(b):
+    w(dict(attempt=f'e2s{b}', gpu='a100-80G', gpus=1, hours=1.0, mem='200G', cpus=8, production=True, mem_fraction='0.95',
+           groups=[[dict(driver='r2acc', config=f'configs/e2s{b}.json')]]))
+
+
+def e2ver(b):
+    for tag, gpu in (('a', 'a100-80G'), ('b', 'h200'), ('c', 'a100-80G')):
+        w(dict(attempt=f'e2v{b}{tag}', gpu=gpu, gpus=1, hours=1.0, mem='240G' if gpu == 'h200' else '200G', cpus=8,
+               production=True, mem_fraction='0.95', groups=[[dict(driver='r2acc', config=f'configs/e2v{b}{tag}.json')]]))
+    w(dict(attempt=f'e2t{b}', gpu='a100-80G', gpus=1, hours=1.0, mem='200G', cpus=8, production=True, mem_fraction='0.95',
+           groups=[[dict(driver='dtime', config=f'configs/e2t{b}.json')]]))
+
+
 if __name__ == '__main__':
-    {'e1': e1, 'e5': e5, 'e2train': e2train}[sys.argv[1]]()
+    if sys.argv[1] in ('e2sel', 'e2ver'):
+        {'e2sel': e2sel, 'e2ver': e2ver}[sys.argv[1]](sys.argv[2])
+    else:
+        {'e1': e1, 'e5': e5, 'e2train': e2train}[sys.argv[1]]()

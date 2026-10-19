@@ -1,15 +1,17 @@
 {
  "lane": "jcp-dims",
- "utc": "2026-10-19T15:50:06Z",
- "step": "resumed after usage-limit stop; submitting t3s; then analyze2d/analyze3d from scratch",
+ "utc": "2026-10-19T15:51:00Z",
+ "step": "t3s 6056422 queued; t2 staged, job audit running",
  "waiting_on": {
-  "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": null,
+  "slurm_jobs": [
+   "6056422"
+  ],
+  "codex_output": "experiments/jcp-dims/audits/codex-job-t2-1.md",
+  "codex_pid": 1831404,
   "local_pid": null
  },
  "expected_finish_utc": null,
- "last_commit": "20030b087",
+ "last_commit": "6008ffe3e",
  "gpu_hours_spent": 28.6212,
  "gpu_hours_cap": 55,
  "notes": ""

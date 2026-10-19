@@ -836,3 +836,23 @@ local raw archive.
 **A13.2** (t3s job audit 2) `t2`'s pending allowance is the projection of the provisional config from the complete
 interim 2D analysis: 284 subjects, 5.0489 GPU-h (supersedes A12.3's 268 / 4.80). Ledger: 28.6212 + `t3s` 12 + `t3c` 2.0
 + `t2` 5.0489 = 47.67 ≤ 55.
+
+## Amendment A14 (2026-10-19, production; answers `audits/codex-job-t2-1.md` FIX-FIRST — no registered cell, rule or verdict changes)
+
+**A14.1 Timing-job identity computed.** §4's identity check was registered but not implemented: `analyze2d.timing_costs`
+now compares each subject's untimed scoring run (`S_<subject>.npz` `W`, dev6) with the accuracy archive of the same
+cell (F2 archive first, else the κ-cell archive; read from the retained slim copies), $\max_{\rm case}\max_k
+\lVert\Delta W_k\rVert/\lVert W_0\rVert\le10^{-10}$, else the subject is "unusable (identity)". On the smoke timing
+archive (`smk2t`) every subject agrees with its production accuracy run to $\le1.2\times10^{-15}$.
+**A14.2 Subject-wide vetoes.** A subject's timing is unusable if any of its split or fused invocations fails a hash
+check, its split/fused equivalence failed, or A14.1 fails (previously only the valid-triplet fraction was required).
+**A14.3 Panel controls enforced.** No `t2` cost is used unless the injected identity fault is caught (every hash of that
+subject fails) and the doubled-work control gives a median ratio in [1.8, 2.2] with identical iterations and identity.
+On `smk2t` both pass (doubled median 2.003).
+**A14.4 Injected fault in production.** The production panel had no injected fault. It is placed on a dedicated,
+unregistered control subject (R128, $M=512$, gauss72 — not an F2 rung), so no registered subject loses its timing.
+`t2`: 299 subjects (298 registered + the control), 5.286 GPU-h → 8 h.
+**A14.5 Memory coverage.** The heaviest production `t2` block is R512 $M=4096$ with rungs gauss320 (q⁺ gauss384) and
+gauss384; the two-phase certification keeps at most the current rung and its successor live (A1.4). The smoke `smk2t`
+ran R512 $M=4096$ gauss256 with q⁺ gauss320 and q⁺⁺ gauss384, so its phases had (256, 320) and then (320, 384) live — the
+production pair (320, 384) at the same $(r,M)$ was therefore exercised; recorded peak 22.15 GB ≤ 120 GB.

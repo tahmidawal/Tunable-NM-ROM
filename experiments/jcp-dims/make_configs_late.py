@@ -46,8 +46,13 @@ def t2():
                     if m:
                         add(r, k * r, f'gauss{int(round(m ** .5))}', form, sch)
     A = sub(384, 1536, 'gauss128', 'LSPG', 'CNR', 'gauss160', 'gauss192')
+    # A14.4 injected identity fault on a dedicated, unregistered control subject (R128, M512, gauss72: not an F2 rung),
+    # so the control costs no registered subject; the analysis requires it to be caught (A14.3)
+    ctl = sub(128, 512, 'gauss72', 'LSPG', 'CNR')
+    S.append(ctl)
+    lab_ = lambda sp: f"1024|R{sp['Rp']}|M{sp['M']}|{sp['rule']}|{sp['form']}|{sp['scheme']}|{float(sp['factor']):g}"
     d = dict(attempt='t2', mesh=1024, edges=[0, 128, 256, 384, 512], cases='dev6', reps=2, burn=0.1, seed=20261019, A=A,
-             subjects=S, doubled=[A], inject_identity_fault=[])
+             subjects=S, doubled=[A], inject_identity_fault=[lab_(ctl)])
     (CFG / 't2.json').write_text(json.dumps(d, indent=1) + '\n')
     print('t2 subjects', len(S))
 

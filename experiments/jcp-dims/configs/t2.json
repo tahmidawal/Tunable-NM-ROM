@@ -3600,6 +3600,18 @@
    "factor": 1,
    "qp": "gauss320",
    "qpp": "gauss384"
+  },
+  {
+   "mesh": 1024,
+   "Rp": 128,
+   "M": 512,
+   "policy": "frozen",
+   "rule": "gauss72",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "factor": 1,
+   "qp": null,
+   "qpp": null
   }
  ],
  "doubled": [
@@ -3616,5 +3628,7 @@
    "qpp": "gauss192"
   }
  ],
- "inject_identity_fault": []
+ "inject_identity_fault": [
+  "1024|R128|M512|gauss72|LSPG|CNR|1"
+ ]
 }

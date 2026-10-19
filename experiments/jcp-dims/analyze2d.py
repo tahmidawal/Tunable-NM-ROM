@@ -318,7 +318,7 @@ def gcert_rows(d, lb, s, rows):
     return out
 
 
-def timing_costs():
+def timing_costs(C=None, RAW=None):
     """DESIGN 4 / A1.1: per subject of t2: cost c = median over valid fused triplets of t_fused / mean(t_A); per-case
     medians (for the case bootstrap); usable iff <= 1/3 of its triplets invalid; timing-job qualification on dev6
     (validity, pooled certificate, G-cert, tight / tighter, q+ rollout and rho, q++ convergence)."""
@@ -327,6 +327,13 @@ def timing_costs():
         return {}
     res = json.loads((d / 'result.json').read_text())
     out = {}
+    # A14.1 timing-job identity (DESIGN 4): the untimed scoring run must equal the accuracy job's archived production
+    # run of the same cell to <= 1e-10, max over dev6 cases and the six outputs of ||dW_k|| / ||W_0||
+    acc = {}
+    for k in (C or {}):
+        if not k.startswith('_') and C[k].get('policy') == 'frozen':
+            acc.setdefault(t2_label(C[k]), []).append(k)
+    inj = set(res['config'].get('inject_identity_fault', []))
     for lb, s in res['subjects'].items():
         fz = [x for x in res['fused'] if x['B'] == lb]
         ok = [x for x in fz if x['valid']]
@@ -363,11 +370,55 @@ def timing_costs():
         want = sorted((c_, r__) for c_ in DSC.DEV6 for r__ in range(reps))
         inv_ok = (sorted((x['case'], x['rep']) for x in fz) == want and
                   sorted((x['case'], x['rep']) for x in res['invocations'] if x['B'] == lb) == want)
+        ident_rel, ident_src = None, None
+        if lb not in inj:
+            for k in sorted(acc.get(lb, []), key=lambda k_: C[k_]['job'] not in ('f2a', 'f2b')):   # F2 archive first
+                Ra = R_of(RAW, k)
+                if Ra is None:
+                    continue
+                ida = [str(x) for x in Ra['case_ids']]
+                Zs = np.load(d / f"S_{lb.replace('|', '_')}.npz")
+                rel = []
+                for j, cid in enumerate([str(x) for x in Zs['case_ids']]):
+                    if cid not in ida:
+                        rel = [np.inf]
+                        break
+                    Wa, Wt = np.asarray(Ra['W'][ida.index(cid)], float), np.asarray(Zs['W'][j], float)
+                    n0 = float(np.linalg.norm(Wa[0]))
+                    rel.append(max(float(np.linalg.norm(Wt[i] - Wa[i])) for i in range(len(Wa))) / n0 if n0 > 0 else np.inf)
+                ident_rel, ident_src = (float(max(rel)) if rel else np.inf), k
+                break
+        ident_ok = ident_rel is not None and ident_rel <= 1e-10
+        # A14.2 subject-wide vetoes: any split or fused hash failure, a failed split/fused equivalence, or the
+        # offline identity, makes the subject's timing unusable (identity)
+        hashes_all = (all(x.get('all_hashes_ok', False) for x in res['invocations'] if x['B'] == lb)
+                      and all(x.get('hash_ok', False) for x in fz))
+        eqv = [x for x in res.get('equivalence', []) if x['subject'] == lb]
+        eqv_ok = bool(eqv) and all(x['passed'] for x in eqv)
+        why = None if (hashes_all and eqv_ok and ident_ok) else (
+            'unusable (identity: hash)' if not hashes_all else 'unusable (identity: split/fused equivalence)' if not eqv_ok
+            else 'unusable (identity: accuracy run missing)' if ident_rel is None else 'unusable (identity: > 1e-10 vs accuracy run)')
         out[lb] = dict(inventory_ok=inv_ok, c=float(np.median([x['ratio'] for x in ok])) if ok else None,
+                       identity_rel=ident_rel, identity_source=ident_src, hashes_all_ok=hashes_all, equivalence_ok=eqv_ok,
+                       identity_label=why, injected_control=lb in inj,
                        c_ev=float(np.median([x['ratio'] for x in res['invocations'] if x['B'] == lb and x['valid']] or [np.nan])),
                        per_case={k: [float(x) for x in v] for k, v in per.items()},     # valid fused triplet ratios per case
-                       usable=bool(inv_ok and len(ok) >= len(fz) * 2 / 3 and sorted(per) == sorted(DSC.DEV6)),
+                       usable=bool(inv_ok and len(ok) >= len(fz) * 2 / 3 and sorted(per) == sorted(DSC.DEV6) and why is None
+                                   and lb not in inj),
                        qualified=bool(q1 and q2), q1=q1, q2=q2)
+    # A14.3 panel controls: the injected identity fault must be caught (every hash of that subject fails) and the
+    # doubled-work control must give a median ratio in [1.8, 2.2] with identical iterations and identity; otherwise
+    # no t2 cost is used ('panel invalid')
+    inj_caught = bool(inj) and all(lb in out and not out[lb]['hashes_all_ok'] for lb in inj)
+    db = res.get('doubled', [])
+    db_ok = bool(db) and 1.8 <= float(np.median([x['ratio'] for x in db])) <= 2.2 and all(x['same_iterations'] and x['identity_ok'] for x in db)
+    ctl = dict(injected_fault_caught=inj_caught, doubled_ok=db_ok,
+               doubled_median=float(np.median([x['ratio'] for x in db])) if db else None)
+    if not (inj_caught and db_ok):
+        for v in out.values():
+            v['usable'] = False
+            v['identity_label'] = v.get('identity_label') or 'unusable (panel invalid: control failed)'
+    out['_controls'] = ctl
     return out
 
 
@@ -630,7 +681,7 @@ def main():
                     v['label'] = f"blocked (M = r control: {ctl}); raw: {v['label']}"
             B6.setdefault(f'R{r}|{form}-{sch}', {})['secondary_at_mstar'] = tr2
     # ---- timing (t2): per-cell cost, timing-job qualification, elasticity, deployed-path Shapley
-    cost = timing_costs()
+    cost = timing_costs(C, RAW)
     out['costs'] = cost
     if cost:
         cells = [(C[k]['r'], C[k]['M'], m_of(C[k]['rule']), cost[lb]) for k in C if not k.startswith('_')

@@ -1,16 +1,14 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-19T02:22:47Z",
- "step": "s3d64b 5932490 RUNNING (A-B-A), no ERR; s2d256a held",
+ "utc": "2026-10-19T02:38:46Z",
+ "step": "s3d64b COMPLETED 2:49; collecting (retry after a transient ssh auth failure); then reconcile, decide on s2d256a (A43.3/A43.5), 3D analysis",
  "waiting_on": {
-  "slurm_jobs": [
-   5932490
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T02:41:47Z",
+ "expected_finish_utc": "2026-10-19T02:57:46Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

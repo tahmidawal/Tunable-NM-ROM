@@ -1,0 +1,45 @@
+host=pax105 source_commit=18f54dfb29347bb31c57a7d42be77bcc8810c93b
+0, NVIDIA A100 80GB PCIe, GPU-6223c3e7-3f2e-9477-5bb9-23ed10f74dc2, 575.57.08, 81920 MiB, 210 MHz, 1512 MHz, 300.00 W
+10.235.106.21:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+jax_backend=gpu gpu_index=0
+STEP r2acc configs/smk1m1024.json 2026-10-19T18:07:34Z
+jax_backend=gpu x64=True precision=highest
+TARGET R128 LSPG_BE_1 46.1
+TARGET R128 LSPG_CNR_1 49.4
+RULE R128 d0 LSPG_BE_1 65.9
+RULE R128 d0 LSPG_CNR_1 67.7
+RULE R128 d1 LSPG_BE_1 69.8
+RULE R128 d1 LSPG_CNR_1 71.6
+RULE R128 d2 LSPG_BE_1 73.5
+RULE R128 d2 LSPG_CNR_1 75.2
+RULE R128 bad LSPG_BE_1 75.8
+RULE R128 bad LSPG_CNR_1 76.3
+R2ACC COMPLETE 76.6
+STEP e1run3d configs/smk13d.json 2026-10-19T18:08:57Z
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 5.5s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 8.2s
+[mesh 65] bank rows [(256, 250047), (256, 250047), (512, 250047)] 9.1s
+[mesh 65] Gram cond 1.0000, A (2052, 1024) 12.3s
+SETUP 29.9
+RUN W256|E1-3D-a|TARGET|gl64 qn|BDF2|0.025|k4 8.0s valid True nonst 0 / 80 43.3
+RUN W256|E1-3D-a|CHECK|gl56 qn|BDF2|0.025|k4 5.1s valid True nonst 0 / 80 52.3
+RUN W256|E1-3D-a|lat8192s0 qn|BDF2|0.025|k4 3.2s valid True nonst 0 / 80 59.2
+RUN W256|E1-3D-a|lat8192s0 ad|LSPG|BDF2|0.025|tight 2.5s valid True nonst 0 / 0 63.3
+RUN W256|E1-3D-a|lat8192s0 ad|LSPG|BDF2|0.025|tighter 1.3s valid True nonst 0 / 0 64.7
+RUN W256|E1-3D-a|lat8192s0|succ|lat16384s0 qn|BDF2|0.025|k4 3.2s valid True nonst 0 / 80 71.4
+RUN W256|E1-3D-a|lat8192s0|PERMUTED qn|BDF2|0.025|k4 0.2s valid True nonst 0 / 80 72.5
+DRAW E1-3D-a 0 72.5
+RUN W256|E1-3D-a|lat8192s1 qn|BDF2|0.025|k4 0.2s valid True nonst 0 / 80 73.1
+RUN W256|E1-3D-a|lat8192s1 ad|LSPG|BDF2|0.025|tight 0.3s valid True nonst 0 / 0 73.5
+RUN W256|E1-3D-a|lat8192s1 ad|LSPG|BDF2|0.025|tighter 0.3s valid True nonst 0 / 0 73.7
+RUN W256|E1-3D-a|lat8192s1|succ|lat16384s1 qn|BDF2|0.025|k4 0.3s valid True nonst 0 / 80 74.4
+DRAW E1-3D-a 1 74.5
+RUN W256|E1-3D-a|lat8192s2 qn|BDF2|0.025|k4 0.2s valid True nonst 0 / 80 75.1
+RUN W256|E1-3D-a|lat8192s2 ad|LSPG|BDF2|0.025|tight 0.3s valid True nonst 0 / 0 75.5
+RUN W256|E1-3D-a|lat8192s2 ad|LSPG|BDF2|0.025|tighter 0.3s valid True nonst 0 / 0 75.8
+RUN W256|E1-3D-a|lat8192s2|succ|lat16384s2 qn|BDF2|0.025|k4 0.3s valid True nonst 0 / 80 76.4
+DRAW E1-3D-a 2 76.5
+RUN W256|E1-3D-a|badlat8192 qn|BDF2|0.025|k4 0.2s valid True nonst 2 / 80 77.4
+E1RUN3D COMPLETE
+ALL-DONE

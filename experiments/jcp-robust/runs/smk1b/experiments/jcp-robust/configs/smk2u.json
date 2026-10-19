@@ -1,0 +1,45 @@
+{
+ "attempt": "smk2u",
+ "driver": "r2acc",
+ "mesh": 256,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "dev6",
+ "bank": {
+  "ckpt": "../../output/train2d_s1/stageB/sep_hfit_dense_mid_N256_dense.pkl",
+  "ckpt_sha256": "SMOKE-RUNTIME",
+  "rotation": "../../output/train2d_s1/rotation/rotation_R512.npz",
+  "rotation_sha256": "SMOKE-RUNTIME",
+  "seed": 1,
+  "note": "smoke-trained (truncated steps); never a result"
+ },
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": null,
+   "check": null,
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "sel",
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full"
+    }
+   ]
+  }
+ ]
+}

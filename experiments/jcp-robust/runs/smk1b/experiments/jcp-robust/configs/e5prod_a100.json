@@ -1,0 +1,298 @@
+{
+ "attempt": "e5prod_a100",
+ "driver": "e5time",
+ "gpu_type": "A100-80G",
+ "allow_4096": false,
+ "jcpref_store": "/cluster/tufts/paralab/tawal01/jcp-ref/store",
+ "pcost": {
+  "meshes": {
+   "256": {
+    "edges": [
+     0,
+     128,
+     256,
+     384,
+     512
+    ]
+   },
+   "1024": {
+    "edges": [
+     0,
+     128,
+     256,
+     384,
+     512
+    ]
+   }
+  },
+  "A": {
+   "mesh": 1024,
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "qp": "gauss160",
+   "qpp": "gauss192"
+  },
+  "subjects": [
+   {
+    "mesh": 256,
+    "Rp": 128,
+    "rule": "fib4181",
+    "policy": "frozen",
+    "scheme": "BE",
+    "qp": "fib6765",
+    "qpp": "fib10946"
+   },
+   {
+    "mesh": 1024,
+    "Rp": 128,
+    "rule": "fib4181",
+    "policy": "frozen",
+    "scheme": "BE",
+    "qp": "fib6765",
+    "qpp": "fib10946"
+   },
+   {
+    "mesh": 256,
+    "Rp": 384,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "qp": "gauss160",
+    "qpp": "gauss192"
+   },
+   {
+    "mesh": 1024,
+    "Rp": 384,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "qp": "gauss160",
+    "qpp": "gauss192"
+   }
+  ],
+  "cases": "dev6",
+  "reps": 3,
+  "burn": 0.1,
+  "seed": 20261017,
+  "doubled": [
+   {
+    "mesh": 1024,
+    "Rp": 128,
+    "rule": "fib4181",
+    "policy": "frozen",
+    "scheme": "BE",
+    "qp": "fib6765",
+    "qpp": "fib10946",
+    "cases": "dev6"
+   },
+   {
+    "mesh": 1024,
+    "Rp": 384,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "qp": "gauss160",
+    "qpp": "gauss192",
+    "cases": "dev6"
+   }
+  ]
+ },
+ "pcross": {
+  "mesh": 1024,
+  "edges": [
+   0,
+   128,
+   256,
+   384,
+   512
+  ],
+  "cases": [
+   [
+    "dev6",
+    0
+   ],
+   [
+    "dev6",
+    1
+   ],
+   [
+    "dev6",
+    2
+   ],
+   [
+    "dev6",
+    3
+   ],
+   [
+    "dev6",
+    4
+   ],
+   [
+    "dev6",
+    5
+   ],
+   [
+    "val32",
+    0
+   ],
+   [
+    "val32",
+    1
+   ],
+   [
+    "val32",
+    2
+   ],
+   [
+    "val32",
+    3
+   ],
+   [
+    "val32",
+    4
+   ],
+   [
+    "val32",
+    5
+   ],
+   [
+    "val32",
+    6
+   ],
+   [
+    "val32",
+    7
+   ],
+   [
+    "val32",
+    8
+   ],
+   [
+    "val32",
+    9
+   ]
+  ],
+  "A": {
+   "label": "A",
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "dt": 0.005,
+   "form": "LSPG",
+   "level": "prod"
+  },
+  "roms": [
+   {
+    "label": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+    "Rp": 128,
+    "rule": "fib4181",
+    "policy": "frozen",
+    "scheme": "BE",
+    "dt": 0.005,
+    "form": "LSPG",
+    "level": "prod",
+    "target_e": {
+     "dev6|0": 0.005996050207513908,
+     "dev6|1": 0.013353291674456572,
+     "dev6|2": 0.03011430195913653,
+     "dev6|3": 0.014760013459176272,
+     "dev6|4": 0.011675859283253879,
+     "dev6|5": 0.014078232654246597
+    }
+   },
+   {
+    "label": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+    "Rp": 384,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "dt": 0.005,
+    "form": "LSPG",
+    "level": "prod",
+    "target_e": {
+     "dev6|0": 0.0007967109253090086,
+     "dev6|1": 0.0025992822179038253,
+     "dev6|2": 0.004081434453974217,
+     "dev6|3": 0.002343020925581073,
+     "dev6|4": 0.001950583431557877,
+     "dev6|5": 0.002602989660454559
+    }
+   }
+  ],
+  "foms": {
+   "fd|CC|L1024|0.005|t1": {
+    "ladder_e": {
+     "dev6|0": 0.00036397185687013966,
+     "dev6|1": 0.0012333055088056437,
+     "dev6|2": 0.0018152257874019969,
+     "dev6|3": 0.0009507764780938982,
+     "dev6|4": 0.0009409124143602396,
+     "dev6|5": 0.0012004565961061834
+    }
+   },
+   "fd|CC|L1024|0.0125|t2": {
+    "ladder_e": {
+     "dev6|0": 0.00231701513340532,
+     "dev6|1": 0.007558040467732897,
+     "dev6|2": 0.01080155558404439,
+     "dev6|3": 0.005992158197818258,
+     "dev6|4": 0.005704999772991525,
+     "dev6|5": 0.007364789152329379
+    }
+   },
+   "ps|N96|0.0125": {
+    "ladder_e": {
+     "dev6|0": 2.562468187514941e-05,
+     "dev6|1": 1.560789448592258e-05,
+     "dev6|2": 0.0002804713103649523,
+     "dev6|3": 0.00012503183513556818,
+     "dev6|4": 2.007539460050757e-05,
+     "dev6|5": 1.1359619529139204e-05
+    }
+   }
+  },
+  "frozen_selection": {
+   "path": "e5/FROZEN-SELECTION-1024.json",
+   "sha256": "af8c45470c9152e1b8e39a2dd9371ddd002598ab0a418e238ad453a08c2c0bb6",
+   "source": "jcp-fom2d runs/c21024 (job 5456289, H200) output/c2time_c21024"
+  },
+  "selection_suffixes": [
+   "|H|union|joint",
+   "|H|CC|same_mesh"
+  ],
+  "expected_comparators": {
+   "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": {
+    "|H|union|joint": "ps|N96|0.0125",
+    "|H|CC|same_mesh": "fd|CC|L1024|0.0125|t2"
+   },
+   "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": {
+    "|H|union|joint": "ps|N96|0.0125",
+    "|H|CC|same_mesh": "fd|CC|L1024|0.005|t1"
+   }
+  },
+  "reps": 3,
+  "burn": 0.1,
+  "seed": 1024,
+  "controls": {
+   "doubled_cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ]
+  },
+  "label": "frozen H200-selected comparators (not the best comparator per GPU)"
+ },
+ "cross_type_meshes": [
+  256,
+  1024
+ ],
+ "note": "two-mesh P-cost panel (256^2, 1024^2)"
+}

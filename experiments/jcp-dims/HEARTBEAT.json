@@ -1,18 +1,19 @@
 {
  "lane": "jcp-dims",
- "utc": "2026-10-19T17:02:40Z",
- "step": "t3s collected; t2 running, f2l queued; b3m staged + audit; analyze3d --after-screen",
+ "utc": "2026-10-19T17:23:04Z",
+ "step": "t2 running, f2l/b3m queued; analyze3d --after-screen (local) -> t3c",
  "waiting_on": {
   "slurm_jobs": [
    "6056624",
-   "6057843"
+   "6057843",
+   "6065773"
   ],
   "codex_output": null,
   "codex_pid": null,
-  "local_pid": null
+  "local_pid": 2028656
  },
  "expected_finish_utc": null,
- "last_commit": "6127656a4",
+ "last_commit": "326aa4c9e",
  "gpu_hours_spent": 29.1701,
  "gpu_hours_cap": 55,
  "notes": ""

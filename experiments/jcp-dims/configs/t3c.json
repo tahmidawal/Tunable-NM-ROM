@@ -1,0 +1,283 @@
+{
+ "attempt": "t3c",
+ "driver": "d3run",
+ "mode": "t3c",
+ "cohort_seed": 923801,
+ "cohort_count": 64,
+ "trust_fraction": 0.05,
+ "timing": {
+  "burn": 0.1
+ },
+ "settings": [
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W1024",
+   "bank": "W1024",
+   "Rp": 1024,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  },
+  {
+   "name": "W768",
+   "bank": "W1024",
+   "Rp": 768,
+   "a": 6,
+   "rule": "lat16384",
+   "reduced": [],
+   "extra": []
+  }
+ ],
+ "extra_rules": [
+  "gl32",
+  "gl40",
+  "lat32768",
+  "lat65536"
+ ],
+ "blocks": [
+  {
+   "kind": "ladder",
+   "setting": "M2_512",
+   "specs": [
+    "fs|BE|0.01|K1",
+    "qn|BDF2|0.016666667|k4"
+   ],
+   "rungs": [
+    "gl32"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|BE|0.01|K1"
+   ],
+   "rungs": [
+    "gl40"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W1024",
+   "specs": [
+    "fs|BE|0.01|K1"
+   ],
+   "rungs": [
+    "lat65536"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W768",
+   "specs": [
+    "fs|BE|0.01|K1"
+   ],
+   "rungs": [
+    "lat32768"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+   ]
+  },
+  {
+   "kind": "panel",
+   "label": "confirm|C_old",
+   "A": {
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "M2_512",
+     "rule": "gl32",
+     "spec": "qn|BDF2|0.016666667|k4"
+    }
+   ],
+   "cases": 8,
+   "reps": 3,
+   "seed": 20261020
+  },
+  {
+   "kind": "panel",
+   "label": "confirm|C_W768",
+   "A": {
+    "setting": "W768",
+    "rule": "lat32768",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "M2_512",
+     "rule": "gl32",
+     "spec": "qn|BDF2|0.016666667|k4"
+    }
+   ],
+   "cases": 8,
+   "reps": 3,
+   "seed": 20261020
+  },
+  {
+   "kind": "panel",
+   "label": "confirm|C_W1024",
+   "A": {
+    "setting": "W1024",
+    "rule": "lat65536",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "M2_512",
+     "rule": "gl32",
+     "spec": "qn|BDF2|0.016666667|k4"
+    }
+   ],
+   "cases": 8,
+   "reps": 3,
+   "seed": 20261020
+  },
+  {
+   "kind": "panel",
+   "label": "confirm|Cq|M2_512",
+   "A": {
+    "setting": "M2_512",
+    "rule": "gl32",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "M2_512",
+     "rule": "gl32",
+     "spec": "qn|BDF2|0.016666667|k4"
+    }
+   ],
+   "cases": 8,
+   "reps": 3,
+   "seed": 20261021
+  },
+  {
+   "kind": "panel",
+   "label": "confirm|Cq|W768",
+   "A": {
+    "setting": "W768",
+    "rule": "lat32768",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "M2_512",
+     "rule": "gl32",
+     "spec": "qn|BDF2|0.016666667|k4"
+    }
+   ],
+   "cases": 8,
+   "reps": 3,
+   "seed": 20261021
+  },
+  {
+   "kind": "panel",
+   "label": "confirm|Cq|W1024",
+   "A": {
+    "setting": "W1024",
+    "rule": "gl40",
+    "spec": "fs|BE|0.01|K1"
+   },
+   "subjects": [
+    {
+     "setting": "M2_512",
+     "rule": "gl32",
+     "spec": "qn|BDF2|0.016666667|k4"
+    }
+   ],
+   "cases": 8,
+   "reps": 3,
+   "seed": 20261021
+  }
+ ]
+}

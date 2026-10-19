@@ -34,6 +34,7 @@ REGIMES_2D = ('N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2')
 TWO_BUMP = ('B1', 'B2')
 S_REF_L = 1024              # s_star grid of the two-bump families (DESIGN §3.1)
 MAX_TRIES = 1000
+TIGHT_ALLOWANCE = {'Ap': 1}         # DESIGN A2.6 / A3.2: cohort-level tight-path allowance (every other cohort 0)
 
 
 class CohortError(ValueError):

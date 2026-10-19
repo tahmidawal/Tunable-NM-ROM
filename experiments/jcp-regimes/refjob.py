@@ -167,7 +167,7 @@ def solve_case(coh, j, kind):
             tight_used = True
             jd = judge(triple)
         else:
-            tight_skipped = True
+            tight_skipped = True                       # outcome stays 'unresolved-floor' (verdict precedence, A3.2 i)
     refine_skipped = False
     if ok(jd['checks']) and jd['checks']['floor'] and not (jd['checks']['order'] and jd['checks']['peclet']):
         if tight_used:
@@ -327,6 +327,10 @@ def mode_fd(cfg, outdir, rep):
         raise SystemExit(f"cohort {cfg['cohort']} not admissible in jcp-regimes")
     cases = cfg.get('cases') or list(range(coh.n))
     assert cases == sorted(cases), 'cases run in ascending index (A3.2: the allowance goes to the first floor failure)'
+    if coh.name in RG.REGIMES_2D:              # A3.2: the frozen cohort-level allowance; pilots / subsets get none
+        full = cases == list(range(coh.n))
+        want = RG.TIGHT_ALLOWANCE.get(coh.name, 0) if full else 0
+        assert int(cfg.get('tight_allowance', 0)) == want, (coh.name, cfg.get('tight_allowance'), want)
     TIGHT_LEFT[0] = int(cfg.get('tight_allowance', 0))
     rep['tight_allowance'] = TIGHT_LEFT[0]
     rep['cohort'] = dict(name=coh.name, n=coh.n, sha256=None if sealed else coh.sha256, cases=cases,

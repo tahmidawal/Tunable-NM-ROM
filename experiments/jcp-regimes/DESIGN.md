@@ -560,3 +560,15 @@ N0, A+, A−, C1, C2, B1, B2 (seven; N0s excluded). σ's normalisation $\max_{\t
 descriptor amplitude $a$ (the exact peak of the continuous IC; for single bumps it exceeds the nodal maximum by a relative
 $\le h^2/(4w^2)\le1.5\times10^{-6}$ at $L\ge8192$; for B1/B2 $a$ is the peak over the $1024^2$ nodes, which are nodes of every
 reference level).
+
+---
+
+## Amendment A4 (2026-10-19, after Codex design audit 4 = READY for 2D; wording only, before code audit)
+
+The stiffness diagnostic is named $\sigma_a=\max_{k=1..5}g_k/a$ with the descriptor amplitude $a$ as denominator (A3's
+claim that $a$ equals the nodal maximum at every level is withdrawn as stated: for single bumps $a$ is the continuous
+peak, for B1/B2 the peak over the $1024^2$ normalisation nodes; nodal maxima at other levels can differ slightly). All
+separation checks use $\sigma_a$ consistently for every cohort, so the convention does not favour any regime.
+Implementation obligations noted by audit 4 for the code audit: the E6 terminal outcome for a blocked escalation is
+`unresolved-floor` by `verdict.judge` precedence (the floor check fails before order/Péclet are considered); `refjob`
+enforces the frozen cohort allowance (`rcohorts.TIGHT_ALLOWANCE`: A+ 1, others 0; any subset/pilot run 0).

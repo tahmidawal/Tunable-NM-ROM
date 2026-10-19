@@ -92,7 +92,7 @@ def main():
         V = json.loads((HERE / 'checks' / f"VERDICT-{c['cell']}.json").read_text())
         assert (HERE / 'checks' / f"VERDICT-{c['cell']}.sha256").read_text().split()[0] == \
             sha(HERE / 'checks' / f"VERDICT-{c['cell']}.json"), 'verdict file differs from its pinned hash'
-        tpath = Path(c.get('tune_json') or HERE / 'runs' / c['tune_attempt'] / 'archive' / 'output' / 'tune.json')
+        tpath = HERE / (c.get('tune_json') or f"runs/{c['tune_attempt']}/archive/output/tune.json")
         T = json.loads(tpath.read_text())
         assert sha(tpath) == V['tune_sha256'], ('tuning JSON differs from the verdict', tpath)
         front_plot(c['cell'], T, V, HERE / 'plots' / f"front-{c['cell']}.png")

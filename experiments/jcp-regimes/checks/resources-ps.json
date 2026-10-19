@@ -1,0 +1,62 @@
+{
+ "attempt": "ps",
+ "projection_hours": 1.5167,
+ "time_limit_hours": 2.5,
+ "configs": {
+  "configs/ps-N0.json": "5ed2662ccd1ecafe6933ea92f601648b620df5577c559425669c03a4dd875cc4",
+  "configs/ps-Ap.json": "c0b8652aaab8a1136c0b0f1fc361975616356613bad22974db99951eafcb20ab",
+  "configs/ps-Am.json": "abe4f06a7d7fef5a9da64578248bd5e92bff6f8822bf8d64d8896634d885ef19",
+  "configs/ps-C1.json": "527b04b22788ef17f4d07df811846daecd310cc2cd4eae3b9187dd757e5f6edc",
+  "configs/ps-C2.json": "b6e0996f61e1b9ef85b9f47f66b8f0a784f59f68c429ffc442d01272d63229af",
+  "configs/ps-B1.json": "e51b4d49ba8f2e707282ae31d72cb4cf78d2d4ee501bbaeecd3f55d730aafe62",
+  "configs/ps-B2.json": "51c0ed0aa99e854d34140a39f7018e73e04066e9d60473a23f39e0a9e61772b8"
+ },
+ "runs": [
+  "refjob:configs/ps-N0.json",
+  "refjob:configs/ps-Ap.json",
+  "refjob:configs/ps-Am.json",
+  "refjob:configs/ps-C1.json",
+  "refjob:configs/ps-C2.json",
+  "refjob:configs/ps-B1.json",
+  "refjob:configs/ps-B2.json"
+ ],
+ "parts": [
+  {
+   "run": "refjob:configs/ps-N0.json",
+   "seconds": 780.0
+  },
+  {
+   "run": "refjob:configs/ps-Ap.json",
+   "seconds": 780.0
+  },
+  {
+   "run": "refjob:configs/ps-Am.json",
+   "seconds": 780.0
+  },
+  {
+   "run": "refjob:configs/ps-C1.json",
+   "seconds": 780.0
+  },
+  {
+   "run": "refjob:configs/ps-C2.json",
+   "seconds": 780.0
+  },
+  {
+   "run": "refjob:configs/ps-B1.json",
+   "seconds": 780.0
+  },
+  {
+   "run": "refjob:configs/ps-B2.json",
+   "seconds": 780.0
+  }
+ ],
+ "basis": {
+  "ordinary": 221.70111935865134,
+  "lownu": 350.367016851902,
+  "probe": 40.18424032907933,
+  "rom_per_run": 0.45252525252525255,
+  "fverify_per_field": 0.12121212121212122,
+  "calib_agree": true,
+  "smoke": "runs/smk1"
+ }
+}

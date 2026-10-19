@@ -118,21 +118,19 @@ def pooled_nonstationary(cert_rows, form):
 
 def draw_qualified(flags, d, target_ok, n_cases, n_tight):
     """A1.2 + A3.2 + A3.3 + A4.2 for one draw. flags: per-case validity lists (valid, valid_tight, valid_succ: n_cases;
-    valid_tighter: n_tight); d: per-case distances / indicator maxima (tight, succ, rho_succ, target, rho_tgt: n_cases;
-    tt: n_tight) and 'nonst_frac'. Values may be None (serialised non-finite) -> treated as +inf (a failure of the bar).
-    Wrong lengths or a missing list -> 'missing' (unavailable). target_ok: True / False (a target run failed on some
-    case) / None (target not certified). Returns (qualified_full, qualified_own_family, status)."""
-    need = dict(valid=n_cases, valid_tight=n_cases, valid_succ=n_cases, valid_tighter=n_tight)
-    needd = dict(tight=n_cases, succ=n_cases, rho_succ=n_cases, target=n_cases, rho_tgt=n_cases, tt=n_tight)
+    valid_tighter: n_tight); d: per-case distances / indicator maxima (tight, succ, rho_succ: n_cases; tt: n_tight;
+    target, rho_tgt: n_cases or None when the run has no target) and 'nonst_frac'. None values (serialised non-finite)
+    count as +inf (a failure of the bar). Own-family qualification (Q1 + Q2 against the successor) is decided from its own
+    evidence; target evidence is needed only for the cross-family criterion (code audit 2 #21). Wrong lengths or a missing
+    list of the evidence a criterion needs -> that criterion is None. target_ok: True / False (a target run failed on some
+    case) / None (target not certified or absent). Returns (qualified_full, qualified_own_family, status)."""
     if n_cases <= 0 or n_tight <= 0:
         return None, None, 'missing'
-    for k, n in need.items():
-        if flags.get(k) is None or len(flags[k]) != n:
-            return None, None, 'missing'
-    for k, n in needd.items():
-        if d.get(k) is None or len(d[k]) != n:
-            return None, None, 'missing'
-    if d.get('nonst_frac') is None or not np.isfinite(d['nonst_frac']):
+    ok_len = lambda xs, n: xs is not None and len(xs) == n
+    own_need = [(flags.get('valid'), n_cases), (flags.get('valid_tight'), n_cases), (flags.get('valid_succ'), n_cases),
+                (flags.get('valid_tighter'), n_tight), (d.get('tight'), n_cases), (d.get('succ'), n_cases),
+                (d.get('rho_succ'), n_cases), (d.get('tt'), n_tight)]
+    if not all(ok_len(x, n) for x, n in own_need) or d.get('nonst_frac') is None or not np.isfinite(d['nonst_frac']):
         return None, None, 'missing'
     for k, st in (('valid', 'failed-prod'), ('valid_tight', 'failed-tight'), ('valid_tighter', 'failed-tighter'),
                   ('valid_succ', 'failed-succ')):
@@ -145,8 +143,25 @@ def draw_qualified(flags, d, target_ok, n_cases, n_tight):
         return None, own, 'target not certified'
     if target_ok is False:
         return None, own, 'failed-target'
+    if not (ok_len(d.get('target'), n_cases) and ok_len(d.get('rho_tgt'), n_cases)):
+        return None, own, 'target evidence missing'
     cross = bool(mx(d['target']) <= BAR_Q2 and mx(d['rho_tgt']) <= BAR_RHO)
     return bool(own and cross), own, 'ok'
+
+
+def case_qualified(flags, d, tight_index, own_config):
+    """Per-case qualification for H-acc-r (code audit 2 #22): the configuration's pooled criteria (own_config: pooled
+    stationarity etc. via draw_qualified's own-family label) AND, on this case, valid production / tight / successor
+    runs within their bars, and on tighter cases a valid tighter run within the tight/tighter bar."""
+    out = []
+    for i in range(len(flags['valid'])):
+        ok = bool(own_config is True and flags['valid'][i] and flags['valid_tight'][i] and flags['valid_succ'][i]
+                  and num(d['tight'][i]) <= BAR_Q1 and num(d['succ'][i]) <= BAR_Q2 and num(d['rho_succ'][i]) <= BAR_RHO)
+        k = tight_index.get(i)
+        if k is not None:
+            ok = ok and bool(flags['valid_tighter'][k]) and num(d['tt'][k]) <= BAR_TT
+        out.append(ok)
+    return out
 
 
 def fixture_fired(cpu_states, job_rho, n_states=6):

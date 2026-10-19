@@ -38,7 +38,7 @@ def records(out, want_label_of):
             av = EA.analyse_arm(out, res, g, ak, r)
             for lab, kind in want_label_of(r, [x['label'] for x in g['rules']]):
                 x = av['rules'][lab]
-                rec['cfg'][(r, kind, ak)] = dict(rule=x['rule'], qualified=x['own_family_qualified'], status=x['status'],
+                rec['cfg'][(r, kind, ak)] = dict(alias_of=lab, rule=x['rule'], qualified=x['own_family_qualified'], status=x['status'],
                                                   e=dict(zip(EA.expected_ids(res['config'].get('cases', 'all38')), x['e'])),
                                                   eps=dict(zip(EA.expected_ids(res['config'].get('cases', 'all38')), x['eps'])),
                                                   eligible=dict(zip(EA.expected_ids(res['config'].get('cases', 'all38')), x['eligible'])),
@@ -93,17 +93,28 @@ def front(C1024, timing):
     if timing is None:
         return dict(state='missing (no timing job)')
     tres = json.loads((timing / 'result.json').read_text())
-    ba = {}
+    if not (tres.get('complete') and (timing / 'COMPLETE').exists() and tres.get('backend') == 'gpu'):
+        return dict(state='missing (timing job incomplete or not on GPU)')
+    if (tres['config'].get('bank') or {}).get('ckpt_sha256') != (C1024.get('bank') or {}).get('ckpt_sha256'):
+        return dict(state='missing (timing job ran on another bank)')
+    # code audit 2 #23: a subject's cost exists only if EVERY registered case has >= 2 valid triplets (valid = drift band
+    # and every identity hash, dtime's own predicate); otherwise that subject's cost is missing
+    reps_ok = {}
     for inv in tres.get('invocations', []):
-        if inv.get('valid') and inv.get('ratio') is not None:
-            ba.setdefault(inv['B'], []).append(float(inv['ratio']))
+        if inv.get('valid'):
+            reps_ok.setdefault(inv['B'], {}).setdefault(inv['case'], []).append(float(inv['ratio']))
+    want_cases = [f'dev6|{c}' for c in range(6)]
+    ba = {}
+    for lb, per in reps_ok.items():
+        if all(len(per.get(c, [])) >= 2 for c in want_cases):
+            ba[lb] = [float(np.median(per[c])) for c in want_cases]
     slots = {}
     for (r, kind, ak), x in C1024['cfg'].items():
         if kind != 'sel':
             continue
         form, sc, fac = ak.split('_')
         lab = f"1024|R{r}|M{4 * r}|{x['rule']}|LSPG|{sc}|{float(fac):g}"
-        cost = float(np.median(ba[lab])) if lab in ba else None
+        cost = float(np.median(ba[lab])) if lab in ba else None              # median over cases of per-case medians
         slots[f'R{r}|{sc}|{fac}'] = dict(rule=x['rule'], qualified=x['qualified'], cost=cost,
                                          median_e=float(np.median(list(x['e'].values()))), worst_e=float(np.max(list(x['e'].values()))))
     q = {k: v for k, v in slots.items() if v['qualified'] is True and v['cost'] is not None}
@@ -149,26 +160,32 @@ def main():
         ap.add_argument(f'--{k}')
     a = ap.parse_args()
     b = int(a.bank)
-    pick_of = lambda r, labels: [(l, 'sel') for l in labels if l == 'sel'] + [(l, 'dep') for l in labels if l == 'dep']
     sel = json.loads((HERE / 'checks' / f'select2d-{b}.json').read_text())
     def sel_labels(r, labels):            # selection job: the candidate equal to the selected / deployed rule
         out = []
         pk = sel['selected'][str(r)]['rule']
         if pk in labels:
             out.append((pk, 'sel'))
-        if DEPLOYED[r] != pk and DEPLOYED[r] in labels:
+        if DEPLOYED[r] in labels:          # code audit 2 #25: the deployed identity always exists (alias when equal)
             out.append((DEPLOYED[r], 'dep'))
+        return out
+    def ver_labels(r, labels):            # verdict jobs: 'sel' and, if the deployed rule differs, 'dep'; else alias
+        out = [(l, 'sel') for l in labels if l == 'sel']
+        if 'dep' in labels:
+            out.append(('dep', 'dep'))
+        elif sel['selected'][str(r)]['rule'] == DEPLOYED[r] and 'sel' in labels:
+            out.append(('sel', 'dep'))
         return out
     C = {}
     C[1024] = records(Path(a.sel), sel_labels)
     if a.v1024:
-        extra = records(Path(a.v1024), pick_of)
+        extra = records(Path(a.v1024), ver_labels)
         C[1024]['cfg'].update(extra['cfg'])
         C[1024]['complete'] = C[1024]['complete'] and extra['complete']
     if a.v256:
-        C[256] = records(Path(a.v256), pick_of)
+        C[256] = records(Path(a.v256), ver_labels)
     if a.v4096:
-        C[4096] = records(Path(a.v4096), pick_of)
+        C[4096] = records(Path(a.v4096), ver_labels)
     rep = dict(bank=b, selection=sel['selected'], jobs={m: dict(job_id=C[m]['job_id'], complete=C[m]['complete'],
                                                               backend=C[m]['backend']) for m in C},
                integrity=all(x['integrity'] for m in C for x in C[m]['cfg'].values()),

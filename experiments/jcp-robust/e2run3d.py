@@ -15,9 +15,15 @@ HERE = Path(__file__).resolve().parent
 
 
 def install_banks(cfg):
+    import hashlib
     for name, b in (cfg.get('bank_registry') or {}).items():
         assert name not in C3.BANKS, f'bank name {name} would shadow an existing bank'
-        C3.BANKS[name] = (HERE / b['path'], b['sha256'])
+        want = b['sha256']
+        if want == 'SMOKE-RUNTIME':                   # trained earlier in the same SMOKE job: hashed now, recorded
+            assert str(cfg.get('attempt', '')).startswith('smk'), 'runtime-hashed banks are allowed in smokes only'
+            want = hashlib.sha256((HERE / b['path']).read_bytes()).hexdigest()
+            print(f'SMOKE bank {name} runtime sha256 {want}', flush=True)
+        C3.BANKS[name] = (HERE / b['path'], want)
 
 
 if __name__ == '__main__':

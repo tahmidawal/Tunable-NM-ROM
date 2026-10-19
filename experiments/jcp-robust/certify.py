@@ -86,13 +86,14 @@ def inv_d3(c):
     bank = {s['name']: s['bank'] for s in c['settings']}
     for b in c['blocks']:
         if b['kind'] == 'ladder':
-            tcs = [j for j in b.get('tighter_cases', list(range(8))) if j in ids]
+            bids = b.get('cases') or ids                     # block-specific case set (code audit 2 #12)
+            tcs = [j for j in b.get('tighter_cases', list(range(8))) if j in bids]
             st = b['setting']
             for rl in b['rungs']:
                 for sp in b['specs']:
-                    keys += [(bank[st], st, rl, sp, 'prod', 'rung', j) for j in ids]
+                    keys += [(bank[st], st, rl, sp, 'prod', 'rung', j) for j in bids]
                 for sd in sorted({tuple(sp.split('|')[1:3]) for sp in b['specs']}):
-                    keys += [(bank[st], st, rl, f'ad|{sd[0]}|{sd[1]}', 'adt-tight', 'rung', j) for j in ids]
+                    keys += [(bank[st], st, rl, f'ad|{sd[0]}|{sd[1]}', 'adt-tight', 'rung', j) for j in bids]
                     keys += [(bank[st], st, rl, f'ad|{sd[0]}|{sd[1]}', 'adt-tighter', 'rung', j) for j in tcs]
         elif b['kind'] == 'panel':
             for sp in [b['A']] + b['subjects']:
@@ -102,7 +103,25 @@ def inv_d3(c):
     return keys
 
 
-INV = {'r2acc': inv_r2acc, 'e1run3d': inv_e13d, 'd3run': inv_d3, 'e2run3d': inv_d3}
+def inv_dtime(c):
+    """dtime: per subject and case an untimed scoring run + tight / tighter / successor / check replays, then reps A-B-A
+    triplets (+ a fused triplet) per (subject, case, rep), and the doubled-work control."""
+    keys = []
+    bank = (c.get('bank') or {}).get('ckpt_sha256', 'incumbent')
+    n = _cases(c.get('cases', 'dev6'))
+    for sp in [c['A']] + c['subjects']:
+        lab = f"{sp['Rp']}|{sp['rule']}|{sp['scheme']}|{sp['factor']}"
+        for i in range(n):
+            keys += [(bank, lab, 'score', i), (bank, lab, 'tight', i), (bank, lab, 'tighter', i), (bank, lab, 'qp', i),
+                     (bank, lab, 'qpp', i)]
+            keys += [(bank, lab, 'triplet', i, r) for r in range(int(c['reps']))]
+            keys += [(bank, lab, 'fused-triplet', i, r) for r in range(int(c['reps']))]
+    for sp in c.get('doubled', []):
+        keys += [(bank, f"{sp['Rp']}|{sp['rule']}|doubled", 'doubled', i) for i in range(n)]
+    return keys
+
+
+INV = {'r2acc': inv_r2acc, 'e1run3d': inv_e13d, 'd3run': inv_d3, 'e2run3d': inv_d3, 'dtime': inv_dtime}
 
 
 def klass(driver, k):
@@ -111,6 +130,8 @@ def klass(driver, k):
         bank, m, g, rule, arm, lev, kind, _ = k
         big = rule.startswith('gauss') and int(rule[5:]) >= 256
         return f"r2acc|{m}|{g}|{lev}|{'big' if big else 'std'}"
+    if driver == 'dtime':
+        return f'dtime|{k[2]}'
     if driver == 'e1run3d':
         return f"e1run3d|{k[1]}|{k[4]}|{'gl' if k[2].startswith('gl') else 'lat'}"
     if k[4] == 'timed-triplet':
@@ -155,7 +176,11 @@ def certify(att, timings_path):
     ip = HERE / 'checks' / f'inventory-{att}.json'
     ip.write_text(json.dumps(inv, indent=0) + '\n')
     proj = max(group_hours)
-    cert = dict(attempt=att, projection_hours=round(proj, 4), group_hours=[round(x, 4) for x in group_hours],
+    import math
+    import subprocess
+    commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=HERE, text=True).strip()
+    cert = dict(attempt=att, commit=commit, jobspec_sha256=hashlib.sha256((HERE / 'jobs' / f'{att}.json').read_bytes()).hexdigest(),
+                time_limit_hours=math.ceil(float(spec['hours']) * 4) / 4, projection_hours=round(proj, 4), group_hours=[round(x, 4) for x in group_hours],
                 gpus=int(spec.get('gpus', 1)), projection_gpu_hours=round(proj * int(spec.get('gpus', 1)), 4),
                 configs=cfgs, inventory_sha256=hashlib.sha256(ip.read_bytes()).hexdigest(), margin=MARGIN,
                 timings=timings_path, timings_sha256=hashlib.sha256((HERE / timings_path).read_bytes()).hexdigest())

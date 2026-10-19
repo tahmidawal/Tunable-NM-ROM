@@ -41,11 +41,21 @@ def load_job(d, sc):
     return res, lad, json.loads(Path(sc).read_text())['scores'], np.load(Path(d) / f"W_{res['mode']}.npz")
 
 
-def case_q(x, nxt):
-    """per-case qualification of a ladder rung (valid, ADT valid and <= bar, successor valid and <= bar, rho <= bar)."""
-    return [bool(x['valid'][i] and x['adt_valid'][i] and E.num(x['dist_adt'][i]) <= E.BAR_Q1 and nxt['valid'][i] and
-                 E.num(x['dist_next'][i]) <= E.BAR_Q2 and max(E.num(v) for v in x['rho'][i]) <= E.BAR_RHO)
-            for i in range(len(x['valid']))]
+def case_q(x, nxt, d_adt, d_next):
+    """per-case qualification of a ladder rung for H-acc-r (code audit 2 #22): the configuration's pooled stationarity
+    (<= 1 %), and on the case valid production / ADT / successor runs within their bars (distances recomputed by the
+    caller), rho <= bar, and on the tighter cases 0-7 a valid tighter run within the tight/tighter bar."""
+    pooled_ok = bool(x['steps'] > 0 and x['nonstationary'] / x['steps'] <= .01)
+    tc = list(x['tighter_cases'])
+    out = []
+    for i, j in enumerate(x['cases']):
+        ok = bool(pooled_ok and x['valid'][i] and x['adt_valid'][i] and d_adt[i] <= E.BAR_Q1 and nxt['valid'][i] and
+                  d_next[i] <= E.BAR_Q2 and max(E.num(v) for v in x['rho'][i]) <= E.BAR_RHO)
+        if j in tc:
+            k = tc.index(j)
+            ok = ok and bool(x['adt_tighter_valid'][k]) and E.num(x['adt_tight_tighter'][k]) <= E.BAR_TT
+        out.append(ok)
+    return out
 
 
 def main():
@@ -65,7 +75,18 @@ def main():
             Wz_of[st['name']] = W_
     rep = dict(bank=b, jobs={r['config']['attempt']: dict(job_id=r['job_id'], complete=bool(r.get('complete')), backend=r['backend'])
                              for r, *_ in J}, selection=sel['slots'], configurations={}, h_acc_r={}, errors={})
-    rep['integrity'] = bool(all(v['complete'] for v in rep['jobs'].values()))
+    rep['integrity'] = bool(all(v['complete'] and v['backend'] == 'gpu' for v in rep['jobs'].values())
+                            and all(v.get('ok') for v in sel['jobs'].values()))
+    import c3common as C3
+    import e2score3 as ES
+    import score3 as SC
+    ES.install(J[0][0]['config'])
+    tab = C3.C.table(923801, 64)
+    n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j)))) for j in range(64)}
+
+    def dist3(sname, A_, B_, ids):
+        G = SC.glat(sname)
+        return [max(float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)) for i, j in enumerate(ids)]
     E_ = lambda key: {int(c): v['e'] for c, v in scores[key].items()}
     EL = lambda key: {int(c): bool(v['eligible']) for c, v in scores[key].items()}
     EP = lambda key: {int(c): E.num(v['eps_ref']) for c, v in scores[key].items()}
@@ -76,8 +97,18 @@ def main():
             if ka not in lad or kb not in lad or ka not in scores or kb not in scores:
                 out[f'{lo}->{hi}'] = dict(outcome='not reached (missing)')
                 continue
-            qa = case_q(lad[ka], lad[f'W{lo}|gl80|{spec}'])
-            qb = case_q(lad[kb], lad[f'W{hi}|gl80|{spec}'])
+            qs = []
+            for w_, k_ in ((lo, ka), (hi, kb)):
+                Wz = Wz_of[f'W{w_}']
+                x = lad[k_]
+                sp_ = spec.split('|')
+                kad = f"W{w_}|gl64|ad|LSPG|{sp_[1]}|{float(sp_[2]):.8g}|tight"
+                d_adt = dist3(f'W{w_}', Wz[k_], Wz[kad], x['cases'])
+                d_nx = dist3(f'W{w_}', Wz[k_], Wz[f'W{w_}|gl80|{spec}'], x['cases'])
+                if any(abs(o - E.num(j)) > 1e-9 * abs(E.num(j)) + 1e-13 for o, j in zip(d_adt, x['dist_adt']) if np.isfinite(o)):
+                    rep['integrity'] = False
+                qs.append(case_q(x, lad[f'W{w_}|gl80|{spec}'], d_adt, d_nx))
+            qa, qb = qs
             ea, eb, ela, elb, ep = E_(ka), E_(kb), EL(ka), EL(kb), EP(ka)
             cs = [c for c in sorted(ea) if c in eb and ela[c] and elb[c]]
             idx = {c: i for i, c in enumerate(lad[ka]['cases'])}
@@ -113,9 +144,14 @@ def main():
         fres = json.loads((Path(a.front) / 'result.json').read_text())
         tm = next(iter(fres['timing'].values()))
         ba = {}
-        for inv in tm['invocations']:
-            if inv.get('hashes_ok') and 1 / 1.1 <= inv['drift'] <= 1.1:
-                ba.setdefault(inv['B'], []).append(inv['ratio'])
+        if tm.get('valid') is True and fres.get('complete') and fres['backend'] == 'gpu':     # code audit 2 #23: d3run's
+            per = {}                                                                          # panel acceptance governs
+            for inv in tm['invocations']:
+                if inv.get('hashes_ok') and 1 / 1.1 <= inv['drift'] <= 1.1:
+                    per.setdefault(inv['B'], {}).setdefault(inv['case'], []).append(inv['ratio'])
+            for nm_, pc in per.items():
+                if all(len(pc.get(c, [])) >= 2 for c in range(8)):
+                    ba[nm_] = [float(np.median(pc[c])) for c in range(8)]
         pts = {}
         for k, v in rep['configurations'].items():
             if k.startswith('slot|'):
@@ -158,6 +194,9 @@ def main():
             Wn, idn = Wz[nk], [int(x) for x in Wz['cases|' + nk]]
             if idn != list(range(64)) or sorted(ida) != list(range(64)):
                 rows[key] = dict(passed=False, reason='population differs')
+                continue
+            if Wn.shape != Wa.shape or not (np.isfinite(Wn).all() and np.isfinite(Wa).all()):
+                rows[key] = dict(passed=False, reason='shape or non-finite values')
                 continue
             rel = [float(np.max(np.abs(Wn[i] - Wa[ida.index(j)])) / max(float(np.max(np.abs(Wa[ida.index(j)]))), 1e-300))
                    for i, j in enumerate(idn)]

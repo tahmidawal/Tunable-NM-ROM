@@ -18,8 +18,13 @@ HERE = Path(__file__).resolve().parent
 
 
 def install(cfg):
+    import hashlib
     for name, b in (cfg.get('bank_registry') or {}).items():
-        C3.BANKS[name] = (HERE / b['path'], b['sha256'])
+        want = b['sha256']
+        if want == 'SMOKE-RUNTIME':
+            assert str(cfg.get('attempt', '')).startswith('smk')
+            want = hashlib.sha256((HERE / b['path']).read_bytes()).hexdigest()
+        C3.BANKS[name] = (HERE / b['path'], want)
     SC.BANKS = {s['name']: (s['bank'], int(s['Rp'])) for s in cfg['settings']}
     SC._G.clear()
 

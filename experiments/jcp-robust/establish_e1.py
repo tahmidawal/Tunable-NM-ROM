@@ -60,7 +60,8 @@ def admit(C, Nb, Nt):
         nb = float(np.linalg.norm(b)) if fin else float('nan')
         r = float(np.linalg.norm(a - b) / nb) if (fin and nb > 0) else float('nan')
         out.append(dict(finite=fin, target_norm=nb, rho_tgt=r, ok=bool(fin and nb > 0 and np.isfinite(r) and r >= 1.)))
-    return dict(states=out, admitted=all(o['ok'] for o in out))
+    n_ok = len(C) == len(Nb) == len(Nt) == 6                  # registered six states; never an empty reduction (code audit 2 #17)
+    return dict(states=out, admitted=bool(n_ok and all(o['ok'] for o in out)))
 
 
 def tested2d(X, w, r, kx, ky, C):

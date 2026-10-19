@@ -60,8 +60,12 @@ def main():
     gpus = int(spec.get('gpus', 1))
     groups = spec['groups']
     assert 1 <= len(groups) <= gpus, (len(groups), gpus)
+    if not spec.get('production'):                  # smoke contract (DESIGN 6, brief): <= 2 GPU-h reserved, smk* only
+        assert att.startswith('smk') and float(spec['hours']) * gpus <= 2.0 + 1e-9, 'non-production jobs are smokes <= 2 GPU-h'
     if spec.get('production'):
         cert = json.loads((ROOT / LANE / 'checks' / f'resources-{att}.json').read_text())
+        assert cert['jobspec_sha256'] == hashlib.sha256(spec_p.read_bytes()).hexdigest(), 'job spec changed after certification'
+        assert abs(cert['time_limit_hours'] - math.ceil(float(spec['hours']) * 4) / 4) < 1e-9, 'time limit differs from the certificate'
         assert spec['hours'] >= 1.5 * cert['projection_hours'] - 1e-9, (spec['hours'], cert['projection_hours'])
         assert cert['gpus'] == gpus, 'certificate GPU count differs from the job spec'
         inv_p = ROOT / LANE / 'checks' / f'inventory-{att}.json'
@@ -71,7 +75,7 @@ def main():
                 if 'config' in s:
                     assert cert['configs'].get(s['config']) == hashlib.sha256((ROOT / LANE / s['config']).read_bytes()).hexdigest(), s
     out = ROOT / LANE / 'runs' / att
-    out.mkdir(parents=True, exist_ok=False)
+    assert not out.exists(), f'{out} exists'
     remote = f'{NAMESPACE}/{att}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
     dirty = subprocess.check_output(['git', '-C', str(ROOT), 'status', '--porcelain', '--', LANE], text=True)
@@ -85,6 +89,7 @@ def main():
             if 'sh' in s:
                 assert f'{LANE}/{s["sh"]}' in files, f'script not committed: {s["sh"]}'
                 assert s.get('complete', '').startswith('OUT/'), 'a shell step needs its completion marker'
+    out.mkdir(parents=True, exist_ok=False)          # only after every validation (code audit 2: no stale dirs)
     proof = []
     for name in sorted(set(files)):
         content = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}'])

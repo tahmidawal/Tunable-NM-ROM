@@ -28,6 +28,16 @@ TT = 't0,t1,t2,t3,t4,t5'
 P1RUNS = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs')
 QLIST = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs')
 DRAWS = [f'd{s}' for s in range(E.NDRAW)]
+# registered production populations by attempt prefix (DESIGN 2.1, A2.1, A4.2): E1 2D all 38 cases at every mesh; E2
+# selection all 38; E2 verdict jobs: e2v<b>a / c all 38, e2v<b>b the P1 16-case subset
+REGISTERED = {'e1m': dict(cases='all38'), 'e2s': dict(cases='all38')}
+SUB16 = [['dev6', c] for c in range(6)] + [['val32', c] for c in range(10)]
+
+
+def registered(attempt):
+    if attempt.startswith('e2v'):
+        return dict(cases=SUB16 if attempt.endswith('b') else 'all38')
+    return REGISTERED.get(attempt[:3])
 
 
 def fd(fa, fb, n0):
@@ -58,8 +68,14 @@ def analyse_arm(out, res, g, arm, rp):
     """One (group, arm) of one mesh: target + certification, every rule's per-case quantities, integrity evidence."""
     gname = g['name']
     labels = [r['label'] for r in g['rules']]
-    want_ids = expected_ids(res['config'].get('cases', 'all38'))
-    want_t = [c for c in expected_ids(g.get('tighter_cases', 'dev6')) if c in want_ids]
+    smoke = str(res['config'].get('attempt', '')).startswith('smk')
+    # registered populations (code audit 2 #2): production E1 / E2 runs are checked against the registered sets, never
+    # against the job's own metadata; smokes carry their own explicit contract (their config) and are labelled smoke
+    reg = registered(str(res['config'].get('attempt', ''))) if not smoke else None
+    want_ids = expected_ids(reg['cases'] if reg else res['config'].get('cases', 'all38'))
+    want_t = [c for c in expected_ids(g.get('tighter_cases', 'dev6') if not reg else 'dev6') if c in want_ids]
+    if reg and expected_ids(res['config'].get('cases', 'all38')) != want_ids:
+        raise ValueError('job population differs from the registered one')
     rows = [r for r in res['rows'] if r['group'] == gname and r['arm'] == arm]
     integ = dict(ids_ok=True, mismatches=[], gcert_fail=0, missing=[])
     has_t = bool(g.get('target'))
@@ -83,8 +99,10 @@ def analyse_arm(out, res, g, arm, rp):
             tc_rows.append(dict(case=cid, check_valid=bool(trow[cid].get('check_valid')), dist=dc, dist_job=trow[cid].get('dist_check'),
                                 agree=agree(dc, trow[cid].get('dist_check'))))
         want_chk = [c for c in expected_ids(g.get('check_cases', 'dev6')) if c in want_ids] if g.get('check') else []
+        integ['mismatches'] += [('TARGET-CHECK', r['case'], 'dist') for r in tc_rows if r['check_valid'] and not r['agree']]
         tgt_cert = bool(g.get('check') and [r['case'] for r in tc_rows] == want_chk and
                         all(r['check_valid'] and r['agree'] and np.isfinite(r['dist']) and r['dist'] <= E.BAR_TC for r in tc_rows))
+        # per case (A4.2): the converged-rule error exists where the certified target ran validly on that case
         econv = [e0(FT[j], cid, scheme, form, dt)['e'] if (tvalid[j] and tgt_cert) else None for j, cid in enumerate(tcases)]
     # target state for draw qualification (A3.3, A4.2): None = not certified; False = certified but a target run failed
     tgt_ok = (None if not tgt_cert else bool(all(tvalid)))
@@ -97,9 +115,12 @@ def analyse_arm(out, res, g, arm, rp):
         tids = [str(x) for x in z['tighter_case_ids']]
         if ids != want_ids or (r.get('level', 'full') == 'full' and tids != want_t):
             integ['ids_ok'] = False
-        rr = {x['case']: x for x in rows if x['label'] == lab and x['kind'] == 'prod'}
-        if sorted(rr) != sorted(ids):
-            integ['missing'].append((lab, 'rows'))
+        lrows = [x for x in rows if x['label'] == lab and x['kind'] == 'prod']
+        rr = {x['case']: x for x in lrows}
+        if sorted(rr) != sorted(ids) or len(lrows) != len(rr):
+            integ['missing'].append((lab, 'rows (missing or duplicated)'))
+        if tuple(np.asarray(z['cert']).shape) != (len(ids), int(z['steps'])):
+            integ['missing'].append((lab, 'certificate shape'))
         F = NC.decode257(np.asarray(z['W']).reshape(-1, rp), rp).reshape(len(ids), 6, 257, 257)
         full = str(z['level']) == 'full'
         q = {k: [] for k in ('tight', 'tt', 'succ', 'target', 'rho_succ', 'rho_tgt', 'e', 'eps', 'eligible', 'valid',
@@ -114,7 +135,11 @@ def analyse_arm(out, res, g, arm, rp):
             q['eps'].append(sc['eps'])
             q['eligible'].append(sc['eligible'])
             if not rr.get(cid, {}).get('gcert_ok', False):
-                integ['gcert_fail'] += 1
+                if str(z['level']) == 'full':        # diagnostic / control rules (bad vector) never invalidate the arm
+                    integ['gcert_fail'] += 1
+                else:
+                    integ.setdefault('gcert_fail_diagnostic', 0)
+                    integ['gcert_fail_diagnostic'] += 1
             if has_t:
                 d_ = fd(f, FT[j], n0) if tvalid[j] else math.inf
                 q['target'].append(d_)
@@ -164,11 +189,14 @@ def analyse_arm(out, res, g, arm, rp):
                                      tight_max=(max(q['tight']) if q['tight'] else None),
                                      succ_max=(max(q['succ']) if q['succ'] else None),
                                      e=q['e'], eps=q['eps'], eligible=q['eligible'], valid=q['valid'],
-                                     case_q=([bool(q['valid'][i] and q['valid_tight'][i] and q['valid_succ'][i]
-                                                   and q['tight'][i] <= E.BAR_Q1 and q['succ'][i] <= E.BAR_Q2
-                                                   and q['rho_succ'][i] <= E.BAR_RHO) for i in range(len(ids))]
-                                             if (full and str(z['succ'])) else None),
+                                     case_q=(E.case_qualified(
+                                         dict(valid=q['valid'], valid_tight=q['valid_tight'], valid_succ=q['valid_succ'],
+                                              valid_tighter=q['valid_tighter']),
+                                         dict(tight=q['tight'], succ=q['succ'], rho_succ=q['rho_succ'], tt=q['tt']),
+                                         {ids.index(c): k for k, c in enumerate(tids)}, own)
+                                             if (full and str(z['succ']) and own is not None) else None),
                                      dist_target=q['target'] if has_t else None)
+    out_arm['smoke'] = smoke
     out_arm['integrity'] = dict(integ, ok=bool(integ['ids_ok'] and not integ['mismatches'] and integ['gcert_fail'] == 0
                                               and not integ['missing']))
     return out_arm
@@ -199,10 +227,9 @@ def arm_verdicts(a):
     stats['worst_e'] = E.rank_interval([agg(np.max, d) for d in dr], delta)
     failed = np.array([[not d['valid'][i] for i in range(n)] for d in dr])
     emat = np.array([d['e'] for d in dr], float)
-    econv = t['econv'] if tgt_full else [None] * n
+    econv = t['econv'] if (t['present'] and t['certified']) else [None] * n      # per case (A4.2)
     h_c = E.h_e1c(emat, emat[0], failed, eps, econv, elig)
-    if not tgt_full:
-        h_c['margin'] = '2 eps_ref only (target-free fallback)'
+    h_c['margin_fallback_cases'] = [i for i in range(n) if econv[i] is None]
     ind = 'unavailable (target not certified / failed)'
     if tgt_full:
         ind = dict(tp=0, fp=0, fn=0, tn=0)

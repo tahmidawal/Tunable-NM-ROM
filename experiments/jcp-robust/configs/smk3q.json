@@ -36,13 +36,24 @@
    "rule": "gl24",
    "reduced": [],
    "extra": []
+  },
+  {
+   "name": "W256p",
+   "bank": "W1024pilot",
+   "Rp": 256,
+   "a": 6,
+   "rule": "gl24",
+   "reduced": [],
+   "extra": []
   }
  ],
  "extra_rules": [
+  "gl24",
+  "gl32",
   "gl64",
   "gl80",
-  "lat8192",
-  "lat16384"
+  "lat16384",
+  "lat8192"
  ],
  "blocks": [
   {
@@ -98,6 +109,35 @@
     6,
     7
    ]
+  },
+  {
+   "kind": "ladder",
+   "setting": "W256p",
+   "specs": [
+    "fs|CN|0.01|K1"
+   ],
+   "rungs": [
+    "gl24",
+    "gl32"
+   ],
+   "cases": [
+    0,
+    1,
+    2,
+    3
+   ],
+   "tighter_cases": [
+    0,
+    1,
+    2,
+    3
+   ]
   }
- ]
+ ],
+ "bank_registry": {
+  "W1024pilot": {
+   "path": "../../output/train3d_pilot/bank.pkl",
+   "sha256": "SMOKE-RUNTIME"
+  }
+ }
 }

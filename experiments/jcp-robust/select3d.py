@@ -44,6 +44,10 @@ def main():
         rep['jobs'][res['config']['attempt']] = dict(job_id=res['job_id'], complete=bool(res.get('complete')),
                                                      backend=res['backend'], memory_rejected=res.get('memory_rejected', []))
         Wz = np.load(d / f"W_{res['mode']}.npz")
+        smoke = str(cfg.get('attempt', '')).startswith('smk')
+        job_ok = bool(res.get('complete') and (d / 'COMPLETE').exists() and res['backend'] == 'gpu'
+                      and not res.get('memory_rejected') and (smoke or [int(x) for x in res['cohort']['cases']] == list(range(64))))
+        rep['jobs'][res['config']['attempt']]['ok'] = job_ok
         tab = C3.C.table(int(cfg['cohort_seed']), int(cfg['cohort_count']))
         cases = [int(x) for x in res['cohort']['cases']]
         n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j)))) for j in cases}
@@ -80,10 +84,26 @@ def main():
                         nonst = (sum(1 for v in gam if not (np.isfinite(v) and v <= E.GAMMA)) / len(gam)) if (gam and len(rows) == len(cases)) else None
                         sp = spec.split('|')
                         ka = f"{sname}|{rl}|ad|LSPG|{sp[1]}|{float(sp[2]):.8g}|tight"
+                        kb = f"{sname}|{rl}|ad|LSPG|{sp[1]}|{float(sp[2]):.8g}|tighter"
                         d_adt = dist(sname, W[rl], Wz[ka]) if ka in Wz.files else None
+                        # code audit 2 #24: tight/tighter recomputed and compared; registered tighter cases 0-7
+                        tcs = [j for j in range(8) if j in cases]
+                        ib = [int(v) for v in Wz['cases|' + kb]] if kb in Wz.files else None
+                        d_tt = (dist(sname, [Wz[ka][cases.index(j)] for j in ib], Wz[kb], ib) if (ib == tcs and ka in Wz.files)
+                                else None)
+                        bad_agree = []
+                        for nm_, off, job in (('adt', d_adt, x['dist_adt']), ('tt', d_tt, x['adt_tight_tighter'])):
+                            if off is None or len(off) != len(job):
+                                bad_agree.append((nm_, 'missing'))
+                            else:
+                                bad_agree += [(nm_, i) for i, (o_, j_) in enumerate(zip(off, job))
+                                              if np.isfinite(o_) and abs(o_ - num(j_)) > 1e-9 * abs(num(j_)) + 1e-13]
                         d_next = dist(sname, W[rl], W[nxt])
                         d_tgt = dist(sname, W[rl], W['gl64']) if 'gl64' in W else None
-                        tt = x['adt_tight_tighter']
+                        tt = d_tt
+                        if bad_agree or not job_ok:
+                            cells[rl] = dict(qualified=None, own=None, status='integrity: ' + (str(bad_agree[:3]) if bad_agree else 'job'))
+                            continue
                         qual, own, status = E.draw_qualified(
                             dict(valid=x['valid'], valid_tight=x['adt_valid'], valid_tighter=x['adt_tighter_valid'],
                                  valid_succ=g[nxt]['valid']),
@@ -92,7 +112,7 @@ def main():
                                  # the dims (3M) predicate); no rho against the target is registered, so it is not tested
                                  target=d_tgt, rho_tgt=[0.] * len(cases), nonst_frac=nonst),
                             (None if tgt_ok is None or tgt_ok is False else bool(all(g['gl64']['valid']))),
-                            len(cases), len(x['adt_tight_tighter']))
+                            len(cases), len(tcs))
                         cells[rl] = dict(qualified=qual, own=own, status=status, m=x.get('m'),
                                          dist_next_max=max(d_next), dist_tgt_max=max(d_tgt) if d_tgt else None)
                     key = 'qualified' if tgt_ok else 'own'

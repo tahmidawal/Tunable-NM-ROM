@@ -100,6 +100,9 @@ def load_bank_cfg(cfg):
     if not b:
         return None, None, None
     ck, rot = HERE / b['ckpt'], HERE / b['rotation']
+    if b.get('ckpt_sha256') == 'SMOKE-RUNTIME':      # a bank trained earlier in the same SMOKE job: hashed at load, recorded
+        assert str(cfg.get('attempt', '')).startswith('smk'), 'runtime-hashed banks are allowed in smokes only'
+        b = dict(b, ckpt_sha256=sha_file(ck), rotation_sha256=sha_file(rot), runtime_hashed=True)
     assert sha_file(ck) == b['ckpt_sha256'], ('checkpoint hash', ck)
     assert sha_file(rot) == b['rotation_sha256'], ('rotation hash', rot)
     return ck, rot, b

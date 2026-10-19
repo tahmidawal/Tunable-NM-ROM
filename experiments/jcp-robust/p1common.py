@@ -150,9 +150,12 @@ def symdiff(L, M):
 class Bank:
     """Frozen model, rotated bank on the L-mesh with explicit column edges; operators per mode policy (2048 modes)."""
 
-    def __init__(self, L, edges, nrb=None):
+    def __init__(self, L, edges, nrb=None, ckpt=None, rotation=None):
         self.L = int(L)
-        self.mdl = mdl = Q.Model(ckpt=T2.CKPT)
+        # jcp-robust EDIT (DESIGN 3.2): an explicit (checkpoint, rotation) pair for retrained banks; default = incumbent
+        self.ckpt = Path(ckpt) if ckpt else Path(T2.CKPT)
+        self.rotation = Path(rotation) if rotation else Path(Q.ROTATION)
+        self.mdl = mdl = Q.Model(ckpt=self.ckpt, rotation=self.rotation)
         assert mdl.R == 512 and mdl.K == 16
         self.edges = list(edges)
         assert self.edges[0] == 0 and self.edges == sorted(self.edges) and self.edges[-1] <= mdl.R

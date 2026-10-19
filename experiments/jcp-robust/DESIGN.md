@@ -711,3 +711,34 @@ E2 seeds 4–5 deferred; if the smoke certificates push the projection above 75,
 training and evaluation), then E1 3D draws are kept at 16 (already the minimum). If even that does not fit, the E2 3D
 incumbent evaluation runs on the four existing fixed configurations only (labelled), before any never-dropped item is
 touched.
+
+---
+
+## Amendment A4 (2026-10-19, after Codex design audit 4; no data exists)
+
+Audit `audits/codex-design-4.md`: one BLOCKING item (prior 19/34: the single-job fallback contradicts the
+every-job case intersection); the rest RESOLVED or IMPLEMENTATION-NOTE.
+
+**A4.1 (blocking item) No single-job fallback.** The A3.9 sentence "a missing or blocked job makes the type label rest on
+the remaining job" is **withdrawn**. E5 requires both jobs of each compared type. If any required job is missing, failed,
+or blocked by C-E5.1, then every cross-type quantity ($\phi_1$–$\phi_3$) and every per-type q4 label involving that type is
+"unavailable (job missing)", and the lane resubmits that job (a new attempt, charged to the ledger) before reporting; per-job
+values of the surviving jobs are still reported, labelled "per-job only". Case sets $C_{\rm cost}$, $C_{\rm cross}$ are
+therefore always built over the full set of four (or six, with L40S) jobs.
+
+**A4.2 Implementation notes carried into the code audit** (not design changes):
+- validity is stored as separate flags for production, tight, tighter, successor, target and check runs; the A3.2 status
+  is derived from them with the precedence `missing` > `failed-prod` > `failed-tight` > `failed-tighter` > `failed-succ`
+  > `failed-target`;
+- a target run that fails on an individual case makes that case's target-dependent quantities unavailable (it does not
+  fail the draw); a configuration-level cross-family gate then needs every case's target valid, otherwise it is
+  "unavailable (target failed on case …)"; H-E1c uses the target-free margin $2\epsilon_{\rm ref}$ on that case;
+- target certification is labelled "checked on the registered subset (dev6 / cases 0–7)", not an every-case proof;
+- E2 2D 4096² verdict runs use the registered H-acc-N 4096² population of P1 (16 cases: dev6 + val32|0–9); E1 uses 38;
+- 3D archive reads use qualify's saved `wkeys` / case mapping (`q3run.py:44–67`), not the 2D `W` key;
+- every staged job carries a generated execution inventory (unique keys: bank, mesh, rule, spec, solver level, case set;
+  reuse marked) and a smoke-derived reservation certificate; the 9.9 GPU-h margin of A3.10 is a projection, not certified;
+- if the A3.10 emergency reduction of the 3D incumbent evaluation fires, historical agreement is reported only for the
+  fixed-configuration quantities and incumbent agreement for selected-rule fronts is "unavailable";
+- bad-vector admission requires finite values and a strictly positive target norm at every state (dims `dstats.py:173–176`);
+  no predicate may pass through an empty reduction.

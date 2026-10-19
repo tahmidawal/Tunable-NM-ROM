@@ -33,6 +33,23 @@ def last_amendment():
     return max(int(x) for x in re.findall(r'^## Amendment A(\d+)', (HERE / 'DESIGN.md').read_text(), re.M))
 
 
+WIN_IDX = dict(W1=(1, 6), W2=(6, 11), W3=(11, 21))
+
+
+def win_meds(v, w_):
+    """median over cases eligible in window w_ of the window error, fixed-t0 and current-time normalisation"""
+    a, b = WIN_IDX[w_]
+    el = [x for x in v['rows'] if x.get(f'elig_{w_}') and 'e_rel_t' in x and len(x['e_rel_t']) >= b]
+    if not el:
+        return '—', '—'
+    return g(np.median([x[f'e_{w_}'] for x in el])), g(np.median([max(x['e_rel_t'][a:b]) for x in el]))
+
+
+def mono(v):
+    st = v['stability']
+    return f"{st.get('monotone_violations_rom', '—')} / {st.get('monotone_violations_ref', '—')}"
+
+
 def J(p):
     return json.loads((HERE / p).read_text()) if p else None
 
@@ -123,7 +140,8 @@ def plots(inp, B2, B7, B3):
             if P:
                 seen.add(r)
                 P = np.array(P)
-                ax.plot(np.arange(P.shape[1]) * .05, np.median(P, axis=0), marker='o', ms=3, label=f'{r} median, n={len(P)}')
+                ln, = ax.plot(np.arange(P.shape[1]) * .05, np.median(P, axis=0), marker='o', ms=3, label=f'{r} median, n={len(P)}')
+                ax.plot(np.arange(P.shape[1]) * .05, np.max(P, axis=0), ls='--', color=ln.get_color(), label=f'{r} worst')
         ax.axvline(.25, color='grey', lw=.8)
         ax.set_yscale('log')
         ax.set_xlabel('t')
@@ -351,35 +369,43 @@ def main():
         rows = []
         for mk, v in sorted(c['b7'].items()):
             gr = v['growth'].get('W2/W1', {})
-            el = [x for x in v['rows'] if x.get('elig_W2') and 'e_rel_t' in x]
-            e2 = g(np.median([x['e_W2'] for x in el])) if el else '—'
-            e2r = g(np.median([max(x['e_rel_t'][6:11]) for x in el])) if el else '—'
-            rows.append((mk, g(v['Q1']['pass']), v['Q2']['label'], g(v['qualified_at_T']), g(v['stability']['pass']),
+            e2, e2r = win_meds(v, 'W2')
+            rows.append((mk, g(v['Q1']['pass']), v['Q2']['label'], g(v['qualified_at_T']), g(v['stability']['pass']), mono(v),
                          gr.get('label', '—'), g(gr.get('median')), f"{gr.get('n', 0)}", e2, e2r))
-        w(table(['member', 'Q1 at T', 'Q2 at T', 'qualified at T', 'stable (outputs)', 'growth W2/W1', 'median g', 'n',
-                 'median e_W2 (fixed t0)', 'median e_W2 (current t)'], rows))
+        w(table(['member', 'Q1 at T', 'Q2 at T', 'qualified at T', 'stable (outputs)', 'energy rises ROM / ref', 'growth W2/W1',
+                 'median g', 'n', 'median e_W2 (fixed t0)', 'median e_W2 (current t)'], rows))
         w('')
         fo = c['front_order']
-        w(f"Front order W1 → W2: all members {fo['all']['label']}; LSPG members {fo['lspg']['label']}.")
+        w(f"Front order W1 → W2: all members {fo['all']['label']} (Kendall $\\tau_b$ {g(fo['all'].get('kendall_tau_b'))}); "
+          f"LSPG members {fo['lspg']['label']} ($\\tau_b$ {g(fo['lspg'].get('kendall_tau_b'))}).")
         w('')
     if B3 and B3.get('b7'):
         w('### 3D, $T=0.5$')
         w('')
-        rows = [(mk, g(v['Q1']['pass']), v['Q2']['label'], g(v['qualified_at_T']), g(v['stability']['pass']),
-                 v['growth'].get('W2/W1', {}).get('label', '—')) for mk, v in sorted(B3['b7'].items())]
-        w(table(['member', 'Q1 at T', 'Q2 at T', 'qualified at T', 'stable', 'growth W2/W1'], rows))
+        rows = [(mk, g(v['Q1']['pass']), v['Q2']['label'], g(v['qualified_at_T']), g(v['stability']['pass']), mono(v),
+                 v['growth'].get('W2/W1', {}).get('label', '—'), g(v['growth'].get('W2/W1', {}).get('median')),
+                 v['growth'].get('W2/W1', {}).get('n', 0), *win_meds(v, 'W2')) for mk, v in sorted(B3['b7'].items())]
+        w(table(['member', 'Q1 at T', 'Q2 at T', 'qualified at T', 'stable', 'energy rises ROM / ref', 'growth W2/W1', 'median g',
+                 'n', 'median e_W2 (fixed t0)', 'median e_W2 (current t)'], rows))
         w('')
+        fo = B3.get('front_order') or {}
+        if fo:
+            w(f"Front order W1 → W2 (all 3D members): {fo.get('label', '—')} (Kendall $\\tau_b$ {g(fo.get('kendall_tau_b'))}, "
+              f"n = {fo.get('n', '—')}).")
+            w('')
     if B7T1:
         w('### $1024^2$, $T=1.0$ (sub16)')
         w('')
-        rows = [(mk, g(v['Q1']['pass']), v['Q2']['label'], g(v['stability']['pass']),
+        rows = [(mk, g(v['Q1']['pass']), v['Q2']['label'], g(v['stability']['pass']), mono(v),
                  v['growth'].get('W2/W1', {}).get('label', '—'), v['growth'].get('W3/W2', {}).get('label', '—'),
-                 g(v['growth'].get('W3/W2', {}).get('median')), v['growth'].get('W3/W2', {}).get('n', 0))
+                 g(v['growth'].get('W3/W2', {}).get('median')), v['growth'].get('W3/W2', {}).get('n', 0), *win_meds(v, 'W3'))
                 for mk, v in sorted(B7T1['b7'].items())]
-        w(table(['member', 'Q1 at T', 'Q2 at T', 'stable', 'growth W2/W1', 'growth W3/W2', 'median g W3/W2', 'n (W3/W2)'], rows))
+        w(table(['member', 'Q1 at T', 'Q2 at T', 'stable', 'energy rises ROM / ref', 'growth W2/W1', 'growth W3/W2 (provisional)',
+                 'median g W3/W2', 'n (W3/W2)', 'median e_W3 (fixed t0, provisional)', 'median e_W3 (current t, provisional)'], rows))
         fo, f3 = B7T1.get('front_order', {}), B7T1.get('front_order_W2W3', {})
         w('')
-        w(f"Front order W1 → W2 (all / LSPG): {fo.get('all', {}).get('label', '—')} / {fo.get('lspg', {}).get('label', '—')}. "
+        w(f"Front order W1 → W2 (all / LSPG): {fo.get('all', {}).get('label', '—')} / {fo.get('lspg', {}).get('label', '—')} "
+          f"(Kendall $\\tau_b$ {g(fo.get('all', {}).get('kendall_tau_b'))} / {g(fo.get('lspg', {}).get('kendall_tau_b'))}). "
           f"Front order W2 → W3 (all / LSPG; W3 tier {f3.get('all', {}).get('tier', '—')}, so provisional, no verdict): "
           f"{f3.get('all', {}).get('label', '—')} / {f3.get('lspg', {}).get('label', '—')}.")
         w('')
@@ -395,6 +421,7 @@ def main():
         rows = []
         for mk, v in sorted(c['b8'].items()):
             rr = v['rows']
+            n_all = len(rr)
             s_ = [r_['W1']['s'] for r_ in rr if 'W1' in r_ and r_['W1'].get('s')]
             us = [r_['undershoot'] for r_ in rr]
             os_ = [r_['overshoot'] for r_ in rr]
@@ -403,9 +430,14 @@ def main():
             ic = [r_['ic_over_floor'] for r_ in rr if isinstance(r_.get('ic_over_floor'), (int, float))]
             rows.append((mk, v['adequacy_W1']['label'], v['adequacy_W2']['label'], g(np.median(s_)) if s_ else '—',
                          g(max(Er)) if Er else '—', f"{sum(x > 1e-3 for x in us)}/{len(us)}", f"{sum(x > 1e-3 for x in os_)}/{len(os_)}",
-                         g(np.median(dens)) if dens else '—', g(np.median(ic)) if ic else '—'))
+                         g(np.median(dens)) if dens else '—', g(np.median(ic)) if ic else '—', n_all))
         w(table(['member', 'sampling W1', 'sampling W2', 'median s (W1)', 'max abs(E_rom/E_ref − 1)', 'undershoot > 1e-3',
-                 'overshoot > 1e-3', 'median near-wall density (cases × times)', 'IC error / floor at t0'], rows))
+                 'overshoot > 1e-3', 'median near-wall density (cases × times)', 'IC error / floor at t0', 'cases (descriptive)'],
+                rows))
+        w('')
+        w('The sampling labels use eligible case-windows only. The descriptive columns (median $s$, energy, extrema, near-wall '
+          'density, IC error) pool every stored case, including the non-rankable references listed under "New references"; '
+          'so does the $s$ histogram.')
         w('')
         if c.get('lane_statement_W1'):
             ls = c['lane_statement_W1']
@@ -470,7 +502,7 @@ GLOSSARY = [
     (r'LSPG / GAL', r'least-squares and Galerkin reduced equations; GAL-CN rows ("diag.") are a registered diagnostic scheme, not part of the LSPG front the lane statement covers.'),
     (r'BE / CN / CNR / BDF2', r'backward Euler; Crank–Nicolson; Crank–Nicolson with Rannacher start-up; second-order backward differentiation.'),
     (r'3D member tokens', r'`W256` / `W512`: 3D bank width; `gl24`: 24-point Gauss–Legendre rule per axis; `lat8192` / `lat16384`: lattice rule with that many nodes; `fs` / `qn`: fixed-sweep and quasi-Newton solvers; then the time scheme and the time step; `K1` / `k4`: solver iteration setting.'),
-    (r'ingredient letters', r'Q quadrature (Gauss $320^2$; check rule Gauss $640^2$); T time package (BDF2 at $\Delta t_0/8$); F form with its stopping rule (in 3D measured at the tight-solver end); S solver tolerance (tight); I initial condition (full-grid least-squares projection; not in 3D); M test space ($M=2048$ sine functions).'),
+    (r'ingredient letters', r'2D: Q quadrature (Gauss $320^2$; check rule Gauss $640^2$); T time package (BDF2 at $\Delta t_0/8$); F form with its stopping rule; S solver tolerance (tight); I initial condition (full-grid least-squares projection); M test space ($M=2048$ sine functions). 3D: Q quadrature (Gauss–Legendre `gl56`; check rule `gl64`), T, S, and F measured only at the tight-solver end; there is no I or M ingredient in 3D.'),
     (r'main effect $I_x$, pair $I_{xy}$', r'the change caused by switching one ingredient; the part of a two-switch change not explained by the two single switches. Table values are medians over eligible cases of the maximum over output times of the norm divided by $n_0$.'),
     (r'$n_0$', r'norm of the reference at the initial time on the scoring lattice; errors are divided by it unless "current t" is stated.'),
     (r'$e_P$ (floor)', r'distance from the reference to the bank span on the scoring lattice; no reduced solution can beat it.'),
@@ -478,19 +510,22 @@ GLOSSARY = [
     (r'$U_\star$ (U*)', r"the ideal end's own numerical uncertainty (half-step and tighter-tolerance replays). A trajectory effect is resolved only if it is at least $3U_\star$; $e_P$ must exceed $2\varepsilon_{\rm ref}$; $e_{\star,\rm dyn}$ must satisfy both."),
     (r'e_tot', r"the deployed configuration's error against the E0 reference (maximum over the five output times, divided by $n_0$)."),
     (r'complete/eligible', r'cases with every candidate available / cases whose reference is eligible; the dominance rule counts complete cases only.'),
-    (r'dominant', r'per case, the largest resolved candidate, or "tied" if it exceeds another resolved candidate by no more than the pair threshold ($3U_\star$ between effects, $2\varepsilon_{\rm ref}$ between reference quantities, their sum when mixed). A component is dominant if it is the per-case winner on more than half of the complete cases, otherwise "no single dominant"; at least 8 complete cases (6 at $4096^2$).'),
-    (r'pair labels', r'per case: interacting if $|I_{xy}|>0.25\max(|I_x|,|I_y|)$ and $\ge3U_\star$; additive if $\le0.25\max$ with the larger main effect resolved. Over cases: interacting if more than 25 % of eligible cases interact, additive if at least 75 % are additive, otherwise mixed; undefined if the corner does not exist (3D F×S).'),
+    (r'dominant', r'per case, the largest resolved candidate, or "tied" if it exceeds another resolved candidate by no more than the pair threshold ($3U_\star$ between effects, $2\varepsilon_{\rm ref}$ between reference quantities, their sum when mixed). A component is dominant if it is the per-case winner on more than half of the complete cases, otherwise "no single dominant". "inconclusive (incomplete)" if fewer than 75 % of eligible cases are complete; "inconclusive (population)" below 8 cases (6 at $4096^2$).'),
+    (r'pair labels', r'per case: interacting if $|I_{xy}|>0.25\max(|I_x|,|I_y|)$ and $\ge3U_\star$; additive if $\le0.25\max$ with the larger main effect resolved. Over cases: interacting if more than 25 % of eligible cases interact, additive if at least 75 % are additive, otherwise mixed; "inconclusive (population)" if fewer than the minimum population have the pair available; undefined if the corner does not exist (3D F×S).'),
     (r'mesh label', r'same / differs: the dominant component agrees / disagrees at $256^2$, $1024^2$, $4096^2$ on the shared sub16 cases; inconclusive if any mesh has no single dominant.'),
     (r'$\varepsilon_{\rm ref}$ (eps_ref)', r"Richardson estimate of the reference's own error; conditional, not a bound."),
     (r'W1, W2, W3', r'output-time windows $(0,0.25]$, $(0.25,0.5]$, $(0.5,1]$.'),
     (r'Q1 / Q2 at T', r'solver qualification (stationarity, distance to a tight solve) and quadrature qualification (agreement with a finer rule), certified over every step to the horizon $T$; "qualified at T" needs both.'),
-    (r'growth g, n', r'per case $g=e_{W_2}/e_{W_1}$ (or $e_{W_3}/e_{W_2}$), using cases whose errors exceed twice their reference uncertainty in both windows. Label from the bootstrap 95 % interval of the median: no growth (upper ≤ 1), bounded growth (lower > 1, upper ≤ 2), accumulating (lower > 2), otherwise between labels. n: cases used.'),
+    (r'growth g, n', r'per case $g=e_{W_2}/e_{W_1}$ (or $e_{W_3}/e_{W_2}$), using cases whose errors exceed twice their reference uncertainty in both windows. Label from the bootstrap 95 % interval of the median: no growth (upper ≤ 1), bounded growth (lower > 1, upper ≤ 2), accumulating (lower > 2), otherwise between labels; "inconclusive (population)" below the minimum population. n: cases used.'),
     (r'fixed t0 / current t', r'the window error divided by $n_0$, or by the reference norm at the same output time; the reference decays, so the second is larger.'),
     (r'front order', r'whether the ranking of members by median window error is the same in two windows over their common eligible cases: preserved (no resolved pair reversed), not preserved, inconclusive (no resolved pair).'),
     (r'tier', r'validated (pseudo-spectral cross-check passed) → verdicts; unvalidated → provisional values, no verdict; suspended → descriptive only.'),
-    (r'non-rankable', r'a reference case that its judge did not accept, whose G-R2 is not evaluable, or that is A9 / A14 terminal; it enters no verdict or table population.'),
+    (r'non-rankable', r'a reference case that its judge did not accept, whose G-R2 is not evaluable, or that is A9 / A14 terminal; it enters no verdict or eligible population (B8 descriptive columns, labelled as such, still include it).'),
+    (r'stable (outputs)', r'every run valid and, at every recorded output time, the reduced kinetic energy no more than $10^{-3}$ (relative) above its initial value; between output times nothing is checked.'),
+    (r'energy rises ROM / ref', r'number of consecutive output-time pairs, summed over cases, at which the energy of the reduced solution / of the reference rises by more than $10^{-3}$ relative.'),
+    (r'Kendall $\tau_b$', r'rank correlation of the members\' median errors in the two windows (1 = same order).'),
     (r'$s$', r'ratio of the error measured on the $1025^2$ lattice to the error on the $257^2$ scoring lattice.'),
-    (r'sampling label', r'per case-window the two routes are consistent if they agree within 10 % plus twice their reference uncertainties (reference-limited windows are dropped); adequate if at least 90 % are consistent, inadequate below 50 %, otherwise mixed.'),
+    (r'sampling label', r'per case-window the two routes are consistent if they agree within 10 % plus twice their reference uncertainties (reference-limited windows are dropped); adequate if at least 90 % are consistent, inadequate below 50 %, otherwise mixed; "inconclusive (population)" below the minimum population of case-windows.'),
     (r'E_rom/E_ref', r'kinetic energy $\tfrac12\lVert u\rVert^2$ of the reduced solution over that of the reference at the same output time; the table gives the largest deviation from 1 over cases and times.'),
     (r'undershoot / overshoot > 1e-3', r'cases whose reduced solution goes below zero (undershoot) or above the initial maximum (overshoot) by more than $10^{-3}$ of the initial maximum.'),
     (r'near-wall density', r'error energy per node in the band within 1/32 of the walls, relative to the whole-interior error energy per node; the median pools cases and output times.'),

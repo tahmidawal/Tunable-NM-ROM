@@ -1,16 +1,16 @@
 {
  "lane": "jcp-budget",
- "utc": "2026-10-19T15:50:30Z",
- "step": "9: results re-audit, then report audit and hand-back",
+ "utc": "2026-10-19T15:58:26Z",
+ "step": "9: report re-audit (codex-report-2), then hand-back",
  "waiting_on": {
   "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T17:50:30Z",
- "last_commit": "7f324796e",
+ "expected_finish_utc": "2026-10-19T16:58:26Z",
+ "last_commit": "f9cbe041f",
  "gpu_hours_spent": 25.91,
  "gpu_hours_cap": 45,
- "notes": "all production collected (25.9 GPU-h); analyses rerun after codex-results-1 fixes"
+ "notes": "results READY-FOR-REPORT (codex-results-2); report fixes applied"
 }

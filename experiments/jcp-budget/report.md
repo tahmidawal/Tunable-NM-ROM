@@ -221,138 +221,146 @@ The bank was trained on $t\le0.25$; beyond it the model extrapolates in time. Q1
 
 ### $256^2$, $T=0.5$
 
-| member | Q1 at T | Q2 at T | qualified at T | stable (outputs) | growth W2/W1 | median g | n | median e_W2 (fixed t0) | median e_W2 (current t) |
-|---|---|---|---|---|---|---|---|---|---|
-| R128 GAL CN 1 | yes | pass | yes | yes | no growth | 0.288 | 36 | 0.00107 | 0.00181 |
-| R128 GAL CN 2 | yes | pass | yes | yes | no growth | 0.275 | 36 | 0.00108 | 0.00185 |
-| R128 GAL CN 5 | yes | pass | yes | yes | no growth | 0.228 | 36 | 0.00158 | 0.00408 |
-| R128 LSPG BE 1 | yes | pass | yes | yes | no growth | 0.54 | 36 | 0.00499 | 0.0118 |
-| R128 LSPG BE 2.5 | no | pass | no | yes | no growth | 0.666 | 36 | 0.0119 | 0.0283 |
-| R256 GAL CN 1 | yes | pass | yes | yes | no growth | 0.279 | 36 | 0.000168 | 0.000311 |
-| R256 GAL CN 2 | yes | pass | yes | yes | no growth | 0.234 | 36 | 0.000262 | 0.0006 |
-| R384 GAL CN 1 | yes | pass | yes | yes | no growth | 0.268 | 36 | 0.000113 | 0.000197 |
-| R384 LSPG CNR 1 | yes | pass | yes | yes | no growth | 0.179 | 36 | 0.000252 | 0.000606 |
-| R384 LSPG CNR 2 | yes | pass | yes | yes | no growth | 0.166 | 36 | 0.000822 | 0.00204 |
+| member | Q1 at T | Q2 at T | qualified at T | stable (outputs) | energy rises ROM / ref | growth W2/W1 | median g | n | median e_W2 (fixed t0) | median e_W2 (current t) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| R128 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.288 | 36 | 0.00107 | 0.00181 |
+| R128 GAL CN 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.275 | 36 | 0.00108 | 0.00185 |
+| R128 GAL CN 5 | yes | pass | yes | yes | 0 / 0 | no growth | 0.228 | 36 | 0.00158 | 0.00408 |
+| R128 LSPG BE 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.54 | 36 | 0.00499 | 0.0118 |
+| R128 LSPG BE 2.5 | no | pass | no | yes | 0 / 0 | no growth | 0.666 | 36 | 0.0119 | 0.0283 |
+| R256 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.279 | 36 | 0.000168 | 0.000311 |
+| R256 GAL CN 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.234 | 36 | 0.000262 | 0.0006 |
+| R384 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.268 | 36 | 0.000113 | 0.000197 |
+| R384 LSPG CNR 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.179 | 36 | 0.000252 | 0.000606 |
+| R384 LSPG CNR 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.166 | 36 | 0.000822 | 0.00204 |
 
-Front order W1 → W2: all members not preserved; LSPG members preserved.
+Front order W1 → W2: all members not preserved (Kendall $\tau_b$ 0.822); LSPG members preserved ($\tau_b$ 1).
 
 ### $1024^2$, $T=0.5$
 
-| member | Q1 at T | Q2 at T | qualified at T | stable (outputs) | growth W2/W1 | median g | n | median e_W2 (fixed t0) | median e_W2 (current t) |
-|---|---|---|---|---|---|---|---|---|---|
-| R128 GAL CN 1 | yes | pass | yes | yes | no growth | 0.288 | 36 | 0.00107 | 0.00181 |
-| R128 GAL CN 2 | yes | pass | yes | yes | no growth | 0.275 | 36 | 0.00108 | 0.00185 |
-| R128 GAL CN 5 | yes | pass | yes | yes | no growth | 0.228 | 36 | 0.00158 | 0.00409 |
-| R128 LSPG BE 1 | yes | pass | yes | yes | no growth | 0.539 | 36 | 0.00498 | 0.0118 |
-| R128 LSPG BE 2.5 | no | pass | no | yes | no growth | 0.666 | 36 | 0.0119 | 0.0283 |
-| R256 GAL CN 1 | yes | pass | yes | yes | no growth | 0.277 | 36 | 0.000168 | 0.000309 |
-| R256 GAL CN 2 | yes | pass | yes | yes | no growth | 0.231 | 36 | 0.000265 | 0.000636 |
-| R256 LSPG CNR 2.5 | no | pass | no | yes | no growth | 0.17 | 36 | 0.00126 | 0.00297 |
-| R384 GAL CN 1 | yes | pass | yes | yes | no growth | 0.263 | 36 | 0.000116 | 0.000201 |
-| R384 LSPG CNR 1 | yes | pass | yes | yes | no growth | 0.172 | 36 | 0.000245 | 0.000594 |
-| R384 LSPG CNR 2 | yes | pass | yes | yes | no growth | 0.165 | 36 | 0.000818 | 0.00201 |
+| member | Q1 at T | Q2 at T | qualified at T | stable (outputs) | energy rises ROM / ref | growth W2/W1 | median g | n | median e_W2 (fixed t0) | median e_W2 (current t) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| R128 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.288 | 36 | 0.00107 | 0.00181 |
+| R128 GAL CN 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.275 | 36 | 0.00108 | 0.00185 |
+| R128 GAL CN 5 | yes | pass | yes | yes | 0 / 0 | no growth | 0.228 | 36 | 0.00158 | 0.00409 |
+| R128 LSPG BE 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.539 | 36 | 0.00498 | 0.0118 |
+| R128 LSPG BE 2.5 | no | pass | no | yes | 0 / 0 | no growth | 0.666 | 36 | 0.0119 | 0.0283 |
+| R256 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.277 | 36 | 0.000168 | 0.000309 |
+| R256 GAL CN 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.231 | 36 | 0.000265 | 0.000636 |
+| R256 LSPG CNR 2.5 | no | pass | no | yes | 0 / 0 | no growth | 0.17 | 36 | 0.00126 | 0.00297 |
+| R384 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.263 | 36 | 0.000116 | 0.000201 |
+| R384 LSPG CNR 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.172 | 36 | 0.000245 | 0.000594 |
+| R384 LSPG CNR 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.165 | 36 | 0.000818 | 0.00201 |
 
-Front order W1 → W2: all members not preserved; LSPG members preserved.
+Front order W1 → W2: all members not preserved (Kendall $\tau_b$ 0.855); LSPG members preserved ($\tau_b$ 1).
 
 ### $4096^2$, $T=0.5$
 
-| member | Q1 at T | Q2 at T | qualified at T | stable (outputs) | growth W2/W1 | median g | n | median e_W2 (fixed t0) | median e_W2 (current t) |
-|---|---|---|---|---|---|---|---|---|---|
-| R128 GAL CN 1 | yes | pass | yes | yes | no growth | 0.264 | 16 | 0.00158 | 0.00239 |
-| R128 GAL CN 2 | yes | pass | yes | yes | no growth | 0.241 | 16 | 0.00159 | 0.00245 |
-| R128 GAL CN 5 | yes | pass | yes | yes | no growth | 0.214 | 16 | 0.00222 | 0.00396 |
-| R128 LSPG BE 1 | yes | pass | yes | yes | no growth | 0.506 | 16 | 0.00613 | 0.0119 |
-| R128 LSPG BE 2 | yes | pass | yes | yes | no growth | 0.607 | 16 | 0.0119 | 0.0234 |
-| R128 LSPG BE 2.5 | yes | pass | yes | yes | no growth | 0.628 | 16 | 0.0147 | 0.0291 |
-| R256 GAL CN 1 | yes | pass | yes | yes | no growth | 0.206 | 16 | 0.000312 | 0.000471 |
-| R256 GAL CN 2 | yes | pass | yes | yes | no growth | 0.216 | 16 | 0.000371 | 0.000619 |
-| R256 LSPG CNR 2.5 | yes | pass | yes | yes | no growth | 0.17 | 16 | 0.00151 | 0.00318 |
-| R384 GAL CN 1 | yes | pass | yes | yes | no growth | 0.209 | 16 | 0.000172 | 0.000281 |
-| R384 LSPG CNR 1 | yes | pass | yes | yes | no growth | 0.161 | 16 | 0.000311 | 0.000626 |
-| R384 LSPG CNR 2 | yes | pass | yes | yes | no growth | 0.172 | 16 | 0.000998 | 0.00211 |
+| member | Q1 at T | Q2 at T | qualified at T | stable (outputs) | energy rises ROM / ref | growth W2/W1 | median g | n | median e_W2 (fixed t0) | median e_W2 (current t) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| R128 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.264 | 16 | 0.00158 | 0.00239 |
+| R128 GAL CN 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.241 | 16 | 0.00159 | 0.00245 |
+| R128 GAL CN 5 | yes | pass | yes | yes | 0 / 0 | no growth | 0.214 | 16 | 0.00222 | 0.00396 |
+| R128 LSPG BE 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.506 | 16 | 0.00613 | 0.0119 |
+| R128 LSPG BE 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.607 | 16 | 0.0119 | 0.0234 |
+| R128 LSPG BE 2.5 | yes | pass | yes | yes | 0 / 0 | no growth | 0.628 | 16 | 0.0147 | 0.0291 |
+| R256 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.206 | 16 | 0.000312 | 0.000471 |
+| R256 GAL CN 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.216 | 16 | 0.000371 | 0.000619 |
+| R256 LSPG CNR 2.5 | yes | pass | yes | yes | 0 / 0 | no growth | 0.17 | 16 | 0.00151 | 0.00318 |
+| R384 GAL CN 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.209 | 16 | 0.000172 | 0.000281 |
+| R384 LSPG CNR 1 | yes | pass | yes | yes | 0 / 0 | no growth | 0.161 | 16 | 0.000311 | 0.000626 |
+| R384 LSPG CNR 2 | yes | pass | yes | yes | 0 / 0 | no growth | 0.172 | 16 | 0.000998 | 0.00211 |
 
-Front order W1 → W2: all members not preserved; LSPG members preserved.
+Front order W1 → W2: all members not preserved (Kendall $\tau_b$ 0.818); LSPG members preserved ($\tau_b$ 1).
 
 ### 3D, $T=0.5$
 
-| member | Q1 at T | Q2 at T | qualified at T | stable | growth W2/W1 |
-|---|---|---|---|---|---|
-| W256 gl24 fs CN 0.0125 K1 | yes | fail | no | yes | no growth |
-| W256 gl24 fs CN 0.01 K1 | yes | fail | no | yes | no growth |
-| W256 lat8192 qn BDF2 0.025 k4 | yes | fail | no | yes | no growth |
-| W512 lat16384 qn BDF2 0.025 k4 | no | fail | no | yes | no growth |
+| member | Q1 at T | Q2 at T | qualified at T | stable | energy rises ROM / ref | growth W2/W1 | median g | n | median e_W2 (fixed t0) | median e_W2 (current t) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| W256 gl24 fs CN 0.0125 K1 | yes | fail | no | yes | 0 / 0 | no growth | 0.458 | 16 | 0.00261 | 0.00463 |
+| W256 gl24 fs CN 0.01 K1 | yes | fail | no | yes | 0 / 0 | no growth | 0.466 | 16 | 0.00261 | 0.0046 |
+| W256 lat8192 qn BDF2 0.025 k4 | yes | fail | no | yes | 0 / 0 | no growth | 0.301 | 16 | 0.0053 | 0.00859 |
+| W512 lat16384 qn BDF2 0.025 k4 | no | fail | no | yes | 0 / 0 | no growth | 0.291 | 16 | 0.00493 | 0.00812 |
+
+Front order W1 → W2 (all 3D members): preserved (Kendall $\tau_b$ 1, n = 16).
 
 ### $1024^2$, $T=1.0$ (sub16)
 
-| member | Q1 at T | Q2 at T | stable | growth W2/W1 | growth W3/W2 | median g W3/W2 | n (W3/W2) |
-|---|---|---|---|---|---|---|---|
-| R128 GAL CN 1 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.36 | 9 |
-| R128 GAL CN 2 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.356 | 9 |
-| R128 GAL CN 5 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.395 | 9 |
-| R128 LSPG BE 1 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.568 | 9 |
-| R128 LSPG BE 2.5 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.616 | 9 |
-| R256 GAL CN 1 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.299 | 9 |
-| R256 GAL CN 2 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.33 | 9 |
-| R256 LSPG CNR 2.5 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.406 | 9 |
-| R384 GAL CN 1 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.434 | 9 |
-| R384 LSPG CNR 1 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.39 | 9 |
-| R384 LSPG CNR 2 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.423 | 9 |
+| member | Q1 at T | Q2 at T | stable | energy rises ROM / ref | growth W2/W1 | growth W3/W2 (provisional) | median g W3/W2 | n (W3/W2) | median e_W3 (fixed t0, provisional) | median e_W3 (current t, provisional) |
+|---|---|---|---|---|---|---|---|---|---|---|
+| R128 GAL CN 1 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.36 | 9 | 0.000875 | 0.00258 |
+| R128 GAL CN 2 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.356 | 9 | 0.000891 | 0.00263 |
+| R128 GAL CN 5 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.395 | 9 | 0.00113 | 0.00408 |
+| R128 LSPG BE 1 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.568 | 9 | 0.00395 | 0.0117 |
+| R128 LSPG BE 2.5 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.616 | 9 | 0.00921 | 0.0259 |
+| R256 GAL CN 1 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.299 | 9 | 0.000196 | 0.000429 |
+| R256 GAL CN 2 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.33 | 9 | 0.000218 | 0.000584 |
+| R256 LSPG CNR 2.5 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.406 | 9 | 0.000897 | 0.00255 |
+| R384 GAL CN 1 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.434 | 9 | 0.000105 | 0.000259 |
+| R384 LSPG CNR 1 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.39 | 9 | 0.000187 | 0.000555 |
+| R384 LSPG CNR 2 | yes | pass | yes | 0 / 0 | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.423 | 9 | 0.000586 | 0.00159 |
 
-Front order W1 → W2 (all / LSPG): not preserved / preserved. Front order W2 → W3 (all / LSPG; W3 tier unvalidated, so provisional, no verdict): no verdict (cross-check unvalidated); provisional: not preserved / no verdict (cross-check unvalidated); provisional: preserved.
+Front order W1 → W2 (all / LSPG): not preserved / preserved (Kendall $\tau_b$ 0.927 / 1). Front order W2 → W3 (all / LSPG; W3 tier unvalidated, so provisional, no verdict): no verdict (cross-check unvalidated); provisional: not preserved / no verdict (cross-check unvalidated); provisional: preserved.
 
 ## B8: physical diagnostics and output-sampling adequacy
 
 ### $256^2$
 
-| member | sampling W1 | sampling W2 | median s (W1) | max abs(E_rom/E_ref − 1) | undershoot > 1e-3 | overshoot > 1e-3 | median near-wall density (cases × times) | IC error / floor at t0 |
-|---|---|---|---|---|---|---|---|---|
-| R128 GAL CN 1 | adequate | adequate | 1.01 | 0.00553 | 36/38 | 8/38 | 2.73 | 1.01 |
-| R128 GAL CN 2 | adequate | adequate | 1 | 0.00817 | 36/38 | 8/38 | 2.42 | 1.01 |
-| R128 GAL CN 5 | adequate | adequate | 1 | 0.027 | 36/38 | 8/38 | 1.04 | 1.01 |
-| R128 LSPG BE 1 | adequate | adequate | 1 | 0.0395 | 36/38 | 8/38 | 0.138 | 1.01 |
-| R128 LSPG BE 2.5 | adequate | adequate | 1 | 0.0966 | 36/38 | 8/38 | 0.0584 | 1.01 |
-| R256 GAL CN 1 | adequate | mixed | 1.02 | 0.00153 | 30/38 | 4/38 | 4.35 | 1.09 |
-| R256 GAL CN 2 | adequate | adequate | 1.01 | 0.00387 | 30/38 | 4/38 | 2.26 | 1.09 |
-| R384 GAL CN 1 | mixed | inadequate | 1.05 | 0.000898 | 32/38 | 1/38 | 4.73 | 1.23 |
-| R384 LSPG CNR 1 | adequate | adequate | 1.01 | 0.00383 | 32/38 | 1/38 | 1.19 | 1.23 |
-| R384 LSPG CNR 2 | adequate | adequate | 1 | 0.0167 | 32/38 | 1/38 | 0.172 | 1.23 |
+| member | sampling W1 | sampling W2 | median s (W1) | max abs(E_rom/E_ref − 1) | undershoot > 1e-3 | overshoot > 1e-3 | median near-wall density (cases × times) | IC error / floor at t0 | cases (descriptive) |
+|---|---|---|---|---|---|---|---|---|---|
+| R128 GAL CN 1 | adequate | adequate | 1.01 | 0.00553 | 36/38 | 8/38 | 2.73 | 1.01 | 38 |
+| R128 GAL CN 2 | adequate | adequate | 1 | 0.00817 | 36/38 | 8/38 | 2.42 | 1.01 | 38 |
+| R128 GAL CN 5 | adequate | adequate | 1 | 0.027 | 36/38 | 8/38 | 1.04 | 1.01 | 38 |
+| R128 LSPG BE 1 | adequate | adequate | 1 | 0.0395 | 36/38 | 8/38 | 0.138 | 1.01 | 38 |
+| R128 LSPG BE 2.5 | adequate | adequate | 1 | 0.0966 | 36/38 | 8/38 | 0.0584 | 1.01 | 38 |
+| R256 GAL CN 1 | adequate | mixed | 1.02 | 0.00153 | 30/38 | 4/38 | 4.35 | 1.09 | 38 |
+| R256 GAL CN 2 | adequate | adequate | 1.01 | 0.00387 | 30/38 | 4/38 | 2.26 | 1.09 | 38 |
+| R384 GAL CN 1 | mixed | inadequate | 1.05 | 0.000898 | 32/38 | 1/38 | 4.73 | 1.23 | 38 |
+| R384 LSPG CNR 1 | adequate | adequate | 1.01 | 0.00383 | 32/38 | 1/38 | 1.19 | 1.23 | 38 |
+| R384 LSPG CNR 2 | adequate | adequate | 1 | 0.0167 | 32/38 | 1/38 | 0.172 | 1.23 | 38 |
+
+The sampling labels use eligible case-windows only. The descriptive columns (median $s$, energy, extrema, near-wall density, IC error) pool every stored case, including the non-rankable references listed under "New references"; so does the $s$ histogram.
 
 Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the $257^2$ scoring lattice is adequate for the 4 LSPG members of the qualified 2D front, relative to the $1025^2$ route** (GAL-CN diagnostic members are not covered by it; their labels are in the table).
 
 ### $1024^2$
 
-| member | sampling W1 | sampling W2 | median s (W1) | max abs(E_rom/E_ref − 1) | undershoot > 1e-3 | overshoot > 1e-3 | median near-wall density (cases × times) | IC error / floor at t0 |
-|---|---|---|---|---|---|---|---|---|
-| R128 GAL CN 1 | adequate | adequate | 1.01 | 0.00553 | 36/38 | 9/38 | 2.72 | 1 |
-| R128 GAL CN 2 | adequate | adequate | 1 | 0.00816 | 36/38 | 9/38 | 2.41 | 1 |
-| R128 GAL CN 5 | adequate | adequate | 1 | 0.027 | 36/38 | 9/38 | 1.01 | 1 |
-| R128 LSPG BE 1 | adequate | adequate | 1 | 0.0395 | 36/38 | 9/38 | 0.137 | 1 |
-| R128 LSPG BE 2.5 | adequate | adequate | 1 | 0.0965 | 36/38 | 9/38 | 0.0581 | 1 |
-| R256 GAL CN 1 | adequate | mixed | 1.02 | 0.00158 | 32/38 | 4/38 | 4.31 | 1.01 |
-| R256 GAL CN 2 | adequate | adequate | 1.01 | 0.00392 | 32/38 | 4/38 | 2.08 | 1.01 |
-| R256 LSPG CNR 2.5 | adequate | adequate | 1 | 0.027 | 32/38 | 4/38 | 0.133 | 1.01 |
-| R384 GAL CN 1 | mixed | inadequate | 1.05 | 0.000931 | 32/38 | 3/38 | 4.67 | 1.03 |
-| R384 LSPG CNR 1 | adequate | adequate | 1.01 | 0.00436 | 32/38 | 3/38 | 1.3 | 1.03 |
-| R384 LSPG CNR 2 | adequate | adequate | 1 | 0.0172 | 32/38 | 3/38 | 0.171 | 1.03 |
+| member | sampling W1 | sampling W2 | median s (W1) | max abs(E_rom/E_ref − 1) | undershoot > 1e-3 | overshoot > 1e-3 | median near-wall density (cases × times) | IC error / floor at t0 | cases (descriptive) |
+|---|---|---|---|---|---|---|---|---|---|
+| R128 GAL CN 1 | adequate | adequate | 1.01 | 0.00553 | 36/38 | 9/38 | 2.72 | 1 | 38 |
+| R128 GAL CN 2 | adequate | adequate | 1 | 0.00816 | 36/38 | 9/38 | 2.41 | 1 | 38 |
+| R128 GAL CN 5 | adequate | adequate | 1 | 0.027 | 36/38 | 9/38 | 1.01 | 1 | 38 |
+| R128 LSPG BE 1 | adequate | adequate | 1 | 0.0395 | 36/38 | 9/38 | 0.137 | 1 | 38 |
+| R128 LSPG BE 2.5 | adequate | adequate | 1 | 0.0965 | 36/38 | 9/38 | 0.0581 | 1 | 38 |
+| R256 GAL CN 1 | adequate | mixed | 1.02 | 0.00158 | 32/38 | 4/38 | 4.31 | 1.01 | 38 |
+| R256 GAL CN 2 | adequate | adequate | 1.01 | 0.00392 | 32/38 | 4/38 | 2.08 | 1.01 | 38 |
+| R256 LSPG CNR 2.5 | adequate | adequate | 1 | 0.027 | 32/38 | 4/38 | 0.133 | 1.01 | 38 |
+| R384 GAL CN 1 | mixed | inadequate | 1.05 | 0.000931 | 32/38 | 3/38 | 4.67 | 1.03 | 38 |
+| R384 LSPG CNR 1 | adequate | adequate | 1.01 | 0.00436 | 32/38 | 3/38 | 1.3 | 1.03 | 38 |
+| R384 LSPG CNR 2 | adequate | adequate | 1 | 0.0172 | 32/38 | 3/38 | 0.171 | 1.03 | 38 |
+
+The sampling labels use eligible case-windows only. The descriptive columns (median $s$, energy, extrema, near-wall density, IC error) pool every stored case, including the non-rankable references listed under "New references"; so does the $s$ histogram.
 
 Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the $257^2$ scoring lattice is adequate for the 5 LSPG members of the qualified 2D front, relative to the $1025^2$ route** (GAL-CN diagnostic members are not covered by it; their labels are in the table).
 
 ### $4096^2$
 
-| member | sampling W1 | sampling W2 | median s (W1) | max abs(E_rom/E_ref − 1) | undershoot > 1e-3 | overshoot > 1e-3 | median near-wall density (cases × times) | IC error / floor at t0 |
-|---|---|---|---|---|---|---|---|---|
-| R128 GAL CN 1 | adequate | adequate | 1 | 0.00553 | 16/16 | 5/16 | 2.54 | 1 |
-| R128 GAL CN 2 | adequate | adequate | 1 | 0.00815 | 16/16 | 5/16 | 2.23 | 1 |
-| R128 GAL CN 5 | adequate | adequate | 1 | 0.0269 | 16/16 | 5/16 | 0.985 | 1 |
-| R128 LSPG BE 1 | adequate | adequate | 1 | 0.0395 | 16/16 | 5/16 | 0.21 | 1 |
-| R128 LSPG BE 2 | adequate | adequate | 1 | 0.0777 | 16/16 | 5/16 | 0.114 | 1 |
-| R128 LSPG BE 2.5 | adequate | adequate | 1 | 0.0965 | 16/16 | 5/16 | 0.093 | 1 |
-| R256 GAL CN 1 | adequate | mixed | 1.02 | 0.00159 | 15/16 | 4/16 | 3.99 | 1.01 |
-| R256 GAL CN 2 | adequate | adequate | 1.02 | 0.00392 | 15/16 | 4/16 | 2.14 | 1.01 |
-| R256 LSPG CNR 2.5 | adequate | adequate | 1 | 0.0179 | 15/16 | 4/16 | 0.241 | 1.01 |
-| R384 GAL CN 1 | mixed | mixed | 1.05 | 0.000936 | 15/16 | 3/16 | 4.4 | 1.02 |
-| R384 LSPG CNR 1 | adequate | adequate | 1.01 | 0.00322 | 15/16 | 3/16 | 1.54 | 1.02 |
-| R384 LSPG CNR 2 | adequate | adequate | 1 | 0.012 | 15/16 | 3/16 | 0.24 | 1.02 |
+| member | sampling W1 | sampling W2 | median s (W1) | max abs(E_rom/E_ref − 1) | undershoot > 1e-3 | overshoot > 1e-3 | median near-wall density (cases × times) | IC error / floor at t0 | cases (descriptive) |
+|---|---|---|---|---|---|---|---|---|---|
+| R128 GAL CN 1 | adequate | adequate | 1 | 0.00553 | 16/16 | 5/16 | 2.54 | 1 | 16 |
+| R128 GAL CN 2 | adequate | adequate | 1 | 0.00815 | 16/16 | 5/16 | 2.23 | 1 | 16 |
+| R128 GAL CN 5 | adequate | adequate | 1 | 0.0269 | 16/16 | 5/16 | 0.985 | 1 | 16 |
+| R128 LSPG BE 1 | adequate | adequate | 1 | 0.0395 | 16/16 | 5/16 | 0.21 | 1 | 16 |
+| R128 LSPG BE 2 | adequate | adequate | 1 | 0.0777 | 16/16 | 5/16 | 0.114 | 1 | 16 |
+| R128 LSPG BE 2.5 | adequate | adequate | 1 | 0.0965 | 16/16 | 5/16 | 0.093 | 1 | 16 |
+| R256 GAL CN 1 | adequate | mixed | 1.02 | 0.00159 | 15/16 | 4/16 | 3.99 | 1.01 | 16 |
+| R256 GAL CN 2 | adequate | adequate | 1.02 | 0.00392 | 15/16 | 4/16 | 2.14 | 1.01 | 16 |
+| R256 LSPG CNR 2.5 | adequate | adequate | 1 | 0.0179 | 15/16 | 4/16 | 0.241 | 1.01 | 16 |
+| R384 GAL CN 1 | mixed | mixed | 1.05 | 0.000936 | 15/16 | 3/16 | 4.4 | 1.02 | 16 |
+| R384 LSPG CNR 1 | adequate | adequate | 1.01 | 0.00322 | 15/16 | 3/16 | 1.54 | 1.02 | 16 |
+| R384 LSPG CNR 2 | adequate | adequate | 1 | 0.012 | 15/16 | 3/16 | 0.24 | 1.02 | 16 |
+
+The sampling labels use eligible case-windows only. The descriptive columns (median $s$, energy, extrema, near-wall density, IC error) pool every stored case, including the non-rankable references listed under "New references"; so does the $s$ histogram.
 
 Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the $257^2$ scoring lattice is adequate for the 6 LSPG members of the qualified 2D front, relative to the $1025^2$ route** (GAL-CN diagnostic members are not covered by it; their labels are in the table).
 
@@ -426,7 +434,7 @@ Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the
 - **LSPG / GAL**: least-squares and Galerkin reduced equations; GAL-CN rows ("diag.") are a registered diagnostic scheme, not part of the LSPG front the lane statement covers.
 - **BE / CN / CNR / BDF2**: backward Euler; Crank–Nicolson; Crank–Nicolson with Rannacher start-up; second-order backward differentiation.
 - **3D member tokens**: `W256` / `W512`: 3D bank width; `gl24`: 24-point Gauss–Legendre rule per axis; `lat8192` / `lat16384`: lattice rule with that many nodes; `fs` / `qn`: fixed-sweep and quasi-Newton solvers; then the time scheme and the time step; `K1` / `k4`: solver iteration setting.
-- **ingredient letters**: Q quadrature (Gauss $320^2$; check rule Gauss $640^2$); T time package (BDF2 at $\Delta t_0/8$); F form with its stopping rule (in 3D measured at the tight-solver end); S solver tolerance (tight); I initial condition (full-grid least-squares projection; not in 3D); M test space ($M=2048$ sine functions).
+- **ingredient letters**: 2D: Q quadrature (Gauss $320^2$; check rule Gauss $640^2$); T time package (BDF2 at $\Delta t_0/8$); F form with its stopping rule; S solver tolerance (tight); I initial condition (full-grid least-squares projection); M test space ($M=2048$ sine functions). 3D: Q quadrature (Gauss–Legendre `gl56`; check rule `gl64`), T, S, and F measured only at the tight-solver end; there is no I or M ingredient in 3D.
 - **main effect $I_x$, pair $I_{xy}$**: the change caused by switching one ingredient; the part of a two-switch change not explained by the two single switches. Table values are medians over eligible cases of the maximum over output times of the norm divided by $n_0$.
 - **$n_0$**: norm of the reference at the initial time on the scoring lattice; errors are divided by it unless "current t" is stated.
 - **$e_P$ (floor)**: distance from the reference to the bank span on the scoring lattice; no reduced solution can beat it.
@@ -434,19 +442,22 @@ Front-ranking adequacy (W1, LSPG members): adequate. Lane statement: **in W1 the
 - **$U_\star$ (U*)**: the ideal end's own numerical uncertainty (half-step and tighter-tolerance replays). A trajectory effect is resolved only if it is at least $3U_\star$; $e_P$ must exceed $2\varepsilon_{\rm ref}$; $e_{\star,\rm dyn}$ must satisfy both.
 - **e_tot**: the deployed configuration's error against the E0 reference (maximum over the five output times, divided by $n_0$).
 - **complete/eligible**: cases with every candidate available / cases whose reference is eligible; the dominance rule counts complete cases only.
-- **dominant**: per case, the largest resolved candidate, or "tied" if it exceeds another resolved candidate by no more than the pair threshold ($3U_\star$ between effects, $2\varepsilon_{\rm ref}$ between reference quantities, their sum when mixed). A component is dominant if it is the per-case winner on more than half of the complete cases, otherwise "no single dominant"; at least 8 complete cases (6 at $4096^2$).
-- **pair labels**: per case: interacting if $|I_{xy}|>0.25\max(|I_x|,|I_y|)$ and $\ge3U_\star$; additive if $\le0.25\max$ with the larger main effect resolved. Over cases: interacting if more than 25 % of eligible cases interact, additive if at least 75 % are additive, otherwise mixed; undefined if the corner does not exist (3D F×S).
+- **dominant**: per case, the largest resolved candidate, or "tied" if it exceeds another resolved candidate by no more than the pair threshold ($3U_\star$ between effects, $2\varepsilon_{\rm ref}$ between reference quantities, their sum when mixed). A component is dominant if it is the per-case winner on more than half of the complete cases, otherwise "no single dominant". "inconclusive (incomplete)" if fewer than 75 % of eligible cases are complete; "inconclusive (population)" below 8 cases (6 at $4096^2$).
+- **pair labels**: per case: interacting if $|I_{xy}|>0.25\max(|I_x|,|I_y|)$ and $\ge3U_\star$; additive if $\le0.25\max$ with the larger main effect resolved. Over cases: interacting if more than 25 % of eligible cases interact, additive if at least 75 % are additive, otherwise mixed; "inconclusive (population)" if fewer than the minimum population have the pair available; undefined if the corner does not exist (3D F×S).
 - **mesh label**: same / differs: the dominant component agrees / disagrees at $256^2$, $1024^2$, $4096^2$ on the shared sub16 cases; inconclusive if any mesh has no single dominant.
 - **$\varepsilon_{\rm ref}$ (eps_ref)**: Richardson estimate of the reference's own error; conditional, not a bound.
 - **W1, W2, W3**: output-time windows $(0,0.25]$, $(0.25,0.5]$, $(0.5,1]$.
 - **Q1 / Q2 at T**: solver qualification (stationarity, distance to a tight solve) and quadrature qualification (agreement with a finer rule), certified over every step to the horizon $T$; "qualified at T" needs both.
-- **growth g, n**: per case $g=e_{W_2}/e_{W_1}$ (or $e_{W_3}/e_{W_2}$), using cases whose errors exceed twice their reference uncertainty in both windows. Label from the bootstrap 95 % interval of the median: no growth (upper ≤ 1), bounded growth (lower > 1, upper ≤ 2), accumulating (lower > 2), otherwise between labels. n: cases used.
+- **growth g, n**: per case $g=e_{W_2}/e_{W_1}$ (or $e_{W_3}/e_{W_2}$), using cases whose errors exceed twice their reference uncertainty in both windows. Label from the bootstrap 95 % interval of the median: no growth (upper ≤ 1), bounded growth (lower > 1, upper ≤ 2), accumulating (lower > 2), otherwise between labels; "inconclusive (population)" below the minimum population. n: cases used.
 - **fixed t0 / current t**: the window error divided by $n_0$, or by the reference norm at the same output time; the reference decays, so the second is larger.
 - **front order**: whether the ranking of members by median window error is the same in two windows over their common eligible cases: preserved (no resolved pair reversed), not preserved, inconclusive (no resolved pair).
 - **tier**: validated (pseudo-spectral cross-check passed) → verdicts; unvalidated → provisional values, no verdict; suspended → descriptive only.
-- **non-rankable**: a reference case that its judge did not accept, whose G-R2 is not evaluable, or that is A9 / A14 terminal; it enters no verdict or table population.
+- **non-rankable**: a reference case that its judge did not accept, whose G-R2 is not evaluable, or that is A9 / A14 terminal; it enters no verdict or eligible population (B8 descriptive columns, labelled as such, still include it).
+- **stable (outputs)**: every run valid and, at every recorded output time, the reduced kinetic energy no more than $10^{-3}$ (relative) above its initial value; between output times nothing is checked.
+- **energy rises ROM / ref**: number of consecutive output-time pairs, summed over cases, at which the energy of the reduced solution / of the reference rises by more than $10^{-3}$ relative.
+- **Kendall $\tau_b$**: rank correlation of the members\' median errors in the two windows (1 = same order).
 - **$s$**: ratio of the error measured on the $1025^2$ lattice to the error on the $257^2$ scoring lattice.
-- **sampling label**: per case-window the two routes are consistent if they agree within 10 % plus twice their reference uncertainties (reference-limited windows are dropped); adequate if at least 90 % are consistent, inadequate below 50 %, otherwise mixed.
+- **sampling label**: per case-window the two routes are consistent if they agree within 10 % plus twice their reference uncertainties (reference-limited windows are dropped); adequate if at least 90 % are consistent, inadequate below 50 %, otherwise mixed; "inconclusive (population)" below the minimum population of case-windows.
 - **E_rom/E_ref**: kinetic energy $\tfrac12\lVert u\rVert^2$ of the reduced solution over that of the reference at the same output time; the table gives the largest deviation from 1 over cases and times.
 - **undershoot / overshoot > 1e-3**: cases whose reduced solution goes below zero (undershoot) or above the initial maximum (overshoot) by more than $10^{-3}$ of the initial maximum.
 - **near-wall density**: error energy per node in the band within 1/32 of the walls, relative to the whole-interior error energy per node; the median pools cases and output times.

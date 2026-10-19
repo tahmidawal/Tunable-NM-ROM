@@ -60,6 +60,10 @@ def main():
         assert drv in DRIVERS, drv
         runs.append((drv, cfg))
     out = ROOT / LANE / 'runs' / a.attempt
+    import sys
+    sys.path.insert(0, str(ROOT / LANE))
+    import guard
+    guard.check_admin(out / 'run.sbatch', ROOT / LANE)
     out.mkdir(parents=True, exist_ok=False)
     remote = f'{NAMESPACE}/{a.attempt}'
     commit = subprocess.check_output(['git', '-C', str(ROOT), 'rev-parse', 'HEAD'], text=True).strip()
@@ -75,6 +79,7 @@ def main():
         if (ROOT / name).exists():
             assert (ROOT / name).read_bytes() == content, f'working copy differs from HEAD: {name}'
         dest = out / name
+        guard.check_admin(dest, ROOT / LANE)
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_bytes(content)
         proof.append(dict(source=name, bytes=len(content), sha256=hashlib.sha256(content).hexdigest(), commit=commit))

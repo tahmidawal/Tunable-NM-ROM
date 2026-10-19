@@ -411,6 +411,9 @@ def mode_fd(cfg, outdir, rep):
             meta['calib_status'] = rep['calib_status']
             meta['seconds'] = time.perf_counter() - t
             write_case(outdir, arrays, meta, sealed, key, manifest)
+            if not sealed:                             # code audit 4: checkpoint the new case before any probe work
+                rep['manifest'] = merged()
+                save(outdir, rep)
             what = [w for w, cs in cfg.get('probes', {}).items() if j in cs]
             if what:                                       # jcp-regimes edit E5
                 pr = probe_case(coh, j, kind, arrays, meta, what, outdir)

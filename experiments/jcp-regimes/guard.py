@@ -39,10 +39,28 @@ def check_dir(path):
     return p
 
 
-def check_local(path, lane_dir):
-    """Local (non-Slurm) acceptance / control outputs: only the lane's checks/ directory or /tmp/."""
+def _lane_sub(lane_dir, sub):
+    """<resolved lane>/<sub>, refusing a symlinked <sub> (its target would otherwise become permitted)."""
+    lane = Path(os.path.realpath(str(lane_dir)))
+    d = lane / sub
+    if d.is_symlink():
+        raise BoundaryError(f'{d} is a symlink')
+    return str(d)
+
+
+def check_admin(path, lane_dir):
+    """Administrative files (staging, ledger, locks): only under the resolved lane's runs/ or checks/."""
     r = os.path.realpath(str(path))
-    ok = r.startswith(os.path.realpath(str(Path(lane_dir) / 'checks')) + '/') or r.startswith('/tmp/')
+    ok = any(r.startswith(_lane_sub(lane_dir, sub) + '/') for sub in ('runs', 'checks'))
+    if not ok or any(f in r + '/' for f in FORBIDDEN):
+        raise BoundaryError(f'refusing administrative path {r}')
+    return Path(path)
+
+
+def check_local(path, lane_dir):
+    """Local (non-Slurm) acceptance / control outputs: only the resolved lane's checks/ directory or /tmp/."""
+    r = os.path.realpath(str(path))
+    ok = r.startswith(_lane_sub(lane_dir, 'checks') + '/') or r.startswith('/tmp/')
     if os.environ.get('SLURM_JOB_ID'):
         ok = (r + '/').startswith(LANE_NS)
     if not ok or any(f in r + '/' for f in FORBIDDEN):

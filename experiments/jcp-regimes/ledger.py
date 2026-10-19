@@ -26,6 +26,9 @@ TERMINAL = ('COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY', 'NOD
 
 @contextmanager
 def locked():
+    import guard
+    guard.check_admin(LED, HERE)
+    guard.check_admin(LOCK, HERE)
     LED.parent.mkdir(exist_ok=True)
     with open(LOCK, 'w') as fh:
         fcntl.flock(fh, fcntl.LOCK_EX)

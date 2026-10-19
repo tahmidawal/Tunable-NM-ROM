@@ -184,8 +184,16 @@ def main(run):
     for form in ('LSPG', 'GAL'):
         cb = np.load(qd / f'CTRL_budget0_{form}.npz')
         cert = np.asarray(cb['cert'], float)
-        dims_ok = (cert.shape == (6, 50) and np.shape(cb['states']) == (6, 51, 384) and len(cb['nu']) == 6
-                   and str(cb['rule']) == 'gauss128' and int(cb['L']) == 1024 and np.shape(cb['A']) == (1536, 384))
+        # identity of the control (code audit 4): registered cases, their generator viscosities, form / scheme, and the
+        # operator / mode arrays equal those of the same setting's production arm (R384 LSPG-CNR)
+        Rref = np.load(qd / 'R_R384_LSPG_CNR_1.npz')
+        nus = [RS.e0_desc(cid.split('|')[0])[int(cid.split('|')[1])][4] if cid.startswith('dev6') else
+               RG.nu_2d(cid.split('|')[0], RG.descriptors_2d(cid.split('|')[0])[int(cid.split('|')[1])]) for cid in CTRL]
+        dims_ok = bool(cert.shape == (6, 50) and np.shape(cb['states']) == (6, 51, 384) and len(cb['nu']) == 6
+                       and str(cb['rule']) == 'gauss128' and int(cb['L']) == 1024 and np.shape(cb['A']) == (1536, 384)
+                       and [str(x) for x in cb['case_ids']] == CTRL and np.array_equal(np.asarray(cb['nu'], float), np.asarray(nus))
+                       and str(cb['form']) == form and str(cb['scheme']) == {'LSPG': 'CNR', 'GAL': 'CN'}[form]
+                       and all(np.array_equal(cb[k], Rref[k]) for k in ('A', 'lam', 'kx', 'ky')))
         check(f'Q-budget0 {form} evidence complete (6 cases x 50 steps, R384, gauss128, 1024^2)', dims_ok,
               cert=cert.shape, states=np.shape(cb['states']))
         frac = float(np.mean(~RS.certified(cert, form)))
@@ -206,7 +214,8 @@ def main(run):
     check('Q-wrong-mesh refused in job', rep['controls']['wrong_mesh']['passed'], raised=rep['controls']['wrong_mesh']['raised'])
     import os
     import subprocess
-    wm = HERE / 'checks' / 'wrongmesh-local.json'
+    import guard as G
+    wm = G.check_local(HERE / 'checks' / 'wrongmesh-local.json', HERE)
     if wm.exists():
         wm.unlink()                                 # never accept a stale result
     rr = subprocess.run(['bash', '/home/tahmid/Dev/Tunable-NM-ROM-Claude/reports/2026-10-17-full-experiment-plan/campaign/jaxslot.sh',

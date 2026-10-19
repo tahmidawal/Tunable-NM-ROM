@@ -9,6 +9,7 @@ LANE=$(cd "$(dirname "$0")/.." && pwd)
 NS=/cluster/tufts/paralab/tawal01/jcp-regimes
 LOCAL="$LANE/runs/$A"
 [ -f "$LOCAL/run.sbatch" ]
+"$PY" -c "import sys; sys.path.insert(0, '$LANE'); import guard; guard.check_admin('$LANE/runs/SUBMIT.lock', '$LANE')" || exit 10
 exec 9>"$LANE/runs/SUBMIT.lock"; flock 9
 TL=$(grep -oP '(?<=#SBATCH --time=)\S+' "$LOCAL/run.sbatch")
 HOURS=$("$PY" -c "h,m,s='$TL'.split(':');print(int(h)+int(m)/60+int(s)/3600)")
@@ -25,17 +26,20 @@ trap '"$PY" "$LANE/ledger.py" release "$A"; echo "staging failed before sbatch: 
 timeout 120 ssh -o ConnectTimeout=20 tufts-login "test ! -e $NS/$A && mkdir -p $NS/$A"
 rsync -a "$LOCAL/" "tufts-login:$NS/$A/"
 timeout 120 ssh -o ConnectTimeout=20 tufts-login "cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet"
-trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: reservation KEPT; settle by hand"' ERR
+trap - ERR                        # classify the sbatch outcome explicitly (code audit 4): no trap during the call
 set +e
 OUT=$(timeout 700 ssh -o ConnectTimeout=20 tufts-login "flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'set -o pipefail; q=\$(squeue -u tawal01 -h) || exit 76; n=\$(printf \"%s\" \"\$q\" | grep -c . || true); [ \$n -lt 8 ] || exit 75; cd $NS/$A && sbatch run.sbatch'")
 RC=$?
 set -e
-if [ $RC -eq 76 ]; then "$PY" "$LANE/ledger.py" release "$A"; echo "squeue failed under the lock: not submitted"; trap - ERR; exit 76; fi
-if [ $RC -eq 75 ]; then "$PY" "$LANE/ledger.py" release "$A"; echo "account at cap 8: not submitted (reservation released)"; trap - ERR; exit 75; fi
-[ $RC -eq 0 ] || false
+if [ $RC -eq 75 ] || [ $RC -eq 76 ]; then       # known non-submission: release, and clear the staged remote dir
+  "$PY" "$LANE/ledger.py" release "$A"
+  timeout 120 ssh -o ConnectTimeout=20 tufts-login "case $NS/$A in $NS/[a-zA-Z0-9]*) rm -rf $NS/$A ;; esac"
+  echo "not submitted (rc=$RC: 75 = account at cap 8, 76 = squeue failed); reservation released"; exit $RC
+fi
 echo "$OUT"
 JID=$(echo "$OUT" | awk '/Submitted batch job/ {print $4}')
-[ -n "$JID" ]
-trap - ERR
+if [ $RC -ne 0 ] || [ -z "$JID" ]; then         # genuinely uncertain: keep the reservation
+  "$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown (rc=$RC): reservation KEPT; settle by hand"; exit 9
+fi
 "$PY" "$LANE/ledger.py" bind "$A" "$JID"
 echo "--- squeue after"; timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -o "%.10i %.24j %.8T %.10M %R"'

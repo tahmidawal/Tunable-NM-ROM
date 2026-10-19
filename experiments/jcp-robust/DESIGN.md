@@ -787,3 +787,14 @@ pilot bank (own-family label of gl24 against gl32).
 queue behind other lanes' jobs and was cancelled before it started (0 GPU-h). The E1 2D/3D smoke has no H200
 requirement (1024² and 65³ fit an A100-80G), so it runs as `smk1b` on A100-80G; the H200 E5 smoke panel of A5.2 runs as
 its own smoke `smk5` (≤ 0.5 GPU-h). Smokes stay one at a time. Nothing else changes.
+
+## Amendment A8 (2026-10-19, coordinator production release; recorded before any production job)
+
+**A8.1 Partial production release (coordinator SendMessage, 2026-10-19).** Released: the 2D items — E1 2D (`e1m256`,
+`e1m1024`, `e1m4096`), E2 2D seeds (`e2t2d` training, then the per-bank `e2s*` / `e2v*` / `e2t*` jobs, incumbent
+included), and E5 on the 2D P1 panel subset (`e5a1`, `e5a2`, `e5h1`, `e5h2`, after the A100 / H200 E5 smokes `smk4` /
+`smk5`). Conditions: `smk3` accepted, and each job's Codex job audit says SUBMIT. Submission through the shared campaign
+sbatch lock (account cap 8, exit 75 = retry later), lane cap 3, ledger cap 75 GPU-h.
+**Held:** every 3D item — E1 3D draws (`e13d`) and E2 3D W1024 seeds (`e2t3d*`, `e2q*`, `e2f*`) — until jcp-dims hands back
+its 3D quadrature front and the coordinator releases them. smk3 (3D memory pilot and 3D replay) is a smoke and has
+already run; its acceptance is a condition of the 2D release, not a 3D production step.

@@ -20,11 +20,31 @@ ROMS = ('ckpt:x|R128|fib4181|frozen|BE|0.005|LSPG|prod', 'ckpt:x|R384|gauss128|f
 PS, CC1, CC2 = 'ps|N96|0.0125', 'fd|CC|L1024|0.0125|t2', 'fd|CC|L1024|0.005|t1'
 PINNED = {ROMS[0]: {'|H|union|joint': PS, '|H|CC|same_mesh': CC1}, ROMS[1]: {'|H|union|joint': PS, '|H|CC|same_mesh': CC2}}
 COST_LEVEL = {R128: .25, R384: 1.0}
+SPEC = {R128: dict(Rp=128, rule='fib4181', policy='frozen', scheme='BE'), R384: dict(Rp=384, rule='gauss128', policy='frozen', scheme='CNR')}
+
+
+def w_of(label, cases):
+    """Deterministic scoring-run coefficients per (subject, case): identical in a synthetic job and its P1 reference."""
+    return np.stack([np.full((6, 4), float(len(label))) + int(c.split('|')[1]) for c in cases])
+
+
+def write_s(d, label, cases, W=None):
+    d.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(d / f"S_{label.replace('|', '_')}.npz", case_ids=np.array(cases), W=w_of(label, cases) if W is None else W)
+
+
+def make_ref(root, meshes=(256, 1024)):
+    """A synthetic P1c reference dir (S_*.npz over all of dev6)."""
+    d = Path(root) / 'p1ref'
+    for f in E5A.FAMS:
+        for L in meshes:
+            write_s(d, f'{L}|{f}', [f'dev6|{i}' for i in range(6)])
+    return str(d)
 CROSS_LEVEL = {ROMS[0]: .24, ROMS[1]: 1.0, PS: .07, CC1: 1.05, CC2: 2.4}
 
 
 def write_job(root, name, gtype, seed, ncase=6, reps=3, cost_scale=None, cross_scale=None, doubled=2.0, meshes=(256, 1024),
-              sigma=.02):
+              sigma=.02, gates=None):
     """A synthetic E5 job directory in the formats e5time writes (P1 p1time / fom2d c2time per-triplet records)."""
     rng = np.random.default_rng(seed)
     d = Path(root) / name
@@ -48,7 +68,11 @@ def write_job(root, name, gtype, seed, ncase=6, reps=3, cost_scale=None, cross_s
             for r in range(reps):
                 dbl.append(dict(subject=lb, case=c, rep=r, ratio=doubled * float(np.exp(sigma * rng.standard_normal())),
                                 drift_ok=True, identity_ok=True, same_iterations=True))
-    pc = dict(config=dict(reps=reps), subjects=subs, invocations=inv, fused=[], doubled=dbl,
+    for lb in subs:
+        write_s(d / 'pcost', lb, cases)
+    specs = [dict(SPEC[f], mesh=L) for f in E5A.FAMS for L in meshes]
+    pc = dict(config=dict(reps=reps, cases=[['dev6', int(c.split('|')[1])] for c in cases], A=dict(SPEC[R384], mesh=1024),
+                          subjects=specs), subjects=subs, invocations=inv, fused=[], doubled=dbl,
               equivalence=[dict(passed=True)], complete=True)
     st2 = []
     for s in list(ROMS) + [PS, CC1, CC2]:
@@ -57,7 +81,8 @@ def write_job(root, name, gtype, seed, ncase=6, reps=3, cost_scale=None, cross_s
                 ratio = CROSS_LEVEL[s] * cross_scale.get(s, 1.) * float(np.exp(sigma * rng.standard_normal()))
                 st2.append(dict(B=s, case=c, rep=r, ratio=ratio, valid=True, tB=.085 * ratio))
     xc = dict(config=dict(cases=[c.split('|')[0:1] + [int(c.split('|')[1])] for c in cases], roms=[dict(label=r) for r in ROMS]),
-              stage2=st2, pinned=PINNED, veto=[], complete=True, gates={})
+              stage2=st2, pinned=PINNED, veto=[], complete=True,
+              gates=gates if gates is not None else {'G-RR': True, 'G-FR': True, 'A-valid': True})
     top = dict(attempt=name, complete=True, gpu_type=gtype, gpu_type_ok=True, backend='gpu', source_check=[dict(ok=True)],
                records=[], pcost=pc, pcross=xc)
     (d / 'result.json').write_text(json.dumps(top))
@@ -69,7 +94,8 @@ def four_jobs(root, h200_cost=None, h200_cross=None, **kw):
     js = [('A100-80G', write_job(root, 'a1', 'A100-80G', 1, **kw)), ('A100-80G', write_job(root, 'a2', 'A100-80G', 2, **kw)),
           ('H200', write_job(root, 'h1', 'H200', 3, cost_scale=h200_cost, cross_scale=h200_cross, **kw)),
           ('H200', write_job(root, 'h2', 'H200', 4, cost_scale=h200_cost, cross_scale=h200_cross, **kw))]
-    return [E5A.load_job(t, d) for t, d in js]
+    ref = make_ref(root)
+    return [E5A.load_job(t, d, p1ref=ref) for t, d in js]
 
 
 EXPECT = {'A100-80G': 2, 'H200': 2}
@@ -116,7 +142,7 @@ def test_c_e5_3_drift_band():
 
 def test_fixtures_fire_and_null_consistent():
     with Tmp() as t:
-        j = E5A.load_job('A100-80G', write_job(t, 'a1', 'A100-80G', 11))
+        j = E5A.load_job('A100-80G', write_job(t, 'a1', 'A100-80G', 11), p1ref=make_ref(t))
         assert j['status'] == 'ok', j['status']
         fx = E5A.fixtures(j)
         for k in ('q1', 'q2', 'q3'):
@@ -129,7 +155,7 @@ def test_fixtures_fire_and_null_consistent():
 
 def test_fixture_too_few_cases_never_passes():
     with Tmp() as t:
-        j = E5A.load_job('A100-80G', write_job(t, 'a1', 'A100-80G', 12, ncase=4))
+        j = E5A.load_job('A100-80G', write_job(t, 'a1', 'A100-80G', 12, ncase=4), p1ref=make_ref(t))
         fx = E5A.fixtures(j)
         assert all(not v['ok'] for v in fx.values())
 
@@ -178,7 +204,7 @@ def test_missing_job_gives_unavailable():
         assert res['per_job']['H200#2']['status'] == 'missing'
         js = four_jobs(t + '/b')
         (Path(js[2]['dir']) / 'COMPLETE').unlink()                       # an incomplete job is "failed", same path
-        res = E5A.analyze([E5A.load_job(j['type'], j['dir']) for j in js], EXPECT)
+        res = E5A.analyze([E5A.load_job(j['type'], j['dir'], p1ref=make_ref(t + '/b')) for j in js], EXPECT)
         _assert_unavailable(res)
 
 
@@ -186,7 +212,7 @@ def test_blocked_job_gives_unavailable():
     with Tmp() as t:
         js = four_jobs(t)
         d = write_job(t, 'h2bad', 'H200', 9, doubled=1.0)              # doubled-work control does not fire
-        js[3] = E5A.load_job('H200', d)
+        js[3] = E5A.load_job('H200', d, p1ref=make_ref(t))
         assert js[3]['status'] == 'blocked (control C-E5.1)'
         res = E5A.analyze(js, EXPECT)
         _assert_unavailable(res)
@@ -229,6 +255,79 @@ def test_failed_fixture_blocks():
         assert all(not v['label'].startswith('blocked') for v in res['phi']['phi1'].values())
         assert all(res['agreement'][k].startswith('blocked') for k in res['agreement'] if k.startswith('H-cost-N'))
         assert all(not res['agreement'][k].startswith('blocked') for k in res['agreement'] if k.startswith('S2'))
+
+
+# ------------------------------------------------------------------ code audit 3: gates, smoke mode, inventory ----
+
+def test_pcross_gates_required():
+    with Tmp() as t:
+        for g in ({'G-RR': False, 'G-FR': True, 'A-valid': True}, {'G-RR': True, 'G-FR': True}, {}):
+            j = E5A.load_job('A100-80G', write_job(t, f'g{len(g)}{sum(g.values())}', 'A100-80G', 21, gates=g), p1ref=make_ref(t))
+            assert j['status'].startswith('blocked (gate P-cross'), (g, j['status'])
+
+
+def test_g_e5_1_required_complete_and_finite():
+    with Tmp() as t:
+        ref = make_ref(t)
+        d = write_job(t, 'a1', 'A100-80G', 22)
+        assert E5A.load_job('A100-80G', d, p1ref=ref)['status'] == 'ok'
+        j = E5A.load_job('A100-80G', d)                                    # no --p1ref
+        assert j['status'] == 'blocked (gate G-E5.1)' and not j['g_e5_1']['passed']
+        lb = f'1024|{R128}'
+        cases = [f'dev6|{i}' for i in range(6)]
+        W = w_of(lb, cases)
+        W[2, 0, 0] *= 1 + 1e-6                                              # numerics differ
+        write_s(d / 'pcost', lb, cases, W)
+        assert E5A.load_job('A100-80G', d, p1ref=ref)['status'] == 'blocked (gate G-E5.1)'
+        W[2, 0, 0] = np.nan                                                 # non-finite
+        write_s(d / 'pcost', lb, cases, W)
+        assert E5A.load_job('A100-80G', d, p1ref=ref)['status'] == 'blocked (gate G-E5.1)'
+        write_s(d / 'pcost', lb, cases[:5])                                 # a registered case missing
+        assert E5A.load_job('A100-80G', d, p1ref=ref)['status'] == 'blocked (gate G-E5.1)'
+        write_s(d / 'pcost', lb, cases)
+        (d / 'pcost' / f"S_{('256|' + R384).replace('|', '_')}.npz").unlink()   # a registered subject missing
+        j = E5A.load_job('A100-80G', d, p1ref=ref)
+        assert j['status'] == 'blocked (gate G-E5.1)' and 'missing job file' in str(j['g_e5_1']['rows'])
+
+
+def test_smoke_mode_single_job():
+    with Tmp() as t:
+        ref = make_ref(t)
+        good = E5A.load_job('A100-80G', write_job(t, 'a1', 'A100-80G', 31, ncase=5, reps=2), p1ref=ref)
+        r = E5A.smoke(good)
+        assert r['ALL'] is True and all(v['ok'] for v in r['checks'].values()), {k: v['ok'] for k, v in r['checks'].items()}
+        assert sum(k.startswith('fixture') for k in r['checks']) == 3
+        bad = E5A.load_job('A100-80G', write_job(t, 'a2', 'A100-80G', 32, ncase=5, reps=2, doubled=1.0), p1ref=ref)
+        r = E5A.smoke(bad)
+        assert r['ALL'] is False and not r['checks'][next(k for k in r['checks'] if k.startswith('C-E5.1'))]['ok']
+        r = E5A.smoke(E5A.load_job('A100-80G', write_job(t, 'a3', 'A100-80G', 33, ncase=5, reps=2)))   # no p1ref
+        assert r['ALL'] is False
+        r = E5A.smoke(E5A.load_job('A100-80G', None))
+        assert r['ALL'] is False
+        res = E5A.analyze([good], {'A100-80G': 1})                          # --expect A100-80G=1 must not crash
+        assert res['phi']['phi1'].startswith('unavailable') and all(v.startswith('unavailable') for v in res['agreement'].values())
+        import subprocess
+        import sys
+        out = Path(t) / 'smk.json'
+        rc = subprocess.run([sys.executable, str(HERE / 'e5analyze.py'), '--smoke', '--job', f"A100-80G={bad['dir']}",
+                             '--p1ref', ref, '--out', str(out)], capture_output=True).returncode
+        assert rc == 1 and json.loads(out.read_text())['ALL'] is False
+
+
+def test_inventory_e5time():
+    for f in ('e5smk4', 'e5prod_a100', 'e5prod_h200'):
+        c = json.loads((HERE / 'configs' / f'{f}.json').read_text())
+        k = EC.inv_e5time(c)
+        assert k and len(k) == len(set(k)), f
+        assert all(isinstance(EC.klass(x), str) and EC.klass(x).startswith('e5time|') for x in k)
+        n = lambda kind, panel: sum(1 for x in k if x[3] == kind and x[1] == panel)
+        pc, xc = c['pcost'], c['pcross']
+        npc = len(EC._cases(pc['cases']))
+        assert n('triplet', 'pcost') == len(pc['subjects']) * npc * pc['reps']
+        nf = len({v for d in xc['expected_comparators'].values() for v in d.values()})
+        assert n('triplet', 'pcross') == (len(xc['roms']) + nf) * len(xc['cases']) * xc['reps']
+        assert n('doubled', 'pcost') == len(pc['doubled']) * npc * pc['reps']
+    assert any('4096|' in x[2] for x in EC.inv_e5time(json.loads((HERE / 'configs' / 'e5prod_h200.json').read_text())))
 
 
 if __name__ == '__main__':

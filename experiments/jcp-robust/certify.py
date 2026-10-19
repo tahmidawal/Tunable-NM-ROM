@@ -148,7 +148,7 @@ def klass(driver, k):
         return f"r2acc|{m}|{g}|{lev}|{'big' if big else 'std'}"
     if driver == 'e5time':
         import e5common as EC
-        return EC.klass(k)
+        return EC.klass(k)          # one-argument signature (subagent note)
     if driver == 'dtime':
         return f'dtime|{k[2]}'
     if driver == 'e1run3d':

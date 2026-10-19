@@ -128,3 +128,70 @@ def verify_sources():
         got = sha_file(p) if p.exists() else None
         rows.append(dict(path=f['path'], want=f['sha256'], got=got, ok=got == f['sha256']))
     return all(r['ok'] for r in rows), rows
+
+
+# ------------------------------------------------------------------ execution inventory (certify.py) ----
+
+_NAMED = {'dev6': [f'dev6|{i}' for i in range(6)], 'dev2': ['dev6|0', 'dev6|1'],
+          'sub16': [f'dev6|{i}' for i in range(6)] + [f'val32|{i}' for i in range(10)]}
+
+
+def _cases(which):
+    return list(_NAMED[which]) if isinstance(which, str) else [f'{c}|{int(i)}' for c, i in which]
+
+
+def _p1_label(sp):
+    return f"{sp['mesh']}|R{sp['Rp']}|{sp['rule']}|{sp.get('policy', 'frozen')}|{sp['scheme']}"
+
+
+def inv_e5time(cfg):
+    """Execution inventory of one e5time config (code audit 3 item 12). Keys are tuples
+    ('e5time', panel, subject, kind, case, rep) with rep = -1 for untimed runs:
+
+      P-cost (p1time, unchanged): per unique subject (A + subjects, deduplicated by label as p1time does) and case: the
+        untimed scoring run ('score'), its 'tight' and 'tighter' replays, and 'qp' / 'qpp' when the subject carries those
+        Q2 roles; one split/fused 'equivalence' run on the first case; per (subject, case, rep) one A-B-A 'triplet' slot
+        and one 'fused-triplet' slot (a slot covers its <= 2 retries); per doubled subject, case, rep one 'doubled' slot.
+      P-cross (c2time sections 1, warm, 4, T-dbl): per subject (A, ROMs, pinned FOMs) and case one 'score' and one 'warm'
+        run; per (ROM or FOM subject, case, rep) one 'triplet' slot; per T-dbl case and rep one 'tdbl' slot.
+    """
+    keys = []
+    pc = cfg['pcost']
+    pcases = _cases(pc['cases'])
+    subs = {}
+    for sp in [pc['A']] + list(pc['subjects']):
+        subs.setdefault(_p1_label(sp), sp)
+    for lb, sp in subs.items():
+        for i, c in enumerate(pcases):
+            kinds = ['score', 'tight', 'tighter'] + [k for k in ('qp', 'qpp') if sp.get(k)] + (['equivalence'] if i == 0 else [])
+            keys += [('e5time', 'pcost', lb, k, c, -1) for k in kinds]
+    reps = int(pc['reps'])
+    for sp in pc['subjects']:
+        for c in pcases:
+            for r in range(reps):
+                keys += [('e5time', 'pcost', _p1_label(sp), 'triplet', c, r), ('e5time', 'pcost', _p1_label(sp), 'fused-triplet', c, r)]
+    for sp in pc.get('doubled', []):
+        for c in _cases(sp.get('cases', pc['cases'])):
+            for r in range(reps):
+                keys.append(('e5time', 'pcost', _p1_label(sp), 'doubled', c, r))
+    xc = cfg['pcross']
+    xcases = _cases(xc['cases'])
+    foms = sorted({k for d in xc['expected_comparators'].values() for k in d.values()})
+    roms = [r['label'] for r in xc['roms']]
+    xreps = int(xc['reps'])
+    for s in [xc['A']['label']] + roms + foms:
+        for c in xcases:
+            keys += [('e5time', 'pcross', s, 'score', c, -1), ('e5time', 'pcross', s, 'warm', c, -1)]
+    for s in roms + foms:
+        for c in xcases:
+            keys += [('e5time', 'pcross', s, 'triplet', c, r) for r in range(xreps)]
+    for c in _cases(xc.get('controls', {}).get('doubled_cases', [])):
+        keys += [('e5time', 'pcross', xc['A']['label'], 'tdbl', c, r) for r in range(xreps)]
+    return keys
+
+
+def klass(key):
+    """Timing class of an inventory key: 'e5time|<panel>|<subject>|<kind>' (per-subject, so 4096^2 P-cost subjects and
+    each FOM comparator get their own measured seconds; a class absent from the smoke timings is reported missing)."""
+    _, panel, subj, kind = key[:4]
+    return f'e5time|{panel}|{subj}|{kind}'

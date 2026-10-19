@@ -193,12 +193,9 @@ def smk4(out):
     rc, log = run(['e5_tests.py'])
     chk(C, 'E5 CPU tests (C-E5.3 drift, fixtures, missing-job paths)', rc == 0, log[-600:])
     P1T = '/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/time/archive/output/p1time_time'
-    rc, log = run(['e5analyze.py', '--job', f"A100-80G={out / 'e5time_e5smk4'}", '--expect', 'A100-80G=1', '--p1ref', P1T,
+    rc, log = run(['e5analyze.py', '--smoke', '--job', f"A100-80G={out / 'e5time_e5smk4'}", '--p1ref', P1T,
                    '--out', str(HERE / 'checks' / 'smoke-smk4-e5.json')])
-    chk(C, 'e5analyze runs on the A100 smoke', rc == 0, log[-800:])
-    if rc == 0:
-        a = json.loads((HERE / 'checks' / 'smoke-smk4-e5.json').read_text())
-        chk(C, 'smoke analysis summary', True, {k: a[k] for k in list(a)[:12]})
+    chk(C, 'E5 single-job smoke analysis: ALL (job ok, C-E5.1, q1/q2/q3/null fixtures, G-E5.1, P-cross gates)', rc == 0, log[-1200:])
     return C
 
 

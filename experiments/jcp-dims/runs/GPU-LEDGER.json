@@ -262,7 +262,7 @@
    "time_limit_hours": 8.0,
    "state": "RUNNING",
    "gpu": "gres/gpu=1",
-   "elapsed_hours": 0.02,
+   "elapsed_hours": 0.9642,
    "pending_hours": 5.286,
    "attempts": 1,
    "node": "pax009",
@@ -284,15 +284,25 @@
    "attempt": "b3m",
    "job_id": "6065773",
    "time_limit_hours": 3.75,
+   "state": "CANCELLED",
+   "gpu": null,
+   "elapsed_hours": 0.0,
+   "pending_hours": null,
+   "attempts": 1,
+   "node": "None assigned",
+   "prior_elapsed_hours": 0.0
+  },
+  {
+   "attempt": "t3c",
+   "job_id": "6071041",
+   "time_limit_hours": 2.5,
    "state": "SUBMITTED",
    "gpu": null,
    "elapsed_hours": null,
-   "pending_hours": null
+   "pending_hours": 2.0
   }
  ],
  "spent_gpu_hours": 29.1701,
- "reserved_gpu_hours": 12.0,
- "pending_core": {
-  "t3c": 2.0
- }
+ "reserved_gpu_hours": 10.75,
+ "pending_core": {}
 }

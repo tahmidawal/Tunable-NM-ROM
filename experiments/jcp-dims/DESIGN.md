@@ -876,3 +876,6 @@ only if completed jobs release enough reservation (measured hours below their li
 **A15.1 (2026-10-19, after `t3s`)** `t3s` used 0.55 GPU-h of its 12 h reservation, so the cap now holds 15.6 GPU-h at
 time limits beyond `t2`, `f2l` and the 2.0 h `t3c` allowance; `b3m` (3.75 h) fits with `t3c` keeping its allowance and
 priority, so `b3m` is funded rather than deferred.
+**A15.2 (2026-10-19)** To keep `t3c`'s priority with the lane at 3/3 and H200s scarce, the still-pending `b3m` (6065773,
+never started, 0 GPU-h) was cancelled and its remote directory removed; `t3c` was submitted (6071041); `b3m` is
+resubmitted unchanged (same staged commit) when a lane slot frees.

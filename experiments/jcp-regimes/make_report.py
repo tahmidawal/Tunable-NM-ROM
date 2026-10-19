@@ -95,7 +95,7 @@ def cell_text(x):
     bua = bi.get('unresolved_under_allowance')
     t += (f"; ratio {num(x['ratio_median'])} [{num(x['ci'][0])}, {num(x['ci'][1])}]; {x['n_used']}/{x['n']} used vs "
           f"{x.get('n_base_used', '—')} baseline ({bi.get('excluded', '—')} baseline cases excluded, "
-          f"{'—' if bua is None else bua} N0 unresolved under the allowance)"
+          f"{'—' if bua is None else bua} N0 unresolved under the allowance)")
     ua = x.get('unresolved_under_allowance')
     t += f"; {'—' if ua is None else ua} unresolved under the allowance"
     if x['not_usable']:

@@ -208,16 +208,23 @@ def main():
                                 and out['separation'][g].get('passed') is False else None) for g in PRIMARY_REGIMES}
     # calibration label (A2.2, A3.1): smoke probes, plus production probes if they were added
     sm = json.loads((HERE / 'checks' / 'smoke-accept.json').read_text())
-    prod_probes = []
+    plan_ = json.loads((HERE / 'checks' / 'resources-plan.json').read_text())
+    want_ids = set()                                 # expected (cohort, case) identities from the certified configs
+    for g in RG.REGIMES_2D:
+        if f'ref{g}' in plan_['attempts']:
+            cf_ = json.loads((HERE / 'configs' / f'ref-{g}.json').read_text())
+            want_ids |= {(g, c) for c in cf_.get('probes', {}).get('tight_coarse', [])}
+    got = []
     for g in RG.REGIMES_2D:
         for rj in Path(a.store).parent.glob(f'runs/ref{g}/output/refjob_ref-{g}/result.json'):
-            prod_probes += [p_['tight_coarse'] for p_ in json.loads(rj.read_text()).get('probes', []) if p_.get('tight_coarse')]
-    plan_ = json.loads((HERE / 'checks' / 'resources-plan.json').read_text())
-    want_probes = len(RG.REGIMES_2D) if plan_['reductions'].get('calib_probes') else 0
-    agree = sm.get('calib_agree') and all(p_['verdict'] == 'agree' for p_ in prod_probes) and len(prod_probes) == want_probes
-    out['calibration'] = dict(smoke_agree=sm.get('calib_agree'), production_probes=len(prod_probes),
-                              production_probes_expected=want_probes,
-                              complete=len(prod_probes) == want_probes,
+            got += [((g, p_['case']), p_['tight_coarse']) for p_ in json.loads(rj.read_text()).get('probes', [])
+                    if p_.get('tight_coarse')]
+    got_ids = [k for k, _ in got]
+    complete = sorted(got_ids) == sorted(want_ids) and len(set(got_ids)) == len(got_ids)
+    agree = sm.get('calib_agree') and complete and all(v['verdict'] == 'agree' for _, v in got)
+    out['calibration'] = dict(smoke_agree=sm.get('calib_agree'), production_probes=len(got),
+                              production_probes_expected=len(want_ids), complete=complete,
+                              missing=sorted(map(list, want_ids - set(got_ids))), unexpected=sorted(map(list, set(got_ids) - want_ids)),
                               label=None if agree else 'floor proxy not supported on these regimes')
     for p in sorted(qd.glob('R_*.npz')):
         R = np.load(p)
@@ -235,6 +242,9 @@ def main():
             per_case.update(q['per_case'])
         errs = errors_of(R, per_case, refs)
         base = np.array([x for coh in ('N0', 'dev6', 'val32') for _, x in usable(errs, coh)[0]])
+        base_info = dict(excluded=sum(usable(errs, coh)[1] for coh in ('N0', 'dev6', 'val32')),
+                         unresolved_under_allowance=out['coverage'].get('N0', {}).get('unresolved_under_allowance'))
+        n0_info = dict(excluded=usable(errs, 'N0')[1], unresolved_under_allowance=base_info['unresolved_under_allowance'])
         base_n0 = np.array([x for _, x in usable(errs, 'N0')[0]])
         dv = np.array([x for coh in ('dev6', 'val32') for _, x in usable(errs, coh)[0]])
         cfg = dict(setting=name, arm=arm, Rp=int(R['Rp']), rule=setting['rule'], diagnostic=(name, arm) in DIAGNOSTIC_ARMS,
@@ -254,9 +264,11 @@ def main():
                 cfg['cells'][coh] = label_cell(errs, quals[coh], coh, base)
                 cfg['cells'][coh]['unresolved_under_allowance'] = out['coverage'][coh].get('unresolved_under_allowance')
                 cfg['cells'][coh]['regime_label'] = out['regime_labels'].get(coh)
+                cfg['cells'][coh]['base_info'] = base_info
                 cfg['cells_vs_N0'][coh] = label_cell(errs, quals[coh], coh, base_n0)
                 for k_ in ('unresolved_under_allowance', 'regime_label'):
                     cfg['cells_vs_N0'][coh][k_] = cfg['cells'][coh][k_]
+                cfg['cells_vs_N0'][coh]['base_info'] = n0_info
         cfg['paired_Am_C1'] = paired(errs)
         cfg['paired_Am_C1']['context'] = {g: dict(qualified=cfg['cells'][g]['qualified'], label=cfg['cells'][g]['label'],
                                                   invalid_runs=cfg['cells'][g]['invalid_runs'], excluded=cfg['cells'][g]['excluded'],
@@ -284,12 +296,15 @@ def main():
     if 'ps' not in plan_['attempts']:
         out['ps_status'] = 'deferred (A3.3 reduction step 2)'
     else:
-        exp_ps = {}
-        for g in RG.REGIMES_2D:
-            f_ = HERE / 'configs' / f'ps-{g}.json'
-            if f_.exists() and f'refjob:configs/ps-{g}.json' in plan_['attempts']['ps']['runs']:
-                exp_ps[f"{g}|{json.loads(f_.read_text())['cases'][0]}"] = True
-        out['ps_status'] = dict(expected=sorted(exp_ps))
+        exp_ps, miss_cfg = {}, []
+        for r_ in plan_['attempts']['ps']['runs']:     # the expected inventory is the certified PS runs
+            f_ = HERE / r_.split(':', 1)[1]
+            if not f_.exists():
+                miss_cfg.append(r_)
+                continue
+            cf_ = json.loads(f_.read_text())
+            exp_ps[f"{cf_['cohort']}|{cf_['cases'][0]}"] = True
+        out['ps_status'] = dict(expected=sorted(exp_ps), missing_configs=miss_cfg)
     for pj in sorted(HERE.glob('runs/ps/output/refjob_ps-*/2d/*/PS/c*_a*.json')):
         ps = json.loads(pj.read_text())
         coh, j = ps['cohort'], int(ps['case'])

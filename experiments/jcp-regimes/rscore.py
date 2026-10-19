@@ -326,8 +326,11 @@ def qualify(R, rows, expect, rho_tables=None, subset=None):
                   rho_max=dmax(rho_ok) if rho_ok.size else None, rho_trivial=int(np.sum(np.isnan(rho))),
                   rho_infinite=int(np.sum(np.isinf(rho))), rho=bool(rho_ok.size) and dmax(rho_ok) <= BAR_RHO,
                   successor_valid=bool(valid_qp) and all(valid_qp),
-                  check_valid=(not expect.get('qpp')) or (bool(valid_qpp) and all(valid_qpp)),
-                  convergence=(not expect.get('qpp')) or (bool(conv) and dmax(conv) <= BAR_Q2),
+                  # the check replay is required only where it is scheduled: subset cases in both the tighter and the
+                  # Q2 populations (val32 has none by design, prod audit 3)
+                  check_scheduled=bool(expect.get('qpp') and [c for c in exp_dev if c in exp_q2]),
+                  check_valid=(not (expect.get('qpp') and [c for c in exp_dev if c in exp_q2])) or (bool(valid_qpp) and all(valid_qpp)),
+                  convergence=(not (expect.get('qpp') and [c for c in exp_dev if c in exp_q2])) or (bool(conv) and dmax(conv) <= BAR_Q2),
                   worst_dist_qp_qpp=dmax(conv) if conv else None)
     pcs = out['per_case'].values()
     q1 = dict(all_valid=bool(out['per_case']) and all(v['valid'] and v['tight_valid'] for v in pcs),

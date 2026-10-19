@@ -91,7 +91,11 @@ def cell_text(x):
     t = f"{x['label']}"
     if x.get('accuracy_label_unqualified'):
         t += f" [accuracy {x['accuracy_label_unqualified']}, unqualified]"
-    t += f"; ratio {num(x['ratio_median'])} [{num(x['ci'][0])}, {num(x['ci'][1])}]; {x['n_used']}/{x['n']} used vs {x.get('n_base_used', '—')} baseline"
+    bi = x.get('base_info') or {}
+    bua = bi.get('unresolved_under_allowance')
+    t += (f"; ratio {num(x['ratio_median'])} [{num(x['ci'][0])}, {num(x['ci'][1])}]; {x['n_used']}/{x['n']} used vs "
+          f"{x.get('n_base_used', '—')} baseline ({bi.get('excluded', '—')} baseline cases excluded, "
+          f"{'—' if bua is None else bua} N0 unresolved under the allowance)"
     ua = x.get('unresolved_under_allowance')
     t += f"; {'—' if ua is None else ua} unresolved under the allowance"
     if x['not_usable']:
@@ -116,6 +120,9 @@ def main():
     if AN.get('deferred_cases'):
         w('**Deferred cases (A3.3):** ' + '; '.join(f'{g}: ' + ', '.join(f'c{c}' for c in v)
                                                for g, v in AN['deferred_cases'].items()) + ' (not run; not part of any label).\n')
+    w('**Selection qualification (A3.2):** reference eligibility depends on a tight-path allowance that differs between '
+      'cohorts (A+ 1, others 0); cases unresolved under the allowance are excluded, and the direction of the resulting '
+      'bias on ROM errors is unknown. Their counts are printed next to every coverage entry.\n')
     if AN.get('separation_note'):
         w(f"**Separation checks:** {AN['separation_note']}.\n")
     w('## Labels per configuration and regime (primary)\n')
@@ -134,10 +141,12 @@ def main():
     for k, c in AN['configs'].items():
         ic = c['in_range_consistency']
         w(row([k, pct(c['baseline']['median']), pct(c['baseline']['worst']),
-               f"{num(ic['ratio'])} [{num(ic['lo'])}, {num(ic['hi'])}]; n {ic['n_N0']} vs {ic['n_devval']}"
+               f"{num(ic['ratio'])} [{num(ic['lo'])}, {num(ic['hi'])}]; n {ic['n_N0']} vs {ic['n_devval']}; "
+               f"N0 unresolved under the allowance {AN['coverage'].get('N0', {}).get('unresolved_under_allowance', '—')}"
                + ('' if ic['coverage_ok'] else '; inconclusive (coverage)')]
               + [(f"{pct(x['median'])} / {pct(x['worst'])} / {num(x['ratio_worst'])}" + (' (worst degrades)' if x['worst_degrades'] else '')
-                  + f" [{x['label']}" + (f"; {x['regime_label']}" if x.get('regime_label') else '') + ']')
+                  + f" [{x['label']}; {x['n_used']}/{x['n']} used; {'—' if x.get('unresolved_under_allowance') is None else x['unresolved_under_allowance']} unresolved"
+                  + ('; not usable' if x['not_usable'] else '') + (f"; {x['regime_label']}" if x.get('regime_label') else '') + ']')
                  if (x := c['cells'].get(g)) else '—' for g in REG + ('N0s',)]))
     w('')
     w('## N0s (stiff part of the training box, descriptive) and the N0-only sensitivity\n')
@@ -241,6 +250,8 @@ def main():
                gpu_hours=dict(spent=spent, cap=LED['cap_gpu_hours']), deferred_cases=AN.get('deferred_cases'),
                coverage=AN['coverage'], separation=AN['separation'], separation_note=AN.get('separation_note'),
                regime_labels=AN['regime_labels'], calibration=cal, projection_floor=AN['projection_floor'], ps=AN.get('ps'),
+               ps_status=AN.get('ps_status'),
+               selection_qualification='eligibility depends on cohort-specific tight-path allowances; bias direction unknown (A3.2)',
                configs={k: dict(diagnostic=c['diagnostic'], baseline=c['baseline'], in_range_consistency=c['in_range_consistency'],
                                 cells=c['cells'], sensitivity_vs_N0=c['cells_vs_N0'], qualification=c['qualification'],
                                 trends=c['trends'], paired_Am_C1={kk: v for kk, v in c['paired_Am_C1'].items() if kk != 'pairs'})

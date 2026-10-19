@@ -14,12 +14,16 @@
   },
   {
    "attempt": "smk2",
-   "state": "SUBMITTED",
+   "state": "COMPLETED",
    "time_limit_hours": 2.0,
-   "job_id": "6074276"
+   "job_id": "6074276",
+   "sacct_state": "COMPLETED",
+   "node": "pax008",
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1",
+   "elapsed_hours": 0.1411
   }
  ],
- "spent_gpu_hours": 0.4083,
- "reserved_gpu_hours": 2.0,
- "committed_gpu_hours": 2.4083
+ "spent_gpu_hours": 0.5494,
+ "reserved_gpu_hours": 0,
+ "committed_gpu_hours": 0.5494
 }

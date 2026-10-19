@@ -1,0 +1,30 @@
+host=pax049 source_commit=6b8cde9e2fffe167a60054ada0f6b9b1be14f9dd
+0, NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 575.57.08, 81920 MiB, 210 MHz, 1512 MHz, 300.00 W
+10.235.106.25:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+allocated CUDA_VISIBLE_DEVICES=0
+jax_backend=gpu gpu_index=0
+STEP e5time configs/e5smk4.json 2026-10-19T22:31:28Z
+jax_backend=gpu x64=True precision=highest
+jax_backend=gpu x64=True precision=highest
+BANK 256 9.0 {'in_use': 330704896, 'peak': 1151519232, 'limit': 78288781312}
+BANK 1024 14.6 {'in_use': 4745447424, 'peak': 17579930368, 'limit': 78288781312}
+SUBJECT 1024|R384|gauss128|frozen|CNR 63.4
+SUBJECT 256|R128|fib4181|frozen|BE 96.7
+SUBJECT 1024|R128|fib4181|frozen|BE 108.0
+SUBJECT 256|R384|gauss128|frozen|CNR 127.1
+TRIPLETS 24 172.0
+TIMING DONE 203.2
+P1TIME COMPLETE 219.1
+E5 PCOST DONE 220.3
+XBANK 1024 0.8 {'in_use': 4364311040, 'peak': 17579930368, 'limit': 78288781312}
+SCORED A True 6.4
+SCORED ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod True 9.1
+SCORED ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod True 10.4
+SCORED fd|CC|L1024|0.005|t1 True 15.0
+SCORED fd|CC|L1024|0.0125|t2 True 16.2
+SCORED ps|N96|0.0125 True 20.3
+STAGE2 24 50 49.8
+STAGE2 48 50 71.3
+PCROSS COMPLETE 78.5
+E5TIME COMPLETE True 299.3
+ALL-DONE

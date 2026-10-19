@@ -1,0 +1,2495 @@
+{
+ "config": {
+  "mesh": 1024,
+  "edges": [
+   0,
+   128,
+   256,
+   384,
+   512
+  ],
+  "cases": [
+   [
+    "dev6",
+    0
+   ],
+   [
+    "dev6",
+    1
+   ],
+   [
+    "dev6",
+    2
+   ],
+   [
+    "dev6",
+    3
+   ],
+   [
+    "dev6",
+    4
+   ]
+  ],
+  "A": {
+   "label": "A",
+   "Rp": 384,
+   "rule": "gauss128",
+   "policy": "frozen",
+   "scheme": "CNR",
+   "dt": 0.005,
+   "form": "LSPG",
+   "level": "prod"
+  },
+  "roms": [
+   {
+    "label": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+    "Rp": 128,
+    "rule": "fib4181",
+    "policy": "frozen",
+    "scheme": "BE",
+    "dt": 0.005,
+    "form": "LSPG",
+    "level": "prod",
+    "target_e": {
+     "dev6|0": 0.005996050207513908,
+     "dev6|1": 0.013353291674456572,
+     "dev6|2": 0.03011430195913653,
+     "dev6|3": 0.014760013459176272,
+     "dev6|4": 0.011675859283253879,
+     "dev6|5": 0.014078232654246597
+    }
+   },
+   {
+    "label": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+    "Rp": 384,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "dt": 0.005,
+    "form": "LSPG",
+    "level": "prod",
+    "target_e": {
+     "dev6|0": 0.0007967109253090086,
+     "dev6|1": 0.0025992822179038253,
+     "dev6|2": 0.004081434453974217,
+     "dev6|3": 0.002343020925581073,
+     "dev6|4": 0.001950583431557877,
+     "dev6|5": 0.002602989660454559
+    }
+   }
+  ],
+  "foms": {
+   "fd|CC|L1024|0.005|t1": {
+    "ladder_e": {
+     "dev6|0": 0.00036397185687013966,
+     "dev6|1": 0.0012333055088056437,
+     "dev6|2": 0.0018152257874019969,
+     "dev6|3": 0.0009507764780938982,
+     "dev6|4": 0.0009409124143602396,
+     "dev6|5": 0.0012004565961061834
+    }
+   },
+   "fd|CC|L1024|0.0125|t2": {
+    "ladder_e": {
+     "dev6|0": 0.00231701513340532,
+     "dev6|1": 0.007558040467732897,
+     "dev6|2": 0.01080155558404439,
+     "dev6|3": 0.005992158197818258,
+     "dev6|4": 0.005704999772991525,
+     "dev6|5": 0.007364789152329379
+    }
+   },
+   "ps|N96|0.0125": {
+    "ladder_e": {
+     "dev6|0": 2.562468187514941e-05,
+     "dev6|1": 1.560789448592258e-05,
+     "dev6|2": 0.0002804713103649523,
+     "dev6|3": 0.00012503183513556818,
+     "dev6|4": 2.007539460050757e-05,
+     "dev6|5": 1.1359619529139204e-05
+    }
+   }
+  },
+  "frozen_selection": {
+   "path": "e5/FROZEN-SELECTION-1024.json",
+   "sha256": "af8c45470c9152e1b8e39a2dd9371ddd002598ab0a418e238ad453a08c2c0bb6",
+   "source": "jcp-fom2d runs/c21024 (job 5456289, H200) output/c2time_c21024"
+  },
+  "selection_suffixes": [
+   "|H|union|joint",
+   "|H|CC|same_mesh"
+  ],
+  "expected_comparators": {
+   "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": {
+    "|H|union|joint": "ps|N96|0.0125",
+    "|H|CC|same_mesh": "fd|CC|L1024|0.0125|t2"
+   },
+   "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": {
+    "|H|union|joint": "ps|N96|0.0125",
+    "|H|CC|same_mesh": "fd|CC|L1024|0.005|t1"
+   }
+  },
+  "reps": 2,
+  "burn": 0.1,
+  "seed": 1024,
+  "controls": {
+   "doubled_cases": [
+    [
+     "dev6",
+     0
+    ],
+    [
+     "dev6",
+     1
+    ]
+   ]
+  },
+  "label": "frozen H200-selected comparators (not the best comparator per GPU)"
+ },
+ "commit": "6b8cde9e2fffe167a60054ada0f6b9b1be14f9dd",
+ "job_id": "6078777",
+ "backend": "gpu",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "nvidia_smi": [
+  "NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 81920 MiB"
+ ],
+ "jax_version": "0.10.2",
+ "store_version": "3ec3b5492748a162c9d77e7c09cdbe1485d449a31bd73a29175b4a0e4efc66a0",
+ "checkpoint_sha256": "18f0266ae6f0454200ec0b7bf94a18cde531feac9d3170d5099adc5d68d6b589",
+ "mesh": 1024,
+ "subjects": {
+  "A": {
+   "kind": "rom",
+   "spec": {
+    "label": "A",
+    "Rp": 384,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "dt": 0.005,
+    "form": "LSPG",
+    "level": "prod"
+   },
+   "scoring": [
+    {
+     "case": "dev6|0",
+     "e": 0.0007967109253090086,
+     "eligible": true,
+     "first_seconds": 1.6772605989990552,
+     "want": null,
+     "repro": null,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|1",
+     "e": 0.0025992822179038253,
+     "eligible": true,
+     "first_seconds": 0.21229021299950546,
+     "want": null,
+     "repro": null,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|2",
+     "e": 0.004081434453974217,
+     "eligible": true,
+     "first_seconds": 0.20863166699928115,
+     "want": null,
+     "repro": null,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|3",
+     "e": 0.002343020925581073,
+     "eligible": true,
+     "first_seconds": 0.21498983800120186,
+     "want": null,
+     "repro": null,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|4",
+     "e": 0.001950583431557877,
+     "eligible": true,
+     "first_seconds": 0.2059917949991359,
+     "want": null,
+     "repro": null,
+     "finite": true,
+     "valid": true
+    }
+   ],
+   "repro_ok": true,
+   "repro_checked": 0
+  },
+  "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": {
+   "kind": "rom",
+   "spec": {
+    "label": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+    "Rp": 128,
+    "rule": "fib4181",
+    "policy": "frozen",
+    "scheme": "BE",
+    "dt": 0.005,
+    "form": "LSPG",
+    "level": "prod",
+    "target_e": {
+     "dev6|0": 0.005996050207513908,
+     "dev6|1": 0.013353291674456572,
+     "dev6|2": 0.03011430195913653,
+     "dev6|3": 0.014760013459176272,
+     "dev6|4": 0.011675859283253879,
+     "dev6|5": 0.014078232654246597
+    }
+   },
+   "scoring": [
+    {
+     "case": "dev6|0",
+     "e": 0.0059960502075137884,
+     "eligible": true,
+     "first_seconds": 1.3838078289991245,
+     "want": 0.005996050207513908,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|1",
+     "e": 0.013353291674456516,
+     "eligible": true,
+     "first_seconds": 0.03197314299904974,
+     "want": 0.013353291674456572,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|2",
+     "e": 0.03011430195913656,
+     "eligible": true,
+     "first_seconds": 0.03129455300040718,
+     "want": 0.03011430195913653,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|3",
+     "e": 0.014760013459176028,
+     "eligible": true,
+     "first_seconds": 0.031069876000401564,
+     "want": 0.014760013459176272,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|4",
+     "e": 0.011675859283253844,
+     "eligible": true,
+     "first_seconds": 0.030233014000259573,
+     "want": 0.011675859283253879,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    }
+   ],
+   "repro_ok": true,
+   "repro_checked": 5
+  },
+  "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": {
+   "kind": "rom",
+   "spec": {
+    "label": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+    "Rp": 384,
+    "rule": "gauss128",
+    "policy": "frozen",
+    "scheme": "CNR",
+    "dt": 0.005,
+    "form": "LSPG",
+    "level": "prod",
+    "target_e": {
+     "dev6|0": 0.0007967109253090086,
+     "dev6|1": 0.0025992822179038253,
+     "dev6|2": 0.004081434453974217,
+     "dev6|3": 0.002343020925581073,
+     "dev6|4": 0.001950583431557877,
+     "dev6|5": 0.002602989660454559
+    }
+   },
+   "scoring": [
+    {
+     "case": "dev6|0",
+     "e": 0.0007967109253090086,
+     "eligible": true,
+     "first_seconds": 0.2157493689992407,
+     "want": 0.0007967109253090086,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|1",
+     "e": 0.0025992822179038253,
+     "eligible": true,
+     "first_seconds": 0.21344312399924092,
+     "want": 0.0025992822179038253,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|2",
+     "e": 0.004081434453974217,
+     "eligible": true,
+     "first_seconds": 0.20924172599916346,
+     "want": 0.004081434453974217,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|3",
+     "e": 0.002343020925581073,
+     "eligible": true,
+     "first_seconds": 0.21370902499984368,
+     "want": 0.002343020925581073,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    },
+    {
+     "case": "dev6|4",
+     "e": 0.001950583431557877,
+     "eligible": true,
+     "first_seconds": 0.20928246600124112,
+     "want": 0.001950583431557877,
+     "repro": true,
+     "finite": true,
+     "valid": true
+    }
+   ],
+   "repro_ok": true,
+   "repro_checked": 5
+  },
+  "fd|CC|L1024|0.005|t1": {
+   "kind": "fom",
+   "spec": {
+    "key": "fd|CC|L1024|0.005|t1"
+   },
+   "scoring": [
+    {
+     "case": "dev6|0",
+     "e": 0.0003639718568700936,
+     "eligible": true,
+     "first_seconds": 1.8639772120004636,
+     "want": 0.00036397185687013966,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|1",
+     "e": 0.0012333055088054748,
+     "eligible": true,
+     "first_seconds": 0.37768105500072124,
+     "want": 0.0012333055088056437,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|2",
+     "e": 0.0018152257874018605,
+     "eligible": true,
+     "first_seconds": 0.6491100559996994,
+     "want": 0.0018152257874019969,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|3",
+     "e": 0.0009507764780938368,
+     "eligible": true,
+     "first_seconds": 0.5470279529999971,
+     "want": 0.0009507764780938982,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|4",
+     "e": 0.0009409124143604567,
+     "eligible": true,
+     "first_seconds": 0.42975546500019846,
+     "want": 0.0009409124143602396,
+     "repro": true,
+     "finite": true
+    }
+   ],
+   "repro_ok": true,
+   "repro_checked": 5
+  },
+  "fd|CC|L1024|0.0125|t2": {
+   "kind": "fom",
+   "spec": {
+    "key": "fd|CC|L1024|0.0125|t2"
+   },
+   "scoring": [
+    {
+     "case": "dev6|0",
+     "e": 0.0023170151334055743,
+     "eligible": true,
+     "first_seconds": 0.19367786699876888,
+     "want": 0.00231701513340532,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|1",
+     "e": 0.007558040467734121,
+     "eligible": true,
+     "first_seconds": 0.15990807799971662,
+     "want": 0.007558040467732897,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|2",
+     "e": 0.010801555584045039,
+     "eligible": true,
+     "first_seconds": 0.30771271900084685,
+     "want": 0.01080155558404439,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|3",
+     "e": 0.00599215819781782,
+     "eligible": true,
+     "first_seconds": 0.2629280490000383,
+     "want": 0.005992158197818258,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|4",
+     "e": 0.005704999772991293,
+     "eligible": true,
+     "first_seconds": 0.18714461400122673,
+     "want": 0.005704999772991525,
+     "repro": true,
+     "finite": true
+    }
+   ],
+   "repro_ok": true,
+   "repro_checked": 5
+  },
+  "ps|N96|0.0125": {
+   "kind": "fom",
+   "spec": {
+    "key": "ps|N96|0.0125"
+   },
+   "scoring": [
+    {
+     "case": "dev6|0",
+     "e": 2.5624681875236732e-05,
+     "eligible": true,
+     "first_seconds": 3.926665981000042,
+     "want": 2.562468187514941e-05,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|1",
+     "e": 1.5607894485915816e-05,
+     "eligible": true,
+     "first_seconds": 0.007365703000687063,
+     "want": 1.560789448592258e-05,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|2",
+     "e": 0.00028047131036497273,
+     "eligible": true,
+     "first_seconds": 0.007415747000777628,
+     "want": 0.0002804713103649523,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|3",
+     "e": 0.0001250318351356718,
+     "eligible": true,
+     "first_seconds": 0.007315319000554155,
+     "want": 0.00012503183513556818,
+     "repro": true,
+     "finite": true
+    },
+    {
+     "case": "dev6|4",
+     "e": 2.0075394600553347e-05,
+     "eligible": true,
+     "first_seconds": 0.007283341999936965,
+     "want": 2.007539460050757e-05,
+     "repro": true,
+     "finite": true
+    }
+   ],
+   "repro_ok": true,
+   "repro_checked": 5
+  }
+ },
+ "prep": {
+  "fd|CC|L1024|0.005|t1": {
+   "median": 0.013531874999898719,
+   "max": 0.028823722999732126,
+   "shared_key": [
+    "fd",
+    1024
+   ]
+  },
+  "fd|CC|L1024|0.0125|t2": {
+   "median": 0.013531874999898719,
+   "max": 0.028823722999732126,
+   "shared_key": [
+    "fd",
+    1024
+   ]
+  },
+  "ps|N96|0.0125": {
+   "median": 0.01817997100079083,
+   "max": 0.03485003199966741,
+   "shared_key": [
+    "ps",
+    96
+   ]
+  }
+ },
+ "stage0": {},
+ "stage1": [],
+ "selection": {
+  "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod@1024|H|union|joint": {
+   "criterion": "joint",
+   "family": "union",
+   "population": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ],
+   "selected": "ps|N96|0.0125",
+   "shortlist": [
+    "ps|N48|0.0125",
+    "ps|N64|0.0125",
+    "ps|N96|0.0125",
+    "fd|CC|L64|0.0125|t2",
+    "fd|CC|L128|0.0125|t2",
+    "fd|CC|L64|0.01|t2",
+    "fd|UB|L512|0.0025|t1",
+    "fd|UB|L1024|0.005|t2",
+    "fd|UB|L512|0.00125|t1"
+   ],
+   "stage0": {
+    "fd|CC|L128|0.0125|t2": 0.02399737760424614,
+    "fd|CC|L64|0.0125|t2": 0.020913909189403057,
+    "fd|CC|L64|0.01|t2": 0.02409166283905506,
+    "fd|UB|L1024|0.005|t2": 0.18186421459540725,
+    "fd|UB|L512|0.00125|t1": 0.2781737092882395,
+    "fd|UB|L512|0.0025|t1": 0.16074149124324322,
+    "ps|N48|0.0125": 0.004786022938787937,
+    "ps|N64|0.0125": 0.005175406113266945,
+    "ps|N96|0.0125": 0.005186529364436865
+   },
+   "stage1": {
+    "fd|CC|L128|0.0125|t2": 0.29874238669312486,
+    "fd|CC|L64|0.0125|t2": 0.25053338895820026,
+    "fd|CC|L64|0.01|t2": 0.2821015479195614,
+    "fd|UB|L1024|0.005|t2": 2.2071539835271397,
+    "fd|UB|L512|0.00125|t1": 3.298084575986392,
+    "fd|UB|L512|0.0025|t1": 1.9694490829434863,
+    "ps|N48|0.0125": 0.06604169820924372,
+    "ps|N64|0.0125": 0.06984447903390137,
+    "ps|N96|0.0125": 0.05967834443231178
+   },
+   "status": "selected",
+   "target": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod"
+  },
+  "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod@1024|H|CC|same_mesh": {
+   "criterion": "same_mesh",
+   "family": "CC",
+   "population": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ],
+   "selected": "fd|CC|L1024|0.0125|t2",
+   "shortlist": [
+    "fd|CC|L1024|0.0125|t2",
+    "fd|CC|L1024|0.01|t2",
+    "fd|CC|L1024|0.005|t1"
+   ],
+   "stage0": {
+    "fd|CC|L1024|0.005|t1": 0.1927682375535369,
+    "fd|CC|L1024|0.0125|t2": 0.0845003486610949,
+    "fd|CC|L1024|0.01|t2": 0.09792026644572616
+   },
+   "stage1": {
+    "fd|CC|L1024|0.005|t1": 2.384226032615133,
+    "fd|CC|L1024|0.0125|t2": 1.0314329540105907,
+    "fd|CC|L1024|0.01|t2": 1.210236516522917
+   },
+   "status": "selected",
+   "target": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod"
+  },
+  "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod@1024|H|union|joint": {
+   "criterion": "joint",
+   "family": "union",
+   "population": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ],
+   "selected": "ps|N96|0.0125",
+   "shortlist": [
+    "ps|N48|0.0125",
+    "ps|N64|0.0125",
+    "ps|N96|0.0125",
+    "fd|CC|L128|0.005|t1",
+    "fd|CC|L256|0.005|t1",
+    "fd|CC|L512|0.005|t1",
+    "fd|UB|L2048|0.000625|t1",
+    "fd|UB|L4096|0.000625|t1"
+   ],
+   "stage0": {
+    "fd|CC|L128|0.005|t1": 0.05179985798895359,
+    "fd|CC|L256|0.005|t1": 0.05358896031975746,
+    "fd|CC|L512|0.005|t1": 0.08341927733272314,
+    "fd|UB|L2048|0.000625|t1": 3.006035079713911,
+    "fd|UB|L4096|0.000625|t1": 13.049888488836586,
+    "ps|N48|0.0125": 0.004786022938787937,
+    "ps|N64|0.0125": 0.005175406113266945,
+    "ps|N96|0.0125": 0.005186529364436865
+   },
+   "stage1": {
+    "fd|CC|L128|0.005|t1": 0.6151956701533763,
+    "fd|CC|L256|0.005|t1": 0.6616312746635766,
+    "fd|CC|L512|0.005|t1": 1.006935783261983,
+    "fd|UB|L2048|0.000625|t1": 39.21052754146919,
+    "fd|UB|L4096|0.000625|t1": 170.26280472776094,
+    "ps|N48|0.0125": 0.06604169820924372,
+    "ps|N64|0.0125": 0.06984447903390137,
+    "ps|N96|0.0125": 0.05967834443231178
+   },
+   "status": "selected",
+   "target": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod"
+  },
+  "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod@1024|H|CC|same_mesh": {
+   "criterion": "same_mesh",
+   "family": "CC",
+   "population": [
+    "dev6|0",
+    "dev6|1",
+    "dev6|2",
+    "dev6|3",
+    "dev6|4",
+    "dev6|5"
+   ],
+   "selected": "fd|CC|L1024|0.005|t1",
+   "shortlist": [
+    "fd|CC|L1024|0.005|t1",
+    "fd|CC|L1024|0.0025|t1"
+   ],
+   "stage0": {
+    "fd|CC|L1024|0.0025|t1": 0.32142159016802907,
+    "fd|CC|L1024|0.005|t1": 0.1927682375535369
+   },
+   "stage1": {
+    "fd|CC|L1024|0.0025|t1": 3.866168069608468,
+    "fd|CC|L1024|0.005|t1": 2.384226032615133
+   },
+   "status": "selected",
+   "target": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod"
+  }
+ },
+ "pinned": {
+  "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod": {
+   "|H|union|joint": "ps|N96|0.0125",
+   "|H|CC|same_mesh": "fd|CC|L1024|0.0125|t2"
+  },
+  "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod": {
+   "|H|union|joint": "ps|N96|0.0125",
+   "|H|CC|same_mesh": "fd|CC|L1024|0.005|t1"
+  }
+ },
+ "frozen_selection_sha256": "af8c45470c9152e1b8e39a2dd9371ddd002598ab0a418e238ad453a08c2c0bb6",
+ "stage2": [
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|0",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21584695099954843,
+   "tA2": 0.21612249400095607,
+   "tB": 0.03188694299933559,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0012765665678003,
+   "ratio": 0.14763517822098898,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0012765665678003
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|0",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21584695099954843,
+     "tA2": 0.21612249400095607,
+     "tB": 0.03188694299933559,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0012765665678003,
+     "ratio": 0.14763517822098898
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|4",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.20774300700031745,
+   "tA2": 0.20842194700162509,
+   "tB": 0.03130666499964718,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.003268172590313,
+   "ratio": 0.15045315420529645,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.003268172590313
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|4",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.20774300700031745,
+     "tA2": 0.20842194700162509,
+     "tB": 0.03130666499964718,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.003268172590313,
+     "ratio": 0.15045315420529645
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|4",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.20758280199879664,
+   "tA2": 0.20847463000063726,
+   "tB": 0.20797891400070512,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0042962518727625,
+   "ratio": 0.9997606003634042,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0042962518727625
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|4",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.20758280199879664,
+     "tA2": 0.20847463000063726,
+     "tB": 0.20797891400070512,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0042962518727625,
+     "ratio": 0.9997606003634042
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|1",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21482475199991313,
+   "tA2": 0.2149219839993748,
+   "tB": 0.16123456400055147,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0004526107841694,
+   "ratio": 0.7503701622102309,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0004526107841694
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|1",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21482475199991313,
+     "tA2": 0.2149219839993748,
+     "tB": 0.16123456400055147,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0004526107841694,
+     "ratio": 0.7503701622102309
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|1",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21484692800004268,
+   "tA2": 0.2141733499993279,
+   "tB": 0.03333280799961358,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9968648469541318,
+   "ratio": 0.15539036129039327,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9968648469541318
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|1",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21484692800004268,
+     "tA2": 0.2141733499993279,
+     "tB": 0.03333280799961358,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9968648469541318,
+     "ratio": 0.15539036129039327
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|4",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.20989874499900907,
+   "tA2": 0.20803492199956963,
+   "tB": 0.4312761159999354,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9911203709224262,
+   "ratio": 2.063849601288054,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9911203709224262
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|4",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.20989874499900907,
+     "tA2": 0.20803492199956963,
+     "tB": 0.4312761159999354,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9911203709224262,
+     "ratio": 2.063849601288054
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|3",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21664325299934717,
+   "tA2": 0.21691393900073308,
+   "tB": 0.5489931900010561,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0012494550263549,
+   "ratio": 2.5325064380477604,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0012494550263549
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|3",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21664325299934717,
+     "tA2": 0.21691393900073308,
+     "tB": 0.5489931900010561,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0012494550263549,
+     "ratio": 2.5325064380477604
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|1",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21546705899891094,
+   "tA2": 0.21439805000045453,
+   "tB": 0.21453424399987853,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9950386430138176,
+   "ratio": 0.9981468116789874,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9950386430138176
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|1",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21546705899891094,
+     "tA2": 0.21439805000045453,
+     "tB": 0.21453424399987853,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9950386430138176,
+     "ratio": 0.9981468116789874
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|2",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21054768700014392,
+   "tA2": 0.21045265099928656,
+   "tB": 0.032201932999669225,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9995486248164897,
+   "ratio": 0.152978181218053,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9995486248164897
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|2",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21054768700014392,
+     "tA2": 0.21045265099928656,
+     "tB": 0.032201932999669225,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9995486248164897,
+     "ratio": 0.152978181218053
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|2",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.20998612999937905,
+   "tA2": 0.21087820200045826,
+   "tB": 0.3087322170013067,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0042482424962156,
+   "ratio": 1.4671341500207058,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0042482424962156
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|2",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.20998612999937905,
+     "tA2": 0.21087820200045826,
+     "tB": 0.3087322170013067,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0042482424962156,
+     "ratio": 1.4671341500207058
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|0",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.217883109999093,
+   "tA2": 0.21639695999874675,
+   "tB": 0.03227940299984766,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9931791408689162,
+   "ratio": 0.148657077447778,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9931791408689162
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|0",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.217883109999093,
+     "tA2": 0.21639695999874675,
+     "tB": 0.03227940299984766,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9931791408689162,
+     "ratio": 0.148657077447778
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|2",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.2100874309999199,
+   "tA2": 0.20955418800076586,
+   "tB": 0.03227966000122251,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9974618043706088,
+   "ratio": 0.15384393987465653,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9974618043706088
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|2",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.2100874309999199,
+     "tA2": 0.20955418800076586,
+     "tB": 0.03227966000122251,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9974618043706088,
+     "ratio": 0.15384393987465653
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|4",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.20846982700095396,
+   "tA2": 0.20801937000032922,
+   "tB": 0.007602796000355738,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9978392220730212,
+   "ratio": 0.03650897096537327,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9978392220730212
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|4",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.20846982700095396,
+     "tA2": 0.20801937000032922,
+     "tB": 0.007602796000355738,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9978392220730212,
+     "ratio": 0.03650897096537327
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|4",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2074953880000976,
+   "tA2": 0.20865816000150517,
+   "tB": 0.03141833100016811,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0056038450426041,
+   "ratio": 0.15099393553673177,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0056038450426041
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|4",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2074953880000976,
+     "tA2": 0.20865816000150517,
+     "tB": 0.03141833100016811,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0056038450426041,
+     "ratio": 0.15099393553673177
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|2",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21232087399948796,
+   "tA2": 0.2108694739999919,
+   "tB": 0.6507227919992147,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9931641200784641,
+   "ratio": 3.075319628981777,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9931641200784641
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|2",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21232087399948796,
+     "tA2": 0.2108694739999919,
+     "tB": 0.6507227919992147,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9931641200784641,
+     "ratio": 3.075319628981777
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|4",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2090669520002848,
+   "tA2": 0.20816841699888755,
+   "tB": 0.1884310130008089,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9957021662543967,
+   "ratio": 0.9032360485296378,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9957021662543967
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|4",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2090669520002848,
+     "tA2": 0.20816841699888755,
+     "tB": 0.1884310130008089,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9957021662543967,
+     "ratio": 0.9032360485296378
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|0",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2181609519993799,
+   "tA2": 0.21560727399992174,
+   "tB": 0.4389929689987184,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9882945230296509,
+   "ratio": 2.0240900217501188,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9882945230296509
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|0",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2181609519993799,
+     "tA2": 0.21560727399992174,
+     "tB": 0.4389929689987184,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9882945230296509,
+     "ratio": 2.0240900217501188
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|3",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21633195799950045,
+   "tA2": 0.2161669590004749,
+   "tB": 0.007730478999292245,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9992372879136705,
+   "ratio": 0.035747969280083475,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9992372879136705
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|3",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21633195799950045,
+     "tA2": 0.2161669590004749,
+     "tB": 0.007730478999292245,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9992372879136705,
+     "ratio": 0.035747969280083475
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|1",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21486741800072195,
+   "tA2": 0.21425850699961302,
+   "tB": 0.2144459690007352,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9971661082598066,
+   "ratio": 0.9994547358124206,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9971661082598066
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|1",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21486741800072195,
+     "tA2": 0.21425850699961302,
+     "tB": 0.2144459690007352,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9971661082598066,
+     "ratio": 0.9994547358124206
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|3",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.2173495240003831,
+   "tA2": 0.21650828500060015,
+   "tB": 0.21632706099990173,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9961295567420637,
+   "ratio": 0.9972256186791902,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9961295567420637
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|3",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.2173495240003831,
+     "tA2": 0.21650828500060015,
+     "tB": 0.21632706099990173,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9961295567420637,
+     "ratio": 0.9972256186791902
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|2",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.20991781700104184,
+   "tA2": 0.21191241000087757,
+   "tB": 0.21184256299966364,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.00950178040307,
+   "ratio": 1.0043972642989367,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.00950178040307
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|2",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.20991781700104184,
+     "tA2": 0.21191241000087757,
+     "tB": 0.21184256299966364,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.00950178040307,
+     "ratio": 1.0043972642989367
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|0",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.2160481440005242,
+   "tA2": 0.2168482409997523,
+   "tB": 0.4395984820002923,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0037033273436784,
+   "ratio": 2.030963977673371,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0037033273436784
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|0",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.2160481440005242,
+     "tA2": 0.2168482409997523,
+     "tB": 0.4395984820002923,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0037033273436784,
+     "ratio": 2.030963977673371
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|2",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2112509130001854,
+   "tA2": 0.21173404799992568,
+   "tB": 0.21017259800100874,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0022870197003118,
+   "ratio": 0.9937591989278954,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0022870197003118
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|2",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2112509130001854,
+     "tA2": 0.21173404799992568,
+     "tB": 0.21017259800100874,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0022870197003118,
+     "ratio": 0.9937591989278954
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|1",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2154615939998621,
+   "tA2": 0.2153786279995984,
+   "tB": 0.3790761250002106,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9996149383343755,
+   "ratio": 1.759706293163526,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9996149383343755
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|1",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2154615939998621,
+     "tA2": 0.2153786279995984,
+     "tB": 0.3790761250002106,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9996149383343755,
+     "ratio": 1.759706293163526
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|2",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21080103299937036,
+   "tA2": 0.2108178680009587,
+   "tB": 0.30942212999980256,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0000798620450233,
+   "ratio": 1.4677811135395995,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0000798620450233
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|2",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21080103299937036,
+     "tA2": 0.2108178680009587,
+     "tB": 0.30942212999980256,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0000798620450233,
+     "ratio": 1.4677811135395995
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|0",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21613683000032324,
+   "tA2": 0.21638407399950665,
+   "tB": 0.0075705099989136215,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0011439235006039,
+   "ratio": 0.03500644675854372,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0011439235006039
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|0",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21613683000032324,
+     "tA2": 0.21638407399950665,
+     "tB": 0.0075705099989136215,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0011439235006039,
+     "ratio": 0.03500644675854372
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|2",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21126434200050426,
+   "tA2": 0.2107228100012435,
+   "tB": 0.6521754490004241,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9974367089394599,
+   "ratio": 3.0909730114139733,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9974367089394599
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|2",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21126434200050426,
+     "tA2": 0.2107228100012435,
+     "tB": 0.6521754490004241,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9974367089394599,
+     "ratio": 3.0909730114139733
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|3",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21675694699843007,
+   "tA2": 0.21611654000116687,
+   "tB": 0.263897087001169,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9970455064710436,
+   "ratio": 1.219280436093859,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9970455064710436
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|3",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21675694699843007,
+     "tA2": 0.21611654000116687,
+     "tB": 0.263897087001169,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9970455064710436,
+     "ratio": 1.219280436093859
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|3",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21700011400025687,
+   "tA2": 0.21592428500116512,
+   "tB": 0.0075580789998639375,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9950422652815266,
+   "ratio": 0.03491639194878971,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9950422652815266
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|3",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21700011400025687,
+     "tA2": 0.21592428500116512,
+     "tB": 0.0075580789998639375,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9950422652815266,
+     "ratio": 0.03491639194878971
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|3",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21705819999988307,
+   "tA2": 0.21694835699963733,
+   "tB": 0.21586686199952965,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9994939467836469,
+   "ratio": 0.9947631367226933,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9994939467836469
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|3",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21705819999988307,
+     "tA2": 0.21694835699963733,
+     "tB": 0.21586686199952965,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9994939467836469,
+     "ratio": 0.9947631367226933
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|1",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21442173099967476,
+   "tA2": 0.2147238550005568,
+   "tB": 0.3793535829991015,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0014090176376875,
+   "ratio": 1.7679481992803103,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0014090176376875
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|1",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21442173099967476,
+     "tA2": 0.2147238550005568,
+     "tB": 0.3793535829991015,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0014090176376875,
+     "ratio": 1.7679481992803103
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|4",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.20895036600086314,
+   "tA2": 0.20957860799899208,
+   "tB": 0.20952062899959856,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0030066566053604,
+   "ratio": 1.001224010835967,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0030066566053604
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|4",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.20895036600086314,
+     "tA2": 0.20957860799899208,
+     "tB": 0.20952062899959856,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0030066566053604,
+     "ratio": 1.001224010835967
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|0",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.2158126739996078,
+   "tA2": 0.2160086739986582,
+   "tB": 0.007557213000836782,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.000908195035157,
+   "ratio": 0.03500157199670049,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.000908195035157
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|0",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.2158126739996078,
+     "tA2": 0.2160086739986582,
+     "tB": 0.007557213000836782,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.000908195035157,
+     "ratio": 0.03500157199670049
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|1",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2148801450002793,
+   "tA2": 0.2142489839989139,
+   "tB": 0.16125087299951701,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.997062730009957,
+   "ratio": 0.7515261123176757,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.997062730009957
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|1",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2148801450002793,
+     "tA2": 0.2142489839989139,
+     "tB": 0.16125087299951701,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.997062730009957,
+     "ratio": 0.7515261123176757
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|0",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2164490619998105,
+   "tA2": 0.21682443600002443,
+   "tB": 0.21542182300072454,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0017342371306477,
+   "ratio": 0.9943918748559443,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0017342371306477
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|0",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2164490619998105,
+     "tA2": 0.21682443600002443,
+     "tB": 0.21542182300072454,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0017342371306477,
+     "ratio": 0.9943918748559443
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|1",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21453546799966716,
+   "tA2": 0.21481709299951035,
+   "tB": 0.007558136001534876,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.001312720001355,
+   "ratio": 0.0352071313325617,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.001312720001355
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|1",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21453546799966716,
+     "tA2": 0.21481709299951035,
+     "tB": 0.007558136001534876,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.001312720001355,
+     "ratio": 0.0352071313325617
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|1",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21514047799973923,
+   "tA2": 0.2152358360017388,
+   "tB": 0.007459223999831011,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0004432359864872,
+   "ratio": 0.03466372919307727,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0004432359864872
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|1",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21514047799973923,
+     "tA2": 0.2152358360017388,
+     "tB": 0.007459223999831011,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0004432359864872,
+     "ratio": 0.03466372919307727
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|0",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21640213599857816,
+   "tA2": 0.21643424600006256,
+   "tB": 0.19464739799877862,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0001483811670169,
+   "ratio": 0.8994040524042172,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0001483811670169
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|0",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21640213599857816,
+     "tA2": 0.21643424600006256,
+     "tB": 0.19464739799877862,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0001483811670169,
+     "ratio": 0.8994040524042172
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|2",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21159402599914756,
+   "tA2": 0.21146916799989413,
+   "tB": 0.0077073579996067565,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9994099171814333,
+   "ratio": 0.03643596563790995,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9994099171814333
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|2",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21159402599914756,
+     "tA2": 0.21146916799989413,
+     "tB": 0.0077073579996067565,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9994099171814333,
+     "ratio": 0.03643596563790995
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|4",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.2085147660000075,
+   "tA2": 0.20832491299916,
+   "tB": 0.0075504379983613035,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9990894985305381,
+   "ratio": 0.03622705984463817,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9990894985305381
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|4",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.2085147660000075,
+     "tA2": 0.20832491299916,
+     "tB": 0.0075504379983613035,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9990894985305381,
+     "ratio": 0.03622705984463817
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|3",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.2171898839987989,
+   "tA2": 0.21679073300038,
+   "tB": 0.03257496999867726,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.998162202626246,
+   "ratio": 0.15012177375073363,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.998162202626246
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|3",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.2171898839987989,
+     "tA2": 0.21679073300038,
+     "tB": 0.03257496999867726,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.998162202626246,
+     "ratio": 0.15012177375073363
+    }
+   ]
+  },
+  {
+   "B": "ps|N96|0.0125",
+   "case": "dev6|2",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.20962673900066875,
+   "tA2": 0.21041039699957764,
+   "tB": 0.0074854940012301086,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0037383494235743,
+   "ratio": 0.035642058092814524,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0037383494235743
+   ],
+   "attempts": [
+    {
+     "B": "ps|N96|0.0125",
+     "case": "dev6|2",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.20962673900066875,
+     "tA2": 0.21041039699957764,
+     "tB": 0.0074854940012301086,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0037383494235743,
+     "ratio": 0.035642058092814524
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|0",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21676803700029268,
+   "tA2": 0.21727562900014163,
+   "tB": 0.19493859300018812,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.0023416367416211,
+   "ratio": 0.8982441550016448,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.0023416367416211
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|0",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21676803700029268,
+     "tA2": 0.21727562900014163,
+     "tB": 0.19493859300018812,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.0023416367416211,
+     "ratio": 0.8982441550016448
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|1",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21360503699906985,
+   "tA2": 0.21546133899937558,
+   "tB": 0.033376430999851436,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.008690347504838,
+   "ratio": 0.15557700564246668,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.008690347504838
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|1",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21360503699906985,
+     "tA2": 0.21546133899937558,
+     "tB": 0.033376430999851436,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.008690347504838,
+     "ratio": 0.15557700564246668
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+   "case": "dev6|0",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21649684400108526,
+   "tA2": 0.21581227400019998,
+   "tB": 0.21699366599932546,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9968379677586346,
+   "ratio": 1.0038819768713754,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9968379677586346
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod",
+     "case": "dev6|0",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21649684400108526,
+     "tA2": 0.21581227400019998,
+     "tB": 0.21699366599932546,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9968379677586346,
+     "ratio": 1.0038819768713754
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|4",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.2088347299995803,
+   "tA2": 0.20780154999920342,
+   "tB": 0.18830215499838232,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9950526428224895,
+   "ratio": 0.9039162648002331,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9950526428224895
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|4",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.2088347299995803,
+     "tA2": 0.20780154999920342,
+     "tB": 0.18830215499838232,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9950526428224895,
+     "ratio": 0.9039162648002331
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.0125|t2",
+   "case": "dev6|3",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21978651900099067,
+   "tA2": 0.21695910999915213,
+   "tB": 0.2640141499996389,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9871356577523948,
+   "ratio": 1.2090064901350281,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9871356577523948
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.0125|t2",
+     "case": "dev6|3",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21978651900099067,
+     "tA2": 0.21695910999915213,
+     "tB": 0.2640141499996389,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9871356577523948,
+     "ratio": 1.2090064901350281
+    }
+   ]
+  },
+  {
+   "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+   "case": "dev6|3",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.21706562299914367,
+   "tA2": 0.21657955899900116,
+   "tB": 0.03219448199888575,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9977607509036821,
+   "ratio": 0.14848306096952543,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9977607509036821
+   ],
+   "attempts": [
+    {
+     "B": "ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod",
+     "case": "dev6|3",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.21706562299914367,
+     "tA2": 0.21657955899900116,
+     "tB": 0.03219448199888575,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9977607509036821,
+     "ratio": 0.14848306096952543
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|3",
+   "rep": 1,
+   "stage": 2,
+   "tA1": 0.21671124400018016,
+   "tA2": 0.21770324099998106,
+   "tB": 0.5490096419998736,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 1.004577505908277,
+   "ratio": 2.5275844197491244,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    1.004577505908277
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|3",
+     "rep": 1,
+     "stage": 2,
+     "tA1": 0.21671124400018016,
+     "tA2": 0.21770324099998106,
+     "tB": 0.5490096419998736,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 1.004577505908277,
+     "ratio": 2.5275844197491244
+    }
+   ]
+  },
+  {
+   "B": "fd|CC|L1024|0.005|t1",
+   "case": "dev6|4",
+   "rep": 0,
+   "stage": 2,
+   "tA1": 0.2097077119997266,
+   "tA2": 0.20931865199963795,
+   "tB": 0.4311532100000477,
+   "hashes_ok": true,
+   "attempt": 0,
+   "drift": 0.9981447511091573,
+   "ratio": 2.057881064498851,
+   "valid": true,
+   "retries": 0,
+   "drifts": [
+    0.9981447511091573
+   ],
+   "attempts": [
+    {
+     "B": "fd|CC|L1024|0.005|t1",
+     "case": "dev6|4",
+     "rep": 0,
+     "stage": 2,
+     "tA1": 0.2097077119997266,
+     "tA2": 0.20931865199963795,
+     "tB": 0.4311532100000477,
+     "hashes_ok": true,
+     "attempt": 0,
+     "drift": 0.9981447511091573,
+     "ratio": 2.057881064498851
+    }
+   ]
+  }
+ ],
+ "controls": {
+  "T-dbl": {
+   "rows": [
+    {
+     "case": "dev6|0",
+     "rep": 0,
+     "t1": 0.21697678500095208,
+     "t_double": 0.43737828399935097,
+     "t2": 0.2174728200006939,
+     "ratio": 2.0134822495589284,
+     "drift": 1.0022861201475524,
+     "identity_ok": true
+    },
+    {
+     "case": "dev6|0",
+     "rep": 1,
+     "t1": 0.21635996800068824,
+     "t_double": 0.43847735000053945,
+     "t2": 0.21635600400077237,
+     "ratio": 2.0266289130601325,
+     "drift": 0.9999816786813545,
+     "identity_ok": true
+    },
+    {
+     "case": "dev6|1",
+     "rep": 0,
+     "t1": 0.21425736300079734,
+     "t_double": 0.4340538159995049,
+     "t2": 0.2143847810002626,
+     "ratio": 2.0252503029586917,
+     "drift": 1.0005946960126864,
+     "identity_ok": true
+    },
+    {
+     "case": "dev6|1",
+     "rep": 1,
+     "t1": 0.21516298200003803,
+     "t_double": 0.4321495820004202,
+     "t2": 0.21454782900036662,
+     "ratio": 2.0113507546823777,
+     "drift": 0.9971409905460815,
+     "identity_ok": true
+    }
+   ],
+   "median": 2.0193662762588103,
+   "fires": true,
+   "role": "descriptive in E5"
+  }
+ },
+ "memory": {
+  "bank": {
+   "in_use": 4364311040,
+   "peak": 17579930368,
+   "limit": 78288781312,
+   "bank_bytes": 4286582784,
+   "build_seconds": 0.4707302759998129
+  },
+  "inputs": {
+   "in_use": 4448561920,
+   "peak": 17579930368,
+   "limit": 78288781312,
+   "n_inputs": 10
+  },
+  "scoring": {
+   "in_use": 5000285440,
+   "peak": 17579930368,
+   "limit": 78288781312
+  },
+  "stage2": {
+   "in_use": 4899622144,
+   "peak": 17579930368,
+   "limit": 78288781312
+  },
+  "end": {
+   "in_use": 5168249344,
+   "peak": 17579930368,
+   "limit": 78288781312
+  }
+ },
+ "gates": {
+  "G-RR": true,
+  "A-valid": true,
+  "G-FR": true,
+  "scope": "repro checked on the dev6 cases (fom2d target_e / ladder_e exist for dev6 only)"
+ },
+ "complete": true,
+ "e5_note": "E5: comparators pinned from fom2d FROZEN-SELECTION-1024.json (H200-selected); no stage 0 / stage 1, no re-selection; stage-2 triplets and identities as c2time",
+ "compile_log": {
+  "map|L1024|1024": 0.05888385099933657,
+  "fd|central|L1024|lim20": 1.3032538459992793,
+  "ps|N96|0.0125|1024": 3.7399092900013784
+ },
+ "compile_events": [
+  [
+   "map|L1024|1024",
+   0.05888385099933657
+  ],
+  [
+   "fd|central|L1024|lim20",
+   1.3032538459992793
+  ],
+  [
+   "ps|N96|0.0125|1024",
+   3.7399092900013784
+  ]
+ ],
+ "veto": [],
+ "elapsed_seconds": 78.5
+}

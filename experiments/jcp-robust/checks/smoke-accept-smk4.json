@@ -1,0 +1,33 @@
+{
+ "smoke": "smk4",
+ "source": "runs/smk4/archive/output",
+ "checks": {
+  "E5 CPU tests (C-E5.3 drift, fixtures, missing-job paths)": {
+   "ok": true,
+   "evidence": "nd_null_consistent (1.2s)\nPASS test_g_e5_1_reference_hash_duplicates_shapes (0.0s)\nPASS test_g_e5_1_required_complete_and_finite (0.0s)\nPASS test_inventory_e5time (0.0s)\nPASS test_missing_job_gives_unavailable (6.2s)\nPASS test_pcross_gates_required (0.0s)\nPASS test_resolve_executing_device (0.0s)\nPASS test_smoke_expected_gpu_type (4.3s)\nPASS test_smoke_mode_single_job (8.1s)\nPASS test_smoke_reports_g_e5_2_descriptive (6.1s)\nPASS test_smoke_requires_full_panel_coverage (3.8s)\nPASS test_telemetry_fails_closed (0.0s)\nPASS test_telemetry_round2_versions_unknown_error_three_records (0.0s)\nALL PASS\n"
+  },
+  "E5 single-job smoke analysis: ALL (job ok, C-E5.1, q1/q2/q3/null fixtures, G-E5.1, P-cross gates)": {
+   "ok": true,
+   "evidence": "OK   GPU type is the expected A100-80G (job, contract)\nOK   job status ok (complete, GPU type, backend, sources, contract, populations, identities, equivalence, gates)\nOK   registered triplet populations complete (P-cost, P-cross)\nOK   C-E5.1 doubled/single case-median in [1.6, 2.4] for every doubled subject\nOK   executing device resolved; telemetry complete (start, between-panels, end)\nOK   P-cost: >= 5 cases with >= 2 valid reps for both subjects at 256^2 and 1024^2\nOK   P-cross: >= 5 cases with >= 2 valid reps for both ROMs and every pinned comparator\nOK   fixture q1: injected x1.5 hardware-dependent, null consistent [1, 1]\nOK   fixture q2: injected x1.5 hardware-dependent, null consistent [1, 1]\nOK   fixture q3: injected x1.5 hardware-dependent, null consistent [1, 1]\nOK   G-E5.1 reproduction of P1c (complete registered set, <= 1e-10)\nOK   P-cross gate G-RR\nOK   P-cross gate G-FR\nOK   P-cross gate A-valid\nALL True\n"
+  },
+  "smoke resource contract (registered spec, regenerated inventories, reservation <= 2 GPU-h)": {
+   "ok": true,
+   "evidence": {
+    "reservation_identity": {
+     "attempt": true,
+     "commit": true,
+     "gpu": true,
+     "gpus": true,
+     "groups": true,
+     "time_limit": true
+    },
+    "configs/e5smk4.json": {
+     "n": 318,
+     "same": true
+    }
+   }
+  }
+ },
+ "ALL": true,
+ "label": "smoke acceptance (plumbing and controls at real size); never a verdict"
+}

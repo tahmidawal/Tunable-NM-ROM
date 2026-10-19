@@ -77,7 +77,7 @@ def table(head, rows):
     return '\n'.join(out)
 
 
-def plots(inp, B2, B7, B3):
+def plots(inp, B2, B7, B3, B7T1=None):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -129,25 +129,35 @@ def plots(inp, B2, B7, B3):
         fig.savefig(HERE / 'plots' / 'b7_error_time_1024.png', dpi=130)
         plt.close(fig)
         made.append('plots/b7_error_time_1024.png')
-        # 3. floor over time per r
-        fig, ax = plt.subplots(figsize=(7, 4))
-        seen = set()
-        for mk, v in sorted(c['b7'].items()):
-            r = mk.split('|')[0]
-            if r in seen:
-                continue
-            P = [x['e_P_t'] for x in v['rows'] if 'e_P_t' in x and x.get('elig_W1') and x.get('elig_W2')]
-            if P:
-                seen.add(r)
-                P = np.array(P)
-                ln, = ax.plot(np.arange(P.shape[1]) * .05, np.median(P, axis=0), marker='o', ms=3, label=f'{r} median, n={len(P)}')
-                ax.plot(np.arange(P.shape[1]) * .05, np.max(P, axis=0), ls='--', color=ln.get_color(), label=f'{r} worst')
-        ax.axvline(.25, color='grey', lw=.8)
-        ax.set_yscale('log')
-        ax.set_xlabel('t')
-        ax.set_ylabel('bank floor e_P(t) = ||(I - Pi) R(t)|| / ||R(t0)||')
-        ax.set_title('Bank floor past the training horizon (1024^2 references)')
-        ax.legend(fontsize=7)
+        # 3. floor over time per bank width: median and worst over eligible cases, every B7 panel (DESIGN 5.3)
+        panels = [('2D $1024^2$ references, T = 0.5', c, ('W1', 'W2'))]
+        if B7T1:
+            panels.append(('2D $1024^2$ references, T = 1.0 (W3 provisional)', B7T1, ('W1', 'W2', 'W3')))
+        if B3 and B3.get('b7'):
+            panels.append(('3D $65^3$ references, T = 0.5', B3, ('W1', 'W2')))
+        fig, axs = plt.subplots(1, len(panels), figsize=(6 * len(panels), 4.2))
+        axs = np.atleast_1d(axs)
+        for ax, (title, src, wins) in zip(axs, panels):
+            seen = set()
+            for mk, v in sorted(src['b7'].items()):
+                r = mk.split('|')[0]
+                if r in seen:
+                    continue
+                P = [x['e_P_t'] for x in v['rows'] if 'e_P_t' in x and all(x.get(f'elig_{w_}') for w_ in wins)]
+                if P:
+                    seen.add(r)
+                    P = np.array(P)
+                    t = np.arange(P.shape[1]) * .05
+                    ln, = ax.plot(t, np.median(P, axis=0), marker='o', ms=3, label=f'{r} median, n={len(P)}')
+                    ax.plot(t, np.max(P, axis=0), ls='--', color=ln.get_color(), label=f'{r} worst')
+            ax.axvline(.25, color='grey', lw=.8)
+            if 'W3' in wins:
+                ax.axvspan(.5, 1., color='grey', alpha=.12)
+            ax.set_yscale('log')
+            ax.set_xlabel('t (training horizon 0.25 marked)')
+            ax.set_title(title, fontsize=9)
+            ax.legend(fontsize=6)
+        axs[0].set_ylabel('bank floor e_P(t) = ||(I - Pi) R(t)|| / ||R(t0)||')
         fig.tight_layout()
         fig.savefig(HERE / 'plots' / 'b7_floor_time.png', dpi=130)
         plt.close(fig)
@@ -214,7 +224,7 @@ def main():
     B7T1 = J(I.get('b7b8_t1'))
     B3 = J(I.get('b3'))
     L = J(I['ledger'])
-    made = plots(I, B2, B7, B3)
+    made = plots(I, B2, B7, B3, B7T1)
     L_ = []
     w = L_.append
     w('# jcp-budget: error budget, longer horizons and physical diagnostics for the off-mesh Burgers ROM (B2, B7, B8)')

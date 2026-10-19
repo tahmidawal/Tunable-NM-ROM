@@ -1,18 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-19T02:52:18Z",
- "step": "job audit 13 SUBMIT; s2d256a submitted (6003086, A100-80G, 4 h); results audit 2 (3D) running",
+ "utc": "2026-10-19T02:57:35Z",
+ "step": "results audit 2 (3D) RESULTS-CONFIRMED -> A45 restatements applied; s2d256a 6003086 RUNNING (2D 256 Stage B); next: collect s2d256a, analyze c2d256, results audit 3 (2D 256 + 2D 1024 V fix), make_report, report audit",
  "waiting_on": {
   "slurm_jobs": [
    6003086
   ],
-  "codex_output": "audits/codex-results-2.md",
-  "codex_pid": [
-   422127
-  ],
+  "codex_output": null,
+  "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T03:11:18Z",
+ "expected_finish_utc": "2026-10-19T03:16:35Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

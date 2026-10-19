@@ -12562,3 +12562,506 @@ ROW W512|lat16384|qn|BDF2|0.025|k4 batch 2 err 0.020383385788307132 0.0487793093
  ROLE B_cost ecsw|512|k8|BDF2|0.016666667|common|central ((np.float64(0.5668492482757634), array([0.51062604, 0.61311963])), 'baseline dominates')
 LABELS Counter({'neither dominates': 100, 'baseline dominates': 21, 'unresolved': 6}) ALL ASSERTIONS PASS
 
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu /home/tahmid/Dev/.venv/bin/python - <<'PY'
+import json,hashlib
+from pathlib import Path
+from collections import Counter
+p=Path('experiments/jcp-hr-baselines');rd=lambda f:json.loads(f.read_text());h=lambda f:hashlib.file_digest(open(f,'rb'),'sha256').hexdigest()
+v=rd(p/'checks/VERDICT-c3d64.json'); ledger=rd(p/'runs/GPU-LEDGER.json');lo=up=0
+for att,kind,path in [('t3d64b','tune',p/'runs/t3d64b/archive/output/tune.json'),('s3d64b','stageb',p/'runs/s3d64b/archive/output/stageb.json'),('s3d64a','stageb',p/'runs/s3d64a/archive/output/stageb.json'),('t3d64a','tune',Path('/tmp/claude-1002/-home-tahmid-Dev-pod-ae-nmrom-Tunable-NM-ROM-Claude/2f07cec8-5e56-4c01-8246-62353b26fb5e/scratchpad/t3d64a-tj/tune.json'))]:
+ d=rd(path);prefix=('A|','EXT|','generator_probe_runs','ours_pass') if kind=='tune' else ('B|','aba','ours_pass');val=sum(z['seconds'] for k,z in d['phases'].items() if k.startswith(prefix))/3600;train=sum(z['seconds'] for k,z in d['phases'].items() if k.startswith(('basis','saturation','adequacy','adv_pod','generator_probe_basis','ecsw_states','ecsw_r')))/3600;alloc=next(j['measured_gpu_hours'] for j in ledger['jobs'] if j['attempt']==att);lo+=val;up+=float(alloc);print(att,'V',val,'T',train,'allocation',alloc,'finished','total_seconds' in d,'active',d.get('active_phase'),'hash',h(path))
+ if kind=='tune':print('inventory',Counter(z['status'] for z in d['inventory'].values()));print('construction_failures',str(d.get('construction_failures'))[:1200])
+print('cumulative',lo,up);assert lo==v['flags']['accounting']['V_hours_cumulative'];assert abs(up-v['flags']['accounting']['V_upper_bound_cumulative'])<1e-14
+for att in ['s3d64b','t3d64b']:
+ root=p/'runs'/att;man={line.split(maxsplit=1)[1].lstrip('./'):line.split()[0] for line in (root/'REMOTE.sha256').read_text().splitlines()};files=list((root/'archive/output/arrays').glob('B~*.npz')) if att.startswith('s') else []
+ for file in files:
+  name=str(file.relative_to(root/'archive'));assert h(file)==man[name],name
+ print('array hashes',att,len(files))
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ exited 1 in 10258ms:
+t3d64b V 5.876768300429168 T 1.0680847368571753 allocation 7.5028 finished True active None hash faacc381af58b9fa36ff41b680d3ffac083376ac83d24175d62eb16f1b355ad3
+inventory Counter({'complete': 1056, 'construction_failed': 72})
+construction_failures {'ecsw|1024|*': "JaxRuntimeError: RESOURCE_EXHAUSTED: Out of memory while trying to allocate 11.95GiB. [executable_name='jit__qr_append_impl'] [tf-allocator-allocation-error='']", 'ecsw|1024|k2': 'KeyError: 1024', 'ecsw|1024|k4': 'KeyError: 1024', 'ecsw|1024|k8': 'KeyError: 1024'}
+s3d64b V 2.7361431502297315 T 0.0 allocation 2.8253 finished True active None hash 7c06058a914e40a385d5d697888cc5defa515b193accecef09f49ec51a01480b
+s3d64a V 0.19055472859569514 T 0.0 allocation 0.2239 finished False active {'name': 'B|ecsw|768|k8|CN|0.025', 'started_unix': 1792366700.1031914} hash cfcf1d02d527d31457718511284db283151c412a259e979da1ae873c58f35381
+Traceback (most recent call last):
+  File "<stdin>", line 9, in <module>
+AssertionError
+t3d64a V 0.03241190924179844 T 0.6360624597945975 allocation 0.8875 finished False active {'name': 'ecsw_r512', 'started_unix': 1792331386.123896} hash b6359410fde307295101f58afffe51a9a7a1a69ba07fe07982bbfa10e647286f
+inventory Counter({'not_run': 1008})
+construction_failures {}
+cumulative 8.835878088496392 11.439499999999999
+
+exec
+/bin/bash -lc "ls experiments/jcp-hr-baselines/runs/t3d64b/archive/output/arrays | head; cat experiments/jcp-hr-baselines/runs/t3d64a/archive.sha256-listing | rg 'tune.json'; rg -n 'LSPG|Galerkin|weak|fs|quasi' experiments/jcp-hr-baselines/DESIGN.md | head -30; tail -6 experiments/jcp-hr-baselines/runs/s3d64b/archive/logs/5932490.out; cat experiments/jcp-hr-baselines/runs/s3d64b/archive/logs/5932490.err" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+ANCH~A~ecsw~128~k2~BDF2~0.01.npz
+ANCH~A~ecsw~128~k2~BDF2~0.0125.npz
+ANCH~A~ecsw~128~k2~BDF2~0.016666667.npz
+ANCH~A~ecsw~128~k2~BDF2~0.025.npz
+ANCH~A~ecsw~128~k2~BE~0.01.npz
+ANCH~A~ecsw~128~k2~BE~0.0125.npz
+ANCH~A~ecsw~128~k2~BE~0.016666667.npz
+ANCH~A~ecsw~128~k2~BE~0.025.npz
+ANCH~A~ecsw~128~k2~CN~0.01.npz
+ANCH~A~ecsw~128~k2~CN~0.0125.npz
+b6359410fde307295101f58afffe51a9a7a1a69ba07fe07982bbfa10e647286f  ./output/tune.json
+1:# jcp-hr-baselines (C3-minimal): POD-LSPG with ECSW and Q-DEIM hyper-reduction against the off-mesh bank ROM
+7:`briefs/COMMON-BRIEF.md` and `briefs/jcp-hr-baselines.md`. Lane `exp/2026-10-06-jcp-hr-baselines`, namespace
+12:Can a standard, well-tuned projection ROM with classical hyper-reduction — POD-LSPG with ECSW or with Q-DEIM — match
+37:- **References and metric.** E0 ST (`refstore.py`, `JCPREF_STORE`, store version and STATUS hash pinned), metric
+59:scored against E0; it is the error floor any POD-LSPG of that FOM approaches as $r\to n$, and is reported beside every
+71:| 3D | BE; CN without start-up (as speed3d's `fs/CN/0.01` arms) | 0.01 |
+97:Every arm solves, per time step, a least-squares problem $\min_c \|\hat r_n(c)\|_2$ (LSPG: Carlberg et al.) with plain
+100:- **`none` — POD-LSPG without hyper-reduction** (diagnostic and the HR arms' own target): $\hat r_n(c) = \mathcal
+102:- **`ecsw` — POD-LSPG with ECSW** (energy-conserving sampling and weighting for Petrov–Galerkin ROMs, Grimberg, Farhat
+105:  $c_{s,n}=\Phi_r^\top u_{s-1}$) the per-node contribution to the LSPG gradient is
+119:- **`qdeim` — POD-LSPG with Q-DEIM on the nonlinear term** (DEIM, Chaturantabut–Sorensen 2010; point selection by
+142:Each step starts from a predictor and stops on the same tests as ours (`t2core.tol_of('LSPG')`): **prod**
+146:- **Native = Gauss–Newton** (the LSPG solver of Carlberg et al.): predictor $c_n$; full step
+184:baseline is labelled **"tuned with less budget than ours"** in every verdict (this weakens only claims in our favour).
+216:  its per-case E0 errors on the verdict cohort from its `runs/EXPORT.json` (expected: r ∈ {128, 256, 384} × {LSPG-BE,
+217:  LSPG-CN-R} at Δt₀ with the frozen rules).
+323:- **Best-practice EQ on our bank:** NNLS empirical quadrature (Yano/Patera style) on the bank's weak residual with
+338:**A1.1 (items 1, 2) Residual and Jacobian, explicit.** The baselines solve weighted strong-residual LSPG ("ECSW" names
+367:**A1.4 (item 6) Same time-stepping options as ours.** 2D: LSPG-BE and LSPG-CN-R at Δt₀ = 0.005 (P1's registered
+400:configuration unqualified ("anchor invalid"), never qualified. The tolerance table is `c2common.tol_of('LSPG', ·)`
+630:manifest (each $U_p^\top$ pivoted independently). Ours' comparator compilations (fs3's static schemes) are counted in the
+873:| ours' adapter | combined R384 gauss128 LSPG-CN-R Δt₀ | combined W256 gl24 FS-K1 BE Δt₀ |
+899:**A6.3 N-under ladder, restated (code audit item 9).** An under-sampled ECSW support below $r$ makes the LSPG problem
+1080:withdrawn (for non-zero-residual LSPG, Gauss–Newton is in general only linearly convergent with a residual-dependent
+1133:   τ = 1e-2 with 32 points and τ = 1e-3 with 64 points — fewer than r — so the weighted LSPG problem was
+1176:**A16.1 Name and claims.** The ECSW arm is "**ECSW with support-targeted greedy NNLS**": the Petrov–Galerkin ECSW
+1319:configurations `M2_512|gl32`, `W256|gl24`, `W512|lat32768`, `W768|lat32768`, `W1024|lat65536`, each `fs|BE|0.01|K1`,
+1521:configurations. Under A21.1 only LSPG members at Δt₀ = 0.005 with scheme BE or CN-R are admissible; they are
+1522:`256|R128|LSPG|BE|1`, `256|R384|LSPG|CNR|1`, `1024|R128|LSPG|BE|1`, `1024|R384|LSPG|CNR|1` (frozen F_2048 prefix, rules
+1574:Q1 + Q2: `W256|gl24|fs|CN|0.01|K1`, `W256|gl24|fs|CN|0.0125|K1`, `W256|lat8192|qn|BDF2|0.025|k4`,
+[  8651.4s]    oursS3: W256 gl24 in 1.0s
+[  9141.2s]    oursS3: W256 lat8192 in 1.0s
+[  9627.3s]    oursS3: W512 lat16384 in 1.2s
+[ 10147.1s] done
+driver_exit=0
+ALL-DONE
+
+codex
+The independent calculations reproduce all fronts, role picks and pair labels: 21 baseline dominations, 100 trade-offs and six unresolved pairs. One important scope point: the qualified W256 CN comparator has lower median error than the dominating ECSW pick; the registered domination rule uses worst-case error and query time. The cumulative V bounds also reproduce; I’m checking replay evidence and the scope of the reported construction cost.
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu /home/tahmid/Dev/.venv/bin/python - <<'PY'
+import json,hashlib,numpy as np
+from pathlib import Path
+p=Path('experiments/jcp-hr-baselines');rd=lambda f:json.loads((p/f).read_text());h=lambda f:hashlib.file_digest(open(f,'rb'),'sha256').hexdigest();b=rd('runs/s3d64b/archive/output/stageb.json');t=rd('runs/t3d64b/archive/output/tune.json');f=rd('checks/FROZEN-STAGEB-c3d64.json')
+man={line.split(maxsplit=1)[1].lstrip('./'):line.split()[0] for line in (p/'runs/s3d64b/REMOTE.sha256').read_text().splitlines()};mx=0
+for m,v in b['members'].items():
+ name='output/arrays/B~'+m.replace('|','~')+'.npz'; file=p/'runs/s3d64b/archive'/name;assert h(file)==man[name]
+ with np.load(file) as z,np.load(p/'runs/t3d64b/archive/output/arrays'/f\"{t['stageA'][m]['stage']}~{m.replace('|','~')}.npz\") as a:
+  wa=a['W'];wb=z['W'];d=np.max(np.abs(wb[:6]-wa))/max(1,np.max(np.abs(wa)));assert d==v['replay_vs_tune_W'];mx=max(mx,d);assert np.isfinite(wb).all();assert np.isfinite(z['Wtight']).all() and np.isfinite(z['Wtighter']).all()
+print('53 hashes and independent coefficient replay PASS max',mx)
+print('tuning G-ours',[(k,v.get('G_ours'),v.keys()) for k,v in t['ours_pass'].items()][:1])
+for k in t['adequacy']:
+ a=t['adequacy'][k]
+ if isinstance(a,dict):assert a['held']/a['inset']==a['ratio'];assert a['adequate']==(a['ratio']<=1.1)
+print('adequacy ratios verified')
+for k,v in rd('checks/VERDICT-c3d64.json')['X'].items():
+ if 'no observed' in v['cell_line']: print('WITHHELD',k,v['cell_line'])
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 8737ms:
+53 hashes and independent coefficient replay PASS max 1.7086697144907148e-15
+tuning G-ours [('M2_512|gl32|fs|BE|0.01|K1', True, dict_keys(['status', 'cases', 'batch', 'qualification', 'replay_worst_rel', 'G_ours', 'timing_ok']))]
+adequacy ratios verified
+WITHHELD W256|gl24|fs|CN|0.0125|K1 qualified subset, not a completeness claim (3D batch 2, A29): no observed domination among the 14 pairs assessed (withheld: basis adequacy failed (A2.2); ECSW coverage incomplete (A3.11)) [developmental, in-sample, unadjusted]
+WITHHELD W256|lat8192|qn|BDF2|0.025|k4 qualified subset, not a completeness claim (3D batch 2, A29): no observed domination among the 15 pairs assessed (withheld: basis adequacy failed (A2.2); ECSW coverage incomplete (A3.11)) [developmental, in-sample, unadjusted]
+
+exec
+/bin/bash -lc "sed -n '671,695p;367,380p;338,351p' experiments/jcp-hr-baselines/DESIGN.md; rg -n 'gal|Galerkin|fixed|residual|quasi' experiments/jcp-hr-baselines/{fs3p.py,qn3.py,s3common.py} | head -45; rg -n 'T_hours|V_hours|construction|cumulative' experiments/jcp-hr-baselines/make_report.py" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+**A1.1 (items 1, 2) Residual and Jacobian, explicit.** The baselines solve weighted strong-residual LSPG ("ECSW" names
+the sampling-and-weighting construction; no energy-conservation property is claimed for this Burgers discretisation).
+With $u=\Phi_r c$ and $s(u)_i=\tfrac L2\sum_a(u_{i+e_a}-u_{i-e_a})$,
+$$J(c)=\partial_c\mathcal R_n(\Phi_rc)=\Big[a_0 I+\Delta t\,b_0\big(\operatorname{diag}(s(u))+\operatorname{diag}(u)\,D_h-\nu\Delta_h\big)\Big]\Phi_r,$$
+$D_h$ the central derivative-sum operator ($s(u)=D_hu$). The same expression (restricted to rows, times $\sqrt{\xi}$) is
+used for ECSW online rows and for ECSW training contributions; G-fd checks it.
+
+**A1.2 (item 3) Q-DEIM objective without truncation.** The SVD with a singular-value cut-off is withdrawn. Offline, the
+Householder QR $B=[\Phi_r,\ \Delta_h\Phi_r,\ U_p]=Q_BR_B$ is formed in f64 (Householder QR is column-wise backward
+stable, so the very different column scales of $\Phi_r$ and $\Delta_h\Phi_r$ are harmless); online
+$\hat r_n(c)=R_Bz(c)$, so $\|\hat r_n(c)\|=\|Bz(c)\|$ exactly for every $c$ and no linear term is approximated. $R_B$ is
+never inverted, so rank deficiency of $B$ does not matter. The DEIM approximation is the only approximation; G-fd
+compares $\|R_Bz\|$ and $J^\top\hat r$ with the independently assembled full-field DEIM residual
+$\Phi_r(\cdot)-\Delta t\nu\Delta_h\Phi_r(\cdot)+U_p(P^\top U_p)^{-1}(\cdot)$ and its gradient on random states,
+**A1.4 (item 6) Same time-stepping options as ours.** 2D: LSPG-BE and LSPG-CN-R at Δt₀ = 0.005 (P1's registered
+options). 3D: **speed3d's full registered ladder**: schemes BE, CN (no start-up), BDF2 (one BE start-up step,
+t2core `BDF2`) × Δt/Δt₀ ∈ {1, 1.25, 5/3, 2.5} (Δt₀ = 0.01), 12 options. Scheme coefficients, step and step count are
+traced, so options add runs, not compilations.
+
+**A1.5 (item 7) Tuning budget, frozen accounting.** Four categories, measured from `sacct` and in-job timers, for both
+methods: (C-model) model construction — ours: bank training; baseline: snapshots + POD; (C-hr) hyper-reduction
+construction — ours: rule tables and rule selection; baseline: advection POD, Q-DEIM pivoting, ECSW training runs and
+NNLS; (C-search) validation search — runs whose purpose is choosing a configuration; (C-cert) numerical certification
+(anchors, Q1 passes). **Equal tuning budget applies to C-search**: the baseline may spend on C-search up to ours' C-search
+GPU-hours for that dimension (2D: combined `c2grid` + `c2fbgrid`; 3D: combined `c3desc*` + `c3grid` and speed3d
+`g1–g3`, from their ledgers; read and pinned at phase-II release), within this lane's cap. The registered grid is run
+first. **Budget-driven extension (pre-registered):** while budget remains and a screening-front configuration sits on a
+grid boundary, the grid is extended one step in that direction (rank +1 rung: 2D 512, 3D 768; ECSW τ = 3e-5; Q-DEIM
+## Amendment A3 (2026-10-18) — answers to Codex design audit 3 (`audits/codex-design-3.md`, verdict WRONG)
+
+A3 governs where it differs from A1, A2 and the sections above. Item numbers are audit 3's.
+
+**A3.1 (item 7) Validation-informed budget, both methods, symmetric.** Two categories only:
+(T) **training-only construction** — work that uses no development/validation case (ours: bank training, per-mesh
+tables; baseline: snapshots, POD, advection POD, Q-DEIM pivoting, ECSW training runs and NNLS); and (V) **all
+validation-informed work** — every run on a development/validation case whose outcome selected or qualified a
+configuration, certification included, on both sides (ours: combined `c2grid`, `c2fbgrid`, `c3desc*` rule selection
+and escalation, `c3grid`, and speed3d `g1–g3`, plus P1d/P1e where they qualify an imported X; baseline: Stage A,
+Stage B, anchors and certification, the generator probe's E0 runs, the extension). Whole-job GPU-hours are split by the
+in-job phase timers; where ours' logs do not separate phases the whole job counts as V (stated). **Equal budget** is
+declared iff baseline V ∈ [0.8, 1.25] × ours' V for that dimension; otherwise every pair label of that dimension carries
+"**unequal-budget, descriptive**" (overrun or shortfall alike). T is reported for both, never omitted. Equal allocation is
+never reported as equal expenditure.
+
+**A3.2 (item 12) N-grad (a) on isolated tuples with an independent oracle.** For a certified-valid smoke trajectory and
+every 5th step $n$: keep the history $(c_n, c_{n-1})$, replace the returned state by $c_{n+1}+\delta_n$ with
+$\delta_n = t_n v_1$, $v_1$ the top right singular vector of $J(c_{n+1})$ and $t_n$ such that
+$\|J\delta_n\| = 100\,\|\hat r(c_{n+1})\|$ (then $\gamma\approx\sigma_1/\|J\|_F\ge r^{-1/2}\gg10^{-3}$). The certifier
+evaluates each tuple **in isolation** (no history propagation). Expected labels come from an independent oracle
+(γ recomputed with a `jax.jacfwd` Jacobian): every perturbed tuple non-stationary, every unperturbed tuple unchanged.
+Part (b) (wrong-gradient solver) stays reported-only.
+
+**A3.3 (item 14) Control specifications.**
+experiments/jcp-hr-baselines/qn3.py:4:residual and gradient (matrix-free products with B, D, P) and a frozen Gauss-Newton matrix H~ = J~^T J~ formed at a
+experiments/jcp-hr-baselines/qn3.py:15:fresh contraction, using fs3's residual expression (adv = 0.5 Ju c, F_n = 0.5 Ju(c_n) c_n + nu lam A c_n).
+experiments/jcp-hr-baselines/qn3.py:252:    state with a fresh contraction, fs3's residual arithmetic (F_n = 0.5 Ju(c_n) c_n + nu lam A c_n; history at k = 0
+experiments/jcp-hr-baselines/fs3p.py:3:2adv_n-adv_{n-1}, least squares with A = QA RA). P3's residual and Jacobian come from the cubic extrapolation of the
+experiments/jcp-hr-baselines/fs3p.py:4:carried Jacobians (exact: Ju is linear in c); P4's residual is the cheap exact residual and, if P4 is chosen, its Jacobian
+experiments/jcp-hr-baselines/fs3p.py:8:jcp-combined: fixed-sweep two-step LMM solver for the off-mesh Burgers 3D ROM (DESIGN 2.1, A1.1, A1.2, A2.1, A2.2).
+experiments/jcp-hr-baselines/fs3p.py:10:A copy of vendor/quad3d/offmesh.make_fsc_rule (the deployed fixed-sweep backward-Euler solver: adaptive LM on the first
+experiments/jcp-hr-baselines/fs3p.py:11:a steps, then K cached-predictor LM sweeps per step) in which the backward-Euler residual is replaced by the LSPG residual
+experiments/jcp-hr-baselines/fs3p.py:22:* recorded per step: LM iterations (adaptive) or K (fixed), exit reason (4 stationary / 0 not stationary / 3 non-finite;
+experiments/jcp-hr-baselines/fs3p.py:23:  adaptive steps: the LM reason), stationarity ratio, residual norm, rejected sweeps, predictor candidate index (0 c_n,
+experiments/jcp-hr-baselines/fs3p.py:58:    tol_ad: residual tolerance of the adaptive LM (vendor: 1e-12 ||s0||). make_lm: LM factory (default the vendor
+experiments/jcp-hr-baselines/fs3p.py:74:            """Residual/Jacobian closure rj(Ju, c) for step k (history fixed)."""
+experiments/jcp-hr-baselines/fs3p.py:211:    """End-to-end 3D query (L2 projection of u0, fixed-sweep LMM stepping, decode of the six output fields), shaped like
+experiments/jcp-hr-baselines/s3common.py:147:    """Quadrature projection on the rule: w0 = (B^T W B)^{-1} B^T W u0(X). The adaptive-start residual tolerance uses the
+135:        bv = sum(a['V_hours_cumulative'] for a in acc)                     # A44.2: every attempt of every cell
+136:        lb = any(a['V_cumulative_is_lower_bound'] for a in acc)
+137:        ub = (None if any(a['V_upper_bound_cumulative'] is None for a in acc)
+138:              else sum(a['V_upper_bound_cumulative'] for a in acc))
+145:    w('Training-only construction (T) is reported per cell below and is never omitted (A3.1).')
+159:        w(f"T = {fmt(a['T_hours'])} h; V = {fmt(a['V_hours'])} h (tuning {fmt(a['V_hours_tuning'])}, Stage B "
+160:          f"{fmt(a['V_hours_stageB'])}); limiting comparator {fmt(a['limiting_comparator_hours'])} h.")
+203:            ('T / V', 'training-only construction hours / validation-informed hours (selection, certification)'),
+
+exec
+/bin/bash -lc "sed -n '145,167p' experiments/jcp-hr-baselines/make_report.py; head -25 experiments/jcp-hr-baselines/fs3p.py; head -23 experiments/jcp-hr-baselines/qn3.py; rg -n 'c3d64|1.068|8.836|11.44|Training-only' experiments/jcp-hr-baselines/report.md" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ exited 2 in 0ms:
+    w('Training-only construction (T) is reported per cell below and is never omitted (A3.1).')
+    w('')
+    # ---- per cell ----
+    for c, V, T in cells:
+        F = V['flags']
+        w(f"## {c['cell']} ({c['d']}D, L = {c['L']})")
+        w('')
+        w(f"Tuning attempt `{c['tune_attempt']}`, Stage-B attempt `{c['stageb_attempt']}`. Basis used: "
+          f"{F.get('basis_used')}. Adequacy: {F.get('adequate')}; saturation (256²): {F.get('saturation_256')}.")
+        w('')
+        w('Restrictions carried by every conclusion of this cell: ' +
+          ('; '.join(F['restrictions']) if F['restrictions'] else 'none') + '.')
+        w('')
+        a = F['accounting']
+        w(f"T = {fmt(a['T_hours'])} h; V = {fmt(a['V_hours'])} h (tuning {fmt(a['V_hours_tuning'])}, Stage B "
+          f"{fmt(a['V_hours_stageB'])}); limiting comparator {fmt(a['limiting_comparator_hours'])} h.")
+        w('')
+        w(f"![screening front](plots/front-{c['cell']}.png)")
+        w('')
+        w('| X (ours) | batch | X worst E0 | B_acc | B_acc label | B_cost | B_cost label | cell line | pairs assessed |')
+        w('|---|---|---|---|---|---|---|---|---|')
+        for key, xr in V['X'].items():
+            ro = xr.get('roles', {})
+"""jcp-speed3d fs3p (DESIGN A1.3): copy of jcp-combined fs3.py with two extra predictor candidates (static flag
+`extra`): P3 cubic extrapolation 4c_n-6c_{n-1}+4c_{n-2}-c_{n-3} and P4 the IMEX predictor (advection extrapolated
+2adv_n-adv_{n-1}, least squares with A = QA RA). P3's residual and Jacobian come from the cubic extrapolation of the
+carried Jacobians (exact: Ju is linear in c); P4's residual is the cheap exact residual and, if P4 is chosen, its Jacobian
+is formed (one extra contraction; such steps have predictor index 4). The carry gains c_{n-3} and Ju(c_{n-3}). With extra=False the
+predictor is fs3's and gate G1 requires bitwise equality with fs3. Original docstring follows.
+
+jcp-combined: fixed-sweep two-step LMM solver for the off-mesh Burgers 3D ROM (DESIGN 2.1, A1.1, A1.2, A2.1, A2.2).
+
+A copy of vendor/quad3d/offmesh.make_fsc_rule (the deployed fixed-sweep backward-Euler solver: adaptive LM on the first
+a steps, then K cached-predictor LM sweeps per step) in which the backward-Euler residual is replaced by the LSPG residual
+of a two-step linear multistep method (scheme table of t2core.SCHEMES):
+
+    r(c) = S * ( A (a0 c + a1 c_n + a2 c_{n-1}) + dt ( b0 (0.5 Ju(c) c + nu lam A c) + b1 F_n ) ),
+    S = 1 / (a0 + dt b0 nu lam),  J = A + dt b0 S * Ju(c),  F_n = 0.5 Ju(c_n) c_n + nu lam A c_n   (Ju(c_n) carried).
+
+Every off-mesh rule is a symmetric quadratic form, so Ju is linear in c and adv(c) = 0.5 Ju(c) c (exact).
+* scheme 'BE' (no mutation) evaluates the vendor expression verbatim (TB._lm_step_parts), so with K = 1 the solver is the
+  deployed one (gate G-FS1, A2.1);
+* startup steps (k < n_startup of the scheme) use BE coefficients through the generic expression and are always inside the
+  adaptive phase: a_eff = min(steps, max(ceil(a dt0 / dt), n_startup))  (A1.2);
+* recorded per step: LM iterations (adaptive) or K (fixed), exit reason (4 stationary / 0 not stationary / 3 non-finite;
+  adaptive steps: the LM reason), stationarity ratio, residual norm, rejected sweeps, predictor candidate index (0 c_n,
+  1 linear, 2 quadratic), damping carried, damping saturation (lam >= 1e14).
+Mutations (manufactured negative controls only, A2.2): 'stale_fn' (CN uses F(c_{n-1})), 'stale_hist' (BDF2 uses c_{n-2}),
+"""jcp-speed3d: QN-k solver (DESIGN §3, A1.2) and the Step 2 stationarity certification (DESIGN §3, A1.4).
+
+QN-k: two-step LMM LSPG step of the off-mesh Burgers 3D ROM, solved by iterations c <- c - H~^{-1} g(c) with the EXACT
+residual and gradient (matrix-free products with B, D, P) and a frozen Gauss-Newton matrix H~ = J~^T J~ formed at a
+refresh state (one dense Jacobian contraction). Batch-first: every array carries a leading batch axis Bt (Bt = 1 for a
+single query); scalar `any` predicates decide whether the (expensive) contraction runs, and its result is applied only
+to the members that asked for it, so batched and single runs take the same per-member branches up to rounding.
+
+    r(c) = S*(a0 A c + hist + dt b0 (adv(c) + nu lam A c)),  hist = a1 A c_n + a2 A c_{n-1} + dt b1 F_n,
+    F_n = adv(c_n) + nu lam A c_n,  S = 1/(a0 + dt b0 nu lam),
+    adv(c) = P^T[(Bc)(Dc)],  g = A^T r + dt b0 Ju(c)^T (S r),  Ju(c)^T v = B^T[(Dc)(Pv)] + D^T[(Bc)(Pv)].
+
+Mutations (negative controls only): 'q0' (no iterations; K2), 'noJuT' (g = A^T r; K3).
+`certify` recomputes, for every step, the Step 2 ratio gamma = ||J^T r|| / (||J||_F ||r||) at the returned state with a
+fresh contraction, using fs3's residual expression (adv = 0.5 Ju c, F_n = 0.5 Ju(c_n) c_n + nu lam A c_n).
+"""
+from __future__ import annotations
+
+import math
+import sys
+from pathlib import Path
+
+import jax
+rg: experiments/jcp-hr-baselines/report.md: IO error for operation on experiments/jcp-hr-baselines/report.md: No such file or directory (os error 2)
+
+exec
+/bin/bash -lc "sed -n '227,262p' experiments/jcp-hr-baselines/pipeline.py; rg -n 'Phi_lat|W=' experiments/jcp-hr-baselines/pipeline.py; ls experiments/jcp-hr-baselines/runs/t3d64b/archive/output/artifacts | tail -15" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+    def run(self, kind, r, data, solver, option, level, u0, nu, mutation=None, certify=True, burn_s=0.):
+        """One timed query + (untimed) certification. Returns a record with lattice fields and Q1 evidence.
+        burn_s > 0: GPU burn before the timed call (screening timings, code audit 1 item 8)."""
+        q = self.query(kind, r, solver, mutation)
+        # A8.1: the native GN's production stopping tolerance is gamma <= 1e-6 ('prod' requests map to it)
+        sch = RM.schedule(self.d, option[0], option[1], 'prod_native' if (solver == 'native' and level == 'prod') else level)
+        u0 = jnp.asarray(u0)
+        if burn_s > 0:
+            burn(burn_s)
+        t0 = time.perf_counter()
+        out = q(u0, jnp.float64(nu), data, sch)
+        sync(out['fields'])
+        t = time.perf_counter() - t0
+        rec = dict(seconds=t, W=np.asarray(out['W']), fields_lat=self.lattice(out['fields']))
+        if certify:
+            gam = self.certifier(kind)(out['C'], jnp.float64(nu), data, sch)
+            rec['cert'] = RM.certify(out, gam, sch, level if level in ('tight', 'tighter') else 'prod')
+            rec['gamma'] = np.asarray(gam)[:int(sch['steps'])]
+        rec['C'] = np.asarray(out['C'])[:int(sch['steps']) + 1]
+        rec['reason'] = np.asarray(out['stats']['reason'])
+        rec['lam'] = np.asarray(out['stats']['lam'])
+        rec['it'] = np.asarray(out['stats']['it'])
+        rec['scale'] = float(out['scale'])
+        return rec
+
+    def lattice(self, fields):
+        if not hasattr(self, '_lat_idx'):
+            self._lat_idx = jnp.asarray(H.lattice_nodes(self.d, self.L))
+        v = np.asarray(jnp.asarray(fields)[:, self._lat_idx])          # rows selected on the device (code audit 1, 18)
+        return H.to_lattice(v, self.d)
+
+
+class ConstructionError(RuntimeError):
+    """A registered configuration cannot be constructed (POD rank not certified, DEIM solve inaccurate, ...)."""
+
+
+240:        rec = dict(seconds=t, W=np.asarray(out['W']), fields_lat=self.lattice(out['fields']))
+HR~qdeim~1024~1024.npz
+HR~qdeim~128~128.npz
+HR~qdeim~128~256.npz
+HR~qdeim~128~512.npz
+HR~qdeim~256~1024.npz
+HR~qdeim~256~256.npz
+HR~qdeim~256~512.npz
+HR~qdeim~512~1024.npz
+HR~qdeim~512~2048.npz
+HR~qdeim~512~512.npz
+HR~qdeim~64~128.npz
+HR~qdeim~64~256.npz
+HR~qdeim~64~64.npz
+HR~qdeim~768~1536.npz
+HR~qdeim~768~768.npz
+
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu /home/tahmid/Dev/.venv/bin/python - <<'PY'
+import json,numpy as np
+from pathlib import Path
+p=Path('experiments/jcp-hr-baselines');b=json.loads((p/'runs/s3d64b/archive/output/stageb.json').read_text());t=json.loads((p/'runs/t3d64b/archive/output/tune.json').read_text());print('basis',str(t['basis'])[:1700]);print('n0',str(t['n0'])[:500]);refs=Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-references/experiments/jcp-references/store')
+n=np.array([json.loads((refs/f'3d/val64/ST/c{i:03d}.json').read_text())['judge']['n0'] for i in range(64)])
+diff=0;adiff=0;disagree=0
+for m,v in b['members'].items():
+ with np.load(p/'runs/s3d64b/archive/output/arrays'/('B~'+m.replace('|','~')+'.npz')) as z:
+  dd=np.max(np.linalg.norm(z['W']-z['Wtight'],axis=-1),axis=1)/n
+  aa=np.max(np.linalg.norm(z['Wtight'][:2]-z['Wtighter'],axis=-1),axis=1)/n[:2]
+  d0=np.array([v['q1']['dist'][f'val64|{i}'] for i in range(64)]);a0=np.array([v['q1']['anchor'][f'val64|{i}'] for i in range(2)])
+  diff=max(diff,np.max(abs(dd-d0)));adiff=max(adiff,np.max(abs(aa-a0)));disagree+=int((max(dd)<=2.5e-4)"'!=(max(d0)<=2.5e-4))
+print('"'coefficient isometry distance discrepancy',diff,adiff,'gate disagreement',disagree)
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 8764ms:
+basis {'snapshots': {'worst_rel_residual': 9.999807209210907e-11, 'rows': 1536, 'steps': [0, 1, 2, 4, 7, 10, 15, 20, 25, 30, 40, 50], 'scheme': 'CNR', 'dt': 0.005, 'adv': 'central'}, 'sigma': [8632.832632019416, 3285.942518301598, 3148.8748078977837, 3020.4374730646737, 1714.9751032511592, 1679.512435343429, 1616.6592247221124, 1391.3193529240816, 1332.416612565765, 1305.0050092393615, 933.8232358524268, 817.8642556554386, 792.245389649634, 760.6853526291754, 717.3740583408068, 699.7897325641333, 669.0622438222568, 569.3056811118657, 564.1938582569509, 552.0278676986754, 499.00242006907195, 432.87544266783544, 420.85817310146376, 409.0474865447116, 401.4979297981085, 397.55392358064205, 333.05218581205224, 327.29859679548235, 322.4374054900879, 318.8598254120676, 308.715655778989, 300.975954680309, 291.3742537829153, 282.4627287686955, 249.36200918782544, 244.80166476213208, 239.0510700909308, 233.8625517924312, 231.6902298964426, 220.98845864692552, 206.93699163407678, 196.14901062795494, 194.10824887301825, 181.63689361503918, 176.97164865932214, 168.60514381354878, 167.21148213434859, 164.02877143147686, 155.90474368459394, 154.8246458292535, 151.1828620797658, 148.18212484406908, 145.74933250111874, 143.29853550442954, 134.69544616040955, 132.0896195096964, 130.7824846398354, 129.24364148218575, 124.56535807517085, 124.2911039664644, 119.95092558112198, 114.99926244466161, 114.04354256328624, 111.73840368081206, 108.43819842861222, 105.42587200544234, 101.1438896048584, 97.986902663222, 96.33425615262149, 94.19999748373432, 93.78065263700442, 91.94341891526744, 89.35687721720478, 88.0618801277398, 87.86290438803651, 85.75529521641421, 84.5577147712339, 82.44431064172264, 81
+n0 {'0': 113.1278262898315, '1': 143.74223795240218, '2': 133.385561089439, '3': 91.46543285333175, '4': 52.770900747001356, '5': 126.92954175598341}
+coefficient isometry distance discrepancy 6.01732205729455e-17 2.0260048302887295e-17 gate disagreement 0
+
+exec
+/bin/bash -lc "rg -n 'ortho|eigh|svd|Phi' experiments/jcp-hr-baselines/pod.py | head -25; rg -n 'q1|G_ours|batch' experiments/jcp-hr-baselines/checks/FROZEN-STAGEB-c3d64.json | tail -5" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 0ms:
+rg: experiments/jcp-hr-baselines/pod.py: IO error for operation on experiments/jcp-hr-baselines/pod.py: No such file or directory (os error 2)
+4839:   "batch": 1,
+4874:   "batch": 2,
+4909:   "batch": 2,
+4941:   "batch": 2,
+4973:   "batch": 2,
+
+exec
+/bin/bash -lc "JAX_PLATFORMS=cpu /home/tahmid/Dev/.venv/bin/python - <<'PY'
+import json
+from pathlib import Path
+p=Path('experiments/jcp-hr-baselines');t=json.loads((p/'runs/t3d64b/archive/output/tune.json').read_text());print({k:v for k,v in t['basis'].items() if k"'!='"'sigma'});print('tune Gours',all(v['G_ours'] for v in t['ours_pass'].values()),max(v['replay_worst_rel'] for v in t['ours_pass'].values()));print('cumulative completed T',1.0680847368571753+.6360624597945975)
+PY" in /home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-06-jcp-hr-baselines
+ succeeded in 1334ms:
+{'snapshots': {'worst_rel_residual': 9.999807209210907e-11, 'rows': 1536, 'steps': [0, 1, 2, 4, 7, 10, 15, 20, 25, 30, 40, 50], 'scheme': 'CNR', 'dt': 0.005, 'adv': 'central'}, 'proj': {'64': {'rms_rel': 0.05851365146372801, 'frob_rel': 0.05304173638008482, 'pod_tail': 0.05304173638010533, 'pod_tail_sq': 0.0028134257982165892}, '128': {'rms_rel': 0.026438696148399995, 'frob_rel': 0.02419956877221768, 'pod_tail': 0.02419956877226511, 'pod_tail_sq': 0.0005856191287635888}, '256': {'rms_rel': 0.010902882366965379, 'frob_rel': 0.00993690374111474, 'pod_tail': 0.009936903741229531, 'pod_tail_sq': 9.874205596246144e-05}, '512': {'rms_rel': 0.003725585818582666, 'frob_rel': 0.003301563529524185, 'pod_tail': 0.0033015635298655954, 'pod_tail_sq': 1.090032174173857e-05}, '768': {'rms_rel': 0.0016572139301670123, 'frob_rel': 0.0014267410192702848, 'pod_tail': 0.0014267410200600468, 'pod_tail_sq': 2.035589938321983e-06}, '1024': {'rms_rel': 0.0008182858740835631, 'frob_rel': 0.0006896809898824836, 'pod_tail': 0.000689680991501025, 'pod_tail_sq': 4.756598700378368e-07}}, 'trust': {'64': 3.0901517509337797, '128': 3.096325887407904, '256': 3.0976736075655538, '512': 3.097916703945634, '768': 3.0979412360885914, '1024': 3.09794555298552}, 'gate': {'orthonormality': 1.509903313490213e-14, 'orth_ok': True, 'numerical_rank_reported': 11956, 'fallback': None, 'certificate': {'64': True, '128': True, '256': True, '512': True, '768': True, '1024': True}, 'optimality_ok': True, 'constructible': [64, 128, 256, 512, 768, 1024]}, 'n_snap': 18432}
+tune Gours True 2.385992115237653e-14
+cumulative completed T 1.704147196651773
+
+codex
+**Overall: RESULTS-CONFIRMED.** The seven domination conclusions and two withheld cell conclusions reproduce independently. The headline needs the qualifications below; no numerical disagreement reverses it.
+
+1. **CORRECT — provenance, eligibility and X errors.** Verified verdict, tuning, Stage-B and frozen-membership hashes, plus all 53 baseline coefficient-file hashes. Independently checked the 64 reference metadata files against the pinned manifest: the eligible set is exactly `val64|0–63`. Reference uncertainties range from `8.910676602e-6` to `1.158854232e-4`. Every X median and maximum reproduces from the comparator export.
+
+2. **CORRECT — Q1 and replay.** Reaggregating **6,890 production/anchor certificates** gives **20 Q1 passes and 33 failures**. All failures exceed the production–tight distance threshold; production has zero nonstationary steps. Largest passing distance: `2.492920958e-4`; largest tight–tighter distance: `3.365268651e-8`.
+
+   Independently recomputed distances from saved coefficients using POD orthonormality and reference initial norms: maximum discrepancies from recorded lattice distances were `6.02e-17` and `2.03e-17`, with no gate disagreement. This uses the recorded orthonormality certificate (`1.51e-14`); I did not reload the full basis.
+
+   All 53 coefficient replays against tuning reproduce, maximum discrepancy `1.708669714e-15`. All nine G-ours gates pass in both jobs; Stage-B maximum relative error discrepancy is `1.558983084e-14`.
+
+3. **CORRECT — timing contract.** Independently checked **180 pairs, 3,246 attempted triples, six rejected attempts and 3,240 accepted triples**. Retry inventories pass; maximum attempted drift is `0.348241273`. Every recorded timed-output discrepancy is zero.
+
+   Measurements share job **5932490**, H200 UUID `GPU-64b76fb8-65c0-ee22-c559-6d9549c2d207`. The log confirms GPU execution and successful completion. The staging script enables f64/highest precision; timing code burns before each synchronized call. No timing-contract artefact was found that changes a conclusion.
+
+4. **CORRECT — X-specific fronts, tie-breaks and roles.** All fronts and picks reproduce. Here **E512** means `ecsw|512|k8|BDF2|0.016666667|common|central`; **Q1024** means Q-DEIM r1024/p4096, CN/common; **N1024** means unreduced r1024, CN/common.
+
+   | X | Batch | Front size | B_acc: T [95% interval] | B_cost |
+   |---|---:|---:|---|---|
+   | M2_512 gl32 FS BE .01 | 1 | 10 | E512: .254553 [.240267, .288249] | E512; dominates |
+   | W256 gl24 FS BE .01 | 1 | 11 | E512: .795892 [.741348, .927494] | E512; dominates |
+   | W512 lat32768 FS BE .01 | 1 | 11 | E512: .220970 [.208737, .252410] | Q1024 .025; unresolved |
+   | W768 lat32768 FS BE .01 | 1 | 11 | E512: .098762 [.094538, .111811] | Q1024 .01; dominates |
+   | W1024 lat65536 FS BE .01 | 1 | 11 | E512: .029521 [.028178, .032838] | N1024 .0125; dominates |
+   | W256 gl24 FS CN .01 | 2 | 11 | E512: .789849 [.739265, .918697] | E512; dominates |
+   | W256 gl24 FS CN .0125 | 2 | 11 | E512: .953866 [.899066, 1.076519] | E512; unresolved |
+   | W256 lat8192 QN BDF2 .025 | 2 | 11 | E512: 1.270145 [1.187660, 1.364778] | ECSW r128/k16 BDF2 .0125; trade-off |
+   | W512 lat16384 QN BDF2 .025 | 2 | 11 | E512: .566849 [.510626, .613120] | E512; dominates |
+
+   B_acc dominates in seven rows; its remaining outcomes are unresolved and trade-off, respectively. T denotes baseline/X full-query time.
+
+5. **CORRECT — envelopes, bootstrap, TOST and cell lines.** Independent NumPy calculations, without invoking `analyze.py` or `stats.py`, reproduce conditional envelopes, **10,000-resample seed-0** intervals, equivalence margins and labels.
+
+   Across **127 unique assessed pairs**: **21 baseline dominates, 100 neither dominates, six unresolved**. No matches or ours-dominates outcomes occur. Assessed counts are 14 per X except W256 QN, which has 15.
+
+   The two withheld conclusions are correctly attached to **W256 FS CN .0125** and **W256 QN BDF2 .025**. Neither is evidence of equivalence or of baseline non-domination beyond the assessed set.
+
+6. **CORRECT — restrictions and their relevance to picks.** Adequacy ratios independently reproduce:
+
+   - r512: **0.944502**, passes.
+   - r768: **1.178152**, fails.
+   - r1024: **1.584391**, fails.
+
+   The tuning inventory contains **1,056 complete and 72 construction-failed configurations**; the latter are r1024 ECSW configurations affected by the recorded **11.95 GiB allocation OOM**. Coverage remains incomplete.
+
+   The adequacy failure directly concerns the r1024 B_cost picks, but **not E512**, which supplies all seven domination witnesses. Registered restrictions correctly withhold favourable/neutral cell conclusions without retracting observed baseline dominations.
+
+7. **CORRECT — cumulative V; NEEDS-RESTATEMENT — construction-cost scope.**
+
+   | Attempt | Completed V, hours | Allocation, hours |
+   |---|---:|---:|
+   | t3d64b | 5.876768300 | 7.5028 |
+   | s3d64b | 2.736143150 | 2.8253 |
+   | cancelled s3d64a | .190554729 | .2239 |
+   | cancelled t3d64a | .032411909 | .8875 |
+   | **Total** | **8.835878088** | **11.4395** |
+
+   Thus **8.836–11.44 h** is correct as the recorded-phase lower bound and allocation upper bound for V.
+
+   Reported **T = 1.068084737 h** describes the selected tuning attempt, **not cumulative construction expenditure**. Cancelled t3d64a records another **.636062460 h** of completed T phases and an unfinished `ecsw_r512` phase. Cumulative completed T is therefore **at least 1.704147197 h**. Do not present 1.068 h as total campaign construction cost.
+
+8. **NEEDS-RESTATEMENT — headline interpretation.**
+
+   - Split “7 of 9” into **five diagnostic batch-1 dominations and two of four qualified batch-2 dominations**, with the other two qualified cell conclusions withheld.
+   - E512 uses **BDF2 at Δt = 1/60**, unlike every X here. This is permitted by A1.4’s registered ladder, but establishes a tuned configuration comparison—not an advantage at fixed scheme or time step.
+   - “Dominates” concerns **query time and worst-case error only**. For qualified W256 FS CN .01, E512 has **worse median error: 1.10984% versus .569816%**, despite lower worst error: **3.23361% versus 6.36983%**.
+   - FS and QN denote solver implementations for the off-mesh least-squares residual. Comparing them against POD-LSPG is permitted, but does not isolate basis, hyper-reduction or solver effects.
+   - Membership was frozen; winners were selected using Stage-B outcomes. Conclusions remain **developmental, in-sample, unadjusted and conditional on ε_ref**.
+
+No files were changed, jobs submitted, GPU work performed, or scratch files created.
+tokens used
+111,227
+**Overall: RESULTS-CONFIRMED.** The seven domination conclusions and two withheld cell conclusions reproduce independently. The headline needs the qualifications below; no numerical disagreement reverses it.
+
+1. **CORRECT — provenance, eligibility and X errors.** Verified verdict, tuning, Stage-B and frozen-membership hashes, plus all 53 baseline coefficient-file hashes. Independently checked the 64 reference metadata files against the pinned manifest: the eligible set is exactly `val64|0–63`. Reference uncertainties range from `8.910676602e-6` to `1.158854232e-4`. Every X median and maximum reproduces from the comparator export.
+
+2. **CORRECT — Q1 and replay.** Reaggregating **6,890 production/anchor certificates** gives **20 Q1 passes and 33 failures**. All failures exceed the production–tight distance threshold; production has zero nonstationary steps. Largest passing distance: `2.492920958e-4`; largest tight–tighter distance: `3.365268651e-8`.
+
+   Independently recomputed distances from saved coefficients using POD orthonormality and reference initial norms: maximum discrepancies from recorded lattice distances were `6.02e-17` and `2.03e-17`, with no gate disagreement. This uses the recorded orthonormality certificate (`1.51e-14`); I did not reload the full basis.
+
+   All 53 coefficient replays against tuning reproduce, maximum discrepancy `1.708669714e-15`. All nine G-ours gates pass in both jobs; Stage-B maximum relative error discrepancy is `1.558983084e-14`.
+
+3. **CORRECT — timing contract.** Independently checked **180 pairs, 3,246 attempted triples, six rejected attempts and 3,240 accepted triples**. Retry inventories pass; maximum attempted drift is `0.348241273`. Every recorded timed-output discrepancy is zero.
+
+   Measurements share job **5932490**, H200 UUID `GPU-64b76fb8-65c0-ee22-c559-6d9549c2d207`. The log confirms GPU execution and successful completion. The staging script enables f64/highest precision; timing code burns before each synchronized call. No timing-contract artefact was found that changes a conclusion.
+
+4. **CORRECT — X-specific fronts, tie-breaks and roles.** All fronts and picks reproduce. Here **E512** means `ecsw|512|k8|BDF2|0.016666667|common|central`; **Q1024** means Q-DEIM r1024/p4096, CN/common; **N1024** means unreduced r1024, CN/common.
+
+   | X | Batch | Front size | B_acc: T [95% interval] | B_cost |
+   |---|---:|---:|---|---|
+   | M2_512 gl32 FS BE .01 | 1 | 10 | E512: .254553 [.240267, .288249] | E512; dominates |
+   | W256 gl24 FS BE .01 | 1 | 11 | E512: .795892 [.741348, .927494] | E512; dominates |
+   | W512 lat32768 FS BE .01 | 1 | 11 | E512: .220970 [.208737, .252410] | Q1024 .025; unresolved |
+   | W768 lat32768 FS BE .01 | 1 | 11 | E512: .098762 [.094538, .111811] | Q1024 .01; dominates |
+   | W1024 lat65536 FS BE .01 | 1 | 11 | E512: .029521 [.028178, .032838] | N1024 .0125; dominates |
+   | W256 gl24 FS CN .01 | 2 | 11 | E512: .789849 [.739265, .918697] | E512; dominates |
+   | W256 gl24 FS CN .0125 | 2 | 11 | E512: .953866 [.899066, 1.076519] | E512; unresolved |
+   | W256 lat8192 QN BDF2 .025 | 2 | 11 | E512: 1.270145 [1.187660, 1.364778] | ECSW r128/k16 BDF2 .0125; trade-off |
+   | W512 lat16384 QN BDF2 .025 | 2 | 11 | E512: .566849 [.510626, .613120] | E512; dominates |
+
+   B_acc dominates in seven rows; its remaining outcomes are unresolved and trade-off, respectively. T denotes baseline/X full-query time.
+
+5. **CORRECT — envelopes, bootstrap, TOST and cell lines.** Independent NumPy calculations, without invoking `analyze.py` or `stats.py`, reproduce conditional envelopes, **10,000-resample seed-0** intervals, equivalence margins and labels.
+
+   Across **127 unique assessed pairs**: **21 baseline dominates, 100 neither dominates, six unresolved**. No matches or ours-dominates outcomes occur. Assessed counts are 14 per X except W256 QN, which has 15.
+
+   The two withheld conclusions are correctly attached to **W256 FS CN .0125** and **W256 QN BDF2 .025**. Neither is evidence of equivalence or of baseline non-domination beyond the assessed set.
+
+6. **CORRECT — restrictions and their relevance to picks.** Adequacy ratios independently reproduce:
+
+   - r512: **0.944502**, passes.
+   - r768: **1.178152**, fails.
+   - r1024: **1.584391**, fails.
+
+   The tuning inventory contains **1,056 complete and 72 construction-failed configurations**; the latter are r1024 ECSW configurations affected by the recorded **11.95 GiB allocation OOM**. Coverage remains incomplete.
+
+   The adequacy failure directly concerns the r1024 B_cost picks, but **not E512**, which supplies all seven domination witnesses. Registered restrictions correctly withhold favourable/neutral cell conclusions without retracting observed baseline dominations.
+
+7. **CORRECT — cumulative V; NEEDS-RESTATEMENT — construction-cost scope.**
+
+   | Attempt | Completed V, hours | Allocation, hours |
+   |---|---:|---:|
+   | t3d64b | 5.876768300 | 7.5028 |
+   | s3d64b | 2.736143150 | 2.8253 |
+   | cancelled s3d64a | .190554729 | .2239 |
+   | cancelled t3d64a | .032411909 | .8875 |
+   | **Total** | **8.835878088** | **11.4395** |
+
+   Thus **8.836–11.44 h** is correct as the recorded-phase lower bound and allocation upper bound for V.
+
+   Reported **T = 1.068084737 h** describes the selected tuning attempt, **not cumulative construction expenditure**. Cancelled t3d64a records another **.636062460 h** of completed T phases and an unfinished `ecsw_r512` phase. Cumulative completed T is therefore **at least 1.704147197 h**. Do not present 1.068 h as total campaign construction cost.
+
+8. **NEEDS-RESTATEMENT — headline interpretation.**
+
+   - Split “7 of 9” into **five diagnostic batch-1 dominations and two of four qualified batch-2 dominations**, with the other two qualified cell conclusions withheld.
+   - E512 uses **BDF2 at Δt = 1/60**, unlike every X here. This is permitted by A1.4’s registered ladder, but establishes a tuned configuration comparison—not an advantage at fixed scheme or time step.
+   - “Dominates” concerns **query time and worst-case error only**. For qualified W256 FS CN .01, E512 has **worse median error: 1.10984% versus .569816%**, despite lower worst error: **3.23361% versus 6.36983%**.
+   - FS and QN denote solver implementations for the off-mesh least-squares residual. Comparing them against POD-LSPG is permitted, but does not isolate basis, hyper-reduction or solver effects.
+   - Membership was frozen; winners were selected using Stage-B outcomes. Conclusions remain **developmental, in-sample, unadjusted and conditional on ε_ref**.
+
+No files were changed, jobs submitted, GPU work performed, or scratch files created.

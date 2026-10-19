@@ -1948,3 +1948,18 @@ all 64 cases, every replay within tolerance, 180/180 timing pairs with timed out
 comparators G-ours. The 3D verdict (VERDICT-c3d64) counts the cancelled attempts t3d64a and s3d64a in cumulative V
 (lower bound 8.84 h; upper bound 11.44 h). It carries the restrictions "basis adequacy failed (A2.2)" and "ECSW coverage
 incomplete (A3.11)"; batch-1 lines are DIAGNOSTIC ONLY; batch-2 lines are a qualified subset. Pending results audit.
+
+---
+
+## Amendment A45 (2026-10-18) — results audit 2 (3D: RESULTS-CONFIRMED) restatements
+
+**A45.1** Construction cost T is reported cumulatively over every tuning attempt of a cell (cancelled t3d64a adds
+0.636 h of completed T phases; 3D T ≥ 1.704 h, a lower bound since t3d64a's last phase was unfinished), beside the
+selected attempt's 1.068 h. **A45.2** The report splits each cell's headline by batch (3D: 5 of 5 diagnostic batch-1
+X dominated; 2 of 4 qualified batch-2 X dominated, the other 2 withheld), states that "dominates" concerns query time
+and worst-case error only and prints the median errors beside every pick (e.g. qualified W256 gl24 FS CN 0.01: the
+pick's worst error 0.0323 vs X's 0.0637, but its median 0.0111 vs X's 0.0057), notes that the most frequent 3D pick
+(ECSW r = 512, κ = 8, BDF2, Δt = Δt₀·5/3) uses a different scheme and step from every X (a tuned-configuration
+comparison, not a fixed-scheme one) and that FS/QN-vs-LSPG comparisons do not isolate basis, hyper-reduction or
+solver effects. The adequacy failure (r = 768, 1,024) concerns the r = 1,024 B_cost picks, not the r = 512 pick behind
+all seven dominations; the restriction still withholds every favourable or neutral 3D conclusion.

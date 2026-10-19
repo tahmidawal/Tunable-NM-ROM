@@ -102,10 +102,13 @@ def accounting(T, B):
         v = phase_sum(J['phases'], V_TUNE if kind == 'tune' else V_STB)
         rec = [j for j in led['jobs'] if j['attempt'] == att]
         a = float(rec[0]['measured_gpu_hours']) if rec and rec[0].get('measured_gpu_hours') is not None else None
-        extra.append(dict(kind=kind, attempt=att, V_completed_hours=v, allocation_hours=a,
+        tt = phase_sum(J['phases'], T_PHASES) if kind == 'tune' else 0.
+        extra.append(dict(kind=kind, attempt=att, V_completed_hours=v, T_completed_hours=tt, allocation_hours=a,
                           finished='total_seconds' in J))
     out['extra_attempts'] = extra
     out['V_hours_cumulative'] = out['V_hours'] + sum(e['V_completed_hours'] for e in extra)
+    out['T_hours_cumulative'] = out['T_hours'] + sum(e['T_completed_hours'] for e in extra)   # A45.1 (lower bound
+    out['T_cumulative_is_lower_bound'] = any(not e['finished'] for e in extra if e['kind'] == 'tune')  # if unfinished)
     out['V_cumulative_is_lower_bound'] = out['V_is_lower_bound'] or any(not e['finished'] for e in extra)
     out['V_upper_bound_cumulative'] = (None if out['V_upper_bound_hours'] is None or
                                        any(e['allocation_hours'] is None for e in extra)

@@ -156,19 +156,45 @@ def main():
           ('; '.join(F['restrictions']) if F['restrictions'] else 'none') + '.')
         w('')
         a = F['accounting']
-        w(f"T = {fmt(a['T_hours'])} h; V = {fmt(a['V_hours'])} h (tuning {fmt(a['V_hours_tuning'])}, Stage B "
-          f"{fmt(a['V_hours_stageB'])}); limiting comparator {fmt(a['limiting_comparator_hours'])} h.")
+        w(f"Selected attempts: T = {fmt(a['T_hours'])} h; V = {fmt(a['V_hours'])} h (tuning {fmt(a['V_hours_tuning'])}, "
+          f"Stage B {fmt(a['V_hours_stageB'])}); limiting comparator {fmt(a['limiting_comparator_hours'])} h. "
+          f"Cumulative over every attempt (A44.2, A45.1): T >= {fmt(a['T_hours_cumulative'])} h, V >= "
+          f"{fmt(a['V_hours_cumulative'])} h (allocation upper bound {fmt(a['V_upper_bound_cumulative'])} h); "
+          f"extra attempts: {', '.join(e['attempt'] for e in a['extra_attempts']) or 'none'}.")
         w('')
         w(f"![screening front](plots/front-{c['cell']}.png)")
         w('')
-        w('| X (ours) | batch | X worst E0 | B_acc | B_acc label | B_cost | B_cost label | cell line | pairs assessed |')
-        w('|---|---|---|---|---|---|---|---|---|')
+        w('Per X (ours): worst and median E0 error of X and of each role pick on the eligible verdict cases; T = '
+          'baseline/X full-query time (median over the six timing cases of the per-case median A-B-A ratio) with its '
+          '95 % bootstrap interval. "Dominates" refers to query time and worst-case error only; the median error is '
+          'shown beside it (A44.3, A45.2). Picks may use a different scheme or time step from X (registered option '
+          'ladder): the comparison is between tuned configurations, not at a fixed scheme or step.')
+        w('')
+        w('| X (ours) | batch | X worst / median | role | pick | pick worst / median | T [95 %] | label |')
+        w('|---|---|---|---|---|---|---|---|')
         for key, xr in V['X'].items():
             ro = xr.get('roles', {})
-            ba, bc = ro.get('B_acc', {}), ro.get('B_cost', {})
-            w(f"| `{key}` | {xr.get('batch')} | {fmt(xr.get('W_X'))} | `{ba.get('id', '-')}` | "
-              f"{ba.get('label', xr.get('label', ''))} | `{bc.get('id', '-')}` | {bc.get('label', '')} | "
-              f"{xr.get('cell_line', xr.get('label', ''))} | {xr.get('n_assessed_pairs', 0)} |")
+            if not ro:
+                w(f"| `{key}` | {xr.get('batch')} | {fmt(xr.get('W_X'))} | - | - | - | - | {xr.get('label', '')} |")
+                continue
+            for role in ('B_acc', 'B_cost'):
+                b = ro.get(role, {})
+                ci = (b.get('time') or {}).get('ci95') or [None, None]
+                w(f"| `{key}` | {xr.get('batch')} | {fmt(xr.get('W_X'))} / {fmt(xr.get('med_X'))} | {role} | "
+                  f"`{b.get('id', '-')}` | {fmt(b.get('W'))} / {fmt(b.get('med'))} | {fmt(b.get('T'))} "
+                  f"[{fmt(ci[0])}, {fmt(ci[1])}] | {b.get('label', '')} |")
+            w(f"| | | | cell | | | | {xr.get('cell_line', '')} (pairs assessed: {xr.get('n_assessed_pairs', 0)}) |")
+        w('')
+        bx = {}
+        for key, xr in V['X'].items():
+            k = 'batch 1 (diagnostic)' if xr.get('diagnostic_only') else f"batch {xr.get('batch')}"
+            dom = 'baseline dominates X' in (xr.get('cell_line') or '')
+            wh = 'withheld' in (xr.get('cell_line') or '')
+            bx.setdefault(k, [0, 0, 0])
+            bx[k][0] += 1
+            bx[k][1] += dom
+            bx[k][2] += wh
+        w('By batch: ' + '; '.join(f"{k}: {v[1]} of {v[0]} X dominated, {v[2]} withheld" for k, v in bx.items()) + '.')
         w('')
         pr = T.get('probe_runs') or {}
         if pr:

@@ -115,7 +115,9 @@ export JAX_ENABLE_X64=true JAX_DEFAULT_MATMUL_PRECISION=highest
 export XLA_PYTHON_CLIENT_MEM_FRACTION={a.mem_fraction}
 export OPENBLAS_NUM_THREADS=8 OMP_NUM_THREADS=8
 export XDG_CACHE_HOME="$TASK_ROOT/cache" TMPDIR="$TASK_ROOT/tmp"
-mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$TASK_ROOT/output"
+export CUDA_CACHE_PATH="$TASK_ROOT/cache/cuda" PYTHONDONTWRITEBYTECODE=1    # contain CUDA / bytecode caches (job audit)
+export JAX_COMPILATION_CACHE_DIR="$TASK_ROOT/cache/jax"
+mkdir -p "$TMPDIR" "$XDG_CACHE_HOME" "$CUDA_CACHE_PATH" "$JAX_COMPILATION_CACHE_DIR" "$TASK_ROOT/output"
 cd "$TASK_ROOT"
 sha256sum -c MANIFEST.sha256 --quiet
 export SOURCE_COMMIT=$(cat COMMIT.txt)

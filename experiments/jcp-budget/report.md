@@ -27,7 +27,7 @@
 | b1024t1 | 5873633 | COMPLETED | 0.102 |
 | ref2t1w | 5981047 | COMPLETED | 1.83 |
 
-Spent 25.9 of 45 GPU-h (Slurm accounting, `runs/GPU-LEDGER.json`). All jobs on H200 under `/cluster/tufts/paralab/tawal01/jcp-budget/`, `jax_backend=gpu` in every log (smoke and collection checks).
+Spent 25.9 of 45 GPU-h (Slurm accounting, `runs/GPU-LEDGER.json`). Every result-producing job ran on H200 under `/cluster/tufts/paralab/tawal01/jcp-budget/` with `jax_backend=gpu` in its log (smoke and collection checks); `ref3` was cancelled 30 s after it started, before any case, and has no collected log (A9). `ref2b`, `ref2c` and `ref2t1` were cancelled and partially collected (A9, A14).
 
 ## New references (B7, B8)
 
@@ -190,6 +190,8 @@ Controls: C-Q yes; C-S yes; C-I yes; G-Q yes; C-score yes; C-T yes; C-F yes.
 
 Gates: G-B0 yes, G-B2 yes, G-B3 yes. Controls: C-Q yes, C-T yes, C-S yes, G-Q yes, C-score yes, C-F yes.
 
+Not reported by `ana3d`: G-B5 does not apply in 3D (no IC ingredient); G-B1 and G-B6 are not computed in 3D — the bitwise reproduction of every deployed corner is G-B3, and the logical corner settings were reconstructed independently in the results audit (`audits/codex-results-1.md`), not by a gate of this lane.
+
 ## B7: longer horizons
 
 The bank was trained on $t\le0.25$; beyond it the model extrapolates in time. Q1/Q2 are certified over every step to $T$ (horizon-specific labels); growth $g=e_{W_2}/e_{W_1}$ uses this lane's references for both windows; labels carry the cross-check tier (A2.3).
@@ -273,7 +275,7 @@ Front order W1 → W2: all members not preserved; LSPG members preserved.
 | R384 LSPG CNR 1 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.39 | 9 |
 | R384 LSPG CNR 2 | yes | pass | yes | no growth | no verdict (cross-check unvalidated); provisional: no growth | 0.423 | 9 |
 
-Front order W2 → W3 (all / LSPG): not preserved / preserved.
+Front order W1 → W2 (all / LSPG): not preserved / preserved. Front order W2 → W3 (all / LSPG; W3 tier unvalidated, so provisional, no verdict): no verdict (cross-check unvalidated); provisional: not preserved / no verdict (cross-check unvalidated); provisional: preserved.
 
 ## B8: physical diagnostics and output-sampling adequacy
 

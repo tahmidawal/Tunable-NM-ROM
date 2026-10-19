@@ -1,19 +1,16 @@
 {
  "lane": "jcp-budget",
- "utc": "2026-10-18T17:11:57Z",
- "step": "7: production jobs running (refs, then b-jobs); submission queues active",
+ "utc": "2026-10-19T15:50:30Z",
+ "step": "9: results re-audit, then report audit and hand-back",
  "waiting_on": {
-  "slurm_jobs": [
-   "5615930",
-   "5625089"
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": null,
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-18T20:11:57Z",
- "last_commit": "c6743fd1b",
- "gpu_hours_spent": 6.033,
+ "expected_finish_utc": "2026-10-19T17:50:30Z",
+ "last_commit": "7f324796e",
+ "gpu_hours_spent": 25.91,
  "gpu_hours_cap": 45,
- "notes": "production released (A5); collecting as jobs finish"
+ "notes": "all production collected (25.9 GPU-h); analyses rerun after codex-results-1 fixes"
 }

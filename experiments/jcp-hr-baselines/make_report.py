@@ -116,8 +116,13 @@ def main():
       'rule on the Stage-B data** (A26.5); "registered pick" means "selected by the registered rule", not an '
       'independently frozen winner or a held-out confirmation (A44.3). Errors are E0 R_ST errors, conditional '
       'Richardson estimates. 3D batch-1 lines are diagnostic only (A22.0); 3D batch-2 lines are a qualified subset, not '
-      'a completeness claim (A29). Q1 distances of the Stage-B members were checked by the results audit against the '
-      'recorded values, not reconstructed (the bases are in the cluster archive).')
+      'a completeness claim (A29). Q1 distances of the Stage-B members: results audits 2 (3D) and 3 (2D 256²) '
+      'reconstructed them from the saved coefficients through the recorded basis-orthonormality certificate (the bases '
+      'themselves are in the cluster archive); results audit 1 (2D 1024²) checked them against the recorded values. '
+      'The 2D 256² restriction "saturation check failed" means the 12-step basis failed the A1.3 check and the '
+      'registered remedy — the all-step basis — was installed and used for that cell (its own adequacy passes); the '
+      'snapshot limitation of the failed 12-step set applies to the 2D 1024² cell. Under A35.1 the restriction withholds '
+      'favourable or neutral conclusions in both 2D cells; observed baseline dominations remain reportable.')
     w('')
     w('## Headline per cell')
     w('')

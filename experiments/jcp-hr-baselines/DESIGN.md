@@ -1963,3 +1963,12 @@ pick's worst error 0.0323 vs X's 0.0637, but its median 0.0111 vs X's 0.0057), n
 comparison, not a fixed-scheme one) and that FS/QN-vs-LSPG comparisons do not isolate basis, hyper-reduction or
 solver effects. The adequacy failure (r = 768, 1,024) concerns the r = 1,024 B_cost picks, not the r = 512 pick behind
 all seven dominations; the restriction still withholds every favourable or neutral 3D conclusion.
+
+---
+
+## Amendment A46 (2026-10-19) — results audit 3 (2D 256² and accounting: RESULTS-CONFIRMED)
+
+The report states that results audits 2 and 3 reconstructed the Stage-B Q1 distances from coefficients (through the
+recorded orthonormality certificate) while results audit 1 checked them against recorded values, and that the 2D 256²
+"saturation check failed" restriction refers to the failed 12-step check whose registered remedy (the all-step basis)
+was installed for that cell; the snapshot limitation applies to 2D 1024². Final ledger: 21.178 GPU-h measured of 30.

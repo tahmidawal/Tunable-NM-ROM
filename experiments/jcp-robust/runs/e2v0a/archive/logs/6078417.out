@@ -1,0 +1,17 @@
+host=pax049 source_commit=b95df992546a3a31385e6a9bec984912dc45b0a3
+0, NVIDIA A100 80GB PCIe, GPU-74d9bc51-9598-c873-88b7-cf67f1886e14, 575.57.08, 81920 MiB, 210 MHz, 1512 MHz, 300.00 W
+10.235.106.25:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+allocated CUDA_VISIBLE_DEVICES=0
+jax_backend=gpu gpu_index=0
+STEP r2acc configs/e2v0a.json 2026-10-19T22:12:58Z
+jax_backend=gpu x64=True precision=highest
+RULE R128 sel LSPG_BE_1 42.9
+RULE R128 sel LSPG_CNR_1 48.5
+RULE R256 sel LSPG_BE_1 92.7
+RULE R256 sel LSPG_CNR_1 111.4
+RULE R256 dep LSPG_BE_1 149.2
+RULE R256 dep LSPG_CNR_1 169.9
+RULE R384 sel LSPG_BE_1 229.0
+RULE R384 sel LSPG_CNR_1 267.0
+R2ACC COMPLETE 267.2
+ALL-DONE

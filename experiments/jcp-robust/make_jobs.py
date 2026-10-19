@@ -56,7 +56,7 @@ def e2ver(b):
     for tag, gpu in (('a', 'a100-80G'), ('b', 'h200'), ('c', 'a100-80G')):
         w(dict(attempt=f'e2v{b}{tag}', gpu=gpu, gpus=1, hours=1.0, mem='240G' if gpu == 'h200' else '200G', cpus=8,
                production=True, mem_fraction='0.95', groups=[[dict(driver='r2acc', config=f'configs/e2v{b}{tag}.json')]]))
-    w(dict(attempt=f'e2t{b}', gpu='a100-80G', gpus=1, hours=1.0, mem='200G', cpus=8, production=True, mem_fraction='0.95',
+    w(dict(attempt=f'e2t{b}', gpu='a100-80G', gpus=1, hours=2.0, mem='200G', cpus=8, production=True, mem_fraction='0.95',
            groups=[[dict(driver='dtime', config=f'configs/e2t{b}.json')]]))
 
 

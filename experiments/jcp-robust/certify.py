@@ -114,8 +114,9 @@ def inv_dtime(c):
         for i in range(n):
             keys += [(bank, lab, 'score', i), (bank, lab, 'tight', i), (bank, lab, 'tighter', i), (bank, lab, 'qp', i),
                      (bank, lab, 'qpp', i)]
-            keys += [(bank, lab, 'triplet', i, r) for r in range(int(c['reps']))]
-            keys += [(bank, lab, 'fused-triplet', i, r) for r in range(int(c['reps']))]
+            if sp is not c['A']:                       # A is the reference: certified, never a timed subject
+                keys += [(bank, lab, 'triplet', i, r) for r in range(int(c['reps']))]
+                keys += [(bank, lab, 'fused-triplet', i, r) for r in range(int(c['reps']))]
     for sp in c.get('doubled', []):
         keys += [(bank, f"{sp['Rp']}|{sp['rule']}|{sp['scheme']}|{sp['factor']}|doubled", 'doubled', i, r) for i in range(n)
                  for r in range(int(c['reps']))]

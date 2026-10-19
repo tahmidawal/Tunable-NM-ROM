@@ -138,7 +138,8 @@ def front(C1024, timing):
     for (r, kind, ak), x in C1024['cfg'].items():
         form, sc, fac = ak.split('_')
         lab = f"1024|R{r}|M{4 * r}|{x['rule']}|LSPG|{sc}|{float(fac):g}"
-        cost = 1.0 if lab == labA else (float(np.median(ba[lab])) if lab in ba else None)     # A against itself: B/A = 1
+        a_ok = eq_ok.get(labA) == [True] and all(inv.get('all_hashes_ok') for inv in tres.get('invocations', []))
+        cost = (1.0 if a_ok else None) if lab == labA else (float(np.median(ba[lab])) if lab in ba else None)   # B/A = 1 for A
         if kind == 'dep':                                  # A2.6 / A3.5: fixed deployed configurations, separate table
             fixed[f'R{r}|{sc}|{fac}'] = dict(rule=x['rule'], qualified=x['qualified'], cost=cost,
                                              median_e=float(np.median(list(x['e'].values()))), worst_e=float(np.max(list(x['e'].values()))))

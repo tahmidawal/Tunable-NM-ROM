@@ -17,6 +17,18 @@ k2m = f2['c2']['k2']['members']
 S2 = [v['S'] for v in k2m.values() if v.get('status') == 'ok']
 q3 = ql['threeD']['tested']
 q3pass = sum(v == 'pass' for v in q3.values())
+HB = W + '/2026-10-06-jcp-hr-baselines/experiments/jcp-hr-baselines'
+HD = W + '/2026-10-18-jcp-heads/experiments/jcp-heads'
+hb = json.load(open(HB + '/runs/EXPORT.json'))['cells']
+def domcount(cell):
+    X = hb[cell]['X']; return sum(': baseline dominates X' in (': ' + v.get('cell_line','')) for v in X.values()), len(X)
+d256, n256 = domcount('c2d256'); d1k, n1k = domcount('c2d1024')
+X3 = hb['c3d64']['X']
+q3x = [v for v in X3.values() if 'batch 2' in v.get('cell_line','')]
+d3, n3 = sum('baseline dominates X' in v['cell_line'] for v in q3x), len(q3x)
+dg = [v for v in X3.values() if 'batch 1' in v.get('cell_line','')]
+d3g, n3g = sum('baseline dominates X' in v['cell_line'] for v in dg), len(dg)
+hd = json.load(open(HD + '/runs/EXPORT.json'))
 
 def img(path, alt):
     b = base64.b64encode(open(path, 'rb').read()).decode()
@@ -91,6 +103,17 @@ td,th{{padding:4px 10px;border-bottom:1px solid var(--line);text-align:right}} t
 <div class="v"><b>Accuracy vs bank width</b>{pill(har['1024|CNR']['range_128_384'])}<small>Error drops from r=128 to 256 to 384 on every mesh. Going to 512 {har['1024|CNR']['384->512']}.</small></div>
 <div class="v"><b>Cost vs bank width</b>{pill('fail' if nfail_cr else 'pass')}<small>Cost does grow with r, but {nfail_cr} of {len(hcr)} kernel timings grow more slowly than their operation counts predict.</small></div>
 </div></section>
+
+<section><h2>Against standard reduced models (POD)</h2>
+<p>H-base fails. A standard POD reduced model with ECSW or Q-DEIM hyper-reduction, tuned on the same validation cases, is both faster and better in the worst case than our model for {d1k} of {n1k} settings at 1024², {d256} of {n256} at 256², and, in 3D, {d3} of the {n3} fully qualified settings (plus {d3g} of {n3g} diagnostic ones). For the other {n3-d3} qualified 3D settings neither model dominated, but that result is held back because the 3D POD basis failed its adequacy check.</p>
+<p class="mute">These are development-cohort, in-sample comparisons, and in some pairs our median error is lower. The 2D tuning budgets are close enough that it is unresolved whether they count as equal; in 3D the POD model got less tuning than ours.</p>
+<div class="figs">{img(HB+'/plots/front-c2d1024.png','2D 1024²: accuracy against cost, POD baselines and ours')}{img(HB+'/plots/front-c3d64.png','3D 65³: accuracy against cost, POD baselines and ours')}</div>
+</section>
+
+<section><h2>The other "k": head size K</h2>
+<p>With the nonlinear head (latent size K), cost is still flat in the mesh. At the same online cost, though, the plain linear span with r = 128 is more accurate than the K = 16 head. Too few of the K = 4, 8 and 32 heads passed the solver checks to say how error changes with K.</p>
+<div class="figs">{img(HD+'/plots/error_cost_1024.png','Head (K) against linear span (r): error and cost at 1024²')}</div>
+</section>
 
 <section><h2>Against the full simulation (2D)</h2>
 <p>K2 fires in 2D as well. For every reduced-model setting, the cheapest full solver that is at least as accurate is a spectral solver on a coarse grid (N = 24 or 48). At 4096² the reduced models run at {min(S2):.2f}–{max(S2):.2f}× its speed ({len(S2)} qualified settings). Against a conventional upwind solver, or a central solver on the same 4096² grid, the reduced model is still several times faster, but those are weaker opponents.</p>

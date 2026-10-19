@@ -1,5 +1,5 @@
 {
- "headline": "Priorities 1 and 2 are nearly done. Cost and accuracy do not depend on the mesh in 2D, and cost does not in 3D; accuracy improves with bank width up to r = 384. But in both 2D and 3D a spectral full-order solver on a coarse grid is faster at equal accuracy (kill criterion K2 fires), so the paper leads with mesh-independence. The POD baseline comparison is still running; priority 3 is being designed.",
+ "headline": "Priorities 1 and 2 are done; priority 3 is half done. Cost does not depend on the mesh in 2D or 3D, and in 2D neither does accuracy; accuracy improves with bank width up to r = 384. But a coarse spectral full solver is faster at equal accuracy (K2 fires in 2D and 3D), and a standard POD reduced model with hyper-reduction beats ours on speed and worst-case error. The paper's case rests on mesh-independent cost and mesh-free evaluation.",
  "lanes": [
   {
    "name": "Priority 1 scaling",
@@ -27,27 +27,33 @@
   },
   {
    "name": "POD baselines",
-   "state": "running",
-   "cls": "inc",
-   "what": "Standard POD reduced models with ECSW / Q-DEIM."
+   "state": "done",
+   "cls": "pass",
+   "what": "POD-LSPG + ECSW / Q-DEIM; baseline wins (H-base fails). 21.2 GPU-h."
   },
   {
    "name": "Dimensions (A3, A4, B3, B6)",
-   "state": "design",
+   "state": "running",
    "cls": "inc",
    "what": "r \u00d7 M \u00d7 m factorial, rule families, test space, 3D qualified re-timing."
   },
   {
    "name": "Error budget + long horizons",
-   "state": "design",
+   "state": "running",
    "cls": "inc",
    "what": "B2, B7, B8."
   },
   {
    "name": "Head size K",
-   "state": "design",
+   "state": "done",
+   "cls": "pass",
+   "what": "K = 4\u201332 heads; linear span wins at equal cost; K trend inconclusive. 3.7 GPU-h."
+  },
+  {
+   "name": "Robustness (E1, E2, E5) and new regimes (D1)",
+   "state": "next",
    "cls": "inc",
-   "what": "K = 4, 8, 16, 32 heads (the other reading of k)."
+   "what": "Priority 4."
   }
  ]
 }

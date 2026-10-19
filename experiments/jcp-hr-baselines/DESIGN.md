@@ -1942,3 +1942,9 @@ comparisons are in-sample, unadjusted, conditional on ε_ref, and snapshot-limit
 Stage-B data (A26.5); "registered pick" means selected by the registered rule, not an independently frozen winner or
 a held-out confirmation. The Q1 lattice distances of the Stage-B members were checked against recorded values but not
 reconstructed by the auditor (the basis is in the cluster archive); this is stated in the report.
+
+**A44.4 (3D Stage B).** s3d64b (job 5932490, H200, 2 h 49 min) completed: 53/53 members, 20 of them Q1-qualified on
+all 64 cases, every replay within tolerance, 180/180 timing pairs with timed outputs equal to scored outputs, 9/9
+comparators G-ours. The 3D verdict (VERDICT-c3d64) counts the cancelled attempts t3d64a and s3d64a in cumulative V
+(lower bound 8.84 h; upper bound 11.44 h). It carries the restrictions "basis adequacy failed (A2.2)" and "ECSW coverage
+incomplete (A3.11)"; batch-1 lines are DIAGNOSTIC ONLY; batch-2 lines are a qualified subset. Pending results audit.

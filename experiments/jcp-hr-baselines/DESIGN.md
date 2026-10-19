@@ -1995,3 +1995,14 @@ paths, marks the four FRONT-2D members and lists the excluded front categories; 
 plots with Q1 failures drawn separately and batches distinguished, and adds POD spectra / projection floors, HR sample
 count vs error, native vs common, the limiting-FOM table, the HR-versus-`none` error-level discrepancy (the field
 distance was not computed in-job: stated as unavailable) and offline-cost bars; (13) extends the glossary.
+
+## Amendment A48 (2026-10-19) — report audit 2 (`audits/codex-report-2.md`, NOT-READY): restatements
+
+No number changed (the regeneration reproduced exactly). The opening's counts (cancelled attempts, constructions that
+failed, FRONT-2D members) are now derived from the inputs; every "By batch" line carries the budget qualification; the
+exported role, exploratory and cell labels themselves carry the dimension's budget qualification (not only a metadata
+field); tied most-frequent dominating picks are all reported (2D 1024²: two co-leaders); the break-even statement now
+follows §11 (in the dominated pairs the baseline is qualified and faster, and elsewhere the restrictions withhold any
+favourable conclusion; ours' per-mesh setup cost is unavailable) and compilation is stated as not separately recorded;
+the ECSW glossary entry adds the A23 KKT-optimum exception and distinguishes target from actual support; step sizes and
+tolerances in prose are written in LaTeX.

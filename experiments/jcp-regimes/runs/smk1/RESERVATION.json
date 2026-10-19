@@ -1,0 +1,36 @@
+{
+ "attempt": "smk1",
+ "gpu": "h200",
+ "time_limit_hours": 2.0,
+ "runs": [
+  [
+   "refjob",
+   "configs/smk1-ref-C2.json"
+  ],
+  [
+   "refjob",
+   "configs/smk1-ref-dev6.json"
+  ],
+  [
+   "refjob",
+   "configs/smk1-ref-B2.json"
+  ],
+  [
+   "refjob",
+   "configs/smk1-ref-Ap.json"
+  ],
+  [
+   "refslim",
+   "configs/smk1-slim.json"
+  ],
+  [
+   "qacc",
+   "configs/smk1-rom.json"
+  ],
+  [
+   "fverify",
+   "configs/smk1-fverify.json"
+  ]
+ ],
+ "commit": "828826f61305ad66b1b425f4a91276370608ce6f"
+}

@@ -19255,3 +19255,8 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - **Post-data labels carried:** A41 reproduction tolerance 1e-12 → 1e-9 (outcomes unchanged); A43.1 resource-model correction; A44.3 headline wording (role picks chosen on the Stage-B data).
 - **Framing consequence.** H-base fails on developmental evidence; together with K2 in both dimensions, the paper cannot claim speed or accuracy advantages over standard alternatives for viscous Burgers on the box. Remaining distinctive claims: mesh-independent cost and mesh-free (continuum) evaluation, plus memory. Recorded prominently; campaign continues.
 - **Open.** 2D 4096² and finer 3D meshes (C3-full); GNAT, POD + exact tensor, best-practice EQ (C3-full, priority 4); per-mesh setup cost for break-even; archive dedup (user).
+
+### 2026-10-19 — priority 4 lanes started in design mode; results page v3 (coordinator)
+- Results page updated after priority 2 (https://claude.ai/artifact/MaZocvqPrsNjGZQYJAPiwF).
+- Worktrees from `21c175a1b`: `exp/2026-10-19-jcp-robust` (@3c2cccea3, mirror 33b095f87; E1 randomised rules, E2 full-recipe seeds ×3 for the 2D R512 and 3D W1024 banks, E5 A100 vs H200; cap 3 jobs / 75 GPU-h) and `exp/2026-10-19-jcp-regimes` (@c4abfc7ee, mirror afc0fa8ce; D1 ν extrapolation, IC-family change, stiffness, new dev cases + references; cap 3 / 60). Priority-4 total 135 GPU-h (plan 120–220); C3-full (GNAT, POD + exact tensor) and C4 are not launched — C3-minimal already falsified H-base, and C4 is excluded from the freeze roster (V3-6); recorded as deferred.
+- Production for priority 4 is released when dims and budget (priority 3) hand back.

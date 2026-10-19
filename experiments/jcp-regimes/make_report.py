@@ -91,8 +91,9 @@ def cell_text(x):
     t = f"{x['label']}"
     if x.get('accuracy_label_unqualified'):
         t += f" [accuracy {x['accuracy_label_unqualified']}, unqualified]"
-    t += f"; ratio {num(x['ratio_median'])} [{num(x['ci'][0])}, {num(x['ci'][1])}]; {x['n_used']}/{x['n']} used"
-    t += f"; {x.get('unresolved_under_allowance') or 0} unresolved under the allowance"
+    t += f"; ratio {num(x['ratio_median'])} [{num(x['ci'][0])}, {num(x['ci'][1])}]; {x['n_used']}/{x['n']} used vs {x.get('n_base_used', '—')} baseline"
+    ua = x.get('unresolved_under_allowance')
+    t += f"; {'—' if ua is None else ua} unresolved under the allowance"
     if x['not_usable']:
         t += '; not usable (median > 10 %)'
     if x.get('regime_label'):
@@ -132,8 +133,11 @@ def main():
     w('|---|---|---|---|' + '---|' * (len(REG) + 1))
     for k, c in AN['configs'].items():
         ic = c['in_range_consistency']
-        w(row([k, pct(c['baseline']['median']), pct(c['baseline']['worst']), f"{num(ic['ratio'])} [{num(ic['lo'])}, {num(ic['hi'])}]"]
-              + [(f"{pct(x['median'])} / {pct(x['worst'])} / {num(x['ratio_worst'])}" + (' (worst degrades)' if x['worst_degrades'] else ''))
+        w(row([k, pct(c['baseline']['median']), pct(c['baseline']['worst']),
+               f"{num(ic['ratio'])} [{num(ic['lo'])}, {num(ic['hi'])}]; n {ic['n_N0']} vs {ic['n_devval']}"
+               + ('' if ic['coverage_ok'] else '; inconclusive (coverage)')]
+              + [(f"{pct(x['median'])} / {pct(x['worst'])} / {num(x['ratio_worst'])}" + (' (worst degrades)' if x['worst_degrades'] else '')
+                  + f" [{x['label']}" + (f"; {x['regime_label']}" if x.get('regime_label') else '') + ']')
                  if (x := c['cells'].get(g)) else '—' for g in REG + ('N0s',)]))
     w('')
     w('## N0s (stiff part of the training box, descriptive) and the N0-only sensitivity\n')
@@ -143,12 +147,16 @@ def main():
         w(row([k, cell_text(c['cells'].get('N0s'))] + [cell_text(c['cells_vs_N0'].get(g)) for g in REG]))
     w('')
     w('## Reference qualifications\n')
-    w(f"- Calibration probe (A2.2, A3.1): smoke agreement {cal['smoke_agree']}; production probes {cal['production_probes']}; "
+    w(f"- Calibration probe (A2.2, A3.1): smoke agreement {cal['smoke_agree']}; production probes {cal['production_probes']} of "
+      f"{cal.get('production_probes_expected')} expected{'' if cal.get('complete') else ' (INCOMPLETE)'}; "
       + (f"label **{cal['label']}**." if cal['label'] else 'no extra label.'))
     for g, lab in AN['regime_labels'].items():
         sp = AN['separation'].get(g)
         w(f"- Separation check, {NAMES[g]}: " + (json.dumps(sp) if sp is not None else '—')
           + (f" → relabelled **{lab}**" if lab else '') + '.')
+    pst = AN.get('ps_status')
+    if isinstance(pst, str):
+        w(f'- Pseudo-spectral cross-check: {pst}.')
     for k, v in AN.get('ps', {}).items():
         w(f"- Pseudo-spectral cross-check {k}: {v['verdict']}" + (f" ({v.get('reason')})" if v.get('reason') else '')
           + (f"; x_ps {num(v.get('x_ps'))}, 2 eps_ref {num(2 * v['eps_ref']) if v.get('eps_ref') else '—'}" if v.get('x_ps') is not None else '')
@@ -163,7 +171,10 @@ def main():
     for k, c in AN['configs'].items():
         pq, tr = c['paired_Am_C1'], c['trends']
         ci = pq.get('ci') or [None, None]
-        lab = pq['label'] + ''.join(f"; {AN['regime_labels'][g]} ({g})" for g in ('Am', 'C1') if AN['regime_labels'].get(g))
+        ctx = pq.get('context', {})
+        lab = pq['label'] + ''.join(f"; {g}: {v['label']}, {v['invalid_runs']} invalid, {v['excluded']} excluded, "
+                                    f"{'—' if v['unresolved_under_allowance'] is None else v['unresolved_under_allowance']} unresolved"
+                                    + (f", {v['regime_label']}" if v.get('regime_label') else '') for g, v in ctx.items())
         w(row([k, pq['n_pairs'], f"{num(pq.get('median_q'))} [{num(ci[0])}, {num(ci[1])}]", num(pq.get('wilcoxon_p')), lab,
                fmt(tr['Ap|d_nu']), fmt(tr['Am|d_nu']), fmt(tr['Am+C1+C2|log10_s'])]))
     w('')
@@ -180,7 +191,8 @@ def main():
             t = f"Q1 {'pass' if q1['pass'] else 'fail: ' + ', '.join(bad)} (non-stationary {q[g]['pooled_noncertified']}/{q[g]['pooled_steps']})"
             t += f"; Q2 {q2.get('label')}"
             if q2.get('worst_dist_qp') is not None:
-                t += f" (successor distance {num(q2['worst_dist_qp'])}, ρ max {num(q2.get('rho_max'))})"
+                t += (f" (successor distance {num(q2['worst_dist_qp'])}, ρ max {num(q2.get('rho_max'))}, check distance "
+                      f"{num(q2.get('worst_dist_qp_qpp'))}, successor valid {q2.get('successor_valid')}, check valid {q2.get('check_valid')})")
             return t
         w(row([k] + [qtxt(g) for g in REG + ('N0s',)]))
     w('')
@@ -217,7 +229,12 @@ def main():
                  ('Spearman ρ', 'rank correlation between error and distance; p from 10 000 permutations'),
                  ('representation floor', 'error of the best least-squares fit of the reference by the first R′ bank functions on the scoring lattice'),
                  ('diagnostic', 'a registered row (GAL-CN) reported but not part of the primary labels'),
-                 ('not usable', 'regime median error above 10 %')):
+                 ('not usable', 'regime median error above 10 %'),
+                 ('OLS slope', 'least-squares slope of log10(error) against the distance variable'),
+                 ('successor / check rule', 'the next finer quadrature rule (Q2 replay) and the one after it (convergence check)'),
+                 ('non-stationary steps', 'time steps whose final stationarity ratio exceeds 1e-3 (LSPG) or whose residual criterion exceeds 1e-8 (GAL)'),
+                 ('configuration id', 'R<width>|<form>_<scheme>_<step factor>: bank width R′, LSPG or GAL, backward Euler (BE), Crank–Nicolson with a Rannacher start (CNR) or Crank–Nicolson (CN), and the step as a multiple of Δt0 = 0.005'),
+                 ('in-range consistency', 'median error on N0 divided by that on dev6+val32: should contain 1 if the fresh references and the E0 references agree')):
         w(f'- **{t}**: {d}.')
     (HERE / 'report.md').write_text('\n'.join(L) + '\n')
     exp = dict(lane='jcp-regimes', label=COND, qualification='exploratory development evidence, no family-wise control',

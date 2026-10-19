@@ -177,8 +177,10 @@ def gcert_ok(R, form, tolf):
 def q2_label(q2, disagreement=False):
     if disagreement:
         return 'fail (offline disagreement)'
-    if not (q2['successor_valid'] and q2['check_valid']):
+    if not q2['successor_valid']:
         return 'unverified (successor invalid)'
+    if not q2['check_valid']:
+        return 'unverified (check replay invalid)'
     if q2['rho_max'] is None:
         return 'unverified (no rho indicators)'
     if not (q2['rollout'] and q2['rho']):

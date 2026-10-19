@@ -99,6 +99,7 @@ def label_cell(errs, qcoh, coh, base_e):
                 median=float(np.median(e)) if len(e) else None, worst=float(np.max(e)) if len(e) else None)
     invalid = sum(1 for cid, x in errs.items() if cid.split('|')[0] == coh and not x['valid'])
     cell['invalid_runs'] = invalid
+    cell['n_base_used'] = int(len(base_e))           # denominator coverage, printed beside every ratio
     pt, lo, hi, dropped = RS.boot_ratio(e, base_e) if len(e) and len(base_e) else (float('nan'),) * 3 + (0,)
     acc = RS.acc_label(pt, lo, hi, dropped, len(e), len(base_e))
     cell.update(ratio_median=pt, ci=[lo, hi], boot_dropped=dropped, accuracy_label=acc,
@@ -168,9 +169,15 @@ def main():
     if have != want or not rep.get('complete'):
         raise SystemExit(f'ROM job incomplete: missing {sorted(set(want) - set(have))}, complete={rep.get("complete")}')
     import hashlib
-    certified = json.loads((HERE / 'configs' / 'rom1024.json').read_text())
-    if rep['config'] != certified:                   # the job ran the certified production config, not a variant
-        raise SystemExit('ROM job config differs from the certified configs/rom1024.json')
+    # the job ran the certified production config: local config == certificate hash == staged committed copy == result
+    plan = json.loads((HERE / 'checks' / 'resources-plan.json').read_text())
+    cert = json.loads((HERE / 'checks' / 'resources-rom1024.json').read_text())
+    staged = Path(a.rom) / 'experiments' / 'jcp-regimes' / 'configs' / 'rom1024.json'
+    loc = HERE / 'configs' / 'rom1024.json'
+    if not ('rom1024' in plan['attempts'] and plan['attempts']['rom1024']['runs'] == cert['runs']
+            and cert['configs']['configs/rom1024.json'] == hashlib.sha256(loc.read_bytes()).hexdigest()
+            == hashlib.sha256(staged.read_bytes()).hexdigest() and rep['config'] == json.loads(staged.read_text())):
+        raise SystemExit('ROM job is not bound to the certified plan / certificate / staged config')
     fv = json.loads(next(Path(a.rom).glob('output/fverify_*/fverify.json')).read_text())
     fvc = hashlib.sha256((HERE / 'configs' / 'fverify-rom1024.json').read_bytes()).hexdigest()
     if not (fv['all_pass'] and fv['config_sha256'] == fvc and sorted(fv['arms']) == sorted(w[2:-4] for w in want) and all(
@@ -205,8 +212,12 @@ def main():
     for g in RG.REGIMES_2D:
         for rj in Path(a.store).parent.glob(f'runs/ref{g}/output/refjob_ref-{g}/result.json'):
             prod_probes += [p_['tight_coarse'] for p_ in json.loads(rj.read_text()).get('probes', []) if p_.get('tight_coarse')]
-    agree = sm.get('calib_agree') and all(p_['verdict'] == 'agree' for p_ in prod_probes)
+    plan_ = json.loads((HERE / 'checks' / 'resources-plan.json').read_text())
+    want_probes = len(RG.REGIMES_2D) if plan_['reductions'].get('calib_probes') else 0
+    agree = sm.get('calib_agree') and all(p_['verdict'] == 'agree' for p_ in prod_probes) and len(prod_probes) == want_probes
     out['calibration'] = dict(smoke_agree=sm.get('calib_agree'), production_probes=len(prod_probes),
+                              production_probes_expected=want_probes,
+                              complete=len(prod_probes) == want_probes,
                               label=None if agree else 'floor proxy not supported on these regimes')
     for p in sorted(qd.glob('R_*.npz')):
         R = np.load(p)
@@ -229,7 +240,9 @@ def main():
         cfg = dict(setting=name, arm=arm, Rp=int(R['Rp']), rule=setting['rule'], diagnostic=(name, arm) in DIAGNOSTIC_ARMS,
                    baseline=dict(n=len(base), median=float(np.median(base)) if len(base) else None,
                                  worst=float(np.max(base)) if len(base) else None),
-                   in_range_consistency=dict(zip(('ratio', 'lo', 'hi', 'dropped'), RS.boot_ratio(base_n0, dv))),
+                   in_range_consistency=dict(zip(('ratio', 'lo', 'hi', 'dropped'), RS.boot_ratio(base_n0, dv)),
+                                             n_N0=int(len(base_n0)), n_devval=int(len(dv)),
+                                             coverage_ok=bool(len(base_n0) >= RS.MIN_ELIG and len(dv) >= RS.MIN_ELIG)),
                    cells={}, cells_vs_N0={}, per_case=errs, qualification={coh: dict(Q1=quals[coh]['Q1'], Q2=quals[coh]['Q2'],
                                                                                      qualified=quals[coh]['numerically_qualified'],
                                                                                      pooled_noncertified=quals[coh]['pooled_noncertified'],
@@ -242,7 +255,14 @@ def main():
                 cfg['cells'][coh]['unresolved_under_allowance'] = out['coverage'][coh].get('unresolved_under_allowance')
                 cfg['cells'][coh]['regime_label'] = out['regime_labels'].get(coh)
                 cfg['cells_vs_N0'][coh] = label_cell(errs, quals[coh], coh, base_n0)
+                for k_ in ('unresolved_under_allowance', 'regime_label'):
+                    cfg['cells_vs_N0'][coh][k_] = cfg['cells'][coh][k_]
         cfg['paired_Am_C1'] = paired(errs)
+        cfg['paired_Am_C1']['context'] = {g: dict(qualified=cfg['cells'][g]['qualified'], label=cfg['cells'][g]['label'],
+                                                  invalid_runs=cfg['cells'][g]['invalid_runs'], excluded=cfg['cells'][g]['excluded'],
+                                                  unresolved_under_allowance=cfg['cells'][g]['unresolved_under_allowance'],
+                                                  regime_label=cfg['cells'][g]['regime_label'])
+                                          for g in ('Am', 'C1') if g in cfg['cells']}
         cfg['trends'] = trends(errs, refs)
         out['configs'][f'{name}|{arm}'] = cfg
         print('analysed', name, arm, flush=True)
@@ -261,6 +281,15 @@ def main():
     # pseudo-spectral cross-check (diagnostic, DESIGN 4.3; E0 verdict.crosscheck with its A10-amended rule, label carried)
     import verdict as V
     out['ps'] = {}
+    if 'ps' not in plan_['attempts']:
+        out['ps_status'] = 'deferred (A3.3 reduction step 2)'
+    else:
+        exp_ps = {}
+        for g in RG.REGIMES_2D:
+            f_ = HERE / 'configs' / f'ps-{g}.json'
+            if f_.exists() and f'refjob:configs/ps-{g}.json' in plan_['attempts']['ps']['runs']:
+                exp_ps[f"{g}|{json.loads(f_.read_text())['cases'][0]}"] = True
+        out['ps_status'] = dict(expected=sorted(exp_ps))
     for pj in sorted(HERE.glob('runs/ps/output/refjob_ps-*/2d/*/PS/c*_a*.json')):
         ps = json.loads(pj.read_text())
         coh, j = ps['cohort'], int(ps['case'])
@@ -275,6 +304,10 @@ def main():
         if rec['verdict'] == 'UNRESOLVED':
             rec['note'] = 'no escalation ladder budgeted in this lane (E0 A1.7 would owe one)'
         out['ps'][f'{coh}|{j}'] = rec
+    if isinstance(out['ps_status'], dict):
+        for k_ in out['ps_status']['expected']:
+            if k_ not in out['ps']:
+                out['ps'][k_] = dict(verdict='MISSING', reason='scheduled PS output not found')
     Path(a.out).parent.mkdir(exist_ok=True)
     Path(a.out).write_text(json.dumps(clean(out), indent=1) + '\n')
     print('wrote', a.out)

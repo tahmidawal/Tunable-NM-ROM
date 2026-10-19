@@ -1,16 +1,14 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-19T04:34:58Z",
- "step": "s2d256a 6003086 RUNNING 1:41 (A-B-A), no ERR; waiting",
+ "utc": "2026-10-19T04:51:00Z",
+ "step": "s2d256a COMPLETED 1:58; collecting; then analyze c2d256, results audit 3, make_report, report audit, hand-back",
  "waiting_on": {
-  "slurm_jobs": [
-   6003086
-  ],
+  "slurm_jobs": [],
   "codex_output": null,
   "codex_pid": [],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T04:53:58Z",
+ "expected_finish_utc": "2026-10-19T05:10:00Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

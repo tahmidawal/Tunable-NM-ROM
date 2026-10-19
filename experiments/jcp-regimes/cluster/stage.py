@@ -42,15 +42,17 @@ def main():
     assert a.attempt.isalnum(), a.attempt
     assert math.isfinite(a.hours) and 0 < a.hours <= 48, a.hours
     if not a.attempt.startswith('smk'):            # A3.3: the job must be part of the certified production plan
+        c_ = json.loads((ROOT / LANE / 'checks' / f'resources-{a.attempt}.json').read_text())
         plan = json.loads((ROOT / LANE / 'checks' / 'resources-plan.json').read_text())
         assert a.attempt in plan['attempts'], f'{a.attempt} is not in the certified plan'
         led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
         seen = {j['attempt'] for j in led['jobs']}
+        assert a.attempt not in seen, 'attempt name already used in the ledger (a retry needs a new planned name)'
+        assert plan['attempts'][a.attempt]['runs'] == c_['runs'] == a.run, 'plan / certificate / requested runs differ'
         remaining = sum(v['time_limit_hours'] for k, v in plan['attempts'].items() if k not in seen)
         assert led['spent_gpu_hours'] + led['reserved_gpu_hours'] + remaining <= 60 + 1e-9, 'plan exceeds the cap'
         assert abs(plan['attempts'][a.attempt]['time_limit_hours'] - a.hours) < 1e-9, 'time limit differs from the plan'
     if not a.attempt.startswith('smk'):
-        c_ = json.loads((ROOT / LANE / 'checks' / f'resources-{a.attempt}.json').read_text())
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])
         for drv, cf in [r.split(':', 1) for r in a.run]:
             assert c_['configs'].get(cf) == hashlib.sha256((ROOT / LANE / cf).read_bytes()).hexdigest(), cf

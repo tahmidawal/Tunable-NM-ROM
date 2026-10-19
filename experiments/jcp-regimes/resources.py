@@ -25,16 +25,38 @@ REGIMES = ['N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2']
 LIMIT = 50.
 
 
+def rom_runs(cfg):
+    """Enumerated qacc workload (A3.3): per arm, prod + tight per case, tighter per tighter case, successor replay per
+    Q2 case, check-rule replay per case in both sets."""
+    import rscore as RS
+    n = 0
+    for st in cfg['settings']:
+        for a in st['arms']:
+            ex = RS.expected_populations(cfg, a)
+            n += 2 * len(ex['cases']) + len(ex['dev']) + len(ex['q2']) + len(set(ex['dev']) & set(ex['q2']))
+    return n
+
+
+def n_fields(cfg):
+    import rscore as RS
+    return sum(len(RS.expected_populations(cfg, a)['cases']) for st in cfg['settings'] for a in st['arms'])
+
+
 def basis():
+    """Measured rates from the accepted smoke; a missing measurement refuses certification (A6)."""
     sm = json.loads((HERE / 'checks' / 'smoke-accept.json').read_text())
     assert sm['all_blocking_pass'], 'smoke not accepted'
     pil = sm['pilots']
     smk_rom = json.loads((HERE / 'configs' / 'smk1-rom.json').read_text())
-    n_sm = sum(len(s['arms']) for s in smk_rom['settings']) * len(smk_rom['settings'][0]['arms'][0]['cases'])
+    st_ = sm['step_seconds']
+    need = ('qacc:configs/smk1-rom.json', 'fverify:configs/smk1-fverify.json')
+    missing = [k for k in need if k not in st_] + ([] if sm.get('probe_seconds') else ['probe_seconds']) + \
+        ([] if 'calib_agree' in sm else ['calib_agree'])
+    if missing:
+        raise SystemExit(f'unmeasured inputs, cannot certify: {missing}')
     return dict(ordinary=max(pil[k]['seconds'] for k in ('dev6|0', 'Ap|13', 'B2|15')), lownu=pil['C2|9']['seconds'],
-                probe=max(sm.get('probe_seconds', {}).values() or [900.]), rom=sm['qacc_elapsed'] / n_sm,
-                fverify_per_field=(sm['step_seconds'].get('fverify:configs/smk1-fverify.json', n_sm * 1.0) / n_sm),  # 1 s/field if unmeasured calib_agree=sm.get('calib_agree'),
-                smoke=sm['run'])
+                probe=max(sm['probe_seconds'].values()), rom_per_run=st_[need[0]] / rom_runs(smk_rom),
+                fverify_per_field=st_[need[1]] / n_fields(smk_rom), calib_agree=bool(sm['calib_agree']), smoke=sm['run'])
 
 
 def cost(runs, b):
@@ -49,14 +71,10 @@ def cost(runs, b):
         elif drv == 'refjob' and cfg['mode'] == 'ps':
             s = len(cfg['cases']) * 600. + 180
         elif drv == 'qacc':
-            import rscore as RS
-            n = sum(len(RS.expected_populations(cfg, a)['cases']) for st in cfg['settings'] for a in st['arms'])
-            s = n * b['rom'] * 1.3 + 300
+            s = rom_runs(cfg) * b['rom_per_run'] * 1.3 + 300
         elif drv == 'fverify':
             rom = json.loads((HERE / 'configs' / 'rom1024.json').read_text())
-            import rscore as RS
-            n = sum(len(RS.expected_populations(rom, a)['cases']) for st in rom['settings'] for a in st['arms'])
-            s = max(300., n * b['fverify_per_field'] * 2)
+            s = max(300., n_fields(rom) * b['fverify_per_field'] * 2)
         elif drv == 'refslim':
             s = 120.
         else:
@@ -79,15 +97,21 @@ def plan():
     b = basis()
     calib = not b['calib_agree']
     steps = [dict(ps=True, reduce_c2=False), dict(ps=False, reduce_c2=False), dict(ps=False, reduce_c2=True)]
+    led = json.loads((HERE / 'runs' / 'GPU-LEDGER.json').read_text())
+    committed = led['spent_gpu_hours'] + led['reserved_gpu_hours']
+    seen = {j['attempt'] for j in led['jobs']}
     for k, opt in enumerate(steps):
         MC.prod(reduce_c2=opt['reduce_c2'], calib_probes=calib)
         A = attempts(opt['ps'])
+        assert not (set(A) & seen), f'attempt names already used: {sorted(set(A) & seen)} (a retry needs a new name)'
         certs = {a: cost(r, b) for a, r in A.items()}
         proj = sum(c[0] for c in certs.values())
-        if proj <= LIMIT:
+        limits = sum(math.ceil(1.5 * c[0] * 4) / 4 for c in certs.values())
+        if proj <= LIMIT and committed + limits <= 60.:      # both the certified projection and the reservation cap
             break
     else:
-        raise SystemExit(f'mandatory remainder {proj:.1f} GPU-h > {LIMIT}: stop and amend (A3.3)')
+        raise SystemExit(f'mandatory remainder {proj:.1f} GPU-h (reservations {limits:.1f} + committed {committed:.1f}) '
+                         f'does not fit: stop and amend (A3.3)')
     out = {}
     for a, runs in A.items():
         p_, parts = certs[a]

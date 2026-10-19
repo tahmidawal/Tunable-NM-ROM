@@ -168,11 +168,23 @@ def main():
     if have != want or not rep.get('complete'):
         raise SystemExit(f'ROM job incomplete: missing {sorted(set(want) - set(have))}, complete={rep.get("complete")}')
     import hashlib
+    certified = json.loads((HERE / 'configs' / 'rom1024.json').read_text())
+    if rep['config'] != certified:                   # the job ran the certified production config, not a variant
+        raise SystemExit('ROM job config differs from the certified configs/rom1024.json')
     fv = json.loads(next(Path(a.rom).glob('output/fverify_*/fverify.json')).read_text())
-    if not (fv['all_pass'] and sorted(fv['arms']) == sorted(w[2:-4] for w in want) and all(
-            fv['arms'][k]['R_file_sha256'] == hashlib.sha256((qd / f'R_{k}.npz').read_bytes()).hexdigest() for k in fv['arms'])):
-        raise SystemExit('full-field verification missing, failed or not bound to these R files')
-    out = dict(rom_attempt=str(a.rom), job=dict(job_id=rep.get('job_id'), gpu=rep.get('gpu'), backend=rep.get('backend'),
+    fvc = hashlib.sha256((HERE / 'configs' / 'fverify-rom1024.json').read_bytes()).hexdigest()
+    if not (fv['all_pass'] and fv['config_sha256'] == fvc and sorted(fv['arms']) == sorted(w[2:-4] for w in want) and all(
+            fv['arms'][k]['R_file_sha256'] == hashlib.sha256((qd / f'R_{k}.npz').read_bytes()).hexdigest()
+            and fv['arms'][k]['f257_sha256'] == str(np.load(qd / f'R_{k}.npz')['f257_sha256']) for k in fv['arms'])):
+        raise SystemExit('full-field verification missing, failed or not bound to these R files / config')
+    deferred = {}                                   # A3.3: cases of a cohort not in the configured population
+    for coh in cohorts:
+        if coh in RG.REGIMES_2D:
+            got = {c for (cc, c) in refs if cc == coh}
+            miss = [c for c in range(len(RG.descriptors_2d(coh))) if c not in got]
+            if miss:
+                deferred[coh] = miss
+    out = dict(deferred_cases=deferred, rom_attempt=str(a.rom), job=dict(job_id=rep.get('job_id'), gpu=rep.get('gpu'), backend=rep.get('backend'),
                                                  commit=rep.get('commit')),
                coverage={coh: coverage_counts(refs, coh) for coh in cohorts}, configs={})
     sig = {}
@@ -212,8 +224,6 @@ def main():
             per_case.update(q['per_case'])
         errs = errors_of(R, per_case, refs)
         base = np.array([x for coh in ('N0', 'dev6', 'val32') for _, x in usable(errs, coh)[0]])
-        if len(base) < RS.MIN_ELIG:
-            raise SystemExit(f'{name}|{arm}: in-range baseline has {len(base)} usable cases (< {RS.MIN_ELIG})')
         base_n0 = np.array([x for _, x in usable(errs, 'N0')[0]])
         dv = np.array([x for coh in ('dev6', 'val32') for _, x in usable(errs, coh)[0]])
         cfg = dict(setting=name, arm=arm, Rp=int(R['Rp']), rule=setting['rule'], diagnostic=(name, arm) in DIAGNOSTIC_ARMS,
@@ -248,6 +258,23 @@ def main():
                 for Rp in (128, 256, 384, 512):
                     floors.setdefault(f'{coh}|R{Rp}', []).append(RS.projection_floor(r_['field'], Rp))
     out['projection_floor'] = {k: dict(median=float(np.median(v)), max=float(np.max(v)), n=len(v)) for k, v in floors.items()}
+    # pseudo-spectral cross-check (diagnostic, DESIGN 4.3; E0 verdict.crosscheck with its A10-amended rule, label carried)
+    import verdict as V
+    out['ps'] = {}
+    for pj in sorted(HERE.glob('runs/ps/output/refjob_ps-*/2d/*/PS/c*_a*.json')):
+        ps = json.loads(pj.read_text())
+        coh, j = ps['cohort'], int(ps['case'])
+        arr = np.load(pj.with_suffix('.npz'))
+        ref = refs.get((coh, j)) or RS.reference(coh, j)
+        runs_ = {r_['id']: r_ for r_ in ps['runs']}
+        full = next(i for i in ps['selected_spatial'] if runs_[i]['N'] == ps['Ns'][-1])
+        rec = V.crosscheck(ref['meta']['judge'], ref['field'], dict(
+            spatial=[(runs_[i]['N'], np.asarray(arr[i])) for i in ps['selected_spatial']], half=np.asarray(arr[ps['selected_half']]),
+            full=np.asarray(arr[full]), finite=ps['finite'], gates_ok=ps['gates_ok'], stability_ok=ps['stability_ok']),
+            ref['meta']['judge']['n0'])
+        if rec['verdict'] == 'UNRESOLVED':
+            rec['note'] = 'no escalation ladder budgeted in this lane (E0 A1.7 would owe one)'
+        out['ps'][f'{coh}|{j}'] = rec
     Path(a.out).parent.mkdir(exist_ok=True)
     Path(a.out).write_text(json.dumps(clean(out), indent=1) + '\n')
     print('wrote', a.out)

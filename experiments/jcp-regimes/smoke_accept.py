@@ -263,6 +263,9 @@ def main(run):
     import datetime as _dt
     stamps = [(ln.split()[1], ln.split()[2], _dt.datetime.fromisoformat(ln.split()[3].replace('Z', '+00:00')))
               for ln in logs.splitlines() if ln.startswith('STEP ')]
+    sacct = run / 'SACCT.json'                         # written at collection: the job's sacct End closes the last step
+    if sacct.exists() and not any(d_ == 'end' for d_, _, _ in stamps):
+        stamps.append(('end', '-', _dt.datetime.fromisoformat(json.loads(sacct.read_text())['End']).replace(tzinfo=_dt.timezone.utc)))
     step_s = {}
     for i, (drv, cf, t) in enumerate(stamps):
         if i + 1 < len(stamps):

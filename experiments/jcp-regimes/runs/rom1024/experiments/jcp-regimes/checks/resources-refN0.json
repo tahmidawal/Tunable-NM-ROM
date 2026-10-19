@@ -1,0 +1,33 @@
+{
+ "attempt": "refN0",
+ "projection_hours": 1.2657,
+ "time_limit_hours": 2.0,
+ "configs": {
+  "configs/ref-N0.json": "91c7fca7e9fce6ddff7641515748a724b2b47a778d1e023579408ae242763774",
+  "configs/slim-N0.json": "5b0b2849f5e9ae572443eab9d422f22fd9229805c6fb10fa76dc4f8e5fe0d141"
+ },
+ "runs": [
+  "refjob:configs/ref-N0.json",
+  "refslim:configs/slim-N0.json"
+ ],
+ "parts": [
+  {
+   "run": "refjob:configs/ref-N0.json",
+   "seconds": 4436.661491686105
+  },
+  {
+   "run": "refslim:configs/slim-N0.json",
+   "seconds": 120.0
+  }
+ ],
+ "basis": {
+  "ordinary": 221.70111935865134,
+  "lownu": 850.0,
+  "lownu_pilot": 350.367016851902,
+  "probe": 40.18424032907933,
+  "rom_per_run": 0.45252525252525255,
+  "fverify_per_field": 0.12121212121212122,
+  "calib_agree": true,
+  "smoke": "runs/smk1"
+ }
+}

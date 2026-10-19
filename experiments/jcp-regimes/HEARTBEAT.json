@@ -1,4 +1,3 @@
-{"lane": "jcp-regimes", "utc": "2026-10-19T19:10:50Z", "step": "awaiting production release",
- "waiting_on": {"slurm_jobs": [], "codex_output": null, "codex_pid": null, "local_pid": null},
- "expected_finish_utc": null, "last_commit": "9b67aa4de", "gpu_hours_spent": 0.5494, "gpu_hours_cap": 60,
- "notes": "design READY (A1-A7), code READY-FOR-SMOKE (code-6), smoke ACCEPTED (smk1 6068450 refs + smk2 6074276 ROM), pre-production READY (prod-7), plan 26.6 GPU-h projected / 41 h reserved; mirror c742bc0c4"}
+{"lane": "jcp-regimes", "utc": "2026-10-19T20:12:42Z", "step": "7: refAp running (6 of 16; A+ c4 unresolved-floor after tight path), refC2 refC1 pending",
+ "waiting_on": {"slurm_jobs": ["6074945", "6074946", "6074948"], "codex_output": null, "codex_pid": null, "local_pid": null},
+ "expected_finish_utc": "2026-10-20T05:16:48Z", "last_commit": "232142d7c", "gpu_hours_spent": 0.5494, "gpu_hours_cap": 60, "notes": "reserved 22.75 h"}

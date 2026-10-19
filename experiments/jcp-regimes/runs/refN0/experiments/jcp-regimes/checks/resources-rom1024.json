@@ -1,0 +1,33 @@
+{
+ "attempt": "rom1024",
+ "projection_hours": 0.988,
+ "time_limit_hours": 1.5,
+ "configs": {
+  "configs/rom1024.json": "ef7f087f2397f8fd9dc64a7421e00e70018913b0c9f0f8c98fd043202ec3700b",
+  "configs/fverify-rom1024.json": "5cc854712e17bdb5c1bcc4890c0102f439a9dfa087f2fb56a1b29605fb758f90"
+ },
+ "runs": [
+  "qacc:configs/rom1024.json",
+  "fverify:configs/fverify-rom1024.json"
+ ],
+ "parts": [
+  {
+   "run": "qacc:configs/rom1024.json",
+   "seconds": 3212.0
+  },
+  {
+   "run": "fverify:configs/fverify-rom1024.json",
+   "seconds": 344.72727272727275
+  }
+ ],
+ "basis": {
+  "ordinary": 221.70111935865134,
+  "lownu": 850.0,
+  "lownu_pilot": 350.367016851902,
+  "probe": 40.18424032907933,
+  "rom_per_run": 0.45252525252525255,
+  "fverify_per_field": 0.12121212121212122,
+  "calib_agree": true,
+  "smoke": "runs/smk1"
+ }
+}

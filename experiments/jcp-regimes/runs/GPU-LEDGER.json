@@ -26,22 +26,32 @@
    "attempt": "refAp",
    "state": "SUBMITTED",
    "time_limit_hours": 8.75,
-   "job_id": "6074945"
+   "job_id": "6074945",
+   "sacct_state": "RUNNING",
+   "node": "pax008",
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1"
   },
   {
    "attempt": "refC2",
    "state": "SUBMITTED",
    "time_limit_hours": 7.0,
-   "job_id": "6074946"
+   "job_id": "6074946",
+   "sacct_state": "PENDING",
+   "node": "None assigned",
+   "alloc": ""
   },
   {
    "attempt": "refC1",
-   "state": "SUBMITTED",
+   "state": "CANCELLED",
    "time_limit_hours": 7.0,
-   "job_id": "6074948"
+   "job_id": "6074948",
+   "sacct_state": "CANCELLED",
+   "node": "None assigned",
+   "alloc": "",
+   "elapsed_hours": 0.0
   }
  ],
  "spent_gpu_hours": 0.5494,
- "reserved_gpu_hours": 22.75,
- "committed_gpu_hours": 23.2994
+ "reserved_gpu_hours": 15.75,
+ "committed_gpu_hours": 16.2994
 }

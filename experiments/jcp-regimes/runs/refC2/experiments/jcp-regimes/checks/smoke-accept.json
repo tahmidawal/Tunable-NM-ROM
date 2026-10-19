@@ -1,0 +1,971 @@
+{
+ "run": "runs/smk1",
+ "step_seconds": {
+  "refjob:configs/smk1-ref-C2.json": 731.0,
+  "refjob:configs/smk1-ref-dev6.json": 175.0,
+  "refjob:configs/smk1-ref-B2.json": 253.0,
+  "refjob:configs/smk1-ref-Ap.json": 205.0,
+  "refslim:configs/smk1-slim.json": 2.0,
+  "qacc:configs/smk1-rom.json": 448.0,
+  "fverify:configs/smk1-fverify.json": 24.0
+ },
+ "probe_seconds": {
+  "C2|9": 12.678651442751288,
+  "B2|15": 6.764129317365587,
+  "Ap|13": 40.18424032907933
+ },
+ "calib_agree": true,
+ "all_blocking_pass": true,
+ "checks": [
+  {
+   "check": "smk1 stderr: the only traceback is the fingerprint-only assertion (A7)",
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "jax_backend=gpu in log",
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "ROM job finished",
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "reference steps finished",
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "no captured-constants / traceback / OOM / disk-full in .out or .err",
+   "passed": true,
+   "blocking": true,
+   "found": []
+  },
+  {
+   "check": "unit gates in job (file)",
+   "passed": true,
+   "blocking": true,
+   "failed": []
+  },
+  {
+   "check": "unit gates re-run locally",
+   "passed": true,
+   "blocking": true,
+   "tail": "fuses C1 with < 8 A- \nPASS R-order first-order triple rejected ('order-fail', [1.0, 1.0, 1.0, 1.0, 0.9999999999999999])\nPASS R-order second-order triple accepted ('accepted', [2.0000000000000004, 2.0, 1.9999999999999998, 2.0, 2.0000000000000004])\nPASS R-peclet rejected ('peclet-fail', 2.5)\nALL-PASS\n"
+  },
+  {
+   "check": "refjob dev6 complete on gpu",
+   "passed": true,
+   "blocking": true,
+   "gpu": "NVIDIA H200"
+  },
+  {
+   "check": "refjob C2 complete on gpu",
+   "passed": true,
+   "blocking": true,
+   "gpu": "NVIDIA H200"
+  },
+  {
+   "check": "refjob B2 complete on gpu",
+   "passed": true,
+   "blocking": true,
+   "gpu": "NVIDIA H200"
+  },
+  {
+   "check": "refjob Ap complete on gpu",
+   "passed": true,
+   "blocking": true,
+   "gpu": "NVIDIA H200"
+  },
+  {
+   "check": "R-repro dev6 c0 == E0 store",
+   "passed": true,
+   "blocking": true,
+   "rel": 0.0,
+   "dp": 8.287046604493753e-10,
+   "outcome": "accepted"
+  },
+  {
+   "check": "R-upwind C2 c9 rejected on order (recomputed)",
+   "passed": true,
+   "blocking": true,
+   "outcome": "order-fail",
+   "p": [
+    0.9564140871403349,
+    0.9780271400687864,
+    0.9546157446390332,
+    0.9389421076360891,
+    0.9364222744732504
+   ],
+   "in_job": "order-fail"
+  },
+  {
+   "check": "R-calib probes agree (A2.2)",
+   "passed": true,
+   "blocking": false,
+   "probes": {
+    "C2|9": {
+     "verdict": "agree",
+     "dev": 4.6962623544742625e-12,
+     "tau": 7.92150388694994e-10,
+     "in_job": "agree"
+    },
+    "B2|15": {
+     "verdict": "agree",
+     "dev": 2.458230711113388e-12,
+     "tau": 6.569771288527461e-10,
+     "in_job": "agree"
+    },
+    "Ap|13": {
+     "verdict": "agree",
+     "dev": 1.5511413272111638e-13,
+     "tau": 9.967141265611603e-10,
+     "in_job": "agree"
+    }
+   }
+  },
+  {
+   "check": "pilot references ran (outcomes recorded)",
+   "passed": true,
+   "blocking": true,
+   "pilots": {
+    "dev6|0": {
+     "outcome": "accepted",
+     "refined": false,
+     "tight_used": false,
+     "tight_skipped": false,
+     "refine_skipped": false,
+     "seconds": 152.94354355800897,
+     "eps_ref": 1.297941396937812e-06,
+     "p": [
+      2.0379656204550924,
+      2.026852554167021,
+      2.0260244856897325,
+      2.0254010789054178,
+      2.027420284952077
+     ],
+     "sigma": {
+      "sigma": 5.57193850397629,
+      "sigma_mid": 5.571918489571995,
+      "ratio": 1.000003592013116,
+      "level": 8192,
+      "underresolved_mid": false
+     },
+     "peclet": 0.016651478179243027
+    },
+    "C2|9": {
+     "outcome": "accepted",
+     "refined": false,
+     "tight_used": false,
+     "tight_skipped": false,
+     "refine_skipped": false,
+     "seconds": 350.367016851902,
+     "eps_ref": 2.609215581129037e-05,
+     "p": [
+      1.9270919964820525,
+      1.9868880136473945,
+      2.001646135065396,
+      2.0037046208383975,
+      2.0061101236507275
+     ],
+     "sigma": {
+      "sigma": 37.287154031312554,
+      "sigma_mid": 37.26608029221371,
+      "ratio": 1.0005654938467796,
+      "level": 8192,
+      "underresolved_mid": false
+     },
+     "peclet": 0.4655335440717601
+    },
+    "B2|15": {
+     "outcome": "accepted",
+     "refined": false,
+     "tight_used": false,
+     "tight_skipped": false,
+     "refine_skipped": false,
+     "seconds": 221.70111935865134,
+     "eps_ref": 6.953959167273136e-06,
+     "p": [
+      1.9959314274251692,
+      2.0002484441516493,
+      1.994860310700667,
+      1.9947100036012932,
+      1.9932925458210655
+     ],
+     "sigma": {
+      "sigma": 12.831958380907041,
+      "sigma_mid": 12.830030946093087,
+      "ratio": 1.0001502283838637,
+      "level": 8192,
+      "underresolved_mid": false
+     },
+     "peclet": 0.06760615523519545
+    },
+    "Ap|13": {
+     "outcome": "accepted",
+     "refined": false,
+     "tight_used": false,
+     "tight_skipped": false,
+     "refine_skipped": false,
+     "seconds": 145.36446305084974,
+     "eps_ref": 5.7311594950639675e-06,
+     "p": [
+      1.9742450725191645,
+      1.95955119622127,
+      1.9445950210151857,
+      1.9356790603747442,
+      1.9309252636646317
+     ],
+     "sigma": {
+      "sigma": 2.25969918954387,
+      "sigma_mid": 2.259824567162642,
+      "ratio": 0.9999445188708036,
+      "level": 8192,
+      "underresolved_mid": false
+     },
+     "peclet": 0.0024439796078677494
+    }
+   }
+  },
+  {
+   "check": "sigma available for regime pilots",
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "qacc complete on gpu",
+   "passed": true,
+   "blocking": true,
+   "gpu": "NVIDIA H200"
+  },
+  {
+   "check": "IC n0 == generator lattice IC norm, every record (recomputed)",
+   "passed": true,
+   "blocking": true,
+   "worst": 4.43140981279647e-16,
+   "in_job": {
+    "dev6": {
+     "case": 0,
+     "n0": 90.84176571063948,
+     "n0_lattice": 90.84176571063948,
+     "equal": true
+    },
+    "N0": {
+     "case": 0,
+     "n0": 95.21130964363358,
+     "n0_lattice": 95.21130964363358,
+     "equal": true
+    },
+    "N0s": {
+     "case": 0,
+     "n0": 68.27116875654312,
+     "n0_lattice": 68.27116875654312,
+     "equal": true
+    },
+    "Ap": {
+     "case": 0,
+     "n0": 66.88384058506108,
+     "n0_lattice": 66.88384058506108,
+     "equal": true
+    },
+    "Am": {
+     "case": 0,
+     "n0": 16.77153318285897,
+     "n0_lattice": 16.77153318285897,
+     "equal": true
+    },
+    "C1": {
+     "case": 0,
+     "n0": 30.050800260089837,
+     "n0_lattice": 30.050800260089837,
+     "equal": true
+    },
+    "C2": {
+     "case": 0,
+     "n0": 46.9035524777136,
+     "n0_lattice": 46.9035524777136,
+     "equal": true
+    },
+    "B1": {
+     "case": 0,
+     "n0": 103.11830051674654,
+     "n0_lattice": 103.11830051674654,
+     "equal": true
+    },
+    "B2": {
+     "case": 0,
+     "n0": 86.30440272624101,
+     "n0_lattice": 86.30440272624101,
+     "equal": true
+    }
+   }
+  },
+  {
+   "check": "Q-repro dev6 errors == FRONT-2D per_case (1e-9)",
+   "passed": true,
+   "blocking": true,
+   "worst": {
+    "1024|R384|LSPG|CNR|1": 7.291187484185623e-14,
+    "1024|R128|LSPG|BE|1": 3.6866968596239385e-15
+   }
+  },
+  {
+   "check": "control populations are the registered six cases",
+   "passed": true,
+   "blocking": true
+  },
+  {
+   "check": "Q-under-resolved exceeds the Q2 bar on >= 1 case",
+   "passed": true,
+   "blocking": true,
+   "dist": {
+    "dev6|0": 0.00407894428549597,
+    "dev6|1": 0.0010530150341142928,
+    "C2|9": 0.12520953931667478,
+    "C2|11": 0.37717552445055563,
+    "B2|15": 0.02831025200290137,
+    "B2|0": 0.055251830357826756
+   },
+   "regime_fired": true
+  },
+  {
+   "check": "Q-budget0 LSPG evidence complete (6 cases x 50 steps, R384, gauss128, 1024^2)",
+   "passed": true,
+   "blocking": true,
+   "cert": [
+    6,
+    50
+   ],
+   "states": [
+    6,
+    51,
+    384
+   ]
+  },
+  {
+   "check": "Q-budget0 LSPG pooled non-certified > 1 % (independent NumPy gamma)",
+   "passed": true,
+   "blocking": true,
+   "in_job_fraction": 1.0,
+   "numpy_gamma_case0_max_rel_diff": 1.872270352563583e-15,
+   "numpy_fraction_case0": 1.0
+  },
+  {
+   "check": "Q-budget0 GAL evidence complete (6 cases x 50 steps, R384, gauss128, 1024^2)",
+   "passed": true,
+   "blocking": true,
+   "cert": [
+    6,
+    50
+   ],
+   "states": [
+    6,
+    51,
+    384
+   ]
+  },
+  {
+   "check": "Q-budget0 GAL pooled non-certified > 1 % (in-job eta; diagnostic row)",
+   "passed": true,
+   "blocking": false,
+   "in_job_fraction": 1.0
+  },
+  {
+   "check": "Q-wrong-mesh refused in job",
+   "passed": true,
+   "blocking": true,
+   "raised": [
+    "table built for L=256 fed to a bank on L=1024",
+    "table built for L=256 fed to a bank on L=1024",
+    "table arrays differ from the ones built for this setting (substituted data)"
+   ]
+  },
+  {
+   "check": "Q-wrong-mesh refused when re-executed locally (CPU, same code path)",
+   "passed": true,
+   "blocking": true,
+   "result": {
+    "own_table_accepted": true,
+    "wrong_mesh_refused": "table built for L=128 fed to a bank on L=256",
+    "perturbed_table_refused": "table arrays differ from the ones built for this setting (substituted data)",
+    "passed": true
+   },
+   "rc": 0
+  },
+  {
+   "check": "full-field independent decode (on-cluster fverify), bound to the pulled R files and config",
+   "passed": true,
+   "blocking": true,
+   "arms": {
+    "R128_LSPG_BE_1": {
+     "passed": true,
+     "max_rel": 6.9579964280318564e-15
+    },
+    "R128_LSPG_CNR_1": {
+     "passed": true,
+     "max_rel": 8.744596604736914e-15
+    },
+    "R256_LSPG_BE_1": {
+     "passed": true,
+     "max_rel": 2.2815749814567225e-14
+    },
+    "R256_LSPG_CNR_1": {
+     "passed": true,
+     "max_rel": 2.989067085315106e-14
+    },
+    "R384_GAL_CN_1": {
+     "passed": true,
+     "max_rel": 6.922839301933278e-14
+    },
+    "R384_LSPG_BE_1": {
+     "passed": true,
+     "max_rel": 4.136361909474618e-14
+    },
+    "R384_LSPG_CNR_1": {
+     "passed": true,
+     "max_rel": 5.763236759283609e-14
+    },
+    "R512_LSPG_BE_1": {
+     "passed": true,
+     "max_rel": 8.116166483251205e-14
+    },
+    "R512_LSPG_CNR_1": {
+     "passed": true,
+     "max_rel": 1.203762492373658e-13
+    }
+   }
+  },
+  {
+   "check": "every configured arm produced its R file",
+   "passed": true,
+   "blocking": true,
+   "missing": []
+  },
+  {
+   "check": "offline Q1/Q2 agree with in-job values (every arm x cohort)",
+   "passed": true,
+   "blocking": true,
+   "n": 81,
+   "disagreeing": []
+  }
+ ],
+ "qualify_smoke": {
+  "R128|LSPG_BE_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|C1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|C2": {
+   "Q1": true,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_BE_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|C1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|C2": {
+   "Q1": true,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R128|LSPG_CNR_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|C1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|C2": {
+   "Q1": false,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_BE_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|C1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|C2": {
+   "Q1": false,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R256|LSPG_CNR_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|GAL_CN_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|GAL_CN_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|GAL_CN_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|GAL_CN_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|GAL_CN_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|GAL_CN_1|C1": {
+   "Q1": true,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R384|GAL_CN_1|C2": {
+   "Q1": true,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R384|GAL_CN_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|GAL_CN_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|C1": {
+   "Q1": true,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|C2": {
+   "Q1": false,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_BE_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|C1": {
+   "Q1": true,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|C2": {
+   "Q1": false,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R384|LSPG_CNR_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|C1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|C2": {
+   "Q1": false,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_BE_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|dev6": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|N0": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|N0s": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|Ap": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|Am": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|C1": {
+   "Q1": false,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|C2": {
+   "Q1": false,
+   "Q2": "fail",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|B1": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  },
+  "R512|LSPG_CNR_1|B2": {
+   "Q1": true,
+   "Q2": "pass",
+   "dis": []
+  }
+ },
+ "rom_seconds_per_case_arm": {
+  "dev6": 0.20919733308255672,
+  "N0": 0.19513585092499852,
+  "N0s": 0.2239186242222786,
+  "Ap": 0.21209504874423146,
+  "Am": 0.21778966207057238,
+  "C1": 0.2233298378996551,
+  "C2": 0.2408571089617908,
+  "B1": 0.2080064220353961,
+  "B2": 0.22294605802744627
+ },
+ "qacc_elapsed": 442.6,
+ "pilots": {
+  "dev6|0": {
+   "outcome": "accepted",
+   "refined": false,
+   "tight_used": false,
+   "tight_skipped": false,
+   "refine_skipped": false,
+   "seconds": 152.94354355800897,
+   "eps_ref": 1.297941396937812e-06,
+   "p": [
+    2.0379656204550924,
+    2.026852554167021,
+    2.0260244856897325,
+    2.0254010789054178,
+    2.027420284952077
+   ],
+   "sigma": {
+    "sigma": 5.57193850397629,
+    "sigma_mid": 5.571918489571995,
+    "ratio": 1.000003592013116,
+    "level": 8192,
+    "underresolved_mid": false
+   },
+   "peclet": 0.016651478179243027
+  },
+  "C2|9": {
+   "outcome": "accepted",
+   "refined": false,
+   "tight_used": false,
+   "tight_skipped": false,
+   "refine_skipped": false,
+   "seconds": 350.367016851902,
+   "eps_ref": 2.609215581129037e-05,
+   "p": [
+    1.9270919964820525,
+    1.9868880136473945,
+    2.001646135065396,
+    2.0037046208383975,
+    2.0061101236507275
+   ],
+   "sigma": {
+    "sigma": 37.287154031312554,
+    "sigma_mid": 37.26608029221371,
+    "ratio": 1.0005654938467796,
+    "level": 8192,
+    "underresolved_mid": false
+   },
+   "peclet": 0.4655335440717601
+  },
+  "B2|15": {
+   "outcome": "accepted",
+   "refined": false,
+   "tight_used": false,
+   "tight_skipped": false,
+   "refine_skipped": false,
+   "seconds": 221.70111935865134,
+   "eps_ref": 6.953959167273136e-06,
+   "p": [
+    1.9959314274251692,
+    2.0002484441516493,
+    1.994860310700667,
+    1.9947100036012932,
+    1.9932925458210655
+   ],
+   "sigma": {
+    "sigma": 12.831958380907041,
+    "sigma_mid": 12.830030946093087,
+    "ratio": 1.0001502283838637,
+    "level": 8192,
+    "underresolved_mid": false
+   },
+   "peclet": 0.06760615523519545
+  },
+  "Ap|13": {
+   "outcome": "accepted",
+   "refined": false,
+   "tight_used": false,
+   "tight_skipped": false,
+   "refine_skipped": false,
+   "seconds": 145.36446305084974,
+   "eps_ref": 5.7311594950639675e-06,
+   "p": [
+    1.9742450725191645,
+    1.95955119622127,
+    1.9445950210151857,
+    1.9356790603747442,
+    1.9309252636646317
+   ],
+   "sigma": {
+    "sigma": 2.25969918954387,
+    "sigma_mid": 2.259824567162642,
+    "ratio": 0.9999445188708036,
+    "level": 8192,
+    "underresolved_mid": false
+   },
+   "peclet": 0.0024439796078677494
+  }
+ }
+}

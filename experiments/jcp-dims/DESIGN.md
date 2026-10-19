@@ -852,7 +852,23 @@ On `smk2t` both pass (doubled median 2.003).
 **A14.4 Injected fault in production.** The production panel had no injected fault. It is placed on a dedicated,
 unregistered control subject (R128, $M=512$, gauss72 — not an F2 rung), so no registered subject loses its timing.
 `t2`: 299 subjects (298 registered + the control), 5.286 GPU-h → 8 h.
-**A14.5 Memory coverage.** The heaviest production `t2` block is R512 $M=4096$ with rungs gauss320 (q⁺ gauss384) and
-gauss384; the two-phase certification keeps at most the current rung and its successor live (A1.4). The smoke `smk2t`
-ran R512 $M=4096$ gauss256 with q⁺ gauss320 and q⁺⁺ gauss384, so its phases had (256, 320) and then (320, 384) live — the
-production pair (320, 384) at the same $(r,M)$ was therefore exercised; recorded peak 22.15 GB ≤ 120 GB.
+**A14.5 Memory coverage (corrected by t2 job audit 2).** `dtime`'s second certification phase keeps main + q⁺⁺, so
+`smk2t` (R512 $M=4096$ gauss256, q⁺ 320, q⁺⁺ 384) exercised (256, 320) then (256, 384), not the production pair
+(gauss320, q⁺ gauss384) — the first version of this item was wrong. That pair at the same $(r,M)$ was built by the
+production accuracy job `f2br1` (same table builders): recorded device peak 29.57 GB for `R512M4096gauss320`. `dtime`
+additionally keeps the reference A persistent (smk2t peak after building A: 17.28 GB, which includes compile
+transients). The conservative sum 29.57 + 17.28 = 46.9 GB is below the 120 GB bound; `dtime`'s per-block memory record
+remains the in-job check.
+**A14.6 (t2 job audit 2)** The injected-fault control counts as caught only if its invocation and fused inventories are
+complete and *every* hash check of that subject fails; the offline identity requires the six unique dev6 case ids and
+$W$ of shape (6, 6, r).
+
+## Amendment A15 (2026-10-19, production; deferrable items against the remaining budget)
+
+With `t3s` (12 h) and `t2` (8 h) reserved and `t3c` pending at 2.0 h, 4.38 GPU-h of the cap remain at time limits.
+Following the defer order (B3 stage (ii) dropped first, then the LMF set) and dropping as little as the cap requires:
+`f2l` (LMF arm, 0.1464 h → 0.25 h) and `b2m` (2D stage (ii), 0.6061 h → 1.0 h) are funded (1.25 h together);
+`b3m` (3D stage (ii), 2.3974 h → 3.75 h) does not fit alongside them and is **deferred (budget)**, to be reconsidered
+only if completed jobs release enough reservation (measured hours below their limits) before `t3c` is submitted, with
+`t3c` keeping priority. The stage (ii) generators passed the code audits and the CPU generator tests of §7
+(`checks/test_dims.json`).

@@ -379,7 +379,11 @@ def timing_costs(C=None, RAW=None):
                 ida = [str(x) for x in Ra['case_ids']]
                 Zs = np.load(d / f"S_{lb.replace('|', '_')}.npz")
                 rel = []
-                for j, cid in enumerate([str(x) for x in Zs['case_ids']]):
+                sid = [str(x) for x in Zs['case_ids']]
+                if sorted(sid) != sorted(DSC.DEV6) or len(set(sid)) != 6 or np.shape(Zs['W']) != (6, 6, int(s['spec']['Rp'])):
+                    ident_rel, ident_src = np.inf, k                # dev6 coverage and W dimensions required (t2 audit 2)
+                    break
+                for j, cid in enumerate(sid):
                     if cid not in ida:
                         rel = [np.inf]
                         break
@@ -409,7 +413,14 @@ def timing_costs(C=None, RAW=None):
     # A14.3 panel controls: the injected identity fault must be caught (every hash of that subject fails) and the
     # doubled-work control must give a median ratio in [1.8, 2.2] with identical iterations and identity; otherwise
     # no t2 cost is used ('panel invalid')
-    inj_caught = bool(inj) and all(lb in out and not out[lb]['hashes_all_ok'] for lb in inj)
+    def _caught(lb):                                       # every expected hash check of the control fails (t2 audit 2)
+        want = sorted((c_, r__) for c_ in DSC.DEV6 for r__ in range(int(res['config']['reps'])))
+        iv = [x for x in res['invocations'] if x['B'] == lb]
+        fu = [x for x in res['fused'] if x['B'] == lb]
+        return bool(sorted((x['case'], x['rep']) for x in iv) == want and sorted((x['case'], x['rep']) for x in fu) == want
+                    and all(not t_['hashes_ok'] for x in iv for t_ in x.get('attempts', [x]))
+                    and all(not x['hash_ok'] for x in fu))
+    inj_caught = bool(inj) and all(lb in out and _caught(lb) for lb in inj)
     db = res.get('doubled', [])
     db_ok = bool(db) and 1.8 <= float(np.median([x['ratio'] for x in db])) <= 2.2 and all(x['same_iterations'] and x['identity_ok'] for x in db)
     ctl = dict(injected_fault_caught=inj_caught, doubled_ok=db_ok,

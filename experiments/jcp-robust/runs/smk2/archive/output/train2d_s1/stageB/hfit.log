@@ -1,0 +1,11 @@
+jax_backend=gpu device=cuda:0 x64=True HFIT arms=['mid', 'wide', 'k32'] steps=2000
+  whitening round-trip 1.077e-14   q == L^T h deviation 2.599e-15
+  span LS floor: train 2.1265e-02  fresh test 1.5558e-02  (S=131072, R=512, K_ckpt=16)
+   hfit[mid]       1/2000 loss 1.0144e+00 recon 1.0075e+00 [5s]
+  ARM mid: recon 1.9153e-01  oracle 1.2095e-01  oracle/floor 7.8x  oracle_nn 1.2003e-01  code-refit gain 1.275x
+  EMITTED refined decoder -> /cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1/stageB/sep_hfit_dense_mid_N256_dense.pkl
+   hfit[wide]       1/2000 loss 1.0127e+00 recon 1.0068e+00 [5s]
+  ARM wide: recon 1.9078e-01  oracle 1.3504e-01  oracle/floor 8.7x  oracle_nn 1.2849e-01  code-refit gain 1.103x
+   hfit[k32]       1/2000 loss 1.0240e+00 recon 1.0122e+00 [4s]
+  ARM k32: recon 1.4465e-01  oracle 8.2505e-02  oracle/floor 5.3x  oracle_nn 6.6080e-02  code-refit gain 1.456x
+HFIT done in 90s -> /cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1/stageB/hfit_full.json

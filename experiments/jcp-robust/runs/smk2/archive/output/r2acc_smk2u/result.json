@@ -1,0 +1,311 @@
+{
+ "config": {
+  "attempt": "smk2u",
+  "driver": "r2acc",
+  "mesh": 256,
+  "edges": [
+   0,
+   128,
+   256,
+   384,
+   512
+  ],
+  "cases": "dev6",
+  "bank": {
+   "ckpt": "../../output/train2d_s1/stageB/sep_hfit_dense_mid_N256_dense.pkl",
+   "ckpt_sha256": "SMOKE-RUNTIME",
+   "rotation": "../../output/train2d_s1/rotation/rotation_R512.npz",
+   "rotation_sha256": "SMOKE-RUNTIME",
+   "seed": 1,
+   "note": "smoke-trained (truncated steps); never a result"
+  },
+  "groups": [
+   {
+    "name": "R128",
+    "Rp": 128,
+    "target": null,
+    "check": null,
+    "tighter_cases": "dev6",
+    "arms": [
+     {
+      "form": "LSPG",
+      "scheme": "BE",
+      "factor": 1
+     }
+    ],
+    "rules": [
+     {
+      "label": "sel",
+      "rule": "fib4181",
+      "succ": "fib6765",
+      "level": "full"
+     }
+    ]
+   }
+  ]
+ },
+ "commit": "39c00e1e37c9a0b2f3c220711c8dcd7b90ee958e",
+ "job_id": "6072695",
+ "backend": "gpu",
+ "gpu": "NVIDIA A100 80GB PCIe",
+ "nvidia_smi": [
+  "NVIDIA A100 80GB PCIe, GPU-c166dee7-f138-fc72-533f-4bfaee778a5c, 81920 MiB"
+ ],
+ "jax_version": "0.10.2",
+ "mesh": 256,
+ "bank": {
+  "ckpt": "../../output/train2d_s1/stageB/sep_hfit_dense_mid_N256_dense.pkl",
+  "ckpt_sha256": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7",
+  "rotation": "../../output/train2d_s1/rotation/rotation_R512.npz",
+  "rotation_sha256": "f49f4bfa6f2ba162becd349e743ac9cefadb7a8d3fa5a27fea5d508121ed1c7b",
+  "seed": 1,
+  "note": "smoke-trained (truncated steps); never a result",
+  "runtime_hashed": true
+ },
+ "checkpoint_sha256": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7",
+ "rotation_sha256": "f49f4bfa6f2ba162becd349e743ac9cefadb7a8d3fa5a27fea5d508121ed1c7b",
+ "cohorts": {
+  "dev6": "108f12dc8f9e6a64daf94f55861c616a29810134a52726e8a683a2a43892dc8a",
+  "val32": "277743cbb99350ca94c12b052613e14c9fb080fc56f2f012600bca381eacec70"
+ },
+ "setup": {
+  "bank": {
+   "edges": [
+    0,
+    128,
+    256,
+    384,
+    512
+   ],
+   "seconds": 6.522185940295458,
+   "bytes": 266342400,
+   "mem": {
+    "in_use": 327325952,
+    "peak": 1151519232,
+    "limit": 78288781312
+   }
+  },
+  "ops_frozen": {
+   "seconds": 1.2897580405697227,
+   "list_hash_2048": "da4f4a6a4bafdddc85d720710cc181173e8f702c9d80451f01743939e02a75a3"
+  }
+ },
+ "rows": [
+  {
+   "group": "R128",
+   "label": "sel",
+   "rule": "fib4181",
+   "arm": "LSPG_BE_1",
+   "case": "dev6|0",
+   "kind": "prod",
+   "seconds": 3.361818195320666,
+   "valid": true,
+   "it_sum": 37,
+   "noncertified": 0,
+   "steps": 50,
+   "gcert_ok": true,
+   "budget_exits": 0,
+   "W_sha": "bc2a06ff9dc1b53493ca5b663f2b0f28c3acec55f08d4f6e389eb2ee6348eb96",
+   "dist_tight": 7.613704187981561e-05,
+   "tight_valid": true,
+   "seconds_tight": 1.0489608822390437,
+   "dist_tight_tighter": 2.129890240948561e-08,
+   "tighter_valid": true,
+   "dist_succ": 6.266077617512595e-06,
+   "succ_valid": true,
+   "rho_succ_max": 0.0004730906370448572
+  },
+  {
+   "group": "R128",
+   "label": "sel",
+   "rule": "fib4181",
+   "arm": "LSPG_BE_1",
+   "case": "dev6|1",
+   "kind": "prod",
+   "seconds": 0.03403951693326235,
+   "valid": true,
+   "it_sum": 46,
+   "noncertified": 0,
+   "steps": 50,
+   "gcert_ok": true,
+   "budget_exits": 0,
+   "W_sha": "794d0712cd9be690dede8329061758d751e5c4debbd4cf14ff0c39f7217aaba0",
+   "dist_tight": 2.4726835066177838e-05,
+   "tight_valid": true,
+   "seconds_tight": 0.04450522921979427,
+   "dist_tight_tighter": 4.292139442246605e-09,
+   "tighter_valid": true,
+   "dist_succ": 2.8347545201433698e-06,
+   "succ_valid": true,
+   "rho_succ_max": 0.0002620755471488944
+  },
+  {
+   "group": "R128",
+   "label": "sel",
+   "rule": "fib4181",
+   "arm": "LSPG_BE_1",
+   "case": "dev6|2",
+   "kind": "prod",
+   "seconds": 0.029795702546834946,
+   "valid": true,
+   "it_sum": 37,
+   "noncertified": 0,
+   "steps": 50,
+   "gcert_ok": true,
+   "budget_exits": 0,
+   "W_sha": "01233f97148d8b7bab9befd9c4923d12bddc4ba2bbbe827aecd0f070efc7ba68",
+   "dist_tight": 0.00019252419498702752,
+   "tight_valid": true,
+   "seconds_tight": 0.04897095449268818,
+   "dist_tight_tighter": 1.0932490143998145e-09,
+   "tighter_valid": true,
+   "dist_succ": 1.025143915546418e-05,
+   "succ_valid": true,
+   "rho_succ_max": 0.00023669135363563973
+  },
+  {
+   "group": "R128",
+   "label": "sel",
+   "rule": "fib4181",
+   "arm": "LSPG_BE_1",
+   "case": "dev6|3",
+   "kind": "prod",
+   "seconds": 0.030828912742435932,
+   "valid": true,
+   "it_sum": 40,
+   "noncertified": 0,
+   "steps": 50,
+   "gcert_ok": true,
+   "budget_exits": 0,
+   "W_sha": "1ed4879a39d65c8018fe3336bd39d5614d22ea3ba91a5cf7df4f5dd524e2ac18",
+   "dist_tight": 0.00012462829631219632,
+   "tight_valid": true,
+   "seconds_tight": 0.048634798265993595,
+   "dist_tight_tighter": 5.080218287773559e-09,
+   "tighter_valid": true,
+   "dist_succ": 1.1083043027360451e-05,
+   "succ_valid": true,
+   "rho_succ_max": 0.0005935215025720625
+  },
+  {
+   "group": "R128",
+   "label": "sel",
+   "rule": "fib4181",
+   "arm": "LSPG_BE_1",
+   "case": "dev6|4",
+   "kind": "prod",
+   "seconds": 0.027988042682409286,
+   "valid": true,
+   "it_sum": 31,
+   "noncertified": 0,
+   "steps": 50,
+   "gcert_ok": true,
+   "budget_exits": 0,
+   "W_sha": "12a0e457d4339d0bf6a7bc6a7c12873b59b4df8be9c269d6f01aa463765d83ef",
+   "dist_tight": 0.00010534468581349921,
+   "tight_valid": true,
+   "seconds_tight": 0.04220065288245678,
+   "dist_tight_tighter": 2.6557543987387874e-08,
+   "tighter_valid": true,
+   "dist_succ": 9.457913885749631e-06,
+   "succ_valid": true,
+   "rho_succ_max": 0.0003894186074884767
+  },
+  {
+   "group": "R128",
+   "label": "sel",
+   "rule": "fib4181",
+   "arm": "LSPG_BE_1",
+   "case": "dev6|5",
+   "kind": "prod",
+   "seconds": 0.02974303439259529,
+   "valid": true,
+   "it_sum": 37,
+   "noncertified": 0,
+   "steps": 50,
+   "gcert_ok": true,
+   "budget_exits": 0,
+   "W_sha": "94314a5738fdb0e997ded2581055ead53ad2b5d1b4fc377a0fdcb3edadb06895",
+   "dist_tight": 5.869567189392075e-05,
+   "tight_valid": true,
+   "seconds_tight": 0.0388322789222002,
+   "dist_tight_tighter": 1.650329702810362e-08,
+   "tighter_valid": true,
+   "dist_succ": 3.7362807464723034e-06,
+   "succ_valid": true,
+   "rho_succ_max": 0.0004857220811923647
+  }
+ ],
+ "groups": {
+  "R128": {
+   "Rp": 128,
+   "M": 512,
+   "mode_hash": "7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533",
+   "meta_fixed": {
+    "main": {
+     "L": 256,
+     "mesh_hash": "2e22fd435060cd5d3cf5e3ef39f79e198b35bd2c4af31974db36601b3a2f4c91",
+     "mode_hash": "7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533",
+     "rule": "fib4181",
+     "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
+     "m": 4181,
+     "Rp": 128,
+     "M": 512,
+     "policy": "frozen",
+     "fingerprint": "c210b91044f2c0fb8999b64827fdfc3dd70775de4adc785affdfb0659ab10e33"
+    }
+   },
+   "rules": {
+    "sel": {
+     "rule": "fib4181",
+     "succ": "fib6765",
+     "level": "full",
+     "meta": {
+      "L": 256,
+      "mesh_hash": "2e22fd435060cd5d3cf5e3ef39f79e198b35bd2c4af31974db36601b3a2f4c91",
+      "mode_hash": "7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533",
+      "rule": "fib4181",
+      "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
+      "m": 4181,
+      "Rp": 128,
+      "M": 512,
+      "policy": "frozen",
+      "fingerprint": "c210b91044f2c0fb8999b64827fdfc3dd70775de4adc785affdfb0659ab10e33"
+     },
+     "meta_succ": {
+      "L": 256,
+      "mesh_hash": "2e22fd435060cd5d3cf5e3ef39f79e198b35bd2c4af31974db36601b3a2f4c91",
+      "mode_hash": "7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533",
+      "rule": "fib6765",
+      "rule_sha256": "eaeb012b4c9c0bf5332d013226c84e2b62d2a9e313633d1fc3f5bd58be36df76",
+      "m": 6765,
+      "Rp": 128,
+      "M": 512,
+      "policy": "frozen",
+      "fingerprint": "b1271bcda02bc52a78c330cf338fc775fc4054501a9e5d9a4cc1fbb2ae842f9c"
+     },
+     "arms": {
+      "LSPG_BE_1": {
+       "n": 6,
+       "seconds": 13.90440864674747
+      }
+     }
+    }
+   },
+   "target": {},
+   "controls": {}
+  }
+ },
+ "memory": {
+  "R128": {
+   "in_use": 394567680,
+   "peak": 1204754944,
+   "limit": 78288781312
+  }
+ },
+ "elapsed": {
+  "R128": 26.5293455356732
+ },
+ "complete": true,
+ "elapsed_seconds": 36.6
+}

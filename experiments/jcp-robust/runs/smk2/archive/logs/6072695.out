@@ -1,0 +1,262 @@
+host=pax105 source_commit=39c00e1e37c9a0b2f3c220711c8dcd7b90ee958e
+0, NVIDIA A100 80GB PCIe, GPU-c166dee7-f138-fc72-533f-4bfaee778a5c, 575.57.08, 81920 MiB, 210 MHz, 1512 MHz, 300.00 W
+10.235.106.21:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+jax_backend=gpu gpu_index=0
+STEP r2acc configs/smk2r.json 2026-10-19T18:12:07Z
+jax_backend=gpu x64=True precision=highest
+TARGET R128 LSPG_BE_1 42.8
+TARGET R128 LSPG_CNR_1 46.1
+RULE R128 fib4181 LSPG_BE_1 61.8
+RULE R128 fib4181 LSPG_CNR_1 63.6
+TARGET R384 LSPG_BE_1 98.8
+TARGET R384 LSPG_CNR_1 115.9
+RULE R384 gauss128 LSPG_BE_1 142.9
+RULE R384 gauss128 LSPG_CNR_1 151.4
+R2ACC COMPLETE 152.4
+STEP sh train2d/run_seed.sh TRAIN2D_SMOKE=1 1 /cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1 2026-10-19T18:14:44Z
+[train2d seed=1 2026-10-19T14:14:44-04:00] mode=smoke host=pax105 stages=A,B,R jobroot_commit=39c00e1e37c9a0b2f3c220711c8dcd7b90ee958e
+NVIDIA A100 80GB PCIe, GPU-c166dee7-f138-fc72-533f-4bfaee778a5c, 81920 MiB, 575.57.08
+jax_backend=gpu
+PROVENANCE sha256 OK
+[train2d seed=1 2026-10-19T14:14:47-04:00] Stage A: smoothtrain --arm base --sigma 4 --lam 0 --seed 1 --nodes 256 --steps 3000 --full-last 500 --log-every 500
+jax_backend=gpu device=NVIDIA A100 80GB PCIe arm=base sigma=4.0 lam=0.0 nodes=256 seed=1 steps=3000
+   gen n=256: trajectories 64/576 worst FOM rel residual 9.95e-13 [15s]
+   gen n=256: trajectories 128/576 worst FOM rel residual 1.00e-12 [28s]
+   gen n=256: trajectories 192/576 worst FOM rel residual 1.00e-12 [41s]
+   gen n=256: trajectories 256/576 worst FOM rel residual 1.00e-12 [53s]
+   gen n=256: trajectories 320/576 worst FOM rel residual 1.00e-12 [65s]
+   gen n=256: trajectories 384/576 worst FOM rel residual 1.00e-12 [76s]
+   gen n=256: trajectories 448/576 worst FOM rel residual 1.00e-12 [88s]
+   gen n=256: trajectories 512/576 worst FOM rel residual 1.00e-12 [101s]
+   gen n=256: trajectories 576/576 worst FOM rel residual 1.00e-12 [112s]
+  data: (16384, 64516) worst residual 1.00e-12 fingerprint {'sum': 200814620.48749176, 'sumsq': 102201588.76752055, 'shape': [576, 51, 65536]} sha fb95690ba87e
+  FD-target uncertainty (D2 vs D4): {'median': 0.0003816813460779617, 'p90': 0.001606813072586792, 'max': 0.4636345655004941}
+   train2[base] step      1/3000  rel-MSE 2.578e+00  grad-rel-MSE 0.000e+00  [13s]
+   train2[base] step    500/3000  rel-MSE 7.765e-02  grad-rel-MSE 0.000e+00  [25s]
+   train2[base] step   1000/3000  rel-MSE 2.536e-02  grad-rel-MSE 0.000e+00  [37s]
+   train2[base] step   1500/3000  rel-MSE 1.514e-02  grad-rel-MSE 0.000e+00  [49s]
+   train2[base] step   2000/3000  rel-MSE 1.157e-02  grad-rel-MSE 0.000e+00  [60s]
+   train2[base] step   2500/3000  rel-MSE 1.036e-02  grad-rel-MSE 0.000e+00  [72s]
+   train2[base] step   3000/3000  rel-MSE 1.001e-02  grad-rel-MSE 0.000e+00  [225s]
+   train2[base] done: recon mean 1.316e-01 max 1.175e+00 (used raw) [228s]
+  rotation: {"R_G_condition_number": 1816.7001477501547, "train_ls_floor": {"mean": 0.020566954588370934, "median": 0.015092815457488352, "max": 0.19149530586429472}}
+DONE
+Stage A OK: steps_done 3000 recon mean 0.13161920569544572 R2a checked False []
+[train2d seed=1 2026-10-19T14:21:09-04:00] Stage B extraction (data stream SEED0=0)
+jax_backend=gpu device=cuda:0 x64=True EXTRACT N=256 K=16 R=512 ckpt=/cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1/stageA/bank.pkl
+  UNALIGNED-CODES MODE: pick 131072 != checkpoint codes 16384: the state pick does not match the checkpoint's training set
+    (expected for a dense-sampling extraction; the identity gate (*) holds for ANY z, so it still tests what it tests, and the checkpoint reconstruction is simply not comparable)
+  bank rank(>1e-8) 512/512  cond(G) 1.817e+03
+  APPENDED 4032 trajectories from seed 1000 to the canonical 576; canonical draw untouched
+   gen+proj: trajectories 64/4608  worst FOM rel residual 9.95e-13  [19s]
+   gen+proj: trajectories 128/4608  worst FOM rel residual 1.00e-12  [33s]
+   gen+proj: trajectories 192/4608  worst FOM rel residual 1.00e-12  [47s]
+   gen+proj: trajectories 256/4608  worst FOM rel residual 1.00e-12  [61s]
+   gen+proj: trajectories 320/4608  worst FOM rel residual 1.00e-12  [74s]
+   gen+proj: trajectories 384/4608  worst FOM rel residual 1.00e-12  [87s]
+   gen+proj: trajectories 448/4608  worst FOM rel residual 1.00e-12  [99s]
+   gen+proj: trajectories 512/4608  worst FOM rel residual 1.00e-12  [114s]
+   gen+proj: trajectories 576/4608  worst FOM rel residual 1.00e-12  [126s]
+   gen+proj: trajectories 640/4608  worst FOM rel residual 1.00e-12  [137s]
+   gen+proj: trajectories 704/4608  worst FOM rel residual 1.00e-12  [149s]
+   gen+proj: trajectories 768/4608  worst FOM rel residual 1.00e-12  [162s]
+   gen+proj: trajectories 832/4608  worst FOM rel residual 1.00e-12  [175s]
+   gen+proj: trajectories 896/4608  worst FOM rel residual 1.00e-12  [188s]
+   gen+proj: trajectories 960/4608  worst FOM rel residual 1.00e-12  [202s]
+   gen+proj: trajectories 1024/4608  worst FOM rel residual 1.00e-12  [215s]
+   gen+proj: trajectories 1088/4608  worst FOM rel residual 1.00e-12  [228s]
+   gen+proj: trajectories 1152/4608  worst FOM rel residual 1.00e-12  [242s]
+   gen+proj: trajectories 1216/4608  worst FOM rel residual 1.00e-12  [252s]
+   gen+proj: trajectories 1280/4608  worst FOM rel residual 1.00e-12  [266s]
+   gen+proj: trajectories 1344/4608  worst FOM rel residual 1.00e-12  [277s]
+   gen+proj: trajectories 1408/4608  worst FOM rel residual 1.00e-12  [287s]
+   gen+proj: trajectories 1472/4608  worst FOM rel residual 1.00e-12  [299s]
+   gen+proj: trajectories 1536/4608  worst FOM rel residual 1.00e-12  [313s]
+   gen+proj: trajectories 1600/4608  worst FOM rel residual 1.00e-12  [327s]
+   gen+proj: trajectories 1664/4608  worst FOM rel residual 1.00e-12  [337s]
+   gen+proj: trajectories 1728/4608  worst FOM rel residual 1.00e-12  [347s]
+   gen+proj: trajectories 1792/4608  worst FOM rel residual 1.00e-12  [359s]
+   gen+proj: trajectories 1856/4608  worst FOM rel residual 1.00e-12  [373s]
+   gen+proj: trajectories 1920/4608  worst FOM rel residual 1.00e-12  [383s]
+   gen+proj: trajectories 1984/4608  worst FOM rel residual 1.00e-12  [397s]
+   gen+proj: trajectories 2048/4608  worst FOM rel residual 1.00e-12  [410s]
+   gen+proj: trajectories 2112/4608  worst FOM rel residual 1.00e-12  [423s]
+   gen+proj: trajectories 2176/4608  worst FOM rel residual 1.00e-12  [433s]
+   gen+proj: trajectories 2240/4608  worst FOM rel residual 1.00e-12  [447s]
+   gen+proj: trajectories 2304/4608  worst FOM rel residual 1.00e-12  [461s]
+   gen+proj: trajectories 2368/4608  worst FOM rel residual 1.00e-12  [474s]
+   gen+proj: trajectories 2432/4608  worst FOM rel residual 1.00e-12  [484s]
+   gen+proj: trajectories 2496/4608  worst FOM rel residual 1.00e-12  [498s]
+   gen+proj: trajectories 2560/4608  worst FOM rel residual 1.00e-12  [511s]
+   gen+proj: trajectories 2624/4608  worst FOM rel residual 1.00e-12  [523s]
+   gen+proj: trajectories 2688/4608  worst FOM rel residual 1.00e-12  [534s]
+   gen+proj: trajectories 2752/4608  worst FOM rel residual 1.00e-12  [548s]
+   gen+proj: trajectories 2816/4608  worst FOM rel residual 1.00e-12  [560s]
+   gen+proj: trajectories 2880/4608  worst FOM rel residual 1.00e-12  [574s]
+   gen+proj: trajectories 2944/4608  worst FOM rel residual 1.00e-12  [588s]
+   gen+proj: trajectories 3008/4608  worst FOM rel residual 1.00e-12  [602s]
+   gen+proj: trajectories 3072/4608  worst FOM rel residual 1.00e-12  [612s]
+   gen+proj: trajectories 3136/4608  worst FOM rel residual 1.00e-12  [625s]
+   gen+proj: trajectories 3200/4608  worst FOM rel residual 1.00e-12  [639s]
+   gen+proj: trajectories 3264/4608  worst FOM rel residual 1.00e-12  [649s]
+   gen+proj: trajectories 3328/4608  worst FOM rel residual 1.00e-12  [662s]
+   gen+proj: trajectories 3392/4608  worst FOM rel residual 1.00e-12  [672s]
+   gen+proj: trajectories 3456/4608  worst FOM rel residual 1.00e-12  [685s]
+   gen+proj: trajectories 3520/4608  worst FOM rel residual 1.00e-12  [696s]
+   gen+proj: trajectories 3584/4608  worst FOM rel residual 1.00e-12  [706s]
+   gen+proj: trajectories 3648/4608  worst FOM rel residual 1.00e-12  [718s]
+   gen+proj: trajectories 3712/4608  worst FOM rel residual 1.00e-12  [731s]
+   gen+proj: trajectories 3776/4608  worst FOM rel residual 1.00e-12  [744s]
+   gen+proj: trajectories 3840/4608  worst FOM rel residual 1.00e-12  [758s]
+   gen+proj: trajectories 3904/4608  worst FOM rel residual 1.00e-12  [772s]
+   gen+proj: trajectories 3968/4608  worst FOM rel residual 1.00e-12  [784s]
+   gen+proj: trajectories 4032/4608  worst FOM rel residual 1.00e-12  [797s]
+   gen+proj: trajectories 4096/4608  worst FOM rel residual 1.00e-12  [807s]
+   gen+proj: trajectories 4160/4608  worst FOM rel residual 1.00e-12  [818s]
+   gen+proj: trajectories 4224/4608  worst FOM rel residual 1.00e-12  [827s]
+   gen+proj: trajectories 4288/4608  worst FOM rel residual 1.00e-12  [838s]
+   gen+proj: trajectories 4352/4608  worst FOM rel residual 1.00e-12  [849s]
+   gen+proj: trajectories 4416/4608  worst FOM rel residual 1.00e-12  [863s]
+   gen+proj: trajectories 4480/4608  worst FOM rel residual 1.00e-12  [874s]
+   gen+proj: trajectories 4544/4608  worst FOM rel residual 1.00e-12  [884s]
+   gen+proj: trajectories 4608/4608  worst FOM rel residual 1.00e-12  [894s]
+  GRAM IDENTITY gate on 64 training states: max rel deviation 9.372e-14 mean 4.810e-15  (full mean 1.170583e+00 vs gram mean 1.170583e+00)
+  span-floor direct-vs-Gram deviation on 64 rows: 2.594e-16  (direct mean 1.864300e-02)
+  checkpoint recon via (*): mean 1.613762e+00  (train span LS floor mean 2.127e-02)
+  fresh test span LS floor: mean 1.556e-02 max 1.114e-01  (test FOM residual 9.92e-13)
+EXTRACT done in 931s -> /cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1/stageB/sep_coeff_N256_K16_R512.npz
+[train2d seed=1 2026-10-19T14:36:43-04:00] Stage B head fit (full call, SEED0=1)
+jax_backend=gpu device=cuda:0 x64=True HFIT arms=['mid', 'wide', 'k32'] steps=2000
+  whitening round-trip 1.077e-14   q == L^T h deviation 2.599e-15
+  span LS floor: train 2.1265e-02  fresh test 1.5558e-02  (S=131072, R=512, K_ckpt=16)
+   hfit[mid]       1/2000 loss 1.0144e+00 recon 1.0075e+00 [5s]
+  ARM mid: recon 1.9153e-01  oracle 1.2095e-01  oracle/floor 7.8x  oracle_nn 1.2003e-01  code-refit gain 1.275x
+  EMITTED refined decoder -> /cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1/stageB/sep_hfit_dense_mid_N256_dense.pkl
+   hfit[wide]       1/2000 loss 1.0127e+00 recon 1.0068e+00 [5s]
+  ARM wide: recon 1.9078e-01  oracle 1.3504e-01  oracle/floor 8.7x  oracle_nn 1.2849e-01  code-refit gain 1.103x
+   hfit[k32]       1/2000 loss 1.0240e+00 recon 1.0122e+00 [4s]
+  ARM k32: recon 1.4465e-01  oracle 8.2505e-02  oracle/floor 5.3x  oracle_nn 6.6080e-02  code-refit gain 1.456x
+HFIT done in 90s -> /cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1/stageB/hfit_full.json
+Stage B OK: {"steps_done": 2000, "steps": 2000, "seconds": 8.606961727142334, "time_cap_fired": false, "gpu": "NVIDIA A100 80GB PCIe"}
+[train2d seed=1 2026-10-19T14:38:17-04:00] Rotation (make_rotation.py, head-based, deployed procedure)
+{
+ "construction": "SVD of A = [(R_G h(z_i))^T / ||R_G h(z_i)||], z_i = every stored training code (ck[\"Z_tr\"]); T = R_G^{-1} V_s, L = V_s^T R_G; per-row normalised as in poisson-bank-knob; training data only",
+ "training_state_norm_range": [
+  1.2237168095086246,
+  175.3734031785433
+ ],
+ "diagnostic_unnormalised_head_truncation_error": {
+  "32": {
+   "max": 0.2956257835646534,
+   "p99": 0.08167370020194038,
+   "median": 0.020833635042394688
+  },
+  "64": {
+   "max": 0.2339365413009411,
+   "p99": 0.053770254106639305,
+   "median": 0.01205339538120893
+  },
+  "128": {
+   "max": 0.12777249927007384,
+   "p99": 0.02979032758445216,
+   "median": 0.006399121350244792
+  },
+  "256": {
+   "max": 0.05667280731089093,
+   "p99": 0.012592533975536745,
+   "median": 0.0022408679622169777
+  },
+  "384": {
+   "max": 0.023798221305929217,
+   "p99": 0.00378217364162986,
+   "median": 0.0005896320344426438
+  },
+  "512": {
+   "max": 8.39513272229769e-08,
+   "p99": 5.268141450207578e-08,
+   "median": 1.9420061547406412e-08
+  }
+ },
+ "checkpoint_sha256": "4fe95a28bf4c223ce1aaf04a117a8eb7ede152615f732f0c32bf2ec00422d7a7",
+ "directions_sha256": "79d794580dad15c03630470940361d8ba9a7779673be9697c90d28e5c3d81535",
+ "train_mesh": 256,
+ "training_codes": 131072,
+ "K": 16,
+ "R": 512,
+ "R_G_condition_number": 1816.6998569147606,
+ "L_times_T_identity_deviation": 4.400928218002065e-13,
+ "rotated_bank_orthonormality_deviation_at_train_mesh": 5.194098722457354e-13,
+ "cumulative_training_energy": {
+  "32": 0.999347935026862,
+  "64": 0.9997753201066479,
+  "128": 0.9999351912891417,
+  "256": 0.9999921791112192,
+  "384": 0.9999994545583969,
+  "512": 1.0000000000000004
+ },
+ "correction_directions_energy_captured": {
+  "16": {
+   "32": 0.637588882186975,
+   "64": 0.7170096416210514,
+   "128": 0.7876247834970466,
+   "256": 0.87995910872472,
+   "384": 0.9419018569015978,
+   "512": 0.9999999999999999
+  },
+  "48": {
+   "32": 0.6647611447512617,
+   "64": 0.7415025430537854,
+   "128": 0.8074446024201046,
+   "256": 0.891852171998107,
+   "384": 0.9488409345225872,
+   "512": 0.9999999999999999
+  },
+  "112": {
+   "32": 0.6911630782070444,
+   "64": 0.7619906638285285,
+   "128": 0.8247222528168611,
+   "256": 0.9035843571356207,
+   "384": 0.9545735043856551,
+   "512": 1.0000000000000002
+  },
+  "240": {
+   "32": 0.7018831104267366,
+   "64": 0.7733091774556147,
+   "128": 0.8338955026918081,
+   "256": 0.9096955583941044,
+   "384": 0.9586950796816617,
+   "512": 1.0
+  },
+  "256": {
+   "32": 0.701662505540417,
+   "64": 0.7723003539206079,
+   "128": 0.8328451163882913,
+   "256": 0.9091327385157513,
+   "384": 0.9585859991174185,
+   "512": 1.0000000000000002
+  }
+ },
+ "T_sha256": "320001e5665f23dd73578d245cd3ffc43fd31509b27dcd6c6d5fb0817e37102e",
+ "L_sha256": "e6a4f2971fc4369148cc383e97a786a5cd6a3f2462e9b9357147e99b3ec1abea",
+ "file_sha256": "f49f4bfa6f2ba162becd349e743ac9cefadb7a8d3fa5a27fea5d508121ed1c7b",
+ "seconds": 17.742441455833614,
+ "jax_backend": "gpu"
+}
+trunc {"32": {"max": 0.2775709840334952, "p99": 0.06119353916200933, "median": 0.021147577987161208}, "64": {"max": 0.14203436133852226, "p99": 0.036085315950272694, "median": 0.012481022215718715}, "128": {"max": 0.06700354142232401, "p99": 0.01964473646807524, "median": 0.006601815765872877}, "256": {"max": 0.020101438474036754, "p99": 0.006612662927517801, "median": 0.0023424190143250716}, "384": {"max": 0.00656816350698746, "p99": 0.0016900993751338524, "median": 0.0006201015531373671}, "512": {"max": 6.495265578539184e-08, "p99": 4.3443977049330634e-08, "median": 0.0}}
+trunc_unnormalised {"32": {"max": 0.2956257835646534, "p99": 0.08167370020194038, "median": 0.020833635042394688}, "64": {"max": 0.2339365413009411, "p99": 0.053770254106639305, "median": 0.01205339538120893}, "128": {"max": 0.12777249927007384, "p99": 0.02979032758445216, "median": 0.006399121350244792}, "256": {"max": 0.05667280731089093, "p99": 0.012592533975536745, "median": 0.0022408679622169777}, "384": {"max": 0.023798221305929217, "p99": 0.00378217364162986, "median": 0.0005896320344426438}, "512": {"max": 8.39513272229769e-08, "p99": 5.268141450207578e-08, "median": 1.9420061547406412e-08}}
+Rotation OK: ||LT-I|| = 4.400928218002065e-13  orth dev = 5.194098722457354e-13  cond(R_G) = 1816.6998569147606
+[train2d seed=1 2026-10-19T14:38:38-04:00] SEED-COMPLETE (/cluster/tufts/paralab/tawal01/jcp-robust/smk2/output/train2d_s1)
+STEP r2acc configs/smk2t.json 2026-10-19T18:38:38Z
+jax_backend=gpu x64=True precision=highest
+TARGET R128 LSPG_BE_1 39.4
+TARGET R128 LSPG_CNR_1 42.3
+RULE R128 fib4181 LSPG_BE_1 57.2
+RULE R128 fib4181 LSPG_CNR_1 58.8
+RULE R128 gauss96 LSPG_BE_1 74.1
+RULE R128 gauss96 LSPG_CNR_1 76.0
+R2ACC COMPLETE 76.3
+STEP r2acc configs/smk2u.json 2026-10-19T18:39:58Z
+jax_backend=gpu x64=True precision=highest
+RULE R128 sel LSPG_BE_1 36.4
+R2ACC COMPLETE 36.6
+ALL-DONE

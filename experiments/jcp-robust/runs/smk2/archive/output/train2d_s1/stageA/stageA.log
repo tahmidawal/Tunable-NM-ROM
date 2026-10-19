@@ -1,0 +1,22 @@
+jax_backend=gpu device=NVIDIA A100 80GB PCIe arm=base sigma=4.0 lam=0.0 nodes=256 seed=1 steps=3000
+   gen n=256: trajectories 64/576 worst FOM rel residual 9.95e-13 [15s]
+   gen n=256: trajectories 128/576 worst FOM rel residual 1.00e-12 [28s]
+   gen n=256: trajectories 192/576 worst FOM rel residual 1.00e-12 [41s]
+   gen n=256: trajectories 256/576 worst FOM rel residual 1.00e-12 [53s]
+   gen n=256: trajectories 320/576 worst FOM rel residual 1.00e-12 [65s]
+   gen n=256: trajectories 384/576 worst FOM rel residual 1.00e-12 [76s]
+   gen n=256: trajectories 448/576 worst FOM rel residual 1.00e-12 [88s]
+   gen n=256: trajectories 512/576 worst FOM rel residual 1.00e-12 [101s]
+   gen n=256: trajectories 576/576 worst FOM rel residual 1.00e-12 [112s]
+  data: (16384, 64516) worst residual 1.00e-12 fingerprint {'sum': 200814620.48749176, 'sumsq': 102201588.76752055, 'shape': [576, 51, 65536]} sha fb95690ba87e
+  FD-target uncertainty (D2 vs D4): {'median': 0.0003816813460779617, 'p90': 0.001606813072586792, 'max': 0.4636345655004941}
+   train2[base] step      1/3000  rel-MSE 2.578e+00  grad-rel-MSE 0.000e+00  [13s]
+   train2[base] step    500/3000  rel-MSE 7.765e-02  grad-rel-MSE 0.000e+00  [25s]
+   train2[base] step   1000/3000  rel-MSE 2.536e-02  grad-rel-MSE 0.000e+00  [37s]
+   train2[base] step   1500/3000  rel-MSE 1.514e-02  grad-rel-MSE 0.000e+00  [49s]
+   train2[base] step   2000/3000  rel-MSE 1.157e-02  grad-rel-MSE 0.000e+00  [60s]
+   train2[base] step   2500/3000  rel-MSE 1.036e-02  grad-rel-MSE 0.000e+00  [72s]
+   train2[base] step   3000/3000  rel-MSE 1.001e-02  grad-rel-MSE 0.000e+00  [225s]
+   train2[base] done: recon mean 1.316e-01 max 1.175e+00 (used raw) [228s]
+  rotation: {"R_G_condition_number": 1816.7001477501547, "train_ls_floor": {"mean": 0.020566954588370934, "median": 0.015092815457488352, "max": 0.19149530586429472}}
+DONE

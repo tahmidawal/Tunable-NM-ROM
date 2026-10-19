@@ -14,6 +14,8 @@
   "e1run3d|W256|prod|gl": 0.2543774307705462,
   "e1run3d|W256|prod|lat": 0.023326135706156492,
   "e1run3d|setup": 19.45,
+  "e5time|per_execution|A100-80G": 0.9411949685534592,
+  "e5time|per_execution|H200": 0.7685534591194969,
   "r2acc|1024|R128sob|prod|big": 0.293302055913955,
   "r2acc|1024|R128sob|prod|std": 0.036918426398187876,
   "r2acc|1024|R128sob|tighter|big": 0.3687448245473206,
@@ -160,6 +162,16 @@
    "sha256": "b06b77be08d7fc9eeef36e3e2f491c9f7c6e7abc856c5712d412c2a197ae7ce2",
    "elapsed": 2464.0,
    "complete": false
+  },
+  "smk4 e5time_e5smk4": {
+   "file": "runs/smk4/archive/output/e5time_e5smk4/result.json",
+   "sha256": "8e83512bb613a949b7918ac0da10a5d6670b5328258b5821c179485d9fecf908",
+   "gpu": "A100-80G"
+  },
+  "smk5 e5time_e5smk1": {
+   "file": "runs/smk5/archive/output/e5time_e5smk1/result.json",
+   "sha256": "f2bd29e0e2aa089bbaa48542bf8c874732247ac9f41db92bb10529df259997cc",
+   "gpu": "H200"
   }
  },
  "note": "seconds per execution; certify.py multiplies by 1.25 and stage.py requires time limit >= 1.5 x projection"

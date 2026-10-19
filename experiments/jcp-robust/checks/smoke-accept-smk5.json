@@ -1,0 +1,29 @@
+{
+ "smoke": "smk5",
+ "source": "runs/smk5/archive/output",
+ "checks": {
+  "H200 E5 single-job smoke: ALL (job ok, C-E5.1, fixtures, G-E5.1, P-cross gates)": {
+   "ok": true,
+   "evidence": "OK   GPU type is the expected H200 (job, contract)\nOK   job status ok (complete, GPU type, backend, sources, contract, populations, identities, equivalence, gates)\nOK   registered triplet populations complete (P-cost, P-cross)\nOK   C-E5.1 doubled/single case-median in [1.6, 2.4] for every doubled subject\nOK   executing device resolved; telemetry complete (start, between-panels, end)\nOK   P-cost: >= 5 cases with >= 2 valid reps for both subjects at 256^2 and 1024^2\nOK   P-cross: >= 5 cases with >= 2 valid reps for both ROMs and every pinned comparator\nOK   fixture q1: injected x1.5 hardware-dependent, null consistent [1, 1]\nOK   fixture q2: injected x1.5 hardware-dependent, null consistent [1, 1]\nOK   fixture q3: injected x1.5 hardware-dependent, null consistent [1, 1]\nOK   G-E5.1 reproduction of P1c (complete registered set, <= 1e-10)\nOK   P-cross gate G-RR\nOK   P-cross gate G-FR\nOK   P-cross gate A-valid\nALL True\n"
+  },
+  "smoke resource contract (registered spec, regenerated inventories, reservation <= 2 GPU-h)": {
+   "ok": true,
+   "evidence": {
+    "reservation_identity": {
+     "attempt": true,
+     "commit": true,
+     "gpu": true,
+     "gpus": true,
+     "groups": true,
+     "time_limit": true
+    },
+    "configs/e5smk1.json": {
+     "n": 318,
+     "same": true
+    }
+   }
+  }
+ },
+ "ALL": true,
+ "label": "smoke acceptance (plumbing and controls at real size); never a verdict"
+}

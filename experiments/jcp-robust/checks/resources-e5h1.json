@@ -1,0 +1,23 @@
+{
+ "attempt": "e5h1",
+ "commit": "3137ea110b7a0550306c32bf96ef347e6a351725",
+ "code_tree_sha256": "2391d72c7903797556b1466dd3f0bf67aa76b92f1f911bf38df8e4e23ff0b80f",
+ "jobspec_sha256": "d4b5a3d562a841a9954cddc98a7da8e0a602d4cd7254792b699b7c612ba75af6",
+ "time_limit_hours": 1.0,
+ "projection_hours": 0.2338,
+ "group_hours": [
+  0.2338
+ ],
+ "gpus": 1,
+ "projection_gpu_hours": 0.2338,
+ "configs": {
+  "configs/e5prod_h200.json": "7f8a135fbdcb946ee59c24f9324c10af79f1ec4c0a0dd4c53b3a23b377e3b4f0"
+ },
+ "inventory_sha256": "918d104fb2c3c206f448174cb3a9e18c4d34f37b0df1936814891a8c332479ae",
+ "margin": 1.25,
+ "estimates": [
+  "A10.1 E5 per-execution rate from the smoke"
+ ],
+ "timings": "checks/smoke-timings.json",
+ "timings_sha256": "967e3a3bfc926c128c09915ebbc1b545efa4cee577eeed9e7c6056c1570ae442"
+}

@@ -638,3 +638,22 @@ acceptance checks the case record identity, the canonical generator $t_0$ and th
 `fverify.json` carries per-arm R-file and field hashes and its config hash, and acceptance binds it to the pulled files.
 The production-gate list of A6 additionally requires evidence-bound production `fverify` acceptance, a measured
 verification cost, and propagation of the calibration / separation qualifications into analysis and `EXPORT.json`.
+
+---
+
+## Amendment A7 (2026-10-19, after smoke smk1 = job 6068450 FAILED at the frozen-identity check; before any ROM output)
+
+**What happened.** smk1 ran its unit gates and all four reference pilots to completion (dev6 c0, C2 c9, B2 c15, A+ c13:
+all `accepted`, no refinement; R-repro field difference 0; both probe kinds produced; see `runs/smk1/`). The ROM step then
+stopped at the R3 assertion that the main-rule manifest equals FRONT-2D's: every field matched (mesh hash, mode-list hash,
+rule sha256, $m$, $M$, $R'$, policy) except `fingerprint`, a sha256 over on-device floating-point reductions of the rule
+tables. Those bits depend on the GPU's reduction order and were produced by qualify in another job, so the field is not a
+cross-job identity. **The check was over-specified, not the configuration wrong.** 0.41 GPU-h spent.
+
+**Changes.** (i) R3 compares every manifest field except `fingerprint` (recorded beside FRONT's value for information);
+table identity rests on the rule sha256, mesh and mode-list hashes, checkpoint and rotation sha256, and numerically on
+Q-repro (dev6 errors equal to FRONT-2D's per-case values to $10^{-9}$). (ii) The smoke is completed by **smk2**, a second
+≤ 2 GPU-h job running only the ROM part (unit gates, `qacc` with `configs/smk1-rom.json`, `fverify`); smk1's reference-pilot
+outputs stand as the reference half of the smoke evidence (same commit lineage; the reference code is unchanged by this
+amendment). `smoke_accept.py runs/smk1 runs/smk2` evaluates both, and requires smk1's only traceback to be this assertion.
+(iii) Job end times written for the acceptance (`SACCT.json`) are converted to UTC.

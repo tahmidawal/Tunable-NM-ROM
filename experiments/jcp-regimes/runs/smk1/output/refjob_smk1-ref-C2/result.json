@@ -1,0 +1,232 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "C2",
+  "cases": [
+   9
+  ],
+  "kinds": [
+   "ST"
+  ],
+  "tight_allowance": 0,
+  "probes": {
+   "upwind": [
+    9
+   ],
+   "tight_coarse": [
+    9
+   ]
+  }
+ },
+ "job": {
+  "job_id": "6068450",
+  "commit": "828826f61305ad66b1b425f4a91276370608ce6f",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "calib_status": "ok",
+ "floor_stab": 10.0,
+ "tight_allowance": 0,
+ "cohort": {
+  "name": "C2",
+  "n": 16,
+  "sha256": "4a71ddce73e63c46e5ab02fbc4d4b1b461834bed4b14da3ead2cf3d6f1ceab10",
+  "cases": [
+   9
+  ],
+  "n_cases": 1
+ },
+ "tight_allowance_after_resume": 0,
+ "cases": [
+  {
+   "case": 9,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 2.609215581129037e-05,
+   "p": [
+    1.9270919964820525,
+    1.9868880136473945,
+    2.001646135065396,
+    2.0037046208383975,
+    2.0061101236507275
+   ],
+   "seconds": 350.367016851902
+  }
+ ],
+ "manifest": [
+  {
+   "file": "2d/C2/ST/c009.json",
+   "sha256": "477cb0edf38d1c5d1e6fbd5248c5addb423368974152dcf4c0f2a6cfd97c78b5"
+  },
+  {
+   "file": "2d/C2/ST/c009.npz",
+   "sha256": "b30d0972e6a75b2e3de713d8870a4382002b1b2bbd5ac3440c159160d8798e24"
+  }
+ ],
+ "probes": [
+  {
+   "case": 9,
+   "kind": "ST",
+   "tight_coarse": {
+    "L": 2048,
+    "prod_id": "a0_L2048",
+    "prod_steps_ok": true,
+    "tau_prod": 7.92150388694994e-10,
+    "tau_tight": 2.0199999999999996e-11,
+    "dev": 4.6962623544742625e-12,
+    "tight_steps_ok": true,
+    "valid": true,
+    "verdict": "agree",
+    "passed": true,
+    "seconds": 12.678651442751288
+   },
+   "upwind_levels": [
+    {
+     "L": 2048,
+     "dt": 0.00125,
+     "tau": 9.738289768019472e-10,
+     "steps_ok": true,
+     "umax_running": 1.6797571083329113,
+     "stages": 202
+    },
+    {
+     "L": 4096,
+     "dt": 0.000625,
+     "tau": 4.074843946850919e-09,
+     "steps_ok": true,
+     "umax_running": 1.6797594178991124,
+     "stages": 402
+    },
+    {
+     "L": 8192,
+     "dt": 0.0003125,
+     "tau": 7.837527401180385e-09,
+     "steps_ok": true,
+     "umax_running": 1.6797599593692354,
+     "stages": 802
+    }
+   ],
+   "upwind": {
+    "outcome": "order-fail",
+    "p": [
+     0.9564140871403349,
+     0.9780271400687864,
+     0.9546157446390332,
+     0.9389421076360891,
+     0.9364222744732504
+    ],
+    "checks": {
+     "solver": true,
+     "peclet": true,
+     "floor": true,
+     "order": false,
+     "direction": true,
+     "t0_shared": true
+    },
+    "rejected": true
+   },
+   "evidence": {
+    "file": "2d/C2/ST/probe_c009.npz",
+    "sha256": "c0d1482cce5ecc9f5afa5a253059005a361304229c13437f1e59104394c5f71f"
+   }
+  }
+ ],
+ "seconds": 727.334676370956,
+ "peak_bytes": 16539234304
+}

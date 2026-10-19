@@ -1,0 +1,8 @@
+Traceback (most recent call last):
+  File "/cluster/tufts/paralab/tawal01/jcp-regimes/smk1/experiments/jcp-regimes/qacc.py", line 399, in <module>
+    main()
+    ~~~~^^
+  File "/cluster/tufts/paralab/tawal01/jcp-regimes/smk1/experiments/jcp-regimes/qacc.py", line 155, in main
+    assert got == want, (sc_['name'], got, want)
+           ^^^^^^^^^^^
+AssertionError: ('R128', {'L': 1024, 'M': 512, 'Rp': 128, 'fingerprint': '95530fb8c56b05c10e409ca7553ef5f1f58ef6ee0d1bfe31c0fbe04b4ccfc9b7', 'm': 4181, 'mesh_hash': 'fef02424157f106b48d04276276c15ebba9c516e6024d4f82ea2f648af3e09c8', 'mode_hash': '7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533', 'policy': 'frozen', 'rule': 'fib4181', 'rule_sha256': '6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277'}, {'L': 1024, 'M': 512, 'Rp': 128, 'fingerprint': 'a4bfc03084761b765c6593ceb50ab15b9e7224f92a5238e802c552c0f5f52518', 'm': 4181, 'mesh_hash': 'fef02424157f106b48d04276276c15ebba9c516e6024d4f82ea2f648af3e09c8', 'mode_hash': '7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533', 'policy': 'frozen', 'rule': 'fib4181', 'rule_sha256': '6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277'})

@@ -1,0 +1,184 @@
+{
+ "config": {
+  "mode": "fd",
+  "dim": 2,
+  "cohort": "B2",
+  "cases": [
+   15
+  ],
+  "kinds": [
+   "ST"
+  ],
+  "tight_allowance": 0,
+  "probes": {
+   "tight_coarse": [
+    15
+   ]
+  }
+ },
+ "job": {
+  "job_id": "6068450",
+  "commit": "828826f61305ad66b1b425f4a91276370608ce6f",
+  "gpu": "NVIDIA H200",
+  "backend": "gpu",
+  "jax": "0.10.2",
+  "numpy": "2.5.0",
+  "precision": "highest"
+ },
+ "complete": true,
+ "gates": [
+  {
+   "gate": "Uorder",
+   "undefined": [
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null,
+    null
+   ],
+   "p_refined_5p4": 2.0,
+   "pass": true
+  },
+  {
+   "gate": "X1b",
+   "dyadic": {
+    "p": [
+     1.0000000000000009,
+     0.9999999999999997,
+     1.0000000000000009,
+     1.0000000000000002,
+     0.9999999999999996
+    ],
+    "outcome": "order-fail"
+   },
+   "refined": {
+    "p": [
+     1.0000000000000018,
+     0.9999999999999978,
+     1.0000000000000004,
+     0.9999999999999998,
+     1.0000000000000004
+    ],
+    "outcome": "order-fail"
+   },
+   "second_order_control": "accepted",
+   "pass": true
+  },
+  {
+   "gate": "Upeclet",
+   "ok": "accepted",
+   "injected": "peclet-fail",
+   "pass": true
+  },
+  {
+   "gate": "Urng",
+   "prefix_stable": true,
+   "ranges": true,
+   "golden_match": true,
+   "numpy": "2.5.0",
+   "pass": true
+  },
+  {
+   "gate": "Ucrypto",
+   "round_trip": true,
+   "wrong_key_detected": true,
+   "pass": true
+  },
+  {
+   "gate": "Utransforms",
+   "worst_rel": 2.5179554147851964e-15,
+   "pass": true
+  },
+  {
+   "gate": "Uic3d",
+   "max_rel": 2.990520838490987e-16,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 2,
+   "L": 256,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  },
+  {
+   "gate": "G1",
+   "d": 3,
+   "L": 64,
+   "max_rel_diff": 0.0,
+   "newton_equal": true,
+   "pass": true
+  }
+ ],
+ "gates_all_pass": true,
+ "calib_status": "ok",
+ "floor_stab": 10.0,
+ "tight_allowance": 0,
+ "cohort": {
+  "name": "B2",
+  "n": 16,
+  "sha256": "1eb47f04cf7885d935680d0eec3733834b7910d28c87d56c077111e78e26e358",
+  "cases": [
+   15
+  ],
+  "n_cases": 1
+ },
+ "tight_allowance_after_resume": 0,
+ "cases": [
+  {
+   "case": 15,
+   "kind": "ST",
+   "outcome": "accepted",
+   "refined": false,
+   "tight": false,
+   "eps_ref": 6.953959167273136e-06,
+   "p": [
+    1.9959314274251692,
+    2.0002484441516493,
+    1.994860310700667,
+    1.9947100036012932,
+    1.9932925458210655
+   ],
+   "seconds": 221.70111935865134
+  }
+ ],
+ "manifest": [
+  {
+   "file": "2d/B2/ST/c015.json",
+   "sha256": "1ba4a1d140c32007af22747d43f40017ffaf6433d2e150557cad06c709fcddd0"
+  },
+  {
+   "file": "2d/B2/ST/c015.npz",
+   "sha256": "5f9c01e2e6fb4063ff9b96405fe748322d5ef54f2bbd3941b84e753836f74ebd"
+  }
+ ],
+ "probes": [
+  {
+   "case": 15,
+   "kind": "ST",
+   "tight_coarse": {
+    "L": 2048,
+    "prod_id": "a0_L2048",
+    "prod_steps_ok": true,
+    "tau_prod": 6.569771288527461e-10,
+    "tau_tight": 5.169101157432026e-11,
+    "dev": 2.458230711113389e-12,
+    "tight_steps_ok": true,
+    "valid": true,
+    "verdict": "agree",
+    "passed": true,
+    "seconds": 6.764129317365587
+   },
+   "evidence": {
+    "file": "2d/B2/ST/probe_c015.npz",
+    "sha256": "2b8b80a8b350958905e6a15109b48d92fae560160106adb577d56c6e8aaefdd7"
+   }
+  }
+ ],
+ "seconds": 249.2177743120119,
+ "peak_bytes": 15734205184
+}

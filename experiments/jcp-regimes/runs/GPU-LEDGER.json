@@ -4,12 +4,16 @@
  "jobs": [
   {
    "attempt": "smk1",
-   "state": "SUBMITTED",
+   "state": "FAILED",
    "time_limit_hours": 2.0,
-   "job_id": "6068450"
+   "job_id": "6068450",
+   "sacct_state": "FAILED",
+   "node": "pax008",
+   "alloc": "billing=8,cpu=8,gres/gpu=1,mem=200G,node=1",
+   "elapsed_hours": 0.4083
   }
  ],
- "spent_gpu_hours": 0,
- "reserved_gpu_hours": 2.0,
- "committed_gpu_hours": 2.0
+ "spent_gpu_hours": 0.4083,
+ "reserved_gpu_hours": 0,
+ "committed_gpu_hours": 0.4083
 }

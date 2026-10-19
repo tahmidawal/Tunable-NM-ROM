@@ -150,9 +150,14 @@ def main():
         roles = {k: sc_[k] for k in ('qp', 'qpp') if sc_.get(k)}
         b0 = P.mem()['in_use']
         st = P.Setting(bank, sc_['name'], sc_['Rp'], sc_['rule'], 'frozen', roles=roles, forms=('LSPG', 'GAL'), nrec=0)
-        want = fz['settings'][sc_['name']]               # R3: rule / mesh / mode-list identity equals FRONT-2D's manifest
+        # R3 (amended A7): rule / mesh / mode-list identity equals FRONT-2D's manifest; the table 'fingerprint' (a hash of
+        # on-device float reductions) is recorded but not compared across jobs: its bits depend on the GPU's reduction
+        # order (smk1 6068450: every other field equal, fingerprint different)
+        want = {k: v for k, v in fz['settings'][sc_['name']].items() if k != 'fingerprint'}
         got = {k: st.meta['main'][k] for k in want}
         assert got == want, (sc_['name'], got, want)
+        rep.setdefault('fingerprints', {})[sc_['name']] = dict(job=st.meta['main']['fingerprint'],
+                                                              front=fz['settings'][sc_['name']].get('fingerprint'))
         A = np.asarray(st.base['A'])
         sA = np.linalg.svd(A, compute_uv=False)
         srep = rep['settings'][sc_['name']] = dict(Rp=st.Rp, M=st.M, policy=st.policy, rules=st.rules, m=st.m, meta=st.meta,

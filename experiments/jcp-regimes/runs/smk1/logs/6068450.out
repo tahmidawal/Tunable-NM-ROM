@@ -1,0 +1,67 @@
+host=pax008 source_commit=828826f61305ad66b1b425f4a91276370608ce6f
+NVIDIA H200, GPU-d115e0d0-3aa6-50ba-f7e0-cd2c2b54a5ae, 143771 MiB
+10.235.106.22:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+jax_backend=gpu
+PASS G-seed refuses [0, 1000, 7090702, 20260927, 923801, 5550001, 2147483647]
+PASS G-seed accepts registered 
+PASS G-bounds registered regimes 
+PASS G-bounds refuses injected rows []
+PASS G-train N0 disjoint 
+PASS G-train all regimes disjoint (A2.1) {'single': 88, 'two_bump': 32, 'others': 4710}
+PASS G-train refuses injected duplicate 
+PASS G-pair C1/A- geometry and nu identical, a larger 
+PASS G-train refuses injected training row 
+PASS G-ic single bump == engines.initial 0.0
+PASS G-ic two-bump peak == a 2.220446049250313e-16
+PASS G-ic B2 sign-changing -1.9927361725803154
+PASS G-ic interface shapes 
+PASS G-ic-ps two-bump coefficients == direct quadrature 3.583463616202375e-15
+PASS S-check separating fixture passes {'Ap': True, 'Am': True, 'C1': True, 'C2': True, 'B1': True, 'B2': True}
+PASS S-check non-separating fixture fails 
+PASS S-check refuses < 8 N0 
+PASS S-check refuses C1 with < 8 A- 
+PASS R-order first-order triple rejected ('order-fail', [1.0, 1.0, 1.0, 1.0, 0.9999999999999999])
+PASS R-order second-order triple accepted ('accepted', [2.0000000000000004, 2.0, 1.9999999999999998, 2.0, 2.0000000000000004])
+PASS R-peclet rejected ('peclet-fail', 2.5)
+ALL-PASS
+STEP refjob configs/smk1-ref-C2.json 2026-10-19T18:08:01Z
+jax_backend=gpu x64=True precision=highest
+[     18.9s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     30.1s]   C2 c9 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=8.76e-12 newton=577 compile=1.1s solve=8.7s peak=939287296
+[     82.3s]   C2 c9 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=9.79e-12 newton=1037 compile=1.2s solve=49.0s peak=3924748544
+[    369.3s]   C2 c9 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=9.65e-12 newton=1611 compile=1.2s solve=277.2s peak=15734205184
+[    382.1s]   PROBE C2 c9 tight_coarse dev=4.696e-12 tau_prod=7.922e-10 passed=True
+[    727.2s]   PROBE C2 c9 upwind outcome=order-fail p=[0.9564140871403349, 0.9780271400687864, 0.9546157446390332, 0.9389421076360891, 0.9364222744732504]
+[    727.3s] CASE C2 9 ST: accepted eps=2.609215581129037e-05 p=[1.9270919964820525, 1.9868880136473945, 2.001646135065396, 2.0037046208383975, 2.0061101236507275] 350s
+JOB COMPLETE
+STEP refjob configs/smk1-ref-dev6.json 2026-10-19T18:20:12Z
+jax_backend=gpu x64=True precision=highest
+[     19.3s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     24.8s]   dev6 c0 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=7.11e-12 newton=406 compile=1.1s solve=2.6s peak=939287296
+[     44.9s]   dev6 c0 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=2.00e-12 newton=806 compile=1.2s solve=15.7s peak=3924748544
+[    172.2s]   dev6 c0 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=3.18e-12 newton=1605 compile=1.2s solve=116.9s peak=15734205184
+[    172.3s] CASE dev6 0 ST: accepted eps=1.297941396937812e-06 p=[2.0379656204550924, 2.026852554167021, 2.0260244856897325, 2.0254010789054178, 2.027420284952077] 153s
+JOB COMPLETE
+STEP refjob configs/smk1-ref-B2.json 2026-10-19T18:23:07Z
+jax_backend=gpu x64=True precision=highest
+[     19.8s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     27.2s]   B2 c15 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=7.50e-12 newton=408 compile=1.1s solve=3.5s peak=939287296
+[     54.1s]   B2 c15 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=2.55e-12 newton=808 compile=1.1s solve=21.6s peak=3924748544
+[    242.3s]   B2 c15 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=4.34e-12 newton=1606 compile=1.3s solve=173.3s peak=15734205184
+[    249.1s]   PROBE B2 c15 tight_coarse dev=2.458e-12 tau_prod=6.570e-10 passed=True
+[    249.2s] CASE B2 15 ST: accepted eps=6.953959167273136e-06 p=[1.9959314274251692, 2.0002484441516493, 1.994860310700667, 1.9947100036012932, 1.9932925458210655] 222s
+JOB COMPLETE
+STEP refjob configs/smk1-ref-Ap.json 2026-10-19T18:27:20Z
+jax_backend=gpu x64=True precision=highest
+[     17.0s] gates all_pass=True: Uorder=True, X1b=True, Upeclet=True, Urng=True, Ucrypto=True, Utransforms=True, Uic3d=True, G12=True, G13=True
+[     21.6s]   Ap c13 ST a0_L2048 prod L=2048 dt=1.250e-03 stages=202 ok=True maxres=5.62e-12 newton=406 compile=1.1s solve=2.1s peak=939287296
+[     37.4s]   Ap c13 ST a1_L4096 prod L=4096 dt=6.250e-04 stages=402 ok=True maxres=8.22e-12 newton=805 compile=1.2s solve=13.2s peak=3924748544
+[    162.4s]   Ap c13 ST a2_L8192 prod L=8192 dt=3.125e-04 stages=802 ok=True maxres=2.98e-12 newton=1605 compile=1.2s solve=116.5s peak=15734205184
+[    202.7s]   PROBE Ap c13 tight_coarse dev=1.551e-13 tau_prod=9.967e-10 passed=True
+[    202.7s] CASE Ap 13 ST: accepted eps=5.7311594950639675e-06 p=[1.9742450725191645, 1.95955119622127, 1.9445950210151857, 1.9356790603747442, 1.9309252636646317] 145s
+JOB COMPLETE
+STEP refslim configs/smk1-slim.json 2026-10-19T18:30:45Z
+REFSLIM 4 cases
+STEP qacc configs/smk1-rom.json 2026-10-19T18:30:47Z
+jax_backend=gpu x64=True precision=highest
+SETUP 13.2 {'in_use': 5440066560, 'peak': 17278585600, 'limit': 138101653504}

@@ -48,17 +48,27 @@ def check(name, ok, blocking=True, **detail):
     print(f"{'PASS' if ok else ('FAIL' if blocking else 'NOTE')} {name} {json.dumps(detail, default=str)[:300]}", flush=True)
 
 
-def main(run):
+def main(run, rom_run=None):
+    """run: the job with the reference pilots (smk1); rom_run: the job with qacc + fverify (smk2, A7), default run."""
     run = Path(run)
+    rom_run = Path(rom_run) if rom_run else run
     out = run / 'output'
-    logs = ''.join(p.read_text() for p in sorted((run / 'logs').glob('*.out')))
-    errs = ''.join(p.read_text() for p in sorted((run / 'logs').glob('*.err')))
+    qout = rom_run / 'output'
+    logs = ''.join(p.read_text() for r_ in dict.fromkeys((run, rom_run)) for p in sorted((r_ / 'logs').glob('*.out')))
+    errs = ''.join(p.read_text() for r_ in dict.fromkeys((run, rom_run)) for p in sorted((r_ / 'logs').glob('*.err')))
+    if rom_run != run:                                 # A7: smk1's only traceback must be the frozen-identity assert
+        e1 = ''.join(p.read_text() for p in sorted((run / 'logs').glob('*.err')))
+        known = e1.count('Traceback') == 1 and 'assert got == want' in e1 and "'fingerprint'" in e1
+        check('smk1 stderr: only the known fingerprint assertion (A7)', known)
+        errs = ''.join(p.read_text() for p in sorted((rom_run / 'logs').glob('*.err')))
     check('jax_backend=gpu in log', 'jax_backend=gpu' in logs)
-    check('job finished', 'ALL-DONE' in logs)
+    check('ROM job finished', 'ALL-DONE' in ''.join(p.read_text() for p in sorted((rom_run / 'logs').glob('*.out'))))
+    check('reference steps finished', all(f'STEP refjob configs/smk1-ref-{g}.json' in logs for g in ('C2', 'dev6', 'B2', 'Ap'))
+          and 'STEP refslim configs/smk1-slim.json' in logs and logs.count('JOB COMPLETE') >= 4)
     bad = [w for w in ('large amount of constants', 'Traceback', 'Segmentation', 'Out of memory', 'RESOURCE_EXHAUSTED',
                        'No space left') if w in logs + errs]
     check('no captured-constants / traceback / OOM / disk-full in .out or .err', not bad, found=bad)
-    ug = json.loads((out / 'unit_gates.json').read_text())
+    ug = json.loads((qout / 'unit_gates.json').read_text())
     check('unit gates in job (file)', ug['all_pass'], failed=[g['gate'] for g in ug['gates'] if not g['pass_']])
     import subprocess
     rr = subprocess.run([sys.executable, str(HERE / 'test_regimes.py')], capture_output=True, text=True, cwd=HERE,
@@ -139,7 +149,7 @@ def main(run):
     check('pilot references ran (outcomes recorded)', all(v['seconds'] for v in pil.values()), blocking=True, pilots=pil)
     check('sigma available for regime pilots', all(pil[k]['sigma'] and pil[k]['sigma']['sigma'] for k in pil if not k.startswith('dev6')))
     # ------------------------------------------------------------------------------------------------------ ROM
-    qd = out / 'qacc_smk1-rom'
+    qd = qout / 'qacc_smk1-rom'
     rep = json.loads((qd / 'result.json').read_text())
     check('qacc complete on gpu', rep.get('complete') and rep['backend'] == 'gpu', gpu=rep['gpu'])
     # IC identity recomputed: every R record's n0 equals the norm of the generator's lattice IC (A1.6 iv)
@@ -225,7 +235,7 @@ def main(run):
     wmr = json.loads(wm.read_text()) if wm.exists() else {}
     check('Q-wrong-mesh refused when re-executed locally (CPU, same code path)', rr.returncode == 0 and wmr.get('passed'),
           result=wmr, rc=rr.returncode)
-    fv = json.loads((out / 'fverify_smk1-fverify' / 'fverify.json').read_text())
+    fv = json.loads((qout / 'fverify_smk1-fverify' / 'fverify.json').read_text())
     import hashlib
     want_fv = json.loads((HERE / 'configs' / 'smk1-fverify.json').read_text())['arms']
     bound = sorted(fv['arms']) == sorted(want_fv) and all(
@@ -263,7 +273,7 @@ def main(run):
     import datetime as _dt
     stamps = [(ln.split()[1], ln.split()[2], _dt.datetime.fromisoformat(ln.split()[3].replace('Z', '+00:00')))
               for ln in logs.splitlines() if ln.startswith('STEP ')]
-    sacct = run / 'SACCT.json'                         # written at collection: the job's sacct End closes the last step
+    sacct = rom_run / 'SACCT.json'                         # written at collection: the job's sacct End closes the last step
     if sacct.exists() and not any(d_ == 'end' for d_, _, _ in stamps):
         stamps.append(('end', '-', _dt.datetime.fromisoformat(json.loads(sacct.read_text())['End']).replace(tzinfo=_dt.timezone.utc)))
     step_s = {}
@@ -299,4 +309,4 @@ def RS_clean(x):
 
 
 if __name__ == '__main__':
-    main(sys.argv[1])
+    main(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else None)

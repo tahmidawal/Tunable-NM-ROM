@@ -19269,3 +19269,8 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
   - In flight: dims, budget, robust, regimes.
   - The session is still open in its terminal. A fresh-session alternative is `reports/2026-10-17-full-experiment-plan/AGENT-PROMPT-resume.md`; do not run both at once.
 - **Path.** `CLAUDE.md`, `AGENTS.md` and this file's header now point at the real repository path, `/home/tahmid/Dev/Tunable-NM-ROM-Claude`. The old `pod-ae-nmrom/...` path is a symlink to the same folder. It stays, because the running ideation session uses it. Historical log entries are unchanged.
+
+### 2026-10-19 ~15:50 UTC — campaign resumed after the weekly usage-limit stop (coordinator)
+- **Stop.** At ~05:52 UTC on 10-19 the account hit its weekly usage limit; every lane agent and the coordinator stopped mid-step (dims at the t3s submit with analyze2d/3d running; budget in its T=1 analysis; robust and regimes just starting their designs). Watchdog loops exited.
+- **State at resume (checked):** cluster queue empty; no lane processes alive locally; disk 90 GB free. Since 10-18, sacct shows all dims/budget jobs COMPLETED except budget ref2b/ref2c/ref3/ref2t1 (cancelled by the lane) — ref2t1's rerun **ref2t1w 5981047 COMPLETED**. dims has job audit `codex-job-t3s-3.md` (SUBMIT) with t3s unsubmitted (28.6 of 55 GPU-h); budget 25.9 of 45 GPU-h.
+- **Resume.** All four lanes resumed in their existing agent contexts by SendMessage with exact restart points (dims: submit t3s, re-run analyses; budget: collect ref2t1w, finish T=1 analysis, re-audit, report; robust and regimes: restart design). Two watchdog loops restarted. Repository now used only from its real path `/home/tahmid/Dev/Tunable-NM-ROM-Claude`.

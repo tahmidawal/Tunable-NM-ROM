@@ -898,3 +898,9 @@ raises). The cache is deleted after that mesh's analyses. P1-scaling archives (s
 **A12.1 (2026-10-18).** `ana2d.npz` caches `.npz` members per key (NumPy re-decompresses a member on every access);
 performance only. On the smoke data `ana7` output is byte-identical (sorted JSON) and `ana2d` differs only in the
 recorded paths (run directory, cached-archive source paths).
+
+**A12.2 (2026-10-19 00:20 UTC).** Two `dict.setdefault(key, Constructor())` calls in `ana7` evaluated the constructor on
+every call (the $r$-prefix span QR, 14 s per case, and the cohort table); now built once per key — performance only,
+same values. The first local `ana7` runs at 256² and 1024² were killed without output at 23:39 UTC (no OOM record; the
+box load was ~70); the analyses now run inside `jaxrun` cgroups through `campaign/jaxslot.sh` (CPU backend, as on the
+smoke).

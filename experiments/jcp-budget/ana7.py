@@ -104,7 +104,9 @@ def same_case(meta, dim, coh, c):
     log-uniform viscosity), so the cluster-written hash is compared only when numpy versions agree.)"""
     sys.path.insert(0, str(HERE / 'ref'))
     import cohorts as CH
-    co = _COH.setdefault((dim, coh), CH.Cohort(dim, coh))
+    if (dim, coh) not in _COH:                  # build once (setdefault would evaluate the constructor on every call)
+        _COH[(dim, coh)] = CH.Cohort(dim, coh)
+    co = _COH[(dim, coh)]
     want = co.desc(c)
     got = meta.get('desc') or {}
     def flat(x):
@@ -286,7 +288,9 @@ def b7_member(run, mk, member, mesh, refs, EL, T, minpop):
             n0n = window_rows(row, F, Rn, meta, nout, EL, cid)
             row['ref_walls_zero'] = bool(np.all(Rn[:, 0, :] == 0) and np.all(Rn[:, -1, :] == 0) and np.all(Rn[:, :, 0] == 0)
                                          and np.all(Rn[:, :, -1] == 0))
-            span = SPANS.setdefault(r, A2.Span(r))
+            if r not in SPANS:                  # build once per r (setdefault evaluated the QR on every case)
+                SPANS[r] = A2.Span(r)
+            span = SPANS[r]
             row['e_P_t'] = (np.linalg.norm(A2.inner(Rn) - span.proj(Rn), axis=1) / n0n).tolist()
         rows.append(row)
     q1 = dict(all_valid=all(x['valid'] for x in rows), gcert=all(x['gcert'] for x in rows),

@@ -5,7 +5,7 @@ at the top, then the dated chronology including everything that was retracted. I
 at the repository root and every session reads and appends to that one file by absolute path:
 
 ```
-/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md
+/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md
 ```
 
 There is no per-worktree copy and no separate status document. This file carries no state — it is

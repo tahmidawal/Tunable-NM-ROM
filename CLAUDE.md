@@ -13,6 +13,8 @@ The repository has two clean packages:
 `best-results/` is the frozen experiment archive. Do not casually rewrite those scripts or
 reported outputs; make a new experiment directory when extending them.
 
+**Location.** The repository lives at `/home/tahmid/Dev/Tunable-NM-ROM-Claude` (moved 2026-10-01). The old path `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude` is a symlink kept so older sessions keep working; start new sessions from the real path. Older lab-log entries still quote the old path; it resolves to the same files.
+
 ## Branching — main is the baseline; experiments live in worktrees
 
 `main` is the frozen baseline. Never run or commit experiments directly on it.
@@ -22,7 +24,7 @@ Every new experiment starts in its own git worktree on its own branch, pushed to
 
 - **Claude names and creates worktrees itself** (user decision, 2026-10-06): no confirmation is
   needed for the name or for creating it. Report the names to the user and in the lab log once created.
-- Worktree dirs live in `/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/worktrees/`,
+- Worktree dirs live in `/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/`,
   named `YYYY-MM-DD-<short-descriptive-slug>` — date first so directories sort
   chronologically. The `worktrees/` dir is listed in `.git/info/exclude` so `main` stays
   clean; it is never committed.
@@ -110,7 +112,7 @@ After every notebook update, rebuild the PDF and commit both. The notebook compl
 
 ### One canonical `LAB-LOG.md`, on `main`, read and appended by every session
 
-`/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md`. Worktrees share one `.git`, so
+`/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md`. Worktrees share one `.git`, so
 that absolute path resolves to main's copy from inside any worktree — there is **no per-worktree
 copy**, and no separate status or start-here document. **Read it at the start of a session and
 append to it before the session ends; appending is a closing step, not an optional extra.**

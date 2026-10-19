@@ -4,7 +4,7 @@
 and every session appends to *this* file by absolute path, whichever worktree it is working in:
 
 ```
-/home/tahmid/Dev/pod-ae-nmrom/Tunable-NM-ROM-Claude/LAB-LOG.md
+/home/tahmid/Dev/Tunable-NM-ROM-Claude/LAB-LOG.md
 ```
 
 There is no per-worktree copy. "Where things stand" is rewritten by each session; the chronology
@@ -19260,3 +19260,12 @@ A cluster check before launch found tufts-login reachable, no jobs queued, and A
 - Results page updated after priority 2 (https://claude.ai/artifact/MaZocvqPrsNjGZQYJAPiwF).
 - Worktrees from `21c175a1b`: `exp/2026-10-19-jcp-robust` (@3c2cccea3, mirror 33b095f87; E1 randomised rules, E2 full-recipe seeds ×3 for the 2D R512 and 3D W1024 banks, E5 A100 vs H200; cap 3 jobs / 75 GPU-h) and `exp/2026-10-19-jcp-regimes` (@c4abfc7ee, mirror afc0fa8ce; D1 ν extrapolation, IC-family change, stiffness, new dev cases + references; cap 3 / 60). Priority-4 total 135 GPU-h (plan 120–220); C3-full (GNAT, POD + exact tensor) and C4 are not launched — C3-minimal already falsified H-base, and C4 is excluded from the freeze roster (V3-6); recorded as deferred.
 - Production for priority 4 is released when dims and budget (priority 3) hand back.
+
+## 2026-10-19
+
+### Campaign paused on the usage limit; repository path note (side session)
+- **Stop.** The Burgers campaign coordinator (terminal session "ideation", `claude --remote-control ideation`) hit the account's weekly usage limit at about 05:52 UTC on 2026-10-19 (resets 2026-10-22 17:00 ET). Its lanes stopped mid-step; no cluster jobs were running or queued.
+  - Done at the stop: speed3d, p1-scaling, qualify, fom2d, heads, hr-baselines.
+  - In flight: dims, budget, robust, regimes.
+  - The session is still open in its terminal. A fresh-session alternative is `reports/2026-10-17-full-experiment-plan/AGENT-PROMPT-resume.md`; do not run both at once.
+- **Path.** `CLAUDE.md`, `AGENTS.md` and this file's header now point at the real repository path, `/home/tahmid/Dev/Tunable-NM-ROM-Claude`. The old `pod-ae-nmrom/...` path is a symlink to the same folder. It stays, because the running ideation session uses it. Historical log entries are unchanged.

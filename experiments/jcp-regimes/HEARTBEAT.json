@@ -1,3 +1,4 @@
-{"lane": "jcp-regimes", "utc": "2026-10-19T19:04:23Z", "step": "6: codex pre-production/plan audit round 5",
- "waiting_on": {"slurm_jobs": [], "codex_output": "audits/codex-prod-5.md", "codex_pid": 2344009, "local_pid": null},
- "expected_finish_utc": "2026-10-19T19:49:23Z", "last_commit": "c65684ceb", "gpu_hours_spent": 0.5494, "gpu_hours_cap": 60, "notes": "smoke accepted (codex A)"}
+{"lane": "jcp-regimes", "utc": "2026-10-19T19:10:50Z", "step": "awaiting production release",
+ "waiting_on": {"slurm_jobs": [], "codex_output": null, "codex_pid": null, "local_pid": null},
+ "expected_finish_utc": null, "last_commit": "9b67aa4de", "gpu_hours_spent": 0.5494, "gpu_hours_cap": 60,
+ "notes": "design READY (A1-A7), code READY-FOR-SMOKE (code-6), smoke ACCEPTED (smk1 6068450 refs + smk2 6074276 ROM), pre-production READY (prod-7), plan 26.6 GPU-h projected / 41 h reserved; mirror c742bc0c4"}

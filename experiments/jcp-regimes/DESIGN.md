@@ -657,3 +657,14 @@ Q-repro (dev6 errors equal to FRONT-2D's per-case values to $10^{-9}$). (ii) The
 outputs stand as the reference half of the smoke evidence (same commit lineage; the reference code is unchanged by this
 amendment). `smoke_accept.py runs/smk1 runs/smk2` evaluates both, and requires smk1's only traceback to be this assertion.
 (iii) Job end times written for the acceptance (`SACCT.json`) are converted to UTC.
+
+---
+
+## Amendment A8 (2026-10-19): production released
+
+The coordinator released production for the 2D plan as certified (`checks/resources-plan.json`: 26.6 GPU-h projected,
+41 h reserved, cap 60), after design audit 4 (READY, 2D), code audit 6 (READY-FOR-SMOKE), the accepted smoke (smk1 6068450 +
+smk2 6074276, `codex-smoke-results-1`) and pre-production audit 7 (READY-FOR-PRODUCTION). Inputs (FRONT-2D v1, P1/qualify
+configurations) are final. Each planned job is staged with `cluster/stage.py`, Codex job-audited, and submitted through the
+campaign sbatch lock (account cap 8), at most 3 lane jobs at a time. The 3D regimes stay deferred (A1.12) and are recorded as
+deferred in the report; the FOM accuracy comparison stays deferred (A3.3 step 1).

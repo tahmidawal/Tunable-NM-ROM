@@ -41,8 +41,8 @@ Spent **35.2** of 55 GPU-h.
 ## Key outcomes (every verdict below is generated from the analysis files)
 
 - **A4 (2D)**: 22 of 26 F2 cells reach a Gauss m*; m* ranges over 9216 … 36864 points; the 4 square (M = r) cells reach none.
-- **A3 (2D) `fixed (M=2048, gauss256)`** (E0-provisional): range **not monotone** (improves; improves; does not improve).
-- **A3 (2D) `fixed m gauss256, M=4r`** (E0-provisional): range **not monotone** (improves; improves; does not improve).
+- **A3 (2D) fixed ($M=2048$, `gauss256`)** (E0-provisional): range **not monotone** (improves; improves; does not improve).
+- **A3 (2D) fixed m `gauss256`, $M=4r$** (E0-provisional): range **not monotone** (improves; improves; does not improve).
 - **B6 (2D)**: M = r control status across cells: unavailable (unqualified cell) — test-space verdicts blocked.
 - **B3 (2D) R128M512**: fib: m* = 4181 (stable) (all 5 draws); gauss: m* = 9216 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: m* = 24577 (stable); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
 - **B3 (2D) R384M1536**: fib: m* = 28657 (stable) (all 5 draws); gauss: m* = 16384 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: none (within the candidate list); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
@@ -591,9 +591,9 @@ Identity failures (excluding the injected control): 23, of which 23 are square (
 
 ## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$ (E0-provisional errors)
 
-- **`fixed (M=2048, gauss256)`**: R128M2048gauss256 → R256M2048gauss256: improves; R256M2048gauss256 → R384M2048gauss256: improves; R384M2048gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
+- **fixed ($M=2048$, `gauss256`)**: R128M2048gauss256 → R256M2048gauss256: improves; R256M2048gauss256 → R384M2048gauss256: improves; R384M2048gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
 
-- **`fixed m gauss256, M=4r`**: R128M512gauss256 → R256M1024gauss256: improves; R256M1024gauss256 → R384M1536gauss256: improves; R384M1536gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
+- **fixed m `gauss256`, $M=4r$**: R128M512gauss256 → R256M1024gauss256: improves; R256M1024gauss256 → R384M1536gauss256: improves; R384M1536gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
 
 
 Elasticities of the full-query cost (descriptive full-query elasticities (beta_r, beta_M, beta_m), not kernel exponents): $\beta_r$ = 0.654 [0.642, 0.671], $\beta_M$ = 0.528 [0.522, 0.532], $\beta_m$ = 0.653 [0.652, 0.655] (case-bootstrap percentile intervals; fit $\log c=\beta_0+\beta_r\log r+\beta_M\log M+\beta_m\log m$).
@@ -608,7 +608,7 @@ Elasticities of the full-query cost (descriptive full-query elasticities (beta_r
 | 384->512 | — | decomposition not reached (unqualified corner) |  |  |  |
 
 
-## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at (r, M) = (384, 1536)
+## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at $(r,M)=(384,1536)$
 
 Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1_gauss256': True, 'passed': True}. 
 
@@ -767,9 +767,9 @@ Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration
 
 - **GAL vs LSPG (adaptive CN)**: kappa1: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (unqualified cell); kappa2: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: GAL more accurate; kappa3: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (resolution); kappa4: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (resolution); kappa8: blocked (M = r controls LSPG / GAL: ('unavailable (unqualified cell)', 'unavailable (unqualified cell)')); raw: inconclusive (resolution)
 
-- **fixed (M=2052 frozen list, lat65536)**: improves; inconclusive (unqualified cell); inconclusive (unqualified cell) — range **inconclusive**
+- **fixed ($M=2052$ frozen list, `lat65536`)** (E0-provisional): improves; inconclusive (unqualified cell); inconclusive (unqualified cell) — range **inconclusive**
 
-- **fixed m lat65536, nominal M**: improves; inconclusive (unqualified cell); inconclusive (unqualified cell) — range **inconclusive**
+- **fixed m `lat65536`, nominal M** (E0-provisional): improves; inconclusive (unqualified cell); inconclusive (unqualified cell) — range **inconclusive**
 
 
 ## B3 (3D, W512, fs|CN|0.01|K1; deployed test space)

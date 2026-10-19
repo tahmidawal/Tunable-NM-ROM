@@ -46,6 +46,12 @@ def lab(d):
     return d.get('label') if isinstance(d, dict) else str(d)
 
 
+def mathify(name):
+    """Panel names from the analysis JSON: equations in LaTeX, rule identifiers in code spans."""
+    name = re.sub(r'(gauss\d+|lat\d+|gl\d+)', r'`\1`', name)
+    return re.sub(r'\b(M|m|r)=(\d+r|\d+)', r'$\1=\2$', name)
+
+
 def table(head, rows):
     esc = lambda c: str(c).replace('|', '\\|')                  # configuration keys contain '|'
     out = ['| ' + ' | '.join(esc(h) for h in head) + ' |', '|' + '---|' * len(head)]
@@ -127,7 +133,7 @@ def sec_2d(a2, L, plots):
         exp['costs_2d'] = {k: (dict(v, contract=CONTRACT_2D) if not k.startswith('_') else v) for k, v in co.items()}
     L.append('\n## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$ (E0-provisional errors)\n')
     for nm, v in a2['A3'].items():
-        L.append(f"- **`{nm}`**: " + '; '.join(f"{t['X'].split('|')[0]} → {t['Y'].split('|')[0]}: {t['label']}" for t in v['transitions'])
+        L.append(f"- **{mathify(nm)}**: " + '; '.join(f"{t['X'].split('|')[0]} → {t['Y'].split('|')[0]}: {t['label']}" for t in v['transitions'])
                  + f" — range: **{v['range']}**\n")
     if a2.get('elasticity'):
         e = a2['elasticity']
@@ -151,7 +157,7 @@ def sec_2d(a2, L, plots):
         L.append(table(['r_a → r_b', 'cases', 'Δ median error (r, M, m)', 'labels', 'Δ cost (r, M, m)', 'labels'], rows) + '\n')
     lm = a2.get('LMF', {})
     lc = sorted({re.match(r'R(\d+)M(\d+)lmf', k).groups() for k in cfg if re.match(r'R\d+M\d+lmf', k)})
-    L.append(f"\n## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at {', '.join(f'(r, M) = ({a}, {b})' for a, b in lc)}\n")
+    L.append(f"\n## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at {', '.join(f'$(r,M)=({a},{b})$' for a, b in lc)}\n")
     L.append(f"Stability checks: {lm.get('stability')}. " + (f"Outcome: {lm['outcome']}." if lm.get('outcome') else '') + '\n')
     for f in ('gauss', 'smolyak'):
         if f in lm:
@@ -249,7 +255,7 @@ def sec_3d(a3, L):
         else:
             L.append(f"- **{k}**: " + '; '.join(f"{kk}: {lab(x)}" for kk, x in v.items()) + '\n')
     for k, v in a3['A3'].items():
-        L.append(f"- **{k}**: " + '; '.join(lab(t) for t in v['transitions']) + f" — range **{v['range']}**\n")
+        L.append(f"- **{mathify(k)}** (E0-provisional): " + '; '.join(lab(t) for t in v['transitions']) + f" — range **{v['range']}**\n")
     fam = a3.get('families', {})
     if fam:
         b3c = load('configs/b3f.json') or {}
@@ -492,7 +498,7 @@ def key_outcomes(a2, a3):
         L.append(f"- **A4 (2D)**: {sum(1 for v in F2.values() if v['mstar'].get('m'))} of {len(F2)} F2 cells reach a Gauss m*; "
                  f"m* ranges over {ms[0] if ms else '—'} … {ms[-1] if ms else '—'} points; the {len(sq)} square (M = r) cells reach none.")
         for nm, v in a2['A3'].items():
-            L.append(f"- **A3 (2D) `{nm}`** (E0-provisional): range **{v['range']}** (" + '; '.join(t['label'] for t in v['transitions']) + ').')
+            L.append(f"- **A3 (2D) {mathify(nm)}** (E0-provisional): range **{v['range']}** (" + '; '.join(t['label'] for t in v['transitions']) + ').')
         ctl = {v.get('control') for k, v in a2['B6'].items() if 'transitions' in v}
         L.append(f"- **B6 (2D)**: M = r control status across cells: {', '.join(sorted(map(str, ctl)))} — test-space verdicts "
                  'blocked.')

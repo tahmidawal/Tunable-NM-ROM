@@ -502,3 +502,113 @@ population-level robustness claim; the report says so.
   deferred).
 - smk3 is extended to the **heaviest 3D evaluation cell** (W1024 gl64 target + gl80 Q2 on 4 cases) to measure compile time and
   device peak, in addition to the training memory pilot.
+
+---
+
+## Amendment A2 (2026-10-19, after Codex design audit 2; no data exists)
+
+Audit `audits/codex-design-2.md`: NEEDS-RESTATEMENT (items 6, 17, 18, 23, 24, 28 WRONG; 7, 12, 14, 19–21, 25–27, 29–31
+NEEDS-RESTATEMENT). A2 governs over A1 and the body where they differ.
+
+**A2.1 (item 6) E1 2D cases and the archive map.** Qualify qualified every R128 fib4181 arm on **all 38 cases at every
+mesh** (its `acc4096` adds val32|10–31 for the factor-1 arms to P1's 16), so E1 uses **38 cases at 256², 1024² and
+4096²** (the 16-case 4096² subset of §2.1 is withdrawn). Reproduction archives (key `W`, shape (n, 6, 128), with
+`case_ids`):
+
+| arm | 256² | 1024² | 4096² |
+|---|---|---|---|
+| LSPG BE 1 | P1 `runs/acc256/.../R_R128_BE.npz` (38) | P1 `acc1024` `R_R128_BE.npz` (38) | P1 `acc4096` `R_R128_BE.npz` (dev6 + val32\|0–9) ∪ qualify `acc4096` `R_R128_LSPG_BE_1.npz` (val32\|10–31) |
+| LSPG CN-R 1 | P1 `acc256` `R_R128_CNR.npz` | P1 `acc1024` `R_R128_CNR.npz` | P1 `acc4096` `R_R128_CNR.npz` ∪ qualify `acc4096` `R_R128_LSPG_CNR_1.npz` |
+| LSPG BE 2, 2.5; GAL CN 1, 2, 5 | qualify `acc256` `R_R128_<form>_<scheme>_<factor>.npz` (38) | qualify `acc1024` (38) | qualify `acc4096` (38) |
+
+P1 archives are local (`worktrees/2026-10-17-jcp-p1-scaling/.../runs/acc*/archive/output/p1acc_acc*/`); qualify archives
+are on the cluster (`burgers-archive/jcp-qualify/acc*/`), fetched one file at a time into scratch and deleted after. The
+file sha256 is checked against the owning lane's listing before use. Norm: per case, $\max_{k,j}|W^{\rm new}_{kj}-W^{\rm arch}_{kj}|
+/\max_{k,j}|W^{\rm arch}_{kj}|$; a zero denominator, a missing case, a case-id mismatch or a non-finite entry fails the
+gate. The comparison runs on CPU from the job's saved `W` (no GPU needed). 3D: qualify `q3d3` archive entries of
+`W256|lat8192|qn|BDF2|0.025|k4` and `W512|lat16384|qn|BDF2|0.025|k4` (64 cases × 6 outputs), same norm.
+
+**A2.2 (items 7, 25) Typicality by rank intervals.** For a statistic $v$ (lower is better) with tolerance $\delta$:
+$k_{\rm lo}=1+\#\{s\ne0: v_s<v_0-\delta\}$, $k_{\rm hi}=16-\#\{s\ne0: v_s>v_0+\delta\}$. Tolerances: $\delta=0$ for $D_s$;
+for the case-median and case-worst E0 error, $\delta=2\,\mathrm{median}_i\,\epsilon_{{\rm ref},i}$ over the eligible cases
+(the aggregate margin). Per statistic: **insensitive** if $k_{\rm lo}=1$ and $k_{\rm hi}=16$; **favourable** if
+$k_{\rm hi}\le2$; **unfavourable** if $k_{\rm lo}\ge15$; **typical** if $3\le k_{\rm lo}$ and $k_{\rm hi}\le14$;
+**indeterminate** otherwise. Configuration label: if all three statistics are insensitive → "**insensitive; typicality not
+assessed**"; otherwise, over the non-insensitive statistics: any favourable and no unfavourable → atypically favourable;
+any unfavourable and no favourable → atypically unfavourable; both → mixed; all typical → typical; else indeterminate.
+The probability 1/4 of an extreme label applies only to an unconditioned, tie-free exchangeable model and is quoted only
+with that qualification (draw 0 is selection-conditioned).
+
+**A2.3 (item 23) Failure vs missing evidence.** *Missing evidence* (no output file, crashed/timed-out job, absent record,
+count mismatch) → "unavailable" by precedence step 4. A *recorded numerical failure* (a run that completed and is flagged
+invalid: non-finite state, non-finite step, damping saturation) is evidence: that draw is **not draw-qualified** (counts
+as a failure in H-E1a), and its statistics take the explicit state "failed", ranked worst ($v_s=+\infty$ for ranks); it never
+passes through the generic finiteness check of step 4.
+
+**A2.4 (item 24) Gates enumerated individually.** Blocking (precedence step 2/3): C-E1.1, C-E1.2, G-E1.1, G-E1.2, G-E1.3
+(E1); **G-E2.3** — the incumbent's verdict runs at the deployed rules reproduce the P1/qualify archives by the A2.1 norm
+($\le10^{-10}$; checks the copied code path) — blocks that dimension's E2 verdicts; C-E5.1 (per job), C-E5.2 fixtures,
+G-E5.1 (E5). **Non-blocking anchors** (reported, never block): G-E2.1 and G-E2.2 (incumbent rule recovery; their
+registered fallback is the procedure-selected rule for every bank), G-E5.2 (copied-harness reproduction of P1c ratios).
+
+**A2.5 (item 12) Target-unverified selections.** If a bank's target check fails, its selection is a **diagnostic pick**:
+the cross-family criterion is reported as "unavailable (target unverified)"; the pick is made on Q1 + successor Q2 only;
+every downstream verdict from that bank carries "target unverified" and is excluded from seed-robust/seed-dependent
+counts that need the cross-family criterion (the selected-rule verdict). Successor-Q2 and E0-error verdicts remain
+available.
+
+**A2.6 (items 14, 26, 27) 3D selection keys, fallbacks and stable identities.** 3D selection is per **(bank, width, spec,
+family)** for the three specs `fs|CN|0.01|K1`, `fs|CN|0.0125|K1`, `qn|BDF2|0.025|k4` (the 0.0125 spec is added to the
+ladders), families Gauss and lattice. Front candidates are **recipe slots** (width, spec, family) with their realised rule;
+a slot whose selection is "none" has no candidate (no fallback run for W768/W1024 or any other width); the four
+fixed qualify configurations are a **separate fixed-configuration comparison** (deduplicated if a slot realises exactly
+the same configuration). 2D identities likewise: slots (r, scheme, factor) with the realised selected rule; when a bank's
+selected rule differs from the deployed rule, the deployed-rule configuration is also run and compared in a separate
+fixed-configuration table. Cross-bank comparisons of front membership are made per slot ("slot present and member /
+present and dominated / absent (no rule)") and, separately, per fixed configuration. The gl64 H-acc-r panel stays separate.
+
+**A2.7 (items 28, 31) Seed attribution and spread ratio.** Among the three new seeds only: **seed-robust** if all three
+labels are definitive and equal; **seed-dependent** if two definitive labels differ; **inconclusive** otherwise. Separately,
+**historical agreement**: when the new seeds are seed-robust, "agrees with incumbent" / "differs from incumbent" (a
+recipe/software-version difference, not attributed to the seed) / "incumbent not definitive". "None within ladder" is a
+definitive selection label (it can agree or disagree); downstream verdicts of an absent slot are "unavailable". Spread ratio
+per transition $r\to r'$: numerator = max − min over seeds 1–3 of the case-median error at $r$; denominator = median over
+seeds 1–3 of $|\Delta_s|$ ($\Delta_s$ = that seed's median paired change $r\to r'$); positive/0 → "∞"; 0/0 → "undefined".
+
+**A2.8 (items 17, 18, 19) E5 estimators restated.**
+- P-cross same-mesh comparator key is `<ROM key>@1024|H|CC|same_mesh` (fom2d file: R128 → `fd|CC|L1024|0.0125|t2`,
+  R384 → `fd|CC|L1024|0.005|t1`), plus `|H|union|joint` (= `|PS|joint`, `ps|N96|0.0125`, timed once). `CC|joint`
+  (L64/L128) is **not** used.
+- Per job, H-cost-N(2) uses P1's `p1stats.h_cost_n` **unchanged** (median over all valid (case, rep) entries per mesh,
+  case bootstrap) on the {256², 1024²} columns.
+- Pooled cross-hardware estimators (new, named): for type $T$, subject $b$, mesh $L$, let $E_{T,b,L}$ be all valid
+  (job, case, rep) B/A entries on the common case set $C$ (cases with ≥ 2 valid reps for every subject, mesh and job of
+  both types; $|C|\ge5$ or "unavailable").
+  - $q_1(T,b,L)=\mathrm{median}\,E_{T,b,L}$;
+  - $q_2(T,b)=\max_L q_1(T,b,L)/\min_L q_1(T,b,L)$ over {256², 1024²};
+  - $q_3(T,b,f)$: per case $c\in C$, $m^{\rm FOM}_c$ = median over the type's valid (job, rep) normalised FOM ratios of
+    comparator $f$, $m^{\rm ROM}_c$ likewise for ROM subject $b$; $q_3=\mathrm{median}_c\,m^{\rm FOM}_c/\mathrm{median}_c\,m^{\rm ROM}_c$
+    (fom2d's `speedup` form, pooled over jobs).
+  - $\phi_k=q_k({\rm H200})/q_k({\rm A100})$. Each bootstrap replicate resamples case ids from $C$ jointly for both types
+    and all subjects, keeps every entry of the resampled cases, and recomputes the full statistic.
+- **A2.9 (items 20, 29) Estimator-specific must-fail fixtures** (on real A100 job-1 data, CPU): q1 — multiply subject
+  R128-BE's 1024² entries by 1.5 in a copy treated as "H200" → $\phi_1$ must be *hardware-dependent*; q2 — multiply only the
+  1024² entries of each subject by 1.5 → $\phi_2$ must be *hardware-dependent* for every subject whose A100 $q_1$ minimum is
+  not at 1024² (others reported); q3 — multiply only the FOM entries by 1.5 → $\phi_3$ *hardware-dependent*. Null fixture
+  (job 1 vs itself) → *consistent* with interval [1, 1]. A failed fixture for $q_k$ blocks the $\phi_k$ verdicts **and** the
+  dependent q4 verdict-agreement conclusion (q2 → H-cost-N(2) agreement; q3 → S2-subset agreement).
+- **smk4** (A100, ≤ 0.5 GPU-h) runs P-cost and P-cross on **5 cases (dev6|0–4) × 2 reps**, so the full E5 analysis path
+  (≥ 5 common cases, ≥ 2 valid reps) and C-E5.1/C-E5.2 run end to end on real A100 data before production.
+
+**A2.10 (item 30) Head-fit stopping rule.** The historical command stops at 200,000 steps **or** 1,500 s, whichever comes
+first (`TIME_CAP=1500`); the incumbent's `mid` arm completed 200,000 steps in 339 s (`hfit_dn256b_full.json`). The command is
+kept exactly; `steps_done`, whether the cap fired, and the device are recorded; Stage B runs on A100-80G (the incumbent's
+type). A seed whose `mid` fit stops on the time cap is reported as a recipe deviation for that seed.
+
+**A2.11 (item 21) Budget inventory.** E1 2D rollouts per (configuration, mesh): 38 cases × 16 draws × (prod + tight +
+successor) + 6 × 16 tighter + 38 target = 1,958; × 7 configurations (GAL included, same structure) × 3 meshes ≈ 41,100;
+Sobol diagnostic 38 × 16 × 2 ≈ 1,200; controls ≈ 300 → **≈ 42,600 rollouts, 9.5 GPU-h** at a mean 0.6 s plus compile and
+4096² decode. E1 3D: 2 × 64 × 16 × 3 + 2 × 8 × 16 tighter + targets + Sobol diagnostic 64 × 16 ≈ 7,500 → 0.7 GPU-h.
+E2 3D selection now covers three specs: 3.5 GPU-h per bank × 4 = 14.0. Revised total ≈ **61.2 GPU-h** (body/A1 lines
+otherwise unchanged); with the 75 cap, E2 seeds 4–5 are expected to be deferred and E2 3D seed 3 is the next item at risk.
+Every figure is a projection until the smoke certificates exist.

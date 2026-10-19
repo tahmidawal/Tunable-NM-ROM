@@ -27730,6 +27730,724 @@
    },
    "numerically_qualified": false
   },
+  "R384M1536lmfsmolyak14|LSPG|CNR": {
+   "attempt": "f2lr1",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.602972967674656e-05,
+   "rule": "smolyak14",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "unverified (ladder top)"
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfgauss64|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 0.00012147658431705594,
+   "rule": "gauss64",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     1.4554911266484263,
+     1.4860616203591317,
+     1.4778938034204951,
+     1.469815328233429,
+     1.4644058268618028,
+     1.4624608189013126
+    ],
+    "job": [
+     1.455491126648432,
+     1.486061620359131,
+     1.477893803420495,
+     1.4698153282334285,
+     1.4644058268618037,
+     1.462460818901313
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.012989738029918273,
+    "rho_max": 1.6819951118160654,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     0.0005886466251672613
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfgauss96|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 8.950846446984904e-05,
+   "rule": "gauss96",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     1.2313107467764248,
+     1.2900078993249535,
+     1.2833315047796114,
+     1.271578865306941,
+     1.259632676161516,
+     1.2480669775869198
+    ],
+    "job": [
+     1.2313107467764397,
+     1.2900078993249509,
+     1.2833315047796074,
+     1.2715788653069369,
+     1.2596326761615104,
+     1.2480669775869144
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.002638623424382666,
+    "rho_max": 1.4606024150943515,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     0.00010330753566266833
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfgauss128|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.606914121611611e-05,
+   "rule": "gauss128",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     0.9766124537539487,
+     1.028313576322328,
+     1.02236392575265,
+     1.0002613135803815,
+     0.97241469984061,
+     0.9477389597175957
+    ],
+    "job": [
+     0.9766124537539547,
+     1.0283135763223326,
+     1.0223639257526531,
+     1.0002613135803864,
+     0.972414699840614,
+     0.9477389597175996
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.0005230659600274387,
+    "rho_max": 1.1247198444440636,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     5.056958704790147e-05
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfgauss160|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.6046159725063794e-05,
+   "rule": "gauss160",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     0.8972404398976473,
+     0.950332915520174,
+     0.913711204902273,
+     0.8747011687378002,
+     0.848341360212625,
+     0.8342817119384061
+    ],
+    "job": [
+     0.8972404398976489,
+     0.9503329155201794,
+     0.9137112049022751,
+     0.8747011687378028,
+     0.8483413602126273,
+     0.834281711938408
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.00023190187165572344,
+    "rho_max": 1.1391286672155227,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     4.0419382182128433e-05
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfgauss192|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.6034333324008053e-05,
+   "rule": "gauss192",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.00021711449175008889,
+    "rho_max": 1.0676460342190321,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     1.162256612370475e-07
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfgauss256|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.6029718528075047e-05,
+   "rule": "gauss256",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "pass",
+    "worst_dist_qp": 2.2131610310419307e-06,
+    "rho_max": 0.0033057848628659774,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     3.245072689126691e-08
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": true
+  },
+  "R384M1536lmfgauss320|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.6029724517244897e-05,
+   "rule": "gauss320",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "unverified (ladder top)"
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfgauss384|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.6029725788035796e-05,
+   "rule": "gauss384",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "unverified (ladder top)"
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfsmolyak8|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": false,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": false
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 0.017421387819951357,
+   "rule": "smolyak8",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     1.5230698775517564,
+     1.4358612736046268,
+     1.3443164920669115,
+     1.305149545388578,
+     1.3787878086150966,
+     1.496899421732064
+    ],
+    "job": [
+     1.5230698775517566,
+     1.435861273604637,
+     1.3443164920669182,
+     1.3051495453885735,
+     1.3787878086150904,
+     1.4968994217320757
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.567174433918141,
+    "rho_max": 1.87770271581428,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     0.16310358746072945
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfsmolyak9|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": false,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": false
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 0.0006314872701492798,
+   "rule": "smolyak9",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     1.3499370424807344,
+     1.4774726425448808,
+     1.4528221989737315,
+     1.3660326293665854,
+     1.2798323415512012,
+     1.1795505319330675
+    ],
+    "job": [
+     1.34993704248074,
+     1.477472642544879,
+     1.4528221989737309,
+     1.3660326293665894,
+     1.2798323415511998,
+     1.1795505319330657
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.26850718502260307,
+    "rho_max": 1.716159053120451,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     0.0054406960808446635
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfsmolyak10|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 0.0001780804399958626,
+   "rule": "smolyak10",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     0.5590310384936091,
+     0.5419412724359319,
+     0.6404249724297065,
+     0.6610114280585178,
+     0.5646558302528968,
+     0.4053871331078765
+    ],
+    "job": [
+     0.5590310384936108,
+     0.5419412724359313,
+     0.6404249724297072,
+     0.6610114280585159,
+     0.5646558302528965,
+     0.40538713310787633
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.031089046154107163,
+    "rho_max": 1.5869080283655834,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     0.000688836900188078
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfsmolyak11|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 3.6999891921242744e-05,
+   "rule": "smolyak11",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     0.029774188916256883,
+     0.01696091643141919,
+     0.047460671984306056,
+     0.05724387717134876,
+     0.043496739145381026,
+     0.04580041500163974
+    ],
+    "job": [
+     0.029774188916256612,
+     0.016960916431421166,
+     0.047460671984305765,
+     0.05724387717134999,
+     0.0434967391453815,
+     0.04580041500164025
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.005288023546171573,
+    "rho_max": 0.963838937981269,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     6.165512100731073e-05
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfsmolyak12|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.6025301454817397e-05,
+   "rule": "smolyak12",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "rho_offline": {
+    "case": "dev6|0",
+    "offline": [
+     0.014646459616664574,
+     0.0018187372518837074,
+     0.0011678256640265284,
+     0.001241711441575091,
+     0.0015316491093479176,
+     0.0016614856275418875
+    ],
+    "job": [
+     0.014646459616665894,
+     0.0018187372518856761,
+     0.0011678256640273359,
+     0.0012417114415739594,
+     0.0015316491093459363,
+     0.0016614856275400797
+    ],
+    "agree": true
+   },
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "fail",
+    "worst_dist_qp": 0.0003829322808766482,
+    "rho_max": 0.3532868570606679,
+    "rho_trivial": 0,
+    "check": [
+     true,
+     1.8877625819459565e-06
+    ],
+    "successor_valid": true
+   },
+   "numerically_qualified": false
+  },
+  "R384M1536lmfsmolyak13|LSPG|CNR": {
+   "attempt": "f2l",
+   "Q1": {
+    "all_valid": true,
+    "certificate": true,
+    "gcert": true,
+    "distance": true,
+    "tight_tighter": true,
+    "offline_agrees": true,
+    "pass": true
+   },
+   "pooled": 0,
+   "steps": 1900,
+   "worst_dist_tight": 1.6030019862513375e-05,
+   "rule": "smolyak13",
+   "r": 384,
+   "M": 1536,
+   "policy": "lmf",
+   "form": "LSPG",
+   "scheme": "CNR",
+   "square": false,
+   "disagreements": [],
+   "median": null,
+   "worst": null,
+   "n_eligible": 0,
+   "Q2": {
+    "label": "unverified (ladder top)"
+   },
+   "numerically_qualified": false
+  },
   "R128M512ffib2584|LSPG|CNR": {
    "attempt": "b2f",
    "Q1": {
@@ -50687,64 +51405,146 @@
    "labels": [
     {
      "key": "R384M1536lmfgauss64|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss64",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.012989738029918273,
+      "rho_max": 1.6819951118160654,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       0.0005886466251672613
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfgauss96|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss96",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.002638623424382666,
+      "rho_max": 1.4606024150943515,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       0.00010330753566266833
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfgauss128|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss128",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.0005230659600274387,
+      "rho_max": 1.1247198444440636,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       5.056958704790147e-05
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfgauss160|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss160",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.00023190187165572344,
+      "rho_max": 1.1391286672155227,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       4.0419382182128433e-05
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfgauss192|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss192",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.00021711449175008889,
+      "rho_max": 1.0676460342190321,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       1.162256612370475e-07
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfgauss256|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss256",
+     "Q1": true,
+     "Q2": {
+      "label": "pass",
+      "worst_dist_qp": 2.2131610310419307e-06,
+      "rho_max": 0.0033057848628659774,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       3.245072689126691e-08
+      ],
+      "successor_valid": true
+     },
+     "qualified": true,
+     "rho_offline_ok": true,
+     "label": "qualified"
     },
     {
      "key": "R384M1536lmfgauss320|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss320",
+     "Q1": true,
+     "Q2": {
+      "label": "unverified (ladder top)"
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfgauss384|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "gauss384",
+     "Q1": true,
+     "Q2": {
+      "label": "unverified (ladder top)"
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     }
    ],
    "mstar": {
-    "outcome": "not reached (incomplete ladder)",
-    "m": null
+    "outcome": "m* = 65536 (stable)",
+    "m": 65536,
+    "stability": "stable",
+    "failing_larger": []
    }
   },
   {
@@ -50752,56 +51552,124 @@
    "labels": [
     {
      "key": "R384M1536lmfsmolyak8|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "smolyak8",
+     "Q1": false,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.567174433918141,
+      "rho_max": 1.87770271581428,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       0.16310358746072945
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfsmolyak9|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "smolyak9",
+     "Q1": false,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.26850718502260307,
+      "rho_max": 1.716159053120451,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       0.0054406960808446635
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfsmolyak10|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "smolyak10",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.031089046154107163,
+      "rho_max": 1.5869080283655834,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       0.000688836900188078
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfsmolyak11|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "smolyak11",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.005288023546171573,
+      "rho_max": 0.963838937981269,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       6.165512100731073e-05
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfsmolyak12|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "smolyak12",
+     "Q1": true,
+     "Q2": {
+      "label": "fail",
+      "worst_dist_qp": 0.0003829322808766482,
+      "rho_max": 0.3532868570606679,
+      "rho_trivial": 0,
+      "check": [
+       true,
+       1.8877625819459565e-06
+      ],
+      "successor_valid": true
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfsmolyak13|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "smolyak13",
+     "Q1": true,
+     "Q2": {
+      "label": "unverified (ladder top)"
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     },
     {
      "key": "R384M1536lmfsmolyak14|LSPG|CNR",
-     "label": "missing",
-     "Q1": null,
-     "Q2": null,
-     "note": null
+     "rule": "smolyak14",
+     "Q1": true,
+     "Q2": {
+      "label": "unverified (ladder top)"
+     },
+     "qualified": false,
+     "rho_offline_ok": true,
+     "label": "not qualified"
     }
    ],
    "mstar": {
-    "outcome": "not reached (incomplete ladder)",
+    "outcome": "none (within the candidate list)",
     "m": null
    }
   },
@@ -57395,16 +58263,18 @@
   },
   "LMF|R384|M1536|LSPG|CNR|1|gauss|s0|lmf": {
    "mstar": {
-    "outcome": "not reached (incomplete ladder)",
-    "m": null
+    "outcome": "m* = 65536 (stable)",
+    "m": 65536,
+    "stability": "stable",
+    "failing_larger": []
    },
    "labels": [
-    "missing",
-    "missing",
-    "missing",
-    "missing",
-    "missing",
-    "missing"
+    "not qualified",
+    "not qualified",
+    "not qualified",
+    "not qualified",
+    "not qualified",
+    "qualified"
    ],
    "sizes": [
     4096,
@@ -57417,15 +58287,15 @@
   },
   "LMF|R384|M1536|LSPG|CNR|1|smolyak|s0|lmf": {
    "mstar": {
-    "outcome": "not reached (incomplete ladder)",
+    "outcome": "none (within the candidate list)",
     "m": null
    },
    "labels": [
-    "missing",
-    "missing",
-    "missing",
-    "missing",
-    "missing"
+    "not qualified",
+    "not qualified",
+    "not qualified",
+    "not qualified",
+    "not qualified"
    ],
    "sizes": [
     1025,
@@ -61333,13 +62203,51 @@
  },
  "LMF": {
   "stability": {
-   "rank_ok": false,
-   "cond_ok": false,
-   "all_runs_valid": false,
-   "q1_gauss256": false,
-   "passed": false
+   "rank_ok": true,
+   "cond_ok": true,
+   "all_runs_valid": true,
+   "q1_gauss256": true,
+   "passed": true
   },
-  "outcome": "unstable test space (no verdict)"
+  "gauss": {
+   "lmf": {
+    "outcome": "m* = 65536 (stable)",
+    "m": 65536,
+    "stability": "stable",
+    "failing_larger": []
+   },
+   "default": {
+    "outcome": "m* = 16384 (stable)",
+    "m": 16384,
+    "stability": "stable",
+    "failing_larger": []
+   },
+   "efficiency": "default needs fewer points"
+  },
+  "smolyak": {
+   "lmf": {
+    "outcome": "none (within the candidate list)",
+    "m": null
+   },
+   "default": {
+    "outcome": "none (within the candidate list)",
+    "m": null
+   },
+   "efficiency": "neither qualifies"
+  },
+  "accuracy_gauss256": {
+   "label": "inconclusive (resolution)",
+   "stats": {
+    "n_eligible": 38,
+    "n_resolved": 18,
+    "improve": 14,
+    "worsen": 4,
+    "tie": 20,
+    "ineligible": 0,
+    "median_change": -3.2151756562976558e-06,
+    "worst_change": -0.0044982497160374856
+   }
+  }
  },
  "shapley_acc": {},
  "costs": {},

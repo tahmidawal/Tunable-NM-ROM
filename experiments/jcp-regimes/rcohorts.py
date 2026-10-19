@@ -3,8 +3,9 @@ b3d_common through cohorts.py's import path when called).
 
 Each regime g is a set of fresh development cases. Row j of regime g is drawn from
     np.random.default_rng([TAG, S_g, j])        TAG = 0x52454749 ('REGI'), S_g >= 2**31 (DESIGN §3.2)
-so the stream is disjoint by construction from E0's historical cohorts (one-word seeds), E0's new sealed / OOD cohorts
-(2D: two-word [seed, j] with seed < 2**31; 3D: one-word seed < 2**31) and the training draws (one-word seeds 0, 1000).
+a domain-separated stream (negligible collision probability; DESIGN A1.3, not a proof of disjointness) relative to E0's
+historical cohorts (one-word seeds), E0's new sealed / OOD cohorts (2D two-word [seed, j], 3D one-word, seeds < 2**31) and
+the training draws (one-word seeds 0, 1000). Descriptor-level duplicates are refused by assert_all_disjoint (A2.1).
 
 2D descriptor of a single-bump case: (cx, cy, w, a, nu)                   -> IC = engines.initial (identical, asserted)
 2D descriptor of a two-bump case:    (sign, a, nu, cx1, cy1, w1, b1, cx2, cy2, w2, b2, s_star)
@@ -197,7 +198,9 @@ def sha_rows(rows):
 # ------------------------------------------------------------------------------------------------- 3D draws ---
 
 def draw_table_3d(regime, seed=None, m=COUNT):
-    """Raw 3D table (DESIGN §3.3), b3d_common.draw_param_table layout, rows from the three-word stream. Phase 2."""
+    """Raw 3D table (DESIGN §3.3), b3d_common.draw_param_table layout, rows from the three-word stream. Phase 2: refused
+    until the 3D amendment (DESIGN A1.12, A2.7); the B23 draft lacks the sign rejection and |.| peak normalisation."""
+    raise NotImplementedError('3D regimes need their own DESIGN amendment (A1.12)')
     seed = SEEDS[3][regime] if seed is None else seed
     B = np.zeros(m, dtype=np.int64)
     c = np.zeros((m, 3, 3))
@@ -246,6 +249,30 @@ def assert_disjoint_2d(rows, others):
     for r_ in rows:
         if r_.shape == (5,) and np.any(np.max(np.abs(o - r_[None, :]), axis=1) <= 1e-12):
             raise CohortError(f'row {r_} coincides with an existing cohort / training row')
+
+
+SINGLE = tuple(g for g in REGIMES_2D if g not in TWO_BUMP)
+
+
+def assert_all_disjoint(others):
+    """DESIGN A2.1: single-bump rows of every regime vs `others` (training draws, dev6, val32, test64 descriptors) and vs
+    each other (within and across regimes); two-bump rows of B1/B2 vs each other. Raises CohortError."""
+    single = [(g, j, r_) for g in SINGLE for j, r_ in enumerate(descriptors_2d(g))]
+    A = np.array([r_ for _, _, r_ in single])
+    assert_disjoint_2d(A, others)
+    for k, (g, j, r_) in enumerate(single):
+        d = np.max(np.abs(A - r_[None, :]), axis=1)
+        d[k] = np.inf
+        if np.any(d <= 1e-12):
+            m = int(np.argmin(d))
+            raise CohortError(f'duplicate rows {g}|{j} and {single[m][0]}|{single[m][1]}')
+    two = np.array([r_ for g in TWO_BUMP for r_ in descriptors_2d(g)])
+    for k in range(len(two)):
+        d = np.max(np.abs(two - two[k][None, :]), axis=1)
+        d[k] = np.inf
+        if np.any(d <= 1e-12):
+            raise CohortError(f'duplicate two-bump rows {k} and {int(np.argmin(d))}')
+    return dict(single=len(single), two_bump=len(two), others=len(others))
 
 
 # ----------------------------------------------------------------------------------------- Cohort interface ---

@@ -446,3 +446,74 @@ regime than in-range, relative to the ROM?). No speed claim. A paired same-GPU t
 amendment (frozen qualified configuration list, 65³ query contract, baseline, certification plan) before any 3D code. The
 3D B2 draft is corrected for that amendment: rejection until the masked blob sum has both signs on the 257³ grid, and
 peak normalisation by $\max|\cdot|$ (`b3d_common.peak_on_reference_grid` uses the signed maximum).
+
+---
+
+## Amendment A2 (2026-10-19, after Codex design audit 2, before any cluster run or data)
+
+Audit `audits/codex-design-2.md`: NEEDS-RESTATEMENT, seven fixes; items 1, 2, 5, 6 CORRECT as amended by A1.
+
+**A2.1 Duplicate checks (fix 1).** G-train is extended to its A1.3 statement and implemented in
+`rcohorts.assert_all_disjoint()`, run by the unit gates and by the ROM case provider: (i) every single-bump row of every
+regime (N0, N0s, A+, A−, C1, C2) against both training draws, dev6, val32 and test64 descriptors and against every other
+single-bump regime row, including within-regime duplicates (max-abs $\le10^{-12}$ refused); (ii) every two-bump row of B1
+and B2 against every other two-bump row (within and across). C1 and A− rows share $(c_x,c_y,w,\nu)$ by design and differ in
+$a$ (C1's $a$ is always larger; gate G-pair). The code header's "disjoint by construction" wording is replaced by A1.3's
+"domain-separated, negligible collision probability". N0s: "does **not sample** the reserved OOD distribution" replaces
+"no OOD case is reproduced or approximated" (the width supports touch at 0.05; N0s's upper ν bound 0.0126 is a rounded
+neighbour of E0's $0.01\cdot10^{0.1}=0.012589$). The realised N0s sample has $s\in[130.0,168.7]$: it covers the **stiff
+part** of the training box, not its corner $s=200$.
+
+**A2.2 Calibration probe conclusion (fix 2).** The probe is valid only if the tight coarse solve itself passes E0's
+per-step acceptance (`steps_ok`); an invalid probe is reported as "probe invalid", never as a pass. A passing probe shows
+**observed agreement of the production and tight solves at the coarsest level within the floor proxy** — not that the proxy
+bounds the true solver error, and not at the finer levels. A failing or invalid probe adds the label "floor proxy not
+supported on these regimes" to every $\epsilon_{ref}$ of the lane. Either way $\epsilon_{ref}$ keeps E0's "conditional
+Richardson estimate" label.
+
+**A2.3 σ edge cases (fix 3).** σ is **unavailable** (value `null`, reason recorded) when the finest final-triple attempt
+failed `steps_ok`, has non-finite gradient statistics, or was not run. Separation checks require $\ge8$ eligible N0 cases
+**and** $\ge4$ eligible N0s cases; if N0s has fewer, the checks use N0 alone and are labelled "stiff-part comparison
+unavailable".
+
+**A2.4 Statistics (fix 4).**
+- *Coverage* applies to eligible **and valid** cases on both sides of every ratio (regime and baseline): each $\ge8$.
+- *Errors of zero.* An error is exactly 0 only for bitwise-identical fields; any case with $e=0$ or non-finite $e$ is excluded
+  from ratios and counted.
+- *Paired A−/C1*: requires $\ge8$ complete pairs (both cases eligible, both runs valid, both errors finite and positive);
+  otherwise "inconclusive (pair coverage)". Wilcoxon signed-rank on $\log q_j$, two-sided, `scipy.stats.wilcoxon` with
+  `zero_method='wilcox'`, `method='exact'` when $n\le25$ and there are no ties or zeros, `'approx'` otherwise; if every
+  difference is zero, $p=1$.
+- *N0s is descriptive*: its labels are printed but are not primary. Primary labels = 8 configurations × 6 regimes (A+, A−,
+  C1, C2, B1, B2) = **48** (A1.8's "56" is superseded), plus the GAL diagnostic row and the paired A−/C1 contrast.
+
+**A2.5 Frozen pilot cases and control predicates (fix 5).** Deterministic rule: the pilot of a regime is its case with the
+largest $s$ (for A+: the largest ν); a second control case is the next-largest $s$. From the registered generator:
+**C2 pilot c9** (second c11), **B2 pilot c15** (second c0), **A+ pilot c13**. Smoke uses: references for dev6 c0 (R-repro),
+C2 c9, B2 c15, A+ c13; R-upwind on C2 c9; R-calib probes on C2 c9, B2 c15, A+ c13; Q-under-resolved and Q-budget0 on dev6 c0,
+c1, C2 c9, c11, B2 c15, c0. Predicates: **R-upwind passes iff the outcome is exactly `order-fail`** with the solver,
+$t_0$ and floor checks passing; rejection for any other reason makes the control **inconclusive → stop and amend**.
+Q-under-resolved passes iff at least one listed case exceeds the Q2 rollout bar; Q-budget0 iff pooled non-certified
+$>1\%$; R-repro and Q-repro as A1.9; R-calib as A2.2. New generator gates: **G-pair** (C1 row $j$ equals A− row $j$ in
+$(c_x,c_y,w,\nu)$ exactly and has larger $a$), N0s injected out-of-bounds rows refused, N0s IC equals `engines.initial`.
+
+**A2.6 Device-specific budget with a tight-path rule (fix 6).** All reference and ROM jobs run on **H200** (E0's 2D H200
+rates). Per-case projections (H200, from E0's 102 2D ST cases): ordinary 150 s, refined 850 s (150 + the 693 s refined
+case), × 1.2 for retries and compilation. Counts: ordinary regimes N0 16 + N0s 8 + A+ 16 + B1 16 + B2 16 = 72 cases →
+3.6 GPU-h; low-ν regimes A− 16 + C1 16 + C2 16 = 48 cases, all assumed refined → 13.6 GPU-h. **Tight-path rule (edit E6 to
+the copied `refjob.solve_case`):** each reference job carries `tight_allowance` (number of cases allowed to enter E0's tight
+path). A floor failure beyond the allowance is not escalated; the case is recorded `unresolved-floor` with
+`tight_skipped=true` (ineligible, reported). Allowances: A+ job 1, every other job 0 (E0's ST record had no tight case in
+102); smoke 0 (the probe of A2.2 still runs). One tight triple is reserved at 4.5 GPU-h (E0's 8192 tight level 3.5 h plus
+the 4096/2048 levels), a refined tight triple is never allowed. ROM job 2, PS 1 (7 cases × about 300 s H200), smoke 2.
+**Projection ≈ 27 GPU-h; reservations** (sbatch time limits, each 1.5 × its job's projection, reserved in the ledger at
+submit time) **≈ 40 GPU-h ≤ 60.** After the smoke, a certificate (`checks/resources-<job>.json`, per-job, from the
+smoke's measured per-case seconds by regime class) replaces these numbers; a job is submitted only if spent + all open
+reservations + its reservation ≤ 60. **Stop/reprojection rule:** if the certified total exceeds 50 GPU-h, C2 is cut to its
+first 8 cases (it is last in the defer order); if still above, the PS cross-check is dropped; (a), (b), C1 are never cut.
+
+**A2.7 FOM ladder ordering (fix 7).** No time ordering is assumed between $(N,\Delta t)$ pairs. For each configuration and
+regime the report lists the **non-dominated matching set**: ladder members whose median and worst errors are $\le$ the
+configuration's, minimal under the partial order ($N$ smaller or equal and $\Delta t$ larger or equal). If no member matches,
+the entry reads "no ladder member matches (up to N = 128, Δt = 0.00625)". Accuracy only (A1.11). 3D stays deferred until its
+own amendment; `rcohorts.draw_table_3d` raises until then.

@@ -55,7 +55,8 @@ _SOLVERS = {}
 _PS = {}
 T_BEGIN = time.perf_counter()
 PREV_MANIFEST = {}                  # hashes this job directory recorded in an earlier (interrupted) run
-QUIET = [False]                     # sealed jobs: no per-case / per-attempt telemetry on stdout (A5.5)
+QUIET = [False]
+TIGHT_LEFT = [0]                    # jcp-regimes edit E6: cases allowed to enter the tight path (cfg 'tight_allowance')                     # sealed jobs: no per-case / per-attempt telemetry on stdout (A5.5)
 
 
 def log(s, sealed_ok=False):
@@ -158,26 +159,59 @@ def solve_case(coh, j, kind):
     jd = judge(triple)
     tight_used = refined = False
     ok = lambda c: c['solver'] and c['t0_shared']
+    tight_skipped = False
     if ok(jd['checks']) and not jd['checks']['floor']:
-        triple = [get(x[0]['L'], dts[x[0]['L']], 'tight') for x in triple]
-        tight_used = True
-        jd = judge(triple)
+        if TIGHT_LEFT[0] > 0:                          # jcp-regimes edit E6 (DESIGN A2.6): tight-path allowance
+            TIGHT_LEFT[0] -= 1
+            triple = [get(x[0]['L'], dts[x[0]['L']], 'tight') for x in triple]
+            tight_used = True
+            jd = judge(triple)
+        else:
+            tight_skipped = True
     if ok(jd['checks']) and jd['checks']['floor'] and not (jd['checks']['order'] and jd['checks']['peclet']):
         L, dt = cfg['refine']
         triple = triple[1:] + [get(L, dt, 'tight' if tight_used else 'refine')]
         refined = True
         jd = judge(triple)
         if ok(jd['checks']) and not jd['checks']['floor'] and not tight_used:
-            triple = [get(x[0]['L'], dts[x[0]['L']], 'tight') for x in triple]
-            tight_used = True
-            jd = judge(triple)
+            tight_skipped = True                       # E6: a refined tight triple is never run (A2.6)
     arrays['t0'] = t0
     meta = dict(dim=d, cohort=coh.name, case=j, kind=kind, desc=coh.desc(j), cohort_sha256=coh.sha256,
                 metric_id=V.METRIC_ID[d], lattice=RC.LATTICE[d], times=RC.TIMES.tolist(),
                 t0_sha256=SI.sha(np.ascontiguousarray(t0).tobytes()), scheme=cfg['scheme'], attempts=attempts,
                 final=[x[1] for x in triple], history=history, judge=jd, outcome=jd['outcome'], refined=refined,
-                tight_used=tight_used, floor_stab=V.FLOOR_STAB)
+                tight_used=tight_used, tight_skipped=tight_skipped, floor_stab=V.FLOOR_STAB)
     return arrays, meta
+
+
+def probe_case(coh, j, kind, arrays, meta, what):
+    """jcp-regimes edit E5 (DESIGN A1.4, A1.9): calibration-transfer probe ('tight_coarse': the coarsest base level at
+    E0's tight tolerances vs the production attempt of the same level; passes iff max_k ||u_prod - u_tight|| / n0 <=
+    tau_prod) and the real reference-side degradation control ('upwind': the three base levels with upwind advection,
+    judged by verdict.judge; must be rejected)."""
+    d = coh.dim
+    cfg = LEVELS[kind][d]
+    t0 = arrays['t0']
+    n0 = float(np.linalg.norm(np.asarray(t0).ravel()))
+    out = {}
+    if 'tight_coarse' in what:
+        L, dt = cfg['base'][0]
+        a0 = next(a for a in meta['attempts'] if a['L'] == L and a['purpose'] in ('prod', 'retry'))
+        rec, lat, res, nwt = attempt(coh, j, L, dt, cfg['scheme'], 'tight')
+        dev = float(max(np.linalg.norm((lat[k] - arrays[a0['id']][k]).ravel()) / n0 for k in range(1, 6)))
+        out['tight_coarse'] = dict(L=L, prod_id=a0['id'], tau_prod=a0['tau'], tau_tight=rec['tau'], dev=dev,
+                                   tight_steps_ok=rec['steps_ok'], passed=bool(rec['steps_ok'] and dev <= a0['tau']),
+                                   seconds=rec['seconds'])
+        log(f"  PROBE {coh.name} c{j} tight_coarse dev={dev:.3e} tau_prod={a0['tau']:.3e} passed={out['tight_coarse']['passed']}")
+    if 'upwind' in what:
+        lv = []
+        for L, dt in cfg['base']:
+            rec, lat, res, nwt = attempt(coh, j, L, dt, cfg['scheme'], 'prod', adv='upwind')
+            lv.append(dict(L=L, lat=lat, tau=rec['tau'], steps_ok=rec['steps_ok'], umax=rec['umax_running']))
+        jd = V.judge(lv, t0, coh.nu(j))
+        out['upwind'] = dict(outcome=jd['outcome'], p=jd['p'], checks=jd['checks'], rejected=jd['outcome'] != 'accepted')
+        log(f"  PROBE {coh.name} c{j} upwind outcome={jd['outcome']} p={jd['p']}")
+    return out
 
 
 def job_info():
@@ -284,6 +318,8 @@ def mode_fd(cfg, outdir, rep):
     else:
         raise SystemExit(f"cohort {cfg['cohort']} not admissible in jcp-regimes")
     cases = cfg.get('cases') or list(range(coh.n))
+    TIGHT_LEFT[0] = int(cfg.get('tight_allowance', 0))
+    rep['tight_allowance'] = TIGHT_LEFT[0]
     rep['cohort'] = dict(name=coh.name, n=coh.n, sha256=None if sealed else coh.sha256, cases=cases,
                          n_cases=len(cases))          # case indices are not secret; descriptors are
     if sealed and list(outdir.rglob('*.enc')):
@@ -322,6 +358,11 @@ def mode_fd(cfg, outdir, rep):
             meta['calib_status'] = rep['calib_status']
             meta['seconds'] = time.perf_counter() - t
             write_case(outdir, arrays, meta, sealed, key, manifest)
+            what = [w for w, cs in cfg.get('probes', {}).items() if j in cs]
+            if what:                                       # jcp-regimes edit E5
+                pr = probe_case(coh, j, kind, arrays, meta, what)
+                rep.setdefault('probes', []).append(dict(case=j, kind=kind, **V_clean(pr)))
+                save(outdir, rep)
             metas.append(meta)
             done += 1
             jd = meta['judge']

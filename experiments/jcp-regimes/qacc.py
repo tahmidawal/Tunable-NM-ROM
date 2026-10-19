@@ -32,6 +32,7 @@ import jax
 import jax.numpy as jnp
 
 GAMMA = 1e-3
+PROBE = np.sort(np.random.default_rng(20261019).choice(257 * 257, 4096, replace=False))   # jcp-regimes edit R2
 
 
 def steps_of(dt):
@@ -100,7 +101,7 @@ def main():
     rep = dict(config=cfg, commit=P.os.environ.get('SOURCE_COMMIT'), job_id=P.os.environ.get('SLURM_JOB_ID'),
                backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=P.gpu_info(),
                jax_version=jax.__version__, mesh=L, checkpoint_sha256=QS.sha_file(T2.CKPT),
-               rotation_sha256=QS.sha_file(Q.ROTATION), cohorts=P.cohort_hashes(), setup={}, rows=[], settings={},
+               rotation_sha256=QS.sha_file(Q.ROTATION), cohorts=P.cohort_hashes(cfg), setup={}, rows=[], settings={},
                memory={}, phases={}, elapsed={}, complete=False)
     save = lambda: json.dump(QS.clean(rep), open(out / 'result.json', 'w'), indent=1)
     QS.burn(.05)
@@ -112,8 +113,14 @@ def main():
     s256 = L // 256
     U0 = {}
     for i, (coh, c, ph) in enumerate(cases):
-        u0n = Q.e.initial(L, ph)
-        U0[i] = (jnp.asarray(u0n), float(ph[4]), float(np.linalg.norm(u0n[::s256, ::s256])))
+        u0n, nu_ = P.ic_full(L, coh, ph)                  # jcp-regimes edit R1 (A1.6 iv)
+        U0[i] = (jnp.asarray(u0n), nu_, float(np.linalg.norm(u0n[::s256, ::s256])))
+    rep['ic_check'] = {}
+    for coh in dict.fromkeys(c_[0] for c_ in cases):     # n0 equals the lattice-IC norm (A1.6 iv), one case per cohort
+        i = next(k for k, c_ in enumerate(cases) if c_[0] == coh)
+        lat = P.ic_full(256, coh, cases[i][2])[0]
+        rep['ic_check'][coh] = dict(case=cases[i][1], n0=U0[i][2], n0_lattice=float(np.linalg.norm(lat)),
+                                    equal=bool(np.array_equal(np.asarray(U0[i][0])[::s256, ::s256], lat)))
     rep['phases']['setup'] = el()
     print('SETUP', el(), P.mem(), flush=True)
     save()
@@ -148,8 +155,8 @@ def main():
             S = steps_of(dt)
             ak = arm_key(form, scheme, fac)
             ids = P.select(cases, arm['cases'])
-            q2 = [i for i in P.select(cases, arm.get('q2_cases', 'sub16')) if i in ids] if st.rules.get('qp') else []
-            dev = [i for i in P.select(cases, 'dev6') if i in ids] if arm.get('tighter', True) else []
+            q2 = [i for i in P.select(cases, arm.get('q2_cases', 'all')) if i in ids] if st.rules.get('qp') else []
+            dev = [i for i in P.select(cases, arm.get('tighter_cases', 'sub')) if i in ids] if arm.get('tighter', True) else []
             n = len(ids)
             g_prod, t_prod = P.tol_of(form, 'prod')
             sch = T2.sched(scheme, dt, g_prod, t_prod)
@@ -234,6 +241,15 @@ def main():
                      weighting='LSPG D = 1/(a0 + dt b0 nu lam)' if form == 'LSPG' else 'GAL Q^T R = 0, A = Q Rm',
                      cert_kind='gamma (LSPG, autodiff)' if form == 'LSPG' else 'eta = ||Q^T R|| / ||A c_n|| (GAL, autodiff)',
                      metric_id_target='2|lattice=256|times=0:0.05:0.25|norm=fixed_t0|max_k>=1')
+            # jcp-regimes edit R2: the decoded lattice fields go to their own (cluster-only) file; the pulled R file keeps
+            # per-time norms and a fixed probe of 4096 lattice values per field for the offline decode check
+            F = R.pop('f257')
+            R['f257_tnorm'] = np.sqrt(np.sum(F.reshape(F.shape[0], 6, -1) ** 2, axis=2))
+            R['f257_probe_idx'] = PROBE
+            R['f257_probe'] = F.reshape(F.shape[0], 6, -1)[:, :, PROBE]
+            R['f257_sha256'] = np.array(sha(F))
+            np.savez_compressed(out / f"F_{sc_['name']}_{ak}.npz", f257=F, case_ids=R['case_ids'])
+            del F
             np.savez_compressed(out / f"R_{sc_['name']}_{ak}.npz", **R)
             srep['arms'][ak] = dict(n=n, mem=P.mem(), steps=S, dt=dt)
             rep['elapsed'][f"{sc_['name']}|{ak}"] = time.perf_counter() - t_arm

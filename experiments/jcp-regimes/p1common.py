@@ -71,35 +71,73 @@ def mem():
 
 # ------------------------------------------------------------------ cohorts ----
 
+ALLOWED = ('dev6', 'val32')         # jcp-regimes edit R1 (DESIGN A1.6): + regime names (rcohorts.REGIMES_2D)
+
+
+def _regimes():
+    import rcohorts as RG
+    return RG
+
+
+def cohort_desc(coh):
+    """Descriptor array of an allowed cohort (dev6/val32: E0/qualify definitions; regimes: rcohorts)."""
+    RG = _regimes()
+    if coh in ALLOWED:
+        return np.asarray(Q.cohort(coh), float)
+    if coh in RG.REGIMES_2D:
+        return RG.descriptors_2d(coh)
+    raise ValueError(f'cohort {coh} not admissible in jcp-regimes')
+
+
 def case_list(cfg):
-    """[(cohort, case, physical descriptor)] for dev6 then val32 (only these two cohorts exist here)."""
-    train = Q.e.params_draw(0, 128)
+    """jcp-regimes edit R1: [(cohort, case, descriptor)] for cfg['cohorts'] (default dev6, val32), in that order; every
+    single-bump row is checked against the training draws (both seeds) and dev6/val32/test64 descriptors (A1.3)."""
+    RG = _regimes()
     out = []
-    for coh in ('dev6', 'val32'):
-        ph = Q.cohort(coh)
-        for t in train:
-            assert not any(np.allclose(t, s) for s in ph), f'{coh} overlaps training'
+    others = np.concatenate([RG.training_rows_2d()] + [np.asarray(Q.cohort(n), float) for n in ('dev6', 'val32', 'test64')])
+    train = RG.training_rows_2d()
+    cohorts = cfg.get('cohorts', ['dev6', 'val32'])
+    if any(c_ in RG.REGIMES_2D for c_ in cohorts):
+        RG.assert_all_disjoint(others)                  # DESIGN A2.1 (every regime, within and across)
+    for coh in cohorts:
+        ph = cohort_desc(coh)
+        if coh in ALLOWED:
+            for t in ph:
+                assert not np.any(np.max(np.abs(train - t[None, :]), axis=1) <= 1e-12), f'{coh} overlaps training'
         for c in range(len(ph)):
             out.append((coh, c, ph[c]))
     return out
 
 
-def cohort_hashes():
-    return {coh: sha(Q.cohort(coh)) for coh in ('dev6', 'val32')}
+def cohort_hashes(cfg=None):
+    return {coh: sha(cohort_desc(coh)) for coh in (cfg or {}).get('cohorts', ['dev6', 'val32'])}
+
+
+def ic_full(L, coh, desc):
+    """jcp-regimes edit R1 (A1.6 iv): nodal (L+1)^2 IC, wall nodes zero; (field, nu)."""
+    RG = _regimes()
+    if coh in ALLOWED:
+        return np.asarray(Q.e.initial(L, desc), float), float(desc[4])
+    return RG.initial_2d(L, coh, desc), RG.nu_2d(coh, desc)
 
 
 def select(cases, which):
-    """Named case sets: all38, sub16 (dev6 + val32[0:10]), dev6, dev2 (smoke: dev6 cases 0-1), or an explicit list."""
-    idx = {('dev6', c): i for i, (coh, c, _) in enumerate(cases) if coh == 'dev6'}
-    idx.update({('val32', c): i for i, (coh, c, _) in enumerate(cases) if coh == 'val32'})
-    if which == 'all38':
+    """jcp-regimes edit R1 (A1.6 ii): named sets 'all' (every listed case), 'sub' (cases 0-3 of each regime + every
+    dev6 case listed), 'dev6', 'dev2' (dev6 0-1), '<cohort>' (all of one cohort), or an explicit [[cohort, case], ...]."""
+    idx = {(coh, c): i for i, (coh, c, _) in enumerate(cases)}
+    RG = _regimes()
+    if which == 'all':
         keys = [(coh, c) for coh, c, _ in cases]
-    elif which == 'sub16':
-        keys = [('dev6', c) for c in range(6)] + [('val32', c) for c in range(10)]
+    elif which == 'sub':
+        keys = [(coh, c) for coh, c, _ in cases if coh == 'dev6' or (coh in RG.REGIMES_2D and c < 4)]
     elif which == 'dev6':
-        keys = [('dev6', c) for c in range(6)]
+        keys = [(coh, c) for coh, c, _ in cases if coh == 'dev6']
     elif which == 'dev2':
         keys = [('dev6', 0), ('dev6', 1)]
+    elif isinstance(which, str):
+        keys = [(coh, c) for coh, c, _ in cases if coh == which]
+        if not keys:
+            raise KeyError(which)
     else:
         keys = [tuple(k) for k in which]
     return [idx[k] for k in keys]

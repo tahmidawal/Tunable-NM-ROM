@@ -50,6 +50,8 @@ def main():
            ('C1', [.5, .5, .1, .6, .005]),          # s = 120 < 250
            ('C2', [.5, .5, .1, 2.5, .0025]),        # a > 2
            ('N0', [.5, .5, .3, 1., .05]),           # w out of range
+           ('N0s', [.5, .5, .1, 1.0, .011]),        # N0s: a < 1.5
+           ('N0s', [.5, .5, .1, 1.8, .02]),         # N0s: nu above .0126
            ('B1', [-1., 1., .05, .3, .3, .1, .8, .7, .7, .1, .8, 1.]),     # wrong sign for B1
            ('B2', [-1., 1., .05, .5, .5, .1, .8, .55, .55, .1, .8, 1.])]   # bumps not separated
     gate('G-bounds refuses injected rows', all(raises(lambda g=g, r=r: RG.check_bounds_2d(g, np.array(r))) for g, r in inj),
@@ -64,14 +66,26 @@ def main():
     except RG.CohortError:
         disj = False
     gate('G-train N0 disjoint', disj)
+    try:
+        info = RG.assert_all_disjoint(others)
+        gate('G-train all regimes disjoint (A2.1)', True, info)
+    except RG.CohortError as e:
+        gate('G-train all regimes disjoint (A2.1)', False, e)
+    # injected within-regime duplicate must be refused by the same routine's pairwise logic
+    dup = np.concatenate([d0, d0[:1]])
+    gate('G-train refuses injected duplicate', raises(lambda: RG.assert_disjoint_2d(dup[-1:], dup[:-1])))
+    # G-pair (A2.5): C1 row j == A- row j in (cx, cy, w, nu), larger a
+    am, c1 = RG.descriptors_2d('Am'), RG.descriptors_2d('C1')
+    gate('G-pair C1/A- geometry and nu identical, a larger',
+         bool(np.array_equal(am[:, [0, 1, 2, 4]], c1[:, [0, 1, 2, 4]]) and np.all(c1[:, 3] > am[:, 3])))
     gate('G-train refuses injected training row', raises(lambda: RG.assert_disjoint_2d(np.concatenate([d0, tr[:1]]), others)))
     # G-ic: single-bump regime ICs equal engines.initial; two-bump peak equals a on the 1025^2 grid
     E2 = CH.E2
     worst = 0.
-    for g in ('N0', 'Ap', 'Am', 'C1', 'C2'):
+    for g in ('N0', 'N0s', 'Ap', 'Am', 'C1', 'C2'):
         D = RG.descriptors_2d(g)
         for L in (256, 1024):
-            for j in (0, 7, 15):
+            for j in (0, 7, len(D) - 1):
                 worst = max(worst, float(np.max(np.abs(RG.initial_2d(L, g, D[j]) - np.asarray(E2.initial(L, D[j]))))))
     gate('G-ic single bump == engines.initial', worst == 0., worst)
     pk = []
@@ -87,6 +101,21 @@ def main():
     # E0 cohort identity: the Cohort interface of rcohorts gives the same t0 lattice as RC.ic_lattice expects
     c = RG.Cohort(2, 'B2')
     gate('G-ic interface shapes', c.ic(256, 0).shape == (255, 255) and c.full_ic(256, 0).shape == (257, 257))
+    # G-ic-ps (A1.9): two-bump spectral IC coefficients == direct non-separable tensor Gauss-Legendre quadrature (N=64)
+    import pscore as PS
+    worst_ps = 0.
+    for g in RG.TWO_BUMP:
+        coh = RG.Cohort(2, g)
+        for j in (0, 1):
+            b = np.asarray(coh.ps_coefs(j, 64))
+            X, W = PS.composite_gl(256)
+            XX, YY = np.meshgrid(X, X, indexing='ij')
+            F = coh.D[j][1] * RG.bump_sum(coh.D[j], XX, YY) / coh.D[j][11]
+            k = np.arange(1, 64)
+            Sx = 2. * np.sin(np.pi * k[:, None] * X[None, :])          # 2 int f sin per axis (as PS.sine_integrals)
+            ref = (Sx * W[None, :]) @ F @ (Sx * W[None, :]).T
+            worst_ps = max(worst_ps, float(np.max(np.abs(b - ref)) / np.max(np.abs(ref))))
+    gate('G-ic-ps two-bump coefficients == direct quadrature', worst_ps <= 1e-12, worst_ps)
     # R-order / R-peclet: synthetic triples through E0 verdict.judge
     rng = np.random.default_rng(0)
     ustar = rng.standard_normal((6, 257, 257))

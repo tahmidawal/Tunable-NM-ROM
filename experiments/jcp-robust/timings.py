@@ -41,6 +41,8 @@ def main():
     ap.add_argument('--qualify-dir', required=True)
     for k in ('smk1b', 'smk2', 'smk3', 'smk4', 'smk5'):
         ap.add_argument(f'--{k}')
+    ap.add_argument('--e1', nargs='*', default=[], help='E1 2D job outputs (r2acc dirs) for the per-execution overhead')
+    ap.add_argument('--e1-elapsed', nargs='*', default=[], help='mesh=seconds of an incomplete job (from its log)')
     a = ap.parse_args()
     T, src = {}, {}
     # ---- 2D from qualify
@@ -116,6 +118,19 @@ def main():
                 T[f'{drv}|{st}|{lev}|{fam}'] = max(T.get(f'{drv}|{st}|{lev}|{fam}') or 0., med(v) or 0.)
             T[f'{"e1run3d" if drv == "e1run3d" else "e2run3d"}|setup'] = max(T.get(f'{"e1run3d" if drv == "e1run3d" else "e2run3d"}|setup') or 0.,
                                                                           float(r.get('elapsed_seconds', 0.)) * .25)
+    # ---- r2acc per-execution overhead (A10.3): job wall time not inside the timed queries (device->host transfer of the
+    # full-field outputs, restriction, distances, indicator evaluation), per execution, measured on E1 2D jobs per mesh
+    el_over = dict(x.split('=') for x in a.e1_elapsed)
+    for d_ in a.e1:
+        p = Path(d_) / 'result.json'
+        r = json.loads(p.read_text())
+        rows = r['rows']
+        tsum = sum((x.get('seconds') or 0) + (x.get('seconds_tight') or 0) for x in rows)
+        n = sum(1 + (1 if x.get('seconds_tight') else 0) + (1 if 'dist_succ' in x else 0) + (1 if 'dist_tight_tighter' in x else 0)
+                for x in rows)
+        el = float(r.get('elapsed_seconds') or el_over[str(r['mesh'])])
+        src[f'e1 {p.parent.name}'] = dict(file=str(p), sha256=sha(p), elapsed=el, complete=bool(r.get('complete')))
+        T[f"r2acc|overhead|{r['mesh']}"] = max(T.get(f"r2acc|overhead|{r['mesh']}") or 0., (el - tsum) / n)
     # ---- E5 (A10.1): per-execution seconds = smoke elapsed / smoke inventory size, per GPU type (smk4 A100, smk5 H200)
     import e5common as EC
     for tag, gt in (('smk4', 'A100-80G'), ('smk5', 'H200')):

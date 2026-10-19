@@ -1,5 +1,14 @@
 {
  "timings": {
+  "dtime|doubled": 2.0342608518898486,
+  "dtime|fused-triplet": 1.6256956389173864,
+  "dtime|qp": 0.5437950417399406,
+  "dtime|qpp": 0.5437950417399406,
+  "dtime|score": 0.5437950417399406,
+  "dtime|setup|1024": 461.94085183842105,
+  "dtime|tight": 0.5437950417399406,
+  "dtime|tighter": 0.5437950417399406,
+  "dtime|triplet": 1.6256956389173864,
   "e1run3d|W256|adt-tighter|lat": 0.03231026045978069,
   "e1run3d|W256|adt-tight|lat": 0.031224439851939678,
   "e1run3d|W256|prod|gl": 0.2543774307705462,
@@ -86,6 +95,9 @@
   "r2acc|4096|R512|prod|std": 0.19104806473478675,
   "r2acc|4096|R512|tighter|std": 0.21641895780339837,
   "r2acc|4096|R512|tight|std": 0.21641895780339837,
+  "r2acc|overhead|1024": 0.0635754981150619,
+  "r2acc|overhead|256": 0.045439322708486295,
+  "r2acc|overhead|4096": 0.3445289246120917,
   "r2acc|setup|1024": 230.97042591921053,
   "r2acc|setup|256": 245.99460063381122,
   "r2acc|setup|4096": 408.26403527911754
@@ -130,6 +142,24 @@
    "file": "runs/smk1b/archive/output/e1run3d_smk13d/result.json",
    "sha256": "b4f5112727d8ebb9c612a31a1632dd2297e5c57c699feb9852ec0ac508d62df2",
    "gpu": "NVIDIA A100 80GB PCIe"
+  },
+  "e1 r2acc_e1m256": {
+   "file": "runs/e1m256/archive/output/r2acc_e1m256/result.json",
+   "sha256": "d24ccbb95d2e59fa0bdfa7f94d6464a4a9b47daac62e49e473e2cf7ebfa8238e",
+   "elapsed": 986.7,
+   "complete": true
+  },
+  "e1 r2acc_e1m1024": {
+   "file": "runs/e1m1024/archive/output/r2acc_e1m1024/result.json",
+   "sha256": "3b6b28bb368ae557432b673930dc7f5d77caf997efac78f9f620cd9ad03f0d19",
+   "elapsed": 1347.2,
+   "complete": true
+  },
+  "e1 r2acc_e1m4096": {
+   "file": "runs/e1m4096/archive/output/r2acc_e1m4096/result.json",
+   "sha256": "b06b77be08d7fc9eeef36e3e2f491c9f7c6e7abc856c5712d412c2a197ae7ce2",
+   "elapsed": 2464.0,
+   "complete": false
   }
  },
  "note": "seconds per execution; certify.py multiplies by 1.25 and stage.py requires time limit >= 1.5 x projection"

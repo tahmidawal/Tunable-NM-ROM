@@ -190,12 +190,13 @@ def certify(att, timings_path):
                     else:
                         sec += T[kk] * len(uniq)
                     uniq = []
+                ov = T.get(f"r2acc|overhead|{c.get('mesh')}", 0.) if st['driver'] == 'r2acc' else 0.   # A10.3
                 for k in uniq:
                     kl = klass(st['driver'], k)
                     if kl not in T:
                         missing.add(kl)
                     else:
-                        sec += T[kl]
+                        sec += T[kl] + ov
                 h += sec * MARGIN / 3600
             else:
                 assert 'projection_hours' in st and st.get('projection_basis'), 'a shell step states its projection and basis'

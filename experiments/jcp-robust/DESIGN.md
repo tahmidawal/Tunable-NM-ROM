@@ -831,3 +831,11 @@ time limit keeps the 1.5× margin of certify/stage.
 acc1024 rows and the smokes): an untimed scoring / replay run = one tight rollout of the slowest measured r; a triplet =
 three production rollouts + 0.4 s of burns; doubled work = four production rollouts + 0.4 s; setup = twice the measured
 1024² r2acc setup. These are estimates, labelled so in the certificate; the 1.5× time-limit margin applies.
+
+**A10.3 (2026-10-19) r2acc certificates add a measured per-execution overhead.** e1m4096 (6077916, H200) was cancelled
+after 42 min at 52 of 119 (rule, arm) blocks: the qualify per-row query times used for its certificate (≈ 0.03 s) omit the
+job's own per-execution work outside the timed query — chiefly the device→host transfer of the six full 4096² output
+fields for every production / tight / tighter / successor run — measured at 0.345 s per execution at 4096² (0.045 s at
+256², 0.064 s at 1024², from the complete e1m256 / e1m1024 jobs). certify.py now adds this measured overhead per mesh; the
+4096² job is resubmitted as `e1m4096b` with the new certificate. Its partial output (draws d0–d7 complete for all arms)
+is kept, labelled partial, and not used for any verdict.

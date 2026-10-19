@@ -1,0 +1,16 @@
+{
+ "attempt": "refN0s",
+ "gpu": "h200",
+ "time_limit_hours": 1.25,
+ "runs": [
+  [
+   "refjob",
+   "configs/ref-N0s.json"
+  ],
+  [
+   "refslim",
+   "configs/slim-N0s.json"
+  ]
+ ],
+ "commit": "5c23c82a2cabd7de47f9b131e52744d1973be8bd"
+}

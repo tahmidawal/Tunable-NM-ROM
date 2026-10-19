@@ -1,0 +1,16 @@
+{
+ "attempt": "refB2",
+ "gpu": "h200",
+ "time_limit_hours": 2.0,
+ "runs": [
+  [
+   "refjob",
+   "configs/ref-B2.json"
+  ],
+  [
+   "refslim",
+   "configs/slim-B2.json"
+  ]
+ ],
+ "commit": "5c23c82a2cabd7de47f9b131e52744d1973be8bd"
+}

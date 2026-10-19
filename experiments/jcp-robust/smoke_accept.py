@@ -315,6 +315,44 @@ def smk5(out):
     return C
 
 
+def smk3c(out):
+    """A9: the 3D evaluation part of smk3 as its own smoke (incumbent W1024 gl64/gl80 heavy cell + W256 lattice replay)."""
+    C = {}
+    d = out / 'e2run3d_smk3c'
+    res = json.loads((d / 'result.json').read_text())
+    chk(C, 'e2run3d smoke complete on gpu', res.get('complete') and res['backend'] == 'gpu' and (d / 'COMPLETE').exists())
+    chk(C, 'heaviest cell (W1024 gl64 + gl80) under the 120 GB device bar', not res.get('memory_rejected') and
+        E_num(res.get('peak_bytes_job')) <= 120e9, dict(peak=res.get('peak_bytes_job'), rejected=res.get('memory_rejected')))
+    lad = {}
+    for blk in res['blocks']:
+        if blk['kind'] == 'ladder':
+            lad.update(blk['result'])
+    for k, n in (('W1024|gl64|fs|CN|0.01|K1', 4), ('W1024|gl80|fs|CN|0.01|K1', 4), ('W256|lat8192|qn|BDF2|0.025|k4', 8),
+                 ('W256|lat16384|qn|BDF2|0.025|k4', 8)):
+        x = lad.get(k)
+        chk(C, f'ladder rung {k} ran valid with ADT anchors on its {n} cases', x is not None and list(x['cases']) == list(range(n))
+            and list(x['tighter_cases']) == list(range(n)) and len(x['adt_tighter_valid']) == n and all(x['adt_tighter_valid'])
+            and len(x['valid']) == n and all(x['valid']) and len(x['adt_valid']) == n and all(x['adt_valid']),
+            None if x is None else dict(valid=x['valid'], dist_adt=x['dist_adt']))
+    z = np.load(d / f"W_{res['mode']}.npz")
+    import hashlib
+    QD = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/q3d3/archive')
+    QA = QD / 'output' / 'q3run_q3d3' / 'W_q2.npz'
+    pin = next((l.split()[0] for l in (QD / 'OUTPUTS.sha256').read_text().splitlines() if l.split()[1] == 'output/q3run_q3d3/W_q2.npz'), None)
+    ok_pin = hashlib.sha256(QA.read_bytes()).hexdigest() == pin
+    a = np.load(QA)
+    ak = 'W256|lat8192|qn|BDF2|0.025|k4#q|qn|BDF2|0.025|k4'
+    Wa, ida = a[ak], [int(x) for x in a['cases|' + ak]]
+    nk = 'W256|lat8192|qn|BDF2|0.025|k4'
+    Wn, idn = z[nk], [int(x) for x in z['cases|' + nk]]
+    fin = bool(np.isfinite(Wn).all() and np.isfinite(Wa).all() and Wn.shape == (8,) + Wa.shape[1:])
+    rel = [float(np.max(np.abs(Wn[i] - Wa[ida.index(j)])) / float(np.max(np.abs(Wa[ida.index(j)])))) for i, j in enumerate(idn)] if fin else [math.inf]
+    chk(C, 'G-E2.3 smoke replay W256 lat8192 qn BDF2 (cases 0-7) <= 1e-10, archive hash pinned, finite',
+        ok_pin and fin and idn == list(range(8)) and max(rel) <= 1e-10, dict(worst=max(rel), pin_ok=ok_pin))
+    resource_contract(C, out, 'smk3c')
+    return C
+
+
 def smk4(out):
     C = {}
     rc, log = run(['e5_tests.py'])
@@ -332,7 +370,7 @@ def main():
     fetched = sys.argv[sys.argv.index('--fetched') + 1] if '--fetched' in sys.argv else None
     global PILOT_BANK
     PILOT_BANK = sys.argv[sys.argv.index('--pilot-bank') + 1] if '--pilot-bank' in sys.argv else None
-    C = {'smk1b': lambda: smk1(out, fetched), 'smk1': lambda: smk1(out, fetched), 'smk2': lambda: smk2(out), 'smk3': lambda: smk3(out), 'smk4': lambda: smk4(out), 'smk5': lambda: smk5(out)}[which]()
+    C = {'smk1b': lambda: smk1(out, fetched), 'smk1': lambda: smk1(out, fetched), 'smk2': lambda: smk2(out), 'smk3': lambda: smk3(out), 'smk4': lambda: smk4(out), 'smk5': lambda: smk5(out), 'smk3c': lambda: smk3c(out)}[which]()
     rep = dict(smoke=which, source=str(out), checks=C, ALL=all(v['ok'] for v in C.values()),
                label='smoke acceptance (plumbing and controls at real size); never a verdict')
     (HERE / 'checks' / f'smoke-accept-{which}.json').write_text(json.dumps(rep, indent=1, default=str) + '\n')

@@ -41,11 +41,15 @@
    "attempt": "smk3",
    "job_id": "6074365",
    "time_limit_hours": 2.0,
-   "state": "SUBMITTED",
-   "gpu": null,
-   "elapsed_hours": null
+   "state": "TIMEOUT",
+   "gpu": "gres/gpu=1",
+   "elapsed_hours": 2.0858,
+   "attempts": 1,
+   "node": "pax008",
+   "gpus": 1,
+   "prior_elapsed_hours": 0.0
   }
  ],
- "spent_gpu_hours": 0.5267,
- "reserved_gpu_hours": 2.0
+ "spent_gpu_hours": 2.6125,
+ "reserved_gpu_hours": 0
 }

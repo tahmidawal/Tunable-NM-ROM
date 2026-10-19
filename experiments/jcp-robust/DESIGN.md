@@ -798,3 +798,18 @@ sbatch lock (account cap 8, exit 75 = retry later), lane cap 3, ledger cap 75 GP
 **Held:** every 3D item — E1 3D draws (`e13d`) and E2 3D W1024 seeds (`e2t3d*`, `e2q*`, `e2f*`) — until jcp-dims hands back
 its 3D quadrature front and the coordinator releases them. smk3 (3D memory pilot and 3D replay) is a smoke and has
 already run; its acceptance is a condition of the 2D release, not a 3D production step.
+
+## Amendment A9 (2026-10-19, after smk3 timed out; before any production job)
+
+**A9.1 The full-size 3D training pilot does not fit a ≤ 2 GPU-h smoke.** smk3 (6074365, H200, 2.09 GPU-h) timed out at
+its 2 h limit inside `train2w.py`: data generation at 33³/65³/129³ completed (the 129³ training set alone took 1,687 s,
+against 1,373 s for all three meshes in the incumbent job j3b), and the host-side stage after it (snapshot POD before the
+bank fit) was still running, with host RSS rising to 176.8 GB (sacct MaxRSS 176,766,044 K; 42 % of the 420G request).
+The registered memory gate (host RSS × 1.25 ≤ request; device peak ≤ 120 GB) could therefore not be completed in a
+smoke. **Decision:** the pilot is not retried as a smoke; the first released 3D training job (`e2t3d1`, when the
+coordinator releases 3D) is itself the memory pilot — it records device peak and host RSS (memwrap + sacct), and the
+other two seeds are submitted only after it shows host RSS × 1.25 ≤ 420G and device peak ≤ 120 GB; its time limit is
+raised to 4 h (data generation was ~1.4× slower than the incumbent's). The pilot-bank rung check of smk3 moves to that job's
+bank (e2q runs). The 3D evaluation part of smk3 (incumbent W1024 gl64/gl80 heavy cell, W256 lattice replay G-E2.3) runs
+as its own smoke **smk3c** (≤ 1 GPU-h). For the 2D release (A8) "smk3 accepted" is read as "smk3c accepted"; this is
+recorded here and reported to the coordinator.

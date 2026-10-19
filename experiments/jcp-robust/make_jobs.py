@@ -41,9 +41,9 @@ def e2train():
                          projection_hours=4.0, projection_basis='incumbent dn256b: Stage A 10,685 s (A100), Stage B 2,676 s hfit '
                          '+ extraction (job 2837431); smk2 measured extraction ~900 s on A100-80G')] for s in (1, 2, 3)]))
     for s in (1, 2, 3):
-        w(dict(attempt=f'e2t3d{s}', gpu='h200', gpus=1, hours=3.0, mem='420G', cpus=8, production=True,
+        w(dict(attempt=f'e2t3d{s}', gpu='h200', gpus=1, hours=4.0, mem='420G', cpus=8, production=True,
                groups=[[dict(sh='train3d/run_seed.sh', args=[str(s), f'OUT/train3d_s{s}'], complete=f'OUT/train3d_s{s}/SEED-COMPLETE',
-                             projection_hours=2.0, projection_basis='incumbent W1024 job j3b 5012847: 6,660 s on H200 '
+                             projection_hours=2.6, projection_basis='incumbent W1024 job j3b 5012847: 6,660 s on H200 x 1.4 (smk3: data generation 1.4x slower) '
                              '(bank fit 4,104 s); smk3 pilot data generation measured')]]))
 
 

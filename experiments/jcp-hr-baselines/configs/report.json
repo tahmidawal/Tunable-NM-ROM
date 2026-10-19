@@ -11,6 +11,6 @@
   "s3d64a": "member identifiers printed the step 1/60 with 8 significant digits, which failed the exact-step schedule check; the step is now recovered exactly as 0.05/k (A44.1) and the job re-run as s3d64b"
  },
  "front2d_members": ["256|R128|BE", "256|R384|CNR", "1024|R128|BE", "1024|R384|CNR"],
- "front2d_excluded": "FRONT-2D v1 members outside the registered baseline options are not assessed: Galerkin (GAL) members, members at steps other than 0.005, and every 4096^2 member (mesh outside C3-minimal) (A21.1, A27)",
- "deferred_scope": "2D 4096^2 and 3D meshes finer than 64 intervals are deferred to C3-full (section 2, section 12)"
+ "front2d_excluded": "FRONT-2D v1 members outside the registered baseline options are not assessed: Galerkin (GAL) members, members at steps other than 0.005, and every $4096^2$ member (mesh outside C3-minimal) (A21.1, A27)",
+ "deferred_scope": "2D $4096^2$ and 3D meshes finer than 64 intervals are deferred to C3-full (section 2, section 12)"
 }

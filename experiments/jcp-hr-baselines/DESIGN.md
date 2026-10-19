@@ -2013,3 +2013,8 @@ No number changed. The break-even statement no longer asserts that no break-even
 recovery count is unnecessary: break-even counts are reported as unavailable because ours' per-mesh setup cost (and,
 in 3D, the M2 bank cost) is not available, so offline costs are not comparable. Remaining prose symbols ($\rho$,
 $\kappa$, $p$, $r$, $L$, $T$, $V$, $\varepsilon_{\rm ref}$) are written in LaTeX.
+
+## Amendment A50 (2026-10-19) — report audit 4 (`audits/codex-report-4.md`, NOT-READY on notation only)
+
+The two remaining non-LaTeX mesh sizes in `configs/report.json` are written as $4096^2$, and the offline-cost figure's
+axis label is shortened so it is not clipped. No number or wording of a conclusion changed.

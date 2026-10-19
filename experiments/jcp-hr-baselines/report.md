@@ -34,7 +34,7 @@ In 2D the ratio interval [1.16, 1.73] crosses the band's upper edge 1.25, so whe
 
 ## The compared configurations (ours)
 
-- **2D (P1)**: jcp-p1-scaling configurations queried with that lane's byte-identical code (`p1common.Setting`, `p1core.make_split_query` fused query). Query contract: the full-field initial condition is sampled at the cold quadrature points and projected onto the reduced space, LSPG stepping at $\Delta t_0 = 0.005$, decode of the six full-field outputs on the mesh. FRONT-2D members (jcp-qualify v1, A27): `1024|R128|BE`, `1024|R384|CNR`, `256|R128|BE`, `256|R384|CNR`. FRONT-2D v1 members outside the registered baseline options are not assessed: Galerkin (GAL) members, members at steps other than 0.005, and every 4096^2 member (mesh outside C3-minimal) (A21.1, A27).
+- **2D (P1)**: jcp-p1-scaling configurations queried with that lane's byte-identical code (`p1common.Setting`, `p1core.make_split_query` fused query). Query contract: the full-field initial condition is sampled at the cold quadrature points and projected onto the reduced space, LSPG stepping at $\Delta t_0 = 0.005$, decode of the six full-field outputs on the mesh. FRONT-2D members (jcp-qualify v1, A27): `1024|R128|BE`, `1024|R384|CNR`, `256|R128|BE`, `256|R384|CNR`. FRONT-2D v1 members outside the registered baseline options are not assessed: Galerkin (GAL) members, members at steps other than 0.005, and every $4096^2$ member (mesh outside C3-minimal) (A21.1, A27).
 - **3D (speed3d / jcp-qualify)**: speed3d's own query, `s3common.make_query(spec, setting, path='mesh')`, with byte-identical `s3common` / `qn3` / `fs3p`. Query contract: least-squares projection of the full-field initial condition on the mesh (`TB.project`), FS or QN stepping, decode of the six outputs on the $63^3$ interior lattice. This is the full-field mesh-path contract (A21.2); the mesh-free m1 contract is not assessed.
 - **Baselines**: initialisation $\Phi_r^\top u_0$, stepping, decode $\Phi_r c$ on the mesh. For every query, timing covers initialisation + stepping + decode with `block_until_ready`; one-off setup (bank and table loading, rule data, basis and HR data transfer, compilation) is excluded on both sides.
 
@@ -49,7 +49,7 @@ In 2D the ratio interval [1.16, 1.73] crosses the band's upper edge 1.25, so whe
 - **c2d256** tuning inventory: 164 configurations completed, 0 not constructible, 0 run failures, 0 deferred.
 - **c2d1024** tuning inventory: 172 configurations completed, 0 not constructible, 0 run failures, 0 deferred.
 - **c3d64** tuning inventory: 1,056 configurations completed, 72 not constructible (ecsw $r=1024$; first failure: JaxRuntimeError, i.e. device memory exhausted at the first NNLS append), 0 run failures, 0 deferred.
-- Deferred scope (not attempted, not failures): 2D 4096^2 and 3D meshes finer than 64 intervals are deferred to C3-full (section 2, section 12).
+- Deferred scope (not attempted, not failures): 2D $4096^2$ and 3D meshes finer than 64 intervals are deferred to C3-full (section 2, section 12).
 
 ## c2d256 (2D, $L = 256$ intervals)
 

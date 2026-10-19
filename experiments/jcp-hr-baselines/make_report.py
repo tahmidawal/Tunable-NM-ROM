@@ -226,7 +226,7 @@ def offline_plot(cells, path):
     ax.set_xticks(np.arange(len(keys)) + .4 - wdt / 2)
     ax.set_xticklabels(keys, rotation=40, ha='right', fontsize=6)
     ax.set_yscale('log')
-    ax.set_ylabel('GPU-seconds (in-job timers, selected tuning attempt)')
+    ax.set_ylabel('GPU-seconds (in-job timers)')
     ax.set_title('baseline offline construction cost by component', fontsize=9)
     ax.legend(fontsize=7)
     fig.tight_layout()

@@ -41,17 +41,17 @@ Spent **35.2** of 55 GPU-h.
 ## Key outcomes (every verdict below is generated from the analysis files)
 
 - **A4 (2D)**: 22 of 26 F2 cells reach a Gauss m*; m* ranges over 9216 … 36864 points; the 4 square (M = r) cells reach none.
-- **A3 (2D) fixed (M=2048, gauss256)**: range **not monotone** (improves; improves; does not improve).
-- **A3 (2D) fixed m gauss256, M=4r**: range **not monotone** (improves; improves; does not improve).
+- **A3 (2D) fixed (M=2048, gauss256)** (E0-provisional): range **not monotone** (improves; improves; does not improve).
+- **A3 (2D) fixed m gauss256, M=4r** (E0-provisional): range **not monotone** (improves; improves; does not improve).
 - **B6 (2D)**: M = r control status across cells: unavailable (unqualified cell) — test-space verdicts blocked.
 - **B3 (2D) R128M512**: fib: m* = 4181 (stable) (all 5 draws); gauss: m* = 9216 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: m* = 24577 (stable); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
 - **B3 (2D) R384M1536**: fib: m* = 28657 (stable) (all 5 draws); gauss: m* = 16384 (stable); halton: none (within the candidate list); mc: none (within the candidate list); smolyak: none (within the candidate list); sobol: none (within the candidate list) — 6 of 15 pairwise comparisons decided.
-- **B6-LMF** (stability checks passed): gauss: default needs fewer points; smolyak: neither qualifies; accuracy at gauss256: inconclusive (resolution).
+- **B6-LMF** (stability checks passed): gauss: default needs fewer points; smolyak: neither qualifies; accuracy at gauss256 (E0-provisional): inconclusive (resolution).
 - **2D timing (`t2`)**: controls passed (True, True); 275 of 299 subjects usable, 208 timing-job qualified.
 - **A4 (3D) coverage**: M2_512: 18 qualified, W256: 25 qualified, W512: 32 qualified, W768: 6 qualified, W1024: 2 qualified.
-- **H2q vs C_old**: fail (the selected candidate failed confirmation) (S = 1.15) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
-- **H2q vs C_W768**: pass (S = 2.95) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
-- **H2q vs C_W1024**: pass (S = 9.87) — qualified configuration vs the deployed (unqualified) comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
+- **H2q vs C_old**: fail (the selected candidate failed confirmation) (S = 1.15) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
+- **H2q vs C_W768**: pass (S = 2.95) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
+- **H2q vs C_W1024**: pass (S = 9.87) — qualified configuration vs the deployed (unqualified) comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
 
 
 ## A4 (2D): smallest qualifying Gauss rule $m^\*(r,M)$, LSPG-CN-R $\Delta t_0$, $1024^2$ (qualification is reference-free; no E0 number enters)
@@ -608,7 +608,7 @@ Elasticities of the full-query cost (descriptive full-query elasticities (beta_r
 | 384->512 | — | decomposition not reached (unqualified corner) |  |  |  |
 
 
-## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at (384, 1536)
+## B6-LMF: low mixed-frequency (hyperbolic-cross) test set at 
 
 Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1_gauss256': True, 'passed': True}. 
 
@@ -616,7 +616,7 @@ Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1
 
 - smolyak: LMF none (within the candidate list) vs default none (within the candidate list) → **neither qualifies**
 
-- accuracy at gauss256: **inconclusive (resolution)**
+- accuracy at gauss256 (E0-provisional): **inconclusive (resolution)**
 
 ## A4 (3D): front completion and per-width $m^\*$
 
@@ -715,7 +715,7 @@ Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1
 | W1024 | 2 | W1024\|gl40\|fs\|BE\|0.01\|K1, W1024\|gl48\|fs\|BE\|0.01\|K1 |
 
 
-### Qualified 3D front (qualified subset of the tested candidates (bounded search; never complete); cost = `t3s` screening ratio to C_old, full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); errors E0-provisional)
+### Qualified 3D front (qualified subset of the tested candidates (bounded search; never complete); cost = `t3s` screening ratio to C_old, full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); errors E0-provisional)
 
 | configuration | on median front | on worst front | cost | median E0 error | worst E0 error |
 |---|---|---|---|---|---|
@@ -740,7 +740,7 @@ Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1
 Open candidates (untested, not dominated by a qualified configuration): 2 — W1024|lat65536|fsp|CN|0.0125|K1, W1024|lat65536|fs|CN|0.0125|K2. The front is therefore a qualified subset, never complete.
 
 
-## Qualified 3D re-timing (H2q; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM — K2 already fired)
+## Qualified 3D re-timing (H2q; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); winners selected by tie-or-beat on E0-provisional errors)
 
 | comparator | configuration | its Q2 | label | qualified winner | n tie-or-beat | S | verdict |
 |---|---|---|---|---|---|---|---|
@@ -748,7 +748,7 @@ Open candidates (untested, not dominated by a qualified configuration): 2 — W1
 | C_W768 | W768\|lat32768\|fs\|BE\|0.01\|K1 | pass | qualified vs qualified comparator | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 18 | 2.95 | pass |
 | C_W1024 | W1024\|lat65536\|fs\|BE\|0.01\|K1 | fail | qualified configuration vs the deployed (unqualified) comparator | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 8 | 9.87 | pass |
 
-Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration of width $w$ at its smallest qualified rule.
+Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration of width $w$ at its smallest qualified rule (full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors).
 
 | width | C^q_w | winner | S (confirmation) | S (screening) | verdict |
 |---|---|---|---|---|---|
@@ -757,7 +757,7 @@ Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration
 | W1024 | W1024\|gl40\|fs\|BE\|0.01\|K1 | M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | 9.67 | 9.46 | pass |
 
 
-## B6 (3D, W512) and A3 (3D)
+## B6 (3D, W512) and A3 (3D) (transitions use E0-provisional errors)
 
 - **W512|LSPG-CN adaptive**: control unavailable (unqualified cell) (kappa = 1: explicit lowest-512 list (shell-breaking control, DESIGN 2.3 (3B))); 1->2: blocked (M = r control: unavailable (unqualified cell)); 2->3: blocked (M = r control: unavailable (unqualified cell)); 3->4: blocked (M = r control: unavailable (unqualified cell)); 4->8: blocked (M = r control: unavailable (unqualified cell)); range 2–4: blocked (control unavailable)
 
@@ -772,7 +772,7 @@ Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration
 - **fixed m lat65536, nominal M**: improves; inconclusive (unqualified cell); inconclusive (unqualified cell) — range **inconclusive**
 
 
-## B3 (3D, W512 κ = 4, fs-CN)
+## B3 (3D, W512, fs|CN|0.01|K1; deployed test space)
 
 | family | family m* |
 |---|---|
@@ -865,17 +865,17 @@ The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is
 
 *median error against M / r at gauss256, LSPG-CN-R (descriptive; B6 blocked).*
 
-![online cost against m at M = 4r (t2, usable subjects).](plots/cost_2d_m.png)
+![online cost against m at $M=4r$ (t2, usable subjects).](plots/cost_2d_m.png)
 
-*online cost against m at M = 4r (t2, usable subjects).*
+*online cost against m at $M=4r$ (t2, usable subjects).*
 
-![median E0 error (%, E0-provisional) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).](plots/heat_err_2d.png)
+![median E0 error (%, E0-provisional) over (r, M) for every Gauss rung; blank = not run; $M=r$ cells fail Q1 (descriptive only).](plots/heat_err_2d.png)
 
-*median E0 error (%, E0-provisional) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).*
+*median E0 error (%, E0-provisional) over (r, M) for every Gauss rung; blank = not run; $M=r$ cells fail Q1 (descriptive only).*
 
-![cost c (t2, usable subjects) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).](plots/heat_cost_2d.png)
+![cost c (t2) over (r, M) for every Gauss rung; blank = not run or timing unusable; $M=r$ cells fail Q1 (descriptive only).](plots/heat_cost_2d.png)
 
-*cost c (t2, usable subjects) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).*
+*cost c (t2) over (r, M) for every Gauss rung; blank = not run or timing unusable; $M=r$ cells fail Q1 (descriptive only).*
 
 ![R128M512: median error against m per rule family; shaded = range over the five draws (descriptive).](plots/family_err_R128M512.png)
 
@@ -889,13 +889,13 @@ The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is
 
 *median error against κ per r and form (descriptive; every B6 verdict is blocked).*
 
-![numerically qualified 3D configurations (screening cost vs median error), the median front, and the comparators (squares). Qualified subset, never complete.](plots/front_3d.png)
+![numerically qualified 3D configurations grouped by bank width (screening cost vs median E0-provisional error), the median front, and the comparators (square = qualified, cross = unqualified). Qualified subset, never complete; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired).](plots/front_3d.png)
 
-*numerically qualified 3D configurations (screening cost vs median error), the median front, and the comparators (squares). Qualified subset, never complete.*
+*numerically qualified 3D configurations grouped by bank width (screening cost vs median E0-provisional error), the median front, and the comparators (square = qualified, cross = unqualified). Qualified subset, never complete; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired).*
 
-![H2q confirmation speed-ups against the three comparators; dashed = pass bar. C_W1024 is an unqualified comparator.](plots/h2q_3d.png)
+![H2q confirmation speed-ups against the three comparators; dashed = pass bar; winners selected by tie-or-beat on E0-provisional errors; C_W1024 is an unqualified comparator; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired).](plots/h2q_3d.png)
 
-*H2q confirmation speed-ups against the three comparators; dashed = pass bar. C_W1024 is an unqualified comparator.*
+*H2q confirmation speed-ups against the three comparators; dashed = pass bar; winners selected by tie-or-beat on E0-provisional errors; C_W1024 is an unqualified comparator; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM (K2 already fired).*
 
 ![3D per-width m*; grey = no listed rule qualifies for all three specs.](plots/width_mstar_3d.png)
 
@@ -922,11 +922,11 @@ The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is
 
 - **E0 / R_ST** — the second-order space-time reference solutions the errors are measured against.
 
-- **ε_ref** — the per-case uncertainty of the reference; two results differing by less than 2 ε_ref are a tie.
+- **$\varepsilon_{\rm ref}$** — the per-case uncertainty of the reference; two results differing by less than $2\varepsilon_{\rm ref}$ are a tie.
 
 - **transition** — a paired per-case comparison of two cells differing in one axis: "improves", "does not improve" or "inconclusive".
 
-- **M = r control** — the deliberately weak square test space; it must be worse than M = 4r, or test-space conclusions at that r are blocked.
+- **$M=r$ control** — the deliberately weak square test space; it must be worse than $M=4r$, or test-space conclusions at that r are blocked.
 
 - **GAL / LSPG** — Galerkin (residual projected onto the trial space) versus least-squares Petrov–Galerkin (residual minimised over M tests).
 
@@ -942,7 +942,19 @@ The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is
 
 - **LMF** — low mixed-frequency (hyperbolic-cross) test set: modes ordered by the product $k_x k_y$.
 
-- **reference A / cost c** — 2D: every timed subject is bracketed by two runs of a fixed reference configuration A; c is the subject time divided by the mean A time (1 = as expensive as A). 3D screening: the same with A = C_old.
+- **reference A / cost c** — 2D: every timed subject is bracketed by two runs of a fixed reference configuration A (r = 384, M = 1536, gauss128, LSPG-CNR); c is the subject time divided by the mean A time (1 = as expensive as A). 3D screening: the same with A = C_old.
+
+- **screening / confirmation** — 3D timing in two stages: `t3s` screens every qualified configuration against C_old on four cases × two repetitions; `t3c` re-times each selected (comparator, winner) pair on eight cases × three repetitions; H2q uses the confirmation.
+
+- **median / worst front** — configurations not beaten in both cost and median (or worst-case) error by another qualified configuration.
+
+- **open candidates** — untested configurations that a qualified configuration does not dominate; their existence means the front may be incomplete.
+
+- **resolution** — the fraction of cases whose paired difference exceeds the tie band; a transition with too few resolved cases is "inconclusive (resolution)".
+
+- **rule names** — 2D: `gauss<n>` = n×n Gauss tensor rule, `fib<F>` = Fibonacci lattice with F points, `sobol<m>`, `halton<m>`, `mc<m>` = m points, `smolyak<l>` = sparse grid of level l. 3D: `gl<n>` = n³ Gauss, `lat<m>` = rank-1 lattice, `sob<m>`, `hal<m>`, `mc<m>`, `smolyak3`. A suffix `s<k>` is the random draw (seed) k; none = draw 0.
+
+- **fs / fsp** — `fs` = fixed-sweep Newton solver (K sweeps per step); `fsp` = the same with two extra predictor candidates (cubic extrapolation and an IMEX predictor), from speed3d `fs3p`.
 
 - **identity** — the timed run must reproduce, bit for bit (hashes) and within the registered tolerance (DESIGN §4) against the accuracy job, the run that was scored; otherwise its timing is unusable.
 
@@ -966,7 +978,7 @@ The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is
 
 - **elasticity β** — the exponent of cost against r, M or m in a log-linear fit across the factorial (descriptive).
 
-- **H2q** — speed-up of the cheapest quadrature-qualified 3D configuration that ties or beats a comparator, confirmed in a paired timing panel; pass if ≥ 1/0.6.
+- **H2q** — speed-up of the cheapest quadrature-qualified 3D configuration that ties or beats a comparator, confirmed in a paired timing panel; pass if $S\ge$ 1.667.
 
 - **C_old, C_W768, C_W1024** — the deployed backward-Euler 3D configurations used as speed comparators.
 

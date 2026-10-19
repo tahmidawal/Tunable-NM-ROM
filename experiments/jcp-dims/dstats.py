@@ -10,6 +10,7 @@ import numpy as np
 
 BAR = 2.5e-4
 RHO_BAR = 0.116
+H2Q_PASS = 1 / .6          # H2q pass bar on the confirmed speed-up S (DESIGN 6.5)
 REL = 0.8              # point-efficiency factor (6.3)
 
 
@@ -265,7 +266,7 @@ def h2q(C, comp, qualified, panel=None):
     if not panel['valid']:
         return dict(verdict='inconclusive (panel invalid)', winner=w)
     S = 1. / panel['median_ratio']
-    return dict(verdict='pass' if S >= 1 / .6 else 'fail (the selected candidate failed confirmation)', winner=w, S=S,
+    return dict(verdict='pass' if S >= H2Q_PASS else 'fail (the selected candidate failed confirmation)', winner=w, S=S,
                 n_matching=len(match))
 
 

@@ -18,17 +18,42 @@ TIGHT_ALLOWANCE = __import__('rcohorts').TIGHT_ALLOWANCE   # A2.6 / A3.2
 PS_CASE = {}                                             # filled by prod(): largest s per cohort (A3 minor)
 
 
-def arms(name, cases):
-    a = [dict(form='LSPG', scheme='BE', factor=1, cases=cases, q2_cases='all', tighter_cases='sub'),
-         dict(form='LSPG', scheme='CNR', factor=1, cases=cases, q2_cases='all', tighter_cases='sub')]
+def arms(name, cases, tighter='sub'):
+    a = [dict(form='LSPG', scheme='BE', factor=1, cases=cases, q2_cases='all', tighter_cases=tighter),
+         dict(form='LSPG', scheme='CNR', factor=1, cases=cases, q2_cases='all', tighter_cases=tighter)]
     if name == 'R384':
-        a.append(dict(form='GAL', scheme='CN', factor=1, cases=cases, q2_cases='all', tighter_cases='sub'))
+        a.append(dict(form='GAL', scheme='CN', factor=1, cases=cases, q2_cases='all', tighter_cases=tighter))
     return a
 
 
-def rom_config(attempt, cohorts, cases, blocks=()):
-    return dict(attempt=attempt, driver='qacc', mesh=1024, edges=EDGES, cohorts=cohorts,
-                settings=[dict(name=n, Rp=r, rule=m, qp=qp, qpp=qpp, arms=arms(n, cases)) for n, r, m, qp, qpp in SETTINGS],
+FRONT = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/FRONT-2D.json')
+FRONT_SHA = 'a51ac1a250f00d4b0006a84f2434ab3c96407b1f575f4ffff7a3eb25b7a8b77d'
+
+
+def frozen():
+    """Frozen identities from FRONT-2D (qualify): checkpoint, rotation and, per setting, the main rule's manifest."""
+    import hashlib
+    raw = FRONT.read_bytes()
+    assert hashlib.sha256(raw).hexdigest() == FRONT_SHA
+    d = json.loads(raw)['meshes']['1024']
+    mfs = [x['manifest'] for g in ('members', 'other_qualified') for x in d[g]]
+    out = dict(front_sha256=FRONT_SHA, settings={})
+    for n, r, m, _, _ in SETTINGS:
+        # the Delta t0 LSPG entries are P1-cited without rule_meta; the setting identity (rule, mesh, modes, fingerprint
+        # of the LSPG tables) is the same for every non-fallback arm of the setting, so take all of them and require one
+        metas = {json.dumps(mf['rule_meta'], sort_keys=True) for mf in mfs
+                 if mf['Rp'] == r and mf['rule'] == m and not mf['fallback'] and mf.get('rule_meta')}
+        assert len(metas) == 1, (n, len(metas))
+        out['settings'][n] = json.loads(metas.pop())
+        ids = {(mf['checkpoint_sha256'], mf['rotation_sha256']) for mf in mfs}
+        assert len(ids) == 1
+        out['checkpoint_sha256'], out['rotation_sha256'] = ids.pop()
+    return out
+
+
+def rom_config(attempt, cohorts, cases, blocks=(), tighter='sub'):
+    return dict(attempt=attempt, driver='qacc', mesh=1024, edges=EDGES, cohorts=cohorts, frozen=frozen(),
+                settings=[dict(name=n, Rp=r, rule=m, qp=qp, qpp=qpp, arms=arms(n, cases, tighter)) for n, r, m, qp, qpp in SETTINGS],
                 blocks=list(blocks))
 
 
@@ -52,7 +77,8 @@ def smk1():
     ctrl = [['dev6', 0], ['dev6', 1], ['C2', 9], ['C2', 11], ['B2', 15], ['B2', 0]]
     blocks = [dict(setting='R384', kind='controls', cases=ctrl, under_resolved='gauss32',
                    under_resolved_successor='gauss64', b0_cases=ctrl)]
-    write('smk1-rom', rom_config('smk1', ['dev6'] + REGIMES, cases, blocks))
+    write('smk1-fverify', dict(source='qacc_smk1-rom'))
+    write('smk1-rom', rom_config('smk1', ['dev6'] + REGIMES, cases, blocks, tighter='all'))   # smoke: every case (no regime has c0-3 complete)
 
 
 def prod():
@@ -65,9 +91,9 @@ def prod():
         write(f'slim-{g}', dict(sources=[f'refjob_ref-{g}']))
         if g != 'N0s':
             D = RG.descriptors_2d(g)
-            key = (lambda r_: RG.nu_2d(g, r_)) if g == 'Ap' else (lambda r_: RG.desc_2d(g, r_)['s'])
-            PS_CASE[g] = int(np.argmax([key(r_) for r_ in D]))
+            PS_CASE[g] = int(np.argmax([RG.desc_2d(g, r_)['s'] for r_ in D]))     # largest s, every cohort (A3 minor)
     write('rom1024', rom_config('rom1024', ['dev6', 'val32'] + REGIMES, 'all'))
+    write('fverify-rom1024', dict(source='qacc_rom1024'))
     write('ps', dict(cases=PS_CASE))       # one PS job step per cohort is generated at staging (A3 minor)
     for g, c in PS_CASE.items():
         write(f'ps-{g}', dict(mode='ps', dim=2, cohort=g, cases=[c], attempt=0))

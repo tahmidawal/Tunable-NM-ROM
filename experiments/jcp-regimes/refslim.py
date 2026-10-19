@@ -26,6 +26,13 @@ def main():
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
     out = Path(a.out)
+    r = str(out.resolve())                            # output-root guard (code audit 1, fix 1): never the E0 lane / store
+    if '/jcp-ref/' in r + '/' or 'jcp-references' in r:
+        raise SystemExit(f'refusing to write into the E0 lane / store: {r}')
+    if os.environ.get('SLURM_JOB_ID'):
+        assert r.startswith('/cluster/tufts/paralab/tawal01/jcp-regimes/'), r
+    else:
+        assert r.startswith('/tmp/'), r
     rows = []
     pairs = [(Path(a.out).parent / s_, js) for s_ in cfg['sources'] for js in sorted((Path(a.out).parent / s_).glob('2d/*/ST/c*.json'))]
     for src, js in pairs:

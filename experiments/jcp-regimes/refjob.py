@@ -189,7 +189,7 @@ def solve_case(coh, j, kind):
     return arrays, meta
 
 
-def probe_case(coh, j, kind, arrays, meta, what):
+def probe_case(coh, j, kind, arrays, meta, what, outdir=None):
     """jcp-regimes edit E5 (DESIGN A1.4, A1.9): calibration-transfer probe ('tight_coarse': the coarsest base level at
     E0's tight tolerances vs the production attempt of the same level; passes iff max_k ||u_prod - u_tight|| / n0 <=
     tau_prod) and the real reference-side degradation control ('upwind': the three base levels with upwind advection,
@@ -199,11 +199,13 @@ def probe_case(coh, j, kind, arrays, meta, what):
     t0 = arrays['t0']
     n0 = float(np.linalg.norm(np.asarray(t0).ravel()))
     out = {}
+    ev = dict(t0=t0)                                  # raw evidence for offline recomputation (A1.9; code audit 1)
     if 'tight_coarse' in what:
         L, dt = cfg['base'][0]
         # A3.1: the production member is the last prod/retry attempt at L (a successful retry replaces a failed prod)
         a0 = [a for a in meta['attempts'] if a['L'] == L and a['purpose'] in ('prod', 'retry')][-1]
         rec, lat, res, nwt = attempt(coh, j, L, dt, cfg['scheme'], 'tight')
+        ev.update(tight_lat=lat, tight_res=res, prod_lat=arrays[a0['id']], prod_res=arrays['res_' + a0['id']])
         dev = float(max(np.linalg.norm((lat[k] - arrays[a0['id']][k]).ravel()) / n0 for k in range(1, 6)))
         valid = bool(rec['steps_ok'] and a0['steps_ok'] and np.isfinite(dev))
         out['tight_coarse'] = dict(L=L, prod_id=a0['id'], prod_steps_ok=a0['steps_ok'], tau_prod=a0['tau'],
@@ -215,10 +217,16 @@ def probe_case(coh, j, kind, arrays, meta, what):
         lv = []
         for L, dt in cfg['base']:
             rec, lat, res, nwt = attempt(coh, j, L, dt, cfg['scheme'], 'prod', adv='upwind')
+            ev[f'upwind_lat_L{L}'], ev[f'upwind_res_L{L}'] = lat, res
+            out.setdefault('upwind_levels', []).append({k: rec[k] for k in ('L', 'dt', 'tau', 'steps_ok', 'umax_running', 'stages')})
             lv.append(dict(L=L, lat=lat, tau=rec['tau'], steps_ok=rec['steps_ok'], umax=rec['umax_running']))
         jd = V.judge(lv, t0, coh.nu(j))
         out['upwind'] = dict(outcome=jd['outcome'], p=jd['p'], checks=jd['checks'], rejected=jd['outcome'] != 'accepted')
         log(f"  PROBE {coh.name} c{j} upwind outcome={jd['outcome']} p={jd['p']}")
+    if outdir is not None:
+        pstem = outdir / f'{d}d' / coh.name / kind / f'probe_c{j:03d}.npz'
+        atomic_write(pstem, SI.npz_bytes(**ev))
+        out['evidence'] = dict(file=str(pstem.relative_to(outdir)), sha256=SI.sha(pstem.read_bytes()))
     return out
 
 
@@ -326,18 +334,31 @@ def mode_fd(cfg, outdir, rep):
     else:
         raise SystemExit(f"cohort {cfg['cohort']} not admissible in jcp-regimes")
     cases = cfg.get('cases') or list(range(coh.n))
-    assert cases == sorted(cases), 'cases run in ascending index (A3.2: the allowance goes to the first floor failure)'
-    if coh.name in RG.REGIMES_2D:              # A3.2: the frozen cohort-level allowance; pilots / subsets get none
-        full = cases == list(range(coh.n))
-        want = RG.TIGHT_ALLOWANCE.get(coh.name, 0) if full else 0
-        assert int(cfg.get('tight_allowance', 0)) == want, (coh.name, cfg.get('tight_allowance'), want)
-    TIGHT_LEFT[0] = int(cfg.get('tight_allowance', 0))
-    rep['tight_allowance'] = TIGHT_LEFT[0]
+    # E6 (A3.2): ascending, unique, in-range cases; ST only; the frozen cohort-level allowance (subsets / pilots / dev6: 0)
+    assert cases == sorted(set(cases)) and all(0 <= j < coh.n for j in cases), 'cases must be ascending, unique, in range'
+    assert list(cfg['kinds']) == ['ST'], 'jcp-regimes produces the ST kind only (DESIGN 4.1)'
+    full = cases == list(range(coh.n))
+    want = RG.TIGHT_ALLOWANCE.get(coh.name, 0) if (full and coh.name in RG.REGIMES_2D) else 0
+    assert int(cfg.get('tight_allowance', 0)) == want, (coh.name, cfg.get('tight_allowance'), want)
+    TIGHT_LEFT[0] = want
+    rep['tight_allowance'] = want
     rep['cohort'] = dict(name=coh.name, n=coh.n, sha256=None if sealed else coh.sha256, cases=cases,
                          n_cases=len(cases))          # case indices are not secret; descriptors are
     if sealed and list(outdir.rglob('*.enc')):
         raise SystemExit('sealed jobs never resume (A5.5): ciphertext already present in the job directory')
     prev = {} if sealed else PREV_MANIFEST
+    if PREV_CONFIG and any(PREV_CONFIG.get(k) != cfg.get(k) for k in ('cohort', 'cases', 'kinds', 'tight_allowance', 'probes')):
+        raise SystemExit('E6: refusing to resume a job directory written with a different configuration')
+
+    def verified(stem):
+        return all(Path(str(stem) + s_).exists() and prev.get(str(Path(str(stem) + s_).relative_to(outdir)))
+                   == SI.sha(Path(str(stem) + s_).read_bytes()) for s_ in ('.npz', '.json'))
+    # E6 (A3.2): pre-pass -- every verified resumed case that used the tight path consumes the allowance up front
+    for j in cases:
+        stem = outdir / f'{d}d' / coh.name / 'ST' / f'c{j:03d}'
+        if verified(stem) and json.loads(Path(str(stem) + '.json').read_text()).get('tight_used'):
+            TIGHT_LEFT[0] = max(0, TIGHT_LEFT[0] - 1)
+    rep['tight_allowance_after_resume'] = TIGHT_LEFT[0]
     manifest, metas = [], []
     rep['cases'] = []
     done = 0
@@ -347,8 +368,7 @@ def mode_fd(cfg, outdir, rep):
             if sealed:
                 if any(Path(str(stem) + s).exists() for s in ('.npz.enc', '.json.enc')):
                     raise SystemExit('sealed jobs never resume (A5.5): output exists')
-            elif all(Path(str(stem) + s).exists() and prev.get(str(Path(str(stem) + s).relative_to(outdir)))
-                     == SI.sha(Path(str(stem) + s).read_bytes()) for s in ('.npz', '.json')):
+            elif verified(stem):
                 # verified resume: both files match the hashes this job recorded when it wrote them (A6.5)
                 meta = json.loads(Path(str(stem) + '.json').read_text())
                 npz = Path(str(stem) + '.npz').read_bytes()
@@ -357,8 +377,10 @@ def mode_fd(cfg, outdir, rep):
                 manifest.append(dict(file=str(stem.relative_to(outdir)) + '.npz', sha256=SI.sha(npz)))
                 manifest.append(dict(file=str(stem.relative_to(outdir)) + '.json',
                                      sha256=SI.sha(Path(str(stem) + '.json').read_bytes())))
-                if meta.get('tight_used'):              # E6 (A3.2): allowance consumption survives restarts
-                    TIGHT_LEFT[0] = max(0, TIGHT_LEFT[0] - 1)
+                what = [w for w, cs in cfg.get('probes', {}).items() if j in cs]
+                if what:                                   # E5: probes are (re)run for resumed cases too
+                    pr = probe_case(coh, j, kind, {k: arr[k] for k in arr.files}, meta, what, outdir)
+                    rep.setdefault('probes', []).append(dict(case=j, kind=kind, **V_clean(pr)))
                 rep['cases'].append(dict(case=j, kind=kind, outcome=meta['outcome'], eps_ref=meta['judge']['eps_ref'],
                                          p=meta['judge']['p'], seconds=meta.get('seconds'), resumed=True))
                 log(f'resumed (verified) {stem}')
@@ -375,7 +397,7 @@ def mode_fd(cfg, outdir, rep):
             write_case(outdir, arrays, meta, sealed, key, manifest)
             what = [w for w, cs in cfg.get('probes', {}).items() if j in cs]
             if what:                                       # jcp-regimes edit E5
-                pr = probe_case(coh, j, kind, arrays, meta, what)
+                pr = probe_case(coh, j, kind, arrays, meta, what, outdir)
                 rep.setdefault('probes', []).append(dict(case=j, kind=kind, **V_clean(pr)))
                 save(outdir, rep)
             metas.append(meta)
@@ -582,6 +604,25 @@ def save(outdir, rep):
     tmp.replace(outdir / 'result.json')
 
 
+LANE_NS = '/cluster/tufts/paralab/tawal01/jcp-regimes/'
+PREV_CONFIG = {}
+
+
+def check_out_root(outdir, cfg):
+    """jcp-regimes edit E2 (code audit 1): writes only under this lane's cluster namespace (inside a Slurm job) or, for a
+    local CPU functional run (allow_cpu, no Slurm), under a /tmp scratch directory; never anywhere in the E0 lane or its
+    store (resolved paths, symlinks followed)."""
+    r = str(Path(outdir).resolve())
+    if '/jcp-ref/' in r + '/' or 'jcp-references' in r:
+        raise SystemExit(f'refusing to write into the E0 lane / store: {r}')
+    if os.environ.get('SLURM_JOB_ID'):
+        ok = r.startswith(LANE_NS)
+    else:
+        ok = bool(cfg.get('allow_cpu')) and r.startswith('/tmp/')
+    if not ok:
+        raise SystemExit(f'refusing output root {r}')
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--config', required=True)
@@ -589,7 +630,10 @@ def main():
     a = ap.parse_args()
     cfg = json.loads(Path(a.config).read_text())
     outdir = Path(a.out)
+    check_out_root(outdir, cfg)
     outdir.mkdir(parents=True, exist_ok=True)
+    if (outdir / 'result.json').exists():
+        PREV_CONFIG.update(json.loads((outdir / 'result.json').read_text()).get('config', {}))
     if not cfg.get('allow_cpu'):
         assert jax.default_backend() == 'gpu', jax.default_backend()
     assert os.environ.get('JAX_DEFAULT_MATMUL_PRECISION') == 'highest'

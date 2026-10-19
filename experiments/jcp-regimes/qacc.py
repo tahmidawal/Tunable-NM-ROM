@@ -104,6 +104,10 @@ def main():
                rotation_sha256=QS.sha_file(Q.ROTATION), cohorts=P.cohort_hashes(cfg), setup={}, rows=[], settings={},
                memory={}, phases={}, elapsed={}, complete=False)
     save = lambda: json.dump(QS.clean(rep), open(out / 'result.json', 'w'), indent=1)
+    fz = cfg['frozen']                                   # jcp-regimes edit R3 (code audit 1): frozen identities enforced
+    assert rep['checkpoint_sha256'] == fz['checkpoint_sha256'], rep['checkpoint_sha256']
+    assert rep['rotation_sha256'] == fz['rotation_sha256'], rep['rotation_sha256']
+    assert set(fz['settings']) == {s_['name'] for s_ in cfg['settings']}
     QS.burn(.05)
     rep['memory']['start'] = P.mem()
     bank = P.Bank(L, cfg['edges'], nrb=cfg.get('bank_blocks'))
@@ -137,6 +141,9 @@ def main():
         roles = {k: sc_[k] for k in ('qp', 'qpp') if sc_.get(k)}
         b0 = P.mem()['in_use']
         st = P.Setting(bank, sc_['name'], sc_['Rp'], sc_['rule'], 'frozen', roles=roles, forms=('LSPG', 'GAL'), nrec=0)
+        want = fz['settings'][sc_['name']]               # R3: rule / mesh / mode-list identity equals FRONT-2D's manifest
+        got = {k: st.meta['main'][k] for k in want}
+        assert got == want, (sc_['name'], got, want)
         A = np.asarray(st.base['A'])
         sA = np.linalg.svd(A, compute_uv=False)
         srep = rep['settings'][sc_['name']] = dict(Rp=st.Rp, M=st.M, policy=st.policy, rules=st.rules, m=st.m, meta=st.meta,

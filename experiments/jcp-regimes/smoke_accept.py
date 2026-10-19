@@ -12,7 +12,9 @@ from pathlib import Path
 import numpy as np
 
 import npcheck as NC
+import rcohorts as RG
 import rscore as RS
+import verdict as V
 
 HERE = Path(__file__).resolve().parent
 FRONT = Path('/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-18-jcp-qualify/experiments/jcp-qualify/runs/FRONT-2D.json')
@@ -28,11 +30,18 @@ def main(run):
     run = Path(run)
     out = run / 'output'
     logs = ''.join(p.read_text() for p in sorted((run / 'logs').glob('*.out')))
+    errs = ''.join(p.read_text() for p in sorted((run / 'logs').glob('*.err')))
     check('jax_backend=gpu in log', 'jax_backend=gpu' in logs)
     check('job finished', 'ALL-DONE' in logs)
-    check('no captured-constants warning', 'large amount of constants' not in logs)
+    bad = [w for w in ('large amount of constants', 'Traceback', 'Segmentation', 'Out of memory', 'RESOURCE_EXHAUSTED',
+                       'No space left') if w in logs + errs]
+    check('no captured-constants / traceback / OOM / disk-full in .out or .err', not bad, found=bad)
     ug = json.loads((out / 'unit_gates.json').read_text())
-    check('unit gates (G-*, R-order, R-peclet)', ug['all_pass'], failed=[g['gate'] for g in ug['gates'] if not g['pass_']])
+    check('unit gates in job (file)', ug['all_pass'], failed=[g['gate'] for g in ug['gates'] if not g['pass_']])
+    import subprocess
+    rr = subprocess.run([sys.executable, str(HERE / 'test_regimes.py')], capture_output=True, text=True, cwd=HERE,
+                        env=dict(__import__('os').environ, JAX_PLATFORMS='cpu'))
+    check('unit gates re-run locally', rr.returncode == 0 and 'ALL-PASS' in rr.stdout, tail=rr.stdout[-300:])
     # ---------------------------------------------------------------------------------------------- references
     RS.STORE = out / 'refslim_smk1-slim'
     res = {g: json.loads((out / f'refjob_smk1-ref-{g}' / 'result.json').read_text()) for g in ('dev6', 'C2', 'B2', 'Ap')}
@@ -50,16 +59,32 @@ def main(run):
     check('R-repro dev6 c0 == E0 store', rel <= 1e-12 and js['outcome'] == m0['outcome'] and dp <= 1e-9, rel=rel, dp=dp,
           outcome=js['outcome'])
     # R-upwind (A2.5): exactly order-fail with solver, t0 and floor passing
+    # R-upwind recomputed from the saved evidence (verdict.judge on the three upwind lattices)
     pr = {p['case']: p for p in res['C2'].get('probes', [])}
-    up = pr.get(9, {}).get('upwind')
-    ok_up = bool(up and up['outcome'] == 'order-fail' and up['checks']['solver'] and up['checks']['t0_shared']
-                 and up['checks']['floor'])
-    check('R-upwind C2 c9 rejected on order', ok_up, outcome=up and up['outcome'], p=up and up['p'])
+    ev = np.load(out / 'refjob_smk1-ref-C2' / '2d' / 'C2' / 'ST' / 'probe_c009.npz')
+    ulv = pr[9]['upwind_levels']
+    lv = []
+    for meta_l in ulv:
+        rs_ = ev[f"upwind_res_L{meta_l['L']}"]
+        lv.append(dict(L=meta_l['L'], lat=ev[f"upwind_lat_L{meta_l['L']}"], tau=V.floor_proxy(rs_, len(rs_)),
+                       steps_ok=bool(V.steps_ok(rs_, len(rs_)) and len(rs_) == meta_l['stages']), umax=meta_l['umax_running']))
+    nu9 = RG.nu_2d('C2', RG.descriptors_2d('C2')[9])
+    jd = V.judge(lv, ev['t0'], nu9)
+    ok_up = bool(jd['outcome'] == 'order-fail' and jd['checks']['solver'] and jd['checks']['t0_shared'] and jd['checks']['floor'])
+    check('R-upwind C2 c9 rejected on order (recomputed)', ok_up, outcome=jd['outcome'], p=jd['p'],
+          in_job=pr[9]['upwind']['outcome'])
     # R-calib (A2.2, A3.1): all three probes must 'agree' for the pass; otherwise a label (not blocking)
     verdicts = {}
     for g, c in (('C2', 9), ('B2', 15), ('Ap', 13)):
+        ev = np.load(out / f'refjob_smk1-ref-{g}' / '2d' / g / 'ST' / f'probe_c{c:03d}.npz')
+        n0 = float(np.linalg.norm(ev['t0'].ravel()))
+        dev = max(float(np.linalg.norm((ev['tight_lat'][k] - ev['prod_lat'][k]).ravel())) / n0 for k in range(1, 6))
+        tau = V.floor_proxy(ev['prod_res'], len(ev['prod_res']))
+        valid = bool(V.steps_ok(ev['prod_res'], len(ev['prod_res'])) and V.steps_ok(ev['tight_res'], len(ev['tight_res']))
+                     and np.isfinite(dev))
+        vd = 'probe invalid' if not valid else ('agree' if dev <= tau else 'disagree')
         pp = {p['case']: p for p in res[g].get('probes', [])}.get(c, {}).get('tight_coarse')
-        verdicts[f'{g}|{c}'] = pp and dict(verdict=pp['verdict'], dev=pp['dev'], tau=pp['tau_prod'])
+        verdicts[f'{g}|{c}'] = dict(verdict=vd, dev=dev, tau=tau, in_job=pp and pp['verdict'])
     check('R-calib probes agree (A2.2)', all(v and v['verdict'] == 'agree' for v in verdicts.values()), blocking=False,
           probes=verdicts)
     # pilots: outcome, sigma available, cost (certificate input)
@@ -77,9 +102,17 @@ def main(run):
     qd = out / 'qacc_smk1-rom'
     rep = json.loads((qd / 'result.json').read_text())
     check('qacc complete on gpu', rep.get('complete') and rep['backend'] == 'gpu', gpu=rep['gpu'])
-    check('IC n0 == lattice IC norm, every cohort (A1.6 iv)',
-          all(v['equal'] and abs(v['n0'] - v['n0_lattice']) <= 1e-12 * v['n0_lattice'] for v in rep['ic_check'].values()),
-          ic=rep['ic_check'])
+    # IC identity recomputed: every R record's n0 equals the norm of the generator's lattice IC (A1.6 iv)
+    worst_n0 = 0.
+    for p in sorted(qd.glob('R_*.npz')):
+        Rz = np.load(p)
+        for j, cid in enumerate(str(x) for x in Rz['case_ids']):
+            coh, c = cid.split('|')
+            lat = RS._engines().initial(256, RS.e0_desc(coh)[int(c)]) if coh in RS.E0_COHORTS else \
+                RG.initial_2d(256, coh, RG.descriptors_2d(coh)[int(c)])
+            worst_n0 = max(worst_n0, abs(float(Rz['n0'][j]) - float(np.linalg.norm(lat))) / float(np.linalg.norm(lat)))
+    check('IC n0 == generator lattice IC norm, every record (recomputed)', worst_n0 <= 1e-12, worst=worst_n0,
+          in_job=rep['ic_check'])
     # Q-repro against FRONT-2D per_case (dev6)
     front = json.loads(FRONT.read_text())['meshes']['1024']
     entries = {x['config']: x for grp in ('members', 'other_qualified') for x in front[grp]}
@@ -88,11 +121,12 @@ def main(run):
         R = np.load(qd / f'R_{setting}_{arm}.npz')
         ids = [str(x) for x in R['case_ids']]
         w = 0.
+        assert sum(c.startswith('dev6|') for c in ids) == 6, 'Q-repro needs all six dev6 cases'
         for j, cid in enumerate(ids):
             if not cid.startswith('dev6|'):
                 continue
             ref = RS.reference('dev6', int(cid.split('|')[1]))
-            e = RS.error(NC.decode257(R['W'][j], int(R['Rp'])), ref)
+            e = RS.error(NC.decode257(R['W'][j], int(R['Rp'])), ref, R['n0'][j])
             e_f = entries[key]['errors']['per_case'][cid]['e']
             w = max(w, abs(e - e_f) / e_f)
         worst_rep[key] = w
@@ -114,11 +148,21 @@ def main(run):
             g_np = NC.gammas(cb['states'][0], cb['A'], cb['lam'], t, str(cb['scheme']), .005, float(cb['nu'][0]))
             detail['numpy_gamma_case0_max_rel_diff'] = float(np.max(np.abs(g_np - cert[0]) / np.maximum(np.abs(cert[0]), 1e-300)))
             detail['numpy_fraction_case0'] = float(np.mean(~(g_np <= RS.GAMMA)))
-        check(f'Q-budget0 {form} pooled non-certified > 1 %', frac > .01, **detail)
-    check('Q-wrong-mesh refused', rep['controls']['wrong_mesh']['passed'])
+        ok_b = frac > .01
+        if form == 'LSPG':          # the independent NumPy gamma must agree with the in-job certificate (gated)
+            ok_b = ok_b and detail['numpy_gamma_case0_max_rel_diff'] <= 1e-6 and detail['numpy_fraction_case0'] > .01
+        check(f'Q-budget0 {form} pooled non-certified > 1 %', ok_b, **detail)
+    check('Q-wrong-mesh refused (in-job exception record; cannot be recomputed offline)',
+          rep['controls']['wrong_mesh']['passed'], raised=rep['controls']['wrong_mesh']['raised'])
+    fv = json.loads((out / 'fverify_smk1-fverify' / 'fverify.json').read_text())
+    check('full-field independent decode (on-cluster fverify)', fv['all_pass'] and len(fv['arms']) == 9, arms=fv['arms'])
     # offline Q1/Q2 machinery per regime (smoke populations), no in-job/offline disagreement
     rows = rep['rows']
     qsum = {}
+    want_arms = sorted(f"R_{s_['name']}_{a_['form']}_{a_['scheme']}_{a_['factor']:g}.npz" for s_ in rep['config']['settings']
+                       for a_ in s_['arms'])
+    have_arms = sorted(p.name for p in qd.glob('R_*.npz'))
+    check('every configured arm produced its R file', have_arms == want_arms, missing=sorted(set(want_arms) - set(have_arms)))
     for p in sorted(qd.glob('R_*.npz')):
         R = np.load(p)
         name, arm = p.stem[2:].split('_', 1)
@@ -127,8 +171,10 @@ def main(run):
         setting = next(s for s in rep['config']['settings'] if s['name'] == name)
         rt = (RS.rule_tables(setting['rule'], int(R['Rp']), R['kx'], R['ky'], 1024),
               RS.rule_tables(setting['qp'], int(R['Rp']), R['kx'], R['ky'], 1024))
+        arm_cfg = next(a_ for a_ in setting['arms'] if f"{a_['form']}_{a_['scheme']}_{a_['factor']:g}" == arm)
+        ex = RS.expected_populations(rep['config'], arm_cfg)
         for coh in dict.fromkeys(str(c).split('|')[0] for c in R['case_ids']):
-            q = RS.qualify(R, rw, dict(form=form, steps=int(R['steps']), qpp=bool(setting.get('qpp'))), rt, subset=[coh])
+            q = RS.qualify(R, rw, dict(ex, form=form, steps=int(R['steps']), qpp=bool(setting.get('qpp'))), rt, subset=[coh])
             qsum[f'{name}|{arm}|{coh}'] = dict(Q1=q['Q1']['pass'], Q2=q['Q2'].get('label'), dis=q['disagreements'][:3])
     check('offline Q1/Q2 agree with in-job values (every arm x cohort)', all(not v['dis'] for v in qsum.values()),
           n=len(qsum), disagreeing=[k for k, v in qsum.items() if v['dis']])

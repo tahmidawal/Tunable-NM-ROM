@@ -74,6 +74,24 @@ def ref_lane(regime, case):
     return np.asarray(z[meta['final'][2]], float), np.asarray(z['t0'], float), meta
 
 
+def e0_desc(cohort):
+    """dev6 / val32 descriptors (E0 cohorts.HISTORICAL, engines.params_draw; identical to qualify's qcore.cohort)."""
+    E2 = _engines()
+    if cohort == 'dev6':
+        return np.concatenate((E2.params_draw(7090702, 4), E2.params_draw(911702, 2)))
+    if cohort == 'val32':
+        return E2.params_draw(20260927, 32)
+    raise IdentityError(cohort)
+
+
+def _engines():
+    p = str(HERE.parent / 'mr-burgers2d')
+    if p not in sys.path:
+        sys.path.append(p)
+    import engines as E2
+    return E2
+
+
 def reference(cohort, case):
     """dict(field, t0, n0, eligible, eps_ref, outcome, sigma, meta) for any allowed cohort."""
     if cohort in E0_COHORTS:
@@ -81,12 +99,25 @@ def reference(cohort, case):
         f, meta = RS.load(2, cohort, case, 'ST')
         st = RS.reference_status(2, cohort, case, 'ST')
         jd = meta['judge']
+        # identity (A1.6): the E0 reference's t0 is the nodal IC this lane's ROM receives
+        desc = e0_desc(cohort)[case]
+        t0 = np.asarray(_engines().initial(256, desc), float)
+        arr, _m = RS._load_raw(2, cohort, case, 'ST')        # the E0 stored t0 (sha-verified by refstore)
+        t0e = np.asarray(arr['t0'], float)
+        # equal to round-off (E0 computed it in another process: 1 ulp differences observed, 2.2e-16)
+        if t0e.shape != t0.shape or np.max(np.abs(t0e - t0)) > 1e-14 * np.max(np.abs(t0)):
+            raise IdentityError(f'{cohort}|{case}: E0 t0 differs from the ROM IC')
+        if (meta['cohort'], meta['case']) != (cohort, case):
+            raise IdentityError('E0 reference identity')
         return dict(field=np.asarray(f, float), n0=float(jd['n0']), eligible=bool(st.get('eligible', meta['outcome'] == 'accepted')),
-                    eps_ref=jd.get('eps_ref'), outcome=meta['outcome'], sigma=None, source='E0')
+                    eps_ref=jd.get('eps_ref'), outcome=meta['outcome'], sigma=None, source='E0', t0=t0)
     if cohort not in RG.REGIMES_2D:
         raise IdentityError(f'cohort {cohort} not admissible')
     f, t0, meta = ref_lane(cohort, case)
     jd = meta['judge']
+    row = RG.descriptors_2d(cohort)[case]
+    if meta['desc'] != RG.desc_2d(cohort, row) or not np.array_equal(t0, RG.initial_2d(256, cohort, row)):
+        raise IdentityError(f'{cohort}|{case}: reference descriptor / t0 differs from the generator')
     return dict(field=f, n0=float(np.linalg.norm(t0.ravel())), eligible=meta['outcome'] == 'accepted',
                 eps_ref=jd.get('eps_ref'), outcome=meta['outcome'], sigma=sigma_of(meta), source='lane', meta=meta,
                 t0=t0)
@@ -96,17 +127,22 @@ def sigma_of(meta):
     """DESIGN A1.5: max_{k=1..5} g_k / max|u(t0)| at the finest level of the final triple; plus the middle-level ratio."""
     att = {a['id']: a for a in meta['attempts']}
     fin, mid = att[meta['final'][2]], att[meta['final'][1]]
-    if fin.get('grad_max') is None:
-        return None
-    u0max = meta['desc'].get('a')               # max|u0| over nodes: a for every family (two-bump peak-normalised)
+    ok = lambda a: bool(a.get('steps_ok') and a.get('grad_max') and len(a['grad_max']) == 6
+                        and all(isinstance(g, (int, float)) and np.isfinite(g) for g in a['grad_max']))
+    if not ok(fin):                             # A2.3: unavailable, with the reason
+        return dict(sigma=None, reason='finest final attempt not steps_ok or gradient statistics missing / non-finite')
+    u0max = meta['desc'].get('a')               # sigma_a: descriptor amplitude (A4)
     s3 = max(fin['grad_max'][1:]) / u0max
-    s2 = max(mid['grad_max'][1:]) / u0max if mid.get('grad_max') else None
+    s2 = max(mid['grad_max'][1:]) / u0max if ok(mid) else None
     return dict(sigma=s3, sigma_mid=s2, ratio=(s3 / s2 if s2 else None), level=fin['L'],
                 underresolved_mid=bool(s2 and abs(s3 / s2 - 1) > .1))
 
 
-def error(field, ref):
-    """E0 metric: max_{k>=1} ||f - R|| / ||R(t0)|| on the lattice."""
+def error(field, ref, n0_rom=None):
+    """E0 metric: max_{k>=1} ||f - R|| / ||R(t0)|| on the lattice. n0_rom: the ROM record's IC norm, which must equal
+    the reference's (identity of the scored pair, A1.6)."""
+    if n0_rom is not None and abs(float(n0_rom) - ref['n0']) > 1e-12 * ref['n0']:
+        raise IdentityError(f'n0 mismatch {n0_rom} vs {ref["n0"]}')
     f = np.asarray(field, float)
     R = ref['field']
     if f.shape != R.shape:
@@ -172,8 +208,29 @@ def qualify(R, rows, expect, rho_tables=None, subset=None):
     form, S = expect['form'], int(expect['steps'])
     Rp = int(R['Rp'])
     ids_all = [str(x) for x in R['case_ids']]
-    keep = [j for j, c in enumerate(ids_all) if subset is None or c.split('|')[0] in subset]
+    insub = lambda c: subset is None or c.split('|')[0] in subset
+    keep = [j for j, c in enumerate(ids_all) if insub(c)]
     out = dict(per_case={}, disagreements=[])
+    # populations, shapes, form / steps (qscore.qualify checks restored; code audit 1 fix 2)
+    exp_cases = [c for c in expect['cases'] if insub(c)]
+    exp_dev = [c for c in expect['dev'] if insub(c)]
+    exp_q2 = [c for c in expect['q2'] if insub(c)]
+    if ids_all != list(expect['cases']):
+        out['disagreements'].append(('population', len(ids_all), len(expect['cases'])))
+    if not exp_cases:
+        out['disagreements'].append(('empty subset', subset))
+    n = len(ids_all)
+    for k, shp in (('W', (n, 6, Rp)), ('W_tight', (n, 6, Rp)), ('states', (n, S + 1, Rp)), ('cert', (n, S)),
+                   ('rec', (n, S)), ('reason', (n, S)), ('w0', (n, Rp)), ('f257_probe', (n, 6, len(R['f257_probe_idx']))),
+                   ('f257_tnorm', (n, 6))):
+        if tuple(np.shape(R[k])) != shp:
+            out['disagreements'].append(('shape', k, np.shape(R[k]), shp))
+    if str(R['form']) != form or int(R['steps']) != S:
+        out['disagreements'].append(('form/steps', str(R['form']), int(R['steps'])))
+    if [c for c in (str(x) for x in R['dev_case_ids']) if insub(c)] != exp_dev:
+        out['disagreements'].append(('tighter population', subset))
+    if [c for c in (str(x) for x in R['q2_case_ids']) if insub(c)] != exp_q2:
+        out['disagreements'].append(('q2 population', subset))
     dec = lambda W: NC.decode257(np.asarray(W)[None], Rp)[0] if np.ndim(W) == 1 else NC.decode257(W, Rp)
     rowby = {f"{r_['cohort']}|{r_['case']}": r_ for r_ in rows}
 
@@ -226,6 +283,8 @@ def qualify(R, rows, expect, rho_tables=None, subset=None):
     q2case = [str(x) for x in R['q2_case_ids']]
     q2 = None
     q2_here = [c for c in q2case if c in out['per_case']]
+    if exp_q2 and not q2_here:
+        out['disagreements'].append(('q2 runs missing', subset))
     if q2_here:
         if rho_tables is None:
             raise ValueError('Q2 needs the independent rho recomputation')
@@ -270,7 +329,7 @@ def qualify(R, rows, expect, rho_tables=None, subset=None):
     q1 = dict(all_valid=bool(out['per_case']) and all(v['valid'] and v['tight_valid'] for v in pcs),
               certificate=bool(cert.size == len(keep) * S) and nonc <= .01 * cert.size, gcert=out['gcert_all'],
               distance=bool(out['per_case']) and dmax(v['dist_tight'] for v in pcs) <= BAR_Q1,
-              tight_tighter=(not dev_keep) or (bool(tt) and dmax(tt) <= BAR_TT and
+              tight_tighter=(not exp_dev) or (dev_keep == exp_dev and len(tt) == len(exp_dev) and dmax(tt) <= BAR_TT and
                                                all(out['per_case'][c]['tighter_valid'] for c in dev_keep)))
     q1['offline_agrees'] = not out['disagreements']
     q1['pass'] = all(q1.values())
@@ -290,6 +349,8 @@ def boot_ratio(num, den, seed=0, n=NBOOT, paired=False):
     """95 % percentile interval of median(num)/median(den) (independent resampling within each set) or, paired,
     of median(num/den) over pairs. Returns (point, lo, hi, dropped)."""
     num, den = np.asarray(num, float), np.asarray(den, float)
+    if num.size == 0 or den.size == 0 or not (np.isfinite(num).all() and np.isfinite(den).all()):
+        return float('nan'), float('nan'), float('nan'), n
     rng = np.random.default_rng(seed)
     if paired:
         q = num / den
@@ -303,6 +364,8 @@ def boot_ratio(num, den, seed=0, n=NBOOT, paired=False):
         ok = np.isfinite(b) & (b > 0)
         dropped = int(np.sum(~ok))
         reps = a[ok] / b[ok]
+    if reps.size == 0:
+        return pt, float('nan'), float('nan'), dropped
     lo, hi = (float(x) for x in np.percentile(reps, [2.5, 97.5]))
     return pt, lo, hi, dropped
 
@@ -310,7 +373,7 @@ def boot_ratio(num, den, seed=0, n=NBOOT, paired=False):
 def acc_label(pt, lo, hi, dropped, n_num, n_den, n=NBOOT):
     if n_num < MIN_ELIG or n_den < MIN_ELIG:
         return 'inconclusive (coverage)'
-    if dropped > .01 * n or not np.isfinite(pt):
+    if dropped > .01 * n or not (np.isfinite(pt) and np.isfinite(lo) and np.isfinite(hi)):
         return 'INCONCLUSIVE'
     if hi < 1.:
         return 'IMPROVES'
@@ -329,21 +392,27 @@ def spearman_perm(x, y, seed=0, n=NPERM):
     if len(x) < 4:
         return dict(rho=None, p=None, n=int(len(x)), excluded=int(np.sum(~ok)))
     rx, ry = rankdata(x), rankdata(y)
+    if np.ptp(rx) == 0 or np.ptp(ry) == 0:
+        return dict(rho=None, p=None, n=int(len(x)), excluded=int(np.sum(~ok)), note='constant ranks')
     r = float(np.corrcoef(rx, ry)[0, 1])
     rng = np.random.default_rng(seed)
     perm = np.array([np.corrcoef(rx, ry[rng.permutation(len(ry))])[0, 1] for _ in range(n)])
     p = float((np.sum(np.abs(perm) >= abs(r) - 1e-15) + 1) / (n + 1))
-    slope = float(np.polyfit(x, np.log10(np.exp(y)) if False else y / np.log(10), 1)[0])
+    slope = float(np.polyfit(x, y / np.log(10.), 1)[0])      # y = ln e  ->  slope of log10 e per unit of x
     return dict(rho=r, p=p, n=int(len(x)), excluded=int(np.sum(~ok)), ols_slope_log10e_per_unit=slope,
                 grows=bool(r > 0 and p < .05))
 
 
 def separation(sig, regimes):
     """DESIGN 4.4 / A1.5 separation checks on eligible-case sigma values. sig: {regime: [sigma of eligible cases]}."""
-    inn = list(sig.get('N0', [])) + list(sig.get('N0s', []))
+    n0 = list(sig.get('N0', []))
+    n0s = list(sig.get('N0s', []))
     res = {}
-    if len(inn) < MIN_ELIG:
-        return {g: 'undetermined (in-range coverage)' for g in regimes}
+    if len(n0) < MIN_ELIG:                       # A2.3: >= 8 eligible N0 required; N0s >= 4 or N0 alone (labelled)
+        return {g: dict(verdict='undetermined (in-range coverage)', n_N0=len(n0)) for g in regimes}
+    use_s = len(n0s) >= 4
+    inn = n0 + (n0s if use_s else [])
+    res['in_range_note'] = None if use_s else 'stiff-part comparison unavailable: N0 alone'
     lo, hi, q90 = min(inn), max(inn), float(np.percentile(inn, 90))
     res['in_range'] = dict(min=lo, max=hi, q90=q90, n=len(inn))
     frac_in = lambda v: float(np.mean([(lo <= x <= hi) for x in v]))
@@ -358,11 +427,17 @@ def separation(sig, regimes):
         elif g == 'C1':
             f = float(np.mean([x > q90 for x in v]))
             am = sig.get('Am', [])
+            if len(am) < MIN_ELIG:
+                res[g] = dict(verdict='undetermined (A- coverage)', n=len(v), n_Am=len(am))
+                continue
             res[g] = dict(n=len(v), frac_above_q90=f, median=float(np.median(v)),
                           median_Am=float(np.median(am)) if am else None,
                           passed=bool(f >= .75 and am and np.median(v) > np.median(am)))
         elif g == 'C2':
             c1 = sig.get('C1', [])
+            if len(c1) < MIN_ELIG:
+                res[g] = dict(verdict='undetermined (C1 coverage)', n=len(v), n_C1=len(c1))
+                continue
             res[g] = dict(n=len(v), median=float(np.median(v)), median_C1=float(np.median(c1)) if c1 else None,
                           passed=bool(c1 and np.median(v) > np.median(c1)))
     return res
@@ -378,3 +453,25 @@ def projection_floor(ref_field, Rp):
     C, *_ = np.linalg.lstsq(G, R[1:].T, rcond=None)
     res = R[1:].T - G @ C
     return float(np.max(np.linalg.norm(res, axis=0)) / n0)
+
+
+def expected_populations(cfg, arm):
+    """Independent re-implementation (no p1common) of the qacc populations of one arm: production cases, tighter set,
+    Q2 set, as 'cohort|case' ids in case_list order (DESIGN A1.6 ii-iii)."""
+    sizes = lambda coh: 6 if coh == 'dev6' else 32 if coh == 'val32' else len(RG.descriptors_2d(coh))
+    order = [f'{coh}|{c}' for coh in cfg.get('cohorts', ['dev6', 'val32']) for c in range(sizes(coh))]
+
+    def sel(which):
+        if which == 'all':
+            return list(order)
+        if which == 'sub':
+            return [x for x in order if x.startswith('dev6|') or (x.split('|')[0] in RG.REGIMES_2D and int(x.split('|')[1]) < 4)]
+        if which == 'dev6':
+            return [x for x in order if x.startswith('dev6|')]
+        if isinstance(which, str):
+            return [x for x in order if x.split('|')[0] == which]
+        return [f'{a}|{b}' for a, b in which]
+    cases = sel(arm['cases'])
+    dev = [x for x in sel(arm.get('tighter_cases', 'sub')) if x in cases] if arm.get('tighter', True) else []
+    q2 = [x for x in sel(arm.get('q2_cases', 'all')) if x in cases]
+    return dict(cases=cases, dev=dev, q2=q2)

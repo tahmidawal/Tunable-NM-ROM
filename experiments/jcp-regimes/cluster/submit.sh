@@ -14,7 +14,7 @@ TL=$(grep -oP '(?<=#SBATCH --time=)\S+' "$LOCAL/run.sbatch")
 HOURS=$("$PY" -c "h,m,s='$TL'.split(':');print(int(h)+int(m)/60+int(s)/3600)")
 RH=$("$PY" -c "import json;print(json.load(open('$LOCAL/RESERVATION.json'))['time_limit_hours'])")
 "$PY" -c "import sys; sys.exit(0 if abs($HOURS-$RH)<1e-9 else 1)" || { echo "time limit $HOURS != reservation $RH"; exit 7; }
-Q=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -h -o "%i %j %T"')
+Q=$(timeout 60 ssh -o ConnectTimeout=20 tufts-login 'squeue -u $USER -h -o "%i %j %T"') || { echo "squeue failed: refusing"; exit 8; }
 NLANE=$(echo "$Q" | awk '$2 ~ /^jg_/' | grep -c . || true)
 NALL=$(echo "$Q" | grep -c . || true)
 echo "--- squeue before (lane=$NLANE account=$NALL)"; echo "$Q"
@@ -27,9 +27,10 @@ rsync -a "$LOCAL/" "tufts-login:$NS/$A/"
 timeout 120 ssh -o ConnectTimeout=20 tufts-login "cd $NS/$A && sha256sum -c MANIFEST.sha256 --quiet"
 trap '"$PY" "$LANE/ledger.py" ambiguous "$A"; echo "sbatch outcome unknown: reservation KEPT; settle by hand"' ERR
 set +e
-OUT=$(timeout 700 ssh -o ConnectTimeout=20 tufts-login "flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'n=\$(squeue -u tawal01 -h | wc -l); [ \$n -lt 8 ] || exit 75; cd $NS/$A && sbatch run.sbatch'")
+OUT=$(timeout 700 ssh -o ConnectTimeout=20 tufts-login "flock -w 600 /cluster/tufts/paralab/tawal01/.campaign-sbatch.lock bash -c 'set -o pipefail; q=\$(squeue -u tawal01 -h) || exit 76; n=\$(printf \"%s\" \"\$q\" | grep -c . || true); [ \$n -lt 8 ] || exit 75; cd $NS/$A && sbatch run.sbatch'")
 RC=$?
 set -e
+if [ $RC -eq 76 ]; then "$PY" "$LANE/ledger.py" release "$A"; echo "squeue failed under the lock: not submitted"; trap - ERR; exit 76; fi
 if [ $RC -eq 75 ]; then "$PY" "$LANE/ledger.py" release "$A"; echo "account at cap 8: not submitted (reservation released)"; trap - ERR; exit 75; fi
 [ $RC -eq 0 ] || false
 echo "$OUT"

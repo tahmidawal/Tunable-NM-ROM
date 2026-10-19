@@ -15,6 +15,7 @@ import verdict as V
 import cohorts as CH
 
 RESULTS = []
+RG_P = ('Ap', 'Am', 'C1', 'C2', 'B1', 'B2')
 
 
 def gate(name, ok, detail=''):
@@ -116,6 +117,22 @@ def main():
             ref = (Sx * W[None, :]) @ F @ (Sx * W[None, :]).T
             worst_ps = max(worst_ps, float(np.max(np.abs(b - ref)) / np.max(np.abs(ref))))
     gate('G-ic-ps two-bump coefficients == direct quadrature', worst_ps <= 1e-12, worst_ps)
+    # S-check fixtures (DESIGN 8, A2.3): separating fixture passes, non-separating fails, coverage rules fire
+    import rscore as RS
+    r_ = np.random.default_rng(1)
+    base = dict(N0=list(r_.uniform(1, 10, 16)), N0s=list(r_.uniform(8, 12, 8)))
+    sep_ok = RS.separation(dict(base, Ap=list(r_.uniform(2, 9, 16)), Am=list(r_.uniform(5, 11, 16)),
+                                C1=list(r_.uniform(20, 40, 16)), C2=list(r_.uniform(50, 90, 16)),
+                                B1=list(r_.uniform(2, 9, 16)), B2=list(r_.uniform(3, 9, 16))), RG_P)
+    gate('S-check separating fixture passes', all(sep_ok[g]['passed'] for g in RG_P), {g: sep_ok[g].get('passed') for g in RG_P})
+    sep_bad = RS.separation(dict(base, Ap=list(r_.uniform(30, 40, 16)), Am=list(r_.uniform(30, 40, 16)),
+                                 C1=list(r_.uniform(1, 3, 16)), C2=list(r_.uniform(1, 2, 16)),
+                                 B1=list(r_.uniform(30, 40, 16)), B2=list(r_.uniform(30, 40, 16))), RG_P)
+    gate('S-check non-separating fixture fails', not any(sep_bad[g]['passed'] for g in RG_P))
+    cov = RS.separation(dict(N0=[1.] * 3, N0s=[1.] * 8, Ap=[1.] * 16), RG_P)
+    gate('S-check refuses < 8 N0', all('undetermined' in str(cov[g]) for g in RG_P))
+    cov2 = RS.separation(dict(base, Am=[5.], C1=list(r_.uniform(20, 40, 16))), ('C1',))
+    gate('S-check refuses C1 with < 8 A-', 'undetermined' in str(cov2['C1']))
     # R-order / R-peclet: synthetic triples through E0 verdict.judge
     rng = np.random.default_rng(0)
     ustar = rng.standard_normal((6, 257, 257))

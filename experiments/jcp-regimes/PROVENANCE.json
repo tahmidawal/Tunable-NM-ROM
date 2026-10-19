@@ -16,8 +16,8 @@
   "source_commit": "cc04f4b54a1b717d00eb803a276d7efb86994773",
   "sha256": "ed2bc68b451adf8ce4433675177f59521e89e0e06b79a447f1270235ff097d07",
   "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
-  "edited_sha256": "839d839b30783d174f299a0127ea57773afd3a6e60c00ffed7875c265aea6967",
-  "edits": "E2 cohort allowlist (regimes + dev6; sealed/OOD/key/seeds refused; calib refused), E3 stiffness_stats in attempt, E4 regime PS IC coefficients, E5 probes (tight_coarse, upwind), E6 tight allowance and skip branches (A2.6, A3.2, A4)"
+  "edited_sha256": "17cd5a16c022e4804eb3dde72e681ce85f417729413f18a58120a3d87e058427",
+  "edits": "E2 cohort allowlist (regimes + dev6; sealed/OOD/key/seeds refused; calib refused), E3 stiffness_stats in attempt, E4 regime PS IC coefficients, E5 probes (tight_coarse, upwind), E6 tight allowance and skip branches (A2.6, A3.2, A4); code-audit-1 fixes (output-root guard, E6 config/resume rules, probe evidence files, probes on resume)"
  },
  {
   "file": "verdict.py",
@@ -82,8 +82,8 @@
   "source_commit": "250b20d91b53fb182845963180cff66b7b761937",
   "sha256": "bb6ced4bdf574555fe08406543508fae65527ae52a5148ed2b3b14ab000f5386",
   "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
-  "edited_sha256": "7ed4e3c15271d1c5866528efa104b0bc417993b0e9405bb7a3870e63d1426d43",
-  "edits": "R1 ic_full + ic_check, q2/tighter populations from arm config; R2 f257 split to F_ files + probe/tnorm in R files"
+  "edited_sha256": "6496f927963236406f75ce09f1cc7123b647ccc296ebf7a6d403c67d29a44932",
+  "edits": "R1 ic_full + ic_check, q2/tighter populations from arm config; R2 f257 split to F_ files + probe/tnorm in R files; R3 frozen checkpoint/rotation/rule_meta identity asserts"
  },
  {
   "file": "p1common.py",
@@ -126,7 +126,7 @@
   "source_commit": "250b20d91b53fb182845963180cff66b7b761937",
   "sha256": "c0e72adbedf6a3f69d78d35e3e3d50896b2e25594e63185b927d20a3a136d6bd",
   "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
-  "edited_sha256": "f38848ce10fc9db7141edb7a542df8f3e8de6bc820c6dba60a73ad7f56a3a487",
+  "edited_sha256": "539b6b4f8b059c4e95a3193f81122be77e2b7005c6e089986bb7f81c176b238c",
   "edits": "rewritten (lane-authored, CAP 60, no qualify inventory rules)"
  },
  {
@@ -144,7 +144,7 @@
   "source_commit": "250b20d91b53fb182845963180cff66b7b761937",
   "sha256": "44d1574ea67383691abb322152afb4c4d1d96e02954cf63252da91124d61055c",
   "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
-  "edited_sha256": "18cebdc9213ea969fdebbc84a41e4072a941a747c9c6f83ddc91841334b273dc",
+  "edited_sha256": "c8abd66451952f43eced3cc3ff70332c220ed6120577d249a2c481101852dbd8",
   "edits": "rewritten for jcp-regimes (namespace, jg_ prefix, drivers qacc/refjob/refslim, unit gates pre-step, smoke cap 2 h)"
  },
  {
@@ -154,7 +154,7 @@
   "source_commit": "250b20d91b53fb182845963180cff66b7b761937",
   "sha256": "ae4d8de1d7ca3aad4ea5014a32e93e72d77a7aec3b31f43a03b613543ba8f327",
   "status": "copied unchanged (edits, if any, are recorded below with the new sha256)",
-  "edited_sha256": "ca8b9eb00c901fbd196ee934fef849ad6b685f85726b8b03b7747b22a86b3a51",
+  "edited_sha256": "f8508166f22f4ecba7e7c2000bdda341f54c2cf59c3a0df6f27daca5736d9044",
   "edits": "rewritten for jcp-regimes (lane cap 3, campaign flock + account cap 8, ledger reserve/bind)"
  }
 ]

@@ -20,8 +20,8 @@ LANE = 'experiments/jcp-regimes'
 EXTRA = ['experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
          'experiments/separable-decoder/sep_common.py',
          'experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl']
-DRIVERS = ('qacc', 'refjob', 'refslim')
-GRES = {'a100-80G': ('gpu:a100:1', '--constraint=a100-80G'), 'h200': ('gpu:h200:1', None)}
+DRIVERS = ('qacc', 'refjob', 'refslim', 'fverify')
+GRES = {'h200': ('gpu:h200:1', None)}                     # DESIGN A2.6: every job on H200
 SKIP = ('runs/', 'audits/', 'plots/', 'report', 'HEARTBEAT.json', 'store/')
 
 
@@ -40,6 +40,12 @@ def main():
     p.add_argument('--mem-fraction', default='0.92')
     a = p.parse_args()
     assert a.attempt.isalnum(), a.attempt
+    assert math.isfinite(a.hours) and 0 < a.hours <= 48, a.hours
+    if not a.attempt.startswith('smk'):            # A3.3: the job must be part of the certified production plan
+        plan = json.loads((ROOT / LANE / 'checks' / 'resources-plan.json').read_text())
+        assert a.attempt in plan['attempts'], f'{a.attempt} is not in the certified plan'
+        led = json.loads((ROOT / LANE / 'runs' / 'GPU-LEDGER.json').read_text())
+        assert led['spent_gpu_hours'] + plan['remaining_reservation_hours'] <= 60 + 1e-9, 'plan exceeds the cap'
     if not a.attempt.startswith('smk'):
         c_ = json.loads((ROOT / LANE / 'checks' / f'resources-{a.attempt}.json').read_text())
         assert a.hours >= 1.5 * c_['projection_hours'] - 1e-9, (a.hours, c_['projection_hours'])

@@ -66,7 +66,10 @@ def main():
         totals(d)
         if cmd == 'reserve':
             att, h = sys.argv[2], float(sys.argv[3])
-            if any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
+            import math
+            if not (math.isfinite(h) and h > 0):
+                print(f'refused: invalid hours {h}'); rc = 1
+            elif any(j['attempt'] == att and j['state'] not in TERMINAL for j in d['jobs']):
                 print(f'{att} already has a live reservation'); rc = 1
             elif d['spent_gpu_hours'] + d['reserved_gpu_hours'] + h > CAP + 1e-9:
                 print(f"refused: {d['spent_gpu_hours']} + {d['reserved_gpu_hours']} + {h} > {CAP}"); rc = 1

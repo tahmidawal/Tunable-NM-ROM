@@ -572,3 +572,33 @@ separation checks use $\sigma_a$ consistently for every cohort, so the conventio
 Implementation obligations noted by audit 4 for the code audit: the E6 terminal outcome for a blocked escalation is
 `unresolved-floor` by `verdict.judge` precedence (the floor check fails before order/Péclet are considered); `refjob`
 enforces the frozen cohort allowance (`rcohorts.TIGHT_ALLOWANCE`: A+ 1, others 0; any subset/pilot run 0).
+
+---
+
+## Amendment A5 (2026-10-19, after Codex code audit 1 = NEEDS-FIX; implementation contract, no change to the science)
+
+Code audit `audits/codex-code-1.md` found implementation gaps; the fixes add these binding implementation rules:
+- **Write boundary.** `refjob` and `refslim` write only under `/cluster/tufts/paralab/tawal01/jcp-regimes/` inside a
+  Slurm job, or under `/tmp/` for a local CPU functional run; any path resolving into the E0 lane or `jcp-ref/` is refused.
+- **E6 configuration.** Cases ascending, unique, in range; kind `ST` only; the allowance must equal the frozen cohort value
+  (A+ 1 on its full population, 0 for every other cohort, subset, pilot or dev6); a job directory refuses to resume under a
+  different configuration; resumed tight cases are deducted in a pre-pass before any case runs.
+- **Probe evidence.** Probe lattices and residual histories are saved (`probe_c<j>.npz`) and the smoke acceptance
+  recomputes the upwind verdict (`verdict.judge`) and the calibration verdict from them.
+- **Identity of every scored pair.** Regime references: descriptor and $t_0$ equal the generator's exactly; E0 references:
+  stored $t_0$ equal to the ROM's nodal IC to $10^{-14}$ relative (E0 wrote it in another process; 1-ulp differences
+  observed); the ROM record's $n_0$ equals the reference's to $10^{-12}$. The ROM job asserts the checkpoint and rotation
+  sha256 and, per setting, the complete main-rule manifest (`rule_meta`: mesh, mode-list hash, rule sha256, $m$,
+  fingerprint) against FRONT-2D (sha256 `a51ac1a2…`).
+- **Full-field decode check.** A CPU step in each ROM job (`fverify.py`) decodes every production coefficient vector with
+  the independent NumPy decoder and compares the full $257^2$ field with the in-job field ($\le10^{-12}$), and checks the
+  F-file hash; the small result is pulled. Offline, the probe/norm comparison remains as a second check.
+- **Qualification populations.** `rscore.qualify` again checks (as `qscore.qualify`) the production, tighter and Q2
+  populations against an independent re-implementation of the config's case selection, array shapes, form and step
+  count; missing tighter or Q2 runs fail the predicates.
+- **σ unavailability and separation coverage** as A2.3, implemented; degenerate statistics (empty sets, constant ranks)
+  return undefined values and INCONCLUSIVE labels.
+- **Hardware and submission.** Every job on H200 (the stager offers no other GPU); time limits must be finite and
+  positive; a production attempt must be listed in the certified plan `checks/resources-plan.json`, whose remaining
+  reservation plus spent hours is $\le 60$; the account-cap check under the campaign flock fails closed if `squeue` fails.
+- **A+ PS case** is its largest-$s$ case (c7), as A3 states; c13 (largest ν) is only the calibration pilot.

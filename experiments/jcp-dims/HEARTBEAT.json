@@ -1,17 +1,17 @@
 {
  "lane": "jcp-dims",
- "utc": "2026-10-19T02:23:20Z",
- "step": "local: analyze2d (b2f), slim f2kB/b2f/b3f/q3r8, analyze3d, score3 b3f; cluster: f2kA",
+ "utc": "2026-10-19T02:29:49Z",
+ "step": "offloading b2f,f2kB; analyze3d (q3r8,b3f) + score3 b3f; cluster: f2kA",
  "waiting_on": {
   "slurm_jobs": [
    "5728354"
   ],
   "codex_output": null,
   "codex_pid": null,
-  "local_pid": 181218
+  "local_pid": 117969
  },
  "expected_finish_utc": null,
- "last_commit": "41e21cedf",
+ "last_commit": "7a412cb6f",
  "gpu_hours_spent": 21.6656,
  "gpu_hours_cap": 55,
  "notes": ""

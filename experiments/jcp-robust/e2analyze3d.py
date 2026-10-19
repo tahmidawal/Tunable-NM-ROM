@@ -47,7 +47,10 @@ def load_job(d, sc):
     for blk in res['blocks']:
         if blk['kind'] == 'ladder':
             lad.update(blk['result'])
-    return res, lad, json.loads(Path(sc).read_text())['scores'], np.load(Path(d) / f"W_{res['mode']}.npz")
+    S_ = json.loads(Path(sc).read_text())
+    Wz = np.load(Path(d) / f"W_{res['mode']}.npz")
+    check_scores(S_, res, Wz)
+    return res, lad, S_['scores'], Wz
 
 
 def case_q(x, nxt, d_adt, d_next, d_tt, nonst):
@@ -82,6 +85,19 @@ def check_bank3d(cfg, b):
     ok = banks == {name} and int(cfg.get('bank_seed', -1)) == int(b) and (regs.get(name) == reg if reg else not regs)
     if not ok:
         raise SystemExit(f"job {cfg.get('attempt')} is not on bank {b}: banks {banks}, seed {cfg.get('bank_seed')}, registry {regs}")
+
+
+def check_scores(sc, res, Wz):
+    """code audit 9 #5: the E0 scores come from THIS job (job id, cohort seed) and, for every saved coefficient key, cover
+    exactly the cases of that key's saved mapping."""
+    if str(sc.get('job_id')) != str(res.get('job_id')) or int(sc.get('seed', -1)) != int(res['config']['cohort_seed']):
+        raise ValueError(f"scores from job {sc.get('job_id')} / seed {sc.get('seed')} do not belong to job {res.get('job_id')}")
+    for k in Wz.files:
+        if k.startswith(('cases|', 'wall|', 'fomfield|')):
+            continue
+        want = sorted(int(c) for c in Wz['cases|' + k])
+        if sorted(int(c) for c in sc['scores'].get(k, {})) != want:
+            raise ValueError(f'scores of {k} do not cover its {len(want)} saved cases')
 
 
 def main():

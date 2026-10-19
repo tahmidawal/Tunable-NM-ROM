@@ -261,14 +261,17 @@ def smk3(out):
             maps_ok = len(arr) == 4 and all([int(c) for c in z['cases|' + keys[k]]] == list(range(8)) for k in keys) and \
                 all(arr[k].shape == (8, 6, 256) for k in arr) and all(np.isfinite(arr[k]).all() for k in arr)   # audit 7 #5
             if maps_ok:
-                def dd(A_, B_):
-                    v = [[float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[i] for k in range(1, 6)] for i in range(8)]
+                F = {k: np.einsum('ctr,rn->ctn', arr[k], G) for k in arr}       # decode every trajectory first (audit 9 #1)
+                fields_ok = all(np.isfinite(F[k]).all() for k in F)
+
+                def dd(ka_, kb_):
+                    v = [[float(np.linalg.norm(F[ka_][i, k] - F[kb_][i, k])) / n0[i] for k in range(1, 6)] for i in range(8)]
                     return [max(r_) if all(math.isfinite(x_) for x_ in r_) else math.inf for r_ in v]
-                d_rec = dict(tight=dd(arr['p'], arr['t']), succ=dd(arr['p'], arr['s']), tt=dd(arr['t'], arr['tt']))
+                d_rec = dict(tight=dd('p', 't'), succ=dd('p', 's'), tt=dd('t', 'tt'))
                 cr = [r_ for r_ in res['rows'] if r_.get('tag') == 'W256p|gl24' and r_.get('spec') == sp and 'gam_cert' in r_]
                 rec_ok = sorted(int(r_['case']) for r_ in cr) == list(range(8)) and all(len(r_['gam_cert']) == 25 for r_ in cr) \
                     and all(math.isfinite(n0[i]) and n0[i] > 0 for i in range(8)) and np.isfinite(G).all() \
-                    and all(math.isfinite(v_) for k_ in ('tight', 'succ', 'tt') for v_ in d_rec[k_])      # audit 8 #2
+                    and all(math.isfinite(v_) for k_ in ('tight', 'succ', 'tt') for v_ in d_rec[k_]) and fields_ok   # audits 8 #2, 9 #1
                 gam = [E_num(v) for r_ in cr for v in r_['gam_cert']]
                 d_rec['nonst'] = (sum(1 for v in gam if not (math.isfinite(v) and v <= 1e-3)) / len(gam)) if (rec_ok and gam) else None
     chk(C, 'pilot rung evidence recomputed from its saved arrays on the pilot bank (mappings, shapes, certificate rows)',

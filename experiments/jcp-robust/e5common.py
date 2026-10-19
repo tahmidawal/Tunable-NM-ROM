@@ -25,8 +25,6 @@ HERE = Path(__file__).resolve().parent
 E5 = HERE / 'e5'
 BAND = (1 / 1.1, 1.1)          # p1time.BAND and c2time.BAND (identical literal in both sources)
 MAX_TRIES = 3                  # one attempt + <= 2 retries (p1time and c2time)
-SMI_FIELDS = ('name,uuid,driver_version,clocks.sm,clocks.mem,clocks.applications.graphics,'
-              'clocks.applications.memory,power.limit,power.draw,temperature.gpu')
 
 
 def drift_ok(drift):
@@ -65,12 +63,155 @@ def _run(cmd):
         return f'ERROR: {e}'
 
 
-def smi_record():
-    q = _run(['nvidia-smi', f'--query-gpu={SMI_FIELDS}', '--format=csv'])
-    mem = _run(['nvidia-smi', '--query-gpu=name,uuid,memory.total', '--format=csv,noheader'])
+SMI_QUERY = ('index,pci.bus_id,uuid,name,memory.total,driver_version,clocks.sm,clocks.mem,clocks.applications.graphics,'
+             'clocks.applications.memory,power.limit,power.draw,temperature.gpu')
+SMI_KEYS = tuple(SMI_QUERY.split(','))
+TELEMETRY_MANDATORY = ('name', 'uuid', 'driver_version', 'clocks.sm', 'clocks.mem', 'power.limit', 'temperature.gpu')
+TELEMETRY_MAY_BE_UNSUPPORTED = ('clocks.applications.graphics', 'clocks.applications.memory', 'power.draw')
+_UNSUP = ('[n/a]', 'n/a', '[not supported]', 'not supported', '[unknown error]')
+
+
+def _unsupported(v):
+    return str(v).strip().lower() in _UNSUP
+
+
+def parse_smi(text):
+    """`nvidia-smi --query-gpu=SMI_QUERY --format=csv,noheader` -> list of {field: value} (raw strings)."""
+    rows = []
+    for line in (text or '').splitlines():
+        if not line.strip():
+            continue
+        vals = [v.strip() for v in line.split(',')]
+        if len(vals) != len(SMI_KEYS):
+            raise ValueError(f'nvidia-smi row has {len(vals)} fields, expected {len(SMI_KEYS)}: {line!r}')
+        rows.append(dict(zip(SMI_KEYS, vals)))
+    return rows
+
+
+def smi_rows(uuid=None):
+    """(rows, error). With uuid: only that device (nvidia-smi --id=<uuid>)."""
+    cmd = ['nvidia-smi', f'--query-gpu={SMI_QUERY}', '--format=csv,noheader'] + ([f'--id={uuid}'] if uuid else [])
+    try:
+        return parse_smi(subprocess.check_output(cmd, text=True, stderr=subprocess.STDOUT, timeout=60)), None
+    except Exception as e:  # noqa: BLE001
+        return [], f'ERROR: {e}'
+
+
+def cuda_uuid(ordinal):
+    """UUID of CUDA device `ordinal` (the visible-device ordinal JAX uses) from the CUDA driver, 'GPU-...' as nvidia-smi
+    prints it; None if libcuda is unavailable."""
+    try:
+        import ctypes
+        lib = ctypes.CDLL('libcuda.so.1')
+        if lib.cuInit(0) != 0:
+            return None
+        dev = ctypes.c_int()
+        if lib.cuDeviceGet(ctypes.byref(dev), int(ordinal)) != 0:
+            return None
+        buf = (ctypes.c_ubyte * 16)()
+        fn = getattr(lib, 'cuDeviceGetUuid_v2', None) or lib.cuDeviceGetUuid
+        if fn(buf, dev) != 0:
+            return None
+        h = bytes(buf).hex()
+        return f'GPU-{h[:8]}-{h[8:12]}-{h[12:16]}-{h[16:20]}-{h[20:]}'
+    except Exception:  # noqa: BLE001
+        return None
+
+
+def _bus(b):
+    try:
+        dom, rest = str(b).lower().split(':', 1)
+        return f'{int(dom, 16):08x}:{rest}'
+    except Exception:  # noqa: BLE001
+        return str(b).lower()
+
+
+def resolve_device(rows, ordinal, cvd=None, cu_uuid=None, pci_bus_id=None, device_order=None):
+    """Bind the EXECUTING device (JAX device ordinal) to one nvidia-smi row (job audit E5 item 3). Evidence, in order:
+    the CUDA driver UUID of that ordinal; JAX's PCI bus id; the CUDA_VISIBLE_DEVICES entry at that ordinal (a UUID, or an
+    index only under CUDA_DEVICE_ORDER=PCI_BUS_ID); a single visible GPU. Conflicting evidence or no unique match ->
+    resolved=False."""
+    out = dict(resolved=False, ordinal=ordinal, cvd=cvd, cuda_uuid=cu_uuid, pci_bus_id=pci_bus_id, evidence={})
+    by_uuid = {r['uuid']: r for r in rows}
+    cands = {}
+    if cu_uuid:
+        cands['cuda-driver uuid of the JAX ordinal'] = cu_uuid if cu_uuid in by_uuid else 'NO-ROW'
+    if pci_bus_id:
+        m = [r['uuid'] for r in rows if _bus(r['pci.bus_id']) == _bus(pci_bus_id)]
+        cands['JAX pci bus id'] = m[0] if len(m) == 1 else 'NO-ROW'
+    if cvd and ordinal is not None:
+        ent = [x.strip() for x in str(cvd).split(',') if x.strip()]
+        if 0 <= int(ordinal) < len(ent):
+            e = ent[int(ordinal)]
+            if e.startswith(('GPU-', 'MIG-')):
+                cands['CUDA_VISIBLE_DEVICES uuid'] = e if e in by_uuid else 'NO-ROW'
+            elif e.isdigit() and device_order == 'PCI_BUS_ID':
+                m = [r['uuid'] for r in rows if r['index'] == e]
+                cands['CUDA_VISIBLE_DEVICES index (PCI_BUS_ID order)'] = m[0] if len(m) == 1 else 'NO-ROW'
+    out['evidence'] = cands
+    vals = set(cands.values())
+    if 'NO-ROW' in vals or len(vals) > 1:
+        out['reason'] = 'conflicting or unmatched device evidence'
+        return out
+    if len(vals) == 1:
+        u = vals.pop()
+        out.update(resolved=True, uuid=u, method=' + '.join(sorted(cands)), row=by_uuid[u])
+        return out
+    if len(rows) == 1:
+        out.update(resolved=True, uuid=rows[0]['uuid'], method='single visible GPU', row=rows[0])
+        return out
+    out['reason'] = 'no device evidence and several visible GPUs'
+    return out
+
+
+def smi_record(uuid=None):
+    """Telemetry of the executing device: its nvidia-smi row (application clocks / power draw may be 'unsupported',
+    recorded explicitly), the raw error if the query failed, and the driver's CUDA version."""
+    rows, err = smi_rows(uuid)
+    row = None
+    if not err:
+        m = [r for r in rows if uuid is None or r['uuid'] == uuid]
+        row = dict(m[0]) if len(m) == 1 else None
+        if row is None:
+            err = f'no unique nvidia-smi row for {uuid}'
+    if row:
+        for k in TELEMETRY_MAY_BE_UNSUPPORTED:
+            if _unsupported(row.get(k, '')):
+                row[k] = 'unsupported'
     head = _run(['nvidia-smi'])
     m = re.search(r'CUDA Version:\s*([0-9.]+)', head)
-    return dict(query=q, memory=mem, cuda_driver_version=m.group(1) if m else None)
+    return dict(row=row, error=err, n_rows=len(rows), cuda_driver_version=m.group(1) if m else None)
+
+
+def telemetry_problems(rec, uuid):
+    """Fail-closed completeness of one record (job audit E5 item 7). Empty list = complete."""
+    if not rec:
+        return ['record missing']
+    p = []
+    smi = rec.get('nvidia_smi') or {}
+    row = smi.get('row') or {}
+    if smi.get('error'):
+        p.append(f"nvidia-smi: {smi['error']}")
+    for k in TELEMETRY_MANDATORY:
+        v = str(row.get(k, '')).strip()
+        if not v or _unsupported(v) or 'error' in v.lower():
+            p.append(f'{k} missing or not a value ({v!r})')
+    for k in TELEMETRY_MAY_BE_UNSUPPORTED:
+        v = str(row.get(k, '')).strip()
+        if v != 'unsupported' and (not v or _unsupported(v) or 'error' in v.lower()):
+            p.append(f'{k} neither a value nor explicitly unsupported ({v!r})')
+    if not uuid or row.get('uuid') != uuid:
+        p.append(f"record uuid {row.get('uuid')!r} is not the executing device {uuid!r}")
+    ver = rec.get('versions') or {}
+    for k in ('jax', 'jaxlib'):
+        if not ver.get(k):
+            p.append(f'{k} version missing')
+    env = rec.get('env') or {}
+    if env.get('JAX_DEFAULT_MATMUL_PRECISION') != 'highest':
+        p.append(f"JAX_DEFAULT_MATMUL_PRECISION={env.get('JAX_DEFAULT_MATMUL_PRECISION')!r}")
+    if str(env.get('JAX_ENABLE_X64')).lower() not in ('true', '1'):
+        p.append(f"JAX_ENABLE_X64={env.get('JAX_ENABLE_X64')!r}")
+    return p
 
 
 def versions():
@@ -82,30 +223,26 @@ def versions():
     return dict(sorted(out.items()))
 
 
-def env_record(tag):
-    return dict(tag=tag, utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), host=socket.gethostname(),
+def env_record(tag, uuid=None):
+    return dict(tag=tag, device_uuid=uuid, utc=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), host=socket.gethostname(),
                 slurm_job_id=os.environ.get('SLURM_JOB_ID'), cuda_visible_devices=os.environ.get('CUDA_VISIBLE_DEVICES'),
                 env={k: os.environ.get(k) for k in ('JAX_ENABLE_X64', 'JAX_DEFAULT_MATMUL_PRECISION', 'XLA_FLAGS',
                                                     'XLA_PYTHON_CLIENT_MEM_FRACTION', 'JAX_PLATFORMS', 'JCPREF_STORE',
                                                     'JCPREF_META', 'SOURCE_COMMIT')},
-                nvidia_smi=smi_record(), versions=versions())
+                nvidia_smi=smi_record(uuid), versions=versions())
 
 
-def gpu_type_ok(expected, smi_memory_lines):
-    """expected in {'A100-80G', 'H200', 'L40S'}; smi lines 'name, uuid, NNN MiB' (p1common.gpu_info format)."""
-    if not smi_memory_lines:
-        return False, 'no nvidia-smi output'
-    name, _, memtot = (s.strip() for s in smi_memory_lines[0].split(',')[:3])
-    mib = float(memtot.split()[0]) if memtot and memtot.split()[0].replace('.', '').isdigit() else 0.
-    if expected == 'A100-80G':
-        ok = 'A100' in name and mib >= 79000
-    elif expected == 'H200':
-        ok = 'H200' in name
-    elif expected == 'L40S':
-        ok = 'L40S' in name
-    else:
-        ok = False
-    return bool(ok), f'{name} {memtot}'
+def gpu_type_ok(expected, row):
+    """expected in {'A100-80G', 'H200', 'L40S'}; row = the EXECUTING device's nvidia-smi row (resolve_device)."""
+    if not row:
+        return False, 'executing device not resolved'
+    name, memtot = row.get('name', ''), row.get('memory.total', '')
+    try:
+        mib = float(str(memtot).split()[0])
+    except (ValueError, IndexError):
+        mib = 0.
+    ok = {'A100-80G': 'A100' in name and mib >= 79000, 'H200': 'H200' in name, 'L40S': 'L40S' in name}.get(expected, False)
+    return bool(ok), f'{name} {memtot} {row.get("uuid")}'
 
 
 # ------------------------------------------------------------------ provenance ----

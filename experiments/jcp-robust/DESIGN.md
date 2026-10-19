@@ -820,3 +820,14 @@ if `e2t3d1`'s host MaxRSS (sacct) × 1.25 exceeds its `--mem` request (420G), or
 it does not complete within its time limit, then **E2 3D seeds 2–3 are deferred** (reported as deferred; never retried at
 a larger size or limit). smk3 already showed 176.8 GB host RSS before the bank fit, so the job audit of `e2t3d1` must cover
 the `--mem` headroom explicitly. 3D production stays held until jcp-dims hands back its 3D quadrature front.
+
+## Amendment A10 (2026-10-19, certificate classes not measured by a dedicated smoke; before the affected jobs)
+
+**A10.1 E5 certificates** use the smoke-measured seconds per execution of the same GPU type: (smk4 elapsed ÷ smk4
+inventory size) for A100-80G, (smk5 elapsed ÷ smk5 inventory size) for H200, times the production inventory size. The
+H200 production 4096² P-cost executions (absent from both smokes) are charged at that H200 per-execution rate; the
+time limit keeps the 1.5× margin of certify/stage.
+**A10.2 dtime (E2 2D front timing) certificates** are derived from the measured 2D rollout classes at 1024² (jcp-qualify
+acc1024 rows and the smokes): an untimed scoring / replay run = one tight rollout of the slowest measured r; a triplet =
+three production rollouts + 0.4 s of burns; doubled work = four production rollouts + 0.4 s; setup = twice the measured
+1024² r2acc setup. These are estimates, labelled so in the certificate; the 1.5× time-limit margin applies.

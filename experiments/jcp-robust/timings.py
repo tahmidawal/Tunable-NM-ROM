@@ -116,6 +116,28 @@ def main():
                 T[f'{drv}|{st}|{lev}|{fam}'] = max(T.get(f'{drv}|{st}|{lev}|{fam}') or 0., med(v) or 0.)
             T[f'{"e1run3d" if drv == "e1run3d" else "e2run3d"}|setup'] = max(T.get(f'{"e1run3d" if drv == "e1run3d" else "e2run3d"}|setup') or 0.,
                                                                           float(r.get('elapsed_seconds', 0.)) * .25)
+    # ---- E5 (A10.1): per-execution seconds = smoke elapsed / smoke inventory size, per GPU type (smk4 A100, smk5 H200)
+    import e5common as EC
+    for tag, gt in (('smk4', 'A100-80G'), ('smk5', 'H200')):
+        if not getattr(a, tag):
+            continue
+        for d_ in sorted(Path(getattr(a, tag)).glob('e5time_*')):
+            p = d_ / 'result.json'
+            r = json.loads(p.read_text())
+            src[f'{tag} {d_.name}'] = dict(file=str(p), sha256=sha(p), gpu=r.get('gpu_type'))
+            n = len(set(map(tuple, EC.inv_e5time(r['config']))))
+            el = float(r.get('elapsed_seconds') or r.get('elapsed', {}).get('total') or 0.)
+            if n and el > 0:
+                T[f'e5time|per_execution|{gt}'] = el / n
+    # ---- dtime (A10.2): derived from the measured 2D rollout classes at 1024^2 (no dtime smoke): an untimed / replay run
+    # costs one tight rollout of the largest r; a triplet three production rollouts + 4 x 0.1 s burn; doubled-work four
+    worst = max(v for k, v in T.items() if k.startswith('r2acc|1024|') and k.endswith('|std') and '|tight|' in k)
+    prod = max(v for k, v in T.items() if k.startswith('r2acc|1024|') and k.endswith('|std') and '|prod|' in k)
+    for kind in ('score', 'tight', 'tighter', 'qp', 'qpp'):
+        T[f'dtime|{kind}'] = worst
+    T['dtime|triplet'] = T['dtime|fused-triplet'] = 3 * prod + .4
+    T['dtime|doubled'] = 4 * prod + .4
+    T['dtime|setup|1024'] = T.get('r2acc|setup|1024', 300.) * 2
     (HERE / 'checks').mkdir(exist_ok=True)
     out = dict(timings={k: v for k, v in sorted(T.items()) if v is not None}, sources=src,
                note='seconds per execution; certify.py multiplies by 1.25 and stage.py requires time limit >= 1.5 x projection')

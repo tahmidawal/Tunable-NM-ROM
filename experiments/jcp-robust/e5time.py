@@ -79,7 +79,7 @@ def pinned_comparators(xc, fz):
     return out
 
 
-def pcross(xc, out, records):
+def pcross(xc, out, records, rec):
     out.mkdir(parents=True, exist_ok=True)
     begin = time.perf_counter()
     el = lambda: round(time.perf_counter() - begin, 1)
@@ -241,7 +241,7 @@ def pcross(xc, out, records):
             o = jax.block_until_ready(call(lb, c)())
             check(lb, c, o)
             del o
-    records.append(EC.env_record('pcross-after-warm'))
+    records.append(rec('pcross-after-warm'))
 
     # ---- 4. stage 2 (fresh triplets, randomised) ----
     rng = np.random.default_rng(int(xc.get('seed', 1)))
@@ -312,17 +312,31 @@ def main():
     if cfg.get('jcpref_store'):
         os.environ.setdefault('JCPREF_STORE', cfg['jcpref_store'])
     begin = time.perf_counter()
-    records = [EC.env_record('start')]
-    gok, gname = EC.gpu_type_ok(cfg['gpu_type'], P.gpu_info())
+    # executing device (job audit E5 item 3): JAX's device ordinal -> CUDA driver UUID / PCI bus id / CUDA_VISIBLE_DEVICES
+    # -> exactly one nvidia-smi row; that UUID is used for the type check and for every telemetry record
+    dev = jax.devices()[0]
+    ordinal = getattr(dev, 'local_hardware_id', None)
+    ordinal = dev.id if ordinal is None else ordinal
+    rows, smi_err = EC.smi_rows()
+    device = EC.resolve_device(rows, ordinal, os.environ.get('CUDA_VISIBLE_DEVICES'),
+                               EC.cuda_uuid(ordinal) if jax.default_backend() == 'gpu' else None,
+                               getattr(dev, 'pci_bus_id', None), os.environ.get('CUDA_DEVICE_ORDER'))
+    device.update(smi_error=smi_err, jax_device=str(dev), jax_device_kind=dev.device_kind)
+    uuid = device.get('uuid')
+    rec = lambda tag: EC.env_record(tag, uuid)
+    records = [rec('start')]
+    tprob = EC.telemetry_problems(records[0], uuid)
+    gok, gname = EC.gpu_type_ok(cfg['gpu_type'], device.get('row'))
     top = dict(attempt=cfg['attempt'], config=cfg, config_sha256=hashlib.sha256(cb).hexdigest(), gpu_type=cfg['gpu_type'],
+               device=device, device_uuid=uuid, telemetry_start_problems=tprob,
                gpu_type_ok=gok, gpu_name=gname, backend=jax.default_backend(), device_kind=jax.devices()[0].device_kind,
                jax_version=jax.__version__, x64=bool(jax.config.jax_enable_x64), source_check=SRC_ROWS,
                commit=os.environ.get('SOURCE_COMMIT'), job_id=os.environ.get('SLURM_JOB_ID'), records=records,
                pcost=None, pcross=None, complete=False)
     save = lambda: (out / 'result.json').write_text(json.dumps(C2T.clean(top), indent=1) + '\n')
     save()
-    if not gok and not cfg.get('allow_cpu_smoke'):
-        print('E5 GPU TYPE MISMATCH', cfg['gpu_type'], gname, flush=True)
+    if not cfg.get('allow_cpu_smoke') and not (device['resolved'] and gok and not tprob):
+        print('E5 DEVICE / TYPE / TELEMETRY CHECK FAILED', cfg['gpu_type'], gname, device.get('reason'), tprob, flush=True)
         sys.exit(4)
 
     # ---- P-cost: P1's p1time.main, unchanged ----
@@ -337,13 +351,14 @@ def main():
         sys.argv = argv0
     top['pcost'] = json.loads((pdir / 'result.json').read_text())
     gc.collect()
-    records.append(EC.env_record('between-panels'))
+    records.append(rec('between-panels'))
     save()
     print('E5 PCOST DONE', round(time.perf_counter() - begin, 1), flush=True)
 
     # ---- P-cross ----
-    top['pcross'] = pcross(cfg["pcross"], out / "pcross", records)
-    records.append(EC.env_record('end'))
+    top['pcross'] = pcross(cfg["pcross"], out / "pcross", records, rec)
+    records.append(rec('end'))
+    top['telemetry_end_problems'] = EC.telemetry_problems(records[-1], uuid)
     top['elapsed_seconds'] = round(time.perf_counter() - begin, 1)
     top['complete'] = bool(top['pcost'].get('complete') and top['pcross'].get('complete'))
     save()

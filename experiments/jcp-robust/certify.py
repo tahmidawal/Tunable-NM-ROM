@@ -178,6 +178,14 @@ def certify(att, timings_path):
                     missing.add(f"{st['driver']}|setup|{c.get('mesh', c.get('mode'))}")
                     setup = 0.
                 sec = setup
+                if st['driver'] == 'e5time':            # A10.1: smoke-measured seconds per execution of the same GPU type
+                    gt = c.get('gpu_type')
+                    kk = f'e5time|per_execution|{gt}'
+                    if kk not in T:
+                        missing.add(kk)
+                    else:
+                        sec += T[kk] * len(uniq)
+                    uniq = []
                 for k in uniq:
                     kl = klass(st['driver'], k)
                     if kl not in T:

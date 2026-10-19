@@ -87,6 +87,40 @@ def fam_of(label):
     return int(m), rest
 
 
+def stage_attempt(d):
+    """The lane's staged attempt (RESERVATION.json of the job dir, up to 4 levels above the output dir), if present."""
+    for q in [Path(d)] + list(Path(d).resolve().parents)[:4]:
+        f = q / 'RESERVATION.json'
+        if f.exists():
+            try:
+                return json.loads(f.read_text()).get('attempt')
+            except Exception:  # noqa: BLE001
+                return None
+    return None
+
+
+def distinct_jobs(jobs):
+    """Job audit E5 item 4: the same directory, SLURM job id or staged attempt may enter the analysis only once; a
+    repeat is marked 'failed (duplicate of ...)' (so the type is incomplete, A4.1). Returns the duplicate list."""
+    seen, dups = {}, []
+    for i, j in enumerate(jobs):
+        keys = []
+        if j.get('dir'):
+            keys.append(('dir', str(Path(j['dir']).resolve())))
+        if j.get('job_id'):
+            keys.append(('job_id', str(j['job_id'])))
+        if j.get('stage_attempt'):
+            keys.append(('stage_attempt', str(j['stage_attempt'])))
+        hit = [(k, seen[k]) for k in keys if k in seen]
+        if hit:
+            why = '; '.join(f'{k[0]} {k[1]} = input #{n + 1}' for k, n in hit)
+            j.update(status=f'failed (duplicate of input #{hit[0][1] + 1})', reasons=list(j.get('reasons') or []) + [why])
+            dups.append(dict(input=i + 1, dir=j.get('dir'), why=why))
+        for k in keys:
+            seen.setdefault(k, i)
+    return dups
+
+
 def load_job(gtype, d, p1ref=None, contracts=None):
     """Load one E5 job and decide its status BEFORE any pooling (code audit 3 item 30): P-cross G-RR / G-FR / A-valid
     (as c2analyze.py:98) and G-E5.1 (complete registered reproduction of P1c, needs p1ref) are required."""
@@ -108,6 +142,24 @@ def load_job(gtype, d, p1ref=None, contracts=None):
         fail.append(f"backend {top.get('backend')}")
     if not all(r.get('ok') for r in top.get('source_check') or [dict(ok=False)]):
         fail.append('source check')
+    # executing device and fail-closed telemetry (job audit E5 items 3, 7): resolved UUID, complete start/end records
+    dev = top.get('device') or {}
+    uuid = dev.get('uuid') if dev.get('resolved') else None
+    job['device_uuid'] = uuid
+    job['job_id'] = top.get('job_id')
+    job['stage_attempt'] = stage_attempt(d)
+    if not uuid:
+        fail.append(f"executing device not resolved ({dev.get('reason')})")
+    recs = {}
+    for r in top.get('records') or []:
+        recs.setdefault(r.get('tag'), r)
+    tel = {tag: EC.telemetry_problems(recs.get(tag), uuid) for tag in ('start', 'end')}
+    job['telemetry'] = tel
+    for tag, pr in tel.items():
+        if pr:
+            fail.append(f'telemetry {tag} incomplete: ' + '; '.join(pr[:4]))
+    if not job['job_id']:
+        fail.append('no SLURM job id recorded')
     pc, xc = top.get('pcost') or {}, top.get('pcross') or {}
     if not (pc.get('complete') and xc.get('complete')):
         fail.append('panel incomplete')
@@ -578,7 +630,14 @@ def analyze(jobs, expect, p1ref=None):
                      'frozen H200-selected comparators; two-mesh P-cost panel (256^2, 1024^2) for every cross-type quantity',
                seed=SEED, nboot=NBOOT, jobs=[], per_job={}, fixtures=None, case_sets={}, pooled={}, phi={}, per_type={},
                agreement={}, unit_to_unit={}, gates={})
+    res['duplicates'] = distinct_jobs(jobs)
     by = {t: [j for j in jobs if j['type'] == t] for t in expect}
+    res['same_device'] = {}
+    for t in expect:                                   # 4.2: same-UUID repeats are labelled (not rejected)
+        us = [j.get('device_uuid') for j in by[t] if j.get('device_uuid')]
+        rep_u = sorted({u for u in us if us.count(u) > 1})
+        res['same_device'][t] = dict(label='same physical GPU' if rep_u else 'distinct GPUs' if len(us) > 1 else 'n/a',
+                                     uuids=us, repeated=rep_u)
     for t, n in expect.items():
         while len(by[t]) < n:
             by[t].append(dict(type=t, dir=None, status='missing', reasons=['not provided']))
@@ -587,7 +646,8 @@ def analyze(jobs, expect, p1ref=None):
             name = f'{t}#{i + 1}'
             j['name'] = name
             res['jobs'].append(dict(name=name, dir=j.get('dir'), status=j['status'], reasons=j.get('reasons'),
-                                    meta=j.get('top_meta'), records=j.get('records')))
+                                    job_id=j.get('job_id'), stage_attempt=j.get('stage_attempt'), device_uuid=j.get('device_uuid'),
+                                    telemetry=j.get('telemetry'), meta=j.get('top_meta'), records=j.get('records')))
             pj = per_job(j)
             if j['status'] != 'ok' and 'cost' in j:
                 pj['scope'] = 'per-job only'
@@ -672,7 +732,8 @@ def analyze(jobs, expect, p1ref=None):
             if len(by[t]) >= 2:
                 g = {'job1': [by[t][0]], 'job2': [by[t][1]]}
                 o = run_panels(g, 'job2', 'job1', sets)
-                res['unit_to_unit'][t] = {k: o.get(k) for k in ('phi1', 'phi2', 'phi3')}
+                res['unit_to_unit'][t] = dict({k: o.get(k) for k in ('phi1', 'phi2', 'phi3')},
+                                              device=res['same_device'][t]['label'])
     else:
         miss = 'unavailable (job missing)' if cross_types else 'unavailable (cross-type pair not requested)'
         res['phi'] = {k: miss for k in ('phi1', 'phi2', 'phi3')}
@@ -737,6 +798,21 @@ def smoke(job, expected_type=None, p1ref=None):
     loaded = 'cost' in job
     ce = job.get('c_e5_1') or dict(fires=False)
     chk('C-E5.1 doubled/single case-median in [1.6, 2.4] for every doubled subject', loaded and ce.get('fires'), ce)
+    tel = job.get('telemetry') or {}
+    chk('executing device resolved; telemetry complete at start and end', bool(job.get('device_uuid')) and
+        set(tel) == {'start', 'end'} and not any(tel.values()), dict(uuid=job.get('device_uuid'), problems=tel))
+    if loaded:                                 # job audit E5 item 5: usable coverage of every required cell
+        g = {'j': [job]}
+        cc = case_set(g, [(f, L) for f in FAMS for L in CROSS_MESHES], job['cost_cases'], 'cost')
+        x = job['cross']
+        need = list(x['roms']) + list(x['foms'])
+        cx = case_set({'j': [dict(cross=x['vals'])]}, need, x['cases'], 'cross')
+    else:
+        cc, cx, need = [], [], []
+    chk(f'P-cost: >= {MIN_CASES} cases with >= {MIN_REPS} valid reps for both subjects at 256^2 and 1024^2', len(cc) >= MIN_CASES,
+        dict(cases=cc))
+    chk(f'P-cross: >= {MIN_CASES} cases with >= {MIN_REPS} valid reps for both ROMs and every pinned comparator',
+        len(cx) >= MIN_CASES, dict(cases=cx, subjects=need))
     fx = fixtures(job) if loaded else {k: dict(ok=False, reason='job not loaded') for k in ('q1', 'q2', 'q3')}
     for k in ('q1', 'q2', 'q3'):
         f = fx[k]

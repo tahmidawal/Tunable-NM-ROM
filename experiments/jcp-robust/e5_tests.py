@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import json
+import zlib
 import shutil
 import tempfile
 from pathlib import Path
@@ -28,6 +29,20 @@ def w_of(label, cases):
     """Deterministic scoring-run coefficients per (subject, case): identical in a synthetic job and its P1 reference."""
     rp = 128 if '|R128|' in label else 384
     return np.stack([np.full((6, rp), float(len(label))) + int(c.split('|')[1]) for c in cases])
+
+
+def smi_row(uuid, name='NVIDIA A100-SXM4-80GB', idx='0', bus='00000000:07:00.0', app='1410 MHz'):
+    return {'index': idx, 'pci.bus_id': bus, 'uuid': uuid, 'name': name, 'memory.total': '81920 MiB',
+            'driver_version': '550.54.15', 'clocks.sm': '1410 MHz', 'clocks.mem': '1593 MHz',
+            'clocks.applications.graphics': app, 'clocks.applications.memory': app, 'power.limit': '400.00 W',
+            'power.draw': '90.1 W', 'temperature.gpu': '34'}
+
+
+def telem(tag, uuid, row=None):
+    r = smi_row(uuid)
+    r.update(row or {})
+    return dict(tag=tag, device_uuid=uuid, env={'JAX_ENABLE_X64': 'true', 'JAX_DEFAULT_MATMUL_PRECISION': 'highest'},
+                versions={'jax': '0.10.2', 'jaxlib': '0.10.2'}, nvidia_smi=dict(row=r, error=None, n_rows=1))
 
 
 def write_s(d, label, cases, W=None):
@@ -91,8 +106,10 @@ def write_job(root, name, gtype, seed, ncase=6, reps=3, cost_scale=None, cross_s
     xc = dict(config=dict(cases=[c.split('|')[0:1] + [int(c.split('|')[1])] for c in cases], roms=[dict(label=r) for r in ROMS]),
               stage2=st2, pinned=PINNED, veto=[], complete=True,
               gates=gates if gates is not None else {'G-RR': True, 'G-FR': True, 'A-valid': True})
+    uuid = f'GPU-{name}-{seed}'
     top = dict(attempt=att, complete=True, gpu_type=gtype, gpu_type_ok=True, backend='gpu', source_check=[dict(ok=True)],
-               records=[], pcost=pc, pcross=xc)
+               device=dict(resolved=True, uuid=uuid, method='test'), device_uuid=uuid, job_id=f'{seed}{name}-{zlib.crc32(str(d).encode())}',
+               records=[telem('start', uuid), telem('between-panels', uuid), telem('end', uuid)], pcost=pc, pcross=xc)
     (d / 'result.json').write_text(json.dumps(top))
     (d / 'COMPLETE').write_text('complete\n')
     return d
@@ -462,6 +479,99 @@ def test_smoke_reports_g_e5_2_descriptive():
         assert r['ALL'] is True and not r['g_e5_2_descriptive']['result']['cells'][f'{R128}|1024']['within']   # no veto
         r = E5A.smoke(E5A.load_job('A100-80G', d2, p1ref=make_ref(t + '/x')), 'A100-80G', make_ref(t + '/x'))
         assert 'error' in r['g_e5_2_descriptive']['result'] and r['ALL'] is True          # no P1 result.json: still no veto
+
+
+# ------------------------------------------------------------------ job audit E5: device, duplicates, coverage, telemetry ----
+
+def test_resolve_executing_device():
+    rows = [smi_row('GPU-a', idx='0', bus='00000000:07:00.0'), smi_row('GPU-b', idx='1', bus='00000000:0F:00.0')]
+    r = EC.resolve_device(rows, 0, cvd='1', cu_uuid='GPU-b')
+    assert r['resolved'] and r['uuid'] == 'GPU-b' and r['row']['index'] == '1'          # driver uuid wins over position
+    assert EC.resolve_device(rows, 0, pci_bus_id='0000:0f:00.0')['uuid'] == 'GPU-b'
+    assert EC.resolve_device(rows, 0, cvd='GPU-a,GPU-b')['uuid'] == 'GPU-a'
+    assert EC.resolve_device(rows, 0, cvd='1', device_order='PCI_BUS_ID')['uuid'] == 'GPU-b'
+    assert not EC.resolve_device(rows, 0, cvd='1')['resolved']                           # index without PCI order: ambiguous
+    assert not EC.resolve_device(rows, 0)['resolved']
+    assert not EC.resolve_device(rows, 0, cvd='GPU-a', cu_uuid='GPU-b')['resolved']      # conflicting evidence
+    assert not EC.resolve_device(rows, 0, cu_uuid='GPU-zzz')['resolved']                 # uuid with no smi row
+    assert EC.resolve_device(rows[:1], 0)['method'] == 'single visible GPU'
+    assert EC.gpu_type_ok('A100-80G', rows[0])[0] and not EC.gpu_type_ok('H200', rows[0])[0]
+    assert not EC.gpu_type_ok('A100-80G', None)[0]
+    txt = ', '.join(rows[0][k] for k in EC.SMI_KEYS)
+    assert EC.parse_smi(txt) == [rows[0]]
+
+
+def test_telemetry_fails_closed():
+    u = 'GPU-x'
+    assert EC.telemetry_problems(telem('start', u), u) == []
+    assert EC.telemetry_problems(telem('start', u, {'clocks.applications.graphics': 'unsupported',
+                                                    'clocks.applications.memory': 'unsupported'}), u) == []
+    for bad in ({'clocks.sm': '[N/A]'}, {'power.limit': ''}, {'temperature.gpu': 'ERROR'}, {'uuid': 'GPU-other'},
+                {'clocks.applications.graphics': '[N/A]'}, {'driver_version': '[Not Supported]'}):
+        assert EC.telemetry_problems(telem('start', u, bad), u), bad
+    r = telem('start', u)
+    r['env']['JAX_DEFAULT_MATMUL_PRECISION'] = None
+    assert EC.telemetry_problems(r, u)
+    r = telem('start', u)
+    r['versions'].pop('jaxlib')
+    assert EC.telemetry_problems(r, u)
+    assert EC.telemetry_problems(None, u) == ['record missing']
+    with Tmp() as t:
+        ref = make_ref(t)
+        for name, fn in (('t1', lambda r: r.update(records=r['records'][:2])),                        # no end record
+                         ('t2', lambda r: r['records'][2]['nvidia_smi'].update(error='ERROR: nvidia-smi failed')),
+                         ('t3', lambda r: r['records'][0]['nvidia_smi']['row'].update({'clocks.mem': '[N/A]'})),
+                         ('t4', lambda r: r.update(device=dict(resolved=False, reason='x'))),
+                         ('t5', lambda r: r.update(job_id=None))):
+            d = write_job(t, name, 'A100-80G', 60, ncase=5, reps=2)
+            _rewrite(d, fn)
+            j = E5A.load_job('A100-80G', d, p1ref=ref)
+            assert j['status'].startswith('failed'), (name, j['status'])
+            assert E5A.smoke(j, 'A100-80G')['ALL'] is False
+
+
+def test_duplicate_jobs_rejected_and_same_gpu_labelled():
+    with Tmp() as t:
+        ref = make_ref(t)
+        js = four_jobs(t)
+        res = E5A.analyze(js[:3] + [E5A.load_job('H200', js[2]['dir'], p1ref=ref)], EXPECT)        # same dir twice
+        assert res['duplicates'] and res['types_complete']['H200'] is False
+        assert res['phi']['phi1'] == 'unavailable (job missing)'
+        d = write_job(t, 'h9', 'H200', 77)
+        _rewrite(d, lambda r: r.update(job_id=js[2]['job_id']))                                     # same SLURM job id
+        res = E5A.analyze(four_jobs(t + '/b')[:3] + [E5A.load_job('H200', d, p1ref=ref)], EXPECT)
+        assert res['types_complete']['H200'] is True                                                 # different id there
+        res = E5A.analyze(js[:3] + [E5A.load_job('H200', d, p1ref=ref)], EXPECT)
+        assert res['duplicates'] and res['types_complete']['H200'] is False
+        d = write_job(t, 'a9', 'A100-80G', 78)                                                       # same physical GPU
+        _rewrite(d, lambda r: [r.update(device=dict(r['device'], uuid=js[0]['device_uuid']), device_uuid=js[0]['device_uuid']),
+                               [x['nvidia_smi']['row'].update(uuid=js[0]['device_uuid']) for x in r['records']]])
+        j = E5A.load_job('A100-80G', d, p1ref=ref)
+        assert j['status'] == 'ok'
+        res = E5A.analyze([js[0], j, js[2], js[3]], EXPECT)
+        assert res['same_device']['A100-80G']['label'] == 'same physical GPU'
+        assert res['same_device']['H200']['label'] == 'distinct GPUs'
+        assert res['unit_to_unit']['A100-80G']['device'] == 'same physical GPU'
+        assert res['phi']['phi1'] != 'unavailable (job missing)'
+
+
+def test_smoke_requires_full_panel_coverage():
+    with Tmp() as t:
+        ref = make_ref(t)
+        for name, sub in (('cv1', CC1), ('cv2', f'256|{R384}')):
+            d = write_job(t, name, 'A100-80G', 70, ncase=5, reps=2)
+
+            def inval(r, sub=sub):
+                rows = r['pcross']['stage2'] if not sub[0].isdigit() else r['pcost']['invocations']
+                x = next(x for x in rows if x['B'] == sub and x['case'] == 'dev6|3')
+                x['valid'] = False
+            _rewrite(d, inval)
+            j = E5A.load_job('A100-80G', d, p1ref=ref)
+            assert j['status'] == 'ok', j['status']                                  # rows complete, one invalid timing
+            r = E5A.smoke(j, 'A100-80G')
+            assert r['ALL'] is False, name
+            bad = [k for k, v in r['checks'].items() if not v['ok']]
+            assert len(bad) == 1 and ('P-cross' in bad[0] if name == 'cv1' else 'P-cost' in bad[0]), bad
 
 
 if __name__ == '__main__':

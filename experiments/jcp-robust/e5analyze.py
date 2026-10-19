@@ -34,7 +34,9 @@ two types give opposite definitive labels; inconclusive otherwise; unavailable /
 Required job gates (code audit 3 item 30; decided in load_job, before any pooling, through the A4.1 path): P-cross
 G-RR, G-FR, A-valid (c2analyze.py:98) and G-E5.1 = P-cost scoring W reproduce P1c (--p1ref) on the complete registered
 subject x case set, finite, <= 1e-10 relative; a missing --p1ref blocks every job. G-E5.2 stays descriptive.
-Single-job smoke (item 27): --smoke --job A100-80G=<dir> --p1ref <dir> reports C-E5.1, the A3.7 fixtures from that
+Registered populations (code audit 4): EC.E5_CONTRACT[attempt] fixes subjects, meshes, cases and reps independently of
+the job config; P-cost / P-cross triplets and the doubled-work rows must each be present exactly once, else blocked.
+Single-job smoke (item 27): --smoke [--gpu-type H200] --job <TYPE=>DIR --p1ref <dir> reports C-E5.1, the A3.7 fixtures from that
 job, G-E5.1 and the P-cross gates as explicit pass/fail plus ALL, and exits 1 unless ALL.
 
     python e5analyze.py --job A100-80G=<dir> --job A100-80G=<dir> --job H200=<dir> --job H200=<dir> \
@@ -54,6 +56,9 @@ if str(HERE / 'e5') not in sys.path:
     sys.path.insert(0, str(HERE / 'e5'))
 import p1stats as S1  # noqa: E402  (P1, unchanged copy)
 import c2analyze as C2A  # noqa: E402  (fom2d, unchanged copy)
+if str(HERE) not in sys.path:
+    sys.path.insert(0, str(HERE))
+import e5common as EC  # noqa: E402  (registered populations, JAX-free)
 
 SEED = 20261019
 NBOOT = 10000
@@ -82,7 +87,7 @@ def fam_of(label):
     return int(m), rest
 
 
-def load_job(gtype, d, p1ref=None):
+def load_job(gtype, d, p1ref=None, contracts=None):
     """Load one E5 job and decide its status BEFORE any pooling (code audit 3 item 30): P-cross G-RR / G-FR / A-valid
     (as c2analyze.py:98) and G-E5.1 (complete registered reproduction of P1c, needs p1ref) are required."""
     d = Path(d) if d else None
@@ -106,21 +111,40 @@ def load_job(gtype, d, p1ref=None):
     pc, xc = top.get('pcost') or {}, top.get('pcross') or {}
     if not (pc.get('complete') and xc.get('complete')):
         fail.append('panel incomplete')
+    ct = (EC.E5_CONTRACT if contracts is None else contracts).get(top.get('attempt'))
+    if ct is None:
+        fail.append(f"no registered E5 contract for attempt {top.get('attempt')!r}")
+    elif ct['gpu_type'] != gtype:
+        fail.append(f"attempt {top.get('attempt')} is registered for {ct['gpu_type']}, not {gtype}")
     if fail:
         job.update(status='failed (' + '; '.join(fail) + ')', reasons=fail)
         return job
+    job['contract'] = ct
+    # registered populations before any statistic (code audit 4 item 34): each (subject, case, rep) exactly once
+    okc, dc = EC.population_check(pc.get('invocations', []), lambda x: (x['B'], x['case'], int(x['rep'])),
+                                  [(s_, c, r) for s_ in ct['pcost_subjects'] for c in ct['pcost_cases'] for r in range(ct['pcost_reps'])])
+    okx, dx = EC.population_check(xc.get('stage2', []), lambda x: (x['B'], x['case'], int(x['rep'])),
+                                  [(s_, c, r) for s_ in ct['roms'] + ct['foms'] for c in ct['pcross_cases'] for r in range(ct['pcross_reps'])])
+    okx = okx and xc.get('pinned') == ct['pinned']
+    job['populations'] = dict(pcost_triplets=dict(dc, ok=okc), pcross_triplets=dict(dx, ok=okx, pinned_ok=xc.get('pinned') == ct['pinned']))
     job.update(extract_cost(pc), cross=extract_cross(xc), dir=str(d))
-    job['c_e5_1'] = c_e5_1(pc.get('doubled', []))
+    job['c_e5_1'] = c_e5_1(pc.get('doubled', []), ct)
     veto = S1.identity_veto(pc.get('invocations', []), pc.get('fused', []), pc.get('doubled', []))
     job['identity_veto_pcost'] = {k: v for k, v in veto.items() if v}
     job['identity_veto_pcross'] = list(xc.get('veto', []))
     job['equivalence_ok'] = bool(pc.get('equivalence')) and all(x.get('passed') for x in pc['equivalence'])
     xg = xc.get('gates') or {}
     job['pcross_gates'] = {k: xg.get(k) is True for k in PCROSS_GATES}
-    job['g_e5_1'] = g_e5_1(job, p1ref, pc)
+    job['g_e5_1'] = g_e5_1(job, p1ref, ct)
     blocked = []
-    if not job['c_e5_1']['fires']:
+    if not job['c_e5_1']['complete']:
+        blocked.append('blocked (control C-E5.1: incomplete)')
+    elif not job['c_e5_1']['fires']:
         blocked.append('blocked (control C-E5.1)')
+    if not okc:
+        blocked.append('blocked (P-cost triplets: incomplete)')
+    if not okx:
+        blocked.append('blocked (P-cross triplets: incomplete)')
     if not job['equivalence_ok']:
         blocked.append('blocked (control: split/fused equivalence)')
     if job['identity_veto_pcost'] or job['identity_veto_pcross']:
@@ -177,25 +201,29 @@ def extract_cross(xc):
                 seconds_B={k: float(np.median(v)) for k, v in tb.items()}, gates=xc.get('gates'))
 
 
-def c_e5_1(rows):
-    """A1.12: P1's doubled-work control must fire in every job (case-median of doubled/single in [1.6, 2.4])."""
-    out = dict(subjects={}, fires=False)
-    if not rows:
-        out['reason'] = 'no doubled-work rows'
+def c_e5_1(rows, ct):
+    """A1.12 + code audit 4 item 34: the configured doubled-work evidence must be complete (every registered doubled
+    subject x case x rep exactly once, each drift-ok with equal identities and iterations and a finite ratio); then the
+    case-median of doubled/single must lie in [1.6, 2.4] for every doubled subject."""
+    req = [(s_, c, r) for s_ in ct['doubled'] for c in ct['pcost_cases'] for r in range(ct['pcost_reps'])]
+    okp, det = EC.population_check(rows, lambda x: (x.get('subject'), x.get('case'), int(x.get('rep', -1))), req)
+    bad = [f"{x.get('subject')}|{x.get('case')}|{x.get('rep')}" for x in rows
+           if not (x.get('drift_ok') and x.get('identity_ok') and x.get('same_iterations')
+                   and isinstance(x.get('ratio'), (int, float)) and np.isfinite(x['ratio']))]
+    out = dict(subjects={}, fires=False, complete=bool(okp and not bad), population=det, invalid_rows=bad[:20])
+    if not out['complete']:
+        out['reason'] = 'incomplete or invalid doubled-work evidence'
         return out
-    subs = sorted({x['subject'] for x in rows})
     ok_all = True
-    for s in subs:
-        xs = [x for x in rows if x['subject'] == s]
+    for s_ in ct['doubled']:
         per = {}
-        for x in xs:
-            if x.get('drift_ok'):
+        for x in rows:
+            if x['subject'] == s_:
                 per.setdefault(x['case'], []).append(x['ratio'])
         cm = {c: float(np.median(v)) for c, v in per.items()}
-        med = float(np.median(list(cm.values()))) if cm else float('nan')
-        integ = all(x.get('identity_ok') and x.get('same_iterations') for x in xs)
-        ok = bool(cm and np.isfinite(med) and DBL_BAND[0] <= med <= DBL_BAND[1] and integ)
-        out['subjects'][s] = dict(case_medians=cm, median=med, identity_and_iterations_ok=integ, fires=ok, n_cases=len(cm))
+        med = float(np.median(list(cm.values())))
+        ok = bool(DBL_BAND[0] <= med <= DBL_BAND[1])
+        out['subjects'][s_] = dict(case_medians=cm, median=med, fires=ok, n_cases=len(cm))
         ok_all = ok_all and ok
     out['fires'] = bool(ok_all)
     return out
@@ -414,12 +442,16 @@ def per_job(job):
                  if all(q1.get(f'{f}|{L}') for L in CROSS_MESHES) else None for f in FAMS}
     x = job['cross']
     S = {}
+    if not job.get('populations', {}).get('pcross_triplets', {}).get('ok'):
+        out['S'] = {f'{r}|{f}': dict(status='P-cross triplet population incomplete', label='unavailable (incomplete)', suffix=suf)
+                    for r, d in x['pinned'].items() for suf, f in d.items()}
+        x = dict(x, pinned={})
     for rom, d in x['pinned'].items():
         for suf, fom in d.items():
             sp = C2A.speedup(C2A.per_case(x['stage2'], rom), C2A.per_case(x['stage2'], fom))
             sp['label'] = s2_label(sp.get('lo'), sp.get('hi')) if sp.get('status') == 'ok' else 'unavailable (invalid timing)'
             S[f'{rom}|{fom}'] = dict(sp, suffix=suf)
-    out['S'] = S
+    out.setdefault('S', S)
     out['seconds_evolve'] = job['seconds_evolve']
     out['seconds_B_cross'] = x['seconds_B']
     out['c_e5_1'] = job['c_e5_1']
@@ -440,50 +472,76 @@ def registered_cases(which):
     return [f'{c}|{int(i)}' for c, i in which]
 
 
-def g_e5_1(job, p1ref, pc):
-    """G-E5.1 (required): for the COMPLETE registered set (every P-cost subject of the job config incl. A x every
-    registered case) the scoring-run coefficients W exist in the job and in P1c, are finite, and agree to <= 1e-10
-    relative. Anything missing, partial or non-finite fails the gate; no p1ref fails it."""
-    out = dict(passed=False, rows={}, tol=REPRO_TOL)
+def p1_listing(p1ref):
+    """P1's own archive listing (<archive>/OUTPUTS.sha256, paths 'output/p1time_time/...') for the reference dir."""
+    lst = Path(p1ref).resolve().parents[1] / 'OUTPUTS.sha256'
+    out = {}
+    for line in lst.read_text().splitlines():
+        if line.strip():
+            h, q = line.split(None, 1)
+            out[q.strip()] = h
+    return out
+
+
+def g_e5_1(job, p1ref, ct):
+    """G-E5.1 (required), population from the registered contract (not the job config): every scored subject
+    (subjects + A) x every registered case. Reference files must hash to P1's own archive listing; case ids unique; the
+    job file holds exactly the registered cases; W shapes exactly (n_cases, 6, r) in both before subtraction; finite;
+    <= 1e-10 relative."""
+    out = dict(passed=False, rows={}, tol=REPRO_TOL, subjects=list(ct['scored']), cases=list(ct['pcost_cases']))
     if not p1ref:
         out['reason'] = 'no --p1ref given (G-E5.1 is required)'
         return out
-    cfg = pc.get('config') or {}
     try:
-        labels = sorted({p1_label(sp) for sp in [cfg['A']] + list(cfg['subjects'])})
-        cases = registered_cases(cfg['cases'])
-    except (KeyError, TypeError) as e:
-        out['reason'] = f'job config lacks the registered set ({e!r})'
+        listing = p1_listing(p1ref)
+    except Exception as e:  # noqa: BLE001
+        out['reason'] = f'P1 archive listing unreadable ({e!r})'
         return out
-    out.update(subjects=labels, cases=cases)
-    if not labels or not cases:
-        out['reason'] = 'empty registered set'
-        return out
-    ok = True
-    for lb in labels:
+    cases = list(ct['pcost_cases'])
+    ok = bool(ct['scored']) and bool(cases)
+    for lb in ct['scored']:
         name = f"S_{lb.replace('|', '_')}.npz"
         pa, pb = Path(job['dir']) / 'pcost' / name, Path(p1ref) / name
-        row = dict(file=name)
-        if not pa.exists() or not pb.exists():
-            row.update(status='missing ' + ('job file' if not pa.exists() else 'P1 reference file'), passed=False)
-        else:
-            a, b = np.load(pa), np.load(pb)
-            ia = {str(c): i for i, c in enumerate(a['case_ids'])}
-            ib = {str(c): i for i, c in enumerate(b['case_ids'])}
-            miss = [c for c in cases if c not in ia or c not in ib]
-            if miss:
-                row.update(status='missing cases', missing=miss, passed=False)
-            else:
-                Wa = np.stack([a['W'][ia[c]] for c in cases])
-                Wb = np.stack([b['W'][ib[c]] for c in cases])
-                fin = bool(np.isfinite(Wa).all() and np.isfinite(Wb).all())
-                den = float(np.max(np.abs(Wb))) if fin else float('nan')
-                rel = float(np.max(np.abs(Wa - Wb)) / den) if fin and den > 0 else float('inf')
-                row.update(status='ok' if fin else 'non-finite W', cases=len(cases), max_rel=rel,
-                           bitwise=bool(fin and np.array_equal(Wa, Wb)), passed=bool(fin and den > 0 and rel <= REPRO_TOL))
-        ok = ok and row['passed']
+        rp = EC.E5_RP[lb.split('|', 1)[1]]
+        row = dict(file=name, passed=False)
         out['rows'][lb] = row
-    out['passed'] = bool(ok and len(out['rows']) == len(labels))
+        if not pa.exists() or not pb.exists():
+            row['status'] = 'missing ' + ('job file' if not pa.exists() else 'P1 reference file')
+            ok = False
+            continue
+        want = listing.get(EC.P1_REF_PREFIX + name)
+        got = EC.sha_file(pb)
+        if want != got:
+            row.update(status='P1 reference sha256 not in / differs from P1 archive listing', want=want, got=got)
+            ok = False
+            continue
+        a, b = np.load(pa), np.load(pb)
+        ca, cb = [str(c) for c in a['case_ids']], [str(c) for c in b['case_ids']]
+        if len(set(ca)) != len(ca) or len(set(cb)) != len(cb):
+            row['status'] = 'duplicate case ids'
+            ok = False
+            continue
+        if sorted(ca) != sorted(cases) or not set(cases) <= set(cb):
+            row.update(status='case set differs from the registered set', job_cases=ca, missing_in_ref=sorted(set(cases) - set(cb)))
+            ok = False
+            continue
+        Wa = np.asarray(a['W'])
+        Wb = np.asarray(b['W'])
+        shp = (6, rp)
+        if Wa.ndim != 3 or Wa.shape[1:] != shp or Wa.shape[0] != len(ca) or Wb.ndim != 3 or Wb.shape[1:] != shp \
+                or Wb.shape[0] != len(cb):
+            row.update(status='W shape differs from (n_cases, 6, r)', job_shape=list(Wa.shape), ref_shape=list(Wb.shape))
+            ok = False
+            continue
+        Wa = np.stack([Wa[ca.index(c)] for c in cases])
+        Wb = np.stack([Wb[cb.index(c)] for c in cases])
+        fin = bool(np.isfinite(Wa).all() and np.isfinite(Wb).all())
+        den = float(np.max(np.abs(Wb))) if fin else float('nan')
+        rel = float(np.max(np.abs(Wa - Wb)) / den) if fin and den > 0 else float('inf')
+        row.update(status='ok' if fin else 'non-finite W', cases=len(cases), max_rel=rel, ref_sha256=got,
+                   bitwise=bool(fin and np.array_equal(Wa, Wb)), passed=bool(fin and den > 0 and rel <= REPRO_TOL))
+        ok = ok and row['passed']
+    out['passed'] = bool(ok and len(out['rows']) == len(ct['scored']))
     return out
 
 
@@ -655,15 +713,21 @@ def analyze(jobs, expect, p1ref=None):
     return res
 
 
-def smoke(job):
+def smoke(job, expected_type=None):
     """Single-job smoke acceptance (code audit 3 item 27): no cross-type pooling; every required control / gate is an
     explicit pass/fail and ALL is their conjunction (a failed or blocked job makes ALL false)."""
     C = {}
 
     def chk(name, ok, detail=None):
         C[name] = dict(ok=bool(ok), detail=detail)
-    chk('job status ok (complete, GPU type, backend, sources, identities, equivalence, gates)', job['status'] == 'ok',
-        dict(status=job['status'], reasons=job.get('reasons')))
+    if expected_type is not None:
+        chk(f'GPU type is the expected {expected_type} (job, contract)', job['type'] == expected_type and
+            (job.get('contract') or {}).get('gpu_type') == expected_type, dict(job=job['type'],
+                                                                            contract=(job.get('contract') or {}).get('gpu_type')))
+    chk('job status ok (complete, GPU type, backend, sources, contract, populations, identities, equivalence, gates)',
+        job['status'] == 'ok', dict(status=job['status'], reasons=job.get('reasons')))
+    pops = job.get('populations') or {}
+    chk('registered triplet populations complete (P-cost, P-cross)', bool(pops) and all(v.get('ok') for v in pops.values()), pops)
     loaded = 'cost' in job
     ce = job.get('c_e5_1') or dict(fires=False)
     chk('C-E5.1 doubled/single case-median in [1.6, 2.4] for every doubled subject', loaded and ce.get('fires'), ce)
@@ -689,13 +753,15 @@ def main():
     ap.add_argument('--p1ref', default=None, help="P1c p1time output dir (result.json, S_*.npz)")
     ap.add_argument('--out', required=True)
     ap.add_argument('--smoke', action='store_true', help='single-job smoke acceptance; exits 1 unless ALL')
+    ap.add_argument('--gpu-type', default=None, choices=('A100-80G', 'H200', 'L40S'),
+                    help='smoke: the expected GPU type (a --job given as a bare DIR takes this type)')
     a = ap.parse_args()
-    jobs = [load_job(*x.split('=', 1), p1ref=a.p1ref) for x in a.job]
+    jobs = [load_job(*(x.split('=', 1) if '=' in x else (a.gpu_type, x)), p1ref=a.p1ref) for x in a.job]
     Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     if a.smoke:
         if len(jobs) != 1:
             raise SystemExit('--smoke takes exactly one --job')
-        r = smoke(jobs[0])
+        r = smoke(jobs[0], a.gpu_type)
         Path(a.out).write_text(json.dumps(clean(r), indent=1) + '\n')
         for k, v in r['checks'].items():
             print('OK  ' if v['ok'] else 'FAIL', k)

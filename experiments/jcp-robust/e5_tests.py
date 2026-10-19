@@ -16,16 +16,18 @@ import e5analyze as E5A
 
 HERE = Path(__file__).resolve().parent
 R128, R384 = E5A.FAMS
-ROMS = ('ckpt:x|R128|fib4181|frozen|BE|0.005|LSPG|prod', 'ckpt:x|R384|gauss128|frozen|CNR|0.005|LSPG|prod')
+ROMS = EC.E5_ROMS
 PS, CC1, CC2 = 'ps|N96|0.0125', 'fd|CC|L1024|0.0125|t2', 'fd|CC|L1024|0.005|t1'
-PINNED = {ROMS[0]: {'|H|union|joint': PS, '|H|CC|same_mesh': CC1}, ROMS[1]: {'|H|union|joint': PS, '|H|CC|same_mesh': CC2}}
+PINNED = EC.E5_PINNED
+assert PINNED == {ROMS[0]: {'|H|union|joint': PS, '|H|CC|same_mesh': CC1}, ROMS[1]: {'|H|union|joint': PS, '|H|CC|same_mesh': CC2}}
 COST_LEVEL = {R128: .25, R384: 1.0}
 SPEC = {R128: dict(Rp=128, rule='fib4181', policy='frozen', scheme='BE'), R384: dict(Rp=384, rule='gauss128', policy='frozen', scheme='CNR')}
 
 
 def w_of(label, cases):
     """Deterministic scoring-run coefficients per (subject, case): identical in a synthetic job and its P1 reference."""
-    return np.stack([np.full((6, 4), float(len(label))) + int(c.split('|')[1]) for c in cases])
+    rp = 128 if '|R128|' in label else 384
+    return np.stack([np.full((6, rp), float(len(label))) + int(c.split('|')[1]) for c in cases])
 
 
 def write_s(d, label, cases, W=None):
@@ -34,11 +36,13 @@ def write_s(d, label, cases, W=None):
 
 
 def make_ref(root, meshes=(256, 1024)):
-    """A synthetic P1c reference dir (S_*.npz over all of dev6)."""
-    d = Path(root) / 'p1ref'
+    """A synthetic P1c archive (output/p1time_time/S_*.npz over all of dev6 + the archive listing OUTPUTS.sha256)."""
+    arch = Path(root) / 'p1arch'
+    d = arch / 'output' / 'p1time_time'
     for f in E5A.FAMS:
         for L in meshes:
             write_s(d, f'{L}|{f}', [f'dev6|{i}' for i in range(6)])
+    (arch / 'OUTPUTS.sha256').write_text(''.join(f'{EC.sha_file(q)}  output/p1time_time/{q.name}\n' for q in sorted(d.glob('S_*.npz'))))
     return str(d)
 CROSS_LEVEL = {ROMS[0]: .24, ROMS[1]: 1.0, PS: .07, CC1: 1.05, CC2: 2.4}
 
@@ -47,6 +51,9 @@ def write_job(root, name, gtype, seed, ncase=6, reps=3, cost_scale=None, cross_s
               sigma=.02, gates=None):
     """A synthetic E5 job directory in the formats e5time writes (P1 p1time / fom2d c2time per-triplet records)."""
     rng = np.random.default_rng(seed)
+    att = f"test-{gtype}-{ncase}x{reps}-{'-'.join(map(str, meshes))}"
+    cl = [f'dev6|{i}' for i in range(ncase)]
+    EC.E5_CONTRACT[att] = EC.make_contract(gtype, meshes, cl, reps, cl, reps)
     d = Path(root) / name
     (d / 'pcost').mkdir(parents=True)
     cases = [f'dev6|{i}' for i in range(ncase)]
@@ -83,7 +90,7 @@ def write_job(root, name, gtype, seed, ncase=6, reps=3, cost_scale=None, cross_s
     xc = dict(config=dict(cases=[c.split('|')[0:1] + [int(c.split('|')[1])] for c in cases], roms=[dict(label=r) for r in ROMS]),
               stage2=st2, pinned=PINNED, veto=[], complete=True,
               gates=gates if gates is not None else {'G-RR': True, 'G-FR': True, 'A-valid': True})
-    top = dict(attempt=name, complete=True, gpu_type=gtype, gpu_type_ok=True, backend='gpu', source_check=[dict(ok=True)],
+    top = dict(attempt=att, complete=True, gpu_type=gtype, gpu_type_ok=True, backend='gpu', source_check=[dict(ok=True)],
                records=[], pcost=pc, pcross=xc)
     (d / 'result.json').write_text(json.dumps(top))
     (d / 'COMPLETE').write_text('complete\n')
@@ -222,8 +229,13 @@ def test_blocked_job_gives_unavailable():
 # ------------------------------------------------------------------ empty / degenerate reductions ----
 
 def test_empty_reductions_never_pass():
-    assert E5A.c_e5_1([])['fires'] is False
-    assert E5A.c_e5_1([dict(subject='s', case='c', ratio=2., drift_ok=False, identity_ok=True, same_iterations=True)])['fires'] is False
+    ct = EC.make_contract('A100-80G', (256, 1024), ['dev6|0'], 1, ['dev6|0'], 1)
+    assert E5A.c_e5_1([], ct)['fires'] is False and E5A.c_e5_1([], ct)['complete'] is False
+    rows = [dict(subject=s_, case='dev6|0', rep=0, ratio=2., drift_ok=True, identity_ok=True, same_iterations=True) for s_ in ct['doubled']]
+    assert E5A.c_e5_1(rows, ct)['fires'] is True
+    rows[0]['drift_ok'] = False
+    assert E5A.c_e5_1(rows, ct)['fires'] is False
+    assert EC.population_check([], lambda x: x, [])[0] is False
     for f in (E5A.phi_label, E5A.cost_label, E5A.s2_label):
         assert f(None, None) == 'unavailable' and f(float('nan'), 1.) == 'unavailable'
     assert E5A.interval([]) == (None, None)
@@ -328,6 +340,88 @@ def test_inventory_e5time():
         assert n('triplet', 'pcross') == (len(xc['roms']) + nf) * len(xc['cases']) * xc['reps']
         assert n('doubled', 'pcost') == len(pc['doubled']) * npc * pc['reps']
     assert any('4096|' in x[2] for x in EC.inv_e5time(json.loads((HERE / 'configs' / 'e5prod_h200.json').read_text())))
+
+
+# ------------------------------------------------------------------ code audit 4: contract, populations, smoke type ----
+
+def _rewrite(d, fn):
+    r = json.loads((Path(d) / 'result.json').read_text())
+    fn(r)
+    (Path(d) / 'result.json').write_text(json.dumps(r))
+
+
+def test_contract_matches_configs_and_unknown_attempt_fails():
+    for att, ct in EC.E5_CONTRACT.items():
+        if att.startswith('test-'):
+            continue
+        c = json.loads((HERE / 'configs' / f'{att}.json').read_text())
+        lab = lambda sp: f"{sp['mesh']}|R{sp['Rp']}|{sp['rule']}|{sp.get('policy', 'frozen')}|{sp['scheme']}"
+        assert c['gpu_type'] == ct['gpu_type'] and {lab(x) for x in c['pcost']['subjects']} == set(ct['pcost_subjects'])
+        assert EC._cases(c['pcost']['cases']) == list(ct['pcost_cases']) and c['pcost']['reps'] == ct['pcost_reps']
+        assert EC._cases(c['pcross']['cases']) == list(ct['pcross_cases']) and c['pcross']['expected_comparators'] == ct['pinned']
+    with Tmp() as t:
+        d = write_job(t, 'a1', 'A100-80G', 40)
+        _rewrite(d, lambda r: r.update(attempt='not-registered'))
+        assert 'no registered E5 contract' in E5A.load_job('A100-80G', d, p1ref=make_ref(t))['status']
+        d = write_job(t, 'h1', 'H200', 41)
+        assert 'registered for H200' in E5A.load_job('A100-80G', d, p1ref=make_ref(t))['status']
+
+
+def test_g_e5_1_reference_hash_duplicates_shapes():
+    with Tmp() as t:
+        ref = make_ref(t)
+        d = write_job(t, 'a1', 'A100-80G', 42)
+        assert E5A.load_job('A100-80G', d, p1ref=ref)['status'] == 'ok'
+        lb = f'256|{R128}'
+        cases = [f'dev6|{i}' for i in range(6)]
+        write_s(d / 'pcost', lb, cases + ['dev6|5'], np.concatenate([w_of(lb, cases), w_of(lb, ['dev6|5'])]))   # duplicate id
+        j = E5A.load_job('A100-80G', d, p1ref=ref)
+        assert j['status'] == 'blocked (gate G-E5.1)' and j['g_e5_1']['rows'][lb]['status'] == 'duplicate case ids'
+        write_s(d / 'pcost', lb, cases, w_of(lb, cases)[:, :, :1])                                 # broadcastable shape
+        j = E5A.load_job('A100-80G', d, p1ref=ref)
+        assert j['status'] == 'blocked (gate G-E5.1)' and 'shape' in j['g_e5_1']['rows'][lb]['status']
+        write_s(d / 'pcost', lb, cases)
+        assert E5A.load_job('A100-80G', d, p1ref=ref)['status'] == 'ok'
+        write_s(Path(ref), lb, cases, w_of(lb, cases) * (1 + 1e-14))                               # reference not as archived
+        j = E5A.load_job('A100-80G', d, p1ref=ref)
+        assert j['status'] == 'blocked (gate G-E5.1)' and 'listing' in j['g_e5_1']['rows'][lb]['status']
+
+
+def test_c_e5_1_and_triplet_populations_complete():
+    with Tmp() as t:
+        ref = make_ref(t)
+        for name, fn, want in (
+                ('d1', lambda r: r['pcost'].update(doubled=r['pcost']['doubled'][:1]), 'blocked (control C-E5.1: incomplete)'),
+                ('d2', lambda r: r['pcost']['doubled'].append(dict(r['pcost']['doubled'][0])), 'blocked (control C-E5.1: incomplete)'),
+                ('d3', lambda r: r['pcost']['doubled'][3].update(drift_ok=False), 'blocked (control C-E5.1: incomplete)'),
+                ('x1', lambda r: r['pcross'].update(stage2=r['pcross']['stage2'][1:]), 'blocked (P-cross triplets: incomplete)'),
+                ('x2', lambda r: r['pcross']['stage2'].append(dict(r['pcross']['stage2'][0])), 'blocked (P-cross triplets: incomplete)'),
+                ('c1', lambda r: r['pcost'].update(invocations=r['pcost']['invocations'][:-1]), 'blocked (P-cost triplets: incomplete)')):
+            d = write_job(t, name, 'A100-80G', 43, ncase=5, reps=2)
+            _rewrite(d, fn)
+            j = E5A.load_job('A100-80G', d, p1ref=ref)
+            assert want in j['reasons'], (name, j['reasons'])
+            r = E5A.smoke(j)
+            assert r['ALL'] is False, name
+            if name.startswith('x'):
+                assert all(v['label'].startswith('unavailable') for v in r['per_job']['S'].values())
+
+
+def test_smoke_expected_gpu_type():
+    with Tmp() as t:
+        ref = make_ref(t)
+        h = E5A.load_job('H200', write_job(t, 'h1', 'H200', 44, ncase=5, reps=2), p1ref=ref)
+        assert E5A.smoke(h, 'H200')['ALL'] is True
+        assert E5A.smoke(h, 'A100-80G')['ALL'] is False
+        import subprocess
+        import sys
+        out = Path(t) / 'smk.json'
+        rc = subprocess.run([sys.executable, '-c', 'import sys, e5_tests, e5analyze; '
+                             f"e5_tests.write_job({t!r}, 'h2', 'H200', 45, ncase=5, reps=2); "
+                             "sys.argv = ['e5analyze.py', '--smoke', '--gpu-type', 'H200', '--job', "
+                             f"{str(Path(t) / 'h2')!r}, '--p1ref', {ref!r}, '--out', {str(out)!r}]; e5analyze.main()"],
+                            cwd=str(HERE), capture_output=True, text=True)
+        assert rc.returncode == 0 and json.loads(out.read_text())['ALL'] is True, rc.stderr[-800:]
 
 
 if __name__ == '__main__':

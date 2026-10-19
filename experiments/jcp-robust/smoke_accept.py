@@ -231,7 +231,7 @@ def smk5(out):
     """H200 E5 panel (DESIGN 6 / A5.2), run as its own smoke after smk1 moved to an A100 (queue; A7.1)."""
     C = {}
     P1T = '/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/time/archive/output/p1time_time'
-    rc, log = run(['e5analyze.py', '--smoke', '--job', f"H200={out / 'e5time_e5smk1'}", '--p1ref', P1T,
+    rc, log = run(['e5analyze.py', '--smoke', '--gpu-type', 'H200', '--job', f"H200={out / 'e5time_e5smk1'}", '--p1ref', P1T,
                    '--out', str(HERE / 'checks' / 'smoke-smk5-e5.json')])
     chk(C, 'H200 E5 single-job smoke: ALL (job ok, C-E5.1, fixtures, G-E5.1, P-cross gates)', rc == 0, log[-1200:])
     resource_contract(C, out, 'smk5')
@@ -243,7 +243,7 @@ def smk4(out):
     rc, log = run(['e5_tests.py'])
     chk(C, 'E5 CPU tests (C-E5.3 drift, fixtures, missing-job paths)', rc == 0, log[-600:])
     P1T = '/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/time/archive/output/p1time_time'
-    rc, log = run(['e5analyze.py', '--smoke', '--job', f"A100-80G={out / 'e5time_e5smk4'}", '--p1ref', P1T,
+    rc, log = run(['e5analyze.py', '--smoke', '--gpu-type', 'A100-80G', '--job', f"A100-80G={out / 'e5time_e5smk4'}", '--p1ref', P1T,
                    '--out', str(HERE / 'checks' / 'smoke-smk4-e5.json')])
     chk(C, 'E5 single-job smoke analysis: ALL (job ok, C-E5.1, q1/q2/q3/null fixtures, G-E5.1, P-cross gates)', rc == 0, log[-1200:])
     resource_contract(C, out, 'smk4')

@@ -195,3 +195,52 @@ def klass(key):
     each FOM comparator get their own measured seconds; a class absent from the smoke timings is reported missing)."""
     _, panel, subj, kind = key[:4]
     return f'e5time|{panel}|{subj}|{kind}'
+
+
+# ------------------------------------------------------------------ registered E5 populations (code audit 4) ----
+# Independent of the job's own config: DESIGN 4.1, A1.11, A2.8 (comparators), A2.9 (smk4: dev6|0-4 x 2 reps). Keyed by
+# the e5time config attempt. Analysis requires every job's evidence to match its attempt's contract exactly.
+
+P1_REF_PREFIX = 'output/p1time_time/'           # P1c archive layout (runs/time/archive/OUTPUTS.sha256)
+E5_FAMS = ('R128|fib4181|frozen|BE', 'R384|gauss128|frozen|CNR')
+E5_RP = {'R128|fib4181|frozen|BE': 128, 'R384|gauss128|frozen|CNR': 384}
+E5_A = '1024|R384|gauss128|frozen|CNR'
+E5_ROMS = ('ckpt:18f0266ae6f0|R128|fib4181|frozen|BE|0.005|LSPG|prod',
+           'ckpt:18f0266ae6f0|R384|gauss128|frozen|CNR|0.005|LSPG|prod')
+E5_PINNED = {E5_ROMS[0]: {'|H|union|joint': 'ps|N96|0.0125', '|H|CC|same_mesh': 'fd|CC|L1024|0.0125|t2'},
+             E5_ROMS[1]: {'|H|union|joint': 'ps|N96|0.0125', '|H|CC|same_mesh': 'fd|CC|L1024|0.005|t1'}}
+_DEV5 = tuple(f'dev6|{i}' for i in range(5))
+_DEV6 = tuple(f'dev6|{i}' for i in range(6))
+_X16 = _DEV6 + tuple(f'val32|{i}' for i in range(10))
+
+
+def make_contract(gpu_type, meshes, pcost_cases, pcost_reps, pcross_cases, pcross_reps, roms=E5_ROMS, pinned=None):
+    pinned = pinned or E5_PINNED
+    subs = tuple(f'{L}|{f}' for f in E5_FAMS for L in meshes)
+    return dict(gpu_type=gpu_type, meshes=tuple(meshes), pcost_subjects=subs, scored=tuple(sorted(set(subs) | {E5_A})),
+                pcost_cases=tuple(pcost_cases), pcost_reps=int(pcost_reps),
+                doubled=(f'1024|{E5_FAMS[0]}', E5_A), roms=tuple(roms), pinned=pinned,
+                foms=tuple(sorted({k for d in pinned.values() for k in d.values()})),
+                pcross_cases=tuple(pcross_cases), pcross_reps=int(pcross_reps))
+
+
+E5_CONTRACT = {
+    'e5smk4': make_contract('A100-80G', (256, 1024), _DEV5, 2, _DEV5, 2),
+    'e5smk1': make_contract('H200', (256, 1024), _DEV5, 2, _DEV5, 2),
+    'e5prod_a100': make_contract('A100-80G', (256, 1024), _DEV6, 3, _X16, 3),
+    'e5prod_h200': make_contract('H200', (256, 1024, 4096), _DEV6, 3, _X16, 3),
+}
+
+
+def population_check(rows, keyf, required):
+    """Every required key present exactly once and no unregistered key. Returns (ok, detail)."""
+    seen = {}
+    for x in rows:
+        k = keyf(x)
+        seen[k] = seen.get(k, 0) + 1
+    req = set(required)
+    missing = sorted(map(str, req - set(seen)))
+    dup = sorted(str(k) for k, n in seen.items() if n > 1)
+    extra = sorted(map(str, set(seen) - req))
+    ok = bool(req) and not missing and not dup and not extra
+    return ok, dict(required=len(req), missing=missing[:20], n_missing=len(missing), duplicates=dup[:20], extra=extra[:20])

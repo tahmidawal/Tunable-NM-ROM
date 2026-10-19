@@ -1,0 +1,70 @@
+{
+ "source": "runs/smk2/archive/output/r2acc_smk2t",
+ "bank": "smk",
+ "job_id": "6072695",
+ "commit": "39c00e1e37c9a0b2f3c220711c8dcd7b90ee958e",
+ "selected": {
+  "128": {
+   "rule": "fib4181",
+   "outcome": "selected",
+   "smoke": true,
+   "target_certified": true,
+   "deployed": "fib4181",
+   "equals_deployed": true
+  }
+ },
+ "cells": {
+  "128": {
+   "LSPG_BE_1": {
+    "fib4181": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 1.1192290027514861e-05,
+     "median_e": 0.0644126079084745,
+     "worst_e": 0.09695181336224758
+    },
+    "gauss96": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 4.214857954792163e-05,
+     "median_e": 0.0644127250366991,
+     "worst_e": 0.09694738395120463
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   },
+   "LSPG_CNR_1": {
+    "fib4181": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 1.149866551154489e-05,
+     "median_e": 0.06496075307378436,
+     "worst_e": 0.09620524751157954
+    },
+    "gauss96": {
+     "qualified": true,
+     "own": true,
+     "status": "ok",
+     "D": 4.486202517094423e-05,
+     "median_e": 0.06496094267444016,
+     "worst_e": 0.09619950608230356
+    },
+    "_integrity": {
+     "ids_ok": true,
+     "mismatches": [],
+     "gcert_fail": 0,
+     "missing": [],
+     "ok": true
+    }
+   }
+  }
+ }
+}

@@ -1,14 +1,16 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-19T04:51:00Z",
- "step": "s2d256a COMPLETED 1:58; collecting; then analyze c2d256, results audit 3, make_report, report audit, hand-back",
+ "utc": "2026-10-19T05:07:49Z",
+ "step": "all production jobs done (ledger 21.178 GPU-h measured); verdicts for 2D 256, 2D 1024, 3D; report.md generated; results audit 3 running; then report audit and hand-back",
  "waiting_on": {
   "slurm_jobs": [],
-  "codex_output": null,
-  "codex_pid": [],
+  "codex_output": "audits/codex-results-3.md",
+  "codex_pid": [
+   740337
+  ],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T05:10:00Z",
+ "expected_finish_utc": "2026-10-19T05:26:49Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

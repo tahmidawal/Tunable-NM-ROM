@@ -49,12 +49,12 @@ Spent **35.2** of 55 GPU-h.
 - **B6-LMF** (stability checks passed): gauss: default needs fewer points; smolyak: neither qualifies; accuracy at gauss256: inconclusive (resolution).
 - **2D timing (`t2`)**: controls passed (True, True); 275 of 299 subjects usable, 208 timing-job qualified.
 - **A4 (3D) coverage**: M2_512: 18 qualified, W256: 25 qualified, W512: 32 qualified, W768: 6 qualified, W1024: 2 qualified.
-- **H2q vs C_old**: fail (the selected candidate failed confirmation) (S = 1.15) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4.
-- **H2q vs C_W768**: pass (S = 2.95) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4.
-- **H2q vs C_W1024**: pass (S = 9.87) — qualified configuration vs the deployed (unqualified) comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4.
+- **H2q vs C_old**: fail (the selected candidate failed confirmation) (S = 1.15) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
+- **H2q vs C_W768**: pass (S = 2.95) — qualified vs qualified comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
+- **H2q vs C_W1024**: pass (S = 9.87) — qualified configuration vs the deployed (unqualified) comparator; winner M2_512|gl32|qn|BDF2|0.016666667|k4; full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); tie-or-beat on E0-provisional errors.
 
 
-## A4 (2D): smallest qualifying Gauss rule $m^\*(r,M)$, LSPG-CN-R $\Delta t_0$, $1024^2$
+## A4 (2D): smallest qualifying Gauss rule $m^\*(r,M)$, LSPG-CN-R $\Delta t_0$, $1024^2$ (qualification is reference-free; no E0 number enters)
 
 | r | M | m* outcome | labels per candidate (Q qualified, N not, · missing) |
 |---|---|---|---|
@@ -199,7 +199,7 @@ Spent **35.2** of 55 GPU-h.
 | sobol\|s4 | pass | 0.000229 |
 
 
-## B6 (2D): test space $M/r$, M = r control, Galerkin vs LSPG (primary rung gauss256)
+## B6 (2D): test space $M/r$, M = r control, Galerkin vs LSPG (primary rung gauss256; transitions use E0-provisional errors)
 
 | r, scheme | M = r control | transitions | range 2–4 |
 |---|---|---|---|
@@ -589,14 +589,14 @@ Identity failures (excluding the injected control): 23, of which 23 are square (
 | 1024\|R512\|M512\|gauss96\|LSPG\|CNR\|1 | 0.789 | True | False | ok |
 
 
-## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$
+## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$ (E0-provisional errors)
 
 - **fixed (M=2048, gauss256)**: R128M2048gauss256 → R256M2048gauss256: improves; R256M2048gauss256 → R384M2048gauss256: improves; R384M2048gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
 
 - **fixed m gauss256, M=4r**: R128M512gauss256 → R256M1024gauss256: improves; R256M1024gauss256 → R384M1536gauss256: improves; R384M1536gauss256 → R512M2048gauss256: does not improve — range: **not monotone**
 
 
-Elasticities of the full-query cost (descriptive full-query elasticities (beta_r, beta_M, beta_m), not kernel exponents): β_r = 0.654 [0.642, 0.671], β_M = 0.528 [0.522, 0.532], β_m = 0.653 [0.652, 0.655].
+Elasticities of the full-query cost (descriptive full-query elasticities (beta_r, beta_M, beta_m), not kernel exponents): $\beta_r$ = 0.654 [0.642, 0.671], $\beta_M$ = 0.528 [0.522, 0.532], $\beta_m$ = 0.653 [0.652, 0.655] (case-bootstrap percentile intervals; fit $\log c=\beta_0+\beta_r\log r+\beta_M\log M+\beta_m\log m$).
 
 
 ### Deployed-path decomposition (Shapley; selection-conditioned description, not a decomposition of the error norm)
@@ -715,6 +715,31 @@ Stability checks: {'rank_ok': True, 'cond_ok': True, 'all_runs_valid': True, 'q1
 | W1024 | 2 | W1024\|gl40\|fs\|BE\|0.01\|K1, W1024\|gl48\|fs\|BE\|0.01\|K1 |
 
 
+### Qualified 3D front (qualified subset of the tested candidates (bounded search; never complete); cost = `t3s` screening ratio to C_old, full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired); errors E0-provisional)
+
+| configuration | on median front | on worst front | cost | median E0 error | worst E0 error |
+|---|---|---|---|---|---|
+| W256\|lat8192\|qn\|BDF2\|0.025\|k4 | True | True | 0.198 | 2.08 % | 5.86 % |
+| W256\|gl24\|qn\|CN\|0.025\|k4 | True | False | 0.227 | 0.839 % | 6.13 % |
+| W256\|gl24\|fs\|CN\|0.0125\|K1 | True | False | 0.263 | 0.589 % | 6.31 % |
+| W256\|gl24\|fs\|CN\|0.01\|K1 | True | False | 0.314 | 0.57 % | 6.37 % |
+| W256M2052\|lat16384\|fs\|CN\|0.01\|K1 | False | True | 0.39 | 0.571 % | 5.58 % |
+| W512\|lat16384\|qn\|BDF2\|0.025\|k4 | False | True | 0.42 | 2.04 % | 4.88 % |
+| W512\|lat32768\|qn\|CN\|0.025\|k4 | True | False | 0.617 | 0.526 % | 5.67 % |
+| M2_512\|gl32\|qn\|BDF2\|0.025\|k4 | False | True | 0.647 | 2.04 % | 4.59 % |
+| M2_512\|lat32768\|qn\|BDF2\|0.025\|k4 | False | True | 0.663 | 2.04 % | 4.59 % |
+| M2_512\|gl32\|qn\|BDF2\|0.025\|kinf | False | True | 0.663 | 2.04 % | 4.59 % |
+| W512\|lat16384s1\|fs\|CN\|0.01\|K1 | True | False | 0.701 | 0.208 % | 5.82 % |
+| W512\|lat16384s2\|fs\|CN\|0.01\|K1 | True | False | 0.703 | 0.208 % | 5.79 % |
+| W512\|lat16384s4\|fs\|CN\|0.01\|K1 | True | False | 0.704 | 0.208 % | 5.8 % |
+| W512\|lat16384s3\|fs\|CN\|0.01\|K1 | True | False | 0.705 | 0.208 % | 5.81 % |
+| M2_512\|gl32\|qn\|BDF2\|0.016666667\|k4 | False | True | 0.841 | 1.04 % | 4.24 % |
+| W512k8\|lat16384\|fs\|CN\|0.01\|K1 | False | True | 1.22 | 0.205 % | 3.14 % |
+| W768\|gl40\|fs\|CN\|0.01\|K1 | True | False | 4.61 | 0.158 % | 7.17 % |
+
+Open candidates (untested, not dominated by a qualified configuration): 2 — W1024|lat65536|fsp|CN|0.0125|K1, W1024|lat65536|fs|CN|0.0125|K2. The front is therefore a qualified subset, never complete.
+
+
 ## Qualified 3D re-timing (H2q; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM — K2 already fired)
 
 | comparator | configuration | its Q2 | label | qualified winner | n tie-or-beat | S | verdict |
@@ -818,7 +843,7 @@ Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration
 
 - A10.2: the `k3` certificate underpriced square adaptive solves; the job was split into `k3a`/`k3b`.
 
-- A12.1: the first `t3s` inventory omitted 18 numerically qualified κ-panel and fixed-(M, m) configurations; fixed before submission.
+- A12.1: the first `t3s` inventory omitted the numerically qualified κ-panel and fixed-(M, m) configurations; fixed before submission.
 
 - A12.4: 2D family draws without in-job gate evidence were labelled "offline (b) disagrees"; relabelled "missing".
 
@@ -832,6 +857,51 @@ Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration
 - smk3: 47 of 47 required controls behave as registered (accepted: True).
 
 
+## Figures
+
+The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is "not reached (unqualified corner)".
+
+![median error against M / r at gauss256, LSPG-CN-R (descriptive; B6 blocked).](plots/b6_2d_kappa.png)
+
+*median error against M / r at gauss256, LSPG-CN-R (descriptive; B6 blocked).*
+
+![online cost against m at M = 4r (t2, usable subjects).](plots/cost_2d_m.png)
+
+*online cost against m at M = 4r (t2, usable subjects).*
+
+![median E0 error (%, E0-provisional) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).](plots/heat_err_2d.png)
+
+*median E0 error (%, E0-provisional) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).*
+
+![cost c (t2, usable subjects) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).](plots/heat_cost_2d.png)
+
+*cost c (t2, usable subjects) over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).*
+
+![R128M512: median error against m per rule family; shaded = range over the five draws (descriptive).](plots/family_err_R128M512.png)
+
+*R128M512: median error against m per rule family; shaded = range over the five draws (descriptive).*
+
+![R384M1536: median error against m per rule family; shaded = range over the five draws (descriptive).](plots/family_err_R384M1536.png)
+
+*R384M1536: median error against m per rule family; shaded = range over the five draws (descriptive).*
+
+![median error against κ per r and form (descriptive; every B6 verdict is blocked).](plots/kappa_forms_2d.png)
+
+*median error against κ per r and form (descriptive; every B6 verdict is blocked).*
+
+![numerically qualified 3D configurations (screening cost vs median error), the median front, and the comparators (squares). Qualified subset, never complete.](plots/front_3d.png)
+
+*numerically qualified 3D configurations (screening cost vs median error), the median front, and the comparators (squares). Qualified subset, never complete.*
+
+![H2q confirmation speed-ups against the three comparators; dashed = pass bar. C_W1024 is an unqualified comparator.](plots/h2q_3d.png)
+
+*H2q confirmation speed-ups against the three comparators; dashed = pass bar. C_W1024 is an unqualified comparator.*
+
+![3D per-width m*; grey = no listed rule qualifies for all three specs.](plots/width_mstar_3d.png)
+
+*3D per-width m*; grey = no listed rule qualifies for all three specs.*
+
+
 ## Glossary
 
 - **r** — bank width: the number of ordered bank coefficients the reduced model solves for.
@@ -842,9 +912,9 @@ Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration
 
 - **m*** — the smallest point count on a pre-declared list at which a configuration is numerically qualified; "none" means no listed rule qualified.
 
-- **Q1** — solver qualification: every run valid, at most 1 % of steps not certified, distance to a tight solve within 2.5e-4 on every case.
+- **Q1** — solver qualification: every run valid, the non-certified steps within the registered fraction, distance to a tight solve within 0.00025 on every case.
 
-- **Q2** — quadrature qualification: the next finer rule changes the trajectory by at most 2.5e-4 on every case and the tested advection by at most 11.6 % at the reached states; the next-but-one rule must agree too.
+- **Q2** — quadrature qualification: the next finer rule (q+) changes the trajectory by at most 0.00025 on every case and the tested advection by at most ρ = 0.116 at the reached states; the next-but-one rule (q++) must agree too.
 
 - **numerically qualified** — Q1 and Q2 both pass.
 
@@ -870,7 +940,27 @@ Secondary (descriptive): against $C^q_w$, the backward-Euler FS-K1 configuration
 
 - **bad-vector control** — a deliberately degenerate lattice that the gate must flag.
 
-- **LMF** — low mixed-frequency (hyperbolic-cross) test set: modes ordered by kx·ky.
+- **LMF** — low mixed-frequency (hyperbolic-cross) test set: modes ordered by the product $k_x k_y$.
+
+- **reference A / cost c** — 2D: every timed subject is bracketed by two runs of a fixed reference configuration A; c is the subject time divided by the mean A time (1 = as expensive as A). 3D screening: the same with A = C_old.
+
+- **identity** — the timed run must reproduce, bit for bit (hashes) and within the registered tolerance (DESIGN §4) against the accuracy job, the run that was scored; otherwise its timing is unusable.
+
+- **usable** — a timing subject whose identity checks, inventory and valid-triplet fraction pass.
+
+- **censored** — a family draw that qualified at no listed rule (its m* lies above the list).
+
+- **ρ** — relative change of the tested advection term between a rule and its successor at the same reduced states.
+
+- **q+, q++** — the next finer and next-but-one rules of a ladder, used to check convergence in m.
+
+- **fs / qn / ad** — 3D solvers: fixed-step Newton (`K1`, `K2` = iteration caps), quasi-Newton (`k4` = iteration cap, `kinf` = until converged), adaptive LSPG/GAL.
+
+- **BE / CN / BDF2** — backward Euler, Crank–Nicolson, second-order backward differentiation time steppers; the number after them is the time step.
+
+- **configuration key** — 2D: `R<r>M<M><tag><rule>|<form>|<scheme>` (tag `k` = κ cell, `f` = family, `lmf` = LMF list). 3D: `<width>|<rule>|<solver>|<scheme>|<dt>|<cap>`; widths `M2_512`, `W256`…`W1024` are bank widths, `W512k<κ>` = test-space ratio κ, `M2052` = frozen test list.
+
+- **E0-provisional** — accuracy measured against E0, whose reference is a conditional Richardson estimate; verdicts depending on errors inherit that qualification.
 
 - **Shapley shares** — the average over the six axis orderings of each axis's one-step change between two deployed configurations.
 

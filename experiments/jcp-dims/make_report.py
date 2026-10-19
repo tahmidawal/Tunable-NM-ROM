@@ -11,7 +11,11 @@ from pathlib import Path
 
 import numpy as np
 
+import dstats as DSTATS
+
 HERE = Path(__file__).resolve().parent
+CONTRACT_2D = 't2: online cost c = median over valid fused triplets of t_fused / mean(t_A), full-field query, 1024^2, H200'
+CONTRACT_3D = 'full-field 65^3 mesh-path query, H200; not a comparison with the best FOM (K2 already fired)'
 PLOTS = HERE / 'plots'
 SERIES = ['#2a78d6', '#eb6834', '#1baf7a', '#eda100', '#e87ba4', '#008300', '#4a3aa7']   # categorical, fixed order
 INK, MUTED, SURF = '#0b0b0b', '#52514e', '#fcfcfb'
@@ -58,7 +62,7 @@ def sec_2d(a2, L, plots):
         return {}
     exp = {}
     cfg = a2['configurations']
-    L.append('## A4 (2D): smallest qualifying Gauss rule $m^\\*(r,M)$, LSPG-CN-R $\\Delta t_0$, $1024^2$\n')
+    L.append('## A4 (2D): smallest qualifying Gauss rule $m^\\*(r,M)$, LSPG-CN-R $\\Delta t_0$, $1024^2$ (qualification is reference-free; no E0 number enters)\n')
     rows = []
     for lid, v in sorted(a2['mstar'].items()):
         if lid.startswith('F2|'):
@@ -78,7 +82,7 @@ def sec_2d(a2, L, plots):
         L.append(table(['family, draw', 'cross-family gate', 'worst distance to gauss384'],
                        [[k, v['gate'] if 'gate' in v else f"control fired: {v.get('fired')} (fixture admitted: {v.get('fixture_admitted')})", sci(v.get('worst_dist_to_target'))] for k, v in sorted(g.items())]) + '\n')
     exp['families_2d'] = a2['families']
-    L.append('\n## B6 (2D): test space $M/r$, M = r control, Galerkin vs LSPG (primary rung gauss256)\n')
+    L.append('\n## B6 (2D): test space $M/r$, M = r control, Galerkin vs LSPG (primary rung gauss256; transitions use E0-provisional errors)\n')
     rows = []
     for k, v in sorted(a2['B6'].items()):
         if 'transitions' in v:
@@ -112,8 +116,8 @@ def sec_2d(a2, L, plots):
                  'which also fail Q1 (non-certified steps), so their rollouts are not reproducible across jobs.\n')
         rows = sorted([[k, sci(v['c']), v['usable'], v['qualified'], v.get('identity_label') or 'ok'] for k, v in subj.items()])
         L.append(table(['subject', 'cost c', 'usable', 'qualified', 'identity'], rows) + '\n')
-        exp['costs_2d'] = co
-    L.append('\n## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$\n')
+        exp['costs_2d'] = {k: (dict(v, contract=CONTRACT_2D) if not k.startswith('_') else v) for k, v in co.items()}
+    L.append('\n## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$ (E0-provisional errors)\n')
     for nm, v in a2['A3'].items():
         L.append(f"- **{nm}**: " + '; '.join(f"{t['X'].split('|')[0]} → {t['Y'].split('|')[0]}: {t['label']}" for t in v['transitions'])
                  + f" — range: **{v['range']}**\n")
@@ -121,9 +125,10 @@ def sec_2d(a2, L, plots):
         e = a2['elasticity']
         if e['status'] == 'ok':
             L.append(f"\nElasticities of the full-query cost ({e.get('label', '')}): "
-                     f"β_r = {e['beta'][1]:.3g} [{e['interval'][0][1]:.3g}, {e['interval'][1][1]:.3g}], "
-                     f"β_M = {e['beta'][2]:.3g} [{e['interval'][0][2]:.3g}, {e['interval'][1][2]:.3g}], "
-                     f"β_m = {e['beta'][3]:.3g} [{e['interval'][0][3]:.3g}, {e['interval'][1][3]:.3g}].\n")
+                     f"$\\beta_r$ = {e['beta'][1]:.3g} [{e['interval'][0][1]:.3g}, {e['interval'][1][1]:.3g}], "
+                     f"$\\beta_M$ = {e['beta'][2]:.3g} [{e['interval'][0][2]:.3g}, {e['interval'][1][2]:.3g}], "
+                     f"$\\beta_m$ = {e['beta'][3]:.3g} [{e['interval'][0][3]:.3g}, {e['interval'][1][3]:.3g}] "
+                     '(case-bootstrap percentile intervals; fit $\\log c=\\beta_0+\\beta_r\\log r+\\beta_M\\log M+\\beta_m\\log m$).\n')
         else:
             L.append(f"\nElasticity fit: {e['status']}.\n")
     if a2.get('shapley'):
@@ -145,6 +150,8 @@ def sec_2d(a2, L, plots):
     if lm.get('accuracy_gauss256'):
         L.append(f"- accuracy at gauss256: **{lm['accuracy_gauss256']['label']}**\n")
     exp['LMF'] = lm
+    exp['A3_2d'], exp['elasticity_2d'], exp['shapley_2d'] = a2.get('A3'), a2.get('elasticity'), a2.get('shapley')
+    exp['gates_2d'] = a2.get('gates')
     # plots
     plt = plots
     if plt is not None:
@@ -161,7 +168,7 @@ def sec_2d(a2, L, plots):
                 ax.plot(np.array(xs)[o], 100 * np.array(ys)[o], '-o', color=SERIES[i], lw=2, ms=4, label=f'r = {r}')
         ax.set_xscale('log', base=2)
         ax.set_xlabel('test-space ratio M / r')
-        ax.set_ylabel('median E0 error (%)')
+        ax.set_ylabel('median E0 error (%, E0-provisional)')
         ax.set_title('2D, LSPG-CN-R, gauss256: error against M / r (M = r cells fail Q1; descriptive)', color=INK, loc='left', fontsize=10)
         ax.legend(frameon=False)
         fig.tight_layout()
@@ -204,6 +211,16 @@ def sec_3d(a3, L):
     L.append('\n### Coverage: numerically qualified configurations per width\n')
     L.append(table(['width', 'n qualified', 'examples'], [[w, len(v), ', '.join(v[:3])] for w, v in a3['coverage'].items()]) + '\n')
     exp['coverage'] = {w: len(v) for w, v in a3['coverage'].items()}
+    fr, sc = a3.get('front') or {}, a3.get('screen') or {}
+    if fr:
+        L.append(f"\n### Qualified 3D front ({fr.get('label')}; cost = `t3s` screening ratio to C_old, {CONTRACT_3D}; errors E0-provisional)\n")
+        keys = sorted(set(fr.get('median', [])) | set(fr.get('worst', [])), key=lambda k: (sc.get(k, {}).get('cost') or 0))
+        L.append(table(['configuration', 'on median front', 'on worst front', 'cost', 'median E0 error', 'worst E0 error'],
+                       [[k, k in fr.get('median', []), k in fr.get('worst', []), sci(sc.get(k, {}).get('cost')), pct(sc.get(k, {}).get('median')),
+                         pct(sc.get(k, {}).get('worst'))] for k in keys]) + '\n')
+        oc = a3.get('open_candidates') or {}
+        L.append(f"Open candidates (untested, not dominated by a qualified configuration): {oc.get('count')} — "
+                 + ', '.join(oc.get('keys', [])) + '. The front is therefore a qualified subset, never complete.\n')
     if a3.get('h2q'):
         L.append('\n## Qualified 3D re-timing (H2q; full-field $65^3$ mesh-path query, H200; not a comparison with the best FOM — K2 already fired)\n')
         rows = [[c, v.get('comparator'), v.get('comparator_q2'), v.get('comparator_label'), v.get('winner'), v.get('n_matching'), sci(v.get('S')), v.get('verdict')]
@@ -214,7 +231,7 @@ def sec_3d(a3, L):
             L.append(table(['width', 'C^q_w', 'winner', 'S (confirmation)', 'S (screening)', 'verdict'],
                            [[w, v['Cq'], v['result'].get('winner'), sci(v['result'].get('S')), sci(v['result'].get('S_screen')), v['result'].get('verdict')]
                             for w, v in a3['h2q_Cq'].items()]) + '\n')
-        exp['h2q'] = a3['h2q']
+        pass
     L.append('\n## B6 (3D, W512) and A3 (3D)\n')
     for k, v in a3['B6'].items():
         if 'transitions' in v:
@@ -235,7 +252,136 @@ def sec_3d(a3, L):
                            [[k, v['gate'] if v.get('gate') else f"control fired: {v.get('fired')}", sci(v.get('worst_dist_to_target'))]
                             for k, v in sorted(g3.items())]) + '\n')
     exp['B6_3d'], exp['A3_3d'], exp['families_3d'] = a3['B6'], a3['A3'], fam
+    exp.update(width_mstar_3d=a3.get('width_mstar'), qualified_3d=a3.get('qualified_3d'), rounds_3d=a3.get('rounds'),
+               front_3d=a3.get('front'), open_candidates_3d=a3.get('open_candidates'), h2q_Cq=a3.get('h2q_Cq'),
+               screen_3d={k: dict(v, contract=CONTRACT_3D) for k, v in (a3.get('screen') or {}).items()})
+    if a3.get('h2q'):
+        exp['h2q'] = {k: dict(v, contract=CONTRACT_3D) for k, v in a3['h2q'].items()}
     return exp
+
+
+def more_plots(a2, a3, plt):
+    """DESIGN 9 plots beyond the two inline ones; returns [(file, caption)]."""
+    out = []
+    if plt is None:
+        return out
+    import re as _re
+    Rs = (128, 256, 384, 512)
+    if a2:
+        cfg, co = a2['configurations'], {k: v for k, v in (a2.get('costs') or {}).items() if not k.startswith('_')}
+        Ms = sorted({int(k.split('M')[1].split('g')[0]) for k in cfg if _re.fullmatch(r'R\d+M\d+gauss\d+\|LSPG\|CNR', k)})
+        for what, fn, val in (('median E0 error (%, E0-provisional)', 'heat_err_2d.png', lambda k: 100 * cfg[k]['median'] if cfg.get(k, {}).get('median') is not None else np.nan),
+                              ('cost c (t2, usable subjects)', 'heat_cost_2d.png',
+                               lambda k: co.get(f"1024|R{cfg[k]['r']}|M{cfg[k]['M']}|{cfg[k]['rule']}|LSPG|CNR|1", {}).get('c') if k in cfg and
+                               co.get(f"1024|R{cfg[k]['r']}|M{cfg[k]['M']}|{cfg[k]['rule']}|LSPG|CNR|1", {}).get('usable') else np.nan)):
+            Z = np.array([[val(f'R{r}M{M}gauss256|LSPG|CNR') if f'R{r}M{M}gauss256|LSPG|CNR' in cfg else np.nan for M in Ms] for r in Rs], float)
+            fig, ax = plt.subplots(figsize=(6.4, 2.8))
+            im = ax.imshow(Z, cmap='Blues', aspect='auto')
+            ax.set_xticks(range(len(Ms)), [str(m) for m in Ms], rotation=45)
+            ax.set_yticks(range(len(Rs)), [str(r) for r in Rs])
+            ax.set_xlabel('M'); ax.set_ylabel('r'); ax.grid(False)
+            for i in range(len(Rs)):
+                for j in range(len(Ms)):
+                    if np.isfinite(Z[i, j]):
+                        ax.text(j, i, f'{Z[i, j]:.2g}', ha='center', va='center', fontsize=7, color=INK if Z[i, j] < np.nanmax(Z) * .6 else SURF)
+            ax.set_title(f'2D LSPG-CN-R gauss256: {what} over (r, M); blank = not run', color=INK, loc='left', fontsize=9)
+            fig.colorbar(im, ax=ax, fraction=.03)
+            fig.tight_layout(); fig.savefig(PLOTS / fn, dpi=160); plt.close(fig)
+            out.append((fn, f'{what} over (r, M) at gauss256; M = r cells fail Q1 (descriptive only).'))
+        import rules2d
+
+        import functools
+
+        @functools.lru_cache(maxsize=None)
+        def mpts(rl):
+            try:
+                return len(rules2d.points(rl)[0])
+            except ValueError:                             # MC: the point count does not depend on the draw
+                return len(rules2d.points(rl + 's0')[0])
+        for cell in (a2.get('families') or {}):
+            fig, ax = plt.subplots(figsize=(6.4, 3.6))
+            fams = sorted((a2['families'][cell]['mstar']))
+            for i, f in enumerate(fams):
+                pref = f'{cell}' + ('' if f == 'gauss' else 'f')
+                rows = {}
+                for k, v in cfg.items():
+                    m_ = _re.fullmatch(_re.escape(pref) + rf'({f}\d+)(s(\d))?\|LSPG\|CNR', k)
+                    if m_ and v.get('median') is not None and v.get('policy') == 'frozen':
+                        rows.setdefault(m_.group(1), []).append(100 * v['median'])
+                xs = sorted(rows, key=mpts)
+                if not xs:
+                    continue
+                mm = [mpts(rl) for rl in xs]
+                med = [np.median(rows[rl]) for rl in xs]
+                ax.plot(mm, med, '-o', color=SERIES[i % len(SERIES)], lw=2, ms=4, label=f)
+                if any(len(rows[rl]) > 1 for rl in xs):
+                    ax.fill_between(mm, [min(rows[rl]) for rl in xs], [max(rows[rl]) for rl in xs], color=SERIES[i % len(SERIES)], alpha=.15, lw=0)
+            ax.set_xscale('log', base=2); ax.set_yscale('log')
+            ax.set_xlabel('quadrature points m'); ax.set_ylabel('median E0 error (%, E0-provisional)')
+            ax.set_title(f'2D {cell}: error vs m per family (band = range over draws)', color=INK, loc='left', fontsize=9)
+            ax.legend(frameon=False, fontsize=8)
+            fig.tight_layout(); fn = f'family_err_{cell}.png'; fig.savefig(PLOTS / fn, dpi=160); plt.close(fig)
+            out.append((fn, f'{cell}: median error against m per rule family; shaded = range over the five draws (descriptive).'))
+        fig, axs = plt.subplots(1, 4, figsize=(9.6, 2.8), sharey=True)
+        for ax, (form, sch, tag) in zip(axs, (('LSPG', 'CNR', ''), ('LSPG', 'CN', 'k'), ('GAL', 'CN', 'k'), ('LSPG', 'BE', 'k'))):
+            for i, r in enumerate(Rs):
+                pts = [(kap, 100 * cfg[k]['median']) for kap in (1, 2, 3, 4, 8) for k in [f'R{r}M{kap * r}{tag}gauss256|{form}|{sch}']
+                       if k in cfg and cfg[k].get('median') is not None]
+                if pts:
+                    ax.plot(*zip(*pts), '-o', color=SERIES[i], lw=2, ms=3, label=f'r = {r}')
+            ax.set_xscale('log', base=2); ax.set_title(f'{form}-{sch}', color=INK, fontsize=9); ax.set_xlabel('κ = M / r')
+        axs[0].set_ylabel('median E0 error (%)'); axs[0].legend(frameon=False, fontsize=7)
+        fig.suptitle('2D κ curves per r and form at gauss256 (E0-provisional; B6 verdicts blocked by the M = r control)', fontsize=9, x=.01, ha='left')
+        fig.tight_layout(); fig.savefig(PLOTS / 'kappa_forms_2d.png', dpi=160); plt.close(fig)
+        out.append(('kappa_forms_2d.png', 'median error against κ per r and form (descriptive; every B6 verdict is blocked).'))
+    if a3:
+        sc, fr = a3.get('screen') or {}, a3.get('front') or {}
+        if sc:
+            fig, ax = plt.subplots(figsize=(6.4, 3.8))
+            ws = ('M2_512', 'W256', 'W512', 'W768', 'W1024')
+            for i, w in enumerate(ws):
+                pts = [(v['cost'], 100 * v['median']) for k, v in sc.items() if k.split('|')[0] == w and v.get('cost')]
+                if pts:
+                    ax.scatter(*zip(*pts), s=14, color=SERIES[i], label=w, alpha=.8)
+            fm = [(sc[k]['cost'], 100 * sc[k]['median']) for k in fr.get('median', []) if k in sc and sc[k].get('cost')]
+            if fm:
+                fm.sort(); ax.plot(*zip(*fm), '-', color=INK, lw=1, label='median front')
+            for c, v in (a3.get('h2q') or {}).items():
+                k = v.get('comparator')
+                if k in sc and sc[k].get('cost'):
+                    ax.scatter([sc[k]['cost']], [100 * sc[k]['median']], marker='s', s=40, facecolors='none', edgecolors=INK)
+                    ax.annotate(c, (sc[k]['cost'], 100 * sc[k]['median']), fontsize=7, xytext=(4, 4), textcoords='offset points')
+            ax.set_xscale('log'); ax.set_xlabel('screening cost (ratio to C_old)'); ax.set_ylabel('median E0 error (%, E0-provisional)')
+            ax.set_title('3D qualified configurations and median front (t3s; full-field 65^3, H200)', color=INK, loc='left', fontsize=9)
+            ax.legend(frameon=False, fontsize=7)
+            fig.tight_layout(); fig.savefig(PLOTS / 'front_3d.png', dpi=160); plt.close(fig)
+            out.append(('front_3d.png', 'numerically qualified 3D configurations (screening cost vs median error), the median front, and the comparators (squares). Qualified subset, never complete.'))
+        if a3.get('h2q'):
+            fig, ax = plt.subplots(figsize=(6.4, 2.8))
+            cs = list(a3['h2q'])
+            S = [a3['h2q'][c].get('S') or 0 for c in cs]
+            ax.barh(cs, S, color=SERIES[0], height=.5)
+            ax.axvline(1 / .6, color=INK, lw=1, ls='--')
+            ax.text(1 / .6, len(cs) - .45, ' pass bar (1/0.6)', fontsize=7, color=INK)
+            for i, v in enumerate(S):
+                ax.text(v, i, f' {v:.3g}', va='center', fontsize=8, color=INK)
+            ax.set_xlabel('confirmed speed-up S of the qualified winner'); ax.grid(axis='y', visible=False)
+            ax.set_title('H2q (t3c; full-field 65^3, H200; not a FOM comparison)', color=INK, loc='left', fontsize=9)
+            fig.tight_layout(); fig.savefig(PLOTS / 'h2q_3d.png', dpi=160); plt.close(fig)
+            out.append(('h2q_3d.png', 'H2q confirmation speed-ups against the three comparators; dashed = pass bar. C_W1024 is an unqualified comparator.'))
+        wm = a3.get('width_mstar') or {}
+        if wm:
+            fig, ax = plt.subplots(figsize=(6.4, 2.8))
+            ks = sorted(wm)
+            vals = [wm[k]['width'].get('m') or 0 for k in ks]
+            ax.barh(ks, vals, color=[SERIES[1] if v else MUTED for v in vals], height=.5)
+            for i, (k, v) in enumerate(zip(ks, vals)):
+                ax.text(v, i, f' {v}' if v else ' none (within the list)', va='center', fontsize=7, color=INK)
+            ax.set_xscale('symlog', linthresh=1000); ax.set_xlabel('width m* (points)'); ax.grid(axis='y', visible=False)
+            ax.set_title('3D per-width m* (intersection over the three registered solver specs)', color=INK, loc='left', fontsize=9)
+            fig.tight_layout(); fig.savefig(PLOTS / 'width_mstar_3d.png', dpi=160); plt.close(fig)
+            out.append(('width_mstar_3d.png', '3D per-width m*; grey = no listed rule qualifies for all three specs.'))
+    return out
 
 
 def main():
@@ -279,6 +425,13 @@ def main():
         if v:
             n = sum(1 for x in v['results'].values() if x['required'])
             L.append(f"- {p}: {n - len(v['failures'])} of {n} required controls behave as registered (accepted: {v['accepted']}).\n")
+    figs = [('b6_2d_kappa.png', 'median error against M / r at gauss256, LSPG-CN-R (descriptive; B6 blocked).'),
+            ('cost_2d_m.png', 'online cost against m at M = 4r (t2, usable subjects).')] + more_plots(a2, a3, plt)
+    L.append('\n## Figures\n')
+    L.append('The Shapley bars of DESIGN 9 are not drawn: every deployed-path decomposition is "not reached (unqualified corner)".\n')
+    for fn, cap in figs:
+        if (PLOTS / fn).exists():
+            L.append(f'![{cap}](plots/{fn})\n\n*{cap}*\n')
     L.append('\n## Glossary\n')
     for t, d in GLOSSARY:
         L.append(f'- **{t}** — {d}\n')
@@ -292,7 +445,7 @@ RETRACTIONS = [
     'replaced the first stated discrepancy numbers, which were wrong, and labels the change a post-smoke relaxation.',
     'A7: the first `f2b` certificate underpriced small and square cells; the job was cancelled and rerun as `f2br1`.',
     'A10.2: the `k3` certificate underpriced square adaptive solves; the job was split into `k3a`/`k3b`.',
-    'A12.1: the first `t3s` inventory omitted 18 numerically qualified κ-panel and fixed-(M, m) configurations; fixed '
+    'A12.1: the first `t3s` inventory omitted the numerically qualified κ-panel and fixed-(M, m) configurations; fixed '
     'before submission.',
     'A12.4: 2D family draws without in-job gate evidence were labelled "offline (b) disagrees"; relabelled "missing".',
     'A14.1–A14.4: the registered timing-identity check, subject vetoes and panel controls were not implemented in the '
@@ -335,7 +488,7 @@ def key_outcomes(a2, a3):
         L.append('- **A4 (3D) coverage**: ' + ', '.join(f'{w}: {len(v)} qualified' for w, v in a3['coverage'].items()) + '.')
         for c, v in (a3.get('h2q') or {}).items():
             L.append(f"- **H2q vs {c}**: {v.get('verdict')}" + (f" (S = {v['S']:.3g})" if v.get('S') else '')
-                     + f" — {v.get('comparator_label')}; winner {v.get('winner')}.")
+                     + f" — {v.get('comparator_label')}; winner {v.get('winner')}; {CONTRACT_3D}; tie-or-beat on E0-provisional errors.")
         if not a3.get('h2q'):
             L.append('- **H2q**: not yet available (timing jobs pending).')
     return '\n'.join(L) + '\n'
@@ -346,8 +499,8 @@ GLOSSARY = [
     ('M', 'the number of sine test functions the residual is tested against; M/r is the test-space ratio.'),
     ('m', 'the number of quadrature points of the off-mesh rule used to integrate the nonlinear (advection) term.'),
     ('m*', 'the smallest point count on a pre-declared list at which a configuration is numerically qualified; "none" means no listed rule qualified.'),
-    ('Q1', 'solver qualification: every run valid, at most 1 % of steps not certified, distance to a tight solve within 2.5e-4 on every case.'),
-    ('Q2', 'quadrature qualification: the next finer rule changes the trajectory by at most 2.5e-4 on every case and the tested advection by at most 11.6 % at the reached states; the next-but-one rule must agree too.'),
+    ('Q1', f'solver qualification: every run valid, the non-certified steps within the registered fraction, distance to a tight solve within {DSTATS.BAR:g} on every case.'),
+    ('Q2', f'quadrature qualification: the next finer rule (q+) changes the trajectory by at most {DSTATS.BAR:g} on every case and the tested advection by at most ρ = {DSTATS.RHO_BAR:g} at the reached states; the next-but-one rule (q++) must agree too.'),
     ('numerically qualified', 'Q1 and Q2 both pass.'),
     ('ladder top', 'the two largest rules of a ladder; they have no finer rules to check against and are never qualified.'),
     ('E0 / R_ST', 'the second-order space-time reference solutions the errors are measured against.'),
@@ -360,7 +513,17 @@ GLOSSARY = [
     ('draw', 'one random realisation (shift or scramble seed) of a randomised family; five draws per family.'),
     ('cross-family gate', 'a family is flagged when its finest rule disagrees with an independent Gauss target (tested advection or rollout).'),
     ('bad-vector control', 'a deliberately degenerate lattice that the gate must flag.'),
-    ('LMF', 'low mixed-frequency (hyperbolic-cross) test set: modes ordered by kx·ky.'),
+    ('LMF', 'low mixed-frequency (hyperbolic-cross) test set: modes ordered by the product $k_x k_y$.'),
+    ('reference A / cost c', '2D: every timed subject is bracketed by two runs of a fixed reference configuration A; c is the subject time divided by the mean A time (1 = as expensive as A). 3D screening: the same with A = C_old.'),
+    ('identity', 'the timed run must reproduce, bit for bit (hashes) and within the registered tolerance (DESIGN §4) against the accuracy job, the run that was scored; otherwise its timing is unusable.'),
+    ('usable', 'a timing subject whose identity checks, inventory and valid-triplet fraction pass.'),
+    ('censored', 'a family draw that qualified at no listed rule (its m* lies above the list).'),
+    ('ρ', 'relative change of the tested advection term between a rule and its successor at the same reduced states.'),
+    ('q+, q++', 'the next finer and next-but-one rules of a ladder, used to check convergence in m.'),
+    ('fs / qn / ad', '3D solvers: fixed-step Newton (`K1`, `K2` = iteration caps), quasi-Newton (`k4` = iteration cap, `kinf` = until converged), adaptive LSPG/GAL.'),
+    ('BE / CN / BDF2', 'backward Euler, Crank–Nicolson, second-order backward differentiation time steppers; the number after them is the time step.'),
+    ('configuration key', '2D: `R<r>M<M><tag><rule>|<form>|<scheme>` (tag `k` = κ cell, `f` = family, `lmf` = LMF list). 3D: `<width>|<rule>|<solver>|<scheme>|<dt>|<cap>`; widths `M2_512`, `W256`…`W1024` are bank widths, `W512k<κ>` = test-space ratio κ, `M2052` = frozen test list.'),
+    ('E0-provisional', 'accuracy measured against E0, whose reference is a conditional Richardson estimate; verdicts depending on errors inherit that qualification.'),
     ('Shapley shares', 'the average over the six axis orderings of each axis\'s one-step change between two deployed configurations.'),
     ('elasticity β', 'the exponent of cost against r, M or m in a log-linear fit across the factorial (descriptive).'),
     ('H2q', 'speed-up of the cheapest quadrature-qualified 3D configuration that ties or beats a comparator, confirmed in a paired timing panel; pass if ≥ 1/0.6.'),

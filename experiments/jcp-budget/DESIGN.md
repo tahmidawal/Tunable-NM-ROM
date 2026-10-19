@@ -922,3 +922,13 @@ otherwise E0's procedure and is kept at $T=0.5$ (where no production case needed
 $T=1.0$ case that the tight retry could have certified is non-rankable instead; the one measured tight retry at
 $T=1.0$ (dev6 1) did not certify its case. Certificate `checks/resources-ref2t1w.json` (projection 5.4 h; the
 worst-path reserve is kept although the tight path is now off).
+
+**A14.1 (2026-10-19 04:30 UTC).** dev6 case 5's tight base retry at $T=1.0$ **did** certify the case (accepted after
+28 005 s). So of the two tight retries measured at $T=1.0$, one certified its case (dev6 5) and one did not (dev6 1).
+Consequence of A14, disclosed: val32 cases 1, 2, 3 ended 'unresolved-floor' without the retry that E0's procedure would
+have run; some of them might have been certifiable. They are non-rankable. The $T=1.0$ B7 population is the sub16
+cases accepted at $T=1.0$: dev6 0, 2, 4, 5 and val32 4–9 (10 cases, above the minimum population 8). Running the three
+tight retries (about 3.5 GPU-h each, and a separate promotion path because the non-accepted files are already promoted)
+is listed as deferred. `ref2t1` was cancelled at 04:21 UTC right after dev6 case 5 (the val32 step had started 62 s
+earlier and wrote no case file); partial collection, promotion (12 files) and the burgers-archive copy are verified.
+Ledger after all production: 25.9 of 45 GPU-h.

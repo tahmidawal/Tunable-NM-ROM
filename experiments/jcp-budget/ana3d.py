@@ -382,13 +382,13 @@ def largest3(d):
     order = sorted(((v, k) for k, (_, v) in cand.items() if res[k]), reverse=True)
     if not order:
         return 'none resolved'
-    if len(order) > 1:
-        (va, ka), (vb, kb) = order[:2]
+    va, ka = order[0]
+    for vb, kb in order[1:]:          # every resolved candidate, each with its pair-specific threshold (codex-results-1)
         ta, tb = cand[ka][0], cand[kb][0]
         tau = 3 * U if ta == tb == 'traj' else (2 * eps if ta == tb == 'ref' else 2 * eps + 3 * U)
         if va - vb <= tau:
             return 'tied'
-    return order[0][1]
+    return ka
 
 
 def pair_label3(d, p):

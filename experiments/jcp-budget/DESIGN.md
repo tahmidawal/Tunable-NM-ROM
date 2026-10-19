@@ -941,3 +941,11 @@ removed **no** rankable case: val32 1–3 with the retry would have been non-ran
 item of A14.1 is withdrawn. The $T=1.0$ B7 population is dev6 0, 2, 4 and val32 4–9 (**9 cases**, above the minimum 8).
 Cross-check tier at $T=1.0$: W1 and W2 validated (val32 0 and 19 PASS); **W3 unvalidated** — val32 case 0's FD
 reference failed the order check at $T=1.0$ ('FD-INVALID'), so W3 results are provisional with no verdicts (A2.3).
+
+**A14.3 (2026-10-19; correction, results audit `codex-results-1`).** The times quoted in A14 and A14.1 for dev6 cases 1
+and 5 (13 502 s, 28 005 s) are cumulative log timestamps, not case durations; the saved case durations are 12 916 s
+(dev6 1) and 12 683 s (dev6 5). The conclusions are unchanged. The same audit found that the dominance rule compared the
+largest candidate only with the second largest; with pair-specific tie thresholds a third candidate can tie the maximum.
+`ana2d.largest` and `ana3d.largest3` now compare the maximum with every resolved candidate; all B2 analyses were rerun
+(two counts changed, both for R384 GAL-CN 1, neither label). At $T=1.0$, `ana7` now also computes the W2 → W3 front
+order, labelled with W3's (unvalidated) tier.

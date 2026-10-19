@@ -209,8 +209,9 @@ def main():
     w(table(['attempt', 'job id', 'state', 'elapsed GPU-h'], rows))
     w('')
     w(f"Spent {g(L.get('spent_gpu_hours'))} of {g(L.get('cap_gpu_hours'))} GPU-h (Slurm accounting, `runs/GPU-LEDGER.json`). "
-      'All jobs on H200 under `/cluster/tufts/paralab/tawal01/jcp-budget/`, `jax_backend=gpu` in every log (smoke and '
-      'collection checks).')
+      'Every result-producing job ran on H200 under `/cluster/tufts/paralab/tawal01/jcp-budget/` with `jax_backend=gpu` in its '
+      'log (smoke and collection checks); `ref3` was cancelled 30 s after it started, before any case, and has no collected '
+      'log (A9). `ref2b`, `ref2c` and `ref2t1` were cancelled and partially collected (A9, A14).')
     w('')
     # ------------------------------------------------------------------ references
     w('## New references (B7, B8)')
@@ -312,7 +313,11 @@ def main():
         w(table(['member', 'dominant', 'Q', 'T', 'S', 'F (tight end)', 'e_P', 'e_dyn*', 'U*', 'pairs'], rows))
         w('')
         w('Gates: ' + ', '.join(f"{k.replace('_', '-')} {g(v.get('passed'))}" for k, v in B3['gates'].items()) +
-          '. Controls: ' + ', '.join(f"{k.replace('_', '-')} {g((v or {}).get('fired'))}" for k, v in B3['controls'].items()) + '.')
+          '. Controls: ' + ', '.join(f"{k.replace('_', '-')} {g((v or {}).get('fired', (v or {}).get('fired_any')))}" for k, v in B3['controls'].items()) + '.')
+        w('')
+        w('Not reported by `ana3d`: G-B5 does not apply in 3D (no IC ingredient); G-B1 and G-B6 are not computed in 3D — the '
+          'bitwise reproduction of every deployed corner is G-B3, and the logical corner settings were reconstructed '
+          'independently in the results audit (`audits/codex-results-1.md`), not by a gate of this lane.')
         w('')
     # ------------------------------------------------------------------ B7
     w('## B7: longer horizons')
@@ -350,9 +355,11 @@ def main():
                  g(v['growth'].get('W3/W2', {}).get('median')), v['growth'].get('W3/W2', {}).get('n', 0))
                 for mk, v in sorted(B7T1['b7'].items())]
         w(table(['member', 'Q1 at T', 'Q2 at T', 'stable', 'growth W2/W1', 'growth W3/W2', 'median g W3/W2', 'n (W3/W2)'], rows))
-        fo = B7T1.get('front_order', {})
+        fo, f3 = B7T1.get('front_order', {}), B7T1.get('front_order_W2W3', {})
         w('')
-        w(f"Front order W2 → W3 (all / LSPG): {fo.get('all', {}).get('label', '—')} / {fo.get('lspg', {}).get('label', '—')}.")
+        w(f"Front order W1 → W2 (all / LSPG): {fo.get('all', {}).get('label', '—')} / {fo.get('lspg', {}).get('label', '—')}. "
+          f"Front order W2 → W3 (all / LSPG; W3 tier {f3.get('all', {}).get('tier', '—')}, so provisional, no verdict): "
+          f"{f3.get('all', {}).get('label', '—')} / {f3.get('lspg', {}).get('label', '—')}.")
         w('')
     # ------------------------------------------------------------------ B8
     w('## B8: physical diagnostics and output-sampling adequacy')

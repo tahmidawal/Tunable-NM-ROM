@@ -414,13 +414,16 @@ def largest(d):
     order = sorted(((v, k) for k, (_, v) in cand.items() if res[k]), reverse=True)
     if not order:
         return dict(label='none resolved')
-    if len(order) > 1:
-        (va, ka), (vb, kb) = order[0], order[1]
+    va, ka = order[0]
+    tied = []
+    for vb, kb in order[1:]:          # every resolved candidate, each with its pair-specific threshold (codex-results-1)
         ta, tb = cand[ka][0], cand[kb][0]
         tau = 3 * U if ta == tb == 'traj' else (2 * eps if ta == tb == 'ref' else 2 * eps + 3 * U)
         if va - vb <= tau:
-            return dict(label='tied', top=[ka, kb])
-    return dict(label=order[0][1])
+            tied.append(kb)
+    if tied:
+        return dict(label='tied', top=[ka] + tied)
+    return dict(label=ka)
 
 
 def pair_label(d, x, y):

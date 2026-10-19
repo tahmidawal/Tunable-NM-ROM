@@ -448,11 +448,13 @@ def kendall_tau_b(x, y):
     return float((c - d) / den) if den > 0 else None
 
 
-def front_order(b7, mks, minpop):
-    """A2.4: common population of cases eligible in W1 and W2 for every member; ties within 2x the larger median eps."""
+def front_order(b7, mks, minpop, wins=('W1', 'W2')):
+    """A2.4: common population of cases eligible in both windows for every member; ties within 2x the larger median eps.
+    wins = (W1, W2) by default; at T = 1.0 also (W2, W3), whose tier carries W3's cross-check status."""
+    wa, wb = wins
     common = None
     for mk in mks:
-        ok = {x['case'] for x in b7[mk]['rows'] if x.get('elig_W1') and x.get('elig_W2')}
+        ok = {x['case'] for x in b7[mk]['rows'] if x.get(f'elig_{wa}') and x.get(f'elig_{wb}')}
         common = ok if common is None else common & ok
     common = sorted(common or [])
     if len(common) < minpop or len(mks) < 2:
@@ -460,20 +462,20 @@ def front_order(b7, mks, minpop):
     med = {}
     for mk in mks:
         rr = {x['case']: x for x in b7[mk]['rows']}
-        med[mk] = {w: float(np.median([rr[c][f'e_{w}'] for c in common])) for w in ('W1', 'W2')}
-        med[mk].update({f'eps_{w}': float(np.median([rr[c][f'eps_{w}'] for c in common])) for w in ('W1', 'W2')})
+        med[mk] = {w: float(np.median([rr[c][f'e_{w}'] for c in common])) for w in wins}
+        med[mk].update({f'eps_{w}': float(np.median([rr[c][f'eps_{w}'] for c in common])) for w in wins})
     resolved = reversed_ = 0
     for a, b in itertools.combinations(mks, 2):
-        r1 = abs(med[a]['W1'] - med[b]['W1']) > 2 * max(med[a]['eps_W1'], med[b]['eps_W1'])
-        r2 = abs(med[a]['W2'] - med[b]['W2']) > 2 * max(med[a]['eps_W2'], med[b]['eps_W2'])
+        r1 = abs(med[a][wa] - med[b][wa]) > 2 * max(med[a][f'eps_{wa}'], med[b][f'eps_{wa}'])
+        r2 = abs(med[a][wb] - med[b][wb]) > 2 * max(med[a][f'eps_{wb}'], med[b][f'eps_{wb}'])
         if r1 and r2:
             resolved += 1
-            reversed_ += int(np.sign(med[a]['W1'] - med[b]['W1']) != np.sign(med[a]['W2'] - med[b]['W2']))
+            reversed_ += int(np.sign(med[a][wa] - med[b][wa]) != np.sign(med[a][wb] - med[b][wb]))
     lab = 'inconclusive' if resolved == 0 else ('preserved' if reversed_ == 0 else 'not preserved')
-    tier = tier_of({x[f'tier_{w}'] for mk in mks for x in b7[mk]['rows'] if x['case'] in common for w in ('W1', 'W2')})
-    return dict(label=tiered(lab, tier), raw_label=lab, tier=tier, n=len(common), resolved_pairs=resolved,
+    tier = tier_of({x[f'tier_{w}'] for mk in mks for x in b7[mk]['rows'] if x['case'] in common for w in wins})
+    return dict(label=tiered(lab, tier), raw_label=lab, tier=tier, windows=list(wins), n=len(common), resolved_pairs=resolved,
                 reversed_pairs=reversed_, medians=med,
-                kendall_tau_b=kendall_tau_b([med[m]['W1'] for m in mks], [med[m]['W2'] for m in mks]))
+                kendall_tau_b=kendall_tau_b([med[m][wa] for m in mks], [med[m][wb] for m in mks]))
 
 
 def fine_recompute(run, members, fine_dir, T, check_ids):
@@ -677,6 +679,9 @@ def main():
     out['coverage']['merged_members'] = sorted(members)
     lspg = [mk for mk, m in members.items() if m['form'] == 'LSPG']
     out['front_order'] = dict(all=front_order(out['b7'], list(members), minpop), lspg=front_order(out['b7'], lspg, minpop))
+    if T > .5:                                  # W2 -> W3 (provisional while W3 is unvalidated; the tier says so)
+        out['front_order_W2W3'] = dict(all=front_order(out['b7'], list(members), minpop, ('W2', 'W3')),
+                                       lspg=front_order(out['b7'], lspg, minpop, ('W2', 'W3')))
     if out['b8']:
         out['ranking_adequacy'] = {w: dict(all=ranking_adequacy(out['b8'], list(out['b8']), w, minpop),
                                            lspg=ranking_adequacy(out['b8'], [m for m in lspg if m in out['b8']], w, minpop))

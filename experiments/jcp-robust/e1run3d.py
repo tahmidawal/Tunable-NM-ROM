@@ -65,7 +65,7 @@ def evaluate(cx, cf, rule, succ, Wt, level, cases, tcs):
     sname, sp = cf['setting'], S.parse_key(cf['spec'])
     st = cx.ST[sname]
     key = S.spec_key(sp)
-    tag = f"{cf['name']}|{rule}"
+    tag = f"{sname}|{cf['name']}|{rule}"
     r = cx.rollouts(sname, rule, [sp], cases, tag=tag)[key]
     W = r['W']
     out = dict(rule=rule, succ=succ, level=level, valid=[bool(x) for x in r['valid']], nonstationary=int(sum(r['nonst'])),
@@ -79,7 +79,7 @@ def evaluate(cx, cf, rule, succ, Wt, level, cases, tcs):
         out.update(dist_adt=cx.dist_cases(sname, W, a['W'], cases)[:, 1:].max(1).tolist(), adt_valid=a['valid'],
                    adt_tight_tighter=a['tt'], adt_tighter_valid=a['valid_tighter'])
         if succ:
-            rs = cx.rollouts(sname, succ, [sp], cases, tag=f"{cf['name']}|{rule}|succ|{succ}")[key]
+            rs = cx.rollouts(sname, succ, [sp], cases, tag=f"{sname}|{cf['name']}|{rule}|succ|{succ}")[key]
             out.update(succ_valid=[bool(x) for x in rs['valid']],
                        dist_succ=cx.dist_cases(sname, W, rs['W'], cases)[:, 1:].max(1).tolist(),
                        rho_succ=rho_rows(cx, st, rule, succ, W).tolist(), succ_sha256=st._d[succ][1]['sha256'])
@@ -113,9 +113,9 @@ def main():
                                                    M=st.M, Rp=st.Rp, draws={}, extra={}, controls={})
         # ---------------- target and target check (A3.3)
         key = S.spec_key(sp)
-        rt = cx.rollouts(sname, cf['target'], [sp], cases, tag=f"{cf['name']}|TARGET|{cf['target']}")[key]
+        rt = cx.rollouts(sname, cf['target'], [sp], cases, tag=f"{sname}|{cf['name']}|TARGET|{cf['target']}")[key]
         Wt = rt['W']
-        rc = cx.rollouts(sname, cf['check'], [sp], chk, tag=f"{cf['name']}|CHECK|{cf['check']}")[key]
+        rc = cx.rollouts(sname, cf['check'], [sp], chk, tag=f"{sname}|{cf['name']}|CHECK|{cf['check']}")[key]
         idx = [cases.index(j) for j in chk]
         res['target_run'] = dict(valid=[bool(x) for x in rt['valid']], check_valid=[bool(x) for x in rc['valid']],
                                  check_cases=chk, dist_check=cx.dist_cases(sname, Wt[idx], rc['W'], chk)[:, 1:].max(1).tolist(),
@@ -128,7 +128,7 @@ def main():
             res['draws'][str(s)], W = evaluate(cx, cf, rule, succ, Wt, 'full', cases, tcs)
             if s == cf.get('permute_draw', 0) and cf.get('permute'):      # G-E1.3: reversed case order replay
                 perm = list(reversed(cases))
-                rp = cx.rollouts(sname, rule, [sp], perm, tag=f"{cf['name']}|{rule}|PERMUTED")[key]
+                rp = cx.rollouts(sname, rule, [sp], perm, tag=f"{sname}|{cf['name']}|{rule}|PERMUTED")[key]
                 dev = []
                 for i, j in enumerate(perm):
                     w0 = W[cases.index(j)]

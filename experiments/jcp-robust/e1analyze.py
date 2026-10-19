@@ -256,8 +256,12 @@ def controls(res, gname, out, mesh):
     if 'identity' in c:
         r['C-E1.2'] = dict(c['identity'])
     if 'fixture' in c and 'bad' in c['fixture']:
-        est = json.loads((HERE / 'checks' / 'establish-e1.json').read_text())
-        pan = [p for p in est['panels'] if p['panel'].startswith('2d|')][0]
+        ef = HERE / 'checks' / 'establish-e1.json'
+        pans = [p for p in json.loads(ef.read_text())['panels'] if p['panel'].startswith('2d|')] if ef.exists() else []
+        if not pans:
+            r['C-E1.1'] = dict(admitted=False, fired=False, reason='establishment missing (control unavailable)')
+            return r
+        pan = pans[0]
         r['C-E1.1'] = E.fixture_fired(pan['states'], c['fixture']['bad']['rho_tgt'])
         r['C-E1.1']['cpu'] = [s_['rho_tgt'] for s_ in pan['states']]
         r['C-E1.1']['job'] = c['fixture']['bad']['rho_tgt']
@@ -275,6 +279,8 @@ def main():
     out = Path(a.out)
     res = json.loads((out / 'result.json').read_text())
     assert res.get('complete'), 'job output incomplete'
+    import e2bank
+    e2bank.use(res['config'].get('bank'))
     rep = dict(source=str(out), mesh=res['mesh'], commit=res['commit'], job_id=res['job_id'], gpu=res['gpu'],
                backend=res['backend'], groups={})
     for g in res['config']['groups']:

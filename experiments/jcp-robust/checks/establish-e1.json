@@ -1,0 +1,103 @@
+{
+ "rule": "admitted iff finite inputs and evaluations, ||N_tgt|| > 0 and finite rho_tgt >= 1 at every state (DESIGN 2.4, A1.3, A4.2)",
+ "panels": [
+  {
+   "states": [
+    {
+     "finite": true,
+     "target_norm": 1061.7435863620278,
+     "rho_tgt": 2.457788687301929,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 919.7799908319054,
+     "rho_tgt": 3.086373658305292,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 799.2897234436591,
+     "rho_tgt": 3.1697668849976415,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 699.7544343887738,
+     "rho_tgt": 3.167792846529176,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 612.5390773762668,
+     "rho_tgt": 3.0994433269877555,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 534.5437322268465,
+     "rho_tgt": 2.9815371933876373,
+     "ok": true
+    }
+   ],
+   "admitted": true,
+   "panel": "2d|R128|M512",
+   "bad": "badlat4181",
+   "target": "gauss384",
+   "fixture": "inputs/fixture_e1_2d.npz",
+   "fixture_sha256": "777df398a8ca7dbf0f2048ea906639805b999efe2c43c5653fd2bf9c6306b321",
+   "case": "dev6|0",
+   "seconds": 474.02560663223267,
+   "mode_list_sha256": "7e86aa237c151a26dc0da15fc15ce2c4e09c353e08bb95b0811011e1e7e01533"
+  },
+  {
+   "states": [
+    {
+     "finite": true,
+     "target_norm": 470.7555464474404,
+     "rho_tgt": 1.5028976637826474,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 392.7490099009525,
+     "rho_tgt": 1.6872638674012552,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 357.6813177553385,
+     "rho_tgt": 1.7651383761043058,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 324.09407501326876,
+     "rho_tgt": 1.8234512741025901,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 289.23703443306084,
+     "rho_tgt": 1.8684359551520395,
+     "ok": true
+    },
+    {
+     "finite": true,
+     "target_norm": 250.1959745234494,
+     "rho_tgt": 1.8992440342377466,
+     "ok": true
+    }
+   ],
+   "admitted": true,
+   "panel": "3d|W256|M1027",
+   "M": 1027,
+   "bad": "badlat8192",
+   "target": "gl64",
+   "fixture": "inputs/fixture_e1_3d.npz",
+   "fixture_sha256": "b791e71406ae3c30eddd77828b4bd15af44ce2164b2d4528232622697ab1bd02",
+   "case": 0,
+   "seconds": 1109.9617023468018
+  }
+ ]
+}

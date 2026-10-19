@@ -27,7 +27,7 @@ LANE = 'experiments/jcp-robust'
 INCUMBENT = ['experiments/separable-decoder/runs/dn256b/out/sep_hfit_dense_mid_N256_dense.pkl',
              'experiments/mr-burgers2d/engines.py', 'experiments/mr-burgers2d/iterative_paths.py',
              'experiments/separable-decoder/sep_common.py']
-DRIVERS = ('r2acc', 'e1run3d', 'd3run', 'dtime', 'e5time')
+DRIVERS = ('r2acc', 'e1run3d', 'd3run', 'e2run3d', 'dtime', 'e5time')
 GRES = {'a100-80G': ('a100', '--constraint=a100-80G'), 'a100': ('a100', None), 'h100': ('h100', None),
         'h200': ('h200', None), 'l40s': ('l40s', None)}
 SKIP = ('runs/', 'audits/', 'checks/', 'plots/', 'report', 'HEARTBEAT.json')

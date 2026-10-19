@@ -1,0 +1,443 @@
+{
+ "source": "/tmp/claude-1002/jcp-robust-cpu/out",
+ "mesh": 256,
+ "commit": null,
+ "job_id": null,
+ "gpu": "cpu",
+ "backend": "cpu",
+ "groups": {
+  "R128": {
+   "arms": {
+    "LSPG_BE_1": {
+     "arm": "LSPG_BE_1",
+     "form": "LSPG",
+     "scheme": "BE",
+     "dt": 0.005,
+     "draws": {
+      "d0": {
+       "rule": "fib4181s0",
+       "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "mismatches": [],
+       "D": 2.9771975775905527e-06,
+       "rho_tgt_max": 0.012226804293140494,
+       "rho_succ_max": 0.011145164761114115,
+       "dist_tight_max": 1.1864710321966111e-05,
+       "dist_succ_max": 1.5591975559826026e-06,
+       "e": [
+        0.0060056641416687175,
+        0.01334540541611271
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06
+       ],
+       "eligible": [
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true
+       ],
+       "dist_target": [
+        2.9771975775905527e-06,
+        8.83849474509294e-08
+       ]
+      },
+      "d1": {
+       "rule": "fib4181s1",
+       "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "mismatches": [],
+       "D": 2.4646496176260607e-06,
+       "rho_tgt_max": 0.012587746979469978,
+       "rho_succ_max": 0.01543057974720315,
+       "dist_tight_max": 1.17801888720678e-05,
+       "dist_succ_max": 1.9829570745921856e-06,
+       "e": [
+        0.006005656182069178,
+        0.013345407938102993
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06
+       ],
+       "eligible": [
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true
+       ],
+       "dist_target": [
+        2.4646496176260607e-06,
+        1.053627370037004e-07
+       ]
+      },
+      "bad": {
+       "rule": "badlat4181",
+       "rule_sha256": "7c195093119ce37b0b76b9c1398840ec3a9b5f554532094f665c9c502e018be4",
+       "level": "prod",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "diagnostic (production only)",
+       "nonst_frac": 0.0,
+       "mismatches": [],
+       "D": 0.28523877765830113,
+       "rho_tgt_max": 9.218156576067164,
+       "rho_succ_max": null,
+       "dist_tight_max": null,
+       "dist_succ_max": null,
+       "e": [
+        0.29001917420503753,
+        0.2231553904044339
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06
+       ],
+       "eligible": [
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true
+       ],
+       "dist_target": [
+        0.28523877765830113,
+        0.23025982338754328
+       ]
+      }
+     },
+     "target_valid": {
+      "dev6|0": true,
+      "dev6|1": true
+     },
+     "target_cert": {
+      "rows": [
+       {
+        "case": "dev6|0",
+        "check_valid": true,
+        "dist": 1.5253100414241839e-05,
+        "dist_job": 1.525310041424094e-05,
+        "agree": true
+       }
+      ],
+      "certified": true,
+      "label": "checked on the registered subset (dev6)"
+     },
+     "econv": [
+      0.006005453749053971,
+      0.013345415707983562
+     ],
+     "verdicts": {
+      "H_E1a": {
+       "label": "robust",
+       "failures": 0,
+       "n": 2,
+       "cp_upper_all": 0.776393202250021,
+       "cp_upper_fresh": 0.95,
+       "failed_draws": []
+      },
+      "H_E1a_own_family": {
+       "label": "robust",
+       "failures": 0,
+       "n": 2,
+       "cp_upper_all": 0.776393202250021,
+       "cp_upper_fresh": 0.95,
+       "failed_draws": []
+      },
+      "H_E1b": {
+       "label": "atypically favourable",
+       "stats": {
+        "D": [
+         2,
+         2,
+         "favourable"
+        ],
+        "median_e": [
+         1,
+         2,
+         "insensitive"
+        ],
+        "worst_e": [
+         1,
+         2,
+         "insensitive"
+        ]
+       },
+       "delta_error": 1.010833338269367e-05
+      },
+      "H_E1c": {
+       "label": "insensitive",
+       "fraction_within": 1.0,
+       "n": 2,
+       "outside": []
+      },
+      "indicator": {
+       "tp": 2,
+       "fp": 0,
+       "fn": 0,
+       "tn": 0
+      },
+      "indicator_draw0": {
+       "rho_ok": true,
+       "rollout_ok": true
+      },
+      "eligible_cases": 2
+     },
+     "G-E1.2": {
+      "passed": true,
+      "worst": 4.0880644153262386e-15,
+      "n": 2,
+      "files": [
+       {
+        "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/acc256/archive/output/p1acc_acc256/R_R128_BE.npz",
+        "sha256": "8b34ce7ad242ea30a02e4cefd024c0a711bb9acdbe4b7650f67aad3b75c1ae12"
+       }
+      ]
+     }
+    },
+    "GAL_CN_1": {
+     "arm": "GAL_CN_1",
+     "form": "GAL",
+     "scheme": "CN",
+     "dt": 0.005,
+     "draws": {
+      "d0": {
+       "rule": "fib4181s0",
+       "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "mismatches": [],
+       "D": 5.442539747720582e-06,
+       "rho_tgt_max": 0.012226804293140494,
+       "rho_succ_max": 0.011145164761114115,
+       "dist_tight_max": 2.2843528726682896e-10,
+       "dist_succ_max": 2.52338646698438e-06,
+       "e": [
+        0.002632117826353901,
+        0.0008522318741963874
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06
+       ],
+       "eligible": [
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true
+       ],
+       "dist_target": [
+        5.442539747720582e-06,
+        9.176099968896536e-08
+       ]
+      },
+      "d1": {
+       "rule": "fib4181s1",
+       "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
+       "level": "full",
+       "qualified": true,
+       "own_family_qualified": true,
+       "status": "ok",
+       "nonst_frac": 0.0,
+       "mismatches": [],
+       "D": 4.0031797551148725e-06,
+       "rho_tgt_max": 0.012587746979469978,
+       "rho_succ_max": 0.01543057974720315,
+       "dist_tight_max": 2.2843530577652613e-10,
+       "dist_succ_max": 3.1168922340779806e-06,
+       "e": [
+        0.0026316061161049007,
+        0.0008522346076154531
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06
+       ],
+       "eligible": [
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true
+       ],
+       "dist_target": [
+        4.0031797551148725e-06,
+        1.0858955046435e-07
+       ]
+      },
+      "bad": {
+       "rule": "badlat4181",
+       "rule_sha256": "7c195093119ce37b0b76b9c1398840ec3a9b5f554532094f665c9c502e018be4",
+       "level": "prod",
+       "qualified": null,
+       "own_family_qualified": null,
+       "status": "diagnostic (production only)",
+       "nonst_frac": 0.0,
+       "mismatches": [],
+       "D": 0.2872437492681661,
+       "rho_tgt_max": 9.218156576067164,
+       "rho_succ_max": null,
+       "dist_tight_max": null,
+       "dist_succ_max": null,
+       "e": [
+        0.28722693255768295,
+        0.25033273588948324
+       ],
+       "eps": [
+        1.2979413974249933e-06,
+        5.054166691346835e-06
+       ],
+       "eligible": [
+        true,
+        true
+       ],
+       "valid": [
+        true,
+        true
+       ],
+       "dist_target": [
+        0.2872437492681661,
+        0.2502352135494972
+       ]
+      }
+     },
+     "target_valid": {
+      "dev6|0": true,
+      "dev6|1": true
+     },
+     "target_cert": {
+      "rows": [
+       {
+        "case": "dev6|0",
+        "check_valid": true,
+        "dist": 2.1156546631404267e-05,
+        "dist_job": 2.1156546631403975e-05,
+        "agree": true
+       }
+      ],
+      "certified": true,
+      "label": "checked on the registered subset (dev6)"
+     },
+     "econv": [
+      0.0026319683292453993,
+      0.0008522262262469636
+     ],
+     "verdicts": {
+      "H_E1a": {
+       "label": "robust",
+       "failures": 0,
+       "n": 2,
+       "cp_upper_all": 0.776393202250021,
+       "cp_upper_fresh": 0.95,
+       "failed_draws": []
+      },
+      "H_E1a_own_family": {
+       "label": "robust",
+       "failures": 0,
+       "n": 2,
+       "cp_upper_all": 0.776393202250021,
+       "cp_upper_fresh": 0.95,
+       "failed_draws": []
+      },
+      "H_E1b": {
+       "label": "atypically favourable",
+       "stats": {
+        "D": [
+         2,
+         2,
+         "favourable"
+        ],
+        "median_e": [
+         1,
+         2,
+         "insensitive"
+        ],
+        "worst_e": [
+         1,
+         2,
+         "insensitive"
+        ]
+       },
+       "delta_error": 1.010833338269367e-05
+      },
+      "H_E1c": {
+       "label": "insensitive",
+       "fraction_within": 1.0,
+       "n": 2,
+       "outside": []
+      },
+      "indicator": {
+       "tp": 2,
+       "fp": 0,
+       "fn": 0,
+       "tn": 0
+      },
+      "indicator_draw0": {
+       "rho_ok": true,
+       "rollout_ok": true
+      },
+      "eligible_cases": 2
+     },
+     "G-E1.2": {
+      "passed": false,
+      "reason": "qualify archives not fetched"
+     }
+    }
+   },
+   "controls": {
+    "G-E1.1": {
+     "s0_equals_deployed": true,
+     "job_sha_equals_deployed": true,
+     "s1_pure_shift": true,
+     "passed": true
+    },
+    "G-E1.3": {
+     "label": "d0",
+     "arm": "LSPG_BE_1",
+     "order": [
+      "dev6|1",
+      "dev6|0"
+     ],
+     "max_rel_dev": 0.0,
+     "per_case": [
+      0.0,
+      0.0
+     ],
+     "passed": true
+    },
+    "C-E1.2": {
+     "raised": true,
+     "message": "rule identity mismatch: role d holds fib4181s1, claimed fib4181",
+     "fired": true,
+     "holder": "fib4181s1",
+     "claimed": "fib4181"
+    },
+    "C-E1.1": {
+     "admitted": false,
+     "fired": false,
+     "reason": "establishment missing (control unavailable)"
+    }
+   }
+  }
+ }
+}

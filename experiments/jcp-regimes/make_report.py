@@ -29,6 +29,23 @@ def num(x, d=3):
     return '—' if x is None else f'{x:.{d}g}'
 
 
+def finish(fig, ax, path, logx=False):
+    """Log axes when there is finite positive data; otherwise linear axes with an explicit 'no usable data' note."""
+    import matplotlib.pyplot as plt
+    try:
+        ax.set_yscale('log')
+        if logx:
+            ax.set_xscale('log')
+        fig.tight_layout()
+        fig.savefig(path, dpi=140)
+    except ValueError:
+        ax.set_yscale('linear')
+        ax.set_xscale('linear')
+        ax.text(.5, .5, 'no usable data', transform=ax.transAxes, ha='center', va='center')
+        fig.savefig(path, dpi=140)
+    plt.close(fig)
+
+
 def plots():
     import matplotlib
     matplotlib.use('Agg')
@@ -44,9 +61,9 @@ def plots():
         ys = [c['baseline']['median'] if g == 'N0' else c['cells'].get(g, {}).get('median') for g in regs]
         ax.plot(range(len(regs)), [np.nan if y is None else y for y in ys], marker='o', label=k)
     ax.set_xticks(range(len(regs)), [g if g != 'N0' else 'in-range I' for g in regs])
-    ax.set_yscale('log'); ax.set_ylabel('median error (eligible cases)'); ax.legend(fontsize=7, ncol=2)
+    ax.set_ylabel('median error (eligible cases)'); ax.legend(fontsize=7, ncol=2)
     ax.set_title('Median error by regime (E0-style, conditional)')
-    fig.tight_layout(); fig.savefig(out / 'median_by_regime.png', dpi=140); plt.close(fig)
+    finish(fig, ax, out / 'median_by_regime.png')
     # error vs distance for A+/A-, and vs s for A-/C1/C2
     import rcohorts as RG
     for key, cohs, xf, xl, fn in (('d_nu', ('Ap', 'Am'), lambda d: d['d_nu'] * (1 if d['nu'] > .1 else -1), 'signed decades outside [0.01, 0.1] (− = below)', 'error_vs_nu.png'),
@@ -60,19 +77,20 @@ def plots():
                 if coh in cohs and x['e'] and x['valid'] and x['eligible']:
                     xs.append(xf(RG.desc_2d(coh, RG.descriptors_2d(coh)[int(j)]))); ys.append(x['e'])
             ax.scatter(xs, ys, s=14, label=k)
-        ax.set_yscale('log'); ax.set_xlabel(xl); ax.set_ylabel('error')
+        ax.set_xlabel(xl); ax.set_ylabel('error')
         if key == 's':
-            ax.set_xscale('log'); ax.axvline(200, color='grey', ls='--', lw=.8)
+            ax.axvline(200, color='grey', ls='--', lw=.8)
         else:
             ax.axvline(0, color='grey', ls='--', lw=.8)
-        ax.legend(fontsize=8); fig.tight_layout(); fig.savefig(out / fn, dpi=140); plt.close(fig)
+        ax.legend(fontsize=8)
+        finish(fig, ax, out / fn, logx=(key == 's'))
     # sigma per regime
     fig, ax = plt.subplots(figsize=(8, 4))
     for i, g in enumerate(('N0', 'N0s') + REG):
         v = [x['sigma']['sigma'] for x in AN['sigma'].get(g, []) if x['sigma'] and x['sigma']['sigma']]
         ax.scatter(np.full(len(v), i) + np.random.default_rng(i).uniform(-.15, .15, len(v)), v, s=10)
-    ax.set_xticks(range(8), ('N0', 'N0s') + REG); ax.set_yscale('log'); ax.set_ylabel('σ_a (output-time interior gradient / a)')
-    fig.tight_layout(); fig.savefig(out / 'sigma_by_regime.png', dpi=140); plt.close(fig)
+    ax.set_xticks(range(8), ('N0', 'N0s') + REG); ax.set_ylabel('σ_a (output-time interior gradient / a)')
+    finish(fig, ax, out / 'sigma_by_regime.png')
 
 
 def esc(x):

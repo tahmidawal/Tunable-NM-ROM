@@ -213,6 +213,10 @@ def t_rules():
     check('2D MC bump error within 4 standard errors (32 seeds)', np.all(np.abs(e2) < 4 * se2))
     check('2D MC seeds distinct', not np.array_equal(R2.points('mc2048s0')[0], R2.points('mc2048s1')[0]))
     check('Halton3/MC in (0,1)^3, weights sum 1', np.all((X > 0) & (X < 1)) and abs(w.sum() - 1) < 1e-12)
+    for nm in ('mc8192s0', 'mc8192s3', 'hal8192s2'):                     # job audit b3m-1: both 3D families explicitly
+        Xm, wm = RN.make(nm, pin)
+        check(f'3D {nm} in (0,1)^3, weights sum 1', np.all((Xm > 0) & (Xm < 1)) and abs(wm.sum() - 1) < 1e-12)
+    check('3D MC seeds distinct', not np.array_equal(RN.make('mc8192s0', pin)[0], RN.make('mc8192s1', pin)[0]))
 
 
 def t_panel():

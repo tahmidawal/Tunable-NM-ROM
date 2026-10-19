@@ -872,3 +872,7 @@ Following the defer order (B3 stage (ii) dropped first, then the LMF set) and dr
 only if completed jobs release enough reservation (measured hours below their limits) before `t3c` is submitted, with
 `t3c` keeping priority. The stage (ii) generators passed the code audits and the CPU generator tests of §7
 (`checks/test_dims.json`).
+
+**A15.1 (2026-10-19, after `t3s`)** `t3s` used 0.55 GPU-h of its 12 h reservation, so the cap now holds 15.6 GPU-h at
+time limits beyond `t2`, `f2l` and the 2.0 h `t3c` allowance; `b3m` (3.75 h) fits with `t3c` keeping its allowance and
+priority, so `b3m` is funded rather than deferred.

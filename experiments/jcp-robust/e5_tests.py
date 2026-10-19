@@ -78,9 +78,10 @@ def write_job(root, name, gtype, seed, ncase=6, reps=3, cost_scale=None, cross_s
     for lb in subs:
         write_s(d / 'pcost', lb, cases)
     specs = [dict(SPEC[f], mesh=L) for f in E5A.FAMS for L in meshes]
+    scored = sorted(set(subs) | {EC.E5_A})
     pc = dict(config=dict(reps=reps, cases=[['dev6', int(c.split('|')[1])] for c in cases], A=dict(SPEC[R384], mesh=1024),
                           subjects=specs), subjects=subs, invocations=inv, fused=[], doubled=dbl,
-              equivalence=[dict(passed=True)], complete=True)
+              equivalence=[dict(subject=lb, fields_rel=0., same_iterations=True, passed=True) for lb in scored], complete=True)
     st2 = []
     for s in list(ROMS) + [PS, CC1, CC2]:
         for c in cases:
@@ -422,6 +423,45 @@ def test_smoke_expected_gpu_type():
                              f"{str(Path(t) / 'h2')!r}, '--p1ref', {ref!r}, '--out', {str(out)!r}]; e5analyze.main()"],
                             cwd=str(HERE), capture_output=True, text=True)
         assert rc.returncode == 0 and json.loads(out.read_text())['ALL'] is True, rc.stderr[-800:]
+
+
+# ------------------------------------------------------------------ code audit 5: equivalence population, G-E5.2 ----
+
+def test_equivalence_population_required():
+    with Tmp() as t:
+        ref = make_ref(t)
+        d0 = write_job(t, 'e0', 'A100-80G', 50, ncase=5, reps=2)
+        scored = EC.E5_CONTRACT[json.loads((d0 / 'result.json').read_text())['attempt']]['scored']
+        assert E5A.load_job('A100-80G', d0, p1ref=ref)['status'] == 'ok'
+        cases = [(f'del{i}', (lambda i: lambda r: r['pcost'].update(equivalence=[x for x in r['pcost']['equivalence']
+                                                                                 if x['subject'] != scored[i]]))(i))
+                 for i in range(len(scored))]                              # delete each required record in turn
+        cases += [('dup', lambda r: r['pcost']['equivalence'].append(dict(r['pcost']['equivalence'][0]))),
+                  ('fail', lambda r: r['pcost']['equivalence'][1].update(passed=False)),
+                  ('anon', lambda r: r['pcost'].update(equivalence=[dict(passed=True)])),
+                  ('none', lambda r: r['pcost'].update(equivalence=[]))]
+        for name, fn in cases:
+            d = write_job(t, name, 'A100-80G', 50, ncase=5, reps=2)
+            _rewrite(d, fn)
+            j = E5A.load_job('A100-80G', d, p1ref=ref)
+            assert 'blocked (control: split/fused equivalence)' in j['reasons'], (name, j['reasons'])
+            assert E5A.smoke(j, 'A100-80G', ref)['ALL'] is False, name
+
+
+def test_smoke_reports_g_e5_2_descriptive():
+    with Tmp() as t:
+        ref = make_ref(t)
+        d = write_job(t, 'a1', 'A100-80G', 51, ncase=5, reps=2)
+        (Path(ref) / 'result.json').write_text(json.dumps(json.loads((d / 'result.json').read_text())['pcost']))
+        r = E5A.smoke(E5A.load_job('A100-80G', d, p1ref=ref), 'A100-80G', ref)
+        g = r['g_e5_2_descriptive']
+        assert r['ALL'] is True and g['role'].startswith('descriptive') and g['result']['cells']
+        assert all(v['within'] for v in g['result']['cells'].values())
+        d2 = write_job(t, 'a2', 'A100-80G', 52, ncase=5, reps=2, cost_scale={(R128, 1024): 3.})
+        r = E5A.smoke(E5A.load_job('A100-80G', d2, p1ref=ref), 'A100-80G', ref)
+        assert r['ALL'] is True and not r['g_e5_2_descriptive']['result']['cells'][f'{R128}|1024']['within']   # no veto
+        r = E5A.smoke(E5A.load_job('A100-80G', d2, p1ref=make_ref(t + '/x')), 'A100-80G', make_ref(t + '/x'))
+        assert 'error' in r['g_e5_2_descriptive']['result'] and r['ALL'] is True          # no P1 result.json: still no veto
 
 
 if __name__ == '__main__':

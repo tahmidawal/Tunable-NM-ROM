@@ -132,7 +132,13 @@ def load_job(gtype, d, p1ref=None, contracts=None):
     veto = S1.identity_veto(pc.get('invocations', []), pc.get('fused', []), pc.get('doubled', []))
     job['identity_veto_pcost'] = {k: v for k, v in veto.items() if v}
     job['identity_veto_pcross'] = list(xc.get('veto', []))
-    job['equivalence_ok'] = bool(pc.get('equivalence')) and all(x.get('passed') for x in pc['equivalence'])
+    # code audit 5 item 13: one split/fused equivalence record per registered scored P-cost subject (incl. A), each
+    # passed; P-cross (c2time / e5time) writes no equivalence records, so none are registered there
+    eqr = pc.get('equivalence', [])
+    oke, de = EC.population_check(eqr, lambda x: x.get('subject'), list(ct['scored']))
+    failed_eq = sorted(str(x.get('subject')) for x in eqr if x.get('passed') is not True)
+    job['equivalence_ok'] = bool(oke and not failed_eq)
+    job['populations']['equivalence'] = dict(de, ok=job['equivalence_ok'], failed=failed_eq)
     xg = xc.get('gates') or {}
     job['pcross_gates'] = {k: xg.get(k) is True for k in PCROSS_GATES}
     job['g_e5_1'] = g_e5_1(job, p1ref, ct)
@@ -713,7 +719,7 @@ def analyze(jobs, expect, p1ref=None):
     return res
 
 
-def smoke(job, expected_type=None):
+def smoke(job, expected_type=None, p1ref=None):
     """Single-job smoke acceptance (code audit 3 item 27): no cross-type pooling; every required control / gate is an
     explicit pass/fail and ALL is their conjunction (a failed or blocked job makes ALL false)."""
     C = {}
@@ -742,8 +748,21 @@ def smoke(job, expected_type=None):
     for k in PCROSS_GATES:
         chk(f'P-cross gate {k}', pg.get(k) is True, pg.get(k))
     pj = per_job(job) if loaded else {}
+    g2 = None                                  # G-E5.2: descriptive only, never part of ALL (code audit 5 item 10)
+    if p1ref and loaded:
+        try:
+            ref = p1_reference_q1(p1ref)
+            g2 = {}
+            for c, v in pj.get('q1', {}).items():
+                rv = ref['cells'].get(c)
+                if rv and v is not None and rv['lo'] is not None:
+                    g2[c] = dict(job=v, p1=rv['q1'], p1_lo=rv['lo'], p1_hi=rv['hi'], within=bool(rv['lo'] <= v <= rv['hi']))
+            g2 = dict(cells=g2, p1_job_id=ref.get('job_id'), p1_gpu=ref.get('gpu'))
+        except Exception as e:  # noqa: BLE001
+            g2 = dict(error=repr(e))
     return dict(mode='single-job smoke (no cross-type pooling)', job=job.get('dir'), type=job['type'], checks=C,
-                ALL=bool(C) and all(v['ok'] for v in C.values()), per_job=pj)
+                ALL=bool(C) and all(v['ok'] for v in C.values()), per_job=pj,
+                g_e5_2_descriptive=dict(role='descriptive (not an acceptance veto)', result=g2))
 
 
 def main():
@@ -761,7 +780,7 @@ def main():
     if a.smoke:
         if len(jobs) != 1:
             raise SystemExit('--smoke takes exactly one --job')
-        r = smoke(jobs[0], a.gpu_type)
+        r = smoke(jobs[0], a.gpu_type, a.p1ref)
         Path(a.out).write_text(json.dumps(clean(r), indent=1) + '\n')
         for k, v in r['checks'].items():
             print('OK  ' if v['ok'] else 'FAIL', k)

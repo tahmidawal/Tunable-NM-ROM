@@ -75,7 +75,8 @@ def main():
                 tgt_ok = None
                 if g.get('gl56') and g.get('gl64') and 'gl56' in W and 'gl64' in W:
                     dchk = dist(sname, W['gl56'][:8], W['gl64'][:8], cases[:8])
-                    tgt_ok = bool(all(g['gl56']['valid'][:8]) and all(g['gl64']['valid']) and max(dchk) <= E.BAR_TC)
+                    tgt_ok = bool(len(g['gl56']['valid']) == len(cases) and len(g['gl64']['valid']) == len(cases) and len(cases) >= 8
+                                  and all(g['gl56']['valid'][:8]) and all(g['gl64']['valid']) and max(dchk) <= E.BAR_TC)
                     rep['target'][f'{sname}|{spec}'] = dict(dist_check=dchk, certified=tgt_ok, all_target_valid=all(g['gl64']['valid']))
                 for fam, cand, ladder in (('gauss', GAUSS_CAND, GAUSS), ('lattice', LAT_CAND, LAT)):
                     cells = {}

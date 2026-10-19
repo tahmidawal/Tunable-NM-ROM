@@ -108,9 +108,11 @@ def front(C1024, timing):
     id_fail = {inv['B'] for inv in tres.get('invocations', []) if not inv.get('all_hashes_ok')}
     id_fail |= {f['B'] for f in tres.get('fused', []) if not f.get('hash_ok')}          # fused-path identity too
     seen, dup = set(), set()
+    reps = range(int(tres['config']['reps']))
+    assert int(tres['config']['reps']) == 3 and tres['config']['cases'] == 'dev6', 'timing job differs from the registered contract'
     for inv in tres.get('invocations', []):
         k_ = (inv['B'], inv['case'], inv['rep'])
-        (dup if k_ in seen else seen).add(k_)
+        (dup if (k_ in seen or inv['rep'] not in reps or inv['case'] not in [f'dev6|{c}' for c in range(6)]) else seen).add(k_)
     reps_ok = {}
     for inv in tres.get('invocations', []):
         lbv = inv['B']

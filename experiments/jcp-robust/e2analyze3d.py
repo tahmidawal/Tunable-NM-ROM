@@ -46,19 +46,18 @@ def load_job(d, sc):
     return res, lad, json.loads(Path(sc).read_text())['scores'], np.load(Path(d) / f"W_{res['mode']}.npz")
 
 
-def case_q(x, nxt, d_adt, d_next):
-    """per-case qualification of a ladder rung for H-acc-r (code audit 2 #22): the configuration's pooled stationarity
-    (<= 1 %), and on the case valid production / ADT / successor runs within their bars (distances recomputed by the
-    caller), rho <= bar, and on the tighter cases 0-7 a valid tighter run within the tight/tighter bar."""
-    pooled_ok = bool(x['steps'] > 0 and x['nonstationary'] / x['steps'] <= .01)
-    tc = list(x['tighter_cases'])
+def case_q(x, nxt, d_adt, d_next, d_tt, nonst):
+    """per-case qualification of a ladder rung for H-acc-r (code audits 2 #22, 5 #5): pooled stationarity recomputed from
+    the saved certificates (nonst, <= 1 %); on the case valid production / ADT / successor runs within their bars
+    (distances recomputed by the caller), rho <= bar; on the registered tighter cases 0-7 a valid tighter run within the
+    tight/tighter bar (recomputed). Any missing evidence -> every case False is not used: the caller passes None."""
+    pooled_ok = bool(nonst is not None and nonst <= .01)
     out = []
     for i, j in enumerate(x['cases']):
         ok = bool(pooled_ok and x['valid'][i] and x['adt_valid'][i] and d_adt[i] <= E.BAR_Q1 and nxt['valid'][i] and
                   d_next[i] <= E.BAR_Q2 and max(E.num(v) for v in x['rho'][i]) <= E.BAR_RHO)
-        if j in tc:
-            k = tc.index(j)
-            ok = ok and bool(x['adt_tighter_valid'][k]) and E.num(x['adt_tight_tighter'][k]) <= E.BAR_TT
+        if j < 8:
+            ok = ok and bool(x['adt_tighter_valid'][j]) and d_tt[j] <= E.BAR_TT
         out.append(ok)
     return out
 
@@ -115,12 +114,27 @@ def main():
                     rep['integrity'] = False                                    # mappings / lengths (code audit 4 #7)
                     qs.append([False] * len(x['cases']))
                     continue
+                ktt = f"W{w_}|gl64|ad|LSPG|{sp_[1]}|{float(sp_[2]):.8g}|tighter"
+                if list(x['tighter_cases']) != list(range(8)) or len(x['adt_tighter_valid']) != 8 or \
+                        [int(v) for v in Wz['cases|' + ktt]] != list(range(8)):
+                    rep['integrity'] = False                                    # registered tighter population 0-7
+                    qs.append([False] * len(x['cases']))
+                    continue
                 d_adt = dist3(f'W{w_}', Wz[k_], Wz[kad], cs_)
                 d_nx = dist3(f'W{w_}', Wz[k_], Wz[knx], cs_)
+                d_tt = dist3(f'W{w_}', Wz[kad][:8], Wz[ktt], list(range(8)))
+                res_ = J[0][0] if any(st_['name'] == f'W{w_}' for st_ in J[0][0]['config']['settings']) else J[1][0]
+                cr = [r_ for r_ in res_['rows'] if r_.get('tag') == f'W{w_}|gl64' and r_.get('spec') == spec and 'gam_cert' in r_]
+                S_exp = int(round(.25 / float(sp_[2])))
+                ok_c = sorted(int(r_['case']) for r_ in cr) == cs_ and all(len(r_['gam_cert']) == S_exp for r_ in cr)
+                gam = [E.num(v) for r_ in cr for v in r_['gam_cert']]
+                nonst = (sum(1 for v in gam if not (np.isfinite(v) and v <= E.GAMMA)) / len(gam)) if (ok_c and gam) else None
+                if nonst is None:
+                    rep['integrity'] = False
                 if any(not (np.isfinite(E.num(j)) and abs(o - E.num(j)) <= 1e-9 * abs(E.num(j)) + 1e-13)
                        for o, j in zip(d_adt, x['dist_adt'])):
                     rep['integrity'] = False
-                qs.append(case_q(x, lad[f'W{w_}|gl80|{spec}'], d_adt, d_nx))
+                qs.append(case_q(x, lad[f'W{w_}|gl80|{spec}'], d_adt, d_nx, d_tt, nonst))
             qa, qb = qs
             ea, eb, ela, elb, ep = E_(ka), E_(kb), EL(ka), EL(kb), EP(ka)
             cs = [c for c in sorted(ea) if c in eb and ela[c] and elb[c]]
@@ -162,13 +176,16 @@ def main():
         ba = {}
         if tm.get('valid') is True and fres.get('complete') and fres['backend'] == 'gpu':     # code audit 2 #23: d3run's
             per = {}                                                                          # panel acceptance governs
-            seen = set()
-            for inv in tm['invocations']:
+            seen, bad = set(), set()
+            for inv in tm['invocations']:                               # vetoes over ALL records first (code audit 5 #4)
                 k_ = (inv['B'], inv['case'], inv['rep'])
-                if k_ in seen:                                          # duplicated repetitions never count twice
-                    continue
+                if k_ in seen or inv['rep'] not in range(3) or inv['case'] not in range(8) or not inv.get('hashes_ok'):
+                    bad.add(inv['B'])                                   # duplicate / unregistered key / identity failure
                 seen.add(k_)
-                if inv.get('hashes_ok') and 1 / 1.1 <= inv['drift'] <= 1.1 and np.isfinite(inv['ratio']) and inv['ratio'] > 0:
+            for inv in tm['invocations']:
+                if inv['B'] in bad:
+                    continue
+                if 1 / 1.1 <= inv['drift'] <= 1.1 and np.isfinite(inv['ratio']) and inv['ratio'] > 0:
                     per.setdefault(inv['B'], {}).setdefault(inv['case'], []).append(inv['ratio'])
             for nm_, pc in per.items():
                 if all(len(pc.get(c, [])) >= 2 for c in range(8)):

@@ -32,20 +32,41 @@ def chk(C, name, ok, ev=None):
 
 
 def resource_contract(C, out, att):
-    """A6.1: the smoke's staged inventory exists, lists every step (driver steps with execution counts, shell steps by
-    name) and the reservation is <= 2 GPU-h."""
+    """A6.1 (code audit 5 #3): the collected JOBSPEC equals the registered jobs/<att>.json at the job's commit; every driver
+    step's inventory equals certify.INV regenerated from the committed config at that commit (keys compared exactly);
+    every shell step lists its registered args / env / projection; the reservation equals the spec's rounded time limit
+    x GPUs and is <= 2 GPU-h."""
+    import certify as CF
     root = out.parent
-    inv = root / f'inventory-{att}.json'
-    rs = root / 'RESERVATION.json'
-    ok = inv.exists() and rs.exists()
-    ev = None
-    if ok:
-        I, R = json.loads(inv.read_text()), json.loads(rs.read_text())
+    ok, ev = True, {}
+    try:
+        commit = (root / 'COMMIT.txt').read_text().strip()
+        git = lambda path: subprocess.check_output(['git', 'show', f'{commit}:experiments/jcp-robust/{path}'], cwd=HERE)
         spec = json.loads((root / 'JOBSPEC.json').read_text())
-        steps = [st.get('config') or st.get('sh') for g in spec['groups'] for st in g]
-        ok = bool(I.get('smoke') and R['time_limit_hours'] <= 2.0 + 1e-9 and all(k in I['inventory'] for k in steps))
-        ev = dict(reserved=R['time_limit_hours'], steps=steps, listed=list(I['inventory']))
-    chk(C, 'smoke resource contract (inventory of every step, reservation <= 2 GPU-h)', ok, ev)
+        reg = json.loads(git(f'jobs/{att}.json'))
+        ok &= spec == reg
+        I = json.loads((root / f'inventory-{att}.json').read_text())
+        R = json.loads((root / 'RESERVATION.json').read_text())
+        lim = math.ceil(float(reg['hours']) * 4) / 4 * int(reg.get('gpus', 1))
+        ok &= bool(I.get('smoke')) and abs(R['time_limit_hours'] - lim) < 1e-9 and lim <= 2.0 + 1e-9
+        for g in reg['groups']:
+            for st in g:
+                if 'driver' in st:
+                    keys = CF.INV[st['driver']](json.loads(git(st['config'])))
+                    want = [list(map(str, k)) for k in sorted(set(map(tuple, keys)), key=str)]
+                    got = I['inventory'].get(st['config'], {})
+                    same = got.get('keys') == want and got.get('n') == len(keys)
+                    ev[st['config']] = dict(n=len(keys), same=same)
+                    ok &= same
+                else:
+                    got = I['inventory'].get(st['sh'], {})
+                    same = (got.get('args') == st.get('args') and got.get('env') == st.get('env')
+                            and got.get('projection_hours') == st.get('projection_hours'))
+                    ev[st['sh']] = dict(same=same)
+                    ok &= same
+    except Exception as e_:                                  # missing artefacts -> the contract fails (never passes)
+        ok, ev = False, dict(error=repr(e_))
+    chk(C, 'smoke resource contract (registered spec, regenerated inventories, reservation <= 2 GPU-h)', ok, ev)
 
 
 def smk1(out, fetched):
@@ -62,6 +83,7 @@ def smk1(out, fetched):
         chk(C, '2d C-E1.2 fires', g['controls'].get('C-E1.2', {}).get('fired'), g['controls'].get('C-E1.2'))
         chk(C, '2d C-E1.1 fires (admitted CPU fixture, in-job agreement 1 %, flagged)', g['controls'].get('C-E1.1', {}).get('fired'),
             g['controls'].get('C-E1.1'))
+        chk(C, '2d registered arm inventory (LSPG_BE_1, LSPG_CNR_1)', sorted(g['arms']) == ['LSPG_BE_1', 'LSPG_CNR_1'], sorted(g['arms']))
         for ak, av in g['arms'].items():
             chk(C, f'2d {ak} integrity (distances recomputed = in-job, G-cert, population)', av['integrity']['ok'], av['integrity'])
             chk(C, f'2d {ak} G-E1.2 reproduction on dev6', (av.get('G-E1.2') or {}).get('passed'), av.get('G-E1.2'))
@@ -81,6 +103,8 @@ def smk1(out, fetched):
         chk(C, '3d analysis runs', rc == 0, log[-800:])
     if rc == 0:
         a = json.loads((HERE / 'checks' / 'smoke-smk1-3d.json').read_text())
+        chk(C, '3d job complete on gpu', a.get('backend') == 'gpu' and (d3 / 'COMPLETE').exists(), a.get('backend'))
+        chk(C, '3d registered configuration inventory (E1-3D-a)', sorted(a['configs']) == ['E1-3D-a'], sorted(a['configs']))
         cv = a['configs']['E1-3D-a']
         ct = cv['controls']
         chk(C, '3d integrity (recomputed target / successor / ADT / tighter distances = in-job)', cv['integrity']['ok'], cv['integrity'])
@@ -195,18 +219,25 @@ def smk3(out):
     for k, n in (('W1024|gl64|fs|CN|0.01|K1', 4), ('W1024|gl80|fs|CN|0.01|K1', 4), ('W256|lat8192|qn|BDF2|0.025|k4', 8),
                  ('W256|lat16384|qn|BDF2|0.025|k4', 8), ('W256p|gl24|fs|CN|0.01|K1', 8), ('W256p|gl32|fs|CN|0.01|K1', 8)):
         x = lad.get(k)
-        chk(C, f'ladder rung {k} ran valid with ADT anchors on its {n} cases', x is not None and len(x['valid']) == n and
+        chk(C, f'ladder rung {k} ran valid with ADT anchors on its {n} cases', x is not None and list(x['cases']) == list(range(n))
+            and list(x['tighter_cases']) == list(range(n)) and len(x['adt_tighter_valid']) == n and all(x['adt_tighter_valid'])
+            and len(x['valid']) == n and
             all(x['valid']) and len(x['adt_valid']) == n and all(x['adt_valid']),
             None if x is None else dict(valid=x['valid'], dist_adt=x['dist_adt']))
     x = lad.get('W256p|gl24|fs|CN|0.01|K1')                  # the rung-selection predicate on the pilot bank (own-family)
-    if x is not None:
+    xn = lad.get('W256p|gl32|fs|CN|0.01|K1')
+    pop_ok = bool(x is not None and xn is not None and list(x['cases']) == list(range(8)) and list(x['tighter_cases']) == list(range(8))
+                  and len(x['adt_tighter_valid']) == 8 and len(x['adt_tight_tighter']) == 8 and len(x['dist_next']) == 8
+                  and list(xn['cases']) == list(range(8)))
+    chk(C, 'pilot rung pair carries the registered populations (cases 0-7, tighter 0-7)', pop_ok)
+    if x is not None and pop_ok:
         import e1stats as E
         qual, own, status = E.draw_qualified(
             dict(valid=x['valid'], valid_tight=x['adt_valid'], valid_tighter=x['adt_tighter_valid'],
                  valid_succ=lad.get('W256p|gl32|fs|CN|0.01|K1', {}).get('valid')),
             dict(tight=x['dist_adt'], tt=x['adt_tight_tighter'], succ=x.get('dist_next'),
                  rho_succ=[max(E.num(v) for v in rr) for rr in x['rho']], target=None, rho_tgt=None,
-                 nonst_frac=(x['nonstationary'] / x['steps']) if x['steps'] else None), None, len(x['valid']), len(x['adt_tight_tighter']))
+                 nonst_frac=(x['nonstationary'] / x['steps']) if x['steps'] else None), None, 8, 8)
         chk(C, 'pilot-bank rung-selection predicate evaluates (own-family label defined)', own is not None, dict(own=own, status=status))
     resource_contract(C, out, 'smk3')
     z = np.load(d / f"W_{res['mode']}.npz")

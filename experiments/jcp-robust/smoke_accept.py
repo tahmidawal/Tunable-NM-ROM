@@ -95,11 +95,7 @@ def smk1(out, fetched):
             {s: (x['status'], x['own_family_qualified']) for s, x in cv['draws'].items()})
         bs = ct.get('bad_rollout_summary', {})
         chk(C, '3d bad vector far from the target (evidence)', bs.get('any_invalid') or E_num(bs.get('D')) > 2.5e-4, bs)
-    P1T = '/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/time/archive/output/p1time_time'
-    rc, log = run(['e5analyze.py', '--smoke', '--job', f"H200={out / 'e5time_e5smk1'}", '--p1ref', P1T,
-                   '--out', str(HERE / 'checks' / 'smoke-smk1-e5.json')])
-    chk(C, 'H200 E5 single-job smoke: ALL (job ok, C-E5.1, fixtures, G-E5.1, P-cross gates)', rc == 0, log[-1200:])
-    resource_contract(C, out, 'smk1')
+    resource_contract(C, out, 'smk1b')
     return C
 
 
@@ -231,6 +227,17 @@ def smk3(out):
     return C
 
 
+def smk5(out):
+    """H200 E5 panel (DESIGN 6 / A5.2), run as its own smoke after smk1 moved to an A100 (queue; A7.1)."""
+    C = {}
+    P1T = '/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/time/archive/output/p1time_time'
+    rc, log = run(['e5analyze.py', '--smoke', '--job', f"H200={out / 'e5time_e5smk1'}", '--p1ref', P1T,
+                   '--out', str(HERE / 'checks' / 'smoke-smk5-e5.json')])
+    chk(C, 'H200 E5 single-job smoke: ALL (job ok, C-E5.1, fixtures, G-E5.1, P-cross gates)', rc == 0, log[-1200:])
+    resource_contract(C, out, 'smk5')
+    return C
+
+
 def smk4(out):
     C = {}
     rc, log = run(['e5_tests.py'])
@@ -246,7 +253,7 @@ def smk4(out):
 def main():
     which, out = sys.argv[1], Path(sys.argv[2])
     fetched = sys.argv[sys.argv.index('--fetched') + 1] if '--fetched' in sys.argv else None
-    C = {'smk1': lambda: smk1(out, fetched), 'smk2': lambda: smk2(out), 'smk3': lambda: smk3(out), 'smk4': lambda: smk4(out)}[which]()
+    C = {'smk1b': lambda: smk1(out, fetched), 'smk1': lambda: smk1(out, fetched), 'smk2': lambda: smk2(out), 'smk3': lambda: smk3(out), 'smk4': lambda: smk4(out), 'smk5': lambda: smk5(out)}[which]()
     rep = dict(smoke=which, source=str(out), checks=C, ALL=all(v['ok'] for v in C.values()),
                label='smoke acceptance (plumbing and controls at real size); never a verdict')
     (HERE / 'checks' / f'smoke-accept-{which}.json').write_text(json.dumps(rep, indent=1, default=str) + '\n')

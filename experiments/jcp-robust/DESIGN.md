@@ -780,3 +780,10 @@ registered "verdict not reached" path must result). The full chain (selection �
 jobs) first runs in production on the incumbent (`e2s0`, `e2v0*`), where the non-blocking anchor G-E2.1 and the blocking
 replay gate G-E2.3 check it before any seed's verdict is read. smk3 evaluates the 3D rung-selection predicate on the
 pilot bank (own-family label of gl24 against gl32).
+
+## Amendment A7 (2026-10-19, before any smoke output)
+
+**A7.1 smk1 moved to an A100-80G as `smk1b`; the H200 E5 panel becomes `smk5`.** smk1 (6070380) waited in the H200
+queue behind other lanes' jobs and was cancelled before it started (0 GPU-h). The E1 2D/3D smoke has no H200
+requirement (1024² and 65³ fit an A100-80G), so it runs as `smk1b` on A100-80G; the H200 E5 smoke panel of A5.2 runs as
+its own smoke `smk5` (≤ 0.5 GPU-h). Smokes stay one at a time. Nothing else changes.

@@ -68,7 +68,8 @@ SMI_QUERY = ('index,pci.bus_id,uuid,name,memory.total,driver_version,clocks.sm,c
 SMI_KEYS = tuple(SMI_QUERY.split(','))
 TELEMETRY_MANDATORY = ('name', 'uuid', 'driver_version', 'clocks.sm', 'clocks.mem', 'power.limit', 'temperature.gpu')
 TELEMETRY_MAY_BE_UNSUPPORTED = ('clocks.applications.graphics', 'clocks.applications.memory', 'power.draw')
-_UNSUP = ('[n/a]', 'n/a', '[not supported]', 'not supported', '[unknown error]')
+_UNSUP = ('[n/a]', 'n/a', '[not supported]', 'not supported')      # nvidia-smi's explicit 'no such capability' only;
+#                                                                     '[Unknown Error]' and query errors are failures
 
 
 def _unsupported(v):
@@ -206,6 +207,11 @@ def telemetry_problems(rec, uuid):
     for k in ('jax', 'jaxlib'):
         if not ver.get(k):
             p.append(f'{k} version missing')
+    for k in ('jax_cuda_plugin', 'jax_cuda_pjrt'):    # a GPU job cannot run without the CUDA plugin: 'not installed' fails
+        if not ver.get(k) or ver.get(k) == 'not installed':
+            p.append(f'{k}: {ver.get(k)!r}')
+    if not re.fullmatch(r'[0-9]+(\.[0-9]+)*', str(smi.get('cuda_driver_version') or '')):
+        p.append(f"CUDA driver version missing ({smi.get('cuda_driver_version')!r})")
     env = rec.get('env') or {}
     if env.get('JAX_DEFAULT_MATMUL_PRECISION') != 'highest':
         p.append(f"JAX_DEFAULT_MATMUL_PRECISION={env.get('JAX_DEFAULT_MATMUL_PRECISION')!r}")
@@ -214,12 +220,22 @@ def telemetry_problems(rec, uuid):
     return p
 
 
-def versions():
+CUDA_PLUGINS = ('jax-cuda12-plugin', 'jax-cuda13-plugin')
+CUDA_PJRT = ('jax-cuda12-pjrt', 'jax-cuda13-pjrt')
+
+
+def versions(dists=None):
+    """Installed versions from import metadata (names normalised to lower case with '-'); plus the explicit fields
+    jax_cuda_plugin / jax_cuda_pjrt = 'name==version' of whichever is installed, or 'not installed' when the metadata
+    shows none."""
     out = {}
-    for d in IM.distributions():
-        n = (d.metadata.get('Name') or '').lower()
+    for d in (IM.distributions() if dists is None else dists):
+        n = (d.metadata.get('Name') or '').lower().replace('_', '-')
         if n.startswith('jax') or n.startswith('nvidia-cuda') or n.startswith('nvidia-cudnn') or n in ('flax', 'numpy', 'scipy'):
             out[n] = d.version
+    for key, names in (('jax_cuda_plugin', CUDA_PLUGINS), ('jax_cuda_pjrt', CUDA_PJRT)):
+        hit = [f'{n}=={out[n]}' for n in names if out.get(n)]
+        out[key] = ', '.join(hit) if hit else 'not installed'
     return dict(sorted(out.items()))
 
 

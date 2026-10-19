@@ -153,7 +153,9 @@ def load_job(gtype, d, p1ref=None, contracts=None):
     recs = {}
     for r in top.get('records') or []:
         recs.setdefault(r.get('tag'), r)
-    tel = {tag: EC.telemetry_problems(recs.get(tag), uuid) for tag in ('start', 'end')}
+    tags = ['start', 'between-panels', 'end'] + sorted({str(r.get('tag')) for r in top.get('records') or []}
+                                                      - {'start', 'between-panels', 'end'})
+    tel = {tag: EC.telemetry_problems(recs.get(tag), uuid) for tag in tags}   # the three required records + any other
     job['telemetry'] = tel
     for tag, pr in tel.items():
         if pr:
@@ -799,8 +801,8 @@ def smoke(job, expected_type=None, p1ref=None):
     ce = job.get('c_e5_1') or dict(fires=False)
     chk('C-E5.1 doubled/single case-median in [1.6, 2.4] for every doubled subject', loaded and ce.get('fires'), ce)
     tel = job.get('telemetry') or {}
-    chk('executing device resolved; telemetry complete at start and end', bool(job.get('device_uuid')) and
-        set(tel) == {'start', 'end'} and not any(tel.values()), dict(uuid=job.get('device_uuid'), problems=tel))
+    chk('executing device resolved; telemetry complete (start, between-panels, end)', bool(job.get('device_uuid')) and
+        {'start', 'between-panels', 'end'} <= set(tel) and not any(tel.values()), dict(uuid=job.get('device_uuid'), problems=tel))
     if loaded:                                 # job audit E5 item 5: usable coverage of every required cell
         g = {'j': [job]}
         cc = case_set(g, [(f, L) for f in FAMS for L in CROSS_MESHES], job['cost_cases'], 'cost')

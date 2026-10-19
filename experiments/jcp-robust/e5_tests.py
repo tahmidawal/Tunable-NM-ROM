@@ -42,7 +42,9 @@ def telem(tag, uuid, row=None):
     r = smi_row(uuid)
     r.update(row or {})
     return dict(tag=tag, device_uuid=uuid, env={'JAX_ENABLE_X64': 'true', 'JAX_DEFAULT_MATMUL_PRECISION': 'highest'},
-                versions={'jax': '0.10.2', 'jaxlib': '0.10.2'}, nvidia_smi=dict(row=r, error=None, n_rows=1))
+                versions={'jax': '0.10.2', 'jaxlib': '0.10.2', 'jax_cuda_plugin': 'jax-cuda12-plugin==0.10.2',
+                          'jax_cuda_pjrt': 'jax-cuda12-pjrt==0.10.2'},
+                nvidia_smi=dict(row=r, error=None, n_rows=1, cuda_driver_version='12.4'))
 
 
 def write_s(d, label, cases, W=None):
@@ -572,6 +574,42 @@ def test_smoke_requires_full_panel_coverage():
             assert r['ALL'] is False, name
             bad = [k for k, v in r['checks'].items() if not v['ok']]
             assert len(bad) == 1 and ('P-cross' in bad[0] if name == 'cv1' else 'P-cost' in bad[0]), bad
+
+
+# ------------------------------------------------------------------ job audit round 2, item 8 ----
+
+class _Dist:
+    def __init__(self, name, version):
+        self.metadata, self.version = {'Name': name}, version
+
+
+def test_telemetry_round2_versions_unknown_error_three_records():
+    v = EC.versions([_Dist('jax', '0.10.2'), _Dist('jaxlib', '0.10.2'), _Dist('jax_cuda12_plugin', '0.10.2'),
+                     _Dist('jax-cuda12-pjrt', '0.10.2')])
+    assert v['jax_cuda_plugin'] == 'jax-cuda12-plugin==0.10.2' and v['jax_cuda_pjrt'] == 'jax-cuda12-pjrt==0.10.2'
+    v = EC.versions([_Dist('jax', '0.10.2'), _Dist('jaxlib', '0.10.2')])
+    assert v['jax_cuda_plugin'] == 'not installed' and v['jax_cuda_pjrt'] == 'not installed'
+    u = 'GPU-x'
+    for mut in (lambda r: r['versions'].update(jax_cuda_plugin='not installed'), lambda r: r['versions'].pop('jax_cuda_pjrt'),
+                lambda r: r['nvidia_smi'].update(cuda_driver_version=None),
+                lambda r: r['nvidia_smi'].update(cuda_driver_version='ERROR: x'),
+                lambda r: r['nvidia_smi']['row'].update({'power.draw': '[Unknown Error]'}),
+                lambda r: r['nvidia_smi']['row'].update({'clocks.applications.graphics': '[Unknown Error]'})):
+        r = telem('start', u)
+        mut(r)
+        assert EC.telemetry_problems(r, u), r
+    assert EC._unsupported('[N/A]') and EC._unsupported('[Not Supported]') and not EC._unsupported('[Unknown Error]')
+    with Tmp() as t:
+        ref = make_ref(t)
+        for name, fn in (('b1', lambda r: r.update(records=[x for x in r['records'] if x['tag'] != 'between-panels'])),
+                         ('b2', lambda r: r['records'][1]['nvidia_smi']['row'].update({'temperature.gpu': '[Unknown Error]'})),
+                         ('b3', lambda r: r['records'].append(dict(telem('pcross-after-warm', r['device_uuid']),
+                                                                   env={'JAX_DEFAULT_MATMUL_PRECISION': 'default'})))):
+            d = write_job(t, name, 'A100-80G', 80, ncase=5, reps=2)
+            _rewrite(d, fn)
+            j = E5A.load_job('A100-80G', d, p1ref=ref)
+            assert j['status'].startswith('failed') and 'telemetry' in j['status'], (name, j['status'])
+            assert E5A.smoke(j, 'A100-80G')['ALL'] is False
 
 
 if __name__ == '__main__':

@@ -192,7 +192,7 @@ def sec_3d(a3, L):
     L.append('\n## B6 (3D, W512) and A3 (3D)\n')
     for k, v in a3['B6'].items():
         if 'transitions' in v:
-            L.append(f"- **{k}**: control {v['control']}; " + '; '.join(f"{t}: {lab(x)}" for t, x in v['transitions'].items())
+            L.append(f"- **{k}**: control {v['control']}" + (f" ({v['control_list']})" if v.get('control_list') else '') + '; ' + '; '.join(f"{t}: {lab(x)}" for t, x in v['transitions'].items())
                      + f"; range 2–4: {v.get('range_2_4')}\n")
         else:
             L.append(f"- **{k}**: " + '; '.join(f"{kk}: {lab(x)}" for kk, x in v.items()) + '\n')
@@ -229,8 +229,14 @@ def main():
     exp.update(sec_2d(a2, L, plt))
     exp.update(sec_3d(a3, L))
     L.append('\n## Deferred and not reached\n')
-    L.append('- `b3m` (3D B3 stage (ii): Monte Carlo and Halton3 families) — **deferred (budget)** (DESIGN A15); the 3D mc/hal '
-             'family rows read "not reached".\n')
+    L.append('- Deferred (budget): none. The deferrable items `f2l` (LMF), `b2m` and `b3m` (B3 stage (ii)) were funded '
+             '(DESIGN A15, A15.1); `f2l` timed out once and its missing setting was rerun as `f2lr1` (A16).\n')
+    nr = []
+    for cell, f in ((a2 or {}).get('families') or {}).items():
+        nr += [f'2D {cell} {k}' for k, v in f['mstar'].items() if v['family']['outcome'].startswith('not reached')]
+    nr += [f'3D {k}' for k, v in ((a3 or {}).get('families') or {}).get('mstar', {}).items() if v['family']['outcome'].startswith('not reached')]
+    if nr:
+        L.append('- Family m* not reached at report time (missing evidence, never a verdict): ' + ', '.join(nr) + '.\n')
     L.append('- 3D square (κ = 1) adaptive cells did not pass Q1, so every 3D B6 transition is blocked (registered rule), '
              'as in 2D.\n')
     L.append('\n## Retractions and corrections during the lane (details in DESIGN.md amendments)\n')

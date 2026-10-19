@@ -455,6 +455,7 @@ def main():
             t_ = {x: dict(v, raw_label=v['label'], label=f'blocked (M = r control: {ctl})') for x, v in t_.items()}
         out['B6'][f'W512|{f}-CN adaptive'] = dict(
             transitions=t_, control_1_to_4=c_, control=ctl,
+            control_list='kappa = 1: explicit lowest-512 list (shell-breaking control, DESIGN 2.3 (3B))',
             range_2_4=(DS.range_verdict(labs_raw) if ctl == 'fired' else
                        'test-space sensitivity not demonstrated' if ctl == 'did not fire' else 'blocked (control unavailable)'),
             range_1_8=DS.range_verdict([v['label'] for v in t_.values()]) if ctl == 'fired' else None,

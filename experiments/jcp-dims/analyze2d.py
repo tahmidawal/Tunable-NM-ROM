@@ -515,14 +515,16 @@ def fixgate_offline(r, M, rules):
     return out
 
 
+CONF_FIELDS = ('attempt', 'Q1', 'pooled', 'steps', 'worst_dist_tight', 'rule', 'r', 'M', 'policy', 'form', 'scheme', 'square',
+               'disagreements', 'rho_offline')
+
+
 def main():
     C, RAW = load_all()
     man = json.loads((CFG / 'MANIFEST-cells.json').read_text())
     out = dict(label='E0 R_ST: conditional Richardson estimate (E0 A10; combined A10, A11, retracted A15 carried)',
                arm_conflicts=ARM_CONFLICT,
-               configurations={k: {kk: v[kk] for kk in ('attempt', 'Q1', 'pooled', 'steps', 'worst_dist_tight', 'rule', 'r', 'M', 'policy',
-                                                         'form', 'scheme', 'square', 'disagreements', 'rho_offline')
-                                   if kk in v} | stats_of(v) for k, v in C.items() if not k.startswith('_')},
+               configurations={k: {kk: v[kk] for kk in CONF_FIELDS if kk in v} | stats_of(v) for k, v in C.items() if not k.startswith('_')},
                ladders=[], mstar={}, families={}, gates={}, A3={}, B6={}, LMF={}, shapley_acc={})
     Q = {}
     for lad in man['ladders']:
@@ -659,7 +661,11 @@ def main():
     if lm['stability']['passed']:
         for k in lmf_keys:                                 # LMF E0 scores only now
             d_, s_, a_ = RAW[k]
-            C[k] = config_entry(C[k]['job'], d_, json.loads((d_ / 'result.json').read_text()), s_, a_, score=True)
+            keep = {kk: C[k][kk] for kk in ('attempt', 'arm_cfg') if kk in C[k]}
+            C[k] = dict(config_entry(C[k]['job'], d_, json.loads((d_ / 'result.json').read_text()), s_, a_, score=True), **keep)
+            prev = out['configurations'].get(k, {})       # results audit 1: refresh the exported summary after scoring
+            out['configurations'][k] = {kk: C[k][kk] for kk in CONF_FIELDS if kk in C[k]} | stats_of(C[k]) | \
+                {kk: prev[kk] for kk in ('Q2', 'numerically_qualified') if kk in prev}
         for f, rungs_def in (('gauss', 'F2'), ('smolyak', 'B3')):
             lid_l = next((L['id'] for lad, L in zip(man['ladders'], out['ladders']) if lad['kind'] == 'LMF' and lad['family'] == f), None)
             lid_d = next((L['id'] for lad, L in zip(man['ladders'], out['ladders']) if lad['kind'] == rungs_def and lad['r'] == 384

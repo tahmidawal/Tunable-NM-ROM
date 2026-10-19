@@ -35,8 +35,9 @@ def lab(d):
 
 
 def table(head, rows):
-    out = ['| ' + ' | '.join(head) + ' |', '|' + '---|' * len(head)]
-    out += ['| ' + ' | '.join(str(c) for c in r) + ' |' for r in rows]
+    esc = lambda c: str(c).replace('|', '\\|')                  # configuration keys contain '|'
+    out = ['| ' + ' | '.join(esc(h) for h in head) + ' |', '|' + '---|' * len(head)]
+    out += ['| ' + ' | '.join(esc(c) for c in r) + ' |' for r in rows]
     return '\n'.join(out)
 
 
@@ -74,17 +75,17 @@ def sec_2d(a2, L, plots):
                         for k, v in sorted(f['mstar'].items())]) + '\n')
         L.append(table(['comparison', 'verdict'], sorted(f['point_efficiency'].items())) + '\n')
         g = a2['gates'][cell]
-        L.append(table(['family | draw', 'cross-family gate', 'worst distance to gauss384'],
-                       [[k, v.get('gate', v.get('fired')), sci(v.get('worst_dist_to_target'))] for k, v in sorted(g.items())]) + '\n')
+        L.append(table(['family, draw', 'cross-family gate', 'worst distance to gauss384'],
+                       [[k, v['gate'] if 'gate' in v else f"control fired: {v.get('fired')} (fixture admitted: {v.get('fixture_admitted')})", sci(v.get('worst_dist_to_target'))] for k, v in sorted(g.items())]) + '\n')
     exp['families_2d'] = a2['families']
     L.append('\n## B6 (2D): test space $M/r$, M = r control, Galerkin vs LSPG (primary rung gauss256)\n')
     rows = []
     for k, v in sorted(a2['B6'].items()):
         if 'transitions' in v:
             rows.append([k, v['control'], ', '.join(f"{t}: {lab(x)}" for t, x in v['transitions'].items()), v.get('range_2_4')])
-    L.append(table(['r | scheme', 'M = r control', 'transitions', 'range 2–4'], rows) + '\n')
+    L.append(table(['r, scheme', 'M = r control', 'transitions', 'range 2–4'], rows) + '\n')
     rows = [[k, nm, lab(x)] for k, v in sorted(a2['B6'].items()) if 'GAL-vs-LSPG' in k for nm, x in v.items()]
-    L.append(table(['r | kappa', 'comparison', 'verdict'], rows) + '\n')
+    L.append(table(['r, kappa', 'comparison', 'verdict'], rows) + '\n')
     exp['B6_2d'] = a2['B6']
     L.append('\n## A3 (2D): representation size at fixed $(M,m)$ and fixed $m$\n')
     for nm, v in a2['A3'].items():

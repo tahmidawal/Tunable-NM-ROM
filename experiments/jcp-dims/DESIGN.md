@@ -799,3 +799,25 @@ any later change invalidates it while the existing cache — whose raw archives 
 from the burgers-archive and checked against the sha256 listings (committed copies: `checks/archive-listings/smk{2,3}.sha256-listing`); recomputed certificates equal the recorded
 ones (`f2kA` 11.2667, `b2f` 1.9548, `f2kB` 1.7404, `k3a` 8.3966, `b3f` 2.4419 h).
 **A11.3** A5.4's release time corrected to ~14:45 UTC (the coordinator's record).
+
+## Amendment A12 (2026-10-19, production; answers `audits/codex-job-t3s-1.md` FIX-FIRST — no registered cell, rule or verdict changes)
+
+**A12.1 Screening scope conforms to §4.** `analyze3d` had restricted `qualified_3d` to the five deployed setting names,
+so 18 numerically qualified configurations (adaptive LSPG/GAL and fixed-sweep `fs|CN` κ = 2, 3, 8 cells of W512,
+`W256M2052`) were not screened. §4 registers "every numerically qualified 3D configuration of this lane and qualify";
+the restriction is removed (coverage stays per deployed setting name, §6.5). `t3s` is regenerated (101 subjects) and
+re-certified before submission.
+**A12.2 T1 enforced.** `dstats.panel_accept` now requires the registered doubled-work subject's median ratio in
+[1.8, 2.2] (speed3d `analyze.py:39–41`, §7), else the panel is invalid; CPU tests added.
+**A12.3 Pending allowances re-estimated.** `t3c`: 2.0 GPU-h (up to six confirmation panels at 8 cases × 3 repetitions
+with the smoke per-invocation cost, ≈ 1.5 h, plus certification blocks), replacing the 1.0 h placeholder. `t2`: the
+projection of a provisional `t2` config built from the interim 2D analysis (4.80 GPU-h for 268 subjects), replacing the
+2.0 h §8 a-priori figure; the final `t2` certificate (after `f2kA`) replaces it. Consequence stated in advance: with these
+estimates the deferrable items (`b2m`, `b3m`, the LMF arm `f2l`) are expected not to fit and will be reported
+"deferred (budget)" unless the measured times release enough of the cap after `t3s`/`t2`.
+**A12.4** The 2D cross-family gate labels a family draw without in-job fixgate evidence "gate unavailable (missing)"
+instead of "offline (b) disagrees" (the stage (ii) MC draws are not run before `b2m`).
+**A12.5 Login-node outages (operational).** On 2026-10-18 ~23:00–23:30 UTC the Tufts login node timed out at the SSH
+banner repeatedly. Submissions are fail-closed: three `f2kB`/`q3r8` attempts reserved nothing or were released after a
+manual `squeue`+`sacct` check (`ledger.py settle --confirmed-absent`), and the partially staged remote directory was
+removed before resubmission; exactly one job per attempt ran.

@@ -296,5 +296,11 @@ def panel_accept(inv, certified, expected, required=None, band=(1 / 1.1, 1.1), i
     for x in inv:
         by.setdefault(x['B'], []).append(x['drift'])
     dok = all(band[0] <= float(np.median(v)) <= band[1] for v in by.values())
-    return dict(valid=bool(hok and fin and dok and not bad_cert and not short), hashes_ok=hok, ratios_finite=fin,
-                drift_ok=dok, uncertified=bad_cert, incomplete=short)
+    # speed3d T1 gate (analyze.py:39-41; DESIGN 7): when the panel registers the doubled-work subject, its median ratio
+    # must lie in [1.8, 2.2], else the panel is invalid (t3s job audit 1)
+    t1 = [x['ratio'] for x in inv if str(x['B']).startswith('T1|')]
+    t1_req = any(str(k).startswith('T1|') for k in expected)
+    t1ok = (not t1_req) or (bool(t1) and 1.8 <= float(np.median(t1)) <= 2.2)
+    return dict(valid=bool(hok and fin and dok and t1ok and not bad_cert and not short), hashes_ok=hok, ratios_finite=fin,
+                drift_ok=dok, t1_ok=t1ok, t1_median=float(np.median(t1)) if t1 else None, uncertified=bad_cert,
+                incomplete=short)

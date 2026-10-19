@@ -227,6 +227,12 @@ def t_panel():
     check('panel: no required keys -> invalid', not DS.panel_accept(inv, {('b', 0): True}, {'b': 4})['valid'])
     check('panel: unexpected subject -> invalid', not DS.panel_accept(inv + [dict(B='rogue', ratio=.5, drift=1., hashes_ok=True)],
                                                                        {('b', 0): True, ('A', 0): True}, {'b': 4}, req)['valid'])
+    t1 = lambda r: [dict(B='T1|A', ratio=r, drift=1., hashes_ok=True)] * 4
+    ex = {'b': 4, 'T1|A': 4}
+    check('panel: T1 ratio 2.0 -> valid', DS.panel_accept(inv + t1(2.0), {('b', 0): True, ('A', 0): True}, ex, req)['valid'])
+    check('panel: T1 ratio 1.5 -> invalid', not DS.panel_accept(inv + t1(1.5), {('b', 0): True, ('A', 0): True}, ex, req)['valid'])
+    check('panel: T1 ratio 2.5 -> invalid', not DS.panel_accept(inv + t1(2.5), {('b', 0): True, ('A', 0): True}, ex, req)['valid'])
+    check('panel: T1 registered but absent -> invalid', not DS.panel_accept(inv, {('b', 0): True, ('A', 0): True}, ex, req)['valid'])
     inv2 = [dict(B='b', case=0, rep=0, ratio=.5, drift=1., hashes_ok=True)] * 2
     check('panel: duplicated invocation hides a missing case -> invalid',
           not DS.panel_accept(inv2, {('b', 0): True, ('A', 0): True, ('b', 1): True, ('A', 1): True}, {'b': 2},

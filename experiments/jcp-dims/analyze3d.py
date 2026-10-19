@@ -543,7 +543,9 @@ def main():
     out['families'] = dict(mstar=fres, gates=gates, point_efficiency=pe)
     # ---- the qualified 3D set (deployment-test-space ladders, rounds, qualify passes) and coverage
     qd = json.loads((QUALIFY / 'runs' / 'EXPORT.json').read_text())['threeD']['tested']
-    qual = sorted({k for k, v in lab.items() if v and k.split('|')[0] in ('M2_512', 'W256', 'W512', 'W768', 'W1024')}
+    # DESIGN 4: every numerically qualified 3D configuration (deployment ladders, kappa / fixed-(M, m) panels, families,
+    # rounds, qualify passes) is screened (t3s job audit 1); coverage stays per deployed setting name (6.5)
+    qual = sorted({k for k, v in lab.items() if v}
                   | {k for k, v in out['rounds'].items() if v.get('label') == 'pass'} | {k for k, v in qd.items() if v == 'pass'})
     out['qualified_3d'] = qual
     out['coverage'] = {w: [k for k in qual if k.split('|')[0] == w] for w in ('M2_512', 'W256', 'W512', 'W768', 'W1024')}

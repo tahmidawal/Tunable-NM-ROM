@@ -509,7 +509,9 @@ def main():
                     dist = max(NC.fdist(NC.decode257(Rf['W'][j], r), NC.decode257(Rt['W'][j], r), SC.n0_of(Rt, j))
                                for j in range(len(Rt['W'])))
                 g = DS.cross_family_gate(rb if agree else [], avail, dist)
-                gates[f'{f}|s{s_}'] = dict(rule=fr, gate=g if agree else 'gate unavailable (offline (b) disagrees)',
+                why = 'gate unavailable (missing: no in-job fixgate evidence)' if (f != 'gauss' and fr not in fg) else \
+                    'gate unavailable (offline (b) disagrees)'
+                gates[f'{f}|s{s_}'] = dict(rule=fr, gate=g if agree else why,
                                            worst_dist_to_target=dist, rho_tgt_max=max(rb) if rb else None)
         bad = fg.get('badlat121393', {})
         adm = next((p['admitted'] for p in fixadm['panels'] if p['panel'] == f'2d|R{r}|M{M}'), False)

@@ -345,3 +345,160 @@ intervals); `runs/EXPORT.json` (verdicts, key numbers, job ids); `runs/GPU-LEDGE
 - E2 seed-dependent H-acc-N or H-acc-r → the mesh-independence / r-dial statements are restated as "for the incumbent bank"
   with the seed spread shown.
 - E5 hardware-dependent → cost-flatness or crossover statements are qualified by hardware type.
+
+---
+
+## Amendment A1 (2026-10-19, after Codex design audit 1; no data exists)
+
+Audit `audits/codex-design-1.md`: NEEDS-RESTATEMENT (5 WRONG, 10 NEEDS-RESTATEMENT). Each item is answered below; where
+A1 and the text above differ, A1 governs.
+
+**A1.1 (audit 1, 3) E1 population and draw generation.** The E1 population is the **pinned qualify population**
+(FRONT-2D v1 @2374fafe1 members + other_qualified; qualify's 3D qualified subset), not configurations qualified later
+by other lanes (e.g. dims). Draws are produced only by calling the vendored generators, never by re-implementing them:
+2D `hari_quadrature.fibonacci_lattice(k, seed=s)` (shift `np.random.default_rng(s).uniform(size=2)`, added after the
+unshifted coordinates are reduced mod 1, exactly the generator's order); 3D `rules.rank1_lattice3(n, z, seed=s)` with
+`z` recovered from the pinned deployed points (dims `rules3d_names.z_of`, bit-for-bit regeneration of $s=0$ asserted).
+G-E1.1 compares sha256 of the regenerated $s=0$ points and weights against the deployed tables.
+
+**A1.2 (audit 4) A draw "qualifies" only under the full contract.** A draw $s$ of configuration $c$ is **draw-qualified**
+iff (i) Q1 in full for that draw: every run valid, pooled non-stationary fraction $\le1\%$, distance to the adaptive tight
+solve $\le2.5\times10^{-4}$ on **every** case (tight solve run for **every** draw and case), tight/tighter agreement
+$\le2.5\times10^{-5}$ on dev6 (2D) / cases 0–7 (3D) for **every** draw; (ii) Q2 against the **draw-matched successor**
+(2D fib6765 with shift $s$; 3D lat16384 resp. lat32768 with shift $s$): rollout distance $\le2.5\times10^{-4}$ on every
+case and $\rho\le0.116$ at own reached states; (iii) the additional cross-family gate: $d\le2.5\times10^{-4}$ against the
+independent target (gauss384 / gl64) on every case. H-E1a uses draw-qualified. The §5 sentence restricting tight solves to
+draw 0 and extreme draws is **withdrawn**. GAL-CN diagnostic rows: GAL's residual criterion replaces $\gamma$ (qualify
+A1.3/A2.5), same structure; still no verdict.
+
+**A1.3 (audit 5) Bad-vector control.** The control's must-fail outcome is defined at the advection level, where the
+establishment is made: in job, the rule-gate computes $\rho_{\rm tgt}$ of `badlat4181` (2D) / `badlat8192` (3D) at the
+same frozen fixture states as the CPU establishment, and the control **fires** iff the in-job $\rho_{\rm tgt}\ge0.116$
+(the gate's bar) at $\ge1$ state **and** the in-job value agrees with the independent CPU value to $\le1\%$ relative at
+every state. The CPU establishment (independent NumPy decode, admission $\rho_{\rm tgt}\ge1$ at every state) is computed
+by this lane for these exact fixtures (dims's fixtures are different sizes/states and establish nothing here). Rollout
+divergence or invalidity of the bad rule is reported as additional evidence, with no required outcome. Not admitted →
+"control unavailable", E1 verdicts of that dimension blocked; admitted but not fired, or CPU/in-job disagreement → E1
+verdicts of that dimension "blocked (control did not fire)".
+
+**A1.4 (audit 6) Reproduction gate and precedence.** G-E1.2 / G-E5.1 / G-E2 reproduction compare **saved outputs**
+(the six output coefficient vectors and the six scoring-lattice fields when saved) of the $s=0$ / incumbent run against the
+archived run: max over cases and outputs of the relative max-norm distance $\le10^{-10}$. Archive map (read on the cluster
+from `burgers-archive/jcp-qualify/<job>/` one file at a time): 2D 256² → qualify `acc256`, 1024² → `acc1024`,
+4096² → `acc4096` (R128 fib4181 arms; LSPG and GAL); 3D E1-3D-a → `q3d3` (`W256|lat8192|qn|BDF2|0.025|k4`), E1-3D-b →
+`q3d3` (`W512|lat16384|qn|BDF2|0.025|k4`); E5 P-cost → p1-scaling `time` archive scores. Expected counts are frozen per
+configuration (2D: 38/38/16 cases × 6 outputs; 3D: 64 × 6); a missing archive file, a missing case, a count mismatch or a
+non-finite value makes the gate **fail** (never pass by an empty reduction). Every statistic over an empty or partially
+missing set is "unavailable", never pass.
+
+Precedence (applied in this order; the first that applies sets the label of every verdict it covers):
+1. job integrity (manifest, `jax_backend=gpu`, x64 + `highest` asserted, identity hashes of tables, expected counts) → "invalid job";
+2. must-fail control of the dimension/panel unavailable or not fired → "blocked (control)";
+3. positive gate (G-E1.1 identity, G-E1.2/G-E2.x reproduction, G-E1.3 permuted batching) failed → "blocked (gate)";
+4. missing / non-finite evidence for that verdict → "unavailable";
+5. the registered decision rule.
+
+**A1.5 (audit 7) E1 statistics.** The 16/16 bound is the **one-sided** 95 % Clopper–Pearson upper bound (0.171); the bound
+on the 15 fresh draws alone (0/15 → 0.181) is reported beside it, because draw 0 was kept for having passed qualification
+(selection-conditioned). Ranks are **mid-ranks** (ties share the average rank); two values are tied for ranking if equal
+to relative $10^{-12}$ (distances) or within $2\epsilon_{\rm ref}$ of each other (errors, case-median / case-worst taken over
+eligible cases). If all 16 values of a statistic are tied, that statistic is labelled "insensitive (all tied)" and does not
+enter the typicality label. A draw with any invalid run gets $D_s=+\infty$ and $+\infty$ errors for its invalid cases (ranked
+worst). Zero eligible cases → "unavailable".
+
+**A1.6 (audits 9, 10) E2 2D recipe frozen exactly; conditional estimand.** Estimand: **algorithmic robustness of the recipe
+conditional on the fixed training data set** (it does not measure sensitivity to resampling the training trajectories).
+Streams: fixed — the 576 canonical trajectories, the Stage-A 16,384-state pick (seed 0, smoothtrain line 403), the
+Stage-B extraction (`sep_coeff_extract.py` with the exact `run_dn256b.sbatch` environment `N=256 K=16 R=512
+MAX_SNAPS=131072 T_EARLY=5 N_TEST=8 SEED0=0 LOOSE=1 EXTRA_SEED=1000 EXTRA_TRAJ=4032 GEN_CHUNK=64 PROJ_CHUNK=256
+IDENT_ROWS=64`; its `SEED0` is the state pick, i.e. data, so it stays 0). Varying with $s$ — Stage A `--seed s` (network
+initialisation and the per-step random spatial point subsets `p_sub`; value-only training uses all picked states, so the
+earlier word "minibatch" is withdrawn); Stage B head fit `sep_hfit_run.py` with the exact "full" call of
+`run_dn256b.sbatch` (`ARMS=mid,wide,k32 STEPS=200000 BATCH=4096 LR=1e-3 TIME_CAP=1500 ORACLE_ITERS=150 CODEDIAG_N=2048
+CODEDIAG_ITERS=60 ENC_STEPS=12000 EMIT=mid`) with `SEED0=s` (keys `SEED0+7`, `SEED0+11`). The F=576/4096 learning-curve
+calls and `sep_speed_r5.py` are diagnostics of the original job and are not run. The emitted dense `mid` checkpoint (all
+131,072 fitted codes) feeds the head-based rotation; smoothtrain's own least-squares rotation is **discarded** as a
+deployment input (kept only as a diagnostic file). The incumbent is a **historical comparator** (older software, default
+autotuning): incumbent-vs-new differences are not attributed to the seed alone; seed-to-seed spread is measured among the
+three new seeds.
+
+**A1.7 (audit 11) 3D checkpoint selection.** `train2w.py`'s own bank-validation checkpoint selection is preserved (the
+incumbent picked step 11,000); the selected step is recorded per seed. Never the final step by default.
+
+**A1.8 (audits 12, 13) Rule selection, ladders, "none", target checks.**
+- 2D candidates (ordered by $m$) and their registered successors: fib4181→fib6765, fib6765→fib10946, gauss96→gauss128,
+  fib10946→fib17711, gauss128→gauss160, gauss160→gauss192, gauss192→gauss256. Target gauss384; **target check per bank**:
+  gauss384 vs gauss320 rollouts on dev6 under both schemes within $2.5\times10^{-5}$ (a tenth of the bar); failing →
+  selection labelled "target unverified" (reported; selection still made). Outcomes per $r$: a selected rule, or **"none
+  within ladder"**, or "unavailable" (invalid/missing evidence).
+- 3D: candidates gl16, gl20, gl24, gl32, gl40, gl48 and lat8192, lat16384, lat32768, lat65536 (dims's candidate lists),
+  certification successors gl20…gl56 and lat16384…lat131072, target gl64 with target check gl64 vs gl56 on cases 0–7 within
+  $2.5\times10^{-5}$. Same outcome set. dims already reports "none" for some incumbent cells; that is an expected outcome.
+- **Verdict runs when no rule is selected:** the cell's primary verdicts are "unavailable (no rule)"; a secondary row runs
+  the deployed rule (2D R128 fib4181 / R256, R384 gauss128; 3D the fixed panel rule below) with its Q1/Q2 labels shown.
+- **Incumbent under the identical procedure:** the incumbent bank gets the same selection, verdict, timing and front runs
+  as each seed (jobs `e2v2d-s0`, `e2v3d-s0`); its historical (deployed-front) labels are kept in a separate column and are
+  never mixed with the restricted-universe labels.
+
+**A1.9 (audit 14) 3D front per bank.** Candidate universe (frozen, per bank): widths {256, 512, 768, 1024} × specs
+{`fs|CN|0.01|K1`, `fs|CN|0.0125|K1`, `qn|BDF2|0.025|k4`} × {the width's selected Gauss rule, its selected lattice rule
+(each if not "none")}, plus the four configurations of qualify's 3D subset. Each candidate: Q1 + Q2; cost by an in-job
+A–B–A timing stage on cases 0–7 × 3 reps, reference A = `W256|gl24|fs|CN|0.01|K1` on the job's own bank; dominance by
+qualify's rule (median and worst E0 error vs B/A cost). Label: "front of the tested 3D universe" (never "complete").
+3D H-acc-r uses a **fixed rule gl64 for every width and bank** (isolates the bank; Q2 against gl80 on cases 0–7 reported;
+a width whose gl64 run fails Q2 makes its transitions "unavailable"), in addition to the per-bank selected-rule rows.
+
+**A1.10 (audit 15) E2 labels.** Over the four banks (incumbent + seeds 1–3), per verdict:
+- **seed-dependent** if any two banks give opposite definitive labels (pass vs fail; improves vs does-not-improve; member
+  vs dominated; qualified vs not qualified; two different selected rules, or a rule vs "none");
+- **seed-robust** if all four labels are definitive and equal;
+- **inconclusive** otherwise (any inconclusive/unavailable label without a definitive disagreement).
+"Unavailable (no rule)" and "missing bank" are reported as their own states and never count as agreement. Spread ratio with
+a zero paired-change denominator is reported as "∞ (no r-step)". Three seeds support a description of agreement, not a
+population-level robustness claim; the report says so.
+
+**A1.11 (audits 16–19) E5 restated.**
+- The A100 restriction applies to the existing full-bank implementation (not an impossibility result).
+- P-cross pins `runs/c21024/archive/output/c2time_c21024/FROZEN-SELECTION-1024.json` of fom2d (sha256 recorded in the
+  config) and the exact selection keys `<ROM key>@1024|H|union|joint`, `|PS|joint` and `|CC|joint` for the two ROM subjects;
+  duplicate comparator selections (union = PS = `ps|N96|0.0125`) are timed once. Labelled "frozen H200-selected
+  comparators", not the best comparator per GPU. Timing cases: dev6|0–5 and val32|0–9 (16), enumerated in the config.
+- Estimators inherited unchanged: P-cost B/A ratio per triplet = $t_B/(\tfrac12(t_{A1}+t_{A2}))$, per-case median over valid
+  reps (p1time / p1stats); P-cross $S$ = fom2d `c2analyze.speedup` (ratio of case medians of within-triplet normalised
+  ratios, common valid cases, ≥ 5 cases).
+- Named subset tests (they do **not** replace the registered verdicts): **H-cost-N(2)**: P1's `h_cost_n` statistic on
+  {256², 1024²} only (pass iff upper 95 % bound ≤ 1.25, fail iff lower > 1.25, else inconclusive), labelled "two-mesh subset";
+  the H200 jobs also give the three-mesh value (H200 only). **S2-subset**: per (ROM subject, comparator), pass iff the lower
+  95 % bound of $S\ge2$, fail iff the upper bound $<2$, else inconclusive; this is not K2 (K2 needs every configuration at
+  the largest mesh).
+- Aggregation: per job, per case: median over valid reps; pooled per type: mean over that type's jobs of the per-case
+  values, on the intersection of cases valid in **all** jobs of both types; quantity = median over cases; $\phi$ = ratio of
+  pooled quantities; paired case bootstrap (cases resampled jointly). Fewer than 5 common cases → "unavailable". Ratios only
+  for q1–q3; q4 (verdict labels) only by the verdict-agreement rule. Per-job values are reported beside the pooled ones, and
+  all conclusions are stated as conditional on the observed devices (two GPUs per type cannot represent a hardware population).
+
+**A1.12 (audit 20) E5 controls replaced.**
+- **C-E5.1 (within-GPU doubled work, must fire in every job):** P1's doubled-work control (B twice inside the timer,
+  flanked by same-subject single executions) must give a doubled/single ratio with case-median in [1.6, 2.4]; otherwise that
+  job's E5 numbers are "blocked (control)".
+- **C-E5.2 (classifier must-fail, synthetic on real data):** the cross-hardware classifier is applied to (A100 job-1 per-case
+  values, the same values × 1.5) → must return *hardware-dependent*; and to (A100 job 1, A100 job 2) → reported (unit-to-unit
+  baseline, no required outcome); a classifier that does not flag the ×1.5 fixture blocks every E5 quantity verdict.
+- **C-E5.3** drift-band unit test (synthetic 1.5× step inside a triplet must be rejected), CPU.
+- An **A100 smoke (smk4, ≤ 0.5 GPU-h)** runs the E5 panels on 2 cases × 1 rep so the A100 path and C-E5.1 are shown on
+  real A100 data before production.
+
+**A1.13 (audit 21) Budget rebuilt from counts (projections; the smokes certify).**
+- E1 2D: per mesh job, 4 LSPG configs × cases (38/38/16) × 16 draws × (prod + tight + successor) + tighter on dev6 + GAL
+  diagnostic (prod + target) + targets once per (config, case); ≈ 23k rollouts at 0.3–2 s → three per-mesh jobs, 8.5 GPU-h
+  total. E1 3D ≈ 6.5k rollouts + targets → 0.6 GPU-h.
+- E2 2D: Stage A 3 GPUs × ≈ 3.1 h = 9.5; Stage B 3 GPUs × ≈ 1.5 h = 4.5; selection + verdict + timing per bank ≈ 2.5 h
+  × 4 banks (incl. incumbent) = 10.0. E2 3D: training 3 × 2.0 = 6.0; selection + gl64 panel + front per bank ≈ 3.0 h
+  (dims's ladder jobs used 1.5–2.9 GPU-h) × 4 = 12.0.
+- E5: 4 jobs × 0.6 = 2.4. Smokes smk1–smk4 ≈ 4.5.
+- **Total ≈ 58.0 GPU-h**; 25 % contingency would give 72.5, inside the 75 cap. Multi-GPU jobs are charged and reserved at
+  (GPUs × time limit). The ledger refuses any submission with spent + reserved + new reservation > 75; the defer order of §7
+  applies (E2 3D seed 3 frees ≈ 5 GPU-h; E2 5-seed extension is not affordable under this projection and is expected to be
+  deferred).
+- smk3 is extended to the **heaviest 3D evaluation cell** (W1024 gl64 target + gl80 Q2 on 4 cases) to measure compile time and
+  device peak, in addition to the training memory pilot.

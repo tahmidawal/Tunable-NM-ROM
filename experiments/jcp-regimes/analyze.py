@@ -301,6 +301,7 @@ def main():
             f_ = HERE / r_.split(':', 1)[1]
             if not f_.exists():
                 miss_cfg.append(r_)
+                exp_ps[f'MISSING-CONFIG:{r_}'] = True      # stays in the expected inventory, reported missing
                 continue
             cf_ = json.loads(f_.read_text())
             exp_ps[f"{cf_['cohort']}|{cf_['cases'][0]}"] = True

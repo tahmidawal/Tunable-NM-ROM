@@ -21,6 +21,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 LOWNU = ('Am', 'C1', 'C2')
 TIGHT_RESERVE_H = 4.5
+LOWNU_REFINE_S = 850.          # DESIGN A2.6 refinement planning allowance per low-nu case (H200)
 REGIMES = ['N0', 'N0s', 'Ap', 'Am', 'C1', 'C2', 'B1', 'B2']
 LIMIT = 50.
 
@@ -54,7 +55,10 @@ def basis():
         ([] if 'calib_agree' in sm else ['calib_agree'])
     if missing:
         raise SystemExit(f'unmeasured inputs, cannot certify: {missing}')
-    return dict(ordinary=max(pil[k]['seconds'] for k in ('dev6|0', 'Ap|13', 'B2|15')), lownu=pil['C2|9']['seconds'],
+    # low-nu: the C2 pilot was not refined, which does not show production cases avoid the 12288 level; keep the
+    # design's refinement allowance (A2.6: 850 s per case) as the floor of the rate (smoke-results audit 1, C)
+    return dict(ordinary=max(pil[k]['seconds'] for k in ('dev6|0', 'Ap|13', 'B2|15')),
+                lownu=max(pil['C2|9']['seconds'], LOWNU_REFINE_S), lownu_pilot=pil['C2|9']['seconds'],
                 probe=max(sm['probe_seconds'].values()), rom_per_run=st_[need[0]] / rom_runs(smk_rom),
                 fverify_per_field=st_[need[1]] / n_fields(smk_rom), calib_agree=bool(sm['calib_agree']), smoke=sm['run'])
 

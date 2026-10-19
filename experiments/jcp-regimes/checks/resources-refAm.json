@@ -1,7 +1,7 @@
 {
  "attempt": "refAm",
- "projection_hours": 1.952,
- "time_limit_hours": 3.0,
+ "projection_hours": 4.6167,
+ "time_limit_hours": 7.0,
  "configs": {
   "configs/ref-Am.json": "dcd2528323d523b40825d42072c50df3475aadbb9927f22cf6a361edae43514c",
   "configs/slim-Am.json": "423fe81e1e003d1c45548539f12d4f83cf1689abcd62188aaf7c6e680edb92de"
@@ -13,7 +13,7 @@
  "parts": [
   {
    "run": "refjob:configs/ref-Am.json",
-   "seconds": 6907.046723556518
+   "seconds": 16500.0
   },
   {
    "run": "refslim:configs/slim-Am.json",
@@ -22,7 +22,8 @@
  ],
  "basis": {
   "ordinary": 221.70111935865134,
-  "lownu": 350.367016851902,
+  "lownu": 850.0,
+  "lownu_pilot": 350.367016851902,
   "probe": 40.18424032907933,
   "rom_per_run": 0.45252525252525255,
   "fverify_per_field": 0.12121212121212122,

@@ -166,6 +166,11 @@ def main():
     pst = AN.get('ps_status')
     if isinstance(pst, str):
         w(f'- Pseudo-spectral cross-check: {pst}.')
+    elif isinstance(pst, dict):
+        got_ = [k for k in pst['expected'] if k in AN.get('ps', {}) and AN['ps'][k].get('verdict') != 'MISSING']
+        w(f"- Pseudo-spectral cross-check: {len(got_)} of {len(pst['expected'])} scheduled cases present"
+          + (f"; missing configurations: {', '.join(pst['missing_configs'])}" if pst.get('missing_configs') else '')
+          + (f"; missing outputs: {', '.join(k for k in pst['expected'] if k not in got_)}" if len(got_) < len(pst['expected']) else '') + '.')
     for k, v in AN.get('ps', {}).items():
         w(f"- Pseudo-spectral cross-check {k}: {v['verdict']}" + (f" ({v.get('reason')})" if v.get('reason') else '')
           + (f"; x_ps {num(v.get('x_ps'))}, 2 eps_ref {num(2 * v['eps_ref']) if v.get('eps_ref') else '—'}" if v.get('x_ps') is not None else '')

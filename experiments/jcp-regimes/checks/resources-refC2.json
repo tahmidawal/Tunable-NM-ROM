@@ -1,7 +1,7 @@
 {
  "attempt": "refC2",
- "projection_hours": 1.952,
- "time_limit_hours": 3.0,
+ "projection_hours": 4.6167,
+ "time_limit_hours": 7.0,
  "configs": {
   "configs/ref-C2.json": "a832f5482720b4bdf0a233d314b5dcb494b3a950918c9112b89edfa107dad548",
   "configs/slim-C2.json": "cf58308139db86eaaa80330b14707f890ff457017c5c4534c0e8aa446a44a4ad"
@@ -13,7 +13,7 @@
  "parts": [
   {
    "run": "refjob:configs/ref-C2.json",
-   "seconds": 6907.046723556518
+   "seconds": 16500.0
   },
   {
    "run": "refslim:configs/slim-C2.json",
@@ -22,7 +22,8 @@
  ],
  "basis": {
   "ordinary": 221.70111935865134,
-  "lownu": 350.367016851902,
+  "lownu": 850.0,
+  "lownu_pilot": 350.367016851902,
   "probe": 40.18424032907933,
   "rom_per_run": 0.45252525252525255,
   "fverify_per_field": 0.12121212121212122,

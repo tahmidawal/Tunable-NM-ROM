@@ -1,0 +1,29 @@
+host=pax009 source_commit=bdd08efd2e119ef97e97a47430d5492208014518
+0, NVIDIA H200, GPU-fcc62a4a-0c50-98b3-7ea0-5b7c13f182ec, 575.57.08, 143771 MiB, 345 MHz, 3201 MHz, 700.00 W
+10.235.106.29:/projects/paralab  4.6T  1.3T  3.4T  27% /cluster/tufts/paralab
+jax_backend=gpu gpu_index=0
+STEP e2run3d configs/smk3c.json 2026-10-19T20:53:52Z
+jax_backend=gpu x64=True precision=highest
+[mesh 65] bank rows [(512, 250047)] 3.8s
+[mesh 65] Gram cond 1.0000, A (2052, 512) 6.3s
+[mesh 65] bank rows [(256, 250047), (768, 250047)] 5.2s
+[mesh 65] Gram cond 1.0000, A (4097, 1024) 8.3s
+SETUP 23.4
+RUN W1024|gl64 fs|CN|0.01|K1 22.1s valid True nonst 0 / 100 50.1
+RUN W1024|gl64 ad|LSPG|CN|0.01|tight 19.2s valid True nonst 0 / 0 69.3
+RUN W1024|gl64 ad|LSPG|CN|0.01|tighter 18.0s valid True nonst 0 / 0 87.3
+LADDER W1024|gl64|fs|CN|0.01|K1 valid True worst dist_adt 7.5840885996648e-06 rho 3.5284853114884545e-08 94.1
+RUN W1024|gl80 fs|CN|0.01|K1 37.0s valid True nonst 0 / 100 131.3
+RUN W1024|gl80 ad|LSPG|CN|0.01|tight 34.9s valid True nonst 0 / 0 166.2
+RUN W1024|gl80 ad|LSPG|CN|0.01|tighter 33.5s valid True nonst 0 / 0 199.7
+LADDER W1024|gl80|fs|CN|0.01|K1 valid True worst dist_adt 7.584088610730078e-06 rho None 199.7
+RUN W256|lat8192 qn|BDF2|0.025|k4 4.3s valid True nonst 0 / 80 208.3
+RUN W256|lat8192 ad|LSPG|BDF2|0.025|tight 2.2s valid True nonst 0 / 0 210.5
+RUN W256|lat8192 ad|LSPG|BDF2|0.025|tighter 1.1s valid True nonst 0 / 0 211.6
+LADDER W256|lat8192|qn|BDF2|0.025|k4 valid True worst dist_adt 0.00010014570522450946 rho 0.004239279407857417 215.5
+RUN W256|lat16384 qn|BDF2|0.025|k4 2.7s valid True nonst 0 / 80 218.4
+RUN W256|lat16384 ad|LSPG|BDF2|0.025|tight 2.1s valid True nonst 0 / 0 220.5
+RUN W256|lat16384 ad|LSPG|BDF2|0.025|tighter 1.2s valid True nonst 0 / 0 221.7
+LADDER W256|lat16384|qn|BDF2|0.025|k4 valid True worst dist_adt 0.00010182451621386871 rho None 221.7
+D3RUN COMPLETE
+ALL-DONE

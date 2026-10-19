@@ -557,6 +557,6 @@ probe of A1.4 (one per regime, coarsest-level tight run, from the smoke's probe 
 conservative planning allowance, not an observed increment. Wilcoxon "ties" means ties among absolute non-zero
 $\log q_j$. Ratio coverage is counted after the zero / non-finite exclusions. The PS cross-check cases are one per cohort
 N0, A+, A−, C1, C2, B1, B2 (seven; N0s excluded). σ's normalisation $\max_{\text{nodes}}|u(t_0)|$ is computed as the
-descriptor amplitude $a$ (the exact peak of the continuous IC; for single bumps it exceeds the nodal maximum by less than
-$(h/w)^2\le10^{-6}$ at the finest levels; for B1/B2 $a$ is the peak over the $1024^2$ nodes, which are nodes of every
+descriptor amplitude $a$ (the exact peak of the continuous IC; for single bumps it exceeds the nodal maximum by a relative
+$\le h^2/(4w^2)\le1.5\times10^{-6}$ at $L\ge8192$; for B1/B2 $a$ is the peak over the $1024^2$ nodes, which are nodes of every
 reference level).

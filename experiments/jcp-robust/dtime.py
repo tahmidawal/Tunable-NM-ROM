@@ -78,7 +78,7 @@ def main():
     burn = float(cfg['burn'])
     rep = dict(config=cfg, commit=P.os.environ.get('SOURCE_COMMIT'), job_id=P.os.environ.get('SLURM_JOB_ID'),
                backend=jax.default_backend(), gpu=jax.devices()[0].device_kind, nvidia_smi=P.gpu_info(),
-               jax_version=jax.__version__, checkpoint_sha256=QS.sha_file(T2.CKPT), cohorts=P.cohort_hashes(),
+               jax_version=jax.__version__, checkpoint_sha256=QS.sha_file(cfg['bank']['ckpt'] if cfg.get('bank') else T2.CKPT), cohorts=P.cohort_hashes(),
                banks={}, subjects={}, invocations=[], fused=[], doubled=[], equivalence=[], memory={}, blocks=[],
                complete=False)
     save = lambda: json.dump(QS.clean(rep), open(out / 'result.json', 'w'), indent=1)
@@ -86,7 +86,9 @@ def main():
     cases = P.case_list(cfg)
     tci = P.select(cases, cfg['cases'])
     L = int(cfg['mesh'])
-    bank = P.Bank(L, cfg['edges'], nrb=cfg.get('bank_blocks'))
+    import r2acc as R2A                                          # jcp-robust EDIT: the job's own bank (DESIGN 3.2)
+    ck_, rot_, _b = R2A.load_bank_cfg(cfg)
+    bank = P.Bank(L, cfg['edges'], nrb=cfg.get('bank_blocks'), ckpt=ck_, rotation=rot_)
     rep['banks'][str(L)] = dict(edges=bank.edges, seconds=bank.build_seconds, bytes=bank.bytes, mem=P.mem())
     s256 = L // 256
     U0 = {}

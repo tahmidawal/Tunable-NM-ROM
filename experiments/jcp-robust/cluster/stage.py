@@ -10,7 +10,8 @@ checkout must equal their blob byte for byte. A job spec (jobs/<attempt>.json, c
    "extra_files": [repo-relative paths],    (beyond the lane; e.g. the incumbent checkpoint, training sources)
    "cluster_inputs": [{"src": abs cluster path, "dst": repo-relative path, "sha256"}]   (copied and verified in-job)}
   step = {"driver": "r2acc"|"e1run3d"|"d3run"|"dtime"|"e5time", "config": "configs/x.json"}
-       | {"sh": "train2d/run_seed.sh", "args": ["1", "OUT/s1"]}       (OUT is replaced by $TASK_ROOT/output)
+       | {"sh": "train2d/run_seed.sh", "args": ["1", "OUT/s1"], "complete": "OUT/s1/SEED-COMPLETE"}
+                                            (OUT is replaced by $TASK_ROOT/output; "complete" = the step's completion marker)
 
     python cluster/stage.py <attempt>
 """
@@ -60,6 +61,9 @@ def main():
     if spec.get('production'):
         cert = json.loads((ROOT / LANE / 'checks' / f'resources-{att}.json').read_text())
         assert spec['hours'] >= 1.5 * cert['projection_hours'] - 1e-9, (spec['hours'], cert['projection_hours'])
+        assert cert['gpus'] == gpus, 'certificate GPU count differs from the job spec'
+        inv_p = ROOT / LANE / 'checks' / f'inventory-{att}.json'
+        assert hashlib.sha256(inv_p.read_bytes()).hexdigest() == cert['inventory_sha256'], 'inventory differs from the certificate'
         for g in groups:
             for s in g:
                 if 'config' in s:
@@ -78,6 +82,7 @@ def main():
                 assert f'{LANE}/{s["config"]}' in files, f'config not committed: {s["config"]}'
             if 'sh' in s:
                 assert f'{LANE}/{s["sh"]}' in files, f'script not committed: {s["sh"]}'
+                assert s.get('complete', '').startswith('OUT/'), 'a shell step needs its completion marker'
     proof = []
     for name in sorted(set(files)):
         content = subprocess.check_output(['git', '-C', str(ROOT), 'show', f'{commit}:{name}'])
@@ -90,6 +95,9 @@ def main():
     (out / 'PROVENANCE.json').write_text(json.dumps(proof, indent=1) + '\n')
     (out / 'COMMIT.txt').write_text(commit + '\n')
     (out / 'JOBSPEC.json').write_text(json.dumps(spec, indent=1) + '\n')
+    if spec.get('production'):                      # A4.2: the certificate and its inventory travel with the job
+        for nm in (f'resources-{att}.json', f'inventory-{att}.json'):
+            (out / nm).write_bytes((ROOT / LANE / 'checks' / nm).read_bytes())
     (out / 'logs').mkdir()
     gname, constraint = GRES[spec['gpu']]
     h = math.ceil(float(spec['hours']) * 4) / 4

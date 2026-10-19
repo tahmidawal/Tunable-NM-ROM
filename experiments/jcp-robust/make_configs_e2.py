@@ -5,6 +5,9 @@
                                                               check gauss320 on dev6, LSPG-BE dt0 and LSPG-CN-R dt0)
   verdicts    python make_configs_e2.py ver <bank>          -> configs/e2v<bank>{a,b,c}.json from checks/select2d-<bank>.json
                                                               a: 256^2 (38), b: 4096^2 (P1 16-case subset), c: 1024^2 factors 2, 2.5
+  timing      python make_configs_e2.py time <bank>         -> configs/e2t<bank>.json (dtime, 1024^2, dev6 x 3 reps, A = R384
+                                                              gauss128 frozen LSPG-CN-R dt0 on the job's bank; slots (r, scheme,
+                                                              factor) at the selected rule + deployed rows when they differ)
 <bank> is 0 (incumbent dn256b) or a seed 1..5 whose files are inputs/banks/s<seed>/{ckpt.pkl, rotation_R512.npz, BANK.json}.
 """
 import hashlib
@@ -79,5 +82,27 @@ def ver(b):
         w(f'configs/e2v{b}{tag}.json', c)
 
 
+def time_(b):
+    s = json.loads((HERE / 'checks' / f'select2d-{b}.json').read_text())
+    bc = bank_cfg(b)
+    sp = lambda r, rule, arm: dict(mesh=1024, Rp=r, M=4 * r, policy='frozen', rule=rule, form='LSPG', scheme=arm['scheme'],
+                                   factor=arm['factor'], qp=SUCC[rule], qpp=SUCC.get(SUCC[rule], 'gauss384'))
+    subj = []
+    for r in RANKS:
+        pick = s['selected'][str(r)]['rule']
+        for arm in SEL_ARMS + FRONT_ARMS:
+            if pick:
+                subj.append(dict(sp(r, pick, arm), slot=f'R{r}|{arm["scheme"]}|{arm["factor"]:g}', role='selected'))
+            if pick != DEPLOYED[r]:
+                subj.append(dict(sp(r, DEPLOYED[r], arm), slot=f'R{r}|{arm["scheme"]}|{arm["factor"]:g}', role='deployed'))
+    A = sp(384, 'gauss128', SEL_ARMS[1])
+    c = dict(attempt=f'e2t{b}', driver='dtime', mesh=1024, edges=EDGES, cases='dev6', reps=3, burn=.1, seed=20261019, A=A,
+             subjects=subj, doubled=[A],
+             selection=dict(file=f'checks/select2d-{b}.json', sha256=sha(HERE / 'checks' / f'select2d-{b}.json')))
+    if bc:
+        c['bank'] = bc
+    w(f'configs/e2t{b}.json', c)
+
+
 if __name__ == '__main__':
-    {'sel': sel, 'ver': ver}[sys.argv[1]](sys.argv[2])
+    {'sel': sel, 'ver': ver, 'time': time_}[sys.argv[1]](sys.argv[2])

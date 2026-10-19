@@ -12,6 +12,8 @@
 #
 # Optional env:  STAGES=A,B,R (default all; a stage whose marker exists is skipped after its outputs are re-hashed)
 #                TRAIN2D_DRYRUN=1  tiny CPU chaining test (N=64, 16 trajectories, 20 steps; >= R=512 states needed); NEVER for results.
+#                TRAIN2D_SMOKE=1   real-size GPU smoke (DESIGN 6 smk2): every size of the recipe, only the step counts
+#                                  truncated (Stage A 3,000 steps, full_last 500; head fit 2,000 steps); NEVER for results.
 set -euo pipefail
 [ $# -eq 2 ] || { echo "usage: PY=<python> $0 <seed> <outdir>" >&2; exit 2; }
 SEED_S=$1
@@ -21,6 +23,7 @@ case "$SEED_S" in ''|*[!0-9]*) echo "seed must be a non-negative integer" >&2; e
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STAGES="${STAGES:-A,B,R}"
 DRY="${TRAIN2D_DRYRUN:-0}"
+SMOKE="${TRAIN2D_SMOKE:-0}"
 mkdir -p "$OUTDIR"
 OUTDIR="$(cd "$OUTDIR" && pwd)"
 [ ! -e "$OUTDIR/SEED-COMPLETE" ] || { echo "$OUTDIR/SEED-COMPLETE exists: refusing to rerun" >&2; exit 3; }
@@ -50,6 +53,11 @@ if [ "$DRY" = "1" ]; then
   NB=64; EX_ENV=(N_TRAJ=16 MAX_SNAPS=512 EXTRA_TRAJ=8 N_TEST=2)
   HF_ENV=(STEPS=20 ORACLE_ITERS=5 CODEDIAG_N=64 CODEDIAG_ITERS=5 ENC_STEPS=20)
   ROT_EXTRA=(--train-mesh 64)
+elif [ "$SMOKE" = "1" ]; then
+  MODE=smoke; A_EXTRA=(--nodes 256 --steps 3000 --full-last 500 --log-every 500)
+  NB=256; EX_ENV=(MAX_SNAPS=131072 EXTRA_TRAJ=4032 N_TEST=8)
+  HF_ENV=(STEPS=2000 ORACLE_ITERS=20 CODEDIAG_N=256 CODEDIAG_ITERS=10 ENC_STEPS=500)
+  ROT_EXTRA=()
 else
   MODE=production; A_EXTRA=(--nodes 256)
   NB=256; EX_ENV=(MAX_SNAPS=131072 EXTRA_TRAJ=4032 N_TEST=8)

@@ -78,57 +78,88 @@ def main():
         tgt_ok = (None if not tc_ok else bool(all(tvalid)))
         e_t = {j: sc['scores'][kt][str(j)]['e'] for j in cases} if kt in sc['scores'] else None
         draws, mism = {}, []
+        sp_ = spec.split('|')
+        adk = lambda lev: f"ad|LSPG|{sp_[1]}|{float(sp_[2]):.8g}|{lev}"
+        tcs = [j for j in cf.get('tighter_cases', list(range(8))) if j in cases]
+        if [str(x) for x in cf['draws']] != [str(x) for x in range(E.NDRAW)]:
+            mism.append(('population', 'draws', cf['draws']))
         for s in [str(x) for x in cf['draws']]:
             dr = r['draws'][s]
             rule = dr['rule']
-            k = key_of(f"{sname}|{nm}|{rule}", spec)
+            tag = f"{sname}|{nm}|{rule}"
+            k = key_of(tag, spec)
             W, ids = Wz[k], [int(x) for x in Wz['cases|' + k]]
-            assert ids == cases
-            d_t = dist(sname, W, Wt, ids)
-            ks = key_of(f"{sname}|{nm}|{rule}|succ|{dr['succ']}", spec)
+            if ids != cases:
+                mism.append((s, 'cases', None))
+            d_t = [x if tvalid[i] else math.inf for i, x in enumerate(dist(sname, W, Wt, ids))]
+            ks = key_of(f"{tag}|succ|{dr['succ']}", spec)
             d_s = dist(sname, W, Wz[ks], ids)
-            for nmx, off, job in (('target', d_t, dr['dist_target']), ('succ', d_s, dr['dist_succ'])):
-                mism += [(s, nmx, j) for j, (x, y) in zip(ids, zip(off, job)) if not agree(x, y)]
-            nonst = sum(dr['nonst_per_case']) / max(1, dr['steps'])
+            ka, kb = f"{tag}|{adk('tight')}", f"{tag}|{adk('tighter')}"          # Q1 recomputed (code audit 1 #5)
+            Wa, Wb = Wz[ka], Wz[kb]
+            ib = [int(x) for x in Wz['cases|' + kb]]
+            d_a = dist(sname, W, Wa, ids)
+            d_tt = dist(sname, [Wa[cases.index(j)] for j in ib], Wb, ib)
+            for nmx, off, job in (('target', d_t, dr['dist_target']), ('succ', d_s, dr['dist_succ']), ('adt', d_a, dr['dist_adt']),
+                                  ('tt', d_tt, dr['adt_tight_tighter'])):
+                if len(off) != len(job):
+                    mism.append((s, nmx, 'length'))
+                    continue
+                mism += [(s, nmx, j) for j, (x, y) in zip(ids, zip(off, job)) if np.isfinite(x) and not agree(x, E.num(y))]
+            if ib != tcs:
+                mism.append((s, 'tighter cases', ib))
+            # stationarity recomputed from the saved fresh certificates (rows gam_cert of the production runs)
+            cr = [x for x in res['rows'] if x.get('tag') == tag and x.get('spec') == spec and 'gam_cert' in x]
+            g_all = [E.num(v) for x in cr for v in x['gam_cert']]
+            nonst = (sum(1 for v in g_all if not (np.isfinite(v) and v <= E.GAMMA)) / len(g_all)) if g_all and len(cr) == len(cases) else None
             sc_ = sc['scores'][k]
-            e = [sc_[str(j)]['e'] for j in ids]
+            valid = [bool(x) for x in dr['valid']]
+            e = [sc_[str(j)]['e'] if valid[i] else math.inf for i, j in enumerate(ids)]
             qual, own, status = E.draw_qualified(
-                dict(valid=dr['valid'], valid_tight=dr['adt_valid'], valid_tighter=dr['adt_tighter_valid'], valid_succ=dr['succ_valid']),
-                dict(tight=dr['dist_adt'], tt=dr['adt_tight_tighter'], succ=d_s, rho_succ=[max(x) for x in dr['rho_succ']],
-                     target=d_t, rho_tgt=[max(x) for x in dr['rho_tgt']], nonst_frac=nonst), tgt_ok)
+                dict(valid=valid, valid_tight=dr['adt_valid'], valid_tighter=dr['adt_tighter_valid'], valid_succ=dr['succ_valid']),
+                dict(tight=d_a, tt=d_tt, succ=d_s, rho_succ=[max(E.num(v) for v in x) for x in dr['rho_succ']],
+                     target=d_t, rho_tgt=[max(E.num(v) for v in x) for x in dr['rho_tgt']], nonst_frac=nonst),
+                tgt_ok, len(cases), len(tcs))
+            D = None if tgt_ok is not True else (math.inf if not all(valid) else max(d_t))
             draws[s] = dict(rule=rule, rule_sha256=dr['rule_sha256'], qualified=qual, own_family_qualified=own, status=status,
-                            D=(max(d_t) if all(np.isfinite(d_t)) else math.inf), rho_tgt_max=float(np.max(dr['rho_tgt'])),
-                            dist_succ_max=max(d_s), dist_adt_max=max(dr['dist_adt']), nonst_frac=nonst, e=e,
+                            D=D, rho_tgt_max=max(max(E.num(v) for v in x) for x in dr['rho_tgt']),
+                            dist_succ_max=max(d_s), dist_adt_max=max(d_a), nonst_frac=nonst, e=e,
                             eps=[sc_[str(j)]['eps_ref'] for j in ids], eligible=[sc_[str(j)]['eligible'] for j in ids],
-                            valid=dr['valid'])
+                            valid=valid)
         dl = [draws[str(x)] for x in cf['draws']]
+        tgt_full = tgt_ok is True
         elig = [all(d['eligible'][i] for d in dl) for i in range(len(cases))]
         ok_e = [i for i in range(len(cases)) if elig[i]]
-        eps = np.array([dl[0]['eps'][i] if dl[0]['eps'][i] is not None else np.nan for i in range(len(cases))])
-        delta = 2 * float(np.nanmax(eps[ok_e])) if ok_e else float('nan')
-        agg = lambda fn, d: math.inf if any(not d['valid'][i] for i in ok_e) else float(fn([d['e'][i] for i in ok_e]))
-        stats = {}
-        if tc_ok:
-            stats['D'] = E.rank_interval([d['D'] for d in dl], 0.)
-        stats['median_e'] = E.rank_interval([agg(np.median, d) for d in dl], delta)
-        stats['worst_e'] = E.rank_interval([agg(np.max, d) for d in dl], delta)
-        econv = [(e_t[j] if (e_t and tc_ok and tvalid[i]) else None) for i, j in enumerate(cases)]
-        failed = np.array([[not d['valid'][i] for i in range(len(cases))] for d in dl])
-        emat = np.array([[d['e'][i] if d['valid'][i] else np.inf for i in range(len(cases))] for d in dl])
-        ind = dict(tp=0, fp=0, fn=0, tn=0)
-        for d in dl:
-            if not tc_ok:
-                break
-            i_ok, r_ok = d['rho_tgt_max'] <= E.BAR_RHO, d['D'] <= E.BAR_Q2
-            ind[('t' if i_ok == r_ok else 'f') + ('p' if i_ok else 'n')] += 1
-        verd = dict(H_E1a=E.h_e1a([d['qualified'] for d in dl]), H_E1a_own_family=E.h_e1a([d['own_family_qualified'] for d in dl]),
-                    H_E1b=dict(label=E.h_e1b({k_: v[2] for k_, v in stats.items()}), stats={k_: list(v) for k_, v in stats.items()},
-                               delta_error=delta),
-                    H_E1c=E.h_e1c(emat, emat[0], failed, eps, econv, elig),
-                    indicator=ind if tc_ok else 'unavailable (target not certified)')
+        h_a = E.h_e1a([d['qualified'] for d in dl]) if tgt_full else \
+            dict(E.h_e1a([d['own_family_qualified'] for d in dl]), basis='Q1 + own-family Q2 only (target not certified / failed)')
+        if ok_e:
+            eps = np.array([E.num(dl[0]['eps'][i]) for i in range(len(cases))])
+            delta = 2 * float(np.max(eps[ok_e]))                         # A3.4
+            agg = lambda fn, d: math.inf if any(not d['valid'][i] for i in ok_e) else float(fn([d['e'][i] for i in ok_e]))
+            stats = {}
+            if tgt_full:
+                stats['D'] = E.rank_interval([d['D'] for d in dl], 0.)
+            stats['median_e'] = E.rank_interval([agg(np.median, d) for d in dl], delta)
+            stats['worst_e'] = E.rank_interval([agg(np.max, d) for d in dl], delta)
+            econv = [(e_t[j] if (e_t and tgt_full) else None) for j in cases]
+            failed = np.array([[not d['valid'][i] for i in range(len(cases))] for d in dl])
+            emat = np.array([d['e'] for d in dl], float)
+            h_c = E.h_e1c(emat, emat[0], failed, eps, econv, elig)
+            h_b = dict(label=E.h_e1b({k_: v[2] for k_, v in stats.items()}), stats={k_: list(v) for k_, v in stats.items()},
+                       delta_error=delta)
+        else:
+            h_c, h_b = dict(label='unavailable', n=0), dict(label='unavailable')
+        ind = 'unavailable (target not certified / failed)'
+        if tgt_full:
+            ind = dict(tp=0, fp=0, fn=0, tn=0)
+            for d in dl:
+                i_ok, r_ok = d['rho_tgt_max'] <= E.BAR_RHO, d['D'] <= E.BAR_Q2
+                ind[('t' if i_ok == r_ok else 'f') + ('p' if i_ok else 'n')] += 1
+            ind['draw0'] = dict(rho_ok=dl[0]['rho_tgt_max'] <= E.BAR_RHO, rollout_ok=dl[0]['D'] <= E.BAR_Q2)
+        verd = dict(H_E1a=h_a, H_E1b=h_b, H_E1c=h_c, indicator=ind, eligible_cases=len(ok_e))
         ctl = dict(r.get('controls', {}))
-        if 'fixture' in ctl:
-            ctl['C-E1.1'] = (E.fixture_fired(pan3[0]['states'], ctl['fixture']['rho_tgt']) if pan3 else
+        if cf.get('bad'):
+            fx_ = ctl.get('fixture', {})
+            ctl['C-E1.1'] = (E.fixture_fired(pan3[0]['states'], fx_.get('rho_tgt')) if pan3 else
                              dict(admitted=False, fired=False, reason='establishment missing (control unavailable)'))
             if pan3:
                 ctl['C-E1.1']['M_job'] = res['settings_M'][sname]['M']
@@ -136,9 +167,16 @@ def main():
                 ctl['C-E1.1']['fired'] = bool(ctl['C-E1.1']['fired'] and ctl['C-E1.1']['M_job'] == ctl['C-E1.1']['M_cpu'])
         idn = ctl.get('identity', {})
         ctl['G-E1.1'] = dict(idn, passed=bool(idn.get('s0_equals_deployed') and idn.get('s1_pure_shift') and idn.get('s1_differs')))
+        ce = ctl.get('C-E1.2', {})
+        ctl['C-E1.2'] = dict(ce, fired=bool(ce.get('raised') and ce.get('true_claim_passes')))
+        pm = ctl.get('permute')
+        if cf.get('permute'):
+            ctl['G-E1.3'] = dict(pm or {}, passed=bool(pm and pm.get('passed')))
         # G-E1.2 reproduction against qualify q3d3 (A2.1, A3.6): draw 0 vs archived 'q' production W, every case
         arch = Path(a.archive)
-        if arch.exists() and nm in QKEY:
+        pin = next((l_.split()[0] for l_ in (QARCH.parents[2] / 'OUTPUTS.sha256').read_text().splitlines()
+                    if l_.split()[1] == 'output/q3run_q3d3/W_q2.npz'), None)
+        if arch.exists() and nm in QKEY and hashlib.sha256(arch.read_bytes()).hexdigest() == pin:
             z = np.load(arch)
             Wa, ida = z[QKEY[nm]], [int(x) for x in z['cases|' + QKEY[nm]]]
             W0 = Wz[key_of(f"{sname}|{nm}|lat{cf['n']}s0", spec)]
@@ -154,7 +192,7 @@ def main():
                              dict(passed=bool(max(rows) <= 1e-10), worst=max(rows), n=len(rows),
                                   archive_sha256=hashlib.sha256(arch.read_bytes()).hexdigest()))
         else:
-            ctl['G-E1.2'] = dict(passed=False, reason='archive unavailable')
+            ctl['G-E1.2'] = dict(passed=False, reason='archive unavailable or hash differs from the qualify pin')
         extra = {}
         for rl, ex in r.get('extra', {}).items():
             k = key_of(f"{sname}|{nm}|{rl}", spec)
@@ -164,7 +202,8 @@ def main():
             b = ctl['bad_rollout']
             k = key_of(f"{sname}|{nm}|{b['rule']}", spec)
             ctl['bad_rollout_summary'] = dict(D=max(dist(sname, Wz[k], Wt, cases)), any_invalid=not all(b['valid']))
-        rep['configs'][nm] = dict(setting=sname, spec=spec, target_cert=dict(certified=tc_ok, dist=dchk, cases=idc,
+        integ = dict(ok=bool(not mism and len(cases) == int(cfg['cohort_count']) and res.get('complete')), mismatches=mism)
+        rep['configs'][nm] = dict(integrity=integ, setting=sname, spec=spec, target_cert=dict(certified=tc_ok, dist=dchk, cases=idc,
                                                                                label='checked on the registered subset (cases 0-7)'),
                                   target_valid=tvalid, draws=draws, verdicts=verd, controls=ctl, extra=extra,
                                   mismatches=mism, econv=econv)

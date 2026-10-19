@@ -40,6 +40,15 @@ def sha_file(p):
     return hashlib.sha256(Path(p).read_bytes()).hexdigest()
 
 
+def table_identity(cx, st, held, claimed):
+    """C-E1.2 / G-E1.1 (3D): the table built under `held` must carry the sha256 of the points of `claimed`."""
+    import rules3d_names as RN
+    X, w = cx.rules[claimed]
+    if st._d[held][1]['sha256'] != RN.sha_rule(X, w):
+        raise ValueError(f'rule identity mismatch: table {held} claimed as {claimed}')
+    return True
+
+
 def rho_rows(cx, st, rule_a, rule_b, W):
     """rho of the own output states (cases, 6) of table rule_a against rule_b."""
     da, db = st.data(rule_a), st.data(rule_b)
@@ -67,6 +76,7 @@ def evaluate(cx, cf, rule, succ, Wt, level, cases, tcs):
     key = S.spec_key(sp)
     tag = f"{sname}|{cf['name']}|{rule}"
     r = cx.rollouts(sname, rule, [sp], cases, tag=tag)[key]
+    table_identity(cx, st, rule, rule)
     W = r['W']
     out = dict(rule=rule, succ=succ, level=level, valid=[bool(x) for x in r['valid']], nonstationary=int(sum(r['nonst'])),
                steps=int(sum(r['steps'])), nonst_per_case=[int(x) for x in r['nonst']], rule_sha256=st._d[rule][1]['sha256'],
@@ -147,6 +157,16 @@ def main():
         res['controls']['identity'] = dict(s0_equals_deployed=bool(np.array_equal(X0, Xs0) and np.array_equal(w0, ws0)),
                                            s1_pure_shift=bool(np.ptp((sh - sh[0] + .5) % 1.0, axis=0).max() < 1e-12),
                                            s1_differs=bool(not np.array_equal(X1, X0)))
+        # C-E1.2: a table built from draw 1 but claimed as the deployed rule must be refused by the identity validator
+        st.data(f'lat{n}s1')
+        try:
+            table_identity(cx, st, f'lat{n}s1', f'lat{n}')
+            res['controls']['C-E1.2'] = dict(raised=False, fired=False)
+        except ValueError as e_:
+            res['controls']['C-E1.2'] = dict(raised=True, fired=True, message=str(e_))
+        table_identity(cx, st, f'lat{n}s1', f'lat{n}s1')          # and the true claim must pass
+        res['controls']['C-E1.2']['true_claim_passes'] = True
+        st.drop(f'lat{n}s1')
         # ---------------- diagnostics (Sobol)
         for rl in cf.get('extra', []):
             res['extra'][rl], _ = evaluate(cx, cf, rl, None, Wt, 'prod', cases, tcs)

@@ -205,7 +205,7 @@ def main():
                     rep['rows'].append(row)
                     del v
                 np.savez_compressed(out / f"T_{g['name']}_{ak}.npz", case_ids=np.array([cid(i) for i in ids]), W=Wt, valid=vt_,
-                                    check_case_ids=np.array([cid(i) for i in chk_ids]),
+                                    check_case_ids=np.array([cid(i) for i in chk_ids] if 'chk' in roles else [], dtype='<U16'),
                                     W_check=np.array([TW[(ak, i)] for i in chk_ids]) if chk_ids and 'chk' in roles else np.zeros((0, 6, st.Rp)),
                                     rule=roles['tgt'], check_rule=roles.get('chk', ''), Rp=st.Rp, mesh=L,
                                     form=arm['form'], scheme=arm['scheme'], dt=DT0 * float(arm['factor']))

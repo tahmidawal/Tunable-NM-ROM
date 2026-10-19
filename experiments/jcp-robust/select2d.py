@@ -29,20 +29,33 @@ def main():
     for r in RANKS:
         g = [x for x in res['config']['groups'] if x['Rp'] == r][0]
         labels = [x['label'] for x in g['rules']]
-        cells, tcert = {}, True
+        assert labels == [c for c, _ in CANDIDATES], 'candidate list differs from the registered one'
+        cells, tcert, integ = {}, True, True
         for arm in ('LSPG_BE_1', 'LSPG_CNR_1'):
-            av, _ = EA.analyse_arm(out, res, g['name'], arm, labels, r)
-            tcert = tcert and av['target_cert']['certified']
-            cells[arm] = {l: dict(qualified=av['draws'][l]['qualified'], own=av['draws'][l]['own_family_qualified'],
-                                  status=av['draws'][l]['status'], D=av['draws'][l]['D'],
-                                  median_e=float(np.median(av['draws'][l]['e'])), worst_e=float(np.max(av['draws'][l]['e'])),
-                                  mismatches=len(av['draws'][l]['mismatches']))
+            av = EA.analyse_arm(out, res, g, arm, r)
+            tcert = tcert and av['target']['certified'] and bool(av['target']['all_valid'])
+            integ = integ and av['integrity']['ok']
+            cells[arm] = {l: dict(qualified=av['rules'][l]['qualified'], own=av['rules'][l]['own_family_qualified'],
+                                  status=av['rules'][l]['status'], D=av['rules'][l]['D'],
+                                  median_e=float(np.median(av['rules'][l]['e'])), worst_e=float(np.max(av['rules'][l]['e'])))
                           for l in labels}
+            cells[arm]['_integrity'] = av['integrity']
         key = 'qualified' if tcert else 'own'
-        pick = next((c for c, _ in CANDIDATES if all(cells[a][c][key] for a in cells)), None)
-        rep['selected'][str(r)] = dict(rule=pick, label=('selected' if tcert else 'diagnostic pick (target unverified)')
-                                       if pick else 'none within ladder', target_certified=tcert,
-                                       deployed=DEPLOYED[r], equals_deployed=pick == DEPLOYED[r])
+        pick, outcome = None, 'none within ladder'
+        if not integ:
+            outcome = 'unavailable (integrity: distance / G-cert / population check failed)'
+        else:
+            for c, _ in CANDIDATES:                    # three-state (code audit 1 #10): undetermined evidence stops the search
+                v = [cells[a][c][key] for a in ('LSPG_BE_1', 'LSPG_CNR_1')]
+                if all(x is True for x in v):
+                    pick = c
+                    outcome = 'selected' if tcert else 'diagnostic pick (target unverified)'
+                    break
+                if any(x is None for x in v):
+                    outcome = f'unavailable (evidence for {c} undetermined)'
+                    break
+        rep['selected'][str(r)] = dict(rule=pick, outcome=outcome, target_certified=tcert, deployed=DEPLOYED[r],
+                                       equals_deployed=pick == DEPLOYED[r])
         rep['cells'][str(r)] = cells
         print(r, rep['selected'][str(r)], flush=True)
     (HERE / 'checks').mkdir(exist_ok=True)

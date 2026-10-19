@@ -77,9 +77,17 @@ def front(b):
         if k not in seen:
             seen.add(k)
             subj.append(dict(setting=k[0], rule=k[1], spec=k[2]))
+    # code audit 1 #9: the panel links every timed run to a run certified EARLIER IN THE SAME JOB (d3run.link_evidence),
+    # so each (setting, rule) of A and of the subjects first gets a one-rung ladder (production with internal-state
+    # recording, in-job certificate, ADT anchors) over the timing cases, then the panel.
+    pairs = {}
+    for x in [A_REF] + subj:
+        pairs.setdefault((x['setting'], x['rule']), set()).add(x['spec'])
+    pre = [dict(kind='ladder', setting=st_, specs=sorted(sp_), rungs=[rl], cases=list(range(8)), tighter_cases=list(range(8)))
+           for (st_, rl), sp_ in sorted(pairs.items())]
     c = dict(attempt=f'e2f{b}', driver='e2run3d', mode=f'e2f{b}', cohort_seed=923801, cohort_count=64, trust_fraction=.05,
              timing=dict(burn=.1), settings=settings(bname, WIDTHS), extra_rules=sorted({x['rule'] for x in subj} | {'gl24'}),
-             blocks=[dict(kind='panel', label=f'front3d-{b}', A=A_REF, subjects=subj, cases=8, reps=3, seed=20261019)],
+             blocks=pre + [dict(kind='panel', label=f'front3d-{b}', A=A_REF, subjects=subj, cases=8, reps=3, seed=20261019)],
              selection=dict(file=f'checks/select3d-{b}.json'), bank_seed=int(b))
     if reg:
         c['bank_registry'] = reg

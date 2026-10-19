@@ -5,6 +5,7 @@
  "job_id": null,
  "gpu": "cpu",
  "backend": "cpu",
+ "complete": true,
  "groups": {
   "R128": {
    "arms": {
@@ -13,21 +14,22 @@
      "form": "LSPG",
      "scheme": "BE",
      "dt": 0.005,
-     "draws": {
+     "rules": {
       "d0": {
        "rule": "fib4181s0",
+       "succ": "fib6765s0",
        "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
        "level": "full",
        "qualified": true,
        "own_family_qualified": true,
        "status": "ok",
        "nonst_frac": 0.0,
-       "mismatches": [],
        "D": 2.9771975775905527e-06,
+       "prod_failed": false,
        "rho_tgt_max": 0.012226804293140494,
        "rho_succ_max": 0.011145164761114115,
-       "dist_tight_max": 1.1864710321966111e-05,
-       "dist_succ_max": 1.5591975559826026e-06,
+       "tight_max": 1.1864710321966111e-05,
+       "succ_max": 1.5591975559826026e-06,
        "e": [
         0.0060056641416687175,
         0.01334540541611271
@@ -51,18 +53,19 @@
       },
       "d1": {
        "rule": "fib4181s1",
+       "succ": "fib6765s1",
        "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
        "level": "full",
        "qualified": true,
        "own_family_qualified": true,
        "status": "ok",
        "nonst_frac": 0.0,
-       "mismatches": [],
        "D": 2.4646496176260607e-06,
+       "prod_failed": false,
        "rho_tgt_max": 0.012587746979469978,
        "rho_succ_max": 0.01543057974720315,
-       "dist_tight_max": 1.17801888720678e-05,
-       "dist_succ_max": 1.9829570745921856e-06,
+       "tight_max": 1.17801888720678e-05,
+       "succ_max": 1.9829570745921856e-06,
        "e": [
         0.006005656182069178,
         0.013345407938102993
@@ -86,18 +89,19 @@
       },
       "bad": {
        "rule": "badlat4181",
+       "succ": "",
        "rule_sha256": "7c195093119ce37b0b76b9c1398840ec3a9b5f554532094f665c9c502e018be4",
        "level": "prod",
        "qualified": null,
        "own_family_qualified": null,
        "status": "diagnostic (production only)",
        "nonst_frac": 0.0,
-       "mismatches": [],
        "D": 0.28523877765830113,
+       "prod_failed": false,
        "rho_tgt_max": 9.218156576067164,
        "rho_succ_max": null,
-       "dist_tight_max": null,
-       "dist_succ_max": null,
+       "tight_max": null,
+       "succ_max": null,
        "e": [
         0.29001917420503753,
         0.2231553904044339
@@ -120,12 +124,12 @@
        ]
       }
      },
-     "target_valid": {
-      "dev6|0": true,
-      "dev6|1": true
-     },
-     "target_cert": {
-      "rows": [
+     "diagnostic": false,
+     "target": {
+      "present": true,
+      "certified": true,
+      "all_valid": true,
+      "check_rows": [
        {
         "case": "dev6|0",
         "check_valid": true,
@@ -134,68 +138,18 @@
         "agree": true
        }
       ],
-      "certified": true,
-      "label": "checked on the registered subset (dev6)"
+      "label": "checked on the registered subset (dev6)",
+      "econv": [
+       0.006005453749053971,
+       0.013345415707983562
+      ]
      },
-     "econv": [
-      0.006005453749053971,
-      0.013345415707983562
-     ],
-     "verdicts": {
-      "H_E1a": {
-       "label": "robust",
-       "failures": 0,
-       "n": 2,
-       "cp_upper_all": 0.776393202250021,
-       "cp_upper_fresh": 0.95,
-       "failed_draws": []
-      },
-      "H_E1a_own_family": {
-       "label": "robust",
-       "failures": 0,
-       "n": 2,
-       "cp_upper_all": 0.776393202250021,
-       "cp_upper_fresh": 0.95,
-       "failed_draws": []
-      },
-      "H_E1b": {
-       "label": "atypically favourable",
-       "stats": {
-        "D": [
-         2,
-         2,
-         "favourable"
-        ],
-        "median_e": [
-         1,
-         2,
-         "insensitive"
-        ],
-        "worst_e": [
-         1,
-         2,
-         "insensitive"
-        ]
-       },
-       "delta_error": 1.010833338269367e-05
-      },
-      "H_E1c": {
-       "label": "insensitive",
-       "fraction_within": 1.0,
-       "n": 2,
-       "outside": []
-      },
-      "indicator": {
-       "tp": 2,
-       "fp": 0,
-       "fn": 0,
-       "tn": 0
-      },
-      "indicator_draw0": {
-       "rho_ok": true,
-       "rollout_ok": true
-      },
-      "eligible_cases": 2
+     "integrity": {
+      "ids_ok": true,
+      "mismatches": [],
+      "gcert_fail": 0,
+      "missing": [],
+      "ok": true
      },
      "G-E1.2": {
       "passed": true,
@@ -203,7 +157,11 @@
       "n": 2,
       "files": [
        {
-        "file": "/home/tahmid/Dev/Tunable-NM-ROM-Claude/worktrees/2026-10-17-jcp-p1-scaling/experiments/jcp-p1-scaling/runs/acc256/archive/output/p1acc_acc256/R_R128_BE.npz",
+        "src": [
+         "p1",
+         "acc256",
+         "R_R128_BE.npz"
+        ],
         "sha256": "8b34ce7ad242ea30a02e4cefd024c0a711bb9acdbe4b7650f67aad3b75c1ae12"
        }
       ]
@@ -214,21 +172,22 @@
      "form": "GAL",
      "scheme": "CN",
      "dt": 0.005,
-     "draws": {
+     "rules": {
       "d0": {
        "rule": "fib4181s0",
+       "succ": "fib6765s0",
        "rule_sha256": "6ad6e430c6de5640c43f404a1d3e52a4dcd94f78f232a8ed7aef1716d4751277",
        "level": "full",
        "qualified": true,
        "own_family_qualified": true,
        "status": "ok",
        "nonst_frac": 0.0,
-       "mismatches": [],
        "D": 5.442539747720582e-06,
+       "prod_failed": false,
        "rho_tgt_max": 0.012226804293140494,
        "rho_succ_max": 0.011145164761114115,
-       "dist_tight_max": 2.2843528726682896e-10,
-       "dist_succ_max": 2.52338646698438e-06,
+       "tight_max": 2.2843528726682896e-10,
+       "succ_max": 2.52338646698438e-06,
        "e": [
         0.002632117826353901,
         0.0008522318741963874
@@ -252,18 +211,19 @@
       },
       "d1": {
        "rule": "fib4181s1",
+       "succ": "fib6765s1",
        "rule_sha256": "95e861a31897f5503bf7bab1a842457d7c6c98ed5ba4bbfc3fbdcc7006f4318e",
        "level": "full",
        "qualified": true,
        "own_family_qualified": true,
        "status": "ok",
        "nonst_frac": 0.0,
-       "mismatches": [],
        "D": 4.0031797551148725e-06,
+       "prod_failed": false,
        "rho_tgt_max": 0.012587746979469978,
        "rho_succ_max": 0.01543057974720315,
-       "dist_tight_max": 2.2843530577652613e-10,
-       "dist_succ_max": 3.1168922340779806e-06,
+       "tight_max": 2.2843530577652613e-10,
+       "succ_max": 3.1168922340779806e-06,
        "e": [
         0.0026316061161049007,
         0.0008522346076154531
@@ -287,18 +247,19 @@
       },
       "bad": {
        "rule": "badlat4181",
+       "succ": "",
        "rule_sha256": "7c195093119ce37b0b76b9c1398840ec3a9b5f554532094f665c9c502e018be4",
        "level": "prod",
        "qualified": null,
        "own_family_qualified": null,
        "status": "diagnostic (production only)",
        "nonst_frac": 0.0,
-       "mismatches": [],
        "D": 0.2872437492681661,
+       "prod_failed": false,
        "rho_tgt_max": 9.218156576067164,
        "rho_succ_max": null,
-       "dist_tight_max": null,
-       "dist_succ_max": null,
+       "tight_max": null,
+       "succ_max": null,
        "e": [
         0.28722693255768295,
         0.25033273588948324
@@ -321,12 +282,12 @@
        ]
       }
      },
-     "target_valid": {
-      "dev6|0": true,
-      "dev6|1": true
-     },
-     "target_cert": {
-      "rows": [
+     "diagnostic": true,
+     "target": {
+      "present": true,
+      "certified": true,
+      "all_valid": true,
+      "check_rows": [
        {
         "case": "dev6|0",
         "check_valid": true,
@@ -335,72 +296,23 @@
         "agree": true
        }
       ],
-      "certified": true,
-      "label": "checked on the registered subset (dev6)"
+      "label": "checked on the registered subset (dev6)",
+      "econv": [
+       0.0026319683292453993,
+       0.0008522262262469636
+      ]
      },
-     "econv": [
-      0.0026319683292453993,
-      0.0008522262262469636
-     ],
-     "verdicts": {
-      "H_E1a": {
-       "label": "robust",
-       "failures": 0,
-       "n": 2,
-       "cp_upper_all": 0.776393202250021,
-       "cp_upper_fresh": 0.95,
-       "failed_draws": []
-      },
-      "H_E1a_own_family": {
-       "label": "robust",
-       "failures": 0,
-       "n": 2,
-       "cp_upper_all": 0.776393202250021,
-       "cp_upper_fresh": 0.95,
-       "failed_draws": []
-      },
-      "H_E1b": {
-       "label": "atypically favourable",
-       "stats": {
-        "D": [
-         2,
-         2,
-         "favourable"
-        ],
-        "median_e": [
-         1,
-         2,
-         "insensitive"
-        ],
-        "worst_e": [
-         1,
-         2,
-         "insensitive"
-        ]
-       },
-       "delta_error": 1.010833338269367e-05
-      },
-      "H_E1c": {
-       "label": "insensitive",
-       "fraction_within": 1.0,
-       "n": 2,
-       "outside": []
-      },
-      "indicator": {
-       "tp": 2,
-       "fp": 0,
-       "fn": 0,
-       "tn": 0
-      },
-      "indicator_draw0": {
-       "rho_ok": true,
-       "rollout_ok": true
-      },
-      "eligible_cases": 2
+     "integrity": {
+      "ids_ok": true,
+      "mismatches": [],
+      "gcert_fail": 0,
+      "missing": [],
+      "ok": true
      },
+     "verdicts": "diagnostic (GAL-CN): no verdict",
      "G-E1.2": {
       "passed": false,
-      "reason": "qualify archives not fetched"
+      "reason": "archive file unavailable: ('qualify', 'acc256', 'R_R128_GAL_CN_1.npz')"
      }
     }
    },
@@ -409,6 +321,7 @@
      "s0_equals_deployed": true,
      "job_sha_equals_deployed": true,
      "s1_pure_shift": true,
+     "s1_differs": true,
      "passed": true
     },
     "G-E1.3": {
@@ -433,9 +346,34 @@
      "claimed": "fib4181"
     },
     "C-E1.1": {
-     "admitted": false,
-     "fired": false,
-     "reason": "establishment missing (control unavailable)"
+     "admitted": true,
+     "fired": true,
+     "agree": true,
+     "flagged": true,
+     "cpu": [
+      2.457788687301929,
+      3.086373658305292,
+      3.1697668849976415,
+      3.167792846529176,
+      3.0994433269877555,
+      2.9815371933876373
+     ],
+     "job": [
+      2.4562231138308275,
+      3.0863755440471854,
+      3.169767072698009,
+      3.1677940726581335,
+      3.0994499120459325,
+      2.9815515017140943
+     ],
+     "deployed_draw_rho_tgt": [
+      0.013950000708236918,
+      0.00010123454608940651,
+      8.21982641120871e-05,
+      0.00014121526094656512,
+      0.00018983931649987567,
+      0.00021310446341292832
+     ]
     }
    }
   }

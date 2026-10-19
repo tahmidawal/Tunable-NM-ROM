@@ -4,6 +4,7 @@
     python cluster/collect.py <attempt> --cleanup     (after the archive is verified and committed/manifested)
 """
 import argparse
+import json
 import shlex
 import subprocess
 from pathlib import Path
@@ -26,14 +27,22 @@ def main():
     if a.cleanup:
         assert (out / 'OUTPUTS.sha256').exists(), 'collect first'
         assert not (out / 'PARTIAL').exists(), 'a partial collection never authorises cleanup'
-        steps = [d for d in (out / 'output').iterdir() if d.is_dir()]
-        assert steps and all((d / 'COMPLETE').exists() for d in steps), 'a staged step lacks its COMPLETE marker'
+        spec = json.loads((out / 'JOBSPEC.json').read_text())          # completion contract per staged step (code audit 1 #13)
+        need = []
+        for g in spec['groups']:
+            for st_ in g:
+                if 'driver' in st_:
+                    need.append(out / 'output' / f"{st_['driver']}_{Path(st_['config']).stem}" / 'COMPLETE')
+                else:
+                    need.append(out / st_['complete'].replace('OUT', 'output'))
+        assert need and all(p_.exists() for p_ in need), ('a staged step lacks its completion marker', [str(p_) for p_ in need if not p_.exists()])
         log = '\n'.join(p.read_text() for p in (out / 'logs').glob('*.out'))
         assert 'ALL-DONE' in log, 'job log lacks ALL-DONE'
         subprocess.run(['sha256sum', '-c', 'OUTPUTS-LOCAL.sha256', '--quiet'], cwd=out, check=True)
-        chk = subprocess.run(SSH + [f'cd {ARCHIVE}/{a.attempt} && sha256sum -c {shlex.quote(remote)}/LARGE.sha256 --quiet'],
-                             capture_output=True, text=True)
-        assert chk.returncode == 0, ('archive copy does not verify', chk.stderr)
+        if (out / 'LARGE.txt').read_text().strip():          # empty large-file list: nothing archived (code audit 1 #14)
+            chk = subprocess.run(SSH + [f'cd {ARCHIVE}/{a.attempt} && sha256sum -c {shlex.quote(remote)}/LARGE.sha256 --quiet'],
+                                 capture_output=True, text=True)
+            assert chk.returncode == 0, ('archive copy does not verify', chk.stderr)
         q = subprocess.run(SSH + [f'squeue -h -n jr_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
         assert not q.strip(), f'job jr_{a.attempt} still queued/running: {q}'
         st = subprocess.run(SSH + [f'sacct -n -X -P --name jr_{a.attempt} -S now-7days -o State'], capture_output=True,

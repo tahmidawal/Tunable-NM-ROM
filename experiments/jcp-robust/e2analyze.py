@@ -205,6 +205,13 @@ def main():
         C[256] = records(Path(a.v256), ver_labels)
     if a.v4096:
         C[4096] = records(Path(a.v4096), ver_labels)
+    # code audit 7 #7: every contributing job ran on the requested bank (checkpoint + rotation), seed b
+    want = None if b == 0 else json.loads((HERE / 'inputs' / 'banks' / f's{b}' / 'BANK.json').read_text())
+    wid = (None, None) if want is None else (want['ckpt_sha256'], want['rotation_sha256'])
+    bid = lambda bk: (None, None) if not bk else (bk['ckpt_sha256'], bk['rotation_sha256'])
+    for m, rec_ in list(C.items()) + ([('v1024', extra)] if a.v1024 else []):
+        if bid(rec_['bank']) != wid:
+            raise SystemExit(f'job of mesh {m} ran on another bank than bank {b}: {bid(rec_["bank"])} != {wid}')
     rep = dict(bank=b, selection=sel['selected'], jobs={m: dict(job_id=C[m]['job_id'], complete=C[m]['complete'],
                                                               backend=C[m]['backend']) for m in C},
                integrity=all(x['integrity'] for m in C for x in C[m]['cfg'].values()),

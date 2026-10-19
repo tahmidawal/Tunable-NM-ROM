@@ -25,6 +25,10 @@ import score3 as SC
 HERE = Path(__file__).resolve().parent
 
 
+class MalformedEvidence(ValueError):
+    """Evidence of the wrong shape / mapping: an integrity failure, never a numerical outcome (code audit 7 #2, #6)."""
+
+
 def _safe_max(xs):
     """max with any non-finite term -> +inf (code audit 4 #32)."""
     return math.inf if (not xs or not all(math.isfinite(x) for x in xs)) else max(xs)
@@ -70,7 +74,7 @@ def main():
         A_, B_ = np.asarray(A_), np.asarray(B_)
         if not (A_.ndim == 3 and A_.shape == B_.shape and A_.shape[0] == len(ids) and A_.shape[1] == 6
                 and A_.shape[2] == np.asarray(G).shape[0]):
-            return [math.inf] * len(ids)                      # malformed evidence: never broadcast (code audit 6 #3)
+            raise MalformedEvidence(f'coefficient shapes {A_.shape} vs {B_.shape} for {len(ids)} cases')   # audits 6 #3, 7 #2
         return [_safe_max([float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)]) for i, j in enumerate(ids)]
 
     for cf in cfg['configs']:
@@ -130,7 +134,7 @@ def main():
                     if len(off) != len(job):
                         mism.append((s, nmx, 'length'))
                         continue
-                    mism += [(s, nmx, j) for j, (x, y) in zip(ids, zip(off, job)) if np.isfinite(x) and not agree(x, E.num(y))]
+                    mism += [(s, nmx, j) for j, (x, y) in zip(ids, zip(off, job)) if not agree(x, E.num(y))]
                 if ib != tcs:
                     mism.append((s, 'tighter cases', ib))
                 # stationarity recomputed from the saved fresh certificates (rows gam_cert of the production runs)

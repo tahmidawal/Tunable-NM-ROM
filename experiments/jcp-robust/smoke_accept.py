@@ -259,9 +259,11 @@ def smk3(out):
                         tt=f'W256p|gl24|ad|LSPG|CN|0.01|tighter')
             arr = {k: z[v] for k, v in keys.items() if v in z.files}
             maps_ok = len(arr) == 4 and all([int(c) for c in z['cases|' + keys[k]]] == list(range(8)) for k in keys) and \
-                all(arr[k].shape == (8, 6, 256) for k in arr)
+                all(arr[k].shape == (8, 6, 256) for k in arr) and all(np.isfinite(arr[k]).all() for k in arr)   # audit 7 #5
             if maps_ok:
-                dd = lambda A_, B_: [max(float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[i] for k in range(1, 6)) for i in range(8)]
+                def dd(A_, B_):
+                    v = [[float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[i] for k in range(1, 6)] for i in range(8)]
+                    return [max(r_) if all(math.isfinite(x_) for x_ in r_) else math.inf for r_ in v]
                 d_rec = dict(tight=dd(arr['p'], arr['t']), succ=dd(arr['p'], arr['s']), tt=dd(arr['t'], arr['tt']))
                 cr = [r_ for r_ in res['rows'] if r_.get('tag') == 'W256p|gl24' and r_.get('spec') == sp and 'gam_cert' in r_]
                 rec_ok = sorted(int(r_['case']) for r_ in cr) == list(range(8)) and all(len(r_['gam_cert']) == 25 for r_ in cr)

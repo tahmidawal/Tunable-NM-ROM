@@ -30,6 +30,10 @@ from make_configs_e2_3d import FIXED
 HERE = Path(__file__).resolve().parent
 
 
+class MalformedEvidence(ValueError):
+    """Evidence of the wrong shape / mapping: an integrity failure, never a numerical outcome (code audit 7 #2, #6)."""
+
+
 def _safe_max(xs):
     """max with any non-finite term -> +inf (code audit 4 #32)."""
     return math.inf if (not xs or not all(math.isfinite(x) for x in xs)) else max(xs)
@@ -93,7 +97,7 @@ def main():
         A_, B_ = np.asarray(A_), np.asarray(B_)
         if not (A_.ndim == 3 and A_.shape == B_.shape and A_.shape[0] == len(ids) and A_.shape[1] == 6
                 and A_.shape[2] == np.asarray(G).shape[0]):
-            return [math.inf] * len(ids)                      # malformed evidence: never broadcast (code audit 6 #3)
+            raise MalformedEvidence(f'coefficient shapes {A_.shape} vs {B_.shape} for {len(ids)} cases')   # audits 6 #3, 7 #2
         return [_safe_max([float(np.linalg.norm((A_[i][k] - B_[i][k]) @ G)) / n0[j] for k in range(1, 6)]) for i, j in enumerate(ids)]
     E_ = lambda key: {int(c): v['e'] for c, v in scores[key].items()}
     EL = lambda key: {int(c): bool(v['eligible']) for c, v in scores[key].items()}
@@ -124,9 +128,14 @@ def main():
                     rep['integrity'] = False                                    # registered tighter population 0-7
                     qs.append([False] * len(x['cases']))
                     continue
-                d_adt = dist3(f'W{w_}', Wz[k_], Wz[kad], cs_)
-                d_nx = dist3(f'W{w_}', Wz[k_], Wz[knx], cs_)
-                d_tt = dist3(f'W{w_}', Wz[kad][:8], Wz[ktt], list(range(8)))
+                try:
+                    d_adt = dist3(f'W{w_}', Wz[k_], Wz[kad], cs_)
+                    d_nx = dist3(f'W{w_}', Wz[k_], Wz[knx], cs_)
+                    d_tt = dist3(f'W{w_}', Wz[kad][:8], Wz[ktt], list(range(8)))
+                except MalformedEvidence:
+                    rep['integrity'] = False                                    # code audit 7 #2
+                    qs.append([False] * len(x['cases']))
+                    continue
                 res_ = J[0][0] if any(st_['name'] == f'W{w_}' for st_ in J[0][0]['config']['settings']) else J[1][0]
                 cr = [r_ for r_ in res_['rows'] if r_.get('tag') == f'W{w_}|gl64' and r_.get('spec') == spec and 'gam_cert' in r_]
                 S_exp = int(round(.25 / float(sp_[2])))
@@ -135,8 +144,12 @@ def main():
                 nonst = (sum(1 for v in gam if not (np.isfinite(v) and v <= E.GAMMA)) / len(gam)) if (ok_c and gam) else None
                 if nonst is None:
                     rep['integrity'] = False
-                if any(not (np.isfinite(E.num(j)) and abs(o - E.num(j)) <= 1e-9 * abs(E.num(j)) + 1e-13)
-                       for o, j in zip(d_adt, x['dist_adt'])):
+                agree_ = lambda o, j: ((not np.isfinite(o)) and not np.isfinite(E.num(j))) or \
+                    (np.isfinite(E.num(j)) and abs(o - E.num(j)) <= 1e-9 * abs(E.num(j)) + 1e-13)
+                if any(not agree_(o, j) for o, j in zip(d_adt, x['dist_adt'])) or \
+                        any(not agree_(o, j) for o, j in zip(d_tt, x['adt_tight_tighter'])) or \
+                        any(not agree_(o, j) for o, j in zip(d_nx, x['dist_next'])) or \
+                        len(x['adt_tight_tighter']) != 8 or len(x['dist_next']) != len(cs_):
                     rep['integrity'] = False
                 qs.append(case_q(x, lad[f'W{w_}|gl80|{spec}'], d_adt, d_nx, d_tt, nonst))
             qa, qb = qs

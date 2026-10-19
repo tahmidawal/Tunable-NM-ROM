@@ -1,0 +1,16 @@
+{
+ "attempt": "e1m256",
+ "gpu": "a100-80G",
+ "gpus": 1,
+ "time_limit": 1.0,
+ "time_limit_hours": 1.0,
+ "groups": [
+  [
+   {
+    "driver": "r2acc",
+    "config": "configs/e1m256.json"
+   }
+  ]
+ ],
+ "commit": "cf340e9f49a8a88a12d6742d50524f08e5451ad4"
+}

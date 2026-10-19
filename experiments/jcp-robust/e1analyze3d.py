@@ -94,7 +94,7 @@ def main():
     n0 = {j: float(np.linalg.norm(np.asarray(C3.C.initial_interior(65, tab, j)))) for j in cases}
     est = HERE / 'checks' / 'establish-e1.json'
     pan3 = [p for p in json.loads(est.read_text())['panels'] if p['panel'].startswith('3d|')] if est.exists() else []
-    rep = dict(source=str(out), job_id=res['job_id'], commit=res['commit'], gpu=res['gpu'], backend=res['backend'], configs={})
+    rep = dict(config_supplementary=[c for c in cfg['configs'] if c.get('supplementary')], source=str(out), job_id=res['job_id'], commit=res['commit'], gpu=res['gpu'], backend=res['backend'], configs={})
 
     def key_of(tag, spec):
         return f'{tag}|{spec}'
@@ -238,6 +238,7 @@ def main():
                 ctl['G-E1.3'] = dict(pm or {}, passed=bool(pm and pm.get('passed')))
             # G-E1.2 reproduction against qualify q3d3 (A2.1, A3.6): draw 0 vs archived 'q' production W, every case
             arch = Path(a.archive)
+            supp = bool(cf.get('supplementary'))
             pin = next((l_.split()[0] for l_ in (QARCH.parents[2] / 'OUTPUTS.sha256').read_text().splitlines()
                         if l_.split()[1] == 'output/q3run_q3d3/W_q2.npz'), None)
             if arch.exists() and nm in QKEY and hashlib.sha256(arch.read_bytes()).hexdigest() == pin:
@@ -258,7 +259,8 @@ def main():
                                  dict(passed=bool(max(rows) <= 1e-10), worst=max(rows), n=len(rows),
                                       archive_sha256=hashlib.sha256(arch.read_bytes()).hexdigest()))
             else:
-                ctl['G-E1.2'] = dict(passed=False, reason='archive unavailable or hash differs from the qualify pin')
+                ctl['G-E1.2'] = (dict(passed=None, reason='supplementary configuration: no pinned archived run (A11.2)') if supp else
+                             dict(passed=False, reason='archive unavailable or hash differs from the qualify pin'))
             extra = {}
             for rl, ex in r.get('extra', {}).items():
                 k = key_of(f"{sname}|{nm}|{rl}", spec)

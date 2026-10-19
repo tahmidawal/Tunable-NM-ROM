@@ -81,8 +81,9 @@ def main():
             blk = 'blocked (control C-E1.2 did not fire)'
         elif not (a.get('G-E1.3') or {}).get('passed'):
             blk = 'blocked (gate G-E1.3)'
+        supp_names = {c['name'] for c in r3.get('config_supplementary', [])}
         for nm, cv in r3['configs'].items():
-            row = dict(dim='3D', config=f"{nm}|{cv['setting']}|{cv['spec']}")
+            row = dict(dim='3D', config=f"{nm}|{cv['setting']}|{cv['spec']}", supplementary=nm in supp_names)
             ctl = cv.get('controls', {})
             if not (r3['backend'] == 'gpu' and cv['integrity']['ok']):
                 row.update(label='invalid job', integrity=cv['integrity'])
@@ -90,7 +91,7 @@ def main():
                 row.update(label=blk)
             elif not (ctl.get('G-E1.1') or {}).get('passed'):
                 row.update(label='blocked (gate G-E1.1)')
-            elif not (ctl.get('G-E1.2') or {}).get('passed'):
+            elif not (ctl.get('G-E1.2') or {}).get('passed') and nm not in supp_names:
                 row.update(label='blocked (gate G-E1.2)', reason=(ctl.get('G-E1.2') or {}).get('reason'))
             else:
                 v = cv['verdicts']

@@ -839,3 +839,24 @@ fields for every production / tight / tighter / successor run — measured at 0.
 256², 0.064 s at 1024², from the complete e1m256 / e1m1024 jobs). certify.py now adds this measured overhead per mesh; the
 4096² job is resubmitted as `e1m4096b` with the new certificate. Its partial output (draws d0–d7 complete for all arms)
 is kept, labelled partial, and not used for any verdict.
+
+## Amendment A11 (2026-10-19, coordinator 3D production release; recorded before any 3D production job)
+
+**A11.1 3D items released** (coordinator SendMessage after jcp-dims handed back): E1 3D draws (`e13d`) and E2 3D W1024
+seeds (`e2t3d1` first as the memory pilot under A9.2's abort rule, then `e2t3d2`, `e2t3d3`, and per bank the `e2q*a/b`
+selection ladders and the `e2f*` front timing), under the usual job audits, the §14 lock, lane cap 3 and 75 GPU-h.
+
+**A11.2 Populations.** The registered E1 3D population stays the pinned qualify subset (A1.1): E1-3D-a
+`W256|lat8192|qn|BDF2|0.025|k4`, E1-3D-b `W512|lat16384|qn|BDF2|0.025|k4` — both are members of dims' qualified 3D front
+(`runs/EXPORT.json` `front_3d`, "qualified subset of the tested candidates; never complete"). dims' front contains two
+further randomised-rule members on deployed test spaces: `W512|lat32768|qn|CN|0.025|k4` and `M2_512|lat32768|qn|BDF2|0.025|k4`.
+They are added to `e13d` as **supplementary** configurations (E1-3D-c, E1-3D-d; 16 draws, draw-matched lat65536 successors,
+gl64 target, same analysis), labelled "supplementary, added after the registration on the coordinator's release, not part
+of the registered verdict set"; their outcomes are reported separately and never pooled with E1-3D-a/b. Members on
+non-deployed test spaces (`W256M2052`, `W512k8`) and the s1–s4 draws dims already ran are not added. The H2q winner
+(`M2_512|gl32|qn|BDF2|0.016666667|k4`) uses a Gauss rule and the M2 bank, so it is outside E1 (deterministic rule) and
+outside E2 3D (W1024 recipe); it is noted, not run. E2 3D keeps its registered verdict set (A1.9, A2.6).
+
+**A11.3** The E1 3D certificate charges the W512 and M2_512 rollout classes (not measured by smk1b, which ran W256 only)
+at twice the measured W256 class; 3D rollouts take 0.02–0.25 s each, so this estimate is immaterial against the 1 h
+limit. Labelled an estimate in the certificate.

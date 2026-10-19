@@ -23,6 +23,15 @@
    "rule": "gl24",
    "reduced": [],
    "extra": []
+  },
+  {
+   "name": "M2_512",
+   "bank": "M2",
+   "Rp": 512,
+   "a": 3,
+   "rule": "gl24",
+   "reduced": [],
+   "extra": []
   }
  ],
  "extra_rules": [
@@ -63,6 +72,23 @@
   "lat32768s7",
   "lat32768s8",
   "lat32768s9",
+  "lat65536",
+  "lat65536s0",
+  "lat65536s1",
+  "lat65536s10",
+  "lat65536s11",
+  "lat65536s12",
+  "lat65536s13",
+  "lat65536s14",
+  "lat65536s15",
+  "lat65536s2",
+  "lat65536s3",
+  "lat65536s4",
+  "lat65536s5",
+  "lat65536s6",
+  "lat65536s7",
+  "lat65536s8",
+  "lat65536s9",
   "lat8192",
   "lat8192s0",
   "lat8192s1",
@@ -175,6 +201,62 @@
     "sob16384s14",
     "sob16384s15"
    ]
+  },
+  {
+   "name": "E1-3D-c",
+   "setting": "W512",
+   "spec": "qn|CN|0.025|k4",
+   "n": 32768,
+   "succ_n": 65536,
+   "target": "gl64",
+   "check": "gl56",
+   "draws": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "supplementary": true
+  },
+  {
+   "name": "E1-3D-d",
+   "setting": "M2_512",
+   "spec": "qn|BDF2|0.025|k4",
+   "n": 32768,
+   "succ_n": 65536,
+   "target": "gl64",
+   "check": "gl56",
+   "draws": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "supplementary": true
   }
  ]
 }

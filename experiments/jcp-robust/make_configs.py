@@ -49,11 +49,17 @@ def e1_3d(draws=DRAWS, cases=None, sobol=True, attempt='e13d'):
                  fixture=dict(path='inputs/fixture_e1_3d.npz', sha256=sha('inputs/fixture_e1_3d.npz'))),
             dict(name='E1-3D-b', setting='W512', spec='qn|BDF2|0.025|k4', n=16384, succ_n=32768, target='gl64', check='gl56',
                  draws=draws, extra=[f'sob16384s{s}' for s in draws] if sobol else [])]
-    extra = sorted(set(['lat8192', 'lat16384', 'lat32768', 'gl56', 'gl64', 'badlat8192'] + lat(8192) + lat(16384) + lat(32768)
-                       + (cfgs[1]['extra'])))
+    if attempt == 'e13d':                       # A11.2 supplementary configurations (dims front members; reported apart)
+        cfgs += [dict(name='E1-3D-c', setting='W512', spec='qn|CN|0.025|k4', n=32768, succ_n=65536, target='gl64', check='gl56',
+                      draws=draws, supplementary=True),
+                 dict(name='E1-3D-d', setting='M2_512', spec='qn|BDF2|0.025|k4', n=32768, succ_n=65536, target='gl64',
+                      check='gl56', draws=draws, supplementary=True)]
+    extra = sorted(set(['lat8192', 'lat16384', 'lat32768', 'lat65536', 'gl56', 'gl64', 'badlat8192'] + lat(8192) + lat(16384)
+                       + lat(32768) + (lat(65536) if attempt == 'e13d' else []) + (cfgs[1]['extra'])))
     c = dict(attempt=attempt, driver='e1run3d', mode='e1', cohort_seed=923801, cohort_count=64, trust_fraction=.05,
              settings=[dict(name='W256', bank='W1024', Rp=256, a=6, rule='gl24', reduced=[], extra=[]),
-                       dict(name='W512', bank='W1024', Rp=512, a=6, rule='gl24', reduced=[], extra=[])],
+                       dict(name='W512', bank='W1024', Rp=512, a=6, rule='gl24', reduced=[], extra=[])]
+             + ([dict(name='M2_512', bank='M2', Rp=512, a=3, rule='gl24', reduced=[], extra=[])] if attempt == 'e13d' else []),
              extra_rules=extra, configs=cfgs)
     if cases is not None:
         c['case_subset'] = cases

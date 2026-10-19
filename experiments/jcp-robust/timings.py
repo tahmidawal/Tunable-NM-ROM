@@ -131,6 +131,11 @@ def main():
         el = float(r.get('elapsed_seconds') or el_over[str(r['mesh'])])
         src[f'e1 {p.parent.name}'] = dict(file=str(p), sha256=sha(p), elapsed=el, complete=bool(r.get('complete')))
         T[f"r2acc|overhead|{r['mesh']}"] = max(T.get(f"r2acc|overhead|{r['mesh']}") or 0., (el - tsum) / n)
+    # ---- E1 3D classes of widths not measured by a smoke (A11.3): W512 / M2_512 = 2 x the measured W256 class (cost linear
+    # in r at these sizes; the 3D rollouts are ~0.02-0.25 s, so the estimate is immaterial against the 1 h limit)
+    for k in [k for k in list(T) if k.startswith('e1run3d|W256|')]:
+        for w_ in ('W512', 'M2_512'):
+            T.setdefault(k.replace('|W256|', f'|{w_}|'), 2 * T[k])
     # ---- E5 (A10.1): per-execution seconds = smoke elapsed / smoke inventory size, per GPU type (smk4 A100, smk5 H200)
     import e5common as EC
     for tag, gt in (('smk4', 'A100-80G'), ('smk5', 'H200')):

@@ -1,16 +1,18 @@
 {
  "lane": "jcp-hr-baselines",
- "utc": "2026-10-19T02:49:59Z",
- "step": "3D verdict committed; job audit 13 (s2d256a release) and results audit 2 (3D) running; no jobs on the cluster; ledger 19.2 measured + 4 reserved",
+ "utc": "2026-10-19T02:52:18Z",
+ "step": "job audit 13 SUBMIT; s2d256a submitted (6003086, A100-80G, 4 h); results audit 2 (3D) running",
  "waiting_on": {
-  "slurm_jobs": [],
-  "codex_output": "audits/codex-job-13.md, audits/codex-results-2.md",
+  "slurm_jobs": [
+   6003086
+  ],
+  "codex_output": "audits/codex-results-2.md",
   "codex_pid": [
    422127
   ],
   "local_pid": null
  },
- "expected_finish_utc": "2026-10-19T03:08:59Z",
+ "expected_finish_utc": "2026-10-19T03:11:18Z",
  "last_commit": "7db7850cb",
  "gpu_hours_spent": 1.512,
  "gpu_hours_cap": 30,

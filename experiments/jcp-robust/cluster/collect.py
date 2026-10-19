@@ -1,4 +1,4 @@
-"""jcp-dims (copied from jcp-qualify; namespace and job prefix jd_ edited). Checksum-collect one completed attempt into runs/<attempt>/archive; then (separately) clean the remote dir.
+"""jcp-robust (copied from jcp-dims; namespace, prefix jr_; brief section 16: files > 100 MB stay on the cluster in burgers-archive). Checksum-collect one completed attempt into runs/<attempt>/archive; then (separately) clean the remote dir.
 
     python cluster/collect.py <attempt> [--partial]
     python cluster/collect.py <attempt> --cleanup     (after the archive is verified and committed/manifested)
@@ -9,7 +9,8 @@ import subprocess
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parents[1]
-NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-dims'
+NAMESPACE = '/cluster/tufts/paralab/tawal01/jcp-robust'
+ARCHIVE = '/cluster/tufts/paralab/tawal01/burgers-archive/jcp-robust'
 SSH = ['timeout', '600', 'ssh', '-o', 'ConnectTimeout=20', 'tufts-login']
 
 
@@ -29,10 +30,13 @@ def main():
         assert steps and all((d / 'COMPLETE').exists() for d in steps), 'a staged step lacks its COMPLETE marker'
         log = '\n'.join(p.read_text() for p in (out / 'logs').glob('*.out'))
         assert 'ALL-DONE' in log, 'job log lacks ALL-DONE'
-        subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
-        q = subprocess.run(SSH + [f'squeue -h -n jd_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
-        assert not q.strip(), f'job jd_{a.attempt} still queued/running: {q}'
-        st = subprocess.run(SSH + [f'sacct -n -X -P --name jd_{a.attempt} -S now-7days -o State'], capture_output=True,
+        subprocess.run(['sha256sum', '-c', 'OUTPUTS-LOCAL.sha256', '--quiet'], cwd=out, check=True)
+        chk = subprocess.run(SSH + [f'cd {ARCHIVE}/{a.attempt} && sha256sum -c {shlex.quote(remote)}/LARGE.sha256 --quiet'],
+                             capture_output=True, text=True)
+        assert chk.returncode == 0, ('archive copy does not verify', chk.stderr)
+        q = subprocess.run(SSH + [f'squeue -h -n jr_{a.attempt} -o %i'], capture_output=True, text=True, check=True).stdout
+        assert not q.strip(), f'job jr_{a.attempt} still queued/running: {q}'
+        st = subprocess.run(SSH + [f'sacct -n -X -P --name jr_{a.attempt} -S now-7days -o State'], capture_output=True,
                             text=True, check=True).stdout.split()
         assert st and st[-1].split()[0] == 'COMPLETED', f'accounting state {st}'
         subprocess.run(SSH + [f'rm -rf {shlex.quote(remote)}'], check=True)
@@ -41,14 +45,24 @@ def main():
     out.mkdir(parents=True, exist_ok=False)
     pre = (f'cd {shlex.quote(remote)} && ' + ('find output -type f -print0 | sort -z | xargs -0 sha256sum > OUTPUTS.sha256 && '
                                               if a.partial else '') +
-           'sha256sum -c OUTPUTS.sha256 --quiet && tar -cf collection.tar COMMIT.txt PROVENANCE.json MANIFEST.sha256 '
-           'run.sbatch logs OUTPUTS.sha256 output && sha256sum collection.tar > collection.tar.sha256')
+           'sha256sum -c OUTPUTS.sha256 --quiet && '
+           # brief 16: every output file > 100 MB is copied to the archive (verified) and left out of the pulled tar
+           f'mkdir -p {ARCHIVE}/{a.attempt} && find output -type f -size +100M | sort > LARGE.txt && '
+           f'(while read f; do mkdir -p "{ARCHIVE}/{a.attempt}/$(dirname "$f")" && cp "$f" "{ARCHIVE}/{a.attempt}/$f"; done < LARGE.txt) && '
+           f'(cd {ARCHIVE}/{a.attempt} && (cat {shlex.quote(remote)}/LARGE.txt | xargs -r sha256sum)) > LARGE.sha256 && '
+           f'(xargs -r sha256sum < LARGE.txt | cmp - LARGE.sha256) && '
+           'tar -cf collection.tar --exclude-from=LARGE.txt COMMIT.txt PROVENANCE.json MANIFEST.sha256 JOBSPEC.json '
+           'run.sbatch logs OUTPUTS.sha256 LARGE.txt LARGE.sha256 output && sha256sum collection.tar > collection.tar.sha256')
     subprocess.run(SSH + [pre], check=True)
     for name in ['collection.tar', 'collection.tar.sha256']:
         subprocess.run(['timeout', '3600', 'scp', '-q', f'tufts-login:{remote}/{name}', str(out / name)], check=True)
     subprocess.run(['sha256sum', '-c', 'collection.tar.sha256'], cwd=out, check=True)
     subprocess.run(['tar', '-xf', 'collection.tar'], cwd=out, check=True)
-    subprocess.run(['sha256sum', '-c', 'OUTPUTS.sha256', '--quiet'], cwd=out, check=True)
+    large = set((out / 'LARGE.txt').read_text().split())
+    lines = [l for l in (out / 'OUTPUTS.sha256').read_text().splitlines() if l.split(None, 1)[1].strip() not in large]
+    (out / 'OUTPUTS-LOCAL.sha256').write_text('\n'.join(lines) + '\n')
+    subprocess.run(['sha256sum', '-c', 'OUTPUTS-LOCAL.sha256', '--quiet'], cwd=out, check=True)
+    (out / 'ARCHIVE-LOCATION.txt').write_text(f'{ARCHIVE}/{a.attempt}  (files listed in LARGE.txt / LARGE.sha256)\n')
     (out / 'collection.tar').unlink()
     if a.partial:
         (out / 'PARTIAL').write_text('partial collection\n')

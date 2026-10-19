@@ -1,0 +1,77 @@
+{
+ "attempt": "smk1",
+ "driver": "r2acc",
+ "mesh": 1024,
+ "edges": [
+  0,
+  128,
+  256,
+  384,
+  512
+ ],
+ "cases": "dev6",
+ "groups": [
+  {
+   "name": "R128",
+   "Rp": 128,
+   "target": "gauss384",
+   "check": "gauss320",
+   "check_cases": "dev6",
+   "tighter_cases": "dev6",
+   "arms": [
+    {
+     "form": "LSPG",
+     "scheme": "BE",
+     "factor": 1
+    },
+    {
+     "form": "LSPG",
+     "scheme": "CNR",
+     "factor": 1
+    }
+   ],
+   "rules": [
+    {
+     "label": "d0",
+     "rule": "fib4181s0",
+     "succ": "fib6765s0",
+     "level": "full"
+    },
+    {
+     "label": "d1",
+     "rule": "fib4181s1",
+     "succ": "fib6765s1",
+     "level": "full"
+    },
+    {
+     "label": "d2",
+     "rule": "fib4181s2",
+     "succ": "fib6765s2",
+     "level": "full"
+    },
+    {
+     "label": "bad",
+     "rule": "badlat4181",
+     "succ": null,
+     "level": "prod"
+    }
+   ],
+   "permute": {
+    "label": "d0",
+    "arm": 0
+   },
+   "identity": {
+    "label_s1": "d1",
+    "claimed": "fib4181"
+   },
+   "fixture": {
+    "path": "inputs/fixture_e1_2d.npz",
+    "sha256": "777df398a8ca7dbf0f2048ea906639805b999efe2c43c5653fd2bf9c6306b321",
+    "rules": [
+     "bad",
+     "d0"
+    ]
+   }
+  }
+ ]
+}
